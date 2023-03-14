@@ -9,6 +9,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/suggestions_context.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -22,9 +23,11 @@ using testing::UnorderedElementsAre;
 
 namespace autofill {
 
-constexpr char16_t kIbanValue_0[] = u"IE12 BOFI 9000 0112 3456 78";
+// Valid Ireland IBAN number.
+constexpr char16_t kIbanValue_0[] = u"IE64 IRCE 9205 0112 3456 78";
+// Two valid Switzerland IBAN numbers.
 constexpr char16_t kIbanValue_1[] = u"CH56 0483 5012 3456 7800 9";
-constexpr char16_t kIbanValue_2[] = u"CH56 9483 5012 3456 7800 9";
+constexpr char16_t kIbanValue_2[] = u"CH93 0076 2011 6238 5295 7";
 
 constexpr char16_t kNickname_0[] = u"Nickname 0";
 constexpr char16_t kNickname_1[] = u"Nickname 1";
@@ -60,6 +63,13 @@ class IBANManagerTest : public testing::Test {
   IBANManagerTest()
       : iban_manager_(&personal_data_manager_, /*is_off_the_record=*/false) {}
 
+  void SetUp() override {
+    ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+                autofill_client_.GetAutofillOptimizationGuide()),
+            ShouldBlockSingleFieldSuggestions)
+        .WillByDefault(testing::Return(false));
+  }
+
   // Sets up the TestPersonalDataManager with an IBAN.
   IBAN SetUpIBAN(base::StringPiece16 value, base::StringPiece16 nickname) {
     IBAN iban;
@@ -78,6 +88,10 @@ class IBANManagerTest : public testing::Test {
     SuggestionsContext context;
     autofill_field.SetTypeTo(AutofillType(type));
     context.focused_field = &autofill_field;
+    FormData form_data;
+    test::CreateTestIbanFormData(&form_data);
+    form_structure_ = std::make_unique<FormStructure>(form_data);
+    context.form_structure = form_structure_.get();
     return context;
   }
 
@@ -91,9 +105,11 @@ class IBANManagerTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
   MockSuggestionsHandler suggestions_handler_;
   TestAutofillClient autofill_client_;
   TestPersonalDataManager personal_data_manager_;
+  std::unique_ptr<FormStructure> form_structure_;
   IBANManager iban_manager_;
 };
 
@@ -162,7 +178,7 @@ TEST_F(IBANManagerTest, ShowsIBANSuggestions_OnlyPrefixMatch) {
       SetUpIBANAndSuggestion(kIbanValue_2, kNickname_1);
 
   AutofillField test_field;
-  test_field.value = u"CH56";
+  test_field.value = u"CH";
   SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
 
   // Setting up mock to verify that the handler is returned a list of
@@ -185,7 +201,7 @@ TEST_F(IBANManagerTest, ShowsIBANSuggestions_OnlyPrefixMatch) {
       suggestions_handler_.GetWeakPtr(),
       /*context=*/context));
 
-  test_field.value = u"CH56 04";
+  test_field.value = u"CH5604";
 
   // Setting up mock to verify that the handler is returned only one
   // iban-based suggestion whose prefix matches `prefix_`. Only one of the two
@@ -227,7 +243,7 @@ TEST_F(IBANManagerTest, ShowsIBANSuggestions_OnlyPrefixMatch) {
 }
 
 TEST_F(IBANManagerTest, DoesNotShowIBANsForOffTheRecord) {
-  IBAN iban_0 = SetUpIBAN(kIbanValue_0, kNickname_0);
+  SetUpIBAN(kIbanValue_0, kNickname_0);
   iban_manager_.SetOffTheRecordForTesting(true);
   AutofillField test_field;
   SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
@@ -243,8 +259,58 @@ TEST_F(IBANManagerTest, DoesNotShowIBANsForOffTheRecord) {
       /*context=*/context));
 }
 
+TEST_F(IBANManagerTest, DoesNotShowIBANsForBlockedWebsite) {
+  SetUpIBAN(kIbanValue_0, kNickname_0);
+  AutofillField test_field;
+  SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
+
+  // Setting up mock to verify that suggestions returning is not triggered if
+  // the website is blocked.
+  EXPECT_CALL(suggestions_handler_, OnSuggestionsReturned).Times(0);
+  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+              autofill_client_.GetAutofillOptimizationGuide()),
+          ShouldBlockSingleFieldSuggestions)
+      .WillByDefault(testing::Return(true));
+
+  // Simulate request for suggestions.
+  EXPECT_FALSE(iban_manager_.OnGetSingleFieldSuggestions(
+      AutoselectFirstSuggestion(false), test_field, autofill_client_,
+      suggestions_handler_.GetWeakPtr(),
+      /*context=*/context));
+}
+
+// Test that suggestions are returned on platforms that don't have an
+// AutofillOptimizationGuide. Having no AutofillOptimizationGuide means that
+// suggestions cannot and will not be blocked.
+TEST_F(IBANManagerTest, ShowsIBANSuggestions_OptimizationGuideNotPresent) {
+  Suggestion iban_suggestion_0 =
+      SetUpIBANAndSuggestion(kIbanValue_0, kNickname_0);
+  AutofillField test_field;
+  SuggestionsContext context = GetIbanFocusedSuggestionsContext(test_field);
+
+  // Delete the AutofillOptimizationGuide.
+  autofill_client_.ResetAutofillOptimizationGuide();
+
+  // Setting up mock to verify that the handler is returned a list of
+  // iban-based suggestions and the iban details line.
+  EXPECT_CALL(suggestions_handler_,
+              OnSuggestionsReturned(
+                  test_field.global_id(), AutoselectFirstSuggestion(false),
+                  UnorderedElementsAre(Field(&Suggestion::main_text,
+                                             iban_suggestion_0.main_text))))
+      .Times(1);
+
+  // Simulate request for suggestions.
+  // Because all criteria are met to trigger returning to the handler,
+  // the handler should be triggered and this should return true.
+  EXPECT_TRUE(iban_manager_.OnGetSingleFieldSuggestions(
+      AutoselectFirstSuggestion(false), test_field, autofill_client_,
+      suggestions_handler_.GetWeakPtr(),
+      /*context=*/context));
+}
+
 TEST_F(IBANManagerTest, NotIbanFieldFocused_NoSuggestionsShown) {
-  IBAN iban_0 = SetUpIBAN(kIbanValue_0, kNickname_0);
+  SetUpIBAN(kIbanValue_0, kNickname_0);
 
   AutofillField test_field;
   test_field.value = std::u16string(kIbanValue_0);

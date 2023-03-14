@@ -41,19 +41,20 @@ void RemovedResultsRanker::UpdateResultRanks(ResultsMap& results,
   // Otherwise, filter any results whose IDs have been recorded as for removal.
   const bool proto_initialized = initialized();
   for (const auto& result : it->second) {
-    if (!proto_initialized) {
-      result->scoring().set_filtered(result->display_type() !=
-                                     DisplayType::kRecentApps);
-    } else {
-      result->scoring().set_filtered(
-          (*proto_)->removed_ids().contains(result->id()));
+    if (!proto_initialized &&
+        result->display_type() != DisplayType::kRecentApps) {
+      result->scoring().set_filtered(true);
+    }
+    if (proto_initialized && (*proto_)->removed_ids().contains(result->id())) {
+      result->scoring().set_filtered(true);
     }
   }
 }
 
 void RemovedResultsRanker::Remove(ChromeSearchResult* result) {
-  if (!initialized())
+  if (!initialized()) {
     return;
+  }
 
   if (IsFileSuggestion(*result)) {
     // If `result` is a file suggestion, remove it through the suggestion

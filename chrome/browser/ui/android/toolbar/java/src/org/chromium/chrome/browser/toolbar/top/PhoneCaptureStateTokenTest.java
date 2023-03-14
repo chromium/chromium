@@ -82,7 +82,7 @@ public class PhoneCaptureStateTokenTest {
                 new PhoneCustomTabCaptureStateTokenBuilder()
                         .setOptionalButtonData(makeButtonDate())
                         .build();
-        Assert.assertEquals(ToolbarSnapshotDifference.OPTIONAL_BUTTON_DATA,
+        Assert.assertEquals(ToolbarSnapshotDifference.OPTIONAL_BUTTON,
                 otherPhoneCaptureStateToken.getAnyDifference(mDefaultPhoneCaptureStateToken));
     }
 
@@ -173,7 +173,7 @@ public class PhoneCaptureStateTokenTest {
                 new PhoneCustomTabCaptureStateTokenBuilder()
                         .setColorStateList(ColorStateList.valueOf(Color.RED))
                         .build();
-        Assert.assertEquals(ToolbarSnapshotDifference.HOME_BUTTON_COLOR,
+        Assert.assertEquals(ToolbarSnapshotDifference.HOME_BUTTON,
                 otherPhoneCaptureStateToken.getAnyDifference(mDefaultPhoneCaptureStateToken));
     }
 

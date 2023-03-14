@@ -5,10 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_PARENT_ACCESS_PARENT_ACCESS_STATE_TRACKER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_PARENT_ACCESS_PARENT_ACCESS_STATE_TRACKER_H_
 
-#include <string>
-
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -35,10 +32,6 @@ class ParentAccessStateTracker {
     kNumStates = 6
   };
 
-  static std::string GetParentAccessResultHistogramForFlowType(
-      absl::optional<parent_access_ui::mojom::ParentAccessParams::FlowType>
-          flow_type);
-
   explicit ParentAccessStateTracker(
       parent_access_ui::mojom::ParentAccessParams::FlowType flow_type);
   ParentAccessStateTracker(const ParentAccessStateTracker&) = delete;
@@ -52,7 +45,6 @@ class ParentAccessStateTracker {
 
   const parent_access_ui::mojom::ParentAccessParams::FlowType flow_type_;
 };
-
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_PARENT_ACCESS_PARENT_ACCESS_STATE_TRACKER_H_

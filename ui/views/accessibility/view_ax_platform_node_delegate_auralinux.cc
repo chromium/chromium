@@ -149,7 +149,7 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegate,
 
   size_t GetChildCount() const override { return widgets_.size(); }
 
-  gfx::NativeViewAccessible ChildAtIndex(size_t index) override {
+  gfx::NativeViewAccessible ChildAtIndex(size_t index) const override {
     if (index >= GetChildCount())
       return nullptr;
 

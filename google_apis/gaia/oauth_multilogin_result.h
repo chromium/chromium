@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/values.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -49,10 +50,11 @@ enum class OAuthMultiloginResponseStatus {
 };
 
 // Parses the status field of the response.
+COMPONENT_EXPORT(GOOGLE_APIS)
 OAuthMultiloginResponseStatus ParseOAuthMultiloginResponseStatus(
     const std::string& status);
 
-class OAuthMultiloginResult {
+class COMPONENT_EXPORT(GOOGLE_APIS) OAuthMultiloginResult {
  public:
   // Parses cookies and status from JSON response. Maps status to
   // GoogleServiceAuthError::State values or sets error to

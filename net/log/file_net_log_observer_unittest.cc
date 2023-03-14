@@ -63,7 +63,7 @@ void AddEntries(FileNetLogObserver* logger,
   NetLogEntry base_entry(NetLogEventType::PAC_JAVASCRIPT_ERROR, source,
                          NetLogEventPhase::BEGIN, base::TimeTicks::Now(),
                          NetLogParamsWithString("message", ""));
-  base::Value value = base_entry.ToValue();
+  base::Value::Dict value = base_entry.ToDict();
   std::string json;
   base::JSONWriter::Write(value, &json);
   size_t base_entry_size = json.size();
@@ -229,7 +229,7 @@ class FileNetLogObserverTest : public ::testing::TestWithParam<bool>,
   bool IsBounded() const { return GetParam(); }
 
   void CreateAndStartObserving(
-      std::unique_ptr<base::Value> constants,
+      std::unique_ptr<base::Value::Dict> constants,
       NetLogCaptureMode capture_mode = NetLogCaptureMode::kDefault) {
     if (IsBounded()) {
       logger_ = FileNetLogObserver::CreateBoundedForTests(
@@ -244,7 +244,7 @@ class FileNetLogObserverTest : public ::testing::TestWithParam<bool>,
   }
 
   void CreateAndStartObservingPreExisting(
-      std::unique_ptr<base::Value> constants) {
+      std::unique_ptr<base::Value::Dict> constants) {
     ASSERT_TRUE(scratch_dir_.CreateUniqueTempDir());
 
     base::File file(log_path_,
@@ -295,7 +295,7 @@ class FileNetLogObserverBoundedTest : public ::testing::Test,
     RunUntilIdle();
   }
 
-  void CreateAndStartObserving(std::unique_ptr<base::Value> constants,
+  void CreateAndStartObserving(std::unique_ptr<base::Value::Dict> constants,
                                uint64_t total_file_size,
                                int num_files) {
     logger_ = FileNetLogObserver::CreateBoundedForTests(
@@ -504,7 +504,8 @@ TEST_P(FileNetLogObserverTest, CustomConstants) {
   base::Value::Dict constants;
   constants.SetByDottedPath(kConstantKey, kConstantString);
 
-  CreateAndStartObserving(std::make_unique<base::Value>(std::move(constants)));
+  CreateAndStartObserving(
+      std::make_unique<base::Value::Dict>(std::move(constants)));
 
   logger_->StopObserving(nullptr, closure.closure());
 
@@ -900,7 +901,7 @@ TEST_F(FileNetLogObserverBoundedTest, InprogressDirectoryBlocked) {
 
   // By creating a file where a directory should be, it will not be possible to
   // write any event files.
-  EXPECT_TRUE(base::WriteFile(GetInprogressDirectory(), "x", 1));
+  EXPECT_TRUE(base::WriteFile(GetInprogressDirectory(), "x"));
 
   CreateAndStartObserving(nullptr, kTotalFileSize, kTotalNumFiles);
 

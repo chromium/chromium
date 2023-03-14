@@ -87,7 +87,8 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
      */
     @IntDef({InterceptScheme.NOT_INTERCEPTED, InterceptScheme.UNKNOWN_SCHEME,
             InterceptScheme.ACCEPTED_SCHEME, InterceptScheme.INTENT_SCHEME,
-            InterceptScheme.MDOC_SCHEME, InterceptScheme.NUM_ENTRIES})
+            InterceptScheme.MDOC_SCHEME, InterceptScheme.OPENID4VP_SCHEME,
+            InterceptScheme.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
     public @interface InterceptScheme {
         int NOT_INTERCEPTED = 0;
@@ -95,10 +96,12 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         int ACCEPTED_SCHEME = 2;
         int INTENT_SCHEME = 3;
         int MDOC_SCHEME = 4;
-        int NUM_ENTRIES = 5;
+        int OPENID4VP_SCHEME = 5;
+        int NUM_ENTRIES = 6;
     }
     private static final List<String> MDOC_SCHEMES =
             new ArrayList<String>(Arrays.asList("mdoc", "mdl-openid4vp", "mdoc-openid4vp"));
+    private static final String OPENID4VP_SCHEME = "openid4vp";
 
     private static final String MAIN_FRAME_INTENT_LAUNCH_NAME =
             "Android.Intent.MainFrameIntentLaunch";
@@ -146,8 +149,8 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     }
 
     @Override
-    public boolean shouldIgnoreNavigation(
-            NavigationHandle navigationHandle, GURL escapedUrl, boolean crossFrame) {
+    public boolean shouldIgnoreNavigation(NavigationHandle navigationHandle, GURL escapedUrl,
+            boolean crossFrame, boolean isSandboxedFrame) {
         // We should never get here for non-main-frame navigations.
         if (!navigationHandle.isInPrimaryMainFrame()) throw new RuntimeException();
 
@@ -164,7 +167,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                 navigationHandle.getReferrerUrl(), navigationHandle.isInPrimaryMainFrame(),
                 navigationHandle.getInitiatorOrigin(), navigationHandle.isExternalProtocol(),
                 mClient.areIntentLaunchesAllowedInHiddenTabsForNavigation(navigationHandle),
-                this::onDidAsyncActionInMainFrame, crossFrame);
+                this::onDidAsyncActionInMainFrame, crossFrame, isSandboxedFrame);
 
         mClient.onDecisionReachedForNavigation(navigationHandle, result);
 
@@ -207,7 +210,8 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                 GURL.emptyGURL() /* referrerUrl */, false /* isInPrimaryMainFrame */,
                 initiatorOrigin, true /* isExternalProtocol */,
                 false /* areIntentLaunchesAllowedInHiddenTabsForNavigation */,
-                this::onDidAsyncActionInSubFrame, false /* crossframe */);
+                this::onDidAsyncActionInSubFrame, false /* crossframe */,
+                false /* isSandboxedMainFrame */);
 
         switch (result.getResultType()) {
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT:
@@ -234,7 +238,8 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             boolean hasUserGesture, boolean isRendererInitiated, GURL referrerUrl,
             boolean isInPrimaryMainFrame, Origin initiatorOrigin, boolean isExternalProtocol,
             boolean areIntentLaunchesAllowedInHiddenTabsForNavigation,
-            Callback<AsyncActionTakenParams> asyncActionTakenCallback, boolean crossFrame) {
+            Callback<AsyncActionTakenParams> asyncActionTakenCallback, boolean crossFrame,
+            boolean isSandboxedMainFrame) {
         boolean initialNavigation = isInitialNavigation();
         redirectHandler.updateNewUrlLoading(pageTransition, isRedirect, hasUserGesture,
                 mClient.getLastUserInteractionTime(), getLastCommittedEntryIndex(),
@@ -263,6 +268,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                         .setAsyncActionTakenCallback(asyncActionTakenCallback)
                         .setIsInitialNavigationInFrame(initialNavigation)
                         .setIsCrossFrameNavigation(crossFrame)
+                        .setIsSandboxedMainFrame(isSandboxedMainFrame)
                         .build();
 
         OverrideUrlLoadingResult result = mExternalNavHandler.shouldOverrideUrlLoading(params);
@@ -284,6 +290,8 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             scheme = InterceptScheme.INTENT_SCHEME;
         } else if (MDOC_SCHEMES.contains(escapedUrl.getScheme())) {
             scheme = InterceptScheme.MDOC_SCHEME;
+        } else if (OPENID4VP_SCHEME.equals(escapedUrl.getScheme())) {
+            scheme = InterceptScheme.OPENID4VP_SCHEME;
         }
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.TabNavigationIntercept.Scheme", scheme, InterceptScheme.NUM_ENTRIES);
@@ -441,6 +449,12 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     }
 
     private void clobberMainFrame(GURL targetUrl, ExternalNavigationParams params) {
+        if (ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF.isEnabled()) {
+            // Our current tab clobbering strategy doesn't support persisting sandbox attributes, so
+            // for sandboxed main frames, drop the navigation.
+            if (params.isSandboxedMainFrame()) return;
+        }
+
         int transitionType = PageTransition.LINK;
         final LoadUrlParams loadUrlParams = new LoadUrlParams(targetUrl, transitionType);
         if (!params.getReferrerUrl().isEmpty()) {

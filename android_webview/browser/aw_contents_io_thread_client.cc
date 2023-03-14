@@ -27,6 +27,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "components/embedder_support/android/util/input_stream.h"
 #include "components/embedder_support/android/util/web_resource_response.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -443,7 +444,10 @@ bool AwContentsIoThreadClient::ShouldAcceptThirdPartyCookies() const {
 }
 
 bool AwContentsIoThreadClient::GetSafeBrowsingEnabled() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(
+      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
+          ? content::BrowserThread::UI
+          : content::BrowserThread::IO);
 
   JNIEnv* env = AttachCurrentThread();
   return Java_AwContentsIoThreadClient_getSafeBrowsingEnabled(env,

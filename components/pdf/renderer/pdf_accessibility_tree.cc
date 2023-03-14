@@ -1242,9 +1242,9 @@ PdfAccessibilityTree::PdfAccessibilityTree(
         GetRenderAccessibilityIfEnabled();
     // PdfAccessibilityTree is created even when accessibility services are not
     // enabled and we rely on them to use PdfOcr service.
-    // TODO(crbug.com/1278249): Need to create a PdfOcr service only when PDF
-    // OCR is turned on.
-    if (render_accessibility) {
+    if (render_accessibility &&
+        render_accessibility->GetAXMode().has_mode(ui::AXMode::kPDFOcr)) {
+      VLOG(2) << "Creating OCR service.";
       ocr_service_ = std::make_unique<PdfOcrService>(
           render_accessibility->GetTreeIDForPluginHost(), *render_frame);
     }
@@ -1734,11 +1734,13 @@ int32_t PdfAccessibilityTree::GetId(const ui::AXNode* node) const {
   return node->id();
 }
 
-void PdfAccessibilityTree::GetChildren(
-    const ui::AXNode* node,
-    std::vector<const ui::AXNode*>* out_children) const {
-  *out_children = std::vector<const ui::AXNode*>(node->children().cbegin(),
-                                                 node->children().cend());
+size_t PdfAccessibilityTree::GetChildCount(const ui::AXNode* node) const {
+  return node->children().size();
+}
+
+const ui::AXNode* PdfAccessibilityTree::ChildAt(const ui::AXNode* node,
+                                                size_t index) const {
+  return node->children()[index];
 }
 
 ui::AXNode* PdfAccessibilityTree::GetParent(const ui::AXNode* node) const {

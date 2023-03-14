@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class AwMetricsLogUploader implements AndroidMetricsLogConsumer {
     private static final String TAG = "AwMetricsLogUploader";
-    private static final long SEND_DATA_TIMEOUT_MS = 2_000;
+    private static final long SEND_DATA_TIMEOUT_MS = 10_000;
 
     private final InitialMetricsServiceConnection mInitialConnection;
     private final boolean mWaitForResults;

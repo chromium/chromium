@@ -336,6 +336,13 @@ void DiskCacheTestWithCache::OnExternalCacheHit(const std::string& key) {
   cache_->OnExternalCacheHit(key);
 }
 
+std::unique_ptr<disk_cache::Backend> DiskCacheTestWithCache::TakeCache() {
+  mem_cache_ = nullptr;
+  simple_cache_impl_ = nullptr;
+  cache_impl_ = nullptr;
+  return std::move(cache_);
+}
+
 void DiskCacheTestWithCache::TearDown() {
   RunUntilIdle();
   ResetCaches();
@@ -350,10 +357,8 @@ void DiskCacheTestWithCache::TearDown() {
 }
 
 void DiskCacheTestWithCache::ResetCaches() {
-  mem_cache_ = nullptr;
-  simple_cache_impl_ = nullptr;
-  cache_impl_ = nullptr;
-  cache_.reset();
+  // Deletion occurs by `cache` going out of scope.
+  std::unique_ptr<disk_cache::Backend> cache = TakeCache();
 }
 
 void DiskCacheTestWithCache::InitMemoryCache() {

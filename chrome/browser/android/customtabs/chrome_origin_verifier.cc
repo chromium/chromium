@@ -7,7 +7,7 @@
 #include "base/android/jni_android.h"
 #include "chrome/browser/android/browserservices/verification/jni_headers/ChromeOriginVerifier_jni.h"
 #include "chrome/browser/browser_process.h"
-#include "components/digital_asset_links/origin_verifier.h"
+#include "components/content_relationship_verification/origin_verifier.h"
 
 namespace customtabs {
 

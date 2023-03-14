@@ -52,7 +52,7 @@ std::unique_ptr<LoopbackServerEntity> PersistentBookmarkEntity::CreateNew(
 
   return std::make_unique<PersistentBookmarkEntity>(
       id, 0, client_entity.name(), originator_cache_guid,
-      originator_client_item_id, client_entity.client_defined_unique_tag(),
+      originator_client_item_id, client_entity.client_tag_hash(),
       client_entity.unique_position(), client_entity.specifics(),
       client_entity.folder(), parent_id, client_entity.ctime(),
       client_entity.mtime());
@@ -86,7 +86,7 @@ PersistentBookmarkEntity::CreateUpdatedVersion(
         LoopbackServerEntity::GetInnerIdFromId(client_entity.id_string());
     // An undeletion is similar to a creation, so let's honor the client tag
     // provided by the client (if any).
-    client_tag_hash = client_entity.client_defined_unique_tag();
+    client_tag_hash = client_entity.client_tag_hash();
   } else {
     // Regular case (non-undeletion).
     const PersistentBookmarkEntity& current_bookmark_entity =
@@ -122,10 +122,10 @@ PersistentBookmarkEntity::CreateFromEntity(
       client_entity.id_string(), client_entity.version(), client_entity.name(),
       client_entity.originator_cache_guid(),
       client_entity.originator_client_item_id(),
-      client_entity.client_defined_unique_tag(),
-      client_entity.unique_position(), client_entity.specifics(),
-      client_entity.folder(), client_entity.parent_id_string(),
-      client_entity.ctime(), client_entity.mtime());
+      client_entity.client_tag_hash(), client_entity.unique_position(),
+      client_entity.specifics(), client_entity.folder(),
+      client_entity.parent_id_string(), client_entity.ctime(),
+      client_entity.mtime());
 }
 PersistentBookmarkEntity::PersistentBookmarkEntity(
     const string& id,
@@ -183,7 +183,7 @@ void PersistentBookmarkEntity::SerializeAsProto(
   LoopbackServerEntity::SerializeBaseProtoFields(proto);
 
   if (!client_tag_hash_.empty()) {
-    proto->set_client_defined_unique_tag(client_tag_hash_);
+    proto->set_client_tag_hash(client_tag_hash_);
   }
 
   proto->set_originator_cache_guid(originator_cache_guid_);

@@ -84,7 +84,8 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromCanvasResource(
     WGPUTextureUsage usage,
     std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource) {
   scoped_refptr<CanvasResource> canvas_resource =
-      recyclable_canvas_resource->resource_provider()->ProduceCanvasResource();
+      recyclable_canvas_resource->resource_provider()->ProduceCanvasResource(
+          CanvasResourceProvider::FlushReason::kWebGPUTexture);
   DCHECK(canvas_resource->IsValid());
   DCHECK(canvas_resource->IsAccelerated());
 

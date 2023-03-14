@@ -338,6 +338,14 @@ extern const base::FeatureParam<int> kFuzzyUrlSuggestionsPenaltyTaperLength;
 // Returns true if the default browser pedal feature is enabled.
 bool IsDefaultBrowserPedalEnabled();
 
+// Indicates whether the default browser pedal should make the change
+// immediately by calling the shell_integration API directly. When
+// false (default), the pedal goes to settings to let the user see
+// and commit the change themselves.
+extern const base::FeatureParam<bool> kDefaultBrowserPedalImmediate;
+
+// Note: These two feature params are only relevant when the above
+// param `kDefaultBrowserPedalImmediate` is true.
 // Indicates whether the default browser pedal can be used when the
 // shell_integration API indicates the system sets default browser
 // interactively, e.g. by bringing up system settings.
@@ -371,7 +379,18 @@ bool ShouldDisableCGIParamMatching();
 bool IsSiteSearchStarterPackEnabled();
 
 // Omnibox UI Simplification - Square icon backgrounds.
-bool IsSquareSuggestIconEnabled();
+// Blue rounded rect background icons for answers e.g. '1+1' and 'define x'.
+// Does not apply to weather answers. Also updates the shade of blue and the
+// stroke color.
+extern const base::FeatureParam<bool> kSquareSuggestIconAnswers;
+// Gray rounded rect background for search loop and nav fav icons.
+extern const base::FeatureParam<bool> kSquareSuggestIconIcons;
+// Gray rounded rect background for entities.
+extern const base::FeatureParam<bool> kSquareSuggestIconEntities;
+// The entity size relative to the background. 0.5 means the entity
+// takes up half of the space. Should be (0, 1). No effect if
+// `kSquareSuggestIconEntities` is false or this is 1.
+extern const base::FeatureParam<double> kSquareSuggestIconEntitiesScale;
 
 // Omnibox UI simplification - uniform row heights.
 // Returns true if the feature to enable uniform row height is enabled.

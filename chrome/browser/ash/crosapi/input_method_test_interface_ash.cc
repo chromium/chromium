@@ -8,6 +8,7 @@
 
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/crosapi/cpp/input_method_test_interface_constants.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/input_method_ash.h"
 #include "ui/events/base_event_utils.h"
@@ -36,6 +37,10 @@ void OverrideTextInputMethod(ash::TextInputMethod* text_input_method) {
   }
 
   bridge->SetCurrentEngineHandler(text_input_method);
+}
+
+bool HasCapability(const base::StringPiece capability) {
+  return capability == kInputMethodTestCapabilitySendKeyModifiers;
 }
 
 }  // namespace
@@ -155,7 +160,7 @@ void InputMethodTestInterfaceAsh::SendKeyEvent(mojom::KeyEventPtr event,
       event->type == mojom::KeyEventType::kKeyPress ? ui::ET_KEY_PRESSED
                                                     : ui::ET_KEY_RELEASED,
       static_cast<ui::KeyboardCode>(event->key_code),
-      static_cast<ui::DomCode>(event->dom_code), ui::EF_NONE,
+      static_cast<ui::DomCode>(event->dom_code), event->flags,
       static_cast<ui::DomKey>(event->dom_key), ui::EventTimeForNow());
   text_input_target_->SendKeyEvent(&key_press);
   std::move(callback).Run(fake_text_input_method_.GetCurrentKeyEventId());
@@ -183,6 +188,18 @@ void InputMethodTestInterfaceAsh::WaitForNextSurroundingTextChange(
   const auto& [text, selection_range] = surrounding_text_changes_.front();
   surrounding_text_changes_.pop();
   std::move(callback).Run(text, selection_range);
+}
+
+void InputMethodTestInterfaceAsh::HasCapabilities(
+    const std::vector<std::string>& capabilities,
+    HasCapabilitiesCallback callback) {
+  for (const std::string& capability : capabilities) {
+    if (!HasCapability(capability)) {
+      std::move(callback).Run(false);
+      return;
+    }
+  }
+  std::move(callback).Run(true);
 }
 
 void InputMethodTestInterfaceAsh::OnFocus() {

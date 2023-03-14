@@ -4,18 +4,23 @@
 
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/root_window_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/system/status_area_widget.h"
-#include "ash/system/video_conference/video_conference_media_state.h"
+#include "ash/system/video_conference/video_conference_common.h"
 #include "ash/system/video_conference/video_conference_tray.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
+#include "components/prefs/pref_service.h"
+#include "components/session_manager/session_manager_types.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -23,9 +28,6 @@
 namespace ash {
 
 namespace {
-// Delay time of hiding the tray.
-constexpr base::TimeDelta kHideTrayDelay = base::Seconds(12);
-
 // The ID for the "Speak-on-mute detected" toast.
 constexpr char kVideoConferenceTraySpeakOnMuteDetectedId[] =
     "video_conference_tray_toast_ids.speak_on_mute_detected";
@@ -39,24 +41,33 @@ VideoConferenceTrayController* g_controller_instance = nullptr;
 VideoConferenceTrayController::VideoConferenceTrayController() {
   DCHECK(!g_controller_instance);
   g_controller_instance = this;
-
-  media::CameraHalDispatcherImpl::GetInstance()->AddCameraPrivacySwitchObserver(
-      this);
-  CrasAudioHandler::Get()->AddAudioObserver(this);
 }
 
 VideoConferenceTrayController::~VideoConferenceTrayController() {
   DCHECK_EQ(this, g_controller_instance);
   g_controller_instance = nullptr;
 
-  media::CameraHalDispatcherImpl::GetInstance()
-      ->RemoveCameraPrivacySwitchObserver(this);
-  CrasAudioHandler::Get()->RemoveAudioObserver(this);
+  if (initialized_) {
+    media::CameraHalDispatcherImpl::GetInstance()
+        ->RemoveCameraPrivacySwitchObserver(this);
+    CrasAudioHandler::Get()->RemoveAudioObserver(this);
+  }
 }
 
 // static
 VideoConferenceTrayController* VideoConferenceTrayController::Get() {
   return g_controller_instance;
+}
+
+void VideoConferenceTrayController::Initialize(
+    VideoConferenceManagerBase* video_conference_manager) {
+  DCHECK(!video_conference_manager_)
+      << "VideoConferenceTrayController should not be Initialized twice.";
+  video_conference_manager_ = video_conference_manager;
+  media::CameraHalDispatcherImpl::GetInstance()->AddCameraPrivacySwitchObserver(
+      this);
+  CrasAudioHandler::Get()->AddAudioObserver(this);
+  initialized_ = true;
 }
 
 void VideoConferenceTrayController::AddObserver(Observer* observer) {
@@ -68,18 +79,21 @@ void VideoConferenceTrayController::RemoveObserver(Observer* observer) {
 }
 
 bool VideoConferenceTrayController::ShouldShowTray() const {
-  return tray_hide_delay_timer_.IsRunning() ? true : state_.has_media_app;
+  DCHECK(Shell::Get());
+
+  // We only show the tray in an active session and if there's a media app
+  // running.
+  return Shell::Get()->session_controller()->GetSessionState() ==
+             session_manager::SessionState::ACTIVE &&
+         state_.has_media_app;
 }
 
 bool VideoConferenceTrayController::GetHasCameraPermissions() const {
-  return tray_hide_delay_timer_.IsRunning() ? camera_permission_during_timer_
-                                            : state_.has_camera_permission;
+  return state_.has_camera_permission;
 }
 
 bool VideoConferenceTrayController::GetHasMicrophonePermissions() const {
-  return tray_hide_delay_timer_.IsRunning()
-             ? microphone_permission_during_timer_
-             : state_.has_microphone_permission;
+  return state_.has_microphone_permission;
 }
 
 bool VideoConferenceTrayController::IsCapturingScreen() const {
@@ -94,23 +108,99 @@ bool VideoConferenceTrayController::IsCapturingMicrophone() const {
   return state_.is_capturing_microphone;
 }
 
+void VideoConferenceTrayController::SetCameraMuted(bool muted) {
+  // If the camera is hardware-muted, do nothing here.
+  if (camera_muted_by_hardware_switch_) {
+    // TODO(b/272145024): Display a toast if camera button is clicked during
+    // hardware-muted.
+    return;
+  }
+
+  if (!ash::features::IsCrosPrivacyHubEnabled()) {
+    media::CameraHalDispatcherImpl::GetInstance()
+        ->SetCameraSWPrivacySwitchState(
+            muted ? cros::mojom::CameraPrivacySwitchState::ON
+                  : cros::mojom::CameraPrivacySwitchState::OFF);
+    return;
+  }
+
+  // Change user pref to let Privacy Hub enable/disable the camera.
+  auto* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  if (!pref_service) {
+    return;
+  }
+  pref_service->SetBoolean(prefs::kUserCameraAllowed, !muted);
+}
+
+bool VideoConferenceTrayController::GetCameraMuted() {
+  if (camera_muted_by_hardware_switch_) {
+    return true;
+  }
+
+  if (!features::IsCrosPrivacyHubEnabled()) {
+    return camera_muted_by_software_switch_;
+  }
+
+  auto* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  return pref_service && !pref_service->GetBoolean(prefs::kUserCameraAllowed);
+}
+
+void VideoConferenceTrayController::SetMicrophoneMuted(bool muted) {
+  if (!ash::features::IsCrosPrivacyHubEnabled()) {
+    CrasAudioHandler::Get()->SetInputMute(
+        /*mute_on=*/muted, CrasAudioHandler::InputMuteChangeMethod::kOther);
+    return;
+  }
+
+  // Change user pref to let Privacy Hub enable/disable the microphone.
+  auto* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  if (!pref_service) {
+    return;
+  }
+  pref_service->SetBoolean(prefs::kUserMicrophoneAllowed, !muted);
+}
+
+bool VideoConferenceTrayController::GetMicrophoneMuted() {
+  if (!features::IsCrosPrivacyHubEnabled()) {
+    return CrasAudioHandler::Get()->IsInputMuted();
+  }
+
+  auto* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  return pref_service &&
+         !pref_service->GetBoolean(prefs::kUserMicrophoneAllowed);
+}
+
+void VideoConferenceTrayController::GetMediaApps(
+    base::OnceCallback<void(MediaApps)> ui_callback) {
+  DCHECK(video_conference_manager_);
+  video_conference_manager_->GetMediaApps(std::move(ui_callback));
+}
+
+void VideoConferenceTrayController::ReturnToApp(
+    const base::UnguessableToken& id) {
+  DCHECK(video_conference_manager_);
+  video_conference_manager_->ReturnToApp(id);
+}
+
+void VideoConferenceTrayController::OnCameraHWPrivacySwitchStateChanged(
+    const std::string& device_id,
+    cros::mojom::CameraPrivacySwitchState state) {
+  camera_muted_by_hardware_switch_ =
+      state == cros::mojom::CameraPrivacySwitchState::ON;
+
+  UpdateCameraIcons();
+}
+
 void VideoConferenceTrayController::OnCameraSWPrivacySwitchStateChanged(
     cros::mojom::CameraPrivacySwitchState state) {
   camera_muted_by_software_switch_ =
-      state != cros::mojom::CameraPrivacySwitchState::ON;
+      state == cros::mojom::CameraPrivacySwitchState::ON;
 
-  for (auto* root_window_controller :
-       Shell::Get()->GetAllRootWindowControllers()) {
-    DCHECK(root_window_controller);
-    DCHECK(root_window_controller->GetStatusAreaWidget());
-
-    auto* camera_icon = root_window_controller->GetStatusAreaWidget()
-                            ->video_conference_tray()
-                            ->camera_icon();
-
-    camera_icon->SetToggled(!camera_muted_by_software_switch_);
-    camera_icon->UpdateCapturingState();
-  }
+  UpdateCameraIcons();
 }
 
 void VideoConferenceTrayController::OnInputMuteChanged(
@@ -156,25 +246,6 @@ void VideoConferenceTrayController::UpdateWithMediaState(
   state_ = state;
 
   if (state_.has_media_app != old_state.has_media_app) {
-    // Reset any on-going timer run.
-    tray_hide_delay_timer_.Stop();
-
-    if (!state_.has_media_app) {
-      camera_permission_during_timer_ = old_state.has_camera_permission;
-      microphone_permission_during_timer_ = old_state.has_microphone_permission;
-
-      // Triggers the timer for delay hiding all the trays. Note that this
-      // should be called before `OnCameraPermissionStateChange()` and
-      // `OnMicrophonePermissionStateChange()`, since in `VideoConferenceTray`
-      // we preserve the state of camera/microphone permission for 12s before
-      // hiding the tray.
-      tray_hide_delay_timer_.Start(
-          FROM_HERE, kHideTrayDelay,
-          base::BindOnce(&VideoConferenceTrayController::
-                             SetTraysVisibilityAfterDelayHiding,
-                         weak_ptr_factory_.GetWeakPtr()));
-    }
-
     for (auto& observer : observer_list_) {
       observer.OnHasMediaAppStateChange();
     }
@@ -209,23 +280,33 @@ void VideoConferenceTrayController::UpdateWithMediaState(
   }
 }
 
+bool VideoConferenceTrayController::HasCameraPermission() const {
+  return state_.has_camera_permission;
+}
+
+bool VideoConferenceTrayController::HasMicrophonePermission() const {
+  return state_.has_microphone_permission;
+}
+
 void VideoConferenceTrayController::HandleDeviceUsedWhileDisabled(
     crosapi::mojom::VideoConferenceMediaDevice device,
     const std::u16string& app_name) {
   // TODO(b/249828245): Implement logic to handle this.
 }
 
-void VideoConferenceTrayController::SetTraysVisibilityAfterDelayHiding() {
+void VideoConferenceTrayController::UpdateCameraIcons() {
   for (auto* root_window_controller :
        Shell::Get()->GetAllRootWindowControllers()) {
     DCHECK(root_window_controller);
     DCHECK(root_window_controller->GetStatusAreaWidget());
 
-    auto* tray =
-        root_window_controller->GetStatusAreaWidget()->video_conference_tray();
+    auto* camera_icon = root_window_controller->GetStatusAreaWidget()
+                            ->video_conference_tray()
+                            ->camera_icon();
 
-    DCHECK(tray);
-    tray->UpdateTrayAndIconsState();
+    camera_icon->SetToggled(camera_muted_by_hardware_switch_ ||
+                            camera_muted_by_software_switch_);
+    camera_icon->UpdateCapturingState();
   }
 }
 

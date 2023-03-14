@@ -725,7 +725,7 @@ class MockNetworkContext : public network::TestNetworkContext {
 
   void CreateTCPServerSocket(
       const net::IPEndPoint& local_addr,
-      uint32_t backlog,
+      network::mojom::TCPServerSocketOptionsPtr options,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       mojo::PendingReceiver<network::mojom::TCPServerSocket> receiver,
       CreateTCPServerSocketCallback callback) override {
@@ -1585,20 +1585,18 @@ IN_PROC_BROWSER_TEST_F(PPAPIPrivateNaClPNaClTest,
   RUN_FILEIO_PRIVATE_SUBTESTS;
 }
 
-#define SETUP_FOR_FILEREF_TESTS                                              \
-  const char kContents[] = "Hello from browser";                             \
-  base::ScopedAllowBlockingForTesting allow_blocking;                        \
-  base::ScopedTempDir temp_dir;                                              \
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());                               \
-  base::FilePath existing_filename = temp_dir.GetPath().AppendASCII("foo");  \
-  ASSERT_EQ(                                                                 \
-      static_cast<int>(sizeof(kContents) - 1),                               \
-      base::WriteFile(existing_filename, kContents, sizeof(kContents) - 1)); \
-  PPAPITestSelectFileDialogFactory::SelectedFileInfoList file_info_list;     \
-  file_info_list.push_back(                                                  \
-      ui::SelectedFileInfo(existing_filename, existing_filename));           \
-  PPAPITestSelectFileDialogFactory test_dialog_factory(                      \
-      PPAPITestSelectFileDialogFactory::RESPOND_WITH_FILE_LIST,              \
+#define SETUP_FOR_FILEREF_TESTS                                             \
+  const char kContents[] = "Hello from browser";                            \
+  base::ScopedAllowBlockingForTesting allow_blocking;                       \
+  base::ScopedTempDir temp_dir;                                             \
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());                              \
+  base::FilePath existing_filename = temp_dir.GetPath().AppendASCII("foo"); \
+  ASSERT_TRUE(base::WriteFile(existing_filename, kContents));               \
+  PPAPITestSelectFileDialogFactory::SelectedFileInfoList file_info_list;    \
+  file_info_list.emplace_back(                                              \
+      ui::SelectedFileInfo(existing_filename, existing_filename));          \
+  PPAPITestSelectFileDialogFactory test_dialog_factory(                     \
+      PPAPITestSelectFileDialogFactory::RESPOND_WITH_FILE_LIST,             \
       file_info_list);
 
 // FileRef tests.

@@ -8,11 +8,14 @@
 
 #include "base/test/bind.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -53,7 +56,18 @@ class BruschettaInstallerViewBrowserTest : public DialogBrowserTest {
   BruschettaInstallerViewBrowserTest& operator=(
       const BruschettaInstallerViewBrowserTest&) = delete;
 
-  void SetUpOnMainThread() override {}
+  void SetUpOnMainThread() override {
+    base::Value::Dict pref;
+
+    base::Value::Dict config;
+    config.Set(prefs::kPolicyEnabledKey,
+               static_cast<int>(prefs::PolicyEnabledState::INSTALL_ALLOWED));
+    config.Set(prefs::kPolicyNameKey, "Config name");
+
+    pref.Set("test-config", std::move(config));
+    browser()->profile()->GetPrefs()->SetDict(prefs::kBruschettaVMConfiguration,
+                                              std::move(pref));
+  }
 
   void ShowUi(const std::string& name) override {
     BruschettaInstallerView::Show(browser()->profile(), GetBruschettaAlphaId());

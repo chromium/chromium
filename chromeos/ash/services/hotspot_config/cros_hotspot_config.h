@@ -39,6 +39,9 @@ class CrosHotspotConfig : public mojom::CrosHotspotConfig,
       mojo::PendingReceiver<mojom::CrosHotspotConfig> pending_receiver);
 
   // mojom::CrosHotspotConfig
+  void ObserveEnabledStateChanges(
+      mojo::PendingRemote<mojom::HotspotEnabledStateObserver> observer)
+      override;
   void AddObserver(
       mojo::PendingRemote<mojom::CrosHotspotConfigObserver> observer) override;
   void GetHotspotInfo(GetHotspotInfoCallback callback) override;

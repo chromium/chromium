@@ -35,16 +35,38 @@ apps::AppType PolicyStringToAppType(const std::string& app_type) {
     return apps::AppType::kArc;
   if (app_type == "BOREALIS")
     return apps::AppType::kBorealis;
+  // After the splitting of kChromeApp from the kExtension type in which
+  // the original kExtension was renamed to kChromeApp (crrev.com/c/3314469),
+  // the subsequent kExtension type refers to Chrome browser extensions only.
+  // The legacy kChromeApp policy string remains unchanged.
+  if (app_type == "BROWSER-EXTENSION")
+    return apps::AppType::kExtension;
+  if (app_type == "BRUSCHETTA")
+    return apps::AppType::kBruschetta;
   if (app_type == "BUILT-IN")
     return apps::AppType::kBuiltIn;
   if (app_type == "CROSTINI")
     return apps::AppType::kCrostini;
   if (app_type == "EXTENSION")
     return apps::AppType::kChromeApp;
+  if (app_type == "LACROS-BROWSER")
+    return apps::AppType::kStandaloneBrowser;
+  if (app_type == "LACROS-CHROME-APP")
+    return apps::AppType::kStandaloneBrowserChromeApp;
+  if (app_type == "LACROS-EXTENSION")
+    return apps::AppType::kStandaloneBrowserExtension;
+  if (app_type == "MAC-OS")
+    return apps::AppType::kMacOs;
   if (app_type == "PLUGIN-VM")
     return apps::AppType::kPluginVm;
+  if (app_type == "REMOTE")
+    return apps::AppType::kRemote;
+  if (app_type == "SYSTEM-WEB")
+    return apps::AppType::kSystemWeb;
   if (app_type == "WEB")
     return apps::AppType::kWeb;
+  if (app_type == "UNKNOWN")
+    return apps::AppType::kUnknown;
 
   NOTREACHED();
   return apps::AppType::kUnknown;
@@ -56,20 +78,36 @@ std::string AppTypeToPolicyString(apps::AppType app_type) {
       return "ARC";
     case apps::AppType::kBorealis:
       return "BOREALIS";
+    case apps::AppType::kExtension:
+      return "BROWSER-EXTENSION";
+    case apps::AppType::kBruschetta:
+      return "BRUSCHETTA";
     case apps::AppType::kBuiltIn:
       return "BUILT-IN";
     case apps::AppType::kCrostini:
       return "CROSTINI";
     case apps::AppType::kChromeApp:
       return "EXTENSION";
+    case apps::AppType::kStandaloneBrowser:
+      return "LACROS-BROWSER";
+    case apps::AppType::kStandaloneBrowserChromeApp:
+      return "LACROS-CHROME-APP";
+    case apps::AppType::kStandaloneBrowserExtension:
+      return "LACROS-EXTENSION";
+    case apps::AppType::kMacOs:
+      return "MAC-OS";
     case apps::AppType::kPluginVm:
       return "PLUGIN-VM";
+    case apps::AppType::kRemote:
+      return "REMOTE";
+    case apps::AppType::kSystemWeb:
+      return "SYSTEM-WEB";
     case apps::AppType::kWeb:
       return "WEB";
-    default:
-      NOTREACHED();
-      return "";
+    case apps::AppType::kUnknown:
+      return "UNKNOWN";
   }
+  NOTREACHED();
 }
 
 AppRestriction PolicyStringToAppRestriction(const std::string& restriction) {

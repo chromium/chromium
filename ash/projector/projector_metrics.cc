@@ -41,12 +41,23 @@ constexpr char
     kProjectorOnDeviceToServerSpeechRecognitionFallbackReasonHistogramName[] =
         "Ash.Projector.OnDeviceToServerSpeechRecognitionFallbackReason";
 
+constexpr char kSpeechRecognitionEndStateOnDevice[] =
+    "Ash.Projector.SpeechRecognitionEndState.OnDevice";
+
+constexpr char kSpeechRecognitionEndStateServerBased[] =
+    "Ash.Projector.SpeechRecognitionEndState.ServerBased";
+
 // Appends the proper suffix to |prefix| based on whether the user is in tablet
 // mode or not.
 std::string GetHistogramName(const std::string& prefix) {
   std::string mode =
       Shell::Get()->IsInTabletMode() ? ".TabletMode" : ".ClamshellMode";
   return prefix + mode;
+}
+
+inline std::string GetSpeechRecognitionHistogramName(bool is_on_device) {
+  return is_on_device ? kSpeechRecognitionEndStateOnDevice
+                      : kSpeechRecognitionEndStateServerBased;
 }
 
 }  // namespace
@@ -123,6 +134,13 @@ ASH_EXPORT void RecordOnDeviceToServerSpeechRecognitionFallbackReason(
   base::UmaHistogramEnumeration(
       kProjectorOnDeviceToServerSpeechRecognitionFallbackReasonHistogramName,
       reason);
+}
+
+ASH_EXPORT void RecordSpeechRecognitionEndState(
+    SpeechRecognitionEndState end_state,
+    bool is_on_device) {
+  base::UmaHistogramEnumeration(GetSpeechRecognitionHistogramName(is_on_device),
+                                end_state);
 }
 
 }  // namespace ash

@@ -34,7 +34,6 @@ namespace blink {
 class CSSValue;
 class ComputedStyleBuilder;
 class Element;
-class PseudoElement;
 class SVGResource;
 class StyleImage;
 
@@ -66,9 +65,7 @@ class ElementStyleResources {
   STACK_ALLOCATED();
 
  public:
-  ElementStyleResources(Element&,
-                        float device_scale_factor,
-                        PseudoElement* pseudo_element);
+  ElementStyleResources(Element&, float device_scale_factor);
   ElementStyleResources(const ElementStyleResources&) = delete;
   ElementStyleResources& operator=(const ElementStyleResources&) = delete;
 
@@ -92,7 +89,6 @@ class ElementStyleResources {
   HashSet<CSSPropertyID> pending_image_properties_;
   HashSet<CSSPropertyID> pending_svg_resource_properties_;
   float device_scale_factor_;
-  PseudoElement* pseudo_element_;
   PreCachedContainerSizes pre_cached_container_sizes_;
 };
 

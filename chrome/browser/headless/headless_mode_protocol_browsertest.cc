@@ -157,9 +157,8 @@ void HeadlessModeProtocolBrowserTest::ProcessTestResult(
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kResetResults)) {
     LOG(INFO) << "Updating expectations in " << expectation_path;
-    int result = base::WriteFile(expectation_path, test_result.data(),
-                                 static_cast<int>(test_result.size()));
-    CHECK(test_result.size() == static_cast<size_t>(result));
+    bool success = base::WriteFile(expectation_path, test_result);
+    CHECK(success);
   }
 
   std::string expectation;
@@ -199,7 +198,14 @@ void HeadlessModeProtocolBrowserTest::OnConsoleAPICalled(
 HEADLESS_MODE_PROTOCOL_TEST(DomFocus, "input/dom-focus.js")
 HEADLESS_MODE_PROTOCOL_TEST(FocusBlurNotifications,
                             "input/focus-blur-notifications.js")
-HEADLESS_MODE_PROTOCOL_TEST(InputClipboardOps, "input/input-clipboard-ops.js")
+// TODO(crbug.com/1416882): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_InputClipboardOps DISABLED_InputClipboardOps
+#else
+#define MAYBE_InputClipboardOps InputClipboardOps
+#endif
+HEADLESS_MODE_PROTOCOL_TEST(MAYBE_InputClipboardOps,
+                            "input/input-clipboard-ops.js")
 
 // https://crbug.com/1411976
 #if BUILDFLAG(IS_WIN)

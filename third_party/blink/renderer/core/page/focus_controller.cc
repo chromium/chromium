@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
+#include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/portal/html_portal_element.h"
@@ -396,6 +397,36 @@ HTMLSlotElement* ScopedFocusNavigation::FindFallbackScopeOwnerSlot(
   return nullptr;
 }
 
+// Checks whether |element| is an <iframe> and seems like a captcha based on
+// heuristics. The heuristics cannot be perfect and therefore is a subject to
+// change, e.g. adding a list of domains of captcha providers to be compared
+// with 'src' attribute.
+bool IsLikelyCaptchaIframe(const Element& element) {
+  auto* iframe_element = DynamicTo<HTMLIFrameElement>(element);
+  if (!iframe_element) {
+    return false;
+  }
+  DEFINE_STATIC_LOCAL(String, kCaptcha, ("captcha"));
+  return iframe_element->FastGetAttribute(html_names::kSrcAttr)
+             .Contains(kCaptcha) ||
+         iframe_element->title().Contains(kCaptcha) ||
+         iframe_element->GetIdAttribute().Contains(kCaptcha) ||
+         iframe_element->GetNameAttribute().Contains(kCaptcha);
+}
+
+// Checks whether |element| is a captcha <iframe> or enclosed with such an
+// <iframe>.
+bool IsLikelyWithinCaptchaIframe(const Element& element,
+                                 FocusController::OwnerMap& owner_map) {
+  if (IsLikelyCaptchaIframe(element)) {
+    return true;
+  }
+  ScopedFocusNavigation scope =
+      ScopedFocusNavigation::CreateFor(element, owner_map);
+  Element* scope_owner = scope.Owner();
+  return scope_owner && IsLikelyCaptchaIframe(*scope_owner);
+}
+
 inline void DispatchBlurEvent(const Document& document,
                               Element& focused_element) {
   focused_element.DispatchBlurEvent(nullptr, mojom::blink::FocusType::kPage);
@@ -641,8 +672,10 @@ Element* FindFocusableElementRecursivelyForward(
         ScopedFocusNavigation inner_scope =
             ScopedFocusNavigation::OwnedByShadowHost(*found, owner_map);
         if (Element* found_in_inner_focus_scope =
-                FindFocusableElementRecursivelyForward(inner_scope, owner_map))
+                FindFocusableElementRecursivelyForward(inner_scope,
+                                                       owner_map)) {
           return found_in_inner_focus_scope;
+        }
       }
       // Skip to the next element in the same scope.
       continue;
@@ -1255,6 +1288,10 @@ Element* FocusController::NextFocusableElementForImeAndAutofill(
           return next_element;
         }
       }
+    }
+    // Captcha is a sort of an input field that should have user input as well.
+    if (IsLikelyWithinCaptchaIframe(*next_html_element, owner_map)) {
+      return next_element;
     }
     auto* next_form_control_element =
         DynamicTo<HTMLFormControlElement>(next_element);

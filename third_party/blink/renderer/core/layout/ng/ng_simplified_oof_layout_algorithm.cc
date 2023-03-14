@@ -23,7 +23,7 @@ NGSimplifiedOOFLayoutAlgorithm::NGSimplifiedOOFLayoutAlgorithm(
   DCHECK(params.space.HasKnownFragmentainerBlockSize());
 
   container_builder_.SetBoxType(previous_fragment.BoxType());
-  container_builder_.SetPageName(previous_fragment.PageName());
+  container_builder_.SetPageNameIfNeeded(previous_fragment.PageName());
   container_builder_.SetFragmentBlockSize(
       params.space.FragmentainerBlockSize());
   container_builder_.SetDisableOOFDescendantsPropagation();

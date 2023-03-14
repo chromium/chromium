@@ -4,109 +4,144 @@
 
 #include "ash/capture_mode/capture_mode_metrics.h"
 
+#include "ash/capture_mode/capture_mode_types.h"
 #include "ash/shell.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 
 namespace ash {
 
 namespace {
 
-constexpr char kEndRecordingReasonHistogramName[] =
+constexpr char kEndRecordingReasonHistogramPrefix[] =
     "Ash.CaptureModeController.EndRecordingReason";
-constexpr char kBarButtonHistogramName[] =
+constexpr char kBarButtonHistogramPrefix[] =
     "Ash.CaptureModeController.BarButtons";
-constexpr char kCaptureAudioOnHistogramName[] =
+constexpr char kCaptureAudioOnHistogramPrefix[] =
     "Ash.CaptureModeController.CaptureAudioOnMetric";
-constexpr char kCaptureConfigurationHistogramName[] =
+constexpr char kCaptureConfigurationHistogramPrefix[] =
     "Ash.CaptureModeController.CaptureConfiguration";
-constexpr char kCaptureRegionAdjustmentHistogramName[] =
+constexpr char kCaptureRegionAdjustmentHistogramPrefix[] =
     "Ash.CaptureModeController.CaptureRegionAdjusted";
+constexpr char kDemoToolsEnabledOnRecordingStartPrefix[] =
+    "Ash.CaptureModeController.DemoToolsEnabledOnRecordingStart";
+constexpr char kEntryHistogramPrefix[] = "Ash.CaptureModeController.EntryPoint";
+constexpr char kRecordTimeHistogramPrefix[] =
+    "Ash.CaptureModeController.ScreenRecordingLength";
+constexpr char kGifRecordingTimeHistogramPrefix[] =
+    "Ash.CaptureModeController.GIFRecordingLength";
+constexpr char kSaveToLocationHistogramPrefix[] =
+    "Ash.CaptureModeController.SaveLocation";
+constexpr char kSwitchToDefaultFolderReasonHistogramPrefix[] =
+    "Ash.CaptureModeController.SwitchToDefaultReason";
+constexpr char kProjectorCaptureConfigurationHistogramPrefix[] =
+    "Ash.CaptureModeController.Projector.CaptureConfiguration";
+constexpr char kProjectorCaptureRegionAdjustmentHistogramPrefix[] =
+    "Ash.CaptureModeController.Projector.CaptureRegionAdjusted";
+constexpr char kProjectorRecordTimeHistogramPrefix[] =
+    "Ash.CaptureModeController.Projector.ScreenRecordingLength";
+constexpr char kRecordingStartsWithCameraPrefix[] =
+    "Ash.CaptureModeController.RecordingStartsWithCamera";
+constexpr char kProjectorDemoToolsEnabledOnRecordingStartPrefix[] =
+    "Ash.CaptureModeController.Projector.DemoToolsEnabledOnRecordingStart";
+constexpr char kProjectorRecordingStartsWithCameraPrefix[] =
+    "Ash.CaptureModeController.Projector.RecordingStartsWithCamera";
+constexpr char kCameraDisconnectionsDuringRecordingsPrefix[] =
+    "Ash.CaptureModeController.CameraDisconnectionsDuringRecordings";
+constexpr char kCameraReconnectDurationPrefix[] =
+    "Ash.CaptureModeController.CameraReconnectDuration";
+constexpr char kRecordingCameraSizeOnStartPrefix[] =
+    "Ash.CaptureModeController.RecordingCameraSizeOnStart";
+constexpr char kRecordingCameraPositionOnStartPrefix[] =
+    "Ash.CaptureModeController.RecordingCameraPositionOnStart";
+constexpr char kGifRecordingFileSizePrefix[] =
+    "Ash.CaptureModeController.GIFRecordingFileSize";
+constexpr char kScreenRecordingFileSizePrefix[] =
+    "Ash.CaptureModeController.ScreenRecordingFileSize";
+constexpr char kNumberOfConnectedCameras[] =
+    "Ash.CaptureModeController.NumberOfConnectedCameras";
 constexpr char kConsecutiveScreenshotHistogramName[] =
     "Ash.CaptureModeController.ConsecutiveScreenshots";
-constexpr char kDemoToolsEnabledOnRecordingStart[] =
-    "Ash.CaptureModeController.DemoToolsEnabledOnRecordingStart";
-constexpr char kEntryHistogramName[] = "Ash.CaptureModeController.EntryPoint";
 constexpr char kQuickActionHistogramName[] =
     "Ash.CaptureModeController.QuickAction";
-constexpr char kRecordTimeHistogramName[] =
-    "Ash.CaptureModeController.ScreenRecordingLength";
-constexpr char kSaveToLocationHistogramName[] =
-    "Ash.CaptureModeController.SaveLocation";
 constexpr char kScreenshotsPerDayHistogramName[] =
     "Ash.CaptureModeController.ScreenshotsPerDay";
 constexpr char kScreenshotsPerWeekHistogramName[] =
     "Ash.CaptureModeController.ScreenshotsPerWeek";
 constexpr char kSwitchesFromInitialModeHistogramName[] =
     "Ash.CaptureModeController.SwitchesFromInitialCaptureMode";
-constexpr char kSwitchToDefaultFolderReasonHistogramName[] =
-    "Ash.CaptureModeController.SwitchToDefaultReason";
-constexpr char kProjectorCaptureConfigurationHistogramName[] =
-    "Ash.CaptureModeController.Projector.CaptureConfiguration";
-constexpr char kProjectorCaptureRegionAdjustmentHistogramName[] =
-    "Ash.CaptureModeController.Projector.CaptureRegionAdjusted";
-constexpr char kProjectorRecordTimeHistogramName[] =
-    "Ash.CaptureModeController.Projector.ScreenRecordingLength";
-constexpr char kRecordingStartsWithCamera[] =
-    "Ash.CaptureModeController.RecordingStartsWithCamera";
-constexpr char kProjectorDemoToolsEnabledOnRecordingStart[] =
-    "Ash.CaptureModeController.Projector.DemoToolsEnabledOnRecordingStart";
-constexpr char kProjectorRecordingStartsWithCamera[] =
-    "Ash.CaptureModeController.Projector.RecordingStartsWithCamera";
-constexpr char kCameraDisconnectionsDuringRecordings[] =
-    "Ash.CaptureModeController.CameraDisconnectionsDuringRecordings";
-constexpr char kCameraReconnectDuration[] =
-    "Ash.CaptureModeController.CameraReconnectDuration";
-constexpr char kRecordingCameraSizeOnStart[] =
-    "Ash.CaptureModeController.RecordingCameraSizeOnStart";
-constexpr char kRecordingCameraPositionOnStart[] =
-    "Ash.CaptureModeController.RecordingCameraPositionOnStart";
-constexpr char kNumberOfConnectedCameras[] =
-    "Ash.CaptureModeController.NumberOfConnectedCameras";
+
+void RecordCaptureModeRecordTimeInternal(const std::string& histogram_prefix,
+                                         base::TimeDelta recording_duration) {
+  // Use the custom counts function instead of custom times so we can record in
+  // seconds instead of milliseconds. The max bucket is 3 hours.
+  base::UmaHistogramCustomCounts(GetCaptureModeHistogramName(histogram_prefix),
+                                 recording_duration.InSeconds(),
+                                 /*min=*/1,
+                                 /*exclusive_max=*/base::Hours(3).InSeconds(),
+                                 /*buckets=*/50);
+}
 
 }  // namespace
 
 void RecordEndRecordingReason(EndRecordingReason reason) {
   base::UmaHistogramEnumeration(
-      GetCaptureModeHistogramName(kEndRecordingReasonHistogramName), reason);
+      GetCaptureModeHistogramName(kEndRecordingReasonHistogramPrefix), reason);
 }
 
 void RecordCaptureModeBarButtonType(CaptureModeBarButtonType button_type) {
   base::UmaHistogramEnumeration(
-      GetCaptureModeHistogramName(kBarButtonHistogramName), button_type);
+      GetCaptureModeHistogramName(kBarButtonHistogramPrefix), button_type);
 }
 
 void RecordCaptureModeConfiguration(CaptureModeType type,
                                     CaptureModeSource source,
+                                    RecordingType recording_type,
                                     bool audio_on,
                                     bool is_in_projector_mode) {
   const std::string histogram_name = GetCaptureModeHistogramName(
-      is_in_projector_mode ? kProjectorCaptureConfigurationHistogramName
-                           : kCaptureConfigurationHistogramName);
+      is_in_projector_mode ? kProjectorCaptureConfigurationHistogramPrefix
+                           : kCaptureConfigurationHistogramPrefix);
 
-  base::UmaHistogramEnumeration(histogram_name, GetConfiguration(type, source));
-  if (type == CaptureModeType::kVideo) {
+  base::UmaHistogramEnumeration(histogram_name,
+                                GetConfiguration(type, source, recording_type));
+  if (type == CaptureModeType::kVideo &&
+      recording_type != RecordingType::kGif) {
     base::UmaHistogramBoolean(
-        GetCaptureModeHistogramName(kCaptureAudioOnHistogramName), audio_on);
+        GetCaptureModeHistogramName(kCaptureAudioOnHistogramPrefix), audio_on);
   }
 }
 
 void RecordCaptureModeEntryType(CaptureModeEntryType entry_type) {
   base::UmaHistogramEnumeration(
-      GetCaptureModeHistogramName(kEntryHistogramName), entry_type);
+      GetCaptureModeHistogramName(kEntryHistogramPrefix), entry_type);
 }
 
-void RecordCaptureModeRecordTime(int64_t length_in_seconds,
-                                 bool is_in_projector_mode) {
-  const std::string histogram_name = GetCaptureModeHistogramName(
-      is_in_projector_mode ? kProjectorRecordTimeHistogramName
-                           : kRecordTimeHistogramName);
+void RecordCaptureModeRecordTime(base::TimeDelta recording_duration,
+                                 bool is_in_projector_mode,
+                                 bool is_gif) {
+  if (is_in_projector_mode) {
+    DCHECK(!is_gif);
+    RecordCaptureModeRecordTimeInternal(kProjectorRecordTimeHistogramPrefix,
+                                        recording_duration);
+    return;
+  }
 
-  // Use custom counts macro instead of custom times so we can record in
-  // seconds instead of milliseconds. The max bucket is 3 hours.
-  base::UmaHistogramCustomCounts(histogram_name, length_in_seconds,
-                                 /*min=*/1,
-                                 /*max=*/base::Hours(3).InSeconds(),
-                                 /*bucket_count=*/50);
+  RecordCaptureModeRecordTimeInternal(
+      is_gif ? kGifRecordingTimeHistogramPrefix : kRecordTimeHistogramPrefix,
+      recording_duration);
+}
+
+void RecordVideoFileSizeKB(bool is_gif, int size_in_kb) {
+  if (size_in_kb < 0) {
+    LOG(ERROR) << "Failed to calculate the video file size. Is GIF: " << is_gif;
+    return;
+  }
+
+  base::UmaHistogramMemoryKB(
+      GetCaptureModeHistogramName(is_gif ? kGifRecordingFileSizePrefix
+                                         : kScreenRecordingFileSizePrefix),
+      size_in_kb);
 }
 
 void RecordCaptureModeSwitchesFromInitialMode(bool switched) {
@@ -116,8 +151,8 @@ void RecordCaptureModeSwitchesFromInitialMode(bool switched) {
 void RecordNumberOfCaptureRegionAdjustments(int num_adjustments,
                                             bool is_in_projector_mode) {
   const std::string histogram_name = GetCaptureModeHistogramName(
-      is_in_projector_mode ? kProjectorCaptureRegionAdjustmentHistogramName
-                           : kCaptureRegionAdjustmentHistogramName);
+      is_in_projector_mode ? kProjectorCaptureRegionAdjustmentHistogramPrefix
+                           : kCaptureRegionAdjustmentHistogramPrefix);
 
   base::UmaHistogramCounts100(histogram_name, num_adjustments);
 }
@@ -147,26 +182,32 @@ void RecordScreenshotNotificationQuickAction(CaptureQuickAction action) {
 
 void RecordSaveToLocation(CaptureModeSaveToLocation save_location) {
   base::UmaHistogramEnumeration(
-      GetCaptureModeHistogramName(kSaveToLocationHistogramName), save_location);
+      GetCaptureModeHistogramName(kSaveToLocationHistogramPrefix),
+      save_location);
 }
 
 void RecordSwitchToDefaultFolderReason(
     CaptureModeSwitchToDefaultReason reason) {
   base::UmaHistogramEnumeration(
-      GetCaptureModeHistogramName(kSwitchToDefaultFolderReasonHistogramName),
+      GetCaptureModeHistogramName(kSwitchToDefaultFolderReasonHistogramPrefix),
       reason);
 }
 
 CaptureModeConfiguration GetConfiguration(CaptureModeType type,
-                                          CaptureModeSource source) {
+                                          CaptureModeSource source,
+                                          RecordingType recording_type) {
   switch (source) {
     case CaptureModeSource::kFullscreen:
       return type == CaptureModeType::kImage
                  ? CaptureModeConfiguration::kFullscreenScreenshot
                  : CaptureModeConfiguration::kFullscreenRecording;
     case CaptureModeSource::kRegion:
-      return type == CaptureModeType::kImage
-                 ? CaptureModeConfiguration::kRegionScreenshot
+      if (type == CaptureModeType::kImage) {
+        return CaptureModeConfiguration::kRegionScreenshot;
+      }
+
+      return recording_type == RecordingType::kGif
+                 ? CaptureModeConfiguration::kRegionGifRecording
                  : CaptureModeConfiguration::kRegionRecording;
     case CaptureModeSource::kWindow:
       return type == CaptureModeType::kImage
@@ -177,16 +218,16 @@ CaptureModeConfiguration GetConfiguration(CaptureModeType type,
 
 void RecordRecordingStartsWithCamera(bool starts_with_camera,
                                      bool is_in_projector_mode) {
-  const std::string histogram_name = is_in_projector_mode
-                                         ? kProjectorRecordingStartsWithCamera
-                                         : kRecordingStartsWithCamera;
-  base::UmaHistogramBoolean(GetCaptureModeHistogramName(histogram_name),
+  const std::string histogram_prefix =
+      is_in_projector_mode ? kProjectorRecordingStartsWithCameraPrefix
+                           : kRecordingStartsWithCameraPrefix;
+  base::UmaHistogramBoolean(GetCaptureModeHistogramName(histogram_prefix),
                             starts_with_camera);
 }
 
 void RecordCameraDisconnectionsDuringRecordings(int num_camera_disconnections) {
   base::UmaHistogramCounts100(
-      GetCaptureModeHistogramName(kCameraDisconnectionsDuringRecordings),
+      GetCaptureModeHistogramName(kCameraDisconnectionsDuringRecordingsPrefix),
       num_camera_disconnections);
 }
 
@@ -197,27 +238,28 @@ void RecordNumberOfConnectedCameras(int num_camera_connected) {
 void RecordCameraReconnectDuration(int length_in_seconds,
                                    int grace_period_in_seconds) {
   base::UmaHistogramCustomCounts(
-      GetCaptureModeHistogramName(kCameraReconnectDuration), length_in_seconds,
-      0, grace_period_in_seconds, grace_period_in_seconds);
+      GetCaptureModeHistogramName(kCameraReconnectDurationPrefix),
+      length_in_seconds, 0, grace_period_in_seconds, grace_period_in_seconds);
 }
 
 void RecordCameraSizeOnStart(CaptureModeCameraSize camera_size) {
   base::UmaHistogramEnumeration(
-      GetCaptureModeHistogramName(kRecordingCameraSizeOnStart), camera_size);
+      GetCaptureModeHistogramName(kRecordingCameraSizeOnStartPrefix),
+      camera_size);
 }
 
 void RecordCameraPositionOnStart(CameraPreviewSnapPosition camera_position) {
   base::UmaHistogramEnumeration(
-      GetCaptureModeHistogramName(kRecordingCameraPositionOnStart),
+      GetCaptureModeHistogramName(kRecordingCameraPositionOnStartPrefix),
       camera_position);
 }
 
 void RecordRecordingStartsWithDemoTools(bool demo_tools_enabled,
                                         bool is_in_projector_mode) {
-  const std::string histogram_name =
-      is_in_projector_mode ? kProjectorDemoToolsEnabledOnRecordingStart
-                           : kDemoToolsEnabledOnRecordingStart;
-  base::UmaHistogramBoolean(GetCaptureModeHistogramName(histogram_name),
+  const std::string histogram_prefix =
+      is_in_projector_mode ? kProjectorDemoToolsEnabledOnRecordingStartPrefix
+                           : kDemoToolsEnabledOnRecordingStartPrefix;
+  base::UmaHistogramBoolean(GetCaptureModeHistogramName(histogram_prefix),
                             demo_tools_enabled);
 }
 

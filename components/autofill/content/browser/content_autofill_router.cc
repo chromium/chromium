@@ -106,7 +106,7 @@ void ContentAutofillRouter::UnregisterDriver(ContentAutofillDriver* driver) {
 
 void ContentAutofillRouter::SetLastQueriedSource(
     ContentAutofillDriver* source) {
-  if (last_queried_source_ && last_queried_target_ != source) {
+  if (last_queried_source_ && last_queried_source_ != source) {
     last_queried_source_->UnsetKeyPressHandlerCallback();
     last_queried_source_->SetShouldSuppressKeyboardCallback(false);
   }

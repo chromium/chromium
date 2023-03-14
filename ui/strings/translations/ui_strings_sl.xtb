@@ -61,6 +61,7 @@
 <translation id="2573731672208488250">{HOURS,plural, =1{čez 1 h}one{čez # h}two{čez # h}few{čez # h}other{čez # h}}</translation>
 <translation id="2583543531130364912">Umerjanje zaslona na dotik</translation>
 <translation id="2586657967955657006">Odložišče</translation>
+<translation id="2653844658857826081">NEW</translation>
 <translation id="2666092431469916601">Na vrh</translation>
 <translation id="2701330563083355633">V skupno rabo dala naprava: <ph name="DEVICE_NAME" /></translation>
 <translation id="271033894570825754">Novo</translation>
@@ -75,6 +76,7 @@
 <translation id="3157931365184549694">Obnovi</translation>
 <translation id="3183922693828471536">Pomik do sem</translation>
 <translation id="3234408098842461169">Puščica dol</translation>
+<translation id="3240426699337459095">Povezava kopirana</translation>
 <translation id="3291688615589870984">{DAYS,plural, =1{1 dan}one{# dan}two{# dneva}few{# dni}other{# dni}}</translation>
 <translation id="3295886253693811851">Klic iz naprave</translation>
 <translation id="3306688585798492231">Vgrajeni zaslon</translation>

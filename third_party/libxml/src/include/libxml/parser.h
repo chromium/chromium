@@ -61,17 +61,14 @@ struct _xmlParserInput {
     int length;                       /* length if known */
     int line;                         /* Current line */
     int col;                          /* Current column */
-    /*
-     * NOTE: consumed is only tested for equality in the parser code,
-     *       so even if there is an overflow this should not give troubles
-     *       for parsing very large instances.
-     */
     unsigned long consumed;           /* How many xmlChars already consumed */
     xmlParserInputDeallocate free;    /* function to deallocate the base */
     const xmlChar *encoding;          /* the encoding string for entity */
     const xmlChar *version;           /* the version string for entity */
     int standalone;                   /* Was that entity marked standalone */
     int id;                           /* an unique identifier for the entity */
+    unsigned long parentConsumed;     /* consumed bytes from parents */
+    xmlEntityPtr entity;              /* entity, if any */
 };
 
 /**
@@ -300,7 +297,7 @@ struct _xmlParserCtxt {
      */
     xmlError          lastError;
     xmlParserMode     parseMode;    /* the parser mode */
-    unsigned long    nbentities;    /* number of entities references */
+    unsigned long    nbentities;    /* unused */
     unsigned long  sizeentities;    /* size of parsed entities */
 
     /* for use by HTML non-recursive parser */
@@ -313,6 +310,8 @@ struct _xmlParserCtxt {
     unsigned long      sizeentcopy;   /* volume of entity copy */
 
     int           endCheckState;    /* quote state for push parser */
+    unsigned short     nbErrors;    /* number of errors */
+    unsigned short   nbWarnings;    /* number of warnings */
 };
 
 /**

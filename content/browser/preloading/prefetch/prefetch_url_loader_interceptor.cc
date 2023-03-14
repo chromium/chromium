@@ -114,7 +114,8 @@ void PrefetchURLLoaderInterceptor::OnGotPrefetchToServce(
 
   if (!prefetch_container ||
       !prefetch_container->IsPrefetchServable(PrefetchCacheableDuration()) ||
-      prefetch_container->HaveDefaultContextCookiesChanged()) {
+      prefetch_container->HaveDefaultContextCookiesChanged(
+          prefetch_container->GetURL())) {
     DoNotInterceptNavigation();
     return;
   }

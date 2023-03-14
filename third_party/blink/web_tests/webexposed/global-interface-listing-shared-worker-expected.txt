@@ -1470,6 +1470,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method test
 [Worker] interface URLSearchParams
 [Worker]     attribute @@toStringTag
+[Worker]     getter size
 [Worker]     method @@iterator
 [Worker]     method append
 [Worker]     method constructor

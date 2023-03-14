@@ -7,68 +7,81 @@
 #ifndef GOOGLE_APIS_GAIA_GAIA_CONSTANTS_H_
 #define GOOGLE_APIS_GAIA_GAIA_CONSTANTS_H_
 
+#include "base/component_export.h"
+
 namespace GaiaConstants {
 
 // Gaia sources for accounting
-extern const char kChromeOSSource[];
-extern const char kChromeSource[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kChromeOSSource[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kChromeSource[];
 // Used as Gaia source suffix to detect retry requests because of
 // |GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE|.
-extern const char kUnexpectedServiceResponse[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kUnexpectedServiceResponse[];
 
 // OAuth2 scopes.
-extern const char kOAuth1LoginScope[];
-extern const char kDeviceManagementServiceOAuth[];
-extern const char kAnyApiOAuth2Scope[];
-extern const char kChromeSyncOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kOAuth1LoginScope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kDeviceManagementServiceOAuth[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kAnyApiOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kChromeSyncOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kChromeSyncSupervisedOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kKidManagementPrivilegedOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kKidsSupervisionSetupChildOAuth2Scope[];
-extern const char kGoogleTalkOAuth2Scope[];
-extern const char kGoogleUserInfoEmail[];
-extern const char kGoogleUserInfoProfile[];
-extern const char kParentApprovalOAuth2Scope[];
-extern const char kPeopleApiReadOnlyOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kGoogleTalkOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kGoogleUserInfoEmail[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kGoogleUserInfoProfile[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kParentApprovalOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kPeopleApiReadOnlyOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kProgrammaticChallengeOAuth2Scope[];
-extern const char kAccountsReauthOAuth2Scope[];
-extern const char kAuditRecordingOAuth2Scope[];
-extern const char kClearCutOAuth2Scope[];
-extern const char kFCMOAuthScope[];
-extern const char kTachyonOAuthScope[];
-extern const char kPhotosOAuth2Scope[];
-extern const char kCastBackdropOAuth2Scope[];
-extern const char kCloudTranslationOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kAccountsReauthOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kAuditRecordingOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kClearCutOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kFCMOAuthScope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kTachyonOAuthScope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kPhotosOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kCastBackdropOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kCloudTranslationOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kPasswordsLeakCheckOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kChromeSafeBrowsingOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kClassifyUrlKidPermissionOAuth2Scope[];
-extern const char kKidFamilyReadonlyOAuth2Scope[];
-extern const char kPaymentsOAuth2Scope[];
-extern const char kCryptAuthOAuth2Scope[];
-extern const char kDriveOAuth2Scope[];
-extern const char kDriveReadOnlyOAuth2Scope[];
-extern const char kAssistantOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kKidFamilyReadonlyOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kPaymentsOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kCryptAuthOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kDriveOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kDriveReadOnlyOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kAssistantOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kCloudPlatformProjectsOAuth2Scope[];
-extern const char kNearbyShareOAuth2Scope[];
-extern const char kGCMGroupServerOAuth2Scope[];
-extern const char kGCMCheckinServerOAuth2Scope[];
-extern const char kChromeWebstoreOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kNearbyShareOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kGCMGroupServerOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kGCMCheckinServerOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kChromeWebstoreOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kAccountCapabilitiesOAuth2Scope[];
-extern const char kSupportContentOAuth2Scope[];
-extern const char kPhotosModuleOAuth2Scope[];
-extern const char kPhotosModuleImageOAuth2Scope[];
-extern const char kSecureConnectOAuth2Scope[];
-extern const char kFeedOAuth2Scope[];
-extern const char kKAnonymityServiceOAuth2Scope[];
-extern const char kCalendarReadOnlyOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kSupportContentOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kPhotosModuleOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kPhotosModuleImageOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kSecureConnectOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kFeedOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kKAnonymityServiceOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kCalendarReadOnlyOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kTasksReadOnlyOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kTasksOAuth2Scope[];
 
 // Used by wallet sign in helper.
-extern const char kClientOAuthEmailKey[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kClientOAuthEmailKey[];
 
 // Refresh token that is guaranteed to be invalid.
-extern const char kInvalidRefreshToken[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kInvalidRefreshToken[];
 
 // Name of the Google authentication cookie.
-extern const char kGaiaSigninCookieName[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kGaiaSigninCookieName[];
 }  // namespace GaiaConstants
 
 #endif  // GOOGLE_APIS_GAIA_GAIA_CONSTANTS_H_

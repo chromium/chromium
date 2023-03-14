@@ -24,8 +24,7 @@ class ChoobeScreenView : public base::SupportsWeakPtr<ChoobeScreenView> {
   virtual ~ChoobeScreenView() = default;
 
   // Shows the contents of the screen.
-  virtual void Show(
-      const std::vector<ChoobeFlowController::OptionalScreen>& screens) = 0;
+  virtual void Show(const std::vector<ScreenSummary>& screens) = 0;
 };
 
 class ChoobeScreenHandler : public BaseScreenHandler, public ChoobeScreenView {
@@ -44,8 +43,7 @@ class ChoobeScreenHandler : public BaseScreenHandler, public ChoobeScreenView {
       ::login::LocalizedValuesBuilder* builder) override;
 
   // ChoobeScreenView:
-  void Show(const std::vector<ChoobeFlowController::OptionalScreen>& screens)
-      override;
+  void Show(const std::vector<ScreenSummary>& screens) override;
 };
 
 }  // namespace ash

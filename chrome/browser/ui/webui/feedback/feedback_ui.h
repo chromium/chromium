@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_FEEDBACK_FEEDBACK_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_FEEDBACK_FEEDBACK_UI_H_
 
+#include "chrome/browser/profiles/profile.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
 // The implementation for the chrome://feedback page.
@@ -14,6 +15,8 @@ class FeedbackUI : public ui::WebDialogUI {
   FeedbackUI(const FeedbackUI&) = delete;
   FeedbackUI& operator=(const FeedbackUI&) = delete;
   ~FeedbackUI() override;
+
+  static bool IsFeedbackEnabled(Profile* profile);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_FEEDBACK_FEEDBACK_UI_H_

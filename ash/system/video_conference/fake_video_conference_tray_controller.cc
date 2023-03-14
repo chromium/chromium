@@ -40,10 +40,9 @@ FakeVideoConferenceTrayController::~FakeVideoConferenceTrayController() {
 }
 
 void FakeVideoConferenceTrayController::SetCameraMuted(bool muted) {
-  camera_muted_ = muted;
   OnCameraSWPrivacySwitchStateChanged(
-      camera_muted_ ? cros::mojom::CameraPrivacySwitchState::ON
-                    : cros::mojom::CameraPrivacySwitchState::OFF);
+      muted ? cros::mojom::CameraPrivacySwitchState::ON
+            : cros::mojom::CameraPrivacySwitchState::OFF);
 }
 
 void FakeVideoConferenceTrayController::SetMicrophoneMuted(bool muted) {
@@ -53,15 +52,22 @@ void FakeVideoConferenceTrayController::SetMicrophoneMuted(bool muted) {
 }
 
 bool FakeVideoConferenceTrayController::GetCameraMuted() {
-  return camera_muted();
+  return camera_muted_by_hardware_switch() || camera_muted_by_software_switch();
 }
 
 bool FakeVideoConferenceTrayController::GetMicrophoneMuted() {
-  return microphone_muted();
+  return microphone_muted_;
 }
 
 void FakeVideoConferenceTrayController::GetMediaApps(
     base::OnceCallback<void(MediaApps)> ui_callback) {
+  // If initialized, use real VideoConferenceTrayController for GetMediaApps.
+  if (initialized()) {
+    VideoConferenceTrayController::GetMediaApps(std::move(ui_callback));
+    return;
+  }
+
+  // If not initialized, use fake `media_apps_`.
   MediaApps apps;
   for (auto& app : media_apps_) {
     apps.push_back(app->Clone());
@@ -72,6 +78,11 @@ void FakeVideoConferenceTrayController::GetMediaApps(
 void FakeVideoConferenceTrayController::ReturnToApp(
     const base::UnguessableToken& id) {
   app_to_launch_state_[id] = true;
+
+  // Call real ReturnToApp if initialized.
+  if (initialized()) {
+    VideoConferenceTrayController::ReturnToApp(id);
+  }
 }
 
 void FakeVideoConferenceTrayController::HandleDeviceUsedWhileDisabled(

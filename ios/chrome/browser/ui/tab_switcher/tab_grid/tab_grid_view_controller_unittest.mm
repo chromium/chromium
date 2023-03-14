@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mediator.h"
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -72,6 +73,7 @@ class TabGridViewControllerTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState local_state_;
   base::UserActionTester user_action_tester_;
   TabGridViewController* view_controller_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
@@ -143,6 +145,7 @@ TEST_F(TabGridViewControllerTest, ImplementsActions) {
   [view_controller_ keyCommand_find];
   [view_controller_ keyCommand_closeAll];
   [view_controller_ keyCommand_undo];
+  [view_controller_ keyCommand_close];
 }
 
 // Checks that metrics are correctly reported.
@@ -157,6 +160,7 @@ TEST_F(TabGridViewControllerTest, Metrics) {
   ExpectUMA(@"keyCommand_find", "MobileKeyCommandSearchTabs");
   ExpectUMA(@"keyCommand_closeAll", "MobileKeyCommandCloseAll");
   ExpectUMA(@"keyCommand_undo", "MobileKeyCommandUndo");
+  ExpectUMA(@"keyCommand_close", "MobileKeyCommandClose");
 }
 
 // This test ensure 2 things:
@@ -185,6 +189,7 @@ TEST_F(TabGridViewControllerTest, ValidateCommand_find) {
   }
 }
 
+// Checks when Close All and Undo keyboard shortcuts are possible.
 TEST_F(TabGridViewControllerTest, CanPerform_CloseAllAndUndo) {
   view_controller_ = [[TabGridViewController alloc]
       initWithPageConfiguration:TabGridPageConfiguration::kIncognitoPageOnly];
@@ -211,4 +216,10 @@ TEST_F(TabGridViewControllerTest, CanPerform_CloseAllAndUndo) {
   incognitoMediator.browser = nullptr;
   incognitoMediator = nil;
 }
+
+// Checks that the ESC keyboard shortcut is always possible.
+TEST_F(TabGridViewControllerTest, CanPerform_Close) {
+  EXPECT_TRUE(CanPerform(@"keyCommand_close"));
+}
+
 }  // namespace

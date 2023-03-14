@@ -179,6 +179,13 @@ class DriveFsHost::MountState : public DriveFsSession,
       // Keep track of the syncing paths.
       bool has_invalid_progress = false;
       for (const mojom::ItemEventPtr& event : status->item_events) {
+        // Currently, download syncing (AKA downsync) events are not reliably
+        // delivered by DriveFs. Therefore, let's not show inline sync status
+        // indicators for them until this is fixed on DriveFs/Cello.
+        if (event->is_download) {
+          continue;
+        }
+
         base::FilePath path = host_->GetMountPath();
         if (!base::FilePath("/").AppendRelativePath(base::FilePath(event->path),
                                                     &path)) {

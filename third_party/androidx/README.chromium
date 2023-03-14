@@ -1,5 +1,6 @@
 Name: Androidx Repository
 Short Name: androidx
+URL: https://androidx.dev
 Version: 1
 License: Refer to additional_readme_paths.json
 License Android Compatible: yes
@@ -40,3 +41,4 @@ Local Modifications:
   it manually and out-of-band with the rest of androidx. Use the
   update_source.sh script to pull in changes from androidx-main.
   https://crbug.com/1414452
+* Pin androidx_recycleview_recycleview to avoid https://crbug.com/1421341.

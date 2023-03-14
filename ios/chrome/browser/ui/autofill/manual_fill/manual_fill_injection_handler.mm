@@ -20,9 +20,9 @@
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "ios/chrome/browser/autofill/form_input_accessory_view_handler.h"
 #import "ios/chrome/browser/passwords/password_tab_helper.h"
+#import "ios/chrome/browser/shared/public/commands/security_alert_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/form_observer_helper.h"
-#import "ios/chrome/browser/ui/commands/security_alert_commands.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
@@ -181,7 +181,7 @@ using base::UmaHistogramEnumeration;
   }
   web::WebFrame* activeWebFrame = web::GetWebFrameWithId(
       activeWebState, self.lastFocusedElementFrameIdentifier);
-  if (!activeWebFrame || !activeWebFrame->CanCallJavaScriptFunction()) {
+  if (!activeWebFrame) {
     return;
   }
 

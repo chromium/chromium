@@ -215,7 +215,7 @@ class PolicyBase final : public TargetPolicy {
   const base::HandlesToInheritVector& GetHandlesBeingShared();
 
  private:
-  // BrokerServicesBase is allowed to set shared backing fields for FixedPolicy.
+  // BrokerServicesBase is allowed to set shared backing fields for TargetConfig.
   friend class sandbox::BrokerServicesBase;
   // Allow PolicyDiagnostic to snapshot PolicyBase for diagnostics.
   friend class PolicyDiagnostic;

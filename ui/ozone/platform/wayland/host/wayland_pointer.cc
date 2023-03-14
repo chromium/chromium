@@ -48,12 +48,11 @@ bool ShouldSuppressPointerEnterOrLeaveEvents(WaylandConnection* connection) {
     return false;
   }
 
-  auto is_window_dragging =
-      connection->window_drag_controller()
-          ? connection->window_drag_controller()->state() !=
-                WaylandWindowDragController::State::kIdle
-          : false;
-  return is_window_dragging;
+  const bool is_dragging_window =
+      connection->window_drag_controller() &&
+      connection->window_drag_controller()->state() !=
+          WaylandWindowDragController::State::kIdle;
+  return is_dragging_window;
 }
 
 }  // namespace

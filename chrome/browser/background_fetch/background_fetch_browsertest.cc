@@ -626,6 +626,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
   EXPECT_EQ(offline_item.progress.value, 0);
   EXPECT_EQ(offline_item.progress.max.value(), 1);
   EXPECT_EQ(offline_item.progress.unit, OfflineItemProgressUnit::PERCENTAGE);
+  EXPECT_FALSE(offline_item.creation_time.is_null());
 
   // Get visuals associated with the newly added offline item.
   std::unique_ptr<OfflineItemVisuals> out_visuals;

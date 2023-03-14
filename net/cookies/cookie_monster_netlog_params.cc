@@ -9,17 +9,18 @@
 
 namespace net {
 
-base::Value NetLogCookieMonsterConstructorParams(bool persistent_store) {
+base::Value::Dict NetLogCookieMonsterConstructorParams(bool persistent_store) {
   base::Value::Dict dict;
   dict.Set("persistent_store", persistent_store);
-  return base::Value(std::move(dict));
+  return dict;
 }
 
-base::Value NetLogCookieMonsterCookieAdded(const CanonicalCookie* cookie,
-                                           bool sync_requested,
-                                           NetLogCaptureMode capture_mode) {
+base::Value::Dict NetLogCookieMonsterCookieAdded(
+    const CanonicalCookie* cookie,
+    bool sync_requested,
+    NetLogCaptureMode capture_mode) {
   if (!NetLogCaptureIncludesSensitive(capture_mode))
-    return base::Value();
+    return base::Value::Dict();
 
   base::Value::Dict dict;
   dict.Set("name", cookie->Name());
@@ -33,15 +34,16 @@ base::Value NetLogCookieMonsterCookieAdded(const CanonicalCookie* cookie,
   dict.Set("is_persistent", cookie->IsPersistent());
   dict.Set("sync_requested", sync_requested);
   dict.Set("same_party", cookie->IsSameParty());
-  return base::Value(std::move(dict));
+  return dict;
 }
 
-base::Value NetLogCookieMonsterCookieDeleted(const CanonicalCookie* cookie,
-                                             CookieChangeCause cause,
-                                             bool sync_requested,
-                                             NetLogCaptureMode capture_mode) {
+base::Value::Dict NetLogCookieMonsterCookieDeleted(
+    const CanonicalCookie* cookie,
+    CookieChangeCause cause,
+    bool sync_requested,
+    NetLogCaptureMode capture_mode) {
   if (!NetLogCaptureIncludesSensitive(capture_mode))
-    return base::Value();
+    return base::Value::Dict();
 
   base::Value::Dict dict;
   dict.Set("name", cookie->Name());
@@ -51,15 +53,15 @@ base::Value NetLogCookieMonsterCookieDeleted(const CanonicalCookie* cookie,
   dict.Set("is_persistent", cookie->IsPersistent());
   dict.Set("deletion_cause", CookieChangeCauseToString(cause));
   dict.Set("sync_requested", sync_requested);
-  return base::Value(std::move(dict));
+  return dict;
 }
 
-base::Value NetLogCookieMonsterCookieRejectedSecure(
+base::Value::Dict NetLogCookieMonsterCookieRejectedSecure(
     const CanonicalCookie* old_cookie,
     const CanonicalCookie* new_cookie,
     NetLogCaptureMode capture_mode) {
   if (!NetLogCaptureIncludesSensitive(capture_mode))
-    return base::Value();
+    return base::Value::Dict();
   base::Value::Dict dict;
   dict.Set("name", old_cookie->Name());
   dict.Set("domain", old_cookie->Domain());
@@ -67,31 +69,31 @@ base::Value NetLogCookieMonsterCookieRejectedSecure(
   dict.Set("newpath", new_cookie->Path());
   dict.Set("oldvalue", old_cookie->Value());
   dict.Set("newvalue", new_cookie->Value());
-  return base::Value(std::move(dict));
+  return dict;
 }
 
-base::Value NetLogCookieMonsterCookieRejectedHttponly(
+base::Value::Dict NetLogCookieMonsterCookieRejectedHttponly(
     const CanonicalCookie* old_cookie,
     const CanonicalCookie* new_cookie,
     NetLogCaptureMode capture_mode) {
   if (!NetLogCaptureIncludesSensitive(capture_mode))
-    return base::Value();
+    return base::Value::Dict();
   base::Value::Dict dict;
   dict.Set("name", old_cookie->Name());
   dict.Set("domain", old_cookie->Domain());
   dict.Set("path", old_cookie->Path());
   dict.Set("oldvalue", old_cookie->Value());
   dict.Set("newvalue", new_cookie->Value());
-  return base::Value(std::move(dict));
+  return dict;
 }
 
-base::Value NetLogCookieMonsterCookiePreservedSkippedSecure(
+base::Value::Dict NetLogCookieMonsterCookiePreservedSkippedSecure(
     const CanonicalCookie* skipped_secure,
     const CanonicalCookie* preserved,
     const CanonicalCookie* new_cookie,
     NetLogCaptureMode capture_mode) {
   if (!NetLogCaptureIncludesSensitive(capture_mode))
-    return base::Value();
+    return base::Value::Dict();
   base::Value::Dict dict;
   dict.Set("name", preserved->Name());
   dict.Set("domain", preserved->Domain());
@@ -100,7 +102,7 @@ base::Value NetLogCookieMonsterCookiePreservedSkippedSecure(
   dict.Set("securecookiepath", skipped_secure->Path());
   dict.Set("preservedvalue", preserved->Value());
   dict.Set("discardedvalue", new_cookie->Value());
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 }  // namespace net

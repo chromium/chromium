@@ -151,8 +151,8 @@ void UserNetworkConfigurationUpdaterAsh::ImportClientCertificates() {
 }
 
 void UserNetworkConfigurationUpdaterAsh::ApplyNetworkPolicy(
-    base::Value::List network_configs_onc,
-    base::Value::Dict global_network_config) {
+    const base::Value::List& network_configs_onc,
+    const base::Value::Dict& global_network_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(user_);
 
@@ -164,10 +164,9 @@ void UserNetworkConfigurationUpdaterAsh::ApplyNetworkPolicy(
       ash::UserSessionManager::PasswordConsumingService::kNetwork,
       save_password);
 
-  network_config_handler_->SetPolicy(
-      onc_source_, user_->username_hash(),
-      base::Value(std::move(network_configs_onc)),
-      base::Value(std::move(global_network_config)));
+  network_config_handler_->SetPolicy(onc_source_, user_->username_hash(),
+                                     network_configs_onc,
+                                     global_network_config);
 }
 
 void UserNetworkConfigurationUpdaterAsh::OnProfileInitializationComplete(

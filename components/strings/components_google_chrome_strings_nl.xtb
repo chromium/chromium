@@ -37,4 +37,6 @@
           en verwijder het vinkje naast 'Een proxyserver voor het LAN-netwerk gebruiken'.</translation>
 <translation id="7230956101631259640">Je bekijkt een beveiligde Chrome-pagina</translation>
 <translation id="8187289872471304532">Ga naar 'Applicaties &gt; Systeemvoorkeuren &gt; Netwerk &gt; Geavanceerd &gt; Proxy's' en verwijder de vinkjes bij proxyservers die zijn aangevinkt.</translation>
+<translation id="8232971017369963250">Chrome wordt mogelijk gemaakt door het opensource-project <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="8279509328145658601">Chrome wordt ook mogelijk gemaakt door andere <ph name="BEGIN_LINK_OSS" />opensource-software<ph name="END_LINK_OSS" />.</translation>
 </translationbundle>

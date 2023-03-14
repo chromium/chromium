@@ -41,13 +41,13 @@ namespace {
 // after a certain timeout has passed without receiving an ACK.
 bool g_connect_backup_jobs_enabled = true;
 
-base::Value NetLogCreateConnectJobParams(
+base::Value::Dict NetLogCreateConnectJobParams(
     bool backup_job,
     const ClientSocketPool::GroupId* group_id) {
   base::Value::Dict dict;
   dict.Set("backup_job", backup_job);
   dict.Set("group_id", group_id->ToString());
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 }  // namespace

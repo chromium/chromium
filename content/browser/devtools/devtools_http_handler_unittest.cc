@@ -219,7 +219,6 @@ TEST_F(DevToolsHttpHandlerTest, TestServerSocketFailed) {
   run_loop_2.Run();
 }
 
-
 TEST_F(DevToolsHttpHandlerTest, TestDevToolsActivePort) {
   base::RunLoop run_loop, run_loop_2;
   base::ScopedTempDir temp_dir;

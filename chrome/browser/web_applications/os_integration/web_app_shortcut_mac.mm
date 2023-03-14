@@ -865,8 +865,20 @@ WebAppShortcutCreator::~WebAppShortcutCreator() = default;
 
 base::FilePath WebAppShortcutCreator::GetApplicationsShortcutPath(
     bool avoid_conflicts) const {
-  if (g_app_shims_allow_update_and_launch_in_tests)
+  // If app shims updates are allowed in tests and the OS integration
+  // test override exists, apps should be updated inside the
+  // test override location instead of the web_applications profile
+  // directory.
+  if (g_app_shims_allow_update_and_launch_in_tests) {
+    if (GetOsIntegrationTestOverride()) {
+      base::FilePath applications_dir = GetChromeAppsFolder();
+      if (applications_dir.empty()) {
+        return base::FilePath();
+      }
+      return applications_dir.Append(GetShortcutBasename());
+    }
     return app_data_dir_.Append(GetShortcutBasename());
+  }
 
   base::FilePath applications_dir = GetChromeAppsFolder();
   if (applications_dir.empty())
@@ -924,7 +936,7 @@ base::FilePath WebAppShortcutCreator::GetFallbackBasename() const {
     app_name += info_->profile_path.BaseName().value();
     app_name += ' ';
   }
-  app_name += info_->extension_id;
+  app_name += info_->app_id;
   return base::FilePath(app_name).ReplaceExtension("app");
 }
 
@@ -998,9 +1010,8 @@ bool WebAppShortcutCreator::BuildShortcut(
 
   // Write the PkgInfo file.
   constexpr char kPkgInfoData[] = "APPL????";
-  constexpr size_t kPkgInfoDataSize = std::size(kPkgInfoData) - 1;
-  if (base::WriteFile(destination_contents_path.Append("PkgInfo"), kPkgInfoData,
-                      kPkgInfoDataSize) != kPkgInfoDataSize) {
+  if (!base::WriteFile(destination_contents_path.Append("PkgInfo"),
+                       kPkgInfoData)) {
     RecordCreateShortcut(CreateShortcutResult::kFailToWritePkgInfoFile);
     LOG(ERROR) << "Failed to write PkgInfo file: " << destination_contents_path;
     return false;
@@ -1177,13 +1188,13 @@ bool WebAppShortcutCreator::UpdateShortcuts(
 }
 
 bool WebAppShortcutCreator::UpdatePlist(const base::FilePath& app_path) const {
-  NSString* extension_id = base::SysUTF8ToNSString(info_->extension_id);
+  NSString* app_id = base::SysUTF8ToNSString(info_->app_id);
   NSString* extension_title = base::SysUTF16ToNSString(info_->title);
   NSString* extension_url = base::SysUTF8ToNSString(info_->url.spec());
   NSString* chrome_bundle_id =
       base::SysUTF8ToNSString(base::mac::BaseBundleID());
   NSDictionary* replacement_dict = @{
-    app_mode::kShortcutIdPlaceholder : extension_id,
+    app_mode::kShortcutIdPlaceholder : app_id,
     app_mode::kShortcutNamePlaceholder : extension_title,
     app_mode::kShortcutURLPlaceholder : extension_url,
     app_mode::kShortcutBrowserBundleIDPlaceholder : chrome_bundle_id
@@ -1216,14 +1227,14 @@ bool WebAppShortcutCreator::UpdatePlist(const base::FilePath& app_path) const {
       base::SysUTF8ToNSString(info_->version_for_display);
   if (IsMultiProfile()) {
     plist[base::mac::CFToNSCast(kCFBundleIdentifierKey)] =
-        base::SysUTF8ToNSString(GetBundleIdentifier(info_->extension_id));
+        base::SysUTF8ToNSString(GetBundleIdentifier(info_->app_id));
     base::FilePath data_dir = GetMultiProfileAppDataDir(app_data_dir_);
     plist[app_mode::kCrAppModeUserDataDirKey] =
         base::mac::FilePathToNSString(data_dir);
   } else {
     plist[base::mac::CFToNSCast(kCFBundleIdentifierKey)] =
         base::SysUTF8ToNSString(
-            GetBundleIdentifier(info_->extension_id, info_->profile_path));
+            GetBundleIdentifier(info_->app_id, info_->profile_path));
     plist[app_mode::kCrAppModeUserDataDirKey] =
         base::mac::FilePathToNSString(app_data_dir_);
     plist[app_mode::kCrAppModeProfileDirKey] =
@@ -1298,7 +1309,7 @@ bool WebAppShortcutCreator::UpdatePlist(const base::FilePath& app_path) const {
 
     plist[app_mode::kCFBundleURLTypesKey] = @[ @{
       app_mode::kCFBundleURLNameKey :
-          base::SysUTF8ToNSString(GetBundleIdentifier(info_->extension_id)),
+          base::SysUTF8ToNSString(GetBundleIdentifier(info_->app_id)),
       app_mode::kCFBundleURLSchemesKey : handlers
     } ];
   }
@@ -1308,7 +1319,7 @@ bool WebAppShortcutCreator::UpdatePlist(const base::FilePath& app_path) const {
                                  protocol_handlers.begin(),
                                  protocol_handlers.end());
     GetOsIntegrationTestOverride()  // IN-TEST
-        ->RegisterProtocolSchemes(info_->extension_id,
+        ->RegisterProtocolSchemes(info_->app_id,
                                   std::move(protocol_handlers_vec));
   }
 
@@ -1348,7 +1359,7 @@ bool WebAppShortcutCreator::UpdateDisplayName(
 
   if (!IsMultiProfile() &&
       HasExistingExtensionShimForDifferentProfile(
-          GetChromeAppsFolder(), info_->extension_id, info_->profile_path)) {
+          GetChromeAppsFolder(), info_->app_id, info_->profile_path)) {
     display_name = [bundle_name
         stringByAppendingString:base::SysUTF8ToNSString(
                                     " (" + info_->profile_name + ")")];
@@ -1391,15 +1402,14 @@ std::vector<base::FilePath> WebAppShortcutCreator::GetAppBundlesByIdUnsorted()
 
   // Search using LaunchServices using the default bundle id.
   const std::string bundle_id = GetBundleIdentifier(
-      info_->extension_id,
-      IsMultiProfile() ? base::FilePath() : info_->profile_path);
+      info_->app_id, IsMultiProfile() ? base::FilePath() : info_->profile_path);
   auto bundle_infos = SearchForBundlesById(bundle_id);
 
   // If in multi-profile mode, search using the profile-scoped bundle id, in
   // case the user has an old shim hanging around.
   if (bundle_infos.empty() && IsMultiProfile()) {
     const std::string profile_scoped_bundle_id =
-        GetBundleIdentifier(info_->extension_id, info_->profile_path);
+        GetBundleIdentifier(info_->app_id, info_->profile_path);
     bundle_infos = SearchForBundlesById(profile_scoped_bundle_id);
   }
 
@@ -1613,8 +1623,8 @@ void DeletePlatformShortcuts(const base::FilePath& app_data_path,
   // `GetChromeAppsFolder()`).
   scoped_refptr<OsIntegrationTestOverride> test_override =
       web_app::GetOsIntegrationTestOverride();
-  const std::string bundle_id = GetBundleIdentifier(shortcut_info.extension_id,
-                                                    shortcut_info.profile_path);
+  const std::string bundle_id =
+      GetBundleIdentifier(shortcut_info.app_id, shortcut_info.profile_path);
   auto bundle_infos = SearchForBundlesById(bundle_id);
   bool result = true;
   for (const auto& bundle_info : bundle_infos) {

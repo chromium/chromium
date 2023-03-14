@@ -5,6 +5,7 @@
 #include "ui/accessibility/ax_tree.h"
 
 #include <stddef.h>
+
 #include <numeric>
 #include <utility>
 
@@ -23,6 +24,7 @@
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/timer/elapsed_timer.h"
+#include "components/crash/core/common/crash_key.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event.h"
@@ -2761,9 +2763,27 @@ void AXTree::RecordError(const AXTreeUpdateState& update_state,
 
   if (is_fatal && !disallow_fail_fast_) {
     LOG(FATAL) << verbose_error.str();
-  } else {
-    LOG(ERROR) << verbose_error.str();
   }
+
+  // If this is the first error, will dump without crashing in
+  // RenderAccessibilityImpl::OnFatalError().
+  static auto* const ax_tree_error_key = base::debug::AllocateCrashKeyString(
+      "ax_tree_error", base::debug::CrashKeySize::Size256);
+  static auto* const ax_tree_update_key = base::debug::AllocateCrashKeyString(
+      "ax_tree_update", base::debug::CrashKeySize::Size256);
+  static auto* const ax_tree_key = base::debug::AllocateCrashKeyString(
+      "ax_tree", base::debug::CrashKeySize::Size256);
+  static auto* const ax_tree_data_key = base::debug::AllocateCrashKeyString(
+      "ax_tree_data", base::debug::CrashKeySize::Size256);
+
+  // Log additional crash keys so we can debug bad tree updates.
+  base::debug::SetCrashKeyString(ax_tree_error_key, new_error);
+  base::debug::SetCrashKeyString(ax_tree_update_key,
+                                 update_state.pending_tree_update->ToString());
+  base::debug::SetCrashKeyString(ax_tree_key,
+                                 TreeToStringHelper(root_, 0, false));
+  base::debug::SetCrashKeyString(ax_tree_data_key, data_.ToString());
+  LOG(ERROR) << verbose_error.str();
 }
 
 }  // namespace ui

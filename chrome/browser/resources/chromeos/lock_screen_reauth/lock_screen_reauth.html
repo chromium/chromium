@@ -88,12 +88,17 @@
     /* #000000 */
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.17);
     display: flex;
+  }
+
+  #samlHeader {
+    display: flex;
+    flex-grow: 1;
     height: 44px;
     justify-content: flex-end;
     text-align: center;
   }
 
-  #samlContainer[saml-notice-message] {
+  #samlHeader[saml-notice-message] {
     /* #FFFFFF */
     background: white;
   }
@@ -133,6 +138,18 @@
     margin: 0 4px;
     padding-inline-end: 8px;
     padding-inline-start: 8px;
+  }
+
+  #policyCertIndicator {
+    color: rgb(106, 106, 106);
+    display: flex;
+    padding-inline-start: 15px;
+  }
+
+  #policyCertIcon {
+    height: 20px;
+    padding-top: 8px;
+    width: 20px;
   }
 
   .title-icon {
@@ -300,14 +317,25 @@
 </div>
 
 <div id="body" hidden="[[!isSamlPage_]]">
-  <div id="samlContainer"
-      saml-notice-message$="[[showSamlNoticeMessage_]]">
-    <span id="samlNoticeMessage" hidden="[[!showSamlNoticeMessage_]]">
-      [[i18n('samlNotice', authDomain_)]]
-    </span>
-    <cr-icon-button id="saml-close-button" iron-icon="cr:close"
-        on-click="onCloseTap_" aria-label="$i18n{lockScreenCloseButton}">
-    </cr-icon-button>
+  <div id="samlContainer">
+    <div id="policyCertIndicator"
+        hidden="[[!policyProvidedTrustedAnchorsUsed_()]]">
+      <cr-tooltip-icon id="policyCertIcon" icon-class="cr:domain"
+          tooltip-text="[[i18nDynamic(locale,
+              'policyProvidedCaCertsTooltipMessage', authDomain_)]]"
+          icon-aria-label="[[i18nDynamic(locale,
+              'policyProvidedCaCertsTooltipMessage', authDomain_)]]"
+          tooltip-position="bottom">
+      </cr-tooltip-icon>
+    </div>
+    <div id="samlHeader" saml-notice-message$="[[showSamlNoticeMessage_]]">
+      <span id="samlNoticeMessage" hidden="[[!showSamlNoticeMessage_]]">
+        [[i18n('samlNotice', authDomain_)]]
+      </span>
+      <cr-icon-button id="saml-close-button" iron-icon="cr:close"
+          on-click="onCloseTap_" aria-label="$i18n{lockScreenCloseButton}">
+      </cr-icon-button>
+    </div>
   </div>
   <webview id="signin-frame" name="signin-frame" class="flex">
   </webview>

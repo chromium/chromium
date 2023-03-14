@@ -11,6 +11,8 @@
 
 #include "net/third_party/quiche/src/quiche/common/quiche_linked_hash_map.h"
 
+namespace thumbnail {
+
 template <class Key, class Value>
 class ScopedPtrExpiringCache {
  private:
@@ -35,8 +37,9 @@ class ScopedPtrExpiringCache {
 
   Value* Get(const Key& key) {
     iterator iter = map_.find(key);
-    if (iter != map_.end())
+    if (iter != map_.end()) {
       return iter->second;
+    }
     return nullptr;
   }
 
@@ -74,5 +77,7 @@ class ScopedPtrExpiringCache {
   size_t max_cache_size_;
   LinkedHashMap map_;
 };
+
+}  // namespace thumbnail
 
 #endif  // CHROME_BROWSER_THUMBNAIL_CC_SCOPED_PTR_EXPIRING_CACHE_H_

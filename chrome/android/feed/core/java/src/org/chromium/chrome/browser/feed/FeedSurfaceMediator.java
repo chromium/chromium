@@ -336,7 +336,7 @@ public class FeedSurfaceMediator
         }
         if (!mSettingUpStreams) {
             logSwitchedFeeds(newStream);
-            bindStream(newStream, /*shouldScrollToTop=*/true);
+            bindStream(newStream);
             if (newStream.getStreamKind() == StreamKind.FOLLOWING) {
                 FeedFeatures.updateFollowingFeedSeen();
             }
@@ -491,9 +491,8 @@ public class FeedSurfaceMediator
         mSettingUpStreams = false;
 
         if (mSectionHeaderModel.get(SectionHeaderListProperties.IS_SECTION_ENABLED_KEY)) {
-            bindStream(mTabToStreamMap.get(mSectionHeaderModel.get(
-                               SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY)),
-                    /*shouldScrollToTop=*/false);
+            bindStream(mTabToStreamMap.get(
+                    mSectionHeaderModel.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY)));
         } else {
             unbindStream();
         }
@@ -629,7 +628,7 @@ public class FeedSurfaceMediator
      * different from new stream. Once bound, the stream can add/remove contents.
      */
     @VisibleForTesting
-    void bindStream(Stream stream, boolean shouldScrollToTop) {
+    void bindStream(Stream stream) {
         if (mCurrentStream == stream) return;
         if (mCurrentStream != null) {
             unbindStream(/* shouldPlaceSpacer = */ true);
@@ -643,17 +642,13 @@ public class FeedSurfaceMediator
         updateLayout(false);
         mCurrentStream.addOnContentChangedListener(mStreamContentChangedListener);
 
-        if (FeedFeatures.isAutoScrollToTopEnabled() && mRestoreScrollState == null) {
-            mRestoreScrollState = getScrollStateForAutoScrollToTop();
-        }
-
         FeedReliabilityLogger reliabilityLogger = mCoordinator.getReliabilityLogger();
         mCurrentStream.bind(mCoordinator.getRecyclerView(), mCoordinator.getContentManager(),
                 mRestoreScrollState, mCoordinator.getSurfaceScope(),
                 mCoordinator.getHybridListRenderer(),
                 reliabilityLogger != null ? reliabilityLogger.getLaunchLogger()
                                           : new FeedLaunchReliabilityLogger() {},
-                mHeaderCount, shouldScrollToTop);
+                mHeaderCount);
         mRestoreScrollState = null;
         mCoordinator.getHybridListRenderer().onSurfaceOpened();
     }
@@ -735,7 +730,7 @@ public class FeedSurfaceMediator
         Stream stream = mTabToStreamMap.get(
                 mSectionHeaderModel.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
         if (stream != null) {
-            bindStream(stream, /*shouldScrollToTop=*/false);
+            bindStream(stream);
         }
     }
 

@@ -296,6 +296,19 @@ void PrefModelAssociator::StopSyncing(syncer::ModelType type) {
   DCHECK_EQ(type_, type);
   models_associated_ = false;
   sync_processor_.reset();
+  if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage)) {
+    // Clear all synced preferences from the account store. Note that the same
+    // store may be in use by other PrefModelAssociators (for other preferences
+    // ModelTypes), so it's not okay to just clear the whole store.
+    // TODO(crbug.com/1416480): StopSyncing() gets called when sync is being
+    // stopped (permanently), but also during browser shutdown, and in that case
+    // it's unnecessary (if mostly harmless) to clear the store. Plumb through
+    // an "is_shutdown" bit and don't clear in that case.
+    for (const std::string& pref_name : synced_preferences_) {
+      user_prefs_->RemoveValue(pref_name, GetWriteFlags(pref_name));
+    }
+  }
+  synced_preferences_.clear();
   pref_service_->OnIsSyncingChanged();
 }
 
@@ -440,6 +453,7 @@ void PrefModelAssociator::RegisterPref(const std::string& name) {
   DCHECK(!base::Contains(registered_preferences_, name));
   DCHECK(
       !base::FeatureList::IsEnabled(syncer::kSyncEnforcePreferencesAllowlist) ||
+      !client_ ||
       client_->GetSyncablePrefsDatabase().IsPreferenceSyncable(name))
       << "Preference " << name
       << " has not been added to syncable prefs allowlist";
@@ -452,6 +466,7 @@ void PrefModelAssociator::RegisterPrefWithLegacyModelType(
   DCHECK(!base::Contains(registered_preferences_, name));
   DCHECK(
       !base::FeatureList::IsEnabled(syncer::kSyncEnforcePreferencesAllowlist) ||
+      !client_ ||
       client_->GetSyncablePrefsDatabase().IsPreferenceSyncable(name))
       << "Preference " << name
       << " has not been added to syncable prefs allowlist";

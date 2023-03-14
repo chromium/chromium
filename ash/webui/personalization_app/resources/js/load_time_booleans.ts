@@ -40,5 +40,5 @@ export function isPersonalizationJellyEnabled() {
 }
 
 export function isMultiZoneRgbKeyboardSupported() {
-  return loadTimeData.getBoolean('isMultiZoneRgbKeyboardSupported');
+  return loadTimeData.getInteger('keyboardBacklightZoneCount') > 1;
 }

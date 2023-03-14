@@ -35,10 +35,9 @@ TEST(MigrationUtilsTest, CopySucceed) {
   base::FilePath new_large_config_path =
       new_config_path.AddExtension(kLargeConfigExtension);
 
-  base::WriteFile(old_config_path, kTestConfigString,
-                  sizeof(kTestConfigString) - 1);
+  base::WriteFile(old_config_path, kTestConfigString);
   base::WriteFile(old_config_path.AddExtension(kLargeConfigExtension),
-                  kTestLargeConfigString, sizeof(kTestLargeConfigString) - 1);
+                  kTestLargeConfigString);
 
   base::ScopedPathOverride eureka_config_override(
       FILE_CAST_CONFIG, old_config_path, /*is_absolute=*/true,

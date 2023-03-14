@@ -18,7 +18,8 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
   return CreateTestFrame(coded_size, visible_rect, natural_size, storage_type,
                          storage_type == media::VideoFrame::STORAGE_OWNED_MEMORY
                              ? media::PIXEL_FORMAT_I420
-                             : media::PIXEL_FORMAT_NV12);
+                             : media::PIXEL_FORMAT_NV12,
+                         base::TimeDelta());
 }
 
 scoped_refptr<media::VideoFrame> CreateTestFrame(
@@ -26,12 +27,12 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
     media::VideoFrame::StorageType storage_type,
-    media::VideoPixelFormat pixel_format) {
+    media::VideoPixelFormat pixel_format,
+    base::TimeDelta timestamp) {
   switch (storage_type) {
     case media::VideoFrame::STORAGE_OWNED_MEMORY:
       return media::VideoFrame::CreateZeroInitializedFrame(
-          pixel_format, coded_size, visible_rect, natural_size,
-          base::TimeDelta());
+          pixel_format, coded_size, visible_rect, natural_size, timestamp);
     case media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER: {
       absl::optional<gfx::BufferFormat> buffer_format =
           media::VideoPixelFormatToGfxBufferFormat(pixel_format);
@@ -43,7 +44,7 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
       const gpu::MailboxHolder empty_mailboxes[media::VideoFrame::kMaxPlanes];
       return media::VideoFrame::WrapExternalGpuMemoryBuffer(
           visible_rect, natural_size, std::move(gmb), empty_mailboxes,
-          base::NullCallback(), base::TimeDelta());
+          base::NullCallback(), timestamp);
     }
     case media::VideoFrame::STORAGE_OPAQUE: {
       absl::optional<gfx::BufferFormat> buffer_format =
@@ -62,7 +63,7 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
 
       return media::VideoFrame::WrapNativeTextures(
           pixel_format, mailboxes, base::NullCallback(), coded_size,
-          visible_rect, natural_size, base::TimeDelta());
+          visible_rect, natural_size, timestamp);
     }
     default:
       NOTREACHED() << "Unsupported storage type or pixel format";

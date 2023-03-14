@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_piece_forward.h"

@@ -15,13 +15,13 @@ class WebContents;
 
 namespace extensions {
 
-// Infobar used by extension auth flows when authentication is done through a
-// Browser Tab. A browser tab is opened when needing action from the user in
-// those flows.
+// Infobar used by extension auth flow `chrome.identity.launchWebAuthFlow()`
+// when authentication is done through a Browser Tab. A browser tab is opened
+// when needing action from the user in this flow.
 // This infobar displays information to the user to clarify why this tab was
-// opened, mentioning the extension name as part of the text.
-// Auth flows should take care of managing when to close the bar if not manually
-// closed by the user, otherwise it should live as long as the flow is alive.
+// opened, mentioning the extension name as part of the text. Auth flows should
+// take care of managing when to close the bar if not manually closed by the
+// user, otherwise it should live as long as the flow is alive.
 class WebAuthFlowInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   static base::WeakPtr<WebAuthFlowInfoBarDelegate> Create(

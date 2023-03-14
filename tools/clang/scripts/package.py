@@ -19,8 +19,6 @@ import sys
 import tarfile
 import time
 
-from update import PACKAGE_VERSION, RELEASE_VERSION, STAMP_FILE
-
 # Path constants.
 THIS_DIR = os.path.dirname(__file__)
 CHROMIUM_DIR = os.path.abspath(os.path.join(THIS_DIR, '..', '..', '..'))
@@ -181,6 +179,8 @@ def main():
                       help='Upload the target archive to Google Cloud Storage.')
   parser.add_argument('--build-mac-arm', action='store_true',
                       help='Build arm binaries. Only valid on macOS.')
+  parser.add_argument('--revision',
+                      help='LLVM revision to use. Default: based on update.py')
   args = parser.parse_args()
 
   if args.build_mac_arm and sys.platform != 'darwin':
@@ -189,6 +189,19 @@ def main():
   if args.build_mac_arm and platform.machine() == 'arm64':
     print('--build-mac-arm only valid on intel to cross-build arm')
     return 1
+
+  if args.revision:
+    # Use upload_revision.py to set the revision first.
+    cmd = [
+        sys.executable,
+        os.path.join(THIS_DIR, 'upload_revision.py'),
+        '--no-git',  # Just run locally, don't upload anything.
+        '--clang-git-hash=' + args.revision
+    ]
+    subprocess.call(cmd)
+
+  # This needs to happen after upload_revision.py modifies update.py.
+  from update import PACKAGE_VERSION, RELEASE_VERSION, STAMP_FILE
 
   expected_stamp = PACKAGE_VERSION
   pdir = 'clang-' + expected_stamp

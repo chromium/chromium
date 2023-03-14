@@ -124,6 +124,15 @@ message NetworkConnectionStateChangeEventData {
   optional NetworkConnectionState connection_state = 2;
 }
 
+// Message describing the WIFI_SIGNAL_STRENGTH_LOW and
+// WIFI_SIGNAL_STRENGTH_RECOVERED events.
+message SignalStrengthEventData {
+  // Unique identifier of the network.
+  optional string guid = 1;
+  // Signal strength value in dBm.
+  optional int32 signal_strength_dbm = 2;
+}
+
 // Configured networks telemetry data.
 message NetworksTelemetry {
   // List of each network telemetry.
@@ -136,6 +145,9 @@ message NetworksTelemetry {
   // event.
   optional NetworkConnectionStateChangeEventData
       network_connection_change_event_data = 4;
+  // Signal strength data describing the WIFI_SIGNAL_STRENGTH_LOW and
+  // WIFI_SIGNAL_STRENGTH_RECOVERED events.
+  optional SignalStrengthEventData signal_strength_event_data = 5;
 }
 
 // Security level of the thunderbolt bus.
@@ -434,9 +446,11 @@ enum MetricEventType {
   APP_INSTALLED = 7;
   APP_UNINSTALLED = 8;
   APP_LAUNCHED = 9;
-  NETWORK_SIGNAL_STRENGTH_LOW = 10;
-  NETWORK_SIGNAL_STRENGTH_RECOVERED = 11;
+  NETWORK_SIGNAL_STRENGTH_LOW = 10 [deprecated = true];
+  NETWORK_SIGNAL_STRENGTH_RECOVERED = 11 [deprecated = true];
   NETWORK_STATE_CHANGE = 12;
+  WIFI_SIGNAL_STRENGTH_LOW = 13;
+  WIFI_SIGNAL_STRENGTH_RECOVERED = 14;
 }
 
 // App telemetry data.

@@ -24,6 +24,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_switches.h"
+#include "gpu/config/webgpu_blocklist.h"
 #include "skia/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/angle/src/gpu_info_util/SystemInfo.h"  // nogncheck
@@ -199,6 +200,52 @@ void AddTogglesToDawnInfoList(dawn::native::Instance* instance,
 }
 #endif
 
+std::string GetDisplayTypeString(gl::DisplayType type) {
+  switch (type) {
+    case gl::DEFAULT:
+      return "DEFAULT";
+    case gl::SWIFT_SHADER:
+      return "SWIFT_SHADER";
+    case gl::ANGLE_WARP:
+      return "ANGLE_WARP";
+    case gl::ANGLE_D3D9:
+      return "ANGLE_D3D9";
+    case gl::ANGLE_D3D11:
+      return "ANGLE_D3D11";
+    case gl::ANGLE_OPENGL:
+      return "ANGLE_OPENGL";
+    case gl::ANGLE_OPENGLES:
+      return "ANGLE_OPENGLES";
+    case gl::ANGLE_NULL:
+      return "ANGLE_NULL";
+    case gl::ANGLE_D3D11_NULL:
+      return "ANGLE_D3D11_NULL";
+    case gl::ANGLE_OPENGL_NULL:
+      return "ANGLE_OPENGL_NULL";
+    case gl::ANGLE_OPENGLES_NULL:
+      return "ANGLE_OPENGLES_NULL";
+    case gl::ANGLE_VULKAN:
+      return "ANGLE_VULKAN";
+    case gl::ANGLE_VULKAN_NULL:
+      return "ANGLE_VULKAN_NULL";
+    case gl::ANGLE_D3D11on12:
+      return "ANGLE_D3D11on12";
+    case gl::ANGLE_SWIFTSHADER:
+      return "ANGLE_SWIFTSHADER";
+    case gl::ANGLE_OPENGL_EGL:
+      return "ANGLE_OPENGL_EGL";
+    case gl::ANGLE_OPENGLES_EGL:
+      return "ANGLE_OPENGLES_EGL";
+    case gl::ANGLE_METAL:
+      return "ANGLE_METAL";
+    case gl::ANGLE_METAL_NULL:
+      return "ANGLE_METAL_NULL";
+    default:
+      NOTREACHED();
+      return "";
+  }
+}
+
 #if BUILDFLAG(USE_DAWN)
 void ForceDawnTogglesForWebGPU(
     bool enable_unsafe_webgpu,
@@ -299,12 +346,17 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
       gl::GetRequestedGLImplementationFromCommandLine(command_line,
                                                       &fallback_to_software);
 
-  // If GL is disabled then we don't need GPUInfo.
-  if (implementation == gl::kGLImplementationDisabled) {
-    gpu_info->gl_vendor = "Disabled";
-    gpu_info->gl_renderer = "Disabled";
-    gpu_info->gl_version = "Disabled";
-    return true;
+  if (implementation.has_value()) {
+    gpu_info->gl_implementation = implementation->GLString();
+    gpu_info->angle_implementation = implementation->ANGLEString();
+
+    // If GL is disabled then we don't need GPUInfo.
+    if (implementation == gl::kGLImplementationDisabled) {
+      gpu_info->gl_vendor = "Disabled";
+      gpu_info->gl_renderer = "Disabled";
+      gpu_info->gl_version = "Disabled";
+      return true;
+    }
   }
 
   if (implementation == gl::GetSoftwareGLImplementation()) {
@@ -336,7 +388,9 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
 
 bool CollectGraphicsInfoGL(GPUInfo* gpu_info, gl::GLDisplay* display) {
   TRACE_EVENT0("startup", "gpu_info_collector::CollectGraphicsInfoGL");
-  DCHECK_NE(gl::GetGLImplementation(), gl::kGLImplementationNone);
+  gl::GLImplementationParts implementation = gl::GetGLImplementationParts();
+  DCHECK_NE(implementation, gl::kGLImplementationNone);
+  gl::GLDisplayEGL* egl_display = display->GetAs<gl::GLDisplayEGL>();
 
   // Now that we can check GL extensions, update passthrough support info.
   if (!gl::PassthroughCommandDecoderSupported()) {
@@ -355,6 +409,12 @@ bool CollectGraphicsInfoGL(GPUInfo* gpu_info, gl::GLDisplay* display) {
     return false;
   }
 
+  gpu_info->gl_implementation = implementation.GLString();
+  gpu_info->angle_implementation = implementation.ANGLEString();
+  if (egl_display) {
+    gpu_info->display_type =
+        GetDisplayTypeString(egl_display->GetDisplayType());
+  }
   gpu_info->gl_renderer = GetGLString(GL_RENDERER);
   gpu_info->gl_vendor = GetGLString(GL_VENDOR);
   gpu_info->gl_version = GetGLString(GL_VERSION);
@@ -386,7 +446,6 @@ bool CollectGraphicsInfoGL(GPUInfo* gpu_info, gl::GLDisplay* display) {
   base::UmaHistogramSparse("GPU.MaxMSAASampleCount", max_samples);
 
 #if BUILDFLAG(IS_ANDROID)
-  gl::GLDisplayEGL* egl_display = display->GetAs<gl::GLDisplayEGL>();
   gpu_info->can_support_threaded_texture_mailbox =
       egl_display->ext->b_EGL_KHR_fence_sync &&
       egl_display->ext->b_EGL_KHR_image_base &&
@@ -517,9 +576,7 @@ void FillGPUInfoFromSystemInfo(GPUInfo* gpu_info,
 #if BUILDFLAG(IS_CHROMEOS)
   gpu_info->gpu.revision = active->revisionId;
 #endif  // BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_MAC)
-  gpu_info->gpu.register_id = active->systemDeviceId;
-#endif  // BUILDFLAG(IS_MAC)
+  gpu_info->gpu.system_device_id = active->systemDeviceId;
   gpu_info->gpu.driver_vendor = std::move(active->driverVendor);
   gpu_info->gpu.driver_version = std::move(active->driverVersion);
   gpu_info->gpu.active = true;
@@ -535,9 +592,7 @@ void FillGPUInfoFromSystemInfo(GPUInfo* gpu_info,
 #if BUILDFLAG(IS_CHROMEOS)
     device.revision = system_info->gpus[i].revisionId;
 #endif  // BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_MAC)
-    device.register_id = system_info->gpus[i].systemDeviceId;
-#endif  // BUILDFLAG(IS_MAC)
+    device.system_device_id = system_info->gpus[i].systemDeviceId;
     device.driver_vendor = std::move(system_info->gpus[i].driverVendor);
     device.driver_version = std::move(system_info->gpus[i].driverVersion);
 
@@ -648,6 +703,14 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
       gpu_str += " " + GetDawnBackendTypeString(backend_type);
       gpu_str += " - " + adapter_name;
       dawn_info_list->push_back(gpu_str);
+
+      dawn_info_list->push_back("[WebGPU Status]");
+      if (IsWebGPUAdapterBlocklisted(
+              *reinterpret_cast<WGPUAdapterProperties*>(&properties))) {
+        dawn_info_list->push_back("Blocklisted");
+      } else {
+        dawn_info_list->push_back("Available");
+      }
 
       // Scope the lifetime of |device| to avoid accidental use after release.
       {

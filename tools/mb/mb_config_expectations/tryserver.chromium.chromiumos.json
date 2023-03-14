@@ -22,6 +22,19 @@
       "use_remoteexec": true
     }
   },
+  "chromeos-amd64-generic-lacros-dbg": {
+    "args_file": "//build/args/chromeos/amd64-generic-crostoolchain.gni",
+    "gn_args": {
+      "chromeos_is_browser_only": true,
+      "dcheck_always_on": false,
+      "is_chromeos_device": true,
+      "is_component_build": false,
+      "is_debug": true,
+      "ozone_platform_headless": true,
+      "target_os": "chromeos",
+      "use_remoteexec": true
+    }
+  },
   "chromeos-amd64-generic-rel": {
     "args_file": "//build/args/chromeos/amd64-generic-vm.gni",
     "gn_args": {
@@ -31,17 +44,6 @@
       "ozone_platform_headless": true,
       "use_real_dbus_clients": false,
       "use_remoteexec": true
-    }
-  },
-  "chromeos-amd64-generic-rel-rts": {
-    "args_file": "//build/args/chromeos/amd64-generic.gni",
-    "gn_args": {
-      "also_build_lacros_chrome_for_architecture": "amd64",
-      "dcheck_always_on": false,
-      "is_chromeos_device": true,
-      "ozone_platform_headless": true,
-      "use_goma": true,
-      "use_real_dbus_clients": false
     }
   },
   "chromeos-arm-generic-dbg": {
@@ -79,7 +81,7 @@
       "dcheck_always_on": true,
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "chromeos-octopus-rel": {
@@ -88,7 +90,7 @@
       "dcheck_always_on": true,
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "gpu-fyi-try-chromeos-amd64-generic": {
@@ -140,7 +142,7 @@
       "is_debug": false,
       "ozone_platform_headless": true,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "lacros-amd64-generic-rel-skylab": {
@@ -190,7 +192,7 @@
       "is_debug": false,
       "ozone_platform_headless": true,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "lacros-arm64-generic-rel-skylab-fyi": {
@@ -203,7 +205,7 @@
       "is_skylab": true,
       "ozone_platform_headless": true,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-cfm-rel": {

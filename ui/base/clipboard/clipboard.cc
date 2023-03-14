@@ -151,8 +151,8 @@ std::map<std::string, std::string> Clipboard::ExtractCustomPlatformNames(
     if (!custom_format_json.empty()) {
       absl::optional<base::Value> json_val =
           base::JSONReader::Read(custom_format_json);
-      if (json_val.has_value()) {
-        for (const auto it : json_val->DictItems()) {
+      if (json_val.has_value() && json_val->is_dict()) {
+        for (const auto it : json_val->GetDict()) {
           const std::string* custom_format_name = it.second.GetIfString();
           if (custom_format_name) {
             // Prepend "web " prefix to the custom format.
@@ -225,13 +225,25 @@ void Clipboard::DispatchPortableRepresentation(PortableFormat format,
       if (params.data.size() == 2 && params.data[1].empty()) {
         return;
       }
-      if (params.data.size() == 2) {
-        WriteHTML(params.data[0].data(), params.data[0].size(),
-                  params.data[1].data(), params.data[1].size());
-      } else if (params.data.size() == 1) {
-        // If there isn't a source URL, then we set the URL data to null and
-        // size to 0.
-        WriteHTML(params.data[0].data(), params.data[0].size(), nullptr, 0);
+      if (params.content_type == ClipboardContentType::kUnsanitized) {
+        if (params.data.size() == 2) {
+          WriteUnsanitizedHTML(params.data[0].data(), params.data[0].size(),
+                               params.data[1].data(), params.data[1].size());
+        } else if (params.data.size() == 1) {
+          // If there isn't a source URL, then we set the URL data to null and
+          // size to 0.
+          WriteUnsanitizedHTML(params.data[0].data(), params.data[0].size(),
+                               nullptr, 0);
+        }
+      } else {
+        if (params.data.size() == 2) {
+          WriteHTML(params.data[0].data(), params.data[0].size(),
+                    params.data[1].data(), params.data[1].size());
+        } else if (params.data.size() == 1) {
+          // If there isn't a source URL, then we set the URL data to null and
+          // size to 0.
+          WriteHTML(params.data[0].data(), params.data[0].size(), nullptr, 0);
+        }
       }
       break;
 

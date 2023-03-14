@@ -126,7 +126,11 @@ enum MouseButtonState {
   DOWN = 2
 };
 
-enum TouchType { PRESS = 1 << 0, RELEASE = 1 << 1, MOVE = 1 << 2 };
+enum TouchType {
+  kTouchPress = 1 << 0,
+  kTouchRelease = 1 << 1,
+  kTouchMove = 1 << 2,
+};
 
 // Sends a mouse down and/or up message with optional one or multiple
 // accelerator keys. The click will be sent to wherever the cursor

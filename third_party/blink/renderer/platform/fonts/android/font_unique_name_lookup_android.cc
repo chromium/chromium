@@ -86,7 +86,11 @@ bool FontUniqueNameLookupAndroid::IsFontUniqueNameLookupReadyForSyncLookup() {
     // Adopt the shared memory region, do not notify anyone in callbacks as
     // PrepareFontUniqueNameLookup must not have been called yet. Just return
     // true from this function.
-    DCHECK_EQ(pending_callbacks_.size(), 0u);
+    // TODO(crbug.com/1416529): Investigate why pending_callbacks is not 0 in
+    // some cases when kPrefetchFontLookupTables is enabled
+    if (pending_callbacks_.size() != 0) {
+      LOG(WARNING) << "Number of pending callbacks not zero";
+    }
     ReceiveReadOnlySharedMemoryRegion(std::move(shared_memory_region));
   }
 

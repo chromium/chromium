@@ -31,8 +31,6 @@ const char kSandboxProfile[] = R"(
 )";
 
 const char kTestData[] = "hello world";
-constexpr int kTestDataLen = std::size(kTestData);
-
 const char kSwitchFile[] = "test-file";
 const char kSwitchExtension[] = "test-extension";
 
@@ -42,8 +40,7 @@ class SeatbeltExtensionTest : public base::MultiProcessTest {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     file_path_ = temp_dir_.GetPath().AppendASCII("sbox.test");
 
-    ASSERT_EQ(kTestDataLen,
-              base::WriteFile(file_path_, kTestData, kTestDataLen));
+    ASSERT_TRUE(base::WriteFile(file_path_, kTestData));
   }
 
   base::FilePath file_path() { return file_path_; }

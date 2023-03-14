@@ -57,6 +57,10 @@ class StorageKey;
 class URLLoaderThrottle;
 }  // namespace blink
 
+namespace blocked_content {
+class PopupNavigationDelegate;
+}  // namespace blocked_content
+
 namespace content {
 class BrowserContext;
 class RenderFrameHost;
@@ -104,6 +108,7 @@ class ChromeHidDelegate;
 class ChromeSerialDelegate;
 class ChromeUsbDelegate;
 class ChromeWebAuthenticationDelegate;
+struct NavigateParams;
 
 #if BUILDFLAG(ENABLE_VR)
 namespace vr {
@@ -113,6 +118,13 @@ class ChromeXrIntegrationClient;
 
 class ChromeContentBrowserClient : public content::ContentBrowserClient {
  public:
+  using PopupNavigationDelegateFactory =
+      std::unique_ptr<blocked_content::PopupNavigationDelegate> (*)(
+          NavigateParams);
+
+  static PopupNavigationDelegateFactory&
+  GetPopupNavigationDelegateFactoryForTesting();
+
   ChromeContentBrowserClient();
 
   ChromeContentBrowserClient(const ChromeContentBrowserClient&) = delete;
@@ -456,7 +468,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::PosixFileDescriptorInfo* mappings) override;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #if BUILDFLAG(IS_WIN)
-  bool PreSpawnChild(sandbox::TargetPolicy* policy,
+  bool PreSpawnChild(sandbox::TargetConfig* config,
                      sandbox::mojom::Sandbox sandbox_type,
                      ChildSpawnFlags flags) override;
   std::wstring GetAppContainerSidForSandboxType(
@@ -519,6 +531,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::NavigationHandle* navigation_handle) override;
   std::unique_ptr<media::ScreenEnumerator> CreateScreenEnumerator()
       const override;
+  bool EnforceSystemAudioEchoCancellation() override;
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)
   void CreateMediaRemoter(
       content::RenderFrameHost* render_frame_host,
@@ -847,6 +860,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const GURL& url) override;
 
   bool AreIsolatedWebAppsEnabled(
+      content::BrowserContext* browser_context) override;
+
+  bool IsThirdPartyStoragePartitioningAllowed(
       content::BrowserContext* browser_context) override;
 
  protected:

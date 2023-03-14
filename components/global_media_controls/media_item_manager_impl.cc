@@ -207,4 +207,8 @@ bool MediaItemManagerImpl::HasOpenDialogForItem() {
   return HasOpenDialog() && dialog_opened_for_single_item_;
 }
 
+base::WeakPtr<MediaItemManager> MediaItemManagerImpl::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace global_media_controls

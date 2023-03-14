@@ -296,6 +296,12 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
         /*add_entropy_source_to_variations_ids=*/true);
   }
 
+  // Passthrough, to expose the underlying method to tests without making it
+  // public.
+  base::flat_set<uint64_t> GetGoogleGroupsFromPrefs() {
+    return VariationsFieldTrialCreator::GetGoogleGroupsFromPrefs();
+  }
+
   TestVariationsSeedStore* seed_store() { return &seed_store_; }
 
  protected:
@@ -1296,6 +1302,89 @@ TEST_F(FieldTrialCreatorTest, WriteBeaconFile) {
   // Verify metrics.
   histogram_tester.ExpectUniqueSample(
       "Variations.ExtendedSafeMode.BeaconFileWrite", 1, 1);
+}
+
+TEST_F(FieldTrialCreatorTest, GetGoogleGroupsFromPrefsWhenPrefNotPresent) {
+  TestVariationsServiceClient variations_service_client;
+  NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
+  TestVariationsFieldTrialCreator field_trial_creator(
+      local_state(), &variations_service_client, &safe_seed_manager);
+
+  ASSERT_EQ(field_trial_creator.GetGoogleGroupsFromPrefs(),
+            base::flat_set<uint64_t>());
+}
+
+TEST_F(FieldTrialCreatorTest, GetGoogleGroupsFromPrefsWhenEmptyDict) {
+  TestVariationsServiceClient variations_service_client;
+  NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
+  TestVariationsFieldTrialCreator field_trial_creator(
+      local_state(), &variations_service_client, &safe_seed_manager);
+
+  // Add an empty dict value for the pref.
+  base::Value::Dict google_groups_dict;
+  local_state()->SetDict(prefs::kVariationsGoogleGroups,
+                         std::move(google_groups_dict));
+
+  ASSERT_EQ(field_trial_creator.GetGoogleGroupsFromPrefs(),
+            base::flat_set<uint64_t>());
+}
+
+TEST_F(FieldTrialCreatorTest,
+       GetGoogleGroupsFromPrefsWhenProfileWithEmptyList) {
+  TestVariationsServiceClient variations_service_client;
+  NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
+  TestVariationsFieldTrialCreator field_trial_creator(
+      local_state(), &variations_service_client, &safe_seed_manager);
+
+  // Add an empty dict value for the pref.
+  base::Value::Dict google_groups_dict;
+  base::Value::List profile_1_groups;
+  google_groups_dict.Set("Profile 1", std::move(profile_1_groups));
+  local_state()->SetDict(prefs::kVariationsGoogleGroups,
+                         std::move(google_groups_dict));
+
+  ASSERT_EQ(field_trial_creator.GetGoogleGroupsFromPrefs(),
+            base::flat_set<uint64_t>());
+}
+
+TEST_F(FieldTrialCreatorTest,
+       GetGoogleGroupsFromPrefsWhenProfileWithNonEmptyList) {
+  TestVariationsServiceClient variations_service_client;
+  NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
+  TestVariationsFieldTrialCreator field_trial_creator(
+      local_state(), &variations_service_client, &safe_seed_manager);
+
+  // Add an empty dict value for the pref.
+  base::Value::Dict google_groups_dict;
+  base::Value::List profile_1_groups;
+  profile_1_groups.Append("123");
+  profile_1_groups.Append("456");
+  google_groups_dict.Set("Profile 1", std::move(profile_1_groups));
+  local_state()->SetDict(prefs::kVariationsGoogleGroups,
+                         std::move(google_groups_dict));
+
+  ASSERT_EQ(field_trial_creator.GetGoogleGroupsFromPrefs(),
+            base::flat_set<uint64_t>({123, 456}));
+}
+
+TEST_F(FieldTrialCreatorTest,
+       GetGoogleGroupsFromPrefsWhenProfileWithNonNumericString) {
+  TestVariationsServiceClient variations_service_client;
+  NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
+  TestVariationsFieldTrialCreator field_trial_creator(
+      local_state(), &variations_service_client, &safe_seed_manager);
+
+  // Add an empty dict value for the pref.
+  base::Value::Dict google_groups_dict;
+  base::Value::List profile_1_groups;
+  profile_1_groups.Append("Alice");
+  profile_1_groups.Append("Bob");
+  google_groups_dict.Set("Profile 1", std::move(profile_1_groups));
+  local_state()->SetDict(prefs::kVariationsGoogleGroups,
+                         std::move(google_groups_dict));
+
+  ASSERT_EQ(field_trial_creator.GetGoogleGroupsFromPrefs(),
+            base::flat_set<uint64_t>());
 }
 
 }  // namespace variations

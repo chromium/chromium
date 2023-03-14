@@ -3,37 +3,42 @@
     color: var(--cros-text-color-prominent);
   }
 
-  .subtitle {
-    font-weight: 600;
-  }
-
   ol {
     padding-inline-start: 20px;
+  }
+
+  cr-button {
+    border-radius: 16px;
+  }
+
+  cr-button:focus-visible {
+    /* disable cr-button default keyboard focus style */
+    box-shadow: none;
+    outline: 2px solid var(--cros-focus-ring-color);
+    outline-offset: 2px;
   }
 </style>
 
 <!-- TODO(b/254586358): Use localized strings -->
-<svg slot="header-image">
+<svg slot="header-image" viewBox="0 0 448 200">
   <use href="images/welcome.svg#EXPORT_image"></use>
 </svg>
 <div slot="title">
-  Set up Microsoft 365 for your Chromebook
+  Set up Microsoft 365 to open files
 </div>
 <div slot="body">
-  <p class="subtitle">
-    How it works:
-  </p>
   <ol>
     <li>Install Microsoft 365</li>
     <li>Connect to Microsoft OneDrive</li>
     <li>Files will move to OneDrive when opening in Microsoft 365</li>
   </ol>
   <p>
-    A subscription may be required.
-    View <a href="#" target="_blank">Microsoft terms and conditions.</a>
+    <a href="#" target="_blank">Learn more</a> about Microsoft 365 on your
+    Chromebook. Read the <a href="#" target="_blank">Microsoft terms and
+    conditions.</a>
   </p>
 </div>
 <div slot="button-container">
   <cr-button class="cancel-button">Cancel</cr-button>
-  <cr-button class="action-button">Set up</cr-button>
+  <cr-button class="action-button">Get started</cr-button>
 </div>

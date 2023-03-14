@@ -26,10 +26,10 @@ You can find the current used version from the output of `./emsdk activate lates
 
 ```
 Set the following tools as active:
-   node-14.15.5-64bit
-   releases-upstream-7b3cd38017f7c582cfa3ac24a9f12aa6a8dca51f-64bit
+   node-14.18.2-64bit
+   releases-1eec24930cb2f56f6d9cd10ffcb031e27ea4157a-64bit
 ```
 
 After the Emscripten environment is setup properly, run `build_ffmpeg.sh` will build `ffmpeg.{js,wasm}` from `src/third_party/ffmpeg`.
 
-The emsdk version of the last build of this package is 1.39.13. TODO(b/199980849): Upgrade the version to 2.0.XX.
+The emsdk version of the last build of this package is 3.1.31.

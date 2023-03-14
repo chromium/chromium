@@ -5,12 +5,21 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_target_device_connection_broker.h"
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_quick_start_decoder.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/nearby_sharing/fake_nearby_connection.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 
 namespace ash::quick_start {
+
+namespace {
+
+// Arbitrary string to use as the connection's authentication token.
+constexpr char kAuthenticationToken[] = "auth_token";
+
+}  // namespace
 
 FakeTargetDeviceConnectionBroker::Factory::Factory() = default;
 
@@ -54,8 +63,9 @@ void FakeTargetDeviceConnectionBroker::InitiateConnection(
   auto random_session_id = RandomSessionId();
   fake_nearby_connection_ = std::make_unique<FakeNearbyConnection>();
   NearbyConnection* nearby_connection = fake_nearby_connection_.get();
+  fake_quick_start_decoder_ = std::make_unique<FakeQuickStartDecoder>();
   auto fake_incomming_connection = std::make_unique<FakeIncommingConnection>(
-      nearby_connection, random_session_id);
+      nearby_connection, random_session_id, kAuthenticationToken);
   connection_lifecycle_listener_->OnIncomingConnectionInitiated(
       source_device_id, fake_incomming_connection->AsWeakPtr());
   fake_connection_ = std::move(fake_incomming_connection);
@@ -66,8 +76,13 @@ void FakeTargetDeviceConnectionBroker::AuthenticateConnection(
   fake_connection_.reset();
   fake_nearby_connection_ = std::make_unique<FakeNearbyConnection>();
   NearbyConnection* nearby_connection = fake_nearby_connection_.get();
+  mojo::PendingRemote<mojom::QuickStartDecoder> remote;
+  fake_quick_start_decoder_ = std::make_unique<FakeQuickStartDecoder>();
   auto fake_authenticated_connection =
-      std::make_unique<FakeAuthenticatedConnection>(nearby_connection);
+      std::make_unique<FakeAuthenticatedConnection>(
+          nearby_connection,
+          mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder>(
+              fake_quick_start_decoder_->GetRemote()));
   connection_lifecycle_listener_->OnConnectionAuthenticated(
       source_device_id, fake_authenticated_connection->AsWeakPtr());
 

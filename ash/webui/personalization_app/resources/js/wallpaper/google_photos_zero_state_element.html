@@ -27,5 +27,7 @@
 <iron-media-query query="(prefers-color-scheme: dark)"
     query-matches="{{isDarkModeActive_}}">
 </iron-media-query>
-<img src="[[getImageSource_(isDarkModeActive_)]]" aria-hidden="true">
-<div inner-h-t-m-l="[[getMessage_()]]"></div>
+<template is="dom-if" if="[[getMessageLabel_(tab)]]">
+  <img src="[[getImageSource_(isDarkModeActive_)]]" aria-hidden="true">
+  <div id="message" inner-h-t-m-l="[[getMessage_(tab)]]"></div>
+</template>

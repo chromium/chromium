@@ -109,7 +109,8 @@ void SendTabToSelfPromoBubbleView::OnSignInButtonClicked() {
           signin_metrics::AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO,
           /*email_hint=*/std::string());
 #else
-  NOTREACHED() << "The promo bubble shouldn't show if dice-support is disabled";
+  NOTREACHED_NORETURN()
+      << "The promo bubble shouldn't show if dice-support is disabled";
 #endif
 }
 

@@ -133,6 +133,6 @@ build_webui("build") {
   if (optimize) {
     optimize_webui_host = "print"
     optimize_webui_in_files = [ "print_preview.js" ]
-    optimize_webui_excludes = [ "pdf/pdf_scripting_api.js" ]
+    optimize_webui_excludes = [ "chrome://print/pdf/pdf_scripting_api.js" ]
   }
 }

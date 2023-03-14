@@ -13,6 +13,7 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/password_manager/web_app_profile_switcher.h"
 #include "chrome/browser/profiles/avatar_menu.h"
 #include "chrome/browser/profiles/avatar_menu_observer.h"
 #include "chrome/browser/sync/sync_ui_util.h"
@@ -97,6 +98,12 @@ class ProfileMenuView : public ProfileMenuViewBase {
 
   std::u16string menu_title_;
   std::u16string menu_subtitle_;
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  // A profile switcher object needed if the user triggers opening other
+  // profile in a web app.
+  absl::optional<WebAppProfileSwitcher> app_profile_switcher_;
+#endif
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MENU_VIEW_H_

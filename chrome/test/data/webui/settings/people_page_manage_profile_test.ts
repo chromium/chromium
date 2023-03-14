@@ -125,12 +125,12 @@ suite('ManageProfileTests', function() {
         manageProfile.shadowRoot!.querySelector(
                                      'cr-profile-avatar-selector')!.shadowRoot!
             .querySelector('#avatar-grid')!.querySelectorAll<HTMLElement>(
-                '.avatar');
+                '.avatar-container > .avatar');
 
     assertEquals(3, items.length);
-    assertFalse(items[0]!.classList.contains('iron-selected'));
-    assertTrue(items[1]!.classList.contains('iron-selected'));
-    assertFalse(items[2]!.classList.contains('iron-selected'));
+    assertFalse(items[0]!.parentElement!.classList.contains('iron-selected'));
+    assertTrue(items[1]!.parentElement!.classList.contains('iron-selected'));
+    assertFalse(items[2]!.parentElement!.classList.contains('iron-selected'));
 
     items[1]!.click();
     const args = await browserProxy.whenCalled('setProfileIconToDefaultAvatar');

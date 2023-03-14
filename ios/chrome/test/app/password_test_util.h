@@ -36,10 +36,11 @@ namespace chrome_test_util {
 MockReauthenticationModule* SetUpAndReturnMockReauthenticationModule(
     bool is_add_new_password = false);
 
-// Replace the reauthentication module in Password Manager's
-// PasswordExporter with a fake one to avoid being
-// blocked with a reauth prompt, and return the fake reauthentication module.
-MockReauthenticationModule* SetUpAndReturnMockReauthenticationModuleForExport();
+// Replaces the reauthentication module in Password Manager's password list with
+// a fake one to avoid being blocked with a reauth prompt and returns the fake
+// reauthentication module.
+MockReauthenticationModule*
+SetUpAndReturnMockReauthenticationModuleForPasswordManager();
 
 // Replace the reauthentication module in Password Settings'
 // PasswordExporter with a fake one to avoid being

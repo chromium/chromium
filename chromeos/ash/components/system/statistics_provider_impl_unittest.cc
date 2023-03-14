@@ -40,15 +40,14 @@ constexpr char kVpdRwPartitionStatusKey[] = "RW_VPD_status";
 // `content`. Returns path to the created file.
 base::FilePath CreateFileInTempDir(const std::string& content,
                                    const base::ScopedTempDir& temp_dir) {
-  DCHECK(temp_dir.IsValid());
+  EXPECT_TRUE(temp_dir.IsValid());
   base::FilePath filepath;
   base::File file =
       base::CreateAndOpenTemporaryFileInDir(temp_dir.GetPath(), &filepath);
-  DCHECK(file.IsValid());
-  DCHECK(!filepath.empty());
+  EXPECT_TRUE(file.IsValid());
+  EXPECT_FALSE(filepath.empty());
 
-  int length = base::WriteFile(filepath, content);
-  DCHECK_GE(length, 0);
+  EXPECT_TRUE(base::WriteFile(filepath, content));
 
   return filepath;
 }

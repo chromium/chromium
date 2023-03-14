@@ -149,13 +149,11 @@ class SimpleTestDragDropClient : public XDragDropClient,
   void OnMouseReleased() override;
   void OnMoveLoopEnded() override;
 
-  std::unique_ptr<X11MoveLoop> CreateMoveLoop(X11MoveLoopDelegate* delegate);
-
   // The x11::Window of the window which is simulated to be the topmost window.
   x11::Window target_window_ = x11::Window::None;
 
-  // The move loop. Not owned.
-  raw_ptr<TestMoveLoop> loop_ = nullptr;
+  // The move loop.
+  std::unique_ptr<TestMoveLoop> loop_;
 
   base::OnceClosure quit_closure_;
 };
@@ -293,12 +291,6 @@ bool SimpleTestDragDropClient::IsMoveLoopRunning() {
   return loop_->IsRunning();
 }
 
-std::unique_ptr<X11MoveLoop> SimpleTestDragDropClient::CreateMoveLoop(
-    X11MoveLoopDelegate* delegate) {
-  loop_ = new TestMoveLoop(delegate);
-  return base::WrapUnique(loop_.get());
-}
-
 DragOperation SimpleTestDragDropClient::StartDragAndDrop(
     std::unique_ptr<OSExchangeData> data,
     X11Window* source_window,
@@ -306,13 +298,14 @@ DragOperation SimpleTestDragDropClient::StartDragAndDrop(
     mojom::DragEventSource source) {
   InitDrag(allowed_operations, data.get());
 
-  auto loop = CreateMoveLoop(this);
+  loop_ = std::make_unique<TestMoveLoop>(this);
 
   // Cursors are not set. Thus, pass nothing.
   loop_->RunMoveLoop(!source_window->HasCapture(), {}, {});
 
   auto resulting_operation = negotiated_operation();
   CleanupDrag();
+  loop_.reset();
   return resulting_operation;
 }
 

@@ -28,7 +28,7 @@
   // Test that the explanations are cleared on navigation. Regression test for https://crbug.com/601944.
   TestRunner.mainTarget.model(SDK.ResourceTreeModel)
       .dispatchEventToListeners(
-          SDK.ResourceTreeModel.Events.MainFrameNavigated, TestRunner.resourceTreeModel.mainFrame);
+          SDK.ResourceTreeModel.Events.PrimaryPageChanged, {frame: TestRunner.resourceTreeModel.mainFrame, type: 'Navigation'});
   explanations =
       Security.SecurityPanel.instance().mainView.contentElement.getElementsByClassName('security-explanation');
   for (var i = 0; i < explanations.length; i++)

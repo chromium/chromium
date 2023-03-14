@@ -19,6 +19,9 @@
 #include "components/password_manager/core/browser/affiliation/affiliation_backend.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_fetcher_interface.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
+#include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
@@ -100,9 +103,11 @@ struct AffiliationServiceImpl::FetchInfo {
 // passing it in the constructor.
 AffiliationServiceImpl::AffiliationServiceImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    scoped_refptr<base::SequencedTaskRunner> backend_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> backend_task_runner,
+    PrefService* pref_service)
     : url_loader_factory_(std::move(url_loader_factory)),
       fetcher_factory_(std::make_unique<AffiliationFetcherFactoryImpl>()),
+      pref_service_(pref_service),
       backend_task_runner_(std::move(backend_task_runner)) {}
 
 AffiliationServiceImpl::~AffiliationServiceImpl() = default;
@@ -259,6 +264,12 @@ void AffiliationServiceImpl::KeepPrefetchForFacets(
     std::vector<FacetURI> facet_uris) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backend_);
+
+  if (base::FeatureList::IsEnabled(features::kPasswordsGrouping)) {
+    // Update pref to indicate grouping info was requested.
+    pref_service_->SetBoolean(prefs::kPasswordsGroupingInfoRequested, true);
+  }
+
   backend_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&AffiliationBackend::KeepPrefetchForFacets,
@@ -282,14 +293,42 @@ void AffiliationServiceImpl::TrimUnusedCache(std::vector<FacetURI> facet_uris) {
                      base::Unretained(backend_), std::move(facet_uris)));
 }
 
-void AffiliationServiceImpl::GetAllGroups(GroupsCallback callback) const {
+void AffiliationServiceImpl::GetGroupingInfo(std::vector<FacetURI> facet_uris,
+                                             GroupsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backend_);
-  backend_task_runner_->PostTaskAndReplyWithResult(
+  DCHECK(base::FeatureList::IsEnabled(features::kPasswordsGrouping));
+
+  // If grouping info was requested before, simply return groups from the cache.
+  if (pref_service_->GetBoolean(prefs::kPasswordsGroupingInfoRequested)) {
+    backend_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&AffiliationBackend::GetGroupingInfo,
+                       base::Unretained(backend_), std::move(facet_uris)),
+        std::move(callback));
+    return;
+  }
+
+  // Update pref right away to avoid any additional requests in the future.
+  pref_service_->SetBoolean(prefs::kPasswordsGroupingInfoRequested, true);
+
+  // Create a callback to call AffiliationServiceImpl::GetGroupingInfo() one
+  // more time.
+  auto get_groups_callback = base::BindOnce(
+      &AffiliationService::GetGroupingInfo, weak_ptr_factory_.GetWeakPtr(),
+      facet_uris, std::move(callback));
+
+  // Make sure to invoke |get_groups_callback| in main sequence.
+  auto callback_in_main_sequence =
+      base::BindOnce(base::IgnoreResult(&base::TaskRunner::PostTask),
+                     base::SequencedTaskRunner::GetCurrentDefault(), FROM_HERE,
+                     std::move(get_groups_callback));
+  // Request affiliation backend to update affiliation information.
+  backend_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&AffiliationBackend::GetAllGroups,
-                     base::Unretained(backend_)),
-      std::move(callback));
+      base::BindOnce(&AffiliationBackend::UpdateAffiliationsAndBranding,
+                     base::Unretained(backend_), facet_uris,
+                     std::move(callback_in_main_sequence)));
 }
 
 void AffiliationServiceImpl::GetPSLExtensions(

@@ -52,6 +52,11 @@ HostContentSettingsMap* PageSpecificContentSettingsDelegate::GetSettingsMap() {
       web_contents_->GetBrowserContext());
 }
 
+std::unique_ptr<BrowsingDataModel::Delegate>
+PageSpecificContentSettingsDelegate::CreateBrowsingDataModelDelegate() {
+  return nullptr;
+}
+
 void PageSpecificContentSettingsDelegate::SetDefaultRendererContentSettingRules(
     content::RenderFrameHost* rfh,
     RendererContentSettingRules* rules) {}

@@ -37,6 +37,10 @@
           "no-unknown-tag-name": "error"
         }
       }
-    ]
+    ],
+    "typeRoots": [
+        "./../../third_party/node/node_modules/@types"
+    ],
+    "types": ["trusted-types"]
   }
 }

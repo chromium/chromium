@@ -156,6 +156,9 @@ class BrowserCommandController : public CommandUpdater,
   // app windows.
   void UpdateCommandsForHostedAppAvailability();
 
+  // Update commands that are used in the Extensions menu in the app menu.
+  void UpdateCommandsForExtensionsMenu();
+
 #if BUILDFLAG(IS_CHROMEOS)
   // Update commands whose state depends on whether the window is in locked
   // fullscreen mode or not.

@@ -16,8 +16,9 @@
 
 namespace blink {
 
-class SpeculationRuleLoader;
 class HTMLAnchorElement;
+class SpeculationCandidate;
+class SpeculationRuleLoader;
 
 // This corresponds to the document's list of speculation rule sets.
 //
@@ -58,6 +59,9 @@ class CORE_EXPORT DocumentSpeculationRules
   void LinkMatchedSelectorsUpdated(HTMLAnchorElement* link);
   void LinkGainedOrLostComputedStyle(HTMLAnchorElement* link);
   void DocumentStyleUpdated();
+  void ChildStyleRecalcBlocked(Element* root);
+  void DidStyleChildren(Element* root);
+  void DisplayLockedElementDisconnected(Element* root);
 
   const HeapVector<Member<StyleRule>>& selectors() { return selectors_; }
 
@@ -78,7 +82,7 @@ class CORE_EXPORT DocumentSpeculationRules
   // Appends all candidates populated from links in the document (based on
   // document rules in all the rule sets).
   void AddLinkBasedSpeculationCandidates(
-      Vector<mojom::blink::SpeculationCandidatePtr>& candidates);
+      HeapVector<Member<SpeculationCandidate>>& candidates);
 
   // Initializes |link_map_| with all links in the document by traversing
   // through the document in shadow-including tree order.
@@ -129,10 +133,15 @@ class CORE_EXPORT DocumentSpeculationRules
   // re-traverse the document to find all links when a new ruleset is
   // added/removed.
   HeapHashMap<Member<HTMLAnchorElement>,
-              Vector<mojom::blink::SpeculationCandidatePtr>>
+              Member<HeapVector<Member<SpeculationCandidate>>>>
       matched_links_;
   HeapHashSet<Member<HTMLAnchorElement>> unmatched_links_;
   HeapHashSet<Member<HTMLAnchorElement>> pending_links_;
+
+  // Links with ComputedStyle that wasn't updated after the most recent style
+  // update (due to having a display-locked ancestor).
+  HeapHashSet<Member<HTMLAnchorElement>> stale_links_;
+  HeapHashSet<Member<Element>> elements_blocking_child_style_recalc_;
 
   // Collects every CSS selector from every CSS selector document rule predicate
   // in this document's speculation rules.

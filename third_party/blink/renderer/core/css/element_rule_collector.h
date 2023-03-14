@@ -141,10 +141,13 @@ class CORE_EXPORT ElementRuleCollector {
   void SetPseudoElementStyleRequest(const StyleRequest& request) {
     pseudo_style_request_ = request;
   }
-  void SetSameOriginOnly(bool f) { same_origin_only_ = f; }
 
   void SetMatchingUARules(bool matching_ua_rules) {
     matching_ua_rules_ = matching_ua_rules;
+  }
+  // If true, :visited will never match. Has no effect otherwise.
+  void SetSuppressVisited(bool suppress_visited) {
+    suppress_visited_ = suppress_visited;
   }
 
   const MatchResult& MatchedResult() const;
@@ -275,8 +278,8 @@ class CORE_EXPORT ElementRuleCollector {
   StyleRequest pseudo_style_request_;
   SelectorChecker::Mode mode_;
   bool can_use_fast_reject_;
-  bool same_origin_only_;
   bool matching_ua_rules_;
+  bool suppress_visited_;
   EInsideLink inside_link_;
 
   HeapVector<MatchedRule, 32> matched_rules_;

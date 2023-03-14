@@ -121,25 +121,12 @@ bool DeviceCommandRunRoutineJob::ParseCommandPayload(
   return true;
 }
 
-void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
-                                         CallbackWithResult failed_callback) {
+void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult result_callback) {
   SYSLOG(INFO) << "Executing RunRoutine command with DiagnosticRoutineEnum "
                << routine_enum_;
   auto* diagnostics_service =
       ash::cros_healthd::ServiceConnection::GetInstance()
           ->GetDiagnosticsService();
-
-  // Call |invalid_parameters_callback| first when invalid routine parameters
-  // are found. |response_callback| should not be used in this case.
-  auto split_failed_callback =
-      base::SplitOnceCallback(std::move(failed_callback));
-  auto invalid_parameters_callback =
-      base::BindOnce(std::move(split_failed_callback.first),
-                     CreatePayload(MakeInvalidParametersResponse()));
-  auto response_callback = base::BindOnce(
-      &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
-      weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
-      std::move(split_failed_callback.second));
 
   switch (routine_enum_) {
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kUnknown: {
@@ -147,13 +134,15 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCapacity: {
-      diagnostics_service->RunBatteryCapacityRoutine(
-          std::move(response_callback));
+      diagnostics_service->RunBatteryCapacityRoutine(base::BindOnce(
+          &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+          weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryHealth: {
-      diagnostics_service->RunBatteryHealthRoutine(
-          std::move(response_callback));
+      diagnostics_service->RunBatteryHealthRoutine(base::BindOnce(
+          &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+          weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kUrandom: {
@@ -167,19 +156,26 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
         if (value < 0) {
           SYSLOG(ERROR) << "Invalid parameters for Urandom routine.";
           base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-              FROM_HERE, std::move(invalid_parameters_callback));
+              FROM_HERE,
+              base::BindOnce(std::move(result_callback), ResultType::kFailure,
+                             CreatePayload(MakeInvalidParametersResponse())));
           break;
         }
         routine_duration = ash::cros_healthd::mojom::NullableUint32::New(value);
       }
-      diagnostics_service->RunUrandomRoutine(std::move(routine_duration),
-                                             std::move(response_callback));
+      diagnostics_service->RunUrandomRoutine(
+          std::move(routine_duration),
+          base::BindOnce(
+              &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+              weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kSmartctlCheck: {
       diagnostics_service->RunSmartctlCheckRoutine(
           ash::cros_healthd::mojom::NullableUint32Ptr(),
-          std::move(response_callback));
+          base::BindOnce(
+              &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+              weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::
@@ -196,13 +192,18 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
         if (value < 0 || value > 255) {
           SYSLOG(ERROR) << "Invalid parameters for smartctl check routine.";
           base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-              FROM_HERE, std::move(invalid_parameters_callback));
+              FROM_HERE,
+              base::BindOnce(std::move(result_callback), ResultType::kFailure,
+                             CreatePayload(MakeInvalidParametersResponse())));
           break;
         }
         input_threshold = ash::cros_healthd::mojom::NullableUint32::New(value);
       }
       diagnostics_service->RunSmartctlCheckRoutine(
-          std::move(input_threshold), std::move(response_callback));
+          std::move(input_threshold),
+          base::BindOnce(
+              &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+              weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kAcPower: {
@@ -221,7 +222,9 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
                                         &expected_status_enum)) {
         SYSLOG(ERROR) << "Invalid parameters for AC Power routine.";
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, std::move(invalid_parameters_callback));
+            FROM_HERE,
+            base::BindOnce(std::move(result_callback), ResultType::kFailure,
+                           CreatePayload(MakeInvalidParametersResponse())));
         break;
       }
       diagnostics_service->RunAcPowerRoutine(
@@ -229,7 +232,9 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
           expected_power_type
               ? absl::optional<std::string>(*expected_power_type)
               : absl::nullopt,
-          std::move(response_callback));
+          base::BindOnce(
+              &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+              weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kCpuCache: {
@@ -243,13 +248,18 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
         if (value < 0) {
           SYSLOG(ERROR) << "Invalid parameters for CPU cache routine.";
           base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-              FROM_HERE, std::move(invalid_parameters_callback));
+              FROM_HERE,
+              base::BindOnce(std::move(result_callback), ResultType::kFailure,
+                             CreatePayload(MakeInvalidParametersResponse())));
           break;
         }
         routine_duration = ash::cros_healthd::mojom::NullableUint32::New(value);
       }
-      diagnostics_service->RunCpuCacheRoutine(std::move(routine_duration),
-                                              std::move(response_callback));
+      diagnostics_service->RunCpuCacheRoutine(
+          std::move(routine_duration),
+          base::BindOnce(
+              &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+              weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kCpuStress: {
@@ -263,13 +273,18 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
         if (value < 0) {
           SYSLOG(ERROR) << "Invalid parameters for CPU stress routine.";
           base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-              FROM_HERE, std::move(invalid_parameters_callback));
+              FROM_HERE,
+              base::BindOnce(std::move(result_callback), ResultType::kFailure,
+                             CreatePayload(MakeInvalidParametersResponse())));
           break;
         }
         routine_duration = ash::cros_healthd::mojom::NullableUint32::New(value);
       }
-      diagnostics_service->RunCpuStressRoutine(std::move(routine_duration),
-                                               std::move(response_callback));
+      diagnostics_service->RunCpuStressRoutine(
+          std::move(routine_duration),
+          base::BindOnce(
+              &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+              weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::
@@ -285,13 +300,18 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
           SYSLOG(ERROR)
               << "Invalid parameters for floating point accuracy routine.";
           base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-              FROM_HERE, std::move(invalid_parameters_callback));
+              FROM_HERE,
+              base::BindOnce(std::move(result_callback), ResultType::kFailure,
+                             CreatePayload(MakeInvalidParametersResponse())));
           break;
         }
         routine_duration = ash::cros_healthd::mojom::NullableUint32::New(value);
       }
       diagnostics_service->RunFloatingPointAccuracyRoutine(
-          std::move(routine_duration), std::move(response_callback));
+          std::move(routine_duration),
+          base::BindOnce(
+              &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+              weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeWearLevel: {
@@ -306,13 +326,18 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
         if (value < 0) {
           SYSLOG(ERROR) << "Invalid parameters for NVMe wear level routine.";
           base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-              FROM_HERE, std::move(invalid_parameters_callback));
+              FROM_HERE,
+              base::BindOnce(std::move(result_callback), ResultType::kFailure,
+                             CreatePayload(MakeInvalidParametersResponse())));
           break;
         }
         routine_duration = ash::cros_healthd::mojom::NullableUint32::New(value);
       }
       diagnostics_service->RunNvmeWearLevelRoutine(
-          std::move(routine_duration), std::move(response_callback));
+          std::move(routine_duration),
+          base::BindOnce(
+              &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+              weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeSelfTest: {
@@ -326,11 +351,16 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
                                         &nvme_self_test_type_enum)) {
         SYSLOG(ERROR) << "Invalid parameters for NVMe self-test routine.";
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, std::move(invalid_parameters_callback));
+            FROM_HERE,
+            base::BindOnce(std::move(result_callback), ResultType::kFailure,
+                           CreatePayload(MakeInvalidParametersResponse())));
         break;
       }
-      diagnostics_service->RunNvmeSelfTestRoutine(nvme_self_test_type_enum,
-                                                  std::move(response_callback));
+      diagnostics_service->RunNvmeSelfTestRoutine(
+          nvme_self_test_type_enum,
+          base::BindOnce(
+              &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+              weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kDiskRead: {
@@ -349,12 +379,16 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
           !PopulateMojoEnumValueIfValid(type.value(), &type_enum)) {
         SYSLOG(ERROR) << "Invalid parameters for disk read routine.";
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, std::move(invalid_parameters_callback));
+            FROM_HERE,
+            base::BindOnce(std::move(result_callback), ResultType::kFailure,
+                           CreatePayload(MakeInvalidParametersResponse())));
         break;
       }
-      diagnostics_service->RunDiskReadRoutine(type_enum, length_seconds.value(),
-                                              file_size_mb.value(),
-                                              std::move(response_callback));
+      diagnostics_service->RunDiskReadRoutine(
+          type_enum, length_seconds.value(), file_size_mb.value(),
+          base::BindOnce(
+              &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+              weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kPrimeSearch: {
@@ -368,13 +402,18 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
         if (value < 0) {
           SYSLOG(ERROR) << "Invalid parameters for prime search routine.";
           base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-              FROM_HERE, std::move(invalid_parameters_callback));
+              FROM_HERE,
+              base::BindOnce(std::move(result_callback), ResultType::kFailure,
+                             CreatePayload(MakeInvalidParametersResponse())));
           break;
         }
         routine_duration = ash::cros_healthd::mojom::NullableUint32::New(value);
       }
-      diagnostics_service->RunPrimeSearchRoutine(std::move(routine_duration),
-                                                 std::move(response_callback));
+      diagnostics_service->RunPrimeSearchRoutine(
+          std::move(routine_duration),
+          base::BindOnce(
+              &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+              weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryDischarge: {
@@ -392,12 +431,16 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
           maximum_discharge_percent_allowed.value() < 0) {
         SYSLOG(ERROR) << "Invalid parameters for BatteryDischarge routine.";
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, std::move(invalid_parameters_callback));
+            FROM_HERE,
+            base::BindOnce(std::move(result_callback), ResultType::kFailure,
+                           CreatePayload(MakeInvalidParametersResponse())));
         break;
       }
       diagnostics_service->RunBatteryDischargeRoutine(
           length_seconds.value(), maximum_discharge_percent_allowed.value(),
-          std::move(response_callback));
+          base::BindOnce(
+              &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+              weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCharge: {
@@ -415,69 +458,89 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
           minimum_charge_percent_required.value() < 0) {
         SYSLOG(ERROR) << "Invalid parameters for BatteryCharge routine.";
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, std::move(invalid_parameters_callback));
+            FROM_HERE,
+            base::BindOnce(std::move(result_callback), ResultType::kFailure,
+                           CreatePayload(MakeInvalidParametersResponse())));
         break;
       }
       diagnostics_service->RunBatteryChargeRoutine(
           length_seconds.value(), minimum_charge_percent_required.value(),
-          std::move(response_callback));
+          base::BindOnce(
+              &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+              weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kMemory: {
-      diagnostics_service->RunMemoryRoutine(std::move(response_callback));
+      diagnostics_service->RunMemoryRoutine(base::BindOnce(
+          &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+          weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kLanConnectivity: {
-      diagnostics_service->RunLanConnectivityRoutine(
-          std::move(response_callback));
+      diagnostics_service->RunLanConnectivityRoutine(base::BindOnce(
+          &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+          weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kSignalStrength: {
-      diagnostics_service->RunSignalStrengthRoutine(
-          std::move(response_callback));
+      diagnostics_service->RunSignalStrengthRoutine(base::BindOnce(
+          &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+          weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kGatewayCanBePinged: {
-      diagnostics_service->RunGatewayCanBePingedRoutine(
-          std::move(response_callback));
+      diagnostics_service->RunGatewayCanBePingedRoutine(base::BindOnce(
+          &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+          weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::
         kHasSecureWiFiConnection: {
-      diagnostics_service->RunHasSecureWiFiConnectionRoutine(
-          std::move(response_callback));
+      diagnostics_service->RunHasSecureWiFiConnectionRoutine(base::BindOnce(
+          &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+          weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kDnsResolverPresent: {
-      diagnostics_service->RunDnsResolverPresentRoutine(
-          std::move(response_callback));
+      diagnostics_service->RunDnsResolverPresentRoutine(base::BindOnce(
+          &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+          weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kDnsLatency: {
-      diagnostics_service->RunDnsLatencyRoutine(std::move(response_callback));
+      diagnostics_service->RunDnsLatencyRoutine(base::BindOnce(
+          &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+          weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kDnsResolution: {
-      diagnostics_service->RunDnsResolutionRoutine(
-          std::move(response_callback));
+      diagnostics_service->RunDnsResolutionRoutine(base::BindOnce(
+          &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+          weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kCaptivePortal: {
-      diagnostics_service->RunCaptivePortalRoutine(
-          std::move(response_callback));
+      diagnostics_service->RunCaptivePortalRoutine(base::BindOnce(
+          &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+          weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kHttpFirewall: {
-      diagnostics_service->RunHttpFirewallRoutine(std::move(response_callback));
+      diagnostics_service->RunHttpFirewallRoutine(base::BindOnce(
+          &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+          weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kHttpsFirewall: {
-      diagnostics_service->RunHttpsFirewallRoutine(
-          std::move(response_callback));
+      diagnostics_service->RunHttpsFirewallRoutine(base::BindOnce(
+          &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+          weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kHttpsLatency: {
-      diagnostics_service->RunHttpsLatencyRoutine(std::move(response_callback));
+      diagnostics_service->RunHttpsLatencyRoutine(base::BindOnce(
+          &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+          weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kVideoConferencing: {
@@ -487,34 +550,45 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
           stun_server_hostname
               ? absl::make_optional<std::string>(*stun_server_hostname)
               : absl::nullopt,
-          std::move(response_callback));
+          base::BindOnce(
+              &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+              weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kArcHttp: {
-      diagnostics_service->RunArcHttpRoutine(std::move(response_callback));
+      diagnostics_service->RunArcHttpRoutine(base::BindOnce(
+          &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+          weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kArcPing: {
-      diagnostics_service->RunArcPingRoutine(std::move(response_callback));
+      diagnostics_service->RunArcPingRoutine(base::BindOnce(
+          &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+          weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kArcDnsResolution: {
-      diagnostics_service->RunArcDnsResolutionRoutine(
-          std::move(response_callback));
+      diagnostics_service->RunArcDnsResolutionRoutine(base::BindOnce(
+          &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+          weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kSensitiveSensor: {
-      diagnostics_service->RunSensitiveSensorRoutine(
-          std::move(response_callback));
+      diagnostics_service->RunSensitiveSensorRoutine(base::BindOnce(
+          &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+          weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kFingerprint: {
-      diagnostics_service->RunFingerprintRoutine(std::move(response_callback));
+      diagnostics_service->RunFingerprintRoutine(base::BindOnce(
+          &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+          weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kFingerprintAlive: {
-      diagnostics_service->RunFingerprintAliveRoutine(
-          std::move(response_callback));
+      diagnostics_service->RunFingerprintAliveRoutine(base::BindOnce(
+          &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+          weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kPrivacyScreen: {
@@ -522,7 +596,10 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
       absl::optional<bool> target_state =
           params_dict_.FindBool(kPrivacyScreenTargetState);
       diagnostics_service->RunPrivacyScreenRoutine(
-          target_state.value_or(true), std::move(response_callback));
+          target_state.value_or(true),
+          base::BindOnce(
+              &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+              weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kLedLitUp: {
@@ -530,7 +607,9 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kEmmcLifetime: {
-      diagnostics_service->RunEmmcLifetimeRoutine(std::move(response_callback));
+      diagnostics_service->RunEmmcLifetimeRoutine(base::BindOnce(
+          &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+          weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kAudioSetVolume: {
@@ -561,19 +640,20 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
 }
 
 void DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived(
-    CallbackWithResult succeeded_callback,
-    CallbackWithResult failed_callback,
+    CallbackWithResult result_callback,
     ash::cros_healthd::mojom::RunRoutineResponsePtr response) {
   if (!response) {
     SYSLOG(ERROR) << "No RunRoutineResponse received from cros_healthd.";
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(failed_callback), absl::nullopt));
+        FROM_HERE, base::BindOnce(std::move(result_callback),
+                                  ResultType::kFailure, absl::nullopt));
     return;
   }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(succeeded_callback),
-                                CreatePayload(std::move(response))));
+      FROM_HERE,
+      base::BindOnce(std::move(result_callback), ResultType::kSuccess,
+                     CreatePayload(std::move(response))));
 }
 
 }  // namespace policy

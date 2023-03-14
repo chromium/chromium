@@ -28,10 +28,10 @@ enum class PolicyPerProfileFilter {
   kAny
 };
 
-// Decode all the fields in |policy| that match the needed |per_profile| flag
+// Decode all the fields in `policy` that match the needed `per_profile` flag
 // which are recognized (see the metadata in policy_constants.cc) and store them
-// in the given |map|, with the given |source| and |scope|. The value of
-// |per_profile| parameter specifies which fields have to be included based on
+// in the given `map`, with the given `source` and `scope`. The value of
+// `per_profile` parameter specifies which fields have to be included based on
 // per_profile flag.
 POLICY_EXPORT void DecodeProtoFields(
     const enterprise_management::CloudPolicySettings& policy,
@@ -41,11 +41,11 @@ POLICY_EXPORT void DecodeProtoFields(
     PolicyMap* map,
     PolicyPerProfileFilter per_profile);
 
-// Parses the JSON policy in |data| into |policy|, and returns true if the
-// parse was successful. The |scope| and |source| are set as scope and source of
-// the policy in the result. In case of failure, the |error| is populated with
+// Parses the JSON policy in `json_dict` into `policy`, and returns true if the
+// parse was successful. The `scope` and `source` are set as scope and source of
+// the policy in the result. In case of failure, the `error` is populated with
 // error message and false is returned.
-POLICY_EXPORT bool ParseComponentPolicy(base::Value json,
+POLICY_EXPORT bool ParseComponentPolicy(base::Value::Dict json_dict,
                                         PolicyScope scope,
                                         PolicySource source,
                                         PolicyMap* policy,

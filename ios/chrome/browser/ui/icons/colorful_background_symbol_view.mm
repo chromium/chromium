@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/icons/colorful_background_symbol_view.h"
 
 #import "ios/chrome/browser/ui/icons/symbols.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -27,10 +28,11 @@ const CGFloat kSymbolSize = 18;
     _symbolView = [[UIImageView alloc] init];
     _symbolView.translatesAutoresizingMaskIntoConstraints = NO;
     _symbolView.contentMode = UIViewContentModeCenter;
-    _symbolView.tintColor = UIColor.whiteColor;
     [self addSubview:_symbolView];
 
     self.layer.cornerRadius = kColorfulBackgroundSymbolCornerRadius;
+
+    [self resetView];
 
     AddSameConstraints(self, _symbolView);
   }
@@ -66,8 +68,24 @@ const CGFloat kSymbolSize = 18;
   _symbolView.image = symbol;
 }
 
+- (UIColor*)symbolTintColor {
+  return _symbolView.tintColor;
+}
+
 - (void)setSymbolTintColor:(UIColor*)color {
+  if (!color) {
+    color = [UIColor colorNamed:kSolidWhiteColor];
+  }
   _symbolView.tintColor = color;
+}
+
+#pragma mark - Public
+
+- (void)resetView {
+  self.symbolTintColor = nil;
+  _symbolView.image = nil;
+  self.borderColor = nil;
+  self.backgroundColor = nil;
 }
 
 #pragma mark - UIView

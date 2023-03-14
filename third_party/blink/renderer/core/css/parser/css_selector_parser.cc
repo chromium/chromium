@@ -96,11 +96,12 @@ void MarkAsEntireComplexSelector(base::span<CSSSelector> selectors) {
 base::span<CSSSelector> CSSSelectorParser::ParseSelector(
     CSSParserTokenRange range,
     const CSSParserContext* context,
+    CSSNestingType nesting_type,
     const StyleRule* parent_rule_for_nesting,
     StyleSheetContents* style_sheet,
     HeapVector<CSSSelector>& arena) {
-  CSSSelectorParser parser(context, parent_rule_for_nesting, style_sheet,
-                           arena);
+  CSSSelectorParser parser(context, nesting_type, parent_rule_for_nesting,
+                           style_sheet, arena);
   range.ConsumeWhitespace();
   base::span<CSSSelector> result = parser.ConsumeComplexSelectorList(
       range, /*in_nested_style_rule=*/parent_rule_for_nesting != nullptr);
@@ -116,12 +117,13 @@ base::span<CSSSelector> CSSSelectorParser::ParseSelector(
 base::span<CSSSelector> CSSSelectorParser::ConsumeSelector(
     CSSParserTokenStream& stream,
     const CSSParserContext* context,
+    CSSNestingType nesting_type,
     const StyleRule* parent_rule_for_nesting,
     StyleSheetContents* style_sheet,
     CSSParserObserver* observer,
     HeapVector<CSSSelector>& arena) {
-  CSSSelectorParser parser(context, parent_rule_for_nesting, style_sheet,
-                           arena);
+  CSSSelectorParser parser(context, nesting_type, parent_rule_for_nesting,
+                           style_sheet, arena);
   stream.ConsumeWhitespace();
   base::span<CSSSelector> result = parser.ConsumeComplexSelectorList(
       stream, observer,
@@ -131,25 +133,24 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeSelector(
 }
 
 // static
-CSSSelectorList* CSSSelectorParser::ParseScopeBoundary(
+absl::optional<base::span<CSSSelector>> CSSSelectorParser::ParseScopeBoundary(
     CSSParserTokenRange range,
     const CSSParserContext* context,
-    StyleSheetContents* style_sheet) {
-  HeapVector<CSSSelector> arena;
-  CSSSelectorParser parser(context, /*parent_rule_for_nesting=*/nullptr,
-                           style_sheet, arena);
+    StyleSheetContents* style_sheet,
+    HeapVector<CSSSelector>& arena) {
+  CSSSelectorParser parser(context, CSSNestingType::kNone,
+                           /*parent_rule_for_nesting=*/nullptr, style_sheet,
+                           arena);
   DisallowPseudoElementsScope disallow_pseudo_elements(&parser);
 
   range.ConsumeWhitespace();
-  CSSSelectorList* result = parser.ConsumeForgivingComplexSelectorList(range);
-  DCHECK(result);
+  absl::optional<base::span<CSSSelector>> result =
+      parser.ConsumeForgivingComplexSelectorList(range);
+  DCHECK(result.has_value());
   if (!range.AtEnd()) {
-    return nullptr;
+    return absl::nullopt;
   }
-  for (const CSSSelector* current = result->First(); current;
-       current = current->TagHistory()) {
-    RecordUsageAndDeprecationsOneSelector(current, context);
-  }
+  parser.RecordUsageAndDeprecations(result.value());
   return result;
 }
 
@@ -159,8 +160,8 @@ bool CSSSelectorParser::SupportsComplexSelector(
     const CSSParserContext* context) {
   range.ConsumeWhitespace();
   HeapVector<CSSSelector> arena;
-  CSSSelectorParser parser(context, /*parent_rule_for_nesting=*/nullptr,
-                           nullptr, arena);
+  CSSSelectorParser parser(context, CSSNestingType::kNone,
+                           /*parent_rule_for_nesting=*/nullptr, nullptr, arena);
   parser.SetInSupportsParsing();
   base::span<CSSSelector> selectors =
       parser.ConsumeComplexSelector(range, /*in_nested_style_rule=*/false,
@@ -175,13 +176,17 @@ bool CSSSelectorParser::SupportsComplexSelector(
 }
 
 CSSSelectorParser::CSSSelectorParser(const CSSParserContext* context,
+                                     CSSNestingType nesting_type,
                                      const StyleRule* parent_rule_for_nesting,
                                      StyleSheetContents* style_sheet,
                                      HeapVector<CSSSelector>& output)
     : context_(context),
+      nesting_type_(nesting_type),
       parent_rule_for_nesting_(parent_rule_for_nesting),
       style_sheet_(style_sheet),
-      output_(output) {}
+      output_(output) {
+  DCHECK(nesting_type_ == CSSNestingType::kNone || parent_rule_for_nesting);
+}
 
 base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelectorList(
     CSSParserTokenRange& range,
@@ -379,23 +384,30 @@ CSSSelectorList* CSSSelectorParser::ConsumeForgivingNestedSelectorList(
   if (inside_compound_pseudo_) {
     return ConsumeForgivingCompoundSelectorList(range);
   }
-  return ConsumeForgivingComplexSelectorList(range);
+  ResetVectorAfterScope reset_vector(output_);
+  absl::optional<base::span<CSSSelector>> forgiving_list =
+      ConsumeForgivingComplexSelectorList(range);
+  if (!forgiving_list.has_value()) {
+    return nullptr;
+  }
+  return CSSSelectorList::AdoptSelectorVector(forgiving_list.value());
 }
 
-CSSSelectorList* CSSSelectorParser::ConsumeForgivingComplexSelectorList(
+absl::optional<base::span<CSSSelector>>
+CSSSelectorParser::ConsumeForgivingComplexSelectorList(
     CSSParserTokenRange& range) {
-  ResetVectorAfterScope reset_vector(output_);
-
   if (RuntimeEnabledFeatures::CSSAtSupportsAlwaysNonForgivingParsingEnabled() &&
       in_supports_parsing_) {
     base::span<CSSSelector> selectors =
         ConsumeComplexSelectorList(range, /*in_nested_style_rule=*/false);
     if (selectors.empty()) {
-      return nullptr;
+      return absl::nullopt;
     } else {
-      return CSSSelectorList::AdoptSelectorVector(selectors);
+      return selectors;
     }
   }
+
+  ResetVectorAfterScope reset_vector(output_);
 
   CSSAtSupportsDropInvalidWhileForgivingParsingCounter
       at_supports_drop_invalid_counter(context_);
@@ -418,7 +430,7 @@ CSSSelectorList* CSSSelectorParser::ConsumeForgivingComplexSelectorList(
       }
       output_.resize(subpos);  // Drop what we parsed so far.
       valid_and_invalid_counter.CountInvalid();
-      AddPlaceholderParentSelectorIfNeeded(argument);
+      AddPlaceholderSelectorIfNeeded(argument);
     } else {
       valid_and_invalid_counter.CountValid();
     }
@@ -434,30 +446,46 @@ CSSSelectorList* CSSSelectorParser::ConsumeForgivingComplexSelectorList(
     if (in_supports_parsing_) {
       at_supports_drop_invalid_counter.Count();
     }
-    return CSSSelectorList::Empty();
+    return base::span<CSSSelector>();
   }
 
-  return CSSSelectorList::AdoptSelectorVector(reset_vector.AddedElements());
+  return reset_vector.CommitAddedElements();
 }
 
-// If the argument was unparsable but contained a & token,
-// we need to keep it so that we still consider the :is()
-// as nest-containing; furthermore, we need to keep it
-// on serialization so that round-tripping does not risk
-// making the :is() no longer nest-containing. We have similar
-// weaknesses here as in CSS custom properties, such as not
-// preserving comments fully.
-void CSSSelectorParser::AddPlaceholderParentSelectorIfNeeded(
+// If the argument was unparsable but contained a parent-referencing selector
+// (& or :scope), we need to keep it so that we still consider the :is()
+// as containing that selector; furthermore, we need to keep it on serialization
+// so that a round-trip doesn't lose this information.
+// We have similar weaknesses here as in CSS custom properties,
+// such as not preserving comments fully.
+void CSSSelectorParser::AddPlaceholderSelectorIfNeeded(
     const CSSParserTokenRange& argument) {
-  const bool contains_nest_token = std::any_of(
-      argument.begin(), argument.end(), [](const CSSParserToken& token) {
-        return token.GetType() == kDelimiterToken && token.Delimiter() == '&';
-      });
-  if (contains_nest_token) {
+  CSSNestingType nesting_type = CSSNestingType::kNone;
+
+  const CSSParserToken* previous_token = nullptr;
+
+  for (const CSSParserToken& token : argument) {
+    if (token.GetType() == kDelimiterToken && token.Delimiter() == '&') {
+      nesting_type = CSSNestingType::kNesting;
+      // Note that a nest-containing selector is also scope-containing, so
+      // no need to look for :scope if '&' has been found.
+      break;
+    }
+    if (previous_token && previous_token->GetType() == kColonToken &&
+        token.GetType() == kIdentToken &&
+        EqualIgnoringASCIICase(token.Value(), "scope")) {
+      DCHECK_EQ(nesting_type, CSSNestingType::kNone);
+      nesting_type = CSSNestingType::kScope;
+    }
+
+    previous_token = &token;
+  }
+
+  if (nesting_type != CSSNestingType::kNone) {
     CSSSelector placeholder_selector;
     placeholder_selector.SetMatch(CSSSelector::kPseudoClass);
     placeholder_selector.SetUnparsedPlaceholder(
-        AtomicString(argument.Serialize()));
+        nesting_type, AtomicString(argument.Serialize()));
     placeholder_selector.SetLastInTagHistory(true);
     output_.push_back(placeholder_selector);
   }
@@ -666,15 +694,85 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeRelativeSelector(
   return reset_vector.CommitAddedElements();
 }
 
+// This acts like CSSSelector::GetNestingType, except across a whole
+// selector list.
+//
+// A return value of CSSNestingType::kNesting means that the list
+// "contains the nesting selector".
+// https://drafts.csswg.org/css-nesting-1/#contain-the-nesting-selector
+//
+// A return value of CSSNestingType::kScope means that the list
+// contains the :scope selector.
+static CSSNestingType GetNestingTypeForSelectorList(
+    const CSSSelector* selector) {
+  if (selector == nullptr) {
+    return CSSNestingType::kNone;
+  }
+  CSSNestingType nesting_type = CSSNestingType::kNone;
+  for (;;) {  // Termination condition within loop.
+    nesting_type = std::max(nesting_type, selector->GetNestingType());
+    if (selector->SelectorList() != nullptr) {
+      nesting_type = std::max(
+          nesting_type,
+          GetNestingTypeForSelectorList(selector->SelectorList()->First()));
+    }
+    if (selector->IsLastInSelectorList() ||
+        nesting_type == CSSNestingType::kNesting) {
+      break;
+    }
+    ++selector;
+  }
+  return nesting_type;
+}
+
+// https://drafts.csswg.org/selectors/#relative-selector-anchor-elements
+static CSSSelector CreateImplicitAnchor(
+    CSSNestingType nesting_type,
+    const StyleRule* parent_rule_for_nesting) {
+  if (nesting_type == CSSNestingType::kNesting) {
+    return CSSSelector(parent_rule_for_nesting, /*is_implicit=*/true);
+  }
+  DCHECK_EQ(nesting_type, CSSNestingType::kScope);
+  return CSSSelector("scope", /*is_implicit=*/true);
+}
+
+static absl::optional<CSSSelector> MaybeCreateImplicitDescendantAnchor(
+    CSSNestingType nesting_type,
+    const StyleRule* parent_rule_for_nesting,
+    const CSSSelector* selector) {
+  switch (nesting_type) {
+    case CSSNestingType::kNone:
+      break;
+    case CSSNestingType::kScope:
+    case CSSNestingType::kNesting:
+      static_assert(CSSNestingType::kNone < CSSNestingType::kScope);
+      static_assert(CSSNestingType::kScope < CSSNestingType::kNesting);
+      // For kNesting, we should only produce an implied descendant combinator
+      // if the selector list is not nest-containing.
+      //
+      // For kScope, we should should only produce an implied descendant
+      // combinator if the selector list is not :scope-containing. Note however
+      // that selectors which are nest-containing are also treated as
+      // :scope-containing.
+      if (GetNestingTypeForSelectorList(selector) < nesting_type) {
+        return CreateImplicitAnchor(nesting_type, parent_rule_for_nesting);
+      }
+      break;
+  }
+  return absl::nullopt;
+}
+
 // A nested rule that starts with a combinator; very similar to
 // ConsumeRelativeSelector() (but we don't use the kRelative* relations,
-// as they have different matching semantics). There's an implicit & in front;
-// e.g., “> .a” is parsed as “& > .a”.
+// as they have different matching semantics). There's an implicit anchor
+// compound in front, which for CSSNestingType::kNesting is the nesting
+// selector (&) and for CSSNestingType::kScope is the :scope pseudo class.
+// E.g. given CSSNestingType::kNesting, “> .a” is parsed as “& > .a” ().
 base::span<CSSSelector> CSSSelectorParser::ConsumeNestedRelativeSelector(
     CSSParserTokenRange& range) {
   ResetVectorAfterScope reset_vector(output_);
   output_.push_back(
-      CSSSelector(parent_rule_for_nesting_, /*is_implicit=*/true));
+      CreateImplicitAnchor(nesting_type_, parent_rule_for_nesting_));
   CSSSelector::RelationType combinator = ConsumeCombinator(range);
   unsigned previous_compound_flags = 0;
   if (!ConsumePartialComplexSelector(range, combinator,
@@ -687,27 +785,6 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeNestedRelativeSelector(
 
   MarkAsEntireComplexSelector(reset_vector.AddedElements());
   return reset_vector.CommitAddedElements();
-}
-
-static bool SelectorListIsNestContaining(const CSSSelector* selector) {
-  if (selector == nullptr) {
-    return false;
-  }
-  for (;;) {  // Termination condition within loop.
-    if (selector->Match() == CSSSelector::kPseudoClass &&
-        (selector->GetPseudoType() == CSSSelector::kPseudoParent ||
-         selector->GetPseudoType() == CSSSelector::kPseudoParentUnparsed)) {
-      return true;
-    }
-    if (selector->SelectorList() != nullptr &&
-        SelectorListIsNestContaining(selector->SelectorList()->First())) {
-      return true;
-    }
-    if (selector->IsLastInSelectorList()) {
-      return false;
-    }
-    ++selector;
-  }
 }
 
 base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelector(
@@ -788,13 +865,15 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelector(
     // a descendant combinator.
     //
     // We need to temporarily mark the end of the selector list, for the benefit
-    // of SelectorListIsNestContaining().
+    // of GetNestingTypeForSelectorList().
     wtf_size_t last_index = output_.size() - 1;
     output_[last_index].SetLastInSelectorList(true);
-    if (!SelectorListIsNestContaining(reset_vector.AddedElements().data())) {
+    if (absl::optional<CSSSelector> anchor =
+            MaybeCreateImplicitDescendantAnchor(
+                nesting_type_, parent_rule_for_nesting_,
+                reset_vector.AddedElements().data())) {
       output_.back().SetRelation(CSSSelector::kDescendant);
-      output_.push_back(
-          CSSSelector(parent_rule_for_nesting_, /*is_implicit=*/true));
+      output_.push_back(anchor.value());
     }
     output_[last_index].SetLastInSelectorList(false);
   }

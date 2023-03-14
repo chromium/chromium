@@ -168,8 +168,8 @@ PlatformKeysInternalSelectClientCertificatesFunction::Run() {
     return RespondNow(Error(kUnsupportedProfile));
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  std::unique_ptr<api_pki::SelectClientCertificates::Params> params(
-      api_pki::SelectClientCertificates::Params::Create(args()));
+  absl::optional<api_pki::SelectClientCertificates::Params> params =
+      api_pki::SelectClientCertificates::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   chromeos::platform_keys::ClientCertificateRequest request;
@@ -293,8 +293,8 @@ PlatformKeysInternalGetPublicKeyFunction::
 
 ExtensionFunction::ResponseAction
 PlatformKeysInternalGetPublicKeyFunction::Run() {
-  std::unique_ptr<api_pki::GetPublicKey::Params> params(
-      api_pki::GetPublicKey::Params::Create(args()));
+  absl::optional<api_pki::GetPublicKey::Params> params =
+      api_pki::GetPublicKey::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   std::string error = ValidateCrosapi(KeystoreService::kGetPublicKeyMinVersion,
@@ -352,8 +352,8 @@ PlatformKeysInternalGetPublicKeyBySpkiFunction::Run() {
     return RespondNow(Error(kUnsupportedProfile));
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  std::unique_ptr<api_pki::GetPublicKeyBySpki::Params> params(
-      api_pki::GetPublicKeyBySpki::Params::Create(args()));
+  absl::optional<api_pki::GetPublicKeyBySpki::Params> params =
+      api_pki::GetPublicKeyBySpki::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const auto& public_key_spki_der = params->public_key_spki_der;
@@ -399,8 +399,8 @@ ExtensionFunction::ResponseAction PlatformKeysInternalSignFunction::Run() {
     return RespondNow(Error(kUnsupportedProfile));
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  std::unique_ptr<api_pki::Sign::Params> params(
-      api_pki::Sign::Params::Create(args()));
+  absl::optional<api_pki::Sign::Params> params =
+      api_pki::Sign::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   absl::optional<chromeos::platform_keys::TokenId> platform_keys_token_id;
@@ -486,9 +486,9 @@ ExtensionFunction::ResponseAction
 PlatformKeysVerifyTLSServerCertificateFunction::Run() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  std::unique_ptr<api_pk::VerifyTLSServerCertificate::Params> params(
-      api_pk::VerifyTLSServerCertificate::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<api_pk::VerifyTLSServerCertificate::Params> params =
+      api_pk::VerifyTLSServerCertificate::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   VerifyTrustAPI::GetFactoryInstance()
       ->Get(browser_context())

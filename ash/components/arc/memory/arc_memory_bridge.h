@@ -37,6 +37,10 @@ class ArcMemoryBridge : public KeyedService {
   using DropCachesCallback = base::OnceCallback<void(bool)>;
   void DropCaches(DropCachesCallback callback);
 
+  // Reclaims pages from all guest processes.
+  using ReclaimCallback = base::OnceCallback<void(mojom::ReclaimResultPtr)>;
+  void Reclaim(mojom::ReclaimRequestPtr, ReclaimCallback);
+
  private:
   THREAD_CHECKER(thread_checker_);
 

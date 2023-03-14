@@ -7,8 +7,8 @@
 #include <windows.h>
 
 #include "base/win/windows_version.h"
+#include "chrome/browser/ui/views/apps/app_window_frame_view_win.h"
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views_win.h"
-#include "chrome/browser/ui/views/apps/glass_app_window_frame_view_win.h"
 #include "ui/base/theme_provider.h"
 #include "ui/display/win/dpi.h"
 #include "ui/gfx/geometry/dip_util.h"
@@ -32,28 +32,29 @@ bool AppWindowDesktopWindowTreeHostWin::GetClientAreaInsets(
   // The inset added below is only necessary for the native glass frame, i.e.
   // not for colored frames drawn by Chrome, or when DWM is disabled.
   // In fullscreen the frame is not visible.
-  if (!app_window_->glass_frame_view() || IsFullscreen()) {
+  if (!app_window_->frame_view() || IsFullscreen()) {
     return false;
   }
 
-  *insets = app_window_->glass_frame_view()->GetClientAreaInsets(monitor);
+  *insets = app_window_->frame_view()->GetClientAreaInsets(monitor);
 
   return true;
 }
 
 bool AppWindowDesktopWindowTreeHostWin::GetDwmFrameInsetsInPixels(
     gfx::Insets* insets) const {
-  // If there's no glass view we never need to change DWM frame insets.
-  if (!GetWidget()->client_view() || !app_window_->glass_frame_view() ||
-      !DesktopWindowTreeHostWin::ShouldUseNativeFrame())
+  // If there's no frame view we never need to change DWM frame insets.
+  if (!GetWidget()->client_view() || !app_window_->frame_view() ||
+      !DesktopWindowTreeHostWin::ShouldUseNativeFrame()) {
     return false;
+  }
 
   if (GetWidget()->IsFullscreen()) {
     *insets = gfx::Insets();
   } else {
     // If the opaque frame is visible, we use the default (zero) margins.
     // Otherwise, we need to figure out how to extend the glass in.
-    *insets = app_window_->glass_frame_view()->GetGlassInsets();
+    *insets = app_window_->frame_view()->GetInsets();
     // The DWM API's expect values in pixels. We need to convert from DIP to
     // pixels here.
     *insets = gfx::ToFlooredInsets(

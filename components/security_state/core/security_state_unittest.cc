@@ -474,6 +474,7 @@ TEST(SecurityStateTest, HttpsOnlyModeOverridesCertificateError) {
   helper.set_cert_status(net::CERT_STATUS_SHA1_SIGNATURE_PRESENT |
                          net::CERT_STATUS_UNABLE_TO_CHECK_REVOCATION);
   EXPECT_TRUE(helper.HasMajorCertificateError());
+  helper.set_is_error_page(true);
   helper.set_is_https_only_mode_upgraded(true);
   EXPECT_EQ(SecurityLevel::WARNING, helper.GetSecurityLevel());
 }
@@ -483,6 +484,7 @@ TEST(SecurityStateTest, MaliciousContentOverridesHttpsOnlyMode) {
   TestSecurityStateHelper helper;
   helper.set_malicious_content_status(
       MALICIOUS_CONTENT_STATUS_SOCIAL_ENGINEERING);
+  helper.set_is_error_page(true);
   helper.set_is_https_only_mode_upgraded(true);
   EXPECT_EQ(DANGEROUS, helper.GetSecurityLevel());
 }

@@ -151,12 +151,14 @@ void HistoryCounter::OnGetWebHistoryCount(
   // If the query failed, err on the safe side and inform the user that they
   // may have history items stored in Sync. Otherwise, we expect at least one
   // entry in the "event" list.
-  if (!result)
+  if (!result) {
     has_synced_visits_ = true;
-  else if (const base::Value* events = result->FindListKey("event"))
-    has_synced_visits_ = !events->GetList().empty();
-  else
+  } else if (const base::Value::List* events =
+                 result->GetDict().FindList("event")) {
+    has_synced_visits_ = !events->empty();
+  } else {
     has_synced_visits_ = false;
+  }
   web_counting_finished_ = true;
   MergeResults();
 }

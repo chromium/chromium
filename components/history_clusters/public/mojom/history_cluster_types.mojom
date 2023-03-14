@@ -85,9 +85,6 @@ struct URLVisit {
   // Annotations for this visit.
   array<Annotation> annotations;
 
-  // The image URL associated with this visit.
-  url.mojom.Url? image_url;
-
   // Set to true for visits known to Chrome Sync, which can be:
   //  1. Remote visits that have been synced to the local machine.
   //  2. Local visits that have been sent to Sync.
@@ -97,6 +94,9 @@ struct URLVisit {
   // visible in production, and used for development only. Disabled by default,
   // but can be enabled by the 'JourneysUserVisibleDebug' flag.
   map<string, string> debug_info;
+
+  // Whether there is a URL-keyed image for this visit.
+  bool has_url_keyed_image;
 };
 
 // Represents a cluster of visits generated from device history by the browser

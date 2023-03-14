@@ -7,6 +7,7 @@
 #include <random>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
@@ -124,33 +125,50 @@ StartupCalculateDecision GetStartupCalculationDecision(
       .next_calculation_delay = presumed_next_calculation_delay};
 }
 
-void RecordBrowsingTopicsApiResultUkmMetrics(
-    ApiAccessFailureReason failure_reason,
-    content::RenderFrameHost* main_frame,
-    bool is_get_topics_request) {
+void RecordBrowsingTopicsApiResultMetrics(ApiAccessResult result,
+                                          content::RenderFrameHost* main_frame,
+                                          bool is_get_topics_request) {
   // The `BrowsingTopics_DocumentBrowsingTopicsApiResult2` event is only
   // recorded for request that gets the topics.
-  if (!is_get_topics_request)
+  if (!is_get_topics_request) {
     return;
+  }
+
+  base::UmaHistogramEnumeration("BrowsingTopics.Result.Status", result);
+
+  if (result == browsing_topics::ApiAccessResult::kSuccess) {
+    return;
+  }
 
   ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
   ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult2 builder(
       main_frame->GetPageUkmSourceId());
-  builder.SetFailureReason(static_cast<int64_t>(failure_reason));
+  builder.SetFailureReason(static_cast<int64_t>(result));
+
   builder.Record(ukm_recorder->Get());
 }
 
-void RecordBrowsingTopicsApiResultUkmMetrics(
+void RecordBrowsingTopicsApiResultMetrics(
     const std::vector<CandidateTopic>& valid_candidate_topics,
     content::RenderFrameHost* main_frame) {
   ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
   ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult2 builder(
       main_frame->GetPageUkmSourceId());
 
+  int real_count = 0;
+  int fake_count = 0;
+  int filtered_count = 0;
+
   for (size_t i = 0; i < 3u && valid_candidate_topics.size() > i; ++i) {
     const CandidateTopic& candidate_topic = valid_candidate_topics[i];
 
     DCHECK(candidate_topic.IsValid());
+
+    if (candidate_topic.should_be_filtered()) {
+      filtered_count += 1;
+    } else {
+      candidate_topic.is_true_topic() ? real_count += 1 : fake_count += 1;
+    }
 
     if (i == 0) {
       builder.SetCandidateTopic0(candidate_topic.topic().value())
@@ -176,6 +194,17 @@ void RecordBrowsingTopicsApiResultUkmMetrics(
           .SetCandidateTopic2ModelVersion(candidate_topic.model_version());
     }
   }
+
+  const int kBuckets = 10;
+  DCHECK_GE(kBuckets,
+            blink::features::kBrowsingTopicsNumberOfEpochsToExpose.Get());
+
+  base::UmaHistogramExactLinear("BrowsingTopics.Result.RealTopicCount",
+                                real_count, kBuckets);
+  base::UmaHistogramExactLinear("BrowsingTopics.Result.FakeTopicCount",
+                                fake_count, kBuckets);
+  base::UmaHistogramExactLinear("BrowsingTopics.Result.FilteredTopicCount",
+                                filtered_count, kBuckets);
 
   builder.Record(ukm_recorder->Get());
 }
@@ -287,26 +316,27 @@ bool BrowsingTopicsServiceImpl::HandleTopicsWebApi(
   RecordBrowsingTopicsApiActionTypeMetrics(caller_source, get_topics, observe);
 
   if (!browsing_topics_state_loaded_) {
-    RecordBrowsingTopicsApiResultUkmMetrics(
-        ApiAccessFailureReason::kStateNotReady, main_frame, get_topics);
+    RecordBrowsingTopicsApiResultMetrics(ApiAccessResult::kStateNotReady,
+                                         main_frame, get_topics);
     return false;
   }
 
   if (!privacy_sandbox_settings_->IsTopicsAllowed()) {
-    RecordBrowsingTopicsApiResultUkmMetrics(
-        ApiAccessFailureReason::kAccessDisallowedBySettings, main_frame,
-        get_topics);
+    RecordBrowsingTopicsApiResultMetrics(
+        ApiAccessResult::kAccessDisallowedBySettings, main_frame, get_topics);
     return false;
   }
 
   if (!privacy_sandbox_settings_->IsTopicsAllowedForContext(
           /*top_frame_origin=*/main_frame->GetLastCommittedOrigin(),
           context_origin.GetURL())) {
-    RecordBrowsingTopicsApiResultUkmMetrics(
-        ApiAccessFailureReason::kAccessDisallowedBySettings, main_frame,
-        get_topics);
+    RecordBrowsingTopicsApiResultMetrics(
+        ApiAccessResult::kAccessDisallowedBySettings, main_frame, get_topics);
     return false;
   }
+
+  RecordBrowsingTopicsApiResultMetrics(ApiAccessResult::kSuccess, main_frame,
+                                       get_topics);
 
   std::string context_domain =
       net::registry_controlled_domains::GetDomainAndRegistry(
@@ -352,7 +382,7 @@ bool BrowsingTopicsServiceImpl::HandleTopicsWebApi(
     valid_candidate_topics.push_back(std::move(candidate_topic));
   }
 
-  RecordBrowsingTopicsApiResultUkmMetrics(valid_candidate_topics, main_frame);
+  RecordBrowsingTopicsApiResultMetrics(valid_candidate_topics, main_frame);
 
   for (const CandidateTopic& candidate_topic : valid_candidate_topics) {
     if (candidate_topic.should_be_filtered())

@@ -517,24 +517,21 @@ TEST_F(CertVerifyProcBuiltinTest, EVNoOCSPRevocationChecks) {
       &NetLogEntry::type);
   ASSERT_NE(event, events.end());
   EXPECT_EQ(net::NetLogEventPhase::BEGIN, event->phase);
-  ASSERT_TRUE(event->params.is_dict());
-  EXPECT_EQ(true, event->params.GetDict().FindBool("is_ev_attempt"));
+  EXPECT_EQ(true, event->params.FindBool("is_ev_attempt"));
 
   event = base::ranges::find(++event, events.end(),
                              NetLogEventType::CERT_VERIFY_PROC_PATH_BUILT,
                              &NetLogEntry::type);
   ASSERT_NE(event, events.end());
   EXPECT_EQ(net::NetLogEventPhase::NONE, event->phase);
-  ASSERT_TRUE(event->params.is_dict());
-  EXPECT_FALSE(event->params.GetDict().FindString("errors"));
+  EXPECT_FALSE(event->params.FindString("errors"));
 
   event = base::ranges::find(
       ++event, events.end(),
       NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT, &NetLogEntry::type);
   ASSERT_NE(event, events.end());
   EXPECT_EQ(net::NetLogEventPhase::END, event->phase);
-  ASSERT_TRUE(event->params.is_dict());
-  EXPECT_EQ(true, event->params.GetDict().FindBool("has_valid_path"));
+  EXPECT_EQ(true, event->params.FindBool("has_valid_path"));
 }
 #endif  // defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
 

@@ -34,6 +34,7 @@ bool IsSystemKey(ui::KeyboardCode key_code) {
     case ui::VKEY_VOLUME_UP:
     case ui::VKEY_POWER:
     case ui::VKEY_SLEEP:
+    case ui::VKEY_F13:  // Lock button on some chromebooks emits F13.
     case ui::VKEY_PRIVACY_SCREEN_TOGGLE:
     case ui::VKEY_SETTINGS:
       return true;

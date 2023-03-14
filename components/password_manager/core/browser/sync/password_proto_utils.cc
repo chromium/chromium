@@ -74,7 +74,7 @@ sync_pb::PasswordSpecificsData_PasswordIssues PasswordIssuesMapToProto(
   sync_pb::PasswordSpecificsData::PasswordIssues password_issues;
   for (const auto& [insecure_type, insecure_metadata] : form_password_issues) {
     sync_pb::PasswordSpecificsData::PasswordIssues::PasswordIssue issue;
-    issue.set_date_first_detection_microseconds(
+    issue.set_date_first_detection_windows_epoch_micros(
         insecure_metadata.create_time.ToDeltaSinceWindowsEpoch()
             .InMicroseconds());
     issue.set_is_muted(insecure_metadata.is_muted.value());
@@ -107,25 +107,25 @@ base::flat_map<InsecureType, InsecurityMetadata> PasswordIssuesMapFromProto(
   if (specifics_issues.has_leaked_password_issue()) {
     const auto& issue = specifics_issues.leaked_password_issue();
     form_issues[InsecureType::kLeaked] = InsecurityMetadata(
-        ConvertToBaseTime(issue.date_first_detection_microseconds()),
+        ConvertToBaseTime(issue.date_first_detection_windows_epoch_micros()),
         IsMuted(issue.is_muted()));
   }
   if (specifics_issues.has_reused_password_issue()) {
     const auto& issue = specifics_issues.reused_password_issue();
     form_issues[InsecureType::kReused] = InsecurityMetadata(
-        ConvertToBaseTime(issue.date_first_detection_microseconds()),
+        ConvertToBaseTime(issue.date_first_detection_windows_epoch_micros()),
         IsMuted(issue.is_muted()));
   }
   if (specifics_issues.has_weak_password_issue()) {
     const auto& issue = specifics_issues.weak_password_issue();
     form_issues[InsecureType::kWeak] = InsecurityMetadata(
-        ConvertToBaseTime(issue.date_first_detection_microseconds()),
+        ConvertToBaseTime(issue.date_first_detection_windows_epoch_micros()),
         IsMuted(issue.is_muted()));
   }
   if (specifics_issues.has_phished_password_issue()) {
     const auto& issue = specifics_issues.phished_password_issue();
     form_issues[InsecureType::kPhished] = InsecurityMetadata(
-        ConvertToBaseTime(issue.date_first_detection_microseconds()),
+        ConvertToBaseTime(issue.date_first_detection_windows_epoch_micros()),
         IsMuted(issue.is_muted()));
   }
   return form_issues;

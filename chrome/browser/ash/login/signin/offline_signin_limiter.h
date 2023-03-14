@@ -33,6 +33,7 @@ class OfflineSigninLimiter : public KeyedService,
  public:
   OfflineSigninLimiter(const OfflineSigninLimiter&) = delete;
   OfflineSigninLimiter& operator=(const OfflineSigninLimiter&) = delete;
+  ~OfflineSigninLimiter() override;  // public for testing purpose only.
 
   // Called when the user successfully authenticates. `auth_flow` indicates
   // the type of authentication flow that the user went through.
@@ -55,7 +56,6 @@ class OfflineSigninLimiter : public KeyedService,
   // `profile` and `clock` must remain valid until Shutdown() is called. If
   // `clock` is NULL, the shared base::DefaultClock instance will be used.
   OfflineSigninLimiter(Profile* profile, const base::Clock* clock);
-  ~OfflineSigninLimiter() override;
 
   // Recalculates the amount of time remaining until online login should be
   // forced and sets the `offline_signin_limit_timer_` accordingly. If the limit

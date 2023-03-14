@@ -13,6 +13,7 @@ OverconstrainedError* OverconstrainedError::Create(const String& constraint,
 
 OverconstrainedError::OverconstrainedError(const String& constraint,
                                            const String& message)
-    : constraint_(constraint), message_(message) {}
+    : DOMException(DOMExceptionCode::kOverconstrainedError, message),
+      constraint_(constraint) {}
 
 }  // namespace blink

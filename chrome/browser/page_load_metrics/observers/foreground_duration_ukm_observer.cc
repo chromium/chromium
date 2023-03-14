@@ -125,7 +125,10 @@ void ForegroundDurationUKMObserver::RecordInputTimingMetrics(
 
 void ForegroundDurationUKMObserver::DidActivatePrerenderedPage(
     content::NavigationHandle* navigation_handle) {
-  DCHECK(GetDelegate().WasPrerenderedThenActivatedInForeground());
-  last_time_shown_ = base::TimeTicks::Now();
-  currently_in_foreground_ = true;
+  if (GetDelegate().WasPrerenderedThenActivatedInForeground()) {
+    last_time_shown_ = base::TimeTicks::Now();
+    currently_in_foreground_ = true;
+  } else {
+    currently_in_foreground_ = false;
+  }
 }

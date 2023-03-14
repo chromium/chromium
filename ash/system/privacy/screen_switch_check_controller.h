@@ -5,15 +5,13 @@
 #ifndef ASH_SYSTEM_PRIVACY_SCREEN_SWITCH_CHECK_CONTROLLER_H_
 #define ASH_SYSTEM_PRIVACY_SCREEN_SWITCH_CHECK_CONTROLLER_H_
 
-#include "ash/system/privacy/screen_capture_observer.h"
-#include "ash/system/privacy/screen_share_observer.h"
+#include "ash/system/privacy/screen_security_observer.h"
 
 namespace ash {
 
 // Controller of a dialog that confirms the user wants to stop screen share/cast
 // on user profile switching.
-class ScreenSwitchCheckController : public ScreenCaptureObserver,
-                                    public ScreenShareObserver {
+class ScreenSwitchCheckController : public ScreenSecurityObserver {
  public:
   ScreenSwitchCheckController();
 
@@ -29,20 +27,16 @@ class ScreenSwitchCheckController : public ScreenCaptureObserver,
   void CanSwitchAwayFromActiveUser(base::OnceCallback<void(bool)> callback);
 
  private:
-  // ScreenCaptureObserver:
-  void OnScreenCaptureStart(
-      base::OnceClosure stop_callback,
-      const base::RepeatingClosure& source_callback,
-      const std::u16string& screen_capture_status) override;
-  void OnScreenCaptureStop() override;
+  // ScreenSecurityObserver:
+  void OnScreenAccessStart(base::OnceClosure stop_callback,
+                           const base::RepeatingClosure& source_callback,
+                           const std::u16string& access_app_name) override;
+  void OnScreenAccessStop() override;
+  void OnRemotingScreenShareStart(base::OnceClosure stop_callback) override;
+  void OnRemotingScreenShareStop() override;
 
-  // ScreenShareObserver:
-  void OnScreenShareStart(base::OnceClosure stop_callback,
-                          const std::u16string& helper_name) override;
-  void OnScreenShareStop() override;
-
-  bool has_capture_ = false;
-  bool has_share_ = false;
+  bool is_screen_accessed_ = false;
+  bool is_remoting_share_ = false;
 };
 
 }  // namespace ash

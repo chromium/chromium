@@ -5,15 +5,10 @@
 # Since these tests will all run in both browser_tests (or interactive_ui_tests)
 # and pixel_browser_tests (or pixel_interactive_ui_tests), avoid including
 # non-pixel tests here.
-#
-# Prefer browser_tests to interactive_ui_tests, as they are less expensive to
-# run; only use interactive_ui_tests if running your test in browser_tests
-# causes flakes (due to widget activation, occlusion, etc.)
 
 AccessCodeCastDialogBrowserTest.*
 AppInfoDialogBrowserTest.*
 AskGoogleForSuggestionsDialogTest.*
-*PopupViewViewsBrowsertest*
 BookmarkBubbleViewBrowserTest.*
 BookmarkEditorViewBrowserTest.*
 BubbleFrameViewBrowserTest.*
@@ -58,10 +53,12 @@ PageInfoBubbleViewHistoryDialogBrowserTest.*
 PageInfoBubbleViewCookiesSubpageBrowserTest.*
 PageInfoBubbleViewIsolatedWebAppBrowserTest.*
 *PasswordBubbleBrowserTest.*
+*PasswordGenerationPopupViewBrowsertest.*
 PasswordReuseModalWarningTest.*
 *PasswordRevampedManagementBubbleBrowserTest.*
 PermissionRequestChipDialogBrowserTest.*
 *PermissionPromptBubbleViewBrowserTest.*
+*PopupViewViewsBrowsertest*
 PrivacySandboxDialogViewBrowserTest.*
 PrivacySandboxNoticeBubbleBrowserTest.*
 ProfilePickerUIPixelTest.*
@@ -86,15 +83,7 @@ UpdateRecommendedDialogTest.*
 WebAppConfirmViewBrowserTest.*
 ZoomBubbleDialogTest.*
 
-# This test uses random network port and shows it on ui.
--ContentSettingBubbleDialogTest.InvokeUi_popups
--OutdatedUpgradeBubbleTest.InvokeUi_Critical
-# TODO(crbug.com/1108988): Fix this flakiness test.
--BookmarkBubbleViewBrowserTest.InvokeUi_bookmark_details_signed_in
-
-# TODO(crbug.com/2666206): Flaky
--ContentSettingBubbleDialogTest.InvokeUi_mediastream_camera
--ContentSettingBubbleDialogTest.InvokeUi_mediastream_mic_and_camera
-
-# TODO(crbug.com/1164574): Flaky
--ContentSettingBubbleDialogTest.InvokeUi_mediastream_mic
+# To temporarily disable a test, add it here with a leading '-', like this:
+#
+# # TODO(crbug.com/xxx): Fix xyz and re-enable.
+# -MyTestSuite.InvokeUi_MyTestCase

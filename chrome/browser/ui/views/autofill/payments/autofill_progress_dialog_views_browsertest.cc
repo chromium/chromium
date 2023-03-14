@@ -32,15 +32,21 @@ class AutofillProgressDialogViewsBrowserTest : public DialogBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents());
   }
 
+  void TearDownOnMainThread() override {
+    // Reset the controller explicitly to avoid that its raw pointer to the
+    // `WebContents` becomes dangling. This mirrors the behavior in production
+    // code in which `ChromeAutofillClient` owns the controller and is destroyed
+    // prior to the destruction of the respective `WebContents`.
+    controller_.reset();
+
+    DialogBrowserTest::TearDownOnMainThread();
+  }
+
   void ShowUi(const std::string& name) override {
     AutofillProgressDialogType autofill_progress_dialog_type_;
-    if (name == "VirtualCardUnmask") {
-      autofill_progress_dialog_type_ =
-          AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog;
-    } else {
-      NOTREACHED();
-      return;
-    }
+    CHECK_EQ(name, "VirtualCardUnmask");
+    autofill_progress_dialog_type_ =
+        AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog;
     controller()->ShowDialog(autofill_progress_dialog_type_, base::DoNothing());
   }
 

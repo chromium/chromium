@@ -818,6 +818,11 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         return mTabSwitcherContainer;
     }
 
+    @Nullable
+    TabSwitcher.Controller getTabSwitcherController() {
+        return mSecondaryTasksSurfaceController;
+    }
+
     void setSnackbarParentView(ViewGroup parentView) {
         if (mSnackbarManager == null) return;
         mSnackbarManager.setParentView(parentView);
@@ -955,7 +960,11 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             }
         }
 
-        boolean ret = mController.onBackPressed();
+        // crbug.com/1420410: secondary task surface might be doing animations when transiting
+        // to/from tab switcher and then intercept back press to wait for animation to be finished.
+        boolean ret = mController.onBackPressed()
+                || (mSecondaryTasksSurfaceController != null
+                        && mSecondaryTasksSurfaceController.onBackPressed());
         assert !BackPressManager.isEnabled()
                 || ret : String.format("Wrong back press state: %s, start surface: %s",
                                  mController.getClass().getName(), mStartSurfaceState);
@@ -973,9 +982,10 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     }
 
     @Override
-    public void handleBackPress() {
-        onBackPressedInternal();
+    public @BackPressResult int handleBackPress() {
+        boolean ret = onBackPressedInternal();
         notifyBackPressStateChanged();
+        return ret ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
     }
 
     @Override
@@ -1436,7 +1446,11 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             return false;
         }
 
-        return Boolean.TRUE.equals(mController.getHandleBackPressChangedSupplier().get());
+        if (Boolean.TRUE.equals(mController.getHandleBackPressChangedSupplier().get())) return true;
+
+        return mSecondaryTasksSurfaceController != null
+                && Boolean.TRUE.equals(
+                        mSecondaryTasksSurfaceController.getHandleBackPressChangedSupplier().get());
     }
 
     boolean isLogoVisible() {

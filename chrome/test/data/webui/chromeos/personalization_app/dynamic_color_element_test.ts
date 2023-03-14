@@ -199,7 +199,7 @@ suite('DynamicColorElementTest', function() {
   });
 
   test('displays static color on load', async () => {
-    const staticColorHex = '#edd0e4';
+    const staticColorHex = '#485045';
     themeProvider.setStaticColor(hexColorToSkColor(staticColorHex));
 
     await initDynamicColorElement();

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ActionSource} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
+import {ActionSource, SortOrder, ViewType} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
 import {BookmarksApiProxy} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_api_proxy.js';
 import {ClickModifiers} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 import {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
@@ -40,6 +40,8 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
       'deleteBookmarks',
       'pasteToBookmark',
       'renameBookmark',
+      'setSortOrder',
+      'setViewType',
       'showContextMenu',
       'showUi',
       'undo',
@@ -110,16 +112,20 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
     return Promise.resolve();
   }
 
-  createFolder(parentId: string, title: string) {
+  createFolder(parentId: string, title: string):
+      Promise<chrome.bookmarks.BookmarkTreeNode> {
     this.methodCalled('createFolder', parentId, title);
+    return Promise.resolve({id: '0', title: 'foo'});
   }
 
   cutBookmark(id: string) {
     this.methodCalled('cutBookmark', id);
   }
 
-  editBookmarks(ids: string[], newParentId: string|undefined) {
-    this.methodCalled('editBookmarks', ids, newParentId);
+  editBookmarks(
+      ids: string[], newTitle: string|undefined, newUrl: string|undefined,
+      newParentId: string|undefined) {
+    this.methodCalled('editBookmarks', ids, newTitle, newUrl, newParentId);
   }
 
   deleteBookmarks(ids: string[]) {
@@ -134,6 +140,14 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
 
   renameBookmark(id: string, title: string) {
     this.methodCalled('renameBookmark', id, title);
+  }
+
+  setSortOrder(sortOrder: SortOrder) {
+    this.methodCalled('setSortOrder', sortOrder);
+  }
+
+  setViewType(viewType: ViewType) {
+    this.methodCalled('setViewType', viewType);
   }
 
   showContextMenu(id: string, x: number, y: number, source: ActionSource) {

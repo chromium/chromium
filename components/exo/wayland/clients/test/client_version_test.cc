@@ -5,6 +5,7 @@
 #include "components/exo/wayland/clients/test/client_version_test.h"
 
 #include <alpha-compositing-unstable-v1-client-protocol.h>
+#include <aura-shell-server-protocol.h>
 #include <chrome-color-management-server-protocol.h>
 #include <content-type-v1-server-protocol.h>
 #include <cursor-shapes-unstable-v1-server-protocol.h>
@@ -34,7 +35,6 @@
 #include <weston-test-server-protocol.h>
 #include <xdg-decoration-unstable-v1-server-protocol.h>
 #include <xdg-shell-server-protocol.h>
-#include <xdg-shell-unstable-v6-server-protocol.h>
 
 #include <memory>
 #include <string>
@@ -66,6 +66,7 @@ struct Globals {
   std::unique_ptr<wl_shell> wl_shell;
   std::unique_ptr<wl_seat> wl_seat;
   std::unique_ptr<wp_presentation> wp_presentation;
+  std::unique_ptr<zaura_output_manager> zaura_output_manager;
   std::unique_ptr<zaura_shell> zaura_shell;
   std::unique_ptr<zwp_linux_dmabuf_v1> zwp_linux_dmabuf_v1;
   std::unique_ptr<wl_subcompositor> wl_subcompositor;
@@ -79,7 +80,6 @@ struct Globals {
   std::unique_ptr<wl_data_device_manager> wl_data_device_manager;
   std::unique_ptr<wp_content_type_manager_v1> wp_content_type_manager_v1;
   std::unique_ptr<wp_viewporter> wp_viewporter;
-  std::unique_ptr<zxdg_shell_v6> zxdg_shell_v6;
   std::unique_ptr<xdg_wm_base> xdg_wm_base;
   std::unique_ptr<zwp_text_input_manager_v1> zwp_text_input_manager_v1;
   std::unique_ptr<zcr_secure_output_v1> zcr_secure_output_v1;
@@ -159,6 +159,7 @@ void RegistryHandler(void* data,
           REGISTRY_CALLBACK(wl_shell, wl_shell),
           REGISTRY_CALLBACK(wl_seat, wl_seat),
           REGISTRY_CALLBACK(wp_presentation, wp_presentation),
+          REGISTRY_CALLBACK(zaura_output_manager, zaura_output_manager),
           REGISTRY_CALLBACK(zaura_shell, zaura_shell),
           REGISTRY_CALLBACK(zwp_linux_dmabuf_v1, zwp_linux_dmabuf_v1),
           REGISTRY_CALLBACK(wl_subcompositor, wl_subcompositor),
@@ -173,7 +174,6 @@ void RegistryHandler(void* data,
           REGISTRY_CALLBACK(wp_content_type_manager_v1,
                             wp_content_type_manager_v1),
           REGISTRY_CALLBACK(wp_viewporter, wp_viewporter),
-          REGISTRY_CALLBACK(zxdg_shell_v6, zxdg_shell_v6),
           REGISTRY_CALLBACK(xdg_wm_base, xdg_wm_base),
           REGISTRY_CALLBACK(zwp_text_input_manager_v1,
                             zwp_text_input_manager_v1),

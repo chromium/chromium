@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AppNotificationsHandler, AppNotificationsHandlerInterface} from '../../../mojom-webui/app_notification_handler.mojom-webui.js';
+import {AppNotificationsHandler, AppNotificationsHandlerInterface} from '../../mojom-webui/app_notification_handler.mojom-webui.js';
 
 let appNotificationProvider: AppNotificationsHandlerInterface|null = null;
 

@@ -10,6 +10,7 @@ include_rules = [
   "+third_party/inspector_protocol/crdtp",
   "+third_party/skia/include",
   "+components/devtools/simple_devtools_protocol_client",
+  "+components/embedder_support/user_agent_utils.h",
   "+components/policy",
   "+components/prefs",
   "+services/device/public/cpp/test/fake_geolocation_manager.h",
@@ -19,5 +20,8 @@ specific_include_rules = {
   "headless_browser_browsertest.*": [
     "+storage/browser",
     "+ui/shell_dialogs",
+  ],
+  "headless_browser_user_agent_metadata_browsertest.*": [
+    "+components/embedder_support/user_agent_utils.h",
   ],
 }

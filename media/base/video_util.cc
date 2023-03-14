@@ -205,7 +205,7 @@ bool ReadbackTexturePlaneToMemorySyncOOP(const VideoFrame& src_frame,
   auto info = SkImageInfo::Make(src_rect.width(), src_rect.height(),
                                 sk_color_type, sk_alpha_type);
   ri->ReadbackImagePixels(holder.mailbox, info, dest_stride, src_rect.x(),
-                          src_rect.y(), dest_pixels);
+                          src_rect.y(), /*plane_index=*/0, dest_pixels);
   return ri->GetGraphicsResetStatusKHR() == GL_NO_ERROR &&
          ri->GetError() == GL_NO_ERROR;
 }

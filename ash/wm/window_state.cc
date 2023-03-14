@@ -747,23 +747,36 @@ void WindowState::set_bounds_changed_by_user(bool bounds_changed_by_user) {
 std::unique_ptr<PresentationTimeRecorder> WindowState::OnDragStarted(
     int window_component) {
   DCHECK(drag_details_);
-  if (delegate_)
+
+  SplitViewController* split_view_controller(
+      SplitViewController::Get(Shell::GetPrimaryRootWindow()));
+  DCHECK(split_view_controller);
+
+  if (split_view_controller->IsWindowInSplitView(window_)) {
+    split_view_controller->MaybeDetachWindow(window_);
+  }
+
+  if (delegate_) {
     return delegate_->OnDragStarted(window_component);
+  }
 
   return nullptr;
 }
 
 void WindowState::OnCompleteDrag(const gfx::PointF& location) {
   DCHECK(drag_details_);
-  if (delegate_)
-    delegate_->OnDragFinished(/*canceled=*/false, location);
+  if (delegate_) {
+    delegate_->OnDragFinished(/*cancel=*/false, location);
+  }
+
   SaveWindowForWindowRestore(this);
 }
 
 void WindowState::OnRevertDrag(const gfx::PointF& location) {
   DCHECK(drag_details_);
-  if (delegate_)
-    delegate_->OnDragFinished(/*canceled=*/true, location);
+  if (delegate_) {
+    delegate_->OnDragFinished(/*cancel=*/true, location);
+  }
 }
 
 void WindowState::OnActivationLost() {

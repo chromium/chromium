@@ -190,10 +190,6 @@
 #include "third_party/blink/public/mojom/serial/serial.mojom.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
-#include "third_party/blink/public/mojom/smart_card/smart_card.mojom.h"
-#endif
-
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)
 #include "media/mojo/mojom/remoting.mojom-forward.h"
 #endif
@@ -212,6 +208,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "content/browser/lock_screen/lock_screen_service_impl.h"
 #include "third_party/blink/public/mojom/lock_screen/lock_screen.mojom.h"
+#include "third_party/blink/public/mojom/smart_card/smart_card.mojom.h"
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -793,10 +790,6 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
   map->Add<blink::mojom::ReportingServiceProxy>(base::BindRepeating(
       &CreateReportingServiceProxyForFrame, base::Unretained(host)));
 
-  map->Add<blink::mojom::RuntimeFeatureStateController>(base::BindRepeating(
-      &RenderFrameHostImpl::CreateRuntimeFeatureStateController,
-      base::Unretained(host)));
-
   map->Add<blink::mojom::SharedWorkerConnector>(
       base::BindRepeating(&BindSharedWorkerConnector, base::Unretained(host)));
 
@@ -1035,7 +1028,7 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
       &RenderFrameHostImpl::BindSerialService, base::Unretained(host)));
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_CHROMEOS)
   map->Add<blink::mojom::SmartCardService>(base::BindRepeating(
       &RenderFrameHostImpl::GetSmartCardService, base::Unretained(host)));
 #endif
@@ -1130,7 +1123,7 @@ void PopulateBinderMapWithContext(
       base::BindRepeating(&EmptyBinderForFrame<device::mojom::VRService>));
 #endif
   RegisterWebUIControllerInterfaceBinder<
-      aggregation_service_internals::mojom::Handler,
+      aggregation_service_internals::mojom::Factory,
       AggregationServiceInternalsUI>(map);
   RegisterWebUIControllerInterfaceBinder<attribution_internals::mojom::Factory,
                                          AttributionInternalsUI>(map);
@@ -1173,6 +1166,9 @@ void PopulateBinderMapWithContext(
   map->Add<media::mojom::FuchsiaMediaCdmProvider>(
       base::BindRepeating(&FuchsiaMediaCdmProviderImpl::Bind));
 #endif
+
+  map->Add<blink::mojom::RuntimeFeatureStateController>(
+      base::BindRepeating(&RuntimeFeatureStateControllerImpl::Create));
 }
 
 void PopulateBinderMap(RenderFrameHostImpl* host, mojo::BinderMap* map) {

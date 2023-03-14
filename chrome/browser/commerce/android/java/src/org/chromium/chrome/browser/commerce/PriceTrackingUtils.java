@@ -24,19 +24,25 @@ public class PriceTrackingUtils {
 
     public static void setPriceTrackingStateForBookmark(
             Profile profile, long bookmarkId, boolean enabled, Callback<Boolean> callback) {
-        PriceTrackingUtilsJni.get().setPriceTrackingStateForBookmark(
-                profile, bookmarkId, enabled, callback);
+        setPriceTrackingStateForBookmark(profile, bookmarkId, enabled, callback, false);
     }
 
-    public static boolean isBookmarkPriceTracked(Profile profile, long bookmarkId) {
-        return PriceTrackingUtilsJni.get().isBookmarkPriceTracked(profile, bookmarkId);
+    public static void setPriceTrackingStateForBookmark(Profile profile, long bookmarkId,
+            boolean enabled, Callback<Boolean> callback, boolean bookmarkCreatedForPriceTracking) {
+        PriceTrackingUtilsJni.get().setPriceTrackingStateForBookmark(
+                profile, bookmarkId, enabled, callback, bookmarkCreatedForPriceTracking);
+    }
+
+    public static void isBookmarkPriceTracked(
+            Profile profile, long bookmarkId, Callback<Boolean> callback) {
+        PriceTrackingUtilsJni.get().isBookmarkPriceTracked(profile, bookmarkId, callback);
     }
 
     @NativeMethods
     @VisibleForTesting
     public interface Natives {
-        void setPriceTrackingStateForBookmark(
-                Profile profile, long bookmarkId, boolean enabled, Callback<Boolean> callback);
-        boolean isBookmarkPriceTracked(Profile profile, long bookmarkId);
+        void setPriceTrackingStateForBookmark(Profile profile, long bookmarkId, boolean enabled,
+                Callback<Boolean> callback, boolean bookmarkCreatedForPriceTracking);
+        void isBookmarkPriceTracked(Profile profile, long bookmarkId, Callback<Boolean> callback);
     }
 }

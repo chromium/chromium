@@ -13,10 +13,12 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {AcceleratorResultData} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
+
 import {getTemplate} from './accelerator_edit_view.html.js';
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {ViewState} from './accelerator_view.js';
-import {getShortcutProvider} from './mojo_interface_provider.js';
+import {getShortcutProvider, useFakeProvider} from './mojo_interface_provider.js';
 import {Accelerator, AcceleratorConfigResult, AcceleratorSource, AcceleratorState, AcceleratorType, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
 import {getAccelerator} from './shortcut_utils.js';
 
@@ -138,10 +140,13 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
     this.shortcutProvider
         .removeAccelerator(
             this.source, this.action, getAccelerator(this.acceleratorInfo))
-        .then((result: AcceleratorConfigResult) => {
-          if (result === AcceleratorConfigResult.SUCCESS) {
-            this.lookupManager.removeAccelerator(
-                this.source, this.action, getAccelerator(this.acceleratorInfo));
+        .then((value: {result: AcceleratorResultData}) => {
+          if (value.result.result === AcceleratorConfigResult.kSuccess) {
+            if (useFakeProvider) {
+              this.lookupManager.removeAccelerator(
+                  this.source, this.action,
+                  getAccelerator(this.acceleratorInfo));
+            }
 
             this.dispatchEvent(new CustomEvent('request-update-accelerator', {
               bubbles: true,

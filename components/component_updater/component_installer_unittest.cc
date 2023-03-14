@@ -113,6 +113,12 @@ class MockUpdateClient : public UpdateClient {
   MOCK_METHOD2(DoUpdate,
                void(const std::vector<std::string>& ids,
                     const CrxDataCallback& crx_data_callback));
+  MOCK_METHOD5(CheckForUpdate,
+               void(const std::string& ids,
+                    CrxDataCallback crx_data_callback,
+                    CrxStateChangeCallback crx_state_change_callback,
+                    bool is_foreground,
+                    Callback callback));
   MOCK_CONST_METHOD2(GetCrxUpdateState,
                      bool(const std::string& id, CrxUpdateItem* update_item));
   MOCK_CONST_METHOD1(IsUpdating, bool(const std::string& id));

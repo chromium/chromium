@@ -29,6 +29,7 @@ build_webui("build") {
     "checkup_details_section.ts",
     "checkup_list_item.ts",
     "dialogs/add_password_dialog.ts",
+    "dialogs/auth_timed_out_dialog.ts",
     "dialogs/delete_password_disclaimer_dialog.ts",
     "dialogs/edit_password_dialog.ts",
     "dialogs/edit_password_disclaimer_dialog.ts",
@@ -52,6 +53,8 @@ build_webui("build") {
     "router.ts",
     "searchable_label.ts",
     "show_password_mixin.ts",
+    "sync_browser_proxy.ts",
+    "user_utils_mixin.ts",
   ]
 
   # Files that are passed as input to css_to_wrapper().

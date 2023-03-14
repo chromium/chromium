@@ -210,6 +210,7 @@ CredentialUIEntry::GetAffiliatedDomains() const {
   std::vector<CredentialUIEntry::DomainInfo> domains;
   for (const auto& facet : facets) {
     CredentialUIEntry::DomainInfo domain;
+    domain.signon_realm = facet.signon_realm;
     password_manager::FacetURI facet_uri =
         password_manager::FacetURI::FromPotentiallyInvalidSpec(
             facet.signon_realm);
@@ -241,6 +242,10 @@ bool operator!=(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs) {
 
 bool operator<(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs) {
   return CreateSortKey(lhs) < CreateSortKey(rhs);
+}
+
+bool IsCompromised(const CredentialUIEntry& credential) {
+  return credential.IsLeaked() || credential.IsPhished();
 }
 
 }  // namespace password_manager

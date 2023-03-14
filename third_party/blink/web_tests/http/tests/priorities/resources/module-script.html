@@ -1,6 +1,6 @@
 <script src="common.js"></script>
 <script>
-  observeAndReportResourceLoadPriority(new URL('../../resources/dummy.js', location));
+  observeAndReportResourceLoadPriority(new URL('../../resources/dummy.js?module', location));
 </script>
 
-<script src="../../resources/dummy.js" type="module" onload="reportLoaded()" onerror="rejector()"></script>
+<script src="../../resources/dummy.js?module" type="module" onload="reportLoaded()" onerror="rejector()"></script>

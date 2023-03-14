@@ -15,7 +15,37 @@ mojom("mojom") {
   webui_module_path = "/ash/webui/shortcut_customization_ui/mojom"
 
   public_deps = [
+    "//ash/public/mojom:accelerator_configuration",
     "//ash/public/mojom:accelerator_info",
+    "//ash/public/mojom:accelerator_keys",
     "//mojo/public/mojom/base",
+  ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "ash.shortcut_customization.mojom.SimpleAccelerator"
+          cpp = "::ui::Accelerator"
+        },
+      ]
+      traits_headers = [ "shortcut_customization_mojom_traits.h" ]
+      traits_sources = [ "shortcut_customization_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//ui/base",
+        "//ui/events:event_constants",
+      ]
+    },
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "shortcut_customization_mojom_traits_unittest.cc" ]
+  deps = [
+    ":mojom",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/events:event_constants",
   ]
 }

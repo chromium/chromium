@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Tovább</translation>
 <translation id="1209796539517632982">Automatikus névszerverek</translation>
 <translation id="1210831758834677569">lao</translation>
+<translation id="1221555006497674479">Kevés tárhely (<ph name="REMAINING_PERCENTAGE" />%) maradt a(z) <ph name="TOTAL_SPACE" /> megosztott meghajtón.</translation>
 <translation id="1243314992276662751">Feltöltés</translation>
 <translation id="1249250836236328755">Műfaj</translation>
 <translation id="1254593899333212300">Közvetlen internetkapcsolat</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">kínai pinjin</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> fájl offline hozzáférhetővé tétele…</translation>
 <translation id="164969095109328410">Chrome-eszköz</translation>
+<translation id="1661207570040737402">Felhasználta a megosztott meghajtó Google Workspace-tárhelyét.</translation>
 <translation id="1661867754829461514">Hiányzó PIN-kód</translation>
 <translation id="166439687370499867">A megosztott hálózati konfigurációk módosítása nem engedélyezett</translation>
 <translation id="1665611772925418501">A fájlt nem lehet módosítani.</translation>
@@ -82,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> elem tömörítése…</translation>
 <translation id="1722687688096767818">Profil hozzáadása…</translation>
 <translation id="1726100011689679555">Névszerverek</translation>
+<translation id="1727562178154619254">Szinkronizálásra kész</translation>
 <translation id="1729953886957086472">német (Németország)</translation>
 <translation id="1730235522912993863">kínai (kanji)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> elem a vágólapra másolva.</translation>
@@ -349,11 +352,11 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Beillesztés</translation>
 <translation id="3952872973865944257">telugu, fonetikus</translation>
-<translation id="3954354850384043518">Folyamatban</translation>
 <translation id="3958548648197196644">Kiwi</translation>
 <translation id="3971140002794351170">Mobilprofil letöltése, <ph name="NETWORK_COUNT" />/<ph name="NETWORK_INDEX" />. hálózat, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">angol (Egyesült Királyság)</translation>
 <translation id="3975895378829046965">bengáli, fonetikus</translation>
+<translation id="3999574733850440202">A közelmúltban megnyitott Microsoft-fájlok átkerültek a OneDrive szolgáltatásba</translation>
 <translation id="4002066346123236978">Cím</translation>
 <translation id="4017788180641807848">angol (USA) billentyűzet Workman kiosztással</translation>
 <translation id="4019998208269143058">Kitűzés a gyorsfájlok közé</translation>
@@ -362,6 +365,7 @@
 <translation id="4092890906744441904">ír</translation>
 <translation id="4124935795427217608">Egyszarvú</translation>
 <translation id="4131235941541910880">Helyezze a kukába azokat az elemeket, amelyekre nincs szüksége.</translation>
+<translation id="4134804435730168042">Hálózat száma: <ph name="NETWORK_INDEX" />., összes hálózat: <ph name="NETWORK_COUNT" />, hálózat neve: <ph name="NETWORK_NAME" />, hálózat szolgáltatója: <ph name="NETWORK_PROVIDER_NAME" />, Aktiválás eszközbeállítás után</translation>
 <translation id="4153015322587141338">Kattintson a kívánt fájlra a jobb egérgombbal, és válassza a(z) „<ph name="PIN_COMMAND" />” lehetőséget, így gyorsan hozzáférhet a polcon lévő fájlokhoz.</translation>
 <translation id="4157569377477607576">A rendszergazda által beállított házirend nem javasolja a következőket:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> áthelyezve.</translation>
@@ -404,6 +408,7 @@
 <translation id="4414834425328380570">A rendszer törli a(z) „<ph name="FILE_NAME" />” fájlt, amely visszaállítása nem lehetséges.</translation>
 <translation id="4418686080762064601">Létrehozhat parancsikont a fájlokhoz</translation>
 <translation id="4425149324548788773">Saját meghajtó</translation>
+<translation id="4432921877815220091">Hálózat száma: <ph name="NETWORK_INDEX" />, összes hálózat: <ph name="NETWORK_COUNT" />, hálózat neve: <ph name="NETWORK_NAME" />, Aktiválás eszközbeállítás után, A rendszergazdája kezeli</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, csatlakozás</translation>
 <translation id="4442424173763614572">A DNS keresése sikertelen</translation>
 <translation id="4462159676511157176">Egyéni névszerverek</translation>
@@ -611,8 +616,10 @@
 <translation id="5911887972742538906">Hiba történt a Linux-alkalmazás telepítése során.</translation>
 <translation id="5912396950572065471">Formázás</translation>
 <translation id="5913638992615760742">A másolási művelet nem várt hiba miatt nem sikerült: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">Új keresési funkciók állnak rendelkezésre</translation>
 <translation id="5926082595146149752">holland (Hollandia), amerikai nemzetközi PC-billentyűzettel</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Hálózat száma: <ph name="NETWORK_INDEX" />., összes hálózat: <ph name="NETWORK_COUNT" />, hálózat neve: <ph name="NETWORK_NAME" />, Aktiválás eszközbeállítás után</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elem</translation>
 <translation id="5957366693331451795">Chromeboxok</translation>
 <translation id="5982621672636444458">Rendezési beállítások</translation>
@@ -699,6 +706,7 @@
 <translation id="6732801395666424405">A tanúsítványok betöltése nem történt meg</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Mappa megosztása a Bruschettával</translation>
+<translation id="6750737795876287924">Jelenlegi könyvtár</translation>
 <translation id="6751256176799620176">1 mappa kiválasztva</translation>
 <translation id="6755827872271341378">ChromeOS Flex-eszköz</translation>
 <translation id="6790428901817661496">Lejátszás</translation>
@@ -736,7 +744,6 @@
 <translation id="6973630695168034713">Mappák</translation>
 <translation id="6976795442547527108">Oroszlán</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">Mindenkori</translation>
 <translation id="6989942356279143254">svéd</translation>
 <translation id="6990081529015358884">Elfogyott a hely</translation>
 <translation id="6993826899923627728">Ezek az elemek a kukában vannak</translation>
@@ -759,6 +766,7 @@
 <translation id="7126604456862387217">„&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;” – &lt;em&gt;keresés a Drive-ban&lt;/em&gt;</translation>
 <translation id="7135561821015524160">kannada, fonetikus</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Hiányzó „Tárgy alternatív neve – egyezés” vagy „Domainvégződés – egyezés” a hitelesítési szerver személyazonosságának ellenőrzéséhez</translation>
 <translation id="7165320105431587207">Nem sikerült konfigurálni a hálózatot</translation>
 <translation id="7170041865419449892">Tartományon kívül</translation>
 <translation id="7180611975245234373">Frissítés</translation>
@@ -791,7 +799,6 @@
 <translation id="7458955835361612701">Nincsenek új képek</translation>
 <translation id="7460898608667578234">ukrán</translation>
 <translation id="7469894403370665791">Automatikus kapcsolódás ehhez a hálózathoz</translation>
-<translation id="7481358317100446445">Kész</translation>
 <translation id="7486315294984620427">Ha fájlokat szeretne a Parallels Desktop felületére húzni, az adott fájlt előbb a Windows-fájlok közé kell másolni.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">malajálam, fonetikus</translation>
@@ -829,6 +836,7 @@
 <translation id="7724603315864178912">Kivágás</translation>
 <translation id="7732111077498238432">A hálózatot házirend szabályozza</translation>
 <translation id="7736003208887389532">Véglegesen törli ezeket a fájlokat?</translation>
+<translation id="7740287852186792672">Keresés eredménye</translation>
 <translation id="7748626145866214022">További lehetőségek érhetők el a műveletsávon, amelyre az Alt+A billentyűkóddal helyezheti át a fókuszt.</translation>
 <translation id="7760449188139285140">kínai, vubi</translation>
 <translation id="7765158879357617694">Áthelyezés</translation>
@@ -880,6 +888,7 @@
 <translation id="8116072619078571545">Jeges víz</translation>
 <translation id="8128733386027980860">angol (Egyesült Királyság) billentyűzet Dvorak kiosztással</translation>
 <translation id="8137331602592933310">A következőt osztották meg Önnel: „<ph name="FILENAME" />”. Nem törölheti, mert nem az Ön tulajdonában áll.</translation>
+<translation id="8138705869659070104">Aktiválás eszközbeállítás után</translation>
 <translation id="813913629614996137">Indítás…</translation>
 <translation id="8147028810663464959">A karakterszélesség félkövér</translation>
 <translation id="8151638057146502721">Konfigurálás</translation>
@@ -905,6 +914,7 @@
 <translation id="8300849813060516376">OTASP sikertelen</translation>
 <translation id="8312871300878166382">Beillesztés mappába</translation>
 <translation id="8329978297633540474">Egyszerű szöveg</translation>
+<translation id="8332007959299458842">A közelmúltban megnyitott Microsoft-fájlok átkerültek a Google Drive-ra</translation>
 <translation id="8335587457941836791">Rögzítés feloldása a polcon</translation>
 <translation id="8335837413233998004">belarusz</translation>
 <translation id="8336153091935557858">Tegnap <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -931,6 +941,7 @@
 <translation id="8487700953926739672">Offline elérhető</translation>
 <translation id="8492972329130824181">Az otthoni hálózat nem áll rendelkezésre. A csatlakozáshoz engedélyezni kell a mobiladatokat használó roamingot.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> elem kibontása…</translation>
+<translation id="8502913769543567768">Hálózat száma: <ph name="NETWORK_INDEX" />., összes hálózat: <ph name="NETWORK_COUNT" />, hálózat neve: <ph name="NETWORK_NAME" />, hálózat szolgáltatója: <ph name="NETWORK_PROVIDER_NAME" />, Aktiválás eszközbeállítás után, A rendszergazdája kezeli</translation>
 <translation id="8521441079177373948">egyesült királyságbeli</translation>
 <translation id="853494022971700746">francia (Franciaország)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, részletek</translation>
@@ -992,6 +1003,7 @@
 <translation id="9046895021617826162">Csatlakozás sikertelen</translation>
 <translation id="9065512565307033593">Ha nem sikerül az igazolás, a hálózati hozzáférés le lesz tiltva.</translation>
 <translation id="908378762078012445">orosz, fonetikus AATSEEL-billentyűzettel</translation>
+<translation id="9086302186042011942">Szinkronizálás</translation>
 <translation id="9099674669267916096">Oldalak száma</translation>
 <translation id="9100610230175265781">Összetett jelszó szükséges</translation>
 <translation id="9110990317705400362">Folyamatosan keressük az új módszereket, hogy a böngészést biztonságosabbá tegyük. Korábban bármelyik webhely megkérhette Önt, hogy adjon hozzá egy bővítményt a böngészőjéhez. A Google Chrome legújabb verzióiban kifejezetten meg kell mondania a Chrome-nak, hogy telepíteni szeretné ezeket a bővítményeket. Ehhez a Bővítmények oldalon kell hozzáadnia őket. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /></translation>

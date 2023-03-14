@@ -42,20 +42,18 @@ non_component_ts_files = [
   "types.ts",
 ]
 
-mojo_js_files = [ "emoji_picker.mojom-webui.js" ]
-mojo_source_files = []
-foreach(f, mojo_js_files) {
-  mojo_source_files +=
-      [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/ash/emoji/" + f ]
-}
+mojo_files = [ "emoji_picker.mojom-webui.ts" ]
 
 resources_grd_file = "$target_gen_dir/resources.grd"
 
 preprocessed_folder = "$target_gen_dir/preprocessed"
 
 copy("copy_mojo") {
-  deps = [ "//chrome/browser/ui/webui/ash/emoji:mojo_bindings_webui_js" ]
-  sources = mojo_source_files
+  deps = [ "//chrome/browser/ui/webui/ash/emoji:mojo_bindings_ts__generator" ]
+  sources = []
+  foreach(_f, mojo_files) {
+    sources += [ "$root_gen_dir/chrome/browser/ui/webui/ash/emoji/" + _f ]
+  }
   outputs = [ "$preprocessed_folder/{{source_file_part}}" ]
 }
 
@@ -204,18 +202,18 @@ copy("copy_checked_in_ts_js_files") {
 }
 
 ts_library("build_ts") {
+  composite = true
   root_dir = "$target_gen_dir/preprocessed"
   out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
+  tsconfig_base = "//tools/typescript/tsconfig_base_polymer.json"
   in_files = web_component_files + non_component_ts_files + html_wrapper_files +
-             mojo_js_files + [ "fuse.js" ]
-  allow_js = true
+             mojo_files + [ "fuse.js" ]
   definitions = [ "$target_gen_dir/preprocessed/fuse.d.ts" ]
   deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
-    "//ui/webui/resources/mojo:library",
+    "//ui/webui/resources/mojo:build_ts",
   ]
   extra_deps = [
     ":copy_checked_in_ts_js_files",

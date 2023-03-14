@@ -148,10 +148,9 @@ Value::List ChromePolicyConversionsClient::GetExtensionPolicies(
   }
   const scoped_refptr<SchemaMap> schema_map =
       schema_registry_service->registry()->schema_map();
-  std::unique_ptr<extensions::ExtensionSet> extension_set =
+  const extensions::ExtensionSet extension_set =
       registry->GenerateInstalledExtensionsSet();
-  for (const scoped_refptr<const extensions::Extension>& extension :
-       *extension_set) {
+  for (const auto& extension : extension_set) {
     // Skip this extension if it's not an enterprise extension.
     if (!extension->manifest()->FindPath(
             extensions::manifest_keys::kStorageManagedSchema)) {

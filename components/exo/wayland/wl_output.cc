@@ -38,8 +38,12 @@ void bind_output(wl_client* client,
       wl_resource_create(client, &wl_output_interface,
                          std::min(version, kWlOutputVersion), output_id);
   auto handler = std::make_unique<WaylandDisplayHandler>(output, resource);
-  handler->Initialize();
   SetImplementation(resource, &output_implementation, std::move(handler));
+
+  // Ensure we set the user_data implementation before initializing the output
+  // as the user_data's lifetime is expected to correlate to that of the
+  // wl_output resource.
+  GetUserDataAs<WaylandDisplayHandler>(resource)->Initialize();
 }
 
 }  // namespace wayland

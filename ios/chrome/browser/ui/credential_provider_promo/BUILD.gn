@@ -11,10 +11,15 @@ source_set("credential_provider_promo") {
     "credential_provider_promo_display_handler.mm",
     "credential_provider_promo_mediator.h",
     "credential_provider_promo_mediator.mm",
+    "credential_provider_promo_metrics.h",
+    "credential_provider_promo_metrics.mm",
+    "credential_provider_promo_scene_agent.h",
+    "credential_provider_promo_scene_agent.mm",
   ]
   deps = [
     ":credential_provider_promo_ui",
     "//base",
+    "//components/feature_engagement/public",
     "//components/prefs",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/application_context",
@@ -25,11 +30,13 @@ source_set("credential_provider_promo") {
     "//ios/chrome/browser/promos_manager",
     "//ios/chrome/browser/promos_manager:features",
     "//ios/chrome/browser/promos_manager:types",
-    "//ios/chrome/browser/ui/commands",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/main:observing_scene_agent",
     "//ios/chrome/browser/ui/promos_manager:promos",
-    "//ios/chrome/browser/ui/util",
     "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
+    "//ios/public/provider/chrome/browser/password_auto_fill:password_auto_fill_api",
   ]
 }
 
@@ -44,10 +51,12 @@ source_set("credential_provider_promo_ui") {
   deps = [
     "//base",
     "//components/password_manager/core/browser",
-    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/credential_provider_promo/resources:animation_files",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
 
     # TODO(crbug.com/1412808): uncomment once Lottie framework is added.
     # "//ios/third_party/lottie",
@@ -56,5 +65,29 @@ source_set("credential_provider_promo_ui") {
   frameworks = [
     "Foundation.framework",
     "UIKit.framework",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "credential_provider_promo_mediator_unittest.mm" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [
+    ":credential_provider_promo",
+    ":credential_provider_promo_ui",
+    "//base",
+    "//components/password_manager/core/common",
+    "//components/prefs:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/credential_provider_promo:features",
+    "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/promos_manager",
+    "//ios/chrome/browser/promos_manager:test_support",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/test:test_support",
+    "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
   ]
 }

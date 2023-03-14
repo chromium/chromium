@@ -25,6 +25,7 @@
 #include "headless/lib/browser/headless_browser_context_options.h"
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_browser_main_parts.h"
+#include "headless/lib/browser/headless_client_hints_controller_delegate.h"
 #include "headless/lib/browser/headless_permission_manager.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
@@ -64,7 +65,9 @@ HeadlessBrowserContextImpl::HeadlessBrowserContextImpl(
     : browser_(browser),
       context_options_(std::move(context_options)),
       permission_controller_delegate_(
-          std::make_unique<HeadlessPermissionManager>(this)) {
+          std::make_unique<HeadlessPermissionManager>(this)),
+      hints_delegate_(
+          std::make_unique<HeadlessClientHintsControllerDelegate>()) {
   BrowserContextDependencyManager::GetInstance()->MarkBrowserContextLive(this);
   InitWhileIOAllowed();
   simple_factory_key_ =
@@ -276,7 +279,7 @@ HeadlessBrowserContextImpl::GetPermissionControllerDelegate() {
 
 content::ClientHintsControllerDelegate*
 HeadlessBrowserContextImpl::GetClientHintsControllerDelegate() {
-  return nullptr;
+  return hints_delegate_.get();
 }
 
 content::BackgroundFetchDelegate*

@@ -26,16 +26,17 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
-import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {LockStateMixin} from '../lock_state_mixin.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {getTemplate} from './os_privacy_page.html.js';
 import {PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} from './peripheral_data_access_browser_proxy.js';
+import {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from './privacy_hub_browser_proxy.js';
 import {PrivacyHubNavigationOrigin} from './privacy_hub_page.js';
 
 const OsSettingsPrivacyPageElementBase = PrefsMixin(
@@ -191,6 +192,14 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
               !loadTimeData.getBoolean('isGuest');
         },
       },
+
+      isHatsSurveyEnabled_: {
+        type: Boolean,
+        readOnly: true,
+        value: function() {
+          return loadTimeData.getBoolean('isPrivacyHubHatsEnabled');
+        },
+      },
     };
   }
 
@@ -200,6 +209,7 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
 
   private authToken_: chrome.quickUnlockPrivate.TokenInfo|undefined;
   private browserProxy_: PeripheralDataAccessBrowserProxy;
+  private privacyHubBrowserProxy_: PrivacyHubBrowserProxy;
 
   /**
    * The timeout ID to pass to clearTimeout() to cancel auth token
@@ -211,6 +221,7 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
   private fingerprintUnlockEnabled_: boolean;
   private focusConfig_: Map<string, string>;
   private isGuestMode_: boolean;
+  private isHatsSurveyEnabled_: boolean;
   private isRevenBranding_: boolean;
   private isSmartPrivacyEnabled_: boolean;
   private isThunderboltSupported_: boolean;
@@ -232,6 +243,8 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
         this.supportedSettingIds.add(Setting.kPeripheralDataAccessProtection);
       }
     });
+
+    this.privacyHubBrowserProxy_ = PrivacyHubBrowserProxyImpl.getInstance();
   }
 
   override ready(): void {
@@ -243,9 +256,14 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
   override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
     if (route !== routes.OS_PRIVACY) {
+      if (this.isHatsSurveyEnabled_) {
+        this.privacyHubBrowserProxy_.sendLeftOsPrivacyPage();
+      }
       return;
     }
-
+    if (this.isHatsSurveyEnabled_) {
+      this.privacyHubBrowserProxy_.sendOpenedOsPrivacyPage();
+    }
     this.attemptDeepLink();
   }
 

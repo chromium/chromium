@@ -64,7 +64,7 @@ class SitePermissionsHelper {
   // that site.
   void UpdateSiteAccess(const Extension& extension,
                         content::WebContents* web_contents,
-                        SitePermissionsHelper::SiteAccess new_access);
+                        SiteAccess new_access);
 
   // Updates the user site settings pointed to by `web_contents` to
   // `site_setting` for `action_ids`.

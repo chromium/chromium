@@ -55,10 +55,12 @@ NetworkingPrivateDelegate* GetDelegate(
 bool HasPrivateNetworkingAccess(const Extension* extension,
                                 Feature::Context context,
                                 const GURL& source_url,
-                                int context_id) {
+                                int context_id,
+                                std::unique_ptr<ContextData> context_data) {
   return ExtensionAPI::GetSharedInstance()
       ->IsAvailable("networkingPrivate", extension, context, source_url,
-                    CheckAliasStatus::NOT_ALLOWED, context_id)
+                    CheckAliasStatus::NOT_ALLOWED, context_id,
+                    std::move(context_data))
       .is_available();
 }
 
@@ -70,14 +72,18 @@ enum class PropertiesType { GET, SET };
 // Filters out all properties that are not allowed for the extension in the
 // provided context.
 // Returns list of removed keys.
-std::vector<std::string> FilterProperties(base::Value::Dict& properties,
-                                          PropertiesType type,
-                                          const Extension* extension,
-                                          Feature::Context context,
-                                          const GURL& source_url,
-                                          int context_id) {
-  if (HasPrivateNetworkingAccess(extension, context, source_url, context_id))
+std::vector<std::string> FilterProperties(
+    base::Value::Dict& properties,
+    PropertiesType type,
+    const Extension* extension,
+    Feature::Context context,
+    const GURL& source_url,
+    int context_id,
+    std::unique_ptr<ContextData> context_data) {
+  if (HasPrivateNetworkingAccess(extension, context, source_url, context_id,
+                                 std::move(context_data))) {
     return std::vector<std::string>();
+  }
 
   const char* const* filter = nullptr;
   size_t filter_size = 0;
@@ -142,7 +148,7 @@ NetworkingPrivateGetPropertiesFunction::
 
 ExtensionFunction::ResponseAction
 NetworkingPrivateGetPropertiesFunction::Run() {
-  std::unique_ptr<private_api::GetProperties::Params> params =
+  absl::optional<private_api::GetProperties::Params> params =
       private_api::GetProperties::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -165,8 +171,9 @@ void NetworkingPrivateGetPropertiesFunction::Result(
     return;
   }
   FilterProperties(result.value(), PropertiesType::GET, extension(),
-                   source_context_type(), source_url(), context_id());
-  Respond(OneArgument(base::Value(std::move(*result))));
+                   source_context_type(), source_url(), context_id(),
+                   GetContextData());
+  Respond(WithArguments(std::move(*result)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -177,7 +184,7 @@ NetworkingPrivateGetManagedPropertiesFunction::
 
 ExtensionFunction::ResponseAction
 NetworkingPrivateGetManagedPropertiesFunction::Run() {
-  std::unique_ptr<private_api::GetManagedProperties::Params> params =
+  absl::optional<private_api::GetManagedProperties::Params> params =
       private_api::GetManagedProperties::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -200,7 +207,8 @@ void NetworkingPrivateGetManagedPropertiesFunction::Result(
     return;
   }
   FilterProperties(result.value(), PropertiesType::GET, extension(),
-                   source_context_type(), source_url(), context_id());
+                   source_context_type(), source_url(), context_id(),
+                   GetContextData());
   Respond(OneArgument(base::Value(std::move(*result))));
 }
 
@@ -211,7 +219,7 @@ NetworkingPrivateGetStateFunction::~NetworkingPrivateGetStateFunction() =
     default;
 
 ExtensionFunction::ResponseAction NetworkingPrivateGetStateFunction::Run() {
-  std::unique_ptr<private_api::GetState::Params> params =
+  absl::optional<private_api::GetState::Params> params =
       private_api::GetState::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -228,7 +236,8 @@ ExtensionFunction::ResponseAction NetworkingPrivateGetStateFunction::Run() {
 
 void NetworkingPrivateGetStateFunction::Success(base::Value::Dict result) {
   FilterProperties(result, PropertiesType::GET, extension(),
-                   source_context_type(), source_url(), context_id());
+                   source_context_type(), source_url(), context_id(),
+                   GetContextData());
   Respond(OneArgument(base::Value(std::move(result))));
 }
 
@@ -244,15 +253,15 @@ NetworkingPrivateSetPropertiesFunction::
 
 ExtensionFunction::ResponseAction
 NetworkingPrivateSetPropertiesFunction::Run() {
-  std::unique_ptr<private_api::SetProperties::Params> params =
+  absl::optional<private_api::SetProperties::Params> params =
       private_api::SetProperties::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   base::Value::Dict properties = params->properties.ToValue();
 
-  std::vector<std::string> not_allowed_properties =
-      FilterProperties(properties, PropertiesType::SET, extension(),
-                       source_context_type(), source_url(), context_id());
+  std::vector<std::string> not_allowed_properties = FilterProperties(
+      properties, PropertiesType::SET, extension(), source_context_type(),
+      source_url(), context_id(), GetContextData());
   if (!not_allowed_properties.empty())
     return RespondNow(Error(InvalidPropertiesError(not_allowed_properties)));
 
@@ -286,7 +295,7 @@ NetworkingPrivateCreateNetworkFunction::
 
 ExtensionFunction::ResponseAction
 NetworkingPrivateCreateNetworkFunction::Run() {
-  std::unique_ptr<private_api::CreateNetwork::Params> params =
+  absl::optional<private_api::CreateNetwork::Params> params =
       private_api::CreateNetwork::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -297,15 +306,15 @@ NetworkingPrivateCreateNetworkFunction::Run() {
 
   base::Value::Dict properties_dict = params->properties.ToValue();
 
-  std::vector<std::string> not_allowed_properties =
-      FilterProperties(properties_dict, PropertiesType::SET, extension(),
-                       source_context_type(), source_url(), context_id());
+  std::vector<std::string> not_allowed_properties = FilterProperties(
+      properties_dict, PropertiesType::SET, extension(), source_context_type(),
+      source_url(), context_id(), GetContextData());
   if (!not_allowed_properties.empty())
     return RespondNow(Error(InvalidPropertiesError(not_allowed_properties)));
 
   GetDelegate(browser_context())
       ->CreateNetwork(
-          params->shared, base::Value(std::move(properties_dict)),
+          params->shared, std::move(properties_dict),
           base::BindOnce(&NetworkingPrivateCreateNetworkFunction::Success,
                          this),
           base::BindOnce(&NetworkingPrivateCreateNetworkFunction::Failure,
@@ -332,7 +341,7 @@ NetworkingPrivateForgetNetworkFunction::
 
 ExtensionFunction::ResponseAction
 NetworkingPrivateForgetNetworkFunction::Run() {
-  std::unique_ptr<private_api::ForgetNetwork::Params> params =
+  absl::optional<private_api::ForgetNetwork::Params> params =
       private_api::ForgetNetwork::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -365,7 +374,7 @@ NetworkingPrivateGetNetworksFunction::~NetworkingPrivateGetNetworksFunction() =
     default;
 
 ExtensionFunction::ResponseAction NetworkingPrivateGetNetworksFunction::Run() {
-  std::unique_ptr<private_api::GetNetworks::Params> params =
+  absl::optional<private_api::GetNetworks::Params> params =
       private_api::GetNetworks::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -405,7 +414,7 @@ NetworkingPrivateGetVisibleNetworksFunction::
 
 ExtensionFunction::ResponseAction
 NetworkingPrivateGetVisibleNetworksFunction::Run() {
-  std::unique_ptr<private_api::GetVisibleNetworks::Params> params =
+  absl::optional<private_api::GetVisibleNetworks::Params> params =
       private_api::GetVisibleNetworks::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -413,7 +422,8 @@ NetworkingPrivateGetVisibleNetworksFunction::Run() {
   // networkingPrivate permissions, i.e. apps that might have started using it
   // before its deprecation.
   if (!HasPrivateNetworkingAccess(extension(), source_context_type(),
-                                  source_url(), context_id())) {
+                                  source_url(), context_id(),
+                                  GetContextData())) {
     return RespondNow(Error(kPrivateOnlyError));
   }
 
@@ -456,7 +466,8 @@ NetworkingPrivateGetEnabledNetworkTypesFunction::Run() {
   // networkingPrivate permissions, i.e. apps that might have started using it
   // before its deprecation.
   if (!HasPrivateNetworkingAccess(extension(), source_context_type(),
-                                  source_url(), context_id())) {
+                                  source_url(), context_id(),
+                                  GetContextData())) {
     return RespondNow(Error(kPrivateOnlyError));
   }
 
@@ -523,7 +534,7 @@ NetworkingPrivateEnableNetworkTypeFunction::
 
 ExtensionFunction::ResponseAction
 NetworkingPrivateEnableNetworkTypeFunction::Run() {
-  std::unique_ptr<private_api::EnableNetworkType::Params> params =
+  absl::optional<private_api::EnableNetworkType::Params> params =
       private_api::EnableNetworkType::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -549,7 +560,7 @@ NetworkingPrivateDisableNetworkTypeFunction::
 
 ExtensionFunction::ResponseAction
 NetworkingPrivateDisableNetworkTypeFunction::Run() {
-  std::unique_ptr<private_api::DisableNetworkType::Params> params =
+  absl::optional<private_api::DisableNetworkType::Params> params =
       private_api::DisableNetworkType::Params::Create(args());
 
   GetDelegate(browser_context())
@@ -574,7 +585,7 @@ NetworkingPrivateRequestNetworkScanFunction::
 
 ExtensionFunction::ResponseAction
 NetworkingPrivateRequestNetworkScanFunction::Run() {
-  std::unique_ptr<private_api::RequestNetworkScan::Params> params =
+  absl::optional<private_api::RequestNetworkScan::Params> params =
       private_api::RequestNetworkScan::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   std::string network_type = private_api::ToString(params->network_type);
@@ -599,7 +610,7 @@ NetworkingPrivateStartConnectFunction::
     ~NetworkingPrivateStartConnectFunction() = default;
 
 ExtensionFunction::ResponseAction NetworkingPrivateStartConnectFunction::Run() {
-  std::unique_ptr<private_api::StartConnect::Params> params =
+  absl::optional<private_api::StartConnect::Params> params =
       private_api::StartConnect::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -632,7 +643,7 @@ NetworkingPrivateStartDisconnectFunction::
 
 ExtensionFunction::ResponseAction
 NetworkingPrivateStartDisconnectFunction::Run() {
-  std::unique_ptr<private_api::StartDisconnect::Params> params =
+  absl::optional<private_api::StartDisconnect::Params> params =
       private_api::StartDisconnect::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -667,11 +678,12 @@ NetworkingPrivateStartActivateFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateStartActivateFunction::Run() {
   if (!HasPrivateNetworkingAccess(extension(), source_context_type(),
-                                  source_url(), context_id())) {
+                                  source_url(), context_id(),
+                                  GetContextData())) {
     return RespondNow(Error(kPrivateOnlyError));
   }
 
-  std::unique_ptr<private_api::StartActivate::Params> params =
+  absl::optional<private_api::StartActivate::Params> params =
       private_api::StartActivate::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -704,7 +716,7 @@ NetworkingPrivateGetCaptivePortalStatusFunction::
 
 ExtensionFunction::ResponseAction
 NetworkingPrivateGetCaptivePortalStatusFunction::Run() {
-  std::unique_ptr<private_api::GetCaptivePortalStatus::Params> params =
+  absl::optional<private_api::GetCaptivePortalStatus::Params> params =
       private_api::GetCaptivePortalStatus::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -741,11 +753,12 @@ NetworkingPrivateUnlockCellularSimFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateUnlockCellularSimFunction::Run() {
   if (!HasPrivateNetworkingAccess(extension(), source_context_type(),
-                                  source_url(), context_id())) {
+                                  source_url(), context_id(),
+                                  GetContextData())) {
     return RespondNow(Error(kPrivateOnlyError));
   }
 
-  std::unique_ptr<private_api::UnlockCellularSim::Params> params =
+  absl::optional<private_api::UnlockCellularSim::Params> params =
       private_api::UnlockCellularSim::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -780,11 +793,12 @@ NetworkingPrivateSetCellularSimStateFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateSetCellularSimStateFunction::Run() {
   if (!HasPrivateNetworkingAccess(extension(), source_context_type(),
-                                  source_url(), context_id())) {
+                                  source_url(), context_id(),
+                                  GetContextData())) {
     return RespondNow(Error(kPrivateOnlyError));
   }
 
-  std::unique_ptr<private_api::SetCellularSimState::Params> params =
+  absl::optional<private_api::SetCellularSimState::Params> params =
       private_api::SetCellularSimState::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -821,11 +835,12 @@ NetworkingPrivateSelectCellularMobileNetworkFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateSelectCellularMobileNetworkFunction::Run() {
   if (!HasPrivateNetworkingAccess(extension(), source_context_type(),
-                                  source_url(), context_id())) {
+                                  source_url(), context_id(),
+                                  GetContextData())) {
     return RespondNow(Error(kPrivateOnlyError));
   }
 
-  std::unique_ptr<private_api::SelectCellularMobileNetwork::Params> params =
+  absl::optional<private_api::SelectCellularMobileNetwork::Params> params =
       private_api::SelectCellularMobileNetwork::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -889,7 +904,8 @@ NetworkingPrivateGetCertificateListsFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateGetCertificateListsFunction::Run() {
   if (!HasPrivateNetworkingAccess(extension(), source_context_type(),
-                                  source_url(), context_id())) {
+                                  source_url(), context_id(),
+                                  GetContextData())) {
     return RespondNow(Error(kPrivateOnlyError));
   }
 

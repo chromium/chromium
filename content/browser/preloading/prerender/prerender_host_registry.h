@@ -5,33 +5,46 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_HOST_REGISTRY_H_
 #define CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_HOST_REGISTRY_H_
 
+#include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "base/types/pass_key.h"
-#include "content/browser/preloading/prerender/prerender_attributes.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
-#include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/common/content_export.h"
-#include "content/common/frame.mojom.h"
+#include "content/common/frame.mojom-forward.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
-#include "url/gurl.h"
+
+class GURL;
+
+namespace base {
+class SingleThreadTaskRunner;
+}
+
+namespace memory_instrumentation {
+class GlobalMemoryDump;
+}
 
 namespace content {
 
+class FrameTree;
+class NavigationRequest;
+class PrerenderCancellationReason;
+class PrerenderHost;
 class PrerenderNewTabHandle;
 class RenderFrameHostImpl;
-class PrerenderCancellationReason;
+class StoredPage;
+struct PrerenderAttributes;
 
 // PrerenderHostRegistry creates and retains a prerender host, and reserves it
 // for NavigationRequest to activate the prerendered page. This is created per

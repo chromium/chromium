@@ -9,6 +9,7 @@
 
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/strings/string_piece.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "mojo/core/core.h"
 #include "mojo/core/embedder/embedder.h"
@@ -62,7 +63,7 @@ TEST_F(SharedBufferTest, PassSharedBufferLocal) {
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(p1));
 }
 
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(USE_BLINK)
 
 // Reads a single message with a shared buffer handle, maps the buffer, copies
 // the message contents into it, then exits.
@@ -344,7 +345,7 @@ TEST_F(SharedBufferTest, CreateAndPassFromChildReadOnlyBuffer) {
   });
 }
 
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(USE_BLINK)
 
 }  // namespace
 }  // namespace core

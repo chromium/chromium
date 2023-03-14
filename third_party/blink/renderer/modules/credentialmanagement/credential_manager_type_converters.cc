@@ -60,14 +60,18 @@ using blink::mojom::blink::CredentialInfoPtr;
 using blink::mojom::blink::CredentialType;
 using blink::mojom::blink::DevicePublicKeyRequest;
 using blink::mojom::blink::DevicePublicKeyRequestPtr;
+using blink::mojom::blink::IdentityProvider;
 using blink::mojom::blink::IdentityProviderConfig;
 using blink::mojom::blink::IdentityProviderConfigPtr;
 using blink::mojom::blink::IdentityProviderLoginHint;
+using blink::mojom::blink::IdentityProviderPtr;
 using blink::mojom::blink::IdentityUserInfo;
 using blink::mojom::blink::IdentityUserInfoPtr;
 using blink::mojom::blink::LargeBlobSupport;
 using blink::mojom::blink::LogoutRpsRequest;
 using blink::mojom::blink::LogoutRpsRequestPtr;
+using blink::mojom::blink::MDocProvider;
+using blink::mojom::blink::MDocProviderPtr;
 using blink::mojom::blink::PRFValues;
 using blink::mojom::blink::PRFValuesPtr;
 using blink::mojom::blink::PublicKeyCredentialCreationOptionsPtr;
@@ -766,6 +770,23 @@ TypeConverter<IdentityProviderConfigPtr, blink::IdentityProviderConfig>::
   }
   mojo_provider->login_hint = std::move(login_hint);
   return mojo_provider;
+}
+
+// static
+IdentityProviderPtr
+TypeConverter<IdentityProviderPtr, blink::IdentityProviderConfig>::Convert(
+    const blink::IdentityProviderConfig& provider) {
+  if (provider.hasMdoc() &&
+      blink::RuntimeEnabledFeatures::WebIdentityMDocsEnabled() &&
+      // TODO(https://crbug.com/1416939): make sure the MDocs API
+      // works well with the Multiple IdP API.
+      !blink::RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled()) {
+    auto mdoc = MDocProvider::New();
+    return IdentityProvider::NewMdoc(std::move(mdoc));
+  } else {
+    auto config = IdentityProviderConfig::From(provider);
+    return IdentityProvider::NewFederated(std::move(config));
+  }
 }
 
 // static

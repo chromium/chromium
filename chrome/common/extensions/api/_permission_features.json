@@ -618,20 +618,10 @@
     "location": "component",
     "platforms": ["chromeos"]
   },
-  "mediaRouterPrivate": {
-    "channel": "stable",
-    "extension_types": ["extension"],
-    "allowlist": [
-      "63ED55E43214C211F82122ED56407FF1A807F2A3",  // Media Router Dev
-      "226CF815E39A363090A1E547D53063472B8279FA"   // Media Router Stable
-    ]
-  },
   "mdns": [{
     "channel": "stable",
     "extension_types": ["extension"],
     "allowlist": [
-      "63ED55E43214C211F82122ED56407FF1A807F2A3",  // Media Router Dev
-      "226CF815E39A363090A1E547D53063472B8279FA",  // Media Router Stable
       "1BFB3A47AA4A1E1C4714D919217602685CDD0FA7",  // http://crbug.com/574600
       "DD87C93131FF8D3DE4E483DC1EB298D73C7223A6"   // http://crbug.com/1328114
     ]
@@ -813,6 +803,9 @@
     "location": "component"
   },
   {
+    // TODO(devlin): Remove these entries. Unfortunately, this causes a bit of
+    // a problem, because accessibility component extensions are relying an
+    // implicit allowlisting from this entry.
     "channel": "stable",
     "extension_types": ["extension"],
     "allowlist": [
@@ -1002,10 +995,6 @@
       "80B9DC58E5210749F052F5B4DB239C50CF72AEB6",
       // Hangout Services component extension.
       "DF84F03F9B960409CCDE0D895B9650EBE81C0A8E",
-      // Media Router dev extension
-      "63ED55E43214C211F82122ED56407FF1A807F2A3",
-      // Media Router release extension
-      "226CF815E39A363090A1E547D53063472B8279FA",
       // Extension used for API test.
       "ADFA45434ABA2F1A4647E673F53FF37F8F6047A3",
       "4F25792AF1AA7483936DE29C07806F203C7170A0",  // http://crbug.com/777967

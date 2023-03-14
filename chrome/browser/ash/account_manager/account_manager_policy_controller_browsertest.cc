@@ -8,8 +8,10 @@
 #include <vector>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/account_manager/account_manager_policy_controller.h"
 #include "chrome/browser/ash/account_manager/account_manager_policy_controller_factory.h"
@@ -116,19 +118,12 @@ class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
   }
 
   std::vector<::account_manager::Account> GetAccountManagerAccounts() {
-    DCHECK(account_manager_);
+    CHECK(account_manager_facade_);
 
-    std::vector<::account_manager::Account> accounts;
-    base::RunLoop run_loop;
-    account_manager_facade_->GetAccounts(base::BindLambdaForTesting(
-        [&accounts, &run_loop](
-            const std::vector<::account_manager::Account>& stored_accounts) {
-          accounts = stored_accounts;
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-
-    return accounts;
+    base::test::TestFuture<const std::vector<::account_manager::Account>&>
+        future;
+    account_manager_facade_->GetAccounts(future.GetCallback());
+    return future.Get();
   }
 
   Profile* profile() { return profile_.get(); }
@@ -140,10 +135,9 @@ class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
 
  private:
   base::ScopedTempDir temp_dir_;
-  // Non-owning pointer.
-  account_manager::AccountManager* account_manager_ = nullptr;
-  // Non-owning pointer.
-  account_manager::AccountManagerFacade* account_manager_facade_ = nullptr;
+  raw_ptr<account_manager::AccountManager> account_manager_ = nullptr;
+  raw_ptr<account_manager::AccountManagerFacade> account_manager_facade_ =
+      nullptr;
   std::unique_ptr<Profile> profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_environment_adaptor_;

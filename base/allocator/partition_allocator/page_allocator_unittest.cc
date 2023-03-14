@@ -127,8 +127,9 @@ TEST(PartitionAllocPageAllocatorTest, AllocFailure) {
 
   size_t size = HugeMemoryAmount();
   // Skip the test for sanitizers and platforms with ASLR turned off.
-  if (size == 0)
+  if (size == 0) {
     return;
+  }
 
   uintptr_t result =
       AllocPages(size, PageAllocationGranularity(),
@@ -160,8 +161,9 @@ TEST(PartitionAllocPageAllocatorTest, MAYBE_ReserveAddressSpace) {
 
   size_t size = HugeMemoryAmount();
   // Skip the test for sanitizers and platforms with ASLR turned off.
-  if (size == 0)
+  if (size == 0) {
     return;
+  }
 
   bool success = ReserveAddressSpace(size);
   if (!success) {
@@ -517,8 +519,9 @@ TEST(PartitionAllocPageAllocatorTest, PageTagging) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 TEST(PartitionAllocPageAllocatorTest, DecommitErasesMemory) {
-  if (!DecommittedMemoryIsAlwaysZeroed())
+  if (!DecommittedMemoryIsAlwaysZeroed()) {
     return;
+  }
 
   size_t size = PageAllocationGranularity();
   uintptr_t buffer = AllocPages(size, PageAllocationGranularity(),

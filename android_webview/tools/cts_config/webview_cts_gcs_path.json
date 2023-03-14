@@ -316,14 +316,14 @@
     },
     "arch": {
       "arm64": {
-        "filename": "arm64/Q/android-cts-arm64-10_r13.zip",
-        "_origin": "https://dl.google.com/dl/android/cts/android-cts-10_r13-linux_x86-arm.zip",
-        "unzip_dir": "arm64/Q/10_r13"
+        "filename": "arm64/Q/android-cts-arm64-10_r15.zip",
+        "_origin": "https://dl.google.com/dl/android/cts/android-cts-10_r15-linux_x86-arm.zip",
+        "unzip_dir": "arm64/Q/10_r15"
       },
       "x86": {
-        "filename": "x86/Q/android-cts-x86-10_r13.zip",
-        "_origin": "https://dl.google.com/dl/android/cts/android-cts-10_r13-linux_x86-x86.zip",
-        "unzip_dir": "x86/Q/10_r13"
+        "filename": "x86/Q/android-cts-x86-10_r15.zip",
+        "_origin": "https://dl.google.com/dl/android/cts/android-cts-10_r15-linux_x86-x86.zip",
+        "unzip_dir": "x86/Q/10_r15"
       }
     },
     "test_runs": [
@@ -404,14 +404,14 @@
     },
     "arch": {
       "arm64": {
-        "filename": "arm64/R/android-cts-arm64-11_r9.zip",
-        "_origin": "https://dl.google.com/dl/android/cts/android-cts-11_r9-linux_x86-arm.zip",
-        "unzip_dir": "arm64/R/11_r9/"
+        "filename": "arm64/R/android-cts-arm64-11_r11.zip",
+        "_origin": "https://dl.google.com/dl/android/cts/android-cts-11_r11-linux_x86-arm.zip",
+        "unzip_dir": "arm64/R/11_r11/"
       },
       "x86": {
-        "filename": "x86/R/android-cts-x86-11_r9.zip",
-        "_origin": "https://dl.google.com/dl/android/cts/android-cts-11_r9-linux_x86-x86.zip",
-        "unzip_dir": "x86/R/11_r9/"
+        "filename": "x86/R/android-cts-x86-11_r11.zip",
+        "_origin": "https://dl.google.com/dl/android/cts/android-cts-11_r11-linux_x86-x86.zip",
+        "unzip_dir": "x86/R/11_r11/"
       }
     },
     "test_runs": [
@@ -540,14 +540,14 @@
     },
     "arch": {
       "arm64": {
-        "filename": "arm64/S/android-cts-arm64-12_r5.zip",
-        "_origin": "https://dl.google.com/dl/android/cts/android-cts-12_r5-linux_x86-arm.zip",
-        "unzip_dir": "arm64/S/12_r5/"
+        "filename": "arm64/S/android-cts-arm64-12_r7.zip",
+        "_origin": "https://dl.google.com/dl/android/cts/android-cts-12_r7-linux_x86-arm.zip",
+        "unzip_dir": "arm64/S/12_r7/"
       },
       "x86": {
-        "filename": "x86/S/android-cts-x86-12_r5.zip",
-        "_origin": "https://dl.google.com/dl/android/cts/android-cts-12_r5-linux_x86-x86.zip",
-        "unzip_dir": "x86/S/12_r5/"
+        "filename": "x86/S/android-cts-x86-12_r7.zip",
+        "_origin": "https://dl.google.com/dl/android/cts/android-cts-12_r7-linux_x86-x86.zip",
+        "unzip_dir": "x86/S/12_r7/"
       }
     },
     "test_runs": [
@@ -702,15 +702,20 @@
       "tag_prefix": "android-cts-13.0"
     },
     "arch": {
+      "arm64": {
+        "filename": "arm64/T/android-cts-arm64-13_r3.zip",
+        "_origin": "https://dl.google.com/dl/android/cts/android-cts-13_r3-linux_x86-arm.zip",
+        "unzip_dir": "arm64/T/13_r3/"
+      },
       "x86": {
-        "filename": "x86/T/android-cts-x86-13_r1.zip",
-        "_origin": "https://dl.google.com/dl/android/cts/android-cts-13_r1-linux_x86-x86.zip",
-        "unzip_dir": "x86/T/13_r1/"
+        "filename": "x86/T/android-cts-x86-13_r3.zip",
+        "_origin": "https://dl.google.com/dl/android/cts/android-cts-13_r3-linux_x86-x86.zip",
+        "unzip_dir": "x86/T/13_r3/"
       }
     },
     "test_runs": [
       {
-        "apk": "android-cts/testcases/CtsWebkitTestCases/x86_64/CtsWebkitTestCases.apk",
+        "apk": "android-cts/testcases/CtsWebkitTestCases.apk",
         "excludes": [
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingMalwareCode",
@@ -743,7 +748,7 @@
         ]
       },
       {
-        "apk": "android-cts/testcases/CtsWebViewStartupApp/x86_64/CtsWebViewStartupApp.apk",
+        "apk": "android-cts/testcases/CtsWebViewStartupApp.apk",
         "excludes": [
           {
             "match": "com.android.cts.webkit.WebViewDeviceSideStartupTest#testCookieManagerBlockingUiThread",
@@ -753,10 +758,10 @@
         ]
       },
       {
-        "apk": "android-cts/testcases/CtsAutoFillServiceTestCases/x86_64/CtsAutoFillServiceTestCases.apk",
+        "apk": "android-cts/testcases/CtsAutoFillServiceTestCases.apk",
         "additional_apks": [
           {
-            "apk": "android-cts/testcases/CtsMockInputMethod/x86_64/CtsMockInputMethod.apk",
+            "apk": "android-cts/testcases/CtsMockInputMethod.apk",
             "forced_queryable": true,
             "force_full_mode": true
           }
@@ -805,13 +810,13 @@
         ]
       },
       {
-        "apk": "android-cts/testcases/CtsAssistTestCases/x86_64/CtsAssistTestCases.apk",
+        "apk": "android-cts/testcases/CtsAssistTestCases.apk",
         "additional_apks": [
           {
-            "apk": "android-cts/testcases/CtsAssistApp/x86_64/CtsAssistApp.apk"
+            "apk": "android-cts/testcases/CtsAssistApp.apk"
           },
           {
-            "apk": "android-cts/testcases/CtsAssistService/x86_64/CtsAssistService.apk",
+            "apk": "android-cts/testcases/CtsAssistService.apk",
             "force_full_mode": true
           }
         ],
@@ -822,7 +827,7 @@
         ]
       },
       {
-        "apk": "android-cts/testcases/CtsWidgetTestCases/x86_64/CtsWidgetTestCases.apk",
+        "apk": "android-cts/testcases/CtsWidgetTestCases.apk",
         "includes": [
           {
             "match": "android.widget.cts.RemoteViewsActivityTest#testWebView"
@@ -830,7 +835,7 @@
         ]
       },
       {
-        "apk": "android-cts/testcases/CtsTextTestCases/x86_64/CtsTextTestCases.apk",
+        "apk": "android-cts/testcases/CtsTextTestCases.apk",
         "includes": [
           {
             "match": "android.text.cts.EmojiTest#testEmojiGlyphWebView"

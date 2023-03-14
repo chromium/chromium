@@ -8,18 +8,14 @@
 #include <map>
 #include <string>
 
-#include "base/check_op.h"
 #include "base/functional/callback.h"
-#include "base/guid.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_util.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
-#include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
+#include "third_party/blink/public/common/interest_group/ad_display_size.h"
 #include "url/gurl.h"
-#include "url/url_constants.h"
 
 namespace content {
 
@@ -80,7 +76,18 @@ FencedFrameURLMapping::SharedStorageURNMappingResult::
 void FencedFrameURLMapping::ImportPendingAdComponents(
     const std::vector<std::pair<GURL, FencedFrameConfig>>& components) {
   for (const auto& component_ad : components) {
-    DCHECK(!IsMapped(component_ad.first));
+    // If this is called redundantly, do nothing.
+    // This happens in urn iframes, because the FencedFrameURLMapping is
+    // attached to the Page. In fenced frames, the Page is rooted at the fenced
+    // frame root, so a new FencedFrameURLMapping is created when the root is
+    // navigated. In urn iframes, the Page is rooted at the top-level frame, so
+    // the same FencedFrameURLMapping exists after "urn iframe root"
+    // navigations.
+    // TODO(crbug.com/1415475): Change this to a CHECK when we remove urn
+    // iframes.
+    if (IsMapped(component_ad.first)) {
+      return;
+    }
 
     UrnUuidToUrlMap::iterator it =
         urn_uuid_to_url_map_.emplace(component_ad.first, component_ad.second)
@@ -129,14 +136,17 @@ FencedFrameURLMapping::AddMappingForUrl(const GURL& url) {
 blink::FencedFrame::RedactedFencedFrameConfig
 FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
     const GURL& urn_uuid,
-    const GURL& url,
+    const blink::AdDescriptor& ad_descriptor,
     AdAuctionData ad_auction_data,
     base::RepeatingClosure on_navigate_callback,
-    std::vector<GURL> ad_component_urls,
+    std::vector<blink::AdDescriptor> ad_component_descriptors,
     scoped_refptr<FencedFrameReporter> fenced_frame_reporter) {
   // Move pending mapped urn::uuid to `urn_uuid_to_url_map_`.
+  // TODO(crbug.com/1422301): Remove the check for whether `urn_uuid` has been
+  // mapped already once the crash is resolved.
+  CHECK(!IsMapped(urn_uuid));
   auto pending_it = pending_urn_uuid_to_url_map_.find(urn_uuid);
-  DCHECK(pending_it != pending_urn_uuid_to_url_map_.end());
+  CHECK(pending_it != pending_urn_uuid_to_url_map_.end());
   pending_urn_uuid_to_url_map_.erase(pending_it);
 
   bool emplaced = false;
@@ -146,8 +156,11 @@ FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
   auto& config = urn_uuid_to_url_map_[urn_uuid];
 
   // Assign mapped URL and interest group info.
+  // TODO(crbug.com/1420638): Once the representation of size in fenced frame
+  // config is finalized, pass the ad size from the winning bid to its fenced
+  // frame config.
   config.urn_uuid_.emplace(urn_uuid);
-  config.mapped_url_.emplace(url, VisibilityToEmbedder::kOpaque,
+  config.mapped_url_.emplace(ad_descriptor.url, VisibilityToEmbedder::kOpaque,
                              VisibilityToContent::kTransparent);
   config.deprecated_should_freeze_initial_size_.emplace(
       true, VisibilityToEmbedder::kTransparent, VisibilityToContent::kOpaque);
@@ -157,11 +170,14 @@ FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
   config.on_navigate_callback_ = std::move(on_navigate_callback);
 
   std::vector<FencedFrameConfig> nested_configs;
-  nested_configs.reserve(ad_component_urls.size());
-  for (auto& ad_component_url : ad_component_urls) {
+  nested_configs.reserve(ad_component_descriptors.size());
+  for (auto& ad_component_descriptor : ad_component_descriptors) {
     // This config has no urn:uuid. It will later be set when being read into
     // `nested_urn_config_pairs` in `GenerateURNConfigVectorForConfigs()`.
-    nested_configs.emplace_back(ad_component_url);
+    // TODO(crbug.com/1420638): Once the representation of size in fenced frame
+    // config is finalized, pass the ad component size from the winning bid to
+    // its fenced frame config.
+    nested_configs.emplace_back(ad_component_descriptor.url);
   }
   config.nested_configs_.emplace(std::move(nested_configs),
                                  VisibilityToEmbedder::kOpaque,
@@ -178,8 +194,8 @@ absl::optional<GURL> FencedFrameURLMapping::GeneratePendingMappedURN() {
   }
 
   GURL urn_uuid = GenerateUrnUuid();
-  DCHECK(!IsMapped(urn_uuid));
-  DCHECK(!IsPendingMapped(urn_uuid));
+  CHECK(!IsMapped(urn_uuid));
+  CHECK(!IsPendingMapped(urn_uuid));
 
   pending_urn_uuid_to_url_map_.emplace(
       urn_uuid, std::set<raw_ptr<MappingResultObserver>>());

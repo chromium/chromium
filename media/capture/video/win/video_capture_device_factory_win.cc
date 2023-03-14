@@ -184,6 +184,12 @@ bool IsDeviceBlockedForMediaFoundationByDisplayName(
   return base::Contains(kDisplayNamesBlockedForMediaFoundation, display_name);
 }
 
+HMODULE ExpandEnvironmentStringsAndLoadLibrary(const wchar_t* path) {
+  wchar_t expanded_path[MAX_PATH] = {0};
+  ExpandEnvironmentStringsW(path, expanded_path, std::size(expanded_path));
+  return LoadLibraryExW(expanded_path, nullptr, LOAD_WITH_ALTERED_SEARCH_PATH);
+}
+
 bool LoadMediaFoundationDlls() {
   static const wchar_t* const kMfDLLs[] = {
       L"%WINDIR%\\system32\\mf.dll", L"%WINDIR%\\system32\\mfplat.dll",
@@ -194,12 +200,19 @@ bool LoadMediaFoundationDlls() {
   // (http://crbug/973868).
   SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY_REPEATEDLY();
 
+  // Load required DLLs.
   for (const wchar_t* kMfDLL : kMfDLLs) {
-    wchar_t path[MAX_PATH] = {0};
-    ExpandEnvironmentStringsW(kMfDLL, path, std::size(path));
-    if (!LoadLibraryExW(path, nullptr, LOAD_WITH_ALTERED_SEARCH_PATH))
+    if (!ExpandEnvironmentStringsAndLoadLibrary(kMfDLL)) {
       return false;
+    }
   }
+
+  // Load optional DLLs whose availability depends on Windows version.
+  if (base::win::GetVersion() >= base::win::Version::WIN11_22H2) {
+    ExpandEnvironmentStringsAndLoadLibrary(
+        L"%WINDIR%\\system32\\mfsensorgroup.dll");
+  }
+
   return true;
 }
 
@@ -281,16 +294,6 @@ DevicesInfo::const_iterator FindNonDirectShowDeviceInfoByNameAndModel(
                    VideoCaptureApi::WIN_DIRECT_SHOW &&
                name_and_model == device_info.descriptor.GetNameAndModel();
       });
-}
-
-bool IsEnclosureLocationSupported() {
-  if (!(base::win::ResolveCoreWinRTDelayload() &&
-        ScopedHString::ResolveCoreWinRTStringDelayload())) {
-    DLOG(ERROR) << "Failed loading functions from combase.dll";
-    return false;
-  }
-
-  return true;
 }
 
 void FindAndSetDefaultVideoCamera(
@@ -566,18 +569,14 @@ void VideoCaptureDeviceFactoryWin::GetDevicesInfo(
     devices_info = GetDevicesInfoDirectShow(devices_info);
   }
 
-  if (IsEnclosureLocationSupported()) {
-    origin_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
-    com_thread_.init_com_with_mta(true);
-    com_thread_.Start();
-    com_thread_.task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&VideoCaptureDeviceFactoryWin::EnumerateDevicesUWP,
-                       base::Unretained(this), std::move(devices_info),
-                       std::move(callback)));
-  } else {
-    DeviceInfoReady(std::move(devices_info), std::move(callback));
-  }
+  origin_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
+  com_thread_.init_com_with_mta(true);
+  com_thread_.Start();
+  com_thread_.task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&VideoCaptureDeviceFactoryWin::EnumerateDevicesUWP,
+                     base::Unretained(this), std::move(devices_info),
+                     std::move(callback)));
 }
 
 void VideoCaptureDeviceFactoryWin::EnumerateDevicesUWP(

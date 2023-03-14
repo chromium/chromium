@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom-test-utils.h"
@@ -161,7 +162,7 @@ class PasswordManagerVotingBrowserTest : public PasswordManagerBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      autofill::features::kAutofillServerCommunication};
+      autofill::features::test::kAutofillServerCommunication};
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
 };
 
@@ -196,12 +197,8 @@ class PasswordManagerBackForwardCacheBrowserTest
     // whether setup is completing.
     LOG(INFO) << "SetUpCommandLine started.";
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{::features::kBackForwardCache,
-          {{"ignore_outstanding_network_request_for_testing", "true"}}},
-         {::features::kBackForwardCacheTimeToLiveControl,
-          {{"time_to_live_seconds", "3600"}}}},
-        // Allow BackForwardCache for all devices regardless of their memory.
-        {::features::kBackForwardCacheMemoryControls});
+        content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(),
+        content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
     PasswordManagerBrowserTest::SetUpCommandLine(command_line);
     LOG(INFO) << "SetUpCommandLine complete.";
   }
@@ -1232,8 +1229,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   NavigateToFile("/password/nonplaceholder_username.html");
 
   // Use autofill predictions
-  autofill::ChromeAutofillClient* autofill_client =
-      autofill::ChromeAutofillClient::FromWebContents(WebContents());
+  autofill::ContentAutofillClient* autofill_client =
+      autofill::ContentAutofillClient::FromWebContents(WebContents());
   autofill_client->PropagateAutofillPredictions(
       autofill::ContentAutofillDriver::GetForRenderFrameHost(
           WebContents()->GetPrimaryMainFrame()),
@@ -1296,8 +1293,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   NavigateToFile("/password/nonplaceholder_username.html");
 
   // Use autofill predictions
-  autofill::ChromeAutofillClient* autofill_client =
-      autofill::ChromeAutofillClient::FromWebContents(WebContents());
+  autofill::AutofillClient* autofill_client =
+      autofill::ContentAutofillClient::FromWebContents(WebContents());
   autofill_client->PropagateAutofillPredictions(
       autofill::ContentAutofillDriver::GetForRenderFrameHost(
           WebContents()->GetPrimaryMainFrame()),
@@ -2053,7 +2050,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       ObservingAutofillClient::FromWebContents(WebContents());
   password_manager::ContentPasswordManagerDriver* driver =
       driver_factory->GetDriverForFrame(WebContents()->GetPrimaryMainFrame());
-  driver->GetPasswordAutofillManager()->set_autofill_client(
+  driver->GetPasswordAutofillManager()->set_autofill_client_for_test(
       observing_autofill_client);
 
   // Trigger in page navigation.
@@ -4488,7 +4485,7 @@ class PasswordManagerPrerenderBrowserTest : public PasswordManagerBrowserTest {
         owned_web_contents.get());
     TestPasswordManagerClient::CreateForWebContentsWithAutofillClient(
         owned_web_contents.get(),
-        autofill::ChromeAutofillClient::FromWebContents(
+        autofill::ContentAutofillClient::FromWebContents(
             owned_web_contents.get()));
     ASSERT_TRUE(
         ChromePasswordManagerClient::FromWebContents(owned_web_contents.get()));

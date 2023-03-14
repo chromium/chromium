@@ -528,7 +528,7 @@ void PresentationServiceDelegateImpl::ReconnectPresentation(
                         std::move(error_cb),
                         mojom::RoutePresentationConnectionPtr(), *result);
   } else {
-    // TODO(crbug.com/627655): Handle multiple URLs.
+    // TODO(crbug.com/1418744): Handle multiple URLs.
     const GURL& presentation_url = presentation_urls[0];
     bool incognito = GetWebContents().GetBrowserContext()->IsOffTheRecord();
     router_->JoinRoute(

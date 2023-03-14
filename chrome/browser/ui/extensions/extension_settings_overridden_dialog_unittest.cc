@@ -93,9 +93,8 @@ TEST_F(ExtensionSettingsOverriddenDialogUnitTest,
 TEST_F(ExtensionSettingsOverriddenDialogUnitTest,
        WontShowForAnAcknowledgedExtension) {
   const extensions::Extension* extension = AddExtension();
-  GetExtensionPrefs()->UpdateExtensionPref(extension->id(),
-                                           kTestAcknowledgedPreference,
-                                           std::make_unique<base::Value>(true));
+  GetExtensionPrefs()->UpdateExtensionPref(
+      extension->id(), kTestAcknowledgedPreference, base::Value(true));
 
   ExtensionSettingsOverriddenDialog controller(
       CreateTestDialogParams(extension->id()), profile());

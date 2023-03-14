@@ -126,13 +126,8 @@ IN_PROC_BROWSER_TEST_F(CookieManagerBrowserTest,
   }
 }
 
-#if BUILDFLAG(IS_WIN)
-// TODO(crbug.com/1204901): Disabled due to flakiness on Windows.
-#define MAYBE_FlushCookiesAfterSet DISABLED_FlushCookiesAfterSet
-#else
-#define MAYBE_FlushCookiesAfterSet FlushCookiesAfterSet
-#endif
-IN_PROC_BROWSER_TEST_F(CookieManagerBrowserTest, MAYBE_FlushCookiesAfterSet) {
+IN_PROC_BROWSER_TEST_F(CookieManagerBrowserTest,
+                       DISABLED_FlushCookiesAfterSet) {
   EXPECT_TRUE(embedded_test_server()->Start());
   NavigateAndWaitForCompletion(
       embedded_test_server()->GetURL("/simple_page.html"), shell());
@@ -147,14 +142,8 @@ IN_PROC_BROWSER_TEST_F(CookieManagerBrowserTest, MAYBE_FlushCookiesAfterSet) {
   EXPECT_GT(GetCookieDbModifiedTime(), original_modified_time);
 }
 
-#if BUILDFLAG(IS_WIN)
-// TODO(crbug.com/1204901): Disabled due to flakiness on Windows.
-#define MAYBE_FlushCookiesAfterSetMultiple DISABLED_FlushCookiesAfterSetMultiple
-#else
-#define MAYBE_FlushCookiesAfterSetMultiple FlushCookiesAfterSetMultiple
-#endif
 IN_PROC_BROWSER_TEST_F(CookieManagerBrowserTest,
-                       MAYBE_FlushCookiesAfterSetMultiple) {
+                       DISABLED_FlushCookiesAfterSetMultiple) {
   EXPECT_TRUE(embedded_test_server()->Start());
   NavigateAndWaitForCompletion(
       embedded_test_server()->GetURL("/simple_page.html"), shell());

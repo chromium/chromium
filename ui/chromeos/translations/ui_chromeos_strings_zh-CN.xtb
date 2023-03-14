@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">下一步</translation>
 <translation id="1209796539517632982">自动域名服务器</translation>
 <translation id="1210831758834677569">老挝语</translation>
+<translation id="1221555006497674479">存储空间不足，您的 <ph name="TOTAL_SPACE" /> 共享云端硬盘存储空间还剩 <ph name="REMAINING_PERCENTAGE" />%。</translation>
 <translation id="1243314992276662751">上传</translation>
 <translation id="1249250836236328755">流派</translation>
 <translation id="1254593899333212300">直接连接到互联网</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">中文拼音</translation>
 <translation id="1646019627374511909">正在将 <ph name="NUMBER_OF_ITEMS" /> 个文件设为“可离线使用”</translation>
 <translation id="164969095109328410">Chrome设备</translation>
+<translation id="1661207570040737402">您的 Google Workspace 共享云端硬盘存储空间已用尽。</translation>
 <translation id="1661867754829461514">缺少 PIN</translation>
 <translation id="166439687370499867">不允许更改共享网络配置</translation>
 <translation id="1665611772925418501">无法修改该文件。</translation>
@@ -82,6 +84,7 @@
 <translation id="1722487484194605434">正在压缩 <ph name="NUMBER_OF_ITEMS" /> 项内容…</translation>
 <translation id="1722687688096767818">正在添加配置文件…</translation>
 <translation id="1726100011689679555">域名服务器</translation>
+<translation id="1727562178154619254">可以开始同步了</translation>
 <translation id="1729953886957086472">德语（德国）</translation>
 <translation id="1730235522912993863">中文仓颉</translation>
 <translation id="1731889557567069540">已复制 <ph name="NUMBER_OF_ITEMS" /> 项。</translation>
@@ -349,11 +352,11 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">粘贴</translation>
 <translation id="3952872973865944257">泰卢固语注音</translation>
-<translation id="3954354850384043518">正在下载</translation>
 <translation id="3958548648197196644">猕猴桃</translation>
 <translation id="3971140002794351170">下载移动网络配置文件，第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），网络名称为“<ph name="NETWORK_NAME" />”，网络服务提供商为“<ph name="NETWORK_PROVIDER_NAME" />”</translation>
 <translation id="3973925058222872294">英语（英国）</translation>
 <translation id="3975895378829046965">孟加拉语注音</translation>
+<translation id="3999574733850440202">最近打开的 Microsoft 文件已移至 OneDrive</translation>
 <translation id="4002066346123236978">标题</translation>
 <translation id="4017788180641807848">英语（美国）Workman 键盘</translation>
 <translation id="4019998208269143058">固定到“快捷文件”空间</translation>
@@ -362,6 +365,7 @@
 <translation id="4092890906744441904">爱尔兰语</translation>
 <translation id="4124935795427217608">独角兽</translation>
 <translation id="4131235941541910880">将不需要的内容移至回收站</translation>
+<translation id="4134804435730168042">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" />，在设备完成设置后启用</translation>
 <translation id="4153015322587141338">只需右键点击某个文件并选择“<ph name="PIN_COMMAND" />”，即可在任务栏中快速访问相应文件。</translation>
 <translation id="4157569377477607576">管理员政策不建议：</translation>
 <translation id="4159731583141908892">已移动 <ph name="FILE_NAME" />。</translation>
@@ -404,6 +408,7 @@
 <translation id="4414834425328380570">“<ph name="FILE_NAME" />”将被删除且无法恢复。</translation>
 <translation id="4418686080762064601">为您的文件创建快捷方式</translation>
 <translation id="4425149324548788773">我的云端硬盘</translation>
+<translation id="4432921877815220091">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，在设备完成设置后启用，由您的管理员管理</translation>
 <translation id="4439427728133035643">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，连接</translation>
 <translation id="4442424173763614572">DNS 查找失败</translation>
 <translation id="4462159676511157176">自定义域名服务器</translation>
@@ -606,8 +611,10 @@
 <translation id="5911887972742538906">安装 Linux 应用时出错。</translation>
 <translation id="5912396950572065471">格式</translation>
 <translation id="5913638992615760742">复制操作失败，出现了意外的错误：<ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">新的搜索功能现已推出</translation>
 <translation id="5926082595146149752">荷兰语（荷兰）美式国际 PC 键盘</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，在设备完成设置后启用</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> 项内容</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">排序选项</translation>
@@ -694,6 +701,7 @@
 <translation id="6732801395666424405">未加载证书</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">与 Bruschetta 共享文件夹</translation>
+<translation id="6750737795876287924">当前目录</translation>
 <translation id="6751256176799620176">已选择 1 个文件夹</translation>
 <translation id="6755827872271341378">ChromeOS Flex 设备</translation>
 <translation id="6790428901817661496">播放</translation>
@@ -731,7 +739,6 @@
 <translation id="6973630695168034713">文件夹</translation>
 <translation id="6976795442547527108">狮子</translation>
 <translation id="6979158407327259162">Google 云端硬盘</translation>
-<translation id="6979737339423435258">时间不限</translation>
 <translation id="6989942356279143254">瑞典语</translation>
 <translation id="6990081529015358884">空间不足</translation>
 <translation id="6993826899923627728">这些内容位于您的回收站中</translation>
@@ -754,6 +761,7 @@
 <translation id="7126604456862387217">&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt; - 搜索云端硬盘&lt;em&gt;&lt;/em&gt;</translation>
 <translation id="7135561821015524160">卡纳达语注音</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">缺少“主体备用名称匹配”或“域名后缀匹配”，无法验证服务器身份</translation>
 <translation id="7165320105431587207">无法配置网络</translation>
 <translation id="7170041865419449892">超出范围</translation>
 <translation id="7180611975245234373">刷新</translation>
@@ -786,7 +794,6 @@
 <translation id="7458955835361612701">没有任何近期图片</translation>
 <translation id="7460898608667578234">乌克兰语</translation>
 <translation id="7469894403370665791">自动连接到该网络</translation>
-<translation id="7481358317100446445">准备就绪</translation>
 <translation id="7486315294984620427">若要将某个文件拖放到 Parallels Desktop，必须先将此文件复制到“Windows 文件”文件夹。</translation>
 <translation id="749452993132003881">平假名</translation>
 <translation id="7495372004724182530">马拉雅拉姆语注音</translation>
@@ -824,6 +831,7 @@
 <translation id="7724603315864178912">剪切</translation>
 <translation id="7732111077498238432">网络受政策控制</translation>
 <translation id="7736003208887389532">要永久删除这些文件吗？</translation>
+<translation id="7740287852186792672">搜索结果</translation>
 <translation id="7748626145866214022">操作栏中提供了更多选项。按 Alt + A 即可聚焦于操作栏。</translation>
 <translation id="7760449188139285140">中文五笔</translation>
 <translation id="7765158879357617694">移动</translation>
@@ -875,6 +883,7 @@
 <translation id="8116072619078571545">冰水</translation>
 <translation id="8128733386027980860">英语（英国）Dvorak 键盘</translation>
 <translation id="8137331602592933310">“<ph name="FILENAME" />”是其他人共享给您的。您无法删除该文件，因为您不是它的所有者。</translation>
+<translation id="8138705869659070104">在设备完成设置后启用</translation>
 <translation id="813913629614996137">正在初始化…</translation>
 <translation id="8147028810663464959">字符宽度为全角</translation>
 <translation id="8151638057146502721">配置</translation>
@@ -900,6 +909,7 @@
 <translation id="8300849813060516376">OTASP 失败</translation>
 <translation id="8312871300878166382">粘贴到文件夹中</translation>
 <translation id="8329978297633540474">纯文本</translation>
+<translation id="8332007959299458842">最近打开的 Microsoft 文件已移至 Google 云端硬盘</translation>
 <translation id="8335587457941836791">取消固定到任务栏</translation>
 <translation id="8335837413233998004">白俄罗斯语</translation>
 <translation id="8336153091935557858">昨天<ph name="YESTERDAY_DAYTIME" /></translation>
@@ -926,6 +936,7 @@
 <translation id="8487700953926739672">可离线使用</translation>
 <translation id="8492972329130824181">无法使用家庭网络。必须启用移动数据漫游才能联网。</translation>
 <translation id="8499098729323186194">正在提取 <ph name="NUMBER_OF_ITEMS" /> 个项目…</translation>
+<translation id="8502913769543567768">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" />，在设备完成设置后启用，由您的管理员管理</translation>
 <translation id="8521441079177373948">英国英语</translation>
 <translation id="853494022971700746">法语（法国）</translation>
 <translation id="8540608333167683902">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，详细信息</translation>
@@ -987,6 +998,7 @@
 <translation id="9046895021617826162">连接失败</translation>
 <translation id="9065512565307033593">如果您未通过验证，我们将禁止您访问网络。</translation>
 <translation id="908378762078012445">俄语注音 AATSEEL 键盘</translation>
+<translation id="9086302186042011942">正在同步</translation>
 <translation id="9099674669267916096">页数</translation>
 <translation id="9100610230175265781">必须提供密码</translation>
 <translation id="9110990317705400362">我们在不断寻找各种方式来提高上网安全。之前，任何网站都可以提示您在浏览器中添加扩展程序；而在最新版本的Google Chrome中，您必须明确告诉Chrome您想要安装这些扩展程序（即：在“扩展程序”页添加它们）后才可以。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>

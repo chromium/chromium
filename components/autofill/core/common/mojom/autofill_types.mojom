@@ -390,6 +390,11 @@ struct FormFieldDataPredictions {
   string overall_type;
   string parseable_name;
   string section;
+  // See AutofillField for information on the ranks.
+  uint32 rank;
+  uint32 rank_in_signature_group;
+  uint32 rank_in_host_form;
+  uint32 rank_in_host_form_signature_group;
 };
 
 // autofill::FormDataPredictions
@@ -403,8 +408,8 @@ struct FormDataPredictions {
 // autofill::PasswordAndMetadata
 // (components/autofill/core/common/password_form_fill_data.h)
 struct PasswordAndMetadata {
-  mojo_base.mojom.String16 username;
-  mojo_base.mojom.String16 password;
+  mojo_base.mojom.String16 username_value;
+  mojo_base.mojom.String16 password_value;
   string realm;
   bool uses_account_store;
 };

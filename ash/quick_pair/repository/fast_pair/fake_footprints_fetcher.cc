@@ -26,8 +26,9 @@ void FakeFootprintsFetcher::GetUserDevices(UserReadDevicesCallback callback) {
     *response.add_fast_pair_info() = entry.second;
   }
 
-  if (add_user_result_)
+  if (add_user_result_) {
     *response.add_fast_pair_info() = opt_in_status_info_;
+  }
   std::move(callback).Run(std::move(response));
 }
 
@@ -44,13 +45,7 @@ void FakeFootprintsFetcher::SetAddUserFastPairInfoResult(bool add_user_result) {
 void FakeFootprintsFetcher::AddUserFastPairInfo(
     nearby::fastpair::FastPairInfo info,
     AddDeviceCallback callback) {
-  if (info.has_opt_in_status() && add_user_result_) {
-    opt_in_status_info_ = info;
-    std::move(callback).Run(add_user_result_);
-    return;
-  }
-
-  if (info.has_opt_in_status() && !add_user_result_) {
+  if (!add_user_result_) {
     std::move(callback).Run(add_user_result_);
     return;
   }

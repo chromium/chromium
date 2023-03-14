@@ -27,6 +27,7 @@ class ASH_EXPORT KnobSwitch : public views::Button {
 
   // views::View:
   void Layout() override;
+  int GetHeightForWidth(int w) const override;
 
  private:
   // views::Button:

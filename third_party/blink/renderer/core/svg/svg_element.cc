@@ -658,10 +658,8 @@ void SVGElement::ParseAttribute(const AttributeModificationParams& params) {
   if (params.name == html_names::kNonceAttr) {
     if (params.new_value != g_empty_atom)
       setNonce(params.new_value);
-  } else if (params.name.Matches(xml_names::kLangAttr)) {
-    PseudoStateChanged(CSSSelector::kPseudoLang);
   } else if (params.name == svg_names::kLangAttr) {
-    PseudoStateChanged(CSSSelector::kPseudoLang);
+    LangAttributeChanged();
   }
 
   const AtomicString& event_name =
@@ -1079,9 +1077,10 @@ scoped_refptr<const ComputedStyle> SVGElement::CustomStyleForLayoutObject(
   StyleRequest style_request;
   style_request.parent_override = style;
   style_request.layout_parent_override = style;
+  style_request.styled_element = this;
   StyleRecalcContext corresponding_recalc_context(style_recalc_context);
   corresponding_recalc_context.old_style =
-      PostStyleUpdateScope::GetOldStyle(*corresponding_element);
+      PostStyleUpdateScope::GetOldStyle(*this);
   return GetDocument().GetStyleResolver().ResolveStyle(
       corresponding_element, corresponding_recalc_context, style_request);
 }

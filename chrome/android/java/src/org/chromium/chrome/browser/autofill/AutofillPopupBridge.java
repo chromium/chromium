@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.autofill;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.Configuration;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -19,7 +18,6 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentSupplier;
@@ -57,7 +55,7 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
         // tab.
         Tab currentTab = TabModelSelectorSupplier.getCurrentTabFrom(windowAndroid);
         WebContents webContents = currentTab != null ? currentTab.getWebContents() : null;
-        if (activity == null || notEnoughScreenSpace(activity) || webContents == null) {
+        if (activity == null || webContents == null) {
             mAutofillPopup = null;
             mContext = null;
             mWebContentsViewRectProvider = null;
@@ -137,7 +135,7 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
     @CalledByNative
     private void show(AutofillSuggestion[] suggestions, boolean isRtl) {
         if (mAutofillPopup != null) {
-            mAutofillPopup.filterAndShow(suggestions, isRtl, shouldUseRefreshStyle());
+            mAutofillPopup.filterAndShow(suggestions, isRtl);
             mWebContentsAccessibility.onAutofillPopupDisplayed(mAutofillPopup.getListView());
         }
     }
@@ -157,24 +155,6 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
     @CalledByNative
     private boolean wasSuppressed() {
         return mAutofillPopup == null;
-    }
-
-    private static boolean shouldUseRefreshStyle() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_REFRESH_STYLE_ANDROID);
-    }
-
-    private static boolean notEnoughScreenSpace(Context context) {
-        Configuration config = context.getResources().getConfiguration();
-        // In landscape mode, most vertical space is used by the on-screen keyboard. When refresh
-        // style is used, the footer is sticky, so there is not much space to even show the first
-        // suggestion. In those cases, the dropdown should only be shown on very large screen
-        // devices, such as tablets.
-        //
-        // TODO(crbug.com/907634): This is a simple first approach to not provide a degraded
-        //                         experience. Explore other alternatives when this happens such as
-        //                         showing suggestions on the keyboard accessory.
-        return shouldUseRefreshStyle() && config.orientation == Configuration.ORIENTATION_LANDSCAPE
-                && !config.isLayoutSizeAtLeast(Configuration.SCREENLAYOUT_SIZE_XLARGE);
     }
 
     // Helper methods for AutofillSuggestion

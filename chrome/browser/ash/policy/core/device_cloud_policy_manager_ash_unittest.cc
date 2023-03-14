@@ -38,6 +38,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/attestation/fake_certificate.h"
 #include "chromeos/ash/components/attestation/mock_attestation_flow.h"
+#include "chromeos/ash/components/attestation/stub_attestation_features.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
@@ -354,6 +355,7 @@ class DeviceCloudPolicyManagerAshTest
 
   DeviceCloudPolicyStoreAsh* store_;
   SchemaRegistry schema_registry_;
+  ash::attestation::ScopedStubAttestationFeatures attestation_features_;
   MockCloudExternalDataManager* external_data_manager_;
   std::unique_ptr<TestingDeviceCloudPolicyManagerAsh> manager_;
   std::unique_ptr<DeviceCloudPolicyInitializer> initializer_;

@@ -77,8 +77,8 @@ bool WebHitTestResult::IsContentEditable() const {
   return private_->Result().IsContentEditable();
 }
 
-uint64_t WebHitTestResult::GetScrollableContainerId() const {
-  return private_->Result().GetScrollableContainer().GetStableId();
+cc::ElementId WebHitTestResult::GetScrollableContainerId() const {
+  return private_->Result().GetScrollableContainer();
 }
 
 WebHitTestResult::WebHitTestResult(const HitTestResult& result)

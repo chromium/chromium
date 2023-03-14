@@ -15,6 +15,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
+#include "base/containers/extend.h"
 #include "base/containers/flat_tree.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
@@ -73,11 +74,6 @@ struct TypedResult {
   std::vector<std::string> error_log;
 
   bool HasErrors() const { return !error_log.empty(); }
-  void DepositErrorLog(std::vector<std::string>& other_error_log) {
-    for (std::string& error : error_log)
-      other_error_log.push_back(std::move(error));
-    error_log.clear();
-  }
 };
 
 std::string CreateError(std::initializer_list<base::StringPiece> parts) {
@@ -95,8 +91,9 @@ void LogErrorsCallCallback(base::WeakPtr<WebAppIconManager> manager,
   if (!manager)
     return;
   std::vector<std::string>* error_log = manager->error_log();
-  if (error_log)
-    result.DepositErrorLog(*error_log);
+  if (error_log) {
+    base::Extend(*error_log, std::move(result.error_log));
+  }
 
   std::move(callback).Run(std::move(result.value));
 }
@@ -383,7 +380,7 @@ TypedResult<std::map<SquareSizePx, SkBitmap>> ReadIconsBlocking(
     IconId icon_id(app_id, purpose, icon_size_px);
     TypedResult<SkBitmap> read_result =
         ReadIconBlocking(utils, web_apps_directory, icon_id);
-    read_result.DepositErrorLog(result.error_log);
+    base::Extend(result.error_log, std::move(read_result.error_log));
     if (!read_result.value.empty())
       result.value[icon_size_px] = std::move(read_result.value);
   }
@@ -405,7 +402,7 @@ ReadIconsLastUpdateTimeBlocking(scoped_refptr<FileUtilsWrapper> utils,
     base::FilePath icon_file = GetIconFileName(web_apps_directory, icon_id);
     TypedResult<base::Time> read_result =
         ReadIconTimeBlocking(utils, icon_file);
-    read_result.DepositErrorLog(result.error_log);
+    base::Extend(result.error_log, std::move(read_result.error_log));
     if (!read_result.value.is_null())
       result.value[icon_size_px] = std::move(read_result.value);
   }
@@ -425,7 +422,7 @@ TypedResult<IconBitmaps> ReadAllIconsBlocking(
     TypedResult<std::map<SquareSizePx, SkBitmap>> read_result =
         ReadIconsBlocking(utils, web_apps_directory, app_id,
                           purpose_sizes.first, purpose_sizes.second);
-    read_result.DepositErrorLog(result.error_log);
+    base::Extend(result.error_log, std::move(read_result.error_log));
     result.value.SetBitmapsForPurpose(purpose_sizes.first,
                                       std::move(read_result.value));
   }
@@ -451,7 +448,7 @@ TypedResult<ShortcutsMenuIconBitmaps> ReadShortcutsMenuIconsBlocking(
         TypedResult<SkBitmap> read_result =
             ReadShortcutsMenuIconBlocking(utils, web_apps_directory, app_id,
                                           purpose, curr_index, icon_size_px);
-        read_result.DepositErrorLog(results.error_log);
+        base::Extend(results.error_log, std::move(read_result.error_log));
         if (!read_result.value.empty())
           bitmaps[icon_size_px] = std::move(read_result.value);
       }
@@ -555,7 +552,7 @@ ReadShortcutMenuIconsWithTimestampBlocking(
                 web_apps_directory, app_id, purpose, curr_index, icon_size_px);
         TypedResult<base::Time> read_result =
             ReadIconTimeBlocking(utils, file_name);
-        read_result.DepositErrorLog(results.error_log);
+        base::Extend(results.error_log, std::move(read_result.error_log));
         if (!read_result.value.is_null()) {
           bitmap_with_time[icon_size_px] = std::move(read_result.value);
         }

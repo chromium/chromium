@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/values.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 
@@ -75,7 +76,7 @@ class NET_EXPORT AddressList {
 
   // Creates a value representation of the address list, appropriate for
   // inclusion in a NetLog.
-  base::Value NetLogParams() const;
+  base::Value::Dict NetLogParams() const;
 
   // Deduplicates the stored addresses while otherwise preserving their order.
   void Deduplicate();

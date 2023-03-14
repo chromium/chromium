@@ -23,7 +23,6 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
@@ -49,6 +48,7 @@
 #include "chrome/browser/web_data_service_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -206,21 +206,14 @@ class LocalCardMigrationBrowserTest
     test_shared_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
-    ContentAutofillDriver::GetForRenderFrameHost(
-        GetActiveWebContents()->GetPrimaryMainFrame())
-        ->autofill_manager()
-        ->client()
-        ->GetPaymentsClient()
-        ->set_url_loader_factory_for_testing(test_shared_loader_factory_);
+    ContentAutofillClient* client =
+        ContentAutofillClient::FromWebContents(GetActiveWebContents());
+    client->GetPaymentsClient()->set_url_loader_factory_for_testing(
+        test_shared_loader_factory_);
 
     // Set up this class as the ObserverForTest implementation.
     local_card_migration_manager_ =
-        ContentAutofillDriver::GetForRenderFrameHost(
-            GetActiveWebContents()->GetPrimaryMainFrame())
-            ->autofill_manager()
-            ->client()
-            ->GetFormDataImporter()
-            ->local_card_migration_manager_.get();
+        client->GetFormDataImporter()->local_card_migration_manager_.get();
 
     local_card_migration_manager_->SetEventObserverForTesting(this);
     personal_data_ = PersonalDataManagerFactory::GetForProfile(GetProfile(0));
@@ -244,6 +237,13 @@ class LocalCardMigrationBrowserTest
 
     SetUploadDetailsRpcPaymentsAccepts();
     SetUpMigrateCardsRpcPaymentsAccepts();
+  }
+
+  void TearDownOnMainThread() override {
+    personal_data_ = nullptr;
+    local_card_migration_manager_ = nullptr;
+
+    SyncTest::TearDownOnMainThread();
   }
 
   void SetPaymentsCustomerDataOnDBSequence(
@@ -521,9 +521,8 @@ class LocalCardMigrationBrowserTest
   void WaitForCardDeletion() { WaitForPersonalDataChange(GetProfile(0)); }
 
   raw_ptr<LocalCardMigrationManager, DanglingUntriaged>
-      local_card_migration_manager_;
-
-  raw_ptr<PersonalDataManager, DanglingUntriaged> personal_data_;
+      local_card_migration_manager_ = nullptr;
+  raw_ptr<PersonalDataManager> personal_data_ = nullptr;
   PersonalDataLoadedObserverMock personal_data_observer_;
 
  private:

@@ -98,6 +98,7 @@ const CGFloat kButtonSpacing = 8;
     [_textField addTarget:self
                    action:@selector(textFieldDidChange:)
          forControlEvents:UIControlEventEditingChanged];
+    _textField.autocorrectionType = UITextAutocorrectionTypeNo;
 
     _hidePasswordButton = [UIButton buttonWithType:UIButtonTypeSystem];
     _hidePasswordButton.translatesAutoresizingMaskIntoConstraints = NO;

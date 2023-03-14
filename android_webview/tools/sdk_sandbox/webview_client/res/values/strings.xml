@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2023 The Chromium Authors
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+
+<resources>
+    <string name="app_name">WebView Sdk Sandbox</string>
+    <string name="load_sdk_provider">Load SDK</string>
+    <string name="unload_sdk_provider">Unload SDK</string>
+    <string name="load_surface_package">Load surface package</string>
+    <string name="load_url">Load URL</string>
+    <string name="url_hint">Enter URL</string>
+</resources>

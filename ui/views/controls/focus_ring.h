@@ -88,6 +88,11 @@ class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
   void SetHaloThickness(float halo_thickness);
   void SetHaloInset(float halo_inset);
 
+  // Explicitly disable using style of focus ring that is drawn with a 2dp gap
+  // between the focus ring and component.
+  void SetOutsetFocusRingDisabled() { outset_focus_ring_disabled_ = true; }
+  bool GetOutsetFocusRingDisabled() { return outset_focus_ring_disabled_; }
+
   bool ShouldPaintForTesting();
 
   // View:
@@ -110,6 +115,10 @@ class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
 
   void RefreshLayer();
 
+  // Returns whether we should outset by `kFocusRingOutset` dp before drawing
+  // the focus ring.
+  bool ShouldSetOutsetFocusRing() const;
+
   bool ShouldPaint();
 
   // Translates the provided SkRect or SkRRect, which is in the parent's
@@ -122,6 +131,8 @@ class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
 
   // The path generator used to draw this focus ring.
   std::unique_ptr<HighlightPathGenerator> path_generator_;
+
+  bool outset_focus_ring_disabled_ = false;
 
   // Whether the enclosed View is in an invalid state, which controls whether
   // the focus ring shows an invalid appearance (usually a different color).

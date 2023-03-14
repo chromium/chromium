@@ -7,14 +7,17 @@
 
 namespace autofill {
 
-// The type of save IBAN bubble to show.
+// The type of IBAN bubble to show.
 enum class IbanBubbleType {
-  // Save prompt when the user is saving locally.
-  kLocalSave = 0,
-
   // There is no bubble to show anymore. This also indicates that the icon
   // should not be visible.
-  kInactive = 1
+  kInactive = 0,
+
+  // Save prompt when the user is saving locally.
+  kLocalSave = 1,
+
+  // The manage IBAN bubble after IBAN is saved.
+  kManageSavedIban = 2
 };
 
 }  // namespace autofill

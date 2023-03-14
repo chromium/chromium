@@ -9,12 +9,13 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCred
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.CARD_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.CARD_NUMBER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.ON_CLICK_ACTION;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.CreditCardProperties.VIRTUAL_CARD_LABEL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.DISMISS_HANDLER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.FooterProperties.SCAN_CREDIT_CARD_CALLBACK;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.FooterProperties.SHOULD_SHOW_SCAN_CREDIT_CARD;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.FooterProperties.SHOW_CREDIT_CARD_SETTINGS_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SCAN_CREDIT_CARD_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHEET_ITEMS;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHOULD_SHOW_SCAN_CREDIT_CARD;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHOW_CREDIT_CARD_SETTINGS_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.VISIBLE;
 
 import android.view.LayoutInflater;
@@ -44,12 +45,6 @@ class TouchToFillCreditCardViewBinder {
             PropertyModel model, TouchToFillCreditCardView view, PropertyKey propertyKey) {
         if (propertyKey == DISMISS_HANDLER) {
             view.setDismissHandler(model.get(DISMISS_HANDLER));
-        } else if (propertyKey == SHOULD_SHOW_SCAN_CREDIT_CARD) {
-            view.setScanCreditCardButton(model.get(SHOULD_SHOW_SCAN_CREDIT_CARD));
-        } else if (propertyKey == SCAN_CREDIT_CARD_CALLBACK) {
-            view.setScanCreditCardCallback(model.get(SCAN_CREDIT_CARD_CALLBACK));
-        } else if (propertyKey == SHOW_CREDIT_CARD_SETTINGS_CALLBACK) {
-            view.setShowCreditCardSettingsCallback(model.get(SHOW_CREDIT_CARD_SETTINGS_CALLBACK));
         } else if (propertyKey == VISIBLE) {
             boolean visibilityChangeSuccessful = view.setVisible(model.get(VISIBLE));
             if (!visibilityChangeSuccessful && model.get(VISIBLE)) {
@@ -93,6 +88,9 @@ class TouchToFillCreditCardViewBinder {
         } else if (propertyKey == CARD_EXPIRATION) {
             TextView expirationDate = view.findViewById(R.id.description_line_2);
             expirationDate.setText(model.get(CARD_EXPIRATION));
+        } else if (propertyKey == VIRTUAL_CARD_LABEL) {
+            TextView virtualCardLabel = view.findViewById(R.id.description_line_2);
+            virtualCardLabel.setText(model.get(VIRTUAL_CARD_LABEL));
         } else if (propertyKey == ON_CLICK_ACTION) {
             view.setOnClickListener(unusedView -> model.get(ON_CLICK_ACTION).run());
         } else {
@@ -136,10 +134,58 @@ class TouchToFillCreditCardViewBinder {
             TextView buttonTitleText = view.findViewById(R.id.touch_to_fill_button_title);
             buttonTitleText.setText(R.string.autofill_credit_card_continue_button);
         } else if (propertyKey == CARD_ICON_ID || propertyKey == CARD_NAME
-                || propertyKey == CARD_NUMBER || propertyKey == CARD_EXPIRATION) {
+                || propertyKey == CARD_NUMBER || propertyKey == CARD_EXPIRATION
+                || propertyKey == VIRTUAL_CARD_LABEL) {
             // Skip, because none of these changes affect the button
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
+    }
+
+    /**
+     * Factory used to create a new footer inside the ListView inside the TouchToFillCreditCardView.
+     * @param parent The parent {@link ViewGroup} of the new item.
+     */
+    static View createFooterItemView(ViewGroup parent) {
+        return LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.touch_to_fill_credit_card_footer_item, parent, false);
+    }
+
+    /**
+     * Called whenever a property in the given model changes. It updates the given view accordingly.
+     * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
+     * @param view The {@link View} of the header to update.
+     * @param key The {@link PropertyKey} which changed.
+     */
+    static void bindFooterView(PropertyModel model, View view, PropertyKey propertyKey) {
+        if (propertyKey == SHOULD_SHOW_SCAN_CREDIT_CARD) {
+            setScanCreditCardButton(view, model.get(SHOULD_SHOW_SCAN_CREDIT_CARD));
+        } else if (propertyKey == SCAN_CREDIT_CARD_CALLBACK) {
+            setScanCreditCardCallback(view, model.get(SCAN_CREDIT_CARD_CALLBACK));
+        } else if (propertyKey == SHOW_CREDIT_CARD_SETTINGS_CALLBACK) {
+            setShowCreditCardSettingsCallback(view, model.get(SHOW_CREDIT_CARD_SETTINGS_CALLBACK));
+        } else {
+            assert false : "Unhandled update to property:" + propertyKey;
+        }
+    }
+
+    private static void setScanCreditCardButton(View view, boolean shouldShowScanCreditCard) {
+        View scanCreditCard = view.findViewById(R.id.scan_new_card);
+        if (shouldShowScanCreditCard) {
+            scanCreditCard.setVisibility(View.VISIBLE);
+        } else {
+            scanCreditCard.setVisibility(View.GONE);
+            scanCreditCard.setOnClickListener(null);
+        }
+    }
+
+    private static void setScanCreditCardCallback(View view, Runnable callback) {
+        View scanCreditCard = view.findViewById(R.id.scan_new_card);
+        scanCreditCard.setOnClickListener(unused -> callback.run());
+    }
+
+    private static void setShowCreditCardSettingsCallback(View view, Runnable callback) {
+        View managePaymentMethodsButton = view.findViewById(R.id.manage_payment_methods);
+        managePaymentMethodsButton.setOnClickListener(unused -> callback.run());
     }
 }

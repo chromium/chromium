@@ -3,12 +3,10 @@
 // found in the LICENSE file.
 
 import {assert} from '../assert.js';
-import {VideoType} from '../type.js';
 import {WaitableEvent} from '../waitable_event.js';
 
 import {
   DOCUMENT_PREFIX,
-  Filenamer,
   IMAGE_PREFIX,
   VIDEO_PREFIX,
 } from './file_namer.js';
@@ -52,14 +50,14 @@ function hasDocumentPrefix(entry: FileAccessEntry): boolean {
 }
 
 /**
- * Temporary directory in the internal file system.
- */
-let internalTempDir: DirectoryAccessEntry|null = null;
-
-/**
  * Camera directory in the external file system.
  */
 let cameraDir: DirectoryAccessEntry|null = null;
+
+/**
+ * Temporary directory which is hidden under the camera directory.
+ */
+let cameraTempDir: DirectoryAccessEntry|null = null;
 
 /**
  * Gets camera directory used by CCA.
@@ -69,12 +67,13 @@ export function getCameraDirectory(): DirectoryAccessEntry|null {
 }
 
 /**
- * Initializes the temporary directory in the internal file system.
+ * Initializes the temporary directory under camera directory.
  *
  * @return Promise for the directory result.
  */
-async function initInternalTempDir(): Promise<DirectoryAccessEntry> {
-  return new DirectoryAccessEntryImpl(await navigator.storage.getDirectory());
+async function initCameraTempDir(): Promise<DirectoryAccessEntry> {
+  assert(cameraDir !== null);
+  return getMaybeLazyDirectory(cameraDir, '.Temp');
 }
 
 /**
@@ -118,11 +117,11 @@ async function initCameraDirectory(): Promise<DirectoryAccessEntry|null> {
  * beginning of the app.
  */
 export async function initialize(): Promise<void> {
-  internalTempDir = await initInternalTempDir();
-  assert(internalTempDir !== null);
-
   cameraDir = await initCameraDirectory();
   assert(cameraDir !== null);
+
+  cameraTempDir = await initCameraTempDir();
+  assert(cameraTempDir !== null);
 }
 
 /**
@@ -142,33 +141,19 @@ export async function saveBlob(
   return file;
 }
 
-/**
- * Creates a file for saving video recording result.
- *
- * @return Newly created video file.
- * @throws If failed to create video file.
- */
-export async function createVideoFile(videoType: VideoType):
-    Promise<FileAccessEntry> {
-  assert(cameraDir !== null);
-  const name = new Filenamer().newVideoName(videoType);
-  const file = await cameraDir.createFile(name);
-  if (file === null) {
-    throw new Error('Failed to create video temp file.');
-  }
-  return file;
-}
-
-const PRIVATE_TEMPFILE_NAME = 'video-intent.mp4';
+const PRIVATE_TEMPFILE_NAME = 'video-tmp.mp4';
 
 /**
  * @return Newly created temporary file.
  * @throws If failed to create video temp file.
  */
 export async function createPrivateTempVideoFile(): Promise<FileAccessEntry> {
-  // TODO(inker): Handles running out of space case.
-  const dir = internalTempDir;
+  const dir = cameraTempDir;
   assert(dir !== null);
+
+  // Delete the previous temporary file if there is any.
+  await dir.removeEntry(PRIVATE_TEMPFILE_NAME);
+
   const file = await dir.createFile(PRIVATE_TEMPFILE_NAME);
   if (file === null) {
     throw new Error('Failed to create private video temp file.');

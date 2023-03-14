@@ -8,7 +8,7 @@
 #include <map>
 
 #include "android_webview/browser/gfx/compositor_frame_consumer.h"
-#include "android_webview/browser/gfx/hardware_renderer.h"
+#include "android_webview/browser/gfx/hardware_renderer_viz.h"
 #include "android_webview/browser/gfx/parent_compositor_draw_constraints.h"
 #include "android_webview/browser/gfx/root_frame_sink.h"
 #include "base/check.h"
@@ -116,7 +116,7 @@ class RenderThreadManager : public CompositorFrameConsumer {
 #endif  // DCHECK_IS_ON()
 
   // Accessed by RT thread.
-  std::unique_ptr<HardwareRenderer> hardware_renderer_;
+  std::unique_ptr<HardwareRendererViz> hardware_renderer_;
   bool view_tree_force_dark_state_ = false;
   raw_ptr<AwVulkanContextProvider> vulkan_context_provider_ = nullptr;
 

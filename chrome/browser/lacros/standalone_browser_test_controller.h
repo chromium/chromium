@@ -42,6 +42,10 @@ class StandaloneBrowserTestController
                 mojo::PendingRemote<crosapi::mojom::TtsUtteranceClient>
                     utterance_client) override;
 
+  void InstallSubApp(const web_app::AppId& parent_app_id,
+                     const std::string& sub_app_start_url,
+                     InstallSubAppCallback callback) override;
+
  private:
   class LacrosUtteranceEventDelegate;
 

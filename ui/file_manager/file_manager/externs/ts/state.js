@@ -32,14 +32,23 @@ export const EntryType = {
 
 /**
  * The data for each individual file/entry.
+ *
+ * * `icon` can be either a string or a IconSet which is an object including
+ * both high/low DPI icon data.
+ *
  * @typedef {{
  *   entry: (Entry|FilesAppEntry),
- *   iconName: (string|undefined),
+ *   icon: (!string|!chrome.fileManagerPrivate.IconSet),
  *   label: string,
  *   volumeType: (VolumeManagerCommon.VolumeType|null),
  *   metadata: !MetadataItem,
  *   isDirectory: boolean,
  *   type: !EntryType,
+ *   isRootEntry: !boolean,
+ *   isEjectable: !boolean,
+ *   shouldDelayLoadingChildren: !boolean,
+ *   children: (!Array<!FileKey>),
+ *   expanded: !boolean,
  * }}
  */
 export let FileData;
@@ -56,6 +65,12 @@ export let FileData;
  * @typedef {string}
  */
 export let FileKey;
+
+/**
+ * A stronger type for identifying a volume.
+ * @typedef {string}
+ */
+export let VolumeId;
 
 /**
  * Describes each part of the path, as in each parent folder and/or root volume.
@@ -252,11 +267,126 @@ export let SearchOptions;
 export let SearchData;
 
 /**
+ * Used to group volumes in the navigation tree.
+ * Sections:
+ *      - TOP: Recents, Shortcuts.
+ *      - MY_FILES: My Files (which includes Downloads, Crostini and Arc++ as
+ *                  its children).
+ *      - TRASH: trash.
+ *      - CLOUD: Drive and FSPs.
+ *      - ANDROID_APPS: ANDROID picker apps.
+ *      - REMOVABLE: Archives, MTPs, Media Views and Removables.
+ * @enum {string}
+ */
+export const NavigationSection = {
+  TOP: 'top',
+  MY_FILES: 'my_files',
+  CLOUD: 'cloud',
+  TRASH: 'trash',
+  ANDROID_APPS: 'android_apps',
+  REMOVABLE: 'removable',
+};
+
+/**
+ * @enum {string}
+ */
+export const NavigationType = {
+  SHORTCUT: 'shortcut',
+  VOLUME: 'volume',
+  RECENT: 'recent',
+  CROSTINI: 'crostini',
+  GUEST_OS: 'guest_os',
+  ENTRY_LIST: 'entry_list',
+  DRIVE: 'drive',
+  ANDROID_APPS: 'android_apps',
+  TRASH: 'trash',
+  // Materialized view is used for Recent and in the future for Search.
+  MATERIALIZED_VIEW: 'materialized_view',
+};
+
+/**
+ * The key of navigation item, it could be:
+ *   * FileKey: the navigation is backed up by a real file entry.
+ *   * string: the navigation is backed up by others (e.g. androids_apps).
+ * @typedef {FileKey|string}
+ */
+export let NavigationKey;
+
+/**
+ * This represents the navigation root node, it can be backed up by an file
+ * entry or an Android app package (e.g. for android_apps type). If its type
+ * is android_apps, the `key` filed will be android app's package name, not a
+ * file key.
+ *
+ * @typedef {{
+ *   key: !NavigationKey,
+ *   section: !NavigationSection,
+ *   type: !NavigationType,
+ *   separator: !boolean,
+ * }}
+ */
+export let NavigationRoot;
+
+/**
+ * `roots` is just a ordered array with NavigationRoot.
+ * @typedef {{
+ *   roots: !Array<!NavigationRoot>,
+ * }}
+ */
+export let NavigationTree;
+
+/**
+ * This carries the same information as VolumeInfo, which is very similar to
+ * fileManagerPrivate.VolumeMetadata.
+ *
+ * The property names are identical to VolumeInfo to simplify the migration.
+ * Notable differences: missing the properties: profile, hasMedia,
+ * remoteMountPath.
+ *
+ * When the volume has an unrecognized file system, it's still mounted here, but
+ * with `error`=="unknown".
+ *
+ * @typedef {{
+ *   volumeId: !VolumeId,
+ *   volumeType: !VolumeManagerCommon.VolumeType,
+ *   rootKey: (FileKey|undefined),
+ *   status: !PropStatus,
+ *   label: string,
+ *   error: (string|undefined),
+ *   deviceType: (chrome.fileManagerPrivate.DeviceType|undefined),
+ *   devicePath: (string|undefined),
+ *   isReadOnly: boolean,
+ *   isReadOnlyRemovableDevice: boolean,
+ *   providerId: (string|undefined),
+ *   configurable: boolean,
+ *   watchable: boolean,
+ *   source: (chrome.fileManagerPrivate.Source|undefined),
+ *   diskFileSystemType: (string|undefined),
+ *   iconSet: (chrome.fileManagerPrivate.IconSet|undefined),
+ *   driveLabel: (string|undefined),
+ *   vmType: (chrome.fileManagerPrivate.VmType|undefined),
+ *   isDisabled: boolean,
+ *   prefixKey: (FileKey|undefined),
+ * }}
+ */
+export let Volume;
+
+/**
+ * @typedef {Object<VolumeId, Volume>}
+ */
+export let VolumeMap;
+
+/**
  * Files app's state.
  * @typedef {{
  *   allEntries: !Object<!FileKey, !FileData>,
  *   currentDirectory: (CurrentDirectory|undefined),
  *   search: (!SearchData|undefined),
+ *   navigation: !NavigationTree,
+ *   volumes: !Object<!VolumeId, !Volume>,
+ *   uiEntries: !Array<!FileKey>,
+ *   folderShortcuts: !Array<!FileKey>,
+ *   androidApps: !Object<!string, !chrome.fileManagerPrivate.AndroidApp>
  * }}
  */
 export let State;

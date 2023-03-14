@@ -4,44 +4,36 @@
 
 #include "gpu/command_buffer/service/scheduler_sequence.h"
 
-#include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_local.h"
 #include "gpu/command_buffer/service/scheduler.h"
+
+#if DCHECK_IS_ON()
+#include "third_party/abseil-cpp/absl/base/attributes.h"
+#endif
 
 namespace gpu {
 
 namespace {
 
 #if DCHECK_IS_ON()
-base::ThreadLocalBoolean* GetScheduleTaskDisallowed() {
-  static base::NoDestructor<base::ThreadLocalBoolean> disallowed;
-  return disallowed.get();
-}
+ABSL_CONST_INIT thread_local bool schedule_task_disallowed = false;
 #endif  // DCHECK_IS_ON()
 
 }  // namespace
 
+ScopedAllowScheduleGpuTask::~ScopedAllowScheduleGpuTask() = default;
+
 ScopedAllowScheduleGpuTask::ScopedAllowScheduleGpuTask()
 #if DCHECK_IS_ON()
-    : original_value_(GetScheduleTaskDisallowed()->Get())
+    : resetter_(&schedule_task_disallowed, false)
 #endif  // DCHECK_IS_ON()
 {
-#if DCHECK_IS_ON()
-  GetScheduleTaskDisallowed()->Set(false);
-#endif  // DCHECK_IS_ON()
-}
-
-ScopedAllowScheduleGpuTask::~ScopedAllowScheduleGpuTask() {
-#if DCHECK_IS_ON()
-  GetScheduleTaskDisallowed()->Set(original_value_);
-#endif  // DCHECK_IS_ON()
 }
 
 // static
 void SchedulerSequence::DefaultDisallowScheduleTaskOnCurrentThread() {
 #if DCHECK_IS_ON()
-  GetScheduleTaskDisallowed()->Set(true);
+  schedule_task_disallowed = true;
 #endif
 }
 
@@ -78,7 +70,7 @@ void SchedulerSequence::ScheduleTask(base::OnceClosure task,
   // task in Android Webview until the next DrawAndSwap.
   if (!target_thread_is_always_available_) {
 #if DCHECK_IS_ON()
-    DCHECK(!GetScheduleTaskDisallowed()->Get())
+    DCHECK(!schedule_task_disallowed)
         << "If your CL is failing this DCHECK, then that means you are "
            "probably calling ScheduleGpuTask at a point that cannot be "
            "supported by Android Webview. Consider using "

@@ -497,7 +497,7 @@ enum ItemEventReason {
   kPin,
 };
 
-// Next MinVersion: 2
+// Next MinVersion: 3
 struct ItemEvent {
   enum State {
     kQueued,
@@ -522,6 +522,9 @@ struct ItemEvent {
   int64 bytes_to_transfer = -1;
 
   [MinVersion=1] ItemEventReason reason = kTransfer;
+
+  // True if it's a download event, else it's an upload event.
+  [MinVersion=2] bool is_download = false;
 };
 
 struct SyncingStatus {

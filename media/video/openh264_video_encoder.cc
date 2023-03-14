@@ -147,6 +147,14 @@ void OpenH264VideoEncoder::Initialize(VideoCodecProfile profile,
     return;
   }
 
+  if (options.bitrate.has_value() &&
+      options.bitrate->mode() == Bitrate::Mode::kExternal) {
+    std::move(done_cb).Run(
+        EncoderStatus(EncoderStatus::Codes::kEncoderInitializationError,
+                      "Unsupported bitrate mode"));
+    return;
+  }
+
   ISVCEncoder* raw_codec = nullptr;
   if (WelsCreateSVCEncoder(&raw_codec) != 0) {
     std::move(done_cb).Run(
@@ -285,7 +293,7 @@ EncoderStatus OpenH264VideoEncoder::DrainOutputs(const SFrameBSInfo& frame_info,
 }
 
 void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
-                                  bool key_frame,
+                                  const EncodeOptions& encode_options,
                                   EncoderStatusCB done_cb) {
   done_cb = BindCallbackToCurrentLoopIfNeeded(std::move(done_cb));
   if (!codec_) {
@@ -348,6 +356,7 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     frame = std::move(i420_frame);
   }
 
+  bool key_frame = encode_options.key_frame;
   if (last_frame_color_space_ != frame->ColorSpace()) {
     last_frame_color_space_ = frame->ColorSpace();
     key_frame = true;

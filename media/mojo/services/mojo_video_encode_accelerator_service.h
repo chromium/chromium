@@ -13,13 +13,13 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/lru_cache.h"
-#include "base/memory/raw_ref.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_info.h"
+#include "gpu/config/gpu_preferences.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
 #include "media/video/video_encode_accelerator.h"
@@ -27,10 +27,6 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-
-namespace gpu {
-struct GpuPreferences;
-}  // namespace gpu
 
 namespace media {
 
@@ -106,9 +102,9 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorService
   void NotifyEncoderInfoChange(const ::media::VideoEncoderInfo& info) override;
 
   CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback_;
-  const raw_ref<const gpu::GpuPreferences> gpu_preferences_;
+  const gpu::GpuPreferences gpu_preferences_;
   const gpu::GpuDriverBugWorkarounds gpu_workarounds_;
-  const raw_ref<const gpu::GPUInfo::GPUDevice> gpu_device_;
+  const gpu::GPUInfo::GPUDevice gpu_device_;
 
   // Owned pointer to the underlying VideoEncodeAccelerator.
   std::unique_ptr<::media::VideoEncodeAccelerator> encoder_;

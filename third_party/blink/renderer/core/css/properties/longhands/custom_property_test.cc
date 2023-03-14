@@ -10,6 +10,8 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -18,7 +20,6 @@
 namespace blink {
 
 using css_test_helpers::RegisterProperty;
-using VariableMode = CSSParserLocalContext::VariableMode;
 
 namespace {
 
@@ -41,14 +42,15 @@ class CustomPropertyTest : public PageTestBase {
                                               false /* allow_visited_style */);
   }
 
-  const CSSValue* ParseValue(const Longhand& property,
+  const CSSValue* ParseValue(const CustomProperty& property,
                              const String& value,
                              const CSSParserLocalContext& local_context) {
     CSSTokenizer tokenizer(value);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
     auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
-    return property.ParseSingleValue(range, *context, local_context);
+    return property.Parse(CSSTokenizedValue{range, value}, *context,
+                          local_context);
   }
 };
 
@@ -177,29 +179,6 @@ TEST_F(CustomPropertyTest, ParseSingleValueTyped) {
   EXPECT_FALSE(value2);
 }
 
-TEST_F(CustomPropertyTest, ParseSingleValueUntyped) {
-  RegisterProperty(GetDocument(), "--x", "<length>", "0px", false);
-  CustomProperty property("--x", GetDocument());
-  const CSSValue* value = ParseValue(
-      property, "maroon",
-      CSSParserLocalContext().WithVariableMode(VariableMode::kUntyped));
-  ASSERT_TRUE(value->IsCustomPropertyDeclaration());
-  EXPECT_EQ("maroon", value->CssText());
-}
-
-TEST_F(CustomPropertyTest, ParseSingleValueValidatedUntyped) {
-  RegisterProperty(GetDocument(), "--x", "<length>", "0px", false);
-  CustomProperty property("--x", GetDocument());
-  auto local_context =
-      CSSParserLocalContext().WithVariableMode(VariableMode::kValidatedUntyped);
-  const CSSValue* value1 = ParseValue(property, "100px", local_context);
-  ASSERT_TRUE(value1->IsCustomPropertyDeclaration());
-  EXPECT_EQ("100px", value1->CssText());
-
-  const CSSValue* value2 = ParseValue(property, "maroon", local_context);
-  EXPECT_FALSE(value2);
-}
-
 TEST_F(CustomPropertyTest, GetCSSPropertyName) {
   CustomProperty property("--x", GetDocument());
   EXPECT_EQ(CSSPropertyName("--x"), property.GetCSSPropertyName());
@@ -282,6 +261,40 @@ TEST_F(CustomPropertyTest, ParseAnchorQueriesAsLengthPercentage) {
     ASSERT_TRUE(value);
     EXPECT_EQ("calc(anchor(--foo top) + anchor-size(--foo width))",
               value->CssText());
+  }
+}
+
+TEST_F(CustomPropertyTest, ValueMode) {
+  RegisterProperty(GetDocument(), "--x", "<length>", "0px", false);
+
+  CustomProperty property("--x", GetDocument());
+
+  scoped_refptr<CSSVariableData> data =
+      css_test_helpers::CreateVariableData("100px");
+  ASSERT_FALSE(data->IsAnimationTainted());
+  auto* declaration = MakeGarbageCollected<CSSCustomPropertyDeclaration>(
+      data, /* parser_context */ nullptr);
+
+  // ValueMode::kNormal
+  {
+    StyleResolverState state(GetDocument(), *GetDocument().documentElement(),
+                             /* StyleRecalcContext */ nullptr, StyleRequest());
+    state.SetStyle(*GetDocument().GetStyleResolver().InitialStyleForElement());
+    property.ApplyValue(state, *declaration, CSSProperty::ValueMode::kNormal);
+    scoped_refptr<const ComputedStyle> style = state.TakeStyle();
+    ASSERT_TRUE(style->GetVariableData("--x"));
+    EXPECT_FALSE(style->GetVariableData("--x")->IsAnimationTainted());
+  }
+
+  // ValueMode::kAnimated
+  {
+    StyleResolverState state(GetDocument(), *GetDocument().documentElement(),
+                             /* StyleRecalcContext */ nullptr, StyleRequest());
+    state.SetStyle(*GetDocument().GetStyleResolver().InitialStyleForElement());
+    property.ApplyValue(state, *declaration, CSSProperty::ValueMode::kAnimated);
+    scoped_refptr<const ComputedStyle> style = state.TakeStyle();
+    ASSERT_TRUE(style->GetVariableData("--x"));
+    EXPECT_TRUE(style->GetVariableData("--x")->IsAnimationTainted());
   }
 }
 

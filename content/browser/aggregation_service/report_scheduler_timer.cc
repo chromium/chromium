@@ -81,6 +81,10 @@ void ReportSchedulerTimer::OnConnectionChanged(
 
   if (offline_) {
     reporting_time_reached_timer_.Stop();
+    if (!was_offline) {
+      delegate_->OnReportingPaused(base::Time::Now());
+    }
+
   } else if (was_offline) {
     // Add delay to all reports that should have been sent while the browser was
     // offline so they are not temporally joinable. We only need to do this if

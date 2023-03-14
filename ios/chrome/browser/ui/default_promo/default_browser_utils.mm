@@ -14,7 +14,7 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -376,7 +376,7 @@ bool ShouldTriggerDefaultBrowserBlueDotBadgeFeature(
     const base::Feature& feature,
     feature_engagement::Tracker* tracker) {
   // TODO(crbug.com/1410229) clean-up experiment code when fully launched.
-  if (!IsInBlueDotExperimentEnabledGroup() || IsChromeLikelyDefaultBrowser()) {
+  if (!IsBlueDotPromoEnabled() || IsChromeLikelyDefaultBrowser()) {
     return false;
   }
 
@@ -415,14 +415,21 @@ bool IsInModifiedStringsGroup() {
   return !paramValue.empty();
 }
 
-bool IsInBlueDotExperiment() {
-  return base::FeatureList::IsEnabled(kDefaultBrowserBlueDotPromo);
-}
-
-bool IsInBlueDotExperimentEnabledGroup() {
+bool AreDefaultBrowserPromosEnabled() {
   if (base::FeatureList::IsEnabled(kDefaultBrowserBlueDotPromo)) {
     return kBlueDotPromoUserGroupParam.Get() ==
-           BlueDotPromoUserGroup::kOnlyBlueDotPromoEnabled;
+           BlueDotPromoUserGroup::kAllDBPromosEnabled;
+  }
+
+  return true;
+}
+
+bool IsBlueDotPromoEnabled() {
+  if (base::FeatureList::IsEnabled(kDefaultBrowserBlueDotPromo)) {
+    return kBlueDotPromoUserGroupParam.Get() ==
+               BlueDotPromoUserGroup::kOnlyBlueDotPromoEnabled ||
+           kBlueDotPromoUserGroupParam.Get() ==
+               BlueDotPromoUserGroup::kAllDBPromosEnabled;
   }
 
   return false;

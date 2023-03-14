@@ -26,9 +26,9 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/token.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/capture/mojom/video_capture_types.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -301,7 +301,7 @@ VideoCaptureFeedbackCB WebVideoCaptureImplManager::GetFeedbackCallback(
   DCHECK(render_main_task_runner_->BelongsToCurrentThread());
   return base::BindRepeating(
       &WebVideoCaptureImplManager::ProcessFeedback,
-      media::BindToCurrentLoop(base::BindRepeating(
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
           &WebVideoCaptureImplManager::ProcessFeedbackInternal,
           weak_factory_.GetMutableWeakPtr(), id)));
 }

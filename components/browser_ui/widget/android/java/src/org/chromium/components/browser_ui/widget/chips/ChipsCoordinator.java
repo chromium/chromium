@@ -78,6 +78,7 @@ public class ChipsCoordinator {
                         .with(ChipProperties.CONTENT_DESCRIPTION, text)
                         .with(ChipProperties.CLICK_HANDLER, clickHandler)
                         .with(ChipProperties.ICON, iconId)
+                        .with(ChipProperties.APPLY_ICON_TINT, true)
                         .with(ChipProperties.ENABLED, true)
                         .with(ChipProperties.SELECTED, false)
                         .with(ChipProperties.TEXT_MAX_WIDTH_PX, ChipProperties.SHOW_WHOLE_TEXT)

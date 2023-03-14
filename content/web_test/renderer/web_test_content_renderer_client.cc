@@ -36,12 +36,6 @@
 #include "ui/gfx/icc_profile.h"
 #include "v8/include/v8.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "third_party/blink/public/web/win/web_font_rendering.h"
-#include "third_party/skia/include/core/SkFontMgr.h"
-#include "third_party/skia/include/ports/SkTypeface_win.h"
-#endif
-
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC)
 #include "skia/ext/test_fonts.h"
 #endif
@@ -109,18 +103,6 @@ void WebTestContentRendererClient::RenderThreadStarted() {
   // platforms set up fonts as part of WebTestBrowserMainRunner in the
   // browser process, via WebTestBrowserPlatformInitialize().
   skia::InitializeSkFontMgrForTest();
-#elif BUILDFLAG(IS_WIN)
-  // DirectWrite only has access to %WINDIR%\Fonts by default. For developer
-  // side-loading, support kRegisterFontFiles to allow access to additional
-  // fonts. The browser process sets these files and punches a hole in the
-  // sandbox for the renderer to load them here.
-  {
-    sk_sp<SkFontMgr> fontmgr = SkFontMgr_New_DirectWrite();
-    for (const auto& file : switches::GetSideloadFontFiles()) {
-      sk_sp<SkTypeface> typeface = fontmgr->makeFromFile(file.c_str());
-      blink::WebFontRendering::AddSideloadedFontForTesting(std::move(typeface));
-    }
-  }
 #endif
 }
 

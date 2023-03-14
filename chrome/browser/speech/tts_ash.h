@@ -77,6 +77,7 @@ class TtsAsh : public mojom::Tts,
   void Stop(const GURL& source_url) override;
   void Pause() override;
   void Resume() override;
+  void IsSpeaking(IsSpeakingCallback callback) override;
 
  private:
   class TtsUtteranceClient;

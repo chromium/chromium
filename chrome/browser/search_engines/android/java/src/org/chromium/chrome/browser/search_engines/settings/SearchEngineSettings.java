@@ -11,7 +11,9 @@ import android.widget.ListView;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.ListFragment;
 
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.R;
+import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /**
@@ -21,8 +23,9 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher;
  *
  * TODO(crbug.com/988877): Add on scroll shadow to action bar.
  */
-public class SearchEngineSettings extends ListFragment {
+public class SearchEngineSettings extends ListFragment implements ProfileDependentSetting {
     private SearchEngineAdapter mSearchEngineAdapter;
+    private Profile mProfile;
 
     @VisibleForTesting
     String getValueForTesting() {
@@ -88,6 +91,12 @@ public class SearchEngineSettings extends ListFragment {
 
     private void createAdapterIfNecessary() {
         if (mSearchEngineAdapter != null) return;
-        mSearchEngineAdapter = new SearchEngineAdapter(getActivity());
+        assert mProfile != null;
+        mSearchEngineAdapter = new SearchEngineAdapter(getActivity(), mProfile);
+    }
+
+    @Override
+    public void setProfile(Profile profile) {
+        mProfile = profile;
     }
 }

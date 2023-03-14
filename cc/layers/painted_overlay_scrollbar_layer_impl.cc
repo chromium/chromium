@@ -131,8 +131,8 @@ void PaintedOverlayScrollbarLayerImpl::AppendThumbQuads(
   for (auto& patch : patches)
     patch.output_rect += offset;
 
-  quad_generator_.AppendQuads(this, thumb_ui_resource_id_, render_pass,
-                              shared_quad_state, patches);
+  quad_generator_.AppendQuadsForCc(this, thumb_ui_resource_id_, render_pass,
+                                   shared_quad_state, patches);
 }
 
 void PaintedOverlayScrollbarLayerImpl::AppendTrackQuads(

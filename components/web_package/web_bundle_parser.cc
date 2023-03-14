@@ -76,7 +76,6 @@ constexpr char kCriticalSection[] = "critical";
 constexpr char kIndexSection[] = "index";
 constexpr char kPrimarySection[] = "primary";
 constexpr char kResponsesSection[] = "responses";
-constexpr char kSignaturesSection[] = "signatures";
 
 // A list of (section-name, length) pairs.
 using SectionLengths = std::vector<std::pair<std::string, uint64_t>>;
@@ -86,7 +85,7 @@ using SectionOffsets = std::map<std::string, std::pair<uint64_t, uint64_t>>;
 
 bool IsMetadataSection(const std::string& name) {
   return (name == kCriticalSection || name == kIndexSection ||
-          name == kPrimarySection || name == kSignaturesSection);
+          name == kPrimarySection);
 }
 
 // Parses a `section-lengths` CBOR item.
@@ -522,9 +521,6 @@ class WebBundleParser::MetadataParser
     if (name == kIndexSection) {
       if (!ParseIndexSection(*section_value))
         return;
-    } else if (name == kSignaturesSection) {
-      if (!ParseSignaturesSection(*section_value))
-        return;
     } else if (name == kCriticalSection) {
       if (!ParseCriticalSection(*section_value))
         return;
@@ -612,109 +608,6 @@ class WebBundleParser::MetadataParser
     return true;
   }
 
-  // https://github.com/WICG/webpackage/blob/main/extensions/signatures-section.md
-  // signatures = [
-  //   authorities: [*authority],
-  //   vouched-subsets: [*{
-  //     authority: index-in-authorities,
-  //     sig: bstr,
-  //     signed: bstr  ; Expected to hold a signed-subset item.
-  //   }],
-  // ]
-  // authority = augmented-certificate
-  // index-in-authorities = uint
-  //
-  // signed-subset = {
-  //   validity-url: whatwg-url,
-  //   auth-sha256: bstr,
-  //   date: uint,
-  //   expires: uint,
-  //   subset-hashes: {+
-  //     whatwg-url => [variants-value, +resource-integrity]
-  //   },
-  //   * tstr => any,
-  // }
-  // resource-integrity = (
-  //   header-sha256: bstr,
-  //   payload-integrity-header: tstr
-  // )
-  bool ParseSignaturesSection(const cbor::Value& section_value) {
-    if (!section_value.is_array() || section_value.GetArray().size() != 2) {
-      RunErrorCallbackAndDestroy(
-          "Signatures section must be an array of size 2.");
-      return false;
-    }
-    const cbor::Value& authorities_value = section_value.GetArray()[0];
-    const cbor::Value& vouched_subsets_value = section_value.GetArray()[1];
-
-    if (!authorities_value.is_array()) {
-      RunErrorCallbackAndDestroy("Authorities must be an array.");
-      return false;
-    }
-    std::vector<mojom::AugmentedCertificatePtr> authorities;
-    for (const cbor::Value& value : authorities_value.GetArray()) {
-      // ParseAugmentedCertificate deletes |this| on failure.
-      auto authority = ParseAugmentedCertificate(value);
-      if (!authority)
-        return false;
-      authorities.push_back(std::move(authority));
-    }
-
-    if (!vouched_subsets_value.is_array()) {
-      RunErrorCallbackAndDestroy("Vouched-subsets must be an array.");
-      return false;
-    }
-    std::vector<mojom::VouchedSubsetPtr> vouched_subsets;
-    for (const cbor::Value& value : vouched_subsets_value.GetArray()) {
-      if (!value.is_map()) {
-        RunErrorCallbackAndDestroy(
-            "An element of vouched-subsets must be a map.");
-        return false;
-      }
-      const cbor::Value::MapValue& item_map = value.GetMap();
-
-      auto* authority_value = Lookup(item_map, "authority");
-      if (!authority_value || !authority_value->is_unsigned()) {
-        RunErrorCallbackAndDestroy(
-            "authority is not found in vouched-subsets map, or not an "
-            "unsigned.");
-        return false;
-      }
-      int64_t authority = authority_value->GetUnsigned();
-
-      auto* sig_value = Lookup(item_map, "sig");
-      if (!sig_value || !sig_value->is_bytestring()) {
-        RunErrorCallbackAndDestroy(
-            "sig is not found in vouched-subsets map, or not a bytestring.");
-        return false;
-      }
-      const cbor::Value::BinaryValue& sig = sig_value->GetBytestring();
-
-      auto* signed_value = Lookup(item_map, "signed");
-      if (!signed_value || !signed_value->is_bytestring()) {
-        RunErrorCallbackAndDestroy(
-            "signed is not found in vouched-subsets map, or not a bytestring.");
-        return false;
-      }
-      const cbor::Value::BinaryValue& raw_signed =
-          signed_value->GetBytestring();
-
-      // ParseSignedSubset deletes |this| on failure.
-      auto parsed_signed = ParseSignedSubset(raw_signed);
-      if (!parsed_signed)
-        return false;
-
-      vouched_subsets.push_back(mojom::VouchedSubset::New(
-          authority, sig, raw_signed, std::move(parsed_signed)));
-    }
-
-    metadata_->authorities = std::move(authorities);
-
-    metadata_->vouched_subsets = std::move(vouched_subsets);
-
-    return true;
-  }
-
   // https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#critical-section
   //   critical = [*tstr]
   bool ParseCriticalSection(const cbor::Value& section_value) {
@@ -756,174 +649,6 @@ class WebBundleParser::MetadataParser
     }
     metadata_->primary_url = std::move(parsed_url);
     return true;
-  }
-
-  // https://wicg.github.io/webpackage/draft-yasskin-http-origin-signed-responses.html#cert-chain-format
-  mojom::AugmentedCertificatePtr ParseAugmentedCertificate(
-      const cbor::Value& value) {
-    if (!value.is_map()) {
-      RunErrorCallbackAndDestroy("augmented-certificate must be a map.");
-      return nullptr;
-    }
-    const cbor::Value::MapValue& item_map = value.GetMap();
-    mojom::AugmentedCertificatePtr authority =
-        mojom::AugmentedCertificate::New();
-
-    auto* cert_value = Lookup(item_map, "cert");
-    if (!cert_value || !cert_value->is_bytestring()) {
-      RunErrorCallbackAndDestroy(
-          "cert is not found in augmented-certificate, or not a bytestring.");
-      return nullptr;
-    }
-    authority->cert = cert_value->GetBytestring();
-
-    if (auto* ocsp_value = Lookup(item_map, "ocsp")) {
-      if (!ocsp_value->is_bytestring()) {
-        RunErrorCallbackAndDestroy("ocsp is not a bytestring.");
-        return nullptr;
-      }
-      authority->ocsp = ocsp_value->GetBytestring();
-    }
-
-    if (auto* sct_value = Lookup(item_map, "sct")) {
-      if (!sct_value->is_bytestring()) {
-        RunErrorCallbackAndDestroy("sct is not a bytestring.");
-        return nullptr;
-      }
-      authority->sct = sct_value->GetBytestring();
-    }
-    return authority;
-  }
-
-  // https://github.com/WICG/webpackage/blob/main/extensions/signatures-section.md
-  mojom::SignedSubsetPtr ParseSignedSubset(
-      const cbor::Value::BinaryValue& signed_bytes) {
-    // Parse |signed_bytes| as a CBOR item.
-    cbor::Reader::DecoderError error;
-    absl::optional<cbor::Value> value =
-        cbor::Reader::Read(signed_bytes, &error);
-    if (!value) {
-      RunErrorCallbackAndDestroy(
-          std::string("Error parsing signed bytes as CBOR: ") +
-          cbor::Reader::ErrorCodeToString(error));
-      return nullptr;
-    }
-
-    if (!value->is_map()) {
-      RunErrorCallbackAndDestroy("signed-subset must be a CBOR map");
-      return nullptr;
-    }
-    const cbor::Value::MapValue& value_map = value->GetMap();
-
-    auto* validity_url_value = Lookup(value_map, "validity-url");
-    if (!validity_url_value || !validity_url_value->is_string()) {
-      RunErrorCallbackAndDestroy(
-          "validity-url is not found in signed-subset, or not a string.");
-      return nullptr;
-    }
-    // TODO(crbug.com/966753): Revisit this once requirements for validity URL
-    // are speced.
-    // TODO(crbug.com/1247939): Consider supporting relative validity URL.
-    GURL validity_url(validity_url_value->GetString());
-    if (!validity_url.is_valid()) {
-      RunErrorCallbackAndDestroy("Cannot parse validity-url.");
-      return nullptr;
-    }
-
-    auto* auth_sha256_value = Lookup(value_map, "auth-sha256");
-    if (!auth_sha256_value || !auth_sha256_value->is_bytestring()) {
-      RunErrorCallbackAndDestroy(
-          "auth-sha256 is not found in signed-subset, or not a bytestring.");
-      return nullptr;
-    }
-    auto auth_sha256 = auth_sha256_value->GetBytestring();
-
-    auto* date_value = Lookup(value_map, "date");
-    if (!date_value || !date_value->is_unsigned()) {
-      RunErrorCallbackAndDestroy(
-          "date is not found in signed-subset, or not an unsigned.");
-      return nullptr;
-    }
-    auto date = date_value->GetUnsigned();
-
-    auto* expires_value = Lookup(value_map, "expires");
-    if (!expires_value || !expires_value->is_unsigned()) {
-      RunErrorCallbackAndDestroy(
-          "expires is not found in signed-subset, or not an unsigned.");
-      return nullptr;
-    }
-    auto expires = expires_value->GetUnsigned();
-
-    auto* subset_hashes_value = Lookup(value_map, "subset-hashes");
-    if (!subset_hashes_value || !subset_hashes_value->is_map()) {
-      RunErrorCallbackAndDestroy(
-          "subset-hashes is not found in signed-subset, or not a map.");
-      return nullptr;
-    }
-    base::flat_map<GURL, mojom::SubsetHashesValuePtr> subset_hashes;
-
-    for (const auto& item : subset_hashes_value->GetMap()) {
-      if (!item.first.is_string()) {
-        RunErrorCallbackAndDestroy("subset-hashes: key must be a string.");
-        return nullptr;
-      }
-      if (!item.second.is_array()) {
-        RunErrorCallbackAndDestroy("subset-hashes: value must be an array.");
-        return nullptr;
-      }
-      const std::string& url = item.first.GetString();
-      const cbor::Value::ArrayValue& value_array = item.second.GetArray();
-
-      // TODO(crbug.com/1247939): Consider supporting relative URL in the
-      // signature section.
-      GURL parsed_url = ParseExchangeURL(url, /*base_url=*/GURL());
-      if (!parsed_url.is_valid()) {
-        RunErrorCallbackAndDestroy("subset-hashes: exchange URL is not valid.");
-        return nullptr;
-      }
-
-      if (value_array.empty() || !value_array[0].is_bytestring()) {
-        RunErrorCallbackAndDestroy(
-            "subset-hashes: the first element of array must be a bytestring.");
-        return nullptr;
-      }
-      base::StringPiece variants_value = value_array[0].GetBytestringAsString();
-      if (value_array.size() < 3 || value_array.size() % 2 != 1) {
-        RunErrorCallbackAndDestroy(
-            "subset-hashes: unexpected size of value array.");
-        return nullptr;
-      }
-      std::vector<mojom::ResourceIntegrityPtr> resource_integrities;
-      for (size_t i = 1; i < value_array.size(); i += 2) {
-        if (!value_array[i].is_bytestring()) {
-          RunErrorCallbackAndDestroy(
-              "subset-hashes: header-sha256 must be a byte string.");
-          return nullptr;
-        }
-        if (!value_array[i + 1].is_string()) {
-          RunErrorCallbackAndDestroy(
-              "subset-hashes: payload-integrity-header must be a string.");
-          return nullptr;
-        }
-        resource_integrities.push_back(mojom::ResourceIntegrity::New(
-            value_array[i].GetBytestring(), value_array[i + 1].GetString()));
-      }
-      subset_hashes.insert(std::make_pair(
-          parsed_url,
-          mojom::SubsetHashesValue::New(std::string(variants_value),
-                                        std::move(resource_integrities))));
-    }
-
-    return mojom::SignedSubset::New(validity_url, auth_sha256, date, expires,
-                                    std::move(subset_hashes));
-  }
-
-  // Returns nullptr if |key| is not in |map|.
-  const cbor::Value* Lookup(const cbor::Value::MapValue& map, const char* key) {
-    auto iter = map.find(cbor::Value(key));
-    if (iter == map.end())
-      return nullptr;
-    return &iter->second;
   }
 
   void RunSuccessCallbackAndDestroy() {

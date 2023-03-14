@@ -149,7 +149,7 @@ class OmniboxPedalSetChromeAsDefaultBrowser : public OmniboxPedal {
           {
               true,
               true,
-              IDS_IOS_OMNIBOX_PEDAL_SYNONYMS_SET_CHROME_AS_DEFAULT_BROWSER_ONE_REQUIRED_HOW_TO_MAKE_CHROME_MY_DEFAULT_BROWSER,
+              IDS_OMNIBOX_PEDAL_SYNONYMS_SET_CHROME_AS_DEFAULT_BROWSER_ONE_REQUIRED_HOW_TO_MAKE_CHROME_MY_DEFAULT_BROWSER,
           },
           {
               false,
@@ -470,6 +470,7 @@ GetPedalImplementations(bool incognito, bool testing) {
 
   if (!incognito) {
     add(new OmniboxPedalClearBrowsingData(incognito));
+    add(new OmniboxPedalViewChromeHistory());
   }
 
   add(new OmniboxPedalManagePasswords());
@@ -478,7 +479,6 @@ GetPedalImplementations(bool incognito, bool testing) {
   add(new OmniboxPedalLaunchIncognito());
   add(new OmniboxPedalRunChromeSafetyCheck());
   add(new OmniboxPedalManageChromeSettings());
-  add(new OmniboxPedalViewChromeHistory());
   add(new OmniboxPedalPlayChromeDinoGame());
 
   return pedals;

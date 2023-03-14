@@ -1403,6 +1403,10 @@ void NGInlineItemsBuilderTemplate<
   data->has_ruby_ = has_ruby_;
   data->is_block_level_ = IsBlockLevel();
   data->changes_may_affect_earlier_lines_ = HasUnicodeBidiPlainText();
+
+#if DCHECK_IS_ON()
+  data->CheckConsistency();
+#endif
 }
 
 template <typename OffsetMappingBuilder>

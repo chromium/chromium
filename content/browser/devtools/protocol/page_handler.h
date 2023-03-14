@@ -110,20 +110,6 @@ class PageHandler : public DevToolsDomainHandler,
       const BackForwardCacheCanStoreDocumentResult* result,
       const BackForwardCacheCanStoreTreeResult* tree_result);
 
-  void DidActivatePrerender(const NavigationRequest& nav_request);
-  void DidCancelPrerender(const GURL& prerendering_url,
-                          const std::string& initiating_frame_id,
-                          PrerenderFinalStatus status,
-                          const std::string& disallowed_api_method);
-
-  void DidUpdatePrefetchStatus(const std::string& initiating_frame_id,
-                               const GURL& prefetch_url,
-                               PreloadingTriggeringOutcome status);
-
-  void DidUpdatePrerenderStatus(const std::string& initiating_frame_id,
-                                const GURL& prerender_url,
-                                PreloadingTriggeringOutcome status);
-
   Response Enable() override;
   Response Disable() override;
 
@@ -241,8 +227,6 @@ class PageHandler : public DevToolsDomainHandler,
   using ResponseOrWebContents = absl::variant<Response, WebContentsImpl*>;
   ResponseOrWebContents GetWebContentsForTopLevelActiveFrame();
 
-  void RetrievePrerenderActivationFromWebContents();
-
   const bool allow_unsafe_operations_;
   const bool is_trusted_;
   const absl::optional<url::Origin> navigation_initiator_origin_;
@@ -258,10 +242,6 @@ class PageHandler : public DevToolsDomainHandler,
   int session_id_;
   int frame_counter_;
   int frames_in_flight_;
-
-  // Whether stored prerender activation has been dispatched to Devtools. Reset
-  // whenever a new prerender event received.
-  bool has_dispatched_stored_prerender_activation_ = false;
 
   // |video_consumer_| consumes video frames from FrameSinkVideoCapturerImpl,
   // and provides PageHandler with these frames via OnFrameFromVideoConsumer.

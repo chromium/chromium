@@ -63,11 +63,6 @@ bool NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
     return false;
   }
 
-  if (!base::FeatureList::IsEnabled(features::kNearbySharingChildAccounts) &&
-      profile->IsChild()) {
-    return false;
-  }
-
   return true;
 }
 

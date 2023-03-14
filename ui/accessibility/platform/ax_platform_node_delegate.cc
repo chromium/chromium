@@ -138,7 +138,7 @@ gfx::NativeViewAccessible AXPlatformNodeDelegate::GetParent() const {
   return nullptr;
 }
 
-absl::optional<size_t> AXPlatformNodeDelegate::GetIndexInParent() {
+absl::optional<size_t> AXPlatformNodeDelegate::GetIndexInParent() const {
   if (node_)
     return node_->GetUnignoredIndexInParent();
 
@@ -159,7 +159,8 @@ size_t AXPlatformNodeDelegate::GetChildCount() const {
   return 0u;
 }
 
-gfx::NativeViewAccessible AXPlatformNodeDelegate::ChildAtIndex(size_t index) {
+gfx::NativeViewAccessible AXPlatformNodeDelegate::ChildAtIndex(
+    size_t index) const {
   return nullptr;
 }
 
@@ -167,20 +168,20 @@ bool AXPlatformNodeDelegate::HasModalDialog() const {
   return false;
 }
 
-gfx::NativeViewAccessible AXPlatformNodeDelegate::GetFirstChild() {
+gfx::NativeViewAccessible AXPlatformNodeDelegate::GetFirstChild() const {
   if (GetChildCount() > 0)
     return ChildAtIndex(0);
   return nullptr;
 }
 
-gfx::NativeViewAccessible AXPlatformNodeDelegate::GetLastChild() {
+gfx::NativeViewAccessible AXPlatformNodeDelegate::GetLastChild() const {
   size_t child_count = GetChildCount();
   if (child_count > 0)
     return ChildAtIndex(child_count - 1);
   return nullptr;
 }
 
-gfx::NativeViewAccessible AXPlatformNodeDelegate::GetNextSibling() {
+gfx::NativeViewAccessible AXPlatformNodeDelegate::GetNextSibling() const {
   AXPlatformNodeDelegate* parent = GetParentDelegate();
   if (!parent)
     return nullptr;
@@ -193,7 +194,7 @@ gfx::NativeViewAccessible AXPlatformNodeDelegate::GetNextSibling() {
   return nullptr;
 }
 
-gfx::NativeViewAccessible AXPlatformNodeDelegate::GetPreviousSibling() {
+gfx::NativeViewAccessible AXPlatformNodeDelegate::GetPreviousSibling() const {
   AXPlatformNodeDelegate* parent = GetParentDelegate();
   if (!parent)
     return nullptr;
@@ -347,11 +348,11 @@ gfx::NativeViewAccessible AXPlatformNodeDelegate::GetTableAncestor() const {
   return nullptr;
 }
 
-std::unique_ptr<ChildIterator> AXPlatformNodeDelegate::ChildrenBegin() {
+std::unique_ptr<ChildIterator> AXPlatformNodeDelegate::ChildrenBegin() const {
   return std::make_unique<ChildIteratorBase>(this, 0);
 }
 
-std::unique_ptr<ChildIterator> AXPlatformNodeDelegate::ChildrenEnd() {
+std::unique_ptr<ChildIterator> AXPlatformNodeDelegate::ChildrenEnd() const {
   return std::make_unique<ChildIteratorBase>(this, GetChildCount());
 }
 

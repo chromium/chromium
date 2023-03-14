@@ -6,6 +6,8 @@
 
 #include "content/browser/bad_message.h"
 #include "content/browser/runtime_feature_state/runtime_feature_state_document_data.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/origin_trials_controller_delegate.h"
 #include "third_party/blink/public/common/origin_trials/origin_trials.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_result.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
@@ -17,10 +19,21 @@ namespace content {
 RuntimeFeatureStateControllerImpl::RuntimeFeatureStateControllerImpl(
     RenderFrameHost& host,
     mojo::PendingReceiver<blink::mojom::RuntimeFeatureStateController> receiver)
-    : receiver_(this, std::move(receiver)), render_frame_host_(host) {}
+    : DocumentService(host, std::move(receiver)) {}
 
 RuntimeFeatureStateControllerImpl::~RuntimeFeatureStateControllerImpl() =
     default;
+
+// static
+void RuntimeFeatureStateControllerImpl::Create(
+    RenderFrameHost* host,
+    mojo::PendingReceiver<blink::mojom::RuntimeFeatureStateController>
+        receiver) {
+  CHECK(host);
+  // The object is bound to the lifetime of `render_frame_host` and the mojo
+  // connection. See DocumentService for details.
+  new RuntimeFeatureStateControllerImpl(*host, std::move(receiver));
+}
 
 void RuntimeFeatureStateControllerImpl::ApplyFeatureDiffForOriginTrial(
     base::flat_map<::blink::mojom::RuntimeFeatureState,
@@ -37,7 +50,7 @@ void RuntimeFeatureStateControllerImpl::ApplyFeatureDiffForOriginTrial(
     bool are_tokens_valid = true;
     for (const auto& token : feature_pair.second->tokens) {
       blink::TrialTokenResult result = validator.ValidateTokenAndTrial(
-          token, render_frame_host_->GetLastCommittedOrigin(),
+          token, render_frame_host().GetLastCommittedOrigin(),
           base::Time::Now());
       if (result.Status() != blink::OriginTrialTokenStatus::kSuccess) {
         are_tokens_valid = false;
@@ -67,19 +80,41 @@ void RuntimeFeatureStateControllerImpl::ApplyFeatureDiffForOriginTrial(
       } else {
         // The renderer is compromised so we terminate it.
         bad_message::ReceivedBadMessage(
-            render_frame_host_->GetProcess(),
+            render_frame_host().GetProcess(),
             bad_message::RFSCI_BROWSER_VALIDATION_BAD_ORIGIN_TRIAL_TOKEN);
+        return;
       }
     }
   }
   // Apply the diff changes to the mutable RuntimeFeatureStateReadContext.
   RuntimeFeatureStateDocumentData* document_data =
       RuntimeFeatureStateDocumentData::GetForCurrentDocument(
-          &*render_frame_host_);
+          &render_frame_host());
   document_data
       ->GetMutableRuntimeFeatureStateReadContext(
           base::PassKey<RuntimeFeatureStateControllerImpl>())
       .ApplyFeatureChange(validated_features);
+}
+
+void RuntimeFeatureStateControllerImpl::EnablePersistentTrial(
+    const std::string& token,
+    const std::vector<url::Origin>& script_origins) {
+  OriginTrialsControllerDelegate* delegate =
+      render_frame_host()
+          .GetBrowserContext()
+          ->GetOriginTrialsControllerDelegate();
+  if (!delegate) {
+    return;
+  }
+
+  // No validation required here, as the delegate will fully validate the
+  // provided token.
+  std::vector<std::string> tokens = {token};
+  delegate->PersistAdditionalTrialsFromTokens(
+      /*origin=*/render_frame_host().GetLastCommittedOrigin(),
+      /*partition_origin=*/
+      render_frame_host().GetOutermostMainFrame()->GetLastCommittedOrigin(),
+      script_origins, tokens, base::Time::Now());
 }
 
 }  // namespace content

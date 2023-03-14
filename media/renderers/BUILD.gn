@@ -123,17 +123,11 @@ source_set("unit_tests") {
   sources = [
     "audio_renderer_impl_unittest.cc",
     "decrypting_renderer_unittest.cc",
+    "paint_canvas_video_renderer_unittest.cc",
     "renderer_impl_unittest.cc",
     "video_renderer_impl_unittest.cc",
     "video_resource_updater_unittest.cc",
   ]
-
-  # TODO: Disabled this test for iOS platform as porting of viz_unittests is in progress.
-  # Refer bug https://crbug.com/1413718
-  if (!is_ios) {
-    sources += [ "paint_canvas_video_renderer_unittest.cc" ]
-  }
-
   configs += [ "//media:media_config" ]
   deps = [
     "//base",

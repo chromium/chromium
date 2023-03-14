@@ -14,6 +14,10 @@ static_library("backend") {
     "accelerator_layout_table.h",
     "search/fake_search_data.cc",
     "search/fake_search_data.h",
+    "search/search_concept.cc",
+    "search/search_concept.h",
+    "search/search_concept_registry.cc",
+    "search/search_concept_registry.h",
     "search/search_handler.cc",
     "search/search_handler.h",
   ]
@@ -24,38 +28,13 @@ static_library("backend") {
     "//ash/public/mojom",
     "//ash/webui/shortcut_customization_ui/backend/search:mojo_bindings",
     "//ash/webui/shortcut_customization_ui/mojom",
+    "//chromeos/ash/components/local_search_service:local_search_service",
+    "//chromeos/ash/components/local_search_service/public/cpp:cpp",
+    "//chromeos/ash/components/local_search_service/public/mojom",
     "//chromeos/strings",
     "//components/prefs:prefs",
     "//ui/base/ime/ash",
     "//ui/chromeos/events",
     "//ui/events/devices",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-
-  sources = [
-    "accelerator_configuration_provider_unittest.cc",
-    "search/search_handler_unittest.cc",
-  ]
-
-  deps = [
-    ":backend",
-    "//ash",
-    "//ash:test_support",
-    "//ash/public/cpp",
-    "//ash/public/mojom",
-    "//ash/webui/shortcut_customization_ui/backend/search:mojo_bindings",
-    "//ash/webui/shortcut_customization_ui/mojom",
-    "//base/test:test_support",
-    "//chromeos/ash/components:test_support",
-    "//content/test:test_support",
-    "//testing/gtest",
-    "//ui/base:test_support",
-    "//ui/base/ime/ash",
-    "//ui/chromeos/events",
-    "//ui/events/devices",
-    "//ui/events/devices:test_support",
   ]
 }

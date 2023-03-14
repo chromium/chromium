@@ -1,0 +1,54 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package ash.help_app;
+
+// The persistent proto for the SearchConcept class.
+message SearchConceptProto {
+  // Versioning information of the search concept. This is used to discard
+  // on-disk state if an incompatible change is made to the search concept.
+  optional int32 version = 1;
+
+  // Keep this proto in-sync with `search.mojom` under the same folder.
+  message Concept {
+    // Unique identifier for this concept.
+    required bytes id = 1;
+
+    // Localized title. Displayed directly in the UI as the main result text.
+    // The stored data is u16string.
+    optional bytes title = 2;
+
+    // Localized category. Displayed directly in the UI as secondary result
+    // text. The stored data is u16string.
+    optional bytes main_category = 3;
+
+    // List of localized tags used to make the search concept searchable.
+    // The stored data is u16string.
+    repeated bytes tags = 4;
+
+    // The locale of the tags. This could be different from the locale of the
+    // other fields. Empty string means system locale. Same format as the locale
+    // field.
+    optional bytes tag_locale = 5;
+
+    // The URL path containing the relevant content, which may or may not
+    // contain URL parameters. For example, if the help content is at
+    // chrome://help-app/help/sub/3399763/id/1282338#install-user, then the
+    // field would be "help/sub/3399763/id/1282338#install-user" for this page.
+    optional bytes url_path_with_parameters = 6;
+
+    // Locale code. Leave unset for the system configured locale. The format is
+    // language[-country] (e.g., en-US) where the language is the 2 or 3 letter
+    // code from ISO-639.
+    optional bytes locale = 7;
+  }
+
+  // A collection of search concepts that is used to generate the in-memory
+  // caches of the help app and local search service.
+  repeated Concept concepts = 2;
+}

@@ -400,6 +400,11 @@ class BrowserAutofillManager : public AutofillManager,
 
   FormData* pending_form_data_for_test() { return pending_form_data_.get(); }
 
+  void OnFormProcessedForTesting(const FormData& form,
+                                 const FormStructure& form_structure) {
+    OnFormProcessed(form, form_structure);
+  }
+
  protected:
   // Stores a `callback` for `form_signature`, possibly overriding an older
   // callback for `form_signature` or triggering a pending callback in case too
@@ -701,7 +706,7 @@ class BrowserAutofillManager : public AutofillManager,
 
   // Returns an appropriate EventFormLogger for the given |field_type_group|.
   // May return nullptr.
-  FormEventLoggerBase* GetEventFormLogger(
+  autofill_metrics::FormEventLoggerBase* GetEventFormLogger(
       FieldTypeGroup field_type_group) const;
 
   void SetDataList(const std::vector<std::u16string>& values,
@@ -716,6 +721,11 @@ class BrowserAutofillManager : public AutofillManager,
   // destruction time (whatever comes first).
   void LogEventCountsUMAMetric(const FormStructure& form_structure);
 
+  // When the forms that meet certain criteria are identified as useless to
+  // Autofill, the function should return false and the forms are not recorded
+  // into UKM.
+  bool ShouldUploadUKM(const FormStructure& form_structure);
+
   // Delegates to perform external processing (display, selection) on
   // our behalf.
   std::unique_ptr<AutofillExternalDelegate> external_delegate_;
@@ -724,9 +734,13 @@ class BrowserAutofillManager : public AutofillManager,
   std::string app_locale_;
 
   // The personal data manager, used to save and load personal data to/from the
-  // web database.  This is overridden by the BrowserAutofillManagerTest.
+  // web database. Set when this BrowserAutofillManager is initialized. This is
+  // overridden by the BrowserAutofillManagerTest.
   // Weak reference.
-  // May be NULL.  NULL indicates OTR.
+  // May be nullptr. Nullptr indicates that we are on an unsupported platform,
+  // for example android webview.
+  // In OTR mode, on supported platforms, `personal_data_` will represent the
+  // original profile's PersonalDataManager.
   raw_ptr<PersonalDataManager> personal_data_;
 
   // Used to help fill data into fields.
@@ -739,8 +753,10 @@ class BrowserAutofillManager : public AutofillManager,
   std::unique_ptr<SingleFieldFormFillRouter> single_field_form_fill_router_;
 
   // Utilities for logging form events.
-  std::unique_ptr<AddressFormEventLogger> address_form_event_logger_;
-  std::unique_ptr<CreditCardFormEventLogger> credit_card_form_event_logger_;
+  std::unique_ptr<autofill_metrics::AddressFormEventLogger>
+      address_form_event_logger_;
+  std::unique_ptr<autofill_metrics::CreditCardFormEventLogger>
+      credit_card_form_event_logger_;
 
   // Have we logged whether Autofill is enabled for this page load?
   bool has_logged_autofill_enabled_ = false;

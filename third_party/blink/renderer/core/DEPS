@@ -76,6 +76,7 @@ include_rules = [
     "+services/network/public/cpp/request_destination.h",
     "+services/network/public/cpp/request_mode.h",
     "+services/network/public/cpp/resource_request.h",
+    "+services/network/public/cpp/url_loader_completion_status.h",
     "+services/network/public/cpp/web_sandbox_flags.h",
     "+services/service_manager/public",
     "+skia/public/mojom",
@@ -110,6 +111,7 @@ include_rules = [
     "+ui/gfx/animation/keyframe/animation_curve.h",
     "+ui/gfx/animation/keyframe/keyframed_animation_curve.h",
     "+ui/gfx/animation/keyframe/timing_function.h",
+    "+ui/gfx/codec/png_codec.h",
     "+ui/gfx/geometry",
     "+ui/gfx/range/range.h",
     "-web",
@@ -189,5 +191,8 @@ specific_include_rules = {
     ],
     "media_values.h": [
         "+ui/base/pointer/pointer_device.h",
+    ],
+    "xml_http_request.cc": [
+        "+net/base/mime_util.h",
     ],
 }

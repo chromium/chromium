@@ -225,7 +225,7 @@ sessions::TabRestoreService::Entries::const_iterator TabIterator::CurrentEntry()
 
 TabIterator& TabIterator::operator++() {
   // Early out at end.
-  if (current_entry_ == entries_.cend()) {
+  if (current_entry_ == entries_->cend()) {
     return *this;
   }
 
@@ -241,7 +241,7 @@ TabIterator& TabIterator::operator++() {
   tabs_ = nullptr;
   current_tab_ = absl::nullopt;
   current_entry_++;
-  if (current_entry_ == entries_.cend()) {
+  if (current_entry_ == entries_->cend()) {
     return *this;
   }
 
@@ -278,7 +278,7 @@ const sessions::TabRestoreService::Tab* TabIterator::operator->() const {
 }
 
 void TabIterator::SetupInnerTabList() {
-  if (current_entry_ == entries_.cend()) {
+  if (current_entry_ == entries_->cend()) {
     return;
   }
 

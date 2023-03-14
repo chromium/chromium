@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
@@ -21,7 +22,6 @@
 #include "media/base/audio_latency.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/channel_layout.h"
 #include "media/base/sample_rates.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
@@ -308,7 +308,7 @@ WebRtcAudioRenderer::WebRtcAudioRenderer(
   if (web_frame.Client()) {
     speech_recognition_client_ =
         web_frame.Client()->CreateSpeechRecognitionClient(
-            media::BindToCurrentLoop(
+            base::BindPostTaskToCurrentDefault(
                 ConvertToBaseOnceCallback(CrossThreadBindOnce(
                     &WebRtcAudioRenderer::EnableSpeechRecognition,
                     weak_factory_.GetWeakPtr()))));
@@ -937,7 +937,7 @@ void WebRtcAudioRenderer::EnableSpeechRecognition() {
   if (speech_recognition_client_ &&
       speech_recognition_client_->IsSpeechRecognitionAvailable()) {
     transcribe_audio_callback_ =
-        media::BindToCurrentLoop(ConvertToBaseRepeatingCallback(
+        base::BindPostTaskToCurrentDefault(ConvertToBaseRepeatingCallback(
             CrossThreadBindRepeating(&WebRtcAudioRenderer::TranscribeAudio,
                                      weak_factory_.GetWeakPtr())));
   }

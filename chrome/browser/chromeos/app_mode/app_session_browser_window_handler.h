@@ -27,7 +27,8 @@ enum class KioskBrowserWindowType {
   kClosedRegularBrowser = 1,
   kOpenedRegularBrowser = 2,
   kOpenedDevToolsBrowser = 3,
-  kMaxValue = kOpenedDevToolsBrowser,
+  kOpenedTroubleshootingNormalBrowser = 4,
+  kMaxValue = kOpenedTroubleshootingNormalBrowser,
 };
 
 // This class monitors for the addition and removal of new browser windows
@@ -48,9 +49,7 @@ class AppSessionBrowserWindowHandler : public BrowserListObserver {
       const absl::optional<std::string>& web_app_name,
       base::RepeatingCallback<void(bool is_closing)>
           on_browser_window_added_callback,
-      base::OnceClosure on_last_browser_window_closed_callback,
-      std::unique_ptr<KioskTroubleshootingController>
-          kiosk_troubleshooting_controller);
+      base::OnceClosure shutdown_app_session_callback);
   AppSessionBrowserWindowHandler(const AppSessionBrowserWindowHandler&) =
       delete;
   AppSessionBrowserWindowHandler& operator=(
@@ -73,12 +72,19 @@ class AppSessionBrowserWindowHandler : public BrowserListObserver {
   // Returns true if open devtools browser and it is allowed by policy.
   bool IsDevToolsAllowedBrowser(Browser* browser) const;
 
+  // Returns true if open normal browser and it is allowed by troubleshooting
+  // policy.
+  bool IsNormalTroubleshootingBrowserAllowed(Browser* browser) const;
+
   // Returns true in case of the initial browser window existed for web kiosks.
   bool ShouldExitKioskWhenLastBrowserRemoved() const;
 
   // Checks that there is no app browser and only `settings_browser_` remains
   // open.
   bool IsOnlySettingsBrowserRemainOpen() const;
+
+  // Calls `shutdown_app_session_callback_` once.
+  void ShutdownAppSession();
 
   // Owned by `ProfileManager`.
   const raw_ptr<Profile, DanglingUntriaged> profile_;
@@ -87,7 +93,7 @@ class AppSessionBrowserWindowHandler : public BrowserListObserver {
   const absl::optional<std::string> web_app_name_;
   base::RepeatingCallback<void(bool is_closing)>
       on_browser_window_added_callback_;
-  base::OnceClosure on_last_browser_window_closed_callback_;
+  base::OnceClosure shutdown_app_session_callback_;
 
   std::unique_ptr<KioskTroubleshootingController>
       kiosk_troubleshooting_controller_;

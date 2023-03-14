@@ -81,7 +81,7 @@ class WebContents;
 }
 
 namespace device_reauth {
-class BiometricAuthenticator;
+class DeviceAuthenticator;
 }
 
 namespace password_manager {
@@ -148,11 +148,11 @@ class ChromePasswordManagerClient
   void OnPasswordSelected(const std::u16string& text) override;
 #endif
 
-  // Returns a pointer to the BiometricAuthenticator which is created on demand.
+  // Returns a pointer to the DeviceAuthenticator which is created on demand.
   // This is currently only implemented for Android, Mac and Windows. On all
   // other platforms this will always be null.
-  scoped_refptr<device_reauth::BiometricAuthenticator>
-  GetBiometricAuthenticator() override;
+  scoped_refptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator()
+      override;
   void GeneratePassword(
       autofill::password_generation::PasswordGenerationType type) override;
   void NotifyUserAutoSignin(
@@ -271,6 +271,12 @@ class ChromePasswordManagerClient
   void UpdateFormManagers() override;
   void NavigateToManagePasswordsPage(
       password_manager::ManagePasswordsReferrer referrer) override;
+
+#if BUILDFLAG(IS_ANDROID)
+  void NavigateToManagePasskeysPage(
+      password_manager::ManagePasswordsReferrer referrer) override;
+#endif
+
   bool IsIsolationForPasswordSitesEnabled() const override;
   bool IsNewTabPage() const override;
   password_manager::FieldInfoManager* GetFieldInfoManager() const override;

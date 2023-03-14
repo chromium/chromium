@@ -10,6 +10,9 @@
 // Category for exposing properties and methods for testing.
 @interface FeedMetricsRecorder (Testing)
 
+// Exposing the timeSpentInFeed property to check if time is properly recorded.
+@property(nonatomic, assign) base::TimeDelta timeSpentInFeed;
+
 // Exposing resetGoodVisitSession to mimic session expiration.
 - (void)resetGoodVisitSession;
 

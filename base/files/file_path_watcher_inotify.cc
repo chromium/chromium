@@ -770,30 +770,29 @@ bool FilePathWatcherImpl::AddWatchForBrokenSymlink(const FilePath& path,
   return false;
 #else   // BUILDFLAG(IS_FUCHSIA)
   DCHECK_EQ(InotifyReader::kInvalidWatch, watch_entry->watch);
-  FilePath link;
-  if (!ReadSymbolicLink(path, &link))
+  absl::optional<FilePath> link = ReadSymbolicLinkAbsolute(path);
+  if (!link) {
     return true;
-
-  if (!link.IsAbsolute())
-    link = path.DirName().Append(link);
+  }
+  DCHECK(link->IsAbsolute());
 
   // Try watching symlink target directory. If the link target is "/", then we
   // shouldn't get here in normal situations and if we do, we'd watch "/" for
   // changes to a component "/" which is harmless so no special treatment of
   // this case is required.
   InotifyReader::Watch watch =
-      g_inotify_reader.Get().AddWatch(link.DirName(), this);
+      g_inotify_reader.Get().AddWatch(link->DirName(), this);
   if (watch == InotifyReader::kWatchLimitExceeded)
     return false;
   if (watch == InotifyReader::kInvalidWatch) {
     // TODO(craig) Symlinks only work if the parent directory for the target
     // exist. Ideally we should make sure we've watched all the components of
     // the symlink path for changes. See crbug.com/91561 for details.
-    DPLOG(WARNING) << "Watch failed for " << link.DirName().value();
+    DPLOG(WARNING) << "Watch failed for " << link->DirName().value();
     return true;
   }
   watch_entry->watch = watch;
-  watch_entry->linkname = link.BaseName().value();
+  watch_entry->linkname = link->BaseName().value();
   return true;
 #endif  // BUILDFLAG(IS_FUCHSIA)
 }

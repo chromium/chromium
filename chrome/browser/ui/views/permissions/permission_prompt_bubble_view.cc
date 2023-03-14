@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
@@ -54,35 +55,30 @@
 
 namespace {
 
-// Returns the origin to be displayed in the permission prompt. May return
-// a non-origin, e.g. extension URLs use the name of the extension.
-std::u16string GetDisplayName(
-    Browser* browser,
-    permissions::PermissionPrompt::Delegate& delegate) {
+constexpr UrlIdentity::TypeSet allowed_types = {
+    UrlIdentity::Type::kDefault, UrlIdentity::Type::kChromeExtension,
+    UrlIdentity::Type::kIsolatedWebApp, UrlIdentity::Type::kFile};
+
+constexpr UrlIdentity::FormatOptions options = {
+    .default_options = {
+        UrlIdentity::DefaultFormatOptions::kOmitCryptographicScheme}};
+
+UrlIdentity GetUrlIdentity(Browser* browser,
+                           permissions::PermissionPrompt::Delegate& delegate) {
   DCHECK(!delegate.Requests().empty());
   GURL origin_url = delegate.GetRequestingOrigin();
 
-  if (origin_url.SchemeIs(extensions::kExtensionScheme)) {
-    std::u16string extension_name =
-        extensions::ui_util::GetEnabledExtensionNameForUrl(origin_url,
-                                                           browser->profile());
-    if (!extension_name.empty())
-      return extension_name;
+  UrlIdentity url_identity =
+      UrlIdentity::CreateFromUrl(browser ? browser->profile() : nullptr,
+                                 origin_url, allowed_types, options);
+
+  if (url_identity.type == UrlIdentity::Type::kFile) {
+    // File URLs will show the same constant.
+    url_identity.name =
+        l10n_util::GetStringUTF16(IDS_PERMISSIONS_BUBBLE_PROMPT_THIS_FILE);
   }
 
-  // File URLs should be displayed as "This file".
-  if (origin_url.SchemeIsFile())
-    return l10n_util::GetStringUTF16(IDS_PERMISSIONS_BUBBLE_PROMPT_THIS_FILE);
-
-  // Isolated Web Apps should show the app's name instead of the origin.
-  if (browser && browser->app_controller() &&
-      browser->app_controller()->IsIsolatedWebApp()) {
-    return browser->app_controller()->GetAppShortName();
-  }
-
-  // Web URLs should be displayed as the origin in the URL.
-  return url_formatter::FormatUrlForSecurityDisplay(
-      origin_url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+  return url_identity;
 }
 
 // Determines whether the current request should also display an
@@ -94,8 +90,9 @@ bool GetShowAllowThisTimeButton(
           permissions::features::kOneTimeGeolocationPermission)) {
     return false;
   }
-  if (delegate.Requests().size() > 1)
+  if (delegate.Requests().size() > 1) {
     return false;
+  }
   CHECK_GT(delegate.Requests().size(), 0u);
   return delegate.Requests()[0]->request_type() ==
          permissions::RequestType::kGeolocation;
@@ -165,28 +162,6 @@ std::vector<permissions::PermissionRequest*> GetVisibleRequests(
   return visible_requests;
 }
 
-// Returns whether the display name is an origin.
-bool GetDisplayNameIsOrigin(Browser* browser,
-                            permissions::PermissionPrompt::Delegate& delegate) {
-  DCHECK(!delegate.Requests().empty());
-  GURL origin_url = delegate.GetRequestingOrigin();
-
-  if (origin_url.SchemeIsFile()) {
-    return false;
-  }
-  if (origin_url.SchemeIs(extensions::kExtensionScheme) &&
-      !extensions::ui_util::GetEnabledExtensionNameForUrl(origin_url,
-                                                          browser->profile())
-           .empty()) {
-    return false;
-  }
-  if (browser && browser->app_controller() &&
-      browser->app_controller()->IsIsolatedWebApp()) {
-    return false;
-  }
-  return true;
-}
-
 // Get extra information to display for the permission, if any.
 absl::optional<std::u16string> GetExtraText(
     permissions::PermissionPrompt::Delegate& delegate) {
@@ -220,15 +195,13 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
     : browser_(browser),
       delegate_(delegate),
       permission_requested_time_(permission_requested_time),
-      display_name_(GetDisplayName(browser, *delegate.get())),
+      url_identity_(GetUrlIdentity(browser, *delegate)),
       accessible_window_title_(GetAccessibleWindowTitleInternal(
-          display_name_,
+          url_identity_.name,
           GetVisibleRequests(*delegate.get()))),
       window_title_(
-          GetWindowTitleInternal(display_name_,
-                                 GetShowAllowThisTimeButton(*delegate.get()))),
-      is_display_name_origin_(
-          GetDisplayNameIsOrigin(browser, *delegate.get())) {
+          GetWindowTitleInternal(url_identity_.name,
+                                 GetShowAllowThisTimeButton(*delegate.get()))) {
   // Note that browser_ may be null in unit tests.
 
   // To prevent permissions being accepted accidentally, and as a security
@@ -328,8 +301,6 @@ PermissionPromptBubbleView::~PermissionPromptBubbleView() = default;
 void PermissionPromptBubbleView::Show() {
   DCHECK(browser_->window());
 
-  // Set |parent_window| because some valid anchors can become hidden.
-  DCHECK(browser_->window());
   UpdateAnchorPosition();
 
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
@@ -408,7 +379,7 @@ void PermissionPromptBubbleView::SetPromptStyle(
 }
 
 void PermissionPromptBubbleView::AddedToWidget() {
-  if (is_display_name_origin_) {
+  if (url_identity_.type == UrlIdentity::Type::kDefault) {
     // There is a risk of URL spoofing from origins that are too wide to fit in
     // the bubble; elide origins from the front to prevent this.
     GetBubbleFrameView()->SetTitleView(

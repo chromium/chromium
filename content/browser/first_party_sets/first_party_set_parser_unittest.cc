@@ -42,6 +42,8 @@ constexpr char kParsedSuccessfullyHistogram[] =
     "Cookie.FirstPartySets.ComponentSetsParsedSuccessfully";
 constexpr char kNonfatalErrorsHistogram[] =
     "Cookie.FirstPartySets.ComponentSetsNonfatalErrors";
+constexpr char kProcessedComponentHistogram[] =
+    "Cookie.FirstPartySets.ProcessedEntireComponent";
 
 }  // namespace
 
@@ -58,14 +60,21 @@ TEST(FirstPartySetParser, RejectsNonemptyMalformed) {
               Pair(IsEmpty(), IsEmpty()));
   EXPECT_EQ(histogram_tester.GetTotalSum(kParsedSuccessfullyHistogram), 0);
   EXPECT_EQ(histogram_tester.GetTotalSum(kNonfatalErrorsHistogram), 0);
+  histogram_tester.ExpectUniqueSample(kProcessedComponentHistogram,
+                                      /*sample=*/0,
+                                      /*expected_bucket_count=*/1);
 }
 
 TEST(FirstPartySetParser, AcceptsTrivial) {
   base::HistogramTester histogram_tester;
   EXPECT_THAT(ParseSets(""), Pair(IsEmpty(), IsEmpty()));
+  histogram_tester.ExpectUniqueSample(kProcessedComponentHistogram,
+                                      /*sample=*/1,
+                                      /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       kParsedSuccessfullyHistogram, /*sample=*/0, /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(kNonfatalErrorsHistogram, /*sample=*/0,
+  histogram_tester.ExpectUniqueSample(kProcessedComponentHistogram,
+                                      /*sample=*/1,
                                       /*expected_bucket_count=*/1);
 }
 
@@ -141,11 +150,18 @@ TEST(FirstPartySetParser, AcceptsMinimal_AllSubsets_WithCcTLDs) {
       kParsedSuccessfullyHistogram, /*sample=*/1, /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(kNonfatalErrorsHistogram, /*sample=*/0,
                                       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(kProcessedComponentHistogram,
+                                      /*sample=*/1,
+                                      /*expected_bucket_count=*/1);
 }
 
 TEST(FirstPartySetParser, RejectsMissingPrimary) {
+  base::HistogramTester histogram_tester;
   EXPECT_THAT(ParseSets(R"({"associatedSites": ["https://aaaa.test"]})"),
               Pair(IsEmpty(), IsEmpty()));
+  histogram_tester.ExpectUniqueSample(kProcessedComponentHistogram,
+                                      /*sample=*/0,
+                                      /*expected_bucket_count=*/1);
 }
 
 TEST(FirstPartySetParser, RejectsTypeUnsafePrimary) {
@@ -198,6 +214,9 @@ TEST(FirstPartySetParser, SkipsSetOnNonOriginPrimary) {
   histogram_tester.ExpectUniqueSample(
       kParsedSuccessfullyHistogram, /*sample=*/2, /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(kNonfatalErrorsHistogram, /*sample=*/1,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(kProcessedComponentHistogram,
+                                      /*sample=*/1,
                                       /*expected_bucket_count=*/1);
 }
 
@@ -327,6 +346,9 @@ TEST(FirstPartySetParser, AcceptsMultipleSets) {
   histogram_tester.ExpectUniqueSample(
       kParsedSuccessfullyHistogram, /*sample=*/2, /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(kNonfatalErrorsHistogram, /*sample=*/0,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(kProcessedComponentHistogram,
+                                      /*sample=*/1,
                                       /*expected_bucket_count=*/1);
 }
 
@@ -513,6 +535,17 @@ TEST(FirstPartySetParser, Rejects_NondisjointCcTLDAliases) {
       Pair(IsEmpty(), IsEmpty()));
 }
 
+TEST(FirstPartySetParser, Logs_MultipleRejections) {
+  // 2 rejections should show up on the histogram as separate instances
+  base::HistogramTester histogram_tester;
+  EXPECT_THAT(ParseSets("certainly not valid JSON"),
+              Pair(IsEmpty(), IsEmpty()));
+  EXPECT_THAT(ParseSets("also not valid JSON"), Pair(IsEmpty(), IsEmpty()));
+  histogram_tester.ExpectUniqueSample(kProcessedComponentHistogram,
+                                      /*sample=*/0,
+                                      /*expected_bucket_count=*/2);
+}
+
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
      Accepts_MissingSetLists) {
   base::Value policy_value = base::JSONReader::Read(R"(
@@ -522,8 +555,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .value()
-          .first,
+          .first.value(),
       FirstPartySetParser::ParsedPolicySetLists({}, {}));
 }
 
@@ -538,8 +570,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .value()
-          .first,
+          .first.value(),
       FirstPartySetParser::ParsedPolicySetLists({}, {}));
 }
 
@@ -558,8 +589,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error()
-          .first,
+          .first.error(),
       ParseError(ParseErrorType::kInvalidType,
                  {kReplacementsField, 0, kPrimaryField}));
 }
@@ -580,8 +610,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error()
-          .first,
+          .first.error(),
       ParseError(ParseErrorType::kInvalidType,
                  {kReplacementsField, 0, kPrimaryField}));
 }
@@ -602,8 +631,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error()
-          .first,
+          .first.error(),
       ParseError(ParseErrorType::kInvalidType,
                  {kReplacementsField, 0, kAssociatedSitesField}));
 }
@@ -625,8 +653,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error()
-          .first,
+          .first.error(),
       ParseError(ParseErrorType::kInvalidType,
                  {kReplacementsField, 0, kAssociatedSitesField, 1}));
 }
@@ -647,8 +674,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error()
-          .first,
+          .first.error(),
       ParseError(ParseErrorType::kInvalidOrigin,
                  {kReplacementsField, 0, kPrimaryField}));
 }
@@ -669,8 +695,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error()
-          .first,
+          .first.error(),
       ParseError(ParseErrorType::kInvalidOrigin,
                  {kReplacementsField, 0, kAssociatedSitesField, 0}));
 }
@@ -690,8 +715,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest, PrimaryNonHttps) {
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error()
-          .first,
+          .first.error(),
       ParseError(ParseErrorType::kNonHttpsScheme,
                  {kReplacementsField, 0, kPrimaryField}));
 }
@@ -712,8 +736,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error()
-          .first,
+          .first.error(),
       ParseError(ParseErrorType::kNonHttpsScheme,
                  {kReplacementsField, 0, kAssociatedSitesField, 0}));
 }
@@ -734,8 +757,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error()
-          .first,
+          .first.error(),
       ParseError(ParseErrorType::kInvalidDomain,
                  {kReplacementsField, 0, kPrimaryField}));
 }
@@ -756,8 +778,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error()
-          .first,
+          .first.error(),
       ParseError(ParseErrorType::kInvalidDomain,
                  {kReplacementsField, 0, kAssociatedSitesField, 0}));
 }
@@ -778,8 +799,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error()
-          .first,
+          .first.error(),
       ParseError(ParseErrorType::kSingletonSet,
                  {kReplacementsField, 0, kAssociatedSitesField}));
 }
@@ -800,8 +820,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error()
-          .first,
+          .first.error(),
       ParseError(ParseErrorType::kRepeatedDomain,
                  {kReplacementsField, 0, kAssociatedSitesField, 0}));
 }
@@ -826,8 +845,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error()
-          .first,
+          .first.error(),
       ParseError(ParseErrorType::kNonDisjointSets,
                  {kReplacementsField, 1, kAssociatedSitesField, 0}));
 }
@@ -852,8 +870,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error()
-          .first,
+          .first.error(),
       ParseError(ParseErrorType::kNonDisjointSets,
                  {kAdditionsField, 1, kAssociatedSitesField, 0}));
 }
@@ -879,8 +896,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error()
-          .first,
+          .first.error(),
       ParseError(ParseErrorType::kNonDisjointSets,
                  {kAdditionsField, 0, kAssociatedSitesField, 0}));
 }
@@ -912,8 +928,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest, WarnsUntilError) {
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error()
-          .first,
+          .first.error(),
       ParseError(ParseErrorType::kInvalidDomain,
                  {kAdditionsField, 0, kPrimaryField}));
 
@@ -921,7 +936,6 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest, WarnsUntilError) {
   // the InvalidOrigin error arises first.
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error()
           .second,
       ElementsAre(ParseWarning(ParseWarningType::kCctldKeyNotCanonical,
                                {kReplacementsField, 0, kCctldsField,
@@ -955,8 +969,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .value()
-          .first,
+          .first.value(),
       FirstPartySetParser::ParsedPolicySetLists(
           {FirstPartySetParser::SetsMap({
                {primary1,
@@ -977,7 +990,6 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
           {}));
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .value()
           .second,
       IsEmpty());
 }
@@ -1014,8 +1026,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .value()
-          .first,
+          .first.value(),
       FirstPartySetParser::ParsedPolicySetLists(
           {FirstPartySetParser::SetsMap({
                {primary1,
@@ -1042,7 +1053,6 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
           })}));
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .value()
           .second,
       IsEmpty());
 }
@@ -1081,8 +1091,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .value()
-          .first,
+          .first.value(),
       FirstPartySetParser::ParsedPolicySetLists(
           {FirstPartySetParser::SetsMap({
                {primary1,
@@ -1110,7 +1119,6 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
 
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .value()
           .second,
       std::vector<ParseWarning>{ParseWarning(
           ParseWarningType::kCctldKeyNotCanonical,
@@ -1225,8 +1233,7 @@ TEST_F(FirstPartySetParserTest,
                                  .value();
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .value()
-          .first,
+          .first.value(),
       FirstPartySetParser::ParsedPolicySetLists(
           {FirstPartySetParser::SetsMap({
               {primary1, net::FirstPartySetEntry(

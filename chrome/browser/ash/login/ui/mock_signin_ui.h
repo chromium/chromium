@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/login/base_screen_handler_utils.h"
+#include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {
@@ -22,7 +23,10 @@ class MockSigninUI : public SigninUI {
   MockSigninUI& operator=(const SigninUI&) = delete;
 
   MOCK_METHOD(void, StartUserOnboarding, (), (override));
-  MOCK_METHOD(void, ResumeUserOnboarding, (OobeScreenId), (override));
+  MOCK_METHOD(void,
+              ResumeUserOnboarding,
+              (const PrefService&, OobeScreenId),
+              (override));
   MOCK_METHOD(void, StartManagementTransition, (), (override));
   MOCK_METHOD(void, ShowTosForExistingUser, (), (override));
   MOCK_METHOD(void, ShowNewTermsForFlexUsers, (), (override));

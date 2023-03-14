@@ -10,6 +10,9 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
+#include "base/i18n/rtl.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "chrome/android/chrome_jni_headers/AutofillPopupBridge_jni.h"
@@ -21,6 +24,7 @@
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/security_state/core/security_state.h"
@@ -65,12 +69,14 @@ bool AutofillPopupViewAndroid::HandleKeyPressEvent(
 }
 
 void AutofillPopupViewAndroid::OnSuggestionsChanged() {
-  if (java_object_.is_null())
+  if (java_object_.is_null()) {
     return;
+  }
 
   const ScopedJavaLocalRef<jobject> view = popup_view_.view();
-  if (view.is_null())
+  if (view.is_null()) {
     return;
+  }
 
   ui::ViewAndroid* view_android = controller_->container_view();
 
@@ -106,8 +112,9 @@ void AutofillPopupViewAndroid::OnSuggestionsChanged() {
     if (suggestion_labels.size() > 0) {
       DCHECK_LE(suggestion_labels[0].size(), 2U);
       sublabel = std::move(suggestion_labels[0][0].value);
-      if (suggestion_labels[0].size() > 1)
+      if (suggestion_labels[0].size() > 1) {
         secondary_sublabel = std::move(suggestion_labels[0][1].value);
+      }
     }
     if (suggestion_labels.size() > 1) {
       DCHECK_EQ(suggestion_labels[1].size(), 1U);
@@ -143,7 +150,7 @@ void AutofillPopupViewAndroid::OnSuggestionsChanged() {
   }
 
   Java_AutofillPopupBridge_show(env, java_object_, data_array,
-                                controller_->IsRTL());
+                                base::i18n::IsRTL());
 }
 
 void AutofillPopupViewAndroid::AxAnnounce(const std::u16string& text) {
@@ -155,14 +162,24 @@ absl::optional<int32_t> AutofillPopupViewAndroid::GetAxUniqueId() {
   return absl::nullopt;
 }
 
+base::WeakPtr<AutofillPopupView> AutofillPopupViewAndroid::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void AutofillPopupViewAndroid::SuggestionSelected(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jint list_index) {
   // Race: Hide() may have already run.
-  if (controller_) {
-    controller_->AcceptSuggestion(list_index,
-                                  /*show_threshold=*/base::TimeDelta());
+  if (!controller_) {
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillPopupUseThresholdForKeyboardAndMobileAccept)) {
+    controller_->AcceptSuggestion(list_index);
+  } else {
+    controller_->AcceptSuggestionWithoutThreshold(list_index);
   }
 }
 
@@ -170,8 +187,9 @@ void AutofillPopupViewAndroid::DeletionRequested(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jint list_index) {
-  if (!controller_ || java_object_.is_null())
+  if (!controller_ || java_object_.is_null()) {
     return;
+  }
 
   std::u16string confirmation_title, confirmation_body;
   if (!controller_->GetRemovalConfirmationText(list_index, &confirmation_title,
@@ -189,8 +207,9 @@ void AutofillPopupViewAndroid::DeletionRequested(
 void AutofillPopupViewAndroid::DeletionConfirmed(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
-  if (!controller_)
+  if (!controller_) {
     return;
+  }
 
   CHECK_GE(deleting_index_, 0);
   controller_->RemoveSuggestion(deleting_index_);
@@ -199,8 +218,9 @@ void AutofillPopupViewAndroid::DeletionConfirmed(
 void AutofillPopupViewAndroid::PopupDismissed(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
-  if (controller_)
+  if (controller_) {
     controller_->ViewDestroyed();
+  }
 
   // The controller has now deleted itself. Remove dangling weak reference.
   controller_ = nullptr;
@@ -214,11 +234,13 @@ bool AutofillPopupViewAndroid::Init() {
   DCHECK(view_android);
   popup_view_ = view_android->AcquireAnchorView();
   const ScopedJavaLocalRef<jobject> view = popup_view_.view();
-  if (view.is_null())
+  if (view.is_null()) {
     return false;
+  }
   ui::WindowAndroid* window_android = view_android->GetWindowAndroid();
-  if (!window_android)
+  if (!window_android) {
     return false;  // The window might not be attached (yet or anymore).
+  }
 
   java_object_.Reset(Java_AutofillPopupBridge_create(
       env, view, reinterpret_cast<intptr_t>(this),
@@ -233,23 +255,26 @@ bool AutofillPopupViewAndroid::WasSuppressed() {
 }
 
 // static
-AutofillPopupView* AutofillPopupView::Create(
+base::WeakPtr<AutofillPopupView> AutofillPopupView::Create(
     base::WeakPtr<AutofillPopupController> controller) {
   if (IsKeyboardAccessoryEnabled()) {
     auto adapter =
         std::make_unique<AutofillKeyboardAccessoryAdapter>(controller);
-    auto accessory_view =
-        std::make_unique<AutofillKeyboardAccessoryView>(adapter->GetWeakPtr());
-    if (!accessory_view->Initialize())
+    auto accessory_view = std::make_unique<AutofillKeyboardAccessoryView>(
+        adapter->GetWeakPtrToAdapter());
+    if (!accessory_view->Initialize()) {
       return nullptr;  // Don't create an adapter without initialized view.
+    }
+
     adapter->SetAccessoryView(std::move(accessory_view));
-    return adapter.release();
+    return adapter.release()->GetWeakPtr();
   }
 
   auto popup_view = std::make_unique<AutofillPopupViewAndroid>(controller);
-  if (!popup_view->Init() || popup_view->WasSuppressed())
+  if (!popup_view->Init() || popup_view->WasSuppressed()) {
     return nullptr;
-  return popup_view.release();
+  }
+  return popup_view.release()->GetWeakPtr();
 }
 
 }  // namespace autofill

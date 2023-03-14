@@ -24,6 +24,8 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kFileSystemAccessRenameWithoutParentAccessRequiresUserActivation);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kFileSystemAccessSkipAfterWriteChecksIfUnchangingExtension);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kFileSystemAccessDirectoryIterationSymbolicLinkCheck);
 
 #if BUILDFLAG(IS_MAC)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFileSystemAccessCowSwapFile);

@@ -56,6 +56,16 @@ class StandaloneTrustedVaultBackend
     virtual void NotifyRecoverabilityDegradedChanged() = 0;
   };
 
+  enum class RefreshTokenErrorState {
+    // State can not be identified (e.g. refresh token is not loaded yet).
+    kUnknown,
+    // Refresh token is in persistent auth error state.
+    kPersistentAuthError,
+    // There are no persistent auth errors (note, that transient errors are
+    // still possible).
+    kNoPersistentAuthErrors,
+  };
+
   // |connection| can be null, in this case functionality that involves
   // interaction with vault service (such as device registration, keys
   // downloading, etc.) will be disabled.
@@ -99,7 +109,7 @@ class StandaloneTrustedVaultBackend
 
   // Sets/resets |primary_account_|.
   void SetPrimaryAccount(const absl::optional<CoreAccountInfo>& primary_account,
-                         bool has_persistent_auth_error);
+                         RefreshTokenErrorState refresh_token_error_state);
 
   // Handles changes of accounts in cookie jar and removes keys for some
   // accounts:
@@ -120,7 +130,7 @@ class StandaloneTrustedVaultBackend
                                 int method_type_hint,
                                 base::OnceClosure cb);
 
-  void ClearDataForAccount(const CoreAccountInfo& account_info);
+  void ClearLocalDataForAccount(const CoreAccountInfo& account_info);
 
   absl::optional<CoreAccountInfo> GetPrimaryAccountForTesting() const;
 
@@ -226,8 +236,9 @@ class StandaloneTrustedVaultBackend
   // vault server.
   absl::optional<CoreAccountInfo> primary_account_;
 
-  // Whether |primary_account_| has a persistent auth error.
-  bool has_persistent_auth_error_ = false;
+  // Error state of refresh token for |primary_account_|.
+  RefreshTokenErrorState refresh_token_error_state_ =
+      StandaloneTrustedVaultBackend::RefreshTokenErrorState::kUnknown;
 
   // If AddTrustedRecoveryMethod() gets invoked before SetPrimaryAccount(), the
   // execution gets deferred until SetPrimaryAccount() is invoked.

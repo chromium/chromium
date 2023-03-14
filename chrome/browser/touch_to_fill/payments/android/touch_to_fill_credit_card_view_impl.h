@@ -32,7 +32,7 @@ class TouchToFillCreditCardViewImpl : public TouchToFillCreditCardView {
  private:
   // TouchToFillCreditCardView:
   bool Show(TouchToFillCreditCardViewController* controller,
-            base::span<const autofill::CreditCard* const> cards_to_suggest,
+            base::span<const autofill::CreditCard> cards_to_suggest,
             bool should_show_scan_credit_card) override;
   void Hide() override;
 

@@ -107,7 +107,7 @@ DeclarativeNetRequestPrefsHelper::UpdateDisabledStaticRulesResult::
 const base::Value::Dict*
 DeclarativeNetRequestPrefsHelper::GetDisabledRuleIdsDict(
     const ExtensionId& extension_id) const {
-  return prefs_.ReadPrefAsDict(
+  return prefs_->ReadPrefAsDict(
       extension_id,
       ExtensionPrefs::JoinPrefs(
           {ExtensionPrefs::kDNRStaticRulesetPref, kDNRDisabledStaticRuleIds}));
@@ -132,7 +132,7 @@ void DeclarativeNetRequestPrefsHelper::SetDisabledStaticRuleIds(
   std::string key = ExtensionPrefs::JoinPrefs(
       {ExtensionPrefs::kDNRStaticRulesetPref, kDNRDisabledStaticRuleIds});
 
-  ExtensionPrefs::ScopedDictionaryUpdate update(&prefs_, extension_id, key);
+  ExtensionPrefs::ScopedDictionaryUpdate update(&*prefs_, extension_id, key);
 
   if (disabled_rule_ids.empty()) {
     std::unique_ptr<prefs::DictionaryValueUpdate> disabled_rule_ids_dict =

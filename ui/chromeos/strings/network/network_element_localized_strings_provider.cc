@@ -29,6 +29,8 @@ namespace {
 constexpr webui::LocalizedString kElementLocalizedStrings[] = {
     {"invalidDomainSuffixMatchEntry", IDS_NETWORK_INVALID_DSM_VALUE},
     {"invalidSubjectAlternativeNameMatchEntry", IDS_NETWORK_INVALID_SAN_ENTRY},
+    {"missingEapDefaultServerCaSubjectVerification",
+     IDS_NETWORK_EAP_DEFAULT_SERVER_CA_WITHOUT_SUBJECT_VERIFICATION},
     {"OncType", IDS_NETWORK_TYPE},
     {"OncTypeCellular", IDS_NETWORK_TYPE_CELLULAR},
     {"OncTypeEthernet", IDS_NETWORK_TYPE_ETHERNET},
@@ -48,6 +50,8 @@ constexpr webui::LocalizedString kElementLocalizedStrings[] = {
     {"networkListItemConnectingTo", IDS_NETWORK_LIST_CONNECTING_TO},
     {"networkListItemInitializing", IDS_NETWORK_LIST_INITIALIZING},
     {"networkListItemTitle", IDS_NETWORK_LIST_ITEM_TITLE},
+    {"networkListItemActivateAfterDeviceSetup",
+     IDS_NETWORK_LIST_ACTIVATE_AFTER_DEVICE_SETUP},
     {"networkListItemSubpageButtonLabel",
      IDS_NETWORK_LIST_ITEM_SUBPAGE_BUTTON_LABEL},
     {"networkListItemLabel", IDS_NETWORK_LIST_ITEM_LABEL},
@@ -94,6 +98,14 @@ constexpr webui::LocalizedString kElementLocalizedStrings[] = {
      IDS_NETWORK_LIST_ITEM_LABEL_ESIM_PENDING_PROFILE},
     {"networkListItemLabelESimPendingProfileWithProviderName",
      IDS_NETWORK_LIST_ITEM_LABEL_ESIM_PENDING_PROFILE_WITH_PROVIDER_NAME},
+    {"networkListItemLabelActivateAfterSetup",
+     IDS_NETWORK_LIST_ITEM_LABEL_CELLULAR_ACTIVATE_AFTER_SETUP},
+    {"networkListItemLabelActivateAfterSetupWithProviderName",
+     IDS_NETWORK_LIST_ITEM_LABEL_CELLULAR_ACTIVATE_AFTER_SETUP_WITH_PROVIDER_NAME},
+    {"networkListItemLabelManagedActivateAfterSetup",
+     IDS_NETWORK_LIST_ITEM_LABEL_CELLULAR_MANAGED_ACTIVATE_AFTER_SETUP},
+    {"networkListItemLabelManagedActivateAfterSetupWithProviderName",
+     IDS_NETWORK_LIST_ITEM_LABEL_CELLULAR_MANAGED_ACTIVATE_AFTER_SETUP_WITH_PROVIDER_NAME},
     {"networkListItemLabelESimPendingProfileInstalling",
      IDS_NETWORK_LIST_ITEM_LABEL_ESIM_PENDING_PROFILE_INSTALLING},
     {"networkListItemLabelESimPendingProfileWithProviderNameInstalling",
@@ -528,6 +540,10 @@ void AddConfigLocalizedStrings(content::WebUIDataSource* html_source) {
   // Only authenticated users can toggle the share state.
   html_source->AddBoolean("shareNetworkAllowEnable",
                           ash::LoginState::Get()->IsUserAuthenticated());
+
+  html_source->AddBoolean(
+      "eapDefaultCasWithoutSubjectVerificationAllowed",
+      ash::features::IsEapDefaultCasWithoutSubjectVerificationAllowed());
 }
 
 void AddErrorLocalizedStrings(content::WebUIDataSource* html_source) {

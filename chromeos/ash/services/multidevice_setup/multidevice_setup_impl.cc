@@ -351,6 +351,20 @@ void MultiDeviceSetupImpl::TriggerEventForDebugging(
   std::move(callback).Run(true /* success */);
 }
 
+void MultiDeviceSetupImpl::SetQuickStartPhoneInstanceID(
+    const std::string& qs_phone_instance_id) {
+  qs_phone_instance_id_ = qs_phone_instance_id;
+}
+
+void MultiDeviceSetupImpl::GetQuickStartPhoneInstanceID(
+    GetQuickStartPhoneInstanceIDCallback callback) {
+  if (qs_phone_instance_id_.empty()) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+  std::move(callback).Run(qs_phone_instance_id_);
+}
+
 void MultiDeviceSetupImpl::SetHostDeviceWithoutAuthToken(
     const std::string& host_instance_id_or_legacy_device_id,
     mojom::PrivilegedHostDeviceSetter::SetHostDeviceCallback callback) {

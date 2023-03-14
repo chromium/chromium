@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <iterator>
 #include <memory>
+#include <sstream>
 #include <string>
 #include <type_traits>
 #include <vector>
@@ -37,6 +38,7 @@
 #include "base/task/thread_pool.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/wallpaper/wallpaper_enumerator.h"
+#include "chrome/browser/ash/wallpaper_handlers/backdrop_fetcher_delegate.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager_factory.h"
@@ -139,8 +141,13 @@ std::string GetBitmapJpegDataUrl(const SkBitmap& bitmap) {
 }  // namespace
 
 PersonalizationAppWallpaperProviderImpl::
-    PersonalizationAppWallpaperProviderImpl(content::WebUI* web_ui)
-    : web_ui_(web_ui), profile_(Profile::FromWebUI(web_ui)) {
+    PersonalizationAppWallpaperProviderImpl(
+        content::WebUI* web_ui,
+        std::unique_ptr<wallpaper_handlers::BackdropFetcherDelegate>
+            backdrop_fetcher_delegate)
+    : web_ui_(web_ui),
+      profile_(Profile::FromWebUI(web_ui)),
+      backdrop_fetcher_delegate_(std::move(backdrop_fetcher_delegate)) {
   content::URLDataSource::Add(profile_,
                               std::make_unique<SanitizedImageSource>(profile_));
 }
@@ -234,7 +241,7 @@ void PersonalizationAppWallpaperProviderImpl::FetchCollections(
   }
 
   wallpaper_collection_info_fetcher_ =
-      std::make_unique<wallpaper_handlers::BackdropCollectionInfoFetcher>();
+      backdrop_fetcher_delegate_->CreateBackdropCollectionInfoFetcher();
 
   // base::Unretained is safe to use because |this| outlives
   // |wallpaper_collection_info_fetcher_|.
@@ -247,8 +254,7 @@ void PersonalizationAppWallpaperProviderImpl::FetchImagesForCollection(
     const std::string& collection_id,
     FetchImagesForCollectionCallback callback) {
   auto wallpaper_images_info_fetcher =
-      std::make_unique<wallpaper_handlers::BackdropImageInfoFetcher>(
-          collection_id);
+      backdrop_fetcher_delegate_->CreateBackdropImageInfoFetcher(collection_id);
 
   auto* wallpaper_images_info_fetcher_ptr = wallpaper_images_info_fetcher.get();
   wallpaper_images_info_fetcher_ptr->Start(base::BindOnce(
@@ -1003,7 +1009,7 @@ void PersonalizationAppWallpaperProviderImpl::FindAttribution(
 
   std::size_t current_index = 0;
   wallpaper_attribution_info_fetcher_ =
-      std::make_unique<wallpaper_handlers::BackdropImageInfoFetcher>(
+      backdrop_fetcher_delegate_->CreateBackdropImageInfoFetcher(
           collections->at(current_index).collection_id());
 
   wallpaper_attribution_info_fetcher_->Start(base::BindOnce(
@@ -1061,7 +1067,7 @@ void PersonalizationAppWallpaperProviderImpl::FindImageMetadataInCollection(
     return;
   }
 
-  auto fetcher = std::make_unique<wallpaper_handlers::BackdropImageInfoFetcher>(
+  auto fetcher = backdrop_fetcher_delegate_->CreateBackdropImageInfoFetcher(
       collections->at(current_index).collection_id());
   fetcher->Start(base::BindOnce(
       &PersonalizationAppWallpaperProviderImpl::FindImageMetadataInCollection,

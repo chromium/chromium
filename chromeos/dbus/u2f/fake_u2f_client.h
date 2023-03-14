@@ -21,8 +21,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_U2F) FakeU2FClient : public U2FClient {
   // U2FClient:
   void IsUvpaa(const u2f::IsUvpaaRequest& request,
                DBusMethodCallback<u2f::IsUvpaaResponse> callback) override;
-  void IsU2FEnabled(const u2f::IsUvpaaRequest& request,
-                    DBusMethodCallback<u2f::IsUvpaaResponse> callback) override;
+  void IsU2FEnabled(
+      const u2f::IsU2fEnabledRequest& request,
+      DBusMethodCallback<u2f::IsU2fEnabledResponse> callback) override;
   void MakeCredential(
       const u2f::MakeCredentialRequest& request,
       DBusMethodCallback<u2f::MakeCredentialResponse> callback) override;

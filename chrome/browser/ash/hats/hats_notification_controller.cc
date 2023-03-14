@@ -38,6 +38,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -54,6 +55,9 @@ const char kNotifierHats[] = "ash.hats";
 // Minimum amount of time before the notification is displayed again after a
 // user has interacted with it.
 constexpr base::TimeDelta kHatsThreshold = base::Days(60);
+
+// The threshold for a Googler is less.
+constexpr base::TimeDelta kHatsGooglerThreshold = base::Days(30);
 
 // The state specific UMA enumerations
 const int kSurveyTriggeredEnumeration = 1;
@@ -223,20 +227,29 @@ bool HatsNotificationController::ShouldShowSurveyToProfile(
                                           ->browser_policy_connector_ash()
                                           ->IsDeviceEnterpriseManaged();
 
-  // Do not show survey to enterprise users.
-  if (is_enterprise_enrolled)
-    return false;
-
-  // Do not show survey to non-owners.
-  if (!ProfileHelper::IsOwnerProfile(profile))
-    return false;
-
-  // Call finch helper only after all the profile checks are complete.
   HatsFinchHelper hats_finch_helper(profile, hats_config);
+
+  // Do not show survey to enterprise users.
+  // Exceptions for Googlers if the survey wants Googlers participation.
+  if (is_enterprise_enrolled &&
+      !(gaia::IsGoogleInternalAccountEmail(profile->GetProfileUserName()) &&
+        hats_finch_helper.IsEnabledForGooglers(hats_config))) {
+    return false;
+  }
+
+  // Do not show survey to non-owners. However, enterprise-enrolled Googlers
+  // who passed the previous check will not be owners; don't exclude them.
+  if (!is_enterprise_enrolled && !ProfileHelper::IsOwnerProfile(profile)) {
+    return false;
+  }
+
   if (!hats_finch_helper.IsDeviceSelectedForCurrentCycle())
     return false;
 
-  const base::TimeDelta threshold_time = kHatsThreshold;
+  const base::TimeDelta threshold_time =
+      gaia::IsGoogleInternalAccountEmail(profile->GetProfileUserName())
+          ? kHatsGooglerThreshold
+          : kHatsThreshold;
 
   // Do not show survey to user if user has interacted with HaTS within the past
   // |threshold_time| time delta.

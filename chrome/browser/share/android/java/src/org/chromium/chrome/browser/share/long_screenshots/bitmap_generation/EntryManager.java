@@ -12,7 +12,6 @@ import android.util.Size;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
-import org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsMetrics;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.LongScreenshotsEntry.EntryStatus;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.paintpreview.player.CompositorStatus;
@@ -185,14 +184,8 @@ public class EntryManager {
                 if (status == CompositorStatus.STOPPED_DUE_TO_MEMORY_PRESSURE
                         || status == CompositorStatus.SKIPPED_DUE_TO_MEMORY_PRESSURE) {
                     updateGeneratorStatus(EntryStatus.INSUFFICIENT_MEMORY);
-                    LongScreenshotsMetrics.logLongScreenshotsEvent(
-                            LongScreenshotsMetrics.LongScreenshotsEvent
-                                    .GENERATOR_COMPOSITOR_MEMORY_PRESSURE);
                 } else if (status == CompositorStatus.OK) {
                     updateGeneratorStatus(EntryStatus.CAPTURE_COMPLETE);
-                    LongScreenshotsMetrics.logLongScreenshotsEvent(
-                            LongScreenshotsMetrics.LongScreenshotsEvent
-                                    .GENERATOR_COMPOSITOR_CAPTURE_COMPLETE);
 
                     Size contentSize = mGenerator.getContentSize();
                     Point scrollOffset = mGenerator.getScrollOffset();
@@ -201,9 +194,6 @@ public class EntryManager {
                     }
                 } else {
                     updateGeneratorStatus(EntryStatus.GENERATION_ERROR);
-                    LongScreenshotsMetrics.logLongScreenshotsEvent(
-                            LongScreenshotsMetrics.LongScreenshotsEvent
-                                    .GENERATOR_COMPOSITOR_GENERATION_ERROR);
                 }
             }
 
@@ -211,14 +201,8 @@ public class EntryManager {
             public void onCaptureResult(@Status int status) {
                 if (status == Status.LOW_MEMORY_DETECTED) {
                     updateGeneratorStatus(EntryStatus.INSUFFICIENT_MEMORY);
-                    LongScreenshotsMetrics.logLongScreenshotsEvent(
-                            LongScreenshotsMetrics.LongScreenshotsEvent
-                                    .GENERATOR_CAPTURE_INSUFFICIENT_MEMORY);
                 } else if (status != Status.OK) {
                     updateGeneratorStatus(EntryStatus.GENERATION_ERROR);
-                    LongScreenshotsMetrics.logLongScreenshotsEvent(
-                            LongScreenshotsMetrics.LongScreenshotsEvent
-                                    .GENERATOR_CAPTURE_GENERATION_ERROR);
                 }
             }
         };

@@ -6,6 +6,8 @@
 
 #include <windows.h>
 
+#include <type_traits>
+
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -381,27 +383,31 @@ DecoderStatus D3D11H264Accelerator::SubmitSlice(
 
   DXVA_Qmatrix_H264 iq_matrix_buf = {};
 
-  if (pps->pic_scaling_matrix_present_flag) {
-    for (int i = 0; i < 6; ++i) {
-      for (int j = 0; j < 16; ++j)
-        iq_matrix_buf.bScalingLists4x4[i][j] = pps->scaling_list4x4[i][j];
-    }
+  const auto& scaling_list4x4_source = pps->pic_scaling_matrix_present_flag
+                                           ? pps->scaling_list4x4
+                                           : sps_.scaling_list4x4;
+  static_assert(
+      std::is_same<
+          std::remove_reference_t<decltype(iq_matrix_buf.bScalingLists4x4)>,
+          std::remove_const_t<std::remove_reference_t<
+              decltype(scaling_list4x4_source)>>>::value);
+  memcpy(iq_matrix_buf.bScalingLists4x4, scaling_list4x4_source,
+         sizeof(iq_matrix_buf.bScalingLists4x4));
 
-    for (int i = 0; i < 2; ++i) {
-      for (int j = 0; j < 64; ++j)
-        iq_matrix_buf.bScalingLists8x8[i][j] = pps->scaling_list8x8[i][j];
-    }
-  } else {
-    for (int i = 0; i < 6; ++i) {
-      for (int j = 0; j < 16; ++j)
-        iq_matrix_buf.bScalingLists4x4[i][j] = sps_.scaling_list4x4[i][j];
-    }
+  const auto& scaling_list8x8_source = pps->pic_scaling_matrix_present_flag
+                                           ? pps->scaling_list8x8
+                                           : sps_.scaling_list8x8;
+  static_assert(
+      std::is_same<
+          std::remove_reference_t<decltype(iq_matrix_buf.bScalingLists8x8[0])>,
+          std::remove_const_t<std::remove_reference_t<
+              decltype(scaling_list8x8_source[0])>>>::value);
+  static_assert(
+      std::extent<decltype(iq_matrix_buf.bScalingLists8x8)>() <=
+      std::extent<std::remove_reference_t<decltype(scaling_list8x8_source)>>());
+  memcpy(iq_matrix_buf.bScalingLists8x8, scaling_list8x8_source,
+         sizeof(iq_matrix_buf.bScalingLists8x8));
 
-    for (int i = 0; i < 2; ++i) {
-      for (int j = 0; j < 64; ++j)
-        iq_matrix_buf.bScalingLists8x8[i][j] = sps_.scaling_list8x8[i][j];
-    }
-  }
   hr = video_context_->GetDecoderBuffer(
       video_decoder_.Get(),
       D3D11_VIDEO_DECODER_BUFFER_INVERSE_QUANTIZATION_MATRIX, &buffer_size,

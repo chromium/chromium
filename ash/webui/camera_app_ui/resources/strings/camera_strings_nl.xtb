@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">Link gevonden. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Pagina <ph name="PAGE_NUMBER" /> verwijderd</translation>
 <translation id="1258009455399840361">90 graden rechtsom draaien</translation>
-<translation id="1300209025925956156">Je document scannen</translation>
-<translation id="1309250603447638106">Updates voor het scannen van documenten downloaden</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Zoeken + pijl-links om ze te openen.</translation>
 <translation id="1417314334557041815">Pagina <ph name="INDEX" /> bewerken</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> is niet aangesloten.</translation>
 <translation id="1473110567575736769">Timer 3 seconden</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">Niets opgenomen</translation>
 <translation id="1838104802459806957">Naar boven kantelen</translation>
 <translation id="1843105061469674856">Extra pagina scannen</translation>
-<translation id="1851169887664797861">Nieuwe camera-opties beschikbaar</translation>
 <translation id="1851616744363735765">ONDERBROKEN</translation>
 <translation id="1899697626337024495">Fotoresolutie</translation>
 <translation id="1925845977604399247">Naar Galerij</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">Scantype</translation>
 <translation id="28682968802727151">Voorbeeld van spiegelen</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> is aangesloten.</translation>
-<translation id="2904654629665923749">Scan van document beschikbaar</translation>
 <translation id="3067436040345934772">Naar rechts schuiven</translation>
 <translation id="3081586908890909590">Naar video opnemen</translation>
 <translation id="313467653172006084">30 FPS</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">Linkadres kopiëren</translation>
 <translation id="4281620174117014503">Gemiddelde resolutie</translation>
 <translation id="428234092390943511">Paginathumbnail</translation>
-<translation id="4340659173795395806">Je kunt nu pdf's met meerdere pagina's maken</translation>
 <translation id="4383571725254449280">Prestatielogboeken afdrukken</translation>
 <translation id="4445542136948522167">Foto maken stoppen</translation>
 <translation id="4570032796877367747">Camera aan voorzijde</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">Opslaan</translation>
 <translation id="5320594929574852403">Beweegt naar links</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5444515100983837161">Plaats alle randen van het document binnen het frame. Scannen werkt het beste als het document en de achtergrond een verschillende kleur hebben.</translation>
 <translation id="5662366948659129155">Pagina <ph name="COUNT" /> scannen</translation>
 <translation id="5671277269877808209">Vierkant</translation>
 <translation id="5746169159649715125">Opslaan als pdf</translation>
@@ -157,7 +150,6 @@ Als je feedback over de afbeeldings- of videokwaliteit gaat, voeg dan een voorbe
 <translation id="8428213095426709021">Instellingen</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Geluid uitzetten voor microfoon schakelen. Geluid uit staat aan</translation>
-<translation id="8712637175834984815">Begrepen</translation>
 <translation id="8730621377337864115">Klaar</translation>
 <translation id="8732462232047530626">Voorbeeld van metadata bekijken</translation>
 <translation id="8815966864175525708">Knop om een foto in portretmodus te maken</translation>

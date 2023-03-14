@@ -30,7 +30,7 @@ namespace absl {
 ABSL_NAMESPACE_BEGIN
 
 ScopedMockLog::ScopedMockLog(MockLogDefault default_exp)
-    : sink_(this), is_capturing_logs_(false) {
+    : sink_(this), is_capturing_logs_(false), is_triggered_(false) {
   if (default_exp == MockLogDefault::kIgnoreUnexpected) {
     // Ignore all calls to Log we did not set expectations for.
     EXPECT_CALL(*this, Log).Times(::testing::AnyNumber());

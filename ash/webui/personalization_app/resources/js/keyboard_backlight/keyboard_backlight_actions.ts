@@ -5,7 +5,7 @@
 import {Action} from 'chrome://resources/ash/common/store/store.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
-import {BacklightColor} from '../../personalization_app.mojom-webui.js';
+import {CurrentBacklightState} from '../../personalization_app.mojom-webui.js';
 
 
 /**
@@ -13,17 +13,17 @@ import {BacklightColor} from '../../personalization_app.mojom-webui.js';
  */
 
 export enum KeyboardBacklightActionName {
-  SET_BACKLIGHT_COLOR = 'set_backlight_color',
+  SET_CURRENT_BACKLIGHT_STATE = 'set_current_backlight_state',
   SET_SHOULD_SHOW_NUDGE = 'set_should_show_nudge',
   SET_WALLPAPER_COLOR = 'set_wallpaper_color',
 }
 
-export type KeyboardBacklightActions =
-    SetBacklightColorAction|SetShouldShowNudgeAction|SetWallpaperColorAction;
+export type KeyboardBacklightActions = SetCurrentBacklightStateAction|
+    SetShouldShowNudgeAction|SetWallpaperColorAction;
 
-export type SetBacklightColorAction = Action&{
-  name: KeyboardBacklightActionName.SET_BACKLIGHT_COLOR,
-  backlightColor: BacklightColor,
+export type SetCurrentBacklightStateAction = Action&{
+  name: KeyboardBacklightActionName.SET_CURRENT_BACKLIGHT_STATE,
+  currentBacklightState: CurrentBacklightState,
 };
 
 export type SetShouldShowNudgeAction = Action&{
@@ -37,13 +37,14 @@ export type SetWallpaperColorAction = Action&{
 };
 
 /**
- * Sets the current value of the backlight color.
+ * Sets the current value of the backlight state.
  */
-export function setBacklightColorAction(backlightColor: BacklightColor):
-    SetBacklightColorAction {
+export function setCurrentBacklightStateAction(
+    currentBacklightState: CurrentBacklightState):
+    SetCurrentBacklightStateAction {
   return {
-    name: KeyboardBacklightActionName.SET_BACKLIGHT_COLOR,
-    backlightColor,
+    name: KeyboardBacklightActionName.SET_CURRENT_BACKLIGHT_STATE,
+    currentBacklightState,
   };
 }
 

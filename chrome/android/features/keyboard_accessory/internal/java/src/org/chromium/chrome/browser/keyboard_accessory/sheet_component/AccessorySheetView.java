@@ -4,25 +4,34 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.sheet_component;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY;
 import static org.chromium.ui.base.LocalizationUtils.isLayoutRtl;
 
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 
 /**
  * Displays the data provided by the {@link AccessorySheetViewBinder}.
  */
-class AccessorySheetView extends FrameLayout {
+class AccessorySheetView extends LinearLayout {
     private ViewPager mViewPager;
+    private FrameLayout mFrameLayout;
     private ImageView mTopShadow;
+    private ImageView mKeyboardToggle;
+    private TextView mSheetTitle;
 
     /**
      * Constructor for inflating from XML.
@@ -36,6 +45,14 @@ class AccessorySheetView extends FrameLayout {
         super.onFinishInflate();
         mViewPager = findViewById(R.id.keyboard_accessory_sheet);
         mTopShadow = findViewById(R.id.accessory_sheet_shadow);
+        mFrameLayout = findViewById(R.id.keyboard_accessory_sheet_frame);
+        if (ChromeFeatureList.isEnabled(AUTOFILL_KEYBOARD_ACCESSORY)) {
+            mKeyboardToggle = findViewById(R.id.show_keyboard);
+            mKeyboardToggle.setImageDrawable(
+                    AppCompatResources.getDrawable(getContext(), R.drawable.ic_arrow_back_24dp));
+            mSheetTitle = findViewById(R.id.sheet_title);
+            findViewById(R.id.sheet_header).setVisibility(View.VISIBLE);
+        }
 
         // Ensure that sub components of the sheet use the RTL direction:
         int layoutDirection = isLayoutRtl() ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR;
@@ -63,5 +80,23 @@ class AccessorySheetView extends FrameLayout {
 
     void setTopShadowVisible(boolean isShadowVisible) {
         mTopShadow.setVisibility(isShadowVisible ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    void setFrameHeight(int height) {
+        ViewGroup.LayoutParams p = mFrameLayout.getLayoutParams();
+        p.height = height;
+        mFrameLayout.setLayoutParams(p);
+    }
+
+    void setTitle(String title) {
+        if (!ChromeFeatureList.isEnabled(AUTOFILL_KEYBOARD_ACCESSORY)) return;
+        assert mSheetTitle != null : "setTitle called before view initialized";
+        mSheetTitle.setText(title);
+    }
+
+    void setShowKeyboardCallback(Runnable runnable) {
+        if (!ChromeFeatureList.isEnabled(AUTOFILL_KEYBOARD_ACCESSORY)) return;
+        assert mKeyboardToggle != null : "setShowKeyboardCallback called before view initialized";
+        mKeyboardToggle.setOnClickListener(runnable == null ? null : view -> runnable.run());
     }
 }

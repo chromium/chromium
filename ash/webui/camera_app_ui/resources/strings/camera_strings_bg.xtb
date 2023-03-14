@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">Разпозната е връзка. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Страница <ph name="PAGE_NUMBER" /> бе изтрита</translation>
 <translation id="1258009455399840361">Завъртане на 90 градуса по часовниковата стрелка</translation>
-<translation id="1300209025925956156">Сканиране на документ</translation>
-<translation id="1309250603447638106">Изтеглят се актуализации за сканиране на документи</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. За достъп натиснете клавиша „търсене“ + стрелката за наляво.</translation>
 <translation id="1417314334557041815">Редактиране на страница <ph name="INDEX" /></translation>
 <translation id="1467231725790366244">Устройството <ph name="CAMERA" /> е изключено.</translation>
 <translation id="1473110567575736769">Таймер за 3 секунди</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">Нищо не е записано</translation>
 <translation id="1838104802459806957">Накланяне нагоре</translation>
 <translation id="1843105061469674856">Сканиране на допълнителна страница</translation>
-<translation id="1851169887664797861">Налице са допълнителни контроли за камерата</translation>
 <translation id="1851616744363735765">НА ПАУЗА</translation>
 <translation id="1899697626337024495">Разделителна способност за снимките</translation>
 <translation id="1925845977604399247">Към галерията</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">Тип сканиране</translation>
 <translation id="28682968802727151">Визуализация на огледалното обръщане</translation>
 <translation id="2879583609344924966">Устройството <ph name="CAMERA" /> е свързано.</translation>
-<translation id="2904654629665923749">Налице е сканиране на документи</translation>
 <translation id="3067436040345934772">Панорамно придвижване надясно</translation>
 <translation id="3081586908890909590">Превключване към режима за запис на видеоклипове</translation>
 <translation id="313467653172006084">30 кдр/сек</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">Копиране на адреса на връзката</translation>
 <translation id="4281620174117014503">Средна разделителна способност</translation>
 <translation id="428234092390943511">Миниизображение на страницата</translation>
-<translation id="4340659173795395806">Вече можете да създавате PDF файлове с няколко страници</translation>
 <translation id="4383571725254449280">Печат на регистрационните файлове за ефективността</translation>
 <translation id="4445542136948522167">Спиране на правенето на снимка</translation>
 <translation id="4570032796877367747">Предна камера</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">Запазване</translation>
 <translation id="5320594929574852403">Премества се наляво</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5444515100983837161">Поставете документа изцяло в рамката. Функцията работи най-добре, ако документът и фонът са с различни цветове.</translation>
 <translation id="5662366948659129155">Сканира се страница <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Квадрат</translation>
 <translation id="5746169159649715125">Запазване като PDF файл</translation>
@@ -157,7 +150,6 @@
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Превключване на спирането на звука на микрофона. Функцията за спиране на звука е включена</translation>
-<translation id="8712637175834984815">Разбрах</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8732462232047530626">Преглед на метаданните</translation>
 <translation id="8815966864175525708">Превключвател за правене на снимка в портретен режим</translation>

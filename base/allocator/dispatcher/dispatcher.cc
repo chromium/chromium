@@ -18,6 +18,7 @@
 #include <atomic>
 #endif
 
+#if !BUILDFLAG(USE_ALLOCATION_EVENT_DISPATCHER)
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
 namespace base::allocator::dispatcher::allocator_shim_details {
 namespace {
@@ -223,9 +224,11 @@ void PartitionFreeHook(void* address) {
 }  // namespace
 }  // namespace base::allocator::dispatcher::partition_allocator_details
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC)
+#endif  // !BUILDFLAG(USE_ALLOCATION_EVENT_DISPATCHER)
 
 namespace base::allocator::dispatcher {
 
+#if !BUILDFLAG(USE_ALLOCATION_EVENT_DISPATCHER)
 void InstallStandardAllocatorHooks() {
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
   allocator_shim::InsertAllocatorDispatch(
@@ -242,10 +245,7 @@ void InstallStandardAllocatorHooks() {
       &partition_allocator_details::PartitionFreeHook);
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC)
 }
-
-}  // namespace base::allocator::dispatcher
-
-namespace base::allocator::dispatcher {
+#endif  // !BUILDFLAG(USE_ALLOCATION_EVENT_DISPATCHER)
 
 // The private implementation of Dispatcher.
 struct Dispatcher::Impl {

@@ -4,10 +4,10 @@
 
 #include "ash/webui/network_ui/network_diagnostics_resource_provider.h"
 
+#include "ash/webui/grit/ash_webui_common_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/resources/grit/webui_resources.h"
 
 namespace ash {
 namespace network_diagnostics {
@@ -139,11 +139,12 @@ struct WebUiResource {
 };
 
 constexpr WebUiResource kResources[] = {
-    {"test_canceled.png", IDR_ASH_COMMON_NETWORK_HEALTH_TEST_CANCELED_PNG},
-    {"test_failed.png", IDR_ASH_COMMON_NETWORK_HEALTH_TEST_FAILED_PNG},
-    {"test_not_run.png", IDR_ASH_COMMON_NETWORK_HEALTH_TEST_NOT_RUN_PNG},
-    {"test_passed.png", IDR_ASH_COMMON_NETWORK_HEALTH_TEST_PASSED_PNG},
-    {"test_warning.png", IDR_ASH_COMMON_NETWORK_HEALTH_TEST_WARNING_PNG},
+    {"test_canceled.png",
+     IDR_ASH_WEBUI_COMMON_NETWORK_HEALTH_TEST_CANCELED_PNG},
+    {"test_failed.png", IDR_ASH_WEBUI_COMMON_NETWORK_HEALTH_TEST_FAILED_PNG},
+    {"test_not_run.png", IDR_ASH_WEBUI_COMMON_NETWORK_HEALTH_TEST_NOT_RUN_PNG},
+    {"test_passed.png", IDR_ASH_WEBUI_COMMON_NETWORK_HEALTH_TEST_PASSED_PNG},
+    {"test_warning.png", IDR_ASH_WEBUI_COMMON_NETWORK_HEALTH_TEST_WARNING_PNG},
 };
 
 struct StringMap {

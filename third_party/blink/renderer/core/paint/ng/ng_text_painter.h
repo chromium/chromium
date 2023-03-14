@@ -105,15 +105,13 @@ class CORE_EXPORT NGTextPainter : public NGTextPainterBase {
       const ComputedStyle& style,
       const TextPaintStyle& text_style,
       TextDecorationInfo& decoration_info,
-      TextDecorationLine lines_to_paint,
-      const PhysicalRect& decoration_rect);
+      TextDecorationLine lines_to_paint);
 
   void PaintDecorationsOnlyLineThrough(const NGFragmentItem& text_item,
                                        const PaintInfo& paint_info,
                                        const ComputedStyle& style,
                                        const TextPaintStyle& text_style,
-                                       TextDecorationInfo& decoration_info,
-                                       const PhysicalRect& decoration_rect);
+                                       TextDecorationInfo& decoration_info);
 
   SvgTextPaintState& SetSvgState(const LayoutSVGInlineText&,
                                  const ComputedStyle&,

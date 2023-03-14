@@ -154,7 +154,6 @@ bool LacrosVirtualKeyboardDelegate::SetWindowBoundsInScreen(
 }
 
 void LacrosVirtualKeyboardDelegate::GetClipboardHistory(
-    const std::set<std::string>& item_ids_filter,
     OnGetClipboardHistoryCallback get_history_callback) {
   NOTIMPLEMENTED_LOG_ONCE();
 }

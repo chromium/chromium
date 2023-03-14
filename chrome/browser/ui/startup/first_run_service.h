@@ -8,15 +8,25 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/signin/public/base/signin_buildflags.h"
 
 class PrefRegistrySimple;
 class Profile;
 class SilentSyncEnabler;
+
+namespace base {
+class FeatureList;
+}
+
+namespace version_info {
+enum class Channel;
+}
 
 // Task to run after the FRE is exited, with `proceed` indicating whether it
 // should be aborted or resumed.
@@ -44,11 +54,30 @@ class FirstRunService : public KeyedService {
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Creates a field trial to control the ForYouFre and
+  // ForYouFreSyntheticTrialRegistration features. The trial is client
+  // controlled because ForYouFre controls the First Run Experience (FRE), which
+  // shows up before a variations seed is available.
+  //
+  // No persistence happens here, instead it happens if/when the attempt to show
+  // the FRE happens, and the client joins an experiment cohort through
+  // `JoinFirstRunCohort()`.
+  static void SetUpClientSideFieldTrialIfNeeded(
+      const base::FieldTrial::EntropyProvider& entropy_provider,
+      base::FeatureList* feature_list);
+
+  // Ensures that the user's experiment group is appropriately reported
+  // to track the effect of the first run experience over time. Should be called
+  // once per browser process startup.
+  static void EnsureStickToFirstRunCohort();
+#endif
+
   explicit FirstRunService(Profile* profile);
   ~FirstRunService() override;
 
-  // Returns whether first run experience (including sync promo) should be
-  // opened on startup.
+  // Runs `::ShouldOpenFirstRun(Profile*)` with the profile associated with this
+  // service instance.
   bool ShouldOpenFirstRun() const;
 
   // This function takes the user through the browser FRE.
@@ -73,6 +102,32 @@ class FirstRunService : public KeyedService {
 
  private:
   friend class FirstRunServiceFactory;
+  FRIEND_TEST_ALL_PREFIXES(FirstRunFieldTrialCreatorTest, SetUpFromClientSide);
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Internal interface for `SetUpClientSideFieldTrialIfNeeded()`, exposed to
+  // allow for channel-independent testing.
+  static void SetUpClientSideFieldTrial(
+      const base::FieldTrial::EntropyProvider& entropy_provider,
+      base::FeatureList* feature_list,
+      version_info::Channel channel);
+
+  // Enrolls this client with a synthetic field trial based on the Finch params.
+  // Should be called when the FRE is launched, then the client needs to
+  // register again on each process startup by calling
+  // `RegisterSyntheticFieldTrial()`.
+  static void JoinFirstRunCohort();
+
+  // Reports to the launch study for the First Run rollout.
+  // Notes:
+  // - This is declared here so it can have access to some private functions
+  // that need to be friended to be used.
+  // - The function is Dice-only as on Lacros (where this build flag is not set)
+  // the ForYouFre feature rollout will not go through this study process. The
+  // feature only guards an internal refactoring that does not have a
+  // user-visible effect. If will only have a killswitch.
+  static void RegisterSyntheticFieldTrial(const std::string& group_name);
+#endif
 
   // Asynchronously attempts to complete the first run silently.
   // By the time `callback` is run (if non-null), either:
@@ -113,6 +168,7 @@ class FirstRunServiceFactory : public ProfileKeyedServiceFactory {
 
  private:
   friend class base::NoDestructor<FirstRunServiceFactory>;
+  friend class FirstRunServiceBrowserTest;
 
   FirstRunServiceFactory();
   ~FirstRunServiceFactory() override;
@@ -122,8 +178,12 @@ class FirstRunServiceFactory : public ProfileKeyedServiceFactory {
   bool ServiceIsCreatedWithBrowserContext() const override;
 };
 
-// Helper to call `FirstRunService::ShouldOpenFirstRun()` without having
-// to first obtain the service instance.
+// Returns whether the first run experience (including sync promo) might be
+// opened for `profile`. It should be checked before
+// `FirstRunService::OpenFirstRunIfNeeded()` is called.
+//
+// Even if this method returns `true`, the FRE can still be skipped if for
+// example the feature is disabled, a policy suppresses it, etc.
 bool ShouldOpenFirstRun(Profile* profile);
 
 #endif  // CHROME_BROWSER_UI_STARTUP_FIRST_RUN_SERVICE_H_

@@ -41,6 +41,7 @@ class CardUnmaskPromptController {
   virtual int GetGooglePayImageRid() const = 0;
   virtual bool ShouldOfferWebauthn() const = 0;
   virtual bool GetWebauthnOfferStartState() const = 0;
+  virtual std::u16string GetCvcImageAnnouncement() const = 0;
 #endif
   virtual base::TimeDelta GetSuccessMessageDuration() const = 0;
   virtual AutofillClient::PaymentsRpcResult GetVerificationResult() const = 0;

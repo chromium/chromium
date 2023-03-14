@@ -134,7 +134,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
 
  private:
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-  std::unique_ptr<FidoDiscoveryBase> MaybeCreatePlatformDiscovery() const;
+  std::vector<std::unique_ptr<FidoDiscoveryBase>> MaybeCreatePlatformDiscovery()
+      const;
 #endif
 
 #if BUILDFLAG(IS_MAC)

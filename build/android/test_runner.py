@@ -242,6 +242,12 @@ def AddCommonOptions(parser):
       action='store_true',
       help='Uses a persistent shell connection for the adb connection.')
 
+  parser.add_argument('--disable-test-server',
+                      action='store_true',
+                      help='Disables SpawnedTestServer which doesn'
+                      't work with remote adb. '
+                      'WARNING: Will break tests which require the server.')
+
   # This is currently only implemented for gtests and instrumentation tests.
   parser.add_argument(
       '--gtest_also_run_disabled_tests', '--gtest-also-run-disabled-tests',
@@ -920,11 +926,12 @@ def _SinkTestResult(test_result, test_file_name, result_sink_client):
                    link_url, test_result.GetName())
   if https_artifacts:
     html_artifact += '<ul>%s</ul>' % '\n'.join(https_artifacts)
-  result_sink_client.Post(test_result.GetName(),
+  result_sink_client.Post(test_result.GetNameForResultSink(),
                           test_result.GetType(),
                           test_result.GetDuration(),
                           log_decoded.encode('utf-8'),
                           test_file_name,
+                          variant=test_result.GetVariantForResultSink(),
                           failure_reason=test_result.GetFailureReason(),
                           html_artifact=html_artifact)
 

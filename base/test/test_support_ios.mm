@@ -31,7 +31,7 @@
 // window displaying the app name. If a bunch of apps using MainHook are being
 // run in a row, this provides an indication of which one is currently running.
 
-static base::TestSuite* g_test_suite = NULL;
+static base::RunTestSuiteCallback g_test_suite_callback;
 static int g_argc;
 static char** g_argv;
 
@@ -226,7 +226,7 @@ bool IsSceneStartupEnabled() {
 - (int)runGoogleTests {
   coverage_util::ConfigureCoverageReportPath();
 
-  int exitStatus = g_test_suite->Run();
+  int exitStatus = std::move(g_test_suite_callback).Run();
 
   if ([self shouldRedirectOutputToFile])
     [self writeOutputToNSLog];
@@ -269,29 +269,22 @@ void InitIOSTestMessageLoop() {
   MessagePump::OverrideMessagePumpForUIFactory(&CreateMessagePumpForUIForTests);
 }
 
-void InitIOSRunHook(TestSuite* suite, int argc, char* argv[]) {
-  g_test_suite = suite;
+void InitIOSRunHook(RunTestSuiteCallback callback) {
+  g_test_suite_callback = std::move(callback);
+}
+
+void InitIOSArgs(int argc, char* argv[]) {
   g_argc = argc;
   g_argv = argv;
 }
 
-void RunTestsFromIOSApp() {
-  // When TestSuite::Run is invoked it calls RunTestsFromIOSApp(). On the first
-  // invocation, this method fires up an iOS app via UIApplicationMain. Since
-  // UIApplicationMain does not return until the app exits, control does not
-  // return to the initial TestSuite::Run invocation, so the app invokes
-  // TestSuite::Run a second time and since |ran_hook| is true at this point,
-  // this method is a no-op and control returns to TestSuite:Run so that test
-  // are executed. Once the app exits, RunTestsFromIOSApp calls exit() so that
-  // control is not returned to the initial invocation of TestSuite::Run.
-  static bool ran_hook = false;
-  if (!ran_hook) {
-    ran_hook = true;
-    @autoreleasepool {
-      int exit_status =
-          UIApplicationMain(g_argc, g_argv, nil, @"ChromeUnitTestDelegate");
-      exit(exit_status);
-    }
+int RunTestsFromIOSApp() {
+  // When LaunchUnitTests is invoked it calls RunTestsFromIOSApp(). On its
+  // invocation, this method fires up an iOS app via UIApplicationMain. The
+  // TestSuite::Run will have be passed via InitIOSRunHook which will execute
+  // the TestSuite once the UIApplication is ready.
+  @autoreleasepool {
+    return UIApplicationMain(g_argc, g_argv, nil, @"ChromeUnitTestDelegate");
   }
 }
 

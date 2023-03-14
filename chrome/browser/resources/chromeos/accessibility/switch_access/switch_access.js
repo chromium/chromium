@@ -31,6 +31,13 @@ export class SwitchAccess {
     const currentFocus = await AsyncUtil.getFocus();
 
     await SwitchAccess.waitForFocus_(desktop, currentFocus);
+
+    // Navigator must be initialized first.
+    Navigator.initializeSingletonInstances(desktop);
+
+    SwitchAccess.commands = new SACommands();
+    KeyboardRootNode.startWatchingVisibility();
+    PreferenceManager.initialize();
   }
 
   /**
@@ -44,7 +51,6 @@ export class SwitchAccess {
       // Disallow web view nodes, which indicate a root web area is still
       // loading and pending focus.
       if (currentFocus && currentFocus.role !== RoleType.WEB_VIEW) {
-        SwitchAccess.finishInit_(desktop);
         resolve();
         return;
       }
@@ -61,7 +67,6 @@ export class SwitchAccess {
         desktop.removeEventListener(EventType.FOCUS, listener, false);
         clearTimeout(callbackId);
 
-        SwitchAccess.finishInit_(desktop);
         resolve();
       };
 
@@ -150,18 +155,5 @@ export class SwitchAccess {
         'Accessibility.CrosSwitchAccess.Error',
         /** @type {number} */ (errorType), errorTypeCountForUMA);
     return new Error(errorString);
-  }
-
-  /**
-   * @param {!AutomationNode} desktop
-   * @private
-   */
-  static finishInit_(desktop) {
-    // Navigator must be initialized first.
-    Navigator.initializeSingletonInstances(desktop);
-
-    SwitchAccess.commands = new SACommands();
-    KeyboardRootNode.startWatchingVisibility();
-    PreferenceManager.initialize();
   }
 }

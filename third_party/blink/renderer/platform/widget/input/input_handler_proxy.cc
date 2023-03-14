@@ -71,7 +71,7 @@ cc::ScrollState CreateScrollStateForGesture(const WebGestureEvent& event) {
       scroll_state_data.delta_granularity =
           event.data.scroll_begin.delta_hint_units;
 
-      if (cc::ElementId::IsValid(
+      if (cc::ElementId::IsValidInternalValue(
               event.data.scroll_begin.scrollable_area_element_id)) {
         cc::ElementId target_scroller(
             event.data.scroll_begin.scrollable_area_element_id);
@@ -382,7 +382,7 @@ void InputHandlerProxy::ContinueScrollBeginAfterMainThreadHitTest(
     std::unique_ptr<blink::WebCoalescedInputEvent> event,
     std::unique_ptr<cc::EventMetrics> metrics,
     EventDispositionCallback callback,
-    cc::ElementIdType hit_test_result) {
+    cc::ElementId hit_test_result) {
   DCHECK(base::FeatureList::IsEnabled(::features::kScrollUnification));
   DCHECK_EQ(event->Event().GetType(),
             WebGestureEvent::Type::kGestureScrollBegin);
@@ -400,9 +400,9 @@ void InputHandlerProxy::ContinueScrollBeginAfterMainThreadHitTest(
 
   auto* gesture_event =
       static_cast<blink::WebGestureEvent*>(event->EventPointer());
-  if (cc::ElementId::IsValid(hit_test_result)) {
+  if (hit_test_result) {
     gesture_event->data.scroll_begin.scrollable_area_element_id =
-        hit_test_result;
+        hit_test_result.GetInternalValue();
     gesture_event->data.scroll_begin.main_thread_hit_tested = true;
 
     if (metrics) {
@@ -584,7 +584,7 @@ void InputHandlerProxy::InjectScrollbarGestureScroll(
     // This will avoid hit testing and directly scroll the scroller with the
     // provided element_id.
     synthetic_gesture_event->data.scroll_begin.scrollable_area_element_id =
-        pointer_result.target_scroller.GetStableId();
+        pointer_result.target_scroller.GetInternalValue();
   }
 
   // Send in a LatencyInfo with SCROLLBAR type so that the end to end latency
@@ -1057,6 +1057,8 @@ InputHandlerProxy::HandleGestureScrollUpdate(
               "trace_id", trace_id, "dx",
               -gesture_event.data.scroll_update.delta_x, "dy",
               -gesture_event.data.scroll_update.delta_y);
+  const float provided_delta_x = gesture_event.data.scroll_update.delta_x;
+  const float provided_delta_y = gesture_event.data.scroll_update.delta_y;
 
   if (scroll_sequence_ignored_) {
     TRACE_EVENT_INSTANT0("input", "Scroll Sequence Ignored",
@@ -1108,10 +1110,20 @@ InputHandlerProxy::HandleGestureScrollUpdate(
   cc::InputHandlerScrollResult scroll_result =
       input_handler_->ScrollUpdate(&scroll_state, delay);
 
-  TRACE_EVENT("input", "InputHandlerProxy::HandleGestureScrollUpdate_Result",
-              "trace_id", trace_id, "did_scroll_y",
-              scroll_state.caused_scroll_y(), "current_visual_offset",
-              scroll_result.current_visual_offset);
+  TRACE_EVENT(
+      "input", "InputHandlerProxy::HandleGestureScrollUpdate_Result",
+      [trace_id, provided_delta_x, provided_delta_y,
+       visual_offset_x = scroll_result.current_visual_offset.x(),
+       visual_offset_y = scroll_result.current_visual_offset.y()](
+          perfetto::EventContext& ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* scroll_data = event->set_scroll_deltas();
+        scroll_data->set_trace_id(trace_id);
+        scroll_data->set_provided_to_compositor_delta_x(provided_delta_x);
+        scroll_data->set_provided_to_compositor_delta_y(provided_delta_y);
+        scroll_data->set_visual_offset_x(visual_offset_x);
+        scroll_data->set_visual_offset_y(visual_offset_y);
+      });
 
   HandleOverscroll(gesture_event.PositionInWidget(), scroll_result);
 

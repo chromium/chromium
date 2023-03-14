@@ -35,10 +35,11 @@
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/tabs/inactive_tabs/utils.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
 #import "ios/web/public/web_state.h"
@@ -406,9 +407,8 @@ bool SessionCrashedInfoBarDelegate::ShouldExpire(
 
   std::set<Browser*> regularBrowsers = browserList->AllRegularBrowsers();
   for (Browser* browser : regularBrowsers) {
-    NSString* sessionID = SceneStateBrowserAgent::FromBrowser(browser)
-                              ->GetSceneState()
-                              .sceneSessionID;
+    NSString* sessionID =
+        SessionRestorationBrowserAgent::FromBrowser(browser)->GetSessionID();
 
     NSString* backupPath =
         [CrashRestoreHelper backupPathForSessionID:sessionID

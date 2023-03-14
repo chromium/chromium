@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">检测到链接。<ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">已删除第 <ph name="PAGE_NUMBER" /> 页</translation>
 <translation id="1258009455399840361">顺时针旋转 90 度</translation>
-<translation id="1300209025925956156">扫描您的文件</translation>
-<translation id="1309250603447638106">正在下载“文件扫描”功能更新</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />。按搜索键 + 向左键即可访问。</translation>
 <translation id="1417314334557041815">修改第 <ph name="INDEX" /> 页</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" />已拔出。</translation>
 <translation id="1473110567575736769">3 秒计时器</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">未记录任何数据</translation>
 <translation id="1838104802459806957">向上倾斜</translation>
 <translation id="1843105061469674856">再扫描一页</translation>
-<translation id="1851169887664797861">已推出新的相机控件</translation>
 <translation id="1851616744363735765">已暂停</translation>
 <translation id="1899697626337024495">照片分辨率</translation>
 <translation id="1925845977604399247">转至“图库”</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">扫描类型</translation>
 <translation id="28682968802727151">镜像翻转预览画面</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" />已插入。</translation>
-<translation id="2904654629665923749">“文件扫描”功能已可供使用</translation>
 <translation id="3067436040345934772">向右平移</translation>
 <translation id="3081586908890909590">切换到录制视频模式</translation>
 <translation id="313467653172006084">30 FPS</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">复制链接地址</translation>
 <translation id="4281620174117014503">中等分辨率</translation>
 <translation id="428234092390943511">页面缩略图</translation>
-<translation id="4340659173795395806">现在您可以创建多页 PDF</translation>
 <translation id="4383571725254449280">打印性能日志</translation>
 <translation id="4445542136948522167">停止拍照</translation>
 <translation id="4570032796877367747">前置摄像头</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">保存</translation>
 <translation id="5320594929574852403">正在向左移动</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5444515100983837161">请将文件的各个边置于框内。当文件的颜色与背景的颜色不同时，扫描效果最佳。</translation>
 <translation id="5662366948659129155">正在扫描第 <ph name="COUNT" /> 页</translation>
 <translation id="5671277269877808209">方形</translation>
 <translation id="5746169159649715125">另存为 PDF</translation>
@@ -157,7 +150,6 @@
 <translation id="8428213095426709021">设置</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">使用切换开关可将麦克风静音或取消静音。目前已静音</translation>
-<translation id="8712637175834984815">知道了</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8732462232047530626">预览元数据</translation>
 <translation id="8815966864175525708">切换到人像拍摄模式</translation>

@@ -22,6 +22,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
+#include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/url_index_private_data.h"
 #include "components/omnibox/common/omnibox_features.h"
 
@@ -50,7 +51,6 @@ InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask::
                                         const SchemeSet& scheme_allowlist)
     : index_(index),
       scheme_allowlist_(scheme_allowlist),
-      succeeded_(false),
       task_creation_time_(base::TimeTicks::Now()) {}
 
 bool InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask::RunOnDBThread(
@@ -71,8 +71,7 @@ void InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask::
 }
 
 InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask::
-    ~RebuildPrivateDataFromHistoryDBTask() {
-}
+    ~RebuildPrivateDataFromHistoryDBTask() = default;
 
 // InMemoryURLIndex ------------------------------------------------------------
 
@@ -131,10 +130,11 @@ ScoredHistoryMatches InMemoryURLIndex::HistoryItemsForTerms(
     const std::u16string& term_string,
     size_t cursor_position,
     const std::string& host_filter,
-    size_t max_matches) {
+    size_t max_matches,
+    OmniboxTriggeredFeatureService* triggered_feature_service) {
   return private_data_->HistoryItemsForTerms(
       term_string, cursor_position, host_filter, max_matches, bookmark_model_,
-      template_url_service_);
+      template_url_service_, triggered_feature_service);
 }
 
 const std::vector<std::string>& InMemoryURLIndex::HighlyVisitedHosts() const {

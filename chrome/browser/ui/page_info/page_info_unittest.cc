@@ -39,6 +39,7 @@
 #include "components/page_info/core/features.h"
 #include "components/page_info/page_info_ui.h"
 #include "components/permissions/features.h"
+#include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/strings/grit/components_strings.h"
@@ -177,6 +178,9 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
         web_contents(),
         std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
             web_contents()));
+
+    permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents(
+        web_contents());
 
     // Setup mock ui.
     ResetMockUI();

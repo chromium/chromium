@@ -116,11 +116,6 @@ PlatformSensorProviderBase::CloneSharedMemoryRegion() {
   return mapped_region_.region.Duplicate();
 }
 
-bool PlatformSensorProviderBase::HasSensors() const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return !sensor_map_.empty();
-}
-
 void PlatformSensorProviderBase::NotifySensorCreated(
     mojom::SensorType type,
     scoped_refptr<PlatformSensor> sensor) {

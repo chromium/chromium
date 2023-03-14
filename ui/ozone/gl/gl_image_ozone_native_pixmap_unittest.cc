@@ -5,10 +5,10 @@
 #include <stdint.h>
 #include <memory>
 
+#include "gpu/command_buffer/service/shared_image/gl_image_native_pixmap.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/client_native_pixmap.h"
-#include "ui/gl/gl_image_native_pixmap.h"
 #include "ui/gl/test/gl_image_test_template.h"
 #include "ui/ozone/public/client_native_pixmap_factory_ozone.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -34,6 +34,12 @@ class GLImageNativePixmapTestDelegate : public GLImageTestDelegateBase {
 
   ~GLImageNativePixmapTestDelegate() override = default;
 
+  void WillTearDown() override {
+    if (texture_id_) {
+      glDeleteTextures(1, &texture_id_);
+    }
+  }
+
   bool SkipTest(GLDisplay* display) const override {
     ui::GLOzone* gl_ozone = ui::OzonePlatform::GetInstance()
                                 ->GetSurfaceFactoryOzone()
@@ -47,7 +53,7 @@ class GLImageNativePixmapTestDelegate : public GLImageTestDelegateBase {
   }
 
   scoped_refptr<GLImage> CreateSolidColorImage(const gfx::Size& size,
-                                               const uint8_t color[4]) const {
+                                               const uint8_t color[4]) {
     ui::SurfaceFactoryOzone* surface_factory =
         ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
     scoped_refptr<gfx::NativePixmap> pixmap =
@@ -71,8 +77,14 @@ class GLImageNativePixmapTestDelegate : public GLImageTestDelegateBase {
       client_pixmap->Unmap();
     }
 
-    auto image =
-        gl::GLImageNativePixmap::Create(size, format, std::move(pixmap));
+    // Create a dummy texture ID to bind - these tests don't actually care about
+    // binding.
+    if (!texture_id_) {
+      glGenTextures(1, &texture_id_);
+    }
+
+    auto image = gpu::GLImageNativePixmap::CreateForTesting(
+        size, format, std::move(pixmap), GetTextureTarget(), texture_id_);
     EXPECT_TRUE(image);
     return image;
   }
@@ -88,12 +100,14 @@ class GLImageNativePixmapTestDelegate : public GLImageTestDelegateBase {
         format == gfx::BufferFormat::YUV_420_BIPLANAR) {
       return 1;
     }
-    if (format == gfx::BufferFormat::P010)
+    if (format == gfx::BufferFormat::P010) {
       return 3;
+    }
     return 0;
   }
 
  private:
+  GLuint texture_id_ = 0;
   std::unique_ptr<gfx::ClientNativePixmapFactory> client_native_pixmap_factory_;
 };
 

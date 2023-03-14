@@ -134,7 +134,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
         base::Histogram::kNoFlags);
     histogram->Add(true);
 
-    if (should_unload_model_on_complete_) {
+    if (!should_unload_model_on_complete_) {
       ExecutionStatus out_status;
       LoadModelFile(&out_status);
     }

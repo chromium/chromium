@@ -1876,6 +1876,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   // Opening a picture in picture window should create a new browser.
   NavigateParams params(MakeNavigateParams(browser()));
   params.disposition = WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
+  params.source_contents = browser()->tab_strip_model()->GetActiveWebContents();
   params.contents_to_insert = WebContents::Create(web_contents_params);
   Navigate(&params);
 
@@ -1904,6 +1905,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   // Opening a picture in picture window should create a new browser.
   NavigateParams params(MakeNavigateParams(browser()));
   params.disposition = WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
+  params.source_contents = browser()->tab_strip_model()->GetActiveWebContents();
   params.contents_to_insert = WebContents::Create(web_contents_params);
   Navigate(&params);
 
@@ -1921,9 +1923,23 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
                                            browser()->profile());
   NavigateParams params(MakeNavigateParams(pip));
   params.disposition = WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
+  params.source_contents = browser()->tab_strip_model()->GetActiveWebContents();
   Navigate(&params);
 
   EXPECT_EQ(params.browser, nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BrowserNavigatorTest,
+    Disposition_PictureInPicture_CantWithoutASourceContents) {
+  // Opening a picture-in-picture window without a source contents should fail.
+  Browser* pip = CreateEmptyBrowserForType(Browser::TYPE_PICTURE_IN_PICTURE,
+                                           browser()->profile());
+  NavigateParams params(MakeNavigateParams(pip));
+  params.disposition = WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
+  params.source_contents = nullptr;
+
+  EXPECT_EQ(nullptr, Navigate(&params));
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -2034,6 +2050,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_BrowserNavigatorTestWithMockScreen,
     // Open the PiP window.
     NavigateParams params(MakeNavigateParams(browser()));
     params.disposition = WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
+    params.source_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
     params.contents_to_insert = WebContents::Create(web_contents_params);
     Navigate(&params);
 
@@ -2060,6 +2078,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_BrowserNavigatorTestWithMockScreen,
     // Open the PiP window.
     NavigateParams params(MakeNavigateParams(browser()));
     params.disposition = WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
+    params.source_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
     params.contents_to_insert = WebContents::Create(web_contents_params);
     Navigate(&params);
 

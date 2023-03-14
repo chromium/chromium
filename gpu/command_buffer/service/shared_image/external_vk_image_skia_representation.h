@@ -47,23 +47,19 @@ class ExternalVkImageSkiaImageRepresentation : public SkiaImageRepresentation {
     return backing_impl()->fence_helper();
   }
 
-  sk_sp<SkPromiseImageTexture> BeginAccess(
+  std::vector<sk_sp<SkPromiseImageTexture>> BeginAccess(
       bool readonly,
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores);
 
   void EndAccess(bool readonly);
 
-  enum AccessMode {
-    kNone = 0,
-    kRead = 1,
-    kWrite = 2,
-  };
-  AccessMode access_mode_ = kNone;
+  const scoped_refptr<SharedContextState> context_state_;
+  AccessMode access_mode_ = AccessMode::kNone;
   int surface_msaa_count_ = 0;
   std::vector<ExternalSemaphore> begin_access_semaphores_;
   ExternalSemaphore end_access_semaphore_;
-  sk_sp<SkSurface> write_surface_;
+  std::vector<sk_sp<SkSurface>> write_surfaces_;
 };
 
 }  // namespace gpu

@@ -11,6 +11,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gl/buildflags.h"
+#include "ui/gl/gl_context.h"
 #include "ui/gl/gl_fence.h"
 
 namespace gl {
@@ -199,14 +200,16 @@ class DawnIOSurfaceRepresentation : public DawnImageRepresentation {
 #endif  // BUILDFLAG(USE_DAWN)
 
 // This class is only put into unique_ptrs and is never copied or assigned.
-class SharedEventAndSignalValue {
+class SharedEventAndSignalValue : public BackpressureMetalSharedEvent {
  public:
   SharedEventAndSignalValue(id shared_event, uint64_t signaled_value);
-  ~SharedEventAndSignalValue();
+  ~SharedEventAndSignalValue() override;
   SharedEventAndSignalValue(const SharedEventAndSignalValue& other) = delete;
   SharedEventAndSignalValue(SharedEventAndSignalValue&& other) = delete;
   SharedEventAndSignalValue& operator=(const SharedEventAndSignalValue& other) =
       delete;
+
+  bool HasCompleted() const override;
 
   // Return value is actually id<MTLSharedEvent>.
   id shared_event() const { return shared_event_; }
@@ -250,10 +253,11 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
 
  private:
   // SharedImageBacking:
-  void OnMemoryDump(const std::string& dump_name,
-                    base::trace_event::MemoryAllocatorDumpGuid client_guid,
-                    base::trace_event::ProcessMemoryDump* pmd,
-                    uint64_t client_tracing_id) override;
+  base::trace_event::MemoryAllocatorDump* OnMemoryDump(
+      const std::string& dump_name,
+      base::trace_event::MemoryAllocatorDumpGuid client_guid,
+      base::trace_event::ProcessMemoryDump* pmd,
+      uint64_t client_tracing_id) override;
   SharedImageBackingType GetType() const override;
   gfx::Rect ClearedRect() const final;
   void SetClearedRect(const gfx::Rect& cleared_rect) final;
@@ -277,6 +281,7 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
   void SetPurgeable(bool purgeable) override;
+  bool IsPurgeable() const override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
 
   // IOSurfaceBackingEGLState::Client:

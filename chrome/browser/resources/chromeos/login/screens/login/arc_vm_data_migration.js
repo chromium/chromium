@@ -7,6 +7,7 @@
  */
 
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/polymer/v3_0/paper-progress/paper-progress.js';
 import '//resources/polymer/v3_0/paper-styles/color.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
@@ -25,12 +26,19 @@ import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 var ArcVmDataMigrationUIState = {
   LOADING: 'loading',
   WELCOME: 'welcome',
+  RESUM: 'resume',
+  PROGRESS: 'progress',
+  SUCCESS: 'success',
+  FAILURE: 'failure',
 };
 
 // Keep in sync with kUserAction* in arc_vm_data_migration_screen.cc.
 var ArcVmDataMigrationUserAction = {
   SKIP: 'skip',
   UPDATE: 'update',
+  RESUME: 'resume',
+  FINISH: 'finish',
+  REPORT: 'report',
 };
 
 /**
@@ -65,6 +73,8 @@ class ArcVmDataMigrationScreen extends ArcVmDataMigrationScreenElementBase {
       minimumBatteryPercent: Number,
       hasEnoughBattery: Boolean,
       isConnectedToCharger: Boolean,
+      migrationProgress: Number,
+      estimatedRemainingTimeInString: String,
     };
   }
 
@@ -75,6 +85,8 @@ class ArcVmDataMigrationScreen extends ArcVmDataMigrationScreenElementBase {
     this.minimumBatteryPercent = 0;
     this.hasEnoughBattery = true;
     this.isConnectedToCharger = true;
+    this.migrationProgress = -1;
+    this.estimatedRemainingTimeInString = '';
   }
 
   defaultUIStep() {
@@ -91,6 +103,8 @@ class ArcVmDataMigrationScreen extends ArcVmDataMigrationScreenElementBase {
       'setRequiredFreeDiskSpace',
       'setMinimumBatteryPercent',
       'setBatteryState',
+      'setMigrationProgress',
+      'setEstimatedRemainingTime',
     ];
   }
 
@@ -121,8 +135,20 @@ class ArcVmDataMigrationScreen extends ArcVmDataMigrationScreenElementBase {
     this.isConnectedToCharger = isConnectedToCharger;
   }
 
+  setMigrationProgress(migrationProgress) {
+    this.migrationProgress = Math.floor(migrationProgress);
+  }
+
+  setEstimatedRemainingTime(estimatedRemainingTimeInString) {
+    this.estimatedRemainingTimeInString = estimatedRemainingTimeInString;
+  }
+
   shouldDisableUpdateButton_(hasEnoughFreeDiskSpace, hasEnoughBattery) {
     return !hasEnoughFreeDiskSpace || !hasEnoughBattery;
+  }
+
+  isProgressIndeterminate_(migrationProgress) {
+    return migrationProgress < 0;
   }
 
   onSkipButtonClicked_() {
@@ -131,6 +157,18 @@ class ArcVmDataMigrationScreen extends ArcVmDataMigrationScreenElementBase {
 
   onUpdateButtonClicked_() {
     this.userActed(ArcVmDataMigrationUserAction.UPDATE);
+  }
+
+  onResumeButtonClicked_() {
+    this.userActed(ArcVmDataMigrationUserAction.RESUME);
+  }
+
+  onFinishButtonClicked_() {
+    this.userActed(ArcVmDataMigrationUserAction.FINISH);
+  }
+
+  onReportButtonClicked_() {
+    this.userActed(ArcVmDataMigrationUserAction.REPORT);
   }
 }
 

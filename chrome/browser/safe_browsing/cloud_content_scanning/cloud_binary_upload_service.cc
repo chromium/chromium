@@ -287,6 +287,13 @@ void CloudBinaryUploadService::UploadForDeepScanning(
                        weakptr_factory_.GetWeakPtr(), raw_request));
   }
 
+  // `request` might have been destroyed by:
+  // - `OnGetRequestData` or
+  // - `OnGetInstanceID`.
+  if (!IsActive(raw_request)) {
+    return;
+  }
+
   active_timers_[raw_request] = std::make_unique<base::OneShotTimer>();
   active_timers_[raw_request]->Start(
       FROM_HERE, is_auth_request ? kAuthTimeout : kScanningTimeout,
@@ -312,8 +319,7 @@ void CloudBinaryUploadService::OnGetInstanceID(Request* request,
 
   request->set_fcm_token(instance_id);
 
-  if (base::FeatureList::IsEnabled(kConnectorsScanningAccessToken) &&
-      CanUseAccessToken(*request, profile_)) {
+  if (CanUseAccessToken(*request, profile_)) {
     if (!token_fetcher_) {
       token_fetcher_ = std::make_unique<SafeBrowsingPrimaryAccountTokenFetcher>(
           IdentityManagerFactory::GetForProfile(profile_));

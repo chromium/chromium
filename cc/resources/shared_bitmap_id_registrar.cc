@@ -4,6 +4,8 @@
 
 #include "cc/resources/shared_bitmap_id_registrar.h"
 
+#include <utility>
+
 #include "cc/layers/texture_layer.h"
 
 namespace cc {

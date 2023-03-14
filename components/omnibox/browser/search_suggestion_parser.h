@@ -343,7 +343,7 @@ class SearchSuggestionParser {
   // Parses JSON response received from the provider, stripping XSSI
   // protection if needed. Returns the parsed data if successful, NULL
   // otherwise.
-  static std::unique_ptr<base::Value> DeserializeJsonData(
+  static absl::optional<base::Value> DeserializeJsonData(
       base::StringPiece json_data);
 
   // Parses results from the suggest server and updates the appropriate suggest

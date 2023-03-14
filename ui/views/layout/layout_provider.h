@@ -136,9 +136,14 @@ enum class Emphasis {
 // These context tokens are granular to the entire client and will map to
 // sys token values (see below).
 enum class ShapeContextTokens {
+  kBadgeRadius,
   kButtonRadius,
-  kTextfieldRadius,
   kComboboxRadius,
+  kDialogRadius,
+  kMenuRadius,
+  kMenuAuxRadius,
+  kMenuTouchRadius,
+  kTextfieldRadius,
 };
 
 // ShapeSysTokens are tokens that map to a fixed value that aligns with UX/UI.
@@ -151,6 +156,7 @@ enum class ShapeSysTokens {
   kDefault,
   kXSmall,
   kSmall,
+  kMediumSmall,
   kMedium,
   kLarge,
   kFull,

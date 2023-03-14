@@ -21,7 +21,6 @@ ci.defaults.set(
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
-    reclient_scandeps_server = True,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     thin_tester_cores = 8,
 )

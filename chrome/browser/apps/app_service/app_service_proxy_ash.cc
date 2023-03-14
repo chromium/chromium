@@ -148,7 +148,7 @@ void AppServiceProxyAsh::Initialize() {
   }
   if (!profile_->AsTestingProfile()) {
     app_platform_metrics_service_ =
-        std::make_unique<AppPlatformMetricsService>(profile_);
+        std::make_unique<apps::AppPlatformMetricsService>(profile_);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&AppServiceProxyAsh::InitAppPlatformMetrics,
                                   weak_ptr_factory_.GetWeakPtr()));
@@ -163,6 +163,12 @@ apps::AppPlatformMetrics* AppServiceProxyAsh::AppPlatformMetrics() {
   return app_platform_metrics_service_
              ? app_platform_metrics_service_->AppPlatformMetrics()
              : nullptr;
+}
+
+apps::AppPlatformMetricsService*
+AppServiceProxyAsh::AppPlatformMetricsService() {
+  return app_platform_metrics_service_ ? app_platform_metrics_service_.get()
+                                       : nullptr;
 }
 
 apps::BrowserAppInstanceTracker*
@@ -372,11 +378,13 @@ void AppServiceProxyAsh::ReadIconsForTesting(AppType app_type,
   ReadIcons(app_type, app_id, size_in_dip, icon_key.Clone(), icon_type,
             std::move(callback));
 }
+
 apps::PromiseAppRegistryCache& AppServiceProxyAsh::PromiseAppRegistryCache() {
   return promise_app_registry_cache_;
 }
-void AppServiceProxyAsh::AddPromiseApp(PromiseAppPtr app) {
-  promise_app_registry_cache_.AddPromiseApp(std::move(app));
+
+void AppServiceProxyAsh::OnPromiseApp(PromiseAppPtr delta) {
+  promise_app_registry_cache_.OnPromiseApp(std::move(delta));
 }
 
 void AppServiceProxyAsh::Shutdown() {
@@ -435,8 +443,6 @@ void AppServiceProxyAsh::OnUninstallDialogClosed(
     bool report_abuse,
     UninstallDialog* uninstall_dialog) {
   if (uninstall) {
-    app_registry_cache_.ForOneApp(app_id, RecordAppBounce);
-
     auto* publisher = GetPublisher(app_type);
     DCHECK(publisher);
     publisher->Uninstall(app_id, uninstall_source, clear_site_data,

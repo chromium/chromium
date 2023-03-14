@@ -77,7 +77,8 @@ import java.util.regex.Pattern;
 @Features.DisableFeatures(ExternalIntentsFeatures.EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME)
 @Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_SUBFRAME_INTENT_TO_SELF_NAME,
         ExternalIntentsFeatures.BLOCK_FRAME_RENAVIGATIONS_NAME,
-        ExternalIntentsFeatures.DO_NOT_REQUIRE_SPECIALIZED_CCT_HANDLER_NAME})
+        ExternalIntentsFeatures.DO_NOT_REQUIRE_SPECIALIZED_CCT_HANDLER_NAME,
+        ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF_NAME})
 public class ExternalNavigationHandlerTest {
     // Expectations
     private static final int IGNORE = 0x0;
@@ -2411,8 +2412,8 @@ public class ExternalNavigationHandlerTest {
 
     @Test
     @SmallTest
-    public void testBlockNonExportedActivity() {
-        mDelegate.add(new IntentActivity(YOUTUBE_URL, YOUTUBE_PACKAGE_NAME, false));
+    public void testBlockNonExportedActivity_Self() {
+        mDelegate.add(new IntentActivity(YOUTUBE_URL, SELF_PACKAGE_NAME, false));
 
         checkUrl(YOUTUBE_URL, redirectHandlerForLinkClick())
                 .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);

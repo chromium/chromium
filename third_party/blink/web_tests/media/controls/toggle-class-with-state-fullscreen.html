@@ -9,7 +9,7 @@
 async_test(t => {
   var video = document.querySelector('video');
 
-  video.onwebkitfullscreenchange = t.step_func_done(_ => {
+  video.onfullscreenchange = t.step_func_done(_ => {
     checkButtonHasClass(fullscreenButton(video), 'fullscreen');
   });
 

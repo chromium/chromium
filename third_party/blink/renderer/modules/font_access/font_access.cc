@@ -37,16 +37,11 @@ const char kFeaturePolicyBlocked[] =
 const char FontAccess::kSupplementName[] = "FontAccess";
 
 FontAccess::FontAccess(LocalDOMWindow* window)
-    : ExecutionContextLifecycleObserver(window),
-      Supplement<LocalDOMWindow>(*window) {}
+    : Supplement<LocalDOMWindow>(*window), remote_(window) {}
 
 void FontAccess::Trace(blink::Visitor* visitor) const {
-  ExecutionContextLifecycleObserver::Trace(visitor);
+  visitor->Trace(remote_);
   Supplement<LocalDOMWindow>::Trace(visitor);
-}
-
-void FontAccess::ContextDestroyed() {
-  remote_.reset();
 }
 
 // static
@@ -93,13 +88,15 @@ ScriptPromise FontAccess::QueryLocalFontsImpl(ScriptState* script_state,
   // Connect to font access manager remote if not bound already.
   if (!remote_.is_bound()) {
     context->GetBrowserInterfaceBroker().GetInterface(
-        remote_.BindNewPipeAndPassReceiver());
+        remote_.BindNewPipeAndPassReceiver(
+            context->GetTaskRunner(TaskType::kFontLoading)));
     remote_.set_disconnect_handler(
         WTF::BindOnce(&FontAccess::OnDisconnect, WrapWeakPersistent(this)));
   }
   DCHECK(remote_.is_bound());
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
   remote_->EnumerateLocalFonts(resolver->WrapCallbackInScriptScope(
       WTF::BindOnce(&FontAccess::DidGetEnumerationResponse,

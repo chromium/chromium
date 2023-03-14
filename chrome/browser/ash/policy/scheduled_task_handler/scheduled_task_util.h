@@ -57,6 +57,14 @@ std::unique_ptr<icu::Calendar> CalculateNextScheduledTimeAfter(
 // max_delay_in_seconds).
 base::TimeDelta GenerateRandomDelay(int max_delay_in_seconds);
 
+// Returns grace period from commandline if present and valid. Returns default
+// grace time otherwise.
+base::TimeDelta GetScheduledRebootGracePeriod();
+
+// Returns true if `reboot_time` is within grace time period.
+bool ShouldSkipRebootDueToGracePeriod(base::Time boot_time,
+                                      base::Time reboot_time);
+
 }  // namespace scheduled_task_util
 
 }  // namespace policy

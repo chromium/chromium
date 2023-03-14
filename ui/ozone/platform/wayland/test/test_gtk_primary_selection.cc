@@ -8,6 +8,7 @@
 #include <wayland-server-core.h>
 
 #include <cstdint>
+#include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -32,8 +33,6 @@ struct GtkPrimarySelectionOffer final : public TestSelectionOffer::Delegate {
                                            mime_type.c_str());
   }
 
-  void OnDestroying() override { delete this; }
-
   raw_ptr<TestSelectionOffer> offer = nullptr;
 };
 
@@ -43,13 +42,13 @@ struct GtkPrimarySelectionDevice final : public TestSelectionDevice::Delegate {
         &TestSelectionOffer::Receive, &Destroy};
     wl_resource* device_resource = device->resource();
     const int version = wl_resource_get_version(device_resource);
-    auto* delegate = new GtkPrimarySelectionOffer;
-
+    auto owned_delegate = std::make_unique<GtkPrimarySelectionOffer>();
+    auto* delegate = owned_delegate.get();
     wl_resource* new_offer_resource =
         CreateResourceWithImpl<TestSelectionOffer>(
             wl_resource_get_client(device->resource()),
             &gtk_primary_selection_offer_interface, version, &kOfferImpl, 0,
-            delegate);
+            std::move(owned_delegate));
     delegate->offer = GetUserDataAs<TestSelectionOffer>(new_offer_resource);
     gtk_primary_selection_device_send_data_offer(device_resource,
                                                  new_offer_resource);
@@ -66,8 +65,6 @@ struct GtkPrimarySelectionDevice final : public TestSelectionDevice::Delegate {
                           uint32_t serial) override {
     NOTIMPLEMENTED();
   }
-
-  void OnDestroying() override { delete this; }
 
   raw_ptr<TestSelectionDevice> device = nullptr;
 };
@@ -92,8 +89,6 @@ struct GtkPrimarySelectionSource : public TestSelectionSource::Delegate {
     NOTREACHED() << "The interface does not support this method.";
   }
 
-  void OnDestroying() override { delete this; }
-
   raw_ptr<TestSelectionSource> source = nullptr;
 };
 
@@ -107,10 +102,11 @@ struct GtkPrimarySelectionDeviceManager
     static const struct gtk_primary_selection_device_interface
         kTestSelectionDeviceImpl = {&TestSelectionDevice::SetSelection,
                                     &Destroy};
-    auto* delegate = new GtkPrimarySelectionDevice;
+    auto owned_delegate = std::make_unique<GtkPrimarySelectionDevice>();
+    auto* delegate = owned_delegate.get();
     wl_resource* resource = CreateResourceWithImpl<TestSelectionDevice>(
         client, &gtk_primary_selection_device_interface, version_,
-        &kTestSelectionDeviceImpl, id, delegate);
+        &kTestSelectionDeviceImpl, id, std::move(owned_delegate));
     delegate->device = GetUserDataAs<TestSelectionDevice>(resource);
     return delegate->device;
   }
@@ -118,15 +114,14 @@ struct GtkPrimarySelectionDeviceManager
   TestSelectionSource* CreateSource(wl_client* client, uint32_t id) override {
     static const struct gtk_primary_selection_source_interface
         kTestSelectionSourceImpl = {&TestSelectionSource::Offer, &Destroy};
-    auto* delegate = new GtkPrimarySelectionSource;
+    auto owned_delegate = std::make_unique<GtkPrimarySelectionSource>();
+    auto* delegate = owned_delegate.get();
     wl_resource* resource = CreateResourceWithImpl<TestSelectionSource>(
         client, &gtk_primary_selection_source_interface, version_,
-        &kTestSelectionSourceImpl, id, delegate);
+        &kTestSelectionSourceImpl, id, std::move(owned_delegate));
     delegate->source = GetUserDataAs<TestSelectionSource>(resource);
     return delegate->source;
   }
-
-  void OnDestroying() override { delete this; }
 
  private:
   const uint32_t version_;
@@ -134,7 +129,7 @@ struct GtkPrimarySelectionDeviceManager
 
 }  // namespace
 
-TestSelectionDeviceManager* CreateTestSelectionManagerGtk() {
+std::unique_ptr<TestSelectionDeviceManager> CreateTestSelectionManagerGtk() {
   constexpr uint32_t kVersion = 1;
   static const struct gtk_primary_selection_device_manager_interface
       kTestSelectionManagerImpl = {&TestSelectionDeviceManager::CreateSource,
@@ -144,8 +139,9 @@ TestSelectionDeviceManager* CreateTestSelectionManagerGtk() {
       .interface = &gtk_primary_selection_device_manager_interface,
       .implementation = &kTestSelectionManagerImpl,
       .version = kVersion};
-  return new TestSelectionDeviceManager(
-      interface_info, new GtkPrimarySelectionDeviceManager(kVersion));
+  return std::make_unique<TestSelectionDeviceManager>(
+      interface_info,
+      std::make_unique<GtkPrimarySelectionDeviceManager>(kVersion));
 }
 
 }  // namespace wl

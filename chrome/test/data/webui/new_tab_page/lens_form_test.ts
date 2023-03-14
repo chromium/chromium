@@ -132,6 +132,18 @@ suite('LensFormTest', () => {
     assertEquals('df', re);
   });
 
+  test('submit file should set surface parameter', async () => {
+    // Arrange.
+    const file = new File([], 'file-name.png', {type: 'image/png'});
+
+    // Act.
+    dispatchFileInputChange(file);
+
+    // Assert.
+    const action = new URL(lensForm.$.fileForm.action);
+    const s = action.searchParams.get('s');
+    assertEquals('4', s);
+  });
 
   test('submit file should set language parameter', async () => {
     // Arrange.
@@ -275,6 +287,15 @@ suite('LensFormTest', () => {
 
     // Assert.
     assertEquals('df', input.value);
+  });
+
+  test('submit url should set surface parameter', async () => {
+    // Arrange.
+    const input =
+        lensForm.$.urlForm.children.namedItem('s') as HTMLInputElement;
+
+    // Assert.
+    assertEquals('4', input.value);
   });
 
   test('submit url should set language parameter', async () => {

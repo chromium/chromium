@@ -12,7 +12,6 @@
 #include "base/debug/stack_trace.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/gtest_util.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "components/gwp_asan/client/guarded_page_allocator.h"
 #include "components/gwp_asan/common/allocator_state.h"
@@ -36,19 +35,11 @@
 namespace gwp_asan {
 namespace internal {
 
-namespace {
-
-constexpr const char* kMallocHistogramName =
-    "GwpAsan.CrashAnalysisResult.Malloc";
-constexpr const char* kPartitionAllocHistogramName =
-    "GwpAsan.CrashAnalysisResult.PartitionAlloc";
-
-}  // namespace
-
 class CrashAnalyzerTest : public testing::Test {
  protected:
   void SetUp() final {
-    gpa_.Init(1, 1, 1, base::DoNothing(), false);
+    gpa_.Init(1, 1, 1, base::DoNothing(), false,
+              LightweightDetectorState::kDisabled, 0);
     InitializeSnapshot();
   }
 
@@ -112,16 +103,10 @@ TEST_F(CrashAnalyzerTest, StackTraceCollection) {
   // Lets pretend a double free() occurred on the allocation we saw previously.
   gpa_.state_.double_free_address = reinterpret_cast<uintptr_t>(ptr);
 
-  base::HistogramTester histogram_tester;
   gwp_asan::Crash proto;
   bool proto_present =
       CrashAnalyzer::GetExceptionInfo(process_snapshot_, &proto);
   ASSERT_TRUE(proto_present);
-
-  int result = static_cast<int>(GwpAsanCrashAnalysisResult::kGwpAsanCrash);
-  EXPECT_THAT(histogram_tester.GetAllSamples(kMallocHistogramName),
-              testing::ElementsAre(base::Bucket(result, 1)));
-  histogram_tester.ExpectTotalCount(kPartitionAllocHistogramName, 0);
 
   ASSERT_TRUE(proto.has_allocation());
   ASSERT_TRUE(proto.has_deallocation());
@@ -166,17 +151,10 @@ TEST_F(CrashAnalyzerTest, InternalError) {
   // single entry slot/metadata entry.
   gpa_.slot_to_metadata_idx_[0] = 5;
 
-  base::HistogramTester histogram_tester;
   gwp_asan::Crash proto;
   bool proto_present =
       CrashAnalyzer::GetExceptionInfo(process_snapshot_, &proto);
   ASSERT_TRUE(proto_present);
-
-  int result =
-      static_cast<int>(GwpAsanCrashAnalysisResult::kErrorBadMetadataIndex);
-  EXPECT_THAT(histogram_tester.GetAllSamples(kMallocHistogramName),
-              testing::ElementsAre(base::Bucket(result, 1)));
-  histogram_tester.ExpectTotalCount(kPartitionAllocHistogramName, 0);
 
   EXPECT_TRUE(proto.has_internal_error());
   ASSERT_TRUE(proto.has_missing_metadata());

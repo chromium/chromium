@@ -16,6 +16,7 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/hash/hash.h"
 #include "base/process/process_iterator.h"
@@ -346,6 +347,28 @@ bool StopGoogleUpdateProcesses(UpdaterScope scope);
 
 // Returns `true` if the argument is a guid.
 bool IsGuid(const std::wstring& s);
+
+// Runs `callback` for each run value in the registry that matches `prefix`.
+void ForEachRegistryRunValueWithPrefix(
+    const std::wstring& prefix,
+    base::RepeatingCallback<void(const std::wstring&)> callback);
+
+// Deletes the registry value at `root\\path`, and returns `true` on success or
+// if the path does not exist.
+[[nodiscard]] bool DeleteRegValue(HKEY root,
+                                  const std::wstring& path,
+                                  const std::wstring& value);
+
+// Runs `callback` for each system service that matches `service_name_prefix`
+// and `display_name_prefix`. `display_name_prefix` can be empty, in which case,
+// only `service_name_prefix` is used for the matching.
+void ForEachServiceWithPrefix(
+    const std::wstring& service_name_prefix,
+    const std::wstring& display_name_prefix,
+    base::RepeatingCallback<void(const std::wstring&)> callback);
+
+// Deletes `service_name` system service and returns `true` on success.
+[[nodiscard]] bool DeleteService(const std::wstring& service_name);
 
 }  // namespace updater
 

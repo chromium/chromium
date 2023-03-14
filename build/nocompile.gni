@@ -63,6 +63,10 @@ import("//build/config/python.gni")
 import("//build/toolchain/toolchain.gni")
 import("//testing/test.gni")
 
+if (is_mac) {
+  import("//build/config/mac/mac_sdk.gni")
+}
+
 declare_args() {
   # TODO(crbug.com/105388): make sure no-compile test is not flaky.
   enable_nocompile_tests = (is_linux || is_chromeos || is_apple) && is_clang &&
@@ -110,8 +114,11 @@ if (enable_nocompile_tests) {
         "-Wno-implicit-int-float-conversion",
       ]
 
-      if (is_apple && host_os != "mac") {
-        args += [ "--target=x86_64-apple-macos" ]
+      if (is_mac && host_os != "mac") {
+        args += [
+          "--target=x86_64-apple-macos",
+          "-mmacos-version-min=$mac_deployment_target",
+        ]
       }
 
       # Iterate over any extra include dirs and append them to the command line.

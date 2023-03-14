@@ -27,10 +27,10 @@ import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.GEN
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KEYBOARD_EXTENSION_STATE;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.EXTENDING_KEYBOARD;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.FLOATING_BAR;
-import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.FLOATING_SHEET;
+import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.FLOATING_SHEET_V2;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.HIDDEN;
-import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.REPLACING_KEYBOARD;
-import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.WAITING_TO_REPLACE;
+import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.REPLACING_KEYBOARD_V2;
+import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState.WAITING_TO_REPLACE_V2;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.SHOULD_EXTEND_KEYBOARD;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.SHOW_WHEN_VISIBLE;
 import static org.chromium.chrome.browser.tab.Tab.INVALID_TAB_ID;
@@ -307,7 +307,7 @@ public class ManualFillingControllerTest {
         MockitoAnnotations.initMocks(this);
         when(mMockWindow.getActivity()).thenReturn(new WeakReference<>(mMockActivity));
         mInsetSupplier.addStackingSupplier(mKeyboardInsetSupplier);
-        when(mMockWindow.getApplicationBottomInsetProvider()).thenReturn(mInsetSupplier);
+        when(mMockWindow.getApplicationBottomInsetSupplier()).thenReturn(mInsetSupplier);
         when(mMockSoftKeyboardDelegate.calculateSoftKeyboardHeight(any())).thenReturn(0);
         when(mMockActivity.getTabModelSelector()).thenReturn(mMockTabModelSelector);
         when(mMockActivity.getActivityTabProvider()).thenReturn(mActivityTabProvider);
@@ -792,7 +792,7 @@ public class ManualFillingControllerTest {
         when(mMockKeyboardAccessory.hasActiveTab()).thenReturn(true);
         when(mMockAccessorySheet.getHeight()).thenReturn(200); // Return height of a large keyboard.
         mModel.set(SHOW_WHEN_VISIBLE, true);
-        mModel.set(KEYBOARD_EXTENSION_STATE, FLOATING_SHEET);
+        mModel.set(KEYBOARD_EXTENSION_STATE, FLOATING_SHEET_V2);
         mController.registerSheetDataProvider(
                 mLastMockWebContents, AccessoryTabType.PASSWORDS, new PropertyProvider<>());
         reset(mMockKeyboardAccessory, mMockAccessorySheet);
@@ -836,7 +836,7 @@ public class ManualFillingControllerTest {
     public void testTransitionToHiddenHidesEverything() {
         addBrowserTab(mMediator, 1111, null);
         // Make sure the model is in a non-HIDDEN state first.
-        mModel.set(KEYBOARD_EXTENSION_STATE, FLOATING_SHEET);
+        mModel.set(KEYBOARD_EXTENSION_STATE, FLOATING_SHEET_V2);
         reset(mMockKeyboardAccessory, mMockAccessorySheet);
 
         // Set the model HIDDEN. This should update keyboard and subcomponents.
@@ -905,51 +905,51 @@ public class ManualFillingControllerTest {
     }
 
     @Test
-    public void testTransitionToFloatingSheetShowsBarAndSheet() {
+    public void testTransitionToFloatingSheetShowsSheet() {
         addBrowserTab(mMediator, 1111, null);
-        // Make sure the model is in a non-FLOATING_SHEET state first.
+        // Make sure the model is in a non-FLOATING_SHEET_V2 state first.
         mModel.set(KEYBOARD_EXTENSION_STATE, HIDDEN);
         reset(mMockKeyboardAccessory, mMockAccessorySheet);
 
-        // Set the model FLOATING_SHEET. This should update keyboard and subcomponents.
-        mModel.set(KEYBOARD_EXTENSION_STATE, FLOATING_SHEET);
-        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_SHEET));
+        // Set the model FLOATING_SHEET_V2. This should update keyboard and subcomponents.
+        mModel.set(KEYBOARD_EXTENSION_STATE, FLOATING_SHEET_V2);
+        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_SHEET_V2));
 
         verify(mMockSoftKeyboardDelegate).showSoftKeyboard(any());
         verify(mMockAccessorySheet).show();
-        verify(mMockKeyboardAccessory).show();
+        verify(mMockKeyboardAccessory, never()).show();
     }
 
     @Test
-    public void testTransitionToReplacingShowsBarAndSheet() {
+    public void testTransitionToReplacingShowsSheet() {
         addBrowserTab(mMediator, 1111, null);
-        // Make sure the model is in a non-REPLACING_KEYBOARD state first.
+        // Make sure the model is in a non-REPLACING_KEYBOARD_V2 state first.
         mModel.set(KEYBOARD_EXTENSION_STATE, HIDDEN);
         reset(mMockKeyboardAccessory, mMockAccessorySheet);
 
-        // Set the model REPLACING_KEYBOARD. This should update keyboard and subcomponents.
-        mModel.set(KEYBOARD_EXTENSION_STATE, REPLACING_KEYBOARD);
-        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(REPLACING_KEYBOARD));
+        // Set the model REPLACING_KEYBOARD_V2. This should update keyboard and subcomponents.
+        mModel.set(KEYBOARD_EXTENSION_STATE, REPLACING_KEYBOARD_V2);
+        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(REPLACING_KEYBOARD_V2));
 
         verify(mMockAccessorySheet).show();
-        verify(mMockKeyboardAccessory).show();
+        verify(mMockKeyboardAccessory, never()).show();
     }
 
     @Test
-    public void testTransitionToWaitingHidesKeyboardAndShowsBarAndSheet() {
+    public void testTransitionToWaitingHidesKeyboardAndShowsSheet() {
         addBrowserTab(mMediator, 1111, null);
-        // Make sure the model is in a non-REPLACING_KEYBOARD state first.
+        // Make sure the model is in a non-REPLACING_KEYBOARD_V2 state first.
         mModel.set(KEYBOARD_EXTENSION_STATE, HIDDEN);
         reset(mMockKeyboardAccessory, mMockAccessorySheet);
 
-        // Set the model REPLACING_KEYBOARD. This should update keyboard and subcomponents.
-        mModel.set(KEYBOARD_EXTENSION_STATE, WAITING_TO_REPLACE);
-        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(WAITING_TO_REPLACE));
+        // Set the model REPLACING_KEYBOARD_V2. This should update keyboard and subcomponents.
+        mModel.set(KEYBOARD_EXTENSION_STATE, WAITING_TO_REPLACE_V2);
+        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(WAITING_TO_REPLACE_V2));
 
         verify(mMockSoftKeyboardDelegate).hideSoftKeyboardOnly(any());
         verify(mMockAccessorySheet, never()).hide();
         verify(mMockKeyboardAccessory, never()).closeActiveTab();
-        verify(mMockKeyboardAccessory).show();
+        verify(mMockKeyboardAccessory, never()).show();
     }
 
     @Test
@@ -1038,7 +1038,7 @@ public class ManualFillingControllerTest {
         when(mMockKeyboardAccessory.hasActiveTab()).thenReturn(true);
         mMediator.onChangeAccessorySheet(0);
 
-        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_SHEET));
+        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_SHEET_V2));
     }
 
     @Test
@@ -1048,7 +1048,7 @@ public class ManualFillingControllerTest {
         mController.registerSheetDataProvider(
                 mLastMockWebContents, AccessoryTabType.PASSWORDS, new PropertyProvider<>());
         mModel.set(SHOW_WHEN_VISIBLE, true);
-        mModel.set(KEYBOARD_EXTENSION_STATE, FLOATING_SHEET);
+        mModel.set(KEYBOARD_EXTENSION_STATE, FLOATING_SHEET_V2);
         reset(mMockKeyboardAccessory, mMockAccessorySheet);
         when(mMockKeyboardAccessory.empty()).thenReturn(false);
         when(mMockKeyboardAccessory.isShown()).thenReturn(true);
@@ -1080,15 +1080,15 @@ public class ManualFillingControllerTest {
         mMediator.onChangeAccessorySheet(0);
 
         // Now the filling component waits for the keyboard to disappear before changing the stat:
-        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(WAITING_TO_REPLACE));
+        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(WAITING_TO_REPLACE_V2));
         // Layout changes but the keyboard is still there, so nothing happens:
         mMediator.onLayoutChange(mMockContentView, 0, 0, 320, 90, 0, 0, 320, 90);
-        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(WAITING_TO_REPLACE));
+        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(WAITING_TO_REPLACE_V2));
 
         // The keyboard finally hides completely and the state changes to REPLACING.
         when(mMockSoftKeyboardDelegate.isSoftKeyboardShowing(any(), any())).thenReturn(false);
         mMediator.onLayoutChange(mMockContentView, 0, 0, 320, 90, 0, 0, 320, 180);
-        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(REPLACING_KEYBOARD));
+        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(REPLACING_KEYBOARD_V2));
     }
 
     @Test
@@ -1098,7 +1098,7 @@ public class ManualFillingControllerTest {
         mController.registerSheetDataProvider(
                 mLastMockWebContents, AccessoryTabType.PASSWORDS, new PropertyProvider<>());
         mModel.set(SHOW_WHEN_VISIBLE, true);
-        mModel.set(KEYBOARD_EXTENSION_STATE, REPLACING_KEYBOARD);
+        mModel.set(KEYBOARD_EXTENSION_STATE, REPLACING_KEYBOARD_V2);
         reset(mMockKeyboardAccessory, mMockAccessorySheet);
         when(mMockKeyboardAccessory.empty()).thenReturn(false);
         when(mMockKeyboardAccessory.isShown()).thenReturn(true);
@@ -1109,7 +1109,7 @@ public class ManualFillingControllerTest {
         mMediator.onCloseAccessorySheet();
 
         // This will cause a temporary floating sheet state which allows a nicer animation:
-        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_SHEET));
+        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_SHEET_V2));
         // This must trigger the keyboard to open, so the transition into EXTENDING can proceed.
         verify(mMockSoftKeyboardDelegate).showSoftKeyboard(any());
 
@@ -1147,15 +1147,15 @@ public class ManualFillingControllerTest {
 
         // Verify that the states are updated correctly and the active tab is set.
         assertThat(mModel.get(SHOW_WHEN_VISIBLE), is(true));
-        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(REPLACING_KEYBOARD));
+        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(REPLACING_KEYBOARD_V2));
         verify(mMockKeyboardAccessory, times(1)).setActiveTab(AccessoryTabType.PASSWORDS);
 
         // Simulate the callback once active tab is set.
         mMediator.onChangeAccessorySheet(0);
 
-        // Assert tha the keyboard extension state continues to be REPLACING_KEYBOARD as we're
+        // Assert tha the keyboard extension state continues to be REPLACING_KEYBOARD_V2 as we're
         // showing the sheet.
-        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(REPLACING_KEYBOARD));
+        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(REPLACING_KEYBOARD_V2));
     }
 
     /**

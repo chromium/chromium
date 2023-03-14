@@ -4,7 +4,7 @@ Case 1, original layer tree:
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -20,7 +20,6 @@ Case 1, original layer tree:
       "name": "LayoutNGBlockFlow (positioned) DIV class='box middle'",
       "position": [180, 180],
       "bounds": [140, 140],
-      "contentsOpaqueForText": true,
       "backgroundColor": "#00FFFF"
     }
   ],
@@ -41,7 +40,7 @@ Case 2: hovering over the "middle" element (causes that div to become its own co
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -64,7 +63,6 @@ Case 2: hovering over the "middle" element (causes that div to become its own co
       "name": "LayoutNGBlockFlow (positioned) DIV class='box middle2'",
       "position": [200, 200],
       "bounds": [120, 120],
-      "contentsOpaqueForText": true,
       "backgroundColor": "#00FFFF"
     }
   ],
@@ -94,7 +92,7 @@ Case 3: hovering over the "middle2" element (causes that div to become its own c
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -154,7 +152,7 @@ Case 4: hovering over the "top" element (causes that div to become its own compo
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -170,7 +168,6 @@ Case 4: hovering over the "top" element (causes that div to become its own compo
       "name": "LayoutNGBlockFlow (positioned) DIV class='box middle'",
       "position": [180, 180],
       "bounds": [120, 120],
-      "contentsOpaqueForText": true,
       "backgroundColor": "#FF00FF"
     },
     {
@@ -207,7 +204,7 @@ Case 5: back to situation in case 1
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -223,7 +220,6 @@ Case 5: back to situation in case 1
       "name": "LayoutNGBlockFlow (positioned) DIV class='box middle'",
       "position": [180, 180],
       "bounds": [140, 140],
-      "contentsOpaqueForText": true,
       "backgroundColor": "#00FFFF"
     }
   ],

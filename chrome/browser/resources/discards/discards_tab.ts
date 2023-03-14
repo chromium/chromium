@@ -358,7 +358,15 @@ class DiscardsTabElement extends DiscardsTabElementBase {
 
   /** Event handler that discards a given tab urgently. */
   private urgentDiscardTab_(e: DomRepeatEvent<TabDiscardsInfo>) {
-    this.discardsDetailsProvider_!.discardById(e.model.item.id)
+    this.discardsDetailsProvider_!
+        .discardById(e.model.item.id, LifecycleUnitDiscardReason.URGENT)
+        .then(this.updateTable_.bind(this));
+  }
+
+  /** Event handler that discards a given tab proactively. */
+  private proactiveDiscardTab_(e: DomRepeatEvent<TabDiscardsInfo>) {
+    this.discardsDetailsProvider_!
+        .discardById(e.model.item.id, LifecycleUnitDiscardReason.PROACTIVE)
         .then(this.updateTable_.bind(this));
   }
 
@@ -372,10 +380,6 @@ class DiscardsTabElement extends DiscardsTabElementBase {
   /** Event handler that discards the next discardable tab urgently. */
   private discardUrgentNow_(_e: Event) {
     this.discardImpl_();
-  }
-
-  private toggleHighEfficiencyMode_(_e: Event) {
-    this.discardsDetailsProvider_!.toggleHighEfficiencyMode();
   }
 
   private toggleBatterySaverMode_(_e: Event) {

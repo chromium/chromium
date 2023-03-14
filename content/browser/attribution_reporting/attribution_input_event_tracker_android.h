@@ -7,14 +7,10 @@
 
 #include <jni.h>
 
+#include "base/android/scoped_java_ref.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "ui/android/event_forwarder.h"
-
-namespace base::android {
-template <typename T>
-class ScopedJavaGlobalRef;
-}  // namespace base::android
 
 namespace ui {
 class MotionEventAndroid;

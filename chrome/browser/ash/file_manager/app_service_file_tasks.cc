@@ -107,13 +107,19 @@ TaskType GetTaskType(apps::AppType app_type) {
   }
 }
 
-const char kImportCrostiniImageHandlerId[] = "import-crostini-image";
-const char kInstallLinuxPackageHandlerId[] = "install-linux-package";
+const char kImportCrostiniImageHandlerId[] =
+    "chrome://file-manager/?import-crostini-image";
+const char kInstallLinuxPackageHandlerId[] =
+    "chrome://file-manager/?install-linux-package";
 
 }  // namespace
 
 bool FileHandlerIsEnabled(Profile* profile,
+                          const std::string& app_id,
                           const std::string& file_handler_id) {
+  if (app_id != kFileManagerSwaAppId) {
+    return true;
+  }
   // Crostini deb files and backup files can be disabled by policy.
   if (file_handler_id == kInstallLinuxPackageHandlerId) {
     return crostini::CrostiniFeatures::Get()->IsRootAccessAllowed(profile);
@@ -279,14 +285,16 @@ void FindAppServiceTasks(Profile* profile,
       if (profile->IsOffTheRecord() &&
           !extensions::util::IsIncognitoEnabled(launch_entry.app_id, profile))
         continue;
-      if (!FileHandlerIsEnabled(profile_with_app_service,
-                                launch_entry.activity_name))
-        continue;
     }
 
     if ((app_type == apps::AppType::kCrostini ||
          app_type == apps::AppType::kPluginVm) &&
         !files_shareable_to_vm) {
+      continue;
+    }
+
+    if (!FileHandlerIsEnabled(profile_with_app_service, launch_entry.app_id,
+                              launch_entry.activity_name)) {
       continue;
     }
 

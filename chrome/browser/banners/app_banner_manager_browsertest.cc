@@ -741,39 +741,13 @@ class AppBannerManagerBrowserTestWithChromeBFCache
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kIgnoreCertificateErrors);
 
-    EnableFeatureAndSetParams(::features::kBackForwardCacheTimeToLiveControl,
-                              "time_to_live_seconds", "3600");
-    // Navigating quickly between cached pages can fail flakily with:
-    // CanStorePageNow: <URL> : No: blocklisted features: outstanding network
-    // request (others)
-    EnableFeatureAndSetParams(::features::kBackForwardCache,
-                              "ignore_outstanding_network_request_for_testing",
-                              "true");
-    // Allow BackForwardCache for all devices regardless of their memory.
-    DisableFeature(::features::kBackForwardCacheMemoryControls);
-
     SetupFeaturesAndParameters();
   }
 
   void SetupFeaturesAndParameters() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
-
-    for (const auto& [feature, params] : enabled_features_with_params_) {
-      enabled_features.emplace_back(*feature, params);
-    }
-
-    feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                disabled_features_);
-  }
-
-  void EnableFeatureAndSetParams(const base::Feature& feature,
-                                 const std::string& param_name,
-                                 const std::string& param_value) {
-    enabled_features_with_params_[feature][param_name] = param_value;
-  }
-
-  void DisableFeature(const base::Feature& feature) {
-    disabled_features_.push_back(feature);
+    feature_list_.InitWithFeaturesAndParameters(
+        content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(),
+        content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
   }
 
   content::WebContents* web_contents() const {
@@ -800,9 +774,6 @@ class AppBannerManagerBrowserTestWithChromeBFCache
   }
 
  private:
-  std::vector<base::test::FeatureRef> disabled_features_;
-  std::map<base::test::FeatureRef, std::map<std::string, std::string>>
-      enabled_features_with_params_;
   base::test::ScopedFeatureList feature_list_;
 };
 

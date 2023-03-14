@@ -12,7 +12,6 @@
   </outputs>
   <release seq="1">
     <includes>
-      <part file="cros_network_config_resources.grdp" />
       <part file="network_health_resources.grdp" />
     </includes>
   </release>

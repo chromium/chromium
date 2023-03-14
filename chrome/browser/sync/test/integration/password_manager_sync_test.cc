@@ -15,6 +15,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
+#include "chrome/browser/password_manager/affiliation_service_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/password_manager/passwords_navigation_observer.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
+#include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/browser.h"
@@ -35,6 +37,7 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
+#include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -78,6 +81,36 @@ MATCHER_P3(MatchesLoginAndRealm, username, password, signon_realm, "") {
 const char kTestUserEmail[] = "user@email.com";
 const char kExampleHostname[] = "www.example.com";
 const char kExamplePslHostname[] = "psl.example.com";
+
+// Waits for SavedPasswordsPresenter to have a certain number of
+// credentials.
+class SavedPasswordsPresenterWaiter
+    : public StatusChangeChecker,
+      public password_manager::SavedPasswordsPresenter::Observer {
+ public:
+  SavedPasswordsPresenterWaiter(
+      password_manager::SavedPasswordsPresenter* presenter,
+      size_t n_passwords)
+      : presenter_(presenter), n_passwords_(n_passwords) {
+    presenter_->AddObserver(this);
+  }
+
+  ~SavedPasswordsPresenterWaiter() override {
+    presenter_->RemoveObserver(this);
+  }
+
+ private:
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for the SavedPasswordsPresenter to have " << n_passwords_
+        << " passwords";
+    return presenter_->GetSavedCredentials().size() == n_passwords_;
+  }
+
+  void OnSavedPasswordsChanged() override { CheckExitCondition(); }
+
+  password_manager::SavedPasswordsPresenter* const presenter_;
+  const size_t n_passwords_;
+};
 
 class SyncActiveWithoutPasswordsChecker
     : public SingleClientStatusChangeChecker {
@@ -1005,6 +1038,34 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTestWithPolicy,
   ASSERT_TRUE(SetupClients());
 
   SyncActiveWithoutPasswordsChecker(GetSyncService(0)).Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
+                       WipingAccountStoreUpdatesSavedPasswordsPresenter) {
+  // Set up one credential in the account store and one presenter.
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  AddCredentialToFakeServer("user", "pass");
+  SetupSyncTransportWithPasswordAccountStorage();
+  ASSERT_EQ(GetAllLoginsFromAccountPasswordStore().size(), 1u);
+  password_manager::SavedPasswordsPresenter presenter(
+      AffiliationServiceFactory::GetForProfile(GetProfile(0)),
+      PasswordStoreFactory::GetForProfile(GetProfile(0),
+                                          ServiceAccessType::EXPLICIT_ACCESS),
+      AccountPasswordStoreFactory::GetForProfile(
+          GetProfile(0), ServiceAccessType::EXPLICIT_ACCESS));
+  presenter.Init();
+  {
+    SavedPasswordsPresenterWaiter waiter(&presenter, 1);
+    waiter.Wait();
+  }
+
+  password_manager::features_util::OptOutOfAccountStorageAndClearSettings(
+      GetProfile(0)->GetPrefs(), GetSyncService(0));
+
+  {
+    SavedPasswordsPresenterWaiter waiter(&presenter, 0);
+    waiter.Wait();
+  }
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 

@@ -1,0 +1,114 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of histograms for
+functionality in CrosAudioConfig.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Prefer owners from the OWNERS file in this directory. If you need a metrics
+reviewer, please send CLs to chromium-metrics-reviews@google.com rather than to
+specific individuals. These CLs will be automatically reassigned to a reviewer
+within about 5 minutes. This approach helps the metrics team to load-balance
+incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="ChromeOS.CrosAudioConfig.DeviceChange"
+    enum="AudioDeviceChange" expires_after="2024-02-14">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Recorded when the user changes either the input or output audio device from
+    a WebUI, such as the OS Audio Settings page. Not recorded when the audio
+    device is programmatically changed.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.CrosAudioConfig.InputDeviceTypeChangedTo"
+    enum="AudioDeviceType" expires_after="2024-02-14">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the type of device selected when the user changes the input audio
+    device from a WebUI, such as the OS Audio Settings page. Not recorded when
+    the audio device is programmatically changed.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.CrosAudioConfig.InputGainSetTo" units="%"
+    expires_after="2024-02-14">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the input gain set by the user from a WebUI, such as the OS Audio
+    Settings page. To account for changes via a UI slider, the histogram is only
+    recorded after the user stops changing the gain for a predetermined amount
+    of seconds.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.CrosAudioConfig.InputMuteStateChange"
+    enum="AudioMuteButtonAction" expires_after="2024-02-14">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Recorded when the user changes the input audio mute state from a WebUI, such
+    as the OS Audio Settings page.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.CrosAudioConfig.NoiseCancellationEnabled"
+    enum="BooleanEnabled" expires_after="2024-02-14">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Recorded when the user enables/disables noise cancellation from a WebUI,
+    such as the OS Audio Settings page.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.CrosAudioConfig.OutputDeviceTypeChangedTo"
+    enum="AudioDeviceType" expires_after="2024-02-14">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the type of device selected when the user changes the output audio
+    device from a WebUI, such as the OS Audio Settings page. Not recorded when
+    the audio device is programmatically changed.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.CrosAudioConfig.OutputMuteStateChange"
+    enum="AudioMuteButtonAction" expires_after="2024-02-14">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Recorded when the user changes the output audio mute state from a WebUI,
+    such as the OS Audio Settings page.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.CrosAudioConfig.OutputVolumeSetTo" units="%"
+    expires_after="2024-02-14">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the output volume set by the user from a WebUI, such as the OS Audio
+    Settings page. To account for changes via a UI slider, the histogram is only
+    recorded after the user stops changing the volume for a predetermined amount
+    of seconds.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

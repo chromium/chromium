@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/items_bubble_controller.h"
 
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
@@ -19,10 +20,17 @@
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/reauth_purpose.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/password_manager/password_manager_util_win.h"
+#elif BUILDFLAG(IS_MAC)
+#include "chrome/browser/password_manager/password_manager_util_mac.h"
+#endif
 
 namespace metrics_util = password_manager::metrics_util;
 
@@ -34,6 +42,12 @@ ItemsBubbleController::ItemsBubbleController(
 
 ItemsBubbleController::~ItemsBubbleController() {
   OnBubbleClosing();
+}
+
+std::u16string ItemsBubbleController::GetTitle() const {
+  return GetManagePasswordsDialogTitleText(
+      GetWebContents()->GetVisibleURL(), delegate_->GetOrigin(),
+      !delegate_->GetCurrentForms().empty());
 }
 
 void ItemsBubbleController::OnManageClicked(
@@ -101,18 +115,20 @@ ItemsBubbleController::GetCredentials() const {
   return delegate_->GetCurrentForms();
 }
 
-void ItemsBubbleController::UpdateStoredCredential(
-    const password_manager::PasswordForm& original_form,
+void ItemsBubbleController::UpdateSelectedCredentialInPasswordStore(
     password_manager::PasswordForm updated_form) {
+  DCHECK(currently_selected_password_.has_value());
   Profile* profile = GetProfile();
   if (!profile) {
     return;
   }
   scoped_refptr<password_manager::PasswordStoreInterface> password_store =
-      PasswordStoreForForm(original_form);
+      PasswordStoreForForm(currently_selected_password_.value());
 
-  if (original_form.username_value == updated_form.username_value) {
+  if (currently_selected_password_.value().username_value ==
+      updated_form.username_value) {
     password_store->UpdateLogin(updated_form);
+    currently_selected_password_ = updated_form;
     return;
   }
   if (updated_form.username_value.empty()) {
@@ -128,7 +144,34 @@ void ItemsBubbleController::UpdateStoredCredential(
   // Weak and reused issues are still relevant.
   updated_form.password_issues.erase(password_manager::InsecureType::kPhished);
   updated_form.password_issues.erase(password_manager::InsecureType::kLeaked);
-  password_store->UpdateLoginWithPrimaryKey(updated_form, original_form);
+  password_store->UpdateLoginWithPrimaryKey(
+      updated_form, currently_selected_password_.value());
+  currently_selected_password_ = updated_form;
+
+  metrics_util::LogUserInteractionsInPasswordManagementBubble(
+      metrics_util::PasswordManagementBubbleInteractions::kUsernameAdded);
+}
+
+void ItemsBubbleController::AuthenticateUserAndDisplayDetailsOf(
+    password_manager::PasswordForm password_form,
+    base::OnceCallback<void(bool)> completion) {
+  std::u16string message;
+#if BUILDFLAG(IS_MAC)
+  message = password_manager_util_mac::GetMessageForLoginPrompt(
+      password_manager::ReauthPurpose::VIEW_PASSWORD);
+#elif BUILDFLAG(IS_WIN)
+  message = password_manager_util_win::GetMessageForLoginPrompt(
+      password_manager::ReauthPurpose::VIEW_PASSWORD);
+#endif
+  // Bind OnUserAuthenticationCompleted() using a weak_ptr such that if the
+  // bubble is closed (and controller is destructed) while the reauth flow is
+  // running, no callback will be invoked upon the conclusion of the
+  // authentication flow.
+  delegate_->AuthenticateUserWithMessage(
+      message,
+      base::BindOnce(&ItemsBubbleController::OnUserAuthenticationCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(password_form),
+                     std::move(completion)));
 }
 
 void ItemsBubbleController::OnFaviconReady(
@@ -144,12 +187,6 @@ void ItemsBubbleController::ReportInteractions() {
     metrics_recorder_->RecordUIDismissalReason(dismissal_reason_);
 }
 
-std::u16string ItemsBubbleController::GetTitle() const {
-  return GetManagePasswordsDialogTitleText(
-      GetWebContents()->GetVisibleURL(), delegate_->GetOrigin(),
-      !delegate_->GetCurrentForms().empty());
-}
-
 scoped_refptr<password_manager::PasswordStoreInterface>
 ItemsBubbleController::PasswordStoreForForm(
     const password_manager::PasswordForm& password_form) const {
@@ -160,4 +197,14 @@ ItemsBubbleController::PasswordStoreForForm(
                    profile, ServiceAccessType::EXPLICIT_ACCESS)
              : PasswordStoreFactory::GetForProfile(
                    profile, ServiceAccessType::EXPLICIT_ACCESS);
+}
+
+void ItemsBubbleController::OnUserAuthenticationCompleted(
+    password_manager::PasswordForm password_form,
+    base::OnceCallback<void(bool)> completion,
+    bool authentication_result) {
+  if (authentication_result) {
+    currently_selected_password_ = std::move(password_form);
+  }
+  std::move(completion).Run(authentication_result);
 }

@@ -8,6 +8,7 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -36,11 +37,9 @@ class BrowsingContextGroupSwapBrowserTest
     // Enable BackForwardCache:
     if (IsBackForwardCacheEnabled()) {
       feature_list_for_back_forward_cache_.InitWithFeaturesAndParameters(
-          {{features::kBackForwardCache, {{}}},
-           {features::kBackForwardCacheTimeToLiveControl,
-            {{"time_to_live_seconds", "3600"}}}},
-          // Allow BackForwardCache for all devices regardless of their memory.
-          {features::kBackForwardCacheMemoryControls});
+          GetDefaultEnabledBackForwardCacheFeaturesForTesting(
+              /*ignore_outstanding_network_request=*/false),
+          GetDefaultDisabledBackForwardCacheFeaturesForTesting());
     } else {
       feature_list_for_back_forward_cache_.InitWithFeatures(
           {}, {features::kBackForwardCache});

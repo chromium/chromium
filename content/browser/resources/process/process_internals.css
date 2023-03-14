@@ -44,7 +44,7 @@ body {
 
 .tab-header {
   border-inline-start: 6px solid transparent;
-  padding-left: 15px;
+  padding-inline-start: 15px;
 }
 
 .tab-header.selected {
@@ -94,3 +94,18 @@ html {
 #isolated-origins-container {
   margin-top: 15px;
 }
+
+.description {
+  font-style: italic;
+}
+
+table {
+  border-collapse: collapse;
+  margin: 0;
+  padding: 0;
+}
+
+table td {
+  padding: 15px;
+}
+

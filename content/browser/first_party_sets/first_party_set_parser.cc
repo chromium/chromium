@@ -338,12 +338,12 @@ base::expected<SetsAndAliases, ParseError> ParseSet(
   for (const std::pair<net::SchemefulSite, net::FirstPartySetEntry>&
            site_and_entry : set_entries) {
     bool inserted = elements.insert(site_and_entry.first).second;
-    DCHECK(inserted);
+    CHECK(inserted);
   }
   for (const std::pair<net::SchemefulSite, net::SchemefulSite>&
            alias_and_canonical : aliases) {
     bool inserted = elements.insert(alias_and_canonical.first).second;
-    DCHECK(inserted);
+    CHECK(inserted);
   }
 
   return std::make_pair(FirstPartySetParser::SingleSet(set_entries), aliases);
@@ -449,6 +449,10 @@ SetsAndAliases FirstPartySetParser::ParseSetsFromStream(std::istream& input,
     absl::optional<base::Value> maybe_value = base::JSONReader::Read(
         trimmed, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
     if (!maybe_value.has_value()) {
+      if (emit_metrics) {
+        base::UmaHistogramBoolean(
+            "Cookie.FirstPartySets.ProcessedEntireComponent", false);
+      }
       return {};
     }
     base::expected<SetsAndAliases, ParseError> parsed = ParseSet(
@@ -462,6 +466,10 @@ SetsAndAliases FirstPartySetParser::ParseSetsFromStream(std::istream& input,
         continue;
       }
       // Abort, something is wrong with the component.
+      if (emit_metrics) {
+        base::UmaHistogramBoolean(
+            "Cookie.FirstPartySets.ProcessedEntireComponent", false);
+      }
       return {};
     }
 
@@ -470,6 +478,8 @@ SetsAndAliases FirstPartySetParser::ParseSetsFromStream(std::istream& input,
     successfully_parsed_sets++;
   }
   if (emit_metrics) {
+    base::UmaHistogramBoolean("Cookie.FirstPartySets.ProcessedEntireComponent",
+                              true);
     base::UmaHistogramCounts1000(
         "Cookie.FirstPartySets.ComponentSetsParsedSuccessfully",
         successfully_parsed_sets);
@@ -491,15 +501,15 @@ FirstPartySetParser::ParseSetsFromEnterprisePolicy(
           policy.FindList(kFirstPartySetPolicyReplacementsField), elements,
           PolicySetType::kReplacement, warnings);
   if (!parsed_replacements.has_value()) {
-    return base::unexpected(
-        std::make_pair(parsed_replacements.error(), warnings));
+    return std::make_pair(base::unexpected(parsed_replacements.error()),
+                          warnings);
   }
 
   base::expected<std::vector<SingleSet>, ParseError> parsed_additions =
       GetPolicySetsFromList(policy.FindList(kFirstPartySetPolicyAdditionsField),
                             elements, PolicySetType::kAddition, warnings);
   if (!parsed_additions.has_value()) {
-    return base::unexpected(std::make_pair(parsed_additions.error(), warnings));
+    return std::make_pair(base::unexpected(parsed_additions.error()), warnings);
   }
 
   return std::make_pair(

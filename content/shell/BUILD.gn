@@ -86,6 +86,7 @@ static_library("content_shell_app") {
   deps = [
     ":content_shell_lib",
     "//components/crash/core/common:crash_key",
+    "//components/memory_system",
     "//content/public/app",
     "//v8",
   ]
@@ -113,6 +114,13 @@ static_library("content_shell_app") {
       "app/shell_main_delegate_mac.h",
       "app/shell_main_delegate_mac.mm",
     ]
+  }
+  if (is_ios) {
+    sources += [
+      "app/ios/shell_application_ios.h",
+      "app/ios/shell_application_ios.mm",
+    ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
   defines = [
     "CONTENT_SHELL_VERSION=\"$content_shell_version\"",
@@ -204,8 +212,6 @@ static_library("content_shell_lib") {
 
   if (is_ios) {
     sources += [
-      "browser/shell_application_ios.h",
-      "browser/shell_application_ios.mm",
       "browser/shell_platform_delegate_ios.mm",
       "browser/shell_web_contents_view_delegate_ios.mm",
     ]
@@ -307,7 +313,14 @@ static_library("content_shell_lib") {
   ]
 
   if (is_fuchsia) {
-    deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.policy:fuchsia.ui.policy_hlcpp" ]
+    sources += [
+      "browser/fuchsia_view_presenter.cc",
+      "browser/fuchsia_view_presenter.h",
+    ]
+    deps += [
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.element:fuchsia.element_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.policy:fuchsia.ui.policy_hlcpp",
+    ]
   } else {
     deps += [
       "//components/crash/content/browser",
@@ -579,6 +592,8 @@ if (is_android) {
 
     deps = [
       ":content_shell_app",
+      ":content_shell_lib",
+      "//base",
       "//content/public/app",
     ]
     bundle_deps = [

@@ -19,6 +19,9 @@
   <message name="IDS_ADS_PERMISSION_TITLE" desc="Title for the ads permission [CHAR_LIMIT=32]">
     Ads
   </message>
+  <message name="IDS_ANTI_ABUSE_PERMISSION_TITLE" desc="Title for the anti-abuse permission [CHAR_LIMIT=32]">
+    Auto-verify
+  </message>
   <message name="IDS_AR_PERMISSION_TITLE" desc="Title of the permission to use Augmented Reality [CHAR_LIMIT=32]">
     Augmented reality
   </message>
@@ -278,6 +281,12 @@
   <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_MESSAGE_SINGLE_WITH_APP" desc="Text of the confirmation dialog when the user asks to clear all data (and app) for a single origin, when there's an app associated with it.">
     This will clear all data and cookies stored by <ph name="ORIGIN">%1$s<ex>google.com</ex></ph> or by its app on your Home screen.
   </message>
+  <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_MESSAGE_GROUP" desc="Text of the confirmation dialog when the user asks to clear all data (and app) for a group of sites">
+    This action will clear all data and cookies for <ph name="ORIGIN">%1$s<ex>google.com</ex></ph> and all sites under it
+  </message>
+  <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_MESSAGE_GROUP_WITH_APP" desc="Text of the confirmation dialog when the user asks to clear all data (and app) for a group of sites, when there's an app associated with it.">
+    This action will clear all data and cookies stored by all sites under <ph name="ORIGIN">%1$s<ex>google.com</ex></ph> or by its app on your Home screen
+  </message>
   <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_OFFLINE_MESSAGE" desc="Text of the confirmation dialog, explaining that all offline data will be cleared (when clearing a site/sites).">
     Any offline data will be cleared
   </message>
@@ -288,7 +297,10 @@
     This will clear <ph name="DATASIZE">%1$s<ex>1 GB</ex></ph> of data and cookies stored by sites or by apps on your Home screen.
   </message>
   <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_SIGN_OUT_MESSAGE" desc="Text of the confirmation dialog, explaining that the user will be signed out of the site being cleared.">
-    You'll be signed out of this site
+    You may be signed out of this site
+  </message>
+  <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_SIGN_OUT_GROUP_MESSAGE" desc="Text of the confirmation dialog, explaining that the user will be signed out of the group of sites being cleared.">
+    You may be signed out of these sites
   </message>
   <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_SIGN_OUT_ALL_MESSAGE" desc="Text of the confirmation dialog, explaining that the user will be signed out of all sites being cleared.">
     You'll be signed out of all sites
@@ -342,6 +354,32 @@
   </message>
   <message name="IDS_SITE_SETTINGS_PAGE_INTRUSIVE_BLOCKED_SUB_LABEL" desc="2 of 2 states for the 'intrusive ads' setting.">
     Ads are blocked on sites known to show intrusive or misleading ads
+  </message>
+
+  <!-- Anti-abuse -->
+
+  <message name="IDS_ANTI_ABUSE_DESCRIPTION" desc="A setting that, if turned on, will enable anti-abuse functionality.">
+    Sites you visit can verify that you're a real person and not a bot
+  </message>
+
+  <message name="IDS_ANTI_ABUSE_WHEN_ON_HEADER" desc="Header text for the section which describes functionality when the 'anti-abuse' setting is enabled.">
+    When on
+  </message>
+
+  <message name="IDS_ANTI_ABUSE_WHEN_ON_SECTION_ONE" desc="Summary text explaining that browsing is smoother when the 'anti-abuse' setting is enabled.">
+    Browsing is faster because a site is less likely to ask you to verify you're a real person
+  </message>
+
+  <message name="IDS_ANTI_ABUSE_WHEN_ON_SECTION_TWO" desc="Summary text explaining that the anti-abuse features do not reveal your browsing history.">
+    This setting works without identifying you or allowing sites to see your browsing history
+  </message>
+
+  <message name="IDS_ANTI_ABUSE_THINGS_TO_CONSIDER_HEADER" desc="Header text for the section explaining additional things to consider when the 'anti-abuse' setting is enabled.">
+    Things to consider
+  </message>
+
+  <message name="IDS_ANTI_ABUSE_THINGS_TO_CONSIDER_SECTION_ONE" desc="Summary text explaining that sites can save info with Chrome when the 'anti-abuse' setting is enabled.">
+    A site you visit can save info with Chrome that validates you're not a bot. As you keep browsing, sites can check with Chrome and verify with a previous site you've visited that you're likely a real person
   </message>
 
   <!-- Augmented reality -->

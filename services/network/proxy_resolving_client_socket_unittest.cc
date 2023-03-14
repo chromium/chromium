@@ -137,9 +137,9 @@ TEST_P(ProxyResolvingClientSocketTest, NetworkIsolationKeyDirect) {
   const url::Origin kDestinationOrigin = url::Origin::Create(kDestination);
   const net::NetworkAnonymizationKey kOtherNaks[] = {
       net::NetworkAnonymizationKey(),
-      net::NetworkAnonymizationKey(
-          net::SchemefulSite(kDestinationOrigin) /* top_frame_origin */,
-          net::SchemefulSite(kDestinationOrigin) /* frame_origin */)};
+      net::NetworkAnonymizationKey::CreateSameSite(
+          net::SchemefulSite(kDestinationOrigin)),
+  };
   for (const auto& other_nak : kOtherNaks) {
     std::unique_ptr<net::HostResolver::ResolveHostRequest> request2 =
         url_request_context->host_resolver()->CreateRequest(

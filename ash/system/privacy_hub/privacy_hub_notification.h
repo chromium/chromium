@@ -5,18 +5,14 @@
 #ifndef ASH_SYSTEM_PRIVACY_HUB_PRIVACY_HUB_NOTIFICATION_H_
 #define ASH_SYSTEM_PRIVACY_HUB_PRIVACY_HUB_NOTIFICATION_H_
 
+#include <set>
 #include <string>
 #include <vector>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/public/cpp/system_notification_builder.h"
-#include "base/containers/enum_set.h"
-#include "base/functional/callback_forward.h"
-#include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
 namespace ash {
@@ -38,53 +34,99 @@ class ASH_EXPORT PrivacyHubNotificationClickDelegate
   // When clicking on the notification message execute this `callback`.
   void SetMessageClickCallback(base::RepeatingClosure callback);
 
+  // Set the `callback` for an additional button.
+  void SetSecondButtonCallback(base::RepeatingClosure callback);
+
  private:
   ~PrivacyHubNotificationClickDelegate() override;
 
-  base::RepeatingClosure button_callback_;
+  // Run `callback` if it's not null. Do nothing otherwise.
+  void RunCallbackIfNotNull(const base::RepeatingClosure& callback);
+
+  std::array<base::RepeatingClosure, 2> button_callbacks_;
   base::RepeatingClosure message_callback_;
+};
+
+// Represents the information displayed in a `PrivacyHubNotification`.
+class ASH_EXPORT PrivacyHubNotificationDescriptor {
+  // `message_ids` must not be empty` and `delegate` must not be null.
+  // `message_ids.at(0)` should be the generic notification message with no
+  // application names.
+  // `message_ids.at(n)` should be the notification message with `n` application
+  // names.
+ public:
+  PrivacyHubNotificationDescriptor(
+      const SensorDisabledNotificationDelegate::SensorSet& sensors,
+      int title_id,
+      const std::vector<int>& button_ids,
+      const std::vector<int>& message_ids,
+      scoped_refptr<PrivacyHubNotificationClickDelegate> delegate);
+  PrivacyHubNotificationDescriptor(
+      const PrivacyHubNotificationDescriptor& other);
+  PrivacyHubNotificationDescriptor& operator=(
+      const PrivacyHubNotificationDescriptor& other);
+  ~PrivacyHubNotificationDescriptor();
+
+  const std::vector<int>& button_ids() const { return button_ids_; }
+
+  const SensorDisabledNotificationDelegate::SensorSet& sensors() const {
+    return sensors_;
+  }
+
+  const std::vector<int>& message_ids() const { return message_ids_; }
+
+  scoped_refptr<PrivacyHubNotificationClickDelegate> delegate() const {
+    return delegate_;
+  }
+
+  int title_id_;
+
+ private:
+  std::vector<int> button_ids_;
+  SensorDisabledNotificationDelegate::SensorSet sensors_;
+  std::vector<int> message_ids_;
+  scoped_refptr<PrivacyHubNotificationClickDelegate> delegate_;
 };
 
 // This class wraps `SystemNotificationBuilder` and adds additional constraints
 // and shared behavior that applies to all Privacy Hub notifications.
 class ASH_EXPORT PrivacyHubNotification {
  public:
-  using MessageIds = std::vector<int>;
-  using SensorSet =
-      base::EnumSet<SensorDisabledNotificationDelegate::Sensor,
-                    SensorDisabledNotificationDelegate::Sensor::kMinValue,
-                    SensorDisabledNotificationDelegate::Sensor::kMaxValue>;
+  // Create a new notification.
+  // When calling `Show() or `Update()`:
+  // If `sensors_` is empty, the generic notification message from `descriptor`
+  // will be displayed.
+  // If `sensors_` is non-empty and `n` applications are using the sensors in
+  // `sensors_`, the displayed notification message will contain `n` application
+  // names. If `descriptor` does not contain a notification message with `n`
+  // application names, the generic notification message from `descriptor` will
+  // be displayed.
+  PrivacyHubNotification(const std::string& id,
+                         NotificationCatalogName catalog_name,
+                         const PrivacyHubNotificationDescriptor& descriptor);
 
-  constexpr static base::TimeDelta kMinShowTime =
-      base::Seconds(message_center::kAutocloseDefaultDelaySeconds);
-
-  // Create a new notification. When calling `Show()` and `sensors_for_apps`
-  // contains at least one sensor it will try to replace currently used apps
-  // by the sensor(s) in the message. This is only possible if there are less
-  // than `message_ids.size()` apps active for the sensor(s) otherwise the
-  // generic message at index 0 will be used again. `message_ids` must not be
-  // empty and `delegate` must not be null.
+  // When PrivacyHubNotification is constructed with multiple
+  // `PrivacyHubNotificationDescriptor`s, which descriptor to use will be
+  // decided depending on the value of `sensors_`. When `sensors_` changes, the
+  // descriptor to use will also change.
+  //`descriptors` must have multiple `PrivacyHubNotificationDescriptor` objects,
+  // use the previous constructor otherwise please.
   PrivacyHubNotification(
       const std::string& id,
-      int title_id,
-      const MessageIds& message_ids,
-      SensorSet sensors_for_apps,
-      scoped_refptr<PrivacyHubNotificationClickDelegate> delegate,
-      ash::NotificationCatalogName catalog_name,
-      int action_button_id);
+      NotificationCatalogName catalog_name,
+      const std::vector<PrivacyHubNotificationDescriptor>& descriptors);
+
   PrivacyHubNotification(PrivacyHubNotification&&) = delete;
   PrivacyHubNotification& operator=(PrivacyHubNotification&&) = delete;
+
   ~PrivacyHubNotification();
 
-  // Show the notification to the user for at least `kMinShowTime`. Calls to
-  // `Hide()` are delayed until this time has passed and the notification is
-  // hidden then. If more than one `message_ids_` exists will attempt to use
-  // the correct one for the number of apps accessing the `sensors_for_apps_`.
+  // Show the notification to the user for at least `kMinShowTime`. Every time
+  // `Show()` is called, the notification will pop up. For silent updates, use
+  // the `Update()` function.
   void Show();
 
-  // Hide the notification from the user if it has already been shown for at
-  // least `kMinShowTime`. If not the notification will be shown for the
-  // remaining time and then hidden.
+  // Hide the notification from the message center.
   void Hide();
 
   // Silently updates the notification when needed, for example, when an
@@ -93,26 +135,54 @@ class ASH_EXPORT PrivacyHubNotification {
   // again.
   void Update();
 
+  // Updates the value of `sensors_`.
+  void SetSensors(SensorDisabledNotificationDelegate::SensorSet sensors);
+
   // Get the underlying `SystemNotificationBuilder` to do modifications beyond
   // what this wrapper allows you to do. If you change the ID of the message
   // `Show()` and `Hide()` are not going to work reliably.
   SystemNotificationBuilder& builder() { return builder_; }
 
  private:
-  // Get names of apps accessing the `sensors_for_apps_`. At most
-  // `message_ids_.size()` elements will be returned.
-  std::vector<std::u16string> GetAppsAccessingSensors() const;
+  // Get names of apps accessing sensors in `sensors_`. At most `number_of_apps`
+  // elements will be returned.
+  std::vector<std::u16string> GetAppsAccessingSensors(
+      size_t number_of_apps) const;
 
-  // Sets the notification message depending on the list of apps accessing the
-  // `sensors_for_apps_`.
-  void SetNotificationMessage();
+  // Propagates information about the update in notification content (message,
+  // title, buttons etc.) to the underlying `SystemNotificationBuilder`. This is
+  // always done before showing or updating a notification.
+  void SetNotificationContent();
 
   std::string id_;
+
+  // A set of `PrivacyHubNotificationDescriptor`s. Appropriate
+  // `PrivacyHubNotificationDescriptor` for a specific `SensorSet` can be found
+  // using the standard `find` function. `sensors_.ToEnumBitmask()` can be used
+  // as the key for the `find` function.
+  std::set<PrivacyHubNotificationDescriptor, std::less<>>
+      notification_descriptors_;
+
+  SensorDisabledNotificationDelegate::SensorSet sensors_;
+
+  // `notification_descriptors_` is a set of
+  // `PrivacyHubNotificationDescriptor`s. The content in the descriptors are
+  // used to update the underlying `SystemNotificationBuilder`. Before a call to
+  // `Show()` or `Update()`, the underlying builder needs to be updated. Content
+  // of which descriptor to use to update the builder depends on the value
+  // current value of `sensors_` enumset.
+  // `has_sensors_changed_` being true means that `sensors_` was updated but the
+  // underlying builder was not updated after that.
+  bool has_sensors_changed_ = true;
+
   SystemNotificationBuilder builder_;
-  MessageIds message_ids_;
-  SensorSet sensors_for_apps_;
-  absl::optional<base::Time> last_time_shown_;
-  base::OneShotTimer remove_timer_;
+
+  // TODO(b/271809217): Refactor camera HW switch notification implementation
+  // Notification for the camera hardware switch is currently using only a
+  // subset of `PrivacyHubNotification` properties. `catalog_name_` is stored to
+  // determine if the notification is for the camera hardware switch to handle
+  // it specially.
+  NotificationCatalogName catalog_name_;
 };
 
 }  // namespace ash

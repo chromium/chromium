@@ -14,11 +14,13 @@
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "mojo/core/ipcz_driver/driver.h"
 #include "mojo/core/ipcz_driver/shared_buffer.h"
@@ -62,7 +64,8 @@ class MojoIpczTransportTest : public test::MojoTestBase {
   // `pipe` to `process`.
   static scoped_refptr<Transport> CreateAndSendTransport(
       MojoHandle pipe,
-      const base::Process& process) {
+      const base::Process& process,
+      bool untrusted = false) {
     PlatformChannel channel;
     MojoHandle transport_for_client =
         WrapPlatformHandle(channel.TakeRemoteEndpoint().TakePlatformHandle())
@@ -71,7 +74,7 @@ class MojoIpczTransportTest : public test::MojoTestBase {
     WriteMessageWithHandles(pipe, "", &transport_for_client, 1);
     return Transport::Create(
         {.source = Transport::kBroker, .destination = Transport::kNonBroker},
-        channel.TakeLocalEndpoint(), process.Duplicate());
+        channel.TakeLocalEndpoint(), process.Duplicate(), untrusted);
   }
 
   // Retrieves a PlatformChannel endpoint from `pipe` and returns a newly
@@ -153,12 +156,12 @@ class MojoIpczTransportTest : public test::MojoTestBase {
 class TransportListener {
  public:
   explicit TransportListener(Transport& transport) : transport_(transport) {
-    transport_.Activate(reinterpret_cast<IpczHandle>(this),
-                        &TransportListener::OnActivity);
+    transport_->Activate(reinterpret_cast<IpczHandle>(this),
+                         &TransportListener::OnActivity);
   }
 
   ~TransportListener() {
-    transport_.Deactivate();
+    transport_->Deactivate();
     deactivation_event_.Wait();
   }
 
@@ -214,7 +217,7 @@ class TransportListener {
     have_messages_.Signal();
   }
 
-  Transport& transport_;
+  const raw_ref<Transport> transport_;
 
   base::Lock lock_;
   base::ConditionVariable have_messages_{&lock_};
@@ -393,23 +396,67 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(TransmitFileClient,
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 
-TEST_F(MojoIpczTransportTest, TransmitFile) {
+class MojoIpczTransportSecurityTest
+    : public MojoIpczTransportTest,
+      public ::testing::WithParamInterface<
+          std::tuple</*enforcement_enabled=*/bool,
+                     /*add_no_execute_flags=*/bool>> {
+ protected:
+  bool IsEnforcementEnabled() {
+// Enforcement only happens on Windows.
+#if BUILDFLAG(IS_WIN)
+    return std::get<0>(GetParam());
+#else
+    return false;
+#endif
+  }
+  bool ShouldMarkNoExecute() { return std::get<1>(GetParam()); }
+};
+
+TEST_P(MojoIpczTransportSecurityTest, TransmitFile) {
   RunTestClientWithController("TransmitFileClient", [&](ClientController& c) {
     scoped_refptr<Transport> transport =
-        CreateAndSendTransport(c.pipe(), c.process());
-
+        CreateAndSendTransport(c.pipe(), c.process(), IsEnforcementEnabled());
     base::ScopedTempDir temp_dir;
     CHECK(temp_dir.CreateUniqueTempDir());
-    base::File new_file(temp_dir.GetPath().AppendASCII("testfile"),
-                        base::File::FLAG_CREATE | base::File::FLAG_READ |
-                            base::File::FLAG_WRITE);
+    int32_t flags = base::File::FLAG_CREATE | base::File::FLAG_READ |
+                    base::File::FLAG_WRITE;
+    if (ShouldMarkNoExecute()) {
+      flags = base::File::AddFlagsForPassingToUntrustedProcess(flags);
+    }
+    base::File new_file(temp_dir.GetPath().AppendASCII("testfile"), flags);
     new_file.Write(0, kMessage1.data(), kMessage1.size());
 
     TransportListener listener(*transport);
-    SerializeFileFor(*transport, std::move(new_file)).Transmit(*transport);
+    if (IsEnforcementEnabled() && !ShouldMarkNoExecute()) {
+      EXPECT_DCHECK_DEATH_WITH(
+          {
+            SerializeFileFor(*transport, std::move(new_file))
+                .Transmit(*transport);
+          },
+          "Transfer of writable handle to executable file to an untrusted "
+          "process");
+      // In this case, the message was never sent, because either DCHECK was
+      // disabled so SerializeFileFor was never called, or the transport crashed
+      // the process. In either case, the client is sitting there waiting for a
+      // file to arrive, so send a read-only version to complete the test.
+      base::File read_only_file =
+          base::File(temp_dir.GetPath().AppendASCII("testfile"),
+                     base::File::FLAG_OPEN | base::File::FLAG_READ);
+      SerializeFileFor(*transport, std::move(read_only_file))
+          .Transmit(*transport);
+    } else {
+      SerializeFileFor(*transport, std::move(new_file)).Transmit(*transport);
+    }
     listener.WaitForDisconnect();
   });
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    MojoIpczTransportSecurityTest,
+    testing::Combine(/*enforcement_enabled=*/testing::Bool(),
+                     /*add_no_execute_flags=*/testing::Bool()));
 
 constexpr std::string_view kMemoryMessage = "mojo wuz here";
 

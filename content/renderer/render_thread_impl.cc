@@ -4,7 +4,6 @@
 
 #include "content/renderer/render_thread_impl.h"
 
-#include <algorithm>
 #include <limits>
 #include <map>
 #include <memory>
@@ -32,6 +31,7 @@
 #include "base/observer_list.h"
 #include "base/path_service.h"
 #include "base/process/process_metrics.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -44,7 +44,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/simple_thread.h"
-#include "base/threading/thread_local.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_pressure_level_proto.h"
@@ -137,6 +136,7 @@
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "services/viz/public/cpp/gpu/gpu.h"
 #include "skia/ext/skia_memory_dump_provider.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/launching_process_state.h"
 #include "third_party/blink/public/common/privacy_budget/active_sampling.h"
@@ -242,8 +242,7 @@ RendererBlinkPlatformImpl* g_current_blink_platform_impl_for_testing;
 
 // Keep the global RenderThreadImpl in a TLS slot so it is impossible to access
 // incorrectly from the wrong thread.
-base::LazyInstance<base::ThreadLocalPointer<RenderThreadImpl>>::DestructorAtExit
-    lazy_tls = LAZY_INSTANCE_INITIALIZER;
+ABSL_CONST_INIT thread_local RenderThreadImpl* render_thread = nullptr;
 
 base::LazyInstance<scoped_refptr<base::SingleThreadTaskRunner>>::
     DestructorAtExit g_main_task_runner = LAZY_INSTANCE_INITIALIZER;
@@ -377,11 +376,7 @@ static bool IsSingleProcess() {
 }  // namespace
 
 RenderThreadImpl::HistogramCustomizer::HistogramCustomizer() {
-  custom_histograms_.insert("V8.MemoryExternalFragmentationTotal");
   custom_histograms_.insert("V8.MemoryHeapSampleTotalCommitted");
-  custom_histograms_.insert("V8.MemoryHeapSampleTotalUsed");
-  custom_histograms_.insert("V8.MemoryHeapUsed");
-  custom_histograms_.insert("V8.MemoryHeapCommitted");
 }
 
 RenderThreadImpl::HistogramCustomizer::~HistogramCustomizer() {}
@@ -481,7 +476,7 @@ bool RenderThreadImpl::HistogramCustomizer::IsAlexaTop10NonGoogleSite(
 
 // static
 RenderThreadImpl* RenderThreadImpl::current() {
-  return lazy_tls.Pointer()->Get();
+  return render_thread;
 }
 
 // static
@@ -589,7 +584,7 @@ void RenderThreadImpl::Init() {
     blink::WebView::SetUseExternalPopupMenus(true);
 #endif
 
-  lazy_tls.Pointer()->Set(this);
+  render_thread = this;
   g_main_task_runner.Get() = base::SingleThreadTaskRunner::GetCurrentDefault();
 
   // Register this object as the main thread.
@@ -859,11 +854,6 @@ void RenderThreadImpl::RemoveObserver(RenderThreadObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void RenderThreadImpl::SetResourceRequestSenderDelegate(
-    blink::WebResourceRequestSenderDelegate* delegate) {
-  resource_request_sender_delegate_ = delegate;
-}
-
 void RenderThreadImpl::InitializeCompositorThread() {
   blink_platform_impl_->CreateAndSetCompositorThread();
   compositor_task_runner_ = blink_platform_impl_->CompositorThreadTaskRunner();
@@ -948,10 +938,9 @@ void RenderThreadImpl::InitializeRenderer(
 
   blink::WebVector<blink::WebString> web_cors_exempt_header_list(
       cors_exempt_header_list.size());
-  std::transform(cors_exempt_header_list.begin(), cors_exempt_header_list.end(),
-                 web_cors_exempt_header_list.begin(), [](const std::string& h) {
-                   return blink::WebString::FromLatin1(h);
-                 });
+  base::ranges::transform(
+      cors_exempt_header_list, web_cors_exempt_header_list.begin(),
+      [](const auto& header) { return blink::WebString::FromLatin1(header); });
   blink::SetCorsExemptHeaderList(web_cors_exempt_header_list);
 }
 
@@ -1576,11 +1565,12 @@ void RenderThreadImpl::UpdateScrollbarTheme(
           : absl::nullopt,
       params->preferred_scroller_style, params->redraw,
       params->jump_on_track_click);
-
+#endif  // BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   is_elastic_overscroll_enabled_ = params->scroll_view_rubber_banding;
 #else
   NOTREACHED();
-#endif
+#endif  // BUILDFLAG(IS_APPLE)
 }
 
 void RenderThreadImpl::OnSystemColorsChanged(
@@ -1852,10 +1842,12 @@ RenderThreadImpl::GetOsSupportForAttributionReporting() {
   return attribution_os_support_;
 }
 
+#if BUILDFLAG(IS_ANDROID)
 void RenderThreadImpl::SetOsSupportForAttributionReporting(
     attribution_reporting::mojom::OsSupport attribution_os_support) {
   attribution_os_support_ = attribution_os_support;
 }
+#endif
 
 std::unique_ptr<CodecFactory> RenderThreadImpl::CreateMediaCodecFactory(
     scoped_refptr<viz::ContextProviderCommandBuffer> context_provider,

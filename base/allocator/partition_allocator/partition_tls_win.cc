@@ -19,16 +19,19 @@ void (*g_on_dll_process_detach)() = nullptr;
 void NTAPI PartitionTlsOnThreadExit(PVOID module,
                                     DWORD reason,
                                     PVOID reserved) {
-  if (reason != DLL_THREAD_DETACH && reason != DLL_PROCESS_DETACH)
+  if (reason != DLL_THREAD_DETACH && reason != DLL_PROCESS_DETACH) {
     return;
+  }
 
-  if (reason == DLL_PROCESS_DETACH && g_on_dll_process_detach)
+  if (reason == DLL_PROCESS_DETACH && g_on_dll_process_detach) {
     g_on_dll_process_detach();
+  }
 
   if (g_destructor) {
     void* per_thread_data = PartitionTlsGet(g_key);
-    if (per_thread_data)
+    if (per_thread_data) {
       g_destructor(per_thread_data);
+    }
   }
 }
 

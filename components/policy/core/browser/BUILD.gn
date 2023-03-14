@@ -133,6 +133,11 @@ static_library("test_support") {
     "//testing/gtest",
     "//url",
   ]
+
+  # The test data lives inside components/policy/test/data (and not inside
+  # chrome/test/data/) because components/policy/PRESUBMIT.py depends on it. And
+  # we want the presubmit check run automatically when the files is modified.
+  data = [ "//components/policy/test/data/" ]
 }
 
 source_set("unit_tests") {

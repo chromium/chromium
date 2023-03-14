@@ -56,8 +56,8 @@ TEST_F('NewTabPageAppTest', 'CounterfactualModules', function() {
   runMochaSuite('NewTabPageAppTest counterfactual modules');
 });
 
-TEST_F('NewTabPageAppTest', 'CustomizeUrl', function() {
-  runMochaSuite('NewTabPageAppTest customize URL');
+TEST_F('NewTabPageAppTest', 'CustomizeDialog', function() {
+  runMochaSuite('NewTabPageAppTest customize dialog');
 });
 
 TEST_F('NewTabPageAppTest', 'CustomizeChromeSidePanel', function() {

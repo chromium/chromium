@@ -64,17 +64,16 @@ struct CC_EXPORT EffectNode {
   EffectNode(const EffectNode& other);
   ~EffectNode();
 
-  enum StableIdLabels { INVALID_STABLE_ID = 0 };
-
   // The node index of this node in the effect tree node vector.
   int id;
   // The node index of the parent node in the effect tree node vector.
   int parent_id;
-  // An opaque, unique, stable identifer for this effect that persists across
+
+  // An opaque, unique, stable identifier for this effect that persists across
   // frame commits. This id is used only for internal implementation
   // details such as RenderSurface and RenderPass ids, and should not
   // be assumed to have semantic meaning.
-  uint64_t stable_id;
+  ElementId element_id;
 
   float opacity;
   float screen_space_opacity;

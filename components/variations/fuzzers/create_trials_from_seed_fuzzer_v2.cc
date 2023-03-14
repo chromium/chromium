@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/fuzzers/create_trials_from_seed_test_case.pb.h"
@@ -34,7 +35,12 @@ EntropyProviders CreateEntropyProviders(
 
 std::unique_ptr<ClientFilterableState> CreateClientFilterableState(
     const CreateTrialsFromSeedTestCase::ClientFilterableState& spec) {
-  auto client_state = CreateDummyClientFilterableState();
+  auto client_state = std::make_unique<ClientFilterableState>(
+      base::BindOnce([] { return false; }),
+      base::BindLambdaForTesting([spec]() {
+        return base::flat_set<uint64_t>(spec.google_groups().begin(),
+                                        spec.google_groups().end());
+      }));
 
   if (spec.has_locale()) {
     client_state->locale = spec.locale();
@@ -90,10 +96,6 @@ std::unique_ptr<ClientFilterableState> CreateClientFilterableState(
         client_state->policy_restriction = RestrictionPolicy::ALL;
         break;
     }
-  }
-  if (!spec.google_groups().empty()) {
-    client_state->google_groups = std::set<uint64_t>(
-        spec.google_groups().begin(), spec.google_groups().end());
   }
   return client_state;
 }

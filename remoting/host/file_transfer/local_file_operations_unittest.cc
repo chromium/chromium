@@ -234,10 +234,7 @@ TEST_F(LocalFileOperationsTest, OpensReader) {
   base::FilePath path = TestDir().Append(kTestFilename);
   std::vector<std::uint8_t> contents =
       ByteArrayFrom(kTestDataOne, kTestDataTwo, kTestDataThree);
-  ASSERT_EQ(
-      static_cast<int>(contents.size()),
-      base::WriteFile(path, reinterpret_cast<const char*>(contents.data()),
-                      contents.size()));
+  ASSERT_TRUE(base::WriteFile(path, contents));
 
   std::unique_ptr<FileOperations::Reader> reader =
       file_operations_->CreateReader();
@@ -262,10 +259,7 @@ TEST_F(LocalFileOperationsTest, ReadsThreeChunks) {
   base::FilePath path = TestDir().Append(kTestFilename);
   std::vector<std::uint8_t> contents =
       ByteArrayFrom(kTestDataOne, kTestDataTwo, kTestDataThree);
-  ASSERT_EQ(
-      static_cast<int>(contents.size()),
-      base::WriteFile(path, reinterpret_cast<const char*>(contents.data()),
-                      contents.size()));
+  ASSERT_TRUE(base::WriteFile(path, contents));
 
   std::unique_ptr<FileOperations::Reader> reader =
       file_operations_->CreateReader();
@@ -299,10 +293,7 @@ TEST_F(LocalFileOperationsTest, ReaderHandlesEof) {
   base::FilePath path = TestDir().Append(kTestFilename);
   std::vector<std::uint8_t> contents =
       ByteArrayFrom(kTestDataOne, kTestDataTwo, kTestDataThree);
-  ASSERT_EQ(
-      static_cast<int>(contents.size()),
-      base::WriteFile(path, reinterpret_cast<const char*>(contents.data()),
-                      contents.size()));
+  ASSERT_TRUE(base::WriteFile(path, contents));
 
   std::unique_ptr<FileOperations::Reader> reader =
       file_operations_->CreateReader();

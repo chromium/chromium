@@ -157,6 +157,13 @@ gfx::ImageSkia* GetImageSkiaNamed(int id) {
   return ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(id);
 }
 
+const std::u16string& GetFolderButtonAccessibleName(
+    const std::u16string& folder_title) {
+  static const std::u16string& fallback_name =
+      l10n_util::GetStringUTF16(IDS_UNNAMED_BOOKMARK_FOLDER);
+  return folder_title.empty() ? fallback_name : folder_title;
+}
+
 // BookmarkButtonBase -----------------------------------------------
 
 // Base class for non-menu hosting buttons used on the bookmark bar.
@@ -1098,9 +1105,10 @@ void BookmarkBarView::BookmarkModelLoaded(BookmarkModel* model,
   DCHECK(model->other_node());
   other_bookmarks_button_->SetAccessibleName(model->other_node()->GetTitle());
   other_bookmarks_button_->SetText(model->other_node()->GetTitle());
+  const auto managed_title = managed_->managed_node()->GetTitle();
   managed_bookmarks_button_->SetAccessibleName(
-      managed_->managed_node()->GetTitle());
-  managed_bookmarks_button_->SetText(managed_->managed_node()->GetTitle());
+      GetFolderButtonAccessibleName(managed_title));
+  managed_bookmarks_button_->SetText(managed_title);
   UpdateAppearanceForTheme();
   UpdateOtherAndManagedButtonsVisibility();
   other_bookmarks_button_->SetEnabled(true);
@@ -1109,12 +1117,7 @@ void BookmarkBarView::BookmarkModelLoaded(BookmarkModel* model,
 }
 
 void BookmarkBarView::BookmarkModelBeingDeleted(BookmarkModel* model) {
-  NOTREACHED();
-  // Do minimal cleanup, presumably we'll be deleted shortly.
-  bookmark_model_->RemoveObserver(this);
-  bookmark_model_ = nullptr;
-
-  drop_weak_ptr_factory_.InvalidateWeakPtrs();
+  NOTREACHED_NORETURN();
 }
 
 void BookmarkBarView::BookmarkNodeMoved(BookmarkModel* model,
@@ -1629,9 +1632,12 @@ void BookmarkBarView::BookmarkNodeChangedImpl(BookmarkModel* model,
                                               const BookmarkNode* node) {
   if (node == managed_->managed_node()) {
     // The managed node may have its title updated.
+    // If the folder is unnamed, set the name to a default string for unnamed
+    // folders; otherwise set the name to the user-supplied folder name.
+    const auto managed_title = managed_->managed_node()->GetTitle();
     managed_bookmarks_button_->SetAccessibleName(
-        managed_->managed_node()->GetTitle());
-    managed_bookmarks_button_->SetText(managed_->managed_node()->GetTitle());
+        GetFolderButtonAccessibleName(managed_title));
+    managed_bookmarks_button_->SetText(managed_title);
     return;
   }
 

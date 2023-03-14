@@ -37,7 +37,7 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/password_generation_util.h"
-#include "components/device_reauth/biometric_authenticator.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
@@ -120,8 +120,7 @@ password_manager::PasswordManagerDriver* GetPasswordManagerDriver(
 
 PasswordAccessoryControllerImpl::~PasswordAccessoryControllerImpl() {
   if (authenticator_) {
-    authenticator_->Cancel(
-        device_reauth::BiometricAuthRequester::kFallbackSheet);
+    authenticator_->Cancel(device_reauth::DeviceAuthRequester::kFallbackSheet);
   }
 }
 
@@ -217,12 +216,12 @@ void PasswordAccessoryControllerImpl::OnFillingTriggered(
     return;
   }
 
-  authenticator_ = password_client_->GetBiometricAuthenticator();
+  authenticator_ = password_client_->GetDeviceAuthenticator();
 
   // |this| cancels the authentication when it is destroyed if one is ongoing,
   // which resets the callback, so it's safe to use base::Unretained(this) here.
   authenticator_->Authenticate(
-      device_reauth::BiometricAuthRequester::kFallbackSheet,
+      device_reauth::DeviceAuthRequester::kFallbackSheet,
       base::BindOnce(&PasswordAccessoryControllerImpl::OnReauthCompleted,
                      base::Unretained(this), selection),
       /*use_last_valid_auth=*/true);
@@ -311,7 +310,8 @@ void PasswordAccessoryControllerImpl::OnOptionSelected(
   if (selected_action == autofill::AccessoryAction::MANAGE_PASSWORDS) {
     password_manager_launcher::ShowPasswordSettings(
         &GetWebContents(),
-        password_manager::ManagePasswordsReferrer::kPasswordsAccessorySheet);
+        password_manager::ManagePasswordsReferrer::kPasswordsAccessorySheet,
+        /*manage_passkeys=*/false);
     return;
   }
   if (selected_action == autofill::AccessoryAction::GENERATE_PASSWORD_MANUAL) {
@@ -535,11 +535,11 @@ bool PasswordAccessoryControllerImpl::ShouldTriggerBiometricReauth(
   if (!selection.is_obfuscated())
     return false;
 
-  scoped_refptr<device_reauth::BiometricAuthenticator> authenticator =
-      password_client_->GetBiometricAuthenticator();
+  scoped_refptr<device_reauth::DeviceAuthenticator> authenticator =
+      password_client_->GetDeviceAuthenticator();
   return password_manager_util::CanUseBiometricAuth(
-      authenticator.get(),
-      device_reauth::BiometricAuthRequester::kFallbackSheet, password_client_);
+      authenticator.get(), device_reauth::DeviceAuthRequester::kFallbackSheet,
+      password_client_);
 }
 
 void PasswordAccessoryControllerImpl::OnReauthCompleted(

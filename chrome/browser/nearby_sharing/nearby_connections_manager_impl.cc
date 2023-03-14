@@ -28,12 +28,14 @@ const nearby::connections::mojom::Strategy kStrategy =
 
 bool ShouldUseInternet(DataUsage data_usage, PowerLevel power_level) {
   // We won't use internet if the user requested we don't.
-  if (data_usage == DataUsage::kOffline)
+  if (data_usage == DataUsage::kOffline) {
     return false;
+  }
 
   // We won't use internet in a low power mode.
-  if (power_level == PowerLevel::kLowPower)
+  if (power_level == PowerLevel::kLowPower) {
     return false;
+  }
 
   net::NetworkChangeNotifier::ConnectionType connection_type =
       net::NetworkChangeNotifier::GetConnectionType();
@@ -63,8 +65,9 @@ bool ShouldEnableWebRtc(DataUsage data_usage, PowerLevel power_level) {
 }
 
 bool ShouldEnableWifiLan(DataUsage data_usage, PowerLevel power_level) {
-  if (!base::FeatureList::IsEnabled(features::kNearbySharingWifiLan))
+  if (!base::FeatureList::IsEnabled(features::kNearbySharingWifiLan)) {
     return false;
+  }
 
   // WifiLan only works if both devices are using the same router. We can't
   // guarantee this, but at least check that we are using Wi-Fi or ethernet.
@@ -85,14 +88,18 @@ std::string MediumSelectionToString(
     const nearby::connections::mojom::MediumSelection& mediums) {
   std::stringstream ss;
   ss << "{";
-  if (mediums.bluetooth)
+  if (mediums.bluetooth) {
     ss << "bluetooth ";
-  if (mediums.ble)
+  }
+  if (mediums.ble) {
     ss << "ble ";
-  if (mediums.web_rtc)
+  }
+  if (mediums.web_rtc) {
     ss << "webrtc ";
-  if (mediums.wifi_lan)
+  }
+  if (mediums.wifi_lan) {
     ss << "wifilan ";
+  }
   ss << "}";
 
   return ss.str();
@@ -180,8 +187,9 @@ void NearbyConnectionsManagerImpl::StopAdvertising(
 
   // TODO(https://crbug.com/1177088): Determine if we should attempt to bind to
   // process.
-  if (!process_reference_)
+  if (!process_reference_) {
     return;
+  }
 
   process_reference_->GetNearbyConnections()->StopAdvertising(
       service_id_, std::move(callback));
@@ -230,8 +238,9 @@ void NearbyConnectionsManagerImpl::StopDiscovery() {
 
   // TODO(https://crbug.com/1177088): Determine if we should attempt to bind to
   // process.
-  if (!process_reference_)
+  if (!process_reference_) {
     return;
+  }
 
   process_reference_->GetNearbyConnections()->StopDiscovery(
       service_id_, base::BindOnce([](ConnectionsStatus status) {
@@ -255,8 +264,9 @@ void NearbyConnectionsManagerImpl::Connect(
     return;
   }
 
-  if (bluetooth_mac_address && bluetooth_mac_address->size() != 6)
+  if (bluetooth_mac_address && bluetooth_mac_address->size() != 6) {
     bluetooth_mac_address.reset();
+  }
 
   auto allowed_mediums = MediumSelection::New(
       /*bluetooth=*/true,
@@ -302,8 +312,9 @@ void NearbyConnectionsManagerImpl::OnConnectionRequested(
     const std::string& endpoint_id,
     ConnectionsStatus status) {
   auto it = pending_outgoing_connections_.find(endpoint_id);
-  if (it == pending_outgoing_connections_.end())
+  if (it == pending_outgoing_connections_.end()) {
     return;
+  }
 
   if (status != ConnectionsStatus::kSuccess) {
     NS_LOG(ERROR) << "Failed to connect to the remote shareTarget: "
@@ -318,8 +329,9 @@ void NearbyConnectionsManagerImpl::OnConnectionRequested(
 void NearbyConnectionsManagerImpl::Disconnect(const std::string& endpoint_id) {
   // TODO(https://crbug.com/1177088): Determine if we should attempt to bind to
   // process.
-  if (!process_reference_)
+  if (!process_reference_) {
     return;
+  }
 
   process_reference_->GetNearbyConnections()->DisconnectFromEndpoint(
       service_id_, endpoint_id,
@@ -342,11 +354,13 @@ void NearbyConnectionsManagerImpl::Send(
     base::WeakPtr<PayloadStatusListener> listener) {
   // TODO(https://crbug.com/1177088): Determine if we should attempt to bind to
   // process.
-  if (!process_reference_)
+  if (!process_reference_) {
     return;
+  }
 
-  if (listener)
+  if (listener) {
     RegisterPayloadStatusListener(payload->id, listener);
+  }
 
   process_reference_->GetNearbyConnections()->SendPayload(
       service_id_, {endpoint_id}, std::move(payload),
@@ -370,8 +384,9 @@ void NearbyConnectionsManagerImpl::RegisterPayloadPath(
     int64_t payload_id,
     const base::FilePath& file_path,
     ConnectionsCallback callback) {
-  if (!process_reference_)
+  if (!process_reference_) {
     return;
+  }
 
   DCHECK(!file_path.empty());
 
@@ -387,8 +402,9 @@ void NearbyConnectionsManagerImpl::OnFileCreated(
     NearbyFileHandler::CreateFileResult result) {
   // TODO(https://crbug.com/1177088): Determine if we should attempt to bind to
   // process.
-  if (!process_reference_)
+  if (!process_reference_) {
     return;
+  }
 
   process_reference_->GetNearbyConnections()->RegisterPayloadFile(
       service_id_, payload_id, std::move(result.input_file),
@@ -398,8 +414,9 @@ void NearbyConnectionsManagerImpl::OnFileCreated(
 NearbyConnectionsManagerImpl::Payload*
 NearbyConnectionsManagerImpl::GetIncomingPayload(int64_t payload_id) {
   auto it = incoming_payloads_.find(payload_id);
-  if (it == incoming_payloads_.end())
+  if (it == incoming_payloads_.end()) {
     return nullptr;
+  }
 
   return it->second.get();
 }
@@ -407,8 +424,9 @@ NearbyConnectionsManagerImpl::GetIncomingPayload(int64_t payload_id) {
 void NearbyConnectionsManagerImpl::Cancel(int64_t payload_id) {
   // TODO(https://crbug.com/1177088): Determine if we should attempt to bind to
   // process.
-  if (!process_reference_)
+  if (!process_reference_) {
     return;
+  }
 
   auto it = payload_status_listeners_.find(payload_id);
   if (it != payload_status_listeners_.end()) {
@@ -450,12 +468,24 @@ void NearbyConnectionsManagerImpl::ClearIncomingPayloads() {
   incoming_payloads_.clear();
 }
 
+absl::optional<std::string>
+NearbyConnectionsManagerImpl::GetAuthenticationToken(
+    const std::string& endpoint_id) {
+  auto it = connection_info_map_.find(endpoint_id);
+  if (it == connection_info_map_.end()) {
+    return absl::nullopt;
+  }
+
+  return it->second->authentication_token;
+}
+
 absl::optional<std::vector<uint8_t>>
 NearbyConnectionsManagerImpl::GetRawAuthenticationToken(
     const std::string& endpoint_id) {
   auto it = connection_info_map_.find(endpoint_id);
-  if (it == connection_info_map_.end())
+  if (it == connection_info_map_.end()) {
     return absl::nullopt;
+  }
 
   return it->second->raw_authentication_token;
 }
@@ -464,8 +494,9 @@ void NearbyConnectionsManagerImpl::UpgradeBandwidth(
     const std::string& endpoint_id) {
   // TODO(https://crbug.com/1177088): Determine if we should attempt to bind to
   // process.
-  if (!process_reference_)
+  if (!process_reference_) {
     return;
+  }
 
   // The only bandwidth upgrade mediums at this point are WebRTC and WifiLan.
   if (!base::FeatureList::IsEnabled(features::kNearbySharingWebRtc) &&
@@ -552,15 +583,23 @@ void NearbyConnectionsManagerImpl::OnConnectionInitiated(
     ConnectionInfoPtr info) {
   // TODO(https://crbug.com/1177088): Determine if we should attempt to bind to
   // process.
-  if (!process_reference_)
+  if (!process_reference_) {
     return;
+  }
 
+  bool is_incoming_connection = info->is_incoming_connection;
+  const std::vector<uint8_t>& endpoint_info = info->endpoint_info;
   auto result = connection_info_map_.emplace(endpoint_id, std::move(info));
   DCHECK(result.second);
 
   mojo::PendingRemote<PayloadListener> payload_listener;
   payload_listeners_.Add(this,
                          payload_listener.InitWithNewPipeAndPassReceiver());
+
+  if (is_incoming_connection && incoming_connection_listener_) {
+    incoming_connection_listener_->OnIncomingConnectionInitiated(endpoint_id,
+                                                                 endpoint_info);
+  }
 
   process_reference_->GetNearbyConnections()->AcceptConnection(
       service_id_, endpoint_id, std::move(payload_listener),
@@ -577,8 +616,9 @@ void NearbyConnectionsManagerImpl::OnConnectionInitiated(
 void NearbyConnectionsManagerImpl::OnConnectionAccepted(
     const std::string& endpoint_id) {
   auto it = connection_info_map_.find(endpoint_id);
-  if (it == connection_info_map_.end())
+  if (it == connection_info_map_.end()) {
     return;
+  }
 
   if (it->second->is_incoming_connection) {
     if (!incoming_connection_listener_) {
@@ -590,7 +630,7 @@ void NearbyConnectionsManagerImpl::OnConnectionAccepted(
     auto result = connections_.emplace(
         endpoint_id, std::make_unique<NearbyConnectionImpl>(this, endpoint_id));
     DCHECK(result.second);
-    incoming_connection_listener_->OnIncomingConnection(
+    incoming_connection_listener_->OnIncomingConnectionAccepted(
         endpoint_id, it->second->endpoint_info, result.first->second.get());
   } else {
     auto pending_it = pending_outgoing_connections_.find(endpoint_id);
@@ -669,8 +709,9 @@ void NearbyConnectionsManagerImpl::OnPayloadTransferUpdate(
     PayloadTransferUpdatePtr update) {
   // TODO(https://crbug.com/1177088): Determine if we should attempt to bind to
   // process.
-  if (!process_reference_)
+  if (!process_reference_) {
     return;
+  }
 
   // If this is a payload we've registered for, then forward its status to the
   // PayloadStatusListener if it still exists. We don't need to do anything more
@@ -700,8 +741,9 @@ void NearbyConnectionsManagerImpl::OnPayloadTransferUpdate(
   // treat it as a control frame (eg. IntroductionFrame) and forward it to the
   // associated NearbyConnection.
   auto payload_it = incoming_payloads_.find(update->payload_id);
-  if (payload_it == incoming_payloads_.end())
+  if (payload_it == incoming_payloads_.end()) {
     return;
+  }
 
   if (!payload_it->second->content->is_bytes()) {
     NS_LOG(WARNING) << "Received unknown payload of file type. Cancelling.";
@@ -710,12 +752,14 @@ void NearbyConnectionsManagerImpl::OnPayloadTransferUpdate(
     return;
   }
 
-  if (update->status != PayloadStatus::kSuccess)
+  if (update->status != PayloadStatus::kSuccess) {
     return;
+  }
 
   auto connections_it = connections_.find(endpoint_id);
-  if (connections_it == connections_.end())
+  if (connections_it == connections_.end()) {
     return;
+  }
 
   NS_LOG(INFO) << "Writing incoming byte message to NearbyConnection.";
   connections_it->second->WriteMessage(
@@ -739,10 +783,11 @@ NearbyConnectionsManagerImpl::GetNearbyConnections() {
   nearby::connections::mojom::NearbyConnections* nearby_connections =
       process_reference_->GetNearbyConnections().get();
 
-  if (!nearby_connections)
+  if (!nearby_connections) {
     NS_LOG(WARNING)
         << __func__
         << "Failed to get a nearby connections from process reference.";
+  }
 
   return nearby_connections;
 }
@@ -770,8 +815,9 @@ void NearbyConnectionsManagerImpl::Reset() {
   requested_bwu_endpoint_ids_.clear();
   current_upgraded_mediums_.clear();
 
-  for (auto& entry : pending_outgoing_connections_)
+  for (auto& entry : pending_outgoing_connections_) {
     std::move(entry.second).Run(/*connection=*/nullptr);
+  }
 
   pending_outgoing_connections_.clear();
 }
@@ -780,8 +826,9 @@ absl::optional<nearby::connections::mojom::Medium>
 NearbyConnectionsManagerImpl::GetUpgradedMedium(
     const std::string& endpoint_id) const {
   const auto it = current_upgraded_mediums_.find(endpoint_id);
-  if (it == current_upgraded_mediums_.end())
+  if (it == current_upgraded_mediums_.end()) {
     return absl::nullopt;
+  }
 
   return it->second;
 }

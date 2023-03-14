@@ -151,6 +151,8 @@ SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
       ui::OzonePlatform::GetInstance()
           ->GetPlatformRuntimeProperties()
           .supports_non_backed_solid_color_buffers;
+#elif BUILDFLAG(IS_APPLE)
+  capabilities_.supports_non_backed_solid_color_overlays = true;
 #endif  // BUILDFLAG(IS_OZONE)
 
   capabilities_.uses_default_gl_framebuffer = false;
@@ -442,40 +444,8 @@ void SkiaOutputDeviceBufferQueue::Submit(bool sync_cpu,
   SkiaOutputDevice::Submit(sync_cpu, std::move(callback));
 }
 
-void SkiaOutputDeviceBufferQueue::SwapBuffers(BufferPresentedCallback feedback,
-                                              OutputSurfaceFrame frame) {
-  StartSwapBuffers({});
-
-  if (current_frame_has_no_primary_plane_) {
-    DCHECK(!current_image_);
-    submitted_image_ = nullptr;
-    current_frame_has_no_primary_plane_ = false;
-  } else {
-    DCHECK(current_image_);
-    submitted_image_ = current_image_;
-    current_image_ = nullptr;
-  }
-
-  // Cancelable callback uses weak ptr to drop this task upon destruction.
-  // Thus it is safe to use |base::Unretained(this)|.
-  // Bind submitted_image_->GetWeakPtr(), since the |submitted_image_| could
-  // be released due to reshape() or destruction.
-  auto data = frame.data;
-  swap_completion_callbacks_.emplace_back(
-      std::make_unique<CancelableSwapCompletionCallback>(base::BindOnce(
-          &SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers,
-          base::Unretained(this), GetSwapBuffersSize(), std::move(frame),
-          submitted_image_ ? submitted_image_->GetWeakPtr() : nullptr,
-          std::move(committed_overlay_mailboxes_))));
-  committed_overlay_mailboxes_.clear();
-
-  presenter_->SwapBuffers(swap_completion_callbacks_.back()->callback(),
-                          std::move(feedback), data);
-  std::swap(committed_overlay_mailboxes_, pending_overlay_mailboxes_);
-}
-
-void SkiaOutputDeviceBufferQueue::PostSubBuffer(
-    const gfx::Rect& rect,
+void SkiaOutputDeviceBufferQueue::Present(
+    const absl::optional<gfx::Rect>& update_rect,
     BufferPresentedCallback feedback,
     OutputSurfaceFrame frame) {
   StartSwapBuffers({});
@@ -509,40 +479,8 @@ void SkiaOutputDeviceBufferQueue::PostSubBuffer(
           std::move(committed_overlay_mailboxes_))));
   committed_overlay_mailboxes_.clear();
 
-  presenter_->PostSubBuffer(rect, swap_completion_callbacks_.back()->callback(),
-                            std::move(feedback), data);
-  std::swap(committed_overlay_mailboxes_, pending_overlay_mailboxes_);
-}
-
-void SkiaOutputDeviceBufferQueue::CommitOverlayPlanes(
-    BufferPresentedCallback feedback,
-    OutputSurfaceFrame frame) {
-  StartSwapBuffers({});
-
-  // There is no drawing for this frame on the main buffer.
-  DCHECK(!current_image_);
-  if (current_frame_has_no_primary_plane_) {
-    submitted_image_ = nullptr;
-    current_frame_has_no_primary_plane_ = false;
-  } else {
-    DCHECK(submitted_image_);
-  }
-
-  // Cancelable callback uses weak ptr to drop this task upon destruction.
-  // Thus it is safe to use |base::Unretained(this)|.
-  // Bind submitted_image_->GetWeakPtr(), since the |submitted_image_| could
-  // be released due to reshape() or destruction.
-  auto data = frame.data;
-  swap_completion_callbacks_.emplace_back(
-      std::make_unique<CancelableSwapCompletionCallback>(base::BindOnce(
-          &SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers,
-          base::Unretained(this), GetSwapBuffersSize(), std::move(frame),
-          submitted_image_ ? submitted_image_->GetWeakPtr() : nullptr,
-          std::move(committed_overlay_mailboxes_))));
-  committed_overlay_mailboxes_.clear();
-
-  presenter_->CommitOverlayPlanes(swap_completion_callbacks_.back()->callback(),
-                                  std::move(feedback), data);
+  presenter_->Present(swap_completion_callbacks_.back()->callback(),
+                      std::move(feedback), data);
   std::swap(committed_overlay_mailboxes_, pending_overlay_mailboxes_);
 }
 

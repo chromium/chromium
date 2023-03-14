@@ -6,22 +6,17 @@
     return document.getElementById(id);
   };
 
-  function getUserMediaAndReturnVideoDimensions(constraints) {
-    navigator.mediaDevices.getUserMedia(constraints)
-        .then(gotStreamCallback)
-        .catch(failedCallback);
-  }
-
-  function failedCallback(error) {
-    failTest('GetUserMedia call failed with code ' + error.code);
-  }
-
-  function gotStreamCallback(stream) {
+  async function getUserMediaAndReturnVideoDimensions(constraints) {
+    let stream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia(constraints);
+    } catch (err) {
+      return toStackTrace('GetUserMedia call failed with code ' + error.code);
+    }
     var localView = $('local-view');
     localView.srcObject = stream;
-    detectVideoPlaying('local-view').then(() => {
-      sendValueToTest(localView.videoWidth + 'x' + localView.videoHeight);
-    });
+    await detectVideoPlaying('local-view');
+    return localView.videoWidth + 'x' + localView.videoHeight;
   }
   </script>
 </head>

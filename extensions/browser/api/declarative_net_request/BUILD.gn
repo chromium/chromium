@@ -15,6 +15,8 @@ source_set("declarative_net_request") {
     "web_contents_helper.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//content/public/browser",

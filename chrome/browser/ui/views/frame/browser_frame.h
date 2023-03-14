@@ -16,6 +16,10 @@
 #include "ui/base/ui_base_types.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#endif
+
 class BrowserNonClientFrameView;
 class BrowserRootView;
 enum class BrowserThemeChangeType;
@@ -228,11 +232,11 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // Store the number of virtual desks that currently exist. Used to determine
-  // whether the system menu should be reset. If the value is -1, then either
-  // the ash::DesksHelper does not exist or haven't retrieved the system menu
-  // model yet.
-  int num_desks_ = -1;
+  // Store the number of virtual desks that currently exist and if the window
+  // state is float state type. Used to determine  whether the system menu
+  // should be reset.
+  absl::optional<int> num_desks_;
+  absl::optional<bool> is_float_state_type_;
 #endif
 };
 

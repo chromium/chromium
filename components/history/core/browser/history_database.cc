@@ -20,6 +20,7 @@
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/sync/base/features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "sql/database.h"
@@ -317,26 +318,36 @@ int HistoryDatabase::CountUniqueHostsVisitedLastMonth() {
   return hosts.size();
 }
 
-int HistoryDatabase::CountUniqueDomainsVisited(base::Time begin_time,
-                                               base::Time end_time) {
+std::pair<int, int> HistoryDatabase::CountUniqueDomainsVisited(
+    base::Time begin_time,
+    base::Time end_time) {
+  // TODO(crbug.com/1365291): Once syncer::kSyncEnableHistoryDataType is fully
+  // rolled out, plus 3 months for old data to expire, the check for
+  // visit_source can be removed - it'll be enough to check for non-empty
+  // originator_cache_guid to detect foreign visits.
   sql::Statement url_sql(db_.GetUniqueStatement(
-      "SELECT urls.url FROM urls JOIN visits "
-      "WHERE urls.id = visits.url "
-      "AND (transition & ?) != 0 "              // CHAIN_END
-      "AND (transition & ?) NOT IN (?, ?, ?) "  // NO SUBFRAME or
+      "SELECT urls.url, visits.originator_cache_guid, "
+      "IFNULL(visit_source.source, ?) "  // SOURCE_BROWSED
+      "FROM urls "
+      "INNER JOIN visits ON urls.id = visits.url "
+      "LEFT JOIN visit_source ON visits.id = visit_source.id "
+      "WHERE (transition & ?) != 0 "            // CHAIN_END
+      "AND (transition & ?) NOT IN (?, ?, ?) "  // No *_SUBFRAME or
                                                 // KEYWORD_GENERATED
       "AND hidden = 0 AND visit_time >= ? AND visit_time < ?"));
 
-  url_sql.BindInt64(0, ui::PAGE_TRANSITION_CHAIN_END);
-  url_sql.BindInt64(1, ui::PAGE_TRANSITION_CORE_MASK);
-  url_sql.BindInt64(2, ui::PAGE_TRANSITION_AUTO_SUBFRAME);
-  url_sql.BindInt64(3, ui::PAGE_TRANSITION_MANUAL_SUBFRAME);
-  url_sql.BindInt64(4, ui::PAGE_TRANSITION_KEYWORD_GENERATED);
+  url_sql.BindInt64(0, VisitSource::SOURCE_BROWSED);
+  url_sql.BindInt64(1, ui::PAGE_TRANSITION_CHAIN_END);
+  url_sql.BindInt64(2, ui::PAGE_TRANSITION_CORE_MASK);
+  url_sql.BindInt64(3, ui::PAGE_TRANSITION_AUTO_SUBFRAME);
+  url_sql.BindInt64(4, ui::PAGE_TRANSITION_MANUAL_SUBFRAME);
+  url_sql.BindInt64(5, ui::PAGE_TRANSITION_KEYWORD_GENERATED);
 
-  url_sql.BindTime(5, begin_time);
-  url_sql.BindTime(6, end_time);
+  url_sql.BindTime(6, begin_time);
+  url_sql.BindTime(7, end_time);
 
-  std::set<std::string> domains;
+  std::set<std::string> all_domains;
+  std::set<std::string> local_domains;
   while (url_sql.Step()) {
     GURL url(url_sql.ColumnString(0));
     std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
@@ -344,10 +355,19 @@ int HistoryDatabase::CountUniqueDomainsVisited(base::Time begin_time,
 
     // IP addresses, empty URLs, and URLs with empty or unregistered TLDs are
     // all excluded.
-    if (!domain.empty())
-      domains.insert(domain);
+    if (domain.empty()) {
+      continue;
+    }
+
+    all_domains.insert(domain);
+
+    bool is_local = url_sql.ColumnString(1).empty() &&
+                    url_sql.ColumnInt(2) == VisitSource::SOURCE_BROWSED;
+    if (is_local) {
+      local_domains.insert(domain);
+    }
   }
-  return domains.size();
+  return std::make_pair(local_domains.size(), all_domains.size());
 }
 
 void HistoryDatabase::BeginExclusiveMode() {
@@ -414,7 +434,8 @@ bool HistoryDatabase::SetSegmentID(VisitID visit_id, SegmentID segment_id) {
       "UPDATE visits SET segment_id = ? WHERE id = ?"));
   s.BindInt64(0, segment_id);
   s.BindInt64(1, visit_id);
-  DCHECK(db_.GetLastChangeCount() == 1);
+  DCHECK_EQ(db_.GetLastChangeCount(), 1)
+      << "segment_id: " << segment_id << ", visit_id: " << visit_id;
 
   return s.Run();
 }

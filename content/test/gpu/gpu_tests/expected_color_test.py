@@ -54,7 +54,7 @@ class ExpectedColorTest(
     """
     try:
       self._CompareScreenshotSamples(tab, screenshot, page, device_pixel_ratio)
-    except Exception as comparison_exception:
+    except Exception:
       # An exception raised from self.fail() indicates a failure.
       image_name = self._UrlToImageName(page.name)
       # We want to report the screenshot comparison failure, not any failures
@@ -63,12 +63,7 @@ class ExpectedColorTest(
         self._UploadTestResultToSkiaGold(image_name, screenshot, page)
       except Exception as gold_exception:  # pylint: disable=broad-except
         logging.error(str(gold_exception))
-      # TODO(https://crbug.com/1043129): Switch this to just "raise" once these
-      # tests are run with Python 3. Python 2's behavior with nested try/excepts
-      # is weird and ends up re-raising the exception raised by
-      # _UploadTestResultToSkiaGold instead of the one by
-      # _CompareScreenshotSamples. See https://stackoverflow.com/q/28698622.
-      raise comparison_exception
+      raise
 
   def _CompareScreenshotSamples(self, tab: ct.Tab, screenshot: ct.Screenshot,
                                 page: 'ExpectedColorPixelTestPage',

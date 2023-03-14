@@ -8,7 +8,6 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_functions.h"
 #include "components/location/android/location_settings.h"
 #include "components/location/android/location_settings_impl.h"
 #include "components/permissions/android/android_permission_util.h"
@@ -28,36 +27,8 @@ namespace {
 
 int g_day_offset_for_testing = 0;
 
-const char kLocationSettingsShowMetricBase[] =
-    "Geolocation.SettingsDialog.ShowEvent.";
-const char kLocationSettingsSuppressMetricBase[] =
-    "Geolocation.SettingsDialog.SuppressEvent.";
-const char kLocationSettingsAcceptMetricBase[] =
-    "Geolocation.SettingsDialog.AcceptEvent.";
-const char kLocationSettingsDenyMetricBase[] =
-    "Geolocation.SettingsDialog.DenyEvent.";
-
-const char kLocationSettingsMetricDSESuffix[] = "DSE";
-const char kLocationSettingsMetricNonDSESuffix[] = "NonDSE";
-
 base::Time GetTimeNow() {
   return base::Time::Now() + base::Days(g_day_offset_for_testing);
-}
-
-void LogLocationSettingsMetric(
-    const std::string& metric_base,
-    bool is_default_search,
-    GeolocationPermissionContextAndroid::LocationSettingsDialogBackOff
-        backoff) {
-  std::string metric_name = metric_base;
-  if (is_default_search)
-    metric_name.append(kLocationSettingsMetricDSESuffix);
-  else
-    metric_name.append(kLocationSettingsMetricNonDSESuffix);
-
-  base::UmaHistogramEnumeration(metric_name, backoff,
-                                GeolocationPermissionContextAndroid::
-                                    LocationSettingsDialogBackOff::kCount);
 }
 
 }  // namespace
@@ -173,15 +144,9 @@ void GeolocationPermissionContextAndroid::NotifyPermissionSet(
       FinishNotifyPermissionSet(id, requesting_origin, embedding_origin,
                                 std::move(callback), false /* persist */,
                                 CONTENT_SETTING_BLOCK);
-      LogLocationSettingsMetric(
-          kLocationSettingsSuppressMetricBase, is_default_search,
-          LocationSettingsBackOffLevel(is_default_search));
       return;
     }
 
-    LogLocationSettingsMetric(kLocationSettingsShowMetricBase,
-                              is_default_search,
-                              LocationSettingsBackOffLevel(is_default_search));
     content::WebContents* web_contents =
         content::WebContents::FromRenderFrameHost(
             content::RenderFrameHost::FromID(id.global_render_frame_host_id()));
@@ -197,11 +162,6 @@ void GeolocationPermissionContextAndroid::NotifyPermissionSet(
       FinishNotifyPermissionSet(id, requesting_origin, embedding_origin,
                                 std::move(callback), false /* persist */,
                                 CONTENT_SETTING_BLOCK);
-      // This case should be very rare, so just pretend it was a denied prompt
-      // for metrics purposes.
-      LogLocationSettingsMetric(
-          kLocationSettingsDenyMetricBase, is_default_search,
-          LocationSettingsBackOffLevel(is_default_search));
       return;
     }
 
@@ -388,14 +348,8 @@ void GeolocationPermissionContextAndroid::OnLocationSettingsDialogShown(
     LocationSettingsDialogOutcome prompt_outcome) {
   bool is_default_search = IsRequestingOriginDSE(requesting_origin);
   if (prompt_outcome == GRANTED) {
-    LogLocationSettingsMetric(kLocationSettingsAcceptMetricBase,
-                              is_default_search,
-                              LocationSettingsBackOffLevel(is_default_search));
     ResetLocationSettingsBackOff(is_default_search);
   } else {
-    LogLocationSettingsMetric(kLocationSettingsDenyMetricBase,
-                              is_default_search,
-                              LocationSettingsBackOffLevel(is_default_search));
     UpdateLocationSettingsBackOff(is_default_search);
     content_setting = CONTENT_SETTING_BLOCK;
     persist = false;

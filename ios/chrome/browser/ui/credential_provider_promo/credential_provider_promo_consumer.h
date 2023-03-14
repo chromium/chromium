@@ -23,9 +23,9 @@
      tertiaryActionString:(NSString*)tertiaryActionString
                     image:(UIImage*)image;
 
-// Passes the animation path to the consumer. Must be called before -viewDidLoad
-// is called.
-- (void)setAnimation:(NSString*)animationResourcePath;
+// Passes the animation resource name to the consumer. Must be called before
+// -viewDidLoad is called.
+- (void)setAnimation:(NSString*)animationResourceName;
 
 @end
 

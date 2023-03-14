@@ -724,6 +724,18 @@ bool D3D11VideoDecoder::NeedsBitstreamConversion() const {
 bool D3D11VideoDecoder::CanReadWithoutStalling() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // If picture buffers haven't been created yet, the client can read.
+  if (picture_buffers_.empty()) {
+    return true;
+  }
+
+  // If we haven't given all our picture buffers to the client, it can read.
+  for (const auto& buffer : picture_buffers_) {
+    if (!buffer->in_client_use()) {
+      return true;
+    }
+  }
+
   return false;
 }
 

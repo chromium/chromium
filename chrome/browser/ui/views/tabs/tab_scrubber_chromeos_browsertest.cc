@@ -287,6 +287,11 @@ class TabScrubberChromeOSTest : public InProcessBrowserTest,
   // History of tab activation. Scrub() resets it.
   std::vector<size_t> activation_order_;
 
+ protected:
+  bool IsDelegatedToLacros(ui::ScrollEvent event) {
+    return TabScrubberChromeOS::MaybeDelegateHandlingToLacros(&event);
+  }
+
  private:
   // Used to generate a sequence of scrolls. Starts with a cancel, is followed
   // by any number of scrolls and finally a fling-start. After every event this
@@ -612,7 +617,7 @@ IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest,
       wm::IsActiveWindow(shell_surface->GetWidget()->GetNativeWindow()));
 
   auto event_generator = CreateEventGenerator(browser());
-  int kOffset = 100;
+  constexpr int kOffset = 100;
 
   // Stop propagation for 3-fingers scroll event.
   ui::ScrollEvent scroll_event_with_3_fingers(
@@ -637,4 +642,43 @@ IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest,
                                               /*finger_count=*/2);
   event_generator->Dispatch(&scroll_event_with_2_fingers);
   EXPECT_FALSE(scroll_event_with_2_fingers.stopped_propagation());
+}
+
+IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, MaybeDelegateHandlingToLacros) {
+  constexpr int kOffset = 100;
+
+  ui::ScrollEvent fling_scroll_event(ui::ET_SCROLL_FLING_START,
+                                     gfx::Point(0, 0), ui::EventTimeForNow(), 0,
+                                     kOffset, 0, kOffset, 0, 0);
+
+  ui::ScrollEvent scroll_event_with_3_fingers(
+      ui::ET_SCROLL, gfx::Point(0, 0), ui::EventTimeForNow(), 0, kOffset, 0,
+      kOffset, 0, kScrubbingGestureFingerCount);
+
+  ui::ScrollEvent scroll_event_with_2_fingers(ui::ET_SCROLL, gfx::Point(0, 0),
+                                              ui::EventTimeForNow(), 0, kOffset,
+                                              0, kOffset, 0,
+                                              /*finger_count=*/2);
+
+  // When there is no activated Lacros window, all scroll events should not be
+  // delegated to Lacros.
+  EXPECT_FALSE(IsDelegatedToLacros(fling_scroll_event));
+  EXPECT_FALSE(IsDelegatedToLacros(scroll_event_with_3_fingers));
+  EXPECT_FALSE(IsDelegatedToLacros(scroll_event_with_2_fingers));
+
+  // Create Lacros window and activate.
+  auto shell_surface = exo::test::ShellSurfaceBuilder({100, 100})
+                           .BuildClientControlledShellSurface();
+  exo::SetShellApplicationId(shell_surface->GetWidget()->GetNativeWindow(),
+                             crosapi::kLacrosAppIdPrefix);
+  wm::ActivateWindow(shell_surface->GetWidget()->GetNativeWindow());
+  ASSERT_TRUE(
+      wm::IsActiveWindow(shell_surface->GetWidget()->GetNativeWindow()));
+
+  // If Lacros window is activated, delegate scroll events related to tab
+  // scrubbing to Lacros while do not delegate other scroll events such as
+  // 2-fingers scroll event.
+  EXPECT_TRUE(IsDelegatedToLacros(fling_scroll_event));
+  EXPECT_TRUE(IsDelegatedToLacros(scroll_event_with_3_fingers));
+  EXPECT_FALSE(IsDelegatedToLacros(scroll_event_with_2_fingers));
 }

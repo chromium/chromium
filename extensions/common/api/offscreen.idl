@@ -30,7 +30,11 @@ namespace offscreen {
     WEB_RTC,
     // The offscreen document needs to interact with the clipboard APIs
     // (e.g. <code>Navigator.clipboard</code>).
-    CLIPBOARD
+    CLIPBOARD,
+    // The offscreen document needs access to <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage">localStorage</a>.
+    LOCAL_STORAGE,
+    // The offscreen document needs to spawn workers.
+    WORKERS
   };
 
   dictionary CreateParameters {

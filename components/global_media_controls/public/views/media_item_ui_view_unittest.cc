@@ -17,7 +17,6 @@
 #include "components/media_message_center/mock_media_notification_item.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/display/test/scoped_screen_override.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/gesture_event_details.h"
@@ -45,10 +44,12 @@ const char kOtherTestNotificationId[] = "othertestid";
 
 class MediaItemUIViewTest : public views::ViewsTestBase {
  public:
-  MediaItemUIViewTest() : screen_override_(&fake_screen_) {}
+  MediaItemUIViewTest() { display::Screen::SetScreenInstance(&fake_screen_); }
   MediaItemUIViewTest(const MediaItemUIViewTest&) = delete;
   MediaItemUIViewTest& operator=(const MediaItemUIViewTest&) = delete;
-  ~MediaItemUIViewTest() override = default;
+  ~MediaItemUIViewTest() override {
+    display::Screen::SetScreenInstance(nullptr);
+  }
 
   // views::ViewsTestBase:
   void SetUp() override {
@@ -248,7 +249,6 @@ class MediaItemUIViewTest : public views::ViewsTestBase {
   base::flat_set<MediaSessionAction> actions_;
 
   display::test::TestScreen fake_screen_;
-  display::test::ScopedScreenOverride screen_override_;
 };
 
 TEST_F(MediaItemUIViewTest, SwipeToDismiss) {

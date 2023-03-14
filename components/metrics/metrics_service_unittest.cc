@@ -26,7 +26,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/test_simple_task_runner.h"
+#include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "components/metrics/clean_exit_beacon.h"
@@ -37,6 +37,7 @@
 #include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/metrics_scheduler.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/metrics_upload_scheduler.h"
 #include "components/metrics/stability_metrics_helper.h"
@@ -78,11 +79,6 @@ class TestUnsentLogStore : public UnsentLogStore {
   }
 };
 
-void YieldUntil(base::Time when) {
-  while (base::Time::Now() <= when)
-    base::PlatformThread::YieldCurrentThread();
-}
-
 // Returns true if |id| is present in |proto|'s collection of FieldTrials.
 bool IsFieldTrialPresent(const SystemProfileProto& proto,
                          const std::string& trial_name,
@@ -109,6 +105,7 @@ class TestMetricsService : public MetricsService {
 
   ~TestMetricsService() override = default;
 
+  using MetricsService::INIT_TASK_DONE;
   using MetricsService::INIT_TASK_SCHEDULED;
   using MetricsService::RecordCurrentEnvironmentHelper;
   using MetricsService::SENDING_LOGS;
@@ -143,7 +140,7 @@ class TestMetricsLog : public MetricsLog {
   TestMetricsLog(const TestMetricsLog&) = delete;
   TestMetricsLog& operator=(const TestMetricsLog&) = delete;
 
-  ~TestMetricsLog() override {}
+  ~TestMetricsLog() override = default;
 };
 
 const char kOnDidCreateMetricsLogHistogramName[] = "Test.OnDidCreateMetricsLog";
@@ -225,17 +222,16 @@ class TestIndependentMetricsProvider : public MetricsProvider {
 class MetricsServiceTest : public testing::Test {
  public:
   MetricsServiceTest()
-      : task_runner_(new base::TestSimpleTaskRunner),
-        task_runner_current_default_handle_(task_runner_),
-        enabled_state_provider_(new TestEnabledStateProvider(false, false)) {
-    base::SetRecordActionTaskRunner(task_runner_);
+      : enabled_state_provider_(new TestEnabledStateProvider(false, false)) {
+    base::SetRecordActionTaskRunner(
+        task_environment_.GetMainThreadTaskRunner());
     MetricsService::RegisterPrefs(testing_local_state_.registry());
   }
 
   MetricsServiceTest(const MetricsServiceTest&) = delete;
   MetricsServiceTest& operator=(const MetricsServiceTest&) = delete;
 
-  ~MetricsServiceTest() override {}
+  ~MetricsServiceTest() override = default;
 
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
@@ -334,9 +330,8 @@ class MetricsServiceTest : public testing::Test {
   const base::FilePath user_data_dir_path() { return temp_dir_.GetPath(); }
 
  protected:
-  scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  base::SingleThreadTaskRunner::CurrentDefaultHandle
-      task_runner_current_default_handle_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_;
 
  private:
@@ -494,6 +489,23 @@ INSTANTIATE_TEST_SUITE_P(All,
                                           testing::Bool(),
                                           testing::Bool()));
 
+TEST_P(MetricsServiceTestWithFeatures, RecordId) {
+  // Set an initial value for the record-ids, to make them predictable.
+  GetLocalState()->SetInteger(prefs::kMetricsLogRecordId, 1000);
+
+  TestMetricsServiceClient client;
+  TestMetricsService service(GetMetricsStateManager(user_data_dir_path()),
+                             &client, GetLocalState());
+
+  auto log1 = service.CreateLogForTesting(MetricsLog::ONGOING_LOG);
+  auto log2 = service.CreateLogForTesting(MetricsLog::INITIAL_STABILITY_LOG);
+  auto log3 = service.CreateLogForTesting(MetricsLog::INDEPENDENT_LOG);
+
+  EXPECT_EQ(1001, log1->uma_proto()->record_id());
+  EXPECT_EQ(1002, log2->uma_proto()->record_id());
+  EXPECT_EQ(1003, log3->uma_proto()->record_id());
+}
+
 TEST_P(MetricsServiceTestWithFeatures, InitialStabilityLogAfterCleanShutDown) {
   base::HistogramTester histogram_tester;
   EnableMetricsReporting();
@@ -501,11 +513,9 @@ TEST_P(MetricsServiceTestWithFeatures, InitialStabilityLogAfterCleanShutDown) {
   // crash streak value is arbitrary.
   const base::FilePath beacon_file_path =
       user_data_dir_path().Append(kCleanExitBeaconFilename);
-  ASSERT_LT(0,
-            base::WriteFile(beacon_file_path,
-                            CleanExitBeacon::CreateBeaconFileContentsForTesting(
-                                /*exited_cleanly=*/true, /*crash_streak=*/1)
-                                .data()));
+  ASSERT_TRUE(base::WriteFile(
+      beacon_file_path, CleanExitBeacon::CreateBeaconFileContentsForTesting(
+                            /*exited_cleanly=*/true, /*crash_streak=*/1)));
 
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(user_data_dir_path()),
@@ -557,11 +567,9 @@ TEST_P(MetricsServiceTestWithFeatures, InitialStabilityLogAtProviderRequest) {
   // crash streak value is arbitrary.
   const base::FilePath beacon_file_path =
       user_data_dir_path().Append(kCleanExitBeaconFilename);
-  ASSERT_LT(0,
-            base::WriteFile(beacon_file_path,
-                            CleanExitBeacon::CreateBeaconFileContentsForTesting(
-                                /*exited_cleanly=*/true, /*crash_streak=*/1)
-                                .data()));
+  ASSERT_TRUE(base::WriteFile(
+      beacon_file_path, CleanExitBeacon::CreateBeaconFileContentsForTesting(
+                            /*exited_cleanly=*/true, /*crash_streak=*/1)));
 
   TestMetricsService service(GetMetricsStateManager(user_data_dir_path()),
                              &client, GetLocalState());
@@ -630,13 +638,28 @@ TEST_P(MetricsServiceTestWithFeatures, IndependentLogAtProviderRequest) {
   const std::string test_histogram = "Test.Histogram";
   base::UmaHistogramBoolean(test_histogram, true);
 
-  // Run pending tasks to finish init task and complete the first ongoing log.
-  // It should also have called the independent log provider (which should have
-  // produced a log).
-  task_runner_->RunPendingTasks();
-  EXPECT_EQ(TestMetricsService::SENDING_LOGS, service.state());
+  // Fast forward the time by |initialization_delay|, which is when the pending
+  // init tasks will run.
+  base::TimeDelta initialization_delay = service.GetInitializationDelay();
+  task_environment_.FastForwardBy(initialization_delay);
+  EXPECT_EQ(TestMetricsService::INIT_TASK_DONE, service.state());
+
+  // Fast forward the time by another |initialization_delay|, which is when
+  // metrics providers are called to provide independent logs.
+  task_environment_.FastForwardBy(initialization_delay);
   EXPECT_TRUE(test_provider->has_independent_metrics_called());
   EXPECT_TRUE(test_provider->provide_independent_metrics_called());
+
+  // Fast forward the time until the MetricsRotationScheduler first runs, which
+  // should complete the first ongoing log.
+  // Note: The first log is only created after N = GetInitialIntervalSeconds()
+  // seconds since the start, and since we already fast forwarded by
+  // |initialization_delay| twice, we only need to fast forward by
+  // N - 2 * |initialization_delay|.
+  task_environment_.FastForwardBy(
+      base::Seconds(MetricsScheduler::GetInitialIntervalSeconds()) -
+      2 * initialization_delay);
+  EXPECT_EQ(TestMetricsService::SENDING_LOGS, service.state());
 
   MetricsLogStore* test_log_store = service.LogStoreForTest();
 
@@ -802,11 +825,9 @@ TEST_P(MetricsServiceTestWithStartupVisibility, InitialStabilityLogAfterCrash) {
   // crash streak value is arbitrary.
   const base::FilePath beacon_file_path =
       user_data_dir_path().Append(kCleanExitBeaconFilename);
-  ASSERT_LT(0,
-            base::WriteFile(beacon_file_path,
-                            CleanExitBeacon::CreateBeaconFileContentsForTesting(
-                                /*exited_cleanly=*/false, /*crash_streak=*/1)
-                                .data()));
+  ASSERT_TRUE(base::WriteFile(
+      beacon_file_path, CleanExitBeacon::CreateBeaconFileContentsForTesting(
+                            /*exited_cleanly=*/false, /*crash_streak=*/1)));
 
   // Set up prefs to simulate restarting after a crash.
 
@@ -920,9 +941,22 @@ TEST_P(MetricsServiceTestWithFeatures,
   service.Start();
   ASSERT_EQ(TestMetricsService::INIT_TASK_SCHEDULED, service.state());
 
-  // Run pending tasks to finish init task and complete the first ongoing log.
-  // Also verify that the test provider was called when closing the log.
-  task_runner_->RunPendingTasks();
+  // Fast forward the time by |initialization_delay|, which is when the pending
+  // init tasks will run.
+  base::TimeDelta initialization_delay = service.GetInitializationDelay();
+  task_environment_.FastForwardBy(initialization_delay);
+  EXPECT_EQ(TestMetricsService::INIT_TASK_DONE, service.state());
+
+  // Fast forward the time until the MetricsRotationScheduler first runs, which
+  // should complete the first ongoing log. Also verify that the test provider
+  // was called when closing the log.
+  // Note: The first log is only created after N = GetInitialIntervalSeconds()
+  // seconds since the start, and since we already fast forwarded by
+  // |initialization_delay| once, we only need to fast forward by
+  // N - |initialization_delay|.
+  task_environment_.FastForwardBy(
+      base::Seconds(MetricsScheduler::GetInitialIntervalSeconds()) -
+      initialization_delay);
   ASSERT_EQ(TestMetricsService::SENDING_LOGS, service.state());
   EXPECT_TRUE(test_provider->record_histogram_snapshots_called());
 
@@ -1009,8 +1043,21 @@ TEST_P(MetricsServiceTestWithFeatures, LogHasUserActions) {
   base::RecordAction(base::UserMetricsAction("TestAction"));
   base::RecordAction(base::UserMetricsAction("DifferentAction"));
 
-  // Run pending tasks to finish init task and complete the first ongoing log.
-  task_runner_->RunPendingTasks();
+  // Fast forward the time by |initialization_delay|, which is when the pending
+  // init tasks will run.
+  base::TimeDelta initialization_delay = service.GetInitializationDelay();
+  task_environment_.FastForwardBy(initialization_delay);
+  EXPECT_EQ(TestMetricsService::INIT_TASK_DONE, service.state());
+
+  // Fast forward the time until the MetricsRotationScheduler first runs, which
+  // should complete the first ongoing log.
+  // Note: The first log is only created after N = GetInitialIntervalSeconds()
+  // seconds since the start, and since we already fast forwarded by
+  // |initialization_delay| once, we only need to fast forward by
+  // N - |initialization_delay|.
+  task_environment_.FastForwardBy(
+      base::Seconds(MetricsScheduler::GetInitialIntervalSeconds()) -
+      initialization_delay);
   ASSERT_EQ(TestMetricsService::SENDING_LOGS, service.state());
 
   MetricsLogStore* test_log_store = service.LogStoreForTest();
@@ -1065,8 +1112,21 @@ TEST_P(MetricsServiceTestWithFeatures, FirstLogCreatedBeforeUnsentLogsSent) {
   ASSERT_EQ(0u, test_log_store->initial_log_count());
   ASSERT_EQ(1u, test_log_store->ongoing_log_count());
 
-  // Run pending tasks to finish init task and complete the first ongoing log.
-  task_runner_->RunPendingTasks();
+  // Fast forward the time by |initialization_delay|, which is when the pending
+  // init tasks will run.
+  base::TimeDelta initialization_delay = service.GetInitializationDelay();
+  task_environment_.FastForwardBy(initialization_delay);
+  EXPECT_EQ(TestMetricsService::INIT_TASK_DONE, service.state());
+
+  // Fast forward the time until the MetricsRotationScheduler first runs, which
+  // should complete the first ongoing log.
+  // Note: The first log is only created after N = GetInitialIntervalSeconds()
+  // seconds since the start, and since we already fast forwarded by
+  // |initialization_delay| once, we only need to fast forward by
+  // N - |initialization_delay|.
+  task_environment_.FastForwardBy(
+      base::Seconds(MetricsScheduler::GetInitialIntervalSeconds()) -
+      initialization_delay);
   ASSERT_EQ(TestMetricsService::SENDING_LOGS, service.state());
   // When the init task is complete, the first ongoing log should be created
   // and added to the ongoing logs.
@@ -1167,6 +1227,8 @@ TEST_P(MetricsServiceTestWithFeatures,
   EXPECT_FALSE(service.persistent_system_profile_complete());
 }
 
+// Verify that the two separate MetricsSchedulers (MetricsRotationScheduler and
+// MetricsUploadScheduler) function together properly.
 TEST_P(MetricsServiceTestWithFeatures, SplitRotation) {
   EnableMetricsReporting();
   TestMetricsServiceClient client;
@@ -1174,39 +1236,160 @@ TEST_P(MetricsServiceTestWithFeatures, SplitRotation) {
                              GetLocalState());
   service.InitializeMetricsRecordingState();
   service.Start();
-  // Rotation loop should create a log and mark state as idle.
-  // Upload loop should start upload or be restarted.
-  // The independent-metrics upload job will be started and always be a task.
-  task_runner_->RunPendingTasks();
-  // Rotation loop should terminated due to being idle.
-  // Upload loop should start uploading if it isn't already.
-  task_runner_->RunPendingTasks();
+  ASSERT_EQ(TestMetricsService::INIT_TASK_SCHEDULED, service.state());
+
+  // Fast forward the time by |initialization_delay|, which is when the pending
+  // init tasks will run.
+  base::TimeDelta initialization_delay = service.GetInitializationDelay();
+  task_environment_.FastForwardBy(initialization_delay);
+  EXPECT_EQ(TestMetricsService::INIT_TASK_DONE, service.state());
+
+  // Fast forward the time until the MetricsRotationScheduler first runs, which
+  // should complete the first ongoing log. The independent-metrics upload job
+  // will be started and always be a task. This should also mark the rotation
+  // scheduler as idle, so that the next time we attempt to create a log, we
+  // return early (and don't create a log).
+  // Note: The first log is only created after N = GetInitialIntervalSeconds()
+  // seconds since the start, and since we already fast forwarded by
+  // |initialization_delay| once, we only need to fast forward by
+  // N - |initialization_delay|.
+  MetricsLogStore* log_store = service.LogStoreForTest();
+  EXPECT_FALSE(log_store->has_unsent_logs());
+  task_environment_.FastForwardBy(
+      base::Seconds(MetricsScheduler::GetInitialIntervalSeconds()) -
+      initialization_delay);
+  ASSERT_EQ(TestMetricsService::SENDING_LOGS, service.state());
+  EXPECT_TRUE(log_store->has_unsent_logs());
+  EXPECT_EQ(1U, log_store->ongoing_log_count());
+
+  // There should be three (delayed) tasks: one for querying independent logs
+  // from metrics providers, one for uploading the unsent log, and one for
+  // creating the next log.
+  EXPECT_EQ(3U, task_environment_.GetPendingMainThreadTaskCount());
+
+  // Fast forward the time so that the upload loop starts uploading logs.
+  base::TimeDelta unsent_log_interval =
+      MetricsUploadScheduler::GetUnsentLogsInterval();
+  task_environment_.FastForwardBy(unsent_log_interval);
   EXPECT_TRUE(client.uploader()->is_uploading());
-  EXPECT_EQ(1U, task_runner_->NumPendingTasks());
-  service.OnApplicationNotIdle();
-  EXPECT_TRUE(client.uploader()->is_uploading());
-  EXPECT_EQ(2U, task_runner_->NumPendingTasks());
-  // Log generation should be suppressed due to unsent log.
-  // Idle state should not be reset.
-  task_runner_->RunPendingTasks();
-  EXPECT_TRUE(client.uploader()->is_uploading());
-  EXPECT_EQ(2U, task_runner_->NumPendingTasks());
-  // Make sure idle state was not reset.
-  task_runner_->RunPendingTasks();
-  EXPECT_TRUE(client.uploader()->is_uploading());
-  EXPECT_EQ(2U, task_runner_->NumPendingTasks());
-  // Upload should not be rescheduled, since there are no other logs.
+  // There should be two (delayed) tasks: one for querying independent logs from
+  // metrics providers, and one for creating the next log. I.e., the task to
+  // upload a log should be running, and should not be in the task queue
+  // anymore. The uploading of this log will only be completed later on in order
+  // to simulate an edge case here.
+  EXPECT_EQ(2U, task_environment_.GetPendingMainThreadTaskCount());
+
+  // Fast forward the time so that the task to create another log is run. This
+  // time, however, it should return early due to being idle (i.e., not create a
+  // log), and it should not post another task to create another log. I.e.,
+  // there should only be one (delayed) task: one for querying independent logs
+  // from metrics providers.
+  // Note: The log is only created after |rotation_scheduler_interval| seconds,
+  // and since we already fast forwarded by |unsent_log_interval| once, we only
+  // need to fast forward by
+  // |rotation_scheduler_interval| - |unsent_log_interval|.
+  base::TimeDelta rotation_scheduler_interval = client.GetUploadInterval();
+  task_environment_.FastForwardBy(rotation_scheduler_interval -
+                                  unsent_log_interval);
+  EXPECT_EQ(1U, log_store->ongoing_log_count());
+  EXPECT_EQ(1U, task_environment_.GetPendingMainThreadTaskCount());
+
+  // Simulate completing the upload. Since there is no other log to be uploaded,
+  // no task should be re-posted. I.e., there should only be one (delayed)
+  // task: one for querying independent logs from metrics providers.
   client.uploader()->CompleteUpload(200);
   EXPECT_FALSE(client.uploader()->is_uploading());
-  EXPECT_EQ(2U, task_runner_->NumPendingTasks());
-  // Running should generate a log, restart upload loop, and mark idle.
-  task_runner_->RunPendingTasks();
+  EXPECT_FALSE(log_store->has_unsent_logs());
+  EXPECT_EQ(1U, task_environment_.GetPendingMainThreadTaskCount());
+
+  // Simulate interacting with the browser, which should 1) set the rotation
+  // scheduler to not idle, 2) queue a task to upload the next log (if there is
+  // one), and 3) queue a task to create the next log. I.e., there should be
+  // three (delayed) tasks: one for querying independent logs from metrics
+  // providers, one for uploading an unsent log, and one for creating the next
+  // log.
+  service.OnApplicationNotIdle();
+  EXPECT_EQ(3U, task_environment_.GetPendingMainThreadTaskCount());
+
+  // We now simulate a more common scenario.
+
+  // Fast forward the time so that the task to upload a log runs. Since there
+  // should be no logs, it should return early, and not re-post a task. I.e.,
+  // there should be two tasks: one for querying independent logs from metrics
+  // providers, and one for creating the next log.
+  task_environment_.FastForwardBy(unsent_log_interval);
   EXPECT_FALSE(client.uploader()->is_uploading());
-  EXPECT_EQ(3U, task_runner_->NumPendingTasks());
-  // Upload should start, and rotation loop should idle out.
-  task_runner_->RunPendingTasks();
+  EXPECT_FALSE(log_store->has_unsent_logs());
+  EXPECT_EQ(2U, task_environment_.GetPendingMainThreadTaskCount());
+
+  // Fast forward the time so that the next log is created. It should re-post
+  // a task to create a new log, and should also re-start the upload scheduler.
+  // I.e., there should be three (delayed) tasks: one for querying independent
+  // logs from metrics providers, one for uploading an unsent log, and one for
+  // creating the next log.
+  // Note: The log is only created after |rotation_scheduler_interval| seconds,
+  // and since we already fast forwarded by |unsent_log_interval| once, we only
+  // need to fast forward by
+  // |rotation_scheduler_interval| - |unsent_log_interval|.
+  task_environment_.FastForwardBy(rotation_scheduler_interval -
+                                  unsent_log_interval);
+  EXPECT_TRUE(log_store->has_unsent_logs());
+  EXPECT_EQ(3U, task_environment_.GetPendingMainThreadTaskCount());
+
+  // Fast forward the time so that the task to upload a log runs.
+  task_environment_.FastForwardBy(unsent_log_interval);
   EXPECT_TRUE(client.uploader()->is_uploading());
-  EXPECT_EQ(1U, task_runner_->NumPendingTasks());
+  // There should be two (delayed) tasks: one for querying independent logs from
+  // metrics providers, and one for creating the next log. I.e., the task to
+  // upload a log should be running, and should not be in the task queue
+  // anymore.
+  EXPECT_EQ(2U, task_environment_.GetPendingMainThreadTaskCount());
+
+  // Simulate completing the upload. However, before doing so, add a dummy log
+  // in order to test that when the upload task completes, if it detects another
+  // log, it will re-post a task to upload the next log. I.e., after uploading
+  // the log, there should be three (delayed) tasks: one for querying
+  // independent logs from metrics providers, one for uploading an unsent log,
+  // and one for creating the next log.
+  log_store->StoreLog("dummy log", MetricsLog::LogType::ONGOING_LOG,
+                      LogMetadata(),
+                      MetricsLogsEventManager::CreateReason::kUnknown);
+  EXPECT_EQ(2U, log_store->ongoing_log_count());
+  client.uploader()->CompleteUpload(200);
+  EXPECT_FALSE(client.uploader()->is_uploading());
+  EXPECT_EQ(1U, log_store->ongoing_log_count());
+  EXPECT_EQ(3U, task_environment_.GetPendingMainThreadTaskCount());
+
+  // Fast forward the time so that the task to upload a log runs.
+  task_environment_.FastForwardBy(unsent_log_interval);
+  EXPECT_TRUE(client.uploader()->is_uploading());
+  // There should be two (delayed) tasks: one for querying independent logs from
+  // metrics providers, and one for creating the next log. I.e., the task to
+  // upload a log should be running, and should not be in the task queue
+  // anymore.
+  EXPECT_EQ(2U, task_environment_.GetPendingMainThreadTaskCount());
+
+  // Simulate completing the upload. Since there is no other log to be uploaded,
+  // no task should be posted. I.e., there should only be two (delayed) tasks:
+  // one for querying independent logs from metrics providers, and one.
+  client.uploader()->CompleteUpload(200);
+  EXPECT_FALSE(client.uploader()->is_uploading());
+  EXPECT_FALSE(log_store->has_unsent_logs());
+  EXPECT_EQ(2U, task_environment_.GetPendingMainThreadTaskCount());
+
+  // Fast forward the time so that the task to create another log is run. It
+  // should return early due to being idle (i.e., not create a log), and it
+  // should not post another task to create another log. I.e., there should only
+  // be one (delayed) task: one for querying independent logs from metrics
+  // providers.
+  // Note: The log is only created after |rotation_scheduler_interval| seconds,
+  // and since we already fast forwarded by |unsent_log_interval| twice, we only
+  // need to fast forward by
+  // |rotation_scheduler_interval| - 2 * |unsent_log_interval|.
+  task_environment_.FastForwardBy(rotation_scheduler_interval -
+                                  2 * unsent_log_interval);
+  EXPECT_FALSE(log_store->has_unsent_logs());
+  EXPECT_EQ(1U, task_environment_.GetPendingMainThreadTaskCount());
 }
 
 TEST_P(MetricsServiceTestWithFeatures, LastLiveTimestamp) {
@@ -1220,9 +1403,26 @@ TEST_P(MetricsServiceTestWithFeatures, LastLiveTimestamp) {
 
   service.InitializeMetricsRecordingState();
   service.Start();
+  ASSERT_EQ(TestMetricsService::INIT_TASK_SCHEDULED, service.state());
 
-  task_runner_->RunPendingTasks();
-  size_t num_pending_tasks = task_runner_->NumPendingTasks();
+  // Fast forward the time by |initialization_delay|, which is when the pending
+  // init tasks will run.
+  base::TimeDelta initialization_delay = service.GetInitializationDelay();
+  task_environment_.FastForwardBy(initialization_delay);
+  EXPECT_EQ(TestMetricsService::INIT_TASK_DONE, service.state());
+
+  // Fast forward the time until the MetricsRotationScheduler first runs, which
+  // should complete the first ongoing log. Also verify that the test provider
+  // was called when closing the log.
+  // Note: The first log is only created after N = GetInitialIntervalSeconds()
+  // seconds since the start, and since we already fast forwarded by
+  // |initialization_delay| once, we only need to fast forward by
+  // N - |initialization_delay|.
+  task_environment_.FastForwardBy(
+      base::Seconds(MetricsScheduler::GetInitialIntervalSeconds()) -
+      initialization_delay);
+  ASSERT_EQ(TestMetricsService::SENDING_LOGS, service.state());
+  size_t num_pending_tasks = task_environment_.GetPendingMainThreadTaskCount();
 
   service.StartUpdatingLastLiveTimestamp();
 
@@ -1231,22 +1431,20 @@ TEST_P(MetricsServiceTestWithFeatures, LastLiveTimestamp) {
   EXPECT_EQ(
       initial_last_live_time,
       GetLocalState()->GetTime(prefs::kStabilityBrowserLastLiveTimeStamp));
-  EXPECT_EQ(num_pending_tasks + 1, task_runner_->NumPendingTasks());
+  EXPECT_EQ(num_pending_tasks + 1,
+            task_environment_.GetPendingMainThreadTaskCount());
 
-  // To avoid flakiness, yield until we're over a microsecond threshold.
-  YieldUntil(initial_last_live_time + base::Microseconds(2));
-
-  task_runner_->RunPendingTasks();
+  // Fast forward the time so that the task to update the "last alive timestamp"
+  // runs.
+  task_environment_.FastForwardBy(service.GetUpdateLastAliveTimestampDelay());
 
   // Verify that the time has updated in local state.
   base::Time updated_last_live_time =
       GetLocalState()->GetTime(prefs::kStabilityBrowserLastLiveTimeStamp);
   EXPECT_LT(initial_last_live_time, updated_last_live_time);
 
-  // Double check that an update schedules again...
-  YieldUntil(updated_last_live_time + base::Microseconds(2));
-
-  task_runner_->RunPendingTasks();
+  // Double check that an update was scheduled again.
+  task_environment_.FastForwardBy(service.GetUpdateLastAliveTimestampDelay());
   EXPECT_LT(
       updated_last_live_time,
       GetLocalState()->GetTime(prefs::kStabilityBrowserLastLiveTimeStamp));
@@ -1363,6 +1561,7 @@ TEST_P(MetricsServiceTestWithFeatures,
   service.InitializeMetricsRecordingState();
   // Start() will create the first ongoing log.
   service.Start();
+  ASSERT_EQ(TestMetricsService::INIT_TASK_SCHEDULED, service.state());
 
   MetricsLogStore* test_log_store = service.LogStoreForTest();
   std::unique_ptr<TestUnsentLogStore> alternate_ongoing_log_store =
@@ -1380,8 +1579,21 @@ TEST_P(MetricsServiceTestWithFeatures,
   ASSERT_EQ(0u, test_log_store->initial_log_count());
   ASSERT_EQ(0u, test_log_store->ongoing_log_count());
 
-  // Run pending tasks to finish init task and complete the first ongoing log.
-  task_runner_->RunPendingTasks();
+  // Fast forward the time by |initialization_delay|, which is when the pending
+  // init tasks will run.
+  base::TimeDelta initialization_delay = service.GetInitializationDelay();
+  task_environment_.FastForwardBy(initialization_delay);
+  EXPECT_EQ(TestMetricsService::INIT_TASK_DONE, service.state());
+
+  // Fast forward the time until the MetricsRotationScheduler first runs, which
+  // should complete the first ongoing log.
+  // Note: The first log is only created after N = GetInitialIntervalSeconds()
+  // seconds since the start, and since we already fast forwarded by
+  // |initialization_delay| once, we only need to fast forward by
+  // N - |initialization_delay|.
+  task_environment_.FastForwardBy(
+      base::Seconds(MetricsScheduler::GetInitialIntervalSeconds()) -
+      initialization_delay);
   ASSERT_EQ(TestMetricsService::SENDING_LOGS, service.state());
   // When the init task is complete, the first ongoing log should be created
   // in the alternate ongoing log store.
@@ -1400,6 +1612,7 @@ TEST_P(MetricsServiceTestWithFeatures,
   service.InitializeMetricsRecordingState();
   // Start() will create the first ongoing log.
   service.Start();
+  ASSERT_EQ(TestMetricsService::INIT_TASK_SCHEDULED, service.state());
 
   MetricsLogStore* test_log_store = service.LogStoreForTest();
   std::unique_ptr<TestUnsentLogStore> alternate_ongoing_log_store =
@@ -1409,8 +1622,21 @@ TEST_P(MetricsServiceTestWithFeatures,
   ASSERT_EQ(0u, test_log_store->initial_log_count());
   ASSERT_EQ(0u, test_log_store->ongoing_log_count());
 
-  // Run pending tasks to finish init task and complete the first ongoing log.
-  task_runner_->RunPendingTasks();
+  // Fast forward the time by |initialization_delay|, which is when the pending
+  // init tasks will run.
+  base::TimeDelta initialization_delay = service.GetInitializationDelay();
+  task_environment_.FastForwardBy(initialization_delay);
+  EXPECT_EQ(TestMetricsService::INIT_TASK_DONE, service.state());
+
+  // Fast forward the time until the MetricsRotationScheduler first runs, which
+  // should complete the first ongoing log.
+  // Note: The first log is only created after N = GetInitialIntervalSeconds()
+  // seconds since the start, and since we already fast forwarded by
+  // |initialization_delay| once, we only need to fast forward by
+  // N - |initialization_delay|.
+  task_environment_.FastForwardBy(
+      base::Seconds(MetricsScheduler::GetInitialIntervalSeconds()) -
+      initialization_delay);
   ASSERT_EQ(TestMetricsService::SENDING_LOGS, service.state());
   ASSERT_EQ(0u, test_log_store->initial_log_count());
   ASSERT_EQ(1u, test_log_store->ongoing_log_count());

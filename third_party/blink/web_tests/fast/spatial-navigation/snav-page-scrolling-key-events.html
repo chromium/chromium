@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<style>
+  a {font-size: 200px;}
+</style>
+
+<a href="#" id="a">a</a><br>
+<a href="#" id="b">b</a><br>
+<a href="#" id="c">c</a><br>
+<a href="#" id="d">d</a><br>
+<a href="#" id="e">e</a><br>
+<a href="#" id="f">f</a><br>
+<a href="#" id="g">g</a><br>
+<a href="#" id="h">h</a><br>
+<a href="#" id="i">i</a><br>
+
+<script>
+  if (window.testRunner) {
+    testRunner.overridePreference('WebKitTabToLinksPreferenceKey', 1);
+    testRunner.overridePreference('WebKitSpatialNavigationEnabled', 1);
+    testRunner.waitUntilDone();
+  }
+
+  test(() => {
+    assert_equals(document.activeElement, document.body);
+    eventSender.keyDown('ArrowDown');
+    assert_equals(document.activeElement, a);
+    eventSender.keyDown('ArrowDown');
+    assert_equals(document.activeElement, b);
+    eventSender.keyDown('ArrowDown', ['altKey']);
+    assert_equals(document.activeElement, b);
+    eventSender.keyDown('ArrowDown');
+    assert_equals(document.activeElement, c);
+    eventSender.keyDown('ArrowUp');
+    assert_equals(document.activeElement, b);
+    eventSender.keyDown('ArrowUp', ['altKey']);
+    assert_equals(document.activeElement, b);
+    eventSender.keyDown('ArrowUp');
+    assert_equals(document.activeElement, a);
+  }, "Alt + up/down key scrolls (page up/down) instead of changing the active element. Up and down keys alone still select a new element.");
+</script>

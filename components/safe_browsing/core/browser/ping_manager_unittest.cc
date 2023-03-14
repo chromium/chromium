@@ -67,7 +67,7 @@ TEST_F(PingManagerTest, TestSafeBrowsingHitUrl) {
             "&ext=1&enh=1&evts=malblhit&evtd=http%3A%2F%2Fmalicious.url.com%2F&"
             "evtr=http%3A%2F%2Fpage.url.com%2F&evhr=http%3A%2F%2Freferrer."
             "url.com%2F&evtb=1&src=l4&m=1",
-        ping_manager()->SafeBrowsingHitUrl(hp).spec());
+        ping_manager()->SafeBrowsingHitUrl(&hp).spec());
   }
 
   {
@@ -86,7 +86,7 @@ TEST_F(PingManagerTest, TestSafeBrowsingHitUrl) {
             "evtd=http%3A%2F%2Fmalicious.url.com%2F&"
             "evtr=http%3A%2F%2Fpage.url.com%2F&evhr=http%3A%2F%2Freferrer."
             "url.com%2F&evtb=0&src=l4&m=1",
-        ping_manager()->SafeBrowsingHitUrl(hp).spec());
+        ping_manager()->SafeBrowsingHitUrl(&hp).spec());
   }
 
   {
@@ -105,7 +105,7 @@ TEST_F(PingManagerTest, TestSafeBrowsingHitUrl) {
             "evtd=http%3A%2F%2Fmalicious.url.com%2F&"
             "evtr=http%3A%2F%2Fpage.url.com%2F&evhr=http%3A%2F%2Freferrer."
             "url.com%2F&evtb=0&src=l4&m=1",
-        ping_manager()->SafeBrowsingHitUrl(hp).spec());
+        ping_manager()->SafeBrowsingHitUrl(&hp).spec());
   }
 
   {
@@ -124,7 +124,7 @@ TEST_F(PingManagerTest, TestSafeBrowsingHitUrl) {
             "evtd=http%3A%2F%2Fmalicious.url.com%2F&"
             "evtr=http%3A%2F%2Fpage.url.com%2F&evhr=http%3A%2F%2Freferrer."
             "url.com%2F&evtb=0&src=rem&m=1",
-        ping_manager()->SafeBrowsingHitUrl(hp).spec());
+        ping_manager()->SafeBrowsingHitUrl(&hp).spec());
   }
 
   {
@@ -143,7 +143,7 @@ TEST_F(PingManagerTest, TestSafeBrowsingHitUrl) {
             "evtd=http%3A%2F%2Fmalicious.url.com%2F&"
             "evtr=http%3A%2F%2Fpage.url.com%2F&evhr=http%3A%2F%2Freferrer."
             "url.com%2F&evtb=0&src=l4&m=0",
-        ping_manager()->SafeBrowsingHitUrl(hp).spec());
+        ping_manager()->SafeBrowsingHitUrl(&hp).spec());
   }
 
   {
@@ -162,7 +162,7 @@ TEST_F(PingManagerTest, TestSafeBrowsingHitUrl) {
             "evtd=http%3A%2F%2Fmalicious.url.com%2F&"
             "evtr=http%3A%2F%2Fpage.url.com%2F&evhr=http%3A%2F%2Freferrer."
             "url.com%2F&evtb=1&src=l4&m=0",
-        ping_manager()->SafeBrowsingHitUrl(hp).spec());
+        ping_manager()->SafeBrowsingHitUrl(&hp).spec());
   }
 
   // Same as above, but add population_id
@@ -183,7 +183,7 @@ TEST_F(PingManagerTest, TestSafeBrowsingHitUrl) {
             "evtd=http%3A%2F%2Fmalicious.url.com%2F&"
             "evtr=http%3A%2F%2Fpage.url.com%2F&evhr=http%3A%2F%2Freferrer."
             "url.com%2F&evtb=1&src=l4&m=0&up=foo+bar",
-        ping_manager()->SafeBrowsingHitUrl(hp).spec());
+        ping_manager()->SafeBrowsingHitUrl(&hp).spec());
   }
 
   // Threat source is real time check.
@@ -203,7 +203,7 @@ TEST_F(PingManagerTest, TestSafeBrowsingHitUrl) {
             "evtd=http%3A%2F%2Fmalicious.url.com%2F&"
             "evtr=http%3A%2F%2Fpage.url.com%2F&evhr=http%3A%2F%2Freferrer."
             "url.com%2F&evtb=0&src=rt&m=1",
-        ping_manager()->SafeBrowsingHitUrl(hp).spec());
+        ping_manager()->SafeBrowsingHitUrl(&hp).spec());
   }
 }
 
@@ -221,6 +221,81 @@ TEST_F(PingManagerTest, TestReportThreatDetails_EmptyReport) {
   PingManager::ReportThreatDetailsResult result =
       ping_manager()->ReportThreatDetails(std::move(report));
   EXPECT_EQ(result, PingManager::ReportThreatDetailsResult::EMPTY_REPORT);
+}
+
+TEST_F(PingManagerTest, TestSanitizeThreatDetailsReport) {
+  // Blank report.
+  {
+    std::unique_ptr<ClientSafeBrowsingReportRequest> report =
+        std::make_unique<ClientSafeBrowsingReportRequest>();
+    ping_manager()->SanitizeThreatDetailsReport(report.get());
+    EXPECT_EQ(report->url(), "");
+  }
+  // One field needs sanitizing.
+  {
+    std::unique_ptr<ClientSafeBrowsingReportRequest> report =
+        std::make_unique<ClientSafeBrowsingReportRequest>();
+    report->set_url("http://user1:pass2@some.url.com/");
+    report->set_page_url("http://some.page.url.com/");
+    ping_manager()->SanitizeThreatDetailsReport(report.get());
+    EXPECT_EQ(report->url(), "http://some.url.com/");
+    EXPECT_EQ(report->page_url(), "http://some.page.url.com/");
+  }
+  // Multiple fields need sanitizing.
+  {
+    std::unique_ptr<ClientSafeBrowsingReportRequest> report =
+        std::make_unique<ClientSafeBrowsingReportRequest>();
+    report->set_url("http://user1:pass2@some.url.com/");
+    report->set_page_url("http://u1:p2@some.page.url.com/");
+    report->set_referrer_url("http://a:b@some.referrer.url.com/");
+    report->add_resources()->set_url("http://c:d@first.resource.com/");
+    report->add_resources();  // second resource has blank URL
+    report->add_resources()->set_url("http://e:f@third.resource.com/");
+    ping_manager()->SanitizeThreatDetailsReport(report.get());
+    EXPECT_EQ(report->url(), "http://some.url.com/");
+    EXPECT_EQ(report->page_url(), "http://some.page.url.com/");
+    EXPECT_EQ(report->referrer_url(), "http://some.referrer.url.com/");
+    EXPECT_EQ(report->resources(0).url(), "http://first.resource.com/");
+    EXPECT_EQ(report->resources(1).url(), "");
+    EXPECT_EQ(report->resources(2).url(), "http://third.resource.com/");
+  }
+}
+
+TEST_F(PingManagerTest, TestSanitizeHitReport) {
+  // Blank report.
+  {
+    std::unique_ptr<HitReport> hit_report = std::make_unique<HitReport>();
+    ping_manager()->SanitizeHitReport(hit_report.get());
+    EXPECT_EQ(hit_report->malicious_url.spec(), "");
+    EXPECT_EQ(hit_report->page_url.spec(), "");
+    EXPECT_EQ(hit_report->referrer_url.spec(), "");
+  }
+  // One field needs sanitizing.
+  {
+    std::unique_ptr<HitReport> hit_report = std::make_unique<HitReport>();
+    hit_report->malicious_url = GURL("http://user1:pass2@malicious.url.com/");
+    hit_report->page_url = GURL("http://page.url.com/");
+    // Sanity check it is indeed the SanitizeHitReport method responsible for
+    // the user1:pass2 being removed and not something about the URL being
+    // invalid.
+    EXPECT_EQ(hit_report->malicious_url.spec(),
+              "http://user1:pass2@malicious.url.com/");
+    ping_manager()->SanitizeHitReport(hit_report.get());
+    EXPECT_EQ(hit_report->malicious_url.spec(), "http://malicious.url.com/");
+    EXPECT_EQ(hit_report->page_url.spec(), "http://page.url.com/");
+    EXPECT_EQ(hit_report->referrer_url.spec(), "");
+  }
+  // Multiple fields need sanitizing.
+  {
+    std::unique_ptr<HitReport> hit_report = std::make_unique<HitReport>();
+    hit_report->malicious_url = GURL("http://user1:pass2@malicious.url.com/");
+    hit_report->page_url = GURL("http://u1:p2@page.url.com/");
+    hit_report->referrer_url = GURL("http://a:b@referrer.url.com/");
+    ping_manager()->SanitizeHitReport(hit_report.get());
+    EXPECT_EQ(hit_report->malicious_url.spec(), "http://malicious.url.com/");
+    EXPECT_EQ(hit_report->page_url.spec(), "http://page.url.com/");
+    EXPECT_EQ(hit_report->referrer_url.spec(), "http://referrer.url.com/");
+  }
 }
 
 }  // namespace safe_browsing

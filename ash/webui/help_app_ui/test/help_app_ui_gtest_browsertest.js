@@ -195,3 +195,7 @@ TEST_F('HelpAppUIGtestBrowserTest', 'GuestCanSearchWithCategories', () => {
 TEST_F('HelpAppUIGtestBrowserTest', 'GuestCanClearSearchIndex', () => {
   runHelpAppTestInGuest('GuestCanClearSearchIndex');
 });
+
+TEST_F('HelpAppUIGtestBrowserTest', 'GuestCanGetDeviceInfo', () => {
+  runHelpAppTestInGuest('GuestCanGetDeviceInfo');
+});

@@ -32,9 +32,6 @@ void CreateFallbackFieldTrialForRecovery(bool is_stable_channel,
     return;
   }
 
-  // TODO(b/239435669): Enable recovery on unknown & canary & dev & beta channels.
-  is_stable_channel = true;
-
   // Recovery is controlled by a flag which is off by default. The local field
   // trial ensures that recovery is enabled on some channels but can later be
   // disabled by Finch when appropriate.

@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_math.h"
 #include "media/base/subsample_entry.h"
+#include "media/video/bit_reader_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/hdr_metadata.h"
@@ -282,110 +283,6 @@ void H264SEIMasteringDisplayInfo::PopulateColorVolumeMetadata(
 H264SEI::H264SEI() = default;
 
 H264SEI::~H264SEI() = default;
-
-#define READ_BITS_OR_RETURN(num_bits, out)                                 \
-  do {                                                                     \
-    int _out;                                                              \
-    if (!br_.ReadBits(num_bits, &_out)) {                                  \
-      DVLOG(1)                                                             \
-          << "Error in stream: unexpected EOS while trying to read " #out; \
-      return kInvalidStream;                                               \
-    }                                                                      \
-    *out = _out;                                                           \
-  } while (0)
-
-#define READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(num_bits, out,             \
-                                                num_bits_remain)           \
-  do {                                                                     \
-    int _out;                                                              \
-    if (!br_.ReadBits(num_bits, &_out)) {                                  \
-      DVLOG(1)                                                             \
-          << "Error in stream: unexpected EOS while trying to read " #out; \
-      return kInvalidStream;                                               \
-    }                                                                      \
-    *num_bits_remain -= num_bits;                                          \
-    *out = _out;                                                           \
-  } while (0)
-
-#define SKIP_BITS_OR_RETURN(num_bits)                                       \
-  do {                                                                      \
-    int bits_left = num_bits;                                               \
-    int discard;                                                            \
-    while (bits_left > 0) {                                                 \
-      if (!br_.ReadBits(bits_left > 16 ? 16 : bits_left, &discard)) {       \
-        DVLOG(1) << "Error in stream: unexpected EOS while trying to skip"; \
-        return kInvalidStream;                                              \
-      }                                                                     \
-      bits_left -= 16;                                                      \
-    }                                                                       \
-  } while (0)
-
-#define READ_BOOL_OR_RETURN(out)                                           \
-  do {                                                                     \
-    int _out;                                                              \
-    if (!br_.ReadBits(1, &_out)) {                                         \
-      DVLOG(1)                                                             \
-          << "Error in stream: unexpected EOS while trying to read " #out; \
-      return kInvalidStream;                                               \
-    }                                                                      \
-    *out = _out != 0;                                                      \
-  } while (0)
-
-#define READ_BOOL_AND_MINUS_BITS_READ_OR_RETURN(out, num_bits_remain)      \
-  do {                                                                     \
-    int _out;                                                              \
-    if (!br_.ReadBits(1, &_out)) {                                         \
-      DVLOG(1)                                                             \
-          << "Error in stream: unexpected EOS while trying to read " #out; \
-      return kInvalidStream;                                               \
-    }                                                                      \
-    *num_bits_remain -= 1;                                                 \
-    *out = _out != 0;                                                      \
-  } while (0)
-
-#define READ_UE_OR_RETURN(out)                                                 \
-  do {                                                                         \
-    if (ReadUE(out, nullptr) != kOk) {                                         \
-      DVLOG(1) << "Error in stream: invalid value while trying to read " #out; \
-      return kInvalidStream;                                                   \
-    }                                                                          \
-  } while (0)
-
-#define READ_UE_AND_MINUS_BITS_READ_OR_RETURN(out, num_bits_remain)            \
-  do {                                                                         \
-    int num_bits_read;                                                         \
-    if (ReadUE(out, &num_bits_read) != kOk) {                                  \
-      DVLOG(1) << "Error in stream: invalid value while trying to read " #out; \
-      return kInvalidStream;                                                   \
-    }                                                                          \
-    *num_bits_remain -= num_bits_read;                                         \
-  } while (0)
-
-#define READ_SE_OR_RETURN(out)                                                 \
-  do {                                                                         \
-    if (ReadSE(out, nullptr) != kOk) {                                         \
-      DVLOG(1) << "Error in stream: invalid value while trying to read " #out; \
-      return kInvalidStream;                                                   \
-    }                                                                          \
-  } while (0)
-
-#define IN_RANGE_OR_RETURN(val, min, max)                                   \
-  do {                                                                      \
-    if ((val) < (min) || (val) > (max)) {                                   \
-      DVLOG(1) << "Error in stream: invalid value, expected " #val " to be" \
-               << " in range [" << (min) << ":" << (max) << "]"             \
-               << " found " << (val) << " instead";                         \
-      return kInvalidStream;                                                \
-    }                                                                       \
-  } while (0)
-
-#define TRUE_OR_RETURN(a)                                            \
-  do {                                                               \
-    if (!(a)) {                                                      \
-      DVLOG(1) << "Error in stream: invalid value, expected " << #a; \
-      return kInvalidStream;                                         \
-    }                                                                \
-  } while (0)
 
 // ISO 14496 part 10
 // VUI parameters: Table E-1 "Meaning of sample aspect ratio indicator"
@@ -745,22 +642,22 @@ H264Parser::Result H264Parser::AdvanceToNextNALU(H264NALU* nalu) {
 }
 
 // Default scaling lists (per spec).
-static const int kDefault4x4Intra[kH264ScalingList4x4Length] = {
+static const uint8_t kDefault4x4Intra[kH264ScalingList4x4Length] = {
     6, 13, 13, 20, 20, 20, 28, 28, 28, 28, 32, 32, 32, 37, 37, 42,
 };
 
-static const int kDefault4x4Inter[kH264ScalingList4x4Length] = {
+static const uint8_t kDefault4x4Inter[kH264ScalingList4x4Length] = {
     10, 14, 14, 20, 20, 20, 24, 24, 24, 24, 27, 27, 27, 30, 30, 34,
 };
 
-static const int kDefault8x8Intra[kH264ScalingList8x8Length] = {
+static const uint8_t kDefault8x8Intra[kH264ScalingList8x8Length] = {
     6,  10, 10, 13, 11, 13, 16, 16, 16, 16, 18, 18, 18, 18, 18, 23,
     23, 23, 23, 23, 23, 25, 25, 25, 25, 25, 25, 25, 27, 27, 27, 27,
     27, 27, 27, 27, 29, 29, 29, 29, 29, 29, 29, 31, 31, 31, 31, 31,
     31, 33, 33, 33, 33, 33, 36, 36, 36, 36, 38, 38, 38, 40, 40, 42,
 };
 
-static const int kDefault8x8Inter[kH264ScalingList8x8Length] = {
+static const uint8_t kDefault8x8Inter[kH264ScalingList8x8Length] = {
     9,  13, 13, 15, 13, 15, 17, 17, 17, 17, 19, 19, 19, 19, 19, 21,
     21, 21, 21, 21, 21, 22, 22, 22, 22, 22, 22, 22, 24, 24, 24, 24,
     24, 24, 24, 24, 25, 25, 25, 25, 25, 25, 25, 27, 27, 27, 27, 27,
@@ -769,7 +666,7 @@ static const int kDefault8x8Inter[kH264ScalingList8x8Length] = {
 
 static inline void DefaultScalingList4x4(
     int i,
-    int scaling_list4x4[][kH264ScalingList4x4Length]) {
+    uint8_t scaling_list4x4[][kH264ScalingList4x4Length]) {
   DCHECK_LT(i, 6);
 
   if (i < 3)
@@ -780,7 +677,7 @@ static inline void DefaultScalingList4x4(
 
 static inline void DefaultScalingList8x8(
     int i,
-    int scaling_list8x8[][kH264ScalingList8x8Length]) {
+    uint8_t scaling_list8x8[][kH264ScalingList8x8Length]) {
   DCHECK_LT(i, 6);
 
   if (i % 2 == 0)
@@ -791,9 +688,9 @@ static inline void DefaultScalingList8x8(
 
 static void FallbackScalingList4x4(
     int i,
-    const int default_scaling_list_intra[],
-    const int default_scaling_list_inter[],
-    int scaling_list4x4[][kH264ScalingList4x4Length]) {
+    const uint8_t default_scaling_list_intra[],
+    const uint8_t default_scaling_list_inter[],
+    uint8_t scaling_list4x4[][kH264ScalingList4x4Length]) {
   static const int kScalingList4x4ByteSize =
       sizeof(scaling_list4x4[0][0]) * kH264ScalingList4x4Length;
 
@@ -832,9 +729,9 @@ static void FallbackScalingList4x4(
 
 static void FallbackScalingList8x8(
     int i,
-    const int default_scaling_list_intra[],
-    const int default_scaling_list_inter[],
-    int scaling_list8x8[][kH264ScalingList8x8Length]) {
+    const uint8_t default_scaling_list_intra[],
+    const uint8_t default_scaling_list_inter[],
+    uint8_t scaling_list8x8[][kH264ScalingList8x8Length]) {
   static const int kScalingList8x8ByteSize =
       sizeof(scaling_list8x8[0][0]) * kH264ScalingList8x8Length;
 
@@ -872,7 +769,7 @@ static void FallbackScalingList8x8(
 }
 
 H264Parser::Result H264Parser::ParseScalingList(int size,
-                                                int* scaling_list,
+                                                uint8_t* scaling_list,
                                                 bool* use_default) {
   // See chapter 7.3.2.1.1.1.
   int last_scale = 8;
@@ -1116,13 +1013,10 @@ H264Parser::Result H264Parser::ParseVUIParameters(H264SPS* sps) {
 }
 
 static void FillDefaultSeqScalingLists(H264SPS* sps) {
-  for (int i = 0; i < 6; ++i)
-    for (int j = 0; j < kH264ScalingList4x4Length; ++j)
-      sps->scaling_list4x4[i][j] = 16;
-
-  for (int i = 0; i < 6; ++i)
-    for (int j = 0; j < kH264ScalingList8x8Length; ++j)
-      sps->scaling_list8x8[i][j] = 16;
+  static_assert(sizeof(sps->scaling_list4x4[0][0]) == sizeof(uint8_t));
+  memset(sps->scaling_list4x4, 16, sizeof(sps->scaling_list4x4));
+  static_assert(sizeof(sps->scaling_list8x8[0][0]) == sizeof(uint8_t));
+  memset(sps->scaling_list8x8, 16, sizeof(sps->scaling_list8x8));
 }
 
 H264Parser::Result H264Parser::ParseSPS(int* sps_id) {

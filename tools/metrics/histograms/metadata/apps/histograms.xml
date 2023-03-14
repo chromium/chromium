@@ -237,17 +237,6 @@ chromium-metrics-reviews@google.com.
   <token key="AppType" variants="AppType"/>
 </histogram>
 
-<histogram name="Apps.AppInfoDialog.CreateExtensionShortcutSuccess"
-    enum="Boolean" expires_after="2021-12-12">
-  <owner>dmurph@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
-  <summary>
-    Records the result of creating shortcuts for an Extension, specifically from
-    the user clicking on &quot;Create Shortcut&quot; on the chrome://apps page,
-    in the right click menu of the respective Extension icon.
-  </summary>
-</histogram>
-
 <histogram name="Apps.AppInfoDialog.CreateWebAppShortcutSuccess" enum="Boolean"
     expires_after="2023-08-08">
   <owner>dmurph@chromium.org</owner>
@@ -269,7 +258,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppLaunchPerAppType" enum="AppType"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>nancylingwang@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
@@ -279,7 +268,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppLaunchPerAppTypeV2" enum="AppTypeV2"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>nancylingwang@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
@@ -289,7 +278,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppLaunchSource" enum="LaunchSource"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>nancylingwang@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>Records an app launch grouped by launch source.</summary>
@@ -368,7 +357,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.AppSearchProvider.QueryTime" units="ms"
-    expires_after="2023-06-24">
+    expires_after="2023-08-27">
   <owner>wrong@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
@@ -410,7 +399,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.ContinueIsDriveEnabled" enum="BooleanEnabled"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>tby@chromium.org</owner>
   <owner>gzadina@chromium.org</owner>
   <summary>
@@ -588,7 +577,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.GameProvider.SearchStatus"
-    enum="GameProviderSearchStatus" expires_after="2023-07-02">
+    enum="GameProviderSearchStatus" expires_after="2023-09-03">
   <owner>wrong@chromium.org</owner>
   <owner>amandadeacon@chromium.org</owner>
   <summary>
@@ -657,7 +646,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.ItemSuggestCache.Status"
-    enum="ItemSuggestCacheStatus" expires_after="2023-06-25">
+    enum="ItemSuggestCacheStatus" expires_after="2023-08-27">
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
@@ -668,7 +657,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.ItemSuggestCache.UpdateCacheLatency" units="ms"
-    expires_after="2023-07-02">
+    expires_after="2023-09-03">
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
@@ -773,7 +762,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.OsSettingsProvider.Error"
-    enum="OsSettingsProviderStatus" expires_after="2023-06-25">
+    enum="OsSettingsProviderStatus" expires_after="2023-08-27">
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
@@ -787,7 +776,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.OsSettingsProvider.IconLoadStatus"
-    enum="OsSettingsProviderIconLoadStatus" expires_after="2023-06-25">
+    enum="OsSettingsProviderIconLoadStatus" expires_after="2023-08-27">
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>chenjih@chromium.org</owner>
@@ -868,7 +857,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.ContinueResultCount.{Type}" units="count"
-    expires_after="2023-02-14">
+    expires_after="2023-09-14">
   <owner>amandadeacon@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
@@ -923,7 +912,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.DriveContinueResultsShown"
-    enum="BooleanShown" expires_after="2023-06-18">
+    enum="BooleanShown" expires_after="2023-08-20">
   <owner>amandadeacon@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
@@ -986,6 +975,27 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records status in reporting of federated analytics examples. These are
     expected to be rare, and the bucket proportion is not meaningful.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.Search.Federated.SearchSessionConclusion"
+    enum="AppListFederatedSearchSessionConclusion" expires_after="2023-09-01">
+  <owner>amandadeacon@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <summary>
+    Tracks the conclusion of each search session starting from the search box.
+    Records launcher dismissals (&quot;quit&quot;), launches, and viewings of
+    answer card results, for the query list view when federated analytics is
+    enabled.
+
+    Quit. Emitted if the user dismisses search without launching a result or
+    seeing an answer card.
+
+    Launch. Emitted if the user launches a search result.
+
+    AnswerCardSeen. Emitted if an answer card is displayed for some threshold
+    period of time, and the user then dismisses the launcher without launching a
+    result.
   </summary>
 </histogram>
 
@@ -1110,7 +1120,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.SearchResultRemovalDecision"
-    enum="AppListResultRemovalConfirmation" expires_after="2023-06-30">
+    enum="AppListResultRemovalConfirmation" expires_after="2023-09-03">
   <owner>tbarzic@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -1466,7 +1476,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListAppMovingType" enum="AppListAppMovingType"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>tbarzic@chromium.org</owner>
   <owner>mmourgos@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
@@ -1588,7 +1598,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Apps.AppListFolderNameLength" units="characters"
-    expires_after="2023-06-25">
+    expires_after="2023-08-27">
 <!-- Name completed by histogram_suffixes
      name="TabletOrClamshellMode" -->
 
@@ -1625,17 +1635,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.AppListInternalApp.Activate"
-    enum="AppListInternalAppName" expires_after="M81">
-  <owner>wutao@chromium.org</owner>
-  <summary>
-    The internal app in apps grid was opened by the user. This is gathered per
-    click of an internal app.
-  </summary>
-</histogram>
-
 <histogram name="Apps.AppListLauncherClickedSearchQueryLength"
-    units="characters" expires_after="2023-07-02">
+    units="characters" expires_after="2023-09-03">
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
@@ -1753,7 +1754,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListSearchAutocomplete" enum="SearchBoxTextMatch"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>yulunwu@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
@@ -1975,22 +1976,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.ArcGhostWindowLaunch" enum="Boolean"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>nancylingwang@chromium.org</owner>
   <owner>sstan@chromium.org</owner>
   <summary>
     Records whether the ARC ghost window is launched when the ARC app are
     restored during the system startup phase.
-  </summary>
-</histogram>
-
-<histogram name="Apps.Bounced" enum="BooleanBounced" expires_after="2020-12-14">
-  <owner>ajlinker@chromium.org</owner>
-  <owner>nancylingwang@chromium.org</owner>
-  <owner>chromeos-apps-foundation-team@google.com</owner>
-  <summary>
-    Records whether an application has bounced (been uninstalled in less than
-    seven days). Recorded when an application is uninstalled.
   </summary>
 </histogram>
 
@@ -2235,7 +2226,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.IconLoadingMethod" enum="IconLoadingMethod"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>nancylingwang@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>Records the app icon loading method when loading app icons.</summary>
@@ -2754,7 +2745,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.RestoreArcWindowCount" units="units"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>nancylingwang@chromium.org</owner>
   <owner>sstan@chromium.org</owner>
   <summary>
@@ -2775,7 +2766,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.RestoredAppLaunch" enum="AppType"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>nancylingwang@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <summary>
@@ -2785,7 +2776,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.RestoreForCrashNotification" enum="RestoreAction"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>nancylingwang@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <summary>
@@ -2795,7 +2786,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.RestoreInitSetting" enum="RestoreSetting"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>nancylingwang@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <summary>
@@ -2804,17 +2795,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.RestoreNoGhostWindowReason" enum="ArcNoWindowReason"
-    expires_after="2023-04-16">
-  <owner>nancylingwang@chromium.org</owner>
-  <owner>sstan@chromium.org</owner>
-  <summary>
-    Records the reason of ARC app launched without ghost window on ARC VM.
-  </summary>
-</histogram>
-
 <histogram name="Apps.RestoreNotification" enum="RestoreAction"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>nancylingwang@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <summary>
@@ -2824,7 +2806,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.RestoreSetting" enum="RestoreSetting"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>nancylingwang@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <summary>
@@ -2926,7 +2908,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.StateTransition.AnimationSmoothness" units="%"
-    expires_after="2023-06-30">
+    expires_after="2023-09-03">
   <owner>tbarzic@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <owner>src/ash/app_list/OWNERS</owner>

@@ -27,6 +27,7 @@
 #include "chromecast/common/mojom/queryable_data_store.mojom.h"
 #include "chromecast/common/queryable_data.h"
 #include "chromecast/net/connectivity_checker.h"
+#include "components/cast/message_port/blink_message_port_adapter.h"
 #include "components/cast/message_port/cast/message_port_cast.h"
 #include "components/media_control/browser/media_blocker.h"
 #include "components/media_control/mojom/media_playback_options.mojom.h"
@@ -627,8 +628,8 @@ bool CastWebContentsImpl::OnPortConnected(
 
   api_bindings_->Connect(
       std::string(port_name),
-      cast_api_bindings::MessagePortCast::FromMessagePort(port.get())
-          ->TakePort()
+      cast_api_bindings::BlinkMessagePortAdapter::FromServerPlatformMessagePort(
+          std::move(port))
           .PassPort());
   return true;
 }

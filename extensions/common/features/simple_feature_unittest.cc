@@ -356,7 +356,8 @@ TEST_F(SimpleFeatureTest, Context) {
             feature
                 .IsAvailableToContext(
                     extension.get(), Feature::BLESSED_EXTENSION_CONTEXT,
-                    Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId)
+                    Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId,
+                    /*context_data=*/nullptr)
                 .result());
   feature.set_allowlist({});
 
@@ -364,7 +365,8 @@ TEST_F(SimpleFeatureTest, Context) {
   {
     Feature::Availability availability = feature.IsAvailableToContext(
         extension.get(), Feature::BLESSED_EXTENSION_CONTEXT,
-        Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId);
+        Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId,
+        /*context_data=*/nullptr);
     EXPECT_EQ(Feature::INVALID_TYPE, availability.result());
     EXPECT_EQ("'somefeature' is only allowed for themes, "
               "but this is a legacy packaged app.",
@@ -377,7 +379,8 @@ TEST_F(SimpleFeatureTest, Context) {
   {
     Feature::Availability availability = feature.IsAvailableToContext(
         extension.get(), Feature::BLESSED_EXTENSION_CONTEXT,
-        Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId);
+        Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId,
+        /*context_data=*/nullptr);
     EXPECT_EQ(Feature::INVALID_CONTEXT, availability.result());
     EXPECT_EQ("'somefeature' is only allowed to run in extension iframes and "
               "content scripts, but this is a privileged page",
@@ -390,7 +393,8 @@ TEST_F(SimpleFeatureTest, Context) {
   {
     Feature::Availability availability = feature.IsAvailableToContext(
         extension.get(), Feature::BLESSED_EXTENSION_CONTEXT,
-        Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId);
+        Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId,
+        /*context_data=*/nullptr);
     EXPECT_EQ(Feature::INVALID_CONTEXT, availability.result());
     EXPECT_EQ("'somefeature' is only allowed to run in extension iframes, "
               "content scripts, and web pages, but this is a privileged page",
@@ -404,7 +408,8 @@ TEST_F(SimpleFeatureTest, Context) {
               other_feature
                   .IsAvailableToContext(
                       extension.get(), Feature::BLESSED_EXTENSION_CONTEXT,
-                      Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId)
+                      Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId,
+                      /*context_data=*/nullptr)
                   .result());
   }
 
@@ -413,13 +418,15 @@ TEST_F(SimpleFeatureTest, Context) {
             feature
                 .IsAvailableToContext(
                     extension.get(), Feature::BLESSED_EXTENSION_CONTEXT,
-                    Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
+                    Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId,
+                    /*context_data=*/nullptr)
                 .result());
 
   {
     Feature::Availability availability = feature.IsAvailableToContext(
         extension.get(), Feature::LOCK_SCREEN_EXTENSION_CONTEXT,
-        Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId);
+        Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId,
+        /*context_data=*/nullptr);
     EXPECT_EQ(Feature::INVALID_CONTEXT, availability.result());
     EXPECT_EQ(
         "'somefeature' is only allowed to run in privileged pages, "
@@ -433,7 +440,8 @@ TEST_F(SimpleFeatureTest, Context) {
             feature
                 .IsAvailableToContext(
                     extension.get(), Feature::LOCK_SCREEN_EXTENSION_CONTEXT,
-                    Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId)
+                    Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId,
+                    /*context_data=*/nullptr)
                 .result());
 
   feature.set_min_manifest_version(22);
@@ -441,7 +449,8 @@ TEST_F(SimpleFeatureTest, Context) {
             feature
                 .IsAvailableToContext(
                     extension.get(), Feature::BLESSED_EXTENSION_CONTEXT,
-                    Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId)
+                    Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId,
+                    /*context_data=*/nullptr)
                 .result());
   feature.set_min_manifest_version(21);
 
@@ -450,7 +459,8 @@ TEST_F(SimpleFeatureTest, Context) {
             feature
                 .IsAvailableToContext(
                     extension.get(), Feature::BLESSED_EXTENSION_CONTEXT,
-                    Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId)
+                    Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId,
+                    /*context_data=*/nullptr)
                 .result());
   feature.set_max_manifest_version(25);
 }
@@ -557,7 +567,8 @@ TEST_F(SimpleFeatureTest, SessionType) {
               feature
                   .IsAvailableToContext(
                       extension.get(), Feature::BLESSED_EXTENSION_CONTEXT,
-                      Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId)
+                      Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId,
+                      /*context_data=*/nullptr)
                   .result())
         << "Failed test '" << kTestData[i].desc << "'.";
 
@@ -989,7 +1000,8 @@ TEST(SimpleFeatureUnitTest, TestChannelsWithoutExtension) {
     EXPECT_EQ(Feature::IS_AVAILABLE,
               feature
                   .IsAvailableToContext(nullptr, Feature::WEBUI_CONTEXT,
-                                        kAllowlistedUrl, kUnspecifiedContextId)
+                                        kAllowlistedUrl, kUnspecifiedContextId,
+                                        /*context_data=*/nullptr)
                   .result());
   }
   {
@@ -998,7 +1010,8 @@ TEST(SimpleFeatureUnitTest, TestChannelsWithoutExtension) {
     EXPECT_EQ(Feature::UNSUPPORTED_CHANNEL,
               feature
                   .IsAvailableToContext(nullptr, Feature::WEBUI_CONTEXT,
-                                        kAllowlistedUrl, kUnspecifiedContextId)
+                                        kAllowlistedUrl, kUnspecifiedContextId,
+                                        /*context_data=*/nullptr)
                   .result());
   }
 }
@@ -1179,7 +1192,8 @@ TEST(SimpleFeatureUnitTest, DisallowForServiceWorkers) {
                     extension.get(), Feature::BLESSED_EXTENSION_CONTEXT,
                     extension->GetResourceURL(
                         ExtensionBuilder::kServiceWorkerScriptFile),
-                    Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId)
+                    Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId,
+                    /*context_data=*/nullptr)
                 .result());
 
   // Check with a different script file, which should return available,
@@ -1189,7 +1203,8 @@ TEST(SimpleFeatureUnitTest, DisallowForServiceWorkers) {
                 .IsAvailableToContext(
                     extension.get(), Feature::BLESSED_EXTENSION_CONTEXT,
                     extension->GetResourceURL("other.js"),
-                    Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId)
+                    Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId,
+                    /*context_data=*/nullptr)
                 .result());
 
   // Disable the feature for service workers. The feature should be disallowed.
@@ -1200,7 +1215,8 @@ TEST(SimpleFeatureUnitTest, DisallowForServiceWorkers) {
                     extension.get(), Feature::BLESSED_EXTENSION_CONTEXT,
                     extension->GetResourceURL(
                         ExtensionBuilder::kServiceWorkerScriptFile),
-                    Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId)
+                    Feature::CHROMEOS_PLATFORM, kUnspecifiedContextId,
+                    /*context_data=*/nullptr)
                 .result());
 }
 

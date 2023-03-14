@@ -296,6 +296,9 @@ void DownloadPrefs::RegisterProfilePrefs(
                                 content::SAVE_PAGE_TYPE_AS_COMPLETE_HTML);
   registry->RegisterIntegerPref(prefs::kDownloadRestrictions, 0);
   registry->RegisterBooleanPref(prefs::kDownloadBubbleEnabled, true);
+  registry->RegisterBooleanPref(
+      prefs::kDownloadBubbleIphSuppression, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(prefs::kDownloadDuplicateFilePromptEnabled,
                                 true);
   registry->RegisterBooleanPref(prefs::kSafeBrowsingForTrustedSourcesEnabled,

@@ -179,6 +179,8 @@ class AmbientAshTestBase : public AshTestBase {
 
   AmbientPhotoController* photo_controller();
 
+  AmbientManagedPhotoController* managed_photo_controller();
+
   AmbientPhotoCache* photo_cache();
 
   AmbientWeatherController* weather_controller();

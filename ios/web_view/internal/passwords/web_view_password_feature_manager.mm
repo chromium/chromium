@@ -35,22 +35,9 @@ bool WebViewPasswordFeatureManager::ShouldShowAccountStorageOptIn() const {
   return false;
 }
 
-bool WebViewPasswordFeatureManager::
-    ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally() const {
-  return false;
-}
-
 bool WebViewPasswordFeatureManager::ShouldShowAccountStorageReSignin(
     const GURL& current_page_url) const {
   return false;
-}
-
-void WebViewPasswordFeatureManager::OptInToAccountStorage() {
-  NOTREACHED();
-}
-
-void WebViewPasswordFeatureManager::OptOutOfAccountStorageAndClearSettings() {
-  NOTREACHED();
 }
 
 bool WebViewPasswordFeatureManager::ShouldShowAccountStorageBubbleUi() const {
@@ -63,11 +50,6 @@ WebViewPasswordFeatureManager::GetDefaultPasswordStore() const {
   return password_manager::PasswordForm::Store::kAccountStore;
 }
 
-void WebViewPasswordFeatureManager::SetDefaultPasswordStore(
-    const password_manager::PasswordForm::Store& store) {
-  NOTREACHED();
-}
-
 bool WebViewPasswordFeatureManager::IsDefaultPasswordStoreSet() const {
   return false;
 }
@@ -78,15 +60,6 @@ WebViewPasswordFeatureManager::ComputePasswordAccountStorageUsageLevel() const {
   // the account-scoped storage is the only option.
   return password_manager::metrics_util::PasswordAccountStorageUsageLevel::
       kUsingAccountStorage;
-}
-
-void WebViewPasswordFeatureManager::RecordMoveOfferedToNonOptedInUser() {
-  NOTREACHED();
-}
-
-int WebViewPasswordFeatureManager::GetMoveOfferedToNonOptedInUserCount() const {
-  NOTREACHED();
-  return 0;
 }
 
 bool WebViewPasswordFeatureManager::

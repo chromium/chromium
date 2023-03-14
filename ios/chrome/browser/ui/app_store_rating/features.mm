@@ -16,6 +16,5 @@ BASE_FEATURE(kAppStoreRating,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAppStoreRatingEnabled() {
-  return IsFullscreenPromosManagerEnabled() &&
-         base::FeatureList::IsEnabled(kAppStoreRating);
+  return base::FeatureList::IsEnabled(kAppStoreRating);
 }

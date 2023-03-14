@@ -142,7 +142,9 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
   void ResolvePromise(uint32_t promise_id);
   void ResolvePromiseWithSession(uint32_t promise_id,
                                  const std::string& session_id);
-  void RejectPromise(uint32_t promise_id, const std::string& error_message);
+  void RejectPromise(uint32_t promise_id,
+                     CdmPromise::Exception exception_code,
+                     const std::string& error_message);
 
   // Registers a callback which will be called when MediaCrypto is ready.
   // Can be called on any thread. Only one callback should be registered.

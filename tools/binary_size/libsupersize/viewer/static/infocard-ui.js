@@ -114,7 +114,8 @@ const displayInfocard = (() => {
       const paddingFragment = dom.createFragment(paddingNodes);
 
       // Update DOM
-      setSizeClasses(this._sizeInfo, sizeContents.value);
+      setSizeClasses(
+          this._sizeInfo, sizeContents.value, state.stMethodCount.get());
       dom.replace(this._sizeInfo, sizeFragment);
       dom.replace(this._addressInfo, addressFragment);
       dom.replace(this._paddingInfo, paddingFragment);

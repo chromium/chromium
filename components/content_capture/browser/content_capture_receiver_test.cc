@@ -34,9 +34,8 @@ class ContentCaptureReceiverTest : public content::RenderViewHostTestHarness,
   void SetUp() override {
     if (GetParam()) {
       scoped_feature_list_.InitWithFeaturesAndParameters(
-          {{{features::kBackForwardCache}, {}}},
-          // Allow BackForwardCache for all devices regardless of their memory.
-          {features::kBackForwardCacheMemoryControls});
+          content::GetBasicBackForwardCacheFeatureForTesting(),
+          content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
     }
     content::RenderViewHostTestHarness::SetUp();
     helper_.CreateProviderAndConsumer(web_contents(),

@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
-#include "ash/system/privacy_hub/privacy_hub_notification.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -21,8 +20,6 @@ class ASH_EXPORT MicrophonePrivacySwitchController
     : public CrasAudioHandler::AudioObserver,
       public SessionObserver {
  public:
-  static constexpr char kNotificationId[] = "ash://microphone_mute";
-
   MicrophonePrivacySwitchController();
   MicrophonePrivacySwitchController(const MicrophonePrivacySwitchController&) =
       delete;
@@ -60,7 +57,6 @@ class ASH_EXPORT MicrophonePrivacySwitchController
   size_t input_stream_count_ = 0;
   bool mic_mute_on_ = false;
   bool mic_muted_by_mute_switch_ = false;
-  PrivacyHubNotification mute_switch_notification_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 };
 

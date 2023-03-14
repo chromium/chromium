@@ -79,7 +79,7 @@ struct LegacyDOMSnapshotAgent::VectorStringHashTraits
   }
 
   static void ConstructDeletedValue(Vector<String>& vec) {
-    new (NotNullTag::kNotNull, &vec)
+    new (WTF::NotNullTag::kNotNull, &vec)
         Vector<String>(WTF::kHashTableDeletedValue);
   }
 

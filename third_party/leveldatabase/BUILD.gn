@@ -4,7 +4,6 @@
 
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
-import("//third_party/google_benchmark/buildconfig.gni")
 
 defines = [ "LEVELDB_PLATFORM_CHROMIUM=1" ]
 
@@ -274,18 +273,14 @@ if (!is_ios && !is_android) {
     deps = [ ":leveldb_testutil" ]
   }
 
-  # The google/banchmark third_party dependency is optional, and only
-  # available if specified. See third_party/google_benchmark/README.chromium.
-  if (enable_google_benchmarks) {
-    test("leveldb_db_bench_log") {
-      sources = [ "src/benchmarks/db_bench_log.cc" ]
-      configs -= [ "//build/config/compiler:chromium_code" ]
-      configs += [ "//build/config/compiler:no_chromium_code" ]
-      deps = [
-        ":leveldb_testutil",
-        "//third_party/google_benchmark",
-      ]
-    }
+  test("leveldb_db_bench_log") {
+    sources = [ "src/benchmarks/db_bench_log.cc" ]
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    deps = [
+      ":leveldb_testutil",
+      "//third_party/google_benchmark",
+    ]
   }
 
   executable("leveldb_leveldbutil") {
@@ -300,11 +295,9 @@ if (!is_ios && !is_android) {
     deps = [
       ":env_chromium_unittests",
       ":leveldb_db_bench",
+      ":leveldb_db_bench_log",
       ":leveldb_unittests",
     ]
-    if (enable_google_benchmarks) {
-      deps += [ ":leveldb_db_bench_log" ]
-    }
   }
 }
 

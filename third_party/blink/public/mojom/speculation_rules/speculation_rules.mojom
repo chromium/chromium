@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "services/network/public/mojom/no_vary_search.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
 import "url/mojom/url.mojom";
 
@@ -73,4 +74,8 @@ struct SpeculationCandidate {
   // The eagerness level to be used by link selection heuristics to select the
   // candidate.
   SpeculationEagerness eagerness = kConservative;
+
+  // The expected No-Vary-Search header if specified.
+  // Explainer: https://github.com/WICG/nav-speculation/blob/main/no-vary-search.md#a-referrer-hint
+  network.mojom.NoVarySearch? no_vary_search_expected;
 };

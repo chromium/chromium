@@ -31,10 +31,10 @@ base::Value CaptureModeToValue(NetLogCaptureMode capture_mode) {
   return base::Value(CaptureModeToInt(capture_mode));
 }
 
-base::Value NetCaptureModeParams(NetLogCaptureMode capture_mode) {
+base::Value::Dict NetCaptureModeParams(NetLogCaptureMode capture_mode) {
   base::Value::Dict dict;
   dict.Set("capture_mode", CaptureModeToValue(capture_mode));
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 TEST(NetLogTest, BasicGlobalEvents) {
@@ -211,23 +211,27 @@ class LoggingObserver : public NetLog::ThreadSafeObserver {
   }
 
   void OnAddEntry(const NetLogEntry& entry) override {
-    std::unique_ptr<base::Value> dict =
-        base::Value::ToUniquePtrValue(entry.ToValue());
+    // TODO(https://crbug.com/1418110): This should be updated to be a
+    // base::Value::Dict instead of a std::unique_ptr.
+    std::unique_ptr<base::Value::Dict> dict =
+        std::make_unique<base::Value::Dict>(entry.ToDict());
     ASSERT_TRUE(dict);
     values_.push_back(std::move(dict));
   }
 
   size_t GetNumValues() const { return values_.size(); }
-  base::Value* GetValue(size_t index) const { return values_[index].get(); }
+  base::Value::Dict* GetDict(size_t index) const {
+    return values_[index].get();
+  }
 
  private:
-  std::vector<std::unique_ptr<base::Value>> values_;
+  std::vector<std::unique_ptr<base::Value::Dict>> values_;
 };
 
 void AddEvent(NetLog* net_log) {
   net_log->AddGlobalEntry(NetLogEventType::CANCELLED,
                           [&](NetLogCaptureMode capture_mode) {
-                            return CaptureModeToValue(capture_mode);
+                            return NetCaptureModeParams(capture_mode);
                           });
 }
 
@@ -415,11 +419,11 @@ TEST(NetLogTest, NetLogTwoObservers) {
   absl::optional<int> param;
   AddEvent(NetLog::Get());
   ASSERT_EQ(1U, observer[0].GetNumValues());
-  param = observer[0].GetValue(0)->GetDict().FindInt("params");
+  param = observer[0].GetDict(0)->FindDict("params")->FindInt("capture_mode");
   ASSERT_TRUE(param);
   EXPECT_EQ(CaptureModeToInt(observer[0].capture_mode()), param.value());
   ASSERT_EQ(1U, observer[1].GetNumValues());
-  param = observer[1].GetValue(0)->GetDict().FindInt("params");
+  param = observer[1].GetDict(0)->FindDict("params")->FindInt("capture_mode");
   ASSERT_TRUE(param);
   EXPECT_EQ(CaptureModeToInt(observer[1].capture_mode()), param.value());
 
@@ -460,10 +464,11 @@ TEST(NetLogTest, NetLogAddRemoveObserverThreads) {
 TEST(NetLogTest, NetLogEntryToValueEmptyParams) {
   // NetLogEntry with no params.
   NetLogEntry entry1(NetLogEventType::REQUEST_ALIVE, NetLogSource(),
-                     NetLogEventPhase::BEGIN, base::TimeTicks(), base::Value());
+                     NetLogEventPhase::BEGIN, base::TimeTicks(),
+                     base::Value::Dict());
 
-  ASSERT_TRUE(entry1.params.is_none());
-  ASSERT_FALSE(entry1.ToValue().GetDict().Find("params"));
+  ASSERT_TRUE(entry1.params.empty());
+  ASSERT_FALSE(entry1.ToDict().Find("params"));
 }
 
 }  // namespace

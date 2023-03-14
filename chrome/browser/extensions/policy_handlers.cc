@@ -377,7 +377,7 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
 
   // Remove |invalid_keys| from the dictionary.
   for (const std::string& key : invalid_keys)
-    policy_value->RemoveKey(key);
+    policy_value->GetDict().Remove(key);
 }
 
 bool ExtensionSettingsPolicyHandler::CheckPolicySettings(

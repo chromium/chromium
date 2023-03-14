@@ -118,9 +118,8 @@ TEST_P(SlimLayerTest, LayerProperties) {
   EXPECT_EQ(layer->transform_origin(), gfx::Point3F(1.f, 2.f, 3.f));
 
   layer->SetIsDrawable(true);
-  layer->SetDrawsContent(true);
   EXPECT_TRUE(layer->draws_content());
-  layer->SetDrawsContent(false);
+  layer->SetIsDrawable(false);
   EXPECT_FALSE(layer->draws_content());
 
   layer->SetBackgroundColor(SkColors::kGray);

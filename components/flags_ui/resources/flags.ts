@@ -621,11 +621,14 @@ class FlagSearch {
       this.noMatchMsg_[0]!.classList.toggle(
           'hidden',
           this.highlightAllMatches(this.experiments_, searchTerm) > 0);
-      // Unavailable experiments
+
+      // <if expr="not is_ios">
+      // Unavailable experiments, which are undefined on iOS.
       this.noMatchMsg_[1]!.classList.toggle(
           'hidden',
           this.highlightAllMatches(this.unavailableExperiments_, searchTerm) >
               0);
+      // </if>
       this.announceSearchResults();
     }
 

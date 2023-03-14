@@ -19,6 +19,7 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/attestation/mock_attestation_flow.h"
+#include "chromeos/ash/components/attestation/stub_attestation_features.h"
 #include "chromeos/ash/components/dbus/attestation/fake_attestation_client.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
@@ -221,6 +222,7 @@ class ActiveDirectoryDeviceStateUploaderTest
   ServerBackedStateKeysBroker broker_;
   StrictMock<MockJobCreationHandler> job_creation_handler_;
   FakeDeviceManagementService dm_service_{&job_creation_handler_};
+  ash::attestation::ScopedStubAttestationFeatures attestation_features_;
   ScopedTestingLocalState local_state_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   network::TestURLLoaderFactory url_loader_factory_;

@@ -19,6 +19,7 @@
 #include "chromeos/ash/components/cryptohome/userdataauth_util.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
 #include "chromeos/ash/components/login/auth/cryptohome_parameter_utils.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
@@ -31,6 +32,17 @@
 #include "components/user_manager/user_names.h"
 
 namespace ash {
+
+namespace {
+
+std::unique_ptr<UserContext> RecordConfiguredFactors(
+    std::unique_ptr<UserContext> context) {
+  AuthMetricsRecorder::Get()->RecordUserAuthFactors(
+      context->GetAuthFactorsData().GetSessionFactors());
+  return context;
+}
+
+}  // namespace
 
 AuthSessionAuthenticator::AuthSessionAuthenticator(
     AuthStatusConsumer* consumer,
@@ -247,6 +259,13 @@ void AuthSessionAuthenticator::DoCompleteLogin(
       steps.push_back(
           base::BindOnce(&AuthSessionAuthenticator::RecordCreatingNewUser,
                          weak_factory_.GetWeakPtr()));
+      // We need to store a user information as it would be used by
+      // CryptohomeKeyDelegateServiceProvider and MisconfiguredUserCleaner
+      // If the user creation process is interrupted, the known user record
+      // will be cleared on reboot in
+      // `UserDirectoryIntegrityManager::RemoveUser` via `UserManager`.
+      steps.push_back(base::BindOnce(&AuthSessionAuthenticator::SaveKnownUser,
+                                     weak_factory_.GetWeakPtr()));
       steps.push_back(base::BindOnce(&MountPerformer::CreateNewUser,
                                      mount_performer_->AsWeakPtr()));
       steps.push_back(base::BindOnce(
@@ -257,13 +276,6 @@ void AuthSessionAuthenticator::DoCompleteLogin(
     }
     // In both cases, add a key
     if (challenge_response_auth) {
-      // We need to store a user information as it would be used by
-      // CryptohomeKeyDelegateServiceProvider.
-      // If the user creation process is interrupted, the known user record
-      // will be cleared on reboot in
-      // `MisconfiguredUserCleaner::OnCleanMisconfiguredUser`.
-      steps.push_back(base::BindOnce(&AuthSessionAuthenticator::SaveKnownUser,
-                                     weak_factory_.GetWeakPtr()));
       steps.push_back(
           base::BindOnce(&AuthFactorEditor::AddContextChallengeResponseKey,
                          auth_factor_editor_->AsWeakPtr()));
@@ -412,8 +424,10 @@ void AuthSessionAuthenticator::DoLoginAsExistingUser(
 
   bool challenge_response_auth = !context->GetChallengeResponseKeys().empty();
 
-  AuthSuccessCallback success_callback = base::BindOnce(
-      &AuthSessionAuthenticator::NotifyAuthSuccess, weak_factory_.GetWeakPtr());
+  AuthSuccessCallback success_callback =
+      base::BindOnce(&RecordConfiguredFactors)
+          .Then(base::BindOnce(&AuthSessionAuthenticator::NotifyAuthSuccess,
+                               weak_factory_.GetWeakPtr()));
 
   // Existing users might require encryption migration: intercept related
   // error codes.
@@ -660,12 +674,18 @@ void AuthSessionAuthenticator::DoLoginAsKiosk(
     steps.push_back(base::BindOnce(&MountPerformer::MountEphemeralDirectory,
                                    mount_performer_->AsWeakPtr()));
   } else {
+    steps.push_back(
+        base::BindOnce(&AuthSessionAuthenticator::RecordCreatingNewUser,
+                       weak_factory_.GetWeakPtr()));
     steps.push_back(base::BindOnce(&MountPerformer::CreateNewUser,
                                    mount_performer_->AsWeakPtr()));
     steps.push_back(base::BindOnce(&MountPerformer::MountPersistentDirectory,
                                    mount_performer_->AsWeakPtr()));
     steps.push_back(base::BindOnce(&AuthFactorEditor::AddKioskKey,
                                    auth_factor_editor_->AsWeakPtr()));
+    steps.push_back(
+        base::BindOnce(&AuthSessionAuthenticator::RecordFirstAuthFactorAdded,
+                       weak_factory_.GetWeakPtr()));
   }
   RunOperationChain(std::move(context), std::move(steps),
                     std::move(success_callback), std::move(error_callback));

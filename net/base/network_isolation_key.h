@@ -13,12 +13,12 @@
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace base {
-class Value;
-}
-
 namespace url {
 class Origin;
+}
+
+namespace network::mojom {
+class NetworkIsolationKeyDataView;
 }
 
 namespace net {
@@ -119,12 +119,42 @@ class NET_EXPORT NetworkIsolationKey {
     return top_frame_site_;
   }
 
+  enum class Mode {
+    // This scheme indicates that "triple-key" NetworkIsolationKeys are used to
+    // partition the HTTP cache. This key will have the following properties:
+    // `top_frame_site` -> the schemeful site of the top level page.
+    // `frame_site ` -> the schemeful site of the frame.
+    // `is_cross_site` -> absl::nullopt.
+    kFrameSiteEnabled,
+    // TODO(awillia): Add `kIsCrossSiteEnabled` here to experiment with
+    // 2.5-keying.
+  };
+
+  // Returns the cache key scheme currently in use.
+  static Mode GetMode();
+
+  // Note: This will CHECK if `GetScheme()` does not return `kFrameSiteEnabled`.
   const absl::optional<SchemefulSite>& GetFrameSite() const;
 
-  // Do not use outside of testing. Returns the `frame_site_` if
-  // `kForceIsolationInfoFrameOriginToTopLevelFrame` is disabled. Else it
-  // returns nullopt.
+  // Do not use outside of testing. Returns the `frame_site_`.
   const absl::optional<SchemefulSite>& GetFrameSiteForTesting() const {
+    return frame_site_;
+  }
+
+  class SerializationPasskey {
+   private:
+    friend struct mojo::StructTraits<
+        network::mojom::NetworkIsolationKeyDataView,
+        NetworkIsolationKey>;
+    SerializationPasskey() = default;
+    ~SerializationPasskey() = default;
+  };
+
+  // When serializing a NIK for sending via mojo we want to access the frame
+  // site (or absl::nullopt) regardless of flags. We don't want to expose this
+  // broadly, though, hence the passkey.
+  const absl::optional<SchemefulSite>& GetFrameSiteForSerialization(
+      SerializationPasskey) const {
     return frame_site_;
   }
 
@@ -135,23 +165,6 @@ class NET_EXPORT NetworkIsolationKey {
 
   // Returns true if all parts of the key are empty.
   bool IsEmpty() const;
-
-  // Returns true if the NetworkIsolationKey has a triple keyed scheme. This
-  // means both `frame_site_` and `top_frame_site_` are populated.
-  static bool IsFrameSiteEnabled();
-
-  // Returns a representation of |this| as a base::Value. Returns false on
-  // failure. Succeeds if either IsEmpty() or !IsTransient().
-  [[nodiscard]] bool ToValue(base::Value* out_value) const;
-
-  // Inverse of ToValue(). Writes the result to |network_isolation_key|. Returns
-  // false on failure. Fails on values that could not have been produced by
-  // ToValue(), like transient origins. If the value of
-  // net::features::kAppendFrameOriginToNetworkIsolationKey has changed between
-  // saving and loading the data, fails.
-  [[nodiscard]] static bool FromValue(
-      const base::Value& value,
-      NetworkIsolationKey* out_network_isolation_key);
 
  private:
   // Whether this key has opaque origins or a nonce.

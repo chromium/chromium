@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# pylint: disable=too-many-lines
+
 import collections
 import fnmatch
 import logging
@@ -13,6 +15,7 @@ import unittest
 
 from telemetry.internal.results import artifact_compatibility_wrapper as acw
 from telemetry.testing import serially_executed_browser_test_case
+from telemetry.util import minidump_utils
 from telemetry.util import screenshot
 from typ import json_results
 
@@ -416,37 +419,14 @@ class GpuIntegrationTest(
     # by a bad combination of command-line arguments. So reset to the original
     # options in attempt to successfully launch a browser.
     if cls.browser is None:
-      cls._RestartTsProxyServerIfNecessary()
+      cls.platform.RestartTsProxyServerOnRemotePlatforms()
       cls.SetBrowserOptions(cls.GetOriginalFinderOptions())
       cls.StartBrowser()
     else:
       cls.StopBrowser()
-      cls._RestartTsProxyServerIfNecessary()
+      cls.platform.RestartTsProxyServerOnRemotePlatforms()
       cls.SetBrowserOptions(cls._finder_options)
       cls.StartBrowser()
-
-  @classmethod
-  def _RestartTsProxyServerIfNecessary(cls) -> None:
-    """Restarts the TsProxyServer on remote platforms.
-
-    If something goes wrong with the connection to the remote device (SSH, adb,
-    etc.), then the forwarder between the device and the host will potentially
-    break, breaking all further network connectivity. So, restart the server
-    and its forwarder.
-    """
-    # TODO(crbug.com/1245346): Move this into Telemetry itself once it is
-    # shown to work.
-    os_name = cls.platform.GetOSName()
-    if os_name in ('android', 'chromeos'):
-      logging.warning(
-          'Restarting TsProxyServer due to being on a remote platform')
-      # pylint: disable=protected-access
-      network_controller_backend = (
-          cls.platform._platform_backend.network_controller_backend)
-      wpr_mode = network_controller_backend._wpr_mode
-      # pylint: enable=protected-access
-      network_controller_backend.Close()
-      network_controller_backend.Open(wpr_mode)
 
   # pylint: disable=no-self-use
   def _ShouldForceRetryOnFailureFirstTest(self) -> bool:
@@ -650,6 +630,7 @@ class GpuIntegrationTest(
       return True
     return False
 
+  # pylint: disable=too-many-return-statements
   def _ClearExpectedCrashes(self, expected_crashes: Dict[str, int]) -> bool:
     """Clears any expected crash minidumps so they're not caught later.
 
@@ -664,26 +645,35 @@ class GpuIntegrationTest(
     # We can't get crashes if we don't have a browser.
     if self.browser is None:
       return True
-    # TODO(crbug.com/1006331): Properly match type once we have a way of
-    # checking the crashed process type without symbolizing the minidump.
+
     total_expected_crashes = sum(expected_crashes.values())
     # The Telemetry-wide cleanup will handle any remaining minidumps, so early
     # return here since we don't expect any, which saves us a bit of work.
     if total_expected_crashes == 0:
       return True
-    unsymbolized_minidumps = self.browser.GetAllUnsymbolizedMinidumpPaths()
-    total_unsymbolized_minidumps = len(unsymbolized_minidumps)
 
-    if total_expected_crashes == total_unsymbolized_minidumps:
+    unsymbolized_minidumps = self.browser.GetAllUnsymbolizedMinidumpPaths()
+
+    crash_counts = collections.defaultdict(int)
+    for path in unsymbolized_minidumps:
+      crash_type = minidump_utils.GetProcessTypeFromMinidump(path)
+      if not crash_type:
+        logging.error(
+            'Unable to verify expected crashes due to inability to extract '
+            'process type from minidump %s', path)
+        return False
+      crash_counts[crash_type] += 1
+
+    if crash_counts == expected_crashes:
       for path in unsymbolized_minidumps:
         self.browser.IgnoreMinidump(path)
       return True
 
     logging.error(
-        'Found %d unsymbolized minidumps when we expected %d. Expected '
-        'crash breakdown: %s', total_unsymbolized_minidumps,
-        total_expected_crashes, expected_crashes)
+        'Found mismatch between expected and actual crash counts. Expected: '
+        '%s, Actual: %s', expected_crashes, crash_counts)
     return False
+  # pylint: enable=too-many-return-statements
 
   # pylint: disable=no-self-use
   def GetExpectedCrashes(self, args: ct.TestArgs) -> Dict[str, int]:

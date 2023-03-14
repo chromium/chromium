@@ -82,7 +82,7 @@ class SiteSettingsPermissionsHandler : public settings::SettingsPageUIHandler {
 
   const raw_ptr<Profile> profile_;
 
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   void SetClockForTesting(base::Clock* clock);
 };

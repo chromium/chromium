@@ -91,7 +91,6 @@ class USB final : public EventTargetWithInlineData,
  private:
   void EnsureServiceConnection();
 
-  bool IsContextSupported() const;
   bool IsFeatureEnabled(ReportOptions) const;
 
   HeapMojoRemote<mojom::blink::WebUsbService> service_;

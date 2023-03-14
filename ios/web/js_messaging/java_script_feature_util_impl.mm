@@ -11,6 +11,7 @@
 #import "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/annotations/annotations_java_script_feature.h"
+#import "ios/web/common/annotations_utils.h"
 #import "ios/web/common/features.h"
 #import "ios/web/favicon/favicon_java_script_feature.h"
 #import "ios/web/find_in_page/find_in_page_java_script_feature.h"
@@ -140,8 +141,12 @@ std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
       NavigationJavaScriptFeature::GetInstance(),
       SessionRestoreJavaScriptFeature::FromBrowserState(browser_state),
       TextFragmentsJavaScriptFeature::GetInstance(),
-      WebFramesManagerJavaScriptFeature::FromBrowserState(browser_state),
       WebUIMessagingJavaScriptFeature::GetInstance()};
+
+  auto frames_manager_features = WebFramesManagerJavaScriptFeature::
+      AllContentWorldFeaturesFromBrowserState(browser_state);
+  features.insert(features.end(), frames_manager_features.begin(),
+                  frames_manager_features.end());
 
   // Plugin Placeholder is no longer used as of iOS 14.5 as <applet> support is
   // completely removed.
@@ -150,7 +155,7 @@ std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
     features.push_back(GetPluginPlaceholderJavaScriptFeature());
   }
 
-  if (base::FeatureList::IsEnabled(web::features::kEnableWebPageAnnotations)) {
+  if (web::WebPageAnnotationsEnabled()) {
     features.push_back(AnnotationsJavaScriptFeature::GetInstance());
   }
 

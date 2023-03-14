@@ -12,6 +12,7 @@
 #include "ash/system/lock_screen_notification_controller.h"
 #include "ash/system/network/auto_connect_notifier.h"
 #include "ash/system/network/cellular_setup_notifier.h"
+#include "ash/system/network/hotspot_notifier.h"
 #include "ash/system/network/managed_sim_lock_notifier.h"
 #include "ash/system/network/wifi_toggle_notification_controller.h"
 #include "ash/system/power/power_notification_controller.h"
@@ -53,7 +54,7 @@ SystemNotificationController::SystemNotificationController()
           message_center::MessageCenter::Get())),
       power_sounds_(MaybeCreatePowerSoundsController()),
       privacy_hub_(std::make_unique<PrivacyHubNotificationController>()),
-      screen_security_(std::make_unique<ScreenSecurityController>()),
+      screen_security_controller_(std::make_unique<ScreenSecurityController>()),
       session_limit_(std::make_unique<SessionLimitNotificationController>()),
       tracing_(std::make_unique<TracingNotificationController>()),
       update_(std::make_unique<UpdateNotificationController>()),
@@ -61,6 +62,9 @@ SystemNotificationController::SystemNotificationController()
   if (features::IsSimLockPolicyEnabled()) {
     managed_sim_lock_notifier_ =
         std::make_unique<ash::ManagedSimLockNotifier>();
+  }
+  if (features::IsHotspotEnabled()) {
+    hotspot_notifier_ = std::make_unique<ash::HotspotNotifier>();
   }
 }
 

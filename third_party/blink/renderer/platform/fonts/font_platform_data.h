@@ -130,7 +130,9 @@ class PLATFORM_EXPORT FontPlatformData {
   FontPlatformData& operator=(const FontPlatformData&) = delete;
 
   bool IsHashTableDeletedValue() const { return is_hash_table_deleted_value_; }
+#if !BUILDFLAG(IS_MAC)
   bool FontContainsCharacter(UChar32 character);
+#endif
 
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
   const WebFontRenderStyle& GetFontRenderStyle() const { return style_; }

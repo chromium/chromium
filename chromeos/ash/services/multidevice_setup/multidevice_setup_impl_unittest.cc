@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
 #include <memory>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -60,10 +60,10 @@ const char kValidAuthToken[] = "validAuthToken";
 multidevice::RemoteDeviceList RefListToRawList(
     const multidevice::RemoteDeviceRefList& ref_list) {
   multidevice::RemoteDeviceList raw_list;
-  std::transform(ref_list.begin(), ref_list.end(), std::back_inserter(raw_list),
-                 [](const multidevice::RemoteDeviceRef ref) {
-                   return *GetMutableRemoteDevice(ref);
-                 });
+  base::ranges::transform(ref_list, std::back_inserter(raw_list),
+                          [](const multidevice::RemoteDeviceRef ref) {
+                            return *GetMutableRemoteDevice(ref);
+                          });
   return raw_list;
 }
 
@@ -856,6 +856,19 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
     return success;
   }
 
+  absl::optional<std::string> CallGetQuickStartPhoneInstanceID() {
+    base::RunLoop run_loop;
+    multidevice_setup_->GetQuickStartPhoneInstanceID(base::BindOnce(
+        &MultiDeviceSetupImplTest::OnGetQuickStartPhoneInstanceID,
+        base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
+
+    absl::optional<std::string> qs_phone_instance_id =
+        last_qs_phone_instance_id_;
+    last_qs_phone_instance_id_.reset();
+    return qs_phone_instance_id;
+  }
+
   void VerifyCurrentHostStatus(
       mojom::HostStatus host_status,
       const absl::optional<multidevice::RemoteDeviceRef>& host_device,
@@ -1003,6 +1016,14 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
     std::move(quit_closure).Run();
   }
 
+  void OnGetQuickStartPhoneInstanceID(
+      base::OnceClosure quit_closure,
+      const absl::optional<std::string>& qs_phone_instance_id) {
+    EXPECT_EQ(absl::nullopt, last_qs_phone_instance_id_);
+    last_qs_phone_instance_id_ = qs_phone_instance_id;
+    std::move(quit_closure).Run();
+  }
+
   base::test::TaskEnvironment task_environment_;
 
   multidevice::RemoteDeviceRefList test_devices_;
@@ -1060,6 +1081,7 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
   absl::optional<base::flat_map<mojom::Feature, mojom::FeatureState>>
       last_get_feature_states_result_;
   absl::optional<bool> last_retry_success_;
+  absl::optional<std::string> last_qs_phone_instance_id_;
 
   std::unique_ptr<MultiDeviceSetupBase> multidevice_setup_;
 };
@@ -1457,6 +1479,14 @@ TEST_P(MultiDeviceSetupImplTest,
   VerifyCurrentHostStatus(
       mojom::HostStatus::kHostSetLocallyButWaitingForBackendConfirmation,
       test_devices()[1], observer.get(), 2u /* expected_observer_index */);
+}
+
+TEST_P(MultiDeviceSetupImplTest, SetAndGetQuickStartPhoneInstanceID) {
+  EXPECT_EQ(absl::nullopt, CallGetQuickStartPhoneInstanceID());
+  const std::string& expected_qs_phone_instance_id = "qsPhoneInstanceID1";
+  multidevice_setup()->SetQuickStartPhoneInstanceID(
+      expected_qs_phone_instance_id);
+  EXPECT_EQ(expected_qs_phone_instance_id, CallGetQuickStartPhoneInstanceID());
 }
 
 // Runs tests twice; once with v1 DeviceSync enabled and once with it disabled.

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/resources/tools/optimize_webui.gni")
@@ -12,6 +13,10 @@ import("//ui/webui/resources/tools/optimize_webui.gni")
 # files into the same path.
 chrome_resources_dir = "${root_gen_dir}/ui/webui/resources/tsc/mwc"
 
+js_library("bundle_lit_js") {
+  sources = [ "lit_exports.js" ]
+}
+
 # Compile lit_exports.js into a singular bundle we can host on
 # chrome://resources.
 optimize_webui("bundle_lit") {
@@ -19,13 +24,11 @@ optimize_webui("bundle_lit") {
   input = rebase_path("//third_party/material_web_components/", root_build_dir)
   js_module_in_files = [ "lit_exports.js" ]
 
-  deps = []
+  deps = [ ":bundle_lit_js" ]
 }
 
 copy("copy_tslib") {
-  sources = [ rebase_path(
-          "//third_party/material_web_components/components-chromium/node_modules/tslib/tslib.js",
-          root_build_dir) ]
+  sources = [ "//third_party/material_web_components/components-chromium/node_modules/tslib/tslib.js" ]
   outputs = [ "$chrome_resources_dir/tslib/tslib.js" ]
 }
 
@@ -35,9 +38,9 @@ copy("copy_lit_bundle") {
   deps = [ ":bundle_lit" ]
 }
 
-generate_grd("build_grdp") {
+generate_grd("build_lit_grdp") {
   grd_prefix = "material_web_components"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
+  out_grd = "$target_gen_dir/lit_resources.grdp"
   input_files_base_dir = rebase_path(chrome_resources_dir, root_build_dir)
   resource_path_prefix = "mwc"
 
@@ -49,6 +52,256 @@ generate_grd("build_grdp") {
   deps = [
     ":copy_lit_bundle",
     ":copy_tslib",
+  ]
+}
+
+generate_grd("build_mwc_grdp") {
+  resource_path_prefix = "mwc"
+  grd_prefix = "material_components"
+  out_grd = "$target_gen_dir/mwc_resources.grdp"
+
+  input_files_base_dir = rebase_path("components-chromium/node_modules", "//")
+
+  input_files = [
+    "@material/web/dialog/lib/dialog-styles.css.js",
+    "@material/web/dialog/lib/dialog.js",
+    "@material/web/dialog/dialog.js",
+    "@material/web/icon/lib/icon.js",
+    "@material/web/icon/lib/icon-styles.css.js",
+    "@material/web/icon/icon.js",
+    "@material/web/badge/badge.js",
+    "@material/web/badge/lib/badge.js",
+    "@material/web/badge/lib/badge-styles.css.js",
+    "@material/web/list/list-item-avatar.js",
+    "@material/web/list/list.js",
+    "@material/web/list/lib/icon/list-item-icon.js",
+    "@material/web/list/lib/icon/list-item-icon-styles.css.js",
+    "@material/web/list/lib/avatar/list-item-avatar.js",
+    "@material/web/list/lib/avatar/list-item-avatar-styles.css.js",
+    "@material/web/list/lib/list.js",
+    "@material/web/list/lib/image/list-item-image.js",
+    "@material/web/list/lib/image/list-item-image-styles.css.js",
+    "@material/web/list/lib/listitemlink/list-item-link.js",
+    "@material/web/list/lib/video/list-item-video-styles.css.js",
+    "@material/web/list/lib/video/list-item-video.js",
+    "@material/web/list/lib/listitem/list-item-private-styles.css.js",
+    "@material/web/list/lib/listitem/list-item-styles.css.js",
+    "@material/web/list/lib/listitem/list-item.js",
+    "@material/web/list/lib/list-styles.css.js",
+    "@material/web/list/list-item-video.js",
+    "@material/web/list/list-item-link.js",
+    "@material/web/list/list-item-icon.js",
+    "@material/web/list/list-item-image.js",
+    "@material/web/list/list-item.js",
+    "@material/web/segmentedbuttonset/lib/outlined-styles.css.js",
+    "@material/web/segmentedbuttonset/lib/segmented-button-set.js",
+    "@material/web/segmentedbuttonset/lib/outlined-segmented-button-set.js",
+    "@material/web/segmentedbuttonset/lib/shared-styles.css.js",
+    "@material/web/segmentedbuttonset/outlined-segmented-button-set.js",
+    "@material/web/motion/animation.js",
+    "@material/web/ripple/lib/ripple-styles.css.js",
+    "@material/web/ripple/lib/ripple.js",
+    "@material/web/ripple/directive.js",
+    "@material/web/ripple/ripple.js",
+    "@material/web/divider/lib/divider-styles.css.js",
+    "@material/web/divider/lib/divider.js",
+    "@material/web/divider/divider.js",
+    "@material/web/menu/menu.js",
+    "@material/web/menu/lib/menu.js",
+    "@material/web/menu/lib/menu-styles.css.js",
+    "@material/web/menu/lib/menuitem/menu-item-private-styles.css.js",
+    "@material/web/menu/lib/menuitem/menu-item.js",
+    "@material/web/menu/lib/menuitem/menu-item-styles.css.js",
+    "@material/web/menu/lib/shared.js",
+    "@material/web/menu/lib/typeaheadController.js",
+    "@material/web/menu/lib/submenuitem/sub-menu-item.js",
+    "@material/web/menu/lib/menuitemlink/menu-item-link.js",
+    "@material/web/menu/lib/types.js",
+    "@material/web/menu/lib/surfacePositionController.js",
+    "@material/web/menu/menu-item-link.js",
+    "@material/web/menu/menu-item.js",
+    "@material/web/menu/sub-menu-item.js",
+    "@material/web/chips/action/link-action.js",
+    "@material/web/chips/action/lib/link-action.js",
+    "@material/web/chips/action/lib/presentational-action.js",
+    "@material/web/chips/action/lib/events.js",
+    "@material/web/chips/action/lib/delete-action.js",
+    "@material/web/chips/action/lib/primary-action.js",
+    "@material/web/chips/action/lib/selectable-action.js",
+    "@material/web/chips/action/lib/action.js",
+    "@material/web/chips/action/lib/types.js",
+    "@material/web/chips/action/lib/constants.js",
+    "@material/web/chips/action/presentational-action.js",
+    "@material/web/chips/action/delete-action.js",
+    "@material/web/chips/action/primary-action.js",
+    "@material/web/chips/action/selectable-action.js",
+    "@material/web/chips/chipset/lib/foundation.js",
+    "@material/web/chips/chipset/lib/adapter.js",
+    "@material/web/chips/chipset/lib/types.js",
+    "@material/web/chips/chipset/lib/constants.js",
+    "@material/web/chips/chip/lib/selectable-chip.js",
+    "@material/web/chips/chip/lib/link-chip.js",
+    "@material/web/chips/chip/lib/action-chip.js",
+    "@material/web/chips/chip/lib/chip.js",
+    "@material/web/chips/chip/lib/foundation.js",
+    "@material/web/chips/chip/lib/adapter.js",
+    "@material/web/chips/chip/lib/types.js",
+    "@material/web/chips/chip/lib/animationframe.js",
+    "@material/web/chips/chip/lib/presentational-chip.js",
+    "@material/web/chips/chip/lib/constants.js",
+    "@material/web/segmentedbutton/lib/outlined-styles.css.js",
+    "@material/web/segmentedbutton/lib/shared-styles.css.js",
+    "@material/web/segmentedbutton/lib/segmented-button.js",
+    "@material/web/segmentedbutton/lib/outlined-segmented-button.js",
+    "@material/web/segmentedbutton/outlined-segmented-button.js",
+    "@material/web/button/tonal-link-button.js",
+    "@material/web/button/elevated-link-button.js",
+    "@material/web/button/lib/button.js",
+    "@material/web/button/lib/tonal-link-button.js",
+    "@material/web/button/lib/outlined-styles.css.js",
+    "@material/web/button/lib/elevated-link-button.js",
+    "@material/web/button/lib/elevated-styles.css.js",
+    "@material/web/button/lib/tonal-styles.css.js",
+    "@material/web/button/lib/link-button.js",
+    "@material/web/button/lib/filled-styles.css.js",
+    "@material/web/button/lib/text-link-button.js",
+    "@material/web/button/lib/tonal-button.js",
+    "@material/web/button/lib/filled-button.js",
+    "@material/web/button/lib/state.js",
+    "@material/web/button/lib/filled-link-button.js",
+    "@material/web/button/lib/elevated-button.js",
+    "@material/web/button/lib/shared-styles.css.js",
+    "@material/web/button/lib/outlined-button.js",
+    "@material/web/button/lib/outlined-link-button.js",
+    "@material/web/button/lib/shared-elevation-styles.css.js",
+    "@material/web/button/lib/text-styles.css.js",
+    "@material/web/button/lib/text-button.js",
+    "@material/web/button/text-link-button.js",
+    "@material/web/button/tonal-button.js",
+    "@material/web/button/filled-button.js",
+    "@material/web/button/filled-link-button.js",
+    "@material/web/button/elevated-button.js",
+    "@material/web/button/outlined-button.js",
+    "@material/web/button/outlined-link-button.js",
+    "@material/web/button/text-button.js",
+    "@material/web/menusurface/lib/menu-surface.js",
+    "@material/web/menusurface/lib/foundation.js",
+    "@material/web/menusurface/lib/menu-surface-styles.css.js",
+    "@material/web/menusurface/lib/adapter.js",
+    "@material/web/menusurface/lib/types.js",
+    "@material/web/menusurface/lib/constants.js",
+    "@material/web/menusurface/menu-surface.js",
+    "@material/web/tokens/v0_152/index.test.css.js",
+    "@material/web/tokens/v0_152/lib.test.css.js",
+    "@material/web/localization/localize.js",
+    "@material/web/focus/strong-focus.js",
+    "@material/web/focus/lib/focus-ring-styles.css.js",
+    "@material/web/focus/lib/focus-ring.js",
+    "@material/web/focus/focus-ring.js",
+    "@material/web/controller/events.js",
+    "@material/web/controller/action-controller.js",
+    "@material/web/controller/observer.js",
+    "@material/web/controller/observer-foundation.js",
+    "@material/web/controller/foundation.js",
+    "@material/web/controller/form-associated.js",
+    "@material/web/controller/form-controller.js",
+    "@material/web/controller/string-converter.js",
+    "@material/web/controller/is-rtl.js",
+    "@material/web/controller/shim-label-activation.js",
+    "@material/web/switch/lib/switch-styles.css.js",
+    "@material/web/switch/lib/switch.js",
+    "@material/web/switch/switch.js",
+    "@material/web/textfield/lib/outlined-styles.css.js",
+    "@material/web/textfield/lib/outlined-text-field.js",
+    "@material/web/textfield/lib/filled-styles.css.js",
+    "@material/web/textfield/lib/outlined-forced-colors-styles.css.js",
+    "@material/web/textfield/lib/shared-styles.css.js",
+    "@material/web/textfield/lib/filled-text-field.js",
+    "@material/web/textfield/lib/filled-forced-colors-styles.css.js",
+    "@material/web/textfield/lib/text-field.js",
+    "@material/web/textfield/outlined-text-field.js",
+    "@material/web/textfield/filled-text-field.js",
+    "@material/web/decorators/aria-property.js",
+    "@material/web/decorators/bound.js",
+    "@material/web/navigationdrawer/navigation-drawer.js",
+    "@material/web/navigationdrawer/lib/navigation-drawer.js",
+    "@material/web/navigationdrawer/lib/navigation-drawer-styles.css.js",
+    "@material/web/navigationdrawer/lib/navigation-drawer-modal.js",
+    "@material/web/navigationdrawer/lib/navigation-drawer-modal-styles.css.js",
+    "@material/web/navigationdrawer/lib/shared-styles.css.js",
+    "@material/web/navigationdrawer/navigation-drawer-modal.js",
+    "@material/web/fab/lib/fab-shared-styles.css.js",
+    "@material/web/fab/lib/fab-extended.js",
+    "@material/web/fab/lib/fab-extended-styles.css.js",
+    "@material/web/fab/lib/fab.js",
+    "@material/web/fab/lib/fab-shared.js",
+    "@material/web/fab/lib/fab-styles.css.js",
+    "@material/web/fab/fab-extended.js",
+    "@material/web/fab/fab.js",
+    "@material/web/elevation/lib/elevation-styles.css.js",
+    "@material/web/elevation/lib/elevation.js",
+    "@material/web/elevation/elevation.js",
+    "@material/web/checkbox/checkbox.js",
+    "@material/web/checkbox/lib/checkbox.js",
+    "@material/web/checkbox/lib/forced-colors-styles.css.js",
+    "@material/web/checkbox/lib/checkbox-styles.css.js",
+    "@material/web/field/outlined-field.js",
+    "@material/web/field/lib/outlined-styles.css.js",
+    "@material/web/field/lib/outlined-field.js",
+    "@material/web/field/lib/filled-field.js",
+    "@material/web/field/lib/filled-styles.css.js",
+    "@material/web/field/lib/field.js",
+    "@material/web/field/lib/shared-styles.css.js",
+    "@material/web/field/filled-field.js",
+    "@material/web/iconbutton/outlined-icon-button-toggle.js",
+    "@material/web/iconbutton/lib/outlined-styles.css.js",
+    "@material/web/iconbutton/lib/icon-button.js",
+    "@material/web/iconbutton/lib/filled-styles.css.js",
+    "@material/web/iconbutton/lib/link-icon-button.js",
+    "@material/web/iconbutton/lib/standard-styles.css.js",
+    "@material/web/iconbutton/lib/icon-button-toggle.js",
+    "@material/web/iconbutton/lib/shared-styles.css.js",
+    "@material/web/iconbutton/lib/filled-tonal-styles.css.js",
+    "@material/web/iconbutton/filled-link-icon-button.js",
+    "@material/web/iconbutton/outlined-link-icon-button.js",
+    "@material/web/iconbutton/standard-icon-button-toggle.js",
+    "@material/web/iconbutton/standard-link-icon-button.js",
+    "@material/web/iconbutton/filled-icon-button.js",
+    "@material/web/iconbutton/filled-tonal-icon-button-toggle.js",
+    "@material/web/iconbutton/filled-tonal-link-icon-button.js",
+    "@material/web/iconbutton/filled-icon-button-toggle.js",
+    "@material/web/iconbutton/outlined-icon-button.js",
+    "@material/web/iconbutton/standard-icon-button.js",
+    "@material/web/iconbutton/filled-tonal-icon-button.js",
+    "@material/web/autocomplete/outlined-autocomplete.js",
+    "@material/web/autocomplete/lib/autocompletesurface/autocomplete-surface-styles.css.js",
+    "@material/web/autocomplete/lib/autocompletesurface/autocomplete-surface.js",
+    "@material/web/autocomplete/lib/outlined-styles.css.js",
+    "@material/web/autocomplete/lib/autocompleteitem/autocomplete-item.js",
+    "@material/web/autocomplete/lib/autocompletelist/autocomplete-list.js",
+    "@material/web/autocomplete/lib/autocompletelist/autocomplete-list-styles.css.js",
+    "@material/web/autocomplete/lib/filled-styles.css.js",
+    "@material/web/autocomplete/lib/autocomplete.js",
+    "@material/web/autocomplete/lib/shared-styles.css.js",
+    "@material/web/autocomplete/autocomplete-list.js",
+    "@material/web/autocomplete/autocomplete-surface.js",
+    "@material/web/autocomplete/autocomplete-item.js",
+    "@material/web/autocomplete/filled-autocomplete.js",
+    "@material/web/navigationbar/lib/navigation-bar-styles.css.js",
+    "@material/web/navigationbar/lib/navigation-bar.js",
+    "@material/web/navigationbar/lib/state.js",
+    "@material/web/navigationbar/lib/constants.js",
+    "@material/web/navigationbar/navigation-bar.js",
+    "@material/web/actionelement/action-element.js",
+    "@material/web/navigationtab/lib/navigation-tab-styles.css.js",
+    "@material/web/navigationtab/lib/state.js",
+    "@material/web/navigationtab/lib/navigation-tab.js",
+    "@material/web/navigationtab/navigation-tab.js",
+    "@material/web/radio/lib/forced-colors-styles.css.js",
+    "@material/web/radio/lib/single-selection-controller.js",
+    "@material/web/radio/lib/radio.js",
+    "@material/web/radio/lib/radio-styles.css.js",
+    "@material/web/radio/radio.js",
   ]
 }
 

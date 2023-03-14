@@ -137,38 +137,30 @@ suite('GooglePhotosPreviewLoadPerformance', () => {
   });
 
   test('sets to false if already received preview images', async () => {
-    personalizationStore.data.ambient.googlePhotosAlbumsPreviews = [];
-    ambientProvider.ambientObserverRemote!.onGooglePhotosAlbumsPreviewsFetched(
-        []);
-    personalizationStore.expectAction(
-        AmbientActionName.SET_GOOGLE_PHOTOS_ALBUMS_PREVIEWS);
-    await personalizationStore.waitForAction(
-        AmbientActionName.SET_GOOGLE_PHOTOS_ALBUMS_PREVIEWS);
+    personalizationStore.data.ambient.previews = [];
+    ambientProvider.ambientObserverRemote!.onPreviewsFetched([]);
+    personalizationStore.expectAction(AmbientActionName.SET_PREVIEWS);
+    await personalizationStore.waitForAction(AmbientActionName.SET_PREVIEWS);
     assertTrue(
         AmbientObserver.shouldLogGooglePhotosPreviewsLoadPerformance,
         'still true because no previews stored yet');
 
-    personalizationStore.data.ambient.googlePhotosAlbumsPreviews = [
+    personalizationStore.data.ambient.previews = [
       {url: 'asdf'},
     ];
-    ambientProvider.ambientObserverRemote!.onGooglePhotosAlbumsPreviewsFetched(
-        []);
-    personalizationStore.expectAction(
-        AmbientActionName.SET_GOOGLE_PHOTOS_ALBUMS_PREVIEWS);
-    await personalizationStore.waitForAction(
-        AmbientActionName.SET_GOOGLE_PHOTOS_ALBUMS_PREVIEWS);
+    ambientProvider.ambientObserverRemote!.onPreviewsFetched([]);
+    personalizationStore.expectAction(AmbientActionName.SET_PREVIEWS);
+    await personalizationStore.waitForAction(AmbientActionName.SET_PREVIEWS);
     assertFalse(AmbientObserver.shouldLogGooglePhotosPreviewsLoadPerformance);
   });
 
   test('sets to false after receiving preview images', async () => {
-    personalizationStore.data.ambient.googlePhotosAlbumsPreviews = [];
-    ambientProvider.ambientObserverRemote!.onGooglePhotosAlbumsPreviewsFetched([
+    personalizationStore.data.ambient.previews = [];
+    ambientProvider.ambientObserverRemote!.onPreviewsFetched([
       {url: 'asdf'},
     ]);
-    personalizationStore.expectAction(
-        AmbientActionName.SET_GOOGLE_PHOTOS_ALBUMS_PREVIEWS);
-    await personalizationStore.waitForAction(
-        AmbientActionName.SET_GOOGLE_PHOTOS_ALBUMS_PREVIEWS);
+    personalizationStore.expectAction(AmbientActionName.SET_PREVIEWS);
+    await personalizationStore.waitForAction(AmbientActionName.SET_PREVIEWS);
     assertFalse(AmbientObserver.shouldLogGooglePhotosPreviewsLoadPerformance);
   });
 });

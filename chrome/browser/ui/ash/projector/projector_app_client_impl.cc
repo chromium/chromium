@@ -9,7 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/projector/annotator_tool.h"
-#include "ash/webui/projector_app/annotator_message_handler.h"
+#include "ash/webui/projector_app/annotator_page_handler_impl.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -155,26 +155,26 @@ void ProjectorAppClientImpl::GetVideo(
                                std::move(callback));
 }
 
-void ProjectorAppClientImpl::SetAnnotatorMessageHandler(
-    ash::AnnotatorMessageHandler* handler) {
-  annotator_message_handler_ = handler;
+void ProjectorAppClientImpl::SetAnnotatorPageHandler(
+    ash::AnnotatorPageHandlerImpl* handler) {
+  annotator_handler_ = handler;
 }
 
-void ProjectorAppClientImpl::ResetAnnotatorMessageHandler(
-    ash::AnnotatorMessageHandler* handler) {
-  if (annotator_message_handler_ == handler) {
-    annotator_message_handler_ = nullptr;
+void ProjectorAppClientImpl::ResetAnnotatorPageHandler(
+    ash::AnnotatorPageHandlerImpl* handler) {
+  if (annotator_handler_ == handler) {
+    annotator_handler_ = nullptr;
   }
 }
 
 void ProjectorAppClientImpl::SetTool(const ash::AnnotatorTool& tool) {
-  DCHECK(annotator_message_handler_);
-  annotator_message_handler_->SetTool(tool);
+  DCHECK(annotator_handler_);
+  annotator_handler_->SetTool(tool);
 }
 
 void ProjectorAppClientImpl::Clear() {
-  DCHECK(annotator_message_handler_);
-  annotator_message_handler_->Clear();
+  DCHECK(annotator_handler_);
+  annotator_handler_->Clear();
 }
 
 void ProjectorAppClientImpl::NotifyAppUIActive(bool active) {

@@ -7,8 +7,8 @@
  */
 
 // clang-format off
-import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {dedupingMixin, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert, assertNotReached} from '//resources/js/assert_ts.js';
 
 interface PaperRippleElement {
   clear(): void;
@@ -86,7 +86,9 @@ export const CrRadioButtonMixin = dedupingMixin(
         override connectedCallback() {
           super.connectedCallback();
           this.addEventListener('blur', this.hideRipple_.bind(this));
-          this.addEventListener('focus', this.onFocus_.bind(this));
+          if (!document.documentElement.hasAttribute('chrome-refresh-2023')) {
+            this.addEventListener('focus', this.onFocus_.bind(this));
+          }
           this.addEventListener('up', this.hideRipple_.bind(this));
         }
 

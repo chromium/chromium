@@ -37,16 +37,16 @@ namespace internal {
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
  public:
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-  static PA_ALWAYS_INLINE uintptr_t RegularPoolBaseMask() {
+  PA_ALWAYS_INLINE static uintptr_t RegularPoolBaseMask() {
     return setup_.regular_pool_base_mask_;
   }
 #else
-  static PA_ALWAYS_INLINE constexpr uintptr_t RegularPoolBaseMask() {
+  PA_ALWAYS_INLINE static constexpr uintptr_t RegularPoolBaseMask() {
     return kRegularPoolBaseMask;
   }
 #endif
 
-  static PA_ALWAYS_INLINE std::pair<pool_handle, uintptr_t> GetPoolAndOffset(
+  PA_ALWAYS_INLINE static std::pair<pool_handle, uintptr_t> GetPoolAndOffset(
       uintptr_t address) {
     // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
 #if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -76,10 +76,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     }
     return std::make_pair(pool, address - base);
   }
-  static PA_ALWAYS_INLINE constexpr size_t ConfigurablePoolMaxSize() {
+  PA_ALWAYS_INLINE static constexpr size_t ConfigurablePoolMaxSize() {
     return kConfigurablePoolMaxSize;
   }
-  static PA_ALWAYS_INLINE constexpr size_t ConfigurablePoolMinSize() {
+  PA_ALWAYS_INLINE static constexpr size_t ConfigurablePoolMinSize() {
     return kConfigurablePoolMinSize;
   }
 
@@ -100,7 +100,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   static void UninitForTesting();
   static void UninitConfigurablePoolForTesting();
 
-  static PA_ALWAYS_INLINE bool IsInitialized() {
+  PA_ALWAYS_INLINE static bool IsInitialized() {
     // Either neither or both regular and BRP pool are initialized. The
     // configurable and pkey pool are initialized separately.
     if (setup_.regular_pool_base_address_ != kUninitializedPoolBaseAddress) {
@@ -112,19 +112,19 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     return false;
   }
 
-  static PA_ALWAYS_INLINE bool IsConfigurablePoolInitialized() {
+  PA_ALWAYS_INLINE static bool IsConfigurablePoolInitialized() {
     return setup_.configurable_pool_base_address_ !=
            kUninitializedPoolBaseAddress;
   }
 
 #if BUILDFLAG(ENABLE_PKEYS)
-  static PA_ALWAYS_INLINE bool IsPkeyPoolInitialized() {
+  PA_ALWAYS_INLINE static bool IsPkeyPoolInitialized() {
     return setup_.pkey_pool_base_address_ != kUninitializedPoolBaseAddress;
   }
 #endif
 
   // Returns false for nullptr.
-  static PA_ALWAYS_INLINE bool IsInRegularPool(uintptr_t address) {
+  PA_ALWAYS_INLINE static bool IsInRegularPool(uintptr_t address) {
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
     const uintptr_t regular_pool_base_mask = setup_.regular_pool_base_mask_;
 #else
@@ -134,12 +134,12 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
            setup_.regular_pool_base_address_;
   }
 
-  static PA_ALWAYS_INLINE uintptr_t RegularPoolBase() {
+  PA_ALWAYS_INLINE static uintptr_t RegularPoolBase() {
     return setup_.regular_pool_base_address_;
   }
 
   // Returns false for nullptr.
-  static PA_ALWAYS_INLINE bool IsInBRPPool(uintptr_t address) {
+  PA_ALWAYS_INLINE static bool IsInBRPPool(uintptr_t address) {
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
     const uintptr_t brp_pool_base_mask = setup_.brp_pool_base_mask_;
 #else
@@ -151,7 +151,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 #if PA_CONFIG(GLUE_CORE_POOLS)
   // Checks whether the address belongs to either regular or BRP pool.
   // Returns false for nullptr.
-  static PA_ALWAYS_INLINE bool IsInCorePools(uintptr_t address) {
+  PA_ALWAYS_INLINE static bool IsInCorePools(uintptr_t address) {
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
     const uintptr_t core_pools_base_mask = setup_.core_pools_base_mask_;
 #else
@@ -166,40 +166,40 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     return ret;
   }
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-  static PA_ALWAYS_INLINE size_t CorePoolsSize() {
+  PA_ALWAYS_INLINE static size_t CorePoolsSize() {
     return RegularPoolSize() * 2;
   }
 #else
-  static PA_ALWAYS_INLINE constexpr size_t CorePoolsSize() {
+  PA_ALWAYS_INLINE static constexpr size_t CorePoolsSize() {
     return RegularPoolSize() * 2;
   }
 #endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 #endif  // PA_CONFIG(GLUE_CORE_POOLS)
 
-  static PA_ALWAYS_INLINE uintptr_t OffsetInBRPPool(uintptr_t address) {
+  PA_ALWAYS_INLINE static uintptr_t OffsetInBRPPool(uintptr_t address) {
     PA_DCHECK(IsInBRPPool(address));
     return address - setup_.brp_pool_base_address_;
   }
 
   // Returns false for nullptr.
-  static PA_ALWAYS_INLINE bool IsInConfigurablePool(uintptr_t address) {
+  PA_ALWAYS_INLINE static bool IsInConfigurablePool(uintptr_t address) {
     return (address & setup_.configurable_pool_base_mask_) ==
            setup_.configurable_pool_base_address_;
   }
 
-  static PA_ALWAYS_INLINE uintptr_t ConfigurablePoolBase() {
+  PA_ALWAYS_INLINE static uintptr_t ConfigurablePoolBase() {
     return setup_.configurable_pool_base_address_;
   }
 
 #if BUILDFLAG(ENABLE_PKEYS)
   // Returns false for nullptr.
-  static PA_ALWAYS_INLINE bool IsInPkeyPool(uintptr_t address) {
+  PA_ALWAYS_INLINE static bool IsInPkeyPool(uintptr_t address) {
     return (address & kPkeyPoolBaseMask) == setup_.pkey_pool_base_address_;
   }
 #endif
 
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
-  static PA_ALWAYS_INLINE std::ptrdiff_t ShadowPoolOffset(pool_handle pool) {
+  PA_ALWAYS_INLINE static std::ptrdiff_t ShadowPoolOffset(pool_handle pool) {
     if (pool == kRegularPoolHandle) {
       return regular_pool_shadow_offset_;
     } else if (pool == kBRPPoolHandle) {
@@ -222,20 +222,20 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 
  private:
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-  static PA_ALWAYS_INLINE size_t RegularPoolSize();
-  static PA_ALWAYS_INLINE size_t BRPPoolSize();
+  PA_ALWAYS_INLINE static size_t RegularPoolSize();
+  PA_ALWAYS_INLINE static size_t BRPPoolSize();
 #else
   // The pool sizes should be as large as maximum whenever possible.
-  constexpr static PA_ALWAYS_INLINE size_t RegularPoolSize() {
+  PA_ALWAYS_INLINE static constexpr size_t RegularPoolSize() {
     return kRegularPoolSize;
   }
-  constexpr static PA_ALWAYS_INLINE size_t BRPPoolSize() {
+  PA_ALWAYS_INLINE static constexpr size_t BRPPoolSize() {
     return kBRPPoolSize;
   }
 #endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 
 #if BUILDFLAG(ENABLE_PKEYS)
-  constexpr static PA_ALWAYS_INLINE size_t PkeyPoolSize() {
+  PA_ALWAYS_INLINE static constexpr size_t PkeyPoolSize() {
     return kPkeyPoolSize;
   }
 #endif

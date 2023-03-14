@@ -238,18 +238,16 @@ void ChromeSigninClient::OnConnectionChanged(
 }
 #endif
 
-void ChromeSigninClient::DelayNetworkCall(base::OnceClosure callback) {
+bool ChromeSigninClient::AreNetworkCallsDelayed() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Do not make network requests in unit tests. ash::NetworkHandler should
   // not be used and is not expected to have been initialized in unit tests.
   if (url_loader_factory_for_testing_ &&
       !ash::NetworkHandler::IsInitialized()) {
-    std::move(callback).Run();
-    return;
+    return false;
   }
-  ash::DelayNetworkCall(base::Milliseconds(ash::kDefaultNetworkRetryDelayMS),
-                        std::move(callback));
-  return;
+
+  return ash::AreNetworkCallsDelayed();
 #else
   // Don't bother if we don't have any kind of network connection.
   network::mojom::ConnectionType type;
@@ -258,11 +256,26 @@ void ChromeSigninClient::DelayNetworkCall(base::OnceClosure callback) {
                             weak_ptr_factory_.GetWeakPtr()));
   if (!sync || type == network::mojom::ConnectionType::CONNECTION_NONE) {
     // Connection type cannot be retrieved synchronously so delay the callback.
-    delayed_callbacks_.push_back(std::move(callback));
-  } else {
-    std::move(callback).Run();
+    return true;
   }
-#endif
+
+  return false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+void ChromeSigninClient::DelayNetworkCall(base::OnceClosure callback) {
+  if (!AreNetworkCallsDelayed()) {
+    std::move(callback).Run();
+    return;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::DelayNetworkCall(base::Milliseconds(ash::kDefaultNetworkRetryDelayMS),
+                        std::move(callback));
+#else
+  // This queue will be processed in `OnConnectionChanged()`.
+  delayed_callbacks_.push_back(std::move(callback));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 std::unique_ptr<GaiaAuthFetcher> ChromeSigninClient::CreateGaiaAuthFetcher(

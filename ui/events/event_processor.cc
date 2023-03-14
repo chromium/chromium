@@ -77,16 +77,13 @@ EventDispatchDetails EventProcessor::OnEventFromSource(Event* event) {
       target = targeter->FindNextBestTarget(target, event_to_dispatch);
     }
   }
-  OnEventProcessingFinished(event, target, details);
+  OnEventProcessingFinished(event);
   return details;
 }
 
 void EventProcessor::OnEventProcessingStarted(Event* event) {
 }
 
-void EventProcessor::OnEventProcessingFinished(
-    Event* event,
-    EventTarget* target,
-    const EventDispatchDetails& details) {}
+void EventProcessor::OnEventProcessingFinished(Event* event) {}
 
 }  // namespace ui

@@ -9,7 +9,6 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -149,6 +148,8 @@ CastMirroringServiceHost::CastMirroringServiceHost(
       gpu_client_(nullptr, base::OnTaskRunnerDeleter(nullptr)),
       tab_switching_ui_enabled_(IsAccessCodeCastTabSwitchingUIEnabled(
           source_media_id.web_contents_id)) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+
   // Observe the target WebContents for Tab mirroring.
   if (source_media_id_.type == content::DesktopMediaID::TYPE_WEB_CONTENTS)
     Observe(GetContents(source_media_id_.web_contents_id));
@@ -164,6 +165,7 @@ void CastMirroringServiceHost::Start(
     mojo::PendingRemote<mojom::CastMessageChannel> outbound_channel,
     mojo::PendingReceiver<mojom::CastMessageChannel> inbound_channel,
     const std::string& sink_name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Start() should not be called in the middle of a mirroring session.
   if (mirroring_service_) {
     LOG(WARNING) << "Unexpected Start() call during an active"
@@ -566,6 +568,17 @@ void CastMirroringServiceHost::OpenOffscreenTab(
   source_media_id_ = BuildMediaIdForWebContents(offscreen_tab_->web_contents());
   DCHECK_EQ(content::DesktopMediaID::TYPE_WEB_CONTENTS, source_media_id_.type);
   Observe(offscreen_tab_->web_contents());
+}
+
+void CastMirroringServiceHost::GetMirroringStats(
+    base::OnceCallback<void(const base::Value)> json_stats_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!mirroring_service_.is_bound()) {
+    std::move(json_stats_cb).Run(base::Value());
+    return;
+  }
+
+  mirroring_service_->GetMirroringStats(std::move(json_stats_cb));
 }
 
 }  // namespace mirroring

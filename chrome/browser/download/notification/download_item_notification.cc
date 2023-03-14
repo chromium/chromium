@@ -718,6 +718,12 @@ void DownloadItemNotification::OnImageDecoded(const SkBitmap& decoded_bitmap) {
 void DownloadItemNotification::OnImageCropped(const SkBitmap& bitmap) {
   gfx::Image image = gfx::Image::CreateFrom1xBitmap(bitmap);
   notification_->set_image(image);
+
+// Provide the file path that backs the image to facilitate notification drag.
+#if BUILDFLAG(IS_CHROMEOS)
+  notification_->set_image_path(item_->GetFullPath());
+#endif
+
   image_decode_status_ = DONE;
   UpdateNotificationData(!closed_, false);
 }

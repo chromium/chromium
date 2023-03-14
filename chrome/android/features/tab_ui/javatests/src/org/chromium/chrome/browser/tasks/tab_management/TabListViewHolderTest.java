@@ -41,6 +41,7 @@ import com.google.protobuf.ByteString;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -77,6 +78,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider.T
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider.TabFaviconFetcher;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.commerce.PriceTracking.BuyableProduct;
 import org.chromium.components.commerce.PriceTracking.PriceTrackingData;
@@ -110,6 +112,9 @@ import java.util.concurrent.atomic.AtomicInteger;
         "force-fieldtrials=Study/Group"})
 @Batch(Batch.UNIT_TESTS)
 public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
+
     @Rule
     public JniMocker mMocker = new JniMocker();
 
@@ -1002,8 +1007,8 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     @UiThreadTest
+    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void testFaviconFetcherAllViewsAndModels() {
-        TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.setForTesting(true);
         final TabFavicon tabFavicon =
                 new ResourceTabFavicon(newDrawable(), StaticTabFaviconType.ROUNDED_GLOBE);
         TabFaviconFetcher fetcher = new TabFaviconFetcher() {

@@ -194,8 +194,9 @@ template <class NodeType>
 inline Node* NodeTraversal::TraverseNextTemplate(NodeType& current) {
   if (current.hasChildren())
     return current.firstChild();
-  if (current.nextSibling())
+  if (current.HasNextSibling()) {
     return current.nextSibling();
+  }
   return NextAncestorSibling(current);
 }
 
@@ -206,14 +207,16 @@ inline Node* NodeTraversal::TraverseNextTemplate(NodeType& current,
     return current.firstChild();
   if (current == stay_within)
     return nullptr;
-  if (current.nextSibling())
+  if (current.HasNextSibling()) {
     return current.nextSibling();
+  }
   return NextAncestorSibling(current, stay_within);
 }
 
 inline Node* NodeTraversal::NextSkippingChildren(const Node& current) {
-  if (current.nextSibling())
+  if (current.HasNextSibling()) {
     return current.nextSibling();
+  }
   return NextAncestorSibling(current);
 }
 
@@ -221,8 +224,9 @@ inline Node* NodeTraversal::NextSkippingChildren(const Node& current,
                                                  const Node* stay_within) {
   if (current == stay_within)
     return nullptr;
-  if (current.nextSibling())
+  if (current.HasNextSibling()) {
     return current.nextSibling();
+  }
   return NextAncestorSibling(current, stay_within);
 }
 

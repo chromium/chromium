@@ -18,6 +18,7 @@
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_switches.h"
+#include "ui/gl/gl_utils.h"
 
 namespace gl {
 namespace {
@@ -382,9 +383,9 @@ void UpdateMonitorInfo() {
 void InitializeDirectComposition(GLDisplayEGL* display) {
   DCHECK(!g_dcomp_device);
 
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableDirectComposition))
+  if (GetGlWorkarounds().disable_direct_composition) {
     return;
+  }
 
   // Direct composition can only be used with ANGLE.
   if (gl::GetGLImplementation() != gl::kGLImplementationEGLANGLE)
@@ -409,13 +410,6 @@ void InitializeDirectComposition(GLDisplayEGL* display) {
       QueryD3D11DeviceObjectFromANGLE();
   if (!d3d11_device) {
     DLOG(ERROR) << "Failed to retrieve D3D11 device";
-    return;
-  }
-
-  // This will fail if the D3D device is "Microsoft Basic Display Adapter".
-  Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device;
-  if (FAILED(d3d11_device.As(&video_device))) {
-    DLOG(ERROR) << "Failed to retrieve video device";
     return;
   }
 
@@ -481,12 +475,15 @@ bool DirectCompositionOverlaysSupported() {
   UpdateOverlaySupport();
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  // Enable flag should be checked before the disable flag, so we could
+  // Enable flag should be checked before the disable workaround, so we could
   // overwrite GPU driver bug workarounds in testing.
-  if (command_line->HasSwitch(switches::kEnableDirectCompositionVideoOverlays))
+  if (command_line->HasSwitch(
+          switches::kEnableDirectCompositionVideoOverlays)) {
     return true;
-  if (command_line->HasSwitch(switches::kDisableDirectCompositionVideoOverlays))
+  }
+  if (GetGlWorkarounds().disable_direct_composition_video_overlays) {
     return false;
+  }
 
   return SupportsOverlays();
 }

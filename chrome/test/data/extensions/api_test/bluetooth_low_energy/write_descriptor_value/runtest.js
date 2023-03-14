@@ -9,7 +9,7 @@ function testWriteDescriptorValue() {
     chrome.test.sendMessage('fail');
     chrome.test.fail(error);
   }
-  chrome.test.assertTrue(descriptor != null, '\'descriptor\' is null');
+  chrome.test.assertNe(null, descriptor, '\'descriptor\' is null');
   chrome.test.assertEq(descId, descriptor.instanceId);
 
   chrome.test.assertEq(writeValue.byteLength, descriptor.value.byteLength);

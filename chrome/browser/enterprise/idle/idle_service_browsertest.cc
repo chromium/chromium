@@ -15,7 +15,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/idle/browser_closer.h"
+#include "chrome/browser/enterprise/idle/dialog_manager.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -172,14 +172,14 @@ class IdleServiceTest : public InProcessBrowserTest {
   }
 
   bool IsDialogOpen() const {
-    return enterprise_idle::BrowserCloser::GetInstance()
+    return enterprise_idle::DialogManager::GetInstance()
         ->IsDialogOpenForTesting();
   }
 
  private:
   testing::NiceMock<policy::MockConfigurationPolicyProvider>
       policy_providers_[2];
-  raw_ptr<MockIdleTimeProvider> idle_time_provider_;
+  raw_ptr<MockIdleTimeProvider, DanglingUntriaged> idle_time_provider_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   std::unique_ptr<ui::test::ScopedIdleProviderForTest> scoped_idle_provider_;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, DidNotClose) {
 
   EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillRepeatedly(Return(base::Seconds(61)));
-  BrowserCloser::GetInstance()->DismissDialogForTesting();
+  DialogManager::GetInstance()->DismissDialogForTesting();
   task_runner()->FastForwardBy(base::Seconds(30));
   EXPECT_EQ(1, GetBrowserCount(profile));
   EXPECT_FALSE(IsDialogOpen());
@@ -452,7 +452,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, DialogDismissedByUser) {
       .WillOnce(Return(base::Seconds(60)));
   task_runner()->FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(IsDialogOpen());
-  BrowserCloser::GetInstance()->DismissDialogForTesting();
+  DialogManager::GetInstance()->DismissDialogForTesting();
 
   EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillRepeatedly(Return(base::Seconds(75)));

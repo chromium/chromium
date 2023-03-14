@@ -90,6 +90,7 @@ class TaskQueueThrottlerTest : public testing::Test {
   void TearDown() override {
     wake_up_budget_pool_->RemoveThrottler(test_task_runner_->NowTicks(),
                                           task_queue_throttler_.get());
+    task_queue_throttler_.reset();
     timer_queue_->ShutdownTaskQueue();
   }
 

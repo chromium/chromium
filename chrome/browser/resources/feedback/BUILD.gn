@@ -16,7 +16,8 @@ build_webui("build") {
     "css/feedback.css",
     "css/feedback_shared_styles.css",
     "css/feedback_shared_vars.css",
-    "css/sys_info.css",
+    "css/logs_map_page.css",
+    "html/autofill_metadata_info.html",
     "html/default.html",
     "html/sys_info.html",
     "images/2x/button_butter_bar_close_hover.png",
@@ -36,8 +37,10 @@ build_webui("build") {
   }
 
   non_web_component_files = [
+    "js/autofill_metadata.ts",
     "js/feedback.ts",
     "js/feedback_util.ts",
+    "js/logs_map_page.ts",
     "js/questionnaire.ts",
     "js/sys_info.ts",
     "js/take_screenshot.ts",
@@ -48,5 +51,4 @@ build_webui("build") {
     "//tools/typescript/definitions/chrome_send.d.ts",
   ]
   ts_deps = [ "//ui/webui/resources/js:build_ts" ]
-  ts_use_local_config = false
 }

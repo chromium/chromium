@@ -194,7 +194,7 @@ class LiveCaptionUiRemoteDriverTest : public InProcessBrowserTest {
   }
 
  protected:
-  raw_ptr<captions::LiveCaptionController> controller_;
+  raw_ptr<captions::LiveCaptionController, DanglingUntriaged> controller_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

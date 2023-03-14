@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/html/canvas/ukm_parameters.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -50,7 +51,7 @@ class CORE_EXPORT CanvasRenderingContextHost : public CanvasResourceHost,
   void DidDraw() { DidDraw(SkIRect::MakeWH(width(), height())); }
 
   virtual void PreFinalizeFrame() = 0;
-  virtual void PostFinalizeFrame() = 0;
+  virtual void PostFinalizeFrame(CanvasResourceProvider::FlushReason) = 0;
   virtual bool PushFrame(scoped_refptr<CanvasResource>&& frame,
                          const SkIRect& damage_rect) = 0;
   virtual bool OriginClean() const = 0;

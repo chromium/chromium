@@ -334,7 +334,7 @@ bool GetPublicKeyBySpki(const std::string& spki,
     LOG(WARNING) << "Could not extract public key from SPKI.";
     return false;
   }
-  switch (EVP_PKEY_type(pkey->type)) {
+  switch (EVP_PKEY_id(pkey.get())) {
     case EVP_PKEY_RSA: {
       if (!VerifyRSAPublicExponent(pkey.get())) {
         return false;

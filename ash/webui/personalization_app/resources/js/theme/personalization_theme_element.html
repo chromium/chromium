@@ -18,6 +18,16 @@
 
   /* These cr-button styles are added here instead of cros-button-style because
   the specs for these buttons are different from others in the app. */
+  cr-button[aria-pressed=true] .text,
+  cr-button[aria-selected=true] .text {
+    color: var(--cros-button-label-color-primary) !important;
+  }
+
+  cr-button[aria-pressed=true] iron-icon,
+  cr-button[aria-selected=true] iron-icon {
+    --iron-icon-fill-color: var(--cros-button-label-color-primary) !important;
+  }
+
   cr-button .text,
   cr-button:hover .text  {
     color: var(--cros-text-color-secondary);
@@ -33,6 +43,11 @@
   cr-button:hover {
     background-color: rgba(var(--cros-ripple-color-rgb),
         var(--cros-button-primary-ripple-opacity));
+  }
+
+  cr-button[aria-pressed=true],
+  cr-button[aria-selected=true] {
+    background-color: var(--cros-button-background-color-primary) !important;
   }
 
   #selector {

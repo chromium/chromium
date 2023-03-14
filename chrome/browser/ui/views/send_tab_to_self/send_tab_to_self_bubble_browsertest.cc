@@ -74,12 +74,11 @@ class SendTabToSelfBubbleTest : public DialogBrowserTest {
       BrowserView::GetBrowserViewForBrowser(browser())
           ->ShowSendTabToSelfPromoBubble(web_contents,
                                          /*show_signin_button=*/true);
-    } else if (name == "ShowNoTargetDevicePromo") {
+    } else {
+      DCHECK_EQ(name, "ShowNoTargetDevicePromo");
       BrowserView::GetBrowserViewForBrowser(browser())
           ->ShowSendTabToSelfPromoBubble(web_contents,
                                          /*show_signin_button=*/false);
-    } else {
-      NOTREACHED();
     }
   }
 };

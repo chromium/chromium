@@ -692,11 +692,10 @@ bool ServiceWorkerGlobalScope::AddEventListenerInternal(
     // Count the update of fetch handlers after the initial evaluation.
     if (event_type == event_type_names::kFetch) {
       UseCounter::Count(
-          this,
-          WebFeature::kServiceWorkerFetchHandlerUpdateAfterInitialization);
+          this, WebFeature::kServiceWorkerFetchHandlerAddedAfterInitialization);
     }
-    UseCounter::Count(this,
-                      WebFeature::kServiceWorkerAddHandlerAfterInitialization);
+    UseCounter::Count(
+        this, WebFeature::kServiceWorkerEventHandlerAddedAfterInitialization);
   }
   return WorkerGlobalScope::AddEventListenerInternal(event_type, listener,
                                                      options);
@@ -2640,6 +2639,12 @@ ServiceWorkerGlobalScope::FetchHandlerType() {
       return mojom::blink::ServiceWorkerFetchHandlerType::kNotSkippable;
     }
   }
+  AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+      mojom::blink::ConsoleMessageSource::kJavaScript,
+      mojom::blink::ConsoleMessageLevel::kWarning,
+      "Fetch event handler is recognized as no-op. "
+      "No-op fetch handler may bring overhead during navigation. "
+      "Consider removing the handler if possible."));
   return mojom::blink::ServiceWorkerFetchHandlerType::kEmptyFetchHandler;
 }
 
@@ -2654,7 +2659,8 @@ bool ServiceWorkerGlobalScope::SetAttributeEventListener(
           WebFeature::kServiceWorkerFetchHandlerModifiedAfterInitialization);
     }
     UseCounter::Count(
-        this, WebFeature::kServiceWorkerSetAttributeHandlerAfterInitialization);
+        this,
+        WebFeature::kServiceWorkerEventHandlerModifiedAfterInitialization);
   }
   return WorkerGlobalScope::SetAttributeEventListener(event_type, listener);
 }

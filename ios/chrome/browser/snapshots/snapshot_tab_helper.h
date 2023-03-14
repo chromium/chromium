@@ -37,11 +37,11 @@ class SnapshotTabHelper : public web::WebStateObserver,
   // not owned by the tab helper.
   void SetSnapshotCache(SnapshotCache* snapshot_cache);
 
-  // Retrieves a color snapshot for the current page, invoking `callback`
-  // with the image. The callback may be called synchronously is there is
-  // a cached snapshot available in memory, otherwise it will be invoked
-  // asynchronously after retrieved from disk. Invokes `callback` with nil if a
-  // snapshot does not exist.
+  // Retrieves a color snapshot for the current page, invoking `callback` with
+  // the image. The callback may be called synchronously if there is a cached
+  // snapshot available in memory, otherwise it will be invoked asynchronously
+  // after retrieved from disk. Invokes `callback` with nil if a snapshot does
+  // not exist.
   void RetrieveColorSnapshot(void (^callback)(UIImage*));
 
   // Retrieves a grey snapshot for the current page, invoking `callback`

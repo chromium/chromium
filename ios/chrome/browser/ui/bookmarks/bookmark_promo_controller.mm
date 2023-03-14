@@ -10,6 +10,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
@@ -24,7 +25,7 @@
 @interface BookmarkPromoController () <SigninPromoViewConsumer,
                                        IdentityManagerObserverBridgeDelegate> {
   bool _isIncognito;
-  ChromeBrowserState* _browserState;
+  Browser* _browser;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserverBridge;
 }
@@ -41,27 +42,28 @@
 @synthesize shouldShowSigninPromo = _shouldShowSigninPromo;
 @synthesize signinPromoViewMediator = _signinPromoViewMediator;
 
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
-                            delegate:
-                                (id<BookmarkPromoControllerDelegate>)delegate
-                           presenter:(id<SigninPresenter>)presenter {
+- (instancetype)initWithBrowser:(Browser*)browser
+                       delegate:(id<BookmarkPromoControllerDelegate>)delegate
+                      presenter:(id<SigninPresenter>)presenter {
   self = [super init];
   if (self) {
     _delegate = delegate;
-    // Incognito browserState can go away before this class is released, this
-    // code avoids keeping a pointer to it.
+    ChromeBrowserState* browserState = browser->GetBrowserState();
+    // Incognito browser can go away before this class is released (once the
+    // last incognito winwdow is closed), this code avoids keeping a pointer to
+    // it.
     _isIncognito = browserState->IsOffTheRecord();
     if (!_isIncognito) {
-      _browserState = browserState;
+      _browser = browser;
       _identityManagerObserverBridge.reset(
           new signin::IdentityManagerObserverBridge(
-              IdentityManagerFactory::GetForBrowserState(_browserState), self));
+              IdentityManagerFactory::GetForBrowserState(browserState), self));
       _signinPromoViewMediator = [[SigninPromoViewMediator alloc]
           initWithAccountManagerService:ChromeAccountManagerServiceFactory::
-                                            GetForBrowserState(_browserState)
+                                            GetForBrowserState(browserState)
                             authService:AuthenticationServiceFactory::
-                                            GetForBrowserState(_browserState)
-                            prefService:_browserState->GetPrefs()
+                                            GetForBrowserState(browserState)
+                            prefService:browserState->GetPrefs()
                             accessPoint:signin_metrics::AccessPoint::
                                             ACCESS_POINT_BOOKMARK_MANAGER
                               presenter:presenter];
@@ -79,13 +81,13 @@
 - (void)shutdown {
   [_signinPromoViewMediator disconnect];
   _signinPromoViewMediator = nil;
-
+  _browser = nullptr;
   _identityManagerObserverBridge.reset();
 }
 
 - (void)hidePromoCell {
   DCHECK(!_isIncognito);
-  DCHECK(_browserState);
+  DCHECK(_browser);
   self.shouldShowSigninPromo = NO;
 }
 
@@ -102,17 +104,18 @@
     return;
   }
 
-  DCHECK(_browserState);
+  DCHECK(_browser);
+  ChromeBrowserState* browserState = _browser->GetBrowserState();
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(_browserState);
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
   if ([SigninPromoViewMediator
           shouldDisplaySigninPromoViewWithAccessPoint:
               signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER
                                 authenticationService:authenticationService
-                                          prefService:_browserState
+                                          prefService:browserState
                                                           ->GetPrefs()]) {
     signin::IdentityManager* identityManager =
-        IdentityManagerFactory::GetForBrowserState(_browserState);
+        IdentityManagerFactory::GetForBrowserState(browserState);
     self.shouldShowSigninPromo =
         !identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync);
   }

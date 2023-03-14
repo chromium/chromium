@@ -437,7 +437,8 @@ int DialogDelegate::GetCornerRadius() const {
 #endif
   if (params_.corner_radius)
     return *params_.corner_radius;
-  return LayoutProvider::Get()->GetCornerRadiusMetric(views::Emphasis::kMedium);
+  return LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::ShapeContextTokens::kDialogRadius);
 }
 
 std::unique_ptr<View> DialogDelegate::DisownFootnoteView() {

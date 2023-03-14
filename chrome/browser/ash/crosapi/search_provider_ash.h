@@ -71,6 +71,8 @@ class SearchProviderAsh : public mojom::SearchResultsPublisher,
       mojom::SearchStatus status,
       absl::optional<std::vector<mojom::SearchResultPtr>> results) override;
 
+  bool IsSearchControllerConnected() const;
+
  private:
   void BindPublisher(
       SearchResultsReceivedCallback callback,

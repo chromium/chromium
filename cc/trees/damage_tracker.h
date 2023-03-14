@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer_collections.h"
+#include "cc/paint/element_id.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace gfx {
@@ -103,11 +104,10 @@ class CC_EXPORT DamageTracker {
                                          const FilterOperations& filters);
 
   struct LayerRectMapData {
-    LayerRectMapData() : layer_id_(0), mailboxId_(0) {}
-    explicit LayerRectMapData(int layer_id)
-        : layer_id_(layer_id), mailboxId_(0) {}
-    void Update(const gfx::Rect& rect, unsigned int mailboxId) {
-      mailboxId_ = mailboxId;
+    LayerRectMapData() = default;
+    explicit LayerRectMapData(int layer_id) : layer_id_(layer_id) {}
+    void Update(const gfx::Rect& rect, unsigned int mailbox_id) {
+      mailbox_id_ = mailbox_id;
       rect_ = rect;
     }
 
@@ -115,17 +115,17 @@ class CC_EXPORT DamageTracker {
       return layer_id_ < other.layer_id_;
     }
 
-    int layer_id_;
-    unsigned int mailboxId_;
+    int layer_id_ = 0;
+    unsigned int mailbox_id_ = 0;
     gfx::Rect rect_;
   };
 
   struct SurfaceRectMapData {
-    SurfaceRectMapData() : surface_id_(0), mailboxId_(0) {}
-    explicit SurfaceRectMapData(uint64_t surface_id)
-        : surface_id_(surface_id), mailboxId_(0) {}
-    void Update(const gfx::Rect& rect, unsigned int mailboxId) {
-      mailboxId_ = mailboxId;
+    SurfaceRectMapData() = default;
+    explicit SurfaceRectMapData(ElementId surface_id)
+        : surface_id_(surface_id) {}
+    void Update(const gfx::Rect& rect, unsigned int mailbox_id) {
+      mailbox_id_ = mailbox_id;
       rect_ = rect;
     }
 
@@ -133,21 +133,21 @@ class CC_EXPORT DamageTracker {
       return surface_id_ < other.surface_id_;
     }
 
-    uint64_t surface_id_;
-    unsigned int mailboxId_;
+    ElementId surface_id_;
+    unsigned int mailbox_id_ = 0;
     gfx::Rect rect_;
   };
   typedef std::vector<LayerRectMapData> SortedRectMapForLayers;
   typedef std::vector<SurfaceRectMapData> SortedRectMapForSurfaces;
 
   LayerRectMapData& RectDataForLayer(int layer_id, bool* layer_is_new);
-  SurfaceRectMapData& RectDataForSurface(uint64_t surface_id,
+  SurfaceRectMapData& RectDataForSurface(ElementId surface_id,
                                          bool* layer_is_new);
 
   SortedRectMapForLayers rect_history_for_layers_;
   SortedRectMapForSurfaces rect_history_for_surfaces_;
 
-  unsigned int mailboxId_ = 0;
+  unsigned int mailbox_id_ = 0;
   DamageAccumulator current_damage_;
   // Damage from contributing render surface and layer
   bool has_damage_from_contributing_content_ = false;

@@ -81,6 +81,15 @@ BridgeConstants.CommandHandler = {
 };
 
 /** @public {!BridgeEntry} */
+BridgeConstants.Earcons = {
+  TARGET: 'Earcons',
+  Action: {
+    CANCEL_EARCON: 'cancelEarcon',
+    PLAY_EARCON: 'playEarcon',
+  },
+};
+
+/** @public {!BridgeEntry} */
 BridgeConstants.EventSource = {
   TARGET: 'EventSource',
   Action: {

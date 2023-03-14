@@ -37,4 +37,6 @@
 <translation id="7230956101631259640">안전한 Chrome 페이지를 보는 중</translation>
 <translation id="8187289872471304532">애플리케이션 &gt; 시스템 환경설정 &gt; 네트워크 &gt; 고급 &gt; 프록시로 이동한 다음
           선택된 프록시를 선택 취소합니다.</translation>
+<translation id="8232971017369963250">Chrome은 <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> 오픈소스 프로젝트를 통해 제작된 브라우저입니다.</translation>
+<translation id="8279509328145658601">Chrome은 다른 <ph name="BEGIN_LINK_OSS" />오픈소스 소프트웨어<ph name="END_LINK_OSS" />를 사용하여 제작된 브라우저입니다.</translation>
 </translationbundle>

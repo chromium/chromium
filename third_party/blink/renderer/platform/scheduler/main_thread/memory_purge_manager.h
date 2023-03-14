@@ -6,7 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MEMORY_PURGE_MANAGER_H_
 
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "third_party/blink/public/common/page/launching_process_state.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_lifecycle_state.h"
 
@@ -15,7 +17,8 @@ namespace blink {
 // Manages process-wide proactive memory purging.
 class PLATFORM_EXPORT MemoryPurgeManager {
  public:
-  MemoryPurgeManager(scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  explicit MemoryPurgeManager(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   MemoryPurgeManager(const MemoryPurgeManager&) = delete;
   MemoryPurgeManager& operator=(const MemoryPurgeManager&) = delete;
   ~MemoryPurgeManager();
@@ -48,8 +51,22 @@ class PLATFORM_EXPORT MemoryPurgeManager {
   // queued memory purge.
   void OnRendererForegrounded();
 
-  // The time of purging after all pages have been frozen.
-  static constexpr int kDefaultTimeToPurgeAfterFreezing = 0;
+  void SetPurgeDisabledForTesting(bool disabled) {
+    purge_disabled_for_testing_ = disabled;
+  }
+
+  // Disabled on Android, as it is not useful there. This is because we freeze
+  // tabs, and trigger a critical memory pressure notification at that point.
+  // This has been confirmed to not be necessary on Android in a field trial.
+  // See https://bugs.chromium.org/p/chromium/issues/detail?id=1335069#c3 for
+  // details.
+  static constexpr bool kPurgeEnabled =
+#if BUILDFLAG(IS_ANDROID)
+      false
+#else
+      true
+#endif
+      ;
 
   // The time of first purging after a renderer is backgrounded. The value was
   // initially set to 30 minutes, but it was reduced to 1 minute because this
@@ -58,8 +75,15 @@ class PLATFORM_EXPORT MemoryPurgeManager {
   //
   // Experiment results:
   // https://docs.google.com/document/d/1E88EYNlZE1DhmlgmjUnGnCAASm8-tWCAWXy8p53vmwc/edit?usp=sharing
-  static constexpr int kDefaultMinTimeToPurgeAfterBackgrounded = 1;
-  static constexpr int kDefaultMaxTimeToPurgeAfterBackgrounded = 4;
+  static constexpr base::TimeDelta kMinTimeToPurgeAfterBackgrounded =
+      base::Minutes(1);
+  static constexpr base::TimeDelta kMaxTimeToPurgeAfterBackgrounded =
+      base::Minutes(4);
+
+  // Only one second, not to delay, but to make sure that it runs after the
+  // non-delayed tasks.
+  static constexpr base::TimeDelta kFreezePurgeDelay =
+      base::TimeDelta(base::Seconds(1));
 
  private:
   // Starts |purge_timer_| to trigger a delayed memory purge. If the timer is
@@ -87,19 +111,19 @@ class PLATFORM_EXPORT MemoryPurgeManager {
 
   base::TimeDelta GetTimeToPurgeAfterBackgrounded() const;
 
-  bool renderer_backgrounded_;
+  bool purge_disabled_for_testing_ = false;
+  bool renderer_backgrounded_ = kLaunchingProcessIsBackgrounded;
 
   // Keeps track of whether a memory purge was requested as a consequence of the
   // renderer transitioning to a backgrounded state. Prevents purges from being
   // cancelled if a purge was requested upon backgrounding the renderer and the
   // renderer is still backgrounded. Supports the metrics collection associated
   // with the PurgeAndSuspend experiment.
-  bool backgrounded_purge_pending_;
+  bool backgrounded_purge_pending_ = false;
 
-  int total_page_count_;
-  int frozen_page_count_;
+  int total_page_count_ = 0;
+  int frozen_page_count_ = 0;
 
-  // Timer to delay memory purging.
   base::OneShotTimer purge_timer_;
 };
 

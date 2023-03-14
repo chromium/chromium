@@ -61,6 +61,7 @@
 <translation id="2573731672208488250">{HOURS,plural, =1{në 1 orë}other{në # orë}}</translation>
 <translation id="2583543531130364912">Kalibro ekranin me prekje</translation>
 <translation id="2586657967955657006">Kujtesa e fragmenteve</translation>
+<translation id="2653844658857826081">E RE</translation>
 <translation id="2666092431469916601">I sipërm</translation>
 <translation id="2701330563083355633">Ndarë nga <ph name="DEVICE_NAME" /></translation>
 <translation id="271033894570825754">E re</translation>
@@ -75,6 +76,7 @@
 <translation id="3157931365184549694">Restauro</translation>
 <translation id="3183922693828471536">Lëvize këtu</translation>
 <translation id="3234408098842461169">Shigjeta poshtë</translation>
+<translation id="3240426699337459095">Lidhja u kopjua</translation>
 <translation id="3291688615589870984">{DAYS,plural, =1{1 ditë}other{# ditë}}</translation>
 <translation id="3295886253693811851">Bëj një telefonatë nga</translation>
 <translation id="3306688585798492231">Ekrani i integruar</translation>

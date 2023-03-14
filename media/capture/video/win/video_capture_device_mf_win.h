@@ -9,6 +9,9 @@
 #ifndef MEDIA_CAPTURE_VIDEO_WIN_VIDEO_CAPTURE_DEVICE_MF_WIN_H_
 #define MEDIA_CAPTURE_VIDEO_WIN_VIDEO_CAPTURE_DEVICE_MF_WIN_H_
 
+#include <d3d11_4.h>
+#include <ks.h>
+#include <ksmedia.h>
 #include <mfcaptureengine.h>
 #include <mfidl.h>
 #include <mfreadwrite.h>
@@ -16,8 +19,10 @@
 #include <strmif.h>
 #include <wrl/client.h>
 
+#include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
@@ -81,6 +86,10 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
                        SetPhotoOptionsCallback callback) override;
   void OnUtilizationReport(media::VideoCaptureFeedback feedback) override;
 
+  // Captured configuration changes.
+  void OnCameraControlChange(REFGUID control_set, UINT32 id);
+  void OnCameraControlError(HRESULT status) const;
+
   // Captured new video data.
   void OnIncomingCapturedData(Microsoft::WRL::ComPtr<IMFMediaBuffer> buffer,
                               base::TimeTicks reference_time,
@@ -117,6 +126,10 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   absl::optional<int> camera_rotation() const { return camera_rotation_; }
 
  private:
+  class MFVideoCallback;
+
+  bool CreateMFCameraControlMonitor();
+  void DeinitVideoCallbacksControlsAndMonitors();
   HRESULT ExecuteHresultCallbackWithRetries(
       base::RepeatingCallback<HRESULT()> callback,
       MediaFoundationFunctionRequiringRetry which_function);
@@ -133,6 +146,15 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   HRESULT FillCapabilities(IMFCaptureSource* source,
                            bool photo,
                            CapabilityList* capabilities);
+  HRESULT SetAndCommitExtendedCameraControlFlags(
+      KSPROPERTY_CAMERACONTROL_EXTENDED_PROPERTY property_id,
+      ULONGLONG flags);
+  HRESULT SetCameraControlProperty(CameraControlProperty property,
+                                   long value,
+                                   long flags);
+  HRESULT SetVideoControlProperty(VideoProcAmpProperty property,
+                                  long value,
+                                  long flags);
   void OnError(VideoCaptureError error,
                const base::Location& from_here,
                HRESULT hr);
@@ -144,6 +166,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   HRESULT DeliverTextureToClient(ID3D11Texture2D* texture,
                                  base::TimeTicks reference_time,
                                  base::TimeDelta timestamp);
+  void OnCameraControlChangeInternal(REFGUID control_set, UINT32 id);
   void OnIncomingCapturedDataInternal(
       Microsoft::WRL::ComPtr<IMFMediaBuffer> buffer,
       base::TimeTicks reference_time,
@@ -163,6 +186,9 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   Microsoft::WRL::ComPtr<IMFMediaSource> source_;
   Microsoft::WRL::ComPtr<IAMCameraControl> camera_control_;
   Microsoft::WRL::ComPtr<IAMVideoProcAmp> video_control_;
+  // This is actually IMFCameraControlMonitor but using it here requires at
+  // least Windows SDK 10.0.22621.0 (for Windows 11 22H2).
+  Microsoft::WRL::ComPtr<IUnknown> camera_control_monitor_;
   Microsoft::WRL::ComPtr<IMFExtendedCameraController>
       extended_camera_controller_;
   Microsoft::WRL::ComPtr<IMFCaptureEngine> engine_;
@@ -186,6 +212,15 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   absl::optional<int> camera_rotation_;
   VideoCaptureParams params_;
   int num_restarts_ = 0;
+
+  struct ValueAndFlags {
+    long value;
+    long flags;
+  };
+
+  base::flat_map<UINT32, ValueAndFlags> set_camera_control_properties_;
+  base::flat_map<UINT32, ULONGLONG> set_extended_camera_control_flags_;
+  base::flat_map<UINT32, ValueAndFlags> set_video_control_properties_;
 
   // Main thread task runner, used to serialize work triggered by
   // IMFCaptureEngine callbacks (OnEvent, OnSample) and work triggered

@@ -62,16 +62,18 @@ void AddressPoolManager::GetPoolUsedSuperPages(
     pool_handle handle,
     std::bitset<kMaxSuperPagesInPool>& used) {
   Pool* pool = GetPool(handle);
-  if (!pool)
+  if (!pool) {
     return;
+  }
 
   pool->GetUsedSuperPages(used);
 }
 
 uintptr_t AddressPoolManager::GetPoolBaseAddress(pool_handle handle) {
   Pool* pool = GetPool(handle);
-  if (!pool)
+  if (!pool) {
     return 0;
+  }
 
   return pool->GetBaseAddress();
 }
@@ -92,11 +94,13 @@ uintptr_t AddressPoolManager::Reserve(pool_handle handle,
                                       uintptr_t requested_address,
                                       size_t length) {
   Pool* pool = GetPool(handle);
-  if (!requested_address)
+  if (!requested_address) {
     return pool->FindChunk(length);
+  }
   const bool is_available = pool->TryReserveChunk(requested_address, length);
-  if (is_available)
+  if (is_available) {
     return requested_address;
+  }
   return pool->FindChunk(length);
 }
 
@@ -163,8 +167,9 @@ uintptr_t AddressPoolManager::Pool::FindChunk(size_t requested_size) {
     // |end_bit| points 1 past the last bit that needs to be 0. If it goes past
     // |total_bits_|, return |nullptr| to signal no free chunk was found.
     size_t end_bit = beg_bit + need_bits;
-    if (end_bit > total_bits_)
+    if (end_bit > total_bits_) {
       return 0;
+    }
 
     bool found = true;
     for (; curr_bit < end_bit; ++curr_bit) {
@@ -176,8 +181,9 @@ uintptr_t AddressPoolManager::Pool::FindChunk(size_t requested_size) {
         // next outer loop pass from checking the same bits.
         beg_bit = curr_bit + 1;
         found = false;
-        if (bit_hint_ == curr_bit)
+        if (bit_hint_ == curr_bit) {
           ++bit_hint_;
+        }
       }
     }
 
@@ -212,12 +218,14 @@ bool AddressPoolManager::Pool::TryReserveChunk(uintptr_t address,
   const size_t need_bits = requested_size / kSuperPageSize;
   const size_t end_bit = begin_bit + need_bits;
   // Check that requested address is not too high.
-  if (end_bit > total_bits_)
+  if (end_bit > total_bits_) {
     return false;
+  }
   // Check if any bit of the requested region is set already.
   for (size_t i = begin_bit; i < end_bit; ++i) {
-    if (alloc_bitset_.test(i))
+    if (alloc_bitset_.test(i)) {
       return false;
+    }
   }
   // Otherwise, set the bits.
   for (size_t i = begin_bit; i < end_bit; ++i) {
@@ -520,8 +528,9 @@ bool AddressPoolManager::GetStats(AddressSpaceStats* stats) {
   // Get blocklist size.
   for (const auto& blocked :
        AddressPoolManagerBitmap::brp_forbidden_super_page_map_) {
-    if (blocked.load(std::memory_order_relaxed))
+    if (blocked.load(std::memory_order_relaxed)) {
       stats->blocklist_size += 1;
+    }
   }
 
   // Count failures in finding non-blocklisted addresses.

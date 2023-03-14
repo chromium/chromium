@@ -13,7 +13,6 @@
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 #include "components/reporting/proto/synced/record.pb.h"
@@ -105,7 +104,8 @@ class EncryptedReportingUploadProvider::UploadHelper
 
   // Upload client (protected by sequenced task runner). Once set, is used
   // repeatedly.
-  std::unique_ptr<UploadClient> upload_client_;
+  std::unique_ptr<UploadClient> upload_client_
+      GUARDED_BY_CONTEXT(sequenced_task_checker_);
 
   // Keep this last so that all weak pointers will be invalidated at the
   // beginning of destruction.
@@ -266,8 +266,7 @@ EncryptedReportingUploadProvider::EncryptedReportingUploadProvider(
           report_successful_upload_cb,
           encryption_key_attached_cb,
           std::move(upload_client_builder_cb),
-          base::ThreadPool::CreateSequencedTaskRunner(
-              {base::TaskPriority::BEST_EFFORT, base::MayBlock()}))) {
+          base::SequencedTaskRunner::GetCurrentDefault())) {
   helper_->PostNewUploadClientRequest();
 }
 

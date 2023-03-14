@@ -523,6 +523,8 @@ void FaviconHandler::OnDidDownloadFavicon(
       if (service_)
         service_->UnableToDownloadFavicon(image_url);
     } else if (http_status_code != 0) {
+      // `http_status_code` might be HTTP_OK here, but this is still
+      // considered an error since `bitmaps` is empty.
       error_other_than_404_found_ = true;
     }
   } else {

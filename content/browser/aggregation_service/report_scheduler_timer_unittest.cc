@@ -44,6 +44,8 @@ class MockReportSchedulerTimerDelegate : public ReportSchedulerTimer::Delegate {
               AdjustOfflineReportTimes,
               (base::OnceCallback<void(absl::optional<base::Time>)>),
               (override));
+
+  MOCK_METHOD(void, OnReportingPaused, (base::Time), (override));
 };
 
 class ReportSchedulerTimerTest : public testing::Test {
@@ -57,8 +59,11 @@ class ReportSchedulerTimerTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  raw_ptr<MockReportSchedulerTimerDelegate> timer_delegate_;
+
+  // Must outlive `timer_delegate_`.
   std::unique_ptr<ReportSchedulerTimer> timer_;
+
+  raw_ptr<MockReportSchedulerTimerDelegate> timer_delegate_;
 };
 
 TEST_F(ReportSchedulerTimerTest, SetTimer_FiredAtAppropriateTime) {
@@ -144,6 +149,7 @@ TEST_F(ReportSchedulerTimerTest, NetworkChange) {
     InSequence seq;
 
     EXPECT_CALL(*timer_delegate_, OnReportingTimeReached).Times(0);
+    EXPECT_CALL(*timer_delegate_, OnReportingPaused).Times(1);
     EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(*timer_delegate_, AdjustOfflineReportTimes);
   }

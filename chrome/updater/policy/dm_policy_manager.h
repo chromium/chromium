@@ -49,6 +49,7 @@ class DMPolicyManager : public PolicyManagerInterface {
   absl::optional<std::string> GetTargetChannel(
       const std::string& app_id) const override;
   absl::optional<std::vector<std::string>> GetForceInstallApps() const override;
+  absl::optional<std::vector<std::string>> GetAppsWithPolicy() const override;
 
  private:
   ~DMPolicyManager() override;

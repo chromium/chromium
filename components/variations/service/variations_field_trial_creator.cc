@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <cstdint>
 #include <memory>
 #include <set>
 #include <utility>
@@ -23,6 +24,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/pattern.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
@@ -342,8 +344,12 @@ VariationsFieldTrialCreator::GetClientFilterableStateForVersion(
   // lives until Chrome exits.
   auto IsEnterpriseCallback = base::BindRepeating(
       &VariationsServiceClient::IsEnterprise, base::Unretained(client_));
+  auto GoogleGroupsCallback = base::BindRepeating(
+      &VariationsFieldTrialCreator::GetGoogleGroupsFromPrefs,
+      base::Unretained(this));
   std::unique_ptr<ClientFilterableState> state =
-      std::make_unique<ClientFilterableState>(IsEnterpriseCallback);
+      std::make_unique<ClientFilterableState>(IsEnterpriseCallback,
+                                              GoogleGroupsCallback);
   state->locale = application_locale_;
   state->reference_date = GetReferenceDateForExpiryChecks(local_state());
   state->version = version;
@@ -577,6 +583,29 @@ bool VariationsFieldTrialCreator::IsSeedForFutureMilestone(bool is_safe_seed) {
 
   int client_milestone = version_info::GetMajorVersionNumberAsInt();
   return seed_milestone > client_milestone;
+}
+
+base::flat_set<uint64_t>
+VariationsFieldTrialCreator::GetGoogleGroupsFromPrefs() {
+  base::flat_set<uint64_t> groups = base::flat_set<uint64_t>();
+
+  const base::Value::Dict& profiles_dict =
+      local_state()->GetDict(prefs::kVariationsGoogleGroups);
+  for (const auto profile : profiles_dict) {
+    const base::Value::List& profile_groups = profile.second.GetList();
+    for (const auto& group_value : profile_groups) {
+      const std::string* group = group_value.GetIfString();
+      if (!group || group->empty()) {
+        continue;
+      }
+      uint64_t group_id;
+      if (!base::StringToUint64(*group, &group_id)) {
+        continue;
+      }
+      groups.insert(group_id);
+    }
+  }
+  return groups;
 }
 
 bool VariationsFieldTrialCreator::CreateTrialsFromSeed(

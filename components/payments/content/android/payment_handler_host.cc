@@ -58,8 +58,7 @@ void PaymentHandlerHost::UpdateWith(
     const base::android::JavaParamRef<jobject>& response_buffer) {
   mojom::PaymentRequestDetailsUpdatePtr response;
   bool success = mojom::PaymentRequestDetailsUpdate::Deserialize(
-      std::move(JavaByteBufferToNativeByteVector(env, response_buffer)),
-      &response);
+      JavaByteBufferToNativeByteVector(env, response_buffer), &response);
   DCHECK(success);
   payment_handler_host_.UpdateWith(std::move(response));
 }

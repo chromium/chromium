@@ -12,11 +12,11 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/cast_streaming/public/remoting_message_factories.h"
-#include "components/cast_streaming/public/remoting_proto_enum_utils.h"
-#include "components/cast_streaming/public/remoting_proto_utils.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/renderer.h"
+#include "media/cast/openscreen/remoting_message_factories.h"
+#include "media/cast/openscreen/remoting_proto_enum_utils.h"
+#include "media/cast/openscreen/remoting_proto_utils.h"
 #include "media/remoting/receiver_controller.h"
 #include "media/remoting/stream_provider.h"
 
@@ -127,7 +127,7 @@ void Receiver::OnReceivedRpc(
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(message);
 
-  cast_streaming::remoting::DispatchRendererRpcCall(message.get(), this);
+  media::cast::DispatchRendererRpcCall(message.get(), this);
 }
 
 void Receiver::SetRemoteHandle(int remote_handle) {
@@ -173,8 +173,8 @@ void Receiver::OnRendererInitialized(PipelineStatus status) {
   DCHECK(init_cb_);
   std::move(init_cb_).Run(status);
 
-  auto rpc = cast_streaming::remoting::CreateMessageForInitializationComplete(
-      status == PIPELINE_OK);
+  auto rpc = media::cast::CreateMessageForInitializationComplete(status ==
+                                                                 PIPELINE_OK);
   rpc->set_handle(remote_handle_);
   SendRpcMessageOnMainThread(std::move(rpc));
 }
@@ -207,7 +207,7 @@ void Receiver::OnRpcFlush(uint32_t audio_count, uint32_t video_count) {
 }
 
 void Receiver::OnFlushDone() {
-  auto rpc = cast_streaming::remoting::CreateMessageForFlushComplete();
+  auto rpc = media::cast::CreateMessageForFlushComplete();
   rpc->set_handle(remote_handle_);
   SendRpcMessageOnMainThread(std::move(rpc));
 }
@@ -235,14 +235,14 @@ void Receiver::OnRpcSetVolume(double volume) {
 
 void Receiver::SendMediaTimeUpdate() {
   // Issues RPC_RC_ONTIMEUPDATE RPC message.
-  auto rpc = cast_streaming::remoting::CreateMessageForMediaTimeUpdate(
-      renderer_->GetMediaTime());
+  auto rpc =
+      media::cast::CreateMessageForMediaTimeUpdate(renderer_->GetMediaTime());
   rpc->set_handle(remote_handle_);
   SendRpcMessageOnMainThread(std::move(rpc));
 }
 
 void Receiver::OnError(PipelineStatus status) {
-  auto rpc = cast_streaming::remoting::CreateMessageForError();
+  auto rpc = media::cast::CreateMessageForError();
   rpc->set_handle(remote_handle_);
   SendRpcMessageOnMainThread(std::move(rpc));
 }
@@ -252,22 +252,21 @@ void Receiver::OnFallback(PipelineStatus status) {
 }
 
 void Receiver::OnEnded() {
-  auto rpc = cast_streaming::remoting::CreateMessageForMediaEnded();
+  auto rpc = media::cast::CreateMessageForMediaEnded();
   rpc->set_handle(remote_handle_);
   SendRpcMessageOnMainThread(std::move(rpc));
   time_update_timer_.Stop();
 }
 
 void Receiver::OnStatisticsUpdate(const PipelineStatistics& stats) {
-  auto rpc = cast_streaming::remoting::CreateMessageForStatisticsUpdate(stats);
+  auto rpc = media::cast::CreateMessageForStatisticsUpdate(stats);
   rpc->set_handle(remote_handle_);
   SendRpcMessageOnMainThread(std::move(rpc));
 }
 
 void Receiver::OnBufferingStateChange(BufferingState state,
                                       BufferingStateChangeReason reason) {
-  auto rpc =
-      cast_streaming::remoting::CreateMessageForBufferingStateChange(state);
+  auto rpc = media::cast::CreateMessageForBufferingStateChange(state);
   rpc->set_handle(remote_handle_);
   SendRpcMessageOnMainThread(std::move(rpc));
 }
@@ -278,22 +277,19 @@ void Receiver::OnWaiting(WaitingReason reason) {
 }
 
 void Receiver::OnAudioConfigChange(const AudioDecoderConfig& config) {
-  auto rpc =
-      cast_streaming::remoting::CreateMessageForAudioConfigChange(config);
+  auto rpc = media::cast::CreateMessageForAudioConfigChange(config);
   rpc->set_handle(remote_handle_);
   SendRpcMessageOnMainThread(std::move(rpc));
 }
 
 void Receiver::OnVideoConfigChange(const VideoDecoderConfig& config) {
-  auto rpc =
-      cast_streaming::remoting::CreateMessageForVideoConfigChange(config);
+  auto rpc = media::cast::CreateMessageForVideoConfigChange(config);
   rpc->set_handle(remote_handle_);
   SendRpcMessageOnMainThread(std::move(rpc));
 }
 
 void Receiver::OnVideoNaturalSizeChange(const gfx::Size& size) {
-  auto rpc =
-      cast_streaming::remoting::CreateMessageForVideoNaturalSizeChange(size);
+  auto rpc = media::cast::CreateMessageForVideoNaturalSizeChange(size);
   rpc->set_handle(remote_handle_);
   SendRpcMessageOnMainThread(std::move(rpc));
 
@@ -302,8 +298,7 @@ void Receiver::OnVideoNaturalSizeChange(const gfx::Size& size) {
 }
 
 void Receiver::OnVideoOpacityChange(bool opaque) {
-  auto rpc =
-      cast_streaming::remoting::CreateMessageForVideoOpacityChange(opaque);
+  auto rpc = media::cast::CreateMessageForVideoOpacityChange(opaque);
   rpc->set_handle(remote_handle_);
   SendRpcMessageOnMainThread(std::move(rpc));
 }

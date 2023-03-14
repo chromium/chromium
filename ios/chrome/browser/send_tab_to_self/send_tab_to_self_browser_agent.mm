@@ -40,11 +40,11 @@ SendTabToSelfBrowserAgent::SendTabToSelfBrowserAgent(Browser* browser)
       model_(SendTabToSelfSyncServiceFactory::GetForBrowserState(
                  browser_->GetBrowserState())
                  ->GetSendTabToSelfModel()) {
-  model_->AddObserver(this);
-  browser_->AddObserver(this);
+  model_observation_.Observe(model_);
+  browser_observation_.Observe(browser_);
 }
 
-SendTabToSelfBrowserAgent::~SendTabToSelfBrowserAgent() {}
+SendTabToSelfBrowserAgent::~SendTabToSelfBrowserAgent() = default;
 
 void SendTabToSelfBrowserAgent::SendTabToSelfModelLoaded() {
   // TODO(crbug.com/949756): Push changes that happened before the model was
@@ -66,10 +66,13 @@ void SendTabToSelfBrowserAgent::EntriesAddedRemotely(
     // becomes visible again, or if the user changes tab or creates a new tab.
     if (web_state) {
       pending_web_state_ = web_state;
-      pending_web_state_->AddObserver(this);
+      web_state_observation_.Reset();
+      web_state_observation_.Observe(pending_web_state_);
     }
 
-    browser_->GetWebStateList()->AddObserver(this);
+    if (!web_state_list_observation_.IsObserving()) {
+      web_state_list_observation_.Observe(browser_->GetWebStateList());
+    }
 
     // Pick the most recent entry since only one Infobar can be shown at a time.
     // TODO(crbug.com/944602): Create a function that returns the most recently
@@ -121,20 +124,18 @@ void SendTabToSelfBrowserAgent::WebStateDestroyed(web::WebState* web_state) {
   DCHECK(pending_web_state_);
   DCHECK(pending_web_state_ == web_state);
 
-  pending_web_state_->RemoveObserver(this);
+  web_state_observation_.Reset();
   pending_web_state_ = nullptr;
 }
 
 void SendTabToSelfBrowserAgent::BrowserDestroyed(Browser* browser) {
-  model_->RemoveObserver(this);
+  model_observation_.Reset();
 
-  browser_->GetWebStateList()->RemoveObserver(this);
+  web_state_list_observation_.Reset();
 
-  if (pending_web_state_) {
-    pending_web_state_->RemoveObserver(this);
-  }
+  web_state_observation_.Reset();
 
-  browser_->RemoveObserver(this);
+  browser_observation_.Reset();
 }
 
 void SendTabToSelfBrowserAgent::DisplayInfoBar(
@@ -157,10 +158,8 @@ void SendTabToSelfBrowserAgent::DisplayInfoBar(
 void SendTabToSelfBrowserAgent::CleanUpObserversAndVariables() {
   pending_entry_ = nullptr;
 
-  browser_->GetWebStateList()->RemoveObserver(this);
+  web_state_list_observation_.Reset();
 
-  if (pending_web_state_) {
-    pending_web_state_->RemoveObserver(this);
-    pending_web_state_ = nullptr;
-  }
+  web_state_observation_.Reset();
+  pending_web_state_ = nullptr;
 }

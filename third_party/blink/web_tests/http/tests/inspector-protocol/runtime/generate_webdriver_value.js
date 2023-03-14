@@ -41,6 +41,7 @@
   await testExpression("document.body")
   await testExpression("window")
   await testExpression("document.querySelector('body > div')")
+  await testExpression("new URL('http://example.com')")
 
   testRunner.completeTest();
 

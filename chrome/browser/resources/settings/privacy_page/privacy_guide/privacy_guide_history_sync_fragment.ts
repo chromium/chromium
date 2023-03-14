@@ -18,7 +18,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {BaseMixin} from '../../base_mixin.js';
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
-import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideSettingsStates} from '../../metrics_browser_proxy.js';
+import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached} from '../../metrics_browser_proxy.js';
 import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes} from '../../people_page/sync_browser_proxy.js';
 import {routes} from '../../route.js';
 import {Route, RouteObserverMixin, Router} from '../../router.js';
@@ -90,16 +90,23 @@ export class PrivacyGuideHistorySyncFragmentElement extends
 
   override ready() {
     super.ready();
+    this.addEventListener('view-enter-start', this.onViewEnterStart_);
+    this.addEventListener('view-exit-finish', this.onViewExitFinish_);
 
     this.addWebUiListener(
         'sync-prefs-changed',
         (syncPrefs: SyncPrefs) => this.onSyncPrefsChange_(syncPrefs));
     this.syncBrowserProxy_.sendSyncPrefsChanged();
-    this.addEventListener('view-exit-finish', this.onViewExitFinish_);
   }
 
   override focus() {
     this.shadowRoot!.querySelector<HTMLElement>('[focus-element]')!.focus();
+  }
+
+  private onViewEnterStart_() {
+    this.metricsBrowserProxy_
+        .recordPrivacyGuideStepsEligibleAndReachedHistogram(
+            PrivacyGuideStepsEligibleAndReached.HISTORY_SYNC_REACHED);
   }
 
   private onViewExitFinish_() {

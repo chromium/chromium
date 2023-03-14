@@ -195,7 +195,7 @@ void QuicConnectionLogger::OnPacketSent(
       }
       break;
     case quic::ENCRYPTION_HANDSHAKE:
-      UMA_HISTOGRAM_CUSTOM_COUNTS("Net.QuicSession.SendPacketSize.Hanshake",
+      UMA_HISTOGRAM_CUSTOM_COUNTS("Net.QuicSession.SendPacketSize.Handshake",
                                   packet_length, 1, kMaxOutgoingPacketSize, 50);
       break;
     case quic::ENCRYPTION_ZERO_RTT:

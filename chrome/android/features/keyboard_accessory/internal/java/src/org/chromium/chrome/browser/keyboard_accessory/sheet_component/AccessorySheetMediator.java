@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.keyboard_accessory.sheet_component;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.ACTIVE_TAB_INDEX;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.NO_ACTIVE_TAB;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.PAGE_CHANGE_LISTENER;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.SHOW_KEYBOARD_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TABS;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TOP_SHADOW_VISIBLE;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.VISIBLE;
@@ -17,7 +18,11 @@ import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetTrigger;
+import org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
+import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator.SheetVisibilityDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable;
@@ -37,10 +42,15 @@ class AccessorySheetMediator implements PropertyObservable.PropertyObserver<Prop
                     mModel.set(TOP_SHADOW_VISIBLE, recyclerView.canScrollVertically(-1));
                 }
             };
+    private final SheetVisibilityDelegate mSheetVisibilityDelegate;
 
-    AccessorySheetMediator(PropertyModel model) {
+    AccessorySheetMediator(PropertyModel model, SheetVisibilityDelegate sheetVisibilityDelegate) {
         mModel = model;
         mModel.addObserver(this);
+        mSheetVisibilityDelegate = sheetVisibilityDelegate;
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) {
+            mModel.set(SHOW_KEYBOARD_CALLBACK, this::onKeyboardRequested);
+        }
     }
 
     @Nullable
@@ -90,28 +100,14 @@ class AccessorySheetMediator implements PropertyObservable.PropertyObserver<Prop
         mModel.set(ACTIVE_TAB_INDEX, position);
     }
 
-    /**
-     * Returns the position of a tab which needs to become the active tab. If the tab to be deleted
-     * is the active tab, return the item on its left. If it was the first item in the list, return
-     * the new first item. If no items remain, return {@link
-     * AccessorySheetProperties#NO_ACTIVE_TAB}.
-     * @param tabToBeDeleted The tab to be removed from the list.
-     * @return The position of the tab which should become active.
-     */
-    private int getNextActiveTab(KeyboardAccessoryData.Tab tabToBeDeleted) {
-        int activeTab = mModel.get(ACTIVE_TAB_INDEX);
-        for (int i = 0; i <= activeTab; i++) {
-            KeyboardAccessoryData.Tab tabLeftToActiveTab = mModel.get(TABS).get(i);
-            // If we delete the active tab or a tab left to it, the new active tab moves left.
-            if (tabLeftToActiveTab == tabToBeDeleted) {
-                --activeTab;
-                break;
-            }
-        }
-        if (activeTab >= 0) return activeTab; // The new active tab is valid.
-        // If there are items left, take the first one.
-        int itemCountAfterDeletion = mModel.get(TABS).size() - 1;
-        return itemCountAfterDeletion > 0 ? 0 : NO_ACTIVE_TAB;
+    private void onKeyboardRequested() {
+        // Return early if the button was clicked twice and the active tab was already reset.
+        if (mModel.get(ACTIVE_TAB_INDEX) == NO_ACTIVE_TAB) return;
+        ManualFillingMetricsRecorder.recordSheetTrigger(
+                mModel.get(TABS).get(mModel.get(ACTIVE_TAB_INDEX)).getRecordingType(),
+                AccessorySheetTrigger.MANUAL_CLOSE);
+        mModel.set(ACTIVE_TAB_INDEX, NO_ACTIVE_TAB);
+        mSheetVisibilityDelegate.onCloseAccessorySheet();
     }
 
     @Override
@@ -123,7 +119,8 @@ class AccessorySheetMediator implements PropertyObservable.PropertyObserver<Prop
             return;
         }
         if (propertyKey == ACTIVE_TAB_INDEX || propertyKey == AccessorySheetProperties.HEIGHT
-                || propertyKey == TOP_SHADOW_VISIBLE || propertyKey == PAGE_CHANGE_LISTENER) {
+                || propertyKey == TOP_SHADOW_VISIBLE || propertyKey == PAGE_CHANGE_LISTENER
+                || propertyKey == SHOW_KEYBOARD_CALLBACK) {
             return;
         }
         assert false : "Every property update needs to be handled explicitly!";

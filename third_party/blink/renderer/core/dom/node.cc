@@ -374,8 +374,9 @@ NodeList* Node::childNodes() {
 
 Node* Node::PseudoAwarePreviousSibling() const {
   Element* parent = parentElement();
-  if (!parent || previousSibling())
+  if (!parent || HasPreviousSibling()) {
     return previousSibling();
+  }
   switch (GetPseudoId()) {
     case kPseudoIdAfter:
       if (Node* previous = parent->lastChild())
@@ -399,8 +400,9 @@ Node* Node::PseudoAwarePreviousSibling() const {
 
 Node* Node::PseudoAwareNextSibling() const {
   Element* parent = parentElement();
-  if (!parent || nextSibling())
+  if (!parent || HasNextSibling()) {
     return nextSibling();
+  }
   switch (GetPseudoId()) {
     case kPseudoIdMarker:
       if (Node* next = parent->GetPseudoElement(kPseudoIdBefore))

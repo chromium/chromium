@@ -63,6 +63,8 @@ class BaseScreen {
 
   bool is_hidden() { return is_hidden_; }
 
+  virtual ScreenSummary GetScreenSummary();
+
  protected:
   virtual void ShowImpl() = 0;
   virtual void HideImpl() = 0;

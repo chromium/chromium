@@ -139,18 +139,18 @@ class FakeRtpTransceiver : public webrtc::RtpTransceiverInterface {
     RTC_DCHECK_NOTREACHED() << "Not implemented";
     return {};
   }
-  std::vector<webrtc::RtpHeaderExtensionCapability> HeaderExtensionsToOffer()
-      const override {
+  std::vector<webrtc::RtpHeaderExtensionCapability>
+  GetHeaderExtensionsToNegotiate() const override {
     return {};
   }
-  webrtc::RTCError SetOfferedRtpHeaderExtensions(
+  webrtc::RTCError SetHeaderExtensionsToNegotiate(
       rtc::ArrayView<const webrtc::RtpHeaderExtensionCapability>
-          header_extensions_to_offer) override {
+          header_extensions) override {
     return webrtc::RTCError(webrtc::RTCErrorType::UNSUPPORTED_OPERATION);
   }
 
-  std::vector<webrtc::RtpHeaderExtensionCapability> HeaderExtensionsNegotiated()
-      const override {
+  std::vector<webrtc::RtpHeaderExtensionCapability>
+  GetNegotiatedHeaderExtensions() const override {
     return {};
   }
 

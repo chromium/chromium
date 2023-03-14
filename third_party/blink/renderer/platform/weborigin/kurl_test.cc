@@ -1130,7 +1130,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Bool());
 
 TEST_P(KURLIPv4EmbeddedIPv6Test, IPv4EmbeddedIPv6Address) {
-  EXPECT_TRUE(KURL(u"http://[::1.2.3.4.]/").IsValid());
   EXPECT_TRUE(KURL(u"http://[::1.2.3.4]/").IsValid());
   EXPECT_FALSE(KURL(u"http://[::1.2.3.4.5]/").IsValid());
   EXPECT_FALSE(KURL(u"http://[::.1.2]/").IsValid());
@@ -1138,9 +1137,11 @@ TEST_P(KURLIPv4EmbeddedIPv6Test, IPv4EmbeddedIPv6Address) {
 
   if (base::FeatureList::IsEnabled(
           url::kStrictIPv4EmbeddedIPv6AddressParsing)) {
+    EXPECT_FALSE(KURL(u"http://[::1.2.3.4.]/").IsValid());
     EXPECT_FALSE(KURL(u"http://[::1.2]/").IsValid());
     EXPECT_FALSE(KURL(u"http://[::1.2.]/").IsValid());
   } else {
+    EXPECT_TRUE(KURL(u"http://[::1.2.3.4.]/").IsValid());
     EXPECT_TRUE(KURL(u"http://[::1.2]/").IsValid());
     EXPECT_TRUE(KURL(u"http://[::1.2.]/").IsValid());
   }

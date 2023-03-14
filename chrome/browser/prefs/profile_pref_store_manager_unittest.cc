@@ -285,8 +285,7 @@ class ProfilePrefStoreManagerTest : public testing::Test,
       std::string contents;
       EXPECT_TRUE(base::ReadFileToString(path, &contents));
       base::ReplaceSubstringsAfterOffset(&contents, 0u, find, replace);
-      EXPECT_EQ(static_cast<int>(contents.length()),
-                base::WriteFile(path, contents.c_str(), contents.length()));
+      EXPECT_TRUE(base::WriteFile(path, contents));
     }
   }
 

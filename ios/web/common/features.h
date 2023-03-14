@@ -61,9 +61,6 @@ BASE_DECLARE_FEATURE(kEnableFullscreenAPI);
 // should be used instead of directly checking this feature.
 BASE_DECLARE_FEATURE(kUseLoadSimulatedRequestForOfflinePage);
 
-// Feature flag that enable web page detected intents annotations.
-BASE_DECLARE_FEATURE(kEnableWebPageAnnotations);
-
 // Feature flag that enables getting more of the surrounding text when the user
 // long presses at a certain location.
 BASE_DECLARE_FEATURE(kLongPressSurroundingText);
@@ -84,6 +81,9 @@ BASE_DECLARE_FEATURE(kScrollViewProxyScrollEnabledWorkaround);
 
 // Feature flag to prevent navigation without user interaction.
 BASE_DECLARE_FEATURE(kPreventNavigationWithoutUserInteraction);
+
+// Feature flag to enable Web Inspector support.
+BASE_DECLARE_FEATURE(kEnableWebInspector);
 
 // When true, user control for camera and/or microphone access should be
 // enabled.

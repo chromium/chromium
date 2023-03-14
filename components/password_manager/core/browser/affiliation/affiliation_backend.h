@@ -94,8 +94,11 @@ class AffiliationBackend : public FacetManagerHost,
   void KeepPrefetchForFacets(std::vector<FacetURI> facet_uris);
   void TrimCacheForFacetURI(const FacetURI& facet_uri);
   void TrimUnusedCache(std::vector<FacetURI> facet_uris);
-  std::vector<GroupedFacets> GetAllGroups() const;
+  std::vector<GroupedFacets> GetGroupingInfo(
+      std::vector<FacetURI> facet_uris) const;
   std::vector<std::string> GetPSLExtensions() const;
+  void UpdateAffiliationsAndBranding(const std::vector<FacetURI>& facets,
+                                     base::OnceClosure callback);
 
   // Deletes the cache database file at |db_path|, and all auxiliary files. The
   // database must be closed before calling this.

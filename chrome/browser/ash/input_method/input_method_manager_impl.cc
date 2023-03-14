@@ -1319,8 +1319,6 @@ void InputMethodManagerImpl::MaybeNotifyImeMenuActivationChanged() {
   is_ime_menu_activated_ = state_->IsMenuActivated();
   for (auto& observer : ime_menu_observers_)
     observer.ImeMenuActivationChanged(is_ime_menu_activated_);
-  UMA_HISTOGRAM_BOOLEAN("InputMethod.ImeMenu.ActivationChanged",
-                        is_ime_menu_activated_);
 }
 
 void InputMethodManagerImpl::OverrideKeyboardKeyset(ImeKeyset keyset) {

@@ -9,6 +9,7 @@
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
@@ -64,10 +65,9 @@ class ConnectionPreserverImplTest : public testing::Test {
                                .SetPublicKey("local device")
                                .Build()),
         test_remote_devices_(multidevice::CreateRemoteDeviceRefListForTest(3)) {
-    std::transform(
-        test_remote_devices_.begin(), test_remote_devices_.end(),
-        std::back_inserter(test_remote_device_ids_),
-        [](const auto& remote_device) { return remote_device.GetDeviceId(); });
+    base::ranges::transform(test_remote_devices_,
+                            std::back_inserter(test_remote_device_ids_),
+                            &multidevice::RemoteDeviceRef::GetDeviceId);
   }
 
   void SetUp() override {

@@ -56,6 +56,19 @@ static_library("test_support") {
     "../browser/attribution_reporting/attribution_interop_runner.h",
     "../browser/attribution_reporting/attribution_test_utils.cc",
     "../browser/attribution_reporting/attribution_test_utils.h",
+    "../browser/attribution_reporting/test/configurable_storage_delegate.cc",
+    "../browser/attribution_reporting/test/configurable_storage_delegate.h",
+    "../browser/attribution_reporting/test/mock_attribution_host.cc",
+    "../browser/attribution_reporting/test/mock_attribution_host.h",
+    "../browser/attribution_reporting/test/mock_attribution_manager.cc",
+    "../browser/attribution_reporting/test/mock_attribution_manager.h",
+    "../browser/attribution_reporting/test/mock_attribution_observer.cc",
+    "../browser/attribution_reporting/test/mock_attribution_observer.h",
+    "../browser/attribution_reporting/test/mock_content_browser_client.h",
+    "../browser/attribution_reporting/test/mock_data_host.cc",
+    "../browser/attribution_reporting/test/mock_data_host.h",
+    "../browser/attribution_reporting/test/source_observer.cc",
+    "../browser/attribution_reporting/test/source_observer.h",
     "../browser/back_forward_cache_test_util.cc",
     "../browser/back_forward_cache_test_util.h",
     "../browser/background_fetch/background_fetch_test_base.cc",
@@ -154,6 +167,8 @@ static_library("test_support") {
     "../public/test/content_mock_cert_verifier.h",
     "../public/test/content_test_suite_base.cc",
     "../public/test/content_test_suite_base.h",
+    "../public/test/cursor_utils.cc",
+    "../public/test/cursor_utils.h",
     "../public/test/download_test_observer.cc",
     "../public/test/download_test_observer.h",
     "../public/test/embedded_worker_instance_test_harness.cc",
@@ -188,6 +203,8 @@ static_library("test_support") {
     "../public/test/javascript_test_observer.h",
     "../public/test/local_frame_host_interceptor.cc",
     "../public/test/local_frame_host_interceptor.h",
+    "../public/test/local_network_access_util.cc",
+    "../public/test/local_network_access_util.h",
     "../public/test/media_start_stop_observer.cc",
     "../public/test/media_start_stop_observer.h",
     "../public/test/mock_browsing_data_remover_delegate.cc",
@@ -234,8 +251,6 @@ static_library("test_support") {
     "../public/test/preloading_test_util.h",
     "../public/test/prerender_test_util.cc",
     "../public/test/prerender_test_util.h",
-    "../public/test/private_network_access_util.cc",
-    "../public/test/private_network_access_util.h",
     "../public/test/render_frame_host_test_support.cc",
     "../public/test/render_frame_host_test_support.h",
     "../public/test/render_view_test.cc",
@@ -1066,7 +1081,7 @@ ts_library("web_ui_mojo_test_build_ts") {
     "web_ui_ts_test.test-mojom-webui.ts",
     "web_ui_ts_test_types.test-mojom-webui.ts",
   ]
-  deps = [ "//ui/webui/resources/mojo:library" ]
+  deps = [ "//ui/webui/resources/mojo:build_ts" ]
   extra_deps = [
     ":preprocess_mojo_webui_test",
     ":web_ui_ts_test_mojo_bindings_ts__generator",
@@ -1806,6 +1821,7 @@ test("content_browsertests") {
       "../browser/renderer_host/direct_manipulation_win_browsertest.cc",
       "../browser/renderer_host/render_process_host_sandbox_policy_win_browsertest.cc",
       "../browser/scheduler/responsiveness/native_event_observer_browsertest_win.cc",
+      "../renderer/fluent_scrollbar_browsertest.cc",
     ]
 
     deps += [
@@ -1924,7 +1940,7 @@ test("content_browsertests") {
     deps += [ "//services/tracing:test_utils" ]
   }
 
-  if (!is_android && !is_fuchsia) {
+  if (is_chromeos) {
     sources += [ "../browser/smart_card/smart_card_browsertest.cc" ]
   }
 
@@ -1951,6 +1967,7 @@ test("content_browsertests") {
       "../browser/accessibility/hit_testing_mac_browsertest.mm",
       "../browser/form_controls_browsertest_mac.h",
       "../browser/form_controls_browsertest_mac.mm",
+      "../browser/gpu/browser_child_process_backgrounded_bridge_browsertest.mm",
       "../browser/keyboard_lock_browsertest_mac.mm",
       "../browser/pointer_lock_browsertest_mac.mm",
       "../browser/renderer_host/render_frame_host_impl_mac_browsertest.mm",
@@ -1969,6 +1986,7 @@ test("content_browsertests") {
       "../browser/keyboard_lock_browsertest_ios.mm",
       "../browser/pointer_lock_browsertest_ios.mm",
     ]
+    bundle_deps = [ ":content_shell_pak_bundle_data" ]
   }
 
   if (is_chromeos_ash) {
@@ -2168,9 +2186,7 @@ test("content_unittests") {
     "../browser/attribution_reporting/attribution_storage_unittest.cc",
     "../browser/attribution_reporting/attribution_utils_unittest.cc",
     "../browser/attribution_reporting/combinatorics_unittest.cc",
-    "../browser/attribution_reporting/common_source_info_unittest.cc",
     "../browser/attribution_reporting/rate_limit_table_unittest.cc",
-    "../browser/attribution_reporting/storable_source_unittest.cc",
     "../browser/background_fetch/background_fetch_cross_origin_filter_unittest.cc",
     "../browser/background_fetch/background_fetch_data_manager_unittest.cc",
     "../browser/background_fetch/background_fetch_delegate_proxy_unittest.cc",
@@ -2390,6 +2406,7 @@ test("content_unittests") {
     "../browser/preloading/prefetcher_unittest.cc",
     "../browser/preloading/preloading_attempt_impl_unittest.cc",
     "../browser/preloading/preloading_config_unittest.cc",
+    "../browser/preloading/preloading_data_impl_unittest.cc",
     "../browser/preloading/preloading_decider_unittest.cc",
     "../browser/preloading/prerender/prerender_host_registry_unittest.cc",
     "../browser/preloading/prerender/prerender_host_unittest.cc",
@@ -2438,6 +2455,7 @@ test("content_unittests") {
     "../browser/renderer_host/input/touchpad_pinch_event_queue_unittest.cc",
     "../browser/renderer_host/input/web_input_event_util_unittest.cc",
     "../browser/renderer_host/isolated_web_app_throttle_unittest.cc",
+    "../browser/renderer_host/local_network_access_util_unittest.cc",
     "../browser/renderer_host/media/audio_input_device_manager_unittest.cc",
     "../browser/renderer_host/media/audio_input_stream_handle_unittest.cc",
     "../browser/renderer_host/media/audio_output_authorization_handler_unittest.cc",
@@ -2472,7 +2490,6 @@ test("content_unittests") {
     "../browser/renderer_host/overscroll_controller_unittest.cc",
     "../browser/renderer_host/pending_beacon_host_unittest.cc",
     "../browser/renderer_host/policy_container_host_unittest.cc",
-    "../browser/renderer_host/private_network_access_util_unittest.cc",
     "../browser/renderer_host/recently_destroyed_hosts_unittest.cc",
     "../browser/renderer_host/render_frame_host_csp_context_unittest.cc",
     "../browser/renderer_host/render_frame_host_impl_unittest.cc",
@@ -2525,6 +2542,7 @@ test("content_unittests") {
     "../browser/service_worker/service_worker_version_unittest.cc",
     "../browser/shareable_file_reference_unittest.cc",
     "../browser/shared_storage/shared_storage_url_loader_factory_proxy_unittest.cc",
+    "../browser/site_instance_group_unittest.cc",
     "../browser/site_instance_impl_unittest.cc",
     "../browser/site_isolation_policy_unittest.cc",
     "../browser/sms/sms_fetcher_impl_unittest.cc",
@@ -2632,7 +2650,6 @@ test("content_unittests") {
     "../renderer/skia_benchmarking_extension_unittest.cc",
     "../renderer/v8_value_converter_impl_unittest.cc",
     "../renderer/worker/worker_thread_registry_unittest.cc",
-    "../services/shared_storage_worklet/module_script_downloader_unittest.cc",
     "../services/shared_storage_worklet/shared_storage_worklet_global_scope_unittest.cc",
     "navigation_simulator_unittest.cc",
     "test_aggregation_service_impl_unittest.cc",
@@ -2717,8 +2734,9 @@ test("content_unittests") {
   }
   if (is_ios) {
     bundle_deps = [
+      ":content_shell_pak_bundle_data",
       ":content_unittests_bundle_data",
-      ":content_unittests_pak_bundle_data",
+      "//media/test:media_bundle_data",
     ]
   }
 
@@ -3175,7 +3193,7 @@ test("content_unittests") {
 }
 
 if (is_ios) {
-  bundle_data("content_unittests_pak_bundle_data") {
+  bundle_data("content_shell_pak_bundle_data") {
     testonly = true
     public_deps = [ "//content/shell:pak" ]
     sources = [ "$root_out_dir/content_shell.pak" ]

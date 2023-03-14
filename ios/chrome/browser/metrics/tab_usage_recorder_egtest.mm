@@ -374,12 +374,6 @@ void SwitchToNormalMode() {
   [ChromeEarlGrey evictOtherBrowserTabs];
   GREYAssertTrue([ChromeEarlGrey isIncognitoMode],
                  @"Failed to switch to incognito mode");
-  NSError* error = [MetricsAppInterface
-      expectTotalCount:0
-          forHistogram:@(tab_usage_recorder::kEvictedTabReloadTime)];
-  if (error) {
-    GREYFail([error description]);
-  }
 
   // Switch back to the normal tabs.
   SwitchToNormalMode();
@@ -400,24 +394,11 @@ void SwitchToNormalMode() {
       selectElementWithMatcher:chrome_test_util::OmniboxText(url2.GetContent())]
       assertWithMatcher:grey_notNil()];
 
-  error = [MetricsAppInterface
-      expectTotalCount:1
-          forHistogram:@(tab_usage_recorder::kEvictedTabReloadTime)];
-  if (error) {
-    GREYFail([error description]);
-  }
-
   [ChromeEarlGrey selectTabAtIndex:0];
   [ChromeEarlGrey waitForWebStateContainingText:kURL1FirstWord];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::OmniboxText(url1.GetContent())]
       assertWithMatcher:grey_notNil()];
-  error = [MetricsAppInterface
-      expectTotalCount:2
-          forHistogram:@(tab_usage_recorder::kEvictedTabReloadTime)];
-  if (error) {
-    GREYFail([error description]);
-  }
 }
 
 // Verify correct recording of metrics when the reloading of an evicted tab
@@ -436,23 +417,9 @@ void SwitchToNormalMode() {
 
   NSError* error = [MetricsAppInterface
       expectUniqueSampleWithCount:1
-                        forBucket:tab_usage_recorder::LOAD_SUCCESS
-                     forHistogram:
-                         @(tab_usage_recorder::kEvictedTabReloadSuccessRate)];
-  if (error) {
-    GREYFail([error description]);
-  }
-  error = [MetricsAppInterface
-      expectUniqueSampleWithCount:1
                         forBucket:tab_usage_recorder::USER_WAITED
                      forHistogram:@(tab_usage_recorder::
                                         kDidUserWaitForEvictedTabReload)];
-  if (error) {
-    GREYFail([error description]);
-  }
-  error = [MetricsAppInterface
-      expectTotalCount:1
-          forHistogram:@(tab_usage_recorder::kEvictedTabReloadTime)];
   if (error) {
     GREYFail([error description]);
   }
@@ -508,9 +475,6 @@ void SwitchToNormalMode() {
     (void)unused;
   }
 
-
-  // Do not test the kEvictedTabReloadSuccessRate, as the timing of the two
-  // page loads cannot be guaranteed.  The test would be flaky.
   NSError* error = [MetricsAppInterface
        expectCount:1
          forBucket:tab_usage_recorder::USER_DID_NOT_WAIT

@@ -77,17 +77,18 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
 
     /* Shows the accounts in a bottom sheet UI allowing user to select one.
      *
-     * @param rpForDisplay is the formatted RP URL to display in the FedCM prompt.
+     * @param topFrameForDisplay is the formatted RP top frame URL to display in the FedCM prompt.
+     * @param iframeForDisplay is the formatted RP iframe URL to display in the FedCM prompt.
      * @param idpForDisplay is the formatted IDP URL to display in the FedCM prompt.
      * @param accounts is the list of accounts to be shown.
      * @param isAutoReauthn represents whether this is an auto re-authn flow.
      */
     @CalledByNative
-    private void showAccounts(String rpForDisplay, String idpForDisplay, Account[] accounts,
-            IdentityProviderMetadata idpMetadata, ClientIdMetadata clientIdMetadata,
-            boolean isAutoReauthn) {
+    private void showAccounts(String topFrameForDisplay, String iframeForDisplay,
+            String idpForDisplay, Account[] accounts, IdentityProviderMetadata idpMetadata,
+            ClientIdMetadata clientIdMetadata, boolean isAutoReauthn) {
         assert accounts != null && accounts.length > 0;
-        mAccountSelectionComponent.showAccounts(rpForDisplay, idpForDisplay,
+        mAccountSelectionComponent.showAccounts(topFrameForDisplay, iframeForDisplay, idpForDisplay,
                 Arrays.asList(accounts), idpMetadata, clientIdMetadata, isAutoReauthn);
     }
 

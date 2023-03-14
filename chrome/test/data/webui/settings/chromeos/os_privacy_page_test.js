@@ -397,6 +397,40 @@ suite('PrivacyPageTests', function() {
         1);
   });
 
+  test('Send HaTS messages', async () => {
+    loadTimeData.overrideValues({
+      isPrivacyHubHatsEnabled: true,
+    });
+
+    const privacyHubBrowserProxy = new TestPrivacyHubBrowserProxy();
+    PrivacyHubBrowserProxyImpl.setInstanceForTesting(privacyHubBrowserProxy);
+
+    privacyPage = document.createElement('os-settings-privacy-page');
+    document.body.appendChild(privacyPage);
+
+    await waitAfterNextRender(privacyPage);
+
+    assertEquals(privacyHubBrowserProxy.sendOpenedOsPrivacyPageCalled, 0);
+    assertEquals(privacyHubBrowserProxy.sendLeftOsPrivacyPageCalled, 1);
+
+    const params = new URLSearchParams();
+    params.append('settingId', '1101');
+    Router.getInstance().navigateTo(routes.OS_PRIVACY, params);
+
+    flush();
+
+    assertEquals(privacyHubBrowserProxy.sendOpenedOsPrivacyPageCalled, 1);
+    assertEquals(privacyHubBrowserProxy.sendLeftOsPrivacyPageCalled, 1);
+
+    params.set('settingId', '1105');
+    Router.getInstance().navigateTo(routes.ACCOUNTS, params);
+
+    flush();
+
+    assertEquals(privacyHubBrowserProxy.sendOpenedOsPrivacyPageCalled, 1);
+    assertEquals(privacyHubBrowserProxy.sendLeftOsPrivacyPageCalled, 2);
+  });
+
   // TODO(crbug.com/1262869): add a test for deep linking to snopping setting
   //                          once it has been added.
 });

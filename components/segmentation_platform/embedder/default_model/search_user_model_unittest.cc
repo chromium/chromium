@@ -45,22 +45,14 @@ TEST_F(SearchUserModelTest, ExecuteModelWithInput) {
 
   EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{}));
 
-  std::string subsegment_key = GetSubsegmentKey(kSearchUserKey);
   ModelProvider::Request input = {0};
-  ExecuteWithInputAndCheckSubsegmentName<SearchUserModel>(
-      input, subsegment_key, /*sub_segment_name=*/"None");
+  ExpectClassifierResults(/*input=*/{0}, {kSearchUserModelLabelNone});
 
-  input[0] = 1;
-  ExecuteWithInputAndCheckSubsegmentName<SearchUserModel>(
-      input, subsegment_key, /*sub_segment_name=*/"Low");
+  ExpectClassifierResults(/*input=*/{1}, {kSearchUserModelLabelLow});
 
-  input[0] = 5;
-  ExecuteWithInputAndCheckSubsegmentName<SearchUserModel>(
-      input, subsegment_key, /*sub_segment_name=*/"Medium");
+  ExpectClassifierResults(/*input=*/{5}, {kSearchUserModelLabelMedium});
 
-  input[0] = 22;
-  ExecuteWithInputAndCheckSubsegmentName<SearchUserModel>(
-      input, subsegment_key, /*sub_segment_name=*/"High");
+  ExpectClassifierResults(/*input=*/{22}, {kSearchUserModelLabelHigh});
 }
 
 }  // namespace segmentation_platform

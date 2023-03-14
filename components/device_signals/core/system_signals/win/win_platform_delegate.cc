@@ -31,22 +31,17 @@ namespace device_signals {
 
 namespace {
 
-struct FreeCertBufferFunctor {
-  void operator()(WIN_CERTIFICATE* certificate) const {
-    if (certificate) {
-      delete[] reinterpret_cast<char*>(certificate);
-    }
-  }
-};
-
-// Returns the SHA-256 hash for the DER-encoded SPKI from the first signer
-// cert chain's leaf cert. Return absl::nullopt if unable to get to that
+// Returns the SHA-256 hash for the DER-encoded SPKI and subject from the first
+// signer cert chain's leaf cert. Return absl::nullopt if unable to get to that
 // certificate.
-absl::optional<std::string> GetSPKIHash(HANDLE verify_trust_state_data) {
+std::pair<absl::optional<std::string>, absl::optional<std::string>> GetSPKIHash(
+    HANDLE verify_trust_state_data) {
+  std::pair<absl::optional<std::string>, absl::optional<std::string>> ret;
+
   CRYPT_PROVIDER_DATA* crypt_provider_data =
       WTHelperProvDataFromStateData(verify_trust_state_data);
   if (!crypt_provider_data) {
-    return absl::nullopt;
+    return ret;
   }
 
   CRYPT_PROVIDER_SGNR* provider_sgnr =
@@ -55,32 +50,49 @@ absl::optional<std::string> GetSPKIHash(HANDLE verify_trust_state_data) {
                                      /*fCounterSigner=*/false,
                                      /*idxCounterSigner=*/0);
   if (!provider_sgnr) {
-    return absl::nullopt;
+    return ret;
   }
 
   CRYPT_PROVIDER_CERT* provider_cert =
       WTHelperGetProvCertFromChain(provider_sgnr, /*idcCert=*/0);
 
   if (!provider_cert || !provider_cert->pChainElement) {
-    return absl::nullopt;
+    return ret;
   }
 
   const CERT_CHAIN_ELEMENT* element = provider_cert->pChainElement;
   const CERT_CONTEXT* cert_context = element->pCertContext;
-  if (!cert_context || !cert_context->pbCertEncoded) {
-    return absl::nullopt;
+  if (!cert_context) {
+    return ret;
   }
 
-  base::StringPiece der_bytes(
-      reinterpret_cast<const char*>(cert_context->pbCertEncoded),
-      cert_context->cbCertEncoded);
+  // Get the hash and subject.
+  if (cert_context->pbCertEncoded) {
+    base::StringPiece der_bytes(
+        reinterpret_cast<const char*>(cert_context->pbCertEncoded),
+        cert_context->cbCertEncoded);
 
-  base::StringPiece spki;
-  if (!net::asn1::ExtractSPKIFromDERCert(der_bytes, &spki)) {
-    return absl::nullopt;
+    base::StringPiece spki;
+    if (net::asn1::ExtractSPKIFromDERCert(der_bytes, &spki)) {
+      ret.first = crypto::SHA256HashString(spki);
+    }
+
+    // Get the subject. First ask how long the name is, including null
+    // terminator.
+    size_t length = CertGetNameStringA(
+        cert_context, CERT_NAME_SIMPLE_DISPLAY_TYPE, /*dwFlags=*/0,
+        /*pvTypePara=*/nullptr, /*pszNameString=*/nullptr, /*cchNameString=*/0);
+    if (length > 0) {
+      std::vector<char> subject(length);
+      CertGetNameStringA(
+          cert_context, CERT_NAME_SIMPLE_DISPLAY_TYPE, /*dwFlags=*/0,
+          /*pvTypePara=*/nullptr, /*pszNameString=*/subject.data(),
+          /*cchNameString=*/subject.size());
+      ret.second = subject.data();
+    }
   }
 
-  return crypto::SHA256HashString(spki);
+  return ret;
 }
 
 }  // namespace
@@ -94,10 +106,10 @@ bool WinPlatformDelegate::ResolveFilePath(const base::FilePath& file_path,
   return ResolvePath(file_path, resolved_file_path);
 }
 
-absl::optional<std::vector<std::string>>
-WinPlatformDelegate::GetSigningCertificatesPublicKeyHashes(
+absl::optional<PlatformDelegate::SigningCertificatesPublicKeys>
+WinPlatformDelegate::GetSigningCertificatesPublicKeys(
     const base::FilePath& file_path) {
-  std::vector<std::string> spki_hashes;
+  SigningCertificatesPublicKeys public_keys;
 
   WINTRUST_FILE_INFO file_info{};
   file_info.cbStruct = sizeof(file_info);
@@ -131,15 +143,20 @@ WinPlatformDelegate::GetSigningCertificatesPublicKeyHashes(
 
   GUID policy_guid = WINTRUST_ACTION_GENERIC_VERIFY_V2;
 
-  WinVerifyTrust(static_cast<HWND>(INVALID_HANDLE_VALUE), &policy_guid,
-                 &wintrust_data);
-  auto primary_spki_hash = GetSPKIHash(wintrust_data.hWVTStateData);
-  if (!primary_spki_hash) {
+  LONG trust = WinVerifyTrust(static_cast<HWND>(INVALID_HANDLE_VALUE),
+                              &policy_guid, &wintrust_data);
+  auto primary_hash_subject = GetSPKIHash(wintrust_data.hWVTStateData);
+  if (!primary_hash_subject.first) {
     // No values could be extracted for the primary signature, return early.
-    return spki_hashes;
+    return public_keys;
   }
 
-  spki_hashes.push_back(primary_spki_hash.value());
+  public_keys.is_os_verified = trust == 0;
+  public_keys.hashes.push_back(primary_hash_subject.first.value());
+
+  if (primary_hash_subject.second) {
+    public_keys.subject_name = primary_hash_subject.second.value();
+  }
 
   // Collect SPKI hashes for secondary signatures' certs.
   DWORD secondary_signatures_count =
@@ -158,9 +175,9 @@ WinPlatformDelegate::GetSigningCertificatesPublicKeyHashes(
     WinVerifyTrust(static_cast<HWND>(INVALID_HANDLE_VALUE), &policy_guid,
                    &wintrust_data);
 
-    auto secondary_spki_hash = GetSPKIHash(wintrust_data.hWVTStateData);
-    if (secondary_spki_hash) {
-      spki_hashes.push_back(secondary_spki_hash.value());
+    auto secondary_hash_subject = GetSPKIHash(wintrust_data.hWVTStateData);
+    if (secondary_hash_subject.first) {
+      public_keys.hashes.push_back(secondary_hash_subject.first.value());
     }
   }
 
@@ -169,7 +186,7 @@ WinPlatformDelegate::GetSigningCertificatesPublicKeyHashes(
   WinVerifyTrust(static_cast<HWND>(INVALID_HANDLE_VALUE), &policy_guid,
                  &wintrust_data);
 
-  return spki_hashes;
+  return public_keys;
 }
 
 }  // namespace device_signals

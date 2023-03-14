@@ -18,6 +18,10 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/gfx/geometry/rect.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
+#endif
+
 void EnterFullscreen(Browser* browser) {
   browser->exclusive_access_manager()
       ->fullscreen_controller()
@@ -108,7 +112,11 @@ IN_PROC_BROWSER_TEST_F(TabSearchBubbleHostBrowserTest,
 
 class FullscreenTabSearchBubbleDialogTest : public DialogBrowserTest {
  public:
-  FullscreenTabSearchBubbleDialogTest() = default;
+  FullscreenTabSearchBubbleDialogTest() {
+#if BUILDFLAG(IS_CHROMEOS)
+    chromeos::MultitaskMenuNudgeController::SetSuppressNudgeForTesting(true);
+#endif
+  }
 
   FullscreenTabSearchBubbleDialogTest(
       const FullscreenTabSearchBubbleDialogTest&) = delete;

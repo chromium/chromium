@@ -13,7 +13,11 @@ use std::pin::Pin;
 /// UTF8 byte order mark.
 const UTF8_BOM: [u8; 3] = [0xef, 0xbb, 0xbf];
 
-/// C++ bindings.
+/// C++ bindings
+// Requires this allow since cxx generates unsafe code.
+//
+// TODO(crbug.com/1422745): patch upstream cxx to generate compatible code.
+#[allow(unsafe_op_in_unsafe_fn)]
 #[cxx::bridge(namespace=serde_json_lenient)]
 mod ffi {
     // From the `wrapper_functions` target.

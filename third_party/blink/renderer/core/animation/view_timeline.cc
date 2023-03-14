@@ -35,7 +35,7 @@ double ComputeOffset(Element* source_element,
                      LayoutBox* subject_layout,
                      LayoutBox* source_layout,
                      ScrollOrientation physical_orientation) {
-  MapCoordinatesFlags flags = kIgnoreScrollOffset;
+  MapCoordinatesFlags flags = kIgnoreScrollOffset | kIgnoreTransforms;
   gfx::PointF point = gfx::PointF(subject_layout->LocalToAncestorPoint(
       PhysicalOffset(), source_layout, flags));
 
@@ -286,10 +286,10 @@ AnimationTimeDelta ViewTimeline::CalculateIntrinsicIterationDuration(
 absl::optional<ScrollTimeline::ScrollOffsets> ViewTimeline::CalculateOffsets(
     PaintLayerScrollableArea* scrollable_area,
     ScrollOrientation physical_orientation) const {
-  // Do not call this method with an inactive timeline.
+  // Do not call this method with an unresolved timeline.
   // Called from ScrollTimeline::ComputeTimelineState, which has safeguard.
   // Any new call sites will require a similar safeguard.
-  DCHECK(ComputeIsActive());
+  DCHECK(IsResolved());
   DCHECK(subject());
   LayoutBox* layout_box = subject()->GetLayoutBox();
   DCHECK(layout_box);
@@ -329,7 +329,7 @@ absl::optional<ScrollTimeline::ScrollOffsets> ViewTimeline::CalculateOffsets(
 
   // Note that the end_side_inset is used to adjust the start offset,
   // and the start_side_inset is used to adjust the end offset.
-  // This is because "start side" refers to logical start side [1] of the
+  // This is because "start side" refers to fical start side [1] of the
   // source box, where as "start offset" refers to the start of the timeline,
   // and similarly for end side/offset.
   // [1] https://drafts.csswg.org/css-writing-modes-4/#css-start
@@ -415,8 +415,9 @@ double ViewTimeline::ToFractionalOffset(
       align_subject_start_view_end + target_size_;
   // Timeline is inactive if scroll range is zero.
   double range = align_subject_end_view_start - align_subject_start_view_end;
-  if (!range)
+  if (!range) {
     return 0;
+  }
 
   double range_start = 0;
   double range_end = 0;
@@ -500,36 +501,6 @@ double ViewTimeline::ToFractionalOffset(
   return (offset - align_subject_start_view_end) / range;
 }
 
-AnimationTimeline::TimeDelayPair ViewTimeline::ComputeEffectiveAnimationDelays(
-    const Animation* animation,
-    const Timing& timing) const {
-  absl::optional<AnimationTimeDelta> duration = GetDuration();
-  if (!duration)
-    return std::make_pair(AnimationTimeDelta(), AnimationTimeDelta());
-  double range_start =
-      animation->GetRangeStart()
-          ? ToFractionalOffset(animation->GetRangeStart().value())
-          : 0;
-  double range_end = animation->GetRangeEnd()
-                         ? ToFractionalOffset(animation->GetRangeEnd().value())
-                         : 1;
-
-  // Timeline range is relative to cover 0% to 100% range.
-  double timeline_range = range_end - range_start;
-
-  // Animation delays are effectively insets on the animation range.
-  // Delays must be expressed as percentages. Time-based delays are ignored.
-  double start_delay =
-      timing.start_delay.relative_delay.value_or(0) * timeline_range;
-  double end_delay =
-      timing.end_delay.relative_delay.value_or(0) * timeline_range;
-
-  // TODO(kevers): Check if additional safeguards are required for delays
-  // summing > 100%.
-  return std::make_pair((range_start + start_delay) * duration.value(),
-                        (1 - range_end + end_delay) * duration.value());
-}
-
 CSSNumericValue* ViewTimeline::startOffset() const {
   absl::optional<ScrollOffsets> scroll_offsets = GetResolvedScrollOffsets();
   if (!scroll_offsets)
@@ -544,6 +515,45 @@ CSSNumericValue* ViewTimeline::endOffset() const {
     return nullptr;
 
   return CSSUnitValues::px(scroll_offsets->end);
+}
+
+void ViewTimeline::UpdateSnapshot() {
+  ScrollTimeline::UpdateSnapshot();
+  ResolveTimelineOffsets(false);
+}
+
+bool ViewTimeline::ValidateSnapshot() {
+  bool valid_snapshot = ScrollTimeline::ValidateSnapshot();
+  bool has_keyframe_update = ResolveTimelineOffsets(true);
+  return valid_snapshot && !has_keyframe_update;
+}
+
+bool ViewTimeline::ResolveTimelineOffsets(bool invalidate_effect) const {
+  bool has_keyframe_update = false;
+  for (Animation* animation : GetAnimations()) {
+    if (auto* effect = DynamicTo<KeyframeEffect>(animation->effect())) {
+      double range_start =
+          animation->GetRangeStart()
+              ? ToFractionalOffset(animation->GetRangeStart().value())
+              : 0;
+      double range_end =
+          animation->GetRangeEnd()
+              ? ToFractionalOffset(animation->GetRangeEnd().value())
+              : 1;
+      if (effect->Model()->ResolveTimelineOffsets(range_start, range_end)) {
+        has_keyframe_update = true;
+        if (invalidate_effect) {
+          animation->InvalidateEffectTargetStyle();
+        }
+      }
+    }
+  }
+  return has_keyframe_update;
+}
+
+void ViewTimeline::FlushStyleUpdate() {
+  ScrollTimeline::FlushStyleUpdate();
+  ResolveTimelineOffsets(/* invalidate_effect */ false);
 }
 
 void ViewTimeline::Trace(Visitor* visitor) const {

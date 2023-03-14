@@ -95,8 +95,7 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
     kMaxValue = kConflictInProfileAndAccountStore,
   };
 
-  using AddCredentialsCallback =
-      base::OnceCallback<void(const std::vector<AddResult>&)>;
+  using AddCredentialsCallback = base::OnceClosure;
   using DuplicatePasswordsMap = std::multimap<std::string, PasswordForm>;
 
   SavedPasswordsPresenter(AffiliationService* affiliation_service,
@@ -126,15 +125,13 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
                          password_manager::PasswordForm::Type::kManuallyAdded);
 
   // Adds |credentials| to the specified store.
-  // Credentials that have invalid data or already exist are ignored.
+  // Credentials are expected to be valid according to `GetExpectedAddResult`
+  // and they should all belong to the same Password Store.
   //
   // NOTE: Informing observers of credentials belonging to mixed types of stores
   // is not supported.
   //
   // For a single credential the behaviour is identical to AddCredential method.
-  //
-  // The result is conveyed in AddCredentialsCallback: a vector of corresponding
-  // AddResult statuses.
   void AddCredentials(const std::vector<CredentialUIEntry>& credentials,
                       password_manager::PasswordForm::Type type,
                       AddCredentialsCallback completion);
@@ -172,14 +169,6 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   void RemoveObserver(Observer* observer);
 
  private:
-  // Adds the |credential| to the specified store.
-  // Expects a credential that is valid to be added - can be verified by
-  // calling `GetExpectedAddResult()` before. `completion` callback wil be run
-  // after the DB call is completed.
-  void AddCredentialAsync(const CredentialUIEntry& credential,
-                          password_manager::PasswordForm::Type type,
-                          base::OnceClosure completion);
-
   // PasswordStoreInterface::Observer
   void OnLoginsChanged(PasswordStoreInterface* store,
                        const PasswordStoreChangeList& changes) override;
@@ -223,7 +212,7 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   scoped_refptr<PasswordStoreInterface> account_store_;
 
   // The number of stores from which no updates have been received yet.
-  int pending_store_updates = 0;
+  int pending_store_updates_ = 0;
 
   std::unique_ptr<PasswordUndoHelper> undo_helper_;
 

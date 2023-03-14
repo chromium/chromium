@@ -126,6 +126,7 @@ const char* const kKnownSettings[] = {
     kReleaseChannelDelegated,
     kReleaseLtsTag,
     kDeviceChannelDowngradeBehavior,
+    kDeviceSystemAecEnabled,
     kReportDeviceActivityTimes,
     kReportDeviceAudioStatus,
     kReportDeviceAudioStatusCheckingRateMs,
@@ -844,6 +845,13 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     // enrolled devices, c.f. crbug/456186.
     new_values_cache->SetBoolean(
         kStatsReportingPref, InstallAttributes::Get()->IsEnterpriseManaged());
+  }
+
+  if (policy.has_device_system_aec_enabled() &&
+      policy.device_system_aec_enabled().has_device_system_aec_enabled()) {
+    new_values_cache->SetBoolean(
+        kDeviceSystemAecEnabled,
+        policy.device_system_aec_enabled().device_system_aec_enabled());
   }
 
   if (!policy.has_release_channel() ||

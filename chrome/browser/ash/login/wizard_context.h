@@ -148,9 +148,18 @@ class WizardContext {
   // True when user is inside the "Add Person" flow.
   bool is_add_person_flow = false;
 
+  // True if user clicked "Select more fatures" button on the last CHOOBE
+  // selected screen.
+  bool return_to_choobe_screen = false;
+
   // Information that is used during Cryptohome recovery or password changed
   // flow.
   std::unique_ptr<UserContext> user_context;
+
+  // Indicates whether there is error when fetching Gaia reauth request token.
+  // This flag helps us determine the reason when the reauth proof token is
+  // missing and if we should ask the user to login again.
+  bool gaia_reauth_token_fetch_error = false;
 };
 
 // Returns |true| if this is an OOBE flow after enterprise enrollment.

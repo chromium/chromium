@@ -38,6 +38,8 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
       !data.ReadTextTrackWindowColor(&out->text_track_window_color) ||
       !data.ReadTextTrackWindowRadius(&out->text_track_window_radius) ||
       !data.ReadPrimaryPointerType(&out->primary_pointer_type) ||
+      !data.ReadOutputDeviceUpdateAbilityType(
+          &out->output_device_update_ability_type) ||
       !data.ReadPrimaryHoverType(&out->primary_hover_type) ||
       !data.ReadViewportStyle(&out->viewport_style) ||
       !data.ReadAnimationPolicy(&out->animation_policy) ||
@@ -118,6 +120,8 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->pointer_events_max_touch_points = data.pointer_events_max_touch_points();
   out->available_pointer_types = data.available_pointer_types();
   out->available_hover_types = data.available_hover_types();
+  out->output_device_update_ability_type =
+      data.output_device_update_ability_type();
   out->dont_send_key_events_to_javascript =
       data.dont_send_key_events_to_javascript();
   out->barrel_button_for_drag_enabled = data.barrel_button_for_drag_enabled();

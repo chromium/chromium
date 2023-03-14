@@ -7,7 +7,6 @@
 #include "chrome/browser/extensions/api/tab_capture/tab_capture_api.h"
 
 #include <algorithm>
-#include <memory>
 #include <set>
 #include <string>
 #include <utility>
@@ -141,7 +140,7 @@ std::string GetAllowlistedExtensionID() {
 }  // namespace
 
 ExtensionFunction::ResponseAction TabCaptureCaptureFunction::Run() {
-  std::unique_ptr<api::tab_capture::Capture::Params> params =
+  absl::optional<api::tab_capture::Capture::Params> params =
       TabCapture::Capture::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -208,8 +207,7 @@ ExtensionFunction::ResponseAction TabCaptureCaptureFunction::Run() {
   // virtual audio/video capture devices and set up all the data flows.  The
   // custom JS bindings can be found here:
   // chrome/renderer/resources/extensions/tab_capture_custom_bindings.js
-  base::Value result(params->options.ToValue());
-  return RespondNow(OneArgument(std::move(result)));
+  return RespondNow(WithArguments(params->options.ToValue()));
 }
 
 ExtensionFunction::ResponseAction TabCaptureGetCapturedTabsFunction::Run() {
@@ -217,11 +215,11 @@ ExtensionFunction::ResponseAction TabCaptureGetCapturedTabsFunction::Run() {
   base::Value::List list;
   if (registry)
     registry->GetCapturedTabs(extension()->id(), &list);
-  return RespondNow(OneArgument(base::Value(std::move(list))));
+  return RespondNow(WithArguments(std::move(list)));
 }
 
 ExtensionFunction::ResponseAction TabCaptureGetMediaStreamIdFunction::Run() {
-  std::unique_ptr<api::tab_capture::GetMediaStreamId::Params> params =
+  absl::optional<api::tab_capture::GetMediaStreamId::Params> params =
       TabCapture::GetMediaStreamId::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -294,7 +292,7 @@ ExtensionFunction::ResponseAction TabCaptureGetMediaStreamIdFunction::Run() {
     return RespondNow(Error(kCapturingSameTab));
   }
 
-  return RespondNow(OneArgument(base::Value(device_id)));
+  return RespondNow(WithArguments(device_id));
 }
 
 }  // namespace extensions

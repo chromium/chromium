@@ -773,6 +773,19 @@ void ConversionContext<Result>::Convert(const PaintChunkSubset& chunks,
     const auto& chunk_state = chunk.properties;
     bool switched_to_chunk_state = false;
 
+    if (additional_cull_rect) {
+      // `SwitchToChunkState` will also update `chunk_to_layer_mapper_`'s chunk
+      // but we need to explicitly switch the state ahead of time to ensure the
+      // call to `chunk_to_layer_mapper_.MapVisualRect` uses the correct state.
+      chunk_to_layer_mapper_.SwitchToChunk(chunk);
+      gfx::Rect chunk_visual_rect =
+          chunk_to_layer_mapper_.MapVisualRect(chunk.drawable_bounds);
+      if (additional_cull_rect &&
+          !additional_cull_rect->Intersects(chunk_visual_rect)) {
+        continue;
+      }
+    }
+
     for (const auto& item : it.DisplayItems()) {
       PaintRecord record;
       if (auto* scrollbar = DynamicTo<ScrollbarDisplayItem>(item))
@@ -793,11 +806,9 @@ void ConversionContext<Result>::Convert(const PaintChunkSubset& chunks,
         continue;
       }
 
-      // `SwitchToChunkState` will also update `chunk_to_layer_mapper_`'s chunk
-      // but we need to explicitly switch the state ahead of time to ensure the
-      // call to `chunk_to_layer_mapper_.MapVisualRect` uses the correct state.
       if (!switched_to_chunk_state) {
-        chunk_to_layer_mapper_.SwitchToChunk(chunk);
+        SwitchToChunkState(chunk);
+        switched_to_chunk_state = true;
       }
 
       gfx::Rect visual_rect =
@@ -805,11 +816,6 @@ void ConversionContext<Result>::Convert(const PaintChunkSubset& chunks,
       if (additional_cull_rect && can_ignore_record &&
           !additional_cull_rect->Intersects(visual_rect)) {
         continue;
-      }
-
-      if (!switched_to_chunk_state) {
-        SwitchToChunkState(chunk);
-        switched_to_chunk_state = true;
       }
 
       result_.StartPaint();

@@ -106,7 +106,14 @@ MultiDeviceSetupServiceFactory* MultiDeviceSetupServiceFactory::GetInstance() {
 }
 
 MultiDeviceSetupServiceFactory::MultiDeviceSetupServiceFactory()
-    : ProfileKeyedServiceFactory("MultiDeviceSetupService") {
+    : ProfileKeyedServiceFactory(
+          "MultiDeviceSetupService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(device_sync::DeviceSyncClientFactory::GetInstance());
   DependsOn(AuthTokenValidatorFactory::GetInstance());
   DependsOn(OobeCompletionTrackerFactory::GetInstance());

@@ -5,11 +5,11 @@
 #import "ios/chrome/test/app/password_test_util.h"
 
 #import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/shared/ui/util/top_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
-#import "ios/chrome/browser/ui/util/top_view_controller.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -70,11 +70,11 @@ MockReauthenticationModule* SetUpAndReturnMockReauthenticationModule(
   return mock_reauthentication_module;
 }
 
-// Replace the reauthentication module in Password Manager's
-// PasswordExporter with a fake one to avoid being
-// blocked with a reauth prompt, and return the fake reauthentication module.
+// Replaces the reauthentication module in Password Manager's passwords list
+// with a fake one to avoid being blocked with a reauth prompt and returns the
+// fake reauthentication module.
 MockReauthenticationModule*
-SetUpAndReturnMockReauthenticationModuleForExport() {
+SetUpAndReturnMockReauthenticationModuleForPasswordManager() {
   MockReauthenticationModule* mock_reauthentication_module =
       [[MockReauthenticationModule alloc] init];
   // TODO(crbug.com/754642): Stop using TopPresentedViewController();

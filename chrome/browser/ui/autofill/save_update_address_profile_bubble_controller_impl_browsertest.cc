@@ -6,9 +6,9 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -30,26 +30,24 @@ class SaveUpdateAddressProfileBubbleControllerImplTest
   void ShowUi(const std::string& name) override {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    autofill::ChromeAutofillClient* autofill_client =
-        autofill::ChromeAutofillClient::FromWebContents(web_contents);
+    autofill::ContentAutofillClient* autofill_client =
+        autofill::ContentAutofillClient::FromWebContents(web_contents);
     AutofillProfile profile = test::GetFullProfile();
     AutofillProfile* original_profile = (name == "Update") ? &profile : nullptr;
     autofill_client->ConfirmSaveAddressProfile(
         profile, original_profile,
         AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
         base::DoNothing());
-    controller_ = SaveUpdateAddressProfileBubbleControllerImpl::FromWebContents(
-        web_contents);
-    DCHECK(controller_);
+    DCHECK(controller());
   }
 
   SaveUpdateAddressProfileBubbleControllerImpl* controller() {
-    return controller_;
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    DCHECK(web_contents);
+    return SaveUpdateAddressProfileBubbleControllerImpl::FromWebContents(
+        web_contents);
   }
-
- private:
-  raw_ptr<SaveUpdateAddressProfileBubbleControllerImpl, DanglingUntriaged>
-      controller_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,

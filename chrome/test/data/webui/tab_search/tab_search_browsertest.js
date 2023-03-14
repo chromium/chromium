@@ -30,36 +30,36 @@ TEST_F('TabSearchAppTest', 'All', function() {
   mocha.run();
 });
 
-var BiMapTest = class extends TabSearchBrowserTest {
+var TabSearchBiMapTest = class extends TabSearchBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://tab-search.top-chrome/test_loader.html?module=tab_search/bimap_test.js';
   }
 };
 
-TEST_F('BiMapTest', 'All', function() {
+TEST_F('TabSearchBiMapTest', 'All', function() {
   mocha.run();
 });
 
-var FuzzySearchTest = class extends TabSearchBrowserTest {
+var TabSearchFuzzySearchTest = class extends TabSearchBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://tab-search.top-chrome/test_loader.html?module=tab_search/fuzzy_search_test.js';
   }
 };
 
-TEST_F('FuzzySearchTest', 'All', function() {
+TEST_F('TabSearchFuzzySearchTest', 'All', function() {
   mocha.run();
 });
 
-var InfiniteListTest = class extends TabSearchBrowserTest {
+var TabSearchInfiniteListTest = class extends TabSearchBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://tab-search.top-chrome/test_loader.html?module=tab_search/infinite_list_test.js';
   }
 };
 
-TEST_F('InfiniteListTest', 'All', function() {
+TEST_F('TabSearchInfiniteListTest', 'All', function() {
   mocha.run();
 });
 

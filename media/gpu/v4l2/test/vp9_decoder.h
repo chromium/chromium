@@ -71,7 +71,7 @@ class Vp9Decoder : public VideoDecoder {
   // for VIDIOC_QBUF ioctl call.
   std::set<int> RefreshReferenceSlots(uint8_t refresh_frame_flags,
                                       scoped_refptr<MmapedBuffer> buffer,
-                                      uint32_t last_queued_buffer_index);
+                                      uint32_t last_queued_buffer_id);
 
   // Parser for the IVF stream to decode.
   const std::unique_ptr<IvfParser> ivf_parser_;

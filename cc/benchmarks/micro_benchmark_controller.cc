@@ -26,7 +26,7 @@ namespace {
 
 std::unique_ptr<MicroBenchmark> CreateBenchmark(
     const std::string& name,
-    base::Value settings,
+    base::Value::Dict settings,
     MicroBenchmark::DoneCallback callback) {
   if (name == "invalidation_benchmark") {
     return std::make_unique<InvalidationBenchmark>(std::move(settings),
@@ -56,7 +56,7 @@ MicroBenchmarkController::~MicroBenchmarkController() = default;
 
 int MicroBenchmarkController::ScheduleRun(
     const std::string& micro_benchmark_name,
-    base::Value settings,
+    base::Value::Dict settings,
     MicroBenchmark::DoneCallback callback) {
   std::unique_ptr<MicroBenchmark> benchmark = CreateBenchmark(
       micro_benchmark_name, std::move(settings), std::move(callback));
@@ -78,7 +78,7 @@ int MicroBenchmarkController::GetNextIdAndIncrement() {
   return id;
 }
 
-bool MicroBenchmarkController::SendMessage(int id, base::Value message) {
+bool MicroBenchmarkController::SendMessage(int id, base::Value::Dict message) {
   auto it = base::ranges::find(benchmarks_, id, &MicroBenchmark::id);
   if (it == benchmarks_.end())
     return false;

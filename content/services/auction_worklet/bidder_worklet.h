@@ -151,6 +151,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       double browser_signal_bid,
       double browser_signal_highest_scoring_other_bid,
       bool browser_signal_made_highest_scoring_other_bid,
+      absl::optional<double> browser_signal_ad_cost,
       const url::Origin& browser_signal_seller_origin,
       const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
       uint32_t bidding_signals_data_version,
@@ -249,6 +250,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     double browser_signal_bid;
     double browser_signal_highest_scoring_other_bid;
     bool browser_signal_made_highest_scoring_other_bid;
+    absl::optional<double> browser_signal_ad_cost;
     url::Origin browser_signal_seller_origin;
     absl::optional<url::Origin> browser_signal_top_level_seller_origin;
     absl::optional<uint32_t> bidding_signals_data_version;
@@ -310,7 +312,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         base::flat_map<std::string, mojom::PrioritySignalsDoublePtr>
             update_priority_signals_overrides,
         PrivateAggregationRequests pa_requests,
-        base::TimeDelta bidding_duration,
+        base::TimeDelta bidding_latency,
         std::vector<std::string> error_msgs)>;
     using ReportWinCallbackInternal =
         base::OnceCallback<void(absl::optional<GURL> report_url,
@@ -369,6 +371,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
                    double browser_signal_bid,
                    double browser_signal_highest_scoring_other_bid,
                    bool browser_signal_made_highest_scoring_other_bid,
+                   const absl::optional<double>& browser_signal_ad_cost,
                    const url::Origin& browser_signal_seller_origin,
                    const absl::optional<url::Origin>&
                        browser_signal_top_level_seller_origin,
@@ -440,7 +443,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
 
     void PostErrorBidCallbackToUserThread(
         GenerateBidCallbackInternal callback,
-        base::TimeDelta bidding_duration,
+        base::TimeDelta bidding_latency,
         std::vector<std::string> error_msgs = std::vector<std::string>());
 
     static void PostResumeToUserThread(
@@ -549,7 +552,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       base::flat_map<std::string, mojom::PrioritySignalsDoublePtr>
           update_priority_signals_overrides,
       PrivateAggregationRequests pa_requests,
-      base::TimeDelta bidding_duration,
+      base::TimeDelta bidding_latency,
       std::vector<std::string> error_msgs);
 
   // Removes `task` from `generate_bid_tasks_` only. Used in case where the

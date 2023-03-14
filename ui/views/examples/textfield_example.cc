@@ -86,7 +86,8 @@ void TextfieldExample::CreateExampleView(View* container) {
   invalid_->SetInvalid(true);
   invalid_->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_TEXTFIELD_INVALID_LABEL));
-
+  invalid_->SetPlaceholderText(
+      l10n_util::GetStringUTF16(IDS_TEXTFIELD_INVALID_PLACEHOLDER));
   container->AddChildView(
       std::make_unique<Label>(GetStringUTF16(IDS_TEXTFIELD_RTL_LABEL)));
   rtl_ = container->AddChildView(std::make_unique<Textfield>());

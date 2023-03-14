@@ -94,7 +94,7 @@ class FormStructureSectioningTest : public testing::Test {
   }
 
  private:
-  test::AutofillEnvironment autofill_environment_;
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
 // This refers to the example from the code comment in form_sectioning_util.h.

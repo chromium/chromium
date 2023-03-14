@@ -2,17 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-if (is_ios) {
-  import("//build/config/ios/bundle_data_from_filelist.gni")
-}
-
 static_library("browser") {
   sources = [
     "browsing_history_driver.h",
     "browsing_history_service.cc",
     "browsing_history_service.h",
-    "domain_mixing_metrics.cc",
-    "domain_mixing_metrics.h",
     "download_constants.h",
     "download_database.cc",
     "download_database.h",
@@ -162,19 +156,10 @@ static_library("browser") {
   }
 }
 
-if (is_ios) {
-  bundle_data_from_filelist("unit_tests_bundle_data") {
-    filelist_name = "unit_tests_bundle_data.filelist"
-    visibility = [ ":unit_tests" ]
-    testonly = true
-  }
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [
     "browsing_history_service_unittest.cc",
-    "domain_mixing_metrics_unittest.cc",
     "download_slice_info_unittest.cc",
     "expire_history_backend_unittest.cc",
     "history_backend_db_unittest.cc",
@@ -224,7 +209,7 @@ source_set("unit_tests") {
     "//url",
   ]
   if (is_ios) {
-    deps += [ ":unit_tests_bundle_data" ]
+    deps += [ "//components/test:history_test_bundle_data" ]
   }
   if (is_android) {
     sources += [ "android/android_history_types_unittest.cc" ]

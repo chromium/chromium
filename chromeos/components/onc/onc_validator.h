@@ -14,9 +14,9 @@
 #include "base/values.h"
 #include "chromeos/components/onc/onc_mapper.h"
 #include "components/onc/onc_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-namespace onc {
+namespace chromeos::onc {
 
 struct OncValueSignature;
 
@@ -109,22 +109,23 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Validator : public Mapper {
 
   // Validate the given |onc_object| dictionary according to |object_signature|.
   // The |object_signature| has to be a pointer to one of the signatures in
-  // |onc_signature.h|. If an error is found, the function returns a Value of
-  // type base::Value::type::NONE  and sets |result| to INVALID. If possible (no
-  // error encountered) a Clone is  created that contains all but the invalid
-  // fields and values and returns this "repaired" object. That means, if not
-  // handled as an error, then the following are dropped from the copy:
+  // |onc_signature.h|. If an error is found, the function returns nullopt and
+  // sets |result| to INVALID. If possible (no error encountered) a Clone is
+  // created that contains all but the invalid fields and values and returns
+  // this "repaired" object. That means, if not handled as an error, then the
+  // following are dropped from the copy:
   // - unknown fields
   // - invalid field names in kRecommended arrays
   // - kRecommended fields in an unmanaged ONC
   // If any of these cases occurred, sets |result| to VALID_WITH_WARNINGS and
   // otherwise to VALID.
   // For details, see the class comment.
-  base::Value ValidateAndRepairObject(const OncValueSignature* object_signature,
-                                      const base::Value& onc_object,
-                                      Result* result);
+  absl::optional<base::Value::Dict> ValidateAndRepairObject(
+      const OncValueSignature* object_signature,
+      const base::Value::Dict& onc_object,
+      Result* result);
 
-  // Returns the list of validation results that occured within validation
+  // Returns the list of validation results that occurred within validation
   // initiated by the last call to |ValidateAndRepairObject|.
   const std::vector<ValidationIssue>& validation_issues() const {
     return validation_issues_;
@@ -208,7 +209,7 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Validator : public Mapper {
   void ValidateEthernetConfigs(base::Value::List* result);
   void OnlyKeepLast(base::Value::List* network_configurations_list,
                     const std::vector<std::string>& guids,
-                    const char* type);
+                    const char* type_for_messages);
   void RemoveNetworkConfigurationWithGuid(
       base::Value::List* network_configurations_list,
       const std::string& guid_to_remove);
@@ -276,7 +277,7 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Validator : public Mapper {
   const bool managed_onc_;
   const bool log_warnings_;
 
-  ::onc::ONCSource onc_source_;
+  ::onc::ONCSource onc_source_ = ::onc::ONC_SOURCE_NONE;
 
   // The path of field names and indices to the current value. Indices
   // are stored as strings in decimal notation.
@@ -290,12 +291,11 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Validator : public Mapper {
   // duplicate GUIDs.
   std::set<std::string> certificate_guids_;
 
-  // List of all validation issues that occured within validation initiated by
+  // List of all validation issues that occurred within validation initiated by
   // function ValidateAndRepairObject.
   std::vector<ValidationIssue> validation_issues_;
 };
 
-}  // namespace onc
-}  // namespace chromeos
+}  // namespace chromeos::onc
 
 #endif  // CHROMEOS_COMPONENTS_ONC_ONC_VALIDATOR_H_

@@ -194,7 +194,7 @@ void ServiceWorkerScriptLoaderFactory::CopyScript(
     int64_t resource_id,
     base::OnceCallback<void(int64_t, net::Error)> callback,
     int64_t new_resource_id) {
-  if (!context_) {
+  if (!context_ || !worker_host_) {
     std::move(callback).Run(new_resource_id, net::ERR_FAILED);
     return;
   }

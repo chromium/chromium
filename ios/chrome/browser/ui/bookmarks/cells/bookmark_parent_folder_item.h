@@ -15,6 +15,9 @@
 // The title of the bookmark folder it represents.
 @property(nonatomic, copy) NSString* title;
 
+// Whether a slashed cloud should be displayed
+@property(nonatomic, assign) BOOL shouldDisplayCloudSlashIcon;
+
 @end
 
 // Cell class associated to BookmarkParentFolderItem.
@@ -22,6 +25,9 @@
 
 // Label that displays the item's title.
 @property(nonatomic, readonly, strong) UILabel* parentFolderNameLabel;
+
+// A view containing a slashed cloud icon; at the end of the subview stack.
+@property(nonatomic, strong) UIView* cloudSlashedView;
 
 @end
 

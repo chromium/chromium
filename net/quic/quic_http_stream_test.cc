@@ -29,6 +29,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
 #include "net/base/upload_bytes_element_reader.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/transport_security_state.h"
@@ -55,6 +56,7 @@
 #include "net/socket/socket_performance_watcher.h"
 #include "net/socket/socket_test_util.h"
 #include "net/spdy/spdy_http_utils.h"
+#include "net/ssl/ssl_config_service_defaults.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
@@ -125,13 +127,10 @@ std::vector<TestParams> GetTestParams() {
 // entry is a list of strings, which when interpreted as colon-separated
 // key-value pairs has exactly one entry with |key| and that entry has value
 // |expected_value|.
-bool CheckHeader(const base::Value& params,
+bool CheckHeader(const base::Value::Dict& params,
                  base::StringPiece key,
                  base::StringPiece expected_value) {
-  if (!params.is_dict()) {
-    return false;
-  }
-  const base::Value::List* headers = params.GetDict().FindList("headers");
+  const base::Value::List* headers = params.FindList("headers");
   if (!headers) {
     return false;
   }
@@ -400,7 +399,7 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
     session_ = std::make_unique<QuicChromiumClientSession>(
         connection_, std::move(socket),
         /*stream_factory=*/nullptr, &crypto_client_stream_factory_, &clock_,
-        &transport_security_state_, /*ssl_config_service=*/nullptr,
+        &transport_security_state_, &ssl_config_service_,
         base::WrapUnique(static_cast<QuicServerInfo*>(nullptr)),
         QuicSessionKey(kDefaultServerHostName, kDefaultServerPort,
                        PRIVACY_MODE_DISABLED, SocketTag(),
@@ -425,7 +424,8 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
         std::make_unique<quic::QuicClientPushPromiseIndex>(), nullptr,
         base::DefaultTickClock::GetInstance(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
-        /*socket_performance_watcher=*/nullptr, NetLog::Get());
+        /*socket_performance_watcher=*/nullptr, HostResolverEndpointResult(),
+        NetLog::Get());
     session_->Initialize();
 
     // Blackhole QPACK decoder stream instead of constructing mock writes.
@@ -653,6 +653,7 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
   std::unique_ptr<UploadDataStream> upload_data_stream_;
   std::unique_ptr<QuicHttpStream> stream_;
   TransportSecurityState transport_security_state_;
+  SSLConfigServiceDefaults ssl_config_service_;
 
   // Must outlive `send_algorithm_` and `connection_`.
   std::unique_ptr<QuicChromiumClientSession> session_;

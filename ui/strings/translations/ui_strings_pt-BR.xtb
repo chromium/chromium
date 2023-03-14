@@ -61,6 +61,7 @@
 <translation id="2573731672208488250">{HOURS,plural, =1{em 1 h}one{em # h}other{em # h}}</translation>
 <translation id="2583543531130364912">Calibrar a touchscreen</translation>
 <translation id="2586657967955657006">Área de transferência</translation>
+<translation id="2653844658857826081">NOVO</translation>
 <translation id="2666092431469916601">Parte superior</translation>
 <translation id="2701330563083355633">Compartilhada por <ph name="DEVICE_NAME" /></translation>
 <translation id="271033894570825754">Novo</translation>
@@ -75,6 +76,7 @@
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3183922693828471536">Percorrer até aqui</translation>
 <translation id="3234408098842461169">Seta para baixo</translation>
+<translation id="3240426699337459095">Link copiado</translation>
 <translation id="3291688615589870984">{DAYS,plural, =1{Um dia}one{# dias}other{# dias}}</translation>
 <translation id="3295886253693811851">Ligar usando</translation>
 <translation id="3306688585798492231">Tela integrada</translation>

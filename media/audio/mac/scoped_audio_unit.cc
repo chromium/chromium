@@ -8,14 +8,6 @@
 
 namespace media {
 
-constexpr AudioComponentDescription desc = {kAudioUnitType_Output,
-#if BUILDFLAG(IS_MAC)
-                                            kAudioUnitSubType_HALOutput,
-#else
-                                            kAudioUnitSubType_RemoteIO,
-#endif
-                                            kAudioUnitManufacturer_Apple, 0, 0};
-
 static void DestroyAudioUnit(AudioUnit audio_unit) {
   OSStatus result = AudioUnitUninitialize(audio_unit);
   OSSTATUS_DLOG_IF(ERROR, result != noErr, result)
@@ -26,6 +18,18 @@ static void DestroyAudioUnit(AudioUnit audio_unit) {
 }
 
 ScopedAudioUnit::ScopedAudioUnit(AudioDeviceID device, AUElement element) {
+  constexpr AudioComponentDescription desc = {
+    kAudioUnitType_Output,
+#if BUILDFLAG(IS_MAC)
+    kAudioUnitSubType_HALOutput,
+#else
+    kAudioUnitSubType_RemoteIO,  // for iOS
+#endif
+    kAudioUnitManufacturer_Apple,
+    0,
+    0
+  };
+
   AudioComponent comp = AudioComponentFindNext(0, &desc);
   if (!comp)
     return;

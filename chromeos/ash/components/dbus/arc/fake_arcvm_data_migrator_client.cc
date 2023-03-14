@@ -36,7 +36,14 @@ void FakeArcVmDataMigratorClient::HasDataToMigrate(
     const arc::data_migrator::HasDataToMigrateRequest& request,
     chromeos::DBusMethodCallback<bool> callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), true));
+      FROM_HERE, base::BindOnce(std::move(callback), has_data_to_migrate_));
+}
+
+void FakeArcVmDataMigratorClient::GetAndroidDataSize(
+    const arc::data_migrator::GetAndroidDataSizeRequest& request,
+    chromeos::DBusMethodCallback<int64_t> callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), android_data_size_));
 }
 
 void FakeArcVmDataMigratorClient::StartMigration(
@@ -46,7 +53,19 @@ void FakeArcVmDataMigratorClient::StartMigration(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
-void FakeArcVmDataMigratorClient::AddObserver(Observer* observer) {}
-void FakeArcVmDataMigratorClient::RemoveObserver(Observer* observer) {}
+void FakeArcVmDataMigratorClient::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void FakeArcVmDataMigratorClient::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void FakeArcVmDataMigratorClient::SendDataMigrationProgress(
+    const arc::data_migrator::DataMigrationProgress& progress) {
+  for (auto& observer : observers_) {
+    observer.OnDataMigrationProgress(progress);
+  }
+}
 
 }  // namespace ash

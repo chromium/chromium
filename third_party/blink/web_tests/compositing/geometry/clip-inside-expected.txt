@@ -3,7 +3,7 @@ Test CSS clip with composited layers. Left and right sides should look the same.
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -19,7 +19,6 @@ Test CSS clip with composited layers. Left and right sides should look the same.
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV class='composited inner'",
       "bounds": [120, 120],
-      "contentsOpaqueForText": true,
       "backgroundColor": "#00000033",
       "transform": 4
     }

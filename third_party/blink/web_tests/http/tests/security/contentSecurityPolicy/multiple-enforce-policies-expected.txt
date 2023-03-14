@@ -1,5 +1,0 @@
-CONSOLE ERROR: Refused to load the image 'ftp://blah.test/' because it violates the following Content Security Policy directive: "img-src http://* https://*".
-
-CONSOLE ERROR: Refused to load the image 'ftp://blah.test/' because it violates the following Content Security Policy directive: "img-src http://*".
-
-

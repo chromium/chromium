@@ -7,6 +7,7 @@
 #include <ostream>
 #include <utility>
 
+#include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
@@ -274,6 +275,28 @@ Value::List ParseJsonList(StringPiece json) {
   absl::optional<Value> result =
       ParseJsonHelper(json, /*expected_type=*/Value::Type::LIST);
   return result.has_value() ? std::move(*result).TakeList() : Value::List();
+}
+
+Value::Dict ParseJsonDictFromFile(const FilePath& json_file_path) {
+  std::string json;
+  if (!ReadFileToString(json_file_path, &json)) {
+    ADD_FAILURE() << "Failed to load json file for parsing. path="
+                  << json_file_path;
+    return {};
+  }
+  return ParseJsonDict(json);
+}
+
+expected<void, WriteJsonError> WriteJsonFile(const FilePath& json_file_path,
+                                             ValueView root) {
+  std::string json;
+  if (!JSONWriter::Write(root, &json)) {
+    return unexpected(WriteJsonError::kGenerateJsonFailure);
+  }
+  if (!WriteFile(json_file_path, json)) {
+    return unexpected(WriteJsonError::kWriteFileFailure);
+  }
+  return {};
 }
 
 }  // namespace test

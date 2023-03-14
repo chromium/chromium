@@ -26,6 +26,7 @@ namespace translate {
 
 class TranslateManager;
 class TranslateUIDelegate;
+class TranslateUILanguagesManager;
 
 BASE_DECLARE_FEATURE(kTranslateMessageUI);
 
@@ -161,6 +162,7 @@ class TranslateMessage {
 
   // Constructed the first time ShowTranslateStep is called.
   std::unique_ptr<TranslateUIDelegate> ui_delegate_;
+  TranslateUILanguagesManager* ui_languages_manager_;
   State state_ = State::kDismissed;
 
   // Keeps track of whether or not this TranslateMessage has ever been

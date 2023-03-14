@@ -123,8 +123,8 @@ void MojoVideoEncodeAcceleratorService::Initialize(
   }
 
   encoder_ = std::move(create_vea_callback_)
-                 .Run(config, this, *gpu_preferences_, gpu_workarounds_,
-                      *gpu_device_, media_log_->Clone());
+                 .Run(config, this, gpu_preferences_, gpu_workarounds_,
+                      gpu_device_, media_log_->Clone());
   if (!encoder_) {
     MEDIA_LOG(ERROR, media_log_.get())
         << __func__ << " Error creating or initializing VEA";
@@ -305,20 +305,16 @@ void MojoVideoEncodeAcceleratorService::BitstreamBufferReady(
   TRACE_EVENT1("media",
                "MojoVideoEncodeAcceleratorService::BitstreamBufferReady",
                "bitstream_buffer_id", bitstream_buffer_id);
-  if (MediaTraceIsEnabled() &&
-      ((!metadata.vp9 && !metadata.av1) ||
-       (metadata.vp9 && metadata.vp9->end_of_picture) ||
-       (metadata.av1 && metadata.av1->end_of_picture))) {
-    const auto timestamp_it =
-        timestamps_.Peek(metadata.timestamp.InMilliseconds());
+  if (MediaTraceIsEnabled() && metadata.end_of_picture()) {
+    int64_t timestamp = metadata.timestamp.InMilliseconds();
+    const auto timestamp_it = timestamps_.Peek(timestamp);
     if (timestamp_it != timestamps_.end()) {
-      const int64_t timestamp = metadata.timestamp.InMilliseconds();
       TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-          "media", "MojoVEAServicee::EncodingFrameDuration",
-          TRACE_ID_LOCAL(this), timestamp_it->second);
+          "media", "MojoVEAServicee::EncodingFrameDuration", timestamp,
+          timestamp_it->second);
       TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP1(
-          "media", "MojoVEAServicee::EncodingFrameDuration",
-          TRACE_ID_LOCAL(this), base::TimeTicks::Now(), "timestamp", timestamp);
+          "media", "MojoVEAServicee::EncodingFrameDuration", timestamp,
+          base::TimeTicks::Now(), "timestamp", timestamp);
     }
   }
 

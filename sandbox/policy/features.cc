@@ -40,17 +40,17 @@ BASE_FEATURE(kRendererAppContainer,
              "RendererAppContainer",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables shared/fixed policy for Windows sandbox policies.
-BASE_FEATURE(kSharedSandboxPolicies,
-             "SharedSandboxPolicies",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Emergency "off switch" for renderer environment filtering, this feature can
 // be removed around the M113 timeline. See https://crbug.com/1403087.
 BASE_FEATURE(kRendererFilterEnvironment,
              "RendererFilterEnvironment",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Emergency "off switch" for removal of direct system font access from
+// sandboxed processes.
+BASE_FEATURE(kWinSboxAllowSystemFonts,
+             "WinSboxAllowSystemFonts",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -74,7 +74,7 @@ BASE_FEATURE(kForceSpectreVariant2Mitigation,
 // as controlled by CanCacheSandboxPolicy().
 BASE_FEATURE(kCacheMacSandboxProfiles,
              "CacheMacSandboxProfiles",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 
 bool IsNetworkSandboxEnabled() {

@@ -80,20 +80,6 @@ GetSortedMetadataWithoutFaviconsFromForeignSyncedSession(
     for (const ForeignSyncedSessionTabAsh& tab : window.tabs) {
       GURL tab_url = tab.current_navigation_url;
 
-      // URLs whose schemes are not http:// or https:// should be ignored
-      // because they may be platform specific (e.g., chrome:// URLs) or may
-      // refer to local media on the phone (e.g., content:// URLs).
-      if (!tab_url.SchemeIsHTTPOrHTTPS()) {
-        continue;
-      }
-
-      // If the url is incorrectly formatted, is empty, or has a
-      // scheme that should be omitted, do not proceed with storing its
-      // metadata.
-      if (!tab_url.is_valid()) {
-        continue;
-      }
-
       const std::u16string title = tab.current_navigation_title;
       const base::Time last_accessed_timestamp = tab.last_modified_timestamp;
       browser_tab_metadata.emplace_back(tab_url, title, last_accessed_timestamp,

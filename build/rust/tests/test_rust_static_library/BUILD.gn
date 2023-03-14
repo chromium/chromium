@@ -5,6 +5,7 @@
 import("//build/rust/rust_static_library.gni")
 
 rust_static_library("test_rust_static_library") {
+  allow_unsafe = true
   sources = [ "src/lib.rs" ]
   cxx_bindings = [ "src/lib.rs" ]
   build_native_rust_unit_tests = true

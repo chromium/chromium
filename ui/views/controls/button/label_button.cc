@@ -36,6 +36,11 @@
 
 namespace views {
 
+namespace {
+constexpr Button::ButtonState kEnabledStates[] = {
+    Button::STATE_NORMAL, Button::STATE_HOVERED, Button::STATE_PRESSED};
+}  // namespace
+
 LabelButton::LabelButton(PressedCallback callback,
                          const std::u16string& text,
                          int button_context)
@@ -120,6 +125,16 @@ void LabelButton::SetTextColor(ButtonState for_state, SkColor color) {
   explicitly_set_colors_[for_state] = true;
 }
 
+void LabelButton::SetTextColorId(ButtonState for_state, ui::ColorId color_id) {
+  button_state_colors_[for_state] = color_id;
+  if (for_state == STATE_DISABLED) {
+    label_->SetDisabledColorId(color_id);
+  } else if (for_state == GetState()) {
+    label_->SetEnabledColorId(color_id);
+  }
+  explicitly_set_colors_[for_state] = true;
+}
+
 float LabelButton::GetFocusRingCornerRadius() const {
   return focus_ring_corner_radius_;
 }
@@ -136,19 +151,22 @@ void LabelButton::SetFocusRingCornerRadius(float radius) {
 }
 
 void LabelButton::SetEnabledTextColors(absl::optional<SkColor> color) {
-  ButtonState states[] = {STATE_NORMAL, STATE_HOVERED, STATE_PRESSED};
   if (color.has_value()) {
-    for (auto state : states)
+    for (auto state : kEnabledStates) {
       SetTextColor(state, color.value());
+    }
     return;
   }
-  for (auto state : states)
+  for (auto state : kEnabledStates) {
     explicitly_set_colors_[state] = false;
+  }
   ResetColorsFromNativeTheme();
 }
 
-void LabelButton::SetEnabledTextColorReadabilityAdjustment(bool enabled) {
-  label_->SetAutoColorReadabilityEnabled(enabled);
+void LabelButton::SetEnabledTextColorIds(ui::ColorId color_id) {
+  for (auto state : kEnabledStates) {
+    SetTextColorId(state, color_id);
+  }
 }
 
 SkColor LabelButton::GetCurrentTextColor() const {
@@ -606,36 +624,36 @@ void LabelButton::VisualStateChanged() {
 }
 
 void LabelButton::ResetColorsFromNativeTheme() {
-  if (!GetWidget()) {
-    // If there is no widget, we can't actually get the real colors here.
-    // An OnThemeChanged() will fire once a widget is available.
-    return;
-  }
-
-  const ui::ColorProvider* color_provider = GetColorProvider();
   // Since this is a LabelButton, use the label colors.
-  SkColor colors[STATE_COUNT] = {
-      color_provider->GetColor(ui::kColorLabelForeground),
-      color_provider->GetColor(ui::kColorLabelForeground),
-      color_provider->GetColor(ui::kColorLabelForeground),
-      color_provider->GetColor(ui::kColorLabelForegroundDisabled),
-  };
+  ui::ColorId color_ids[STATE_COUNT] = {
+      ui::kColorLabelForeground, ui::kColorLabelForeground,
+      ui::kColorLabelForeground, ui::kColorLabelForegroundDisabled};
 
   label_->SetBackground(nullptr);
   label_->SetAutoColorReadabilityEnabled(false);
 
   for (size_t state = STATE_NORMAL; state < STATE_COUNT; ++state) {
     if (!explicitly_set_colors_[state]) {
-      SetTextColor(static_cast<ButtonState>(state), colors[state]);
+      SetTextColorId(static_cast<ButtonState>(state), color_ids[state]);
       explicitly_set_colors_[state] = false;
     }
   }
 }
 
 void LabelButton::ResetLabelEnabledColor() {
-  const SkColor color = button_state_colors_[GetState()];
-  if (GetState() != STATE_DISABLED && label_->GetEnabledColor() != color)
-    label_->SetEnabledColor(color);
+  if (GetState() == STATE_DISABLED) {
+    return;
+  }
+  const absl::variant<SkColor, ui::ColorId>& color =
+      button_state_colors_[GetState()];
+  if (absl::holds_alternative<SkColor>(color) &&
+      label_->GetEnabledColor() != absl::get<SkColor>(color)) {
+    label_->SetEnabledColor(absl::get<SkColor>(color));
+  } else if (absl::holds_alternative<ui::ColorId>(color)) {
+    // Omitting the check that the new color id differs from the existing color
+    // id, because the setter already does that check.
+    label_->SetEnabledColorId(absl::get<ui::ColorId>(color));
+  }
 }
 
 Button::ButtonState LabelButton::ImageStateForState(

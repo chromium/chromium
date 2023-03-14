@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "components/content_creation/notes/android/jni_headers/NoteServiceBridge_jni.h"
 #include "components/content_creation/notes/android/note_template_conversion_bridge.h"
-#include "components/content_creation/notes/core/server/note_data.h"
 #include "components/content_creation/notes/core/templates/note_template.h"
 
 namespace content_creation {
@@ -27,12 +26,6 @@ void RunGetTemplatesCallback(const JavaRef<jobject>& j_callback,
   RunObjectCallbackAndroid(
       j_callback,
       NoteTemplateConversionBridge::CreateJavaNoteTemplates(env, templates));
-}
-
-void RunPublishNoteCallback(const JavaRef<jobject>& j_callback,
-                            std::string noteUrl) {
-  JNIEnv* env = AttachCurrentThread();
-  RunObjectCallbackAndroid(j_callback, ConvertUTF8ToJavaString(env, noteUrl));
 }
 
 }  // namespace
@@ -71,25 +64,6 @@ void NoteServiceBridge::GetTemplates(JNIEnv* env,
                                      const JavaParamRef<jobject>& jcallback) {
   note_service_->GetTemplates(base::BindOnce(
       &RunGetTemplatesCallback, ScopedJavaGlobalRef<jobject>(jcallback)));
-}
-
-jboolean NoteServiceBridge::IsPublishAvailable(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller) {
-  return note_service_->IsPublishAvailable();
-}
-
-void NoteServiceBridge::PublishNote(JNIEnv* env,
-                                    const JavaParamRef<jobject>& jcaller,
-                                    jstring selectedText,
-                                    jstring shareUrl,
-                                    const JavaParamRef<jobject>& jcallback) {
-  NoteData noteData(ConvertJavaStringToUTF8(env, selectedText),
-                    ConvertJavaStringToUTF8(env, shareUrl));
-
-  note_service_->PublishNote(
-      noteData, base::BindOnce(&RunPublishNoteCallback,
-                               ScopedJavaGlobalRef<jobject>(jcallback)));
 }
 
 }  // namespace content_creation

@@ -159,21 +159,23 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
 
   void CleanupPendingLongTap();
 
-  // Helper method to perform the drop if allowed by
-  // DataTransferPolicyController. If it's run, `drag_cancel` will be replaced.
-  // Otherwise `drag_cancel` will run to cancel the drag.
+  // Performs data drop. NOTE: this method does not run in an async drop if
+  // disallowed by `ui::DataTransferPolicyController`. `cancel_drag_callback`
+  // runs if this method does not run.
   void PerformDrop(const gfx::Point drop_location_in_screen,
                    ui::DropTargetEvent event,
                    std::unique_ptr<ui::OSExchangeData> drag_data,
                    aura::client::DragDropDelegate::DropCallback drop_cb,
+                   aura::client::DragDropDelegate::DropCallbackWithAnimation
+                       drop_cb_animation,
                    std::unique_ptr<TabDragDropDelegate> tab_drag_drop_delegate,
-                   base::ScopedClosureRunner drag_cancel);
+                   base::ScopedClosureRunner cancel_drag_callback);
 
   void CancelIfInProgress();
 
   bool enabled_ = false;
   bool drag_drop_completed_ = true;
-  views::UniqueWidgetPtr drag_image_widget_;
+  std::unique_ptr<views::Widget> drag_image_widget_;
   gfx::Vector2d drag_image_offset_;
   std::unique_ptr<ui::OSExchangeData> drag_data_;
   int allowed_operations_ = 0;

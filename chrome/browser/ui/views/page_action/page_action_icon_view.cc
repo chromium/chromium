@@ -51,8 +51,7 @@ bool PageActionIconView::Delegate::ShouldHidePageActionIcons() const {
 
 const OmniboxView* PageActionIconView::Delegate::GetOmniboxView() const {
   // Should not reach here: should call subclass's implementation.
-  NOTREACHED();
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 
 PageActionIconView::PageActionIconView(
@@ -159,11 +158,9 @@ void PageActionIconView::NotifyClick(const ui::Event& event) {
     source = EXECUTE_SOURCE_MOUSE;
   } else if (event.IsKeyEvent()) {
     source = EXECUTE_SOURCE_KEYBOARD;
-  } else if (event.IsGestureEvent()) {
-    source = EXECUTE_SOURCE_GESTURE;
   } else {
-    NOTREACHED();
-    return;
+    CHECK(event.IsGestureEvent());
+    source = EXECUTE_SOURCE_GESTURE;
   }
 
   // Set ink drop state to ACTIVATED.

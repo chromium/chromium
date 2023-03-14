@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
 
 namespace blink {

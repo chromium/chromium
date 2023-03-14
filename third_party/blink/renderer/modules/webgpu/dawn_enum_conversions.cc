@@ -27,7 +27,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_storage_texture_access.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_store_op.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_aspect.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_component_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_dimension.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_sample_type.h"
@@ -80,20 +79,6 @@ WGPUStorageTextureAccess AsDawnEnum(
   switch (webgpu_enum.AsEnum()) {
     case V8GPUStorageTextureAccess::Enum::kWriteOnly:
       return WGPUStorageTextureAccess_WriteOnly;
-  }
-}
-
-WGPUTextureComponentType AsDawnEnum(
-    const V8GPUTextureComponentType& webgpu_enum) {
-  switch (webgpu_enum.AsEnum()) {
-    case V8GPUTextureComponentType::Enum::kFloat:
-      return WGPUTextureComponentType_Float;
-    case V8GPUTextureComponentType::Enum::kUint:
-      return WGPUTextureComponentType_Uint;
-    case V8GPUTextureComponentType::Enum::kSint:
-      return WGPUTextureComponentType_Sint;
-    case V8GPUTextureComponentType::Enum::kDepthComparison:
-      return WGPUTextureComponentType_DepthComparison;
   }
 }
 

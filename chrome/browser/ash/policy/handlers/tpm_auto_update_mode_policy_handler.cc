@@ -55,24 +55,23 @@ AutoUpdateMode GetTPMAutoUpdateModeSetting(
   if (!tpm_settings)
     return AutoUpdateMode::kNever;
 
-  const base::Value* const auto_update_mode = tpm_settings->FindKeyOfType(
-      ash::tpm_firmware_update::kSettingsKeyAutoUpdateMode,
-      base::Value::Type::INTEGER);
+  absl::optional<int> auto_update_mode = tpm_settings->GetDict().FindInt(
+      ash::tpm_firmware_update::kSettingsKeyAutoUpdateMode);
 
   // Policy not set.
-  if (!auto_update_mode || auto_update_mode->GetInt() == 0)
+  if (!auto_update_mode || *auto_update_mode == 0) {
     return AutoUpdateMode::kNever;
+  }
 
   // Verify that the value is within range.
-  if (auto_update_mode->GetInt() < static_cast<int>(AutoUpdateMode::kNever) ||
-      auto_update_mode->GetInt() >
-          static_cast<int>(AutoUpdateMode::kEnrollment)) {
+  if (*auto_update_mode < static_cast<int>(AutoUpdateMode::kNever) ||
+      *auto_update_mode > static_cast<int>(AutoUpdateMode::kEnrollment)) {
     NOTREACHED() << "Invalid value for device policy key "
                     "TPMFirmwareUpdateSettings.AutoUpdateMode";
     return AutoUpdateMode::kNever;
   }
 
-  return static_cast<AutoUpdateMode>(auto_update_mode->GetInt());
+  return static_cast<AutoUpdateMode>(*auto_update_mode);
 }
 
 }  // namespace

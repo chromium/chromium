@@ -21,6 +21,8 @@ MirroringService::MirroringService(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
     : receiver_(this, std::move(receiver)),
       io_task_runner_(std::move(io_task_runner)) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+
   receiver_.set_disconnect_handler(
       base::BindOnce(&MirroringService::OnDisconnect, base::Unretained(this)));
 }
@@ -34,6 +36,7 @@ void MirroringService::Start(
     mojo::PendingRemote<mojom::ResourceProvider> resource_provider,
     mojo::PendingRemote<mojom::CastMessageChannel> outbound_channel,
     mojo::PendingReceiver<mojom::CastMessageChannel> inbound_channel) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   session_.reset();
   session_host_.reset();
 
@@ -60,6 +63,7 @@ void MirroringService::Start(
 }
 
 void MirroringService::SwitchMirroringSourceTab() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (session_) {
     session_->SwitchSourceTab();
   } else if (session_host_) {
@@ -67,7 +71,15 @@ void MirroringService::SwitchMirroringSourceTab() {
   }
 }
 
+void MirroringService::GetMirroringStats(GetMirroringStatsCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Currently implementation only exists for legacy mirroring sessions.
+  session_ ? std::move(callback).Run(base::Value(session_->GetMirroringStats()))
+           : std::move(callback).Run(base::Value());
+}
+
 void MirroringService::OnDisconnect() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   session_.reset();
   session_host_.reset();
 }

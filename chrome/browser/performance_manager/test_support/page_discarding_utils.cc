@@ -14,6 +14,7 @@
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
+#include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 
 namespace performance_manager {
@@ -43,6 +44,10 @@ GraphTestHarnessWithMockDiscarder::~GraphTestHarnessWithMockDiscarder() =
 void GraphTestHarnessWithMockDiscarder::SetUp() {
   GraphTestHarness::SetUp();
 
+  performance_manager::user_tuning::prefs::RegisterLocalStatePrefs(
+      local_state_.registry());
+  user_performance_tuning_manager_environment_.SetUp(&local_state_);
+
   // Some tests depends on the existence of the PageAggregator.
   graph()->PassToGraph(std::make_unique<PageAggregator>());
 
@@ -58,6 +63,11 @@ void GraphTestHarnessWithMockDiscarder::SetUp() {
   auto page_discarding_helper =
       std::make_unique<policies::PageDiscardingHelper>();
   page_discarding_helper->SetMockDiscarderForTesting(std::move(mock_discarder));
+  // The PageDiscardingHelper usually keeps track of the relevant patterns on
+  // profile creation and deletion. Since no profile is involved in this kind of
+  // test, add an empty patterns list associated with the "empty string" browser
+  // context ID, which is the one used by default for new PageNodes.
+  page_discarding_helper->SetNoDiscardPatternsForProfile("", {});
 
   graph()->PassToGraph(std::move(page_discarding_helper));
   DCHECK(policies::PageDiscardingHelper::GetFromGraph(graph()));
@@ -75,6 +85,7 @@ void GraphTestHarnessWithMockDiscarder::TearDown() {
   main_frame_node_.reset();
   page_node_.reset();
   process_node_.reset();
+  user_performance_tuning_manager_environment_.TearDown();
   GraphTestHarness::TearDown();
 }
 

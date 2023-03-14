@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/network/hotspot_util.h"
+#include "chromeos/ash/components/network/metrics/hotspot_metrics_helper.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -88,22 +89,27 @@ void HotspotStateHandler::SetHotspotConfig(
 
   if (!LoginState::Get()->IsUserLoggedIn()) {
     NET_LOG(ERROR) << "Could not set hotspot config without login first.";
+    HotspotMetricsHelper::RecordSetHotspotConfigResult(
+        SetHotspotConfigResult::kFailedNotLogin);
     std::move(callback).Run(SetHotspotConfigResult::kFailedNotLogin);
     return;
   }
 
   if (!mojom_config) {
     NET_LOG(ERROR) << "Invalid hotspot configurations.";
+    HotspotMetricsHelper::RecordSetHotspotConfigResult(
+        SetHotspotConfigResult::kFailedInvalidConfiguration);
     std::move(callback).Run(
         SetHotspotConfigResult::kFailedInvalidConfiguration);
     return;
   }
 
-  base::Value shill_tethering_config =
+  base::Value::Dict shill_tethering_config =
       MojomConfigToShillConfig(std::move(mojom_config));
   auto callback_split = base::SplitOnceCallback(std::move(callback));
   ShillManagerClient::Get()->SetProperty(
-      shill::kTetheringConfigProperty, std::move(shill_tethering_config),
+      shill::kTetheringConfigProperty,
+      base::Value(std::move(shill_tethering_config)),
       base::BindOnce(&HotspotStateHandler::OnSetHotspotConfigSuccess,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(callback_split.first)),
@@ -114,6 +120,8 @@ void HotspotStateHandler::SetHotspotConfig(
 
 void HotspotStateHandler::OnSetHotspotConfigSuccess(
     SetHotspotConfigCallback callback) {
+  HotspotMetricsHelper::RecordSetHotspotConfigResult(
+      hotspot_config::mojom::SetHotspotConfigResult::kSuccess);
   ShillManagerClient::Get()->GetProperties(
       base::BindOnce(&HotspotStateHandler::UpdateHotspotConfigAndRunCallback,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -123,10 +131,13 @@ void HotspotStateHandler::OnSetHotspotConfigFailure(
     SetHotspotConfigCallback callback,
     const std::string& error_name,
     const std::string& error_message) {
+  using SetHotspotConfigResult = hotspot_config::mojom::SetHotspotConfigResult;
+
   NET_LOG(ERROR) << "Error setting hotspot config, error name:" << error_name
                  << ", message" << error_message;
-  std::move(callback).Run(hotspot_config::mojom::SetHotspotConfigResult::
-                              kFailedInvalidConfiguration);
+  HotspotMetricsHelper::RecordSetHotspotConfigResult(
+      SetHotspotConfigResult::kFailedInvalidConfiguration);
+  std::move(callback).Run(SetHotspotConfigResult::kFailedInvalidConfiguration);
 }
 
 void HotspotStateHandler::LoggedInStateChanged() {
@@ -217,6 +228,9 @@ void HotspotStateHandler::UpdateHotspotStatus(const base::Value::Dict& status) {
 
   if (mojom_state != hotspot_config::mojom::HotspotState::kEnabled) {
     active_client_count_ = 0;
+    if (mojom_state == hotspot_config::mojom::HotspotState::kDisabled) {
+      UpdateDisableReason(status);
+    }
     return;
   }
   size_t active_client_count = GetActiveClientCount(status);
@@ -225,6 +239,23 @@ void HotspotStateHandler::UpdateHotspotStatus(const base::Value::Dict& status) {
 
   active_client_count_ = active_client_count;
   NotifyHotspotStatusChanged();
+}
+
+void HotspotStateHandler::UpdateDisableReason(const base::Value::Dict& status) {
+  const std::string* idle_reason =
+      status.FindString(shill::kTetheringStatusIdleReasonProperty);
+  if (!idle_reason) {
+    NET_LOG(EVENT) << "HotspotStateHandler: No string value for: "
+                   << shill::kTetheringStatusIdleReasonProperty << " in "
+                   << shill::kTetheringStatusProperty;
+    return;
+  }
+
+  if (*idle_reason != shill::kTetheringIdleReasonInitialState) {
+    hotspot_config::mojom::DisableReason disable_reason =
+        ShillTetheringIdleReasonToMojomState(*idle_reason);
+    NotifyHotspotTurnedOff(disable_reason);
+  }
 }
 
 void HotspotStateHandler::NotifyHotspotStatusChanged() {

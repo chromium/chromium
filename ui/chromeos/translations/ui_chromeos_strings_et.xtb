@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Järgmine</translation>
 <translation id="1209796539517632982">Automaatsed nimeserverid</translation>
 <translation id="1210831758834677569">lao</translation>
+<translation id="1221555006497674479">Salvestusruumi on vähe, alles on <ph name="REMAINING_PERCENTAGE" />% teie jagatud ketta salvestusruumist <ph name="TOTAL_SPACE" />.</translation>
 <translation id="1243314992276662751">Laadi üles</translation>
 <translation id="1249250836236328755">Žanr</translation>
 <translation id="1254593899333212300">Otsene Interneti-ühendus</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">hiina, pinyin</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> faili võrguühenduseta kättesaadavaks tegemine</translation>
 <translation id="164969095109328410">Chrome'i seade</translation>
+<translation id="1661207570040737402">Olete kasutanud ära kogu oma jagatud ketta Google Workspace'i salvestusruumi.</translation>
 <translation id="1661867754829461514">PIN-kood puudub</translation>
 <translation id="166439687370499867">Jagatud võrgu seadistuste muutmine ei ole lubatud</translation>
 <translation id="1665611772925418501">Faili ei saa muuta.</translation>
@@ -82,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> üksuse pakkimine …</translation>
 <translation id="1722687688096767818">Profiili lisamine …</translation>
 <translation id="1726100011689679555">Nimeserverid</translation>
+<translation id="1727562178154619254">Sünkroonimiseks valmis</translation>
 <translation id="1729953886957086472">saksa (Saksamaa)</translation>
 <translation id="1730235522912993863">hiina, cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> üksust on kopeeritud.</translation>
@@ -349,11 +352,11 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Kleebi</translation>
 <translation id="3952872973865944257">telugu, foneetiline</translation>
-<translation id="3954354850384043518">Pooleli</translation>
 <translation id="3958548648197196644">Kiivi</translation>
 <translation id="3971140002794351170">Mobiiliprofiili allalaadimine, võrk <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">inglise (Ühendkuningriik)</translation>
 <translation id="3975895378829046965">bengali, foneetiline</translation>
+<translation id="3999574733850440202">Hiljuti avatud Microsofti failid on teisaldatud OneDrive'i</translation>
 <translation id="4002066346123236978">Pealkiri</translation>
 <translation id="4017788180641807848">inglise (USA), Workmani klaviatuuriga</translation>
 <translation id="4019998208269143058">Kinnita kiirfailidesse</translation>
@@ -362,6 +365,7 @@
 <translation id="4092890906744441904">iiri</translation>
 <translation id="4124935795427217608">Ükssarvik</translation>
 <translation id="4131235941541910880">Teisaldage ebavajalikud üksused prügikasti</translation>
+<translation id="4134804435730168042">Võrk <ph name="NETWORK_INDEX" />, võrke kokku <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktiveerige pärast seadme seadistust</translation>
 <translation id="4153015322587141338">Paremklõpsake failil ja tehke valik „<ph name="PIN_COMMAND" />“, et riiulil olevatele failidele kiirelt juurde pääseda.</translation>
 <translation id="4157569377477607576">Administraatori reegel ei soovita:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> on teisaldatud.</translation>
@@ -404,6 +408,7 @@
 <translation id="4414834425328380570">„<ph name="FILE_NAME" />“ kustutatakse ja te ei saa seda taastada.</translation>
 <translation id="4418686080762064601">Looge oma failide jaoks otsetee</translation>
 <translation id="4425149324548788773">Minu ketas</translation>
+<translation id="4432921877815220091">Võrk <ph name="NETWORK_INDEX" />, võrke kokku <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, aktiveerige pärast seadme seadistust, võrku haldab teie administraator</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, ühenda</translation>
 <translation id="4442424173763614572">DNS-i otsing nurjus</translation>
 <translation id="4462159676511157176">Kohandatud nimeserverid</translation>
@@ -611,8 +616,10 @@
 <translation id="5911887972742538906">Linuxi rakenduse installimisel ilmnes viga.</translation>
 <translation id="5912396950572065471">Vorming</translation>
 <translation id="5913638992615760742">Kopeerimine ebaõnnestus, ootamatu viga: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">Saadaval on uued otsingufunktsioonid</translation>
 <translation id="5926082595146149752">hollandi (Holland), USA rahvusvahelise arvutiklaviatuuriga</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Võrk <ph name="NETWORK_INDEX" />, võrke kokku <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, aktiveerige pärast seadme seadistust</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> üksust</translation>
 <translation id="5957366693331451795">Chromeboxid</translation>
 <translation id="5982621672636444458">Sortimisvalikud</translation>
@@ -699,6 +706,7 @@
 <translation id="6732801395666424405">Sertifikaate ei laaditud</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Kausta jagamine Bruschettaga</translation>
+<translation id="6750737795876287924">Praegune kataloog</translation>
 <translation id="6751256176799620176">Valitud on üks kaust</translation>
 <translation id="6755827872271341378">Chrome OS Flexi seade</translation>
 <translation id="6790428901817661496">Esita</translation>
@@ -736,7 +744,6 @@
 <translation id="6973630695168034713">Kaustad</translation>
 <translation id="6976795442547527108">Lõvi</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">Algusest</translation>
 <translation id="6989942356279143254">rootsi</translation>
 <translation id="6990081529015358884">Ruum sai otsa</translation>
 <translation id="6993826899923627728">Need üksused on prügikastis</translation>
@@ -759,6 +766,7 @@
 <translation id="7126604456862387217">„&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;” – &lt;em&gt;otsi Drive'ist&lt;/em&gt;</translation>
 <translation id="7135561821015524160">kannada, foneetiline</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Autentimisserveri identiteedi kinnitamiseks puudub „Teema alternatiivse nime vaste“ või „Domeenisufiksi vaste“.</translation>
 <translation id="7165320105431587207">Võrgu seadistamine ebaõnnestus</translation>
 <translation id="7170041865419449892">Vahemikust väljas</translation>
 <translation id="7180611975245234373">Värskenda</translation>
@@ -791,7 +799,6 @@
 <translation id="7458955835361612701">Hiljutisi pilte pole</translation>
 <translation id="7460898608667578234">ukraina keel</translation>
 <translation id="7469894403370665791">Võta automaatselt selle võrguga ühendust</translation>
-<translation id="7481358317100446445">Valmis</translation>
 <translation id="7486315294984620427">Failide pukseerimiseks Parallels Desktopile peab fail olema kopeeritud Windowsi failide hulka.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">malajalami, foneetiline</translation>
@@ -829,6 +836,7 @@
 <translation id="7724603315864178912">Lõika</translation>
 <translation id="7732111077498238432">Võrgus kehtivad eeskirjad</translation>
 <translation id="7736003208887389532">Kas kustutada need failid jäädavalt?</translation>
+<translation id="7740287852186792672">Otsingutulemused</translation>
 <translation id="7748626145866214022">Toiminguribal on saadaval rohkem valikuid. Toiminguriba esiletõstmiseks vajutage klahve Alt + A.</translation>
 <translation id="7760449188139285140">hiina, wubi</translation>
 <translation id="7765158879357617694">Liiguta</translation>
@@ -880,6 +888,7 @@
 <translation id="8116072619078571545">Jäävesi</translation>
 <translation id="8128733386027980860">inglise (Ühendkuningriik), Dvoraki klaviatuuriga</translation>
 <translation id="8137331602592933310">Faili „<ph name="FILENAME" />” on teiega jagatud. Te ei saa seda kustutada, kuna te pole selle omanik.</translation>
+<translation id="8138705869659070104">Aktiveerige pärast seadme seadistust</translation>
 <translation id="813913629614996137">Lähtestamine …</translation>
 <translation id="8147028810663464959">Tähemärkide laius on täislaius</translation>
 <translation id="8151638057146502721">Seadista</translation>
@@ -905,6 +914,7 @@
 <translation id="8300849813060516376">OTASP nurjus</translation>
 <translation id="8312871300878166382">Kleebi kausta</translation>
 <translation id="8329978297633540474">Lihttekst</translation>
+<translation id="8332007959299458842">Hiljuti avatud Microsofti failid on teisaldatud Google Drive'i</translation>
 <translation id="8335587457941836791">Riiulilt vabastamine</translation>
 <translation id="8335837413233998004">valgevene</translation>
 <translation id="8336153091935557858">Eile kell <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -931,6 +941,7 @@
 <translation id="8487700953926739672">Võrguühenduseta saadaval</translation>
 <translation id="8492972329130824181">Kodune võrk pole saadaval. Ühenduse loomiseks tuleb lubada mobiilse andmeside rändlus.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> üksuse ekstraktimine …</translation>
+<translation id="8502913769543567768">Võrk <ph name="NETWORK_INDEX" />, võrke kokku <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktiveerige pärast seadme seadistust, võrku haldab teie administraator</translation>
 <translation id="8521441079177373948">Ühendkuningriik</translation>
 <translation id="853494022971700746">prantsuse (Prantsusmaa)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, üksikasjad</translation>
@@ -992,6 +1003,7 @@
 <translation id="9046895021617826162">Ühendamine nurjus</translation>
 <translation id="9065512565307033593">Kui kinnitamine ebaõnnestub, keelatakse juurdepääs võrgule.</translation>
 <translation id="908378762078012445">vene, foneetilise AATSEEL-klaviatuuriga</translation>
+<translation id="9086302186042011942">Sünkroonimine</translation>
 <translation id="9099674669267916096">Lehtede arv</translation>
 <translation id="9100610230175265781">Parool on vajalik</translation>
 <translation id="9110990317705400362">Otsime alati võimalusi, kuidas muuta sirvimine veelgi turvalisemaks. Varem võis iga veebisait paluda teil lisada brauserisse laiendusi. Google Chrome'i uusimas versioonis peate Chrome'ile selgelt ütlema, et soovite neid laiendusi installida, lisades need lehe Laiendused kaudu. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>

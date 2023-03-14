@@ -225,7 +225,7 @@ TEST_F(SimpleIndexFileTest, Serialize) {
   base::Time when_index_last_saw_cache;
   SimpleIndexLoadResult deserialize_result;
   WrappedSimpleIndexFile::Deserialize(
-      net::DISK_CACHE, static_cast<const char*>(pickle->data()), pickle->size(),
+      net::DISK_CACHE, pickle->data_as_char(), pickle->size(),
       &when_index_last_saw_cache, &deserialize_result);
   EXPECT_TRUE(deserialize_result.did_load);
   EXPECT_EQ(now, when_index_last_saw_cache);
@@ -265,7 +265,7 @@ TEST_F(SimpleIndexFileTest, SerializeAppCache) {
   base::Time when_index_last_saw_cache;
   SimpleIndexLoadResult deserialize_result;
   WrappedSimpleIndexFile::Deserialize(
-      net::APP_CACHE, static_cast<const char*>(pickle->data()), pickle->size(),
+      net::APP_CACHE, pickle->data_as_char(), pickle->size(),
       &when_index_last_saw_cache, &deserialize_result);
   EXPECT_TRUE(deserialize_result.did_load);
   EXPECT_EQ(now, when_index_last_saw_cache);
@@ -309,7 +309,7 @@ TEST_F(SimpleIndexFileTest, ReadV7Format) {
   base::Time when_index_last_saw_cache;
   SimpleIndexLoadResult deserialize_result;
   WrappedSimpleIndexFile::Deserialize(
-      net::DISK_CACHE, static_cast<const char*>(pickle->data()), pickle->size(),
+      net::DISK_CACHE, pickle->data_as_char(), pickle->size(),
       &when_index_last_saw_cache, &deserialize_result);
   EXPECT_TRUE(deserialize_result.did_load);
   EXPECT_EQ(now, when_index_last_saw_cache);
@@ -351,7 +351,7 @@ TEST_F(SimpleIndexFileTest, ReadV8Format) {
   base::Time when_index_last_saw_cache;
   SimpleIndexLoadResult deserialize_result;
   WrappedSimpleIndexFile::Deserialize(
-      net::DISK_CACHE, static_cast<const char*>(pickle->data()), pickle->size(),
+      net::DISK_CACHE, pickle->data_as_char(), pickle->size(),
       &when_index_last_saw_cache, &deserialize_result);
   EXPECT_TRUE(deserialize_result.did_load);
   EXPECT_EQ(now, when_index_last_saw_cache);
@@ -397,7 +397,7 @@ TEST_F(SimpleIndexFileTest, ReadV8FormatAppCache) {
   base::Time when_index_last_saw_cache;
   SimpleIndexLoadResult deserialize_result;
   WrappedSimpleIndexFile::Deserialize(
-      net::APP_CACHE, static_cast<const char*>(pickle->data()), pickle->size(),
+      net::APP_CACHE, pickle->data_as_char(), pickle->size(),
       &when_index_last_saw_cache, &deserialize_result);
   EXPECT_TRUE(deserialize_result.did_load);
   EXPECT_EQ(now, when_index_last_saw_cache);
@@ -432,9 +432,7 @@ TEST_F(SimpleIndexFileTest, LegacyIsIndexFileStale) {
   EXPECT_TRUE(
       WrappedSimpleIndexFile::LegacyIsIndexFileStale(cache_mtime, index_path));
   const std::string kDummyData = "nothing to be seen here";
-  EXPECT_EQ(static_cast<int>(kDummyData.size()),
-            base::WriteFile(index_path,
-                            kDummyData.data(), kDummyData.size()));
+  EXPECT_TRUE(base::WriteFile(index_path, kDummyData));
   ASSERT_TRUE(base::GetFileInfo(cache_path, &file_info));
   cache_mtime = file_info.last_modified;
   EXPECT_FALSE(
@@ -504,8 +502,7 @@ TEST_F(SimpleIndexFileTest, LoadCorruptIndex) {
   ASSERT_TRUE(simple_index_file.CreateIndexFileDirectory());
   const base::FilePath& index_path = simple_index_file.GetIndexFilePath();
   const std::string kDummyData = "nothing to be seen here";
-  EXPECT_EQ(static_cast<int>(kDummyData.size()),
-            base::WriteFile(index_path, kDummyData.data(), kDummyData.size()));
+  EXPECT_TRUE(base::WriteFile(index_path, kDummyData));
   base::File::Info file_info;
   ASSERT_TRUE(
       base::GetFileInfo(simple_index_file.GetIndexFilePath(), &file_info));
@@ -535,10 +532,7 @@ TEST_F(SimpleIndexFileTest, LoadCorruptIndex2) {
   base::Pickle bad_payload;
   bad_payload.WriteString("nothing to be seen here");
 
-  EXPECT_EQ(
-      static_cast<int>(bad_payload.size()),
-      base::WriteFile(index_path, static_cast<const char*>(bad_payload.data()),
-                      bad_payload.size()));
+  EXPECT_TRUE(base::WriteFile(index_path, bad_payload));
   base::File::Info file_info;
   ASSERT_TRUE(
       base::GetFileInfo(simple_index_file.GetIndexFilePath(), &file_info));
@@ -579,9 +573,7 @@ TEST_F(SimpleIndexFileTest, SimpleCacheUpgrade) {
   const std::string index_file_contents("incorrectly serialized data");
   const base::FilePath old_index_file =
       cache_path.AppendASCII("the-real-index");
-  ASSERT_EQ(static_cast<int>(index_file_contents.size()),
-            base::WriteFile(old_index_file, index_file_contents.data(),
-                            index_file_contents.size()));
+  ASSERT_TRUE(base::WriteFile(old_index_file, index_file_contents));
 
   TrivialFileOperations file_operations;
   // Upgrade the cache.
@@ -641,9 +633,7 @@ TEST_F(SimpleIndexFileTest, OverwritesStaleTempFile) {
   const base::FilePath& temp_index_path =
       simple_index_file.GetTempIndexFilePath();
   const std::string kDummyData = "nothing to be seen here";
-  EXPECT_EQ(
-      static_cast<int>(kDummyData.size()),
-      base::WriteFile(temp_index_path, kDummyData.data(), kDummyData.size()));
+  EXPECT_TRUE(base::WriteFile(temp_index_path, kDummyData));
   ASSERT_TRUE(base::PathExists(simple_index_file.GetTempIndexFilePath()));
 
   // Write the index file.

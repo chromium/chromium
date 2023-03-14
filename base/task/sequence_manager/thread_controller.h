@@ -156,13 +156,6 @@ class BASE_EXPORT ThreadController {
   // pump).
   virtual void PrioritizeYieldingToNative(base::TimeTicks prioritize_until) = 0;
 
-  // Currently only overridden on ThreadControllerWithMessagePumpImpl.
-  // While input is active, don't let sequence manager execute work
-  // for more than |delta|, which is exported from the feature param
-  // |kBrowserPeriodicYieldingToNativeNormalInputAfterMsParam| or
-  // |kBrowserPeriodicYieldingToNativeFlingInputAfterMsParam| for flings.
-  virtual void EnablePeriodicYieldingToNative(base::TimeDelta delta) = 0;
-
   // Sets the SingleThreadTaskRunner that will be returned by
   // SingleThreadTaskRunner::GetCurrentDefault on the thread controlled by this
   // ThreadController.
@@ -414,7 +407,7 @@ class BASE_EXPORT ThreadController {
       SampleMetadata thread_controller_sample_metadata_;
       size_t thread_controller_active_id_ = 0;
 #if BUILDFLAG(ENABLE_BASE_TRACING)
-      TerminatingFlowLambda& terminating_wakeup_flow_lambda_;
+      const raw_ref<TerminatingFlowLambda> terminating_wakeup_flow_lambda_;
 #endif
 
       // Toggles to true when used as RunLevel&& input to construct another

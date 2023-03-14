@@ -207,7 +207,6 @@ GLenum GetInternalFormat(const GLVersionInfo* version, GLenum internal_format) {
 }
 
 void InitializeStaticGLBindingsGL() {
-  g_current_gl_context_tls = new base::ThreadLocalPointer<CurrentGL>;
   g_no_context_current_gl = new CurrentGL;
   g_no_context_current_gl->Api = new NoContextGLApi;
 }
@@ -221,10 +220,7 @@ void ClearBindingsGL() {
     g_no_context_current_gl = nullptr;
   }
 
-  if (g_current_gl_context_tls) {
-    delete g_current_gl_context_tls;
-    g_current_gl_context_tls = nullptr;
-  }
+  GetGlContextForCurrentThread() = nullptr;
 }
 
 bool SetNullDrawGLBindingsEnabled(bool enabled) {
@@ -238,8 +234,7 @@ bool GetNullDrawBindingsEnabled() {
 }
 
 void SetCurrentGL(CurrentGL* current) {
-  CurrentGL* new_current = current ? current : g_no_context_current_gl;
-  g_current_gl_context_tls->Set(new_current);
+  GetGlContextForCurrentThread() = current ? current : g_no_context_current_gl;
 }
 
 GLApi::GLApi() = default;

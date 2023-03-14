@@ -16,6 +16,7 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/cxx20_is_constant_evaluated.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
@@ -134,6 +135,11 @@ enum class RawPtrTraits : unsigned {
   //
   // Test only.
   kUseCountingWrapperForTest = (1 << 4),
+
+  // Helper trait that can be used to test raw_ptr's behaviour or conversions.
+  //
+  // Test only.
+  kDummyForTest = (1 << 5),
 };
 
 // Used to combine RawPtrTraits:
@@ -160,12 +166,12 @@ constexpr RawPtrTraits Remove(RawPtrTraits a, RawPtrTraits b) {
 }
 
 constexpr bool AreValid(RawPtrTraits traits) {
-  return Remove(traits, RawPtrTraits::kMayDangle |
-                            RawPtrTraits::kDisableMTECheckedPtr |
-                            RawPtrTraits::kDisableHooks |
-                            RawPtrTraits::kAllowPtrArithmetic |
-                            RawPtrTraits::kUseCountingWrapperForTest) ==
-         RawPtrTraits::kEmpty;
+  return Remove(traits,
+                RawPtrTraits::kMayDangle | RawPtrTraits::kDisableMTECheckedPtr |
+                    RawPtrTraits::kDisableHooks |
+                    RawPtrTraits::kAllowPtrArithmetic |
+                    RawPtrTraits::kUseCountingWrapperForTest |
+                    RawPtrTraits::kDummyForTest) == RawPtrTraits::kEmpty;
 }
 
 template <RawPtrTraits Traits>
@@ -180,38 +186,41 @@ namespace internal {
 struct RawPtrNoOpImpl {
   // Wraps a pointer.
   template <typename T>
-  static PA_ALWAYS_INLINE T* WrapRawPtr(T* ptr) {
+  PA_ALWAYS_INLINE static constexpr T* WrapRawPtr(T* ptr) {
     return ptr;
   }
 
   // Notifies the allocator when a wrapped pointer is being removed or replaced.
   template <typename T>
-  static PA_ALWAYS_INLINE void ReleaseWrappedPtr(T*) {}
+  PA_ALWAYS_INLINE static constexpr void ReleaseWrappedPtr(T*) {}
 
   // Unwraps the pointer, while asserting that memory hasn't been freed. The
   // function is allowed to crash on nullptr.
   template <typename T>
-  static PA_ALWAYS_INLINE T* SafelyUnwrapPtrForDereference(T* wrapped_ptr) {
+  PA_ALWAYS_INLINE static constexpr T* SafelyUnwrapPtrForDereference(
+      T* wrapped_ptr) {
     return wrapped_ptr;
   }
 
   // Unwraps the pointer, while asserting that memory hasn't been freed. The
   // function must handle nullptr gracefully.
   template <typename T>
-  static PA_ALWAYS_INLINE T* SafelyUnwrapPtrForExtraction(T* wrapped_ptr) {
+  PA_ALWAYS_INLINE static constexpr T* SafelyUnwrapPtrForExtraction(
+      T* wrapped_ptr) {
     return wrapped_ptr;
   }
 
   // Unwraps the pointer, without making an assertion on whether memory was
   // freed or not.
   template <typename T>
-  static PA_ALWAYS_INLINE T* UnsafelyUnwrapPtrForComparison(T* wrapped_ptr) {
+  PA_ALWAYS_INLINE static constexpr T* UnsafelyUnwrapPtrForComparison(
+      T* wrapped_ptr) {
     return wrapped_ptr;
   }
 
   // Upcasts the wrapped pointer.
   template <typename To, typename From>
-  static PA_ALWAYS_INLINE constexpr To* Upcast(From* wrapped_ptr) {
+  PA_ALWAYS_INLINE static constexpr To* Upcast(From* wrapped_ptr) {
     static_assert(std::is_convertible<From*, To*>::value,
                   "From must be convertible to To.");
     // Note, this cast may change the address if upcasting to base that lies in
@@ -224,40 +233,52 @@ struct RawPtrNoOpImpl {
       typename T,
       typename Z,
       typename =
-          std::enable_if_t<partition_alloc::internal::offset_type<Z>, void>>
-  static PA_ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
+          std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
+  PA_ALWAYS_INLINE static constexpr T* Advance(T* wrapped_ptr, Z delta_elems) {
     return wrapped_ptr + delta_elems;
   }
 
+  // Retreat the wrapped pointer by `delta_elems`.
+  template <
+      typename T,
+      typename Z,
+      typename =
+          std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
+  PA_ALWAYS_INLINE static constexpr T* Retreat(T* wrapped_ptr, Z delta_elems) {
+    return wrapped_ptr - delta_elems;
+  }
+
   template <typename T>
-  static PA_ALWAYS_INLINE ptrdiff_t GetDeltaElems(T* wrapped_ptr1,
-                                                  T* wrapped_ptr2) {
+  PA_ALWAYS_INLINE static constexpr ptrdiff_t GetDeltaElems(T* wrapped_ptr1,
+                                                            T* wrapped_ptr2) {
     return wrapped_ptr1 - wrapped_ptr2;
   }
 
   // Returns a copy of a wrapped pointer, without making an assertion on whether
   // memory was freed or not.
   template <typename T>
-  static PA_ALWAYS_INLINE T* Duplicate(T* wrapped_ptr) {
+  PA_ALWAYS_INLINE static constexpr T* Duplicate(T* wrapped_ptr) {
     return wrapped_ptr;
   }
 
   // `WrapRawPtrForDuplication` and `UnsafelyUnwrapPtrForDuplication` are used
   // to create a new raw_ptr<T> from another raw_ptr<T> of a different flavor.
   template <typename T>
-  static PA_ALWAYS_INLINE T* WrapRawPtrForDuplication(T* ptr) {
+  PA_ALWAYS_INLINE static constexpr T* WrapRawPtrForDuplication(T* ptr) {
     return ptr;
   }
 
   template <typename T>
-  static PA_ALWAYS_INLINE T* UnsafelyUnwrapPtrForDuplication(T* wrapped_ptr) {
+  PA_ALWAYS_INLINE static constexpr T* UnsafelyUnwrapPtrForDuplication(
+      T* wrapped_ptr) {
     return wrapped_ptr;
   }
 
   // This is for accounting only, used by unit tests.
-  static PA_ALWAYS_INLINE void IncrementSwapCountForTest() {}
-  static PA_ALWAYS_INLINE void IncrementLessCountForTest() {}
-  static PA_ALWAYS_INLINE void IncrementPointerToMemberOperatorCountForTest() {}
+  PA_ALWAYS_INLINE constexpr static void IncrementSwapCountForTest() {}
+  PA_ALWAYS_INLINE constexpr static void IncrementLessCountForTest() {}
+  PA_ALWAYS_INLINE constexpr static void
+  IncrementPointerToMemberOperatorCountForTest() {}
 };
 
 #if PA_CONFIG(ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
@@ -282,7 +303,7 @@ static_assert((kTopBit & kTagMask) > 0,
 struct MTECheckedPtrImplPartitionAllocSupport {
   // Checks if the necessary support is enabled in PartitionAlloc for `ptr`.
   template <typename T>
-  static PA_ALWAYS_INLINE bool EnabledForPtr(T* ptr) {
+  PA_ALWAYS_INLINE static bool EnabledForPtr(T* ptr) {
     // Disambiguation: UntagPtr removes the hardware MTE tag, whereas this class
     // is responsible for handling the software MTE tag.
     auto addr = partition_alloc::UntagPtr(ptr);
@@ -290,7 +311,7 @@ struct MTECheckedPtrImplPartitionAllocSupport {
   }
 
   // Returns pointer to the tag that protects are pointed by |addr|.
-  static PA_ALWAYS_INLINE void* TagPointer(uintptr_t addr) {
+  PA_ALWAYS_INLINE static void* TagPointer(uintptr_t addr) {
     return partition_alloc::PartitionTagPointer(addr);
   }
 };
@@ -305,7 +326,10 @@ struct MTECheckedPtrImpl {
 
   // Wraps a pointer, and returns its uintptr_t representation.
   template <typename T>
-  static PA_ALWAYS_INLINE T* WrapRawPtr(T* ptr) {
+  PA_ALWAYS_INLINE static constexpr T* WrapRawPtr(T* ptr) {
+    if (partition_alloc::internal::base::is_constant_evaluated()) {
+      return ptr;
+    }
     // Catch the obviously unsupported cases, e.g. `nullptr` or `-1ull`.
     //
     // `ExtractPtr(ptr)` should be functionally identical to `ptr` for
@@ -352,12 +376,16 @@ struct MTECheckedPtrImpl {
   // Notifies the allocator when a wrapped pointer is being removed or replaced.
   // No-op for MTECheckedPtrImpl.
   template <typename T>
-  static PA_ALWAYS_INLINE void ReleaseWrappedPtr(T*) {}
+  PA_ALWAYS_INLINE static constexpr void ReleaseWrappedPtr(T*) {}
 
   // Unwraps the pointer's uintptr_t representation, while asserting that memory
   // hasn't been freed. The function is allowed to crash on nullptr.
   template <typename T>
-  static PA_ALWAYS_INLINE T* SafelyUnwrapPtrForDereference(T* wrapped_ptr) {
+  PA_ALWAYS_INLINE static constexpr T* SafelyUnwrapPtrForDereference(
+      T* wrapped_ptr) {
+    if (partition_alloc::internal::base::is_constant_evaluated()) {
+      return wrapped_ptr;
+    }
     // Disambiguation: UntagPtr removes the hardware MTE tag, whereas this
     // function is responsible for removing the software MTE tag.
     uintptr_t wrapped_addr = partition_alloc::UntagPtr(wrapped_ptr);
@@ -386,7 +414,11 @@ struct MTECheckedPtrImpl {
   // Unwraps the pointer as a T*, without making an assertion on whether
   // memory was freed or not.
   template <typename T>
-  static PA_ALWAYS_INLINE T* SafelyUnwrapPtrForExtraction(T* wrapped_ptr) {
+  PA_ALWAYS_INLINE static constexpr T* SafelyUnwrapPtrForExtraction(
+      T* wrapped_ptr) {
+    if (partition_alloc::internal::base::is_constant_evaluated()) {
+      return wrapped_ptr;
+    }
     // Return `wrapped_ptr` straightaway if protection is disabled, e.g.
     // when `ptr` is `nullptr` or `uintptr_t{-1ull}`.
     T* extracted_ptr = ExtractPtr(wrapped_ptr);
@@ -399,7 +431,11 @@ struct MTECheckedPtrImpl {
   // Unwraps the pointer's uintptr_t representation, without making an assertion
   // on whether memory was freed or not.
   template <typename T>
-  static PA_ALWAYS_INLINE T* UnsafelyUnwrapPtrForComparison(T* wrapped_ptr) {
+  PA_ALWAYS_INLINE static constexpr T* UnsafelyUnwrapPtrForComparison(
+      T* wrapped_ptr) {
+    if (partition_alloc::internal::base::is_constant_evaluated()) {
+      return wrapped_ptr;
+    }
     // Return `wrapped_ptr` straightaway if protection is disabled, e.g.
     // when `ptr` is `nullptr` or `uintptr_t{-1ull}`.
     T* extracted_ptr = ExtractPtr(wrapped_ptr);
@@ -411,7 +447,7 @@ struct MTECheckedPtrImpl {
 
   // Upcasts the wrapped pointer.
   template <typename To, typename From>
-  static PA_ALWAYS_INLINE constexpr To* Upcast(From* wrapped_ptr) {
+  PA_ALWAYS_INLINE static constexpr To* Upcast(From* wrapped_ptr) {
     static_assert(std::is_convertible<From*, To*>::value,
                   "From must be convertible to To.");
 
@@ -424,14 +460,29 @@ struct MTECheckedPtrImpl {
       typename T,
       typename Z,
       typename =
-          std::enable_if_t<partition_alloc::internal::offset_type<Z>, void>>
-  static PA_ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
+          std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
+  PA_ALWAYS_INLINE static constexpr T* Advance(T* wrapped_ptr, Z delta_elems) {
     return wrapped_ptr + delta_elems;
   }
 
+  // Retreat the wrapped pointer by `delta_elems`.
+  template <
+      typename T,
+      typename Z,
+      typename =
+          std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
+  PA_ALWAYS_INLINE static constexpr T* Retreat(T* wrapped_ptr, Z delta_elems) {
+    return wrapped_ptr - delta_elems;
+  }
+
   template <typename T>
-  static PA_ALWAYS_INLINE ptrdiff_t GetDeltaElems(T* wrapped_ptr1,
-                                                  T* wrapped_ptr2) {
+  PA_ALWAYS_INLINE static constexpr ptrdiff_t GetDeltaElems(T* wrapped_ptr1,
+                                                            T* wrapped_ptr2) {
+    if (partition_alloc::internal::base::is_constant_evaluated()) {
+      return wrapped_ptr1 - wrapped_ptr2;
+    }
+
+#if BUILDFLAG(ENABLE_POINTER_SUBTRACTION_CHECK)
     // Ensure that both pointers come from the same allocation.
     //
     // Disambiguation: UntagPtr removes the hardware MTE tag, whereas this
@@ -448,6 +499,7 @@ struct MTECheckedPtrImpl {
       PA_BASE_CHECK(tag1 == tag2);
       return wrapped_ptr1 - wrapped_ptr2;
     }
+#endif  // BUILDFLAG(ENABLE_POINTER_SUBTRACTION_CHECK)
 
     // If one or the other arg come untagged, we have to perform the
     // subtraction entirely without tags.
@@ -460,34 +512,42 @@ struct MTECheckedPtrImpl {
   // Returns a copy of a wrapped pointer, without making an assertion
   // on whether memory was freed or not.
   template <typename T>
-  static PA_ALWAYS_INLINE T* Duplicate(T* wrapped_ptr) {
+  PA_ALWAYS_INLINE static constexpr T* Duplicate(T* wrapped_ptr) {
     return wrapped_ptr;
   }
 
   // `WrapRawPtrForDuplication` and `UnsafelyUnwrapPtrForDuplication` are used
   // to create a new raw_ptr<T> from another raw_ptr<T> of a different flavor.
   template <typename T>
-  static PA_ALWAYS_INLINE T* WrapRawPtrForDuplication(T* ptr) {
+  PA_ALWAYS_INLINE static constexpr T* WrapRawPtrForDuplication(T* ptr) {
+    if (partition_alloc::internal::base::is_constant_evaluated()) {
+      return ptr;
+    }
     return WrapRawPtr(ptr);
   }
 
   template <typename T>
-  static PA_ALWAYS_INLINE T* UnsafelyUnwrapPtrForDuplication(T* wrapped_ptr) {
+  PA_ALWAYS_INLINE static constexpr T* UnsafelyUnwrapPtrForDuplication(
+      T* wrapped_ptr) {
+    if (partition_alloc::internal::base::is_constant_evaluated()) {
+      return wrapped_ptr;
+    }
     return ExtractPtr(wrapped_ptr);
   }
 
   // This is for accounting only, used by unit tests.
-  static PA_ALWAYS_INLINE void IncrementSwapCountForTest() {}
-  static PA_ALWAYS_INLINE void IncrementLessCountForTest() {}
-  static PA_ALWAYS_INLINE void IncrementPointerToMemberOperatorCountForTest() {}
+  PA_ALWAYS_INLINE static constexpr void IncrementSwapCountForTest() {}
+  PA_ALWAYS_INLINE static constexpr void IncrementLessCountForTest() {}
+  PA_ALWAYS_INLINE static constexpr void
+  IncrementPointerToMemberOperatorCountForTest() {}
 
  private:
-  static PA_ALWAYS_INLINE uintptr_t ExtractAddress(uintptr_t wrapped_ptr) {
+  PA_ALWAYS_INLINE static uintptr_t ExtractAddress(uintptr_t wrapped_ptr) {
     return wrapped_ptr & kAddressMask;
   }
 
   template <typename T>
-  static PA_ALWAYS_INLINE T* ExtractPtr(T* wrapped_ptr) {
+  PA_ALWAYS_INLINE static T* ExtractPtr(T* wrapped_ptr) {
     // Disambiguation: UntagPtr/TagAddr handle the hardware MTE tag, whereas
     // this function is responsible for removing the software MTE tag.
     // TODO(kdlee): Ensure that wrapped_ptr's hardware MTE tag is preserved.
@@ -496,7 +556,7 @@ struct MTECheckedPtrImpl {
         ExtractAddress(partition_alloc::UntagPtr(wrapped_ptr))));
   }
 
-  static PA_ALWAYS_INLINE uintptr_t ExtractTag(uintptr_t wrapped_ptr) {
+  PA_ALWAYS_INLINE static uintptr_t ExtractTag(uintptr_t wrapped_ptr) {
     return (wrapped_ptr & kTagMask) >> kValidAddressBits;
   }
 };
@@ -519,60 +579,65 @@ struct RawPtrCountingImplWrapperForTest
   using SuperImpl = typename raw_ptr_traits::TraitsToImpl<Traits>::Impl;
 
   template <typename T>
-  static PA_ALWAYS_INLINE T* WrapRawPtr(T* ptr) {
+  PA_ALWAYS_INLINE static constexpr T* WrapRawPtr(T* ptr) {
     ++wrap_raw_ptr_cnt;
     return SuperImpl::WrapRawPtr(ptr);
   }
 
   template <typename T>
-  static PA_ALWAYS_INLINE void ReleaseWrappedPtr(T* ptr) {
+  PA_ALWAYS_INLINE static constexpr void ReleaseWrappedPtr(T* ptr) {
     ++release_wrapped_ptr_cnt;
     SuperImpl::ReleaseWrappedPtr(ptr);
   }
 
   template <typename T>
-  static PA_ALWAYS_INLINE T* SafelyUnwrapPtrForDereference(T* wrapped_ptr) {
+  PA_ALWAYS_INLINE static constexpr T* SafelyUnwrapPtrForDereference(
+      T* wrapped_ptr) {
     ++get_for_dereference_cnt;
     return SuperImpl::SafelyUnwrapPtrForDereference(wrapped_ptr);
   }
 
   template <typename T>
-  static PA_ALWAYS_INLINE T* SafelyUnwrapPtrForExtraction(T* wrapped_ptr) {
+  PA_ALWAYS_INLINE static constexpr T* SafelyUnwrapPtrForExtraction(
+      T* wrapped_ptr) {
     ++get_for_extraction_cnt;
     return SuperImpl::SafelyUnwrapPtrForExtraction(wrapped_ptr);
   }
 
   template <typename T>
-  static PA_ALWAYS_INLINE T* UnsafelyUnwrapPtrForComparison(T* wrapped_ptr) {
+  PA_ALWAYS_INLINE static constexpr T* UnsafelyUnwrapPtrForComparison(
+      T* wrapped_ptr) {
     ++get_for_comparison_cnt;
     return SuperImpl::UnsafelyUnwrapPtrForComparison(wrapped_ptr);
   }
 
-  static PA_ALWAYS_INLINE void IncrementSwapCountForTest() {
+  PA_ALWAYS_INLINE static constexpr void IncrementSwapCountForTest() {
     ++wrapped_ptr_swap_cnt;
   }
 
-  static PA_ALWAYS_INLINE void IncrementLessCountForTest() {
+  PA_ALWAYS_INLINE static constexpr void IncrementLessCountForTest() {
     ++wrapped_ptr_less_cnt;
   }
 
-  static PA_ALWAYS_INLINE void IncrementPointerToMemberOperatorCountForTest() {
+  PA_ALWAYS_INLINE static constexpr void
+  IncrementPointerToMemberOperatorCountForTest() {
     ++pointer_to_member_operator_cnt;
   }
 
   template <typename T>
-  static PA_ALWAYS_INLINE T* WrapRawPtrForDuplication(T* ptr) {
+  PA_ALWAYS_INLINE static constexpr T* WrapRawPtrForDuplication(T* ptr) {
     ++wrap_raw_ptr_for_dup_cnt;
     return SuperImpl::WrapRawPtrForDuplication(ptr);
   }
 
   template <typename T>
-  static PA_ALWAYS_INLINE T* UnsafelyUnwrapPtrForDuplication(T* wrapped_ptr) {
+  PA_ALWAYS_INLINE static constexpr T* UnsafelyUnwrapPtrForDuplication(
+      T* wrapped_ptr) {
     ++get_for_duplication_cnt;
     return SuperImpl::UnsafelyUnwrapPtrForDuplication(wrapped_ptr);
   }
 
-  static void ClearCounters() {
+  static constexpr void ClearCounters() {
     wrap_raw_ptr_cnt = 0;
     release_wrapped_ptr_cnt = 0;
     get_for_dereference_cnt = 0;
@@ -768,17 +833,17 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
     BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR)
   // BackupRefPtr requires a non-trivial default constructor, destructor, etc.
-  constexpr PA_ALWAYS_INLINE raw_ptr() noexcept : wrapped_ptr_(nullptr) {}
+  PA_ALWAYS_INLINE constexpr raw_ptr() noexcept : wrapped_ptr_(nullptr) {}
 
-  PA_ALWAYS_INLINE raw_ptr(const raw_ptr& p) noexcept
+  PA_ALWAYS_INLINE constexpr raw_ptr(const raw_ptr& p) noexcept
       : wrapped_ptr_(Impl::Duplicate(p.wrapped_ptr_)) {}
 
-  PA_ALWAYS_INLINE raw_ptr(raw_ptr&& p) noexcept {
+  PA_ALWAYS_INLINE constexpr raw_ptr(raw_ptr&& p) noexcept {
     wrapped_ptr_ = p.wrapped_ptr_;
     p.wrapped_ptr_ = nullptr;
   }
 
-  PA_ALWAYS_INLINE raw_ptr& operator=(const raw_ptr& p) noexcept {
+  PA_ALWAYS_INLINE constexpr raw_ptr& operator=(const raw_ptr& p) noexcept {
     // Duplicate before releasing, in case the pointer is assigned to itself.
     //
     // Unlike the move version of this operator, don't add |this != &p| branch,
@@ -792,7 +857,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     return *this;
   }
 
-  PA_ALWAYS_INLINE raw_ptr& operator=(raw_ptr&& p) noexcept {
+  PA_ALWAYS_INLINE constexpr raw_ptr& operator=(raw_ptr&& p) noexcept {
     // Unlike the the copy version of this operator, this branch is necessaty
     // for correctness.
     if (PA_LIKELY(this != &p)) {
@@ -803,7 +868,13 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     return *this;
   }
 
+// Constexpr destructors were introduced in C++20. PartitionAlloc's minimum
+// supported C++ version is C++17.
+#if defined(__cpp_constexpr) && __cpp_constexpr >= 201907L
+  PA_ALWAYS_INLINE constexpr ~raw_ptr() noexcept {
+#else
   PA_ALWAYS_INLINE ~raw_ptr() noexcept {
+#endif
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
     // Work around external issues where raw_ptr is used after destruction.
     wrapped_ptr_ = nullptr;
@@ -817,7 +888,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   //
   // TODO(lukasza): Always initialize |wrapped_ptr_|.  Fix resulting build
   // errors.  Analyze performance impact.
-  constexpr PA_ALWAYS_INLINE raw_ptr() noexcept = default;
+  PA_ALWAYS_INLINE constexpr raw_ptr() noexcept = default;
 
   // In addition to nullptr_t ctor above, raw_ptr needs to have these
   // as |=default| or |constexpr| to avoid hitting -Wglobal-constructors in
@@ -834,17 +905,38 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
         // BUILDFLAG(USE_ASAN_UNOWNED_PTR)
 
+  // Cross-kind copy constructor.
+  // Move is not supported as different traits may use different ref-counts, so
+  // let move operations degrade to copy, which handles it well.
   template <RawPtrTraits PassedTraits,
             typename Unused = std::enable_if_t<Traits != PassedTraits>>
-  PA_ALWAYS_INLINE explicit raw_ptr(const raw_ptr<T, PassedTraits>& p) noexcept
+  PA_ALWAYS_INLINE constexpr explicit raw_ptr(
+      const raw_ptr<T, PassedTraits>& p) noexcept
       : wrapped_ptr_(Impl::WrapRawPtrForDuplication(
             raw_ptr_traits::TraitsToImpl<PassedTraits>::Impl::
-                UnsafelyUnwrapPtrForDuplication(p.wrapped_ptr_))) {}
+                UnsafelyUnwrapPtrForDuplication(p.wrapped_ptr_))) {
+    // Limit cross-kind conversions only to cases where kMayDangle gets added,
+    // because that's needed for Unretained(Ref)Wrapper. Use a static_assert,
+    // instead of disabling via SFINAE, so that the compiler catches other
+    // conversions. Otherwise implicit raw_ptr<T> -> T* -> raw_ptr<> route will
+    // be taken.
+    static_assert(Traits == (PassedTraits | RawPtrTraits::kMayDangle));
+  }
 
+  // Cross-kind assignment.
+  // Move is not supported as different traits may use different ref-counts, so
+  // let move operations degrade to copy, which handles it well.
   template <RawPtrTraits PassedTraits,
             typename Unused = std::enable_if_t<Traits != PassedTraits>>
-  PA_ALWAYS_INLINE raw_ptr& operator=(
+  PA_ALWAYS_INLINE constexpr raw_ptr& operator=(
       const raw_ptr<T, PassedTraits>& p) noexcept {
+    // Limit cross-kind assignments only to cases where kMayDangle gets added,
+    // because that's needed for Unretained(Ref)Wrapper. Use a static_assert,
+    // instead of disabling via SFINAE, so that the compiler catches other
+    // conversions. Otherwise implicit raw_ptr<T> -> T* -> raw_ptr<> route will
+    // be taken.
+    static_assert(Traits == (PassedTraits | RawPtrTraits::kMayDangle));
+
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
     wrapped_ptr_ = Impl::WrapRawPtrForDuplication(
         raw_ptr_traits::TraitsToImpl<PassedTraits>::Impl::
@@ -854,12 +946,13 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
 
   // Deliberately implicit, because raw_ptr is supposed to resemble raw ptr.
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr PA_ALWAYS_INLINE raw_ptr(std::nullptr_t) noexcept
+  PA_ALWAYS_INLINE constexpr raw_ptr(std::nullptr_t) noexcept
       : wrapped_ptr_(nullptr) {}
 
   // Deliberately implicit, because raw_ptr is supposed to resemble raw ptr.
   // NOLINTNEXTLINE(google-explicit-constructor)
-  PA_ALWAYS_INLINE raw_ptr(T* p) noexcept : wrapped_ptr_(Impl::WrapRawPtr(p)) {}
+  PA_ALWAYS_INLINE constexpr raw_ptr(T* p) noexcept
+      : wrapped_ptr_(Impl::WrapRawPtr(p)) {}
 
   // Deliberately implicit in order to support implicit upcast.
   template <typename U,
@@ -867,7 +960,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
                 std::is_convertible<U*, T*>::value &&
                 !std::is_void<typename std::remove_cv<T>::type>::value>>
   // NOLINTNEXTLINE(google-explicit-constructor)
-  PA_ALWAYS_INLINE raw_ptr(const raw_ptr<U, Traits>& ptr) noexcept
+  PA_ALWAYS_INLINE constexpr raw_ptr(const raw_ptr<U, Traits>& ptr) noexcept
       : wrapped_ptr_(
             Impl::Duplicate(Impl::template Upcast<T, U>(ptr.wrapped_ptr_))) {}
   // Deliberately implicit in order to support implicit upcast.
@@ -876,19 +969,19 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
                 std::is_convertible<U*, T*>::value &&
                 !std::is_void<typename std::remove_cv<T>::type>::value>>
   // NOLINTNEXTLINE(google-explicit-constructor)
-  PA_ALWAYS_INLINE raw_ptr(raw_ptr<U, Traits>&& ptr) noexcept
+  PA_ALWAYS_INLINE constexpr raw_ptr(raw_ptr<U, Traits>&& ptr) noexcept
       : wrapped_ptr_(Impl::template Upcast<T, U>(ptr.wrapped_ptr_)) {
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     ptr.wrapped_ptr_ = nullptr;
 #endif
   }
 
-  PA_ALWAYS_INLINE raw_ptr& operator=(std::nullptr_t) noexcept {
+  PA_ALWAYS_INLINE constexpr raw_ptr& operator=(std::nullptr_t) noexcept {
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
     wrapped_ptr_ = nullptr;
     return *this;
   }
-  PA_ALWAYS_INLINE raw_ptr& operator=(T* p) noexcept {
+  PA_ALWAYS_INLINE constexpr raw_ptr& operator=(T* p) noexcept {
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
     wrapped_ptr_ = Impl::WrapRawPtr(p);
     return *this;
@@ -899,12 +992,15 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
             typename Unused = std::enable_if_t<
                 std::is_convertible<U*, T*>::value &&
                 !std::is_void<typename std::remove_cv<T>::type>::value>>
-  PA_ALWAYS_INLINE raw_ptr& operator=(const raw_ptr<U, Traits>& ptr) noexcept {
-    // Make sure that pointer isn't assigned to itself (look at pointer address,
-    // not its value).
+  PA_ALWAYS_INLINE constexpr raw_ptr& operator=(
+      const raw_ptr<U, Traits>& ptr) noexcept {
+    // Make sure that pointer isn't assigned to itself (look at raw_ptr address,
+    // not its contained pointer value). The comparison is only needed when they
+    // are the same type, otherwise they can't be the same raw_ptr object.
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-    PA_RAW_PTR_CHECK(reinterpret_cast<uintptr_t>(this) !=
-                     reinterpret_cast<uintptr_t>(&ptr));
+    if constexpr (std::is_same_v<raw_ptr, std::decay_t<decltype(ptr)>>) {
+      PA_RAW_PTR_CHECK(this != &ptr);
+    }
 #endif
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
     wrapped_ptr_ =
@@ -915,12 +1011,15 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
             typename Unused = std::enable_if_t<
                 std::is_convertible<U*, T*>::value &&
                 !std::is_void<typename std::remove_cv<T>::type>::value>>
-  PA_ALWAYS_INLINE raw_ptr& operator=(raw_ptr<U, Traits>&& ptr) noexcept {
-    // Make sure that pointer isn't assigned to itself (look at pointer address,
-    // not its value).
+  PA_ALWAYS_INLINE constexpr raw_ptr& operator=(
+      raw_ptr<U, Traits>&& ptr) noexcept {
+    // Make sure that pointer isn't assigned to itself (look at raw_ptr address,
+    // not its contained pointer value). The comparison is only needed when they
+    // are the same type, otherwise they can't be the same raw_ptr object.
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-    PA_RAW_PTR_CHECK(reinterpret_cast<uintptr_t>(this) !=
-                     reinterpret_cast<uintptr_t>(&ptr));
+    if constexpr (std::is_same_v<raw_ptr, std::decay_t<decltype(ptr)>>) {
+      PA_RAW_PTR_CHECK(this != &ptr);
+    }
 #endif
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
     wrapped_ptr_ = Impl::template Upcast<T, U>(ptr.wrapped_ptr_);
@@ -932,19 +1031,21 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
 
   // Avoid using. The goal of raw_ptr is to be as close to raw pointer as
   // possible, so use it only if absolutely necessary (e.g. for const_cast).
-  PA_ALWAYS_INLINE T* get() const { return GetForExtraction(); }
+  PA_ALWAYS_INLINE constexpr T* get() const { return GetForExtraction(); }
 
-  constexpr explicit PA_ALWAYS_INLINE operator bool() const {
+  PA_ALWAYS_INLINE constexpr explicit operator bool() const {
     return !!wrapped_ptr_;
   }
 
   template <typename U = T,
             typename Unused = std::enable_if_t<
                 !std::is_void<typename std::remove_cv<U>::type>::value>>
-  PA_ALWAYS_INLINE U& operator*() const {
+  PA_ALWAYS_INLINE constexpr U& operator*() const {
     return *GetForDereference();
   }
-  PA_ALWAYS_INLINE T* operator->() const { return GetForDereference(); }
+  PA_ALWAYS_INLINE constexpr T* operator->() const {
+    return GetForDereference();
+  }
 
   // Disables `(my_raw_ptr->*pmf)(...)` as a workaround for
   // the ICE in GCC parsing the code, reported at
@@ -953,72 +1054,79 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   void operator->*(PMF) const = delete;
 
   // Deliberately implicit, because raw_ptr is supposed to resemble raw ptr.
-  // NOLINTNEXTLINE(runtime/explicit)
-  PA_ALWAYS_INLINE operator T*() const { return GetForExtraction(); }
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  PA_ALWAYS_INLINE constexpr operator T*() const { return GetForExtraction(); }
   template <typename U>
-  explicit PA_ALWAYS_INLINE operator U*() const {
+  PA_ALWAYS_INLINE constexpr explicit operator U*() const {
     // This operator may be invoked from static_cast, meaning the types may not
     // be implicitly convertible, hence the need for static_cast here.
     return static_cast<U*>(GetForExtraction());
   }
 
-  PA_ALWAYS_INLINE raw_ptr& operator++() {
+  PA_ALWAYS_INLINE constexpr raw_ptr& operator++() {
     wrapped_ptr_ = Impl::Advance(wrapped_ptr_, 1);
     return *this;
   }
-  PA_ALWAYS_INLINE raw_ptr& operator--() {
-    wrapped_ptr_ = Impl::Advance(wrapped_ptr_, -1);
+  PA_ALWAYS_INLINE constexpr raw_ptr& operator--() {
+    wrapped_ptr_ = Impl::Retreat(wrapped_ptr_, 1);
     return *this;
   }
-  PA_ALWAYS_INLINE raw_ptr operator++(int /* post_increment */) {
+  PA_ALWAYS_INLINE constexpr raw_ptr operator++(int /* post_increment */) {
     raw_ptr result = *this;
     ++(*this);
     return result;
   }
-  PA_ALWAYS_INLINE raw_ptr operator--(int /* post_decrement */) {
+  PA_ALWAYS_INLINE constexpr raw_ptr operator--(int /* post_decrement */) {
     raw_ptr result = *this;
     --(*this);
     return result;
   }
   template <
       typename Z,
-      typename = std::enable_if_t<partition_alloc::internal::offset_type<Z>>>
-  PA_ALWAYS_INLINE raw_ptr& operator+=(Z delta_elems) {
+      typename = std::enable_if_t<partition_alloc::internal::is_offset_type<Z>>>
+  PA_ALWAYS_INLINE constexpr raw_ptr& operator+=(Z delta_elems) {
     wrapped_ptr_ = Impl::Advance(wrapped_ptr_, delta_elems);
     return *this;
   }
   template <
       typename Z,
-      typename = std::enable_if_t<partition_alloc::internal::offset_type<Z>>>
-  PA_ALWAYS_INLINE raw_ptr& operator-=(Z delta_elems) {
-    return *this += -delta_elems;
+      typename = std::enable_if_t<partition_alloc::internal::is_offset_type<Z>>>
+  PA_ALWAYS_INLINE constexpr raw_ptr& operator-=(Z delta_elems) {
+    wrapped_ptr_ = Impl::Retreat(wrapped_ptr_, delta_elems);
+    return *this;
   }
 
   // Do not disable operator+() and operator-().
-  // They provide OOB checks. Keep them enabled, which may be blocked later when
-  // attempting to apply the += or -= operation, when disabled. In the absence
-  // of operators +/-, the compiler is free to implicitly convert to the
-  // underlying T* representation and perform ordinary pointer arithmetic, thus
-  // invalidating the purpose behind disabling them.
+  // They provide OOB checks, which prevent from assigning an arbitrary value to
+  // raw_ptr, leading BRP to modifying arbitrary memory thinking it's ref-count.
+  // Keep them enabled, which may be blocked later when attempting to apply the
+  // += or -= operation, when disabled. In the absence of operators +/-, the
+  // compiler is free to implicitly convert to the underlying T* representation
+  // and perform ordinary pointer arithmetic, thus invalidating the purpose
+  // behind disabling them.
   template <typename Z>
-  friend PA_ALWAYS_INLINE raw_ptr operator+(const raw_ptr& p, Z delta_elems) {
+  PA_ALWAYS_INLINE friend constexpr raw_ptr operator+(const raw_ptr& p,
+                                                      Z delta_elems) {
     raw_ptr result = p;
     return result += delta_elems;
   }
   template <typename Z>
-  friend PA_ALWAYS_INLINE raw_ptr operator-(const raw_ptr& p, Z delta_elems) {
+  PA_ALWAYS_INLINE friend constexpr raw_ptr operator-(const raw_ptr& p,
+                                                      Z delta_elems) {
     raw_ptr result = p;
     return result -= delta_elems;
   }
 
-  friend PA_ALWAYS_INLINE ptrdiff_t operator-(const raw_ptr& p1,
-                                              const raw_ptr& p2) {
+  PA_ALWAYS_INLINE friend constexpr ptrdiff_t operator-(const raw_ptr& p1,
+                                                        const raw_ptr& p2) {
     return Impl::GetDeltaElems(p1.wrapped_ptr_, p2.wrapped_ptr_);
   }
-  friend PA_ALWAYS_INLINE ptrdiff_t operator-(T* p1, const raw_ptr& p2) {
+  PA_ALWAYS_INLINE friend constexpr ptrdiff_t operator-(T* p1,
+                                                        const raw_ptr& p2) {
     return Impl::GetDeltaElems(p1, p2.wrapped_ptr_);
   }
-  friend PA_ALWAYS_INLINE ptrdiff_t operator-(const raw_ptr& p1, T* p2) {
+  PA_ALWAYS_INLINE friend constexpr ptrdiff_t operator-(const raw_ptr& p1,
+                                                        T* p2) {
     return Impl::GetDeltaElems(p1.wrapped_ptr_, p2);
   }
 
@@ -1026,10 +1134,10 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   // raw delete calls, this avoids the raw_ptr to be temporarily dangling
   // during the free operation, which will lead to taking the slower path that
   // involves quarantine.
-  PA_ALWAYS_INLINE void ClearAndDelete() noexcept {
+  PA_ALWAYS_INLINE constexpr void ClearAndDelete() noexcept {
     delete GetForExtractionAndReset();
   }
-  PA_ALWAYS_INLINE void ClearAndDeleteArray() noexcept {
+  PA_ALWAYS_INLINE constexpr void ClearAndDeleteArray() noexcept {
     delete[] GetForExtractionAndReset();
   }
 
@@ -1049,7 +1157,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   // variable (or worse, a field)! It's meant to be used as a temporary, to be
   // passed into a cleanup & freeing function, and destructed at the end of the
   // statement.
-  PA_ALWAYS_INLINE DanglingRawPtrType ExtractAsDangling() noexcept {
+  PA_ALWAYS_INLINE constexpr DanglingRawPtrType ExtractAsDangling() noexcept {
     if constexpr (std::is_same_v<
                       typename std::remove_reference<decltype(*this)>::type,
                       DanglingRawPtrType>) {
@@ -1080,90 +1188,85 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   // because a comparison operator defined inline would not be allowed to call
   // `raw_ptr<U>`'s private `GetForComparison()` method.
   template <typename U, typename V, RawPtrTraits R1, RawPtrTraits R2>
-  friend PA_ALWAYS_INLINE bool operator==(const raw_ptr<U, R1>& lhs,
-                                          const raw_ptr<V, R2>& rhs);
+  friend bool operator==(const raw_ptr<U, R1>& lhs, const raw_ptr<V, R2>& rhs);
   template <typename U, typename V, RawPtrTraits R1, RawPtrTraits R2>
-  friend PA_ALWAYS_INLINE bool operator!=(const raw_ptr<U, R1>& lhs,
-                                          const raw_ptr<V, R2>& rhs);
+  friend bool operator!=(const raw_ptr<U, R1>& lhs, const raw_ptr<V, R2>& rhs);
   template <typename U, typename V, RawPtrTraits R1, RawPtrTraits R2>
-  friend PA_ALWAYS_INLINE bool operator<(const raw_ptr<U, R1>& lhs,
-                                         const raw_ptr<V, R2>& rhs);
+  friend bool operator<(const raw_ptr<U, R1>& lhs, const raw_ptr<V, R2>& rhs);
   template <typename U, typename V, RawPtrTraits R1, RawPtrTraits R2>
-  friend PA_ALWAYS_INLINE bool operator>(const raw_ptr<U, R1>& lhs,
-                                         const raw_ptr<V, R2>& rhs);
+  friend bool operator>(const raw_ptr<U, R1>& lhs, const raw_ptr<V, R2>& rhs);
   template <typename U, typename V, RawPtrTraits R1, RawPtrTraits R2>
-  friend PA_ALWAYS_INLINE bool operator<=(const raw_ptr<U, R1>& lhs,
-                                          const raw_ptr<V, R2>& rhs);
+  friend bool operator<=(const raw_ptr<U, R1>& lhs, const raw_ptr<V, R2>& rhs);
   template <typename U, typename V, RawPtrTraits R1, RawPtrTraits R2>
-  friend PA_ALWAYS_INLINE bool operator>=(const raw_ptr<U, R1>& lhs,
-                                          const raw_ptr<V, R2>& rhs);
+  friend bool operator>=(const raw_ptr<U, R1>& lhs, const raw_ptr<V, R2>& rhs);
 
   // Comparisons with U*. These operators also handle the case where the RHS is
   // T*.
   template <typename U>
-  friend PA_ALWAYS_INLINE bool operator==(const raw_ptr& lhs, U* rhs) {
+  PA_ALWAYS_INLINE friend bool operator==(const raw_ptr& lhs, U* rhs) {
     return lhs.GetForComparison() == rhs;
   }
   template <typename U>
-  friend PA_ALWAYS_INLINE bool operator!=(const raw_ptr& lhs, U* rhs) {
+  PA_ALWAYS_INLINE friend bool operator!=(const raw_ptr& lhs, U* rhs) {
     return !(lhs == rhs);
   }
   template <typename U>
-  friend PA_ALWAYS_INLINE bool operator==(U* lhs, const raw_ptr& rhs) {
+  PA_ALWAYS_INLINE friend bool operator==(U* lhs, const raw_ptr& rhs) {
     return rhs == lhs;  // Reverse order to call the operator above.
   }
   template <typename U>
-  friend PA_ALWAYS_INLINE bool operator!=(U* lhs, const raw_ptr& rhs) {
+  PA_ALWAYS_INLINE friend bool operator!=(U* lhs, const raw_ptr& rhs) {
     return rhs != lhs;  // Reverse order to call the operator above.
   }
   template <typename U>
-  friend PA_ALWAYS_INLINE bool operator<(const raw_ptr& lhs, U* rhs) {
+  PA_ALWAYS_INLINE friend bool operator<(const raw_ptr& lhs, U* rhs) {
     return lhs.GetForComparison() < rhs;
   }
   template <typename U>
-  friend PA_ALWAYS_INLINE bool operator<=(const raw_ptr& lhs, U* rhs) {
+  PA_ALWAYS_INLINE friend bool operator<=(const raw_ptr& lhs, U* rhs) {
     return lhs.GetForComparison() <= rhs;
   }
   template <typename U>
-  friend PA_ALWAYS_INLINE bool operator>(const raw_ptr& lhs, U* rhs) {
+  PA_ALWAYS_INLINE friend bool operator>(const raw_ptr& lhs, U* rhs) {
     return lhs.GetForComparison() > rhs;
   }
   template <typename U>
-  friend PA_ALWAYS_INLINE bool operator>=(const raw_ptr& lhs, U* rhs) {
+  PA_ALWAYS_INLINE friend bool operator>=(const raw_ptr& lhs, U* rhs) {
     return lhs.GetForComparison() >= rhs;
   }
   template <typename U>
-  friend PA_ALWAYS_INLINE bool operator<(U* lhs, const raw_ptr& rhs) {
+  PA_ALWAYS_INLINE friend bool operator<(U* lhs, const raw_ptr& rhs) {
     return lhs < rhs.GetForComparison();
   }
   template <typename U>
-  friend PA_ALWAYS_INLINE bool operator<=(U* lhs, const raw_ptr& rhs) {
+  PA_ALWAYS_INLINE friend bool operator<=(U* lhs, const raw_ptr& rhs) {
     return lhs <= rhs.GetForComparison();
   }
   template <typename U>
-  friend PA_ALWAYS_INLINE bool operator>(U* lhs, const raw_ptr& rhs) {
+  PA_ALWAYS_INLINE friend bool operator>(U* lhs, const raw_ptr& rhs) {
     return lhs > rhs.GetForComparison();
   }
   template <typename U>
-  friend PA_ALWAYS_INLINE bool operator>=(U* lhs, const raw_ptr& rhs) {
+  PA_ALWAYS_INLINE friend bool operator>=(U* lhs, const raw_ptr& rhs) {
     return lhs >= rhs.GetForComparison();
   }
 
   // Comparisons with `std::nullptr_t`.
-  friend PA_ALWAYS_INLINE bool operator==(const raw_ptr& lhs, std::nullptr_t) {
+  PA_ALWAYS_INLINE friend bool operator==(const raw_ptr& lhs, std::nullptr_t) {
     return !lhs;
   }
-  friend PA_ALWAYS_INLINE bool operator!=(const raw_ptr& lhs, std::nullptr_t) {
+  PA_ALWAYS_INLINE friend bool operator!=(const raw_ptr& lhs, std::nullptr_t) {
     return !!lhs;  // Use !! otherwise the costly implicit cast will be used.
   }
-  friend PA_ALWAYS_INLINE bool operator==(std::nullptr_t, const raw_ptr& rhs) {
+  PA_ALWAYS_INLINE friend bool operator==(std::nullptr_t, const raw_ptr& rhs) {
     return !rhs;
   }
-  friend PA_ALWAYS_INLINE bool operator!=(std::nullptr_t, const raw_ptr& rhs) {
+  PA_ALWAYS_INLINE friend bool operator!=(std::nullptr_t, const raw_ptr& rhs) {
     return !!rhs;  // Use !! otherwise the costly implicit cast will be used.
   }
 
-  friend PA_ALWAYS_INLINE void swap(raw_ptr& lhs, raw_ptr& rhs) noexcept {
+  PA_ALWAYS_INLINE friend constexpr void swap(raw_ptr& lhs,
+                                              raw_ptr& rhs) noexcept {
     Impl::IncrementSwapCountForTest();
     std::swap(lhs.wrapped_ptr_, rhs.wrapped_ptr_);
   }
@@ -1178,23 +1281,23 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   // This getter is meant for situations where the pointer is meant to be
   // dereferenced. It is allowed to crash on nullptr (it may or may not),
   // because it knows that the caller will crash on nullptr.
-  PA_ALWAYS_INLINE T* GetForDereference() const {
+  PA_ALWAYS_INLINE constexpr T* GetForDereference() const {
     return Impl::SafelyUnwrapPtrForDereference(wrapped_ptr_);
   }
   // This getter is meant for situations where the raw pointer is meant to be
   // extracted outside of this class, but not necessarily with an intention to
   // dereference. It mustn't crash on nullptr.
-  PA_ALWAYS_INLINE T* GetForExtraction() const {
+  PA_ALWAYS_INLINE constexpr T* GetForExtraction() const {
     return Impl::SafelyUnwrapPtrForExtraction(wrapped_ptr_);
   }
   // This getter is meant *only* for situations where the pointer is meant to be
   // compared (guaranteeing no dereference or extraction outside of this class).
   // Any verifications can and should be skipped for performance reasons.
-  PA_ALWAYS_INLINE T* GetForComparison() const {
+  PA_ALWAYS_INLINE constexpr T* GetForComparison() const {
     return Impl::UnsafelyUnwrapPtrForComparison(wrapped_ptr_);
   }
 
-  PA_ALWAYS_INLINE T* GetForExtractionAndReset() {
+  PA_ALWAYS_INLINE constexpr T* GetForExtractionAndReset() {
     T* ptr = GetForExtraction();
     operator=(nullptr);
     return ptr;

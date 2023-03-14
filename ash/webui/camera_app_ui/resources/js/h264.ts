@@ -10,6 +10,7 @@
 
 import {assert, assertNotReached} from './assert.js';
 import {Resolution} from './type.js';
+import {getNumberEnumMapping} from './util.js';
 
 export enum Profile {
   BASELINE = 66,
@@ -17,8 +18,8 @@ export enum Profile {
   HIGH = 100,
 }
 
-export const profileValues = new Set(
-    Object.values(Profile).filter((x): x is Profile => typeof x === 'number'));
+export const profileValues =
+    new Set(Object.values(getNumberEnumMapping(Profile)));
 
 /**
  * Asserts that a number is one of the value of possible h264 profile.
@@ -57,9 +58,8 @@ export enum Level {
   LV62 = 62,
 }
 
-export const LEVELS = Object.values(Level)
-                          .filter((x): x is Level => typeof x === 'number')
-                          .sort((a, b) => a - b);
+export const LEVELS =
+    Object.values(getNumberEnumMapping(Level)).sort((a, b) => a - b);
 
 export interface EncoderParameters {
   profile: Profile;

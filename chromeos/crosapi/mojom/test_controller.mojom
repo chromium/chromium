@@ -49,8 +49,8 @@ enum OptionalBoolean {
 // Implemented in lacros-chrome.
 // Lets the Ash browser tests that require Lacros to send commands to this
 // lacros-chrome instance.
-// Next version: 4
-// Next method id: 4
+// Next version: 6
+// Next method id: 6
 [Stable, Uuid="20e7f031-f4e1-4ad9-bd91-ad59eb8b1504"]
 interface StandaloneBrowserTestController {
   // Installs a test web app in lacros-chrome given a start URL and mode (open
@@ -75,6 +75,12 @@ interface StandaloneBrowserTestController {
   [MinVersion=4]
   TtsSpeak@4(TtsUtterance utterance,
              pending_remote<TtsUtteranceClient> utterance_client);
+
+  // Installs an app with the given start url as a sub app of the given parent
+  // app in Lacros.
+  [MinVersion=5]
+  InstallSubApp@5(string parent_app_id, string sub_app_start_url)
+    => (string sub_app_id);
 };
 
 // Allows callers running in lacros to trigger test events that are passed to
@@ -149,18 +155,23 @@ enum KeyEventType {
   kKeyRelease = 1
 };
 
+// Next version: 2
+// Next id: 5
 [Stable]
 struct KeyEvent {
   KeyEventType type@0;
   int32 dom_key@1;
   int32 dom_code@2;
   int32 key_code@3;
+  // This corresponds to ui::EventFlags from:
+  // https://source.chromium.org/chromium/chromium/src/+/main:ui/events/event_constants.h;l=16;drc=19f3c214cd4f78e0fe47b2ccafaca406aaacd42f
+  [MinVersion=1] int32 flags@4;
 };
 
 // This interface is implemented by Ash-Chrome.
 // It enables tests in Lacros-Chrome to send commands as an input method.
-// Next version: 5
-// Next method id: 6
+// Next version: 6
+// Next method id: 7
 [Stable, Uuid="c214f4f5-c583-44d1-9547-bb2456d9e70b"]
 interface InputMethodTestInterface {
   // Calls the callback when the input method has focused on some input field.
@@ -212,6 +223,12 @@ interface InputMethodTestInterface {
   // always returns the same set of values for the same set of operations.
   [MinVersion=4] WaitForNextSurroundingTextChange@5() =>
       (string surrounding_text, gfx.mojom.Range selection_range);
+
+  // Returns whether every capability in `capabilities` is supported by Ash.
+  // Capabilities are listed as string constants in
+  // //chromeos/crosapi/cpp/input_method_test_interface_constants.h
+  [MinVersion=5] HasCapabilities@6(array<string> capabilities)
+      => (bool has_capabilities);
 };
 
 // This interface is implemented by Ash-Chrome.

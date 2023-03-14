@@ -8,10 +8,6 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "third_party/skia/include/core/SkColor.h"
 
-namespace base {
-class Value;
-}  // namespace base
-
 namespace ash {
 
 // The annotator tool type.
@@ -26,8 +22,12 @@ enum class ASH_PUBLIC_EXPORT AnnotatorToolType {
 
 // The tool that the annotator will use.
 struct ASH_PUBLIC_EXPORT AnnotatorTool {
-  static AnnotatorTool FromValue(const base::Value& value);
-  base::Value ToValue() const;
+  // Returns the hex value in RGBA format.
+  // For example, SK_ColorGREEN -> "00FF00FF".
+  std::string GetColorHexString() const;
+
+  // Returns the tool chosen as a string.
+  std::string GetToolString() const;
 
   bool operator==(const AnnotatorTool& rhs) const;
 

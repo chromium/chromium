@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -533,8 +532,8 @@ ExtensionFunction::ResponseAction AutomationInternalEnableTabFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(automation_info);
 
   using api::automation_internal::EnableTab::Params;
-  std::unique_ptr<Params> params(Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<Params> params = Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   content::WebContents* contents = nullptr;
   AutomationInternalApiDelegate* automation_api_delegate =
       ExtensionsAPIClient::Get()->GetAutomationInternalApiDelegate();
@@ -611,8 +610,8 @@ absl::optional<std::string> AutomationInternalEnableTreeFunction::EnableTree(
 ExtensionFunction::ResponseAction AutomationInternalEnableTreeFunction::Run() {
   using api::automation_internal::EnableTree::Params;
 
-  std::unique_ptr<Params> params(Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<Params> params = Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   ui::AXTreeID ax_tree_id = ui::AXTreeID::FromString(params->tree_id);
   absl::optional<std::string> error = EnableTree(ax_tree_id, extension_id());
@@ -701,8 +700,8 @@ AutomationInternalPerformActionFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(automation_info && automation_info->interact);
 
   using api::automation_internal::PerformAction::Params;
-  std::unique_ptr<Params> params(Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<Params> params = Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   int request_id = params->args.request_id.value_or(-1);
 
@@ -779,8 +778,8 @@ AutomationInternalQuerySelectorFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(automation_info);
 
   using api::automation_internal::QuerySelector::Params;
-  std::unique_ptr<Params> params(Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<Params> params = Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromAXTreeID(
       ui::AXTreeID::FromString(params->args.tree_id));
@@ -807,7 +806,7 @@ void AutomationInternalQuerySelectorFunction::OnResponse(
     return;
   }
 
-  Respond(OneArgument(base::Value(result_acc_obj_id)));
+  Respond(WithArguments(result_acc_obj_id));
 }
 
 }  // namespace extensions

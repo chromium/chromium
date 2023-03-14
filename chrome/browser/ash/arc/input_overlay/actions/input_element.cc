@@ -42,16 +42,17 @@ bool IsSameDomCode(ui::DomCode a, ui::DomCode b) {
 }
 
 MouseAction ConvertToMouseActionEnum(const std::string& mouse_action) {
-  if (mouse_action == kPrimaryClick)
+  if (mouse_action == kPrimaryClick) {
     return MouseAction::PRIMARY_CLICK;
-  if (mouse_action == kSecondaryClick)
+  } else if (mouse_action == kSecondaryClick) {
     return MouseAction::SECONDARY_CLICK;
-  if (mouse_action == kHoverMove)
+  } else if (mouse_action == kHoverMove) {
     return MouseAction::HOVER_MOVE;
-  if (mouse_action == kPrimaryDragMove)
+  } else if (mouse_action == kPrimaryDragMove) {
     return MouseAction::PRIMARY_DRAG_MOVE;
-  if (mouse_action == kSecondaryDragMove)
+  } else if (mouse_action == kSecondaryDragMove) {
     return MouseAction::SECONDARY_DRAG_MOVE;
+  }
   return MouseAction::NONE;
 }
 
@@ -60,8 +61,9 @@ InputElement::InputElement() {}
 InputElement::InputElement(ui::DomCode code) {
   input_sources_ = InputSource::IS_KEYBOARD;
   keys_.emplace_back(code);
-  if (ModifierDomCodeToEventFlag(code) != ui::EF_NONE)
+  if (ModifierDomCodeToEventFlag(code) != ui::EF_NONE) {
     is_modifier_key_ = true;
+  }
 }
 
 InputElement::InputElement(const InputElement& other) = default;
@@ -161,8 +163,9 @@ bool InputElement::IsOverlapped(const InputElement& input_element) const {
   }
   if (input_sources_ == InputSource::IS_KEYBOARD) {
     for (auto key : input_element.keys()) {
-      if (base::Contains(keys_, key))
+      if (base::Contains(keys_, key)) {
         return true;
+      }
     }
     return false;
   }
@@ -171,8 +174,9 @@ bool InputElement::IsOverlapped(const InputElement& input_element) const {
 
 void InputElement::SetKey(size_t index, ui::DomCode code) {
   DCHECK(index < keys_.size());
-  if (index >= keys_.size())
+  if (index >= keys_.size()) {
     return;
+  }
   keys_[index] = code;
 }
 
@@ -196,13 +200,16 @@ std::unique_ptr<InputElementProto> InputElement::ConvertToProto() {
 }
 
 bool InputElement::operator==(const InputElement& other) const {
-  if (this->input_sources_ != other.input_sources())
+  if (this->input_sources_ != other.input_sources()) {
     return false;
+  }
   bool equal = true;
-  if (!!(this->input_sources_ & InputSource::IS_KEYBOARD))
+  if (!!(this->input_sources_ & InputSource::IS_KEYBOARD)) {
     equal = equal && (this->keys_ == other.keys());
-  if (!!(this->input_sources_ & InputSource::IS_MOUSE))
+  }
+  if (!!(this->input_sources_ & InputSource::IS_MOUSE)) {
     equal = equal && (this->mouse_action_ == other.mouse_action());
+  }
   return equal;
 }
 

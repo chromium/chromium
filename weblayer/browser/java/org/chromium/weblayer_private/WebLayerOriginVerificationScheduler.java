@@ -8,9 +8,9 @@ import android.content.Context;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.components.digital_asset_links.OriginVerificationScheduler;
-import org.chromium.components.digital_asset_links.OriginVerifier;
-import org.chromium.components.digital_asset_links.OriginVerifierHelper;
+import org.chromium.components.content_relationship_verification.OriginVerificationScheduler;
+import org.chromium.components.content_relationship_verification.OriginVerifier;
+import org.chromium.components.content_relationship_verification.OriginVerifierHelper;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.BrowserContextHandle;
 

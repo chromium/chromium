@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/mac/mach_port_rendezvous.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/posix/global_descriptors.h"
@@ -55,7 +56,8 @@ class SandboxProfileCache {
     return *cache;
   }
 
-  sandbox::mac::SandboxPolicy* Query(sandbox::mojom::Sandbox sandbox_type) {
+  const sandbox::mac::SandboxPolicy* Query(
+      sandbox::mojom::Sandbox sandbox_type) {
     base::AutoLock lock(lock_);
     auto it = cache_.find(sandbox_type);
     if (it == cache_.end())
@@ -138,7 +140,7 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
     // problem.
     options->environment.insert(std::make_pair("OS_ACTIVITY_MODE", "disable"));
 
-    auto* cached_policy = SandboxProfileCache::Get().Query(sandbox_type);
+    const auto* cached_policy = SandboxProfileCache::Get().Query(sandbox_type);
     if (cached_policy) {
       policy_ = *cached_policy;
     } else {

@@ -67,7 +67,7 @@ void CredentialProviderSigninDialogTestDataStorage::SetSigninPassword(
 }
 
 // static
-base::Value
+base::Value::Dict
 CredentialProviderSigninDialogTestDataStorage::MakeSignInResponseValue(
     const std::string& id,
     const std::string& password,
@@ -76,22 +76,22 @@ CredentialProviderSigninDialogTestDataStorage::MakeSignInResponseValue(
     const std::string& refresh_token) {
   base::Value::Dict args;
   if (!email.empty())
-    args.Set(credential_provider::kKeyEmail, base::Value(email));
+    args.Set(credential_provider::kKeyEmail, email);
   if (!password.empty())
-    args.Set(credential_provider::kKeyPassword, base::Value(password));
+    args.Set(credential_provider::kKeyPassword, password);
   if (!id.empty())
-    args.Set(credential_provider::kKeyId, base::Value(id));
+    args.Set(credential_provider::kKeyId, id);
   if (!refresh_token.empty())
-    args.Set(credential_provider::kKeyRefreshToken, base::Value(refresh_token));
+    args.Set(credential_provider::kKeyRefreshToken, refresh_token);
   if (!access_token.empty())
-    args.Set(credential_provider::kKeyAccessToken, base::Value(access_token));
+    args.Set(credential_provider::kKeyAccessToken, access_token);
 
   args.Set(credential_provider::kKeyExitCode,
-           base::Value(credential_provider::kUiecSuccess));
-  return base::Value(std::move(args));
+           credential_provider::kUiecSuccess);
+  return args;
 }
 
-base::Value
+base::Value::Dict
 CredentialProviderSigninDialogTestDataStorage::MakeValidSignInResponseValue()
     const {
   return MakeSignInResponseValue(GetSuccessId(), GetSuccessPassword(),

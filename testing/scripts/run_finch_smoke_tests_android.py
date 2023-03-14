@@ -62,6 +62,7 @@ from blinkpy.common.path_finder import PathFinder
 from blinkpy.web_tests.models import test_failures
 from blinkpy.web_tests.port.android import (
     ANDROID_WEBLAYER, ANDROID_WEBVIEW, CHROME_ANDROID)
+from blinkpy.w3c.wpt_results_processor import WPTResultsProcessor
 
 from devil import devil_env
 from devil.android import apk_helper
@@ -123,11 +124,13 @@ class FinchTestCase(common.BaseIsolatedScriptArgsAdapter):
     self.path_finder = PathFinder(self.fs)
     self.port = self.host.port_factory.get()
     super(FinchTestCase, self).__init__()
+    self._add_extra_arguments()
     self._parser = self._override_options(self._parser)
     self._include_filename = None
     self.layout_test_results_subdir = 'layout-test-results'
     self._device = device
     self.parse_args()
+    self.port.set_option_default('target', self.options.target)
     self._browser_apk_helper = apk_helper.ToHelper(self.options.browser_apk)
 
     self.browser_package_name = self._browser_apk_helper.GetPackageName()
@@ -198,10 +201,7 @@ class FinchTestCase(common.BaseIsolatedScriptArgsAdapter):
 
         `argument.ArgumentParser` can extend other parsers and override their
         options, with the caveat that the child parser only inherits options
-        that the parent had at the time of the child's initialization. There is
-        not a clean way to add option overrides in `add_extra_arguments`, where
-        the provided parser is only passed up the inheritance chain, so we add
-        overridden options here at the very end.
+        that the parent had at the time of the child's initialization.
 
         See Also:
             https://docs.python.org/3/library/argparse.html#parents
@@ -322,6 +322,10 @@ class FinchTestCase(common.BaseIsolatedScriptArgsAdapter):
   def wpt_output(self):
       return self.options.isolated_script_test_output
 
+  @property
+  def _raw_log_path(self):
+    return self.fs.join(self.output_directory, 'finch-smoke-raw-events.log')
+
   def __enter__(self):
     self._device.EnableRoot()
     # Run below commands to ensure that the device can download a seed
@@ -391,24 +395,19 @@ class FinchTestCase(common.BaseIsolatedScriptArgsAdapter):
           'run',
       ]
 
-  def process_and_upload_results(self):
-    command = [
-        self.select_python_executable(),
-        os.path.join(BLINK_TOOLS, 'wpt_process_results.py'),
-        '--target',
-        self.options.target,
-        '--web-tests-dir',
-        BLINK_WEB_TESTS,
-        '--artifacts-dir',
-        os.path.join(os.path.dirname(self.wpt_output),
-                      self.layout_test_results_subdir),
-        '--wpt-results',
-        self.wpt_output,
-    ]
-    if self.options.verbose:
-        command.append('--verbose')
-
-    return common.run_command(command)
+  def process_and_upload_results(self, test_name_prefix):
+    processor = WPTResultsProcessor(
+        self.host.filesystem,
+        self.port,
+        artifacts_dir=os.path.join(os.path.dirname(self.wpt_output),
+                                   self.layout_test_results_subdir),
+        test_name_prefix=test_name_prefix)
+    processor.recreate_artifacts_dir()
+    with self.fs.open_text_file_for_reading(self._raw_log_path) as raw_logs:
+        for event in map(json.loads, raw_logs):
+            if event.get('action') != 'shutdown':
+                processor.process_event(event)
+    processor.process_results_json(self.wpt_output)
 
   def wpt_rest_args(self, unknown_args):
     rest_args = list(self._wpt_run_args)
@@ -419,6 +418,7 @@ class FinchTestCase(common.BaseIsolatedScriptArgsAdapter):
         '--tests=%s' % self.wpt_root_dir,
         '--metadata=%s' % self.wpt_root_dir,
         '--mojojs-path=%s' % self.mojo_js_directory,
+        '--log-raw=%s' % self._raw_log_path,
     ])
 
     if self.options.default_exclude:
@@ -496,11 +496,12 @@ class FinchTestCase(common.BaseIsolatedScriptArgsAdapter):
                         type=lambda processes: max(0, int(processes)),
                         default=1,
                         help='Number of emulator to run.')
+    common.add_emulator_args(parser)
     # Add arguments used by Skia Gold.
     FinchSkiaGoldProperties.AddCommandLineArguments(parser)
 
-  def add_extra_arguments(self, parser):
-    super(FinchTestCase, self).add_extra_arguments(parser)
+  def _add_extra_arguments(self):
+    parser = self._parser
     parser.add_argument(
       '-t',
       '--target',
@@ -665,7 +666,7 @@ class FinchTestCase(common.BaseIsolatedScriptArgsAdapter):
     # If wpt tests are not run then the file path stored in self.wpt_output
     # was not created. That is why this check exists.
     if os.path.exists(self.wpt_output):
-      self.process_and_upload_results()
+      self.process_and_upload_results(test_run_variation)
 
       with open(self.wpt_output, 'r') as test_harness_results:
         test_harness_results_dict = json.load(test_harness_results)
@@ -1189,7 +1190,6 @@ def main(args):
         required=False,
         help='path to write test results JSON object to')
 
-  common.add_emulator_args(parser)
   script_common.AddDeviceArguments(parser)
   script_common.AddEnvironmentArguments(parser)
   logging_common.AddLoggingArguments(parser)

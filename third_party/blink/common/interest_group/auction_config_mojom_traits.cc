@@ -137,6 +137,8 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
       !data.ReadAllBuyersPrioritySignals(&out->all_buyers_priority_signals) ||
       !data.ReadAuctionReportBuyerKeys(&out->auction_report_buyer_keys) ||
       !data.ReadAuctionReportBuyers(&out->auction_report_buyers) ||
+      !data.ReadRequiredSellerCapabilities(
+          &out->required_seller_capabilities) ||
       !data.ReadComponentAuctions(&out->component_auctions)) {
     return false;
   }

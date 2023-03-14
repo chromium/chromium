@@ -8,6 +8,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/performance_controls/tab_discard_tab_helper.h"
@@ -42,9 +43,14 @@ class DiscardMockNavigationHandle : public content::MockNavigationHandle {
  public:
   void SetWasDiscarded(bool was_discarded) { was_discarded_ = was_discarded; }
   bool ExistingDocumentWasDiscarded() const override { return was_discarded_; }
+  void SetWebContents(content::WebContents* web_contents) {
+    web_contents_ = web_contents;
+  }
+  content::WebContents* GetWebContents() override { return web_contents_; }
 
  private:
   bool was_discarded_ = false;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
 };
 
 class HighEfficiencyChipViewTest : public TestWithBrowserView {
@@ -55,23 +61,23 @@ class HighEfficiencyChipViewTest : public TestWithBrowserView {
   void SetUp() override {
     feature_list_.InitAndEnableFeature(
         performance_manager::features::kHighEfficiencyModeAvailable);
-    performance_manager::user_tuning::prefs::RegisterLocalStatePrefs(
-        local_state_.registry());
-    environment_.SetUp(&local_state_);
     TestWithBrowserView::SetUp();
 
-    AddTab(browser(), GURL("http://foo"));
-    content::WebContents* contents =
-        browser()->tab_strip_model()->GetWebContentsAt(0);
-    TabDiscardTabHelper::CreateForWebContents(contents);
-    performance_manager::user_tuning::UserPerformanceTuningManager::
-        PreDiscardResourceUsage::CreateForWebContents(contents,
-                                                      kMemorySavingsKilobytes);
+    AddNewTab(kMemorySavingsKilobytes,
+              ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
   }
 
-  void TearDown() override {
-    TestWithBrowserView::TearDown();
-    environment_.TearDown();
+  // Creates a new tab at index 0 that would report the given memory savings and
+  // discard reason if the tab was discarded
+  void AddNewTab(int memory_savings,
+                 mojom::LifecycleUnitDiscardReason discard_reason) {
+    AddTab(browser(), GURL("http://foo"));
+    content::WebContents* contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    TabDiscardTabHelper::CreateForWebContents(contents);
+    performance_manager::user_tuning::UserPerformanceTuningManager::
+        PreDiscardResourceUsage::CreateForWebContents(contents, memory_savings,
+                                                      discard_reason);
   }
 
   void SetTabDiscardState(int tab_index, bool is_discarded) {
@@ -80,6 +86,8 @@ class HighEfficiencyChipViewTest : public TestWithBrowserView {
     std::unique_ptr<DiscardMockNavigationHandle> navigation_handle =
         std::make_unique<DiscardMockNavigationHandle>();
     navigation_handle.get()->SetWasDiscarded(is_discarded);
+    navigation_handle.get()->SetWebContents(
+        browser()->tab_strip_model()->GetWebContentsAt(tab_index));
     tab_helper->DidStartNavigation(navigation_handle.get());
 
     browser_view()
@@ -89,9 +97,9 @@ class HighEfficiencyChipViewTest : public TestWithBrowserView {
   }
 
   void SetHighEfficiencyModeEnabled(bool enabled) {
-    g_browser_process->local_state()->SetBoolean(
-        performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled,
-        enabled);
+    performance_manager::user_tuning::UserPerformanceTuningManager::
+        GetInstance()
+            ->SetHighEfficiencyModeEnabled(enabled);
   }
 
   PageActionIconView* GetPageActionIconView() {
@@ -129,20 +137,31 @@ class HighEfficiencyChipViewTest : public TestWithBrowserView {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  TestingPrefServiceSimple local_state_;
-  performance_manager::user_tuning::TestUserPerformanceTuningManagerEnvironment
-      environment_;
 };
 
 // When the previous page has a tab discard state of true, when the icon is
 // updated it should be visible.
-TEST_F(HighEfficiencyChipViewTest, ShouldShowForDiscardedPage) {
+TEST_F(HighEfficiencyChipViewTest, ShouldShowChipForProactivelyDiscardedPage) {
   SetHighEfficiencyModeEnabled(true);
   SetTabDiscardState(0, true);
+  EXPECT_TRUE(GetPageActionIconView()->GetVisible());
+}
 
-  PageActionIconView* view = GetPageActionIconView();
+TEST_F(HighEfficiencyChipViewTest,
+       ShouldNotShowChipWhenNonProactivelyDiscardPage) {
+  SetHighEfficiencyModeEnabled(true);
 
-  EXPECT_TRUE(view->GetVisible());
+  // Add a new tab that was discarded through extensions
+  AddNewTab(kMemorySavingsKilobytes,
+            ::mojom::LifecycleUnitDiscardReason::EXTERNAL);
+  SetTabDiscardState(0, true);
+  EXPECT_FALSE(GetPageActionIconView()->GetVisible());
+
+  // Add a new tab that was urgently discarded
+  AddNewTab(kMemorySavingsKilobytes,
+            ::mojom::LifecycleUnitDiscardReason::URGENT);
+  SetTabDiscardState(0, true);
+  EXPECT_FALSE(GetPageActionIconView()->GetVisible());
 }
 
 // If a discard is triggered when the user doesn't have high efficiency mode
@@ -244,16 +263,11 @@ TEST_F(HighEfficiencyChipViewTest, ShouldRenderMemorySavingsInDialog) {
 //  in the dialog.
 TEST_F(HighEfficiencyChipViewTest, ShouldNotRenderSmallMemorySavingsInDialog) {
   // Add a new tab with small memory savings.
-  AddTab(browser(), GURL("http://bar"));
-  content::WebContents* contents =
-      browser()->tab_strip_model()->GetWebContentsAt(1);
-  TabDiscardTabHelper::CreateForWebContents(contents);
-  performance_manager::user_tuning::UserPerformanceTuningManager::
-      PreDiscardResourceUsage::CreateForWebContents(
-          contents, kSmallMemorySavingsKilobytes);
+  AddNewTab(kSmallMemorySavingsKilobytes,
+            ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
 
   // Mark the new tab as discarded.
-  SetTabDiscardState(1, true);
+  SetTabDiscardState(0, true);
 
   ClickPageActionChip();
 
@@ -280,12 +294,11 @@ TEST_F(HighEfficiencyChipViewTest, ShouldHideLabelAfterMultipleDiscards) {
   EXPECT_FALSE(GetPageActionIconView()->ShouldShowLabel());
 }
 
-// When a chip is expaneded with the label, if we navigate to another tab
-// and come back, the chip should be collapsed with the label hidden.
 TEST_F(HighEfficiencyChipViewTest, ShouldCollapseChipAfterNavigatingTabs) {
   SetHighEfficiencyModeEnabled(true);
+  AddNewTab(kMemorySavingsKilobytes,
+            ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  AddTab(browser(), GURL("http://foo"));
   EXPECT_EQ(2, tab_strip_model->GetTabCount());
 
   SetTabDiscardState(0, true);
@@ -302,6 +315,27 @@ TEST_F(HighEfficiencyChipViewTest, ShouldCollapseChipAfterNavigatingTabs) {
   EXPECT_FALSE(GetPageActionIconView()->ShouldShowLabel());
 
   tab_strip_model->SelectNextTab();
+  EXPECT_FALSE(GetPageActionIconView()->ShouldShowLabel());
+}
+
+TEST_F(HighEfficiencyChipViewTest,
+       ShouldCollapseChipAfterNavigatingTabsWithDialogOpen) {
+  SetHighEfficiencyModeEnabled(true);
+  AddNewTab(kMemorySavingsKilobytes,
+            ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  EXPECT_EQ(2, tab_strip_model->GetTabCount());
+
+  SetTabDiscardState(0, true);
+  SetTabDiscardState(1, true);
+
+  EXPECT_TRUE(GetPageActionIconView()->ShouldShowLabel());
+  tab_strip_model->SelectNextTab();
+
+  EXPECT_TRUE(GetPageActionIconView()->ShouldShowLabel());
+  ClickPageActionChip();
+
+  tab_strip_model->SelectPreviousTab();
   EXPECT_FALSE(GetPageActionIconView()->ShouldShowLabel());
 }
 
@@ -327,20 +361,14 @@ TEST_F(HighEfficiencyChipViewTest, ShowChipWithSavingsInGuestMode) {
 
 TEST_F(HighEfficiencyChipViewTest, ShowChipWithoutSavingsInGuestMode) {
   // Add a new tab with small memory savings.
-  AddTab(browser(), GURL("http://bar"));
-  content::WebContents* contents =
-      browser()->tab_strip_model()->GetWebContentsAt(1);
-  TabDiscardTabHelper::CreateForWebContents(contents);
-  performance_manager::user_tuning::UserPerformanceTuningManager::
-      PreDiscardResourceUsage::CreateForWebContents(
-          contents, kSmallMemorySavingsKilobytes);
+  AddNewTab(kSmallMemorySavingsKilobytes,
+            ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
 
   TestingProfile* testprofile = browser()->profile()->AsTestingProfile();
   EXPECT_TRUE(testprofile);
   testprofile->SetGuestSession(true);
 
-  SetTabDiscardState(1, true);
-
+  SetTabDiscardState(0, true);
   ClickPageActionChip();
 
   // Since there is no placeholders in the bubble text in guest mode and without

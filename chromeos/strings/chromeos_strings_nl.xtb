@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">Uitstekend (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2364498172489649528">Geslaagd</translation>
+<translation id="2367335866686097760">Sleutel voor toetstoewijzing</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Feedbackrapport sturen</translation>
 <translation id="2407209115954268704">Simlockstatus</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">Avatar-afbeelding gewijzigd</translation>
 <translation id="3192947282887913208">Audiobestanden</translation>
 <translation id="3199982728237701504">Documentfeeder (dubbelzijdig)</translation>
+<translation id="3211671540163313381">D-pad voor toetstoewijzing</translation>
 <translation id="3226405216343213872">Zoeken naar scanners</translation>
+<translation id="3226657629376379887">Actiemenu voor indeling</translation>
 <translation id="3246869037381808805">Afdruktaken ouder dan 1 dag worden verwijderd</translation>
 <translation id="3268178239013324452">Mislukt - Klep geopend</translation>
 <translation id="3275729367986477355">Avatar-afbeelding</translation>
@@ -253,6 +256,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Beveiliging</translation>
 <translation id="3435896845095436175">Aanzetten</translation>
+<translation id="345256797477978759">Venster vastzetten op het grotere <ph name="DIRECTION" />gedeelte van het scherm</translation>
 <translation id="3456078764689556234">Pagina <ph name="PRINTED_PAGES" /> van <ph name="TOTAL_PAGES" /> afgedrukt.</translation>
 <translation id="345898999683440380">Pagina <ph name="PAGE_NUM" /> scannen. <ph name="PERCENTAGE_VALUE" />% voltooid.</translation>
 <translation id="3459509316159669723">Afdrukken</translation>
@@ -273,12 +277,14 @@
 <translation id="3595596368722241419">Batterij is vol</translation>
 <translation id="3600339377155080675">Scherm spiegelen</translation>
 <translation id="3602290021589620013">Voorbeeld</translation>
+<translation id="360282891121575443">Foto's in gedeelde albums kunnen door andere gebruikers worden geüpdatet. Met Dagelijks wijzigen kunnen achtergronden worden getoond die momenteel niet in het album staan.</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Achtergrond wijzigen</translation>
 <translation id="360565022852130722">Wifi-netwerk is beveiligd met het zwakke protocol WEP 802.1x</translation>
 <translation id="3606583719724308068">Lange vertraging voor HTTPS-websites</translation>
 <translation id="361575905210396100">Bedankt voor je feedback</translation>
 <translation id="3632579075709132555">Privacyscherm schakelen</translation>
+<translation id="3639846061339007994">boven</translation>
 <translation id="3651050199673793219">Een temperatuureenheid selecteren</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Bezig met laden...</translation>
@@ -520,6 +526,7 @@
 <translation id="576835345334454681">Helderheid van scherm verhogen</translation>
 <translation id="57838592816432529">Geluid uitzetten</translation>
 <translation id="5784136236926853061">Hoge HTTP-vertraging</translation>
+<translation id="5826644637650799838">Over de achtergrond</translation>
 <translation id="5832805196449965646">Persoon toevoegen</translation>
 <translation id="583281660410589416">Onbekend</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
@@ -562,6 +569,7 @@
 <translation id="6117895505466548728"><ph name="TITLE" />, + nog <ph name="NUMBER" /> albums</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Invoermethodeservice voor Chrome OS</translation>
+<translation id="6136285399872347291">Backspace</translation>
 <translation id="6137767437444130246">Gebruikerscertificaat</translation>
 <translation id="6146993107019042706">Geef je nieuwe wachtwoord opnieuw op om te voltooien</translation>
 <translation id="6147514244879357420">Png</translation>
@@ -609,6 +617,7 @@
 <translation id="650266656685499220">Ga naar Google Foto's om albums te maken</translation>
 <translation id="6516990319416533844">Als je de oplaadsnelheid van de batterij wilt testen, laat je de batterij korte tijd leeg lopen</translation>
 <translation id="6517239166834772319">Ontdekken</translation>
+<translation id="6526200165918397681">Aanpassen aan achtergrond</translation>
 <translation id="6527081081771465939">Onbekend wifi-beveiligingsprotocol</translation>
 <translation id="6535178685492749208">Je bent offline. Feedback wordt later verstuurd.</translation>
 <translation id="65587193855025101">Flatbed</translation>
@@ -628,6 +637,7 @@
 <translation id="6657585470893396449">Wachtwoord</translation>
 <translation id="6659594942844771486">Browsertabblad</translation>
 <translation id="6692996468359469499">Informatie over je selectie bekijken</translation>
+<translation id="6698459586333070823">Gedeelde albums kunnen worden geüpdatet door andere gebruikers</translation>
 <translation id="6704062477274546131">DNS-resolutie</translation>
 <translation id="6723839937902243910">Voeding</translation>
 <translation id="6723847290197874913">Achtergrondverlichting toetsenbord</translation>
@@ -664,6 +674,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Mislukt: autorisatie mislukt</translation>
 <translation id="7103252855940681301">Apparaat <ph name="INDEX" /> van <ph name="COUNT" /> met de naam <ph name="NAME" />.</translation>
+<translation id="7108668606237948702">Enter</translation>
 <translation id="7130438335435247835">Toegangspuntnaam (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Naamserver}other{Naamservers}}</translation>
 <translation id="7143207342074048698">Verbinden</translation>
@@ -673,6 +684,7 @@
 <translation id="7155171745945906037">Bestaande foto van camera of uit bestand</translation>
 <translation id="7162487448488904999">Galerij</translation>
 <translation id="7170236477717446850">Profielfoto</translation>
+<translation id="7171919371520438592">Venster vastzetten op het kleinere <ph name="DIRECTION" />gedeelte van het scherm</translation>
 <translation id="7172721935181587524">1 afbeelding</translation>
 <translation id="7177485034254901881">Dit <ph name="DEVICE_TYPE" /> wordt beheerd door <ph name="MANAGER" />. Beheerders kunnen het apparaat op afstand instellen.</translation>
 <translation id="7180611975245234373">Vernieuwen</translation>
@@ -748,6 +760,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Type provider</translation>
 <translation id="7882501334836096755">Openbare sleutel</translation>
+<translation id="78957024357676568">links</translation>
 <translation id="7915220255123750251">Beheer de APN-instellingen voor het netwerk. APN's maken verbinding tussen een mobiel netwerk en internet.</translation>
 <translation id="7936303884198020182">Geen naamservers gevonden</translation>
 <translation id="7942349550061667556">Rood</translation>
@@ -776,9 +789,11 @@
 <translation id="8183974620058026102">Bijvoegen</translation>
 <translation id="8206859287963243715">Mobiel</translation>
 <translation id="8208861521865154048">Speciale voordelen</translation>
+<translation id="8210733748736414123">onder</translation>
 <translation id="8226628635270268143">Kies je favoriete foto's en albums</translation>
 <translation id="8227119283605456246">Bestand bijvoegen</translation>
 <translation id="8230672074305416752">Kan de standaard netwerkgateway niet pingen</translation>
+<translation id="8242426110754782860">Doorgaan</translation>
 <translation id="8246209727385807362">Onbekende provider</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8286154143153872371">Maak verbinding met een netwerk en laad de pagina opnieuw om de achtergrond te bekijken.</translation>
@@ -789,9 +804,11 @@
 <translation id="8318753676953949627">Geen afbeeldingen</translation>
 <translation id="8336739000755212683">Accountafbeelding van apparaat wijzigen</translation>
 <translation id="8347227221149377169">Afdruktaken</translation>
+<translation id="8351855506390808906">Aanraakpunt voor toetstoewijzing</translation>
 <translation id="8352772353338965963">Een account toevoegen aan Toegang tot meerdere accounts. Alle ingelogde accounts zijn toegankelijk zonder wachtwoord, dus deze functie moet alleen worden gebruikt voor vertrouwde accounts.</translation>
 <translation id="8364946094152050673">Lege naamservers</translation>
 <translation id="8372477600026034341">Extra hosts</translation>
+<translation id="8380114448424469341">Venster vastzetten op de <ph name="DIRECTION" />helft van het scherm</translation>
 <translation id="8395584934117017006">Deze <ph name="DEVICE_TYPE" /> wordt zakelijk beheerd</translation>
 <translation id="8398927464629426868">De snelheid waarmee het apparaat op dit moment wordt opgeladen of ontladen</translation>
 <translation id="8410244574650205435">Automatisch gevonden</translation>
@@ -856,6 +873,7 @@
 <translation id="8930622219860340959">Draadloos</translation>
 <translation id="8936793075252196307">IP-adres van client</translation>
 <translation id="894617464444543719">Apparaat is een telefoon.</translation>
+<translation id="8957423540740801332">rechts</translation>
 <translation id="8968751544471797276">Oplaadsnelheid</translation>
 <translation id="8970109610781093811">Opnieuw uitvoeren</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -883,6 +901,7 @@
 <translation id="9137526406337347448">Google-services</translation>
 <translation id="9138630967333032450">Shift links</translation>
 <translation id="9149391708638971077">Geheugentest uitvoeren</translation>
+<translation id="9161276708550942948">spatie</translation>
 <translation id="9173638680043580060">Nog minder dan een minuut</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Je toetsenbord kan automatisch worden afgestemd op je achtergrond</translation>

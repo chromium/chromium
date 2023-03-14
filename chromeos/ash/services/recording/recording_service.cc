@@ -9,12 +9,14 @@
 #include <cstdlib>
 
 #include "base/check.h"
+#include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/recording/gif_encoder.h"
+#include "chromeos/ash/services/recording/recording_encoder.h"
 #include "chromeos/ash/services/recording/recording_service_constants.h"
 #include "chromeos/ash/services/recording/video_capture_params.h"
 #include "chromeos/ash/services/recording/webm_encoder_muxer.h"
@@ -126,6 +128,15 @@ void TerminateServiceImmediately() {
   LOG(ERROR)
       << "The recording service client was disconnected. Exiting immediately.";
   std::exit(EXIT_FAILURE);
+}
+
+// Creates the appropriate encoder capabilities based to the type of the given
+// `output_file_path`.
+std::unique_ptr<RecordingEncoder::Capabilities> CreateEncoderCapabilities(
+    const base::FilePath& output_file_path) {
+  return output_file_path.MatchesExtension(".gif")
+             ? GifEncoder::CreateCapabilities()
+             : WebmEncoderMuxer::CreateCapabilities();
 }
 
 // Creates and returns the appropriate encoder based on the type of the given
@@ -475,6 +486,7 @@ void RecordingService::StartNewRecording(
   current_video_capture_params_ = std::move(capture_params);
   const bool should_record_audio = audio_stream_factory.is_valid();
 
+  encoder_capabilities_ = CreateEncoderCapabilities(output_file_path);
   encoder_muxer_ = CreateEncoder(
       encoding_task_runner_,
       CreateVideoEncoderOptions(current_video_capture_params_->GetVideoSize()),
@@ -499,6 +511,13 @@ void RecordingService::StartNewRecording(
 void RecordingService::ReconfigureVideoEncoder() {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   DCHECK(current_video_capture_params_);
+  DCHECK(encoder_capabilities_);
+
+  if (!encoder_capabilities_->SupportsVideoFrameSizeChanges()) {
+    OnEncodingFailure(
+        mojom::RecordingStatus::kVideoEncoderReconfigurationFailure);
+    return;
+  }
 
   ++number_of_video_encoder_reconfigures_;
   encoder_muxer_.AsyncCall(&RecordingEncoder::InitializeVideoEncoder)
@@ -512,6 +531,7 @@ void RecordingService::TerminateRecording(mojom::RecordingStatus status) {
 
   refresh_timer_.Stop();
   current_video_capture_params_.reset();
+  encoder_capabilities_.reset();
   video_capturer_remote_.reset();
   consumer_receiver_.reset();
 
@@ -524,6 +544,7 @@ void RecordingService::ConnectAndStartVideoCapturer(
     mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   DCHECK(current_video_capture_params_);
+  DCHECK(encoder_capabilities_);
 
   video_capturer_remote_.reset();
   video_capturer_remote_.Bind(std::move(video_capturer));
@@ -532,7 +553,7 @@ void RecordingService::ConnectAndStartVideoCapturer(
   video_capturer_remote_.set_disconnect_handler(base::BindOnce(
       &RecordingService::OnVideoCapturerDisconnected, base::Unretained(this)));
   current_video_capture_params_->InitializeVideoCapturer(
-      video_capturer_remote_);
+      video_capturer_remote_, encoder_capabilities_->GetSupportedPixelFormat());
   video_capturer_remote_->Start(consumer_receiver_.BindNewPipeAndPassRemote(),
                                 viz::mojom::BufferFormatPreference::kDefault);
 

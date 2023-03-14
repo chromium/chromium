@@ -24,6 +24,7 @@
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
@@ -103,7 +104,7 @@ void RemoveSavedFileEntry(ExtensionPrefs* prefs,
 // Clears all SavedFileEntry for the app from ExtensionPrefs.
 void ClearSavedFileEntries(ExtensionPrefs* prefs,
                            const std::string& extension_id) {
-  prefs->UpdateExtensionPref(extension_id, kFileEntries, nullptr);
+  prefs->UpdateExtensionPref(extension_id, kFileEntries, absl::nullopt);
 }
 
 // Returns all SavedFileEntries for the app.

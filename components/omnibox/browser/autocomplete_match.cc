@@ -43,6 +43,12 @@
 
 namespace {
 
+#if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
+// Used for `SEARCH_SUGGEST_TAIL` and `NULL_RESULT_MESSAGE` (e.g. starter pack)
+// type suggestion icons.
+static gfx::VectorIcon empty_icon;
+#endif
+
 bool IsTrivialClassification(const ACMatchClassifications& classifications) {
   return classifications.empty() ||
          ((classifications.size() == 1) &&
@@ -94,6 +100,11 @@ bool RichAutocompletionApplicable(bool enabled_all_providers,
 // Gives a basis for match comparison that prefers some providers over others
 // while remaining neutral with a default score of zero for most providers.
 int GetDeduplicationProviderPreferenceScore(AutocompleteProvider::Type type) {
+  const static int shortcuts_preference =
+      base::FeatureList::IsEnabled(
+          omnibox::kPreferNonShortcutMatchesWhenDeduping)
+          ? -1
+          : 0;
   const static std::unordered_map<AutocompleteProvider::Type, int>
       provider_preference = {
           {// Prefer live document suggestions. We check provider type instead
@@ -106,8 +117,12 @@ int GetDeduplicationProviderPreferenceScore(AutocompleteProvider::Type type) {
            // set, and 2) they may display enhanced information such as the
            // bookmark folders path.
            AutocompleteProvider::TYPE_BOOKMARK, 1},
+          {// Prefer non-shorcut matches over shortcuts, the latter of which may
+           // have stale or missing URL titles (the latter from what-you-typed
+           // matches).
+           AutocompleteProvider::TYPE_SHORTCUTS, shortcuts_preference},
           {// Prefer non-fuzzy matches over fuzzy matches.
-           AutocompleteProvider::TYPE_HISTORY_FUZZY, -1},
+           AutocompleteProvider::TYPE_HISTORY_FUZZY, -2},
       };
   const auto it = provider_preference.find(type);
   if (it == provider_preference.end()) {
@@ -504,7 +519,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
 
     case Type::SEARCH_SUGGEST_TAIL:
     case Type::NULL_RESULT_MESSAGE:
-      return omnibox::kBlankIcon;
+      return empty_icon;
 
     case Type::DOCUMENT_SUGGESTION:
       switch (document_type) {

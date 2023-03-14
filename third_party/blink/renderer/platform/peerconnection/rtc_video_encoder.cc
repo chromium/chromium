@@ -19,6 +19,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_restrictions.h"
@@ -26,7 +27,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_switches.h"
@@ -535,11 +535,6 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   // its own thread, hence the |encode_event| argument.
   void Enqueue(FrameChunk frame_chunk, SignaledValue encode_event);
 
-  // RTCVideoEncoder is given a buffer to be passed to WebRTC through the
-  // RTCVideoEncoder::ReturnEncodedImage() function.  When that is complete,
-  // the buffer is returned to Impl by its index using this function.
-  void UseOutputBitstreamBufferId(int32_t bitstream_buffer_id);
-
   // Request encoding parameter change for the underlying encoder.
   void RequestEncodingParametersChange(
       const webrtc::VideoEncoder::RateControlParameters& parameters);
@@ -604,6 +599,15 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   // Returns an empty list is spatial layers are not used.
   std::vector<gfx::Size> ActiveSpatialResolutions() const;
 
+  // Call VideoEncodeAccelerator::UseOutputBitstreamBuffer() for a buffer whose
+  // id is |bitstream_buffer_id|.
+  void UseOutputBitstreamBuffer(int32_t bitstream_buffer_id);
+
+  // RTCVideoEncoder is given a buffer to be passed to WebRTC through the
+  // RTCVideoEncoder::ReturnEncodedImage() function.  When that is complete,
+  // the buffer is returned to Impl by its index using this function.
+  void BitstreamBufferAvailable(int32_t bitstream_buffer_id);
+
   // This is attached to |gpu_task_runner_|, not the thread class is constructed
   // on.
   SEQUENCE_CHECKER(sequence_checker_);
@@ -644,13 +648,22 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
                    base::WritableSharedMemoryMapping>>
       output_buffers_;
 
+  // The number of frames that are sent to a hardware video encoder by Encode()
+  // and the encoder holds them.
+  size_t frames_in_encoder_count_ = 0;
+
   // Input buffers ready to be filled with input from Encode().  As a LIFO since
   // we don't care about ordering.
   Vector<int> input_buffers_free_;
 
-  // The number of output buffers ready to be filled with output from the
-  // encoder.
-  int output_buffers_free_count_{0};
+  // The number of output buffers that have been sent to a hardware video
+  // encoder by VideoEncodeAccelerator::UseOutputBitstreamBuffer() and the
+  // encoder holds them.
+  size_t output_buffers_in_encoder_count_{0};
+
+  // The buffer ids that are not sent to a hardware video encoder and this holds
+  // them. UseOutputBitstreamBuffer() is called for them on the next Encode().
+  Vector<int32_t> pending_output_buffers_;
 
   // Whether to send the frames to VEA as native buffer. Native buffer allows
   // VEA to pass the buffer to the encoder directly without further processing.
@@ -872,7 +885,7 @@ void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk,
   // continue. If this is a key frame, WebRTC will request a key frame again.
   // Besides, webrtc will drop a frame if Encode() blocks too long.
   if (!use_native_input_ && input_buffers_free_.empty() &&
-      output_buffers_free_count_ == 0) {
+      output_buffers_in_encoder_count_ == 0u) {
     DVLOG(2) << "Run out of input and output buffers. Drop the frame.";
     encode_event.Set(WEBRTC_VIDEO_CODEC_ERROR);
     encode_event.Signal();
@@ -897,9 +910,25 @@ void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk,
   }
 }
 
-void RTCVideoEncoder::Impl::UseOutputBitstreamBufferId(
+void RTCVideoEncoder::Impl::BitstreamBufferAvailable(
     int32_t bitstream_buffer_id) {
-  TRACE_EVENT0("webrtc", "RTCVideoEncoder::Impl::UseOutputBitstreamBufferId");
+  TRACE_EVENT0("webrtc", "RTCVideoEncoder::Impl::BitstreamBufferAvailable");
+  DVLOG(3) << __func__ << " bitstream_buffer_id=" << bitstream_buffer_id;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // If there is no frame in a hardware video encoder,
+  // UseOutputBitstreamBuffer() call for this buffer id is postponed in the next
+  // Encode() call. This avoids unnecessary thread wake up in GPU process.
+  if (frames_in_encoder_count_ == 0) {
+    pending_output_buffers_.push_back(bitstream_buffer_id);
+    return;
+  }
+
+  UseOutputBitstreamBuffer(bitstream_buffer_id);
+}
+
+void RTCVideoEncoder::Impl::UseOutputBitstreamBuffer(
+    int32_t bitstream_buffer_id) {
+  TRACE_EVENT0("webrtc", "RTCVideoEncoder::Impl::UseOutputBitstreamBuffer");
   DVLOG(3) << __func__ << " bitstream_buffer_id=" << bitstream_buffer_id;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (video_encoder_) {
@@ -907,7 +936,7 @@ void RTCVideoEncoder::Impl::UseOutputBitstreamBufferId(
         bitstream_buffer_id,
         output_buffers_[bitstream_buffer_id].first.Duplicate(),
         output_buffers_[bitstream_buffer_id].first.GetSize()));
-    output_buffers_free_count_++;
+    output_buffers_in_encoder_count_++;
   }
 }
 
@@ -1019,11 +1048,12 @@ void RTCVideoEncoder::Impl::RequireBitstreamBuffers(
 
   // Immediately provide all output buffers to the VEA.
   for (wtf_size_t i = 0; i < output_buffers_.size(); ++i) {
-    video_encoder_->UseOutputBitstreamBuffer(
-        media::BitstreamBuffer(i, output_buffers_[i].first.Duplicate(),
-                               output_buffers_[i].first.GetSize()));
-    output_buffers_free_count_++;
+    UseOutputBitstreamBuffer(i);
   }
+
+  pending_output_buffers_.clear();
+  pending_output_buffers_.reserve(output_buffers_.size());
+
   DCHECK_EQ(status_, WEBRTC_VIDEO_CODEC_UNINITIALIZED);
   status_ = WEBRTC_VIDEO_CODEC_OK;
 
@@ -1054,7 +1084,14 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
                       media::VideoEncodeAccelerator::kPlatformFailureError);
     return;
   }
-  output_buffers_free_count_--;
+  DCHECK_NE(output_buffers_in_encoder_count_, 0u);
+  output_buffers_in_encoder_count_--;
+
+  // Decrease |frames_in_encoder_count_| on the first frame.
+  if (metadata.spatial_idx().value_or(0) == 0) {
+    DCHECK_NE(0u, frames_in_encoder_count_);
+    frames_in_encoder_count_--;
+  }
 
   // Find RTP and capture timestamps by going through |pending_timestamps_|.
   // Derive it from current time otherwise.
@@ -1065,7 +1102,7 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
     // Pop timestamps until we have a match.
     while (!submitted_frames_.empty()) {
       auto& front_frame = submitted_frames_.front();
-      const bool end_of_picture = !metadata.vp9 || metadata.vp9->end_of_picture;
+      const bool end_of_picture = metadata.end_of_picture();
       if (front_frame.media_timestamp_ == metadata.timestamp) {
         rtp_timestamp = front_frame.rtp_timestamp_;
         capture_timestamp_ms = front_frame.capture_time_ms_;
@@ -1116,8 +1153,8 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
   webrtc::EncodedImage image;
   image.SetEncodedData(rtc::make_ref_counted<EncodedDataWrapper>(
       static_cast<uint8_t*>(output_mapping_memory), metadata.payload_size_bytes,
-      media::BindToCurrentLoop(
-          base::BindOnce(&RTCVideoEncoder::Impl::UseOutputBitstreamBufferId,
+      base::BindPostTaskToCurrentDefault(
+          base::BindOnce(&RTCVideoEncoder::Impl::BitstreamBufferAvailable,
                          weak_this_, bitstream_buffer_id))));
   auto encoded_size = metadata.encoded_size.value_or(input_visible_size_);
   image._encodedWidth = encoded_size.width();
@@ -1453,8 +1490,9 @@ void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk) {
       frame->BackWithSharedMemory(&region);
 
       input_buffers_free_.pop_back();
-      frame->AddDestructionObserver(media::BindToCurrentLoop(WTF::BindOnce(
-          &RTCVideoEncoder::Impl::InputBufferReleased, weak_this_, index)));
+      frame->AddDestructionObserver(
+          base::BindPostTaskToCurrentDefault(WTF::BindOnce(
+              &RTCVideoEncoder::Impl::InputBufferReleased, weak_this_, index)));
     }
   }
 
@@ -1465,6 +1503,14 @@ void RTCVideoEncoder::Impl::EncodeOneFrame(FrameChunk frame_chunk) {
                                    frame_chunk.render_time_ms,
                                    ActiveSpatialResolutions());
   }
+
+  // Call UseOutputBitstreamBuffer() for pending output buffers.
+  for (const auto& bitstream_buffer_id : pending_output_buffers_) {
+    UseOutputBitstreamBuffer(bitstream_buffer_id);
+  }
+  pending_output_buffers_.clear();
+
+  frames_in_encoder_count_++;
   video_encoder_->Encode(frame, frame_chunk.force_keyframe);
   async_encode_event_.SetAndReset(WEBRTC_VIDEO_CODEC_OK);
 }
@@ -1518,6 +1564,14 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput(
                                    frame_chunk.render_time_ms,
                                    ActiveSpatialResolutions());
   }
+
+  // Call UseOutputBitstreamBuffer() for pending output buffers.
+  for (const auto& bitstream_buffer_id : pending_output_buffers_) {
+    UseOutputBitstreamBuffer(bitstream_buffer_id);
+  }
+  pending_output_buffers_.clear();
+
+  frames_in_encoder_count_++;
   video_encoder_->Encode(frame, frame_chunk.force_keyframe);
   async_encode_event_.SetAndReset(WEBRTC_VIDEO_CODEC_OK);
 }
@@ -1655,8 +1709,9 @@ int32_t RTCVideoEncoder::InitEncode(
   Impl::UpdateEncoderInfoCallback update_encoder_info_callback =
       base::BindRepeating(&RTCVideoEncoder::UpdateEncoderInfo,
                           base::Unretained(this));
-  base::RepeatingClosure execute_software_fallback = media::BindToCurrentLoop(
-      base::BindRepeating(&RTCVideoEncoder::SetError, weak_this_));
+  base::RepeatingClosure execute_software_fallback =
+      base::BindPostTaskToCurrentDefault(
+          base::BindRepeating(&RTCVideoEncoder::SetError, weak_this_));
 
   impl_ = std::make_unique<Impl>(
       gpu_factories_, ProfileToWebRtcVideoCodecType(profile_),

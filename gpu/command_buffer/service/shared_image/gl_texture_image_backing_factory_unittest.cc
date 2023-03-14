@@ -105,7 +105,7 @@ void CreateSharedContext(const GpuDriverBugWorkarounds& workarounds,
       base::MakeRefCounted<gles2::FeatureInfo>(workarounds, GpuFeatureInfo());
   context_state = base::MakeRefCounted<SharedContextState>(
       std::move(share_group), surface, context,
-      false /* use_virtualized_gl_contexts */, base::DoNothing());
+      /*use_virtualized_gl_contexts=*/false, base::DoNothing());
   context_state->InitializeGrContext(GpuPreferences(), workarounds, nullptr);
   context_state->InitializeGL(GpuPreferences(), feature_info);
 }
@@ -126,7 +126,7 @@ class GLTextureImageBackingFactoryTestBase : public testing::Test {
             std::make_unique<SharedImageManager>(is_thread_safe)) {}
   ~GLTextureImageBackingFactoryTestBase() override {
     // |context_state_| must be destroyed on its own context.
-    context_state_->MakeCurrent(surface_.get(), true /* needs_gl */);
+    context_state_->MakeCurrent(surface_.get(), /*needs_gl=*/true);
   }
 
   void SetUpBase(const GpuDriverBugWorkarounds& workarounds,
@@ -286,7 +286,7 @@ TEST_F(GLTextureImageBackingFactoryTest, EstimatedSize) {
 
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, false /* is_thread_safe */);
+      alpha_type, usage, /*is_thread_safe=*/false);
   ASSERT_TRUE(backing);
 
   size_t backing_estimated_size = backing->GetEstimatedSize();
@@ -373,6 +373,14 @@ TEST_P(GLTextureImageBackingFactoryWithFormatTest, Basic) {
     GTEST_SKIP();
   }
 
+#if BUILDFLAG(IS_IOS)
+  if (format == viz::SinglePlaneFormat::kBGRA_1010102) {
+    // Just like Mac, producing SkSurface for BGRA_1010102 fails on iOS
+    // (crbug.com/1100975)
+    GTEST_SKIP();
+  }
+#endif  // BUILDFLAG(IS_IOS)
+
   EXPECT_CALL(progress_reporter_, ReportProgress).Times(AtLeast(1));
   auto mailbox = Mailbox::GenerateForSharedImage();
   gfx::Size size(256, 256);
@@ -389,7 +397,7 @@ TEST_P(GLTextureImageBackingFactoryWithFormatTest, Basic) {
 
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, false /* is_thread_safe */);
+      alpha_type, usage, /*is_thread_safe=*/false);
   ASSERT_TRUE(backing);
 
   // Check clearing.
@@ -611,6 +619,7 @@ TEST_P(GLTextureImageBackingFactoryWithUploadTest, UploadFromMemory) {
     std::vector<SkBitmap> bitmaps =
         AllocateRedBitmaps(format, size, alpha_type, /*added_stride=*/0);
     EXPECT_TRUE(backing->UploadFromMemory(GetSkPixmaps(bitmaps)));
+    EXPECT_EQ(glGetError(), static_cast<GLenum>(GL_NO_ERROR));
   }
 
   // Upload from bitmap with larger than expected stride.
@@ -618,6 +627,7 @@ TEST_P(GLTextureImageBackingFactoryWithUploadTest, UploadFromMemory) {
     std::vector<SkBitmap> bitmaps =
         AllocateRedBitmaps(format, size, alpha_type, /*added_stride=*/25);
     EXPECT_TRUE(backing->UploadFromMemory(GetSkPixmaps(bitmaps)));
+    EXPECT_EQ(glGetError(), static_cast<GLenum>(GL_NO_ERROR));
   }
 }
 
@@ -651,6 +661,7 @@ TEST_P(GLTextureImageBackingFactoryWithReadbackTest, ReadbackToMemory) {
 
   // Upload from bitmap with expected stride.
   ASSERT_TRUE(backing->UploadFromMemory(GetSkPixmaps(src_bitmaps)));
+  EXPECT_EQ(glGetError(), static_cast<GLenum>(GL_NO_ERROR));
 
   const int num_planes = format.NumberOfPlanes();
 
@@ -666,6 +677,7 @@ TEST_P(GLTextureImageBackingFactoryWithReadbackTest, ReadbackToMemory) {
 
     std::vector<SkPixmap> pixmaps = GetSkPixmaps(readback_bitmaps);
     ASSERT_TRUE(backing->ReadbackToMemory(pixmaps));
+    EXPECT_EQ(glGetError(), static_cast<GLenum>(GL_NO_ERROR));
 
     for (int plane = 0; plane < num_planes; ++plane) {
       EXPECT_TRUE(cc::MatchesBitmap(readback_bitmaps[plane], src_bitmaps[plane],
@@ -686,6 +698,7 @@ TEST_P(GLTextureImageBackingFactoryWithReadbackTest, ReadbackToMemory) {
 
     std::vector<SkPixmap> pixmaps = GetSkPixmaps(readback_bitmaps);
     ASSERT_TRUE(backing->ReadbackToMemory(pixmaps));
+    EXPECT_EQ(glGetError(), static_cast<GLenum>(GL_NO_ERROR));
 
     for (int plane = 0; plane < num_planes; ++plane) {
       EXPECT_TRUE(cc::MatchesBitmap(readback_bitmaps[plane], src_bitmaps[plane],

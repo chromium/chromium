@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
@@ -64,7 +65,7 @@ class CONTENT_EXPORT PrefetchContainer {
   // Defines the key to uniquely identify a prefetch.
   using Key = std::pair<GlobalRenderFrameHostId, GURL>;
   Key GetPrefetchContainerKey() const {
-    return std::make_pair(referring_render_frame_host_id_, url_);
+    return std::make_pair(referring_render_frame_host_id_, prefetch_url_);
   }
 
   // The ID of the RenderFrameHost that triggered the prefetch.
@@ -72,8 +73,8 @@ class CONTENT_EXPORT PrefetchContainer {
     return referring_render_frame_host_id_;
   }
 
-  // The URL that will potentially be prefetched.
-  GURL GetURL() const { return url_; }
+  // The initial URL that was requested to be prefetched.
+  GURL GetURL() const { return prefetch_url_; }
 
   // The type of this prefetch. Controls how the prefetch is handled.
   const PrefetchType& GetPrefetchType() const { return prefetch_type_; }
@@ -100,22 +101,42 @@ class CONTENT_EXPORT PrefetchContainer {
   std::unique_ptr<ProxyLookupClientImpl> ReleaseProxyLookupClient();
 
   // Whether or not the prefetch was determined to be eligibile.
-  void OnEligibilityCheckComplete(bool is_eligible,
+  void OnEligibilityCheckComplete(const GURL& url,
+                                  bool is_eligible,
                                   absl::optional<PrefetchStatus> status);
-  bool IsEligible() const { return is_eligible_; }
+  bool IsInitialPrefetchEligible() const;
+
+  // Adds a the new URL to |redirect_chain_|.
+  void AddRedirectHop(const GURL& url);
+
+  // Gets the result of the eligibility check for the given URL. The URL must be
+  // in |redirect_chain_|. A value of absl::nullopt indicates that the
+  // eligibility check is still in progress.
+  absl::optional<bool> GetEligibilityResultForRedirect(const GURL& url);
+
+  // Registers a callback for the given URL in |redirect_chain_| to be called
+  // once the eligibility check is completed with the result.
+  using OnEligibilityCheckCompleteCallback =
+      base::OnceCallback<void(bool is_eligible)>;
+  void SetOnEligibilityCheckCompleteCallback(
+      const GURL& url,
+      OnEligibilityCheckCompleteCallback
+          on_eligibility_check_complete_callback);
+
+  // The length of the redirect chain for this prefetch.
+  size_t GetRedirectChainSize() const { return redirect_chain_.size(); }
 
   // Whether this prefetch is a decoy. Decoy prefetches will not store the
   // response, and not serve any prefetched resources.
   void SetIsDecoy(bool is_decoy) { is_decoy_ = is_decoy; }
   bool IsDecoy() const { return is_decoy_; }
 
-  // After the initial eligiblity check for |url_|, a
-  // |PrefetchCookieListener| listens for any changes to the cookies
-  // associated with |url_|. If these cookies change, then no prefetched
-  // resources will be served.
-  void RegisterCookieListener(network::mojom::CookieManager* cookie_manager);
-  void StopCookieListener();
-  bool HaveDefaultContextCookiesChanged() const;
+  // Allows for |PrefetchCookieListener|s to be reigsitered for elements of
+  // |redirect_chain_|.
+  void RegisterCookieListener(const GURL& url,
+                              network::mojom::CookieManager* cookie_manager);
+  void StopCookieListener(const GURL& url);
+  bool HaveDefaultContextCookiesChanged(const GURL& url) const;
 
   // Before a prefetch can be served, any cookies added to the isolated network
   // context must be copied over to the default network context. These functions
@@ -224,6 +245,11 @@ class CONTENT_EXPORT PrefetchContainer {
   void SimulateAttemptAtInterceptorForTest();
   void DisablePrecogLoggingForTest() { attempt_ = nullptr; }
 
+  void SetNoVarySearchHelper(
+      scoped_refptr<NoVarySearchHelper> no_vary_search_helper) {
+    no_vary_search_helper_ = no_vary_search_helper;
+  }
+
  protected:
   friend class PrefetchContainerTest;
 
@@ -234,11 +260,43 @@ class CONTENT_EXPORT PrefetchContainer {
       const network::mojom::URLResponseHead* head);
 
  private:
+  // Holds the state for the request for a single URL in the context of the
+  // broader prefetch. A prefetch can request multiple URLs due to redirects.
+  class SinglePrefetch {
+   public:
+    explicit SinglePrefetch(const GURL& url);
+    ~SinglePrefetch();
+
+    SinglePrefetch(const SinglePrefetch&) = delete;
+    SinglePrefetch& operator=(const SinglePrefetch&) = delete;
+
+    // The URL that will potentially be prefetched. This can be the original
+    // prefetch URL, or a URL from a redirect resulting from requesting the
+    // original prefetch URL.
+    GURL url_;
+
+    // Whether this |url_| is eligible to be prefetched
+    absl::optional<bool> is_eligible_;
+
+    OnEligibilityCheckCompleteCallback on_eligibility_check_complete_callback_;
+
+    // This tracks whether the cookies associated with |url_| have changed at
+    // some point after the initial eligibility check.
+    std::unique_ptr<PrefetchCookieListener> cookie_listener_;
+  };
+
+  // Helper function to get the |SinglePrefetch| for the given URL.
+  SinglePrefetch* GetSinglePrefetch(const GURL& url) const;
+
+  // Helper function to match URLs using |no_vary_search_helper_|.
+  bool IsMatchingNoVarySearchUrl(const GURL& internal_url,
+                                 const GURL& external_url) const;
+
   // The ID of the RenderFrameHost that triggered the prefetch.
   GlobalRenderFrameHostId referring_render_frame_host_id_;
 
-  // The URL that will potentially be prefetched
-  GURL url_;
+  // The URL that was requested to be prefetch.
+  GURL prefetch_url_;
 
   // The type of this prefetch. This controls some specific details about how
   // the prefetch is handled, including whether an isolated network context or
@@ -258,27 +316,22 @@ class CONTENT_EXPORT PrefetchContainer {
   // The current status, if any, of the prefetch.
   absl::optional<PrefetchStatus> prefetch_status_;
 
-  // Looks up the proxy settings in the default network context for |url_|. If
-  // there is an existing proxy for |url_| then it is not eligible.
+  // Looks up the proxy settings in the default network context all URLs in
+  // |redirect_chain_|.
   std::unique_ptr<ProxyLookupClientImpl> proxy_lookup_client_;
-
-  // Whethere or not this prefetch was determined to be eligible to be
-  // prefetched.
-  bool is_eligible_ = false;
 
   // Whether this prefetch is a decoy or not. If the prefetch is a decoy then
   // any prefetched resources will not be served.
   bool is_decoy_ = false;
 
-  // This tracks whether the cookies associated with |url_| have changed at some
-  // point after the initial eligibility check.
-  std::unique_ptr<PrefetchCookieListener> cookie_listener_;
+  // The redirect chain resulting from prefetching |prefetch_url_|.
+  std::vector<std::unique_ptr<SinglePrefetch>> redirect_chain_;
 
-  // The network context used to prefetch |url_|.
+  // The network context used for this prefetch.
   std::unique_ptr<PrefetchNetworkContext> network_context_;
 
-  // The streaming URL loader used to prefetch and serve |url_|. Only used if
-  // |PrefetchUseStreamingURLLoader| is true.
+  // The streaming URL loader used to prefetch and serve this prefetch. Only
+  // used if |PrefetchUseStreamingURLLoader| is true.
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader_;
 
   // The time at which |prefetched_response_| was received. This is used to
@@ -339,6 +392,9 @@ class CONTENT_EXPORT PrefetchContainer {
   // holdback status, triggering outcome and failure reason are set in
   // `SetPrefetchStatus`.
   base::WeakPtr<PreloadingAttempt> attempt_;
+
+  // Used to match URLs based on no vary search params.
+  scoped_refptr<NoVarySearchHelper> no_vary_search_helper_;
 
   base::WeakPtrFactory<PrefetchContainer> weak_method_factory_{this};
 };

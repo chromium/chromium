@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/video_rvfc/video_frame_callback_requester_impl.h"
+#include "third_party/blink/renderer/core/page/page_animator.h"
 
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -202,8 +203,8 @@ class VideoFrameCallbackRequesterImplTest : public PageTestBase {
   void SimulateFramePresented() { video_->OnRequestVideoFrameCallback(); }
 
   void SimulateVideoFrameCallback(base::TimeTicks now) {
-    GetDocument().GetScriptedAnimationController().ServiceScriptedAnimations(
-        now);
+    PageAnimator::ServiceScriptedAnimations(
+        now, {{GetDocument().GetScriptedAnimationController(), false}});
   }
 
   V8VideoFrameRequestCallback* GetCallback(ScriptState* script_state,

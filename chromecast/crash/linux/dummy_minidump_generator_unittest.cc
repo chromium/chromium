@@ -34,8 +34,7 @@ TEST(DummyMinidumpGeneratorTest, GenerateSucceedsWithSmallSource) {
   // Create a fake minidump file.
   ScopedTempFile fake_minidump;
   const std::string data("Test contents of the minidump file.\n");
-  ASSERT_EQ(static_cast<int>(data.size()),
-            base::WriteFile(fake_minidump.path(), data.c_str(), data.size()));
+  ASSERT_TRUE(base::WriteFile(fake_minidump.path(), data));
 
   DummyMinidumpGenerator generator(fake_minidump.path().value());
   base::FilePath new_minidump = minidump_dir.GetPath().Append("minidump.dmp");
@@ -61,8 +60,7 @@ TEST(DummyMinidumpGeneratorTest, GenerateSucceedsWithLargeSource) {
   const std::string data = base::RandBytesAsString(str_len);
 
   // Write the string to the file.
-  ASSERT_EQ(static_cast<int>(data.size()),
-            base::WriteFile(fake_minidump.path(), data.c_str(), data.size()));
+  ASSERT_TRUE(base::WriteFile(fake_minidump.path(), data));
 
   base::FilePath new_minidump = minidump_dir.GetPath().Append("minidump.dmp");
   DummyMinidumpGenerator generator(fake_minidump.path().value());

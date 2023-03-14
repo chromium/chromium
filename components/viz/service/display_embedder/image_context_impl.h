@@ -51,7 +51,7 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
                    bool maybe_concurrent_reads,
                    const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
                    sk_sp<SkColorSpace> color_space,
-                   bool allow_keeping_read_access = true,
+                   bool is_for_render_pass,
                    bool raw_draw_if_possible = false);
 
   ImageContextImpl(const ImageContextImpl&) = delete;
@@ -97,7 +97,9 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
       std::vector<GrBackendSemaphore>* end_semaphores);
 
   const bool maybe_concurrent_reads_ = false;
-  const bool allow_keeping_read_access_ = true;
+  // Indicates that this will be used to refer to allocations that originate
+  // from the renderer.
+  const bool is_for_render_pass_ = false;
   const bool raw_draw_if_possible_ = false;
 
   // Fallback in case we cannot produce a |representation_|.

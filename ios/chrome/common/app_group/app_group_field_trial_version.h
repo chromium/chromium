@@ -21,10 +21,6 @@ extern NSString* const kFieldTrialVersionKey;
 // feature.
 extern const int kPasswordCreationFeatureVersion;
 
-// The current version of the credential provider extension's password manager
-// branding update feature.
-extern const int kPasswordManagerBrandingUpdateFeatureVersion;
-
 // The current version of the credential provider extension's favicon display
 // feature.
 extern const int kCredentialProviderExtensionFaviconsFeatureVersion;

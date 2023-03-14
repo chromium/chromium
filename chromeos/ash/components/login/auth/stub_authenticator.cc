@@ -53,11 +53,6 @@ void StubAuthenticator::AuthenticateToLogin(
             FROM_HERE, base::BindOnce(&StubAuthenticator::OnAuthFailure, this,
                                       AuthFailure(failure_reason_)));
         break;
-      case AuthAction::kPasswordChange:
-        task_runner_->PostTask(
-            FROM_HERE,
-            base::BindOnce(&StubAuthenticator::OnPasswordChangeDetected, this));
-        break;
       case AuthAction::kOldEncryption:
         if (user_context->IsForcingDircrypto()) {
           task_runner_->PostTask(
@@ -94,7 +89,6 @@ void StubAuthenticator::AuthenticateToUnlock(
                                       AuthFailure(failure_reason_)));
         break;
       case AuthAction::kAuthSuccess:
-      case AuthAction::kPasswordChange:
       case AuthAction::kOldEncryption:
         // The distinction between fields other than AuthAction::kAuthFailure
         // only matter for login.
@@ -175,24 +169,18 @@ void StubAuthenticator::RecoverEncryptedData(
     std::unique_ptr<UserContext> user_context,
     const std::string& old_password) {
   if (old_password_ != old_password) {
-    if (data_recovery_notifier_)
-      data_recovery_notifier_.Run(DataRecoveryStatus::kRecoveryFailed);
     task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&StubAuthenticator::OnPasswordChangeDetected, this));
     return;
   }
 
-  if (data_recovery_notifier_)
-    data_recovery_notifier_.Run(DataRecoveryStatus::kRecovered);
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&StubAuthenticator::OnAuthSuccess, this));
 }
 
 void StubAuthenticator::ResyncEncryptedData(
     std::unique_ptr<UserContext> user_context) {
-  if (data_recovery_notifier_)
-    data_recovery_notifier_.Run(DataRecoveryStatus::kResynced);
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&StubAuthenticator::OnAuthSuccess, this));
 }

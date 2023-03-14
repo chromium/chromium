@@ -142,6 +142,7 @@ export function makePasswordManagerPrefs():
 export interface InsecureCredentialsParams {
   url?: string;
   username?: string;
+  password?: string;
   types?: chrome.passwordsPrivate.CompromiseType[];
   id?: number;
   elapsedMinSinceCompromise?: number;
@@ -176,8 +177,18 @@ export function makeInsecureCredential(params: InsecureCredentialsParams):
       link: `https://${url}/`,
     },
     username: username,
+    password: params.password,
     note: '',
     isAndroidCredential: false,
     compromisedInfo: types.length ? compromisedInfo : undefined,
+  };
+}
+
+export function createAffiliatedDomain(domain: string):
+    chrome.passwordsPrivate.DomainInfo {
+  return {
+    name: domain,
+    url: `https://${domain}/login`,
+    signonRealm: `https://${domain}/login`,
   };
 }

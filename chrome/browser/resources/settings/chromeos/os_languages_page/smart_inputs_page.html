@@ -21,35 +21,6 @@
 </style>
 
 <div route-path="default">
-  <template is="dom-if" if="[[allowAssistivePersonalInfo_]]">
-    <div id="assistPersonalInfo" class="padded-section">
-      <div aria-hidden="true">
-        $i18n{personalInfoSuggestionTitle}
-        <iron-icon id="help-icon" icon="cr:help-outline"></iron-icon>
-        <paper-tooltip for="help-icon" position="top"
-            fit-to-visible-bounds>
-          $i18n{personalInfoSuggestionHelpTooltip}
-        </paper-tooltip>
-      </div>
-      <div class="horizontal-align bottom-pad">
-        <div class="secondary" aria-hidden="true"
-            id="personalInfoSuggestionDescription">
-          $i18n{personalInfoSuggestionDescription}
-        </div>
-        <cr-toggle
-            checked="[[allowAssistivePersonalInfo_]]"
-            on-change="onPersonalInfoSuggestionToggled_"
-            aria-describedby="personalInfoSuggestionDescription"
-            deep-link-focus-id$=
-                "[[Setting.kShowPersonalInformationSuggestions]]">
-        </cr-toggle>
-      </div>
-      <cr-link-row class="hr list-item"
-          label="$i18n{managePersonalInfo}"
-          on-click="onManagePersonalInfoClick_" external>
-      </cr-link-row>
-    </div>
-  </template>
   <template is="dom-if" if="[[allowEmojiSuggestion_]]">
     <settings-toggle-button id="emojiSuggestion" class="hr"
         pref="{{prefs.assistive_input.emoji_suggestion_enabled}}"

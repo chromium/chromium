@@ -120,10 +120,10 @@
 #endif
 
 #if BUILDFLAG(IS_OZONE)
+#include "gpu/command_buffer/service/shared_image/gl_image_native_pixmap.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_usage_util.h"
 #include "ui/gfx/native_pixmap.h"
-#include "ui/gl/gl_image_native_pixmap.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 #endif
@@ -133,10 +133,6 @@
 // Note that this must be included after gl_bindings.h to avoid conflicts.
 #include <OpenGL/CGLIOSurface.h>
 #endif  // BUILDFLAG(IS_MAC)
-
-#if BUILDFLAG(IS_WIN)
-#include "ui/gl/gl_image_d3d.h"
-#endif
 
 // Note: this undefs far and near so include this after other Windows headers.
 #include "third_party/angle/src/image_util/loadimage.h"
@@ -499,7 +495,7 @@ class BackTexture {
 #if BUILDFLAG(IS_OZONE)
   // The image that backs the texture, if its backed by a native
   // GpuMemoryBuffer.
-  scoped_refptr<gl::GLImageNativePixmap> image_;
+  scoped_refptr<GLImageNativePixmap> image_;
 #endif
 };
 
@@ -2465,6 +2461,12 @@ class GLES2DecoderImpl : public GLES2Decoder,
   bool ClientExposedBackBufferHasAlpha() const {
     if (back_buffer_draw_buffer_ == GL_NONE)
       return false;
+
+    if (external_default_framebuffer_ &&
+        external_default_framebuffer_->IsSharedImageAttached()) {
+      return external_default_framebuffer_->HasAlpha();
+    }
+
     if (offscreen_target_frame_buffer_.get()) {
       return offscreen_buffer_should_have_alpha_;
     }
@@ -2516,11 +2518,12 @@ class GLES2DecoderImpl : public GLES2Decoder,
   // Note: Creation of anonymous images is possible only on Ozone.
 #if BUILDFLAG(IS_OZONE)
   bool SupportsCreateAnonymousImage();
-  scoped_refptr<gl::GLImageNativePixmap> CreateAnonymousImage(
+  scoped_refptr<GLImageNativePixmap> CreateAnonymousImage(
       const gfx::Size& size,
       gfx::BufferFormat format,
       bool* is_cleared,
-      GLuint target);
+      GLuint target,
+      GLuint texture_id);
 #endif
   unsigned int RequiredTextureTypeForAnonymousImage();
 
@@ -3235,8 +3238,8 @@ bool BackTexture::AllocateNativeGpuMemoryBuffer(const gfx::Size& size,
     // duplicate BGRX_8888.
     buffer_format = gfx::BufferFormat::BGRX_8888;
   }
-  scoped_refptr<gl::GLImageNativePixmap> image = decoder_->CreateAnonymousImage(
-      size, buffer_format, &is_cleared, Target());
+  scoped_refptr<GLImageNativePixmap> image = decoder_->CreateAnonymousImage(
+      size, buffer_format, &is_cleared, Target(), id());
   if (!image)
     return false;
 
@@ -3575,10 +3578,6 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
   // SetSurface.
   context_ = context;
   surface_ = surface;
-
-  // Set workarounds for the surface.
-  if (workarounds().rely_on_implicit_sync_for_swap_buffers)
-    surface_->SetRelyOnImplicitSync();
 
   // Create GPU Tracer for timing values.
   gpu_tracer_ = std::make_unique<GPUTracer>(this);
@@ -5035,6 +5034,9 @@ gfx::Size GLES2DecoderImpl::GetBoundReadFramebufferSize() {
   Framebuffer* framebuffer = GetBoundReadFramebuffer();
   if (framebuffer) {
     return framebuffer->GetFramebufferValidSize();
+  } else if (external_default_framebuffer_ &&
+             external_default_framebuffer_->IsSharedImageAttached()) {
+    return external_default_framebuffer_->GetSize();
   } else if (offscreen_target_frame_buffer_.get()) {
     return offscreen_size_;
   } else {
@@ -5046,6 +5048,9 @@ gfx::Size GLES2DecoderImpl::GetBoundDrawFramebufferSize() {
   Framebuffer* framebuffer = GetBoundDrawFramebuffer();
   if (framebuffer) {
     return framebuffer->GetFramebufferValidSize();
+  } else if (external_default_framebuffer_ &&
+             external_default_framebuffer_->IsSharedImageAttached()) {
+    return external_default_framebuffer_->GetSize();
   } else if (offscreen_target_frame_buffer_.get()) {
     return offscreen_size_;
   } else {
@@ -5057,6 +5062,10 @@ GLuint GLES2DecoderImpl::GetBoundReadFramebufferServiceId() {
   Framebuffer* framebuffer = GetBoundReadFramebuffer();
   if (framebuffer) {
     return framebuffer->service_id();
+  }
+  if (external_default_framebuffer_ &&
+      external_default_framebuffer_->IsSharedImageAttached()) {
+    return external_default_framebuffer_->GetFramebufferId();
   }
   if (offscreen_resolved_frame_buffer_.get()) {
     return offscreen_resolved_frame_buffer_->id();
@@ -5074,6 +5083,10 @@ GLuint GLES2DecoderImpl::GetBoundDrawFramebufferServiceId() const {
   Framebuffer* framebuffer = GetBoundDrawFramebuffer();
   if (framebuffer) {
     return framebuffer->service_id();
+  }
+  if (external_default_framebuffer_ &&
+      external_default_framebuffer_->IsSharedImageAttached()) {
+    return external_default_framebuffer_->GetFramebufferId();
   }
   if (offscreen_target_frame_buffer_.get()) {
     return offscreen_target_frame_buffer_->id();
@@ -5102,6 +5115,10 @@ GLenum GLES2DecoderImpl::GetBoundReadFramebufferInternalFormat() {
   } else {  // Back buffer.
     if (back_buffer_read_buffer_ == GL_NONE)
       return 0;
+    if (external_default_framebuffer_ &&
+        external_default_framebuffer_->IsSharedImageAttached()) {
+      return external_default_framebuffer_->GetColorFormat();
+    }
     if (offscreen_target_frame_buffer_.get()) {
       return offscreen_target_color_format_;
     }
@@ -5157,6 +5174,10 @@ GLsizei GLES2DecoderImpl::GetBoundFramebufferSamples(GLenum target) {
   if (framebuffer) {
     return framebuffer->GetSamples();
   } else {  // Back buffer.
+    if (external_default_framebuffer_ &&
+        external_default_framebuffer_->IsSharedImageAttached()) {
+      return external_default_framebuffer_->GetSamplesCount();
+    }
     if (offscreen_target_frame_buffer_.get()) {
       return offscreen_target_samples_;
     }
@@ -5172,6 +5193,10 @@ GLenum GLES2DecoderImpl::GetBoundFramebufferDepthFormat(
   if (framebuffer) {
     return framebuffer->GetDepthFormat();
   } else {  // Back buffer.
+    if (external_default_framebuffer_ &&
+        external_default_framebuffer_->IsSharedImageAttached()) {
+      return external_default_framebuffer_->GetDepthFormat();
+    }
     if (offscreen_target_frame_buffer_.get()) {
       return offscreen_target_depth_format_;
     }
@@ -5189,6 +5214,10 @@ GLenum GLES2DecoderImpl::GetBoundFramebufferStencilFormat(
   if (framebuffer) {
     return framebuffer->GetStencilFormat();
   } else {  // Back buffer.
+    if (external_default_framebuffer_ &&
+        external_default_framebuffer_->IsSharedImageAttached()) {
+      return external_default_framebuffer_->GetStencilFormat();
+    }
     if (offscreen_target_frame_buffer_.get()) {
       return offscreen_target_stencil_format_;
     }
@@ -5286,11 +5315,6 @@ void GLES2DecoderImpl::Destroy(bool have_context) {
     return;
 
   DCHECK(!have_context || context_->IsCurrent(nullptr));
-
-  // Prepare to destroy the surface while the context is still current, because
-  // some surface destructors make GL calls.
-  if (surface_)
-    surface_->PrepareToDestroy(have_context);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Destroy any textures that are pending destruction.
@@ -6207,6 +6231,10 @@ bool GLES2DecoderImpl::BoundFramebufferAllowsChangesToAlphaChannel() {
     return framebuffer->HasAlphaMRT();
   if (back_buffer_draw_buffer_ == GL_NONE)
     return false;
+  if (external_default_framebuffer_ &&
+      external_default_framebuffer_->IsSharedImageAttached()) {
+    return external_default_framebuffer_->HasAlpha();
+  }
   if (offscreen_target_frame_buffer_.get()) {
     GLenum format = offscreen_target_color_format_;
     return (format == GL_RGBA || format == GL_RGBA8) &&
@@ -6221,6 +6249,10 @@ bool GLES2DecoderImpl::BoundFramebufferHasDepthAttachment() {
   if (framebuffer) {
     return framebuffer->HasDepthAttachment();
   }
+  if (external_default_framebuffer_ &&
+      external_default_framebuffer_->IsSharedImageAttached()) {
+    return external_default_framebuffer_->HasDepth();
+  }
   if (offscreen_target_frame_buffer_.get()) {
     return offscreen_target_depth_format_ != 0;
   }
@@ -6231,6 +6263,10 @@ bool GLES2DecoderImpl::BoundFramebufferHasStencilAttachment() {
   Framebuffer* framebuffer = GetBoundDrawFramebuffer();
   if (framebuffer) {
     return framebuffer->HasStencilAttachment();
+  }
+  if (external_default_framebuffer_ &&
+      external_default_framebuffer_->IsSharedImageAttached()) {
+    return external_default_framebuffer_->HasStencil();
   }
   if (offscreen_target_frame_buffer_.get()) {
     return offscreen_target_stencil_format_ != 0 ||
@@ -10531,15 +10567,6 @@ bool GLES2DecoderImpl::DoBindTexImageIfNeeded(Texture* texture,
       if (texture_unit)
         api()->glActiveTextureFn(texture_unit);
       api()->glBindTextureFn(textarget, texture->service_id());
-#if BUILDFLAG(IS_WIN)
-      auto* d3d_image =
-          gl::GLImage::ToGLImageD3D(texture->GetLevelImage(textarget, 0));
-      if (d3d_image) {
-        bool rv = d3d_image->BindTexImage(textarget);
-        DCHECK(rv) << "BindTexImage() failed";
-      }
-#endif
-
       texture->MarkLevelImageBound(textarget, 0);
       if (!texture_unit) {
         RestoreCurrentTextureBindings(&state_, textarget,
@@ -13066,6 +13093,13 @@ void GLES2DecoderImpl::FinishReadPixels(GLsizei width,
   if (result != nullptr) {
     result->success = 1;
   }
+}
+
+error::Error GLES2DecoderImpl::HandleReadbackARGBImagePixelsINTERNAL(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return error::kNoError;
 }
 
 error::Error GLES2DecoderImpl::HandleReadPixels(uint32_t immediate_data_size,
@@ -19543,11 +19577,12 @@ bool GLES2DecoderImpl::SupportsCreateAnonymousImage() {
       .supports_native_pixmaps;
 }
 
-scoped_refptr<gl::GLImageNativePixmap> GLES2DecoderImpl::CreateAnonymousImage(
+scoped_refptr<GLImageNativePixmap> GLES2DecoderImpl::CreateAnonymousImage(
     const gfx::Size& size,
     gfx::BufferFormat format,
     bool* is_cleared,
-    GLuint target) {
+    GLuint target,
+    GLuint texture_id) {
   gfx::BufferUsage usage = gfx::BufferUsage::SCANOUT;
   SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
 
@@ -19562,14 +19597,14 @@ scoped_refptr<gl::GLImageNativePixmap> GLES2DecoderImpl::CreateAnonymousImage(
                << gfx::BufferUsageToString(usage);
     return nullptr;
   }
-  auto image = gl::GLImageNativePixmap::Create(size, format, std::move(pixmap));
+  auto image = GLImageNativePixmap::Create(size, format, std::move(pixmap),
+                                           target, texture_id);
   if (!image) {
     LOG(ERROR) << "Failed to create GLImage " << size.ToString() << ", "
                << gfx::BufferFormatToString(format) << ", usage "
                << gfx::BufferUsageToString(usage);
     return nullptr;
   }
-  image->BindTexImage(target);
 
   *is_cleared = true;
   return image;

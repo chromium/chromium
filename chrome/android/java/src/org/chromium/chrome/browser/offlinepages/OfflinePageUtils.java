@@ -66,8 +66,6 @@ import java.util.Map;
  */
 public class OfflinePageUtils {
     private static final String TAG = "OfflinePageUtils";
-    /** Background task tag to differentiate from other task types */
-    public static final String TASK_TAG = "OfflinePageUtils";
 
     private static final int DEFAULT_SNACKBAR_DURATION_MS = 6 * 1000; // 6 second
 

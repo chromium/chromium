@@ -536,8 +536,10 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
         std::make_unique<MockRenderProcessHost>(browser_context_.get());
     process_host_->Init();
     auto site_instance = SiteInstance::Create(browser_context_.get());
-    site_instance_group_ = base::WrapRefCounted(new SiteInstanceGroup(
-        site_instance->GetBrowsingInstanceId(), process_host_.get()));
+    static_cast<SiteInstanceImpl*>(site_instance.get())
+        ->SetProcessForTesting(process_host_.get());
+    site_instance_group_ =
+        static_cast<SiteInstanceImpl*>(site_instance.get())->group();
 
     sink_ = &process_host_->sink();
 
@@ -3231,9 +3233,9 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFrames) {
   // Make sure |parent_view_| is evicted to avoid interfering with the code
   // below.
   parent_view_->Hide();
-  static_cast<viz::FrameEvictorClient*>(
-      parent_view_->delegated_frame_host_.get())
-      ->EvictDelegatedFrame();
+  auto* dfh = parent_view_->delegated_frame_host_.get();
+  static_cast<viz::FrameEvictorClient*>(dfh)->EvictDelegatedFrame(
+      dfh->GetFrameEvictorForTesting()->CollectSurfaceIdsForEviction());
 
   size_t max_renderer_frames =
       FrameEvictionManager::GetInstance()->GetMaxNumberOfSavedFrames();
@@ -3348,9 +3350,9 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFramesWithMemoryPressure) {
   // Make sure |parent_view_| is evicted to avoid interfering with the code
   // below.
   parent_view_->Hide();
-  static_cast<viz::FrameEvictorClient*>(
-      parent_view_->delegated_frame_host_.get())
-      ->EvictDelegatedFrame();
+  auto* dfh = parent_view_->delegated_frame_host_.get();
+  static_cast<viz::FrameEvictorClient*>(dfh)->EvictDelegatedFrame(
+      dfh->GetFrameEvictorForTesting()->CollectSurfaceIdsForEviction());
 
   // The test logic below relies on having max_renderer_frames > 2.  By default,
   // this value is calculated from total physical memory and causes the test to
@@ -5693,8 +5695,9 @@ TEST_F(RenderWidgetHostViewAuraTest, AllocateLocalSurfaceIdOnEviction) {
   view_->Show();
   viz::LocalSurfaceId id1 = view_->GetLocalSurfaceId();
   view_->Hide();
-  static_cast<viz::FrameEvictorClient*>(view_->delegated_frame_host_.get())
-      ->EvictDelegatedFrame();
+  auto* dfh = view_->delegated_frame_host_.get();
+  static_cast<viz::FrameEvictorClient*>(dfh)->EvictDelegatedFrame(
+      dfh->GetFrameEvictorForTesting()->CollectSurfaceIdsForEviction());
   view_->Show();
   viz::LocalSurfaceId id2 = view_->GetLocalSurfaceId();
   EXPECT_NE(id1, id2);
@@ -5964,9 +5967,9 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
         CreateViewForProcess(widget_host_for_first_process_);
 
     second_process_host_ = CreateNewProcessHost();
-    second_site_instance_group_ = base::WrapRefCounted(
-        new SiteInstanceGroup(tab_site_instance_group()->browsing_instance_id(),
-                              second_process_host_.get()));
+    second_site_instance_group_ =
+        base::WrapRefCounted(SiteInstanceGroup::CreateForTesting(
+            tab_site_instance_group(), second_process_host_.get()));
     widget_host_for_second_process_ =
         CreateRenderWidgetHostForSiteInstanceGroup(
             second_site_instance_group_.get());
@@ -5974,9 +5977,9 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
         CreateViewForProcess(widget_host_for_second_process_);
 
     third_process_host_ = CreateNewProcessHost();
-    third_site_instance_group_ = base::WrapRefCounted(
-        new SiteInstanceGroup(tab_site_instance_group()->browsing_instance_id(),
-                              third_process_host_.get()));
+    third_site_instance_group_ =
+        base::WrapRefCounted(SiteInstanceGroup::CreateForTesting(
+            tab_site_instance_group(), third_process_host_.get()));
     widget_host_for_third_process_ = CreateRenderWidgetHostForSiteInstanceGroup(
         third_site_instance_group_.get());
     view_for_third_process_ =

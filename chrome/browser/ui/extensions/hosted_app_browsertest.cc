@@ -183,11 +183,16 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
   HostedOrWebAppTest()
       : app_browser_(nullptr),
         https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    scoped_feature_list_.InitWithFeatures({}, {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+          // TODO(crbug.com/1394910): Remove this and use HTTPS URLs in the
+          // tests.
+          features::kHttpsUpgrades,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      features::kWebAppsCrosapi, ash::features::kLacrosPrimary
+              features::kWebAppsCrosapi, ash::features::kLacrosPrimary
 #endif
-    });
+        });
   }
 
   HostedOrWebAppTest(const HostedOrWebAppTest&) = delete;
@@ -1178,16 +1183,10 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, PopupsInsideHostedApp) {
   }
 }
 
-// Tests that hosted app URLs loaded in iframes of non-app pages won't cause an
-// OOPIF unless there is another reason to create it, but popups from outside
-// the app will swap into the app.
-// TODO(crbug.com/807471): Flaky on Windows 7.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_FromOutsideHostedApp DISABLED_FromOutsideHostedApp
-#else
-#define MAYBE_FromOutsideHostedApp FromOutsideHostedApp
-#endif
-IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, MAYBE_FromOutsideHostedApp) {
+// This test was flaky on Win7 because it was bumping up against a 45 second
+// timeout. If it starts flaking on Windows 10+, it should be broken up into
+// smaller tests. See https://crbug.com/807471.
+IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, FromOutsideHostedApp) {
   // Set up and launch the hosted app.
   GURL app_url =
       embedded_test_server()->GetURL("app.site.test", "/frame_tree/simple.htm");

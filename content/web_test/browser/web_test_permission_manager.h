@@ -10,6 +10,7 @@
 #include "base/containers/id_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/synchronization/lock.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller_delegate.h"
 #include "content/public/browser/permission_result.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -28,7 +29,8 @@ class WebTestPermissionManager
     : public PermissionControllerDelegate,
       public blink::test::mojom::PermissionAutomation {
  public:
-  WebTestPermissionManager();
+  // `browser_context` must outlive `this`.
+  explicit WebTestPermissionManager(BrowserContext& browser_context);
 
   WebTestPermissionManager(const WebTestPermissionManager&) = delete;
   WebTestPermissionManager& operator=(const WebTestPermissionManager&) = delete;
@@ -85,10 +87,12 @@ class WebTestPermissionManager
   void UnsubscribePermissionStatusChange(
       SubscriptionId subscription_id) override;
 
-  void SetPermission(blink::PermissionType permission,
-                     blink::mojom::PermissionStatus status,
-                     const GURL& url,
-                     const GURL& embedding_url);
+  void SetPermission(
+      blink::PermissionType permission,
+      blink::mojom::PermissionStatus status,
+      const GURL& url,
+      const GURL& embedding_url,
+      blink::test::mojom::PermissionAutomation::SetPermissionCallback callback);
   void ResetPermissions();
 
   // blink::test::mojom::PermissionAutomation
@@ -131,8 +135,12 @@ class WebTestPermissionManager
   using DefaultPermissionStatusMap =
       std::unordered_map<blink::PermissionType, blink::mojom::PermissionStatus>;
 
-  void OnPermissionChanged(const PermissionDescription& permission,
-                           blink::mojom::PermissionStatus status);
+  void OnPermissionChanged(
+      const PermissionDescription& permission,
+      blink::mojom::PermissionStatus status,
+      blink::test::mojom::PermissionAutomation::SetPermissionCallback callback);
+
+  raw_ref<BrowserContext> browser_context_;
 
   // Mutex for permissions access. Unfortunately, the permissions can be
   // accessed from the IO thread because of Notifications' synchronous IPC.

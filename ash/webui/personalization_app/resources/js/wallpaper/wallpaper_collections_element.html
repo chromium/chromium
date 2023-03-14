@@ -93,6 +93,9 @@
     --personalization-app-grid-item-background-color: var(--google-grey-200);
   }
 
+  wallpaper-grid-item[data-is-time-of-day-collection] {
+    --personalization-app-grid-item-border-radius: 80px;
+  }
 </style>
 <template is="dom-if" if="[[hasError_]]">
   <wallpaper-error></wallpaper-error>
@@ -152,6 +155,7 @@
         <template is="dom-if" if="[[isOnlineTile_(item)]]">
           <wallpaper-grid-item aria-posinset$="[[getAriaIndex_(index)]]"
               data-online
+              data-is-time-of-day-collection="[[isTimeOfDayCollection_(item)]]"
               disabled="[[!isSelectableTile_(item)]]"
               index="[[index]]"
               info-text="[[item.info]]"

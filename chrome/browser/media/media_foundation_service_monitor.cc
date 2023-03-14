@@ -29,7 +29,7 @@ namespace {
 constexpr int kMaxNumberOfSamples = 20;
 
 // The grace period to ignore errors after a power/display state change.
-constexpr auto kGracePeriod = base::Seconds(2);
+constexpr auto kGracePeriod = base::Seconds(5);
 
 constexpr double kMaxAverageFailureScore = 0.1;  // Two failures out of 20.
 
@@ -37,6 +37,7 @@ constexpr double kMaxAverageFailureScore = 0.1;  // Two failures out of 20.
 constexpr int kSignificantPlayback = 0;  // This must always be zero.
 constexpr int kPlaybackOrCdmError = 1;
 constexpr int kCrash = 1;
+constexpr int kUnexpectedHardwareContextReset = 1;
 
 // We store a list of timestamps in "Local State" (see about://local-state)
 // under the key "media.hardware_secure_decryption.disabled_times". This is
@@ -194,10 +195,8 @@ void MediaFoundationServiceMonitor::OnServiceProcessCrashed(
   if (!info.IsService<media::mojom::MediaFoundationServiceBroker>())
     return;
 
-  bool is_after_power_or_display_change =
-      (base::Time::Now() - last_power_or_display_change_time_) < kGracePeriod;
-  base::UmaHistogramBoolean("Media.EME.MediaFoundationService.Crash",
-                            is_after_power_or_display_change);
+  base::UmaHistogramBoolean("Media.EME.MediaFoundationService.Crash2",
+                            HasRecentPowerOrDisplayChange());
 
   // Site should always be set when launching MediaFoundationService, but it
   // could be empty, e.g. during capability checking or when
@@ -241,24 +240,39 @@ void MediaFoundationServiceMonitor::OnPlaybackOrCdmError(HRESULT hr) {
   DVLOG(1) << __func__;
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (base::Time::Now() - last_power_or_display_change_time_ < kGracePeriod) {
+  if (HasRecentPowerOrDisplayChange()) {
     DVLOG(1) << "Playback or CDM error ignored since it happened right after "
                 "a power or display change.";
     base::UmaHistogramSparse(
-        "Media.EME.MediaFoundationService.ErrorAfterPowerOrDisplayChange", hr);
+        "Media.EME.MediaFoundationService.ErrorAfterPowerOrDisplayChange2", hr);
     return;
   }
 
   base::UmaHistogramSparse(
-      "Media.EME.MediaFoundationService.ErrorNotAfterPowerOrDisplayChange", hr);
+      "Media.EME.MediaFoundationService.ErrorNotAfterPowerOrDisplayChange2",
+      hr);
   AddSample(kPlaybackOrCdmError);
+}
+
+void MediaFoundationServiceMonitor::OnUnexpectedHardwareContextReset() {
+  DVLOG(1) << __func__;
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (media::kHardwareSecureDecryptionFallbackOnHardwareContextReset.Get()) {
+    AddSample(kUnexpectedHardwareContextReset);
+  }
+}
+
+bool MediaFoundationServiceMonitor::HasRecentPowerOrDisplayChange() const {
+  return base::TimeTicks::Now() - last_power_or_display_change_time_ <
+         kGracePeriod;
 }
 
 void MediaFoundationServiceMonitor::OnPowerOrDisplayChange() {
   DVLOG(1) << __func__;
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  last_power_or_display_change_time_ = base::Time::Now();
+  last_power_or_display_change_time_ = base::TimeTicks::Now();
 }
 
 void MediaFoundationServiceMonitor::AddSample(int failure_score) {

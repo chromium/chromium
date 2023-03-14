@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/page_info/page_info_permission_content_view.h"
 
 #include "base/ranges/algorithm.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"

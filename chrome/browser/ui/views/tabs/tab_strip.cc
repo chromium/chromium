@@ -605,7 +605,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     int source_view_index = static_cast<int>(
         base::ranges::find(views, source_view) - views.begin());
 
-    const auto should_animate_tab = [=](int index_in_views) {
+    const auto should_animate_tab = [=, &views, this](int index_in_views) {
       // If the tab at `index_in_views` is already animating, don't interrupt
       // it.
       if (bounds_animator_.IsAnimating(views[index_in_views]))
@@ -776,10 +776,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
       }
     }
 
-    if (min_distance_index == -1) {
-      NOTREACHED();
-      return 0;
-    }
+    CHECK_NE(min_distance_index, -1);
 
     // When moving a tab within a tabstrip, the target index is expressed as if
     // the tabs are not in the tabstrip, i.e. it acts like the tabs are first
@@ -1170,26 +1167,7 @@ bool TabStrip::ShouldDrawStrokes() const {
       controller_->GetFrameColor(BrowserFrameActiveState::kActive);
   const float contrast_ratio =
       color_utils::GetContrastRatio(background_color, frame_color);
-  if (contrast_ratio < kMinimumContrastRatioForOutlines)
-    return true;
-
-  // Don't want to have to run a full feature query every time this function is
-  // called.
-  static const bool tab_outlines_in_low_contrast =
-      base::FeatureList::IsEnabled(features::kTabOutlinesInLowContrastThemes);
-  if (tab_outlines_in_low_contrast) {
-    constexpr float kMinimumAbsoluteContrastForOutlines = 0.2f;
-    const float background_luminance =
-        color_utils::GetRelativeLuminance(background_color);
-    const float frame_luminance =
-        color_utils::GetRelativeLuminance(frame_color);
-    const float contrast_difference =
-        std::fabs(background_luminance - frame_luminance);
-    if (contrast_difference < kMinimumAbsoluteContrastForOutlines)
-      return true;
-  }
-
-  return false;
+  return contrast_ratio < kMinimumContrastRatioForOutlines;
 }
 
 void TabStrip::SetSelection(const ui::ListSelectionModel& new_selection) {
@@ -1852,8 +1830,7 @@ void TabStrip::ChildPreferredSizeChanged(views::View* child) {
 BrowserRootView::DropIndex TabStrip::GetDropIndex(
     const ui::DropTargetEvent& event) {
   // BrowserView should talk directly to |tab_container_| instead of asking us.
-  NOTREACHED();
-  return tab_container_->GetDropIndex(event);
+  NOTREACHED_NORETURN();
 }
 
 BrowserRootView::DropTarget* TabStrip::GetDropTarget(
@@ -1863,8 +1840,7 @@ BrowserRootView::DropTarget* TabStrip::GetDropTarget(
 
 views::View* TabStrip::GetViewForDrop() {
   // BrowserView should talk directly to |tab_container_| instead of asking us.
-  NOTREACHED();
-  return tab_container_->GetViewForDrop();
+  NOTREACHED_NORETURN();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

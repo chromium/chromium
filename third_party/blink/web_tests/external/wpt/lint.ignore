@@ -185,6 +185,7 @@ SET TIMEOUT: html/semantics/embedded-content/the-iframe-element/*
 SET TIMEOUT: html/semantics/embedded-content/the-img-element/*
 SET TIMEOUT: html/semantics/embedded-content/the-object-element/object-param-url.html
 SET TIMEOUT: html/semantics/embedded-content/the-object-element/object-param-url-ref.html
+SET TIMEOUT: html/semantics/forms/textfieldselection/select-event.html
 SET TIMEOUT: html/semantics/scripting-1/the-script-element/*
 SET TIMEOUT: html/webappapis/dynamic-markup-insertion/opening-the-input-stream/0*
 SET TIMEOUT: html/webappapis/dynamic-markup-insertion/opening-the-input-stream/resources/history-frame.html
@@ -356,6 +357,7 @@ SET TIMEOUT: speculation-rules/prerender/resources/media-autoplay-attribute.html
 SET TIMEOUT: speculation-rules/prerender/resources/media-play.html
 SET TIMEOUT: html/browsers/browsing-the-web/back-forward-cache/timers.html
 SET TIMEOUT: dom/abort/crashtests/timeout-close.html
+SET TIMEOUT: common/rendering-utils.js
 
 # setTimeout use in reftests
 SET TIMEOUT: acid/acid3/test.html
@@ -754,6 +756,7 @@ MISSING DEPENDENCY: resources/chromium/webusb-test.js
 MISSING DEPENDENCY: resources/chromium/fake-serial.js
 MISSING DEPENDENCY: resources/chromium/fake-hid.js
 MISSING DEPENDENCY: resources/chromium/generic_sensor_mocks.js
+MISSING DEPENDENCY: resources/chromium/mock-battery-monitor.js
 MISSING DEPENDENCY: resources/chromium/mock-barcodedetection.js
 MISSING DEPENDENCY: resources/chromium/mock-direct-sockets.js
 MISSING DEPENDENCY: resources/chromium/mock-facedetection.js
@@ -789,7 +792,6 @@ AHEM SYSTEM FONT: infrastructure/assumptions/ahem.html
 
 # Existing crashtests using testharness
 TESTHARNESS-IN-OTHER-TYPE: accessibility/crashtests/computed-node-checked.html
-TESTHARNESS-IN-OTHER-TYPE: html/canvas/element/manual/wide-gamut-canvas/imagedata-no-color-settings-crash.html
 TESTHARNESS-IN-OTHER-TYPE: css/CSS2/floats-clear/adjoining-float-new-fc-crash.html
 TESTHARNESS-IN-OTHER-TYPE: css/CSS2/floats/floats-saturated-position-crash.html
 TESTHARNESS-IN-OTHER-TYPE: css/CSS2/linebox/video-needs-layout-crash.html
@@ -814,6 +816,7 @@ TESTHARNESS-IN-OTHER-TYPE: css/css-text/white-space/pre-with-whitespace-crash.ht
 TESTHARNESS-IN-OTHER-TYPE: css/css-writing-modes/bidi-inline-fragment-crash.html
 TESTHARNESS-IN-OTHER-TYPE: dom/svg-insert-crash.html
 TESTHARNESS-IN-OTHER-TYPE: editing/run/first-letter-crossing-engine-boundary-crash.html
+TESTHARNESS-IN-OTHER-TYPE: html/canvas/element/manual/wide-gamut-canvas/imagedata-no-color-settings-crash.html
 TESTHARNESS-IN-OTHER-TYPE: html/semantics/embedded-content/the-object-element/block-object-with-ruby-crash.html
 TESTHARNESS-IN-OTHER-TYPE: html/semantics/forms/the-input-element/time-datalist-crash.html
 TESTHARNESS-IN-OTHER-TYPE: html/semantics/forms/the-input-element/type-change-file-to-text-crash.html
@@ -831,8 +834,9 @@ TESTHARNESS-IN-OTHER-TYPE: svg/svg-in-svg/svg-in-svg-circular-filter-reference-c
 # Adding the testharnessreport.js script causes the test to never complete.
 MISSING-TESTHARNESSREPORT: accessibility/crashtests/computed-node-checked.html
 
-PRINT STATEMENT: webdriver/tests/print/printcmd.py
-PRINT STATEMENT: webdriver/tests/print/user_prompts.py
+PRINT STATEMENT: webdriver/tests/print/*
+PRINT STATEMENT: webdriver/tests/bidi/browsing_context/print/*
+PRINT STATEMENT: webdriver/tests/support/fixtures_bidi.py
 
 DUPLICATE-BASENAME-PATH: acid/acid3/empty.html
 DUPLICATE-BASENAME-PATH: acid/acid3/empty.xml

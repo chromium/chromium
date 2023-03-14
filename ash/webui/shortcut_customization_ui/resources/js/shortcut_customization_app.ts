@@ -9,6 +9,7 @@ import '../strings.m.js';
 import '../css/shortcut_customization_shared.css.js';
 import 'chrome://resources/ash/common/navigation_view_panel.js';
 import 'chrome://resources/ash/common/page_toolbar.js';
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {NavigationViewPanelElement} from 'chrome://resources/ash/common/navigation_view_panel.js';
@@ -16,13 +17,15 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {AcceleratorsUpdatedObserverInterface, AcceleratorsUpdatedObserverReceiver} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
+
 import {AcceleratorEditDialogElement} from './accelerator_edit_dialog.js';
 import {RequestUpdateAcceleratorEvent} from './accelerator_edit_view.js';
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {ShowEditDialogEvent} from './accelerator_row.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {getTemplate} from './shortcut_customization_app.html.js';
-import {AcceleratorInfo, AcceleratorSource, AcceleratorState, AcceleratorType, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
+import {AcceleratorConfigResult, AcceleratorInfo, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
 import {getCategoryNameStringId, isCustomizationDisabled} from './shortcut_utils.js';
 
 export interface ShortcutCustomizationAppElement {
@@ -48,7 +51,8 @@ declare global {
 const ShortcutCustomizationAppElementBase = I18nMixin(PolymerElement);
 
 export class ShortcutCustomizationAppElement extends
-    ShortcutCustomizationAppElementBase {
+    ShortcutCustomizationAppElementBase implements
+        AcceleratorsUpdatedObserverInterface {
   static get is(): string {
     return 'shortcut-customization-app';
   }
@@ -96,6 +100,7 @@ export class ShortcutCustomizationAppElement extends
   private shortcutProvider: ShortcutProviderInterface = getShortcutProvider();
   private acceleratorlookupManager: AcceleratorLookupManager =
       AcceleratorLookupManager.getInstance();
+  private acceleratorsUpdatedReceiver: AcceleratorsUpdatedObserverReceiver;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -109,6 +114,7 @@ export class ShortcutCustomizationAppElement extends
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
+    this.acceleratorsUpdatedReceiver.$.close();
     this.removeEventListener('show-edit-dialog', this.showDialog);
     this.removeEventListener('edit-dialog-closed', this.onDialogClosed);
     this.removeEventListener(
@@ -133,6 +139,18 @@ export class ShortcutCustomizationAppElement extends
     this.acceleratorlookupManager.setAcceleratorLayoutLookup(layoutInfos);
     // Notify pages to update their accelerators.
     this.$.navigationPanel.notifyEvent('updateAccelerators');
+
+    // After fetching initial accelerators, start observing for any changes.
+    this.acceleratorsUpdatedReceiver =
+        new AcceleratorsUpdatedObserverReceiver(this);
+    this.shortcutProvider.addObserver(
+        this.acceleratorsUpdatedReceiver.$.bindNewPipeAndPassRemote());
+  }
+
+  // AcceleratorsUpdatedObserverInterface:
+  onAcceleratorsUpdated(config: MojoAcceleratorConfig): void {
+    this.acceleratorlookupManager.setAcceleratorLookup(config);
+    this.$.navigationPanel.notifyEvent('updateSubsections');
   }
 
   private addNavigationSelectors(layoutInfos: MojoLayoutInfo[]): void {
@@ -166,14 +184,8 @@ export class ShortcutCustomizationAppElement extends
   private onRequestUpdateAccelerators(e: RequestUpdateAcceleratorEvent): void {
     this.$.navigationPanel.notifyEvent('updateSubsections');
     const updatedAccels =
-        this.acceleratorlookupManager
-            .getStandardAcceleratorInfos(e.detail.source, e.detail.action)
-            ?.filter((accel: StandardAcceleratorInfo) => {
-              // Hide accelerators that are default and disabled.
-              return !(
-                  accel.type === AcceleratorType.kDefault &&
-                  accel.state === AcceleratorState.kDisabledByUser);
-            });
+        this.acceleratorlookupManager.getStandardAcceleratorInfos(
+            e.detail.source, e.detail.action);
 
     this.shadowRoot!.querySelector<AcceleratorEditDialogElement>('#editDialog')!
         .updateDialogAccelerators(updatedAccels as AcceleratorInfo[]);
@@ -188,7 +200,12 @@ export class ShortcutCustomizationAppElement extends
   }
 
   protected onConfirmRestoreButtonClicked(): void {
-    // TODO(jimmyxgong): Implement this function.
+    this.shortcutProvider.restoreAllDefaults().then(({result}) => {
+      // TODO(jimmyxgong): Explore error state with restore all.
+      if (result.result === AcceleratorConfigResult.kSuccess) {
+        this.closeRestoreAllDialog();
+      }
+    });
   }
 
   protected closeRestoreAllDialog(): void {

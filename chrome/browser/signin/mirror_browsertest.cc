@@ -22,6 +22,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -112,7 +113,7 @@ class MirrorBrowserTest : public InProcessBrowserTest {
     auto web_auth_flow = std::make_unique<extensions::WebAuthFlow>(
         nullptr, browser()->profile(),
         https_server.GetURL("google.com", kAuthPath),
-        extensions::WebAuthFlow::INTERACTIVE, partition, "extension_name");
+        extensions::WebAuthFlow::INTERACTIVE, partition);
 
     web_auth_flow->Start();
     run_loop.Run();
@@ -261,17 +262,32 @@ IN_PROC_BROWSER_TEST_F(MirrorBrowserTest, MirrorRequestHeader) {
   }
 }
 
+// These tests should be removed once `features::kWebAuthFlowInBrowserTab` is
+// launched.
+class MirrorBrowserTestWithWebAuthFlowInBrowserTabOff
+    : public MirrorBrowserTest {
+ public:
+  MirrorBrowserTestWithWebAuthFlowInBrowserTabOff() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kWebAuthFlowInBrowserTab);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Verifies that requests originated from chrome.identity.launchWebAuthFlow()
 // API don't have Mirror headers attached.
 // This is a regression test for crbug.com/1077504.
-IN_PROC_BROWSER_TEST_F(MirrorBrowserTest,
+IN_PROC_BROWSER_TEST_F(MirrorBrowserTestWithWebAuthFlowInBrowserTabOff,
                        NoMirrorExtensionConsent_LaunchWebAuthFlow) {
   RunExtensionConsentTest(extensions::WebAuthFlow::LAUNCH_WEB_AUTH_FLOW, false);
 }
 
 // Verifies that requests originated from chrome.identity.getAuthToken()
 // API have Mirror headers attached.
-IN_PROC_BROWSER_TEST_F(MirrorBrowserTest, MirrorExtensionConsent_GetAuthToken) {
+IN_PROC_BROWSER_TEST_F(MirrorBrowserTestWithWebAuthFlowInBrowserTabOff,
+                       MirrorExtensionConsent_GetAuthToken) {
   RunExtensionConsentTest(extensions::WebAuthFlow::GET_AUTH_TOKEN, true);
 }
 

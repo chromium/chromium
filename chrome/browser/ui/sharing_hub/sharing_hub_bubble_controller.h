@@ -63,8 +63,7 @@ class SharingHubBubbleController {
   // Client code should call these when the corresponding things happen in the
   // View.
   virtual void OnBubbleClosed() = 0;
-  virtual void OnActionSelected(int command_id,
-                                std::string feature_name_for_metrics) = 0;
+  virtual void OnActionSelected(const SharingHubAction& action) = 0;
 #endif
 };
 

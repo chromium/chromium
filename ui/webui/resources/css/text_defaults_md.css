@@ -15,13 +15,15 @@
  * to an HTML string.
  * Otherwise its placeholders won't be expanded. */
 
+<if expr="not chromeos_ash and not is_android">
 @import url(chrome://resources/css/roboto.css);
+</if>
 
 body {
-  font-family: Roboto, $i18nRaw{fontFamily};
+  font-family: Roboto, $i18nRaw{fontfamily};
   font-size: 81.25%;
 }
 
 button {
-  font-family: Roboto, $i18nRaw{fontFamily};
+  font-family: Roboto, $i18nRaw{fontfamily};
 }

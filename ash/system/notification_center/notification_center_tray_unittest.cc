@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
@@ -16,6 +17,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -36,6 +38,8 @@ class NotificationCenterTrayTest : public AshTestBase {
   void SetUp() override {
     // Enable quick settings revamp feature.
     scoped_feature_list_.InitAndEnableFeature(features::kQsRevamp);
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kCameraEffectsSupportedByHardware);
 
     AshTestBase::SetUp();
 

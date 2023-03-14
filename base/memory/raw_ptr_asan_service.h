@@ -32,6 +32,12 @@ class BASE_EXPORT RawPtrAsanService {
     kInstantiation,
   };
 
+  struct PendingReport {
+    ReportType type = ReportType::kDereference;
+    uintptr_t allocation_base = 0;
+    size_t allocation_size = 0;
+  };
+
   void Configure(EnableDereferenceCheck,
                  EnableExtractionCheck,
                  EnableInstantiationCheck);
@@ -40,22 +46,22 @@ class BASE_EXPORT RawPtrAsanService {
 
   bool IsEnabled() const { return mode_ == Mode::kEnabled; }
 
-  NO_SANITIZE("address")
-  ALWAYS_INLINE bool is_dereference_check_enabled() const {
+  ALWAYS_INLINE NO_SANITIZE(
+      "address") bool is_dereference_check_enabled() const {
     return is_dereference_check_enabled_;
   }
 
-  NO_SANITIZE("address")
-  ALWAYS_INLINE bool is_extraction_check_enabled() const {
+  ALWAYS_INLINE NO_SANITIZE(
+      "address") bool is_extraction_check_enabled() const {
     return is_extraction_check_enabled_;
   }
 
-  NO_SANITIZE("address")
-  ALWAYS_INLINE bool is_instantiation_check_enabled() const {
+  ALWAYS_INLINE NO_SANITIZE(
+      "address") bool is_instantiation_check_enabled() const {
     return is_instantiation_check_enabled_;
   }
 
-  NO_SANITIZE("address") ALWAYS_INLINE static RawPtrAsanService& GetInstance() {
+  ALWAYS_INLINE NO_SANITIZE("address") static RawPtrAsanService& GetInstance() {
     return instance_;
   }
 
@@ -70,14 +76,6 @@ class BASE_EXPORT RawPtrAsanService {
     kDisabled,
     kEnabled,
   };
-
-  struct PendingReport {
-    ReportType type;
-    uintptr_t allocation_base;
-    size_t allocation_size;
-  };
-
-  static PendingReport& GetPendingReport();
 
   uint8_t* GetShadow(void* ptr) const;
 

@@ -32,25 +32,11 @@
 #include <sys/prctl.h>
 #endif
 
-#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && \
-    defined(OFFICIAL_BUILD)
-#include "base/trace_event/cfi_backtrace_android.h"  // no-presubmit-check
-#define CFI_BACKTRACE_AVAILABLE 1
-#else
-#define CFI_BACKTRACE_AVAILABLE 0
-#endif
-
 namespace base {
 
 constexpr uint32_t kMaxStackEntries = 256;
 
 namespace {
-
-#if CFI_BACKTRACE_AVAILABLE
-BASE_FEATURE(kAvoidCFIBacktrace,
-             "AndroidHeapSamplerAvoidCFIBacktrace",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
 
 #if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 BASE_FEATURE(kAvoidFramePointers,
@@ -115,16 +101,6 @@ const char* UpdateAndGetThreadName(const char* name) {
 }
 
 StackUnwinder ChooseStackUnwinder() {
-#if CFI_BACKTRACE_AVAILABLE
-  // Only check the kAvoidCFIBacktrace feature if CFIBacktrace would actually be
-  // used, so the experiment group directly measures what happens when it's
-  // disabled.
-  if (trace_event::CFIBacktraceAndroid::GetInitializedInstance()
-          ->can_unwind_stack_frames() &&
-      !base::FeatureList::IsEnabled(kAvoidCFIBacktrace)) {
-    return StackUnwinder::kCFIBacktrace;
-  }
-#endif
 #if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
   // Use frame pointers if available, since they can be faster than the default.
   if (!base::FeatureList::IsEnabled(kAvoidFramePointers)) {
@@ -217,13 +193,6 @@ void** SamplingHeapProfiler::CaptureStackTrace(void** frames,
   size_t skip_frames = 3;
   size_t frame_count = 0;
   switch (unwinder_) {
-#if CFI_BACKTRACE_AVAILABLE
-    case StackUnwinder::kCFIBacktrace:
-      frame_count =
-          base::trace_event::CFIBacktraceAndroid::GetInitializedInstance()
-              ->Unwind(const_cast<const void**>(frames), max_entries);
-      break;
-#endif
 #if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
     case StackUnwinder::kFramePointers:
       frame_count = base::debug::TraceStackFramePointers(

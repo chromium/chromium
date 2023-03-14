@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include <cstdint>
-#include <functional>
 #include <iosfwd>
 #include <memory>
 #include <string>
@@ -23,8 +22,6 @@ class TracedValue;
 }  // namespace base
 
 namespace cc {
-
-using ElementIdType = uint64_t;
 
 // Element ids are chosen by cc's clients and can be used as a stable identifier
 // across updates.
@@ -45,38 +42,41 @@ using ElementIdType = uint64_t;
 // targets. A Layer's element id can change over the Layer's lifetime because
 // non-default ElementIds are only set during an animation's lifetime.
 struct CC_PAINT_EXPORT ElementId {
-  explicit ElementId(ElementIdType id) : id_(id) {
+  using InternalValue = uint64_t;
+
+  // Constructs an invalid element id.
+  constexpr ElementId() : id_(kInvalidElementId) {}
+
+  explicit constexpr ElementId(InternalValue id) : id_(id) {
     DCHECK_NE(id, kInvalidElementId);
   }
-
-  ElementId() : id_(kInvalidElementId) {}
 
   bool operator==(const ElementId& o) const { return id_ == o.id_; }
   bool operator!=(const ElementId& o) const { return !(*this == o); }
   bool operator<(const ElementId& o) const { return id_ < o.id_; }
 
   // Returns true if the ElementId has been initialized with a valid id.
-  explicit operator bool() const { return !!id_; }
+  explicit constexpr operator bool() const { return IsValidInternalValue(id_); }
 
   void AddToTracedValue(base::trace_event::TracedValue* res) const;
 
-  ElementIdType GetStableId() const;
-
   std::string ToString() const;
 
-  static bool IsValid(ElementIdType id);
-  // An ElementId that is reserved for custom property animation on paint
-  // worklet element.
-  static const ElementIdType kReservedElementId;
+  // Returns the internal id. Use this function with caution not to break
+  // opaqueness of the id.
+  InternalValue GetInternalValue() const { return id_; }
+  static constexpr bool IsValidInternalValue(InternalValue value) {
+    return value != kInvalidElementId;
+  }
 
  private:
   friend struct ElementIdHash;
-  static const ElementIdType kInvalidElementId;
+  static constexpr InternalValue kInvalidElementId = 0;
 
   // The compositor treats this as an opaque handle and should not know how to
   // interpret these bits. Non-blink cc clients typically operate in terms of
   // layers and may set this value to match the client's layer id.
-  ElementIdType id_;
+  InternalValue id_;
 };
 
 ElementId CC_PAINT_EXPORT LayerIdToElementIdForTesting(int layer_id);

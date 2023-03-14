@@ -959,6 +959,8 @@ TEST_F(ServiceWorkerVersionTest, RequestTimeout) {
 TEST_F(ServiceWorkerVersionTest, RequestNowTimeout) {
   absl::optional<blink::ServiceWorkerStatusCode> status;
   base::RunLoop run_loop;
+  auto* service_worker =
+      helper_->AddNewPendingServiceWorker<FakeServiceWorker>(helper_.get());
   version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
   ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk,
             StartServiceWorker(version_.get()));
@@ -974,6 +976,11 @@ TEST_F(ServiceWorkerVersionTest, RequestNowTimeout) {
   version_->timeout_timer_.user_task().Run();
   run_loop.Run();
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorTimeout, status.value());
+
+  service_worker->FlushForTesting();
+  // Should try to set idle timeout if the last request has expired and is
+  // CONTINUE_ON_TIMEOUT.
+  EXPECT_TRUE(service_worker->idle_delay().has_value());
 
   EXPECT_FALSE(version_->FinishRequest(request_id, /*was_handled=*/true));
 

@@ -423,8 +423,11 @@ void FileInputType::SetFilesAndDispatchEvents(FileList* files) {
     GetElement().DispatchInputEvent();
     GetElement().DispatchChangeEvent();
     if (AXObjectCache* cache =
-            GetElement().GetDocument().ExistingAXObjectCache())
+            GetElement().GetDocument().ExistingAXObjectCache()) {
       cache->HandleValueChanged(&GetElement());
+    }
+  } else {
+    GetElement().DispatchCancelEvent();
   }
 }
 

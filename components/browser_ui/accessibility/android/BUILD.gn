@@ -39,6 +39,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/accessibility/AccessibilitySettingsDelegate.java",
     "java/src/org/chromium/components/browser_ui/accessibility/FontSizePrefs.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomCoordinator.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomCoordinatorDelegate.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomMediator.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomMetrics.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomPreference.java",

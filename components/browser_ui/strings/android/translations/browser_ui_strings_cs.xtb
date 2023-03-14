@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Snížit přiblížení</translation>
 <translation id="1510341833810331442">Weby nemohou ukládat data do vašeho zařízení</translation>
 <translation id="1547123415014299762">Soubory cookie třetích stran jsou povoleny</translation>
+<translation id="1593426485665524382">V horní části obrazovky jsou k dispozici nové akce</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Související weby</translation>
 <translation id="1644574205037202324">Historie</translation>
@@ -59,6 +60,7 @@
 <translation id="216989819110952009">I přestože měli oči chráněné zelenými brýlemi, Dorotka a její přátelé byli oslněni</translation>
 <translation id="2176704795966505152">Zobrazovat v hlavní nabídce možnost přiblížení</translation>
 <translation id="2182457891543959921">Předtím, než webům bude povoleno vytvořit 3D mapu vašeho okolí nebo sledovat polohu kamery, se zeptat (doporučeno)</translation>
+<translation id="2194856509914051091">Co je třeba zvážit</translation>
 <translation id="2212565012507486665">Povolit cookies</translation>
 <translation id="2228071138934252756">Pokud aplikaci <ph name="APP_NAME" /> chcete umožnit přístup k fotoaparátu, zapněte fotoaparát také v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Soubory cookie třetích stran jsou blokovány</translation>
@@ -98,7 +100,6 @@
 <translation id="2713106313042589954">Vypnout kameru</translation>
 <translation id="2717722538473713889">E‑mailové adresy</translation>
 <translation id="2750481671343847896">Weby mohou zobrazovat výzvy k přihlášení od služeb zjišťujících identitu</translation>
-<translation id="2779966372261694284">Budete odhlášeni z tohoto webu</translation>
 <translation id="2822354292072154809">Opravdu chcete resetovat všechna oprávnění webů pro objekt <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Stránky</translation>
 <translation id="2874939134665556319">Předchozí skladba</translation>
@@ -144,6 +145,9 @@
 <translation id="3600792891314830896">Ztlumit weby, které přehrávají zvuky</translation>
 <translation id="3602290021589620013">Náhled</translation>
 <translation id="3628308229821498208">Navrhovaná vyhledávání</translation>
+<translation id="3636279694100170143">Navštívené weby mohou ověřit, že jste skutečný uživatel, a ne robot</translation>
+<translation id="3649190289964910441">Web, který navštívíte, může do Chromu uložit informace, které potvrzují, že jste skutečný uživatel. Při dalším procházení může Chrome na požádání jinému webu sdělit, že vás předchozí web ověřil jako pravděpodobně důvěryhodného uživatele.</translation>
+<translation id="3721953990244350188">Zavřít a zobrazit další dostupnou akci</translation>
 <translation id="3744111561329211289">Synchronizace na pozadí</translation>
 <translation id="3763247130972274048">Dvojitým klepnutím na šipku vlevo nebo vpravo přeskočíte video o 10 s</translation>
 <translation id="3794286421982011626">Web, který navštívíte, může ukládat informace o tom, co děláte, aby fungoval podle očekávání – například abyste zůstali přihlášeni nebo v košíku zůstaly přidané položky. Weby tato data často ukládají dočasně na vašem zařízení.</translation>
@@ -191,11 +195,11 @@
 <translation id="4534723447064627427">Pokud aplikaci <ph name="APP_NAME" /> chcete umožnit přístup k mikrofonu, zapněte mikrofon také v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Vypnout mikrofon</translation>
 <translation id="4570913071927164677">Podrobnosti</translation>
-<translation id="4575264539271661854">Usnadnit přiblížení textu a obrázků na navštíveném webu</translation>
 <translation id="4598549027014564149">V anonymním režimu weby nemohou používat soubory cookie ke sledování vaší aktivity prohlížení na webech, a to ani na souvisejících webech. Vaše aktivita prohlížení se nepoužívá například k personalizaci reklam. Některé weby mohou přestat fungovat.</translation>
 <translation id="4645575059429386691">Spravováno vaším rodičem</translation>
 <translation id="4670064810192446073">Virtuální realita</translation>
 <translation id="4751476147751820511">Senzory pohybu nebo světla</translation>
+<translation id="477781522763920796">Toto nastavení funguje, aniž by webům umožňovalo identifikovat vás nebo zjistit vaši historii prohlížení.</translation>
 <translation id="4779083564647765204">Lupa</translation>
 <translation id="4811450222531576619">Informace o zdroji a tématu</translation>
 <translation id="4836046166855586901">Zeptat se, když chce web zjistit, kdy aktivně používáte toto zařízení</translation>
@@ -257,6 +261,7 @@
 <translation id="5740126560802162366">Weby mohou ukládat data na vašem zařízení</translation>
 <translation id="5771720122942595109">Oprávnění <ph name="PERMISSION_1" /> je zablokováno</translation>
 <translation id="5804241973901381774">Oprávnění</translation>
+<translation id="5810805850857689118">Touto akcí vymažete všechna data a soubory cookie webu <ph name="ORIGIN" /> a všech jeho podřízených webů</translation>
 <translation id="5860033963881614850">Vypnuto</translation>
 <translation id="5876056640971328065">Pozastavit video</translation>
 <translation id="5884085660368669834">Nastavení webu</translation>
@@ -273,6 +278,7 @@
 <translation id="6040143037577758943">Zavřít</translation>
 <translation id="6042308850641462728">Více</translation>
 <translation id="6064125863973209585">Dokončená stahování</translation>
+<translation id="6071501408666570960">Můžete být odhlášeni z tohoto webu</translation>
 <translation id="6165508094623778733">Další informace</translation>
 <translation id="6177111841848151710">Pro aktuální vyhledávač blokováno</translation>
 <translation id="6177128806592000436">Spojení s tímto webem není bezpečné</translation>
@@ -323,6 +329,7 @@
 <translation id="7016516562562142042">Pro aktuální vyhledávač povoleno</translation>
 <translation id="702275896380648118">Tento web určuje, co se vám líbí, a pak navrhuje reklamy jiným webům. Tento web také získává témata reklam z Chromu, aby vám mohl zobrazovat relevantnější reklamy.</translation>
 <translation id="702463548815491781">Doporučeno, když je zapnuta funkce TalkBack nebo přístup pomocí přepínačů</translation>
+<translation id="7050519587566342213">Prohlížení je plynulejší, protože vám weby při přechodu z jednoho na další s větší pravděpodobností důvěřují.</translation>
 <translation id="7053983685419859001">Blokovat</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Vybráno: 1}few{Vybráno: #}many{Vybráno: #}other{Vybráno: #}}</translation>
 <translation id="7087918508125750058">Vybrané položky: <ph name="ITEM_COUNT" />. Možnosti jsou k dispozici u horního okraje obrazovky</translation>
@@ -347,6 +354,7 @@
 <translation id="757524316907819857">Bránit webům v přehrávání chráněného obsahu</translation>
 <translation id="7577900504646297215">Spravovat zájmy</translation>
 <translation id="7594634374516752650">Telefon je připojen k zařízení Bluetooth</translation>
+<translation id="7634280112532283638">Omezení spamu a podvodů</translation>
 <translation id="7641339528570811325">Vymazat údaje o prohlížení…</translation>
 <translation id="7649070708921625228">Nápověda</translation>
 <translation id="7658239707568436148">Zrušit</translation>
@@ -407,6 +415,7 @@
 <translation id="8514955299594277296">Nepovolovat webům ukládat data do zařízení (nedoporučeno)</translation>
 <translation id="851751545965956758">Bránit webům v připojení k zařízením</translation>
 <translation id="8525306231823319788">Celá obrazovka</translation>
+<translation id="8528440122773422556">Touto akcí vymažete všechna data a soubory cookie uložené všemi weby v doméně <ph name="ORIGIN" /> nebo její aplikací na ploše</translation>
 <translation id="8541410041357371550">Tento web získává témata reklam z Chromu, aby vám mohl zobrazovat relevantnější reklamy</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Soubory cookie jsou povoleny pro <ph name="FPS_MEMBERS_COUNT" /> web <ph name="FPS_OWNER" />}few{Soubory cookie jsou povoleny pro <ph name="FPS_MEMBERS_COUNT" /> weby <ph name="FPS_OWNER" />}many{Soubory cookie jsou povoleny pro <ph name="FPS_MEMBERS_COUNT" /> webu <ph name="FPS_OWNER" />}other{Soubory cookie jsou povoleny pro <ph name="FPS_MEMBERS_COUNT" /> webů <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Povoleno (doporučeno)</translation>
@@ -421,6 +430,7 @@
 <translation id="8737217482364735741">Tímto vymažete všechna uložená data a soubory cookie webu <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Vybrat obrázek</translation>
 <translation id="8801436777607969138">Blokovat JavaScript na konkrétním webu.</translation>
+<translation id="8803526663383843427">Když je tato funkce zapnutá</translation>
 <translation id="8816026460808729765">Blokovat webům přístup k senzorům</translation>
 <translation id="8823559166155093873">Blokování souborů cookie</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -434,6 +444,7 @@
 <translation id="8986362086234534611">Odstranit</translation>
 <translation id="8990043154272859344">Budete odhlášeni ze všech webů</translation>
 <translation id="9019902583201351841">Spravováno vašimi rodiči</translation>
+<translation id="9039697262778250930">Z těchto webů můžete být odhlášeni</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Tento web je ve skupině, která může sledovat vaši aktivitu. Skupinu definoval vlastník <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Smazat soubory cookie?</translation>

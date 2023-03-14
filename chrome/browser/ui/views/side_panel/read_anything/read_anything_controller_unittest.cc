@@ -8,14 +8,17 @@
 
 #include "base/test/gtest_util.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
+#include "chrome/common/accessibility/read_anything_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/accessibility/accessibility_features.h"
 
 class ReadAnythingControllerTest : public TestWithBrowserView {
  public:
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatures({features::kReadAnythingWithScreen2x},
+                                          {});
     TestWithBrowserView::SetUp();
 
     model_ = std::make_unique<ReadAnythingModel>();
@@ -25,7 +28,7 @@ class ReadAnythingControllerTest : public TestWithBrowserView {
     // Reset prefs to default values for test.
     browser()->profile()->GetPrefs()->SetString(
         prefs::kAccessibilityReadAnythingFontName,
-        kReadAnythingDefaultFontName);
+        string_constants::kReadAnythingDefaultFontName);
     browser()->profile()->GetPrefs()->SetDouble(
         prefs::kAccessibilityReadAnythingFontScale,
         kReadAnythingDefaultFontScale);
@@ -66,6 +69,9 @@ class ReadAnythingControllerTest : public TestWithBrowserView {
     model_->Init(font_name, font_scale, colors, line_spacing, letter_spacing);
   }
 
+  void OnUIReady() { controller_->OnUIReady(); }
+  void OnUIDestroyed() { controller_->OnUIDestroyed(); }
+
   std::string GetPrefFontName() {
     return browser()->profile()->GetPrefs()->GetString(
         prefs::kAccessibilityReadAnythingFontName);
@@ -94,6 +100,7 @@ class ReadAnythingControllerTest : public TestWithBrowserView {
  protected:
   std::unique_ptr<ReadAnythingModel> model_;
   std::unique_ptr<ReadAnythingController> controller_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ReadAnythingControllerTest, ValidIndexUpdatesFontNamePref) {
@@ -238,4 +245,10 @@ TEST_F(ReadAnythingControllerTest, OnLetterSpacingChangedInvalidInput) {
   MockOnLetterSpacingChanged(10);
 
   EXPECT_EQ(GetPrefsLetterSpacing(), 1);
+}
+
+TEST_F(ReadAnythingControllerTest, CallOnUIReadyTwiceNoCrash) {
+  OnUIReady();
+  OnUIDestroyed();
+  OnUIReady();
 }

@@ -7,7 +7,6 @@
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -24,31 +23,24 @@ NSString* const kConsentViewControllerIdentifier =
 
 - (void)viewDidLoad {
   self.view.accessibilityIdentifier = kConsentViewControllerIdentifier;
+  self.bannerName = @"consent_view_controller";
 
-  if (IsPasswordManagerBrandingUpdateEnable()) {
-    self.bannerName = @"consent_view_controller";
+  NSString* userEmail = [app_group::GetGroupUserDefaults()
+      stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()];
 
-    NSString* userEmail = [app_group::GetGroupUserDefaults()
-        stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()];
-
-    if (userEmail.length) {
-      NSString* baseLocalizedString = NSLocalizedString(
-          @"IDS_IOS_CREDENTIAL_PROVIDER_CONSENT_SUBTITLE_BRANDED_SYNC",
-          @"The subtitle in the consent screen.");
-      self.subtitleText =
-          [baseLocalizedString stringByReplacingOccurrencesOfString:@"$1"
-                                                         withString:userEmail];
-    } else {
-      self.subtitleText = NSLocalizedString(
-          @"IDS_IOS_CREDENTIAL_PROVIDER_CONSENT_SUBTITLE_BRANDED_NO_SYNC",
-          @"The subtitle in the consent screen.");
-    }
-  } else {
-    self.bannerName = @"legacy_consent_view_controller";
+  if (userEmail.length) {
+    NSString* baseLocalizedString = NSLocalizedString(
+        @"IDS_IOS_CREDENTIAL_PROVIDER_CONSENT_SUBTITLE_BRANDED_SYNC",
+        @"The subtitle in the consent screen.");
     self.subtitleText =
-        NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_CONSENT_SUBTITLE",
-                          @"The subtitle in the consent screen.");
+        [baseLocalizedString stringByReplacingOccurrencesOfString:@"$1"
+                                                       withString:userEmail];
+  } else {
+    self.subtitleText = NSLocalizedString(
+        @"IDS_IOS_CREDENTIAL_PROVIDER_CONSENT_SUBTITLE_BRANDED_NO_SYNC",
+        @"The subtitle in the consent screen.");
   }
+
   self.titleText =
       NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_CONSENT_TITLE",
                         @"The title in the consent screen.");

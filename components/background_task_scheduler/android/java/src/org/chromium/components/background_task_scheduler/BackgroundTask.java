@@ -72,14 +72,4 @@ public interface BackgroundTask {
      */
     @MainThread
     boolean onStopTask(Context context, TaskParameters taskParameters);
-
-    /**
-     * Callback from {@link BackgroundTaskScheduler} when it detects system conditions requiring
-     * rescheduling, e.g. Google Play Services update or OS upgrade. The task should schedule itself
-     * again with appropriate parameters.
-     *
-     * @param context the current context.
-     */
-    @MainThread
-    void reschedule(Context context);
 }

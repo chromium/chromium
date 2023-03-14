@@ -5,25 +5,11 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <resources>
-    <!-- Dimens for legacy UI
-         TODO(crbug.com/874077): Remove once refresh UI is fully rolled out. -->
     <dimen name="autofill_dropdown_item_height">50dp</dimen>
     <dimen name="autofill_dropdown_item_tag_height">16dp</dimen>
     <dimen name="autofill_dropdown_item_divider_height">1dp</dimen>
     <dimen name="autofill_dropdown_item_label_margin">10dp</dimen>
     <dimen name="autofill_dropdown_icon_margin">8dp</dimen>
-
-    <!-- Dimens for refresh UI -->
-    <dimen name="autofill_dropdown_refresh_item_height">48dp</dimen>
-    <dimen name="autofill_dropdown_refresh_footer_item_height">40dp</dimen>
-
-    <dimen name="autofill_dropdown_refresh_icon_height">16dp</dimen>
-    <dimen name="autofill_dropdown_refresh_icon_width">38dp</dimen>
-    <dimen name="autofill_dropdown_refresh_footer_icon_height">14dp</dimen>
-
-    <dimen name="autofill_dropdown_refresh_horizontal_padding">16dp</dimen>
-    <dimen name="autofill_dropdown_refresh_vertical_padding">12dp</dimen>
-    <dimen name="autofill_dropdown_refresh_icon_margin">24dp</dimen>
 
     <dimen name="autofill_dropdown_icon_width">32dp</dimen>
     <dimen name="autofill_dropdown_icon_height">20dp</dimen>

@@ -24,7 +24,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {FittingType} from '../constants.js';
 import {record, UserAction} from '../metrics.js';
 // <if expr="enable_screen_ai_service">
-import {PdfViewerPrivateProxyImpl} from '../pdf_viewer_private_proxy.js';
+import {PdfOcrPrefCallback, PdfViewerPrivateProxyImpl} from '../pdf_viewer_private_proxy.js';
 
 // </if>
 
@@ -165,11 +165,22 @@ export class ViewerToolbarElement extends PolymerElement {
   // <if expr="enable_screen_ai_service">
   pdfOcrEnabled: boolean;
   private pdfOcrAlwaysActive_: boolean;
+  private pdfOcrPrefChanged_: PdfOcrPrefCallback = null;
 
   override async connectedCallback() {
     super.connectedCallback();
     this.pdfOcrAlwaysActive_ =
         await PdfViewerPrivateProxyImpl.getInstance().isPdfOcrAlwaysActive();
+    this.pdfOcrPrefChanged_ = this.onPdfOcrPrefChanged.bind(this);
+    PdfViewerPrivateProxyImpl.getInstance().addPdfOcrPrefChangedListener(
+        this.pdfOcrPrefChanged_);
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    PdfViewerPrivateProxyImpl.getInstance().removePdfOcrPrefChangedListener(
+        this.pdfOcrPrefChanged_);
+    this.pdfOcrPrefChanged_ = null;
   }
   // </if>
 
@@ -393,6 +404,10 @@ export class ViewerToolbarElement extends PolymerElement {
       this.pdfOcrAlwaysActive_ = valueToSet;
       // TODO(crbug.com/1393069): Start/stop PDF OCR accordingly.
     }
+  }
+
+  private onPdfOcrPrefChanged(isPdfOcrAlwaysActive: boolean) {
+    this.pdfOcrAlwaysActive_ = isPdfOcrAlwaysActive;
   }
   // </if>
 }

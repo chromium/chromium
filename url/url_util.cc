@@ -57,7 +57,6 @@ struct SchemeRegistry {
        SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION},  // WebSocket secure.
       {kWsScheme, SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION},  // WebSocket.
       {kFileSystemScheme, SCHEME_WITHOUT_AUTHORITY},
-      {kQuicTransportScheme, SCHEME_WITH_HOST_AND_PORT},
   };
 
   // Schemes that are allowed for referrers.
@@ -74,7 +73,10 @@ struct SchemeRegistry {
 
   // Schemes that do not trigger mixed content warning.
   std::vector<std::string> secure_schemes = {
-      kHttpsScheme, kAboutScheme, kDataScheme, kQuicTransportScheme, kWssScheme,
+      kHttpsScheme,
+      kWssScheme,
+      kDataScheme,
+      kAboutScheme,
   };
 
   // Schemes that normal pages cannot link to or access (i.e., with the same

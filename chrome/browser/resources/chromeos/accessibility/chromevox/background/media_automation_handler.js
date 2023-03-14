@@ -8,10 +8,10 @@
 import {AsyncUtil} from '../../common/async_util.js';
 import {LocalStorage} from '../../common/local_storage.js';
 import {SettingsManager} from '../common/settings_manager.js';
-import {TtsCapturingEventListener} from '../common/tts_interface.js';
 
 import {BaseAutomationHandler} from './base_automation_handler.js';
 import {ChromeVox} from './chromevox.js';
+import {TtsCapturingEventListener} from './tts_interface.js';
 
 const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationNode = chrome.automation.AutomationNode;

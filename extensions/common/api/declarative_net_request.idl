@@ -36,7 +36,8 @@ namespace declarativeNetRequest {
     options,
     patch,
     post,
-    put
+    put,
+    other
   };
 
   // This describes whether the request is first or third party to the frame in
@@ -235,12 +236,13 @@ namespace declarativeNetRequest {
     //  <li>
     //    This matches against the request initiator and not the request url.
     //  </li>
+    //  <li>Sub-domains of the listed domains are also matched.</li>
     // </ul>
     DOMString[]? initiatorDomains;
 
     // The rule will not match network requests originating from the list of
-    // <code>excludedDomains</code>. If the list is empty or omitted, no
-    // domains are excluded. This takes precedence over
+    // <code>excludedInitiatorDomains</code>. If the list is empty or omitted,
+    // no domains are excluded. This takes precedence over
     // <code>initiatorDomains</code>.
     //
     // Notes:
@@ -251,6 +253,7 @@ namespace declarativeNetRequest {
     //  <li>
     //    This matches against the request initiator and not the request url.
     //  </li>
+    //  <li>Sub-domains of the listed domains are also excluded.</li>
     // </ul>
     DOMString[]? excludedInitiatorDomains;
 
@@ -264,12 +267,13 @@ namespace declarativeNetRequest {
     //  <li>Sub-domains like "a.example.com" are also allowed.</li>
     //  <li>The entries must consist of only ascii characters.</li>
     //  <li>Use punycode encoding for internationalized domains.</li>
+    //  <li>Sub-domains of the listed domains are also matched.</li>
     // </ul>
     DOMString[]? requestDomains;
 
     // The rule will not match network requests when the domains matches one
-    // from the list of <code>excludedDomains</code>. If the list is empty or
-    // omitted, no domains are excluded. This takes precedence over
+    // from the list of <code>excludedRequestDomains</code>. If the list is
+    // empty or omitted, no domains are excluded. This takes precedence over
     // <code>requestDomains</code>.
     //
     // Notes:
@@ -277,6 +281,7 @@ namespace declarativeNetRequest {
     //  <li>Sub-domains like "a.example.com" are also allowed.</li>
     //  <li>The entries must consist of only ascii characters.</li>
     //  <li>Use punycode encoding for internationalized domains.</li>
+    //  <li>Sub-domains of the listed domains are also excluded.</li>
     // </ul>
     DOMString[]? excludedRequestDomains;
 

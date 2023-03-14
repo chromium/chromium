@@ -68,6 +68,10 @@ declare_args() {
   # recommended to enable PA-E above, but isn't strictly necessary. Embedders
   # can create and use PA partitions explicitly.
   enable_pointer_compression_support = false
+
+  # Enables a bounds check when two pointers (at least one being raw_ptr) are
+  # subtracted (if supported by the underlying implementation).
+  enable_pointer_subtraction_check = false
 }
 
 declare_args() {
@@ -133,8 +137,24 @@ declare_args() {
   enable_backup_ref_ptr_slow_checks =
       enable_backup_ref_ptr_slow_checks_default && enable_backup_ref_ptr_support
 
+  # Enable the feature flag required to activate backup ref pointers. That is to
+  # say `PartitionAllocBackupRefPtr`.
+  #
+  # This is meant to be used primarily on bots. It is much easier to override
+  # the feature flags using a binary flag instead of updating multiple bots's
+  # scripts to pass command line arguments.
+  enable_backup_ref_ptr_feature_flag = false
+
   enable_dangling_raw_ptr_checks =
       enable_dangling_raw_ptr_checks_default && enable_backup_ref_ptr_support
+
+  # Enable the feature flag required to check for dangling pointers. That is to
+  # say `PartitionAllocDanglingPtr`.
+  #
+  # This is meant to be used primarily on bots. It is much easier to override
+  # the feature flags using a binary flag instead of updating multiple bots's
+  # scripts to pass command line arguments.
+  enable_dangling_raw_ptr_feature_flag = false
 
   # Enables the dangling raw_ptr checks feature for the performance experiment.
   # Not every dangling pointers have been fixed or annotated yet. To avoid
@@ -146,6 +166,7 @@ declare_args() {
   # to go through build_overrides
   enable_dangling_raw_ptr_perf_experiment = false
 
+  # Set to `enable_backup_ref_ptr_support && has_64_bit_pointers` when enabling.
   backup_ref_ptr_poison_oob_ptr = false
 }
 
@@ -187,6 +208,7 @@ if (!use_partition_alloc) {
   enable_backup_ref_ptr_slow_checks = false
   enable_dangling_raw_ptr_checks = false
   enable_dangling_raw_ptr_perf_experiment = false
+  enable_pointer_subtraction_check = false
   backup_ref_ptr_poison_oob_ptr = false
   use_starscan = false
 }
@@ -219,6 +241,8 @@ assert(
 assert(
     enable_backup_ref_ptr_support || !backup_ref_ptr_poison_oob_ptr,
     "Can't enable poisoning for OOB pointers if BackupRefPtr isn't enabled at all")
+assert(has_64_bit_pointers || !backup_ref_ptr_poison_oob_ptr,
+       "Can't enable poisoning for OOB pointers if pointers are only 32-bit")
 
 # AsanBackupRefPtr and AsanUnownedPtr are mutually exclusive variants of raw_ptr.
 assert(

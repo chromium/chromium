@@ -148,6 +148,8 @@
     [RaisesException] DOMString idleTimeSpellCheckerState(Document document);
     [RaisesException] void runIdleTimeSpellChecker(Document document);
 
+    [RaisesException] boolean hasLastEditCommand(Document document);
+
     sequence<DOMString> userPreferredLanguages();
     void setUserPreferredLanguages(sequence<DOMString> languages);
     void setSystemTimeZone(DOMString timezone);

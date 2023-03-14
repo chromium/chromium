@@ -193,7 +193,7 @@ std::string GetStorageKeyForWalletMetadataTypeAndSpecificsId(
   pickle.WriteInt(static_cast<int>(type));
   // We use the (base64-encoded) |specifics_id| here.
   pickle.WriteString(specifics_id);
-  return std::string(static_cast<const char*>(pickle.data()), pickle.size());
+  return std::string(pickle.data_as_char(), pickle.size());
 }
 
 void SetAutofillWalletSpecificsFromServerProfile(

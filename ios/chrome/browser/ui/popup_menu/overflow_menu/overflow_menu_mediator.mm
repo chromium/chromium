@@ -39,19 +39,20 @@
 #import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/reading_list/offline_url_utils.h"
+#import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
+#import "ios/chrome/browser/shared/public/commands/price_notifications_commands.h"
+#import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
+#import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
-#import "ios/chrome/browser/ui/commands/activity_service_commands.h"
-#import "ios/chrome/browser/ui/commands/application_commands.h"
-#import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
-#import "ios/chrome/browser/ui/commands/browser_commands.h"
-#import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
-#import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
-#import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
-#import "ios/chrome/browser/ui/commands/page_info_commands.h"
-#import "ios/chrome/browser/ui/commands/price_notifications_commands.h"
-#import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
-#import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
@@ -62,7 +63,7 @@
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_utils.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
@@ -138,6 +139,7 @@ OverflowMenuAction* CreateOverflowMenuActionWithString(
                                  monochromeSymbol:monochromeSymbol
                           accessibilityIdentifier:accessibilityID
                                enterpriseDisabled:NO
+                              displayNewLabelIcon:NO
                                           handler:handler];
 }
 
@@ -263,9 +265,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   if (!webState || !webStateList) {
     return;
   }
-
-  int webStateIndex = webStateList->GetIndexOfWebState(webState);
-  webStateList->SetWebStatePinnedAt(webStateIndex, pinned);
+  SetWebStatePinnedState(webStateList, webState->GetStableIdentifier(), pinned);
 }
 
 - (instancetype)init {
@@ -727,16 +727,23 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
         });
 
     self.pinTabAction = CreateOverflowMenuAction(
-        IDS_IOS_TOOLS_MENU_PIN_TAB, kLocationSymbol,
-        /*systemSymbol=*/NO, /*monochromeSymbol=*/NO, kToolsMenuPinTabId, ^{
+        IDS_IOS_TOOLS_MENU_PIN_TAB, kPinSymbol,
+        /*systemSymbol=*/YES, /*monochromeSymbol=*/NO, kToolsMenuPinTabId, ^{
+          SetPinnedTabOverflowUsed();
           [weakSelf pinTab];
         });
 
     self.unpinTabAction = CreateOverflowMenuAction(
         IDS_IOS_TOOLS_MENU_UNPIN_TAB, kPinSlashSymbol,
         /*systemSymbol=*/YES, /*monochromeSymbol=*/NO, kToolsMenuUnpinTabId, ^{
+          SetPinnedTabOverflowUsed();
           [weakSelf unpinTab];
         });
+
+    if (!WasPinnedTabOverflowUsed()) {
+      self.pinTabAction.displayNewLabelIcon = YES;
+      self.unpinTabAction.displayNewLabelIcon = YES;
+    }
 
     self.clearBrowsingDataAction = CreateOverflowMenuAction(
         IDS_IOS_TOOLS_MENU_CLEAR_BROWSING_DATA, kTrashSymbol,
@@ -1008,6 +1015,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                    monochromeSymbol:NO
                             accessibilityIdentifier:accessibilityID
                                  enterpriseDisabled:NO
+                                displayNewLabelIcon:NO
                                             handler:handlerWithMetrics];
 
   result.destination = static_cast<NSInteger>(destination);
@@ -1089,7 +1097,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 }
 
 // Decides whether the default browser blue dot promo should be active, and if
-// it is, move the settings destination to the front and add the blue dot badge.
+// it is, move the settings destination to 4th position and add the blue dot
+// badge.
 - (NSArray<OverflowMenuDestination*>*)maybeActivateDefaultBrowserBlueDotPromo:
     (NSArray<OverflowMenuDestination*>*)destinations {
   if (!self.engagementTracker) {
@@ -1102,16 +1111,21 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
     // Add the blue dot promo badge to the settings destination.
     self.settingsDestination.badge = BadgeTypeBlueDot;
 
-    // Move the settings destination to the front of the destinations, otherwise
-    // respecting the original order.
+    // Move the settings destination to the 4th position of the destinations,
+    // otherwise respecting the original order.
     NSMutableArray<OverflowMenuDestination*>* newDestinations =
         [[NSMutableArray alloc] init];
 
-    [newDestinations addObject:self.settingsDestination];
     for (OverflowMenuDestination* destination in destinations) {
-      if (destination != self.settingsDestination) {
-        [newDestinations addObject:destination];
+      if (destination == self.settingsDestination) {
+        continue;
       }
+
+      if ([newDestinations count] == 3) {
+        [newDestinations addObject:self.settingsDestination];
+      }
+
+      [newDestinations addObject:destination];
     }
 
     // If we've only started showing the blue dot recently (<6 hours), don't
@@ -1708,16 +1722,25 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 
 // Dismisses the menu and pins the tab.
 - (void)pinTab {
+  RecordAction(UserMetricsAction("MobileMenuPinTab"));
   [[self class] setTabPinned:YES
                     webState:self.webState
                 webStateList:self.webStateList];
-  [self.popupMenuCommandsHandler showSnackbarForPinnedState:YES
-                                                   webState:self.webState];
+  if (!IsSplitToolbarMode(self.webState->GetView()) ||
+      !_engagementTracker->WouldTriggerHelpUI(
+          feature_engagement::kIPHTabPinnedFeature)) {
+    // Only show the snackbar if the tab strip is visible or if the IPH is
+    // presented.
+    [self.popupMenuCommandsHandler showSnackbarForPinnedState:YES
+                                                     webState:self.webState];
+  }
+
   [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
 }
 
 // Dismisses the menu and unpins the tab.
 - (void)unpinTab {
+  RecordAction(UserMetricsAction("MobileMenuUnpinTab"));
   [[self class] setTabPinned:NO
                     webState:self.webState
                 webStateList:self.webStateList];

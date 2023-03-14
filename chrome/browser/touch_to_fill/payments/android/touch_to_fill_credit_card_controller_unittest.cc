@@ -37,7 +37,7 @@ class MockTouchToFillCreditCardViewImpl
   MOCK_METHOD(bool,
               Show,
               (autofill::TouchToFillCreditCardViewController * controller,
-               base::span<const autofill::CreditCard* const> cards_to_suggest,
+               base::span<const autofill::CreditCard> cards_to_suggest,
                bool should_show_scan_credit_card));
   MOCK_METHOD(void, Hide, ());
 };
@@ -75,7 +75,10 @@ class MockTouchToFillDelegateImpl : public autofill::TouchToFillDelegate {
   MOCK_METHOD(void, ScanCreditCard, (), (override));
   MOCK_METHOD(void, OnCreditCardScanned, (const CreditCard& card), (override));
   MOCK_METHOD(void, ShowCreditCardSettings, (), (override));
-  MOCK_METHOD(void, SuggestionSelected, (std::string unique_id), (override));
+  MOCK_METHOD(void,
+              SuggestionSelected,
+              (std::string unique_id, bool is_virtual),
+              (override));
   MOCK_METHOD(void, OnDismissed, (bool dismissed_by_user), (override));
 
  private:
@@ -101,10 +104,8 @@ class TouchToFillCreditCardControllerTest
 
   std::unique_ptr<MockTouchToFillCreditCardViewImpl> mock_view_;
   MockTouchToFillDelegateImpl mock_delegate_;
-  const CreditCard credit_card1_ = autofill::test::GetCreditCard();
-  const CreditCard credit_card2_ = autofill::test::GetCreditCard2();
-  const std::vector<const autofill::CreditCard*> credit_cards_ = {
-      &credit_card1_, &credit_card2_};
+  const std::vector<const autofill::CreditCard> credit_cards_ = {
+      autofill::test::GetCreditCard(), autofill::test::GetCreditCard2()};
   // The object to be tested.
   autofill::TouchToFillCreditCardController credit_card_controller_;
 };

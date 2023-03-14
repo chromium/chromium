@@ -396,8 +396,9 @@ void SearchPrefetchService::OnURLOpenedFromOmnibox(
       TemplateURLServiceFactory::GetForProfile(profile_);
   DCHECK(template_url_service);
   auto* default_search = template_url_service->GetDefaultSearchProvider();
-  if (!default_search)
+  if (!default_search) {
     return;
+  }
 
   GURL canonical_search_url;
 
@@ -452,7 +453,7 @@ void SearchPrefetchService::OnPrerenderedRequestUsed(
   DeletePrefetch(canonical_search_url);
 }
 
-std::unique_ptr<SearchPrefetchURLLoader>
+SearchPrefetchURLLoader::RequestHandler
 SearchPrefetchService::TakePrerenderFromMemoryCache(
     const network::ResourceRequest& tentative_resource_request) {
   SearchPrefetchServingReasonRecorder recorder{/*for_prerender=*/true};
@@ -463,19 +464,20 @@ SearchPrefetchService::TakePrerenderFromMemoryCache(
     // kPrerendered, but it happened unexpectedly due to
     // restarting/serviceworker interception within prerender navigation stack
     // on ChromeOS.
-    return nullptr;
+    return {};
   }
 
   // TODO(https://crbug.com/1295170): Do not use the prefetched response if it
   // is about to expire.
   DCHECK_NE(iter->second->current_status(),
             SearchPrefetchStatus::kRequestFailed);
-  recorder.reason_ = SearchPrefetchServingReason::kPrerendered;
+  recorder.reason_ = SearchPrefetchServingReason::kServed;
 
   iter->second->MarkPrefetchAsPrerendered();
   std::unique_ptr<SearchPrefetchURLLoader> response =
       iter->second->TakeSearchPrefetchURLLoader();
-  return response;
+  return SearchPrefetchURLLoader::GetServingResponseHandlerFromLoader(
+      std::move(response));
   // Do not remove the corresponding entry from `prefetches_` for now, to avoid
   // prefetching the same response over again. The entry will be removed on
   // prerendering activation or other cases.
@@ -490,7 +492,7 @@ SearchPrefetchService::GetSearchPrefetchStatusForTesting(
   return prefetches_[canonical_search_url]->current_status();
 }
 
-std::unique_ptr<SearchPrefetchURLLoader>
+SearchPrefetchURLLoader::RequestHandler
 SearchPrefetchService::TakePrefetchResponseFromMemoryCache(
     const network::ResourceRequest& tentative_resource_request) {
   const GURL& navigation_url = tentative_resource_request.url;
@@ -500,7 +502,7 @@ SearchPrefetchService::TakePrefetchResponseFromMemoryCache(
       RetrieveSearchTermsInMemoryCache(tentative_resource_request, recorder);
   if (iter == prefetches_.end()) {
     DCHECK_NE(recorder.reason_, SearchPrefetchServingReason::kServed);
-    return nullptr;
+    return {};
   }
 
   auto status = iter->second->current_status();
@@ -510,7 +512,7 @@ SearchPrefetchService::TakePrefetchResponseFromMemoryCache(
     // Set the failure reason when prefetch is not served.
     iter->second->SetPrefetchAttemptFailureReason(ToPreloadingFailureReason(
         SearchPrefetchServingReason::kRequestInFlightNotReady));
-    return nullptr;
+    return {};
   }
 
   bool is_servable =
@@ -524,7 +526,7 @@ SearchPrefetchService::TakePrefetchResponseFromMemoryCache(
     // Set the failure reason when prefetch is not served.
     iter->second->SetPrefetchAttemptFailureReason(ToPreloadingFailureReason(
         SearchPrefetchServingReason::kNotServedOtherReason));
-    return nullptr;
+    return {};
   }
 
   std::unique_ptr<SearchPrefetchURLLoader> response =
@@ -536,22 +538,24 @@ SearchPrefetchService::TakePrefetchResponseFromMemoryCache(
     AddCacheEntry(navigation_url, iter->second->prefetch_url());
 
   DeletePrefetch(iter->first);
-
-  return response;
+  return SearchPrefetchURLLoader::GetServingResponseHandlerFromLoader(
+      std::move(response));
 }
 
-std::unique_ptr<SearchPrefetchURLLoader>
+SearchPrefetchURLLoader::RequestHandler
 SearchPrefetchService::TakePrefetchResponseFromDiskCache(
     const GURL& navigation_url) {
   GURL navigation_url_without_ref(net::SimplifyUrlForRequest(navigation_url));
   if (prefetch_cache_.find(navigation_url_without_ref) ==
       prefetch_cache_.end()) {
-    return nullptr;
+    return {};
   }
 
-  return std::make_unique<CacheAliasSearchPrefetchURLLoader>(
+  auto loader = std::make_unique<CacheAliasSearchPrefetchURLLoader>(
       profile_, SearchPrefetchRequest::NetworkAnnotationForPrefetch(),
       prefetch_cache_[navigation_url_without_ref].first);
+  return SearchPrefetchURLLoader::GetServingResponseHandlerFromLoader(
+      std::move(loader));
 }
 
 void SearchPrefetchService::ClearPrefetches() {

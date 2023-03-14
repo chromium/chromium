@@ -340,9 +340,6 @@ class ComputedStyle : public ComputedStyleBase,
   // into new instances.
   CORE_EXPORT static scoped_refptr<ComputedStyle> CreateInitialStyleSingleton();
 
-  // Shallow copy into a new instance sharing DataPtrs.
-  CORE_EXPORT static scoped_refptr<ComputedStyle> Clone(const ComputedStyle&);
-
   static const ComputedStyle* NullifyEnsured(const ComputedStyle* style) {
     if (!style) {
       return nullptr;
@@ -2237,30 +2234,18 @@ class ComputedStyle : public ComputedStyleBase,
   // `white-space` property may become a shorthand in future.
   // https://drafts.csswg.org/css-text-4/#white-space-property
   static bool DeprecatedAutoWrap(EWhiteSpace ws) {
-    // Nowrap and pre don't automatically wrap.
-    return IsNot(ws, EWhiteSpace::kNowrap | EWhiteSpace::kPre);
+    return blink::ShouldWrapLine(ws);
   }
   static bool DeprecatedPreserveNewline(EWhiteSpace ws) {
-    // Normal and nowrap do not preserve newlines.
-    return IsNot(ws, EWhiteSpace::kNormal | EWhiteSpace::kNowrap);
+    return ShouldPreserveBreaks(ws);
   }
   static bool DeprecatedCollapseWhiteSpace(EWhiteSpace ws) {
-    // Pre and prewrap do not collapse whitespace.
-    return IsNot(ws, EWhiteSpace::kPre | EWhiteSpace::kPreWrap |
-                         EWhiteSpace::kBreakSpaces);
+    return blink::ShouldCollapseSpacesAndTabs(ws);
   }
 
-  bool ShouldWrapLine() const { return DeprecatedAutoWrap(WhiteSpace()); }
-  bool ShouldWrapLineBreakingSpaces() const {
-    // `ShouldWrapLine` should be `true` if `break-spaces`.
-    DCHECK(WhiteSpace() != EWhiteSpace::kBreakSpaces || ShouldWrapLine());
-    return WhiteSpace() == EWhiteSpace::kBreakSpaces;
+  bool ShouldPreserveSpacesAndTabs() const {
+    return blink::ShouldPreserveSpacesAndTabs(WhiteSpace());
   }
-  bool ShouldWrapLineTrailingSpaces() const {
-    return IsNot(WhiteSpace(), EWhiteSpace::kNowrap | EWhiteSpace::kPre |
-                                   EWhiteSpace::kBreakSpaces);
-  }
-
   bool PreserveNewline() const {
     return DeprecatedPreserveNewline(WhiteSpace());
   }
@@ -2278,9 +2263,12 @@ class ComputedStyle : public ComputedStyleBase,
     return false;
   }
 
+  bool ShouldWrapLine() const { return DeprecatedAutoWrap(WhiteSpace()); }
+  bool ShouldBreakSpaces() const {
+    return blink::ShouldBreakSpaces(WhiteSpace());
+  }
   bool BreakOnlyAfterWhiteSpace() const {
-    return Is(WhiteSpace(),
-              EWhiteSpace::kPreWrap | EWhiteSpace::kBreakSpaces) ||
+    return (ShouldPreserveSpacesAndTabs() && ShouldWrapLine()) ||
            GetLineBreak() == LineBreak::kAfterWhiteSpace;
   }
   bool NeedsTrailingSpace() const {
@@ -2395,6 +2383,9 @@ class ComputedStyle : public ComputedStyleBase,
     if (pseudo == kPseudoIdMarker) {
       return Display() == EDisplay::kListItem;
     }
+    if (pseudo == kPseudoIdBackdrop && TopLayer() == ETopLayer::kNone) {
+      return false;
+    }
     if (!HasPseudoElementStyle(pseudo)) {
       return false;
     }
@@ -2406,6 +2397,10 @@ class ComputedStyle : public ComputedStyleBase,
     // elements with an actual layout object.
     return pseudo == kPseudoIdBefore || pseudo == kPseudoIdAfter;
   }
+
+  // Returns true if the element is a top layer candidate whose top-layer
+  // property computes to 'browser'.
+  bool IsInTopLayer(const Element& element) const;
 
   // Load the images of CSS properties that were deferred by LazyLoad.
   void LoadDeferredImages(Document&) const;
@@ -2420,7 +2415,8 @@ class ComputedStyle : public ComputedStyleBase,
 
   bool GeneratesMarkerImage() const {
     return Display() == EDisplay::kListItem && ListStyleImage() &&
-           !ListStyleImage()->ErrorOccurred();
+           !ListStyleImage()->ErrorOccurred() &&
+           (ListStyleImage()->IsLoading() || ListStyleImage()->IsLoaded());
   }
 
   LogicalSize LogicalAspectRatio() const {
@@ -2520,12 +2516,6 @@ class ComputedStyle : public ComputedStyleBase,
            display == EDisplay::kTableCell ||
            display == EDisplay::kTableCaption;
   }
-
-  // Whitespace utility functions.
-  static bool Is(EWhiteSpace a, EWhiteSpace b) {
-    return static_cast<unsigned>(a) & static_cast<unsigned>(b);
-  }
-  static bool IsNot(EWhiteSpace a, EWhiteSpace b) { return !Is(a, b); }
 
   bool InternalVisitedBorderLeftColorHasNotChanged(
       const ComputedStyle& other) const {
@@ -2661,6 +2651,9 @@ class ComputedStyle : public ComputedStyleBase,
            !unforced_color.IsSystemColorIncludingDeprecated();
   }
   bool ShouldForceColor(const StyleColor& unforced_color) const {
+    // If any other properties are added that are affected by ForcedColors mode,
+    // adjust EditingStyle::RemoveForcedColorsIfNeeded and
+    // EditingStyle::MergeStyleFromRulesForSerialization accordingly.
     return ShouldForceColor(InForcedColorsMode(), ForcedColorAdjust(),
                             unforced_color);
   }
@@ -2782,10 +2775,7 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   // Access to UserModify().
   friend class MatchedPropertiesCache;
 
-  explicit ComputedStyleBuilder(const ComputedStyle& style) {
-    style_ = ComputedStyle::Clone(style);
-    SetStyleBase(*style_);
-  }
+  CORE_EXPORT explicit ComputedStyleBuilder(const ComputedStyle& style);
   ComputedStyleBuilder(const ComputedStyleBuilder& builder) = delete;
   ComputedStyleBuilder(ComputedStyleBuilder&&) = default;
   ComputedStyleBuilder& operator=(const ComputedStyleBuilder&) = delete;
@@ -2794,10 +2784,7 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   scoped_refptr<const ComputedStyle> TakeStyle() { return std::move(style_); }
 
   // NOTE: Prefer `TakeStyle()` if possible.
-  scoped_refptr<const ComputedStyle> CloneStyle() const {
-    DCHECK(style_);
-    return ComputedStyle::Clone(*style_);
-  }
+  CORE_EXPORT scoped_refptr<const ComputedStyle> CloneStyle() const;
 
   CORE_EXPORT void InheritFrom(
       const ComputedStyle& inherit_parent,

@@ -1,0 +1,69 @@
+<style include="history-clusters-shared-style">
+  #content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+  }
+
+  a:link,
+  a:visited,
+  a:hover,
+  a:active {
+    text-decoration: none;
+  }
+
+  :host-context(.focus-outline-visible) :focus {
+    box-shadow: var(--ntp-focus-shadow);
+    outline: none;
+  }
+
+  .related-search {
+    background:
+        var(--color-new-tab-page-history-clusters-module-item-background);
+    display: flex;
+    flex-direction: row;
+    height: 44px;
+    margin-bottom: 4px;
+    width: 100%;
+  }
+
+  .related-search:first-child {
+    border-radius: 12px 12px 0 0;
+  }
+
+  .related-search:last-of-type {
+    border-radius: 0 0 12px 12px;
+  }
+
+  .icon {
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 20px;
+    background-color: var(--color-new-tab-page-primary-foreground);
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: 20px;
+    height: 20px;
+    margin: auto 16px;
+    width: 20px;
+  }
+
+  .title {
+    color: var(--color-new-tab-page-primary-foreground);
+    font-size: 14px;
+    margin: auto 0;
+  }
+</style>
+<div id="content">
+  <template is="dom-repeat" items="[[relatedSearches]]"
+            filter="[[filterRelatedSearches_]]">
+    <a class="related-search" href="[[computeSearchUrl_(item.query)]]"
+       on-click="onClick_" on-auxclick="onClick_">
+      <div class="icon"
+           style="-webkit-mask-image:
+           url(//resources/images/icon_search.svg);"></div>
+      <div class="title truncate">[[item.query]]</div>
+    </a>
+  </template>
+</div>

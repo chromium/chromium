@@ -16,6 +16,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
@@ -26,6 +27,7 @@ import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
+import org.chromium.chrome.browser.share.ShareContentTypeHelper;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextMetricsHelper;
@@ -35,8 +37,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.share.ShareParams;
@@ -105,15 +105,13 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     // TODO(crbug/1022172): Should be package-protected once modularization is complete.
     public ShareSheetCoordinator(BottomSheetController controller,
             ActivityLifecycleDispatcher lifecycleDispatcher, Supplier<Tab> tabProvider,
-            ShareSheetPropertyModelBuilder modelBuilder, Callback<Tab> printTab,
-            LargeIconBridge iconBridge, boolean isIncognito,
+            Callback<Tab> printTab, LargeIconBridge iconBridge, boolean isIncognito,
             ImageEditorModuleProvider imageEditorModuleProvider, Tracker featureEngagementTracker,
             Profile profile) {
         mBottomSheetController = controller;
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
         mTabProvider = tabProvider;
-        mPropertyModelBuilder = modelBuilder;
         mPrintTabCallback = printTab;
         mIsIncognito = isIncognito;
         mImageEditorModuleProvider = imageEditorModuleProvider;
@@ -132,20 +130,13 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
                             ShareSheetCoordinator.this::onLayoutChange);
                 }
             }
-
-            @Override
-            public void onSheetStateChanged(@SheetState int state, @StateChangeReason int reason) {
-                if (state == SheetState.HIDDEN) {
-                    RecordHistogram.recordEnumeratedHistogram(
-                            "Sharing.SharingHubAndroid.CloseReason", reason,
-                            StateChangeReason.MAX_VALUE + 1);
-                }
-            }
         };
         mBottomSheetController.addObserver(mBottomSheetObserver);
         mIconBridge = iconBridge;
         mFeatureEngagementTracker = featureEngagementTracker;
         mProfile = profile;
+        mPropertyModelBuilder = new ShareSheetPropertyModelBuilder(mBottomSheetController,
+                ContextUtils.getApplicationContext().getPackageManager(), mProfile);
         mShareSheetUsageRankingHelper = new ShareSheetUsageRankingHelper(mBottomSheetController,
                 mBottomSheet, mShareStartTime, mLinkGenerationStatusForMetrics,
                 mLinkToggleMetricsDetails, mPropertyModelBuilder, mProfile);
@@ -197,8 +188,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         mShareStartTime = shareStartTime;
         mLinkGenerationStatusForMetrics = mBottomSheet.getLinkGenerationState();
 
-        mContentTypes =
-                ShareSheetPropertyModelBuilder.getContentTypes(mShareParams, mChromeShareExtras);
+        mContentTypes = ShareContentTypeHelper.getContentTypes(mShareParams, mChromeShareExtras);
         updateShareSheet(mChromeShareExtras.saveLastUsed(), this::finishShowShareSheet);
     }
 
@@ -221,8 +211,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         mBottomSheet.updateShareParams(mShareParams);
         mLinkGenerationStatusForMetrics = linkGenerationState;
         mLinkToggleMetricsDetails = linkToggleMetricsDetails;
-        mContentTypes =
-                ShareSheetPropertyModelBuilder.getContentTypes(mShareParams, mChromeShareExtras);
+        mContentTypes = ShareContentTypeHelper.getContentTypes(mShareParams, mChromeShareExtras);
         updateShareSheet(mChromeShareExtras.saveLastUsed(), null);
     }
 

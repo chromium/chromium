@@ -1234,6 +1234,7 @@ mojom("mojom") {
   generate_java = true
   sources = [
     "cert_verifier_service.mojom",
+    "clear_data_filter.mojom",
     "cors_origin_pattern.mojom",
     "default_credentials.mojom",
     "dhcp_wpad_url_client.mojom",

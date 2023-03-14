@@ -353,6 +353,9 @@ AccessibilityUI::AccessibilityUI(content::WebUI* web_ui)
       base::BindRepeating(&ShouldHandleAccessibilityRequestCallback),
       base::BindRepeating(&HandleAccessibilityRequestCallback,
                           web_ui->GetWebContents()->GetBrowserContext()));
+  html_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types parse-html-subset sanitize-inner-html;");
 
   web_ui->AddMessageHandler(std::make_unique<AccessibilityUIMessageHandler>());
 }

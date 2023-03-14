@@ -33,10 +33,9 @@
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
-#include "third_party/blink/public/platform/web_request_peer.h"
-#include "third_party/blink/public/platform/web_resource_request_sender_delegate.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/public/platform/web_url_request_util.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/resource_request_client.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "url/gurl.h"
 
@@ -45,13 +44,6 @@ namespace blink {
 namespace {
 
 static constexpr char kTestPageUrl[] = "http://www.google.com/";
-static constexpr char kTestPageHeaders[] =
-    "HTTP/1.1 200 OK\nContent-Type:text/html\n\n";
-static constexpr char kTestPageMimeType[] = "text/html";
-static constexpr char kTestPageCharset[] = "";
-static constexpr char kTestPageContents[] =
-    "<html><head><title>Google</title></head><body><h1>Google</h1></body></"
-    "html>";
 
 constexpr size_t kDataPipeCapacity = 4096;
 
@@ -73,69 +65,13 @@ base::TimeTicks TicksFromMicroseconds(int64_t micros) {
 
 }  // namespace
 
-class TestResourceRequestSenderDelegate
-    : public WebResourceRequestSenderDelegate {
+// A mock ResourceRequestClient to receive messages from the
+// ResourceRequestSender.
+class MockRequestClient : public ResourceRequestClient {
  public:
-  TestResourceRequestSenderDelegate() = default;
-  TestResourceRequestSenderDelegate(const TestResourceRequestSenderDelegate&) =
-      delete;
-  TestResourceRequestSenderDelegate& operator=(
-      const TestResourceRequestSenderDelegate&) = delete;
-  ~TestResourceRequestSenderDelegate() override = default;
+  MockRequestClient() = default;
 
-  void OnRequestComplete() override {}
-
-  scoped_refptr<WebRequestPeer> OnReceivedResponse(
-      scoped_refptr<WebRequestPeer> current_peer,
-      const WebString& mime_type,
-      const WebURL& url) override {
-    return base::MakeRefCounted<WrapperPeer>(std::move(current_peer));
-  }
-
-  class WrapperPeer : public WebRequestPeer {
-   public:
-    explicit WrapperPeer(scoped_refptr<WebRequestPeer> original_peer)
-        : original_peer_(std::move(original_peer)) {}
-    WrapperPeer(const WrapperPeer&) = delete;
-    WrapperPeer& operator=(const WrapperPeer&) = delete;
-
-    // WebRequestPeer overrides:
-    void OnUploadProgress(uint64_t position, uint64_t size) override {}
-    bool OnReceivedRedirect(const net::RedirectInfo& redirect_info,
-                            network::mojom::URLResponseHeadPtr head,
-                            std::vector<std::string>*) override {
-      return false;
-    }
-    void OnReceivedResponse(network::mojom::URLResponseHeadPtr head,
-                            base::TimeTicks response_arrival) override {
-      response_head_ = std::move(head);
-    }
-    void OnStartLoadingResponseBody(
-        mojo::ScopedDataPipeConsumerHandle body) override {
-      body_handle_ = std::move(body);
-    }
-    void OnTransferSizeUpdated(int transfer_size_diff) override {}
-    void OnCompletedRequest(
-        const network::URLLoaderCompletionStatus& status) override {
-      original_peer_->OnReceivedResponse(std::move(response_head_));
-      original_peer_->OnStartLoadingResponseBody(std::move(body_handle_));
-      original_peer_->OnCompletedRequest(status);
-    }
-
-   private:
-    scoped_refptr<WebRequestPeer> original_peer_;
-    network::mojom::URLResponseHeadPtr response_head_;
-    mojo::ScopedDataPipeConsumerHandle body_handle_;
-  };
-};
-
-// A mock WebRequestPeer to receive messages from the ResourceRequestSender.
-class MockRequestPeer : public WebRequestPeer {
- public:
-  explicit MockRequestPeer(ResourceRequestSender* resource_request_sender)
-      : resource_request_sender_(resource_request_sender) {}
-
-  // WebRequestPeer overrides:
+  // ResourceRequestClient overrides:
   void OnUploadProgress(uint64_t position, uint64_t size) override {}
   bool OnReceivedRedirect(const net::RedirectInfo& redirect_info,
                           network::mojom::URLResponseHeadPtr head,
@@ -147,16 +83,9 @@ class MockRequestPeer : public WebRequestPeer {
                           base::TimeTicks response_arrival) override {
     last_load_timing_ = head->load_timing;
     received_response_ = true;
-    if (cancel_on_receive_response_) {
-      resource_request_sender_->Cancel(
-          scheduler::GetSingleThreadTaskRunnerForTesting());
-    }
   }
   void OnStartLoadingResponseBody(
       mojo::ScopedDataPipeConsumerHandle body) override {
-    if (cancel_on_receive_response_) {
-      return;
-    }
     if (body) {
       data_ += ReadOneChunk(&body);
     }
@@ -165,9 +94,6 @@ class MockRequestPeer : public WebRequestPeer {
   void OnReceivedCachedMetadata(mojo_base::BigBuffer data) override {}
   void OnCompletedRequest(
       const network::URLLoaderCompletionStatus& status) override {
-    if (cancel_on_receive_response_) {
-      return;
-    }
     completion_status_ = status;
     complete_ = true;
   }
@@ -180,20 +106,14 @@ class MockRequestPeer : public WebRequestPeer {
     return completion_status_;
   }
 
-  void SetCancelOnReceiveResponse(bool cancel_on_receive_response) {
-    cancel_on_receive_response_ = cancel_on_receive_response;
-  }
-
  private:
   // Data received. If downloading to file, remains empty.
   std::string data_;
 
   bool received_response_ = false;
   bool complete_ = false;
-  bool cancel_on_receive_response_ = false;
   net::LoadTimingInfo last_load_timing_;
   network::URLLoaderCompletionStatus completion_status_;
-  ResourceRequestSender* resource_request_sender_ = nullptr;
 };  // namespace blink
 
 // Sets up the message sender override for the unit test.
@@ -201,8 +121,7 @@ class ResourceRequestSenderTest : public testing::Test,
                                   public network::mojom::URLLoaderFactory {
  public:
   explicit ResourceRequestSenderTest()
-      : platform_(&delegate_),
-        resource_request_sender_(new ResourceRequestSender()) {}
+      : resource_request_sender_(new ResourceRequestSender()) {}
 
   ~ResourceRequestSenderTest() override {
     resource_request_sender_.reset();
@@ -222,17 +141,6 @@ class ResourceRequestSenderTest : public testing::Test,
   void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
       override {
     NOTREACHED();
-  }
-
-  void CallOnReceiveResponse(network::mojom::URLLoaderClient* client,
-                             mojo::ScopedDataPipeConsumerHandle body) {
-    auto head = network::mojom::URLResponseHead::New();
-    std::string raw_headers(kTestPageHeaders);
-    std::replace(raw_headers.begin(), raw_headers.end(), '\n', '\0');
-    head->headers = new net::HttpResponseHeaders(raw_headers);
-    head->mime_type = kTestPageMimeType;
-    head->charset = kTestPageCharset;
-    client->OnReceiveResponse(std::move(head), std::move(body), absl::nullopt);
   }
 
   std::unique_ptr<network::ResourceRequest> CreateResourceRequest() {
@@ -259,11 +167,11 @@ class ResourceRequestSenderTest : public testing::Test,
   ResourceRequestSender* sender() { return resource_request_sender_.get(); }
 
   void StartAsync(std::unique_ptr<network::ResourceRequest> request,
-                  scoped_refptr<WebRequestPeer> peer) {
+                  scoped_refptr<ResourceRequestClient> client) {
     sender()->SendAsync(
         std::move(request), scheduler::GetSingleThreadTaskRunnerForTesting(),
         TRAFFIC_ANNOTATION_FOR_TESTS, false,
-        /*cors_exempt_header_list=*/Vector<String>(), std::move(peer),
+        /*cors_exempt_header_list=*/Vector<String>(), std::move(client),
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(this),
         std::vector<std::unique_ptr<URLLoaderThrottle>>(),
         std::make_unique<ResourceLoadInfoNotifierWrapper>(
@@ -271,39 +179,15 @@ class ResourceRequestSenderTest : public testing::Test,
         /*back_forward_cache_loader_helper=*/nullptr);
   }
 
-  static MojoCreateDataPipeOptions DataPipeOptions() {
-    MojoCreateDataPipeOptions options;
-    options.struct_size = sizeof(MojoCreateDataPipeOptions);
-    options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
-    options.element_num_bytes = 1;
-    options.capacity_num_bytes = kDataPipeCapacity;
-    return options;
-  }
-
-  class TestPlatform final : public TestingPlatformSupport {
-   public:
-    explicit TestPlatform(WebResourceRequestSenderDelegate* delegate)
-        : delegate_(delegate) {}
-    WebResourceRequestSenderDelegate* GetResourceRequestSenderDelegate()
-        override {
-      return delegate_;
-    }
-
-   private:
-    WebResourceRequestSenderDelegate* delegate_;
-  };
-
  protected:
   std::vector<std::pair<mojo::PendingReceiver<network::mojom::URLLoader>,
                         mojo::PendingRemote<network::mojom::URLLoaderClient>>>
       loader_and_clients_;
-  TestResourceRequestSenderDelegate delegate_;
   base::test::SingleThreadTaskEnvironment task_environment_;
-  ScopedTestingPlatformSupport<TestPlatform, WebResourceRequestSenderDelegate*>
-      platform_;
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
   std::unique_ptr<ResourceRequestSender> resource_request_sender_;
 
-  scoped_refptr<MockRequestPeer> mock_peer_;
+  scoped_refptr<MockRequestClient> mock_client_;
 };
 
 // Tests the generation of unique request ids.
@@ -316,106 +200,11 @@ TEST_F(ResourceRequestSenderTest, MakeRequestID) {
   EXPECT_GE(first_id, 0);
 }
 
-TEST_F(ResourceRequestSenderTest, DelegateTest) {
-  std::unique_ptr<network::ResourceRequest> request(CreateResourceRequest());
-  mock_peer_ =
-      base::MakeRefCounted<MockRequestPeer>(resource_request_sender_.get());
-  StartAsync(std::move(request), mock_peer_);
-
-  ASSERT_EQ(1u, loader_and_clients_.size());
-  mojo::Remote<network::mojom::URLLoaderClient> client(
-      std::move(loader_and_clients_[0].second));
-  loader_and_clients_.clear();
-
-  mojo::ScopedDataPipeProducerHandle producer_handle;
-  mojo::ScopedDataPipeConsumerHandle consumer_handle;
-  auto options = DataPipeOptions();
-  ASSERT_EQ(mojo::CreateDataPipe(&options, producer_handle, consumer_handle),
-            MOJO_RESULT_OK);
-
-  // The wrapper eats all messages until RequestComplete message is sent.
-  CallOnReceiveResponse(client.get(), std::move(consumer_handle));
-
-  uint32_t size = static_cast<uint32_t>(strlen(kTestPageContents));
-  auto result = producer_handle->WriteData(kTestPageContents, &size,
-                                           MOJO_WRITE_DATA_FLAG_NONE);
-  ASSERT_EQ(result, MOJO_RESULT_OK);
-  ASSERT_EQ(size, strlen(kTestPageContents));
-
-  producer_handle.reset();
-
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(mock_peer_->received_response());
-
-  // This lets the wrapper peer pass all the messages to the original
-  // peer at once.
-  network::URLLoaderCompletionStatus status;
-  status.error_code = net::OK;
-  status.exists_in_cache = false;
-  status.encoded_data_length = strlen(kTestPageContents);
-  client->OnComplete(status);
-
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(mock_peer_->received_response());
-  EXPECT_EQ(kTestPageContents, mock_peer_->data());
-  EXPECT_TRUE(mock_peer_->complete());
-}
-
-TEST_F(ResourceRequestSenderTest, CancelDuringCallbackWithWrapperPeer) {
-  std::unique_ptr<network::ResourceRequest> request(CreateResourceRequest());
-  mock_peer_ =
-      base::MakeRefCounted<MockRequestPeer>(resource_request_sender_.get());
-  mock_peer_->SetCancelOnReceiveResponse(true);
-  StartAsync(std::move(request), mock_peer_);
-
-  ASSERT_EQ(1u, loader_and_clients_.size());
-  mojo::Remote<network::mojom::URLLoaderClient> client(
-      std::move(loader_and_clients_[0].second));
-  loader_and_clients_.clear();
-
-  mojo::ScopedDataPipeProducerHandle producer_handle;
-  mojo::ScopedDataPipeConsumerHandle consumer_handle;
-  auto options = DataPipeOptions();
-  ASSERT_EQ(mojo::CreateDataPipe(&options, producer_handle, consumer_handle),
-            MOJO_RESULT_OK);
-
-  CallOnReceiveResponse(client.get(), std::move(consumer_handle));
-  uint32_t size = static_cast<uint32_t>(strlen(kTestPageContents));
-  auto result = producer_handle->WriteData(kTestPageContents, &size,
-                                           MOJO_WRITE_DATA_FLAG_NONE);
-  ASSERT_EQ(result, MOJO_RESULT_OK);
-  ASSERT_EQ(size, strlen(kTestPageContents));
-  producer_handle.reset();
-
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(mock_peer_->received_response());
-
-  // This lets the wrapper peer pass all the messages to the original
-  // peer at once, but the original peer cancels right after it receives
-  // the response. (This will remove pending request info from
-  // ResourceRequestSender while the wrapper peer is still running
-  // OnCompletedRequest, but it should not lead to crashes.)
-  network::URLLoaderCompletionStatus status;
-  status.error_code = net::OK;
-  status.exists_in_cache = false;
-  status.encoded_data_length = strlen(kTestPageContents);
-  client->OnComplete(status);
-
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(mock_peer_->received_response());
-  // Request should have been cancelled with no additional messages.
-  // EXPECT_TRUE(peer_context.cancelled);
-  EXPECT_EQ("", mock_peer_->data());
-  EXPECT_FALSE(mock_peer_->complete());
-}
-
 class TimeConversionTest : public ResourceRequestSenderTest {
  public:
   void PerformTest(network::mojom::URLResponseHeadPtr response_head) {
     std::unique_ptr<network::ResourceRequest> request(CreateResourceRequest());
-    StartAsync(std::move(request), mock_peer_);
+    StartAsync(std::move(request), mock_client_);
 
     ASSERT_EQ(1u, loader_and_clients_.size());
     mojo::Remote<network::mojom::URLLoaderClient> client(
@@ -483,9 +272,8 @@ class CompletionTimeConversionTest : public ResourceRequestSenderTest {
                    base::TimeTicks completion_time,
                    base::TimeDelta delay) {
     std::unique_ptr<network::ResourceRequest> request(CreateResourceRequest());
-    mock_peer_ =
-        base::MakeRefCounted<MockRequestPeer>(resource_request_sender_.get());
-    StartAsync(std::move(request), mock_peer_);
+    mock_client_ = base::MakeRefCounted<MockRequestClient>();
+    StartAsync(std::move(request), mock_client_);
 
     ASSERT_EQ(1u, loader_and_clients_.size());
     mojo::Remote<network::mojom::URLLoaderClient> client(
@@ -522,12 +310,12 @@ class CompletionTimeConversionTest : public ResourceRequestSenderTest {
   }
 
   base::TimeTicks request_start() const {
-    EXPECT_TRUE(mock_peer_->received_response());
-    return mock_peer_->last_load_timing().request_start;
+    EXPECT_TRUE(mock_client_->received_response());
+    return mock_client_->last_load_timing().request_start;
   }
   base::TimeTicks completion_time() const {
-    EXPECT_TRUE(mock_peer_->complete());
-    return mock_peer_->completion_status().completion_time;
+    EXPECT_TRUE(mock_client_->complete());
+    return mock_client_->completion_status().completion_time;
   }
 };
 

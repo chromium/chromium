@@ -198,7 +198,7 @@ bool RotateLogFile(const base::FilePath& target_path) {
   {
     // Opens a file, only if it exists.
     base::File fp(target_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-    if (!fp.GetInfo(&info)) {
+    if (!fp.IsValid() || !fp.GetInfo(&info)) {
       // On failure, keep using the same file.
       return false;
     }

@@ -18,12 +18,12 @@
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/sync/sync_error_browser_agent.h"
 #import "ios/chrome/browser/ui/browser_view/browser_coordinator+private.h"
-#import "ios/chrome/browser/ui/commands/activity_service_commands.h"
-#import "ios/chrome/browser/ui/commands/application_commands.h"
-#import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
-#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_model.h"
 #import "ios/chrome/browser/ui/fullscreen/test/test_fullscreen_controller.h"
@@ -315,14 +315,18 @@ TEST_F(BrowserCoordinatorTest, NewTabPageTabHelperDelegate) {
   // Insert the web_state into the Browser.
   InsertWebState();
 
-  // Open a NTP and expect a call to the NTP coordinator.
-  [[mockNTPCoordinator expect] didNavigateToNTP];
+  // Open an NTP to start the coordinator.
   OpenURL(GURL("chrome://newtab/"));
   EXPECT_OCMOCK_VERIFY(mockNTPCoordinator);
 
   // Open a non-NTP page and expect a call to the NTP coordinator.
   [[mockNTPCoordinator expect] didNavigateAwayFromNTP];
   OpenURL(GURL("chrome://version/"));
+  EXPECT_OCMOCK_VERIFY(mockNTPCoordinator);
+
+  // Open another NTP and expect a navigation call.
+  [[mockNTPCoordinator expect] didNavigateToNTP];
+  OpenURL(GURL("chrome://newtab/"));
   EXPECT_OCMOCK_VERIFY(mockNTPCoordinator);
 
   [browser_coordinator stop];

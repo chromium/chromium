@@ -68,7 +68,7 @@ class NetworkConnectImpl : public NetworkConnect {
   void ShowCarrierAccountDetail(const std::string& network_id) override;
   void ShowPortalSignin(const std::string& network_id, Source source) override;
   void ConfigureNetworkIdAndConnect(const std::string& network_id,
-                                    const base::Value& shill_properties,
+                                    const base::Value::Dict& shill_properties,
                                     bool shared) override;
   void CreateConfigurationAndConnect(base::Value::Dict shill_properties,
                                      bool shared) override;
@@ -94,13 +94,13 @@ class NetworkConnectImpl : public NetworkConnect {
   void SetPropertiesFailed(const std::string& desc,
                            const std::string& network_id,
                            const std::string& config_error_name);
-  void SetPropertiesToClear(base::Value* properties_to_set,
+  void SetPropertiesToClear(base::Value::Dict* properties_to_set,
                             std::vector<std::string>* properties_to_clear);
   void ClearPropertiesAndConnect(
       const std::string& network_id,
       const std::vector<std::string>& properties_to_clear);
   void ConfigureSetProfileSucceeded(const std::string& network_id,
-                                    base::Value properties_to_set);
+                                    base::Value::Dict properties_to_set);
 
   Delegate* delegate_;
   base::WeakPtrFactory<NetworkConnectImpl> weak_factory_{this};
@@ -297,18 +297,20 @@ void NetworkConnectImpl::SetPropertiesFailed(
 }
 
 void NetworkConnectImpl::SetPropertiesToClear(
-    base::Value* properties_to_set,
+    base::Value::Dict* properties_to_set,
     std::vector<std::string>* properties_to_clear) {
   // Move empty string properties to properties_to_clear.
-  for (auto iter : properties_to_set->DictItems()) {
-    if (!iter.second.is_string())
+  for (auto iter : *properties_to_set) {
+    if (!iter.second.is_string()) {
       continue;
-    if (iter.second.GetString().empty())
+    }
+    if (iter.second.GetString().empty()) {
       properties_to_clear->push_back(iter.first);
+    }
   }
   // Remove cleared properties from properties_to_set.
   for (const std::string& property_to_clear : *properties_to_clear) {
-    properties_to_set->RemoveKey(property_to_clear);
+    properties_to_set->Remove(property_to_clear);
   }
 }
 
@@ -335,7 +337,7 @@ void NetworkConnectImpl::ClearPropertiesAndConnect(
 
 void NetworkConnectImpl::ConfigureSetProfileSucceeded(
     const std::string& network_id,
-    base::Value properties_to_set) {
+    base::Value::Dict properties_to_set) {
   std::vector<std::string> properties_to_clear;
   SetPropertiesToClear(&properties_to_set, &properties_to_clear);
   const NetworkState* network = GetNetworkStateFromId(network_id);
@@ -345,7 +347,7 @@ void NetworkConnectImpl::ConfigureSetProfileSucceeded(
     return;
   }
   NetworkHandler::Get()->network_configuration_handler()->SetShillProperties(
-      network->path(), properties_to_set.GetDict(),
+      network->path(), properties_to_set,
       base::BindOnce(&NetworkConnectImpl::ClearPropertiesAndConnect,
                      weak_factory_.GetWeakPtr(), network_id,
                      properties_to_clear),
@@ -499,12 +501,12 @@ void NetworkConnectImpl::ShowPortalSignin(const std::string& network_id,
 
 void NetworkConnectImpl::ConfigureNetworkIdAndConnect(
     const std::string& network_id,
-    const base::Value& properties,
+    const base::Value::Dict& properties,
     bool shared) {
   NET_LOG(USER) << "ConfigureNetworkIdAndConnect: "
                 << NetworkGuidId(network_id);
 
-  base::Value properties_to_set = properties.Clone();
+  base::Value::Dict properties_to_set = properties.Clone();
 
   std::string profile_path;
   if (!GetNetworkProfilePath(shared, &profile_path)) {

@@ -8,6 +8,7 @@ import './site_favicon.js';
 import './searchable_label.js';
 import './shared_style.css.js';
 
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -21,8 +22,9 @@ export interface PasswordListItemElement {
     numberOfAccounts: HTMLElement,
   };
 }
+const PasswordListItemElementBase = I18nMixin(PolymerElement);
 
-export class PasswordListItemElement extends PolymerElement {
+export class PasswordListItemElement extends PasswordListItemElementBase {
   static get is() {
     return 'password-list-item';
   }
@@ -122,6 +124,10 @@ export class PasswordListItemElement extends PolymerElement {
       return this.item.name + ' • ' + matchingDomain;
     }
     return this.item.name;
+  }
+
+  private getAriaLabel_(): string {
+    return this.i18n('viewPasswordAriaDescription', this.item.name);
   }
 }
 

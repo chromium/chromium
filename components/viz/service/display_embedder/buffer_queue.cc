@@ -6,10 +6,10 @@
 
 #include <utility>
 
+#include "base/metrics/histogram_macros.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/service/display/skia_output_surface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/common/sync_token.h"
 
 namespace viz {
 
@@ -94,12 +94,17 @@ void BufferQueue::SwapBuffersSkipped(const gfx::Rect& damage) {
 bool BufferQueue::Reshape(const gfx::Size& size,
                           const gfx::ColorSpace& color_space,
                           gfx::BufferFormat format) {
-  if (size == size_ && color_space == color_space_ && format == format_)
+  if (size == size_ && color_space == color_space_ && format == format_) {
     return false;
+  }
 
   size_ = size;
   color_space_ = color_space;
   format_ = format;
+
+  if (buffers_destroyed_) {
+    return true;
+  }
 
   FreeAllBuffers();
   AllocateBuffers(number_of_buffers_);
@@ -108,6 +113,9 @@ bool BufferQueue::Reshape(const gfx::Size& size,
 }
 
 void BufferQueue::RecreateBuffers() {
+  if (buffers_destroyed_) {
+    return;
+  }
   FreeAllBuffers();
   AllocateBuffers(number_of_buffers_);
 }
@@ -156,6 +164,8 @@ void BufferQueue::AllocateBuffers(size_t n) {
 }
 
 std::unique_ptr<BufferQueue::AllocatedBuffer> BufferQueue::GetNextBuffer() {
+  RecreateBuffersIfDestroyed();
+
   DCHECK(!available_buffers_.empty());
 
   std::unique_ptr<AllocatedBuffer> buffer =
@@ -165,6 +175,12 @@ std::unique_ptr<BufferQueue::AllocatedBuffer> BufferQueue::GetNextBuffer() {
 }
 
 gpu::Mailbox BufferQueue::GetLastSwappedBuffer() {
+  if (buffers_destroyed_) {
+    // Buffers will not be destroyed on platforms where we need to use a buffer
+    // for overlay testing (Ash).
+    return gpu::Mailbox();
+  }
+
   // The last swapped buffer will generally be in displayed_buffer_, as long as
   // SwapBuffersComplete() has been called at least once for a non-empty swap
   // since the last Reshape().
@@ -193,10 +209,31 @@ void BufferQueue::EnsureMinNumberOfBuffers(size_t n) {
   }
 
   // If Reshape hasn't been called yet we can't allocate the buffers.
-  if (!size_.IsEmpty()) {
+  if (!size_.IsEmpty() && !buffers_destroyed_) {
     AllocateBuffers(n - number_of_buffers_);
   }
   number_of_buffers_ = n;
+}
+
+void BufferQueue::DestroyBuffers() {
+  if (buffers_destroyed_) {
+    return;
+  }
+  buffers_destroyed_ = true;
+  destroyed_timer_ = base::ElapsedTimer();
+  FreeAllBuffers();
+}
+
+void BufferQueue::RecreateBuffersIfDestroyed() {
+  if (!buffers_destroyed_) {
+    return;
+  }
+  AllocateBuffers(number_of_buffers_);
+  buffers_destroyed_ = false;
+  base::TimeDelta elapsed = destroyed_timer_->Elapsed();
+  UMA_HISTOGRAM_TIMES("Compositing.BufferQueue.TimeUntilBuffersRecreatedMs",
+                      elapsed);
+  destroyed_timer_.reset();
 }
 
 BufferQueue::AllocatedBuffer::AllocatedBuffer(const gpu::Mailbox& mailbox,

@@ -32,6 +32,12 @@ BASE_FEATURE(kAccessCodeCastTabSwitchingUI,
              "AccessCodeCastTabSwitchingUI",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Provide functionality to freeze the casting session when AccessCodeCast is
+// enabled.
+BASE_FEATURE(kAccessCodeCastFreezeUI,
+             "AccessCodeCastFreezeUI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 
 namespace media_router {
@@ -66,6 +72,11 @@ base::TimeDelta GetAccessCodeDeviceDurationPref(Profile* profile) {
 bool IsAccessCodeCastTabSwitchingUiEnabled(Profile* profile) {
   return profile && GetAccessCodeCastEnabledPref(profile) &&
          base::FeatureList::IsEnabled(features::kAccessCodeCastTabSwitchingUI);
+}
+
+bool IsAccessCodeCastFreezeUiEnabled(Profile* profile) {
+  return profile && GetAccessCodeCastEnabledPref(profile) &&
+         base::FeatureList::IsEnabled(features::kAccessCodeCastFreezeUI);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

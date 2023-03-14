@@ -7,12 +7,40 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_defaults.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
+#include "ash/system/input_device_settings/input_device_tracker.h"
 #include "base/check.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
+namespace {
+
+mojom::PointingStickSettingsPtr GetDefaultPointingStickSettings() {
+  mojom::PointingStickSettingsPtr settings =
+      mojom::PointingStickSettings::New();
+  settings->sensitivity = kDefaultSensitivity;
+  settings->swap_right = kDefaultSwapRight;
+  settings->acceleration_enabled = kDefaultAccelerationEnabled;
+  return settings;
+}
+
+// GetPointingStickSettingsFromPrefs returns pointing stick settings based on
+// user prefs to be used as settings for new pointing sticks.
+mojom::PointingStickSettingsPtr GetPointingStickSettingsFromPrefs(
+    PrefService* prefs) {
+  mojom::PointingStickSettingsPtr settings =
+      mojom::PointingStickSettings::New();
+  settings->sensitivity = prefs->GetInteger(prefs::kPointingStickSensitivity);
+  settings->swap_right =
+      prefs->GetBoolean(prefs::kPrimaryPointingStickButtonRight);
+  settings->acceleration_enabled =
+      prefs->GetBoolean(prefs::kPointingStickAcceleration);
+  return settings;
+}
+
+}  // namespace
 
 PointingStickPrefHandlerImpl::PointingStickPrefHandlerImpl() = default;
 PointingStickPrefHandlerImpl::~PointingStickPrefHandlerImpl() = default;
@@ -24,7 +52,8 @@ void PointingStickPrefHandlerImpl::InitializePointingStickSettings(
       pref_service->GetDict(prefs::kPointingStickDeviceSettingsDictPref);
   const auto* settings_dict = devices_dict.FindDict(pointing_stick->device_key);
   if (!settings_dict) {
-    pointing_stick->settings = GetNewPointingStickSettings(*pointing_stick);
+    pointing_stick->settings =
+        GetNewPointingStickSettings(pref_service, *pointing_stick);
   } else {
     pointing_stick->settings = RetreivePointingStickSettings(
         pref_service, *pointing_stick, *settings_dict);
@@ -71,15 +100,16 @@ void PointingStickPrefHandlerImpl::UpdatePointingStickSettings(
 
 mojom::PointingStickSettingsPtr
 PointingStickPrefHandlerImpl::GetNewPointingStickSettings(
+    PrefService* pref_service,
     const mojom::PointingStick& pointing_stick) {
-  // TODO(michaelcheco): Implement pulling from old device settings if the
-  // device was observed in the transition period.
-  mojom::PointingStickSettingsPtr settings =
-      mojom::PointingStickSettings::New();
-  settings->sensitivity = kDefaultSensitivity;
-  settings->swap_right = kDefaultReverseScrolling;
-  settings->acceleration_enabled = kDefaultAccelerationEnabled;
-  return settings;
+  // TODO(michaelcheco): Remove once transitioned to per-device settings.
+  if (Shell::Get()->input_device_tracker()->WasDevicePreviouslyConnected(
+          InputDeviceTracker::InputDeviceCategory::kPointingStick,
+          pointing_stick.device_key)) {
+    return GetPointingStickSettingsFromPrefs(pref_service);
+  }
+
+  return GetDefaultPointingStickSettings();
 }
 
 mojom::PointingStickSettingsPtr

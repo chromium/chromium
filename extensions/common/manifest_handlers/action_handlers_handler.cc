@@ -54,18 +54,18 @@ bool ActionHandlersHandler::Parse(Extension* extension, std::u16string* error) {
     std::string value;
     bool enabled_on_lock_screen = false;
     if (wrapped_value.is_dict()) {
-      const base::Value* action_value = wrapped_value.FindKeyOfType(
-          keys::kActionHandlerActionKey, base::Value::Type::STRING);
-      if (!action_value) {
+      const base::Value::Dict& wrapped_dict = wrapped_value.GetDict();
+      const std::string* action =
+          wrapped_dict.FindString(keys::kActionHandlerActionKey);
+      if (!action) {
         *error = errors::kInvalidActionHandlerDictionary;
         return false;
       }
-      value = action_value->GetString();
-      const base::Value* lock_screen_value = wrapped_value.FindKeyOfType(
-          keys::kActionHandlerEnabledOnLockScreenKey,
-          base::Value::Type::BOOLEAN);
-      if (lock_screen_value) {
-        enabled_on_lock_screen = lock_screen_value->GetBool();
+      value = *action;
+      absl::optional<bool> enabled =
+          wrapped_dict.FindBool(keys::kActionHandlerEnabledOnLockScreenKey);
+      if (enabled) {
+        enabled_on_lock_screen = *enabled;
       }
     } else if (wrapped_value.is_string()) {
       value = wrapped_value.GetString();

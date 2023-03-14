@@ -352,7 +352,8 @@ IdentityTestEnvironment::FinishBuildIdentityManagerForTests(
   init_params.primary_account_mutator =
       std::make_unique<PrimaryAccountMutatorImpl>(
           account_tracker_service.get(), token_service.get(),
-          primary_account_manager.get(), pref_service, account_consistency);
+          primary_account_manager.get(), pref_service, signin_client,
+          account_consistency);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   init_params.accounts_mutator = std::make_unique<AccountsMutatorImpl>(
@@ -405,6 +406,15 @@ IdentityManager* IdentityTestEnvironment::identity_manager() {
                                : owned_identity_manager_.get();
 }
 
+SigninClient* IdentityTestEnvironment::signin_client() {
+  if (dependencies_owner_) {
+    return dependencies_owner_->signin_client();
+  } else {
+    DCHECK(raw_signin_client_);
+    return raw_signin_client_;
+  }
+}
+
 TestIdentityManagerObserver*
 IdentityTestEnvironment::identity_manager_observer() {
   return test_identity_manager_observer_.get();
@@ -439,9 +449,11 @@ AccountInfo IdentityTestEnvironment::MakePrimaryAccountAvailable(
                                              consent_level);
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void IdentityTestEnvironment::RevokeSyncConsent() {
   signin::RevokeSyncConsent(identity_manager());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 void IdentityTestEnvironment::ClearPrimaryAccount() {
   signin::ClearPrimaryAccount(identity_manager());

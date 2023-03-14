@@ -404,6 +404,10 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
   source->AddString(
       "showAccessRequestsInToolbarLearnMoreLink",
       chrome_extension_constants::kShowAccessRequestsInToolbarHelpURL);
+  source->AddBoolean(
+      "enableUserPermittedSites",
+      base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControlWithPermittedSites));
 
   return source;
 }

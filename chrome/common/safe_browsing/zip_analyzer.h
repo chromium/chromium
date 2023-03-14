@@ -9,16 +9,20 @@
 #define CHROME_COMMON_SAFE_BROWSING_ZIP_ANALYZER_H_
 
 #include "base/files/file.h"
+#include "base/functional/callback.h"
 
 namespace safe_browsing {
 
 struct ArchiveAnalyzerResults;
 
+using AnalyzerCallback =
+    base::OnceCallback<void(const ArchiveAnalyzerResults&)>;
+
 namespace zip_analyzer {
 
 void AnalyzeZipFile(base::File zip_file,
-                    base::File temp_file,
-                    ArchiveAnalyzerResults* results);
+                    AnalyzerCallback callback,
+                    base::File temp_file);
 
 }  // namespace zip_analyzer
 }  // namespace safe_browsing

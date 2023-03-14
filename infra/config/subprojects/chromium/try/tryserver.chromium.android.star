@@ -154,9 +154,6 @@ try_.builder(
     cores = 16,
     ssd = True,
     main_list_view = "try",
-
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
     properties = {
         "$build/binary_size": {
             "analyze_targets": [
@@ -288,16 +285,12 @@ try_.builder(
     name = "android-deterministic-dbg",
     executable = "recipe:swarming/deterministic_build",
     execution_timeout = 6 * time.hour,
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
 )
 
 try_.builder(
     name = "android-deterministic-rel",
     executable = "recipe:swarming/deterministic_build",
     execution_timeout = 6 * time.hour,
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
 )
 
 try_.builder(
@@ -675,6 +668,7 @@ try_.gpu.optional_tests_builder(
             cq.location_filter(path_regexp = "third_party/blink/renderer/modules/mediastream/.+"),
             cq.location_filter(path_regexp = "third_party/blink/renderer/modules/webcodecs/.+"),
             cq.location_filter(path_regexp = "third_party/blink/renderer/modules/webgl/.+"),
+            cq.location_filter(path_regexp = "third_party/blink/renderer/modules/webgpu/.+"),
             cq.location_filter(path_regexp = "third_party/blink/renderer/platform/graphics/gpu/.+"),
             cq.location_filter(path_regexp = "tools/clang/scripts/update.py"),
             cq.location_filter(path_regexp = "tools/mb/mb_config_expectations/tryserver.chromium.android.json"),

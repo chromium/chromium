@@ -126,8 +126,8 @@ bool CopyBundle(UpdaterScope scope) {
     }
   }
 
-  if (!base::CopyDirectory(base::mac::OuterBundlePath(), *versioned_install_dir,
-                           true)) {
+  if (!CopyDir(base::mac::OuterBundlePath(), *versioned_install_dir,
+               scope == UpdaterScope::kSystem)) {
     LOG(ERROR) << "Copying app to '" << versioned_install_dir->value().c_str()
                << "' failed";
     return false;
@@ -224,11 +224,11 @@ int DoSetup(UpdaterScope scope) {
   // Quarantine attribute needs to be removed here as the copied bundle might be
   // given com.apple.quarantine attribute, and the server is attempted to be
   // launched below, Gatekeeper could prompt the user.
-  const absl::optional<base::FilePath> bundle_path =
-      GetUpdaterAppBundlePath(scope);
-  if (!bundle_path)
-    return kErrorFailedToGetAppBundlePath;
-  if (!RemoveQuarantineAttributes(*bundle_path)) {
+  const absl::optional<base::FilePath> install_dir = GetInstallDirectory(scope);
+  if (!install_dir) {
+    return kErrorFailedToGetInstallDir;
+  }
+  if (!RemoveQuarantineAttributes(*install_dir)) {
     VLOG(1) << "Couldn't remove quarantine bits for updater. This will likely "
                "cause Gatekeeper to show a prompt to the user.";
   }

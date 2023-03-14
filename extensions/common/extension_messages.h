@@ -16,10 +16,10 @@
 #include <vector>
 
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "content/public/common/common_param_traits.h"
 #include "content/public/common/socket_permission_request.h"
-#include "extensions/common/activation_sequence.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/port_context.h"
@@ -455,13 +455,6 @@ IPC_MESSAGE_CONTROL4(ExtensionHostMsg_EventAckWorker,
                      int /* worker_thread_id */,
                      int /* event_id */)
 
-// Tells the browser that an extension service worker context was initialized,
-// but possibly didn't start executing its top-level JavaScript.
-IPC_MESSAGE_CONTROL3(ExtensionHostMsg_DidInitializeServiceWorkerContext,
-                     std::string /* extension_id */,
-                     int64_t /* service_worker_version_id */,
-                     int /* worker_thread_id */)
-
 // Tells the browser that an extension service worker context has started and
 // finished executing its top-level JavaScript.
 // Start corresponds to EmbeddedWorkerInstance::OnStarted notification.
@@ -483,7 +476,7 @@ IPC_MESSAGE_CONTROL3(ExtensionHostMsg_DidInitializeServiceWorkerContext,
 // See https://crbug.com/879015#c4 for details.
 IPC_MESSAGE_CONTROL5(ExtensionHostMsg_DidStartServiceWorkerContext,
                      std::string /* extension_id */,
-                     extensions::ActivationSequence /* activation_sequence */,
+                     base::UnguessableToken /* activation_sequence */,
                      GURL /* service_worker_scope */,
                      int64_t /* service_worker_version_id */,
                      int /* worker_thread_id */)
@@ -492,7 +485,7 @@ IPC_MESSAGE_CONTROL5(ExtensionHostMsg_DidStartServiceWorkerContext,
 // destroyed.
 IPC_MESSAGE_CONTROL5(ExtensionHostMsg_DidStopServiceWorkerContext,
                      std::string /* extension_id */,
-                     extensions::ActivationSequence /* activation_sequence */,
+                     base::UnguessableToken /* activation_sequence */,
                      GURL /* service_worker_scope */,
                      int64_t /* service_worker_version_id */,
                      int /* worker_thread_id */)

@@ -9,9 +9,9 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/time/time.h"
-#import "ios/chrome/browser/ui/commands/application_commands.h"
-#import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
-#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_detail_coordinator.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_controller.h"
@@ -110,7 +110,7 @@ NSString* const kTableViewNavigationDismissButtonId =
 #pragma mark - UINavigationControllerDelegate
 
 - (void)navigationController:(UINavigationController*)navigationController
-      willShowViewController:(UIViewController*)viewController
+       didShowViewController:(UIViewController*)viewController
                     animated:(BOOL)animated {
   // No-op if the previous view controller is not the detail view.
   if (!self.whatsNewDetailCoordinator) {

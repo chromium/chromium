@@ -8,6 +8,7 @@
 #include <set>
 #include <string>
 
+#include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "chrome/common/chrome_paths.h"
 #include "extensions/common/extension.h"
@@ -28,6 +29,68 @@ class ChromeExtensionsClientTest : public testing::Test {
  private:
   std::unique_ptr<ChromeExtensionsClient> extensions_client_;
 };
+
+base::span<const char* const> GetFeatureList() {
+  constexpr const char* feature_list[] = {"AllowedFeature",
+                                          "DisallowedFeature"};
+  return base::make_span(feature_list);
+}
+
+bool FeatureDelegatedCheck(const std::string& api_full_name,
+                           const Extension* extension,
+                           Feature::Context context,
+                           const GURL& url,
+                           Feature::Platform platform,
+                           int context_id,
+                           bool check_developer_mode,
+                           std::unique_ptr<ContextData> context_data) {
+  return api_full_name == "AllowedFeature";
+}
+
+Feature::FeatureDelegatedAvailabilityCheckMap
+CreateFeatureDelegatedAvailabilityCheckMap() {
+  Feature::FeatureDelegatedAvailabilityCheckMap map;
+  auto feature_list = GetFeatureList();
+  for (const auto* item : feature_list) {
+    map.emplace(item, base::BindRepeating(&FeatureDelegatedCheck));
+  }
+  return map;
+}
+
+TEST_F(ChromeExtensionsClientTest, FeatureDelegatedAvailabilityCheckMap) {
+  auto* client = ExtensionsClient::Get();
+  {
+    const auto& map = client->GetFeatureDelegatedAvailabilityCheckMap();
+    EXPECT_TRUE(map.empty());
+  }
+
+  client->SetFeatureDelegatedAvailabilityCheckMap(
+      CreateFeatureDelegatedAvailabilityCheckMap());
+  {
+    const auto& map = client->GetFeatureDelegatedAvailabilityCheckMap();
+    EXPECT_EQ(2u, map.size());
+
+    ASSERT_EQ(1u, map.count("AllowedFeature"));
+    bool allowed_result =
+        map.at("AllowedFeature")
+            .Run("AllowedFeature", /*extension=*/nullptr,
+                 Feature::Context::UNSPECIFIED_CONTEXT, GURL(),
+                 Feature::Platform::UNSPECIFIED_PLATFORM, /*context_id*/ 0,
+                 /*check_developer_mode=*/false,
+                 /*context_data=*/nullptr);
+    EXPECT_TRUE(allowed_result);
+
+    ASSERT_EQ(1u, map.count("DisallowedFeature"));
+    bool disallowed_result =
+        map.at("DisallowedFeature")
+            .Run("DisallowedFeature", /*extension=*/nullptr,
+                 Feature::Context::UNSPECIFIED_CONTEXT, GURL(),
+                 Feature::Platform::UNSPECIFIED_PLATFORM, /*context_id*/ 0,
+                 /*check_developer_mode=*/false,
+                 /*context_data=*/nullptr);
+    EXPECT_FALSE(disallowed_result);
+  }
+}
 
 // Test that a browser action extension returns a path to an icon.
 TEST_F(ChromeExtensionsClientTest, GetBrowserImagePaths) {

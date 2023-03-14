@@ -22,8 +22,8 @@ div {
 <div id="targetB"></div>
 <script>
 test(() => {
-  assert_equals(getComputedStyle(targetA).getPropertyValue('--y'), '  green');
-  assert_equals(getComputedStyle(targetB).getPropertyValue('--y'), '  lime');
+  assert_equals(getComputedStyle(targetA).getPropertyValue('--y'), 'green');
+  assert_equals(getComputedStyle(targetB).getPropertyValue('--y'), 'lime');
 }, 'CSS Animations on var() chained custom properties should be applied');
 
 test(() => {

@@ -4,11 +4,11 @@
 
 #include "remoting/host/win/simple_task_dialog.h"
 
-#include <algorithm>
 #include <iterator>
 #include <string>
 
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "remoting/host/win/core_resource.h"
 
 namespace remoting {
@@ -74,11 +74,10 @@ absl::optional<int> SimpleTaskDialog::Show() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<TASKDIALOG_BUTTON> taskdialog_buttons;
-  std::transform(
-      dialog_buttons_.begin(), dialog_buttons_.end(),
-      std::back_inserter(taskdialog_buttons),
-      [](const std::pair<int, std::wstring>& button) -> TASKDIALOG_BUTTON {
-        return {button.first, button.second.c_str()};
+  base::ranges::transform(
+      dialog_buttons_, std::back_inserter(taskdialog_buttons),
+      [](const std::pair<int, std::wstring>& button) {
+        return TASKDIALOG_BUTTON{button.first, button.second.c_str()};
       });
 
   TASKDIALOGCONFIG dialog_config = {0};

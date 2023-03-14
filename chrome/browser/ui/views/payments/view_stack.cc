@@ -146,10 +146,9 @@ void ViewStack::OnBoundsAnimatorDone(views::BoundsAnimator* animator) {
     RemoveChildViewT(stack_.back());
     stack_.pop_back();
     DCHECK(!stack_.empty()) << "State stack should never be empty";
-  } else if (animator == slide_in_animator_.get()) {
-    HideCoveredViews();
   } else {
-    NOTREACHED();
+    CHECK_EQ(animator, slide_in_animator_.get());
+    HideCoveredViews();
   }
   RequestFocus();
 }

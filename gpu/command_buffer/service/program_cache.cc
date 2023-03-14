@@ -19,10 +19,12 @@ namespace gles2 {
 ProgramCache::ScopedCacheUse::ScopedCacheUse(ProgramCache* cache,
                                              CacheProgramCallback callback)
     : cache_(cache) {
+  base::AutoLock auto_lock(cache_->lock_);
   cache_->cache_program_callback_ = callback;
 }
 
 ProgramCache::ScopedCacheUse::~ScopedCacheUse() {
+  base::AutoLock auto_lock(cache_->lock_);
   cache_->cache_program_callback_.Reset();
 }
 

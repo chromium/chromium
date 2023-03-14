@@ -12,6 +12,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/system_toast_style.h"
+#include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rect.h"
@@ -76,6 +77,9 @@ void CaptureModeToastController::ShowCaptureToast(
   } else {
     toast_contents_view_->SetText(capture_toast_label);
   }
+
+  capture_mode_util::TriggerAccessibilityAlertSoon(
+      base::UTF16ToUTF8(capture_toast_label));
 
   MaybeRepositionCaptureToast();
   const bool did_visibility_change = capture_mode_util::SetWidgetVisibility(

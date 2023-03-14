@@ -38,6 +38,7 @@ enum ReportingDestination {
   kSeller,
   kComponentSeller,
   kSharedStorageSelectUrl,
+  kDirectSeller,
 };
 
 // TODO(crbug.com/1347953): Decompose this into flags that directly control the

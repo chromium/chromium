@@ -26,7 +26,7 @@ ConfigurationPolicyPrefStoreTest::ConfigurationPolicyPrefStoreTest()
                                             PopulatePolicyHandlerParameters,
                                         base::Unretained(this)),
                     GetChromePolicyDetailsCallback(),
-                    /* allow_all_future_policies*/ true) {
+                    /* are_future_policies_allowed_by_default*/ true) {
   provider_.SetDefaultReturns(false /* is_initialization_complete_return */,
                               false /* is_first_policy_load_complete_return */);
   EXPECT_CALL(provider_, IsInitializationComplete(_))

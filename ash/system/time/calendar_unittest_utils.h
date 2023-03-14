@@ -257,8 +257,8 @@ std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
     const google_apis::calendar::CalendarEvent::ResponseStatus
         self_response_status =
             google_apis::calendar::CalendarEvent::ResponseStatus::kAccepted,
-    const bool all_day_event = false,
-    const std::string hangout_link = "");
+    bool all_day_event = false,
+    GURL video_conference_url = GURL());
 
 // Creates a `google_apis::calendar::CalendarEvent` for testing, that converts
 // start/end `base::Time` objects to `google_apis::calendar::DateTime`.
@@ -272,8 +272,8 @@ std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
     const google_apis::calendar::CalendarEvent::ResponseStatus
         self_response_status =
             google_apis::calendar::CalendarEvent::ResponseStatus::kAccepted,
-    const bool all_day_event = false,
-    const std::string hangout_link = "");
+    bool all_day_event = false,
+    GURL video_conference_url = GURL());
 
 std::unique_ptr<google_apis::calendar::EventList> CreateMockEventList(
     std::list<std::unique_ptr<google_apis::calendar::CalendarEvent>> events);

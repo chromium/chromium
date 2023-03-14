@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/compositor/layer_tree_owner.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -139,6 +140,51 @@ DropHelper::DropCallback DropHelper::GetDropCallback(
         // is invoked with as that event is in window coordinates and callbacks
         // expect View coordinates.
         std::move(drop_cb).Run(drop_event, output_drag_op);
+      },
+      drop_event, std::move(drop_view_cb));
+}
+
+DropHelper::DropCallbackWithAnimation DropHelper::GetDropCallbackWithAnimation(
+    const OSExchangeData& data,
+    const gfx::Point& root_view_location,
+    int drag_operation) {
+  View* drop_view = target_view_;
+  if (!drop_view) {
+    return base::NullCallback();
+  }
+
+  if (drag_operation == ui::DragDropTypes::DRAG_NONE) {
+    drop_view->OnDragExited();
+    return base::NullCallback();
+  }
+
+  gfx::Point view_location(root_view_location);
+  View* root_view = drop_view->GetWidget()->GetRootView();
+  View::ConvertPointToTarget(root_view, drop_view, &view_location);
+  ui::DropTargetEvent drop_event(data, gfx::PointF(view_location),
+                                 gfx::PointF(view_location), drag_operation);
+
+  auto drop_view_cb = drop_view->GetDropCallbackWithAnimation(drop_event);
+  if (!drop_view_cb) {
+    return base::NullCallback();
+  }
+
+  // Only reset the target view when the helper successfully returns a callback.
+  // If no callback is returned here, GetDropCallback might still need the
+  // target view.
+  deepest_view_ = target_view_ = nullptr;
+
+  return base::BindOnce(
+      [](const ui::DropTargetEvent& drop_event,
+         View::DropCallbackWithAnimation drop_cb,
+         std::unique_ptr<ui::OSExchangeData> data,
+         ui::mojom::DragOperation& output_drag_op,
+         std::unique_ptr<ui::LayerTreeOwner> old_layer_owner) {
+        // Bind the drop_event here instead of using the one that the callback
+        // is invoked with as that event is in window coordinates and callbacks
+        // expect View coordinates.
+        std::move(drop_cb).Run(drop_event, output_drag_op,
+                               std::move(old_layer_owner));
       },
       drop_event, std::move(drop_view_cb));
 }

@@ -13,7 +13,6 @@
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -385,13 +384,15 @@ void BrowserViewLayout::Layout(views::View* browser_view) {
   vertical_layout_rect_ = browser_view->GetLocalBounds();
   int top_inset = delegate_->GetTopInsetInBrowserView();
   int top = LayoutTitleBarForWebApp(top_inset);
-  top = LayoutTabStripRegion(top);
-  if (delegate_->IsTabStripVisible()) {
-    tab_strip_->SetBackgroundOffset(tab_strip_region_view_->GetMirroredX() +
-                                    browser_view_->GetMirroredX() +
-                                    delegate_->GetThemeBackgroundXInset());
+  if (delegate_->ShouldLayoutTabStrip()) {
+    top = LayoutTabStripRegion(top);
+    if (delegate_->IsTabStripVisible()) {
+      tab_strip_->SetBackgroundOffset(tab_strip_region_view_->GetMirroredX() +
+                                      browser_view_->GetMirroredX() +
+                                      delegate_->GetThemeBackgroundXInset());
+    }
+    top = LayoutWebUITabStrip(top);
   }
-  top = LayoutWebUITabStrip(top);
   top = LayoutToolbar(top);
 
   top = LayoutBookmarkAndInfoBars(top, browser_view->y());

@@ -611,7 +611,7 @@ namespace {
 // because the UI toolkit has loose guarantees about where the actual label
 // appears in the shadow DOM.
 constexpr char kInfoButtonSelector[] = "#icon-button-2283726";
-constexpr char kAnnotationButtonSelector[] = "#icon-button-3709949292";
+constexpr char kAnnotationButtonSelector[] = "#icon-button-2138468";
 constexpr char kCropAndRotateButtonSelector[] = "#icon-button-2723030533";
 
 // Clicks the button on the app bar with the specified selector.

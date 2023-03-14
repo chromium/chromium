@@ -264,23 +264,24 @@ TEST_F(ChromePingManagerTest, ReportSafeBrowsingHit) {
       profile_manager_->CreateTestingProfile("testing_profile");
   auto* ping_manager = ChromePingManagerFactory::GetForBrowserContext(profile);
 
-  HitReport hit_report;
-  hit_report.post_data = "testing_hit_report_post_data";
+  std::unique_ptr<HitReport> hit_report = std::make_unique<HitReport>();
+  std::string post_data = "testing_hit_report_post_data";
+  hit_report->post_data = post_data;
   // Threat type and source are arbitrary but specified so that determining the
   // URL does not does throw an error due to input validation.
-  hit_report.threat_type = SB_THREAT_TYPE_URL_PHISHING;
-  hit_report.threat_source = ThreatSource::LOCAL_PVER4;
+  hit_report->threat_type = SB_THREAT_TYPE_URL_PHISHING;
+  hit_report->threat_source = ThreatSource::LOCAL_PVER4;
 
   network::TestURLLoaderFactory test_url_loader_factory;
   test_url_loader_factory.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
-        EXPECT_EQ(GetUploadData(request), hit_report.post_data);
+        EXPECT_EQ(GetUploadData(request), post_data);
       }));
   ping_manager->SetURLLoaderFactoryForTesting(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory));
 
-  ping_manager->ReportSafeBrowsingHit(hit_report);
+  ping_manager->ReportSafeBrowsingHit(std::move(hit_report));
 }
 
 }  // namespace safe_browsing

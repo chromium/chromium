@@ -469,7 +469,7 @@ void Shell::ExitFullscreenModeForTab(WebContents* web_contents) {
 
 void Shell::ToggleFullscreenModeForTab(WebContents* web_contents,
                                        bool enter_fullscreen) {
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   g_platform->ToggleFullscreenModeForTab(this, web_contents, enter_fullscreen);
 #endif
   if (is_fullscreen_ != enter_fullscreen) {
@@ -482,7 +482,7 @@ void Shell::ToggleFullscreenModeForTab(WebContents* web_contents,
 }
 
 bool Shell::IsFullscreenForTabOrPending(const WebContents* web_contents) {
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return g_platform->IsFullscreenForTabOrPending(this, web_contents);
 #else
   return is_fullscreen_;

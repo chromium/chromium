@@ -6,9 +6,9 @@
 
 #import "base/notreached.h"
 #import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_suggestion_icon_util.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/public/provider/chrome/browser/branded_images/branded_images_api.h"
 #import "url/gurl.h"
@@ -113,21 +113,6 @@
   }
 }
 
-- (UIImage*)backgroundImage {
-  switch (self.iconType) {
-    case OmniboxIconTypeImage:
-      return nil;
-    case OmniboxIconTypeSuggestionIcon:
-      if ([self hasCustomAnswerIcon]) {
-        return [[UIImage imageNamed:@"background_solid"]
-            imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-      }
-      return nil;
-    case OmniboxIconTypeFavicon:
-      return nil;
-  }
-}
-
 - (UIColor*)backgroundImageTintColor {
   switch (self.iconType) {
     case OmniboxIconTypeImage:
@@ -142,16 +127,7 @@
   }
 }
 
-- (UIImage*)overlayImage {
-  switch (self.iconType) {
-    case OmniboxIconTypeImage:
-    case OmniboxIconTypeSuggestionIcon:
-    case OmniboxIconTypeFavicon:
-      return nil;
-  }
-}
-
-- (UIColor*)overlayImageTintColor {
+- (UIColor*)borderColor {
   return nil;
 }
 

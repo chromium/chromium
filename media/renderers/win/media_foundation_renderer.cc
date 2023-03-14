@@ -131,22 +131,31 @@ MediaFoundationRenderer::~MediaFoundationRenderer() {
 
   StopSendingStatistics();
 
-  if (mf_media_engine_extension_)
-    mf_media_engine_extension_->Shutdown();
-  if (mf_media_engine_notify_)
+  // 'mf_media_engine_notify_' should be shutdown first as errors are possible
+  // if source is being created while shutdown is called (causing
+  // ERROR_FILE_NOT_FOUND from Media Foundations). These errors should be
+  // ignored by 'mf_media_engine_notify_' instead of being propagated up.
+  if (mf_media_engine_notify_) {
     mf_media_engine_notify_->Shutdown();
-  if (mf_media_engine_)
+  }
+  if (mf_media_engine_extension_) {
+    mf_media_engine_extension_->Shutdown();
+  }
+  if (mf_media_engine_) {
     mf_media_engine_->Shutdown();
+  }
 
-  if (mf_source_)
+  if (mf_source_) {
     mf_source_->DetachResource();
+  }
 
   if (dxgi_device_manager_) {
     dxgi_device_manager_.Reset();
     MFUnlockDXGIDeviceManager();
   }
-  if (virtual_video_window_)
+  if (virtual_video_window_) {
     DestroyWindow(virtual_video_window_);
+  }
 }
 
 void MediaFoundationRenderer::Initialize(MediaResource* media_resource,

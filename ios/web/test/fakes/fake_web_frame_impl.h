@@ -31,7 +31,6 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
   std::string GetFrameId() const override;
   bool IsMainFrame() const override;
   GURL GetSecurityOrigin() const override;
-  bool CanCallJavaScriptFunction() const override;
   BrowserState* GetBrowserState() override;
   bool CallJavaScriptFunction(
       const std::string& name,
@@ -59,22 +58,19 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
   void AddResultForExecutedJs(base::Value* js_result,
                               const std::u16string& executed_js) override;
   void set_force_timeout(bool force_timeout) override;
-  void set_can_call_function(bool can_call_function) override;
   void set_call_java_script_function_callback(
       base::RepeatingClosure callback) override;
 
   // WebFrameInternal:
-  // If `CanCallJavaScriptFunction()` is true, the JavaScript call which would
-  // be executed by a real WebFrame will be added to `java_script_calls_`.
-  // Returns the value of `CanCallJavaScriptFunction()`. `content_world` is
-  // stored to `last_received_content_world_`.
+  // The JavaScript call which would be executed by a real WebFrame will be
+  // added to `java_script_calls_`. `content_world` is stored to
+  // `last_received_content_world_`. Always returns true.
   bool CallJavaScriptFunctionInContentWorld(
       const std::string& name,
       const std::vector<base::Value>& parameters,
       JavaScriptContentWorld* content_world) override;
-  // If `CanCallJavaScriptFunction()` is true, the JavaScript call which would
-  // be executed by a real WebFrame will be added to `java_script_calls_`.
-  // Returns the value of `CanCallJavaScriptFunction()`.
+  // The JavaScript call which would be executed by a real WebFrame will be
+  // added to `java_script_calls_`. Always returns true.
   // `callback` will be executed with the value passed in to
   // AddJsResultForFunctionCall() or null if no such result has been added.
   // `content_world` is stored to `last_received_content_world_`.
@@ -105,8 +101,6 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
   // Vector holding history of all javascript handler calls made in this frame.
   // The calls are sorted with the most recent appended at the end.
   std::vector<std::u16string> java_script_calls_;
-  // The return value of CanCallJavaScriptFunction().
-  bool can_call_function_ = true;
   // When set to true, will force calls to CallJavaScriptFunction to fail with
   // timeout.
   bool force_timeout_ = false;

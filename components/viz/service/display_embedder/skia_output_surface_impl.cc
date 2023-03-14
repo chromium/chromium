@@ -572,7 +572,7 @@ SkiaOutputSurfaceImpl::CreateImageContext(
   return std::make_unique<ImageContextImpl>(
       holder, size, format, maybe_concurrent_reads, ycbcr_info,
       std::move(color_space),
-      /*allow_keeping_read_access=*/true, raw_draw_if_possible);
+      /*is_for_render_pass=*/false, raw_draw_if_possible);
 }
 
 void SkiaOutputSurfaceImpl::SwapBuffers(OutputSurfaceFrame frame) {
@@ -719,6 +719,7 @@ SkCanvas* SkiaOutputSurfaceImpl::RecordOverdrawForCurrentPaint() {
 void SkiaOutputSurfaceImpl::EndPaint(
     base::OnceClosure on_finished,
     base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb,
+    const gfx::Rect& update_rect,
     bool is_overlay) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(current_paint_);
@@ -751,14 +752,17 @@ void SkiaOutputSurfaceImpl::EndPaint(
                    /*make_current=*/true, /*need_framebuffer=*/true);
     draw_rectangle_.reset();
   } else {
-    auto task = base::BindOnce(
-        &SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass,
-        base::Unretained(impl_on_gpu_.get()), current_paint_->mailbox(),
-        std::move(ddl), std::move(overdraw_ddl),
-        std::move(images_in_current_paint_), resource_sync_tokens_,
-        std::move(on_finished), std::move(return_release_fence_cb), is_overlay);
-    EnqueueGpuTask(std::move(task), std::move(resource_sync_tokens_),
-                   /*make_current=*/true, /*need_framebuffer=*/false);
+    if (!update_rect.IsEmpty()) {
+      auto task = base::BindOnce(
+          &SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass,
+          base::Unretained(impl_on_gpu_.get()), current_paint_->mailbox(),
+          std::move(ddl), std::move(overdraw_ddl),
+          std::move(images_in_current_paint_), resource_sync_tokens_,
+          std::move(on_finished), std::move(return_release_fence_cb),
+          update_rect, is_overlay);
+      EnqueueGpuTask(std::move(task), std::move(resource_sync_tokens_),
+                     /*make_current=*/true, /*need_framebuffer=*/false);
+    }
   }
   images_in_current_paint_.clear();
   current_paint_.reset();
@@ -781,7 +785,7 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromRenderPass(
     image_context = std::make_unique<ImageContextImpl>(
         mailbox_holder, size, si_format, /*maybe_concurrent_reads=*/false,
         /*ycbcr_info=*/absl::nullopt, std::move(color_space),
-        /*allow_keeping_read_access=*/false);
+        /*is_for_render_pass=*/true);
   }
   if (!image_context->has_image()) {
     SkColorType color_type =
@@ -1248,9 +1252,7 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
   if (dependency_->IsUsingVulkan()) {
 #if BUILDFLAG(ENABLE_VULKAN)
     if (!ycbcr_info) {
-      DCHECK(si_format.is_single_plane());
-      // TODO(hitawala): Add multiplanar support for Skia-Vulkan.
-      return GrBackendFormat::MakeVk(gpu::ToVkFormat(si_format));
+      return GrBackendFormat::MakeVk(gpu::ToVkFormat(si_format, plane_index));
     }
 
     // Assume optimal tiling.

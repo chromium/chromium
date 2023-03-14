@@ -10,7 +10,6 @@
 #include "base/sequence_checker.h"
 #include "chrome/browser/cart/cart_db.h"
 #include "chrome/browser/cart/cart_discount_metric_collector.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/commerce/core/proto/cart_db_content.pb.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"

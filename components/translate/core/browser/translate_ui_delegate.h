@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
+#include "components/translate/core/browser/translate_ui_delegate.h"
 #include "components/translate/core/common/translate_errors.h"
 
 namespace translate {
@@ -25,21 +26,11 @@ class LanguageState;
 class TranslateDriver;
 class TranslateManager;
 class TranslatePrefs;
+class TranslateUILanguagesManager;
 
-// The TranslateUIDelegate is a generic delegate for UI which offers Translate
-// feature to the user.
-
-// Note that the API offers a way to read/set language values through array
-// indices. Such indices are only valid as long as the visual representation
-// (infobar, bubble...) is in sync with the underlying language list which
-// can actually change at run time (see translate_language_list.h).
-// It is recommended that languages are only updated by language code to
-// avoid bugs like crbug.com/555124
-
+// The delegate for the Full Page Translate Bubble UI.
 class TranslateUIDelegate {
  public:
-  static const size_t kNoIndex = static_cast<size_t>(-1);
-
   TranslateUIDelegate(const base::WeakPtr<TranslateManager>& translate_manager,
                       const std::string& source_language,
                       const std::string& target_language);
@@ -47,55 +38,24 @@ class TranslateUIDelegate {
   TranslateUIDelegate(const TranslateUIDelegate&) = delete;
   TranslateUIDelegate& operator=(const TranslateUIDelegate&) = delete;
 
-  virtual ~TranslateUIDelegate();
+  ~TranslateUIDelegate();
+
+  TranslateUILanguagesManager* translate_ui_languages_manager() {
+    return translate_ui_languages_manager_.get();
+  }
+
+  // Wrappers for equivalent TranslateUILanguagesManager APIs used to add
+  // Full Page Translate related logging.
+  void UpdateAndRecordSourceLanguageIndex(size_t language_index);
+  void UpdateAndRecordSourceLanguage(const std::string& language_code);
+  void UpdateAndRecordTargetLanguageIndex(size_t language_index);
+  void UpdateAndRecordTargetLanguage(const std::string& language_code);
 
   // Handles when an error message is shown.
   void OnErrorShown(TranslateErrors error_type);
 
   // Returns the LanguageState associated with this object.
   const LanguageState* GetLanguageState();
-
-  // Returns the number of languages supported.
-  size_t GetNumberOfLanguages() const;
-
-  // Returns the source language index.
-  size_t GetSourceLanguageIndex() const { return source_language_index_; }
-
-  // Returns the initial source language index.
-  size_t GetInitialSourceLanguageIndex() const {
-    return initial_source_language_index_;
-  }
-
-  // Returns the source language code.
-  std::string GetSourceLanguageCode() const;
-
-  // Updates the source language index if |language_index| is different from the
-  // current index.
-  void UpdateSourceLanguageIndex(size_t language_index);
-
-  // Updates the source language and saves the change for logging if the provided 
-  // |language_code| is valid.
-  void UpdateSourceLanguage(const std::string& language_code);
-
-  // Returns the target language index.
-  size_t GetTargetLanguageIndex() const { return target_language_index_; }
-
-  // Returns the target language code.
-  std::string GetTargetLanguageCode() const;
-
-  // Updates the target language index if |language_index| is different from the
-  // current index.
-  void UpdateTargetLanguageIndex(size_t language_index);
-
-  // Updates the target language and saves the change for logging if the provided 
-  // |language_code| is valid.
-  void UpdateTargetLanguage(const std::string& language_code);
-
-  // Returns the ISO code for the language at |index|.
-  std::string GetLanguageCodeAt(size_t index) const;
-
-  // Returns the displayable name for the language at |index|.
-  std::u16string GetLanguageNameAt(size_t index) const;
 
   // Translatable content languages.
   void GetContentLanguagesCodes(
@@ -173,8 +133,6 @@ class TranslateUIDelegate {
   // languages data.
   void MaybeSetContentLanguages();
 
-  static std::u16string GetUnknownLanguageDisplayName();
-
   // Returns whether or not the current session is off-the-record.
   bool IsIncognito() const;
 
@@ -199,31 +157,14 @@ class TranslateUIDelegate {
   raw_ptr<TranslateDriver, DanglingUntriaged> translate_driver_;
   base::WeakPtr<TranslateManager> translate_manager_;
 
-  // ISO code (en, fr...) -> displayable name in the current locale
-  typedef std::pair<std::string, std::u16string> LanguageNamePair;
-
-  // The list supported languages for translation.
-  // The languages are sorted alphabetically based on the displayable name.
-  std::vector<LanguageNamePair> languages_;
+  // Manages the Translate UI language list related APIs.
+  std::unique_ptr<TranslateUILanguagesManager> translate_ui_languages_manager_;
 
   // The list of language codes representing translatable user's setting
   // languages. The languages are in order defined by the user.
   std::vector<std::string> translatable_content_languages_codes_;
 
-  // The index for language the page is in before translation.
-  size_t source_language_index_;
-
-  // The index for language the page is in before translation in that was first
-  // reported (source_language_index_ changes if the user selects a new
-  // source language, but this one does not).  This is necessary to report
-  // language detection errors with the right source language even if the user
-  // changed the source language.
-  size_t initial_source_language_index_;
-
-  // The index for language the page should be translated to.
-  size_t target_language_index_;
-
-  // The translation related preferences.
+  // Translate related preferences.
   std::unique_ptr<TranslatePrefs> prefs_;
 
   // Listens to accept languages changes.

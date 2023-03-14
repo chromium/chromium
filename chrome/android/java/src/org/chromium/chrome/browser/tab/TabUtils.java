@@ -29,6 +29,7 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.url.GURL;
@@ -244,7 +245,7 @@ public class TabUtils {
      * @return Aspect ratio for the grid tab card.
      */
     public static float getTabThumbnailAspectRatio(Context context) {
-        if (TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(context)
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
                 && context.getResources().getConfiguration().orientation
                         == Configuration.ORIENTATION_LANDSCAPE) {
             return (context.getResources().getConfiguration().screenWidthDp * 1.f)

@@ -45,7 +45,7 @@ hue-slider {
 }
 
 eye-dropper {
-  background-image: -webkit-image-set(url(eye_dropper_icon.svg) 1x);
+  background-image: url(eye_dropper_icon.svg);
   background-origin: content-box;
   background-repeat: no-repeat;
   background-size: contain;
@@ -259,7 +259,7 @@ system-color-picker.selected {
   }
 
   eye-dropper {
-    background-image: -webkit-image-set(url(eye_dropper_icon_dark.svg) 1x);
+    background-image: url(eye_dropper_icon_dark.svg);
   }
 
   eye-dropper.selected {

@@ -11,6 +11,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase_map.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
@@ -24,6 +25,7 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/device_public_key_extension.h"
 #include "device/fido/discoverable_credential_metadata.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_parsing_utils.h"
@@ -256,7 +258,7 @@ base::flat_set<FidoTransportProtocol> GetTransportsAllowedByRP(
                       credential.transports.end());
   }
 
-  transports.insert(device::FidoTransportProtocol::kAndroidAccessory);
+  transports.insert(FidoTransportProtocol::kAndroidAccessory);
   return transports;
 }
 
@@ -276,11 +278,32 @@ void ReportGetAssertionResponseTransport(FidoAuthenticator* authenticator) {
   }
 }
 
+UserVerificationRequirement AtLeastUVPreferred(UserVerificationRequirement uv) {
+  switch (uv) {
+    case UserVerificationRequirement::kDiscouraged:
+      return UserVerificationRequirement::kPreferred;
+    case UserVerificationRequirement::kPreferred:
+    case UserVerificationRequirement::kRequired:
+      return uv;
+  }
+}
+
 CtapGetAssertionRequest SpecializeRequestForAuthenticator(
     const CtapGetAssertionRequest& request,
     const CtapGetAssertionOptions& options,
     const FidoAuthenticator& authenticator) {
   CtapGetAssertionRequest specialized_request(request);
+
+  if (request.allow_list.empty() &&
+      (authenticator.AuthenticatorTransport() !=
+           FidoTransportProtocol::kInternal ||
+       !base::FeatureList::IsEnabled(
+           kWebAuthnMacPlatformAuthenticatorOptionalUv))) {
+    // Resident credential requests on external authenticators always require
+    // user verification.
+    specialized_request.user_verification =
+        UserVerificationRequirement::kRequired;
+  }
 
   if (authenticator.Options().always_uv) {
     specialized_request.user_verification =
@@ -294,8 +317,15 @@ CtapGetAssertionRequest SpecializeRequestForAuthenticator(
       !authenticator.Options().supports_device_public_key) {
     specialized_request.device_public_key.reset();
   }
-  if (!options.prf_inputs.empty() && authenticator.Options().supports_prf) {
-    specialized_request.prf_inputs = options.prf_inputs;
+  if (!options.prf_inputs.empty()) {
+    if (authenticator.Options().supports_prf) {
+      specialized_request.prf_inputs = options.prf_inputs;
+    }
+    // CTAP2 devices have two PRFs per credential: one for non-UV assertions
+    // and another for UV assertions. WebAuthn only exposes the latter so UV
+    // is needed if supported by the authenticator.
+    specialized_request.user_verification =
+        AtLeastUVPreferred(specialized_request.user_verification);
   }
   return specialized_request;
 }
@@ -317,15 +347,6 @@ CtapGetAssertionOptions SpecializeOptionsForAuthenticator(
   }
 
   return specialized_options;
-}
-
-CtapGetAssertionRequest SetUVForDiscoverableRequests(
-    CtapGetAssertionRequest request) {
-  if (request.allow_list.empty()) {
-    // Resident credential requests always involve user verification.
-    request.user_verification = UserVerificationRequirement::kRequired;
-  }
-  return request;
 }
 
 bool IsOnlyHybridOrInternal(const PublicKeyCredentialDescriptor& credential) {
@@ -358,7 +379,7 @@ GetAssertionRequestHandler::GetAssertionRequestHandler(
               supported_transports,
               GetTransportsAllowedByRP(request))),
       completion_callback_(std::move(completion_callback)),
-      request_(SetUVForDiscoverableRequests(std::move(request))),
+      request_(std::move(request)),
       options_(std::move(options)),
       allow_skipping_pin_touch_(allow_skipping_pin_touch) {
   transport_availability_info().request_type = FidoRequestType::kGetAssertion;
@@ -375,6 +396,13 @@ GetAssertionRequestHandler::GetAssertionRequestHandler(
                            base::Contains(cred.transports,
                                           FidoTransportProtocol::kInternal);
                   });
+  transport_availability_info().request_is_internal_only =
+      !request_.allow_list.empty() &&
+      base::ranges::all_of(
+          request_.allow_list, [](const PublicKeyCredentialDescriptor& cred) {
+            return cred.transports ==
+                   std::vector{FidoTransportProtocol::kInternal};
+          });
 
   FIDO_LOG(EVENT) << "Starting GetAssertion flow";
   Start();
@@ -384,9 +412,13 @@ GetAssertionRequestHandler::~GetAssertionRequestHandler() = default;
 
 void GetAssertionRequestHandler::PreselectAccount(
     std::vector<uint8_t> credential_id) {
-  // PreselectAccount is only supposed to be invoked for discoverable credential
-  // requests.
-  DCHECK(request_.allow_list.empty());
+  DCHECK(!preselected_credential_);
+  DCHECK(
+      request_.allow_list.empty() ||
+      std::any_of(request_.allow_list.begin(), request_.allow_list.end(),
+                  [credential_id](const PublicKeyCredentialDescriptor& desc) {
+                    return desc.id == credential_id;
+                  }));
   preselected_credential_ = std::move(credential_id);
 }
 
@@ -453,7 +485,14 @@ void GetAssertionRequestHandler::DispatchRequest(
   PINUVDisposition uv_disposition =
       authenticator->PINUVDispositionForGetAssertion(request, observer());
   switch (uv_disposition) {
-    case PINUVDisposition::kNoUV:
+    case PINUVDisposition::kNoUVRequired:
+      // CTAP2 devices have two PRFs per credential: one for non-UV assertions
+      // and another for UV assertions. If the authenticator is UV capable but
+      // the request isn't doing UV then we mustn't evaluate any PRF because
+      // it would be the wrong one.
+      options.prf_inputs.clear();
+      break;
+    case PINUVDisposition::kUVNotSupportedNorRequired:
     case PINUVDisposition::kNoTokenInternalUV:
     case PINUVDisposition::kNoTokenInternalUVPINFallback:
       // Proceed without a token.
@@ -475,8 +514,12 @@ void GetAssertionRequestHandler::DispatchRequest(
   }
 
   if (preselected_credential_) {
-    DCHECK(request.allow_list.empty());
-    request.allow_list = {device::PublicKeyCredentialDescriptor(
+    DCHECK(request_.allow_list.empty() ||
+           std::any_of(request_.allow_list.begin(), request_.allow_list.end(),
+                       [this](const PublicKeyCredentialDescriptor& desc) {
+                         return desc.id == preselected_credential_;
+                       }));
+    request.allow_list = {PublicKeyCredentialDescriptor(
         CredentialType::kPublicKey, *preselected_credential_,
         {FidoTransportProtocol::kInternal})};
   }
@@ -647,7 +690,7 @@ void GetAssertionRequestHandler::HandleResponse(
   }
 
 #if BUILDFLAG(IS_WIN)
-  if (authenticator->GetType() == FidoAuthenticator::Type::kWinNative) {
+  if (authenticator->GetType() == AuthenticatorType::kWinNative) {
     state_ = State::kFinished;
     CancelActiveAuthenticators(authenticator->GetId());
     if (status != CtapDeviceResponseCode::kSuccess) {
@@ -733,7 +776,7 @@ void GetAssertionRequestHandler::HandleResponse(
     return;
   }
 
-  if (preselected_credential_) {
+  if (request_.allow_list.empty() && preselected_credential_) {
     // A discoverable platform credential was preselected by the user prior to
     // making the assertion request. Instruct the UI not to show another account
     // selection dialog by setting the `userSelected` flag.

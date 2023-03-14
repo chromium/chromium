@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 enum class IntroChoice;
@@ -45,6 +46,11 @@ class IntroHandler : public content::WebUIMessageHandler {
   // This message is sent when the view is created.
   void HandleInitializeMainView(const base::Value::List& args);
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Sends an updated profile info (avatar, domain etc..) to the WebUI.
+  void UpdateProfileInfo();
+#endif
+
   // Fires the `managed-device-disclaimer-updated` event with the disclaimer
   // that will be caught and handled in the ts file.
   void FireManagedDisclaimerUpdate(std::string disclaimer);
@@ -53,6 +59,9 @@ class IntroHandler : public content::WebUIMessageHandler {
   const bool is_device_managed_ = false;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   std::unique_ptr<policy::CloudPolicyStore::Observer> policy_store_observer_;
+#endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::unique_ptr<signin::IdentityManager::Observer> identity_manager_observer_;
 #endif
 };
 

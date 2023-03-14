@@ -113,7 +113,7 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
     EnsureNormalizedTiming();
     return normalized_.value();
   }
-  void InvalidateNormalizedTiming() { normalized_.reset(); }
+  void InvalidateNormalizedTiming() const { normalized_.reset(); }
 
   void UpdateSpecifiedTiming(const Timing&);
   void SetIgnoreCssTimingProperties();
@@ -171,12 +171,6 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
   virtual AnimationTimeDelta IntrinsicIterationDuration() const {
     return AnimationTimeDelta();
   }
-
-  // Converts timeline offsets to start and end delays in time units based on
-  // the timeline duration. In the event that the timeline is not an instance
-  // of a view timeline, the delays are zero.
-  using TimeDelayPair = std::pair<AnimationTimeDelta, AnimationTimeDelta>;
-  TimeDelayPair ComputeEffectiveAnimationDelays() const;
 
   virtual AnimationTimeDelta CalculateTimeToEffectChange(
       bool forwards,

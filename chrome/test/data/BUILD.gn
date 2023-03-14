@@ -6,16 +6,6 @@ import("//chrome/common/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//tools/grit/grit_rule.gni")
 
-grit("chrome_test_resources") {
-  source = "chrome_test_resources.grd"
-  defines = chrome_grit_defines
-  outputs = [
-    "test/data/grit/chrome_test_resources.h",
-    "chrome_test_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
-}
-
 grit("webui_test_resources") {
   source = "webui_test_resources.grd"
   defines = chrome_grit_defines

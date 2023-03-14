@@ -145,10 +145,17 @@ void WebViewTrustedVaultClient::AddTrustedRecoveryMethod(
   NOTREACHED();
 }
 
-void WebViewTrustedVaultClient::ClearDataForAccount(
+void WebViewTrustedVaultClient::ClearLocalDataForAccount(
     const CoreAccountInfo& account_info) {
-  // TODO(crbug.com/1273080): decide whether this logic needs to be implemented
-  // on iOS.
+  id<CWVTrustedVaultProvider> provider = CWVSyncController.trustedVaultProvider;
+  if (!provider) {
+    DLOG(ERROR) << "Please set CWVSyncController.trustedVaultProvider to "
+                   "enable trusted vault.";
+    return;
+  }
+
+  [provider clearLocalDataForForIdentity:CWVIdentityFromCoreAccountInfo(
+                                             account_info)];
 }
 
 }  // namespace ios_web_view

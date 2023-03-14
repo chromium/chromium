@@ -11,6 +11,7 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ServiceInfo;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
@@ -231,8 +232,8 @@ public class DownloadForegroundServiceImpl extends DownloadForegroundService.Imp
     @VisibleForTesting
     void startForegroundInternal(int notificationId, Notification notification) {
         Log.w(TAG, "startForegroundInternal id: " + notificationId);
-        ForegroundServiceUtils.getInstance().startForeground(
-                getService(), notificationId, notification, 0 /* foregroundServiceType */);
+        ForegroundServiceUtils.getInstance().startForeground(getService(), notificationId,
+                notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC);
     }
 
     @VisibleForTesting

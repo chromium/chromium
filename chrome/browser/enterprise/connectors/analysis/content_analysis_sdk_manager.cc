@@ -69,7 +69,12 @@ void ContentAnalysisSdkManager::ResetClient(
     const content_analysis::sdk::Client::Config& config) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   clients_.erase(config);
-  // TODO(b/2398416680): recreate now?
+  // Temporary code(b/268532118): If the config name is "path_system" and the
+  // config is not user specific, try again with a different name.  The plan
+  // is to remove this in m115.
+  if (config.name == "brcm_chrm_cas" && !config.user_specific) {
+    clients_.erase({"path_system", config.user_specific});
+  }
 }
 
 std::unique_ptr<content_analysis::sdk::Client>

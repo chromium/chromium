@@ -27,6 +27,7 @@
 #include "ui/android/resources/ui_resource_provider.h"
 #include "ui/android/ui_android_jni_headers/ResourceManager_jni.h"
 #include "ui/android/window_android.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -118,6 +119,10 @@ Resource* ResourceManagerImpl::GetResource(AndroidResourceType res_type,
 }
 
 void ResourceManagerImpl::RemoveUnusedTints() {
+  if (base::FeatureList::IsEnabled(features::kKeepAndroidTintedResources)) {
+    return;
+  }
+
   // Iterate over the currently cached tints and remove ones that were not
   // used as defined in |used_tints|.
   for (auto it = tinted_resources_.cbegin(); it != tinted_resources_.cend();) {

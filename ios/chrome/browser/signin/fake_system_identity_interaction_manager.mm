@@ -144,6 +144,7 @@ id<SystemIdentity> gFakeSystemIdentityInteractionManagerIdentity = nil;
 - (void)startAuthActivityWithViewController:(UIViewController*)viewController
                                   userEmail:(NSString*)userEmail
                                  completion:(SigninCompletionBlock)completion {
+  DCHECK(completion);
   _signinCompletion = completion;
   _authActivityViewController =
       [[FakeAuthActivityViewController alloc] initWithManager:self];

@@ -227,6 +227,11 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
                 .setInterpolator(BakedBezierInterpolator.FADE_IN_CURVE)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
+                    public void onAnimationStart(Animator animation) {
+                        mDialogView.onEnterAnimationStarted(animation.getDuration());
+                    }
+
+                    @Override
                     public void onAnimationEnd(Animator animation) {
                         updateContainerHierarchy(true);
                     }

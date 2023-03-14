@@ -61,11 +61,13 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_hidden_state.h"
+#include "third_party/blink/renderer/core/timing/animation_frame_timing_info.h"
 #include "third_party/blink/renderer/core/timing/largest_contentful_paint.h"
 #include "third_party/blink/renderer/core/timing/layout_shift.h"
 #include "third_party/blink/renderer/core/timing/performance_element_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
+#include "third_party/blink/renderer/core/timing/performance_long_animation_frame_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_observer.h"
 #include "third_party/blink/renderer/core/timing/performance_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_timing_for_reporting.h"
@@ -79,6 +81,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 static constexpr base::TimeDelta kLongTaskObserverThreshold =
@@ -605,6 +608,25 @@ bool WindowPerformance::SetInteractionIdAndRecordLatency(
   }
   return responsiveness_metrics_->SetKeyIdAndRecordLatency(entry, key_code,
                                                            event_timestamps);
+}
+
+void WindowPerformance::ReportLongAnimationFrameTiming(
+    AnimationFrameTimingInfo* info) {
+  LocalDOMWindow* window = DomWindow();
+  if (!window) {
+    return;
+  }
+
+  PerformanceLongAnimationFrameTiming* entry =
+      MakeGarbageCollected<PerformanceLongAnimationFrameTiming>(
+          info, time_origin_, cross_origin_isolated_capability_, window);
+
+  if (!IsLongAnimationFrameBufferFull()) {
+    InsertEntryIntoSortedBuffer(long_animation_frame_buffer_, *entry,
+                                kRecordSwaps);
+  }
+
+  NotifyObserversOfEntry(*entry);
 }
 
 void WindowPerformance::AddElementTiming(const AtomicString& name,

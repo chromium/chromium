@@ -432,6 +432,20 @@ void TtsClientLacros::RequestResume() {
   lacros_service->GetRemote<crosapi::mojom::Tts>()->Resume();
 }
 
+void TtsClientLacros::IsSpeaking(base::OnceCallback<void(bool)> callback) {
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (!lacros_service->IsAvailable<crosapi::mojom::Tts>() ||
+      static_cast<uint32_t>(
+          lacros_service->GetInterfaceVersion(crosapi::mojom::Tts::Uuid_)) <
+          crosapi::mojom::Tts::kIsSpeakingMinVersion) {
+    LOG(WARNING) << kErrorUnsupportedVersion;
+    std::move(callback).Run(false);
+    return;
+  }
+  lacros_service->GetRemote<crosapi::mojom::Tts>()->IsSpeaking(
+      std::move(callback));
+}
+
 void TtsClientLacros::OnLacrosSpeechEngineTtsEvent(
     int utterance_id,
     content::TtsEventType event_type,

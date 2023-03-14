@@ -38,4 +38,46 @@ void InputOverlayUkm::RecordInputOverlayCustomizedUsageUkm(
       .Record(ukm::UkmRecorder::Get());
 }
 
+void InputOverlayUkm::RecordInputOverlayActionReposition(
+    const std::string& package_name,
+    RepositionType reposition_type,
+    InputOverlayWindowStateType state_type) {
+  ukm::builders::GamingInputOverlay_ActionRepositionOperationType(
+      ukm::AppSourceUrlRecorder::GetSourceIdForArcPackageName(package_name))
+      .SetOperationType(static_cast<int64_t>(reposition_type))
+      .Record(ukm::UkmRecorder::Get());
+  ukm::builders::GamingInputOverlay_ActionRepositionWindowStateType(
+      ukm::AppSourceUrlRecorder::GetSourceIdForArcPackageName(package_name))
+      .SetWindowStateType(static_cast<int64_t>(state_type))
+      .Record(ukm::UkmRecorder::Get());
+}
+
+void InputOverlayUkm::RecordInputOverlayMenuEntryReposition(
+    const std::string& package_name,
+    RepositionType reposition_type,
+    InputOverlayWindowStateType state_type) {
+  ukm::builders::GamingInputOverlay_MenuEntryRepositionOperationType(
+      ukm::AppSourceUrlRecorder::GetSourceIdForArcPackageName(package_name))
+      .SetOperationType(static_cast<int64_t>(reposition_type))
+      .Record(ukm::UkmRecorder::Get());
+  ukm::builders::GamingInputOverlay_MenuEntryRepositionWindowStateType(
+      ukm::AppSourceUrlRecorder::GetSourceIdForArcPackageName(package_name))
+      .SetWindowStateType(static_cast<int64_t>(state_type))
+      .Record(ukm::UkmRecorder::Get());
+}
+
+void InputOverlayUkm::RecordInputOverlayButtonGroupReposition(
+    const std::string& package_name,
+    RepositionType reposition_type,
+    InputOverlayWindowStateType state_type) {
+  ukm::builders::GamingInputOverlay_ButtonGroupRepositionOperationType(
+      ukm::AppSourceUrlRecorder::GetSourceIdForArcPackageName(package_name))
+      .SetOperationType(static_cast<int64_t>(reposition_type))
+      .Record(ukm::UkmRecorder::Get());
+  ukm::builders::GamingInputOverlay_ButtonGroupRepositionWindowStateType(
+      ukm::AppSourceUrlRecorder::GetSourceIdForArcPackageName(package_name))
+      .SetWindowStateType(static_cast<int64_t>(state_type))
+      .Record(ukm::UkmRecorder::Get());
+}
+
 }  // namespace arc::input_overlay

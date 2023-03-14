@@ -21,11 +21,12 @@ class HistoryClustersServiceFactory : public ProfileKeyedServiceFactory {
   static history_clusters::HistoryClustersService* GetForBrowserContext(
       content::BrowserContext* browser_context);
 
+  static HistoryClustersServiceFactory& GetInstance();
+
   static void EnsureFactoryBuilt();
 
  private:
   friend base::NoDestructor<HistoryClustersServiceFactory>;
-  static HistoryClustersServiceFactory& GetInstance();
 
   HistoryClustersServiceFactory();
   ~HistoryClustersServiceFactory() override;

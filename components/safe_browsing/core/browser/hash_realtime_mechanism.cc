@@ -91,11 +91,10 @@ void HashRealTimeMechanism::StartLookupOnUIThread(
     const GURL& url,
     base::WeakPtr<HashRealTimeService> lookup_service_on_ui,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner) {
-  bool is_lookup_service_available =
-      lookup_service_on_ui && !lookup_service_on_ui->IsInBackoffMode();
-  base::UmaHistogramBoolean("SafeBrowsing.HPRT.IsLookupServiceAvailable",
-                            is_lookup_service_available);
-  if (!is_lookup_service_available) {
+  auto is_lookup_service_found = !!lookup_service_on_ui;
+  base::UmaHistogramBoolean("SafeBrowsing.HPRT.IsLookupServiceFound",
+                            is_lookup_service_found);
+  if (!is_lookup_service_found) {
     io_task_runner->PostTask(
         FROM_HERE, base::BindOnce(&HashRealTimeMechanism::PerformHashBasedCheck,
                                   weak_ptr_on_io, url));

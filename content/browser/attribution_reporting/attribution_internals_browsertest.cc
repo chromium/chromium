@@ -23,18 +23,21 @@
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
+#include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
-#include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
+#include "content/browser/attribution_reporting/create_report_result.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/attribution_reporting/store_source_result.h"
 #include "content/browser/attribution_reporting/stored_source.h"
+#include "content/browser/attribution_reporting/test/mock_attribution_manager.h"
+#include "content/browser/attribution_reporting/test/mock_content_browser_client.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -60,8 +63,7 @@ namespace {
 using ::attribution_reporting::FilterPair;
 using ::attribution_reporting::SuitableOrigin;
 using ::attribution_reporting::mojom::SourceRegistrationError;
-
-using AttributionFilters = ::attribution_reporting::Filters;
+using ::attribution_reporting::mojom::SourceType;
 
 using ::base::test::RunOnceCallback;
 
@@ -109,7 +111,7 @@ class AttributionInternalsWebUiBrowserTest : public ContentBrowserTest {
         .WillByDefault(RunOnceCallback<0>(std::vector<StoredSource>{}));
 
     ON_CALL(*manager, GetPendingReportsForInternalUse)
-        .WillByDefault(RunOnceCallback<2>(std::vector<AttributionReport>{}));
+        .WillByDefault(RunOnceCallback<1>(std::vector<AttributionReport>{}));
 
     static_cast<StoragePartitionImpl*>(shell()
                                            ->web_contents()
@@ -279,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
               })
               .BuildStored(),
           SourceBuilder(now + base::Hours(1))
-              .SetSourceType(AttributionSourceType::kEvent)
+              .SetSourceType(SourceType::kEvent)
               .SetPriority(std::numeric_limits<int64_t>::max())
               .SetDedupKeys({13, 17})
               .SetAggregatableBudgetConsumed(1300)
@@ -314,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   manager()->NotifySourceHandled(
       SourceBuilder(now + base::Hours(7))
-          .SetSourceType(AttributionSourceType::kEvent)
+          .SetSourceType(SourceType::kEvent)
           .Build(),
       StorableSource::Result::kExcessiveReportingOrigins);
 
@@ -404,8 +406,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   manager()->NotifySourceRegistrationFailure(
       "!", *SuitableOrigin::Deserialize("https://b.test"),
-      *SuitableOrigin::Deserialize("https://a.test"),
-      AttributionSourceType::kEvent, SourceRegistrationError::kInvalidJson);
+      *SuitableOrigin::Deserialize("https://a.test"), SourceType::kEvent,
+      SourceRegistrationError::kInvalidJson);
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 }
 
@@ -509,10 +511,10 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       SendResult(SendResult::Status::kTransientFailure, net::ERR_TIMED_OUT));
 
   ON_CALL(*manager(), GetPendingReportsForInternalUse)
-      .WillByDefault(RunOnceCallback<2>(std::vector<AttributionReport>{
+      .WillByDefault(RunOnceCallback<1>(std::vector<AttributionReport>{
           ReportBuilder(AttributionInfoBuilder(
                             SourceBuilder(now)
-                                .SetSourceType(AttributionSourceType::kEvent)
+                                .SetSourceType(SourceType::kEvent)
                                 .SetAttributionLogic(
                                     StoredSource::AttributionLogic::kFalsely)
                                 .BuildStored())
@@ -676,7 +678,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   EXPECT_CALL(*manager(), GetPendingReportsForInternalUse)
       .WillRepeatedly(
-          [&](AttributionReport::Types, int limit,
+          [&](int limit,
               base::OnceCallback<void(std::vector<AttributionReport>)>
                   callback) { std::move(callback).Run(stored_reports); });
 
@@ -815,14 +817,13 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   EXPECT_CALL(*manager(), GetPendingReportsForInternalUse)
-      .WillOnce(RunOnceCallback<2>(std::vector<AttributionReport>{
+      .WillOnce(RunOnceCallback<1>(std::vector<AttributionReport>{
           ReportBuilder(
               AttributionInfoBuilder(SourceBuilder().BuildStored()).Build())
               .SetPriority(7)
               .SetReportId(AttributionReport::EventLevelData::Id(5))
               .Build()}))
-      .WillOnce(RunOnceCallback<2>(std::vector<AttributionReport>{}))
-      .WillOnce(RunOnceCallback<2>(std::vector<AttributionReport>{}));
+      .WillOnce(RunOnceCallback<1>(std::vector<AttributionReport>{}));
 
   EXPECT_CALL(
       *manager(),
@@ -873,7 +874,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   // The real manager would do this itself, but the test manager requires manual
   // triggering.
-  manager()->NotifyReportsChanged(AttributionReport::Type::kEventLevel);
+  manager()->NotifyReportsChanged();
 
   ASSERT_EQ(kSentTitle, sent_title_watcher.WaitAndGetTitle());
 }
@@ -953,12 +954,12 @@ IN_PROC_BROWSER_TEST_F(
       SendResult(SendResult::Status::kTransientFailure,
                  net::ERR_INTERNET_DISCONNECTED));
   ON_CALL(*manager(), GetPendingReportsForInternalUse)
-      .WillByDefault(RunOnceCallback<2>(std::vector<AttributionReport>{
-          ReportBuilder(AttributionInfoBuilder(
-                            SourceBuilder(now)
-                                .SetSourceType(AttributionSourceType::kEvent)
-                                .BuildStored())
-                            .Build())
+      .WillByDefault(RunOnceCallback<1>(std::vector<AttributionReport>{
+          ReportBuilder(
+              AttributionInfoBuilder(SourceBuilder(now)
+                                         .SetSourceType(SourceType::kEvent)
+                                         .BuildStored())
+                  .Build())
               .SetReportTime(now)
               .SetAggregatableHistogramContributions(contributions)
               .BuildAggregatableAttribution()}));
@@ -1001,52 +1002,47 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        TriggersDisplayed) {
   ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
-  const auto create_trigger =
-      [](absl::optional<network::TriggerAttestation> attestation) {
-        return AttributionTrigger(
-            /*reporting_origin=*/*SuitableOrigin::Deserialize("https://r.test"),
-            attribution_reporting::TriggerRegistration(
-                FilterPair{
-                    .positive = *AttributionFilters::Create({{"a", {"b"}}}),
-                    .negative = *AttributionFilters::Create({{"g", {"h"}}})},
-                /*debug_key=*/1,
-                *attribution_reporting::AggregatableDedupKeyList::Create(
-                    {attribution_reporting::AggregatableDedupKey(
-                        /*dedup_key=*/18, FilterPair())}),
-                *attribution_reporting::EventTriggerDataList::Create({
-                    attribution_reporting::EventTriggerData(
-                        /*data=*/2,
-                        /*priority=*/3,
-                        /*dedup_key=*/absl::nullopt,
-                        FilterPair{.positive = *AttributionFilters::Create(
-                                       {{"c", {"d"}}})}),
-                    attribution_reporting::EventTriggerData(
-                        /*data=*/4,
-                        /*priority=*/5,
-                        /*dedup_key=*/6,
-                        FilterPair{.negative = *AttributionFilters::Create(
-                                       {{"e", {"f"}}})}),
-                }),
-                *attribution_reporting::AggregatableTriggerDataList::Create(
-                    {*attribution_reporting::AggregatableTriggerData::Create(
-                         /*key_piece=*/345,
-                         /*source_keys=*/{"a"},
-                         FilterPair{.positive = *AttributionFilters::Create(
-                                        {{"c", {"d"}}})}),
-                     *attribution_reporting::AggregatableTriggerData::Create(
-                         /*key_piece=*/678,
-                         /*source_keys=*/{"b"},
-                         FilterPair{.negative = *AttributionFilters::Create(
-                                        {{"e", {"f"}}})})}),
-                /*aggregatable_values=*/
-                *attribution_reporting::AggregatableValues::Create(
-                    {{"a", 123}, {"b", 456}}),
-                /*debug_reporting=*/false,
-                ::aggregation_service::mojom::AggregationCoordinator::kDefault),
-            *SuitableOrigin::Deserialize("https://d.test"),
-            std::move(attestation),
-            /*is_within_fenced_frame=*/false);
-      };
+  const auto create_trigger = [](absl::optional<network::TriggerAttestation>
+                                     attestation) {
+    return AttributionTrigger(
+        /*reporting_origin=*/*SuitableOrigin::Deserialize("https://r.test"),
+        attribution_reporting::TriggerRegistration(
+            FilterPair(/*positive=*/{{{"a", {"b"}}}},
+                       /*negative=*/{{{"g", {"h"}}}}),
+            /*debug_key=*/1,
+            {attribution_reporting::AggregatableDedupKey(
+                /*dedup_key=*/18, FilterPair())},
+            {
+                attribution_reporting::EventTriggerData(
+                    /*data=*/2,
+                    /*priority=*/3,
+                    /*dedup_key=*/absl::nullopt,
+                    FilterPair(
+                        /*positive=*/{{{"c", {"d"}}}},
+                        /*negative=*/{})),
+                attribution_reporting::EventTriggerData(
+                    /*data=*/4,
+                    /*priority=*/5,
+                    /*dedup_key=*/6,
+                    FilterPair(/*positive=*/{}, /*negative=*/{{{"e", {"f"}}}})),
+            },
+            {*attribution_reporting::AggregatableTriggerData::Create(
+                 /*key_piece=*/345,
+                 /*source_keys=*/{"a"},
+                 FilterPair(/*positive=*/{},
+                            /*negative=*/{{{"c", {"d"}}}})),
+             *attribution_reporting::AggregatableTriggerData::Create(
+                 /*key_piece=*/678,
+                 /*source_keys=*/{"b"},
+                 FilterPair(/*positive=*/{}, /*negative=*/{{{"e", {"f"}}}}))},
+            /*aggregatable_values=*/
+            *attribution_reporting::AggregatableValues::Create(
+                {{"a", 123}, {"b", 456}}),
+            /*debug_reporting=*/false,
+            ::aggregation_service::mojom::AggregationCoordinator::kDefault),
+        *SuitableOrigin::Deserialize("https://d.test"), std::move(attestation),
+        /*is_within_fenced_frame=*/false);
+  };
 
   static constexpr char kScript[] = R"(
     const expectedAttestation =
@@ -1115,8 +1111,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   EXPECT_CALL(*manager(), GetPendingReportsForInternalUse)
-      .WillOnce(RunOnceCallback<2>(std::vector<AttributionReport>{}))
-      .WillOnce(RunOnceCallback<2>(std::vector<AttributionReport>{
+      .WillOnce(RunOnceCallback<1>(std::vector<AttributionReport>{
           ReportBuilder(
               AttributionInfoBuilder(SourceBuilder().BuildStored()).Build())
               .SetReportId(
@@ -1124,7 +1119,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
               .SetAggregatableHistogramContributions(
                   {AggregatableHistogramContribution(1, 2)})
               .BuildAggregatableAttribution()}))
-      .WillOnce(RunOnceCallback<2>(std::vector<AttributionReport>{}));
+      .WillOnce(RunOnceCallback<1>(std::vector<AttributionReport>{}));
 
   EXPECT_CALL(
       *manager(),
@@ -1182,8 +1177,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   // The real manager would do this itself, but the test manager requires manual
   // triggering.
-  manager()->NotifyReportsChanged(
-      AttributionReport::Type::kAggregatableAttribution);
+  manager()->NotifyReportsChanged();
 
   EXPECT_EQ(kSentTitle, sent_title_watcher.WaitAndGetTitle());
 }
@@ -1205,7 +1199,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                  /*http_response_code=*/200));
 
   ON_CALL(*manager(), GetPendingReportsForInternalUse)
-      .WillByDefault(RunOnceCallback<2>(std::vector<AttributionReport>{
+      .WillByDefault(RunOnceCallback<1>(std::vector<AttributionReport>{
           ReportBuilder(
               AttributionInfoBuilder(SourceBuilder(now).BuildStored()).Build())
               .SetReportTime(now + base::Hours(1))
@@ -1316,8 +1310,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       AttributionDebugReport::Create(
           SourceBuilder().SetDebugReporting(true).Build(),
           /*is_debug_cookie_set=*/true,
-          AttributionStorage::StoreSourceResult(
-              StorableSource::Result::kInternalError));
+          StoreSourceResult(StorableSource::Result::kInternalError));
   ASSERT_TRUE(report);
 
   static constexpr char kScript[] = R"(

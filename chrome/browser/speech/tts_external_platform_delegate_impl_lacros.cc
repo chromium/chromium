@@ -41,18 +41,6 @@ void ExternalPlatformDelegateImplLacros::Enqueue(
       ->SpeakOrEnqueue(std::move(utterance));
 }
 
-void ExternalPlatformDelegateImplLacros::OnTtsEvent(
-    content::BrowserContext* browser_context,
-    int utterance_id,
-    content::TtsEventType event_type,
-    int char_index,
-    int length,
-    const std::string& error_message) {
-  TtsClientLacros::GetForBrowserContext(browser_context)
-      ->OnLacrosSpeechEngineTtsEvent(utterance_id, event_type, char_index,
-                                     length, error_message);
-}
-
 void ExternalPlatformDelegateImplLacros::Stop(const GURL& source_url) {
   // TODO(crbug.com/1251979): When Tts is supported for secondary prfoile in
   // in Lacros, use TtsClientLacros created for the same profile.

@@ -14,6 +14,7 @@
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/sharing_mojo_service.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace ash {
@@ -58,9 +59,12 @@ NearbyProcessManagerImpl::NearbyReferenceImpl::NearbyReferenceImpl(
     const mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>&
         connections,
     const mojo::SharedRemote<sharing::mojom::NearbySharingDecoder>& decoder,
+    const mojo::SharedRemote<quick_start::mojom::QuickStartDecoder>&
+        quick_start_decoder,
     base::OnceClosure destructor_callback)
     : connections_(connections),
       decoder_(decoder),
+      quick_start_decoder_(quick_start_decoder),
       destructor_callback_(std::move(destructor_callback)) {}
 
 NearbyProcessManagerImpl::NearbyReferenceImpl::~NearbyReferenceImpl() {
@@ -83,6 +87,11 @@ NearbyProcessManagerImpl::NearbyReferenceImpl::GetNearbySharingDecoder() const {
   return decoder_;
 }
 
+const mojo::SharedRemote<quick_start::mojom::QuickStartDecoder>&
+NearbyProcessManagerImpl::NearbyReferenceImpl::GetQuickStartDecoder() const {
+  return quick_start_decoder_;
+}
+
 NearbyProcessManagerImpl::NearbyProcessManagerImpl(
     NearbyDependenciesProvider* nearby_dependencies_provider,
     std::unique_ptr<base::OneShotTimer> timer,
@@ -97,8 +106,9 @@ NearbyProcessManagerImpl::~NearbyProcessManagerImpl() = default;
 std::unique_ptr<NearbyProcessManager::NearbyProcessReference>
 NearbyProcessManagerImpl::GetNearbyProcessReference(
     NearbyProcessStoppedCallback on_process_stopped_callback) {
-  if (shut_down_)
+  if (shut_down_) {
     return nullptr;
+  }
 
   if (!sharing_ || !connections_ || !decoder_) {
     if (!AttemptToBindToUtilityProcess()) {
@@ -119,14 +129,15 @@ NearbyProcessManagerImpl::GetNearbyProcessReference(
   shutdown_debounce_timer_->Stop();
 
   return std::make_unique<NearbyReferenceImpl>(
-      connections_, decoder_,
+      connections_, decoder_, quick_start_decoder_,
       base::BindOnce(&NearbyProcessManagerImpl::OnReferenceDeleted,
                      weak_ptr_factory_.GetWeakPtr(), reference_id));
 }
 
 void NearbyProcessManagerImpl::Shutdown() {
-  if (shut_down_)
+  if (shut_down_) {
     return;
+  }
 
   shut_down_ = true;
 
@@ -143,8 +154,9 @@ bool NearbyProcessManagerImpl::AttemptToBindToUtilityProcess() {
   sharing::mojom::NearbyDependenciesPtr deps =
       nearby_dependencies_provider_->GetDependencies();
 
-  if (!deps)
+  if (!deps) {
     return false;
+  }
 
   NS_LOG(INFO) << "Starting up Nearby utility process.";
 
@@ -179,9 +191,24 @@ bool NearbyProcessManagerImpl::AttemptToBindToUtilityProcess() {
           NearbyProcessShutdownReason::kDecoderMojoPipeDisconnection),
       base::SequencedTaskRunner::GetCurrentDefault());
 
+  mojo::PendingRemote<quick_start::mojom::QuickStartDecoder>
+      quick_start_decoder;
+  mojo::PendingReceiver<quick_start::mojom::QuickStartDecoder>
+      quick_start_decoder_receiver =
+          quick_start_decoder.InitWithNewPipeAndPassReceiver();
+  quick_start_decoder_.Bind(std::move(quick_start_decoder),
+                            /*bind_task_runner=*/nullptr);
+  quick_start_decoder_.set_disconnect_handler(
+      base::BindOnce(
+          &NearbyProcessManagerImpl::OnMojoPipeDisconnect,
+          weak_ptr_factory_.GetWeakPtr(),
+          NearbyProcessShutdownReason::kDecoderMojoPipeDisconnection),
+      base::SequencedTaskRunner::GetCurrentDefault());
+
   // Pass these references to Connect() to start up the process.
   sharing_->Connect(std::move(deps), std::move(connections_receiver),
-                    std::move(decoder_receiver));
+                    std::move(decoder_receiver),
+                    std::move(quick_start_decoder_receiver));
 
   return true;
 }
@@ -217,8 +244,9 @@ void NearbyProcessManagerImpl::OnReferenceDeleted(
 
   // If there are still active references, the process should be kept alive, so
   // return early.
-  if (!id_to_process_stopped_callback_map_.empty())
+  if (!id_to_process_stopped_callback_map_.empty()) {
     return;
+  }
 
   NS_LOG(VERBOSE) << "All Nearby references have been released; will shut down "
                   << "process in " << kProcessCleanupTimeout << " unless a new "
@@ -237,8 +265,9 @@ void NearbyProcessManagerImpl::OnReferenceDeleted(
 
 void NearbyProcessManagerImpl::ShutDownProcess(
     NearbyProcessShutdownReason shutdown_reason) {
-  if (!sharing_ && !connections_ && !decoder_)
+  if (!sharing_ && !connections_ && !decoder_) {
     return;
+  }
 
   // Ensure that we don't try to stop the process again.
   shutdown_debounce_timer_->Stop();
@@ -282,8 +311,9 @@ void NearbyProcessManagerImpl::NotifyProcessStopped(
   id_to_process_stopped_callback_map_.clear();
 
   // Invoke the "process stopped" callback for each client.
-  for (auto& it : old_map)
+  for (auto& it : old_map) {
     std::move(it.second).Run(shutdown_reason);
+  }
 }
 
 }  // namespace nearby

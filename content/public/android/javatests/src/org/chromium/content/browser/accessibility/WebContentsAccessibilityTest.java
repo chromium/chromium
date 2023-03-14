@@ -64,6 +64,7 @@ import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBu
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_OFFSCREEN;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_BOTTOM;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_TOP;
+import static org.chromium.ui.accessibility.AccessibilityState.EVENT_TYPE_MASK_NONE;
 
 import android.annotation.SuppressLint;
 import android.content.ClipData;
@@ -98,6 +99,7 @@ import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.Arrays;
@@ -388,7 +390,8 @@ public class WebContentsAccessibilityTest {
 
         // Set the relevant features and screen reader state.
         FeatureList.setTestFeatures(ON_DEMAND_ON_COMPUTE_ON);
-        mActivityTestRule.mWcax.setScreenReaderModeForTesting(true);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> AccessibilityState.setScreenReaderModeForTesting(true));
 
         performHistogramActions();
 
@@ -426,7 +429,8 @@ public class WebContentsAccessibilityTest {
 
         // Set the relevant features and screen reader state.
         FeatureList.setTestFeatures(ON_DEMAND_ON_COMPUTE_ON);
-        mActivityTestRule.mWcax.setScreenReaderModeForTesting(false);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> AccessibilityState.setScreenReaderModeForTesting(false));
 
         performHistogramActions();
 
@@ -466,8 +470,10 @@ public class WebContentsAccessibilityTest {
 
         // Set the relevant features and screen reader state, set event type masks to empty.
         FeatureList.setTestFeatures(ON_DEMAND_ON_COMPUTE_ON);
-        mActivityTestRule.mWcax.setEventTypeMaskEmptyForTesting();
-        mActivityTestRule.mWcax.setScreenReaderModeForTesting(true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AccessibilityState.setEventTypeMaskForTesting(EVENT_TYPE_MASK_NONE);
+            AccessibilityState.setScreenReaderModeForTesting(true);
+        });
 
         performHistogramActions();
 
@@ -506,8 +512,10 @@ public class WebContentsAccessibilityTest {
 
         // Set the relevant features and screen reader state, set event type masks to empty.
         FeatureList.setTestFeatures(ON_DEMAND_ON_COMPUTE_ON);
-        mActivityTestRule.mWcax.setEventTypeMaskEmptyForTesting();
-        mActivityTestRule.mWcax.setScreenReaderModeForTesting(false);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AccessibilityState.setEventTypeMaskForTesting(EVENT_TYPE_MASK_NONE);
+            AccessibilityState.setScreenReaderModeForTesting(false);
+        });
 
         performHistogramActions();
 

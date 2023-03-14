@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/mock_account_manager_facade.h"
@@ -63,16 +64,10 @@ class MockObserver : public AccountAppsAvailability::Observer {
 
 base::flat_set<account_manager::Account> GetAccountsAvailableInArcSync(
     AccountAppsAvailability* availability) {
-  base::flat_set<account_manager::Account> result;
-  base::RunLoop run_loop;
-  availability->GetAccountsAvailableInArc(base::BindLambdaForTesting(
-      [&result,
-       &run_loop](const base::flat_set<account_manager::Account>& accounts) {
-        result = accounts;
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-  return result;
+  base::test::TestFuture<const base::flat_set<account_manager::Account>&>
+      future;
+  availability->GetAccountsAvailableInArc(future.GetCallback());
+  return future.Get();
 }
 
 MATCHER_P(AccountEqual, other, "") {
@@ -82,11 +77,13 @@ MATCHER_P(AccountEqual, other, "") {
 }  // namespace
 
 class AccountAppsAvailabilityTest : public testing::Test {
- protected:
-  AccountAppsAvailabilityTest() = default;
+ public:
   AccountAppsAvailabilityTest(const AccountAppsAvailabilityTest&) = delete;
   AccountAppsAvailabilityTest& operator=(const AccountAppsAvailabilityTest&) =
       delete;
+
+ protected:
+  AccountAppsAvailabilityTest() = default;
   ~AccountAppsAvailabilityTest() override = default;
 
   void SetUp() override {
@@ -180,19 +177,13 @@ TEST_F(AccountAppsAvailabilityTest, CallsBeforeInitialization) {
   // Make secondary account unavailable in ARC.
   account_apps_availability->SetIsAccountAvailableInArc(secondary_account,
                                                         false);
-  base::flat_set<account_manager::Account> result;
-  base::RunLoop run_loop;
-  account_apps_availability->GetAccountsAvailableInArc(
-      base::BindLambdaForTesting(
-          [&result, &run_loop](
-              const base::flat_set<account_manager::Account>& accounts) {
-            result = accounts;
-            run_loop.Quit();
-          }));
 
+  base::test::TestFuture<const base::flat_set<account_manager::Account>&>
+      future;
   // Wait for initialization and for `GetAccountsAvailableInArc` call
   // completion.
-  run_loop.Run();
+  account_apps_availability->GetAccountsAvailableInArc(future.GetCallback());
+  base::flat_set<account_manager::Account> result = future.Get();
   EXPECT_TRUE(account_apps_availability->IsInitialized());
 
   // Only primary account is available, secondary account was removed.

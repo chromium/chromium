@@ -1564,8 +1564,8 @@ TEST_F(LoginDatabaseTest, ReportMetricsTest) {
   db().ReportMetrics();
   account_db.ReportMetrics();
 
-  histogram_tester.ExpectUniqueSample("PasswordManager.InaccessiblePasswords2",
-                                      0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ProfileStore.InaccessiblePasswords3", 0, 1);
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.BubbleSuppression.AccountsInStatisticsTable2", 4, 1);
@@ -1594,7 +1594,7 @@ TEST_F(LoginDatabaseTest, ReportAccountStoreMetricsTest) {
   account_db.ReportMetrics();
 
   histogram_tester.ExpectUniqueSample(
-      "PasswordManager.AccountStore.InaccessiblePasswords2", 0, 1);
+      "PasswordManager.AccountStore.InaccessiblePasswords3", 0, 1);
 }
 
 TEST_F(LoginDatabaseTest, NoMetadata) {
@@ -1842,7 +1842,7 @@ TEST(LoginDatabaseFutureLoginDatabase, ShouldNotDowngradeDatabaseVersion) {
     // Set the DB version to be coming from the future.
     ASSERT_TRUE(meta_table.Init(&connection, kDBFutureVersion,
                                 kCompatibleVersionNumber));
-    meta_table.SetVersionNumber(kDBFutureVersion);
+    ASSERT_TRUE(meta_table.SetVersionNumber(kDBFutureVersion));
   }
   {
     // Open the database again.

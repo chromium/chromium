@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/arc/session/arc_app_id_provider_impl.h"
 #include "chrome/browser/ash/arc/session/arc_requirement_checker.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
+#include "chrome/browser/ash/arc/session/arc_vm_data_migration_necessity_checker.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
 #include "chrome/browser/ash/policy/arc/android_management_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
@@ -80,6 +81,10 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   //   State is ACTIVE, instead.
   // REMOVING_DATA_DIR: When ARC is disabled, the data directory is removed.
   //   While removing is processed, ARC cannot be started. This is the state.
+  // CHECKING_DATA_MIGRATION_NECESSITY: When ARC /data migration is enabled but
+  //   not started yet, we need to check whether the migration is necessary by
+  //   inspecting the content of /data. ARC cannot be started while the check is
+  //   being performed, which is indicated by this state.
   // READY: ARC is ready to run, but not running yet. This state is skipped on
   //   the first boot case.
   // ACTIVE: ARC is running.
@@ -109,6 +114,8 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   //     immediately.
   //   REMOVING_DATA_DIR: Eventually state will become STOPPED. Do nothing
   //     immediately.
+  //   CHECKING_DATA_MIGRATION_NECESSITY: Eventually state will become STOPPED.
+  //     Do nothing immediately.
   //
   // TODO(hidehiko): Fix the state machine, and update the comment including
   // relationship with |enable_requested_|.
@@ -117,6 +124,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
     STOPPED,
     CHECKING_REQUIREMENTS,
     REMOVING_DATA_DIR,
+    CHECKING_DATA_MIGRATION_NECESSITY,
     READY,
     ACTIVE,
     STOPPING,
@@ -407,9 +415,17 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // Starts to remove ARC data, if it is requested via RequestArcDataRemoval().
   // On completion, OnArcDataRemoved() is called.
   // If not requested, just skipping the data removal, and moves to
-  // MaybeReenableArc() directly.
+  // MaybeReenableArc() or CheckArcVmDataMigrationNecessity() directly.
   void MaybeStartArcDataRemoval();
   void OnArcDataRemoved(absl::optional<bool> success);
+
+  // Checks whether /data migration is needed for enabling virtio-blk /data.
+  // On completion, OnArcVmDataMigrationNecessityChecked() is called.
+  // ArcSessionRunner::set_use_virtio_blk_data() should be called after the
+  // check is finished but before ARC is enabled in MaybeReenableArc().
+  void CheckArcVmDataMigrationNecessity(base::OnceClosure callback);
+  void OnArcVmDataMigrationNecessityChecked(base::OnceClosure callback,
+                                            absl::optional<bool> result);
 
   // On ARC session stopped and/or data removal completion, this is called
   // so that, if necessary, ARC session is restarted.
@@ -464,6 +480,9 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
 
   std::unique_ptr<ArcSupportHost> support_host_;
   std::unique_ptr<ArcDataRemover> data_remover_;
+
+  std::unique_ptr<ArcVmDataMigrationNecessityChecker>
+      arc_vm_data_migration_necessity_checker_;
 
   ArcRequirementChecker::AndroidManagementCheckerFactory
       android_management_checker_factory_;

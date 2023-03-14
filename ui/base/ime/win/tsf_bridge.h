@@ -9,6 +9,8 @@
 #include <windows.h>
 #include <wrl/client.h>
 
+#include <memory>
+
 #include "base/component_export.h"
 #include "ui/base/ime/ime_key_event_dispatcher.h"
 
@@ -31,7 +33,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFBridge {
   TSFBridge(const TSFBridge&) = delete;
   TSFBridge& operator=(const TSFBridge&) = delete;
 
-  virtual ~TSFBridge();
+  virtual ~TSFBridge() = default;
 
   // Returns the thread local TSFBridge instance. Initialize() must be called
   // first. Do not cache this pointer and use it after TSFBridge Shutdown().
@@ -48,7 +50,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFBridge {
   // Sets the new instance of TSFBridge in the thread-local storage (such as
   // MockTSFBridge for testing). This function replaces previous TSFBridge
   // instance with the newInstance and also deletes the old instance.
-  static void ReplaceThreadLocalTSFBridge(TSFBridge* new_instance);
+  static void ReplaceThreadLocalTSFBridge(
+      std::unique_ptr<TSFBridge> new_instance);
 
   // Destroys the thread local instance.
   static void Shutdown();
@@ -100,7 +103,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFBridge {
 
  protected:
   // Uses GetInstance() instead.
-  TSFBridge();
+  TSFBridge() = default;
 };
 
 }  // namespace ui

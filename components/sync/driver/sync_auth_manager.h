@@ -15,7 +15,6 @@
 #include "base/timer/timer.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/driver/sync_auth_util.h"
 #include "components/sync/driver/sync_token_status.h"
 #include "components/sync/engine/connection_status.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -29,6 +28,14 @@ struct AccessTokenInfo;
 namespace syncer {
 
 struct SyncCredentials;
+
+struct SyncAccountInfo {
+  SyncAccountInfo();
+  SyncAccountInfo(const CoreAccountInfo& account_info, bool is_sync_consented);
+
+  CoreAccountInfo account_info;
+  bool is_sync_consented = false;
+};
 
 // SyncAuthManager tracks the account to be used for Sync and its authentication
 // state. Note that this account may or may not be the primary account (as per

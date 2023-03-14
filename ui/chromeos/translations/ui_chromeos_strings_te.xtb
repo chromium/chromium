@@ -84,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> అంశాలను జిప్ చేస్తోంది...</translation>
 <translation id="1722687688096767818">ప్రొఫైల్‌ను జోడిస్తోంది...</translation>
 <translation id="1726100011689679555">పేరు సర్వర్‌లు</translation>
+<translation id="1727562178154619254">సింక్ చేయడానికి సిద్ధంగా ఉంది</translation>
 <translation id="1729953886957086472">జర్మన్ (జర్మనీ)</translation>
 <translation id="1730235522912993863">చైనీస్ కాంగ్జీ</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> ఐటమ్‌లు కాపీ చేయబడ్డాయి.</translation>
@@ -351,11 +352,11 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">పేస్ట్ చేయండి</translation>
 <translation id="3952872973865944257">తెలుగు ఫొనెటిక్</translation>
-<translation id="3954354850384043518">ప్రోగ్రెస్‌లో ఉంది</translation>
 <translation id="3958548648197196644">కివి</translation>
 <translation id="3971140002794351170"><ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> నుండి <ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" />వ నెట్‌వర్క్ మొబైల్ ప్రొఫైల్‌ను డౌన్‌లోడ్ చేయండి</translation>
 <translation id="3973925058222872294">ఇంగ్లీష్ (UK)</translation>
 <translation id="3975895378829046965">బంగ్లా ఫొనెటిక్</translation>
+<translation id="3999574733850440202">ఇటీవల తెరిచిన Microsoft ఫైల్స్ OneDriveకు తరలించబడ్డాయి</translation>
 <translation id="4002066346123236978">శీర్షిక</translation>
 <translation id="4017788180641807848">వర్క్‌మాన్ కీబోర్డ్‌తో ఇంగ్లీష్ (US)</translation>
 <translation id="4019998208269143058">క్విక్ ఫైల్స్‌కు పిన్ చేయండి</translation>
@@ -364,6 +365,7 @@
 <translation id="4092890906744441904">ఐరిష్</translation>
 <translation id="4124935795427217608">యునికార్న్</translation>
 <translation id="4131235941541910880">మీకు అవసరం లేని ఐటెమ్‌లను ట్రాష్‌కు తరలించండి</translation>
+<translation id="4134804435730168042"><ph name="NETWORK_COUNT" />‌లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, పరికరాన్ని సెటప్ చేసిన తర్వాత యాక్టివేట్ చేయండి</translation>
 <translation id="4153015322587141338">షెల్ఫ్‌లో ఉన్న మీ ఫైల్స్‌కు క్విక్ యాక్సెస్‌ను పొందడానికి, ఫైల్‌పై కుడి క్లిక్ చేసి, "<ph name="PIN_COMMAND" />"ను ఎంచుకోండి.</translation>
 <translation id="4157569377477607576">అడ్మినిస్ట్రేటర్ పాలసీ వీటిని సిఫార్సు చేయదు:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> తరలించబడింది.</translation>
@@ -406,6 +408,7 @@
 <translation id="4414834425328380570">"<ph name="FILE_NAME" />" తొలగించబడుతుంది, దానిని రీస్టోర్ చేయలేరు.</translation>
 <translation id="4418686080762064601">మీ ఫైల్స్ కోసం షార్ట్‌కట్‌ను క్రియేట్ చేయండి</translation>
 <translation id="4425149324548788773">నా డ్రైవ్‌</translation>
+<translation id="4432921877815220091"><ph name="NETWORK_COUNT" />‌లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, పరికరాన్ని సెటప్ చేసిన తర్వాత యాక్టివేట్ చేయండి, అది మీ అడ్మినిస్ట్రేటర్ ద్వారా మేనేజ్ చేయబడుతోంది</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, కనెక్ట్ చేయండి</translation>
 <translation id="4442424173763614572">DNS సెర్చ్ విఫలమైంది</translation>
 <translation id="4462159676511157176">అనుకూల పేరు సర్వర్‌లు</translation>
@@ -613,8 +616,10 @@
 <translation id="5911887972742538906">మీ Linux అప్లికేషన్ యొక్క ఇన్‌స్టాలేషన్ సమయంలో ఎర్రర్ ఏర్పడింది.</translation>
 <translation id="5912396950572065471">ఫార్మాట్</translation>
 <translation id="5913638992615760742">కాపీ చర్య విఫలమైంది, ఊహించని ఎర్రర్: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">కొత్త సెర్చ్ ఫీచర్‌లు అందుబాటులో ఉన్నాయి</translation>
 <translation id="5926082595146149752">US అంతర్జాతీయ PC కీబోర్డ్‌తో డచ్ (నెదర్లాండ్స్)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063"><ph name="NETWORK_COUNT" />‌లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, పరికరాన్ని సెటప్ చేసిన తర్వాత యాక్టివేట్ చేయండి</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> అంశాలు</translation>
 <translation id="5957366693331451795">Chromeboxలు</translation>
 <translation id="5982621672636444458">క్రమబద్ధీకరణ ఎంపికలు</translation>
@@ -701,6 +706,7 @@
 <translation id="6732801395666424405">ప్రమాణపత్రాలు లోడ్ కాలేదు</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Bruschettaతో ఫోల్డర్‌ను షేర్ చేయండి</translation>
+<translation id="6750737795876287924">ప్రస్తుత డైరెక్టరీ</translation>
 <translation id="6751256176799620176">1 ఫోల్డర్ ఎంచుకోబడింది</translation>
 <translation id="6755827872271341378">ChromeOS Flex పరికరం</translation>
 <translation id="6790428901817661496">ప్లే చేయి</translation>
@@ -738,7 +744,6 @@
 <translation id="6973630695168034713">ఫోల్డర్‌లు</translation>
 <translation id="6976795442547527108">సింహం</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">మొత్తం సమయం</translation>
 <translation id="6989942356279143254">స్వీడిష్</translation>
 <translation id="6990081529015358884">మీకు ఖాళీ స్థలం లేదు</translation>
 <translation id="6993826899923627728">ఈ ఐటెమ్‌లు మీ ట్రాష్‌లో ఉన్నాయి</translation>
@@ -761,6 +766,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;డిస్క్‌లో వెతకండి&lt;/em&gt;</translation>
 <translation id="7135561821015524160">కన్నడ ఫొనెటిక్</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">ప్రామాణీకరణ సర్వర్ గుర్తింపును ధృవీకరించడానికి 'సబ్జెక్ట్ ప్రత్యామ్నాయ పేరు మ్యాచ్' లేదా 'డొమైన్ సఫిక్స్ మ్యాచ్' అందుబాటులో లేదు</translation>
 <translation id="7165320105431587207">నెట్‌వర్క్‌ను కాన్ఫిగర్ చేయడంలో విఫలమైంది</translation>
 <translation id="7170041865419449892">పరిధిని దాటింది</translation>
 <translation id="7180611975245234373">రిఫ్రెష్ చేయండి</translation>
@@ -793,7 +799,6 @@
 <translation id="7458955835361612701">ఇటీవలి ఇమేజ్‌లు ఏవీ లేవు</translation>
 <translation id="7460898608667578234">ఉక్రెయినియన్</translation>
 <translation id="7469894403370665791">ఆటోమేటిక్‌గా ఈ నెట్‌వర్క్‌కు కనెక్ట్ చేయి</translation>
-<translation id="7481358317100446445">సిద్ధం</translation>
 <translation id="7486315294984620427">Parallels Desktopలో ఫైళ్లను డ్రాప్ చేయడానికి, ఫైల్ తప్పనిసరిగా Windows ఫైళ్లకు కాపీ చేయబడి ఉండాలి.</translation>
 <translation id="749452993132003881">హిరగానా</translation>
 <translation id="7495372004724182530">మలయాళం ఫొనెటిక్</translation>
@@ -831,6 +836,7 @@
 <translation id="7724603315864178912">కత్తిరించండి</translation>
 <translation id="7732111077498238432">విధానం ద్వారా నెట్‌వర్క్ నియంత్రించబడుతుంది</translation>
 <translation id="7736003208887389532">ఈ ఫైల్స్‌ను శాశ్వతంగా తొలగించాలా?</translation>
+<translation id="7740287852186792672">శోధన ఫలితాలు</translation>
 <translation id="7748626145866214022">చర్య బార్‌లో మరిన్ని ఎంపికలు అందుబాటులో ఉంటాయి. చర్య బార్‌పై దృష్టి పెట్టడం కోసం Alt + A నొక్కండి.</translation>
 <translation id="7760449188139285140">చైనీస్ వుబీ</translation>
 <translation id="7765158879357617694">తరలించు</translation>
@@ -882,6 +888,7 @@
 <translation id="8116072619078571545">చల్లటి నీరు</translation>
 <translation id="8128733386027980860">డ్వోరక్ కీబోర్డ్‌తో ఇంగ్లీష్ (UK)</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" మీతో షేర్ చేయబడింది. మీకు ఇది స్వంతం కానందున మీరు దీన్ని తొలగించలేరు.</translation>
+<translation id="8138705869659070104">పరికరాన్ని సెటప్ చేసిన తర్వాత యాక్టివేట్ చేయండి</translation>
 <translation id="813913629614996137">ప్రారంభిస్తోంది...</translation>
 <translation id="8147028810663464959">అక్షరం వెడల్పు నిండింది</translation>
 <translation id="8151638057146502721">కాన్ఫిగర్ చేయి</translation>
@@ -907,6 +914,7 @@
 <translation id="8300849813060516376">OTASP విఫలమైంది</translation>
 <translation id="8312871300878166382">ఫోల్డర్‌లోకి పేస్ట్ చేయండి</translation>
 <translation id="8329978297633540474">సాదా వచనం</translation>
+<translation id="8332007959299458842">ఇటీవల తెరిచిన Microsoft ఫైల్స్ Google Driveకు తరలించబడ్డాయి</translation>
 <translation id="8335587457941836791">అర నుండి అన్‌పిన్ చేయండి</translation>
 <translation id="8335837413233998004">బెలారుసియన్</translation>
 <translation id="8336153091935557858">నిన్న <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -933,6 +941,7 @@
 <translation id="8487700953926739672">ఆఫ్‌లైన్‌లో అందుబాటు</translation>
 <translation id="8492972329130824181">ఇంటి నెట్‌వర్క్ అందుబాటులో లేదు. కనెక్ట్ చేయడానికి మొబైల్ డేటా రోమింగ్‌ను తప్పనిసరిగా ఎనేబుల్ చేయాలి.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> ఐటెమ్‌లను సంగ్రహిస్తోంది...</translation>
+<translation id="8502913769543567768"><ph name="NETWORK_COUNT" />‌లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, పరికరాన్ని సెటప్ చేసిన తర్వాత యాక్టివేట్ చేయండి, అది మీ అడ్మినిస్ట్రేటర్ ద్వారా మేనేజ్ చేయబడుతోంది</translation>
 <translation id="8521441079177373948">యుకె</translation>
 <translation id="853494022971700746">ఫ్రెంచ్ (ఫ్రాన్స్)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, వివరాలు</translation>
@@ -994,6 +1003,7 @@
 <translation id="9046895021617826162">కనెక్ట్ విఫలమైంది</translation>
 <translation id="9065512565307033593">మీరు వెరిఫై చేయలేకపోతే, మీ నెట్‌వర్క్ యాక్సెస్ డిజేబుల్ చేయబడుతుంది.</translation>
 <translation id="908378762078012445">ఫోనెటిక్ AATSEEL కీబోర్డ్‌తో రష్యన్</translation>
+<translation id="9086302186042011942">సింక్ చేస్తోంది</translation>
 <translation id="9099674669267916096">పేజీ గణన</translation>
 <translation id="9100610230175265781">రహస్య పదబంధం అవసరం</translation>
 <translation id="9110990317705400362">మేము మీ బ్రౌజింగ్‌ను సురక్షితం చేసే మార్గాల కోసం నిరంతరం శోధిస్తున్నాము. గతంలో, ఏ వెబ్‌సైట్ అయినా మీ బ్రౌజర్‌కు ఎక్స్‌టెన్ష‌న్‌ను జోడించడానికి మిమ్మల్ని ప్రాంప్ట్ చేసి ఉండ‌వ‌చ్చు. Google Chrome తాజా వెర్ష‌న్‌ల‌లో, మీరు తప్పనిసరిగా ఎక్స్‌టెన్ష‌న్‌ల పేజీలో వాటిని జోడించడం ద్వారా ఈ ఎక్స్‌టెన్ష‌న్‌లను ఇన్‌స్టాల్ చేయాలని అనుకుంటున్నట్లు Chromeకు ప్రత్యేకించి తెలియజేయాలి. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>

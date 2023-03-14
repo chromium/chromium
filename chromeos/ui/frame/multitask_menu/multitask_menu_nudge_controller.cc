@@ -4,6 +4,7 @@
 
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
 
+#include "base/metrics/user_metrics.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/wm/features.h"
@@ -20,6 +21,10 @@
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_pref_names.h"
+#endif
 
 namespace chromeos {
 
@@ -50,6 +55,7 @@ bool g_suppress_nudge_for_testing = false;
 // Clock that can be overridden for testing.
 base::Clock* g_clock_override = nullptr;
 
+// May be null in tests.
 MultitaskMenuNudgeController::Delegate* g_delegate_instance = nullptr;
 
 base::Time GetTime() {
@@ -118,14 +124,20 @@ MultitaskMenuNudgeController::~MultitaskMenuNudgeController() {
   display::Screen::GetScreen()->RemoveObserver(this);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // static
 void MultitaskMenuNudgeController::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(kClamshellShownCountPrefName, 0);
-  registry->RegisterIntegerPref(kTabletShownCountPrefName, 0);
-  registry->RegisterTimePref(kClamshellLastShownPrefName, base::Time());
-  registry->RegisterTimePref(kTabletLastShownPrefName, base::Time());
+  registry->RegisterIntegerPref(
+      ash::prefs::kMultitaskMenuNudgeClamshellShownCount, 0);
+  registry->RegisterIntegerPref(ash::prefs::kMultitaskMenuNudgeTabletShownCount,
+                                0);
+  registry->RegisterTimePref(ash::prefs::kMultitaskMenuNudgeClamshellLastShown,
+                             base::Time());
+  registry->RegisterTimePref(ash::prefs::kMultitaskMenuNudgeTabletLastShown,
+                             base::Time());
 }
+#endif
 
 void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window) {
   MaybeShowNudge(window, /*anchor_view=*/nullptr);
@@ -138,10 +150,7 @@ void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window,
     return;
   }
 
-  // TODO(sammiequon): Delegate is not available for lacros yet.
-  if (!g_delegate_instance) {
-    return;
-  }
+  DCHECK(g_delegate_instance);
 
   // If the window is not visible, do not show the nudge.
   if (!window->IsVisible()) {
@@ -169,6 +178,23 @@ void MultitaskMenuNudgeController::DismissNudge() {
   if (nudge_widget_ && !nudge_widget_->IsClosed()) {
     nudge_widget_->GetLayer()->GetAnimator()->AbortAllAnimations();
     nudge_widget_->CloseNow();
+  }
+}
+
+void MultitaskMenuNudgeController::OnMenuOpened(bool tablet_mode) {
+  // Avoid sending prefs through the cros API or recording user actions if the
+  // nudge isn't shown.
+  if (nudge_widget_ && !nudge_widget_->IsClosed()) {
+    return;
+  }
+
+  base::RecordAction(
+      base::UserMetricsAction("Nudge_Active_When_MultitaskMenu_Opened"));
+  DismissNudge();
+
+  if (g_delegate_instance) {
+    g_delegate_instance->SetNudgePreferences(tablet_mode, kNudgeMaxShownCount,
+                                             GetTime());
   }
 }
 
@@ -264,11 +290,6 @@ void MultitaskMenuNudgeController::OnGetPreferences(
   if (tablet_mode != TabletState::Get()->InTabletMode()) {
     return;
   }
-
-  // TODO(b/267787811): When the multitask menu has been opened in tablet
-  // mode, don't show the tablet nudge anymore.
-  // TODO(sammiequon|hewer): When the multitask menu has been opened in
-  // clamshell mode, don't show the clamshell nudge anymore.
 
   // Nudge has already been shown three times. No need to educate anymore.
   if (shown_count >= kNudgeMaxShownCount) {
@@ -387,13 +408,35 @@ void MultitaskMenuNudgeController::UpdateWidgetAndPulse() {
   }
 
   // The nudge is placed right below the anchor.
-  // TODO(crbug.com/1329233): Determine what to do if the nudge is offscreen.
   const gfx::Rect anchor_bounds_in_screen = anchor_view_->GetBoundsInScreen();
-  const gfx::Rect bounds_in_screen(
+  gfx::Rect bounds_in_screen(
       anchor_bounds_in_screen.CenterPoint().x() - size.width() / 2,
       anchor_bounds_in_screen.bottom() + kNudgeDistanceFromAnchor, size.width(),
       size.height());
+  bool adjust_to_fit = false;
+  const display::Display display =
+      display::Screen::GetScreen()->GetDisplayNearestView(window_);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Lacros always needs adjustment since the child cannot go outside the
+  // parents bounds currently. See https://crbug.com/1416919.
+  adjust_to_fit = true;
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  // If the nudge is going to be offscreen, make sure it is within the window
+  // bounds.
+  adjust_to_fit = !display.work_area().Contains(bounds_in_screen);
+#endif
+  if (adjust_to_fit) {
+    // The nudge should be within the window bounds.
+    bounds_in_screen.AdjustToFit(window_->GetBoundsInScreen());
+  }
   nudge_widget_->SetBounds(bounds_in_screen);
+
+  // If setting bounds on the nudge causes it to move to another display (this
+  // can happen while dragging across displays), dismiss the nudge.
+  if (nudge_widget_->GetNativeWindow()->parent() != window_->parent()) {
+    DismissNudge();
+    return;
+  }
 
   // The circular pulse should be a square that matches the smaller dimension of
   // `anchor_view_`. We use rounded corners to make it look like a circle.

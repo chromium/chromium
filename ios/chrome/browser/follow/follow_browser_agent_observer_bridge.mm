@@ -29,3 +29,7 @@ void FollowBrowserAgentObserverBridge::OnWebSiteUnfollowed(
     FollowedWebSite* web_site) {
   [observing_ unfollowedWebSite:web_site];
 }
+
+void FollowBrowserAgentObserverBridge::OnFollowedWebSitesLoaded() {
+  [observing_ followedWebSitesLoaded];
+}

@@ -134,7 +134,6 @@ void OnModelInputCreated(
     std::unique_ptr<tflite::task::vision::ImageClassifier> classifier,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(std::vector<double>)> callback) {
-  base::Time before_operation = base::Time::Now();
   tflite::task::vision::FrameBuffer::Plane plane{
       reinterpret_cast<const tflite::uint8*>(model_input.data()),
       {3 * input_width, 3}};
@@ -143,8 +142,6 @@ void OnModelInputCreated(
       tflite::task::vision::FrameBuffer::Format::kRGB,
       tflite::task::vision::FrameBuffer::Orientation::kTopLeft);
   auto statusor_result = classifier->Classify(*frame_buffer);
-  base::UmaHistogramTimes("SBClientPhishing.ApplyTfliteTime.Classify",
-                          base::Time::Now() - before_operation);
   if (!statusor_result.ok()) {
     VLOG(1) << statusor_result.status().ToString();
     callback_task_runner->PostTask(
@@ -170,15 +167,12 @@ void OnClassifierCreated(
     std::unique_ptr<tflite::task::vision::ImageClassifier> classifier,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(std::vector<double>)> callback) {
-  base::Time before_operation = base::Time::Now();
   std::string model_input = GetModelInput(bitmap, input_width, input_height);
   if (model_input.empty()) {
     callback_task_runner->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::vector<double>()));
     return;
   }
-  base::UmaHistogramTimes("SBClientPhishing.ApplyTfliteTime.GetModelInput",
-                          base::Time::Now() - before_operation);
 
   // Break up the task to avoid blocking too long.
   base::ThreadPool::PostTask(
@@ -200,12 +194,8 @@ void Scorer::ApplyVisualTfLiteModelHelper(
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(std::vector<double>)> callback) {
   TRACE_EVENT0("safe_browsing", "ApplyVisualTfLiteModel");
-  base::Time before_operation = base::Time::Now();
-  before_operation = base::Time::Now();
   std::unique_ptr<tflite::task::vision::ImageClassifier> classifier =
       CreateClassifier(std::move(model_data));
-  base::UmaHistogramTimes("SBClientPhishing.ApplyTfliteTime.CreateClassifier",
-                          base::Time::Now() - before_operation);
   if (!classifier) {
     callback_task_runner->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::vector<double>()));

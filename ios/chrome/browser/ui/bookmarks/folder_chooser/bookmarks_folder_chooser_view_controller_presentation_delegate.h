@@ -17,7 +17,10 @@ class BookmarkNode;
 
 // Called when user taps on the "New Folder" row on the top of the screen
 // (shown only if `allowsNewFolders` is true).
-- (void)showBookmarksFolderEditor;
+// `parent` is used as the parent folder inside which a new folder will be
+// created.
+- (void)showBookmarksFolderEditorWithParentFolder:
+    (const bookmarks::BookmarkNode*)parent;
 // Called when a bookmark folder is selected. `folder` is the newly selected
 // folder.
 - (void)bookmarksFolderChooserViewController:
@@ -27,6 +30,11 @@ class BookmarkNode;
 // Called when the user is done with the picker, either by tapping the Cancel or
 // the Back button.
 - (void)bookmarksFolderChooserViewControllerDidCancel:
+    (BookmarksFolderChooserViewController*)viewController;
+// Called when the view controller disappears either through
+// 1. swiping right.
+// 2. or pressing the back button when cancel button is not available.
+- (void)bookmarksFolderChooserViewControllerDidDismiss:
     (BookmarksFolderChooserViewController*)viewController;
 
 @end

@@ -58,8 +58,8 @@ promise_test(async (t) => {
   const response = await nextValueFromServer(key);
   const [length, first_url] = response.split(",");
 
-  assert_equals(length, '0', 'There should be 0 nested configurations.');
-}, 'getNestedConfigs() in a nested iframe should be empty');
+  assert_equals(length, '20', 'There should be 20 nested configurations.');
+}, 'getNestedConfigs() should work in a same-origin nested iframe');
 
 promise_test(async (t) => {
   const key = token();

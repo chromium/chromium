@@ -110,7 +110,8 @@ public class MinidumpUploadServiceImpl extends MinidumpUploadService.Impl {
                         .Builder(TaskIds.CHROME_MINIDUMP_UPLOADING_JOB_ID,
                                 new ComponentName(ContextUtils.getApplicationContext(),
                                         ChromeMinidumpUploadJobService.class))
-                        .setExtras(permissions);
+                        .setExtras(permissions)
+                        .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED);
         MinidumpUploadJobService.scheduleUpload(builder);
     }
 

@@ -41,12 +41,6 @@ constexpr int kCaptionButtonHeight = 18;
 // The content edge images have a shadow built into them.
 const int OpaqueBrowserFrameViewLayout::kContentEdgeShadowThickness = 2;
 
-// The frame border is only visible in restored mode and is hardcoded to 4 px on
-// each side regardless of the system window border size.  This is overridable
-// by subclasses, so RestoredFrameBorderInsets() should be used instead of using
-// this constant directly.
-const int OpaqueBrowserFrameViewLayout::kFrameBorderThickness = 4;
-
 // The frame has a 2 px 3D edge along the top.  This is overridable by
 // subclasses, so RestoredFrameEdgeInsets() should be used instead of using this
 // constant directly.
@@ -171,8 +165,7 @@ gfx::Rect OpaqueBrowserFrameViewLayout::GetWindowBoundsForClientBounds(
 
 gfx::Insets OpaqueBrowserFrameViewLayout::FrameBorderInsets(
     bool restored) const {
-  return (!restored && delegate_->IsFrameCondensed()) ||
-                 delegate_->GetBorderlessModeEnabled()
+  return !restored && delegate_->IsFrameCondensed()
              ? gfx::Insets()
              : RestoredFrameBorderInsets();
 }
@@ -781,8 +774,7 @@ gfx::Size OpaqueBrowserFrameViewLayout::GetPreferredSize(
     const views::View* host) const {
   // This is never used; NonClientView::CalculatePreferredSize() will be called
   // instead.
-  NOTREACHED();
-  return gfx::Size();
+  NOTREACHED_NORETURN();
 }
 
 void OpaqueBrowserFrameViewLayout::ViewAdded(views::View* host,

@@ -64,7 +64,8 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
 
   METADATA_HEADER(AccountSelectionBubbleView);
   AccountSelectionBubbleView(
-      const std::u16string& rp_for_display,
+      const std::u16string& top_frame_for_display,
+      const absl::optional<std::u16string>& iframe_for_display,
       const absl::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,
       bool show_auto_reauthn_checkbox,
@@ -81,12 +82,13 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
                           const std::u16string& title) override;
 
   void ShowSingleAccountConfirmDialog(
-      const std::u16string& rp_for_display,
+      const std::u16string& top_frame_for_display,
+      const absl::optional<std::u16string>& iframe_for_display,
       const content::IdentityRequestAccount& account,
       const IdentityProviderDisplayData& idp_display_data,
       bool show_back_button) override;
 
-  void ShowFailureDialog(const std::u16string& rp_for_display,
+  void ShowFailureDialog(const std::u16string& top_frame_for_display,
                          const std::u16string& idp_for_display) override;
 
   // Populates `idp_images` when an IDP image has been fetched.
@@ -95,11 +97,9 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
  private:
   gfx::Rect GetBubbleBounds() override;
 
-  // Returns a View containing the logo of the identity provider and the title
-  // of the bubble, properly formatted. Creates the `header_icon_view_` if
-  // `has_idp_icon` is true.
-  std::unique_ptr<views::View> CreateHeaderView(const std::u16string& title,
-                                                bool has_idp_icon);
+  // Returns a View containing the logo of the identity provider. Creates the
+  // `header_icon_view_` if `has_idp_icon` is true.
+  std::unique_ptr<views::View> CreateHeaderView(bool has_idp_icon);
 
   // Returns a View for single account chooser. It contains the account
   // information, disclosure text and a button for the user to confirm the
@@ -133,6 +133,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // image based on the IDP.
   void UpdateHeader(const content::IdentityProviderMetadata& idp_metadata,
                     const std::u16string subpage_title,
+                    const std::u16string subpage_subtitle,
                     bool show_back_button);
 
   // Sets the brand views::ImageView visibility and image. Initiates the
@@ -149,6 +150,9 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
 
   // The accessible title.
   std::u16string accessible_title_;
+
+  // The initial subtitle for the dialog.
+  std::u16string subtitle_;
 
   blink::mojom::RpContext rp_context_;
 
@@ -172,6 +176,10 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
 
   // View containing the bubble title.
   raw_ptr<views::Label> title_label_ = nullptr;
+
+  // View containing the bubble subtitle, which is empty if the iframe domain
+  // does not need to be displayed.
+  raw_ptr<views::Label> subtitle_label_ = nullptr;
 
   // View containing the continue button.
   raw_ptr<views::MdTextButton> continue_button_ = nullptr;

@@ -8,8 +8,8 @@
 #include <list>
 
 #include "ash/ash_export.h"
+#include "ash/system/tray/tray_background_view.h"
 #include "base/functional/callback_helpers.h"
-#include "ui/views/view_observer.h"
 
 namespace ash {
 
@@ -17,7 +17,8 @@ class NotificationCenterTray;
 
 // This class controls the animation sequence that runs when the notification
 // center tray's visibility changes.
-class ASH_EXPORT StatusAreaAnimationController : public views::ViewObserver {
+class ASH_EXPORT StatusAreaAnimationController
+    : public TrayBackgroundView::Observer {
  public:
   explicit StatusAreaAnimationController(
       NotificationCenterTray* notification_center_tray);
@@ -41,9 +42,8 @@ class ASH_EXPORT StatusAreaAnimationController : public views::ViewObserver {
   // animations.
   void EnableNotificationCenterTrayItemAnimations();
 
-  // views::ViewObserver:
-  void OnViewVisibilityChanged(views::View* observed_view,
-                               views::View* starting_view) override;
+  // ash::TrayBackgroundView::Observer:
+  void OnVisiblePreferredChanged(bool visible_preferred) override;
 
   // A `base::ScopedClosureRunner` that, when run, re-enables default visibility
   // animations for `NotificationCenterTray`. Note that this should not be run

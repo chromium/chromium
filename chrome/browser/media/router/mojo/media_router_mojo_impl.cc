@@ -17,6 +17,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/cast_mirroring_service_host.h"
 #include "chrome/browser/media/cast_remoting_connector.h"
+#include "chrome/browser/media/router/mojo/media_router_debugger_impl.h"
 #include "chrome/browser/media/router/mojo/media_router_mojo_metrics.h"
 #include "chrome/browser/media/router/mojo/media_sink_service_status.h"
 #include "chrome/grit/chromium_strings.h"
@@ -67,6 +68,29 @@ DesktopMediaPickerController::Params MakeDesktopPickerParams(
   return params;
 }
 
+// Returns a vector of media routes that are in |routes_a| and not in
+// |routes_b|. Compares routes only by route id, and returns the version of
+// the routes from |routes_a|.
+std::vector<MediaRoute> GetRouteSetDifference(
+    std::vector<MediaRoute> routes_a,
+    std::vector<MediaRoute> routes_b) {
+  std::vector<MediaRoute> routes;
+  for (auto route_a : routes_a) {
+    bool route_seen = false;
+    for (auto route_b : routes_b) {
+      if (route_a.media_route_id() == route_b.media_route_id()) {
+        route_seen = true;
+      }
+    }
+
+    if (!route_seen) {
+      routes.emplace_back(route_a);
+    }
+  }
+
+  return routes;
+}
+
 }  // namespace
 
 MediaRouterMojoImpl::MediaRoutesQuery::MediaRoutesQuery() = default;
@@ -109,6 +133,7 @@ void MediaRouterMojoImpl::Initialize() {
   // outside of the constructor.
   internal_routes_observer_ =
       std::make_unique<InternalMediaRoutesObserver>(this);
+  media_router_debugger_ = std::make_unique<MediaRouterDebuggerImpl>(*this);
 }
 
 void MediaRouterMojoImpl::RegisterMediaRouteProvider(
@@ -161,6 +186,24 @@ void MediaRouterMojoImpl::OnRoutesUpdated(
     mojom::MediaRouteProviderId provider_id,
     const std::vector<MediaRoute>& routes) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  auto current_routes = GetCurrentRoutes();
+
+  std::vector<MediaRoute> added_routes =
+      GetRouteSetDifference(routes, current_routes);
+  std::vector<MediaRoute> removed_routes =
+      GetRouteSetDifference(current_routes, routes);
+
+  for (const auto& route : added_routes) {
+    if (route.IsLocalMirroringRoute()) {
+      AddMirroringMediaControllerHost(route);
+    }
+  }
+
+  for (const auto& route : removed_routes) {
+    mirroring_media_controller_hosts_.erase(route.media_route_id());
+  }
+
   routes_query_.SetRoutesForProvider(provider_id, routes);
   routes_query_.NotifyObservers();
 }
@@ -272,6 +315,10 @@ void MediaRouterMojoImpl::CreateRoute(const MediaSource::Id& source_id,
   }
 }
 
+// TODO(crbug.com/1418747): The auto-join and/or "mirroring to flinging"
+// features result in multiple presentations with identical presentation IDs
+// of "auto-join".  This is a latent bug because the rest of the code assumes
+// presentation IDs are unique.
 void MediaRouterMojoImpl::JoinRoute(const MediaSource::Id& source_id,
                                     const std::string& presentation_id,
                                     const url::Origin& origin,
@@ -364,6 +411,17 @@ std::vector<MediaRoute> MediaRouterMojoImpl::GetCurrentRoutes() const {
 std::unique_ptr<media::FlingingController>
 MediaRouterMojoImpl::GetFlingingController(const MediaRoute::Id& route_id) {
   return nullptr;
+}
+
+MirroringMediaControllerHost*
+MediaRouterMojoImpl::GetMirroringMediaControllerHost(
+    const MediaRoute::Id& route_id) {
+  auto it = mirroring_media_controller_hosts_.find(route_id);
+  if (it != mirroring_media_controller_hosts_.end()) {
+    return it->second.get();
+  } else {
+    return nullptr;
+  }
 }
 
 void MediaRouterMojoImpl::GetMediaController(
@@ -725,6 +783,19 @@ void MediaRouterMojoImpl::OnMediaControllerCreated(
   MediaRouterMojoMetrics::RecordMediaRouteControllerCreationResult(success);
 }
 
+void MediaRouterMojoImpl::AddMirroringMediaControllerHost(
+    const MediaRoute& route) {
+  mojo::Remote<media_router::mojom::MediaController> controller_remote;
+  mojo::PendingReceiver<media_router::mojom::MediaController>
+      controller_receiver = controller_remote.BindNewPipeAndPassReceiver();
+  auto host = std::make_unique<MirroringMediaControllerHost>(
+      std::move(controller_remote));
+  auto observer_remote = host->GetMediaStatusObserverPendingRemote();
+  GetMediaController(route.media_route_id(), std::move(controller_receiver),
+                     std::move(observer_remote));
+  mirroring_media_controller_hosts_[route.media_route_id()] = std::move(host);
+}
+
 void MediaRouterMojoImpl::OnProviderConnectionError(
     mojom::MediaRouteProviderId provider_id) {
   media_route_providers_.erase(provider_id);
@@ -740,7 +811,7 @@ LoggerImpl* MediaRouterMojoImpl::GetLogger() {
 }
 
 MediaRouterDebugger& MediaRouterMojoImpl::GetDebugger() {
-  return media_router_debugger_;
+  return *media_router_debugger_.get();
 }
 
 void MediaRouterMojoImpl::GetLogsAsString(GetLogsAsStringCallback callback) {
@@ -864,6 +935,7 @@ const MediaRoute* MediaRouterMojoImpl::GetRoute(
 void MediaRouterMojoImpl::Shutdown() {
   // The observer calls virtual methods on MediaRouter; it must be destroyed
   // outside of the dtor
+  media_router_debugger_.reset();
   internal_routes_observer_.reset();
 }
 
@@ -906,6 +978,21 @@ void MediaRouterMojoImpl::CreateRouteWithSelectedDesktop(
                 .Run(route, std::move(connection), error_text, result_code);
           },
           std::move(mr_callback)));
+}
+
+void MediaRouterMojoImpl::GetMirroringStats(
+    const MediaRoute::Id& route_id,
+    base::OnceCallback<void(const base::Value)> json_stats_cb) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  absl::optional<mojom::MediaRouteProviderId> provider_id =
+      GetProviderIdForRoute(route_id);
+  if (!provider_id) {
+    std::move(json_stats_cb).Run(base::Value());
+    return;
+  }
+
+  media_route_providers_[*provider_id]->GetMirroringStats(
+      route_id, std::move(json_stats_cb));
 }
 
 }  // namespace media_router

@@ -9,9 +9,7 @@
 #include <utility>
 
 #include "base/task/single_thread_task_runner.h"
-#include "content/common/private_aggregation_host.mojom.h"
 #include "content/services/shared_storage_worklet/console.h"
-#include "content/services/shared_storage_worklet/module_script_downloader.h"
 #include "content/services/shared_storage_worklet/private_aggregation.h"
 #include "content/services/shared_storage_worklet/shared_storage.h"
 #include "content/services/shared_storage_worklet/unnamed_operation_handler.h"
@@ -22,6 +20,8 @@
 #include "gin/public/isolate_holder.h"
 #include "gin/v8_initializer.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/common/shared_storage/module_script_downloader.h"
+#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-function.h"
 #include "v8/include/v8-initialization.h"
@@ -44,23 +44,25 @@ void InitV8() {
 }  // namespace
 
 SharedStorageWorkletGlobalScope::SharedStorageWorkletGlobalScope(
-    bool private_aggregation_permissions_policy_allowed)
+    bool private_aggregation_permissions_policy_allowed,
+    const absl::optional<std::u16string>& embedder_context)
     : private_aggregation_permissions_policy_allowed_(
-          private_aggregation_permissions_policy_allowed) {}
+          private_aggregation_permissions_policy_allowed),
+      embedder_context_(embedder_context) {}
 
 SharedStorageWorkletGlobalScope::~SharedStorageWorkletGlobalScope() = default;
 
 void SharedStorageWorkletGlobalScope::AddModule(
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         pending_url_loader_factory,
-    mojom::SharedStorageWorkletServiceClient* client,
-    content::mojom::PrivateAggregationHost* private_aggregation_host,
+    blink::mojom::SharedStorageWorkletServiceClient* client,
+    blink::mojom::PrivateAggregationHost* private_aggregation_host,
     const GURL& script_source_url,
-    mojom::SharedStorageWorkletService::AddModuleCallback callback) {
+    blink::mojom::SharedStorageWorkletService::AddModuleCallback callback) {
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory(
       std::move(pending_url_loader_factory));
 
-  module_script_downloader_ = std::make_unique<ModuleScriptDownloader>(
+  module_script_downloader_ = std::make_unique<blink::ModuleScriptDownloader>(
       url_loader_factory.get(), script_source_url,
       base::BindOnce(&SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded,
                      weak_ptr_factory_.GetWeakPtr(), client,
@@ -69,10 +71,10 @@ void SharedStorageWorkletGlobalScope::AddModule(
 }
 
 void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
-    mojom::SharedStorageWorkletServiceClient* client,
-    content::mojom::PrivateAggregationHost* private_aggregation_host,
+    blink::mojom::SharedStorageWorkletServiceClient* client,
+    blink::mojom::PrivateAggregationHost* private_aggregation_host,
     const GURL& script_source_url,
-    mojom::SharedStorageWorkletService::AddModuleCallback callback,
+    blink::mojom::SharedStorageWorkletService::AddModuleCallback callback,
     std::unique_ptr<std::string> response_body,
     std::string error_message) {
   module_script_downloader_.reset();
@@ -150,7 +152,7 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
 
   // After the module script execution, create and expose the shared storage
   // object.
-  shared_storage_ = std::make_unique<SharedStorage>(client);
+  shared_storage_ = std::make_unique<SharedStorage>(client, embedder_context_);
   context->Global()
       ->Set(context, gin::StringToSymbol(Isolate(), "sharedStorage"),
             shared_storage_->GetWrapper(Isolate()).ToLocalChecked())
@@ -163,7 +165,7 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
     const std::string& name,
     const std::vector<GURL>& urls,
     const std::vector<uint8_t>& serialized_data,
-    mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback
+    blink::mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback
         callback) {
   if (!isolate_holder_) {
     // TODO(yaoxia): if this operation comes while fetching the module script,
@@ -184,7 +186,7 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
 void SharedStorageWorkletGlobalScope::RunOperation(
     const std::string& name,
     const std::vector<uint8_t>& serialized_data,
-    mojom::SharedStorageWorkletService::RunOperationCallback callback) {
+    blink::mojom::SharedStorageWorkletService::RunOperationCallback callback) {
   if (!isolate_holder_) {
     // TODO(yaoxia): if this operation comes while fetching the module script,
     // we might want to queue the operation to be handled later after addModule

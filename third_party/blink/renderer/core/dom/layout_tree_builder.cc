@@ -55,16 +55,36 @@ LayoutTreeBuilderForElement::LayoutTreeBuilderForElement(
 }
 
 LayoutObject* LayoutTreeBuilderForElement::NextLayoutObject() const {
-  if (node_->IsFirstLetterPseudoElement())
+  if (node_->IsFirstLetterPseudoElement()) {
     return context_.next_sibling;
-  if (node_->IsInTopLayer())
-    return LayoutTreeBuilderTraversal::NextInTopLayer(*node_);
+  }
+  if (style_->StyleType() == kPseudoIdViewTransition) {
+    // ::view-transition is the last rendered child of LayoutView()
+    return nullptr;
+  }
+  if (style_->IsInTopLayer(*node_)) {
+    if (LayoutObject* next_in_top_layer =
+            LayoutTreeBuilderTraversal::NextInTopLayer(*node_)) {
+      return next_in_top_layer;
+    }
+    // We are at the end of the top layer elements. The ::view-transition is
+    // rendered on top of the top layer elements, appended as the last child of
+    // the LayoutView.
+    if (PseudoElement* view_transition_pseudo =
+            node_->GetDocument().documentElement()->GetPseudoElement(
+                kPseudoIdViewTransition)) {
+      return view_transition_pseudo->GetLayoutObject();
+    }
+    return nullptr;
+  }
   return LayoutTreeBuilder::NextLayoutObject();
 }
 
 LayoutObject* LayoutTreeBuilderForElement::ParentLayoutObject() const {
-  if (node_->IsInTopLayer())
+  if (style_->StyleType() == kPseudoIdViewTransition ||
+      style_->IsInTopLayer(*node_)) {
     return node_->GetDocument().GetLayoutView();
+  }
   return context_.parent;
 }
 
@@ -79,7 +99,7 @@ void LayoutTreeBuilderForElement::CreateLayoutObject() {
   // If we are in the top layer and the parent layout object without top layer
   // adjustment can't have children, then don't render.
   // https://github.com/w3c/csswg-drafts/issues/6939#issuecomment-1016671534
-  if (node_->IsInTopLayer() && context_.parent &&
+  if (style_->IsInTopLayer(*node_) && context_.parent &&
       !context_.parent->CanHaveChildren() &&
       node_->GetPseudoId() != kPseudoIdBackdrop) {
     return;

@@ -24,6 +24,7 @@
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/mock_userdataauth_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
 #include "chromeos/ash/components/login/auth/mock_auth_status_consumer.h"
 #include "chromeos/ash/components/login/auth/mock_safe_mode_delegate.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
@@ -214,6 +215,9 @@ class AuthSessionAuthenticatorTest : public ::testing::Test {
   const AccountId kAccountId = AccountId::FromUserEmail(kEmail);
 
   AuthSessionAuthenticatorTest() {
+    auth_metrics_recorder_ = AuthMetricsRecorder::CreateForTesting();
+    auth_metrics_recorder_->OnAuthenticationSurfaceChange(
+        AuthMetricsRecorder::AuthenticationSurface::kLogin);
     CryptohomeMiscClient::InitializeFake();
     SystemSaltGetter::Initialize();
     UserDataAuthClient::OverrideGlobalInstanceForTesting(&userdataauth_);
@@ -301,6 +305,7 @@ class AuthSessionAuthenticatorTest : public ::testing::Test {
   // Unowned (points to the object owned by `authenticator_`).
   MockSafeModeDelegate* safe_mode_delegate_ = nullptr;
   TestingPrefServiceSimple local_state_;
+  std::unique_ptr<AuthMetricsRecorder> auth_metrics_recorder_;
 };
 
 // Test the `CompleteLogin()` method in the new regular user scenario.

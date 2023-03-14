@@ -235,10 +235,11 @@ class SafeBrowsingDatabaseManager
 
   // Called to initialize objects that are used on the io_thread, such as the
   // v4 protocol manager.  This may be called multiple times during the life of
-  // the DatabaseManager. Must be called on IO thread. All subclasses should
-  // override this method, set enabled_ to true and call the base class method
-  // at the top of it.
-  virtual void StartOnIOThread(
+  // the DatabaseManager. Must be called on IO thread unless
+  // kSafeBrowsingOnUIThread is enabled in which case it'll be UI thread. All
+  // subclasses should override this method, set enabled_ to true and call the
+  // base class method at the top of it.
+  virtual void StartOnSBThread(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const V4ProtocolConfig& config);
 
@@ -253,10 +254,11 @@ class SafeBrowsingDatabaseManager
   base::CallbackListSubscription RegisterDatabaseUpdatedCallback(
       const OnDatabaseUpdated& cb);
 
-  // Called to stop or shutdown operations on the io_thread. All subclasses
-  // should override this method, set enabled_ to false and call the base class
-  // method at the bottom of it.
-  virtual void StopOnIOThread(bool shutdown);
+  // Called to stop or shutdown operations on the io_thread unless
+  // kSafeBrowsingOnUIThread is enabled in which case it'll be UI thread. All
+  // subclasses should override this method, set enabled_ to false and call the
+  // base class method at the bottom of it.
+  virtual void StopOnSBThread(bool shutdown);
 
   // Called to check if database is ready or not.
   virtual bool IsDatabaseReady();
@@ -324,7 +326,8 @@ class SafeBrowsingDatabaseManager
   // parameter to its RefCountedDeleteOnSequence base class, which exposes its
   // passed-in task runner as owning_task_runner(). Expose that |io_task_runner|
   // parameter internally as io_task_runner() for clarity.
-  scoped_refptr<base::SequencedTaskRunner> io_task_runner() {
+  // Note if kSafeBrowsingOnUIThread is enabled that'll be the UI thread.
+  scoped_refptr<base::SequencedTaskRunner> sb_task_runner() {
     return owning_task_runner();
   }
 
@@ -345,7 +348,7 @@ class SafeBrowsingDatabaseManager
   // extensions that have been blocklisted since.
   void NotifyDatabaseUpdateFinished();
 
-  // Created and destroyed via StartOnIOThread/StopOnIOThread.
+  // Created and destroyed via StartOnSBThread/StopOnSBThread.
   std::unique_ptr<V4GetHashProtocolManager> v4_get_hash_protocol_manager_;
 
   // A list of parties to be notified about database updates.

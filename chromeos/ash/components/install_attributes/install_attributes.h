@@ -131,15 +131,7 @@ class COMPONENT_EXPORT(ASH_INSTALL_ATTRIBUTES) InstallAttributes {
   // Return whether TPM is locked.
   bool IsDeviceLocked() const { return device_locked_; }
 
-  // Returns true before and during the first sign in. More specifically, it
-  // remembers whether device was not locked during the Init() and holds the
-  // value until Chrome's restart.
-  bool IsFirstSignIn() const { return first_sign_in_; }
-
  protected:
-  // True if device was not locked during `Init()`.
-  bool first_sign_in_ = false;
-
   // True if install attributes have been read successfully.  False if read
   // failed or no read attempt was made.
   bool device_locked_ = false;

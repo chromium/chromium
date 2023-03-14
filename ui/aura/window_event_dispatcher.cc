@@ -505,30 +505,11 @@ void WindowEventDispatcher::OnEventProcessingStarted(ui::Event* event) {
   observer_notifiers_.push(std::make_unique<ObserverNotifier>(this, *event));
 }
 
-void WindowEventDispatcher::OnEventProcessingFinished(
-    ui::Event* event,
-    ui::EventTarget* target,
-    const ui::EventDispatchDetails& details) {
+void WindowEventDispatcher::OnEventProcessingFinished(ui::Event* event) {
   if (in_shutdown_)
     return;
 
   observer_notifiers_.pop();
-}
-
-bool WindowEventDispatcher::ShouldReportEventLatency(
-    ui::EventTarget* target,
-    const ui::EventDispatchDetails& details) {
-  // If a target getting destroyed, we expect ui::Compositor has a frame to
-  // reflect it.
-  if (details.target_destroyed)
-    return true;
-  if (details.dispatcher_destroyed || !target)
-    return false;
-  const aura::Window* target_window = static_cast<aura::Window*>(target);
-  const std::string& name = target_window->GetName();
-  // We shouldn't report the latency in ui::Compositor for exo windows and aura
-  // windows backing web contents.
-  return name != "RenderWidgetHostViewAura" && !base::StartsWith(name, "Exo");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -626,8 +607,6 @@ ui::EventDispatchDetails WindowEventDispatcher::PostDispatchEvent(
     std::unique_ptr<cc::EventsMetricsManager::ScopedMonitor> monitor =
         std::move(event_metrics_monitors_.back());
     event_metrics_monitors_.pop_back();
-    if (event.handled() && ShouldReportEventLatency(target, details))
-      monitor->SetSaveMetrics();
   }
 
   return details;

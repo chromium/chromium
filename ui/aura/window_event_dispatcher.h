@@ -222,10 +222,7 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
   // Overridden from ui::EventProcessor:
   ui::EventTarget* GetRootForEvent(ui::Event* event) override;
   void OnEventProcessingStarted(ui::Event* event) override;
-  void OnEventProcessingFinished(
-      ui::Event* event,
-      ui::EventTarget* target,
-      const ui::EventDispatchDetails& details) override;
+  void OnEventProcessingFinished(ui::Event* event) override;
 
   // Overridden from ui::EventDispatcherDelegate.
   bool CanDispatchToTarget(ui::EventTarget* target) override;
@@ -281,10 +278,6 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
   // Calls SynthesizeMouseMove() if |window| is currently visible and contains
   // the mouse cursor.
   void SynthesizeMouseMoveAfterChangeToWindow(Window* window);
-
-  // Determines whether to report event latency.
-  bool ShouldReportEventLatency(ui::EventTarget* target,
-                                const ui::EventDispatchDetails& details);
 
   ui::EventDispatchDetails PreDispatchLocatedEvent(Window* target,
                                                    ui::LocatedEvent* event);

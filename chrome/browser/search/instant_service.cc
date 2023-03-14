@@ -67,10 +67,6 @@ InstantService::InstantService(Profile* profile)
   if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI))
     return;
 
-  registrar_.Add(this,
-                 content::NOTIFICATION_RENDERER_PROCESS_TERMINATED,
-                 content::NotificationService::AllSources());
-
   most_visited_sites_ = ChromeMostVisitedSitesFactory::NewForProfile(profile_);
   if (most_visited_sites_) {
     most_visited_sites_->EnableCustomLinks(false);
@@ -100,8 +96,12 @@ InstantService::InstantService(Profile* profile)
 
 InstantService::~InstantService() = default;
 
-void InstantService::AddInstantProcess(int process_id) {
-  process_ids_.insert(process_id);
+void InstantService::AddInstantProcess(content::RenderProcessHost* host) {
+  process_ids_.insert(host->GetID());
+  // The same process may be added for multiple WebContents. Only observe once.
+  if (!host_observation_.IsObservingSource(host)) {
+    host_observation_.AddObservation(host);
+  }
 }
 
 bool InstantService::IsInstantProcess(int process_id) const {
@@ -177,26 +177,13 @@ void InstantService::Shutdown() {
   ThemeServiceFactory::GetForProfile(profile_)->RemoveObserver(this);
 }
 
-void InstantService::Observe(int type,
-                             const content::NotificationSource& source,
-                             const content::NotificationDetails& details) {
-  switch (type) {
-    case content::NOTIFICATION_RENDERER_PROCESS_TERMINATED: {
-      content::RenderProcessHost* rph =
-          content::Source<content::RenderProcessHost>(source).ptr();
-      Profile* renderer_profile =
-          static_cast<Profile*>(rph->GetBrowserContext());
-      if (profile_ == renderer_profile)
-        OnRendererProcessTerminated(rph->GetID());
-      break;
-    }
-    default:
-      NOTREACHED() << "Unexpected notification type in InstantService.";
+void InstantService::RenderProcessHostDestroyed(
+    content::RenderProcessHost* host) {
+  Profile* renderer_profile = static_cast<Profile*>(host->GetBrowserContext());
+  if (profile_ == renderer_profile) {
+    process_ids_.erase(host->GetID());
+    host_observation_.RemoveObservation(host);
   }
-}
-
-void InstantService::OnRendererProcessTerminated(int process_id) {
-  process_ids_.erase(process_id);
 }
 
 void InstantService::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {

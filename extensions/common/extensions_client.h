@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/strings/string_piece.h"
+#include "extensions/common/features/feature.h"
 #include "extensions/common/permissions/api_permission_set.h"
 #include "services/network/public/mojom/cors_origin_pattern.mojom-forward.h"
 
@@ -47,6 +48,11 @@ class ExtensionsClient {
   ExtensionsClient(const ExtensionsClient&) = delete;
   ExtensionsClient& operator=(const ExtensionsClient&) = delete;
   virtual ~ExtensionsClient();
+
+  void SetFeatureDelegatedAvailabilityCheckMap(
+      Feature::FeatureDelegatedAvailabilityCheckMap map);
+  const Feature::FeatureDelegatedAvailabilityCheckMap&
+  GetFeatureDelegatedAvailabilityCheckMap();
 
   // Create a FeatureProvider for a specific feature type, e.g. "permission".
   std::unique_ptr<FeatureProvider> CreateFeatureProvider(
@@ -158,6 +164,8 @@ class ExtensionsClient {
   void DoInitialize();
 
   std::vector<std::unique_ptr<ExtensionsAPIProvider>> api_providers_;
+
+  Feature::FeatureDelegatedAvailabilityCheckMap availability_check_map_;
 
   // Whether DoInitialize() has been called.
   bool initialize_called_ = false;

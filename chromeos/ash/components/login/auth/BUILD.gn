@@ -143,6 +143,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/userdataauth:test_support",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//chromeos/ash/components/login/auth",
+    "//chromeos/ash/components/osauth/impl",
     "//components/account_id",
     "//components/password_manager/core/browser:password_hash_data",
     "//components/prefs",

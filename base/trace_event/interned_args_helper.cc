@@ -80,8 +80,10 @@ size_t InternedMapping::Get(perfetto::EventContext* ctx,
 void InternedMapping::Add(perfetto::EventContext* ctx,
                           size_t iid,
                           const base::ModuleCache::Module* module) {
+  // TODO(b/270470700): Remove TransformModuleIDToSymbolServerFormat on all
+  // platforms once tools/tracing is fixed.
   const auto build_id = InternedBuildId::Get(
-      ctx, base::TransformModuleIDToBreakpadFormat(module->GetId()));
+      ctx, base::TransformModuleIDToSymbolServerFormat(module->GetId()));
   const auto path_id =
       InternedMappingPath::Get(ctx, module->GetDebugBasename().MaybeAsASCII());
 

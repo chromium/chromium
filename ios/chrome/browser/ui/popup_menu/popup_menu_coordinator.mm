@@ -24,21 +24,24 @@
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
+#import "ios/chrome/browser/shared/public/commands/lens_commands.h"
+#import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
+#import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
+#import "ios/chrome/browser/shared/public/commands/price_notifications_commands.h"
+#import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_mediator.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
-#import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
-#import "ios/chrome/browser/ui/commands/browser_commands.h"
-#import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
-#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
-#import "ios/chrome/browser/ui/commands/lens_commands.h"
-#import "ios/chrome/browser/ui/commands/page_info_commands.h"
-#import "ios/chrome/browser/ui/commands/popup_menu_commands.h"
-#import "ios/chrome/browser/ui/commands/price_notifications_commands.h"
-#import "ios/chrome/browser/ui/commands/qr_scanner_commands.h"
-#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/main/layout_guide_util.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_mediator.h"
@@ -52,9 +55,6 @@
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_presenter_delegate.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_table_view_controller.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
-#import "ios/chrome/browser/ui/util/layout_guide_names.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/util/util_swift.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -66,6 +66,9 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using base::RecordAction;
+using base::UserMetricsAction;
 
 namespace {
 // Returns the corresponding command type for a Popup menu `type`.
@@ -180,15 +183,13 @@ enum class IOSOverflowMenuActionType {
 #pragma mark - PopupMenuCommands
 
 - (void)showNavigationHistoryBackPopupMenu {
-  base::RecordAction(
-      base::UserMetricsAction("MobileToolbarShowTabHistoryMenu"));
+  RecordAction(UserMetricsAction("MobileToolbarShowTabHistoryMenu"));
   [self presentPopupOfType:PopupMenuTypeNavigationBackward
       fromLayoutGuideNamed:kBackButtonGuide];
 }
 
 - (void)showNavigationHistoryForwardPopupMenu {
-  base::RecordAction(
-      base::UserMetricsAction("MobileToolbarShowTabHistoryMenu"));
+  RecordAction(UserMetricsAction("MobileToolbarShowTabHistoryMenu"));
   [self presentPopupOfType:PopupMenuTypeNavigationForward
       fromLayoutGuideNamed:kForwardButtonGuide];
 }
@@ -200,13 +201,13 @@ enum class IOSOverflowMenuActionType {
 }
 
 - (void)showTabGridButtonPopup {
-  base::RecordAction(base::UserMetricsAction("MobileToolbarShowTabGridMenu"));
+  RecordAction(UserMetricsAction("MobileToolbarShowTabGridMenu"));
   [self presentPopupOfType:PopupMenuTypeTabGrid
       fromLayoutGuideNamed:kTabSwitcherGuide];
 }
 
 - (void)showNewTabButtonPopup {
-  base::RecordAction(base::UserMetricsAction("MobileToolbarShowNewTabMenu"));
+  RecordAction(UserMetricsAction("MobileToolbarShowNewTabMenu"));
   [self presentPopupOfType:PopupMenuTypeNewTab
       fromLayoutGuideNamed:kNewTabButtonGuide];
 }
@@ -248,6 +249,7 @@ enum class IOSOverflowMenuActionType {
   }
 
   if (self.overflowMenuMediator) {
+    [self.bubblePresenter presentTabPinnedBubble];
     [self.baseViewController dismissViewControllerAnimated:animated
                                                 completion:nil];
     [self.overflowMenuMediator disconnect];
@@ -263,7 +265,6 @@ enum class IOSOverflowMenuActionType {
 - (void)showSnackbarForPinnedState:(BOOL)pinnedState
                           webState:(web::WebState*)webState {
   DCHECK(IsPinnedTabsOverflowEnabled());
-
   int messageId = pinnedState ? IDS_IOS_SNACKBAR_MESSAGE_PINNED_TAB
                               : IDS_IOS_SNACKBAR_MESSAGE_UNPINNED_TAB;
 
@@ -271,6 +272,12 @@ enum class IOSOverflowMenuActionType {
   base::WeakPtr<Browser> weakBrowser = self.browser->AsWeakPtr();
 
   void (^undoAction)() = ^{
+    if (pinnedState) {
+      RecordAction(UserMetricsAction("MobileSnackbarUndoPinAction"));
+    } else {
+      RecordAction(UserMetricsAction("MobileSnackbarUndoUnpinAction"));
+    }
+
     Browser* browser = weakBrowser.get();
     if (!browser) {
       return;

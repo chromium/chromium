@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 import './user_note_overview_row.js';
+import '//user-notes-side-panel.top-chrome/shared/sp_heading.js';
 
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './user_note_overviews_list.html.js';
@@ -22,16 +24,48 @@ export class UserNoteOverviewsListElement extends PolymerElement {
   static get properties() {
     return {
       overviews: Object,
+
+      currentTabHasNotes_: {
+        computed: 'hasOverviewforCurrentTab_(overviews)',
+        type: Boolean,
+      },
     };
   }
 
   overviews: NoteOverview[];
+  private currentTabHasNotes_: boolean;
 
   private userNotesApi_: UserNotesApiProxy =
       UserNotesApiProxyImpl.getInstance();
 
-  private sortByModificationTime_(
-      overview1: NoteOverview, overview2: NoteOverview): number {
+  private hasOverviewforCurrentTab_(): boolean {
+    return this.overviews.filter(overview => overview.isCurrentTab === true)
+               .length > 0;
+  }
+
+  private headerShownBeforeOverview_(index: number): boolean {
+    return index === 0 || (index === 1 && this.currentTabHasNotes_);
+  }
+
+  private getHeader_(index: number): string {
+    return loadTimeData.getString(
+        (index === 0 && this.currentTabHasNotes_) ? 'currentTab' : 'allNotes');
+  }
+
+  private shouldShowHr_(overview: NoteOverview): boolean {
+    return overview.isCurrentTab && this.overviews.length > 1;
+  }
+
+  private sortOverviews_(overview1: NoteOverview, overview2: NoteOverview):
+      number {
+    // Sort the current tab overview at the top.
+    if (overview1.isCurrentTab) {
+      return -1;
+    }
+    if (overview2.isCurrentTab) {
+      return 1;
+    }
+    // Sort remaining overviews by last modification time.
     return Number(
         overview2.lastModificationTime.internalValue -
         overview1.lastModificationTime.internalValue);

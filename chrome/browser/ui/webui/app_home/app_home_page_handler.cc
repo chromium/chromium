@@ -70,7 +70,7 @@ namespace webapps {
 
 namespace {
 
-const int kWebAppIconSize = 128;
+const int kWebAppIconSize = 64;
 
 // The Youtube app is incorrectly hardcoded to be a 'bookmark app'. However, it
 // is a platform app.
@@ -295,13 +295,7 @@ void AppHomePageHandler::CreateExtensionAppShortcut(
   Browser* browser = GetCurrentBrowser();
   chrome::ShowCreateChromeAppShortcutsDialog(
       browser->window()->GetNativeWindow(), browser->profile(), extension,
-      base::BindOnce(
-          [](base::OnceClosure done, bool success) {
-            base::UmaHistogramBoolean(
-                "Apps.AppInfoDialog.CreateExtensionShortcutSuccess", success);
-            std::move(done).Run();
-          },
-          std::move(done)));
+      base::IgnoreArgs<bool>(std::move(done)));
 }
 
 app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromWebApp(
@@ -405,28 +399,27 @@ void AppHomePageHandler::FillWebAppInfoList(
 void AppHomePageHandler::FillExtensionInfoList(
     std::vector<app_home::mojom::AppInfoPtr>* result) {
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile_);
-  std::unique_ptr<ExtensionSet> extension_apps =
-      registry->GenerateInstalledExtensionsSet(ExtensionRegistry::ENABLED |
-                                               ExtensionRegistry::DISABLED |
-                                               ExtensionRegistry::TERMINATED);
-  for (const auto& extension : *extension_apps) {
+  const ExtensionSet extension_apps = registry->GenerateInstalledExtensionsSet(
+      ExtensionRegistry::ENABLED | ExtensionRegistry::DISABLED |
+      ExtensionRegistry::TERMINATED);
+  for (const auto& extension : extension_apps) {
     if (!extensions::ui_util::ShouldDisplayInNewTabPage(extension.get(),
                                                         profile_) ||
         extension->id() == extensions::kWebStoreAppId) {
       continue;
     }
 
-    bool is_deprecated_app = false;
-    auto* context = extension_system_->extension_service()->GetBrowserContext();
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
-    is_deprecated_app = extensions::IsExtensionUnsupportedDeprecatedApp(
-        context, extension->id());
-#endif
+    auto* context = extension_system_->extension_service()->GetBrowserContext();
+    const bool is_deprecated_app =
+        extensions::IsExtensionUnsupportedDeprecatedApp(context,
+                                                        extension->id());
     if (is_deprecated_app && !extensions::IsExtensionForceInstalled(
                                  context, extension->id(), nullptr)) {
       deprecated_app_ids_.insert(extension->id());
     }
+#endif
     result->emplace_back(CreateAppInfoPtrFromExtension(extension.get()));
   }
 }
@@ -577,6 +570,11 @@ void AppHomePageHandler::GetApps(GetAppsCallback callback) {
   std::vector<app_home::mojom::AppInfoPtr> result;
   FillWebAppInfoList(&result);
   FillExtensionInfoList(&result);
+  sort(result.begin(), result.end(),
+       [](const app_home::mojom::AppInfoPtr& lhs,
+          const app_home::mojom::AppInfoPtr& rhs) {
+         return lhs->name < rhs->name;
+       });
   std::move(callback).Run(std::move(result));
 }
 

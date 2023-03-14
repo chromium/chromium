@@ -149,60 +149,6 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
   // Adds a delay before the passed callback is called.
   void SetCallbackDelay(base::TimeDelta delay);
 
-  // Calls the power event OnAcInserted for all registered power observers.
-  void EmitAcInsertedEventForTesting();
-
-  // Calls the power event OnAcRemoved on all registered power observers.
-  void EmitAcRemovedEventForTesting();
-
-  // Calls the power event OnOsSuspend on all registered power observers.
-  void EmitOsSuspendEventForTesting();
-
-  // Calls the power event OnOsResume on all registered power observers.
-  void EmitOsResumeEventForTesting();
-
-  // Calls the Bluetooth event OnAdapterAdded for all registered Bluetooth
-  // observers.
-  void EmitAdapterAddedEventForTesting();
-
-  // Calls the Bluetooth event OnAdapterRemoved on all registered Bluetooth
-  // observers.
-  void EmitAdapterRemovedEventForTesting();
-
-  // Calls the Bluetooth event OnAdapterPropertyChanged on all registered
-  // Bluetooth observers.
-  void EmitAdapterPropertyChangedEventForTesting();
-
-  // Calls the Bluetooth event OnDeviceAdded on all registered Bluetooth
-  // observers.
-  void EmitDeviceAddedEventForTesting();
-
-  // Calls the Bluetooth event OnDeviceRemoved on all registered Bluetooth
-  // observers.
-  void EmitDeviceRemovedEventForTesting();
-
-  // Calls the Bluetooth event OnDevicePropertyChanged on all registered
-  // Bluetooth observers.
-  void EmitDevicePropertyChangedEventForTesting();
-
-  // Calls the lid event OnLidClosed for all registered lid observers.
-  void EmitLidClosedEventForTesting();
-
-  // Calls the lid event OnLidOpened for all registered lid observers.
-  void EmitLidOpenedEventForTesting();
-
-  // Calls the audio event OnUnderrun for all registered audio observers.
-  void EmitAudioUnderrunEventForTesting();
-
-  // Calls the audio event OnSevereUnderrun for all registered audio observers.
-  void EmitAudioSevereUnderrunEventForTesting();
-
-  // Calls the Thunderbolt event OnAdd on all registered Thunderbolt observers.
-  void EmitThunderboltAddEventForTesting();
-
-  // Calls the USB event OnAdd on all registered USB observers.
-  void EmitUsbAddEventForTesting();
-
   // Calls the `OnEvent` method with `info` on all observers registered for
   // `category`.
   void EmitEventForCategory(mojom::EventCategoryEnum category,
@@ -343,23 +289,23 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
       RunBluetoothPairingRoutineCallback callback) override;
 
   // CrosHealthdEventService overrides:
-  void AddBluetoothObserver(
+  void DEPRECATED_AddBluetoothObserver(
       mojo::PendingRemote<mojom::CrosHealthdBluetoothObserver> observer)
       override;
-  void AddLidObserver(
+  void DEPRECATED_AddLidObserver(
       mojo::PendingRemote<mojom::CrosHealthdLidObserver> observer) override;
-  void AddPowerObserver(
+  void DEPRECATED_AddPowerObserver(
       mojo::PendingRemote<mojom::CrosHealthdPowerObserver> observer) override;
   void AddNetworkObserver(
       mojo::PendingRemote<
           chromeos::network_health::mojom::NetworkEventsObserver> observer)
       override;
-  void AddAudioObserver(
+  void DEPRECATED_AddAudioObserver(
       mojo::PendingRemote<mojom::CrosHealthdAudioObserver> observer) override;
-  void AddThunderboltObserver(
+  void DEPRECATED_AddThunderboltObserver(
       mojo::PendingRemote<mojom::CrosHealthdThunderboltObserver> observer)
       override;
-  void AddUsbObserver(
+  void DEPRECATED_AddUsbObserver(
       mojo::PendingRemote<mojom::CrosHealthdUsbObserver> observer) override;
   void AddEventObserver(
       ash::cros_healthd::mojom::EventCategoryEnum category,
@@ -403,21 +349,9 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
   internal::ServiceProvider<mojom::CrosHealthdProbeService> probe_provider_{
       this};
 
-  // Collection of registered Bluetooth observers.
-  mojo::RemoteSet<mojom::CrosHealthdBluetoothObserver> bluetooth_observers_;
-  // Collection of registered lid observers.
-  mojo::RemoteSet<mojom::CrosHealthdLidObserver> lid_observers_;
-  // Collection of registered power observers.
-  mojo::RemoteSet<mojom::CrosHealthdPowerObserver> power_observers_;
   // Collection of registered network observers.
   mojo::RemoteSet<chromeos::network_health::mojom::NetworkEventsObserver>
       network_observers_;
-  // Collection of registered audio observers.
-  mojo::RemoteSet<mojom::CrosHealthdAudioObserver> audio_observers_;
-  // Collection of registered Thunderbolt observers.
-  mojo::RemoteSet<mojom::CrosHealthdThunderboltObserver> thunderbolt_observers_;
-  // Collection of registered USB observers.
-  mojo::RemoteSet<mojom::CrosHealthdUsbObserver> usb_observers_;
   // Collection of registered general observers grouped by category.
   std::map<mojom::EventCategoryEnum, mojo::RemoteSet<mojom::EventObserver>>
       event_observers_;

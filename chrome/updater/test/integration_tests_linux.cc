@@ -175,11 +175,11 @@ void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
   NOTIMPLEMENTED();
 }
 
-void SetupFakeLegacyUpdaterData(UpdaterScope scope) {
+void SetupFakeLegacyUpdater(UpdaterScope scope) {
   // No legacy migration for Linux.
 }
 
-void ExpectLegacyUpdaterDataMigrated(UpdaterScope scope) {
+void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {
   // No legacy migration for Linux.
 }
 

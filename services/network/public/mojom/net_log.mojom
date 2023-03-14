@@ -79,5 +79,6 @@ interface NetLogProxySink {
   AddEntry(/*NetLogEventType*/ uint32 type,
            /*NetLogSourceType*/ uint32 source_type, uint32 source_id,
            mojo_base.mojom.TimeTicks source_start_time, NetLogEventPhase phase,
-           mojo_base.mojom.TimeTicks time, mojo_base.mojom.Value params);
+           mojo_base.mojom.TimeTicks time,
+           mojo_base.mojom.DictionaryValue params);
 };

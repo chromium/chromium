@@ -9,7 +9,7 @@ import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 suite('UrlUtilTest', function() {
   function getExpectedImageSet(url: string): string {
-    return '-webkit-image-set(' +
+    return 'image-set(' +
         'url("chrome://favicon2/?size=20&scaleFactor=1x&pageUrl=' +
         encodeURIComponent(url) + '&allowGoogleServerFallback=0") 1x, ' +
         'url("chrome://favicon2/?size=20&scaleFactor=2x&pageUrl=' +

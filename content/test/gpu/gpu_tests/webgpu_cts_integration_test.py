@@ -16,6 +16,7 @@ import unittest
 import websockets  # pylint:disable=import-error
 import websockets.server as ws_server  # pylint: disable=import-error
 
+from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
 
@@ -195,7 +196,6 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
     cls.SetUpWebsocketServer()
     browser_args = [
-        '--enable-unsafe-webgpu',
         '--disable-dawn-features=disallow_unsafe_apis',
         # When running tests in parallel, windows can be treated as occluded if
         # a newly opened window fully covers a previous one, which can cause
@@ -203,7 +203,8 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         # since Linux/Mac stagger new windows, but pass in on all platforms
         # since it could technically be hit on any platform.
         '--disable-backgrounding-occluded-windows',
-    ]
+    ] + cba.ENABLE_WEBGPU_FOR_TESTING
+
     if cls._use_webgpu_adapter:
       browser_args.append('--use-webgpu-adapter=%s' % cls._use_webgpu_adapter)
     if cls._enable_dawn_backend_validation:

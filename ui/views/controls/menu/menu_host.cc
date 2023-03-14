@@ -131,7 +131,7 @@ void MenuHost::InitMenuHost(const InitParams& init_params) {
   bool bubble_border = submenu_->GetScrollViewContainer() &&
                        submenu_->GetScrollViewContainer()->HasBubbleBorder();
   params.shadow_type =
-      (bubble_border || (menu_config.win11_style_menus && rounded_border))
+      (bubble_border || (menu_config.use_bubble_border && rounded_border))
           ? Widget::InitParams::ShadowType::kNone
           : Widget::InitParams::ShadowType::kDrop;
   params.opacity = (bubble_border || rounded_border)

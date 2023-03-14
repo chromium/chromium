@@ -64,7 +64,11 @@ interface Handler {
   // Deletes all persisted data for the aggregation service, returning when the
   // operation has been completed.
   ClearStorage() => ();
+};
 
-  // Registers an observer to be notified of aggregation service events.
-  AddObserver(pending_remote<Observer> observer) => (bool success);
+// Factory for Observer and Handler.
+interface Factory {
+  // Binds the observer and handler.
+  Create(pending_remote<Observer> observer,
+         pending_receiver<Handler> handler);
 };

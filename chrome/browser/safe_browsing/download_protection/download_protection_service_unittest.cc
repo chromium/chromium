@@ -127,6 +127,7 @@ using content::BrowserThread;
 using content::FileSystemAccessWriteItem;
 using ::testing::_;
 using ::testing::Assign;
+using ::testing::AtMost;
 using ::testing::ContainerEq;
 using ::testing::DoAll;
 using ::testing::ElementsAre;
@@ -732,6 +733,10 @@ class DownloadProtectionServiceTestBase
   // Verify that corrupted ZIP/DMGs do send a ping.
   void CheckClientDownloadReportCorruptArchive(ArchiveType type);
 
+  // Verify that real time download protection follows policy value.
+  void CheckClientDownloadRealTimeDownloadProtectionRequestPolicy(
+      bool policy_value);
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -800,9 +805,7 @@ void DownloadProtectionServiceTestBase::CheckClientDownloadReportCorruptArchive(
   }
 
   std::string file_contents = "corrupt archive file";
-  ASSERT_EQ(
-      static_cast<int>(file_contents.size()),
-      base::WriteFile(tmp_path_, file_contents.data(), file_contents.size()));
+  ASSERT_TRUE(base::WriteFile(tmp_path_, file_contents));
 
   RunLoop run_loop;
   download_service_->CheckClientDownload(
@@ -823,6 +826,43 @@ void DownloadProtectionServiceTestBase::CheckClientDownloadReportCorruptArchive(
 
   Mock::VerifyAndClearExpectations(sb_service_.get());
   Mock::VerifyAndClearExpectations(binary_feature_extractor_.get());
+}
+
+void DownloadProtectionServiceTestBase::
+    CheckClientDownloadRealTimeDownloadProtectionRequestPolicy(
+        bool policy_value) {
+  profile()->GetPrefs()->SetBoolean(
+      prefs::kRealTimeDownloadProtectionRequestAllowedByPolicy, policy_value);
+  PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
+  NiceMockDownloadItem item;
+  PrepareBasicDownloadItem(&item, {"http://www.evil.com/a.exe"},  // url_chain
+                           "http://www.google.com/",              // referrer
+                           FILE_PATH_LITERAL("a.tmp"),            // tmp_path
+                           FILE_PATH_LITERAL("a.exe"));           // final_path
+  content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
+
+  if (policy_value) {
+    EXPECT_CALL(*sb_service_->mock_database_manager(),
+                MatchDownloadAllowlistUrl(_))
+        .WillRepeatedly(Return(false));
+    EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _));
+    EXPECT_CALL(*binary_feature_extractor_.get(),
+                ExtractImageFeatures(
+                    tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
+    RunLoop run_loop;
+    download_service_->MaybeCheckClientDownload(
+        &item,
+        base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
+                            base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
+    EXPECT_TRUE(IsResult(DownloadCheckResult::SAFE));
+    EXPECT_TRUE(HasClientDownloadRequest());
+  } else {
+    base::MockCallback<CheckDownloadRepeatingCallback> done_callback;
+    download_service_->MaybeCheckClientDownload(&item, done_callback.Get());
+    EXPECT_CALL(done_callback, Run(_)).Times(0);
+  }
+  ClearClientDownloadRequest();
 }
 
 // TODO(crbug.com/721964): Create specific unit tests for
@@ -1521,10 +1561,9 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadZip) {
   std::string file_contents = "dummy file";
   {
     // In this case, it only contains a text file.
-    ASSERT_EQ(static_cast<int>(file_contents.size()),
-              base::WriteFile(zip_source_dir.GetPath().Append(
-                                  FILE_PATH_LITERAL("file.txt")),
-                              file_contents.data(), file_contents.size()));
+    ASSERT_TRUE(base::WriteFile(
+        zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.txt")),
+        file_contents));
     ASSERT_TRUE(zip::Zip(zip_source_dir.GetPath(), tmp_path_, false));
     RunLoop run_loop;
     download_service_->CheckClientDownload(
@@ -1539,10 +1578,9 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadZip) {
   }
   {
     // Now check with an executable in the zip file as well.
-    ASSERT_EQ(static_cast<int>(file_contents.size()),
-              base::WriteFile(zip_source_dir.GetPath().Append(
-                                  FILE_PATH_LITERAL("file.exe")),
-                              file_contents.data(), file_contents.size()));
+    ASSERT_TRUE(base::WriteFile(
+        zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.exe")),
+        file_contents));
     ASSERT_TRUE(zip::Zip(zip_source_dir.GetPath(), tmp_path_, false));
     EXPECT_CALL(*sb_service_->mock_database_manager(),
                 MatchDownloadAllowlistUrl(_))
@@ -1588,10 +1626,9 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadZip) {
   {
     // Repeat the test with an archive inside the zip file in addition to the
     // executable.
-    ASSERT_EQ(static_cast<int>(file_contents.size()),
-              base::WriteFile(zip_source_dir.GetPath().Append(
-                                  FILE_PATH_LITERAL("file.rar")),
-                              file_contents.data(), file_contents.size()));
+    ASSERT_TRUE(base::WriteFile(
+        zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.rar")),
+        file_contents));
     ASSERT_TRUE(zip::Zip(zip_source_dir.GetPath(), tmp_path_, false));
     RunLoop run_loop;
     download_service_->CheckClientDownload(
@@ -2244,6 +2281,16 @@ TEST_F(DownloadProtectionServiceTest,
   }
 }
 
+TEST_F(DownloadProtectionServiceTest,
+       CheckClientDownloadRealTimeDownloadProtectionRequestPolicyEnabled) {
+  CheckClientDownloadRealTimeDownloadProtectionRequestPolicy(true);
+}
+
+TEST_F(DownloadProtectionServiceTest,
+       CheckClientDownloadRealTimeDownloadProtectionRequestPolicyDisabled) {
+  CheckClientDownloadRealTimeDownloadProtectionRequestPolicy(false);
+}
+
 TEST_F(DownloadProtectionServiceTest, TestCheckDownloadUrl) {
   std::vector<GURL> url_chain;
   url_chain.emplace_back("http://www.google.com/");
@@ -2410,16 +2457,25 @@ TEST_F(DownloadProtectionServiceTest, TestDownloadItemDestroyed) {
                 MatchDownloadAllowlistUrl(_))
         .WillRepeatedly(Return(false));
 
-    // Expects that MockDownloadItem will go out of scope while asynchronous
-    // processing is checking allowlist, and thus will return after allowlist
-    // check rather than continuing to process the download, since
-    // OnDownloadDestroyed will be called to terminate the processing.
+    int expect_count;
+    if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
+      expect_count = 1;
+    } else {
+      // Expects that MockDownloadItem will go out of scope while asynchronous
+      // processing is checking allowlist, and thus will return after allowlist
+      // check rather than continuing to process the download, since
+      // OnDownloadDestroyed will be called to terminate the processing.
+      expect_count = 0;
+    }
+
+    // Note 'AtMost' is used because on Mac timing differences make the mocks
+    // not reached when kSafeBrowsingOnUIThread is enabled.
     EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _))
-        .Times(0);
+        .Times(AtMost(expect_count));
     EXPECT_CALL(*binary_feature_extractor_.get(),
                 ExtractImageFeatures(
                     tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _))
-        .Times(0);
+        .Times(AtMost(expect_count));
 
     download_service_->CheckClientDownload(
         &item, base::BindRepeating(
@@ -3195,6 +3251,8 @@ TEST_F(DownloadProtectionServiceFlagTest, CheckClientDownloadOverridenByFlag) {
                            "http://www.google.com/",              // referrer
                            FILE_PATH_LITERAL("a.tmp"),            // tmp_path
                            FILE_PATH_LITERAL("a.exe"));           // final_path
+  content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
+
   EXPECT_CALL(item, GetHash()).WillRepeatedly(ReturnRef(blocklisted_hash_));
   EXPECT_CALL(*sb_service_->mock_database_manager(),
               MatchDownloadAllowlistUrl(_))
@@ -3228,6 +3286,7 @@ TEST_F(DownloadProtectionServiceFlagTest,
       testdata_path_.AppendASCII(
           "zipfile_one_unsigned_binary.zip"),                   // tmp_path
       temp_dir_.GetPath().Append(FILE_PATH_LITERAL("a.zip")));  // final_path
+  content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
 
   EXPECT_CALL(*sb_service_->mock_database_manager(),
               MatchDownloadAllowlistUrl(_))
@@ -3827,6 +3886,17 @@ TEST_F(DownloadProtectionServiceTest,
       /*tmp_path_literal=*/FILE_PATH_LITERAL("a.exe.crswap"),
       /*final_path_literal=*/FILE_PATH_LITERAL("a.exe"));
   item->browser_context = profile1;
+
+  if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
+    // Note 'AtMost' is used below because on Mac timing differences make the
+    // mocks not reached.
+    EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _))
+        .Times(AtMost(1));
+    EXPECT_CALL(*binary_feature_extractor_.get(),
+                ExtractImageFeatures(
+                    tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _))
+        .Times(AtMost(1));
+  }
 
   RunLoop run_loop;
   download_service_->CheckFileSystemAccessWrite(
@@ -4634,43 +4704,18 @@ TEST_F(DownloadProtectionServiceTest, ESBRequestScanFalseWhenTooLarge) {
   EXPECT_TRUE(IsResult(DownloadCheckResult::UNCOMMON));
 }
 
-// Test fixture with the enterprise CSD checks either enabled or disabled.
-class EnterpriseCsdDownloadTest : public DownloadProtectionServiceTestBase,
-                                  public ::testing::WithParamInterface<bool> {
+class EnterpriseCsdDownloadTest : public DownloadProtectionServiceTestBase {
  public:
-  EnterpriseCsdDownloadTest() {
-    // Enable the feature early to prevent race condition trying to access
-    // the enabled features set.  This happens for example when the history
-    // service is started below.
-    if (flag_enabled()) {
-      EnableFeatures({kSafeBrowsingEnterpriseCsd,
-                      kSafeBrowsingDisableConsumerCsdForEnterprise});
-    } else {
-      DisableFeatures({kSafeBrowsingEnterpriseCsd,
-                       kSafeBrowsingDisableConsumerCsdForEnterprise});
-    }
-  }
-
-  bool flag_enabled() const { return GetParam(); }
+  EnterpriseCsdDownloadTest() = default;
 };
 
-TEST_P(EnterpriseCsdDownloadTest, SkipsConsumerCsdWhenEnabled) {
+TEST_F(EnterpriseCsdDownloadTest, SkipsConsumerCsdWhenEnabled) {
   NiceMockDownloadItem item;
   PrepareBasicDownloadItem(&item, {"http://www.evil.com/a.exe"},  // url_chain
                            "http://www.google.com/",              // referrer
                            FILE_PATH_LITERAL("a.tmp"),            // tmp_path
                            FILE_PATH_LITERAL("a.exe"));           // final_path
   content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
-
-  if (!flag_enabled()) {
-    EXPECT_CALL(*sb_service_->mock_database_manager(),
-                MatchDownloadAllowlistUrl(_))
-        .WillRepeatedly(Return(false));
-    EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _));
-    EXPECT_CALL(*binary_feature_extractor_.get(),
-                ExtractImageFeatures(
-                    tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
-  }
 
   SetAnalysisConnector(profile()->GetPrefs(),
                        enterprise_connectors::FILE_DOWNLOADED, R"(
@@ -4698,26 +4743,17 @@ TEST_P(EnterpriseCsdDownloadTest, SkipsConsumerCsdWhenEnabled) {
                           base::Unretained(this), run_loop.QuitClosure()));
   run_loop.Run();
 
-  EXPECT_EQ(HasClientDownloadRequest(), !flag_enabled());
+  EXPECT_EQ(HasClientDownloadRequest(), false);
   EXPECT_TRUE(test_upload_service->was_called());
 }
 
-TEST_P(EnterpriseCsdDownloadTest, PopulatesCsdFieldWhenEnabled) {
+TEST_F(EnterpriseCsdDownloadTest, PopulatesCsdFieldWhenEnabled) {
   NiceMockDownloadItem item;
   PrepareBasicDownloadItem(&item, {"http://www.evil.com/a.exe"},  // url_chain
                            "http://www.google.com/",              // referrer
                            FILE_PATH_LITERAL("a.tmp"),            // tmp_path
                            FILE_PATH_LITERAL("a.exe"));           // final_path
   content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
-  if (!flag_enabled()) {
-    EXPECT_CALL(*sb_service_->mock_database_manager(),
-                MatchDownloadAllowlistUrl(_))
-        .WillRepeatedly(Return(false));
-    EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _));
-    EXPECT_CALL(*binary_feature_extractor_.get(),
-                ExtractImageFeatures(
-                    tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
-  }
 
   SetAnalysisConnector(profile()->GetPrefs(),
                        enterprise_connectors::FILE_DOWNLOADED,
@@ -4746,11 +4782,10 @@ TEST_P(EnterpriseCsdDownloadTest, PopulatesCsdFieldWhenEnabled) {
   run_loop.Run();
 
   EXPECT_TRUE(test_upload_service->was_called());
-  EXPECT_EQ(test_upload_service->last_request().request_data().has_csd(),
-            flag_enabled());
+  EXPECT_EQ(test_upload_service->last_request().request_data().has_csd(), true);
 }
 
-TEST_P(EnterpriseCsdDownloadTest, StillDoesMetadataCheckForLargeFile) {
+TEST_F(EnterpriseCsdDownloadTest, StillDoesMetadataCheckForLargeFile) {
   NiceMockDownloadItem item;
   PrepareBasicDownloadItem(&item, {"http://www.evil.com/a.exe"},  // url_chain
                            "http://www.google.com/",              // referrer
@@ -4794,7 +4829,5 @@ TEST_P(EnterpriseCsdDownloadTest, StillDoesMetadataCheckForLargeFile) {
   EXPECT_TRUE(test_upload_service->was_called());
   EXPECT_TRUE(IsResult(DownloadCheckResult::SAFE));
 }
-
-INSTANTIATE_TEST_SUITE_P(, EnterpriseCsdDownloadTest, testing::Bool());
 
 }  // namespace safe_browsing

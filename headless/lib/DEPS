@@ -14,6 +14,7 @@ specific_include_rules = {
   "headless_content_main_delegate.cc": [
     "+cc/base/switches.h",
     "+components/viz/common/switches.h",
+    "+components/devtools/devtools_pipe/devtools_pipe.h",
     "+gpu/config/gpu_switches.h",
     "+third_party/blink/public/common/switches.h",
   ],

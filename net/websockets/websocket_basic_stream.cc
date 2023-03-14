@@ -106,13 +106,13 @@ int CalculateSerializedSizeAndTurnOnMaskBit(
   return static_cast<int>(total_size);
 }
 
-base::Value NetLogBufferSizeParam(int buffer_size) {
+base::Value::Dict NetLogBufferSizeParam(int buffer_size) {
   base::Value::Dict dict;
   dict.Set("read_buffer_size_in_bytes", buffer_size);
-  return base::Value(std::move(dict));
+  return dict;
 }
 
-base::Value NetLogFrameHeaderParam(const WebSocketFrameHeader* header) {
+base::Value::Dict NetLogFrameHeaderParam(const WebSocketFrameHeader* header) {
   base::Value::Dict dict;
   dict.Set("final", header->final);
   dict.Set("reserved1", header->reserved1);
@@ -121,7 +121,7 @@ base::Value NetLogFrameHeaderParam(const WebSocketFrameHeader* header) {
   dict.Set("opcode", header->opcode);
   dict.Set("masked", header->masked);
   dict.Set("payload_length", static_cast<double>(header->payload_length));
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 }  // namespace

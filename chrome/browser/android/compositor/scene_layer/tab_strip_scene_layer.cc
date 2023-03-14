@@ -31,7 +31,6 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
     : SceneLayer(env, jobj),
       tab_strip_layer_(cc::slim::SolidColorLayer::Create()),
       scrollable_strip_layer_(cc::slim::Layer::Create()),
-      scrim_layer_(cc::slim::SolidColorLayer::Create()),
       new_tab_button_(cc::slim::UIResourceLayer::Create()),
       new_tab_button_background_(cc::slim::UIResourceLayer::Create()),
       left_fade_(cc::slim::UIResourceLayer::Create()),
@@ -46,7 +45,6 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
   model_selector_button_background_->SetIsDrawable(true);
   left_fade_->SetIsDrawable(true);
   right_fade_->SetIsDrawable(true);
-  scrim_layer_->SetIsDrawable(true);
   tab_strip_redesign_enabled = is_tab_strip_redesign_enabled;
 
   // When the ScrollingStripStacker is used, the new tab button and tabs scroll,
@@ -73,7 +71,6 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
     }
     tab_strip_layer_->AddChild(new_tab_button_);
   }
-  tab_strip_layer_->AddChild(scrim_layer_);
   layer()->AddChild(tab_strip_layer_);
 }
 
@@ -152,26 +149,6 @@ void TabStripSceneLayer::UpdateTabStripLayer(JNIEnv* env,
     DCHECK(layer()->children()[background_index] == tab_strip_layer_);
     layer()->InsertChild(tab_strip_layer_, background_index);
   }
-}
-
-void TabStripSceneLayer::UpdateStripScrim(JNIEnv* env,
-                                          const JavaParamRef<jobject>& jobj,
-                                          jfloat x,
-                                          jfloat y,
-                                          jint width,
-                                          jint height,
-                                          jint color,
-                                          jfloat alpha) {
-  if (alpha == 0.f) {
-    scrim_layer_->SetIsDrawable(false);
-    return;
-  }
-  scrim_layer_->SetIsDrawable(true);
-  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
-  scrim_layer_->SetBackgroundColor(SkColor4f::FromColor(color));
-  scrim_layer_->SetBounds(gfx::Size(width, height));
-  scrim_layer_->SetPosition(gfx::PointF(x, y));
-  scrim_layer_->SetOpacity(alpha);
 }
 
 void TabStripSceneLayer::UpdateNewTabButton(
@@ -329,9 +306,8 @@ void TabStripSceneLayer::UpdateTabStripLeftFade(
   left_fade_->SetUIResourceId(fade_resource->ui_resource()->id());
 
   // The same resource is used for both left and right fade, so the
-  // resource must be rotated for the left fade.
-  gfx::Transform fade_transform;
-  fade_transform.RotateAboutYAxis(180.0);
+  // resource must be mirrored for the left fade.
+  gfx::Transform fade_transform = gfx::Transform::MakeScale(-1.0f, 1.0f);
   left_fade_->SetTransform(fade_transform);
 
   // Set opacity.

@@ -68,40 +68,33 @@ ConvertToIncompatibleApplication(const std::string& name,
   if (!value.is_dict())
     return nullptr;
 
-  const base::Value* registry_is_hkcu_value =
-      value.FindKeyOfType("registry_is_hkcu", base::Value::Type::BOOLEAN);
-  const base::Value* registry_key_path_value =
-      value.FindKeyOfType("registry_key_path", base::Value::Type::STRING);
-  const base::Value* registry_wow64_access_value =
-      value.FindKeyOfType("registry_wow64_access", base::Value::Type::INTEGER);
-  const base::Value* allow_load_value =
-      value.FindKeyOfType("allow_load", base::Value::Type::BOOLEAN);
-  const base::Value* type_value =
-      value.FindKeyOfType("type", base::Value::Type::INTEGER);
-  const base::Value* message_url_value =
-      value.FindKeyOfType("message_url", base::Value::Type::STRING);
+  const base::Value::Dict& dict = value.GetDict();
+  absl::optional<bool> registry_is_hkcu = dict.FindBool("registry_is_hkcu");
+  const std::string* registry_key_path = dict.FindString("registry_key_path");
+  absl::optional<int> registry_wow64_access =
+      dict.FindInt("registry_wow64_access");
+  absl::optional<bool> allow_load = dict.FindBool("allow_load");
+  absl::optional<int> type = dict.FindInt("type");
+  const std::string* message_url = dict.FindString("message_url");
 
   // All of the above are required for a valid application.
-  if (!registry_is_hkcu_value || !registry_key_path_value ||
-      !registry_wow64_access_value || !allow_load_value || !type_value ||
-      !message_url_value) {
+  if (!registry_is_hkcu || !registry_key_path || !registry_wow64_access ||
+      !allow_load || !type || !message_url) {
     return nullptr;
   }
 
   InstalledApplications::ApplicationInfo application_info = {
       base::UTF8ToWide(name),
-      registry_is_hkcu_value->GetBool() ? HKEY_CURRENT_USER
-                                        : HKEY_LOCAL_MACHINE,
-      base::UTF8ToWide(registry_key_path_value->GetString()),
-      static_cast<REGSAM>(registry_wow64_access_value->GetInt())};
+      *registry_is_hkcu ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE,
+      base::UTF8ToWide(*registry_key_path),
+      static_cast<REGSAM>(*registry_wow64_access)};
 
   auto blocklist_action =
       std::make_unique<chrome::conflicts::BlocklistAction>();
-  blocklist_action->set_allow_load(allow_load_value->GetBool());
+  blocklist_action->set_allow_load(*allow_load);
   blocklist_action->set_message_type(
-      static_cast<chrome::conflicts::BlocklistMessageType>(
-          type_value->GetInt()));
-  blocklist_action->set_message_url(message_url_value->GetString());
+      static_cast<chrome::conflicts::BlocklistMessageType>(*type));
+  blocklist_action->set_message_url(*message_url);
 
   return std::make_unique<
       IncompatibleApplicationsUpdater::IncompatibleApplication>(

@@ -34,8 +34,6 @@ class TaskTabHelper : public content::WebContentsObserver,
   // WebContentsObserver
   void NavigationEntryCommitted(
       const content::LoadCommittedDetails& load_details) override;
-  void NavigationListPruned(
-      const content::PrunedDetails& pruned_details) override;
   static sessions::NavigationTaskId* GetCurrentTaskId(
       content::WebContents* web_contents);
   const sessions::NavigationTaskId* get_task_id_for_navigation(
@@ -48,27 +46,14 @@ class TaskTabHelper : public content::WebContentsObserver,
  protected:
   explicit TaskTabHelper(content::WebContents* web_contents);
 
-  enum class HubType { DEFAULT_SEARCH_ENGINE, FORM_SUBMIT, OTHER };
-
-  virtual HubType GetSpokeEntryHubType() const;
-
-  // For testing
-  int GetSpokesForTesting(int id) {
-    return entry_index_to_spoke_count_map_[id];
-  }
-
  private:
   friend class content::WebContentsUserData<TaskTabHelper>;
   void UpdateAndRecordTaskIds(
       const content::LoadCommittedDetails& load_details);
 
-  void RecordHubAndSpokeNavigationUsage(int sample);
-
   int64_t GetParentTaskId();
   int64_t GetParentRootTaskId();
 
-  int last_pruned_navigation_entry_index_ = -1;
-  std::map<int, int> entry_index_to_spoke_count_map_;
   std::unordered_map<int, sessions::NavigationTaskId>
       local_navigation_task_id_map_;
 

@@ -10,7 +10,14 @@
 #include "content/public/browser/browser_context.h"
 
 CredentialsCleanerRunnerFactory::CredentialsCleanerRunnerFactory()
-    : ProfileKeyedServiceFactory("CredentialsCleanerRunner") {}
+    : ProfileKeyedServiceFactory(
+          "CredentialsCleanerRunner",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {}
 
 CredentialsCleanerRunnerFactory::~CredentialsCleanerRunnerFactory() = default;
 

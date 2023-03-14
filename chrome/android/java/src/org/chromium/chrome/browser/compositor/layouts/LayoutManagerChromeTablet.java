@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.ThemeColorObserver;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
@@ -154,20 +153,16 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
     @Override
     public void showLayout(int layoutType, boolean animate) {
         if (layoutType == LayoutType.TAB_SWITCHER && mOverviewLayout == null
-                && mTabSwitcherLayout == null
-                && TabUiFeatureUtilities.isTabletGridTabSwitcherEnabled(mHost.getContext())) {
+                && mTabSwitcherLayout == null) {
             try {
-                if (!mStartSurfaceSupplier.hasValue()) {
+                if (!mStartSurfaceSupplier.hasValue() && !mTabSwitcherSupplier.hasValue()) {
                     final ViewGroup containerView = mCreateStartSurfaceCallable.call();
                     createOverviewLayout(mStartSurfaceSupplier.get(), mTabSwitcherSupplier.get(),
                             mJankTracker, mScrimCoordinator, containerView);
-                    if (TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(
-                                mHost.getContext())) {
-                        mThemeColorObserver =
-                                (color, shouldAnimate) -> containerView.setBackgroundColor(color);
-                        mTopUiThemeColorProvider = getTopUiThemeColorProvider().get();
-                        mTopUiThemeColorProvider.addThemeColorObserver(mThemeColorObserver);
-                    }
+                    mThemeColorObserver =
+                            (color, shouldAnimate) -> containerView.setBackgroundColor(color);
+                    mTopUiThemeColorProvider = getTopUiThemeColorProvider().get();
+                    mTopUiThemeColorProvider.addThemeColorObserver(mThemeColorObserver);
                 }
             } catch (Exception e) {
                 throw new RuntimeException("Failed to initialize start surface.", e);

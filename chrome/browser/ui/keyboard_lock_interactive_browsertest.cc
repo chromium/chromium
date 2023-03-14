@@ -104,6 +104,9 @@ class KeyboardLockInteractiveBrowserTest
   bool RequestKeyboardLock(bool lock_all_keys = true);
   bool CancelKeyboardLock();
   bool DisablePreventDefaultOnTestPage();
+#if BUILDFLAG(IS_MAC)
+  void ExitFullscreen();
+#endif
 
   ExclusiveAccessManager* GetExclusiveAccessManager() {
     return browser()->exclusive_access_manager();
@@ -118,7 +121,8 @@ class KeyboardLockInteractiveBrowserTest
   net::EmbeddedTestServer https_test_server_;
 
 #if BUILDFLAG(IS_MAC)
-  ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen_;
+  std::unique_ptr<ui::test::ScopedFakeNSWindowFullscreen> fake_fullscreen_ =
+      std::make_unique<ui::test::ScopedFakeNSWindowFullscreen>();
 #endif
 };
 
@@ -184,6 +188,12 @@ bool KeyboardLockInteractiveBrowserTest::CancelKeyboardLock() {
   // keyboard.unlock() is a synchronous call.
   return ExecuteScript(GetActiveWebContents(), kKeyboardUnlockMethodCall);
 }
+
+#if BUILDFLAG(IS_MAC)
+void KeyboardLockInteractiveBrowserTest::ExitFullscreen() {
+  fake_fullscreen_.reset();
+}
+#endif
 
 bool KeyboardLockInteractiveBrowserTest::DisablePreventDefaultOnTestPage() {
   // We cannot test browser shortcuts in JS fullscreen with the default webpage
@@ -639,4 +649,11 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
   ui_test_utils::DownloadURL(browser(), download_url);
 
   ASSERT_TRUE(IsKeyboardLockActive());
+#if BUILDFLAG(IS_MAC)
+  // Must exit fullscreen before ending the test to prevent crashing while
+  // tearing down the test browser, due to the download bubble being shown on
+  // changing the fullscreen state while the browser is being destroyed.
+  CancelKeyboardLock();
+  ExitFullscreen();
+#endif
 }

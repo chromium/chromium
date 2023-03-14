@@ -1,13 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zu">
+<translation id="1347497506789975534">Bonisa izindlela zokukhokha ezilondoloziwe</translation>
 <translation id="1383876407941801731">Sesha</translation>
-<translation id="1566281227936819866">Bonisa izindlela zokukhokha ezilondoloziwe</translation>
 <translation id="1717486229951421299">Uhlu lokuqinisekisa elizogcwaliswa ekuthintweni livulwe ngobude obuhhafu.</translation>
 <translation id="207576718733492531">Uhlu lokuqinisekisa oluzogcwaliswa ekuthinteni luvaliwe.</translation>
 <translation id="2610239185026711824">Iphakamisa iphasiwedi</translation>
 <translation id="2652129567809778422">Khetha iphasiwedi</translation>
-<translation id="2803478378562657435">Ukubonisa izinketho zamaphasiwedi alondoloziwe namaphasiwedi</translation>
 <translation id="2903493209154104877">Amakheli</translation>
 <translation id="3399357656427473483">Uhlu lokuqinisekisa oluzogcwaliswa ekuthinteni.</translation>
 <translation id="3688051737190211318">Uma uyethemba i-<ph name="ORIGIN" />, ungasebenzisa iphasiwedi elondoloziwe ukuze ungene ngemvume</translation>
@@ -15,16 +14,14 @@
 <translation id="4660011489602794167">Bonisa ikhibhodi</translation>
 <translation id="4694050069269396220">Uma wethemba i-<ph name="ORIGIN" />, ungase usebenzise iphasiwedi elondolozelwe elinye isayithi.</translation>
 <translation id="5016175294846053194">Iziphakamiso zokugcwalisa ngokuzenzakalela ziyatholakala ngaphezu kwekhibhodi</translation>
-<translation id="5088366526685584589">Ibonisa amakheli alondoloziwe</translation>
 <translation id="5441504010984421144">Uhlu lokuqinisekisa oluzogcwaliswa ekuthinteni livulwe ngobude obugcwele.</translation>
+<translation id="6296921860874265377">Bonisa amaphasiwedi alondoloziwe nokukhethwa kukho kwephasiwedi</translation>
 <translation id="6393156038355142111">Iphakamisa iphasiwedi eqinile</translation>
 <translation id="6558703547256592471">Zama ukusebenzisa iphasiwedi eyingqayizivele kusayithi ngayinye.</translation>
 <translation id="7029809446516969842">Amaphasiwedi</translation>
-<translation id="7299100402441711551">Bonisa amakheli</translation>
-<translation id="7494879913343971937">Bonisa amaphasiwedi</translation>
 <translation id="7594473730623999723">Swayipha ukuze ubone iziphakamiso eziningi</translation>
+<translation id="7873973044507799456">Bonisa amakheli alondoloziwe</translation>
 <translation id="7992095260806105436">Sebenzisa isiphakamiso sokugcwalisa ngokuzenzakalela se-Chrome</translation>
-<translation id="8037472847879765671">Bonisa izindlela zokukhokha</translation>
 <translation id="8507520749471379845">Amaphasiwedi atholakalayo</translation>
 <translation id="8705308553596171387">Ayikho iphasiwedi</translation>
 <translation id="879180780857354295">Okunye okukhethwa kukho okutholakala ngenhla kwekhibhodi</translation>

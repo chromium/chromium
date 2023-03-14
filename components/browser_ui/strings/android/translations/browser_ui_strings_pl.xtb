@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Zmniejsz powiększenie</translation>
 <translation id="1510341833810331442">Witryny nie mogą zapisywać danych na Twoim urządzeniu</translation>
 <translation id="1547123415014299762">Pliki cookie innych firm są dozwolone</translation>
+<translation id="1593426485665524382">Nowe działania są dostępne u góry ekranu</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Powiązane witryny</translation>
 <translation id="1644574205037202324">Historia</translation>
@@ -59,6 +60,7 @@
 <translation id="216989819110952009">Chociaż oczy ich osłaniały zielone okulary, Dorotę i jej przyjaciół po prostu oślepił przepych</translation>
 <translation id="2176704795966505152">Pokaż opcję powiększenia w menu głównym</translation>
 <translation id="2182457891543959921">Pytaj, zanim zezwolisz stronom na tworzenie mapy 3D Twojego otoczenia lub śledzenie pozycji kamery (zalecane)</translation>
+<translation id="2194856509914051091">Istotne kwestie</translation>
 <translation id="2212565012507486665">Zezwalaj na pliki cookie</translation>
 <translation id="2228071138934252756">Aby zezwolić aplikacji <ph name="APP_NAME" /> na dostęp do aparatu, musisz go też włączyć w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Pliki cookie innych firm są blokowane</translation>
@@ -98,7 +100,6 @@
 <translation id="2713106313042589954">Wyłącz kamerę</translation>
 <translation id="2717722538473713889">Adresy e-mail</translation>
 <translation id="2750481671343847896">Witryny mogą wyświetlać prośby o zalogowanie się pochodzące od usług tożsamości.</translation>
-<translation id="2779966372261694284">Wylogujemy Cię z tej strony</translation>
 <translation id="2822354292072154809">Czy na pewno chcesz zresetować wszystkie uprawnienia witryny dla obiektu <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Witryna</translation>
 <translation id="2874939134665556319">Poprzedni utwór</translation>
@@ -144,6 +145,9 @@
 <translation id="3600792891314830896">Wycisz strony, które odtwarzają dźwięk</translation>
 <translation id="3602290021589620013">Podgląd</translation>
 <translation id="3628308229821498208">Sugerowane wyszukiwania</translation>
+<translation id="3636279694100170143">Odwiedzane przez Ciebie witryny mogą potwierdzić, że jesteś rzeczywistym użytkownikiem, a nie botem</translation>
+<translation id="3649190289964910441">Strona, którą odwiedzasz, może zapisywać w Chrome informacje, że jesteś prawdziwym użytkownikiem. Podczas przeglądania witryny mogą sprawdzać je w Chrome i potwierdzać w pierwszej odwiedzonej witrynie, że prawdopodobnie jesteś zaufanym użytkownikiem.</translation>
+<translation id="3721953990244350188">Zamknij i pokaż kolejne dostępne działanie</translation>
 <translation id="3744111561329211289">Synchronizacja w tle</translation>
 <translation id="3763247130972274048">Kliknij dwukrotnie z lewej lub prawej strony filmu, by przewinąć o 10 s</translation>
 <translation id="3794286421982011626">Aby strona, na którą wchodzisz, działała zgodnie z oczekiwaniami – na przykład nie wylogowywała Cię lub pokazywała produkty w koszyku na zakupy – może ona zapisywać informacje o tym, co robisz. Często witryny zapisują te informacje tymczasowo na Twoim urządzeniu.</translation>
@@ -191,11 +195,11 @@
 <translation id="4534723447064627427">Aby zezwolić aplikacji <ph name="APP_NAME" /> na dostęp do mikrofonu, musisz go też włączyć w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Wycisz mikrofon</translation>
 <translation id="4570913071927164677">Szczegóły</translation>
-<translation id="4575264539271661854">Ułatw powiększanie tekstu i obrazów w odwiedzanej witrynie</translation>
 <translation id="4598549027014564149">W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem innych witryn, nawet powiązanych. Twoja aktywność związana z przeglądaniem nie służy do personalizowania reklam. W niektórych witrynach mogą nie działać funkcje.</translation>
 <translation id="4645575059429386691">Zarządzany przez Twojego rodzica</translation>
 <translation id="4670064810192446073">Rzeczywistość wirtualna</translation>
 <translation id="4751476147751820511">Czujniki ruchu lub światła</translation>
+<translation id="477781522763920796">To ustawienie działa bez ujawniania Twojej tożsamości i udzielania witrynom dostępu do Twojej historii przeglądania.</translation>
 <translation id="4779083564647765204">Powiększ</translation>
 <translation id="4811450222531576619">Poznaj jej źródło i temat</translation>
 <translation id="4836046166855586901">Pytaj, gdy strona chce wiedzieć, kiedy aktywnie korzystasz z urządzenia</translation>
@@ -257,6 +261,7 @@
 <translation id="5740126560802162366">Witryny mogą zapisywać dane na Twoim urządzeniu</translation>
 <translation id="5771720122942595109">Zablokowane: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Uprawnienia</translation>
+<translation id="5810805850857689118">To działanie spowoduje usunięcie wszystkich danych i plików cookie powiązanych z grupą <ph name="ORIGIN" /> i znajdującymi się w niej stronami</translation>
 <translation id="5860033963881614850">Wyłączone</translation>
 <translation id="5876056640971328065">Wstrzymaj film</translation>
 <translation id="5884085660368669834">Ustawienie witryny</translation>
@@ -273,6 +278,7 @@
 <translation id="6040143037577758943">Zamknij</translation>
 <translation id="6042308850641462728">Więcej</translation>
 <translation id="6064125863973209585">Ukończenie pobierania plików</translation>
+<translation id="6071501408666570960">Może nastąpić wylogowanie z tej strony</translation>
 <translation id="6165508094623778733">Dowiedz się więcej</translation>
 <translation id="6177111841848151710">Zablokowano dostęp obecnej wyszukiwarce</translation>
 <translation id="6177128806592000436">Twoje połączenie z tą witryną nie jest bezpieczne</translation>
@@ -323,6 +329,7 @@
 <translation id="7016516562562142042">Zezwolono na dostęp obecnej wyszukiwarce</translation>
 <translation id="702275896380648118">Witryna określa Twoje zainteresowania, a potem sugeruje reklamy innym witrynom. Witryna wykorzystuje też gromadzone przez Chrome informacje o interesujących Cię tematach, aby wyświetlać trafniejsze reklamy.</translation>
 <translation id="702463548815491781">Zalecane, gdy włączono TalkBack lub Switch Access</translation>
+<translation id="7050519587566342213">Przeglądanie działa płynniej, ponieważ jesteś bardziej wiarygodnym użytkownikiem dla kolejnych witryn.</translation>
 <translation id="7053983685419859001">Blokuj</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Wybrano 1}few{Wybrano #}many{Wybrano #}other{Wybrano #}}</translation>
 <translation id="7087918508125750058">Wybrano <ph name="ITEM_COUNT" />. Opcje dostępne na górze ekranu</translation>
@@ -347,6 +354,7 @@
 <translation id="757524316907819857">Blokuj odtwarzanie treści chronionej na stronach</translation>
 <translation id="7577900504646297215">Zarządzaj zainteresowaniami</translation>
 <translation id="7594634374516752650">Połączono z urządzeniem Bluetooth</translation>
+<translation id="7634280112532283638">Ograniczenie spamu i oszustw</translation>
 <translation id="7641339528570811325">Wyczyść dane przeglądania…</translation>
 <translation id="7649070708921625228">Pomoc</translation>
 <translation id="7658239707568436148">Anuluj</translation>
@@ -407,6 +415,7 @@
 <translation id="8514955299594277296">Nie zezwalaj witrynom na zapisywanie danych na urządzeniu (niezalecane)</translation>
 <translation id="851751545965956758">Nie zezwalaj stronom na łączenie się z urządzeniami</translation>
 <translation id="8525306231823319788">Pełny ekran</translation>
+<translation id="8528440122773422556">To działanie spowoduje usunięcie wszystkich danych i plików cookie zapisanych przez strony internetowe w grupie <ph name="ORIGIN" /> lub jej aplikację na ekranie głównym</translation>
 <translation id="8541410041357371550">Witryna wykorzystuje gromadzone przez Chrome informacje o interesujących Cię tematach, aby wyświetlać trafniejsze reklamy.</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Pliki cookie dozwolone w przypadku <ph name="FPS_MEMBERS_COUNT" /> witryny <ph name="FPS_OWNER" />}few{Pliki cookie dozwolone w przypadku <ph name="FPS_MEMBERS_COUNT" /> witryn <ph name="FPS_OWNER" />}many{Pliki cookie dozwolone w przypadku <ph name="FPS_MEMBERS_COUNT" /> witryn <ph name="FPS_OWNER" />}other{Pliki cookie dozwolone w przypadku <ph name="FPS_MEMBERS_COUNT" /> witryny <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Dozwolone (zalecane)</translation>
@@ -421,6 +430,7 @@
 <translation id="8737217482364735741">Spowoduje to usunięcie wszystkich danych i plików cookie zapisanych przez stronę <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Wybierz obraz</translation>
 <translation id="8801436777607969138">Zablokuj JavaScript w określonej witrynie.</translation>
+<translation id="8803526663383843427">Kiedy funkcja jest włączona</translation>
 <translation id="8816026460808729765">Blokuj stronom dostęp do czujników</translation>
 <translation id="8823559166155093873">Blokuj pliki cookie</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -434,6 +444,7 @@
 <translation id="8986362086234534611">Zapomnij</translation>
 <translation id="8990043154272859344">Wylogujemy Cię ze wszystkich stron</translation>
 <translation id="9019902583201351841">Zarządzany przez Twoich rodziców</translation>
+<translation id="9039697262778250930">Może nastąpić wylogowanie z tych stron</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Ta witryna należy do grupy, która ma dostęp do danych o Twojej aktywności. Grupa jest zdefiniowana przez <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Usunąć pliki cookie?</translation>

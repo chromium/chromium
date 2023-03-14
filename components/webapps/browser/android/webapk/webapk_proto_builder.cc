@@ -329,9 +329,7 @@ bool StoreUpdateRequestToFileInBackground(
   // Create directory if it does not exist.
   base::CreateDirectory(update_request_path.DirName());
 
-  int bytes_written =
-      base::WriteFile(update_request_path, proto->c_str(), proto->size());
-  return (bytes_written == static_cast<int>(proto->size()));
+  return base::WriteFile(update_request_path, *proto);
 }
 
 }  // namespace webapps

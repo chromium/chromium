@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -194,6 +195,16 @@ class UpdateServiceStubUntrusted : public mojom::UpdateService {
     observer->OnComplete(mojom::UpdateService_Result::kPermissionDenied);
   }
 
+  void CheckForUpdate(
+      const std::string& app_id,
+      UpdateService::Priority priority,
+      UpdateService::PolicySameVersionUpdate policy_same_version_update,
+      UpdateCallback callback) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    impl_->CheckForUpdate(app_id, priority, policy_same_version_update,
+                          std::move(callback));
+  }
+
  private:
   void OnClientDisconnected();
 
@@ -207,26 +218,11 @@ UpdateServiceStub::UpdateServiceStub(scoped_refptr<updater::UpdateService> impl,
                                      UpdaterScope scope,
                                      base::RepeatingClosure task_start_listener,
                                      base::RepeatingClosure task_end_listener)
-    : filter_(std::make_unique<UpdateServiceStubUntrusted>(this)),
-      server_(
-          {.server_name = GetUpdateServiceServerName(scope),
-           .message_pipe_id =
-               named_mojo_ipc_server::EndpointOptions::kUseIsolatedConnection},
-          base::BindRepeating(base::BindRepeating(
-              [](mojom::UpdateService* interface,
-                 mojom::UpdateService* filter,
-                 std::unique_ptr<named_mojo_ipc_server::ConnectionInfo> info) {
-                return IsConnectionTrusted(*info) ? interface : filter;
-              },
-              this,
-              filter_.get()))),
-      impl_(impl),
-      task_start_listener_(task_start_listener),
-      task_end_listener_(task_end_listener) {
-  server_.set_disconnect_handler(base::BindRepeating(
-      []() { VLOG(1) << "UpdateService client disconnected."; }));
-  server_.StartServer();
-}
+    : UpdateServiceStub(impl,
+                        scope,
+                        task_start_listener,
+                        task_end_listener,
+                        base::RepeatingClosure()) {}
 
 UpdateServiceStub::~UpdateServiceStub() = default;
 
@@ -305,12 +301,21 @@ void UpdateServiceStub::Update(
 
   auto [state_change_callback, on_complete_callback] =
       MakeStateChangeObserverCallbacks(std::move(observer));
-  impl_->Update(app_id, install_data_index,
-                static_cast<updater::UpdateService::Priority>(priority),
-                static_cast<updater::UpdateService::PolicySameVersionUpdate>(
-                    policy_same_version_update),
-                do_update_check_only, state_change_callback,
-                std::move(on_complete_callback).Then(task_end_listener_));
+  if (do_update_check_only) {
+    impl_->CheckForUpdate(
+        app_id, static_cast<updater::UpdateService::Priority>(priority),
+        static_cast<updater::UpdateService::PolicySameVersionUpdate>(
+            policy_same_version_update),
+        state_change_callback,
+        std::move(on_complete_callback).Then(task_end_listener_));
+  } else {
+    impl_->Update(app_id, install_data_index,
+                  static_cast<updater::UpdateService::Priority>(priority),
+                  static_cast<updater::UpdateService::PolicySameVersionUpdate>(
+                      policy_same_version_update),
+                  state_change_callback,
+                  std::move(on_complete_callback).Then(task_end_listener_));
+  }
 }
 
 void UpdateServiceStub::Install(mojom::RegistrationRequestPtr registration,
@@ -357,6 +362,56 @@ void UpdateServiceStub::RunInstaller(const std::string& app_id,
   impl_->RunInstaller(app_id, installer_path, install_args, install_data,
                       install_settings, std::move(state_change_callback),
                       std::move(on_complete_callback).Then(task_end_listener_));
+}
+
+void UpdateServiceStub::CheckForUpdate(
+    const std::string& app_id,
+    UpdateService::Priority priority,
+    UpdateService::PolicySameVersionUpdate policy_same_version_update,
+    UpdateCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  task_start_listener_.Run();
+  auto observer = std::make_unique<mojo::Remote<mojom::StateChangeObserver>>();
+  std::move(callback).Run(observer->BindNewPipeAndPassReceiver());
+  auto [state_change_callback, on_complete_callback] =
+      MakeStateChangeObserverCallbacks(std::move(observer));
+  impl_->CheckForUpdate(
+      app_id, static_cast<updater::UpdateService::Priority>(priority),
+      static_cast<updater::UpdateService::PolicySameVersionUpdate>(
+          policy_same_version_update),
+      state_change_callback,
+      std::move(on_complete_callback).Then(task_end_listener_));
+}
+
+UpdateServiceStub::UpdateServiceStub(
+    scoped_refptr<updater::UpdateService> impl,
+    UpdaterScope scope,
+    base::RepeatingClosure task_start_listener,
+    base::RepeatingClosure task_end_listener,
+    base::RepeatingClosure endpoint_created_listener_for_testing)
+    : filter_(std::make_unique<UpdateServiceStubUntrusted>(this)),
+      server_(
+          {.server_name = GetUpdateServiceServerName(scope),
+           .message_pipe_id =
+               named_mojo_ipc_server::EndpointOptions::kUseIsolatedConnection},
+          base::BindRepeating(base::BindRepeating(
+              [](mojom::UpdateService* interface,
+                 mojom::UpdateService* filter,
+                 std::unique_ptr<named_mojo_ipc_server::ConnectionInfo> info) {
+                return IsConnectionTrusted(*info) ? interface : filter;
+              },
+              this,
+              filter_.get()))),
+      impl_(impl),
+      task_start_listener_(task_start_listener),
+      task_end_listener_(task_end_listener) {
+  server_.set_disconnect_handler(base::BindRepeating(
+      []() { VLOG(1) << "UpdateService client disconnected."; }));
+  if (endpoint_created_listener_for_testing) {
+    server_.set_on_server_endpoint_created_callback_for_testing(  // IN-TEST
+        endpoint_created_listener_for_testing);
+  }
+  server_.StartServer();
 }
 
 }  // namespace updater

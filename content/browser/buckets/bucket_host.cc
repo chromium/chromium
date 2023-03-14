@@ -48,10 +48,22 @@ BucketHost::CreateStorageBucketBinding(
 }
 
 void BucketHost::Persist(PersistCallback callback) {
-  if (!bucket_info_.is_null() && receivers_.current_context() &&
-      receivers_.current_context()->GetPermissionStatus(
+  if (bucket_info_.is_null() || !receivers_.current_context()) {
+    std::move(callback).Run(false, /*success=*/false);
+    return;
+  }
+
+  // Persistence is a one-way operation. If the bucket is already persistent, it
+  // can't be made non-persistent, so skip the permission status check (which
+  // hypothetically could have reverted from GRANTED to DENIED).
+  if (bucket_info_.persistent) {
+    std::move(callback).Run(true, /*success=*/true);
+    return;
+  }
+
+  if (receivers_.current_context()->GetPermissionStatus(
           blink::PermissionType::DURABLE_STORAGE) ==
-          blink::mojom::PermissionStatus::GRANTED) {
+      blink::mojom::PermissionStatus::GRANTED) {
     GetQuotaManagerProxy()->UpdateBucketPersistence(
         bucket_id_, /*persistent=*/true,
         base::SequencedTaskRunner::GetCurrentDefault(),
@@ -60,7 +72,7 @@ void BucketHost::Persist(PersistCallback callback) {
             base::BindOnce(&BucketHost::DidValidateForPersist,
                            base::Unretained(this), std::move(callback))));
   } else {
-    std::move(callback).Run(false, false);
+    std::move(callback).Run(false, /*success=*/true);
   }
 }
 
@@ -202,7 +214,7 @@ void BucketHost::DidGetBucket(
     storage::QuotaErrorOr<storage::BucketInfo> bucket_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!bucket_info.ok()) {
+  if (!bucket_info.has_value()) {
     bucket_info_ = {};
     std::move(callback).Run(false);
     return;

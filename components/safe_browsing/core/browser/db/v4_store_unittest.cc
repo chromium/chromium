@@ -73,8 +73,7 @@ class V4StoreTest : public PlatformTest {
 
     std::string file_format_string;
     file_format->SerializeToString(&file_format_string);
-    base::WriteFile(store_path_, file_format_string.data(),
-                    file_format_string.size());
+    base::WriteFile(store_path_, file_format_string);
   }
 
   void UpdatedStoreReady(bool* called_back,
@@ -122,7 +121,7 @@ TEST_F(V4StoreTest, TestReadFromAbsentFile) {
 
 TEST_F(V4StoreTest, TestReadFromInvalidContentsFile) {
   const char kInvalidContents[] = "Chromium";
-  base::WriteFile(store_path_, kInvalidContents, strlen(kInvalidContents));
+  base::WriteFile(store_path_, kInvalidContents);
   EXPECT_EQ(PROTO_PARSING_FAILURE,
             InMemoryV4Store(task_runner_, store_path_).ReadFromDisk());
 }
@@ -132,7 +131,7 @@ TEST_F(V4StoreTest, TestReadFromFileWithUnknownProto) {
   checksum.set_sha256("checksum");
   std::string checksum_string;
   checksum.SerializeToString(&checksum_string);
-  base::WriteFile(store_path_, checksum_string.data(), checksum_string.size());
+  base::WriteFile(store_path_, checksum_string);
 
   // Even though we wrote a completely different proto to file, the proto
   // parsing method does not fail. This shows the importance of a magic number.

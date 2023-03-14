@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html>
-<body>
+<head>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script type="module">
-import {MockBatteryMonitor} from './resources/mock-battery-monitor.js';
-
-const mock = new MockBatteryMonitor();
-
-promise_test(async _ => {
-  mock.setBatteryStatus(false, 10, 20, 0.5);
+<script src="/resources/test-only-api.js"></script>
+<script src="/battery-status/resources/battery-status-helpers.js"></script>
+</head>
+<body>
+<script>
+battery_status_test(async (t, mockBatteryMonitor) => {
+  mockBatteryMonitor.setBatteryStatus(false, 10, 20, 0.5);
 
   let battery = await navigator.getBattery();
   const newLevel = 0.6;
@@ -18,7 +18,7 @@ promise_test(async _ => {
   battery = null;
   gc();
 
-  mock.setBatteryStatus(false, 10, 20, newLevel);
+  mockBatteryMonitor.setBatteryStatus(false, 10, 20, newLevel);
   await levelChange;
 }, 'BatteryManager object is not garbage-collected with listeners attached');
 </script>

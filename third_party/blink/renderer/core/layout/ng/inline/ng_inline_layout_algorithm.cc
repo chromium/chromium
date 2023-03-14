@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_breaker.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_info.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_truncator.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_paragraph_line_breaker.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_ruby_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_outside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/list/ng_unpositioned_list_marker.h"
@@ -45,27 +46,50 @@
 
 namespace blink {
 
+namespace {
+
+inline bool ShouldInitiateBalancing(
+    const NGInlineBreakToken* break_token,
+    const LayoutOpportunityVector& opportunities) {
+  // Block-fragmented boxes are not supported.
+  if (break_token) {
+    return false;
+  }
+  // All lines should have the same available widths. No floats etc.
+  if (opportunities.size() != 1) {
+    return false;
+  }
+  const NGLayoutOpportunity& opportunity = opportunities.front();
+  // Bisection needs a positive available width.
+  if (opportunity.rect.InlineSize() <= LayoutUnit() ||
+      // Block-fragmented boxes are not supported.
+      opportunity.rect.BlockEndOffset() != LayoutUnit::Max() ||
+      // Shape exclusions are not supported.
+      opportunity.HasShapeExclusions()) {
+    return false;
+  }
+  return true;
+}
+
+}  // namespace
+
 NGInlineLayoutAlgorithm::NGInlineLayoutAlgorithm(
     NGInlineNode inline_node,
     const NGConstraintSpace& space,
     const NGInlineBreakToken* break_token,
     const NGColumnSpannerPath* column_spanner_path,
     NGInlineChildLayoutContext* context)
-    : NGLayoutAlgorithm(
-          inline_node,
-          inline_node.GetDocument()
-              .GetStyleResolver()
-              .CreateAnonymousStyleWithDisplay(inline_node.Style(),
-                                               EDisplay::kBlock),
-          space,
-          // Use LTR direction since inline layout handles bidi by itself and
-          // lays out in visual order.
-          TextDirection::kLtr,
-          break_token),
+    : NGLayoutAlgorithm(inline_node,
+                        &inline_node.Style(),
+                        space,
+                        // Use LTR direction since inline layout handles bidi by
+                        // itself and lays out in visual order.
+                        TextDirection::kLtr,
+                        break_token),
       box_states_(nullptr),
       context_(context),
       column_spanner_path_(column_spanner_path),
-      baseline_type_(container_builder_.Style().GetFontBaseline()),
+      baseline_type_(inline_node.Style().GetFontBaseline()),
       quirks_mode_(inline_node.GetDocument().InLineHeightQuirksMode()) {
   DCHECK(context);
 }
@@ -415,6 +439,9 @@ void NGInlineLayoutAlgorithm::CreateLine(
     box_states_->LineBoxState().EnsureTextMetrics(
         line_info->LineStyle(), *box_states_->LineBoxState().font,
         baseline_type_);
+  } else if (UNLIKELY(initial_letter_item_result) &&
+             box_states_->LineBoxState().metrics.IsEmpty()) {
+    box_states_->LineBoxState().metrics = FontHeight();
   }
 
   const FontHeight& line_box_metrics = box_states_->LineBoxState().metrics;
@@ -550,24 +577,9 @@ void NGInlineLayoutAlgorithm::PlaceControlItem(const NGInlineItem& item,
   DCHECK_EQ(item.Type(), NGInlineItem::kControl);
   DCHECK_GE(item.Length(), 1u);
   DCHECK(!item.TextShapeResult());
+  DCHECK_NE(item.TextType(), NGTextType::kNormal);
 #if DCHECK_IS_ON()
-  UChar character = line_info.ItemsData().text_content[item.StartOffset()];
-  NGTextType text_type;
-  switch (character) {
-    case kNewlineCharacter:
-      text_type = NGTextType::kForcedLineBreak;
-      break;
-    case kTabulationCharacter:
-      text_type = NGTextType::kFlowControl;
-      break;
-    case kZeroWidthSpaceCharacter:
-      text_type = NGTextType::kFlowControl;
-      break;
-    default:
-      NOTREACHED();
-      return;
-  }
-  DCHECK_EQ(item.TextType(), text_type);
+  item.CheckTextType(line_info.ItemsData().text_content);
 #endif
 
   // Don't generate fragments if this is a generated (not in DOM) break
@@ -1253,6 +1265,10 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
   NGLogicalLineItems* const line_box = items_builder->AcquireLogicalLineItems();
   DCHECK(line_box);
 
+  const bool initiate_balancing =
+      Style().TextWrap() == ETextWrap::kBalance &&
+      ShouldInitiateBalancing(break_token, opportunities) &&
+      !column_spanner_path_;
   bool is_line_created = false;
   LayoutUnit line_block_size;
   LayoutUnit block_delta;
@@ -1286,6 +1302,24 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
     NGLineLayoutOpportunity line_opportunity =
         opportunity.ComputeLineLayoutOpportunity(ConstraintSpace(),
                                                  line_block_size, block_delta);
+
+    if (initiate_balancing) {
+      // `ShouldInitiateBalancing` should have checked these conditions.
+      DCHECK(!context_->BalancedAvailableWidth());
+      DCHECK_GT(line_opportunity.AvailableInlineSize(), LayoutUnit());
+      DCHECK_EQ(opportunity.rect.BlockEndOffset(), LayoutUnit::Max());
+      DCHECK(!opportunity.HasShapeExclusions());
+      context_->SetBalancedAvailableWidth(
+          NGParagraphLineBreaker::AttemptParagraphBalancing(
+              Node(), ConstraintSpace(), line_opportunity));
+    }
+    absl::optional<NGLineLayoutOpportunity> saved_line_opportunity;
+    if (const absl::optional<LayoutUnit>& balanced_available_width =
+            context_->BalancedAvailableWidth()) {
+      saved_line_opportunity = line_opportunity;
+      NGParagraphLineBreaker::PrepareForNextLine(*balanced_available_width,
+                                                 &line_opportunity);
+    }
 
     STACK_UNINITIALIZED NGLineInfo line_info;
     NGLineBreaker line_breaker(
@@ -1373,6 +1407,12 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
       // Normally the last opportunity should fit the line, but arithmetic
       // overflow can lead to failures for all opportunities. Just let the line
       // to overflow in that case.
+    }
+
+    if (saved_line_opportunity) {
+      // Restore `line_opportunity` if `NGParagraphLineBreaker` updated it.
+      line_opportunity = *saved_line_opportunity;
+      line_info.SetAvailableWidth(line_opportunity.AvailableInlineSize());
     }
 
     PrepareBoxStates(line_info, break_token);

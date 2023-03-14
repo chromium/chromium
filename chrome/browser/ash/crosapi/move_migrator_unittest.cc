@@ -46,7 +46,6 @@ constexpr char kCacheFilePath[] = "Cache";                     // deletable
 
 constexpr char kDataFilePath[] = "Data";
 constexpr char kDataContent[] = "Hello, World!";
-constexpr int kDataSize = sizeof(kDataContent);
 
 // ID of an extension that will be moved from Ash to Lacros.
 // NOTE: we use a sequence of characters that can't be an
@@ -82,10 +81,8 @@ void SetUpExtensions(const base::FilePath& profile_path,
   // Generate data for an extension that has to be moved to Lacros.
   if (lacros) {
     ASSERT_TRUE(base::CreateDirectory(path.Append(kMoveExtensionId)));
-    ASSERT_EQ(
-        base::WriteFile(path.Append(kMoveExtensionId).Append(kDataFilePath),
-                        kDataContent, kDataSize),
-        kDataSize);
+    ASSERT_TRUE(base::WriteFile(
+        path.Append(kMoveExtensionId).Append(kDataFilePath), kDataContent));
   }
 
   // Generate data for an extension that has to stay in Ash.
@@ -93,10 +90,8 @@ void SetUpExtensions(const base::FilePath& profile_path,
     std::string keep_extension_id =
         browser_data_migrator_util::kExtensionsAshOnly[0];
     ASSERT_TRUE(base::CreateDirectory(path.Append(keep_extension_id)));
-    ASSERT_EQ(
-        base::WriteFile(path.Append(keep_extension_id).Append(kDataFilePath),
-                        kDataContent, kDataSize),
-        kDataSize);
+    ASSERT_TRUE(base::WriteFile(
+        path.Append(keep_extension_id).Append(kDataFilePath), kDataContent));
   }
 
   // Generate data for an extension that has to be in both Ash and Lacros.
@@ -104,10 +99,8 @@ void SetUpExtensions(const base::FilePath& profile_path,
     std::string both_extension_id =
         browser_data_migrator_util::kExtensionsBothChromes[0];
     ASSERT_TRUE(base::CreateDirectory(path.Append(both_extension_id)));
-    ASSERT_EQ(
-        base::WriteFile(path.Append(both_extension_id).Append(kDataFilePath),
-                        kDataContent, kDataSize),
-        kDataSize);
+    ASSERT_TRUE(base::WriteFile(
+        path.Append(both_extension_id).Append(kDataFilePath), kDataContent));
   }
 }
 
@@ -126,10 +119,8 @@ void SetUpStorage(const base::FilePath& profile_path,
   // Generate data for an extension that has to be moved to Lacros.
   if (lacros) {
     ASSERT_TRUE(base::CreateDirectory(path.Append(kMoveExtensionId)));
-    ASSERT_EQ(
-        base::WriteFile(path.Append(kMoveExtensionId).Append(kDataFilePath),
-                        kDataContent, kDataSize),
-        kDataSize);
+    ASSERT_TRUE(base::WriteFile(
+        path.Append(kMoveExtensionId).Append(kDataFilePath), kDataContent));
   }
 
   // Generate data for an extension that has to stay in Ash.
@@ -137,10 +128,8 @@ void SetUpStorage(const base::FilePath& profile_path,
     std::string keep_extension_id =
         browser_data_migrator_util::kExtensionsAshOnly[0];
     ASSERT_TRUE(base::CreateDirectory(path.Append(keep_extension_id)));
-    ASSERT_EQ(
-        base::WriteFile(path.Append(keep_extension_id).Append(kDataFilePath),
-                        kDataContent, kDataSize),
-        kDataSize);
+    ASSERT_TRUE(base::WriteFile(
+        path.Append(keep_extension_id).Append(kDataFilePath), kDataContent));
   }
 
   // Generate data for an extension that has to be in both Ash and Lacros.
@@ -148,10 +137,8 @@ void SetUpStorage(const base::FilePath& profile_path,
     std::string both_extension_id =
         browser_data_migrator_util::kExtensionsBothChromes[0];
     ASSERT_TRUE(base::CreateDirectory(path.Append(both_extension_id)));
-    ASSERT_EQ(
-        base::WriteFile(path.Append(both_extension_id).Append(kDataFilePath),
-                        kDataContent, kDataSize),
-        kDataSize);
+    ASSERT_TRUE(base::WriteFile(
+        path.Append(both_extension_id).Append(kDataFilePath), kDataContent));
   }
 }
 
@@ -240,12 +227,10 @@ void SetUpIndexedDB(const base::FilePath& profile_path,
                                                       kMoveExtensionId);
     ASSERT_TRUE(base::CreateDirectory(move_extension_blob_path));
     ASSERT_TRUE(base::CreateDirectory(move_extension_leveldb_path));
-    ASSERT_EQ(base::WriteFile(move_extension_blob_path.Append(kDataFilePath),
-                              kDataContent, kDataSize),
-              kDataSize);
-    ASSERT_EQ(base::WriteFile(move_extension_leveldb_path.Append(kDataFilePath),
-                              kDataContent, kDataSize),
-              kDataSize);
+    ASSERT_TRUE(base::WriteFile(move_extension_blob_path.Append(kDataFilePath),
+                                kDataContent));
+    ASSERT_TRUE(base::WriteFile(
+        move_extension_leveldb_path.Append(kDataFilePath), kDataContent));
   }
 
   if (ash) {
@@ -256,12 +241,10 @@ void SetUpIndexedDB(const base::FilePath& profile_path,
                                                       keep_extension_id);
     ASSERT_TRUE(base::CreateDirectory(keep_extension_blob_path));
     ASSERT_TRUE(base::CreateDirectory(keep_extension_leveldb_path));
-    ASSERT_EQ(base::WriteFile(keep_extension_blob_path.Append(kDataFilePath),
-                              kDataContent, kDataSize),
-              kDataSize);
-    ASSERT_EQ(base::WriteFile(keep_extension_leveldb_path.Append(kDataFilePath),
-                              kDataContent, kDataSize),
-              kDataSize);
+    ASSERT_TRUE(base::WriteFile(keep_extension_blob_path.Append(kDataFilePath),
+                                kDataContent));
+    ASSERT_TRUE(base::WriteFile(
+        keep_extension_leveldb_path.Append(kDataFilePath), kDataContent));
   }
 
   if (both) {
@@ -272,12 +255,10 @@ void SetUpIndexedDB(const base::FilePath& profile_path,
                                                       both_extension_id);
     ASSERT_TRUE(base::CreateDirectory(both_extension_blob_path));
     ASSERT_TRUE(base::CreateDirectory(both_extension_leveldb_path));
-    ASSERT_EQ(base::WriteFile(both_extension_blob_path.Append(kDataFilePath),
-                              kDataContent, kDataSize),
-              kDataSize);
-    ASSERT_EQ(base::WriteFile(both_extension_leveldb_path.Append(kDataFilePath),
-                              kDataContent, kDataSize),
-              kDataSize);
+    ASSERT_TRUE(base::WriteFile(both_extension_blob_path.Append(kDataFilePath),
+                                kDataContent));
+    ASSERT_TRUE(base::WriteFile(
+        both_extension_leveldb_path.Append(kDataFilePath), kDataContent));
   }
 }
 
@@ -369,35 +350,25 @@ void SetUpProfileDirectory(const base::FilePath& path) {
   //     |- LevelDB
   //     |- Nigori.bin
   ASSERT_TRUE(base::CreateDirectory(path.Append(kCacheFilePath)));
-  ASSERT_EQ(base::WriteFile(path.Append(kCacheFilePath).Append(kDataFilePath),
-                            kDataContent, kDataSize),
-            kDataSize);
+  ASSERT_TRUE(base::WriteFile(path.Append(kCacheFilePath).Append(kDataFilePath),
+                              kDataContent));
 
   ASSERT_TRUE(base::CreateDirectory(path.Append(kDownloadsFilePath)));
-  ASSERT_EQ(
-      base::WriteFile(path.Append(kDownloadsFilePath).Append(kDataFilePath),
-                      kDataContent, kDataSize),
-      kDataSize);
+  ASSERT_TRUE(base::WriteFile(
+      path.Append(kDownloadsFilePath).Append(kDataFilePath), kDataContent));
 
   ASSERT_TRUE(base::CreateDirectory(path.Append(kBookmarksFilePath)));
-  ASSERT_EQ(
-      base::WriteFile(path.Append(kBookmarksFilePath).Append(kDataFilePath),
-                      kDataContent, kDataSize),
-      kDataSize);
-  ASSERT_EQ(
-      base::WriteFile(path.Append(kCookiesFilePath), kDataContent, kDataSize),
-      kDataSize);
+  ASSERT_TRUE(base::WriteFile(
+      path.Append(kBookmarksFilePath).Append(kDataFilePath), kDataContent));
+  ASSERT_TRUE(base::WriteFile(path.Append(kCookiesFilePath), kDataContent));
 
   ASSERT_TRUE(base::CreateDirectory(path.Append(kSharedProtoDBPath)));
-  ASSERT_EQ(
-      base::WriteFile(path.Append(kSharedProtoDBPath).Append(kDataFilePath),
-                      kDataContent, kDataSize),
-      kDataSize);
+  ASSERT_TRUE(base::WriteFile(
+      path.Append(kSharedProtoDBPath).Append(kDataFilePath), kDataContent));
 
   ASSERT_TRUE(base::CreateDirectory(
       path.Append(browser_data_migrator_util::kSyncDataFilePath)));
-  ASSERT_EQ(base::WriteFile(GetNigoriPath(path), kDataContent, kDataSize),
-            kDataSize);
+  ASSERT_TRUE(base::WriteFile(GetNigoriPath(path), kDataContent));
 
   SetUpExtensions(path);
   SetUpStorage(path);
@@ -450,11 +421,10 @@ TEST(MoveMigratorTest, PreMigrationCleanUp) {
   EXPECT_TRUE(base::CreateDirectory(original_profile_dir_2));
   EXPECT_TRUE(base::CreateDirectory(
       original_profile_dir_2.Append(browser_data_migrator_util::kLacrosDir)));
-  EXPECT_EQ(base::WriteFile(original_profile_dir_2
-                                .Append(browser_data_migrator_util::kLacrosDir)
-                                .Append(chrome::kFirstRunSentinel),
-                            "", 0),
-            0);
+  ASSERT_TRUE(base::WriteFile(
+      original_profile_dir_2.Append(browser_data_migrator_util::kLacrosDir)
+          .Append(chrome::kFirstRunSentinel),
+      base::StringPiece()));
   MoveMigrator::TaskResult result_2 =
       MoveMigrator::PreMigrationCleanUp(original_profile_dir_2);
   ASSERT_EQ(result_2.status, MoveMigrator::TaskStatus::kSucceeded);
@@ -466,9 +436,8 @@ TEST(MoveMigratorTest, PreMigrationCleanUp) {
   const base::FilePath original_profile_dir_3 =
       scoped_temp_dir.GetPath().Append("user3");
   EXPECT_TRUE(base::CreateDirectory(original_profile_dir_3));
-  ASSERT_EQ(base::WriteFile(original_profile_dir_3.Append(kCacheFilePath),
-                            kDataContent, kDataSize),
-            kDataSize);
+  ASSERT_TRUE(base::WriteFile(original_profile_dir_3.Append(kCacheFilePath),
+                              kDataContent));
   MoveMigrator::TaskResult result_3 =
       MoveMigrator::PreMigrationCleanUp(original_profile_dir_3);
   ASSERT_EQ(result_3.status, MoveMigrator::TaskStatus::kSucceeded);
@@ -484,12 +453,10 @@ TEST(MoveMigratorTest, PreMigrationCleanUp) {
   EXPECT_TRUE(base::CreateDirectory(original_profile_dir_4));
   EXPECT_TRUE(base::CreateDirectory(
       original_profile_dir_4.Append(browser_data_migrator_util::kSplitTmpDir)));
-  EXPECT_EQ(
-      base::WriteFile(original_profile_dir_4
-                          .Append(browser_data_migrator_util::kSplitTmpDir)
-                          .Append("TestFile"),
-                      kDataContent, kDataSize),
-      kDataSize);
+  ASSERT_TRUE(base::WriteFile(
+      original_profile_dir_4.Append(browser_data_migrator_util::kSplitTmpDir)
+          .Append("TestFile"),
+      kDataContent));
   MoveMigrator::TaskResult result_4 =
       MoveMigrator::PreMigrationCleanUp(original_profile_dir_4);
   ASSERT_EQ(result_4.status, MoveMigrator::TaskStatus::kSucceeded);
@@ -975,9 +942,8 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveLacrosItems) {
       original_profile_dir_.Append(kCacheFilePath)));
 
   ASSERT_TRUE(base::CreateDirectory(tmp_user_dir));
-  ASSERT_EQ(
-      base::WriteFile(tmp_user_dir.Append(chrome::kFirstRunSentinel), "", 0),
-      0);
+  ASSERT_TRUE(base::WriteFile(tmp_user_dir.Append(chrome::kFirstRunSentinel),
+                              base::StringPiece()));
   ASSERT_TRUE(base::CreateDirectory(tmp_profile_dir));
   ASSERT_TRUE(base::CreateDirectory(tmp_split_dir));
   ASSERT_TRUE(
@@ -1085,9 +1051,8 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveSplitItems) {
       original_profile_dir_.Append(kCacheFilePath)));
 
   ASSERT_TRUE(base::CreateDirectory(tmp_user_dir));
-  ASSERT_EQ(
-      base::WriteFile(tmp_user_dir.Append(chrome::kFirstRunSentinel), "", 0),
-      0);
+  ASSERT_TRUE(base::WriteFile(tmp_user_dir.Append(chrome::kFirstRunSentinel),
+                              base::StringPiece()));
   ASSERT_TRUE(base::CreateDirectory(tmp_profile_dir));
   ASSERT_TRUE(base::CreateDirectory(tmp_split_dir));
   ASSERT_TRUE(
@@ -1195,9 +1160,8 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveTmpDir) {
       original_profile_dir_.Append(kCacheFilePath)));
 
   ASSERT_TRUE(base::CreateDirectory(tmp_user_dir));
-  ASSERT_EQ(
-      base::WriteFile(tmp_user_dir.Append(chrome::kFirstRunSentinel), "", 0),
-      0);
+  ASSERT_TRUE(base::WriteFile(tmp_user_dir.Append(chrome::kFirstRunSentinel),
+                              base::StringPiece()));
   ASSERT_TRUE(base::CreateDirectory(tmp_profile_dir));
   ASSERT_TRUE(
       base::CopyDirectory(original_profile_dir_.Append(kSharedProtoDBPath),

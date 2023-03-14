@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "input_glitch_counter.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
 #include "services/audio/input_controller.h"
 
@@ -67,7 +68,8 @@ class InputSyncWriter final : public InputController::SyncWriter {
   void Write(const media::AudioBus* data,
              double volume,
              bool key_pressed,
-             base::TimeTicks capture_time) final;
+             base::TimeTicks capture_time,
+             const media::AudioGlitchInfo& glitch_info) final;
 
   void Close() final;
 
@@ -84,7 +86,8 @@ class InputSyncWriter final : public InputController::SyncWriter {
   bool PushDataToFifo(const media::AudioBus& data,
                       double volume,
                       bool key_pressed,
-                      base::TimeTicks capture_time);
+                      base::TimeTicks capture_time,
+                      const media::AudioGlitchInfo& glitch_info);
 
   // Write data and audio parameters to current segment in shared memory.
   // Returns true if the data was successfully written, returns false if it was
@@ -92,12 +95,15 @@ class InputSyncWriter final : public InputController::SyncWriter {
   bool WriteDataToCurrentSegment(const media::AudioBus& data,
                                  double volume,
                                  bool key_pressed,
-                                 base::TimeTicks capture_time);
+                                 base::TimeTicks capture_time,
+                                 const media::AudioGlitchInfo& glitch_info);
 
   // Signals over the socket that data has been written to the current segment.
   // Updates counters and returns true if successful. Logs error and returns
   // false if failure.
   bool SignalDataWrittenAndUpdateCounters();
+
+  media::AudioInputBuffer* GetSharedInputBuffer(uint32_t segment_id) const;
 
   const base::RepeatingCallback<void(const std::string&)> log_callback_;
 
@@ -156,6 +162,7 @@ class InputSyncWriter final : public InputController::SyncWriter {
     OverflowData(double volume,
                  bool key_pressed,
                  base::TimeTicks capture_time,
+                 const media::AudioGlitchInfo& glitch_info,
                  std::unique_ptr<media::AudioBus> audio_bus);
 
     OverflowData(const OverflowData&) = delete;
@@ -169,12 +176,19 @@ class InputSyncWriter final : public InputController::SyncWriter {
     double volume_;
     bool key_pressed_;
     base::TimeTicks capture_time_;
+    media::AudioGlitchInfo glitch_info_;
     std::unique_ptr<media::AudioBus> audio_bus_;
   };
 
   std::vector<OverflowData> overflow_data_;
 
   std::unique_ptr<InputGlitchCounter> glitch_counter_;
+
+  // Glitch info that has yet to be successfully communicated to the renderer.
+  media::AudioGlitchInfo pending_glitch_info_;
+
+  // Represents the glitch info of one dropped buffer.
+  const media::AudioGlitchInfo dropped_buffer_glitch_;
 };
 
 }  // namespace audio

@@ -459,9 +459,9 @@ ProcessesEventRouter* ProcessesAPI::processes_event_router() {
 
 ExtensionFunction::ResponseAction ProcessesGetProcessIdForTabFunction::Run() {
   // For this function, the task manager doesn't even need to be running.
-  std::unique_ptr<api::processes::GetProcessIdForTab::Params> params(
-      api::processes::GetProcessIdForTab::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<api::processes::GetProcessIdForTab::Params> params =
+      api::processes::GetProcessIdForTab::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   const int tab_id = params->tab_id;
   content::WebContents* contents = nullptr;
@@ -489,9 +489,9 @@ ExtensionFunction::ResponseAction ProcessesTerminateFunction::Run() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // For this function, the task manager doesn't even need to be running.
-  std::unique_ptr<api::processes::Terminate::Params> params(
-      api::processes::Terminate::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<api::processes::Terminate::Params> params =
+      api::processes::Terminate::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   child_process_host_id_ = params->process_id;
   if (child_process_host_id_ < 0) {
@@ -577,9 +577,9 @@ ProcessesGetProcessInfoFunction::ProcessesGetProcessInfoFunction()
           GetRefreshTypesFlagOnlyEssentialData()) {}
 
 ExtensionFunction::ResponseAction ProcessesGetProcessInfoFunction::Run() {
-  std::unique_ptr<api::processes::GetProcessInfo::Params> params(
-      api::processes::GetProcessInfo::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<api::processes::GetProcessInfo::Params> params =
+      api::processes::GetProcessInfo::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   if (params->process_ids.as_integer)
     process_host_ids_.push_back(*params->process_ids.as_integer);
   else

@@ -518,44 +518,58 @@ TEST_F(SSLConnectJobTest, DirectSSLError) {
               test::IsError(ERR_BAD_SSL_CLIENT_AUTH_CERT));
 }
 
-// Test that the legacy crypto fallback is triggered on applicable error codes.
-TEST_F(SSLConnectJobTest, DirectLegacyCryptoFallback) {
-  for (Error error :
-       {ERR_CONNECTION_CLOSED, ERR_CONNECTION_RESET, ERR_SSL_PROTOCOL_ERROR,
-        ERR_SSL_VERSION_OR_CIPHER_MISMATCH}) {
-    SCOPED_TRACE(error);
+// Test that the sha1 server handshakes fallback is triggered on applicable
+// error codes.
+TEST_F(SSLConnectJobTest, SHA1ServerHandshakeFallback) {
+  for (bool feature_enabled : {true, false}) {
+    SCOPED_TRACE(feature_enabled);
+    base::test::ScopedFeatureList feature_list;
+    if (feature_enabled) {
+      feature_list.InitAndEnableFeature(features::kSHA1ServerSignature);
+    } else {
+      feature_list.InitAndDisableFeature(features::kSHA1ServerSignature);
+    }
+    for (Error error :
+         {ERR_CONNECTION_CLOSED, ERR_CONNECTION_RESET, ERR_SSL_PROTOCOL_ERROR,
+          ERR_SSL_VERSION_OR_CIPHER_MISMATCH}) {
+      SCOPED_TRACE(error);
 
-    for (bool second_attempt_ok : {true, false}) {
-      SCOPED_TRACE(second_attempt_ok);
+      for (bool second_attempt_ok : {true, false}) {
+        SCOPED_TRACE(second_attempt_ok);
 
-      StaticSocketDataProvider data;
-      socket_factory_.AddSocketDataProvider(&data);
-      SSLSocketDataProvider ssl(ASYNC, error);
-      socket_factory_.AddSSLSocketDataProvider(&ssl);
-      ssl.expected_disable_legacy_crypto = true;
+        StaticSocketDataProvider data;
+        socket_factory_.AddSocketDataProvider(&data);
+        SSLSocketDataProvider ssl(ASYNC, error);
+        socket_factory_.AddSSLSocketDataProvider(&ssl);
+        ssl.expected_disable_sha1_server_signatures = true;
 
-      Error error2 = second_attempt_ok ? OK : error;
-      StaticSocketDataProvider data2;
-      socket_factory_.AddSocketDataProvider(&data2);
-      SSLSocketDataProvider ssl2(ASYNC, error2);
-      socket_factory_.AddSSLSocketDataProvider(&ssl2);
-      ssl2.expected_disable_legacy_crypto = false;
+        Error error2 = second_attempt_ok ? OK : error;
+        StaticSocketDataProvider data2;
+        socket_factory_.AddSocketDataProvider(&data2);
+        SSLSocketDataProvider ssl2(ASYNC, error2);
+        socket_factory_.AddSSLSocketDataProvider(&ssl2);
+        if (feature_enabled) {
+          ssl2.expected_disable_sha1_server_signatures = false;
+        } else {
+          ssl2.expected_disable_sha1_server_signatures = true;
+        }
 
-      TestConnectJobDelegate test_delegate;
-      std::unique_ptr<ConnectJob> ssl_connect_job =
-          CreateConnectJob(&test_delegate);
+        TestConnectJobDelegate test_delegate;
+        std::unique_ptr<ConnectJob> ssl_connect_job =
+            CreateConnectJob(&test_delegate);
 
-      test_delegate.StartJobExpectingResult(ssl_connect_job.get(), error2,
-                                            /*expect_sync_result=*/false);
-      ConnectionAttempts connection_attempts =
-          ssl_connect_job->GetConnectionAttempts();
-      if (second_attempt_ok) {
-        ASSERT_EQ(1u, connection_attempts.size());
-        EXPECT_THAT(connection_attempts[0].result, test::IsError(error));
-      } else {
-        ASSERT_EQ(2u, connection_attempts.size());
-        EXPECT_THAT(connection_attempts[0].result, test::IsError(error));
-        EXPECT_THAT(connection_attempts[1].result, test::IsError(error));
+        test_delegate.StartJobExpectingResult(ssl_connect_job.get(), error2,
+                                              /*expect_sync_result=*/false);
+        ConnectionAttempts connection_attempts =
+            ssl_connect_job->GetConnectionAttempts();
+        if (second_attempt_ok) {
+          ASSERT_EQ(1u, connection_attempts.size());
+          EXPECT_THAT(connection_attempts[0].result, test::IsError(error));
+        } else {
+          ASSERT_EQ(2u, connection_attempts.size());
+          EXPECT_THAT(connection_attempts[0].result, test::IsError(error));
+          EXPECT_THAT(connection_attempts[1].result, test::IsError(error));
+        }
       }
     }
   }
@@ -640,7 +654,7 @@ TEST_F(SSLConnectJobTest, LegacyCryptoFallbackHistograms) {
     socket_factory_.AddSocketDataProvider(&data);
     SSLSocketDataProvider ssl(ASYNC, test.first_attempt);
     socket_factory_.AddSSLSocketDataProvider(&ssl);
-    ssl.expected_disable_legacy_crypto = true;
+    ssl.expected_disable_sha1_server_signatures = true;
 
     StaticSocketDataProvider data2;
     SSLSocketDataProvider ssl2(ASYNC, OK);
@@ -648,7 +662,7 @@ TEST_F(SSLConnectJobTest, LegacyCryptoFallbackHistograms) {
       socket_factory_.AddSocketDataProvider(&data2);
       socket_factory_.AddSSLSocketDataProvider(&ssl2);
       ssl2.ssl_info = ssl_info;
-      ssl2.expected_disable_legacy_crypto = false;
+      ssl2.expected_disable_sha1_server_signatures = false;
     } else {
       ssl.ssl_info = ssl_info;
     }
@@ -1579,7 +1593,7 @@ TEST_F(SSLConnectJobTest, ECHRecoveryThenLegacyCrypto) {
   // The handshake will then fail, and provide retry configs.
   SSLSocketDataProvider ssl2(ASYNC, ERR_ECH_NOT_NEGOTIATED);
   ssl2.expected_ech_config_list = ech_config_list2;
-  ssl2.expected_disable_legacy_crypto = true;
+  ssl2.expected_disable_sha1_server_signatures = true;
   ssl2.ech_retry_configs = ech_config_list3;
   socket_factory_.AddSSLSocketDataProvider(&ssl2);
   // The third connection attempt should skip `endpoint1` and retry with only
@@ -1592,7 +1606,7 @@ TEST_F(SSLConnectJobTest, ECHRecoveryThenLegacyCrypto) {
   // further but trigger the legacy crypto fallback.
   SSLSocketDataProvider ssl3(ASYNC, ERR_SSL_PROTOCOL_ERROR);
   ssl3.expected_ech_config_list = ech_config_list3;
-  ssl3.expected_disable_legacy_crypto = true;
+  ssl3.expected_disable_sha1_server_signatures = true;
   socket_factory_.AddSSLSocketDataProvider(&ssl3);
   // The third connection attempt should still skip `endpoint1` and retry with
   // only `endpoint2`.
@@ -1604,7 +1618,7 @@ TEST_F(SSLConnectJobTest, ECHRecoveryThenLegacyCrypto) {
   // connection enables legacy crypto and succeeds.
   SSLSocketDataProvider ssl4(ASYNC, OK);
   ssl4.expected_ech_config_list = ech_config_list3;
-  ssl4.expected_disable_legacy_crypto = false;
+  ssl4.expected_disable_sha1_server_signatures = false;
   socket_factory_.AddSSLSocketDataProvider(&ssl4);
 
   // The connection should ultimately succeed.
@@ -1657,7 +1671,7 @@ TEST_F(SSLConnectJobTest, LegacyCryptoThenECHRecovery) {
   // The handshake will then fail, and trigger the legacy cryptography fallback.
   SSLSocketDataProvider ssl2(ASYNC, ERR_SSL_PROTOCOL_ERROR);
   ssl2.expected_ech_config_list = ech_config_list2;
-  ssl2.expected_disable_legacy_crypto = true;
+  ssl2.expected_disable_sha1_server_signatures = true;
   socket_factory_.AddSSLSocketDataProvider(&ssl2);
   // The third and fourth connection attempts proceed as before, but with legacy
   // cryptography enabled.
@@ -1672,7 +1686,7 @@ TEST_F(SSLConnectJobTest, LegacyCryptoThenECHRecovery) {
   // The handshake enables legacy crypto. Now ECH fails with retry configs.
   SSLSocketDataProvider ssl4(ASYNC, ERR_ECH_NOT_NEGOTIATED);
   ssl4.expected_ech_config_list = ech_config_list2;
-  ssl4.expected_disable_legacy_crypto = false;
+  ssl4.expected_disable_sha1_server_signatures = false;
   ssl4.ech_retry_configs = ech_config_list3;
   socket_factory_.AddSSLSocketDataProvider(&ssl4);
   // The fourth connection attempt should still skip `endpoint1` and retry with
@@ -1685,7 +1699,7 @@ TEST_F(SSLConnectJobTest, LegacyCryptoThenECHRecovery) {
   // cryptography.
   SSLSocketDataProvider ssl5(ASYNC, OK);
   ssl5.expected_ech_config_list = ech_config_list3;
-  ssl5.expected_disable_legacy_crypto = false;
+  ssl5.expected_disable_sha1_server_signatures = false;
   socket_factory_.AddSSLSocketDataProvider(&ssl5);
 
   // The connection should ultimately succeed.

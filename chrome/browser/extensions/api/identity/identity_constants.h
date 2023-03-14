@@ -21,6 +21,7 @@ extern const char kGetAuthTokenInteractivityDeniedError[];
 extern const char kInvalidRedirect[];
 extern const char kOffTheRecord[];
 extern const char kPageLoadFailure[];
+extern const char kPageLoadTimedOut[];
 extern const char kSetAccountsInCookieFailure[];
 extern const char kInvalidConsentResult[];
 extern const char kCanceled[];

@@ -9,6 +9,7 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
+#include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -101,8 +102,9 @@ class LacrosDataMigrationScreenTest : public OobeBaseTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     OobeBaseTest::SetUpCommandLine(command_line);
 
-    command_line->AppendSwitchASCII(switches::kBrowserDataMigrationMode,
-                                    "copy");
+    command_line->AppendSwitchASCII(
+        switches::kBrowserDataMigrationMode,
+        browser_data_migrator_util::kMoveSwitchValue);
   }
 
   bool is_attempt_restart_called() const { return is_attempt_restart_called_; }

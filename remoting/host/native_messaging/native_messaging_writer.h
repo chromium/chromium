@@ -6,10 +6,7 @@
 #define REMOTING_HOST_NATIVE_MESSAGING_NATIVE_MESSAGING_WRITER_H_
 
 #include "base/files/file.h"
-
-namespace base {
-class Value;
-}  // namespace base
+#include "base/values.h"
 
 namespace remoting {
 
@@ -26,7 +23,7 @@ class NativeMessagingWriter {
 
   // Sends a message to the Native Messaging client, returning true if
   // successful.
-  bool WriteMessage(const base::Value& message);
+  bool WriteMessage(base::ValueView message);
 
  private:
   base::File write_stream_;

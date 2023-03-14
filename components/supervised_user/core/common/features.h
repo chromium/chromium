@@ -18,6 +18,8 @@ extern const char kLocalWebApprovalsPreferredButtonRemote[];
 BASE_DECLARE_FEATURE(kAllowHistoryDeletionForChildAccounts);
 BASE_DECLARE_FEATURE(kSynchronousSignInChecking);
 
+// Flags related to supervision features on Desktop and iOS platforms.
+BASE_DECLARE_FEATURE(kEnableSupervisionOnDesktopAndIOS);
 BASE_DECLARE_FEATURE(kFilterWebsitesForSupervisedUsersOnThirdParty);
 
 // Returns whether refreshed version of the website filter interstitial is

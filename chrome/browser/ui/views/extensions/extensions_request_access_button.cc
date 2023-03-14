@@ -15,55 +15,68 @@
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
-#include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
-#include "chrome/browser/ui/views/extensions/extensions_request_access_button_hover_card.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_request_access_hover_card_coordinator.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
-ExtensionsRequestAccessButton::ExtensionsRequestAccessButton(Browser* browser)
+namespace {
+
+std::vector<const extensions::Extension*> GetExtensions(
+    Profile* profile,
+    std::vector<extensions::ExtensionId>& extension_ids) {
+  const extensions::ExtensionSet& enabled_extensions =
+      extensions::ExtensionRegistry::Get(profile)->enabled_extensions();
+  std::vector<const extensions::Extension*> extensions;
+  for (auto extension_id : extension_ids) {
+    extensions.push_back(enabled_extensions.GetByID(extension_id));
+  }
+  return extensions;
+}
+
+}  // namespace
+
+ExtensionsRequestAccessButton::ExtensionsRequestAccessButton(
+    Browser* browser,
+    ExtensionsContainer* extensions_container)
     : ToolbarButton(
           base::BindRepeating(&ExtensionsRequestAccessButton::OnButtonPressed,
                               base::Unretained(this))),
-      browser_(browser) {}
+      browser_(browser),
+      extensions_container_(extensions_container),
+      hover_card_coordinator_(
+          std::make_unique<ExtensionsRequestAccessHoverCardCoordinator>()) {}
 
 ExtensionsRequestAccessButton::~ExtensionsRequestAccessButton() = default;
 
-void ExtensionsRequestAccessButton::UpdateExtensionsRequestingAccess(
-    std::vector<ToolbarActionViewController*> extensions_requesting_access) {
-  DCHECK(!extensions_requesting_access.empty());
-  extensions_requesting_access_ = extensions_requesting_access;
+void ExtensionsRequestAccessButton::Update(
+    std::vector<extensions::ExtensionId>& extension_ids) {
+  extension_ids_ = extension_ids;
+  SetVisible(!extension_ids_.empty());
+
+  if (extension_ids_.empty()) {
+    return;
+  }
 
   // TODO(crbug.com/1239772): Set the label and background color without borders
   // separately to match the mocks. For now, using SetHighlight to display that
   // adds a border and highlight color in addition to the label.
   absl::optional<SkColor> color;
-  SetHighlight(l10n_util::GetStringFUTF16Int(
-                   IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON,
-                   static_cast<int>(extensions_requesting_access_.size())),
-               color);
+  SetHighlight(
+      l10n_util::GetStringFUTF16Int(IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON,
+                                    static_cast<int>(extension_ids_.size())),
+      color);
 }
 
 void ExtensionsRequestAccessButton::MaybeShowHoverCard() {
-  if (ExtensionsRequestAccessButtonHoverCard::IsShowing() ||
-      !GetWidget()->IsMouseEventsEnabled())
+  if (hover_card_coordinator_->IsShowing() ||
+      !GetWidget()->IsMouseEventsEnabled()) {
     return;
-
-  ExtensionsRequestAccessButtonHoverCard::ShowBubble(
-      GetActiveWebContents(), this, extensions_requesting_access_);
-}
-
-std::vector<std::string>
-ExtensionsRequestAccessButton::GetExtensionsNamesForTesting() {
-  std::vector<std::string> extension_names;
-  for (auto* extension : extensions_requesting_access_) {
-    extension_names.push_back(base::UTF16ToUTF8(extension->GetActionName()));
   }
-  return extension_names;
+
+  hover_card_coordinator_->ShowBubble(GetActiveWebContents(), this,
+                                      extensions_container_, extension_ids_);
 }
 
 std::u16string ExtensionsRequestAccessButton::GetTooltipText(
@@ -73,28 +86,24 @@ std::u16string ExtensionsRequestAccessButton::GetTooltipText(
 }
 
 void ExtensionsRequestAccessButton::OnButtonPressed() {
-  if (ExtensionsRequestAccessButtonHoverCard::IsShowing()) {
-    ExtensionsRequestAccessButtonHoverCard::HideBubble();
+  if (hover_card_coordinator_->IsShowing()) {
+    hover_card_coordinator_->HideBubble();
   }
 
   content::WebContents* web_contents = GetActiveWebContents();
   extensions::ExtensionActionRunner* action_runner =
       extensions::ExtensionActionRunner::GetForWebContents(web_contents);
-  if (!action_runner)
+  if (!action_runner) {
     return;
-
-  DCHECK_GT(extensions_requesting_access_.size(), 0u);
-  const extensions::ExtensionSet& enabled_extensions =
-      extensions::ExtensionRegistry::Get(browser_->profile())
-          ->enabled_extensions();
-  std::vector<const extensions::Extension*> extensions;
-  for (auto* extension : extensions_requesting_access_) {
-    extensions.push_back(enabled_extensions.GetByID(extension->GetId()));
   }
+
+  DCHECK_GT(extension_ids_.size(), 0u);
+  std::vector<const extensions::Extension*> extensions_to_run =
+      GetExtensions(browser_->profile(), extension_ids_);
 
   base::RecordAction(base::UserMetricsAction(
       "Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton"));
-  action_runner->GrantTabPermissions(extensions);
+  action_runner->GrantTabPermissions(extensions_to_run);
 }
 
 // Linux enter/leave events are sometimes flaky, so we don't want to "miss"
@@ -110,7 +119,7 @@ void ExtensionsRequestAccessButton::OnMouseEntered(
 }
 
 void ExtensionsRequestAccessButton::OnMouseExited(const ui::MouseEvent& event) {
-  ExtensionsRequestAccessButtonHoverCard::HideBubble();
+  hover_card_coordinator_->HideBubble();
 }
 
 content::WebContents* ExtensionsRequestAccessButton::GetActiveWebContents() {

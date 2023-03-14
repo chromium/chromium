@@ -402,7 +402,7 @@ bool SharedImageInterfaceProxy::GetSHMForPixelData(
 }
 
 SharedImageInterface::SwapChainMailboxes
-SharedImageInterfaceProxy::CreateSwapChain(viz::ResourceFormat format,
+SharedImageInterfaceProxy::CreateSwapChain(viz::SharedImageFormat format,
                                            const gfx::Size& size,
                                            const gfx::ColorSpace& color_space,
                                            GrSurfaceOrigin surface_origin,
@@ -478,6 +478,26 @@ scoped_refptr<gfx::NativePixmap> SharedImageInterfaceProxy::GetNativePixmap(
   // Clients outside of the GPU process cannot obtain the backing NativePixmap
   // for SharedImages.
   return nullptr;
+}
+
+void SharedImageInterfaceProxy::AddReferenceToSharedImage(
+    const SyncToken& sync_token,
+    const Mailbox& mailbox,
+    uint32_t usage) {
+  std::vector<SyncToken> dependencies =
+      GenerateDependenciesFromSyncToken(std::move(sync_token), host_);
+  {
+    base::AutoLock lock(lock_);
+    AddMailbox(mailbox, usage);
+    // Note: we enqueue the IPC under the lock to guarantee monotonicity of the
+    // release ids as seen by the service.
+    last_flush_id_ = host_->EnqueueDeferredMessage(
+        mojom::DeferredRequestParams::NewSharedImageRequest(
+            mojom::DeferredSharedImageRequest::NewAddReferenceToSharedImage(
+                mojom::AddReferenceToSharedImageParams::New(
+                    mailbox, ++next_release_id_))),
+        std::move(dependencies));
+  }
 }
 
 void SharedImageInterfaceProxy::AddMailbox(const Mailbox& mailbox,

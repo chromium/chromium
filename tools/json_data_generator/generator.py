@@ -38,7 +38,7 @@ class JSONDataGenerator(object):
         '''Adds one or more JSON files to the model.'''
         for path in paths:
             try:
-                with open(path, 'r') as f:
+                with open(path, 'r', encoding='utf-8') as f:
                     self.AddJSONToModel(path, f.read())
                     self.sources.append(path)
             except ValueError as err:

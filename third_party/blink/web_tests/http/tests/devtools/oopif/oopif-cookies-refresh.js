@@ -13,7 +13,7 @@
   await TestRunner.showPanel('console');
   await TestRunner.showPanel('resources');
 
-  UI.panels.resources.showCookies(SDK.targetManager.mainTarget(), 'http://127.0.0.1:8000');
+  UI.panels.resources.showCookies(SDK.targetManager.rootTarget(), 'http://127.0.0.1:8000');
   await ApplicationTestRunner.waitForCookies();
 
   await TestRunner.navigatePromise('resources/page-out.html');

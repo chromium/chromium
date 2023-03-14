@@ -78,7 +78,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.Callback;
 import org.chromium.base.GarbageCollectionTestUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.test.metrics.HistogramTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -86,6 +85,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
@@ -178,9 +178,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
                     .setRevision(1)
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_START)
                     .build();
-
-    @Rule
-    public HistogramTestRule mHistogramTester = new HistogramTestRule();
 
     @SuppressWarnings("FieldCanBeLocal")
     private EmbeddedTestServer mTestServer;
@@ -888,6 +885,9 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0/"
         + "thumbnail_aspect_ratio/1.0"})
+    // TODO(crbug/1422295): TabSelectionEditorV2 is currently not compatible with TabSuggestions.
+    // TabSuggestions are not launched and need to be reworked to use TabSelectionEditorV2.
+    @DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testTabSuggestionMessageCard_dismiss() throws InterruptedException {
         // clang-format on
         prepareTabs(3, 0, null);
@@ -920,6 +920,9 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0"
         + "/thumbnail_aspect_ratio/1.0"})
+    // TODO(crbug/1422295): TabSelectionEditorV2 is currently not compatible with TabSuggestions.
+    // TabSuggestions are not launched and need to be reworked to use TabSelectionEditorV2.
+    @DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testTabSuggestionMessageCard_review() throws InterruptedException {
         // clang-format on
         prepareTabs(3, 0, null);
@@ -953,6 +956,9 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0/"
         + "thumbnail_aspect_ratio/1.0"})
+    // TODO(crbug/1422295): TabSelectionEditorV2 is currently not compatible with TabSuggestions.
+    // TabSuggestions are not launched and need to be reworked to use TabSelectionEditorV2.
+    @DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testShowOnlyOneTabSuggestionMessageCard_withSoftCleanup()
             throws InterruptedException {
         // clang-format on
@@ -968,6 +974,9 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0/"
         + "thumbnail_aspect_ratio/1.0"})
+    // TODO(crbug/1422295): TabSelectionEditorV2 is currently not compatible with TabSuggestions.
+    // TabSuggestions are not launched and need to be reworked to use TabSelectionEditorV2.
+    @DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     @DisabledTest(message = "https://crbug.com/1198484, crbug.com/1130621")
     public void testShowOnlyOneTabSuggestionMessageCard_withHardCleanup()
             throws InterruptedException {
@@ -984,6 +993,9 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0/"
         + "thumbnail_aspect_ratio/1.0"})
+    // TODO(crbug/1422295): TabSelectionEditorV2 is currently not compatible with TabSuggestions.
+    // TabSuggestions are not launched and need to be reworked to use TabSelectionEditorV2.
+    @DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     @DisabledTest(message = "https://crbug.com/1311825")
     public void testTabSuggestionMessageCardDismissAfterTabClosing() throws InterruptedException {
         // clang-format on
@@ -1018,6 +1030,9 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0/"
         + "thumbnail_aspect_ratio/1.0"})
+    // TODO(crbug/1422295): TabSelectionEditorV2 is currently not compatible with TabSuggestions.
+    // TabSuggestions are not launched and need to be reworked to use TabSelectionEditorV2.
+    @DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     @DisabledTest(message = "https://crbug.com/1326533")
     public void testTabSuggestionMessageCard_orientation() throws InterruptedException {
         // clang-format on
@@ -1164,28 +1179,17 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS})
     public void testThumbnailFetchingResult_liveLayer() throws Exception {
+        var histograms = HistogramWatcher.newSingleRecordWatcher(
+                TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT,
+                TabContentManager.ThumbnailFetchingResult.GOT_NOTHING);
+
         prepareTabs(1, 0, "about:blank");
         enterTabSwitcher(mActivityTestRule.getActivity());
         // There might be an additional one from capturing thumbnail for the live layer.
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(mAllBitmaps.size(), Matchers.greaterThanOrEqualTo(1)));
 
-        assertEquals(0,
-                mHistogramTester.getHistogramValueCount(
-                        TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT,
-                        TabContentManager.ThumbnailFetchingResult.GOT_JPEG));
-        assertEquals(0,
-                mHistogramTester.getHistogramValueCount(
-                        TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT,
-                        TabContentManager.ThumbnailFetchingResult.GOT_ETC1));
-        assertEquals(0,
-                mHistogramTester.getHistogramValueCount(
-                        TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT,
-                        TabContentManager.ThumbnailFetchingResult.GOT_DIFFERENT_ASPECT_RATIO_JPEG));
-        assertEquals(1,
-                mHistogramTester.getHistogramValueCount(
-                        TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT,
-                        TabContentManager.ThumbnailFetchingResult.GOT_NOTHING));
+        histograms.assertExpected();
     }
 
     @Test
@@ -1193,6 +1197,10 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS})
     public void testThumbnailFetchingResult_jpeg() throws Exception {
+        var histograms = HistogramWatcher.newSingleRecordWatcher(
+                TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT,
+                TabContentManager.ThumbnailFetchingResult.GOT_JPEG);
+
         prepareTabs(1, 0, "about:blank");
         simulateJpegHasCachedWithDefaultAspectRatio();
 
@@ -1201,22 +1209,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(mAllBitmaps.size(), Matchers.greaterThanOrEqualTo(1)));
 
-        assertEquals(1,
-                mHistogramTester.getHistogramValueCount(
-                        TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT,
-                        TabContentManager.ThumbnailFetchingResult.GOT_JPEG));
-        assertEquals(0,
-                mHistogramTester.getHistogramValueCount(
-                        TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT,
-                        TabContentManager.ThumbnailFetchingResult.GOT_ETC1));
-        assertEquals(0,
-                mHistogramTester.getHistogramValueCount(
-                        TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT,
-                        TabContentManager.ThumbnailFetchingResult.GOT_DIFFERENT_ASPECT_RATIO_JPEG));
-        assertEquals(0,
-                mHistogramTester.getHistogramValueCount(
-                        TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT,
-                        TabContentManager.ThumbnailFetchingResult.GOT_NOTHING));
+        histograms.assertExpected();
     }
 
     @Test
@@ -1225,6 +1218,10 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/thumbnail_aspect_ratio/2.0/allow_to_refetch/true"})
     @DisabledTest(message = "crbug.com/1315676#c20")
     public void testThumbnailFetchingResult_changingAspectRatio() throws Exception {
+        var histograms = HistogramWatcher.newSingleRecordWatcher(
+                TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT,
+                TabContentManager.ThumbnailFetchingResult.GOT_DIFFERENT_ASPECT_RATIO_JPEG);
+
         prepareTabs(1, 0, "about:blank");
         // Simulate Jpeg has cached with default aspect ratio.
         simulateJpegHasCachedWithDefaultAspectRatio();
@@ -1233,19 +1230,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(mAllBitmaps.size(), Matchers.greaterThanOrEqualTo(1)));
 
-        assertEquals(0,
-                mHistogramTester.getHistogramValueCount(
-                        TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT,
-                        TabContentManager.ThumbnailFetchingResult.GOT_JPEG));
-        assertEquals(0,
-                mHistogramTester.getHistogramValueCount(
-                        TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT,
-                        TabContentManager.ThumbnailFetchingResult.GOT_ETC1));
-        assertEquals(1,
-                mHistogramTester.getHistogramValueCount(
-                        TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT,
-                        TabContentManager.ThumbnailFetchingResult.GOT_DIFFERENT_ASPECT_RATIO_JPEG));
-
+        histograms.assertExpected();
         onViewWaiting(tabSwitcherViewMatcher())
                 .check(ThumbnailAspectRatioAssertion.havingAspectRatio(2.0));
     }
@@ -1478,9 +1463,13 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
-    @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
+    // TODO(crbug/1422295): Manual selection for V2 is tested elsewhere in TabSelectionEditorTest.
+    // This can be removed once the feature flag is cleaned up.
+    @DisableFeatures(
+            {ChromeFeatureList.TAB_TO_GTS_ANIMATION, ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     @DisabledTest(message = "crbug.com/1096997")
-    public void testTabGroupManualSelection() throws InterruptedException {
+    public void
+    testTabGroupManualSelection() throws InterruptedException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         TabSelectionEditorTestingRobot robot = new TabSelectionEditorTestingRobot();
         createTabs(cta, false, 3);
@@ -1504,6 +1493,9 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    // TODO(crbug/1422295): Manual selection for V2 is tested elsewhere in TabSelectionEditorTest.
+    // This can be removed once the feature flag is cleaned up.
+    @DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testTabGroupManualSelection_DisabledForSingleTab() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         TabSelectionEditorTestingRobot robot = new TabSelectionEditorTestingRobot();
@@ -1546,6 +1538,10 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
             ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
+    // TODO(crbug/1422295): System back is partly tested in TabSelectionEditorTest. This test should
+    // stay, but the test fixtures for TabSelectionEditor assume V1 here and need to be updated
+    // during flag cleanup.
+    @DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testTabGroupManualSelection_SystemBackDismiss() {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -1587,7 +1583,10 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
             ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study"})
-    @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
+    // TODO(crbug/1422295): TabSelectionEditorV2 is currently not compatible with TabSuggestions.
+    // TabSuggestions are not launched and need to be reworked to use TabSelectionEditorV2.
+    @DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2,
+                      ChromeFeatureList.TAB_TO_GTS_ANIMATION})
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0" +
             "/thumbnail_aspect_ratio/1.0"})
@@ -1749,7 +1748,8 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
             ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
-            ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
+            ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study",
+        ChromeFeatureList.START_SURFACE_WITH_ACCESSIBILITY})
     public void testUndoClosure_AccessibilityMode() throws Exception {
         // clang-format on
         TestThreadUtils.runOnUiThreadBlocking(

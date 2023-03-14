@@ -7,7 +7,9 @@
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/dm_token_utils.h"
+#include "chrome/browser/policy/management_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/policy/core/common/cloud/dm_token.h"
@@ -58,6 +60,14 @@ bool ChromeEnterpriseRealTimeUrlLookupService::CanPerformFullURLLookup() const {
 bool ChromeEnterpriseRealTimeUrlLookupService::
     CanPerformFullURLLookupWithToken() const {
   DCHECK(CanPerformFullURLLookup());
+
+  // Don't allow using the access token if the managed profile doesn't match the
+  // managed device.
+  if (policy::IsDeviceCloudManaged() &&
+      !chrome::enterprise_util::IsProfileAffiliated(profile_)) {
+    return false;
+  }
+
   if (safe_browsing::SyncUtils::IsPrimaryAccountSignedIn(
           IdentityManagerFactory::GetForProfile(profile_))) {
     return base::FeatureList::IsEnabled((kRealTimeUrlFilteringForEnterprise));

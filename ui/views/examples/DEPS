@@ -6,7 +6,7 @@ include_rules = [
   "+content/shell",
   "+mojo/core/embedder/embedder.h",  # TestGpuServiceHolder needs Mojo.
   "+sandbox",
-  "+ui/gl/gl_switches.h",  # Disable Direct Composition Workaround.
+  "+ui/gl/gl_utils.h",  # Disable Direct Composition Workaround.
   "+ui/gl/init/gl_factory.h",  # To initialize GL bindings.
   "+ui/message_center",  # For the notification example.
   "+ui/snapshot", # Enable Skia Gold testing

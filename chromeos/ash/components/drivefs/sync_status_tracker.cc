@@ -4,14 +4,17 @@
 
 #include "chromeos/ash/components/drivefs/sync_status_tracker.h"
 
+#include <math.h>
 #include <cstdint>
 #include <memory>
 #include <ranges>
 #include <utility>
 #include <vector>
 
+#include <base/logging.h>
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 
 namespace drivefs {
@@ -46,6 +49,8 @@ SyncStatusTracker::SyncStatusTracker() = default;
 SyncStatusTracker::~SyncStatusTracker() = default;
 
 SyncState SyncStatusTracker::GetSyncState(const base::FilePath path) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (path.empty() || !path.IsAbsolute()) {
     return SyncState::CreateNotFound(path);
   }
@@ -57,7 +62,11 @@ SyncState SyncStatusTracker::GetSyncState(const base::FilePath path) const {
 }
 
 const std::vector<const SyncState> SyncStatusTracker::GetChangesAndClean() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   std::vector<const SyncState> updated_sync_states;
+
+  int64_t total_mem_usage_in_bytes = 0;
 
   // Traverse trie.
   std::vector<Node*> stack = {root_.get()};
@@ -68,6 +77,10 @@ const std::vector<const SyncState> SyncStatusTracker::GetChangesAndClean() {
     for (auto& child : node->children) {
       stack.emplace_back(child.second.get());
     }
+
+    total_mem_usage_in_bytes +=
+        sizeof(SyncStatusTracker::Node) +
+        node->path_part.size() * sizeof(base::FilePath::StringType::value_type);
 
     // Collect dirty nodes and flip them back to pristine.
     if (node->state.IsDirty()) {
@@ -84,6 +97,9 @@ const std::vector<const SyncState> SyncStatusTracker::GetChangesAndClean() {
   if (root_->children.empty()) {
     root_->state.Set(kNotFound, 0, 0);
   }
+
+  UMA_HISTOGRAM_MEMORY_KB("FileBrowser.SyncStatusTrackerMemoryUsage",
+                          total_mem_usage_in_bytes / 1024);
 
   return updated_sync_states;
 }
@@ -111,6 +127,8 @@ void SyncStatusTracker::SetSyncState(const int64_t id,
                                      const SyncStatus status,
                                      const int64_t transferred,
                                      const int64_t total) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (path.empty() || !path.IsAbsolute()) {
     return;
   }

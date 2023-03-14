@@ -44,6 +44,7 @@ import org.chromium.chrome.features.start_surface.StartSurfaceDelegate;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 import java.util.List;
@@ -133,9 +134,10 @@ public class LayoutManagerChrome
 
         Context context = host.getContext();
         if (ReturnToChromeUtil.isStartSurfaceRefactorEnabled(context)) {
-            assert ReturnToChromeUtil.isStartSurfaceRefactorEnabled(context);
-            createOverviewLayout(startSurfaceSupplier.get(), tabSwitcherSupplier.get(), jankTracker,
-                    scrimCoordinator, tabSwitcherScrimAnchor);
+            if (startSurfaceSupplier.hasValue() || tabSwitcherSupplier.hasValue()) {
+                createOverviewLayout(startSurfaceSupplier.get(), tabSwitcherSupplier.get(),
+                        jankTracker, scrimCoordinator, tabSwitcherScrimAnchor);
+            }
         } else if (startSurfaceSupplier.hasValue()) {
             createOverviewLayout(startSurfaceSupplier.get(), /*tabSwitcher=*/null, jankTracker,
                     scrimCoordinator, tabSwitcherScrimAnchor);
@@ -183,7 +185,7 @@ public class LayoutManagerChrome
                     scrimCoordinator);
         }
 
-        if (TabUiFeatureUtilities.isTabletGridTabSwitcherEnabled(mHost.getContext())) {
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mHost.getContext())) {
             mTabSwitcherFocusLayoutStateObserver = new LayoutStateObserver() {
                 @Override
                 public void onFinishedShowing(int layoutType) {
@@ -594,18 +596,7 @@ public class LayoutManagerChrome
         @Override
         public boolean isSwipeEnabled(@ScrollDirection int direction) {
             FullscreenManager manager = mHost.getFullscreenManager();
-            if (getActiveLayout() != mStaticLayout) {
-                if (mStartSurfaceHomeLayout != null
-                        && getActiveLayout() == mStartSurfaceHomeLayout) {
-                    // Left and right swipe is disabled on Start surface.
-                    if (direction != ScrollDirection.DOWN) {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
-            }
-            if (!DeviceClassManager.enableToolbarSwipe()
+            if (getActiveLayout() != mStaticLayout || !DeviceClassManager.enableToolbarSwipe()
                     || (manager != null && manager.getPersistentFullscreenMode())) {
                 return false;
             }

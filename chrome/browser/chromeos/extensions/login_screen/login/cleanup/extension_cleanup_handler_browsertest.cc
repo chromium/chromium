@@ -162,7 +162,7 @@ class ExtensionCleanupHandlerTest : public policy::DevicePolicyCrosBrowserTest {
   int GetNumberOfInstalledExtensions() {
     return extensions::ExtensionRegistry::Get(GetActiveUserProfile())
         ->GenerateInstalledExtensionsSet()
-        ->size();
+        .size();
   }
 
   void WaitForSessionStart() {
@@ -236,11 +236,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionCleanupHandlerTest,
   EXPECT_EQ(GetNumberOfInstalledExtensions(), num_default_extensions + 3);
 
   // Create observers for all extensions and apps that will be cleaned up.
-  std::unique_ptr<extensions::ExtensionSet> all_installed_extensions =
+  const extensions::ExtensionSet all_installed_extensions =
       extension_registry->GenerateInstalledExtensionsSet();
   std::unordered_set<std::unique_ptr<extensions::TestExtensionRegistryObserver>>
       extension_observers;
-  for (auto& extension : *all_installed_extensions) {
+  for (const auto& extension : all_installed_extensions) {
     // Don't observe exempt and user installed extensions.
     if (base::Contains(kExemptExtensions, extension->id()))
       continue;

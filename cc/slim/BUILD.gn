@@ -4,10 +4,13 @@
 
 component("slim") {
   sources = [
+    "constants.h",
     "features.cc",
     "features.h",
     "filter.cc",
     "filter.h",
+    "frame_data.cc",
+    "frame_data.h",
     "frame_sink.cc",
     "frame_sink.h",
     "frame_sink_cc_wrapper.cc",

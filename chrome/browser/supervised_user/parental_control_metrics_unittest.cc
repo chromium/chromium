@@ -18,12 +18,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_url_filter.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -94,39 +94,43 @@ TEST_F(ParentalControlMetricsTest, WebFilterTypeMetric) {
   // OnNewDay(). Since the default values are the same of override values, the
   // WebFilterType doesn't change and no report here.
   GetPrefs()->SetInteger(prefs::kDefaultSupervisedUserFilteringBehavior,
-                         SupervisedUserURLFilter::ALLOW);
+                         supervised_user::SupervisedUserURLFilter::ALLOW);
   GetPrefs()->SetBoolean(prefs::kSupervisedUserSafeSites, true);
 
   // Tests daily report.
   OnNewDay();
   histogram_tester_.ExpectUniqueSample(
-      SupervisedUserURLFilter::GetWebFilterTypeHistogramNameForTest(),
+      supervised_user::SupervisedUserURLFilter::
+          GetWebFilterTypeHistogramNameForTest(),
       /*sample=*/
-      SupervisedUserURLFilter::WebFilterType::kTryToBlockMatureSites,
+      supervised_user::SupervisedUserURLFilter::WebFilterType::
+          kTryToBlockMatureSites,
       /*expected_count=*/1);
 
   // Tests filter "allow all sites".
   GetPrefs()->SetBoolean(prefs::kSupervisedUserSafeSites, false);
 
   histogram_tester_.ExpectBucketCount(
-      SupervisedUserURLFilter::GetWebFilterTypeHistogramNameForTest(),
+      supervised_user::SupervisedUserURLFilter::
+          GetWebFilterTypeHistogramNameForTest(),
       /*sample=*/
-      SupervisedUserURLFilter::WebFilterType::kAllowAllSites,
+      supervised_user::SupervisedUserURLFilter::WebFilterType::kAllowAllSites,
       /*expected_count=*/1);
 
   // Tests filter "only allow certain sites" on Family Link app.
   GetPrefs()->SetInteger(prefs::kDefaultSupervisedUserFilteringBehavior,
-                         SupervisedUserURLFilter::BLOCK);
+                         supervised_user::SupervisedUserURLFilter::BLOCK);
 
   histogram_tester_.ExpectBucketCount(
-      SupervisedUserURLFilter::GetWebFilterTypeHistogramNameForTest(),
+      supervised_user::SupervisedUserURLFilter::
+          GetWebFilterTypeHistogramNameForTest(),
       /*sample=*/
-      SupervisedUserURLFilter::WebFilterType::kCertainSites,
+      supervised_user::SupervisedUserURLFilter::WebFilterType::kCertainSites,
       /*expected_count=*/1);
 
-  histogram_tester_.ExpectTotalCount(
-      SupervisedUserURLFilter::GetWebFilterTypeHistogramNameForTest(),
-      /*expected_count=*/3);
+  histogram_tester_.ExpectTotalCount(supervised_user::SupervisedUserURLFilter::
+                                         GetWebFilterTypeHistogramNameForTest(),
+                                     /*expected_count=*/3);
 }
 
 TEST_F(ParentalControlMetricsTest, ManagedSiteListTypeMetric) {
@@ -136,21 +140,24 @@ TEST_F(ParentalControlMetricsTest, ManagedSiteListTypeMetric) {
   // OnNewDay(). Since the default values are the same of override values, the
   // WebFilterType doesn't change and no report here.
   GetPrefs()->SetInteger(prefs::kDefaultSupervisedUserFilteringBehavior,
-                         SupervisedUserURLFilter::ALLOW);
+                         supervised_user::SupervisedUserURLFilter::ALLOW);
   GetPrefs()->SetBoolean(prefs::kSupervisedUserSafeSites, true);
 
   // Tests daily report.
   OnNewDay();
   histogram_tester_.ExpectUniqueSample(
-      SupervisedUserURLFilter::GetManagedSiteListHistogramNameForTest(),
+      supervised_user::SupervisedUserURLFilter::
+          GetManagedSiteListHistogramNameForTest(),
       /*sample=*/
-      SupervisedUserURLFilter::ManagedSiteList::kEmpty,
+      supervised_user::SupervisedUserURLFilter::ManagedSiteList::kEmpty,
       /*expected_count=*/1);
   histogram_tester_.ExpectUniqueSample(
-      SupervisedUserURLFilter::GetApprovedSitesCountHistogramNameForTest(),
+      supervised_user::SupervisedUserURLFilter::
+          GetApprovedSitesCountHistogramNameForTest(),
       /*sample=*/0, /*expected_count=*/1);
   histogram_tester_.ExpectUniqueSample(
-      SupervisedUserURLFilter::GetBlockedSitesCountHistogramNameForTest(),
+      supervised_user::SupervisedUserURLFilter::
+          GetBlockedSitesCountHistogramNameForTest(),
       /*sample=*/0, /*expected_count=*/1);
 
   // Blocks `kExampleHost0`.
@@ -162,15 +169,19 @@ TEST_F(ParentalControlMetricsTest, ManagedSiteListTypeMetric) {
   }
 
   histogram_tester_.ExpectBucketCount(
-      SupervisedUserURLFilter::GetManagedSiteListHistogramNameForTest(),
+      supervised_user::SupervisedUserURLFilter::
+          GetManagedSiteListHistogramNameForTest(),
       /*sample=*/
-      SupervisedUserURLFilter::ManagedSiteList::kBlockedListOnly,
+      supervised_user::SupervisedUserURLFilter::ManagedSiteList::
+          kBlockedListOnly,
       /*expected_count=*/1);
   histogram_tester_.ExpectBucketCount(
-      SupervisedUserURLFilter::GetApprovedSitesCountHistogramNameForTest(),
+      supervised_user::SupervisedUserURLFilter::
+          GetApprovedSitesCountHistogramNameForTest(),
       /*sample=*/0, /*expected_count=*/2);
   histogram_tester_.ExpectBucketCount(
-      SupervisedUserURLFilter::GetBlockedSitesCountHistogramNameForTest(),
+      supervised_user::SupervisedUserURLFilter::
+          GetBlockedSitesCountHistogramNameForTest(),
       /*sample=*/1, /*expected_count=*/1);
 
   // Approves `kExampleHost0`.
@@ -182,15 +193,19 @@ TEST_F(ParentalControlMetricsTest, ManagedSiteListTypeMetric) {
   }
 
   histogram_tester_.ExpectBucketCount(
-      SupervisedUserURLFilter::GetManagedSiteListHistogramNameForTest(),
+      supervised_user::SupervisedUserURLFilter::
+          GetManagedSiteListHistogramNameForTest(),
       /*sample=*/
-      SupervisedUserURLFilter::ManagedSiteList::kApprovedListOnly,
+      supervised_user::SupervisedUserURLFilter::ManagedSiteList::
+          kApprovedListOnly,
       /*expected_count=*/1);
   histogram_tester_.ExpectBucketCount(
-      SupervisedUserURLFilter::GetApprovedSitesCountHistogramNameForTest(),
+      supervised_user::SupervisedUserURLFilter::
+          GetApprovedSitesCountHistogramNameForTest(),
       /*sample=*/1, /*expected_count=*/1);
   histogram_tester_.ExpectBucketCount(
-      SupervisedUserURLFilter::GetBlockedSitesCountHistogramNameForTest(),
+      supervised_user::SupervisedUserURLFilter::
+          GetBlockedSitesCountHistogramNameForTest(),
       /*sample=*/0, /*expected_count=*/2);
 
   // Blocks `kExampleURL1`.
@@ -202,24 +217,30 @@ TEST_F(ParentalControlMetricsTest, ManagedSiteListTypeMetric) {
   }
 
   histogram_tester_.ExpectBucketCount(
-      SupervisedUserURLFilter::GetManagedSiteListHistogramNameForTest(),
+      supervised_user::SupervisedUserURLFilter::
+          GetManagedSiteListHistogramNameForTest(),
       /*sample=*/
-      SupervisedUserURLFilter::ManagedSiteList::kBoth,
+      supervised_user::SupervisedUserURLFilter::ManagedSiteList::kBoth,
       /*expected_count=*/1);
   histogram_tester_.ExpectBucketCount(
-      SupervisedUserURLFilter::GetApprovedSitesCountHistogramNameForTest(),
+      supervised_user::SupervisedUserURLFilter::
+          GetApprovedSitesCountHistogramNameForTest(),
       /*sample=*/1, /*expected_count=*/2);
   histogram_tester_.ExpectBucketCount(
-      SupervisedUserURLFilter::GetBlockedSitesCountHistogramNameForTest(),
+      supervised_user::SupervisedUserURLFilter::
+          GetBlockedSitesCountHistogramNameForTest(),
       /*sample=*/1, /*expected_count=*/2);
 
   histogram_tester_.ExpectTotalCount(
-      SupervisedUserURLFilter::GetManagedSiteListHistogramNameForTest(),
+      supervised_user::SupervisedUserURLFilter::
+          GetManagedSiteListHistogramNameForTest(),
       /*expected_count=*/4);
   histogram_tester_.ExpectTotalCount(
-      SupervisedUserURLFilter::GetApprovedSitesCountHistogramNameForTest(),
+      supervised_user::SupervisedUserURLFilter::
+          GetApprovedSitesCountHistogramNameForTest(),
       /*expected_count=*/4);
   histogram_tester_.ExpectTotalCount(
-      SupervisedUserURLFilter::GetBlockedSitesCountHistogramNameForTest(),
+      supervised_user::SupervisedUserURLFilter::
+          GetBlockedSitesCountHistogramNameForTest(),
       /*expected_count=*/4);
 }

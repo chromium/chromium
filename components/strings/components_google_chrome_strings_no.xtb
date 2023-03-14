@@ -38,4 +38,6 @@
           og fjern avmerkingen for «Bruk en proxy-tjener for LAN-nettverket».</translation>
 <translation id="7230956101631259640">Du er på en sikker Chrome-side</translation>
 <translation id="8187289872471304532">Gå til Programmer &gt; Systeminnstillinger &gt; Nettverk &gt; Avansert &gt; Proxy-tjenere og fjern avmerkingen for alle valgte proxy-tjenere.</translation>
+<translation id="8232971017369963250">Chrome er tilgjengelig som følge av åpen kilde-prosjektet, <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="8279509328145658601">Chrome er også tilgjengelig takket være annen <ph name="BEGIN_LINK_OSS" />programvare med åpen kildekode<ph name="END_LINK_OSS" />.</translation>
 </translationbundle>

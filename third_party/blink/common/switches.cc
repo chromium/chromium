@@ -8,7 +8,7 @@ namespace blink {
 namespace switches {
 
 // Allows processing of input before a frame has been committed.
-// TODO(schenney): crbug.com/987626. Used by headless. Look for a way not
+// TODO(crbug.com/987626): Used by headless. Look for a way not
 // involving a command line switch.
 const char kAllowPreCommitInput[] = "allow-pre-commit-input";
 
@@ -140,16 +140,6 @@ const char kDisableThrottleNonVisibleCrossOriginIframes[] =
 const char kTouchTextSelectionStrategy[] = "touch-selection-strategy";
 const char kTouchTextSelectionStrategy_Character[] = "character";
 const char kTouchTextSelectionStrategy_Direction[] = "direction";
-
-// Used to communicate managed policy for the MaxUnthrottledTimeoutNestingLevel
-// feature. This feature is typically controlled by base::Feature (see
-// blink/common/features.*) but requires an enterprise policy override. This is
-// implicitly a tri-state, and can be either unset, or set to "1" for force
-// enable, or "0" for force disable.
-extern const char kUnthrottledNestedTimeoutPolicy[] =
-    "unthrottled-nested-timeout-level-policy";
-extern const char kUnthrottledNestedTimeoutPolicy_ForceDisable[] = "0";
-extern const char kUnthrottledNestedTimeoutPolicy_ForceEnable[] = "1";
 
 // Comma-separated list of origins that can use SharedArrayBuffer without
 // enabling cross-origin isolation.

@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
+#include "base/mac/mach_port_rendezvous.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/environment_internal.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -84,9 +85,11 @@ class PosixSpawnFileActions {
     DPSXCHECK(posix_spawn_file_actions_addinherit_np(&file_actions_, filedes));
   }
 
+#if BUILDFLAG(IS_MAC)
   void Chdir(const char* path) API_AVAILABLE(macos(10.15)) {
     DPSXCHECK(posix_spawn_file_actions_addchdir_np(&file_actions_, path));
   }
+#endif
 
   const posix_spawn_file_actions_t* get() const { return &file_actions_; }
 
@@ -221,11 +224,13 @@ Process LaunchProcess(const std::vector<std::string>& argv,
     file_actions.Inherit(STDERR_FILENO);
   }
 
+#if BUILDFLAG(IS_MAC)
   if (options.disclaim_responsibility) {
     if (__builtin_available(macOS 10.14, *)) {
       DPSXCHECK(responsibility_spawnattrs_setdisclaim(attr.get(), 1));
     }
   }
+#endif
 
   std::vector<char*> argv_cstr;
   argv_cstr.reserve(argv.size() + 1);
@@ -255,9 +260,12 @@ Process LaunchProcess(const std::vector<std::string>& argv,
 
   if (!options.current_directory.empty()) {
     const char* chdir_str = options.current_directory.value().c_str();
+#if BUILDFLAG(IS_MAC)
     if (__builtin_available(macOS 10.15, *)) {
       file_actions.Chdir(chdir_str);
-    } else {
+    } else
+#endif
+    {
       // If the chdir posix_spawn_file_actions extension is not available,
       // change the thread-specific working directory. The new process will
       // inherit it during posix_spawnp().

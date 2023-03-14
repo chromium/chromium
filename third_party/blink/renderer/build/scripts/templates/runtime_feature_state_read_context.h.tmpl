@@ -17,10 +17,16 @@ class RuntimeFeatureStateControllerImpl;
 
 namespace blink {
 
+// A class to represent a read only copy of RuntimeFeatureState override values.
+// This class is not mutable by the browser process but could potentially be
+// modified by the renderer process for features which allow origin trial
+// overrides.
+// See RuntimeFeatureStateContext for additional information.
+
 class BLINK_COMMON_EXPORT RuntimeFeatureStateReadContext {
  public:
   // You probably don't want to instantiate this class directly, use
-  // RuntimeFeatureStateContext instead.
+  // RuntimeFeatureStateContext instead as it will initialize the override map.
   RuntimeFeatureStateReadContext() = default;
 
   const base::flat_map<blink::mojom::RuntimeFeatureState, bool>&
@@ -29,7 +35,7 @@ class BLINK_COMMON_EXPORT RuntimeFeatureStateReadContext {
   }
 
   {% for feature in browser_read_access_features %}
-  bool Is{{feature.name}}Enabled() {
+  bool Is{{feature.name}}Enabled() const {
     return IsEnabled(
         blink::mojom::RuntimeFeatureState::k{{feature.name}});
   }
@@ -56,8 +62,9 @@ class BLINK_COMMON_EXPORT RuntimeFeatureStateReadContext {
  private:
   // Only RuntimeFeatureStateControllerImpl should be able to make changes
   // to the read-only context, when a feature diff is sent from
-  // the renderer to the browser via IPC. Thus, ApplyFeatureChange()
-  // is private but will be called in RuntimeFeatureStateControllerImpl instances.
+  // the renderer process to the browser process via IPC. Thus,
+  // ApplyFeatureChange() is private but will be called in
+  // RuntimeFeatureStateControllerImpl instances.
   friend class ::content::RuntimeFeatureStateControllerImpl;
 
   // This function allows RuntimeFeatureStateControllerImpl to update the
@@ -67,8 +74,8 @@ class BLINK_COMMON_EXPORT RuntimeFeatureStateReadContext {
   void ApplyFeatureChange(
     const base::flat_map<blink::mojom::RuntimeFeatureState,
                                        bool>& modified_features) {
-    // Feature values sent from the renderer take precedence over state
-    // held currently in the browser, so insert_or_assign is used.
+    // Feature values sent from the renderer process take precedence over state
+    // held currently in the browser process, so insert_or_assign is used.
     for(auto const& feature : modified_features) {
       feature_overrides_.insert_or_assign(feature.first, feature.second);
     }

@@ -66,11 +66,6 @@ class VIEWS_EXPORT BadgePainter {
 
   // The baseline offset of the badge image to the menu text baseline.
   static constexpr int kBadgeBaselineOffsetMac = -4;
-
-  // The corner radius of the rounded rect for the badge.
-  static constexpr int kBadgeCornerRadius = 3;
-  static_assert(kBadgeCornerRadius <= kBadgeInternalPadding,
-                "Badge corner radius should not exceed padding.");
 };
 
 }  // namespace views

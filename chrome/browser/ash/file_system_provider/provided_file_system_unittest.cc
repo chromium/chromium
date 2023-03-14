@@ -97,15 +97,15 @@ class FakeEventRouter : public extensions::EventRouter {
 
       using extensions::api::file_system_provider_internal::
           OperationRequestedSuccess::Params;
-      std::unique_ptr<Params> params(Params::Create(list));
-      ASSERT_TRUE(params.get());
+      absl::optional<Params> params(Params::Create(list));
+      ASSERT_TRUE(params.has_value());
       file_system_->GetRequestManager()->FulfillRequest(
           request_id,
-          RequestValue::CreateForOperationSuccess(std::move(params)),
+          RequestValue::CreateForOperationSuccess(std::move(*params)),
           false /* has_more */);
     } else {
       file_system_->GetRequestManager()->RejectRequest(
-          request_id, std::make_unique<RequestValue>(), reply_result_);
+          request_id, RequestValue(), reply_result_);
     }
   }
 

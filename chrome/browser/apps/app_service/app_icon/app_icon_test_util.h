@@ -10,6 +10,7 @@
 #include "build/chromeos_buildflags.h"
 
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "extensions/grit/extensions_browser_resources.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -28,7 +29,8 @@ constexpr int kSizeInDip = 64;
 
 void EnsureRepresentationsLoaded(gfx::ImageSkia& output_image_skia);
 
-void LoadDefaultIcon(gfx::ImageSkia& output_image_skia);
+void LoadDefaultIcon(gfx::ImageSkia& output_image_skia,
+                     int resource_id = IDR_APP_DEFAULT_ICON);
 
 void VerifyIcon(const gfx::ImageSkia& src, const gfx::ImageSkia& dst);
 

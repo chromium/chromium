@@ -80,10 +80,6 @@ input[type=checkbox] {
   -webkit-appearance: none;
 }
 
-[tabindex] {
-  outline: none; /* Prevent default focus ring style. */
-}
-
 [i18n-text] {
   user-select: none;
 }
@@ -91,10 +87,6 @@ input[type=checkbox] {
 .cancel-animate {
   animation: none !important;
   transition: none !important;
-}
-
-.circle button {
-  border-radius: 50%;
 }
 
 .buttons {
@@ -413,7 +405,7 @@ body.taking #start-takephoto:active {
 #recordvideo,
 #pause-recordvideo {
   --dot-size: 25%;
-  --durtaion: 180ms;
+  --duration: 180ms;
   --red: #f44336;
   --square-delay: 45ms;
   --square-size: calc(100% / 3);
@@ -423,7 +415,7 @@ body.taking #start-takephoto:active {
   border-radius: 50%;
   height: var(--size);
   position: relative;
-  transition: var(--durtaion) var(--standard-easing);
+  transition: var(--duration) var(--standard-easing);
   width: var(--size);
 }
 
@@ -447,7 +439,7 @@ body.taking.video #recordvideo:hover {
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
-  transition: var(--durtaion) var(--standard-easing);
+  transition: var(--duration) var(--standard-easing);
   width: var(--dot-size);
 }
 
@@ -468,7 +460,7 @@ body:not(.recording-ui-paused).video #pause-recordvideo .red-dot {
   opacity: 0;
   position: absolute;
   top: 50%;
-  transition: var(--durtaion) var(--square-delay) var(--standard-easing);
+  transition: var(--duration) var(--square-delay) var(--standard-easing);
   width: 0;
 }
 
@@ -630,9 +622,6 @@ body:not(.enable-ptz) #open-ptz-panel {
 }
 
 #open-ptz-panel {
-  --ripple-spread-ratio: 2;
-  --ripple-start-radius: 18px;
-
   background-image: url(/images/camera_button_ptz_panel_off.svg);
 }
 
@@ -699,7 +688,6 @@ body.doc-mode-reviewing #open-settings {
 }
 
 #view-camera,
-#view-document-mode-dialog,
 #view-document-review,
 #view-option-panel,
 #view-ptz-panel,
@@ -728,7 +716,6 @@ body.doc-mode-reviewing #open-settings {
 }
 
 body.view-camera #view-camera,
-body.view-document-mode-dialog #view-document-mode-dialog,
 body.view-document-review #view-document-review,
 body.view-option-panel #view-option-panel,
 body.view-ptz-panel #view-ptz-panel,
@@ -1060,29 +1047,6 @@ body:not(.recording-ui-paused) #record-time [i18n-text=record_video_paused_msg] 
 
 #record-time #record-time-msg {
   margin-inline-start: 8px;
-}
-
-@media print {
-  html {
-    height: 100%;  /* Required for printing. */
-  }
-
-  body {
-    height: auto;
-    overflow: visible;
-    position: static;
-    width: 100%;
-  }
-
-  /* Reset background colors. */
-  body {
-    background: transparent;
-  }
-
-  /* Hide the buttons. */
-  .buttons {
-    display: none;
-  }
 }
 
 #spoken_msg {
@@ -1506,8 +1470,11 @@ body:not(.video) #settings-video-resolution {
   background-image: url(/images/camera_button_fps_60_checked.svg);
 }
 
+[tabindex] {
+  outline: none; /* Prevent default focus ring style. */
+}
+
 [tabindex='0'] {
-  outline: none;
   outline-offset: 3px;
 }
 

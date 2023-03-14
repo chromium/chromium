@@ -78,19 +78,18 @@ class UploadClientTest : public ::testing::TestWithParam<
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Set up fake primary profile.
-    auto mock_user_manager =
-        std::make_unique<testing::NiceMock<ash::FakeChromeUserManager>>();
+    auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
     profile_ = std::make_unique<TestingProfile>(
         base::FilePath(FILE_PATH_LITERAL("/home/chronos/u-0123456789abcdef")));
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
         profile_->GetProfileUserName(), "12345"));
     const user_manager::User* user =
-        mock_user_manager->AddPublicAccountUser(account_id);
-    mock_user_manager->UserLoggedIn(account_id, user->username_hash(),
+        fake_user_manager->AddPublicAccountUser(account_id);
+    fake_user_manager->UserLoggedIn(account_id, user->username_hash(),
                                     /*browser_restart=*/false,
                                     /*is_child=*/false);
     user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(mock_user_manager));
+        std::move(fake_user_manager));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 

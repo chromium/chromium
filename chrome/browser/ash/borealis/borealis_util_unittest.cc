@@ -51,24 +51,10 @@ TEST_F(BorealisUtilTest, GetBorealisAppIdReturnsId) {
   EXPECT_EQ(GetBorealisAppId("steam://rungameid/123").value(), 123);
 }
 
-// TODO(b/244651040): Remove legacy tests when sommelier changes are complete.
-TEST_F(BorealisUtilTest,
-       GetBorealisAppIdFromWindowReturnsEmptyOnFailureLegacy) {
-  std::unique_ptr<aura::Window> window =
-      MakeWindow("org.chromium.borealis.wmclass.foo");
-  EXPECT_EQ(GetBorealisAppId(window.get()), absl::nullopt);
-}
-
 TEST_F(BorealisUtilTest, GetBorealisAppIdFromWindowReturnsEmptyOnFailure) {
   std::unique_ptr<aura::Window> window =
       MakeWindow("org.chromium.guest_os.borealis.wmclass.foo");
   EXPECT_EQ(GetBorealisAppId(window.get()), absl::nullopt);
-}
-
-TEST_F(BorealisUtilTest, GetBorealisAppIdFromWindowReturnsIdLegacy) {
-  std::unique_ptr<aura::Window> window =
-      MakeWindow("org.chromium.borealis.xprop.123");
-  EXPECT_EQ(GetBorealisAppId(window.get()).value(), 123);
 }
 
 TEST_F(BorealisUtilTest, GetBorealisAppIdFromWindowReturnsId) {
@@ -80,17 +66,19 @@ TEST_F(BorealisUtilTest, GetBorealisAppIdFromWindowReturnsId) {
 TEST_F(BorealisUtilTest, FeedbackFormUrlExcludesNonGames) {
   TestingProfile profile;
 
-  EXPECT_FALSE(GetFeedbackFormUrl(&profile,
-                                  "borealisanon:org.chromium.borealis.xid.100",
-                                  "CoolApp")
-                   .is_valid());
+  EXPECT_FALSE(
+      GetFeedbackFormUrl(&profile,
+                         "borealis_anon:org.chromium.guest_os.borealis.xid.100",
+                         "CoolApp")
+          .is_valid());
 }
 
 TEST_F(BorealisUtilTest, FeedbackFormUrlPrefillsWindowTitle) {
   TestingProfile profile;
 
   EXPECT_THAT(GetFeedbackFormUrl(
-                  &profile, "borealisanon:org.chromium.borealis.app", "CoolApp")
+                  &profile, "borealis_anon:org.chromium.guest_os.borealis.app",
+                  "CoolApp")
                   .spec(),
               testing::HasSubstr("=CoolApp"));
 }
@@ -99,7 +87,7 @@ TEST_F(BorealisUtilTest, FeedbackFormUrlIsPrefilled) {
   TestingProfile profile;
 
   GURL url = GetFeedbackFormUrl(
-      &profile, "borealisanon:org.chromium.borealis.app", "CoolApp");
+      &profile, "borealis_anon:org.chromium.guest_os.borealis.app", "CoolApp");
 
   // Count the number of query parameters beginning with "entry"; these are
   // form fields that we're prefilling.

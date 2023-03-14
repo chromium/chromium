@@ -364,7 +364,7 @@ class HintsManagerTest : public ProtoDatabaseProviderTestBase {
     HintsComponentInfo info(
         base::Version(version),
         temp_dir().Append(FILE_PATH_LITERAL("badconfig.pb")));
-    ASSERT_EQ(7, base::WriteFile(info.path, "garbage", 7));
+    ASSERT_TRUE(base::WriteFile(info.path, "garbage"));
 
     hints_manager_->OnHintsComponentAvailable(info);
     RunUntilIdle();
@@ -481,9 +481,7 @@ class HintsManagerTest : public ProtoDatabaseProviderTestBase {
                          const base::FilePath& filePath) {
     std::string serialized_config;
     ASSERT_TRUE(config.SerializeToString(&serialized_config));
-    ASSERT_EQ(static_cast<int32_t>(serialized_config.size()),
-              base::WriteFile(filePath, serialized_config.data(),
-                              serialized_config.size()));
+    ASSERT_TRUE(base::WriteFile(filePath, serialized_config));
   }
 
   base::test::TaskEnvironment task_environment_{

@@ -72,6 +72,20 @@ void FakeBluetoothAdapter::NotifyDeviceChanged(
   }
 }
 
+void FakeBluetoothAdapter::NotifyDeviceConnectedStateChanged(
+    device::BluetoothDevice* device,
+    bool is_now_connected) {
+  for (auto& observer : observers_) {
+    observer.DeviceConnectedStateChanged(this, device, is_now_connected);
+  }
+}
+
+void FakeBluetoothAdapter::NotifyDeviceAdded(device::BluetoothDevice* device) {
+  for (auto& observer : observers_) {
+    observer.DeviceAdded(this, device);
+  }
+}
+
 bool FakeBluetoothAdapter::IsPowered() const {
   return is_bluetooth_powered_;
 }

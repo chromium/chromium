@@ -67,16 +67,33 @@ void AXMenuList::Detach() {
 
   // Clear the popup.
   if (children_.size()) {
-    children_[0]->DetachFromParent();
     // Do not call Remove() while AXObjectCacheImpl() is detaching all objects,
     // because the hash map of objects does not allow simultaneous iteration and
     // removal of objects.
-    if (!AXObjectCache().HasBeenDisposed())
-      children_[0]->AXObjectCache().Remove(children_[0]);
+    if (!AXObjectCache().HasBeenDisposed()) {
+      auto& cache = AXObjectCache();
+      for (auto* const option_grandchild :
+           To<HTMLSelectElement>(GetNode())->GetOptionList()) {
+        cache.Remove(option_grandchild, /* notify_parent */ false);
+      }
+      cache.Remove(children_[0], /* notify_parent */ false);
+    }
     children_.clear();
   }
 
   AXLayoutObject::Detach();
+}
+
+void AXMenuList::ChildrenChangedWithCleanLayout() {
+  if (!children_.empty()) {
+    if (AXObject* child_popup = children_[0]) {
+      // If we have a child popup, update its children at the same time.
+      DCHECK(IsA<AXMenuListPopup>(child_popup));
+      child_popup->ChildrenChangedWithCleanLayout();
+    }
+  }
+
+  AXObject::ChildrenChangedWithCleanLayout();
 }
 
 void AXMenuList::SetNeedsToUpdateChildren() const {
@@ -96,7 +113,7 @@ void AXMenuList::ClearChildren() const {
     return;
 
   // Unless the menu list is detached, there's no reason to clear our
-  // AXMenuListPopup child. If we get a call to clearChildren, it's because the
+  // AXMenuListPopup child. If we get a call to ClearChildren, it's because the
   // options might have changed, so call it on our popup. Clearing the
   // AXMenuListPopup child would cause additional thrashing and events that the
   // AT would need to process, potentially causing the AT to believe that the

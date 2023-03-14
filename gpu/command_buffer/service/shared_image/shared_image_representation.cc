@@ -124,6 +124,11 @@ GLTexturePassthroughImageRepresentation::GetTexturePassthrough() {
   return GetTexturePassthrough(0);
 }
 
+bool GLTexturePassthroughImageRepresentation::
+    NeedsSuspendAccessForDXGIKeyedMutex() const {
+  return false;
+}
+
 bool SkiaImageRepresentation::SupportsMultipleConcurrentReadAccess() {
   return false;
 }
@@ -237,7 +242,7 @@ SkiaImageRepresentation::BeginScopedWriteAccess(
     bool use_sk_surface) {
   return BeginScopedWriteAccess(
       /*final_msaa_count=*/1,
-      SkSurfaceProps(0 /* flags */, kUnknown_SkPixelGeometry), begin_semaphores,
+      SkSurfaceProps(/*flags=*/0, kUnknown_SkPixelGeometry), begin_semaphores,
       end_semaphores, allow_uncleared, use_sk_surface);
 }
 
@@ -448,9 +453,27 @@ DawnImageRepresentation::BeginScopedAccess(
       base::PassKey<DawnImageRepresentation>(), this, texture);
 }
 
+SharedImageRepresentationFactoryRef::SharedImageRepresentationFactoryRef(
+    SharedImageManager* manager,
+    SharedImageBacking* backing,
+    MemoryTypeTracker* tracker,
+    bool is_primary)
+    : SharedImageRepresentation(manager, backing, tracker),
+      is_primary_(is_primary) {
+  // If this is secondary reference, we need to notify SharedImageBacking that
+  // it can significantly outlive its owning SharedImageFactory and can't rely
+  // on it for operation.
+  if (!is_primary) {
+    backing->OnAddSecondaryReference();
+  }
+}
+
 SharedImageRepresentationFactoryRef::~SharedImageRepresentationFactoryRef() {
-  backing()->UnregisterImageFactory();
-  backing()->MarkForDestruction();
+  // Only primary refs provide link to the owning SharedImageFactory.
+  if (is_primary_) {
+    backing()->UnregisterImageFactory();
+    backing()->MarkForDestruction();
+  }
 }
 
 VaapiImageRepresentation::VaapiImageRepresentation(

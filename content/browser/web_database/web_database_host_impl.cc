@@ -150,7 +150,7 @@ void WebDatabaseHostImpl::OpenFileWithBucketCreated(
     OpenFileCallback callback,
     storage::QuotaErrorOr<storage::BucketInfo> bucket) {
   // Return invalid file path on `UpdateOrCreateBucket` error.
-  if (!bucket.ok()) {
+  if (!bucket.has_value()) {
     std::move(callback).Run(base::File());
     return;
   }

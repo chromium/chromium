@@ -194,7 +194,8 @@ TEST(SizesMathFunctionParserTest, Basic) {
 
   for (unsigned i = 0; test_cases[i].input; ++i) {
     SizesMathFunctionParser calc_parser(
-        CSSParserTokenRange(CSSTokenizer(test_cases[i].input).TokenizeToEOF()),
+        CSSParserTokenRange(
+            CSSTokenizer(StringView(test_cases[i].input)).TokenizeToEOF()),
         media_values);
     ASSERT_EQ(test_cases[i].valid, calc_parser.IsValid());
     if (calc_parser.IsValid()) {

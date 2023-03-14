@@ -227,7 +227,7 @@ class PA_TRIVIAL_ABI CompressedPointer final {
       internal::CompressedPointerBaseGlobal::kBitsToShift +
       kBitsForSignExtension;
 
-  static PA_ALWAYS_INLINE UnderlyingType Compress(T* ptr) {
+  PA_ALWAYS_INLINE static UnderlyingType Compress(T* ptr) {
     static constexpr size_t kMinimalRequiredAlignment = 8;
     static_assert((1 << kOverallBitsToShift) == kMinimalRequiredAlignment);
 
@@ -252,13 +252,14 @@ class PA_TRIVIAL_ABI CompressedPointer final {
     // frequent operation, we let more work here in favor of faster
     // decompression.
     // TODO(1376980): Avoid this by overreserving the heap.
-    if (compressed)
+    if (compressed) {
       compressed |= (1u << (sizeof(uint32_t) * CHAR_BIT - 1));
+    }
 
     return compressed;
   }
 
-  static PA_ALWAYS_INLINE T* Decompress(UnderlyingType ptr) {
+  PA_ALWAYS_INLINE static T* Decompress(UnderlyingType ptr) {
     PA_DCHECK(internal::CompressedPointerBaseGlobal::IsSet());
     const uintptr_t base = internal::CompressedPointerBaseGlobal::Get();
     // Treat compressed pointer as signed and cast it to uint64_t, which will
@@ -460,13 +461,13 @@ class PA_TRIVIAL_ABI UncompressedPointer final {
 
   template <typename U,
             std::enable_if_t<std::is_convertible_v<U*, T*>>* = nullptr>
-  PA_ALWAYS_INLINE constexpr UncompressedPointer(
+  PA_ALWAYS_INLINE constexpr explicit UncompressedPointer(
       const UncompressedPointer<U>& other)
       : ptr_(other.ptr_) {}
 
   template <typename U,
             std::enable_if_t<std::is_convertible_v<U*, T*>>* = nullptr>
-  PA_ALWAYS_INLINE constexpr UncompressedPointer(
+  PA_ALWAYS_INLINE constexpr explicit UncompressedPointer(
       UncompressedPointer<U>&& other) noexcept
       : ptr_(std::move(other.ptr_)) {}
 

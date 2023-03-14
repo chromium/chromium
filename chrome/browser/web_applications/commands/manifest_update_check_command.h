@@ -1,0 +1,157 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_MANIFEST_UPDATE_CHECK_COMMAND_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_MANIFEST_UPDATE_CHECK_COMMAND_H_
+
+#include <memory>
+
+#include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
+#include "base/values.h"
+#include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/manifest_update_utils.h"
+#include "chrome/browser/web_applications/web_app_callback_app_identity.h"
+#include "chrome/browser/web_applications/web_app_icon_downloader.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace content {
+class WebContents;
+}
+
+class GURL;
+
+namespace web_app {
+
+// Documentation: docs/webapps/manifest_update_process.md
+//
+// Checks whether the installed web app associated with a given WebContents has
+// out of date manifest data and what to update it to.
+//
+// High level procedure for this command:
+// - Download new manifest data from site including external resources (such as
+//   icon bitmaps).
+// - Load existing manifest data from disk including external resources.
+// - Diff manifest data.
+// - Resolve any changes to app identity by confirming the change with the user,
+//   silently allowing them, or reverting them.
+// - Return back to the caller to schedule applying the changes back to disk.
+class ManifestUpdateCheckCommand : public WebAppCommandTemplate<AppLock> {
+ public:
+  // TODO(crbug.com/1409710): Merge ManifestUpdateDataFetchCommand and
+  // ManifestUpdateFinalizeCommand into one so we don't have to return optional
+  // early exit results to the caller.
+  using CompletedCallback = base::OnceCallback<void(
+      ManifestUpdateCheckResult check_result,
+      absl::optional<WebAppInstallInfo> new_install_info)>;
+
+  ManifestUpdateCheckCommand(
+      const GURL& url,
+      const AppId& app_id,
+      base::WeakPtr<content::WebContents> web_contents,
+      CompletedCallback callback,
+      std::unique_ptr<WebAppDataRetriever> data_retriever);
+
+  ~ManifestUpdateCheckCommand() override;
+
+  // WebAppCommandTemplate<AppLock>:
+  const LockDescription& lock_description() const override;
+  void OnSyncSourceRemoved() override {}
+  void OnShutdown() override;
+  base::Value ToDebugValue() const override;
+  void StartWithLock(std::unique_ptr<AppLock> lock) override;
+
+ private:
+  // Stage: Download the new manifest data
+  // (ManifestUpdateCheckStage::kDownloadingNewManifestData).
+  void DownloadNewManifestData(base::OnceClosure next_step_callback);
+  void DownloadNewManifestJson(
+      WebAppDataRetriever::CheckInstallabilityCallback next_step_callback);
+  void StashNewManifestJson(base::OnceClosure next_step_callback,
+                            blink::mojom::ManifestPtr opt_manifest,
+                            const GURL& manifest_url,
+                            bool valid_manifest_for_web_app,
+                            webapps::InstallableStatusCode installable_status);
+  void DownloadNewIconBitmaps(
+      WebAppIconDownloader::WebAppIconDownloaderCallback next_step_callback);
+  void StashNewIconBitmaps(base::OnceClosure next_step_callback,
+                           IconsDownloadedResult result,
+                           IconsMap icons_map,
+                           DownloadedIconsHttpResults icons_http_results);
+
+  // Stage: Loading existing manifest data from disk.
+  // (ManifestUpdateCheckStage::kLoadingExistingManifestData)
+  void LoadExistingManifestData(base::OnceClosure next_step_callback);
+  void LoadExistingAppIcons(
+      WebAppIconManager::ReadIconBitmapsCallback next_step_callback);
+  void StashExistingAppIcons(base::OnceClosure next_step_callback,
+                             IconBitmaps icon_bitmaps);
+  void LoadExistingShortcutsMenuIcons(
+      WebAppIconManager::ReadShortcutsMenuIconsCallback next_step_callback);
+  void StashExistingShortcutsMenuIcons(
+      base::OnceClosure next_step_callback,
+      ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps);
+
+  // Stage: Comparing the existing and new manifest data.
+  // (ManifestUpdateCheckStage::kComparingManifestData)
+  void CompareManifestData(base::OnceClosure next_step_callback);
+
+  // Stage: Resolving identity changes to app name and icons, deciding whether
+  // to silently accept, require a user prompt or revert changes.
+  // (ManifestUpdateCheckStage::kResolvingIdentityChanges)
+  void ResolveIdentityChanges(base::OnceClosure next_step_callback);
+  IdentityUpdateDecision MakeAppNameIdentityUpdateDecision() const;
+  IdentityUpdateDecision MakeAppIconIdentityUpdateDecision() const;
+  void RevertIdentityChangesIfNeeded();
+  void ConfirmAppIdentityUpdate(base::OnceClosure next_step_callback);
+  void OnIdentityUpdateConfirmationComplete(
+      base::OnceClosure next_step_callback,
+      AppIdentityUpdate app_identity_update_allowed);
+
+  // Stage: Update check complete.
+  // (ManifestUpdateCheckStage::kComplete)
+  void CheckComplete();
+
+  const WebApp& GetWebApp() const;
+  bool IsWebContentsDestroyed() const;
+  void CompleteCommandAndSelfDestruct(ManifestUpdateCheckResult check_result);
+
+  base::WeakPtr<ManifestUpdateCheckCommand> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+  // Manifest update check request parameters.
+  const GURL url_;
+  const AppId app_id_;
+  CompletedCallback completed_callback_;
+
+  // Resources and helpers used to fetch manifest data.
+  AppLockDescription lock_description_;
+  std::unique_ptr<AppLock> lock_;
+  base::WeakPtr<content::WebContents> web_contents_;
+  std::unique_ptr<WebAppDataRetriever> data_retriever_;
+  absl::optional<WebAppIconDownloader> icon_downloader_;
+
+  // Temporary variables stored here while the update check progresses
+  // asynchronously.
+  WebAppInstallInfo new_install_info_;
+  IconBitmaps existing_app_icon_bitmaps_;
+  ShortcutsMenuIconBitmaps existing_shortcuts_menu_icon_bitmaps_;
+  ManifestDataChanges manifest_data_changes_;
+
+  // Debug info.
+  ManifestUpdateCheckStage stage_ = ManifestUpdateCheckStage::kPendingAppLock;
+  base::Value::Dict debug_log_;
+
+  base::WeakPtrFactory<ManifestUpdateCheckCommand> weak_factory_{this};
+};
+
+}  // namespace web_app
+
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_MANIFEST_UPDATE_CHECK_COMMAND_H_

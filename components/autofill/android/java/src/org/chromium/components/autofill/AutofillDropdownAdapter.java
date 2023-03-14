@@ -38,27 +38,22 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
     private final Set<Integer> mSeparators;
     private final boolean mAreAllItemsEnabled;
     private final int mLabelMargin;
-    private final boolean mIsRefresh;
 
     /**
      * Creates an {@code ArrayAdapter} with specified parameters.
      * @param context Application context.
      * @param items List of labels and icons to display.
      * @param separators Set of positions that separate {@code items}.
-     * @param isRefresh Whether or not the dropdown should be presented using refreshed styling.
      */
-    public AutofillDropdownAdapter(Context context, List<? extends DropdownItem> items,
-            Set<Integer> separators, boolean isRefresh) {
-        super(context,
-                isRefresh ? R.layout.autofill_dropdown_item_refresh
-                          : R.layout.autofill_dropdown_item);
+    public AutofillDropdownAdapter(
+            Context context, List<? extends DropdownItem> items, Set<Integer> separators) {
+        super(context, R.layout.autofill_dropdown_item);
         mContext = context;
         addAll(items);
         mSeparators = separators;
         mAreAllItemsEnabled = checkAreAllItemsEnabled();
         mLabelMargin = context.getResources().getDimensionPixelSize(
                 R.dimen.autofill_dropdown_item_label_margin);
-        mIsRefresh = isRefresh;
     }
 
     private boolean checkAreAllItemsEnabled() {
@@ -76,57 +71,11 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
         View layout = convertView;
         if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(mContext);
-            int layoutId = mIsRefresh ? R.layout.autofill_dropdown_item_refresh
-                                      : R.layout.autofill_dropdown_item;
-            layout = inflater.inflate(layoutId, null);
+            layout = inflater.inflate(R.layout.autofill_dropdown_item, null);
             layout.setBackground(new DropdownDividerDrawable(/*backgroundColor=*/null));
         }
 
         DropdownItem item = getItem(position);
-
-        if (mIsRefresh) {
-            TextView labelView = populateLabelView(
-                    layout, R.id.dropdown_label, item.getLabel(), item.isEnabled());
-            populateLabelView(layout, R.id.dropdown_secondary_label, item.getSecondaryLabel(),
-                    item.isEnabled());
-            populateLabelView(layout, R.id.dropdown_sublabel, item.getSublabel(), false);
-            populateLabelView(
-                    layout, R.id.dropdown_secondary_sublabel, item.getSecondarySublabel(), false);
-            // For refreshed layout, ignore the return value as we don't need to adjust the height
-            // of the view.
-            populateLabelView(layout, R.id.dropdown_item_tag, item.getItemTag(), false);
-            // Set the visibility of the start/end icons.
-            layout.findViewById(R.id.start_dropdown_icon)
-                    .setVisibility(item.isIconAtStart() ? View.VISIBLE : View.GONE);
-            layout.findViewById(R.id.end_dropdown_icon)
-                    .setVisibility(item.isIconAtStart() ? View.GONE : View.VISIBLE);
-            ImageView iconView =
-                    populateIconView((ImageView) (item.isIconAtStart()
-                                                     ? layout.findViewById(R.id.start_dropdown_icon)
-                                                     : layout.findViewById(R.id.end_dropdown_icon)),
-                            item);
-            if (iconView != null) {
-                iconView.setLayoutParams(getSizeParamsForIconView(iconView, item));
-            }
-
-            if (item.isMultilineLabel()) {
-                labelView.setSingleLine(false);
-
-                LinearLayout wrapper =
-                        (LinearLayout) layout.findViewById(R.id.dropdown_label_wrapper);
-
-                int paddingHeight = mContext.getResources().getDimensionPixelSize(
-                        R.dimen.autofill_dropdown_refresh_vertical_padding);
-
-                wrapper.setPadding(
-                        /*left=*/0, /*top=*/paddingHeight, /*right=*/0, /*bottom=*/paddingHeight);
-            }
-
-            return layout;
-        }
-
-        // TODO(crbug.com/874077): The rest of this function builds the deprecated legacy UI.
-        // Remove this branch once the refreshed UI is 100% rolled out.
 
         int height = mContext.getResources().getDimensionPixelSize(
                 R.dimen.autofill_dropdown_item_height);

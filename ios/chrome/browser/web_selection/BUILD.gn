@@ -8,6 +8,7 @@ source_set("web_selection") {
   sources = [
     "web_selection_java_script_feature.h",
     "web_selection_java_script_feature.mm",
+    "web_selection_java_script_feature_observer.h",
     "web_selection_response.h",
     "web_selection_response.mm",
     "web_selection_tab_helper.h",
@@ -16,6 +17,7 @@ source_set("web_selection") {
   deps = [
     ":web_selection_js",
     "//components/shared_highlighting/ios",
+    "//ios/web/js_messaging:scoped_wk_script_message_handler",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
   ]
@@ -25,12 +27,15 @@ source_set("web_selection") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [ "web_selection_java_script_feature_unittest.mm" ]
+  sources = [
+    "web_selection_java_script_feature_unittest.mm",
+    "web_selection_tab_helper_unittest.mm",
+  ]
   deps = [
     ":web_selection",
     "//base/test:test_support",
     "//ios/chrome/browser/browser_state:test_support",
-    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/web:web_internal",
     "//ios/web/public/test",
     "//testing/gtest",
@@ -41,5 +46,8 @@ optimize_ts("web_selection_js") {
   visibility = [ ":web_selection" ]
 
   sources = [ "resources/web_selection.ts" ]
-  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
+  deps = [
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
 }

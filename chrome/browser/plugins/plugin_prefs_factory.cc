@@ -52,11 +52,6 @@ PluginPrefsFactory::BuildServiceInstanceFor(
 
 void PluginPrefsFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  base::FilePath internal_dir;
-  base::PathService::Get(chrome::DIR_INTERNAL_PLUGINS, &internal_dir);
-  registry->RegisterFilePathPref(prefs::kPluginsLastInternalDirectory,
-                                 internal_dir);
-  registry->RegisterListPref(prefs::kPluginsPluginsList);
   registry->RegisterBooleanPref(
       prefs::kPluginsAlwaysOpenPdfExternally, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);

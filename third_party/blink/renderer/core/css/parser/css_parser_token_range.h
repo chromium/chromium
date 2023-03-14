@@ -80,6 +80,8 @@ class CORE_EXPORT CSSParserTokenRange {
   const CSSParserToken* last_;
 };
 
+bool NeedsInsertedComment(const CSSParserToken& a, const CSSParserToken& b);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_PARSER_TOKEN_RANGE_H_

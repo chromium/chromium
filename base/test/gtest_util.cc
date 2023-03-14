@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/strings/string_util.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -66,8 +67,7 @@ bool WriteCompiledInTestsToFile(const FilePath& path) {
     storage.Append(std::move(test_info));
   }
 
-  JSONFileValueSerializer serializer(path);
-  return serializer.Serialize(storage);
+  return base::test::WriteJsonFile(path, storage).has_value();
 }
 
 bool ReadTestNamesFromFile(const FilePath& path,

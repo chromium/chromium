@@ -1,13 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
+<translation id="1347497506789975534">显示已保存的付款方式</translation>
 <translation id="1383876407941801731">搜索</translation>
-<translation id="1566281227936819866">显示的是已保存的付款方式</translation>
 <translation id="1717486229951421299">轻触即可填充的凭据的列表已半屏打开。</translation>
 <translation id="207576718733492531">轻触即可填充的凭据的列表已关闭。</translation>
 <translation id="2610239185026711824">建议一个密码</translation>
 <translation id="2652129567809778422">选择密码</translation>
-<translation id="2803478378562657435">正在显示已保存的密码和密码选项</translation>
 <translation id="2903493209154104877">地址</translation>
 <translation id="3399357656427473483">轻触即可填充的凭据的列表。</translation>
 <translation id="3688051737190211318">如果您信任 <ph name="ORIGIN" />，则可使用已保存的密码登录</translation>
@@ -15,16 +14,14 @@
 <translation id="4660011489602794167">显示键盘</translation>
 <translation id="4694050069269396220">如果您信任 <ph name="ORIGIN" />，则可使用其他网站已保存的密码。</translation>
 <translation id="5016175294846053194">键盘上方显示了自动填充建议</translation>
-<translation id="5088366526685584589">目前显示的是已保存的地址</translation>
 <translation id="5441504010984421144">轻触即可填充的凭据的列表已全屏打开。</translation>
+<translation id="6296921860874265377">显示已保存的密码和密码选项</translation>
 <translation id="6393156038355142111">建议一个安全系数高的密码</translation>
 <translation id="6558703547256592471">尽量为每个网站使用独一无二的密码。</translation>
 <translation id="7029809446516969842">密码</translation>
-<translation id="7299100402441711551">显示地址</translation>
-<translation id="7494879913343971937">显示密码</translation>
 <translation id="7594473730623999723">滑动可查看更多建议</translation>
+<translation id="7873973044507799456">显示已保存的地址</translation>
 <translation id="7992095260806105436">使用 Chrome 自动填充建议</translation>
-<translation id="8037472847879765671">显示付款方式</translation>
 <translation id="8507520749471379845">有可用密码</translation>
 <translation id="8705308553596171387">无密码</translation>
 <translation id="879180780857354295">键盘上方显示了备用的填充选项</translation>

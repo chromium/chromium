@@ -51,7 +51,14 @@ class ArcInitialOptInNotifierFactory : public ProfileKeyedServiceFactory {
 };
 
 ArcInitialOptInNotifierFactory::ArcInitialOptInNotifierFactory()
-    : ProfileKeyedServiceFactory("ArcInitialOptInNotifierFactory") {}
+    : ProfileKeyedServiceFactory(
+          "ArcInitialOptInNotifierFactory",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {}
 
 }  // anonymous namespace
 

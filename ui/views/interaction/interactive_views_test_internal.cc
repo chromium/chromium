@@ -54,11 +54,6 @@ InteractiveViewsTestPrivate::InteractiveViewsTestPrivate(
     : InteractiveTestPrivate(std::move(test_util)) {}
 InteractiveViewsTestPrivate::~InteractiveViewsTestPrivate() = default;
 
-void InteractiveViewsTestPrivate::DoTestTearDown() {
-  mouse_util_.reset();
-  InteractiveTestPrivate::DoTestTearDown();
-}
-
 void InteractiveViewsTestPrivate::OnSequenceComplete() {
   mouse_util_->CancelAllGestures();
   InteractiveTestPrivate::OnSequenceComplete();

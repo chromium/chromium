@@ -63,7 +63,7 @@ TEST_P(RendererFeatureSandboxWinTest, RendererGeneratedPolicyTest) {
   auto policy = broker->CreatePolicy();
 
   content::RendererSandboxedProcessLauncherDelegateWin test_renderer_delegate(
-      &cmd_line, /* is_jit_disabled */ false);
+      cmd_line, /*is_jit_disabled=*/false);
 
   // PreSpawn
   ::sandbox::ResultCode result =

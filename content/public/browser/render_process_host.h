@@ -19,8 +19,8 @@
 #include "base/supports_user_data.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
-#include "components/attribution_reporting/os_support.mojom-forward.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/web_exposed_isolation_level.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
 #include "media/media_buildflags.h"
@@ -50,6 +50,7 @@
 #include "ui/gfx/native_widget_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "components/attribution_reporting/os_support.mojom-forward.h"
 #include "content/public/browser/android/child_process_importance.h"
 #endif
 
@@ -497,6 +498,15 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual void IncrementWorkerRefCount() = 0;
   virtual void DecrementWorkerRefCount() = 0;
 
+  // "Pending reuse" ref count may be used to keep a process alive because we
+  // know that it will be reused soon.  Unlike the keep alive ref count, it is
+  // not time-based, and unlike the worker ref count above, it is not used for
+  // workers.  It is intentionally kept separate from the other ref counts to
+  // ease debugging, so that it's easier to tell what kept a particular process
+  // alive.
+  virtual void IncrementPendingReuseRefCount() = 0;
+  virtual void DecrementPendingReuseRefCount() = 0;
+
   // Sets all the various process lifetime ref counts to zero (e.g., keep alive,
   // worker, etc). Called when the browser context will be destroyed so this
   // RenderProcessHost can immediately die.
@@ -651,6 +661,11 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // any RenderViewHosts that are swapped out.
   size_t GetActiveViewCount();
 
+  // Returns the isolation level of the RenderProcessHost's ProcessLock. We
+  // do not return the ProcessLock or WebExposedIsolationInfo because those
+  // are not exposed outside of //content for now.
+  WebExposedIsolationLevel GetWebExposedIsolationLevel();
+
   // Posts |task|, if this RenderProcessHost is ready or when it becomes ready
   // (see RenderProcessHost::IsReady method).  The |task| might not run at all
   // (e.g. if |render_process_host| is destroyed before becoming ready).  This
@@ -685,11 +700,13 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
                                    base::ScopedFD log_file_descriptor) = 0;
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
   // Sets whether OS-level support is enabled for Attribution Reporting API.
   // See
   // https://github.com/WICG/attribution-reporting-api/blob/main/app_to_web.md.
   virtual void SetOsSupportForAttributionReporting(
       attribution_reporting::mojom::OsSupport os_support) = 0;
+#endif
 
   // Static management functions -----------------------------------------------
 

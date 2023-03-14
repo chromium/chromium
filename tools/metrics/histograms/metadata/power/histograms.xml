@@ -175,7 +175,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="PerformanceMonitor.AverageCPU8.Total{UsageScenario}"
-    units="1/100 %" expires_after="2023-03-31">
+    units="1/100 %" expires_after="2024-03-31">
   <owner>fdoray@chromium.org</owner>
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -187,7 +187,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PerformanceMonitor.AverageCPU8.{ProcessName}" units="1/100 %"
-    expires_after="2023-03-31">
+    expires_after="2024-03-31">
   <owner>fdoray@chromium.org</owner>
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -209,7 +209,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PerformanceMonitor.EnergyImpact2.Total{UsageScenario}"
-    units="ScaledUnits" expires_after="2023-03-31">
+    units="ScaledUnits" expires_after="2024-03-31">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -221,7 +221,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PerformanceMonitor.EnergyImpact2.{ProcessName}"
-    units="ScaledUnits" expires_after="2023-03-31">
+    units="ScaledUnits" expires_after="2024-03-31">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -256,7 +256,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PerformanceMonitor.IdleWakeups2.Total{UsageScenario}"
-    units="WakeupsPerSecond" expires_after="2023-03-31">
+    units="WakeupsPerSecond" expires_after="2024-03-31">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -268,7 +268,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PerformanceMonitor.IdleWakeups2.{ProcessName}"
-    units="WakeupsPerSecond" expires_after="2023-03-31">
+    units="WakeupsPerSecond" expires_after="2024-03-31">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -287,7 +287,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PerformanceMonitor.PackageExitIdleWakeups2.Total{UsageScenario}"
-    units="WakeupsPerSecond" expires_after="2023-03-31">
+    units="WakeupsPerSecond" expires_after="2024-03-31">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.orgg</owner>
   <summary>
@@ -299,7 +299,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PerformanceMonitor.PackageExitIdleWakeups2.{ProcessName}"
-    units="WakeupsPerSecond" expires_after="2023-03-31">
+    units="WakeupsPerSecond" expires_after="2024-03-31">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.orgg</owner>
   <summary>
@@ -330,7 +330,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PerformanceMonitor.ResourceCoalition.BytesReadPerSecond2{UsageScenario}"
-    units="BytesPerSecond" expires_after="2023-03-31">
+    units="BytesPerSecond" expires_after="2024-03-31">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -344,7 +344,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PerformanceMonitor.ResourceCoalition.BytesWrittenPerSecond2{UsageScenario}"
-    units="BytesPerSecond" expires_after="2023-03-31">
+    units="BytesPerSecond" expires_after="2024-03-31">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -357,7 +357,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PerformanceMonitor.ResourceCoalition.CPUTime"
-    units="hundredth of percent" expires_after="2023-03-31">
+    units="hundredth of percent" expires_after="2024-03-31">
   <obsolete>
     Deprecated in 07/2021 because the computation was wrong. Replaced by
     PerformanceMonitor.ResourceCoalition.CPUTime2.
@@ -375,7 +375,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PerformanceMonitor.ResourceCoalition.CPUTime2_10sec{UsageScenario10sec}"
-    units="1/100 %" expires_after="2023-03-31">
+    units="1/100 %" expires_after="2024-03-31">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -390,7 +390,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PerformanceMonitor.ResourceCoalition.CPUTime2{UsageScenario}"
-    units="1/100 %" expires_after="2023-03-31">
+    units="1/100 %" expires_after="2024-03-31">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -405,7 +405,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PerformanceMonitor.ResourceCoalition.Energy"
-    units="milliwatts" expires_after="2023-03-31">
+    units="milliwatts" expires_after="2024-03-31">
   <obsolete>
     Deprecated in 07/2021 because the name of the metric was wrong. Replaced by
     PerformanceMonitor.ResourceCoalition.Power.
@@ -420,7 +420,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PerformanceMonitor.ResourceCoalition.EnergyImpact{UsageScenario}"
-    units="centi-EnergyImpact" expires_after="2023-03-31">
+    units="centi-EnergyImpact" expires_after="2024-03-31">
   <owner>siggi@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -442,7 +442,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PerformanceMonitor.ResourceCoalition.GPUTime"
-    units="hundredth of percent" expires_after="2023-03-31">
+    units="hundredth of percent" expires_after="2024-03-31">
   <obsolete>
     Deprecated in 07/2021 because the computation was wrong. Replaced by
     PerformanceMonitor.ResourceCoalition.GPUTime2.
@@ -458,7 +458,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PerformanceMonitor.ResourceCoalition.GPUTime2{UsageScenario}"
-    units="1/100 %" expires_after="2023-03-31">
+    units="1/100 %" expires_after="2024-03-31">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -473,7 +473,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PerformanceMonitor.ResourceCoalition.InterruptWakeupsPerSecond{UsageScenario}"
-    units="milliWakeupsPerSecond" expires_after="2023-03-31">
+    units="milliWakeupsPerSecond" expires_after="2024-03-31">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -487,7 +487,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PerformanceMonitor.ResourceCoalition.PlatformIdleWakeupsPerSecond{UsageScenario}"
-    units="milliWakeupsPerSecond" expires_after="2023-03-31">
+    units="milliWakeupsPerSecond" expires_after="2024-03-31">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -500,7 +500,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PerformanceMonitor.ResourceCoalition.Power2{UsageScenario}"
-    units="milliwatts" expires_after="2023-03-31">
+    units="milliwatts" expires_after="2024-03-31">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -513,7 +513,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PerformanceMonitor.ResourceCoalition.QoSLevel.{QoSLevel}{UsageScenario}"
-    units="1/100 %" expires_after="2023-03-31">
+    units="1/100 %" expires_after="2024-03-31">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -537,7 +537,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PerformanceMonitor.UsageScenario.LongInterval"
     enum="PerformanceMonitor.UsageScenario.LongInterval"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -552,7 +552,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PerformanceMonitor.UsageScenario.ShortInterval"
     enum="PerformanceMonitor.UsageScenario.ShortInterval"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -737,7 +737,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.AmbientLightOnResume" units="lux"
-    expires_after="2023-06-25">
+    expires_after="2023-08-27">
   <owner>bkersten@chromium.org</owner>
   <owner>slangley@chromium.org</owner>
   <summary>
@@ -911,7 +911,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BatteryDischargeMode5{UsageScenario}{IntervalType}"
-    enum="BatteryDischargeMode" expires_after="2023-03-31">
+    enum="BatteryDischargeMode" expires_after="2024-03-31">
   <owner>etiennep@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <summary>
@@ -943,7 +943,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Power.BatteryDischargeRateMilliwatts6{UsageScenario}{IntervalType}"
-    units="milliwatts" expires_after="2023-03-31">
+    units="milliwatts" expires_after="2024-03-31">
   <owner>etiennep@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
@@ -967,7 +967,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Power.BatteryDischargeRatePreciseMilliwatts{UsageScenario}{IntervalType}"
-    units="milliwatts" expires_after="2023-03-31">
+    units="milliwatts" expires_after="2024-03-31">
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -993,7 +993,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Power.BatteryDischargeRateRelative5{UsageScenario}{IntervalType}"
-    units="hundredth of percent" expires_after="2023-03-31">
+    units="hundredth of percent" expires_after="2024-03-31">
   <owner>etiennep@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
@@ -1082,7 +1082,7 @@ chromium-metrics-reviews@google.com.
   <token key="BatteryCapacityType" variants="BatteryCapacityType"/>
 </histogram>
 
-<histogram name="Power.BatteryPercentDrop" units="%" expires_after="2023-06-25">
+<histogram name="Power.BatteryPercentDrop" units="%" expires_after="2023-08-27">
   <owner>ryansturm@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -1247,7 +1247,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.CpuTimeSecondsPerPowerMode.{ProcessType}"
-    enum="PowerMode" expires_after="2023-03-31">
+    enum="PowerMode" expires_after="2024-03-31">
   <obsolete>
     Deprecated in 11/2022 without replacement.
   </obsolete>
@@ -1425,7 +1425,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.DimEvent{PowerSource}" enum="PowerDimEvent"
-    expires_after="2023-03-01">
+    expires_after="2024-03-01">
   <owner>mqg@chromium.org</owner>
   <owner>charleszhao@chromium.org</owner>
   <summary>
@@ -1681,7 +1681,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.ForegroundRadio.Wakeups.Cell.30Seconds"
-    enum="RadioSignalLevel" expires_after="2023-06-28">
+    enum="RadioSignalLevel" expires_after="2023-08-27">
   <owner>eseckler@chromium.org</owner>
   <owner>khokhlov@google.com</owner>
   <owner>skyostil@chromium.org</owner>
@@ -2039,7 +2039,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.LockEvent{PowerSource}" enum="PowerLockEvent"
-    expires_after="2023-03-01">
+    expires_after="2024-03-01">
   <owner>mqg@chromium.org</owner>
   <owner>charleszhao@chromium.org</owner>
   <summary>
@@ -2065,7 +2065,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.Mac.IsOnBattery2" enum="BooleanOnBattery"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>avi@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
   <summary>
@@ -2119,7 +2119,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.PC10inS0ixRuntimeResidencyRate" units="%"
-    expires_after="2023-06-30">
+    expires_after="2023-09-03">
   <owner>skardach@google.com</owner>
   <owner>svenva@google.com</owner>
   <owner>chromeos-platform-power@google.com</owner>
@@ -2138,7 +2138,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.PC10RuntimeResidencyRate" units="%"
-    expires_after="2023-06-30">
+    expires_after="2023-09-03">
   <owner>skardach@google.com</owner>
   <owner>svenva@google.com</owner>
   <owner>chromeos-platform-power@google.com</owner>
@@ -2184,7 +2184,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.PowerButtonPressed" units="units"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>emaamari@google.com</owner>
   <owner>chromeos-commercial-identity@google.com</owner>
   <summary>
@@ -2195,7 +2195,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.PowerButtonPressInLaptopMode"
-    enum="PowerButtonPressType" expires_after="2023-07-02">
+    enum="PowerButtonPressType" expires_after="2023-09-03">
   <owner>minch@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
@@ -2206,7 +2206,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.PowerButtonPressInTabletMode"
-    enum="PowerButtonPressType" expires_after="2023-07-02">
+    enum="PowerButtonPressType" expires_after="2023-09-03">
   <owner>minch@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
@@ -2217,7 +2217,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.PowerScheduler.ProcessPowerModeChange.{ProcessType}"
-    enum="PowerMode" expires_after="2023-03-31">
+    enum="PowerMode" expires_after="2024-03-31">
   <obsolete>
     Deprecated in 11/2022 without replacement.
   </obsolete>
@@ -2408,7 +2408,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.{HpsEvent}.DurationSeconds" units="seconds"
-    expires_after="2023-03-01">
+    expires_after="2024-03-01">
   <owner>mqg@chromium.org</owner>
   <owner>charleszhao@chromium.org</owner>
   <summary>
@@ -2427,7 +2427,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PowerML.DimImminent.Action" enum="PowerMLDimImminentAction"
-    expires_after="2023-07-02">
+    expires_after="2023-09-03">
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -2437,7 +2437,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PowerML.ModelDim.Result" enum="PowerMLFinalResult"
-    expires_after="2023-07-02">
+    expires_after="2023-09-03">
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -2447,7 +2447,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PowerML.ModelNoDim.Result" enum="PowerMLFinalResult"
-    expires_after="2023-07-02">
+    expires_after="2023-09-03">
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>

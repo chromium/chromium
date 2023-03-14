@@ -4,9 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/password/passwords_mediator.h"
 
-#import "base/strings/sys_string_conversions.h"
-#import "base/strings/utf_string_conversions.h"
-#import "base/time/time.h"
+#import "base/memory/raw_ptr.h"
 #import "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/common/password_manager_features.h"
@@ -31,22 +29,22 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/mac/url_conversions.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-#import "ui/base/l10n/time_format.h"
 #import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
+using password_manager::WarningType;
+
 namespace {
-// Amount of time after which timestamp is shown instead of "just now".
-constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
 
 // Returns true if the Password Checkup feature flag is enabled.
 bool IsPasswordCheckupEnabled() {
   return base::FeatureList::IsEnabled(
       password_manager::features::kIOSPasswordCheckup);
 }
+
 }  // namespace
 
 @interface PasswordsMediator () <IdentityManagerObserverBridgeDelegate,
@@ -57,9 +55,9 @@ bool IsPasswordCheckupEnabled() {
   scoped_refptr<IOSChromePasswordCheckManager> _passwordCheckManager;
 
   // Service to check if passwords are synced.
-  SyncSetupService* _syncSetupService;
+  raw_ptr<SyncSetupService> _syncSetupService;
 
-  password_manager::SavedPasswordsPresenter* _savedPasswordsPresenter;
+  raw_ptr<password_manager::SavedPasswordsPresenter> _savedPasswordsPresenter;
 
   // A helper object for passing data about changes in password check status
   // and changes to compromised credentials list.
@@ -77,22 +75,22 @@ bool IsPasswordCheckupEnabled() {
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
 
-  // Sync observer
+  // Sync observer.
   std::unique_ptr<SyncObserverBridge> _syncObserver;
+
+  // Object storing the time of the previous successful re-authentication.
+  // This is meant to be used by the `ReauthenticationModule` for keeping
+  // re-authentications valid for a certain time interval within the scope
+  // of the Passwords Screen.
+  __strong NSDate* _successfulReauthTime;
+
+  // FaviconLoader is a keyed service that uses LargeIconService to retrieve
+  // favicon images.
+  raw_ptr<FaviconLoader> _faviconLoader;
+
+  // Service to know whether passwords are synced.
+  raw_ptr<syncer::SyncService> _syncService;
 }
-
-// Object storing the time of the previous successful re-authentication.
-// This is meant to be used by the `ReauthenticationModule` for keeping
-// re-authentications valid for a certain time interval within the scope
-// of the Passwords Screen.
-@property(nonatomic, strong, readonly) NSDate* successfulReauthTime;
-
-// FaviconLoader is a keyed service that uses LargeIconService to retrieve
-// favicon images.
-@property(nonatomic, assign) FaviconLoader* faviconLoader;
-
-// Service to know whether passwords are synced.
-@property(nonatomic, assign) syncer::SyncService* syncService;
 
 @end
 
@@ -131,16 +129,6 @@ bool IsPasswordCheckupEnabled() {
   return self;
 }
 
-- (void)dealloc {
-  if (_passwordsPresenterObserver) {
-    _savedPasswordsPresenter->RemoveObserver(_passwordsPresenterObserver.get());
-  }
-  if (_passwordCheckObserver) {
-    _passwordCheckManager->RemoveObserver(_passwordCheckObserver.get());
-  }
-  [[PasswordAutoFillStatusManager sharedManager] removeObserver:self];
-}
-
 - (void)setConsumer:(id<PasswordsConsumer>)consumer {
   if (_consumer == consumer)
     return;
@@ -152,14 +140,17 @@ bool IsPasswordCheckupEnabled() {
   [self updateConsumerPasswordCheckState:_currentState];
 }
 
-- (void)deleteCredential:
-    (const password_manager::CredentialUIEntry&)credential {
-  _savedPasswordsPresenter->RemoveCredential(credential);
-}
-
 - (void)disconnect {
   _identityManagerObserver.reset();
   _syncObserver.reset();
+  _passwordsPresenterObserver.reset();
+  _passwordCheckObserver.reset();
+  [[PasswordAutoFillStatusManager sharedManager] removeObserver:self];
+
+  _passwordCheckManager.reset();
+  _syncSetupService = nullptr;
+  _savedPasswordsPresenter = nullptr;
+  _faviconLoader = nullptr;
   _syncService = nullptr;
 }
 
@@ -176,33 +167,10 @@ bool IsPasswordCheckupEnabled() {
   _passwordCheckManager->StartPasswordCheck();
 }
 
-- (NSString*)formatElapsedTimeSinceLastCheck {
+- (NSString*)formattedElapsedTimeSinceLastCheck {
   base::Time lastCompletedCheck =
       _passwordCheckManager->GetLastPasswordCheckTime();
-
-  // lastCompletedCheck is 0.0 in case the check never completely ran before.
-  if (lastCompletedCheck == base::Time())
-    return l10n_util::GetNSString(IDS_IOS_CHECK_NEVER_RUN);
-
-  base::TimeDelta elapsedTime = base::Time::Now() - lastCompletedCheck;
-
-  NSString* timestamp;
-  // If check finished in less than `kJustCheckedTimeThresholdInMinutes` show
-  // "just now" instead of timestamp.
-  if (elapsedTime < kJustCheckedTimeThresholdInMinutes)
-    timestamp = l10n_util::GetNSString(IDS_IOS_CHECK_FINISHED_JUST_NOW);
-  else
-    timestamp = base::SysUTF8ToNSString(
-        base::UTF16ToUTF8(ui::TimeFormat::SimpleWithMonthAndYear(
-            ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_LONG,
-            elapsedTime, true)));
-
-  return IsPasswordCheckupEnabled()
-             ? l10n_util::GetNSStringF(
-                   IDS_IOS_PASSWORD_CHECKUP_LAST_COMPLETED_CHECK,
-                   base::SysNSStringToUTF16(timestamp))
-             : l10n_util::GetNSStringF(IDS_IOS_LAST_COMPLETED_CHECK,
-                                       base::SysNSStringToUTF16(timestamp));
+  return password_manager::FormatElapsedTimeSinceLastCheck(lastCompletedCheck);
 }
 
 - (NSAttributedString*)passwordCheckErrorInfo {
@@ -306,7 +274,7 @@ bool IsPasswordCheckupEnabled() {
 }
 
 - (void)insecureCredentialsDidChange {
-  // Compromised passwords changes has no effect on UI while check is running.
+  // Insecure password changes have no effect on UI while check is running.
   if (_passwordCheckManager->GetPasswordCheckState() ==
       PasswordCheckState::kRunning)
     return;
@@ -347,8 +315,7 @@ bool IsPasswordCheckupEnabled() {
   }
 }
 
-// Updates the `_consumer` Password Check UI State and Unmuted Compromised
-// Passwords.
+// Updates the `_consumer` Password Check UI State and Insecure Passwords.
 - (void)updateConsumerPasswordCheckState:
     (PasswordCheckState)passwordCheckState {
   DCHECK(self.consumer);
@@ -444,17 +411,17 @@ bool IsPasswordCheckupEnabled() {
 }
 
 - (NSDate*)lastSuccessfulReauthTime {
-  return [self successfulReauthTime];
+  return _successfulReauthTime;
 }
 
 #pragma mark - TableViewFaviconDataSource
 
-- (void)faviconForURL:(CrURL*)URL
-           completion:(void (^)(FaviconAttributes*))completion {
-  syncer::SyncService* syncService = self.syncService;
+- (void)faviconForPageURL:(CrURL*)URL
+               completion:(void (^)(FaviconAttributes*))completion {
   BOOL isPasswordSyncEnabled =
-      password_manager_util::IsPasswordSyncNormalEncryptionEnabled(syncService);
-  self.faviconLoader->FaviconForPageUrl(
+      password_manager_util::IsPasswordSyncNormalEncryptionEnabled(
+          _syncService);
+  _faviconLoader->FaviconForPageUrl(
       URL.gurl, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
       /*fallback_to_google_server=*/isPasswordSyncEnabled, completion);
 }

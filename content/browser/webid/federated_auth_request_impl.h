@@ -118,6 +118,19 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     absl::optional<IdentityProviderData> data;
   };
 
+  // For use by the devtools protocol for browser automation.
+  IdentityRequestDialogController* GetDialogController() {
+    return request_dialog_controller_.get();
+  }
+
+  const std::vector<IdentityProviderData>& GetSortedIdpData() const {
+    return idp_data_for_display_;
+  }
+
+  void AcceptAccountsDialogForDevtools(const GURL& config_url,
+                                       const IdentityRequestAccount& account);
+  void DismissAccountsDialogForDevtools();
+
  private:
   friend class FederatedAuthRequestImplTest;
 
@@ -188,7 +201,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       std::unique_ptr<IdentityProviderInfo> idp_info,
       IdpNetworkRequestManager::FetchStatus status,
       IdpNetworkRequestManager::AccountList accounts);
-  void OnAccountSelected(const GURL& idp_config_url,
+  void OnAccountSelected(bool auto_reauthn,
+                         const GURL& idp_config_url,
                          const std::string& account_id,
                          bool is_sign_in);
   void OnDismissFailureDialog(
@@ -287,6 +301,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   // Populated by MaybeShowAccountsDialog().
   base::flat_map<GURL, std::unique_ptr<IdentityProviderInfo>> idp_infos_;
+  std::vector<IdentityProviderData> idp_data_for_display_;
 
   raw_ptr<FederatedIdentityApiPermissionContextDelegate>
       api_permission_delegate_ = nullptr;

@@ -10,6 +10,8 @@ from blinkpy.common.system.output_capture import OutputCapture
 from blinkpy.tool.blink_tool import BlinkTool
 
 
+@unittest.skip('Temporarily disabled while crbug.com/1324638 is being fixed; '
+               'reenable once `copy-existing-baselines` is removed')
 # Avoid creating a real `Git` object, since it runs a command in its
 # constructor.
 @patch('blinkpy.tool.blink_tool.BlinkTool.git',

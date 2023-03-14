@@ -315,6 +315,11 @@ bool StructTraits<autofill::mojom::FormFieldDataPredictionsDataView,
     return false;
   if (!data.ReadSection(&out->section))
     return false;
+  out->rank = data.rank();
+  out->rank_in_signature_group = data.rank_in_signature_group();
+  out->rank_in_host_form = data.rank_in_host_form();
+  out->rank_in_host_form_signature_group =
+      data.rank_in_host_form_signature_group();
 
   return true;
 }
@@ -339,10 +344,12 @@ bool StructTraits<autofill::mojom::PasswordAndMetadataDataView,
                   autofill::PasswordAndMetadata>::
     Read(autofill::mojom::PasswordAndMetadataDataView data,
          autofill::PasswordAndMetadata* out) {
-  if (!data.ReadUsername(&out->username))
+  if (!data.ReadUsernameValue(&out->username_value)) {
     return false;
-  if (!data.ReadPassword(&out->password))
+  }
+  if (!data.ReadPasswordValue(&out->password_value)) {
     return false;
+  }
   if (!data.ReadRealm(&out->realm))
     return false;
 

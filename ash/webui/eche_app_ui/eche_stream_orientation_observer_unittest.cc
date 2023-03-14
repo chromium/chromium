@@ -45,8 +45,8 @@ class EcheStreamOrientationObserverTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  void OnStreamOrientationChanged(mojom::StreamOrientation orientation) {
-    observer_->OnStreamOrientationChanged(orientation);
+  void OnStreamOrientationChanged(bool is_landscape) {
+    observer_->OnStreamOrientationChanged(is_landscape);
   }
 
   EcheTray* eche_tray() { return eche_tray_; }
@@ -61,24 +61,20 @@ class EcheStreamOrientationObserverTest : public AshTestBase {
 };
 
 TEST_F(EcheStreamOrientationObserverTest, OnStreamOrientationChanged) {
-  EXPECT_EQ(eche_tray()->get_stream_orientation_for_test(),
-            mojom::StreamOrientation::kPortrait);
+  EXPECT_EQ(eche_tray()->get_is_landscape_for_test(), false);
 
-  OnStreamOrientationChanged(mojom::StreamOrientation::kLandscape);
+  OnStreamOrientationChanged(true);
 
-  EXPECT_EQ(eche_tray()->get_stream_orientation_for_test(),
-            mojom::StreamOrientation::kLandscape);
+  EXPECT_EQ(eche_tray()->get_is_landscape_for_test(), true);
 
-  OnStreamOrientationChanged(mojom::StreamOrientation::kPortrait);
+  OnStreamOrientationChanged(false);
 
-  EXPECT_EQ(eche_tray()->get_stream_orientation_for_test(),
-            mojom::StreamOrientation::kPortrait);
+  EXPECT_EQ(eche_tray()->get_is_landscape_for_test(), false);
 
-  OnStreamOrientationChanged(mojom::StreamOrientation::kPortrait);
+  OnStreamOrientationChanged(false);
 
   // Should not change
-  EXPECT_EQ(eche_tray()->get_stream_orientation_for_test(),
-            mojom::StreamOrientation::kPortrait);
+  EXPECT_EQ(eche_tray()->get_is_landscape_for_test(), false);
 }
 
 TEST_F(EcheStreamOrientationObserverTest, EcheSWAFlagDisabled) {
@@ -88,14 +84,12 @@ TEST_F(EcheStreamOrientationObserverTest, EcheSWAFlagDisabled) {
       /*disabled_features=*/{features::kEcheSWA});
 
   EXPECT_FALSE(eche_tray()->IsInitialized());
-  EXPECT_EQ(eche_tray()->get_stream_orientation_for_test(),
-            mojom::StreamOrientation::kPortrait);
+  EXPECT_EQ(eche_tray()->get_is_landscape_for_test(), false);
 
-  OnStreamOrientationChanged(mojom::StreamOrientation::kLandscape);
+  OnStreamOrientationChanged(false);
 
   EXPECT_FALSE(eche_tray()->IsInitialized());
-  EXPECT_EQ(eche_tray()->get_stream_orientation_for_test(),
-            mojom::StreamOrientation::kPortrait);
+  EXPECT_EQ(eche_tray()->get_is_landscape_for_test(), false);
 }
 
 }  // namespace ash::eche_app

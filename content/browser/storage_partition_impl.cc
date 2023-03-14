@@ -88,6 +88,7 @@
 #include "content/browser/quota/quota_context.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
+#include "content/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
@@ -121,6 +122,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/net_errors.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/ssl/client_cert_store.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
@@ -436,8 +438,9 @@ BrowserContext* GetBrowserContextFromStoragePartition(
 // Returns the WebContents corresponding to `context`.
 WebContents* GetWebContents(
     StoragePartitionImpl::URLLoaderNetworkContext context) {
-  if (!context.navigation_or_document())
+  if (!context.navigation_or_document()) {
     return nullptr;
+  }
   return context.navigation_or_document()->GetWebContents();
 }
 
@@ -564,8 +567,9 @@ void OnAuthRequiredContinuation(
 // Returns true if the request is the primary main frame navigation.
 bool IsPrimaryMainFrameRequest(
     const StoragePartitionImpl::URLLoaderNetworkContext& context) {
-  if (!context.IsNavigationRequestContext())
+  if (!context.IsNavigationRequestContext()) {
     return false;
+  }
 
   return context.navigation_or_document()->IsInPrimaryMainFrame();
 }
@@ -652,16 +656,20 @@ bool CancelIfPrerendering(NavigationOrDocumentHandle* navigation_or_document,
                           PrerenderFinalStatus final_status) {
   FrameTreeNode* frame_tree_node = nullptr;
   // `navigation_or_document` can be null for `kServiceWorkerContext`.
-  if (!navigation_or_document)
+  if (!navigation_or_document) {
     return false;
+  }
   auto* navigation_request = navigation_or_document->GetNavigationRequest();
-  if (navigation_request)
+  if (navigation_request) {
     frame_tree_node = navigation_request->frame_tree_node();
+  }
   auto* render_frame_host = navigation_or_document->GetDocument();
-  if (render_frame_host)
+  if (render_frame_host) {
     frame_tree_node = FrameTreeNode::From(render_frame_host);
-  if (!frame_tree_node)
+  }
+  if (!frame_tree_node) {
     return false;
+  }
 
   auto* web_contents = WebContentsImpl::FromFrameTreeNode(frame_tree_node);
   return web_contents->CancelPrerendering(frame_tree_node, final_status);
@@ -673,8 +681,9 @@ void OnCertificateRequestedContinuation(
         client_cert_responder_remote,
     base::RepeatingCallback<WebContents*(void)> web_contents_getter) {
   WebContents* web_contents = nullptr;
-  if (web_contents_getter)
+  if (web_contents_getter) {
     web_contents = web_contents_getter.Run();
+  }
 
   if (!web_contents) {
     CallCancelRequest(std::move(client_cert_responder_remote));
@@ -732,8 +741,9 @@ CombineStorageKeyMatcherFunctions(
     StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
     StoragePartition::StorageKeyPolicyMatcherFunction
         storage_key_policy_matcher) {
-  if (storage_key_matcher.is_null() && storage_key_policy_matcher.is_null())
+  if (storage_key_matcher.is_null() && storage_key_policy_matcher.is_null()) {
     return base::NullCallback();
+  }
 
   return base::BindRepeating(
       [](StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
@@ -823,8 +833,9 @@ class StoragePartitionImpl::URLLoaderFactoryForBrowserProcess
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override {
     DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-    if (!storage_partition_)
+    if (!storage_partition_) {
       return;
+    }
     storage_partition_->GetURLLoaderFactoryForBrowserProcessInternal()
         ->CreateLoaderAndStart(std::move(receiver), request_id, options,
                                url_request, std::move(client),
@@ -833,8 +844,9 @@ class StoragePartitionImpl::URLLoaderFactoryForBrowserProcess
 
   void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
       override {
-    if (!storage_partition_)
+    if (!storage_partition_) {
       return;
+    }
     storage_partition_->GetURLLoaderFactoryForBrowserProcessInternal()->Clone(
         std::move(receiver));
   }
@@ -863,18 +875,24 @@ storage::QuotaClientTypes StoragePartitionImpl::GenerateQuotaClientTypes(
   if (remove_mask & StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS) {
     quota_client_types.insert(storage::QuotaClientType::kFileSystem);
   }
-  if (remove_mask & StoragePartition::REMOVE_DATA_MASK_WEBSQL)
+  if (remove_mask & StoragePartition::REMOVE_DATA_MASK_WEBSQL) {
     quota_client_types.insert(storage::QuotaClientType::kDatabase);
-  if (remove_mask & StoragePartition::REMOVE_DATA_MASK_INDEXEDDB)
+  }
+  if (remove_mask & StoragePartition::REMOVE_DATA_MASK_INDEXEDDB) {
     quota_client_types.insert(storage::QuotaClientType::kIndexedDatabase);
-  if (remove_mask & StoragePartition::REMOVE_DATA_MASK_SERVICE_WORKERS)
+  }
+  if (remove_mask & StoragePartition::REMOVE_DATA_MASK_SERVICE_WORKERS) {
     quota_client_types.insert(storage::QuotaClientType::kServiceWorker);
-  if (remove_mask & StoragePartition::REMOVE_DATA_MASK_CACHE_STORAGE)
+  }
+  if (remove_mask & StoragePartition::REMOVE_DATA_MASK_CACHE_STORAGE) {
     quota_client_types.insert(storage::QuotaClientType::kServiceWorkerCache);
-  if (remove_mask & StoragePartition::REMOVE_DATA_MASK_BACKGROUND_FETCH)
+  }
+  if (remove_mask & StoragePartition::REMOVE_DATA_MASK_BACKGROUND_FETCH) {
     quota_client_types.insert(storage::QuotaClientType::kBackgroundFetch);
-  if (remove_mask & StoragePartition::REMOVE_DATA_MASK_MEDIA_LICENSES)
+  }
+  if (remove_mask & StoragePartition::REMOVE_DATA_MASK_MEDIA_LICENSES) {
     quota_client_types.insert(storage::QuotaClientType::kMediaLicense);
+  }
   return quota_client_types;
 }
 
@@ -1089,8 +1107,9 @@ class StoragePartitionImpl::ServiceWorkerCookieAccessObserver
         *service_worker_context->GetWindowClientFrameRoutingIds(
             blink::StorageKey::CreateFirstParty(
                 url::Origin::Create(details->url)));
-    if (destinations.empty())
+    if (destinations.empty()) {
       return;
+    }
 
     for (GlobalRenderFrameHostId frame_id : destinations) {
       if (RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(frame_id)) {
@@ -1120,8 +1139,9 @@ StoragePartitionImpl::StoragePartitionImpl(
 StoragePartitionImpl::~StoragePartitionImpl() {
   browser_context_ = nullptr;
 
-  if (url_loader_factory_getter_)
+  if (url_loader_factory_getter_) {
     url_loader_factory_getter_->OnStoragePartitionDestroyed();
+  }
 
   if (shared_url_loader_factory_for_browser_process_) {
     shared_url_loader_factory_for_browser_process_->Shutdown();
@@ -1136,32 +1156,41 @@ StoragePartitionImpl::~StoragePartitionImpl() {
                                   std::move(database_tracker)));
   }
 
-  if (GetFileSystemAccessManager())
+  if (GetFileSystemAccessManager()) {
     GetFileSystemAccessManager()->Shutdown();
+  }
 
-  if (GetFileSystemContext())
+  if (GetFileSystemContext()) {
     GetFileSystemContext()->Shutdown();
+  }
 
-  if (GetDOMStorageContext())
+  if (GetDOMStorageContext()) {
     GetDOMStorageContext()->Shutdown();
+  }
 
-  if (GetServiceWorkerContext())
+  if (GetServiceWorkerContext()) {
     GetServiceWorkerContext()->Shutdown();
+  }
 
-  if (GetPlatformNotificationContext())
+  if (GetPlatformNotificationContext()) {
     GetPlatformNotificationContext()->Shutdown();
+  }
 
-  if (GetBackgroundSyncContext())
+  if (GetBackgroundSyncContext()) {
     GetBackgroundSyncContext()->Shutdown();
+  }
 
-  if (GetBackgroundFetchContext())
+  if (GetBackgroundFetchContext()) {
     GetBackgroundFetchContext()->Shutdown();
+  }
 
-  if (GetContentIndexContext())
+  if (GetContentIndexContext()) {
     GetContentIndexContext()->Shutdown();
+  }
 
-  if (GetGeneratedCodeCacheContext())
+  if (GetGeneratedCodeCacheContext()) {
     GetGeneratedCodeCacheContext()->Shutdown();
+  }
 }
 
 // static
@@ -1425,8 +1454,9 @@ void StoragePartitionImpl::OnStorageServiceDisconnected() {
   remote_partition_.reset();
 
   dom_storage_context_->RecoverFromStorageServiceCrash();
-  for (const auto& client : dom_storage_clients_)
+  for (const auto& client : dom_storage_clients_) {
     client.second->ResetStorageAreaAndNamespaceConnections();
+  }
 }
 
 const StoragePartitionConfig& StoragePartitionImpl::GetConfig() {
@@ -1443,8 +1473,9 @@ std::string StoragePartitionImpl::GetPartitionDomain() {
 
 network::mojom::NetworkContext* StoragePartitionImpl::GetNetworkContext() {
   DCHECK(initialized_);
-  if (!network_context_.is_bound())
+  if (!network_context_.is_bound()) {
     InitNetworkContext();
+  }
   return network_context_.get();
 }
 
@@ -1485,15 +1516,16 @@ void StoragePartitionImpl::CreateRestrictedCookieManager(
     bool is_service_worker,
     int process_id,
     int routing_id,
+    net::CookieSettingOverrides cookie_setting_overrides,
     mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver,
     mojo::PendingRemote<network::mojom::CookieAccessObserver> cookie_observer) {
   DCHECK(initialized_);
   if (!GetContentClient()->browser()->WillCreateRestrictedCookieManager(
           role, browser_context_, origin, isolation_info, is_service_worker,
           process_id, routing_id, &receiver)) {
-    GetNetworkContext()->GetRestrictedCookieManager(std::move(receiver), role,
-                                                    origin, isolation_info,
-                                                    std::move(cookie_observer));
+    GetNetworkContext()->GetRestrictedCookieManager(
+        std::move(receiver), role, origin, isolation_info,
+        cookie_setting_overrides, std::move(cookie_observer));
   }
 }
 
@@ -1864,8 +1896,9 @@ void StoragePartitionImpl::OnAuthRequired(
     return;
   }
 
-  if (!is_primary_main_frame.has_value())
+  if (!is_primary_main_frame.has_value()) {
     is_primary_main_frame = IsPrimaryMainFrameRequest(context);
+  }
   auto web_contents_getter = base::BindRepeating(GetWebContents, context);
   int process_id = network::mojom::kBrowserProcessId;
   if (context.type() ==
@@ -1889,8 +1922,9 @@ void StoragePartitionImpl::OnAuthRequired(
     // CreateForRenderFrameHost above.
     if (context.navigation_or_document()) {
       auto* render_frame_host = context.navigation_or_document()->GetDocument();
-      if (render_frame_host)
+      if (render_frame_host) {
         process_id = render_frame_host->GetGlobalId().child_id;
+      }
     }
   }
   OnAuthRequiredContinuation(
@@ -2080,8 +2114,9 @@ void StoragePartitionImpl::OnCanSendReportingReports(
                        ->GetPermissionResultForOriginWithoutContext(
                            blink::PermissionType::BACKGROUND_SYNC, origin)
                        .status == blink::mojom::PermissionStatus::GRANTED;
-    if (allowed)
+    if (allowed) {
       origins_out.push_back(origin);
+    }
   }
 
   std::move(callback).Run(origins_out);
@@ -2236,8 +2271,9 @@ void StoragePartitionImpl::QuotaManagedDataDeletionHelper::
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK_GT(task_count_, 0);
   --task_count_;
-  if (task_count_)
+  if (task_count_) {
     return;
+  }
 
   std::move(callback_).Run();
   delete this;
@@ -2318,8 +2354,9 @@ void StoragePartitionImpl::QuotaManagedDataDeletionHelper::
   (*deletion_task_count)++;
   for (const auto& bucket : buckets) {
     // TODO(mkwst): Clean this up, it's slow. http://crbug.com/130746
-    if (storage_key_.has_value() && bucket.storage_key != *storage_key_)
+    if (storage_key_.has_value() && bucket.storage_key != *storage_key_) {
       continue;
+    }
 
     if (storage_key_matcher &&
         !storage_key_matcher.Run(bucket.storage_key,
@@ -2451,10 +2488,12 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
     DCHECK(!cookie_deletion_filter->created_after_time.has_value());
     DCHECK(!cookie_deletion_filter->created_before_time.has_value());
 
-    if (!begin.is_null())
+    if (!begin.is_null()) {
       cookie_deletion_filter->created_after_time = begin;
-    if (!end.is_null())
+    }
+    if (!end.is_null()) {
       cookie_deletion_filter->created_before_time = end;
+    }
 
     cookie_manager->DeleteCookies(
         std::move(cookie_deletion_filter),
@@ -2489,8 +2528,9 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
   }
 
   if (remove_mask_ & REMOVE_DATA_MASK_INTEREST_GROUP_PERMISSIONS_CACHE) {
-    if (interest_group_manager)
+    if (interest_group_manager) {
       interest_group_manager->ClearPermissionsCache();
+    }
   }
 
   if (remove_mask_ & REMOVE_DATA_MASK_INDEXEDDB ||
@@ -2607,8 +2647,9 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
         [](base::WeakPtr<storage::SharedStorageManager> manager,
            base::OnceClosure callback,
            storage::SharedStorageDatabase::OperationResult result) {
-          if (manager)
+          if (manager) {
             manager->OnOperationResult(result);
+          }
           std::move(callback).Run();
         },
         shared_storage_manager->GetWeakPtr(),
@@ -2628,8 +2669,9 @@ void StoragePartitionImpl::ClearDataForOrigin(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(initialized_);
   CookieDeletionFilterPtr deletion_filter = CookieDeletionFilter::New();
-  if (!storage_origin.host().empty())
+  if (!storage_origin.host().empty()) {
     deletion_filter->host_name = storage_origin.host();
+  }
   // Construct a |BrowsingDataFilterBuilder| instead of just passing a storage
   // key based on the origin directly. This is needed to be able to delete the
   // associated 3P data embedded on the origin.
@@ -2642,52 +2684,11 @@ void StoragePartitionImpl::ClearDataForOrigin(
                 base::Time::Max(), std::move(callback));
 }
 
-void StoragePartitionImpl::ClearDataForAllBuckets(
-    const blink::StorageKey& storage_key,
-    base::OnceClosure callback) {
-  DCHECK(initialized_);
-  DCHECK(callback);
-
-  // Retrieve all the buckets info and clear the data.
-  // TODO(crbug.com/1415860): This can be slow for a great number of buckets.
-  GetQuotaManagerProxy()->GetBucketsForStorageKey(
-      storage_key,
-      blink::mojom::StorageType::kTemporary,  // Storage buckets only uses
-                                              // temporary storage.
-      /*delete_expired=*/true,  // The expired buckets should be deleted since
-                                // this method clears data for all buckets.
-      base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindOnce(&StoragePartitionImpl::RetrieveBucketsForClearingDone,
-                     base::Unretained(this), storage_key, std::move(callback)));
-}
-
-void StoragePartitionImpl::RetrieveBucketsForClearingDone(
-    const blink::StorageKey& storage_key,
-    base::OnceClosure callback,
-    storage::QuotaErrorOr<std::set<storage::BucketInfo>> buckets) {
-  DCHECK(initialized_);
-  DCHECK(callback);
-
-  if (!buckets.ok() || buckets->empty()) {
-    std::move(callback).Run();
-    return;
-  }
-
-  std::set<std::string> buckets_to_remove = {};
-
-  for (auto& bucket : buckets.value()) {
-    buckets_to_remove.insert(bucket.name);
-  }
-
-  ClearDataForBuckets(storage_key, buckets_to_remove, std::move(callback));
-}
-
 void StoragePartitionImpl::ClearDataForBuckets(
     const blink::StorageKey& storage_key,
     const std::set<std::string>& storage_buckets,
     base::OnceClosure callback) {
   DCHECK(initialized_);
-  DCHECK(callback);
 
   const auto remove_buckets_done =
       base::BarrierCallback<blink::mojom::QuotaStatusCode>(
@@ -2740,8 +2741,9 @@ void StoragePartitionImpl::ClearData(uint32_t remove_mask,
                                      base::OnceClosure callback) {
   DCHECK(initialized_);
   CookieDeletionFilterPtr deletion_filter = CookieDeletionFilter::New();
-  if (!storage_key.origin().host().empty())
+  if (!storage_key.origin().host().empty()) {
     deletion_filter->host_name = storage_key.origin().host();
+  }
   bool perform_storage_cleanup =
       begin.is_null() && end.is_max() && storage_key.origin().opaque();
   ClearDataImpl(remove_mask, quota_storage_remove_mask, storage_key,
@@ -2781,8 +2783,9 @@ void StoragePartitionImpl::ClearCodeCaches(
 void StoragePartitionImpl::Flush() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(initialized_);
-  if (GetDOMStorageContext())
+  if (GetDOMStorageContext()) {
     GetDOMStorageContext()->Flush();
+  }
 }
 
 void StoragePartitionImpl::ResetURLLoaderFactories() {
@@ -2823,10 +2826,12 @@ void StoragePartitionImpl::FlushNetworkInterfaceForTesting() {
   DCHECK(initialized_);
   DCHECK(network_context_);
   network_context_.FlushForTesting();
-  if (url_loader_factory_for_browser_process_)
+  if (url_loader_factory_for_browser_process_) {
     url_loader_factory_for_browser_process_.FlushForTesting();
-  if (cookie_manager_for_browser_process_)
+  }
+  if (cookie_manager_for_browser_process_) {
     cookie_manager_for_browser_process_.FlushForTesting();
+  }
 }
 
 void StoragePartitionImpl::WaitForDeletionTasksForTesting() {
@@ -2933,8 +2938,9 @@ void StoragePartitionImpl::OverrideSpecialStoragePolicyForTesting(
 
 void StoragePartitionImpl::ShutdownBackgroundSyncContextForTesting() {
   DCHECK(initialized_);
-  if (GetBackgroundSyncContext())
+  if (GetBackgroundSyncContext()) {
     GetBackgroundSyncContext()->Shutdown();
+  }
 }
 
 void StoragePartitionImpl::OverrideBackgroundSyncContextForTesting(
@@ -3138,20 +3144,38 @@ void StoragePartitionImpl::BindSessionStorageAreaForProcess(
 absl::optional<blink::StorageKey> StoragePartitionImpl::CalculateStorageKey(
     const url::Origin& origin,
     const base::UnguessableToken* nonce) {
-  if (!blink::StorageKey::IsThirdPartyStoragePartitioningEnabled())
+  if (!blink::StorageKey::IsThirdPartyStoragePartitioningEnabled()) {
     return absl::nullopt;
+  }
 
   NavigationOrDocumentHandle* handle =
       url_loader_network_observers_.current_context().navigation_or_document();
-  if (!handle)
+  if (!handle) {
     return absl::nullopt;
+  }
   FrameTreeNode* node = handle->GetFrameTreeNode();
-  if (!node)
+  if (!node) {
     return absl::nullopt;
+  }
   RenderFrameHostImpl* frame_host = node->current_frame_host();
-  if (!frame_host)
+  if (!frame_host) {
     return absl::nullopt;
-  return frame_host->CalculateStorageKey(origin, nonce);
+  }
+
+  // Determine if we should allow partitioned StorageKeys.
+  //
+  // If this is a main frame navigation then the value of
+  // third_party_storage_partitioning_enabled is irrelevant because main frames
+  // are always first-party by definition. If this is a subframe navigation
+  // then the main frame will have the correct value.
+  bool third_party_storage_partitioning_enabled = false;
+  if (!frame_host->is_main_frame()) {
+    third_party_storage_partitioning_enabled =
+        frame_host->IsMainFrameThirdPartyStoragePartitioningEnabled();
+  }
+
+  return frame_host->CalculateStorageKey(
+      origin, nonce, third_party_storage_partitioning_enabled);
 }
 
 StoragePartitionImpl::URLLoaderNetworkContext::URLLoaderNetworkContext(
@@ -3159,11 +3183,13 @@ StoragePartitionImpl::URLLoaderNetworkContext::URLLoaderNetworkContext(
     GlobalRenderFrameHostId render_frame_host_id)
     : type_(type) {
   // `render_frame_host_id` can be invalid for `kServiceWorkerContext`.
-  if (!render_frame_host_id)
+  if (!render_frame_host_id) {
     return;
+  }
   auto* render_frame_host = RenderFrameHostImpl::FromID(render_frame_host_id);
-  if (!render_frame_host)
+  if (!render_frame_host) {
     return;
+  }
 
   navigation_or_document_ = render_frame_host->GetNavigationOrDocumentHandle();
 }

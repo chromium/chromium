@@ -47,6 +47,6 @@ TEST_F(ReadingListListItemFactoryTest, SetA11yDelegate) {
       [[ReadingListListItemFactory alloc] init];
   factory.accessibilityDelegate = mockDelegate;
   id<ReadingListListItem> item =
-      [factory cellItemForReadingListEntry:entry_.get()];
+      [factory cellItemForReadingListEntry:entry_.get() needsExplicitUpload:NO];
   EXPECT_EQ(item.customActionFactory.accessibilityDelegate, mockDelegate);
 }

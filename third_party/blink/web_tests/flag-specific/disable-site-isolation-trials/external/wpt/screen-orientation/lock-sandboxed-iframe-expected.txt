@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS Test without 'allow-orientation-lock' sandboxing directive
-PASS Test with 'allow-orientation-lock' sandboxing directive
-Harness: the test ran to completion.
-

@@ -242,10 +242,6 @@ fun:*GlobalHandles*PostGarbageCollectionProcessing*
 
 fun:*InvokeAccessorGetterCallback*
 
-# False-positives in fontconfig.  May be removed after this MR is merged:
-# https://gitlab.freedesktop.org/fontconfig/fontconfig/-/merge_requests/261
-src:*/third_party/fontconfig/src/src/fchash.c
-
 ######### Uncategorized
 
 src:*native_client/*

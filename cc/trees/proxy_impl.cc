@@ -397,7 +397,8 @@ void ProxyImpl::OnHungCommit() {
   UMA_HISTOGRAM_BOOLEAN("Compositing.Renderer.CommitHung", true);
   static auto* hung_commit_data = base::debug::AllocateCrashKeyString(
       "hung_commit", base::debug::CrashKeySize::Size256);
-  std::string debug_info = scheduler_->GetHungCommitDebugInfo();
+  std::string debug_info = host_impl_->GetHungCommitDebugInfo() +
+                           scheduler_->GetHungCommitDebugInfo();
   LOG(ERROR) << "commit hung: " << debug_info;
   base::debug::SetCrashKeyString(hung_commit_data, debug_info);
   scheduler_->TraceHungCommitDebugInfo();
@@ -558,9 +559,16 @@ void ProxyImpl::RenewTreePriority() {
 
   last_raster_priority_ = raster_tree_priority;
 
-  // New content always takes priority when ui resources have been evicted.
+  // New content takes priority in certain cases:
+  // - When ui resources have been evicted.
+  // - When the viewport is 0x0 (may be invalid/unset?)
+  // - When the active scroll gesture requires main-thread repainting for the
+  //   scroll offset change to be visible.
   if (host_impl_->active_tree()->GetDeviceViewport().size().IsEmpty() ||
-      host_impl_->EvictedUIResourcesExist()) {
+      host_impl_->EvictedUIResourcesExist() ||
+      (host_impl_->IsCurrentScrollMainRepainted() &&
+       base::FeatureList::IsEnabled(
+           features::kMainRepaintScrollPrefersNewContent))) {
     // Once we enter NEW_CONTENTS_TAKES_PRIORITY mode, visible tiles on active
     // tree might be freed. We need to set RequiresHighResToDraw to ensure that
     // high res tiles will be required to activate pending tree.

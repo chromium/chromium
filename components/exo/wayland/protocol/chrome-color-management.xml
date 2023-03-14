@@ -43,7 +43,7 @@
   over the course of our development.
   </description>
 
-  <interface name="zcr_color_manager_v1" version="3">
+  <interface name="zcr_color_manager_v1" version="4">
     <description summary="color manager singleton">
 	A global interface used for getting color management surface and color
 	management output objects as well as creating color space objects from
@@ -314,7 +314,7 @@
     </request>
   </interface>
 
-  <interface name="zcr_color_management_output_v1" version="1">
+  <interface name="zcr_color_management_output_v1" version="4">
     <description summary="output color properties">
 	A zcr_color_management_output_v1 describes the color properties of an
 	output.
@@ -398,7 +398,7 @@
     </request>
   </interface>
 
-  <interface name="zcr_color_management_surface_v1" version="1">
+  <interface name="zcr_color_management_surface_v1" version="4">
     <description summary="color management extension to a surface">
 	A zcr_color_management_surface_v1 allows the client to set the color
 	space and HDR properties of a surface.
@@ -556,7 +556,7 @@
     </request>
   </interface>
 
-  <interface name="zcr_color_space_creator_v1" version="1">
+  <interface name="zcr_color_space_creator_v1" version="4">
     <description summary="color space creator">
 	A zcr_color_space_creator_v1 object returns a created color space
 	or the error which occured during creation.
@@ -592,7 +592,7 @@
     </event>
   </interface>
 
-  <interface name="zcr_color_space_v1" version="3">
+  <interface name="zcr_color_space_v1" version="4">
     <description summary="color space">
 	Refers to a color space which can be attached to a surface
 	(zcr_color_management_surface_v1.set_color_space). It may provide

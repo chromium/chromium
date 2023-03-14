@@ -297,7 +297,7 @@ class PlayerCompositorDelegateTest : public testing::Test {
               auto root_file = directory->AppendASCII("0.skp");
               proto->mutable_root_frame()->set_file_path(
                   root_file.AsUTF8Unsafe());
-              base::WriteFile(root_file, fake_data.data(), fake_data.size());
+              base::WriteFile(root_file, fake_data);
 
               if (!skip_proto_serialization) {
                 file_manager->SerializePaintPreviewProto(key, *proto, false);
@@ -366,12 +366,12 @@ TEST_F(PlayerCompositorDelegateTest, OnClick) {
             auto root_file = directory->AppendASCII("0.skp");
             proto->mutable_root_frame()->set_file_path(
                 root_file.AsUTF8Unsafe());
-            base::WriteFile(root_file, fake_data.data(), fake_data.size());
+            base::WriteFile(root_file, fake_data);
 
             auto subframe_file = directory->AppendASCII("1.skp");
             proto->mutable_subframes(0)->set_file_path(
                 subframe_file.AsUTF8Unsafe());
-            base::WriteFile(subframe_file, fake_data.data(), fake_data.size());
+            base::WriteFile(subframe_file, fake_data);
 
             file_manager->SerializePaintPreviewProto(key, *proto, false);
             std::move(quit).Run();
@@ -420,7 +420,7 @@ TEST_F(PlayerCompositorDelegateTest, BadProto) {
             auto directory = file_manager->CreateOrGetDirectory(key, true);
             std::string fake_data = "Hello World!";
             auto proto_file = directory->AppendASCII("proto.pb");
-            base::WriteFile(proto_file, fake_data.data(), fake_data.size());
+            base::WriteFile(proto_file, fake_data);
           },
           loop.QuitClosure(), file_manager, key));
 
@@ -670,8 +670,7 @@ TEST_F(PlayerCompositorDelegateTest, CompressOnClose) {
           base::Unretained(&dir)));
   env.RunUntilIdle();
   std::string data = "foo";
-  EXPECT_TRUE(
-      base::WriteFile(dir.AppendASCII("test_file"), data.data(), data.size()));
+  EXPECT_TRUE(base::WriteFile(dir.AppendASCII("test_file"), data));
   {
     PlayerCompositorDelegateImpl player_compositor_delegate;
     player_compositor_delegate.SetExpected(CompositorStatus::NO_CAPTURE, 0.0);

@@ -56,13 +56,6 @@ class ProcessManagementTest : public ExtensionBrowserTest {
   }
 
  private:
-  // This is needed for testing isolated apps, which are still experimental.
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ExtensionBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(
-        extensions::switches::kEnableExperimentalExtensionApis);
-  }
-
   void SetUpOnMainThread() override {
     ExtensionBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -164,17 +157,16 @@ class ChromeWebStoreInIsolatedOriginTest : public ChromeWebStoreProcessTest {
 
 }  // namespace
 
-// Ensure that an isolated app never shares a process with WebUIs, non-isolated
-// extensions, and normal webpages.  None of these should ever comingle
-// RenderProcessHosts even if we hit the process limit.
+// Ensure that hosted apps, extensions, normal web sites, and WebUI never share
+// a process with each other, even if we hit the process limit.
+// Note: All web and hosted app URLs in this test are same-site, so Site
+// Isolation is not directly involved.
 IN_PROC_BROWSER_TEST_F(ProcessManagementTest, ProcessOverflow) {
   // Set max renderers to 1 to force running out of processes.
   content::RenderProcessHost::SetMaxRendererProcessCount(1);
 
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("isolated_apps/app1")));
-  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("isolated_apps/app2")));
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("hosted_app")));
   ASSERT_TRUE(
       LoadExtension(test_data_dir_.AppendASCII("api_test/app_process")));
@@ -194,100 +186,75 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest, ProcessOverflow) {
   GURL extension1_url = extension1->url();
 
   // Create multiple tabs for each type of renderer that might exist.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), base_url.Resolve("isolated_apps/app1/main.html")));
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(chrome::kChromeUINewTabURL),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  // Tab 0: NTP 1.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
+  // Tab 1: Hosted app 1.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), base_url.Resolve("hosted_app/main.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  // Tab 2: Web page 1.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), base_url.Resolve("test_file.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), base_url.Resolve("isolated_apps/app2/main.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  // Tab 3: NTP 2.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUINewTabURL),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  // Tab 4: Hosted app 2.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), base_url.Resolve("api_test/app_process/path1/empty.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  // Tab 5: Web page 2.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), base_url.Resolve("test_file_with_body.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  // Load another copy of isolated app 1.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), base_url.Resolve("isolated_apps/app1/main.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-
-  // Load another extension.
+  // Load another extension (in background).
   const extensions::Extension* extension2 = LoadExtension(
       test_data_dir_.AppendASCII("api_test/browser_action/close_background"));
   ASSERT_TRUE(extension2);
   GURL extension2_url = extension2->url();
 
   // Get tab processes.
-  ASSERT_EQ(9, browser()->tab_strip_model()->count());
-  content::RenderProcessHost* isolated1_host = browser()
-                                                   ->tab_strip_model()
-                                                   ->GetWebContentsAt(0)
-                                                   ->GetPrimaryMainFrame()
-                                                   ->GetProcess();
+  ASSERT_EQ(6, browser()->tab_strip_model()->count());
   content::RenderProcessHost* ntp1_host = browser()
                                               ->tab_strip_model()
-                                              ->GetWebContentsAt(1)
+                                              ->GetWebContentsAt(0)
                                               ->GetPrimaryMainFrame()
                                               ->GetProcess();
   content::RenderProcessHost* hosted1_host = browser()
                                                  ->tab_strip_model()
-                                                 ->GetWebContentsAt(2)
+                                                 ->GetWebContentsAt(1)
                                                  ->GetPrimaryMainFrame()
                                                  ->GetProcess();
   content::RenderProcessHost* web1_host = browser()
                                               ->tab_strip_model()
-                                              ->GetWebContentsAt(3)
+                                              ->GetWebContentsAt(2)
                                               ->GetPrimaryMainFrame()
                                               ->GetProcess();
 
-  content::RenderProcessHost* isolated2_host = browser()
-                                                   ->tab_strip_model()
-                                                   ->GetWebContentsAt(4)
-                                                   ->GetPrimaryMainFrame()
-                                                   ->GetProcess();
   content::RenderProcessHost* ntp2_host = browser()
                                               ->tab_strip_model()
-                                              ->GetWebContentsAt(5)
+                                              ->GetWebContentsAt(3)
                                               ->GetPrimaryMainFrame()
                                               ->GetProcess();
   content::RenderProcessHost* hosted2_host = browser()
                                                  ->tab_strip_model()
-                                                 ->GetWebContentsAt(6)
+                                                 ->GetWebContentsAt(4)
                                                  ->GetPrimaryMainFrame()
                                                  ->GetProcess();
   content::RenderProcessHost* web2_host = browser()
                                               ->tab_strip_model()
-                                              ->GetWebContentsAt(7)
+                                              ->GetWebContentsAt(5)
                                               ->GetPrimaryMainFrame()
                                               ->GetProcess();
-
-  content::RenderProcessHost* second_isolated1_host =
-      browser()
-          ->tab_strip_model()
-          ->GetWebContentsAt(8)
-          ->GetPrimaryMainFrame()
-          ->GetProcess();
 
   // Get extension processes.
   extensions::ProcessManager* process_manager =
@@ -297,20 +264,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest, ProcessOverflow) {
   content::RenderProcessHost* extension2_host =
       process_manager->GetSiteInstanceForURL(extension2_url)->GetProcess();
 
-  // An isolated app only shares with other instances of itself, not other
-  // isolated apps or anything else.
-  EXPECT_EQ(isolated1_host, second_isolated1_host);
-  EXPECT_NE(isolated1_host, isolated2_host);
-  EXPECT_NE(isolated1_host, ntp1_host);
-  EXPECT_NE(isolated1_host, hosted1_host);
-  EXPECT_NE(isolated1_host, web1_host);
-  EXPECT_NE(isolated1_host, extension1_host);
-  EXPECT_NE(isolated2_host, ntp1_host);
-  EXPECT_NE(isolated2_host, hosted1_host);
-  EXPECT_NE(isolated2_host, web1_host);
-  EXPECT_NE(isolated2_host, extension1_host);
-
-  // Everything else is clannish.  WebUI only shares with other WebUI.
+  // WebUI only shares with other same-site WebUI.
   EXPECT_EQ(ntp1_host, ntp2_host);
   EXPECT_NE(ntp1_host, hosted1_host);
   EXPECT_NE(ntp1_host, web1_host);
@@ -323,97 +277,12 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest, ProcessOverflow) {
   EXPECT_NE(hosted1_host, web1_host);
   EXPECT_NE(hosted1_host, extension1_host);
 
-  // Web pages only share with each other.
+  // Same-site web pages only share with each other.
   EXPECT_EQ(web1_host, web2_host);
   EXPECT_NE(web1_host, extension1_host);
 
   // Extensions are not allowed to share, even with each other.
   EXPECT_NE(extension1_host, extension2_host);
-}
-
-// See
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ExtensionProcessBalancing DISABLED_ExtensionProcessBalancing
-#else
-#define MAYBE_ExtensionProcessBalancing ExtensionProcessBalancing
-#endif
-// Test to verify that the policy of maximum share of extension processes is
-// properly enforced.
-IN_PROC_BROWSER_TEST_F(ProcessManagementTest, MAYBE_ExtensionProcessBalancing) {
-  // Set max renderers to 6 so we can expect 2 extension processes to be
-  // allocated.
-  content::RenderProcessHost::SetMaxRendererProcessCount(6);
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  // The app under test acts on URLs whose host is "localhost",
-  // so the URLs we navigate to must have host "localhost".
-  GURL base_url = embedded_test_server()->GetURL(
-      "/extensions/");
-  GURL::Replacements replace_host;
-  replace_host.SetHostStr("localhost");
-  base_url = base_url.ReplaceComponents(replace_host);
-
-  ASSERT_TRUE(LoadExtension(
-      test_data_dir_.AppendASCII("api_test/browser_action/none")));
-  ASSERT_TRUE(LoadExtension(
-      test_data_dir_.AppendASCII("api_test/browser_action/basics")));
-  ASSERT_TRUE(LoadExtension(
-      test_data_dir_.AppendASCII("api_test/browser_action/remove_popup")));
-  ASSERT_TRUE(LoadExtension(
-      test_data_dir_.AppendASCII("api_test/browser_action/add_popup")));
-  ASSERT_TRUE(LoadExtension(
-      test_data_dir_.AppendASCII("api_test/browser_action/no_icon")));
-  ASSERT_TRUE(LoadExtension(
-      test_data_dir_.AppendASCII("isolated_apps/app1")));
-  ASSERT_TRUE(LoadExtension(
-      test_data_dir_.AppendASCII("api_test/management/test")));
-
-  // TODO(lukasza): It might be worth it to navigate to actual
-  // chrome-extension:// URIs below (not to HTTP URIs) to make sure the 1/3rd
-  // of process limit also applies to normal tabs (not just to background pages
-  // and scripts).
-  content::RenderProcessHost* first_renderer =
-      ui_test_utils::NavigateToURL(
-          browser(), base_url.Resolve("isolated_apps/app1/main.html"))
-          ->GetProcess();
-  content::RenderProcessHostWatcher first_renderer_watcher(
-      first_renderer,
-      content::RenderProcessHostWatcher::WATCH_FOR_HOST_DESTRUCTION);
-
-  content::RenderProcessHost* second_renderer =
-      ui_test_utils::NavigateToURL(
-          browser(), base_url.Resolve("api_test/management/test/basics.html"))
-          ->GetProcess();
-
-  std::set<int> process_ids;
-  Profile* profile = browser()->profile();
-  extensions::ProcessManager* epm = extensions::ProcessManager::Get(profile);
-  for (extensions::ExtensionHost* host : epm->background_hosts())
-    process_ids.insert(host->render_process_host()->GetID());
-
-  // We've loaded 5 extensions with background pages
-  // (api_test/browser_action/*), 1 extension without background page
-  // (api_test/management), and one isolated app. Extension process sharing is
-  // not allowed so there is no extension process limit, so each of the 5
-  // background pages/scripts will be hosted in a separate process.
-  EXPECT_EQ(5u, process_ids.size());
-
-  if (first_renderer != second_renderer) {
-    // Wait for the first renderer to be torn down before verifying the number
-    // of processes, else we race with the teardown here (specifically the
-    // UnfreezableFrameMsg_SwapOut -> FrameHostMsg_SwapOut_ACK round trip).
-    first_renderer_watcher.Wait();
-  }
-
-  // ProcessMap will always have exactly 5 entries - one for each of the
-  // extensions with a background page (api_test/browser_action/*).  There won't
-  // be any additional entries, since 1) the isolated app will be associated
-  // with a separate content::BrowserContext and 2) the navigation to
-  // api_test/management/test/basics.html navigates to a file: URI (not to a
-  // chrome-extension: URI).
-  extensions::ProcessMap* process_map = extensions::ProcessMap::Get(profile);
-  EXPECT_EQ(5u, process_map->size());
 }
 
 // Test that pushing both extensions and web processes past the limit creates

@@ -113,9 +113,10 @@ struct ParsedHeaders {
   // The parsed value of the Content-Language header.
   array<string>? content_language;
 
-  // The parsed value of the No-Vary-Search header. Null if not present
-  // or if No-Vary-Search header represents the default URL search variance.
+  // The parsed value of the No-Vary-Search header including parse error
+  // indicator. Null if not present or if No-Vary-Search header represents
+  // the default URL search variance.
   // For more information, see:
   // https://wicg.github.io/nav-speculation/no-vary-search.html#model
-  NoVarySearch? no_vary_search;
+  NoVarySearchWithParseError? no_vary_search_with_parse_error;
 };

@@ -26,6 +26,8 @@
 #include "third_party/blink/renderer/core/css/css_grid_integer_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_grid_template_areas_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
+#include "third_party/blink/renderer/core/css/css_image_set_option_value.h"
+#include "third_party/blink/renderer/core/css/css_image_set_type_value.h"
 #include "third_party/blink/renderer/core/css/css_image_set_value.h"
 #include "third_party/blink/renderer/core/css/css_image_value.h"
 #include "third_party/blink/renderer/core/css/css_inherited_value.h"
@@ -684,9 +686,14 @@ bool AddCSSPaintArgument(
     return false;
   }
   if (!token_range.AtEnd()) {
-    // TODO(crbug.com/661854): Pass through the original string when we have it.
+    // CSSParserTokenRange doesn't store precise location information about
+    // where each token started or ended, so we don't have the actual original
+    // string. However, for CSS paint arguments, it's not a huge issue
+    // if we get normalized whitespace etc., so we work around it by creating
+    // a fake “original text” by serializing the tokens back.
+    String text = token_range.Serialize();
     scoped_refptr<CSSVariableData> unparsed_css_variable_data =
-        CSSVariableData::Create({token_range, StringView()}, false, false);
+        CSSVariableData::Create({token_range, text}, false, false);
     if (unparsed_css_variable_data.get()) {
       variable_data->push_back(std::move(unparsed_css_variable_data));
       return true;
@@ -1463,7 +1470,7 @@ CSSPrimitiveValue* ConsumeTime(CSSParserTokenRange& range,
   return nullptr;
 }
 
-CSSPrimitiveValue* ConsumeResolution(CSSParserTokenRange& range) {
+CSSNumericLiteralValue* ConsumeResolution(CSSParserTokenRange& range) {
   const CSSParserToken& token = range.Peek();
 
   // Unlike the other types, calc() does not work with <resolution>.
@@ -2191,8 +2198,8 @@ static bool ParseColorFunctionParameters(CSSParserTokenRange& range,
 
   absl::optional<double> alpha = ConsumeAlphaWithLeadingSlash(args, context);
 
-  result = Color::FromColorSpace(colorspace, params[0], params[1], params[2],
-                                    alpha);
+  result =
+      Color::FromColorSpace(colorspace, params[0], params[1], params[2], alpha);
   return args.AtEnd();
 }
 
@@ -3138,6 +3145,7 @@ static CSSValue* ConsumeRadialGradient(CSSParserTokenRange& args,
 
   if (has_color_space) {
     result->SetColorInterpolationSpace(color_space, hue_interpolation_method);
+    context.Count(WebFeature::kCSSColorGradientColorSpace);
   }
 
   return ConsumeGradientColorStops(args, context, result,
@@ -3205,6 +3213,7 @@ static CSSValue* ConsumeLinearGradient(
 
   if (has_color_space) {
     result->SetColorInterpolationSpace(color_space, hue_interpolation_method);
+    context.Count(WebFeature::kCSSColorGradientColorSpace);
   }
 
   return ConsumeGradientColorStops(args, context, result,
@@ -3256,6 +3265,7 @@ static CSSValue* ConsumeConicGradient(CSSParserTokenRange& args,
 
   if (has_color_space) {
     result->SetColorInterpolationSpace(color_space, hue_interpolation_method);
+    context.Count(WebFeature::kCSSColorGradientColorSpace);
   }
 
   return ConsumeGradientColorStops(args, context, result,
@@ -3474,50 +3484,95 @@ static CSSValue* ConsumeGeneratedImage(CSSParserTokenRange& range,
 static CSSImageValue* CreateCSSImageValueWithReferrer(
     const AtomicString& raw_value,
     const CSSParserContext& context) {
-  return MakeGarbageCollected<CSSImageValue>(
+  auto* image_value = MakeGarbageCollected<CSSImageValue>(
       raw_value, context.CompleteURL(raw_value), context.GetReferrer(),
       context.IsOriginClean() ? OriginClean::kTrue : OriginClean::kFalse,
       context.IsAdRelated());
+  if (context.Mode() == kUASheetMode) {
+    image_value->SetInitiator(fetch_initiator_type_names::kUacss);
+  }
+  return image_value;
 }
 
-static CSSValue* ConsumeImageSet(CSSParserTokenRange& range,
-                                 const CSSParserContext& context) {
+static CSSImageSetTypeValue* ConsumeImageSetType(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context) {
+  if (!RuntimeEnabledFeatures::CSSImageSetEnabled() ||
+      range.Peek().FunctionId() != CSSValueID::kType) {
+    return nullptr;
+  }
+
   CSSParserTokenRange range_copy = range;
   CSSParserTokenRange args = ConsumeFunction(range_copy);
-  auto* image_set = MakeGarbageCollected<CSSImageSetValue>();
-  do {
-    AtomicString url_value =
-        (RuntimeEnabledFeatures::CSSImageSetEnabled()
-             ? ConsumeUrlOrStringAsStringView(args, context)
-             : ConsumeUrlAsStringView(args, context))
-            .ToAtomicString();
-    if (url_value.IsNull()) {
+
+  auto type = ConsumeUrlOrStringAsStringView(args, context).ToString();
+  if (type.IsNull()) {
+    return nullptr;
+  }
+
+  range = range_copy;
+
+  return MakeGarbageCollected<CSSImageSetTypeValue>(type);
+}
+
+static CSSImageSetOptionValue* ConsumeImageSetOption(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    ConsumeGeneratedImagePolicy generated_image_policy) {
+  const ConsumeStringUrlImagePolicy string_url_image_policy =
+      RuntimeEnabledFeatures::CSSImageSetEnabled()
+          ? ConsumeStringUrlImagePolicy::kAllow
+          : ConsumeStringUrlImagePolicy::kForbid;
+
+  const CSSValue* image = ConsumeImage(range, context, generated_image_policy,
+                                       string_url_image_policy,
+                                       ConsumeImageSetImagePolicy::kForbid);
+  if (!image) {
+    return nullptr;
+  }
+
+  // Type could appear before or after resolution
+  CSSImageSetTypeValue* type = ConsumeImageSetType(range, context);
+
+  CSSNumericLiteralValue* resolution = nullptr;
+  if (range.Peek().GetType() == kDimensionToken ||
+      !RuntimeEnabledFeatures::CSSImageSetEnabled()) {
+    if (range.Peek().GetUnitType() != CSSPrimitiveValue::UnitType::kX &&
+        !RuntimeEnabledFeatures::CSSImageSetEnabled()) {
       return nullptr;
     }
 
-    CSSImageValue* image = CreateCSSImageValueWithReferrer(url_value, context);
-    if (context.Mode() == kUASheetMode) {
-      image->SetInitiator(fetch_initiator_type_names::kUacss);
+    resolution = ConsumeResolution(range);
+    if (!resolution || (resolution->GetDoubleValue() <= 0.0 &&
+                        !RuntimeEnabledFeatures::CSSImageSetEnabled())) {
+      return nullptr;
     }
-    image_set->Append(*image);
+  }
 
-    if (args.Peek().GetType() != kDimensionToken &&
-        RuntimeEnabledFeatures::CSSImageSetEnabled()) {
-      image_set->Append(*CSSNumericLiteralValue::Create(
-          1.0, CSSPrimitiveValue::UnitType::kX));
-    } else {
-      if (args.Peek().GetUnitType() != CSSPrimitiveValue::UnitType::kX &&
-          !RuntimeEnabledFeatures::CSSImageSetEnabled()) {
-        return nullptr;
-      }
+  if (!type) {
+    type = ConsumeImageSetType(range, context);
+  }
 
-      const CSSPrimitiveValue* resolution = ConsumeResolution(args);
-      if (resolution == nullptr || resolution->GetDoubleValue() <= 0.0) {
-        return nullptr;
-      }
+  return MakeGarbageCollected<CSSImageSetOptionValue>(image, resolution, type);
+}
 
-      image_set->Append(*resolution);
+static CSSValue* ConsumeImageSet(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    ConsumeGeneratedImagePolicy generated_image_policy =
+        ConsumeGeneratedImagePolicy::kAllow) {
+  CSSParserTokenRange range_copy = range;
+  CSSParserTokenRange args = ConsumeFunction(range_copy);
+
+  auto* image_set = MakeGarbageCollected<CSSImageSetValue>();
+  do {
+    auto* image_set_option =
+        ConsumeImageSetOption(args, context, generated_image_policy);
+    if (!image_set_option) {
+      return nullptr;
     }
+
+    image_set->Append(*image_set_option);
   } while (ConsumeCommaIncludingWhitespace(args));
 
   if (!args.AtEnd()) {
@@ -3539,22 +3594,31 @@ static CSSValue* ConsumeImageSet(CSSParserTokenRange& range,
   }
 
   range = range_copy;
+
   return image_set;
 }
 
-CSSValue* ConsumeImage(CSSParserTokenRange& range,
-                       const CSSParserContext& context,
-                       ConsumeGeneratedImagePolicy generated_image_policy) {
-  AtomicString uri = ConsumeUrlAsStringView(range, context).ToAtomicString();
+CSSValue* ConsumeImage(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const ConsumeGeneratedImagePolicy generated_image_policy,
+    const ConsumeStringUrlImagePolicy string_url_image_policy,
+    const ConsumeImageSetImagePolicy image_set_image_policy) {
+  AtomicString uri =
+      ((string_url_image_policy == ConsumeStringUrlImagePolicy::kAllow)
+           ? ConsumeUrlOrStringAsStringView(range, context)
+           : ConsumeUrlAsStringView(range, context))
+          .ToAtomicString();
   if (!uri.IsNull()) {
     return CreateCSSImageValueWithReferrer(uri, context);
   }
   if (range.Peek().GetType() == kFunctionToken) {
     CSSValueID id = range.Peek().FunctionId();
-    if (id == CSSValueID::kWebkitImageSet ||
-        (id == CSSValueID::kImageSet &&
-         RuntimeEnabledFeatures::CSSImageSetEnabled())) {
-      return ConsumeImageSet(range, context);
+    if ((id == CSSValueID::kWebkitImageSet ||
+         (id == CSSValueID::kImageSet &&
+          RuntimeEnabledFeatures::CSSImageSetEnabled())) &&
+        image_set_image_policy == ConsumeImageSetImagePolicy::kAllow) {
+      return ConsumeImageSet(range, context, generated_image_policy);
     }
     if (generated_image_policy == ConsumeGeneratedImagePolicy::kAllow &&
         IsGeneratedImage(id)) {
@@ -4253,7 +4317,7 @@ CSSValue* ConsumeTimelineRangeNameAndPercent(CSSParserTokenRange& range,
 
 CSSValue* ConsumeAnimationDelay(CSSParserTokenRange& range,
                                 const CSSParserContext& context) {
-  DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
+  DCHECK(RuntimeEnabledFeatures::CSSAnimationDelayStartEndEnabled());
   return ConsumeTime(range, context, CSSPrimitiveValue::ValueRange::kAll);
 }
 

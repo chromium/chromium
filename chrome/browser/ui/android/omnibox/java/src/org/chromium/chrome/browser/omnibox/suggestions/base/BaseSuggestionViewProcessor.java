@@ -9,12 +9,14 @@ import android.graphics.Typeface;
 import android.text.Spannable;
 import android.text.style.StyleSpan;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.suggestions.ActionChipsDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionProcessor;
@@ -33,6 +35,7 @@ import java.util.List;
 public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor {
     private final @NonNull Context mContext;
     private final @NonNull SuggestionHost mSuggestionHost;
+    private final @Nullable ActionChipsProcessor mActionChipsProcessor;
     private final @Nullable FaviconFetcher mFaviconFetcher;
     private final int mDesiredFaviconWidthPx;
     private final int mDecorationImageSizePx;
@@ -44,6 +47,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
      * @param faviconFetcher A mechanism to use to retrieve favicons.
      */
     public BaseSuggestionViewProcessor(@NonNull Context context, @NonNull SuggestionHost host,
+            @Nullable ActionChipsDelegate actionChipsDelegate,
             @Nullable FaviconFetcher faviconFetcher) {
         mContext = context;
         mSuggestionHost = host;
@@ -52,8 +56,14 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
         mDecorationImageSizePx = context.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_decoration_image_size);
         mSuggestionSizePx = mContext.getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_semicompact_height);
+                R.dimen.omnibox_suggestion_content_height);
         mFaviconFetcher = faviconFetcher;
+
+        if (actionChipsDelegate != null) {
+            mActionChipsProcessor = new ActionChipsProcessor(context, host, actionChipsDelegate);
+        } else {
+            mActionChipsProcessor = null;
+        }
     }
 
     /**
@@ -91,8 +101,8 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
      * @param model Property model to update.
      * @param actions List of actions for the suggestion.
      */
-    protected void setCustomActions(PropertyModel model, List<Action> actions) {
-        model.set(BaseSuggestionViewProperties.ACTIONS, actions);
+    protected void setActionButtons(PropertyModel model, List<Action> actions) {
+        model.set(BaseSuggestionViewProperties.ACTION_BUTTONS, actions);
     }
 
     /**
@@ -119,7 +129,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                     R.string.accessibility_omnibox_btn_refine, suggestion.getFillIntoEdit());
             action = () -> mSuggestionHost.onRefineSuggestion(suggestion);
         }
-        setCustomActions(model,
+        setActionButtons(model,
                 Arrays.asList(
                         new Action(SuggestionDrawableState.Builder.forDrawableRes(mContext, icon)
                                            .setLarge(true)
@@ -156,7 +166,19 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                 () -> onSuggestionLongClicked(suggestion, position));
         model.set(BaseSuggestionViewProperties.ON_FOCUS_VIA_SELECTION,
                 () -> mSuggestionHost.setOmniboxEditingText(suggestion.getFillIntoEdit()));
-        setCustomActions(model, null);
+        setActionButtons(model, null);
+
+        if (mActionChipsProcessor != null) {
+            mActionChipsProcessor.populateModel(suggestion, model, position);
+        }
+    }
+
+    @Override
+    @CallSuper
+    public void onUrlFocusChange(boolean hasFocus) {
+        if (mActionChipsProcessor != null) {
+            mActionChipsProcessor.onUrlFocusChange(hasFocus);
+        }
     }
 
     /**

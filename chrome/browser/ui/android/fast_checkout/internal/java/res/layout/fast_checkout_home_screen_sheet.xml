@@ -14,7 +14,9 @@ found in the LICENSE file.
   <LinearLayout
       android:layout_height="wrap_content"
       android:layout_width="match_parent"
-      android:orientation="vertical">
+      android:orientation="vertical"
+      android:clickable="true"
+      android:focusable="true">
 
       <!-- Header section -->
       <ImageView
@@ -43,7 +45,7 @@ found in the LICENSE file.
           android:layout_height="wrap_content"
           android:gravity="center_horizontal"
           android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-          android:text="@string/fast_checkout_home_sheet_subtitle" />
+          android:text="@string/fast_checkout_home_sheet_subtitle"/>
       </LinearLayout>
 
       <!-- Autofill Options -->
@@ -59,7 +61,7 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:paddingTop="@dimen/fast_checkout_home_sheet_address_card_padding"
             android:paddingBottom="@dimen/fast_checkout_home_sheet_address_card_padding"
-            android:background="@drawable/fast_checkout_item_background_top_copy"
+            android:background="@drawable/fast_checkout_background_top"
             android:orientation="horizontal">
           <ImageView
               android:layout_width="@dimen/fast_checkout_address_icon"
@@ -126,7 +128,7 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:gravity="center_vertical"
             android:minHeight="@dimen/fast_checkout_sheet_home_screen_cc_min_height"
-            android:background="@drawable/fast_checkout_item_background_bottom">
+            android:background="@drawable/fast_checkout_background_bottom">
 
             <ImageView
                 android:id="@+id/fast_checkout_credit_card_icon"

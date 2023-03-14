@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/capabilities_types.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
@@ -28,7 +29,6 @@
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/whats_new/feature_flags.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -534,6 +534,54 @@ id<GREYMatcher> notPracticallyVisible() {
                                  index])]
         assertWithMatcher:grey_interactable()];
   }
+}
+
+// Tests that the pull to refresh (iphone) or the refresh button (ipad) lands
+// the user on the top of the NTP even with a previously saved scroll position.
+- (void)testReload {
+  // Scroll to have a position to restored.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
+      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
+
+  // Save the position before navigating.
+  UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
+  CGFloat previousPosition = collectionView.contentOffset.y;
+
+  // Navigate and come back.
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&StandardResponse));
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL pageURL = self.testServer->GetURL(kPageURL);
+
+  [ChromeEarlGrey loadURL:pageURL];
+  [ChromeEarlGrey waitForWebStateContainingText:kPageLoadedString];
+  [ChromeEarlGrey goBack];
+
+  // Check that the new position is the same.
+  GREYAssertEqual(previousPosition, collectionView.contentOffset.y,
+                  @"NTP is not at the same position.");
+
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // Have to scroll up to the top since tapping on reload button does not
+    // automatically scroll to the top when feed is off or if feed returns no
+    // contents (e.g. upstream bots). TODO(crbug.com/1406940): Look into why the
+    // Feed only scrolls up when there is content.
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
+        performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
+    // Tap on reload button.
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::ReloadButton()]
+        performAction:grey_tap()];
+  } else {
+    // Get back to the top of the page and then pull down to trigger Pull To
+    // Refresh
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
+        performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
+        performAction:grey_swipeSlowInDirection(kGREYDirectionDown)];
+  }
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [self
+      testNTPInitialPositionAndContent:[NewTabPageAppInterface collectionView]];
 }
 
 // Tests that the position of the collection view is restored when navigating
@@ -1051,6 +1099,44 @@ id<GREYMatcher> notPracticallyVisible() {
         performAction:grey_tap()];
   }
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPIncognitoView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Test that signing in and signing out results in the NTP scrolled to the top
+// and not in some unexpected layout state.
+- (void)testSignInSignOutScrolledToTop {
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPLogo()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:identity];
+  [SigninEarlGreyUI signinWithFakeIdentity:identity];
+  GREYWaitForAppToIdle(@"App failed to idle");
+
+  // Verify Identity Disc is visible since it is the top-most element and should
+  // be showing now.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSStringF(
+                                   IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL,
+                                   base::SysNSStringToUTF16(
+                                       identity.userFullName),
+                                   base::SysNSStringToUTF16(
+                                       identity.userEmail)))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPLogo()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Sign out
+  [SigninEarlGreyUI
+      signOutWithConfirmationChoice:SignOutConfirmationChoiceClearData];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPLogo()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

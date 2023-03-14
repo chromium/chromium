@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -17,7 +17,6 @@
       "name": "LayoutNGBlockFlow DIV class='container'",
       "position": [1, 1],
       "bounds": [2100, 100],
-      "contentsOpaqueForText": true,
       "invalidations": [
         [0, 0, 100, 100]
       ],
@@ -34,7 +33,6 @@
       "name": "VerticalScrollbar",
       "position": [286, 1],
       "bounds": [15, 200],
-      "contentsOpaqueForText": true,
       "transform": 1
     }
   ],

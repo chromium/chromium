@@ -47,10 +47,15 @@ source_set("public") {
 
   if (is_android) {
     sources += [
+      "android/input_context_android.cc",
+      "android/input_context_android.h",
       "android/segmentation_platform_conversion_bridge.cc",
       "android/segmentation_platform_conversion_bridge.h",
     ]
-    deps += [ ":jni_headers" ]
+    deps += [
+      ":jni_headers",
+      "//url:gurl_android",
+    ]
   }
 }
 
@@ -65,6 +70,16 @@ source_set("unit_tests") {
     ":public",
     "//testing/gtest",
   ]
+
+  if (is_android) {
+    sources += [ "android/input_context_android_unittest.cc" ]
+
+    deps += [
+      "//base:base",
+      "//url:gurl_android",
+      "//url:url",
+    ]
+  }
 }
 
 source_set("test_support") {
@@ -83,6 +98,9 @@ source_set("test_support") {
 if (is_android) {
   android_library("public_java") {
     sources = [
+      "android/java/src/org/chromium/components/segmentation_platform/Constants.java",
+      "android/java/src/org/chromium/components/segmentation_platform/InputContext.java",
+      "android/java/src/org/chromium/components/segmentation_platform/ProcessedValue.java",
       "android/java/src/org/chromium/components/segmentation_platform/SegmentSelectionResult.java",
       "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformConversionBridge.java",
       "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformService.java",
@@ -92,20 +110,50 @@ if (is_android) {
       "//base:base_java",
       "//base:jni_java",
       "//build/android:build_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_annotation_annotation_jvm_java",
+      "//url:gurl_java",
     ]
+
+    srcjar_deps = [ ":processed_value_enums_java" ]
 
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
     public_deps = [ "//components/segmentation_platform/public/proto:segmentation_platform_proto_java" ]
   }
 
+  robolectric_library("junit") {
+    sources = [ "android/java/src/org/chromium/components/segmentation_platform/InputContextTest.java" ]
+
+    deps = [
+      ":public_java",
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//base:base_junit_test_support",
+      "//content/public/android:content_full_java",
+      "//third_party/androidx:androidx_test_runner_java",
+      "//third_party/junit",
+      "//third_party/mockito:mockito_java",
+      "//ui/android:ui_no_recycler_view_java",
+      "//url:gurl_java",
+      "//url:gurl_junit_test_support",
+    ]
+  }
+
   generate_jni("jni_headers") {
     visibility = [ ":*" ]
 
-    sources = [ "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformConversionBridge.java" ]
+    sources = [
+      "android/java/src/org/chromium/components/segmentation_platform/InputContext.java",
+      "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformConversionBridge.java",
+    ]
   }
 
   java_cpp_enum("execution_status_enums_java") {
     sources = [ "result.h" ]
+  }
+
+  java_cpp_enum("processed_value_enums_java") {
+    sources = [ "types/processed_value.h" ]
   }
 }

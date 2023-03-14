@@ -40,9 +40,6 @@ class ASH_EXPORT LoginErrorBubble : public LoginBaseBubbleView {
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
-  // LoginBaseBubbleView:
-  void OnThemeChanged() override;
-
  private:
   views::View* content_ = nullptr;
   views::ImageView* alert_icon_ = nullptr;

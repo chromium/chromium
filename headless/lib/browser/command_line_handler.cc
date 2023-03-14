@@ -179,6 +179,11 @@ bool HandleCommandLineSwitches(base::CommandLine& command_line,
     }
   }
 
+  if (command_line.HasSwitch(switches::kAcceptLang)) {
+    builder.SetAcceptLanguage(
+        command_line.GetSwitchValueASCII(switches::kAcceptLang));
+  }
+
   if (command_line.HasSwitch(switches::kFontRenderHinting)) {
     if (!HandleFontRenderHinting(command_line, builder)) {
       return false;

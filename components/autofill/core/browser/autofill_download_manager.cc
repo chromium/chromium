@@ -102,7 +102,7 @@ const char kDefaultAutofillServerURL[] =
 // The default number of days after which to reset the registry of autofill
 // events for which an upload has been sent.
 const base::FeatureParam<int> kAutofillUploadThrottlingPeriodInDays(
-    &features::kAutofillUploadThrottling,
+    &features::test::kAutofillUploadThrottling,
     switches::kAutofillUploadThrottlingPeriodInDays,
     28);
 
@@ -114,7 +114,7 @@ constexpr char kGoogEncodeResponseIfExecutable[] =
 
 // The maximum number of attempts for a given autofill request.
 const base::FeatureParam<int> kAutofillMaxServerAttempts(
-    &features::kAutofillServerCommunication,
+    &features::test::kAutofillServerCommunication,
     "max-attempts",
     5);
 
@@ -139,16 +139,16 @@ GURL GetAutofillServerURL() {
   // Server communication is enabled. If there's an autofill server url param
   // use it, otherwise use the default.
   const std::string autofill_server_url_str =
-      base::FeatureParam<std::string>(&features::kAutofillServerCommunication,
-                                      switches::kAutofillServerURL,
-                                      kDefaultAutofillServerURL)
+      base::FeatureParam<std::string>(
+          &features::test::kAutofillServerCommunication,
+          switches::kAutofillServerURL, kDefaultAutofillServerURL)
           .Get();
 
   GURL autofill_server_url(autofill_server_url_str);
 
   if (!autofill_server_url.is_valid()) {
     LOG(ERROR) << "Invalid URL param for "
-               << features::kAutofillServerCommunication.name << "/"
+               << features::test::kAutofillServerCommunication.name << "/"
                << switches::kAutofillServerURL << ": "
                << autofill_server_url_str;
     return GURL();
@@ -602,7 +602,8 @@ AutofillDownloadManager::~AutofillDownloadManager() = default;
 
 bool AutofillDownloadManager::IsEnabled() const {
   return autofill_server_url_.is_valid() &&
-         base::FeatureList::IsEnabled(features::kAutofillServerCommunication);
+         base::FeatureList::IsEnabled(
+             features::test::kAutofillServerCommunication);
 }
 
 bool AutofillDownloadManager::StartQueryRequest(
@@ -683,7 +684,7 @@ bool AutofillDownloadManager::StartUploadRequest(
   bool can_throttle_upload =
       CanThrottleUpload(form, throttle_reset_period_, prefs);
   bool throttling_is_enabled =
-      base::FeatureList::IsEnabled(features::kAutofillUploadThrottling);
+      base::FeatureList::IsEnabled(features::test::kAutofillUploadThrottling);
   bool is_small_form = form.active_field_count() < 3;
   bool allow_upload =
       !(can_throttle_upload && (throttling_is_enabled || is_small_form));

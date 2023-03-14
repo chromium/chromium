@@ -422,9 +422,7 @@ bool UpdateManifestVersion(const base::FilePath& manifest,
     return false;
   }
   DCHECK(modified);
-  int written = base::WriteFile(manifest, &contents[0],
-                                static_cast<int>(contents.size()));
-  return written != -1 && static_cast<size_t>(written) == contents.size();
+  return base::WriteFile(manifest, contents);
 }
 
 bool IncrementNewVersion(upgrade_test::Direction direction,
@@ -589,10 +587,8 @@ bool GenerateAlternateVersion(const base::FilePath& original_installer_path,
     // Write out setup.ex_
     if (!resource_loader.Load(&kSetupEx_[0], &kBl[0], &resource_data))
       return false;
-    int written = base::WriteFile(
-        setup_ex_, reinterpret_cast<const char*>(resource_data.first),
-        static_cast<int>(resource_data.second));
-    if (written != static_cast<int>(resource_data.second)) {
+    if (!base::WriteFile(setup_ex_, base::make_span(resource_data.first,
+                                                    resource_data.second))) {
       LOG(DFATAL) << "Failed writing \"" << setup_ex_.value() << "\"";
       return false;
     }
@@ -608,10 +604,9 @@ bool GenerateAlternateVersion(const base::FilePath& original_installer_path,
     DCHECK(archive_resource_name);
     DCHECK(!chrome_packed_7z.empty());
     DCHECK(archive_file);
-    written = base::WriteFile(
-        *archive_file, reinterpret_cast<const char*>(resource_data.first),
-        static_cast<int>(resource_data.second));
-    if (written != static_cast<int>(resource_data.second)) {
+    if (!base::WriteFile(
+            *archive_file,
+            base::make_span(resource_data.first, resource_data.second))) {
       LOG(DFATAL) << "Failed writing \"" << archive_file->value() << "\"";
       return false;
     }

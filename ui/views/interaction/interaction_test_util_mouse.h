@@ -76,14 +76,18 @@ class InteractionTestUtilMouse {
   bool PerformGesturesImpl(MouseGestures gestures,
                            gfx::NativeWindow window_hint);
 
-  void MaybeCancelDrag(bool in_future);
+  bool ShouldCancelDrag() const;
+  void CancelFutureDrag();
+  void CancelDragNow();
 
   bool SendButtonPress(const MouseButtonGesture& gesture,
                        gfx::NativeWindow window_hint,
-                       base::OnceClosure sync_operation_complete);
+                       bool sync,
+                       base::OnceClosure on_complete);
   bool SendMove(const MouseMoveGesture& gesture,
                 gfx::NativeWindow window_hint,
-                base::OnceClosure sync_operation_complete);
+                bool sync,
+                base::OnceClosure on_complete);
 
   // The set of mouse buttons currently depressed. Used to clean up on abort.
   std::set<ui_controls::MouseButton> buttons_down_;
@@ -102,9 +106,7 @@ class InteractionTestUtilMouse {
   // without this it is possible for a drag loop to start and not exit,
   // preventing a test from completing.
   class DragEnder;
-  std::unique_ptr<DragEnder> drag_ender_;
-  class NativeWindowRef;
-  const std::unique_ptr<NativeWindowRef> native_window_;
+  const std::unique_ptr<DragEnder> drag_ender_;
 #endif
 
   base::WeakPtrFactory<InteractionTestUtilMouse> weak_ptr_factory_{this};

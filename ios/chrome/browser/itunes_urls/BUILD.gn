@@ -10,7 +10,7 @@ source_set("itunes_urls") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/web",
     "//url",
   ]
@@ -29,7 +29,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//ios/chrome/browser/browser_state:test_support",
-    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/test/fakes",
     "//ios/web/public",
     "//ios/web/public/test:test",

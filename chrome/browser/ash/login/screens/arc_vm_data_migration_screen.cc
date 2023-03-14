@@ -17,9 +17,15 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
+#include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
+#include "chrome/browser/ash/login/ui/login_feedback.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -30,13 +36,36 @@ namespace ash {
 
 namespace {
 
+constexpr char kArcRemoveDataJobName[] = "arc_2dremove_2ddata";
+
 constexpr char kPathToCheckFreeDiskSpace[] = "/home/chronos/user";
 // TODO(b/258278176): Set appropriate thresholds based on experiments.
 constexpr int64_t kMinimumFreeDiskSpaceForMigration = 1LL << 30;  // 1 GB.
 constexpr double kMinimumBatteryPercent = 30.0;
 
+// |average_speed_| is calculated using the smooth factor k as:
+// k * (average speed of the latest interval) + (1 - k) * |average_speed_|.
+constexpr double kAverageSpeedSmoothFactor = 0.1;
+
+// |average_speed_| := max(|average_speed_|, kAverageSpeedDropBound).
+constexpr double kAverageSpeedDropBound = 1e-8;
+
+// Minimum length of interval to update the migration's progress and calculate
+// its average speed.
+constexpr base::TimeDelta kMinimumIntervalLengthForProgressUpdate =
+    base::Milliseconds(100);
+constexpr base::TimeDelta kMaximumEstimatedRemainingTime = base::Days(1);
+
 constexpr char kUserActionSkip[] = "skip";
 constexpr char kUserActionUpdate[] = "update";
+constexpr char kUserActionResume[] = "resume";
+constexpr char kUserActionFinish[] = "finish";
+constexpr char kUserActionReport[] = "report";
+
+std::string GetChromeOsUsername(Profile* profile) {
+  const AccountId account(multi_user_util::GetAccountIdFromProfile(profile));
+  return cryptohome::CreateAccountIdentifierFromAccountId(account).account_id();
+}
 
 }  // namespace
 
@@ -44,36 +73,16 @@ ArcVmDataMigrationScreen::ArcVmDataMigrationScreen(
     base::WeakPtr<ArcVmDataMigrationScreenView> view)
     : BaseScreen(ArcVmDataMigrationScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
+      tick_clock_(base::DefaultTickClock::GetInstance()),
       view_(std::move(view)) {
   DCHECK(view_);
 }
 
 ArcVmDataMigrationScreen::~ArcVmDataMigrationScreen() = default;
 
-void ArcVmDataMigrationScreen::PowerChanged(
-    const power_manager::PowerSupplyProperties& proto) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (proto.has_battery_percent()) {
-    battery_percent_ = proto.battery_percent();
-  }
-
-  if (proto.has_external_power()) {
-    is_connected_to_charger_ =
-        proto.external_power() !=
-        power_manager::PowerSupplyProperties_ExternalPower_DISCONNECTED;
-  }
-
-  if (!view_) {
-    return;
-  }
-  view_->SetBatteryState(battery_percent_ >= kMinimumBatteryPercent,
-                         is_connected_to_charger_);
-
-  // TODO(b/258278176): Properly handle cases like the resume screen and the
-  // progress screen.
-  if (current_ui_state_ == ArcVmDataMigrationScreenView::UIState::kLoading) {
-    UpdateUIState(ArcVmDataMigrationScreenView::UIState::kWelcome);
-  }
+void ArcVmDataMigrationScreen::SetTickClockForTesting(
+    const base::TickClock* tick_clock) {
+  tick_clock_ = tick_clock;
 }
 
 void ArcVmDataMigrationScreen::ShowImpl() {
@@ -95,6 +104,22 @@ void ArcVmDataMigrationScreen::ShowImpl() {
   scoped_screen_lock_blocker_ =
       Shell::Get()->session_controller()->GetScopedScreenLockBlocker();
 
+  switch (arc::GetArcVmDataMigrationStatus(profile_->GetPrefs())) {
+    case arc::ArcVmDataMigrationStatus::kConfirmed:
+      // Set the status back to kNotified to prepare for cases where the
+      // migration is skipped or the device is shut down before the migration is
+      // started.
+      arc::SetArcVmDataMigrationStatus(
+          profile_->GetPrefs(), arc::ArcVmDataMigrationStatus::kNotified);
+      break;
+    case arc::ArcVmDataMigrationStatus::kStarted:
+      resuming_ = true;
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+
   view_->Show();
   StopArcVmInstanceAndArcUpstartJobs();
 }
@@ -113,6 +138,12 @@ void ArcVmDataMigrationScreen::OnUserAction(const base::Value::List& args) {
     HandleSkip();
   } else if (action_id == kUserActionUpdate) {
     HandleUpdate();
+  } else if (action_id == kUserActionResume) {
+    HandleResume();
+  } else if (action_id == kUserActionFinish) {
+    HandleFinish();
+  } else if (action_id == kUserActionReport) {
+    HandleReport();
   } else {
     BaseScreen::OnUserAction(args);
   }
@@ -136,7 +167,7 @@ void ArcVmDataMigrationScreen::OnGetVmInfoResponse(
     absl::optional<vm_tools::concierge::GetVmInfoResponse> response) {
   if (!response.has_value()) {
     LOG(ERROR) << "GetVmInfo for ARCVM failed: No D-Bus response";
-    HandleFatalError();
+    HandleSetupFailure();
     return;
   }
 
@@ -151,6 +182,7 @@ void ArcVmDataMigrationScreen::OnGetVmInfoResponse(
   // ARCVM is running. Send the StopVmRequest signal and wait for OnVmStopped()
   // to be invoked.
   VLOG(1) << "ARCVM is running. Sending StopVmRequest to concierge";
+  DCHECK(!concierge_observation_.IsObserving());
   concierge_observation_.Observe(ConciergeClient::Get());
   vm_tools::concierge::StopVmRequest request;
   request.set_name(arc::kArcVmName);
@@ -168,7 +200,7 @@ void ArcVmDataMigrationScreen::OnStopVmResponse(
                << (response.has_value() ? response->failure_reason()
                                         : "No D-Bus response");
     concierge_observation_.Reset();
-    HandleFatalError();
+    HandleSetupFailure();
   }
 }
 
@@ -188,7 +220,7 @@ void ArcVmDataMigrationScreen::OnArcUpstartJobsStopped(bool result) {
   // |result| is true when there are no stale Upstart jobs.
   if (!result) {
     LOG(ERROR) << "Failed to stop ARC Upstart jobs";
-    HandleFatalError();
+    HandleSetupFailure();
     return;
   }
 
@@ -196,15 +228,11 @@ void ArcVmDataMigrationScreen::OnArcUpstartJobsStopped(bool result) {
 }
 
 void ArcVmDataMigrationScreen::SetUpInitialView() {
-  arc::ArcVmDataMigrationStatus data_migration_status =
-      arc::GetArcVmDataMigrationStatus(profile_->GetPrefs());
-  switch (data_migration_status) {
-    case arc::ArcVmDataMigrationStatus::kConfirmed:
-      // Set the status back to kNotified to prepare for cases where the
-      // migration is skipped or the device is shut down before the migration is
-      // started.
-      arc::SetArcVmDataMigrationStatus(
-          profile_->GetPrefs(), arc::ArcVmDataMigrationStatus::kNotified);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(profile_);
+  switch (arc::GetArcVmDataMigrationStatus(profile_->GetPrefs())) {
+    case arc::ArcVmDataMigrationStatus::kNotified:
+      DCHECK(!resuming_);
       DCHECK(ash::SpacedClient::Get());
       ash::SpacedClient::Get()->GetFreeDiskSpace(
           kPathToCheckFreeDiskSpace,
@@ -212,8 +240,8 @@ void ArcVmDataMigrationScreen::SetUpInitialView() {
                          weak_ptr_factory_.GetWeakPtr()));
       break;
     case arc::ArcVmDataMigrationStatus::kStarted:
-      // TODO(b/258278176): Show the resume screen.
-      UpdateUIState(ArcVmDataMigrationScreenView::UIState::kWelcome);
+      DCHECK(resuming_);
+      CheckBatteryState();
       break;
     default:
       NOTREACHED();
@@ -225,7 +253,7 @@ void ArcVmDataMigrationScreen::OnGetFreeDiskSpace(
     absl::optional<int64_t> reply) {
   if (!reply.has_value() || reply.value() < 0) {
     LOG(ERROR) << "Failed to get free disk space from spaced";
-    HandleFatalError();
+    HandleSetupFailure();
     return;
   }
 
@@ -246,13 +274,60 @@ void ArcVmDataMigrationScreen::OnGetFreeDiskSpace(
     return;
   }
 
+  CheckBatteryState();
+}
+
+void ArcVmDataMigrationScreen::CheckBatteryState() {
+  if (!view_) {
+    return;
+  }
+
   view_->SetMinimumBatteryPercent(kMinimumBatteryPercent);
 
   // Request PowerManager to report the battery status updates. The UI will be
   // updated on PowerChanged().
   DCHECK(chromeos::PowerManagerClient::Get());
+  DCHECK(!power_manager_observation_.IsObserving());
   power_manager_observation_.Observe(chromeos::PowerManagerClient::Get());
   chromeos::PowerManagerClient::Get()->RequestStatusUpdate();
+}
+
+void ArcVmDataMigrationScreen::PowerChanged(
+    const power_manager::PowerSupplyProperties& proto) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (proto.has_battery_percent()) {
+    battery_percent_ = proto.battery_percent();
+  } else {
+    LOG(WARNING) << "No battery percent is reported. Reusing the old value: "
+                 << battery_percent_;
+  }
+
+  if (proto.has_external_power()) {
+    is_connected_to_charger_ =
+        proto.external_power() !=
+        power_manager::PowerSupplyProperties_ExternalPower_DISCONNECTED;
+  } else {
+    LOG(WARNING) << "No external power info is reported. Reusing the old info: "
+                 << "is_connected_to_charger_ = " << is_connected_to_charger_;
+  }
+
+  if (!view_) {
+    return;
+  }
+  view_->SetBatteryState(battery_percent_ >= kMinimumBatteryPercent,
+                         is_connected_to_charger_);
+
+  if (update_button_pressed_ ||
+      current_ui_state_ != ArcVmDataMigrationScreenView::UIState::kLoading) {
+    // No need to update the UI state if this is not the initial loading screen.
+    return;
+  }
+
+  if (resuming_) {
+    UpdateUIState(ArcVmDataMigrationScreenView::UIState::kResume);
+  } else {
+    UpdateUIState(ArcVmDataMigrationScreenView::UIState::kWelcome);
+  }
 }
 
 void ArcVmDataMigrationScreen::SetUpDestinationAndTriggerMigration() {
@@ -285,9 +360,6 @@ void ArcVmDataMigrationScreen::SetUpDestinationAndTriggerMigration() {
   for (const char* tune2fs_opt : kTune2fsOpts) {
     request.add_tune2fs_opts(tune2fs_opt);
   }
-  // TODO(b/258278176): Show a different UI while setting up the disk image, and
-  // prevent (or gracefully handle) cases where the update button is pressed
-  // multiple times.
   ConciergeClient::Get()->CreateDiskImage(
       std::move(request),
       base::BindOnce(&ArcVmDataMigrationScreen::OnCreateDiskImageResponse,
@@ -298,7 +370,7 @@ void ArcVmDataMigrationScreen::OnCreateDiskImageResponse(
     absl::optional<vm_tools::concierge::CreateDiskImageResponse> response) {
   if (!response.has_value()) {
     LOG(ERROR) << "Failed to create a disk image for /data: No D-Bus response";
-    HandleFatalError();
+    HandleSetupFailure();
     return;
   }
 
@@ -317,7 +389,7 @@ void ArcVmDataMigrationScreen::OnCreateDiskImageResponse(
       LOG(ERROR) << "Failed to create a disk image for /data. Status: "
                  << response->status()
                  << ", reason: " << response->failure_reason();
-      HandleFatalError();
+      HandleSetupFailure();
       return;
   }
 
@@ -325,10 +397,152 @@ void ArcVmDataMigrationScreen::OnCreateDiskImageResponse(
 }
 
 void ArcVmDataMigrationScreen::TriggerMigration() {
-  arc::SetArcVmDataMigrationStatus(profile_->GetPrefs(),
-                                   arc::ArcVmDataMigrationStatus::kStarted);
-  // TODO(b/258278176): Trigger the migration.
-  NOTIMPLEMENTED();
+  std::vector<std::string> environment = {"CHROMEOS_USER=" +
+                                          GetChromeOsUsername(profile_)};
+  std::deque<arc::JobDesc> jobs{arc::JobDesc{
+      arc::kArcVmDataMigratorJobName, arc::UpstartOperation::JOB_STOP_AND_START,
+      std::move(environment)}};
+  arc::ConfigureUpstartJobs(
+      std::move(jobs),
+      base::BindOnce(&ArcVmDataMigrationScreen::OnArcVmDataMigratorStarted,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ArcVmDataMigrationScreen::OnArcVmDataMigratorStarted(bool result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!result) {
+    LOG(ERROR) << "Failed to start arcvm-data-migrator";
+    HandleSetupFailure();
+    return;
+  }
+
+  DCHECK(tick_clock_);
+  previous_ticks_ = tick_clock_->NowTicks();
+  DCHECK(ArcVmDataMigratorClient::Get());
+  DCHECK(!migration_progress_observation_.IsObserving());
+  migration_progress_observation_.Observe(ArcVmDataMigratorClient::Get());
+  UpdateUIState(ArcVmDataMigrationScreenView::UIState::kProgress);
+  SetArcVmDataMigrationStatus(profile_->GetPrefs(),
+                              arc::ArcVmDataMigrationStatus::kStarted);
+
+  arc::data_migrator::StartMigrationRequest request;
+  request.set_username(GetChromeOsUsername(profile_));
+  request.set_destination_type(
+      base::FeatureList::IsEnabled(arc::kLvmApplicationContainers)
+          ? arc::data_migrator::LVM_DEVICE
+          : arc::data_migrator::CROSVM_DISK);
+  ArcVmDataMigratorClient::Get()->StartMigration(
+      request,
+      base::BindOnce(&ArcVmDataMigrationScreen::OnStartMigrationResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ArcVmDataMigrationScreen::OnStartMigrationResponse(bool result) {
+  if (!result) {
+    LOG(ERROR) << "Failed to start migration";
+    migration_progress_observation_.Reset();
+    HandleSetupFailure();
+    return;
+  }
+}
+
+void ArcVmDataMigrationScreen::OnDataMigrationProgress(
+    const arc::data_migrator::DataMigrationProgress& progress) {
+  switch (progress.status()) {
+    case arc::data_migrator::DATA_MIGRATION_IN_PROGRESS:
+      VLOG(1) << "ARCVM /data migration in progress: current_bytes="
+              << progress.current_bytes()
+              << ", total_bytes=" << progress.total_bytes();
+      UpdateProgressBar(progress.current_bytes(), progress.total_bytes());
+      return;
+    case arc::data_migrator::DATA_MIGRATION_SUCCESS:
+      VLOG(1) << "ARCVM /data migration finished successfully";
+      migration_progress_observation_.Reset();
+      SetArcVmDataMigrationStatus(profile_->GetPrefs(),
+                                  arc::ArcVmDataMigrationStatus::kFinished);
+      UpdateUIState(ArcVmDataMigrationScreenView::UIState::kSuccess);
+      return;
+    case arc::data_migrator::DATA_MIGRATION_FAILED:
+      LOG(ERROR) << "ARCVM /data migration failed";
+      migration_progress_observation_.Reset();
+      RemoveArcDataAndShowFailureScreen();
+      return;
+    default:
+      NOTREACHED();
+      return;
+  }
+}
+
+void ArcVmDataMigrationScreen::UpdateProgressBar(uint64_t current_bytes,
+                                                 uint64_t total_bytes) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(tick_clock_);
+  if (!current_bytes || !total_bytes) {
+    // Initializing. Just update the clock.
+    previous_ticks_ = tick_clock_->NowTicks();
+    return;
+  }
+  base::TimeTicks current_ticks = tick_clock_->NowTicks();
+  base::TimeDelta delta = current_ticks - previous_ticks_;
+  if (delta < kMinimumIntervalLengthForProgressUpdate) {
+    return;
+  }
+  previous_ticks_ = current_ticks;
+
+  double current_speed =
+      (current_bytes - previous_bytes_) / delta.InMillisecondsF();
+  previous_bytes_ = current_bytes;
+  if (average_speed_ == 0.0) {
+    average_speed_ = current_speed;
+  }
+  average_speed_ = kAverageSpeedSmoothFactor * current_speed +
+                   (1.0 - kAverageSpeedSmoothFactor) * average_speed_;
+  if (average_speed_ < kAverageSpeedDropBound) {
+    average_speed_ = kAverageSpeedDropBound;
+  }
+
+  double estimated_remaining_time_in_millis =
+      (total_bytes - current_bytes) / average_speed_;
+
+  if (!view_) {
+    return;
+  }
+  view_->SetMigrationProgress(100.0 * current_bytes / total_bytes);
+  view_->SetEstimatedRemainingTime(base::Milliseconds(static_cast<int64_t>(
+      std::round(std::min(estimated_remaining_time_in_millis,
+                          kMaximumEstimatedRemainingTime.InMillisecondsF())))));
+}
+
+void ArcVmDataMigrationScreen::RemoveArcDataAndShowFailureScreen() {
+  std::vector<std::string> environment = {"CHROMEOS_USER=" +
+                                          GetChromeOsUsername(profile_)};
+  std::deque<arc::JobDesc> jobs{
+      arc::JobDesc{
+          arc::kArcVmDataMigratorJobName, arc::UpstartOperation::JOB_STOP, {}},
+      arc::JobDesc{kArcRemoveDataJobName,
+                   arc::UpstartOperation::JOB_STOP_AND_START,
+                   std::move(environment)},
+  };
+  arc::ConfigureUpstartJobs(
+      std::move(jobs),
+      base::BindOnce(&ArcVmDataMigrationScreen::OnArcDataRemoved,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ArcVmDataMigrationScreen::OnArcDataRemoved(bool success) {
+  DCHECK(profile_);
+  if (!success) {
+    LOG(ERROR) << "Failed to remove /data. Requesting removal in next session";
+    // Set |kArcDataRemoveRequested| so that ArcSessionManager tries to remove
+    // /data before starting the next session. The reason why we do not just
+    // rely on this pref is to increase the chance of successfully removing
+    // /data; the pref is effective only once and invalidated even when /data
+    // could not be removed.
+    profile_->GetPrefs()->SetBoolean(arc::prefs::kArcDataRemoveRequested, true);
+  }
+  SetArcVmDataMigrationStatus(profile_->GetPrefs(),
+                              arc::ArcVmDataMigrationStatus::kFinished);
+  UpdateUIState(ArcVmDataMigrationScreenView::UIState::kFailure);
 }
 
 void ArcVmDataMigrationScreen::OnVmStarted(
@@ -360,11 +574,55 @@ void ArcVmDataMigrationScreen::HandleSkip() {
 }
 
 void ArcVmDataMigrationScreen::HandleUpdate() {
-  SetUpDestinationAndTriggerMigration();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (update_button_pressed_) {
+    return;
+  }
+  update_button_pressed_ = true;
+  UpdateUIState(ArcVmDataMigrationScreenView::UIState::kLoading);
+  if (resuming_) {
+    TriggerMigration();
+  } else {
+    SetUpDestinationAndTriggerMigration();
+  }
 }
 
-void ArcVmDataMigrationScreen::HandleFatalError() {
-  // TODO(b/258278176): Show a fatal error screen and report the reason.
+void ArcVmDataMigrationScreen::HandleResume() {
+  DCHECK(resuming_);
+  HandleUpdate();
+}
+
+void ArcVmDataMigrationScreen::HandleFinish() {
+  chrome::AttemptRelaunch();
+}
+
+void ArcVmDataMigrationScreen::HandleReport() {
+  const int64_t unique_identifier =
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds();
+  const std::string description_template =
+      base::StringPrintf("Report tag: #arcvm-data-migration (%s)",
+                         base::NumberToString(unique_identifier).c_str());
+  LoginFeedback login_feedback(profile_);
+  login_feedback.Request(description_template);
+}
+
+void ArcVmDataMigrationScreen::HandleSetupFailure() {
+  // TODO(b/272151802): Report the reason to UMA.
+  if (resuming_) {
+    // Treat as a migration failure (i.e., wipe /data, mark the migration as
+    // finished, and show the failure screen) to avoid unmanageable resumes.
+    LOG(WARNING) << "Encountered a setup failure on resume. Wiping /data and "
+                    "showing the failure screen";
+    RemoveArcDataAndShowFailureScreen();
+    return;
+  }
+
+  HandleRetriableFatalError();
+}
+
+void ArcVmDataMigrationScreen::HandleRetriableFatalError() {
+  DCHECK(!resuming_);
+  // TODO(b/258278176): Show an appropriate UI.
   chrome::AttemptRelaunch();
 }
 

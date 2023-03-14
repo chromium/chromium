@@ -14,7 +14,7 @@ namespace ash {
 namespace {
 
 // Configurations of grid view for `TabSlider` instances.
-constexpr size_t kGridViewRowNum = 6;
+constexpr size_t kGridViewRowNum = 9;
 constexpr size_t kGridViewColNum = 1;
 constexpr size_t kGridViewRowGroupSize = 3;
 constexpr size_t kGirdViewColGroupSize = 1;
@@ -69,61 +69,116 @@ std::unique_ptr<SystemUIComponentsGridView> CreateTabSliderInstancesGridView() {
       u"video mode");
   icon_slider_two_disabled->SetEnabled(false);
 
-  // Create an instance of label slider with two buttons.
-  auto label_slider_two = std::make_unique<TabSlider>();
+  // Create an instance of label slider with two buttons and unevenly
+  // distributed space.
+  auto label_slider_two_unevenly = std::make_unique<TabSlider>(
+      /*has_background=*/true, /*has_selector_animation=*/true,
+      /*distribute_space_evenly=*/false);
   // Add the buttons with `TabSliderButton` unique pointer.
   auto* label_button =
-      label_slider_two->AddButton(std::make_unique<LabelSliderButton>(
-          LabelSliderButton::PressedCallback(), u"Label 1", u"label 1"));
+      label_slider_two_unevenly->AddButton(std::make_unique<LabelSliderButton>(
+          LabelSliderButton::PressedCallback(), u"one", u"label 1"));
   label_button->SetSelected(true);
-  label_slider_two->AddButton(std::make_unique<LabelSliderButton>(
-      LabelSliderButton::PressedCallback(), u"Label 2", u"label 2"));
+  label_slider_two_unevenly->AddButton(std::make_unique<LabelSliderButton>(
+      LabelSliderButton::PressedCallback(), u"one two three", u"label 2"));
 
-  // Create an instance of label slider with three buttons with customized
-  // layout.
+  // Create an instance of label slider with two buttons and evenly distributed
+  // space.
+  auto label_slider_two = std::make_unique<TabSlider>();
+  auto* label_button_two_1 = label_slider_two->AddButton<LabelSliderButton>(
+      LabelSliderButton::PressedCallback(), u"one", u"label 1");
+  label_button_two_1->SetSelected(true);
+  label_slider_two->AddButton<LabelSliderButton>(
+      LabelSliderButton::PressedCallback(), u"one two three", u"label 2");
+
+  // Create an instance of label slider with three buttons and evenly
+  // distributed space.
   auto label_slider_three = std::make_unique<TabSlider>();
-  label_slider_three->SetCustomLayout(
-      {/*button_container_spacing=*/2, /*between_buttons_spacing=*/16});
-  // Add the buttons with ctor arguments of `TabSliderButton`.
-  auto* label_button_1 = label_slider_three->AddButton<LabelSliderButton>(
-      LabelSliderButton::PressedCallback(), u"Label 1", u"label 1");
-  label_button_1->SetSelected(true);
+  auto* label_button_three_1 = label_slider_three->AddButton<LabelSliderButton>(
+      LabelSliderButton::PressedCallback(), u"one", u"label 1");
+  label_button_three_1->SetSelected(true);
   label_slider_three->AddButton<LabelSliderButton>(
-      LabelSliderButton::PressedCallback(), u"Label 2", u"label 2");
+      LabelSliderButton::PressedCallback(), u"one two three", u"label 2");
   label_slider_three->AddButton<LabelSliderButton>(
-      LabelSliderButton::PressedCallback(), u"Label 3", u"label 3");
+      LabelSliderButton::PressedCallback(), u"one two three four five",
+      u"label 3");
 
-  // Create an instance of disabled label slider with two buttons.
-  auto label_slider_two_disabled = std::make_unique<TabSlider>();
-  auto* disabled_label_button =
-      label_slider_two_disabled->AddButton<LabelSliderButton>(
-          LabelSliderButton::PressedCallback(), u"Label 1", u"label 1");
-  disabled_label_button->SetSelected(true);
-  label_slider_two_disabled->AddButton<LabelSliderButton>(
-      LabelSliderButton::PressedCallback(), u"Label 2", u"label 2");
-  label_slider_two_disabled->SetEnabled(false);
+  // Create an instance of icon + label slider with two buttons and unevenly
+  // distributed space.
+  auto icon_label_slider_two_unevenly = std::make_unique<TabSlider>(
+      /*has_background=*/true, /*has_selector_animation=*/true,
+      /*distribute_space_evenly=*/false);
+  auto* icon_label_button =
+      icon_label_slider_two_unevenly->AddButton<IconLabelSliderButton>(
+          IconLabelSliderButton::PressedCallback(),
+          &kPrivacyIndicatorsCameraIcon, u"one", u"button 1");
+  icon_label_button->SetSelected(true);
+  icon_label_slider_two_unevenly->AddButton<IconLabelSliderButton>(
+      IconLabelSliderButton::PressedCallback(),
+      &kPrivacyIndicatorsMicrophoneIcon, u"one two three", u"button 2");
+
+  // Create an instance of icon + label slider with three buttons and evenly
+  // distributed space.
+  auto icon_label_slider_three = std::make_unique<TabSlider>();
+  auto* icon_label_button_1 =
+      icon_label_slider_three->AddButton<IconLabelSliderButton>(
+          IconLabelSliderButton::PressedCallback(),
+          &kPrivacyIndicatorsMicrophoneIcon, u"one", u"button 1");
+  icon_label_button_1->SetSelected(true);
+  icon_label_slider_three->AddButton<IconLabelSliderButton>(
+      IconLabelSliderButton::PressedCallback(),
+      &kPrivacyIndicatorsMicrophoneIcon, u"one two three", u"button 2");
+  icon_label_slider_three->AddButton<IconLabelSliderButton>(
+      IconLabelSliderButton::PressedCallback(),
+      &kPrivacyIndicatorsMicrophoneIcon, u"ont two three four five",
+      u"button 3");
+
+  // Create an instance of disabled icon + label slider with two buttons.
+  auto icon_label_slider_two_disabled = std::make_unique<TabSlider>();
+  auto* icon_label_button_disabled =
+      icon_label_slider_two_disabled->AddButton<IconLabelSliderButton>(
+          IconLabelSliderButton::PressedCallback(),
+          &kPrivacyIndicatorsCameraIcon, u"one", u"button 1");
+  icon_label_button_disabled->SetSelected(true);
+  icon_label_slider_two_disabled->AddButton<IconLabelSliderButton>(
+      IconLabelSliderButton::PressedCallback(),
+      &kPrivacyIndicatorsMicrophoneIcon, u"one two three", u"button 2");
+  icon_label_slider_two_disabled->SetEnabled(false);
 
   grid_view->AddInstance(
-      u"Icon tab slider with 2 buttons, recommended layout, selector "
+      u"Icon tab slider with 2 buttons, recommended layout, selector \n"
       u"animation, and background",
       std::move(icon_slider_two));
   grid_view->AddInstance(
-      u"Icon tab slider with 3 buttons, custom layout, no selector "
+      u"Icon tab slider with 3 buttons, custom layout, no selector \n"
       u"animation, and no background",
       std::move(icon_slider_three));
   grid_view->AddInstance(u"Disabled icon slider with 2 buttons",
                          std::move(icon_slider_two_disabled));
 
   grid_view->AddInstance(
-      u"Label tab slider with 2 buttons, recommended layout, selector "
-      u"animation, and background",
+      u"Label tab slider with 2 buttons, recommended layout, selector \n"
+      u"animation, background, and unevenly distributed spaces",
+      std::move(label_slider_two_unevenly));
+  grid_view->AddInstance(
+      u"Label tab slider with 2 buttons, recommended layout, selector \n"
+      u"animation, background, and evenly distributed space",
       std::move(label_slider_two));
   grid_view->AddInstance(
-      u"Label tab slider with 3 buttons, recommended layout, selector "
-      u"animation, and background",
+      u"Label tab slider with 3 buttons, recommended layout, selector \n"
+      u"animation, background, and evenly distributed space",
       std::move(label_slider_three));
-  grid_view->AddInstance(u"Disabled label slider with 2 buttons",
-                         std::move(label_slider_two_disabled));
+
+  grid_view->AddInstance(
+      u"Icon + label tab slider with 2 buttons, recommended layout, selector \n"
+      u"animation, background, and unevenly distributed space",
+      std::move(icon_label_slider_two_unevenly));
+  grid_view->AddInstance(
+      u"Icon + label tab slider with 3 buttons, recommended layout, selector \n"
+      u"animation, background, and evenly distributed space",
+      std::move(icon_label_slider_three));
+  grid_view->AddInstance(u"Disabled icon + label slider with 2 buttons",
+                         std::move(icon_label_slider_two_disabled));
 
   return grid_view;
 }

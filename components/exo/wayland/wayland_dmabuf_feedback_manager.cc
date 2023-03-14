@@ -14,6 +14,9 @@
 #include "base/functional/bind.h"
 #include "components/exo/buffer.h"
 #include "components/exo/display.h"
+#include "components/exo/shell_surface_base.h"
+#include "components/exo/shell_surface_util.h"
+#include "components/exo/surface.h"
 #include "components/exo/wayland/server_util.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "ui/aura/env.h"
@@ -195,6 +198,8 @@ class WaylandDmabufSurfaceFeedback : public SurfaceObserver {
   ~WaylandDmabufSurfaceFeedback() override;
 
   void OnSurfaceDestroying(Surface* surface) override {
+    feedback_manager_->RemoveSurfaceFromScanoutCandidates(
+        surface_, ScanoutReasonFlags::kNone);
     feedback_manager_->RemoveSurfaceFeedback(surface_);
   }
 
@@ -202,6 +207,27 @@ class WaylandDmabufSurfaceFeedback : public SurfaceObserver {
                         int64_t old_display,
                         int64_t new_display) override {
     feedback_manager_->MaybeResendFeedback(surface_);
+  }
+
+  void OnFullscreenStateChanged(bool fullscreen) override {
+    if (fullscreen) {
+      feedback_manager_->AddSurfaceToScanoutCandidates(
+          surface_, ScanoutReasonFlags::kFullscreen);
+    } else {
+      feedback_manager_->RemoveSurfaceFromScanoutCandidates(
+          surface_, ScanoutReasonFlags::kFullscreen);
+    }
+  }
+
+  void OnOverlayPriorityHintChanged(
+      OverlayPriority overlay_priority_hint) override {
+    if (overlay_priority_hint == OverlayPriority::REQUIRED) {
+      feedback_manager_->AddSurfaceToScanoutCandidates(
+          surface_, ScanoutReasonFlags::kOverlayPriorityHint);
+    } else {
+      feedback_manager_->RemoveSurfaceFromScanoutCandidates(
+          surface_, ScanoutReasonFlags::kOverlayPriorityHint);
+    }
   }
 
   void AddSurfaceFeedbackRef(
@@ -402,6 +428,20 @@ void WaylandDmabufFeedbackManager::GetSurfaceFeedback(
         std::make_unique<WaylandDmabufFeedback>(default_feedback_);
     auto new_surface_feedback = std::make_unique<WaylandDmabufSurfaceFeedback>(
         this, surface, std::move(defaut_feedback_copy));
+
+    ShellSurfaceBase* shell_surface_base = nullptr;
+    for (auto* window = surface->window(); window && !shell_surface_base;
+         window = window->parent()) {
+      shell_surface_base = GetShellSurfaceBaseForWindow(window);
+    }
+    if (shell_surface_base) {
+      bool fullscreen = shell_surface_base->GetWidget()->IsFullscreen();
+      new_surface_feedback->OnFullscreenStateChanged(fullscreen);
+    }
+
+    new_surface_feedback->OnOverlayPriorityHintChanged(
+        surface->GetOverlayPriorityHint());
+
     it = surface_feedbacks_.emplace_hint(it, surface,
                                          std::move(new_surface_feedback));
   }
@@ -431,23 +471,31 @@ void WaylandDmabufFeedbackManager::RemoveSurfaceFeedback(Surface* surface) {
 }
 
 void WaylandDmabufFeedbackManager::AddSurfaceToScanoutCandidates(
-    Surface* surface) {
-  if (base::Contains(scanout_candidates_, surface))
+    Surface* surface,
+    ScanoutReasonFlags reason) {
+  auto search = scanout_candidates_.find(surface);
+  if (search != scanout_candidates_.end()) {
+    search->second = static_cast<ScanoutReasonFlags>(
+        static_cast<uint32_t>(search->second) | static_cast<uint32_t>(reason));
     return;
+  }
 
-  scanout_candidates_.emplace(surface);
+  scanout_candidates_.emplace(surface, reason);
 
-  if (!base::Contains(surface_feedbacks_, surface))
+  if (!base::Contains(surface_feedbacks_, surface)) {
     return;
+  }
 
   const auto& surface_feedback = surface_feedbacks_[surface];
   auto* feedback = surface_feedback->GetFeedback();
-  if (feedback->GetScanoutTranche())
+  if (feedback->GetScanoutTranche()) {
     return;
+  }
 
   feedback->MaybeAddScanoutTranche(surface);
-  if (!feedback->GetScanoutTranche())
+  if (!feedback->GetScanoutTranche()) {
     return;
+  }
 
   for (auto* feedback_ref : surface_feedback->GetFeedbackRefs()) {
     SendFeedback(feedback, feedback_ref->GetFeedbackResource());
@@ -455,19 +503,31 @@ void WaylandDmabufFeedbackManager::AddSurfaceToScanoutCandidates(
 }
 
 void WaylandDmabufFeedbackManager::RemoveSurfaceFromScanoutCandidates(
-    Surface* surface) {
-  if (!base::Contains(scanout_candidates_, surface))
+    Surface* surface,
+    ScanoutReasonFlags reason) {
+  auto search = scanout_candidates_.find(surface);
+  if (search == scanout_candidates_.end()) {
     return;
+  }
 
-  scanout_candidates_.erase(surface);
-
-  if (!base::Contains(surface_feedbacks_, surface))
+  search->second = static_cast<ScanoutReasonFlags>(
+      static_cast<uint32_t>(search->second) & ~static_cast<uint32_t>(reason));
+  if (search->second == ScanoutReasonFlags::kNone ||
+      reason == ScanoutReasonFlags::kNone) {
+    scanout_candidates_.erase(surface);
+  } else {
     return;
+  }
+
+  if (!base::Contains(surface_feedbacks_, surface)) {
+    return;
+  }
 
   const auto& surface_feedback = surface_feedbacks_[surface];
   auto* feedback = surface_feedback->GetFeedback();
-  if (!feedback->GetScanoutTranche())
+  if (!feedback->GetScanoutTranche()) {
     return;
+  }
 
   feedback->ClearScanoutTranche();
   for (auto* feedback_ref : surface_feedback->GetFeedbackRefs()) {

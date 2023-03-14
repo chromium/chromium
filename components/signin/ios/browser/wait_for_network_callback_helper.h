@@ -27,8 +27,11 @@ class WaitForNetworkCallbackHelper
   void OnNetworkChanged(
       net::NetworkChangeNotifier::ConnectionType type) override;
 
-  // If offline, saves the |callback| to be called later when online. Otherwise,
-  // invokes immediately.
+  // Is network offline?
+  bool AreNetworkCallsDelayed();
+
+  // If `AreNetworkCallsDelayed()`, saves the `callback` to be called later when
+  // online. Otherwise, invokes immediately.
   void HandleCallback(base::OnceClosure callback);
 
  private:

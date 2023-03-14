@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -152,12 +153,12 @@ class MockResultQueue {
 class MockAsyncSharedStorageDatabase : public AsyncSharedStorageDatabase {
  public:
   static std::unique_ptr<AsyncSharedStorageDatabase> Create() {
-    return absl::WrapUnique(new MockAsyncSharedStorageDatabase());
+    return base::WrapUnique(new MockAsyncSharedStorageDatabase());
   }
 
   static std::unique_ptr<AsyncSharedStorageDatabase> Create(
       std::queue<OperationResult> result_queue) {
-    return absl::WrapUnique(
+    return base::WrapUnique(
         new MockAsyncSharedStorageDatabase(std::move(result_queue)));
   }
 
@@ -202,15 +203,13 @@ class MockAsyncSharedStorageDatabase : public AsyncSharedStorageDatabase {
     Run(std::move(callback));
   }
   void Keys(url::Origin context_origin,
-            mojo::PendingRemote<
-                shared_storage_worklet::mojom::SharedStorageEntriesListener>
+            mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
                 pending_listener,
             base::OnceCallback<void(OperationResult)> callback) override {
     Run(std::move(callback));
   }
   void Entries(url::Origin context_origin,
-               mojo::PendingRemote<
-                   shared_storage_worklet::mojom::SharedStorageEntriesListener>
+               mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
                    pending_listener,
                base::OnceCallback<void(OperationResult)> callback) override {
     Run(std::move(callback));
@@ -626,8 +625,7 @@ class SharedStorageManagerTest : public testing::Test {
 
   OperationResult KeysSync(
       url::Origin context_origin,
-      mojo::PendingRemote<
-          shared_storage_worklet::mojom::SharedStorageEntriesListener>
+      mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
           listener) {
     DCHECK(GetManager());
     base::test::TestFuture<OperationResult> future;
@@ -656,8 +654,7 @@ class SharedStorageManagerTest : public testing::Test {
 
   OperationResult EntriesSync(
       url::Origin context_origin,
-      mojo::PendingRemote<
-          shared_storage_worklet::mojom::SharedStorageEntriesListener>
+      mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
           listener) {
     DCHECK(GetManager());
     base::test::TestFuture<OperationResult> future;

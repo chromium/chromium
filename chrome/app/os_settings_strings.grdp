@@ -965,6 +965,12 @@
   <message name="IDS_SETTINGS_HIGH_CONTRAST_DESCRIPTION" desc="Label for checkbox which enables high-contrast UI.">
     Turn light screens dark, and dark screens light. Press Search + Ctrl + H to turn color inversion on and off.
   </message>
+  <message name="IDS_SETTINGS_COLOR_FILTERING_LABEL" desc="Label for a checkbox which enables color filtering settings.">
+    Color filters
+  </message>
+  <message name="IDS_SETTINGS_COLOR_FILTERING_DESCRIPTION" desc="Description for a checkbox which enables color filtering settings.">
+    Adjust how colors appear on your screen
+  </message>
   <message name="IDS_SETTINGS_GREYSCALE_LABEL" desc="Label for slider which controls greyscale UI filter.">
     Greyscale
   </message>
@@ -976,6 +982,21 @@
   </message>
   <message name="IDS_SETTINGS_HUE_ROTATION_LABEL" desc="Label for slider which controls hue rotation filter UI.">
     Hue rotation
+  </message>
+  <message name="IDS_SETTINGS_PROTANOMALY_FILTER" desc="Label for a setting drop-down menu option for a color filter that helps people with protanomaly.">
+    Red-green filter (red weak, protanomaly)
+  </message>
+  <message name="IDS_SETTINGS_TRITANOMALY_FILTER" desc="Label for a setting drop-down menu option for a color filter that helps people with tritanomaly.">
+    Blue-yellow filter (tritanomaly)
+  </message>
+  <message name="IDS_SETTINGS_DEUTERANOMALY_FILTER" desc="Label for a setting drop-down menu option for a color filter that helps people with deuteranomaly.">
+    Red-green filter (green weak, deuteranomaly)
+  </message>
+  <message name="IDS_SETTINGS_COLOR_VISION_DEFICIENCY_TYPE_LABEL" desc="Label for a drop-down menu option that provides color vision correction filters">
+    Filter type
+  </message>
+  <message name="IDS_SETTINGS_COLOR_VISION_FILTER_INTENSITY_LABEL" desc="Label for a slider that allows people to control the intensity of the color vision correction filter">
+    Intensity
   </message>
   <message name="IDS_SETTINGS_COLOR_FILTER_MINIMUM_LABEL" desc="Label for the side of the color filter slider control that causes the least visual change.">
     Less
@@ -1003,6 +1024,81 @@
   </message>
   <message name="IDS_SETTINGS_CHROMEVOX_TUTORIAL_LABEL" desc="Label for button to open ChromeVox tutorial.">
     ChromeVox tutorial
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_GENERAL_LABEL" desc="In the ChromeVox settings subpage, the label for the General section header.">
+    General
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_VOICES_LABEL" desc="In the ChromeVox settings subpage, the label for the Voices section header.">
+    Voices
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_BRAILLE_LABEL" desc="In the ChromeVox settings subpage, the label for the Braille section header.">
+    Braille
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_DEVELOPER_OPTIONS_LABEL" desc="In the ChromeVox settings subpage, the label for the Developer Options section header.">
+    Developer Options
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_USE_VERBOSE_MODE" desc="In the ChromeVox settings subpage, the label for the toggle to enable verbose descriptions (An option for ChromeVox to speak more verbosely when giving descriptions to the user).">
+    Enable verbose descriptions
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_AUTO_READ" desc="In the ChromeVox settings subpage, the label for the toggle to automatically read page after it finishes loading." >
+    Automatically read page after it finishes loading
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_SPEAK_TEXT_UNDER_MOUSE" desc="In the ChromeVox settings subpage, the label for the toggle to enable a setting which speaks text under the mouse cursor." >
+    Speak text under the mouse
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_USE_PITCH_CHANGES" desc="In the ChromeVox settings subpage, the label for the toggle to change pitch when speaking element types and formatted text." >
+    Change pitch when speaking element types and formatted text
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_ANNOUNCE_RICH_TEXT_ATTRIBUTES" desc="In the ChromeVox settings subpage, the label for the toggle to automatically announce rich text styles." >
+    Announce text styling
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_CAPITAL_STRATEGY" desc="In the ChromeVox settings subpage, the label for the multi select option for how to verbalize capital letters.">
+    When reading capitals
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_ANNOUNCE_CAPITALS" desc="In the ChromeVox settings subpage, the label for the option that sets capital description strategy to announce presence of capital letters">
+    Speak "cap" before letter
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_INCREASE_PITCH" desc="In the ChromeVox settings subpage, the label for the option that sets capital description strategy to increase pitch">
+    Increase pitch
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_NUMBER_READING_STYLE" desc="In the ChromeVox settings subpage, the label for choosing how ChromeVox reads numbers.">
+    Read numbers as
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_NUMBER_READING_STYLE_WORDS" desc="In the ChromeVox settings subpage, the label for an option to read numbers as words.">
+    Words
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_NUMBER_READING_STYLE_DIGITS" desc="In the ChromeVox settings subpage, the label for an option to read numbers as digits.">
+    Digits
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_PUNCTUATION_ECHO" desc="In the ChromeVox settings subpage, the label for choosing how ChromeVox reads punctuation.">
+    Punctuation echo
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_PUNCTUATION_ECHO_NONE" desc="In the ChromeVox settings subpage, the label for an option to echo (speak) no punctuation.">
+    None
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_PUNCTUATION_ECHO_SOME" desc="In the ChromeVox settings subpage, the label for an option to echo (speak) some punctuation.">
+    Some
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_PUNCTUATION_ECHO_ALL" desc="In the ChromeVox settings subpage, the label for an option to echo (speak) all punctuation.">
+    All
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_ANNOUNCE_DOWNLOAD_NOTIFICATIONS" desc="In the ChromeVox settings subpage, the label for an option to announce download notifications.">
+    Announce download notifications
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_SMART_STICKY_MODE" desc="In the ChromeVox settings subpage, the label for the toggle that enables or disables Smart Sticky Mode. The label explains how the feature works.">
+    Turn off sticky mode when editing text (Smart Sticky Mode)
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_AUDIO_STRATEGY" desc="In the ChromeVox settings subpage, the label for the multiselect dropdown for how to play audio when ChromeVox speaks using text to speech.">
+    When playing audio...
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_AUDIO_NORMAL" desc="In the ChromeVox settings subpage, the label for an option to allow audio playback to be at a normal volume even if ChromeVox is speaking.">
+    Play at normal volume even if ChromeVox is speaking
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_AUDIO_DUCK" desc="In the ChromeVox settings subpage, the label for an option to allow audio playback to play at lower volume when ChromeVox is speaking (use audio ducking).">
+    Play at lower volume when ChromeVox is speaking
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_AUDIO_SUSPEND" desc="In the ChromeVox settings subpage, the label for an option to pause audio playback when ChromeVox is speaking (use audio suspension).">
+    Pause playback when ChromeVox is speaking
   </message>
   <message name="IDS_SETTINGS_SCREEN_MAGNIFIER_LABEL" desc="Label for checkbox which enables the fullscreen magnifier">
     Full-screen magnifier
@@ -2478,6 +2574,15 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_AUDIO_INPUT_GAIN_TITLE" desc="In Device Settings, the title of the slider under the input section in audio settings subpage. This slider controls the microphone's gain setting." translateable="false">
     Gain
   </message>
+  <message name="IDS_SETTINGS_AUDIO_INPUT_MUTE_BUTTON_ARIA_LABEL_NOT_MUTED" desc="In Device Settings, the aria label for the input mute button when not muted." translateable="false">
+    Toggle mic. Mic is on, toggling will mute input.
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_INPUT_MUTE_BUTTON_ARIA_LABEL_MUTED" desc="In Device Settings, the aria label for the input mute button when muted." translateable="false">
+    Toggle mic. Mic is muted.
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_INPUT_MUTE_BUTTON_ARIA_LABEL_MUTED_BY_HARDWARE_SWITCH" desc="In Device Settings, the aria label for the input mute button when microphone mute switch is turned on." translateable="false">
+    Device's microphone button is turned off.
+  </message>
   <message name="IDS_SETTINGS_AUDIO_INPUT_NOISE_CANCELLATION_TITLE" desc="In Device Settings, the title of the noise cancellation toggle under the input section in audio settings subpage." translateable="false">
     Noise Cancellation
   </message>
@@ -2519,6 +2624,12 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_AUDIO_MUTED_EXTERNALLY_TOOLTIP" desc="In Device Settings, the tooltip used for the input and output mute buttons shown when the device is muted by hardware/switch." translateable="false">
     Muted by hardware/switch
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_OUTPUT_MUTE_BUTTON_ARIA_LABEL_NOT_MUTED" desc="In Device Settings, the aria label for the output mute button when not muted." translateable="false">
+    Toggle volume. Volume is on, toggling will mute audio.
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_OUTPUT_MUTE_BUTTON_ARIA_LABEL_MUTED" desc="In Device Settings, the aria label for the output mute button when not muted." translateable="false">
+    Toggle volume. Volume is muted.
   </message>
 
   <!-- Device pointer page (OS settings) -->
@@ -3290,6 +3401,12 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_NETWORK_ACCESSIBILITY_LABEL" desc="Label for the button that toggles showing the network address configuration settings. Only visible by screen reader software.">
     Show network address settings
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_REMOVAL_TITLE" desc="Settings > Internet > Network details: Title of the Passpoint network removal dialog.">
+    Forget this subscription?
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_REMOVAL_DESCRIPTION" desc="Settings > Internet > Network details: Description of the Passpoint network removal dialog.">
+    By forgetting this network you will also remove the Passpoint subscription and its associated networks. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PROXY" desc="Settings > Internet > Network details: Proxy section label.">
     Proxy

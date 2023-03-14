@@ -261,7 +261,7 @@ class VideoTrackRecorderTest
         frame_type == TestFrameType::kNv12Software
             ? media::VideoFrame::STORAGE_OWNED_MEMORY
             : media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
-        media::VideoPixelFormat::PIXEL_FORMAT_NV12);
+        media::VideoPixelFormat::PIXEL_FORMAT_NV12, base::TimeDelta());
     scoped_refptr<media::VideoFrame> video_frame2 = video_frame;
     if (frame_type == TestFrameType::kNv12GpuMemoryBuffer)
       video_frame2 = media::ConvertToMemoryMappedFrame(video_frame);
@@ -423,7 +423,7 @@ TEST_P(VideoTrackRecorderTest, EncodeFrameRGB) {
           : blink::CreateTestFrame(frame_size, gfx::Rect(frame_size),
                                    frame_size,
                                    media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
-                                   media::PIXEL_FORMAT_XRGB);
+                                   media::PIXEL_FORMAT_XRGB, base::TimeDelta());
 
   base::RunLoop run_loop;
   EXPECT_CALL(*this, OnEncodedVideo(_, _, _, _, true))

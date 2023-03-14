@@ -51,7 +51,7 @@
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_MAC)
 #include "ui/accelerated_widget_mac/ca_transaction_observer.h"
 #endif
 
@@ -192,8 +192,8 @@ InProcessContextFactory::~InProcessContextFactory() {
   DCHECK(per_compositor_data_.empty());
 }
 
-void InProcessContextFactory::SetUseFastRefreshRateForTests() {
-  refresh_rate_ = 200.0;
+void InProcessContextFactory::SetRefreshRateForTests(double refresh_rate) {
+  refresh_rate_ = refresh_rate;
 }
 
 void InProcessContextFactory::CreateLayerTreeFrameSink(

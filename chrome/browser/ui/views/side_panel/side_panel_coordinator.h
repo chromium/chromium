@@ -101,7 +101,7 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   FRIEND_TEST_ALL_PREFIXES(UserNoteUICoordinatorTest,
                            PopulateUserNoteSidePanel);
 
-  // Unlike Show() which takes in a SidePanelEntry's id or key, this version
+  // Unlike `Show()` which takes in a SidePanelEntry's id or key, this version
   // should only be used for the rare case when we need to show a particular
   // entry instead of letting GetEntryForKey() decide for us.
   void Show(SidePanelEntry* entry,
@@ -129,7 +129,7 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
 
   // Removes existing SidePanelEntry contents from the side panel if any exist
   // and populates the side panel with the provided SidePanelEntry and
-  // |content_view| if provided, otherwise get the content_view from the
+  // `content_view` if provided, otherwise get the content_view from the
   // provided SidePanelEntry.
   void PopulateSidePanel(
       SidePanelEntry* entry,
@@ -160,22 +160,24 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // Sets the entry corresponding to `entry_key` as selected in the combobox.
   void SetSelectedEntryInCombobox(const SidePanelEntry::Key& entry_key);
 
-  // Determines if the extension's entry in the combobox should be removed when
-  // one of its entries is deregistered. Called from OnEntryWillDeregister().
-  bool ShouldRemoveExtensionFromComboboxOnDeregister(
-      SidePanelRegistry* registry,
+  // Determines if the entry in the combobox should be removed when it is
+  // deregistered. Called from `OnEntryWillDeregister()`.
+  bool ShouldRemoveFromComboboxOnDeregister(
+      SidePanelRegistry* deregistering_registry,
       const SidePanelEntry::Key& entry_key);
 
-  // Finds and shows an appropriate fallback entry or closes the side panel.
-  // Called if the entry being deregistered is an active extension entry in
-  // OnEntryWillDeregister().
-  void OnActiveExtensionEntryWillDeregister(
-      SidePanelRegistry* registry,
-      const SidePanelEntry::Key& entry_key);
+  // Returns the new entry to be shown after the active entry is deregistered,
+  // or nullptr if no suitable entry is found. Called from
+  // `OnEntryWillDeregister()` when there's an active entry being shown in the
+  // side panel.
+  SidePanelEntry* GetNewActiveEntryOnDeregister(
+      SidePanelRegistry* deregistering_registry,
+      const SidePanelEntry::Key& key);
 
   // Returns the new entry to be shown after the active tab has changed, or
-  // nullptr if no suitable entry is found. Called from OnTabStripModelChanged()
-  // when there's an active entry being shown in the side panel.
+  // nullptr if no suitable entry is found. Called from
+  // `OnTabStripModelChanged()` when there's an active entry being shown in the
+  // side panel.
   SidePanelEntry* GetNewActiveEntryOnTabChanged();
 
   // SidePanelRegistryObserver:
@@ -215,7 +217,7 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // automatically if the entry is destroyed.
   base::WeakPtr<SidePanelEntry> current_entry_;
 
-  // Used to update SidePanelEntry options in the header_combobox_ based on
+  // Used to update SidePanelEntry options in the `header_combobox_` based on
   // their availability in the observed side panel registries.
   std::unique_ptr<SidePanelComboboxModel> combobox_model_;
   raw_ptr<views::Combobox, DanglingUntriaged> header_combobox_ = nullptr;

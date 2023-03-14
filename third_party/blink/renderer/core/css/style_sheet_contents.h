@@ -70,10 +70,7 @@ class CORE_EXPORT StyleSheetContents final
   const AtomicString& NamespaceURIFromPrefix(const AtomicString& prefix) const;
 
   void ParseAuthorStyleSheet(const CSSStyleSheetResource*);
-  ParseSheetResult ParseString(
-      const String&,
-      bool allow_import_rules = true,
-      std::unique_ptr<CachedCSSTokenizer> tokenizer = nullptr);
+  ParseSheetResult ParseString(const String&, bool allow_import_rules = true);
 
   bool IsCacheableForResource() const;
   bool IsCacheableForStyleElement() const;
@@ -215,7 +212,7 @@ class CORE_EXPORT StyleSheetContents final
   }
 
   bool HasRuleSet() { return rule_set_.Get(); }
-  RuleSet& EnsureRuleSet(const MediaQueryEvaluator&, AddRuleFlags);
+  RuleSet& EnsureRuleSet(const MediaQueryEvaluator&);
   void ClearRuleSet();
 
   String SourceMapURL() const { return source_map_url_; }

@@ -59,7 +59,16 @@ class UpdateEngine : public base::RefCountedThreadSafe<UpdateEngine> {
   // is not found.
   bool GetUpdateState(const std::string& id, CrxUpdateItem* update_state);
 
-  // Update the given app ids. Returns a closure that can be called to trigger
+  // Does an update check for `id` but stops after receiving the update check
+  // response.
+  void CheckForUpdate(
+      bool is_foreground,
+      const std::string& id,
+      UpdateClient::CrxDataCallback crx_data_callback,
+      UpdateClient::CrxStateChangeCallback crx_state_change_callback,
+      Callback update_callback);
+
+  // Updates the given app ids. Returns a closure that can be called to trigger
   // cancellation of the operation. `update_callback` is called when the
   // operation is complete (even if cancelled). The cancellation callback
   // must be called only on the main sequence.
@@ -79,8 +88,17 @@ class UpdateEngine : public base::RefCountedThreadSafe<UpdateEngine> {
   friend class base::RefCountedThreadSafe<UpdateEngine>;
   ~UpdateEngine();
 
+  // Maps a session id to an update context.
   using UpdateContexts = std::map<std::string, scoped_refptr<UpdateContext>>;
 
+  absl::optional<base::RepeatingClosure> InvokeOperation(
+      bool is_foreground,
+      bool is_update_check_only,
+      bool is_install,
+      const std::vector<std::string>& ids,
+      UpdateClient::CrxDataCallback crx_data_callback,
+      UpdateClient::CrxStateChangeCallback crx_state_change_callback,
+      Callback update_callback);
   void UpdateComplete(scoped_refptr<UpdateContext> update_context, Error error);
 
   void DoUpdateCheck(scoped_refptr<UpdateContext> update_context);
@@ -138,7 +156,8 @@ struct UpdateContext : public base::RefCountedThreadSafe<UpdateContext> {
       UpdateClient::CrxStateChangeCallback crx_state_change_callback,
       const UpdateEngine::NotifyObserversCallback& notify_observers_callback,
       UpdateEngine::Callback callback,
-      PersistedData* persisted_data);
+      PersistedData* persisted_data,
+      bool is_update_check_only);
 #else
   UpdateContext(
       scoped_refptr<Configurator> config,
@@ -148,7 +167,8 @@ struct UpdateContext : public base::RefCountedThreadSafe<UpdateContext> {
       UpdateClient::CrxStateChangeCallback crx_state_change_callback,
       const UpdateEngine::NotifyObserversCallback& notify_observers_callback,
       UpdateEngine::Callback callback,
-      PersistedData* persisted_data);
+      PersistedData* persisted_data,
+      bool is_update_check_only);
 #endif
   UpdateContext(const UpdateContext&) = delete;
   UpdateContext& operator=(const UpdateContext&) = delete;
@@ -218,6 +238,9 @@ struct UpdateContext : public base::RefCountedThreadSafe<UpdateContext> {
 
   // Persists data using the prefs service. Not owned by this class.
   raw_ptr<PersistedData> persisted_data = nullptr;
+
+  // True if this context is for an update check operation.
+  bool is_update_check_only = false;
 
  private:
   friend class base::RefCountedThreadSafe<UpdateContext>;

@@ -41,7 +41,13 @@ NotifierId::NotifierId(const GURL& origin)
     : NotifierId(origin, /*title=*/absl::nullopt) {}
 
 NotifierId::NotifierId(const GURL& url, absl::optional<std::u16string> title)
-    : type(NotifierType::WEB_PAGE), url(url), title(title) {}
+    : type(NotifierType::WEB_PAGE),
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      catalog_name(ash::NotificationCatalogName::kNone),
+#endif  // IS_CHROMEOS_ASH
+      url(url),
+      title(title) {
+}
 
 NotifierId::NotifierId(const NotifierId& other) = default;
 

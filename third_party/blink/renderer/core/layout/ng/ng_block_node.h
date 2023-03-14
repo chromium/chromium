@@ -157,7 +157,7 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   bool IsInlineLevel() const;
   bool IsAtomicInlineLevel() const;
   bool HasAspectRatio() const;
-  bool IsInTopLayer() const;
+  bool IsInTopOrViewTransitionLayer() const;
 
   // Returns the aspect ratio of a replaced element.
   LogicalSize GetAspectRatio() const;
@@ -275,7 +275,8 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   void FinishLayout(LayoutBlockFlow*,
                     const NGConstraintSpace&,
                     const NGBlockBreakToken*,
-                    const NGLayoutResult*) const;
+                    const NGLayoutResult*,
+                    LayoutSize old_box_size) const;
 
   // Update the layout results vector in LayoutBox with the new result.
   void StoreResultInLayoutBox(const NGLayoutResult*,

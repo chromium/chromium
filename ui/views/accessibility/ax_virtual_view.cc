@@ -277,7 +277,7 @@ size_t AXVirtualView::GetChildCount() const {
   return count;
 }
 
-gfx::NativeViewAccessible AXVirtualView::ChildAtIndex(size_t index) {
+gfx::NativeViewAccessible AXVirtualView::ChildAtIndex(size_t index) const {
   DCHECK_LT(index, GetChildCount())
       << "|index| should be less than the child count.";
 

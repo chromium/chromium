@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "extensions/common/context_data.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/manifest.h"
@@ -50,7 +51,8 @@ class ComplexFeature : public Feature {
       const GURL& url,
       Platform platform,
       int context_id,
-      bool check_developer_mode) const override;
+      bool check_developer_mode,
+      std::unique_ptr<ContextData> context_data) const override;
 
   bool IsInternal() const override;
 

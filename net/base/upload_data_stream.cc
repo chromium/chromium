@@ -14,22 +14,22 @@ namespace net {
 
 namespace {
 
-base::Value NetLogInitEndInfoParams(int result,
-                                    int total_size,
-                                    bool is_chunked) {
+base::Value::Dict NetLogInitEndInfoParams(int result,
+                                          int total_size,
+                                          bool is_chunked) {
   base::Value::Dict dict;
 
   dict.Set("net_error", result);
   dict.Set("total_size", total_size);
   dict.Set("is_chunked", is_chunked);
-  return base::Value(std::move(dict));
+  return dict;
 }
 
-base::Value CreateReadInfoParams(int current_position) {
+base::Value::Dict CreateReadInfoParams(int current_position) {
   base::Value::Dict dict;
 
   dict.Set("current_position", current_position);
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 }  // namespace

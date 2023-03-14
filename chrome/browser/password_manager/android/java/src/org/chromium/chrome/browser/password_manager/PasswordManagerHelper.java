@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.password_manager;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.PASSKEY_MANAGEMENT_USING_ACCOUNT_SETTINGS_ANDROID;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID_BRANDING;
 
@@ -147,10 +148,13 @@ public class PasswordManagerHelper {
      * Services.
      *
      * @param context used to show the UI to manage passwords.
+     * @param managePasskeys indicates whether passkey management is needed, which when true will
+     *      attempt to launch the credential manager even without syncing enabled.
      */
     public static void showPasswordSettings(Context context, @ManagePasswordsReferrer int referrer,
             SettingsLauncher settingsLauncher, SyncService syncService,
-            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
+            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
+            boolean managePasskeys) {
         RecordHistogram.recordEnumeratedHistogram("PasswordManager.ManagePasswordsReferrer",
                 referrer, ManagePasswordsReferrer.MAX_VALUE + 1);
 
@@ -159,6 +163,29 @@ public class PasswordManagerHelper {
                     LoadingModalDialogCoordinator.create(modalDialogManagerSupplier, context);
             launchTheCredentialManager(referrer, syncService, loadingDialogCoordinator,
                     modalDialogManagerSupplier, context);
+            return;
+        }
+
+        if (managePasskeys && canUseAccountSettings()) {
+            // Passkey management has been selected but UPM is not available, possibly because
+            // password sync is not turned on. Attempt to use an AccountSettings intent to show
+            // an account chooser and open the native password manager, where passkeys are managed.
+            CredentialManagerLauncher credentialManagerLauncher;
+            try {
+                credentialManagerLauncher = getCredentialManagerLauncher();
+            } catch (CredentialManagerBackendException exception) {
+                if (exception.errorCode != CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED) {
+                    return;
+                }
+
+                showGmsUpdateDialog(modalDialogManagerSupplier, context);
+                return;
+            }
+
+            String accountName = (syncService != null)
+                    ? CoreAccountInfo.getEmailFrom(syncService.getAccountInfo())
+                    : "";
+            credentialManagerLauncher.getAccountSettingsIntent(accountName, context::startActivity);
             return;
         }
 
@@ -188,6 +215,23 @@ public class PasswordManagerHelper {
                 && hasChosenToSyncPasswords(syncService)
                 && !prefService.getBoolean(
                         Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS)
+                && PasswordManagerBackendSupportHelper.getInstance().isBackendPresent();
+    }
+
+    /**
+     * Checks the ability to use an AccountSettings intent to launch the password manager.
+     * This provides a fallback for users who attempt to manage passkeys when UPM is not
+     * available. Passkeys cannot be managed from the Chrome password settings page.
+     *
+     * Since there is not necessarily a signed in Chrome user, the intent might show an
+     * account chooser before showing the password manager.
+     *
+     * @return True if the AccountSettings intent is available for use, false otherwise.
+     */
+    public static boolean canUseAccountSettings() {
+        PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+        return PasswordManagerHelper.usesUnifiedPasswordManagerUI()
+                && ChromeFeatureList.isEnabled(PASSKEY_MANAGEMENT_USING_ACCOUNT_SETTINGS_ANDROID)
                 && PasswordManagerBackendSupportHelper.getInstance().isBackendPresent();
     }
 
@@ -400,6 +444,7 @@ public class PasswordManagerHelper {
             SyncService syncService, LoadingModalDialogCoordinator loadingDialogCoordinator,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier, Context context) {
         assert canUseUpm();
+        assert syncService != null;
 
         CredentialManagerLauncher credentialManagerLauncher;
         try {

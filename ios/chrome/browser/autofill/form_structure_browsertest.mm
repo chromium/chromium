@@ -220,10 +220,13 @@ FormStructureBrowserTest::FormStructureBrowserTest()
        // TODO(crbug.com/1355264): Remove once launched.
        features::kAutofillLabelAffixRemoval},
       // Disabled
-      // TODO(crbug.com/1311937): Remove once launched.
-      // This feature is part of the AutofillRefinedPhoneNumberTypes rollout. As
-      // it is not supported on iOS yet, it is disabled.
-      {features::kAutofillConsiderPhoneNumberSeparatorsValidLabels});
+      {// TODO(crbug.com/1311937): Remove once launched.
+       // This feature is part of the AutofillRefinedPhoneNumberTypes rollout.
+       // As it is not supported on iOS yet, it is disabled.
+       features::kAutofillConsiderPhoneNumberSeparatorsValidLabels,
+       // TODO(crbug.com/1317961): Remove once launched. This feature is
+       // disabled since it is not supported on iOS.
+       features::kAutofillAlwaysParsePlaceholders});
 }
 
 void FormStructureBrowserTest::SetUp() {

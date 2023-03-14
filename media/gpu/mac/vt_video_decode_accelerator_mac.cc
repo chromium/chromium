@@ -50,13 +50,13 @@
 #include "media/base/mac/color_space_util_mac.h"
 #include "media/base/media_switches.h"
 #include "media/filters/vp9_parser.h"
+#include "media/gpu/mac/gl_image_io_surface.h"
 #include "media/gpu/mac/vp9_super_frame_bitstream_filter.h"
 #include "media/gpu/mac/vt_config_util.h"
 #include "media/video/h264_level_limits.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gl/gl_context.h"
-#include "ui/gl/gl_image_io_surface.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/scoped_binders.h"
 
@@ -2289,12 +2289,12 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
       gfx::BufferFormat plane_buffer_format =
           gpu::GetPlaneBufferFormat(planes[plane], buffer_format_);
 
-      scoped_refptr<gl::GLImageIOSurface> gl_image(
-          gl::GLImageIOSurface::Create(plane_size));
+      scoped_refptr<GLImageIOSurface> gl_image(
+          GLImageIOSurface::Create(plane_size));
       if (!gl_image->InitializeWithCVPixelBuffer(
               frame.image.get(), plane,
               gfx::GenericSharedMemoryId(g_cv_pixel_buffer_ids.GetNext()),
-              plane_buffer_format, color_space)) {
+              plane_buffer_format)) {
         NOTIFY_STATUS("Failed to initialize GLImageIOSurface", PLATFORM_FAILURE,
                       SFT_PLATFORM_ERROR);
       }

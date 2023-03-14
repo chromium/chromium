@@ -214,6 +214,10 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   // tests are rewritten in a way to not use verifier.
   virtual bool UseVerifier();
 
+  // Used to determine whether ARC_PACKAGE data type needs to be enabled. This
+  // is applicable on ChromeOS-Ash platform only.
+  virtual bool UseArcPackage();
+
   // Initializes sync clients and profiles but does not sync any of them.
   [[nodiscard]] virtual bool SetupClients();
 

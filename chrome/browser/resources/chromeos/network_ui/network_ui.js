@@ -21,7 +21,7 @@ import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {CrosNetworkConfig, CrosNetworkConfigRemote, StartConnectResult} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './network_ui.html.js';
 import {NetworkUIBrowserProxy, NetworkUIBrowserProxyImpl} from './network_ui_browser_proxy.js';
@@ -116,6 +116,12 @@ Polymer({
       value: false,
     },
 
+    /** @private */
+    showNetworkSelect_: {
+      type: Boolean,
+      value: false,
+    },
+
   },
 
   /** @type {?CrosNetworkConfigRemote} */
@@ -127,15 +133,6 @@ Polymer({
   /** @override */
   attached() {
     this.networkConfig_ = CrosNetworkConfig.getRemote();
-
-    const select = this.$$('network-select');
-    select.customItems = [
-      {
-        customItemName: 'addWiFiListItemName',
-        polymerIcon: 'cr:add',
-        customData: 'WiFi',
-      },
-    ];
 
     this.$$('#import-onc').value = '';
 
@@ -397,6 +394,21 @@ Polymer({
   getNetworkDiagnosticsElement_() {
     return /** @type {!NetworkDiagnosticsElement} */ (
         this.$$('#network-diagnostics'));
+  },
+
+  /** @private */
+  renderNetworkSelect_() {
+    this.showNetworkSelect_ = true;
+    flush();
+
+    const select = this.$$('network-select');
+    select.customItems = [
+      {
+        customItemName: 'addWiFiListItemName',
+        polymerIcon: 'cr:add',
+        customData: 'WiFi',
+      },
+    ];
   },
 
   /**

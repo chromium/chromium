@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabProperties.IS_DEFAULT_A11Y_FOCUS_REQUESTED;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabProperties.ITEMS;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabProperties.SCROLL_LISTENER;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,8 +22,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
-import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabModel.AccessorySheetDataPiece;
+import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece;
 import org.chromium.ui.modelutil.ListModel;
+import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * This stateless class provides methods to bind a {@link ListModel<AccessorySheetDataPiece>}
@@ -131,5 +137,20 @@ class AccessorySheetTabViewBinder {
                 new LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false));
         view.setItemAnimator(null);
         if (scrollListener != null) view.addOnScrollListener(scrollListener);
+    }
+
+    public static void bind(
+            PropertyModel model, AccessorySheetTabView view, PropertyKey propertyKey) {
+        if (propertyKey == ITEMS) {
+            // TODO(crbug/1418065): move setting adapter from initializeView() (in descendants)
+        } else if (propertyKey == SCROLL_LISTENER) {
+            // TODO(crbug/1418065): move setting listener from initializeView()
+        } else if (propertyKey == IS_DEFAULT_A11Y_FOCUS_REQUESTED) {
+            if (model.get(IS_DEFAULT_A11Y_FOCUS_REQUESTED)) {
+                view.requestDefaultA11yFocus();
+            }
+        } else {
+            assert false : "Binding property not implemented: " + propertyKey;
+        }
     }
 }

@@ -34,6 +34,14 @@ PageImpl::PageImpl(RenderFrameHostImpl& rfh, PageDelegate& delegate)
     select_url_report_event_budget_ = static_cast<double>(
         blink::features::kSharedStorageReportEventBitBudgetPerPageLoad.Get());
   }
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSharedStorageSelectURLLimit)) {
+    select_url_overall_budget_ = static_cast<double>(
+        blink::features::kSharedStorageSelectURLBitBudgetPerPageLoad.Get());
+    select_url_max_bits_per_origin_ = static_cast<double>(
+        blink::features::kSharedStorageSelectURLBitBudgetPerOriginPerPageLoad
+            .Get());
+  }
 }
 
 PageImpl::~PageImpl() {
@@ -171,7 +179,8 @@ void PageImpl::SetActivationStartTime(base::TimeTicks activation_start) {
 }
 
 void PageImpl::ActivateForPrerendering(
-    StoredPage::RenderViewHostImplSafeRefSet& render_view_hosts) {
+    StoredPage::RenderViewHostImplSafeRefSet& render_view_hosts,
+    absl::optional<blink::ViewTransitionState> view_transition_state) {
   base::OnceClosure did_activate_render_views =
       base::BindOnce(&PageImpl::DidActivateAllRenderViewsForPrerendering,
                      weak_factory_.GetWeakPtr());
@@ -179,7 +188,8 @@ void PageImpl::ActivateForPrerendering(
   base::RepeatingClosure barrier = base::BarrierClosure(
       render_view_hosts.size(), std::move(did_activate_render_views));
   for (const auto& rvh : render_view_hosts) {
-    base::TimeTicks navigation_start_to_send;
+    auto params = blink::mojom::PrerenderPageActivationParams::New();
+
     // Only send navigation_start to the RenderViewHost for the main frame to
     // avoid sending the info cross-origin. Only this RenderViewHost needs the
     // info, as we expect the other RenderViewHosts are made for cross-origin
@@ -188,16 +198,16 @@ void PageImpl::ActivateForPrerendering(
     // not yet committed. These RenderViews still need to know about activation
     // so their documents are created in the non-prerendered state once their
     // navigation is committed.
-    if (main_document_->GetRenderViewHost() == &*rvh)
-      navigation_start_to_send = *activation_start_time_for_prerendering_;
+    if (main_document_->GetRenderViewHost() == &*rvh) {
+      params->activation_start = *activation_start_time_for_prerendering_;
+      params->view_transition_state = std::move(view_transition_state);
+    }
 
-    auto params = blink::mojom::PrerenderPageActivationParams::New();
     params->was_user_activated =
         main_document_->frame_tree_node()
                 ->has_received_user_gesture_before_nav()
             ? blink::mojom::WasActivatedOption::kYes
             : blink::mojom::WasActivatedOption::kNo;
-    params->activation_start = navigation_start_to_send;
     rvh->ActivatePrerenderedPage(std::move(params), barrier);
   }
 
@@ -311,20 +321,40 @@ base::flat_map<std::string, std::string> PageImpl::GetKeyboardLayoutMap() {
   return GetMainDocument().GetRenderWidgetHost()->GetKeyboardLayoutMap();
 }
 
-bool PageImpl::IsSelectURLAllowed(const url::Origin& origin) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kSharedStorageSelectURLLimit)) {
+bool PageImpl::CheckAndMaybeDebitSelectURLBudgets(const url::Origin& origin,
+                                                  double bits_to_charge) {
+  if (!select_url_overall_budget_) {
+    // The limits are not enabled.
     return true;
   }
 
-  int& count = select_url_count_[origin];
-  if (count >=
-      blink::features::
-          kSharedStorageMaxAllowedSelectURLCallsPerOriginPerPageLoad.Get()) {
+  // Return false if there is insufficient overall budget.
+  if (bits_to_charge > select_url_overall_budget_.value()) {
     return false;
   }
 
-  ++count;
+  DCHECK(select_url_max_bits_per_origin_);
+
+  // Return false if the max bits per origin is set to a value smaller than the
+  // current bits to charge.
+  if (bits_to_charge > select_url_max_bits_per_origin_.value()) {
+    return false;
+  }
+
+  // Charge the per-origin budget or return false if there is not enough.
+  auto it = select_url_per_origin_budget_.find(origin);
+  if (it == select_url_per_origin_budget_.end()) {
+    select_url_per_origin_budget_[origin] =
+        select_url_max_bits_per_origin_.value() - bits_to_charge;
+  } else if (bits_to_charge > it->second) {
+    // There is insufficient per-origin budget remaining.
+    return false;
+  } else {
+    it->second -= bits_to_charge;
+  }
+
+  // Charge the overall budget.
+  select_url_overall_budget_.value() -= bits_to_charge;
   return true;
 }
 

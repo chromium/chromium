@@ -856,8 +856,7 @@ TEST_F(SavedPasswordsPresenterTest, AddCredentialsListEmpty) {
   presenter().AddCredentials({},
                              password_manager::PasswordForm::Type::kImported,
                              completion_callback.Get());
-  EXPECT_CALL(completion_callback,
-              Run(std::vector<SavedPasswordsPresenter::AddResult>{}));
+  EXPECT_CALL(completion_callback, Run).Times(1);
   RunUntilIdle();
 
   // Call RunUntilIdle again to await when SavedPasswordsPresenter obtain all
@@ -888,224 +887,9 @@ TEST_F(SavedPasswordsPresenterTest, AddCredentialsListOnePassword) {
       {profile_store_cred},
       password_manager::PasswordForm::Type::kManuallyAdded,
       completion_callback.Get());
-  EXPECT_CALL(completion_callback,
-              Run(std::vector<SavedPasswordsPresenter::AddResult>{
-                  SavedPasswordsPresenter::AddResult::kSuccess}));
+  EXPECT_CALL(completion_callback, Run).Times(1);
   RunUntilIdle();
   presenter().RemoveObserver(&observer);
-}
-
-// Tests whether adding 2 credentials with 1 that has same username and realm in
-// the profile store fails with the correct response.
-TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
-       AddCredentialsListTwoPasswordOneConflictsProfileStore) {
-  PasswordForm existing_profile_form =
-      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, /*index=*/0);
-  PasswordForm new_profile_form =
-      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, /*index=*/1);
-
-  profile_store().AddLogin(existing_profile_form);
-  RunUntilIdle();
-
-  PasswordForm conflicting_profile_form = existing_profile_form;
-  conflicting_profile_form.password_value = u"abc";
-
-  base::MockCallback<SavedPasswordsPresenter::AddCredentialsCallback>
-      completion_callback;
-
-  presenter().AddCredentials({CredentialUIEntry(conflicting_profile_form),
-                              CredentialUIEntry(new_profile_form)},
-                             password_manager::PasswordForm::Type::kImported,
-                             completion_callback.Get());
-  EXPECT_CALL(completion_callback,
-              Run(std::vector<SavedPasswordsPresenter::AddResult>{
-                  SavedPasswordsPresenter::AddResult::kConflictInProfileStore,
-                  SavedPasswordsPresenter::AddResult::kSuccess}));
-  RunUntilIdle();
-
-  // Call RunUntilIdle again to await when SavedPasswordsPresenter obtain all
-  // the logins.
-  RunUntilIdle();
-  EXPECT_THAT(presenter().GetSavedCredentials(),
-              UnorderedElementsAre(CredentialUIEntry(existing_profile_form),
-                                   CredentialUIEntry(new_profile_form)));
-}
-
-// Tests whether adding whether adding 2 credentials with 1 that has same
-// username and realm in the account store fails with the correct response.
-TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
-       AddCredentialsListTwoPasswordOneConflictsAccountStore) {
-  PasswordForm existing_account_form =
-      CreateTestPasswordForm(PasswordForm::Store::kAccountStore, /*index=*/0);
-  PasswordForm new_account_form =
-      CreateTestPasswordForm(PasswordForm::Store::kAccountStore, /*index=*/1);
-
-  account_store().AddLogin(existing_account_form);
-  RunUntilIdle();
-
-  PasswordForm conflicting_account_form = existing_account_form;
-  conflicting_account_form.password_value = u"abc";
-
-  base::MockCallback<SavedPasswordsPresenter::AddCredentialsCallback>
-      completion_callback;
-  presenter().AddCredentials({CredentialUIEntry(conflicting_account_form),
-                              CredentialUIEntry(new_account_form)},
-                             password_manager::PasswordForm::Type::kImported,
-                             completion_callback.Get());
-  EXPECT_CALL(completion_callback,
-              Run(std::vector<SavedPasswordsPresenter::AddResult>{
-                  SavedPasswordsPresenter::AddResult::kConflictInAccountStore,
-                  SavedPasswordsPresenter::AddResult::kSuccess}));
-  RunUntilIdle();
-
-  // Call RunUntilIdle again to await when SavedPasswordsPresenter obtain all
-  // the logins.
-  RunUntilIdle();
-  EXPECT_THAT(presenter().GetSavedCredentials(),
-              UnorderedElementsAre(CredentialUIEntry(existing_account_form),
-                                   CredentialUIEntry(new_account_form)));
-}
-
-// Tests whether adding 2 credentials with 1 that has same username and realm in
-// both profile and account store fails with the correct response.
-TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
-       AddCredentialsListTwoPasswordOneConflictsProfileAndAccountStore) {
-  PasswordForm existing_profile_form =
-      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, /*index=*/0);
-
-  PasswordForm existing_account_form =
-      CreateTestPasswordForm(PasswordForm::Store::kAccountStore, /*index=*/0);
-
-  PasswordForm new_profile_form =
-      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, /*index=*/1);
-
-  profile_store().AddLogin(existing_profile_form);
-  account_store().AddLogin(existing_account_form);
-  RunUntilIdle();
-
-  PasswordForm conflicting_profile_form = existing_profile_form;
-  conflicting_profile_form.password_value = u"abc";
-
-  base::MockCallback<SavedPasswordsPresenter::AddCredentialsCallback>
-      completion_callback;
-  presenter().AddCredentials({CredentialUIEntry(conflicting_profile_form),
-                              CredentialUIEntry(new_profile_form)},
-                             password_manager::PasswordForm::Type::kImported,
-                             completion_callback.Get());
-  EXPECT_CALL(
-      completion_callback,
-      Run(std::vector<SavedPasswordsPresenter::AddResult>{
-          SavedPasswordsPresenter::AddResult::kConflictInProfileAndAccountStore,
-          SavedPasswordsPresenter::AddResult::kSuccess}));
-  RunUntilIdle();
-
-  // Call RunUntilIdle again to await when SavedPasswordsPresenter obtain all
-  // the logins.
-  RunUntilIdle();
-  EXPECT_THAT(presenter().GetSavedCredentials(),
-              UnorderedElementsAre(CredentialUIEntry(existing_profile_form),
-                                   CredentialUIEntry(new_profile_form)));
-}
-
-// Tests whether adding 2 passwords with 1 that already exists in the profile
-// store fails with the correct response.
-TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
-       AddCredentialsListTwoPasswordOneExactMatchProfileStore) {
-  PasswordForm existing_profile_form =
-      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, /*index=*/0);
-  PasswordForm new_profile_form =
-      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, /*index=*/1);
-
-  profile_store().AddLogin(existing_profile_form);
-  RunUntilIdle();
-
-  base::MockCallback<SavedPasswordsPresenter::AddCredentialsCallback>
-      completion_callback;
-
-  presenter().AddCredentials({CredentialUIEntry(existing_profile_form),
-                              CredentialUIEntry(new_profile_form)},
-                             password_manager::PasswordForm::Type::kImported,
-                             completion_callback.Get());
-  EXPECT_CALL(completion_callback,
-              Run(std::vector<SavedPasswordsPresenter::AddResult>{
-                  SavedPasswordsPresenter::AddResult::kExactMatch,
-                  SavedPasswordsPresenter::AddResult::kSuccess}));
-  RunUntilIdle();
-
-  // Call RunUntilIdle again to await when SavedPasswordsPresenter obtain all
-  // the logins.
-  RunUntilIdle();
-  EXPECT_THAT(presenter().GetSavedCredentials(),
-              UnorderedElementsAre(CredentialUIEntry(existing_profile_form),
-                                   CredentialUIEntry(new_profile_form)));
-}
-
-// Tests whether adding whether adding 2 passwords with 1 that already exists in
-// the account store fails with the correct response.
-TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
-       AddCredentialsListTwoPasswordOneExactMatchAccountStore) {
-  PasswordForm existing_account_form =
-      CreateTestPasswordForm(PasswordForm::Store::kAccountStore, /*index=*/0);
-  PasswordForm new_account_form =
-      CreateTestPasswordForm(PasswordForm::Store::kAccountStore, /*index=*/1);
-
-  account_store().AddLogin(existing_account_form);
-  RunUntilIdle();
-
-  base::MockCallback<SavedPasswordsPresenter::AddCredentialsCallback>
-      completion_callback;
-  presenter().AddCredentials({CredentialUIEntry(existing_account_form),
-                              CredentialUIEntry(new_account_form)},
-                             password_manager::PasswordForm::Type::kImported,
-                             completion_callback.Get());
-  EXPECT_CALL(completion_callback,
-              Run(std::vector<SavedPasswordsPresenter::AddResult>{
-                  SavedPasswordsPresenter::AddResult::kExactMatch,
-                  SavedPasswordsPresenter::AddResult::kSuccess}));
-  RunUntilIdle();
-
-  // Call RunUntilIdle again to await when SavedPasswordsPresenter obtain all
-  // the logins.
-  RunUntilIdle();
-  EXPECT_THAT(presenter().GetSavedCredentials(),
-              UnorderedElementsAre(CredentialUIEntry(existing_account_form),
-                                   CredentialUIEntry(new_account_form)));
-}
-
-// Tests whether adding 2 passwords with 1 that already exists in both profile
-// and account store fails with the correct response.
-TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
-       AddCredentialsListTwoPasswordOneExactMatchProfileAndAccountStore) {
-  PasswordForm existing_profile_form =
-      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, /*index=*/0);
-  PasswordForm existing_account_form =
-      CreateTestPasswordForm(PasswordForm::Store::kAccountStore, /*index=*/0);
-
-  PasswordForm new_profile_form =
-      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, /*index=*/1);
-
-  profile_store().AddLogin(existing_profile_form);
-  account_store().AddLogin(existing_account_form);
-  RunUntilIdle();
-
-  base::MockCallback<SavedPasswordsPresenter::AddCredentialsCallback>
-      completion_callback;
-  presenter().AddCredentials({CredentialUIEntry(existing_profile_form),
-                              CredentialUIEntry(new_profile_form)},
-                             password_manager::PasswordForm::Type::kImported,
-                             completion_callback.Get());
-  EXPECT_CALL(completion_callback,
-              Run(std::vector<SavedPasswordsPresenter::AddResult>{
-                  SavedPasswordsPresenter::AddResult::kExactMatch,
-                  SavedPasswordsPresenter::AddResult::kSuccess}));
-  RunUntilIdle();
-
-  // Call RunUntilIdle again to await when SavedPasswordsPresenter obtain all
-  // the logins.
-  RunUntilIdle();
-  EXPECT_THAT(presenter().GetSavedCredentials(),
-              UnorderedElementsAre(CredentialUIEntry(existing_profile_form),
-                                   CredentialUIEntry(new_profile_form)));
 }
 
 // Tests whether adding 2 passwords notifies observers with credentials in one
@@ -1130,7 +914,7 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
   base::MockCallback<SavedPasswordsPresenter::AddCredentialsCallback>
       completion_callback;
 
-  EXPECT_CALL(observer, OnSavedPasswordsChanged).Times(2);
+  EXPECT_CALL(observer, OnSavedPasswordsChanged).Times(1);
 
   CredentialUIEntry account_store_cred_1(account_store_form_1);
   CredentialUIEntry account_store_cred_2(account_store_form_2);
@@ -1138,10 +922,7 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
   presenter().AddCredentials({account_store_cred_1, account_store_cred_2},
                              password_manager::PasswordForm::Type::kImported,
                              completion_callback.Get());
-  EXPECT_CALL(completion_callback,
-              Run(std::vector<SavedPasswordsPresenter::AddResult>{
-                  SavedPasswordsPresenter::AddResult::kSuccess,
-                  SavedPasswordsPresenter::AddResult::kSuccess}));
+  EXPECT_CALL(completion_callback, Run).Times(1);
   RunUntilIdle();
 
   // Call RunUntilIdle again to await when SavedPasswordsPresenter obtain all
@@ -1150,91 +931,6 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
   EXPECT_THAT(presenter().GetSavedCredentials(),
               UnorderedElementsAre(account_store_cred_1, account_store_cred_2));
   presenter().RemoveObserver(&observer);
-}
-
-// Tests whether adding 2 passwords (1 invalid, 1 valid) notifies observers with
-// only the valid password and returns the correct list of statuses.
-TEST_F(SavedPasswordsPresenterTest,
-       AddCredentialsListPasswordProfileStoreWithOneInvalid) {
-  PasswordForm profile_store_form_1 =
-      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, /*index=*/0);
-  profile_store_form_1.password_value = u"";
-  profile_store_form_1.type = password_manager::PasswordForm::Type::kImported;
-  profile_store_form_1.date_created = base::Time::Now();
-  profile_store_form_1.date_password_modified = base::Time::Now();
-
-  PasswordForm profile_store_form_2 =
-      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, /*index=*/1);
-  profile_store_form_2.type = password_manager::PasswordForm::Type::kImported;
-  profile_store_form_2.date_created = base::Time::Now();
-  profile_store_form_2.date_password_modified = base::Time::Now();
-
-  StrictMockSavedPasswordsPresenterObserver observer;
-  presenter().AddObserver(&observer);
-
-  base::MockCallback<SavedPasswordsPresenter::AddCredentialsCallback>
-      completion_callback;
-
-  EXPECT_CALL(observer, OnSavedPasswordsChanged);
-
-  CredentialUIEntry profile_store_cred_1(profile_store_form_1);
-  CredentialUIEntry profile_store_cred_2(profile_store_form_2);
-  presenter().AddCredentials({profile_store_cred_1, profile_store_cred_2},
-                             password_manager::PasswordForm::Type::kImported,
-                             completion_callback.Get());
-  EXPECT_CALL(completion_callback,
-              Run(std::vector<SavedPasswordsPresenter::AddResult>{
-                  SavedPasswordsPresenter::AddResult::kInvalid,
-                  SavedPasswordsPresenter::AddResult::kSuccess}));
-  RunUntilIdle();
-  presenter().RemoveObserver(&observer);
-
-  // Call RunUntilIdle again to await when SavedPasswordsPresenter obtain all
-  // the logins.
-  RunUntilIdle();
-  EXPECT_THAT(presenter().GetSavedCredentials(),
-              UnorderedElementsAre(profile_store_cred_2));
-}
-
-TEST_F(SavedPasswordsPresenterTest, AddCredentialsAcceptsOnlyValidURLs) {
-  base::MockCallback<SavedPasswordsPresenter::AddCredentialsCallback>
-      completion_callback;
-
-  PasswordForm valid_url_form =
-      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, /*index=*/0);
-  PasswordForm valid_android_form =
-      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, /*index=*/1);
-  PasswordForm invalid_ulr_form =
-      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, /*index=*/2);
-
-  valid_android_form.url = GURL(
-      "android://"
-      "Jzj5T2E45Hb33D-lk-"
-      "EHZVCrb7a064dEicTwrTYQYGXO99JqE2YERhbMP1qLogwJiy87OsBzC09Gk094Z-U_hg==@"
-      "com.netflix.mediaclient");
-  valid_android_form.signon_realm = valid_android_form.url.spec();
-  invalid_ulr_form.url = GURL("http/site:80");
-  invalid_ulr_form.signon_realm = valid_android_form.url.spec();
-
-  CredentialUIEntry valid_url_cred(valid_url_form);
-  CredentialUIEntry valid_android_cred(valid_android_form);
-  CredentialUIEntry invalid_ulr_cred(invalid_ulr_form);
-  presenter().AddCredentials(
-      {valid_url_cred, valid_android_cred, invalid_ulr_cred},
-      password_manager::PasswordForm::Type::kImported,
-      completion_callback.Get());
-  EXPECT_CALL(completion_callback,
-              Run(std::vector<SavedPasswordsPresenter::AddResult>{
-                  SavedPasswordsPresenter::AddResult::kSuccess,
-                  SavedPasswordsPresenter::AddResult::kSuccess,
-                  SavedPasswordsPresenter::AddResult::kInvalid}));
-  RunUntilIdle();
-
-  // Call RunUntilIdle again to await when SavedPasswordsPresenter obtain all
-  // the logins.
-  RunUntilIdle();
-  EXPECT_THAT(presenter().GetSavedCredentials(),
-              UnorderedElementsAre(valid_url_cred, valid_android_cred));
 }
 
 // Tests whether passwords added via AddPassword are saved to the correct store
@@ -1454,8 +1150,8 @@ TEST_F(SavedPasswordsPresenterTest, EditPasswordsInCredentialGroup) {
   grouped_facets[0].facets.push_back(std::move(facet));
   Facet facet2(FacetURI::FromPotentiallyInvalidSpec(form2.signon_realm));
   grouped_facets[0].facets.push_back(std::move(facet2));
-  EXPECT_CALL(affiliation_service(), GetAllGroups)
-      .WillRepeatedly(base::test::RunOnceCallback<0>(grouped_facets));
+  EXPECT_CALL(affiliation_service(), GetGroupingInfo)
+      .WillRepeatedly(base::test::RunOnceCallback<1>(grouped_facets));
 
   RunUntilIdle();
 
@@ -1506,8 +1202,8 @@ TEST_F(SavedPasswordsPresenterTest, DeletePasswordsInCredentialGroup) {
   grouped_facets[0].facets.push_back(std::move(facet));
   Facet facet2(FacetURI::FromPotentiallyInvalidSpec(form2.signon_realm));
   grouped_facets[0].facets.push_back(std::move(facet2));
-  EXPECT_CALL(affiliation_service(), GetAllGroups)
-      .WillRepeatedly(base::test::RunOnceCallback<0>(grouped_facets));
+  EXPECT_CALL(affiliation_service(), GetGroupingInfo)
+      .WillRepeatedly(base::test::RunOnceCallback<1>(grouped_facets));
 
   store().AddLogin(form);
   store().AddLogin(form2);
@@ -1679,12 +1375,14 @@ TEST_F(SavedPasswordsPresenterTest, GetAffiliatedGroups) {
   store().AddLogin(form3);
   store().AddLogin(blocked_form);
 
-  std::vector<password_manager::GroupedFacets> grouped_facets(1);
+  std::vector<password_manager::GroupedFacets> grouped_facets(2);
   grouped_facets[0].facets = {
       Facet(FacetURI::FromPotentiallyInvalidSpec(form1.signon_realm)),
       Facet(FacetURI::FromPotentiallyInvalidSpec(form2.signon_realm))};
-  EXPECT_CALL(affiliation_service(), GetAllGroups)
-      .WillRepeatedly(base::test::RunOnceCallback<0>(grouped_facets));
+  grouped_facets[1].facets = {
+      Facet(FacetURI::FromPotentiallyInvalidSpec(form3.signon_realm))};
+  EXPECT_CALL(affiliation_service(), GetGroupingInfo)
+      .WillRepeatedly(base::test::RunOnceCallback<1>(grouped_facets));
 
   RunUntilIdle();
 

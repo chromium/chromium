@@ -45,7 +45,48 @@ TEST(CalendarAPIResponseTypesTest, ParseEventList) {
   EXPECT_EQ(event.status(), CalendarEvent::EventStatus::kConfirmed);
   EXPECT_EQ(event.self_response_status(),
             CalendarEvent::ResponseStatus::kNeedsAction);
-  EXPECT_EQ(event.hangout_link(), "https://meet.google.com/jbe-test");
+}
+
+TEST(CalendarAPIResponseTypesTest, ParseConferenceDataUri) {
+  std::unique_ptr<base::Value> events =
+      test_util::LoadJSONFile("calendar/events.json");
+  ASSERT_TRUE(events.get());
+
+  ASSERT_EQ(base::Value::Type::DICT, events->type());
+  auto event_list = EventList::CreateFrom(*events);
+
+  EXPECT_EQ(3U, event_list->items().size());
+
+  const CalendarEvent& event = *event_list->items()[0];
+  EXPECT_EQ(event.conference_data_uri(), "https://meet.google.com/jbe-test");
+}
+
+TEST(CalendarAPIResponseTypesTest, ParseMissingConferenceDataUri) {
+  std::unique_ptr<base::Value> events =
+      test_util::LoadJSONFile("calendar/event_statuses.json");
+  ASSERT_TRUE(events.get());
+
+  ASSERT_EQ(base::Value::Type::DICT, events->type());
+  auto event_list = EventList::CreateFrom(*events);
+
+  EXPECT_EQ(4U, event_list->items().size());
+
+  for (auto& event : event_list->items()) {
+    EXPECT_TRUE(event->conference_data_uri().is_empty());
+  }
+}
+
+TEST(CalendarAPIResponseTypesTest, ParseInvalidConferenceDataUri) {
+  std::unique_ptr<base::Value> events = test_util::LoadJSONFile(
+      "calendar/event_with_invalid_conference_data_uri.json");
+  ASSERT_TRUE(events.get());
+
+  ASSERT_EQ(base::Value::Type::DICT, events->type());
+  auto event_list = EventList::CreateFrom(*events);
+
+  EXPECT_EQ(1U, event_list->items().size());
+
+  EXPECT_TRUE(event_list->items()[0]->conference_data_uri().is_empty());
 }
 
 TEST(CalendarAPIResponseTypesTest, ParseEventListWithCorrectEventStatuses) {

@@ -9,14 +9,11 @@
 #include <set>
 #include <string>
 
+#include "base/values.h"
 #include "net/base/auth.h"
 #include "net/base/net_export.h"
 
 template <class T> class scoped_refptr;
-
-namespace base {
-class Value;
-}
 
 namespace url {
 class SchemeHostPort;
@@ -157,7 +154,7 @@ class NET_EXPORT_PRIVATE HttpAuth {
       AuthorizationResult authorization_result);
 
   // Returns a value for logging an authorization result to a NetLog.
-  static base::Value NetLogAuthorizationResultParams(
+  static base::Value::Dict NetLogAuthorizationResultParams(
       const char* name,
       AuthorizationResult authorization_result);
 

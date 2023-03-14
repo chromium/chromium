@@ -15,7 +15,7 @@ IdentityPrivateSetConsentResultFunction::
 
 ExtensionFunction::ResponseAction
 IdentityPrivateSetConsentResultFunction::Run() {
-  std::unique_ptr<Params> params = Params::Create(args());
+  absl::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   IdentityAPI::GetFactoryInstance()

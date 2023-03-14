@@ -101,7 +101,7 @@ void CryptoModulePasswordDialogView::Init(const std::string& hostname,
           IDS_CRYPTO_MODULE_AUTH_DIALOG_TEXT_CERT_EXPORT, slot16);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_NORETURN();
   }
 
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();

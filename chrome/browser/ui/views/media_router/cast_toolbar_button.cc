@@ -230,12 +230,11 @@ void CastToolbarButton::LogIconChange(const gfx::VectorIcon* icon) {
   } else if (icon_ == &vector_icons::kMediaRouterWarningIcon) {
     logger_->LogInfo(mojom::LogCategory::kUi, kLoggerComponent,
                      "Cast toolbar icon shows a warning issue.", "", "", "");
-  } else if (icon_ == &vector_icons::kMediaRouterActiveIcon) {
+  } else {
+    CHECK_EQ(icon_, &vector_icons::kMediaRouterActiveIcon);
     logger_->LogInfo(mojom::LogCategory::kUi, kLoggerComponent,
                      "Cast toolbar icon is blue, indicating an active session.",
                      "", "", "");
-  } else {
-    NOTREACHED();
   }
 }
 

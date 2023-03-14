@@ -23,7 +23,14 @@ SyncSessionsWebContentsRouterFactory::GetInstance() {
 }
 
 SyncSessionsWebContentsRouterFactory::SyncSessionsWebContentsRouterFactory()
-    : ProfileKeyedServiceFactory("SyncSessionsWebContentsRouter") {}
+    : ProfileKeyedServiceFactory(
+          "SyncSessionsWebContentsRouter",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {}
 
 SyncSessionsWebContentsRouterFactory::~SyncSessionsWebContentsRouterFactory() =
     default;

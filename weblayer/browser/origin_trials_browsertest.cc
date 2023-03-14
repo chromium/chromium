@@ -76,7 +76,8 @@ class OriginTrialsBrowserTest : public WebLayerBrowserTest {
         "https", kTrialEnabledDomain, 443);
     return GetBrowserContext()
         ->GetOriginTrialsControllerDelegate()
-        ->GetPersistedTrialsForOrigin(origin, base::Time::Now());
+        ->GetPersistedTrialsForOrigin(origin, /*partition_origin*/ origin,
+                                      base::Time::Now());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

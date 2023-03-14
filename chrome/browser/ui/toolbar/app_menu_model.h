@@ -84,6 +84,9 @@ enum AppMenuAction {
   MENU_ACTION_CHROME_WHATS_NEW = 54,
   MENU_ACTION_LACROS_DATA_MIGRATION = 55,
   MENU_ACTION_MENU_OPENED = 56,
+  // Only used by ExtensionsMenuModel sub menu.
+  MENU_ACTION_VISIT_CHROME_WEB_STORE = 57,
+  MENU_ACTION_MANAGE_EXTENSIONS_VIA_EXT_MENU = 58,
   LIMIT_MENU_ACTION
 };
 
@@ -121,6 +124,23 @@ class ToolsMenuModel : public ui::SimpleMenuModel {
   void Build(Browser* browser);
 };
 
+class ExtensionsMenuModel : public ui::SimpleMenuModel {
+ public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kManageExtensionsMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kVisitChromeWebStoreMenuItem);
+
+  ExtensionsMenuModel(ui::SimpleMenuModel::Delegate* delegate,
+                      Browser* browser);
+
+  ExtensionsMenuModel(const ExtensionsMenuModel&) = delete;
+  ExtensionsMenuModel& operator=(const ExtensionsMenuModel&) = delete;
+
+  ~ExtensionsMenuModel() override;
+
+ private:
+  void Build(Browser* browser);
+};
+
 // A menu model that builds the contents of the app menu.
 class AppMenuModel : public ui::SimpleMenuModel,
                      public ui::SimpleMenuModel::Delegate,
@@ -130,6 +150,7 @@ class AppMenuModel : public ui::SimpleMenuModel,
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDownloadsMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHistoryMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kExtensionsMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMoreToolsMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kIncognitoMenuItem);
 

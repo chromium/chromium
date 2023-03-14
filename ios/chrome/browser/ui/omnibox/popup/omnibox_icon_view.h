@@ -19,8 +19,6 @@
 @property(nonatomic, weak) id<FaviconRetriever> faviconRetriever;
 /// Used to fetch other images (rich entities, answers, etc.)
 @property(nonatomic, weak) id<ImageRetriever> imageRetriever;
-/// Used for testing to check whether this view is displaying anything.
-@property(nonatomic, readonly) UIImage* mainImage;
 /// Same as UIImageView.
 @property(nonatomic, getter=isHighlighted) BOOL highlighted;
 

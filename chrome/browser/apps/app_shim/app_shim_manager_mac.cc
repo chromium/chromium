@@ -68,7 +68,7 @@ namespace {
 // https://crbug.com/1274236
 BASE_FEATURE(kAppShimProfileMenuIcons,
              "AppShimProfileMenuIcons",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // A crash key that is used when dumping because of errors when building and
 // verifying the app shim requirement.

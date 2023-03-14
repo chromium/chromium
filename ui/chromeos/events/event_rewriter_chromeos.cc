@@ -6,6 +6,7 @@
 
 #include <fcntl.h>
 #include <stddef.h>
+#include <cstdint>
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
@@ -23,14 +24,20 @@
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/chromeos/events/keyboard_capability.h"
 #include "ui/chromeos/events/mojom/modifier_key.mojom-shared.h"
 #include "ui/chromeos/events/pref_names.h"
 #include "ui/events/devices/device_data_manager.h"
+#include "ui/events/event.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/event_rewriter.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
+#include "ui/events/types/event_type.h"
 
 namespace ui {
 
@@ -43,6 +50,99 @@ const int kHotrodRemoteProductId = 0x21cc;
 // Flag masks for remapping alt+click or search+click to right click.
 constexpr int kAltLeftButton = (EF_ALT_DOWN | EF_LEFT_MOUSE_BUTTON);
 constexpr int kSearchLeftButton = (EF_COMMAND_DOWN | EF_LEFT_MOUSE_BUTTON);
+
+// Index of the remapped flags in the auto repeat usage metric.
+enum class AutoRepeatUsageModifierFlag : uint32_t {
+  kMeta = 0,
+  kControl = 1,
+  kAlt = 2,
+  kShift = 3,
+  kCapsLock = 4,
+  kNumModifierFlags
+};
+
+// Mapping between event flag to `AutoRepeatUsageModifierFlag` index for the
+// auto repeat usage metric.
+constexpr struct AutoRepeatUsageModifierMapping {
+  int event_flag;
+  AutoRepeatUsageModifierFlag auto_repeat_flag;
+} kEventFlagToAutoRepeatMetricFlag[] = {
+    {EF_COMMAND_DOWN, AutoRepeatUsageModifierFlag::kMeta},
+    {EF_CONTROL_DOWN, AutoRepeatUsageModifierFlag::kControl},
+    {EF_ALT_DOWN, AutoRepeatUsageModifierFlag::kAlt},
+    {EF_SHIFT_DOWN, AutoRepeatUsageModifierFlag::kShift},
+    {EF_CAPS_LOCK_ON, AutoRepeatUsageModifierFlag::kCapsLock},
+};
+
+// Amount to shift the bitset of modifiers to so they are left aligned at the
+// top of the 32 bit int.
+constexpr int kAutoRepeatUsageAmountToShiftModifierFlags =
+    ((sizeof(uint32_t) * 8) -
+     static_cast<int>(AutoRepeatUsageModifierFlag::kNumModifierFlags));
+
+// Number of bits reserved for potential new keyboard codes in the future
+// without breaking the auto repeat usage metric.
+constexpr int kAutoRepeatUsageNumBitsReservedForKeyboardCode = 16;
+static_assert(kAutoRepeatUsageAmountToShiftModifierFlags >=
+              kAutoRepeatUsageNumBitsReservedForKeyboardCode);
+
+// Records the usage of auto repeat in a sparse histogram. Keeps track of the
+// keyboard code + the modifier flags.
+// To decode:
+// Top `AutoRepeatUsageModifierFlag::kNumModifierFlags` bits are used to denote
+// modifier flags. See `AutoRepeatUsageModifierFlag` to decode the top bits.
+// The rest of the bits are used to store the `KeyboardCode` for the repeated
+// keypress. Currently, `kAutoRepeatUsageNumBitsReservedForKeyboardCode` are
+// reserved to allow the number of `KeyboardCode` values to expand in the future
+// without breaking this metric.
+void RecordAutoRepeatUsageMetric(
+    const KeyEvent& key_event,
+    const std::unique_ptr<Event>& rewritten_event) {
+  // Use original event if the event has not been rewritten.
+  const KeyEvent* auto_repeat_event = &key_event;
+  if (rewritten_event) {
+    auto_repeat_event = rewritten_event.get()->AsKeyEvent();
+  }
+
+  // Only want to record metrics if its a repeated keypressed event.
+  if (!(auto_repeat_event->flags() & EF_IS_REPEAT) ||
+      !(auto_repeat_event->type() & ET_KEY_PRESSED)) {
+    return;
+  }
+
+  // Apply remapped auto repeat event flags.
+  uint32_t auto_repeat_usage_modifier_flags = 0;
+  for (const auto& [event_flag, auto_repeat_flag] :
+       kEventFlagToAutoRepeatMetricFlag) {
+    if (auto_repeat_event->flags() & event_flag) {
+      auto_repeat_usage_modifier_flags |=
+          (1u << static_cast<uint32_t>(auto_repeat_flag));
+    }
+  }
+
+  UMA_HISTOGRAM_SPARSE("ChromeOS.Inputs.AutoRepeatUsage",
+                       ((auto_repeat_usage_modifier_flags
+                         << kAutoRepeatUsageAmountToShiftModifierFlags) +
+                        auto_repeat_event->key_code()));
+}
+
+using ModifierKeyUsageMetric = EventRewriterChromeOS::ModifierKeyUsageMetric;
+constexpr struct ModifierKeyUsageMapping {
+  DomCode code;
+  ModifierKeyUsageMetric modifier_key_enum;
+} modifier_key_usage_mappings[] = {
+    {DomCode::CONTROL_LEFT, ModifierKeyUsageMetric::kControlLeft},
+    {DomCode::CONTROL_RIGHT, ModifierKeyUsageMetric::kControlRight},
+    {DomCode::META_LEFT, ModifierKeyUsageMetric::kMetaLeft},
+    {DomCode::META_RIGHT, ModifierKeyUsageMetric::kMetaRight},
+    {DomCode::ALT_LEFT, ModifierKeyUsageMetric::kAltLeft},
+    {DomCode::ALT_RIGHT, ModifierKeyUsageMetric::kAltRight},
+    {DomCode::SHIFT_LEFT, ModifierKeyUsageMetric::kShiftLeft},
+    {DomCode::SHIFT_RIGHT, ModifierKeyUsageMetric::kShiftRight},
+    {DomCode::BACKSPACE, ModifierKeyUsageMetric::kBackspace},
+    {DomCode::ESCAPE, ModifierKeyUsageMetric::kEscape},
+    {DomCode::CAPS_LOCK, ModifierKeyUsageMetric::kCapsLock},
+    {DomCode::LAUNCH_ASSISTANT, ModifierKeyUsageMetric::kAssistant}};
 
 // Table of properties of remappable keys and/or remapping targets (not
 // strictly limited to "modifiers").
@@ -198,6 +298,11 @@ const ModifierRemapping* GetSearchRemappedKey(
   }
 
   return GetRemappedKey(pref_name, delegate);
+}
+
+bool ShouldRewriteMetaTopRowKeyComboEvents(
+    EventRewriterChromeOS::Delegate* delegate) {
+  return delegate && delegate->RewriteMetaTopRowKeyComboEvents();
 }
 
 bool IsISOLevel5ShiftUsedByCurrentInputMethod() {
@@ -770,16 +875,17 @@ EventDispatchDetails EventRewriterChromeOS::RewriteEvent(
   if ((event.type() == ET_KEY_PRESSED) || (event.type() == ET_KEY_RELEASED)) {
     std::unique_ptr<Event> rewritten_event;
     const base::Time key_rewrite_start_time = base::Time::Now();
+    DCHECK((&event)->AsKeyEvent());
     const EventRewriteStatus status =
         RewriteKeyEvent(*((&event)->AsKeyEvent()), &rewritten_event);
-    const EventDispatchDetails details = RewriteKeyEventInContext(
-        *((&event)->AsKeyEvent()), std::move(rewritten_event), status,
-        continuation);
+    RecordAutoRepeatUsageMetric(*((&event)->AsKeyEvent()), rewritten_event);
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "ChromeOS.Inputs.EventRewriter.KeyRewriteLatency",
         base::Time::Now() - key_rewrite_start_time, base::Microseconds(1),
         base::Milliseconds(100), 100);
-    return details;
+    return RewriteKeyEventInContext(*((&event)->AsKeyEvent()),
+                                    std::move(rewritten_event), status,
+                                    continuation);
   }
   if ((event.type() == ET_MOUSE_PRESSED) ||
       (event.type() == ET_MOUSE_RELEASED)) {
@@ -843,28 +949,13 @@ EventRewriterChromeOS::GetKeyboardTopRowLayout(
 bool EventRewriterChromeOS::HasAssistantKeyOnKeyboard(
     const InputDevice& keyboard_device,
     bool* has_assistant_key) {
-  const char kDevNameProperty[] = "DEVNAME";
-  std::string dev_name;
-  if (!GetDeviceProperty(keyboard_device.sys_path, kDevNameProperty,
-                         &dev_name) ||
-      dev_name.empty()) {
+  std::unique_ptr<EventDeviceInfo> devinfo =
+      KeyboardCapability::CreateEventDeviceInfoFromInputDevice(keyboard_device);
+  if (!devinfo) {
     return false;
   }
 
-  base::ScopedFD fd(open(dev_name.c_str(), O_RDONLY));
-  if (fd.get() < 0) {
-    LOG(ERROR) << "Cannot open " << dev_name.c_str() << " : " << errno;
-    return false;
-  }
-
-  EventDeviceInfo devinfo;
-  if (!devinfo.Initialize(fd.get(), keyboard_device.sys_path)) {
-    LOG(ERROR) << "Failed to get device information for "
-               << keyboard_device.sys_path.value();
-    return false;
-  }
-
-  *has_assistant_key = devinfo.HasKeyEvent(KEY_ASSISTANT);
+  *has_assistant_key = devinfo->HasKeyEvent(KEY_ASSISTANT);
   return true;
 }
 
@@ -1219,6 +1310,94 @@ bool EventRewriterChromeOS::ShouldRemapToRightClick(
          IsFromTouchpadDevice(mouse_event);
 }
 
+void EventRewriterChromeOS::RecordModifierKeyPressedAfterRemapping(
+    DomCode dom_code) {
+  const ModifierKeyUsageMapping* modifier_key_usage_mapping = nullptr;
+  for (const auto& mapping : modifier_key_usage_mappings) {
+    if (dom_code == mapping.code) {
+      modifier_key_usage_mapping = &mapping;
+      break;
+    }
+  }
+
+  if (modifier_key_usage_mapping == nullptr) {
+    return;
+  }
+
+  const auto device_type = GetLastKeyboardType();
+  switch (device_type) {
+    case KeyboardCapability::DeviceType::kDeviceInternalKeyboard:
+      UMA_HISTOGRAM_ENUMERATION(
+          "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.Internal",
+          modifier_key_usage_mapping->modifier_key_enum);
+      break;
+    case KeyboardCapability::DeviceType::kDeviceExternalAppleKeyboard:
+      UMA_HISTOGRAM_ENUMERATION(
+          "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.AppleExternal",
+          modifier_key_usage_mapping->modifier_key_enum);
+      break;
+    case KeyboardCapability::DeviceType::kDeviceExternalChromeOsKeyboard:
+      UMA_HISTOGRAM_ENUMERATION(
+          "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.CrOSExternal",
+          modifier_key_usage_mapping->modifier_key_enum);
+      break;
+    case KeyboardCapability::DeviceType::kDeviceExternalGenericKeyboard:
+    case KeyboardCapability::DeviceType::kDeviceExternalUnknown:
+      UMA_HISTOGRAM_ENUMERATION(
+          "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.External",
+          modifier_key_usage_mapping->modifier_key_enum);
+      break;
+    case KeyboardCapability::DeviceType::kDeviceHotrodRemote:
+    case KeyboardCapability::DeviceType::kDeviceVirtualCoreKeyboard:
+    case KeyboardCapability::DeviceType::kDeviceUnknown:
+      break;
+  }
+}
+
+void EventRewriterChromeOS::RecordModifierKeyPressedBeforeRemapping(
+    DomCode dom_code) {
+  const ModifierKeyUsageMapping* modifier_key_usage_mapping = nullptr;
+  for (const auto& mapping : modifier_key_usage_mappings) {
+    if (dom_code == mapping.code) {
+      modifier_key_usage_mapping = &mapping;
+      break;
+    }
+  }
+
+  if (modifier_key_usage_mapping == nullptr) {
+    return;
+  }
+
+  const auto device_type = GetLastKeyboardType();
+  switch (device_type) {
+    case KeyboardCapability::DeviceType::kDeviceInternalKeyboard:
+      UMA_HISTOGRAM_ENUMERATION(
+          "ChromeOS.Inputs.Keyboard.ModifierPressed.Internal",
+          modifier_key_usage_mapping->modifier_key_enum);
+      break;
+    case KeyboardCapability::DeviceType::kDeviceExternalAppleKeyboard:
+      UMA_HISTOGRAM_ENUMERATION(
+          "ChromeOS.Inputs.Keyboard.ModifierPressed.AppleExternal",
+          modifier_key_usage_mapping->modifier_key_enum);
+      break;
+    case KeyboardCapability::DeviceType::kDeviceExternalChromeOsKeyboard:
+      UMA_HISTOGRAM_ENUMERATION(
+          "ChromeOS.Inputs.Keyboard.ModifierPressed.CrOSExternal",
+          modifier_key_usage_mapping->modifier_key_enum);
+      break;
+    case KeyboardCapability::DeviceType::kDeviceExternalGenericKeyboard:
+    case KeyboardCapability::DeviceType::kDeviceExternalUnknown:
+      UMA_HISTOGRAM_ENUMERATION(
+          "ChromeOS.Inputs.Keyboard.ModifierPressed.External",
+          modifier_key_usage_mapping->modifier_key_enum);
+      break;
+    case KeyboardCapability::DeviceType::kDeviceHotrodRemote:
+    case KeyboardCapability::DeviceType::kDeviceVirtualCoreKeyboard:
+    case KeyboardCapability::DeviceType::kDeviceUnknown:
+      break;
+  }
+}
+
 EventRewriteStatus EventRewriterChromeOS::RewriteKeyEvent(
     const KeyEvent& key_event,
     std::unique_ptr<Event>* rewritten_event) {
@@ -1233,6 +1412,13 @@ EventRewriteStatus EventRewriterChromeOS::RewriteKeyEvent(
     return EVENT_REWRITE_DISCARD;
   }
 
+  // Records metric if the `key_event` is for a modifier key press event.
+  const bool should_record_modifier_key_press_metrics =
+      !(key_event.flags() & EF_IS_REPEAT) && key_event.type() == ET_KEY_PRESSED;
+  if (should_record_modifier_key_press_metrics) {
+    RecordModifierKeyPressedBeforeRemapping(key_event.code());
+  }
+
   MutableKeyState state = {key_event.flags(), key_event.code(),
                            key_event.GetDomKey(), key_event.key_code()};
 
@@ -1243,11 +1429,18 @@ EventRewriteStatus EventRewriterChromeOS::RewriteKeyEvent(
     // done to the key event. It will only return true if the key event is
     // rewritten to ALTGR. A false return is not an error.
     if (RewriteModifierKeys(key_event, &state)) {
+      if (should_record_modifier_key_press_metrics) {
+        RecordModifierKeyPressedAfterRemapping(state.code);
+      }
       // Early exit with completed event.
       BuildRewrittenKeyEvent(key_event, state, rewritten_event);
       return EVENT_REWRITE_REWRITTEN;
     }
     RewriteNumPadKeys(key_event, &state);
+  }
+
+  if (should_record_modifier_key_press_metrics) {
+    RecordModifierKeyPressedAfterRemapping(state.code);
   }
 
   if (delegate_ &&
@@ -1640,6 +1833,8 @@ void EventRewriterChromeOS::RewriteFunctionKeys(const KeyEvent& key_event,
   }
 
   const bool search_is_pressed = (state->flags & EF_COMMAND_DOWN) != 0;
+  const bool flip_remapping =
+      ShouldRewriteMetaTopRowKeyComboEvents(delegate_) && search_is_pressed;
   if (layout ==
       KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom) {
     if (RewriteTopRowKeysForCustomLayout(key_event.source_device_id(),
@@ -1655,13 +1850,18 @@ void EventRewriterChromeOS::RewriteFunctionKeys(const KeyEvent& key_event,
       return;
     }
   } else if ((state->key_code >= VKEY_F1) && (state->key_code <= VKEY_F12)) {
-    //  Search? Top Row   Result
-    //  ------- --------  ------
-    //  No      Fn        Unchanged
-    //  No      System    Fn -> System
-    //  Yes     Fn        Fn -> System
-    //  Yes     System    Search+Fn -> Fn
-    if (ForceTopRowAsFunctionKeys() == search_is_pressed) {
+    //  Search? Top Row  Rewrite Meta F-Key Result
+    //  ------- -------- ------------------ ------
+    //  No      Fn       Yes                Unchanged
+    //  No      System   Yes                Fn -> System
+    //  Yes     Fn       Yes                Fn -> System
+    //  Yes     System   Yes                Search+Fn -> Fn
+    //  No      Fn       No                 Unchanged
+    //  No      System   No                 Fn -> System
+    //  Yes     Fn       No                 Unchanged
+    //  Yes     System   No                 Unchanged
+    if (ForceTopRowAsFunctionKeys(key_event.source_device_id()) ==
+        flip_remapping) {
       // Rewrite the F1-F12 keys on a Chromebook keyboard to system keys.
       // This is the original Chrome OS layout.
       static const KeyboardRemapping kFkeysToSystemKeys1[] = {
@@ -1746,10 +1946,16 @@ void EventRewriterChromeOS::RewriteFunctionKeys(const KeyEvent& key_event,
       incoming_without_command.flags &= ~EF_COMMAND_DOWN;
       if (RewriteWithKeyboardRemappings(mapping, mappingSize,
                                         incoming_without_command, state)) {
+        // If the remapping was not supposed to be flipped and search is
+        // pressed, the search flag must be added back.
+        if (!flip_remapping && search_is_pressed) {
+          state->flags |= EF_COMMAND_DOWN;
+        }
         return;
       }
-    } else if (search_is_pressed) {
-      // Allow Search to avoid rewriting F1-F12.
+    } else if (flip_remapping) {
+      // If we were supposed to flip the remapping, that means we should remove
+      // the search flag.
       state->flags &= ~EF_COMMAND_DOWN;
       return;
     }
@@ -2007,16 +2213,24 @@ bool EventRewriterChromeOS::StoreCustomTopRowMapping(
 // Additionally, these keyboards provide the mapping via sysfs so each
 // new keyboard does not need to be explicitly special cased in the future.
 //
-//  Search  Force function keys Key code   Result
-//  ------- ------------------- --------   ------
-//  No        No                Function   Unchanged
-//  Yes       No                Function   Unchanged
-//  No        Yes               Function   Unchanged
-//  Yes       Yes               Function   Unchanged
-//  No        No                Action     Unchanged
-//  Yes       No                Action     Action -> Fn
-//  No        Yes               Action     Action -> Fn
-//  Yes       Yes               Action     Unchanged
+//  Search  Force function keys Rewrite Meta F-Key  Key code   Result
+//  ------- ------------------- ------------------  --------   ------
+//  No        No                Yes                 Function   Unchanged
+//  Yes       No                Yes                 Function   Unchanged
+//  No        Yes               Yes                 Function   Unchanged
+//  Yes       Yes               Yes                 Function   Unchanged
+//  No        No                Yes                 Action     Unchanged
+//  Yes       No                Yes                 Action     Action -> Fn
+//  No        Yes               Yes                 Action     Action -> Fn
+//  Yes       Yes               Yes                 Action     Unchanged
+//  No        No                No                  Function   Unchanged
+//  Yes       No                No                  Function   Unchanged
+//  No        Yes               No                  Function   Unchanged
+//  Yes       Yes               No                  Function   Unchanged
+//  No        No                No                  Action     Unchanged
+//  Yes       No                No                  Action     Unchanged
+//  No        Yes               No                  Action     Unchanged
+//  Yes       Yes               No                  Action     Unchanged
 bool EventRewriterChromeOS::RewriteTopRowKeysForCustomLayout(
     int device_id,
     const KeyEvent& key_event,
@@ -2026,6 +2240,9 @@ bool EventRewriterChromeOS::RewriteTopRowKeysForCustomLayout(
   if (IsCustomLayoutFunctionKey(key_event.key_code())) {
     return true;
   }
+
+  const bool flip_remapping =
+      ShouldRewriteMetaTopRowKeyComboEvents(delegate_) && search_is_pressed;
 
   const auto& scan_code_map_iter = top_row_scan_code_map_.find(device_id);
   if (scan_code_map_iter == top_row_scan_code_map_.end()) {
@@ -2040,13 +2257,17 @@ bool EventRewriterChromeOS::RewriteTopRowKeysForCustomLayout(
   // If the scan code appears in the top row mapping it is an action key.
   const bool is_action_key = (key_iter != scan_code_map.end());
   if (is_action_key) {
-    if (search_is_pressed != ForceTopRowAsFunctionKeys()) {
+    if (flip_remapping !=
+        ForceTopRowAsFunctionKeys(key_event.source_device_id())) {
       ApplyRemapping(key_iter->second, state);
     }
 
-    // Clear command/search key if pressed. It's been consumed in the remapping
-    // or wasn't pressed.
-    state->flags &= ~EF_COMMAND_DOWN;
+    // Clear command/search key if pressed and we were supposed to perform a
+    // remapping.
+    if (flip_remapping) {
+      state->flags &= ~EF_COMMAND_DOWN;
+    }
+
     return true;
   }
 
@@ -2059,16 +2280,24 @@ bool EventRewriterChromeOS::RewriteTopRowKeysForCustomLayout(
 // force-function-key preference, function keys have to be mapped to action keys
 // or vice versa.
 //
-//  Search  force function keys key code   Result
-//  ------- ------------------- --------   ------
-//  No        No                Function   Unchanged
-//  Yes       No                Function   Fn -> Action
-//  No        Yes               Function   Unchanged
-//  Yes       Yes               Function   Fn -> Action
-//  No        No                Action     Unchanged
-//  Yes       No                Action     Action -> Fn
-//  No        Yes               Action     Action -> Fn
-//  Yes       Yes               Action     Unchanged
+//  Search  Force function keys Rewrite Meta F-Key  Key code   Result
+//  ------- ------------------- ------------------  --------   ------
+//  No      No                  Yes                 Function   Unchanged
+//  Yes     No                  Yes                 Function   Fn -> Action
+//  No      Yes                 Yes                 Function   Unchanged
+//  Yes     Yes                 Yes                 Function   Fn -> Action
+//  No      No                  Yes                 Action     Unchanged
+//  Yes     No                  Yes                 Action     Action -> Fn
+//  No      Yes                 Yes                 Action     Action -> Fn
+//  Yes     Yes                 Yes                 Action     Unchanged
+//  No      No                  No                  Function   Unchanged
+//  Yes     No                  No                  Function   Unchanged
+//  No      Yes                 No                  Function   Unchanged
+//  Yes     Yes                 No                  Function   Unchanged
+//  No      No                  No                  Action     Unchanged
+//  Yes     No                  No                  Action     Unchanged
+//  No      Yes                 No                  Action     Action -> Fn
+//  Yes     Yes                 No                  Action     Action -> Fn
 bool EventRewriterChromeOS::RewriteTopRowKeysForLayoutWilco(
     const KeyEvent& key_event,
     bool search_is_pressed,
@@ -2145,14 +2374,17 @@ bool EventRewriterChromeOS::RewriteTopRowKeysForLayoutWilco(
       {{EF_NONE, VKEY_PRIVACY_SCREEN_TOGGLE},
        {EF_NONE, DomCode::F12, DomKey::F12, VKEY_F12}},
   };
-
-  MutableKeyState incoming_without_command = *state;
-  incoming_without_command.flags &= ~EF_COMMAND_DOWN;
+  const bool flip_remapping =
+      ShouldRewriteMetaTopRowKeyComboEvents(delegate_) && search_is_pressed;
+  MutableKeyState incoming_with_command_removed_if_neccessary = *state;
+  if (flip_remapping) {
+    incoming_with_command_removed_if_neccessary.flags &= ~EF_COMMAND_DOWN;
+  }
 
   if ((state->key_code >= VKEY_F1) && (state->key_code <= VKEY_F12)) {
     // Incoming key code is a Fn key. Check if it needs to be mapped back to its
     // corresponding action key.
-    if (search_is_pressed) {
+    if (flip_remapping) {
       // On some Drallion devices, F12 shares a key with privacy screen toggle.
       // Account for this before rewriting for Wilco 1.0 layout.
       if (layout == KeyboardCapability::KeyboardTopRowLayout::
@@ -2162,31 +2394,35 @@ bool EventRewriterChromeOS::RewriteTopRowKeysForLayoutWilco(
           state->key_code = VKEY_PRIVACY_SCREEN_TOGGLE;
           state->code = DomCode::PRIVACY_SCREEN_TOGGLE;
         }
-        // Clear command flag before returning
+        // Clear command flag if the remapping should be flipped.
         state->flags = (state->flags & ~EF_COMMAND_DOWN);
         return true;
       }
-      return RewriteWithKeyboardRemappings(kFnkeysToActionKeys,
-                                           std::size(kFnkeysToActionKeys),
-                                           incoming_without_command, state);
+      return RewriteWithKeyboardRemappings(
+          kFnkeysToActionKeys, std::size(kFnkeysToActionKeys),
+          incoming_with_command_removed_if_neccessary, state);
     }
     return true;
   } else if (IsKeyCodeInMappings(state->key_code, kActionToFnKeys,
                                  std::size(kActionToFnKeys))) {
     // Incoming key code is an action key. Check if it needs to be mapped back
     // to its corresponding function key.
-    if (search_is_pressed != ForceTopRowAsFunctionKeys()) {
+    if (flip_remapping !=
+        ForceTopRowAsFunctionKeys(key_event.source_device_id())) {
       // On Drallion, mirror mode toggle is on its own key so don't remap it.
       if (layout == KeyboardCapability::KeyboardTopRowLayout::
                         kKbdTopRowLayoutDrallion &&
           MatchKeyboardRemapping(*state, {EF_CONTROL_DOWN, VKEY_ZOOM})) {
-        // Clear command flag before returning
-        state->flags = (state->flags & ~EF_COMMAND_DOWN);
+        // Clear command flag before returning if the remapping should be
+        // flipped.
+        if (flip_remapping) {
+          state->flags = (state->flags & ~EF_COMMAND_DOWN);
+        }
         return true;
       }
-      return RewriteWithKeyboardRemappings(kActionToFnKeys,
-                                           std::size(kActionToFnKeys),
-                                           incoming_without_command, state);
+      return RewriteWithKeyboardRemappings(
+          kActionToFnKeys, std::size(kActionToFnKeys),
+          incoming_with_command_removed_if_neccessary, state);
     }
     // Remap Privacy Screen Toggle to F12 on Drallion devices that do not have
     // privacy screens.
@@ -2198,19 +2434,19 @@ bool EventRewriterChromeOS::RewriteTopRowKeysForLayoutWilco(
       state->code = DomCode::F12;
       state->key = DomKey::F12;
     }
-    // At this point we know search_is_pressed == ForceTopRowAsFunctionKeys().
-    // If they're both true, they cancel each other. Thus we can clear the
-    // search-key modifier flag.
-    state->flags &= ~EF_COMMAND_DOWN;
-
+    // If the mapping should be flipped when command is down, the flag needs to
+    // be cleared.
+    if (flip_remapping) {
+      state->flags &= ~EF_COMMAND_DOWN;
+    }
     return true;
   }
 
   return false;
 }
 
-bool EventRewriterChromeOS::ForceTopRowAsFunctionKeys() const {
-  return delegate_ && delegate_->TopRowKeysAreFunctionKeys();
+bool EventRewriterChromeOS::ForceTopRowAsFunctionKeys(int device_id) const {
+  return delegate_ && delegate_->TopRowKeysAreFunctionKeys(device_id);
 }
 
 KeyboardCapability::DeviceType EventRewriterChromeOS::KeyboardDeviceAdded(

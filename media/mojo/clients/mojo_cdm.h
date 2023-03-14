@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -115,6 +116,9 @@ class MojoCdm final : public ContentDecryptionModule,
   void OnNewSessionCdmPromiseResult(uint32_t promise_id,
                                     mojom::CdmPromiseResultPtr result,
                                     const std::string& session_id);
+
+  // Helper for rejecting promises when connection lost.
+  void RejectPromiseConnectionLost(uint32_t promise_id);
 
   THREAD_CHECKER(thread_checker_);
 

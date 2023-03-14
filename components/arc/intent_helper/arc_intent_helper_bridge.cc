@@ -84,11 +84,6 @@ enum class ArcIntentHelperOpenType {
   kMaxValue = WEB_APP,
 };
 
-// Records Arc.IntentHelper.OpenType UMA histogram.
-void RecordOpenType(ArcIntentHelperOpenType type) {
-  UMA_HISTOGRAM_ENUMERATION("Arc.IntentHelper.OpenType", type);
-}
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class OpenIntentAction {
@@ -211,13 +206,11 @@ void ArcIntentHelperBridge::OnIntentFiltersUpdated(
 
 void ArcIntentHelperBridge::OnOpenDownloads() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  RecordOpenType(ArcIntentHelperOpenType::DOWNLOADS);
   ash::NewWindowDelegate::GetInstance()->OpenDownloadsFolder();
 }
 
 void ArcIntentHelperBridge::OnOpenUrl(const std::string& url) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  RecordOpenType(ArcIntentHelperOpenType::URL);
   // Converts |url| to a fixed-up one and checks validity.
   const GURL gurl(url_formatter::FixupURL(url, /*desired_tld=*/std::string()));
   if (!gurl.is_valid())
@@ -231,7 +224,6 @@ void ArcIntentHelperBridge::OnOpenCustomTab(const std::string& url,
                                             int32_t task_id,
                                             OnOpenCustomTabCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  RecordOpenType(ArcIntentHelperOpenType::CUSTOM_TAB);
   // Converts |url| to a fixed-up one and checks validity.
   const GURL gurl(url_formatter::FixupURL(url, /*desired_tld=*/std::string()));
   if (!gurl.is_valid() ||
@@ -244,7 +236,6 @@ void ArcIntentHelperBridge::OnOpenCustomTab(const std::string& url,
 
 void ArcIntentHelperBridge::OnOpenChromePage(mojom::ChromePage page) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  RecordOpenType(ArcIntentHelperOpenType::CHROME_PAGE);
 
   g_open_url_delegate->OpenChromePageFromArc(page);
 }
@@ -256,13 +247,11 @@ void ArcIntentHelperBridge::FactoryResetArc() {
 
 void ArcIntentHelperBridge::OpenWallpaperPicker() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  RecordOpenType(ArcIntentHelperOpenType::WALLPAPER_PICKER);
   ash::WallpaperController::Get()->OpenWallpaperPickerIfAllowed();
 }
 
 void ArcIntentHelperBridge::OpenVolumeControl() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  RecordOpenType(ArcIntentHelperOpenType::VOLUME_CONTROL);
   auto* audio = ArcAudioBridge::GetForBrowserContext(context_);
   DCHECK(audio);
   audio->ShowVolumeControls();
@@ -270,7 +259,6 @@ void ArcIntentHelperBridge::OpenVolumeControl() {
 
 void ArcIntentHelperBridge::OnOpenWebApp(const std::string& url) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  RecordOpenType(ArcIntentHelperOpenType::WEB_APP);
   // Converts |url| to a fixed-up one and checks validity.
   const GURL gurl(url_formatter::FixupURL(url, /*desired_tld=*/std::string()));
 
@@ -364,7 +352,6 @@ void ArcIntentHelperBridge::OnOpenAppWithIntent(
     arc::mojom::LaunchIntentPtr intent) {
   // Web app launches should only be invoked on HTTPS URLs.
   if (CanOpenWebAppForUrl(start_url)) {
-    RecordOpenType(ArcIntentHelperOpenType::WEB_APP);
     RecordOpenAppIntentAction(intent);
 
     g_open_url_delegate->OpenAppWithIntent(start_url, std::move(intent));

@@ -90,8 +90,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ReservationOffsetTable {
     uint16_t offsets[kReservationOffsetTableLength] = {};
 
     constexpr _ReservationOffsetTable() {
-      for (uint16_t& offset : offsets)
+      for (uint16_t& offset : offsets) {
         offset = kOffsetTagNotAllocated;
+      }
     }
   };
 #if BUILDFLAG(HAS_64_BIT_POINTERS)
@@ -106,7 +107,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ReservationOffsetTable {
   static PA_CONSTINIT _PaddedReservationOffsetTables
       padded_reservation_offset_tables_ PA_PKEY_ALIGN;
 #else
-    // A single table for the entire 32-bit address space.
+  // A single table for the entire 32-bit address space.
   static PA_CONSTINIT struct _ReservationOffsetTable reservation_offset_table_;
 #endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
 };
@@ -193,8 +194,9 @@ PA_ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(uintptr_t address) {
 #endif  // BUILDFLAG(PA_DCHECK_IS_ON)
   uint16_t* offset_ptr = ReservationOffsetPointer(address);
   PA_DCHECK(*offset_ptr != kOffsetTagNotAllocated);
-  if (*offset_ptr == kOffsetTagNormalBuckets)
+  if (*offset_ptr == kOffsetTagNormalBuckets) {
     return 0;
+  }
   uintptr_t reservation_start = ComputeReservationStart(address, offset_ptr);
 #if BUILDFLAG(PA_DCHECK_IS_ON)
   // MSVC workaround: the preprocessor seems to choke on an `#if` embedded
@@ -240,8 +242,9 @@ GetDirectMapReservationStart(uintptr_t address,
             address);
   uint16_t* offset_ptr = ReservationOffsetPointer(pool, offset_in_pool);
   PA_DCHECK(*offset_ptr != kOffsetTagNotAllocated);
-  if (*offset_ptr == kOffsetTagNormalBuckets)
+  if (*offset_ptr == kOffsetTagNormalBuckets) {
     return 0;
+  }
   uintptr_t reservation_start = ComputeReservationStart(address, offset_ptr);
   PA_DCHECK(*ReservationOffsetPointer(reservation_start) == 0);
   return reservation_start;

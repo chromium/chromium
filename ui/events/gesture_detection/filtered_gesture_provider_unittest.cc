@@ -155,4 +155,15 @@ TEST_F(FilteredGestureProviderTest, TouchMovedBeyondSlopRegion_MultiTouch) {
   }
 }
 
+// Extra cancel events should be handled gracefully: https://crbug.com/1407442
+TEST_F(FilteredGestureProviderTest, ExtraCancel) {
+  GestureProvider::Config config;
+  FilteredGestureProvider provider(config, this);
+
+  test::MockMotionEvent event(MotionEvent::Action::CANCEL, base::TimeTicks(), 0,
+                              0);
+  auto result = provider.OnTouchEvent(event);
+  EXPECT_FALSE(result.succeeded);
+}
+
 }  // namespace ui

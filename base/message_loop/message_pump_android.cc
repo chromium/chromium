@@ -8,7 +8,6 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <jni.h>
-#include <linux/time.h>
 #include <sys/eventfd.h>
 #include <sys/syscall.h>
 #include <sys/types.h>
@@ -23,8 +22,6 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
-#include "base/task/task_features.h"
-#include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 
 // Android stripped sys/timerfd.h out of their platform headers, so we have to
@@ -86,51 +83,10 @@ STACK_ALIGN int DelayedLooperCallback(int fd, int events, void* data) {
   return 1;  // continue listening for events
 }
 
-STACK_ALIGN int ResumeNonDelayedLooperCallback(int fd, int events, void* data) {
-  if (events & ALOOPER_EVENT_HANGUP)
-    return 0;
-
-  DCHECK(events & ALOOPER_EVENT_INPUT);
-  MessagePumpForUI* pump = reinterpret_cast<MessagePumpForUI*>(data);
-  pump->OnResumeNonDelayedLooperCallback();
-  return 1;  // continue listening for events
-}
-
 // A bit added to the |non_delayed_fd_| to keep it signaled when we yield to
 // native work below.
 constexpr uint64_t kTryNativeWorkBeforeIdleBit = uint64_t(1) << 32;
 }  // namespace
-
-void ClearTimerFD(int timer_fd) {
-  // Clear the fd.
-  uint64_t value;
-  long ret = read(timer_fd, &value, sizeof(value));
-
-  // TODO(mthiesse): Figure out how it's possible to hit EAGAIN here.
-  // According to http://man7.org/linux/man-pages/man2/timerfd_create.2.html
-  // EAGAIN only happens if no timer has expired. Also according to the man page
-  // poll only returns readable when a timer has expired. So this function will
-  // only be called when a timer has expired, but reading reveals no timer has
-  // expired...
-  // The functions that use ClearTimerFD are OnResumeNonDelayedLooperCallback(),
-  // OnDelayedLooperCallback(). For Resume only Quit() and
-  // ScheduleWorkWithDelay() touch its timer, and similarly for Delayed only
-  // Quit() and ScheduleDelayedWork() do, but all of them run on the same thread
-  // as this callback so there are no obvious timing or multi-threading related
-  // issues.
-  DPCHECK(ret >= 0 || errno == EAGAIN);
-}
-
-itimerspec GetTimerSpecDelay(base::TimeDelta yield_duration) {
-  struct itimerspec ts;
-  int64_t nanos = yield_duration.InNanoseconds();
-  ts.it_interval.tv_sec = 0;  // Don't repeat.
-  ts.it_interval.tv_nsec = 0;
-  ts.it_value.tv_sec =
-      static_cast<time_t>(nanos / TimeTicks::kNanosecondsPerSecond);
-  ts.it_value.tv_nsec = nanos % TimeTicks::kNanosecondsPerSecond;
-  return ts;
-}
 
 MessagePumpForUI::MessagePumpForUI()
     : env_(base::android::AttachCurrentThread()) {
@@ -142,9 +98,6 @@ MessagePumpForUI::MessagePumpForUI()
   CHECK_NE(non_delayed_fd_, -1);
   DCHECK_EQ(TimeTicks::GetClock(), TimeTicks::Clock::LINUX_CLOCK_MONOTONIC);
 
-  resume_after_yielding_non_delayed_fd_ = checked_cast<int>(
-      timerfd_create(CLOCK_MONOTONIC, O_NONBLOCK | O_CLOEXEC));
-  CHECK_NE(resume_after_yielding_non_delayed_fd_, -1);
   // We can't create the timerfd with TFD_NONBLOCK | TFD_CLOEXEC as we can't
   // include timerfd.h. See comments above on __NR_timerfd_create. It looks like
   // they're just aliases to O_NONBLOCK and O_CLOEXEC anyways, so this should be
@@ -159,9 +112,6 @@ MessagePumpForUI::MessagePumpForUI()
   ALooper_acquire(looper_);
   ALooper_addFd(looper_, non_delayed_fd_, 0, ALOOPER_EVENT_INPUT,
                 &NonDelayedLooperCallback, reinterpret_cast<void*>(this));
-  ALooper_addFd(looper_, resume_after_yielding_non_delayed_fd_, 0,
-                ALOOPER_EVENT_INPUT, &ResumeNonDelayedLooperCallback,
-                reinterpret_cast<void*>(this));
   ALooper_addFd(looper_, delayed_fd_, 0, ALOOPER_EVENT_INPUT,
                 &DelayedLooperCallback, reinterpret_cast<void*>(this));
 }
@@ -169,19 +119,15 @@ MessagePumpForUI::MessagePumpForUI()
 MessagePumpForUI::~MessagePumpForUI() {
   DCHECK_EQ(ALooper_forThread(), looper_);
   ALooper_removeFd(looper_, non_delayed_fd_);
-  ALooper_removeFd(looper_, resume_after_yielding_non_delayed_fd_);
   ALooper_removeFd(looper_, delayed_fd_);
   ALooper_release(looper_);
   looper_ = nullptr;
 
   close(non_delayed_fd_);
-  close(resume_after_yielding_non_delayed_fd_);
   close(delayed_fd_);
 }
 
 void MessagePumpForUI::OnDelayedLooperCallback() {
-  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("base"),
-              "MessagePumpForUI::OnDelayedLooperCallback");
   // There may be non-Chromium callbacks on the same ALooper which may have left
   // a pending exception set, and ALooper does not check for this between
   // callbacks. Check here, and if there's already an exception, just skip this
@@ -195,8 +141,20 @@ void MessagePumpForUI::OnDelayedLooperCallback() {
   if (ShouldQuit())
     return;
 
-  ClearTimerFD(delayed_fd_);
+  // Clear the fd.
+  uint64_t value;
+  long ret = read(delayed_fd_, &value, sizeof(value));
 
+  // TODO(mthiesse): Figure out how it's possible to hit EAGAIN here.
+  // According to http://man7.org/linux/man-pages/man2/timerfd_create.2.html
+  // EAGAIN only happens if no timer has expired. Also according to the man page
+  // poll only returns readable when a timer has expired. So this function will
+  // only be called when a timer has expired, but reading reveals no timer has
+  // expired...
+  // Quit() and ScheduleDelayedWork() are the only other functions that touch
+  // the timerfd, and they both run on the same thread as this callback, so
+  // there are no obvious timing or multi-threading related issues.
+  DPCHECK(ret >= 0 || errno == EAGAIN);
   DoDelayedLooperWork();
 }
 
@@ -218,31 +176,7 @@ void MessagePumpForUI::DoDelayedLooperWork() {
     ScheduleDelayedWork(next_work_info);
 }
 
-void MessagePumpForUI::OnResumeNonDelayedLooperCallback() {
-  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("base"),
-              "MessagePumpForUI::OnResumeNonDelayedLooperCallback");
-  // There may be non-Chromium callbacks on the same ALooper which may have left
-  // a pending exception set, and ALooper does not check for this between
-  // callbacks. Check here, and if there's already an exception, just skip this
-  // iteration without clearing the fd. If the exception ends up being non-fatal
-  // then we'll just get called again on the next polling iteration.
-  if (base::android::HasException(env_))
-    return;
-
-  // ALooper_pollOnce may call this after Quit() if OnNonDelayedLooperCallback()
-  // resulted in Quit() in the same round.
-  if (ShouldQuit())
-    return;
-
-  ClearTimerFD(resume_after_yielding_non_delayed_fd_);
-
-  // Resume the execution of the non delayed fd normally after the yield.
-  DoNonDelayedLooperWork(false);
-}
-
 void MessagePumpForUI::OnNonDelayedLooperCallback() {
-  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("base"),
-              "MessagePumpForUI::OnNonDelayedLooperCallback");
   // There may be non-Chromium callbacks on the same ALooper which may have left
   // a pending exception set, and ALooper does not check for this between
   // callbacks. Check here, and if there's already an exception, just skip this
@@ -288,11 +222,7 @@ void MessagePumpForUI::DoNonDelayedLooperWork(bool do_idle_work) {
     // chance to run. This is useful when user input is waiting for native to
     // have a chance to run.
     if (next_work_info.is_immediate() && next_work_info.yield_to_native) {
-      // We should delay calling the DoNonDelayedLooperWork for a some time
-      // because epoll doesn't guarantee the event handling in the order of
-      // arrival, by delaying the call back by yield_duration_, we increase
-      // the likelihood of picking a different starved fd.
-      ScheduleWorkWithDelay();
+      ScheduleWork();
       return;
     }
   } while (next_work_info.is_immediate());
@@ -304,7 +234,7 @@ void MessagePumpForUI::DoNonDelayedLooperWork(bool do_idle_work) {
     return;
 
   // Before declaring this loop idle, yield to native work items and arrange to
-  // be called again (unless we're already in that second call).non_delayed_fd_
+  // be called again (unless we're already in that second call).
   if (!do_idle_work) {
     ScheduleWorkInternal(/*do_idle_work=*/true);
     return;
@@ -333,7 +263,6 @@ void MessagePumpForUI::DoNonDelayedLooperWork(bool do_idle_work) {
   // are still queued up.
   DoIdleWork();
   if (!next_work_info.delayed_run_time.is_max()) {
-    TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("base"), "ScheduleWorkIsMax");
     ScheduleDelayedWork(next_work_info);
   }
 }
@@ -343,7 +272,6 @@ void MessagePumpForUI::DoIdleWork() {
     // If DoIdleWork() resulted in any work, we're not idle yet. We need to pump
     // the loop here because we may in fact be idle after doing idle work
     // without any new tasks being queued.
-    TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("base"), "DoIdleWorkScheduleWork");
     ScheduleWork();
   }
 }
@@ -377,8 +305,6 @@ void MessagePumpForUI::Quit() {
   int64_t value;
   // Clear any pending timer.
   read(delayed_fd_, &value, sizeof(value));
-  // Clear any pending timer.
-  read(resume_after_yielding_non_delayed_fd_, &value, sizeof(value));
   // Clear the eventfd.
   read(non_delayed_fd_, &value, sizeof(value));
 
@@ -405,35 +331,14 @@ void MessagePumpForUI::ScheduleWorkInternal(bool do_idle_work) {
   // the read and write APIs for this file descriptor work, specifically without
   // EFD_SEMAPHORE.
   // Note: Calls with |do_idle_work| set to true may race with potential calls
-  // where the parameter is false. This is fine as write() is adding
-  // |value|,do_idle_work have their values added together. Since idle work is
-  // only executed when the value read equals kTryNativeWorkBeforeIdleBit, a
-  // race would prevent idle work from being run and trigger another call to
-  // this method with |do_idle_work| set to true.delayed_fd_
-
-  TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("base"),
-               "MessagePumpForUI::ScheduleWorkInternal", "do_idle_work",
-               do_idle_work);
-
+  // where the parameter is false. This is fine as write() is adding |value|,
+  // not overwriting the existing value, and as such racing calls would merely
+  // have their values added together. Since idle work is only executed when the
+  // value read equals kTryNativeWorkBeforeIdleBit, a race would prevent idle
+  // work from being run and trigger another call to this method with
+  // |do_idle_work| set to true.
   uint64_t value = do_idle_work ? kTryNativeWorkBeforeIdleBit : 1;
   long ret = write(non_delayed_fd_, &value, sizeof(value));
-  DPCHECK(ret >= 0);
-}
-
-void MessagePumpForUI::ScheduleWorkWithDelay() {
-  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("base"),
-              "MessagePumpForUI::ScheduleWorkWithDelay");
-
-  // This initialization can't be done in the constructor because the
-  // FeatureList is not initialized at that time.
-  if (!yield_duration_.has_value())
-    yield_duration_ = kBrowserPeriodicYieldingToNativeDelay.Get();
-
-  auto timer = TimeTicks::Now();
-  struct itimerspec ts =
-      GetTimerSpecDelay(timer.since_origin() + yield_duration_.value());
-  long ret = timerfd_settime(resume_after_yielding_non_delayed_fd_,
-                             TFD_TIMER_ABSTIME, &ts, nullptr);
   DPCHECK(ret >= 0);
 }
 
@@ -449,15 +354,20 @@ void MessagePumpForUI::ScheduleDelayedWork(
 
   DCHECK(!next_work_info.is_immediate());
   delayed_scheduled_time_ = next_work_info.delayed_run_time;
-  TimeDelta yield_delay = next_work_info.delayed_run_time.since_origin();
-  struct itimerspec ts = GetTimerSpecDelay(yield_delay);
+  int64_t nanos =
+      next_work_info.delayed_run_time.since_origin().InNanoseconds();
+  struct itimerspec ts;
+  ts.it_interval.tv_sec = 0;  // Don't repeat.
+  ts.it_interval.tv_nsec = 0;
+  ts.it_value.tv_sec =
+      static_cast<time_t>(nanos / TimeTicks::kNanosecondsPerSecond);
+  ts.it_value.tv_nsec = nanos % TimeTicks::kNanosecondsPerSecond;
+
   long ret = timerfd_settime(delayed_fd_, TFD_TIMER_ABSTIME, &ts, nullptr);
   DPCHECK(ret >= 0);
 }
 
 void MessagePumpForUI::QuitWhenIdle(base::OnceClosure callback) {
-  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("base"),
-              "MessagePumpForUI::QuitWhenIdle");
   DCHECK(!on_quit_callback_);
   DCHECK(run_loop_);
   on_quit_callback_ = std::move(callback);

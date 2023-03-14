@@ -63,11 +63,6 @@ BLINK_COMMON_EXPORT extern const char kMaxUntiledLayerWidth[];
 BLINK_COMMON_EXPORT extern const char kMinHeightForGpuRasterTile[];
 BLINK_COMMON_EXPORT extern const char kNetworkQuietTimeout[];
 BLINK_COMMON_EXPORT extern const char kNumRasterThreads[];
-BLINK_COMMON_EXPORT extern const char kUnthrottledNestedTimeoutPolicy[];
-BLINK_COMMON_EXPORT extern const char
-    kUnthrottledNestedTimeoutPolicy_ForceDisable[];
-BLINK_COMMON_EXPORT extern const char
-    kUnthrottledNestedTimeoutPolicy_ForceEnable[];
 BLINK_COMMON_EXPORT extern const char kSharedArrayBufferAllowedOrigins[];
 BLINK_COMMON_EXPORT extern const char kShowLayoutShiftRegions[];
 BLINK_COMMON_EXPORT extern const char kShowPaintRects[];

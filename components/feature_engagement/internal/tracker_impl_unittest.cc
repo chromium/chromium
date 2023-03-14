@@ -54,6 +54,9 @@ BASE_FEATURE(kTrackerTestFeatureQux,
 BASE_FEATURE(kTrackerTestFeatureSnooze,
              "test_snooze",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTrackerTestGroupOne,
+             "test_group_one",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 void RegisterFeatureConfig(EditableConfiguration* configuration,
                            const base::Feature& feature,
@@ -65,12 +68,23 @@ void RegisterFeatureConfig(EditableConfiguration* configuration,
   config.used.name = feature.name + std::string("_used");
   config.trigger.name = feature.name + std::string("_trigger");
   config.trigger.storage = 1u;
+  config.groups = {"test_group_one"};
   config.tracking_only = tracking_only;
   if (snooze_params) {
     config.snooze_params.snooze_interval = 7u;
     config.snooze_params.max_limit = 3u;
   }
   configuration->SetConfiguration(&feature, config);
+}
+
+void RegisterGroupConfig(EditableConfiguration* configuration,
+                         const base::Feature& group,
+                         bool valid) {
+  GroupConfig config;
+  config.valid = valid;
+  config.trigger.name = group.name + std::string("_trigger");
+  config.trigger.storage = 1u;
+  configuration->SetConfiguration(&group, config);
 }
 
 // An OnInitializedCallback that stores whether it has been invoked and what
@@ -225,6 +239,28 @@ class TestTrackerDisplayLockController : public DisplayLockController {
   std::unique_ptr<DisplayLockHandle> next_display_lock_handle_;
 };
 
+class TestTrackerEventExporter
+    : public TrackerEventExporter,
+      public base::SupportsWeakPtr<TestTrackerEventExporter> {
+ public:
+  TestTrackerEventExporter() = default;
+
+  ~TestTrackerEventExporter() override = default;
+
+  void ExportEvents(ExportEventsCallback callback) override {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), events_to_export_));
+  }
+
+  void SetEventsToExport(std::vector<EventData> events) {
+    events_to_export_ = events;
+  }
+
+ private:
+  // The events to export
+  std::vector<EventData> events_to_export_;
+};
+
 class TrackerImplTest : public ::testing::Test {
  public:
   TrackerImplTest() = default;
@@ -252,6 +288,8 @@ class TrackerImplTest : public ::testing::Test {
     RegisterFeatureConfig(configuration.get(), kTrackerTestFeatureSnooze,
                           true /* is_valid */, false /* tracking_only */,
                           true /* snooze_params */);
+    RegisterGroupConfig(configuration.get(), kTrackerTestGroupOne,
+                        true /* is_valid */);
 
     std::unique_ptr<TestTrackerInMemoryEventStore> event_store =
         CreateEventStore();
@@ -275,15 +313,17 @@ class TrackerImplTest : public ::testing::Test {
     auto time_provider = std::make_unique<TestTimeProvider>();
     time_provider_ = time_provider.get();
 
+    event_exporter_ = std::make_unique<TestTrackerEventExporter>();
+
     tracker_ = std::make_unique<TrackerImpl>(
         std::move(event_model), std::move(availability_model),
         std::move(configuration), std::move(display_lock_controller),
-        std::move(condition_validator), std::move(time_provider));
+        std::move(condition_validator), std::move(time_provider),
+        event_exporter_->AsWeakPtr());
   }
 
-  void VerifyEventTriggerEvents(const base::Feature& feature, uint32_t count) {
-    Event trigger_event = event_store_->GetEvent(
-        configuration_->GetFeatureConfig(feature).trigger.name);
+  void VerifyEventTrigger(std::string event_name, uint32_t count) {
+    Event trigger_event = event_store_->GetEvent(event_name);
     if (count == 0) {
       EXPECT_EQ(0, trigger_event.events_size());
       return;
@@ -292,6 +332,17 @@ class TrackerImplTest : public ::testing::Test {
     EXPECT_EQ(1, trigger_event.events_size());
     EXPECT_EQ(1u, trigger_event.events(0).day());
     EXPECT_EQ(count, trigger_event.events(0).count());
+  }
+
+  void VerifyEventTriggerEvents(const base::Feature& feature, uint32_t count) {
+    VerifyEventTrigger(configuration_->GetFeatureConfig(feature).trigger.name,
+                       count);
+  }
+
+  void VerifyGroupEventTriggerEvents(const base::Feature& group,
+                                     uint32_t count) {
+    VerifyEventTrigger(configuration_->GetGroupConfig(group).trigger.name,
+                       count);
   }
 
   void VerifyHistogramsForFeature(const std::string& histogram_name,
@@ -477,6 +528,7 @@ class TrackerImplTest : public ::testing::Test {
   raw_ptr<TestTrackerAvailabilityModel> availability_model_;
   raw_ptr<TestTrackerDisplayLockController> display_lock_controller_;
   raw_ptr<Configuration> configuration_;
+  std::unique_ptr<TestTrackerEventExporter> event_exporter_;
   base::HistogramTester histogram_tester_;
   raw_ptr<OnceConditionValidator> condition_validator_;
   raw_ptr<TestTimeProvider> time_provider_;
@@ -660,6 +712,112 @@ TEST_F(FailingAvailabilityModelInitTrackerImplTest, AvailabilityModelNotReady) {
   EXPECT_FALSE(callback.success());
 }
 
+TEST_F(TrackerImplTest, TestMigrateEvents) {
+  EXPECT_FALSE(tracker_->IsInitialized());
+  TestTrackerEventExporter::EventData event1("test", 1);
+  event_exporter_->SetEventsToExport({event1});
+
+  StoringInitializedCallback callback;
+  tracker_->AddOnInitializedCallback(base::BindOnce(
+      &StoringInitializedCallback::OnInitialized, base::Unretained(&callback)));
+  EXPECT_FALSE(callback.invoked());
+
+  // Ensure all initialization is finished.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(tracker_->IsInitialized());
+  EXPECT_TRUE(callback.invoked());
+  EXPECT_TRUE(callback.success());
+
+  // Check that event made it into the store.
+  Event stored_event1 = event_store_->GetEvent("test");
+  EXPECT_EQ("test", stored_event1.name());
+  ASSERT_EQ(1, stored_event1.events_size());
+  EXPECT_EQ(1u, stored_event1.events(0).day());
+  EXPECT_EQ(1u, stored_event1.events(0).count());
+}
+
+TEST_F(TrackerImplTest, TestMigrateMultipleEvents) {
+  EXPECT_FALSE(tracker_->IsInitialized());
+  TestTrackerEventExporter::EventData event1("test", 1);
+  TestTrackerEventExporter::EventData event2("test2", 1);
+  event_exporter_->SetEventsToExport({event1, event2});
+
+  StoringInitializedCallback callback;
+  tracker_->AddOnInitializedCallback(base::BindOnce(
+      &StoringInitializedCallback::OnInitialized, base::Unretained(&callback)));
+  EXPECT_FALSE(callback.invoked());
+
+  // Ensure all initialization is finished.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(tracker_->IsInitialized());
+  EXPECT_TRUE(callback.invoked());
+  EXPECT_TRUE(callback.success());
+
+  // Check that events made it into the store.
+  Event stored_event1 = event_store_->GetEvent("test");
+  EXPECT_EQ("test", stored_event1.name());
+  ASSERT_EQ(1, stored_event1.events_size());
+  EXPECT_EQ(1u, stored_event1.events(0).day());
+  EXPECT_EQ(1u, stored_event1.events(0).count());
+
+  Event stored_event2 = event_store_->GetEvent("test2");
+  EXPECT_EQ("test2", stored_event2.name());
+  ASSERT_EQ(1, stored_event2.events_size());
+  EXPECT_EQ(1u, stored_event2.events(0).day());
+  EXPECT_EQ(1u, stored_event2.events(0).count());
+}
+
+TEST_F(TrackerImplTest, TestMigrateSameEventMultipleTimes) {
+  EXPECT_FALSE(tracker_->IsInitialized());
+  TestTrackerEventExporter::EventData event1("test", 1);
+  TestTrackerEventExporter::EventData event2("test", 1);
+  TestTrackerEventExporter::EventData event3("test", 2);
+  event_exporter_->SetEventsToExport({event1, event2, event3});
+
+  StoringInitializedCallback callback;
+  tracker_->AddOnInitializedCallback(base::BindOnce(
+      &StoringInitializedCallback::OnInitialized, base::Unretained(&callback)));
+  EXPECT_FALSE(callback.invoked());
+
+  // Ensure all initialization is finished.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(tracker_->IsInitialized());
+  EXPECT_TRUE(callback.invoked());
+  EXPECT_TRUE(callback.success());
+
+  // Check that events made it into the store.
+  Event stored_event = event_store_->GetEvent("test");
+  EXPECT_EQ("test", stored_event.name());
+  ASSERT_EQ(2, stored_event.events_size());
+  EXPECT_EQ(1u, stored_event.events(0).day());
+  EXPECT_EQ(2u, stored_event.events(0).count());
+
+  EXPECT_EQ(2u, stored_event.events(1).day());
+  EXPECT_EQ(1u, stored_event.events(1).count());
+}
+
+TEST_F(TrackerImplTest, TestNoMigration) {
+  EXPECT_FALSE(tracker_->IsInitialized());
+
+  // Reset the event provider to simulate not providing one.
+  event_exporter_.reset();
+
+  StoringInitializedCallback callback;
+  tracker_->AddOnInitializedCallback(base::BindOnce(
+      &StoringInitializedCallback::OnInitialized, base::Unretained(&callback)));
+  EXPECT_FALSE(callback.invoked());
+
+  // Ensure all initialization is finished and no crash or NPE happens.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(tracker_->IsInitialized());
+  EXPECT_TRUE(callback.invoked());
+  EXPECT_TRUE(callback.success());
+}
+
 TEST_F(TrackerImplTest, TestSetPriorityNotificationBeforeRegistration) {
   // Ensure all initialization is finished.
   StoringInitializedCallback callback;
@@ -750,10 +908,13 @@ TEST_F(TrackerImplTest, TestTriggering) {
   // The first time a feature triggers it should be shown.
   EXPECT_TRUE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureFoo));
   VerifyEventTriggerEvents(kTrackerTestFeatureFoo, 1u);
+  VerifyGroupEventTriggerEvents(kTrackerTestGroupOne, 1u);
   EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureFoo));
   VerifyEventTriggerEvents(kTrackerTestFeatureFoo, 1u);
+  VerifyGroupEventTriggerEvents(kTrackerTestGroupOne, 1u);
   EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureQux));
   VerifyEventTriggerEvents(kTrackerTestFeatureQux, 0);
+  VerifyGroupEventTriggerEvents(kTrackerTestGroupOne, 1u);
   VerifyUserActionsTriggerChecks(user_action_tester, 2, 0, 0, 1);
   VerifyUserActionsTriggered(user_action_tester, 1, 0, 0, 0);
   VerifyUserActionsNotTriggered(user_action_tester, 1, 0, 0, 1);
@@ -766,8 +927,10 @@ TEST_F(TrackerImplTest, TestTriggering) {
   // shown.
   EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureBar));
   VerifyEventTriggerEvents(kTrackerTestFeatureBar, 0);
+  VerifyGroupEventTriggerEvents(kTrackerTestGroupOne, 1u);
   EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureQux));
   VerifyEventTriggerEvents(kTrackerTestFeatureQux, 0);
+  VerifyGroupEventTriggerEvents(kTrackerTestGroupOne, 1u);
   VerifyUserActionsTriggerChecks(user_action_tester, 2, 1, 0, 2);
   VerifyUserActionsTriggered(user_action_tester, 1, 0, 0, 0);
   VerifyUserActionsNotTriggered(user_action_tester, 1, 1, 0, 2);
@@ -780,10 +943,13 @@ TEST_F(TrackerImplTest, TestTriggering) {
   tracker_->Dismissed(kTrackerTestFeatureFoo);
   EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureFoo));
   VerifyEventTriggerEvents(kTrackerTestFeatureFoo, 1u);
+  VerifyGroupEventTriggerEvents(kTrackerTestGroupOne, 1u);
   EXPECT_TRUE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureBar));
   VerifyEventTriggerEvents(kTrackerTestFeatureBar, 1u);
+  VerifyGroupEventTriggerEvents(kTrackerTestGroupOne, 2u);
   EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureQux));
   VerifyEventTriggerEvents(kTrackerTestFeatureQux, 0);
+  VerifyGroupEventTriggerEvents(kTrackerTestGroupOne, 2u);
   VerifyUserActionsTriggerChecks(user_action_tester, 3, 2, 0, 3);
   VerifyUserActionsTriggered(user_action_tester, 1, 1, 0, 0);
   VerifyUserActionsNotTriggered(user_action_tester, 2, 1, 0, 3);
@@ -796,10 +962,13 @@ TEST_F(TrackerImplTest, TestTriggering) {
   tracker_->Dismissed(kTrackerTestFeatureBar);
   EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureFoo));
   VerifyEventTriggerEvents(kTrackerTestFeatureFoo, 1u);
+  VerifyGroupEventTriggerEvents(kTrackerTestGroupOne, 2u);
   EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureBar));
   VerifyEventTriggerEvents(kTrackerTestFeatureBar, 1u);
+  VerifyGroupEventTriggerEvents(kTrackerTestGroupOne, 2u);
   EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureQux));
   VerifyEventTriggerEvents(kTrackerTestFeatureQux, 0);
+  VerifyGroupEventTriggerEvents(kTrackerTestGroupOne, 2u);
   VerifyUserActionsTriggerChecks(user_action_tester, 4, 3, 0, 4);
   VerifyUserActionsTriggered(user_action_tester, 1, 1, 0, 0);
   VerifyUserActionsNotTriggered(user_action_tester, 3, 2, 0, 4);

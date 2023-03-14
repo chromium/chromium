@@ -79,6 +79,41 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
   EXPECT_FALSE(ns_window.visible);
 }
 
+IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithWindowSize, LargeWindowSize) {
+  gfx::NativeWindow native_window = browser()->window()->GetNativeWindow();
+  NSWindow* ns_window = native_window.GetNativeNSWindow();
+
+  // Expect the platform window size to be smaller than the requested window
+  // size due to Cocoa clamping the window dimensions to the monitor work
+  // area.
+  NSRect frame_rect = [ns_window frame];
+  EXPECT_LT(NSWidth(frame_rect), kWindowSize.width());
+  EXPECT_LT(NSHeight(frame_rect), kWindowSize.height());
+
+  // Expect the reported browser window size to be the same as the requested
+  // window size.
+  gfx::Rect bounds = browser()->window()->GetBounds();
+  EXPECT_EQ(bounds.size(), kWindowSize);
+}
+
+IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithWindowSizeAndScale,
+                       WindowSizeWithScale) {
+  gfx::NativeWindow native_window = browser()->window()->GetNativeWindow();
+  NSWindow* ns_window = native_window.GetNativeNSWindow();
+
+  // Expect the platform window size to be the same as the requested window size
+  // due to scaling because Mac does not appear to support device scaling at
+  // this time.
+  NSRect frame_rect = [ns_window frame];
+  EXPECT_EQ(NSWidth(frame_rect), kWindowSize.width());
+  EXPECT_EQ(NSHeight(frame_rect), kWindowSize.height());
+
+  // Expect the reported browser window size to be the same as the requested
+  // window size.
+  gfx::Rect bounds = browser()->window()->GetBounds();
+  EXPECT_EQ(bounds.size(), kWindowSize);
+}
+
 }  // namespace
 
 }  // namespace headless

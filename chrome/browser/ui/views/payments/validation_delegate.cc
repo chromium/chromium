@@ -15,8 +15,7 @@ bool ValidationDelegate::ShouldFormat() {
 }
 
 std::u16string ValidationDelegate::Format(const std::u16string& text) {
-  NOTREACHED();
-  return text;
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace payments

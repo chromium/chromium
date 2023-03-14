@@ -2934,7 +2934,8 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode) {
   bool repainted = false;
   bool needs_clear_repaint_flags = false;
 
-  PaintChunkSubset previous_chunks(paint_controller_->GetPaintArtifactShared());
+  scoped_refptr<const PaintArtifact> previous_artifact =
+      paint_controller_->GetPaintArtifactShared();
 
   PaintController::ScopedBenchmarkMode scoped_benchmark(*paint_controller_,
                                                         benchmark_mode);
@@ -2973,7 +2974,7 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode) {
     repainted = true;
     if (paint_artifact_compositor_) {
       paint_artifact_compositor_->SetNeedsFullUpdateAfterPaintIfNeeded(
-          previous_chunks, paint_controller_->GetPaintArtifactShared());
+          *previous_artifact, paint_controller_->GetPaintArtifact());
     }
   }
 
@@ -3137,7 +3138,7 @@ void LocalFrameView::UpdateStyleAndLayoutIfNeededRecursive() {
 
   // WebView plugins need to update regardless of whether the
   // LayoutEmbeddedObject that owns them needed layout.
-  // TODO(schenney): This currently runs the entire lifecycle on plugin
+  // TODO(rendering-core) This currently runs the entire lifecycle on plugin
   // WebViews. We should have a way to only run these other Documents to the
   // same lifecycle stage as this frame.
   for (const auto& plugin : plugins_) {
@@ -3589,7 +3590,7 @@ void LocalFrameView::SetTracksRasterInvalidations(
                        track_raster_invalidations);
 }
 
-void LocalFrameView::ServiceScriptedAnimations(base::TimeTicks start_time) {
+void LocalFrameView::ServiceScrollAnimations(base::TimeTicks start_time) {
   bool can_throttle = CanThrottleRendering();
   // Disallow throttling in case any script needs to do a synchronous
   // lifecycle update in other frames which are throttled.
@@ -3614,7 +3615,6 @@ void LocalFrameView::ServiceScriptedAnimations(base::TimeTicks start_time) {
       }
     }
     GetFrame().AnimateSnapFling(start_time);
-
     // After scroll updates, snapshot scroll state once at top of animation
     // frame.
     GetFrame().UpdateScrollSnapshots();
@@ -3624,7 +3624,6 @@ void LocalFrameView::ServiceScriptedAnimations(base::TimeTicks start_time) {
     SVGDocumentExtensions::ServiceWebAnimationsOnAnimationFrame(*document);
     document->GetDocumentAnimations().UpdateAnimationTimingForAnimationFrame();
   }
-  document->ServiceScriptedAnimations(start_time, can_throttle);
 }
 
 void LocalFrameView::ScheduleAnimation(base::TimeDelta delay,
@@ -4052,8 +4051,9 @@ void LocalFrameView::PaintOutsideOfLifecycle(GraphicsContext& context,
   });
 
   {
+    bool disable_expansion = paint_flags & PaintFlag::kOmitCompositingInfo;
     OverriddenCullRectScope force_cull_rect(*GetLayoutView()->Layer(),
-                                            cull_rect);
+                                            cull_rect, disable_expansion);
     PaintControllerCycleScope cycle_scope(context.GetPaintController(),
                                           PaintDebugInfoEnabled());
     PaintFrame(context, paint_flags);
@@ -4850,9 +4850,9 @@ PaintLayer* LocalFrameView::GetXROverlayLayer() const {
   return nullptr;
 }
 
-void LocalFrameView::PropagateCullRectNeedsUpdateForFrames() {
+void LocalFrameView::SetCullRectNeedsUpdateForFrames(bool disable_expansion) {
   ForAllNonThrottledLocalFrameViews(
-      [](LocalFrameView& frame_view) {
+      [disable_expansion](LocalFrameView& frame_view) {
         // Propagate child frame PaintLayer NeedsCullRectUpdate flag into the
         // owner frame.
         if (auto* frame_layout_view = frame_view.GetLayoutView()) {
@@ -4864,6 +4864,15 @@ void LocalFrameView::PropagateCullRectNeedsUpdateForFrames() {
                 frame_root_layer->DescendantNeedsCullRectUpdate()) {
               owner->Layer()->SetDescendantNeedsCullRectUpdate();
             }
+          }
+        }
+        // If we disable cull rect expansion in a OverriddenCullRectScope,
+        // invalidate cull rects for user scrollable areas. This may not
+        // invalidate all cull rects affected by disable_expansion but it
+        // doesn't affect correctness.
+        if (disable_expansion && frame_view.UserScrollableAreas()) {
+          for (const auto& area : *frame_view.UserScrollableAreas()) {
+            area->Layer()->SetNeedsCullRectUpdate();
           }
         }
       },
@@ -4950,26 +4959,6 @@ bool LocalFrameView::RemovePendingTransformUpdate(const LayoutObject& object) {
   return true;
 }
 
-bool LocalFrameView::UpdateAllPendingTransforms() {
-  DCHECK(GetFrame().IsLocalRoot() || !IsAttached());
-  bool updated = false;
-  ForAllNonThrottledLocalFrameViews([&updated](LocalFrameView& frame_view) {
-    HeapHashSet<Member<LayoutObject>> blocked_updates;
-    if (frame_view.pending_transform_updates_) {
-      for (LayoutObject* object : *frame_view.pending_transform_updates_) {
-        if (!DisplayLockUtilities::LockedAncestorPreventingPrePaint(*object)) {
-          PaintPropertyTreeBuilder::DirectlyUpdateTransformMatrix(*object);
-          updated = true;
-        } else {
-          blocked_updates.insert(object);
-        }
-      }
-      frame_view.pending_transform_updates_->swap(blocked_updates);
-    }
-  });
-  return updated;
-}
-
 void LocalFrameView::AddPendingOpacityUpdate(LayoutObject& object) {
   if (!pending_opacity_updates_) {
     pending_opacity_updates_ =
@@ -4988,23 +4977,44 @@ bool LocalFrameView::RemovePendingOpacityUpdate(const LayoutObject& object) {
   return true;
 }
 
-bool LocalFrameView::UpdateAllPendingOpacityUpdates() {
+bool LocalFrameView::ExecuteAllPendingUpdates() {
   DCHECK(GetFrame().IsLocalRoot() || !IsAttached());
   bool updated = false;
   ForAllNonThrottledLocalFrameViews([&updated](LocalFrameView& frame_view) {
-    HeapHashSet<Member<LayoutObject>> blocked_updates;
     if (frame_view.pending_opacity_updates_) {
       for (LayoutObject* object : *frame_view.pending_opacity_updates_) {
-        if (!DisplayLockUtilities::LockedAncestorPreventingPrePaint(*object)) {
-          PaintPropertyTreeBuilder::DirectlyUpdateOpacityValue(*object);
-          updated = true;
-        } else {
-          blocked_updates.insert(object);
-        }
+        DCHECK(
+            !DisplayLockUtilities::LockedAncestorPreventingPrePaint(*object));
+        PaintPropertyTreeBuilder::DirectlyUpdateOpacityValue(*object);
+        updated = true;
       }
-      frame_view.pending_opacity_updates_->swap(blocked_updates);
+      frame_view.pending_opacity_updates_->clear();
+    }
+    if (frame_view.pending_transform_updates_) {
+      for (LayoutObject* object : *frame_view.pending_transform_updates_) {
+        DCHECK(
+            !DisplayLockUtilities::LockedAncestorPreventingPrePaint(*object));
+        PaintPropertyTreeBuilder::DirectlyUpdateTransformMatrix(*object);
+        updated = true;
+      }
+      frame_view.pending_transform_updates_->clear();
     }
   });
   return updated;
+}
+
+void LocalFrameView::RemoveAllPendingUpdates() {
+  if (pending_opacity_updates_) {
+    for (LayoutObject* object : *pending_opacity_updates_) {
+      object->SetNeedsPaintPropertyUpdate();
+    }
+    pending_opacity_updates_->clear();
+  }
+  if (pending_transform_updates_) {
+    for (LayoutObject* object : *pending_transform_updates_) {
+      object->SetNeedsPaintPropertyUpdate();
+    }
+    pending_transform_updates_->clear();
+  }
 }
 }  // namespace blink

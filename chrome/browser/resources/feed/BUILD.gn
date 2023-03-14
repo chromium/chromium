@@ -21,6 +21,5 @@ build_webui("build") {
   mojo_files =
       [ "$root_gen_dir/chrome/browser/ui/webui/feed/feed.mojom-webui.ts" ]
 
-  ts_use_local_config = false
-  ts_deps = [ "//ui/webui/resources/mojo:library" ]
+  ts_deps = [ "//ui/webui/resources/mojo:build_ts" ]
 }

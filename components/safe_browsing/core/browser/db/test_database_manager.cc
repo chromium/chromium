@@ -113,16 +113,16 @@ bool TestSafeBrowsingDatabaseManager::IsDownloadProtectionEnabled() const {
   return false;
 }
 
-void TestSafeBrowsingDatabaseManager::StartOnIOThread(
+void TestSafeBrowsingDatabaseManager::StartOnSBThread(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const V4ProtocolConfig& config) {
-  SafeBrowsingDatabaseManager::StartOnIOThread(url_loader_factory, config);
+  SafeBrowsingDatabaseManager::StartOnSBThread(url_loader_factory, config);
   enabled_ = true;
 }
 
-void TestSafeBrowsingDatabaseManager::StopOnIOThread(bool shutdown) {
+void TestSafeBrowsingDatabaseManager::StopOnSBThread(bool shutdown) {
   enabled_ = false;
-  SafeBrowsingDatabaseManager::StopOnIOThread(shutdown);
+  SafeBrowsingDatabaseManager::StopOnSBThread(shutdown);
 }
 
 }  // namespace safe_browsing

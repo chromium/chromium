@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 388 tests; 225 PASS, 163 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 352 tests; 200 PASS, 152 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS aa-- (using URL)
 PASS aa-- (using URL.host)
@@ -325,42 +325,6 @@ PASS a­b (using <a>.hostname)
 PASS a­b (using <area>)
 PASS a­b (using <area>.host)
 PASS a­b (using <area>.hostname)
-PASS a%C2%ADb (using URL)
-PASS a%C2%ADb (using URL.host)
-PASS a%C2%ADb (using URL.hostname)
-PASS a%C2%ADb (using <a>)
-PASS a%C2%ADb (using <a>.host)
-PASS a%C2%ADb (using <a>.hostname)
-PASS a%C2%ADb (using <area>)
-PASS a%C2%ADb (using <area>.host)
-PASS a%C2%ADb (using <area>.hostname)
-PASS ­ (using URL)
-PASS ­ (using URL.host)
-PASS ­ (using URL.hostname)
-FAIL ­ (using <a>) assert_equals: expected "https://­/x" but got "https://%C2%AD/x"
-PASS ­ (using <a>.host)
-PASS ­ (using <a>.hostname)
-FAIL ­ (using <area>) assert_equals: expected "https://­/x" but got "https://%C2%AD/x"
-PASS ­ (using <area>.host)
-PASS ­ (using <area>.hostname)
-PASS %C2%AD (using URL)
-PASS %C2%AD (using URL.host)
-PASS %C2%AD (using URL.hostname)
-PASS %C2%AD (using <a>)
-PASS %C2%AD (using <a>.host)
-PASS %C2%AD (using <a>.hostname)
-PASS %C2%AD (using <area>)
-PASS %C2%AD (using <area>.host)
-PASS %C2%AD (using <area>.hostname)
-FAIL xn-- (using URL) assert_throws_js: function "() => makeURL("url", hostTest.input)" did not throw
-FAIL xn-- (using URL.host) assert_equals: expected "x" but got "xn--"
-FAIL xn-- (using URL.hostname) assert_equals: expected "x" but got "xn--"
-FAIL xn-- (using <a>) assert_equals: expected "" but got "xn--"
-FAIL xn-- (using <a>.host) assert_equals: expected "x" but got "xn--"
-FAIL xn-- (using <a>.hostname) assert_equals: expected "x" but got "xn--"
-FAIL xn-- (using <area>) assert_equals: expected "" but got "xn--"
-FAIL xn-- (using <area>.host) assert_equals: expected "x" but got "xn--"
-FAIL xn-- (using <area>.hostname) assert_equals: expected "x" but got "xn--"
 PASS ≠ (using URL)
 PASS ≠ (using URL.host)
 PASS ≠ (using URL.hostname)

@@ -54,7 +54,9 @@ void RecordFileExtensionType(const std::string& metric_name,
 bool CheckUrlAgainstAllowlist(
     const GURL& url,
     scoped_refptr<SafeBrowsingDatabaseManager> database_manager) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)
+                          ? content::BrowserThread::UI
+                          : content::BrowserThread::IO);
 
   if (!database_manager.get()) {
     return false;
@@ -139,11 +141,23 @@ void CheckClientDownloadRequestBase::Start() {
   // If allowlist check passes, FinishRequest() will be called to avoid
   // analyzing file. Otherwise, AnalyzeFile() will be called to continue with
   // analysis.
-  content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&CheckUrlAgainstAllowlist, source_url_, database_manager_),
-      base::BindOnce(&CheckClientDownloadRequestBase::OnUrlAllowlistCheckDone,
-                     GetWeakPtr()));
+  if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
+    auto weak_ptr = GetWeakPtr();
+    bool is_allowlisted =
+        CheckUrlAgainstAllowlist(source_url_, database_manager_);
+    if (!weak_ptr) {
+      // `CheckUrlAgainstAllowlist` could delete this object.
+      return;
+    }
+    OnUrlAllowlistCheckDone(is_allowlisted);
+  } else {
+    content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&CheckUrlAgainstAllowlist, source_url_,
+                       database_manager_),
+        base::BindOnce(&CheckClientDownloadRequestBase::OnUrlAllowlistCheckDone,
+                       GetWeakPtr()));
+  }
 }
 
 void CheckClientDownloadRequestBase::FinishRequest(
@@ -420,11 +434,25 @@ void CheckClientDownloadRequestBase::SendRequest() {
               "from dangerous sites' under Privacy. This feature is enabled by "
               "default."
             chrome_policy {
+              subProto1 {
+                RealTimeDownloadProtectionRequestAllowed {
+                  RealTimeDownloadProtectionRequestAllowed: false
+                }
+              }
+            }
+            chrome_policy {
+              SafeBrowsingProtectionLevel {
+                policy_options {mode: MANDATORY}
+                SafeBrowsingProtectionLevel: 0
+              }
+            }
+            chrome_policy {
               SafeBrowsingEnabled {
                 policy_options {mode: MANDATORY}
                 SafeBrowsingEnabled: false
               }
             }
+            deprecated_policies: "SafeBrowsingEnabled"
           })");
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = PPAPIDownloadRequest::GetDownloadRequestUrl();

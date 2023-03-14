@@ -74,6 +74,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -532,7 +533,9 @@ absl::optional<PaintRecord> SVGImage::PaintRecordForCurrentFrame(
 
   view->UpdateAllLifecyclePhases(DocumentUpdateReason::kSVGImage);
 
-  return view->GetPaintRecord(cull_rect);
+  return view->GetPaintRecord(
+      RuntimeEnabledFeatures::SvgRasterOptimizationsEnabled() ? cull_rect
+                                                              : nullptr);
 }
 
 static bool DrawNeedsLayer(const cc::PaintFlags& flags) {

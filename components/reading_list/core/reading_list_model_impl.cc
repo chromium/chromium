@@ -18,6 +18,7 @@
 #include "components/reading_list/core/reading_list_model_storage.h"
 #include "components/reading_list/core/reading_list_sync_bridge.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "url/gurl.h"
 
 ReadingListModelImpl::ScopedReadingListBatchUpdateImpl::
@@ -183,7 +184,9 @@ bool ReadingListModelImpl::DeleteAllEntries() {
   for (const auto& url : GetKeys()) {
     RemoveEntryByURL(url);
   }
-  return entries_.empty();
+
+  DCHECK(entries_.empty());
+  return true;
 }
 
 void ReadingListModelImpl::UpdateEntryStateCountersOnEntryRemoval(
@@ -325,6 +328,18 @@ bool ReadingListModelImpl::IsUrlSupported(const GURL& url) {
   return url.SchemeIsHTTPOrHTTPS();
 }
 
+CoreAccountId ReadingListModelImpl::GetAccountWhereEntryIsSavedTo(
+    const GURL& url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(loaded());
+
+  if (entries_.find(url) == entries_.end()) {
+    return CoreAccountId();
+  }
+  return CoreAccountId::FromString(
+      sync_bridge_.change_processor()->TrackedAccountId());
+}
+
 bool ReadingListModelImpl::NeedsExplicitUploadToSyncServer(
     const GURL& url) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -350,7 +365,7 @@ const ReadingListEntry& ReadingListModelImpl::AddOrReplaceEntry(
     RemoveEntryByURL(url);
   }
 
-  std::string trimmed_title = base::CollapseWhitespaceASCII(title, false);
+  std::string trimmed_title = TrimTitle(title);
 
   auto entry =
       base::MakeRefCounted<ReadingListEntry>(url, trimmed_title, clock_->Now());
@@ -402,7 +417,7 @@ void ReadingListModelImpl::SetEntryTitleIfExists(const GURL& url,
     return;
   }
   ReadingListEntry& entry = *(iterator->second);
-  std::string trimmed_title = base::CollapseWhitespaceASCII(title, false);
+  std::string trimmed_title = TrimTitle(title);
   if (entry.Title() == trimmed_title) {
     return;
   }
@@ -557,6 +572,11 @@ ReadingListModelImpl::BeginBatchUpdatesWithSyncMetadata() {
 bool ReadingListModelImpl::IsTrackingSyncMetadata() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return sync_bridge_.change_processor()->IsTrackingMetadata();
+}
+
+// static
+std::string ReadingListModelImpl::TrimTitle(const std::string& title) {
+  return base::CollapseWhitespaceASCII(title, false);
 }
 
 // static

@@ -9,6 +9,19 @@
 
 namespace language {
 
+enum class OverrideLanguageModel {
+  DEFAULT,
+  GEO,
+};
+
+// Returns whether Translate triggering should be overridden on English pages in
+// India.
+bool OverrideTranslateTriggerInIndia();
+
+// Returns which language model to use depending on the state of all Language
+// experiments.
+OverrideLanguageModel GetOverrideLanguageModel();
+
 // Some languages like Norwegian and Filipino use different codes within Chrome
 // and the Translate service (ie "nb" vs "no" and "fil" vs "tl").
 // This converts a Chrome language code to the Translate server synonym. The

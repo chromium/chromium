@@ -46,8 +46,10 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/cursor_utils.h"
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/button_test_api.h"
@@ -675,6 +677,44 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewBrowserTest,
         "TimeToAction",
         duration, 1);
   }
+}
+
+IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewBrowserTest,
+                       PermissionPromptBubbleDisallowsCustomCursors) {
+  ui::Cursor custom_cursor(ui::mojom::CursorType::kCustom);
+
+  content::RenderWidgetHost* widget_host = test_api_->manager()
+                                               ->GetAssociatedWebContents()
+                                               ->GetRenderViewHost()
+                                               ->GetWidget();
+
+  // Initially custom cursors are allowed.
+  widget_host->SetCursor(custom_cursor);
+  EXPECT_EQ(content::CursorUtils::GetLastCursorForWebContents(
+                test_api_->manager()->GetAssociatedWebContents()),
+            ui::mojom::CursorType::kCustom);
+
+  // While a permission prompt is active custom cursors are not allowed.
+  ShowUi("geolocation");
+  EXPECT_EQ(
+      test_api_->manager()->current_request_prompt_disposition_for_testing(),
+      GetParam() ? permissions::PermissionPromptDisposition::
+                       LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE
+                 : permissions::PermissionPromptDisposition::ANCHORED_BUBBLE);
+
+  widget_host->SetCursor(custom_cursor);
+  EXPECT_EQ(content::CursorUtils::GetLastCursorForWebContents(
+                test_api_->manager()->GetAssociatedWebContents()),
+            ui::mojom::CursorType::kPointer);
+
+  // After the prompt is resolved, custom cursors are allowed again.
+  test_api_->manager()->Accept();
+  base::RunLoop().RunUntilIdle();
+
+  widget_host->SetCursor(custom_cursor);
+  EXPECT_EQ(content::CursorUtils::GetLastCursorForWebContents(
+                test_api_->manager()->GetAssociatedWebContents()),
+            ui::mojom::CursorType::kCustom);
 }
 
 class PermissionPromptBubbleViewQuietUiBrowserTest

@@ -470,7 +470,7 @@ class CORE_EXPORT LocalFrameView final
     return user_scrollable_areas_.Get();
   }
 
-  void ServiceScriptedAnimations(base::TimeTicks);
+  void ServiceScrollAnimations(base::TimeTicks);
 
   void ScheduleAnimation(base::TimeDelta = base::TimeDelta(),
                          base::Location location = base::Location::Current());
@@ -750,7 +750,7 @@ class CORE_EXPORT LocalFrameView final
   // Gets the xr overlay layer if present, or nullptr if there is none.
   PaintLayer* GetXROverlayLayer() const;
 
-  void PropagateCullRectNeedsUpdateForFrames();
+  void SetCullRectNeedsUpdateForFrames(bool disable_expansion);
 
   void RunPaintBenchmark(int repeat_count, cc::PaintBenchmarkResult& result);
 
@@ -765,11 +765,12 @@ class CORE_EXPORT LocalFrameView final
 
   void AddPendingTransformUpdate(LayoutObject& object);
   bool RemovePendingTransformUpdate(const LayoutObject& object);
-  bool UpdateAllPendingTransforms();
 
   void AddPendingOpacityUpdate(LayoutObject& object);
   bool RemovePendingOpacityUpdate(const LayoutObject& object);
-  bool UpdateAllPendingOpacityUpdates();
+
+  void RemoveAllPendingUpdates();
+  bool ExecuteAllPendingUpdates();
 
   void ForAllChildLocalFrameViews(base::FunctionRef<void(LocalFrameView&)>);
 

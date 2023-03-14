@@ -449,20 +449,9 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalDataWithLayout(
   StorageType storage_type = STORAGE_UNOWNED_MEMORY;
 
   if (!IsValidConfig(layout.format(), storage_type, layout.coded_size(),
-                     visible_rect, natural_size)) {
-    DLOG(ERROR) << __func__ << " Invalid config."
-                << ConfigToString(layout.format(), storage_type,
-                                  layout.coded_size(), visible_rect,
-                                  natural_size);
-    return nullptr;
-  }
-
-  const auto& last_plane = layout.planes()[layout.planes().size() - 1];
-  const size_t required_size = last_plane.offset + last_plane.size;
-  if (data_size < required_size) {
-    DLOG(ERROR) << __func__ << " Provided data size is too small. Provided "
-                << data_size << " bytes, but " << required_size
-                << " bytes are required."
+                     visible_rect, natural_size) ||
+      !layout.FitsInContiguousBufferOfSize(data_size)) {
+    DLOG(ERROR) << "Invalid config: "
                 << ConfigToString(layout.format(), storage_type,
                                   layout.coded_size(), visible_rect,
                                   natural_size);
@@ -1278,6 +1267,9 @@ template <typename T>
 T VideoFrame::GetVisibleDataInternal(T data, size_t plane) const {
   DCHECK(IsValidPlane(format(), plane));
   DCHECK(IsMappable());
+  if (UNLIKELY(!data)) {
+    return nullptr;
+  }
 
   // Calculate an offset that is properly aligned for all planes.
   const gfx::Size alignment = CommonAlignment(format());

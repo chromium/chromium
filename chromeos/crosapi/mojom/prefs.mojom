@@ -95,6 +95,10 @@ enum PrefPath {
   [MinVersion=7] kDnsOverHttpsSalt = 33,
   // M110: ash::prefs::kUserGeolocationAllowed
   [MinVersion=8] kGeolocationAllowed = 34,
+  // M112: prefs::kMultitaskMenuNudgeClamshellShownCount
+  [MinVersion=9] kMultitaskMenuNudgeClamshellShownCount = 35,
+  // M112: prefs::kMultitaskMenuNudgeClamshellLastShown
+  [MinVersion=9] kMultitaskMenuNudgeClamshellLastShown = 36,
 };
 
 // Information about who or what is controlling a particular pref. This is used

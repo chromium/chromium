@@ -15,7 +15,6 @@
 #import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
-#import "components/breadcrumbs/core/breadcrumb_manager.h"
 #import "components/upload_list/crash_upload_list.h"
 #import "ios/chrome/browser/crash_report/crash_helper.h"
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
@@ -231,11 +230,6 @@ void StopMonitoringTabStateForWebStateList(WebStateList* web_state_list) {
 void ClearStateForWebStateList(WebStateList* web_state_list) {
   CrashReporterURLObserver::GetSharedInstance()->RemoveWebStateList(
       web_state_list);
-}
-
-void SetPreviousSessionEvents(const std::vector<std::string>& events) {
-  breadcrumbs::BreadcrumbManager::GetInstance().SetPreviousSessionEvents(
-      events);
 }
 
 }  // namespace crash_report_helper

@@ -54,6 +54,9 @@ BASE_FEATURE(kDialMediaRouteProvider,
 BASE_FEATURE(kStartCastSessionWithoutTerminating,
              "StartCastSessionWithoutTerminating",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kFallbackToAudioTabMirroring,
+             "FallbackToAudioTabMirroring",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kGlobalMediaControlsCastStartStop,

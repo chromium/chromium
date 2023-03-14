@@ -47,11 +47,8 @@ constexpr int kBannerViewTopRadius = 0;
 constexpr int kBannerViewBottomRadius = 8;
 constexpr float kScaleUpFactor = 0.8f;
 
-// The app IDs used for the capture mode camera and microphone recording privacy
-// indicators.
-constexpr char kCameraPrivacyIndicatorId[] = "system-capture-mode-camera";
-constexpr char kMicrophonePrivacyIndicatorId[] =
-    "system-capture-mode-microphone";
+// The app ID used for the capture mode privacy indicators.
+constexpr char kCaptureModePrivacyIndicatorsId[] = "system-capture-mode";
 
 // Returns the target visibility of the camera preview, given the
 // `confine_bounds_short_side_length`. The out parameter
@@ -496,24 +493,22 @@ views::BoxLayout* CreateAndInitBoxLayoutForView(views::View* view) {
   return box_layout;
 }
 
-std::string GetScreenCaptureNotificationIdForPath(const base::FilePath& path) {
-  DCHECK(!path.empty());
-  return base::StringPrintf("%s-%s", kScreenCaptureNotificationId,
-                            path.BaseName().value().c_str());
-}
-
-void MaybeUpdateCameraPrivacyIndicator(bool camera_on) {
-  if (features::IsPrivacyIndicatorsEnabled()) {
-    UpdatePrivacyIndicatorsView(kCameraPrivacyIndicatorId, camera_on,
-                                /*is_microphone_used=*/false);
+void MaybeUpdateCaptureModePrivacyIndicators() {
+  if (!features::IsPrivacyIndicatorsEnabled()) {
+    return;
   }
-}
 
-void MaybeUpdateMicrophonePrivacyIndicator(bool mic_on) {
-  if (features::IsPrivacyIndicatorsEnabled()) {
-    UpdatePrivacyIndicatorsView(kMicrophonePrivacyIndicatorId,
-                                /*is_camera_used=*/false, mic_on);
-  }
+  auto* controller = CaptureModeController::Get();
+  const bool is_camera_used =
+      !!controller->camera_controller()->camera_preview_widget();
+  const bool is_microphone_used = controller->IsAudioRecordingInProgress();
+
+  UpdatePrivacyIndicators(
+      /*app_id=*/kCaptureModePrivacyIndicatorsId,
+      /*app_name=*/
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAPTURE_MODE_BUTTON_LABEL),
+      is_camera_used, is_microphone_used, /*delegate=*/
+      base::MakeRefCounted<PrivacyIndicatorsNotificationDelegate>());
 }
 
 ui::ColorProvider* GetColorProviderForNativeTheme() {

@@ -13,7 +13,6 @@
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -112,7 +111,6 @@ class RequestImpl : public WebHistoryService::Request {
 
     if (error.state() != GoogleServiceAuthError::NONE) {
       is_pending_ = false;
-      UMA_HISTOGRAM_BOOLEAN("WebHistory.OAuthTokenCompletion", false);
       std::move(callback_).Run(this, false);
 
       // It is valid for the callback to delete `this`, so do not access any
@@ -122,8 +120,6 @@ class RequestImpl : public WebHistoryService::Request {
 
     DCHECK(!access_token_info.token.empty());
     access_token_ = access_token_info.token;
-
-    UMA_HISTOGRAM_BOOLEAN("WebHistory.OAuthTokenCompletion", true);
 
     // Got an access token -- start the actual API request.
     net::NetworkTrafficAnnotationTag traffic_annotation =
@@ -189,10 +185,6 @@ class RequestImpl : public WebHistoryService::Request {
           simple_url_loader_->ResponseInfo()->headers->response_code();
     }
     simple_url_loader_.reset();
-
-    UMA_HISTOGRAM_CUSTOM_ENUMERATION("WebHistory.OAuthTokenResponseCode",
-        net::HttpUtil::MapStatusCodeForHistogram(response_code_),
-        net::HttpUtil::GetStatusCodesForHistogram());
 
     // If the response code indicates that the token might not be valid,
     // invalidate the token and try again.

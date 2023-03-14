@@ -51,8 +51,6 @@ class ASH_EXPORT FakeVideoConferenceTrayController
   void AddMediaApp(crosapi::mojom::VideoConferenceMediaAppInfoPtr media_app);
   void ClearMediaApps();
 
-  bool camera_muted() { return camera_muted_; }
-  bool microphone_muted() { return microphone_muted_; }
   const std::vector<
       std::pair<crosapi::mojom::VideoConferenceMediaDevice, std::u16string>>&
   device_used_while_disabled_records() {
@@ -67,8 +65,7 @@ class ASH_EXPORT FakeVideoConferenceTrayController
   // A vector containing all currently running media apps. Used for testing.
   MediaApps media_apps_;
 
-  // Indicates whether camera/microphone is muted.
-  bool camera_muted_ = false;
+  // Indicates whether microphone is muted.
   bool microphone_muted_ = false;
 
   // Records calls of the HandleDeviceUsedWhileDisabled for testing.

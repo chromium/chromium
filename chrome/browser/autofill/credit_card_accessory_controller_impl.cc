@@ -166,11 +166,10 @@ CreditCardAccessoryControllerImpl::GetSheetData() const {
   if (!unmasked_cards.empty()) {
     // Add the cached server cards first, so that they show up on the top of the
     // manual filling view.
-    std::transform(unmasked_cards.begin(), unmasked_cards.end(),
-                   std::back_inserter(info_to_add),
-                   [allow_filling](const CachedServerCardInfo* data) {
-                     return TranslateCachedCard(data, allow_filling);
-                   });
+    base::ranges::transform(unmasked_cards, std::back_inserter(info_to_add),
+                            [allow_filling](const CachedServerCardInfo* data) {
+                              return TranslateCachedCard(data, allow_filling);
+                            });
   }
   // Only add cards that are not present in the cache. Otherwise, we might
   // show duplicates.
@@ -280,9 +279,11 @@ bool CreditCardAccessoryController::AllowedForWebContents(
   DCHECK(web_contents) << "Need valid WebContents to attach controller to!";
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableManualFallbackForVirtualCards)) {
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents->GetBrowserContext());
     PersonalDataManager* personal_data_manager =
-        PersonalDataManagerFactory::GetForBrowserContext(
-            web_contents->GetBrowserContext());
+        PersonalDataManagerFactory::GetForProfile(
+            profile->GetOriginalProfile());
     if (personal_data_manager) {
       std::vector<CreditCard*> cards =
           personal_data_manager->GetCreditCardsToSuggest();
@@ -413,7 +414,7 @@ CreditCardAccessoryControllerImpl::GetAllCreditCards() const {
     // If any of cards is enrolled for virtual cards and the feature is active,
     // then insert a virtual card suggestion right before the actual card.
     if (ShouldCreateVirtualCard(card)) {
-      cards.push_back(CreditCard::CreateVirtualCard(*card));
+      cards.push_back(CreditCard::CreateVirtualCardWithGuidSuffix(*card));
     }
     cards.push_back(card);
   }

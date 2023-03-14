@@ -19,7 +19,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {ClearBrowsingDataBrowserProxyImpl, UpdateSyncStateEvent} from '../../clear_browsing_data_dialog/clear_browsing_data_browser_proxy.js';
 import {loadTimeData} from '../../i18n_setup.js';
-import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideInteractions} from '../../metrics_browser_proxy.js';
+import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyGuideStepsEligibleAndReached} from '../../metrics_browser_proxy.js';
 
 import {getTemplate} from './privacy_guide_completion_fragment.html.js';
 
@@ -75,6 +75,8 @@ export class PrivacyGuideCompletionFragmentElement extends
 
   override ready() {
     super.ready();
+    this.addEventListener('view-enter-start', this.onViewEnterStart_);
+
     this.addWebUiListener(
         'update-sync-state',
         (event: UpdateSyncStateEvent) => this.updateWaaLink_(event.signedIn));
@@ -85,6 +87,12 @@ export class PrivacyGuideCompletionFragmentElement extends
 
   override focus() {
     this.shadowRoot!.querySelector<HTMLElement>('.headline')!.focus();
+  }
+
+  private onViewEnterStart_() {
+    this.metricsBrowserProxy_
+        .recordPrivacyGuideStepsEligibleAndReachedHistogram(
+            PrivacyGuideStepsEligibleAndReached.COMPLETION_REACHED);
   }
 
   private computeIsNoLinkLayout_() {

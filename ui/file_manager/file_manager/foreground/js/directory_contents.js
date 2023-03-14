@@ -11,6 +11,7 @@ import {AsyncQueue, ConcurrentQueue} from '../../common/js/async_util.js';
 import {createDOMError} from '../../common/js/dom_utils.js';
 import {FileType} from '../../common/js/file_type.js';
 import {metrics} from '../../common/js/metrics.js';
+import {getEarliestTimestamp} from '../../common/js/recent_date_bucket.js';
 import {createTrashReaders} from '../../common/js/trash.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
@@ -295,37 +296,6 @@ export class SearchV2ContentScanner extends ContentScanner {
   }
 
   /**
-   * Computes the timestamp based on options. If the options ask for today's
-   * results, it uses the time in ms from midnight. For yesterday, it goes back
-   * by one day from midnight. For week, it goes back by 6 days from midnight.
-   * For a month, it goes back by 30 days since midnight, regardless of how
-   * many days are in the current month. For a year, it goes back by 365 days
-   * since midnight, regardless if the current year is a leap year or not.
-   * @private
-   */
-  getEarliestTimestamp_() {
-    const now = new Date();
-    const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const midnightMs = midnight.getTime();
-    const dayMs = 24 * 60 * 60 * 1000;
-
-    switch (this.options_.recency) {
-      case SearchRecency.TODAY:
-        return midnightMs;
-      case SearchRecency.YESTERDAY:
-        return midnightMs - 1 * dayMs;
-      case SearchRecency.LAST_WEEK:
-        return midnightMs - 6 * dayMs;
-      case SearchRecency.LAST_MONTH:
-        return midnightMs - 30 * dayMs;
-      case SearchRecency.LAST_YEAR:
-        return midnightMs - 365 * dayMs;
-      default:
-        return 0;
-    }
-  }
-
-  /**
    * @returns Whether or not the Google Drive search should be performed.
    * @private
    */
@@ -348,11 +318,14 @@ export class SearchV2ContentScanner extends ContentScanner {
       invalidateCache = false) {
     const searchPromises = [];
     const category = this.getDesiredCategory_();
+    const now = new Date();
     if (this.isSearchingLocal_()) {
       searchPromises.push(new Promise((resolve, reject) => {
-        const rootDir =
-            this.isSearchingRoot_() ? this.entry_.filesystem.root : this.entry_;
-        const timestamp = this.getEarliestTimestamp_();
+        metrics.startInterval('Search.Local.Latency');
+        const rootDir = this.isSearchingRoot_() ?
+            this.entry_.filesystem.root :
+            /** @type {DirectoryEntry} */ (util.unwrapEntry(this.entry_));
+        const timestamp = getEarliestTimestamp(this.options_.recency, now);
         chrome.fileManagerPrivate.searchFiles(
             {
               rootDir: rootDir,
@@ -373,6 +346,7 @@ export class SearchV2ContentScanner extends ContentScanner {
                     util.FileError.NOT_READABLE_ERR,
                     chrome.runtime.lastError.message));
               } else {
+                metrics.recordInterval('Search.Local.Latency');
                 resolve(entries);
               }
             });
@@ -380,6 +354,7 @@ export class SearchV2ContentScanner extends ContentScanner {
     }
     if (this.isSearchingDrive_()) {
       searchPromises.push(new Promise((resolve, reject) => {
+        metrics.startInterval('Search.Drive.Latency');
         chrome.fileManagerPrivate.searchDrive(
             {
               query: this.query_,
@@ -396,6 +371,7 @@ export class SearchV2ContentScanner extends ContentScanner {
               } else if (!entries) {
                 reject(createDOMError(util.FileError.INVALID_MODIFICATION_ERR));
               } else {
+                metrics.recordInterval('Search.Drive.Latency');
                 resolve(entries);
               }
             });
@@ -407,14 +383,17 @@ export class SearchV2ContentScanner extends ContentScanner {
       successCallback();
     }
     Promise.allSettled(searchPromises).then((results) => {
+      let resultCount = 0;
       for (const result of results) {
         if (result.status === 'rejected') {
           errorCallback(/** @type {DOMError} */ (result.reason));
         } else if (result.status === 'fulfilled') {
           entriesCallback(result.value);
+          resultCount += result.value.length;
         }
       }
       successCallback();
+      metrics.recordMediumCount('Search.ResultCount', resultCount);
     });
   }
 }
@@ -507,7 +486,7 @@ export class RecentContentScanner extends ContentScanner {
   async scan(
       entriesCallback, successCallback, errorCallback,
       invalidateCache = false) {
-    /** @type {function(!FileEntry): boolean} */
+    /** @type {function(!Entry): boolean} */
     const isMatchQuery = (entry) =>
         entry.name.toLowerCase().indexOf(this.query_) >= 0;
     /**
@@ -515,7 +494,7 @@ export class RecentContentScanner extends ContentScanner {
      * some volumes. Before returning the recent entries, we need to check if
      * the entry's volume location is valid or not (crbug.com/1333385/#c17).
      */
-    /** @type {function(!FileEntry): boolean} */
+    /** @type {function(!Entry): boolean} */
     const isAllowedVolume = (entry) =>
         this.volumeManager_.getVolumeInfo(entry) !== null;
     chrome.fileManagerPrivate.getRecentFiles(
@@ -529,7 +508,8 @@ export class RecentContentScanner extends ContentScanner {
           }
           if (entries.length > 0) {
             entriesCallback(entries.filter(
-                entry => isMatchQuery(entry) && isAllowedVolume(entry)));
+                entry =>
+                    isMatchQuery(assert(entry)) && isAllowedVolume(entry)));
           }
           successCallback();
         });

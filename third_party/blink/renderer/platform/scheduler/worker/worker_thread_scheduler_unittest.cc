@@ -466,15 +466,13 @@ class FrameSchedulerDelegateWithUkmSourceId : public FrameScheduler::Delegate {
   ukm::UkmRecorder* GetUkmRecorder() override { return nullptr; }
 
   ukm::SourceId GetUkmSourceId() override { return source_id_; }
+  void OnTaskCompleted(base::TimeTicks,
+                       base::TimeTicks,
+                       base::TimeTicks) override {}
 
   void UpdateTaskTime(base::TimeDelta time) override {}
 
-  void UpdateBackForwardCacheDisablingFeatures(
-      uint64_t features_mask,
-      const BFCacheBlockingFeatureAndLocations&
-          non_sticky_features_and_js_locations,
-      const BFCacheBlockingFeatureAndLocations&
-          sticky_features_and_js_locations) override {}
+  void UpdateBackForwardCacheDisablingFeatures(BlockingDetails) override {}
 
   const base::UnguessableToken& GetAgentClusterId() const override {
     return base::UnguessableToken::Null();

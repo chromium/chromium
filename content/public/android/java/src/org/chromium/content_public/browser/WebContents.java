@@ -562,4 +562,11 @@ public interface WebContents extends Parcelable {
      * before SurfaceHolder.Callback2.surfaceDestroyed returns.
      */
     void tearDownDialogOverlays();
+
+    /**
+     * This function checks all frames in this WebContents (not just the main
+     * frame) and returns true if at least one frame has either a beforeunload or
+     * an unload/pagehide/visibilitychange handler.
+     */
+    boolean needToFireBeforeUnloadOrUnloadEvents();
 }

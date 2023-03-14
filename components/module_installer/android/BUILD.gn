@@ -51,7 +51,6 @@ robolectric_binary("module_installer_junit_tests") {
     "junit/src/org/chromium/components/module_installer/builder/ModuleTest.java",
     "junit/src/org/chromium/components/module_installer/engine/ApkEngineTest.java",
     "junit/src/org/chromium/components/module_installer/engine/SplitCompatEngineTest.java",
-    "junit/src/org/chromium/components/module_installer/logger/LoggerTestUtil.java",
     "junit/src/org/chromium/components/module_installer/logger/PlayCoreLoggerTest.java",
     "junit/src/org/chromium/components/module_installer/logger/SplitInstallFailureLoggerTest.java",
     "junit/src/org/chromium/components/module_installer/logger/SplitInstallStatusLoggerTest.java",

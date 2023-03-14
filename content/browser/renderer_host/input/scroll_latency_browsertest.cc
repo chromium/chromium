@@ -293,13 +293,8 @@ class ScrollLatencyScrollbarBrowserTest : public ScrollLatencyBrowserTest {
     // The following features need to be disabled:
     // - kOverlayScrollbar since overlay scrollbars are not hit-testable (thus
     // input is not routed to scrollbars).
-    // - kCompositorThreadedScrollbarScrolling since this feature is already
-    // tested by ScrollLatencyCompositedScrollbarBrowserTest. Hence, this
-    // current test can be used exclusively to test the main thread scrollbar
-    // path.
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {}, {features::kOverlayScrollbar,
-             features::kCompositorThreadedScrollbarScrolling});
+        {}, {features::kOverlayScrollbar});
   }
 
   ~ScrollLatencyScrollbarBrowserTest() override = default;
@@ -369,27 +364,6 @@ class ScrollLatencyScrollbarBrowserTest : public ScrollLatencyBrowserTest {
 #endif  // !BUILDFLAG(IS_ANDROID)
   }
 
-  virtual bool DoesScrollbarScrollOnMainThread() const { return true; }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-class ScrollLatencyCompositedScrollbarBrowserTest
-    : public ScrollLatencyScrollbarBrowserTest {
- public:
-  ScrollLatencyCompositedScrollbarBrowserTest() {}
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ScrollLatencyScrollbarBrowserTest::SetUpCommandLine(command_line);
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kCompositorThreadedScrollbarScrolling);
-  }
-
-  ~ScrollLatencyCompositedScrollbarBrowserTest() override {}
-
- protected:
-  bool DoesScrollbarScrollOnMainThread() const override { return false; }
-
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -399,7 +373,7 @@ class ScrollLatencyCompositedScrollbarBrowserTest
 #else
 #define MAYBE_ScrollbarThumbDragLatency ScrollbarThumbDragLatency
 #endif
-IN_PROC_BROWSER_TEST_F(ScrollLatencyCompositedScrollbarBrowserTest,
+IN_PROC_BROWSER_TEST_F(ScrollLatencyScrollbarBrowserTest,
                        MAYBE_ScrollbarThumbDragLatency) {
   LoadURL();
 

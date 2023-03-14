@@ -27,7 +27,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           بروید و مطمئن شوید که تنظیمات بر روی «بدون پراکسی» یا «مستقیم» است.</translation>
+<translation id="6549378540556750549">‏ارائه Chromium ازطریق <ph name="BEGIN_LINK_OSS" />نرم‌افزارهای متن‌باز<ph name="END_LINK_OSS" /> دیگر نیز ممکن شده است.</translation>
 <translation id="6613594504749178791">‏دفعه بعدی که Chromium را مجدداً راه‌اندازی می‌کنید، این تغییرات اعمال می‌شوند.</translation>
+<translation id="7681937895330411637">‏ارائه Chromium ازطریق پروژه متن‌باز <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ممکن شده است.</translation>
 <translation id="7861509383340276692">‏به
           منوی Chromium &gt;
           <ph name="SETTINGS_TITLE" />

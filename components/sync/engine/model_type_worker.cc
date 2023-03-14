@@ -32,7 +32,6 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_invalidation_adapter.h"
 #include "components/sync/base/time.h"
-#include "components/sync/base/unique_position.h"
 #include "components/sync/engine/bookmark_update_preprocessing.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/commit_contribution.h"
@@ -503,7 +502,7 @@ void ModelTypeWorker::ProcessGetUpdatesResponse(
   // remote data first. Instead, apply updates as they come in. This saves the
   // need to accumulate all data in memory.
   if (ApplyUpdatesImmediatelyTypes().Has(type_)) {
-    ApplyUpdates(status);
+    ApplyUpdates(status, /*cycle_done=*/false);
   }
 }
 
@@ -554,7 +553,7 @@ ModelTypeWorker::DecryptionStatus ModelTypeWorker::PopulateUpdateResponseData(
   // Prepare the message for the model thread.
   data.id = update_entity.id_string();
   data.client_tag_hash =
-      ClientTagHash::FromHashed(update_entity.client_defined_unique_tag());
+      ClientTagHash::FromHashed(update_entity.client_tag_hash());
   data.creation_time = ProtoTimeToTime(update_entity.ctime());
   data.modification_time = ProtoTimeToTime(update_entity.mtime());
   data.name = update_entity.name();
@@ -587,12 +586,23 @@ ModelTypeWorker::DecryptionStatus ModelTypeWorker::PopulateUpdateResponseData(
   return SUCCESS;
 }
 
-void ModelTypeWorker::ApplyUpdates(StatusController* status) {
+void ModelTypeWorker::ApplyUpdates(StatusController* status, bool cycle_done) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Indicate to the processor that the initial download is done. The initial
-  // sync technically isn't done yet but by the time this value is persisted to
-  // disk on the model thread it will be.
+  // Indicate the new initial-sync state to the processor: If the current sync
+  // cycle was completed, the initial sync must be done. Otherwise, it's started
+  // now. The latter can only happen for ApplyUpdatesImmediatelyTypes(), since
+  // other types wait for the cycle to complete before applying any updates.
+  // Note that the initial sync technically isn't started/done yet but by the
+  // time this value is persisted to disk on the model thread it will be.
   model_type_state_.set_initial_sync_done(true);
+  if (cycle_done) {
+    model_type_state_.set_initial_sync_state(
+        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  } else {
+    DCHECK(ApplyUpdatesImmediatelyTypes().Has(type_));
+    model_type_state_.set_initial_sync_state(
+        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_PARTIALLY_DONE);
+  }
 
   if (!entries_pending_decryption_.empty() &&
       (!encryption_enabled_ || cryptographer_->CanEncrypt())) {

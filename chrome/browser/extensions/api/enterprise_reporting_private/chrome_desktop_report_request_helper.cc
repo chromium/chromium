@@ -316,8 +316,7 @@ void StoreDeviceData(const std::string& id,
       return;
     }
 
-    base::WriteFile(tmp_path, reinterpret_cast<const char*>(data->data()),
-                    data->size());
+    base::WriteFile(tmp_path, *data);
     success = base::Move(tmp_path, data_file);
   } else {
     // Not passing a second parameter means clear the data sored under |id|.

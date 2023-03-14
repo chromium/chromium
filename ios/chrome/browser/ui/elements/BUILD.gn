@@ -7,6 +7,7 @@ source_set("elements") {
   sources = [
     "extended_touch_target_button.h",
     "extended_touch_target_button.mm",
+    "fade_truncating_label+private.h",
     "fade_truncating_label.h",
     "fade_truncating_label.mm",
     "gray_highlight_button.h",
@@ -26,9 +27,9 @@ source_set("elements") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/elements:constants",
-    "//ios/chrome/browser/ui/util",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
@@ -46,7 +47,7 @@ source_set("activity_overlay") {
   deps = [
     ":elements_internal",
     "//base",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/common/ui/util",
   ]
 }
@@ -66,6 +67,7 @@ source_set("unit_tests") {
   sources = [
     "activity_overlay_coordinator_unittest.mm",
     "chrome_activity_overlay_coordinator_unittest.mm",
+    "fade_truncating_label_unittest.mm",
     "text_field_configuration_unittest.mm",
     "windowed_container_view_unittest.mm",
   ]
@@ -77,6 +79,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test:test_support",
     "//testing/gtest",
     "//third_party/ocmock",
@@ -98,10 +101,10 @@ source_set("elements_internal") {
   deps = [
     ":constants",
     "//base",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/scoped_ui_blocker:scoped_ui_blocker",
-    "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ios/third_party/material_components_ios",

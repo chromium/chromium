@@ -99,6 +99,10 @@ void delete_touch(wl_touch* touch) {
     wl_touch_destroy(touch);
 }
 
+void delete_zaura_output_manager(zaura_output_manager* manager) {
+  zaura_output_manager_destroy(manager);
+}
+
 void delete_zaura_shell(zaura_shell* shell) {
   if (wl::get_version_of_object(shell) >= ZAURA_SHELL_RELEASE_SINCE_VERSION)
     zaura_shell_release(shell);
@@ -228,6 +232,8 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_positioner)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_surface)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_toplevel)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_wm_base)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(zaura_output_manager,
+                                             delete_zaura_output_manager)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(zaura_shell, delete_zaura_shell)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(zaura_surface,
                                              delete_zaura_surface)

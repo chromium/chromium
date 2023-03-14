@@ -100,7 +100,6 @@
 <translation id="1420408895951708260">Միացնել/անջատել գիշերային ռեժիմը: <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Թույլ է տալիս ձեր հեռախոսում վերջերս ավելացված լուսանկարները և մեդիա ֆայլերը դիտել <ph name="DEVICE_TYPE" /> սարքում։</translation>
 <translation id="1426410128494586442">Այո</translation>
-<translation id="1447641497144572814">Էկրանապահը գործարկվում է</translation>
 <translation id="1455242230282523554">Ցուցադրել լեզվի կարգավորումները</translation>
 <translation id="1460620680449458626">Ձայնն անջատված է:</translation>
 <translation id="14648076227129703">Սա հասանելի է դարձնում տեսախցիկը <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> հավելվածներին, ինչպես նաև բոլոր հավելվածներին և կայքերին, որոնք ունեն տեսախցիկի օգտագործման թույլտվություն</translation>
@@ -125,9 +124,12 @@
 <translation id="1550406609415860283">Հասանելի են սարքեր</translation>
 <translation id="1550523713251050646">Լրացուցիչ ընտրանքների համար սեղմեք</translation>
 <translation id="1555130319947370107">Կապույտ</translation>
+<translation id="1576623706766186887">Փոքրացնել, երբ խոշորացույցը միացված է</translation>
+<translation id="1586324912145647027">Անցնել 1–8 աշխատասեղաններին</translation>
 <translation id="1589090746204042747">Դիտեք այս աշխատաշրջանում ձեր գործողությունների վիճակագրությունը</translation>
 <translation id="1610778689852195798">«Undo» (հետարկել)</translation>
 <translation id="1611993646327628135">Միացված է</translation>
+<translation id="1618835956950524778">Առանձնացնել գործարկիչի կոճակը դարակում</translation>
 <translation id="1620510694547887537">Տեսախցիկ</translation>
 <translation id="1632985212731562677">Switch Access-ն անջատելու համար անցեք Կարգավորումներ &gt; Հատուկ գործառույթներ։</translation>
 <translation id="163517899691012366">Ծանուցումների ձայնն անջատված է «Չանհանգստացնել» ռեժիմում</translation>
@@ -149,6 +151,7 @@
 <translation id="1715293566947629045">Պրոֆիլն անջատվում է։ Մի փոքր սպասեք։</translation>
 <translation id="1719094688023114093">Կենդանի ենթագրերը միացված են։</translation>
 <translation id="1720011244392820496">Միացրեք Wi-Fi համաժամացումը</translation>
+<translation id="1731815243805539470">Անցնել նախորդ օգտատիրոջը</translation>
 <translation id="1733996486177697563">Անցեք մուգ թեմայից բաց թեմային և հակառակը։ Հպեք աշխատասեղանին և պահեք, այնուհետև ընտրեք «Պաստառ և ոճ»։</translation>
 <translation id="1736898441010944794">«<ph name="NAME" />» ադապտերը տեսանելի է Bluetooth սարքերին։</translation>
 <translation id="174102739345480129">Նշիչն անջատված է։</translation>
@@ -194,6 +197,7 @@
 <translation id="1919743966458266018">Խնդիրների կառավարիչը բացելու դյուրանցումը փոխվել է: <ph name="OLD_SHORTCUT" />-ի փոխարեն օգտագործեք <ph name="NEW_SHORTCUT" />:</translation>
 <translation id="1923539912171292317">Ավտոմատ սեղմումներ</translation>
 <translation id="1928739107511554905">Թարմացումը տեղադրելու համար հպէկրանի միջոցով վերագործարկեք Chromebook-ը՝ առանց ստեղնաշարն անջատելու։</translation>
+<translation id="1948405482892809935">Անցնել հաջորդ օգտատիրոջը</translation>
 <translation id="1951012854035635156">Օգնական</translation>
 <translation id="1954252331066828794">Էկրանի տեսագրումը ավարտվեց</translation>
 <translation id="1957958912175573503">Ընտրեք լեզուն</translation>
@@ -279,6 +283,7 @@
 <translation id="2429753432712299108">«<ph name="DEVICE_NAME" />» Bluetooth սարքը զուգավորման թույլտվություն է խնդրում: Նախքան ընդունելը հաստատեք, որ սարքի վրա ցուցադրվում է այս կոդը` <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Ցույց տալ գաղտնաբառը</translation>
 <translation id="243878895369688216">Երեկ բացել եք</translation>
+<translation id="2440978926514840421">GIF ձևաչափով տեսագրումն արվել է</translation>
 <translation id="2441427462554639370">Ձայնագրումն ավարտվեց ոչ բավարար տարածքի պատճառով</translation>
 <translation id="24452542372838207">Ընդարձակել</translation>
 <translation id="2449089818483227734">Մարտկոցի լիցքը քիչ է</translation>
@@ -288,10 +293,12 @@
 <translation id="2475982808118771221">Սխալ առաջացավ</translation>
 <translation id="2482878487686419369">Ծանուցումներ</translation>
 <translation id="2484513351006226581">Ստեղնաշարի դասավորությունը փոխելու համար սեղմեք <ph name="KEYBOARD_SHORTCUT" />։</translation>
+<translation id="2487915095798731898">Միանալ</translation>
 <translation id="2501920221385095727">Կպչուն ստեղներ</translation>
 <translation id="2509468283778169019">CAPS LOCK-ը միացված է</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Ապակողպել պատուհանները</translation>
+<translation id="2530896289327917474">Միացրեք/անջատեք ստեղնային դիտարկումը</translation>
 <translation id="2542089167727451762">Հպեք ձեր պրոֆիլի նկարին</translation>
 <translation id="255671100581129685">Google Օգնականը հասանելի չէ հանրային աշխատաշրջանում։</translation>
 <translation id="256712445991462162">Ամրացված խոշորացույց</translation>
@@ -303,6 +310,7 @@
 <translation id="2596078834055697711">Ստանալ պատուհանի պատկեր</translation>
 <translation id="2598725286293895280">Չաջակցվող հավելվածներ աշխատասեղանում</translation>
 <translation id="2607678425161541573">Անհրաժեշտ է առցանց մուտք գործել</translation>
+<translation id="2612614436418177118">Տեղաշարժել հավելվածի պատկերակը հավելվածների ցանցում</translation>
 <translation id="2620016719323068571">Որոնեք ձեր <ph name="CATEGORY" />ում, ֆայլերում, հավելվածներում և այլն…</translation>
 <translation id="2620436844016719705">Համակարգ</translation>
 <translation id="2621713457727696555">Պաշտպանված է</translation>
@@ -329,6 +337,7 @@
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">«Delete» (Ջնջել)</translation>
 <translation id="2750941250130734256">Ակտիվ պատուհանն ապամրացված է։</translation>
+<translation id="2761723519669354964">Բացել առանձնացված տարրը դարակից</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից</translation>
 <translation id="2782591952652094792">Դուրս գալ տեսագրման ռեժիմից</translation>
 <translation id="2791421900609674576">Դուք առաջարկություններ կտեսնեք և կկարողանաք շարունակել այն պահից, որտեղ կանգ էիք առել։ Առաջարկությունները հեռացնելու համար հպեք և պահեք։</translation>
@@ -365,7 +374,8 @@
 <translation id="296762781903199866">Չհաջողվեց ներբեռնել <ph name="LANGUAGE" /> լեզվով խոսքի ճանաչման ֆայլերը</translation>
 <translation id="2970920913501714344">Տեղադրել հավելվածներ, ընդլայնումներ և թեմաներ</translation>
 <translation id="2977598380246111477">Հաջորդ համարը</translation>
-<translation id="2985148236010982088">Դիտել բոլոր հավելվածները</translation>
+<translation id="2985148236010982088">Տեսնել բոլոր հավելվածները</translation>
+<translation id="29859347674873492">Բացել Օգնությունը «Հնարավորություններ» հավելվածում</translation>
 <translation id="2992327365391326550">Սարքի խոսափողի կոճակն անջատված է։</translation>
 <translation id="2996462380875591307">Ամրացված խոշորացույցը միացավ: Այն անջատելու համար նորից սեղմեք Ctrl+Search+D:</translation>
 <translation id="3000461861112256445">Մոնո</translation>
@@ -392,6 +402,7 @@
 <translation id="3100274880412651815">Անջատել տեսագրման ռեժիմը</translation>
 <translation id="3105917916468784889">Ստանալ սքրինշոթը</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113492864356515707">Առանձնացնել նախորդ տարրը դարակում</translation>
 <translation id="3120421559657122717">Անջատե՞լ սարքը</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Թարմացնելու համար վերագործարկեք</translation>
@@ -417,6 +428,7 @@
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> պատուհանը տեղափոխվել է աշխատասեղան <ph name="ACTIVE_DESK" />-ից աշխատասեղան <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Կարգավորում</translation>
 <translation id="3255483164551725916">Ի՞նչ կարող ես անել:</translation>
+<translation id="3256109297135787951">Չեղարկել տարրի նշումը դարակում</translation>
 <translation id="3260969790895726815">Քանի որ խոսքը սարքում է մշակվում, թելադրումը կարելի է օգտագործել անցանց ռեժիմում, սակայն որոշ ձայնային հրամաններ չեն աշխատի։</translation>
 <translation id="3269597722229482060">Աջ սեղմում</translation>
 <translation id="3289544412142055976">Լինուքսի հավելվածները ներկայումս չեն աջակցվում</translation>
@@ -432,6 +444,7 @@
 <translation id="3340978935015468852">կարգավորումներում</translation>
 <translation id="3341303451326249809">Սքրինշոթը ստեղծվեց</translation>
 <translation id="334252345105450327">Սքրինշոթ անել</translation>
+<translation id="3349345708646875009">Բացել խնդիրների կառավարիչը</translation>
 <translation id="3351879221545518001">Դուք հեռարձակում եք ձեր էկրանի պատկերը:</translation>
 <translation id="3364721542077212959">Ստիլուսի գործիքներ</translation>
 <translation id="3365977133351922112">Հեռախոսը շատ հեռու է։ Մոտեցրեք այն։</translation>
@@ -446,6 +459,7 @@
 <translation id="3405101454990027959">Միացնել խոսափողի օգտագործման թույլտվությունը</translation>
 <translation id="3410336247007142655">Ցույց տալ մուգ թեմայի կարգավորումները</translation>
 <translation id="3413817803639110246">Դեռևս ոչինչ չկա</translation>
+<translation id="3423744722495840645">Բացել/փակել գործարկիչը</translation>
 <translation id="3428447136709161042">Անջատել «<ph name="NETWORK_NAME" />» ցանցից</translation>
 <translation id="3430396595145920809">Սահեցրեք մատը աջից՝ հետ գնալու համար</translation>
 <translation id="3431517721463707585">Աշխատասեղան 14</translation>
@@ -499,11 +513,18 @@
 <translation id="3631369015426612114">Թույլ տալ ծանուցումները հետևյալ կայքերից</translation>
 <translation id="3633097874324966332">Բացեք Bluetooth-ի կարգավորումները՝ սարքը զուգակցելու համար</translation>
 <translation id="3638400994746983214">Միացնել/անջատել գաղտնիության էկրանը։ <ph name="STATE_TEXT" />:</translation>
+<translation id="3649256019230929621">Նվազեցնել պատուհանը</translation>
 <translation id="3649505501900178324">Թարմացման ժամկետը լրացել է</translation>
+<translation id="3653999174677652346"><ph name="EVENT_POSITION" />
+        <ph name="EVENT_SUMMARY" />,
+        <ph name="START_TIME" />-ից մինչև
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" />։ Ընտրեք միջոցառումը՝ Google Օրացույցում լրացուցիչ տեղեկություններ տեսնելու համար։</translation>
 <translation id="3659444876902283058">(օր <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Մնացել է մոտ <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%)։
 Միացրեք սարքը հոսանքին։</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> կառավարվող օգտատեր</translation>
+<translation id="367531336287639526">Ընտրել առաջին տարրը հասցեագոտու ձախ կողմում</translation>
 <translation id="36813544980941320">Ձեր հեռախոսում և <ph name="DEVICE_NAME" />-ում կօգտագործվեն նույն Wi-Fi ցանցերը</translation>
 <translation id="3694122362646626770">Վեբկայքեր</translation>
 <translation id="3702809606464356667">Ցուցադրվում են պատուհաններ ընթացիկ աշխատասեղանից։ Սեղմեք վեր սլաքի ստեղնը՝ բոլոր աշխատասեղանների պատուհանները ցուցադրելու համար։</translation>
@@ -547,6 +568,7 @@
 <translation id="3925540965556789199"><ph name="DATE" />, միջոցառումների բեռնում։</translation>
 <translation id="3932043219784172185">Միացած սարքեր չկան</translation>
 <translation id="3934456833412894880">Հարմարվող լիցքավորումը միացված է։ Մարտկոցի աշխատաժամանակը երկարացնելու համար այն կլիցքավորվի մինչև 80%։ Մարտկոցն ամբողջությամբ կլիցքավորվի միայն այն դեպքում, երբ իսկապես դրա անհրաժեշտությունը լինի։</translation>
+<translation id="3936620957945677513">Սեղմեք «Մտնել»՝ <ph name="EVENT_SUMMARY" /> միջոցառմանը միանալու համար</translation>
 <translation id="3943857333388298514">Տեղադրել</translation>
 <translation id="394485226368336402">Ձայնի կարգավորումներ</translation>
 <translation id="3945319193631853098">Հպեք՝ կարգավորումն ավարտելու համար</translation>
@@ -564,7 +586,9 @@
 <translation id="4017989525502048489">Լազերային ցուցիչ</translation>
 <translation id="401993194061514265">Նշիչը հասանելի չէ։ Նորից բացեք Screencast-ը։</translation>
 <translation id="4021716437419160885">Ոլորել վար</translation>
+<translation id="4022497978915111141">Կողպել սարքը</translation>
 <translation id="4024840464866786680">Եթե մոռացել եք ձեր PIN կոդը և գաղտնաբառը կամ վերջերս փոխել եք Google հաշվի գաղտնաբառը, փորձեք վերականգնել այս օգտատիրոջը։</translation>
+<translation id="4026843240379844265">Տեղափոխել ակտիվ պատուհանը էկրանների միջև</translation>
 <translation id="4028481283645788203">Անվտանգության նկատառումներից ելնելով անհրաժեշտ է մուտքագրել գաղտնաբառը</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Դուք հասանելի եք դարձրել ձեր էկրանը</translation>
@@ -601,6 +625,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, տեղադրված հավելված, դադարեցված է</translation>
 <translation id="423685346499232137">Այս պահին հնարավոր չէ բովանդակություն պատճենել կամ տեղադրել</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4240486403425279990">Համատեսքի ռեժիմ</translation>
 <translation id="4242533952199664413">Բացել կարգավորումները</translation>
 <translation id="4247123849143712100">Թարմացնել և անջատել</translation>
 <translation id="4250229828105606438">Սքրինշոթ</translation>
@@ -635,7 +660,6 @@
 <translation id="4405151984121254935">Միացված արտաքին սարքի տիպը չի աջակցվում</translation>
 <translation id="4406883609789734330">Կենդանի ենթագրեր</translation>
 <translation id="4412944820643904175">«<ph name="FEATURE_NAME" />» գործառույթն անջատված է։</translation>
-<translation id="4421231901400348175">Էկրանի կառավարման համօգտագործում <ph name="HELPER_NAME" />-ի հետ Հեռակա օգնության միջոցով:</translation>
 <translation id="4424159417645388645">Աշխատասեղան 5</translation>
 <translation id="4430019312045809116">Ձայնի ուժգնություն</translation>
 <translation id="4435022394553622295">Դիտեք ձեր հեռախոսի ծանուցումներն ու հավելվածները <ph name="DEVICE_TYPE" /> սարքում</translation>
@@ -766,6 +790,7 @@
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> սարքը կապվեց նոր հեռախոսի հետ</translation>
 <translation id="5035389544768382859">Հաստատեք էկրանի կազմաձևումը</translation>
 <translation id="5042305953558921026">Համատեսքի ռեժիմի ստեղն</translation>
+<translation id="5043679421800073804">Ընտրել վերջին պատկերակը դարակում</translation>
 <translation id="504465286040788597">Նախորդ պարբերությունը</translation>
 <translation id="5045550434625856497">Գաղտնաբառը սխալ է</translation>
 <translation id="5078796286268621944">Սխալ PIN կոդ</translation>
@@ -799,6 +824,7 @@
 <translation id="5253783950165989294">Կապ է հաստատվել «<ph name="DEVICE_NAME" />» սարքի հետ, մարտկոցի լիցքը՝ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">Պահված աշխատասեղաններ չկան</translation>
 <translation id="5260676007519551770">Աշխատասեղան 4</translation>
+<translation id="5278086053818066789">Միացնել/անջատել ChromeVox-ը (տեքստի հնչեցում)</translation>
 <translation id="5283099933536931082">«<ph name="APP_ITEM_TITLE" />» հավելվածը ձեզ ծանուցում է ցուցադրում։</translation>
 <translation id="5283198616748585639">Ավելացնել 1 րոպե</translation>
 <translation id="528468243742722775">Վերջ</translation>
@@ -825,6 +851,7 @@
 <translation id="536019650977002321">Ձեր ադմինիստրատորը թույլ չի տալիս ձայնագրություններ կատարել։ Լրացուցիչ տեղեկությունների համար դիմեք ձեր ադմինիստրատորին։</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> լեզվով խոսքի ֆայլերը մասամբ ներբեռնվել են</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Անցեք այս ներդիր</translation>
+<translation id="5369717264580061086">Նախադիտել ֆայլը «Ֆայլեր» հավելվածում</translation>
 <translation id="5377367976106153749">Միացնե՞լ տեսախցիկի օգտագործման թույլտվությունը</translation>
 <translation id="5379115545237091094">Չափազանց շատ փորձեր</translation>
 <translation id="5391307769715781764">Փոխարինե՞լ պահված աշխատասեղանը</translation>
@@ -844,6 +871,8 @@
 <translation id="5465662442746197494">Օգնությո՞ւն է պետք:</translation>
 <translation id="547979256943495781">Դարակն աջ կողմում է</translation>
 <translation id="5491186829646618080">Հասանելի են ներկառուցված ծրագրի թարմացումներ</translation>
+<translation id="5503884284981862082">Բացել/փակել Google Օգնականը</translation>
+<translation id="5506975627792768506">Միացնել կամ անջատել խոշորացույցը</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Ադմինիստրատորը հեռացրել է բոլոր eSIM պրոֆիլները։ Լրացուցիչ տեղեկությունների համար դիմեք ձեր ադմինիստրատորին։</translation>
 <translation id="5523434445161341166">«<ph name="FEATURE_NAME" />» գործառույթը միանում է։</translation>
@@ -853,6 +882,7 @@
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5546397813406633847">Վերականգնել օգտատիրոջը</translation>
 <translation id="554893713779400387">Միացնել/անջատել ձայնային ներածումը</translation>
+<translation id="5551456515017410630">Բացել/փակել օրացույցը</translation>
 <translation id="5558091555391176027">Միացնել/անջատել «Փոխանակում մոտակա սարքերի հետ» գործառույթի բարձր տեսանելիությունը</translation>
 <translation id="5560420195677022218">Դիտեք ձեր հեռախոսի հավելվածները <ph name="DEVICE_TYPE" /> սարքում</translation>
 <translation id="556042886152191864">Կոճակ</translation>
@@ -883,6 +913,7 @@
 <translation id="5689633613396158040">Գիշերային լույսը թույլ է տալիս ավելի հանգիստ նայել էկրանին և կարդալ թույլ լուսավորության պայմաններում։ Հպեք՝ գիշերային լույսի միացման ժամը փոխելու կամ այն ամբողջությամբ անջատելու համար։</translation>
 <translation id="5691772641933328258">Չհաջողվեց ճանաչել մատնահետքը</translation>
 <translation id="5693255400847650006">Խոսափողը ներկայումս օգտագործվում է</translation>
+<translation id="5699366815052349604">Նշանակել ակտիվ պատուհան բոլոր աշխատասեղաններին</translation>
 <translation id="570390244361237317">Բոլոր հավելվածները․ սլաքների ստեղների օգնությամբ կարող եք բացել բոլոր հավելվածների ցանկը</translation>
 <translation id="5707775774148071965">Ձեր սարքն աջակցում է տվյալների փոխանցման ավելի բարձր արագություն, քան ձեր մալուխը։ Սարքի աշխատանքի արդյունավետությունը կարող է սահմանափակվել։</translation>
 <translation id="5710450975648804523">«Չանհանգստացնել» ռեժիմն ակտիվ է</translation>
@@ -901,6 +932,7 @@
 <translation id="576453121877257266">Գիշերային ռեժիմը միացված է</translation>
 <translation id="5769373120130404283">Գաղտնիության էկրան</translation>
 <translation id="5773950591113557721">Սա օգտագործման թույլտվություն է տրամադրում <ph name="APP_NAME" /> հավելվածին և բոլոր այն հավելվածներին ու կայքերին, որոնք ունեն խոսափողի և տեսախցիկի օգտագործման թույլտվություն</translation>
+<translation id="5774295353725270860">Բացել «Ֆայլեր» ծրագիրը</translation>
 <translation id="5777841717266010279">Դադարեցնե՞լ էկրանի համօգտագործումը:</translation>
 <translation id="5779721926447984944">Ամրացված ֆայլեր</translation>
 <translation id="5788127256798019331">Play-ի ֆայլեր</translation>
@@ -941,6 +973,7 @@
 <translation id="598882571027504733">Թարմացումը տեղադրելու համար վերագործարկեք Chromebook-ը՝ առանց ստեղնաշարն անջատելու։</translation>
 <translation id="6002179289567220515">Դուք ֆիզիկական փոխանջատիչի միջոցով անջատել եք 1 տեսախցիկ։ Կարող եք նաև անջատել բոլոր տեսախցիկների հասանելիությունը։</translation>
 <translation id="6012623610530968780">Էջ <ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" /></translation>
+<translation id="601304062528754300">Առանձնացնել հաջորդ տարրը դարակում</translation>
 <translation id="6018164090099858612">Ելք հայելային ռեժիմից</translation>
 <translation id="602001110135236999">Ոլորել ձախ</translation>
 <translation id="6022924867608035986">Մաքրել որոնման դաշտի տեքստը</translation>
@@ -954,6 +987,7 @@
 <translation id="6043212731627905357">Այս մոնիտորը համատեղելի չէ ձեր <ph name="DEVICE_TYPE" /> սարքի հետ (մոնիտորը չի աջակցվում):</translation>
 <translation id="6043994281159824495">Դուրս գրվել</translation>
 <translation id="6045629311476491587">Օգտագործվում է <ph name="APP_COUNT" /> հավելվածի կողմից</translation>
+<translation id="6045998054441862242">Միացնել բարձր կոնտրաստի ռեժիմը</translation>
 <translation id="6047696787498798094">Էկրանի համօգտագործումը կդադարեցվի օգտատիրոջը փոխելու դեպքում: Ցանկանո՞ւմ եք շարունակել:</translation>
 <translation id="6054305421211936131">Մտնել հաշիվ խելացի քարտի օգնությամբ</translation>
 <translation id="6059276912018042191">Վերջերս բացված Chrome-ի ներդիրներ</translation>
@@ -976,6 +1010,7 @@
 <translation id="615957422585914272">Ցույց տալ էկրանի ստեղնաշարը</translation>
 <translation id="6165508094623778733">Իմանալ ավելին</translation>
 <translation id="6166852626429024716">Որոնեք սարքում, հավելվածներում, կարգավորումներում, համացանցում…</translation>
+<translation id="6168318496333165060">Բացել «Դիագնոստիկա» հավելվածը</translation>
 <translation id="6179832488876878285">Դուք կարող եք այստեղ ամրացնել ձեր կարևոր ֆայլերը։ Սկսելու համար բացեք «Ֆայլեր» հավելվածը։</translation>
 <translation id="6182592640011875895">Բացել աշխատասեղանը</translation>
 <translation id="619279033188484792">Թույլ է տալիս հեռախոսում վերջերս ավելացված լուսանկարները, մեդիա ֆայլերը և ծանուցումները դիտել <ph name="DEVICE_TYPE" /> սարքում։</translation>
@@ -983,12 +1018,14 @@
 <translation id="6193431488227440296">Մշակողների</translation>
 <translation id="6200515304866777730">Չի աջակցվում հավելվածի կողմից</translation>
 <translation id="6210042900243040400">Միացեք սարքին (<ph name="NAME" />), որը նախկինում պահել եք <ph name="EMAIL" /> հաշվում</translation>
+<translation id="6213808132343683860">Էկրանի մի մասի սքրինշոթ կամ տեսագրություն անել</translation>
 <translation id="6220928844947387476">Այժմ դուք կարող եք միաժամանակ տեսագրել ձեզ և ձեր էկրանը</translation>
 <translation id="622484624075952240">Վար</translation>
 <translation id="623116199192908855">Հեռարձակեք ձեր էկրանը Chromebook սարքից</translation>
 <translation id="6231419273573514727">Արտաքին սարքերի աշխատանքի արդյունավետությունը կարող է սահմանափակվել</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> հավելվածը ներկայումս օգտագործում է ձեր տեսախցիկն ու խոսափողը</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6247728804802644171">Բացել ծանուցումները</translation>
 <translation id="6254629735336163724">Միայն հորիզոնական</translation>
 <translation id="6259254695169772643">Ընտրելու համար օգտագործեք ստիլուսը</translation>
 <translation id="6267036997247669271"><ph name="NAME" />` ակտիվացում…</translation>
@@ -997,6 +1034,7 @@
 <translation id="6284232397434400372">Լուծաչափը փոխվել է</translation>
 <translation id="6288235558961782912">Ծնողների թույլտվությամբ <ph name="USER_EMAIL_ADDRESS" /> օգտատիրոջը հնարավոր կլինի նորից ավելացնել ավելի ուշ:</translation>
 <translation id="6291221004442998378">Չի լիցքավորվում</translation>
+<translation id="6309219492973062892">Ընտրել դարակի 1–8 պատկերակները</translation>
 <translation id="6315170314923504164">Ձայնային</translation>
 <translation id="6330012934079202188">Ցուցադրվում են բոլոր աշխատասեղանների պատուհանները։ Սեղմեք վեր սլաքի ստեղնը՝ ընթացիկ աշխատասեղանից պատուհաններ ցուցադրելու համար։</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> աշխատաշրջանը կառավարվում է <ph name="MANAGER" />-ի կողմից</translation>
@@ -1065,6 +1103,7 @@
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> կայքին/հավելվածին անհրաժեշտ է, որ հաստատեք ձեր ինքնությունը</translation>
 <translation id="6650933572246256093">«<ph name="DEVICE_NAME" />» Bluetooth սարքը զուգավորման թույլտվություն է խնդրում: Մուտքագրեք այս անցակոդն այդ սարքում՝ <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Գաղտնաբառ</translation>
+<translation id="666343722268997814">Մկնիկի աջ կոճակով բացել նշված տարրի ընտրացանկը</translation>
 <translation id="6665545700722362599">Թույլատրեք կայքերին, հավելվածներին և ընդլայնումներին օգտագործել տեղորոշման ծառայությունները, սարքի խոսափողը, տեսախցիկը և այլ գործառույթներ:</translation>
 <translation id="6667908387435388584">Միացեք ձեր հեռախոսի թեժ կետին, անջատեք սարքի ձայնը կամ տեղորոշեք այն, ինչպես նաև դիտեք ձեր հեռախոսում բացված Chrome-ի վերջին ներդիրները</translation>
 <translation id="6670153871843998651">Աշխատասեղան 3</translation>
@@ -1091,7 +1130,9 @@
 <translation id="6786750046913594791">Փակել պանակը</translation>
 <translation id="6787595647772650851">Վերականգնել վերջին աշխատաշրջանը</translation>
 <translation id="6790428901817661496">Նվագարկել</translation>
+<translation id="679368458793552943">Մեծացնել, երբ խոշորացույցը միացված է</translation>
 <translation id="6801878137098616817">Վերջերս փոփոխել եք</translation>
+<translation id="6802196538183166658">Բացել Արագ կարգավորումները ժամանակ ընտրելիս</translation>
 <translation id="6802687695197837794">Սա օգտագործման թույլտվություն է տրամադրում <ph name="APP1_NAME" /> և <ph name="APP2_NAME" /> հավելվածներին, ինչպես նաև բոլոր այն հավելվածներին ու կայքերին, որոնք ունեն խոսափողի և տեսախցիկի օգտագործման թույլտվություն</translation>
 <translation id="6803622936009808957">Չհաջողվեց հայելապատճենել մոնիտորները, քանի որ աջակցվող լուծաչափեր չգտնվեցին: Փոխարենը միացվել է ընդարձակված աշխատասեղանը:</translation>
 <translation id="6812232930908427253">Չհաջողվեց պահել աշխատասեղանը։ Չափազանց շատ պատուհաններ կամ ներդիրներ կան։</translation>
@@ -1115,6 +1156,7 @@
 <translation id="6901883536534621389">Օգտագործեք ժեստեր նավիգացիայի համար</translation>
 <translation id="6919251195245069855">Չհաջողվեց ճանաչել ձեր խելացի քարտը: Նորից փորձեք։</translation>
 <translation id="6931576957638141829">Պահել…</translation>
+<translation id="6941333068993625698">Կարծիք հայտնել</translation>
 <translation id="6942518653766415536">Տեսագրման ձևաչափի ընտրացանկ</translation>
 <translation id="6945221475159498467">Ընտրել</translation>
 <translation id="6960565108681981554">Ակտիվացված չէ։ Դիմեք ձեր կապի օպերատորին։</translation>
@@ -1151,6 +1193,7 @@
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="7098053464892629930">Google Play-ում ներբեռնեք <ph name="NAME" />-ի համար հավելվածը՝ բոլոր հասանելի գործառույթները տեսնելու համար</translation>
 <translation id="7098389117866926363">USB-C սարք (հետևի ձախ միացք)</translation>
+<translation id="7100906357717321275">Ցույց տալ թաքցված ֆայլերը «Ֆայլեր» հավելվածում</translation>
 <translation id="7106330611027933926">Ցուցադրել աշխատասեղանների տողը</translation>
 <translation id="7116969082764510092">Աշխատասեղան 11</translation>
 <translation id="7118268675952955085">սքրինշոթ</translation>
@@ -1195,6 +1238,7 @@
 <translation id="7384028040782072252">Սեղմեք մկնիկի աջ կոճակը ցանկացած տեղ՝ հավելվածները վերադասավորելու համար</translation>
 <translation id="7386767620098596324">Միացնել/անջատել կապը։ <ph name="STATE_TEXT" />։</translation>
 <translation id="7392563512730092880">Դուք կարող եք ավելի ուշ նշել պարամետրերը կարգավորումներում։</translation>
+<translation id="7401222354741467707">Ամբողջ էկրանի սքրինշոթ կամ տեսագրություն անել</translation>
 <translation id="7405710164030118432">Սարքն ապակողպելու համար մուտքագրեք Family Link-ի ծնողի մուտքի կոդը</translation>
 <translation id="7406608787870898861">Ավարտեք բջջային ցանցի կարգավորումը</translation>
 <translation id="740790383907119240">Հավելվածների դյուրանցումներ</translation>
@@ -1235,9 +1279,11 @@
 <translation id="7607002721634913082">Դադարեցված է</translation>
 <translation id="7609951632080598826">Օրացույցի դիտակերպ, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Տեսախցիկը նորից միացվեց։</translation>
+<translation id="7611271430932669992">Տեղափոխել ֆոկուսը ելնող և երկխոսության պատուհանների վրա</translation>
 <translation id="761736749114493194">Միացնել/անջատել տեսախցիկի կադրավորումը։ <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">Տեսախցիկի պատկերն ամրացված է ներքևի աջ անկյունում</translation>
+<translation id="7638572816805275740">Պատուհանի սքրինշոթ կամ էկրանի տեսագրություն անել</translation>
 <translation id="7642106959537987271">գունաշրջման ռեժիմ</translation>
 <translation id="7642647758716480637">Բացել «<ph name="NETWORK_NAME" />» ցանցի կարգավորումները, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (սեփականատեր)</translation>
@@ -1301,6 +1347,7 @@
 <translation id="7944023924886109030">Դիտել այսօրվա բոլոր միջոցառումները</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" />-ից</translation>
 <translation id="7968693143708939792">Ընտրել պանակ</translation>
+<translation id="797512352675305461">Միացնել կամ անջատել լիաէկրան խոշորացույցը</translation>
 <translation id="7977927628060636163">Բջջային ցանցերի որոնում...</translation>
 <translation id="7982789257301363584">Ցանց</translation>
 <translation id="7984197416080286869">Մատնահետքով ապակողպման փորձերը չափից շատ են</translation>
@@ -1324,9 +1371,11 @@
 <translation id="8091153018031979607">Մեկնարկը՝ <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Ավտոմատ թարմացումներ</translation>
 <translation id="8098591350844501178">Դադարեցնել էկրանի հեռարձակումը <ph name="RECEIVER_NAME" />-ին</translation>
+<translation id="810637681351706236">Ապամրացնել հավելվածը դարակից</translation>
 <translation id="8113423164597455979">Բոլորը միացված են</translation>
 <translation id="8113515504791187892">«Ընտրեք և լսեք» կոճակ</translation>
 <translation id="8120151603115102514">Հեռախոսում կարգավորված չէ կողպէկրան։ Ձեր Chromebook-ն ապակողպելու համար մուտքագրեք գաղտնաբառը։</translation>
+<translation id="8127095419621171197">Բացել «Հաշվիչ» հավելվածը</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Հաստատել</translation>
 <translation id="8131994907636310308">Փակել տեսակավորման մասին ծանուցումը</translation>
@@ -1344,6 +1393,7 @@
 <translation id="8155628902202578800">Բացել <ph name="USER_EMAIL_ADDRESS" /> հաշվի տեղեկությունների երկխոսության պատուհանը</translation>
 <translation id="8167567890448493835">Օգտագործվում է՝ <ph name="LOCALE_NAME" /></translation>
 <translation id="8183592608247778598">Դիտեք ձեր հեռախոսի վերջին լուսանկարները, մեդիաֆայլերը, ծանուցումներն ու հավելվածները <ph name="DEVICE_TYPE" /> սարքում</translation>
+<translation id="8185090165691050712">Միացնել/անջատել ընտրացանկը՝ կողպման ռեժիմի չափը փոխելու համար</translation>
 <translation id="8192202700944119416">Ծանուցումները թաքցված են:</translation>
 <translation id="8196787716797768628">Ժեստերի միջոցով արագ անցեք մեկ հավելվածից մյուսը և օգտագործեք Chromebook-ը պլանշետի ռեժիմում։</translation>
 <translation id="8200772114523450471">Շարունակել</translation>
@@ -1352,6 +1402,7 @@
 <translation id="8214996719228530800">Canary կապուղի</translation>
 <translation id="8219451629189078428">Այս ընթացքում Chromebook-ը պետք է միացված լինի և սնուցվի հոսանքից։ Համոզվեք, որ լիցքավորիչի և ադապտերի մալուխները պատշաճ միացված են Chromebook-ին և վարդակին։ Մի՛ անջատեք Chromebook-ը։</translation>
 <translation id="8230305195727960608">Գունաշրջման ռեժիմ</translation>
+<translation id="8233140502441622270">Բացել «Ստեղնային դյուրանցում» հավելվածը</translation>
 <translation id="8236042855478648955">Ընդմիջման ժամն է</translation>
 <translation id="8246282815785366524">Բարի վերադարձ, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />, մարտկոցի լիցքը՝ <ph name="BATTERY_STATUS" /></translation>
@@ -1436,6 +1487,7 @@
 <translation id="8676770494376880701">Կապակցվել է թույլ լիցքով լիցքավորիչ</translation>
 <translation id="8683506306463609433">Արդյունավետության հետագծումն ակտիվ է</translation>
 <translation id="8703634754197148428">Սկսել տեսագրումը։ Տեսագրումը սկսելուց հետո կարող եք օգտագործել Alt+Shift+L ստեղների համադրությունը՝ դարակ անցնելու և տեսագրումը կանգնեցնելու կոճակը գտնելու համար։</translation>
+<translation id="870917907284186124">Միացնել/անջատել թելադրումը (ձայնային մուտքագրում)</translation>
 <translation id="8721053961083920564">Միացնել/անջատել ձայնը: <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Լիաէկրան տեսագրում</translation>
 <translation id="8731487213223706745">Ավարտը՝ <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
@@ -1446,6 +1498,7 @@
 <translation id="8755498163081687682"><ph name="ORIGIN_NAME" /> կայքին/հավելվածին անհրաժեշտ է, որ հաստատեք ձեր ինքնությունը</translation>
 <translation id="875593634123171288">Ցուցադրել VPN-ի կարգավորումները</translation>
 <translation id="8759408218731716181">Հնարավոր չէ կարգավորել բազմակի մուտքը</translation>
+<translation id="8763883995157866248">Սարքում միացնել քնի ռեժիմը</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, տեղադրված հավելված, արգելափակված է</translation>
 <translation id="8785070478575117577">Միացում «<ph name="NETWORK_NAME" />» ցանցին</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />։ <ph name="ENTERPRISE_TEXT" /></translation>
@@ -1463,8 +1516,11 @@
 <translation id="8850991929411075241">Որոնել+Esc</translation>
 <translation id="8853703225951107899">Չհաջողվեց հաստատել ձեր PIN կոդը կամ գաղտնաբառը։ Նշում․ եթե դուք վերջերս փոխել եք ձեր գաղտնաբառը, ապա օգտագործեք հինը։ Ձեր նոր գաղտնաբառն ուժի մեջ կմտնի, երբ դուրս գաք հաշվից։</translation>
 <translation id="8855885154700222542">Լիաէկրան ռեժիմի ստեղն</translation>
+<translation id="8858369206579825206">Գաղտնիության կարգավորումներ</translation>
 <translation id="8870509716567206129">Հավելվածը չի աջակցում էկրանի տրոհումը:</translation>
 <translation id="8874184842967597500">Կապ չկա</translation>
+<translation id="8875021410787719674">Տեղաշարժվել ներքևի աջ անկյունի, Գործարկիչի, հասցեագոտու, էջանիշների գոտու, բացված կայքի և ներբեռնումների միջև</translation>
+<translation id="8876148469852588625">Միջոցառում <ph name="EVENT_POSITION" />՝ <ph name="EVENT_TOTAL_COUNT" />-ից</translation>
 <translation id="8876661425082386199">Ստուգեք ձեր կապը</translation>
 <translation id="8877788021141246043">Ստեղծել հիշեցում</translation>
 <translation id="8878886163241303700">Էկրանի ընդարձակում</translation>
@@ -1482,12 +1538,14 @@
 <translation id="8940956008527784070">Մարտկոցի լիցքն սպառվում է (<ph name="PERCENTAGE" />%)</translation>
 <translation id="8949925099261528566">Միացած է, սակայն ինտերնետ կապ չկա</translation>
 <translation id="8951539504029375108">Միայն հաստատված Thunderbolt սարքերն են համատեղելի ձեր Chromebook-ի հետ</translation>
+<translation id="8980862970816311842">Հավելվածի պատկերակը տեղափոխել պանակ կամ պանակից դուրս՝ հավելվածների ցանցում</translation>
 <translation id="8982906748181120328">Մոտակա սարքերի հասանելիություն</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Օգտագործվում է՝ <ph name="IME_NAME" /></translation>
 <translation id="8991617137207906966">Գունաշրջման ռեժիմը միացված է։ Նորից սեղմեք Ctrl+Search+H՝ անջատելու համար։</translation>
 <translation id="899350903320462459">Ծանուցման հետ գործողություն կատարելու համար ապակողպեք սարքը որպես <ph name="LOGIN_ID" /></translation>
 <translation id="9000771174482730261">ԿԱՌԱՎԱՐԵԼ ՏԱՐԱԾՔԸ</translation>
+<translation id="9005984960510803406">Բացել Crosh պատուհանը</translation>
 <translation id="9017320285115481645">Մուտքագրեք Family Link-ի ծնողի մուտքի կոդը։</translation>
 <translation id="9024331582947483881">լիաէկրան</translation>
 <translation id="9029736946581028033">Սարքը շուտով կանջատվի</translation>
@@ -1495,6 +1553,7 @@
 <translation id="9034924485347205037">Լինուքսի ֆայլեր</translation>
 <translation id="9047624247355796468">Բացել «<ph name="NETWORK_NAME" />» ցանցի կարգավորումները</translation>
 <translation id="9059834730836941392">Կոծկել</translation>
+<translation id="906458777597946297">Առավելացնել պատուհանը</translation>
 <translation id="9065203028668620118">Փոփոխել</translation>
 <translation id="9070640332319875144">Օգնականի կարգավորումներ</translation>
 <translation id="9072519059834302790">Մարտկոցը կդատարկվի <ph name="TIME_LEFT" />ից։</translation>

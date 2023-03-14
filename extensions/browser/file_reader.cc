@@ -4,6 +4,8 @@
 
 #include "extensions/browser/file_reader.h"
 
+#include <algorithm>
+
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -12,9 +14,11 @@
 #include "extensions/browser/extension_file_task_runner.h"
 
 FileReader::FileReader(std::vector<extensions::ExtensionResource> resources,
+                       size_t max_resources_length,
                        OptionalFileSequenceTask optional_file_sequence_task,
                        DoneCallback done_callback)
     : resources_(std::move(resources)),
+      max_resources_length_(max_resources_length),
       optional_file_sequence_task_(std::move(optional_file_sequence_task)),
       done_callback_(std::move(done_callback)),
       origin_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
@@ -33,20 +37,31 @@ void FileReader::ReadFilesOnFileSequence() {
   std::vector<std::unique_ptr<std::string>> data;
   data.reserve(resources_.size());
   absl::optional<std::string> error;
+
+  size_t remaining_length = max_resources_length_;
   for (const auto& resource : resources_) {
     data.push_back(std::make_unique<std::string>());
     std::string* file_data = data.back().get();
-    bool success = base::ReadFileToString(resource.GetFilePath(), file_data);
+    bool success = base::ReadFileToStringWithMaxSize(
+        resource.GetFilePath(), file_data, remaining_length);
     if (!success) {
-      error =
-          base::StringPrintf("Could not load file: '%s'.",
-                             resource.relative_path().AsUTF8Unsafe().c_str());
+      // If `file_data` is non-empty, then the file length exceeded
+      // `max_resources_length_`. Otherwise, another error was encountered when
+      // attempting to read the file.
+      const char* const format_string =
+          file_data->empty()
+              ? "Could not load file: '%s'."
+              : "Could not load file: '%s'. Resource size exceeded.";
+      error = base::StringPrintf(
+          format_string, resource.relative_path().AsUTF8Unsafe().c_str());
+
       // Clear `data` to avoid passing a partial result.
       data.clear();
 
       break;
     }
 
+    remaining_length -= file_data->size();
     if (optional_file_sequence_task_)
       optional_file_sequence_task_.Run(file_data);
   }

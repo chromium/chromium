@@ -13,6 +13,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.metrics.ChangeMetricsReportingStateCalledFrom;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -70,7 +71,8 @@ public class FirstRunUtils {
      *         collect stats.
      */
     static void acceptTermsOfService(boolean allowMetricsAndCrashUploading) {
-        UmaSessionStats.changeMetricsReportingConsent(allowMetricsAndCrashUploading);
+        UmaSessionStats.changeMetricsReportingConsent(
+                allowMetricsAndCrashUploading, ChangeMetricsReportingStateCalledFrom.UI_FIRST_RUN);
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, true);
         setEulaAccepted();

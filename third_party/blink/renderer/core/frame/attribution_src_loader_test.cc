@@ -10,6 +10,9 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
+#include "components/attribution_reporting/os_support.mojom-shared.h"
 #include "components/attribution_reporting/registration_type.mojom-shared.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
@@ -18,6 +21,7 @@
 #include "net/http/structured_headers.h"
 #include "services/network/public/cpp/trigger_attestation.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
@@ -36,6 +40,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_factory.h"
 #include "third_party/blink/renderer/platform/loader/testing/mock_resource.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
@@ -99,6 +104,11 @@ class MockDataHost : public mojom::blink::AttributionDataHost {
     return trigger_attestation_;
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  const Vector<KURL>& os_sources() const { return os_sources_; }
+  const Vector<KURL>& os_triggers() const { return os_triggers_; }
+#endif
+
   size_t disconnects() const { return disconnects_; }
 
   void Flush() { receiver_.FlushForTesting(); }
@@ -121,11 +131,26 @@ class MockDataHost : public mojom::blink::AttributionDataHost {
     trigger_attestation_.push_back(std::move(attestation));
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  void OsSourceDataAvailable(const KURL& registration_url) override {
+    os_sources_.push_back(registration_url);
+  }
+
+  void OsTriggerDataAvailable(const KURL& registration_url) override {
+    os_triggers_.push_back(registration_url);
+  }
+#endif
+
   Vector<attribution_reporting::SourceRegistration> source_data_;
 
   Vector<attribution_reporting::TriggerRegistration> trigger_data_;
 
   Vector<absl::optional<network::TriggerAttestation>> trigger_attestation_;
+
+#if BUILDFLAG(IS_ANDROID)
+  Vector<KURL> os_sources_;
+  Vector<KURL> os_triggers_;
+#endif
 
   size_t disconnects_ = 0;
   mojo::Receiver<mojom::blink::AttributionDataHost> receiver_{this};
@@ -279,6 +304,40 @@ TEST_F(AttributionSrcLoaderTest, RegisterTriggerWithSourceTriggerHeader) {
   response.SetHttpHeaderField(
       http_names::kAttributionReportingRegisterTrigger,
       R"({"event_trigger_data":[{"trigger_data": "7"}]})");
+
+  MockAttributionHost host(
+      GetFrame().GetRemoteNavigationAssociatedInterfaces());
+  attribution_src_loader_->MaybeRegisterAttributionHeaders(request, response,
+                                                           resource);
+  host.WaitUntilBoundAndFlush();
+
+  auto* mock_data_host = host.mock_data_host();
+  ASSERT_TRUE(mock_data_host);
+
+  mock_data_host->Flush();
+  EXPECT_EQ(mock_data_host->trigger_data().size(), 1u);
+}
+
+TEST_F(AttributionSrcLoaderTest, RegisterTriggerOsHeadersIgnored) {
+  KURL test_url = ToKURL("https://example1.com/foo.html");
+
+  ResourceRequest request(test_url);
+  request.SetHttpHeaderField(http_names::kAttributionReportingEligible,
+                             "event-source, trigger");
+  auto* resource = MakeGarbageCollected<MockResource>(test_url);
+  ResourceResponse response(test_url);
+  response.SetHttpStatusCode(200);
+  response.SetHttpHeaderField(
+      http_names::kAttributionReportingRegisterTrigger,
+      R"({"event_trigger_data":[{"trigger_data": "7"}]})");
+
+  // These should be ignored because the relevant feature is disabled by
+  // default.
+  response.SetHttpHeaderField(http_names::kAttributionReportingRegisterOSSource,
+                              R"("https://r.test/x")");
+  response.SetHttpHeaderField(
+      http_names::kAttributionReportingRegisterOSTrigger,
+      R"("https://r.test/y")");
 
   MockAttributionHost host(
       GetFrame().GetRemoteNavigationAssociatedInterfaces());
@@ -495,6 +554,17 @@ TEST_F(AttributionSrcLoaderTest, EagerlyClosesRemote) {
   EXPECT_EQ(mock_data_host->disconnects(), 1u);
 }
 
+class AttributionTestingPlatformSupport : public TestingPlatformSupport {
+ public:
+  attribution_reporting::mojom::OsSupport GetOsSupportForAttributionReporting()
+      override {
+    return os_support;
+  }
+
+  attribution_reporting::mojom::OsSupport os_support =
+      attribution_reporting::mojom::OsSupport::kDisabled;
+};
+
 class AttributionSrcLoaderCrossAppWebEnabledTest
     : public AttributionSrcLoaderTest {
  public:
@@ -503,6 +573,9 @@ class AttributionSrcLoaderCrossAppWebEnabledTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       blink::features::kAttributionReportingCrossAppWeb};
+
+ protected:
+  ScopedTestingPlatformSupport<AttributionTestingPlatformSupport> platform_;
 };
 
 TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest, SupportHeader_Register) {
@@ -545,6 +618,35 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
   ASSERT_EQ(dict->size(), 1u);
   EXPECT_TRUE(dict->contains("web"));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest, RegisterOsTrigger) {
+  platform_->os_support = attribution_reporting::mojom::OsSupport::kEnabled;
+
+  KURL test_url = ToKURL("https://example1.com/foo.html");
+
+  ResourceRequest request(test_url);
+  auto* resource = MakeGarbageCollected<MockResource>(test_url);
+  ResourceResponse response(test_url);
+  response.SetHttpStatusCode(200);
+  response.SetHttpHeaderField(
+      http_names::kAttributionReportingRegisterOSTrigger,
+      R"("https://r.test/x")");
+
+  MockAttributionHost host(
+      GetFrame().GetRemoteNavigationAssociatedInterfaces());
+  EXPECT_TRUE(attribution_src_loader_->MaybeRegisterAttributionHeaders(
+      request, response, resource));
+  host.WaitUntilBoundAndFlush();
+
+  auto* mock_data_host = host.mock_data_host();
+  ASSERT_TRUE(mock_data_host);
+
+  mock_data_host->Flush();
+  EXPECT_THAT(mock_data_host->os_triggers(),
+              ::testing::ElementsAre(KURL("https://r.test/x")));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace blink

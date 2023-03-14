@@ -1,0 +1,20 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("prefs") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "ios_chrome_syncable_prefs_database.cc",
+    "ios_chrome_syncable_prefs_database.h",
+  ]
+  deps = [
+    "//base",
+    "//components/handoff",
+    "//components/sync_preferences",
+    "//components/sync_preferences:common_syncable_prefs_database",
+    "//ios/chrome/browser/prefs:browser_prefs",
+    "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/voice:prefs",
+  ]
+}

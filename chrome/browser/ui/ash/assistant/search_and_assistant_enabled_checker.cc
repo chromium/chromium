@@ -116,14 +116,14 @@ void SearchAndAssistantEnabledChecker::OnSimpleURLLoaderComplete(
 
 void SearchAndAssistantEnabledChecker::OnJsonParsed(
     data_decoder::DataDecoder::ValueOrError response) {
-  if (!response.has_value()) {
+  if (!response.has_value() || !response->is_dict()) {
     LOG(ERROR) << "JSON parsing failed: " << response.error();
     delegate_->OnError();
     return;
   }
 
   // |result| is true if the Search and Assistant bit is disabled.
-  auto is_disabled = response->FindBoolPath("result");
+  auto is_disabled = response->GetDict().FindBool("result");
 
   delegate_->OnSearchAndAssistantStateReceived(is_disabled.value());
 }

@@ -247,10 +247,6 @@ source_set("unit_tests") {
     ]
   }
 
-  if (is_win) {
-    data_deps += [ "//media/cdm/win/test:media_foundation_clear_key_cdm" ]
-  }
-
   if (proprietary_codecs) {
     sources += [ "cenc_utils_unittest.cc" ]
   }

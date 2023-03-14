@@ -126,6 +126,10 @@ using pASurfaceTransactionStats_releaseASurfaceControls =
     void (*)(ASurfaceControl** surface_controls);
 using pASurfaceTransactionStats_getPreviousReleaseFenceFd =
     int (*)(ASurfaceTransactionStats* stats, ASurfaceControl* surface_control);
+using pASurfaceTransaction_setEnableBackPressure =
+    void (*)(ASurfaceTransaction* transaction,
+             ASurfaceControl* surface_control,
+             bool enable_back_pressure);
 }
 
 namespace gfx {
@@ -251,6 +255,8 @@ struct SurfaceControlMethods {
                   ASurfaceTransactionStats_releaseASurfaceControls);
     LOAD_FUNCTION(main_dl_handle,
                   ASurfaceTransactionStats_getPreviousReleaseFenceFd);
+    LOAD_FUNCTION_MAYBE(main_dl_handle,
+                        ASurfaceTransaction_setEnableBackPressure);
   }
 
   ~SurfaceControlMethods() = default;
@@ -287,6 +293,8 @@ struct SurfaceControlMethods {
       ASurfaceTransaction_setHdrMetadata_smpte2086Fn;
   pASurfaceTransaction_setFrameRate ASurfaceTransaction_setFrameRateFn;
   pASurfaceTransaction_setFrameTimeline ASurfaceTransaction_setFrameTimelineFn;
+  pASurfaceTransaction_setEnableBackPressure
+      ASurfaceTransaction_setEnableBackPressureFn;
 
   // TransactionStats methods.
   pASurfaceTransactionStats_getPresentFenceFd
@@ -555,6 +563,12 @@ bool SurfaceControl::SupportsSetFrameTimeline() {
 bool SurfaceControl::SupportsSurfacelessControl() {
   return IsSupported() &&
          !!SurfaceControlMethods::Get().ASurfaceControl_fromJavaFn;
+}
+
+bool SurfaceControl::SupportsSetEnableBackPressure() {
+  return IsSupported() &&
+         SurfaceControlMethods::Get()
+                 .ASurfaceTransaction_setEnableBackPressureFn != nullptr;
 }
 
 void SurfaceControl::SetStubImplementationForTesting() {
@@ -873,6 +887,12 @@ void SurfaceControl::Transaction::PrepareCallbacks() {
         transaction_, ack_ctx, &OnTransactionCompletedOnAnyThread);
     need_to_apply_ = true;
   }
+}
+
+void SurfaceControl::Transaction::SetEnableBackPressure(const Surface& surface,
+                                                        bool enable) {
+  SurfaceControlMethods::Get().ASurfaceTransaction_setEnableBackPressureFn(
+      transaction_, surface.surface(), enable);
 }
 
 }  // namespace gfx

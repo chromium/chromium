@@ -25,7 +25,6 @@ class CachingWordShaperTest : public FontTestBase {
 
     font = Font(font_description);
     ASSERT_TRUE(font.CanShapeWordByWord());
-    fallback_fonts = nullptr;
     cache = std::make_unique<ShapeCache>();
   }
 
@@ -33,7 +32,6 @@ class CachingWordShaperTest : public FontTestBase {
   FontDescription font_description;
   Font font;
   std::unique_ptr<ShapeCache> cache;
-  HashSet<const SimpleFontData*>* fallback_fonts;
   unsigned start_index = 0;
   unsigned num_glyphs = 0;
   hb_script_t script = HB_SCRIPT_INVALID;

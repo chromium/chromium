@@ -97,8 +97,10 @@ class WebRtcRtpDumpHandlerTest : public testing::Test {
     *incoming_dump = dir.AppendASCII("recv");
     *outgoing_dump = dir.AppendASCII("send");
     const char dummy[] = "dummy";
-    EXPECT_GT(base::WriteFile(*incoming_dump, dummy, std::size(dummy)), 0);
-    EXPECT_GT(base::WriteFile(*outgoing_dump, dummy, std::size(dummy)), 0);
+    EXPECT_TRUE(base::WriteFile(*incoming_dump,
+                                base::StringPiece(dummy, std::size(dummy))));
+    EXPECT_TRUE(base::WriteFile(*outgoing_dump,
+                                base::StringPiece(dummy, std::size(dummy))));
   }
 
   void FlushTaskRunners() {

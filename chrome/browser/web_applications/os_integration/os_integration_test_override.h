@@ -17,7 +17,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
+#include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -115,14 +117,20 @@ class OsIntegrationTestOverride
                               std::string app_name,
                               std::string file_extension);
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  // Reads the icon color for a specific shortcut created
+  // Reads the icon color for a specific shortcut that has been created.
+  // For Mac and Win, the shortcut_dir field is mandatory. For all other OSes,
+  // this can be an empty base::FilePath().
+  // For ChromeOS and Linux, the size_px field is mandatory to prevent erroneous
+  // results. For all other OSes, the field can be skipped. The default value of
+  // size_px is usually filled up with kLauncherIconSize (see
+  // chrome/browser/web_applications/web_app_icon_generator.h for more
+  // information), which is 128.
   absl::optional<SkColor> GetShortcutIconTopLeftColor(
       Profile* profile,
       base::FilePath shortcut_dir,
       const AppId& app_id,
-      const std::string& app_name);
-#endif
+      const std::string& app_name,
+      SquareSizePx size_px = icon_size::k128);
 
 #if BUILDFLAG(IS_WIN)
   // These should not be called from tests, these are automatically

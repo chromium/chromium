@@ -209,8 +209,7 @@ bool IsHevcProfileSupported(const VideoType& type) {
     return false;
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_MAC)
+#if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // TODO(b/171813538): For Lacros, the supplemental profile cache will be
   // asking lacros-gpu, but we will be doing decoding in ash-gpu. Until the
@@ -222,15 +221,9 @@ bool IsHevcProfileSupported(const VideoType& type) {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   return GetSupplementalProfileCache()->IsProfileSupported(type.profile);
-#elif BUILDFLAG(IS_ANDROID)
-  // Technically android 5.0 mandates support for only HEVC main profile,
-  // however some platforms (like chromecast) have had more profiles supported
-  // so we'll see what happens if we just enable them all.
-  return base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport);
 #else
   return true;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_MAC)
+#endif  // BUIDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
 #else
   return false;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)

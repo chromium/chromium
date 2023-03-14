@@ -271,7 +271,7 @@ apiBridge.registerCustomHook(function(api) {
 
     let errorMsg = 'API Test Error in ' + testName(currentTest);
     if (message)
-      errorMessage += ': ' + message;
+      errorMsg += ': ' + message;
 
     if (typeof expected == 'object') {
       if (chromeTest.checkDeepEq(expected, actual)) {

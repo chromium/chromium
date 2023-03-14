@@ -15,6 +15,7 @@ section	.text code align=64
 EXTERN	OPENSSL_ia32cap_P
 
 
+section	.rdata rdata align=8
 ALIGN	64
 $L$poly:
 	DQ	0xffffffffffffffff,0x00000000ffffffff,0x0000000000000000,0xffffffff00000001
@@ -33,6 +34,8 @@ $L$ord:
 	DQ	0xf3b9cac2fc632551,0xbce6faada7179e84,0xffffffffffffffff,0xffffffff00000000
 $L$ordK:
 	DQ	0xccd1c8aaee00bc4f
+section	.text
+
 
 
 

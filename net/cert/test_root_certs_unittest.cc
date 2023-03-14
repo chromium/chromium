@@ -15,6 +15,7 @@
 #include "net/cert/crl_set.h"
 #include "net/cert/x509_certificate.h"
 #include "net/log/net_log_with_source.h"
+#include "net/net_buildflags.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
@@ -33,13 +34,16 @@ const char kRootCertificateFile[] = "root_ca_cert.pem";
 const char kGoodCertificateFile[] = "ok_cert.pem";
 
 scoped_refptr<CertVerifyProc> CreateCertVerifyProc() {
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
   if (base::FeatureList::IsEnabled(features::kChromeRootStoreUsed)) {
     return CertVerifyProc::CreateBuiltinWithChromeRootStore(
         /*cert_net_fetcher=*/nullptr);
   }
 #endif
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(CHROME_ROOT_STORE_ONLY)
+  return CertVerifyProc::CreateBuiltinWithChromeRootStore(
+      /*cert_net_fetcher=*/nullptr);
+#elif BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return CertVerifyProc::CreateBuiltinVerifyProc(/*cert_net_fetcher=*/nullptr);
 #else
   return CertVerifyProc::CreateSystemVerifyProc(/*cert_net_fetcher=*/nullptr);

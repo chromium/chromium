@@ -40,4 +40,6 @@
 <translation id="8187289872471304532">Sélectionnez
           Applications &gt; Préférences système &gt; Réseau &gt; Avancé &gt; Proxys
           et désélectionnez les serveurs proxy sélectionnés.</translation>
+<translation id="8232971017369963250">Chrome fonctionne grâce au projet Open Source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="8279509328145658601">Chrome fonctionne également grâce à d'autres <ph name="BEGIN_LINK_OSS" />logiciels Open Source<ph name="END_LINK_OSS" />.</translation>
 </translationbundle>

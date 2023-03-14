@@ -10,6 +10,7 @@
 #include "components/segmentation_platform/internal/execution/processing/query_processor.h"
 #include "components/segmentation_platform/internal/proto/client_results.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
+#include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
@@ -126,9 +127,13 @@ proto::PredictionResult CreatePredictionResult(
     const proto::OutputConfig& output_config,
     base::Time timestamp);
 
+// Creates client result from prediction result.
 proto::ClientResult CreateClientResultFromPredResult(
     proto::PredictionResult pred_result,
     base::Time timestamp);
+
+// Returns true if config has migrated to multi output.
+bool HasMigratedToMultiOutput(Config* config);
 
 }  // namespace metadata_utils
 }  // namespace segmentation_platform

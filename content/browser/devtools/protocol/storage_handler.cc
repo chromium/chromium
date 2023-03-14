@@ -916,8 +916,9 @@ void SendGetInterestGroup(
   if (group.bidding_wasm_helper_url)
     protocol_group->SetBiddingWasmHelperUrl(
         group.bidding_wasm_helper_url->spec());
-  if (group.daily_update_url)
-    protocol_group->SetUpdateUrl(group.daily_update_url->spec());
+  if (group.update_url) {
+    protocol_group->SetUpdateUrl(group.update_url->spec());
+  }
   if (group.trusted_bidding_signals_url)
     protocol_group->SetTrustedBiddingSignalsUrl(
         group.trusted_bidding_signals_url->spec());

@@ -160,9 +160,10 @@ Status ParseType(const std::string& type_as_string, WebViewInfo::Type* type) {
 namespace internal {
 
 Status ParseWebViewsInfo(const std::string& data, WebViewsInfo* views_info) {
-  std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(data);
-  if (!value.get())
+  absl::optional<base::Value> value = base::JSONReader::Read(data);
+  if (!value) {
     return Status(kUnknownError, "DevTools returned invalid JSON");
+  }
   if (!value->is_list())
     return Status(kUnknownError, "DevTools did not return list");
 

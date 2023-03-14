@@ -69,8 +69,7 @@ class LocalExtensionCacheTest : public testing::Test {
                   size_t size,
                   const base::Time& timestamp) {
     std::string data(size, 0);
-    EXPECT_EQ(base::WriteFile(file, data.data(), data.size()),
-              static_cast<int>(size));
+    EXPECT_TRUE(base::WriteFile(file, data));
     EXPECT_TRUE(base::TouchFile(file, timestamp, timestamp));
   }
 
@@ -94,8 +93,7 @@ class LocalExtensionCacheTest : public testing::Test {
         GetExtensionFileName(dir, id, version, hex_hash);
     if (filename)
       *filename = file;
-    EXPECT_EQ(base::WriteFile(file, data.data(), data.size()),
-              static_cast<int>(size));
+    EXPECT_TRUE(base::WriteFile(file, data));
     EXPECT_TRUE(base::TouchFile(file, timestamp, timestamp));
 
     return hex_hash;

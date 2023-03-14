@@ -1,0 +1,15 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module extensions.mojom;
+
+// An interface for an extension service worker context. Implemented in the
+// browser process.
+interface ServiceWorkerHost {
+  // Tells the browser that an extension service worker context was initialized,
+  // but possibly didn't start executing its top-level JavaScript.
+  DidInitializeServiceWorkerContext(string extension_id,
+                                    int64 service_worker_version_id,
+                                    int32 worker_thread_id);
+};

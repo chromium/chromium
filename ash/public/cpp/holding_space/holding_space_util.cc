@@ -27,6 +27,7 @@ gfx::Size GetMaxImageSizeForType(HoldingSpaceItem::Type type) {
           gfx::Size(kHoldingSpaceChipIconSize, kHoldingSpaceChipIconSize);
       break;
     case HoldingSpaceItem::Type::kScreenRecording:
+    case HoldingSpaceItem::Type::kScreenRecordingGif:
     case HoldingSpaceItem::Type::kScreenshot:
       max_size = kHoldingSpaceScreenCaptureSize;
       break;
@@ -96,6 +97,8 @@ std::string ToString(HoldingSpaceItem::Type type) {
       return "Scan";
     case HoldingSpaceItem::Type::kScreenRecording:
       return "ScreenRecording";
+    case HoldingSpaceItem::Type::kScreenRecordingGif:
+      return "ScreenRecordingGif";
     case HoldingSpaceItem::Type::kScreenshot:
       return "Screenshot";
   }

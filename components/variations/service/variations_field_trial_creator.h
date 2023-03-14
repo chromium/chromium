@@ -5,12 +5,14 @@
 #ifndef COMPONENTS_VARIATIONS_SERVICE_VARIATIONS_FIELD_TRIAL_CREATOR_H_
 #define COMPONENTS_VARIATIONS_SERVICE_VARIATIONS_FIELD_TRIAL_CREATOR_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/time/time.h"
@@ -202,6 +204,10 @@ class VariationsFieldTrialCreator {
   // Protected and virtual for testing.
   virtual void ApplyFieldTrialTestingConfig(base::FeatureList* feature_list);
 #endif  // BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
+
+  // Read the google group memberships from local-state prefs.
+  // Protected for testing.
+  base::flat_set<uint64_t> GetGoogleGroupsFromPrefs();
 
  private:
   // Returns true if the loaded VariationsSeed has expired. An expired seed is

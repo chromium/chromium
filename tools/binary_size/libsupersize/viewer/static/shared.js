@@ -6,7 +6,7 @@
 
 /**
  * @fileoverview
- * Constants used by both the UI and Web Worker scripts.
+ * Types, constants and basic utils shared by UI and Web Worker scripts.
  */
 
 /**
@@ -115,92 +115,7 @@
  */
 
 /**
- * @enum {number} Abberivated keys used by FileEntry fields in the JSON data
- *     file.
- */
-const _FLAGS = {
-  ANONYMOUS:        1 << 0,
-  STARTUP:          1 << 1,
-  UNLIKELY:         1 << 2,
-  REL:              1 << 3,
-  REL_LOCAL:        1 << 4,
-  GENERATED_SOURCE: 1 << 5,
-  CLONE:            1 << 6,
-  HOT:              1 << 7,
-  COVERAGE:         1 << 8,
-  UNCOMPRESSED:     1 << 9,
-};
-
-/** @type {Object<string, _FLAGS>} */
-const _NAMES_TO_FLAGS = Object.freeze({
-  hot: _FLAGS.HOT,
-  generated: _FLAGS.GENERATED_SOURCE,
-  coverage: _FLAGS.COVERAGE,
-  uncompressed: _FLAGS.UNCOMPRESSED,
-});
-
-/**
- * @enum {number} Various byte units and the corresponding amount of bytes that
- *     one unit represents.
- */
-const _BYTE_UNITS = {
-  GiB: 1024 ** 3,
-  MiB: 1024 ** 2,
-  KiB: 1024 ** 1,
-  B:   1024 ** 0,
-};
-
-/** @enum {number} All possible states for a delta symbol. */
-const _DIFF_STATUSES = {
-  UNCHANGED: 0,
-  CHANGED:   1,
-  ADDED:     2,
-  REMOVED:   3,
-};
-
-/**
- * @enum {string} Special types used by artifacts, such as folders and files.
- */
-const _ARTIFACT_TYPES = {
-  DIRECTORY:  'D',
-  GROUP:      'G',
-  FILE:       'F',
-  JAVA_CLASS: 'J',
-};
-const _ARTIFACT_TYPE_SET = new Set(Object.values(_ARTIFACT_TYPES));
-
-/** @type {string} Type for a dex method symbol. */
-const _DEX_METHOD_SYMBOL_TYPE = 'm';
-
-/** @type {string} Type for an 'other' symbol. */
-const _OTHER_SYMBOL_TYPE = 'o';
-
-/**
- * @type {Set} Set of all known symbol types. Artifact types are not included.
- */
-const _SYMBOL_TYPE_SET =
-    new Set(/** @type {Iterable<string>} */ ('bdrtRxmopP'));
-
-/** @type {Array<string> | string} */
-const _LOCALE = /** @type {Array<string>} */ (navigator.languages) ||
-    navigator.language;
-
-/** @enum {string} Keys in query string and names of input elements. */
-const STATE_KEY = {
-  LOAD_URL: 'load_url',
-  BEFORE_URL: 'before_url',
-  BYTE_UNIT: 'byteunit',
-  METHOD_COUNT: 'method_count',
-  MIN_SIZE: 'min_size',
-  GROUP_BY: 'group_by',
-  INCLUDE: 'include',
-  EXCLUDE: 'exclude',
-  TYPE: 'type',
-  FLAG_FILTER: 'flag_filter',
-};
-
-/**
- * Throws error if |cond| is false.
+ * Throws error if |cond| is falsey.
  * @param {boolean} cond The condition to check.
  * @param {string=} msg Message on assert failure.
  */
@@ -210,31 +125,15 @@ function assert(cond, msg = 'Assert fail.') {
 }
 
 /**
- * Throws error if |obj| is null; returns |obj| otherwise.
- * @param {?Object} obj The condition to check.
+ * Throws error if |obj| is null or undefined; returns |obj| otherwise.
+ * @param {?Object} obj The (non-primitive) object to check.
  * @param {string=} msg Message on assert failure.
  * @return {!Object}
  */
 function assertNotNull(obj, msg = 'Assert fail: Object is null.') {
-  if (!obj)
+  if (obj == null)  // Using == to also include undefined.
     throw new Error(msg);
   return obj;
-}
-
-/**
- * Iterates over each type in the query string. Types can be expressed as
- * repeats of the same key in the query string ("type=b&type=p") or as a long
- * string with multiple characters ("type=bp").
- * @generator
- * @param {Array<string>} typesList All values associated with the "type" key
- *     in the query string.
- */
-function* translateTypes(typesList) {
-  for (const typeOrTypes of typesList) {
-    for (const typeChar of typeOrTypes) {
-      yield typeChar;
-    }
-  }
 }
 
 /**
@@ -252,54 +151,4 @@ function debounce(func, wait) {
     timeoutId = setTimeout(() => func(...args), wait);
   }
   return /** @type {*} */ (debounced);
-}
-
-/**
- * Returns shortName for a tree node.
- * @param {TreeNode} treeNode
- * @return {string}
- */
-function shortName(treeNode) {
-  return treeNode.idPath.slice(treeNode.shortNameIndex);
-}
-
-/**
- * Returns whether a symbol has a certain bit flag.
- * @param {_FLAGS} flag Bit flag from `_FLAGS`.
- * @param {TreeNode} symbolNode
- * @return {boolean}
- */
-function hasFlag(flag, symbolNode) {
-  return (symbolNode.flags & flag) === flag;
-}
-
-/**
- * Returns a formatted number with grouping, taking an optional range for number
- * of digits after the decimal point (default 0, i.e., assume integer).
- * @param {number} num
- * @param {number=} lo
- * @param {number=} hi
- * @return {string}
- */
-function formatNumber(num, lo = 0, hi = 0) {
-  return num.toLocaleString(_LOCALE, {
-    useGrouping: true,
-    minimumFractionDigits: lo,
-    maximumFractionDigits: hi
-  });
-}
-
-/**
- * Same as formatNumber(), but returns percentage instead.
- * @param {number} num
- * @param {number=} lo
- * @param {number=} hi
- * @return {string}
- */
-function formatPercent(num, lo = 0, hi = 0) {
-  return num.toLocaleString(_LOCALE, {
-    style: 'percent',
-    minimumFractionDigits: lo,
-    maximumFractionDigits: hi,
-  });
 }

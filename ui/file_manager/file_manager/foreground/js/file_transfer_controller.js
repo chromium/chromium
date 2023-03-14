@@ -633,9 +633,9 @@ export class FileTransferController {
           // starting here.
           const item = new ProgressCenterItem();
           item.type = /** @type {!ProgressItemType} */ (taskType);
-          // Default to SCANNING. It will be updated as matching IOTask events
+          // Default to PENDING. It will be updated as matching IOTask events
           // are handled in FileOperationHandler::onIOTaskProgressStatus_.
-          item.state = ProgressItemState.SCANNING;
+          item.state = ProgressItemState.PENDING;
           item.itemCount = entries.length;
           item.remainingTime = 0;
           item.cancelCallback = () => {

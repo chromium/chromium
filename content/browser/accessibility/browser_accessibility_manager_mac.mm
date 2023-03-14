@@ -100,16 +100,18 @@ void BrowserAccessibilityManagerMac::FireBlinkEvent(ax::mojom::Event event_type,
   FireNativeMacNotification(mac_notification, node);
 }
 
-void PostAnnouncementNotification(NSString* announcement) {
+void PostAnnouncementNotification(NSString* announcement,
+                                  NSWindow* window,
+                                  NSAccessibilityPriorityLevel priorityLevel) {
   NSDictionary* notification_info = @{
     NSAccessibilityAnnouncementKey : announcement,
-    NSAccessibilityPriorityKey : @(NSAccessibilityPriorityLow)
+    NSAccessibilityPriorityKey : @(priorityLevel)
   };
   // Trigger VoiceOver speech and show on Braille display, if available.
   // The Braille will only appear for a few seconds, and then will be replaced
   // with the previous announcement.
   NSAccessibilityPostNotificationWithUserInfo(
-      [NSApp mainWindow], NSAccessibilityAnnouncementRequestedNotification,
+      window, NSAccessibilityAnnouncementRequestedNotification,
       notification_info);
 }
 
@@ -223,6 +225,29 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
         return;
       }
 
+      BrowserAccessibilityManager* root_manager = GetManagerForRootFrame();
+      if (root_manager) {
+        BrowserAccessibilityManagerMac* root_manager_mac =
+            root_manager->ToBrowserAccessibilityManagerMac();
+        id window = root_manager_mac->GetWindow();
+        if ([window isKindOfClass:[NSAccessibilityRemoteUIElement class]]) {
+          // ui::NSAccessibilityLiveRegionChangedNotification seems to require
+          // application be active. Use the announcement API to get around on
+          // PWA. Announcement requires active window, so send the announcement
+          // notification to the PWA related window. same work around like
+          // https://chromium-review.googlesource.com/c/chromium/src/+/3257815
+          std::string live_status =
+              node->GetStringAttribute(ax::mojom::StringAttribute::kLiveStatus);
+          NSAccessibilityPriorityLevel priority_level =
+              live_status == "assertive" ? NSAccessibilityPriorityHigh
+                                         : NSAccessibilityPriorityMedium;
+          PostAnnouncementNotification(
+              base::SysUTF16ToNSString(wrapper->GetTextContentUTF16()),
+              [root_manager_mac->GetParentView() window], priority_level);
+          return;
+        }
+      }
+
       if (base::mac::IsOS10_13()) {
         // Use the announcement API to get around OS <= 10.13 VoiceOver bug
         // where it stops announcing live regions after the first time focus
@@ -230,7 +255,8 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
         // Unfortunately this produces an annoying boing sound with each live
         // announcement, but the alternative is almost no live region support.
         PostAnnouncementNotification(
-            base::SysUTF16ToNSString(wrapper->GetTextContentUTF16()));
+            base::SysUTF16ToNSString(wrapper->GetTextContentUTF16()),
+            [NSApp mainWindow], NSAccessibilityPriorityLow);
         return;
       }
 

@@ -149,10 +149,11 @@ TEST_F(ViewsTutorialTest, BubbleDismissOnViewHiddenDoesNotEndTutorial) {
                           kIndicatorElementId, "", kArrow);
   tutorial_registry_.AddTutorial(kTutorialId, std::move(desc));
 
-  ASSERT_TRUE(tutorial_service_.StartTutorial(
+  tutorial_service_.StartTutorial(
       kTutorialId,
       views::ElementTrackerViews::GetContextForWidget(widget_.get()),
-      completed.Get(), aborted.Get()));
+      completed.Get(), aborted.Get());
+  ASSERT_TRUE(tutorial_service_.IsRunningTutorial());
 
   hide_button_on_press_ = true;
   views::test::InteractionTestUtilSimulatorViews::PressButton(
@@ -198,10 +199,11 @@ TEST_F(ViewsTutorialTest, FinalBubbleDismissOnViewHiddenDoesEndTutorial) {
                           kIndicatorElementId, "", kArrow);
   tutorial_registry_.AddTutorial(kTutorialId, std::move(desc));
 
-  ASSERT_TRUE(tutorial_service_.StartTutorial(
+  tutorial_service_.StartTutorial(
       kTutorialId,
       views::ElementTrackerViews::GetContextForWidget(widget_.get()),
-      completed.Get(), aborted.Get()));
+      completed.Get(), aborted.Get());
+  ASSERT_TRUE(tutorial_service_.IsRunningTutorial());
 
   views::test::InteractionTestUtilSimulatorViews::PressButton(
       button_.get(), ui::test::InteractionTestUtil::InputType::kKeyboard);

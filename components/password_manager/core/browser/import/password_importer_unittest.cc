@@ -86,9 +86,12 @@ class PasswordImporterTest : public testing::Test {
           password_manager::PasswordForm::Store::kProfileStore) {
     importer_.Import(input_file, to_store,
                      base::BindOnce(&PasswordImporterTest::OnPasswordsConsumed,
+                                    base::Unretained(this)),
+                     base::BindOnce(&PasswordImporterTest::CleanupCallback,
                                     base::Unretained(this)));
     task_environment_.RunUntilIdle();
     ASSERT_TRUE(results_callback_called_);
+    ASSERT_TRUE(cleanup_callback_called_);
   }
 
   std::vector<CredentialUIEntry> stored_passwords() {
@@ -130,9 +133,12 @@ class PasswordImporterTest : public testing::Test {
     import_results_ = results;
   }
 
+  void CleanupCallback() { cleanup_callback_called_ = true; }
+
   base::test::TaskEnvironment task_environment_;
   password_manager::ImportResults import_results_;
   bool results_callback_called_ = false;
+  bool cleanup_callback_called_ = false;
   FakePasswordParserService service_;
   mojo::Receiver<mojom::CSVPasswordParser> receiver_;
   scoped_refptr<TestPasswordStore> profile_store_ =
@@ -154,8 +160,7 @@ TEST_F(PasswordImporterTest, CSVImportBaseFields) {
 
   base::FilePath input_path =
       temp_directory_.GetPath().AppendASCII(kTestFileName);
-  ASSERT_EQ(static_cast<int>(strlen(kTestCSVInput)),
-            base::WriteFile(input_path, kTestCSVInput, strlen(kTestCSVInput)));
+  ASSERT_TRUE(base::WriteFile(input_path, kTestCSVInput));
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
 
   histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 1);
@@ -185,8 +190,7 @@ TEST_F(PasswordImporterTest, CSVImportWithNote) {
 
   base::FilePath input_path =
       temp_directory_.GetPath().AppendASCII(kTestFileName);
-  ASSERT_EQ(static_cast<int>(strlen(kTestCSVInput)),
-            base::WriteFile(input_path, kTestCSVInput, strlen(kTestCSVInput)));
+  ASSERT_TRUE(base::WriteFile(input_path, kTestCSVInput));
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
 
   histogram_tester.ExpectUniqueSample(
@@ -211,9 +215,7 @@ TEST_F(PasswordImporterTest, CSVImportLongNote) {
 
   base::FilePath input_path =
       temp_directory_.GetPath().AppendASCII(kTestFileName);
-  ASSERT_EQ(static_cast<int>(kTestCSVInput.length()),
-            base::WriteFile(input_path, kTestCSVInput.c_str(),
-                            kTestCSVInput.length()));
+  ASSERT_TRUE(base::WriteFile(input_path, kTestCSVInput));
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
 
   histogram_tester.ExpectUniqueSample("PasswordManager.ImportEntryStatus",
@@ -245,8 +247,7 @@ TEST_F(PasswordImporterTest, CSVImportAndroidCredential) {
 
   base::FilePath input_path =
       temp_directory_.GetPath().AppendASCII(kTestFileName);
-  ASSERT_EQ(static_cast<int>(strlen(kTestCSVInput)),
-            base::WriteFile(input_path, kTestCSVInput, strlen(kTestCSVInput)));
+  ASSERT_TRUE(base::WriteFile(input_path, kTestCSVInput));
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
 
   histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 1);
@@ -274,8 +275,7 @@ TEST_F(PasswordImporterTest, CSVImportBadHeaderReturnsBadFormat) {
 
   base::FilePath input_path =
       temp_directory_.GetPath().AppendASCII(kTestFileName);
-  ASSERT_EQ(static_cast<int>(strlen(kTestCSVInput)),
-            base::WriteFile(input_path, kTestCSVInput, strlen(kTestCSVInput)));
+  ASSERT_TRUE(base::WriteFile(input_path, kTestCSVInput));
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
 
   histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 0);
@@ -318,9 +318,7 @@ TEST_F(PasswordImporterTest,
 
   base::FilePath input_path =
       temp_directory_.GetPath().AppendASCII(kTestFileName);
-  ASSERT_EQ(static_cast<int>(kTestCSVInput.length()),
-            base::WriteFile(input_path, kTestCSVInput.c_str(),
-                            kTestCSVInput.length()));
+  ASSERT_TRUE(base::WriteFile(input_path, kTestCSVInput));
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
 
   histogram_tester.ExpectUniqueSample(
@@ -364,9 +362,7 @@ TEST_F(PasswordImporterTest, ExactMatchWithConflictingNotesValidConcatenation) {
 
   base::FilePath input_path =
       temp_directory_.GetPath().AppendASCII(kTestFileName);
-  ASSERT_EQ(static_cast<int>(kTestCSVInput.length()),
-            base::WriteFile(input_path, kTestCSVInput.c_str(),
-                            kTestCSVInput.length()));
+  ASSERT_TRUE(base::WriteFile(input_path, kTestCSVInput));
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
 
   histogram_tester.ExpectUniqueSample(
@@ -406,9 +402,7 @@ TEST_F(PasswordImporterTest, ExactMatchImportedNoteIsSubstingOfLocalNote) {
 
   base::FilePath input_path =
       temp_directory_.GetPath().AppendASCII(kTestFileName);
-  ASSERT_EQ(static_cast<int>(kTestCSVInput.length()),
-            base::WriteFile(input_path, kTestCSVInput.c_str(),
-                            kTestCSVInput.length()));
+  ASSERT_TRUE(base::WriteFile(input_path, kTestCSVInput));
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
 
   histogram_tester.ExpectUniqueSample(
@@ -446,8 +440,7 @@ TEST_F(PasswordImporterTest, CSVImportExactMatchProfileStore) {
 
   base::FilePath input_path =
       temp_directory_.GetPath().AppendASCII(kTestFileName);
-  ASSERT_EQ(static_cast<int>(strlen(kTestCSVInput)),
-            base::WriteFile(input_path, kTestCSVInput, strlen(kTestCSVInput)));
+  ASSERT_TRUE(base::WriteFile(input_path, kTestCSVInput));
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
 
   histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 1);
@@ -492,8 +485,7 @@ TEST_F(PasswordImporterTest, CSVImportExactMatchAccountStore) {
 
   base::FilePath input_path =
       temp_directory_.GetPath().AppendASCII(kTestFileName);
-  ASSERT_EQ(static_cast<int>(strlen(kTestCSVInput)),
-            base::WriteFile(input_path, kTestCSVInput, strlen(kTestCSVInput)));
+  ASSERT_TRUE(base::WriteFile(input_path, kTestCSVInput));
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
 
   histogram_tester.ExpectTotalCount("PasswordManager.ImportDuration", 1);
@@ -537,8 +529,7 @@ TEST_F(PasswordImporterTest, CSVImportExactMatchProfileAndAccountStore) {
 
   base::FilePath input_path =
       temp_directory_.GetPath().AppendASCII(kTestFileName);
-  ASSERT_EQ(static_cast<int>(strlen(kTestCSVInput)),
-            base::WriteFile(input_path, kTestCSVInput, strlen(kTestCSVInput)));
+  ASSERT_TRUE(base::WriteFile(input_path, kTestCSVInput));
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(
       input_path, password_manager::PasswordForm::Store::kAccountStore));
 
@@ -584,8 +575,7 @@ TEST_F(PasswordImporterTest, CSVImportConflictProfileStore) {
 
   base::FilePath input_path =
       temp_directory_.GetPath().AppendASCII(kTestFileName);
-  ASSERT_EQ(static_cast<int>(strlen(kTestCSVInput)),
-            base::WriteFile(input_path, kTestCSVInput, strlen(kTestCSVInput)));
+  ASSERT_TRUE(base::WriteFile(input_path, kTestCSVInput));
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
 
   histogram_tester.ExpectUniqueSample("PasswordManager.ImportEntryStatus",
@@ -633,8 +623,7 @@ TEST_F(PasswordImporterTest, CSVImportConflictAccountStore) {
 
   base::FilePath input_path =
       temp_directory_.GetPath().AppendASCII(kTestFileName);
-  ASSERT_EQ(static_cast<int>(strlen(kTestCSVInput)),
-            base::WriteFile(input_path, kTestCSVInput, strlen(kTestCSVInput)));
+  ASSERT_TRUE(base::WriteFile(input_path, kTestCSVInput));
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(
       input_path, password_manager::PasswordForm::Store::kAccountStore));
 
@@ -684,8 +673,7 @@ TEST_F(PasswordImporterTest, CSVImportConflictProfileAndAccountStore) {
 
   base::FilePath input_path =
       temp_directory_.GetPath().AppendASCII(kTestFileName);
-  ASSERT_EQ(static_cast<int>(strlen(kTestCSVInput)),
-            base::WriteFile(input_path, kTestCSVInput, strlen(kTestCSVInput)));
+  ASSERT_TRUE(base::WriteFile(input_path, kTestCSVInput));
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(
       input_path, password_manager::PasswordForm::Store::kAccountStore));
 
@@ -725,8 +713,7 @@ TEST_F(PasswordImporterTest, CSVImportEmptyPasswordReported) {
 
   base::FilePath input_path =
       temp_directory_.GetPath().AppendASCII(kTestFileName);
-  ASSERT_EQ(static_cast<int>(strlen(kTestCSVInput)),
-            base::WriteFile(input_path, kTestCSVInput, strlen(kTestCSVInput)));
+  ASSERT_TRUE(base::WriteFile(input_path, kTestCSVInput));
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
 
   histogram_tester.ExpectUniqueSample("PasswordManager.ImportEntryStatus",
@@ -762,8 +749,7 @@ TEST_F(PasswordImporterTest, CSVImportEmptyURLReported) {
 
   base::FilePath input_path =
       temp_directory_.GetPath().AppendASCII(kTestFileName);
-  ASSERT_EQ(static_cast<int>(strlen(kTestCSVInput)),
-            base::WriteFile(input_path, kTestCSVInput, strlen(kTestCSVInput)));
+  ASSERT_TRUE(base::WriteFile(input_path, kTestCSVInput));
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
 
   histogram_tester.ExpectUniqueSample("PasswordManager.ImportEntryStatus",
@@ -793,9 +779,7 @@ TEST_F(PasswordImporterTest, CSVImportLongURLReported) {
 
   base::FilePath input_path =
       temp_directory_.GetPath().AppendASCII(kTestFileName);
-  ASSERT_EQ(static_cast<int>(kTestCSVInput.length()),
-            base::WriteFile(input_path, kTestCSVInput.c_str(),
-                            kTestCSVInput.length()));
+  ASSERT_TRUE(base::WriteFile(input_path, kTestCSVInput));
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
 
   histogram_tester.ExpectUniqueSample("PasswordManager.ImportEntryStatus",
@@ -826,9 +810,7 @@ TEST_F(PasswordImporterTest, CSVImportLongPassword) {
 
   base::FilePath input_path =
       temp_directory_.GetPath().AppendASCII(kTestFileName);
-  ASSERT_EQ(static_cast<int>(kTestCSVInput.length()),
-            base::WriteFile(input_path, kTestCSVInput.c_str(),
-                            kTestCSVInput.length()));
+  ASSERT_TRUE(base::WriteFile(input_path, kTestCSVInput));
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
 
   histogram_tester.ExpectUniqueSample("PasswordManager.ImportEntryStatus",
@@ -858,9 +840,7 @@ TEST_F(PasswordImporterTest, CSVImportLongUsername) {
 
   base::FilePath input_path =
       temp_directory_.GetPath().AppendASCII(kTestFileName);
-  ASSERT_EQ(static_cast<int>(kTestCSVInput.length()),
-            base::WriteFile(input_path, kTestCSVInput.c_str(),
-                            kTestCSVInput.length()));
+  ASSERT_TRUE(base::WriteFile(input_path, kTestCSVInput));
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
 
   histogram_tester.ExpectUniqueSample("PasswordManager.ImportEntryStatus",
@@ -889,8 +869,7 @@ TEST_F(PasswordImporterTest, CSVImportInvalidURLReported) {
 
   base::FilePath input_path =
       temp_directory_.GetPath().AppendASCII(kTestFileName);
-  ASSERT_EQ(static_cast<int>(strlen(kTestCSVInput)),
-            base::WriteFile(input_path, kTestCSVInput, strlen(kTestCSVInput)));
+  ASSERT_TRUE(base::WriteFile(input_path, kTestCSVInput));
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
 
   histogram_tester.ExpectUniqueSample("PasswordManager.ImportEntryStatus",
@@ -920,8 +899,7 @@ TEST_F(PasswordImporterTest, CSVImportNonASCIIURLReported) {
 
   base::FilePath input_path =
       temp_directory_.GetPath().AppendASCII(kTestFileName);
-  ASSERT_EQ(static_cast<int>(strlen(kTestCSVInput)),
-            base::WriteFile(input_path, kTestCSVInput, strlen(kTestCSVInput)));
+  ASSERT_TRUE(base::WriteFile(input_path, kTestCSVInput));
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
 
   histogram_tester.ExpectUniqueSample("PasswordManager.ImportEntryStatus",
@@ -953,8 +931,7 @@ TEST_F(PasswordImporterTest, SingleFailedSingleSucceeds) {
 
   base::FilePath input_path =
       temp_directory_.GetPath().AppendASCII(kTestFileName);
-  ASSERT_EQ(static_cast<int>(strlen(kTestCSVInput)),
-            base::WriteFile(input_path, kTestCSVInput, strlen(kTestCSVInput)));
+  ASSERT_TRUE(base::WriteFile(input_path, kTestCSVInput));
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
 
   histogram_tester.ExpectUniqueSample("PasswordManager.ImportEntryStatus",
@@ -986,8 +963,7 @@ TEST_F(PasswordImporterTest, PartialImportSucceeds) {
 
   base::FilePath input_path =
       temp_directory_.GetPath().AppendASCII(kTestFileName);
-  ASSERT_EQ(static_cast<int>(strlen(kTestCSVInput)),
-            base::WriteFile(input_path, kTestCSVInput, strlen(kTestCSVInput)));
+  ASSERT_TRUE(base::WriteFile(input_path, kTestCSVInput));
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
 
   histogram_tester.ExpectUniqueSample("PasswordManager.ImportEntryStatus",

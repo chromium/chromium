@@ -59,6 +59,12 @@ class COMPONENT_EXPORT(CC_SLIM) UIResourceLayer : public Layer {
   const auto& vertex_opacity() const { return vertex_opacity_; }
 
   bool HasDrawableContent() const override;
+  void AppendQuads(viz::CompositorRenderPass& render_pass,
+                   FrameData& data,
+                   const gfx::Transform& transform_to_root,
+                   const gfx::Transform& transform_to_target,
+                   const gfx::Rect* clip_in_target,
+                   const gfx::Rect& visible_rect) override;
 
  private:
   cc::UIResourceLayer* cc_layer() const;

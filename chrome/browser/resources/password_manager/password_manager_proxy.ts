@@ -9,6 +9,8 @@
 
 export type BlockedSite = chrome.passwordsPrivate.ExceptionEntry;
 
+export type AccountStorageOptInStateChangedListener = (optInState: boolean) =>
+    void;
 export type CredentialsChangedListener =
     (credentials: chrome.passwordsPrivate.PasswordUiEntry[]) => void;
 export type PasswordCheckStatusChangedListener =
@@ -16,6 +18,7 @@ export type PasswordCheckStatusChangedListener =
 export type BlockedSitesListChangedListener = (entries: BlockedSite[]) => void;
 export type PasswordsFileExportProgressListener =
     (progress: chrome.passwordsPrivate.PasswordExportProgress) => void;
+export type PasswordManagerAuthTimeoutListener = () => void;
 
 /**
  * Represents different interactions the user can perform on the Password Check
@@ -158,6 +161,24 @@ export interface PasswordManagerProxy {
       reason: chrome.passwordsPrivate.PlaintextReason): Promise<string>;
 
   /**
+   * Saves a new password entry described by the given |options|.
+   * @param options Details about a new password and storage to be used.
+   * @return A promise that resolves when the new entry is added.
+   */
+  addPassword(options: chrome.passwordsPrivate.AddPasswordOptions):
+      Promise<void>;
+
+  /**
+   * Changes the saved password corresponding to |ids|.
+   * @param ids The ids for the password entry being updated.
+   * @return A promise that resolves with the new IDs when the password is
+   *     updated for all ids.
+   */
+  changeSavedPassword(
+      ids: number, params: chrome.passwordsPrivate.ChangeSavedPasswordParams):
+      Promise<number>;
+
+  /**
    * Should remove the saved password and notify that the list has changed.
    * @param id The id for the password entry being removed. No-op if |id| is not
    *     in the list.
@@ -229,6 +250,50 @@ export interface PasswordManagerProxy {
    * Shows the file with the exported passwords in the OS shell.
    */
   showExportedFileInShell(filePath: string): void;
+
+  /**
+   * Requests whether the given |url| meets the requirements to save a password
+   * for it (e.g. valid, has proper scheme etc.).
+   * @return A promise that resolves to the corresponding URLCollection on
+   *     success and to null otherwise.
+   */
+  getUrlCollection(url: string):
+      Promise<chrome.passwordsPrivate.UrlCollection|null>;
+
+  /**
+   * Add an observer for authentication timeout.
+   */
+  addPasswordManagerAuthTimeoutListener(
+      listener: PasswordManagerAuthTimeoutListener): void;
+
+  /**
+   * Remove the specified observer for authentication timeout.
+   */
+  removePasswordManagerAuthTimeoutListener(
+      listener: PasswordManagerAuthTimeoutListener): void;
+
+  /**
+   * Requests extension of authentication validity.
+   */
+  extendAuthValidity(): void;
+
+  /**
+   * Add an observer to the account storage opt-in state.
+   */
+  addAccountStorageOptInStateListener(
+      listener: AccountStorageOptInStateChangedListener): void;
+
+  /**
+   * Remove an observer to the account storage opt-in state.
+   */
+  removeAccountStorageOptInStateListener(
+      listener: AccountStorageOptInStateChangedListener): void;
+
+  /**
+   * Requests the account-storage opt-in state of the current user.
+   * @return A promise that resolves to the opt-in state.
+   */
+  isOptedInForAccountStorage(): Promise<boolean>;
 }
 
 /**
@@ -322,6 +387,15 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
     return chrome.passwordsPrivate.requestPlaintextPassword(id, reason);
   }
 
+  addPassword(options: chrome.passwordsPrivate.AddPasswordOptions) {
+    return chrome.passwordsPrivate.addPassword(options);
+  }
+
+  changeSavedPassword(
+      id: number, params: chrome.passwordsPrivate.ChangeSavedPasswordParams) {
+    return chrome.passwordsPrivate.changeSavedPassword(id, params);
+  }
+
   removeSavedPassword(
       id: number, fromStores: chrome.passwordsPrivate.PasswordStoreSet) {
     chrome.passwordsPrivate.removeSavedPassword(id, fromStores);
@@ -374,6 +448,41 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   showExportedFileInShell(filePath: string) {
     chrome.passwordsPrivate.showExportedFileInShell(filePath);
+  }
+
+  getUrlCollection(url: string) {
+    return chrome.passwordsPrivate.getUrlCollection(url);
+  }
+
+  addPasswordManagerAuthTimeoutListener(
+      listener: PasswordManagerAuthTimeoutListener) {
+    chrome.passwordsPrivate.onPasswordManagerAuthTimeout.addListener(listener);
+  }
+
+  removePasswordManagerAuthTimeoutListener(
+      listener: PasswordManagerAuthTimeoutListener) {
+    chrome.passwordsPrivate.onPasswordManagerAuthTimeout.removeListener(
+        listener);
+  }
+
+  extendAuthValidity() {
+    chrome.passwordsPrivate.extendAuthValidity();
+  }
+
+  addAccountStorageOptInStateListener(
+      listener: AccountStorageOptInStateChangedListener) {
+    chrome.passwordsPrivate.onAccountStorageOptInStateChanged.addListener(
+        listener);
+  }
+
+  removeAccountStorageOptInStateListener(
+      listener: AccountStorageOptInStateChangedListener) {
+    chrome.passwordsPrivate.onAccountStorageOptInStateChanged.removeListener(
+        listener);
+  }
+
+  isOptedInForAccountStorage() {
+    return chrome.passwordsPrivate.isOptedInForAccountStorage();
   }
 
   static getInstance(): PasswordManagerProxy {

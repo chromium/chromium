@@ -18,7 +18,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.test.pagecontroller.controllers.first_run.TOSController;
+import org.chromium.chrome.test.pagecontroller.controllers.first_run.SyncConfirmationViewPageController;
 import org.chromium.chrome.test.pagecontroller.controllers.ntp.NewTabPageController;
 import org.chromium.chrome.test.pagecontroller.rules.ChromeUiApplicationTestRule;
 import org.chromium.chrome.test.pagecontroller.rules.ChromeUiAutomatorTestRule;
@@ -48,8 +48,8 @@ public class FirstRunControllerTest {
     @DisabledTest(message = "https://crbug.com/1286635")
     @Test
     public void testFirstRunIsShown() {
-        Assert.assertTrue("TOS page should be shown.",
-                          TOSController.getInstance().isCurrentPageThis());
+        Assert.assertTrue("Sync dialog page should be shown.",
+                SyncConfirmationViewPageController.getInstance().isCurrentPageThis());
     }
 
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
@@ -57,7 +57,7 @@ public class FirstRunControllerTest {
     public void testDisableFre() {
         Assert.assertTrue(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE + " should work.",
                           NewTabPageController.getInstance().isCurrentPageThis());
-        Assert.assertFalse("TOS Page should not be detected.",
-                          TOSController.getInstance().isCurrentPageThis());
+        Assert.assertFalse("Sync dialog page should not be detected.",
+                SyncConfirmationViewPageController.getInstance().isCurrentPageThis());
     }
 }

@@ -7,31 +7,19 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/no_destructor.h"
-#include "base/threading/thread_local.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/scheduler.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace gpu {
 
 namespace {
 
-base::ThreadLocalPointer<const SchedulerTaskRunner>&
-GetCurrentTaskRunnerStorage() {
-  static base::NoDestructor<base::ThreadLocalPointer<const SchedulerTaskRunner>>
-      runner;
-  return *runner;
-}
-
-void SetCurrentTaskRunner(const SchedulerTaskRunner* runner) {
-  GetCurrentTaskRunnerStorage().Set(runner);
-}
-
-const SchedulerTaskRunner* GetCurrentTaskRunner() {
-  return GetCurrentTaskRunnerStorage().Get();
-}
+ABSL_CONST_INIT thread_local const SchedulerTaskRunner* current_task_runner =
+    nullptr;
 
 }  // namespace
 
@@ -69,8 +57,8 @@ bool SchedulerTaskRunner::PostNonNestableDelayedTask(
 }
 
 bool SchedulerTaskRunner::RunsTasksInCurrentSequence() const {
-  const SchedulerTaskRunner* current = GetCurrentTaskRunner();
-  return current != nullptr && current->sequence_id_ == sequence_id_;
+  return current_task_runner &&
+         current_task_runner->sequence_id_ == sequence_id_;
 }
 
 void SchedulerTaskRunner::RunTask(base::OnceClosure task) {
@@ -85,10 +73,9 @@ void SchedulerTaskRunner::RunTask(base::OnceClosure task) {
   }
 
   // Scheduler doesn't nest tasks, so we don't support nesting.
-  DCHECK(!GetCurrentTaskRunner());
-  SetCurrentTaskRunner(this);
+  const base::AutoReset<const SchedulerTaskRunner*> resetter(
+      &current_task_runner, this, nullptr);
   std::move(task).Run();
-  SetCurrentTaskRunner(nullptr);
 }
 
 }  // namespace gpu

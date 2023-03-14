@@ -1,13 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
+<translation id="1347497506789975534">Vis lagrede betalingsmåter</translation>
 <translation id="1383876407941801731">Søk</translation>
-<translation id="1566281227936819866">Viser lagrede betalingsmåter</translation>
 <translation id="1717486229951421299">Listen over legitimasjon som kan fylles ut ved å trykke, er åpnet i halv høyde.</translation>
 <translation id="207576718733492531">Listen over legitimasjon som kan fylles ut ved å trykke, er lukket.</translation>
 <translation id="2610239185026711824">Foreslå passord</translation>
 <translation id="2652129567809778422">Velg passord</translation>
-<translation id="2803478378562657435">Viser lagrede passord og passordalternativer</translation>
 <translation id="2903493209154104877">Adresser</translation>
 <translation id="3399357656427473483">Listen over legitimasjon som kan fylles ut ved å trykke.</translation>
 <translation id="3688051737190211318">Hvis du stoler på <ph name="ORIGIN" />, kan du logge på med et lagret passord</translation>
@@ -15,16 +14,14 @@
 <translation id="4660011489602794167">Vis tastatur</translation>
 <translation id="4694050069269396220">Hvis du stoler på <ph name="ORIGIN" />, kan du bruke lagrede passord for andre nettsteder.</translation>
 <translation id="5016175294846053194">Autofyllforslag er tilgjengelige ovenfor tastaturet</translation>
-<translation id="5088366526685584589">Viser lagrede adresser</translation>
 <translation id="5441504010984421144">Listen over legitimasjon som kan fylles ut ved å trykke, er åpnet i full høyde.</translation>
+<translation id="6296921860874265377">Vis lagrede passord og passordalternativer</translation>
 <translation id="6393156038355142111">Foreslå et sterkt passord</translation>
 <translation id="6558703547256592471">Prøv å bruke unike passord for hvert nettsted.</translation>
 <translation id="7029809446516969842">Passord</translation>
-<translation id="7299100402441711551">Vis adresser</translation>
-<translation id="7494879913343971937">Vis passord</translation>
 <translation id="7594473730623999723">Sveip for å se flere forslag</translation>
+<translation id="7873973044507799456">Vis lagrede adresser</translation>
 <translation id="7992095260806105436">Bruk autofyllforslag fra Chrome</translation>
-<translation id="8037472847879765671">Vis betalingsmåter</translation>
 <translation id="8507520749471379845">Passord er tilgjengelige</translation>
 <translation id="8705308553596171387">Ingen passord</translation>
 <translation id="879180780857354295">Du finner andre utfyllingsalternativer over tastaturet</translation>

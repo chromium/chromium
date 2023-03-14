@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">İleri</translation>
 <translation id="1209796539517632982">Otomatik ad sunucuları</translation>
 <translation id="1210831758834677569">Laoca</translation>
+<translation id="1221555006497674479"><ph name="TOTAL_SPACE" /> olan ortak Drive depolama alanınızda %<ph name="REMAINING_PERCENTAGE" /> oranından daha az depolama alanı kaldı.</translation>
 <translation id="1243314992276662751">Yükle</translation>
 <translation id="1249250836236328755">Tür</translation>
 <translation id="1254593899333212300">Doğrudan İnternet bağlantısı</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">Çince Pinyin</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> dosya çevrimdışı kullanılabilir hale getiriliyor</translation>
 <translation id="164969095109328410">Chrome cihaz</translation>
+<translation id="1661207570040737402">Google Workspace ortak Drive depolama alanınızın tamamını kullandınız.</translation>
 <translation id="1661867754829461514">PIN eksik</translation>
 <translation id="166439687370499867">Paylaşılan ağ yapılandırmalarının değiştirilmesine izin verilmez</translation>
 <translation id="1665611772925418501">Dosya değiştirilemedi.</translation>
@@ -82,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> öğe sıkıştırılıyor...</translation>
 <translation id="1722687688096767818">Profil Ekleniyor...</translation>
 <translation id="1726100011689679555">Ad sunucuları</translation>
+<translation id="1727562178154619254">Senkronizasyona hazır</translation>
 <translation id="1729953886957086472">Almanca (Almanya)</translation>
 <translation id="1730235522912993863">Çince Kanji</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> öğe kopyalandı.</translation>
@@ -349,11 +352,11 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Yapıştır</translation>
 <translation id="3952872973865944257">Telugu Fonetik</translation>
-<translation id="3954354850384043518">Devam ediyor</translation>
 <translation id="3958548648197196644">Kivi</translation>
 <translation id="3971140002794351170">Mobil profili indir, <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> ağı</translation>
 <translation id="3973925058222872294">İngilizce (BK)</translation>
 <translation id="3975895378829046965">Bengalce Fonetik</translation>
+<translation id="3999574733850440202">Son açılan Microsoft dosyaları OneDrive'a taşındı</translation>
 <translation id="4002066346123236978">Başlık</translation>
 <translation id="4017788180641807848">Workman klavye ile İngilizce (ABD)</translation>
 <translation id="4019998208269143058">Hızlı dosyalara sabitle</translation>
@@ -362,6 +365,7 @@
 <translation id="4092890906744441904">İrlandaca</translation>
 <translation id="4124935795427217608">Tek boynuzlu at</translation>
 <translation id="4131235941541910880">İhtiyacınız olmayan öğeleri Çöp Kutusu'na taşıyın</translation>
+<translation id="4134804435730168042">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Cihaz kurulumundan sonra etkinleştir</translation>
 <translation id="4153015322587141338">Raftaki dosyalarınıza hızlı erişim için bir dosyayı sağ tıklayıp "<ph name="PIN_COMMAND" />" seçeneğini kullanın.</translation>
 <translation id="4157569377477607576">Yönetici politikası şunları önermez:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> öğe taşındı.</translation>
@@ -404,6 +408,7 @@
 <translation id="4414834425328380570">"<ph name="FILE_NAME" />" silinecek ve bu dosyayı geri yükleyemeyeceksiniz.</translation>
 <translation id="4418686080762064601">Dosyalarınız için kısayol oluşturun</translation>
 <translation id="4425149324548788773">Drive'ım</translation>
+<translation id="4432921877815220091">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Cihaz kurulumundan sonra etkinleştir, Yöneticiniz tarafından yönetiliyor</translation>
 <translation id="4439427728133035643">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Bağlan</translation>
 <translation id="4442424173763614572">DNS arama başarısız oldu</translation>
 <translation id="4462159676511157176">Özel ad sunucuları</translation>
@@ -611,8 +616,10 @@
 <translation id="5911887972742538906">Linux uygulamanızın yüklenmesi sırasında bir hata oluştu.</translation>
 <translation id="5912396950572065471">Biçim</translation>
 <translation id="5913638992615760742">Kopyalama işlemi başarısız oldu, beklenmeyen hata: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">Yeni arama özellikleri mevcut</translation>
 <translation id="5926082595146149752">ABD Uluslararası PC klavyesiyle Felemenkçe (Hollanda)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Cihaz kurulumundan sonra etkinleştir</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> öğe</translation>
 <translation id="5957366693331451795">Chromebox'lar</translation>
 <translation id="5982621672636444458">Sıralama seçenekleri</translation>
@@ -699,6 +706,7 @@
 <translation id="6732801395666424405">Sertifikalar yüklenmedi</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Klasörü Bruschetta ile paylaşın</translation>
+<translation id="6750737795876287924">Geçerli dizin</translation>
 <translation id="6751256176799620176">1 klasör seçildi</translation>
 <translation id="6755827872271341378">ChromeOS Flex cihaz</translation>
 <translation id="6790428901817661496">Oynat</translation>
@@ -736,7 +744,6 @@
 <translation id="6973630695168034713">Klasörler</translation>
 <translation id="6976795442547527108">Aslan</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">Tüm zamanlar</translation>
 <translation id="6989942356279143254">İsveççe</translation>
 <translation id="6990081529015358884">Boş yeriniz kalmadı</translation>
 <translation id="6993826899923627728">Bu öğeler çöp kutunuzda</translation>
@@ -759,6 +766,7 @@
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" - &lt;em&gt;Drive'da ara&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannada Fonetik</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Kimlik doğrulama sunucusu kimliğini doğrulamak için "Konu alternatif adı eşleşmesi" veya "Alan adı son eki eşleşmesi" eksik</translation>
 <translation id="7165320105431587207">Ağ yapılandırılamadı</translation>
 <translation id="7170041865419449892">Aralık dışında</translation>
 <translation id="7180611975245234373">Yenile</translation>
@@ -791,7 +799,6 @@
 <translation id="7458955835361612701">Yakın tarihli resim yok</translation>
 <translation id="7460898608667578234">Ukraynaca</translation>
 <translation id="7469894403370665791">Bu ağa otomatik olarak bağlan</translation>
-<translation id="7481358317100446445">Hazır</translation>
 <translation id="7486315294984620427">Dosyaları Parallels Desktop'a bırakabilmek için Windows dosyalarına kopyalamak gerekir.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam dili Fonetik</translation>
@@ -829,6 +836,7 @@
 <translation id="7724603315864178912">Kes</translation>
 <translation id="7732111077498238432">Ağ, politika ile denetleniyor</translation>
 <translation id="7736003208887389532">Bu dosyalar kalıcı olarak silinsin mi?</translation>
+<translation id="7740287852186792672">Arama sonuçları</translation>
 <translation id="7748626145866214022">İşlem çubuğunda daha fazla seçenek var. İşlem çubuğuna odaklanmak için Alt + A tuşlarına basın.</translation>
 <translation id="7760449188139285140">Çince Wubi</translation>
 <translation id="7765158879357617694">Taşı</translation>
@@ -880,6 +888,7 @@
 <translation id="8116072619078571545">Buzlu su</translation>
 <translation id="8128733386027980860">Dvorak klavye ile İngilizce (ABD)</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" sizinle paylaşıldı. Sahibi siz olmadığınız için bu dosyayı silemezsiniz.</translation>
+<translation id="8138705869659070104">Cihaz kurulumundan sonra etkinleştirin</translation>
 <translation id="813913629614996137">İlk kullanıma hazırlanıyor...</translation>
 <translation id="8147028810663464959">Karakter genişliği Tam</translation>
 <translation id="8151638057146502721">Yapılandır</translation>
@@ -905,6 +914,7 @@
 <translation id="8300849813060516376">OTASP başarısız oldu</translation>
 <translation id="8312871300878166382">Klasörünün içine yapıştır</translation>
 <translation id="8329978297633540474">Düz metin</translation>
+<translation id="8332007959299458842">Son açılan Microsoft dosyaları Google Drive'a taşındı</translation>
 <translation id="8335587457941836791">Raftaki sabitlemeyi kaldır</translation>
 <translation id="8335837413233998004">Belarusça</translation>
 <translation id="8336153091935557858">Dün <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -931,6 +941,7 @@
 <translation id="8487700953926739672">Çevrimdışı kullanılabilir</translation>
 <translation id="8492972329130824181">Ev ağı kullanılamıyor. Bağlanmak için mobil veri dolaşımı etkinleştirilmelidir.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> öğe çıkarılıyor...</translation>
+<translation id="8502913769543567768">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Cihaz kurulumundan sonra etkinleştir, Yöneticiniz tarafından yönetiliyor</translation>
 <translation id="8521441079177373948">İngiltere</translation>
 <translation id="853494022971700746">Fransızca (Fransa)</translation>
 <translation id="8540608333167683902">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Ayrıntılar</translation>
@@ -992,6 +1003,7 @@
 <translation id="9046895021617826162">Bağlantı başarısız oldu</translation>
 <translation id="9065512565307033593">Kimliğinizi doğrulayamazsanız ağ erişiminiz devre dışı bırakılacaktır.</translation>
 <translation id="908378762078012445">Fonetik AATSEEL klavye ile Rusça</translation>
+<translation id="9086302186042011942">Senkronize ediliyor</translation>
 <translation id="9099674669267916096">Sayfa sayısı</translation>
 <translation id="9100610230175265781">Parola gerekli</translation>
 <translation id="9110990317705400362">Sürekli olarak, web'e daha güvenli göz atabilmenizi sağlamanın yollarını aramaktayız. Önceden, herhangi bir web sitesi, tarayıcınıza uzantı eklemeniz için istekte bulunabiliyordu. Google Chrome'un son sürümlerinde bu uzantıları yüklemek istediğinizi Chrome'a açıkça söylemelisiniz. Bunu yapmak için uzantıları Uzantılar sayfası üzerinden eklemeniz gerekiyor. <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" /></translation>

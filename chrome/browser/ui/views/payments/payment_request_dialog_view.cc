@@ -36,6 +36,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -136,6 +137,8 @@ void PaymentRequestDialogView::ShowErrorMessage() {
 void PaymentRequestDialogView::ShowProcessingSpinner() {
   throbber_->Start();
   throbber_overlay_->SetVisible(true);
+  throbber_overlay_->GetViewAccessibility().OverrideIsIgnored(false);
+  throbber_overlay_->GetViewAccessibility().OverrideIsLeaf(false);
   if (observer_for_testing_)
     observer_for_testing_->OnProcessingSpinnerShown();
 }
@@ -417,7 +420,14 @@ void PaymentRequestDialogView::EditorViewUpdated() {
 
 void PaymentRequestDialogView::HideProcessingSpinner() {
   throbber_->Stop();
+  // TODO(crbug.com/1418659): Instead of setting the throbber to invisible, can
+  // we destroy and remove it from the view when it's not being used?
   throbber_overlay_->SetVisible(false);
+  // Screen readers do not ignore invisible elements, so force the screen
+  // reader to skip the invisible throbber by making it an ignored leaf node in
+  // the accessibility tree.
+  throbber_overlay_->GetViewAccessibility().OverrideIsIgnored(true);
+  throbber_overlay_->GetViewAccessibility().OverrideIsLeaf(true);
   if (observer_for_testing_)
     observer_for_testing_->OnProcessingSpinnerHidden();
 }

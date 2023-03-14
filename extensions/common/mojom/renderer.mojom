@@ -4,17 +4,17 @@
 
 module extensions.mojom;
 
-import "mojo/public/mojom/base/shared_memory.mojom";
-import "extensions/common/mojom/activation_sequence.mojom";
 import "extensions/common/mojom/api_permission_id.mojom";
 import "extensions/common/mojom/channel.mojom";
-import "extensions/common/mojom/host_id.mojom";
 import "extensions/common/mojom/feature_session_type.mojom";
+import "extensions/common/mojom/host_id.mojom";
 import "extensions/common/mojom/manifest.mojom";
 import "extensions/common/mojom/permission_set.mojom";
 import "extensions/common/mojom/url_pattern_set.mojom";
-import "mojo/public/mojom/base/values.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "mojo/public/mojom/base/values.mojom";
 
 // Mojo struct to be used as argument on the LoadExtension method.
 struct ExtensionLoadedParams {
@@ -45,8 +45,8 @@ struct ExtensionLoadedParams {
   string id;
 
   // If this extension is Service Worker based, then this contains the
-  // activation sequence of the extension
-  ActivationSequence? worker_activation_sequence;
+  // activation token of the extension
+  mojo_base.mojom.UnguessableToken? worker_activation_token;
 
   // Send creation flags so that extension is initialized identically.
   int32 creation_flags;

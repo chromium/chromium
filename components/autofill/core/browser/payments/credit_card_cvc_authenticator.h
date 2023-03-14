@@ -18,7 +18,7 @@
 
 namespace autofill {
 
-namespace metrics {
+namespace autofill_metrics {
 class AutofillMetricsBaseTest;
 }
 
@@ -127,7 +127,7 @@ class CreditCardCvcAuthenticator
  private:
   friend class BrowserAutofillManagerTest;
   friend class AutofillMetricsTest;
-  friend class metrics::AutofillMetricsBaseTest;
+  friend class autofill_metrics::AutofillMetricsBaseTest;
   friend class CreditCardAccessManagerTest;
   friend class CreditCardCvcAuthenticatorTest;
 

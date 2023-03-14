@@ -15,6 +15,10 @@ namespace ui {
 class Event;
 }  // namespace ui
 
+namespace gfx {
+class RoundedCornersF;
+}
+
 namespace ash {
 
 // Label ID's.
@@ -31,6 +35,24 @@ struct SelectedDateParams {
   base::Time selected_date_midnight_utc;
 };
 
+struct UIParams {
+  bool round_top_corners = false;
+  bool round_bottom_corners = false;
+  // Show the calendar indicator dots which show the event colors. If
+  // false this piece of UI is not added to the view hierarchy.
+  bool show_event_list_dot = false;
+  // Used in `Label::SizeToFit()` to fix the width of this view.  If 0, no
+  // fixed width is enforced.
+  int fixed_width = 0;
+};
+
+// The index of the event in the event list. Used for the accessibility
+// description to show "Event n of n".
+struct EventListItemIndex {
+  int item_index;
+  int total_count_of_events;
+};
+
 // This view displays a jelly version of a calendar event entry.
 class ASH_EXPORT CalendarEventListItemViewJelly : public ActionableView {
  public:
@@ -40,14 +62,8 @@ class ASH_EXPORT CalendarEventListItemViewJelly : public ActionableView {
       CalendarViewController* calendar_view_controller,
       SelectedDateParams selected_date_params,
       google_apis::calendar::CalendarEvent event,
-      const bool round_top_corners,
-      const bool round_bottom_corners,
-      // Show the calendar indicator dots which show the event colors. If
-      // false this piece of UI is not added to the view hierarchy.
-      const bool show_event_list_dot,
-      // Used in `Label::SizeToFit()` to fix the width of this view.  If 0, no
-      // fixed width is enforced.
-      const int fixed_width = 0);
+      UIParams ui_params,
+      EventListItemIndex event_list_item_index);
   CalendarEventListItemViewJelly(const CalendarEventListItemViewJelly& other) =
       delete;
   CalendarEventListItemViewJelly& operator=(
@@ -59,6 +75,11 @@ class ASH_EXPORT CalendarEventListItemViewJelly : public ActionableView {
 
   // ActionableView:
   bool PerformAction(const ui::Event& event) override;
+
+  // Sets up a custom highlight path for when the
+  // `CalendarEventListItemViewJelly` view is focused. Conditionally follows the
+  // same corner rounding as the view.
+  void SetUpFocusHighlight(const gfx::RoundedCornersF& item_corner_radius);
 
   void OnJoinMeetingButtonPressed(const ui::Event& event);
 
@@ -73,7 +94,7 @@ class ASH_EXPORT CalendarEventListItemViewJelly : public ActionableView {
   // The URL for the meeting event.
   const GURL event_url_;
 
-  const std::string hangout_link_;
+  const GURL video_conference_url_;
 
   base::WeakPtrFactory<CalendarEventListItemViewJelly> weak_ptr_factory_{this};
 };

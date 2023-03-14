@@ -160,10 +160,10 @@ TEST(TextFragmentTest, FromValue) {
   base::Value string_value = base::Value(base::Value::Type::STRING);
   EXPECT_FALSE(TextFragment::FromValue(&string_value).has_value());
 
-  fragment_value.SetStringKey(kFragmentTextStartKey, text_start);
-  fragment_value.SetStringKey(kFragmentTextEndKey, text_end);
-  fragment_value.SetStringKey(kFragmentPrefixKey, prefix);
-  fragment_value.SetStringKey(kFragmentSuffixKey, suffix);
+  fragment_value.GetDict().Set(kFragmentTextStartKey, text_start);
+  fragment_value.GetDict().Set(kFragmentTextEndKey, text_end);
+  fragment_value.GetDict().Set(kFragmentPrefixKey, prefix);
+  fragment_value.GetDict().Set(kFragmentSuffixKey, suffix);
 
   absl::optional<TextFragment> opt_fragment =
       TextFragment::FromValue(&fragment_value);
@@ -176,7 +176,7 @@ TEST(TextFragmentTest, FromValue) {
 
   // Testing the case where the dictionary value doesn't have a text start
   // value.
-  ASSERT_TRUE(fragment_value.RemoveKey(kFragmentTextStartKey));
+  ASSERT_TRUE(fragment_value.GetDict().Remove(kFragmentTextStartKey));
   EXPECT_FALSE(TextFragment::FromValue(&fragment_value).has_value());
 }
 

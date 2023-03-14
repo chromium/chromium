@@ -21,6 +21,7 @@
 #define CALL_MEMBER_FN(obj, func) ((obj).*(func))
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof(x)[0])
 
+using segmentation_platform::SegmentationUkmHelper;
 using segmentation_platform::proto::SegmentId;
 using ukm::builders::Segmentation_ModelExecution;
 
@@ -80,6 +81,18 @@ const UkmMemberFn kSegmentationUkmInputMethods[] = {
     &Segmentation_ModelExecution::SetInput48,
     &Segmentation_ModelExecution::SetInput49};
 
+const UkmMemberFn kSegmentationUkmPredictionResultMethods[] = {
+    &Segmentation_ModelExecution::SetPredictionResult1,
+    &Segmentation_ModelExecution::SetPredictionResult2,
+    &Segmentation_ModelExecution::SetPredictionResult3,
+    &Segmentation_ModelExecution::SetPredictionResult4,
+    &Segmentation_ModelExecution::SetPredictionResult5,
+    &Segmentation_ModelExecution::SetPredictionResult6,
+    &Segmentation_ModelExecution::SetPredictionResult7,
+    &Segmentation_ModelExecution::SetPredictionResult8,
+    &Segmentation_ModelExecution::SetPredictionResult9,
+    &Segmentation_ModelExecution::SetPredictionResult10};
+
 const UkmMemberFn kSegmentationUkmOutputMethods[] = {
     &Segmentation_ModelExecution::SetActualResult,
     &Segmentation_ModelExecution::SetActualResult2,
@@ -87,8 +100,18 @@ const UkmMemberFn kSegmentationUkmOutputMethods[] = {
     &Segmentation_ModelExecution::SetActualResult4,
     &Segmentation_ModelExecution::SetActualResult5,
     &Segmentation_ModelExecution::SetActualResult6};
-
 }  // namespace
+
+// Helper method to add model prediction results to UKM log.
+void AddPredictionResultToUkmModelExecution(
+    ukm::builders::Segmentation_ModelExecution* model_execution,
+    const std::vector<float>& results) {
+  CHECK_LE(results.size(), ARRAY_SIZE(kSegmentationUkmPredictionResultMethods));
+  for (size_t i = 0; i < results.size(); ++i) {
+    CALL_MEMBER_FN(*model_execution, kSegmentationUkmPredictionResultMethods[i])
+    (SegmentationUkmHelper::FloatToInt64(results[i]));
+  }
+}
 
 namespace segmentation_platform {
 
@@ -126,7 +149,7 @@ ukm::SourceId SegmentationUkmHelper::RecordModelExecutionResult(
     SegmentId segment_id,
     int64_t model_version,
     const ModelProvider::Request& input_tensor,
-    float result) {
+    const std::vector<float>& results) {
   ukm::SourceId source_id = ukm::NoURLSourceId();
   ukm::builders::Segmentation_ModelExecution execution_result(source_id);
 
@@ -136,9 +159,8 @@ ukm::SourceId SegmentationUkmHelper::RecordModelExecutionResult(
     return ukm::kInvalidSourceId;
   }
 
-  // TODO(xingliu): Also record continuous outputs for model execution.
-  execution_result.SetPredictionResult(FloatToInt64(result))
-      .Record(ukm::UkmRecorder::Get());
+  AddPredictionResultToUkmModelExecution(&execution_result, results);
+  execution_result.Record(ukm::UkmRecorder::Get());
   return source_id;
 }
 
@@ -162,9 +184,9 @@ ukm::SourceId SegmentationUkmHelper::RecordTrainingData(
   }
 
   if (prediction_result.has_value() && prediction_result->result_size() > 0) {
-    // TODO(ritikagup): Add support for uploading multiple outputs.
-    execution_result.SetPredictionResult(
-        FloatToInt64(prediction_result->result()[0]));
+    std::vector<float> results(prediction_result->result().begin(),
+                               prediction_result->result().end());
+    AddPredictionResultToUkmModelExecution(&execution_result, results);
   }
   if (selected_segment.has_value()) {
     execution_result.SetSelectionResult(selected_segment->segment_id);

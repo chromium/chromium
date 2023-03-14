@@ -23,8 +23,10 @@ namespace base::allocator::dispatcher {
 // twice. The scoped guard allows us to detect that.
 //
 // Besides that the implementations of thread_local on macOS and Android
-// seem to allocate memory lazily on the first access to thread_local variables.
-// Make use of pthread TLS instead of C++ thread_local there.
+// seem to allocate memory lazily on the first access to thread_local variables
+// (and on Android at least thread_local is implemented on top of pthread so is
+// strictly worse for performance). Make use of pthread TLS instead of C++
+// thread_local there.
 struct BASE_EXPORT ReentryGuard {
   ReentryGuard() : allowed_(!pthread_getspecific(entered_key_)) {
     pthread_setspecific(entered_key_, reinterpret_cast<void*>(true));
@@ -37,10 +39,11 @@ struct BASE_EXPORT ReentryGuard {
 
   explicit operator bool() const noexcept { return allowed_; }
 
-  // This function must be called in very early of the process start-up in
-  // order to acquire a low TLS slot number because glibc TLS implementation
-  // will require a malloc call to allocate storage for a higher slot number
-  // (>= PTHREAD_KEY_2NDLEVEL_SIZE == 32).  c.f. heap_profiling::InitTLSSlot.
+  // This function must be called before installing any allocator hooks because
+  // some TLS implementations may allocate (eg. glibc will require a malloc call
+  // to allocate storage for a higher slot number (>= PTHREAD_KEY_2NDLEVEL_SIZE
+  // == 32). This touches the thread-local storage so that any malloc happens
+  // before installing the hooks.
   static void InitTLSSlot();
 
   // InitTLSSlot() is called before crash keys are available. At some point

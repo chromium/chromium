@@ -14,6 +14,7 @@
 #include "ash/public/cpp/android_intent_helper.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/public/cpp/session/session_types.h"
 #include "ash/public/mojom/assistant_volume_control.mojom.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -25,11 +26,23 @@
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/libassistant/public/cpp/assistant_feedback.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 
 namespace ash {
+
+namespace {
+
+const AccountId& GetActiveUserAccountId() {
+  const UserSession* active_user_session =
+      Shell::Get()->session_controller()->GetUserSession(0);
+  DCHECK(active_user_session);
+  return active_user_session->user_info.account_id;
+}
+
+}  // namespace
 
 AssistantControllerImpl::AssistantControllerImpl() {
   assistant_state_controller_.AddObserver(this);
@@ -136,6 +149,7 @@ void AssistantControllerImpl::DownloadImage(
             })");
 
   ImageDownloader::Get()->Download(url, kNetworkTrafficAnnotationTag,
+                                   GetActiveUserAccountId(),
                                    std::move(callback));
 }
 

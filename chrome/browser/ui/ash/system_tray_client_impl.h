@@ -101,7 +101,7 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
                          const base::Time& date,
                          bool& opened_pwa,
                          GURL& finalized_event_url) override;
-  void ShowGoogleMeet(const std::string& hangout_link) override;
+  void ShowVideoConference(const GURL& video_conference_url) override;
   void ShowChannelInfoAdditionalDetails() override;
   void ShowChannelInfoGiveFeedback() override;
   void ShowAudioSettings() override;

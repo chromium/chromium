@@ -18,14 +18,46 @@
 #include "base/feature_list.h"
 #include "base/mac/mach_logging.h"
 #include "base/memory/free_deleter.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
+
+namespace {
 
 // Enables setting the task role of every child process to
 // TASK_DEFAULT_APPLICATION.
 BASE_FEATURE(kMacSetDefaultTaskRole,
              "MacSetDefaultTaskRole",
              FEATURE_DISABLED_BY_DEFAULT);
+
+// Returns the `task_role_t` of the process whose process ID is `pid`.
+absl::optional<task_role_t> GetTaskCategoryPolicyRole(
+    PortProvider* port_provider,
+    ProcessId pid) {
+  DCHECK(port_provider);
+
+  mach_port_t task_port = port_provider->TaskForPid(pid);
+  if (task_port == TASK_NULL) {
+    return absl::nullopt;
+  }
+
+  task_category_policy_data_t category_policy;
+  mach_msg_type_number_t task_info_count = TASK_CATEGORY_POLICY_COUNT;
+  boolean_t get_default = FALSE;
+
+  kern_return_t result =
+      task_policy_get(task_port, TASK_CATEGORY_POLICY,
+                      reinterpret_cast<task_policy_t>(&category_policy),
+                      &task_info_count, &get_default);
+  if (result != KERN_SUCCESS) {
+    MACH_LOG(ERROR, result) << "task_policy_get TASK_CATEGORY_POLICY";
+    return absl::nullopt;
+  }
+  DCHECK(!get_default);
+  return category_policy.role;
+}
+
+}  // namespace
 
 Time Process::CreationTime() const {
   int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, Pid()};
@@ -46,42 +78,39 @@ bool Process::CanBackgroundProcesses() {
 
 bool Process::IsProcessBackgrounded(PortProvider* port_provider) const {
   DCHECK(IsValid());
-  if (port_provider == nullptr)
-    return false;
+  DCHECK(port_provider);
 
-  mach_port_t task_port = port_provider->TaskForPid(Pid());
-  if (task_port == TASK_NULL)
-    return false;
-
-  task_category_policy_data_t category_policy;
-  mach_msg_type_number_t task_info_count = TASK_CATEGORY_POLICY_COUNT;
-  boolean_t get_default = FALSE;
-
-  kern_return_t result =
-      task_policy_get(task_port, TASK_CATEGORY_POLICY,
-                      reinterpret_cast<task_policy_t>(&category_policy),
-                      &task_info_count, &get_default);
-  MACH_LOG_IF(ERROR, result != KERN_SUCCESS, result)
-      << "task_policy_get TASK_CATEGORY_POLICY";
-
-  if (result == KERN_SUCCESS && get_default == FALSE) {
-    return category_policy.role == TASK_BACKGROUND_APPLICATION;
-  }
-  return false;
+  // A process is backgrounded if the role is explicitly
+  // TASK_BACKGROUND_APPLICATION (as opposed to not being
+  // TASK_FOREGROUND_APPLICATION).
+  absl::optional<task_role_t> task_role =
+      GetTaskCategoryPolicyRole(port_provider, Pid());
+  return task_role && *task_role == TASK_BACKGROUND_APPLICATION;
 }
 
 bool Process::SetProcessBackgrounded(PortProvider* port_provider,
                                      bool background) {
   DCHECK(IsValid());
-  if (port_provider == nullptr || !CanBackgroundProcesses())
+  DCHECK(port_provider);
+
+  if (!CanBackgroundProcesses()) {
     return false;
+  }
 
   mach_port_t task_port = port_provider->TaskForPid(Pid());
   if (task_port == TASK_NULL)
     return false;
 
-  if (IsProcessBackgrounded(port_provider) == background)
+  absl::optional<task_role_t> current_role =
+      GetTaskCategoryPolicyRole(port_provider, Pid());
+  if (!current_role) {
+    return false;
+  }
+
+  if ((background && *current_role == TASK_BACKGROUND_APPLICATION) ||
+      (!background && *current_role == TASK_FOREGROUND_APPLICATION)) {
     return true;
+  }
 
   task_category_policy category_policy;
   category_policy.role =

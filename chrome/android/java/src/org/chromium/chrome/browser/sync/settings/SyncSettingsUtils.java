@@ -286,7 +286,7 @@ public class SyncSettingsUtils {
      * @param context The application context, used by the method to get string resources.
      * @param state Must not be GoogleServiceAuthError.State.None.
      */
-    public static String getSyncStatusSummaryForAuthError(
+    private static String getSyncStatusSummaryForAuthError(
             Context context, @GoogleServiceAuthError.State int state) {
         switch (state) {
             case GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS:

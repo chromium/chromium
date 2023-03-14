@@ -104,7 +104,7 @@ void DispatchEventToExtensionsImpl(Profile* profile,
       std::string level_of_control =
           level_getter.Run(profile, extension->id(), browser_pref, incognito);
 
-      args[0].SetStringKey(kLevelOfControlKey, level_of_control);
+      args[0].GetDict().Set(kLevelOfControlKey, level_of_control);
 
       // If the extension is in incognito split mode,
       // a) incognito pref changes are visible only to the incognito tabs

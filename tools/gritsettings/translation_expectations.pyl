@@ -117,7 +117,6 @@
     "chrome/app/resources/locale_settings_linux.grd": "Not UI strings; localized separately",
     "chrome/app/resources/locale_settings_mac.grd": "Not UI strings; localized separately",
     "chrome/app/resources/locale_settings_win.grd": "Not UI strings; localized separately",
-    "chrome/test/data/chrome_test_resources.grd": "Test data",
     "chromecast/app/resources/chromecast_settings.grd": "Not UI strings; localized separately",
     "components/components_locale_settings.grd": "Not UI strings; localized separately",
     "components/policy/resources/policy_templates.build.grd": "Copy of policy_templates.grd used locally for build only",

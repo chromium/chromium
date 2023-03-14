@@ -44,7 +44,8 @@ std::u16string GetDeviceManagedUiWebUILabel();
 
 // Returns nullopt if the device is not managed, the UTF8-encoded string
 // representation of the manager identity if available and an empty string if
-// the device is managed but the manager is not known.
+// the device is managed but the manager is not known or if the policy store
+// hasn't been loaded yet.
 absl::optional<std::string> GetDeviceManagerIdentity();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

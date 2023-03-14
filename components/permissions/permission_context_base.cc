@@ -164,17 +164,23 @@ void PermissionContextBase::RequestPermission(
         // Block the request and log to the developer console.
         LogPermissionBlockedMessage(rfh, kPermissionBlockedKillSwitchMessage,
                                     content_settings_type_);
+        PermissionUmaUtil::RecordPermissionRequestedFromFrame(
+            content_settings_type_, rfh);
         std::move(callback).Run(CONTENT_SETTING_BLOCK);
         return;
       case PermissionStatusSource::MULTIPLE_DISMISSALS:
         LogPermissionBlockedMessage(rfh,
                                     kPermissionBlockedRepeatedDismissalsMessage,
                                     content_settings_type_);
+        PermissionUmaUtil::RecordPermissionRequestedFromFrame(
+            content_settings_type_, rfh);
         break;
       case PermissionStatusSource::MULTIPLE_IGNORES:
         LogPermissionBlockedMessage(rfh,
                                     kPermissionBlockedRepeatedIgnoresMessage,
                                     content_settings_type_);
+        PermissionUmaUtil::RecordPermissionRequestedFromFrame(
+            content_settings_type_, rfh);
         break;
       case PermissionStatusSource::FEATURE_POLICY:
         LogPermissionBlockedMessage(rfh,
@@ -185,10 +191,13 @@ void PermissionContextBase::RequestPermission(
         LogPermissionBlockedMessage(rfh, kPermissionBlockedRecentDisplayMessage,
                                     content_settings_type_);
         break;
+      case PermissionStatusSource::UNSPECIFIED:
+        PermissionUmaUtil::RecordPermissionRequestedFromFrame(
+            content_settings_type_, rfh);
+        break;
       case PermissionStatusSource::PORTAL:
       case PermissionStatusSource::FENCED_FRAME:
       case PermissionStatusSource::INSECURE_ORIGIN:
-      case PermissionStatusSource::UNSPECIFIED:
       case PermissionStatusSource::VIRTUAL_URL_DIFFERENT_ORIGIN:
         break;
     }
@@ -202,6 +211,9 @@ void PermissionContextBase::RequestPermission(
                         /*is_final_decision=*/true);
     return;
   }
+
+  PermissionUmaUtil::RecordPermissionRequestedFromFrame(content_settings_type_,
+                                                        rfh);
 
   // We are going to show a prompt now.
   PermissionUmaUtil::PermissionRequested(content_settings_type_);
@@ -498,6 +510,13 @@ void PermissionContextBase::NotifyPermissionSet(
   if (is_final_decision) {
     UpdateTabContext(id, requesting_origin,
                      content_setting == CONTENT_SETTING_ALLOW);
+    if (content_setting == CONTENT_SETTING_ALLOW) {
+      if (auto* rfh = content::RenderFrameHost::FromID(
+              id.global_render_frame_host_id())) {
+        PermissionUmaUtil::RecordPermissionsUsageSourceAndPolicyConfiguration(
+            content_settings_type_, rfh);
+      }
+    }
   }
 
   if (content_setting == CONTENT_SETTING_DEFAULT)

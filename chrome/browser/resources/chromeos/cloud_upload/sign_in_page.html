@@ -24,10 +24,23 @@
   .error-text {
     margin-inline-start: 5px;
   }
+
+  cr-button {
+    border-radius: 16px;
+  }
+
+  cr-button:focus-visible {
+    /* disable cr-button default keyboard focus style */
+    box-shadow: none;
+    outline: 2px solid var(--cros-focus-ring-color);
+    outline-offset: 2px;
+  }
 </style>
 
 <!-- TODO(b/254586358): Use localized strings -->
-<img src="images/connect_one_drive.png" slot="header-image"></img>
+<svg slot="header-image" viewBox="0 0 448 200">
+  <use href="images/connect_one_drive.svg#EXPORT_image"></use>
+</svg>
 <div slot="title">
   Connect to Microsoft OneDrive to open files in Microsoft 365
 </div>
@@ -35,17 +48,13 @@
   <div id="error-message" hidden>
     <div class="icon"></div>
     <span class="error-text">
-      Unable to connect to OneDrive. Please try again.
+      Can’t connect to OneDrive. Try again.
     </span>
   </div>
   <p>
-    To edit files in Microsoft 365, they need to be stored in Microsoft OneDrive
-    cloud storage. If you open a file not already in OneDrive, your Chromebook
-    can move it for you.
-    <a href="https://support.google.com/chromebook" target="_blank">Learn more</a>
-  </p>
-  <p>
-    You'll need to sign in with your Microsoft account to continue.
+    Microsoft 365 uses OneDrive to open and edit Word, Excel, and PowerPoint
+    files. These files will be found in the Files app side navigation labeled
+    “Microsoft OneDrive.”
   </p>
 </div>
 <div slot="button-container">

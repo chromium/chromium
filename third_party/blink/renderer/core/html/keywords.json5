@@ -78,6 +78,9 @@
     "auto",
     "hint",
     "async",
+    "show",
+    "hide",
+    "toggle",
 
     // referrerpolicy attribute
     // https://w3c.github.io/webappsec-referrer-policy/#referrer-policies

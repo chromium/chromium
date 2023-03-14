@@ -6,7 +6,9 @@
 
 #include <utility>
 
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/event.h"
 #include "ui/events/scoped_target_handler.h"
 #include "ui/gfx/color_palette.h"
@@ -145,16 +147,19 @@ void InkDropHost::SetCreateMaskCallback(
 }
 
 SkColor InkDropHost::GetBaseColor() const {
-  if (ink_drop_base_color_id_.has_value()) {
-    return host_view_->GetColorProvider()->GetColor(
-        ink_drop_base_color_id_.value());
+  if (absl::holds_alternative<ui::ColorId>(ink_drop_base_color_)) {
+    ui::ColorProvider* color_provider = host_view_->GetColorProvider();
+    CHECK(color_provider);
+    return color_provider->GetColor(
+        absl::get<ui::ColorId>(ink_drop_base_color_));
   }
 
-  if (ink_drop_base_color_callback_) {
-    return ink_drop_base_color_callback_.Run();
+  if (absl::holds_alternative<SkColor>(ink_drop_base_color_)) {
+    return absl::get<SkColor>(ink_drop_base_color_);
   }
-  DCHECK(ink_drop_base_color_);
-  return ink_drop_base_color_.value_or(gfx::kPlaceholderColor);
+
+  return absl::get<base::RepeatingCallback<SkColor()>>(ink_drop_base_color_)
+      .Run();
 }
 
 void InkDropHost::SetBaseColor(SkColor color) {
@@ -162,12 +167,13 @@ void InkDropHost::SetBaseColor(SkColor color) {
 }
 
 void InkDropHost::SetBaseColorId(ui::ColorId color_id) {
-  ink_drop_base_color_id_ = color_id;
+  ink_drop_base_color_ = color_id;
 }
 
 void InkDropHost::SetBaseColorCallback(
     base::RepeatingCallback<SkColor()> callback) {
-  ink_drop_base_color_callback_ = std::move(callback);
+  CHECK(callback);
+  ink_drop_base_color_ = std::move(callback);
 }
 
 void InkDropHost::SetMode(InkDropMode ink_drop_mode) {
@@ -177,6 +183,15 @@ void InkDropHost::SetMode(InkDropMode ink_drop_mode) {
 
 InkDropHost::InkDropMode InkDropHost::GetMode() const {
   return ink_drop_mode_;
+}
+
+void InkDropHost::SetLayerRegion(LayerRegion region) {
+  layer_region_ = region;
+  ink_drop_.reset();
+}
+
+LayerRegion InkDropHost::GetLayerRegion() const {
+  return layer_region_;
 }
 
 void InkDropHost::SetVisibleOpacity(float visible_opacity) {
@@ -257,7 +272,7 @@ void InkDropHost::AddInkDropLayer(ui::Layer* ink_drop_layer) {
   if (!AddInkDropClip(ink_drop_layer)) {
     InstallInkDropMask(ink_drop_layer);
   }
-  host_view_->AddLayerToRegion(ink_drop_layer, LayerRegion::kBelow);
+  host_view_->AddLayerToRegion(ink_drop_layer, layer_region_);
 }
 
 void InkDropHost::RemoveInkDropLayer(ui::Layer* ink_drop_layer) {

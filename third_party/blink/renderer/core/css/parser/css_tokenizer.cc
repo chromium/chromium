@@ -23,43 +23,6 @@ constexpr wtf_size_t kEstimatedCharactersPerToken = 3;
 
 }  // namespace
 
-// static
-std::unique_ptr<CachedCSSTokenizer> CSSTokenizer::CreateCachedTokenizer(
-    const String& input) {
-  CSSTokenizer tokenizer(input);
-
-  Vector<CSSParserToken> tokens;
-
-  // This holds offsets into the source text for each token.
-  Vector<wtf_size_t> offsets;
-
-  wtf_size_t reserved_size = (tokenizer.input_.length() - tokenizer.Offset()) /
-                             kEstimatedCharactersPerToken;
-  tokens.ReserveInitialCapacity(reserved_size);
-  offsets.ReserveInitialCapacity(reserved_size);
-
-  offsets.push_back(0);
-  while (true) {
-    const CSSParserToken token =
-        tokenizer.NextToken</*SkipComments=*/false, /*StoreOffset=*/true>();
-    tokens.push_back(token);
-    offsets.push_back(tokenizer.Offset());
-    if (token.GetType() == kEOFToken) {
-      break;
-    }
-  }
-  return std::make_unique<CachedCSSTokenizer>(
-      input, std::move(tokens), std::move(offsets),
-      std::move(tokenizer.string_pool_));
-}
-
-std::unique_ptr<CachedCSSTokenizer> CachedCSSTokenizer::DuplicateForTesting()
-    const {
-  return std::make_unique<CachedCSSTokenizer>(
-      input_.RangeAt(0, input_.length()).ToString(), tokens_, offsets_,
-      string_pool_);
-}
-
 CSSTokenizer::CSSTokenizer(const String& string, wtf_size_t offset)
     : input_(string) {
   // According to the spec, we should perform preprocessing here.
@@ -70,6 +33,11 @@ CSSTokenizer::CSSTokenizer(const String& string, wtf_size_t offset)
   // * Do not count white spaces
   // * CSSTokenizerInputStream::NextInputChar() replaces NULLs for replacement
   //   characters
+  input_.Advance(offset);
+}
+
+CSSTokenizer::CSSTokenizer(StringView string, wtf_size_t offset)
+    : input_(string) {
   input_.Advance(offset);
 }
 
@@ -100,6 +68,12 @@ CSSParserToken CSSTokenizer::TokenizeSingle() {
 
 CSSParserToken CSSTokenizer::TokenizeSingleWithComments() {
   return NextToken</*SkipComments=*/false, /*StoreOffset=*/true>();
+}
+
+void CSSTokenizer::PersistStrings(CSSTokenizer& destination) {
+  for (String& s : string_pool_) {
+    destination.string_pool_.push_back(std::move(s));
+  }
 }
 
 wtf_size_t CSSTokenizer::TokenCount() {
@@ -749,7 +723,8 @@ StringView CSSTokenizer::ConsumeName() {
       // so to implement the IsASCII() test, which for LChar only
       // tests whether the top bit is set, we don't need a compare;
       // we can just rely on the top bit directly (using a PANDN).
-      uint16_t bits = _mm_movemask_epi8(non_name_mask & ~b);
+      uint16_t bits =
+          _mm_movemask_epi8(reinterpret_cast<__m128i>(non_name_mask & ~b));
       if (bits == 0) {
         size += 16;
         continue;

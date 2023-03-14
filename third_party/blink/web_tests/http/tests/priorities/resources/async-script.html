@@ -1,6 +1,6 @@
 <script src="common.js"></script>
 <script>
-  observeAndReportResourceLoadPriority(new URL('../../resources/dummy.js', location));
+  observeAndReportResourceLoadPriority(new URL('../../resources/dummy.js?async', location));
 </script>
 
-<script src="../../resources/dummy.js" async onload="reportLoaded()" onerror="reportFailure()"></script>
+<script src="../../resources/dummy.js?async" async onload="reportLoaded()" onerror="reportFailure()"></script>

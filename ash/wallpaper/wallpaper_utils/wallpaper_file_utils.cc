@@ -90,9 +90,7 @@ bool ResizeAndSaveWallpaper(const gfx::ImageSkia& image,
   }
 
   // Saves |data| to |path| in local file system.
-  size_t written_bytes =
-      base::WriteFile(path, data->front_as<const char>(), data->size());
-  return written_bytes == data->size();
+  return base::WriteFile(path, base::make_span(data->front(), data->size()));
 }
 
 }  // namespace ash

@@ -157,7 +157,7 @@ void InstallFromInfoCommand::PopulateInitialDebugInfo() {
 }
 
 void InstallFromInfoCommand::Abort(webapps::InstallResultCode code) {
-  debug_value_.Set("result_code", base::StreamableToString(code));
+  debug_value_.Set("result_code", base::ToString(code));
   if (!install_callback_)
     return;
   webapps::InstallableMetrics::TrackInstallResult(false);
@@ -171,7 +171,7 @@ void InstallFromInfoCommand::OnInstallCompleted(const AppId& app_id,
                                                 webapps::InstallResultCode code,
                                                 OsHooksErrors os_hooks_errors) {
   webapps::InstallableMetrics::TrackInstallResult(webapps::IsSuccess(code));
-  debug_value_.Set("result_code", base::StreamableToString(code));
+  debug_value_.Set("result_code", base::ToString(code));
   if (!webapps::IsSuccess(code)) {
     OnUnintallAndReplaceFinished(app_id, code,
                                  /*did_uninstall_and_replace=*/false);

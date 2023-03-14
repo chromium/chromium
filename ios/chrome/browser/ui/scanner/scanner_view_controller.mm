@@ -9,7 +9,7 @@
 #import "base/logging.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "ios/chrome/browser/ui/commands/load_query_commands.h"
+#import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/ui/scanner/scanner_alerts.h"
 #import "ios/chrome/browser/ui/scanner/scanner_presenting.h"
 #import "ios/chrome/browser/ui/scanner/scanner_transitioning_delegate.h"

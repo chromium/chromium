@@ -23,7 +23,7 @@ if bool(int(os.environ.get('DEPOT_TOOLS_WIN_TOOLCHAIN', '1'))):
 else:
     vs_version = vs_toolchain.GetVisualStudioVersion()
     vs_path = vs_toolchain.DetectVisualStudioPath()
-    if vs_version in ['2017', '2019']:
+    if vs_version in ['2022']:
         script_path = os.path.join(vs_path,
                                    r'VC\Auxiliary\Build\vcvarsall.bat')
         print('"%s" amd64' % script_path)

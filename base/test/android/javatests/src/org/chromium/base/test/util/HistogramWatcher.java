@@ -461,6 +461,23 @@ public class HistogramWatcher {
         }
     }
 
+    /**
+     * Polls the instrumentation thread until the expected histograms are recorded.
+     *
+     * Throws {@link CriteriaNotSatisfiedException} if the polling times out, wrapping the
+     * assertion to printed out the state of the histograms at the last check.
+     */
+    public void pollInstrumentationThreadUntilSatisfied() {
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            try {
+                assertExpected();
+                return true;
+            } catch (AssertionError e) {
+                throw new CriteriaNotSatisfiedException(e);
+            }
+        });
+    }
+
     private static class HistogramAndValue {
         private final String mHistogram;
         private final int mValue;

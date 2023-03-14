@@ -54,8 +54,9 @@ void SpinningMutex::AcquireSpinThenBlock() {
   int tries = 0;
   int backoff = 1;
   do {
-    if (PA_LIKELY(Try()))
+    if (PA_LIKELY(Try())) {
       return;
+    }
     // Note: Per the intel optimization manual
     // (https://software.intel.com/content/dam/develop/public/us/en/documents/64-ia-32-architectures-optimization-manual.pdf),
     // the "pause" instruction is more costly on Skylake Client than on previous

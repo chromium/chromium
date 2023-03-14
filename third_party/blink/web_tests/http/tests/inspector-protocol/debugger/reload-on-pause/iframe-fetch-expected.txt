@@ -1,0 +1,4 @@
+Don't crash reloading while paused in the micro task queue of an iframe
+Paused on debugger statement.
+Successfully reloaded.
+

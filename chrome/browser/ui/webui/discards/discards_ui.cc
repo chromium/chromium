@@ -182,10 +182,11 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
   }
 
   void DiscardById(int32_t id,
+                   mojom::LifecycleUnitDiscardReason reason,
                    DiscardByIdCallback callback) override {
     auto* lifecycle_unit = GetLifecycleUnitById(id);
     if (lifecycle_unit)
-      lifecycle_unit->Discard(mojom::LifecycleUnitDiscardReason::URGENT);
+      lifecycle_unit->Discard(reason);
     std::move(callback).Run();
   }
 
@@ -200,17 +201,6 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
         g_browser_process->GetTabManager();
     tab_manager->DiscardTab(mojom::LifecycleUnitDiscardReason::URGENT);
     std::move(callback).Run();
-  }
-
-  void ToggleHighEfficiencyMode() override {
-    if (base::FeatureList::IsEnabled(
-            performance_manager::features::kHighEfficiencyModeAvailable)) {
-      bool enabled = g_browser_process->local_state()->GetBoolean(
-          performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled);
-      g_browser_process->local_state()->SetBoolean(
-          performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled,
-          !enabled);
-    }
   }
 
   void ToggleBatterySaverMode() override {

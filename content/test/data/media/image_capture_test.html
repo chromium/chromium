@@ -18,7 +18,7 @@ function delayedResolver(object, delayInMs) {
 
 // Runs an ImageCapture.getPhotoCapabilities() and expects it to succeed.
 function testCreateAndGetPhotoCapabilitiesSucceeds() {
-  navigator.mediaDevices.getUserMedia({"video" : CONSTRAINTS})
+  return navigator.mediaDevices.getUserMedia({"video" : CONSTRAINTS})
       .then(stream => {
         assertEquals('video', stream.getVideoTracks()[0].kind);
         let imageCapturer = new ImageCapture(stream.getVideoTracks()[0]);
@@ -26,16 +26,16 @@ function testCreateAndGetPhotoCapabilitiesSucceeds() {
       })
       .then(capabilities => {
         // There's nothing to check here since |capabilities| vary per device.
-        reportTestSuccess();
+        return logSuccess();
       })
       .catch(err => {
-        return failTest(err.toString());
+        return toStackTrace(err.toString());
       });
 }
 
 // Runs an ImageCapture.getPhotoSettings() and expects it to succeed.
 function testCreateAndGetPhotoSettingsSucceeds() {
-  navigator.mediaDevices.getUserMedia({"video" : CONSTRAINTS})
+  return navigator.mediaDevices.getUserMedia({"video" : CONSTRAINTS})
       .then(stream => {
         assertEquals('video', stream.getVideoTracks()[0].kind);
         let imageCapturer = new ImageCapture(stream.getVideoTracks()[0]);
@@ -43,16 +43,16 @@ function testCreateAndGetPhotoSettingsSucceeds() {
       })
       .then(settings => {
         // There's nothing to check here since |settings| vary per device.
-        reportTestSuccess();
+        return logSuccess();
       })
       .catch(err => {
-        return failTest(err.toString());
+        return toStackTrace(err.toString());
       });
 }
 
 // Runs an ImageCapture.takePhoto() and expects it to succeed.
 function testCreateAndTakePhotoSucceeds() {
-  navigator.mediaDevices.getUserMedia({"video" : CONSTRAINTS})
+  return navigator.mediaDevices.getUserMedia({"video" : CONSTRAINTS})
       .then(stream => {
         assertEquals('video', stream.getVideoTracks()[0].kind);
         let imageCapturer = new ImageCapture(stream.getVideoTracks()[0]);
@@ -62,34 +62,31 @@ function testCreateAndTakePhotoSucceeds() {
         assertTrue(blob.type != undefined);
         assertNotEquals(0, blob.size);
 
-        reportTestSuccess();
+        return logSuccess();
       })
       .catch(err => {
-        return failTest(err.toString());
+        return toStackTrace(err.toString());
       });
 }
 
 // Runs an ImageCapture.takePhoto() and expects it to get rejected.
 function testCreateAndTakePhotoIsRejected() {
-  navigator.mediaDevices.getUserMedia({"video" : CONSTRAINTS})
+  return navigator.mediaDevices.getUserMedia({"video" : CONSTRAINTS})
       .then(stream => {
         assertEquals('video', stream.getVideoTracks()[0].kind);
         let imageCapturer = new ImageCapture(stream.getVideoTracks()[0]);
         return imageCapturer.takePhoto();
       })
       .then(blob => {
-        failTest('Expected promise to get rejected but it was fulfilled');
+        return toStackTrace('Expected promise to get rejected but it was fulfilled');
       }, err => {
-        reportTestSuccess();
-      })
-      .catch(err => {
-        return failTest(err.toString());
+        return logSuccess();
       });
 }
 
 // Runs an ImageCapture.grabFrame() and expects it to succeed.
 function testCreateAndGrabFrameSucceeds() {
-  navigator.mediaDevices.getUserMedia({"video" : CONSTRAINTS})
+  return navigator.mediaDevices.getUserMedia({"video" : CONSTRAINTS})
       .then(stream => {
         assertEquals('video', stream.getVideoTracks()[0].kind);
         let imageCapturer = new ImageCapture(stream.getVideoTracks()[0]);
@@ -100,42 +97,42 @@ function testCreateAndGrabFrameSucceeds() {
         // appear rotated.
         assertTrue(WIDTH == imageBitmap.width || WIDTH == imageBitmap.height);
 
-        reportTestSuccess();
+        return logSuccess();
       })
       .catch(err => {
-        return failTest(err.toString());
+        return toStackTrace(err.toString());
       });
 }
 
 // Runs a MediaStreamTrack.getCapabilities().
 function testCreateAndGetTrackCapabilities() {
   var imageCapturer;
-  navigator.mediaDevices.getUserMedia({"video" : CONSTRAINTS})
+  return navigator.mediaDevices.getUserMedia({"video" : CONSTRAINTS})
       .then(stream => {
         assertEquals('video', stream.getVideoTracks()[0].kind);
         imageCapturer = new ImageCapture(stream.getVideoTracks()[0]);
         imageCapturer.track.getCapabilities();
         // There's nothing to check here since |capabilities| vary per device.
-        reportTestSuccess();
+        return logSuccess();
       })
       .catch(err => {
-        return failTest(err.toString());
+        return toStackTrace(err.toString());
       });
 }
 
 // Runs an MediaStreamTrack.getSettings().
 function testCreateAndGetTrackSettings() {
   var imageCapturer;
-  navigator.mediaDevices.getUserMedia({"video" : CONSTRAINTS})
+  return navigator.mediaDevices.getUserMedia({"video" : CONSTRAINTS})
       .then(stream => {
         assertEquals('video', stream.getVideoTracks()[0].kind);
         imageCapturer = new ImageCapture(stream.getVideoTracks()[0]);
         imageCapturer.track.getSettings();
         // There's nothing to check here since |settings| vary per device.
-        reportTestSuccess();
+        return logSuccess();
       })
       .catch(err => {
-        return failTest(err.toString());
+        return toStackTrace(err.toString());
       });
 }
 
@@ -144,15 +141,14 @@ function testManipulatePan() {
   var newPan = -1;
   var imageCapturer;
   var panTolerance;
-  navigator.mediaDevices.getUserMedia({"video" : CONSTRAINTS})
+  return navigator.mediaDevices.getUserMedia({"video" : CONSTRAINTS})
       .then(stream => {
         assertEquals('video', stream.getVideoTracks()[0].kind);
         imageCapturer = new ImageCapture(stream.getVideoTracks()[0]);
         const trackCapabilities = imageCapturer.track.getCapabilities();
         if (trackCapabilities.pan === undefined) {
           console.log('pan not supported, skipping test');
-          reportTestSuccess();
-          return;
+          return logSuccess();
         }
 
         const currentPan = imageCapturer.track.getSettings().pan;
@@ -161,17 +157,17 @@ function testManipulatePan() {
         console.log("Setting pan from " + currentPan + " to " + newPan);
         panTolerance = trackCapabilities.pan.step / 10;
 
-        return imageCapturer.track.applyConstraints({advanced : [{pan : newPan}]});
-      })
-      .then(() => {
-        assertEquals(newPan,
-                     imageCapturer.track.getConstraints().advanced[0].pan);
-        assertTrue(Math.abs(newPan - imageCapturer.track.getSettings().pan)
-            < panTolerance);
-        reportTestSuccess();
+        return imageCapturer.track.applyConstraints({advanced : [{pan : newPan}]})
+          .then(() => {
+            assertEquals(newPan,
+                        imageCapturer.track.getConstraints().advanced[0].pan);
+            assertTrue(Math.abs(newPan - imageCapturer.track.getSettings().pan)
+                < panTolerance);
+            return logSuccess();
+          });
       })
       .catch(err => {
-        return failTest(err.toString());
+        return toStackTrace(err.toString());
       });
 }
 
@@ -180,15 +176,14 @@ function testManipulateTilt() {
   var newTilt = -1;
   var imageCapturer;
   var tiltTolerance;
-  navigator.mediaDevices.getUserMedia({"video" : CONSTRAINTS})
+  return navigator.mediaDevices.getUserMedia({"video" : CONSTRAINTS})
       .then(stream => {
         assertEquals('video', stream.getVideoTracks()[0].kind);
         imageCapturer = new ImageCapture(stream.getVideoTracks()[0]);
         const trackCapabilities = imageCapturer.track.getCapabilities();
         if (trackCapabilities.tilt === undefined) {
           console.log('tilt not supported, skipping test');
-          reportTestSuccess();
-          return;
+          return logSuccess();
         }
 
         const currentTilt = imageCapturer.track.getSettings().tilt;
@@ -197,17 +192,17 @@ function testManipulateTilt() {
         console.log("Setting tilt from " + currentTilt + " to " + newTilt);
         tiltTolerance = trackCapabilities.tilt.step / 10;
 
-        return imageCapturer.track.applyConstraints({advanced : [{tilt : newTilt}]});
-      })
-      .then(() => {
-        assertEquals(newTilt,
-                     imageCapturer.track.getConstraints().advanced[0].tilt);
-        assertTrue(Math.abs(newTilt - imageCapturer.track.getSettings().tilt)
-            < tiltTolerance);
-        reportTestSuccess();
+        return imageCapturer.track.applyConstraints({advanced : [{tilt : newTilt}]})
+          .then(() => {
+            assertEquals(newTilt,
+                        imageCapturer.track.getConstraints().advanced[0].tilt);
+            assertTrue(Math.abs(newTilt - imageCapturer.track.getSettings().tilt)
+                < tiltTolerance);
+            return logSuccess();
+          });
       })
       .catch(err => {
-        return failTest(err.toString());
+        return toStackTrace(err.toString());
       });
 }
 
@@ -216,15 +211,14 @@ function testManipulateZoom() {
   var newZoom = -1;
   var imageCapturer;
   var zoomTolerance;
-  navigator.mediaDevices.getUserMedia({"video" : CONSTRAINTS})
+  return navigator.mediaDevices.getUserMedia({"video" : CONSTRAINTS})
       .then(stream => {
         assertEquals('video', stream.getVideoTracks()[0].kind);
         imageCapturer = new ImageCapture(stream.getVideoTracks()[0]);
         const trackCapabilities = imageCapturer.track.getCapabilities();
         if (trackCapabilities.zoom === undefined) {
           console.log('zoom not supported, skipping test');
-          reportTestSuccess();
-          return;
+          return logSuccess();
         }
 
         const currentZoom = imageCapturer.track.getSettings().zoom;
@@ -233,14 +227,14 @@ function testManipulateZoom() {
         console.log("Setting zoom from " + currentZoom + " to " + newZoom);
         zoomTolerance = trackCapabilities.zoom.step / 10;
 
-        return imageCapturer.track.applyConstraints({advanced : [{zoom : newZoom}]});
-      })
-      .then(() => {
-        assertEquals(newZoom,
-                     imageCapturer.track.getConstraints().advanced[0].zoom);
-        assertTrue(Math.abs(newZoom - imageCapturer.track.getSettings().zoom)
-            < zoomTolerance);
-        reportTestSuccess();
+        return imageCapturer.track.applyConstraints({advanced : [{zoom : newZoom}]})
+          .then(() => {
+            assertEquals(newZoom,
+                        imageCapturer.track.getConstraints().advanced[0].zoom);
+            assertTrue(Math.abs(newZoom - imageCapturer.track.getSettings().zoom)
+                < zoomTolerance);
+            return logSuccess();
+          });
       })
       .catch(err => {
         return failTest(err.toString());
@@ -252,15 +246,14 @@ function testManipulateExposureTime() {
     var newExposureTime = -1;
     var imageCapturer;
     var exposureTimeTolerance;
-    navigator.mediaDevices.getUserMedia({"video": CONSTRAINTS})
+    return navigator.mediaDevices.getUserMedia({"video": CONSTRAINTS})
         .then(stream => {
             assertEquals('video', stream.getVideoTracks()[0].kind);
             imageCapturer = new ImageCapture(stream.getVideoTracks()[0]);
             const trackCapabilities = imageCapturer.track.getCapabilities();
             if (trackCapabilities.exposureTime === undefined) {
                 console.log('exposureTime not supported, skipping test');
-                reportTestSuccess();
-                return;
+                return logSuccess();
             }
 
             const currentExposureTime = imageCapturer.track.getSettings().exposureTime;
@@ -285,16 +278,16 @@ function testManipulateExposureTime() {
                     exposureMode: "manual",
                     exposureTime: newExposureTime
                 }]
+            })
+            .then(() => {
+                assertEquals(newExposureTime,
+                    imageCapturer.track.getConstraints().advanced[0].exposureTime
+                );
+                assertTrue(Math.abs(newExposureTime - imageCapturer.track.getSettings()
+                        .exposureTime) <
+                    exposureTimeTolerance);
+                return logSuccess();
             });
-        })
-        .then(() => {
-            assertEquals(newExposureTime,
-                imageCapturer.track.getConstraints().advanced[0].exposureTime
-            );
-            assertTrue(Math.abs(newExposureTime - imageCapturer.track.getSettings()
-                    .exposureTime) <
-                exposureTimeTolerance);
-            reportTestSuccess();
         })
         .catch(err => {
             return failTest(err.toString());
@@ -306,15 +299,14 @@ function testManipulateFocusDistance() {
     var newFocusDistance = -1;
     var imageCapturer;
     var focusDistanceTolerance;
-    navigator.mediaDevices.getUserMedia({"video": CONSTRAINTS})
+    return navigator.mediaDevices.getUserMedia({"video": CONSTRAINTS})
         .then(stream => {
             assertEquals('video', stream.getVideoTracks()[0].kind);
             imageCapturer = new ImageCapture(stream.getVideoTracks()[0]);
             const trackCapabilities = imageCapturer.track.getCapabilities();
             if (trackCapabilities.focusDistance === undefined) {
                 console.log('focusDistance not supported, skipping test');
-                reportTestSuccess();
-                return;
+                return logSuccess();
             }
 
             const currentFocusDistance = imageCapturer.track.getSettings().focusDistance;
@@ -339,19 +331,19 @@ function testManipulateFocusDistance() {
                     focusMode: "manual",
                     focusDistance: newFocusDistance
                 }]
+            })
+            .then(() => {
+                assertEquals(newFocusDistance,
+                    imageCapturer.track.getConstraints().advanced[0].focusDistance
+                );
+                assertTrue(Math.abs(newFocusDistance - imageCapturer.track.getSettings()
+                        .focusDistance) <
+                    focusDistanceTolerance);
+                return logSuccess();
             });
         })
-        .then(() => {
-            assertEquals(newFocusDistance,
-                imageCapturer.track.getConstraints().advanced[0].focusDistance
-            );
-            assertTrue(Math.abs(newFocusDistance - imageCapturer.track.getSettings()
-                    .focusDistance) <
-                focusDistanceTolerance);
-            reportTestSuccess();
-        })
         .catch(err => {
-            return failTest(err.toString());
+            return toStackTrace(err.toString());
         });
 }
 

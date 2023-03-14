@@ -1,0 +1,35 @@
+<link rel="stylesheet" href="../demo.css">
+
+<h1>Side panel shared components</h1>
+
+<h2>Filter chips</h2>
+<div class="demos">
+  <sp-filter-chip>
+    <iron-icon icon="cr:add"></iron-icon>
+    Filter
+  </sp-filter-chip>
+
+  <sp-filter-chip selected>
+    <iron-icon icon="cr:check"></iron-icon>
+    Selected filter
+  </sp-filter-chip>
+
+  <sp-filter-chip disabled>
+    <iron-icon icon="cr:clear"></iron-icon>
+    Disabled filter
+  </sp-filter-chip>
+</div>
+
+<h2>List item badges</h2>
+<div class="demos">
+  <sp-list-item-badge>
+    <iron-icon icon="cr:info-outline"></iron-icon>
+    <span>3 Notes</span>
+  </sp-list-item-badge>
+
+  <sp-list-item-badge updated>
+    <iron-icon icon="cr:info-outline"></iron-icon>
+    <span>$100</span>
+    <span slot="previous-badge">$200</span>
+  </sp-list-item-badge>
+</div>

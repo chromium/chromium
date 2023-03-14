@@ -82,10 +82,9 @@ class CrashReporterBreadcrumbObserverTest : public PlatformTest {
 // are collected by the CrashReporterBreadcrumbObserver and attached to crash
 // reports.
 TEST_F(CrashReporterBreadcrumbObserverTest, EventsAttachedToCrashReport) {
-  breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service =
-      BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-          chrome_browser_state_.get());
-  breadcrumb_service->AddEvent("Breadcrumb Event");
+  BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
+      chrome_browser_state_.get())
+      ->AddEvent("Breadcrumb Event");
   const auto& events =
       breadcrumbs::BreadcrumbManager::GetInstance().GetEvents();
   std::string expected_breadcrumbs;
@@ -99,10 +98,6 @@ TEST_F(CrashReporterBreadcrumbObserverTest, EventsAttachedToCrashReport) {
 TEST_F(CrashReporterBreadcrumbObserverTest, ProductDataOverflow) {
   crash_helper::SetEnabled(true);
 
-  breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service =
-      BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-          chrome_browser_state_.get());
-
   // Build a sample breadcrumbs string greater than the maximum allowed size.
   NSMutableString* breadcrumbs = [[NSMutableString alloc] init];
   while (breadcrumbs.length < breadcrumbs::kMaxDataLength) {
@@ -111,7 +106,9 @@ TEST_F(CrashReporterBreadcrumbObserverTest, ProductDataOverflow) {
   [breadcrumbs appendString:@"12:01 Fake Breadcrumb Event/n"];
   ASSERT_GT([breadcrumbs length], breadcrumbs::kMaxDataLength);
 
-  breadcrumb_service->AddEvent(base::SysNSStringToUTF8(breadcrumbs));
+  BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
+      chrome_browser_state_.get())
+      ->AddEvent(base::SysNSStringToUTF8(breadcrumbs));
   EXPECT_EQ(BreadcrumbAnnotations().size(), breadcrumbs::kMaxDataLength);
 }
 
@@ -126,19 +123,16 @@ TEST_F(CrashReporterBreadcrumbObserverTest,
   breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service =
       BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
           chrome_browser_state_.get());
-
   breadcrumb_service->AddEvent(event);
 
   breadcrumbs::BreadcrumbManagerKeyedService* otr_breadcrumb_service =
       BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
           chrome_browser_state_->GetOffTheRecordChromeBrowserState());
-
   otr_breadcrumb_service->AddEvent(event);
 
   breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service_2 =
       BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
           chrome_browser_state_2_.get());
-
   breadcrumb_service_2->AddEvent(event);
 
   std::string breadcrumbs = BreadcrumbAnnotations();

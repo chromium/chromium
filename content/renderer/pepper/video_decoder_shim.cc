@@ -69,26 +69,28 @@ bool IsSoftwareCodecSupported(media::VideoCodec codec) {
 }  // namespace
 
 struct VideoDecoderShim::PendingDecode {
-  PendingDecode(uint32_t decode_id,
+  PendingDecode(absl::optional<uint32_t> decode_id,
                 const scoped_refptr<media::DecoderBuffer>& buffer);
   ~PendingDecode();
 
-  const uint32_t decode_id;
+  // |decode_id| is absl::optional because it will be absl::nullopt when the
+  // decoder is being flushed.
+  const absl::optional<uint32_t> decode_id;
   const scoped_refptr<media::DecoderBuffer> buffer;
 };
 
 VideoDecoderShim::PendingDecode::PendingDecode(
-    uint32_t decode_id,
+    absl::optional<uint32_t> decode_id,
     const scoped_refptr<media::DecoderBuffer>& buffer)
-    : decode_id(decode_id), buffer(buffer) {
-}
+    : decode_id(decode_id), buffer(buffer) {}
 
 VideoDecoderShim::PendingDecode::~PendingDecode() {
 }
 
 struct VideoDecoderShim::PendingFrame {
-  explicit PendingFrame(uint32_t decode_id);
-  PendingFrame(uint32_t decode_id, scoped_refptr<media::VideoFrame> frame);
+  explicit PendingFrame(absl::optional<uint32_t> decode_id);
+  PendingFrame(absl::optional<uint32_t> decode_id,
+               scoped_refptr<media::VideoFrame> frame);
 
   // This could be expensive to copy, so guard against that.
   PendingFrame(const PendingFrame&) = delete;
@@ -96,16 +98,17 @@ struct VideoDecoderShim::PendingFrame {
 
   ~PendingFrame();
 
-  const uint32_t decode_id;
+  // |decode_id| is absl::optional because it will be absl::nullopt when the
+  // decoder is being flushed.
+  const absl::optional<uint32_t> decode_id;
   scoped_refptr<media::VideoFrame> video_frame;
 };
 
-VideoDecoderShim::PendingFrame::PendingFrame(uint32_t decode_id)
-    : decode_id(decode_id) {
-}
+VideoDecoderShim::PendingFrame::PendingFrame(absl::optional<uint32_t> decode_id)
+    : decode_id(decode_id) {}
 
 VideoDecoderShim::PendingFrame::PendingFrame(
-    uint32_t decode_id,
+    absl::optional<uint32_t> decode_id,
     scoped_refptr<media::VideoFrame> frame)
     : decode_id(decode_id), video_frame(std::move(frame)) {}
 
@@ -127,13 +130,15 @@ class VideoDecoderShim::DecoderImpl {
       media::VideoDecoderConfig config,
       media::GpuVideoAcceleratorFactories* gpu_factories);
   void Decode(uint32_t decode_id, scoped_refptr<media::DecoderBuffer> buffer);
+  void Flush();
   void Reset();
   void Stop();
 
  private:
   void OnInitDone(media::DecoderStatus status);
   void DoDecode();
-  void OnDecodeComplete(media::DecoderStatus status);
+  void OnDecodeComplete(absl::optional<uint32_t> decode_id,
+                        media::DecoderStatus status);
   void OnOutputComplete(scoped_refptr<media::VideoFrame> frame);
   void OnResetComplete();
 
@@ -147,24 +152,15 @@ class VideoDecoderShim::DecoderImpl {
   using PendingDecodeQueue = base::queue<PendingDecode>;
   PendingDecodeQueue pending_decodes_;
   bool awaiting_decoder_ = false;
-  // VideoDecoder returns pictures without information about the decode buffer
-  // that generated it. However, when VideoDecoderShim is used for software
-  // decoding, both media::FFmpegVideoDecoder and media::VpxVideoDecoder always
-  // generate corresponding frames before decode is finished. This assumption is
-  // critical so that the Pepper plugin can associate Decode() calls with
-  // decoded frames which is a requirement of the PPB_VideoDecoder API. In that
-  // case |decode_id_| is used to store the id of the current buffer while a
-  // Decode() call is pending.
-  uint32_t decode_id_ = 0;
-  // For hardware decoding we can't assume that VideoDecoder always generates
-  // corresponding frames before decode is finished. In that case, the
-  // frame can be output before or after the decode completion callback is
-  // called. In order to allow the Pepper plugin to associate Decode() calls
-  // with decoded frames we use |decode_counter_| and |timestamp_to_id_cache_|
-  // to generate and store fake timestamps. The corresponding timestamp will
-  // be put in the media::DecoderBuffer that's sent to the VideoDecoder. When
-  // VideoDecoder returns a VideoFrame we use its timestamp to look up the
-  // Decode() call id in |timestamp_to_id_cache_|.
+  // We can't assume that VideoDecoder always generates corresponding frames
+  // before decode is finished. In that case, the frame can be output before
+  // or after the decode completion callback is called. In order to allow the
+  // Pepper plugin to associate Decode() calls with decoded frames we use
+  // |decode_counter_| and |timestamp_to_id_cache_| to generate and store fake
+  // timestamps. The corresponding timestamp will be put in the
+  // media::DecoderBuffer that's sent to the VideoDecoder. When VideoDecoder
+  // returns a VideoFrame we use its timestamp to look up the Decode() call id
+  // in |timestamp_to_id_cache_|.
   base::LRUCache<base::TimeDelta, uint32_t> timestamp_to_id_cache_;
   base::TimeDelta decode_counter_ = base::Microseconds(0u);
 
@@ -256,11 +252,24 @@ void VideoDecoderShim::DecoderImpl::Decode(
   DoDecode();
 }
 
+void VideoDecoderShim::DecoderImpl::Flush() {
+  DCHECK(decoder_);
+
+  pending_decodes_.emplace(/*decode_id=*/absl::nullopt,
+                           media::DecoderBuffer::CreateEOSBuffer());
+
+  DoDecode();
+}
+
 void VideoDecoderShim::DecoderImpl::Reset() {
   DCHECK(decoder_);
   // Abort all pending decodes.
   while (!pending_decodes_.empty()) {
     const PendingDecode& decode = pending_decodes_.front();
+
+    // The PepperVideoDecoderHost validates that there's not a pending flush
+    // when a reset request is received.
+    DCHECK(decode.decode_id.has_value());
     std::unique_ptr<PendingFrame> pending_frame(
         new PendingFrame(decode.decode_id));
     main_task_runner_->PostTask(
@@ -315,12 +324,8 @@ void VideoDecoderShim::DecoderImpl::DoDecode() {
 
   awaiting_decoder_ = true;
   const PendingDecode& decode = pending_decodes_.front();
-  // Note that |decode_id_| is set regardless of whether we're doing hardware or
-  // software decoding. That's because OnDecodeComplete() uses this ID to notify
-  // the shim on both paths.
-  decode_id_ = decode.decode_id;
 
-  if (use_hw_decoder_) {
+  if (!decode.buffer->end_of_stream()) {
     const base::TimeDelta new_counter =
         decode_counter_ + base::Microseconds(1u);
     if (new_counter == decode_counter_) {
@@ -336,18 +341,20 @@ void VideoDecoderShim::DecoderImpl::DoDecode() {
     decode_counter_ = new_counter;
     DCHECK(timestamp_to_id_cache_.Peek(decode_counter_) ==
            timestamp_to_id_cache_.end());
-    timestamp_to_id_cache_.Put(decode_counter_, decode.decode_id);
+    DCHECK(decode.decode_id.has_value());
+    timestamp_to_id_cache_.Put(decode_counter_, decode.decode_id.value());
     decode.buffer->set_timestamp(decode_counter_);
   }
 
   decoder_->Decode(
       decode.buffer,
       base::BindOnce(&VideoDecoderShim::DecoderImpl::OnDecodeComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), decode.decode_id));
   pending_decodes_.pop();
 }
 
 void VideoDecoderShim::DecoderImpl::OnDecodeComplete(
+    absl::optional<uint32_t> decode_id,
     media::DecoderStatus status) {
   DCHECK(awaiting_decoder_);
   awaiting_decoder_ = false;
@@ -365,37 +372,31 @@ void VideoDecoderShim::DecoderImpl::OnDecodeComplete(
 
   main_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&VideoDecoderShim::OnDecodeComplete, shim_,
-                                result, decode_id_));
+                                result, decode_id));
 
   DoDecode();
 }
 
 void VideoDecoderShim::DecoderImpl::OnOutputComplete(
     scoped_refptr<media::VideoFrame> frame) {
-  // Software decoders are expected to generated frames only when a Decode()
+  // Software decoders are expected to generate frames only when a Decode()
   // call is pending.
   DCHECK(use_hw_decoder_ || awaiting_decoder_);
+  DCHECK(!frame->metadata().end_of_stream);
 
   uint32_t decode_id;
-  if (!use_hw_decoder_) {
-    decode_id = decode_id_;
+
+  base::TimeDelta timestamp = frame->timestamp();
+  auto it = timestamp_to_id_cache_.Get(timestamp);
+  if (it != timestamp_to_id_cache_.end()) {
+    decode_id = it->second;
   } else {
-    base::TimeDelta timestamp = frame->timestamp();
-    auto it = timestamp_to_id_cache_.Get(timestamp);
-    if (it != timestamp_to_id_cache_.end()) {
-      decode_id = it->second;
-    } else {
-      NOTREACHED();
-      return;
-    }
+    NOTREACHED();
+    return;
   }
 
-  std::unique_ptr<PendingFrame> pending_frame;
-  if (!frame->metadata().end_of_stream) {
-    pending_frame = std::make_unique<PendingFrame>(decode_id, std::move(frame));
-  } else {
-    pending_frame = std::make_unique<PendingFrame>(decode_id);
-  }
+  auto pending_frame =
+      std::make_unique<PendingFrame>(decode_id, std::move(frame));
 
   main_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&VideoDecoderShim::OnOutputComplete, shim_,
@@ -599,7 +600,12 @@ void VideoDecoderShim::ReusePictureBuffer(int32_t picture_buffer_id) {
 void VideoDecoderShim::Flush() {
   DCHECK(RenderThreadImpl::current());
   DCHECK_EQ(state_, DECODING);
+
   state_ = FLUSHING;
+  media_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&VideoDecoderShim::DecoderImpl::Flush,
+                                base::Unretained(decoder_impl_.get())));
+  num_pending_decodes_++;
 }
 
 void VideoDecoderShim::Reset() {
@@ -622,7 +628,8 @@ void VideoDecoderShim::OnInitializeFailed() {
   host_->NotifyError(media::VideoDecodeAccelerator::PLATFORM_FAILURE);
 }
 
-void VideoDecoderShim::OnDecodeComplete(int32_t result, uint32_t decode_id) {
+void VideoDecoderShim::OnDecodeComplete(int32_t result,
+                                        absl::optional<uint32_t> decode_id) {
   DCHECK(RenderThreadImpl::current());
   DCHECK(host_);
 
@@ -632,44 +639,60 @@ void VideoDecoderShim::OnDecodeComplete(int32_t result, uint32_t decode_id) {
   }
 
   num_pending_decodes_--;
-  completed_decodes_.push(decode_id);
+  if (decode_id.has_value()) {
+    completed_decodes_.push(decode_id.value());
+  }
 
   // If frames are being queued because we're out of textures, don't notify
   // the host that decode has completed. This exerts "back pressure" to keep
   // the host from sending buffers that will cause pending_frames_ to grow.
   if (pending_frames_.empty())
     NotifyCompletedDecodes();
+
+  if (!decode_id.has_value()) {
+    // The flush request has been completed. This DCHECK is guaranteed by a
+    // couple of facts:
+    //
+    // 1) The PepperVideoDecoderHost doesn't call VideoDecoderShim::Decode() or
+    //    VideoDecoderShim::Flush() if there is a flush in progress, so
+    //    |num_pending_decodes_| shouldn't increase after calling Flush() and
+    //    before the flush is completed.
+    //
+    // 2) All pending decode callbacks should have been called.
+    DCHECK(!num_pending_decodes_);
+    pending_frames_.push(
+        std::make_unique<PendingFrame>(/*decode_id=*/absl::nullopt));
+  }
 }
 
 void VideoDecoderShim::OnOutputComplete(std::unique_ptr<PendingFrame> frame) {
   DCHECK(RenderThreadImpl::current());
   DCHECK(host_);
+  DCHECK(frame->video_frame);
 
-  if (frame->video_frame) {
-    if (texture_size_ != frame->video_frame->coded_size()) {
-      // If the size has changed, all current textures must be dismissed. Add
-      // all textures to |textures_to_dismiss_| and dismiss any that aren't in
-      // use by the plugin. We will dismiss the rest as they are recycled.
-      for (IdToMailboxMap::const_iterator it = texture_mailbox_map_.begin();
-           it != texture_mailbox_map_.end(); ++it) {
-        textures_to_dismiss_.insert(it->first);
-      }
-      for (auto it = available_textures_.begin();
-           it != available_textures_.end(); ++it) {
-        DismissTexture(*it);
-      }
-      available_textures_.clear();
-      FlushCommandBuffer();
-
-      host_->ProvidePictureBuffers(texture_pool_size_, media::PIXEL_FORMAT_ARGB,
-                                   1, frame->video_frame->coded_size(),
-                                   GL_TEXTURE_2D);
-      texture_size_ = frame->video_frame->coded_size();
+  if (texture_size_ != frame->video_frame->coded_size()) {
+    // If the size has changed, all current textures must be dismissed. Add
+    // all textures to |textures_to_dismiss_| and dismiss any that aren't in
+    // use by the plugin. We will dismiss the rest as they are recycled.
+    for (IdToMailboxMap::const_iterator it = texture_mailbox_map_.begin();
+         it != texture_mailbox_map_.end(); ++it) {
+      textures_to_dismiss_.insert(it->first);
     }
+    for (auto it = available_textures_.begin(); it != available_textures_.end();
+         ++it) {
+      DismissTexture(*it);
+    }
+    available_textures_.clear();
+    FlushCommandBuffer();
 
-    pending_frames_.push(std::move(frame));
-    SendPictures();
+    host_->ProvidePictureBuffers(texture_pool_size_, media::PIXEL_FORMAT_ARGB,
+                                 1, frame->video_frame->coded_size(),
+                                 GL_TEXTURE_2D);
+    texture_size_ = frame->video_frame->coded_size();
   }
+
+  pending_frames_.push(std::move(frame));
+  SendPictures();
 }
 
 void VideoDecoderShim::SendPictures() {
@@ -687,6 +710,19 @@ void VideoDecoderShim::SendPictures() {
 
   while (!pending_frames_.empty() && !available_textures_.empty()) {
     const std::unique_ptr<PendingFrame>& frame = pending_frames_.front();
+
+    if (!frame->decode_id.has_value()) {
+      // This signals the completion of a flush: all frames should have been
+      // output by the underlying decoder (as required by the
+      // media::VideoDecoder API) and the plugin should not have sent any other
+      // decode requests while the flush was pending (this is validated by the
+      // PepperVideoDecoderHost).
+      pending_frames_.pop();
+      DCHECK(pending_frames_.empty());
+      DCHECK(!num_pending_decodes_);
+      DCHECK_EQ(state_, FLUSHING);
+      break;
+    }
 
     auto it = available_textures_.begin();
     uint32_t texture_id = *it;
@@ -743,7 +779,8 @@ void VideoDecoderShim::SendPictures() {
       }
       gl->DeleteTextures(1, &destination_texture_id);
     }
-    host_->PictureReady(media::Picture(texture_id, frame->decode_id,
+    DCHECK(frame->decode_id.has_value());
+    host_->PictureReady(media::Picture(texture_id, frame->decode_id.value(),
                                        frame->video_frame->visible_rect(),
                                        gfx::ColorSpace(), false));
     pending_frames_.pop();

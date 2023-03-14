@@ -65,10 +65,10 @@ crbug.com/1117211 css3/filters/composited-layer-promotion-after-outset-overlap-c
 # ref tests that fail in highdpi
 crbug.com/1179572 animations/cross-fade-webkit-mask-box-image.html [ Failure ]
 
-crbug.com/1353771 virtual/view-transition/external/wpt/css/css-view-transitions/content-with-clip-max-texture-size.html [ Failure ]
+crbug.com/1409713 virtual/view-transition/external/wpt/css/css-view-transitions/content-with-clip-max-texture-size.html [ Failure ]
 crbug.com/1353771 virtual/view-transition/external/wpt/css/css-view-transitions/new-content-with-overflow-zoomed.html [ Failure ]
 crbug.com/1353771 virtual/view-transition/external/wpt/css/css-view-transitions/old-content-with-overflow-zoomed.html [ Failure ]
-crbug.com/1353771 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/content-with-clip-max-texture-size.html [ Failure ]
+crbug.com/1409713 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/content-with-clip-max-texture-size.html [ Failure ]
 crbug.com/1353771 virtual/view-transition/external/wpt/css/css-view-transitions/element-with-overflow.html [ Failure ]
 crbug.com/1412910 virtual/view-transition/external/wpt/css/css-view-transitions/fractional-translation-from-position.html [ Failure ]
 crbug.com/1414855 virtual/view-transition/external/wpt/css/css-view-transitions/new-content-captures-spans.html [ Failure ]
@@ -264,7 +264,6 @@ crbug.com/1179565 svg/stroke/non-scaling-stroke-text.html [ Failure ]
 crbug.com/1179565 svg/text/text-outline-2.html [ Failure ]
 crbug.com/1179565 svg/text/text-outline-rgba.html [ Failure ]
 crbug.com/1179585 svg/text/textpath-outline.svg [ Failure ]
-crbug.com/1179565 svg/text/textpath-pattern.svg [ Failure ]
 crbug.com/1179565 svg/text/tspan-multiple-outline.svg [ Failure ]
 crbug.com/1179565 svg/transforms/change-transform-origin-css.xhtml [ Failure ]
 crbug.com/1179565 svg/transforms/change-transform-origin-presentation-attribute.xhtml [ Failure ]
@@ -273,7 +272,6 @@ crbug.com/1179565 external/wpt/svg/painting/reftests/display-none-mask.html [ Fa
 
 crbug.com/1179572 transforms/combine-transforms-properties-transform.html [ Failure ]
 crbug.com/1179572 transforms/perspective-fixed-pos-descendant.html [ Failure ]
-crbug.com/1179572 transforms/transformed-document-element.html [ Failure ]
 
 crbug.com/1179570 virtual/forced-high-contrast-colors/external/wpt/forced-colors-mode/backplate/forced-colors-mode-backplate-10.html [ Failure ]
 crbug.com/1179570 virtual/forced-high-contrast-colors/fast/css/forced-colors-mode/forced-colors-mode-04.html [ Failure ]

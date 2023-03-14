@@ -43,6 +43,21 @@ enum class FeatureSuccessEnum {
   kMaxValue = kTtsFailure,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// See enum LanguagePackDlcErrorType in tools/metrics/histograms/enums.xml.
+enum class DlcErrorTypeEnum {
+  kErrorUnknown = 0,
+  kErrorNone = 1,
+  kErrorInternal = 2,
+  kErrorBusy = 3,
+  kErrorNeedReboot = 4,
+  kErrorInvalidDlc = 5,
+  kErrorAllocation = 6,
+  kErrorNoImageFound = 7,
+  kMaxValue = kErrorNoImageFound,
+};
+
 // Status contains information about the status of a Language Pack operation.
 struct PackResult {
   // This string contains the error returns by DLC Service.

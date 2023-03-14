@@ -170,19 +170,6 @@ bool SharedImageInterfaceInProcess::LazyCreateSharedImageFactory() {
 }
 
 Mailbox SharedImageInterfaceInProcess::CreateSharedImage(
-    viz::ResourceFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    gpu::SurfaceHandle surface_handle) {
-  return CreateSharedImage(viz::SharedImageFormat::SinglePlane(format), size,
-                           color_space, surface_origin, alpha_type, usage,
-                           surface_handle);
-}
-
-Mailbox SharedImageInterfaceInProcess::CreateSharedImage(
     viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
@@ -370,7 +357,7 @@ void SharedImageInterfaceInProcess::CreateGMBSharedImageOnGpuThread(
 
 SharedImageInterface::SwapChainMailboxes
 SharedImageInterfaceInProcess::CreateSwapChain(
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
@@ -505,6 +492,15 @@ void SharedImageInterfaceInProcess::ScheduleGpuTask(
     base::OnceClosure task,
     std::vector<SyncToken> sync_token_fences) {
   task_sequence_->ScheduleTask(std::move(task), std::move(sync_token_fences));
+}
+
+void SharedImageInterfaceInProcess::AddReferenceToSharedImage(
+    const SyncToken& sync_token,
+    const Mailbox& mailbox,
+    uint32_t usage) {
+  // Secondary references are required only by client processes, so it shouldn't
+  // be reachable here.
+  NOTREACHED();
 }
 
 }  // namespace gpu

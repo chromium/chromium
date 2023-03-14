@@ -6,7 +6,9 @@
 
 #include "base/hash/sha1.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/safe_browsing/content/common/file_type_policies.h"
 #include "net/cert/x509_util.h"
 #include "url/gurl.h"
 
@@ -29,6 +31,63 @@ std::string EscapeCertAttribute(const std::string& attribute) {
     }
   }
   return escaped;
+}
+
+int ArchiveEntryWeight(const ClientDownloadRequest::ArchivedBinary& entry) {
+  return FileTypePolicies::GetInstance()
+      ->SettingsForFile(base::FilePath::FromUTF8Unsafe(entry.file_basename()),
+                        GURL{}, nullptr)
+      .file_weight();
+}
+
+size_t ArchiveEntryDepth(const ClientDownloadRequest::ArchivedBinary& entry) {
+  return base::FilePath::FromUTF8Unsafe(entry.file_basename())
+      .GetComponents()
+      .size();
+}
+
+void SelectEncryptedEntry(
+    std::vector<ClientDownloadRequest::ArchivedBinary>* considering,
+    google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>*
+        selected) {
+  auto it = base::ranges::find_if(
+      *considering, &ClientDownloadRequest::ArchivedBinary::is_encrypted);
+  if (it != considering->end()) {
+    *selected->Add() = *it;
+    considering->erase(it);
+  }
+}
+
+void SelectDeepestEntry(
+    std::vector<ClientDownloadRequest::ArchivedBinary>* considering,
+    google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>*
+        selected) {
+  auto it = base::ranges::max_element(*considering, {}, &ArchiveEntryDepth);
+  if (it != considering->end()) {
+    *selected->Add() = *it;
+    considering->erase(it);
+  }
+}
+
+void SelectWildcardEntry(
+    std::vector<ClientDownloadRequest::ArchivedBinary>* considering,
+    google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>*
+        selected) {
+  int remaining_executables = base::ranges::count_if(
+      *considering, &ClientDownloadRequest::ArchivedBinary::is_executable);
+  for (auto it = considering->begin(); it != considering->end(); ++it) {
+    if (it->is_executable()) {
+      // Choose the current entry with probability 1/remaining_executables. This
+      // leads to a uniform distribution over all executables.
+      if (remaining_executables * base::RandDouble() < 1) {
+        *selected->Add() = *it;
+        considering->erase(it);
+        return;
+      }
+
+      --remaining_executables;
+    }
+  }
 }
 
 }  // namespace
@@ -95,6 +154,64 @@ GURL GetFileSystemAccessDownloadUrl(const GURL& frame_url) {
   // random UUID.
   return GURL("blob:" + frame_url.DeprecatedGetOriginAsURL().spec() +
               "file-system-access-write");
+}
+
+google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>
+SelectArchiveEntries(const google::protobuf::RepeatedPtrField<
+                     ClientDownloadRequest::ArchivedBinary>& src_binaries) {
+  // Limit the number of entries so we don't clog the backend.
+  // We can expand this limit by pushing a new download_file_types update.
+  size_t limit =
+      FileTypePolicies::GetInstance()->GetMaxArchivedBinariesToReport();
+
+  google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>
+      selected;
+
+  std::vector<ClientDownloadRequest::ArchivedBinary> considering;
+  for (const ClientDownloadRequest::ArchivedBinary& entry : src_binaries) {
+    if (entry.is_executable() || entry.is_archive()) {
+      considering.push_back(entry);
+    }
+  }
+
+  if (static_cast<size_t>(selected.size()) < limit) {
+    SelectEncryptedEntry(&considering, &selected);
+  }
+
+  if (static_cast<size_t>(selected.size()) < limit) {
+    SelectDeepestEntry(&considering, &selected);
+  }
+
+  // Only add the wildcard if we otherwise wouldn't be able to fit all the
+  // entries.
+  if (static_cast<size_t>(selected.size()) < limit &&
+      considering.size() + selected.size() > limit) {
+    SelectWildcardEntry(&considering, &selected);
+  }
+
+  std::sort(considering.begin(), considering.end(),
+            [](const ClientDownloadRequest::ArchivedBinary& lhs,
+               const ClientDownloadRequest::ArchivedBinary& rhs) {
+              // The comparator should return true if `lhs` should come before
+              // `rhs`. We want the shallowest and highest-weight entries first.
+              if (ArchiveEntryDepth(lhs) != ArchiveEntryDepth(rhs)) {
+                return ArchiveEntryDepth(lhs) < ArchiveEntryDepth(rhs);
+              }
+
+              return ArchiveEntryWeight(lhs) > ArchiveEntryWeight(rhs);
+            });
+
+  for (const ClientDownloadRequest::ArchivedBinary& binary : considering) {
+    if (static_cast<size_t>(selected.size()) >= limit) {
+      break;
+    }
+
+    if (binary.is_executable() || binary.is_archive()) {
+      *selected.Add() = binary;
+    }
+  }
+
+  return selected;
 }
 
 }  // namespace safe_browsing

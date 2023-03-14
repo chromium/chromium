@@ -19,11 +19,6 @@ namespace base {
 class SequencedTaskRunner;
 }
 
-namespace gpu {
-struct GpuPreferences;
-class GpuDriverBugWorkarounds;
-}  // namespace gpu
-
 namespace media {
 
 // This class implements the interface mojom::VideoEncodeAcceleratorProvider,

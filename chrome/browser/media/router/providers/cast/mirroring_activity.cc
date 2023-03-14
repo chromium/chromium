@@ -27,22 +27,16 @@
 #include "chrome/browser/media/router/providers/cast/cast_activity_manager.h"
 #include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/media_router/browser/media_router.h"
-#include "components/media_router/browser/media_router_factory.h"
-#include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
+#include "components/media_router/browser/media_router_debugger.h"
+#include "components/media_router/browser/mirroring_to_flinging_switcher.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "components/media_router/common/providers/cast/channel/cast_message_util.h"
 #include "components/media_router/common/providers/cast/channel/cast_socket.h"
 #include "components/media_router/common/providers/cast/channel/enum_table.h"
 #include "components/media_router/common/route_request_result.h"
-#include "components/mirroring/mojom/session_parameters.mojom-forward.h"
 #include "components/mirroring/mojom/session_parameters.mojom.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/browser/presentation_request.h"
-#include "content/public/browser/web_contents.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -152,40 +146,11 @@ bool ShouldForceLetterboxing(base::StringPiece model_name) {
   return model_name.find("Nest Hub") != base::StringPiece::npos;
 }
 
-void AutoSwitchToFlingingIfNeeded(const std::string& sink_id,
-                                  int frame_tree_node_id) {
+bool IsRtcpReportingEnabled(int frame_tree_node_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  auto* web_contents =
-      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
-  if (!web_contents)
-    return;
+  auto* debugger = MediaRouterDebugger::GetForFrameTreeNode(frame_tree_node_id);
 
-  base::WeakPtr<WebContentsPresentationManager>
-      web_contents_presentation_manager =
-          WebContentsPresentationManager::Get(web_contents);
-  if (!web_contents_presentation_manager ||
-      !web_contents_presentation_manager->HasDefaultPresentationRequest()) {
-    return;
-  }
-
-  auto* media_router = MediaRouterFactory::GetApiForBrowserContextIfExists(
-      web_contents->GetBrowserContext());
-  if (!media_router)
-    return;
-
-  const auto& presentation_request =
-      web_contents_presentation_manager->GetDefaultPresentationRequest();
-  const auto source_id =
-      MediaSource::ForPresentationUrl(presentation_request.presentation_urls[0])
-          .id();
-  bool incognito = web_contents->GetBrowserContext()->IsOffTheRecord();
-  media_router->JoinRoute(
-      source_id, kAutoJoinPresentationId, presentation_request.frame_origin,
-      web_contents,
-      base::BindOnce(&WebContentsPresentationManager::OnPresentationResponse,
-                     std::move(web_contents_presentation_manager),
-                     presentation_request),
-      base::TimeDelta(), incognito);
+  return debugger ? debugger->IsRtcpReportsEnabled() : false;
 }
 
 }  // namespace
@@ -197,14 +162,18 @@ MirroringActivity::MirroringActivity(
     CastSessionTracker* session_tracker,
     int frame_tree_node_id,
     const CastSinkExtraData& cast_data,
-    OnStopCallback callback)
+    OnStopCallback callback,
+    OnSourceChangedCallback source_changed_callback)
     : CastActivity(route, app_id, message_handler, session_tracker),
       mirroring_type_(GetMirroringType(route)),
       frame_tree_node_id_(frame_tree_node_id),
       cast_data_(cast_data),
-      on_stop_(std::move(callback)) {}
+      on_stop_(std::move(callback)),
+      source_changed_callback_(std::move(source_changed_callback)) {}
 
 MirroringActivity::~MirroringActivity() {
+  content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE, std::move(host_));
+
   if (!did_start_mirroring_timestamp_) {
     return;
   }
@@ -235,8 +204,6 @@ MirroringActivity::~MirroringActivity() {
     base::UmaHistogramLongTimes(kHistogramSessionLengthAccessCode,
                                 cast_duration);
   }
-
-  content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE, std::move(host_));
 }
 
 void MirroringActivity::CreateMojoBindings(mojom::MediaRouter* media_router) {
@@ -305,8 +272,8 @@ void MirroringActivity::OnError(SessionError error) {
     // Record the error for access code discovery types.
     CastDiscoveryType discovery_type = cast_data_.discovery_type;
     if (discovery_type == CastDiscoveryType::kAccessCodeManualEntry) {
-      base::UmaHistogramEnumeration(
-          kHistogramStartFailureAccessCodeManualEntry, error);
+      base::UmaHistogramEnumeration(kHistogramStartFailureAccessCodeManualEntry,
+                                    error);
     } else if (discovery_type ==
                CastDiscoveryType::kAccessCodeRememberedDevice) {
       base::UmaHistogramEnumeration(
@@ -337,8 +304,7 @@ void MirroringActivity::DidStart() {
   if (discovery_type == CastDiscoveryType::kAccessCodeManualEntry) {
     base::UmaHistogramEnumeration(kHistogramStartSuccessAccessCodeManualEntry,
                                   *mirroring_type_);
-  } else if (discovery_type ==
-             CastDiscoveryType::kAccessCodeRememberedDevice) {
+  } else if (discovery_type == CastDiscoveryType::kAccessCodeRememberedDevice) {
     base::UmaHistogramEnumeration(
         kHistogramStartSuccessAccessCodeRememberedDevice, *mirroring_type_);
   }
@@ -365,20 +331,17 @@ void MirroringActivity::LogErrorMessage(const std::string& message) {
 void MirroringActivity::OnSourceChanged() {
   DCHECK(host_);
   absl::optional<int> frame_tree_node_id = host_->GetTabSourceId();
-  if (!frame_tree_node_id || frame_tree_node_id == frame_tree_node_id_) {
+  if (!source_changed_callback_ || !frame_tree_node_id ||
+      frame_tree_node_id == frame_tree_node_id_) {
     return;
   }
 
-  session_tracker_->OnSourceChanged(route_.media_route_id(),
-                                    frame_tree_node_id_, *frame_tree_node_id);
+  source_changed_callback_.Run(frame_tree_node_id_, *frame_tree_node_id);
   frame_tree_node_id_ = *frame_tree_node_id;
 
-  // Posting to UI thread, as while obtaining WebContents instance through
-  // `FromFrameTreeNodeId()`, a call to `GloballyFindByID()` would happen and
-  // that is only allowed on UI thread.
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&AutoSwitchToFlingingIfNeeded,
-                                route_.media_sink_id(), frame_tree_node_id_));
+      FROM_HERE,
+      base::BindOnce(&SwitchToFlingingIfPossible, frame_tree_node_id_));
 }
 
 void MirroringActivity::OnMessage(mirroring::mojom::CastMessagePtr message) {
@@ -542,10 +505,10 @@ void MirroringActivity::OnSessionSet(const CastSession& session) {
   if (!has_audio && !has_video) {
     return;
   }
-  const SessionType session_type =
-      has_audio && has_video
-          ? SessionType::AUDIO_AND_VIDEO
-          : has_audio ? SessionType::AUDIO_ONLY : SessionType::VIDEO_ONLY;
+  const SessionType session_type = has_audio && has_video
+                                       ? SessionType::AUDIO_AND_VIDEO
+                                   : has_audio ? SessionType::AUDIO_ONLY
+                                               : SessionType::VIDEO_ONLY;
 
   will_start_mirroring_timestamp_ = base::Time::Now();
 
@@ -562,16 +525,41 @@ void MirroringActivity::OnSessionSet(const CastSession& session) {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &mirroring::MirroringServiceHost::Start, host_->GetWeakPtr(),
+          &MirroringActivity::StartOnUiThread, weak_ptr_factory_.GetWeakPtr(),
+          host_->GetWeakPtr(),
           SessionParameters::New(
               session_type, cast_data_.ip_endpoint.address(),
               cast_data_.model_name, sink_.sink().name(),
               session.destination_id(), message_handler_->source_id(),
               cast_source->target_playout_delay(),
               route().media_source().IsRemotePlaybackSource(),
-              ShouldForceLetterboxing(cast_data_.model_name)),
+              ShouldForceLetterboxing(cast_data_.model_name),
+              false /* enable_rtcp_reporting */),
           std::move(observer_remote), std::move(channel_remote),
-          std::move(channel_to_service_receiver_), route_.media_sink_name()));
+          std::move(channel_to_service_receiver_), route_.media_sink_name(),
+          frame_tree_node_id_));
+}
+
+void MirroringActivity::StartOnUiThread(
+    base::WeakPtr<mirroring::MirroringServiceHost> host,
+    mirroring::mojom::SessionParametersPtr session_params,
+    mojo::PendingRemote<mirroring::mojom::SessionObserver> observer,
+    mojo::PendingRemote<mirroring::mojom::CastMessageChannel> outbound_channel,
+    mojo::PendingReceiver<mirroring::mojom::CastMessageChannel> inbound_channel,
+    const std::string& sink_name,
+    int frame_tree_node_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!host) {
+    return;
+  }
+
+  session_params->enable_rtcp_reporting =
+      IsRtcpReportingEnabled(frame_tree_node_id);
+
+  host->Start(std::move(session_params), std::move(observer),
+              std::move(outbound_channel), std::move(inbound_channel),
+              sink_name);
 }
 
 void MirroringActivity::StopMirroring() {

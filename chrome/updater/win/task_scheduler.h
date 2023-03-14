@@ -13,6 +13,9 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace base {
 class CommandLine;
@@ -25,7 +28,7 @@ enum class UpdaterScope;
 
 // This class wraps a scheduled task and expose an API to parametrize a task
 // before calling |Register|, or to verify its existence, or delete it.
-class TaskScheduler {
+class TaskScheduler : public base::RefCountedThreadSafe<TaskScheduler> {
  public:
   // The type of trigger to register for this task.
   enum TriggerType {
@@ -93,11 +96,18 @@ class TaskScheduler {
     TriggerType trigger_type = TRIGGER_TYPE_MAX;
   };
 
-  static std::unique_ptr<TaskScheduler> CreateInstance(UpdaterScope scope);
+  // Creates an instance of the task scheduler for the given `scope`.
+  // `use_task_subfolders` dictates whether the scheduler creates and works with
+  // tasks that are created within a subfolder (`true` by default), or tasks
+  // that are created at the root folder. When `use_task_subfolders` is `true`,
+  // the tasks are created within the subfolder returned by
+  // `GetTaskSubfolderName()`.
+  static scoped_refptr<TaskScheduler> CreateInstance(
+      UpdaterScope scope,
+      bool use_task_subfolders = true);
 
   TaskScheduler(const TaskScheduler&) = delete;
   TaskScheduler& operator=(const TaskScheduler&) = delete;
-  virtual ~TaskScheduler() = default;
 
   // Identify whether the task is registered or not.
   virtual bool IsTaskRegistered(const wchar_t* task_name) = 0;
@@ -152,8 +162,15 @@ class TaskScheduler {
   // with the company folder `GetTaskCompanyFolder`.
   virtual std::wstring GetTaskSubfolderName() = 0;
 
+  // Runs `callback` for each task that matches `prefix`.
+  virtual void ForEachTaskWithPrefix(
+      const std::wstring& prefix,
+      base::RepeatingCallback<void(const std::wstring&)> callback) = 0;
+
  protected:
+  friend class base::RefCountedThreadSafe<TaskScheduler>;
   TaskScheduler();
+  virtual ~TaskScheduler() = default;
 };
 
 std::ostream& operator<<(std::ostream& stream,

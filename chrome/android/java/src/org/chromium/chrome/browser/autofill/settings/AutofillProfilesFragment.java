@@ -114,7 +114,7 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
             }
 
             @Override
-            public boolean isPreferenceClickDisabledByPolicy(Preference preference) {
+            public boolean isPreferenceClickDisabled(Preference preference) {
                 return PersonalDataManager.isAutofillProfileManaged()
                         && !PersonalDataManager.isAutofillProfileEnabled();
             }

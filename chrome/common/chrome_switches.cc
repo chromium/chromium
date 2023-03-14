@@ -670,7 +670,7 @@ const char kEnableAccessibilityTabSwitcher[] =
     "enable-accessibility-tab-switcher";
 
 // Forces the device to report being owned by an enterprise. This mimics the
-// presence of an app signaling device ownerhsip.
+// presence of an app signaling device ownership.
 const char kForceDeviceOwnership[] = "force-device-ownership";
 
 // Forces the night mode to be enabled.

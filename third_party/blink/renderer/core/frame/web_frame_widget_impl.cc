@@ -133,6 +133,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint_worklet_paint_dispatcher.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/widget/input/main_thread_event_queue.h"
@@ -311,6 +312,13 @@ WebFrameWidgetImpl::~WebFrameWidgetImpl() {
 
 void WebFrameWidgetImpl::BindLocalRoot(WebLocalFrame& local_root) {
   local_root_ = To<WebLocalFrameImpl>(local_root);
+  if (RuntimeEnabledFeatures::LongAnimationFrameTimingEnabled() &&
+      !IsHidden()) {
+    DCHECK(local_root_->GetFrame());
+    animation_frame_timing_monitor_ =
+        MakeGarbageCollected<AnimationFrameTimingMonitor>(
+            *this, local_root_->GetFrame()->GetProbeSink());
+  }
 }
 
 bool WebFrameWidgetImpl::ForTopMostMainFrame() const {
@@ -332,6 +340,11 @@ void WebFrameWidgetImpl::Close() {
     View()->SetMainFrameViewWidget(nullptr);
   }
 
+  if (animation_frame_timing_monitor_) {
+    animation_frame_timing_monitor_->Shutdown();
+    animation_frame_timing_monitor_.Clear();
+  }
+
   mutator_dispatcher_ = nullptr;
   local_root_ = nullptr;
   widget_base_->Shutdown();
@@ -345,6 +358,11 @@ void WebFrameWidgetImpl::Close() {
 
 WebLocalFrame* WebFrameWidgetImpl::LocalRoot() const {
   return local_root_;
+}
+
+bool WebFrameWidgetImpl::RequestedMainFramePending() {
+  return View() && View()->does_composite() && LayerTreeHost() &&
+         LayerTreeHost()->RequestedMainFramePending();
 }
 
 gfx::Rect WebFrameWidgetImpl::ComputeBlockBound(
@@ -414,8 +432,6 @@ void WebFrameWidgetImpl::DragTargetDragOver(
 void WebFrameWidgetImpl::DragTargetDragLeave(
     const gfx::PointF& point_in_viewport,
     const gfx::PointF& screen_point) {
-  DCHECK(current_drag_data_);
-
   // TODO(paulmeyer): It shouldn't be possible for |current_drag_data_| to be
   // null here, but this is somehow happening (rarely). This suggests that in
   // some cases drag-leave is happening before drag-enter, which should be
@@ -553,11 +569,17 @@ void WebFrameWidgetImpl::OnStartStylusWriting(
 }
 
 void WebFrameWidgetImpl::HandleStylusWritingGestureAction(
-    mojom::blink::StylusWritingGestureDataPtr gesture_data) {
+    mojom::blink::StylusWritingGestureDataPtr gesture_data,
+    HandleStylusWritingGestureActionCallback callback) {
   LocalFrame* focused_frame = FocusedLocalFrameInWidget();
-  if (!focused_frame)
+  if (!focused_frame) {
+    std::move(callback).Run(mojom::blink::HandwritingGestureResult::kFailed);
     return;
-  StylusWritingGesture::ApplyGesture(focused_frame, std::move(gesture_data));
+  }
+  mojom::blink::HandwritingGestureResult result =
+      StylusWritingGesture::ApplyGesture(focused_frame,
+                                         std::move(gesture_data));
+  std::move(callback).Run(result);
 }
 
 void WebFrameWidgetImpl::SetBackgroundOpaque(bool opaque) {
@@ -1285,6 +1307,7 @@ void WebFrameWidgetImpl::Trace(Visitor* visitor) const {
   visitor->Trace(input_target_receiver_);
   visitor->Trace(mouse_capture_element_);
   visitor->Trace(device_emulator_);
+  visitor->Trace(animation_frame_timing_monitor_);
 }
 
 void WebFrameWidgetImpl::SetNeedsRecalculateRasterScales() {
@@ -1352,6 +1375,10 @@ void WebFrameWidgetImpl::DidObserveFirstScrollDelay(
 }
 
 void WebFrameWidgetImpl::WillBeginMainFrame() {
+  if (animation_frame_timing_monitor_) {
+    animation_frame_timing_monitor_->WillBeginMainFrame();
+  }
+
   if (!RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled())
     return;
 
@@ -1374,12 +1401,40 @@ WebFrameWidgetImpl::AllocateNewLayerTreeFrameSink() {
   return nullptr;
 }
 
+void WebFrameWidgetImpl::ReportLongAnimationFrameTiming(
+    AnimationFrameTimingInfo* timing_info) {
+  ForEachLocalFrameControlledByWidget(
+      local_root_->GetFrame(), [&](WebLocalFrameImpl* local_frame) {
+        DOMWindowPerformance::performance(*local_frame->GetFrame()->DomWindow())
+            ->ReportLongAnimationFrameTiming(timing_info);
+      });
+}
+
+bool WebFrameWidgetImpl::ShouldReportLongAnimationFrameTiming() const {
+  return widget_base_ && !IsHidden();
+}
+void WebFrameWidgetImpl::OnTaskCompletedForFrame(
+    base::TimeTicks start_time,
+    base::TimeTicks end_time,
+    base::TimeTicks desired_execution_time,
+    LocalFrame* frame) {
+  if (animation_frame_timing_monitor_) {
+    animation_frame_timing_monitor_->OnTaskCompleted(
+        start_time, end_time, desired_execution_time, frame);
+  }
+}
+
 void WebFrameWidgetImpl::DidBeginMainFrame() {
   LocalFrame* root_frame = LocalRootImpl()->GetFrame();
   DCHECK(root_frame);
 
   if (LocalFrameView* frame_view = root_frame->View())
     frame_view->RunPostLifecycleSteps();
+
+  if (animation_frame_timing_monitor_) {
+    animation_frame_timing_monitor_->DidBeginMainFrame();
+  }
+
   if (Page* page = root_frame->GetPage())
     page->Animator().PostAnimate();
 }
@@ -1389,6 +1444,11 @@ void WebFrameWidgetImpl::UpdateLifecycle(WebLifecycleUpdate requested_update,
   TRACE_EVENT0("blink", "WebFrameWidgetImpl::UpdateLifecycle");
   if (!LocalRootImpl())
     return;
+
+  if (requested_update == WebLifecycleUpdate::kAll &&
+      animation_frame_timing_monitor_) {
+    animation_frame_timing_monitor_->WillPerformStyleAndLayoutCalculation();
+  }
 
   GetPage()->UpdateLifecycle(*LocalRootImpl()->GetFrame(), requested_update,
                              reason);
@@ -2155,6 +2215,14 @@ void WebFrameWidgetImpl::BeginMainFrame(base::TimeTicks last_frame_time) {
                last_frame_time);
   DCHECK(!last_frame_time.is_null());
   CHECK(LocalRootImpl());
+
+  // The last_frame_time is created in the compositor thread, it's the time when
+  // the compositor is ready for a new frame and starts preparing it. For the
+  // purpose of animation frame timing, this is the desired time to start
+  // rendering, equivalent to the time when a work task is posted.
+  if (animation_frame_timing_monitor_) {
+    animation_frame_timing_monitor_->SetDesiredRenderStartTime(last_frame_time);
+  }
 
   // Dirty bit on MouseEventManager is not cleared in OOPIFs after scroll
   // or layout changes. Ensure the hover state is recomputed if necessary.
@@ -3413,7 +3481,7 @@ void WebFrameWidgetImpl::InjectGestureScrollEvent(
             injected_type, now, device, gfx::PointF(0, 0), delta, granularity);
     if (injected_type == WebInputEvent::Type::kGestureScrollBegin) {
       gesture_event->data.scroll_begin.scrollable_area_element_id =
-          scrollable_area_element_id.GetStableId();
+          scrollable_area_element_id.GetInternalValue();
       gesture_event->data.scroll_begin.main_thread_hit_tested = true;
     }
 
@@ -3484,7 +3552,7 @@ bool WebFrameWidgetImpl::IsProvisional() {
   return LocalRoot()->IsProvisional();
 }
 
-uint64_t WebFrameWidgetImpl::GetScrollableContainerIdAt(
+cc::ElementId WebFrameWidgetImpl::GetScrollableContainerIdAt(
     const gfx::PointF& point) {
   return HitTestResultAt(point).GetScrollableContainerId();
 }
@@ -3535,7 +3603,7 @@ void WebFrameWidgetImpl::SetPanAction(mojom::blink::PanAction pan_action) {
 }
 
 void WebFrameWidgetImpl::DidHandleGestureEvent(const WebGestureEvent& event) {
-#if BUILDFLAG(IS_ANDROID) || defined(USE_AURA)
+#if BUILDFLAG(IS_ANDROID) || defined(USE_AURA) || BUILDFLAG(IS_IOS)
   if (event.GetType() == WebInputEvent::Type::kGestureTap) {
     widget_base_->ShowVirtualKeyboard();
   } else if (event.GetType() == WebInputEvent::Type::kGestureLongPress) {
@@ -3746,6 +3814,14 @@ void WebFrameWidgetImpl::CopyToFindPboard() {
   To<WebLocalFrameImpl>(focused_frame)->CopyToFindPboard();
 }
 
+void WebFrameWidgetImpl::CenterSelection() {
+  WebLocalFrame* focused_frame = FocusedWebLocalFrameInWidget();
+  if (!focused_frame) {
+    return;
+  }
+  To<WebLocalFrameImpl>(focused_frame)->CenterSelection();
+}
+
 void WebFrameWidgetImpl::Paste() {
   WebLocalFrame* focused_frame = FocusedWebLocalFrameInWidget();
   if (!focused_frame)
@@ -3895,7 +3971,6 @@ void WebFrameWidgetImpl::MoveCaret(const gfx::Point& point_in_dips) {
       widget_base_->DIPsToRoundedBlinkSpace(point_in_dips));
 }
 
-#if BUILDFLAG(IS_ANDROID)
 void WebFrameWidgetImpl::SelectAroundCaret(
     mojom::blink::SelectionGranularity granularity,
     bool should_show_handle,
@@ -3960,7 +4035,6 @@ void WebFrameWidgetImpl::SelectAroundCaret(
   result->word_end_adjust = word_end_adjust;
   std::move(callback).Run(std::move(result));
 }
-#endif
 
 void WebFrameWidgetImpl::ForEachRemoteFrameControlledByWidget(
     base::FunctionRef<void(RemoteFrame*)> callback) {
@@ -4211,6 +4285,11 @@ void WebFrameWidgetImpl::WasHidden() {
                                       [](WebLocalFrameImpl* local_frame) {
                                         local_frame->Client()->WasHidden();
                                       });
+
+  if (animation_frame_timing_monitor_) {
+    animation_frame_timing_monitor_->Shutdown();
+    animation_frame_timing_monitor_.Clear();
+  }
 }
 
 void WebFrameWidgetImpl::WasShown(bool was_evicted) {
@@ -4223,6 +4302,14 @@ void WebFrameWidgetImpl::WasShown(bool was_evicted) {
         // On eviction, the last SurfaceId is invalidated. We need to
         // allocate a new id.
         &RemoteFrame::ResendVisualProperties);
+  }
+
+  if (!animation_frame_timing_monitor_ &&
+      RuntimeEnabledFeatures::LongAnimationFrameTimingEnabled()) {
+    DCHECK(local_root_->GetFrame());
+    animation_frame_timing_monitor_ =
+        MakeGarbageCollected<AnimationFrameTimingMonitor>(
+            *this, local_root_->GetFrame()->GetProbeSink());
   }
 }
 

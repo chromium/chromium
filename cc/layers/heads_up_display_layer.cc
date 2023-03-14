@@ -26,7 +26,6 @@ HeadsUpDisplayLayer::HeadsUpDisplayLayer()
   }
   DCHECK(typeface_.Read(*this).get());
   SetIsDrawable(true);
-  SetDrawsContent(HasDrawableContent());
 }
 
 HeadsUpDisplayLayer::~HeadsUpDisplayLayer() = default;

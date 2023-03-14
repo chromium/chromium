@@ -87,14 +87,17 @@ GrpcHttpConnectionClient::~GrpcHttpConnectionClient() {
 
   CleanUp();
 
-  if (write_queue_) {
-    // Request the server to prepare for shutdown.
-    StreamHttpConnectionRequest request;
-    request.set_command(StreamHttpConnectionRequest::UNREGISTER);
-    write_queue_->ScheduleWrite(std::move(request));
+  {
+    base::AutoLock lock(write_queue_lock_);
+    is_shutting_down_ = true;
   }
 
   if (call_) {
+    {
+      base::AutoLock lock(write_queue_lock_);
+      write_queue_.reset();
+    }
+
     call_->TryCancel();
     cq_thread_.reset();
   }
@@ -104,14 +107,20 @@ void GrpcHttpConnectionClient::Start() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   if (call_) {
-    write_queue_.reset();
+    {
+      base::AutoLock lock(write_queue_lock_);
+      write_queue_.reset();
+    }
 
     call_->TryCancel();
     call_.reset();
   }
 
-  write_queue_ =
-      std::make_unique<StreamingWriteQueue<StreamHttpConnectionRequest>>();
+  {
+    base::AutoLock lock(write_queue_lock_);
+    write_queue_ =
+        std::make_unique<StreamingWriteQueue<StreamHttpConnectionRequest>>();
+  }
 
   // Create a bidi streaming call to relay http connection from Libassistant.
   BidiStreamingRpcCall<StreamHttpConnectionRequest,
@@ -144,8 +153,10 @@ void GrpcHttpConnectionClient::CleanUp() {
 
 void GrpcHttpConnectionClient::ScheduleRequest(
     StreamHttpConnectionRequest request) {
-  ENSURE_CALLING_SEQUENCE(&GrpcHttpConnectionClient::ScheduleRequest,
-                          std::move(request));
+  base::AutoLock lock(write_queue_lock_);
+  if (is_shutting_down_) {
+    return;
+  }
 
   if (write_queue_) {
     write_queue_->ScheduleWrite(std::move(request));
@@ -156,6 +167,13 @@ void GrpcHttpConnectionClient::ScheduleRequest(
 void GrpcHttpConnectionClient::OnRpcWriteAvailable(
     grpc::ClientContext* context,
     StreamingWriter<StreamHttpConnectionRequest>* writer) {
+  {
+    base::AutoLock lock(write_queue_lock_);
+    if (is_shutting_down_) {
+      return;
+    }
+  }
+
   if (!init_request_sent_) {
     DVLOG(1) << "Sending GrpcHttpConnectionClient registration request.";
     init_request_sent_ = true;
@@ -166,22 +184,13 @@ void GrpcHttpConnectionClient::OnRpcWriteAvailable(
     return;
   }
 
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::WeakPtr<GrpcHttpConnectionClient> weak_ptr,
-             StreamingWriter<StreamHttpConnectionRequest>* writer) {
-            if (!weak_ptr) {
-              return;
-            }
+  {
+    base::AutoLock lock(write_queue_lock_);
 
-            if (!weak_ptr->write_queue_) {
-              return;
-            }
-
-            weak_ptr->write_queue_->OnRpcWriteAvailable(writer);
-          },
-          weak_factory_.GetWeakPtr(), base::UnsafeDanglingUntriaged(writer)));
+    if (write_queue_) {
+      write_queue_->OnRpcWriteAvailable(writer);
+    }
+  }
 }
 
 void GrpcHttpConnectionClient::OnRpcReadAvailable(

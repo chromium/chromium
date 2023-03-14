@@ -67,6 +67,7 @@ class FrameNodeImpl
   void SetHasNonEmptyBeforeUnload(bool has_nonempty_beforeunload) override;
   void SetIsAdFrame(bool is_ad_frame) override;
   void SetHadFormInteraction() override;
+  void SetHadUserEdits() override;
   void OnNonPersistentNotificationCreated() override;
   void OnFirstContentfulPaint(
       base::TimeDelta time_since_navigation_start) override;
@@ -103,6 +104,7 @@ class FrameNodeImpl
   const base::flat_set<WorkerNodeImpl*>& child_worker_nodes() const;
   const PriorityAndReason& priority_and_reason() const;
   bool had_form_interaction() const;
+  bool had_user_edits() const;
   bool is_audible() const;
   const absl::optional<gfx::Rect>& viewport_intersection() const;
   Visibility visibility() const;
@@ -189,6 +191,7 @@ class FrameNodeImpl
       const WorkerNodeVisitor& visitor) const override;
   const PriorityAndReason& GetPriorityAndReason() const override;
   bool HadFormInteraction() const override;
+  bool HadUserEdits() const override;
   bool IsAudible() const override;
   const absl::optional<gfx::Rect>& GetViewportIntersection() const override;
   Visibility GetVisibility() const override;
@@ -218,10 +221,19 @@ class FrameNodeImpl
         network_almost_idle{false};
 
     // Indicates if a form in the frame has been interacted with.
+    // TODO(crbug.com/1156388): Remove this once HadUserEdits is known to cover
+    // all existing cases.
     ObservedProperty::NotifiesOnlyOnChanges<
         bool,
         &FrameNodeObserver::OnHadFormInteractionChanged>
         had_form_interaction{false};
+
+    // Indicates that the user has made edits to the page. This is a superset of
+    // `had_form_interaction`, but can also represent changes to
+    // `contenteditable` elements.
+    ObservedProperty::
+        NotifiesOnlyOnChanges<bool, &FrameNodeObserver::OnHadUserEditsChanged>
+            had_user_edits{false};
   };
 
   // Invoked by subframes on joining/leaving the graph.

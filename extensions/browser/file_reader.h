@@ -32,6 +32,7 @@ class FileReader : public base::RefCountedThreadSafe<FileReader> {
   using OptionalFileSequenceTask = base::RepeatingCallback<void(std::string*)>;
 
   FileReader(std::vector<extensions::ExtensionResource> resources,
+             size_t max_resources_length,
              OptionalFileSequenceTask file_sequence_task,
              DoneCallback done_callback);
 
@@ -50,6 +51,7 @@ class FileReader : public base::RefCountedThreadSafe<FileReader> {
   void ReadFilesOnFileSequence();
 
   std::vector<extensions::ExtensionResource> resources_;
+  const size_t max_resources_length_;
   OptionalFileSequenceTask optional_file_sequence_task_;
   DoneCallback done_callback_;
   const scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner_;

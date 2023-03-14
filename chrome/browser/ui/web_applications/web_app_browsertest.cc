@@ -58,10 +58,12 @@
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_utils.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
+#include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -104,10 +106,10 @@
 #include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/system_web_apps/color_helpers.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chromeos/constants/chromeos_features.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -452,7 +454,8 @@ class DynamicColorSystemWebAppBrowserTest
   bool UseSystemThemeColor() const { return GetParam(); }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{ash::features::kJelly};
+  base::test::ScopedFeatureList scoped_feature_list_{
+      chromeos::features::kJelly};
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -1583,7 +1586,41 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WebAppCreateAndDeleteShortcut) {
           provider->registrar_unsafe().GetAppShortName(app_id));
   EXPECT_FALSE(base::PathExists(desktop_shortcut_path));
 #endif
-}  // namespace web_app
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, RunOnOsLoginMetrics) {
+  os_hooks_suppress_.reset();
+  GURL pwa_url("https://test-app.com");
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  std::unique_ptr<OsIntegrationTestOverride::BlockingRegistration>
+      registration = OsIntegrationTestOverride::OverrideForTesting();
+
+  auto* provider = WebAppProvider::GetForTest(profile());
+  const AppId& app_id = InstallPWA(pwa_url);
+
+  ASSERT_TRUE(provider->registrar_unsafe().IsInstalled(app_id));
+
+  base::HistogramTester tester;
+  base::RunLoop run_loop;
+  provider->scheduler().SetRunOnOsLoginMode(
+      app_id, RunOnOsLoginMode::kWindowed, base::BindLambdaForTesting([&]() {
+        EXPECT_THAT(
+            tester.GetAllSamples("WebApp.RunOnOsLogin.Registration.Result"),
+            BucketsAre(base::Bucket(true, 1)));
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  EXPECT_TRUE(GetOsIntegrationTestOverride()->IsRunOnOsLoginEnabled(
+      profile(), app_id, provider->registrar_unsafe().GetAppShortName(app_id)));
+
+  test::UninstallAllWebApps(profile());
+  EXPECT_FALSE(GetOsIntegrationTestOverride()->IsRunOnOsLoginEnabled(
+      profile(), app_id, provider->registrar_unsafe().GetAppShortName(app_id)));
+  EXPECT_THAT(tester.GetAllSamples("WebApp.RunOnOsLogin.Unregistration.Result"),
+              BucketsAre(base::Bucket(true, 1)));
+}
 #endif
 
 // Tests that reparenting the last browser tab doesn't close the browser window.
@@ -1737,10 +1774,10 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentDisplayBrowserApp) {
             DisplayMode::kMinimalUi);
   EXPECT_FALSE(
       provider->registrar_unsafe().GetAppLastLaunchTime(app_id).is_null());
-  tester.ExpectUniqueSample("Extensions.BookmarkAppLaunchContainer",
+  tester.ExpectUniqueSample("WebApp.LaunchContainer",
                             apps::LaunchContainer::kLaunchContainerWindow, 1);
-  tester.ExpectUniqueSample("Extensions.BookmarkAppLaunchSource",
-                            extensions::AppLaunchSource::kSourceReparenting, 1);
+  tester.ExpectUniqueSample("WebApp.LaunchSource",
+                            apps::LaunchSource::kFromReparenting, 1);
 }
 
 // Tests that the manifest name of the current installable site is used in the
@@ -1927,12 +1964,17 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, NewAppWindow) {
   BrowserList* const browser_list = BrowserList::GetInstance();
   const GURL app_url = GetSecureAppURL();
   const AppId app_id = InstallPWA(app_url);
-  Browser* const app_browser = LaunchWebAppBrowser(app_id);
+  Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
 
   EXPECT_EQ(browser_list->size(), 2U);
+
+  ui_test_utils::BrowserChangeObserver browser_change_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   EXPECT_TRUE(chrome::ExecuteCommand(app_browser, IDC_NEW_WINDOW));
+  Browser* const new_browser = browser_change_observer.Wait();
+
+  EXPECT_EQ(new_browser, browser_list->GetLastActive());
   EXPECT_EQ(browser_list->size(), 3U);
-  Browser* const new_browser = browser_list->GetLastActive();
   EXPECT_NE(new_browser, browser());
   EXPECT_NE(new_browser, app_browser);
   EXPECT_TRUE(new_browser->is_type_app());
@@ -1943,12 +1985,16 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, NewAppWindow) {
       .SetAppUserDisplayMode(app_id, web_app::mojom::UserDisplayMode::kBrowser,
                              /*is_user_action=*/false);
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
+
+  ui_test_utils::AllBrowserTabAddedWaiter tab_waiter;
   EXPECT_TRUE(chrome::ExecuteCommand(app_browser, IDC_NEW_WINDOW));
+  content::WebContents* new_tab = tab_waiter.Wait();
+
+  ASSERT_TRUE(new_tab);
   EXPECT_EQ(browser_list->GetLastActive(), browser());
   EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
-  EXPECT_EQ(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
-      app_url);
+  EXPECT_EQ(new_tab, browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_EQ(new_tab->GetVisibleURL(), app_url);
 }
 
 #endif
@@ -2062,6 +2108,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_Borderless,
   EXPECT_EQ(DisplayMode::kBorderless, app_display_mode_override[0]);
 
   Browser* const app_browser = LaunchWebAppBrowser(app_id);
+  app_browser->app_controller()->SetIsolatedWebAppTrueForTesting();
+
   EXPECT_TRUE(app_browser->app_controller()->AppUsesBorderlessMode());
 }
 
@@ -2230,9 +2278,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
     const std::vector<std::wstring> file_extensions =
         GetFileExtensionsForProgId(file_handler_prog_id);
     for (const auto& file_extension : file_extensions) {
-      std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-      const std::string extension =
-          converter.to_bytes(file_extension.substr(1));
+      const std::string extension = base::WideToUTF8(file_extension.substr(1));
       EXPECT_TRUE(base::Contains(expected_extensions, extension))
           << "Missing file extension: " << extension;
       const std::wstring reg_key =

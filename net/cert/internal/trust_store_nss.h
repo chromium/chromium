@@ -28,8 +28,38 @@ class NET_EXPORT TrustStoreNSS : public TrustStore {
   using UserSlotTrustSetting =
       absl::variant<UseTrustFromAllUserSlots, crypto::ScopedPK11Slot>;
 
+  class ResultDebugData : public base::SupportsUserData::Data {
+   public:
+    enum class SlotFilterType {
+      kDontFilter,
+      kDoNotAllowUserSlots,
+      kAllowSpecifiedUserSlot
+    };
+
+    explicit ResultDebugData(bool ignore_system_trust_settings,
+                             SlotFilterType slot_filter_type);
+
+    static const ResultDebugData* Get(const base::SupportsUserData* debug_data);
+    static void Create(bool ignore_system_trust_settings,
+                       SlotFilterType slot_filter_type,
+                       base::SupportsUserData* debug_data);
+
+    // base::SupportsUserData::Data implementation:
+    std::unique_ptr<Data> Clone() override;
+
+    bool ignore_system_trust_settings() const {
+      return ignore_system_trust_settings_;
+    }
+
+    SlotFilterType slot_filter_type() const { return slot_filter_type_; }
+
+   private:
+    const bool ignore_system_trust_settings_;
+    const SlotFilterType slot_filter_type_;
+  };
+
   // Creates a TrustStoreNSS which will find anchors that are trusted for
-  // |trust_type|.
+  // SSL server auth.
   //
   // |system_trust_setting| configures the use of trust from the builtin roots.
   // If |system_trust_setting| is kIgnoreSystemTrust, trust settings from the
@@ -39,8 +69,7 @@ class NET_EXPORT TrustStoreNSS : public TrustStore {
   //  * UseTrustFromAllUserSlots: all user slots will be allowed.
   //  * nullptr: no user slots will be allowed.
   //  * non-null PK11Slot: the specified slot will be allowed.
-  TrustStoreNSS(SECTrustType trust_type,
-                SystemTrustSetting system_trust_setting,
+  TrustStoreNSS(SystemTrustSetting system_trust_setting,
                 UserSlotTrustSetting user_slot_trust_setting);
 
   TrustStoreNSS(const TrustStoreNSS&) = delete;
@@ -58,14 +87,17 @@ class NET_EXPORT TrustStoreNSS : public TrustStore {
 
  private:
   bool IsCertAllowedForTrust(CERTCertificate* cert) const;
+  CertificateTrust GetTrustForNSSTrust(const CERTCertTrust& trust) const;
 
-  SECTrustType trust_type_;
+  CertificateTrust GetTrustIgnoringSystemTrust(
+      const ParsedCertificate* cert,
+      base::SupportsUserData* debug_data) const;
+  CertificateTrust GetTrustWithSystemTrust(
+      const ParsedCertificate* cert,
+      base::SupportsUserData* debug_data) const;
 
   // |ignore_system_certs_trust_settings_| specifies if the system trust
   // settings should be considered when determining a cert's trustworthiness.
-  //
-  // TODO(hchao, sleevi): Figure out how to ignore built-in trust settings,
-  // while respecting user-configured trust settings, for these certificates.
   const bool ignore_system_trust_settings_ = false;
 
   // |user_slot_trust_setting_| specifies which slots certificates must be

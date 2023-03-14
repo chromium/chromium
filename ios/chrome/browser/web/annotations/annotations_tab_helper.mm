@@ -16,9 +16,9 @@
 #import "ios/chrome/browser/text_selection/text_classifier_model_service.h"
 #import "ios/chrome/browser/text_selection/text_classifier_model_service_factory.h"
 #import "ios/public/provider/chrome/browser/context_menu/context_menu_api.h"
-#import "ios/web/annotations/annotations_text_manager.h"
-#import "ios/web/annotations/annotations_utils.h"
+#import "ios/web/common/annotations_utils.h"
 #import "ios/web/common/url_scheme_util.h"
+#import "ios/web/public/annotations/annotations_text_manager.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
@@ -63,7 +63,8 @@ void AnnotationsTabHelper::WebStateDestroyed(web::WebState* web_state) {
 #pragma mark - AnnotationsTextObserver methods.
 
 void AnnotationsTabHelper::OnTextExtracted(web::WebState* web_state,
-                                           const std::string& text) {
+                                           const std::string& text,
+                                           int seq_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(web_state_, web_state);
 
@@ -78,10 +79,10 @@ void AnnotationsTabHelper::OnTextExtracted(web::WebState* web_state,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&ios::provider::ExtractDataElementsFromText, text,
-                     ios::provider::GetHandledIntentTypes(web_state),
+                     ios::provider::GetHandledIntentTypesForOneTap(web_state),
                      std::move(model_path)),
       base::BindOnce(&AnnotationsTabHelper::ApplyDeferredProcessing,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), seq_id));
 }
 
 void AnnotationsTabHelper::OnDecorated(web::WebState* web_state,
@@ -100,8 +101,7 @@ void AnnotationsTabHelper::OnClick(web::WebState* web_state,
                                    const std::string& data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NSTextCheckingResult* match =
-      web::annotations::DecodeNSTextCheckingResultData(
-          base::SysUTF8ToNSString(data));
+      web::DecodeNSTextCheckingResultData(base::SysUTF8ToNSString(data));
   if (!match) {
     return;
   }
@@ -120,7 +120,7 @@ void AnnotationsTabHelper::OnClick(web::WebState* web_state,
                   openURL:[NSURL URLWithString:phone_number_call_format]
                   options:@{}
         completionHandler:nil];
-  } else if (web::annotations::IsNSTextCheckingResultEmail(match)) {
+  } else if (web::IsNSTextCheckingResultEmail(match)) {
     base::RecordAction(
         base::UserMetricsAction("IOS.EmailExperience.OneTap.CreateEmail"));
     MailtoHandlerServiceFactory::GetForBrowserState(
@@ -140,6 +140,7 @@ void AnnotationsTabHelper::OnClick(web::WebState* web_state,
 #pragma mark - Private Methods
 
 void AnnotationsTabHelper::ApplyDeferredProcessing(
+    int seq_id,
     absl::optional<base::Value> deferred) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -148,7 +149,7 @@ void AnnotationsTabHelper::ApplyDeferredProcessing(
     DCHECK(manager);
 
     base::Value annotations(std::move(deferred.value()));
-    manager->DecorateAnnotations(web_state_, annotations);
+    manager->DecorateAnnotations(web_state_, annotations, seq_id);
   }
 }
 

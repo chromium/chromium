@@ -145,8 +145,8 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
   if (ExtensionsBrowserClient::Get()->IsShuttingDown())
     return RespondNow(Error(kUnknownErrorDoNotUse));
 
-  std::unique_ptr<Create::Params> params(Create::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<Create::Params> params = Create::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   GURL url = extension()->GetResourceURL(params->url);
   // URLs normally must be relative to the extension. We make an exception
@@ -212,12 +212,12 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
           // initialized. Hence, adding a callback for window first navigation
           // completion.
           if (existing_window->DidFinishFirstNavigation())
-            return RespondNow(OneArgument(base::Value(std::move(result))));
+            return RespondNow(WithArguments(std::move(result)));
 
-          existing_window->AddOnDidFinishFirstNavigationCallback(base::BindOnce(
-              &AppWindowCreateFunction::
-                  OnAppWindowFinishedFirstNavigationOrClosed,
-              this, OneArgument(base::Value(std::move(result)))));
+          existing_window->AddOnDidFinishFirstNavigationCallback(
+              base::BindOnce(&AppWindowCreateFunction::
+                                 OnAppWindowFinishedFirstNavigationOrClosed,
+                             this, WithArguments(std::move(result))));
           return RespondLater();
         }
       }
@@ -420,7 +420,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
   result.Set("frameId", frame_id);
   result.Set("id", app_window->window_key());
   app_window->GetSerializedState(&result);
-  ResponseValue result_arg = OneArgument(base::Value(std::move(result)));
+  ResponseValue result_arg = WithArguments(std::move(result));
 
   if (AppWindowRegistry::Get(browser_context())
           ->HadDevToolsAttached(app_window->web_contents())) {

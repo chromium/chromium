@@ -19,6 +19,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -73,6 +74,9 @@ constexpr int kSelectionHandleBarMinHeight = 5;
 // Maximum amount that selection handle bar can stick out of client view's
 // boundaries.
 constexpr int kSelectionHandleBarBottomAllowance = 3;
+
+// Delay before showing the quick menu after it is requested, in milliseconds.
+const int kQuickMenuDelayInMs = 200;
 
 gfx::Image* GetCenterHandleImage() {
   static gfx::Image* handle_image = nullptr;
@@ -246,6 +250,9 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
   void OnGestureEvent(ui::GestureEvent* event) override {
     event->SetHandled();
     switch (event->type()) {
+      case ui::ET_GESTURE_TAP:
+        controller_->OnHandleTapped(this);
+        break;
       case ui::ET_GESTURE_SCROLL_BEGIN: {
         widget_->SetCapture(this);
         controller_->OnDragBegin(this);
@@ -399,6 +406,9 @@ TouchSelectionControllerImpl::TouchSelectionControllerImpl(
   std::set<ui::EventType> types = {ui::ET_MOUSE_PRESSED, ui::ET_MOUSE_MOVED,
                                    ui::ET_KEY_PRESSED, ui::ET_MOUSEWHEEL};
   env->AddEventObserver(this, env, types);
+
+  tap_cursor_to_toggle_menu_enabled_ =
+      ::features::IsTouchTextEditingRedesignEnabled();
 }
 
 TouchSelectionControllerImpl::~TouchSelectionControllerImpl() {
@@ -445,11 +455,6 @@ void TouchSelectionControllerImpl::SelectionChanged() {
   selection_bound_1_clipped_ = screen_bound_anchor_clipped;
   selection_bound_2_clipped_ = screen_bound_focus_clipped;
 
-  if (client_view_->DrawsHandles()) {
-    UpdateQuickMenu();
-    return;
-  }
-
   if (dragging_handle_) {
     // We need to reposition only the selection handle that is being dragged.
     // The other handle stays the same. Also, the selection handle being dragged
@@ -482,20 +487,21 @@ void TouchSelectionControllerImpl::SelectionChanged() {
       SetHandleBound(non_dragging_handle, anchor, screen_bound_anchor_clipped);
     }
   } else {
-    UpdateQuickMenu();
-
-    // Check if there is any selection at all.
     if (screen_bound_anchor.edge_start() == screen_bound_focus.edge_start() &&
         screen_bound_anchor.edge_end() == screen_bound_focus.edge_end()) {
+      // Empty selection, show cursor handle.
       selection_handle_1_->SetWidgetVisible(false);
       selection_handle_2_->SetWidgetVisible(false);
       SetHandleBound(cursor_handle_, anchor, screen_bound_anchor_clipped);
-      return;
+      quick_menu_requested_ = !tap_cursor_to_toggle_menu_enabled_;
+    } else {
+      // Non-empty selection, show selection handles.
+      cursor_handle_->SetWidgetVisible(false);
+      SetHandleBound(selection_handle_1_, anchor, screen_bound_anchor_clipped);
+      SetHandleBound(selection_handle_2_, focus, screen_bound_focus_clipped);
+      quick_menu_requested_ = true;
     }
-
-    cursor_handle_->SetWidgetVisible(false);
-    SetHandleBound(selection_handle_1_, anchor, screen_bound_anchor_clipped);
-    SetHandleBound(selection_handle_2_, focus, screen_bound_focus_clipped);
+    UpdateQuickMenu();
   }
 }
 
@@ -506,9 +512,18 @@ void TouchSelectionControllerImpl::ShowQuickMenuImmediatelyForTesting() {
   }
 }
 
+void TouchSelectionControllerImpl::OnHandleTapped(EditingHandleView* handle) {
+  if (tap_cursor_to_toggle_menu_enabled_) {
+    if (handle == cursor_handle_) {
+      quick_menu_requested_ = !quick_menu_requested_;
+    }
+    UpdateQuickMenu();
+  }
+}
+
 void TouchSelectionControllerImpl::OnDragBegin(EditingHandleView* handle) {
   dragging_handle_ = handle;
-  HideQuickMenu();
+  UpdateQuickMenu();
   if (dragging_handle_ == cursor_handle_) {
     return;
   }
@@ -551,7 +566,7 @@ void TouchSelectionControllerImpl::OnDragUpdate(const gfx::Point& drag_pos) {
 
 void TouchSelectionControllerImpl::OnDragEnd() {
   dragging_handle_ = nullptr;
-  StartQuickMenuTimer();
+  UpdateQuickMenu();
 }
 
 void TouchSelectionControllerImpl::ConvertPointToClientView(
@@ -655,14 +670,16 @@ void TouchSelectionControllerImpl::QuickMenuTimerFired() {
 void TouchSelectionControllerImpl::StartQuickMenuTimer() {
   if (quick_menu_timer_.IsRunning())
     return;
-  quick_menu_timer_.Start(FROM_HERE, base::Milliseconds(200), this,
+  quick_menu_timer_.Start(FROM_HERE, base::Milliseconds(kQuickMenuDelayInMs),
+                          this,
                           &TouchSelectionControllerImpl::QuickMenuTimerFired);
 }
 
 void TouchSelectionControllerImpl::UpdateQuickMenu() {
-  // Hide quick menu to be shown when the timer fires.
   HideQuickMenu();
-  StartQuickMenuTimer();
+  if (quick_menu_requested_ && !dragging_handle_) {
+    StartQuickMenuTimer();
+  }
 }
 
 void TouchSelectionControllerImpl::HideQuickMenu() {

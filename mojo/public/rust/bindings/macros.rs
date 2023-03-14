@@ -13,41 +13,25 @@
 #[macro_export]
 macro_rules! impl_encodable_for_pointer {
     () => {
-        fn mojom_alignment() -> usize {
-            8 // All mojom pointers are 8 bytes in length, and thus are 8-byte aligned
-        }
-        fn mojom_type() -> $crate::bindings::mojom::MojomType {
-            $crate::bindings::mojom::MojomType::Pointer
-        }
-        fn embed_size(
-            _context: &$crate::bindings::encoding::Context,
-        ) -> $crate::bindings::encoding::Bits {
-            $crate::bindings::mojom::POINTER_BIT_SIZE
+        const MOJOM_TYPE: $crate::mojom::MojomType = $crate::mojom::MojomType::Pointer;
+        fn embed_size(_context: &$crate::encoding::Context) -> $crate::encoding::Bits {
+            $crate::mojom::POINTER_BIT_SIZE
         }
         fn encode(
             self,
-            encoder: &mut $crate::bindings::encoding::Encoder,
-            context: $crate::bindings::encoding::Context,
+            encoder: &mut $crate::encoding::Encoder,
+            state: &mut $crate::encoding::EncodingState,
+            context: $crate::encoding::Context,
         ) {
-            let loc = encoder.size() as u64;
-            {
-                let state = encoder.get_mut(&context);
-                state.encode_pointer(loc);
-            }
-            self.encode_new(encoder, context);
+            state.encode_pointer(self.encode_new(encoder, context));
         }
         fn decode(
-            decoder: &mut $crate::bindings::decoding::Decoder,
-            context: $crate::bindings::encoding::Context,
+            decoder: &mut $crate::decoding::Decoder,
+            context: $crate::encoding::Context,
         ) -> Result<Self, ValidationError> {
-            let ptr = {
-                let state = decoder.get_mut(&context);
-                match state.decode_pointer() {
-                    Some(ptr) => ptr,
-                    None => return Err(ValidationError::IllegalPointer),
-                }
-            };
-            if ptr == $crate::bindings::mojom::MOJOM_NULL_POINTER {
+            let state = decoder.get_mut(&context);
+            let ptr = state.decode_pointer()?;
+            if ptr == $crate::mojom::MOJOM_NULL_POINTER {
                 Err(ValidationError::UnexpectedNullPointer)
             } else {
                 Self::decode_new(decoder, context, ptr)
@@ -67,36 +51,39 @@ macro_rules! impl_encodable_for_pointer {
 #[macro_export]
 macro_rules! impl_encodable_for_union {
     () => {
-        fn mojom_alignment() -> usize {
-            8
-        }
-        fn mojom_type() -> $crate::bindings::mojom::MojomType {
-            $crate::bindings::mojom::MojomType::Union
-        }
-        fn embed_size(
-            context: &$crate::bindings::encoding::Context,
-        ) -> $crate::bindings::encoding::Bits {
-            if context.is_union() { Self::nested_embed_size() } else { Self::inline_embed_size() }
+        const MOJOM_TYPE: $crate::mojom::MojomType = $crate::mojom::MojomType::Union;
+        fn embed_size(context: &$crate::encoding::Context) -> $crate::encoding::Bits {
+            if context.is_union() {
+                $crate::mojom::UNION_NESTED_EMBED_SIZE
+            } else {
+                $crate::mojom::UNION_INLINE_EMBED_SIZE
+            }
         }
         fn encode(
             self,
-            encoder: &mut $crate::bindings::encoding::Encoder,
-            context: $crate::bindings::encoding::Context,
+            encoder: &mut $crate::encoding::Encoder,
+            state: &mut $crate::encoding::EncodingState,
+            context: $crate::encoding::Context,
         ) {
             if context.is_union() {
-                self.nested_encode(encoder, context);
+                $crate::mojom::encode_union_nested(self, encoder, state, context);
             } else {
-                self.inline_encode(encoder, context.set_is_union(true));
+                $crate::mojom::encode_union_inline(
+                    self,
+                    encoder,
+                    state,
+                    context.set_is_union(true),
+                );
             }
         }
         fn decode(
-            decoder: &mut $crate::bindings::decoding::Decoder,
-            context: $crate::bindings::encoding::Context,
+            decoder: &mut $crate::decoding::Decoder,
+            context: $crate::encoding::Context,
         ) -> Result<Self, ValidationError> {
             if context.is_union() {
-                Self::nested_decode(decoder, context)
+                $crate::mojom::decode_union_nested(decoder, context)
             } else {
-                Self::inline_decode(decoder, context.set_is_union(true))
+                $crate::mojom::decode_union_inline(decoder, context.set_is_union(true))
             }
         }
     };
@@ -113,40 +100,32 @@ macro_rules! impl_encodable_for_union {
 #[macro_export]
 macro_rules! impl_encodable_for_interface {
     () => {
-        fn mojom_alignment() -> usize {
-            4
-        }
-        fn mojom_type() -> $crate::bindings::mojom::MojomType {
-            $crate::bindings::mojom::MojomType::Interface
-        }
-        fn embed_size(
-            _context: &$crate::bindings::encoding::Context,
-        ) -> $crate::bindings::encoding::Bits {
+        const MOJOM_TYPE: $crate::mojom::MojomType = $crate::mojom::MojomType::Interface;
+        fn embed_size(_context: &$crate::encoding::Context) -> $crate::encoding::Bits {
             use std::mem;
-            $crate::bindings::encoding::Bits(2 * 8 * mem::size_of::<u32>())
+            $crate::encoding::Bits(2 * 8 * mem::size_of::<u32>())
         }
-        fn compute_size(&self, _context: $crate::bindings::encoding::Context) -> usize {
+        fn compute_size(&self, _context: $crate::encoding::Context) -> usize {
             0 // Indicates that this type is inlined and it adds nothing external to the size
         }
         fn encode(
             self,
-            encoder: &mut $crate::bindings::encoding::Encoder,
-            context: $crate::bindings::encoding::Context,
+            encoder: &mut $crate::encoding::Encoder,
+            state: &mut $crate::encoding::EncodingState,
+            context: $crate::encoding::Context,
         ) {
             let version = self.version();
             let pos = encoder.add_handle(self.as_untyped());
-            let mut state = encoder.get_mut(&context);
             state.encode(pos as i32);
             state.encode(version as u32);
         }
         fn decode(
-            decoder: &mut $crate::bindings::decoding::Decoder,
-            context: $crate::bindings::encoding::Context,
+            decoder: &mut $crate::decoding::Decoder,
+            context: $crate::encoding::Context,
         ) -> Result<Self, ValidationError> {
-            let (handle_index, version) = {
-                let mut state = decoder.get_mut(&context);
-                (state.decode::<i32>(), state.decode::<u32>())
-            };
+            let state = decoder.get_mut(&context);
+            let handle_index: i32 = state.decode();
+            let version: u32 = state.decode();
             let handle = decoder
                 .claim_handle::<$crate::system::message_pipe::MessageEndpoint>(handle_index)?;
             Ok(Self::with_version(handle, version))

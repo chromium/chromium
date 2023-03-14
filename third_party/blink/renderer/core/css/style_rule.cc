@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/css/css_font_palette_values_rule.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_import_rule.h"
+#include "third_party/blink/renderer/core/css/css_initial_rule.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/css_layer_block_rule.h"
 #include "third_party/blink/renderer/core/css/css_layer_statement_rule.h"
@@ -140,6 +141,9 @@ void StyleRuleBase::Trace(Visitor* visitor) const {
     case kTry:
       To<StyleRuleTry>(this)->TraceAfterDispatch(visitor);
       return;
+    case kInitial:
+      To<StyleRuleInitial>(this)->TraceAfterDispatch(visitor);
+      return;
   }
   NOTREACHED();
 }
@@ -209,6 +213,9 @@ void StyleRuleBase::FinalizeGarbageCollectedObject() {
     case kTry:
       To<StyleRuleTry>(this)->~StyleRuleTry();
       return;
+    case kInitial:
+      To<StyleRuleInitial>(this)->~StyleRuleInitial();
+      return;
   }
   NOTREACHED();
 }
@@ -257,6 +264,8 @@ StyleRuleBase* StyleRuleBase::Copy() const {
       return To<StyleRuleCounterStyle>(this)->Copy();
     case kPositionFallback:
       return To<StyleRulePositionFallback>(this)->Copy();
+    case kInitial:
+      return To<StyleRuleInitial>(this)->Copy();
     case kTry:
       NOTREACHED();
       return nullptr;
@@ -338,6 +347,10 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
     case kPositionFallback:
       rule = MakeGarbageCollected<CSSPositionFallbackRule>(
           To<StyleRulePositionFallback>(self), parent_sheet);
+      break;
+    case kInitial:
+      rule = MakeGarbageCollected<CSSInitialRule>(To<StyleRuleInitial>(self),
+                                                  parent_sheet);
       break;
     case kFontFeature:
     case kTry:
@@ -475,6 +488,7 @@ void StyleRuleBase::Reparent(StyleRule* old_parent, StyleRule* new_parent) {
     case kContainer:
     case kMedia:
     case kSupports:
+    case kInitial:
       for (StyleRuleBase* child :
            DynamicTo<StyleRuleGroup>(this)->ChildRules()) {
         child->Reparent(old_parent, new_parent);
@@ -750,5 +764,8 @@ void StyleRuleContainer::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(container_query_);
   StyleRuleCondition::TraceAfterDispatch(visitor);
 }
+
+StyleRuleInitial::StyleRuleInitial(HeapVector<Member<StyleRuleBase>> rules)
+    : StyleRuleCondition(kInitial, "", std::move(rules)) {}
 
 }  // namespace blink

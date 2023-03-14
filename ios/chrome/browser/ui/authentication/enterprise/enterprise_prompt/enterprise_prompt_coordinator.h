@@ -7,8 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_type.h"
-#import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
 // Delegate for the coordinator.
 @protocol EnterprisePromptCoordinatorDelegate

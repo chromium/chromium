@@ -9,14 +9,12 @@
 #include "base/clang_profiling_buildflags.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/lazy_instance.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/process/process_handle.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/hang_watcher.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_local.h"
 #include "build/build_config.h"
 #include "build/config/compiler/compiler_buildflags.h"
 #include "content/child/child_thread_impl.h"
@@ -27,6 +25,7 @@
 #include "mojo/public/cpp/system/dynamic_library_support.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "services/tracing/public/cpp/trace_startup.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
@@ -36,8 +35,8 @@
 namespace content {
 
 namespace {
-base::LazyInstance<base::ThreadLocalPointer<ChildProcess>>::DestructorAtExit
-    g_lazy_child_process_tls = LAZY_INSTANCE_INITIALIZER;
+
+ABSL_CONST_INIT thread_local ChildProcess* child_process = nullptr;
 
 class ChildIOThread : public base::Thread {
  public:
@@ -56,18 +55,14 @@ class ChildIOThread : public base::Thread {
     base::Thread::Run(run_loop);
   }
 };
-}
+
+}  // namespace
 
 ChildProcess::ChildProcess(base::ThreadType io_thread_type,
                            std::unique_ptr<base::ThreadPoolInstance::InitParams>
                                thread_pool_init_params)
-    : ref_count_(0),
-      shutdown_event_(base::WaitableEvent::ResetPolicy::MANUAL,
-                      base::WaitableEvent::InitialState::NOT_SIGNALED),
+    : resetter_(&child_process, this, nullptr),
       io_thread_(std::make_unique<ChildIOThread>()) {
-  DCHECK(!g_lazy_child_process_tls.Pointer()->Get());
-  g_lazy_child_process_tls.Pointer()->Set(this);
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
@@ -146,7 +141,7 @@ ChildProcess::ChildProcess(base::ThreadType io_thread_type,
 }
 
 ChildProcess::~ChildProcess() {
-  DCHECK(g_lazy_child_process_tls.Pointer()->Get() == this);
+  DCHECK_EQ(child_process, this);
 
   // Signal this event before destroying the child process.  That way all
   // background threads can cleanup.
@@ -165,7 +160,6 @@ ChildProcess::~ChildProcess() {
     }
   }
 
-  g_lazy_child_process_tls.Pointer()->Set(nullptr);
   io_thread_->Stop();
   io_thread_.reset();
 
@@ -208,7 +202,7 @@ void ChildProcess::ReleaseProcess() {
 }
 
 ChildProcess* ChildProcess::current() {
-  return g_lazy_child_process_tls.Pointer()->Get();
+  return child_process;
 }
 
 base::WaitableEvent* ChildProcess::GetShutDownEvent() {

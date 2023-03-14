@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromecast/browser/cast_web_contents.h"
+#include "components/cast/message_port/blink_message_port_adapter.h"
 #include "components/cast/message_port/cast/message_port_cast.h"
 #include "components/cast/named_message_port_connector/grit/named_message_port_connector_resources.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -51,8 +52,8 @@ void NamedMessagePortConnectorCast::OnPageLoaded() {
 
   std::vector<blink::WebMessagePort> ports;
   ports.push_back(
-      cast_api_bindings::MessagePortCast::FromMessagePort(port.get())
-          ->TakePort());
+      cast_api_bindings::BlinkMessagePortAdapter::FromServerPlatformMessagePort(
+          std::move(port)));
   cast_web_contents_->PostMessageToMainFrame("*", connect_message,
                                              std::move(ports));
 }

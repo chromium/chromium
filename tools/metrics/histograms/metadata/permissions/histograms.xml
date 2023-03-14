@@ -48,6 +48,26 @@ chromium-metrics-reviews@google.com.
   <variant name="WindowPlacement"/>
 </variants>
 
+<variants name="PermissionTypesSupportPermissionsPolicy">
+  <variant name="AR"/>
+  <variant name="AudioCapture"/>
+  <variant name="ClipboardReadWrite"/>
+  <variant name="ClipboardSanitizedWrite"/>
+  <variant name="DisplayCapture"/>
+  <variant name="Geolocation"/>
+  <variant name="IdleDetection"/>
+  <variant name="LocalFonts"/>
+  <variant name="Midi"/>
+  <variant name="MidiSysEx"/>
+  <variant name="ProtectedMedia"/>
+  <variant name="StorageAccess"/>
+  <variant name="TopLevelStorageAccess"/>
+  <variant name="VideoCapture"/>
+  <variant name="VR"/>
+  <variant name="WakeLockScreen"/>
+  <variant name="WindowPlacement"/>
+</variants>
+
 <variants name="PromptDisposition">
   <variant name="AnchoredBubble"/>
   <variant name="CustomModalDialog"/>
@@ -148,6 +168,33 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Permissions.Action.{PermissionType}.CrossOriginFrame"
+    enum="PermissionAction" expires_after="2023-10-26">
+  <owner>tungnh@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded when a permission prompt has been resolved and the permission
+    request was made from a cross-origin iframe. Records the action that a user
+    had taken.
+  </summary>
+  <token key="PermissionType" variants="AllPermissionTypes"/>
+</histogram>
+
+<histogram
+    name="Permissions.Action.{PermissionType}.CrossOriginFrame.TopLevelHeaderPolicy"
+    enum="PermissionsPolicyConfiguration" expires_after="2023-10-26">
+  <owner>tungnh@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded whenever a permission prompt is shown to the user which was
+    triggered by a request made from a cross-origin frame. Records what type of
+    type of permission header policy the top-level document defined for the
+    accessed feature.
+  </summary>
+  <token key="PermissionType"
+      variants="PermissionTypesSupportPermissionsPolicy"/>
+</histogram>
+
 <histogram name="Permissions.API.CreatedPermissionStatusObjects" units="units"
     expires_after="2023-08-08">
   <owner>andypaicu@chromium.org</owner>
@@ -178,7 +225,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.AutoBlocker.EmbargoStatus"
-    enum="PermissionEmbargoStatus" expires_after="2023-06-18">
+    enum="PermissionEmbargoStatus" expires_after="2023-08-20">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -508,6 +555,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Permissions.Experimental.Usage.{PermissionType}.CrossOriginFrame.TopLevelHeaderPolicy"
+    enum="PermissionsPolicyConfiguration" expires_after="2023-10-26">
+  <owner>tungnh@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded whenever a permission is used in a cross-origin frame. Records what
+    type of permission header policy the top-level document defined for the
+    accessed feature.
+  </summary>
+  <token key="PermissionType"
+      variants="PermissionTypesSupportPermissionsPolicy"/>
+</histogram>
+
+<histogram
+    name="Permissions.Experimental.Usage.{PermissionType}.IsCrossOriginFrame"
+    enum="Boolean" expires_after="2023-10-26">
+  <owner>tungnh@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded whenever a permission is used. Records whether the permission is
+    used in a cross origin frame.
+  </summary>
+  <token key="PermissionType" variants="AllPermissionTypes"/>
+</histogram>
+
 <histogram name="Permissions.FCM.Revocation" enum="FcmTokenRevocation"
     expires_after="2023-10-31">
   <obsolete>
@@ -579,6 +652,20 @@ chromium-metrics-reviews@google.com.
     ignored or not.
   </summary>
   <token key="PermissionType" variants="Top2PermissionTypes"/>
+</histogram>
+
+<histogram
+    name="Permissions.PageInfo.Changed.{PermissionType}.Reallowed.Outcome"
+    enum="PermissionChangeInfo" expires_after="2023-10-31">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records if a user manually reallowed permission state via PageInfo. Recorded
+    when the user closes a tab, makes cross-origin navigation, or if permission
+    is used by an origin. Grouped by whether permission was used, the page was
+    reloaded and a &quot;Reload this page&quot; infobar was shown.
+  </summary>
+  <token key="PermissionType" variants="AllPermissionTypes"/>
 </histogram>
 
 <histogram name="Permissions.PageInfo.Changed.{PermissionType}.{ReloadInfoBar}"
@@ -689,7 +776,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Prompt.Accepted.PriorDismissCount2" units="units"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -853,7 +940,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Prompt.Notifications.EnabledAppLevel"
-    enum="Boolean" expires_after="2023-05-14">
+    enum="Boolean" expires_after="2023-08-27">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -1130,6 +1217,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Permissions.Request.CrossOrigin" enum="PermissionType"
+    expires_after="2023-11-15">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded whenever a permission request is made by a cross-origin site, and
+    before it is decided whether the request should be displayed to the user.
+    Records the permission type of the request.
+  </summary>
+</histogram>
+
+<histogram name="Permissions.Request.SameOrigin.{FrameLevel}"
+    enum="PermissionType" expires_after="2023-11-15">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded whenever a permission request is made by a same-origin site, and
+    before it is decided whether the request should be displayed to the user.
+    Records the permission type of the request, and is grouped by whether the
+    requesting frame is the main frame or a sub frame.
+  </summary>
+  <token key="FrameLevel">
+    <variant name="MainFrame"/>
+    <variant name="SubFrame"/>
+  </token>
+</histogram>
+
 <histogram base="true" name="Permissions.Revocation.ElapsedTimeSinceGrant"
     units="seconds" expires_after="2023-08-08">
   <owner>engedy@chromium.org</owner>
@@ -1162,7 +1276,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Permissions.Usage.ElapsedTimeSinceGrant"
-    units="seconds" expires_after="2023-07-02">
+    units="seconds" expires_after="2023-09-03">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -1173,7 +1287,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.WebHid.ChooserClosed" enum="WebHidChooserClosed"
-    expires_after="2023-06-25">
+    expires_after="2023-08-27">
   <owner>mattreynolds@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -1247,7 +1361,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteEngagementService.OriginsEngaged" units="units"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>calamity@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <summary>
@@ -1298,7 +1412,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebsiteSettings.Action" enum="WebsiteSettingsAction"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>estark@chromium.org</owner>
   <owner>dullweber@chromium.org</owner>
   <summary>
@@ -1378,7 +1492,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebsiteSettings.GetAllSitesLoadTime" units="ms"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>chrome-friendly-settings@google.com</owner>

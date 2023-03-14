@@ -12,6 +12,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/mock_password_reuse_manager.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
@@ -166,6 +167,90 @@ class StoreMetricsReporterTest : public SyncUsernameTestBase {
   TestingPrefServiceSimple prefs_;
 };
 
+TEST_F(StoreMetricsReporterTest, ReportMetricsPasswordManagerEnabledDefault) {
+  base::HistogramTester histogram_tester;
+  StoreMetricsReporter reporter(
+      /*profile_store=*/nullptr, /*account_store=*/nullptr, sync_service(),
+      identity_manager(), &prefs_, /*password_reuse_manager=*/nullptr,
+      /*is_under_advanced_protection=*/false,
+      /*done_callback*/ base::DoNothing());
+
+  histogram_tester.ExpectUniqueSample("PasswordManager.EnableState", 0, 1);
+}
+
+enum class EnableSettingManageState {
+  kUser,
+  kExtension,
+  kPolicy,
+  kRecommended,
+  kOther,
+};
+
+struct EnableStateParam {
+  bool test_pref_value;
+  EnableSettingManageState test_setting_manage_state;
+  int expected_histogram_value;
+};
+
+class StoreMetricsReporterTestWithEnableStateParams
+    : public StoreMetricsReporterTest,
+      public ::testing::WithParamInterface<EnableStateParam> {};
+
+TEST_P(StoreMetricsReporterTestWithEnableStateParams,
+       ReportMetricsPasswordManagerEnableStateTest) {
+  const EnableStateParam param = GetParam();
+
+  switch (param.test_setting_manage_state) {
+    case EnableSettingManageState::kUser:
+      prefs_.SetUserPref(password_manager::prefs::kCredentialsEnableService,
+                         std::make_unique<base::Value>(param.test_pref_value));
+      break;
+    case EnableSettingManageState::kExtension:
+      prefs_.SetExtensionPref(
+          password_manager::prefs::kCredentialsEnableService,
+          std::make_unique<base::Value>(param.test_pref_value));
+      break;
+    case EnableSettingManageState::kPolicy:
+      prefs_.SetManagedPref(
+          password_manager::prefs::kCredentialsEnableService,
+          std::make_unique<base::Value>(param.test_pref_value));
+      break;
+    case EnableSettingManageState::kRecommended:
+      prefs_.SetRecommendedPref(
+          password_manager::prefs::kCredentialsEnableService,
+          std::make_unique<base::Value>(param.test_pref_value));
+      break;
+    default:
+
+      break;
+  }
+
+  base::HistogramTester histogram_tester;
+  StoreMetricsReporter reporter(
+      /*profile_store=*/nullptr, /*account_store=*/nullptr, sync_service(),
+      identity_manager(), &prefs_, /*password_reuse_manager=*/nullptr,
+      /*is_under_advanced_protection=*/false,
+      /*done_callback*/ base::DoNothing());
+
+  histogram_tester.ExpectUniqueSample("PasswordManager.EnableState",
+                                      param.expected_histogram_value, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    StoreMetricsReporterTestWithEnableStateParams,
+    ::testing::Values(
+        EnableStateParam(true, EnableSettingManageState::kUser, 1),
+        EnableStateParam(true, EnableSettingManageState::kExtension, 2),
+        EnableStateParam(true, EnableSettingManageState::kPolicy, 3),
+        EnableStateParam(true, EnableSettingManageState::kRecommended, 4),
+        EnableStateParam(false, EnableSettingManageState::kUser, 6),
+        EnableStateParam(false, EnableSettingManageState::kExtension, 7),
+        EnableStateParam(false, EnableSettingManageState::kPolicy, 8),
+        EnableStateParam(false, EnableSettingManageState::kRecommended, 9)));
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
 // The test fixture is used to test StoreIndependentMetrics. Depending on the
 // test, the parameter defines whether password manager or
 // kBiometricAuthenticationBeforeFilling pref is enabled.
@@ -173,26 +258,6 @@ class StoreMetricsReporterTestWithParams
     : public StoreMetricsReporterTest,
       public ::testing::WithParamInterface<bool> {};
 
-// Test if password manager status is recorded correctly.
-TEST_P(StoreMetricsReporterTestWithParams,
-       ReportMetricsPasswordManagerEnabled) {
-  const bool password_manager_enabled = GetParam();
-
-  prefs_.SetBoolean(password_manager::prefs::kCredentialsEnableService,
-                    password_manager_enabled);
-  base::HistogramTester histogram_tester;
-
-  StoreMetricsReporter reporter(
-      /*profile_store=*/nullptr, /*account_store=*/nullptr, sync_service(),
-      identity_manager(), &prefs_, /*password_reuse_manager=*/nullptr,
-      /*is_under_advanced_protection=*/false,
-      /*done_callback*/ base::DoNothing());
-
-  histogram_tester.ExpectUniqueSample("PasswordManager.Enabled4",
-                                      password_manager_enabled, 1);
-}
-
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 TEST_P(StoreMetricsReporterTestWithParams,
        ReportMetricsBiometricAuthBeforeFilling) {
   const bool biometric_auth_before_filling_enabled = GetParam();
@@ -212,9 +277,10 @@ TEST_P(StoreMetricsReporterTestWithParams,
       "PasswordManager.BiometricAuthBeforeFillingEnabled2",
       biometric_auth_before_filling_enabled, 1);
 }
-#endif
 
 INSTANTIATE_TEST_SUITE_P(All, StoreMetricsReporterTestWithParams, Bool());
+
+#endif
 
 TEST_F(StoreMetricsReporterTest, ReportMetricsAtMostOncePerDay) {
   auto profile_store =
@@ -227,7 +293,7 @@ TEST_F(StoreMetricsReporterTest, ReportMetricsAtMostOncePerDay) {
       profile_store.get(), /*account_store=*/nullptr, sync_service(),
       identity_manager(), &prefs_, /*password_reuse_manager=*/nullptr,
       /*is_under_advanced_protection=*/false, done_callback.Get());
-  histogram_tester.ExpectTotalCount("PasswordManager.Enabled4", 1);
+  histogram_tester.ExpectTotalCount("PasswordManager.EnableState", 1);
   EXPECT_CALL(done_callback, Run());
   RunUntilIdle();
 
@@ -865,8 +931,10 @@ TEST_F(StoreMetricsReporterTest, MultiStoreMetrics) {
   // This test is only relevant when the passwords accounts store is enabled.
   if (!base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage))
     return;
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   prefs_.registry()->RegisterDictionaryPref(
       prefs::kAccountStoragePerAccountSettings);
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   auto profile_store =
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
   auto account_store =
@@ -929,10 +997,20 @@ TEST_F(StoreMetricsReporterTest, MultiStoreMetrics) {
 
   for (bool opted_in : {false, true}) {
     if (opted_in) {
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
       features_util::OptInToAccountStorage(&prefs_, sync_service());
+#else
+      test_sync_service()->GetUserSettings()->SetSelectedTypes(
+          /*sync_everything=*/true, syncer::UserSelectableTypeSet::All());
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
     } else {
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
       features_util::OptOutOfAccountStorageAndClearSettings(&prefs_,
                                                             sync_service());
+#else
+      test_sync_service()->GetUserSettings()->SetSelectedTypes(
+          /*sync_everything=*/false, syncer::UserSelectableTypeSet());
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
     }
 
     // In every pass in the loop, StoreMetricsReporter uses the same pref

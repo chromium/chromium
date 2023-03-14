@@ -8,7 +8,6 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/locales.gni")
 import("//build/config/ui.gni")
 import("//chrome/common/features.gni")
-import("//components/gwp_asan/buildflags/buildflags.gni")
 import("//components/nacl/features.gni")
 import("//crypto/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
@@ -59,11 +58,25 @@ if (is_win) {
   source_set("chrome_exe_main_exports") {
     sources = [ "chrome_exe_main_win.h" ]
   }
-  source_set("crash_reporter_client_win_unit_tests") {
+
+  source_set("exit_code_watcher") {
+    sources = [
+      "exit_code_watcher_win.cc",
+      "exit_code_watcher_win.h",
+    ]
+    public_deps = [ "//base:base" ]
+  }
+
+  source_set("win_unit_tests") {
     testonly = true
-    sources = [ "chrome_crash_reporter_client_win_unittest.cc" ]
+    sources = [
+      "chrome_crash_reporter_client_win_unittest.cc",
+      "exit_code_watcher_win_unittest.cc",
+    ]
     deps = [
+      ":exit_code_watcher",
       "//base:base",
+      "//base/test:test_support",
       "//chrome/chrome_elf:crash",
       "//testing/gtest:gtest",
     ]
@@ -178,8 +191,8 @@ static_library("test_support") {
     "//chrome/renderer",
     "//chrome/utility",
     "//components/about_ui",
-    "//components/gwp_asan/buildflags",
-    "//components/heap_profiling/in_process",
+    "//components/devtools/devtools_pipe",
+    "//components/memory_system",
     "//components/nacl/common:buildflags",
     "//components/startup_metric_utils/browser",
     "//content/public/app",
@@ -218,7 +231,6 @@ static_library("test_support") {
     deps += [
       "//chrome/chrome_elf:test_stubs",
       "//chrome/install_static:install_static_util",
-      "//components/browser_watcher:stability_client",
       "//sandbox/win:sandbox",
     ]
   }
@@ -254,21 +266,10 @@ static_library("test_support") {
       "//components/nacl/renderer/plugin:nacl_trusted_plugin",
     ]
   }
-
-  if (enable_gwp_asan) {
-    deps += [ "//components/gwp_asan/client" ]
-  }
 }
 
 if (is_fuchsia) {
   # Generate a packaged component, and an installer script to aid development.
-
-  # TODO(crbug.com/1211758): Remove this once bringup on CFv2 is complete.
-  fuchsia_component("chrome_component_v1") {
-    visibility = [ ":*" ]
-    manifest = "chrome_v1.cmx"
-    data_deps = [ "//chrome:chrome_initial" ]
-  }
 
   fuchsia_component("chrome_component") {
     visibility = [ ":*" ]
@@ -278,10 +279,7 @@ if (is_fuchsia) {
 
   fuchsia_package("chrome_pkg") {
     package_name = "chrome"
-    deps = [
-      ":chrome_component",
-      ":chrome_component_v1",
-    ]
+    deps = [ ":chrome_component" ]
 
     excluded_dirs = FUCHSIA_PACKAGED_CONTENT_EMBEDDER_EXCLUDED_DIRS
   }

@@ -829,7 +829,8 @@ ScriptPromise MediaCapabilities::decodingInfo(
     UseCounter::Count(ExecutionContext::From(script_state),
                       WebFeature::kMediaCapabilitiesDecodingInfoWebrtc);
 
-    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+        script_state, exception_state.GetContext());
 
     // IMPORTANT: Acquire the promise before potentially synchronously resolving
     // it in the code that follows. Otherwise the promise returned to JS will be
@@ -990,7 +991,8 @@ ScriptPromise MediaCapabilities::decodingInfo(
     return CreateResolvedPromiseToDecodingInfoWith(false, script_state, config);
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
 
   // IMPORTANT: Acquire the promise before potentially synchronously resolving
   // it in the code that follows. Otherwise the promise returned to JS will be
@@ -1027,7 +1029,8 @@ ScriptPromise MediaCapabilities::encodingInfo(
   // Validation errors should return above.
   DCHECK(message.empty());
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
 
   // IMPORTANT: Acquire the promise before potentially synchronously resolving
   // it in the code that follows. Otherwise the promise returned to JS will be

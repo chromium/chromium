@@ -78,6 +78,12 @@ void BrokeredClientSocketFactory::BrokerCreateTcpSocket(
   socket_broker_->CreateTcpSocket(address_family, std::move(callback));
 }
 
+void BrokeredClientSocketFactory::BrokerCreateUdpSocket(
+    net::AddressFamily address_family,
+    mojom::SocketBroker::CreateUdpSocketCallback callback) {
+  socket_broker_->CreateUdpSocket(address_family, std::move(callback));
+}
+
 bool BrokeredClientSocketFactory::ShouldBroker(
     const net::AddressList& addresses) const {
 #if BUILDFLAG(IS_WIN)

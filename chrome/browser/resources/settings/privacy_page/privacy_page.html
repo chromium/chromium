@@ -39,7 +39,7 @@
             label="$i18n{clearBrowsingData}"
             sub-label="$i18n{clearBrowsingDataDescription}"
             on-click="onClearBrowsingDataTap_"></cr-link-row>
-        <template is="dom-if" if="[[showPrivacyGuideEntryPoint_]]">
+        <template is="dom-if" if="[[isPrivacyGuideAvailable]]">
           <cr-link-row id="privacyGuideLinkRow" class="hr"
               start-icon="settings20:wind-rose"
               label="$i18n{privacyGuideLabel}"
@@ -532,6 +532,13 @@
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
         </settings-subpage>
+      </template>
+      <template is="dom-if" if="[[privateStateTokensEnabled_]]">
+        <template is="dom-if" route-path="/content/autoVerify" no-search>
+          <settings-subpage page-title="$i18n{siteSettingsAntiAbuse}">
+            <settings-anti-abuse-page></settings-anti-abuse-page>
+          </settings-subpage>
+        </template>
       </template>
       <template is="dom-if" route-path="/content/microphone" no-search>
         <settings-subpage page-title="$i18n{siteSettingsCategoryMicrophone}"

@@ -44,18 +44,35 @@ SavedTabGroup::SavedTabGroup(const SavedTabGroup& other) = default;
 
 SavedTabGroup::~SavedTabGroup() = default;
 
-SavedTabGroupTab* SavedTabGroup::GetTab(const base::GUID& saved_tab_guid) {
+const SavedTabGroupTab* SavedTabGroup::GetTab(
+    const base::GUID& saved_tab_guid) const {
   absl::optional<int> index = GetIndexOfTab(saved_tab_guid);
   if (!index.has_value())
     return nullptr;
   return &saved_tabs()[index.value()];
 }
 
-SavedTabGroupTab* SavedTabGroup::GetTab(const base::Token& local_tab_id) {
+const SavedTabGroupTab* SavedTabGroup::GetTab(
+    const base::Token& local_tab_id) const {
   absl::optional<int> index = GetIndexOfTab(local_tab_id);
   if (!index.has_value())
     return nullptr;
+  return &saved_tabs()[index.value()];
+}
 
+SavedTabGroupTab* SavedTabGroup::GetTab(const base::GUID& saved_tab_guid) {
+  absl::optional<int> index = GetIndexOfTab(saved_tab_guid);
+  if (!index.has_value()) {
+    return nullptr;
+  }
+  return &saved_tabs()[index.value()];
+}
+
+SavedTabGroupTab* SavedTabGroup::GetTab(const base::Token& local_tab_id) {
+  absl::optional<int> index = GetIndexOfTab(local_tab_id);
+  if (!index.has_value()) {
+    return nullptr;
+  }
   return &saved_tabs()[index.value()];
 }
 

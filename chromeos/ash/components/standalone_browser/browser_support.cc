@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/standalone_browser/browser_support.h"
 
 #include "base/check_op.h"
+#include "base/logging.h"
 
 namespace ash::standalone_browser {
 namespace {
@@ -43,5 +44,19 @@ BrowserSupport* BrowserSupport::Get() {
   DCHECK(g_instance);
   return g_instance;
 }
+
+// static
+base::AutoReset<bool> BrowserSupport::SetLacrosEnabledForTest(
+    bool force_enabled) {
+  return base::AutoReset<bool>(&lacros_enabled_for_test_, force_enabled);
+}
+
+// static
+bool BrowserSupport::GetLacrosEnabledForTest() {
+  return lacros_enabled_for_test_;
+}
+
+// static
+bool BrowserSupport::lacros_enabled_for_test_ = false;
 
 }  // namespace ash::standalone_browser

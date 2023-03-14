@@ -15,16 +15,14 @@ int main(int argc, char** argv) {
 
   base::FilePath google_test_a =
       startup_dir.Append(chrome_cleaner::kTestUwsAFilename);
-  if (base::WriteFile(google_test_a, chrome_cleaner::kTestUwsAFileContents,
-                      chrome_cleaner::kTestUwsAFileContentsSize) == -1) {
+  if (!base::WriteFile(google_test_a, chrome_cleaner::kTestUwsAFileContents)) {
     PLOG(ERROR) << "Failed to create test UwS at " << google_test_a;
     return 1;
   }
 
   base::FilePath google_test_b =
       startup_dir.Append(chrome_cleaner::kTestUwsBFilename);
-  if (base::WriteFile(google_test_b, chrome_cleaner::kTestUwsBFileContents,
-                      chrome_cleaner::kTestUwsBFileContentsSize) == -1) {
+  if (!base::WriteFile(google_test_b, chrome_cleaner::kTestUwsBFileContents)) {
     PLOG(ERROR) << "Failed to create test UwS at " << google_test_b;
     return 1;
   }

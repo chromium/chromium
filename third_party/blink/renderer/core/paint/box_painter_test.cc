@@ -223,20 +223,20 @@ TEST_P(BoxPainterTest, ScrollHitTestProperties) {
 
   // We always create scroll node for the root layer.
   const auto& root_transform =
-      ToUnaliased(paint_chunks.begin()->properties.Transform());
+      ToUnaliased(paint_chunks[0].properties.Transform());
   EXPECT_NE(nullptr, root_transform.ScrollNode());
 
   // The container's background chunk should not scroll and therefore should use
   // the root transform. Its local transform is actually a paint offset
   // transform.
   const auto& container_transform =
-      ToUnaliased((paint_chunks.begin() + 1)->properties.Transform());
+      ToUnaliased(paint_chunks[1].properties.Transform());
   EXPECT_EQ(&root_transform, container_transform.Parent());
   EXPECT_EQ(nullptr, container_transform.ScrollNode());
 
   // The scroll hit test should not be scrolled and should not be clipped.
   // Its local transform is actually a paint offset transform.
-  const auto& scroll_hit_test_chunk = *(paint_chunks.begin() + 2);
+  const auto& scroll_hit_test_chunk = paint_chunks[2];
   const auto& scroll_hit_test_transform =
       ToUnaliased(scroll_hit_test_chunk.properties.Transform());
   EXPECT_EQ(nullptr, scroll_hit_test_transform.ScrollNode());
@@ -247,7 +247,7 @@ TEST_P(BoxPainterTest, ScrollHitTestProperties) {
             scroll_hit_test_clip.PaintClipRect().Rect());
 
   // The scrolled contents should be scrolled and clipped.
-  const auto& contents_chunk = *(paint_chunks.begin() + 3);
+  const auto& contents_chunk = paint_chunks[3];
   const auto& contents_transform =
       ToUnaliased(contents_chunk.properties.Transform());
   const auto* contents_scroll = contents_transform.ScrollNode();

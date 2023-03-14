@@ -61,6 +61,7 @@
 <translation id="2573731672208488250">{HOURS,plural, =1{1 сағатта}other{# сағатта}}</translation>
 <translation id="2583543531130364912">Сенсорлық экранды калибрлеңіз</translation>
 <translation id="2586657967955657006">Буфер</translation>
+<translation id="2653844658857826081">ЖАҢА</translation>
 <translation id="2666092431469916601">Жоғары</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> құрылғысынан бөлісілді.</translation>
 <translation id="271033894570825754">Жаңа</translation>
@@ -75,6 +76,7 @@
 <translation id="3157931365184549694">Қалпына келтіру</translation>
 <translation id="3183922693828471536">Мына жерге айналдыру</translation>
 <translation id="3234408098842461169">Төмен көрсеткісі</translation>
+<translation id="3240426699337459095">Сілтеме көшірілді</translation>
 <translation id="3291688615589870984">{DAYS,plural, =1{1 күн}other{# күн}}</translation>
 <translation id="3295886253693811851">Қоңырау шалу құрылғысы:</translation>
 <translation id="3306688585798492231">Ендірілген дисплей</translation>

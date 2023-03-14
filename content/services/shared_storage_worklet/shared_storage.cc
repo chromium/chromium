@@ -63,8 +63,10 @@ void LogTimingHistogramForVoidOperation(
 
 }  // namespace
 
-SharedStorage::SharedStorage(mojom::SharedStorageWorkletServiceClient* client)
-    : client_(client) {}
+SharedStorage::SharedStorage(
+    blink::mojom::SharedStorageWorkletServiceClient* client,
+    const absl::optional<std::u16string>& embedder_context)
+    : client_(client), embedder_context_(embedder_context) {}
 
 SharedStorage::~SharedStorage() = default;
 
@@ -81,7 +83,8 @@ gin::ObjectTemplateBuilder SharedStorage::GetObjectTemplateBuilder(
       .SetMethod("keys", &SharedStorage::Keys)
       .SetMethod("entries", &SharedStorage::Entries)
       .SetMethod("length", &SharedStorage::Length)
-      .SetMethod("remainingBudget", &SharedStorage::RemainingBudget);
+      .SetMethod("remainingBudget", &SharedStorage::RemainingBudget)
+      .SetProperty("context", &SharedStorage::Context);
 }
 
 const char* SharedStorage::GetTypeName() {
@@ -334,6 +337,20 @@ v8::Local<v8::Promise> SharedStorage::RemainingBudget(gin::Arguments* args) {
   return promise;
 }
 
+v8::Local<v8::Value> SharedStorage::Context(gin::Arguments* args) {
+  v8::Isolate* isolate = args->isolate();
+
+  if (!embedder_context_) {
+    base::UmaHistogramBoolean("Storage.SharedStorage.Worklet.Context.IsDefined",
+                              false);
+    return v8::Undefined(isolate);
+  }
+
+  base::UmaHistogramBoolean("Storage.SharedStorage.Worklet.Context.IsDefined",
+                            true);
+  return gin::ConvertToV8(isolate, embedder_context_.value());
+}
+
 void SharedStorage::OnVoidOperationFinished(
     v8::Isolate* isolate,
     v8::Global<v8::Promise::Resolver> global_resolver,
@@ -359,7 +376,7 @@ void SharedStorage::OnStringRetrievalOperationFinished(
     v8::Isolate* isolate,
     v8::Global<v8::Promise::Resolver> global_resolver,
     base::TimeTicks start_time,
-    shared_storage_worklet::mojom::SharedStorageGetStatus status,
+    blink::mojom::SharedStorageGetStatus status,
     const std::string& error_message,
     const std::u16string& result) {
   WorkletV8Helper::HandleScope scope(isolate);
@@ -367,16 +384,14 @@ void SharedStorage::OnStringRetrievalOperationFinished(
   v8::Local<v8::Context> context = resolver->GetCreationContextChecked();
   base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
 
-  if (status ==
-      shared_storage_worklet::mojom::SharedStorageGetStatus::kSuccess) {
+  if (status == blink::mojom::SharedStorageGetStatus::kSuccess) {
     resolver->Resolve(context, gin::ConvertToV8(isolate, result)).ToChecked();
     base::UmaHistogramMediumTimes("Storage.SharedStorage.Worklet.Timing.Get",
                                   elapsed_time);
     return;
   }
 
-  if (status ==
-      shared_storage_worklet::mojom::SharedStorageGetStatus::kNotFound) {
+  if (status == blink::mojom::SharedStorageGetStatus::kNotFound) {
     resolver->Resolve(context, v8::Undefined(isolate)).ToChecked();
     base::UmaHistogramMediumTimes("Storage.SharedStorage.Worklet.Timing.Get",
                                   elapsed_time);

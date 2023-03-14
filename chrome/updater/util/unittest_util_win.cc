@@ -113,4 +113,21 @@ void SetupCmdExe(UpdaterScope scope,
   cmd_exe_command_line = base::CommandLine(cmd_exe_path);
 }
 
+[[nodiscard]] bool CreateService(const std::wstring& service_name,
+                                 const std::wstring& display_name,
+                                 const std::wstring& command_line) {
+  ScopedScHandle scm(::OpenSCManager(
+      nullptr, nullptr, SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE));
+  if (!scm.IsValid()) {
+    return false;
+  }
+
+  ScopedScHandle service(::CreateService(
+      scm.Get(), service_name.c_str(), display_name.c_str(),
+      DELETE | SERVICE_QUERY_CONFIG | SERVICE_CHANGE_CONFIG,
+      SERVICE_WIN32_OWN_PROCESS, SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL,
+      command_line.c_str(), nullptr, nullptr, nullptr, nullptr, nullptr));
+  return service.IsValid() || ::GetLastError() == ERROR_SERVICE_EXISTS;
+}
+
 }  // namespace updater

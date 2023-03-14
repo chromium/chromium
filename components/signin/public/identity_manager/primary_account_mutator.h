@@ -39,6 +39,8 @@ class PrimaryAccountMutator {
     kSyncConsentAlreadySet = 2,
     // Sign-in is disallowed.
     kSigninNotAllowed = 4,
+    // The primary account cannot be modified.
+    kPrimaryAccountChangeNotAllowed = 5,
   };
 
   PrimaryAccountMutator() = default;
@@ -69,6 +71,9 @@ class PrimaryAccountMutator {
   // (i.e. without implying browser sync consent). Requires that the account
   // is known by the IdentityManager. See README.md for details on the meaning
   // of "unconsented". Returns whether the operation succeeded or not.
+  // On non-ChromeOS platforms, this additionally requires that:
+  //    - setting the primary account is allowed,
+  //    - there is not already a managed primary account set.
   //
   // The account state changes will be recorded in UMA, attributed to the
   // provided `access_point`.
@@ -80,6 +85,7 @@ class PrimaryAccountMutator {
       signin_metrics::AccessPoint access_point =
           signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN) = 0;
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Revokes sync consent from the primary account. We distinguish the following
   // cases:
   // a. If transitioning from ConsentLevel::kSync to ConsentLevel::kSignin
@@ -95,14 +101,13 @@ class PrimaryAccountMutator {
       signin_metrics::ProfileSignout source_metric,
       signin_metrics::SignoutDelete delete_metric) = 0;
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Clears the primary account, removes all accounts and revokes the sync
   // consent. Returns true if the action was successful and false if there
   // was no primary account set.
   virtual bool ClearPrimaryAccount(
       signin_metrics::ProfileSignout source_metric,
       signin_metrics::SignoutDelete delete_metric) = 0;
-#endif
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 }  // namespace signin

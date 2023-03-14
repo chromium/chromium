@@ -200,6 +200,15 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, DynamicContentScriptsSizeLimits) {
       << message_;
 }
 
+// Tests that scripting.executeScript called with files exceeding the max size
+// limit will return an error and not execute.
+IN_PROC_BROWSER_TEST_F(ScriptingAPITest, ExecuteScriptSizeLimit) {
+  auto single_scripts_limit_reset =
+      script_parsing::CreateScopedMaxScriptLengthForTesting(700u);
+  ASSERT_TRUE(RunExtensionTest("scripting/execute_script_size_limit"))
+      << message_;
+}
+
 // Tests that calling scripting.executeScript works on a newly created tab
 // before the initial commit has happened. Regression for crbug.com/1191971.
 IN_PROC_BROWSER_TEST_F(ScriptingAPITest, ExecuteScriptBeforeInitialCommit) {

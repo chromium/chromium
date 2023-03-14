@@ -854,41 +854,6 @@ TEST_F(ParseTest, TestReadingFlagsFromEnvMoxedWithRegularFlags) {
 
 // --------------------------------------------------------------------
 
-TEST_F(ParseTest, TestKeepParsedArgs) {
-  const char* in_args1[] = {
-      "testbin",        "arg1", "--bool_flag",
-      "--int_flag=211", "arg2", "--double_flag=1.1",
-      "--string_flag",  "asd",  "--",
-      "arg3",           "arg4",
-  };
-
-  auto out_args1 = InvokeParse(in_args1);
-
-  EXPECT_THAT(
-      out_args1,
-      ElementsAreArray({absl::string_view("testbin"), absl::string_view("arg1"),
-                        absl::string_view("arg2"), absl::string_view("arg3"),
-                        absl::string_view("arg4")}));
-
-  auto out_args2 = flags::ParseCommandLineImpl(
-      11, const_cast<char**>(in_args1), flags::ArgvListAction::kKeepParsedArgs,
-      flags::UsageFlagsAction::kHandleUsage,
-      flags::OnUndefinedFlag::kAbortIfUndefined);
-
-  EXPECT_THAT(
-      out_args2,
-      ElementsAreArray({absl::string_view("testbin"),
-                        absl::string_view("--bool_flag"),
-                        absl::string_view("--int_flag=211"),
-                        absl::string_view("--double_flag=1.1"),
-                        absl::string_view("--string_flag"),
-                        absl::string_view("asd"), absl::string_view("--"),
-                        absl::string_view("arg1"), absl::string_view("arg2"),
-                        absl::string_view("arg3"), absl::string_view("arg4")}));
-}
-
-// --------------------------------------------------------------------
-
 TEST_F(ParseTest, TestIgnoreUndefinedFlags) {
   const char* in_args1[] = {
       "testbin",
@@ -898,34 +863,13 @@ TEST_F(ParseTest, TestIgnoreUndefinedFlags) {
   };
 
   auto out_args1 = flags::ParseCommandLineImpl(
-      4, const_cast<char**>(in_args1), flags::ArgvListAction::kRemoveParsedArgs,
-      flags::UsageFlagsAction::kHandleUsage,
+      4, const_cast<char**>(in_args1), flags::UsageFlagsAction::kHandleUsage,
       flags::OnUndefinedFlag::kIgnoreUndefined);
 
   EXPECT_THAT(out_args1, ElementsAreArray({absl::string_view("testbin"),
                                            absl::string_view("arg1")}));
 
   EXPECT_EQ(absl::GetFlag(FLAGS_int_flag), 21);
-
-  const char* in_args2[] = {
-      "testbin",
-      "arg1",
-      "--undef_flag=aa",
-      "--string_flag=AA",
-  };
-
-  auto out_args2 = flags::ParseCommandLineImpl(
-      4, const_cast<char**>(in_args2), flags::ArgvListAction::kKeepParsedArgs,
-      flags::UsageFlagsAction::kHandleUsage,
-      flags::OnUndefinedFlag::kIgnoreUndefined);
-
-  EXPECT_THAT(
-      out_args2,
-      ElementsAreArray(
-          {absl::string_view("testbin"), absl::string_view("--undef_flag=aa"),
-           absl::string_view("--string_flag=AA"), absl::string_view("arg1")}));
-
-  EXPECT_EQ(absl::GetFlag(FLAGS_string_flag), "AA");
 }
 
 // --------------------------------------------------------------------
@@ -945,8 +889,7 @@ TEST_F(ParseDeathTest, TestSimpleHelpFlagHandling) {
   };
 
   auto out_args2 = flags::ParseCommandLineImpl(
-      3, const_cast<char**>(in_args2), flags::ArgvListAction::kRemoveParsedArgs,
-      flags::UsageFlagsAction::kIgnoreUsage,
+      3, const_cast<char**>(in_args2), flags::UsageFlagsAction::kIgnoreUsage,
       flags::OnUndefinedFlag::kAbortIfUndefined);
 
   EXPECT_EQ(flags::GetFlagsHelpMode(), flags::HelpMode::kImportant);
@@ -962,8 +905,7 @@ TEST_F(ParseDeathTest, TestSubstringHelpFlagHandling) {
   };
 
   auto out_args1 = flags::ParseCommandLineImpl(
-      2, const_cast<char**>(in_args1), flags::ArgvListAction::kRemoveParsedArgs,
-      flags::UsageFlagsAction::kIgnoreUsage,
+      2, const_cast<char**>(in_args1), flags::UsageFlagsAction::kIgnoreUsage,
       flags::OnUndefinedFlag::kAbortIfUndefined);
 
   EXPECT_EQ(flags::GetFlagsHelpMode(), flags::HelpMode::kMatch);
@@ -972,8 +914,7 @@ TEST_F(ParseDeathTest, TestSubstringHelpFlagHandling) {
   const char* in_args2[] = {"testbin", "--help", "some_positional_arg"};
 
   auto out_args2 = flags::ParseCommandLineImpl(
-      3, const_cast<char**>(in_args2), flags::ArgvListAction::kRemoveParsedArgs,
-      flags::UsageFlagsAction::kIgnoreUsage,
+      3, const_cast<char**>(in_args2), flags::UsageFlagsAction::kIgnoreUsage,
       flags::OnUndefinedFlag::kAbortIfUndefined);
 
   EXPECT_EQ(flags::GetFlagsHelpMode(), flags::HelpMode::kImportant);

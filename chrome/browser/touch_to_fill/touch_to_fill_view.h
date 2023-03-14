@@ -26,18 +26,21 @@ class TouchToFillView {
   TouchToFillView& operator=(const TouchToFillView&) = delete;
   virtual ~TouchToFillView() = default;
 
-  // Instructs Touch To Fill to show the provided |credentials| to the user.
-  // |formatted_url| contains a human friendly version of the current origin.
-  // |is_origin_secure| indicates whether the current frame origin is secure.
-  // |trigger_submission| indicates whether Touch To Fill will submit a form
-  // after filling. After user interaction either OnCredentialSelected() or
-  // OnDismiss() gets invoked.
+  // Instructs Touch To Fill to show the provided `credentials` to the user.
+  // `formatted_url` contains a human friendly version of the current origin.
+  // `is_origin_secure` indicates whether the current frame origin is secure.
+  // `trigger_submission` indicates whether Touch To Fill will submit a form
+  // after filling. `can_manage_passwords_when_passkeys_present` indicates
+  // whether selecting the 'manage' button with passkeys available will show a
+  // screen that also allows management of passwords. After user interaction
+  // either OnCredentialSelected() or OnDismiss() gets invoked.
   virtual void Show(
       const GURL& url,
       IsOriginSecure is_origin_secure,
       base::span<const password_manager::UiCredential> credentials,
       base::span<const password_manager::PasskeyCredential> passkey_credentials,
-      bool trigger_submission) = 0;
+      bool trigger_submission,
+      bool can_manage_passwords_when_passkeys_present) = 0;
 
   // Invoked in case the user chooses an entry from the credential list
   // presented to them.

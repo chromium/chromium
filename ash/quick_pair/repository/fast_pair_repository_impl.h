@@ -75,6 +75,9 @@ class FastPairRepositoryImpl : public FastPairRepository,
       scoped_refptr<Device> device) override;
   void DeleteAssociatedDevice(const std::string& mac_address,
                               DeleteAssociatedDeviceCallback callback) override;
+  void UpdateAssociatedDeviceFootprintsName(const std::string& mac_address,
+                                            const std::string& display_name,
+                                            bool cache_may_be_stale) override;
   void DeleteAssociatedDeviceByAccountKey(
       const std::vector<uint8_t>& account_key,
       DeleteAssociatedDeviceByAccountKeyCallback callback) override;
@@ -116,6 +119,12 @@ class FastPairRepositoryImpl : public FastPairRepository,
       const AccountKeyFilter& account_key_filter,
       CheckAccountKeysCallback callback,
       absl::optional<nearby::fastpair::UserReadDevicesResponse> user_devices);
+
+  void UpdateCacheAndRetryChangeDisplayName(
+      const std::string& mac_address,
+      const std::string& display_name,
+      absl::optional<nearby::fastpair::UserReadDevicesResponse> user_devices);
+
   void UpdateUserDevicesCache(
       absl::optional<nearby::fastpair::UserReadDevicesResponse> user_devices);
   void CompleteAccountKeyLookup(CheckAccountKeysCallback callback,

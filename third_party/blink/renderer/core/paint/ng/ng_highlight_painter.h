@@ -130,7 +130,6 @@ class CORE_EXPORT NGHighlightPainter {
       const NGInlineCursor& cursor,
       const NGFragmentItem& fragment_item,
       const absl::optional<AffineTransform> writing_mode_rotation,
-      const PhysicalRect& decoration_rect,
       const PhysicalOffset& box_origin,
       const ComputedStyle& style,
       const TextPaintStyle& text_style,
@@ -217,13 +216,6 @@ class CORE_EXPORT NGHighlightPainter {
     const TextPaintStyle text_style;
     const TextDecorationLine decorations_in_effect;
   };
-  struct CachedDecorationInfo {
-    STACK_ALLOCATED();
-
-   public:
-    absl::optional<NGHighlightOverlay::HighlightLayer> id{};
-    absl::optional<TextDecorationInfo> info{};
-  };
 
   Case ComputePaintCase() const;
   void FastPaintSpellingGrammarDecorations(const Text& text_node,
@@ -241,7 +233,9 @@ class CORE_EXPORT NGHighlightPainter {
       const ComputedStyle& style,
       const TextPaintStyle& text_style,
       const AppliedTextDecoration* decoration_override);
-  void ClipToPartDecorations(const NGHighlightOverlay::HighlightPart&);
+  PhysicalRect RectInWritingModeSpace(
+      const NGHighlightOverlay::HighlightRange&);
+  void ClipToPartDecorations(const PhysicalRect&);
   void PaintDecorationsExceptLineThrough(
       const NGHighlightOverlay::HighlightPart&);
   void PaintDecorationsExceptLineThrough(
@@ -251,9 +245,6 @@ class CORE_EXPORT NGHighlightPainter {
       const NGHighlightOverlay::HighlightPart&);
   void PaintSpellingGrammarDecorations(
       const NGHighlightOverlay::HighlightPart&);
-  TextDecorationInfo& DecorationInfoForLayer(
-      const LayerPaintState&,
-      absl::optional<TextDecorationInfo>&);
 
   const NGTextFragmentPaintInfo& fragment_paint_info_;
   NGTextPainter& text_painter_;
@@ -261,8 +252,6 @@ class CORE_EXPORT NGHighlightPainter {
   const PaintInfo& paint_info_;
   const NGInlineCursor& cursor_;
   const NGFragmentItem& fragment_item_;
-  const absl::optional<AffineTransform> writing_mode_rotation_;
-  const PhysicalRect& decoration_rect_;
   const PhysicalOffset& box_origin_;
   const ComputedStyle& originating_style_;
   const TextPaintStyle& originating_text_style_;
@@ -278,7 +267,6 @@ class CORE_EXPORT NGHighlightPainter {
   DocumentMarkerVector custom_;
   Vector<LayerPaintState> layers_;
   Vector<NGHighlightOverlay::HighlightPart> parts_;
-  CachedDecorationInfo decoration_cache_[2];
   const bool skip_backgrounds_;
   Case paint_case_;
 };

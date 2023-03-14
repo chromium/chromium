@@ -27,14 +27,7 @@ using ::testing::Eq;
 using ::testing::IsNull;
 using ::testing::Pointee;
 
-// Extracted from |GetPolicies()| because ASSERT_* macros can only be used in
-// functions that return void.
-void AssertHasPolicyContainerHost(RenderFrameHostImpl* frame) {
-  ASSERT_TRUE(frame->policy_container_host());
-}
-
 const PolicyContainerPolicies& GetPolicies(RenderFrameHostImpl* frame) {
-  AssertHasPolicyContainerHost(frame);
   return frame->policy_container_host()->policies();
 }
 
@@ -58,7 +51,9 @@ network::mojom::ContentSecurityPolicyPtr MakeTestCSP() {
 // presence of navigation history in particular.
 class NavigationPolicyContainerBuilderBrowserTest : public ContentBrowserTest {
  protected:
-  explicit NavigationPolicyContainerBuilderBrowserTest() { StartServer(); }
+  explicit NavigationPolicyContainerBuilderBrowserTest() {
+    CHECK(embedded_test_server()->Start());
+  }
 
   // Returns a pointer to the current root RenderFrameHostImpl.
   RenderFrameHostImpl* root_frame_host() {
@@ -87,10 +82,6 @@ class NavigationPolicyContainerBuilderBrowserTest : public ContentBrowserTest {
 
     return entry->root_node()->frame_entry.get();
   }
-
- private:
-  // Constructor helper. We cannot use ASSERT_* macros in constructors.
-  void StartServer() { ASSERT_TRUE(embedded_test_server()->Start()); }
 };
 
 // Verifies that HistoryPolicies() returns nullptr in the absence of a history
@@ -114,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
 
   const PolicyContainerPolicies& root_policies = GetPolicies(root_frame_host());
   EXPECT_EQ(root_policies.ip_address_space,
-            network::mojom::IPAddressSpace::kLocal);
+            network::mojom::IPAddressSpace::kLoopback);
 
   NavigationPolicyContainerBuilder builder(
       nullptr, nullptr, GetLastCommittedFrameNavigationEntry());
@@ -158,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
 
   const PolicyContainerPolicies& root_policies = GetPolicies(root_frame_host());
   EXPECT_EQ(root_policies.ip_address_space,
-            network::mojom::IPAddressSpace::kLocal);
+            network::mojom::IPAddressSpace::kLoopback);
 
   FrameNavigationEntry* entry = GetLastCommittedFrameNavigationEntry();
   NavigationPolicyContainerBuilder builder(nullptr, nullptr, entry);
@@ -212,7 +203,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   EXPECT_TRUE(NavigateToURLFromRenderer(root, AboutBlankUrl()));
 
   PolicyContainerPolicies initiator_policies;
-  initiator_policies.ip_address_space = network::mojom::IPAddressSpace::kLocal;
+  initiator_policies.ip_address_space =
+      network::mojom::IPAddressSpace::kLoopback;
 
   blink::LocalFrameToken token;
   auto initiator_host =

@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.basic;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
 
@@ -132,7 +132,7 @@ public class BasicSuggestionProcessorUnitTest {
     public void setUp() {
         doReturn("").when(mUrlBarText).getTextWithoutAutocomplete();
         mProcessor = new BasicSuggestionProcessor(ContextUtils.getApplicationContext(),
-                mSuggestionHost, mUrlBarText, mIconFetcher, mIsBookmarked);
+                mSuggestionHost, null, mUrlBarText, mIconFetcher, mIsBookmarked);
     }
 
     /**
@@ -305,11 +305,11 @@ public class BasicSuggestionProcessorUnitTest {
         createSearchSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, typed);
         PropertyModel model = mProcessor.createModel();
         mProcessor.populateModel(mSuggestion, model, 0);
-        Assert.assertNull(mModel.get(BaseSuggestionViewProperties.ACTIONS));
+        Assert.assertNull(mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS));
 
         createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, typed);
         mProcessor.populateModel(mSuggestion, model, 0);
-        Assert.assertNull(mModel.get(BaseSuggestionViewProperties.ACTIONS));
+        Assert.assertNull(mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS));
     }
 
     @Test
@@ -321,14 +321,14 @@ public class BasicSuggestionProcessorUnitTest {
         createSearchSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, refined);
         PropertyModel model = mProcessor.createModel();
         mProcessor.populateModel(mSuggestion, model, 0);
-        Assert.assertNotNull(mModel.get(BaseSuggestionViewProperties.ACTIONS));
+        Assert.assertNotNull(mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS));
 
         createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, refined);
         mProcessor.populateModel(mSuggestion, model, 0);
-        Assert.assertNotNull(mModel.get(BaseSuggestionViewProperties.ACTIONS));
+        Assert.assertNotNull(mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS));
 
         final List<BaseSuggestionViewProperties.Action> actions =
-                mModel.get(BaseSuggestionViewProperties.ACTIONS);
+                mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
         Assert.assertEquals(actions.size(), 1);
         final SuggestionDrawableState iconState = actions.get(0).icon;
         Assert.assertEquals(iconState.resourceId, R.drawable.btn_suggestion_refine);
@@ -341,10 +341,10 @@ public class BasicSuggestionProcessorUnitTest {
         createSwitchToTabSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, tabMatch);
         PropertyModel model = mProcessor.createModel();
         mProcessor.populateModel(mSuggestion, model, 0);
-        Assert.assertNotNull(mModel.get(BaseSuggestionViewProperties.ACTIONS));
+        Assert.assertNotNull(mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS));
 
         final List<BaseSuggestionViewProperties.Action> actions =
-                mModel.get(BaseSuggestionViewProperties.ACTIONS);
+                mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
         Assert.assertEquals(actions.size(), 1);
         final SuggestionDrawableState iconState = actions.get(0).icon;
         Assert.assertEquals(iconState.resourceId, R.drawable.switch_to_tab);

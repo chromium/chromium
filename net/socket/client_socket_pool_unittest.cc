@@ -56,8 +56,8 @@ TEST(ClientSocketPool, GroupIdOperators) {
   const SchemefulSite kSiteA(GURL("http://a.test/"));
   const SchemefulSite kSiteB(GURL("http://b.test/"));
   const NetworkAnonymizationKey kNetworkAnonymizationKeys[] = {
-      NetworkAnonymizationKey(kSiteA, kSiteA, /*is_cross_site=*/false),
-      NetworkAnonymizationKey(kSiteB, kSiteB, /*is_cross_site=*/false),
+      NetworkAnonymizationKey::CreateSameSite(kSiteA),
+      NetworkAnonymizationKey::CreateSameSite(kSiteB),
   };
 
   const SecureDnsPolicy kDisableSecureDnsValues[] = {SecureDnsPolicy::kAllow,
@@ -148,13 +148,12 @@ TEST(ClientSocketPool, GroupIdToString) {
                 SecureDnsPolicy::kAllow)
                 .ToString());
 
-  EXPECT_EQ("https://foo <https://foo.test>",
+  EXPECT_EQ("https://foo <https://foo.test cross_site>",
             ClientSocketPool::GroupId(
                 url::SchemeHostPort(url::kHttpsScheme, "foo", 443),
                 PrivacyMode::PRIVACY_MODE_DISABLED,
-                NetworkAnonymizationKey(SchemefulSite(GURL("https://foo.test")),
-                                        SchemefulSite(GURL("https://bar.test")),
-                                        /*is_cross_site=*/true),
+                NetworkAnonymizationKey::CreateCrossSite(
+                    SchemefulSite(GURL("https://foo.test"))),
                 SecureDnsPolicy::kAllow)
                 .ToString());
 
@@ -176,13 +175,13 @@ TEST(ClientSocketPool, PartitionConnectionsByNetworkIsolationKeyDisabled) {
   ClientSocketPool::GroupId group_id1(
       url::SchemeHostPort(url::kHttpsScheme, "foo", 443),
       PrivacyMode::PRIVACY_MODE_DISABLED,
-      NetworkAnonymizationKey(kSiteFoo, kSiteFoo, /*is_cross_site=*/false),
+      NetworkAnonymizationKey::CreateSameSite(kSiteFoo),
       SecureDnsPolicy::kAllow);
 
   ClientSocketPool::GroupId group_id2(
       url::SchemeHostPort(url::kHttpsScheme, "foo", 443),
       PrivacyMode::PRIVACY_MODE_DISABLED,
-      NetworkAnonymizationKey(kSiteBar, kSiteBar, /*is_cross_site=*/false),
+      NetworkAnonymizationKey::CreateSameSite(kSiteBar),
       SecureDnsPolicy::kAllow);
 
   EXPECT_FALSE(group_id1.network_anonymization_key().IsFullyPopulated());

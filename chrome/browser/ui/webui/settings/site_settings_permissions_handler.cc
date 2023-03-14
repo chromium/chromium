@@ -195,9 +195,12 @@ SiteSettingsPermissionsHandler::GetUnusedSitePermissionsFromDict(
   std::set<ContentSettingsType> permission_types;
   for (const auto& permission : *permissions) {
     CHECK(permission.is_string());
-    const std::string& type = permission.GetString();
-    permission_types.insert(
-        site_settings::ContentSettingsTypeFromGroupName(type));
+    const std::string& type_string = permission.GetString();
+    ContentSettingsType type =
+        site_settings::ContentSettingsTypeFromGroupName(type_string);
+    CHECK(type != ContentSettingsType::DEFAULT)
+        << type_string << " is not expected to have a UI representation.";
+    permission_types.insert(type);
   }
 
   const base::Value* js_expiration =

@@ -93,6 +93,7 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
     // Make sure to close any showing popups prior to tearing down the UI.
     content::WebContents* web_contents =
         active_browser_->tab_strip_model()->GetActiveWebContents();
+    active_browser_ = nullptr;
     ContentAutofillDriverFactory::FromWebContents(web_contents)
         ->DriverForFrame(web_contents->GetPrimaryMainFrame())
         ->autofill_manager()
@@ -237,8 +238,8 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
 
   Profile* current_profile() { return active_browser_->profile(); }
 
-  test::AutofillEnvironment autofill_environment_;
-  raw_ptr<Browser, DanglingUntriaged> active_browser_;
+  test::AutofillBrowserTestEnvironment autofill_test_environment_;
+  raw_ptr<Browser> active_browser_ = nullptr;
 };
 
 // Tests that a user can save a simple Autocomplete value.
@@ -282,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
   // AutocompleteHistoryManager.
   NavigateToFile(kSimpleFormFileName);
 
-  // The checkup is executed asynchronsouly on startup and may not have
+  // The checkup is executed asynchronously on startup and may not have
   // finished, yet.
   WaitForPrefValue(pref_service(),
                    prefs::kAutocompleteLastVersionRetentionPolicy,

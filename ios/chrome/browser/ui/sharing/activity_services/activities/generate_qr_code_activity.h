@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/commands/qr_generation_commands.h"
+#import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
 #include "url/gurl.h"
 
 // Activity that ends up showing a QR code for the given URL.

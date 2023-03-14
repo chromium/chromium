@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "ipc/ipc_channel.h"
@@ -47,12 +48,13 @@ void ToImageSkia(DecodeImageCallback callback, const SkBitmap& bitmap) {
 void ToFrames(DecodeAnimationCallback callback,
               std::vector<data_decoder::mojom::AnimationFramePtr> raw_frames) {
   std::vector<AnimationFrame> frames(raw_frames.size());
-  std::transform(raw_frames.cbegin(), raw_frames.cend(), frames.begin(),
-                 [](const data_decoder::mojom::AnimationFramePtr& frame_ptr) {
-                   return AnimationFrame{
-                       gfx::ImageSkia::CreateFrom1xBitmap(frame_ptr->bitmap),
-                       frame_ptr->duration};
-                 });
+  base::ranges::transform(
+      raw_frames, frames.begin(),
+      [](const data_decoder::mojom::AnimationFramePtr& frame_ptr) {
+        return AnimationFrame{
+            gfx::ImageSkia::CreateFrom1xBitmap(frame_ptr->bitmap),
+            frame_ptr->duration};
+      });
   std::move(callback).Run(std::move(frames));
 }
 

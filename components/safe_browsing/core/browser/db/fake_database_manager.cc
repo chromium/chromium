@@ -61,7 +61,7 @@ bool FakeSafeBrowsingDatabaseManager::CheckBrowseUrl(
     pattern_type = it1->second;
   }
 
-  io_task_runner()->PostTask(
+  sb_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeSafeBrowsingDatabaseManager::CheckBrowseURLAsync, url,
                      result_threat_type, pattern_type, client));
@@ -82,7 +82,7 @@ bool FakeSafeBrowsingDatabaseManager::CheckDownloadUrl(
     if (result_threat_type == SB_THREAT_TYPE_SAFE)
       continue;
 
-    io_task_runner()->PostTask(
+    sb_task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(&FakeSafeBrowsingDatabaseManager::CheckDownloadURLAsync,
                        url_chain, result_threat_type, client));

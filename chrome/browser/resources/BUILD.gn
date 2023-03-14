@@ -45,6 +45,7 @@ group("resources") {
       "profile_internals:resources",
       "settings:resources",
       "side_panel/bookmarks:resources",
+      "side_panel/companion:resources",
       "side_panel/customize_chrome:resources",
       "side_panel/history_clusters:resources",
       "side_panel/read_anything:resources",
@@ -141,7 +142,6 @@ if (is_chromeos_ash && enable_js_type_check) {
       "gaia_auth_host:closure_compile",
       "nearby_internals:closure_compile",
       "nearby_share:closure_compile",
-      "nearby_share/shared:closure_compile_module",
     ]
   }
 }

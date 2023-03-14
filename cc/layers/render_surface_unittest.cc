@@ -181,8 +181,9 @@ TEST(RenderSurfaceTest, SanityCheckSurfaceCreatesCorrectSharedQuadState) {
 TEST(RenderSurfaceTest, SanityCheckSurfaceCreatesCorrectRenderPass) {
   LayerTreeImplTestBase impl;
   LayerImpl* root = impl.root_layer();
-
   LayerImpl* layer = impl.AddLayer<LayerImpl>();
+  impl.SetElementIdsForTesting();
+
   CopyProperties(root, layer);
   auto& effect_node = CreateEffectNode(layer);
   effect_node.render_surface_reason = RenderSurfaceReason::kTest;
@@ -201,7 +202,8 @@ TEST(RenderSurfaceTest, SanityCheckSurfaceCreatesCorrectRenderPass) {
 
   auto pass = render_surface->CreateRenderPass();
 
-  EXPECT_EQ(viz::CompositorRenderPassId{2}, pass->id);
+  EXPECT_EQ(viz::CompositorRenderPassId(layer->element_id().GetInternalValue()),
+            pass->id);
   EXPECT_EQ(content_rect, pass->output_rect);
   EXPECT_EQ(origin, pass->transform_to_root_target);
 }

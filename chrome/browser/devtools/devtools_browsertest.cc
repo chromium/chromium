@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -50,11 +51,17 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -231,6 +238,27 @@ void SwitchToExtensionPanel(DevToolsWindow* window,
   std::string prefix(base::TrimString(devtools_extension->url().spec(), "/",
                                       base::TRIM_TRAILING));
   SwitchToPanel(window, (prefix + panel_name).c_str());
+}
+
+void DisallowDevToolsForForceInstalledExtenions(Browser* browser) {
+  browser->profile()->GetPrefs()->SetInteger(
+      prefs::kDevToolsAvailability,
+      static_cast<int>(policy::DeveloperToolsPolicyHandler::Availability::
+                           kDisallowedForForceInstalledExtensions));
+}
+
+void DisallowDevTools(Browser* browser) {
+  browser->profile()->GetPrefs()->SetInteger(
+      prefs::kDevToolsAvailability,
+      static_cast<int>(
+          policy::DeveloperToolsPolicyHandler::Availability::kDisallowed));
+}
+
+void AllowDevTools(Browser* browser) {
+  browser->profile()->GetPrefs()->SetInteger(
+      prefs::kDevToolsAvailability,
+      static_cast<int>(
+          policy::DeveloperToolsPolicyHandler::Availability::kAllowed));
 }
 
 }  // namespace
@@ -672,6 +700,21 @@ class DevToolsExtensionTest : public DevToolsTest {
   const base::FilePath test_extensions_dir_;
 };
 
+class DevToolsExtensionChromeUrlTest : public DevToolsExtensionTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    DevToolsExtensionTest::SetUpCommandLine(command_line);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // These tests use chrome:// URLs and are written on the assumption devtools
+    // are always available, so guarantee that assumption holds. Tests that
+    // check if devtools can be disabled should use a test fixture without the
+    // kForceDevToolsAvailable switch set.
+    command_line->AppendSwitch(ash::switches::kForceDevToolsAvailable);
+#endif
+  }
+};
+
 class DevToolsExperimentalExtensionTest : public DevToolsExtensionTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -996,7 +1039,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
 }
 
 // Tests that chrome.devtools extension is correctly exposed.
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, TestExtensionOnNewTab) {
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionChromeUrlTest, TestExtensionOnNewTab) {
   // Install the dynamically-generated devtools extension.
   const Extension* devtools_extension = LoadExtensionForTest(
       "Devtools Extension", "panel_devtools_page.html", "");
@@ -1931,8 +1974,8 @@ class BrowserAutofillManagerTestDelegateDevtoolsImpl
     : public autofill::BrowserAutofillManagerTestDelegate {
  public:
   explicit BrowserAutofillManagerTestDelegateDevtoolsImpl(
-      WebContents* inspectedContents)
-      : inspected_contents_(inspectedContents) {}
+      WebContents* inspected_contents)
+      : inspected_contents_(inspected_contents) {}
 
   BrowserAutofillManagerTestDelegateDevtoolsImpl(
       const BrowserAutofillManagerTestDelegateDevtoolsImpl&) = delete;
@@ -1946,6 +1989,14 @@ class BrowserAutofillManagerTestDelegateDevtoolsImpl
   void DidFillFormData() override {}
 
   void DidShowSuggestions() override {
+    // Set an override for the minimum 500 ms threshold before enter key strokes
+    // are accepted.
+    if (base::WeakPtr<autofill::AutofillPopupControllerImpl> controller =
+            autofill::ChromeAutofillClient::FromWebContentsForTesting(
+                inspected_contents_.get())
+                ->popup_controller_for_testing()) {
+      controller->DisableThresholdForTesting(true);
+    }
     ASSERT_TRUE(content::ExecuteScript(inspected_contents_,
                                        "console.log('didShowSuggestions');"));
   }
@@ -1953,7 +2004,7 @@ class BrowserAutofillManagerTestDelegateDevtoolsImpl
   void OnTextFieldChanged() override {}
 
  private:
-  WebContents* inspected_contents_;
+  const raw_ptr<WebContents> inspected_contents_;
 };
 
 // Disabled. Failing on MacOS MSAN. See https://crbug.com/849129.
@@ -1975,6 +2026,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest,
           ->DriverForFrame(GetInspectedTab()->GetPrimaryMainFrame());
   auto* autofill_manager = static_cast<autofill::BrowserAutofillManager*>(
       autofill_driver->autofill_manager());
+  ASSERT_TRUE(autofill_manager);
   BrowserAutofillManagerTestDelegateDevtoolsImpl autoFillTestDelegate(
       GetInspectedTab());
   autofill_manager->SetTestDelegate(&autoFillTestDelegate);
@@ -2276,10 +2328,7 @@ IN_PROC_BROWSER_TEST_F(RemoteDebuggingTest, DiscoveryPage) {
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsTest, PolicyDisallowed) {
-  browser()->profile()->GetPrefs()->SetInteger(
-      prefs::kDevToolsAvailability,
-      static_cast<int>(
-          policy::DeveloperToolsPolicyHandler::Availability::kDisallowed));
+  DisallowDevTools(browser());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);
@@ -2296,10 +2345,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, PolicyDisallowedCloseConnection) {
   auto agent_host = content::DevToolsAgentHost::GetOrCreateFor(web_contents);
 
   // Policy change must close the connection
-  browser()->profile()->GetPrefs()->SetInteger(
-      prefs::kDevToolsAvailability,
-      static_cast<int>(
-          policy::DeveloperToolsPolicyHandler::Availability::kDisallowed));
+  DisallowDevTools(browser());
   ASSERT_FALSE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 }
 
@@ -2337,11 +2383,7 @@ class DevToolsExtensionForceInstallTest : public extensions::ExtensionBrowserTes
 
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionForceInstallTest,
                        PolicyDisallowedForForceInstalledExtensions) {
-  browser()->profile()->GetPrefs()->SetInteger(
-      prefs::kDevToolsAvailability,
-      static_cast<int>(policy::DeveloperToolsPolicyHandler::Availability::
-                           kDisallowedForForceInstalledExtensions));
-
+  // DevTools are disallowed for force-installed extensions by default.
   content::WebContents* web_contents = nullptr;
   ASSERT_NO_FATAL_FAILURE(ForceInstallExtensionAndOpen(&web_contents));
 
@@ -2352,29 +2394,25 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionForceInstallTest,
 
 IN_PROC_BROWSER_TEST_F(
     DevToolsExtensionForceInstallTest,
-    PolicyDisallowedForForceInstalledExtensionsCloseConneciton) {
+    PolicyDisallowedForForceInstalledExtensionsCloseConnection) {
+  AllowDevTools(browser());
   content::WebContents* web_contents = nullptr;
   ASSERT_NO_FATAL_FAILURE(ForceInstallExtensionAndOpen(&web_contents));
 
   DevToolsWindow::OpenDevToolsWindow(web_contents);
   auto agent_host = content::DevToolsAgentHost::GetOrCreateFor(web_contents);
 
+  ASSERT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
+
   // Policy change must close the connection with the force installed extension.
-  browser()->profile()->GetPrefs()->SetInteger(
-      prefs::kDevToolsAvailability,
-      static_cast<int>(policy::DeveloperToolsPolicyHandler::Availability::
-                           kDisallowedForForceInstalledExtensions));
+  DisallowDevToolsForForceInstalledExtenions(browser());
   ASSERT_FALSE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 }
 
 IN_PROC_BROWSER_TEST_F(
     DevToolsExtensionForceInstallTest,
     PolicyDisallowedForForceInstalledExtensionsAfterNavigation) {
-  browser()->profile()->GetPrefs()->SetInteger(
-      prefs::kDevToolsAvailability,
-      static_cast<int>(policy::DeveloperToolsPolicyHandler::Availability::
-                           kDisallowedForForceInstalledExtensions));
-
+  // DevTools are disallowed for force-installed extensions by default.
   std::string extension_id;
   ASSERT_NO_FATAL_FAILURE(ForceInstallExtension(&extension_id));
   content::WebContents* web_contents =
@@ -2395,6 +2433,8 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     DevToolsExtensionForceInstallTest,
     PolicyDisallowedForForceInstalledExtensionsKeepConnectionAboutBlank) {
+  AllowDevTools(browser());
+
   std::string extension_id;
   ASSERT_NO_FATAL_FAILURE(ForceInstallExtension(&extension_id));
   content::WebContents* web_contents =
@@ -2403,13 +2443,11 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   DevToolsWindow::OpenDevToolsWindow(web_contents);
   auto agent_host = content::DevToolsAgentHost::GetOrCreateFor(web_contents);
+  ASSERT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 
   // Policy change to must not disrupt CDP coneciton unrelated to a force
   // installed extension.
-  browser()->profile()->GetPrefs()->SetInteger(
-      prefs::kDevToolsAvailability,
-      static_cast<int>(policy::DeveloperToolsPolicyHandler::Availability::
-                           kDisallowedForForceInstalledExtensions));
+  DisallowDevToolsForForceInstalledExtenions(browser());
   ASSERT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 }
 
@@ -2431,11 +2469,7 @@ class DevToolsAllowedByCommandLineSwitch : public DevToolsExtensionForceInstallT
 
 IN_PROC_BROWSER_TEST_F(DevToolsAllowedByCommandLineSwitch,
                        SwitchOverridesPolicyOnChromeOS) {
-  browser()->profile()->GetPrefs()->SetInteger(
-      prefs::kDevToolsAvailability,
-      static_cast<int>(policy::DeveloperToolsPolicyHandler::Availability::
-                           kDisallowedForForceInstalledExtensions));
-
+  // DevTools are disallowed for force-installed extensions by default.
   content::WebContents* web_contents = nullptr;
   ASSERT_NO_FATAL_FAILURE(ForceInstallExtensionAndOpen(&web_contents));
 
@@ -2446,6 +2480,97 @@ IN_PROC_BROWSER_TEST_F(DevToolsAllowedByCommandLineSwitch,
 #else
   ASSERT_FALSE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 #endif
+}
+
+// Tests disallowed devtools for force-installed web apps.
+class DevToolsWebAppForceInstallTest
+    : public web_app::WebAppControllerBrowserTest {
+ protected:
+  // WebAppControllerBrowserTest overrides:
+  void SetUpOnMainThread() override {
+    web_app::WebAppControllerBrowserTest::SetUpOnMainThread();
+    // Allow different origins to be handled by the embedded_test_server.
+    host_resolver()->AddRule("*", "127.0.0.1");
+    web_app::test::WaitUntilReady(
+        web_app::WebAppProvider::GetForTest(profile()));
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  // Installs a web app, emulating that it has been force-installed by policy.
+  // Fills |*out_web_contents| with a |WebContents| that has been navigated to
+  // the force-installed web app.
+  void ForceInstallWebAppAndOpen(content::WebContents** out_web_contents) {
+    web_app::ForceInstallWebApp(profile(), GetWebAppUrl());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetWebAppUrl()));
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetWebContentsAt(0);
+    *out_web_contents = web_contents;
+  }
+
+  GURL GetWebAppUrl() const {
+    return embedded_test_server()->GetURL("/banners/manifest_test_page.html");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsWebAppForceInstallTest,
+                       PolicyDisallowedForForceInstalledWebApp) {
+  // DevTools are disallowed for force-installed web apps by default.
+  content::WebContents* web_contents = nullptr;
+  ASSERT_NO_FATAL_FAILURE(ForceInstallWebAppAndOpen(&web_contents));
+
+  DevToolsWindow::OpenDevToolsWindow(web_contents);
+  auto agent_host = content::DevToolsAgentHost::GetOrCreateFor(web_contents);
+  ASSERT_FALSE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsWebAppForceInstallTest,
+                       PolicyDisallowedForForceInstalledWebAppCloseConnection) {
+  AllowDevTools(browser());
+  content::WebContents* web_contents = nullptr;
+  ASSERT_NO_FATAL_FAILURE(ForceInstallWebAppAndOpen(&web_contents));
+
+  DevToolsWindow::OpenDevToolsWindow(web_contents);
+  auto agent_host = content::DevToolsAgentHost::GetOrCreateFor(web_contents);
+  ASSERT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
+
+  // Policy change must close the connection with the force installed extension.
+  DisallowDevToolsForForceInstalledExtenions(browser());
+  ASSERT_FALSE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DevToolsWebAppForceInstallTest,
+    PolicyDisallowedForForceInstalledWebAppNavigateToAboutBlank) {
+  // DevTools are disallowed for force-installed web apps by default.
+  content::WebContents* web_contents = nullptr;
+  ASSERT_NO_FATAL_FAILURE(ForceInstallWebAppAndOpen(&web_contents));
+  DevToolsWindow::OpenDevToolsWindow(web_contents);
+  auto agent_host = content::DevToolsAgentHost::GetOrCreateFor(web_contents);
+  ASSERT_FALSE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
+
+  // It's possible to open DevTools for about:blank.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  DevToolsWindow::OpenDevToolsWindow(web_contents);
+  ASSERT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DevToolsWebAppForceInstallTest,
+    PolicyDisallowedForForceInstalledWebAppKeepConnectionAboutBlank) {
+  AllowDevTools(browser());
+
+  content::WebContents* web_contents;
+  ASSERT_NO_FATAL_FAILURE(ForceInstallWebAppAndOpen(&web_contents));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  DevToolsWindow::OpenDevToolsWindow(web_contents);
+  auto agent_host = content::DevToolsAgentHost::GetOrCreateFor(web_contents);
+  ASSERT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
+
+  // Policy change to must not disrupt CDP coneciton unrelated to a force
+  // installed extension.
+  DisallowDevToolsForForceInstalledExtenions(browser());
+  ASSERT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 }
 
 class DevToolsPixelOutputTests : public DevToolsTest {
@@ -2582,11 +2707,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest,
                                   "  window.abc = 239;\n"
                                   "  console.log(abc);\n"
                                   "</script>");
-  test_factory.AddFactoryOverride(GURL("chrome://dummyurl").host(),
+  test_factory.AddFactoryOverride(GURL("https://a.com/dummyurl").host(),
                                   &mock_provider);
 
   ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("chrome://dummyurl")));
+      ui_test_utils::NavigateToURL(browser(), GURL("https://a.com/dummyurl")));
   DevToolsWindow* window =
       DevToolsWindowTesting::OpenDevToolsWindowSync(GetInspectedTab(), true);
   chrome::DuplicateTab(browser());

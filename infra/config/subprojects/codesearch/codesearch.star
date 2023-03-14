@@ -39,13 +39,6 @@ try_.defaults.os.set(os.LINUX_DEFAULT)
 try_.defaults.pool.set("luci.chromium.try")
 try_.defaults.service_account.set("chromium-try-builder@chops-service-accounts.iam.gserviceaccount.com")
 
-try_.defaults.caches.set([
-    swarming.cache(
-        name = "win_toolchain",
-        path = "win_toolchain",
-    ),
-])
-
 consoles.list_view(
     name = "tryserver.chromium.codesearch",
 )

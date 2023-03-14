@@ -8,10 +8,11 @@
 
 #include "cc/layers/ui_resource_layer.h"
 #include "cc/slim/features.h"
+#include "cc/slim/frame_data.h"
 #include "cc/slim/layer_tree_impl.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
-#include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
+#include "components/viz/common/resources/resource_id.h"
 
 namespace cc::slim {
 
@@ -115,7 +116,7 @@ void UIResourceLayer::SetLayerTree(LayerTree* tree) {
 
   Layer::SetLayerTree(tree);
   RefreshResource();
-  SetDrawsContent(HasDrawableContent());
+  UpdateDrawsContent();
 }
 
 bool UIResourceLayer::HasDrawableContent() const {
@@ -133,8 +134,39 @@ void UIResourceLayer::SetUIResourceIdInternal(cc::UIResourceId resource_id) {
     return;
   }
   resource_id_ = resource_id;
-  SetDrawsContent(HasDrawableContent());
+  UpdateDrawsContent();
   NotifyPropertyChanged();
+}
+
+void UIResourceLayer::AppendQuads(viz::CompositorRenderPass& render_pass,
+                                  FrameData& data,
+                                  const gfx::Transform& transform_to_root,
+                                  const gfx::Transform& transform_to_target,
+                                  const gfx::Rect* clip_in_target,
+                                  const gfx::Rect& visible_rect) {
+  viz::ResourceId viz_resource_id =
+      static_cast<LayerTreeImpl*>(layer_tree())->GetVizResourceId(resource_id_);
+  if (viz_resource_id == viz::kInvalidResourceId) {
+    return;
+  }
+
+  viz::SharedQuadState* quad_state = CreateAndAppendSharedQuadState(
+      render_pass, transform_to_target, clip_in_target, visible_rect);
+
+  viz::TextureDrawQuad* quad =
+      render_pass.CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
+  constexpr bool kFlipped = false;
+  constexpr bool kNearest = false;
+  constexpr bool kPremultiplied = true;
+  constexpr bool kSecureOutputOnly = false;
+  constexpr auto kVideoType = gfx::ProtectedVideoType::kClear;
+  const bool needs_blending = !static_cast<LayerTreeImpl*>(layer_tree())
+                                   ->IsUIResourceOpaque(resource_id_);
+  quad->SetNew(quad_state, quad_state->quad_layer_rect,
+               quad_state->visible_quad_layer_rect, needs_blending,
+               viz_resource_id, kPremultiplied, uv_top_left(),
+               uv_bottom_right(), SkColors::kTransparent, vertex_opacity_,
+               kFlipped, kNearest, kSecureOutputOnly, kVideoType);
 }
 
 }  // namespace cc::slim

@@ -401,9 +401,10 @@ public class SelectableListLayout<E> extends FrameLayout
     }
 
     @Override
-    public void handleBackPress() {
+    public @BackPressResult int handleBackPress() {
         var ret = onBackPressed();
         assert ret;
+        return ret ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
     }
 
     @Override

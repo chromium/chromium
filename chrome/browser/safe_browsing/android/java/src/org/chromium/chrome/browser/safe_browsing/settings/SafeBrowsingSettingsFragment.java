@@ -91,8 +91,8 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
 
         Preference managedDisclaimerText = findPreference(PREF_MANAGED_DISCLAIMER_TEXT);
         TextMessagePreference textManagedLegacy = findPreference(PREF_TEXT_MANAGED_LEGACY);
-        boolean managedTextVisible = managedPreferenceDelegate.isPreferenceClickDisabledByPolicy(
-                mSafeBrowsingPreference);
+        boolean managedTextVisible =
+                managedPreferenceDelegate.isPreferenceClickDisabled(mSafeBrowsingPreference);
 
         if (SettingsFeatureList.isEnabled(
                     SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)) {

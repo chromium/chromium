@@ -84,6 +84,7 @@ class DefaultValuesPolicyManager : public PolicyManagerInterface {
   absl::optional<std::string> GetTargetChannel(
       const std::string& app_id) const override;
   absl::optional<std::vector<std::string>> GetForceInstallApps() const override;
+  absl::optional<std::vector<std::string>> GetAppsWithPolicy() const override;
 
  private:
   ~DefaultValuesPolicyManager() override;
@@ -167,6 +168,11 @@ absl::optional<std::string> DefaultValuesPolicyManager::GetTargetChannel(
 
 absl::optional<std::vector<std::string>>
 DefaultValuesPolicyManager::GetForceInstallApps() const {
+  return absl::nullopt;
+}
+
+absl::optional<std::vector<std::string>>
+DefaultValuesPolicyManager::GetAppsWithPolicy() const {
   return absl::nullopt;
 }
 

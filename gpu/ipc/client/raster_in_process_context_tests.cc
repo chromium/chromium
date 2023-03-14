@@ -6,7 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "components/viz/common/resources/resource_format.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/test/test_gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/raster_implementation.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -23,7 +23,8 @@ namespace gpu {
 
 namespace {
 
-constexpr viz::ResourceFormat kResourceFormat = viz::RGBA_8888;
+constexpr viz::SharedImageFormat kSharedImageFormat =
+    viz::SinglePlaneFormat::kRGBA_8888;
 constexpr gfx::Size kBufferSize(100, 100);
 
 class RasterInProcessCommandBufferTest : public ::testing::Test {
@@ -87,7 +88,7 @@ TEST_F(RasterInProcessCommandBufferTest, AllowedBetweenBeginEndRasterCHROMIUM) {
   uint32_t flags = gpu::SHARED_IMAGE_USAGE_RASTER |
                    gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
   gpu::Mailbox mailbox = sii->CreateSharedImage(
-      kResourceFormat, kBufferSize, color_space, kTopLeft_GrSurfaceOrigin,
+      kSharedImageFormat, kBufferSize, color_space, kTopLeft_GrSurfaceOrigin,
       kPremul_SkAlphaType, flags, kNullSurfaceHandle);
   ri_->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 

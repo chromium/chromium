@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/system_tray_test_api.h"
+#include "ash/system/accessibility/accessibility_detailed_view.h"
+#include "ash/system/tray/tray_detailed_view.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -40,8 +43,8 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
 
-using testing::Return;
 using testing::_;
+using testing::Return;
 using testing::WithParamInterface;
 
 namespace ash {
@@ -79,8 +82,9 @@ void EnableSelectToSpeak(bool enabled) {
 
 void EnableDictation(bool enabled) {
   bool already_enabled = AccessibilityManager::Get()->IsDictationEnabled();
-  if (enabled == already_enabled)
+  if (enabled == already_enabled) {
     return;
+  }
   AccessibilityManager::Get()->ToggleDictation();
   base::RunLoop().RunUntilIdle();
 }
@@ -144,9 +148,8 @@ void EnableStickyKeys(bool enabled) {
 
 // Uses InProcessBrowserTest instead of OobeBaseTest because most of the tests
 // don't need to test the login screen.
-class TrayAccessibilityTest
-    : public InProcessBrowserTest,
-      public WithParamInterface<PrefSettingMechanism> {
+class TrayAccessibilityTest : public InProcessBrowserTest,
+                              public WithParamInterface<PrefSettingMechanism> {
  public:
   TrayAccessibilityTest()
       : disable_animations_(
@@ -193,7 +196,10 @@ class TrayAccessibilityTest
 
   bool IsMenuButtonVisible() {
     bool visible = tray_test_api_->IsBubbleViewVisible(
-        ash::VIEW_ID_ACCESSIBILITY_TRAY_ITEM, true /* open_tray */);
+        base::FeatureList::IsEnabled(ash::features::kQsRevamp)
+            ? ash::VIEW_ID_ACCESSIBILITY_FEATURE_TILE
+            : ash::VIEW_ID_ACCESSIBILITY_TRAY_ITEM,
+        true /* open_tray */);
     tray_test_api_->CloseBubble();
     return visible;
   }
@@ -205,12 +211,18 @@ class TrayAccessibilityTest
   void ClickVirtualKeyboardOnDetailMenu() {
     // Scroll the detailed view to show the virtual keyboard option.
     tray_test_api_->ScrollToShowView(
+        tray_test_api_->GetAccessibilityDetailedView()
+            ->scroll_view_for_testing(),
         ash::VIEW_ID_ACCESSIBILITY_VIRTUAL_KEYBOARD);
     tray_test_api_->ClickBubbleView(
         ash::VIEW_ID_ACCESSIBILITY_VIRTUAL_KEYBOARD);
   }
 
   bool IsVirtualKeyboardEnabledOnDetailMenu() const {
+    if (features::IsQsRevampEnabled()) {
+      return tray_test_api_->IsToggleOn(
+          ash::VIEW_ID_ACCESSIBILITY_VIRTUAL_KEYBOARD_ENABLED);
+    }
     return tray_test_api_->IsBubbleViewVisible(
         ash::VIEW_ID_ACCESSIBILITY_VIRTUAL_KEYBOARD_ENABLED,
         false /* open_tray */);

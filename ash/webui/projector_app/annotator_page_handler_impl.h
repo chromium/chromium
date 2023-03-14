@@ -1,0 +1,64 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_WEBUI_PROJECTOR_APP_ANNOTATOR_PAGE_HANDLER_IMPL_H_
+#define ASH_WEBUI_PROJECTOR_APP_ANNOTATOR_PAGE_HANDLER_IMPL_H_
+
+#include "ash/public/cpp/projector/projector_annotator_controller.h"
+#include "ash/webui/projector_app/mojom/annotator.mojom.h"
+#include "base/functional/callback.h"
+#include "base/values.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+
+namespace content {
+class WebUI;
+}  // namespace content
+
+namespace ash {
+
+struct AnnotatorTool;
+
+// Handles communication with the Annotator WebUI (i.e.
+// chrome://projector/annotator/annotator_embedder.html).
+class AnnotatorPageHandlerImpl : public annotator::mojom::AnnotatorPageHandler {
+ public:
+  AnnotatorPageHandlerImpl(
+      mojo::PendingReceiver<annotator::mojom::AnnotatorPageHandler>
+          annotator_handler,
+      mojo::PendingRemote<annotator::mojom::AnnotatorPage> annotator,
+      content::WebUI* web_ui);
+  AnnotatorPageHandlerImpl(const AnnotatorPageHandlerImpl&) = delete;
+  AnnotatorPageHandlerImpl& operator=(const AnnotatorPageHandlerImpl&) = delete;
+  ~AnnotatorPageHandlerImpl() override;
+
+  // Called by ProjectorAppClient.
+  void SetTool(const AnnotatorTool& tool);
+  void Undo();
+  void Redo();
+  void Clear();
+
+  // annotator::mojom::AnnotatorHandler:
+  void OnUndoRedoAvailabilityChanged(bool undo_available,
+                                     bool redo_available) override;
+  void OnCanvasInitialized(bool success) override;
+  void OnError(const std::vector<std::string>& messages) override;
+
+  content::WebUI* get_web_ui_for_test() { return web_ui_; }
+
+ private:
+  mojo::Remote<annotator::mojom::AnnotatorPage> annotator_remote_;
+  mojo::Receiver<annotator::mojom::AnnotatorPageHandler>
+      annotator_handler_receiver_;
+
+  // The WebUI that owns the TrustedProjectorAnnotatorUI that owns this
+  // instance.
+  content::WebUI* const web_ui_;
+};
+
+}  // namespace ash
+
+#endif  // ASH_WEBUI_PROJECTOR_APP_ANNOTATOR_PAGE_HANDLER_IMPL_H_

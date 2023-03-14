@@ -93,7 +93,7 @@ class COMPONENT_EXPORT(BIOD_CLIENT) BiodClient {
   // one argument which contains a list of the stored records' object paths for
   // a given user.
   using UserRecordsCallback =
-      base::OnceCallback<void(const std::vector<dbus::ObjectPath>&)>;
+      base::OnceCallback<void(const std::vector<dbus::ObjectPath>&, bool)>;
 
   // BiometricTypeCallback is used for the GetType method. It receives
   // one argument which states the type of biometric.

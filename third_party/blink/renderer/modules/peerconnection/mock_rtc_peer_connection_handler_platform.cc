@@ -252,15 +252,15 @@ class MockRTCPeerConnectionHandlerPlatform::DummyRTCRtpTransceiverPlatform
       const override {
     return absl::nullopt;
   }
-  webrtc::RTCError SetOfferedRtpHeaderExtensions(
+  webrtc::RTCError SetHeaderExtensionsToNegotiate(
       Vector<webrtc::RtpHeaderExtensionCapability> header_extensions) override {
     return webrtc::RTCError(webrtc::RTCErrorType::UNSUPPORTED_OPERATION);
   }
-  Vector<webrtc::RtpHeaderExtensionCapability> HeaderExtensionsNegotiated()
+  Vector<webrtc::RtpHeaderExtensionCapability> GetNegotiatedHeaderExtensions()
       const override {
     return {};
   }
-  Vector<webrtc::RtpHeaderExtensionCapability> HeaderExtensionsToOffer()
+  Vector<webrtc::RtpHeaderExtensionCapability> GetHeaderExtensionsToNegotiate()
       const override {
     return {};
   }

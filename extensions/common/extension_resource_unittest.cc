@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <ctype.h>
 #include <stddef.h>
-
-#include <algorithm>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/common/constants.h"
@@ -30,7 +30,7 @@ TEST(ExtensionResourceTest, CreateEmptyResource) {
 const base::FilePath::StringType ToLower(
     const base::FilePath::StringType& in_str) {
   base::FilePath::StringType str(in_str);
-  std::transform(str.begin(), str.end(), str.begin(), tolower);
+  base::ranges::transform(str, str.begin(), tolower);
   return str;
 }
 
@@ -58,8 +58,8 @@ TEST(ExtensionResourceTest, ResourcesOutsideOfPath) {
   ASSERT_TRUE(base::CreateDirectory(sub_dir));
   base::FilePath inner_file = inner_dir.AppendASCII("inner");
   base::FilePath outer_file = temp.GetPath().AppendASCII("outer");
-  ASSERT_EQ(1, base::WriteFile(outer_file, "X", 1));
-  ASSERT_EQ(1, base::WriteFile(inner_file, "X", 1));
+  ASSERT_TRUE(base::WriteFile(outer_file, "X"));
+  ASSERT_TRUE(base::WriteFile(inner_file, "X"));
   std::string extension_id = crx_file::id_util::GenerateId("test");
 
 #if BUILDFLAG(IS_POSIX)
@@ -126,8 +126,7 @@ TEST(ExtensionResourceTest, CreateWithAllResourcesOnDisk) {
   const char* filename = "res.ico";
   base::FilePath root_resource = temp.GetPath().AppendASCII(filename);
   std::string data = "some foo";
-  ASSERT_EQ(static_cast<int>(data.length()),
-            base::WriteFile(root_resource, data.c_str(), data.length()));
+  ASSERT_TRUE(base::WriteFile(root_resource, data));
 
   // Create l10n resources (for current locale and its parents).
   base::FilePath l10n_path = temp.GetPath().Append(kLocaleFolder);
@@ -141,9 +140,7 @@ TEST(ExtensionResourceTest, CreateWithAllResourcesOnDisk) {
     base::FilePath make_path;
     make_path = l10n_path.AppendASCII(locales[i]);
     ASSERT_TRUE(base::CreateDirectory(make_path));
-    ASSERT_EQ(static_cast<int>(data.length()),
-              base::WriteFile(make_path.AppendASCII(filename), data.c_str(),
-                              data.length()));
+    ASSERT_TRUE(base::WriteFile(make_path.AppendASCII(filename), data));
   }
 
   base::FilePath path;

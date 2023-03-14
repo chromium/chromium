@@ -153,14 +153,6 @@ export class Background extends ChromeVoxState {
   }
 
   /** @override */
-  getCurrentRange() {
-    if (ChromeVoxRange.getCurrentRangeWithoutRecovery()?.isValid()) {
-      return ChromeVoxRange.getCurrentRangeWithoutRecovery();
-    }
-    return null;
-  }
-
-  /** @override */
   get isReadingContinuously() {
     return this.isReadingContinuously_;
   }
@@ -173,20 +165,6 @@ export class Background extends ChromeVoxState {
   /** @override */
   get talkBackEnabled() {
     return this.talkBackEnabled_;
-  }
-
-  /** @override */
-  getCurrentRangeWithoutRecovery() {
-    return ChromeVoxRange.getCurrentRangeWithoutRecovery();
-  }
-
-  /**
-   * @param {CursorRange} newRange The new range.
-   * @override
-   */
-  setCurrentRange(newRange) {
-    ChromeVoxRange.previous = ChromeVoxRange.getCurrentRangeWithoutRecovery();
-    ChromeVoxRange.instance.current_ = newRange;
   }
 
   /** @override */
@@ -313,16 +291,6 @@ export class Background extends ChromeVoxState {
 
     if (!ChromeVoxRange.getCurrentRangeWithoutRecovery()?.isValid()) {
       ChromeVoxRange.set(ChromeVoxRange.previous);
-    }
-  }
-
-  /** @private */
-  async setCurrentRangeToFocus_() {
-    const focus = await AsyncUtil.getFocus();
-    if (focus) {
-      ChromeVoxRange.set(CursorRange.fromNode(focus));
-    } else {
-      ChromeVoxRange.set(null);
     }
   }
 

@@ -51,14 +51,14 @@ with `AutofillAgent` extracting a form from the DOM.
 ┌─┴──────────────────┐     │          ┌─┴───────────────────┐ │   │owns N         queries│
 │ChromeAutofillClient◄─────┼──────────┤AutofillManager      ├─┼───┴──────────────────────┘
 │1 per WebContents   │     │  weak ref│1 per RenderFrameHost│ │
-└────────────────────┘     │          └─▲─────────────────┬─┘ │
-                           │            │           events│   │
-                           └────────────┼────────────────►│◄──┘
-                                        │                 │
-                           ┌────────────┼─────────────────┼────────────┐
-                           │owns 1      │events           │            │
-                           │            │owns 1           │            │
-┌──────────────────────────┴─┐        ┌─┴─────────────────▼─┐        ┌─▼───────────────────┐
+└─┬──────────────────┘     │          └─▲─────────────────┬─┘ │
+  │owns 1                  │            │           events│   │
+  │                        └────────────┼────────────────►│◄──┘
+  │                                     │                 │
+  │                        ┌────────────┼─────────────────┼────────────┐
+  │                        │owns 1      │events           │            │
+  │                        │            │owns 1           │            │
+┌─▼────────────────────────┴─┐        ┌─┴─────────────────▼─┐        ┌─▼───────────────────┐
 │ContentAutofillDriverFactory├────────►ContentAutofillDriver◄────────►ContentAutofillRouter│
 │1 per WebContents           │owns N  │1 per RenderFrameHost│ events │1 per WebContents    │
 └────────────────────────────┘        └─▲─────────┬─────────┘        └─────────────────────┘

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ref.h"
 #include "base/values.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/extension_id.h"
@@ -87,7 +88,7 @@ class DeclarativeNetRequestPrefsHelper {
                                 RulesetID ruleset_id,
                                 const base::flat_set<int>& disabled_rule_ids);
 
-  ExtensionPrefs& prefs_;
+  const raw_ref<ExtensionPrefs> prefs_;
 };
 
 }  // namespace declarative_net_request

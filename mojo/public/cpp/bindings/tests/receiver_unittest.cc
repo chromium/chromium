@@ -16,6 +16,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/threading/thread.h"
+#include "build/blink_buildflags.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/test/mojo_test_base.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -982,6 +983,8 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(MultiprocessReceiverClient,
   MojoClose(test_pipe);
 }
 
+// iOS doesn't have the ability to fork processes yet.
+#if BUILDFLAG(USE_BLINK)
 TEST_F(MultiprocessReceiverTest, MultiprocessReceiver) {
   // Regression test for https://crbug.com/1371860.
   //
@@ -1025,6 +1028,7 @@ TEST_F(MultiprocessReceiverTest, MultiprocessReceiver) {
     }
   });
 }
+#endif  // BUILDFLAG(USE_BLINK)
 
 INSTANTIATE_MOJO_BINDINGS_TEST_SUITE_P(ReceiverTest);
 INSTANTIATE_MOJO_BINDINGS_TEST_SUITE_P(SelfOwnedReceiverTest);

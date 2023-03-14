@@ -16,6 +16,10 @@ class WebState;
 }  // namespace web
 
 // Returns the index of the tab with `identifier` in `web_state_list`.
+// Returns WebStateList::kInvalidIndex if the tab is not found.
+int GetWebStateIndex(WebStateList* web_state_list, NSString* identifier);
+
+// Returns the index of the tab with `identifier` in `web_state_list`.
 // `pinned` tracks the pinned state of the tab we are looking for.
 // Returns WebStateList::kInvalidIndex if the pinned state of the tab is not the
 // same as `pinned` or if the tab is not found.

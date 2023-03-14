@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/mojom/memory.mojom-forward.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/connection_observer.h"
 #include "base/logging.h"
@@ -65,6 +66,17 @@ void ArcMemoryBridge::DropCaches(DropCachesCallback callback) {
     return;
   }
   memory_instance->DropCaches(std::move(callback));
+}
+
+void ArcMemoryBridge::Reclaim(mojom::ReclaimRequestPtr request,
+                              ReclaimCallback callback) {
+  auto* const memory_instance =
+      ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->memory(), Reclaim);
+  if (!memory_instance) {
+    std::move(callback).Run(mojom::ReclaimResult::New(0, 0));
+    return;
+  }
+  memory_instance->Reclaim(std::move(request), std::move(callback));
 }
 
 }  // namespace arc

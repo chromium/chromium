@@ -130,7 +130,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
     static final int LOCATION_BAR_TRANSPARENT_BACKGROUND_ALPHA = 51;
 
-    private TabCountProvider mTabCountProvider;
+    private @Nullable TabCountProvider mTabCountProvider;
 
     protected LocationBarCoordinator mLocationBar;
 
@@ -1666,15 +1666,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         } else {
             addHomeButton();
         }
-        if (mOptionalButton != null) {
-            if (isMenuButtonPresent()) {
-                int padding = getResources().getDimensionPixelSize(
-                        R.dimen.toolbar_phone_optional_button_padding);
-                mOptionalButton.setPaddingStart(padding);
-            } else {
-                mOptionalButton.setPaddingStart(0);
-            }
-        }
     }
 
     @Override
@@ -2529,6 +2520,13 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         } else {
             mOptionalButton.setIconForegroundColor(null);
         }
+    }
+
+    @Override
+    protected void onMenuButtonDisabled() {
+        super.onMenuButtonDisabled();
+        // Menu button should always be enabled on ToolbarPhone.
+        assert false;
     }
 
     @Override

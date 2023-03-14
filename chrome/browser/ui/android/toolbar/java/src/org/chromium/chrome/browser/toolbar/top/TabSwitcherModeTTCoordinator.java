@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.function.BooleanSupplier;
 
@@ -52,21 +53,19 @@ class TabSwitcherModeTTCoordinator {
     private IncognitoTabModelObserver mIncognitoTabModelObserver;
 
     private final boolean mIsGridTabSwitcherEnabled;
-    private final boolean mIsTabletGtsPolishEnabled;
     private final boolean mIsTabToGtsAnimationEnabled;
     private final BooleanSupplier mIsIncognitoModeEnabledSupplier;
     private final TopToolbarInteractabilityManager mTopToolbarInteractabilityManager;
 
     TabSwitcherModeTTCoordinator(ViewStub tabSwitcherToolbarStub,
             ViewStub tabSwitcherFullscreenToolbarStub, MenuButtonCoordinator menuButtonCoordinator,
-            boolean isGridTabSwitcherEnabled, boolean isTabletGtsPolishEnabled,
-            boolean isTabToGtsAnimationEnabled, BooleanSupplier isIncognitoModeEnabledSupplier,
+            boolean isGridTabSwitcherEnabled, boolean isTabToGtsAnimationEnabled,
+            BooleanSupplier isIncognitoModeEnabledSupplier,
             ToolbarColorObserverManager toolbarColorObserverManager) {
         mTabSwitcherToolbarStub = tabSwitcherToolbarStub;
         mTabSwitcherFullscreenToolbarStub = tabSwitcherFullscreenToolbarStub;
         mMenuButtonCoordinator = menuButtonCoordinator;
         mIsGridTabSwitcherEnabled = isGridTabSwitcherEnabled;
-        mIsTabletGtsPolishEnabled = isTabletGtsPolishEnabled;
         mIsTabToGtsAnimationEnabled = isTabToGtsAnimationEnabled;
         mIsIncognitoModeEnabledSupplier = isIncognitoModeEnabledSupplier;
         mTopToolbarInteractabilityManager =
@@ -183,7 +182,8 @@ class TabSwitcherModeTTCoordinator {
      * if necessary.
      */
     private void maybeInflateAndSetToolbar() {
-        if (!mIsTabletGtsPolishEnabled) {
+        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(
+                    mTabSwitcherToolbarStub.getContext())) {
             if (mActiveTabSwitcherToolbar == null) {
                 mActiveTabSwitcherToolbar =
                         (TabSwitcherModeTopToolbar) mTabSwitcherToolbarStub.inflate();

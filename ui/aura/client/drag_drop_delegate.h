@@ -17,7 +17,8 @@
 
 namespace ui {
 class DropTargetEvent;
-}
+class LayerTreeOwner;
+}  // namespace ui
 
 namespace aura {
 class Window;
@@ -46,6 +47,13 @@ class AURA_EXPORT DragDropDelegate {
       base::OnceCallback<void(std::unique_ptr<ui::OSExchangeData> data,
                               ui::mojom::DragOperation& output_drag_op)>;
 
+  // Callback emitted by GetDropCallbackWithAnimation used to handle deferred
+  // drop events and drag image dropping animation.
+  using DropCallbackWithAnimation = base::OnceCallback<void(
+      std::unique_ptr<ui::OSExchangeData> data,
+      ui::mojom::DragOperation& output_drag_op,
+      std::unique_ptr<ui::LayerTreeOwner> old_layer_owner)>;
+
   // OnDragEntered is invoked when the mouse enters this window during a drag &
   // drop session. This is immediately followed by an invocation of
   // OnDragUpdated, and eventually one of OnDragExited, or GetDropCallback.
@@ -62,9 +70,14 @@ class AURA_EXPORT DragDropDelegate {
 
   // Invoked during a drag and drop session when the user release the mouse, but
   // the drop is held because of the DataTransferPolicyController.
-  // The returned callback may be NullCallback if there's nothing to do and the
-  // drop event is ignored.
+  // The implementation may support different a callback to obtain a drag image
+  // widget and manipulate the dropping animation when
+  // GetDropCallbackWithAnimation returns base::NullCallback(). Otherwise, the
+  // implementation will fallback to the default GetDropCallback(). If both
+  // callbacks are null, there's nothing to do and the drop event is ignored.
   virtual DropCallback GetDropCallback(const ui::DropTargetEvent& event) = 0;
+  virtual DropCallbackWithAnimation GetDropCallbackWithAnimation(
+      const ui::DropTargetEvent& event);
 
  protected:
   virtual ~DragDropDelegate() {}

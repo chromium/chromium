@@ -28,8 +28,10 @@ function fullscreen_test()
             // wait for the fullscreenchange event
         }));
 
-        v1.addEventListener("webkitfullscreenchange", t.step_func_done());
+        v1.addEventListener("fullscreenchange", t.step_func_done());
+
         v2.addEventListener("webkitfullscreenchange", t.unreached_func());
+        v2.addEventListener("fullscreenchange", t.unreached_func());
     });
 }
 

@@ -33,6 +33,11 @@
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/live_tab_context_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_util.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
@@ -48,9 +53,6 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
-#import "ios/chrome/browser/ui/commands/application_commands.h"
-#import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
-#import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
@@ -73,8 +75,6 @@
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/url_loading/url_loading_util.h"
@@ -1348,14 +1348,15 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
   NSString* itemIdentifier = URLItem.uniqueIdentifier;
   [self.imageDataSource
-      faviconForURL:URLItem.URL
-         completion:^(FaviconAttributes* attributes) {
-           // Only set favicon if the cell hasn't been reused.
-           if ([URLCell.cellUniqueIdentifier isEqualToString:itemIdentifier]) {
-             DCHECK(attributes);
-             [URLCell.faviconView configureWithAttributes:attributes];
-           }
-         }];
+      faviconForPageURL:URLItem.URL
+             completion:^(FaviconAttributes* attributes) {
+               // Only set favicon if the cell hasn't been reused.
+               if ([URLCell.cellUniqueIdentifier
+                       isEqualToString:itemIdentifier]) {
+                 DCHECK(attributes);
+                 [URLCell.faviconView configureWithAttributes:attributes];
+               }
+             }];
 }
 
 #pragma mark - Distant Sessions helpers
@@ -1469,6 +1470,11 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
 - (void)openTabWithContentOfDistantTab:
     (synced_sessions::DistantTab const*)distantTab {
+  if (!self.browser) {
+    // Prevent interactions if the browser is nil, for example during dismissal.
+    return;
+  }
+
   // Shouldn't reach this if in incognito.
   DCHECK(!self.isIncognito);
 
@@ -1524,6 +1530,11 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 }
 
 - (void)openTabWithTabRestoreEntryId:(const SessionID)entry_id {
+  if (!self.browser) {
+    // Prevent interactions if the browser is nil, for example during dismissal.
+    return;
+  }
+
   // It is reasonable to ignore this request if a modal UI is already showing
   // above recent tabs. This can happen when a user simultaneously taps a
   // recently closed tab and "enable sync". The sync settings UI appears first
@@ -1552,6 +1563,11 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 }
 
 - (void)openNewTabWithCurrentSearchTerm {
+  if (!self.browser) {
+    // Prevent interactions if the browser is nil, for example during dismissal.
+    return;
+  }
+
   // It is reasonable to ignore this request if a modal UI is already showing
   // above recent tabs. This can happen when a user simultaneously taps a
   // recently closed tab and "enable sync". The sync settings UI appears first
@@ -1719,7 +1735,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
                     [[ShowSigninCommand alloc]
                         initWithOperation:AuthenticationOperationReauthenticate
                               accessPoint:signin_metrics::AccessPoint::
-                                              ACCESS_POINT_UNKNOWN]
+                                              ACCESS_POINT_RECENT_TABS]
         baseViewController:self];
 }
 

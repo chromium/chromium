@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">மிக நன்றாக உள்ளது (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">தொடர்க</translation>
 <translation id="2364498172489649528">வெற்றி</translation>
+<translation id="2367335866686097760">கீ பட்டன் ஒதுக்கீடு</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">கருத்து அறிக்கையை அனுப்பு</translation>
 <translation id="2407209115954268704">சிம் நிலை</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">தோற்றப் படம் மாற்றப்பட்டது</translation>
 <translation id="3192947282887913208">ஆடியோ ஃபைல்கள் </translation>
 <translation id="3199982728237701504">டாக்குமெண்ட் ஃபீடர் (இரண்டு பக்கமும்)</translation>
+<translation id="3211671540163313381">டி-பேட் பட்டன் ஒதுக்கீடு</translation>
 <translation id="3226405216343213872">ஸ்கேனர்களைத் தேடுகிறது</translation>
+<translation id="3226657629376379887">தளவமைப்புகளுக்கான செயல்பாட்டு மெனு</translation>
 <translation id="3246869037381808805">1 நாளுக்கும் முன்னதாக உள்ள பிரிண்ட்டிங் பணிகள் அகற்றப்படும்</translation>
 <translation id="3268178239013324452">பிரிண்டரின் மூடி திறந்துள்ளதால் அச்சிட முடியவில்லை</translation>
 <translation id="3275729367986477355">தோற்றப் படம்</translation>
@@ -253,6 +256,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">பாதுகாப்பு</translation>
 <translation id="3435896845095436175">இயக்கு</translation>
+<translation id="345256797477978759">திரையின் <ph name="DIRECTION" /> பக்க அகலப் பகுதியிலுள்ள சாளரத்தை டாக் செய்யும்</translation>
 <translation id="3456078764689556234">அச்சிடப்பட்ட பக்கங்கள்: <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">ஸ்கேன் செய்யப்படும் பக்கம்: <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% முடிந்தது.</translation>
 <translation id="3459509316159669723">அச்சிடல்</translation>
@@ -273,12 +277,14 @@
 <translation id="3595596368722241419">பேட்டரி நிரம்பியது</translation>
 <translation id="3600339377155080675">ஸ்கிரீன் மிரர்</translation>
 <translation id="3602290021589620013">மாதிரிக்காட்சி</translation>
+<translation id="360282891121575443">பகிர்ந்த ஆல்பங்களில் உள்ள படங்களைப் பிற பயனர்கள் மாற்றலாம். தினமும் மாற்றுவதால் தற்போது ஆல்பத்தில் இல்லாத வால்பேப்பர்கள் காட்டப்படக்கூடும்.</translation>
 <translation id="3603829704940252505">தோற்றப் படம்</translation>
 <translation id="3604713164406837697">வால்பேப்பரை மாற்று</translation>
 <translation id="360565022852130722">WEP 802.1x என்னும் வலுவற்ற நெறிமுறை மூலம் வைஃபை நெட்வொர்க் பாதுகாக்கப்படுகிறது</translation>
 <translation id="3606583719724308068">HTTPS இணையதளங்களில் அதிகளவு தாமதம் ஏற்படுகிறது</translation>
 <translation id="361575905210396100">உங்கள் கருத்துக்கு நன்றி</translation>
 <translation id="3632579075709132555">தனிப்பட்ட திரையை இயக்கும்/முடக்கும்</translation>
+<translation id="3639846061339007994">மேல் பக்கம்</translation>
 <translation id="3651050199673793219">வெப்பநிலை அலகைத் தேர்ந்தெடுக்கும்</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> சோதனை</translation>
 <translation id="370665806235115550">ஏற்றுகிறது…</translation>
@@ -520,6 +526,7 @@
 <translation id="576835345334454681">காட்சி ஒளிர்வை அதிகரிக்கும்</translation>
 <translation id="57838592816432529">ஒலியடக்கு</translation>
 <translation id="5784136236926853061">HTTP கோரிக்கைகள் அதிக நேரம் எடுத்துக்கொள்கின்றன</translation>
+<translation id="5826644637650799838">கலை குறித்த விவரம்</translation>
 <translation id="5832805196449965646">நபரைச் சேர்</translation>
 <translation id="583281660410589416">தெரியாதது</translation>
 <translation id="5843706793424741864">ஃபாரன்ஹீட்</translation>
@@ -562,6 +569,7 @@
 <translation id="6117895505466548728"><ph name="TITLE" />, மேலும் <ph name="NUMBER" /> ஆல்பங்கள்</translation>
 <translation id="6122191549521593678">ஆன்லைன்</translation>
 <translation id="6122277663991249694">ChromeOS உள்ளீட்டு முறை சேவை</translation>
+<translation id="6136285399872347291">பேக்ஸ்பேஸ்</translation>
 <translation id="6137767437444130246">பயனர் சான்றிதழ்</translation>
 <translation id="6146993107019042706">நிறைவுசெய்ய புதிய கடவுச்சொல்லை உள்ளிடவும்</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -609,6 +617,7 @@
 <translation id="650266656685499220">ஆல்பங்களை உருவாக்க Google Photosஸிற்குச் செல்லலாம்</translation>
 <translation id="6516990319416533844">பேட்டரியின் சார்ஜிங் விகிதத்தைப் பரிசோதிக்க, சிறிது நேரத்திற்கு அதன் சார்ஜைக் காலி செய்யவும்</translation>
 <translation id="6517239166834772319">Explore</translation>
+<translation id="6526200165918397681">வால்பேப்பருடன் பொருத்தும்</translation>
 <translation id="6527081081771465939">அறியப்படாத வைஃபை பாதுகாப்பு நெறிமுறை</translation>
 <translation id="6535178685492749208">ஆஃப்லைனில் உள்ளீர்கள். உங்களின் கருத்து பின்னர் அனுப்பப்படும்.</translation>
 <translation id="65587193855025101">ஃபிளாட்பெட்</translation>
@@ -628,6 +637,7 @@
 <translation id="6657585470893396449">கடவுச்சொல்</translation>
 <translation id="6659594942844771486">உலாவிப் பக்கம்</translation>
 <translation id="6692996468359469499">திரையில் நீங்கள் தேர்ந்தெடுத்தது தொடர்பாக தகவல்களைப் பெறவும்</translation>
+<translation id="6698459586333070823">பகிர்ந்த ஆல்பங்களில் பிற பயனர்கள் மாற்றங்களைச் செய்யலாம்</translation>
 <translation id="6704062477274546131">DNS ரெசல்யூஷன்</translation>
 <translation id="6723839937902243910">ஆற்றல்</translation>
 <translation id="6723847290197874913">கீபோர்டு பேக்லைட்</translation>
@@ -664,6 +674,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">தோல்வியடைந்தது - அங்கீகரிக்க முடியவில்லை</translation>
 <translation id="7103252855940681301"><ph name="COUNT" /> சாதனங்களில் <ph name="INDEX" />வது சாதனத்தின் பெயர் <ph name="NAME" />.</translation>
+<translation id="7108668606237948702">உள்ளிடு</translation>
 <translation id="7130438335435247835">ஆக்சஸ் பாயிண்ட் நேம் (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{நேம் சர்வர்}other{நேம் சர்வர்கள்}}</translation>
 <translation id="7143207342074048698">இணைத்தல்</translation>
@@ -673,6 +684,7 @@
 <translation id="7155171745945906037">கேமரா அல்லது ஃபைலில் இருக்கும் படம்</translation>
 <translation id="7162487448488904999">கேலரி</translation>
 <translation id="7170236477717446850">சுயவிவரப் படம்</translation>
+<translation id="7171919371520438592">திரையின் <ph name="DIRECTION" /> பக்கச் சிறிய பகுதியில் சாளரத்தை டாக் செய்யும்</translation>
 <translation id="7172721935181587524">1 படம்</translation>
 <translation id="7177485034254901881">இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது. நிர்வாகிகள் இந்தச் சாதனத்தைத் தொலைநிலையிலிருந்து உள்ளமைக்கக்கூடும்.</translation>
 <translation id="7180611975245234373">புதுப்பி</translation>
@@ -748,6 +760,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">வழங்குநர் வகை</translation>
 <translation id="7882501334836096755">பொதுக் குறியீடு</translation>
+<translation id="78957024357676568">இடது</translation>
 <translation id="7915220255123750251">நெட்வொர்க் APN அமைப்புகளை நிர்வகிக்கலாம். மொபைல் நெட்வொர்க் மற்றும் இணையத்திற்கு இடையில் APNகள் இணைப்பை உருவாக்கும்.</translation>
 <translation id="7936303884198020182">பெயர் சேவையகங்கள் எதுவும் இல்லை</translation>
 <translation id="7942349550061667556">சிவப்பு</translation>
@@ -776,9 +789,11 @@
 <translation id="8183974620058026102">இணை</translation>
 <translation id="8206859287963243715">செல்லுலர்</translation>
 <translation id="8208861521865154048">சலுகைகள்</translation>
+<translation id="8210733748736414123">கீழ் பக்கம்</translation>
 <translation id="8226628635270268143">உங்களுக்குப் பிடித்த படங்களையும் ஆல்பங்களையும் தேர்வுசெய்க</translation>
 <translation id="8227119283605456246">ஃபைலை இணை</translation>
 <translation id="8230672074305416752">இயல்புநிலை நெட்வொர்க் கேட்வேயைப் பிங் செய்ய முடியவில்லை</translation>
+<translation id="8242426110754782860">தொடருக</translation>
 <translation id="8246209727385807362">அறியப்படாத தொலைத்தொடர்பு நிறுவனம்</translation>
 <translation id="827422111966801947">இண்டிகோ</translation>
 <translation id="8286154143153872371">வால்பேப்பரைப் பார்க்க நெட்வொர்க்குடன் இணைத்து, பக்கத்தை ரெஃப்ரெஷ் செய்யவும்.</translation>
@@ -789,9 +804,11 @@
 <translation id="8318753676953949627">படங்கள் இல்லை</translation>
 <translation id="8336739000755212683">சாதனக் கணக்கின் படத்தை மாற்றவும்</translation>
 <translation id="8347227221149377169">அச்சுப் பணிகள்</translation>
+<translation id="8351855506390808906">டச் பாயிண்ட் பட்டன் ஒதுக்கீடு</translation>
 <translation id="8352772353338965963">பல உள்நுழைவுக்குக் கணக்கைச் சேர்க்கவும். உள்நுழைந்த அனைத்து கணக்குகளையும் கடவுச்சொல் இல்லாமலே அணுகலாம் என்பதால் இந்த அம்சத்தை நம்பகமான கணக்குகளுடன் மட்டுமே பயன்படுத்த வேண்டும்.</translation>
 <translation id="8364946094152050673">பெயர் சேவையகங்கள் காலியாக உள்ளன</translation>
 <translation id="8372477600026034341">கூடுதல் ஹோஸ்ட்கள்</translation>
+<translation id="8380114448424469341">திரையின் <ph name="DIRECTION" /> பக்கப் பாதியில் சாளரத்தை டாக் செய்யும்</translation>
 <translation id="8395584934117017006">இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை நிறுவனம் நிர்வகிக்கிறது</translation>
 <translation id="8398927464629426868">தற்போது சாதனத்தில் சார்ஜ் ஏறும் அல்லது குறையும் வீதம்</translation>
 <translation id="8410244574650205435">தானாகக் கண்டறியப்பட்டது</translation>
@@ -856,6 +873,7 @@
 <translation id="8930622219860340959">கம்பியில்லா</translation>
 <translation id="8936793075252196307">கிளையண்ட் IP முகவரி</translation>
 <translation id="894617464444543719">சாதனம் ஒரு மொபைல்.</translation>
+<translation id="8957423540740801332">வலது</translation>
 <translation id="8968751544471797276">சார்ஜிங் விகிதம்</translation>
 <translation id="8970109610781093811">மீண்டும் இயக்கு</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -883,6 +901,7 @@
 <translation id="9137526406337347448">Google சேவைகள்</translation>
 <translation id="9138630967333032450">இடதுபக்க shift</translation>
 <translation id="9149391708638971077">நினைவகச் சோதனையை இயக்கு</translation>
+<translation id="9161276708550942948">space</translation>
 <translation id="9173638680043580060">ஒரு நிமிடத்திற்கும் குறைவான நேரமே மீதமுள்ளது</translation>
 <translation id="917720651393141712">சோதனை செய்</translation>
 <translation id="9188992814426075118">உங்கள் வால்பேப்பருக்கு ஏற்றவாறு கீபோர்டு வண்ணம் தானாகவே மாறும்</translation>

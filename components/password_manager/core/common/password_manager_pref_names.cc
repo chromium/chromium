@@ -70,8 +70,10 @@ const char kWasAutoSignInFirstRunExperienceShown[] =
 const char kWereOldGoogleLoginsRemoved[] =
     "profile.were_old_google_logins_removed";
 
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 const char kAccountStoragePerAccountSettings[] =
     "profile.password_account_storage_settings";
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 const char kSyncPasswordHash[] = "profile.sync_password_hash";
 
@@ -118,6 +120,9 @@ const char kBiometricAuthenticationBeforeFilling[] =
 const char kHadBiometricsAvailable[] =
     "password_manager.had_biometrics_available";
 #endif
+
+extern const char kPasswordsGroupingInfoRequested[] =
+    "password_manager.passwords_grouping_info_requested";
 
 }  // namespace prefs
 }  // namespace password_manager

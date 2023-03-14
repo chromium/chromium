@@ -4,8 +4,10 @@
 
 import 'chrome://os-settings/chromeos/os_settings.js';
 
-import {RegisterReceiveSurfaceResult} from 'chrome://os-settings/mojo/nearby_share.mojom-webui.js';
+import {nearbyShareMojom} from 'chrome://os-settings/chromeos/os_settings.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+const {RegisterReceiveSurfaceResult} = nearbyShareMojom;
 
 suite('NearbyShare', function() {
   let nearbyShareHighVisibilityPage;

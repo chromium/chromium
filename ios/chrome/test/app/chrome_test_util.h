@@ -6,8 +6,8 @@
 #define IOS_CHROME_TEST_APP_CHROME_TEST_UTIL_H_
 
 #import "base/ios/block_types.h"
-#import "ios/chrome/browser/ui/commands/browser_commands.h"
-#import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 
 @protocol ApplicationCommands;
 class Browser;

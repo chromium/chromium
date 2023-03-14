@@ -73,6 +73,10 @@ class TtsClientLacros
   // Ash's TtsController.
   void RequestResume();
 
+  // Forwards the request to query Ash TtsController's IsSpeaking() state and
+  // returns the result in callback.
+  void IsSpeaking(base::OnceCallback<void(bool)> callback);
+
   // Handle events received from the Lacros speech engine.
   void OnLacrosSpeechEngineTtsEvent(int utterance_id,
                                     content::TtsEventType event_type,

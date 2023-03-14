@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/test/mock_os_integration_manager.h"
+#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/common/chrome_constants.h"
@@ -41,13 +42,13 @@ const std::u16string kFakeAppTitle(u"fake title");
 std::unique_ptr<ShortcutInfo> CreateTestShorcutInfo(const AppId& app_id) {
   auto shortcut_info = std::make_unique<ShortcutInfo>();
   shortcut_info->profile_path = base::FilePath(kFakeProfilePath);
-  shortcut_info->extension_id = app_id;
+  shortcut_info->app_id = app_id;
   shortcut_info->url = GURL(kFakeAppUrl);
   shortcut_info->title = kFakeAppTitle;
   return shortcut_info;
 }
 
-class OsIntegrationManagerTest : public testing::Test {
+class OsIntegrationManagerTest : public WebAppTest {
  public:
   OsIntegrationManagerTest() {
     features_.InitWithFeatures({blink::features::kWebAppEnableUrlHandlers,
@@ -58,7 +59,6 @@ class OsIntegrationManagerTest : public testing::Test {
   ~OsIntegrationManagerTest() override = default;
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList features_;
 };
 

@@ -6,6 +6,8 @@
 
 #include "build/build_config.h"
 
+BASE_FEATURE(kClickToCall, "ClickToCall", base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSharingMatchPulseInterval,
              "SharingMatchPulseInterval",
              base::FEATURE_DISABLED_BY_DEFAULT);

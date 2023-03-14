@@ -13,9 +13,10 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "url/gurl.h"
 
-class GoogleServiceAuthError {
+class COMPONENT_EXPORT(GOOGLE_APIS) GoogleServiceAuthError {
  public:
   //
   // These enumerations are referenced by integer value in HTML login code and

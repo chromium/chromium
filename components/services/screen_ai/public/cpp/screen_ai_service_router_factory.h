@@ -23,6 +23,8 @@ class ScreenAIServiceRouterFactory : public BrowserContextKeyedServiceFactory {
   static screen_ai::ScreenAIServiceRouter* GetForBrowserContext(
       content::BrowserContext* context);
 
+  static void EnsureFactoryBuilt();
+
  private:
   friend class base::NoDestructor<ScreenAIServiceRouterFactory>;
   static ScreenAIServiceRouterFactory* GetInstance();

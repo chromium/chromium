@@ -103,6 +103,7 @@ declare global {
       export interface DomainInfo {
         name: string;
         url: string;
+        signonRealm: string;
       }
 
       export interface PasswordUiEntry {

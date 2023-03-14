@@ -54,16 +54,16 @@ class GL_EXPORT DCompPresenter : public Presenter, public VSyncObserver {
   DCompPresenter(const DCompPresenter&) = delete;
   DCompPresenter& operator=(const DCompPresenter&) = delete;
 
-  // GLSurfaceEGL implementation.
-  bool Initialize(GLSurfaceFormat format) override;
-  void Destroy() override;
+  bool Initialize();
+  void Destroy();
+  gfx::VSyncProvider* GetVSyncProvider();
+  bool SupportsProtectedVideo() const;
+
+  // Presenter implementation.
   bool Resize(const gfx::Size& size,
               float scale_factor,
               const gfx::ColorSpace& color_space,
               bool has_alpha) override;
-  gfx::VSyncProvider* GetVSyncProvider() override;
-  bool SupportsDCLayers() const override;
-  bool SupportsProtectedVideo() const override;
   bool SetDrawRectangle(const gfx::Rect& rect) override;
   bool SupportsGpuVSync() const override;
   void SetGpuVSyncEnabled(bool enabled) override;

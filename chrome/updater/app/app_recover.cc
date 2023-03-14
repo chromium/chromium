@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/barrier_closure.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -67,6 +68,12 @@ void AppRecover::Uninitialize() {
 }
 
 void AppRecover::FirstTaskRun() {
+  if (!global_prefs_) {
+    VLOG(0) << "Recovery task could not acquire global prefs.";
+    Shutdown(kErrorFailedToLockPrefsMutex);
+    return;
+  }
+
   const std::vector<RegistrationRequest> registrations = RecordRegisteredApps();
 
   // Release global prefs lock so that the updater may run concurrently.
@@ -79,6 +86,7 @@ void AppRecover::FirstTaskRun() {
 }
 
 std::vector<RegistrationRequest> AppRecover::RecordRegisteredApps() const {
+  CHECK(global_prefs_);
   scoped_refptr<PersistedData> data = base::MakeRefCounted<PersistedData>(
       updater_scope(), global_prefs_->GetPrefService());
   std::vector<RegistrationRequest> apps;

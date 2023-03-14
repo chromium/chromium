@@ -84,7 +84,9 @@ void VersionInfoUpdater::StartUpdate(bool is_chrome_branded) {
   policy::DeviceCloudPolicyManagerAsh* policy_manager =
       connector->GetDeviceCloudPolicyManager();
   if (policy_manager) {
-    policy_manager->core()->store()->AddObserver(this);
+    if (!policy_manager->core()->store()->HasObserver(this)) {
+      policy_manager->core()->store()->AddObserver(this);
+    }
 
     // Ensure that we have up-to-date enterprise info in case enterprise policy
     // is already fetched and has finished initialization.

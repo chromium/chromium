@@ -9,10 +9,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.eq;
 
 import android.content.Context;
 import android.os.PersistableBundle;
@@ -70,11 +70,6 @@ public class PrefetchBackgroundTaskUnitTest {
         @Override
         public void cancel(Context context, int taskId) {
             mTaskInfos.remove(taskId);
-        }
-
-        @Override
-        public boolean isScheduled(Context context, int taskId) {
-            return (mTaskInfos.get(taskId) != null);
         }
 
         @Override

@@ -4,8 +4,12 @@
 
 #include "content/browser/preloading/prerender/prerender_new_tab_handle.h"
 
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
+#include "content/browser/web_contents/web_contents_impl.h"
+#include "content/common/frame.mojom.h"
 #include "content/public/browser/web_contents_delegate.h"
 
 namespace content {

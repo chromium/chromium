@@ -54,8 +54,7 @@ void NativeInputMethodEngine::Initialize(
               ? std::move(suggester_switch_)
               : std::make_unique<AssistiveSuggesterClientFilter>(
                     base::BindRepeating(&GetFocusedTabUrl),
-                    base::BindRepeating(&GetFocusedWindowProperties)),
-          nullptr);
+                    base::BindRepeating(&GetFocusedWindowProperties)));
   assistive_suggester_ = assistive_suggester.get();
   std::unique_ptr<AutocorrectManager> autocorrect_manager =
       std::make_unique<AutocorrectManager>(this, profile);

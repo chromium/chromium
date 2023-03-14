@@ -120,8 +120,20 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest, Accelerators) {
 // dialog.
 IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
                        SyncConfirmationDefaultFocus) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // This test runs in the main profile.
+  EXPECT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  CoreAccountInfo device_primary_account =
+      GetIdentityManager()->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin);
+  signin::MakePrimaryAccountAvailable(GetIdentityManager(),
+                                      device_primary_account.email,
+                                      signin::ConsentLevel::kSync);
+#else
   signin::MakePrimaryAccountAvailable(GetIdentityManager(), "alice@gmail.com",
                                       signin::ConsentLevel::kSync);
+#endif
   content::TestNavigationObserver content_observer(
       GURL("chrome://sync-confirmation/"));
   content_observer.StartWatchingNewWebContents();
@@ -204,8 +216,19 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
 // interception dialog.
 IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
                        EnterpriseConfirmationDefaultFocus) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // This test runs in the main profile.
+  EXPECT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  auto primary_account_info = GetIdentityManager()->GetPrimaryAccountInfo(
+      signin::ConsentLevel::kSignin);
+  auto account_info = signin::MakePrimaryAccountAvailable(
+      GetIdentityManager(), primary_account_info.email,
+      signin::ConsentLevel::kSync);
+#else
   auto account_info = signin::MakePrimaryAccountAvailable(
       GetIdentityManager(), "alice@gmail.com", signin::ConsentLevel::kSync);
+#endif
   content::TestNavigationObserver content_observer(
       GURL("chrome://enterprise-profile-welcome/"));
   content_observer.StartWatchingNewWebContents();

@@ -51,7 +51,6 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.share.crow.CrowButtonDelegateImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProviderJni;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -274,8 +273,8 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
                 new ActivityLifecycleDispatcherImpl(mActivity), new MockTabCreatorManager(),
                 Mockito.mock(MenuOrKeyboardActionController.class),
                 new MultiWindowModeStateDispatcherImpl(mActivity), new DummyJankTracker(),
-                new ObservableSupplierImpl<>(), new CrowButtonDelegateImpl(),
-                new BackPressManager(), mIncognitoReauthControllerSupplier, null);
+                new ObservableSupplierImpl<>(), new BackPressManager(),
+                mIncognitoReauthControllerSupplier, null);
 
         Assert.assertFalse(LibraryLoader.getInstance().isLoaded());
         when(mLibraryLoader.isInitialized()).thenReturn(true);

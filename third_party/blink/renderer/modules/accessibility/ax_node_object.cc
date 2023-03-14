@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
+#include "third_party/blink/renderer/core/dom/css_toggle_inference.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -102,6 +103,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/portal/html_portal_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
@@ -496,6 +498,13 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   Element* element = GetElement();
   if (!element) {
     return kDefaultBehavior;
+  }
+
+  if (IsExcludedByFormControlsFilter()) {
+    if (ignored_reasons) {
+      ignored_reasons->push_back(IgnoredReason(kAXUninteresting));
+    }
+    return kIgnoreObject;
   }
 
   if (IsA<SVGElement>(node)) {
@@ -1343,6 +1352,75 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   return RoleFromLayoutObjectOrNode();
 }
 
+namespace {
+
+ax::mojom::blink::Role InferredCSSToggleRole(Node* node) {
+  Element* element = DynamicTo<Element>(node);
+  if (!element) {
+    return ax::mojom::blink::Role::kUnknown;
+  }
+
+  // toggle_inference is null when CSS toggles are not used in the document.
+  CSSToggleInference* toggle_inference =
+      element->GetDocument().GetCSSToggleInference();
+  if (!toggle_inference) {
+    return ax::mojom::blink::Role::kUnknown;
+  }
+
+  DCHECK(RuntimeEnabledFeatures::CSSTogglesEnabled());
+
+  switch (toggle_inference->RoleForElement(element)) {
+    case CSSToggleRole::kNone:
+      break;
+    case CSSToggleRole::kButtonWithPopup:
+      return ax::mojom::blink::Role::kPopUpButton;
+    case CSSToggleRole::kDisclosure:
+      break;
+    case CSSToggleRole::kDisclosureButton:
+      return ax::mojom::blink::Role::kButton;
+    case CSSToggleRole::kTree:
+      return ax::mojom::blink::Role::kTree;
+    case CSSToggleRole::kTreeGroup:
+      return ax::mojom::blink::Role::kGroup;
+    case CSSToggleRole::kTreeItem:
+      return ax::mojom::blink::Role::kTreeItem;
+    case CSSToggleRole::kAccordion:
+      break;
+    case CSSToggleRole::kAccordionItem:
+      return ax::mojom::blink::Role::kRegion;
+    case CSSToggleRole::kAccordionItemButton:
+      return ax::mojom::blink::Role::kButton;
+    case CSSToggleRole::kTabContainer:
+      // TODO(dbaron): We should verify that using kTabList really
+      // works here, since this is a container that has both the tab
+      // list *and* the tab panels.  We should also make sure that
+      // posinset/setsize work correctly for the tabs.
+      return ax::mojom::blink::Role::kTabList;
+    case CSSToggleRole::kTab:
+      return ax::mojom::blink::Role::kTab;
+    case CSSToggleRole::kTabPanel:
+      return ax::mojom::blink::Role::kTabPanel;
+    case CSSToggleRole::kRadioGroup:
+      return ax::mojom::blink::Role::kRadioGroup;
+    case CSSToggleRole::kRadioItem:
+      return ax::mojom::blink::Role::kRadioButton;
+    case CSSToggleRole::kCheckboxGroup:
+      break;
+    case CSSToggleRole::kCheckbox:
+      return ax::mojom::blink::Role::kCheckBox;
+    case CSSToggleRole::kListbox:
+      return ax::mojom::blink::Role::kListBox;
+    case CSSToggleRole::kListboxItem:
+      return ax::mojom::blink::Role::kListBoxOption;
+    case CSSToggleRole::kButton:
+      return ax::mojom::blink::Role::kButton;
+  }
+
+  return ax::mojom::blink::Role::kUnknown;
+}
+
+}  // namespace
+
 ax::mojom::blink::Role AXNodeObject::DetermineAccessibilityRole() {
 #if DCHECK_IS_ON()
   base::AutoReset<bool> reentrancy_protector(&is_computing_role_, true);
@@ -1357,8 +1435,25 @@ ax::mojom::blink::Role AXNodeObject::DetermineAccessibilityRole() {
 
   aria_role_ = DetermineAriaRoleAttribute();
 
-  return aria_role_ == ax::mojom::blink::Role::kUnknown ? native_role_
-                                                        : aria_role_;
+  // Order of precedence is currently:
+  //   1. ARIA role
+  //   2. Inferred role from CSS Toggle inference engine
+  //   3. Native markup role
+  // but we may decide to change how the CSS Toggle inference fits in.
+  //
+  // TODO(dbaron): Perhaps revisit whether there are types of elements
+  // where toggles should not work.
+
+  if (aria_role_ != ax::mojom::blink::Role::kUnknown) {
+    return aria_role_;
+  }
+
+  ax::mojom::blink::Role css_toggle_role = InferredCSSToggleRole(GetNode());
+  if (css_toggle_role != ax::mojom::blink::Role::kUnknown) {
+    return css_toggle_role;
+  }
+
+  return native_role_;
 }
 
 void AXNodeObject::AccessibilityChildrenFromAOMProperty(
@@ -1417,7 +1512,8 @@ void AXNodeObject::Init(AXObject* parent) {
 #endif
   AXObject::Init(parent);
 
-  DCHECK(role_ == native_role_ || role_ == aria_role_)
+  DCHECK(role_ == native_role_ || role_ == aria_role_ ||
+         GetNode()->GetDocument().GetCSSToggleInference())
       << "Role must be either the cached native role or cached aria role: "
       << "\n* Final role: " << role_ << "\n* Native role: " << native_role_
       << "\n* Aria role: " << aria_role_ << "\n* Node: " << GetNode();
@@ -3088,18 +3184,9 @@ String AXNodeObject::GetValueForControl() const {
     if (auto* select_menu = HTMLSelectMenuElement::OwnerSelectMenu(node)) {
       DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
       if (HTMLOptionElement* selected = select_menu->selectedOption()) {
-        // TODO(accessibility) Because these <option> elements can contain
-        // anything, we need to create an AXObject for the selected option, and
-        // use ax_selected_option->ComputedName(). However, for now, the
-        // AXObject is not created because AXObject::IsRelevantSlotElement()
-        // returns false for the invisible slot parent. Also, strangely,
-        // selected->innerText()/GetInnerTextWithoutUpdate() are returning "".
-        // See the following content_browsertest:
-        // All/DumpAccessibilityTreeTest.AccessibilitySelectMenu/blink.
-        // TODO(crbug.com/1401767): DCHECK fails with synchronous serialization.
-        DCHECK(selected->firstChild())
-            << "There is a selected option but it has no DOM children.";
-        return selected->textContent();
+        if (selected->firstChild()) {
+          return selected->textContent();
+        }
       }
       return String();
     }
@@ -3231,6 +3318,8 @@ ax::mojom::blink::IsPopup AXNodeObject::IsPopup() const {
       return ax::mojom::blink::IsPopup::kNone;
     case PopoverValueType::kAuto:
       return ax::mojom::blink::IsPopup::kAuto;
+    case PopoverValueType::kHint:
+      return ax::mojom::blink::IsPopup::kHint;
     case PopoverValueType::kManual:
       return ax::mojom::blink::IsPopup::kManual;
   }
@@ -3968,13 +4057,9 @@ void AXNodeObject::ForceAddInlineTextBoxChildren() {
 }
 
 void AXNodeObject::AddInlineTextBoxChildren(bool force) {
-  Document* document = GetDocument();
-  if (!document) {
-    NOTREACHED();
-    return;
-  }
+  DCHECK(GetDocument());
 
-  Settings* settings = document->GetSettings();
+  Settings* settings = GetDocument()->GetSettings();
   if (!force &&
       (!settings || !settings->GetInlineTextBoxAccessibilityEnabled())) {
     return;
@@ -3983,12 +4068,7 @@ void AXNodeObject::AddInlineTextBoxChildren(bool force) {
   if (!GetLayoutObject() || !GetLayoutObject()->IsText())
     return;
 
-  if (GetLayoutObject()->NeedsLayout()) {
-    // If a LayoutText or a LayoutBR needs layout, its inline text boxes are
-    // either nonexistent or invalid, so defer until the layout happens and the
-    // layoutObject calls AXObjectCacheImpl::inlineTextBoxesUpdated.
-    return;
-  }
+  DCHECK(!GetLayoutObject()->NeedsLayout());
 
   if (LastKnownIsIgnoredValue()) {
     // Inline textboxes are included if and only if the parent is unignored.
@@ -4027,8 +4107,8 @@ void AXNodeObject::AddImageMapChildren() {
   HTMLImageElement* curr_image_element = DynamicTo<HTMLImageElement>(GetNode());
   DCHECK(curr_image_element);
   DCHECK(curr_image_element->IsLink());
-  String usemap = curr_image_element->FastGetAttribute(html_names::kUsemapAttr);
-  DCHECK(!usemap.empty());
+  DCHECK(
+      !curr_image_element->FastGetAttribute(html_names::kUsemapAttr).empty());
 
   // Even though several images can point to the same map via usemap, only
   // use one reported via HTMLImageMapElement::ImageElement(), which is always
@@ -4712,61 +4792,6 @@ bool AXNodeObject::OnNativeSetSequentialFocusNavigationStartingPointAction() {
   document->ClearFocusedElement();
   document->SetSequentialFocusNavigationStartingPoint(GetNode());
   return true;
-}
-
-void AXNodeObject::ChildrenChangedWithCleanLayout() {
-  DCHECK(!IsDetached()) << "Don't call on detached node: "
-                        << ToString(true, true);
-  DCHECK(GetNode() || GetLayoutObject());
-
-  // When children changed on a <map> that means we need to forward the
-  // children changed to the <img> that parents the <area> elements.
-  // TODO(accessibility) Consider treating <img usemap> as aria-owns so that
-  // we get implementation "for free" vai relation cache, etc.
-  if (HTMLMapElement* map_element = DynamicTo<HTMLMapElement>(GetNode())) {
-    HTMLImageElement* image_element = map_element->ImageElement();
-    if (image_element) {
-      AXObject* ax_image = AXObjectCache().Get(image_element);
-      if (ax_image) {
-        ax_image->ChildrenChangedWithCleanLayout();
-        return;
-      }
-    }
-  }
-
-  // Always invalidate |children_| even if it was invalidated before, because
-  // now layout is clean.
-  SetNeedsToUpdateChildren();
-
-  // The caller, AXObjectCacheImpl::ChildrenChangedWithCleanLayout(), is only
-  // Between the time that AXObjectCacheImpl::ChildrenChanged() determines
-  // which included parent to use and now, it's possible that the parent will
-  // no longer be ignored. This is rare, but is covered by this test:
-  // external/wpt/accessibility/crashtests/delayed-ignored-change.html/
-  //
-  // If this object is no longer included in the tree, then our parent needs to
-  // recompute its included-in-the-tree children vector. (And if our parent
-  // isn't included in the tree either, it will recursively update its parent
-  // and so on.)
-  //
-  // The first ancestor that's included in the tree will
-  // be the one that actually fires the ChildrenChanged
-  // event notification.
-  if (!LastKnownIsIncludedInTreeValue()) {
-    if (AXObject* ax_parent = CachedParentObject()) {
-      ax_parent->ChildrenChangedWithCleanLayout();
-      return;
-    }
-  }
-
-  // TODO(accessibility) Move this up.
-  if (!CanHaveChildren())
-    return;
-
-  DCHECK(!IsDetached()) << "None of the above should be able to detach |this|: "
-                        << ToString(true, true);
-
-  AXObjectCache().MarkAXObjectDirtyWithCleanLayout(this);
 }
 
 void AXNodeObject::SelectedOptions(AXObjectVector& options) const {
@@ -5683,6 +5708,42 @@ String AXNodeObject::Description(
         description_sources->back().text = description;
       } else {
         return description;
+      }
+    }
+  }
+
+  // For form controls that act as triggering elements for popovers of type
+  // kHint, then set aria-describedby to the popover.
+  if (auto* form_control = DynamicTo<HTMLFormControlElement>(element)) {
+    auto popover_target = form_control->popoverTargetElement();
+    if (popover_target.popover &&
+        popover_target.popover->PopoverType() == PopoverValueType::kHint) {
+      DCHECK(RuntimeEnabledFeatures::HTMLPopoverHintEnabled());
+      description_from = ax::mojom::blink::DescriptionFrom::kPopoverAttribute;
+      if (description_sources) {
+        description_sources->push_back(DescriptionSource(
+            found_description, html_names::kPopovertargetAttr));
+        description_sources->back().type = description_from;
+      }
+      AXObject* popover_ax_object =
+          AXObjectCache().GetOrCreate(popover_target.popover);
+      if (popover_ax_object) {
+        AXObjectSet visited;
+        description = RecursiveTextAlternative(*popover_ax_object,
+                                               popover_ax_object, visited);
+        if (related_objects) {
+          related_objects->push_back(
+              MakeGarbageCollected<NameSourceRelatedObject>(popover_ax_object,
+                                                            description));
+        }
+        if (description_sources) {
+          DescriptionSource& source = description_sources->back();
+          source.related_objects = *related_objects;
+          source.text = description;
+          found_description = true;
+        } else {
+          return description;
+        }
       }
     }
   }

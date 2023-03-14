@@ -54,23 +54,22 @@ bool NaClModulesHandler::Parse(Extension* extension, std::u16string* error) {
 
   const base::Value::List& list = list_value->GetList();
   for (size_t i = 0; i < list.size(); ++i) {
-    if (!list[i].is_dict()) {
+    const base::Value::Dict* dict = list[i].GetIfDict();
+    if (!dict) {
       *error = errors::kInvalidNaClModules;
       return false;
     }
 
     // Get nacl_modules[i].path.
-    const base::Value* path_str = list[i].FindKeyOfType(
-        keys::kNaClModulesPath, base::Value::Type::STRING);
-    if (path_str == nullptr) {
+    const std::string* path = dict->FindString(keys::kNaClModulesPath);
+    if (path == nullptr) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           errors::kInvalidNaClModulesPath, base::NumberToString(i));
       return false;
     }
 
     // Get nacl_modules[i].mime_type.
-    const base::Value* mime_type = list[i].FindKeyOfType(
-        keys::kNaClModulesMIMEType, base::Value::Type::STRING);
+    const std::string* mime_type = dict->FindString(keys::kNaClModulesMIMEType);
     if (mime_type == nullptr) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           errors::kInvalidNaClModulesMIMEType, base::NumberToString(i));
@@ -79,8 +78,8 @@ bool NaClModulesHandler::Parse(Extension* extension, std::u16string* error) {
 
     nacl_module_data->nacl_modules_.push_back(NaClModuleInfo());
     nacl_module_data->nacl_modules_.back().url =
-        extension->GetResourceURL(path_str->GetString());
-    nacl_module_data->nacl_modules_.back().mime_type = mime_type->GetString();
+        extension->GetResourceURL(*path);
+    nacl_module_data->nacl_modules_.back().mime_type = *mime_type;
   }
 
   extension->SetManifestData(keys::kNaClModules, std::move(nacl_module_data));

@@ -150,7 +150,6 @@ void LogDownloadCompletion(DownloadClient client,
 // exclusive.
 void LogDownloadPauseReason(const DownloadBlockageStatus& blockage_status,
                             bool on_upload_data_received);
-void LogEntryRemovedWhileWaitingForUploadResponse();
 
 // Log statistics about the status of a TaskFinishedCallback.
 void LogScheduledTaskStatus(DownloadTaskType task_type,
@@ -173,9 +172,6 @@ void LogEntryEvent(DownloadEvent event);
 
 // At the time of a retry, logs which retry attempt count this is.
 void LogEntryRetryCount(uint32_t retry_count);
-
-// Records whether the entry was an upload.
-void LogHasUploadData(DownloadClient client, bool has_upload_data);
 
 }  // namespace stats
 }  // namespace download

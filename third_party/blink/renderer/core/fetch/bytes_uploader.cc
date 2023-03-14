@@ -26,13 +26,15 @@ BytesUploader::BytesUploader(
     : ExecutionContextLifecycleObserver(execution_context),
       consumer_(consumer),
       client_(client),
-      receiver_(this, std::move(pending_receiver)),
+      receiver_(this, execution_context),
       upload_pipe_watcher_(FROM_HERE,
                            mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                           std::move(task_runner)) {
+                           task_runner) {
   DCHECK(consumer_);
   DCHECK_EQ(consumer_->GetPublicState(),
             BytesConsumer::PublicState::kReadableOrWaiting);
+
+  receiver_.Bind(std::move(pending_receiver), std::move(task_runner));
 }
 
 BytesUploader::~BytesUploader() = default;
@@ -40,6 +42,7 @@ BytesUploader::~BytesUploader() = default;
 void BytesUploader::Trace(blink::Visitor* visitor) const {
   visitor->Trace(consumer_);
   visitor->Trace(client_);
+  visitor->Trace(receiver_);
   BytesConsumer::Client::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }

@@ -142,11 +142,11 @@
   <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V4" desc="Title text for the Autofill save card prompt when the card is to be saved by uploading it to Google Payments, according to November 2018 UI guidelines. The prompt can be either a bubble or an infobar.">
     Save card to Google Account?
   </message>
+  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V5" desc="Title text for the Autofill save card prompt when the card is to be saved by uploading it to Google Payments, based on the results for the Save Card UI experiment. The prompt can be either a bubble or an infobar.">
+    Save card?
+  </message>
   <message name="IDS_AUTOFILL_CARD_SAVED" desc="Title text for the Autofill save card manager bubble when the card has been saved either locally or to Google Payments. Also label for icon animation.">
     Card saved
-  </message>
-  <message name="IDS_AUTOFILL_MANAGE_CARDS" desc="Text to show for the button in the save card manager bubble when the card has been saved either locally or to Google Payments.">
-    Manage cards
   </message>
   <message name="IDS_AUTOFILL_DONE" desc="Text to show for the button in the save card manager bubble when the card has been saved either locally or to Google Payments.">
     Done
@@ -171,6 +171,9 @@
   </message>
   <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3_WITH_NAME" desc="Explanation of the effect of the Autofill save card prompt when the card is to be saved by uploading it to Google Payments, according to April 2018 UI guidelines. The prompt will be shown in a bubble below the omnibox.">
     To pay faster next time, save your card, name, and billing address to your Google Account.
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V4" desc="Explanation of the effect of the Autofill save card prompt when the card is to be saved by uploading it to Google Payments, based on the results for the Save Card UI experiment. The prompt will be shown in a bubble below the omnibox.">
+    Pay faster next time and protect your card with Google’s industry-leading security.
   </message>
 
   <if expr="is_ios">
@@ -358,6 +361,12 @@
     <message name="IDS_AUTOFILL_CARD_UNMASK_CVC_IMAGE_DESCRIPTION_FOR_AMEX" desc="Accessible description for the CVC image. It should describe where to find the CVC on an American Express credit card.">
       The CVC is located on the front of your card.
     </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_CVC_IMAGE_ANNOUNCEMENT" desc="Announcement for the CVC image. It describes where to find the CVC on a credit card.">
+      Your CVC is on the back of your card. It’s the last 3 digits at the top right of the signature box.
+    </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_CVC_IMAGE_ANNOUNCEMENT_AMEX" desc="Announcement for the CVC image. It describes where to find the CVC on an American Express credit card.">
+      Your CVC is on the front of your card. It’s the 4-digit code at the top right above your card number.
+    </message>
   </if>
   <if expr="is_ios">
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE" desc="Title for the credit card unmasking dialog.">
@@ -537,6 +546,9 @@
   </message>
   <message name="IDS_AUTOFILL_IBAN_SAVED" desc="Title text for the Autofill save IBAN (International Bank Account Number) bubble view when the IBAN  has been saved. Also label for icon animation.">
     IBAN saved
+  </message>
+  <message name="IDS_AUTOFILL_MANAGE_SAVED_PAYMENT_METHODS" desc="Text to show for the button in the save IBAN (International Bank Account Number) manage bubble, or in the save card manager bubble which appears after either IBAN or credit card had been saved. The user will be redirected to chrome://settings/payments if the 'Manage payment methods' button is clicked.">
+    Manage payment methods
   </message>
 
   <!-- virtual cards related strings - start -->

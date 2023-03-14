@@ -29,6 +29,7 @@ import android.widget.FrameLayout;
 
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.SmallTest;
 
@@ -36,17 +37,22 @@ import com.google.android.material.color.MaterialColors;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.Spy;
 
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogView.VisibilityListener;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -65,6 +71,9 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
     private static final String TAG = "TGPVBT";
     private static final int CONTENT_TOP_MARGIN = 56;
 
+    @Rule
+    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+
     private PropertyModel mModel;
     private PropertyModelChangeProcessor mMCP;
     private TabGroupUiToolbarView mToolbarView;
@@ -75,7 +84,10 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
     private EditText mTitleTextView;
     private View mMainContent;
     private ScrimCoordinator mScrimCoordinator;
+    @Spy
     private GridLayoutManager mLayoutManager;
+    @Spy
+    private LinearLayoutManager mLinearLayoutManager;
 
     @Override
     public void setUpTest() throws Exception {
@@ -453,15 +465,12 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     @UiThreadTest
+    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void testSetIsTitleTextFocused() {
         Assert.assertFalse(mTitleTextView.isFocused());
 
         mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, true);
 
-        // Binder should ignore set focus signal to avoid duplicate setting.
-        Assert.assertFalse(mTitleTextView.isFocused());
-
-        mTitleTextView.requestFocus();
         Assert.assertTrue(mTitleTextView.isFocused());
 
         mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, false);
@@ -492,6 +501,21 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
         verify(mLayoutManager, times(1))
                 .scrollToPositionWithOffset(eq(5),
                         intThat(allOf(lessThan(mContentView.getHeight() / 2), greaterThan(0))));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testSetInitialScrollIndex_Linear() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mLinearLayoutManager = spy(new LinearLayoutManager(getActivity()));
+            mContentView.setLayoutManager(mLinearLayoutManager);
+        });
+        mContentView.layout(0, 0, 100, 500);
+
+        mModel.set(TabGridPanelProperties.INITIAL_SCROLL_INDEX, 5);
+
+        verify(mLinearLayoutManager, times(1)).scrollToPositionWithOffset(eq(5), eq(0));
     }
 
     @Override

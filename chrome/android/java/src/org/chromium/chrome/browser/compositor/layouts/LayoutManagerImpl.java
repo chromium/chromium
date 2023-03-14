@@ -1155,14 +1155,14 @@ public class LayoutManagerImpl
     }
 
     @Override
-    public void handleBackPress() {
+    public @BackPressResult int handleBackPress() {
         for (SceneOverlay sceneOverlay : mSceneOverlays) {
             Boolean enabled = sceneOverlay.getHandleBackPressChangedSupplier().get();
             if (enabled != null && enabled) {
-                sceneOverlay.handleBackPress();
-                return;
+                return sceneOverlay.handleBackPress();
             }
         }
+        return BackPressResult.FAILURE;
     }
 
     @Override

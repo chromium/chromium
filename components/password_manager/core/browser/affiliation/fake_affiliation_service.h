@@ -30,7 +30,8 @@ class FakeAffiliationService : public AffiliationService {
   void KeepPrefetchForFacets(std::vector<FacetURI> facet_uris) override;
   void TrimCacheForFacetURI(const FacetURI& facet_uri) override;
   void TrimUnusedCache(std::vector<FacetURI> facet_uris) override;
-  void GetAllGroups(GroupsCallback callback) const override;
+  void GetGroupingInfo(std::vector<FacetURI> facet_uris,
+                       GroupsCallback callback) override;
   void GetPSLExtensions(base::OnceCallback<void(std::vector<std::string>)>
                             callback) const override;
 };

@@ -23,6 +23,7 @@ share_unit_device_javatest_java_sources = [
 ]
 
 share_junit_test_java_sources = [
+  "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/android_share_sheet/AndroidShareSheetControllerUnitTest.java",
   "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextCoordinatorTest.java",
   "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextHelperTest.java",
   "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/long_screenshots/LongScreenshotsCoordinatorTest.java",

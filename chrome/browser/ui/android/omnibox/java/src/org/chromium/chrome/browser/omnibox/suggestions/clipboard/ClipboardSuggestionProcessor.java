@@ -37,7 +37,7 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
      */
     public ClipboardSuggestionProcessor(
             Context context, SuggestionHost suggestionHost, FaviconFetcher faviconFetcher) {
-        super(context, suggestionHost, faviconFetcher);
+        super(context, suggestionHost, null, faviconFetcher);
     }
 
     @Override
@@ -164,7 +164,7 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
         Runnable action = showContent ? ()
                 -> concealButtonClickHandler(suggestion, model)
                 : () -> revealButtonClickHandler(suggestion, model);
-        setCustomActions(model,
+        setActionButtons(model,
                 Arrays.asList(new Action(
                         SuggestionDrawableState.Builder.forDrawableRes(getContext(), icon)
                                 .setLarge(true)

@@ -4,8 +4,6 @@
 
 source_set("cells") {
   sources = [
-    "bookmark_folder_item.h",
-    "bookmark_folder_item.mm",
     "bookmark_home_node_item.h",
     "bookmark_home_node_item.mm",
     "bookmark_parent_folder_item.h",
@@ -14,18 +12,20 @@ source_set("cells") {
     "bookmark_table_cell_title_editing.h",
     "bookmark_text_field_item.h",
     "bookmark_text_field_item.mm",
+    "table_view_bookmarks_folder_item.h",
+    "table_view_bookmarks_folder_item.mm",
   ]
 
   deps = [
     "//base",
     "//base:i18n",
-    "//components/bookmarks/browser:browser",
+    "//components/bookmarks/browser",
     "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/browser/ui/bookmarks:constants",
-    "//ios/chrome/browser/ui/bookmarks:core",
+    "//ios/chrome/browser/ui/bookmarks:utils",
     "//ios/chrome/browser/ui/icons",
     "//ios/chrome/browser/ui/ntp:logo",
     "//ios/chrome/browser/ui/table_view:styler",
@@ -48,10 +48,8 @@ source_set("unit_tests") {
   deps = [
     ":cells",
     "//base/test:test_support",
-    "//ios/chrome/browser/ui:feature_flags",
-    "//ios/chrome/browser/ui/collection_view/cells",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/table_view:styler",
-    "//ios/third_party/material_components_ios",
     "//testing/gtest",
     "//third_party/ocmock",
   ]

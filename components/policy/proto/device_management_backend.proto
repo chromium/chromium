@@ -2529,10 +2529,21 @@ message DeviceAutoEnrollmentResponse {
   repeated bytes hashes = 2;
 }
 
-// Sent by the client to the server. The device management server keeps a
-// mapping of device identifiers to device state. Devices query this table after
-// hard reset in order recover state. This request is keyed just by the opaque
-// server-backed state key; there is no further authentication.
+// Sent by the client to the server. This request is keyed by the opaque
+// server-backed state key, (optionally) serial number and RLZ brand code; there
+// is no further authentication.
+//
+// This message can be used for secondary state determination by managed devices
+// after a hard reset to recover state. In this case, the client only sets the
+// `server_backed_state_key`. The device management server keeps a mapping of
+// this identifier to device state. In case device has been deprovisioned, the
+// server also performs initial enrollment check using the serial number and
+// brand code stored in device state from previous enrollment.
+//
+// It is also used for unified state determination, which replaces both initial
+// and secondary state enrollment. In this case, this request can also be sent
+// by brand new devices and the server would not know their serial number and
+// brand code, hence the values are supplied as part of the request.
 message DeviceStateRetrievalRequest {
   // Opaque, client-determined, unpredictable, stable and unique device
   // identifier to retrieve state for. This field contains 32 bytes of data that
@@ -2540,6 +2551,12 @@ message DeviceStateRetrievalRequest {
   // a concatenation of suitable device identifiers through a cryptographic hash
   // algorithm such as SHA-256.
   optional bytes server_backed_state_key = 1;
+
+  // The serial number of the device.
+  optional string serial_number = 2;
+
+  // The 4-character brand code of the device.
+  optional string brand_code = 3;
 }
 
 // Sent by the client to the server when in registered state to update the
@@ -2809,6 +2826,9 @@ message RemoteCommand {
 
     // Fetch information that determines the availability of CRD on the device.
     FETCH_CRD_AVAILABILITY_INFO = 15;
+
+    // Fetch the logs from the Support Tool on managed ChromeOS devices.
+    FETCH_SUPPORT_PACKET = 16;
 
     // Please update metrics after adding a new item - see the comment above.
   }

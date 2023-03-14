@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsMana
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelperUtils;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEnginePromoDialog;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEnginePromoDialog.DefaultSearchEnginePromoDialogObserver;
@@ -152,7 +153,9 @@ public class SearchActivityTest {
 
                         @Override
                         public List<TemplateUrl> getSearchEnginesForPromoDialog(int promoType) {
-                            return TemplateUrlServiceFactory.get().getTemplateUrls();
+                            return TemplateUrlServiceFactory
+                                    .getForProfile(Profile.getLastUsedRegularProfile())
+                                    .getTemplateUrls();
                         }
                     });
                 });
@@ -564,7 +567,7 @@ public class SearchActivityTest {
 
         startSearchActivity();
         SuggestionInfo<BaseSuggestionView> info =
-                mOmnibox.getSuggestionByType(OmniboxSuggestionType.CLIPBOARD_IMAGE);
+                mOmnibox.findSuggestionWithType(OmniboxSuggestionType.CLIPBOARD_IMAGE);
 
         Assert.assertNotNull("The image clipboard suggestion should contains post content type.",
                 info.suggestion.getPostContentType());
@@ -589,8 +592,8 @@ public class SearchActivityTest {
             // them since on fast device tab jump to result page really quick but on slow device
             // may stay on upload page for a really long time.
             boolean isValid = tab.getUrl().equals(info.suggestion.getUrl())
-                    || TemplateUrlServiceFactory.get().isSearchResultsPageFromDefaultSearchProvider(
-                            tab.getUrl());
+                    || TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
+                               .isSearchResultsPageFromDefaultSearchProvider(tab.getUrl());
             Criteria.checkThat(
                     "Invalid URL: " + tab.getUrl().getSpec(), isValid, Matchers.is(true));
         });
@@ -606,7 +609,7 @@ public class SearchActivityTest {
         // Start the Activity.
         final SearchActivity searchActivity = startSearchActivity();
         final SuggestionInfo<BaseSuggestionView> info =
-                mOmnibox.getSuggestionByType(OmniboxSuggestionType.CLIPBOARD_IMAGE);
+                mOmnibox.findSuggestionWithType(OmniboxSuggestionType.CLIPBOARD_IMAGE);
 
         Intent intent =
                 new Intent(Intent.ACTION_VIEW, Uri.parse(info.suggestion.getUrl().getSpec()));
@@ -629,8 +632,8 @@ public class SearchActivityTest {
         CriteriaHelper.pollUiThread(() -> {
             Tab tab = cta.getActivityTab();
             Criteria.checkThat("Unexpected URL: " + tab.getUrl().getSpec(),
-                    TemplateUrlServiceFactory.get().isSearchResultsPageFromDefaultSearchProvider(
-                            tab.getUrl()),
+                    TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
+                            .isSearchResultsPageFromDefaultSearchProvider(tab.getUrl()),
                     Matchers.is(false));
         });
     }
@@ -764,9 +767,9 @@ public class SearchActivityTest {
     private void clickFirstClipboardSuggestion(SearchActivityLocationBarLayout locationBar)
             throws InterruptedException {
         SuggestionInfo<BaseSuggestionView> info =
-                mOmnibox.getSuggestionByType(OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION);
-        TestTouchUtils.performClickOnMainSync(InstrumentationRegistry.getInstrumentation(),
-                info.view.getDecoratedSuggestionView());
+                mOmnibox.findSuggestionWithType(OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION);
+        TestTouchUtils.performClickOnMainSync(
+                InstrumentationRegistry.getInstrumentation(), info.view);
     }
 
     private SearchActivity startSearchActivity() {

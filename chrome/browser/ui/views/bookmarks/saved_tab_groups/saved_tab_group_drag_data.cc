@@ -1,0 +1,107 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_drag_data.h"
+
+#include <memory>
+#include <string>
+
+#include "base/pickle.h"
+#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/base/theme_provider.h"
+#include "ui/compositor/canvas_painter.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/drag_utils.h"
+
+namespace {
+
+// The MIME type for the clipboard format for SavedTabGroupDragData.
+const char kClipboardFormatString[] = "chromium/x-savedtabgroup-entries";
+
+// Paint `button` to an image, then give that to `data` for its drag image.
+void AddButtonImageToOSExchangeData(SavedTabGroupButton* button,
+                                    const gfx::Point& press_pt,
+                                    const ui::ThemeProvider* theme_provider,
+                                    ui::OSExchangeData* data) {
+  // The button paints itself relative to its parent View's local coordinates.
+  // We want it to paint relative to its own local coordinates, so we
+  // temporarily move the button to the origin of the parent's local space to
+  // make those coordinate spaces agree.
+  const gfx::Rect og_bounds = button->bounds();
+  gfx::Rect adjusted_bounds = og_bounds;
+  adjusted_bounds.Offset(-og_bounds.OffsetFromOrigin());
+  button->SetBoundsRect(adjusted_bounds);
+
+  // Take a snapshot of the button.
+  SkBitmap bitmap;
+  const float raster_scale = ScaleFactorForDragFromWidget(button->GetWidget());
+  const SkColor clear_color = SK_ColorTRANSPARENT;
+  button->Paint(views::PaintInfo::CreateRootPaintInfo(
+      ui::CanvasPainter(&bitmap, button->size(), raster_scale, clear_color,
+                        true /* is_pixel_canvas */)
+          .context(),
+      button->size()));
+  const gfx::ImageSkia image =
+      gfx::ImageSkia::CreateFromBitmap(bitmap, raster_scale);
+  data->provider().SetDragImage(image, press_pt.OffsetFromOrigin());
+
+  button->SetBoundsRect(og_bounds);
+}
+
+}  // anonymous namespace
+
+SavedTabGroupDragData::SavedTabGroupDragData(const base::GUID guid)
+    : guid_(guid) {}
+
+// static
+const ui::ClipboardFormatType& SavedTabGroupDragData::GetFormatType() {
+  static base::NoDestructor<ui::ClipboardFormatType> format(
+      ui::ClipboardFormatType::GetType(kClipboardFormatString));
+
+  return *format;
+}
+
+// static
+absl::optional<SavedTabGroupDragData>
+SavedTabGroupDragData::ReadFromOSExchangeData(const ui::OSExchangeData* data) {
+  if (!data->HasCustomFormat(GetFormatType())) {
+    return absl::nullopt;
+  }
+
+  base::Pickle drag_data_pickle;
+  if (!data->GetPickledData(GetFormatType(), &drag_data_pickle)) {
+    return absl::nullopt;
+  }
+
+  base::PickleIterator data_iterator(drag_data_pickle);
+  std::string guid_str;
+  if (!data_iterator.ReadString(&guid_str)) {
+    return absl::nullopt;
+  }
+
+  base::GUID guid = base::GUID::ParseCaseInsensitive(guid_str);
+  if (!guid.is_valid()) {
+    return absl::nullopt;
+  }
+
+  return SavedTabGroupDragData(guid);
+}
+
+// static
+void SavedTabGroupDragData::WriteToOSExchangeData(
+    SavedTabGroupButton* button,
+    const gfx::Point& press_pt,
+    const ui::ThemeProvider* theme_provider,
+    ui::OSExchangeData* data) {
+  AddButtonImageToOSExchangeData(button, press_pt, theme_provider, data);
+
+  base::Pickle data_pickle;
+  data_pickle.WriteString(button->guid().AsLowercaseString());
+  data->SetPickledData(GetFormatType(), data_pickle);
+
+  // TODO(tbergquist): Save profile too so we can prevent cross-profile drops.
+}

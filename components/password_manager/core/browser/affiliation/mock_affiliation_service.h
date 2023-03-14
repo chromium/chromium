@@ -46,7 +46,10 @@ class MockAffiliationService : public AffiliationService {
   MOCK_METHOD(void, KeepPrefetchForFacets, (std::vector<FacetURI>), (override));
   MOCK_METHOD(void, TrimCacheForFacetURI, (const FacetURI&), (override));
   MOCK_METHOD(void, TrimUnusedCache, (std::vector<FacetURI>), (override));
-  MOCK_METHOD(void, GetAllGroups, (GroupsCallback), (override, const));
+  MOCK_METHOD(void,
+              GetGroupingInfo,
+              (std::vector<FacetURI>, GroupsCallback),
+              (override));
   MOCK_METHOD(void,
               GetPSLExtensions,
               (base::OnceCallback<void(std::vector<std::string>)>),

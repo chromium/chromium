@@ -195,13 +195,16 @@ class JobControllerPeer {
 
 class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
  public:
-  explicit HttpStreamFactoryJobControllerTestBase(bool dns_https_alpn_enabled)
+  explicit HttpStreamFactoryJobControllerTestBase(
+      bool dns_https_alpn_enabled,
+      std::vector<base::test::FeatureRef> enabled_features = {})
       : TestWithTaskEnvironment(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         dns_https_alpn_enabled_(dns_https_alpn_enabled) {
     if (dns_https_alpn_enabled_) {
-      feature_list_.InitWithFeatures({features::kUseDnsHttpsSvcbAlpn}, {});
+      enabled_features.push_back(features::kUseDnsHttpsSvcbAlpn);
     }
+    feature_list_.InitWithFeatures(enabled_features, {});
     FLAGS_quic_enable_http3_grease_randomness = false;
     CreateSessionDeps();
   }
@@ -2686,10 +2689,12 @@ TEST_P(HttpStreamFactoryJobControllerTest,
 
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
-  const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
+  const auto kNetworkAnonymizationKey1 =
+      NetworkAnonymizationKey::CreateSameSite(kSite1);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
   const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
-  const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
+  const auto kNetworkAnonymizationKey2 =
+      NetworkAnonymizationKey::CreateSameSite(kSite2);
 
   tcp_data_ = std::make_unique<SequencedSocketData>();
   tcp_data_->set_connect_data(MockConnect(ASYNC, OK));
@@ -3117,10 +3122,12 @@ TEST_F(JobControllerLimitMultipleH2Requests,
 
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
-  const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
+  const auto kNetworkAnonymizationKey1 =
+      NetworkAnonymizationKey::CreateSameSite(kSite1);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
   const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
-  const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
+  const auto kNetworkAnonymizationKey2 =
+      NetworkAnonymizationKey::CreateSameSite(kSite2);
 
   tcp_data_ = std::make_unique<SequencedSocketData>(
       MockConnect(SYNCHRONOUS, ERR_IO_PENDING), base::span<MockRead>(),
@@ -3742,8 +3749,7 @@ void HttpStreamFactoryJobControllerTestBase::TestAltSvcVersionSelection(
   NetworkIsolationKey network_isolation_key(
       SchemefulSite(GURL("https://example.com")),
       SchemefulSite(GURL("https://example.com")));
-  NetworkAnonymizationKey network_anonymization_key(
-      SchemefulSite(GURL("https://example.com")),
+  auto network_anonymization_key = NetworkAnonymizationKey::CreateSameSite(
       SchemefulSite(GURL("https://example.com")));
   request_info.network_isolation_key = network_isolation_key;
   request_info.network_anonymization_key = network_anonymization_key;
@@ -3862,8 +3868,10 @@ TEST_P(HttpStreamFactoryJobControllerTest, QuicHostAllowlist) {
 class HttpStreamFactoryJobControllerDnsHttpsAlpnTest
     : public HttpStreamFactoryJobControllerTestBase {
  protected:
-  HttpStreamFactoryJobControllerDnsHttpsAlpnTest()
-      : HttpStreamFactoryJobControllerTestBase(true) {}
+  explicit HttpStreamFactoryJobControllerDnsHttpsAlpnTest(
+      std::vector<base::test::FeatureRef> enabled_features = {})
+      : HttpStreamFactoryJobControllerTestBase(true,
+                                               std::move(enabled_features)) {}
 
   void SetUp() override { SkipCreatingJobController(); }
 
@@ -5127,6 +5135,70 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest, PreconnectNoDnsAlpnH3) {
   MakeMainJobSucceed(/*expect_stream_ready=*/false);
   base::RunLoop().RunUntilIdle();
 
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+}
+
+class HttpStreamFactoryJobControllerDnsHttpsAlpnEchTest
+    : public HttpStreamFactoryJobControllerDnsHttpsAlpnTest {
+ public:
+  HttpStreamFactoryJobControllerDnsHttpsAlpnEchTest()
+      : HttpStreamFactoryJobControllerDnsHttpsAlpnTest(
+            {features::kEncryptedClientHello,
+             features::kEncryptedClientHelloQuic}) {}
+};
+
+// Test that, when an Alt-Svc-based preconnect fails with
+// `ERR_DNS_NO_MATCHING_SUPPORTED_ALPN`, the job controller handles it
+// correctly. This is a regression test for https://crbug.com/1420202.
+//
+// In a general HTTPS-RR implementation, this may happen simply because there
+// was no A/AAAA route. However, we do not implement HTTPS-RR in full yet (see
+// https://crbug.com/1417033), so instead this is only possible in a corner case
+// with ECH.
+TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnEchTest,
+       PreconnectAlternateNoDnsAlpn) {
+  const char kAlternateHost[] = "alt.example.com";
+
+  EnableOndemandHostResolver();
+  PrepareForMainJob();
+  SetPreconnect();
+
+  // Register a mock HTTPS record where the HTTPS-RR route is only good for h2,
+  // which is incompatible with Alt-Svc. The A/AAAA route would be compatible,
+  // but the server supports ECH, so we enable SVCB-reliant mode and reject it.
+  // As a result, the alternate job will fail.
+  HostResolverEndpointResult endpoint_result1;
+  endpoint_result1.ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
+  endpoint_result1.metadata.ech_config_list = {1, 2, 3, 4};
+  endpoint_result1.metadata.supported_protocol_alpns = {"h2"};
+  HostResolverEndpointResult endpoint_result2;
+  endpoint_result2.ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
+  session_deps_.host_resolver->rules()->AddRule(
+      kAlternateHost,
+      MockHostResolverBase::RuleResolver::RuleResult(
+          {endpoint_result1, endpoint_result2}, {kAlternateHost}));
+
+  HttpRequestInfo request_info = CreateTestHttpRequestInfo();
+  Initialize(request_info);
+  CreateJobController(request_info);
+
+  url::SchemeHostPort server(request_info.url);
+  AlternativeService alternative_service(kProtoQUIC, kAlternateHost, 443);
+  SetAlternativeService(request_info, alternative_service);
+
+  job_controller_->Preconnect(/*num_streams=*/1);
+  // Only one job is started.
+  EXPECT_TRUE(job_controller_->main_job());
+  EXPECT_FALSE(job_controller_->alternative_job());
+  EXPECT_EQ(HttpStreamFactory::PRECONNECT,
+            job_controller_->main_job()->job_type());
+
+  // Resolve the DNS request.
+  session_deps_.host_resolver->ResolveAllPending();
+  base::RunLoop().RunUntilIdle();
+
+  // The jobs should have failed. We currently do not try the non-Alt-Svc route
+  // in preconnects if Alt-Svc failed.
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
 }
 

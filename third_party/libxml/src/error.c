@@ -18,6 +18,8 @@
 
 #include "private/error.h"
 
+#define XML_MAX_ERRORS 100
+
 #define XML_GET_VAR_STR(msg, str) {				\
     int       size, prev_size = -1;				\
     int       chars;						\
@@ -188,10 +190,12 @@ xmlParserPrintFileContextInternal(xmlParserInputPtr input ,
     }
     n = 0;
     /* search backwards for beginning-of-line (to max buff size) */
-    while ((n++ < (sizeof(content)-1)) && (cur > base) &&
-	   (*(cur) != '\n') && (*(cur) != '\r'))
+    while ((n < sizeof(content) - 1) && (cur > base) &&
+	   (*cur != '\n') && (*cur != '\r')) {
         cur--;
-    if ((*(cur) == '\n') || (*(cur) == '\r')) {
+        n++;
+    }
+    if ((n > 0) && ((*cur == '\n') || (*cur == '\r'))) {
         cur++;
     } else {
         /* skip over continuation bytes */
@@ -485,12 +489,25 @@ __xmlRaiseError(xmlStructuredErrorFunc schannel,
         (domain == XML_FROM_DTD) || (domain == XML_FROM_NAMESPACE) ||
 	(domain == XML_FROM_IO) || (domain == XML_FROM_VALID)) {
 	ctxt = (xmlParserCtxtPtr) ctx;
-	if ((schannel == NULL) && (ctxt != NULL) && (ctxt->sax != NULL) &&
-	    (ctxt->sax->initialized == XML_SAX2_MAGIC) &&
-	    (ctxt->sax->serror != NULL)) {
-	    schannel = ctxt->sax->serror;
-	    data = ctxt->userData;
-	}
+
+        if (ctxt != NULL) {
+            if (level == XML_ERR_WARNING) {
+                if (ctxt->nbWarnings >= XML_MAX_ERRORS)
+                    return;
+                ctxt->nbWarnings += 1;
+            } else {
+                if (ctxt->nbErrors >= XML_MAX_ERRORS)
+                    return;
+                ctxt->nbErrors += 1;
+            }
+
+            if ((schannel == NULL) && (ctxt->sax != NULL) &&
+                (ctxt->sax->initialized == XML_SAX2_MAGIC) &&
+                (ctxt->sax->serror != NULL)) {
+                schannel = ctxt->sax->serror;
+                data = ctxt->userData;
+            }
+        }
     }
     /*
      * Check if structured error handler set

@@ -14,7 +14,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "base/notreached.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -43,30 +42,54 @@
 #endif
 
 namespace {
-
 bool IsFirstRunEligibleProfile(Profile* profile) {
-  // Profile selections should exclude these already.
-  DCHECK(!profile->IsOffTheRecord());
+  if (profile->IsOffTheRecord()) {
+    return false;
+  }
+
+  // The parent guest and the profiles in a ChromeOS Guest session get through
+  // the OTR check above.
+  if (profile->IsGuestSession()) {
+    return false;
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Skip for users without Gaia account (e.g. Active Directory, Kiosk, Guest…)
-  if (!profiles::SessionHasGaiaAccount())
+  if (!profiles::SessionHasGaiaAccount()) {
     return false;
-
-  // The profile in Guest user sessions is considered "regular" but should
-  // also be excluded here.
-  if (profile->IsGuestSession())
-    return false;
+  }
 
   // Having secondary profiles implies that the user already used Chrome and so
   // should not have to see the FRE. So we never want to run it for these.
-  if (!profile->IsMainProfile())
+  if (!profile->IsMainProfile()) {
     return false;
-#else
-  DCHECK(!profile->IsGuestSession());
+  }
 #endif
 
   return true;
+}
+
+bool IsFirstRunEligibleProcess() {
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Lacros we want to run the FRE beyond the strict first run as defined by
+  // `IsChromeFirstRun()` for a few reasons:
+  // - Migrated profiles will have their first run sentinel imported from the
+  //   ash data dir, but we need to run the FRE in silent mode to re-enable sync
+  //   on the Lacros primary profile.
+  // - If the user exits the FRE without advancing beyond the first step, we
+  //   need to show the FRE again next time they open Chrome, this is definitely
+  //   not the "first run" anymore.
+  if (!first_run::IsChromeFirstRun()) {
+    return false;
+  }
+#endif
+
+  // TODO(crbug.com/1347504): `IsChromeFirstRun()` should be a sufficient check
+  // for Dice platforms. We currently keep this because some tests add
+  // `--force-first-run` while keeping `--no-first-run`. We should updated the
+  // affected tests to handle correctly the FRE opening instead of a tab.
+  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kNoFirstRun);
 }
 
 enum class PolicyEffect {
@@ -161,7 +184,11 @@ void SetFirstRunFinished(FinishedReason reason) {
 #endif
 }
 
-bool IsFirstRunFinished() {
+// Returns whether `prefs::kFirstRunFinished` is true. This implies that the FRE
+// should not be opened again and would set if the user saw the FRE and is done
+// with it, or if for some other reason (e.g. policy or some other browser
+// state) we determine that we should not show it.
+bool IsFirstRunMarkedFinishedInPrefs() {
   // Can be null in unit tests.
   const PrefService* const local_state = g_browser_process->local_state();
   return local_state && local_state->GetBoolean(prefs::kFirstRunFinished);
@@ -187,6 +214,8 @@ void OnFirstRunHasExited(ResumeTaskCallback original_intent_callback,
     SetFirstRunFinished(FinishedReason::kFinishedFlow);
   }
 
+  base::UmaHistogramEnumeration("ProfilePicker.FirstRun.ExitStatus", status);
+
   bool proceed = status == ProfilePicker::FirstRunExitStatus::kCompleted;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   proceed |= kForYouFreCloseShouldProceed.Get();
@@ -202,35 +231,14 @@ void OnFirstRunHasExited(ResumeTaskCallback original_intent_callback,
 // static
 void FirstRunService::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kFirstRunFinished, false);
+  registry->RegisterStringPref(prefs::kFirstRunStudyGroup, "");
 }
 
 FirstRunService::FirstRunService(Profile* profile) : profile_(profile) {}
 FirstRunService::~FirstRunService() = default;
 
 bool FirstRunService::ShouldOpenFirstRun() const {
-  DCHECK(IsFirstRunEligibleProfile(profile_));
-
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On Lacros we want to run the FRE beyond the strict first run as defined by
-  // `IsChromeFirstRun()` for a few reasons:
-  // - Migrated profiles will have their first run sentinel imported from the
-  //   ash data dir, but we need to run the FRE in silent mode to re-enable sync
-  //   on the Lacros primary profile.
-  // - If the user exits the FRE without advancing beyond the first step, we
-  //   need to show the FRE again next time they open Chrome, this is definitely
-  //   not the "first run" anymore.
-  if (!first_run::IsChromeFirstRun()) {
-    return false;
-  }
-#endif
-
-  const base::CommandLine* command_line =
-      base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kNoFirstRun)) {
-    return false;
-  }
-
-  return !IsFirstRunFinished();
+  return ::ShouldOpenFirstRun(profile_);
 }
 
 void FirstRunService::TryMarkFirstRunAlreadyFinished(
@@ -323,9 +331,12 @@ void FirstRunService::OpenFirstRunIfNeeded(EntryPoint entry_point,
 
 void FirstRunService::OpenFirstRunInternal(EntryPoint entry_point,
                                            ResumeTaskCallback callback) {
-  if (!ShouldOpenFirstRun()) {
-    // Opening the First Run is not needed, it might have been marked finished
-    // silently for example.
+  if (IsFirstRunMarkedFinishedInPrefs()) {
+    // Opening the First Run is not needed. For example it might have been
+    // marked finished silently, or is suppressed by policy.
+    //
+    // Note that this assumes that the prefs state is the the only part of
+    // `ShouldOpenFirstRun()` that can change during the service's lifetime.
     std::move(callback).Run(/*proceed=*/true);
     return;
   }
@@ -373,19 +384,23 @@ FirstRunService* FirstRunServiceFactory::GetForBrowserContext(
 
 KeyedService* FirstRunServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  if (IsFirstRunFinished()) {
-    return nullptr;
-  }
-
   Profile* profile = Profile::FromBrowserContext(context);
-  // `ProfileSelections` exclude some profiles already, but they do not check
-  // for some more specific conditions where we don't want to instantiate the
-  // service.
-  if (!IsFirstRunEligibleProfile(profile)) {
+  if (!ShouldOpenFirstRun(profile)) {
     return nullptr;
   }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  if (base::FeatureList::IsEnabled(kForYouFreSyntheticTrialRegistration)) {
+    // We use this point to register for the study as it can give us a good
+    // counterfactual, before checking the state of the feature itself. The
+    // service is created on demand so we are in a code path that will require
+    // the FRE to be shown.
+    // Besides being suppressed by enterprise policy, if the FRE doesn't run, it
+    // would be related to handling some corner cases, and should not impact our
+    // metrics too much.
+    FirstRunService::JoinFirstRunCohort();
+  }
+
   if (!base::FeatureList::IsEnabled(kForYouFre)) {
     return nullptr;
   }
@@ -395,14 +410,10 @@ KeyedService* FirstRunServiceFactory::BuildServiceInstanceFor(
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Check if we should turn Sync on from the background and skip the FRE.
-  // TODO(dgn): maybe post task? For example see
-  // //chrome/browser/permissions/permission_auditing_service_factory.cc
-  if (instance->ShouldOpenFirstRun()) {
-    // If we don't manage to set it, we will just have to defer silent or visual
-    // handling of the FRE to when the user attempts to open a browser UI. So
-    // we don't need to do anything when the attempt finishes.
-    instance->TryMarkFirstRunAlreadyFinished(base::OnceClosure());
-  }
+  // If we don't manage to set it, we will just have to defer silent or visual
+  // handling of the FRE to when the user attempts to open a browser UI. So
+  // we don't need to do anything when the attempt finishes.
+  instance->TryMarkFirstRunAlreadyFinished(base::OnceClosure());
 #endif
 
   return instance;
@@ -421,6 +432,6 @@ bool FirstRunServiceFactory::ServiceIsCreatedWithBrowserContext() const {
 // Helpers ---------------------------------------------------------------------
 
 bool ShouldOpenFirstRun(Profile* profile) {
-  auto* instance = FirstRunServiceFactory::GetForBrowserContext(profile);
-  return instance && instance->ShouldOpenFirstRun();
+  return IsFirstRunEligibleProcess() && IsFirstRunEligibleProfile(profile) &&
+         !IsFirstRunMarkedFinishedInPrefs();
 }

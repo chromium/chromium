@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/run_loop.h"
 #include "fuchsia_web/common/test/fake_feedback_service.h"
 #include "fuchsia_web/common/test/test_realm_support.h"
 
@@ -70,7 +71,15 @@ ContextProviderForTest::ContextProviderForTest(
     ContextProviderForTest&&) noexcept = default;
 ContextProviderForTest& ContextProviderForTest::operator=(
     ContextProviderForTest&&) noexcept = default;
-ContextProviderForTest::~ContextProviderForTest() = default;
+
+ContextProviderForTest::~ContextProviderForTest() {
+  // We're about to shut down the realm; unbind to unhook the error handler.
+  context_provider_.Unbind();
+  base::RunLoop run_loop;
+  realm_root_.Teardown(
+      [quit = run_loop.QuitClosure()](auto result) { quit.Run(); });
+  run_loop.Run();
+}
 
 ContextProviderForTest::ContextProviderForTest(
     ::component_testing::RealmRoot realm_root,

@@ -237,8 +237,8 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
     previous_update_for_testing_ = PreviousUpdateType::kNone;
   }
 
-  void SetNeedsFullUpdateAfterPaintIfNeeded(const PaintChunkSubset& previous,
-                                            const PaintChunkSubset& repainted);
+  void SetNeedsFullUpdateAfterPaintIfNeeded(const PaintArtifact& previous,
+                                            const PaintArtifact& repainted);
 
   // Returns true if a property tree node associated with |element_id| exists
   // on any of the PropertyTrees constructed by |Update|.
@@ -259,7 +259,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   // cc layer. This is the entry point of the layerization algorithm.
   void CollectPendingLayers(scoped_refptr<const PaintArtifact>);
 
-  // This is the internal recursion of collectPendingLayers. This function
+  // This is the internal recursion of CollectPendingLayers. This function
   // loops over the list of paint chunks, scoped by an isolated group
   // (i.e. effect node). Inside of the loop, chunks are tested for overlap
   // and merge compatibility. Subgroups are handled by recursion, and will
@@ -280,9 +280,9 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   // time a paint property tree node is encountered that has direct compositing
   // reasons. This case will always start a new layer and can skip merge tests.
   // New values are added when transform nodes are first encountered.
-  void LayerizeGroup(const PaintChunkSubset&,
+  void LayerizeGroup(scoped_refptr<const PaintArtifact>,
                      const EffectPaintPropertyNode&,
-                     PaintChunkIterator& chunk_cursor,
+                     Vector<PaintChunk>::const_iterator& chunk_cursor,
                      HashSet<const TransformPaintPropertyNode*>&
                          directly_composited_transforms,
                      bool force_draws_content);

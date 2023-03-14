@@ -21,6 +21,7 @@
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
 
@@ -32,12 +33,8 @@ class UserHostRestrictionsBrowserTest
       public testing::WithParamInterface<bool> {
  public:
   UserHostRestrictionsBrowserTest() {
-    const base::Feature& feature =
-        extensions_features::kExtensionsMenuAccessControl;
-    if (GetParam())
-      feature_list_.InitAndEnableFeature(feature);
-    else
-      feature_list_.InitAndDisableFeature(feature);
+    feature_list_.InitWithFeatureState(
+        extensions_features::kExtensionsMenuAccessControl, GetParam());
   }
   ~UserHostRestrictionsBrowserTest() override = default;
 
@@ -65,16 +62,6 @@ class UserHostRestrictionsBrowserTest
     ScriptingPermissionsModifier(profile(), &extension)
         .SetWithholdHostPermissions(true);
     waiter.WaitForExtensionPermissionsUpdate();
-  }
-
-  // Adds `url` as a new user-permitted site and waits for the change to take
-  // effect.
-  void AddUserPermittedSite(const GURL& url) {
-    PermissionsManager* permissions_manager =
-        PermissionsManager::Get(profile());
-    PermissionsManagerWaiter waiter(permissions_manager);
-    permissions_manager->AddUserPermittedSite(url::Origin::Create(url));
-    waiter.WaitForUserPermissionsSettingsChange();
   }
 
  private:
@@ -279,9 +266,44 @@ IN_PROC_BROWSER_TEST_P(
   }
 }
 
+class UserHostRestrictionsWithPermittedSitesBrowserTest
+    : public UserHostRestrictionsBrowserTest {
+ public:
+  UserHostRestrictionsWithPermittedSitesBrowserTest();
+  UserHostRestrictionsWithPermittedSitesBrowserTest(
+      const UserHostRestrictionsWithPermittedSitesBrowserTest&) = delete;
+  const UserHostRestrictionsWithPermittedSitesBrowserTest& operator=(
+      const UserHostRestrictionsWithPermittedSitesBrowserTest&) = delete;
+  ~UserHostRestrictionsWithPermittedSitesBrowserTest() override = default;
+
+  // Adds `url` as a new user-permitted site and waits for the change to take
+  // effect.
+  void AddUserPermittedSite(const GURL& url) {
+    PermissionsManager* permissions_manager =
+        PermissionsManager::Get(profile());
+    PermissionsManagerWaiter waiter(permissions_manager);
+    permissions_manager->AddUserPermittedSite(url::Origin::Create(url));
+    waiter.WaitForUserPermissionsSettingsChange();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+UserHostRestrictionsWithPermittedSitesBrowserTest::
+    UserHostRestrictionsWithPermittedSitesBrowserTest() {
+  feature_list_.InitAndEnableFeature(
+      extensions_features::kExtensionsMenuAccessControlWithPermittedSites);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         UserHostRestrictionsWithPermittedSitesBrowserTest,
+                         testing::Bool());
+
 // Tests that extensions with withheld host permissions are automatically
 // allowed to run on sites the user allows all extensions to run on.
-IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest, UserPermittedSites) {
+IN_PROC_BROWSER_TEST_P(UserHostRestrictionsWithPermittedSitesBrowserTest,
+                       UserPermittedSites) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   static constexpr char kManifest[] =
@@ -402,7 +424,7 @@ IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest, UserPermittedSites) {
 }
 
 // Tests that user permitted sites are persisted and granted on extension load.
-IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest,
+IN_PROC_BROWSER_TEST_P(UserHostRestrictionsWithPermittedSitesBrowserTest,
                        PRE_UserPermittedSitesArePersisted) {
   // Note: We need a "real" extension here (instead of just a TestExtensionDir)
   // because it needs to persist for the next test.
@@ -433,7 +455,7 @@ IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest,
                 allowed_url, extension_misc::kUnknownTabId, nullptr));
 }
 
-IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest,
+IN_PROC_BROWSER_TEST_P(UserHostRestrictionsWithPermittedSitesBrowserTest,
                        UserPermittedSitesArePersisted) {
   const Extension* found_extension = nullptr;
   for (const auto& extension :
@@ -446,9 +468,9 @@ IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest,
   ASSERT_TRUE(found_extension);
 
   const GURL example_com("https://example.com");
-  // The user-permitted site should be allowed if and only if the feature is
-  // enabled (unlike the test above, our load-time granting *is* guarded behind
-  // the feature flag).
+  // The user-permitted site should be allowed iff the
+  // kExtensionsMenuAccessControl feature is enabled (unlike the test above, our
+  // load-time granting *is* guarded behind the feature flag).
   if (GetParam()) {
     EXPECT_EQ(PermissionsData::PageAccess::kAllowed,
               found_extension->permissions_data()->GetPageAccess(
@@ -462,7 +484,7 @@ IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest,
 
 // Tests that sites the user indicated all extensions may run on are still
 // available to extensions after a permissions withholding change.
-IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest,
+IN_PROC_BROWSER_TEST_P(UserHostRestrictionsWithPermittedSitesBrowserTest,
                        UserPermittedSitesAreAppliedOnWithholdingChange) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
@@ -495,9 +517,9 @@ IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest,
 
   WithholdExtensionPermissions(*extension);
 
-  // Once permissions are withheld, with the feature enabled, the extension may
-  // still run on the user-permitted site (without the feature enabled, the
-  // site is withheld).
+  // Once permissions are withheld, with the kExtensionsMenuAccessControl
+  // feature enabled, the extension may still run on the user-permitted site
+  // (without the feature enabled, the site is withheld).
   if (GetParam()) {
     EXPECT_EQ(PermissionsData::PageAccess::kAllowed,
               extension->permissions_data()->GetPageAccess(
@@ -515,7 +537,7 @@ IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest,
           non_user_permitted_site, extension_misc::kUnknownTabId, nullptr));
 }
 
-IN_PROC_BROWSER_TEST_P(UserHostRestrictionsBrowserTest,
+IN_PROC_BROWSER_TEST_P(UserHostRestrictionsWithPermittedSitesBrowserTest,
                        UserPermittedSitesAndChromeFavicon) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 

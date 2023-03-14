@@ -173,7 +173,7 @@ void PageInfoCookiesContentView::SetBlockingThirdPartyCookiesInfo(
     case CookieControlsStatus::kDisabled:
       break;
     case CookieControlsStatus::kUninitialized:
-      NOTREACHED();
+      NOTREACHED_NORETURN();
   }
 
   if (show_cookies_block_control) {

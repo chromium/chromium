@@ -9,19 +9,27 @@
 
 #import "base/ios/block_types.h"
 
+#import "base/memory/weak_ptr.h"
+#import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
+#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
-#import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/browser_view/tab_consumer.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_coordinator.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_consumer.h"
+#import "ios/chrome/browser/ui/main/layout_guide_util.h"
 #import "ios/chrome/browser/ui/ntp/logo_animation_controller.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/ui/page_info/requirements/page_info_presentation.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
+#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
+#import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_ntp_delegate.h"
 #import "ios/chrome/browser/web/web_state_container_view_provider.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
 
 @protocol ApplicationCommands;
 class Browser;
@@ -50,11 +58,16 @@ class PrerenderService;
 @protocol SnackbarCommands;
 @class TabStripCoordinator;
 @class TabStripLegacyCoordinator;
+class TabUsageRecorderBrowserAgent;
 @protocol TextZoomCommands;
 @class ToolbarAccessoryPresenter;
 @protocol ToolbarCommands;
 @protocol IncognitoReauthCommands;
+@class LayoutGuideCenter;
 @protocol LoadQueryCommands;
+class UrlLoadingBrowserAgent;
+class UrlLoadingNotifierBrowserAgent;
+class WebNavigationBrowserAgent;
 
 // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
 typedef struct {
@@ -81,6 +94,13 @@ typedef struct {
   id<ToolbarCommands> toolbarCommandsHandler;
   id<LoadQueryCommands> loadQueryCommandsHandler;
   id<OmniboxCommands> omniboxCommandsHandler;
+  BOOL isOffTheRecord;
+  UrlLoadingBrowserAgent* urlLoadingBrowserAgent;
+  UrlLoadingNotifierBrowserAgent* urlLoadingNotifierBrowserAgent;
+  TabUsageRecorderBrowserAgent* tabUsageRecorderBrowserAgent;
+  WebNavigationBrowserAgent* webNavigationBrowserAgent;
+  LayoutGuideCenter* layoutGuideCenter;
+  base::WeakPtr<WebStateList> webStateList;
 } BrowserViewControllerDependencies;
 
 // The top-level view controller for the browser UI. Manages other controllers
@@ -89,6 +109,7 @@ typedef struct {
     : UIViewController <FindBarPresentationDelegate,
                         IncognitoReauthConsumer,
                         LogoAnimationControllerOwnerOwner,
+                        TabConsumer,
                         OmniboxFocusDelegate,
                         OmniboxPopupPresenterDelegate,
                         ThumbStripSupporting,
@@ -121,6 +142,9 @@ typedef struct {
 // BrowserCoordinator, remove this as a public property. Returns whether or not
 // text to speech is playing.
 @property(nonatomic, assign, readonly, getter=isPlayingTTS) BOOL playingTTS;
+
+// Whether web usage is enabled for the WebStates in `self.browser`.
+@property(nonatomic) BOOL webUsageEnabled;
 
 // The container used for infobar banner overlays.
 @property(nonatomic, strong)

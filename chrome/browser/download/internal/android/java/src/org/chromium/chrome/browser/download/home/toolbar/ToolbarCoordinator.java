@@ -168,9 +168,10 @@ public class ToolbarCoordinator implements SelectionObserver<ListItem>, BackPres
     }
 
     @Override
-    public void handleBackPress() {
+    public int handleBackPress() {
         var ret = handleBackPressed();
         assert ret;
+        return ret ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
     }
 
     @Override

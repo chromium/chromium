@@ -1,0 +1,193 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include <string>
+
+#include "ash/shell.h"
+#include "ash/system/message_center/ash_message_popup_collection.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/run_loop.h"
+#include "base/strings/string_piece_forward.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
+#include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/quick_answers/quick_answers_browsertest_base.h"
+#include "chrome/browser/ui/quick_answers/ui/quick_answers_view.h"
+#include "chrome/browser/ui/quick_answers/ui/user_consent_view.h"
+#include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
+#include "components/prefs/pref_service.h"
+#include "content/public/test/browser_test.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notification_delegate.h"
+#include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/widget.h"
+#include "url/gurl.h"
+
+namespace quick_answers {
+namespace {
+
+constexpr char kTestQuery[] = "test";
+constexpr int kCursorXToOverlapWithANotification = 600;
+constexpr int kCursorYToOverlapWithANotification = 400;
+
+constexpr char kTestNotificationId[] = "id";
+constexpr char16_t kTestNotificationTitle[] = u"title";
+constexpr char16_t kTestNotificationMessage[] = u"message";
+constexpr char16_t kTestNotificationDisplaySource[] = u"display-source";
+constexpr char kTestNotificationOriginUrl[] = "https://example.com/";
+
+constexpr int kFakeImageWidth = 300;
+constexpr int kFakeImageHeight = 300;
+
+constexpr int kAnimationCompletionPollingInterval = 50;  // milliseconds
+
+gfx::Image CreateFakeImage() {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(kFakeImageWidth, kFakeImageHeight);
+  return gfx::Image::CreateFrom1xBitmap(bitmap);
+}
+
+void CheckAnimationEnded(views::Widget* widget,
+                         gfx::Rect* rect,
+                         base::RunLoop* run_loop) {
+  gfx::Rect current_rect = widget->GetWindowBoundsInScreen();
+
+  if (current_rect == *rect) {
+    run_loop->Quit();
+    return;
+  }
+
+  *rect = current_rect;
+}
+
+void WaitAnimationCompletion(views::Widget* widget) {
+  base::RunLoop run_loop;
+  base::RepeatingTimer timer;
+  gfx::Rect rect;
+
+  timer.Start(
+      FROM_HERE, base::Milliseconds(kAnimationCompletionPollingInterval),
+      base::BindRepeating(&CheckAnimationEnded, widget, &rect, &run_loop));
+  run_loop.Run();
+}
+
+}  // namespace
+
+class QuickAnswersBrowserTest : public QuickAnswersBrowserTestBase {
+ protected:
+  // This simulates a behavior where a user enables QuickAnswers from Settings.
+  void SetQuickAnswersEnabled(bool enabled) {
+    chrome_test_utils::GetProfile(this)->GetPrefs()->SetBoolean(
+        prefs::kQuickAnswersEnabled, enabled);
+  }
+
+  void SendTestImageNotification() {
+    message_center::RichNotificationData rich_notification_data;
+    rich_notification_data.image = CreateFakeImage();
+    rich_notification_data.never_timeout = true;
+
+    message_center::Notification notification(
+        message_center::NotificationType::NOTIFICATION_TYPE_IMAGE,
+        kTestNotificationId, kTestNotificationTitle, kTestNotificationMessage,
+        /*icon=*/ui::ImageModel(), kTestNotificationDisplaySource,
+        GURL(kTestNotificationOriginUrl), message_center::NotifierId(),
+        rich_notification_data,
+        base::MakeRefCounted<message_center::NotificationDelegate>());
+
+    NotificationDisplayService::GetForProfile(
+        chrome_test_utils::GetProfile(this))
+        ->Display(NotificationHandler::Type::TRANSIENT, notification,
+                  /*metadata=*/nullptr);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(QuickAnswersBrowserTest,
+                       QuickAnswersViewAboveNotification) {
+  SetQuickAnswersEnabled(true);
+
+  views::NamedWidgetShownWaiter quick_answers_view_widget_waiter(
+      views::test::AnyWidgetTestPasskey(), QuickAnswersView::kWidgetName);
+
+  ShowMenuParams params;
+  params.selected_text = kTestQuery;
+  params.x = kCursorXToOverlapWithANotification;
+  params.y = kCursorYToOverlapWithANotification;
+  ShowMenu(params);
+
+  views::Widget* quick_answers_view_widget =
+      quick_answers_view_widget_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(quick_answers_view_widget != nullptr);
+
+  views::NamedWidgetShownWaiter message_popup_widget_waiter(
+      views::test::AnyWidgetTestPasskey(),
+      ash::AshMessagePopupCollection::kMessagePopupWidgetName);
+
+  SendTestImageNotification();
+
+  views::Widget* message_popup_widget =
+      message_popup_widget_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(message_popup_widget != nullptr);
+
+  // The notification is animating. Wait the animation completion before
+  // checking the bounds.
+  WaitAnimationCompletion(message_popup_widget);
+
+  // Make sure that `QuickAnswersView` overlaps with the notification.
+  ASSERT_FALSE(
+      gfx::IntersectRects(message_popup_widget->GetWindowBoundsInScreen(),
+                          quick_answers_view_widget->GetWindowBoundsInScreen())
+          .IsEmpty());
+
+  // TODO(b/239716419): Quick answers UI should be above the notification.
+  EXPECT_TRUE(message_popup_widget->IsStackedAbove(
+      quick_answers_view_widget->GetNativeView()));
+}
+
+IN_PROC_BROWSER_TEST_F(QuickAnswersBrowserTest,
+                       UserConsentViewAboveNotification) {
+  views::NamedWidgetShownWaiter user_consent_view_widget_waiter(
+      views::test::AnyWidgetTestPasskey(), UserConsentView::kWidgetName);
+
+  ShowMenuParams params;
+  params.selected_text = kTestQuery;
+  params.x = kCursorXToOverlapWithANotification;
+  params.y = kCursorYToOverlapWithANotification;
+  ShowMenu(params);
+
+  views::Widget* user_consent_view_widget =
+      user_consent_view_widget_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(user_consent_view_widget != nullptr);
+
+  views::NamedWidgetShownWaiter message_popup_widget_waiter(
+      views::test::AnyWidgetTestPasskey(),
+      ash::AshMessagePopupCollection::kMessagePopupWidgetName);
+
+  SendTestImageNotification();
+
+  views::Widget* message_popup_widget =
+      message_popup_widget_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(message_popup_widget != nullptr);
+
+  // The notification is animating. Wait the animation completion before
+  // checking the bounds.
+  WaitAnimationCompletion(message_popup_widget);
+
+  // Make sure that `UserConsentView` overlaps with the notification.
+  ASSERT_FALSE(
+      gfx::IntersectRects(message_popup_widget->GetWindowBoundsInScreen(),
+                          user_consent_view_widget->GetWindowBoundsInScreen())
+          .IsEmpty());
+
+  // TODO(b/239716419): Quick answers UI should be above the notification.
+  EXPECT_TRUE(message_popup_widget->IsStackedAbove(
+      user_consent_view_widget->GetNativeView()));
+}
+
+}  // namespace quick_answers

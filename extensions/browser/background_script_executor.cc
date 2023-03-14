@@ -8,7 +8,6 @@
 #include "base/json/json_reader.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/service_worker_context.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/service_worker_test_helpers.h"
 #include "extensions/browser/extension_host.h"
@@ -155,9 +154,8 @@ bool BackgroundScriptExecutor::ExecuteScriptInServiceWorker() {
     script_result_queue_ = std::make_unique<ScriptResultQueue>();
 
   content::ServiceWorkerContext* service_worker_context =
-      util::GetStoragePartitionForExtensionId(extension_->id(),
-                                              browser_context_)
-          ->GetServiceWorkerContext();
+      util::GetServiceWorkerContextForExtensionId(extension_->id(),
+                                                  browser_context_);
 
   service_worker_context->ExecuteScriptForTest(  // IN-TEST
       script_, worker_ids[0].version_id,

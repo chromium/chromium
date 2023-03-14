@@ -40,7 +40,7 @@ export class Trie {
   /**
    * returns all keys that share the same given prefix.
    */
-  getKeys(prefix: string|undefined): string[] {
+  getKeys(prefix?: string): string[] {
     const allKeys: string[] = [];
     if (prefix !== undefined) {
       const prefixNode = this.getChildNode(prefix);

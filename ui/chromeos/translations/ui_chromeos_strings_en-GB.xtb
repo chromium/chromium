@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">Zipping <ph name="NUMBER_OF_ITEMS" /> items…</translation>
 <translation id="1722687688096767818">Adding profile…</translation>
 <translation id="1726100011689679555">Name servers</translation>
+<translation id="1727562178154619254">Ready to sync</translation>
 <translation id="1729953886957086472">German (Germany)</translation>
 <translation id="1730235522912993863">Chinese Cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> items copied.</translation>
@@ -351,7 +352,6 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Paste</translation>
 <translation id="3952872973865944257">Telugu phonetic</translation>
-<translation id="3954354850384043518">In progress</translation>
 <translation id="3958548648197196644">Kiwi</translation>
 <translation id="3971140002794351170">Download mobile profile, network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">English (UK)</translation>
@@ -365,6 +365,7 @@
 <translation id="4092890906744441904">Irish</translation>
 <translation id="4124935795427217608">Unicorn</translation>
 <translation id="4131235941541910880">Move items that you don't need to the bin</translation>
+<translation id="4134804435730168042">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, activate after device setup</translation>
 <translation id="4153015322587141338">Right-click a file, and select '<ph name="PIN_COMMAND" />' for quick access to your files in shelf.</translation>
 <translation id="4157569377477607576">Administrator policy doesn't recommend:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> moved.</translation>
@@ -407,6 +408,7 @@
 <translation id="4414834425328380570">‘<ph name="FILE_NAME" />’ will be deleted and you won't be able to restore it.</translation>
 <translation id="4418686080762064601">Create a shortcut for your files</translation>
 <translation id="4425149324548788773">My Drive</translation>
+<translation id="4432921877815220091">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, activate after device setup, managed by your administrator</translation>
 <translation id="4439427728133035643">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, signal strength <ph name="SIGNAL_STRENGTH" />%, connect</translation>
 <translation id="4442424173763614572">DNS lookup failed</translation>
 <translation id="4462159676511157176">Custom name servers</translation>
@@ -614,8 +616,10 @@
 <translation id="5911887972742538906">An error occurred during installation of your Linux application.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5913638992615760742">Copy operation failed, unexpected error: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">New search features available</translation>
 <translation id="5926082595146149752">Dutch (Netherlands) with US International PC keyboard</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, activate after device setup</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> items</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">Sort options</translation>
@@ -702,6 +706,7 @@
 <translation id="6732801395666424405">Certificates not loaded</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Share folder with Bruschetta</translation>
+<translation id="6750737795876287924">Current directory</translation>
 <translation id="6751256176799620176">1 folder selected</translation>
 <translation id="6755827872271341378">Chrome OS Flex device</translation>
 <translation id="6790428901817661496">Play</translation>
@@ -739,7 +744,6 @@
 <translation id="6973630695168034713">Folders</translation>
 <translation id="6976795442547527108">Lion</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">All time</translation>
 <translation id="6989942356279143254">Swedish</translation>
 <translation id="6990081529015358884">You have run out of space</translation>
 <translation id="6993826899923627728">These items are in your bin</translation>
@@ -762,6 +766,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;search Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannada (phonetic)</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Missing 'subject alternative name match' or 'domain suffix match' to validate the authentication server identity</translation>
 <translation id="7165320105431587207">Failed to configure network</translation>
 <translation id="7170041865419449892">Out of range</translation>
 <translation id="7180611975245234373">Refresh</translation>
@@ -794,7 +799,6 @@
 <translation id="7458955835361612701">No recent images</translation>
 <translation id="7460898608667578234">Ukrainian</translation>
 <translation id="7469894403370665791">Automatically connect to this network</translation>
-<translation id="7481358317100446445">Ready</translation>
 <translation id="7486315294984620427">To drop files in Parallels Desktop, the file must be copied to Windows files.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam phonetic</translation>
@@ -832,6 +836,7 @@
 <translation id="7724603315864178912">Cut</translation>
 <translation id="7732111077498238432">Network is policy controlled</translation>
 <translation id="7736003208887389532">Permanently delete these files?</translation>
+<translation id="7740287852186792672">Search results</translation>
 <translation id="7748626145866214022">More options available on the action bar. Press Alt + A to focus the action bar.</translation>
 <translation id="7760449188139285140">Chinese Wubi</translation>
 <translation id="7765158879357617694">Move</translation>
@@ -883,6 +888,7 @@
 <translation id="8116072619078571545">Ice water</translation>
 <translation id="8128733386027980860">English (UK) with Dvorak keyboard</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" has been shared with you. You cannot delete it because you do not own it.</translation>
+<translation id="8138705869659070104">Activate after device setup</translation>
 <translation id="813913629614996137">Initialising...</translation>
 <translation id="8147028810663464959">Character width is Full</translation>
 <translation id="8151638057146502721">Configure</translation>
@@ -935,6 +941,7 @@
 <translation id="8487700953926739672">Available offline</translation>
 <translation id="8492972329130824181">Home network is not available. Mobile data roaming must be enabled to connect.</translation>
 <translation id="8499098729323186194">Extracting <ph name="NUMBER_OF_ITEMS" /> items…</translation>
+<translation id="8502913769543567768">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, activate after device setup, managed by your administrator</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="853494022971700746">French (France)</translation>
 <translation id="8540608333167683902">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, details</translation>
@@ -996,6 +1003,7 @@
 <translation id="9046895021617826162">Connection failed</translation>
 <translation id="9065512565307033593">If you fail to verify, your network access will be disabled.</translation>
 <translation id="908378762078012445">Russian with phonetic AATSEEL keyboard</translation>
+<translation id="9086302186042011942">Syncing</translation>
 <translation id="9099674669267916096">Page count</translation>
 <translation id="9100610230175265781">Passphrase required</translation>
 <translation id="9110990317705400362">We're constantly looking for ways to make your browsing safer. Previously, any website could prompt you to add an extension into your browser. In the latest versions of Google Chrome, you must explicitly tell Chrome that you want to install these extensions by adding them through the Extensions page. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>

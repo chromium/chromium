@@ -40,6 +40,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
@@ -236,10 +237,11 @@ class WebNavigationApiBackForwardCacheTest : public WebNavigationApiTest {
  public:
   WebNavigationApiBackForwardCacheTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kBackForwardCache,
-          {{"content_injection_supported", "true"},
-           {"all_extensions_allowed", "true"}}}},
-        {features::kBackForwardCacheMemoryControls});
+        content::GetBasicBackForwardCacheFeatureForTesting(
+            {{features::kBackForwardCache,
+              {{"content_injection_supported", "true"},
+               {"all_extensions_allowed", "true"}}}}),
+        content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
   }
   ~WebNavigationApiBackForwardCacheTest() override = default;
 

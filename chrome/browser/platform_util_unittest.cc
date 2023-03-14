@@ -183,7 +183,6 @@ class PlatformUtilTest : public PlatformUtilTestBase {
     ASSERT_NO_FATAL_FAILURE(PlatformUtilTestBase::SetUp());
 
     static const char kTestFileData[] = "Cow says moo!";
-    const int kTestFileDataLength = std::size(kTestFileData) - 1;
 
     // This prevents platform_util from invoking any shell or external APIs
     // during tests. Doing so may result in external applications being launched
@@ -194,9 +193,7 @@ class PlatformUtilTest : public PlatformUtilTestBase {
 
     // A valid file.
     existing_file_ = directory_.GetPath().AppendASCII("test_file.txt");
-    ASSERT_EQ(
-        kTestFileDataLength,
-        base::WriteFile(existing_file_, kTestFileData, kTestFileDataLength));
+    ASSERT_TRUE(base::WriteFile(existing_file_, kTestFileData));
 
     // A valid folder.
     existing_folder_ = directory_.GetPath().AppendASCII("test_folder");
@@ -301,7 +298,7 @@ TEST_F(PlatformUtilPosixTest, OpenFolderWithPosixSymlinksChromeOS) {
 TEST_F(PlatformUtilTest, OpenFileWithUnhandledFileType) {
   base::FilePath unhandled_file =
       directory_.GetPath().AppendASCII("myfile.filetype");
-  ASSERT_EQ(3, base::WriteFile(unhandled_file, "cat", 3));
+  ASSERT_TRUE(base::WriteFile(unhandled_file, "cat"));
   EXPECT_EQ(OPEN_FAILED_NO_HANLDER_FOR_FILE_TYPE,
             CallOpenItem(unhandled_file, OPEN_FILE));
 }

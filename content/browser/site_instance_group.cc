@@ -15,10 +15,10 @@ namespace {
 SiteInstanceGroupId::Generator site_instance_group_id_generator;
 }  // namespace
 
-SiteInstanceGroup::SiteInstanceGroup(BrowsingInstanceId browsing_instance_id,
+SiteInstanceGroup::SiteInstanceGroup(BrowsingInstance* browsing_instance,
                                      RenderProcessHost* process)
     : id_(site_instance_group_id_generator.GenerateNextId()),
-      browsing_instance_id_(browsing_instance_id),
+      browsing_instance_(browsing_instance),
       process_(process->GetSafeRef()),
       agent_scheduling_group_(
           AgentSchedulingGroupHost::GetOrCreate(*this, *process)
@@ -47,6 +47,7 @@ void SiteInstanceGroup::RemoveObserver(Observer* observer) {
 }
 
 void SiteInstanceGroup::AddSiteInstance(SiteInstanceImpl* site_instance) {
+  CHECK_EQ(browsing_instance_id(), site_instance->GetBrowsingInstanceId());
   site_instances_.insert(site_instance);
 }
 
@@ -87,6 +88,28 @@ void SiteInstanceGroup::RenderProcessExited(
     const ChildProcessTerminationInfo& info) {
   for (auto& observer : observers_)
     observer.RenderProcessGone(this, info);
+}
+
+// static
+SiteInstanceGroup* SiteInstanceGroup::CreateForTesting(
+    BrowserContext* browser_context,
+    RenderProcessHost* process) {
+  return new SiteInstanceGroup(
+      new BrowsingInstance(browser_context,
+                           WebExposedIsolationInfo::CreateNonIsolated(),
+                           /*is_guest=*/false,
+                           /*is_fenced=*/false, /*coop_related_group=*/nullptr,
+                           /*common_coop_origin=*/absl::nullopt),
+      process);
+}
+
+// static
+SiteInstanceGroup* SiteInstanceGroup::CreateForTesting(
+    SiteInstanceGroup* group,
+    RenderProcessHost* process) {
+  return new SiteInstanceGroup(
+      group->browsing_instance_for_testing(),  // IN-TEST
+      process);
 }
 
 void SiteInstanceGroup::WriteIntoTrace(

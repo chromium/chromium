@@ -44,7 +44,14 @@ ChromeEnterpriseRealTimeUrlLookupServiceFactory::GetInstance() {
 
 ChromeEnterpriseRealTimeUrlLookupServiceFactory::
     ChromeEnterpriseRealTimeUrlLookupServiceFactory()
-    : ProfileKeyedServiceFactory("ChromeEnterpriseRealTimeUrlLookupService") {
+    : ProfileKeyedServiceFactory(
+          "ChromeEnterpriseRealTimeUrlLookupService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(VerdictCacheManagerFactory::GetInstance());
   DependsOn(enterprise_connectors::ConnectorsServiceFactory::GetInstance());
   DependsOn(SafeBrowsingNavigationObserverManagerFactory::GetInstance());

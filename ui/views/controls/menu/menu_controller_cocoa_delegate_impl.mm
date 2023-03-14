@@ -12,11 +12,13 @@
 #include "ui/base/interaction/element_tracker_mac.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/gfx/platform_font_mac.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/badge_painter.h"
+#include "ui/views/layout/layout_provider.h"
 
 namespace {
 
@@ -25,7 +27,9 @@ constexpr CGFloat kIPHDotSize = 6;
 NSImage* NewTagImage(const ui::ColorProvider* color_provider) {
   // 1. Make the attributed string.
 
-  NSString* badge_text = l10n_util::GetNSString(IDS_NEW_BADGE);
+  NSString* badge_text = l10n_util::GetNSString(features::IsChromeRefresh2023()
+                                                    ? IDS_NEW_BADGE_UPPERCASE
+                                                    : IDS_NEW_BADGE);
 
   // The preferred font is slightly smaller and slightly more bold than the
   // menu font. The size change is required to make it look correct in the
@@ -39,7 +43,7 @@ NSImage* NewTagImage(const ui::ColorProvider* color_provider) {
 
   DCHECK(color_provider);
   NSColor* badge_text_color = skia::SkColorToSRGBNSColor(
-      color_provider->GetColor(ui::kColorButtonBackgroundProminent));
+      color_provider->GetColor(ui::kColorBadgeForeground));
 
   NSDictionary* badge_attrs = @{
     NSFontAttributeName : badge_font.GetNativeFont(),
@@ -68,13 +72,16 @@ NSImage* NewTagImage(const ui::ColorProvider* color_provider) {
       drawingHandler:^(NSRect dest_rect) {
         NSRect badge_frame = NSInsetRect(
             dest_rect, views::BadgePainter::kBadgeHorizontalMargin, 0);
-        NSBezierPath* rounded_badge_rect = [NSBezierPath
-            bezierPathWithRoundedRect:badge_frame
-                              xRadius:views::BadgePainter::kBadgeCornerRadius
-                              yRadius:views::BadgePainter::kBadgeCornerRadius];
+        const int badge_radius =
+            views::LayoutProvider::Get()->GetCornerRadiusMetric(
+                views::ShapeContextTokens::kBadgeRadius);
+        NSBezierPath* rounded_badge_rect =
+            [NSBezierPath bezierPathWithRoundedRect:badge_frame
+                                            xRadius:badge_radius
+                                            yRadius:badge_radius];
         DCHECK(color_provider);
         NSColor* badge_color = skia::SkColorToSRGBNSColor(
-            color_provider->GetColor(ui::kColorButtonBackgroundProminent));
+            color_provider->GetColor(ui::kColorBadgeBackground));
         [badge_color set];
         [rounded_badge_rect fill];
 
@@ -111,12 +118,20 @@ NSImage* IPHDotImage(const ui::ColorProvider* color_provider) {
 
 // --- Private API begin ---
 
-@interface NSCarbonMenuImpl : NSObject
+// Historically, all menu handling in macOS was handled by HI Toolbox, and the
+// bridge from Cocoa to Carbon to use Carbon's menus was the class
+// NSCarbonMenuImpl. However, starting in macOS 13, it looks like this is
+// changing, as now a NSCocoaMenuImpl class exists, which is optionally created
+// in -[NSMenu _createMenuImpl] and may possibly in the future be returned from
+// -[NSMenu _menuImpl]. Therefore, abstract away into a protocol the (one)
+// common method that this code uses that is present on both Impl classes.
+@protocol CrNSMenuImpl <NSObject>
+@optional
 - (void)highlightItemAtIndex:(NSInteger)index;
 @end
 
-@interface NSMenu ()
-- (NSCarbonMenuImpl*)_menuImpl;
+@interface NSMenu (Impl)
+- (id<CrNSMenuImpl>)_menuImpl;
 - (CGRect)_boundsIfOpen;
 @end
 
@@ -238,7 +253,7 @@ NSImage* IPHDotImage(const ui::ColorProvider* color_provider) {
       NSMenu* const menu_obj = note.object;
       if (alerted_index.has_value()) {
         if ([menu respondsToSelector:@selector(_menuImpl)]) {
-          NSCarbonMenuImpl* menuImpl = [menu_obj _menuImpl];
+          id<CrNSMenuImpl> menuImpl = [menu_obj _menuImpl];
           if ([menuImpl respondsToSelector:@selector(highlightItemAtIndex:)]) {
             const auto index =
                 base::checked_cast<NSInteger>(alerted_index.value());

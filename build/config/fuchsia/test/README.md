@@ -13,8 +13,11 @@ Runs an `archivist-without-attribution` with custom protocol routing for tests
 that want to intercept events written to a `LogSink` by a component.
 
 #### chromium_test_facet.shard.test-cml
-Runs CFv2 tests in the "chromium" test realm. This is generally required for all
-Chromium tests that must interact with true system services.
+Runs tests in the `chromium` test realm, which is mostly hermetic but has access
+to specific system services that cannot (currently) be faked. For more
+information, see https://fxbug.dev/91934. This is generally required for all
+Chromium tests not using the
+[`chromium_system_test_facet`](#chromium_system_test_facetshardtest-cml).
 
 #### fonts.shard.test-cml
 For tests that test fonts by providing `fuchsia.fonts.Provider`. This shard
@@ -29,15 +32,40 @@ Required by tests that execute JavaScript. Should only be required in a small
 number of tests.
 
 #### minimum.shard.test-cml
-Capabilities required by anything that uses `//base/test`, used as the base
-fragment for all test suites.
+Capabilities required by anything that uses `//base/test` when running in the
+(default) `chromium` test realm. It is the default base fragment for most
+`test()` Components.
 
-`config-data` is included in the features list so that the platform can offer
-ICU timezone data to these tests when they are being run.  A more general
-approach is discussed in https://fxbug.dev/85845.
+The system-wide `config-data` directory capability is routed to tests running in
+the realm so that individual tests may route subdirectories as needed.
+TODO(crbug.com/1360077): Remove this after migrating to the new mechanism.
 
 #### logger.shard.test-cml
 For tests that test logging functionality by providing `fuchsia.logger.Log`.
+
+#### sysmem.shard.test-cml
+For tests that depend on the sysmem service (e.g. to allocate image buffers to
+share with Vulkan and Scenic).
+
+#### system_test_minimum.shard.test-cml
+Capabilities required by anything that uses `//base/test` when running as a
+system test in the `chromium-system` test realm. It is the base fragment for
+`test()` Components that use the
+[`chromium_system_test_facet`](#chromium_system_test_facetshardtest-cml).
+
+Most tests use the [`minimum`](#minimumshardtest-cml) shard.
+
+#### chromium_system_test_facet.shard.test-cml
+Runs tests in the `chromium-system` test realm. This is required for Chromium
+tests that are intended to run against the actual system and its real system
+services. This is required for, for example, performance tests intended to
+measure system performance. Another overlapping use case is tests that need to
+be run in environments without access to the packages containing fake
+implementations of required protocols that other tests use.
+(https://crbug.com/1408597 should make that use case obsolete.)
+
+Most tests should use the
+[`chromium_test_facet`](#chromium_test_facetshardtest-cml).
 
 #### test_ui_stack.shard.test-cml
 For tests that need an isolated UI subsystem, that supports the Flatland

@@ -380,26 +380,25 @@ void StorageHandler::UpdateSystemSizeItem() {
 
   int64_t system_bytes = 0;
   for (int i = 0; i < SizeCalculator::kCalculationTypeCount; ++i) {
-    const int64_t total_bytes_for_current_item =
-        std::max(storage_items_total_bytes_[i], static_cast<int64_t>(0));
+    int64_t total_bytes_for_current_item = storage_items_total_bytes_[i];
+    // Handle errors.
+    if (total_bytes_for_current_item < 0) {
+      if (i == static_cast<int>(SizeCalculator::CalculationType::kTotal) ||
+          i == static_cast<int>(SizeCalculator::CalculationType::kAvailable)) {
+        // Abort the calculation and display an error under "System".
+        system_bytes = -1;
+        break;
+      }
+      // Skip this storage item, which effectively means that its actual size is
+      // added under "System" instead of its actual storage row.
+      continue;
+    }
     // The total amount of disk space counts positively towards system's size.
     if (i == static_cast<int>(SizeCalculator::CalculationType::kTotal)) {
-      if (total_bytes_for_current_item <= 0) {
-        return;
-      }
       system_bytes += total_bytes_for_current_item;
       continue;
     }
-    // The size taken by offline files should not affect the system size.
-    if (i ==
-        static_cast<int>(SizeCalculator::CalculationType::kDriveOfflineFiles)) {
-      continue;
-    }
     // All other items are subtracted from the total amount of disk space.
-    if (i == static_cast<int>(SizeCalculator::CalculationType::kAvailable) &&
-        total_bytes_for_current_item < 0) {
-      return;
-    }
     system_bytes -= total_bytes_for_current_item;
   }
 

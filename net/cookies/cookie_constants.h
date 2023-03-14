@@ -297,7 +297,7 @@ enum class CookieSourceSchemeName {
   kHttpsScheme = 14,
   kJavaScriptScheme = 15,
   kMailToScheme = 16,
-  kQuicTransportScheme = 17,
+  kQuicTransportScheme_Obsoleted = 17,
   kTelScheme = 18,
   kUrnScheme = 19,
   kWsScheme = 20,

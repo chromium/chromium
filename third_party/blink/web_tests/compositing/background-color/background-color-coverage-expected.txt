@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -22,7 +22,6 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='green3'",
       "bounds": [110, 110],
-      "contentsOpaqueForText": true,
       "backgroundColor": "#008000",
       "transform": 2
     },
@@ -30,20 +29,19 @@
       "name": "LayoutNGBlockFlow (positioned) DIV id='brown1'",
       "bounds": [100, 100],
       "contentsOpaque": true,
-      "backgroundColor": "#664C00",
+      "backgroundColor": "#664D00",
       "transform": 3
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='brown2'",
       "bounds": [100, 100],
       "contentsOpaque": true,
-      "backgroundColor": "#664C00",
+      "backgroundColor": "#664D00",
       "transform": 4
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='brown3'",
       "bounds": [100, 100],
-      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 5
     },
@@ -57,7 +55,6 @@
       "name": "HorizontalScrollbar",
       "position": [0, 85],
       "bounds": [100, 15],
-      "contentsOpaqueForText": true,
       "transform": 5
     },
     {
@@ -71,13 +68,12 @@
       "name": "LayoutNGBlockFlow (positioned) DIV id='brown3'",
       "bounds": [85, 10000],
       "contentsOpaque": true,
-      "backgroundColor": "#664C00",
+      "backgroundColor": "#664D00",
       "transform": 5
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='brown4'",
       "bounds": [100, 100],
-      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 6
     },
@@ -91,7 +87,6 @@
       "name": "HorizontalScrollbar",
       "position": [0, 85],
       "bounds": [100, 15],
-      "contentsOpaqueForText": true,
       "transform": 6
     },
     {
@@ -105,7 +100,7 @@
       "name": "LayoutNGBlockFlow (positioned) DIV id='brown4'",
       "bounds": [85, 10000],
       "contentsOpaque": true,
-      "backgroundColor": "#664C00",
+      "backgroundColor": "#664D00",
       "transform": 6
     }
   ],

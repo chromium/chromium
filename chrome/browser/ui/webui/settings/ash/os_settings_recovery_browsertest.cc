@@ -4,74 +4,13 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
-#include "chrome/browser/ash/login/test/cryptohome_mixin.h"
-#include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_browser_test_mixin.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_ui.h"
-#include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/ash/services/auth_factor_config/in_process_instances.h"
-#include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-test-utils.h"
-#include "components/user_manager/user_names.h"
+#include "chrome/browser/ui/webui/settings/ash/os_settings_lock_screen_browser_test_base.h"
+#include "chrome/test/data/webui/settings/chromeos/test_api.test-mojom-test-utils.h"
 #include "content/public/test/browser_test.h"
-#include "testing/gtest/include/gtest/gtest.h"
-
-namespace {
-
-const char kPassword[] = "the-password";
-
-}  // namespace
 
 namespace ash::settings {
 
-class OSSettingsRecoveryTest : public MixinBasedInProcessBrowserTest {
- public:
-  OSSettingsRecoveryTest() {
-    cryptohome_.set_enable_auth_check(true);
-    cryptohome_.set_supports_low_entropy_credentials(true);
-    cryptohome_.MarkUserAsExisting(GetAccountId());
-    cryptohome_.AddGaiaPassword(GetAccountId(), kPassword);
-  }
-
-  void SetUpOnMainThread() override {
-    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
-    logged_in_user_mixin_.LogInUser();
-  }
-
-  // Opens the ChromeOS settings app, goes to the "lock screen" section and
-  // enters the password. May be called only once per test.
-  mojom::LockScreenSettingsAsyncWaiter OpenLockScreenSettings() {
-    CHECK(!os_settings_driver_remote_.is_bound());
-    os_settings_driver_remote_ =
-        mojo::Remote{os_settings_mixin_.OpenOSSettings()};
-
-    CHECK(!lock_screen_settings_remote_.is_bound());
-    lock_screen_settings_remote_ = mojo::Remote{
-        mojom::OSSettingsDriverAsyncWaiter{os_settings_driver_remote_.get()}
-            .GoToLockScreenSettings()};
-
-    mojom::LockScreenSettingsAsyncWaiter{lock_screen_settings_remote_.get()}
-        .Authenticate(kPassword);
-    return mojom::LockScreenSettingsAsyncWaiter{
-        lock_screen_settings_remote_.get()};
-  }
-
-  const AccountId& GetAccountId() {
-    return logged_in_user_mixin_.GetAccountId();
-  }
-
- protected:
-  CryptohomeMixin cryptohome_{&mixin_host_};
-  LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, LoggedInUserMixin::LogInType::kRegular,
-      embedded_test_server(), this};
-  OSSettingsBrowserTestMixin os_settings_mixin_{&mixin_host_};
-
-  mojo::Remote<mojom::OSSettingsDriver> os_settings_driver_remote_;
-  mojo::Remote<mojom::LockScreenSettings> lock_screen_settings_remote_;
-};
+class OSSettingsRecoveryTest : public OSSettingsLockScreenBrowserTestBase {};
 
 class OSSettingsRecoveryTestWithFeature : public OSSettingsRecoveryTest {
  public:
@@ -96,13 +35,13 @@ class OSSettingsRecoveryTestWithoutFeature : public OSSettingsRecoveryTest {
 IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithoutFeature,
                        ControlNotVisible) {
   mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
-      OpenLockScreenSettings();
+      OpenLockScreenSettingsAndAuthenticate();
   lock_screen_settings.AssertRecoveryControlVisibility(false);
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature, ControlVisible) {
   mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
-      OpenLockScreenSettings();
+      OpenLockScreenSettingsAndAuthenticate();
   lock_screen_settings.AssertRecoveryControlVisibility(true);
 }
 
@@ -110,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature, CheckingEnables) {
   EXPECT_FALSE(cryptohome_.HasRecoveryFactor(GetAccountId()));
 
   mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
-      OpenLockScreenSettings();
+      OpenLockScreenSettingsAndAuthenticate();
   lock_screen_settings.AssertRecoveryConfigured(false);
   lock_screen_settings.EnableRecoveryConfiguration();
   lock_screen_settings.AssertRecoveryConfigured(true);
@@ -127,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature,
   cryptohome_.AddRecoveryFactor(GetAccountId());
 
   mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
-      OpenLockScreenSettings();
+      OpenLockScreenSettingsAndAuthenticate();
   lock_screen_settings.AssertRecoveryConfigured(true);
   lock_screen_settings.DisableRecoveryConfiguration(
       mojom::LockScreenSettings::RecoveryDialogAction::CancelDialog);
@@ -146,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature,
   cryptohome_.AddRecoveryFactor(GetAccountId());
 
   mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
-      OpenLockScreenSettings();
+      OpenLockScreenSettingsAndAuthenticate();
   lock_screen_settings.AssertRecoveryConfigured(true);
   lock_screen_settings.DisableRecoveryConfiguration(
       mojom::LockScreenSettings::RecoveryDialogAction::ConfirmDisabling);
@@ -159,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature,
 // the password prompt again.
 IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature, DestroyedSession) {
   mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
-      OpenLockScreenSettings();
+      OpenLockScreenSettingsAndAuthenticate();
 
   // Try to change recovery setting, but with an invalid auth session. This
   // should throw us back to the password prompt.

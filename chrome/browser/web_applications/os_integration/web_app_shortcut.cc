@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
@@ -30,8 +31,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/os_integration/file_handling_sub_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -41,8 +44,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep_default.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/gfx/icon_util.h"
@@ -144,6 +149,31 @@ ConvertIconProtoDataToShortcutsMenuIcon(
   return shortcut_menu_item_icons;
 }
 
+gfx::ImageFamily PackageIconsIntoImageFamily(
+    std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
+  gfx::ImageFamily image_family;
+  for (auto& size_and_bitmap : icon_bitmaps) {
+    image_family.Add(gfx::ImageSkia(
+        gfx::ImageSkiaRep(size_and_bitmap.second, /*scale=*/0.0f)));
+  }
+
+  // If the image failed to load, use the standard application icon.
+  if (image_family.empty()) {
+    SquareSizePx icon_size_in_px = GetDesiredIconSizesForShortcut().back();
+    gfx::ImageSkia image_skia = CreateDefaultApplicationIcon(icon_size_in_px);
+    image_family.Add(gfx::Image(image_skia));
+  }
+
+  return image_family;
+}
+
+std::unique_ptr<ShortcutInfo> SetFavicon(
+    std::unique_ptr<ShortcutInfo> shortcut_info,
+    gfx::ImageFamily image_family) {
+  shortcut_info->favicon = std::move(image_family);
+  return shortcut_info;
+}
+
 }  // namespace
 
 ShortcutInfo::ShortcutInfo() = default;
@@ -160,7 +190,7 @@ std::unique_ptr<ShortcutInfo> BuildShortcutInfoWithoutFavicon(
     const proto::WebAppOsIntegrationState& state) {
   auto shortcut_info = std::make_unique<ShortcutInfo>();
 
-  shortcut_info->extension_id = app_id;
+  shortcut_info->app_id = app_id;
   shortcut_info->url = start_url;
   DCHECK(state.has_shortcut());
   const proto::ShortcutDescription& shortcut_state = state.shortcut();
@@ -217,6 +247,39 @@ std::unique_ptr<ShortcutInfo> BuildShortcutInfoWithoutFavicon(
   return shortcut_info;
 }
 
+void PopulateFaviconForShortcutInfo(
+    const WebApp* app,
+    WebAppIconManager& icon_manager,
+    std::unique_ptr<ShortcutInfo> shortcut_info_to_populate,
+    base::OnceCallback<void(std::unique_ptr<ShortcutInfo>)> callback) {
+  DCHECK(app);
+
+  // Build a common intersection between desired and downloaded icons.
+  auto icon_sizes_in_px = base::STLSetIntersection<std::vector<SquareSizePx>>(
+      app->downloaded_icon_sizes(IconPurpose::ANY),
+      GetDesiredIconSizesForShortcut());
+
+  auto populate_and_return_shortcut_info =
+      base::BindOnce(&SetFavicon, std::move(shortcut_info_to_populate))
+          .Then(std::move(callback));
+
+  if (!icon_sizes_in_px.empty()) {
+    icon_manager.ReadIcons(
+        app->app_id(), IconPurpose::ANY, icon_sizes_in_px,
+        base::BindOnce(&PackageIconsIntoImageFamily)
+            .Then(std::move(populate_and_return_shortcut_info)));
+    return;
+  }
+
+  // If there is no single icon at the desired sizes, we will resize what we can
+  // get.
+  SquareSizePx desired_icon_size = GetDesiredIconSizesForShortcut().back();
+  icon_manager.ReadIconAndResize(
+      app->app_id(), IconPurpose::ANY, desired_icon_size,
+      base::BindOnce(&PackageIconsIntoImageFamily)
+          .Then(std::move(populate_and_return_shortcut_info)));
+}
+
 std::vector<WebAppShortcutsMenuItemInfo> CreateShortcutsMenuItemInfos(
     const proto::ShortcutMenus& shortcut_menus) {
   std::vector<WebAppShortcutsMenuItemInfo> shortcut_menu_item_infos;
@@ -236,11 +299,11 @@ std::vector<WebAppShortcutsMenuItemInfo> CreateShortcutsMenuItemInfos(
 }
 
 std::string GenerateApplicationNameFromInfo(const ShortcutInfo& shortcut_info) {
-  // TODO(loyso): Remove this empty()/non-empty difference.
-  if (shortcut_info.extension_id.empty())
+  if (shortcut_info.app_id.empty()) {
     return GenerateApplicationNameFromURL(shortcut_info.url);
+  }
 
-  return GenerateApplicationNameFromAppId(shortcut_info.extension_id);
+  return GenerateApplicationNameFromAppId(shortcut_info.app_id);
 }
 
 base::FilePath GetOsIntegrationResourcesDirectoryForApp(
@@ -371,9 +434,8 @@ scoped_refptr<base::SequencedTaskRunner> GetShortcutIOTaskRunner() {
 }
 
 base::FilePath GetShortcutDataDir(const ShortcutInfo& shortcut_info) {
-  return GetOsIntegrationResourcesDirectoryForApp(shortcut_info.profile_path,
-                                                  shortcut_info.extension_id,
-                                                  shortcut_info.url);
+  return GetOsIntegrationResourcesDirectoryForApp(
+      shortcut_info.profile_path, shortcut_info.app_id, shortcut_info.url);
 }
 
 #if !BUILDFLAG(IS_MAC)

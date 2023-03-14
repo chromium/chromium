@@ -161,7 +161,7 @@ suite('NetworkSummaryItem', function() {
     netSummaryItem.setProperties({
       deviceState: {
         inhibitReason: InhibitReason.kNotInhibited,
-        deviceState: DeviceStateType.kUnavailable,
+        deviceState: DeviceStateType.kDisabled,
         type: NetworkType.kCellular,
         simAbsent: false,
       },
@@ -179,6 +179,59 @@ suite('NetworkSummaryItem', function() {
     assertFalse(netSummaryItem.shadowRoot.querySelector('#deviceEnabledButton')
                     .disabled);
   });
+
+  test(
+      'Toggle should be disabled when device state is unavailable', function() {
+        netSummaryItem.setProperties({
+          deviceState: {
+            inhibitReason: InhibitReason.kNotInhibited,
+            deviceState: DeviceStateType.kUnavailable,
+            type: NetworkType.kCellular,
+            simAbsent: false,
+          },
+          activeNetworkState: {
+            connectionState: ConnectionStateType.kNotConnected,
+            guid: '',
+            type: NetworkType.kCellular,
+            typeState: {cellular: {networkTechnology: ''}},
+          },
+        });
+
+        flush();
+        assertFalse(
+            netSummaryItem.shadowRoot.querySelector('#deviceEnabledButton')
+                .checked);
+        assertTrue(
+            netSummaryItem.shadowRoot.querySelector('#deviceEnabledButton')
+                .disabled);
+      });
+
+  test(
+      'Toggle should be on and disabled when device state is enabling',
+      function() {
+        netSummaryItem.setProperties({
+          deviceState: {
+            deviceState: DeviceStateType.kEnabling,
+            type: NetworkType.kWiFi,
+          },
+          activeNetworkState: {
+            connectionState: ConnectionStateType.kNotConnected,
+            guid: '',
+            type: NetworkType.kWiFi,
+            typeState: {
+              wifi: {},
+            },
+          },
+        });
+
+        flush();
+        assertTrue(
+            netSummaryItem.shadowRoot.querySelector('#deviceEnabledButton')
+                .checked);
+        assertTrue(
+            netSummaryItem.shadowRoot.querySelector('#deviceEnabledButton')
+                .disabled);
+      });
 
   test('Mobile data toggle shown on locked device', function() {
     initWithESimLocked();

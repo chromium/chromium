@@ -23,6 +23,14 @@
 // Init with a weak reference of web controller, used for passing through calls.
 - (instancetype)initWithWebController:(CRWWebController*)webController;
 
+// Content view proxy API used only internally.
+
+// Sets the content view to `nil` and adds a placeholder scroll view if needed.
+// Setting up the placeholder can be costly, so we don't want to proceed with
+// the setup when clearing the content view, unless we intend to set a non-nil
+// content view in the future and wish to preserve state.
+- (void)clearContentViewAndAddPlaceholder:(BOOL)addPlaceholder;
+
 @end
 
 #endif  // IOS_WEB_WEB_STATE_UI_CRW_WEB_VIEW_PROXY_IMPL_H_

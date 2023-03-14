@@ -530,6 +530,10 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
         tool.CopyFiles(dev)
         tool.SetupEnvironment()
 
+        if self._env.disable_test_server:
+          logging.warning('Not starting test server. Some tests may fail.')
+          return
+
         try:
           # See https://crbug.com/1030827.
           # This is a hack that may break in the future. We're relying on the

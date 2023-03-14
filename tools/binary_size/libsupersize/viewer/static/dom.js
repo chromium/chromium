@@ -4,12 +4,31 @@
 
 'use strict';
 
+/**
+ * @fileoverview
+ * Constants, utilities, and objects for DOM access.
+ */
+
+/** @enum {string} Keys in query string and names of input elements. */
+const STATE_KEY = {
+  LOAD_URL: 'load_url',
+  BEFORE_URL: 'before_url',
+  BYTE_UNIT: 'byteunit',
+  METHOD_COUNT: 'method_count',
+  MIN_SIZE: 'min_size',
+  GROUP_BY: 'group_by',
+  INCLUDE: 'include',
+  EXCLUDE: 'exclude',
+  TYPE: 'type',
+  FLAG_FILTER: 'flag_filter',
+};
+
 /** Utilities for working with the DOM */
 const dom = {
   /**
    * Creates a document fragment from the given nodes.
    * @param {Iterable<Node>} nodes
-   * @return {DocumentFragment}
+   * @return {!DocumentFragment}
    */
   createFragment(nodes) {
     const fragment = document.createDocumentFragment();
@@ -137,11 +156,15 @@ class MainElements {
     this.divDiffStatusIcons =
         /** @type {!HTMLDivElement} */ (this.query('#div-diff-status-icons'));
 
-    /** @type {!HTMLTemplateElement} Template for groups in the tree. */
+    /** @public {!HTMLDivElement} */
+    this.divMetricsIcons =
+        /** @type {!HTMLDivElement} */ (this.query('#div-metrics-icons'));
+
+    /** @type {!HTMLTemplateElement} Template for groups in the symbol tree. */
     this.tmplSymbolTreeGroup = /** @type {!HTMLTemplateElement} */ (
         this.query('#tmpl-symbol-tree-group'));
 
-    /** @type {!HTMLTemplateElement} Template for leaves in the tree. */
+    /** @type {!HTMLTemplateElement} Template for leaves in the symbol tree. */
     this.tmplSymbolTreeLeaf = /** @type {!HTMLTemplateElement} */ (
         this.query('#tmpl-symbol-tree-leaf'));
 
@@ -152,6 +175,22 @@ class MainElements {
     /** @type {!HTMLUListElement} */
     this.ulSymbolTree =
         /** @type {!HTMLUListElement} */ (this.query('#ul-symbol-tree'));
+
+    /** @type {!HTMLTemplateElement} Template for groups in the metrics tree. */
+    this.tmplMetricsTreeGroup = /** @type {!HTMLTemplateElement} */ (
+        this.query('#tmpl-metrics-tree-group'));
+
+    /** @type {!HTMLTemplateElement} Template for leaves in the metrics tree. */
+    this.tmplMetricsTreeLeaf = /** @type {!HTMLTemplateElement} */ (
+        this.query('#tmpl-metrics-tree-leaf'));
+
+    /** @public {!HTMLDivElement} */
+    this.divMetricsView =
+        /** @type {!HTMLDivElement} */ (this.query('#div-metrics-view'));
+
+    /** @type {!HTMLUListElement} */
+    this.ulMetricsTree =
+        /** @type {!HTMLUListElement} */ (this.query('#ul-metrics-tree'));
 
     /** @public {!HTMLDivElement} */
     this.divNoSymbolsMsg =

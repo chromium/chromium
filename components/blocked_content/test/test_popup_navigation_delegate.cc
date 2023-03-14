@@ -23,7 +23,7 @@ bool TestPopupNavigationDelegate::GetOriginalUserGesture() {
   return true;
 }
 
-const GURL& TestPopupNavigationDelegate::GetURL() {
+GURL TestPopupNavigationDelegate::GetURL() {
   return url_;
 }
 

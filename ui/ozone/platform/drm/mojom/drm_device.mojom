@@ -66,6 +66,10 @@ interface DrmDevice {
       uint32 modeset_flag) =>
     (bool config_success);
 
+  // Sets the HDCP Key Property in the connector attached to the |display_id|.
+  SetHdcpKeyProp(int64 display_id, string key) =>
+      (int64 display_id, bool success);
+
   // Gets high-definition content protection (HDCP) (DRM as in
   // digital rights management) state.
   GetHDCPState(int64 display_id) =>

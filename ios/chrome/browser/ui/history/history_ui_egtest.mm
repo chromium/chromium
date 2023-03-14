@@ -11,6 +11,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/url_formatter/elide_url.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
@@ -18,7 +19,6 @@
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/ui/table_view/table_view_constants.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -285,7 +285,13 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that searching a typed URL (after Sync is enabled and the URL is
 // uploaded to the Sync server) displays only entries matching the search term.
-- (void)testSearchSyncedHistory {
+// TODO(crbug.com/1421761): This test is flaky on devices.
+#if IPHONE_OS_SIMULATOR
+#define MAYBE_testSearchSyncedHistory testSearchSyncedHistory
+#else
+#define MAYBE_testSearchSyncedHistory FLAKY_testSearchSyncedHistory
+#endif
+- (void)MAYBE_testSearchSyncedHistory {
   const char syncedURL[] = "http://mockurl/sync/";
   const GURL mockURL(syncedURL);
 

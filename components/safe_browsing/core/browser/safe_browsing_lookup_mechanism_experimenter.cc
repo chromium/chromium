@@ -255,7 +255,7 @@ void SafeBrowsingLookupMechanismExperimenter::MaybeCompleteExperiment() {
       !latest_check->url_real_time_details.results.has_value() ||
       num_checks_with_eligibility_determined_ < checks_to_run_.size() ||
       (!will_process_response_reached_time_.has_value() &&
-       !is_browser_url_loader_throttle_checker_on_io_destructed_)) {
+       !is_browser_url_loader_throttle_checker_on_sb_destructed_)) {
     // The results are not yet complete.
     return;
   }
@@ -419,9 +419,9 @@ void SafeBrowsingLookupMechanismExperimenter::LogIndividualMechanismResult(
   //  - SafeBrowsing.HPRTExperiment[.Redirects].URT.DelayedResponse
   //  - SafeBrowsing.HPRTExperiment[.Redirects].HPRT.DelayedResponse
   //  - SafeBrowsing.HPRTExperiment[.Redirects].HPD.DelayedResponse
-  //  - SafeBrowsing.HPRTExperiment[.Redirects].URT.DelayedResponseAmount
-  //  - SafeBrowsing.HPRTExperiment[.Redirects].HPRT.DelayedResponseAmount
-  //  - SafeBrowsing.HPRTExperiment[.Redirects].HPD.DelayedResponseAmount
+  //  - SafeBrowsing.HPRTExperiment[.Redirects].URT.DelayedResponseTime
+  //  - SafeBrowsing.HPRTExperiment[.Redirects].HPRT.DelayedResponseTime
+  //  - SafeBrowsing.HPRTExperiment[.Redirects].HPD.DelayedResponseTime
   auto histogram_prefix = base::StrCat(
       {"SafeBrowsing.HPRTExperiment.", redirects_qualifier, acronym});
   base::UmaHistogramTimes(base::StrCat({histogram_prefix, ".TimeTaken"}),
@@ -435,7 +435,7 @@ void SafeBrowsingLookupMechanismExperimenter::LogIndividualMechanismResult(
       delay_information.delayed_response);
   if (delay_information.delayed_response_amount.has_value()) {
     base::UmaHistogramTimes(
-        base::StrCat({histogram_prefix, ".DelayedResponseAmount"}),
+        base::StrCat({histogram_prefix, ".DelayedResponseTime"}),
         delay_information.delayed_response_amount.value());
   }
 }
@@ -445,17 +445,16 @@ SafeBrowsingLookupMechanismExperimenter::GetDelayInformation(
   DelayInformation delay_information;
   if (will_process_response_reached_time_.has_value()) {
     DCHECK(first_check_start_time_.has_value());
-    bool delayed_response =
-        first_check_start_time_.value() + results.time_taken >
-        will_process_response_reached_time_.value();
+    auto mechanism_completion_time =
+        first_check_start_time_.value() + results.time_taken;
+    auto process_response_time = will_process_response_reached_time_.value();
+    bool delayed_response = mechanism_completion_time > process_response_time;
     delay_information.delayed_response =
         delayed_response ? ExperimentUnknownNoYesResult::kYes
                          : ExperimentUnknownNoYesResult::kNo;
     delay_information.delayed_response_amount =
-        delayed_response
-            ? (will_process_response_reached_time_.value() -
-               (first_check_start_time_.value() + results.time_taken))
-            : base::TimeDelta();
+        delayed_response ? mechanism_completion_time - process_response_time
+                         : base::TimeDelta();
   } else {
     // If the URL real-time check results in a warning, there might never
     // be a call to WillProcessResponse. In these cases, we log "Unknown"
@@ -556,8 +555,8 @@ void SafeBrowsingLookupMechanismExperimenter::SetCheckExperimentEligibility(
 }
 
 void SafeBrowsingLookupMechanismExperimenter::
-    OnBrowserUrlLoaderThrottleCheckerOnIODestructed() {
-  is_browser_url_loader_throttle_checker_on_io_destructed_ = true;
+    OnBrowserUrlLoaderThrottleCheckerOnSBDestructed() {
+  is_browser_url_loader_throttle_checker_on_sb_destructed_ = true;
   if (!will_process_response_reached_time_.has_value()) {
     MaybeCompleteExperiment();
     // Normally it can be dangerous to run code after a call to

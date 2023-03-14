@@ -255,15 +255,11 @@ void HoldingSpaceKeyedService::AddScan(const base::FilePath& file_path) {
   AddItemOfType(HoldingSpaceItem::Type::kScan, file_path);
 }
 
-void HoldingSpaceKeyedService::AddScreenRecording(
-    const base::FilePath& screen_recording_file) {
-  AddItemOfType(HoldingSpaceItem::Type::kScreenRecording,
-                screen_recording_file);
-}
-
-void HoldingSpaceKeyedService::AddScreenshot(
-    const base::FilePath& screenshot_file) {
-  AddItemOfType(HoldingSpaceItem::Type::kScreenshot, screenshot_file);
+void HoldingSpaceKeyedService::AddScreenCapture(
+    HoldingSpaceItem::Type type,
+    const base::FilePath& file_path) {
+  DCHECK(HoldingSpaceItem::IsScreenCapture(type));
+  AddItemOfType(type, file_path);
 }
 
 void HoldingSpaceKeyedService::SetSuggestions(

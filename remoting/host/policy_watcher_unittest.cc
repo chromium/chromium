@@ -313,6 +313,10 @@ class PolicyWatcherTest : public testing::Test {
     dict.Set(key::kRemoteAccessHostDomainList, base::Value::List());
     dict.Set(key::kRemoteAccessHostClipboardSizeBytes, -1);
     dict.Set(key::kRemoteAccessHostAllowRemoteSupportConnections, true);
+#if BUILDFLAG(IS_CHROMEOS)
+    dict.Set(key::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections,
+             true);
+#endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
     dict.Set(key::kRemoteAccessHostMatchUsername, false);
 #endif

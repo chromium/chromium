@@ -93,7 +93,6 @@ source_set("storage") {
     "//components/services/storage/privileged/mojom",
     "//components/services/storage/public/mojom",
     "//components/services/storage/service_worker:service_worker_proto",
-    "//components/services/storage/shared_storage/public/mojom",
     "//mojo/public/cpp/bindings",
     "//sql",
     "//third_party/abseil-cpp:absl",

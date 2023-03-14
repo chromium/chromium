@@ -54,6 +54,10 @@ mojom("mojom") {
           mojom = "ash.ime.mojom.AssistiveWindowType"
           cpp = "::ash::ime::AssistiveWindowType"
         },
+        {
+          mojom = "ash.ime.mojom.AutocorrectSuggestionProvider"
+          cpp = "::ash::ime::AutocorrectSuggestionProvider"
+        },
       ]
 
       traits_headers = [ "mojom_traits.h" ]

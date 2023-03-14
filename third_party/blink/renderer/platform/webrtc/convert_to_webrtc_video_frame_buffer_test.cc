@@ -54,8 +54,9 @@ TEST_P(ConvertToWebRtcVideoFrameBufferParamTest, ToI420) {
 
   media::VideoFrame::StorageType storage_type = std::get<0>(GetParam());
   media::VideoPixelFormat pixel_format = std::get<1>(GetParam());
-  scoped_refptr<media::VideoFrame> frame = CreateTestFrame(
-      kCodedSize, kVisibleRect, kNaturalSize, storage_type, pixel_format);
+  scoped_refptr<media::VideoFrame> frame =
+      CreateTestFrame(kCodedSize, kVisibleRect, kNaturalSize, storage_type,
+                      pixel_format, base::TimeDelta());
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer =
       ConvertToWebRtcVideoFrameBuffer(std::move(frame), resources_);
 
@@ -84,10 +85,10 @@ TEST(ConvertToWebRtcVideoFrameBufferTest, ToI420ADownScale) {
 
   // The adapter should report width and height from the natural size for
   // VideoFrame backed by owned memory.
-  auto owned_memory_frame =
-      CreateTestFrame(kCodedSize, kVisibleRect, kNaturalSize,
-                      media::VideoFrame::STORAGE_OWNED_MEMORY,
-                      media::VideoPixelFormat::PIXEL_FORMAT_I420A);
+  auto owned_memory_frame = CreateTestFrame(
+      kCodedSize, kVisibleRect, kNaturalSize,
+      media::VideoFrame::STORAGE_OWNED_MEMORY,
+      media::VideoPixelFormat::PIXEL_FORMAT_I420A, base::TimeDelta());
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> owned_memory_frame_buffer =
       ConvertToWebRtcVideoFrameBuffer(std::move(owned_memory_frame), resources);
   EXPECT_EQ(owned_memory_frame_buffer->width(), kNaturalSize.width());
@@ -178,10 +179,10 @@ TEST(ConvertToWebRtcVideoFrameBufferTest, Nv12OwnedMemoryFrame) {
 
   // The adapter should report width and height from the natural size for
   // VideoFrame backed by owned memory.
-  auto owned_memory_frame =
-      CreateTestFrame(kCodedSize, kVisibleRect, kNaturalSize,
-                      media::VideoFrame::STORAGE_OWNED_MEMORY,
-                      media::VideoPixelFormat::PIXEL_FORMAT_NV12);
+  auto owned_memory_frame = CreateTestFrame(
+      kCodedSize, kVisibleRect, kNaturalSize,
+      media::VideoFrame::STORAGE_OWNED_MEMORY,
+      media::VideoPixelFormat::PIXEL_FORMAT_NV12, base::TimeDelta());
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> owned_memory_frame_buffer =
       ConvertToWebRtcVideoFrameBuffer(std::move(owned_memory_frame), resources);
   EXPECT_EQ(owned_memory_frame_buffer->width(), kNaturalSize.width());
@@ -204,10 +205,10 @@ TEST(ConvertToWebRtcVideoFrameBufferTest, Nv12ScaleOwnedMemoryFrame) {
 
   // The adapter should report width and height from the natural size for
   // VideoFrame backed by owned memory.
-  auto owned_memory_frame =
-      CreateTestFrame(kCodedSize, kVisibleRect, kNaturalSize,
-                      media::VideoFrame::STORAGE_OWNED_MEMORY,
-                      media::VideoPixelFormat::PIXEL_FORMAT_NV12);
+  auto owned_memory_frame = CreateTestFrame(
+      kCodedSize, kVisibleRect, kNaturalSize,
+      media::VideoFrame::STORAGE_OWNED_MEMORY,
+      media::VideoPixelFormat::PIXEL_FORMAT_NV12, base::TimeDelta());
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> owned_memory_frame_buffer =
       ConvertToWebRtcVideoFrameBuffer(std::move(owned_memory_frame), resources);
   EXPECT_EQ(owned_memory_frame_buffer->width(), kNaturalSize.width());
@@ -231,7 +232,7 @@ TEST(ConvertToWebRtcVideoFrameBufferTest,
   // VideoFrame backed by owned memory.
   auto owned_memory_frame = CreateTestFrame(
       kCodedSize, kVisibleRect, kNaturalSize, media::VideoFrame::STORAGE_OPAQUE,
-      media::VideoPixelFormat::PIXEL_FORMAT_NV12);
+      media::VideoPixelFormat::PIXEL_FORMAT_NV12, base::TimeDelta());
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer =
       ConvertToWebRtcVideoFrameBuffer(std::move(owned_memory_frame), nullptr);
   EXPECT_EQ(frame_buffer->width(), kNaturalSize.width());
@@ -261,12 +262,12 @@ TEST(ConvertToWebRtcVideoFrameBufferTest,
   // VideoFrame backed by owned memory.
   auto owned_memory_frame = CreateTestFrame(
       kCodedSize, kVisibleRect, kNaturalSize, media::VideoFrame::STORAGE_OPAQUE,
-      media::VideoPixelFormat::PIXEL_FORMAT_NV12);
+      media::VideoPixelFormat::PIXEL_FORMAT_NV12, base::TimeDelta());
 
-  scoped_refptr<media::VideoFrame> memory_frame =
-      CreateTestFrame(kCodedSize, kVisibleRect, kNaturalSize,
-                      media::VideoFrame::STORAGE_OWNED_MEMORY,
-                      media::VideoPixelFormat::PIXEL_FORMAT_ARGB);
+  scoped_refptr<media::VideoFrame> memory_frame = CreateTestFrame(
+      kCodedSize, kVisibleRect, kNaturalSize,
+      media::VideoFrame::STORAGE_OWNED_MEMORY,
+      media::VideoPixelFormat::PIXEL_FORMAT_ARGB, base::TimeDelta());
   // fill mock image with whilte color.
   memset(memory_frame->writable_data(media::VideoFrame::kARGBPlane), 0xFF,
          kCodedSize.GetArea() * 4);

@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -55,7 +56,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
-#include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/url_loader_factory_manager.h"
 #include "extensions/common/extension_features.h"
@@ -259,11 +259,10 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
         console_observer.messages();
 
     std::vector<std::string> messages;
-    std::transform(console_messages.begin(), console_messages.end(),
-                   std::back_inserter(messages),
-                   [](const ConsoleMessage& console_message) {
-                     return base::UTF16ToUTF8(console_message.message);
-                   });
+    base::ranges::transform(console_messages, std::back_inserter(messages),
+                            [](const auto& console_message) {
+                              return base::UTF16ToUTF8(console_message.message);
+                            });
 
     // We allow more than 1 console message, because the test might flakily see
     // extra console messages - see https://crbug.com/1085629.
@@ -396,8 +395,8 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
     std::string registration_script =
         content::JsReplace(kRegistrationScript, kServiceWorkerPath);
 
-    std::string result = browsertest_util::ExecuteScriptInBackgroundPage(
-        browser()->profile(), extension_->id(), registration_script);
+    std::string result =
+        ExecuteScriptInBackgroundPage(extension_->id(), registration_script);
     if (result != "SUCCESS") {
       ADD_FAILURE() << "Failed to register the service worker: " << result;
       return false;
@@ -483,8 +482,8 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
     int tab_id = ExtensionTabUtil::GetTabId(web_contents);
     std::string background_script = content::JsReplace(
         "chrome.tabs.executeScript($1, { code: $2 });", tab_id, content_script);
-    return browsertest_util::ExecuteScriptInBackgroundPageNoWait(
-        browser()->profile(), extension_->id(), background_script);
+    return ExecuteScriptInBackgroundPageNoWait(extension_->id(),
+                                               background_script);
   }
 
  protected:
@@ -540,15 +539,14 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
   // |fetch_script| will include calls to |domAutomationController.send| and
   // therefore instances of FetchCallback should not inject their own calls to
   // |domAutomationController.send| (e.g. this constraint rules out
-  // browsertest_util::ExecuteScriptInBackgroundPage and/or
-  // content::ExecuteScript).
+  // ExecuteScriptInBackgroundPage and/or content::ExecuteScript).
   //
   // The function should return true if script execution started successfully.
   //
   // Currently used "implementations":
   // - CorbAndCorsExtensionBrowserTest::ExecuteContentScript(web_contents)
   // - CorbAndCorsExtensionBrowserTest::ExecuteRegularScript(web_contents)
-  // - browsertest_util::ExecuteScriptInBackgroundPageNoWait(profile, ext_id)
+  // - ExecuteScriptInBackgroundPageNoWait(profile, ext_id)
   using FetchCallback =
       base::OnceCallback<bool(const std::string& fetch_script)>;
 
@@ -881,8 +879,10 @@ class CorbAndCorsUserHostRestrictionsBrowserTest
     : public CorbAndCorsExtensionBrowserTest {
  public:
   CorbAndCorsUserHostRestrictionsBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionsMenuAccessControl);
+    std::vector<base::test::FeatureRef> enabled_features = {
+        extensions_features::kExtensionsMenuAccessControl,
+        extensions_features::kExtensionsMenuAccessControlWithPermittedSites};
+    scoped_feature_list_.InitWithFeatures(enabled_features, {});
   }
 
  private:
@@ -909,12 +909,15 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsUserHostRestrictionsBrowserTest,
 
   PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
   {
+    // Sites can be set as restricted iff the `host controls` flag is enabled.
     PermissionsManagerWaiter waiter(permissions_manager);
     permissions_manager->AddUserRestrictedSite(
         url::Origin::Create(policy_allowed_resource));
     waiter.WaitForUserPermissionsSettingsChange();
   }
   {
+    // Sites can be set as permitted iff the `host controls` and `permitted
+    // sites` flags are enabled.
     PermissionsManagerWaiter waiter(permissions_manager);
     permissions_manager->AddUserPermittedSite(
         url::Origin::Create(policy_restricted_resource));

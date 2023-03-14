@@ -119,8 +119,6 @@ DownloadDangerPromptViews::DownloadDangerPromptViews(
   message_body_label->SetAllowCharacterBreak(true);
 
   AddChildView(std::move(message_body_label));
-
-  RecordOpenedDangerousConfirmDialog(download_->GetDangerType());
 }
 
 DownloadDangerPromptViews::~DownloadDangerPromptViews() {
@@ -145,8 +143,7 @@ void DownloadDangerPromptViews::InvokeActionForTesting(Action action) {
       break;
 
     default:
-      NOTREACHED();
-      break;
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -256,8 +253,7 @@ std::u16string DownloadDangerPromptViews::GetMessageBody() const {
       }
     }
   }
-  NOTREACHED();
-  return std::u16string();
+  NOTREACHED_NORETURN();
 }
 
 void DownloadDangerPromptViews::RunDone(Action action) {

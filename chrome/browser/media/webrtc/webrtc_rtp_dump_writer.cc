@@ -166,27 +166,20 @@ class WebRtcRtpDumpWriter::FileWorker {
       return 0;
     }
 
-    int bytes_written = -1;
+    bool success = false;
 
     if (base::PathExists(dump_path_)) {
-      bytes_written = base::AppendToFile(dump_path_, compressed_buffer)
-                          ? compressed_buffer.size()
-                          : -1;
+      success = base::AppendToFile(dump_path_, compressed_buffer);
     } else {
-      bytes_written = base::WriteFile(
-          dump_path_,
-          reinterpret_cast<const char*>(&compressed_buffer[0]),
-          compressed_buffer.size());
+      success = base::WriteFile(dump_path_, compressed_buffer);
     }
 
-    if (bytes_written == -1) {
+    if (!success) {
       DVLOG(2) << "Writing file failed: " << dump_path_.value();
       *result = FLUSH_RESULT_FAILURE;
       return 0;
     }
-
-    DCHECK_EQ(static_cast<size_t>(bytes_written), compressed_buffer.size());
-    return bytes_written;
+    return compressed_buffer.size();
   }
 
   // Compresses |input| into |output|.

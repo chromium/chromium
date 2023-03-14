@@ -15,6 +15,7 @@
 #include "base/version.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace net {
 class FirstPartySetsCacheFilter;
@@ -108,15 +109,18 @@ class CONTENT_EXPORT FirstPartySetsHandler {
   // Returns the singleton instance.
   static FirstPartySetsHandler* GetInstance();
 
-  // Validates the First-Party Sets Overrides enterprise policy in `policy`,
-  // and outputs warnings that arise when parsing and an optional error that is
-  // present if `policy` was invalid.
+  // Validates the First-Party Sets Overrides enterprise policy in `policy`.
+  // This function returns whether the validation was successful (or an error if
+  // the policy was invalid), and a list of warnings. Warnings are returned even
+  // if the policy was invalid, in order to surface as many issues as possible
+  // at once.
   //
   // This validation only checks that all sets in this policy are valid
   // First-Party Sets and disjoint from each other. It doesn't require
   // disjointness with other sources, such as the public sets, since this policy
   // will be used override First-Party Sets in those sources.
-  static std::pair<absl::optional<ParseError>, std::vector<ParseWarning>>
+  static std::pair<base::expected<absl::monostate, ParseError>,
+                   std::vector<ParseWarning>>
   ValidateEnterprisePolicy(const base::Value::Dict& policy);
 
   // Returns whether First-Party Sets is enabled.

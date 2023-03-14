@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -51,7 +52,7 @@ class TestLocalFrameBackForwardCacheClient
   }
 
   void DidChangeBackForwardCacheDisablingFeatures(
-      uint64_t features_mask) override {}
+      Vector<mojom::blink::BlockingDetailsPtr> details) override {}
 
   void WaitUntilEvictedFromBackForwardCache() {
     base::RunLoop run_loop;

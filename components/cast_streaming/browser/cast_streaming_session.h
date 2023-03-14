@@ -12,13 +12,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
-#include "components/cast/message_port/message_port.h"
-#include "components/cast_streaming/browser/cast_message_port_impl.h"
-#include "components/cast_streaming/browser/demuxer_stream_data_provider.h"
-#include "components/cast_streaming/browser/playback_command_dispatcher.h"
+#include "components/cast_streaming/browser/control/playback_command_dispatcher.h"
+#include "components/cast_streaming/browser/control/remoting/remoting_session_client.h"
+#include "components/cast_streaming/browser/control/renderer_controller_config.h"
+#include "components/cast_streaming/browser/frame/demuxer_stream_data_provider.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"
-#include "components/cast_streaming/browser/remoting_session_client.h"
-#include "components/cast_streaming/browser/renderer_controller_config.h"
 #include "components/openscreen_platform/network_util.h"
 #include "components/openscreen_platform/task_runner.h"
 #include "media/base/audio_decoder_config.h"
@@ -27,11 +25,13 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openscreen/src/cast/streaming/receiver.h"
+#include "third_party/openscreen/src/cast/streaming/receiver_constraints.h"
 #include "third_party/openscreen/src/cast/streaming/receiver_session.h"
 
 namespace cast_streaming {
 
 class StreamConsumer;
+class CastMessagePortConverter;
 
 // Entry point for the Cast Streaming Receiver implementation. Used to start a
 // Cast Streaming Session for a provided MessagePort server.
@@ -97,8 +97,8 @@ class CastStreamingSession {
   // surrounding this support.
   void Start(Client* client,
              absl::optional<RendererControllerConfig> renderer_controls,
-             std::unique_ptr<ReceiverSession::AVConstraints> av_constraints,
-             std::unique_ptr<cast_api_bindings::MessagePort> message_port,
+             openscreen::cast::ReceiverConstraints av_constraints,
+             ReceiverSession::MessagePortProvider message_port_provider,
              scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   // Stops the Cast Streaming Session. This can only be called once during the
@@ -130,8 +130,8 @@ class CastStreamingSession {
     ReceiverSessionClient(
         CastStreamingSession::Client* client,
         absl::optional<RendererControllerConfig> renderer_controls,
-        std::unique_ptr<ReceiverSession::AVConstraints> av_constraints,
-        std::unique_ptr<cast_api_bindings::MessagePort> message_port,
+        openscreen::cast::ReceiverConstraints av_constraints,
+        ReceiverSession::MessagePortProvider message_port_provider,
         scoped_refptr<base::SequencedTaskRunner> task_runner);
     ~ReceiverSessionClient() override;
 
@@ -194,7 +194,7 @@ class CastStreamingSession {
 
     openscreen_platform::TaskRunner task_runner_;
     openscreen::cast::Environment environment_;
-    CastMessagePortImpl cast_message_port_impl_;
+    std::unique_ptr<CastMessagePortConverter> cast_message_port_converter_;
     std::unique_ptr<openscreen::cast::ReceiverSession> receiver_session_;
     base::OneShotTimer init_timeout_timer_;
 

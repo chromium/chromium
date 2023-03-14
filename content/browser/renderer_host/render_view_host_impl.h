@@ -384,16 +384,19 @@ class CONTENT_EXPORT RenderViewHostImpl
   // by frames with SiteInstanceGroups that generate an ID that matches this
   // field.
   FrameTree::RenderViewHostMapId render_view_host_map_id_;
-
-  // The SiteInstanceGroup this RenderViewHostImpl belongs to.
-  base::SafeRef<SiteInstanceGroup> site_instance_group_;
-
   // Provides information for selecting the session storage namespace for this
   // view.
   const StoragePartitionConfig storage_partition_config_;
 
   // Routing ID for this RenderViewHost.
   const int routing_id_;
+
+  const AgentSchedulingGroupHost::RouteOwner route_{
+      this, render_widget_host_->agent_scheduling_group(), routing_id_};
+
+  // Depends on route_, because the group may delete itself when the last
+  // RouteOwner in its RenderProcessHost goes away.
+  base::SafeRef<SiteInstanceGroup> site_instance_group_;
 
   // Whether the renderer-side `blink::WebView` is created. Becomes false when
   // the renderer crashes.

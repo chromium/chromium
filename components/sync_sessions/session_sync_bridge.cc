@@ -164,6 +164,13 @@ void SessionSyncBridge::StartLocalSessionEventHandler() {
   // well as the processor.
   local_session_event_router_->StartRoutingTo(
       syncing_->local_session_event_handler.get());
+
+  // Initializing |syncing_| influences the behavior of the public API, because
+  // GetOpenTabsUIDelegate() transitions from returning nullptr to returning an
+  // actual delegate. The nullptr has specifics semantics documented in the
+  // SessionSyncService API, so interested parties (subscribed to changes)
+  // should be notified that the value changed. https://crbug.com/1422634.
+  notify_foreign_session_updated_cb_.Run();
 }
 
 absl::optional<syncer::ModelError> SessionSyncBridge::ApplySyncChanges(

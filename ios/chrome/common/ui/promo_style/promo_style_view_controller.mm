@@ -589,6 +589,9 @@ constexpr CGFloat kFullAvatarImageSize = 100;
     _primaryActionButton = [[HighlightButton alloc] initWithFrame:CGRectZero];
     _primaryActionButton.contentEdgeInsets =
         UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
+    _primaryActionButton.titleEdgeInsets =
+        UIEdgeInsetsMake(0, kMoreArrowMargin, 0, kMoreArrowMargin);
+
     [_primaryActionButton setBackgroundColor:[UIColor colorNamed:kBlueColor]];
     UIColor* titleColor = [UIColor colorNamed:kSolidButtonTextColor];
     [_primaryActionButton setTitleColor:titleColor
@@ -603,8 +606,8 @@ constexpr CGFloat kFullAvatarImageSize = 100;
 
     // Use `primaryActionString` even if scrolling to the end is mandatory
     // because at the viewDidLoad stage, the scroll view hasn't computed its
-    // content height, so there is no way to knOow if scrolling is needed. This
-    // label will be updated at the viewDidAppear stage if necessary.
+    // content height, so there is no way to knOow if scrolling is needed.
+    // This label will be updated at the viewDidAppear stage if necessary.
     [_primaryActionButton setTitle:self.primaryActionString
                           forState:UIControlStateNormal];
     UILabel* titleLabel = _primaryActionButton.titleLabel;
@@ -613,8 +616,6 @@ constexpr CGFloat kFullAvatarImageSize = 100;
     _primaryActionButton.titleLabel.adjustsFontForContentSizeCategory = YES;
     _primaryActionButton.accessibilityIdentifier =
         kPromoStylePrimaryActionAccessibilityIdentifier;
-    _primaryActionButton.titleEdgeInsets =
-        UIEdgeInsetsMake(0, kMoreArrowMargin, 0, kMoreArrowMargin);
     _primaryActionButton.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     [_primaryActionButton addTarget:self
                              action:@selector(didTapPrimaryActionButton)
@@ -912,11 +913,12 @@ constexpr CGFloat kFullAvatarImageSize = 100;
           accessibilityIdentifier:(NSString*)accessibilityIdentifier {
   UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
   [button setTitle:buttonText forState:UIControlStateNormal];
-  button.contentEdgeInsets =
-      UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
   [button setBackgroundColor:[UIColor clearColor]];
   UIColor* titleColor = [UIColor colorNamed:kBlueColor];
   [button setTitleColor:titleColor forState:UIControlStateNormal];
+  button.contentEdgeInsets =
+      UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
+
   button.titleLabel.font =
       [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   button.translatesAutoresizingMaskIntoConstraints = NO;
@@ -1074,7 +1076,7 @@ constexpr CGFloat kFullAvatarImageSize = 100;
 
 // Helper that returns whether the `traitCollection` has a regular vertical
 // and regular horizontal size class.
-// Copied from "ios/chrome/browser/ui/util/uikit_ui_util.mm"
+// Copied from "ios/chrome/browser/shared/ui/util/uikit_ui_util.mm"
 - (bool)isRegularXRegularSizeClass:(UITraitCollection*)traitCollection {
   return traitCollection.verticalSizeClass == UIUserInterfaceSizeClassRegular &&
          traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular;

@@ -7,6 +7,7 @@ import("//testing/test.gni")
 
 rust_static_library("test_serde_json_lenient_rs") {
   crate_root = "lib.rs"
+  allow_unsafe = true
   sources = [ "lib.rs" ]
   cxx_bindings = [ "lib.rs" ]
   deps = [ "//third_party/rust/serde_json_lenient/v0_1:lib" ]

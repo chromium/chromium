@@ -80,6 +80,7 @@
 #include "content/browser/preloading/prerender/prerender_new_tab_handle.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
+#include "content/browser/renderer_host/cursor_manager.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
@@ -166,6 +167,7 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/image_downloader/image_downloader.mojom.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom-shared.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
@@ -1321,16 +1323,6 @@ std::string WebContentsImpl::GetTitleForMediaControls() {
   return delegate_->GetTitleForMediaControls(this);
 }
 
-bool WebContentsImpl::IsFullscreenOnDisplay(int64_t display_id) const {
-  if (!delegate_)
-    return false;
-  DCHECK_NE(display_id, display::kInvalidDisplayId);
-  int64_t fullscreen_display = display::kInvalidDisplayId;
-  if (!delegate_->IsFullscreenForTabOrPending(this, &fullscreen_display))
-    return false;
-  return fullscreen_display == display_id;
-}
-
 // Returns the NavigationController for the primary FrameTree, i.e. the one
 // whose URL is shown in the omnibox. With MPArch we can have multiple
 // FrameTrees in one WebContents and each has its own NavigationController.
@@ -1635,7 +1627,8 @@ void WebContentsImpl::CancelActiveAndPendingDialogs() {
 
 void WebContentsImpl::ClosePage() {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::ClosePage");
-  GetPrimaryMainFrame()->ClosePage();
+  GetPrimaryMainFrame()->ClosePage(
+      RenderFrameHostImpl::ClosePageSource::kBrowser);
 }
 
 RenderWidgetHostView* WebContentsImpl::GetRenderWidgetHostView() {
@@ -2218,6 +2211,10 @@ void WebContentsImpl::SetHasPictureInPictureCommon(
   // visible pages.
   if (visibility_ != Visibility::VISIBLE)
     UpdateVisibilityAndNotifyPageAndView(visibility_);
+}
+
+void WebContentsImpl::DisallowCustomCursorScopeExpired() {
+  --disallow_custom_cursor_scope_count_;
 }
 
 void WebContentsImpl::SetHasPictureInPictureVideo(
@@ -3821,7 +3818,7 @@ void WebContentsImpl::UpdateUserGestureCarryoverInfo() {
 #endif
 
 bool WebContentsImpl::IsFullscreen() {
-  return delegate_ ? delegate_->IsFullscreenForTabOrPending(this) : false;
+  return delegate_ && delegate_->IsFullscreenForTabOrPending(this);
 }
 
 bool WebContentsImpl::ShouldShowStaleContentOnEviction() {
@@ -4771,6 +4768,21 @@ void WebContentsImpl::SelectRange(const gfx::Point& base,
   input_handler->SelectRange(base, extent);
 }
 
+void WebContentsImpl::SelectAroundCaret(
+    blink::mojom::SelectionGranularity granularity,
+    bool should_show_handle,
+    bool should_show_context_menu) {
+  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::SelectAroundCaret");
+  auto* input_handler = GetFocusedFrameWidgetInputHandler();
+  if (!input_handler) {
+    return;
+  }
+
+  last_interaction_time_ = ui::EventTimeForNow();
+  input_handler->SelectAroundCaret(granularity, should_show_handle,
+                                   should_show_context_menu, base::DoNothing());
+}
+
 void WebContentsImpl::MoveCaret(const gfx::Point& extent) {
   OPTIONAL_TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("content.verbose"),
                         "WebContentsImpl::MoveCaret");
@@ -4968,6 +4980,19 @@ void WebContentsImpl::CopyToFindPboard() {
   // Windows/Linux don't have the concept of a find pasteboard.
   input_handler->CopyToFindPboard();
   RecordAction(base::UserMetricsAction("CopyToFindPboard"));
+#endif
+}
+
+void WebContentsImpl::CenterSelection() {
+  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::CenterSelection");
+#if BUILDFLAG(IS_MAC)
+  auto* input_handler = GetFocusedFrameWidgetInputHandler();
+  if (!input_handler) {
+    return;
+  }
+
+  last_interaction_time_ = ui::EventTimeForNow();
+  input_handler->CenterSelection();
 #endif
 }
 
@@ -5600,25 +5625,28 @@ base::ScopedClosureRunner WebContentsImpl::ForSecurityDropFullscreen(
     int64_t display_id) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::ForSecurityDropFullscreen",
                         "display_id", display_id);
-  // Kick WebContentses that are "related" to this WebContents out of
-  // fullscreen. This needs to be done with two passes, because it is simple to
-  // walk _up_ the chain of openers and outer contents, but it not simple to
-  // walk _down_ the chain.
+  // Make WebContentses "related" to this instance exit HTML element fullscreen,
+  // ignoring browser fullscreen and fullscreen-within-tab modes. This needs to
+  // be done with two passes, because it is simple to walk _up_ the chain of
+  // openers and outer contents, but it not simple to walk _down_ the chain.
+  auto is_fullscreen = [](WebContentsImpl* tab, int64_t display_id) {
+    if (!tab || !tab->GetDelegate()) {
+      return false;
+    }
+    const FullscreenState state = tab->GetDelegate()->GetFullscreenState(tab);
+    return state.target_mode == FullscreenMode::kContent &&
+           (display_id == display::kInvalidDisplayId ||
+            state.target_display_id == display::kInvalidDisplayId ||
+            state.target_display_id == display_id);
+  };
 
-  // First, determine if any WebContents that is in fullscreen has this
-  // WebContents as an upstream contents. Drop that WebContents out of
-  // fullscreen if it does. This is theoretically quadratic-ish (fullscreen
-  // contentses x each one's opener length) but neither of those is expected to
-  // ever be a large number.
+  // First, determine if any fullscreen WebContents has this WebContents as an
+  // upstream contents. Drop that WebContents out of fullscreen if it does. This
+  // is theoretically quadratic-ish (fullscreen contentses x each one's opener
+  // length) but neither of those is expected to ever be a large number.
   auto fullscreen_set_copy = *FullscreenContentsSet(GetBrowserContext());
   for (auto* fullscreen_contents : fullscreen_set_copy) {
-    // Checking IsFullscreen() for tabs in the fullscreen set may seem
-    // redundant, but teeeeechnically fullscreen is run by the delegate, and
-    // it's possible that the delegate's notion of fullscreen may have changed
-    // outside of WebContents's notice.
-    if (fullscreen_contents->IsFullscreen() &&
-        (display_id == display::kInvalidDisplayId ||
-         fullscreen_contents->IsFullscreenOnDisplay(display_id))) {
+    if (is_fullscreen(fullscreen_contents, display_id)) {
       auto opener_contentses = GetAllOpeningWebContents(fullscreen_contents);
       if (opener_contentses.count(this))
         fullscreen_contents->ExitFullscreen(true);
@@ -5635,10 +5663,9 @@ base::ScopedClosureRunner WebContentsImpl::ForSecurityDropFullscreen(
   std::vector<base::WeakPtr<WebContentsImpl>> blocked_contentses;
 
   for (auto* opener : GetAllOpeningWebContents(this)) {
-    // Drop fullscreen if the WebContents is in it, and...
-    if (opener->IsFullscreen() && (display_id == display::kInvalidDisplayId ||
-                                   opener->IsFullscreenOnDisplay(display_id)))
+    if (is_fullscreen(opener, display_id)) {
       opener->ExitFullscreen(true);
+    }
 
     // ...block the WebContents from entering fullscreen until further notice.
     ++opener->fullscreen_blocker_count_;
@@ -9620,10 +9647,27 @@ void WebContentsImpl::AboutToBeDiscarded(WebContents* new_contents) {
                              new_contents);
 }
 
+base::ScopedClosureRunner WebContentsImpl::CreateDisallowCustomCursorScope() {
+  auto* render_widget_host_base = GetPrimaryMainFrame()
+                                      ->GetRenderWidgetHost()
+                                      ->GetRenderWidgetHostViewBase();
+
+  // It's possible for |render_widget_host_base| to be null if the renderer
+  // crashed. To avoid race conditions, null-check here. See crbug.com/1421552
+  // as well.
+  if (!render_widget_host_base) {
+    return base::ScopedClosureRunner();
+  }
+
+  auto* cursor_manager = render_widget_host_base->GetCursorManager();
+  return cursor_manager->CreateDisallowCustomCursorScope();
+}
+
 bool WebContentsImpl::CancelPrerendering(FrameTreeNode* frame_tree_node,
                                          PrerenderFinalStatus final_status) {
-  if (!frame_tree_node)
+  if (!frame_tree_node) {
     return false;
+  }
 
   DCHECK_EQ(this, FromFrameTreeNode(frame_tree_node));
 

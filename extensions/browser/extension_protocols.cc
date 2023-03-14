@@ -606,7 +606,7 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
     const std::string extension_id = request_.url.host();
     ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
     scoped_refptr<const Extension> extension =
-        registry->GenerateInstalledExtensionsSet()->GetByIDorGUID(extension_id);
+        registry->GenerateInstalledExtensionsSet().GetByIDorGUID(extension_id);
     const ExtensionSet& enabled_extensions = registry->enabled_extensions();
     const ProcessMap* process_map = ProcessMap::Get(browser_context_);
     bool incognito_enabled =

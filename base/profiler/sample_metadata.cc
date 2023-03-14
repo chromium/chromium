@@ -103,6 +103,21 @@ void ApplyMetadataToPastSamples(TimeTicks period_start,
                                         GetPlatformThreadIdForScope(scope));
 }
 
+void AddProfileMetadataImpl(uint64_t name_hash,
+                            int64_t key,
+                            int64_t value,
+                            absl::optional<PlatformThreadId> thread_id) {
+  StackSamplingProfiler::AddProfileMetadata(name_hash, key, value, thread_id);
+}
+
+void AddProfileMetadata(StringPiece name,
+                        int64_t key,
+                        int64_t value,
+                        SampleMetadataScope scope) {
+  return AddProfileMetadataImpl(HashMetricName(name), key, value,
+                                GetPlatformThreadIdForScope(scope));
+}
+
 MetadataRecorder* GetSampleMetadataRecorder() {
   static NoDestructor<MetadataRecorder> instance;
   return instance.get();

@@ -1,0 +1,26 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/compiler/compiler.gni")
+
+declare_args() {
+  # Whether to compile support for Allocation Stack Trace Recorder.
+  #
+  # The recorder is initially intended as a support tool for Arm's
+  # Memory Tagging Extensions. A history of the most recent allocations and
+  # frees is included in the crashpad report and gives developers information
+  # where the memory which was invalidly accessed was allocated or freed.
+  #
+  # Although it should work on other platforms as well, for the above reasons,
+  # we currently enable it only for Android when compiling for Arm64.
+  build_allocation_stack_trace_recorder = current_cpu == "arm64" && is_android
+}
+
+assert(!(build_allocation_stack_trace_recorder && is_fuchsia),
+       "Stack trace recording is not supported on Fuchsia due to missing" +
+           " Crashpad!")
+
+assert(!(build_allocation_stack_trace_recorder && is_linux),
+       "WARNING: Stack trace recording is not supported on Linux due to" +
+           " performance issues computing stack trace!")

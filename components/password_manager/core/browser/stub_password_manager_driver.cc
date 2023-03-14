@@ -69,6 +69,10 @@ bool StubPasswordManagerDriver::CanShowAutofillUi() const {
   return {};
 }
 
+int StubPasswordManagerDriver::GetFrameId() const {
+  return GetId();
+}
+
 const GURL& StubPasswordManagerDriver::GetLastCommittedURL() const {
   return GURL::EmptyGURL();
 }

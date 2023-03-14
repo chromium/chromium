@@ -256,8 +256,8 @@ scoped_refptr<SecurityOrigin> DefaultTopFrameOrigin(
 
 CookieStore::CookieStore(
     ExecutionContext* execution_context,
-    mojo::Remote<network::mojom::blink::RestrictedCookieManager> backend)
-    : ExecutionContextLifecycleObserver(execution_context),
+    HeapMojoRemote<network::mojom::blink::RestrictedCookieManager> backend)
+    : ExecutionContextClient(execution_context),
       backend_(std::move(backend)),
       change_listener_receiver_(this, execution_context),
       default_cookie_url_(DefaultCookieURL(execution_context)),
@@ -357,12 +357,9 @@ ScriptPromise CookieStore::Delete(ScriptState* script_state,
 
 void CookieStore::Trace(Visitor* visitor) const {
   visitor->Trace(change_listener_receiver_);
+  visitor->Trace(backend_);
   EventTargetWithInlineData::Trace(visitor);
-  ExecutionContextLifecycleObserver::Trace(visitor);
-}
-
-void CookieStore::ContextDestroyed() {
-  backend_.reset();
+  ExecutionContextClient::Trace(visitor);
 }
 
 const AtomicString& CookieStore::InterfaceName() const {
@@ -370,7 +367,7 @@ const AtomicString& CookieStore::InterfaceName() const {
 }
 
 ExecutionContext* CookieStore::GetExecutionContext() const {
-  return ExecutionContextLifecycleObserver::GetExecutionContext();
+  return ExecutionContextClient::GetExecutionContext();
 }
 
 void CookieStore::RemoveAllEventListeners() {
@@ -435,7 +432,8 @@ ScriptPromise CookieStore::DoRead(
     return ScriptPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   backend_->GetAllForUrl(
       cookie_url, default_site_for_cookies_, default_top_frame_origin_,
       context->HasStorageAccess(), std::move(backend_options),
@@ -516,7 +514,8 @@ ScriptPromise CookieStore::DoWrite(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   backend_->SetCanonicalCookie(
       *std::move(canonical_cookie), default_cookie_url_,
       default_site_for_cookies_, default_top_frame_origin_,

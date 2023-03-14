@@ -96,10 +96,9 @@ BrowserContextImpl::~BrowserContextImpl() {
     }
   }
   if (!rph_crash_key_value.empty()) {
-    NOTREACHED() << "rph_with_bc_reference : " << rph_crash_key_value;
-
     SCOPED_CRASH_KEY_STRING256("BrowserContext", "dangling_rph",
                                rph_crash_key_value);
+    NOTREACHED() << "rph_with_bc_reference : " << rph_crash_key_value;
     base::debug::DumpWithoutCrashing();
   }
 

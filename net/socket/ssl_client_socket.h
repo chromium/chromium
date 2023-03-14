@@ -134,10 +134,6 @@ class NET_EXPORT SSLClientContext : public SSLConfigService::Observer,
     return sct_auditing_delegate_;
   }
 
-  // Returns whether ECH (Encrypted ClientHello) should be enabled. This
-  // function checks both config() and feature flags.
-  bool EncryptedClientHelloEnabled() const;
-
   // Creates a new SSLClientSocket which can then be used to establish an SSL
   // connection to |host_and_port| over the already-connected |stream_socket|.
   std::unique_ptr<SSLClientSocket> CreateSSLClientSocket(

@@ -7,16 +7,17 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "base/time/time.h"
 
 class GoogleServiceAuthError;
 
 // An interface that defines the callbacks for consumers to which
 // OAuth2AccessTokenFetcher can return results.
-class OAuth2AccessTokenConsumer {
+class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2AccessTokenConsumer {
  public:
   // Structure representing information contained in OAuth2 access token.
-  struct TokenResponse {
+  struct COMPONENT_EXPORT(GOOGLE_APIS) TokenResponse {
     TokenResponse();
     TokenResponse(const TokenResponse& response);
     TokenResponse(TokenResponse&& response);
@@ -39,7 +40,7 @@ class OAuth2AccessTokenConsumer {
     std::string id_token;
 
     // Helper class to make building TokenResponse objects clearer.
-    class Builder {
+    class COMPONENT_EXPORT(GOOGLE_APIS) Builder {
      public:
       Builder();
       ~Builder();

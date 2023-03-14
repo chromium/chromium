@@ -22,7 +22,7 @@ class PopupNavigationDelegateImpl
   // blocked_content::PopupNavigationDelegate:
   content::RenderFrameHost* GetOpener() override;
   bool GetOriginalUserGesture() override;
-  const GURL& GetURL() override;
+  GURL GetURL() override;
   NavigateResult NavigateWithGesture(
       const blink::mojom::WindowFeatures& window_features,
       absl::optional<WindowOpenDisposition> updated_disposition) override;

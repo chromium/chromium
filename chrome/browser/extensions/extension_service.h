@@ -17,6 +17,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/blocklist.h"
@@ -32,8 +33,8 @@
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
 #include "components/sync/model/string_ordinal.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_process_host_creation_observer.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_install_pref.h"
 #include "extensions/browser/crx_file_info.h"
 #include "extensions/browser/disable_reason.h"
@@ -169,7 +170,8 @@ class ExtensionServiceInterface {
 // between normal and incognito profiles.
 class ExtensionService : public ExtensionServiceInterface,
                          public ExternalProviderInterface::VisitorInterface,
-                         public content::NotificationObserver,
+                         public content::RenderProcessHostCreationObserver,
+                         public content::RenderProcessHostObserver,
                          public Blocklist::Observer,
                          public ExtensionManagement::Observer,
                          public UpgradeObserver,
@@ -514,10 +516,11 @@ class ExtensionService : public ExtensionServiceInterface,
 
   void OnAppTerminating();
 
-  // content::NotificationObserver implementation:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // content::RenderProcessHostCreationObserver:
+  void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
+
+  // content::RenderProcessHostObserver:
+  void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
 
   // Blocklist::Observer implementation.
   void OnBlocklistUpdated() override;
@@ -626,7 +629,8 @@ class ExtensionService : public ExtensionServiceInterface,
       const std::string& id,
       const std::string& profile_user_name,
       const base::FilePath& install_dir,
-      const base::FilePath& extension_path);
+      const base::FilePath& extension_path,
+      const base::FilePath& profile_dir);
 
   // Called when the initial extensions load has completed.
   void OnInstalledExtensionsLoaded();
@@ -695,7 +699,10 @@ class ExtensionService : public ExtensionServiceInterface,
   std::unique_ptr<ExtensionUpdater> updater_;
 
   base::CallbackListSubscription on_app_terminating_subscription_;
-  content::NotificationRegistrar registrar_;
+
+  base::ScopedMultiSourceObservation<content::RenderProcessHost,
+                                     content::RenderProcessHostObserver>
+      host_observation_{this};
 
   // Keeps track of loading and unloading component extensions.
   std::unique_ptr<ComponentLoader> component_loader_;

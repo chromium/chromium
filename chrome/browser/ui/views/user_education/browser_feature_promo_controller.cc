@@ -97,14 +97,9 @@ std::u16string BrowserFeaturePromoController::GetTutorialScreenReaderHint()
 #else
   static const auto kAccelerator = IDC_FOCUS_NEXT_PANE;
 #endif
-  if (browser_view_->GetAccelerator(kAccelerator, &accelerator)) {
-    accelerator_text = accelerator.GetShortcutText();
-  } else {
-    NOTREACHED();
-  }
-
+  CHECK(browser_view_->GetAccelerator(kAccelerator, &accelerator));
   return l10n_util::GetStringFUTF16(IDS_FOCUS_HELP_BUBBLE_TUTORIAL_DESCRIPTION,
-                                    accelerator_text);
+                                    accelerator.GetShortcutText());
 }
 
 std::u16string
@@ -120,11 +115,8 @@ BrowserFeaturePromoController::GetFocusHelpBubbleScreenReaderHint(
 
   ui::Accelerator accelerator;
   std::u16string accelerator_text;
-  if (browser_view_->GetAccelerator(IDC_FOCUS_NEXT_PANE, &accelerator)) {
-    accelerator_text = accelerator.GetShortcutText();
-  } else {
-    NOTREACHED();
-  }
+  CHECK(browser_view_->GetAccelerator(IDC_FOCUS_NEXT_PANE, &accelerator));
+  accelerator_text = accelerator.GetShortcutText();
 
   // Present the user with the full help bubble navigation shortcut.
   auto* const anchor_view = anchor_element->AsA<views::TrackedElementViews>();

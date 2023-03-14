@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/location.h"
@@ -13,8 +14,12 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
+#include "components/attribution_reporting/aggregatable_trigger_data.h"
+#include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/os_support.mojom.h"
 #include "components/attribution_reporting/registration_type.mojom.h"
 #include "components/attribution_reporting/source_registration.h"
@@ -23,6 +28,9 @@
 #include "content/browser/attribution_reporting/attribution_constants.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
+#include "content/browser/attribution_reporting/test/mock_attribution_host.h"
+#include "content/browser/attribution_reporting/test/mock_data_host.h"
+#include "content/browser/attribution_reporting/test/source_observer.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -47,6 +55,10 @@
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "content/browser/attribution_reporting/attribution_os_level_manager_android.h"
+#endif
 
 namespace content {
 
@@ -135,8 +147,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest, SourceRegistered) {
 
   EXPECT_EQ(source_data.size(), 1u);
   EXPECT_EQ(source_data.front().source_event_id, 5UL);
-  EXPECT_EQ(source_data.front().destination,
-            net::SchemefulSite::Deserialize("https://d.test"));
+  EXPECT_THAT(source_data.front().destination_set.destinations(),
+              ElementsAre(net::SchemefulSite::Deserialize("https://d.test")));
   EXPECT_EQ(source_data.front().priority, 0);
   EXPECT_EQ(source_data.front().expiry, absl::nullopt);
   EXPECT_FALSE(source_data.front().debug_key);
@@ -184,8 +196,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
     EXPECT_EQ(source_data.size(), 1u);
     EXPECT_EQ(source_data.front().source_event_id, 5UL);
-    EXPECT_EQ(source_data.front().destination,
-              net::SchemefulSite::Deserialize("https://d.test"));
+    EXPECT_THAT(source_data.front().destination_set.destinations(),
+                ElementsAre(net::SchemefulSite::Deserialize("https://d.test")));
     EXPECT_EQ(source_data.front().priority, 0);
     EXPECT_EQ(source_data.front().expiry, absl::nullopt);
     EXPECT_FALSE(source_data.front().debug_key);
@@ -511,11 +523,11 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
   EXPECT_EQ(source_data.size(), 2u);
   EXPECT_EQ(source_data.front().source_event_id, 1UL);
-  EXPECT_EQ(source_data.front().destination,
-            net::SchemefulSite::Deserialize("https://d.test"));
+  EXPECT_THAT(source_data.front().destination_set.destinations(),
+              ElementsAre(net::SchemefulSite::Deserialize("https://d.test")));
   EXPECT_EQ(source_data.back().source_event_id, 5UL);
-  EXPECT_EQ(source_data.back().destination,
-            net::SchemefulSite::Deserialize("https://d.test"));
+  EXPECT_THAT(source_data.back().destination_set.destinations(),
+              ElementsAre(net::SchemefulSite::Deserialize("https://d.test")));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -548,8 +560,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   // Only the second source is registered.
   EXPECT_EQ(source_data.size(), 1u);
   EXPECT_EQ(source_data.back().source_event_id, 5UL);
-  EXPECT_EQ(source_data.back().destination,
-            net::SchemefulSite::Deserialize("https://d.test"));
+  EXPECT_THAT(source_data.back().destination_set.destinations(),
+              ElementsAre(net::SchemefulSite::Deserialize("https://d.test")));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -611,8 +623,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   // Only the second source is registered.
   EXPECT_EQ(source_data.size(), 1u);
   EXPECT_EQ(source_data.back().source_event_id, 5UL);
-  EXPECT_EQ(source_data.back().destination,
-            net::SchemefulSite::Deserialize("https://d.test"));
+  EXPECT_THAT(source_data.back().destination_set.destinations(),
+              ElementsAre(net::SchemefulSite::Deserialize("https://d.test")));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -844,13 +856,11 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcBasicTriggerBrowserTest,
       ElementsAre(TriggerRegistrationMatches(TriggerRegistrationMatcherConfig(
           FilterPair(),
           /*debug_key=*/Eq(absl::nullopt),
-          EventTriggerDataListMatches(EventTriggerDataListMatcherConfig(
-              ElementsAre(EventTriggerDataMatches(EventTriggerDataMatcherConfig(
-                  /*data=*/7))))),
-          attribution_reporting::AggregatableDedupKeyList(),
+          ElementsAre(EventTriggerDataMatches(EventTriggerDataMatcherConfig(
+              /*data=*/7))),
+          std::vector<attribution_reporting::AggregatableDedupKey>(),
           /*debug_reporting=*/false,
-          /*aggregatable_trigger_data=*/
-          attribution_reporting::AggregatableTriggerDataList(),
+          std::vector<attribution_reporting::AggregatableTriggerData>(),
           /*aggregatable_values=*/
           attribution_reporting::AggregatableValues(),
           ::aggregation_service::mojom::AggregationCoordinator::kDefault))));
@@ -904,36 +914,30 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_THAT(
       data_host->trigger_data(),
       ElementsAre(TriggerRegistrationMatches(TriggerRegistrationMatcherConfig(
-          FilterPair{.positive = *attribution_reporting::Filters::Create(
-                         {{"w", {}}, {"x", {"y", "z"}}}),
-                     .negative = *attribution_reporting::Filters::Create(
-                         {{"a", {"b"}}})},
+          FilterPair(/*positive=*/
+                     {{{"w", {}}, {"x", {"y", "z"}}}},
+                     /*negative=*/{{{"a", {"b"}}}}),
           /*debug_key=*/Optional(789),
-          EventTriggerDataListMatches(
-              EventTriggerDataListMatcherConfig(ElementsAre(
-                  attribution_reporting::EventTriggerData(
-                      /*data=*/1,
-                      /*priority=*/5, /*dedup_key=*/1024,
-                      FilterPair{
-                          .positive = *attribution_reporting::Filters::Create(
-                              {{"a", {"b"}}}),
-                          .negative = *attribution_reporting::Filters::Create(
-                              {{"c", {}}})}),
-                  attribution_reporting::EventTriggerData(
-                      /*data=*/2, /*priority=*/10,
-                      /*dedup_key=*/absl::nullopt,
-                      FilterPair{.negative =
-                                     *attribution_reporting::Filters::Create(
-                                         {{"d", {"e", "f"}}, {"g", {}}})})))),
-          *attribution_reporting::AggregatableDedupKeyList::Create(
-              {attribution_reporting::AggregatableDedupKey(
-                  /*dedup_key=*/123, FilterPair())}),
+          ElementsAre(attribution_reporting::EventTriggerData(
+                          /*data=*/1,
+                          /*priority=*/5, /*dedup_key=*/1024,
+                          FilterPair(/*positive=*/
+                                     {{{"a", {"b"}}}},
+                                     /*negative=*/
+                                     {{{"c", {}}}})),
+                      attribution_reporting::EventTriggerData(
+                          /*data=*/2, /*priority=*/10,
+                          /*dedup_key=*/absl::nullopt,
+                          FilterPair(/*positive=*/{}, /*negative=*/
+                                     {{{"d", {"e", "f"}}, {"g", {}}}}))),
+          std::vector<attribution_reporting::AggregatableDedupKey>{
+              attribution_reporting::AggregatableDedupKey(
+                  /*dedup_key=*/123, FilterPair())},
           /*debug_reporting=*/true,
-          /*aggregatable_trigger_data=*/
-          *attribution_reporting::AggregatableTriggerDataList::Create(
-              {*attribution_reporting::AggregatableTriggerData::Create(
+          std::vector<attribution_reporting::AggregatableTriggerData>{
+              *attribution_reporting::AggregatableTriggerData::Create(
                   /*key_piece=*/absl::MakeUint128(/*high=*/0, /*low=*/1),
-                  /*source_keys=*/{"key"}, FilterPair())}),
+                  /*source_keys=*/{"key"}, FilterPair())},
           /*aggregatable_values=*/
           *attribution_reporting::AggregatableValues::Create({{"key", 123}}),
           ::aggregation_service::mojom::AggregationCoordinator::kAwsCloud))));
@@ -967,8 +971,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   const auto& trigger_data = data_host->trigger_data();
 
   EXPECT_EQ(trigger_data.size(), 1u);
-  EXPECT_EQ(trigger_data.front().event_triggers.vec().size(), 1u);
-  EXPECT_EQ(trigger_data.front().event_triggers.vec().front().data, 7u);
+  EXPECT_EQ(trigger_data.front().event_triggers.size(), 1u);
+  EXPECT_EQ(trigger_data.front().event_triggers.front().data, 7u);
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -1001,8 +1005,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_EQ(trigger_data.size(), 2u);
 
   // Both triggers should be processed.
-  EXPECT_EQ(trigger_data.front().event_triggers.vec().front().data, 5u);
-  EXPECT_EQ(trigger_data.back().event_triggers.vec().front().data, 7u);
+  EXPECT_EQ(trigger_data.front().event_triggers.front().data, 5u);
+  EXPECT_EQ(trigger_data.back().event_triggers.front().data, 7u);
 
   // Middle redirect source should be ignored.
   EXPECT_EQ(data_host->source_data().size(), 0u);
@@ -1170,8 +1174,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcPrerenderBrowserTest,
   const auto& trigger_data = data_host->trigger_data();
 
   ASSERT_EQ(trigger_data.size(), 1u);
-  ASSERT_EQ(trigger_data.front().event_triggers.vec().size(), 1u);
-  EXPECT_EQ(trigger_data.front().event_triggers.vec().front().data, 7u);
+  ASSERT_EQ(trigger_data.front().event_triggers.size(), 1u);
+  EXPECT_EQ(trigger_data.front().event_triggers.front().data, 7u);
 }
 
 class AttributionSrcFencedFrameBrowserTest : public AttributionSrcBrowserTest {
@@ -1313,6 +1317,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcCrossAppWebEnabledBrowserTest,
             "web");
 }
 
+#if BUILDFLAG(IS_ANDROID)
+
 IN_PROC_BROWSER_TEST_F(
     AttributionSrcCrossAppWebEnabledBrowserTest,
     OsLevelEnabledPriorToRendererInitialization_SetsSupportHeader) {
@@ -1334,8 +1340,9 @@ IN_PROC_BROWSER_TEST_F(
           https_server.get(), "/register_source2");
   ASSERT_TRUE(https_server->Start());
 
-  AttributionManagerImpl::ScopedOsSupportForTesting scoped_os_support_setting(
-      attribution_reporting::mojom::OsSupport::kEnabled);
+  AttributionOsLevelManagerAndroid::ScopedOsSupportForTesting
+      scoped_os_support_setting(
+          attribution_reporting::mojom::OsSupport::kEnabled);
 
   GURL page_url =
       https_server->GetURL("b.test", "/page_with_impression_creator.html");
@@ -1388,8 +1395,9 @@ IN_PROC_BROWSER_TEST_F(
       https_server->GetURL("b.test", "/page_with_impression_creator.html");
   ASSERT_TRUE(NavigateToURL(web_contents(), page_url));
 
-  AttributionManagerImpl::ScopedOsSupportForTesting scoped_os_support_setting(
-      attribution_reporting::mojom::OsSupport::kEnabled);
+  AttributionOsLevelManagerAndroid::ScopedOsSupportForTesting
+      scoped_os_support_setting(
+          attribution_reporting::mojom::OsSupport::kEnabled);
 
   GURL register_url = https_server->GetURL("d.test", "/register_source1");
   ASSERT_TRUE(ExecJs(web_contents(),
@@ -1412,5 +1420,93 @@ IN_PROC_BROWSER_TEST_F(
                 "Attribution-Reporting-Support"),
             "web, os");
 }
+
+struct OsRegistrationTestCase {
+  const char* name;
+  const char* header;
+  std::vector<GURL> expected_os_sources;
+  std::vector<GURL> expected_os_triggers;
+};
+
+class AttributionSrcCrossAppWebEnabledOsRegistrationBrowserTest
+    : public AttributionSrcCrossAppWebEnabledBrowserTest,
+      public ::testing::WithParamInterface<OsRegistrationTestCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AttributionSrcCrossAppWebEnabledOsRegistrationBrowserTest,
+    ::testing::Values(
+        OsRegistrationTestCase{
+            .name = "source",
+            .header = "Attribution-Reporting-Register-OS-Source",
+            .expected_os_sources = {GURL("https://r.test/x")},
+        },
+        OsRegistrationTestCase{
+            .name = "trigger",
+            .header = "Attribution-Reporting-Register-OS-Trigger",
+            .expected_os_triggers = {GURL("https://r.test/x")},
+        }),
+    [](const auto& info) { return info.param.name; });  // test name generator
+
+IN_PROC_BROWSER_TEST_P(
+    AttributionSrcCrossAppWebEnabledOsRegistrationBrowserTest,
+    Register) {
+  const auto& test_case = GetParam();
+
+  // Create a separate server as we cannot register a `ControllableHttpResponse`
+  // after the server starts.
+  auto https_server = std::make_unique<net::EmbeddedTestServer>(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  net::test_server::RegisterDefaultHandlers(https_server.get());
+  https_server->ServeFilesFromSourceDirectory(
+      "content/test/data/attribution_reporting");
+  https_server->ServeFilesFromSourceDirectory("content/test/data");
+
+  std::unique_ptr<MockDataHost> data_host;
+  base::RunLoop loop;
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
+      .WillOnce(
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
+              RegistrationType) {
+            data_host = GetRegisteredDataHost(std::move(host));
+            loop.Quit();
+          });
+
+  auto register_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server.get(), "/register");
+  ASSERT_TRUE(https_server->Start());
+
+  AttributionOsLevelManagerAndroid::ScopedOsSupportForTesting
+      scoped_os_support_setting(
+          attribution_reporting::mojom::OsSupport::kEnabled);
+
+  GURL page_url =
+      https_server->GetURL("b.test", "/page_with_impression_creator.html");
+  ASSERT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  GURL register_url = https_server->GetURL("d.test", "/register");
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     JsReplace("createAttributionSrcImg($1);", register_url)));
+
+  register_response->WaitForRequest();
+
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->AddCustomHeader(test_case.header, R"("https://r.test/x")");
+  register_response->Send(http_response->ToResponseString());
+  register_response->Done();
+
+  if (!data_host) {
+    loop.Run();
+  }
+  data_host->WaitForOsSources(test_case.expected_os_sources.size());
+  data_host->WaitForOsTriggers(test_case.expected_os_triggers.size());
+
+  EXPECT_EQ(data_host->os_sources(), test_case.expected_os_sources);
+  EXPECT_EQ(data_host->os_triggers(), test_case.expected_os_triggers);
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace content

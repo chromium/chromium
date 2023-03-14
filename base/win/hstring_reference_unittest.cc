@@ -26,8 +26,6 @@ void VerifyHSTRINGEquals(HSTRING hstring, const wchar_t* test_string) {
 }  // namespace
 
 TEST(HStringReferenceTest, Init) {
-  EXPECT_TRUE(ScopedHString::ResolveCoreWinRTStringDelayload());
-
   const HStringReference string(kTestString);
   EXPECT_NE(string.Get(), nullptr);
   VerifyHSTRINGEquals(string.Get(), kTestString);

@@ -283,9 +283,10 @@ class DateOrderedListMediator implements BackPressHandler {
     }
 
     @Override
-    public void handleBackPress() {
+    public int handleBackPress() {
         var ret = onBackPressed();
         assert ret;
+        return ret ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
     }
 
     @Override

@@ -1,10 +1,10 @@
 'use strict';
 
 function processQueryParams() {
-  const queryParams = new URL(window.location).searchParams;
+  const url = new URL(window.location);
+  const queryParams = url.searchParams;
   return {
-    expectAccessAllowed: queryParams.get("allowed") != "false",
-    topLevelDocument: queryParams.get("rootdocument") != "false",
+    topLevelDocument: window === window.top,
     testPrefix: queryParams.get("testCase") || "top-level-context",
   };
 }
@@ -100,7 +100,7 @@ function ReplyPromise(timestamp) {
 }
 
 // Returns a promise that resolves when the given frame fires its load event.
-function ReloadPromise(frame) {
+function LoadPromise(frame) {
   return new Promise((resolve) => {
     frame.addEventListener("load", (event) => {
       resolve();
@@ -108,10 +108,46 @@ function ReloadPromise(frame) {
   });
 }
 
+// Writes cookies via document.cookie in the given frame.
+function SetDocumentCookieFromFrame(frame, cookie) {
+  return PostMessageAndAwaitReply(
+    { command: "write document.cookie", cookie }, frame.contentWindow);
+}
+
 // Reads cookies via document.cookie in the given frame.
 function GetJSCookiesFromFrame(frame) {
   return PostMessageAndAwaitReply(
       { command: "document.cookie" }, frame.contentWindow);
+}
+
+async function DeleteCookieInFrame(frame, name, params) {
+  await SetDocumentCookieFromFrame(frame, `${name}=0; expires=${new Date(0).toUTCString()}; ${params};`);
+  assert_false(cookieStringHasCookie(name, '0', await GetJSCookiesFromFrame(frame)), `Verify that cookie '${name}' has been deleted.`);
+}
+
+// Tests whether the frame can write cookies via document.cookie. Note that this
+// overwrites, then optionally deletes, cookies named "cookie" and "foo".
+//
+// This function requires the caller to have included
+// /cookies/resources/cookie-helper.sub.js.
+async function CanFrameWriteCookies(frame, keep_after_writing = false) {
+  const cookie_suffix = "Secure;SameSite=None;Path=/";
+  await DeleteCookieInFrame(frame, "cookie", cookie_suffix);
+  await DeleteCookieInFrame(frame, "foo", cookie_suffix);
+
+  await SetDocumentCookieFromFrame(frame, `cookie=monster;${cookie_suffix}`);
+  await SetDocumentCookieFromFrame(frame, `foo=bar;${cookie_suffix}`);
+
+  const cookies = await GetJSCookiesFromFrame(frame);
+  const can_write = cookieStringHasCookie("cookie", "monster", cookies) &&
+      cookieStringHasCookie("foo", "bar", cookies);
+
+  if (!keep_after_writing) {
+    await DeleteCookieInFrame(frame, "cookie", cookie_suffix);
+    await DeleteCookieInFrame(frame, "foo", cookie_suffix);
+  }
+
+  return can_write;
 }
 
 // Reads cookies via the `httpCookies` variable in the given frame.
@@ -149,12 +185,30 @@ function ObservePermissionChange(frame, args = []) {
 // Executes `location.reload()` in the given frame. The returned promise
 // resolves when the frame has finished reloading.
 function FrameInitiatedReload(frame) {
-  const reload = ReloadPromise(frame);
+  const reload = LoadPromise(frame);
   frame.contentWindow.postMessage({ command: "reload" }, "*");
   return reload;
 }
 
+// Executes `location.href = url` in the given frame. The returned promise
+// resolves when the frame has finished navigating.
+function FrameInitiatedNavigation(frame, url) {
+  const load = LoadPromise(frame);
+  frame.contentWindow.postMessage({ command: "navigate", url }, "*");
+  return load;
+}
+
+// Makes a subresource request to the provided host in the given frame, and returns the cookies in the response.
+function FetchFromFrame(frame, host) {
+  return PostMessageAndAwaitReply(
+    { command: "subresource cookies", host }, frame.contentWindow);
+}
+
 // Tries to set storage access policy, ignoring any errors.
+//
+// Note: to discourage the writing of tests that assume unpartitioned cookie
+// access by default, any test that calls this with `value` == "blocked" should
+// do so as the first step in the test.
 async function MaybeSetStorageAccess(origin, embedding_origin, value) {
   try {
     await test_driver.set_storage_access(origin, embedding_origin, value);

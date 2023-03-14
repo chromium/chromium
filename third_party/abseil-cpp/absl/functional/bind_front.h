@@ -46,7 +46,7 @@ ABSL_NAMESPACE_BEGIN
 //
 // Like `std::bind()`, `absl::bind_front()` is implicitly convertible to
 // `std::function`.  In particular, it may be used as a simpler replacement for
-// `std::bind()` in most cases, as it does not require  placeholders to be
+// `std::bind()` in most cases, as it does not require placeholders to be
 // specified. More importantly, it provides more reliable correctness guarantees
 // than `std::bind()`; while `std::bind()` will silently ignore passing more
 // parameters than expected, for example, `absl::bind_front()` will report such

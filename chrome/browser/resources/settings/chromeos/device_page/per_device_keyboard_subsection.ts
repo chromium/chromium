@@ -26,16 +26,19 @@ import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.j
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router} from '../router.js';
 
+import {mojoTimeDelta} from './fake_input_device_data.js';
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
 import {InputDeviceSettingsProviderInterface, Keyboard} from './input_device_settings_types.js';
 import {getTemplate} from './per_device_keyboard_subsection.html.js';
 
 const SettingsPerDeviceKeyboardSubsectionElementBase =
-    RouteOriginMixin(PolymerElement);
+    DeepLinkingMixin(RouteOriginMixin(PolymerElement));
 
 export class SettingsPerDeviceKeyboardSubsectionElement extends
     SettingsPerDeviceKeyboardSubsectionElementBase {
@@ -134,6 +137,21 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
         type: String,
         value: '',
       },
+
+      /**
+       * Used by DeepLinkingMixin to focus this page's deep links.
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set<Setting>([
+          Setting.kKeyboardFunctionKeys,
+          Setting.kKeyboardAutoRepeat,
+        ]),
+      },
+
+      keyboardIndex: {
+        type: Number,
+      },
     };
   }
 
@@ -149,6 +167,18 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
     ];
   }
 
+  override currentRouteChanged(route: Route): void {
+    // Does not apply to this page.
+    if (route !== routes.PER_DEVICE_KEYBOARD) {
+      return;
+    }
+
+    // If there is more than one keyboard, focus on the first one.
+    if (this.keyboardIndex === 0) {
+      this.attemptDeepLink();
+    }
+  }
+
   protected keyboard: Keyboard;
   private autoRepeatDelays: number[];
   private autoRepeatIntervals: number[];
@@ -162,21 +192,23 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
   private isInitialized: boolean = false;
   private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();
+  private keyboardIndex: number;
 
   private updateSettingsToCurrentPrefs(): void {
     this.set(
         'topRowAreFunctionKeysPref.value',
-        this.keyboard.settings.topRowAreFKeys);
+        this.keyboard.settings.topRowAreFkeys);
     this.set(
         'blockMetaFunctionKeyRewritesPref.value',
-        this.keyboard.settings.suppressMetaFKeyRewrites);
+        this.keyboard.settings.suppressMetaFkeyRewrites);
     this.set(
         'enableAutoRepeatPref.value', this.keyboard.settings.autoRepeatEnabled);
     this.set(
-        'autoRepeatDelaysPref.value', this.keyboard.settings.autoRepeatDelay);
+        'autoRepeatDelaysPref.value',
+        Number(this.keyboard.settings.autoRepeatDelay.microseconds) / 1000);
     this.set(
         'autoRepeatIntervalsPref.value',
-        this.keyboard.settings.autoRepeatInterval);
+        Number(this.keyboard.settings.autoRepeatInterval.microseconds) / 1000);
     this.isInitialized = true;
   }
 
@@ -200,10 +232,10 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
     this.keyboard.settings = {
       ...this.keyboard.settings,
       autoRepeatEnabled: this.enableAutoRepeatPref.value,
-      topRowAreFKeys: this.topRowAreFunctionKeysPref.value,
-      autoRepeatDelay: this.autoRepeatDelaysPref.value,
-      autoRepeatInterval: this.autoRepeatIntervalsPref.value,
-      suppressMetaFKeyRewrites: this.blockMetaFunctionKeyRewritesPref.value,
+      topRowAreFkeys: this.topRowAreFunctionKeysPref.value,
+      autoRepeatDelay: mojoTimeDelta(this.autoRepeatDelaysPref.value),
+      autoRepeatInterval: mojoTimeDelta(this.autoRepeatIntervalsPref.value),
+      suppressMetaFkeyRewrites: this.blockMetaFunctionKeyRewritesPref.value,
     };
     this.inputDeviceSettingsProvider.setKeyboardSettings(
         this.keyboard.id, this.keyboard.settings);
@@ -211,7 +243,7 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
 
   private async onModifierRemappingsChanged(): Promise<void> {
     const numRemappedModifierKeys =
-        this.keyboard.settings.modifierRemappings.size;
+        Object.keys(this.keyboard.settings.modifierRemappings).length;
 
     // Only display the sub-label if the modifierRemappings map isn't empty.
     if (numRemappedModifierKeys > 0) {

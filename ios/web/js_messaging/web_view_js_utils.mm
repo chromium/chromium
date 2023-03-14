@@ -137,4 +137,16 @@ void ExecuteJavaScript(WKWebView* web_view,
              completionHandler:completion_handler];
 }
 
+void RegisterExistingFrames(WKWebView* web_view,
+                            WKContentWorld* content_world) {
+  DCHECK(content_world);
+
+  NSString* script = @"__gCrWeb.message.getExistingFrames();";
+
+  [web_view evaluateJavaScript:script
+                       inFrame:nil
+                inContentWorld:content_world
+             completionHandler:nil];
+}
+
 }  // namespace web

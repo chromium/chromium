@@ -19,10 +19,7 @@ constexpr char kPumpkinInstallingError[] = "Pumpkin already installing.";
 
 namespace ash {
 
-PumpkinInstaller::PumpkinInstaller() {
-  DCHECK(features::IsExperimentalAccessibilityDictationWithPumpkinEnabled());
-}
-
+PumpkinInstaller::PumpkinInstaller() = default;
 PumpkinInstaller::~PumpkinInstaller() = default;
 
 void PumpkinInstaller::MaybeInstall(InstalledCallback on_installed,

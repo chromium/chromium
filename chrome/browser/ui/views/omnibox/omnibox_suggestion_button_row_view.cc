@@ -177,6 +177,7 @@ void OmniboxSuggestionButtonRowView::BuildViews() {
     keyword_button_ = nullptr;
     tab_switch_button_ = nullptr;
     action_buttons_.clear();
+    previous_active_button_ = nullptr;
   }
 
   // For all of these buttons, the visibility set from UpdateFromModel().
@@ -279,12 +280,15 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
 
 void OmniboxSuggestionButtonRowView::SelectionStateChanged() {
   auto* const active_button = GetActiveButton();
-  if (active_button == previous_active_button_)
+  if (active_button == previous_active_button_) {
     return;
-  if (previous_active_button_)
+  }
+  if (previous_active_button_) {
     views::FocusRing::Get(previous_active_button_)->SchedulePaint();
-  if (active_button)
+  }
+  if (active_button) {
     views::FocusRing::Get(active_button)->SchedulePaint();
+  }
   previous_active_button_ = active_button;
 }
 
@@ -348,8 +352,7 @@ void OmniboxSuggestionButtonRowView::ButtonPressed(
   } else {
     WindowOpenDisposition disposition =
         ui::DispositionFromEventFlags(event.flags());
-    model_->TriggerPopupSelectionAction(selection, event.time_stamp(),
-                                        disposition);
+    model_->OpenSelection(selection, event.time_stamp(), disposition);
   }
 }
 

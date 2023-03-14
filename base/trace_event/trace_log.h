@@ -22,7 +22,6 @@
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/thread_local.h"
 #include "base/time/time_override.h"
 #include "base/trace_event/category_registry.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -71,6 +70,8 @@ class BASE_EXPORT TraceLog :
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     public MemoryDumpProvider {
  public:
+  class ThreadLocalEventBuffer;
+
   // Argument passed to TraceLog::SetEnabled.
   enum Mode : uint8_t {
     // Enables normal tracing (recording trace events in the trace buffer).
@@ -475,7 +476,6 @@ class BASE_EXPORT TraceLog :
   InternalTraceOptions GetInternalOptionsFromTraceConfig(
       const TraceConfig& config);
 
-  class ThreadLocalEventBuffer;
   class OptionalAutoLock;
   struct RegisteredAsyncObserver;
 
@@ -601,10 +601,6 @@ class BASE_EXPORT TraceLog :
   std::atomic<InternalTraceOptions> trace_options_;
 
   TraceConfig trace_config_;
-
-  ThreadLocalPointer<ThreadLocalEventBuffer> thread_local_event_buffer_;
-  ThreadLocalBoolean thread_blocks_message_loop_;
-  ThreadLocalBoolean thread_is_in_trace_event_;
 
   // Contains task runners for the threads that have had at least one event
   // added into the local event buffer.

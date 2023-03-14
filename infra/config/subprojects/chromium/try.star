@@ -13,12 +13,6 @@ try_.defaults.set(
     bucket = "try",
     cpu = cpu.X86_64,
     build_numbers = True,
-    caches = [
-        swarming.cache(
-            name = "win_toolchain",
-            path = "win_toolchain",
-        ),
-    ],
     cq_group = "cq",
     # Max. pending time for builds. CQ considers builds pending >2h as timed
     # out: http://shortn/_8PaHsdYmlq. Keep this in sync.
@@ -60,6 +54,35 @@ luci.bucket(
             groups = "service-account-chromium-tryserver",
         ),
     ],
+)
+
+# Shadow bucket of `try`, for led builds.
+luci.bucket(
+    name = "try.shadow",
+    shadows = "try",
+    constraints = luci.bucket_constraints(
+        pools = ["luci.chromium.try", "luci.chromium.try.orchestrator"],
+        service_accounts = [
+            "chromium-cipd-try-builder@chops-service-accounts.iam.gserviceaccount.com",
+            "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
+            "chromium-try-builder@chops-service-accounts.iam.gserviceaccount.com",
+            "chromium-try-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
+        ],
+    ),
+    bindings = [
+        luci.binding(
+            roles = "role/buildbucket.creator",
+            groups = [
+                "mdb/chrome-troopers",
+                "chromium-led-users",
+            ],
+            users = [
+                "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
+                "infra-try-recipes-tester@chops-service-accounts.iam.gserviceaccount.com",
+            ],
+        ),
+    ],
+    dynamic = True,
 )
 
 luci.cq_group(

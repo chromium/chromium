@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "ash/public/cpp/input_device_settings_controller.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -16,69 +16,113 @@
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/system/input_device_settings/pref_handlers/keyboard_pref_handler_impl.h"
+#include "ash/system/input_device_settings/pref_handlers/mouse_pref_handler_impl.h"
+#include "ash/system/input_device_settings/pref_handlers/pointing_stick_pref_handler_impl.h"
+#include "ash/system/input_device_settings/pref_handlers/touchpad_pref_handler_impl.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
-#include "base/notreached.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
+#include "ui/chromeos/events/keyboard_capability.h"
 #include "ui/events/devices/input_device.h"
 
 namespace ash {
 
 namespace {
+
+mojom::MetaKey GetMetaKeyForKeyboard(const ui::InputDevice& keyboard) {
+  const auto device_type =
+      Shell::Get()->keyboard_capability()->GetDeviceType(keyboard);
+  switch (device_type) {
+    case ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard:
+    case ui::KeyboardCapability::DeviceType::kDeviceExternalChromeOsKeyboard:
+    case ui::KeyboardCapability::DeviceType::kDeviceHotrodRemote:
+    case ui::KeyboardCapability::DeviceType::kDeviceUnknown:
+    case ui::KeyboardCapability::DeviceType::kDeviceVirtualCoreKeyboard:
+      return Shell::Get()->keyboard_capability()->HasLauncherButton(keyboard)
+                 ? mojom::MetaKey::kLauncher
+                 : mojom::MetaKey::kSearch;
+    case ui::KeyboardCapability::DeviceType::kDeviceExternalAppleKeyboard:
+      return mojom::MetaKey::kCommand;
+    case ui::KeyboardCapability::DeviceType::kDeviceExternalGenericKeyboard:
+    case ui::KeyboardCapability::DeviceType::kDeviceExternalUnknown:
+      return mojom::MetaKey::kExternalMeta;
+  };
+}
+
 mojom::KeyboardPtr BuildMojomKeyboard(const ui::InputDevice& keyboard) {
-  // TODO(dpad): Fully initialize the mojom::Keyboard object.
   mojom::KeyboardPtr mojom_keyboard = mojom::Keyboard::New();
   mojom_keyboard->id = keyboard.id;
   mojom_keyboard->name = keyboard.name;
   mojom_keyboard->device_key = BuildDeviceKey(keyboard);
+  mojom_keyboard->is_external =
+      keyboard.type != ui::InputDeviceType::INPUT_DEVICE_INTERNAL;
+  // Enable only when flag is enabled to avoid crashing while problem is
+  // addressed. See b/272960076
+  if (features::IsInputDeviceSettingsSplitEnabled()) {
+    mojom_keyboard->modifier_keys =
+        Shell::Get()->keyboard_capability()->GetModifierKeys(keyboard);
+    mojom_keyboard->meta_key = GetMetaKeyForKeyboard(keyboard);
+  }
   return mojom_keyboard;
 }
 
 mojom::MousePtr BuildMojomMouse(const ui::InputDevice& mouse) {
-  // TODO(dpad): Fully initialize the objects.
   mojom::MousePtr mojom_mouse = mojom::Mouse::New();
   mojom_mouse->id = mouse.id;
   mojom_mouse->name = mouse.name;
   mojom_mouse->device_key = BuildDeviceKey(mouse);
+  mojom_mouse->is_external =
+      mouse.type != ui::InputDeviceType::INPUT_DEVICE_INTERNAL;
   return mojom_mouse;
 }
 
 mojom::TouchpadPtr BuildMojomTouchpad(const ui::InputDevice& touchpad) {
-  // TODO(dpad): Fully initialize the objects.
   mojom::TouchpadPtr mojom_touchpad = mojom::Touchpad::New();
   mojom_touchpad->id = touchpad.id;
   mojom_touchpad->name = touchpad.name;
   mojom_touchpad->device_key = BuildDeviceKey(touchpad);
+  mojom_touchpad->is_external =
+      touchpad.type != ui::InputDeviceType::INPUT_DEVICE_INTERNAL;
   return mojom_touchpad;
 }
 
 mojom::PointingStickPtr BuildMojomPointingStick(
     const ui::InputDevice& touchpad) {
-  // TODO(dpad): Fully initialize the objects.
   mojom::PointingStickPtr mojom_pointing_stick = mojom::PointingStick::New();
   mojom_pointing_stick->id = touchpad.id;
   mojom_pointing_stick->name = touchpad.name;
   mojom_pointing_stick->device_key = BuildDeviceKey(touchpad);
+  mojom_pointing_stick->is_external =
+      touchpad.type != ui::InputDeviceType::INPUT_DEVICE_INTERNAL;
   return mojom_pointing_stick;
 }
 }  // namespace
 
 InputDeviceSettingsControllerImpl::InputDeviceSettingsControllerImpl()
-    : keyboard_pref_handler_(std::make_unique<KeyboardPrefHandlerImpl>()) {
+    : keyboard_pref_handler_(std::make_unique<KeyboardPrefHandlerImpl>()),
+      touchpad_pref_handler_(std::make_unique<TouchpadPrefHandlerImpl>()),
+      mouse_pref_handler_(std::make_unique<MousePrefHandlerImpl>()),
+      pointing_stick_pref_handler_(
+          std::make_unique<PointingStickPrefHandlerImpl>()) {
   Init();
 }
 
 InputDeviceSettingsControllerImpl::InputDeviceSettingsControllerImpl(
-    std::unique_ptr<KeyboardPrefHandler> keyboard_pref_handler)
-    : keyboard_pref_handler_(std::move(keyboard_pref_handler)) {
+    std::unique_ptr<KeyboardPrefHandler> keyboard_pref_handler,
+    std::unique_ptr<TouchpadPrefHandler> touchpad_pref_handler,
+    std::unique_ptr<MousePrefHandler> mouse_pref_handler,
+    std::unique_ptr<PointingStickPrefHandler> pointing_stick_pref_handler)
+    : keyboard_pref_handler_(std::move(keyboard_pref_handler)),
+      touchpad_pref_handler_(std::move(touchpad_pref_handler)),
+      mouse_pref_handler_(std::move(mouse_pref_handler)),
+      pointing_stick_pref_handler_(std::move(pointing_stick_pref_handler)) {
   Init();
 }
 
 void InputDeviceSettingsControllerImpl::Init() {
-  if (features::IsInputDeviceSettingsSplitEnabled()) {
-    Shell::Get()->session_controller()->AddObserver(this);
-  }
+  Shell::Get()->session_controller()->AddObserver(this);
   keyboard_notifier_ =
       std::make_unique<InputDeviceNotifier<mojom::KeyboardPtr>>(
           &keyboards_,
@@ -104,9 +148,7 @@ void InputDeviceSettingsControllerImpl::Init() {
 }
 
 InputDeviceSettingsControllerImpl::~InputDeviceSettingsControllerImpl() {
-  if (features::IsInputDeviceSettingsSplitEnabled()) {
-    Shell::Get()->session_controller()->RemoveObserver(this);
-  }
+  Shell::Get()->session_controller()->RemoveObserver(this);
 }
 
 void InputDeviceSettingsControllerImpl::RegisterProfilePrefs(
@@ -120,8 +162,72 @@ void InputDeviceSettingsControllerImpl::RegisterProfilePrefs(
 
 void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
+  // If the flag is disabled, clear all the settings dictionaries.
+  if (!features::IsInputDeviceSettingsSplitEnabled()) {
+    active_pref_service_ = nullptr;
+    pref_service->SetDict(prefs::kKeyboardDeviceSettingsDictPref, {});
+    pref_service->SetDict(prefs::kMouseDeviceSettingsDictPref, {});
+    pref_service->SetDict(prefs::kPointingStickDeviceSettingsDictPref, {});
+    pref_service->SetDict(prefs::kTouchpadDeviceSettingsDictPref, {});
+    return;
+  }
   active_pref_service_ = pref_service;
-  // TODO(michaelcheco): Initialize settings and notify observers.
+  for (const auto& [id, keyboard] : keyboards_) {
+    keyboard_pref_handler_->InitializeKeyboardSettings(active_pref_service_,
+                                                       keyboard.get());
+    DispatchKeyboardSettingsChanged(id);
+  }
+  for (const auto& [id, touchpad] : touchpads_) {
+    touchpad_pref_handler_->InitializeTouchpadSettings(active_pref_service_,
+                                                       touchpad.get());
+    DispatchTouchpadSettingsChanged(id);
+  }
+  for (const auto& [id, mouse] : mice_) {
+    mouse_pref_handler_->InitializeMouseSettings(active_pref_service_,
+                                                 mouse.get());
+    DispatchMouseSettingsChanged(id);
+  }
+  for (const auto& [id, pointing_stick] : pointing_sticks_) {
+    pointing_stick_pref_handler_->InitializePointingStickSettings(
+        active_pref_service_, pointing_stick.get());
+    DispatchPointingStickSettingsChanged(id);
+  }
+}
+
+const mojom::KeyboardSettings*
+InputDeviceSettingsControllerImpl::GetKeyboardSettings(DeviceId id) {
+  auto iter = keyboards_.find(id);
+  if (iter == keyboards_.end()) {
+    return nullptr;
+  }
+  return iter->second->settings.get();
+}
+
+const mojom::MouseSettings* InputDeviceSettingsControllerImpl::GetMouseSettings(
+    DeviceId id) {
+  auto iter = mice_.find(id);
+  if (iter == mice_.end()) {
+    return nullptr;
+  }
+  return iter->second->settings.get();
+}
+
+const mojom::TouchpadSettings*
+InputDeviceSettingsControllerImpl::GetTouchpadSettings(DeviceId id) {
+  auto iter = touchpads_.find(id);
+  if (iter == touchpads_.end()) {
+    return nullptr;
+  }
+  return iter->second->settings.get();
+}
+
+const mojom::PointingStickSettings*
+InputDeviceSettingsControllerImpl::GetPointingStickSettings(DeviceId id) {
+  auto iter = pointing_sticks_.find(id);
+  if (iter == pointing_sticks_.end()) {
+    return nullptr;
+  }
+  return iter->second->settings.get();
 }
 
 std::vector<mojom::KeyboardPtr>
@@ -172,11 +278,119 @@ InputDeviceSettingsControllerImpl::GetConnectedPointingSticks() {
   return pointing_stick_vector;
 }
 
-// TODO(dpad): Implement updating of keyboard settings.
 void InputDeviceSettingsControllerImpl::SetKeyboardSettings(
     DeviceId id,
-    const mojom::KeyboardSettings& settings) {
-  NOTIMPLEMENTED();
+    mojom::KeyboardSettingsPtr settings) {
+  DCHECK(active_pref_service_);
+
+  // If a device with the given id does not exist, do nothing.
+  auto found_keyboard_iter = keyboards_.find(id);
+  if (found_keyboard_iter == keyboards_.end()) {
+    return;
+  }
+
+  // TODO(dpad): Validate incoming settings to make sure the settings can apply
+  // to the given device.
+  auto& found_keyboard = *found_keyboard_iter->second;
+  found_keyboard.settings = settings.Clone();
+  keyboard_pref_handler_->UpdateKeyboardSettings(active_pref_service_,
+                                                 found_keyboard);
+  DispatchKeyboardSettingsChanged(id);
+  // Check the list of keyboards to see if any have the same |device_key|.
+  // If so, their settings need to also be updated.
+  for (const auto& [device_id, keyboard] : keyboards_) {
+    if (device_id != found_keyboard.id &&
+        keyboard->device_key == found_keyboard.device_key) {
+      keyboard->settings = settings->Clone();
+      DispatchKeyboardSettingsChanged(device_id);
+    }
+  }
+}
+
+void InputDeviceSettingsControllerImpl::SetTouchpadSettings(
+    DeviceId id,
+    mojom::TouchpadSettingsPtr settings) {
+  DCHECK(active_pref_service_);
+
+  // If a device with the given id does not exist, do nothing.
+  auto found_touchpad_iter = touchpads_.find(id);
+  if (found_touchpad_iter == touchpads_.end()) {
+    return;
+  }
+
+  // TODO(dpad): Validate incoming settings to make sure the settings can apply
+  // to the given device.
+  auto& found_touchpad = *found_touchpad_iter->second;
+  found_touchpad.settings = settings.Clone();
+  touchpad_pref_handler_->UpdateTouchpadSettings(active_pref_service_,
+                                                 found_touchpad);
+  DispatchTouchpadSettingsChanged(id);
+  // Check the list of touchpads to see if any have the same |device_key|.
+  // If so, their settings need to also be updated.
+  for (const auto& [device_id, touchpad] : touchpads_) {
+    if (device_id != found_touchpad.id &&
+        touchpad->device_key == found_touchpad.device_key) {
+      touchpad->settings = settings->Clone();
+      DispatchTouchpadSettingsChanged(device_id);
+    }
+  }
+}
+
+void InputDeviceSettingsControllerImpl::SetMouseSettings(
+    DeviceId id,
+    mojom::MouseSettingsPtr settings) {
+  DCHECK(active_pref_service_);
+
+  // If a device with the given id does not exist, do nothing.
+  auto found_mouse_iter = mice_.find(id);
+  if (found_mouse_iter == mice_.end()) {
+    return;
+  }
+
+  // TODO(dpad): Validate incoming settings to make sure the settings can apply
+  // to the given device.
+  auto& found_mouse = *found_mouse_iter->second;
+  found_mouse.settings = settings.Clone();
+  mouse_pref_handler_->UpdateMouseSettings(active_pref_service_, found_mouse);
+  DispatchMouseSettingsChanged(id);
+  // Check the list of mice to see if any have the same |device_key|.
+  // If so, their settings need to also be updated.
+  for (const auto& [device_id, mouse] : mice_) {
+    if (device_id != found_mouse.id &&
+        mouse->device_key == found_mouse.device_key) {
+      mouse->settings = settings->Clone();
+      DispatchMouseSettingsChanged(device_id);
+    }
+  }
+}
+
+void InputDeviceSettingsControllerImpl::SetPointingStickSettings(
+    DeviceId id,
+    mojom::PointingStickSettingsPtr settings) {
+  DCHECK(active_pref_service_);
+
+  // If a device with the given id does not exist, do nothing.
+  auto found_pointing_stick_iter = pointing_sticks_.find(id);
+  if (found_pointing_stick_iter == pointing_sticks_.end()) {
+    return;
+  }
+
+  // TODO(dpad): Validate incoming settings to make sure the settings can apply
+  // to the given device.
+  auto& found_pointing_stick = *found_pointing_stick_iter->second;
+  found_pointing_stick.settings = settings.Clone();
+  pointing_stick_pref_handler_->UpdatePointingStickSettings(
+      active_pref_service_, found_pointing_stick);
+  DispatchPointingStickSettingsChanged(id);
+  // Check the list of pointing sticks to see if any have the same |device_key|.
+  // If so, their settings need to also be updated.
+  for (const auto& [device_id, pointing_stick] : pointing_sticks_) {
+    if (device_id != found_pointing_stick.id &&
+        pointing_stick->device_key == found_pointing_stick.device_key) {
+      pointing_stick->settings = settings->Clone();
+      DispatchPointingStickSettingsChanged(device_id);
+    }
+  }
 }
 
 void InputDeviceSettingsControllerImpl::AddObserver(Observer* observer) {
@@ -195,12 +409,23 @@ void InputDeviceSettingsControllerImpl::DispatchKeyboardConnected(DeviceId id) {
   }
 }
 
-void InputDeviceSettingsControllerImpl::DispatchKeyboardDisconnected(
+void InputDeviceSettingsControllerImpl::
+    DispatchKeyboardDisconnectedAndEraseFromList(DeviceId id) {
+  DCHECK(base::Contains(keyboards_, id));
+  auto keyboard_iter = keyboards_.find(id);
+  auto keyboard = std::move(keyboard_iter->second);
+  keyboards_.erase(keyboard_iter);
+  for (auto& observer : observers_) {
+    observer.OnKeyboardDisconnected(*keyboard);
+  }
+}
+
+void InputDeviceSettingsControllerImpl::DispatchKeyboardSettingsChanged(
     DeviceId id) {
   DCHECK(base::Contains(keyboards_, id));
   const auto& keyboard = *keyboards_.at(id);
   for (auto& observer : observers_) {
-    observer.OnKeyboardDisconnected(keyboard);
+    observer.OnKeyboardSettingsUpdated(keyboard);
   }
 }
 
@@ -212,12 +437,23 @@ void InputDeviceSettingsControllerImpl::DispatchTouchpadConnected(DeviceId id) {
   }
 }
 
-void InputDeviceSettingsControllerImpl::DispatchTouchpadDisconnected(
+void InputDeviceSettingsControllerImpl::
+    DispatchTouchpadDisconnectedAndEraseFromList(DeviceId id) {
+  DCHECK(base::Contains(touchpads_, id));
+  auto touchpad_iter = touchpads_.find(id);
+  auto touchpad = std::move(touchpad_iter->second);
+  touchpads_.erase(touchpad_iter);
+  for (auto& observer : observers_) {
+    observer.OnTouchpadDisconnected(*touchpad);
+  }
+}
+
+void InputDeviceSettingsControllerImpl::DispatchTouchpadSettingsChanged(
     DeviceId id) {
   DCHECK(base::Contains(touchpads_, id));
   const auto& touchpad = *touchpads_.at(id);
   for (auto& observer : observers_) {
-    observer.OnTouchpadDisconnected(touchpad);
+    observer.OnTouchpadSettingsUpdated(touchpad);
   }
 }
 
@@ -229,11 +465,23 @@ void InputDeviceSettingsControllerImpl::DispatchMouseConnected(DeviceId id) {
   }
 }
 
-void InputDeviceSettingsControllerImpl::DispatchMouseDisconnected(DeviceId id) {
+void InputDeviceSettingsControllerImpl::
+    DispatchMouseDisconnectedAndEraseFromList(DeviceId id) {
+  DCHECK(base::Contains(mice_, id));
+  auto mouse_iter = mice_.find(id);
+  auto mouse = std::move(mouse_iter->second);
+  mice_.erase(mouse_iter);
+  for (auto& observer : observers_) {
+    observer.OnMouseDisconnected(*mouse);
+  }
+}
+
+void InputDeviceSettingsControllerImpl::DispatchMouseSettingsChanged(
+    DeviceId id) {
   DCHECK(base::Contains(mice_, id));
   const auto& mouse = *mice_.at(id);
   for (auto& observer : observers_) {
-    observer.OnMouseDisconnected(mouse);
+    observer.OnMouseSettingsUpdated(mouse);
   }
 }
 
@@ -246,12 +494,23 @@ void InputDeviceSettingsControllerImpl::DispatchPointingStickConnected(
   }
 }
 
-void InputDeviceSettingsControllerImpl::DispatchPointingStickDisconnected(
+void InputDeviceSettingsControllerImpl::
+    DispatchPointingStickDisconnectedAndEraseFromList(DeviceId id) {
+  DCHECK(base::Contains(pointing_sticks_, id));
+  auto pointing_stick_iter = pointing_sticks_.find(id);
+  auto pointing_stick = std::move(pointing_stick_iter->second);
+  pointing_sticks_.erase(pointing_stick_iter);
+  for (auto& observer : observers_) {
+    observer.OnPointingStickDisconnected(*pointing_stick);
+  }
+}
+
+void InputDeviceSettingsControllerImpl::DispatchPointingStickSettingsChanged(
     DeviceId id) {
   DCHECK(base::Contains(pointing_sticks_, id));
   const auto& pointing_stick = *pointing_sticks_.at(id);
   for (auto& observer : observers_) {
-    observer.OnPointingStickDisconnected(pointing_stick);
+    observer.OnPointingStickSettingsUpdated(pointing_stick);
   }
 }
 
@@ -271,8 +530,7 @@ void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
   }
 
   for (const auto id : keyboard_ids_to_remove) {
-    DispatchKeyboardDisconnected(id);
-    keyboards_.erase(id);
+    DispatchKeyboardDisconnectedAndEraseFromList(id);
   }
 }
 
@@ -281,13 +539,16 @@ void InputDeviceSettingsControllerImpl::OnTouchpadListUpdated(
     std::vector<DeviceId> touchpad_ids_to_remove) {
   for (const auto& touchpad : touchpads_to_add) {
     auto mojom_touchpad = BuildMojomTouchpad(touchpad);
+    if (active_pref_service_) {
+      touchpad_pref_handler_->InitializeTouchpadSettings(active_pref_service_,
+                                                         mojom_touchpad.get());
+    }
     touchpads_.insert_or_assign(touchpad.id, std::move(mojom_touchpad));
     DispatchTouchpadConnected(touchpad.id);
   }
 
   for (const auto id : touchpad_ids_to_remove) {
-    DispatchTouchpadDisconnected(id);
-    touchpads_.erase(id);
+    DispatchTouchpadDisconnectedAndEraseFromList(id);
   }
 }
 
@@ -296,13 +557,16 @@ void InputDeviceSettingsControllerImpl::OnMouseListUpdated(
     std::vector<DeviceId> mouse_ids_to_remove) {
   for (const auto& mouse : mice_to_add) {
     auto mojom_mouse = BuildMojomMouse(mouse);
+    if (active_pref_service_) {
+      mouse_pref_handler_->InitializeMouseSettings(active_pref_service_,
+                                                   mojom_mouse.get());
+    }
     mice_.insert_or_assign(mouse.id, std::move(mojom_mouse));
     DispatchMouseConnected(mouse.id);
   }
 
   for (const auto id : mouse_ids_to_remove) {
-    DispatchMouseDisconnected(id);
-    mice_.erase(id);
+    DispatchMouseDisconnectedAndEraseFromList(id);
   }
 }
 
@@ -311,14 +575,17 @@ void InputDeviceSettingsControllerImpl::OnPointingStickListUpdated(
     std::vector<DeviceId> pointing_stick_ids_to_remove) {
   for (const auto& pointing_stick : pointing_sticks_to_add) {
     auto mojom_pointing_stick = BuildMojomPointingStick(pointing_stick);
+    if (active_pref_service_) {
+      pointing_stick_pref_handler_->InitializePointingStickSettings(
+          active_pref_service_, mojom_pointing_stick.get());
+    }
     pointing_sticks_.insert_or_assign(pointing_stick.id,
                                       std::move(mojom_pointing_stick));
     DispatchPointingStickConnected(pointing_stick.id);
   }
 
   for (const auto id : pointing_stick_ids_to_remove) {
-    DispatchPointingStickDisconnected(id);
-    pointing_sticks_.erase(id);
+    DispatchPointingStickDisconnectedAndEraseFromList(id);
   }
 }
 

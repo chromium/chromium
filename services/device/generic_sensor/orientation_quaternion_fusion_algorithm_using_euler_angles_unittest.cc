@@ -39,7 +39,7 @@ TEST_F(OrientationQuaternionFusionAlgorithmUsingEulerAnglesTest,
        ReadSourceSensorFailed) {
   ASSERT_EQ(1UL, fusion_algorithm_->source_types().size());
 
-  mojom::SensorType source_type = fusion_algorithm_->source_types()[0];
+  mojom::SensorType source_type = *(fusion_algorithm_->source_types().cbegin());
   SensorReading reading;
   SensorReading fused_reading;
   fake_fusion_sensor_->SetSensorReading(source_type, reading,
@@ -53,7 +53,7 @@ TEST_F(OrientationQuaternionFusionAlgorithmUsingEulerAnglesTest,
             quaternions_test_values.size());
   ASSERT_EQ(1UL, fusion_algorithm_->source_types().size());
 
-  mojom::SensorType source_type = fusion_algorithm_->source_types()[0];
+  mojom::SensorType source_type = *(fusion_algorithm_->source_types().cbegin());
   SensorReading reading;
   SensorReading fused_reading;
 

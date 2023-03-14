@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Startup.AfterStartupTaskCount" units="units"
-    expires_after="2023-06-25">
+    expires_after="2023-08-27">
   <owner>michaeln@chromium.org</owner>
   <summary>
     The number of after-startup tasks that were queued prior to startup
@@ -192,7 +192,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.Cold.TimeToVisibleContent" units="ms"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>ckitagawa@chromium.org</owner>
   <summary>
     Android: The time from the activity creation point to the moment the content
@@ -246,7 +246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Startup.Android.FeedStreamCreatedTime" units="ms"
-    expires_after="2023-06-30">
+    expires_after="2023-09-03">
 <!-- Name completed by histogram_suffixes name="JavaStartMode" -->
 
   <owner>hanxi@chromium.org</owner>
@@ -280,7 +280,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.IsHomepagePolicyManagerInitialized"
-    enum="Boolean" expires_after="2023-06-30">
+    enum="Boolean" expires_after="2023-09-03">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -313,7 +313,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.LastVisitedTabIsSRPWhenOverviewShownAtLaunch"
-    enum="Boolean" expires_after="2023-06-30">
+    enum="Boolean" expires_after="2023-09-03">
   <owner>hanxi@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <summary>
@@ -321,20 +321,6 @@ chromium-metrics-reviews@google.com.
     StartSurface is shown at launch. This histogram is only recorded when
     StartSurface is shown at launch due to &quot;return to tab switcher&quot;
     feature.
-  </summary>
-</histogram>
-
-<histogram name="Startup.Android.NewInstance.LaunchedFromDraggedLinkViewIntent"
-    enum="Boolean" expires_after="2023-07-09">
-  <owner>twellington@chromium.org</owner>
-  <owner>aishwaryarj@google.com</owner>
-  <summary>
-    Recorded when a VIEW intent to launch ChromeTabbedActivity contained the
-    FLAG_ACTIVITY_MULTIPLE_TASK flag. Records 'true' if the intent came from
-    dragging a link out of Chrome, and false otherwise. Note that some OEMs
-    currently do not use the full ClipData.Item intent when propagating a drag
-    event, in which case 'false' will be recorded regardless of whether the drag
-    event / VIEW intent originated from Chrome.
   </summary>
 </histogram>
 
@@ -374,7 +360,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.StartSurfaceShownAtStartup" enum="Boolean"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>hanxi@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <summary>
@@ -395,7 +381,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.BringToForegroundReason"
-    enum="BooleanBringToForegroundReason" expires_after="2023-06-18">
+    enum="BooleanBringToForegroundReason" expires_after="2023-08-20">
   <owner>peter@chromium.org</owner>
   <summary>
     Records the cause, each time Chrome is brought to the foreground. Currently
@@ -412,26 +398,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Startup.BrowserMainRunnerImplInitializeStep1Time" units="ms"
-    expires_after="M77">
-  <owner>robliao@chromium.org</owner>
-  <summary>
-    The amount of time that elapsed during the first section of
-    BrowserMainRunnerImpl::Initialize.
-  </summary>
-</histogram>
-
-<histogram name="Startup.BrowserMainRunnerImplInitializeStep2Time" units="ms"
-    expires_after="M77">
-  <owner>robliao@chromium.org</owner>
-  <summary>
-    The amount of time that elapsed during the second section of
-    BrowserMainRunnerImpl::Initialize.
-  </summary>
-</histogram>
-
 <histogram name="Startup.BrowserMessageLoopFirstIdle" units="ms"
-    expires_after="2023-06-25">
+    expires_after="2023-08-27">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -516,7 +484,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.BrowserWindow.FirstPaint" units="ms"
-    expires_after="2023-06-25">
+    expires_after="2023-08-27">
   <owner>gab@chromium.org</owner>
   <owner>mblsha@yandex-team.ru</owner>
   <summary>
@@ -564,9 +532,7 @@ chromium-metrics-reviews@google.com.
     is showing at this point, so there aren't any UI elements for a user to
     interact with.
 
-    It includes code loading, static initializers and the execution time
-    contained in Startup.ColdStartWithExternalURLTime and
-    Startup.ColdStartWithoutExternalURLTime metrics.
+    It includes code loading and static initializers.
 
     The total counts in this histogram can be compared with the number of emits
     to the user action MobileWillEnterForeground. The former reports the number
@@ -575,24 +541,6 @@ chromium-metrics-reviews@google.com.
 
     Do not modify this metric in any way without contacting
     chrome-analysis-team@google.com.
-  </summary>
-</histogram>
-
-<histogram name="Startup.ColdStartWithExternalURLTime" units="ms"
-    expires_after="2021-04-18">
-  <owner>jif@chromium.org</owner>
-  <summary>
-    The duration of all initializations in a cold start triggered by an external
-    URL.
-  </summary>
-</histogram>
-
-<histogram name="Startup.ColdStartWithoutExternalURLTime" units="ms"
-    expires_after="M82">
-  <owner>jif@chromium.org</owner>
-  <summary>
-    The duration of all initializations in a cold start not triggered by an
-    external URL.
   </summary>
 </histogram>
 

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
+#include "chrome/install_static/user_data_dir.h"
 
+#include "base/ranges/algorithm.h"
 #include "base/test/test_reg_util_win.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/chrome_for_testing/buildflags.h"
 #include "chrome/chrome_elf/nt_registry/nt_registry.h"
 #include "chrome/install_static/install_details.h"
-#include "chrome/install_static/user_data_dir.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace install_static {
@@ -162,8 +162,7 @@ TEST(UserDataDir, RegistrySettingWithPathExpansionHKCU) {
   EXPECT_EQ(strlen("X:\\WINDOWS"), result.size());
   EXPECT_EQ(std::wstring::npos, result.find(L"${windows}"));
   std::wstring upper;
-  std::transform(result.begin(), result.end(), std::back_inserter(upper),
-                 toupper);
+  base::ranges::transform(result, std::back_inserter(upper), toupper);
   EXPECT_TRUE(EndsWith(upper, L"\\WINDOWS"));
   EXPECT_EQ(std::wstring(), invalid);
 }

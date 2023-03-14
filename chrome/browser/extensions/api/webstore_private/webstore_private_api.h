@@ -27,7 +27,7 @@
 // TODO(https://crbug.com/1060801): Here and elsewhere, possibly switch build
 // flag to #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
-#include "chrome/browser/ui/supervised_user/parent_permission_dialog.h"
+#include "extensions/browser/supervised_user_extensions_delegate.h"
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 class Profile;
@@ -92,19 +92,21 @@ class WebstorePrivateBeginInstallWithManifest3Function
                               const std::string& error_message) override;
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  void OnParentPermissionDone(ParentPermissionDialog::Result result);
+  // Handles the result of the extension approval flow.
+  void OnExtensionApprovalDone(
+      SupervisedUserExtensionsDelegate::ExtensionApprovalResult result);
 
-  void OnParentPermissionReceived();
+  void OnExtensionApprovalApproved();
 
-  void OnParentPermissionCanceled();
+  void OnExtensionApprovalCanceled();
 
-  void OnParentPermissionFailed();
+  void OnExtensionApprovalFailed();
+
+  void OnExtensionApprovalBlocked();
 
   // Returns true if the parental approval prompt was shown, false if there was
   // an error showing it.
   bool PromptForParentApproval();
-
-  void OnBlockedByParentDialogDone();
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
   void OnFrictionPromptDone(bool result);
@@ -140,7 +142,7 @@ class WebstorePrivateBeginInstallWithManifest3Function
 
   const Params::Details& details() const { return params_->details; }
 
-  std::unique_ptr<Params> params_;
+  absl::optional<Params> params_;
 
   raw_ptr<Profile> profile_ = nullptr;
 
@@ -156,7 +158,6 @@ class WebstorePrivateBeginInstallWithManifest3Function
   std::u16string blocked_by_policy_error_message_;
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  std::unique_ptr<ParentPermissionDialog> parent_permission_dialog_;
   SupervisedUserExtensionsMetricsRecorder
       supervised_user_extensions_metrics_recorder_;
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)

@@ -9,6 +9,7 @@
 #import "base/check_op.h"
 #import "base/functional/bind.h"
 #import "base/ios/block_types.h"
+#import "base/mac/foundation_util.h"
 #import "base/memory/ref_counted.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
@@ -228,12 +229,30 @@ using web::WebThread;
   }
 
   // Check if user has decided to proceed with this bad cert.
-  scoped_refptr<net::X509Certificate> leafCert =
-      net::x509_util::CreateX509CertificateFromSecCertificate(
-          base::ScopedCFTypeRef<SecCertificateRef>(
-              SecTrustGetCertificateAtIndex(trust, 0),
-              base::scoped_policy::RETAIN),
-          {});
+  // TODO(crbug.com/1418068): Remove after minimum version required is >=
+  // iOS 15.
+  scoped_refptr<net::X509Certificate> leafCert = nil;
+  if (@available(iOS 15.0, *)) {
+    base::ScopedCFTypeRef<CFArrayRef> certificateChain(
+        SecTrustCopyCertificateChain(trust));
+    SecCertificateRef secCertificate =
+        base::mac::CFCastStrict<SecCertificateRef>(
+            CFArrayGetValueAtIndex(certificateChain, 0));
+    leafCert = net::x509_util::CreateX509CertificateFromSecCertificate(
+        base::ScopedCFTypeRef<SecCertificateRef>(secCertificate,
+                                                 base::scoped_policy::RETAIN),
+        {});
+  }
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+  else {
+    leafCert = net::x509_util::CreateX509CertificateFromSecCertificate(
+        base::ScopedCFTypeRef<SecCertificateRef>(
+            SecTrustGetCertificateAtIndex(trust, 0),
+            base::scoped_policy::RETAIN),
+        {});
+  }
+#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+
   if (!leafCert)
     return web::CERT_ACCEPT_POLICY_NON_RECOVERABLE_ERROR;
 

@@ -11,12 +11,14 @@ import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.AppCompatImageView;
 
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionLayout.LayoutParams;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
+import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,9 +29,11 @@ import java.util.List;
  *
  * @param <T> The type of View being wrapped by this container.
  */
-public class BaseSuggestionView<T extends View> extends SimpleHorizontalLayoutView {
+public class BaseSuggestionView<T extends View> extends SuggestionLayout {
     private final List<ImageView> mActionButtons;
-    private final DecoratedSuggestionView<T> mDecoratedView;
+    private final ImageView mDecorationIcon;
+    private final @NonNull ActionChipsView mActionChips;
+    private T mContentView;
     private @Nullable Runnable mOnFocusViaSelectionListener;
 
     /**
@@ -40,12 +44,26 @@ public class BaseSuggestionView<T extends View> extends SimpleHorizontalLayoutVi
     public BaseSuggestionView(T view) {
         super(view.getContext());
 
-        mDecoratedView = new DecoratedSuggestionView<>(getContext());
-        mDecoratedView.setLayoutParams(LayoutParams.forDynamicView());
-        addView(mDecoratedView);
+        setClickable(true);
+        setFocusable(true);
+
+        mDecorationIcon = new ImageView(getContext());
+        mDecorationIcon.setOutlineProvider(new RoundedCornerOutlineProvider(
+                getResources().getDimensionPixelSize(R.dimen.default_rounded_corner_radius)));
+        mDecorationIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        addView(mDecorationIcon,
+                LayoutParams.forViewType(LayoutParams.SuggestionViewType.DECORATION));
+
+        mActionChips = new ActionChipsView(getContext());
+        mActionChips.setVisibility(GONE);
+        addView(mActionChips, LayoutParams.forViewType(LayoutParams.SuggestionViewType.FOOTER));
 
         mActionButtons = new ArrayList<>();
-        setContentView(view);
+
+        mContentView = view;
+        mContentView.setLayoutParams(
+                LayoutParams.forViewType(LayoutParams.SuggestionViewType.CONTENT));
+        addView(mContentView);
     }
 
     /**
@@ -83,9 +101,7 @@ public class BaseSuggestionView<T extends View> extends SimpleHorizontalLayoutVi
             actionView.setScaleType(ImageView.ScaleType.CENTER);
 
             actionView.setLayoutParams(
-                    new LayoutParams(getResources().getDimensionPixelSize(
-                                             R.dimen.omnibox_suggestion_action_icon_width),
-                            LayoutParams.MATCH_PARENT));
+                    LayoutParams.forViewType(LayoutParams.SuggestionViewType.ACTION_BUTTON));
             mActionButtons.add(actionView);
             addView(actionView);
         }
@@ -115,6 +131,10 @@ public class BaseSuggestionView<T extends View> extends SimpleHorizontalLayoutVi
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // Pass event to ActionChips first in case this key event is appropriate for ActionChip
+        // navigation.
+        if (mActionChips.onKeyDown(keyCode, event)) return true;
+
         boolean isRtl = getLayoutDirection() == LAYOUT_DIRECTION_RTL;
         if ((!isRtl && KeyNavigationUtil.isGoRight(event))
                 || (isRtl && KeyNavigationUtil.isGoLeft(event))) {
@@ -128,30 +148,19 @@ public class BaseSuggestionView<T extends View> extends SimpleHorizontalLayoutVi
 
     @Override
     public void setSelected(boolean selected) {
-        mDecoratedView.setSelected(selected);
+        super.setSelected(selected);
         if (selected && mOnFocusViaSelectionListener != null) {
             mOnFocusViaSelectionListener.run();
         }
     }
 
-    /**
-     * Set the content view to supplied view.
-     *
-     * @param view View to be displayed as suggestion content.
-     */
-    void setContentView(T view) {
-        mDecoratedView.setContentView(view);
-    }
-
     /** @return Embedded suggestion content view. */
     public T getContentView() {
-        return mDecoratedView.getContentView();
+        return mContentView;
     }
 
-    /** @return Decorated suggestion view. */
-    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    public DecoratedSuggestionView<T> getDecoratedSuggestionView() {
-        return mDecoratedView;
+    public ActionChipsView getActionChipsView() {
+        return mActionChips;
     }
 
     /**
@@ -165,6 +174,11 @@ public class BaseSuggestionView<T extends View> extends SimpleHorizontalLayoutVi
 
     /** @return Widget holding suggestion decoration icon. */
     ImageView getSuggestionImageView() {
-        return mDecoratedView.getImageView();
+        return mDecorationIcon;
+    }
+
+    @Override
+    public boolean isFocused() {
+        return super.isFocused() || (isSelected() && !isInTouchMode());
     }
 }

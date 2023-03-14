@@ -7,8 +7,8 @@
 
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/dictionary_base.h"
-#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
@@ -17,13 +17,12 @@ namespace blink {
 class MLGraphBuilder;
 class MLOperand;
 
-class MODULES_EXPORT MLOperator final : public ScriptWrappable {
-  DEFINE_WRAPPERTYPEINFO();
-
+class MODULES_EXPORT MLOperator final : public GarbageCollected<MLOperator> {
  public:
   enum class OperatorKind {
     // Keep the order as the same as build methods of MLGraphBuilder.
     kClamp,
+    kConcat,
     kConv2d,
     kAdd,
     kSub,
@@ -39,7 +38,8 @@ class MODULES_EXPORT MLOperator final : public ScriptWrappable {
     kReshape,
     kResample2d,
     kSoftmax,
-    kSigmoid
+    kSigmoid,
+    kTranspose
   };
 
   static String OperatorKindToString(MLOperator::OperatorKind kind);
@@ -63,9 +63,9 @@ class MODULES_EXPORT MLOperator final : public ScriptWrappable {
   MLOperator(const MLOperator&) = delete;
   MLOperator& operator=(const MLOperator&) = delete;
 
-  ~MLOperator() override;
+  ~MLOperator();
 
-  void Trace(Visitor* visitor) const override;
+  void Trace(Visitor* visitor) const;
 
   OperatorKind Kind() const;
   const bindings::DictionaryBase* Options() const;
@@ -89,9 +89,8 @@ class MODULES_EXPORT MLOperator final : public ScriptWrappable {
   // OperatorKind is kClamp, options_ could static_cast to MLClampOptions.
   Member<const bindings::DictionaryBase> options_;
   // is_conneted_ indicates whether the operator is connected with operands.
-  // According to WebNN spec https://www.w3.org/TR/webnn/#api-mloperator, an
-  // operator without operand connections could be used as an activation
-  // function that is fused into another operator.
+  // An operator without operand connections could be used by an MLActivation
+  // to represent an activation function that is fused into another operator.
   bool is_connected_{false};
   HeapVector<Member<const MLOperand>> inputs_;
   HeapVector<Member<const MLOperand>> outputs_;

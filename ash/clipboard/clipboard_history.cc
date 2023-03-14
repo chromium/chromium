@@ -44,6 +44,10 @@ const std::list<ClipboardHistoryItem>& ClipboardHistory::GetItems() const {
   return history_list_;
 }
 
+std::list<ClipboardHistoryItem>& ClipboardHistory::GetItems() {
+  return history_list_;
+}
+
 void ClipboardHistory::Clear() {
   history_list_ = std::list<ClipboardHistoryItem>();
   for (auto& observer : observers_)

@@ -19,10 +19,13 @@
 #include "base/process/process.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/types/pass_key.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/browser/browser_frame_context_data.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 #include "extensions/browser/quota_service.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/extra_response_data.mojom.h"
@@ -130,35 +133,66 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // Sends |error| as an error response.
   void RespondWithError(std::string error);
 
+  using PassKey = base::PassKey<ExtensionFunction>;
+
   // The result of a function call.
   //
   // Use NoArguments(), OneArgument(), ArgumentList(), or Error()
   // rather than this class directly.
-  class ResponseValueObject {
+  class ResponseValue {
    public:
-    virtual ~ResponseValueObject() {}
+    ResponseValue(bool success, PassKey);
+    ResponseValue(ResponseValue&& other);
+    ResponseValue& operator=(ResponseValue&& other) = delete;
+    ResponseValue(const ResponseValue&) = delete;
+    ResponseValue& operator=(const ResponseValue&) = delete;
+    ~ResponseValue();
 
     // Returns true for success, false for failure.
-    virtual bool Apply() = 0;
+    bool success() const { return success_; }
 
-   protected:
-    void SetFunctionResults(ExtensionFunction* function,
-                            base::Value::List results);
-    void SetFunctionError(ExtensionFunction* function, std::string error);
+   private:
+    const bool success_;
   };
-  typedef std::unique_ptr<ResponseValueObject> ResponseValue;
+
+  // The action type used to hold a callback to be used by ResponseAction, when
+  // returning from RunAsync.
+  class RespondNowAction {
+   public:
+    using SendResponseCallback = base::OnceCallback<void(bool)>;
+    RespondNowAction(ResponseValue result, SendResponseCallback send_response);
+    RespondNowAction(RespondNowAction&& other);
+    RespondNowAction& operator=(RespondNowAction&& other) = delete;
+    ~RespondNowAction();
+
+    // Executes the send response callback.
+    void Execute();
+
+   private:
+    ResponseValue result_;
+    SendResponseCallback send_response_;
+  };
 
   // The action to use when returning from RunAsync.
   //
   // Use RespondNow() or RespondLater() or AlreadyResponded() rather than this
   // class directly.
-  class ResponseActionObject {
-   public:
-    virtual ~ResponseActionObject() {}
 
-    virtual void Execute() = 0;
+  class ResponseAction {
+   public:
+    explicit ResponseAction(PassKey);
+    ResponseAction(RespondNowAction action, PassKey);
+    ResponseAction(ResponseAction&& other);
+    ResponseAction& operator=(ResponseAction&& other) = delete;
+    ~ResponseAction();
+
+    // Executes whatever respond action it may be holding.
+    void Execute();
+
+   private:
+    // An action object responsible for handling the sending of the response.
+    absl::optional<RespondNowAction> action_;
   };
-  typedef std::unique_ptr<ResponseActionObject> ResponseAction;
 
   // Helper class for tests to force all ExtensionFunction::user_gesture()
   // calls to return true as long as at least one instance of this class
@@ -237,6 +271,11 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // Retrieves the results of the function as a base::Value::List for testing
   // purposes.
   const base::Value::List* GetResultListForTest() const;
+
+  std::unique_ptr<extensions::BrowserFrameContextData> GetContextData() const {
+    return std::make_unique<extensions::BrowserFrameContextData>(
+        render_frame_host());
+  }
 
   // Retrieves any error string from the function.
   virtual const std::string& GetError() const;
@@ -402,14 +441,11 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // ErrorUtils::FormatErrorMessage, that is, each occurrence of * is replaced
   // by the corresponding |s*|:
   // Error("Error in *: *", "foo", "bar") <--> Error("Error in foo: bar").
-  ResponseValue Error(const std::string& format, const std::string& s1);
-  ResponseValue Error(const std::string& format,
-                      const std::string& s1,
-                      const std::string& s2);
-  ResponseValue Error(const std::string& format,
-                      const std::string& s1,
-                      const std::string& s2,
-                      const std::string& s3);
+  template <typename... Args>
+  ResponseValue Error(const std::string& format, const Args&... args) {
+    return CreateErrorResponseValue(
+        (extensions::ErrorUtils::FormatErrorMessage(format, args), ...));
+  }
   // Error with a list of arguments |args| to pass to caller.
   // Using this ResponseValue indicates something is wrong with the API.
   // It shouldn't be possible to have both an error *and* some arguments.
@@ -513,6 +549,15 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   scoped_refptr<const extensions::Extension> extension_;
 
  private:
+  ResponseValue CreateArgumentListResponse(base::Value::List result);
+  ResponseValue CreateErrorWithArgumentsResponse(base::Value::List result,
+                                                 const std::string& error);
+  ResponseValue CreateErrorResponseValue(std::string error);
+  ResponseValue CreateBadMessageResponse();
+
+  void SetFunctionResults(base::Value::List results);
+  void SetFunctionError(std::string error);
+
   friend struct content::BrowserThread::DeleteOnThread<
       content::BrowserThread::UI>;
   friend class base::DeleteHelper<ExtensionFunction>;

@@ -26,8 +26,8 @@ source_set("follow_iph") {
     "//ios/chrome/browser/discover_feed:discover_feed_factory",
     "//ios/chrome/browser/follow:tab_helper",
     "//ios/chrome/browser/main:public",
-    "//ios/chrome/browser/ui/commands",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/ntp/metrics",
   ]
 }
@@ -48,8 +48,8 @@ source_set("first_follow") {
     "//ios/chrome/browser/follow:service",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/net:crurl",
-    "//ios/chrome/browser/ui/commands",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/ntp/metrics",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/favicon",

@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -19,6 +20,10 @@ class FakeWebAppUiManager : public WebAppUiManager {
   FakeWebAppUiManager& operator=(const FakeWebAppUiManager&) = delete;
   ~FakeWebAppUiManager() override;
 
+  using OnLaunchWebAppCallback =
+      base::RepeatingCallback<void(apps::AppLaunchParams params,
+                                   LaunchWebAppWindowSetting launch_setting)>;
+
   void SetSubsystems(WebAppSyncBridge* sync_bridge,
                      OsIntegrationManager* os_integration_manager) override;
   void Start() override;
@@ -26,6 +31,8 @@ class FakeWebAppUiManager : public WebAppUiManager {
 
   void SetNumWindowsForApp(const AppId& app_id, size_t num_windows_for_app);
   int num_reparent_tab_calls() const { return num_reparent_tab_calls_; }
+
+  void SetOnLaunchWebAppCallback(OnLaunchWebAppCallback callback);
 
   // WebAppUiManager:
   WebAppUiManagerImpl* AsImpl() override;
@@ -68,6 +75,7 @@ class FakeWebAppUiManager : public WebAppUiManager {
  private:
   std::map<AppId, size_t> app_id_to_num_windows_map_;
   int num_reparent_tab_calls_ = 0;
+  OnLaunchWebAppCallback on_launch_web_app_callback_;
 };
 
 }  // namespace web_app

@@ -85,12 +85,13 @@ TEST_F(PageDiscardingHelperTest,
        TestCannotDiscardRecentlyVisiblePageUnlessExplicitlyRequested) {
   page_node()->SetIsVisible(true);
   page_node()->SetIsVisible(false);
+  AdvanceClock(base::Seconds(1));
   EXPECT_FALSE(
       PageDiscardingHelper::GetFromGraph(graph())->CanUrgentlyDiscardForTesting(
           page_node()));
   EXPECT_TRUE(
       PageDiscardingHelper::GetFromGraph(graph())->CanUrgentlyDiscardForTesting(
-          page_node(), /* consider_minimum_protection_time */ false));
+          page_node(), /* minimum_time_in_background */ base::Seconds(1)));
 }
 #endif
 
@@ -206,6 +207,13 @@ TEST_F(PageDiscardingHelperTest, TestCannotDiscardPageWithFormInteractions) {
           page_node()));
 }
 
+TEST_F(PageDiscardingHelperTest, TestCannotDiscardPageWithUserEdits) {
+  frame_node()->SetHadUserEdits();
+  EXPECT_FALSE(
+      PageDiscardingHelper::GetFromGraph(graph())->CanUrgentlyDiscardForTesting(
+          page_node()));
+}
+
 TEST_F(PageDiscardingHelperTest, TestCannotDiscardIsActiveTab) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetIsActiveTabForTesting(true);
@@ -302,34 +310,36 @@ TEST_F(PageDiscardingHelperTest, TestCannotDiscardIsDevToolsOpen) {
           page_node()));
 }
 
-// Tests UrgentlyDiscardMultiplePages.
+// Tests DiscardMultiplePages.
 
-TEST_F(PageDiscardingHelperTest, UrgentlyDiscardMultiplePagesNoCandidate) {
+TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesNoCandidate) {
   page_node()->SetIsVisible(true);
 
   // When discard_protected_tabs is false, protected page can not be discarded.
-  PageDiscardingHelper::GetFromGraph(graph())->UrgentlyDiscardMultiplePages(
+  PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
       /*reclaim_target_kb*/ 1024,
       /*discard_protected_tabs*/ false,
-      base::BindOnce([](bool success) { EXPECT_FALSE(success); }));
+      base::BindOnce([](bool success) { EXPECT_FALSE(success); }),
+      ::mojom::LifecycleUnitDiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
-TEST_F(PageDiscardingHelperTest, UrgentlyDiscardMultiplePagesDiscardProtected) {
+TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesDiscardProtected) {
   page_node()->SetIsVisible(true);
 
   // When discard_protected_tabs is true, protected page can be discarded.
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
       .WillOnce(Return(true));
 
-  PageDiscardingHelper::GetFromGraph(graph())->UrgentlyDiscardMultiplePages(
+  PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
       /*reclaim_target_kb*/ 1024,
       /*discard_protected_tabs*/ true,
-      base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
+      base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
+      ::mojom::LifecycleUnitDiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
-TEST_F(PageDiscardingHelperTest, UrgentlyDiscardMultiplePagesTwoCandidates) {
+TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesTwoCandidates) {
   auto process_node2 = CreateNode<performance_manager::ProcessNodeImpl>();
   auto page_node2 = CreateNode<performance_manager::PageNodeImpl>();
   auto main_frame_node2 =
@@ -350,15 +360,15 @@ TEST_F(PageDiscardingHelperTest, UrgentlyDiscardMultiplePagesTwoCandidates) {
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node2.get()))
       .WillOnce(Return(true));
 
-  PageDiscardingHelper::GetFromGraph(graph())->UrgentlyDiscardMultiplePages(
+  PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
       /*reclaim_target_kb*/ 2048,
       /*discard_protected_tabs*/ true,
-      base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
+      base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
+      ::mojom::LifecycleUnitDiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
-TEST_F(PageDiscardingHelperTest,
-       UrgentlyDiscardMultiplePagesTwoCandidatesProtected) {
+TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesTwoCandidatesProtected) {
   // page_node() is audible and should not be discarded.
   page_node()->SetIsAudible(true);
 
@@ -381,14 +391,15 @@ TEST_F(PageDiscardingHelperTest,
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node2.get()))
       .WillOnce(Return(true));
 
-  PageDiscardingHelper::GetFromGraph(graph())->UrgentlyDiscardMultiplePages(
+  PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
       /*reclaim_target_kb*/ 1000000,
       /*discard_protected_tabs*/ false,
-      base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
+      base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
+      ::mojom::LifecycleUnitDiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
-TEST_F(PageDiscardingHelperTest, UrgentlyDiscardMultiplePagesThreeCandidates) {
+TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesThreeCandidates) {
   auto process_node2 = CreateNode<performance_manager::ProcessNodeImpl>();
   auto page_node2 = CreateNode<performance_manager::PageNodeImpl>();
   auto main_frame_node2 =
@@ -424,17 +435,18 @@ TEST_F(PageDiscardingHelperTest, UrgentlyDiscardMultiplePagesThreeCandidates) {
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node2.get()))
       .WillOnce(Return(true));
 
-  PageDiscardingHelper::GetFromGraph(graph())->UrgentlyDiscardMultiplePages(
+  PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
       /*reclaim_target_kb*/ 1500,
       /*discard_protected_tabs*/ true,
-      base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
+      base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
+      ::mojom::LifecycleUnitDiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
   histogram_tester()->ExpectBucketCount("Discarding.DiscardCandidatesCount", 3,
                                         1);
 }
 
 TEST_F(PageDiscardingHelperTest,
-       UrgentlyDiscardMultiplePagesThreeCandidatesWithPriority) {
+       DiscardMultiplePagesThreeCandidatesWithPriority) {
   // page_node() is audible and should have lower discard priority.
   page_node()->SetIsAudible(true);
 
@@ -473,15 +485,16 @@ TEST_F(PageDiscardingHelperTest,
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node3.get()))
       .WillOnce(Return(true));
 
-  PageDiscardingHelper::GetFromGraph(graph())->UrgentlyDiscardMultiplePages(
+  PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
       /*reclaim_target_kb*/ 1500,
       /*discard_protected_tabs*/ true,
-      base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
+      base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
+      ::mojom::LifecycleUnitDiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
-TEST_F(PageDiscardingHelperTest, UrgentlyDiscardMultiplePagesNoDiscardable) {
-  // UrgentlyDiscardMultiplePages should not retry indefinitely when all nodes
+TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesNoDiscardable) {
+  // DiscardMultiplePages should not retry indefinitely when all nodes
   // are not discardable.
 
   auto process_node2 = CreateNode<performance_manager::ProcessNodeImpl>();
@@ -498,37 +511,41 @@ TEST_F(PageDiscardingHelperTest, UrgentlyDiscardMultiplePagesNoDiscardable) {
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node2.get()))
       .WillOnce(Return(false));
 
-  PageDiscardingHelper::GetFromGraph(graph())->UrgentlyDiscardMultiplePages(
+  PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
       /*reclaim_target_kb*/ 10240,
       /*discard_protected_tabs*/ true,
-      base::BindOnce([](bool success) { EXPECT_FALSE(success); }));
+      base::BindOnce([](bool success) { EXPECT_FALSE(success); }),
+      ::mojom::LifecycleUnitDiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
-// Tests UrgentlyDiscardAPage.
+// Tests DiscardAPage.
 
-TEST_F(PageDiscardingHelperTest, UrgentlyDiscardAPageNoCandidate) {
+TEST_F(PageDiscardingHelperTest, DiscardAPageNoCandidate) {
   page_node()->SetIsVisible(true);
-  PageDiscardingHelper::GetFromGraph(graph())->UrgentlyDiscardAPage(
-      base::BindOnce([](bool success) { EXPECT_FALSE(success); }));
+  PageDiscardingHelper::GetFromGraph(graph())->DiscardAPage(
+      base::BindOnce([](bool success) { EXPECT_FALSE(success); }),
+      ::mojom::LifecycleUnitDiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
-TEST_F(PageDiscardingHelperTest, UrgentlyDiscardAPageSingleCandidate) {
+TEST_F(PageDiscardingHelperTest, DiscardAPageSingleCandidate) {
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
       .WillOnce(Return(true));
-  PageDiscardingHelper::GetFromGraph(graph())->UrgentlyDiscardAPage(
-      base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
+  PageDiscardingHelper::GetFromGraph(graph())->DiscardAPage(
+      base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
+      ::mojom::LifecycleUnitDiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
   histogram_tester()->ExpectBucketCount("Discarding.DiscardCandidatesCount", 1,
                                         1);
 }
 
-TEST_F(PageDiscardingHelperTest, UrgentlyDiscardAPageSingleCandidateFails) {
+TEST_F(PageDiscardingHelperTest, DiscardAPageSingleCandidateFails) {
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
       .WillOnce(Return(false));
-  PageDiscardingHelper::GetFromGraph(graph())->UrgentlyDiscardAPage(
-      base::BindOnce([](bool success) { EXPECT_FALSE(success); }));
+  PageDiscardingHelper::GetFromGraph(graph())->DiscardAPage(
+      base::BindOnce([](bool success) { EXPECT_FALSE(success); }),
+      ::mojom::LifecycleUnitDiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
   // There should be 2 discard attempts, during the first one an attempt will be
   // made to discard |page_node()|, on the second attempt no discard candidate
@@ -540,7 +557,7 @@ TEST_F(PageDiscardingHelperTest, UrgentlyDiscardAPageSingleCandidateFails) {
                                         1);
 }
 
-TEST_F(PageDiscardingHelperTest, UrgentlyDiscardAPageTwoCandidates) {
+TEST_F(PageDiscardingHelperTest, DiscardAPageTwoCandidates) {
   auto process_node2 = CreateNode<performance_manager::ProcessNodeImpl>();
   auto page_node2 = CreateNode<performance_manager::PageNodeImpl>();
   auto main_frame_node2 =
@@ -565,15 +582,16 @@ TEST_F(PageDiscardingHelperTest, UrgentlyDiscardAPageTwoCandidates) {
     EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
         .WillOnce(Return(true));
 
-    PageDiscardingHelper::GetFromGraph(graph())->UrgentlyDiscardAPage(
-        base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
+    PageDiscardingHelper::GetFromGraph(graph())->DiscardAPage(
+        base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
+        ::mojom::LifecycleUnitDiscardReason::URGENT);
     ::testing::Mock::VerifyAndClearExpectations(discarder());
 
   histogram_tester()->ExpectBucketCount("Discarding.DiscardCandidatesCount", 2,
                                         1);
 }
 
-TEST_F(PageDiscardingHelperTest, UrgentlyDiscardAPageTwoCandidatesFirstFails) {
+TEST_F(PageDiscardingHelperTest, DiscardAPageTwoCandidatesFirstFails) {
   auto process_node2 = CreateNode<performance_manager::ProcessNodeImpl>();
   auto page_node2 = CreateNode<performance_manager::PageNodeImpl>();
   auto main_frame_node2 =
@@ -593,13 +611,13 @@ TEST_F(PageDiscardingHelperTest, UrgentlyDiscardAPageTwoCandidatesFirstFails) {
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node2.get()))
       .WillOnce(Return(true));
 
-  PageDiscardingHelper::GetFromGraph(graph())->UrgentlyDiscardAPage(
-      base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
+  PageDiscardingHelper::GetFromGraph(graph())->DiscardAPage(
+      base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
+      ::mojom::LifecycleUnitDiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
-TEST_F(PageDiscardingHelperTest,
-       UrgentlyDiscardAPageTwoCandidatesMultipleFrames) {
+TEST_F(PageDiscardingHelperTest, DiscardAPageTwoCandidatesMultipleFrames) {
   auto process_node2 = CreateNode<performance_manager::ProcessNodeImpl>();
   auto page_node2 = CreateNode<performance_manager::PageNodeImpl>();
   auto main_frame_node2 =
@@ -619,12 +637,13 @@ TEST_F(PageDiscardingHelperTest,
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
       .WillOnce(Return(true));
 
-  PageDiscardingHelper::GetFromGraph(graph())->UrgentlyDiscardAPage(
-      base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
+  PageDiscardingHelper::GetFromGraph(graph())->DiscardAPage(
+      base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
+      ::mojom::LifecycleUnitDiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
-TEST_F(PageDiscardingHelperTest, UrgentlyDiscardAPageTwoCandidatesNoRSSData) {
+TEST_F(PageDiscardingHelperTest, DiscardAPageTwoCandidatesNoRSSData) {
   auto process_node2 = CreateNode<performance_manager::ProcessNodeImpl>();
   auto page_node2 = CreateNode<performance_manager::PageNodeImpl>();
   auto main_frame_node2 =
@@ -648,15 +667,15 @@ TEST_F(PageDiscardingHelperTest, UrgentlyDiscardAPageTwoCandidatesNoRSSData) {
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node2.get()))
       .WillOnce(Return(true));
 
-  PageDiscardingHelper::GetFromGraph(graph())->UrgentlyDiscardAPage(
-      base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
+  PageDiscardingHelper::GetFromGraph(graph())->DiscardAPage(
+      base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
+      ::mojom::LifecycleUnitDiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
-// Tests UrgentlyDiscardMultiplePages with reclaim_target_kb == nullopt.
+// Tests DiscardMultiplePages with reclaim_target_kb == nullopt.
 
-TEST_F(PageDiscardingHelperTest,
-       UrgentlyDiscardMultiplePagesTwoCandidatesNoRSSData) {
+TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesTwoCandidatesNoRSSData) {
   auto process_node2 = CreateNode<performance_manager::ProcessNodeImpl>();
   auto page_node2 = CreateNode<performance_manager::PageNodeImpl>();
   auto main_frame_node2 =
@@ -680,10 +699,11 @@ TEST_F(PageDiscardingHelperTest,
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node2.get()))
       .WillOnce(Return(true));
 
-  PageDiscardingHelper::GetFromGraph(graph())->UrgentlyDiscardMultiplePages(
+  PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
       /*reclaim_target_kb*/ absl::nullopt,
       /*discard_protected_tabs*/ true,
-      base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
+      base::BindOnce([](bool success) { EXPECT_TRUE(success); }),
+      ::mojom::LifecycleUnitDiscardReason::URGENT);
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 

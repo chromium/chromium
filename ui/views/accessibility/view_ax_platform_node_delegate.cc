@@ -363,7 +363,7 @@ size_t ViewAXPlatformNodeDelegate::GetChildCount() const {
 }
 
 gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::ChildAtIndex(
-    size_t index) {
+    size_t index) const {
   DCHECK_LT(index, GetChildCount())
       << "|index| should be less than the unignored child count.";
   if (IsLeaf())

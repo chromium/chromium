@@ -103,8 +103,6 @@ class ScopedPredictionModelConstructionAndValidationRecorder {
         optimization_target_(optimization_target) {}
 
   ~ScopedPredictionModelConstructionAndValidationRecorder() {
-    base::UmaHistogramBoolean("OptimizationGuide.IsPredictionModelValid",
-                              is_valid_);
     base::UmaHistogramBoolean(
         "OptimizationGuide.IsPredictionModelValid." +
             GetStringNameForOptimizationTarget(optimization_target_),
@@ -115,9 +113,6 @@ class ScopedPredictionModelConstructionAndValidationRecorder {
     if (is_valid_) {
       base::TimeDelta validation_latency =
           base::TimeTicks::Now() - validation_start_time_;
-      base::UmaHistogramTimes(
-          "OptimizationGuide.PredictionModelValidationLatency",
-          validation_latency);
       base::UmaHistogramTimes(
           "OptimizationGuide.PredictionModelValidationLatency." +
               GetStringNameForOptimizationTarget(optimization_target_),

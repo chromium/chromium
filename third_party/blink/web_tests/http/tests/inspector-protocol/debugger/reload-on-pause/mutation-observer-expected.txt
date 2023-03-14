@@ -1,0 +1,4 @@
+MutationObserver should keep firing after reloading from a debugger statement
+Paused on debugger statement.
+Successfully reloaded and paused.
+

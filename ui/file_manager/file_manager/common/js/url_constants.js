@@ -15,6 +15,15 @@ export const SWA_APP_ID = 'fkiggjmkendpmbegkagpmagjepfkpmeb';
 export const SWA_FILES_APP_HOST = 'file-manager';
 
 /**
+ * Special key for when we are showing search results. Search results do not
+ * have a corresponding entry in the directory tree. As a result we need to
+ * fake the PathComponent that represents the "current" directory. This constant
+ * corresponds to the key field of the PathComponent object.
+ * @const {string}
+ */
+export const SEARCH_RESULTS_KEY = 'fake-entry://search/';
+
+/**
  * The URL of the legacy version of File Manager.
  * @const {!URL}
  */

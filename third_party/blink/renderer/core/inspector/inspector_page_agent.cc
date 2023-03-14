@@ -579,6 +579,16 @@ Response InspectorPageAgent::addScriptToEvaluateOnNewDocument(
   worlds_to_evaluate_on_load_.Set(*identifier, world_name.fromMaybe(""));
   include_command_line_api_for_scripts_to_evaluate_on_load_.Set(
       *identifier, include_command_line_api.fromMaybe(false));
+
+  if (client_->IsPausedForNewWindow()) {
+    // When opening a new popup, Page.addScriptToEvaluateOnNewDocument could be
+    // called after Runtime.enable that forces main context creation. In this
+    // case, we would not normally evaluate the script, but we should.
+    for (LocalFrame* frame : *inspected_frames_) {
+      EvaluateScriptOnNewDocument(*frame, *identifier);
+    }
+  }
+
   return Response::Success();
 }
 
@@ -947,7 +957,7 @@ scoped_refptr<DOMWrapperWorld> InspectorPageAgent::EnsureDOMWrapperWorld(
   return world;
 }
 
-void InspectorPageAgent::DidClearDocumentOfWindowObject(LocalFrame* frame) {
+void InspectorPageAgent::DidCreateMainWorldContext(LocalFrame* frame) {
   if (!GetFrontend())
     return;
 
@@ -962,43 +972,8 @@ void InspectorPageAgent::DidClearDocumentOfWindowObject(LocalFrame* frame) {
               return Decimal::FromString(a) < Decimal::FromString(b);
             });
 
-  // Throughout this method,
-  // `ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled` is used because
-  // `inspector-protocol/page/add-script-to-evaluate-on-load-disabled-js.js`
-  // requires that the scripts here should be evaluated on pages with scripting
-  // disabled.
-
   for (const WTF::String& key : keys) {
-    auto* window = frame->DomWindow();
-    v8::HandleScope handle_scope(window->GetIsolate());
-
-    ScriptState* script_state = nullptr;
-    const String world_name = worlds_to_evaluate_on_load_.Get(key);
-    if (world_name.empty()) {
-      script_state = ToScriptStateForMainWorld(window->GetFrame());
-    } else if (scoped_refptr<DOMWrapperWorld> world = EnsureDOMWrapperWorld(
-                   frame, world_name, true /* grant_universal_access */)) {
-      script_state = ToScriptState(
-          window->GetFrame(),
-          *DOMWrapperWorld::EnsureIsolatedWorld(ToIsolate(window->GetFrame()),
-                                                world->GetWorldId()));
-    }
-    if (!script_state)
-      continue;
-
-    std::unique_ptr<v8_inspector::V8InspectorSession::CommandLineAPIScope>
-        scope;
-    if (include_command_line_api_for_scripts_to_evaluate_on_load_.Get(key)) {
-      scope = v8_session_->initializeCommandLineAPIScope(
-          v8_inspector::V8ContextInfo::executionContextId(
-              script_state->GetContext()));
-      DCHECK(scope);
-    }
-    ClassicScript::CreateUnspecifiedScript(
-        scripts_to_evaluate_on_load_.Get(key))
-        ->RunScriptOnScriptState(
-            script_state,
-            ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
+    EvaluateScriptOnNewDocument(*frame, key);
   }
 
   if (!script_to_evaluate_on_load_once_.empty()) {
@@ -1006,6 +981,47 @@ void InspectorPageAgent::DidClearDocumentOfWindowObject(LocalFrame* frame) {
         ->RunScript(frame->DomWindow(),
                     ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
   }
+}
+
+void InspectorPageAgent::EvaluateScriptOnNewDocument(
+    LocalFrame& frame,
+    const String& script_identifier) {
+  // Throughout this method,
+  // `ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled` is used because
+  // `inspector-protocol/page/add-script-to-evaluate-on-load-disabled-js.js`
+  // requires that the scripts here should be evaluated on pages with scripting
+  // disabled.
+
+  auto* window = frame.DomWindow();
+  v8::HandleScope handle_scope(window->GetIsolate());
+
+  ScriptState* script_state = nullptr;
+  const String world_name = worlds_to_evaluate_on_load_.Get(script_identifier);
+  if (world_name.empty()) {
+    script_state = ToScriptStateForMainWorld(window->GetFrame());
+  } else if (scoped_refptr<DOMWrapperWorld> world = EnsureDOMWrapperWorld(
+                 &frame, world_name, true /* grant_universal_access */)) {
+    script_state =
+        ToScriptState(window->GetFrame(),
+                      *DOMWrapperWorld::EnsureIsolatedWorld(
+                          ToIsolate(window->GetFrame()), world->GetWorldId()));
+  }
+  if (!script_state) {
+    return;
+  }
+
+  std::unique_ptr<v8_inspector::V8InspectorSession::CommandLineAPIScope> scope;
+  if (include_command_line_api_for_scripts_to_evaluate_on_load_.Get(
+          script_identifier)) {
+    scope = v8_session_->initializeCommandLineAPIScope(
+        v8_inspector::V8ContextInfo::executionContextId(
+            script_state->GetContext()));
+    DCHECK(scope);
+  }
+  ClassicScript::CreateUnspecifiedScript(
+      scripts_to_evaluate_on_load_.Get(script_identifier))
+      ->RunScriptOnScriptState(
+          script_state, ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
 }
 
 void InspectorPageAgent::DomContentLoadedEventFired(LocalFrame* frame) {

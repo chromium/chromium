@@ -152,13 +152,14 @@ void DownloadBubbleUIControllerDelegate::OnNewDownloadReady(
     if (inspected)
       web_contents = inspected;
   }
-  Browser* browser_to_pop_bubble =
+  Browser* browser_to_show_animation =
       web_contents ? chrome::FindBrowserWithWebContents(web_contents) : nullptr;
 
   // As a last resort, use the last active browser for this profile. Not ideal,
   // but better than not showing the download at all.
-  if (browser_to_pop_bubble == nullptr)
-    browser_to_pop_bubble = chrome::FindLastActiveWithProfile(profile_);
+  if (browser_to_show_animation == nullptr) {
+    browser_to_show_animation = chrome::FindLastActiveWithProfile(profile_);
+  }
 
   BrowserList* browser_list = BrowserList::GetInstance();
   if (!browser_list)
@@ -168,7 +169,7 @@ void DownloadBubbleUIControllerDelegate::OnNewDownloadReady(
     if (browser && browser->window() &&
         browser->window()->GetDownloadBubbleUIController()) {
       browser->window()->GetDownloadBubbleUIController()->OnNewItem(
-          item, /*show_details=*/(browser == browser_to_pop_bubble));
+          item, /*may_show_animation=*/(browser == browser_to_show_animation));
     }
   }
 }

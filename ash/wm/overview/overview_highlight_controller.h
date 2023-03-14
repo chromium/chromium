@@ -18,13 +18,12 @@ class OverviewSession;
 class ScopedA11yOverrideWindowSetter;
 
 // Manages highlighting items while in overview. Responsible for telling
-// highlightable items to show or hide their focus ring borders, when tabbing
-// through highlightable items with arrow keys and trackpad swipes, or when tab
-// dragging. In this context, an highlightable item can represent anything
-// focusable in overview mode such as a desk textfield, saved desk button and an
-// `OverviewItem`. The idea behind the movement strategy is that it should be
-// possible to access any highlightable view via keyboard by pressing the tab or
-// arrow keys repeatedly.
+// highlightable items to show or hide their focus ring borders, or when tabbing
+// through highlightable items with arrow keys and trackpad swipes. In this
+// context, an highlightable item can represent anything focusable in overview
+// mode such as a desk textfield, saved desk button and an `OverviewItem`. The
+// idea behind the movement strategy is that it should be possible to access any
+// highlightable view via keyboard by pressing the tab or arrow keys repeatedly.
 // +-------+  +-------+  +-------+
 // |   0   |  |   1   |  |   2   |
 // +-------+  +-------+  +-------+
@@ -97,11 +96,6 @@ class ASH_EXPORT OverviewHighlightController {
   // expanded to zero state.
   void ResetHighlightedView();
 
-  // Hides or shows the tab dragging highlight.
-  void HideTabDragHighlight();
-  void ShowTabDragHighlight(OverviewHighlightableView* view);
-  bool IsTabDragHighlightVisible() const;
-
  private:
   // Returns a vector of views that can be traversed via overview tabbing.
   // Includes desk mini views, the new desk button and overview items.
@@ -124,9 +118,6 @@ class ASH_EXPORT OverviewHighlightController {
 
   // The current view that is being highlighted, if any.
   OverviewHighlightableView* highlighted_view_ = nullptr;
-
-  // The current view that is being tab dragged, if any.
-  OverviewHighlightableView* tab_dragged_view_ = nullptr;
 
   // Helps to update the current a11y override window. And accessibility
   // features will focus on the window that is being set. Once `this` goes out

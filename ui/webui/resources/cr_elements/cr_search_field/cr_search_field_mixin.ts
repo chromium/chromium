@@ -6,8 +6,8 @@
  * Helper functions for implementing an incremental search field. See
  * <settings-subpage-search> for a simple implementation.
  */
-import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
-import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertNotReached} from '//resources/js/assert_ts.js';
+import {dedupingMixin, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrInputElement} from '../cr_input/cr_input.js';
 

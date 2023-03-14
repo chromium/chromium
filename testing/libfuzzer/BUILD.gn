@@ -6,22 +6,29 @@
 # See http://www.chromium.org/developers/testing/libfuzzer
 #
 # To enable libfuzzer, 'use_libfuzzer' GN option should be set to true.
-# Or to enable afl, 'use_afl' GN option should be set to true.
+# Or equivalent 'use_afl' or 'use_centipede' options for those engines.
 
 import("//build/config/features.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 
-# TODO(mmoroz): we should eventually rename this into "fuzzing_engine_main".
+# Temporary target for legacy reasons. Some third party repos explicitly
+# refer to libfuzzer_main though they should refer to fuzzer_engine_main
+# instead, and so do some infrastructure repos. We should migrate them
+# all to point to :fuzzing_engine_main instead.
+# TODO: remove this target once they've all migrated.
 source_set("libfuzzer_main") {
   deps = []
   sources = []
   if (use_libfuzzer) {
     deps += [ "//third_party/libFuzzer:libfuzzer" ]
     if (is_ios) {
-      deps += [ "//testing/libfuzzer/fuzzer_support_ios:libfuzzer_main_ios" ]
+      deps +=
+          [ "//testing/libfuzzer/fuzzer_support_ios:fuzzing_engine_main_ios" ]
     }
   } else if (use_afl) {
     deps += [ "//third_party/libFuzzer:afl_driver" ]
+  } else if (use_centipede) {
+    deps += [ "//third_party/centipede:centipede_runner_main" ]
   } else {
     sources += [ "unittest_main.cc" ]
   }
@@ -33,6 +40,20 @@ source_set("libfuzzer_main") {
     # target's isolate.
     data = [ "//tools/code_coverage/" ]
   }
+}
+
+# The currently selected fuzzing engine, providing a main() function.
+# Fuzzers should depend upon this.
+group("fuzzing_engine_main") {
+  deps = [
+    ":fuzzing_engine",
+    ":libfuzzer_main",
+  ]
+}
+
+# Any fuzzer using any fuzzing engine. This will be used by infra scripts
+# to identify fuzzers which should be built and made available to ClusterFuzz.
+group("fuzzing_engine") {
 }
 
 # A config used by all fuzzer_tests.

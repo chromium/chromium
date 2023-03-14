@@ -48,8 +48,7 @@ LayoutVariant LayoutVariant::FromFeatureVariant(
     case share::DesktopSharePreviewVariant::kEnabled72:
       return kVariant72;
     case share::DesktopSharePreviewVariant::kDisabled:
-      NOTREACHED();
-      return kVariant16;
+      NOTREACHED_NORETURN();
   }
 }
 

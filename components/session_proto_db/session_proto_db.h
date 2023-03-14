@@ -336,7 +336,7 @@ void SessionProtoDB<T>::DeleteContentWithPrefix(const std::string& key_prefix,
   } else {
     storage_database_->UpdateEntriesWithRemoveFilter(
         std::make_unique<ContentEntry>(),
-        std::move(base::BindRepeating(&DatabasePrefixFilter, key_prefix)),
+        base::BindRepeating(&DatabasePrefixFilter, key_prefix),
         base::BindOnce(&SessionProtoDB::OnOperationCommitted,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }

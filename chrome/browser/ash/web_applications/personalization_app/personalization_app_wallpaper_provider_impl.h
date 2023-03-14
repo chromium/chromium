@@ -22,6 +22,7 @@
 #include "base/files/file.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ash/wallpaper_handlers/backdrop_fetcher_delegate.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -45,6 +46,7 @@ class WebUI;
 
 namespace wallpaper_handlers {
 class BackdropCollectionInfoFetcher;
+class BackdropFetcherDelegate;
 class BackdropImageInfoFetcher;
 class GooglePhotosAlbumsFetcher;
 class GooglePhotosSharedAlbumsFetcher;
@@ -65,7 +67,10 @@ class PersonalizationAppWallpaperProviderImpl
     : public PersonalizationAppWallpaperProvider,
       ash::WallpaperControllerObserver {
  public:
-  explicit PersonalizationAppWallpaperProviderImpl(content::WebUI* web_ui);
+  PersonalizationAppWallpaperProviderImpl(
+      content::WebUI* web_ui,
+      std::unique_ptr<wallpaper_handlers::BackdropFetcherDelegate>
+          backdrop_fetcher_delegate);
 
   PersonalizationAppWallpaperProviderImpl(
       const PersonalizationAppWallpaperProviderImpl&) = delete;
@@ -374,6 +379,9 @@ class PersonalizationAppWallpaperProviderImpl
   base::ScopedObservation<ash::WallpaperController,
                           ash::WallpaperControllerObserver>
       wallpaper_controller_observer_{this};
+
+  const std::unique_ptr<wallpaper_handlers::BackdropFetcherDelegate>
+      backdrop_fetcher_delegate_;
 
   // Place near bottom of class so this is cleaned up before any pending
   // callbacks are dropped.

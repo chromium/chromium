@@ -23,6 +23,7 @@ DictationBubbleController::DictationBubbleController() {
 }
 
 DictationBubbleController::~DictationBubbleController() {
+  input_method_observer_.Reset();
   if (widget_ && !widget_->IsClosed())
     widget_->CloseNow();
 }

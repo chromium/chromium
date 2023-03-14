@@ -31,7 +31,7 @@ import logging
 import optparse
 import re
 from collections import defaultdict
-from typing import ClassVar
+from typing import ClassVar, List, Optional
 
 from blinkpy.common import message_pool
 from blinkpy.common.path_finder import WEB_TESTS_LAST_COMPONENT
@@ -48,10 +48,6 @@ _log = logging.getLogger(__name__)
 # the leading dot.
 # TODO(robertma): Investigate changing the CLI.
 BASELINE_SUFFIX_LIST = tuple(ext[1:] for ext in base.Port.BASELINE_EXTENSIONS)
-# When large number of tests need to be optimized, limit the length of the commandline to 128 tests
-# to not run into issues with any commandline size limitations with popen. In windows CreateProcess()
-# arg length limit is 32768. With 250 chars in test path length, choosing a chunk size of 128.
-MAX_TESTS_IN_OPTIMIZE_CMDLINE = 128
 
 
 class AbstractRebaseliningCommand(Command):
@@ -461,8 +457,10 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
 
         return copy_baseline_commands, rebaseline_commands, lines_to_remove
 
-    def _optimize_commands(self, test_baseline_set, verbose=False):
-        """Returns a list of commands to run in parallel to de-duplicate baselines."""
+    def _optimize_command(self,
+                          test_baseline_set,
+                          verbose=False) -> Optional[List[str]]:
+        """Return a command to de-duplicate baselines, if possible."""
         test_set = set()
         baseline_subset = self._filter_baseline_set_builders(test_baseline_set)
         for test, build, step_name, _ in baseline_subset:
@@ -482,36 +480,19 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             if port.lookup_virtual_test_base(test) in test_set
         ])
         test_set -= virtual_tests_to_exclude
+        if not test_set:
+            return None
 
-        # Process the test_list so that each list caps at MAX_TESTS_IN_OPTIMIZE_CMDLINE tests
-        capped_test_list = []
-        test_list = list(test_set)
-        for i in range(0, len(test_set), MAX_TESTS_IN_OPTIMIZE_CMDLINE):
-            capped_test_list.append(test_list[i:i +
-                                              MAX_TESTS_IN_OPTIMIZE_CMDLINE])
-
-        optimize_commands = []
-        path_to_blink_tool = self._tool.path()
-
-        # Build one optimize-baselines invocation command for each flag_spec.
-        # All the tests in the test list will be optimized iteratively.
-        for test_list in capped_test_list:
-            command = [
-                self._tool.executable,
-                path_to_blink_tool,
-                'optimize-baselines',
-                # FIXME: We should propagate the platform options as well.
-                # Prevent multiple baseline optimizer to race updating the manifest.
-                # The manifest has already been updated when listing tests.
-                '--no-manifest-update',
-            ]
-            if verbose:
-                command.append('--verbose')
-
-            command.extend(test_list)
-            optimize_commands.append(command)
-
-        return optimize_commands
+        command = [
+            self._tool.path(),
+            'optimize-baselines',
+            # The manifest has already been updated when listing tests.
+            '--no-manifest-update',
+        ]
+        if verbose:
+            command.append('--verbose')
+        command.extend(sorted(test_set))
+        return command
 
     def _update_expectations_files(self, lines_to_remove):
         tests = list(lines_to_remove.keys())
@@ -558,9 +539,9 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             system_remover.remove_os_versions(test, versions)
         system_remover.update_expectations()
 
-    def _message_pool(self):
+    def _message_pool(self, worker_factory):
         num_workers = min(self.MAX_WORKERS, self._tool.executive.cpu_count())
-        return message_pool.get(self, self._worker_factory, num_workers)
+        return message_pool.get(self, worker_factory, num_workers)
 
     def _worker_factory(self, worker_connection):
         return Worker(worker_connection,
@@ -595,30 +576,31 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         # lines_to_remove are unexpected passes.
         copy_baseline_commands, rebaseline_commands, lines_to_remove = self._rebaseline_commands(
             test_baseline_set, options)
-        with self._message_pool() as pool:
+        with self._message_pool(self._worker_factory) as pool:
             pool.run([('copy_existing_baselines', command)
                       for command in copy_baseline_commands])
-        with self._message_pool() as pool:
+        with self._message_pool(self._worker_factory) as pool:
             pool.run([('rebaseline', command)
                       for command in rebaseline_commands])
 
         if lines_to_remove:
             self._update_expectations_files(lines_to_remove)
 
+        exit_code = 0
         if options.optimize:
             # No point in optimizing during a dry run where no files were
             # downloaded.
             if self._dry_run:
                 _log.info('Skipping optimization during dry run.')
             else:
-                optimize_commands = self._optimize_commands(
+                optimize_command = self._optimize_command(
                     test_baseline_set, options.verbose)
-                with self._message_pool() as pool:
-                    pool.run([('optimize_baselines', command)
-                              for command in optimize_commands])
+                if optimize_command:
+                    exit_code = exit_code or self._tool.main(optimize_command)
 
         if not self._dry_run:
             self._tool.git().add_list(self.unstaged_baselines())
+        return exit_code
 
     def unstaged_baselines(self):
         """Returns absolute paths for unstaged (including untracked) baselines."""
@@ -628,26 +610,6 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         return sorted(self._tool.git().absolute_path(path)
                       for path in unstaged_changes
                       if re.match(baseline_re, path))
-
-    def _generic_baseline_paths(self, test_baseline_set):
-        """Returns absolute paths for generic baselines for the given tests.
-
-        Even when a test does not have a generic baseline, the path where it
-        would be is still included in the return value.
-        """
-        filesystem = self._tool.filesystem
-        baseline_paths = []
-        for test in test_baseline_set.all_tests():
-            filenames = [
-                self._file_name_for_expected_result(test, suffix)
-                for suffix in BASELINE_SUFFIX_LIST
-            ]
-            baseline_paths += [
-                filesystem.join(self._web_tests_dir(), filename)
-                for filename in filenames
-            ]
-        baseline_paths.sort()
-        return baseline_paths
 
     def _web_tests_dir(self):
         return self._tool.port_factory.get().web_tests_dir()

@@ -32,8 +32,9 @@ namespace commerce {
 enum class SubscriptionType;
 struct CommerceSubscription;
 
-using ManageSubscriptionsFetcherCallback =
-    base::OnceCallback<void(SubscriptionsRequestStatus)>;
+using ManageSubscriptionsFetcherCallback = base::OnceCallback<void(
+    SubscriptionsRequestStatus,
+    std::unique_ptr<std::vector<CommerceSubscription>>)>;
 using GetSubscriptionsFetcherCallback = base::OnceCallback<void(
     SubscriptionsRequestStatus,
     std::unique_ptr<std::vector<CommerceSubscription>>)>;
@@ -99,6 +100,10 @@ class SubscriptionsServerProxy {
   void OnGetSubscriptionsJsonParsed(
       GetSubscriptionsFetcherCallback callback,
       data_decoder::DataDecoder::ValueOrError result);
+
+  std::unique_ptr<std::vector<CommerceSubscription>>
+  GetSubscriptionsFromParsedJson(
+      const data_decoder::DataDecoder::ValueOrError& result);
 
   base::Value Serialize(const CommerceSubscription& subscription);
 

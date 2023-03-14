@@ -91,6 +91,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
       const CookieSettings& cookie_settings,
       const url::Origin& origin,
       const net::IsolationInfo& isolation_info,
+      const net::CookieSettingOverrides& cookie_setting_overrides,
       mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
       net::FirstPartySetMetadata first_party_set_metadata,
       UmaMetricsUpdater* metrics_updater = nullptr);
@@ -239,6 +240,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   const mojom::RestrictedCookieManagerRole role_;
   const raw_ptr<net::CookieStore> cookie_store_;
   const raw_ref<const CookieSettings> cookie_settings_;
+
+  // The minimal subset of overrides to use when accessing cookies via this
+  // instance. Additional overrides may be added to the set returned by
+  // GetCookieSettingOverrides, depending on additional factors not known at
+  // construction or that may change after construction.
+  const net::CookieSettingOverrides cookie_setting_overrides_;
 
   url::Origin origin_;
 

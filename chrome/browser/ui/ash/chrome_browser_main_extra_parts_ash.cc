@@ -13,6 +13,7 @@
 #include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
 #include "ash/shell.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
+#include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/command_line.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
@@ -27,7 +28,7 @@
 #include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/sync/sync_error_notifier_factory.h"
-#include "chrome/browser/ash/video_conference/video_conference_tray_controller_impl.h"
+#include "chrome/browser/ash/wallpaper_handlers/backdrop_fetcher_delegate.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/tablet_mode/tablet_mode_page_behavior.h"
@@ -165,7 +166,7 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
     // available so that this works on linux-chromeos and unit tests.
     if (ash::DBusThreadManager::Get()->GetSystemBus()) {
       video_conference_tray_controller_ =
-          std::make_unique<ash::VideoConferenceTrayControllerImpl>();
+          std::make_unique<ash::VideoConferenceTrayController>();
     } else {
       video_conference_tray_controller_ =
           std::make_unique<ash::FakeVideoConferenceTrayController>();
@@ -211,7 +212,8 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   // WallpaperControllerClientImpl singleton instance via
   // ash::ChromeUserManagerImpl.
   wallpaper_controller_client_ =
-      std::make_unique<WallpaperControllerClientImpl>();
+      std::make_unique<WallpaperControllerClientImpl>(
+          std::make_unique<wallpaper_handlers::BackdropFetcherDelegateImpl>());
   wallpaper_controller_client_->Init();
 
   session_controller_client_ = std::make_unique<SessionControllerClientImpl>();

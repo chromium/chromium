@@ -67,8 +67,13 @@ ExecutableMetadataServiceImpl::GetAllExecutableMetadata(
       executable_metadata.version = product_metadata->version;
     }
 
-    executable_metadata.public_keys_hashes =
-        platform_delegate_->GetSigningCertificatesPublicKeyHashes(file_path);
+    auto public_keys =
+        platform_delegate_->GetSigningCertificatesPublicKeys(file_path);
+    if (public_keys) {
+      executable_metadata.public_keys_hashes = public_keys->hashes;
+      executable_metadata.is_os_verified = public_keys->is_os_verified;
+      executable_metadata.subject_name = public_keys->subject_name;
+    }
 
     file_paths_to_metadata_map[file_path] = executable_metadata;
   }

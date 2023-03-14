@@ -97,6 +97,7 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
                   UserRemovalReason reason,
                   RemoveUserDelegate* delegate) override;
   void RemoveUserFromList(const AccountId& account_id) override;
+  void RemoveUserFromListForRecreation(const AccountId& account_id) override;
   bool IsKnownUser(const AccountId& account_id) const override;
   const User* FindUser(const AccountId& account_id) const override;
   User* FindUserAndModify(const AccountId& account_id) override;
@@ -118,6 +119,9 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   void RecordOwner(const AccountId& owner) override;
   void UpdateUserAccountData(const AccountId& account_id,
                              const UserAccountData& account_data) override;
+  bool IsOwnerUser(const User* user) const override;
+  bool IsPrimaryUser(const User* user) const override;
+  bool IsEphemeralUser(const User* user) const override;
   bool IsCurrentUserOwner() const override;
   bool IsCurrentUserNew() const override;
   bool IsCurrentUserNonCryptohomeDataEphemeral() const override;
@@ -233,6 +237,9 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // meaning that the user won't be added after the removal.
   User* RemoveRegularOrSupervisedUserFromList(const AccountId& account_id,
                                               bool notify);
+
+  // Implementation for `RemoveUserFromList`[`ForRecreation`] methods.
+  void RemoveUserFromListImpl(const AccountId& account_id, bool notify);
 
   // Implementation for RemoveUser method. This is an asynchronous part of the
   // method, that verifies that owner will not get deleted, and calls

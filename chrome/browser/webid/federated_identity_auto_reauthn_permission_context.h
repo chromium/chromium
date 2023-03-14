@@ -34,7 +34,10 @@ class FederatedIdentityAutoReauthnPermissionContext
       const FederatedIdentityAutoReauthnPermissionContext&) = delete;
 
   // content::FederatedIdentityAutoReauthnPermissionContextDelegate:
-  bool HasAutoReauthnPermission(
+  bool HasAutoReauthnContentSetting() override;
+  bool IsAutoReauthnEmbargoed(
+      const url::Origin& relying_party_embedder) override;
+  base::Time GetAutoReauthnEmbargoStartTime(
       const url::Origin& relying_party_embedder) override;
   void RecordDisplayAndEmbargo(
       const url::Origin& relying_party_embedder) override;

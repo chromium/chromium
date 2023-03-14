@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.share.crow.CrowButtonDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
@@ -69,8 +68,8 @@ public class ExploreSurfaceCoordinator {
             @NewTabPageLaunchOrigin int launchOrigin, @NonNull Supplier<Toolbar> toolbarSupplier,
             long embeddingSurfaceConstructedTimeNs, FeedSwipeRefreshLayout swipeRefreshLayout,
             ViewGroup parentView, Supplier<Tab> parentTabSupplier, SnackbarManager snackbarManager,
-            Supplier<ShareDelegate> shareDelegateSupplier, CrowButtonDelegate crowButtonDelegate,
-            WindowAndroid windowAndroid, TabModelSelector tabModelSelector) {
+            Supplier<ShareDelegate> shareDelegateSupplier, WindowAndroid windowAndroid,
+            TabModelSelector tabModelSelector) {
         mActivity = activity;
         mExploreSurfaceNavigationDelegate = new ExploreSurfaceNavigationDelegate(parentTabSupplier);
         mIsPlaceholderShownInitially = isPlaceholderShown;
@@ -85,7 +84,7 @@ public class ExploreSurfaceCoordinator {
                 SurfaceType.START_SURFACE, embeddingSurfaceConstructedTimeNs, swipeRefreshLayout,
                 /*overScrollDisabled=*/true, parentView,
                 new ExploreSurfaceActionDelegate(
-                        snackbarManager, BookmarkModel.getForProfile(profile), crowButtonDelegate),
+                        snackbarManager, BookmarkModel.getForProfile(profile)),
                 HelpAndFeedbackLauncherImpl.getInstance(), tabModelSelector);
 
         mFeedSurfaceCoordinator.getView().setId(R.id.start_surface_explore_view);
@@ -138,10 +137,9 @@ public class ExploreSurfaceCoordinator {
     }
 
     private class ExploreSurfaceActionDelegate extends FeedActionDelegateImpl {
-        ExploreSurfaceActionDelegate(SnackbarManager snackbarManager, BookmarkModel bookmarkModel,
-                CrowButtonDelegate crowButtonDelegate) {
+        ExploreSurfaceActionDelegate(SnackbarManager snackbarManager, BookmarkModel bookmarkModel) {
             super(mActivity, snackbarManager, mExploreSurfaceNavigationDelegate, bookmarkModel,
-                    crowButtonDelegate, BrowserUiUtils.HostSurface.START_SURFACE);
+                    BrowserUiUtils.HostSurface.START_SURFACE);
         }
 
         @Override

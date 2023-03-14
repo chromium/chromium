@@ -119,18 +119,18 @@ void SavedPasswordsPresenter::Init() {
   profile_store_->AddObserver(this);
   if (account_store_)
     account_store_->AddObserver(this);
-  pending_store_updates++;
+  pending_store_updates_++;
   profile_store_->GetAllLoginsWithAffiliationAndBrandingInformation(
       weak_ptr_factory_.GetWeakPtr());
   if (account_store_) {
-    pending_store_updates++;
+    pending_store_updates_++;
     account_store_->GetAllLoginsWithAffiliationAndBrandingInformation(
         weak_ptr_factory_.GetWeakPtr());
   }
 }
 
 bool SavedPasswordsPresenter::IsWaitingForPasswordStore() const {
-  return pending_store_updates != 0;
+  return pending_store_updates_ != 0;
 }
 
 void SavedPasswordsPresenter::RemoveObservers() {
@@ -215,18 +215,6 @@ SavedPasswordsPresenter::GetExpectedAddResult(
   return AddResult::kConflictInProfileAndAccountStore;
 }
 
-void SavedPasswordsPresenter::AddCredentialAsync(
-    const CredentialUIEntry& credential,
-    password_manager::PasswordForm::Type type,
-    base::OnceClosure completion) {
-  DCHECK_EQ(GetExpectedAddResult(credential), AddResult::kSuccess);
-
-  UnblocklistBothStores(credential);
-  PasswordForm form = GenerateFormFromCredential(credential, type);
-
-  GetStoreFor(form).AddLogin(form, base::BindOnce(std::move(completion)));
-}
-
 bool SavedPasswordsPresenter::AddCredential(
     const CredentialUIEntry& credential,
     password_manager::PasswordForm::Type type) {
@@ -256,48 +244,24 @@ void SavedPasswordsPresenter::AddCredentials(
     const std::vector<CredentialUIEntry>& credentials,
     password_manager::PasswordForm::Type type,
     AddCredentialsCallback completion) {
-  std::vector<AddResult> results;
-  results.reserve(credentials.size());
+  if (credentials.empty()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(completion));
+    return;
+  }
 
-  // Invalid credentials are filtered out since AddCredentialAsync() won't
-  // perform any checks on the credential and expects a valid credential.
-  std::vector<CredentialUIEntry> valid_credentials;
-  valid_credentials.reserve(credentials.size());
-
-  base::ranges::transform(credentials, std::back_inserter(results),
+  std::vector<PasswordForm> password_forms;
+  base::ranges::transform(credentials, std::back_inserter(password_forms),
                           [&](const CredentialUIEntry& credential) {
-                            AddResult result = GetExpectedAddResult(credential);
-                            if (result == AddResult::kSuccess)
-                              valid_credentials.push_back(credential);
-                            return result;
+                            return GenerateFormFromCredential(credential, type);
                           });
 
-  if (valid_credentials.empty()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(completion), std::move(results)));
-    return;
+  for (const PasswordForm& form : password_forms) {
+    CHECK(form.in_store == password_forms[0].in_store);
   }
 
-  if (valid_credentials.size() == 1) {
-    AddCredentialAsync(
-        std::move(valid_credentials[0]), type,
-        base::BindOnce(std::move(completion), std::move(results)));
-    return;
-  }
-
-  // To avoid multiple updates for the observers we remove them at the
-  // beginning.
-  RemoveObservers();
-
-  // Reinitialize presenter after all add operations are complete.
-  base::RepeatingClosure completion_barrier_closure = base::BarrierClosure(
-      valid_credentials.size(),
-      base::BindOnce(&SavedPasswordsPresenter::Init,
-                     weak_ptr_factory_.GetWeakPtr())
-          .Then(base::BindOnce(std::move(completion), std::move(results))));
-
-  for (CredentialUIEntry& credential : valid_credentials)
-    AddCredentialAsync(std::move(credential), type, completion_barrier_closure);
+  GetStoreFor(password_forms[0])
+      .AddLogins(password_forms, std::move(completion));
 }
 
 SavedPasswordsPresenter::EditResult
@@ -456,6 +420,10 @@ void SavedPasswordsPresenter::NotifyEdited(
 }
 
 void SavedPasswordsPresenter::NotifySavedPasswordsChanged() {
+  // Notify observers when there are no pending password store updates.
+  if (pending_store_updates_ > 0) {
+    return;
+  }
   for (auto& observer : observers_)
     observer.OnSavedPasswordsChanged();
 }
@@ -513,8 +481,8 @@ void SavedPasswordsPresenter::OnGetPasswordStoreResults(
 void SavedPasswordsPresenter::OnGetPasswordStoreResultsFrom(
     PasswordStoreInterface* store,
     std::vector<std::unique_ptr<PasswordForm>> results) {
-  pending_store_updates--;
-  DCHECK_GE(pending_store_updates, 0);
+  pending_store_updates_--;
+  DCHECK_GE(pending_store_updates_, 0);
 
   std::vector<PasswordForm> forms;
   for (auto& form : results) {
@@ -559,9 +527,20 @@ void SavedPasswordsPresenter::AddForms(const std::vector<PasswordForm>& forms) {
     return;
   }
 
+  // Group passwords once we received forms from all password stores.
+  if (pending_store_updates_ > 0) {
+    return;
+  }
+  // TODO(crbug.com/1354196): Pass only added forms to |passwords_grouper_|.
+  std::vector<PasswordForm> all_forms;
+  all_forms.reserve(sort_key_to_password_forms_.size());
+  for (auto const& [key, form] : sort_key_to_password_forms_) {
+    all_forms.push_back(form);
+  }
+
   // Notify observers after grouping is complete.
   passwords_grouper_->GroupPasswords(
-      sort_key_to_password_forms_,
+      std::move(all_forms),
       base::BindOnce(&SavedPasswordsPresenter::NotifySavedPasswordsChanged,
                      weak_ptr_factory_.GetWeakPtr()));
 }

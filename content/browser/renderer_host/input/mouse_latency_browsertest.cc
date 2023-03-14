@@ -8,9 +8,9 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/test_timeouts.h"
+#include "base/test/values_test_util.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/input/synthetic_gesture.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_controller.h"
@@ -148,10 +148,7 @@ class MouseLatencyBrowserTest : public ContentBrowserTest {
   }
 
   void OnTraceDataCollected(std::unique_ptr<std::string> trace_data_string) {
-    std::unique_ptr<base::Value> trace_data =
-        base::JSONReader::ReadDeprecated(*trace_data_string);
-    ASSERT_TRUE(trace_data);
-    trace_data_ = trace_data->Clone();
+    trace_data_ = base::test::ParseJson(*trace_data_string);
     runner_->Quit();
   }
 

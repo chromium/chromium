@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_observer.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
 #include "components/signin/public/base/signin_client.h"
 
@@ -20,11 +22,18 @@ BoundSessionCookieControllerImpl::BoundSessionCookieControllerImpl(
 BoundSessionCookieControllerImpl::~BoundSessionCookieControllerImpl() = default;
 
 void BoundSessionCookieControllerImpl::Initialize() {
+  // `base::Unretained(this)` is safe because `this` owns
+  // `cookie_observer_`.
+  cookie_observer_ = std::make_unique<BoundSessionCookieObserver>(
+      client_, url_, cookie_name_,
+      base::BindRepeating(
+          &BoundSessionCookieControllerImpl::SetCookieExpirationTimeAndNotify,
+          base::Unretained(this)));
   StartRefreshCookieRequest();
 }
 
 void BoundSessionCookieControllerImpl::SetCookieExpirationTimeAndNotify(
-    const base::Time& expiration_time) {
+    base::Time expiration_time) {
   if (cookie_expiration_time_ == expiration_time) {
     return;
   }
@@ -56,7 +65,7 @@ void BoundSessionCookieControllerImpl::StartRefreshCookieRequest() {
 }
 
 void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(
-    absl::optional<const base::Time> expiration_time) {
+    absl::optional<base::Time> expiration_time) {
   refresh_cookie_fetcher_.reset();
   if (expiration_time.has_value()) {
     // Cookie fetch succeeded.

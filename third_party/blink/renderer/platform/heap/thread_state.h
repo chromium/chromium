@@ -37,13 +37,13 @@ class PLATFORM_EXPORT ThreadState final {
 
   using StackState = cppgc::EmbedderStackState;
 
-  static ALWAYS_INLINE ThreadState* Current() {
+  ALWAYS_INLINE static ThreadState* Current() {
     return &ThreadStateStorage::Current()->thread_state();
   }
 
   // Returns true if the current thread is currently sweeping, i.e., whether the
   // caller is invoked from a destructor.
-  static ALWAYS_INLINE bool IsSweepingOnOwningThread(
+  ALWAYS_INLINE static bool IsSweepingOnOwningThread(
       ThreadStateStorage& storage);
 
   // Attaches a ThreadState to the main-thread.

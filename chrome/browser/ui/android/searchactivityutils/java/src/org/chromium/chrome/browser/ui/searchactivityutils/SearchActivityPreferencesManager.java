@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensQueryParams;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -226,7 +227,8 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
     public static void onNativeLibraryReady() {
         assert LibraryLoader.getInstance().isInitialized();
         SearchActivityPreferencesManager self = get();
-        TemplateUrlService service = TemplateUrlServiceFactory.get();
+        TemplateUrlService service =
+                TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
         service.registerLoadListener(self);
         service.addObserver(self);
         if (!service.isLoaded()) {
@@ -265,7 +267,8 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
         assert LibraryLoader.getInstance().isInitialized();
         // Getting an instance of the TemplateUrlService requires that the native library be
         // loaded, but the TemplateUrlService also itself needs to be initialized.
-        TemplateUrlService service = TemplateUrlServiceFactory.get();
+        TemplateUrlService service =
+                TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
         assert service.isLoaded() : "TemplateUrlServiceFactory is not ready yet.";
 
         // Update the URL that we show for zero-suggest.
@@ -284,7 +287,8 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
 
     @Override
     public void onTemplateUrlServiceLoaded() {
-        TemplateUrlServiceFactory.get().unregisterLoadListener(this);
+        TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
+                .unregisterLoadListener(this);
         updateDefaultSearchEngineInfo();
     }
 

@@ -58,6 +58,7 @@ enum class AssistiveWindowType {
   kGrammarSuggestion,
   kMultiWordSuggestion,
   kLongpressDiacriticsSuggestion,
+  kLearnMore,
 };
 
 // Represents the current state of suggestions in the assistive window.

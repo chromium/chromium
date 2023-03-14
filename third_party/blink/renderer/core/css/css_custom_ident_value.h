@@ -14,11 +14,13 @@
 namespace blink {
 
 class TreeScope;
+class ScopedCSSName;
 
 class CORE_EXPORT CSSCustomIdentValue : public CSSValue {
  public:
   explicit CSSCustomIdentValue(const AtomicString&);
   explicit CSSCustomIdentValue(CSSPropertyID);
+  explicit CSSCustomIdentValue(const ScopedCSSName&);
 
   const TreeScope* GetTreeScope() const { return tree_scope_; }
   const AtomicString& Value() const {

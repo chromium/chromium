@@ -40,4 +40,6 @@
 <translation id="8187289872471304532">Tehke valikud
           Rakendused &gt; Süsteemieelised &gt; Võrk &gt; Täpsem &gt; Puhverserverid
           ja tühjendage kõigi valitud puhverserverite märkeruudud.</translation>
+<translation id="8232971017369963250">Chrome'i võimaldab pakkuda <ph name="BEGIN_LINK_CHROMIUM" />Chromiumi<ph name="END_LINK_CHROMIUM" /> avatud lähtekoodi projekt.</translation>
+<translation id="8279509328145658601">Chrome'i võimaldab pakkuda ka muu <ph name="BEGIN_LINK_OSS" />avatud lähtekoodiga tarkvara<ph name="END_LINK_OSS" />.</translation>
 </translationbundle>

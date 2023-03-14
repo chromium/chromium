@@ -147,7 +147,7 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
             @Override
             public void finishedShowing() {
                 mAndroidViewFinishedShowing = true;
-                if (!TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(context)) {
+                if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
                     doneShowing();
                 }
                 // When Tab-to-GTS animation is done, it's time to renew the thumbnail without
@@ -283,7 +283,7 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
         final boolean shouldAnimate =
                 animate && !isCurrentTabModelEmpty && !isShowingStartSurfaceHomepage;
 
-        if (TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(getContext())) {
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
             showOverviewWithTranslateUp(shouldAnimate);
         } else {
             if (isShowingStartSurfaceHomepage) {
@@ -402,7 +402,7 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
         updateCacheVisibleIds(new LinkedList<>(Arrays.asList(sourceTabId)));
 
         mIsAnimatingHide = true;
-        if (TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(getContext())) {
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
             translateDown();
         } else {
             mStartSurface.hideTabSwitcherView(!isTabGtsAnimationEnabled());
@@ -513,7 +513,7 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
         if (skipSlowZooming) {
             showShrinkingAnimation &= quick;
         }
-        if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(getContext())) {
             // Intentionally disable the shrinking animation when accessibility is enabled.
             // During the shrinking animation, since the ComponsitorViewHolder is not focusable,
             // I think we are in a temporary no "valid" focus target state, so the focus shifts
@@ -528,6 +528,16 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
         }
 
         forceAnimationToFinish();
+        // TODO(crbug/1423109): mLayoutTabs shouldn't be null here, but it is possible the delayed
+        // removal via a handler in mTabSwitcherObserver#finishedShowing results in a null
+        // mLayoutTabs. This should be fixed by simplifying thumbnail capture logic.
+        if (mLayoutTabs == null) {
+            LayoutTab sourceLayoutTab = createLayoutTab(
+                    mTabModelSelector.getCurrentTabId(), mTabModelSelector.isIncognitoSelected());
+            sourceLayoutTab.setDecorationAlpha(0);
+
+            mLayoutTabs = new LayoutTab[] {sourceLayoutTab};
+        }
         LayoutTab sourceLayoutTab = mLayoutTabs[0];
         CompositorAnimationHandler handler = getAnimationHandler();
         Collection<Animator> animationList = new ArrayList<>(5);
@@ -570,6 +580,14 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
         mTabToSwitcherAnimation = new AnimatorSet();
         mTabToSwitcherAnimation.playTogether(animationList);
         mTabToSwitcherAnimation.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                TabSwitcher.Controller controller = mStartSurface.getGridTabSwitcherController();
+                if (controller != null) {
+                    controller.prepareShowTabSwitcherView();
+                }
+            }
+
             @Override
             public void onAnimationEnd(Animator animation) {
                 mTabToSwitcherAnimation = null;
@@ -864,7 +882,7 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
 
     @Override
     public boolean canHostBeFocusable() {
-        if (TabUiFeatureUtilities.isLaunchPolishEnabled()
+        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(getContext())
                 && ChromeAccessibilityUtil.get().isAccessibilityEnabled()
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
             // We don't allow this layout to gain focus when accessibility is enabled so that the
@@ -883,7 +901,7 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
      * @return Whether shrink/expand animation is enabled.
      */
     private boolean isTabGtsAnimationEnabled() {
-        if (TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(getContext())) return false;
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) return false;
         return TabUiFeatureUtilities.isTabToGtsAnimationEnabled();
     }
 }

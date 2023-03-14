@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android" >
+    <foreground android:drawable="@drawable/ic_cast_vector"/>
+    <background android:drawable="@color/ic_settings_cast_background"/>
+    <monochrome android:drawable="@drawable/ic_cast_vector"/>
+</adaptive-icon>

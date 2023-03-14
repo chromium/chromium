@@ -16,25 +16,27 @@
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 
-namespace views {
-class Widget;
-}  // namespace views
-
 namespace policy {
 
 // A View for the idle timeout dialog. This is shown to users to inform them
 // that Chrome will be closed by the IdleService, as dictated by the
 // IdleProfileCloseTimeout policy.
-class IdleDialogView : views::BubbleDialogDelegateView {
+class IdleDialogView : public views::BubbleDialogDelegateView {
  public:
+  IdleDialogView(base::TimeDelta dialog_duration,
+                 base::TimeDelta idle_threshold,
+                 IdleDialog::ActionSet actions,
+                 base::OnceClosure on_close_by_user);
+
   // Shows the dialog informing the user that Chrome will close after
   // |dialog_duration|. |idle_threshold| is the value of the
   // IdleProfileCloseTimeout policy, for displaying to the user.
   // |on_close_by_user| is run if the user clicks on "Continue", or presses
   // Escape to close the dialog.
-  static views::Widget* Show(base::TimeDelta dialog_duration,
-                             base::TimeDelta idle_threshold,
-                             base::RepeatingClosure on_close_by_user);
+  static base::WeakPtr<views::Widget> Show(base::TimeDelta dialog_duration,
+                                           base::TimeDelta idle_threshold,
+                                           IdleDialog::ActionSet actions,
+                                           base::OnceClosure on_close_by_user);
 
   IdleDialogView(const IdleDialogView&) = delete;
   IdleDialogView& operator=(const IdleDialogView&) = delete;
@@ -46,46 +48,25 @@ class IdleDialogView : views::BubbleDialogDelegateView {
   ui::ImageModel GetWindowIcon() override;
 
  private:
-  IdleDialogView(base::TimeDelta dialog_duration,
-                 base::TimeDelta idle_threshold,
-                 base::RepeatingClosure on_close_by_user);
-
   // Updates the text in the dialog. Runs every second via
   // |update_timer_|.
-  void UpdateBody();
+  void UpdateCountdown();
 
   raw_ptr<views::Label> main_label_ = nullptr;
   raw_ptr<views::Label> incognito_label_ = nullptr;
   raw_ptr<views::Label> countdown_label_ = nullptr;
 
-  // When |deadline_| is reached, this dialog will automatically close. Meant
-  // for displaying to the user.
-  const base::Time deadline_;
+  // Fires every 1s to update the countdown.
+  base::RepeatingTimer update_timer_;
 
-  // How much time it took for this dialog to trigger. Meant for displaying to
-  // the user.
-  const int minutes_;
+  // Data used to generate user-visible strings.
+  const base::TimeDelta idle_threshold_;
+  const IdleDialog::ActionSet actions_;
+  const base::TimeTicks deadline_;
 
   // Number of Incognito windows open when the dialog was shown. Cached to avoid
   // iterating through BrowserList every 1s.
   int incognito_count_;
-
-  // Fires every 1s to update the countdown.
-  base::RepeatingTimer update_timer_;
-};
-
-// Owns the IdleDialogView widget. Created via IdleDialog::Show().
-class IdleDialogImpl : public IdleDialog, public views::WidgetObserver {
- public:
-  explicit IdleDialogImpl(views::Widget* dialog);
-
-  ~IdleDialogImpl() override;
-
-  // views::WidgetObserver:
-  void OnWidgetDestroying(views::Widget* widget) override;
-
- private:
-  raw_ptr<views::Widget> widget_;
 };
 
 }  // namespace policy

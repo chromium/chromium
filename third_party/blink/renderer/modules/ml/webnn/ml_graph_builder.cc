@@ -14,11 +14,13 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/ml/buildflags.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -548,6 +550,92 @@ MLOperand* MLGraphBuilder::constant(const MLOperandDescriptor* desc,
   return constant_operand;
 }
 
+MLOperand* MLGraphBuilder::concat(const HeapVector<Member<MLOperand>>& inputs,
+                                  const uint32_t axis,
+                                  ExceptionState& exception_state) {
+  auto* concat =
+      MakeGarbageCollected<MLOperator>(this, MLOperator::OperatorKind::kConcat);
+  if (inputs.empty()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "The inputs should not be empty.");
+    return nullptr;
+  }
+  const auto& first_input_shape = inputs[0]->Dimensions();
+  const auto first_input_rank = first_input_shape.size();
+  // According to WebNN spec:
+  // https://www.w3.org/TR/webnn/#dom-mlgraphbuilder-concat-inputs-axis-axis,
+  // the axis that the inputs concatenate along, with the value in the interval
+  // [0, N-1] where N is the rank of input tensors. We just check the first
+  // input rank here because we will check all inputs have same rank in the
+  // following loop.
+  if (axis >= first_input_rank) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "The value of axis should be in the interval [0, N-1] where N is the "
+        "rank of input tensors.");
+    return nullptr;
+  }
+  const auto output_type = inputs[0]->Type();
+  // The loop skips the first input to avoid repeated checks.
+  for (wtf_size_t i = 1; i < inputs.size(); ++i) {
+    if (inputs[i]->Type() != output_type) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                        "The input types don't match.");
+      return nullptr;
+    }
+    // According to WebNN spec:
+    // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-concat, all input tensors
+    // must have the same dimension.
+    if (inputs[i]->Dimensions().size() != first_input_rank) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          "All input tensors must have the same dimension.");
+      return nullptr;
+    }
+    // According to WebNN spec:
+    // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-concat, all input tensors
+    // must have the same shape, except for the size of the dimension to
+    // concatenate on.
+    for (wtf_size_t dim = 0; dim < first_input_rank; ++dim) {
+      if (dim == axis ||
+          inputs[i]->Dimensions()[dim] == first_input_shape[dim]) {
+        continue;
+      }
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          "All input tensors must have the same shape, except for the size of "
+          "the dimension to concatenate on.");
+      return nullptr;
+    }
+  }
+  // Calculate the output shape according to WebNN spec:
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-concat, the output tensor
+  // has the same shape except on the dimension that all the inputs concatenated
+  // along. The size of that dimension is computed as the sum of all the input
+  // sizes of the same dimension.
+  auto axis_size = base::MakeCheckedNum<uint32_t>(0);
+  for (auto& input : inputs) {
+    axis_size += input->Dimensions()[axis];
+  }
+  auto output_shape = first_input_shape;
+  if (!axis_size.AssignIfValid(&output_shape[axis])) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "The concatenated dimension size is too large.");
+    return nullptr;
+  }
+  String error_message;
+  auto* output = MLOperand::ValidateAndCreateOutput(
+      this, output_type, output_shape, concat, error_message);
+  if (!output) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      error_message);
+    return nullptr;
+  }
+  concat->Connect((HeapVector<Member<const MLOperand>>)inputs, {output});
+  return output;
+}
+
 MLOperand* MLGraphBuilder::clamp(const MLOperand* input,
                                  const MLClampOptions* options,
                                  ExceptionState& exception_state) {
@@ -571,13 +659,13 @@ MLOperand* MLGraphBuilder::clamp(const MLOperand* input,
   return output;
 }
 
-MLOperator* MLGraphBuilder::clamp(const MLClampOptions* options,
-                                  ExceptionState& exception_state) {
+MLActivation* MLGraphBuilder::clamp(const MLClampOptions* options,
+                                    ExceptionState& exception_state) {
   if (!ValidateClampOptions(options, exception_state)) {
     return nullptr;
   }
   // Create the clamp operator that would be used as an activation function.
-  return MakeGarbageCollected<MLOperator>(
+  return MakeGarbageCollected<MLActivation>(
       this, MLOperator::OperatorKind::kClamp, options);
 }
 
@@ -873,11 +961,11 @@ MLOperand* MLGraphBuilder::hardSwish(const MLOperand* input,
   return output;
 }
 
-MLOperator* MLGraphBuilder::hardSwish(ExceptionState& exception_state) {
+MLActivation* MLGraphBuilder::hardSwish(ExceptionState& exception_state) {
   // Create the hard-swish operator that would be used as an activation
   // function.
-  return MakeGarbageCollected<MLOperator>(this,
-                                          MLOperator::OperatorKind::kHardSwish);
+  return MakeGarbageCollected<MLActivation>(
+      this, MLOperator::OperatorKind::kHardSwish);
 }
 
 MLOperand* MLGraphBuilder::averagePool2d(const MLOperand* input,
@@ -913,10 +1001,10 @@ MLOperand* MLGraphBuilder::relu(const MLOperand* input,
   return output;
 }
 
-MLOperator* MLGraphBuilder::relu(ExceptionState& exception_state) {
+MLActivation* MLGraphBuilder::relu(ExceptionState& exception_state) {
   // Create the relu operator that would be used as an activation function.
-  return MakeGarbageCollected<MLOperator>(this,
-                                          MLOperator::OperatorKind::kRelu);
+  return MakeGarbageCollected<MLActivation>(this,
+                                            MLOperator::OperatorKind::kRelu);
 }
 
 MLOperand* MLGraphBuilder::reshape(
@@ -1141,10 +1229,10 @@ MLOperand* MLGraphBuilder::sigmoid(const MLOperand* input,
   return output;
 }
 
-MLOperator* MLGraphBuilder::sigmoid(ExceptionState& exception_state) {
+MLActivation* MLGraphBuilder::sigmoid(ExceptionState& exception_state) {
   // Create the sigmoid operator that would be used as an activation function.
-  return MakeGarbageCollected<MLOperator>(this,
-                                          MLOperator::OperatorKind::kSigmoid);
+  return MakeGarbageCollected<MLActivation>(this,
+                                            MLOperator::OperatorKind::kSigmoid);
 }
 
 MLOperand* MLGraphBuilder::softmax(const MLOperand* input,
@@ -1179,6 +1267,73 @@ MLOperand* MLGraphBuilder::softmax(const MLOperand* input,
   return output;
 }
 
+MLOperand* MLGraphBuilder::transpose(const MLOperand* input,
+                                     const MLTransposeOptions* options,
+                                     ExceptionState& exception_state) {
+  // According to WebNN spec:
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-transpose,
+  // When permutation is not specified, it’s set to [N-1...0], where N is the
+  // rank of the input tensor.
+  auto input_rank = input->Dimensions().size();
+  Vector<int32_t> default_permutation(input_rank);
+  for (wtf_size_t i = 0; i < input_rank - 1; i++) {
+    default_permutation[i] = input_rank - 1 - i;
+  }
+  const Vector<int32_t> permutation =
+      options->getPermutationOr(std::move(default_permutation));
+  if (permutation.size() != input_rank) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "The number of values in permutation must be the same as the rank "
+        "of the input tensor.");
+    return nullptr;
+  }
+
+  // The current WebNN spec defines the value of permutation as signed
+  // integer: https://www.w3.org/TR/webnn/#dom-mltransposeoptions-permutation
+  // And an issue has been filed to track it:
+  // https://github.com/webmachinelearning/webnn/issues/317
+  if (base::ranges::any_of(permutation, [input_rank](int32_t axis) {
+        return axis < 0 || base::MakeStrictNum(axis) >= input_rank;
+      })) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        String::Format(
+            "The values in permutation must be within the range from 0 "
+            "to (%u).",
+            input_rank - 1));
+    return nullptr;
+  }
+
+  if (permutation.size() !=
+      std::set<int32_t>(permutation.begin(), permutation.end()).size()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "Two or more values are same in the permutation sequence.");
+    return nullptr;
+  }
+
+  Vector<uint32_t> output_shape(input_rank);
+  for (wtf_size_t i = 0; i < input_rank; ++i) {
+    output_shape[i] = input->Dimensions()[permutation[i]];
+  }
+  auto* transpose = MakeGarbageCollected<MLOperator>(
+      this, MLOperator::OperatorKind::kTranspose, options);
+  String error_message;
+  // According to WebNN spec
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-transpose, the output
+  // tensor of transpose has the same type as its input.
+  auto* output = MLOperand::ValidateAndCreateOutput(
+      this, input->Type(), std::move(output_shape), transpose, error_message);
+  if (!output) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      error_message);
+    return nullptr;
+  }
+  transpose->Connect({input}, {output});
+  return output;
+}
+
 ScriptPromise MLGraphBuilder::build(ScriptState* script_state,
                                     const MLNamedOperands& named_outputs,
                                     ExceptionState& exception_state) {
@@ -1188,7 +1343,8 @@ ScriptPromise MLGraphBuilder::build(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
   if (g_backend_for_testing) {

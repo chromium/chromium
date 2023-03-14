@@ -1123,11 +1123,11 @@ void TabContainerImpl::StartInsertTabAnimation(int model_index) {
     // If we have a tab to our left, start at its right edge.
     bounds.set_x(GetTabAtModelIndex(model_index - 1)->bounds().right() -
                  tab_overlap);
-  } else if (model_index + 1 < GetTabCount()) {
+  } else {
+    CHECK_LT(model_index + 1, GetTabCount())
+        << "First tab inserted into the tabstrip should not animate.";
     // Otherwise, if we have a tab to our right, start at its left edge.
     bounds.set_x(GetTabAtModelIndex(model_index + 1)->bounds().x());
-  } else {
-    NOTREACHED() << "First tab inserted into the tabstrip should not animate.";
   }
 
   // Start at the width of the overlap in order to animate at the same speed

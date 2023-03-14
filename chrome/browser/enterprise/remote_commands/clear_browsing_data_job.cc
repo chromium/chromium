@@ -122,8 +122,7 @@ bool ClearBrowsingDataJob::ParseCommandPayload(
   return true;
 }
 
-void ClearBrowsingDataJob::RunImpl(CallbackWithResult succeeded_callback,
-                                   CallbackWithResult failed_callback) {
+void ClearBrowsingDataJob::RunImpl(CallbackWithResult result_callback) {
   DCHECK(profile_manager_);
 
   uint64_t types = 0;
@@ -140,17 +139,19 @@ void ClearBrowsingDataJob::RunImpl(CallbackWithResult succeeded_callback,
     // deleted by the time the command was received.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(failed_callback), CreatePayload(types)));
+        base::BindOnce(std::move(result_callback), policy::ResultType::kFailure,
+                       CreatePayload(types)));
     return;
   }
 
-  succeeded_callback_ = std::move(succeeded_callback);
-  failed_callback_ = std::move(failed_callback);
+  result_callback_ = std::move(result_callback);
 
   if (types == 0) {
-    // There's nothing to clear, invoke the success callback and be done.
+    // There's nothing to clear, invoke the callback with success result and be
+    // done.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(succeeded_callback_),
+        FROM_HERE, base::BindOnce(std::move(result_callback_),
+                                  policy::ResultType::kSuccess,
                                   CreatePayload(
                                       /*failed_data_types=*/0)));
     return;
@@ -174,15 +175,12 @@ void ClearBrowsingDataJob::OnBrowsingDataRemoverDone(
 
   std::string payload = CreatePayload(failed_data_types);
 
-  if (failed_data_types != 0) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(failed_callback_), std::move(payload)));
-  } else {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(succeeded_callback_), std::move(payload)));
-  }
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(result_callback_),
+                     failed_data_types != 0 ? policy::ResultType::kFailure
+                                            : policy::ResultType::kSuccess,
+                     std::move(payload)));
 }
 
 }  // namespace enterprise_commands

@@ -30,10 +30,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
 
   static const absl::optional<net::SchemefulSite>& frame_site(
       const net::NetworkIsolationKey& input) {
-    static const base::NoDestructor<absl::optional<net::SchemefulSite>>
-        nullopt_origin;
-    return net::NetworkIsolationKey::IsFrameSiteEnabled() ? input.GetFrameSite()
-                                                          : *nullopt_origin;
+    return input.GetFrameSiteForSerialization(
+        net::NetworkIsolationKey::SerializationPasskey());
   }
 
   static const absl::optional<base::UnguessableToken>& nonce(

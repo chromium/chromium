@@ -186,8 +186,7 @@ class ReportingCacheTest : public ReportingTestBase,
       base::UnguessableToken::Create();
   const NetworkAnonymizationKey kNak_;
   const NetworkAnonymizationKey kOtherNak_ =
-      NetworkAnonymizationKey(SchemefulSite(kOrigin1_),
-                              SchemefulSite(kOrigin2_));
+      NetworkAnonymizationKey::CreateCrossSite(SchemefulSite(kOrigin1_));
   const IsolationInfo kIsolationInfo1_ =
       IsolationInfo::Create(IsolationInfo::RequestType::kOther,
                             kOrigin1_,

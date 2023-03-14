@@ -3,6 +3,7 @@ include_rules = [
   "+components/autofill/core",
   "+components/crash/core",
   "+components/embedder_support/switches.h",
+  "+components/memory_system",
   "+components/safe_browsing/android",
   "+components/spellcheck/common",
   "+components/translate/core/common",

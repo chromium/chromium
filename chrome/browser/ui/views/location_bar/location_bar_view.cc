@@ -185,7 +185,9 @@ LocationBarView::LocationBarView(Browser* browser,
       return v->omnibox_view_->model()->is_caret_visible() &&
              !v->GetOmniboxPopupView()->IsOpen();
     });
-
+    if (features::IsChromeRefresh2023()) {
+      views::FocusRing::Get(this)->SetOutsetFocusRingDisabled();
+    }
     views::InstallPillHighlightPathGenerator(this);
 
 #if BUILDFLAG(IS_MAC)
@@ -1094,15 +1096,6 @@ ui::PageTransition LocationBarView::GetPageTransition() const {
 
 base::TimeTicks LocationBarView::GetMatchSelectionTimestamp() const {
   return match_selection_timestamp();
-}
-
-void LocationBarView::AcceptInput() {
-  AcceptInput(base::TimeTicks());
-}
-
-void LocationBarView::AcceptInput(base::TimeTicks match_selection_timestamp) {
-  omnibox_view_->model()->AcceptInput(WindowOpenDisposition::CURRENT_TAB,
-                                      match_selection_timestamp);
 }
 
 void LocationBarView::FocusSearch() {

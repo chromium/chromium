@@ -7,16 +7,19 @@
 #include <set>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "components/variations/variations_crash_keys.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace variations {
 
 namespace {
 
 ChildProcessFieldTrialSyncer* g_instance = nullptr;
+ABSL_CONST_INIT thread_local bool in_set_field_trial_group_from_browser = false;
 
 }  // namespace
 
@@ -73,16 +76,14 @@ void ChildProcessFieldTrialSyncer::Init() {
 void ChildProcessFieldTrialSyncer::SetFieldTrialGroupFromBrowser(
     const std::string& trial_name,
     const std::string& group_name) {
-  DCHECK(!in_set_field_trial_group_from_browser_.Get());
-  in_set_field_trial_group_from_browser_.Set(true);
+  const base::AutoReset<bool> resetter(&in_set_field_trial_group_from_browser,
+                                       true, false);
 
   base::FieldTrial* trial =
       base::FieldTrialList::CreateFieldTrial(trial_name, group_name);
   // Ensure the trial is marked as "used" by calling Activate() on it if it is
   // marked as activated.
   trial->Activate();
-
-  in_set_field_trial_group_from_browser_.Set(false);
 }
 
 void ChildProcessFieldTrialSyncer::OnFieldTrialGroupFinalized(
@@ -90,10 +91,9 @@ void ChildProcessFieldTrialSyncer::OnFieldTrialGroupFinalized(
     const std::string& group_name) {
   // It is not necessary to notify the browser if this is invoked from
   // SetFieldTrialGroupFromBrowser().
-  if (in_set_field_trial_group_from_browser_.Get())
-    return;
-
-  activated_callback_.Run(trial_name);
+  if (!in_set_field_trial_group_from_browser) {
+    activated_callback_.Run(trial_name);
+  }
 }
 
 }  // namespace variations

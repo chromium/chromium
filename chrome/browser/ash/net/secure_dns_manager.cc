@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/net/secure_dns_manager.h"
 
-#include <algorithm>
 #include <map>
 #include <string>
 
@@ -12,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -70,20 +70,21 @@ void SecureDnsManager::LoadProviders() {
 
   for (const auto* provider : local_providers) {
     std::vector<std::string> ip_addrs;
-    std::transform(provider->ip_addresses.begin(), provider->ip_addresses.end(),
-                   std::back_inserter(ip_addrs),
-                   [](const net::IPAddress& addr) { return addr.ToString(); });
+    base::ranges::transform(provider->ip_addresses,
+                            std::back_inserter(ip_addrs),
+                            &net::IPAddress::ToString);
     local_doh_providers_[provider->doh_server_config] =
         base::JoinString(ip_addrs, ",");
   }
 }
 
-base::Value SecureDnsManager::GetProviders(const std::string& mode,
-                                           const std::string& templates) {
-  base::Value doh_providers(base::Value::Type::DICT);
+base::Value::Dict SecureDnsManager::GetProviders(const std::string& mode,
+                                                 const std::string& templates) {
+  base::Value::Dict doh_providers;
 
-  if (mode == SecureDnsConfig::kModeOff)
-    return doh_providers.Clone();
+  if (mode == SecureDnsConfig::kModeOff) {
+    return doh_providers;
+  }
 
   // If there are templates then use them. In secure mode, the values, which
   // hold the IP addresses of the name servers, are left empty. In automatic
@@ -93,30 +94,32 @@ base::Value SecureDnsManager::GetProviders(const std::string& mode,
   // switch providers whenever the tracked network or its settings change.
   for (const auto& doh_template : base::SplitString(
            templates, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
-    doh_providers.SetKey(doh_template, base::Value(""));
+    doh_providers.Set(doh_template, "");
   }
-  if (mode == SecureDnsConfig::kModeSecure)
-    return doh_providers.Clone();
+  if (mode == SecureDnsConfig::kModeSecure) {
+    return doh_providers;
+  }
 
-  const bool want_all = doh_providers.DictEmpty();
+  const bool want_all = doh_providers.empty();
   for (const auto& provider : local_doh_providers_) {
     const std::string& server_template = provider.first.server_template();
-    if (want_all || doh_providers.GetDict().contains(server_template)) {
-      doh_providers.SetKey(server_template, base::Value(provider.second));
+    if (want_all || doh_providers.contains(server_template)) {
+      doh_providers.Set(server_template, provider.second);
     }
   }
-  return doh_providers.Clone();
+  return doh_providers;
 }
 
 void SecureDnsManager::OnPrefChanged() {
   doh_templates_uri_resolver_->UpdateFromPrefs(pref_service_);
 
-  const auto doh_providers =
+  base::Value::Dict doh_providers =
       GetProviders(registrar_.prefs()->GetString(prefs::kDnsOverHttpsMode),
                    doh_templates_uri_resolver_->GetEffectiveTemplates());
 
   NetworkHandler::Get()->network_configuration_handler()->SetManagerProperty(
-      shill::kDNSProxyDOHProvidersProperty, doh_providers);
+      shill::kDNSProxyDOHProvidersProperty,
+      base::Value(std::move(doh_providers)));
 
   NetworkHandler::Get()
       ->network_metadata_store()

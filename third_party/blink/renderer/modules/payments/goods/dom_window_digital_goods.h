@@ -9,8 +9,8 @@
 #include "third_party/blink/public/mojom/digital_goods/digital_goods.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
-#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 
 namespace blink {
 
@@ -23,7 +23,7 @@ class DOMWindowDigitalGoods final
  public:
   static const char kSupplementName[];
 
-  DOMWindowDigitalGoods();
+  DOMWindowDigitalGoods(ExecutionContext* context);
 
   // IDL Interface:
   static ScriptPromise getDigitalGoodsService(ScriptState*,
@@ -38,8 +38,7 @@ class DOMWindowDigitalGoods final
   void Trace(Visitor* visitor) const override;
 
  private:
-  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
-  mojo::Remote<payments::mojom::blink::DigitalGoodsFactory> mojo_service_;
+  HeapMojoRemote<payments::mojom::blink::DigitalGoodsFactory> mojo_service_;
 
   static DOMWindowDigitalGoods* FromState(LocalDOMWindow*);
 };

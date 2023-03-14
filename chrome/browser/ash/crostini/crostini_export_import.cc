@@ -46,7 +46,14 @@ class CrostiniExportImportFactory : public ProfileKeyedServiceFactory {
   friend class base::NoDestructor<CrostiniExportImportFactory>;
 
   CrostiniExportImportFactory()
-      : ProfileKeyedServiceFactory("CrostiniExportImportService") {
+      : ProfileKeyedServiceFactory(
+            "CrostiniExportImportService",
+            ProfileSelections::Builder()
+                .WithRegular(ProfileSelection::kOriginalOnly)
+                // TODO(crbug.com/1418376): Check if this service is needed in
+                // Guest mode.
+                .WithGuest(ProfileSelection::kOriginalOnly)
+                .Build()) {
     DependsOn(guest_os::GuestOsSharePathFactory::GetInstance());
     DependsOn(CrostiniManagerFactory::GetInstance());
   }
@@ -60,6 +67,10 @@ class CrostiniExportImportFactory : public ProfileKeyedServiceFactory {
     return new CrostiniExportImport(profile);
   }
 };
+
+void CrostiniExportImport::EnsureFactoryBuilt() {
+  CrostiniExportImportFactory::GetInstance();
+}
 
 CrostiniExportImport* CrostiniExportImport::GetForProfile(Profile* profile) {
   return CrostiniExportImportFactory::GetForProfile(profile);

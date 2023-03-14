@@ -158,6 +158,12 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
               chromeos::DBusMethodCallback<vm_tools::concierge::SwapVmResponse>
                   callback) override;
 
+  void InstallPflash(
+      base::ScopedFD fd,
+      const vm_tools::concierge::InstallPflashRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::InstallPflashResponse>
+          callback) override;
+
   const base::ObserverList<Observer>& observer_list() const {
     return observer_list_;
   }
@@ -328,6 +334,11 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
       absl::optional<vm_tools::concierge::SwapVmResponse> swap_vm_response) {
     swap_vm_response_ = swap_vm_response;
   }
+  void set_install_pflash_response(
+      absl::optional<vm_tools::concierge::InstallPflashResponse>
+          install_pflash_response) {
+    install_pflash_response_ = install_pflash_response;
+  }
 
   void set_send_create_disk_image_response_delay(base::TimeDelta delay) {
     send_create_disk_image_response_delay_ = delay;
@@ -437,6 +448,8 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
   absl::optional<vm_tools::concierge::GetVmLaunchAllowedResponse>
       get_vm_launch_allowed_response_;
   absl::optional<vm_tools::concierge::SwapVmResponse> swap_vm_response_;
+  absl::optional<vm_tools::concierge::InstallPflashResponse>
+      install_pflash_response_;
 
   base::TimeDelta send_create_disk_image_response_delay_;
   base::TimeDelta send_start_vm_response_delay_;

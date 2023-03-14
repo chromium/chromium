@@ -7,7 +7,7 @@
 
 #include "components/autofill/core/browser/form_structure.h"
 
-namespace autofill::metrics {
+namespace autofill::autofill_metrics {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. These mirror the first entries of
@@ -33,6 +33,6 @@ int GetShadowPrediction(ServerFieldType current,
 // values to the actual and hypothetical predictions.
 void LogShadowPredictionComparison(const AutofillField& field);
 
-}  // namespace autofill::metrics
+}  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_SHADOW_PREDICTION_METRICS_H_

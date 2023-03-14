@@ -12,6 +12,7 @@ formatted version XML.
 import xml.etree.ElementTree as ET
 import textwrap as tw
 import model_util as util
+import re
 
 # Default key rotation period if not explicitly specified in the XML.
 DEFAULT_KEY_ROTATION_PERIOD = 90
@@ -84,6 +85,7 @@ class Model:
   ID_REGEX = r'^(none|per-project|uma)$'
   SCOPE_REGEX = r'^(profile|device)$'
   KEY_REGEX = r'^[0-9]+$'
+  CROS_EVENTS_REGEX = r'(?i)(true|false|)$'
 
   def __init__(self, xml_string):
     elem = ET.fromstring(xml_string)
@@ -111,7 +113,7 @@ class Project:
 
   A Project is initialized with an XML node representing one project, eg:
 
-    <project name="MyProject">
+    <project name="MyProject" cros_events="true">
       <owner>owner@chromium.org</owner>
       <id>none</id>
       <scope>project</scope>
@@ -130,7 +132,7 @@ class Project:
   """
 
   def __init__(self, elem):
-    util.check_attributes(elem, {'name'})
+    util.check_attributes(elem, {'name'}, {'cros_events'})
     util.check_children(elem, {'id', 'scope', 'summary', 'owner', 'event'})
     util.check_child_names_unique(elem, 'event')
 
@@ -141,7 +143,12 @@ class Project:
     self.owners = util.get_text_children(elem, 'owner', Model.OWNER_REGEX)
 
     self.key_rotation_period = DEFAULT_KEY_ROTATION_PERIOD
-    self.is_event_sequence_project = self.name == EVENT_SEQUENCE_PROJECT_NAME
+    cros_events_attr = util.get_optional_attr(elem, 'cros_events',
+                                              Model.CROS_EVENTS_REGEX)
+    if cros_events_attr:
+      self.is_event_sequence_project = cros_events_attr.lower() == 'true'
+    else:
+      self.is_event_sequence_project = False
 
     # Check if key-rotation is specified. If so, then change the
     # key_rotation_period.
@@ -158,9 +165,13 @@ class Project:
     events = indent(events, '  ')
     summary = wrap(self.summary, indent='    ')
     owners = '\n'.join('  <owner>{}</owner>'.format(o) for o in self.owners)
+    if self.is_event_sequence_project:
+      cros_events_attr = ' cros_events="true"'
+    else:
+      cros_events_attr = ''
 
     result = tw.dedent("""\
-               <project name="{name}">
+               <project name="{name}"{cros_events_attr}>
                {owners}
                  <id>{id}</id>
                  <scope>{scope}</scope>
@@ -172,6 +183,7 @@ class Project:
                {events}
                </project>""")
     return result.format(name=self.name,
+                         cros_events_attr=cros_events_attr,
                          owners=owners,
                          id=self.id,
                          scope=self.scope,

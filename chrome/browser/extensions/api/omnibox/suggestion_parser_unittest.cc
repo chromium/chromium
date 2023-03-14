@@ -68,13 +68,7 @@ class SuggestionParserUnitTest : public testing::Test {
     return std::move(result.descriptions_and_styles);
   }
 
-  // Returns the parsing error from attempting to parse `str`.
-  std::string GetParseError(base::StringPiece str) {
-    DescriptionAndStylesResult result;
-    ParseImpl({str}, &result);
-    return result.error;
-  }
-  // Same as above, accepting multiple string inputs.
+  // Returns the parsing error from attempting to parse `strs`.
   std::string GetParseError(const std::vector<base::StringPiece>& strs) {
     DescriptionAndStylesResult result;
     ParseImpl(strs, &result);
@@ -179,9 +173,9 @@ TEST_F(SuggestionParserUnitTest, MultipleEntries) {
 TEST_F(SuggestionParserUnitTest, ParsingFails) {
   // Note: These aren't expected to be terribly robust tests, since XML parsing
   // is exercised significantly more in the XmlParser-related tests.
-  EXPECT_THAT(GetParseError("<dim>no closing tag"),
+  EXPECT_THAT(GetParseError({"<dim>no closing tag"}),
               testing::HasSubstr("Opening and ending tag mismatch"));
-  EXPECT_THAT(GetParseError("<dim>hello <url>foo</dim> world</url>"),
+  EXPECT_THAT(GetParseError({"<dim>hello <url>foo</dim> world</url>"}),
               testing::HasSubstr("Opening and ending tag mismatch"));
   // Test an error in one of three inputs.
   EXPECT_THAT(GetParseError({"first <match>match</match> entry",
@@ -193,7 +187,7 @@ TEST_F(SuggestionParserUnitTest, ParsingFails) {
   // do any escaping for the element tags we use ("fragment" and
   // "internal-suggestion"), extensions can prematurely end our tags. This is
   // safe; it just results in invalid XML.
-  EXPECT_THAT(GetParseError("first </fragment>DROP TABLE supersecret"),
+  EXPECT_THAT(GetParseError({"first </fragment>DROP TABLE supersecret"}),
               testing::HasSubstr("Extra content at the end of the document"));
   EXPECT_THAT(
       GetParseError(
@@ -207,7 +201,7 @@ TEST_F(SuggestionParserUnitTest, ParsingFails) {
   // <fragment>first suggestion</fragment>
   // <fragment>second</fragment>
   EXPECT_THAT(
-      GetParseError("first suggestion</fragment><fragment>second</fragment>"),
+      GetParseError({"first suggestion</fragment><fragment>second</fragment>"}),
       testing::HasSubstr("Extra content at the end of the document"));
 
   // Test an injection that inserts unexpected children in our synthesized XML

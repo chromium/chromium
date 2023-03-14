@@ -339,18 +339,19 @@
   }
 </style>
 
-<img class="background-image" id="left-background-image">
-<img class="background-image" id="right-background-image">
+<img id="left-background-image" class="background-image" alt="">
+<img id="right-background-image" class="background-image" alt="">
 
 <div class="custom-scrollbar" id="safeZone">
   <div id="contentArea">
-    <img id="product-logo" src="images/product-logo.svg">
+    <img id="product-logo" src="images/product-logo.svg"
+        alt="$i18n{productLogoAltText}">
     <h1 class="fade-in">$i18n{pageTitle}</h1>
     <p class="fade-in" id="subtitle">$i18n{pageSubtitle}</p>
     <div id="benefit-cards-container">
       <template is="dom-repeat" items="[[benefitCards_]]">
         <div class="benefit-card fade-in">
-          <div id="[[item.iconId]]" class="cr-icon"></div>
+          <div id="[[item.iconId]]" class="cr-icon" title=""></div>
           <h2>[[item.title]]</h2>
           <p class="benefit-card-description">[[item.description]]</p>
         </div>
@@ -359,7 +360,7 @@
     <div class$="[[getDisclaimerVisibilityClass_(isDeviceManaged_, managedDeviceDisclaimer_)]]"
       id="managedDeviceDisclaimer">
       <div id="icon-container">
-        <iron-icon icon="cr:domain"></iron-icon>
+        <iron-icon icon="cr:domain" alt=""></iron-icon>
       </div>
       <p>
         [[managedDeviceDisclaimer_]]

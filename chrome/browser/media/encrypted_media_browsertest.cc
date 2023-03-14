@@ -91,8 +91,8 @@ enum class ConfigChangeType {
   ENCRYPTED_TO_ENCRYPTED = 3,
 };
 
-// Whether the video should be played once or twice.
-enum class PlayCount { ONCE, TWICE };
+// Whether the video should be not played or played once or twice.
+enum class PlayCount { ZERO = 0, ONCE = 1, TWICE = 2 };
 
 // Base class for encrypted media tests.
 class EncryptedMediaTestBase : public MediaBrowserTest {
@@ -158,23 +158,23 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
       query_params.emplace_back("forceInvalidResponse", "1");
     if (!session_to_load.empty())
       query_params.emplace_back("sessionToLoad", session_to_load);
-    if (play_count == PlayCount::TWICE)
-      query_params.emplace_back("playTwice", "1");
+    query_params.emplace_back(
+        "playCount", base::NumberToString(static_cast<int>(play_count)));
     RunEncryptedMediaTestPage(html_page, key_system, query_params,
                               expected_title);
   }
 
   void RunSimpleEncryptedMediaTest(const std::string& media_file,
                                    const std::string& key_system,
-                                   SrcType src_type) {
+                                   SrcType src_type,
+                                   PlayCount play_count) {
     std::string expected_title = media::kEndedTitle;
     if (!IsPlayBackPossible(key_system)) {
       expected_title = kEmeUpdateFailed;
     }
 
     RunEncryptedMediaTest(kDefaultEmePlayer, media_file, key_system, src_type,
-                          kNoSessionToLoad, false, PlayCount::ONCE,
-                          expected_title);
+                          kNoSessionToLoad, false, play_count, expected_title);
     // Check KeyMessage received for all key systems.
     bool receivedKeyMessage = false;
     EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
@@ -436,7 +436,7 @@ class ParameterizedEncryptedMediaTestBase : public EncryptedMediaTestBase {
 
   void TestSimplePlayback(const std::string& encrypted_media) {
     RunSimpleEncryptedMediaTest(encrypted_media, CurrentKeySystem(),
-                                CurrentSourceType());
+                                CurrentSourceType(), PlayCount::ONCE);
   }
 
   void TestMultiplePlayback(const std::string& encrypted_media) {
@@ -883,13 +883,13 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, LoadSessionAfterClose) {
 IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, DecryptOnly_VideoAudio_WebM) {
   RunSimpleEncryptedMediaTest("bear-320x240-av_enc-av.webm",
                               media::kExternalClearKeyDecryptOnlyKeySystem,
-                              SrcType::MSE);
+                              SrcType::MSE, PlayCount::ONCE);
 }
 
 IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, DecryptOnly_VideoOnly_MP4_VP9) {
   RunSimpleEncryptedMediaTest("bear-320x240-v_frag-vp9-cenc.mp4",
                               media::kExternalClearKeyDecryptOnlyKeySystem,
-                              SrcType::MSE);
+                              SrcType::MSE, PlayCount::ONCE);
 }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -1005,3 +1005,45 @@ IN_PROC_BROWSER_TEST_F(ECKIncognitoEncryptedMediaTest, LoadSessionAfterClose) {
                             media::kEndedTitle);
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_PROPRIETARY_CODECS)
+// MediaFoundation Clear Key Key System uses Windows Media Foundation's decoders
+// and H264 is always supported.
+class MediaFoundationEncryptedMediaTest : public EncryptedMediaTestBase {
+ public:
+  void TestLicenseExchange(const std::string& encrypted_media) {
+    // Skip the playback since we test the EME parts only.
+    RunSimpleEncryptedMediaTest(encrypted_media,
+                                media::kMediaFoundationClearKeyKeySystem,
+                                SrcType::MSE, PlayCount::ZERO);
+  }
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EncryptedMediaTestBase::SetUpCommandLine(command_line);
+    SetUpCommandLineForKeySystem(media::kMediaFoundationClearKeyKeySystem,
+                                 command_line);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
+                       Playback_ClearLeadEncryptedCencVideo_Success) {
+  TestLicenseExchange("bear-640x360-v_frag-cenc.mp4");  // H.264
+}
+
+IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
+                       Playback_ClearLeadEncryptedCbcsVideo_Success) {
+  TestLicenseExchange("bear-640x360-v_frag-cbcs.mp4");  // H.264
+}
+
+IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
+                       Playback_EncryptedAudioCbcs_MediaTypeUnsupported) {
+  // MediaFoundation Clear Key Key System supports only H.264 videos
+  // (codecs=avc1.64001E). See AddMediaFoundationClearKey() in
+  // components/cdm/renderer/key_system_support_update.cc
+  RunEncryptedMediaTest(
+      kDefaultEmePlayer, "bear-640x360-a_frag-cbcs.mp4" /*codecs=mp4a.40.2*/,
+      media::kMediaFoundationClearKeyKeySystem, SrcType::MSE, kNoSessionToLoad,
+      false, PlayCount::ONCE, kEmeNotSupportedError);
+}
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_PROPRIETARY_CODECS)

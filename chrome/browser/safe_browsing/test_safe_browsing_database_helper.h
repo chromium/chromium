@@ -65,11 +65,11 @@ class TestSafeBrowsingDatabaseHelper {
  private:
   std::unique_ptr<safe_browsing::TestSafeBrowsingServiceFactory> sb_factory_;
   // Owned by the V4Database.
-  raw_ptr<InsertingDatabaseFactory> v4_db_factory_ = nullptr;
+  raw_ptr<InsertingDatabaseFactory, DanglingUntriaged> v4_db_factory_ = nullptr;
 
   // Owned by the V4GetHashProtocolManager. Will stay nullptr if the v4 hash
   // factory is not being mocked.
-  raw_ptr<safe_browsing::TestV4GetHashProtocolManagerFactory>
+  raw_ptr<safe_browsing::TestV4GetHashProtocolManagerFactory, DanglingUntriaged>
       v4_get_hash_factory_ = nullptr;
 };
 

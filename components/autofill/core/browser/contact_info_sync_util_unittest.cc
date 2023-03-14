@@ -222,7 +222,8 @@ TEST(ContactInfoSyncUtilTest, CreateContactInfoEntityDataFromAutofillProfile) {
   ContactInfoSpecifics specifics = ConstructCompleteSpecifics();
 
   std::unique_ptr<syncer::EntityData> entity_data =
-      CreateContactInfoEntityDataFromAutofillProfile(profile);
+      CreateContactInfoEntityDataFromAutofillProfile(
+          profile, /*base_contact_info_specifics=*/{});
   ASSERT_TRUE(entity_data != nullptr);
   EXPECT_EQ(entity_data->name, profile.guid());
   EXPECT_EQ(specifics.SerializeAsString(),
@@ -234,7 +235,9 @@ TEST(ContactInfoSyncUtilTest,
      CreateContactInfoEntityDataFromAutofillProfile_InvalidGUID) {
   AutofillProfile profile(kInvalidGuid, /*origin=*/"",
                           AutofillProfile::Source::kAccount);
-  EXPECT_EQ(CreateContactInfoEntityDataFromAutofillProfile(profile), nullptr);
+  EXPECT_EQ(CreateContactInfoEntityDataFromAutofillProfile(
+                profile, /*base_contact_info_specifics=*/{}),
+            nullptr);
 }
 
 // Test that AutofillProfiles with invalid source are not converted.
@@ -242,7 +245,85 @@ TEST(ContactInfoSyncUtilTest,
      CreateContactInfoEntityDataFromAutofillProfile_InvalidSource) {
   AutofillProfile profile(kGuid, /*origin=*/"",
                           AutofillProfile::Source::kLocalOrSyncable);
-  EXPECT_EQ(CreateContactInfoEntityDataFromAutofillProfile(profile), nullptr);
+  EXPECT_EQ(CreateContactInfoEntityDataFromAutofillProfile(
+                profile, /*base_contact_info_specifics=*/{}),
+            nullptr);
+}
+
+// Test that supported fields and nested messages are successfully trimmed.
+TEST(ContactInfoSyncUtilTest, TrimAllSupportedFieldsFromRemoteSpecifics) {
+  sync_pb::ContactInfoSpecifics contact_info_specifics;
+  contact_info_specifics.mutable_address_city()->set_value("City");
+  contact_info_specifics.mutable_address_city()->mutable_metadata()->set_status(
+      sync_pb::ContactInfoSpecifics::VerificationStatus::
+          ContactInfoSpecifics_VerificationStatus_OBSERVED);
+
+  sync_pb::ContactInfoSpecifics empty_contact_info_specifics;
+  EXPECT_EQ(TrimContactInfoSpecificsDataForCaching(contact_info_specifics)
+                .SerializeAsString(),
+            empty_contact_info_specifics.SerializeAsString());
+}
+
+// Test that supported fields and nested messages are successfully trimmed but
+// that unsupported fields are preserved.
+TEST(ContactInfoSyncUtilTest,
+     TrimAllSupportedFieldsFromRemoteSpecifics_PreserveUnsupportedFields) {
+  sync_pb::ContactInfoSpecifics contact_info_specifics_with_only_unknown_fields;
+
+  // Set an unsupported field in both the top-level message and also in a nested
+  // message.
+  *contact_info_specifics_with_only_unknown_fields.mutable_unknown_fields() =
+      "unsupported_fields";
+  *contact_info_specifics_with_only_unknown_fields.mutable_address_city()
+       ->mutable_unknown_fields() = "unsupported_field_in_nested_message";
+
+  // Create a copy and set a value to the same nested message that already
+  // contains an unsupported field.
+  sync_pb::ContactInfoSpecifics
+      contact_info_specifics_with_known_and_unknown_fields =
+          contact_info_specifics_with_only_unknown_fields;
+  contact_info_specifics_with_known_and_unknown_fields.mutable_address_city()
+      ->set_value("City");
+
+  EXPECT_EQ(TrimContactInfoSpecificsDataForCaching(
+                contact_info_specifics_with_known_and_unknown_fields)
+                .SerializeAsString(),
+            contact_info_specifics_with_only_unknown_fields
+                .SerializePartialAsString());
+}
+
+// Test that the conversion of a profile to specifics preserve the unsupported
+// fields.
+TEST(ContactInfoSyncUtilTest, ContactInfoSpecificsFromAutofillProfile) {
+  // If this feature is not available the honorific prefix will be lost in the
+  // back and forth conversion.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      autofill::features::kAutofillEnableSupportForHonorificPrefixes);
+
+  // Create the base message that only contains unsupported fields in both the
+  // top-level and a nested message.
+  sync_pb::ContactInfoSpecifics contact_info_specifics_with_only_unknown_fields;
+  *contact_info_specifics_with_only_unknown_fields.mutable_unknown_fields() =
+      "unsupported_fields";
+  *contact_info_specifics_with_only_unknown_fields.mutable_address_city()
+       ->mutable_unknown_fields() = "unsupported_field_in_nested_message";
+
+  ContactInfoSpecifics contact_info_specifics_from_profile =
+      ContactInfoSpecificsFromAutofillProfile(
+          ConstructCompleteProfile(),
+          contact_info_specifics_with_only_unknown_fields);
+
+  // Test that the unknown fields are preserved and that the rest of the
+  // specifics match the expectations.
+  sync_pb::ContactInfoSpecifics expected_contact_info =
+      ConstructCompleteSpecifics();
+  *expected_contact_info.mutable_unknown_fields() = "unsupported_fields";
+  *expected_contact_info.mutable_address_city()->mutable_unknown_fields() =
+      "unsupported_field_in_nested_message";
+
+  EXPECT_EQ(contact_info_specifics_from_profile.SerializeAsString(),
+            expected_contact_info.SerializeAsString());
 }
 
 // Test that converting ContactInfoSpecifics -> AutofillProfile works.

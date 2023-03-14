@@ -30,16 +30,15 @@ def BuildCmxFromFragment(output_file, fragment_file, program_binary):
 
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument(
-      '--cmx-fragment',
-      required=True,
-      help='Path to the CMX fragment to read from')
-  parser.add_argument(
-      '--cmx', required=True, help='Path to write the complete CMX file to')
-  parser.add_argument(
-      '--program',
-      required=True,
-      help='Package-relative path to the program binary')
+  parser.add_argument('--cmx-fragment',
+                      required=True,
+                      help='Path to the CMX fragment to read from')
+  parser.add_argument('--cmx',
+                      required=True,
+                      help='Path to write the complete CMX file to')
+  parser.add_argument('--program',
+                      required=True,
+                      help='Package-relative path to the program binary')
   args = parser.parse_args()
 
   return BuildCmxFromFragment(args.cmx, args.cmx_fragment, args.program)

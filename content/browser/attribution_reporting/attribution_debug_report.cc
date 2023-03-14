@@ -4,6 +4,8 @@
 
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
 
+#include <stdint.h>
+
 #include <utility>
 
 #include "base/check.h"
@@ -11,12 +13,15 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/attribution_reporting/destination_set.h"
+#include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
-#include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
+#include "content/browser/attribution_reporting/create_report_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/attribution_reporting/store_source_result.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -34,6 +39,7 @@ enum class DebugDataType {
   kSourceDestinationLimit,
   kSourceNoised,
   kSourceStorageLimit,
+  kSourceSuccess,
   kSourceUnknownError,
   kTriggerNoMatchingSource,
   kTriggerAttributionsPerSourceDestinationLimit,
@@ -62,10 +68,16 @@ absl::optional<DebugDataType> DataTypeIfCookieSet(DebugDataType data_type,
 absl::optional<DebugDataType> GetReportDataType(StorableSource::Result result,
                                                 bool is_debug_cookie_set) {
   switch (result) {
-    case StorableSource::Result::kSuccess:
-    case StorableSource::Result::kExcessiveReportingOrigins:
     case StorableSource::Result::kProhibitedByBrowserPolicy:
       return absl::nullopt;
+    case StorableSource::Result::kSuccess:
+    // `kSourceSuccess` is sent for unattributed reporting origin limit to
+    // mitigate the security concerns on reporting this error. Because
+    // `kExcessiveReportingOrigins` is thrown based on information across
+    // reporting origins, reporting on it would violate the same-origin policy.
+    case StorableSource::Result::kExcessiveReportingOrigins:
+      return DataTypeIfCookieSet(DebugDataType::kSourceSuccess,
+                                 is_debug_cookie_set);
     case StorableSource::Result::kInsufficientUniqueDestinationCapacity:
       return DebugDataType::kSourceDestinationLimit;
     case StorableSource::Result::kSuccessNoised:
@@ -181,6 +193,8 @@ std::string SerializeReportDataType(DebugDataType data_type) {
       return "source-noised";
     case DebugDataType::kSourceStorageLimit:
       return "source-storage-limit";
+    case DebugDataType::kSourceSuccess:
+      return "source-success";
     case DebugDataType::kSourceUnknownError:
       return "source-unknown-error";
     case DebugDataType::kTriggerNoMatchingSource:
@@ -221,13 +235,13 @@ std::string SerializeReportDataType(DebugDataType data_type) {
 }
 
 void SetSourceData(base::Value::Dict& data_body,
-                   const CommonSourceInfo& common_info) {
-  data_body.Set("source_event_id",
-                base::NumberToString(common_info.source_event_id()));
-  data_body.Set("source_site", common_info.SourceSite().Serialize());
-  if (common_info.debug_key()) {
-    data_body.Set("source_debug_key",
-                  base::NumberToString(*common_info.debug_key()));
+                   uint64_t source_event_id,
+                   const net::SchemefulSite& source_site,
+                   absl::optional<uint64_t> source_debug_key) {
+  data_body.Set("source_event_id", base::NumberToString(source_event_id));
+  data_body.Set("source_site", source_site.Serialize());
+  if (source_debug_key) {
+    data_body.Set("source_debug_key", base::NumberToString(*source_debug_key));
   }
 }
 
@@ -237,17 +251,18 @@ void SetLimit(base::Value::Dict& data_body, absl::optional<T> limit) {
   data_body.Set("limit", base::NumberToString(*limit));
 }
 
-base::Value::Dict GetReportDataBody(
-    DebugDataType data_type,
-    const StorableSource& source,
-    const AttributionStorage::StoreSourceResult& result) {
+base::Value::Dict GetReportDataBody(DebugDataType data_type,
+                                    const StorableSource& source,
+                                    const StoreSourceResult& result) {
   DCHECK(!source.is_within_fenced_frame());
 
-  const CommonSourceInfo& common_info = source.common_info();
+  const attribution_reporting::SourceRegistration& registration =
+      source.registration();
+
   base::Value::Dict data_body;
-  data_body.Set(kAttributionDestination,
-                common_info.SerializeDestinationSites());
-  SetSourceData(data_body, common_info);
+  data_body.Set(kAttributionDestination, registration.destination_set.ToJson());
+  SetSourceData(data_body, registration.source_event_id,
+                source.common_info().source_site(), registration.debug_key);
 
   switch (data_type) {
     case DebugDataType::kSourceDestinationLimit:
@@ -258,6 +273,7 @@ base::Value::Dict GetReportDataBody(
       SetLimit(data_body, result.max_sources_per_origin);
       break;
     case DebugDataType::kSourceNoised:
+    case DebugDataType::kSourceSuccess:
     case DebugDataType::kSourceUnknownError:
       break;
     case DebugDataType::kTriggerNoMatchingSource:
@@ -299,8 +315,9 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
     data_body.Set("trigger_debug_key", base::NumberToString(*debug_key));
   }
 
-  if (result.source()) {
-    SetSourceData(data_body, result.source()->common_info());
+  if (const absl::optional<StoredSource>& source = result.source()) {
+    SetSourceData(data_body, source->source_event_id(),
+                  source->common_info().source_site(), source->debug_key());
   }
 
   switch (data_type) {
@@ -343,6 +360,7 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
     case DebugDataType::kSourceDestinationLimit:
     case DebugDataType::kSourceNoised:
     case DebugDataType::kSourceStorageLimit:
+    case DebugDataType::kSourceSuccess:
     case DebugDataType::kSourceUnknownError:
       NOTREACHED();
       return base::Value::Dict();
@@ -373,8 +391,9 @@ GURL ReportURL(const attribution_reporting::SuitableOrigin& reporting_origin) {
 absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
     const StorableSource& source,
     bool is_debug_cookie_set,
-    const AttributionStorage::StoreSourceResult& result) {
-  if (!source.debug_reporting() || source.is_within_fenced_frame()) {
+    const StoreSourceResult& result) {
+  if (!source.registration().debug_reporting ||
+      source.is_within_fenced_frame()) {
     return absl::nullopt;
   }
 

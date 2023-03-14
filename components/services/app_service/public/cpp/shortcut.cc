@@ -10,12 +10,15 @@
 
 namespace apps {
 
-Shortcut::Shortcut(const std::string& shortcut_id,
+Shortcut::Shortcut(const ShortcutId& shortcut_id,
                    const std::string& name,
                    uint8_t position)
     : shortcut_id(shortcut_id), name(name), position(position) {}
 
 Shortcut::~Shortcut() = default;
+
+Shortcut::Shortcut(Shortcut&&) = default;
+Shortcut& Shortcut::operator=(Shortcut&&) = default;
 
 bool Shortcut::operator==(const Shortcut& other) const {
   return shortcut_id == other.shortcut_id && name == other.name &&

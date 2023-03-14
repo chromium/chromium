@@ -28,6 +28,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browser_ui.share.ShareParams.TargetChosenCallback;
 import org.chromium.ui.base.WindowAndroid;
@@ -74,8 +75,8 @@ public class ShareHelper {
      */
     public static void shareWithSystemShareSheetUi(ShareParams params) {
         recordShareSource(ShareSourceAndroid.ANDROID_SHARE_SHEET);
-        TargetChosenReceiver.sendChooserIntent(
-                params.getWindow(), getShareIntent(params), params.getCallback());
+        new TargetChosenReceiver(params.getCallback())
+                .sendChooserIntent(params.getWindow(), getShareIntent(params));
     }
 
     /**
@@ -126,17 +127,8 @@ public class ShareHelper {
     }
 
     /**
-     * Exposed for browser to send callback without exposing TargetChosenReceiver.
-     */
-    protected static void sendChooserIntent(
-            WindowAndroid window, Intent sharingIntent, @Nullable TargetChosenCallback callback) {
-        TargetChosenReceiver.sendChooserIntent(window, sharingIntent, callback);
-    }
-
-    /**
      * Receiver to record the chosen component when sharing an Intent.
      */
-    @VisibleForTesting
     public static class TargetChosenReceiver extends BroadcastReceiver implements IntentCallback {
         private static final Object LOCK = new Object();
 
@@ -146,12 +138,18 @@ public class ShareHelper {
         @Nullable
         private TargetChosenCallback mCallback;
 
-        private TargetChosenReceiver(@Nullable TargetChosenCallback callback) {
+        protected TargetChosenReceiver(@Nullable TargetChosenCallback callback) {
             mCallback = callback;
         }
 
-        public static void sendChooserIntent(WindowAndroid window, Intent sharingIntent,
-                @Nullable TargetChosenCallback callback) {
+        /**
+         * Create a chooser intent and send it to trigger Android share sheet.
+         *
+         * @param window The {@link WindowAndroid} that starts the sharing.
+         * @param sharingIntent The intent with {@link Intent.ACTION_SEND}.
+         */
+        protected void sendChooserIntent(WindowAndroid window, Intent sharingIntent) {
+            ThreadUtils.assertOnUiThread();
             final Context context = ContextUtils.getApplicationContext();
             final String packageName = context.getPackageName();
             synchronized (LOCK) {
@@ -165,33 +163,55 @@ public class ShareHelper {
                     // TargetChosenCallback is called).
                     sLastRegisteredReceiver.cancel();
                 }
-                sLastRegisteredReceiver = new TargetChosenReceiver(callback);
+                sLastRegisteredReceiver = this;
                 ContextUtils.registerNonExportedBroadcastReceiver(context, sLastRegisteredReceiver,
                         new IntentFilter(sTargetChosenReceiveAction));
             }
 
-            Intent intent = new Intent(sTargetChosenReceiveAction);
-            intent.setPackage(packageName);
-            IntentUtils.addTrustedIntentExtras(intent);
+            Intent chooserIntent =
+                    getChooserIntent(window, sharingIntent, sTargetChosenReceiveAction);
+            ShareHelper.fireIntent(window, chooserIntent, sLastRegisteredReceiver);
+        }
+
+        /** Create the chooser intent via {@link android.content.Intent.createChooser} */
+        protected Intent getChooserIntent(
+                WindowAndroid window, Intent sharingIntent, String targetChosenAction) {
+            Intent intent = createSendBackIntentWithFilteredAction(targetChosenAction);
             Activity activity = window.getActivity().get();
             final PendingIntent pendingIntent = PendingIntent.getBroadcast(activity, 0, intent,
                     PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT
                             | IntentUtils.getPendingIntentMutabilityFlag(true));
-            Intent chooserIntent = Intent.createChooser(sharingIntent,
-                    context.getString(R.string.share_link_chooser_title),
+            return Intent.createChooser(sharingIntent,
+                    activity.getString(R.string.share_link_chooser_title),
                     pendingIntent.getIntentSender());
-            fireIntent(window, chooserIntent, sLastRegisteredReceiver);
+        }
+
+        /**
+         * Create an intent to be carried by {@link PendingIntent.getBroadcast}, and will be
+         * received after the PendingIntent is sent. The input action is used to match
+         * the {@link IntentFilter} that this broadcast receiver is interested with.
+         */
+        private Intent createSendBackIntentWithFilteredAction(String filteredAction) {
+            final Context context = ContextUtils.getApplicationContext();
+            Intent intent = new Intent(filteredAction);
+            intent.setPackage(context.getPackageName());
+            IntentUtils.addTrustedIntentExtras(intent);
+            return intent;
         }
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            ThreadUtils.assertOnUiThread();
+            // Ignore intents that's not initiated from Chrome.
+            if (!IntentUtils.isTrustedIntentFromSelf(intent)) return;
+
             synchronized (LOCK) {
-                if (sLastRegisteredReceiver != this) return;
+                if (sLastRegisteredReceiver != this) {
+                    return;
+                }
                 ContextUtils.getApplicationContext().unregisterReceiver(sLastRegisteredReceiver);
                 sLastRegisteredReceiver = null;
             }
-            if (!IntentUtils.isTrustedIntentFromSelf(intent)) return;
-
             ComponentName target = intent.getParcelableExtra(Intent.EXTRA_CHOSEN_COMPONENT);
             if (mCallback != null) {
                 mCallback.onTargetChosen(target);
@@ -221,6 +241,7 @@ public class ShareHelper {
 
         @VisibleForTesting
         public static void resetForTesting() {
+            ThreadUtils.assertOnUiThread();
             synchronized (LOCK) {
                 sTargetChosenReceiveAction = null;
                 if (sLastRegisteredReceiver != null) {

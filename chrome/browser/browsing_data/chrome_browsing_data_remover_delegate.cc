@@ -143,6 +143,7 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/http/http_transaction_factory.h"
 #include "net/net_buildflags.h"
+#include "services/network/public/mojom/clear_data_filter.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/customtabs/chrome_origin_verifier.h"
@@ -1078,21 +1079,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     }
   }
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-  // Plugin is data not separated for protected and unprotected web origins. We
-  // check the origin_type_mask_ to prevent unintended deletion.
-  if ((remove_mask & constants::DATA_TYPE_PLUGIN_DATA) &&
-      (origin_type_mask &
-       content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB)) {
-    base::RecordAction(UserMetricsAction("ClearBrowsingData_LSOData"));
-
-    if (filter_builder->MatchesAllOriginsAndDomains()) {
-      // TODO(bbudge) Figure out how to delete Flash plugin data without a
-      // Flash plugin.
-    }
-  }
-#endif
-
   //////////////////////////////////////////////////////////////////////////////
   // DATA_TYPE_MEDIA_LICENSES
   if (remove_mask & content::BrowsingDataRemover::DATA_TYPE_MEDIA_LICENSES) {
@@ -1340,14 +1326,18 @@ void ChromeBrowsingDataRemoverDelegate::OnTaskComplete(
   // Explicitly clear any opt-ins to the account-scoped password storage
   // when cookies are being cleared. This needs to happen after passwords
   // have been deleted, so it is performed when all other tasks are completed.
-  // TODO(crbug.com/1052005, crbug.com/1078762): These *should* get cleared
-  // automatically when the Google cookies are deleted, but currently this
-  // doesn't always work reliably. When these bugs get resolved, the
-  // following line and associated code can be removed.
+  // Note: These usually get cleared automatically when the Google cookies are
+  // deleted, but there is one edge case where that doesn't work: If the user
+  // clears cookies via CBD while they are already signed out (but their
+  // account is still present in the account chooser). In that case, without the
+  // code below, the settings-clearing would only happen when the Google cookies
+  // are refreshed the next time, typically on the next browser restart.
   if (should_clear_password_account_storage_settings_) {
     should_clear_password_account_storage_settings_ = false;
+#if !BUILDFLAG(IS_ANDROID)
     password_manager::features_util::ClearAccountStorageSettingsForAllUsers(
         profile_->GetPrefs());
+#endif  // !BUILDFLAG(IS_ANDROID)
   }
 
   slow_pending_tasks_closure_.Cancel();

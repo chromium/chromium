@@ -9,8 +9,9 @@
 
 import {Msgs} from '../common/msgs.js';
 import {SettingsManager} from '../common/settings_manager.js';
-import {TtsInterface} from '../common/tts_interface.js';
 import * as ttsTypes from '../common/tts_types.js';
+
+import {TtsInterface} from './tts_interface.js';
 
 /**
  * @typedef {{

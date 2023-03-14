@@ -632,8 +632,6 @@ TEST_F(PowerBookmarkDatabaseImplTest, GetPowerOverviewsForSearchParams) {
   EXPECT_TRUE(pbdb->CreatePower(
       MakePower(GURL("https://example.com/a3.html"), kMockType)));
   EXPECT_TRUE(pbdb->CreatePower(
-      MakePower(GURL("https://example.com/a3.html"), kNoteType)));
-  EXPECT_TRUE(pbdb->CreatePower(
       MakePower(GURL("https://example.com/a3.html"), kMockType)));
   EXPECT_TRUE(pbdb->CreatePower(
       MakePower(GURL("https://example.com/a1.html"), kMockType)));
@@ -644,13 +642,53 @@ TEST_F(PowerBookmarkDatabaseImplTest, GetPowerOverviewsForSearchParams) {
   std::vector<std::unique_ptr<PowerOverview>> search_results =
       pbdb->GetPowerOverviewsForSearchParams(search_params);
 
-  EXPECT_EQ(3u, search_results.size());
+  EXPECT_EQ(2u, search_results.size());
   EXPECT_TRUE(ContainsPowerOverview(search_results, kMockType,
                                     GURL("https://example.com/a3.html"), 2));
-  EXPECT_TRUE(ContainsPowerOverview(search_results, kNoteType,
-                                    GURL("https://example.com/a3.html"), 1));
   EXPECT_TRUE(ContainsPowerOverview(search_results, kMockType,
                                     GURL("https://example.com/a1.html"), 1));
+}
+
+TEST_F(PowerBookmarkDatabaseImplTest, GetPowerOverviewsCaseSensitive) {
+  std::unique_ptr<PowerBookmarkDatabaseImpl> pbdb =
+      std::make_unique<PowerBookmarkDatabaseImpl>(db_dir());
+  EXPECT_TRUE(pbdb->Init());
+
+  EXPECT_TRUE(pbdb->CreatePower(
+      MakePower(GURL("https://example.com/a3.html"), kMockType)));
+  EXPECT_TRUE(pbdb->CreatePower(
+      MakePower(GURL("https://example.com/a3.html"), kMockType)));
+  EXPECT_TRUE(pbdb->CreatePower(
+      MakePower(GURL("https://example.com/a1.html"), kMockType)));
+  EXPECT_TRUE(pbdb->CreatePower(
+      MakePower(GURL("https://example.com/a1.html"), kMockType)));
+
+  SearchParams case_sensitive_search_params{.query = "/A",
+                                            .case_sensitive = true};
+  EXPECT_EQ(0u,
+            pbdb->GetPowerOverviewsForSearchParams(case_sensitive_search_params)
+                .size());
+}
+
+TEST_F(PowerBookmarkDatabaseImplTest, GetPowerOverviewsIgnoreCase) {
+  std::unique_ptr<PowerBookmarkDatabaseImpl> pbdb =
+      std::make_unique<PowerBookmarkDatabaseImpl>(db_dir());
+  EXPECT_TRUE(pbdb->Init());
+
+  EXPECT_TRUE(pbdb->CreatePower(
+      MakePower(GURL("https://example.com/a3.html"), kMockType)));
+  EXPECT_TRUE(pbdb->CreatePower(
+      MakePower(GURL("https://example.com/a3.html"), kMockType)));
+  EXPECT_TRUE(pbdb->CreatePower(
+      MakePower(GURL("https://example.com/a1.html"), kMockType)));
+  EXPECT_TRUE(pbdb->CreatePower(
+      MakePower(GURL("https://example.com/a1.html"), kMockType)));
+
+  SearchParams case_insensitive_search_params{.query = "/A",
+                                              .case_sensitive = false};
+  EXPECT_EQ(
+      2u, pbdb->GetPowerOverviewsForSearchParams(case_insensitive_search_params)
+              .size());
 }
 
 TEST_F(PowerBookmarkDatabaseImplTest,
@@ -759,6 +797,32 @@ TEST_F(PowerBookmarkDatabaseImplTest,
   {
     SearchParams search_params{
         .query = "not found anywhere",
+    };
+    std::vector<std::unique_ptr<PowerOverview>> search_results =
+        pbdb->GetPowerOverviewsForSearchParams(search_params);
+
+    EXPECT_EQ(0u, search_results.size());
+  }
+}
+
+TEST_F(PowerBookmarkDatabaseImplTest,
+       GetPowerOverviewsForSearchParamsShouldNotMatchNoteUrl) {
+  std::unique_ptr<PowerBookmarkDatabaseImpl> pbdb =
+      std::make_unique<PowerBookmarkDatabaseImpl>(db_dir());
+  EXPECT_TRUE(pbdb->Init());
+
+  {
+    std::unique_ptr<sync_pb::PowerEntity> note_specifics =
+        std::make_unique<sync_pb::PowerEntity>();
+    note_specifics->mutable_note_entity()->set_plain_text("");
+    std::unique_ptr<Power> note_power = MakePower(
+        GURL("https://example.com/foo"), kNoteType, std::move(note_specifics));
+    EXPECT_TRUE(pbdb->CreatePower(std::move(note_power)));
+  }
+  // Test should not match URL for notes.
+  {
+    SearchParams search_params{
+        .query = "foo",
     };
     std::vector<std::unique_ptr<PowerOverview>> search_results =
         pbdb->GetPowerOverviewsForSearchParams(search_params);

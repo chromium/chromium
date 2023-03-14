@@ -9,14 +9,18 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/cast_streaming/browser/cast_streaming_session.h"
-#include "components/cast_streaming/browser/demuxer_stream_data_provider.h"
+#include "components/cast_streaming/browser/frame/demuxer_stream_data_provider.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"
-#include "components/cast_streaming/public/mojom/demuxer_connector.mojom.h"
-#include "components/cast_streaming/public/mojom/renderer_controller.mojom.h"
+#include "components/cast_streaming/common/public/mojom/demuxer_connector.mojom.h"
+#include "components/cast_streaming/common/public/mojom/renderer_controller.mojom.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace openscreen::cast {
+class ReceiverConstraints;
+}
 
 namespace cast_streaming {
 
@@ -28,10 +32,9 @@ class ReceiverSessionImpl final
  public:
   // |av_constraints| specifies the supported media codecs and limitations
   // surrounding this support.
-  ReceiverSessionImpl(
-      std::unique_ptr<ReceiverSession::AVConstraints> av_constraints,
-      MessagePortProvider message_port_provider,
-      ReceiverSession::Client* client);
+  ReceiverSessionImpl(openscreen::cast::ReceiverConstraints av_constraints,
+                      MessagePortProvider message_port_provider,
+                      ReceiverSession::Client* client);
   ~ReceiverSessionImpl() override;
 
   ReceiverSessionImpl(const ReceiverSessionImpl&) = delete;
@@ -100,7 +103,7 @@ class ReceiverSessionImpl final
   // Populated in the ctor, and empty following a call to either
   // OnReceiverEnabled() or OnMojoDisconnect().
   MessagePortProvider message_port_provider_;
-  std::unique_ptr<ReceiverSession::AVConstraints> av_constraints_;
+  openscreen::cast::ReceiverConstraints av_constraints_;
 
   mojo::AssociatedRemote<mojom::DemuxerConnector> demuxer_connector_;
   cast_streaming::CastStreamingSession cast_streaming_session_;

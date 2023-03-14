@@ -15,7 +15,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/string_split.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/ui/commands/web_content_commands.h"
+#import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"

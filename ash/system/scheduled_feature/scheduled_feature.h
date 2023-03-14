@@ -14,6 +14,9 @@
 #include "ash/system/time/time_of_day.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
+#include "base/scoped_observation_traits.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -46,6 +49,24 @@ class ASH_EXPORT ScheduledFeature
     base::TimeTicks NowTicks() const override;
   };
 
+  // For callers who are interested in feature state changes expressed using
+  // `ScheduleCheckpoint`. Checkpoints are a finer-grained way of reading the
+  // feature's "enabled" state; if this level of detail is not necessary, it's
+  // sufficient to just observe the binary "enabled" state (see `GetEnabled()`).
+  class CheckpointObserver : public base::CheckedObserver {
+   public:
+    // Invoked whenever a new `ScheduleCheckpoint` has been reached.
+    //
+    // The `src` is provided in case a caller is observing multiple
+    // `ScheduledFeature`s and needs to know which feature this notification is
+    // coming from.
+    virtual void OnCheckpointChanged(const ScheduledFeature* src,
+                                     ScheduleCheckpoint new_checkpoint) = 0;
+
+   protected:
+    ~CheckpointObserver() override = default;
+  };
+
   // `prefs_path_custom_start_time` and `prefs_path_custom_end_time` can be
   // empty strings. Supplying only one of the custom time prefs is invalid,
   // while supplying both of them enables the custom scheduling support.
@@ -61,6 +82,7 @@ class ASH_EXPORT ScheduledFeature
   PrefService* active_user_pref_service() const {
     return active_user_pref_service_;
   }
+  ScheduleCheckpoint current_checkpoint() const { return current_checkpoint_; }
   base::OneShotTimer* timer() { return timer_.get(); }
 
   bool GetEnabled() const;
@@ -77,6 +99,9 @@ class ASH_EXPORT ScheduledFeature
   void SetScheduleType(ScheduleType type);
   void SetCustomStartTime(TimeOfDay start_time);
   void SetCustomEndTime(TimeOfDay end_time);
+
+  void AddCheckpointObserver(CheckpointObserver* obs);
+  void RemoveCheckpointObserver(CheckpointObserver* obs);
 
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
@@ -141,24 +166,34 @@ class ASH_EXPORT ScheduledFeature
                             bool did_schedule_change,
                             bool keep_manual_toggles_during_schedules);
 
-  // Schedule the upcoming next toggle of the feature status.
-  void ScheduleNextToggle(base::TimeDelta delay);
+  // Schedule the next upcoming refresh of the feature state. `target_status`
+  // may actually be the same as `GetEnabled()` in some cases. For example, if
+  // it is currently `kSunrise` (`GetEnabled()` is false), that means the next
+  // `ScheduleCheckpoint` is `kMorning` (`target_status` is still false).
+  void ScheduleNextRefresh(base::TimeDelta delay, bool target_status);
+
+  void SetCurrentCheckpoint(ScheduleCheckpoint new_checkpoint);
 
   // The pref service of the currently active user. Can be null in
   // ash_unittests.
   PrefService* active_user_pref_service_ = nullptr;
 
-  // Tracks the upcoming feature state changes per each user due to automatic
-  // schedules. This can be used to restore a manually toggled status while the
-  // schedule is being used. See MaybeRestoreSchedule().
-  struct ScheduleTargetState {
+  // Contains all of the data required to restore `ScheduledFeature` to a state
+  // it was in previously. This is maintained per user mainly so that
+  // `ScheduledFeature` can pick up where it left off when the active user
+  // changes. This includes restoring a manually toggled feature status. See
+  // `MaybeRestoreSchedule()`.
+  struct ScheduleSnapshot {
     // The time at which the feature will switch to `target_status` defined
-    // below.
+    // below. `target_status` is not necessarily a change in status. See
+    // comments above `ScheduleNextRefresh()`.
     base::Time target_time;
     bool target_status;
+    // The value of `current_checkpoint_` at the time this snapshot of the
+    // feature's state was captured.
+    ScheduleCheckpoint current_checkpoint;
   };
-  base::flat_map<PrefService*, ScheduleTargetState>
-      per_user_schedule_target_state_;
+  base::flat_map<PrefService*, ScheduleSnapshot> per_user_schedule_snapshot_;
 
   // The timer that schedules the start and end of this feature when the
   // schedule type is either kSunsetToSunrise or kCustom. Safe to assume this is
@@ -192,8 +227,32 @@ class ASH_EXPORT ScheduledFeature
   // May be reset in tests to override the time of "Now"; otherwise, points to
   // `default_clock_`. Should never be null.
   const Clock* clock_ = nullptr;  // Not owned.
+
+  // Never persisted anywhere. Must stay in sync with the feature's current
+  // "enabled" state.
+  ScheduleCheckpoint current_checkpoint_ = ScheduleCheckpoint::kDisabled;
+
+  base::ObserverList<CheckpointObserver> checkpoint_observers_;
 };
 
 }  // namespace ash
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<ash::ScheduledFeature,
+                               ash::ScheduledFeature::CheckpointObserver> {
+  static void AddObserver(ash::ScheduledFeature* source,
+                          ash::ScheduledFeature::CheckpointObserver* observer) {
+    source->AddCheckpointObserver(observer);
+  }
+  static void RemoveObserver(
+      ash::ScheduledFeature* source,
+      ash::ScheduledFeature::CheckpointObserver* observer) {
+    source->RemoveCheckpointObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // ASH_SYSTEM_SCHEDULED_FEATURE_SCHEDULED_FEATURE_H_

@@ -7,20 +7,20 @@ module network.mojom;
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "services/network/public/mojom/ip_address_space.mojom";
 
-// How to treat private network requests.
+// How to treat local network requests.
 //
-// Private network requests are requests from a less-private IP address space
-// to a more-private IP address space. Concretely:
+// Local network requests are requests from a less-local IP address space
+// to a more-local IP address space. Concretely:
 //
-//  - unknown to private
 //  - unknown to local
-//  - public to private
+//  - unknown to loopback
 //  - public to local
-//  - private to local
+//  - public to loopback
+//  - local to loopback
 //
-// See the definition in the Private Network Access specification:
-// https://wicg.github.io/private-network-access/#ip-address-space
-enum PrivateNetworkRequestPolicy {
+// See the definition in the Local Network Access specification:
+// https://wicg.github.io/local-network-access/#ip-address-space
+enum LocalNetworkRequestPolicy {
   // Allow the requests.
   kAllow,
 
@@ -50,7 +50,7 @@ struct ClientSecurityState {
   // The initiator's IP AddressSpace.
   IPAddressSpace ip_address_space = kUnknown;
 
-  // The policy to apply to private network requests.
-  PrivateNetworkRequestPolicy private_network_request_policy = kAllow;
+  // The policy to apply to local network requests.
+  LocalNetworkRequestPolicy local_network_request_policy = kAllow;
 };
 

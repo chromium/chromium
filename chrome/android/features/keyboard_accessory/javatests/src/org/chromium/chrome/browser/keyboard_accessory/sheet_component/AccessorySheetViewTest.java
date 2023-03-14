@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.keyboard_accessory.sheet_component;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -17,10 +18,13 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.ACTIVE_TAB_INDEX;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.HEIGHT;
-import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.NO_ACTIVE_TAB;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.SHOW_KEYBOARD_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TABS;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TOP_SHADOW_VISIBLE;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.VISIBLE;
@@ -40,18 +44,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.AsyncViewProvider;
 import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.ViewProvider;
 import org.chromium.ui.modelutil.LazyConstructionPropertyMcp;
-import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.ViewUtils;
 
@@ -78,14 +83,7 @@ public class AccessorySheetViewTest {
                     R.id.keyboard_accessory_sheet_stub);
             int height = mActivityTestRule.getActivity().getResources().getDimensionPixelSize(
                     R.dimen.keyboard_accessory_sheet_height);
-            mModel = new PropertyModel
-                             .Builder(TABS, ACTIVE_TAB_INDEX, VISIBLE, HEIGHT, TOP_SHADOW_VISIBLE)
-                             .with(HEIGHT, height)
-                             .with(TABS, new ListModel<>())
-                             .with(ACTIVE_TAB_INDEX, NO_ACTIVE_TAB)
-                             .with(VISIBLE, false)
-                             .with(TOP_SHADOW_VISIBLE, false)
-                             .build();
+            mModel = AccessorySheetProperties.defaultPropertyModel().with(HEIGHT, height).build();
             ViewProvider<AccessorySheetView> provider =
                     AsyncViewProvider.of(viewStub, R.id.keyboard_accessory_sheet_container);
             mViewPager = new ArrayBlockingQueue<>(1);
@@ -224,6 +222,26 @@ public class AccessorySheetViewTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(TOP_SHADOW_VISIBLE, false));
         onView(isRoot()).check(
                 waitForView(withId(R.id.accessory_sheet_shadow), ViewUtils.VIEW_INVISIBLE));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY})
+    public void testHeader() {
+        Runnable runnable = mock(Runnable.class);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel.get(TABS).add(createTestTabWithTextView("Header"));
+            mModel.set(ACTIVE_TAB_INDEX, 0);
+            mModel.set(SHOW_KEYBOARD_CALLBACK, runnable);
+            mModel.set(VISIBLE, true);
+        });
+
+        onViewWaiting(withId(R.id.show_keyboard)).perform(click());
+
+        verify(runnable, times(1)).run();
+
+        onView(withId(R.id.sheet_title)).check(matches(withText("Passwords")));
     }
 
     private Tab createTestTabWithTextView(String textViewCaption) {

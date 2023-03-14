@@ -26,6 +26,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkRow.Location;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -108,7 +109,7 @@ public class BookmarkItemRowTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     public void testSetBookmarkId() {
-        doReturn(BookmarkUIState.STATE_FOLDER).when(mDelegate).getCurrentState();
+        doReturn(BookmarkUiMode.FOLDER).when(mDelegate).getCurrentUiMode();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mBookmarkItemRow.setBookmarkId(mBookmarkId, Location.TOP, false); });
 
@@ -126,7 +127,7 @@ public class BookmarkItemRowTest extends BlankUiTestActivityTestCase {
     @Test(expected = AssertionError.class)
     @SmallTest
     public void testSetBookmarkId_LoadingWhileClicked() {
-        doReturn(BookmarkUIState.STATE_LOADING).when(mDelegate).getCurrentState();
+        doReturn(BookmarkUiMode.LOADING).when(mDelegate).getCurrentUiMode();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mBookmarkItemRow.setBookmarkId(mBookmarkId, Location.TOP, false); });
 

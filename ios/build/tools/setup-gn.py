@@ -61,6 +61,12 @@ class ConfigParserWithStringInterpolation(configparser.ConfigParser):
       return fallback
     return self._UnquoteString(self._ExpandEnvVar(raw_value))
 
+  def getboolean(self, section, option, fallback=False):
+    try:
+      return super().getboolean(section, option)
+    except configparser.NoOptionError:
+      return fallback
+
   def _UnquoteString(self, string):
     if not string or string[0] != '"' or string[-1] != '"':
       return string
@@ -223,7 +229,8 @@ class GnGenerator(object):
       gn_command.append('--xcode-configs=' + ';'.join(SUPPORTED_CONFIGS))
       gn_command.append('--xcode-config-build-dir='
                         '//out/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}')
-      if self._settings.has_section('filters'):
+      use_blink = self._settings.getboolean('gn_args', 'use_blink')
+      if self._settings.has_section('filters') and not use_blink:
         target_filters = self._settings.values('filters')
         if target_filters:
           gn_command.append('--filters=%s' % ';'.join(target_filters))
@@ -355,6 +362,10 @@ def Main(args):
       '--config-path', default=os.path.expanduser('~/.setup-gn'),
       help='path to the user config file (default: %(default)s)')
   parser.add_argument(
+      '--project-config-path', default=os.path.join(default_root, os.pardir,
+          '.setup-gn'),
+      help='path to the project config file (default: %(default)s)')
+  parser.add_argument(
       '--system-config-path', default=os.path.splitext(__file__)[0] + '.config',
       help='path to the default config file (default: %(default)s)')
   parser.add_argument(
@@ -370,6 +381,7 @@ def Main(args):
   settings.read([
       args.system_config_path,
       args.config_path,
+      args.project_config_path,
   ])
 
   # Add private sections corresponding to --import argument.

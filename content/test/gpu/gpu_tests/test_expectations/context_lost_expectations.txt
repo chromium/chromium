@@ -5,7 +5,7 @@
 #         chromeos
 #         fuchsia
 #         linux ubuntu
-#         mac highsierra mojave catalina bigsur monterey
+#         mac highsierra mojave catalina bigsur monterey ventura
 #         win win8 win10 ]
 # Devices
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
@@ -22,7 +22,7 @@
 #         release release-x64
 #         fuchsia-chrome web-engine-shell ]
 # GPU
-# tags: [ amd amd-0x6613 amd-0x679e amd-0x6821 amd-0x7340
+# tags: [ amd amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340
 #         apple apple-apple-m1 apple-angle-metal-renderer:-apple-m1
 #         arm
 #         google google-0xffff google-0xc0de
@@ -59,6 +59,8 @@
 # tags: [ oop-c no-oop-c ]
 # WebGPU Backend Validation
 # tags: [ dawn-backend-validation dawn-no-backend-validation ]
+# WebGPU Adapter
+# tags: [ webgpu-adapter-default webgpu-adapter-swiftshader ]
 # Clang coverage
 # tags: [ clang-coverage no-clang-coverage ]
 # results: [ Failure RetryOnFailure Skip Slow ]
@@ -84,6 +86,7 @@ crbug.com/1078566 [ android ] GpuNormalTermination_NewWebGLNotBlocked [ Skip ]
 
 # Fuchsia cannot launch a new tab.
 [ fuchsia ] ContextLost_WebGLContextLostInHiddenTab [ Skip ]
+[ fuchsia ] ContextLost_WebGLContextRestoredInHiddenTab [ Skip ]
 
 # Webgpu not fully supported on Linux, Android, ChromeOS, and Fuchsia
 [ linux ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
@@ -159,6 +162,16 @@ crbug.com/923134 [ android ] ContextLost_WebGL2Blocked [ Skip ]
 # Failures/Flakes #
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
+
+# Fails on Linux AMD RX 5500 XT with RADV 20.0.8
+crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] ContextLost_WebGL2UnpackImageHeight [ Failure ]
+crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] ContextLost_WebGLContextLostFromGPUProcessExit [ Failure ]
+crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] ContextLost_WebGLContextLostFromQuantity [ Failure ]
+crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] GpuCrash_GPUProcessCrashesExactlyOncePerVisitToAboutGpuCrash [ Failure ]
+crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] GpuNormalTermination_NewWebGLNotBlocked [ Failure ]
+crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] GpuNormalTermination_OriginalWebGLNotBlocked [ Failure ]
+
+crbug.com/1419583 [ linux amd-0x7340 angle-vulkan ] ContextLost_WebGLContextRestoredInHiddenTab [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

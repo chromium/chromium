@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/worker_thread_debugger.h"
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
@@ -479,11 +480,7 @@ DedicatedWorkerObjectProxy& DedicatedWorkerGlobalScope::WorkerObjectProxy()
 }
 
 void DedicatedWorkerGlobalScope::UpdateBackForwardCacheDisablingFeatures(
-    uint64_t features_mask,
-    const BFCacheBlockingFeatureAndLocations&
-        non_sticky_features_and_js_locations,
-    const BFCacheBlockingFeatureAndLocations&
-        sticky_features_and_js_locations) {
+    BlockingDetails details) {
   // `back_forward_cache_controller_host_` might not be bound when non-
   // PlzDedicatedWorker is used. Non-PlzDedicatedWorker will be removed in near
   // future.
@@ -492,9 +489,11 @@ void DedicatedWorkerGlobalScope::UpdateBackForwardCacheDisablingFeatures(
   if (!back_forward_cache_controller_host_.is_bound()) {
     return;
   }
-
+  auto mojom_details = LocalFrame::ConvertFeatureAndLocationToMojomStruct(
+      details.non_sticky_features_and_js_locations,
+      details.sticky_features_and_js_locations);
   back_forward_cache_controller_host_
-      ->DidChangeBackForwardCacheDisablingFeatures(features_mask);
+      ->DidChangeBackForwardCacheDisablingFeatures(std::move(mojom_details));
 }
 
 void DedicatedWorkerGlobalScope::Trace(Visitor* visitor) const {

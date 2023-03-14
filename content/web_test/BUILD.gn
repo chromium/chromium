@@ -225,6 +225,14 @@ static_library("web_test_browser") {
   if (use_aura) {
     deps += [ "//ui/aura:test_support" ]
   }
+
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
+
+  if (is_fuchsia) {
+    deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.scenic:fuchsia.ui.scenic_hlcpp" ]
+  }
 }
 
 # TODO(crbug.com/1154721): The `allow_circular_includes_from` declared in

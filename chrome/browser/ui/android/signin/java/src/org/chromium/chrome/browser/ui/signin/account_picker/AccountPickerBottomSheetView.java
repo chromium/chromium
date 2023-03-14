@@ -166,14 +166,19 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     }
 
     /**
-     * Adjusts the strings in the header and dismiss button for the send-tab-to-self entry point.
+     * Sets the title, subtitle, and dismiss button text.
      */
-    void setSendTabToSelfHeaderAndDismissButtonText() {
-        setSendTabToSelfHeaderText(ViewState.COLLAPSED_ACCOUNT_LIST);
-        setSendTabToSelfHeaderText(ViewState.EXPANDED_ACCOUNT_LIST);
-        setSendTabToSelfHeaderText(ViewState.NO_ACCOUNTS);
-
-        mDismissButton.setText(R.string.cancel);
+    void setBottomSheetStrings(
+            @StringRes int title, @StringRes int subtitle, @StringRes int cancelButton) {
+        final int[] viewStates = {ViewState.COLLAPSED_ACCOUNT_LIST, ViewState.EXPANDED_ACCOUNT_LIST,
+                ViewState.NO_ACCOUNTS};
+        for (int viewState : viewStates) {
+            final View view = mViewFlipper.getChildAt(viewState);
+            ((TextView) view.findViewById(R.id.account_picker_header_title)).setText(title);
+            ((TextViewWithLeading) view.findViewById(R.id.account_picker_header_subtitle))
+                    .setText(subtitle);
+        }
+        mDismissButton.setText(cancelButton);
     }
 
     @Override
@@ -248,14 +253,6 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     @Override
     public int getSheetClosedAccessibilityStringId() {
         return R.string.account_picker_bottom_sheet_accessibility_closed;
-    }
-
-    private void setSendTabToSelfHeaderText(@ViewState int viewState) {
-        final View view = mViewFlipper.getChildAt(viewState);
-        ((TextView) view.findViewById(R.id.account_picker_header_title))
-                .setText(R.string.signin_account_picker_bottom_sheet_title_for_send_tab_to_self);
-        ((TextViewWithLeading) view.findViewById(R.id.account_picker_header_subtitle))
-                .setText(R.string.signin_account_picker_bottom_sheet_subtitle_for_send_tab_to_self);
     }
 
     private static void setUpContinueButton(View view, @StringRes int buttonId) {

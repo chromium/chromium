@@ -2,14 +2,6 @@
 <script src="media_license.js"></script>
 <script>
 
-  function success_() {
-    domAutomationController.send(true);
-  }
-
-  function failure_() {
-    domAutomationController.send(false);
-  }
-
   function isHttps_() {
     return location.protocol === 'https:';
   }
@@ -17,108 +9,158 @@
   function setCookie() {
     const samesite_none_secure = '; SameSite=None; Secure';
     document.cookie = 'foo=bar; Max-Age=1000' + (isHttps_() ? samesite_none_secure : '');
-    success_();
+    return true;
+  }
+  function setCookieAsync() {
+    // Provided for Java.
+    domAutomationController.send(setCookie());
   }
 
   function hasCookie() {
-    domAutomationController.send(document.cookie.indexOf('foo=bar') != -1);
+    return document.cookie.indexOf('foo=bar') != -1;
+  }
+  function hasCookieAsync() {
+    // Provided for Java.
+    domAutomationController.send(hasCookie());
   }
 
   function setSessionCookie() {
     const samesite_none_secure = '; SameSite=None; Secure';
     document.cookie = 'bar=session' + (isHttps_() ? samesite_none_secure : '');
-    success_();
+    return true;
   }
 
   function hasSessionCookie() {
-    domAutomationController.send(document.cookie == 'bar=session');
+    return document.cookie == 'bar=session';
   }
 
   function setCookieStore() {
-    cookieStore.set({
+    return cookieStore.set({
       name: 'cookie-name', value: 'cookie-value', sameSite: 'none'
-    }).then(success_).catch(failure_);
+    })
+    .then(() => true)
+    .catch(() => false);
   }
 
   function hasCookieStore() {
-    cookieStore.get('cookie-name').then(function (cookie) {
-      domAutomationController.send(cookie.value == 'cookie-value');
-    }).catch(failure_);
+    return cookieStore.get('cookie-name')
+    .then((cookie) => cookie.value == 'cookie-value')
+    .catch(() => false);
   }
 
   function setLocalStorage() {
     localStorage.setItem('foo', 'bar');
-    success_();
+    return true;
+  }
+  function setLocalStorageAsync() {
+    // Provided for Java.
+    domAutomationController.send(setLocalStorage());
   }
 
   function hasLocalStorage() {
     try {
-      domAutomationController.send(localStorage.getItem('foo') == 'bar');
+      return localStorage.getItem('foo') == 'bar';
     } catch (e) {
-      failure_();
+      return false;
     }
+  }
+  function hasLocalStorageAsync() {
+    // Provided for Java.
+    domAutomationController.send(hasLocalStorage());
   }
 
   function setSessionStorage() {
     sessionStorage.setItem('foo', 'bar');
-    success_();
+    return true;
   }
 
   function hasSessionStorage() {
     try {
-      domAutomationController.send(sessionStorage.getItem('foo') == 'bar');
+      return sessionStorage.getItem('foo') == 'bar';
     } catch (e) {
-      failure_();
+      return false;
     }
   }
 
   function setServiceWorker() {
-    navigator.serviceWorker.register('empty_worker.js').then(function() {
-      navigator.serviceWorker.ready.then(success_);
-    }).catch(failure_);
+    return navigator.serviceWorker.register('empty_worker.js')
+    .then(() => navigator.serviceWorker.ready)
+    .then(() => true)
+    .catch(() => false);
+  }
+  async function setServiceWorkerAsync() {
+    // Provided for Java.
+    domAutomationController.send(await setServiceWorker());
   }
 
   function hasServiceWorker() {
-    navigator.serviceWorker.getRegistrations().then(function (registrations) {
-      domAutomationController.send(registrations.length > 0);
-    }).catch(failure_);
+    return navigator.serviceWorker.getRegistrations()
+    .then((registrations) => registrations.length > 0)
+    .catch(() => false);
+  }
+  async function hasServiceWorkerAsync() {
+    // Provided for Java.
+    domAutomationController.send(await hasServiceWorker());
   }
 
   function setCacheStorage() {
-    caches.open("cache").then(function (cache) {
-      cache.put("/foo", new Response("bar")).then(success_);
-    }).catch(failure_);
+    return caches.open("cache")
+    .then((cache) => cache.put("/foo", new Response("bar")))
+    .then(() => true)
+    .catch(() => false);
+  }
+  async function setCacheStorageAsync() {
+    // Provided for Java.
+    domAutomationController.send(await setCacheStorage());
   }
 
   function hasCacheStorage() {
-    caches.open("cache").then(function (cache) {
-      cache.keys().then(function (keys) {
-        domAutomationController.send(keys.length > 0);
-      });
-    }).catch(failure_);
+    return caches.open("cache")
+    .then((cache) => cache.keys())
+    .then((keys) => keys.length > 0)
+    .catch(() => false);
+  }
+  async function hasCacheStorageAsync() {
+    // Provided for Java.
+    domAutomationController.send(await hasCacheStorage());
   }
 
-  function openFile_(name, options, callback, error) {
-    window.webkitRequestFileSystem(TEMPORARY, 1024, function (fs) {
-      fs.root.getFile(name, options, callback, error);
-    }, error);
+  async function openFile_(name, options, callback, error) {
+    const fs = await new Promise((resolve, reject) => {
+      window.webkitRequestFileSystem(TEMPORARY, 1024, resolve, reject);
+    });
+    return new Promise((resolve, reject) => {
+      fs.root.getFile(name, options, resolve, reject);
+    });
   }
 
   function setFileSystem() {
-    openFile_('foo.txt', { create: true, exclusive: true }, success_, failure_);
+    return openFile_('foo.txt', { create: true, exclusive: true })
+    .then(() => true)
+    .catch(() => false);
+  }
+  async function setFileSystemAsync() {
+    // Provided for Java.
+    domAutomationController.send(await setFileSystem());
   }
 
   function hasFileSystem() {
-    openFile_('foo.txt', { create: false }, success_, failure_);
+    return openFile_('foo.txt', { create: false })
+    .then(() => true)
+    .catch(() => false);
+  }
+  async function hasFileSystemAsync() {
+    // Provided for Java.
+    domAutomationController.send(await hasFileSystem());
   }
 
   async function setFileSystemAccess() {
     try {
       let dir = await navigator.storage.getDirectory();
       await dir.getFileHandle('foo.txt', {create: true});
-      success_();
+      return true;
     } catch (e) {
-      failure_();
+      return false;
     }
   }
 
@@ -126,37 +168,51 @@
     try {
       let dir = await navigator.storage.getDirectory();
       await dir.getFileHandle('foo.txt', { create: false });
-      success_();
+      return true;
     } catch (e) {
-      failure_();
+      return false;
     }
   }
 
-  function setWebSql() {
+  async function setWebSql() {
     try {
       var db = openDatabase('testdb', '1.0', 'a test db', 1024);
-      db.transaction(function (tx) {
-        tx.executeSql('CREATE TABLE IF NOT EXISTS foo (text)');
-        tx.executeSql('INSERT INTO foo (text) VALUES ("bar")');
-      }, failure_, success_);
+      await new Promise((resolve, reject) => {
+        db.transaction(function (tx) {
+          tx.executeSql('CREATE TABLE IF NOT EXISTS foo (text)');
+          tx.executeSql('INSERT INTO foo (text) VALUES ("bar")');
+        }, reject, resolve);
+      });
+      return true;
     } catch (e) {
-      return failure_();
+      return false;
     }
   }
+  async function setWebSqlAsync() {
+    // Provided for Java.
+    domAutomationController.send(await setWebSql());
+  }
 
-  function hasWebSql() {
+  async function hasWebSql() {
     try {
       var db = openDatabase('testdb', '1.0', 'a test db', 1024);
       var num_results;
-      db.transaction(function (tx) {
-        tx.executeSql('CREATE TABLE IF NOT EXISTS foo (text)');
-        tx.executeSql('SELECT * FROM foo', [], function (tx, results) {
-          num_results = results.rows.length;
-        });
-      }, null, function() { domAutomationController.send(num_results > 0); });
+      await new Promise((resolve, reject) => {
+        db.transaction(function (tx) {
+          tx.executeSql('CREATE TABLE IF NOT EXISTS foo (text)');
+          tx.executeSql('SELECT * FROM foo', [], function (tx, results) {
+            num_results = results.rows.length;
+          });
+        }, reject, resolve);
+      });
+      return num_results > 0;
     } catch (e) {
-      return failure_();
+      return false;
     }
+  }
+  async function hasWebSqlAsync() {
+    // Provided for Java.
+    domAutomationController.send(await hasWebSql());
   }
 
   function setIndexedDb() {
@@ -164,62 +220,74 @@
     open.onupgradeneeded = function() {
       open.result.createObjectStore('store');
     }
-    open.onsuccess = function() {
-      open.result.close();
-      success_();
-    }
-    open.onerror = failure_;
+    return new Promise((resolve) => {
+      open.onsuccess = function () {
+        open.result.close();
+        resolve(true);
+      }
+      open.onerror = () => resolve(false);
+    });
+  }
+  async function setIndexedDbAsync() {
+    domAutomationController.send(await setIndexedDb());
   }
 
   function hasIndexedDb() {
     var open = indexedDB.open('db');
-    open.onsuccess = function() {
-      var hasStore = open.result.objectStoreNames.contains('store');
-      open.result.close();
-      domAutomationController.send(hasStore);
-    }
-    open.onerror = failure_;
+    return new Promise((resolve) => {
+      open.onsuccess = function() {
+        var hasStore = open.result.objectStoreNames.contains('store');
+        open.result.close();
+        resolve(hasStore);
+      }
+      open.onerror = () => resolve(false);
+    });
+  }
+  async function hasIndexedDbAsync() {
+    domAutomationController.send(await hasIndexedDb());
   }
 
   function worker_(command) {
     let worker = new Worker("site_data_worker.js");
-    worker.onmessage = e => {
-      domAutomationController.send(e.data);
-    };
-    worker.postMessage(command)
+    return new Promise((resolve) => {
+      worker.onmessage = e => {
+        resolve(e.data);
+      };
+      worker.postMessage(command);
+    });
   }
 
   function hasWorkerFileSystemAccess() {
-    worker_("hasFileSystemAccess");
+    return worker_("hasFileSystemAccess");
   }
 
   function setWorkerFileSystemAccess() {
-    worker_("setFileSystemAccess");
+    return worker_("setFileSystemAccess");
   }
 
   function hasWorkerCacheStorage() {
-    worker_("hasCacheStorage");
+    return worker_("hasCacheStorage");
   }
 
   function setWorkerCacheStorage() {
-    worker_("setCacheStorage");
+    return worker_("setCacheStorage");
   }
 
   function hasWorkerIndexedDb() {
-    worker_("hasIndexedDb");
+    return worker_("hasIndexedDb");
   }
 
   function setWorkerIndexedDb() {
-    worker_("setIndexedDb");
+    return worker_("setIndexedDb");
   }
 
   function setHistory() {
     history.pushState({}, "foo");
-    success_();
+    return true;
   }
 
   function hasHistory() {
-    domAutomationController.send(history.length > 1);
+    return history.length > 1;
   }
 
   let sharedWorker; // Global variable to keep worker alive.
@@ -233,38 +301,44 @@
   }
 
   function setSharedWorker() {
-    connectSharedWorker().then(() => {
+    return connectSharedWorker()
+    .then(() => {
       sharedWorker.port.postMessage({ "value": "foo" });
-      success_();
-    }).catch(failure_);
+      return true;
+    })
+    .catch(() => false);
   }
 
   async function hasSharedWorker() {
-    connectSharedWorker().then(() => {
-      sharedWorker.port.onmessage = e => {
-        domAutomationController.send(e.data.value === "foo");
-      };
-      sharedWorker.port.postMessage({});
-    }).catch(failure_);
+    return connectSharedWorker()
+    .then(() => {
+      return new Promise((resolve) => {
+        sharedWorker.port.onmessage = e => {
+          resolve(e.data.value === "foo");
+        };
+        sharedWorker.port.postMessage({});
+      });
+    })
+    .catch(() => false);
   }
 
   let lock;
   function setWebLock() {
-    navigator.locks.request("foo", l => {
-      lock = new Promise((res, rej) => { });
-      // Now lock will be held while |lock| exists.
-      success_();
-      return lock;
-    }).catch(failure_);
+    return new Promise((resolve) => {
+      navigator.locks.request("foo", () => {
+        lock = new Promise(() => { });
+        // Now lock will be held while |lock| exists.
+        resolve(true);
+        return lock;
+      })
+    })
+    .catch(() => false);
   }
 
   function hasWebLock() {
-    navigator.locks.query().then(locks => {
-      if (locks.held.length)
-        domAutomationController.send(locks.held[0].name === "foo");
-      else
-        failure_();
-    }).catch(failure_);
+    return navigator.locks.query()
+    .then(locks => !!locks.held.length && locks.held[0].name === "foo")
+    .catch(() => false);
   }
 </script>
 

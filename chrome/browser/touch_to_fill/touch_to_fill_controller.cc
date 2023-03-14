@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
+#include "chrome/browser/password_manager/android/password_manager_launcher_android.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller_delegate.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_view.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_view_factory.h"
@@ -66,7 +67,8 @@ void TouchToFillController::Show(
       TouchToFillView::IsOriginSecure(
           network::IsOriginPotentiallyTrustworthy(url::Origin::Create(url))),
       SortCredentials(credentials), passkey_credentials,
-      delegate_->ShouldTriggerSubmission());
+      delegate_->ShouldTriggerSubmission(),
+      password_manager_launcher::CanManagePasswordsWhenPasskeysPresent());
 }
 
 void TouchToFillController::OnCredentialSelected(
@@ -87,11 +89,12 @@ void TouchToFillController::OnPasskeyCredentialSelected(
                                  base::Unretained(this)));
 }
 
-void TouchToFillController::OnManagePasswordsSelected() {
+void TouchToFillController::OnManagePasswordsSelected(bool passkeys_shown) {
   view_.reset();
   // Unretained is safe here because TouchToFillController owns the delegate.
-  delegate_->OnManagePasswordsSelected(base::BindOnce(
-      &TouchToFillController::ActionCompleted, base::Unretained(this)));
+  delegate_->OnManagePasswordsSelected(
+      passkeys_shown, base::BindOnce(&TouchToFillController::ActionCompleted,
+                                     base::Unretained(this)));
 }
 
 void TouchToFillController::OnDismiss() {

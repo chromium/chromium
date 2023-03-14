@@ -265,6 +265,17 @@ TCPSocketWin::TCPSocketWin(
   EnsureWinsockInit();
 }
 
+TCPSocketWin::TCPSocketWin(
+    std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
+    NetLogWithSource net_log_source)
+    : socket_(INVALID_SOCKET),
+      socket_performance_watcher_(std::move(socket_performance_watcher)),
+      accept_event_(WSA_INVALID_EVENT),
+      net_log_(net_log_source) {
+  net_log_.BeginEvent(NetLogEventType::SOCKET_ALIVE);
+  EnsureWinsockInit();
+}
+
 TCPSocketWin::~TCPSocketWin() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   Close();

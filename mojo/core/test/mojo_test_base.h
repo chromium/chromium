@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "mojo/core/test/multiprocess_test_helper.h"
 #include "mojo/public/c/system/trap.h"
@@ -48,7 +49,7 @@ class MojoTestBase : public testing::Test {
 
     ~ClientController();
 
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(USE_BLINK)
     const base::Process& process() const { return helper_.test_child(); }
 #endif
 
@@ -59,7 +60,7 @@ class MojoTestBase : public testing::Test {
    private:
     friend class MojoTestBase;
 
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(USE_BLINK)
     MultiprocessTestHelper helper_;
 #endif
     ScopedMessagePipeHandle pipe_;
@@ -200,7 +201,7 @@ class MojoTestBase : public testing::Test {
 // |pipe_name| will be bound to the MojoHandle of a message pipe connected
 // to the test process (see RunTestClient* above.) This pipe handle is
 // automatically closed on test client teardown.
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(USE_BLINK)
 #define DEFINE_TEST_CLIENT_WITH_PIPE(client_name, test_base, pipe_name) \
   class client_name##_MainFixture : public test_base {                  \
     void TestBody() override {}                                         \
@@ -236,7 +237,7 @@ class MojoTestBase : public testing::Test {
                        base::Unretained(&test)));                            \
   }                                                                          \
   void client_name##_MainFixture::Main(MojoHandle pipe_name)
-#else  // !BUILDFLAG(IS_IOS)
+#else  // BUILDFLAG(USE_BLINK)
 #define DEFINE_TEST_CLIENT_WITH_PIPE(client_name, test_base, pipe_name) \
   class client_name##_MainFixture : public test_base {                  \
     void TestBody() override {}                                         \
@@ -253,7 +254,7 @@ class MojoTestBase : public testing::Test {
     void Main(MojoHandle);                                                   \
   };                                                                         \
   void client_name##_MainFixture::Main(MojoHandle pipe_name)
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(USE_BLINK)
 
 }  // namespace test
 }  // namespace core

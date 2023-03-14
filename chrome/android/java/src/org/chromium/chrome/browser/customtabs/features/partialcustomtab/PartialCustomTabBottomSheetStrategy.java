@@ -60,6 +60,8 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
                    PartialCustomTabHandleStrategy.DragEventCallback {
     @VisibleForTesting
     static final long SPINNER_TIMEOUT_MS = 500;
+    @VisibleForTesting
+    static final int BOTTOM_SHEET_MAX_WIDTH_DP_LANDSCAPE = 900;
     /**
      * Minimal height the bottom sheet CCT should show is half of the display height.
      */
@@ -70,7 +72,6 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
      * display height.
      */
     private static final float EXTRA_HEIGHT_RATIO = 0.1f;
-    private static final int BOTTOM_SHEET_MAX_WIDTH_DP = 900;
     private static final int SPINNER_FADEIN_DURATION_MS = 100;
     private static final int SPINNER_FADEOUT_DURATION_MS = 400;
     private static final int NAVBAR_BUTTON_HIDE_SHOW_DELAY_MS = 150;
@@ -156,8 +157,6 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
         mUnclampedInitialHeight = initialHeight;
         mIsFixedHeight = isFixedHeight;
-        mHeight = MATCH_PARENT;
-        mWidth = MATCH_PARENT;
     }
 
     @Override
@@ -397,8 +396,8 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
         int density = (int) (mActivity.getResources().getDisplayMetrics().density);
         WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
-        if (width / density > BOTTOM_SHEET_MAX_WIDTH_DP) {
-            width = BOTTOM_SHEET_MAX_WIDTH_DP * density;
+        if (isLandscapeMaxWidth(width)) {
+            width = BOTTOM_SHEET_MAX_WIDTH_DP_LANDSCAPE * density;
         }
         attrs.width = width;
         mActivity.getWindow().setAttributes(attrs);
@@ -421,6 +420,13 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
         mActivity.getWindow().setAttributes(attrs);
     }
 
+    private boolean isMaxWidthLandscapeBottomSheet() {
+        if (!ChromeFeatureList.sCctResizableSideSheet.isEnabled()) return false;
+
+        int displayWidth = mVersionCompat.getDisplayWidth();
+        return isLandscapeMaxWidth(displayWidth);
+    }
+
     private void updateDragBarVisibility() {
         updateDragBarVisibility(
                 /*dragHandlebarVisibility*/ isFixedHeight() ? View.GONE : View.VISIBLE);
@@ -429,16 +435,34 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     @Override
     protected void setTopMargins(int shadowOffset, int handleOffset) {
         View handleView = mActivity.findViewById(R.id.custom_tabs_handle_view);
+        boolean isMaxWidthLandscapeBottomSheet = isMaxWidthLandscapeBottomSheet();
+
+        if (ChromeFeatureList.sCctResizableSideSheet.isEnabled()) {
+            float maxWidthBottomSheetEv =
+                    mActivity.getResources().getDimensionPixelSize(R.dimen.default_elevation_2);
+            float regBottomSheetEv =
+                    mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_elevation);
+            float elevation =
+                    isMaxWidthLandscapeBottomSheet ? maxWidthBottomSheetEv : regBottomSheetEv;
+
+            ViewGroup coordinatorLayout = (ViewGroup) mActivity.findViewById(R.id.coordinator);
+            coordinatorLayout.setElevation(elevation);
+            if (handleView != null) {
+                handleView.setElevation(elevation);
+            }
+        }
+
+        int sideMargin = isMaxWidthLandscapeBottomSheet ? shadowOffset : 0;
         if (handleView != null) {
             ViewGroup.MarginLayoutParams lp =
                     (ViewGroup.MarginLayoutParams) handleView.getLayoutParams();
-            lp.setMargins(0, shadowOffset, 0, 0);
+            lp.setMargins(sideMargin, shadowOffset, sideMargin, 0);
         }
 
         // Make enough room for the handle View.
         ViewGroup.MarginLayoutParams mlp =
                 (ViewGroup.MarginLayoutParams) mToolbarCoordinator.getLayoutParams();
-        mlp.setMargins(0, handleOffset, 0, 0);
+        mlp.setMargins(sideMargin, handleOffset, sideMargin, 0);
     }
 
     @Override
@@ -448,7 +472,9 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
     @Override
     protected boolean shouldHaveNoShadowOffset() {
-        return mStatus == HeightStatus.TOP;
+        return mStatus == HeightStatus.TOP
+                || (ChromeFeatureList.sCctResizableSideSheet.isEnabled()
+                        && mActivity.getWindow().getAttributes().y <= getFullyExpandedY());
     }
 
     @Override
@@ -637,21 +663,6 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
         mSpinnerView.setLayoutParams(lp);
     }
 
-    private void maybeInvokeResizeCallback() {
-        WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
-        if (isFullHeight() || isFullscreen()) {
-            mOnResizedCallback.onResized(mDisplayHeight, mDisplayWidth);
-            mHeight = mDisplayHeight;
-            mWidth = mDisplayWidth;
-        } else {
-            if ((mHeight != attrs.height && mHeight > 0) || (mWidth != attrs.width && mWidth > 0)) {
-                mOnResizedCallback.onResized(attrs.height, attrs.width);
-            }
-            mHeight = attrs.height;
-            mWidth = attrs.width;
-        }
-    }
-
     private void changeVisibilityNavbarButtons(boolean show) {
         View decorView = mActivity.getWindow().getDecorView();
         WindowInsetsControllerCompat controller =
@@ -800,6 +811,11 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
             onDragMove(startY + 1);
             onDragEnd(0);
         }
+    }
+
+    private boolean isLandscapeMaxWidth(int width) {
+        int density = (int) (mActivity.getResources().getDisplayMetrics().density);
+        return isLandscape() && width / density > BOTTOM_SHEET_MAX_WIDTH_DP_LANDSCAPE;
     }
 
     @VisibleForTesting

@@ -1,8 +1,6 @@
 // Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-//
-// TODO(crbug.com/1207718): Delete this file.
 
 #include "components/cast_streaming/browser/cast_message_port_impl.h"
 
@@ -10,6 +8,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/values.h"
+#include "components/cast_streaming/browser/cast_message_port_converter.h"
 #include "components/cast_streaming/common/message_serialization.h"
 #include "third_party/openscreen/src/platform/base/error.h"
 
@@ -49,7 +48,40 @@ base::Value::Dict GetMediaCurrentStatusValue() {
   return media_current_status;
 }
 
+// Implementation of CastMessagePortConverter using CastMessagePortImpl.
+class CastMessagePortConverterImpl : public CastMessagePortConverter {
+ public:
+  CastMessagePortConverterImpl(
+      ReceiverSession::MessagePortProvider message_port_provider,
+      base::OnceClosure on_close)
+      : message_port_(std::move(message_port_provider).Run()),
+        on_close_(std::move(on_close)) {}
+  ~CastMessagePortConverterImpl() override = default;
+
+  openscreen::cast::MessagePort& GetMessagePort() override {
+    if (!openscreen_port_) {
+      DCHECK(message_port_);
+      openscreen_port_ = std::make_unique<CastMessagePortImpl>(
+          std::move(message_port_), std::move(on_close_));
+    }
+    return *openscreen_port_;
+  }
+
+ private:
+  std::unique_ptr<cast_api_bindings::MessagePort> message_port_;
+  base::OnceClosure on_close_;
+
+  std::unique_ptr<openscreen::cast::MessagePort> openscreen_port_;
+};
+
 }  // namespace
+
+std::unique_ptr<CastMessagePortConverter> CastMessagePortConverter::Create(
+    ReceiverSession::MessagePortProvider message_port_provider,
+    base::OnceClosure on_close) {
+  return std::make_unique<CastMessagePortConverterImpl>(
+      std::move(message_port_provider), std::move(on_close));
+}
 
 CastMessagePortImpl::CastMessagePortImpl(
     std::unique_ptr<cast_api_bindings::MessagePort> message_port,

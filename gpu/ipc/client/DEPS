@@ -14,11 +14,11 @@ specific_include_rules = {
     "+cc/paint/paint_image.h",
   ],
   "raster_in_process_context_tests.cc": [
-    "+components/viz/common/resources/resource_format.h",
-    "+components/viz/common/resources/resource_format_utils.h",
+    "+components/viz/common/resources/shared_image_format.h",
     "+components/viz/test/test_gpu_memory_buffer_manager.h",
   ],
   "client_shared_image_interface.cc": [
+    "+components/viz/common/resources/resource_format_utils.h",
     "+components/viz/common/resources/shared_image_format.h",
   ]
 }

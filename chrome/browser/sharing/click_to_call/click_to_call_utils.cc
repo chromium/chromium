@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharing/click_to_call/phone_number_regex.h"
+#include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/sharing_service.h"
 #include "chrome/browser/sharing/sharing_service_factory.h"
 #include "chrome/common/pref_names.h"
@@ -39,6 +40,10 @@ bool IsClickToCallEnabled(content::BrowserContext* browser_context) {
   // We don't support sending phone numbers from Android.
   return false;
 #else   // BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(kClickToCall)) {
+    return false;
+  }
+
   // Check Chrome enterprise policy for Click to Call.
   Profile* profile = Profile::FromBrowserContext(browser_context);
   if (profile && !profile->GetPrefs()->GetBoolean(prefs::kClickToCallEnabled))

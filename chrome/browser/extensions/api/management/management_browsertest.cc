@@ -361,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, MAYBE_AutoUpdate) {
   ExtensionService* service = extension_service();
   ExtensionRegistry* registry = extension_registry();
   const size_t size_before = registry->enabled_extensions().size();
-  ASSERT_TRUE(registry->disabled_extensions().is_empty());
+  EXPECT_TRUE(registry->disabled_extensions().empty());
   const Extension* extension = InstallExtension(crx_v1_path, 1);
   ASSERT_TRUE(extension);
   EXPECT_TRUE(listener1.WaitUntilSatisfied());
@@ -523,7 +523,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, ExternalUrlUpdate) {
 
   ExtensionRegistry* registry = extension_registry();
   const size_t size_before = registry->enabled_extensions().size();
-  ASSERT_TRUE(registry->disabled_extensions().is_empty());
+  EXPECT_TRUE(registry->disabled_extensions().empty());
 
   extensions::PendingExtensionManager* pending_extension_manager =
       service->pending_extension_manager();
@@ -610,7 +610,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, ExternalPolicyRefresh) {
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser()->profile());
   const size_t size_before = registry->enabled_extensions().size();
-  ASSERT_TRUE(registry->disabled_extensions().is_empty());
+  EXPECT_TRUE(registry->disabled_extensions().empty());
 
   ASSERT_TRUE(extensions::ExtensionManagementFactory::GetForBrowserContext(
                   browser()->profile())
@@ -679,7 +679,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser()->profile());
   const char kExtensionId[] = "ogjcoiohnmldgjemafoockdghcjciccf";
   const size_t size_before = registry->enabled_extensions().size();
-  ASSERT_TRUE(registry->disabled_extensions().is_empty());
+  EXPECT_TRUE(registry->disabled_extensions().empty());
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_dir;
@@ -746,7 +746,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   ASSERT_TRUE(extension);
   EXPECT_EQ(ManifestLocation::kInternal, extension->location());
   EXPECT_TRUE(service->IsExtensionEnabled(kExtensionId));
-  EXPECT_TRUE(registry->disabled_extensions().is_empty());
+  EXPECT_TRUE(registry->disabled_extensions().empty());
 
   DisableExtension(kExtensionId);
   EXPECT_EQ(1u, registry->disabled_extensions().size());
@@ -769,5 +769,5 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   ASSERT_TRUE(extension);
   EXPECT_EQ(ManifestLocation::kExternalPolicyDownload, extension->location());
   EXPECT_TRUE(service->IsExtensionEnabled(kExtensionId));
-  EXPECT_TRUE(registry->disabled_extensions().is_empty());
+  EXPECT_TRUE(registry->disabled_extensions().empty());
 }

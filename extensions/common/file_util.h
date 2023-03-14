@@ -45,8 +45,16 @@ base::FilePath InstallExtension(const base::FilePath& unpacked_source_dir,
                                 const std::string& version,
                                 const base::FilePath& extensions_dir);
 
-// Removes all versions of the extension with |id| from |extensions_dir|.
-void UninstallExtension(const base::FilePath& extensions_dir,
+// Removes all versions of the extension with `id` from `extensions_dir` with a
+// recursive delete. `profile_dir` is the path to the current Chrome profile
+// directory. Requirements:
+//   *) `profile_dir`, `extensions_dir`, and `id` cannot be empty
+//   *) `profile_dir`, and `extensions_dir` must be absolute paths
+//   *) `extensions_dir` must be a subdir of `profile_dir`
+// Otherwise the deletion will not be performed to avoid the risk of dangerous
+// paths like ".", "..", etc.
+void UninstallExtension(const base::FilePath& profile_dir,
+                        const base::FilePath& extensions_dir,
                         const std::string& id);
 
 // Loads and validates an extension from the specified directory. Uses

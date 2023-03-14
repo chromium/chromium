@@ -14,6 +14,9 @@ void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
                                     const ui::ColorProviderManager::Key& key) {
   ui::ColorMixer& mixer = provider->AddMixer();
   mixer[kColorSidePanelContentBackground] = {ui::kColorSysSurface4};
+  mixer[kColorSidePanelScrollbarThumb] = {ui::kColorSysPrimary};
+  mixer[kColorSidePanelCardBackground] = {ui::kColorSysSurface};
+
   mixer[kColorSidePanelBadgeBackground] = {ui::kColorSysSurfaceVariant};
   mixer[kColorSidePanelBadgeBackgroundUpdated] = {
       ui::kColorSysTertiaryContainer};
@@ -21,14 +24,15 @@ void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
   mixer[kColorSidePanelBadgeForegroundUpdated] = {
       ui::kColorSysOnTertiaryContainer};
 
-  // TODO(crbug.com/1400859): Finalize filter chip colors.
-  mixer[kColorSidePanelFilterChipBorder] = {ui::kColorButtonBackgroundTonal};
+  mixer[kColorSidePanelFilterChipBorder] = {ui::kColorSysTonalOutline};
   mixer[kColorSidePanelFilterChipForeground] = {ui::kColorSysOnSurface};
   mixer[kColorSidePanelFilterChipForegroundSelected] = {
-      ui::kColorSysOnPrimaryContainer};
+      ui::kColorSysOnTonalContainer};
   mixer[kColorSidePanelFilterChipIcon] = {ui::kColorSysPrimary};
   mixer[kColorSidePanelFilterChipIconSelected] = {
-      ui::kColorSysOnPrimaryContainer};
+      ui::kColorSysOnTonalContainer};
   mixer[kColorSidePanelFilterChipBackgroundSelected] = {
-      ui::kColorSysPrimaryContainer};
+      ui::kColorSysTonalContainer};
+
+  mixer[kColorSidePanelTextfieldBorder] = {ui::kColorSysNeutralOutline};
 }

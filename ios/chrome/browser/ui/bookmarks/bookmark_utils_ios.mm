@@ -15,19 +15,25 @@
 #import "base/check.h"
 #import "base/hash/hash.h"
 #import "base/i18n/string_compare.h"
+#import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/notreached.h"
 #import "base/ranges/algorithm.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/common/bookmark_features.h"
 #import "components/bookmarks/common/bookmark_metrics.h"
 #import "components/query_parser/query_parser.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/bookmarks/bookmarks_utils.h"
 #import "ios/chrome/browser/flags/system_flags.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/bookmarks/undo_manager_wrapper.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "third_party/skia/include/core/SkColor.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -41,6 +47,13 @@
 using bookmarks::BookmarkNode;
 
 namespace bookmark_utils_ios {
+
+namespace {
+
+// The size of the cloud.slash icon.
+constexpr CGFloat kCloudSlashPointSize = 24;
+
+}  // namespace
 
 NSString* const kBookmarksSnackbarCategory = @"BookmarksSnackbarCategory";
 
@@ -108,6 +121,42 @@ NSString* TitleForBookmarkNode(const BookmarkNode* node) {
   return title;
 }
 
+#pragma mark - Profile and account
+
+BookmarkModelType GetBookmarkModelType(
+    const bookmarks::BookmarkNode* bookmark_node,
+    bookmarks::BookmarkModel* profile_model,
+    bookmarks::BookmarkModel* account_model) {
+  DCHECK(profile_model);
+  if (bookmark_node->HasAncestor(profile_model->root_node())) {
+    return BookmarkModelType::kProfile;
+  }
+  DCHECK(account_model &&
+         bookmark_node->HasAncestor(account_model->root_node()));
+  return BookmarkModelType::kAccount;
+}
+
+// TODO (crbug.com/1404250): Implements the distinction of profile/account
+// models when both models are used.
+bool ShouldDisplayCloudSlashIcon(SyncSetupService* sync_setup_service) {
+  if (!base::FeatureList::IsEnabled(
+          bookmarks::kEnableBookmarksAccountStorage)) {
+    return false;
+  }
+  return !(
+      sync_setup_service->IsSyncRequested() &&
+      sync_setup_service->IsDataTypePreferred(syncer::ModelType::BOOKMARKS));
+}
+
+UIImageView* CloudSlashIcon() {
+  UIImage* cloudSlashedImage = CustomSymbolWithPointSize(
+      kCloudSlashSymbol, bookmark_utils_ios::kCloudSlashPointSize);
+  UIImageView* cloudSlashedView =
+      [[UIImageView alloc] initWithImage:cloudSlashedImage];
+  cloudSlashedView.tintColor = [UIColor colorNamed:kTextSecondaryColor];
+  return cloudSlashedView;
+}
+
 #pragma mark - Updating Bookmarks
 
 // Deletes all subnodes of `node`, including `node`, that are in `bookmarks`.
@@ -128,11 +177,14 @@ void DeleteBookmarks(const std::set<const BookmarkNode*>& bookmarks,
 // the user presses the undo button, and the UndoManagerWrapper allows the undo
 // to go through.
 MDCSnackbarMessage* CreateUndoToastWithWrapper(UndoManagerWrapper* wrapper,
-                                               NSString* text) {
+                                               NSString* text,
+                                               std::string user_action) {
+  DCHECK(!user_action.empty());
   // Create the block that will be executed if the user taps the undo button.
   MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
   action.handler = ^{
     if (![wrapper hasUndoManagerChanged]) {
+      base::RecordAction(base::UserMetricsAction(user_action.c_str()));
       [wrapper undo];
     }
   };
@@ -197,7 +249,10 @@ MDCSnackbarMessage* CreateOrUpdateBookmarkWithUndoToast(
   NSString* text =
       l10n_util::GetNSString((node) ? IDS_IOS_BOOKMARK_NEW_BOOKMARK_UPDATED
                                     : IDS_IOS_BOOKMARK_NEW_BOOKMARK_CREATED);
-  return CreateUndoToastWithWrapper(wrapper, text);
+  const char* user_action = (node)
+                                ? "MobileBookmarkManagerUpdatedBookmarkUndone"
+                                : "MobileBookmarkManagerAddedBookmarkUndone";
+  return CreateUndoToastWithWrapper(wrapper, text, user_action);
 }
 
 MDCSnackbarMessage* CreateBookmarkAtPositionWithUndoToast(
@@ -224,7 +279,8 @@ MDCSnackbarMessage* CreateBookmarkAtPositionWithUndoToast(
 
   NSString* text =
       l10n_util::GetNSString(IDS_IOS_BOOKMARK_NEW_BOOKMARK_CREATED);
-  return CreateUndoToastWithWrapper(wrapper, text);
+  return CreateUndoToastWithWrapper(wrapper, text,
+                                    "MobileBookmarkManagerBookmarkAddedUndone");
 }
 
 MDCSnackbarMessage* UpdateBookmarkPositionWithUndoToast(
@@ -256,7 +312,8 @@ MDCSnackbarMessage* UpdateBookmarkPositionWithUndoToast(
 
   NSString* text =
       l10n_util::GetNSString(IDS_IOS_BOOKMARK_NEW_BOOKMARK_UPDATED);
-  return CreateUndoToastWithWrapper(wrapper, text);
+  return CreateUndoToastWithWrapper(wrapper, text,
+                                    "MobileBookmarkManagerMoveToFolderUndone");
 }
 
 void DeleteBookmarks(const std::set<const BookmarkNode*>& bookmarks,
@@ -282,7 +339,6 @@ MDCSnackbarMessage* DeleteBookmarksWithUndoToast(
   [wrapper resetUndoManagerChanged];
 
   NSString* text = nil;
-
   if (node_count == 1) {
     text = l10n_util::GetNSString(IDS_IOS_BOOKMARK_NEW_SINGLE_BOOKMARK_DELETE);
   } else {
@@ -290,8 +346,8 @@ MDCSnackbarMessage* DeleteBookmarksWithUndoToast(
         l10n_util::GetNSStringF(IDS_IOS_BOOKMARK_NEW_MULTIPLE_BOOKMARK_DELETE,
                                 base::NumberToString16(node_count));
   }
-
-  return CreateUndoToastWithWrapper(wrapper, text);
+  return CreateUndoToastWithWrapper(wrapper, text,
+                                    "MobileBookmarkManagerDeletedEntryUndone");
 }
 
 bool MoveBookmarks(std::set<const BookmarkNode*> bookmarks,
@@ -342,8 +398,8 @@ MDCSnackbarMessage* MoveBookmarksWithUndoToast(
     text = l10n_util::GetNSStringF(IDS_IOS_BOOKMARK_NEW_MULTIPLE_BOOKMARK_MOVE,
                                    base::NumberToString16(node_count));
   }
-
-  return CreateUndoToastWithWrapper(wrapper, text);
+  return CreateUndoToastWithWrapper(wrapper, text,
+                                    "MobileBookmarkManagerMoveToFolderUndone");
 }
 
 #pragma mark - Useful bookmark manipulation.
@@ -520,8 +576,8 @@ std::vector<NodeVector::size_type> MissingNodesIndices(
 
 #pragma mark - Cache position in table view.
 
-NSArray* CreateBookmarkPath(bookmarks::BookmarkModel* model,
-                            int64_t folder_id) {
+NSArray<NSNumber*>* CreateBookmarkPath(bookmarks::BookmarkModel* model,
+                                       int64_t folder_id) {
   // Create an array with root node id, if folder_id == root node.
   if (model->root_node()->id() == folder_id) {
     return @[ [NSNumber numberWithLongLong:model->root_node()->id()] ];
@@ -532,7 +588,7 @@ NSArray* CreateBookmarkPath(bookmarks::BookmarkModel* model,
     return nil;
   }
 
-  NSMutableArray* bookmarkPath = [NSMutableArray array];
+  NSMutableArray<NSNumber*>* bookmarkPath = [NSMutableArray array];
   [bookmarkPath addObject:[NSNumber numberWithLongLong:folder_id]];
   while (model->root_node()->id() != bookmark->id()) {
     bookmark = bookmark->parent();

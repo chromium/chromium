@@ -10,7 +10,7 @@ PASS style.getPropertyValue("--important-foo") is ""
 PASS style.removeProperty("--foo") is "papayawhip"
 PASS style.getPropertyValue("--foo") is ""
 PASS computedStyle.setProperty("--error", "") threw exception NoModificationAllowedError: Failed to execute 'setProperty' on 'CSSStyleDeclaration': These styles are computed, and therefore the '--error' property is read-only..
-PASS cssText is "#test2 { --variable:value; }"
+PASS cssText is "#test2 { --variable: value; }"
 PASS successfullyParsed is true
 
 TEST COMPLETE

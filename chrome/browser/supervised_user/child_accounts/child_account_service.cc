@@ -114,7 +114,7 @@ FamilyInfoFetcher::ErrorCode ConvertStatus(KidsExternalFetcherStatus status) {
   switch (status.state()) {
     case KidsExternalFetcherStatus::GOOGLE_SERVICE_AUTH_ERROR:
       return FamilyInfoFetcher::ErrorCode::kTokenError;
-    case KidsExternalFetcherStatus::HTTP_ERROR:
+    case KidsExternalFetcherStatus::NET_OR_HTTP_ERROR:
       return FamilyInfoFetcher::ErrorCode::kNetworkError;
     case KidsExternalFetcherStatus::INVALID_RESPONSE:
       return FamilyInfoFetcher::ErrorCode::kServiceError;

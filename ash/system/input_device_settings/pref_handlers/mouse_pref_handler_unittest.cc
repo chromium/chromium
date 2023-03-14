@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/input_device_settings/input_device_settings_defaults.h"
 #include "ash/system/input_device_settings/pref_handlers/mouse_pref_handler_impl.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "ash/shell.h"
+#include "ash/system/input_device_settings/input_device_settings_defaults.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
+#include "ash/system/input_device_settings/input_device_tracker.h"
 #include "ash/test/ash_test_base.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -19,6 +22,13 @@ const std::string kDictFakeValue = "fake_value";
 
 const std::string kMouseKey1 = "device_key1";
 const std::string kMouseKey2 = "device_key2";
+
+const bool kTestSwapRight = false;
+const int kTestSensitivity = 2;
+const bool kTestReverseScrolling = false;
+const bool kTestAccelerationEnabled = false;
+const int kTestScrollSensitivity = 3;
+const bool kTestScrollAcceleration = false;
 
 const mojom::MouseSettings kMouseSettingsDefault(
     /*swap_right=*/kDefaultSwapRight,
@@ -69,6 +79,20 @@ class MousePrefHandlerTest : public AshTestBase {
 
     pref_service_->registry()->RegisterDictionaryPref(
         prefs::kMouseDeviceSettingsDictPref);
+    // We are using these test constants as a a way to differentiate values
+    // retrieved from prefs or default mouse settings.
+    pref_service_->registry()->RegisterBooleanPref(
+        prefs::kPrimaryMouseButtonRight, kTestSwapRight);
+    pref_service_->registry()->RegisterIntegerPref(prefs::kMouseSensitivity,
+                                                   kTestSensitivity);
+    pref_service_->registry()->RegisterBooleanPref(prefs::kMouseReverseScroll,
+                                                   kTestReverseScrolling);
+    pref_service_->registry()->RegisterBooleanPref(prefs::kMouseAcceleration,
+                                                   kTestAccelerationEnabled);
+    pref_service_->registry()->RegisterIntegerPref(
+        prefs::kMouseScrollSensitivity, kTestScrollSensitivity);
+    pref_service_->registry()->RegisterBooleanPref(
+        prefs::kMouseScrollAcceleration, kTestScrollAcceleration);
   }
 
   void CheckMouseSettingsAndDictAreEqual(
@@ -245,6 +269,22 @@ TEST_F(MousePrefHandlerTest, NewMouseDefaultSettings) {
   settings_dict = devices_dict.FindDict(kMouseKey2);
   ASSERT_NE(nullptr, settings_dict);
   CheckMouseSettingsAndDictAreEqual(kMouseSettingsDefault, *settings_dict);
+}
+
+TEST_F(MousePrefHandlerTest, MouseObserveredInTransitionPeriod) {
+  mojom::Mouse mouse;
+  mouse.device_key = kMouseKey1;
+  Shell::Get()->input_device_tracker()->OnMouseConnected(mouse);
+  // Initialize mouse settings for the device and check that the Test
+  // prefs were used as defaults.
+  mojom::MouseSettingsPtr settings =
+      CallInitializeMouseSettings(mouse.device_key);
+  ASSERT_EQ(settings->swap_right, kTestSwapRight);
+  ASSERT_EQ(settings->sensitivity, kTestSensitivity);
+  ASSERT_EQ(settings->reverse_scrolling, kTestReverseScrolling);
+  ASSERT_EQ(settings->acceleration_enabled, kTestAccelerationEnabled);
+  ASSERT_EQ(settings->scroll_sensitivity, kTestScrollSensitivity);
+  ASSERT_EQ(settings->scroll_acceleration, kTestScrollAcceleration);
 }
 
 class MouseSettingsPrefConversionTest

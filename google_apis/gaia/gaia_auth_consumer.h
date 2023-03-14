@@ -9,14 +9,16 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
+
 class GoogleServiceAuthError;
 class OAuthMultiloginResult;
 
 // An interface that defines the callbacks for objects that
 // GaiaAuthFetcher can return data to.
-class GaiaAuthConsumer {
+class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthConsumer {
  public:
-  struct ClientOAuthResult {
+  struct COMPONENT_EXPORT(GOOGLE_APIS) ClientOAuthResult {
     ClientOAuthResult(const std::string& new_refresh_token,
                       const std::string& new_access_token,
                       int new_expires_in_secs,

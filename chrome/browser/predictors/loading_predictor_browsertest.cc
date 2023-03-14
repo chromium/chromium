@@ -71,6 +71,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/cors.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -627,7 +628,8 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest,
   GURL url = GetDataURLWithContent(content);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   net::SchemefulSite site = net::SchemefulSite(url);
-  net::NetworkAnonymizationKey network_anonymization_key(site, site);
+  auto network_anonymization_key =
+      net::NetworkAnonymizationKey ::CreateSameSite(site);
   // Ensure that no backgound task would make a host lookup or attempt to
   // preconnect.
   base::RunLoop().RunUntilIdle();
@@ -672,7 +674,8 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest,
       "test.com", GetPathWithPortReplacement(kHtmlSubresourcesPath,
                                              embedded_test_server()->port()));
   net::SchemefulSite site = net::SchemefulSite(url);
-  net::NetworkAnonymizationKey network_anonymization_key(site, site);
+  auto network_anonymization_key =
+      net::NetworkAnonymizationKey ::CreateSameSite(site);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ResetNetworkState();
   ResetPredictorState();
@@ -703,7 +706,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest, LearnFromNavigation) {
   for (auto* const host : kHtmlSubresourcesHosts) {
     requests.emplace_back(
         url::Origin::Create(embedded_test_server()->GetURL(host, "/")), 1,
-        net::NetworkAnonymizationKey(site, site));
+        net::NetworkAnonymizationKey::CreateSameSite(site));
   }
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -739,7 +742,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTestLearnAllResources,
   for (auto* const host : kHtmlSubresourcesHosts) {
     requests.emplace_back(
         url::Origin::Create(embedded_test_server()->GetURL(host, "/")), 1,
-        net::NetworkAnonymizationKey(site, site));
+        net::NetworkAnonymizationKey::CreateSameSite(site));
   }
 
   // When kLoadingOnlyLearnHighPriorityResources is disabled, loading data
@@ -747,7 +750,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTestLearnAllResources,
   // bar.com as well.
   requests.emplace_back(
       url::Origin::Create(embedded_test_server()->GetURL("bar.com", "/")), 1,
-      net::NetworkAnonymizationKey(site, site));
+      net::NetworkAnonymizationKey::CreateSameSite(site));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   auto prediction = GetPreconnectPrediction(url);
@@ -774,7 +777,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest,
   for (auto* const host : kHtmlSubresourcesHosts) {
     expected_requests.emplace_back(
         url::Origin::Create(embedded_test_server()->GetURL(host, "/")), 1,
-        net::NetworkAnonymizationKey(site, site));
+        net::NetworkAnonymizationKey::CreateSameSite(site));
   }
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), original_url));
@@ -796,8 +799,8 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest,
   std::vector<PreconnectRequest> expected_requests_1;
   url::Origin redirect_origin = url::Origin::Create(
       embedded_test_server()->GetURL(redirect_url.host(), "/"));
-  expected_requests_1.emplace_back(redirect_origin, 1,
-                                   net::NetworkAnonymizationKey(site, site));
+  expected_requests_1.emplace_back(
+      redirect_origin, 1, net::NetworkAnonymizationKey::CreateSameSite(site));
   EXPECT_THAT(prediction->requests,
               testing::UnorderedElementsAreArray(expected_requests_1));
 
@@ -805,8 +808,8 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest,
   // redirect) after the second navigation.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), original_url));
   prediction = GetPreconnectPrediction(original_url);
-  expected_requests.emplace_back(redirect_origin, 1,
-                                 net::NetworkAnonymizationKey(site, site));
+  expected_requests.emplace_back(
+      redirect_origin, 1, net::NetworkAnonymizationKey::CreateSameSite(site));
   ASSERT_TRUE(prediction);
   EXPECT_EQ(prediction->is_redirected, true);
   EXPECT_EQ(prediction->host, redirect_url.host());
@@ -824,7 +827,8 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest,
       "test.com", GetPathWithPortReplacement(kHtmlSubresourcesPath,
                                              embedded_test_server()->port()));
   net::SchemefulSite site = net::SchemefulSite(url);
-  net::NetworkAnonymizationKey network_anonymization_key(site, site);
+  auto network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateSameSite(site);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ResetNetworkState();
 
@@ -850,7 +854,8 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest,
 IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest, DnsPrefetch) {
   GURL url = embedded_test_server()->GetURL("/predictor/dns_prefetch.html");
   net::SchemefulSite site = net::SchemefulSite(url);
-  net::NetworkAnonymizationKey network_anonymization_key(site, site);
+  auto network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateSameSite(site);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   preconnect_manager_observer()->WaitUntilHostLookedUp(
       GURL(kChromiumUrl).host(), network_anonymization_key);
@@ -1306,9 +1311,8 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorNetworkIsolationKeyBrowserTest,
     EXPECT_EQ(2u, connection_tracker()->GetAcceptedSocketCount());
     EXPECT_EQ(2u, connection_tracker()->GetReadSocketCount());
   } else {
-    // Otherwise, the preconnected socket is used, so counts remain unchanged
-    // since the last check.
-    EXPECT_EQ(2u, connection_tracker()->GetAcceptedSocketCount());
+    // Otherwise, the preconnected socket cannot be used.
+    EXPECT_EQ(3u, connection_tracker()->GetAcceptedSocketCount());
     EXPECT_EQ(2u, connection_tracker()->GetReadSocketCount());
   }
 
@@ -1387,7 +1391,8 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTestWithProxy,
       "test.com", GetPathWithPortReplacement(kHtmlSubresourcesPath,
                                              embedded_test_server()->port()));
   net::SchemefulSite site = net::SchemefulSite(url);
-  net::NetworkAnonymizationKey network_anonymization_key(site, site);
+  auto network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateSameSite(site);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ResetNetworkState();
   ResetPredictorState();
@@ -1415,7 +1420,8 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTestWithProxy,
       "test.com", GetPathWithPortReplacement(kHtmlSubresourcesPath,
                                              embedded_test_server()->port()));
   net::SchemefulSite site = net::SchemefulSite(url);
-  net::NetworkAnonymizationKey network_anonymization_key(site, site);
+  auto network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateSameSite(site);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ResetNetworkState();
 
@@ -1550,7 +1556,8 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorBrowserTestWithOptimizationGuide,
       "test.com", GetPathWithPortReplacement(kHtmlSubresourcesPath,
                                              embedded_test_server()->port()));
   net::SchemefulSite site = net::SchemefulSite(url);
-  net::NetworkAnonymizationKey network_anonymization_key(site, site);
+  auto network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateSameSite(site);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ResetNetworkState();
 
@@ -1591,7 +1598,8 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorBrowserTestWithOptimizationGuide,
                                              embedded_test_server()->port()));
   url::Origin origin = url::Origin::Create(url);
   net::SchemefulSite site = net::SchemefulSite(origin);
-  net::NetworkAnonymizationKey network_anonymization_key(site, site);
+  auto network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateSameSite(site);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ResetNetworkState();
 
@@ -1650,7 +1658,8 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorBrowserTestWithOptimizationGuide,
                               Subresource("skipsoverinvalidurl/////")});
   url::Origin origin = url::Origin::Create(url);
   net::SchemefulSite site = net::SchemefulSite(origin);
-  net::NetworkAnonymizationKey network_anonymization_key(site, site);
+  auto network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateSameSite(site);
 
   auto observer = NavigateToURLAsync(url);
   EXPECT_TRUE(observer->WaitForRequestStart());
@@ -1700,7 +1709,8 @@ IN_PROC_BROWSER_TEST_P(
     OptimizationGuidePredictionsNotAppliedForAlreadyCommittedNavigation) {
   GURL url = embedded_test_server()->GetURL("hints.com", "/simple.html");
   net::SchemefulSite site = net::SchemefulSite(url);
-  net::NetworkAnonymizationKey network_anonymization_key(site, site);
+  auto network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateSameSite(site);
   // Navigate to URL with hints but only seed hints after navigation has
   // committed.
   auto observer = NavigateToURLAsync(url);
@@ -1740,7 +1750,8 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorBrowserTestWithOptimizationGuide,
   ResetNetworkState();
 
   net::SchemefulSite site = net::SchemefulSite(destination_url);
-  net::NetworkAnonymizationKey network_anonymization_key(site, site);
+  auto network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateSameSite(site);
   // Navigate to URL with hints but is redirected, hints should not be
   // applied.
   auto observer = NavigateToURLAsync(redirecting_url);
@@ -1798,7 +1809,8 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTestWithNoLocalPredictions,
                                              embedded_test_server()->port()));
   url::Origin origin = url::Origin::Create(url);
   net::SchemefulSite site = net::SchemefulSite(origin);
-  net::NetworkAnonymizationKey network_anonymization_key(site, site);
+  auto network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateSameSite(site);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ResetNetworkState();
 
@@ -1930,7 +1942,8 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorPrefetchBrowserTest,
 
   // preconnect.com should be preconnected to.
   net::SchemefulSite site = net::SchemefulSite(url);
-  net::NetworkAnonymizationKey network_anonymization_key(site, site);
+  auto network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateSameSite(site);
   preconnect_manager_observer()->WaitUntilHostLookedUp(
       "preconnect.com", network_anonymization_key);
   EXPECT_TRUE(preconnect_manager_observer()->HostFound(
@@ -1996,7 +2009,8 @@ IN_PROC_BROWSER_TEST_P(
     expected_subresource_hosts = {"preconnect.com"};
   }
   net::SchemefulSite site = net::SchemefulSite(url);
-  net::NetworkAnonymizationKey network_anonymization_key(site, site);
+  auto network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateSameSite(site);
   for (const auto& host : expected_subresource_hosts) {
     preconnect_manager_observer()->WaitUntilHostLookedUp(
         host, network_anonymization_key);
@@ -2052,7 +2066,7 @@ IN_PROC_BROWSER_TEST_P(
               Optional(network::CorsErrorStatus(
                   network::mojom::CorsError::kInsecurePrivateNetwork,
                   network::mojom::IPAddressSpace::kUnknown,
-                  network::mojom::IPAddressSpace::kLocal)));
+                  network::mojom::IPAddressSpace::kLoopback)));
 }
 
 // This fixture is for disabling prefetching via test suite instantiation to
@@ -2108,7 +2122,8 @@ IN_PROC_BROWSER_TEST_P(
     // use_predictions is disabled.
   }
   net::SchemefulSite site = net::SchemefulSite(url);
-  net::NetworkAnonymizationKey network_anonymization_key(site, site);
+  auto network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateSameSite(site);
   for (const auto& host : expected_subresource_hosts) {
     preconnect_manager_observer()->WaitUntilHostLookedUp(
         host, network_anonymization_key);

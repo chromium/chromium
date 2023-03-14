@@ -96,6 +96,7 @@ source_set("vaapi") {
     ":vaapi_status",
     "//base",
     "//build:chromeos_buildflags",
+    "//gpu/command_buffer/service:gles2",
     "//gpu/config",
     "//gpu/ipc/common",
     "//gpu/ipc/service",
@@ -141,6 +142,8 @@ source_set("vaapi") {
   if (use_vaapi_x11) {
     deps += [ "//ui/gfx/x" ]
     sources += [
+      "gl_image_egl_pixmap.cc",
+      "gl_image_egl_pixmap.h",
       "vaapi_picture_native_pixmap_angle.cc",
       "vaapi_picture_native_pixmap_angle.h",
     ]
@@ -159,6 +162,8 @@ source_set("vaapi") {
 
   if (use_egl) {
     sources += [
+      "gl_image_gl_texture.cc",
+      "gl_image_gl_texture.h",
       "vaapi_picture_native_pixmap_egl.cc",
       "vaapi_picture_native_pixmap_egl.h",
     ]

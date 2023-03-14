@@ -251,7 +251,8 @@ class MockVP9RateControl
   MOCK_METHOD1(UpdateRateControl, void(const libvpx::VP9RateControlRtcConfig&));
   MOCK_CONST_METHOD0(GetLoopfilterLevel, int());
   MOCK_METHOD1(ComputeQP, int(const libvpx::VP9FrameParamsQpRTC&));
-  MOCK_METHOD1(PostEncodeUpdate, void(uint64_t));
+  MOCK_METHOD2(PostEncodeUpdate,
+               void(uint64_t, const libvpx::VP9FrameParamsQpRTC&));
 };
 }  // namespace
 
@@ -398,8 +399,9 @@ void VP9VaapiVideoEncoderDelegateTest::
 
   auto encode_job = CreateEncodeJob(is_keyframe, va_surface, picture);
 
-  FRAME_TYPE libvpx_frame_type =
-      is_keyframe ? FRAME_TYPE::KEY_FRAME : FRAME_TYPE::INTER_FRAME;
+  libvpx::RcFrameType libvpx_frame_type =
+      is_keyframe ? libvpx::RcFrameType::kKeyFrame
+                  : libvpx::RcFrameType::kInterFrame;
   constexpr int kDefaultQP = 34;
   EXPECT_CALL(
       *mock_rate_ctrl_,
@@ -427,9 +429,22 @@ void VP9VaapiVideoEncoderDelegateTest::
 
   constexpr size_t kDefaultEncodedFrameSize = 123456;
   // For BitrateControlUpdate sequence.
-  EXPECT_CALL(*mock_rate_ctrl_, PostEncodeUpdate(kDefaultEncodedFrameSize))
+  EXPECT_CALL(*mock_rate_ctrl_,
+              PostEncodeUpdate(
+                  kDefaultEncodedFrameSize,
+                  MatchFrameParam(libvpx_frame_type, expected_temporal_layer_id,
+                                  expected_spatial_layer_id)))
       .WillOnce(Return());
-  encoder_->BitrateControlUpdate(kDefaultEncodedFrameSize);
+  BitstreamBufferMetadata metadata;
+  metadata.payload_size_bytes = kDefaultEncodedFrameSize;
+  metadata.key_frame = is_keyframe;
+  metadata.qp = kDefaultQP;
+  if (encoder_->svc_layers_) {
+    metadata.vp9.emplace();
+    metadata.vp9->spatial_idx = expected_spatial_layer_id;
+    metadata.vp9->temporal_idx = expected_temporal_layer_id;
+  }
+  encoder_->BitrateControlUpdate(metadata);
 }
 
 void VP9VaapiVideoEncoderDelegateTest::UpdateRatesAndEncode(

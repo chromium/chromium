@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_task_queue.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
+#include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_queue_type.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -75,6 +76,7 @@ class PLATFORM_EXPORT FrameTaskQueueController {
 
   scoped_refptr<MainThreadTaskQueue> NewWebSchedulingTaskQueue(
       MainThreadTaskQueue::QueueTraits,
+      WebSchedulingQueueType,
       WebSchedulingPriority);
 
   void RemoveWebSchedulingTaskQueue(MainThreadTaskQueue*);

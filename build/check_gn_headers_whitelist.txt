@@ -54,8 +54,6 @@ chrome/install_static/install_modes.h
 chrome/install_static/install_util.h
 chrome/install_static/test/scoped_install_details.h
 chrome/installer/util/google_update_settings.h
-components/browser_watcher/features.h
-components/browser_watcher/stability_paths.h
 components/cdm/browser/cdm_message_filter_android.h
 components/device_event_log/device_event_log_export.h
 components/login/login_export.h

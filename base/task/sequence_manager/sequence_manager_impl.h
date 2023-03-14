@@ -137,7 +137,6 @@ class BASE_EXPORT SequenceManagerImpl
       const TaskQueue::Spec& spec) override;
   std::string DescribeAllPendingTasks() const override;
   void PrioritizeYieldingToNative(base::TimeTicks prioritize_until) override;
-  void EnablePeriodicYieldingToNative(base::TimeDelta interval) override;
   void AddTaskObserver(TaskObserver* task_observer) override;
   void RemoveTaskObserver(TaskObserver* task_observer) override;
   absl::optional<WakeUp> GetNextDelayedWakeUp() const override;

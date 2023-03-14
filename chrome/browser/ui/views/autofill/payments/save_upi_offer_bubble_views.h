@@ -39,6 +39,7 @@ class SaveUPIOfferBubbleViews : public autofill::SaveUPIBubble,
 
   // LocationBarBubbleDelegateView:
   void Init() override;
+  void WindowClosing() override;
 
   ~SaveUPIOfferBubbleViews() override;
 

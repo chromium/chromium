@@ -123,35 +123,36 @@ void SessionFlagsManager::LoadStateFromBackingFile() {
     return;
 
   DCHECK(value->is_dict());
-  const std::string* user_id = value->FindStringKey(kUserIdKey);
+  base::Value::Dict& value_dict = value->GetDict();
+  const std::string* user_id = value_dict.FindString(kUserIdKey);
   if (user_id && !user_id->empty()) {
     user_id_ = *user_id;
   }
 
-  const std::string* user_hash = value->FindStringKey(kUserHashKey);
+  const std::string* user_hash = value_dict.FindString(kUserHashKey);
   if (user_hash && !user_hash->empty()) {
     user_hash_ = *user_hash;
   }
 
-  base::Value* user_flags = value->FindListKey(kUserFlagsKey);
+  base::Value::List* user_flags = value_dict.FindList(kUserFlagsKey);
   if (user_flags) {
     user_flags_ = std::vector<Switch>();
-    for (const base::Value& flag : user_flags->GetList()) {
+    for (const base::Value& flag : *user_flags) {
       DCHECK(flag.is_dict());
       user_flags_->emplace_back(
-          std::make_pair(*flag.FindStringKey(kFlagNameKey),
-                         *flag.FindStringKey(kFlagValueKey)));
+          std::make_pair(*flag.GetDict().FindString(kFlagNameKey),
+                         *flag.GetDict().FindString(kFlagValueKey)));
     }
   }
 
-  base::Value* restart_job = value->FindListKey(kRestartJobKey);
+  base::Value::List* restart_job = value_dict.FindList(kRestartJobKey);
   if (restart_job) {
     restart_job_ = std::vector<Switch>();
-    for (const base::Value& job_switch : restart_job->GetList()) {
+    for (const base::Value& job_switch : *restart_job) {
       DCHECK(job_switch.is_dict());
       restart_job_->emplace_back(
-          std::make_pair(*job_switch.FindStringKey(kFlagNameKey),
-                         *job_switch.FindStringKey(kFlagValueKey)));
+          std::make_pair(*job_switch.GetDict().FindString(kFlagNameKey),
+                         *job_switch.GetDict().FindString(kFlagValueKey)));
     }
   }
 }

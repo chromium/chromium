@@ -88,11 +88,7 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
 
   // scheduler::WorkerScheduler::Delegate
   void UpdateBackForwardCacheDisablingFeatures(
-      uint64_t features_mask,
-      const BFCacheBlockingFeatureAndLocations&
-          non_sticky_features_and_js_locations,
-      const BFCacheBlockingFeatureAndLocations&
-          sticky_features_and_js_locations) override {}
+      BlockingDetails details) override {}
 
   // BackForwardCacheLoaderHelperImpl::Delegate
   void EvictFromBackForwardCache(

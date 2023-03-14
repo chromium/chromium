@@ -174,6 +174,7 @@ class StreamingReceiverSessionClient
       const ::media::AudioDecoderConfig& audio_config) override;
   void OnVideoConfigUpdated(
       const ::media::VideoDecoderConfig& video_config) override;
+  void OnStreamingSessionEnded() override;
 
   // cast_receiver::StreamingConfigManager::ConfigObserver overrides.
   void OnStreamingConfigSet(

@@ -19,9 +19,9 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {DropdownMenuOptionList} from '../../controls/settings_dropdown_menu.js';
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
-import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from '../os_languages_page/languages_browser_proxy.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteOriginMixin} from '../route_origin_mixin.js';
@@ -202,14 +202,6 @@ class SettingsSelectToSpeakSubpageElement extends
                   'selectToSpeakOptionsHighlightColorPink'),
             },
           ];
-        },
-      },
-
-      isExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'isExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled');
         },
       },
 

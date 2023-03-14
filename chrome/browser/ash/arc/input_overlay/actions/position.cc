@@ -20,27 +20,24 @@ constexpr char kAspectRatio[] = "aspect_ratio";
 constexpr char kXonY[] = "x_on_y";
 constexpr char kYonX[] = "y_on_x";
 
-absl::optional<gfx::PointF> ParseTwoElementsArray(const base::Value& value,
-                                                  const char* key,
-                                                  bool required) {
-  const base::Value* list_value = value.FindListKey(key);
-  if (!list_value) {
-    if (required)
+absl::optional<gfx::PointF> ParseTwoElementsArray(
+    const base::Value::Dict& value,
+    const char* key,
+    bool required) {
+  const base::Value::List* list = value.FindList(key);
+  if (!list) {
+    if (required) {
       LOG(ERROR) << "Require values for key " << key;
+    }
     return absl::nullopt;
   }
-  if (!list_value->is_list()) {
-    LOG(ERROR) << "Require list values for key " << key;
-    return absl::nullopt;
-  }
-  auto& list = list_value->GetList();
-  if (list.size() != 2) {
+  if (list->size() != 2) {
     LOG(ERROR) << "Require two elements for " << key << ". But got "
-               << list.size() << " elements.";
+               << list->size() << " elements.";
     return absl::nullopt;
   }
-  double x = list.front().GetDouble();
-  double y = list.back().GetDouble();
+  double x = list->front().GetDouble();
+  double y = list->back().GetDouble();
   if (std::abs(x) > 1 || std::abs(y) > 1) {
     LOG(ERROR) << "Require normalized values for " << key << ". But got x{" << x
                << "}, y{" << y << "}";
@@ -49,8 +46,9 @@ absl::optional<gfx::PointF> ParseTwoElementsArray(const base::Value& value,
   return absl::make_optional<gfx::PointF>(x, y);
 }
 
-absl::optional<int> ParseIntValue(const base::Value& value, std::string key) {
-  auto val = value.FindIntKey(key);
+absl::optional<int> ParseIntValue(const base::Value::Dict& value,
+                                  std::string key) {
+  absl::optional<int> val = value.FindInt(key);
   if (val) {
     if (*val <= 0) {
       LOG(ERROR) << "Value for {" << key << "} should be positive, but got {"
@@ -73,16 +71,18 @@ float CalculateDependent(const gfx::PointF& anchor,
         std::abs(anchor_to_target.y()) * content_bounds.height();
     res = anchor.x() * content_bounds.width() +
           (anchor_to_target.x() < 0 ? -1 : 1) * anchor_to_target_y * dependent;
-    if (res >= content_bounds.width())
+    if (res >= content_bounds.width()) {
       res = content_bounds.width() - 1;
+    }
   } else {
     float anchor_to_target_x =
         std::abs(anchor_to_target.x()) * content_bounds.width();
     res = anchor.y() * content_bounds.height() +
           (std::signbit(anchor_to_target.y()) ? -1 : 1) * anchor_to_target_x *
               dependent;
-    if (res >= content_bounds.height())
+    if (res >= content_bounds.height()) {
       res = content_bounds.height() - 1;
+    }
   }
   // Make sure it is inside of the window bounds.
   return std::max(0.0f, res);
@@ -90,10 +90,10 @@ float CalculateDependent(const gfx::PointF& anchor,
 
 }  // namespace
 
-bool ParsePositiveFraction(const base::Value& value,
+bool ParsePositiveFraction(const base::Value::Dict& value,
                            const char* key,
                            absl::optional<float>* output) {
-  *output = value.FindDoubleKey(key);
+  *output = value.FindDouble(key);
   if (*output && **output <= 0) {
     LOG(ERROR) << "Require positive value of " << key << ". But got {"
                << output->value() << "}.";
@@ -117,7 +117,7 @@ std::unique_ptr<Position> Position::ConvertFromProto(
   return position;
 }
 
-bool Position::ParseFromJson(const base::Value& value) {
+bool Position::ParseFromJson(const base::Value::Dict& value) {
   switch (position_type_) {
     case PositionType::kDefault:
       return ParseDefaultFromJson(value);
@@ -142,7 +142,7 @@ gfx::PointF Position::CalculatePosition(
   }
 }
 
-bool Position::ParseDefaultFromJson(const base::Value& value) {
+bool Position::ParseDefaultFromJson(const base::Value::Dict& value) {
   // Parse anchor point if existing, or the anchor point is (0, 0).
   auto anchor = ParseTwoElementsArray(value, kAnchor, false);
   if (!anchor) {
@@ -153,8 +153,9 @@ bool Position::ParseDefaultFromJson(const base::Value& value) {
   }
   // Parse the vector which starts from anchor point to the target position.
   auto anchor_to_target = ParseTwoElementsArray(value, kAnchorToTarget, true);
-  if (!anchor_to_target)
+  if (!anchor_to_target) {
     return false;
+  }
   anchor_to_target_.set_x(anchor_to_target.value().x());
   anchor_to_target_.set_y(anchor_to_target.value().y());
 
@@ -173,15 +174,19 @@ bool Position::ParseDefaultFromJson(const base::Value& value) {
   return true;
 }
 
-bool Position::ParseDependentFromJson(const base::Value& value) {
-  if (!ParseDefaultFromJson(value))
+bool Position::ParseDependentFromJson(const base::Value::Dict& value) {
+  if (!ParseDefaultFromJson(value)) {
     return false;
-  if (!ParsePositiveFraction(value, kAspectRatio, &aspect_ratio_))
+  }
+  if (!ParsePositiveFraction(value, kAspectRatio, &aspect_ratio_)) {
     return false;
-  if (!ParsePositiveFraction(value, kXonY, &x_on_y_))
+  }
+  if (!ParsePositiveFraction(value, kXonY, &x_on_y_)) {
     return false;
-  if (!ParsePositiveFraction(value, kYonX, &y_on_x_))
+  }
+  if (!ParsePositiveFraction(value, kYonX, &y_on_x_)) {
     return false;
+  }
 
   if (aspect_ratio_ && (!x_on_y_ || !y_on_x_)) {
     LOG(ERROR) << "Require both x_on_y and y_on_x is aspect_ratio is set.";
@@ -209,10 +214,12 @@ gfx::PointF Position::CalculateDefaultPosition(
     const gfx::RectF& content_bounds) const {
   auto res = anchor_ + anchor_to_target_;
   res.Scale(content_bounds.width(), content_bounds.height());
-  if (max_x_)
+  if (max_x_) {
     res.set_x(std::min((int)res.x(), *max_x_));
-  if (max_y_)
+  }
+  if (max_y_) {
     res.set_y(std::min((int)res.y(), *max_y_));
+  }
   return res;
 }
 

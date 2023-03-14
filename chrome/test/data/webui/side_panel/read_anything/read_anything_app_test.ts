@@ -6,7 +6,7 @@ import 'chrome://read-anything-side-panel.top-chrome/app.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {ReadAnythingElement} from 'chrome://read-anything-side-panel.top-chrome/app.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertStringContains} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('ReadAnythingAppTest', () => {
@@ -17,33 +17,35 @@ suite('ReadAnythingAppTest', () => {
   // rest of the Read Anything feature, which we are not testing here.
   chrome.readAnything.onConnected = () => {};
 
-  // This is called by readAnythingApp onselectionchange. It is usually
-  // implemented by ReadAnythingAppController which forwards these arguments to
-  // the browser process in the form of an AXEventNotificationDetail. Instead,
-  // we capture the arguments here and verify their values. Since
-  // onselectionchange is called asynchronously, the test must wait for this
-  // function to be called; therefore we fire a custom event
-  // on-selection-change-for-text here for the test to await.
-  chrome.readAnything.onSelectionChange =
-      (anchorNodeId: number, anchorOffset: number, focusNodeId: number,
-       focusOffset: number) => {
-        readAnythingApp.shadowRoot!.dispatchEvent(
-            new CustomEvent('on-selection-change-for-test', {
-              detail: {
-                anchorNodeId: anchorNodeId,
-                anchorOffset: anchorOffset,
-                focusNodeId: focusNodeId,
-                focusOffset: focusOffset,
-              },
-            }));
-      };
-
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     readAnythingApp = document.createElement('read-anything-app');
     document.body.appendChild(readAnythingApp);
     chrome.readAnything.setThemeForTesting('default', 18.0, 0, 0, 1, 0);
   });
+
+  const setOnSelectionChangeForTest = () => {
+    // This is called by readAnythingApp onselectionchange. It is usually
+    // implemented by ReadAnythingAppController which forwards these arguments
+    // to the browser process in the form of an AXEventNotificationDetail.
+    // Instead, we capture the arguments here and verify their values. Since
+    // onselectionchange is called asynchronously, the test must wait for this
+    // function to be called; therefore we fire a custom event
+    // on-selection-change-for-text here for the test to await.
+    chrome.readAnything.onSelectionChange =
+        (anchorNodeId: number, anchorOffset: number, focusNodeId: number,
+         focusOffset: number) => {
+          readAnythingApp.shadowRoot!.dispatchEvent(
+              new CustomEvent('on-selection-change-for-test', {
+                detail: {
+                  anchorNodeId: anchorNodeId,
+                  anchorOffset: anchorOffset,
+                  focusNodeId: focusNodeId,
+                  focusOffset: focusOffset,
+                },
+              }));
+        };
+  };
 
   const assertFontName = (fontFamily: string) => {
     const container = readAnythingApp.shadowRoot!.getElementById('container');
@@ -117,6 +119,78 @@ suite('ReadAnythingAppTest', () => {
     const container = readAnythingApp.shadowRoot!.getElementById('container');
     // very loose letter letter spacing = 0.1em, font size = 1em = 16px
     assertEquals('1.6px', getComputedStyle(container!).letterSpacing);
+  });
+
+  // The loading screen shows when we connect.
+  test('connectedCallback showLoadingScreen', () => {
+    const emptyState =
+        readAnythingApp.shadowRoot!.querySelector('sp-empty-state')!;
+
+    assertEquals(
+        readAnythingApp.shadowRoot!.getElementById(
+                                       'empty-state-container')!.hidden,
+        false);
+    assertEquals(emptyState.heading, 'Getting ready');
+    assertEquals(emptyState.body, '');
+    assertStringContains(emptyState.imagePath, 'throbber');
+    assertStringContains(emptyState.darkImagePath, 'throbber');
+  });
+
+  test(
+      'onselectionchange nothingSelectedOnLoadingScreenSelection', async () => {
+        const emptyState =
+            readAnythingApp.shadowRoot!.getElementById('empty-state-container');
+        let selectionChanged = false;
+        chrome.readAnything.onSelectionChange =
+            (_anchorNodeId: number, _anchorOffset: number, _focusNodeId: number,
+             _focusOffset: number) => {
+              selectionChanged = true;
+            };
+
+        const range = new Range();
+        range.setStartBefore(emptyState!);
+        range.setEndAfter(emptyState!);
+        const selection = readAnythingApp.shadowRoot!.getSelection();
+        selection!.removeAllRanges();
+        selection!.addRange(range);
+
+        setTimeout(() => {
+          assertFalse(selectionChanged);
+        }, 1000);
+      });
+
+  test('updateContent hidesLoadingScreen', () => {
+    // root htmlTag='#document' id=1
+    // ++paragraph htmlTag='p' id=2
+    // ++++staticText name='This is a paragraph' id=3
+    const axTree = {
+      rootId: 1,
+      nodes: [
+        {
+          id: 1,
+          role: 'rootWebArea',
+          htmlTag: '#document',
+          childIds: [2],
+        },
+        {
+          id: 2,
+          role: 'paragraph',
+          htmlTag: 'p',
+          childIds: [3],
+        },
+        {
+          id: 3,
+          role: 'staticText',
+          name: 'This is a paragraph',
+        },
+      ],
+    };
+    chrome.readAnything.setContentForTesting(axTree, [2]);
+
+    assertEquals(
+        readAnythingApp.shadowRoot!.getElementById(
+                                       'empty-state-container')!.hidden,
+        true);
   });
 
   test('updateContent paragraph', () => {
@@ -513,7 +587,7 @@ suite('ReadAnythingAppTest', () => {
       ],
     };
     chrome.readAnything.setContentForTesting(axTree, [2]);
-    const expected = '<div></div>';
+    const expected = '';
     assertContainerInnerHTML(expected);
   });
 
@@ -631,6 +705,7 @@ suite('ReadAnythingAppTest', () => {
         is_backward: false,
       },
     };
+    setOnSelectionChangeForTest();
     chrome.readAnything.setContentForTesting(axTree, []);
     // The expected string contains the complete text of each node in the
     // selection.
@@ -708,6 +783,7 @@ suite('ReadAnythingAppTest', () => {
         is_backward: true,
       },
     };
+    setOnSelectionChangeForTest();
     chrome.readAnything.setContentForTesting(axTree, []);
     // The expected string contains the complete text of each node in the
     // selection.
@@ -751,6 +827,7 @@ suite('ReadAnythingAppTest', () => {
         },
       ],
     };
+    setOnSelectionChangeForTest();
     chrome.readAnything.setContentForTesting(axTree, [1]);
     const expected = '<div>HelloWorldFriend</div>';
     assertContainerInnerHTML(expected);
@@ -1053,7 +1130,7 @@ suite('ReadAnythingAppTest', () => {
       ],
     };
     chrome.readAnything.setContentForTesting(axTree, []);
-    const expected = '<div></div>';
+    const expected = '';
     assertContainerInnerHTML(expected);
   });
 

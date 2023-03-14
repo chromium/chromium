@@ -38,12 +38,21 @@
 #include "base/files/file_descriptor_watcher_posix.h"
 #endif
 
+#if BUILDFLAG(IS_IOS)
+#include "base/test/test_support_ios.h"
+#endif
+
 namespace base {
 
 namespace {
 
 // This constant controls how many tests are run in a single batch by default.
-const size_t kDefaultTestBatchLimit = 10;
+const size_t kDefaultTestBatchLimit =
+#if BUILDFLAG(IS_IOS)
+    100;
+#else
+    10;
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 void PrintUsage() {
@@ -136,21 +145,14 @@ bool GetSwitchValueAsInt(const std::string& switch_name, int* result) {
 
   return true;
 }
-#endif
 
-int LaunchUnitTestsInternal(RunTestSuiteCallback run_test_suite,
-                            size_t parallel_jobs,
-                            int default_batch_limit,
-                            size_t retry_limit,
-                            bool use_job_objects,
-                            RepeatingClosure timeout_callback,
-                            OnceClosure gtest_init) {
-  base::test::AllowCheckIsTestForTesting();
-
-#if BUILDFLAG(IS_ANDROID)
-  // We can't easily fork on Android, just run the test suite directly.
-  return std::move(run_test_suite).Run();
-#else
+int RunTestSuite(RunTestSuiteCallback run_test_suite,
+                 size_t parallel_jobs,
+                 int default_batch_limit,
+                 size_t retry_limit,
+                 bool use_job_objects,
+                 RepeatingClosure timeout_callback,
+                 OnceClosure gtest_init) {
   bool force_single_process = false;
   if (CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kTestLauncherDebugLauncher)) {
@@ -213,6 +215,31 @@ int LaunchUnitTestsInternal(RunTestSuiteCallback run_test_suite,
   fflush(stdout);
 
   return (success ? 0 : 1);
+}
+#endif
+
+int LaunchUnitTestsInternal(RunTestSuiteCallback run_test_suite,
+                            size_t parallel_jobs,
+                            int default_batch_limit,
+                            size_t retry_limit,
+                            bool use_job_objects,
+                            RepeatingClosure timeout_callback,
+                            OnceClosure gtest_init) {
+  base::test::AllowCheckIsTestForTesting();
+
+#if BUILDFLAG(IS_ANDROID)
+  // We can't easily fork on Android, just run the test suite directly.
+  return std::move(run_test_suite).Run();
+#elif BUILDFLAG(IS_IOS)
+  InitIOSRunHook(base::BindOnce(&RunTestSuite, std::move(run_test_suite),
+                                parallel_jobs, default_batch_limit, retry_limit,
+                                use_job_objects, timeout_callback,
+                                std::move(gtest_init)));
+  return RunTestsFromIOSApp();
+#else
+  return RunTestSuite(std::move(run_test_suite), parallel_jobs,
+                      default_batch_limit, retry_limit, use_job_objects,
+                      timeout_callback, std::move(gtest_init));
 #endif
 }
 

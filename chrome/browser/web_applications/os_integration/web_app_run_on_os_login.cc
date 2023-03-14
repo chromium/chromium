@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -39,9 +40,11 @@ void ScheduleRegisterRunOnOsLogin(WebAppSyncBridge* sync_bridge,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(sync_bridge);
 
-  {
+  // TODO(crbug.com/1401125): Remove once sub managers have been implemented and
+  //  OsIntegrationManager::Synchronize() is running fine.
+  if (!AreSubManagersExecuteEnabled()) {
     ScopedRegistryUpdate update(sync_bridge);
-    update->UpdateApp(shortcut_info->extension_id)
+    update->UpdateApp(shortcut_info->app_id)
         ->SetRunOnOsLoginOsIntegrationState(RunOnOsLoginMode::kWindowed);
   }
 
@@ -58,7 +61,10 @@ void ScheduleUnregisterRunOnOsLogin(WebAppSyncBridge* sync_bridge,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(sync_bridge);
 
-  if (sync_bridge->registrar().IsInstalled(app_id)) {
+  // TODO(crbug.com/1401125): Remove once sub managers have been implemented and
+  //  OsIntegrationManager::Synchronize() is running fine.
+  if (!AreSubManagersExecuteEnabled() &&
+      sync_bridge->registrar().IsInstalled(app_id)) {
     ScopedRegistryUpdate update(sync_bridge);
     update->UpdateApp(app_id)->SetRunOnOsLoginOsIntegrationState(
         RunOnOsLoginMode::kNotRun);

@@ -228,7 +228,7 @@ void PaintPreviewRecorderImpl::CapturePaintPreview(
                             std::move(response));
     return;
   }
-  base::AutoReset<bool>(&is_painting_preview_, true);
+  const base::AutoReset<bool> resetter(&is_painting_preview_, true);
   CapturePaintPreviewInternal(params, std::move(response), std::move(callback));
 }
 

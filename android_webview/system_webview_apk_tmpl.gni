@@ -23,9 +23,6 @@ declare_args() {
   # on which you are going to install WebView is configured to load a
   # different package name than the default used in AOSP.
   system_webview_package_name = "com.android.webview"
-
-  # Whether to enable standalone and trichrome WebView bundle build targets.
-  enable_webview_bundles = true
 }
 
 template("system_webview_apk_or_module_tmpl") {
@@ -62,11 +59,15 @@ template("system_webview_apk_or_module_tmpl") {
     _android_manifest = "$target_gen_dir/$target_name/AndroidManifest.xml"
     _android_manifest_target_name = "${target_name}__android_manifest"
     jinja_template(_android_manifest_target_name) {
+      if (!defined(_android_sdk_release)) {
+        _android_sdk_release = android_sdk_release
+      }
       input = "//android_webview/nonembedded/java/AndroidManifest.xml"
       output = _android_manifest
       _force_32_bit = _include_32_bit_webview && _include_64_bit_webview &&
                       (!_is_trichrome || !_is_64_bit_browser)
       variables = webview_jinja_variables + [
+                    "android_sdk_release=$_android_sdk_release",
                     "force_32_bit=$_force_32_bit",
                     "manifest_package=$_manifest_package",
                   ]
@@ -129,6 +130,9 @@ template("system_webview_apk_or_module_tmpl") {
         defined(invoker.exclude_weblayer_java) && invoker.exclude_weblayer_java
     _omit_dex = defined(invoker.omit_dex) && invoker.omit_dex
 
+    if (!defined(min_sdk_version) && _is_trichrome) {
+      min_sdk_version = 29
+    }
     if (defined(expected_android_manifest)) {
       expected_android_manifest_version_code_offset = chrome_version_code
       expected_android_manifest_library_version_offset = chrome_version_code

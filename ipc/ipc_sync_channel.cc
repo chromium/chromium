@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -19,7 +18,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_local.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel_factory.h"
@@ -27,6 +25,7 @@
 #include "ipc/ipc_message_macros.h"
 #include "ipc/ipc_sync_message.h"
 #include "mojo/public/cpp/bindings/sync_event_watcher.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 #if !BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
 #include "ipc/trace_ipc_message.h"
@@ -43,6 +42,10 @@ namespace {
 void OnEventReady(bool* signal) {
   *signal = true;
 }
+
+// Holds a pointer to the per-thread ReceivedSyncMsgQueue object.
+ABSL_CONST_INIT thread_local SyncChannel::ReceivedSyncMsgQueue* received_queue =
+    nullptr;
 
 }  // namespace
 
@@ -71,13 +74,11 @@ class SyncChannel::ReceivedSyncMsgQueue :
   static ReceivedSyncMsgQueue* AddContext() {
     // We want one ReceivedSyncMsgQueue per listener thread (i.e. since multiple
     // SyncChannel objects can block the same thread).
-    ReceivedSyncMsgQueue* rv = lazy_tls_ptr_.Pointer()->Get();
-    if (!rv) {
-      rv = new ReceivedSyncMsgQueue();
-      ReceivedSyncMsgQueue::lazy_tls_ptr_.Pointer()->Set(rv);
+    if (!received_queue) {
+      received_queue = new ReceivedSyncMsgQueue();
     }
-    rv->listener_count_++;
-    return rv;
+    ++received_queue->listener_count_;
+    return received_queue;
   }
 
   // Prevents messages from being dispatched immediately when the dispatch event
@@ -182,8 +183,8 @@ class SyncChannel::ReceivedSyncMsgQueue :
     }
 
     if (--listener_count_ == 0) {
-      DCHECK(lazy_tls_ptr_.Pointer()->Get());
-      lazy_tls_ptr_.Pointer()->Set(nullptr);
+      DCHECK(received_queue);
+      received_queue = nullptr;
       sync_dispatch_watcher_.reset();
     }
   }
@@ -192,10 +193,6 @@ class SyncChannel::ReceivedSyncMsgQueue :
   base::SingleThreadTaskRunner* listener_task_runner() {
     return listener_task_runner_.get();
   }
-
-  // Holds a pointer to the per-thread ReceivedSyncMsgQueue object.
-  static base::LazyInstance<base::ThreadLocalPointer<ReceivedSyncMsgQueue>>::
-      DestructorAtExit lazy_tls_ptr_;
 
   // Called on the ipc thread to check if we can unblock any current Send()
   // calls based on a queued reply.
@@ -277,11 +274,6 @@ class SyncChannel::ReceivedSyncMsgQueue :
   // Watches |dispatch_event_| during all sync handle watches on this thread.
   std::unique_ptr<mojo::SyncEventWatcher> sync_dispatch_watcher_;
 };
-
-base::LazyInstance<base::ThreadLocalPointer<
-    SyncChannel::ReceivedSyncMsgQueue>>::DestructorAtExit
-    SyncChannel::ReceivedSyncMsgQueue::lazy_tls_ptr_ =
-        LAZY_INSTANCE_INITIALIZER;
 
 SyncChannel::SyncContext::SyncContext(
     Listener* listener,

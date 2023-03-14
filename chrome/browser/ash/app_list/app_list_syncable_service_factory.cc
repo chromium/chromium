@@ -96,8 +96,13 @@ bool AppListSyncableServiceFactory::ServiceIsCreatedWithBrowserContext() const {
   return true;
 }
 
+// static
+bool AppListSyncableServiceFactory::IsUsedInTesting() {
+  return use_in_testing;
+}
+
 bool AppListSyncableServiceFactory::ServiceIsNULLWhileTesting() const {
-  return !use_in_testing;
+  return !IsUsedInTesting();
 }
 
 }  // namespace app_list

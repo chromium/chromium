@@ -74,7 +74,7 @@ class BlinkTool(Host):
         self._path = path
         self.commands = [
             AnalyzeBaselines(),
-            CopyExistingBaselines(),
+            CopyExistingBaselines(self),
             CrashLog(),
             FlakyTests(),
             OptimizeBaselines(),
@@ -82,7 +82,7 @@ class BlinkTool(Host):
             PrintBaselines(),
             PrintExpectations(),
             Rebaseline(),
-            RebaselineCL(),
+            RebaselineCL(self),
             RebaselineTest(),
             UpdateMetadata(self),
         ]

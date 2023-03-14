@@ -60,6 +60,7 @@ class DrmGpuDisplayManager {
   bool ConfigureDisplays(
       const std::vector<display::DisplayConfigurationParams>& config_requests,
       uint32_t modeset_flag);
+  bool SetHdcpKeyProp(int64_t display_id, const std::string& key);
   bool GetHDCPState(int64_t display_id,
                     display::HDCPState* state,
                     display::ContentProtectionMethod* protection_method);
@@ -78,6 +79,8 @@ class DrmGpuDisplayManager {
   void SetColorSpace(int64_t crtc_id, const gfx::ColorSpace& color_space);
 
  private:
+  friend class DrmGpuDisplayManagerTest;
+
   DrmDisplay* FindDisplay(int64_t display_id);
 
   // Notify ScreenManager of all the displays that were present before the

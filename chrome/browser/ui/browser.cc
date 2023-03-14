@@ -1690,9 +1690,11 @@ void Browser::AddNewContents(
   // popups on other screens and retains fullscreen focus for exit accelerators.
   // Popups are activated when the opener exits fullscreen, which happens
   // immediately if the popup would overlap the fullscreen window.
+  // Allow fullscreen-within-tab openers to open popups normally.
   NavigateParams::WindowAction window_action = NavigateParams::SHOW_WINDOW;
   if (disposition == WindowOpenDisposition::NEW_POPUP &&
-      fullscreen_controller->IsFullscreenForTabOrPending(source)) {
+      GetFullscreenState(source).target_mode ==
+          content::FullscreenMode::kContent) {
     window_action = NavigateParams::SHOW_WINDOW_INACTIVE;
     fullscreen_controller->FullscreenTabOpeningPopup(source,
                                                      new_contents.get());
@@ -1992,13 +1994,15 @@ void Browser::ExitFullscreenModeForTab(WebContents* web_contents) {
 }
 
 bool Browser::IsFullscreenForTabOrPending(const WebContents* web_contents) {
-  return IsFullscreenForTabOrPending(web_contents, /*display_id=*/nullptr);
+  const content::FullscreenState state = GetFullscreenState(web_contents);
+  return state.target_mode == content::FullscreenMode::kContent ||
+         state.target_mode == content::FullscreenMode::kPseudoContent;
 }
 
-bool Browser::IsFullscreenForTabOrPending(const WebContents* web_contents,
-                                          int64_t* display_id) {
-  return exclusive_access_manager_->fullscreen_controller()
-      ->IsFullscreenForTabOrPending(web_contents, display_id);
+content::FullscreenState Browser::GetFullscreenState(
+    const WebContents* web_contents) const {
+  return exclusive_access_manager_->fullscreen_controller()->GetFullscreenState(
+      web_contents);
 }
 
 blink::mojom::DisplayMode Browser::GetDisplayMode(

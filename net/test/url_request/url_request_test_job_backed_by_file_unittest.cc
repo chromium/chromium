@@ -88,13 +88,6 @@ class TestURLRequestTestJobBackedByFile : public URLRequestTestJobBackedByFile {
   const raw_ptr<std::string> observed_content_;
 };
 
-// Helper function to create a file at |path| filled with |content|.
-// Returns true on success.
-bool CreateFileWithContent(const std::string& content,
-                           const base::FilePath& path) {
-  return base::WriteFile(path, content.c_str(), content.length()) != -1;
-}
-
 // A simple holder for start/end used in http range requests.
 struct Range {
   int start;
@@ -180,7 +173,7 @@ void URLRequestTestJobBackedByFileEventsTest::RunSuccessfulRequestWithString(
   base::FilePath path = directory_.GetPath().Append(FILE_PATH_LITERAL("test"));
   if (!file_extension.empty())
     path = path.AddExtension(file_extension);
-  ASSERT_TRUE(CreateFileWithContent(raw_content, path));
+  ASSERT_TRUE(base::WriteFile(path, raw_content));
 
   std::string range_value;
   if (range) {

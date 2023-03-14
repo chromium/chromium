@@ -12,3 +12,22 @@ include_rules = [
   "-content",
   "-ios",
 ]
+specific_include_rules = {
+  "common_syncable_prefs_database\.cc": [
+    "+components/autofill",
+    "+components/bookmarks",
+    "+components/browsing_data",
+    "+components/commerce",
+    "+components/content_settings",
+    "+components/dom_distiller",
+    "+components/language",
+    "+components/metrics",
+    "+components/ntp_tiles",
+    "+components/omnibox",
+    "+components/password_manager",
+    "+components/payments",
+    "+components/safe_browsing",
+    "+components/search_engines",
+    "+components/translate",
+  ]
+}

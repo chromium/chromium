@@ -79,10 +79,8 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
   };
 
   // force_blocking ensures that the image will block the load event.
-  void UpdateFromElement(
-      UpdateFromElementBehavior = kUpdateNormal,
-      network::mojom::ReferrerPolicy = network::mojom::ReferrerPolicy::kDefault,
-      bool force_blocking = false);
+  void UpdateFromElement(UpdateFromElementBehavior = kUpdateNormal,
+                         bool force_blocking = false);
 
   void ElementDidMoveToNewDocument();
 
@@ -93,10 +91,7 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
 
   // Returns true if this loader should be updated via UpdateFromElement() when
   // being inserted into a new parent; returns false otherwise.
-  bool ShouldUpdateOnInsertedInto(
-      ContainerNode& insertion_point,
-      network::mojom::ReferrerPolicy referrer_policy =
-          network::mojom::ReferrerPolicy::kDefault) const;
+  bool ShouldUpdateOnInsertedInto(ContainerNode& insertion_point) const;
 
   // Returns true if a the owner of this loader should consider the image being
   // loaded as "potentially available", i.e that it may eventually become
@@ -144,9 +139,8 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
 
   ScriptPromise Decode(ScriptState*, ExceptionState&);
 
-  // force_blocking ensures that the image will block the load event.
-  void LoadDeferredImage(network::mojom::ReferrerPolicy,
-                         bool force_blocking = false,
+  // `force_blocking` ensures that the image will block the load event.
+  void LoadDeferredImage(bool force_blocking = false,
                          bool update_from_microtask = false);
 
  protected:
@@ -175,12 +169,10 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
 
   // Called from the task or from updateFromElement to initiate the load.
   // force_blocking ensures that the image will block the load event.
-  void DoUpdateFromElement(
-      scoped_refptr<const DOMWrapperWorld> world,
-      UpdateFromElementBehavior,
-      network::mojom::ReferrerPolicy = network::mojom::ReferrerPolicy::kDefault,
-      UpdateType = UpdateType::kAsync,
-      bool force_blocking = false);
+  void DoUpdateFromElement(scoped_refptr<const DOMWrapperWorld> world,
+                           UpdateFromElementBehavior,
+                           UpdateType = UpdateType::kAsync,
+                           bool force_blocking = false);
 
   virtual void DispatchLoadEvent() = 0;
   virtual void NoImageResourceToLoad() {}
@@ -202,8 +194,7 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
   void ClearFailedLoadURL();
   void DispatchErrorEvent();
   void CrossSiteOrCSPViolationOccurred(AtomicString);
-  void EnqueueImageLoadingMicroTask(UpdateFromElementBehavior,
-                                    network::mojom::ReferrerPolicy);
+  void EnqueueImageLoadingMicroTask(UpdateFromElementBehavior);
 
   KURL ImageSourceToKURL(AtomicString) const;
 
@@ -226,8 +217,6 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
   Member<ImageResourceContent> image_content_;
   Member<ImageResourceContent> image_content_for_image_document_;
 
-  network::mojom::ReferrerPolicy last_referrer_policy_ =
-      network::mojom::ReferrerPolicy::kDefault;
   AtomicString failed_load_url_;
   base::WeakPtr<Task> pending_task_;  // owned by Microtask
   std::unique_ptr<IncrementLoadEventDelayCount>

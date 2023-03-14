@@ -17,7 +17,7 @@
 struct wl_drm;
 
 namespace gfx {
-enum class BufferFormat;
+enum class BufferFormat : uint8_t;
 class Size;
 }  // namespace gfx
 

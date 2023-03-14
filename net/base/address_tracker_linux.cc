@@ -17,6 +17,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/task/current_thread.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "net/base/network_interfaces_linux.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

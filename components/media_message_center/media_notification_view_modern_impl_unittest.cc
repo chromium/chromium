@@ -169,9 +169,9 @@ class MediaNotificationViewModernImplTest : public views::ViewsTestBase {
   std::vector<views::Button*> media_control_buttons() const {
     std::vector<views::Button*> buttons;
     auto children = view()->media_controls_container_->children();
-    std::transform(
-        children.begin(), children.end(), std::back_inserter(buttons),
-        [](views::View* child) { return views::Button::AsButton(child); });
+    base::ranges::transform(
+        children, std::back_inserter(buttons),
+        [](auto* view) { return views::Button::AsButton(view); });
     buttons.push_back(views::Button::AsButton(picture_in_picture_button()));
     return buttons;
   }

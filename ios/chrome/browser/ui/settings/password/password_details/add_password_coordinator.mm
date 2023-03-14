@@ -5,24 +5,25 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_coordinator.h"
 
 #import "base/mac/foundation_util.h"
+#import "base/memory/scoped_refptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
+#import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
+#import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
-#import "ios/chrome/browser/ui/commands/application_commands.h"
-#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_mediator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_view_controller.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -32,13 +33,9 @@
 #error "This file requires ARC support."
 #endif
 
-@interface AddPasswordCoordinator () <
-    AddPasswordHandler,
-    AddPasswordMediatorDelegate,
-    UIAdaptivePresentationControllerDelegate> {
-  // Manager responsible for getting existing password profiles.
-  IOSChromePasswordCheckManager* _manager;
-}
+@interface AddPasswordCoordinator () <AddPasswordHandler,
+                                      AddPasswordMediatorDelegate,
+                                      UIAdaptivePresentationControllerDelegate>
 
 // Main view controller for this coordinator.
 @property(nonatomic, strong) AddPasswordViewController* viewController;
@@ -62,15 +59,12 @@
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                              reauthModule:(ReauthenticationModule*)reauthModule
-                      passwordCheckManager:
-                          (IOSChromePasswordCheckManager*)manager {
+                              reauthModule:
+                                  (ReauthenticationModule*)reauthModule {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     DCHECK(viewController);
-    DCHECK(manager);
     DCHECK(reauthModule);
-    _manager = manager;
     _reauthenticationModule = reauthModule;
     _dispatcher = static_cast<id<BrowserCommands, ApplicationCommands>>(
         browser->GetCommandDispatcher());
@@ -79,27 +73,17 @@
 }
 
 - (void)start {
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-  DCHECK(authenticationService);
-  NSString* syncingUserEmail = nil;
-  id<SystemIdentity> identity =
-      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSync);
-  if (identity) {
-    SyncSetupService* syncSetupService =
-        SyncSetupServiceFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
-    if (syncSetupService->IsDataTypeActive(syncer::PASSWORDS)) {
-      syncingUserEmail = identity.userEmail;
-    }
-  }
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  self.viewController = [[AddPasswordViewController alloc] init];
 
-  self.viewController = [[AddPasswordViewController alloc]
-      initWithSyncingUserEmail:syncingUserEmail];
-
-  self.mediator = [[AddPasswordMediator alloc] initWithDelegate:self
-                                           passwordCheckManager:_manager];
+  self.mediator = [[AddPasswordMediator alloc]
+          initWithDelegate:self
+      passwordCheckManager:IOSChromePasswordCheckManagerFactory::
+                               GetForBrowserState(browserState)
+                                   .get()
+               prefService:browserState->GetPrefs()
+               syncService:SyncServiceFactory::GetForBrowserState(
+                               browserState)];
   self.mediator.consumer = self.viewController;
   self.viewController.delegate = self.mediator;
   self.viewController.addPasswordHandler = self;

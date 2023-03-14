@@ -13,7 +13,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/json/json_file_value_serializer.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
@@ -23,6 +22,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/values_test_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "net/base/ip_address.h"
@@ -615,8 +615,6 @@ TEST_F(NetworkServiceTest, DnsOverHttpsEnableDisable) {
       /*insecure_dns_client_enabled=*/false, net::SecureDnsMode::kAutomatic,
       kConfig1,
       /*additional_dns_types_enabled=*/true);
-  EXPECT_TRUE(
-      service()->host_resolver_manager()->GetDnsConfigAsValue().is_dict());
   EXPECT_EQ(kConfig1, dns_client_ptr->GetEffectiveConfig()->doh_config);
 
   // Enable DNS over HTTPS for two servers.
@@ -625,8 +623,6 @@ TEST_F(NetworkServiceTest, DnsOverHttpsEnableDisable) {
       /*insecure_dns_client_enabled=*/true, net::SecureDnsMode::kSecure,
       kConfig2,
       /*additional_dns_types_enabled=*/true);
-  EXPECT_TRUE(
-      service()->host_resolver_manager()->GetDnsConfigAsValue().is_dict());
   EXPECT_EQ(kConfig2, dns_client_ptr->GetEffectiveConfig()->doh_config);
 }
 
@@ -1098,13 +1094,8 @@ TEST_F(NetworkServiceTestWithService, StartsNetLog) {
   // |log_file| is closed on another thread, so have to wait for that to happen.
   task_environment_.RunUntilIdle();
 
-  JSONFileValueDeserializer deserializer(log_path);
-  std::unique_ptr<base::Value> log_dict =
-      deserializer.Deserialize(nullptr, nullptr);
-  ASSERT_TRUE(log_dict);
-  ASSERT_TRUE(log_dict->is_dict());
-  ASSERT_EQ(*log_dict->GetDict().FindStringByDottedPath("constants.amiatest"),
-            "iamatest");
+  base::Value::Dict log_dict = base::test::ParseJsonDictFromFile(log_path);
+  ASSERT_EQ(*log_dict.FindStringByDottedPath("constants.amiatest"), "iamatest");
 }
 
 // Verifies that raw headers are only reported if requested.

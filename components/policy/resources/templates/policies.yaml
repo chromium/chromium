@@ -1057,14 +1057,14 @@ policies:
   1056: KioskTroubleshootingToolsEnabled
   1057: ForceEnablePepperVideoDecoderDevAPI
   1058: DomainReliabilityAllowed
-  1059: ScreensaverEnabled
-  1060: ScreensaverIdleTimeoutSeconds
-  1061: ScreensaverImageDisplayIntervalSeconds
-  1062: ScreensaverImages
-  1063: DeviceScreensaverEnabled
-  1064: DeviceScreensaverIdleTimeoutSeconds
-  1065: DeviceScreensaverImageDisplayIntervalSeconds
-  1066: DeviceScreensaverImages
+  1059: ScreensaverLockScreenEnabled
+  1060: ScreensaverLockScreenIdleTimeoutSeconds
+  1061: ScreensaverLockScreenImageDisplayIntervalSeconds
+  1062: ScreensaverLockScreenImages
+  1063: DeviceScreensaverLoginScreenEnabled
+  1064: DeviceScreensaverLoginScreenIdleTimeoutSeconds
+  1065: DeviceScreensaverLoginScreenImageDisplayIntervalSeconds
+  1066: DeviceScreensaverLoginScreenImages
   1067: DefaultWindowManagementSetting
   1068: WindowManagementAllowedForUrls
   1069: WindowManagementBlockedForUrls
@@ -1078,6 +1078,17 @@ policies:
   1077: WallpaperGooglePhotosIntegrationEnabled
   1078: WebRtcTextLogCollectionAllowed
   1079: EnforceLocalAnchorConstraintsEnabled
+  1080: ShowTouchpadScrollScreenEnabled
+  1081: DeviceSystemAecEnabled
+  1082: HttpAllowlist
+  1083: HttpsUpgradesEnabled
+  1084: RealTimeDownloadProtectionRequestAllowed
+  1085: MandatoryExtensionsForIncognitoNavigation
+  1086: CredentialProviderPromoEnabled
+  1087: RemoteAccessHostAllowEnterpriseRemoteSupportConnections
+  1088: ClientSidePhishingProtectionAllowed
+  1089: UserAvatarCustomizationSelectorsEnabled
+  1090: DefaultThirdPartyStoragePartitioningSetting
 atomic_groups:
   1: Homepage
   2: RemoteAccess

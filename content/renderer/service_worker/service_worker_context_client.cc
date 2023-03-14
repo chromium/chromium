@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -178,6 +179,10 @@ ServiceWorkerContextClient::ServiceWorkerContextClient(
 
 ServiceWorkerContextClient::~ServiceWorkerContextClient() {
   DCHECK(initiator_thread_task_runner_->RunsTasksInCurrentSequence());
+  // Speculative fix on the memory leak.
+  // We ensure `instance_host_` is reset before `initiator_thread_task_runner_`
+  // is shut down (crbug.com/1409993).
+  instance_host_.reset();
 }
 
 void ServiceWorkerContextClient::StartWorkerContextOnInitiatorThread(
@@ -407,10 +412,9 @@ ServiceWorkerContextClient::CreateWorkerFetchContextOnInitiatorThread() {
 
   blink::WebVector<blink::WebString> web_cors_exempt_header_list(
       cors_exempt_header_list_.size());
-  std::transform(
-      cors_exempt_header_list_.begin(), cors_exempt_header_list_.end(),
-      web_cors_exempt_header_list.begin(),
-      [](const std::string& h) { return blink::WebString::FromLatin1(h); });
+  base::ranges::transform(
+      cors_exempt_header_list_, web_cors_exempt_header_list.begin(),
+      [](const auto& header) { return blink::WebString::FromLatin1(header); });
 
   return blink::WebServiceWorkerFetchContext::Create(
       renderer_preferences_, script_url_, loader_factories_->PassInterface(),

@@ -92,6 +92,11 @@ class PLATFORM_EXPORT ImageOrientation final {
   // orientation. It should be used in a right-handed coordinate system.
   AffineTransform TransformFromDefault(const gfx::SizeF& drawn_size) const;
 
+  // This transform can be used to reverse an image orientation, it's for
+  // drawing an image according to the way it is encoded. It should be used in a
+  // right-handed coordinate system.
+  AffineTransform TransformToDefault(const gfx::SizeF& drawn_size) const;
+
   inline bool operator==(const ImageOrientation& other) const {
     return other.orientation_ == orientation_;
   }

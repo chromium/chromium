@@ -42,6 +42,7 @@ class LOCKABLE BASE_EXPORT Lock {
 
   // Null implementation if not debug.
   void AssertAcquired() const ASSERT_EXCLUSIVE_LOCK() {}
+  void AssertNotHeld() const {}
 #else
   Lock();
   ~Lock();
@@ -67,6 +68,7 @@ class LOCKABLE BASE_EXPORT Lock {
   }
 
   void AssertAcquired() const ASSERT_EXCLUSIVE_LOCK();
+  void AssertNotHeld() const;
 #endif  // DCHECK_IS_ON()
 
   // Whether Lock mitigates priority inversion when used from different thread

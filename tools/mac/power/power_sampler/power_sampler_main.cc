@@ -338,13 +338,17 @@ int main(int argc, char** argv) {
                                             timeout);
   }
 
-  // Install signal handler for on-demand quitting.
-  struct sigaction new_action;
-  new_action.sa_handler = quit_signal_handler;
-  sigemptyset(&new_action.sa_mask);
-  new_action.sa_flags = 0;
-  sigaction(SIGTERM, &new_action, NULL);
-  sigaction(SIGINT, &new_action, NULL);
+  // Install signal handler for on-demand quitting. When no samplers are used
+  // there is no need to "gracefully quit". In that case no handlers need to be
+  // installed.
+  if (controller.HasSamplers()) {
+    struct sigaction new_action;
+    new_action.sa_handler = quit_signal_handler;
+    sigemptyset(&new_action.sa_mask);
+    new_action.sa_flags = 0;
+    sigaction(SIGTERM, &new_action, NULL);
+    sigaction(SIGINT, &new_action, NULL);
+  }
 
   base::RepeatingTimer quit_timer;
   quit_timer.Start(

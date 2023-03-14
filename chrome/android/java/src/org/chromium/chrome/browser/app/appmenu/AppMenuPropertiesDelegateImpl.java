@@ -28,6 +28,8 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
+import com.google.common.primitives.UnsignedLongs;
+
 import org.chromium.base.BuildInfo;
 import org.chromium.base.CallbackController;
 import org.chromium.base.ContextUtils;
@@ -76,7 +78,11 @@ import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
+import org.chromium.components.commerce.core.CommerceSubscription;
+import org.chromium.components.commerce.core.IdentifierType;
+import org.chromium.components.commerce.core.ManagementType;
 import org.chromium.components.commerce.core.ShoppingService;
+import org.chromium.components.commerce.core.SubscriptionType;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -1127,13 +1133,18 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         startPriceTrackingMenuItem.setEnabled(editEnabled);
         stopPriceTrackingMenuItem.setEnabled(editEnabled);
 
-        boolean priceTrackingEnabled = false;
         if (info != null) {
-            priceTrackingEnabled = PowerBookmarkUtils.isPriceTrackingEnabledForClusterId(
-                    info.productClusterId, mBookmarkModelSupplier.get());
+            CommerceSubscription sub = new CommerceSubscription(SubscriptionType.PRICE_TRACK,
+                    IdentifierType.PRODUCT_CLUSTER_ID,
+                    UnsignedLongs.toString(info.productClusterId), ManagementType.USER_MANAGED,
+                    null);
+            boolean isSubscribed = service.isSubscribedFromCache(sub);
+            startPriceTrackingMenuItem.setVisible(!isSubscribed);
+            stopPriceTrackingMenuItem.setVisible(isSubscribed);
+        } else {
+            startPriceTrackingMenuItem.setVisible(true);
+            stopPriceTrackingMenuItem.setVisible(false);
         }
-        startPriceTrackingMenuItem.setVisible(!priceTrackingEnabled);
-        stopPriceTrackingMenuItem.setVisible(priceTrackingEnabled);
     }
 
     /**

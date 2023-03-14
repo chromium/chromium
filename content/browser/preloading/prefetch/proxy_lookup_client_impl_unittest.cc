@@ -53,7 +53,8 @@ TEST_F(ProxyLookupClientImplTest, NoProxyInfo) {
   base::RunLoop run_loop;
   GURL test_url("example.com");
   net::SchemefulSite site(test_url);
-  net::NetworkAnonymizationKey network_anonymization_key(site, site);
+  auto network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateSameSite(site);
   std::unique_ptr<ProxyLookupClientImpl> proxy_lookup_client =
       std::make_unique<ProxyLookupClientImpl>(
           test_url, network_anonymization_key,
@@ -79,7 +80,8 @@ TEST_F(ProxyLookupClientImplTest, OnlyDirect) {
   base::RunLoop run_loop;
   GURL test_url("example.com");
   net::SchemefulSite site(test_url);
-  net::NetworkAnonymizationKey network_anonymization_key(site, site);
+  auto network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateSameSite(site);
   std::unique_ptr<ProxyLookupClientImpl> proxy_lookup_client =
       std::make_unique<ProxyLookupClientImpl>(
           test_url, network_anonymization_key,
@@ -104,7 +106,8 @@ TEST_F(ProxyLookupClientImplTest, Proxy) {
   base::RunLoop run_loop;
   GURL test_url("example.com");
   net::SchemefulSite site(test_url);
-  net::NetworkAnonymizationKey network_anonymization_key(site, site);
+  auto network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateSameSite(site);
   std::unique_ptr<ProxyLookupClientImpl> proxy_lookup_client =
       std::make_unique<ProxyLookupClientImpl>(
           test_url, network_anonymization_key,
@@ -129,7 +132,8 @@ TEST_F(ProxyLookupClientImplTest, Disconnect) {
   base::RunLoop run_loop;
   GURL test_url("example.com");
   net::SchemefulSite site(test_url);
-  net::NetworkAnonymizationKey network_anonymization_key(site, site);
+  auto network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateSameSite(site);
   std::unique_ptr<ProxyLookupClientImpl> proxy_lookup_client =
       std::make_unique<ProxyLookupClientImpl>(
           test_url, network_anonymization_key,

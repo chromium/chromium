@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ash/app_list/search/local_images/image_annotation_worker.h"
 
+#include <memory>
+
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/app_list/search/local_images/annotation_storage.h"
 #include "chrome/browser/ash/app_list/search/local_images/local_image_search_provider.h"
+#include "chrome/browser/ash/app_list/search/local_images/local_image_search_test_util.h"
 #include "chromeos/dbus/machine_learning/machine_learning_client.h"
 #include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -26,47 +29,25 @@ class ImageAnnotationWorkerTest : public testing::Test {
     ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
     test_directory_ = temp_dir.GetPath();
-    base::FilePath test_db = test_directory_.AppendASCII("test.db");
     annotation_worker_ =
         std::make_unique<ImageAnnotationWorker>(test_directory_);
     annotation_worker_->UseFakeAnnotatorForTests();
-    storage_ = base::MakeRefCounted<AnnotationStorage>(
+    bar_image_path_ = test_directory_.AppendASCII("bar.jpg");
+    const base::FilePath test_db = test_directory_.AppendASCII("test.db");
+    storage_ = std::make_unique<AnnotationStorage>(
         std::move(test_db), /*histogram_tag=*/"test",
         /*current_version_number=*/2, /*annotation_worker=*/nullptr);
-    bar_image_path_ = test_directory_.AppendASCII("bar.jpg");
   }
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<ImageAnnotationWorker> annotation_worker_;
-  scoped_refptr<AnnotationStorage> storage_;
+  std::unique_ptr<AnnotationStorage> storage_;
   base::FilePath test_directory_;
   base::FilePath bar_image_path_;
 };
 
-bool Matcher(std::vector<ImageInfo> arg,
-             std::vector<ImageInfo> expected_images) {
-  for (const auto& expect_image : expected_images) {
-    for (const auto& test_image : arg) {
-      if (test_image.path == expect_image.path &&
-          test_image.annotations == expect_image.annotations &&
-          test_image.last_modified == expect_image.last_modified) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
-MATCHER_P(OneOfImages, image1, "") {
-  return Matcher(arg, {image1});
-}
-
-MATCHER_P4(OneOfImages, image1, image2, image3, image4, "") {
-  return Matcher(arg, {image1, image2, image3, image4});
-}
-
 TEST_F(ImageAnnotationWorkerTest, MustProcessTheFolderAtInitTest) {
-  storage_->InitializeAsync();
+  storage_->Initialize();
   task_environment_.RunUntilIdle();
 
   auto jpg_path = test_directory_.AppendASCII("bar.jpg");
@@ -77,20 +58,13 @@ TEST_F(ImageAnnotationWorkerTest, MustProcessTheFolderAtInitTest) {
   auto JPG_path = test_directory_.AppendASCII("bar5.JPG");
 
   auto image_time = base::Time::Now();
-  base::WriteFile(jpg_path, "test");
-  base::TouchFile(jpg_path, image_time, image_time);
-  base::WriteFile(jpeg_path, "test");
-  base::TouchFile(jpeg_path, image_time, image_time);
-  base::WriteFile(png_path, "test");
-  base::TouchFile(png_path, image_time, image_time);
-  base::WriteFile(jng_path, "test");
-  base::TouchFile(jng_path, image_time, image_time);
-  base::WriteFile(tjng_path, "test");
-  base::TouchFile(tjng_path, image_time, image_time);
-  base::WriteFile(JPG_path, "test");
-  base::TouchFile(JPG_path, image_time, image_time);
+  for (const auto& path :
+       {jpg_path, jpeg_path, png_path, jng_path, tjng_path, JPG_path}) {
+    base::WriteFile(path, "test");
+    base::TouchFile(path, image_time, image_time);
+  }
 
-  annotation_worker_->Run(storage_);
+  annotation_worker_->Initialize(storage_.get());
   task_environment_.RunUntilIdle();
 
   ImageInfo jpg_image({"bar"}, jpg_path, image_time);
@@ -98,19 +72,16 @@ TEST_F(ImageAnnotationWorkerTest, MustProcessTheFolderAtInitTest) {
   ImageInfo png_image({"bar2"}, png_path, image_time);
   ImageInfo JPG_image({"bar5"}, JPG_path, image_time);
 
-  auto expect_all =
-      base::BindLambdaForTesting([=](std::vector<ImageInfo> images) {
-        EXPECT_THAT(images,
-                    OneOfImages(jpg_image, jpeg_image, png_image, JPG_image));
-      });
-  storage_->GetAllAnnotationsAsync(expect_all);
+  auto annotations = storage_->GetAllAnnotations();
+  EXPECT_THAT(annotations, testing::UnorderedElementsAreArray(
+                               {jpg_image, jpeg_image, png_image, JPG_image}));
 
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(ImageAnnotationWorkerTest, MustProcessOnNewFileTest) {
-  storage_->InitializeAsync();
-  annotation_worker_->Run(storage_);
+  storage_->Initialize();
+  annotation_worker_->Initialize(storage_.get());
   task_environment_.RunUntilIdle();
 
   base::WriteFile(bar_image_path_, "test");
@@ -122,18 +93,16 @@ TEST_F(ImageAnnotationWorkerTest, MustProcessOnNewFileTest) {
   task_environment_.RunUntilIdle();
 
   ImageInfo bar_image({"bar"}, bar_image_path_, bar_image_time);
-  auto expect_one =
-      base::BindLambdaForTesting([=](std::vector<ImageInfo> images) {
-        EXPECT_THAT(images, OneOfImages(bar_image));
-      });
-  storage_->GetAllAnnotationsAsync(expect_one);
+
+  EXPECT_THAT(storage_->GetAllAnnotations(),
+              testing::ElementsAreArray({bar_image}));
 
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(ImageAnnotationWorkerTest, MustUpdateOnFileUpdateTest) {
-  storage_->InitializeAsync();
-  annotation_worker_->Run(storage_);
+  storage_->Initialize();
+  annotation_worker_->Initialize(storage_.get());
   task_environment_.RunUntilIdle();
 
   base::WriteFile(bar_image_path_, "test");
@@ -152,18 +121,15 @@ TEST_F(ImageAnnotationWorkerTest, MustUpdateOnFileUpdateTest) {
   task_environment_.RunUntilIdle();
 
   ImageInfo bar_image_updated({"bar"}, bar_image_path_, bar_image_time_updated);
-  auto expect_updated =
-      base::BindLambdaForTesting([=](std::vector<ImageInfo> images) {
-        EXPECT_THAT(images, OneOfImages(bar_image_updated));
-      });
-  storage_->GetAllAnnotationsAsync(expect_updated);
+  EXPECT_THAT(storage_->GetAllAnnotations(),
+              testing::ElementsAreArray({bar_image_updated}));
 
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(ImageAnnotationWorkerTest, MustRemoveOnFileDeleteTest) {
-  storage_->InitializeAsync();
-  annotation_worker_->Run(storage_);
+  storage_->Initialize();
+  annotation_worker_->Initialize(storage_.get());
   task_environment_.RunUntilIdle();
 
   base::WriteFile(bar_image_path_, "test");
@@ -177,9 +143,7 @@ TEST_F(ImageAnnotationWorkerTest, MustRemoveOnFileDeleteTest) {
                                                   /*error=*/false);
   task_environment_.RunUntilIdle();
 
-  auto expect_empty = base::BindLambdaForTesting(
-      [=](std::vector<ImageInfo> images) { EXPECT_TRUE(images.empty()); });
-  storage_->GetAllAnnotationsAsync(expect_empty);
+  EXPECT_TRUE(storage_->GetAllAnnotations().empty());
 
   task_environment_.RunUntilIdle();
 }

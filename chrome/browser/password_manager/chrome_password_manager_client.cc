@@ -23,7 +23,7 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/device_reauth/chrome_biometric_authenticator_factory.h"
+#include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -480,7 +480,7 @@ void ChromePasswordManagerClient::ShowTouchToFill(
           .GetCredentials(),
       passkeys,
       std::make_unique<TouchToFillControllerAutofillDelegate>(
-          this, GetBiometricAuthenticator(), driver->AsWeakPtr(),
+          this, GetDeviceAuthenticator(), driver->AsWeakPtr(),
           submission_readiness));
 }
 
@@ -490,10 +490,10 @@ void ChromePasswordManagerClient::OnPasswordSelected(
 }
 #endif
 
-scoped_refptr<device_reauth::BiometricAuthenticator>
-ChromePasswordManagerClient::GetBiometricAuthenticator() {
+scoped_refptr<device_reauth::DeviceAuthenticator>
+ChromePasswordManagerClient::GetDeviceAuthenticator() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  return ChromeBiometricAuthenticatorFactory::GetBiometricAuthenticator();
+  return ChromeDeviceAuthenticatorFactory::GetDeviceAuthenticator();
 #else
   return nullptr;
 #endif
@@ -1053,12 +1053,21 @@ void ChromePasswordManagerClient::UpdateFormManagers() {
 void ChromePasswordManagerClient::NavigateToManagePasswordsPage(
     password_manager::ManagePasswordsReferrer referrer) {
 #if BUILDFLAG(IS_ANDROID)
-  password_manager_launcher::ShowPasswordSettings(web_contents(), referrer);
+  password_manager_launcher::ShowPasswordSettings(web_contents(), referrer,
+                                                  /*manage_passkeys=*/false);
 #else
   ::NavigateToManagePasswordsPage(
       chrome::FindBrowserWithWebContents(web_contents()), referrer);
 #endif
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void ChromePasswordManagerClient::NavigateToManagePasskeysPage(
+    password_manager::ManagePasswordsReferrer referrer) {
+  password_manager_launcher::ShowPasswordSettings(web_contents(), referrer,
+                                                  /*manage_passkeys=*/true);
+}
+#endif
 
 bool ChromePasswordManagerClient::IsIsolationForPasswordSitesEnabled() const {
   // TODO(crbug.com/862989): Move the following function (and the feature) to

@@ -364,6 +364,8 @@ void DownloadHistory::LoadHistoryDownloads(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(notifier_.GetManager());
 
+  SCOPED_UMA_HISTOGRAM_TIMER("Download.LoadHistoryDownloadsTime");
+
   std::map<std::string, int> file_name_count;
   CountFilePathOccurences(rows, &file_name_count);
 

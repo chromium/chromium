@@ -66,9 +66,6 @@ class StorageAccessGrantPermissionContext
       bool user_gesture,
       permissions::BrowserPermissionCallback callback);
 
-  static void SetImplicitGrantLimitForTesting(int limit);
-  static void SetAutodenyOutsideFPSForTesting(bool deny);
-
  private:
   // PermissionContextBase:
   void DecidePermission(

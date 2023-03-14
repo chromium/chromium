@@ -286,7 +286,7 @@ DrmDisplayHostManager::DrmDisplayHostManager(
     // Create a dummy DisplaySnapshot and resolve display ID collisions.
     std::unique_ptr<display::DisplaySnapshot> current_display_snapshot =
         CreateDisplaySnapshot(*primary_drm_device_, display_info.get(), 0,
-                              gfx::Point(), display::DrmFormatsAndModifiers());
+                              display::DrmFormatsAndModifiers());
 
     const auto colliding_display_snapshot_iter =
         edid_id_collision_map.find(current_display_snapshot->edid_display_id());
@@ -591,6 +591,16 @@ void DrmDisplayHostManager::GpuHasUpdatedNativeDisplays(
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(get_displays_callback_)));
     get_displays_callback_.Reset();
+  }
+}
+
+void DrmDisplayHostManager::GpuSetHdcpKeyProp(int64_t display_id,
+                                              bool success) {
+  DrmDisplayHost* display = GetDisplay(display_id);
+  if (display) {
+    display->OnHdcpKeyPropSetReceived(success);
+  } else {
+    LOG(ERROR) << "Couldn't find display with id=" << display_id;
   }
 }
 

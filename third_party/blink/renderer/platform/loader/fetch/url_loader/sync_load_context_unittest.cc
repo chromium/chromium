@@ -74,17 +74,17 @@ class MockPendingSharedURLLoaderFactory
 
 class MockResourceRequestSender : public ResourceRequestSender {
  public:
-  void CreatePendingRequest(scoped_refptr<WebRequestPeer> peer) {
-    peer_ = std::move(peer);
+  void CreatePendingRequest(scoped_refptr<ResourceRequestClient> client) {
+    client_ = std::move(client);
   }
 
   void DeletePendingRequest(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override {
-    peer_.reset();
+    client_.reset();
   }
 
  private:
-  scoped_refptr<WebRequestPeer> peer_;
+  scoped_refptr<ResourceRequestClient> client_;
 };
 
 }  // namespace
@@ -128,17 +128,16 @@ class SyncLoadContextTest : public testing::Test {
       base::WaitableEvent* redirect_or_response_event,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
     DCHECK(task_runner->BelongsToCurrentThread());
-    auto* context = new SyncLoadContext(
+    auto context = base::AdoptRef(new SyncLoadContext(
         request, std::make_unique<MockPendingSharedURLLoaderFactory>(),
         response, context_for_redirect, redirect_or_response_event,
         nullptr /* terminate_sync_load_event */,
         base::Seconds(60) /* timeout */,
-        mojo::NullRemote() /* download_to_blob_registry */, task_runner);
+        mojo::NullRemote() /* download_to_blob_registry */, task_runner));
 
     auto mock_resource_request_sender =
         std::make_unique<MockResourceRequestSender>();
-    mock_resource_request_sender->CreatePendingRequest(
-        base::WrapRefCounted(context));
+    mock_resource_request_sender->CreatePendingRequest(context);
     context->resource_request_sender_ = std::move(mock_resource_request_sender);
 
     // Simulate the response.

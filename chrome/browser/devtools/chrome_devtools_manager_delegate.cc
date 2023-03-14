@@ -28,6 +28,10 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
+#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/browser_resources.h"
 #include "components/guest_view/browser/guest_view_base.h"
@@ -48,6 +52,9 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
+#include "chrome/common/channel_info.h"
+#include "components/version_info/version_info.h"
+#include "third_party/cros_system_api/switches/chrome_switches.h"
 #endif
 
 using content::DevToolsAgentHost;
@@ -169,10 +176,26 @@ bool ChromeDevToolsManagerDelegate::AllowInspectingRenderFrameHost(
   Profile* profile =
       Profile::FromBrowserContext(rfh->GetProcess()->GetBrowserContext());
   auto* process_manager = extensions::ProcessManager::Get(profile);
-  return AllowInspection(
-      profile, process_manager
-                   ? process_manager->GetExtensionForRenderFrameHost(rfh)
-                   : nullptr);
+  auto* extension = process_manager
+                        ? process_manager->GetExtensionForRenderFrameHost(rfh)
+                        : nullptr;
+  if (extension || !web_app::AreWebAppsEnabled(profile)) {
+    return AllowInspection(profile, extension);
+  }
+
+  if (auto* web_app_provider =
+          web_app::WebAppProvider::GetForWebApps(profile)) {
+    absl::optional<web_app::AppId> app_id =
+        web_app_provider->registrar_unsafe().FindAppWithUrlInScope(
+            rfh->GetMainFrame()->GetLastCommittedURL());
+    if (app_id) {
+      const auto* web_app =
+          web_app_provider->registrar_unsafe().GetAppById(app_id.value());
+      return AllowInspection(profile, web_app);
+    }
+  }
+  // |extension| is always nullptr here.
+  return AllowInspection(profile, extension);
 }
 
 // static
@@ -181,11 +204,40 @@ bool ChromeDevToolsManagerDelegate::AllowInspection(
     content::WebContents* web_contents) {
   const extensions::Extension* extension = nullptr;
   if (web_contents) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Disable devtools for ash webui for dev, beta, stable channels unless
+    // device is in devmode, or running with `--force-devtools-available'.
+    GURL url = web_contents->GetLastCommittedURL();
+    if ((url.SchemeIs("chrome") && url.host() != "inspect") ||
+        url.SchemeIs("os")) {
+      base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+      if (chrome::GetChannel() >= version_info::Channel::DEV &&
+          !command_line->HasSwitch(chromeos::switches::kSystemInDevMode) &&
+          !command_line->HasSwitch(ash::switches::kForceDevToolsAvailable)) {
+        return false;
+      }
+    }
+#endif
+
     if (auto* process_manager = extensions::ProcessManager::Get(
             web_contents->GetBrowserContext())) {
       extension = process_manager->GetExtensionForWebContents(web_contents);
     }
+    if (extension || !web_app::AreWebAppsEnabled(profile)) {
+      return AllowInspection(profile, extension);
+    }
+
+    const web_app::AppId* app_id =
+        web_app::WebAppTabHelper::GetAppId(web_contents);
+    auto* web_app_provider =
+        web_app::WebAppProvider::GetForWebContents(web_contents);
+    if (app_id && web_app_provider) {
+      const web_app::WebApp* web_app =
+          web_app_provider->registrar_unsafe().GetAppById(*app_id);
+      return AllowInspection(profile, web_app);
+    }
   }
+  // |extension| is always nullptr here.
   return AllowInspection(profile, extension);
 }
 
@@ -193,30 +245,9 @@ bool ChromeDevToolsManagerDelegate::AllowInspection(
 bool ChromeDevToolsManagerDelegate::AllowInspection(
     Profile* profile,
     const extensions::Extension* extension) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(ash::switches::kForceDevToolsAvailable))
-    return true;
-#endif
-
   using Availability = policy::DeveloperToolsPolicyHandler::Availability;
   Availability availability =
-      policy::DeveloperToolsPolicyHandler::GetDevToolsAvailability(
-          profile->GetPrefs());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Do not create DevTools if it's disabled for primary profile.
-  Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
-  if (primary_profile &&
-      policy::DeveloperToolsPolicyHandler::IsDevToolsAvailabilitySetByPolicy(
-          primary_profile->GetPrefs())) {
-    availability =
-        policy::DeveloperToolsPolicyHandler::GetMostRestrictiveAvailability(
-            availability,
-            policy::DeveloperToolsPolicyHandler::GetDevToolsAvailability(
-                primary_profile->GetPrefs()));
-  }
-#endif
-
+      policy::DeveloperToolsPolicyHandler::GetEffectiveAvailability(profile);
   switch (availability) {
     case Availability::kDisallowed:
       return false;
@@ -225,6 +256,27 @@ bool ChromeDevToolsManagerDelegate::AllowInspection(
     case Availability::kDisallowedForForceInstalledExtensions:
       return !extension ||
              !extensions::Manifest::IsPolicyLocation(extension->location());
+    default:
+      NOTREACHED() << "Unknown developer tools policy";
+      return true;
+  }
+}
+
+// static
+bool ChromeDevToolsManagerDelegate::AllowInspection(
+    Profile* profile,
+    const web_app::WebApp* web_app) {
+  using Availability = policy::DeveloperToolsPolicyHandler::Availability;
+  Availability availability =
+      policy::DeveloperToolsPolicyHandler::GetEffectiveAvailability(profile);
+  switch (availability) {
+    case Availability::kDisallowed:
+      return false;
+    case Availability::kAllowed:
+      return true;
+    case Availability::kDisallowedForForceInstalledExtensions:
+      return !web_app || (!web_app->IsPolicyInstalledApp() &&
+                          !web_app->IsKioskInstalledApp());
     default:
       NOTREACHED() << "Unknown developer tools policy";
       return true;

@@ -178,11 +178,6 @@ HRESULT UpdaterImpl::FetchPolicies(IUpdaterCallback* callback) {
   return S_OK;
 }
 
-HRESULT UpdaterImpl::CheckForUpdate(const wchar_t* app_id) {
-  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-  return E_NOTIMPL;
-}
-
 HRESULT UpdaterImpl::RegisterApp(const wchar_t* app_id,
                                  const wchar_t* brand_code,
                                  const wchar_t* brand_path,
@@ -337,6 +332,55 @@ class StateChangeCallbackFilter {
 
 }  // namespace
 
+HRESULT UpdaterImpl::CheckForUpdate(const wchar_t* app_id,
+                                    LONG priority,
+                                    BOOL same_version_update_allowed,
+                                    IUpdaterObserver* observer) {
+  auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+
+  using IUpdaterObserverPtr = Microsoft::WRL::ComPtr<IUpdaterObserver>;
+  auto observer_local = IUpdaterObserverPtr(observer);
+
+  scoped_refptr<ComServerApp> com_server = AppServerSingletonInstance();
+  com_server->main_task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<UpdateService> update_service,
+             scoped_refptr<base::SequencedTaskRunner> task_runner,
+             const std::string& app_id, UpdateService::Priority priority,
+             bool same_version_update_allowed, IUpdaterObserverPtr observer) {
+            update_service->CheckForUpdate(
+                app_id, priority,
+                same_version_update_allowed
+                    ? UpdateService::PolicySameVersionUpdate::kAllowed
+                    : UpdateService::PolicySameVersionUpdate::kNotAllowed,
+                base::BindRepeating(&StateChangeCallbackFilter::OnStateChange,
+                                    base::Owned(new StateChangeCallbackFilter(
+                                        task_runner, observer))),
+                base::BindOnce(
+                    [](scoped_refptr<base::SequencedTaskRunner> task_runner,
+                       IUpdaterObserverPtr observer,
+                       UpdateService::Result result) {
+                      task_runner->PostTaskAndReplyWithResult(
+                          FROM_HERE,
+                          base::BindOnce(
+                              &IUpdaterObserver::OnComplete, observer,
+                              Microsoft::WRL::Make<CompleteStatusImpl>(
+                                  static_cast<int>(result), L"")),
+                          base::BindOnce([](HRESULT hr) {
+                            VLOG(2) << "UpdaterImpl::Update "
+                                    << "callback returned " << std::hex << hr;
+                          }));
+                    },
+                    task_runner, observer));
+          },
+          com_server->update_service(), task_runner, base::WideToUTF8(app_id),
+          static_cast<UpdateService::Priority>(priority),
+          same_version_update_allowed, observer_local));
+  return S_OK;
+}
+
 // Called by the COM RPC runtime on one of its threads. Invokes the in-process
 // `update_service` on the main sequence. The callbacks received from
 // `update_service` arrive in the main sequence too. Since handling these
@@ -347,7 +391,6 @@ HRESULT UpdaterImpl::Update(const wchar_t* app_id,
                             const wchar_t* install_data_index,
                             LONG priority,
                             BOOL same_version_update_allowed,
-                            BOOL do_update_check_only,
                             IUpdaterObserver* observer) {
   // This task runner is responsible for sequencing the callbacks posted
   // by the `UpdateService` and calling the outbound COM functions to
@@ -366,13 +409,12 @@ HRESULT UpdaterImpl::Update(const wchar_t* app_id,
              scoped_refptr<base::SequencedTaskRunner> task_runner,
              const std::string& app_id, const std::string& install_data_index,
              UpdateService::Priority priority, bool same_version_update_allowed,
-             bool do_update_check_only, IUpdaterObserverPtr observer) {
+             IUpdaterObserverPtr observer) {
             update_service->Update(
                 app_id, install_data_index, priority,
                 same_version_update_allowed
                     ? UpdateService::PolicySameVersionUpdate::kAllowed
                     : UpdateService::PolicySameVersionUpdate::kNotAllowed,
-                do_update_check_only,
                 base::BindRepeating(&StateChangeCallbackFilter::OnStateChange,
                                     base::Owned(new StateChangeCallbackFilter(
                                         task_runner, observer))),
@@ -396,10 +438,7 @@ HRESULT UpdaterImpl::Update(const wchar_t* app_id,
           com_server->update_service(), task_runner, base::WideToUTF8(app_id),
           base::WideToUTF8(install_data_index),
           static_cast<UpdateService::Priority>(priority),
-          same_version_update_allowed, do_update_check_only, observer_local));
-
-  // Always return S_OK from this function. Errors must be reported using the
-  // observer interface.
+          same_version_update_allowed, observer_local));
   return S_OK;
 }
 
@@ -440,9 +479,6 @@ HRESULT UpdaterImpl::UpdateAll(IUpdaterObserver* observer) {
           },
           com_server->update_service(), task_runner,
           IUpdaterObserverPtr(observer)));
-
-  // Always return S_OK from this function. Errors must be reported using the
-  // observer interface.
   return S_OK;
 }
 
@@ -544,9 +580,6 @@ HRESULT UpdaterImpl::Install(const wchar_t* app_id,
           base::WideToUTF8(client_install_data),
           base::WideToUTF8(install_data_index),
           static_cast<UpdateService::Priority>(priority), observer_local));
-
-  // Always return S_OK from this function. Errors must be reported using the
-  // observer interface.
   return S_OK;
 }
 
@@ -689,9 +722,6 @@ HRESULT UpdaterInternalImpl::Run(IUpdaterInternalCallback* callback) {
           },
           com_server->update_service_internal(), task_runner,
           IUpdaterInternalCallbackPtr(callback)));
-
-  // Always return S_OK from this function. Errors must be reported using the
-  // callback interface.
   return S_OK;
 }
 
@@ -725,9 +755,6 @@ HRESULT UpdaterInternalImpl::Hello(IUpdaterInternalCallback* callback) {
           },
           com_server->update_service_internal(), task_runner,
           IUpdaterInternalCallbackPtr(callback)));
-
-  // Always return S_OK from this function. Errors must be reported using the
-  // callback interface.
   return S_OK;
 }
 

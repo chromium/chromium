@@ -84,11 +84,6 @@ public final class ProxyNativeTask extends NativeBackgroundTask {
         return false;
     }
 
-    @Override
-    public void reschedule(Context context) {
-        // TODO(shaktisahu): Reschedule the task.
-    }
-
     private void destroy() {
         if (mNativeProxyNativeTask == 0) return;
         ProxyNativeTaskJni.get().destroy(mNativeProxyNativeTask, ProxyNativeTask.this);

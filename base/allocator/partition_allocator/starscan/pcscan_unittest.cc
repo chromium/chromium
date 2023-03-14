@@ -27,6 +27,7 @@
 namespace partition_alloc::internal {
 
 namespace {
+
 struct DisableStackScanningScope final {
   DisableStackScanningScope() {
     if (PCScan::IsStackScanningEnabled()) {
@@ -35,13 +36,15 @@ struct DisableStackScanningScope final {
     }
   }
   ~DisableStackScanningScope() {
-    if (changed_)
+    if (changed_) {
       PCScan::EnableStackScanning();
+    }
   }
 
  private:
   bool changed_ = false;
 };
+
 }  // namespace
 
 class PartitionAllocPCScanTestBase : public testing::Test {
@@ -104,8 +107,10 @@ class PartitionAllocPCScanTestBase : public testing::Test {
   partition_alloc::PartitionAllocatorAllowLeaksForTesting allocator_;
 };
 
+namespace {
+
 // The test that expects free() being quarantined only when tag overflow occurs.
-class PartitionAllocPCScanWithMTETest : public PartitionAllocPCScanTestBase {};
+using PartitionAllocPCScanWithMTETest = PartitionAllocPCScanTestBase;
 
 // The test that expects every free() being quarantined.
 class PartitionAllocPCScanTest : public PartitionAllocPCScanTestBase {
@@ -115,8 +120,6 @@ class PartitionAllocPCScanTest : public PartitionAllocPCScanTestBase {
     root().SetQuarantineAlwaysForTesting(false);
   }
 };
-
-namespace {
 
 using SlotSpan = ThreadSafePartitionRoot::SlotSpan;
 
@@ -204,8 +207,6 @@ struct List final : ListBase {
   }
 };
 
-}  // namespace
-
 TEST_F(PartitionAllocPCScanTest, ArbitraryObjectInQuarantine) {
   using ListType = List<8>;
 
@@ -240,8 +241,6 @@ TEST_F(PartitionAllocPCScanTest, LastObjectInQuarantine) {
   root().FreeNoHooks(full_slot_span.last);
   EXPECT_TRUE(IsInQuarantine(full_slot_span.last));
 }
-
-namespace {
 
 template <typename SourceList, typename ValueList>
 void TestDanglingReference(PartitionAllocPCScanTest& test,
@@ -285,8 +284,6 @@ void TestDanglingReferenceNotVisited(PartitionAllocPCScanTest& test,
   // Check that the object is in the freelist now.
   EXPECT_TRUE(IsInFreeList(value_root.ObjectToSlotStart(value)));
 }
-
-}  // namespace
 
 TEST_F(PartitionAllocPCScanTest, DanglingReferenceSameBucket) {
   using SourceList = List<8>;
@@ -412,8 +409,6 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceFromFullPage) {
   TestDanglingReference(*this, source, value, root());
 }
 
-namespace {
-
 template <size_t Size>
 struct ListWithInnerReference {
   char buffer1[Size];
@@ -432,8 +427,6 @@ struct ListWithInnerReference {
     root.Free(list);
   }
 };
-
-}  // namespace
 
 // Disabled due to consistent failure http://crbug.com/1242407
 #if BUILDFLAG(IS_ANDROID)
@@ -588,7 +581,6 @@ TEST_F(PartitionAllocPCScanTest, DoubleFree) {
 #endif  // PA_CONFIG(STARSCAN_EAGER_DOUBLE_FREE_DETECTION_ENABLED)
 #endif  // defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 
-namespace {
 template <typename SourceList, typename ValueList>
 void TestDanglingReferenceWithSafepoint(PartitionAllocPCScanTest& test,
                                         SourceList* source,
@@ -629,7 +621,6 @@ void TestDanglingReferenceWithSafepoint(PartitionAllocPCScanTest& test,
     EXPECT_TRUE(IsInFreeList(test.root().ObjectToSlotStart(value)));
   }
 }
-}  // namespace
 
 TEST_F(PartitionAllocPCScanTest, Safepoint) {
   using SourceList = List<64>;
@@ -644,49 +635,63 @@ TEST_F(PartitionAllocPCScanTest, Safepoint) {
   TestDanglingReferenceWithSafepoint(*this, source, value, root());
 }
 
-TEST_F(PartitionAllocPCScanTest, StackScanning) {
-  using ValueList = List<8>;
-
-  PCScan::EnableStackScanning();
-
-  static void* dangling_reference = nullptr;
-  // Set to nullptr if the test is retried.
-  dangling_reference = nullptr;
-
-  // Create and set dangling reference in the global.
-  [this]() PA_NOINLINE {
+class PartitionAllocPCScanStackScanningTest : public PartitionAllocPCScanTest {
+ protected:
+  // Creates and sets a dangling reference in `dangling_reference_`.
+  PA_NOINLINE void CreateDanglingReference() {
+    using ValueList = List<8>;
     auto* value = ValueList::Create(root(), nullptr);
     ValueList::Destroy(root(), value);
-    dangling_reference = value;
-  }();
+    dangling_reference_ = value;
+  }
 
-  [this]() PA_NOINLINE {
+  PA_NOINLINE void SetupAndRunTest() {
     // Register the top of the stack to be the current pointer.
     PCScan::NotifyThreadCreated(GetStackPointer());
-    [this]() PA_NOINLINE {
-      // This writes the pointer to the stack.
-      [[maybe_unused]] auto* volatile stack_ref = dangling_reference;
-      // Call the non-inline function that would scan the stack. Don't execute
-      // the rest of the actions inside the function, since otherwise it would
-      // be tail-call optimized and the parent frame's stack with the dangling
-      // pointer would be missed.
-      [this]() PA_NOINLINE {
-        // Schedule PCScan but don't scan.
-        SchedulePCScan();
-        // Enter safepoint and scan from mutator. This will scan the stack.
-        JoinPCScanAsMutator();
-      }();
-      // Check that the object is still quarantined since it's referenced by
-      // |dangling_reference|.
-      EXPECT_TRUE(IsInQuarantine(dangling_reference));
-      // Check that value is not in the freelist.
-      EXPECT_FALSE(IsInFreeList(root().ObjectToSlotStart(dangling_reference)));
-      // Run sweeper.
-      FinishPCScanAsScanner();
-      // Check that |dangling_reference| still exists.
-      EXPECT_FALSE(IsInFreeList(root().ObjectToSlotStart(dangling_reference)));
-    }();
-  }();
+    RunTest();
+  }
+
+  PA_NOINLINE void RunTest() {
+    // This writes the pointer to the stack.
+    [[maybe_unused]] auto* volatile stack_ref = dangling_reference_;
+    // Call the non-inline function that would scan the stack. Don't execute
+    // the rest of the actions inside the function, since otherwise it would
+    // be tail-call optimized and the parent frame's stack with the dangling
+    // pointer would be missed.
+    ScanStack();
+    // Check that the object is still quarantined since it's referenced by
+    // |dangling_reference_|.
+    EXPECT_TRUE(IsInQuarantine(dangling_reference_));
+    // Check that value is not in the freelist.
+    EXPECT_FALSE(IsInFreeList(root().ObjectToSlotStart(dangling_reference_)));
+    // Run sweeper.
+    FinishPCScanAsScanner();
+    // Check that |dangling_reference_| still exists.
+    EXPECT_FALSE(IsInFreeList(root().ObjectToSlotStart(dangling_reference_)));
+  }
+
+  PA_NOINLINE void ScanStack() {
+    // Schedule PCScan but don't scan.
+    SchedulePCScan();
+    // Enter safepoint and scan from mutator. This will scan the stack.
+    JoinPCScanAsMutator();
+  }
+
+  static void* dangling_reference_;
+};
+
+// static
+void* PartitionAllocPCScanStackScanningTest::dangling_reference_ = nullptr;
+
+TEST_F(PartitionAllocPCScanStackScanningTest, StackScanning) {
+  PCScan::EnableStackScanning();
+
+  // Set to nullptr if the test is retried.
+  dangling_reference_ = nullptr;
+
+  CreateDanglingReference();
+
+  SetupAndRunTest();
 }
 
 TEST_F(PartitionAllocPCScanTest, DontScanUnusedRawSize) {
@@ -861,6 +866,8 @@ TEST_F(PartitionAllocPCScanWithMTETest, QuarantineOnlyOnTagOverflow) {
   EXPECT_FALSE(true && "Should never be reached");
 }
 #endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
+
+}  // namespace
 
 }  // namespace partition_alloc::internal
 

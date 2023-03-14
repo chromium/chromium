@@ -36,9 +36,6 @@ class WebFrame : public base::SupportsUserData {
   virtual bool IsMainFrame() const = 0;
   // The security origin associated with this frame.
   virtual GURL GetSecurityOrigin() const = 0;
-  // Whether or not the receiver represents a frame which supports calling
-  // JavaScript functions using `CallJavaScriptFunction()`.
-  virtual bool CanCallJavaScriptFunction() const = 0;
 
   // Returns the BrowserState associated with this WebFrame.
   virtual BrowserState* GetBrowserState() = 0;

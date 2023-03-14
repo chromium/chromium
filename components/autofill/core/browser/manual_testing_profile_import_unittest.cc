@@ -30,11 +30,13 @@ TEST(ManualTestingProfileImportTest, AutofillProfilesFromJSON_Valid) {
   absl::optional<base::Value> json = base::JSONReader::Read(R"({
     "profiles" : [
       {
+        "source" : "localOrSyncable",
         "NAME_FULL" : "first last",
         "NAME_FIRST" : "first",
         "NAME_LAST" : "last"
       },
       {
+        "source" : "account",
         "ADDRESS_HOME_STREET_ADDRESS" : "street 123",
         "ADDRESS_HOME_STREET_NAME" : "street",
         "ADDRESS_HOME_HOUSE_NUMBER" : "123"
@@ -43,7 +45,7 @@ TEST(ManualTestingProfileImportTest, AutofillProfilesFromJSON_Valid) {
   })");
   ASSERT_TRUE(json);
 
-  AutofillProfile expected_profile1;
+  AutofillProfile expected_profile1(AutofillProfile::Source::kLocalOrSyncable);
   expected_profile1.SetRawInfoWithVerificationStatus(
       NAME_FULL, u"first last", VerificationStatus::kUserVerified);
   expected_profile1.SetRawInfoWithVerificationStatus(
@@ -51,7 +53,7 @@ TEST(ManualTestingProfileImportTest, AutofillProfilesFromJSON_Valid) {
   expected_profile1.SetRawInfoWithVerificationStatus(
       NAME_LAST, u"last", VerificationStatus::kUserVerified);
 
-  AutofillProfile expected_profile2;
+  AutofillProfile expected_profile2(AutofillProfile::Source::kAccount);
   expected_profile2.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_STREET_ADDRESS, u"street 123",
       VerificationStatus::kUserVerified);
@@ -60,10 +62,12 @@ TEST(ManualTestingProfileImportTest, AutofillProfilesFromJSON_Valid) {
   expected_profile2.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_HOUSE_NUMBER, u"123", VerificationStatus::kUserVerified);
 
-  EXPECT_THAT(
-      AutofillProfilesFromJSON(*json),
-      testing::Optional(testing::Pointwise(
-          ProfilesCompareEqual(), {expected_profile1, expected_profile2})));
+  base::expected<std::vector<AutofillProfile>, std::string> profiles =
+      AutofillProfilesFromJSON(*json);
+  ASSERT_TRUE(profiles.has_value()) << profiles.error();
+  EXPECT_THAT(*profiles,
+              testing::Pointwise(ProfilesCompareEqual(),
+                                 {expected_profile1, expected_profile2}));
 }
 
 // Tests that the conversion fails when an unrecognized field type is present.
@@ -77,7 +81,21 @@ TEST(ManualTestingProfileImportTest,
     ]
   })");
   ASSERT_TRUE(json);
-  EXPECT_FALSE(AutofillProfilesFromJSON(*json));
+  EXPECT_FALSE(AutofillProfilesFromJSON(*json).has_value());
+}
+
+// Tests that the conversion fails when the "source" has an unrecognized value.
+TEST(ManualTestingProfileImportTest,
+     AutofillProfilesFromJSON_UnrecognizedSource) {
+  absl::optional<base::Value> json = base::JSONReader::Read(R"({
+    "profiles" : [
+      {
+        "source" : "invalid"
+      }
+    ]
+  })");
+  ASSERT_TRUE(json);
+  EXPECT_FALSE(AutofillProfilesFromJSON(*json).has_value());
 }
 
 // Tests that the conversion fails for non-fully structured profiles.
@@ -92,7 +110,7 @@ TEST(ManualTestingProfileImportTest,
     ]
   })");
   ASSERT_TRUE(json);
-  EXPECT_FALSE(AutofillProfilesFromJSON(*json));
+  EXPECT_FALSE(AutofillProfilesFromJSON(*json).has_value());
 }
 
 }  // namespace autofill

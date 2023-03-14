@@ -136,6 +136,13 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
     return &feature_list_processor_;
   }
 
+  void RefreshCollector() {
+    collector_.reset();
+    collector_ = std::make_unique<TrainingDataCollectorImpl>(
+        &feature_list_processor_, &histogram_signal_handler_,
+        storage_service_.get(), &configs_, &prefs_, &clock_);
+  }
+
   proto::SegmentInfo* CreateSegmentInfo(DecisionType type,
                                         bool upload_tensors = false) {
     test_segment_db()->AddUserActionFeature(kTestOptimizationTarget0, "action",
@@ -273,7 +280,7 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
     run_loop.Run();
   }
 
-  void WaitForContinousCollection() {
+  void WaitForContinuousCollection() {
     base::RunLoop run_loop;
     test_recorder_.SetOnAddEntryCallback(
         Segmentation_ModelExecution::kEntryName, run_loop.QuitClosure());
@@ -363,7 +370,7 @@ TEST_F(TrainingDataCollectorImplTest, PartialOutputNotAllowed) {
 }
 
 // Tests that continuous collection happens on startup.
-TEST_F(TrainingDataCollectorImplTest, ContinousCollectionOnStartupNoDelay) {
+TEST_F(TrainingDataCollectorImplTest, ContinuousCollectionOnStartupNoDelay) {
   CreateSegmentInfo(kPeriodicDecisionType, /*upload_tensors=*/true);
   clock()->Advance(base::Days(1));
 
@@ -383,12 +390,12 @@ TEST_F(TrainingDataCollectorImplTest, ReportCollectedContinuousTrainingData) {
   CreateSegmentInfo(kPeriodicDecisionType, /*upload_tensors=*/true);
   Init();
   clock()->Advance(base::Days(1));
-  WaitForContinousCollection();
+  WaitForContinuousCollection();
   ExpectUkm(
       {Segmentation_ModelExecution::kOptimizationTargetName,
        Segmentation_ModelExecution::kModelVersionName,
        Segmentation_ModelExecution::kInput0Name,
-       Segmentation_ModelExecution::kPredictionResultName,
+       Segmentation_ModelExecution::kPredictionResult1Name,
        Segmentation_ModelExecution::kSelectionResultName,
        Segmentation_ModelExecution::kOutputDelaySecName,
        Segmentation_ModelExecution::kActualResultName,
@@ -418,7 +425,7 @@ TEST_F(TrainingDataCollectorImplTest, ContinuousWithExactPrediction) {
                               proto::TrainingOutputs::TriggerConfig::ONDEMAND);
   task_environment()->RunUntilIdle();
   clock()->Advance(kNextUserSession);
-  WaitForContinousCollection();
+  WaitForContinuousCollection();
   ExpectResult1Ukm();
 }
 
@@ -443,7 +450,7 @@ TEST_F(TrainingDataCollectorImplTest, ContinuousWithFlexibleObservation) {
                               proto::TrainingOutputs::TriggerConfig::ONDEMAND);
   task_environment()->RunUntilIdle();
   clock()->Advance(kNextUserSession);
-  WaitForContinousCollection();
+  WaitForContinuousCollection();
   ExpectResult1Ukm();
 }
 
@@ -464,7 +471,7 @@ TEST_F(TrainingDataCollectorImplTest, ContinuousWithDelay) {
   task_environment()->RunUntilIdle();
   ExpectResult1Ukm();
   clock()->Advance(kNextUserSession);
-  WaitForContinousCollection();
+  WaitForContinuousCollection();
   ExpectUkmCount(2u);
 }
 
@@ -479,7 +486,7 @@ TEST_F(TrainingDataCollectorImplTest,
   CreateSegmentInfo(kPeriodicDecisionType, /*upload_tensors=*/true);
   Init();
   clock()->Advance(base::Hours(24));
-  WaitForContinousCollection();
+  WaitForContinuousCollection();
   test_recorder()->Purge();
   ExpectUkmCount(0u);
 
@@ -490,7 +497,7 @@ TEST_F(TrainingDataCollectorImplTest,
 
   // Collect again after 24 hours and it should work.
   clock()->Advance(base::Hours(24));
-  WaitForContinousCollection();
+  WaitForContinuousCollection();
   ExpectUkmCount(1u);
 }
 
@@ -611,6 +618,36 @@ TEST_F(TrainingDataCollectorImplTest, DataCollectionWithTimeTrigger) {
              SegmentationUkmHelper::FloatToInt64(1.f),
              SegmentationUkmHelper::FloatToInt64(2.f),
              SegmentationUkmHelper::FloatToInt64(3.f)});
+}
+
+TEST_F(TrainingDataCollectorImplTest, DataCollectionWithStoreToDisk) {
+  auto* segment_info = CreateSegmentInfo(kPeriodicDecisionType);
+  segment_info->mutable_model_metadata()
+      ->mutable_training_outputs()
+      ->mutable_trigger_config()
+      ->set_use_exact_prediction_time(true);
+  AddTimeTrigger(segment_info, base::Days(7));
+  const base::TimeDelta kNextUserSession = base::Days(10);
+
+  base::Time current = clock()->Now();
+  SetupFeatureProcessorResult1(current, current + base::Days(7));
+
+  // Trigger decision time with the collector and wait for the database to store
+  // the training data.
+  Init();
+  collector()->OnDecisionTime(kTestOptimizationTarget0, nullptr,
+                              proto::TrainingOutputs::TriggerConfig::ONDEMAND);
+  task_environment()->RunUntilIdle();
+  ExpectUkmCount(0);
+  clock()->Advance(kNextUserSession);
+
+  // Delete and create a new collector to ensure data is stored to disk.
+  RefreshCollector();
+
+  // At startup the new collector should fetch the training data, finish the
+  // training request, trigger observation and record the ukm.
+  Init();
+  ExpectResult1Ukm();
 }
 
 }  // namespace

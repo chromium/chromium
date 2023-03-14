@@ -13,9 +13,10 @@ build_webui("build") {
 
   non_web_component_files = [ "indexeddb_internals.ts" ]
 
+  ts_tsconfig_base = "tsconfig_base.json"
   ts_deps = [
     "//ui/webui/resources/js:build_ts",
-    "//ui/webui/resources/mojo:library",
+    "//ui/webui/resources/mojo:build_ts",
   ]
 
   indexeddb_internal_folder = "content/browser/indexed_db"

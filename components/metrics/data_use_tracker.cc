@@ -123,14 +123,15 @@ void DataUseTracker::RemoveExpiredEntriesForPref(const std::string& pref_name) {
   const base::Time current_date = GetCurrentMeasurementDate();
   const base::Time week_ago = current_date - base::Days(7);
 
-  base::Value user_pref_new_dict{base::Value::Type::DICT};
+  base::Value::Dict user_pref_new_dict;
   for (const auto it : user_pref_dict) {
     base::Time key_date;
     if (base::Time::FromUTCString(it.first.c_str(), &key_date) &&
-        key_date > week_ago)
-      user_pref_new_dict.SetPath(it.first, it.second.Clone());
+        key_date > week_ago) {
+      user_pref_new_dict.Set(it.first, it.second.Clone());
+    }
   }
-  local_state_->Set(pref_name, user_pref_new_dict);
+  local_state_->SetDict(pref_name, std::move(user_pref_new_dict));
 }
 
 // Note: We compute total data use regardless of what is the current date. In

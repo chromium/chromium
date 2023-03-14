@@ -110,8 +110,8 @@
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_sync_model_type_controller.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/supervised_user_sync_model_type_controller.h"
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
@@ -415,10 +415,12 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
             sharing_message_delegate)));
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+    // |profile_| must not be null and must outlive this controller.
     controllers.push_back(
         std::make_unique<SupervisedUserSyncModelTypeController>(
-            syncer::SUPERVISED_USER_SETTINGS, profile_, dump_stack,
-            model_type_store_factory,
+            syncer::SUPERVISED_USER_SETTINGS,
+            base::BindRepeating(&Profile::IsChild, base::Unretained(profile_)),
+            dump_stack, model_type_store_factory,
             GetSyncableServiceForType(syncer::SUPERVISED_USER_SETTINGS)));
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
@@ -721,7 +723,8 @@ ChromeSyncClient::GetSyncApiComponentFactory() {
 
 syncer::SyncTypePreferenceProvider* ChromeSyncClient::GetPreferenceProvider() {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  return SupervisedUserServiceFactory::GetForProfile(profile_);
+  return SupervisedUserSettingsServiceFactory::GetForKey(
+      profile_->GetProfileKey());
 #else
   return nullptr;
 #endif

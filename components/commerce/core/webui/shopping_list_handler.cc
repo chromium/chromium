@@ -9,10 +9,12 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
+#include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/payments/core/currency_formatter.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
@@ -92,9 +94,9 @@ ShoppingListHandler::ShoppingListHandler(
       pref_service_(prefs),
       tracker_(tracker),
       locale_(locale) {
+  scoped_observation_.Observe(shopping_service_);
   // It is safe to schedule updates and observe bookmarks. If the feature is
   // disabled, no new information will be fetched or provided to the frontend.
-  scoped_observation_.Observe(bookmark_model);
   shopping_service_->ScheduleSavedProductUpdate();
 }
 
@@ -103,12 +105,20 @@ ShoppingListHandler::~ShoppingListHandler() = default;
 void ShoppingListHandler::GetAllPriceTrackedBookmarkProductInfo(
     GetAllPriceTrackedBookmarkProductInfoCallback callback) {
   if (!shopping_service_->IsShoppingListEligible()) {
-    std::move(callback).Run({});
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  std::vector<BookmarkProductInfoPtr>()));
     return;
   }
-  std::vector<const bookmarks::BookmarkNode*> bookmarks =
-      GetAllPriceTrackedBookmarks(bookmark_model_);
+  GetAllPriceTrackedBookmarks(
+      shopping_service_, bookmark_model_,
+      base::BindOnce(&ShoppingListHandler::OnFetchPriceTrackedBookmarks,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
 
+void ShoppingListHandler::OnFetchPriceTrackedBookmarks(
+    GetAllPriceTrackedBookmarkProductInfoCallback callback,
+    std::vector<const bookmarks::BookmarkNode*> bookmarks) {
   std::vector<BookmarkProductInfoPtr> info_list =
       BookmarkListToMojoList(*bookmark_model_, bookmarks, locale_);
 
@@ -141,7 +151,7 @@ void ShoppingListHandler::TrackPriceForBookmark(int64_t bookmark_id) {
       bookmarks::GetBookmarkNodeByID(bookmark_model_, bookmark_id), true,
       base::BindOnce(&ShoppingListHandler::onPriceTrackResult,
                      weak_ptr_factory_.GetWeakPtr(), bookmark_id,
-                     bookmark_model_));
+                     bookmark_model_, true));
 }
 
 void ShoppingListHandler::UntrackPriceForBookmark(int64_t bookmark_id) {
@@ -150,24 +160,48 @@ void ShoppingListHandler::UntrackPriceForBookmark(int64_t bookmark_id) {
       bookmarks::GetBookmarkNodeByID(bookmark_model_, bookmark_id), false,
       base::BindOnce(&ShoppingListHandler::onPriceTrackResult,
                      weak_ptr_factory_.GetWeakPtr(), bookmark_id,
-                     bookmark_model_));
+                     bookmark_model_, false));
 }
 
-void ShoppingListHandler::BookmarkModelChanged() {}
+void ShoppingListHandler::OnSubscribe(
+    const std::vector<CommerceSubscription>& subscriptions,
+    bool succeeded) {
+  if (succeeded) {
+    HandleSubscriptionChange(subscriptions, true);
+  }
+}
 
-void ShoppingListHandler::BookmarkMetaInfoChanged(
-    bookmarks::BookmarkModel* model,
-    const bookmarks::BookmarkNode* node) {
-  std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
-      power_bookmarks::GetNodePowerBookmarkMeta(model, node);
-  if (!meta || !meta->has_shopping_specifics())
-    return;
+void ShoppingListHandler::OnUnsubscribe(
+    const std::vector<CommerceSubscription>& subscriptions,
+    bool succeeded) {
+  if (succeeded) {
+    HandleSubscriptionChange(subscriptions, false);
+  }
+}
 
-  if (commerce::IsBookmarkPriceTracked(model, node)) {
-    remote_page_->PriceTrackedForBookmark(
-        BookmarkNodeToMojoProduct(*model, node, locale_));
-  } else {
-    remote_page_->PriceUntrackedForBookmark(node->id());
+void ShoppingListHandler::HandleSubscriptionChange(
+    const std::vector<CommerceSubscription>& subscriptions,
+    bool is_tracking) {
+  for (auto& sub : subscriptions) {
+    if (sub.id_type != IdentifierType::kProductClusterId) {
+      continue;
+    }
+
+    uint64_t cluster_id;
+    if (!base::StringToUint64(sub.id, &cluster_id)) {
+      continue;
+    }
+
+    std::vector<const bookmarks::BookmarkNode*> bookmarks =
+        GetBookmarksWithClusterId(bookmark_model_, cluster_id);
+    for (auto* node : bookmarks) {
+      if (is_tracking) {
+        remote_page_->PriceTrackedForBookmark(
+            BookmarkNodeToMojoProduct(*bookmark_model_, node, locale_));
+      } else {
+        remote_page_->PriceUntrackedForBookmark(node->id());
+      }
+    }
   }
 }
 
@@ -186,15 +220,25 @@ std::vector<BookmarkProductInfoPtr> ShoppingListHandler::BookmarkListToMojoList(
 
 void ShoppingListHandler::onPriceTrackResult(int64_t bookmark_id,
                                              bookmarks::BookmarkModel* model,
+                                             bool is_tracking,
                                              bool success) {
   if (success)
     return;
-  auto* node = bookmarks::GetBookmarkNodeByID(bookmark_model_, bookmark_id);
-  if (commerce::IsBookmarkPriceTracked(bookmark_model_, node)) {
+
+  // We only do work here if price tracking failed. When the UI is interacted
+  // with, we assume success. In the event it failed, we switch things back.
+  // So in this case, if we were trying to untrack and that action failed, set
+  // the UI back to "tracking".
+  if (!is_tracking) {
+    auto* node = bookmarks::GetBookmarkNodeByID(bookmark_model_, bookmark_id);
     remote_page_->PriceTrackedForBookmark(
         BookmarkNodeToMojoProduct(*model, node, locale_));
   } else {
     remote_page_->PriceUntrackedForBookmark(bookmark_id);
   }
+  // Pass in whether the failed operation was to track or untrack price. It
+  // should be the reverse of the current tracking status since the operation
+  // failed.
+  remote_page_->OperationFailedForBookmark(bookmark_id, is_tracking);
 }
 }  // namespace commerce

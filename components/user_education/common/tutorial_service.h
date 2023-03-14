@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/timer/timer.h"
 #include "components/user_education/common/tutorial.h"
 #include "components/user_education/common/tutorial_identifier.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -39,7 +40,7 @@ class TutorialService {
   using AbortedCallback = base::OnceClosure;
 
   // Returns true if there is a currently running tutorial.
-  bool IsRunningTutorial() const;
+  virtual bool IsRunningTutorial() const;
 
   // Sets the current help bubble stored by the service.
   void SetCurrentBubble(std::unique_ptr<HelpBubble> bubble, bool is_last_step);
@@ -48,7 +49,8 @@ class TutorialService {
   void HideCurrentBubbleIfShowing();
 
   // Starts the tutorial by looking for the id in the Tutorial Registry.
-  virtual bool StartTutorial(
+  // Any existing tutorial is canceled.
+  virtual void StartTutorial(
       TutorialIdentifier id,
       ui::ElementContext context,
       CompletedCallback completed_callback = base::DoNothing(),
@@ -93,6 +95,10 @@ class TutorialService {
     ui::ElementContext context_;
   };
 
+  // Called when a non-final bubble is closed. Used to trigger the broken
+  // tutorial timeout.
+  void OnNonFinalBubbleClosed(HelpBubble* bubble);
+
   // Calls the completion code for the running tutorial.
   // TODO (dpenning): allow for registering a callback that performs any
   // IPH/other code on completion of tutorial
@@ -103,6 +109,10 @@ class TutorialService {
 
   // Tracks when the user toggles focus to a help bubble via the keyboard.
   void OnFocusToggledForAccessibility(HelpBubble* bubble);
+
+  // Called when there has been no bubble visible for enough time that the
+  // current tutorial should probably be aborted.
+  void OnBrokenTutorial();
 
   // Creation params for the last started tutorial. Used to restart the
   // tutorial after it has been completed.
@@ -128,7 +138,14 @@ class TutorialService {
   std::unique_ptr<HelpBubble> currently_displayed_bubble_;
 
   // Listens for when the final bubble in a Tutorial is closed.
-  base::CallbackListSubscription final_bubble_closed_subscription_;
+  base::CallbackListSubscription bubble_closed_subscription_;
+
+  // Whether the currently-displayed bubble is the final one.
+  bool is_final_bubble_ = false;
+
+  // Used to check for broken tutorials - when no bubble is visible for an
+  // unexpected period of time.
+  base::OneShotTimer broken_tutorial_timer_;
 
   // Pointers to the registries used for constructing and showing tutorials and
   // help bubbles.

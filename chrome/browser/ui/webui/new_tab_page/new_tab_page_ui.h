@@ -14,11 +14,11 @@
 #include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "chrome/browser/new_tab_page/modules/drive/drive.mojom.h"
 #include "chrome/browser/new_tab_page/modules/feed/feed.mojom.h"
+#include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters.mojom.h"
 #include "chrome/browser/new_tab_page/modules/photos/photos.mojom.h"
 #include "chrome/browser/new_tab_page/modules/recipes/recipes.mojom.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
-#include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom-forward.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
 #if !defined(OFFICIAL_BUILD)
 #include "chrome/browser/ui/webui/new_tab_page/foo/foo.mojom.h"  // nogncheck crbug.com/1125897
@@ -78,9 +78,7 @@ class PhotosHandler;
 namespace ntp {
 class FeedHandler;
 }
-namespace history_clusters {
-class HistoryClustersHandler;
-}
+class HistoryClustersPageHandler;
 class HelpBubbleHandler;
 class NewTabPageUI
     : public ui::MojoWebUIController,
@@ -182,11 +180,12 @@ class NewTabPageUI
   void BindInterface(
       mojo::PendingReceiver<chrome_cart::mojom::CartHandler> pending_receiver);
 
-  // Instantiates the implementor of the history_clusters::mojom::PageHandler
-  // mojo interface passing to it the pending receiver that will be internally
-  // bound.
-  void BindInterface(mojo::PendingReceiver<history_clusters::mojom::PageHandler>
-                         pending_page_handler);
+  // Instantiates the implementor of the
+  // ntp::history_clusters::mojom::PageHandler mojo interface passing to it the
+  // pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<ntp::history_clusters::mojom::PageHandler>
+          pending_page_handler);
 
   void BindInterface(
       mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
@@ -268,8 +267,7 @@ class NewTabPageUI
   std::unique_ptr<FooHandler> foo_handler_;
 #endif
   std::unique_ptr<CartHandler> cart_handler_;
-  std::unique_ptr<history_clusters::HistoryClustersHandler>
-      history_clusters_handler_;
+  std::unique_ptr<HistoryClustersPageHandler> history_clusters_handler_;
   raw_ptr<Profile> profile_;
   raw_ptr<ThemeService> theme_service_;
   raw_ptr<NtpCustomBackgroundService> ntp_custom_background_service_;

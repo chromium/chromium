@@ -28,6 +28,7 @@
 ; Mach IPC.
 (allow mach-lookup
   (global-name "com.apple.audio.AudioComponentRegistrar")
+  (global-name "com.apple.audio.AudioSession")
   (global-name "com.apple.audio.audiohald")
   (global-name "com.apple.audio.coreaudiod")
   (global-name "com.apple.audio.SystemSoundServer-OSX")

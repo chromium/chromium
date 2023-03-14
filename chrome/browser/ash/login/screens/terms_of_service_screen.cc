@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
@@ -133,9 +132,7 @@ bool TermsOfServiceScreen::MaybeSkip(WizardContext& context) {
   if (user_manager::UserManager::Get()->IsLoggedInAsPublicAccount())
     return false;
 
-  if (!features::IsManagedTermsOfServiceEnabled())
-    exit_callback_.Run(Result::NOT_APPLICABLE);
-  return !features::IsManagedTermsOfServiceEnabled();
+  return false;
 }
 
 void TermsOfServiceScreen::ShowImpl() {
@@ -256,28 +253,22 @@ void TermsOfServiceScreen::OnDownloaded(
     // If the Terms of Service were downloaded successfully, sanitize and show
     // them to the user.
     view_->OnLoadSuccess(base::EscapeForHTML(*response_body));
-    if (features::IsManagedTermsOfServiceEnabled()) {
-      // Update locally saved terms.
-      SaveTos(base::EscapeForHTML(*response_body));
-    }
+    // Update locally saved terms.
+    SaveTos(base::EscapeForHTML(*response_body));
   }
 }
 
 void TermsOfServiceScreen::LoadFromFileOrShowError() {
   if (!view_)
     return;
-  if (features::IsManagedTermsOfServiceEnabled()) {
-    auto tos_path = GetTosFilePath();
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE,
-        {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-        base::BindOnce(&ReadFileToOptionalString, tos_path),
-        base::BindOnce(&TermsOfServiceScreen::OnTosLoadedFromFile,
-                       weak_factory_.GetWeakPtr()));
-    return;
-  }
-  view_->OnLoadError();
+  auto tos_path = GetTosFilePath();
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&ReadFileToOptionalString, tos_path),
+      base::BindOnce(&TermsOfServiceScreen::OnTosLoadedFromFile,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void TermsOfServiceScreen::OnTosLoadedFromFile(

@@ -1309,7 +1309,7 @@ body.files-ng .thumbnail-frame > .img-container {
 }
 
 /* Only display outlines for entries with thumbnails. */
-#list-container.thumbnail-view li.pinned:has(.thumbnail) .inline-status .progress,
+#list-container.thumbnail-view li:has(.thumbnail) .inline-status .progress,
 #list-container.thumbnail-view li.pinned:has(.thumbnail) .inline-status xf-icon[type=offline] {
   --xf-icon-color-outline: var(--cros-bg-color);
 }
@@ -1357,6 +1357,10 @@ body[type='full-page'] .detail-name .detail-icon:active {
   position: relative;
   vertical-align: top;  /* Prevent vertical spacing for wrapped inline box. */
   width: 160px;
+}
+
+.thumbnail-grid .thumbnail-item.directory.pinned .filename-label {
+  padding-inline-end: 24px;
 }
 
 .thumbnail-item.directory   {
@@ -2092,6 +2096,16 @@ html.col-resize .table-header-label .sort-icon:not(:active):hover {
 
 .table-row-cell > .dateholder {
   display: flex;
+}
+
+.table-row-cell > .dateholder > .date {
+  flex: 1 1;
+  overflow: hidden;
+}
+
+.table-row-cell > .dateholder > .dlp-managed-icon {
+  flex: 0 0 24px;
+  margin-inline-start: 8px;
 }
 
 .table-header-splitter  {

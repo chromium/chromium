@@ -245,7 +245,7 @@ class OopPixelTest : public testing::Test,
     SkBitmap result;
     result.allocPixels(image_info);
     ri->ReadbackImagePixels(mailbox, image_info, image_info.minRowBytes(), 0, 0,
-                            result.getPixels());
+                            /*plane_index=*/0, result.getPixels());
     return result;
   }
 
@@ -2220,7 +2220,7 @@ TEST_F(OopPixelTest, CopySharedImage) {
 
     ri->ReadbackImagePixels(dest_mailbox, readback_bitmap.info(),
                             readback_bitmap.rowBytes(), 0, 0,
-                            readback_bitmap.getPixels());
+                            /*plane_index=*/0, readback_bitmap.getPixels());
   }
 
   // The pixel value should be unchanged, even though the source and dest are

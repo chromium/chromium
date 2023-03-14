@@ -135,22 +135,22 @@ const CSSValue* ConsumeSyntaxComponent(const CSSSyntaxComponent& syntax,
 
 }  // namespace
 
-const CSSValue* CSSSyntaxDefinition::Parse(CSSParserTokenRange range,
+const CSSValue* CSSSyntaxDefinition::Parse(CSSTokenizedValue value,
                                            const CSSParserContext& context,
                                            bool is_animation_tainted) const {
   if (IsUniversal()) {
     // The 'default' keyword is reserved despite not being a CSS-wide keyword.
     // TODO(https://crbug.com/1344170): This code may be unneeded.
-    if (CouldConsumeReservedKeyword(range)) {
+    if (CouldConsumeReservedKeyword(value.range)) {
       return nullptr;
     }
-    return CSSVariableParser::ParseVariableReferenceValue(range, context,
+    return CSSVariableParser::ParseVariableReferenceValue(value, context,
                                                           is_animation_tainted);
   }
-  range.ConsumeWhitespace();
+  value.range.ConsumeWhitespace();
   for (const CSSSyntaxComponent& component : syntax_components_) {
     if (const CSSValue* result =
-            ConsumeSyntaxComponent(component, range, context)) {
+            ConsumeSyntaxComponent(component, value.range, context)) {
       return result;
     }
   }

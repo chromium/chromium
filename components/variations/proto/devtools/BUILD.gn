@@ -9,9 +9,10 @@ import("//third_party/closure_compiler/compile_js.gni")
 
 # Some of the Windows builders do not support Java, which is a required
 # dependency for this build target. The fuzzable_proto_library doesn't support
-# building JS protos when use_libfuzzer is true.This target is only built
+# building JS protos when we're using a fuzzing engine that supports
+# libprotobuf-mutator, such as libfuzzer. This target is only built
 # manually, so it's fine to limit it to Linux non-fuzzer builds.
-if (is_linux && !use_libfuzzer) {
+if (is_linux && !use_fuzzing_engine_with_lpm) {
   # Build this target to generate a small, self-contained utility for parsing a
   # serialized ClientVariations proto from the X-Client-Data header.
   #

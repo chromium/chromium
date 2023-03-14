@@ -74,24 +74,24 @@ GURL GetPopularSitesURL(const std::string& directory,
                         const std::string& version) {
   // A Chrome iOS-only experiment is being run for M109 which overrides the
   // popular sites URL.
-  IOSDefaultPopularSitesExperimentBehavior experiment_type =
-      GetDefaultPopularSitesExperimentType();
+  NewTabPageRetentionExperimentBehavior experiment_type =
+      GetNewTabPageRetentionExperimentType();
 
   // If the experiment is enabled, and the popular sites suggestions should
   // include sites with native iOS apps,
   // `kIOSDefaultPopularSitesExperimentIncludeApps` is used.
-  if (country == "US" &&
-      experiment_type ==
-          IOSDefaultPopularSitesExperimentBehavior::kIncludePopularApps) {
+  if (country == "US" && experiment_type ==
+                             NewTabPageRetentionExperimentBehavior::
+                                 kPopularSitesIncludePopularApps) {
     return GURL(kIOSDefaultPopularSitesExperimentIncludeApps);
   }
 
   // If the experiment is enabled, and the popular sites suggestions should
   // exclude sites with native iOS apps,
   // `kIOSDefaultPopularSitesExperimentExcludeApps` is used.
-  if (country == "US" &&
-      experiment_type ==
-          IOSDefaultPopularSitesExperimentBehavior::kExcludePopularApps) {
+  if (country == "US" && experiment_type ==
+                             NewTabPageRetentionExperimentBehavior::
+                                 kPopularSitesExcludePopularApps) {
     return GURL(kIOSDefaultPopularSitesExperimentExcludeApps);
   }
 
@@ -258,14 +258,14 @@ base::Value DefaultPopularSites() {
 
   // A Chrome iOS-only experiment is being run which overrides the popular sites
   // URL.
-  IOSDefaultPopularSitesExperimentBehavior experiment_type =
-      GetDefaultPopularSitesExperimentType();
+  NewTabPageRetentionExperimentBehavior experiment_type =
+      GetNewTabPageRetentionExperimentType();
 
   // If the experiment is enabled, and the popular sites suggestions should
   // include sites with native iOS apps,
   // `kIOSDefaultPopularSitesExperimentIncludeApps` is used.
   if (experiment_type ==
-      IOSDefaultPopularSitesExperimentBehavior::kIncludePopularApps) {
+      NewTabPageRetentionExperimentBehavior::kPopularSitesIncludePopularApps) {
     popular_sites_json = IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_JSON;
   }
 
@@ -273,7 +273,7 @@ base::Value DefaultPopularSites() {
   // exclude sites with native iOS apps,
   // `kIOSDefaultPopularSitesExperimentExcludeApps` is used.
   if (experiment_type ==
-      IOSDefaultPopularSitesExperimentBehavior::kExcludePopularApps) {
+      NewTabPageRetentionExperimentBehavior::kPopularSitesExcludePopularApps) {
     popular_sites_json = IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_JSON;
   }
 
@@ -293,9 +293,9 @@ base::Value DefaultPopularSites() {
 
   // If the experiment is enabled, and the popular sites suggestions should
   // include sites with native iOS apps,
-  // `kIOSDefaultPopularSitesExperimentIncludeApps` is used.
+  // `kPopularSitesIncludePopularApps` is used.
   if (experiment_type ==
-      IOSDefaultPopularSitesExperimentBehavior::kIncludePopularApps) {
+      NewTabPageRetentionExperimentBehavior::kPopularSitesIncludePopularApps) {
     static constexpr int popular_sites_icons_with_popular_ios_apps[] = {
         IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON0,
         IDR_DEFAULT_POPULAR_SITES_WITH_POPULAR_APPS_ICON1,
@@ -311,9 +311,9 @@ base::Value DefaultPopularSites() {
 
   // If the experiment is enabled, and the popular sites suggestions should
   // exclude sites with native iOS apps,
-  // `kIOSDefaultPopularSitesExperimentExcludeApps` is used.
+  // `kPopularSitesExcludePopularApps` is used.
   if (experiment_type ==
-      IOSDefaultPopularSitesExperimentBehavior::kExcludePopularApps) {
+      NewTabPageRetentionExperimentBehavior::kPopularSitesExcludePopularApps) {
     static constexpr int popular_sites_icons_without_popular_ios_apps[] = {
         IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON0,
         IDR_DEFAULT_POPULAR_SITES_WITHOUT_POPULAR_APPS_ICON1,

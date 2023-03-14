@@ -54,9 +54,9 @@ test(function() {
   assert_equals(getComputedStyle(testElem).getPropertyValue('--foo  '), 'and this \\(');
   assert_equals(getComputedStyle(testElem).getPropertyValue('--wow'), '');
   assert_equals(getComputedStyle(testElem).getPropertyValue('--yay'), '');
-  assert_equals(getComputedStyle(testElem).getPropertyValue('--n'), ' ');
+  assert_equals(getComputedStyle(testElem).getPropertyValue('--n'), '');
   assert_equals(getComputedStyle(testElem).getPropertyValue('--wrong'), '');
-  assert_equals(getComputedStyle(testElem).getPropertyValue('--space'), ' space at start');
+  assert_equals(getComputedStyle(testElem).getPropertyValue('--space'), 'space at start');
 }, "Test that above CSS.supports values can be specified in style.");
 
 test(function() {
@@ -75,8 +75,8 @@ test(function() {
   assert_equals(testElem.style.getPropertyValue('--foo  '), 'and this \\(');
   assert_equals(testElem.style.getPropertyValue('--wow'), '');
   assert_equals(testElem.style.getPropertyValue('--yay'), '');
-  assert_equals(testElem.style.getPropertyValue('--n'), ' ');
+  assert_equals(testElem.style.getPropertyValue('--n'), '');
   assert_equals(testElem.style.getPropertyValue('--wrong'), '');
-  assert_equals(testElem.style.getPropertyValue('--space'), ' space at start');
+  assert_equals(testElem.style.getPropertyValue('--space'), 'space at start');
 }, "Test that above CSS.supports values can be written into inline style via CSSOM API");
 </script>

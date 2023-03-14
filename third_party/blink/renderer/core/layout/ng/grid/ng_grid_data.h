@@ -30,8 +30,14 @@ struct CORE_EXPORT NGGridPlacementData {
   // should be used exclusively by subgrids to differentiate such scenario.
   NGGridPlacementData(const ComputedStyle& grid_style,
                       const NGGridLineResolver& parent_line_resolver,
-                      GridArea subgrid_area)
-      : line_resolver(grid_style, parent_line_resolver, subgrid_area) {}
+                      GridArea subgrid_area,
+                      wtf_size_t column_auto_repetitions,
+                      wtf_size_t row_auto_repetitions)
+      : line_resolver(grid_style,
+                      parent_line_resolver,
+                      subgrid_area,
+                      column_auto_repetitions,
+                      row_auto_repetitions) {}
 
   // This constructor only copies inputs to the auto-placement algorithm.
   NGGridPlacementData(const NGGridPlacementData& other)

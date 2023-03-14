@@ -64,4 +64,8 @@ bool IsFedCmIdPRegistrationEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmIdPRegistration);
 }
 
+bool IsWebIdentityMDocsEnabled() {
+  return base::FeatureList::IsEnabled(features::kWebIdentityMDocs);
+}
+
 }  // namespace content

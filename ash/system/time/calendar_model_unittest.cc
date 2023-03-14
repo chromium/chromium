@@ -4,7 +4,6 @@
 
 #include "ash/system/time/calendar_model.h"
 
-#include <algorithm>
 #include <cstddef>
 #include <iterator>
 #include <memory>
@@ -24,6 +23,7 @@
 #include "ash/system/time/calendar_utils.h"
 #include "ash/test/ash_test_base.h"
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -1017,9 +1017,8 @@ TEST_F(CalendarModelTest, ShouldFilterEvents) {
   EXPECT_FALSE(events.empty());
 
   std::vector<std::string> filtered_event_ids;
-  std::transform(events.begin(), events.end(),
-                 std::back_inserter(filtered_event_ids),
-                 [](CalendarEvent& event) { return event.id(); });
+  base::ranges::transform(events, std::back_inserter(filtered_event_ids),
+                          &CalendarEvent::id);
   EXPECT_THAT(filtered_event_ids,
               testing::UnorderedElementsAreArray(std::vector<std::string>{
                   "confirmed+accepted", "tentative+accepted",
@@ -1449,6 +1448,89 @@ TEST_F(CalendarModelTest, FindUpcomingEvents_PreviousDay) {
 
   EXPECT_EQ(events.size(), size_t(1));
   EXPECT_TRUE(event_list_contains(events, kEventInProgressStartedYesterdayId));
+}
+
+// If two events start at the same time, show the one finishing earlier first.
+// Returns:
+// First event: 13:00 - 13:45
+// Second event: 13:00 - 14:00
+TEST_F(CalendarModelTest, EventsSortingWithSameStartTime) {
+  // Set timezone and fake now.
+  const char* kNow = "10 Nov 2022 13:00 GMT";
+  ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
+  SetTodayFromStr(kNow);
+
+  const char* kSummary = "summary";
+  const char* kFirstEventId = "first_event";
+  const char* kSecondEventId = "second_event";
+
+  auto first_event = calendar_test_utils::CreateEvent(kFirstEventId, kSummary,
+                                                      "10 Nov 2022 13:00 GMT",
+                                                      "10 Nov 2022 13:45 GMT");
+  auto second_event = calendar_test_utils::CreateEvent(kSecondEventId, kSummary,
+                                                       "10 Nov 2022 13:00 GMT",
+                                                       "10 Nov 2022 14:00 GMT");
+
+  // Prepare mock events list. Note we add the second event first, which should
+  // later be sorted differently.
+  std::unique_ptr<google_apis::calendar::EventList> event_list =
+      std::make_unique<google_apis::calendar::EventList>();
+  event_list->InjectItemForTesting(std::move(second_event));
+  event_list->InjectItemForTesting(std::move(first_event));
+
+  // Mock the events are fetched.
+  MockOnEventsFetched(calendar_utils::GetStartOfMonthUTC(
+                          calendar_test_utils::GetTimeFromString(kNow)),
+                      google_apis::ApiErrorCode::HTTP_SUCCESS,
+                      event_list.get());
+
+  auto events = calendar_model_->FindUpcomingEvents(now_);
+
+  EXPECT_EQ(events.size(), size_t(2));
+  EXPECT_EQ(kFirstEventId, events.front().id());
+  EXPECT_EQ(kSecondEventId, events.back().id());
+}
+
+// If one event starts later but finishes earlier than another, show the one
+// that started earlier first.
+// Returns:
+// Second event: 13:00 - 14:00
+// First event: 13:05 - 13:45
+TEST_F(CalendarModelTest, EventsSortingWithDifferentStartTime) {
+  // Set timezone and fake now.
+  const char* kNow = "10 Nov 2022 13:00 GMT";
+  ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
+  SetTodayFromStr(kNow);
+
+  const char* kSummary = "summary";
+  const char* kFirstEventId = "first_event";
+  const char* kSecondEventId = "second_event";
+
+  auto first_event = calendar_test_utils::CreateEvent(kFirstEventId, kSummary,
+                                                      "10 Nov 2022 13:05 GMT",
+                                                      "10 Nov 2022 13:45 GMT");
+  auto second_event = calendar_test_utils::CreateEvent(kSecondEventId, kSummary,
+                                                       "10 Nov 2022 13:00 GMT",
+                                                       "10 Nov 2022 14:00 GMT");
+
+  // Prepare mock events list. Note we add the first event first, which should
+  // later be sorted differently.
+  std::unique_ptr<google_apis::calendar::EventList> event_list =
+      std::make_unique<google_apis::calendar::EventList>();
+  event_list->InjectItemForTesting(std::move(first_event));
+  event_list->InjectItemForTesting(std::move(second_event));
+
+  // Mock the events are fetched.
+  MockOnEventsFetched(calendar_utils::GetStartOfMonthUTC(
+                          calendar_test_utils::GetTimeFromString(kNow)),
+                      google_apis::ApiErrorCode::HTTP_SUCCESS,
+                      event_list.get());
+
+  auto events = calendar_model_->FindUpcomingEvents(now_);
+
+  EXPECT_EQ(events.size(), size_t(2));
+  EXPECT_EQ(kSecondEventId, events.front().id());
+  EXPECT_EQ(kFirstEventId, events.back().id());
 }
 
 }  // namespace ash

@@ -12,6 +12,7 @@ features:
   dynamic_refresh: true
   per_profile: true
 future_on:
+- android
 - fuchsia
 items:
 - caption: Do not filter sites for adult content
@@ -21,8 +22,8 @@ items:
   name: SafeSitesFilterEnabled
   value: 1
 owners:
-- nwokedi@chromium.org
-- nparker@chromium.org
+- michaelpg@chromium.org
+- ftirelo@chromium.org
 schema:
   enum:
   - 0

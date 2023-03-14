@@ -12,13 +12,14 @@
 #import "base/command_line.h"
 #import "base/feature_list.h"
 #import "base/metrics/field_trial.h"
+#import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
 #import "components/autofill/core/common/autofill_switches.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/variations/variations_associated_data.h"
 #import "ios/chrome/browser/browsing_data/browsing_data_features.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -34,6 +35,8 @@ NSString* const kOriginServerHost = @"AlternateOriginServerHost";
 NSString* const kWhatsNewPromoStatus = @"WhatsNewPromoStatus";
 NSString* const kClearApplicationGroup = @"ClearApplicationGroup";
 NSString* const kNextPromoForDisplayOverride = @"NextPromoForDisplayOverride";
+NSString* const kForceExperienceForDeviceSwitcherExperimentalSettings =
+    @"ForceExperienceForDeviceSwitcher";
 BASE_FEATURE(kEnableThirdPartyKeyboardWorkaround,
              "EnableThirdPartyKeyboardWorkaround",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -67,6 +70,11 @@ bool ShouldResetFirstFollowCount() {
 bool ShouldForceFeedSigninPromo() {
   return [[NSUserDefaults standardUserDefaults]
       boolForKey:@"ForceFeedSigninPromo"];
+}
+
+bool ShouldIgnoreTileAblationConditions() {
+  return [[NSUserDefaults standardUserDefaults]
+      boolForKey:@"IgnoreTileAblationConditions"];
 }
 
 void DidResetFirstFollowCount() {
@@ -133,6 +141,23 @@ bool IsThirdPartyKeyboardWorkaroundEnabled() {
 NSString* GetForcedPromoToDisplay() {
   return [[NSUserDefaults standardUserDefaults]
       stringForKey:kNextPromoForDisplayOverride];
+}
+
+std::string GetSegmentForForcedDeviceSwitcherExperience() {
+  // Checks iOS Experimental Settings.
+  std::string segment =
+      base::SysNSStringToUTF8([[NSUserDefaults standardUserDefaults]
+          stringForKey:kForceExperienceForDeviceSwitcherExperimentalSettings]);
+  if (segment.empty()) {
+    // Checks command line flag.
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(
+            switches::kForceDeviceSwitcherExperienceCommandLineFlag)) {
+      segment = command_line->GetSwitchValueNative(
+          switches::kForceDeviceSwitcherExperienceCommandLineFlag);
+    }
+  }
+  return segment;
 }
 
 }  // namespace experimental_flags

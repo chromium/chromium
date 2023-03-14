@@ -14,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -28,12 +27,16 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
@@ -41,6 +44,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_config.h"
@@ -53,12 +57,6 @@
 namespace autofill {
 
 namespace {
-
-// The duration for which clicks on the just-shown Autofill popup should be
-// ignored. This is to prevent users accidentally accepting suggestions
-// (crbug.com/1279268).
-static constexpr base::TimeDelta kIgnoreEarlyClicksOnPopupDuration =
-    base::Milliseconds(500);
 
 // Max width for the username and masked password.
 constexpr int kAutofillPopupUsernameMaxWidth = 272;
@@ -80,10 +78,13 @@ constexpr int kAdjacentLabelsVerticalSpacing = 2;
 
 // The default icon size used in the suggestion drop down.
 constexpr int kIconSize = 16;
+constexpr int kTrashCanLightIconSize = 12;
 
 // The icon size used in the suggestion dropdown for displaying the Google
 // Password Manager icon in the Manager Passwords entry.
 constexpr int kGooglePasswordManagerIconSize = 20;
+
+constexpr int kAutocompleteDeleteIconHorizontalPadding = 8;
 
 // Popup items that use a leading icon instead of a trailing one.
 constexpr PopupItemId kItemTypesUsingLeadingIcons[] = {
@@ -148,7 +149,7 @@ std::unique_ptr<views::ImageView> GetIconImageViewByName(
   }
 
   if (icon_str == "settingsIcon") {
-    return ImageViewFromVectorIcon(kMonoColorProductIcon);
+    return ImageViewFromVectorIcon(omnibox::kProductIcon);
   }
 
   if (icon_str == "empty") {
@@ -230,6 +231,29 @@ void AddSpacerWithSize(views::View& view,
   layout.SetFlexForView(view.AddChildView(std::move(spacer)),
                         /*flex=*/resize ? 1 : 0,
                         /*use_min_size=*/true);
+}
+
+// TODO(crbug.com/1417187): Add ASCII art to explain the reason for the
+// arithmetic below.
+gfx::Insets GetMarginsForContentCell(bool has_control_element) {
+  int left_margin = PopupBaseView::GetHorizontalMargin();
+  int right_margin = left_margin;
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillShowAutocompleteDeleteButton)) {
+    // If the feature is enabled, then the row already adds some extra
+    // horizontal margin on the left - deduct that.
+    left_margin = std::max(
+        0, left_margin - ChromeLayoutProvider::Get()->GetDistanceMetric(
+                             DISTANCE_CONTENT_LIST_VERTICAL_SINGLE));
+
+    // If there is no control element, then this is the only cell and the same
+    // correction needs to be made on the right side, too.
+    if (!has_control_element) {
+      right_margin = left_margin;
+    }
+  }
+  return gfx::Insets::TLBR(0, left_margin, 0, right_margin);
 }
 
 // Creates the table in which all the Autofill suggestion content apart from
@@ -316,10 +340,14 @@ void AddSuggestionContentToView(
     std::unique_ptr<views::Label> description_label,
     std::vector<std::unique_ptr<views::View>> subtext_views,
     PopupCellView& content_view) {
+  bool has_control_element =
+      suggestion.frontend_id == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillShowAutocompleteDeleteButton);
   views::BoxLayout& layout =
       *content_view.SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
-          gfx::Insets::VH(0, PopupBaseView::GetHorizontalMargin())));
+          GetMarginsForContentCell(has_control_element)));
 
   layout.set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
@@ -435,30 +463,6 @@ std::u16string GetVoiceOverStringFromSuggestion(const Suggestion& suggestion) {
   return base::JoinString(text, u" ");
 }
 
-// Adds all relevant accessibility information to a content view.
-void AddAccessibilityInformationToContentView(
-    base::WeakPtr<AutofillPopupController> controller,
-    int line_number,
-    PopupCellView& content_view) {
-  DCHECK(controller);
-  content_view.SetVoiceOverString(GetVoiceOverStringFromSuggestion(
-      controller->GetSuggestionAt(line_number)));
-
-  int set_size = 0;
-  int set_index = line_number + 1;
-  for (int i = 0; i < controller->GetLineCount(); ++i) {
-    if (controller->GetSuggestionAt(i).frontend_id == POPUP_ITEM_ID_SEPARATOR) {
-      if (i < line_number) {
-        --set_index;
-      }
-    } else {
-      ++set_size;
-    }
-  }
-  content_view.SetSetIndexForAccessibility(set_index);
-  content_view.SetSetSizeForAccessibility(set_size);
-}
-
 // Adds the callbacks for the content area to `content_view`.
 void AddCallbacksToContentView(
     base::WeakPtr<AutofillPopupController> controller,
@@ -469,8 +473,99 @@ void AddCallbacksToContentView(
   content_view.SetOnUnselectedCallback(base::BindRepeating(
       &AutofillPopupController::SelectSuggestion, controller, absl::nullopt));
   content_view.SetOnAcceptedCallback(base::BindRepeating(
-      &AutofillPopupController::AcceptSuggestion, controller, line_number,
-      /*show_threshold=*/kIgnoreEarlyClicksOnPopupDuration));
+      &AutofillPopupController::AcceptSuggestion, controller, line_number));
+}
+
+// ********************* AccessibilityDelegate implementations *****************
+
+// ********************* ContentItemAccessibilityDelegate  *********************
+class ContentItemAccessibilityDelegate
+    : public PopupCellView::AccessibilityDelegate {
+ public:
+  // Creates an a11y delegate for the `line_number`. `controller` must not be
+  // null.
+  ContentItemAccessibilityDelegate(
+      base::WeakPtr<AutofillPopupController> controller,
+      int line_number);
+  ~ContentItemAccessibilityDelegate() override = default;
+
+  void GetAccessibleNodeData(bool is_selected,
+                             ui::AXNodeData* node_data) const override;
+
+ private:
+  // The string announced via VoiceOver.
+  std::u16string voice_over_string_;
+  // The number of suggestions in the popup and the (1-based) index of the
+  // suggestion this delegate belongs to.
+  int set_index_ = 0;
+  int set_size_ = 0;
+};
+
+ContentItemAccessibilityDelegate::ContentItemAccessibilityDelegate(
+    base::WeakPtr<AutofillPopupController> controller,
+    int line_number) {
+  DCHECK(controller);
+
+  voice_over_string_ = GetVoiceOverStringFromSuggestion(
+      controller->GetSuggestionAt(line_number));
+
+  set_size_ = 0;
+  set_index_ = line_number + 1;
+  for (int i = 0; i < controller->GetLineCount(); ++i) {
+    if (controller->GetSuggestionAt(i).frontend_id == POPUP_ITEM_ID_SEPARATOR) {
+      if (i < line_number) {
+        --set_index_;
+      }
+    } else {
+      ++set_size_;
+    }
+  }
+}
+
+void ContentItemAccessibilityDelegate::GetAccessibleNodeData(
+    bool is_selected,
+    ui::AXNodeData* node_data) const {
+  DCHECK(node_data);
+  // Options are selectable.
+  node_data->role = ax::mojom::Role::kListBoxOption;
+  node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, is_selected);
+  node_data->SetNameChecked(voice_over_string_);
+
+  node_data->AddIntAttribute(ax::mojom::IntAttribute::kPosInSet, set_index_);
+  node_data->AddIntAttribute(ax::mojom::IntAttribute::kSetSize, set_size_);
+}
+
+// ******************** DeleteButtonAccessibilityDelegate  *********************
+class DeleteButtonAccessibilityDelegate
+    : public PopupCellView::AccessibilityDelegate {
+ public:
+  DeleteButtonAccessibilityDelegate(
+      base::WeakPtr<AutofillPopupController> controller,
+      int line_number);
+  ~DeleteButtonAccessibilityDelegate() override = default;
+
+  void GetAccessibleNodeData(bool is_selected,
+                             ui::AXNodeData* node_data) const override;
+
+ private:
+  std::u16string voice_over_string_;
+};
+
+DeleteButtonAccessibilityDelegate::DeleteButtonAccessibilityDelegate(
+    base::WeakPtr<AutofillPopupController> controller,
+    int line_number) {
+  DCHECK(controller);
+  voice_over_string_ = l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_A11Y_HINT,
+      GetVoiceOverStringFromSuggestion(
+          controller->GetSuggestionAt(line_number)));
+}
+
+void DeleteButtonAccessibilityDelegate::GetAccessibleNodeData(
+    bool is_selected,
+    ui::AXNodeData* node_data) const {
+  node_data->role = ax::mojom::Role::kButton;
+  node_data->SetNameChecked(voice_over_string_);
 }
 
 }  // namespace
@@ -506,11 +601,12 @@ std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateContent() {
   }
   const Suggestion& kSuggestion =
       GetController()->GetSuggestionAt(GetLineNumber());
-  auto view = std::make_unique<PopupCellView>();
-
-  // Prepare the a11y information.
-  AddAccessibilityInformationToContentView(GetController(), GetLineNumber(),
-                                           *view);
+  std::unique_ptr<PopupCellView> view =
+      views::Builder<PopupCellView>()
+          .SetAccessibilityDelegate(
+              std::make_unique<ContentItemAccessibilityDelegate>(
+                  GetController(), GetLineNumber()))
+          .Build();
 
   // Add the actual views.
   std::unique_ptr<views::Label> main_text_label = CreateMainTextLabel(
@@ -585,7 +681,46 @@ void PopupSuggestionStrategy::FormatLabel(views::Label& label,
 }
 
 std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateControl() {
-  NOTIMPLEMENTED();
+  if (!GetController()) {
+    return nullptr;
+  }
+
+  // If the feature is enabled, autocomplete entries have a delete button.
+  if (GetController()->GetSuggestionAt(GetLineNumber()).frontend_id ==
+          POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillShowAutocompleteDeleteButton)) {
+    std::unique_ptr<PopupCellView> view =
+        views::Builder<PopupCellView>()
+            .SetAccessibilityDelegate(
+                std::make_unique<DeleteButtonAccessibilityDelegate>(
+                    GetController(), GetLineNumber()))
+            .Build();
+
+    view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kHorizontal,
+        gfx::Insets::VH(0, kAutocompleteDeleteIconHorizontalPadding)));
+    views::ImageView* delete_icon = view->AddChildView(
+        ImageViewFromVectorIcon(kTrashCanLightIcon, kTrashCanLightIconSize));
+    // The tooltip is set for both the cell and the image to ensure that it is
+    // also shown over the padding area.
+    delete_icon->SetTooltipText(l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_TOOLTIP));
+    view->SetTooltipText(l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_TOOLTIP));
+    view->SetOnAcceptedCallback(base::BindRepeating(
+        [](base::WeakPtr<AutofillPopupController> controller, int line_number) {
+          if (controller && controller->RemoveSuggestion(line_number)) {
+            AutofillMetrics::OnAutocompleteSuggestionDeleted(
+                AutofillMetrics::AutocompleteSingleEntryRemovalMethod::
+                    kDeleteButtonClicked);
+          }
+        },
+        GetController(), GetLineNumber()));
+
+    return view;
+  }
+
   return nullptr;
 }
 
@@ -606,10 +741,12 @@ PopupPasswordSuggestionStrategy::CreateContent() {
 
   const Suggestion& kSuggestion =
       GetController()->GetSuggestionAt(GetLineNumber());
-  auto view = std::make_unique<PopupCellView>();
-
-  AddAccessibilityInformationToContentView(GetController(), GetLineNumber(),
-                                           *view);
+  std::unique_ptr<PopupCellView> view =
+      views::Builder<PopupCellView>()
+          .SetAccessibilityDelegate(
+              std::make_unique<ContentItemAccessibilityDelegate>(
+                  GetController(), GetLineNumber()))
+          .Build();
 
   // Add the actual views.
   std::unique_ptr<views::Label> main_text_label = CreateMainTextLabel(
@@ -662,7 +799,6 @@ PopupPasswordSuggestionStrategy::CreateAndTrackSubtextViews(
 
 std::unique_ptr<PopupCellView>
 PopupPasswordSuggestionStrategy::CreateControl() {
-  NOTIMPLEMENTED();
   return nullptr;
 }
 
@@ -682,14 +818,17 @@ std::unique_ptr<PopupCellView> PopupFooterStrategy::CreateContent() {
 
   const Suggestion& kSuggestion =
       GetController()->GetSuggestionAt(GetLineNumber());
-  auto view = std::make_unique<PopupCellView>();
-  AddAccessibilityInformationToContentView(GetController(), GetLineNumber(),
-                                           *view);
+  std::unique_ptr<PopupCellView> view =
+      views::Builder<PopupCellView>()
+          .SetAccessibilityDelegate(
+              std::make_unique<ContentItemAccessibilityDelegate>(
+                  GetController(), GetLineNumber()))
+          .Build();
 
   views::BoxLayout* layout_manager =
       view->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
-          gfx::Insets::VH(0, PopupBaseView::GetHorizontalMargin())));
+          GetMarginsForContentCell(/*has_control_element=*/false)));
 
   layout_manager->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
@@ -746,7 +885,6 @@ std::unique_ptr<PopupCellView> PopupFooterStrategy::CreateContent() {
 }
 
 std::unique_ptr<PopupCellView> PopupFooterStrategy::CreateControl() {
-  NOTIMPLEMENTED();
   return nullptr;
 }
 

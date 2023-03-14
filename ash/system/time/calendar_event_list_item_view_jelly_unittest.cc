@@ -21,12 +21,12 @@ std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
     const char* start_time,
     const char* end_time,
     bool all_day_event = false,
-    std::string hangout_link = "") {
+    GURL video_conference_url = GURL()) {
   return calendar_test_utils::CreateEvent(
       "id_0", "summary_0", start_time, end_time,
       google_apis::calendar::CalendarEvent::EventStatus::kConfirmed,
       google_apis::calendar::CalendarEvent::ResponseStatus::kAccepted,
-      all_day_event, hangout_link);
+      all_day_event, video_conference_url);
 }
 
 }  // namespace
@@ -53,10 +53,7 @@ class CalendarViewEventListItemViewJellyTest : public AshTestBase {
 
   void CreateEventListItemView(base::Time date,
                                google_apis::calendar::CalendarEvent* event,
-                               bool round_top_corners = false,
-                               bool round_bottom_corners = false,
-                               bool show_event_list_dot = true,
-                               int fixed_width = 0) {
+                               UIParams ui_params = {}) {
     event_list_item_view_jelly_.reset();
     controller_->UpdateMonth(date);
     controller_->selected_date_ = date;
@@ -66,8 +63,7 @@ class CalendarViewEventListItemViewJellyTest : public AshTestBase {
             SelectedDateParams{controller_->selected_date().value(),
                                controller_->selected_date_midnight(),
                                controller_->selected_date_midnight_utc()},
-            *event, round_top_corners, round_bottom_corners,
-            show_event_list_dot, fixed_width);
+            *event, ui_params, EventListItemIndex{1, 1});
   }
 
   void SetSelectedDateInController(base::Time date) {
@@ -132,8 +128,9 @@ TEST_F(CalendarViewEventListItemViewJellyTest,
   EXPECT_EQ(u"summary_0, 9:00\u2009\x2013\u200910:00\u202fAM",
             time_label->GetTooltipText());
   EXPECT_EQ(
-      u"9:00\u202fAM to\n        10:00\u202fAM,\n        GMT+02:00,\n        "
-      u"summary_0. Select for more details in Google Calendar.",
+      u"Event 1 of 1\n        summary_0,\n        9:00\x202F"
+      u"AM to\n        10:00\x202F"
+      u"AM,\n        GMT+02:00. Select for more details in Google Calendar.",
       event_list_item_view()->GetAccessibleName());
 }
 
@@ -145,11 +142,12 @@ TEST_F(CalendarViewEventListItemViewJellyTest, TopRoundedCorners) {
   const char* end_time_string = "22 Nov 2021 10:00 GMT";
   const auto event = CreateEvent(start_time_string, end_time_string);
 
-  CreateEventListItemView(date, event.get(), true);
+  CreateEventListItemView(date, event.get(),
+                          UIParams{/*round_top_corners=*/true});
 
   const ui::Layer* background_layer =
       event_list_item_view()->GetLayersInOrder().back();
-  EXPECT_EQ(gfx::RoundedCornersF(16, 16, 0, 0),
+  EXPECT_EQ(gfx::RoundedCornersF(16, 16, 4, 4),
             background_layer->rounded_corner_radii());
 }
 
@@ -161,12 +159,13 @@ TEST_F(CalendarViewEventListItemViewJellyTest, BottomRoundedCorners) {
   const char* end_time_string = "22 Nov 2021 10:00 GMT";
   const auto event = CreateEvent(start_time_string, end_time_string);
 
-  CreateEventListItemView(date, event.get(), /*round_top_corners=*/false,
-                          /*round_bottom_corners=*/true);
+  CreateEventListItemView(
+      date, event.get(),
+      UIParams{/*round_top_corners=*/false, /*round_bottom_corners=*/true});
 
   const ui::Layer* background_layer =
       event_list_item_view()->GetLayersInOrder().back();
-  EXPECT_EQ(gfx::RoundedCornersF(0, 0, 16, 16),
+  EXPECT_EQ(gfx::RoundedCornersF(4, 4, 16, 16),
             background_layer->rounded_corner_radii());
 }
 
@@ -178,8 +177,9 @@ TEST_F(CalendarViewEventListItemViewJellyTest, AllRoundedCorners) {
   const char* end_time_string = "22 Nov 2021 10:00 GMT";
   const auto event = CreateEvent(start_time_string, end_time_string);
 
-  CreateEventListItemView(date, event.get(), /*round_top_corners=*/true,
-                          /*round_bottom_corners=*/true);
+  CreateEventListItemView(
+      date, event.get(),
+      UIParams{/*round_top_corners=*/true, /*round_bottom_corners=*/true});
 
   const ui::Layer* background_layer =
       event_list_item_view()->GetLayersInOrder().back();
@@ -197,19 +197,18 @@ TEST_F(CalendarViewEventListItemViewJellyTest, FixedLabelWidth) {
 
   // If we don't set `fixed_width`, it will default to 0 (which the
   // `views::Label::SizeToFit()` method will ignore).
-  CreateEventListItemView(date, event.get(), /*round_top_corners=*/true,
-                          /*round_bottom_corners=*/true);
+  CreateEventListItemView(date, event.get());
 
   // The label should have it's preferred size as we didn't set a `fixed_width`.
   EXPECT_TRUE(GetSummaryLabel()->width() > 0);
 
   // Set a fixed width. The label should be this size exactly.
   const auto fixed_width = 150;
-  CreateEventListItemView(date, event.get(),
-                          /*round_top_corners=*/true,
-                          /*round_bottom_corners=*/true,
-                          /*show_event_list_dot=*/true,
-                          /*fixed_width=*/fixed_width);
+  CreateEventListItemView(
+      date, event.get(),
+      UIParams{/*round_top_corners=*/
+               true, /*round_bottom_corners=*/true,
+               /*show_event_list_dot=*/true, /*fixed_width=*/fixed_width});
 
   EXPECT_EQ(fixed_width, GetSummaryLabel()->width());
 }
@@ -224,51 +223,50 @@ TEST_F(CalendarViewEventListItemViewJellyTest,
   const auto event = CreateEvent(start_time_string, end_time_string);
 
   // Set `show_event_list_dot` to false.
-  CreateEventListItemView(date, event.get(), /*round_top_corners=*/true,
-                          /*round_bottom_corners=*/true,
-                          /*show_event_list_dot=*/false);
+  CreateEventListItemView(date, event.get(),
+                          UIParams{/*round_top_corners=*/
+                                   true, /*round_bottom_corners=*/true,
+                                   /*show_event_list_dot=*/false});
 
   // Event list dot should not exist.
   EXPECT_FALSE(GetEventListItemDot());
 
   // Set `show_event_list_dot` to true.
-  CreateEventListItemView(date, event.get(), /*round_top_corners=*/true,
-                          /*round_bottom_corners=*/true,
-                          /*show_event_list_dot=*/true);
+  CreateEventListItemView(date, event.get(),
+                          UIParams{/*round_top_corners=*/
+                                   true, /*round_bottom_corners=*/true,
+                                   /*show_event_list_dot=*/true});
 
   // Event list dot should exist.
   EXPECT_TRUE(GetEventListItemDot());
 }
 
 TEST_F(CalendarViewEventListItemViewJellyTest,
-       ShouldShowJoinMeetingButton_WhenGoogleMeetLinkExists) {
+       ShouldShowJoinMeetingButton_WhenConferenceDataUrlExists) {
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("22 Nov 2021 00:00 UTC", &date));
   SetSelectedDateInController(date);
   const char* start_time_string = "22 Nov 2021 09:00 GMT";
   const char* end_time_string = "22 Nov 2021 10:00 GMT";
   const auto event = CreateEvent(start_time_string, end_time_string, false,
-                                 "https://meet.google.com/my-meeting");
+                                 GURL("https://meet.google.com/my-meeting"));
 
-  CreateEventListItemView(date, event.get(), /*round_top_corners=*/true,
-                          /*round_bottom_corners=*/true,
-                          /*show_event_list_dot=*/false);
+  CreateEventListItemView(date, event.get());
 
   EXPECT_TRUE(GetJoinButton());
 }
 
 TEST_F(CalendarViewEventListItemViewJellyTest,
-       ShouldHideJoinMeetingButton_WhenGoogleMeetLinkDoesNotExist) {
+       ShouldHideJoinMeetingButton_WhenConferenceDataUrlDoesNotExist) {
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("22 Nov 2021 00:00 UTC", &date));
   SetSelectedDateInController(date);
   const char* start_time_string = "22 Nov 2021 09:00 GMT";
   const char* end_time_string = "22 Nov 2021 10:00 GMT";
-  const auto event = CreateEvent(start_time_string, end_time_string);
+  const auto event =
+      CreateEvent(start_time_string, end_time_string, false, GURL());
 
-  CreateEventListItemView(date, event.get(), /*round_top_corners=*/true,
-                          /*round_bottom_corners=*/true,
-                          /*show_event_list_dot=*/false);
+  CreateEventListItemView(date, event.get());
 
   EXPECT_FALSE(GetJoinButton());
 }

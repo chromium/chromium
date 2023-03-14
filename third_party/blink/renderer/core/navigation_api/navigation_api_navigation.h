@@ -13,7 +13,6 @@
 
 namespace blink {
 
-class NavigationApi;
 class NavigationHistoryEntry;
 class NavigationResult;
 class NavigationOptions;
@@ -25,7 +24,6 @@ class NavigationApiNavigation final
     : public GarbageCollected<NavigationApiNavigation> {
  public:
   NavigationApiNavigation(ScriptState*,
-                          NavigationApi*,
                           NavigationOptions*,
                           const String& key,
                           scoped_refptr<SerializedScriptValue> state = nullptr);
@@ -54,7 +52,6 @@ class NavigationApiNavigation final
   scoped_refptr<SerializedScriptValue> serialized_state_;
   ScriptValue info_;
   String key_;
-  Member<NavigationApi> navigation_api_;
   Member<NavigationHistoryEntry> committed_to_entry_;
   Member<ScriptPromiseResolver> committed_resolver_;
   Member<ScriptPromiseResolver> finished_resolver_;

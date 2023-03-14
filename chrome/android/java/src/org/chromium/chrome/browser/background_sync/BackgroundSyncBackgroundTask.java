@@ -69,13 +69,6 @@ public class BackgroundSyncBackgroundTask extends NativeBackgroundTask {
         return true;
     }
 
-    @Override
-    public void reschedule(Context context) {
-        BackgroundSyncBackgroundTaskScheduler.getInstance().reschedule(
-                BackgroundSyncBackgroundTaskScheduler.BackgroundSyncTask
-                        .ONE_SHOT_SYNC_CHROME_WAKE_UP);
-    }
-
     @NativeMethods
     interface Natives {
         void fireOneShotBackgroundSyncEvents(Runnable callback);

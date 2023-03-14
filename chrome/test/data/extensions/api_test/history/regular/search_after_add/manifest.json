@@ -1,0 +1,11 @@
+{
+  "name": "chrome.history",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "end-to-end browser test for chrome.history API",
+  "permissions": ["history"],
+  "background": {
+    "scripts": ["search_after_add.js"],
+    "persistent": true
+  }
+}

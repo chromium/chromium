@@ -34,7 +34,7 @@
 #include "media/capture/video/create_video_capture_device_factory.h"
 #include "media/capture/video/linux/fake_device_provider.h"
 #include "media/capture/video/linux/fake_v4l2_impl.h"
-#include "media/capture/video/linux/video_capture_device_factory_linux.h"
+#include "media/capture/video/linux/video_capture_device_factory_v4l2.h"
 #include "media/capture/video/video_capture_system_impl.h"
 #include "media/capture/video_capture_types.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
@@ -335,7 +335,7 @@ void VideoCaptureHostTestcase::SetUpOnIOThreadFirst() {
 
 void VideoCaptureHostTestcase::SetUpOnUIThread() {
   // Here we specify the devices described by `kDeviceDescriptors`.
-  // Which tells the `VideoCaptureDeviceFactoryLinux` what devices we have.
+  // Which tells the `VideoCaptureDeviceFactoryV4L2` what devices we have.
   // This factory is then used to setup the `MediaStreamManager`.
   std::unique_ptr<media::FakeDeviceProvider> fake_device_provider =
       std::make_unique<media::FakeDeviceProvider>();
@@ -349,9 +349,9 @@ void VideoCaptureHostTestcase::SetUpOnUIThread() {
     fake_device_provider->AddDevice(descriptor);
   }
 
-  std::unique_ptr<media::VideoCaptureDeviceFactoryLinux>
+  std::unique_ptr<media::VideoCaptureDeviceFactoryV4L2>
       video_capture_device_factory =
-          std::make_unique<media::VideoCaptureDeviceFactoryLinux>(
+          std::make_unique<media::VideoCaptureDeviceFactoryV4L2>(
               task_environment_.GetMainThreadTaskRunner());
 
   video_capture_device_factory->SetV4L2EnvironmentForTesting(

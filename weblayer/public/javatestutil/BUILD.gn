@@ -8,11 +8,12 @@ import("//build/config/android/rules.gni")
 android_library("test_java") {
   testonly = true
   sources = [
-    "org/chromium/weblayer/SettingsTestUtils.java",
+    "org/chromium/weblayer/TestProfile.java",
     "org/chromium/weblayer/TestWebLayer.java",
   ]
 
   deps = [
+    "//base:base_java",
     "//base:base_java_test_support",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/junit:junit",

@@ -7,8 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-@class ASCredentialProviderExtensionContext;
 @class ConsentCoordinator;
+@protocol CredentialResponseHandler;
 @class ReauthenticationHandler;
 @class UIViewController;
 
@@ -16,9 +16,9 @@
 
 // Default initializer. When the coordinator is started it will present on
 // `baseViewController`.
-- (instancetype)
-    initWithBaseViewController:(UIViewController*)baseViewController
-                       context:(ASCredentialProviderExtensionContext*)context
+- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+                 credentialResponseHandler:
+                     (id<CredentialResponseHandler>)credentialResponseHandler
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

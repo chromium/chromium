@@ -12,9 +12,14 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_error_event_init.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/events/error_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/mediarecorder/blob_event.h"
@@ -191,7 +196,7 @@ MediaRecorder::MediaRecorder(ExecutionContext* context,
       stream_(stream),
       mime_type_(options->mimeType()) {
   if (context->IsContextDestroyed()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Execution context is detached.");
     return;
   }
@@ -240,7 +245,7 @@ void MediaRecorder::start(ExceptionState& exception_state) {
 
 void MediaRecorder::start(int time_slice, ExceptionState& exception_state) {
   if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Execution context is detached.");
     return;
   }
@@ -252,7 +257,7 @@ void MediaRecorder::start(int time_slice, ExceptionState& exception_state) {
   }
 
   if (stream_->getTracks().size() == 0) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kUnknownError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "The MediaRecorder cannot start because"
                                       "there are no audio or video tracks "
                                       "available.");
@@ -270,14 +275,11 @@ void MediaRecorder::start(int time_slice, ExceptionState& exception_state) {
 
 void MediaRecorder::stop(ExceptionState& exception_state) {
   if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Execution context is detached.");
     return;
   }
   if (state_ == State::kInactive) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "The MediaRecorder's state is '" + StateToString(state_) + "'.");
     return;
   }
 
@@ -286,7 +288,7 @@ void MediaRecorder::stop(ExceptionState& exception_state) {
 
 void MediaRecorder::pause(ExceptionState& exception_state) {
   if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Execution context is detached.");
     return;
   }
@@ -308,7 +310,7 @@ void MediaRecorder::pause(ExceptionState& exception_state) {
 
 void MediaRecorder::resume(ExceptionState& exception_state) {
   if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Execution context is detached.");
     return;
   }
@@ -329,7 +331,7 @@ void MediaRecorder::resume(ExceptionState& exception_state) {
 
 void MediaRecorder::requestData(ExceptionState& exception_state) {
   if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Execution context is detached.");
     return;
   }
@@ -425,10 +427,19 @@ void MediaRecorder::WriteData(const void* data,
                   timecode);
 }
 
-void MediaRecorder::OnError(const String& message) {
+void MediaRecorder::OnError(DOMExceptionCode code, const String& message) {
   DLOG(ERROR) << message.Ascii();
+
+  ScriptState* script_state =
+      ToScriptStateForMainWorld(DomWindow()->GetFrame());
+  ScriptState::Scope scope(script_state);
+  ScriptValue error_value = ScriptValue::From(
+      script_state, MakeGarbageCollected<DOMException>(code, message));
+  ErrorEventInit* event_init = ErrorEventInit::Create();
+  event_init->setError(error_value);
+  ScheduleDispatchEvent(
+      ErrorEvent::Create(script_state, event_type_names::kError, event_init));
   StopRecording();
-  ScheduleDispatchEvent(Event::Create(event_type_names::kError));
 }
 
 void MediaRecorder::OnAllTracksEnded() {
@@ -453,10 +464,10 @@ void MediaRecorder::StopRecording() {
     return;
   }
   // Make sure that starting the recorder again yields an onstart event.
-  first_write_received_ = false;
   state_ = State::kInactive;
 
   recorder_handler_->Stop();
+  first_write_received_ = false;
 
   WriteData(nullptr /* data */, 0 /* length */, true /* lastInSlice */,
             base::Time::Now().ToDoubleT() * 1000.0);

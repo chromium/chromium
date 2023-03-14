@@ -75,7 +75,7 @@ class FileAnalysisRequestTest : public testing::Test {
     base::ScopedTempDir temp_dir;
     ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
     base::FilePath file_path = temp_dir.GetPath().AppendASCII("normal.doc");
-    base::WriteFile(file_path, file_contents.data(), file_contents.size());
+    base::WriteFile(file_path, file_contents);
 
     auto request =
         MakeRequest(/*block_unsupported_types=*/false, file_path,
@@ -316,7 +316,7 @@ TEST_F(FileAnalysisRequestTest, CachesResults) {
 
   std::string normal_contents = "Normal file contents";
   base::FilePath file_path = temp_dir.GetPath().AppendASCII("normal.doc");
-  base::WriteFile(file_path, normal_contents.data(), normal_contents.size());
+  base::WriteFile(file_path, normal_contents);
 
   BinaryUploadService::Result async_result;
   BinaryUploadService::Request::Data async_data;
@@ -366,7 +366,7 @@ TEST_F(FileAnalysisRequestTest, CachesResultsWithKnownMimetype) {
 
   std::string normal_contents = "Normal file contents";
   base::FilePath file_path = temp_dir.GetPath().AppendASCII("normal.doc");
-  base::WriteFile(file_path, normal_contents.data(), normal_contents.size());
+  base::WriteFile(file_path, normal_contents);
 
   BinaryUploadService::Result result;
   BinaryUploadService::Request::Data data;

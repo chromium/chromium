@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.autofill;
 
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
 
@@ -32,10 +31,8 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -55,7 +52,6 @@ import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.DropdownPopupWindowInterface;
 import org.chromium.ui.R;
-import org.chromium.ui.test.util.UiDisableIf;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -352,51 +348,6 @@ public class AutofillPopupTest {
         assertLogged(LAST_NAME, profileFullName);
         assertLogged(EMAIL, profileFullName);
         // Country will not be logged since "US" is not a valid <option>.
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"autofill"})
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_REFRESH_STYLE_ANDROID)
-    @DisableIf.Device(type = UiDisableIf.TABLET) // https://crbug.com/1399871
-    public void testScreenOrientationPortrait() throws TimeoutException {
-        runTestScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"autofill"})
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_REFRESH_STYLE_ANDROID)
-    @DisableIf.Device(type = UiDisableIf.TABLET) // https://crbug.com/1399871
-    public void testScreenOrientationLandscape() throws TimeoutException {
-        runTestScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-    }
-
-    private void runTestScreenOrientation(int orientation) throws TimeoutException {
-        // TODO(crbug.com/905081): Also test different screen sizes.
-        loadForm(BASIC_PAGE_DATA, "J", activity -> activity.setRequestedOrientation(orientation));
-
-        ChromeActivity activity = mActivityTestRule.getActivity();
-        final WebContents webContents = activity.getCurrentWebContents();
-        final Configuration config = activity.getResources().getConfiguration();
-        final boolean shouldShowPopup = config.orientation == Configuration.ORIENTATION_PORTRAIT
-                || config.isLayoutSizeAtLeast(Configuration.SCREENLAYOUT_SIZE_XLARGE);
-        final View view = webContents.getViewAndroidDelegate().getContainerView();
-        if (shouldShowPopup) {
-            waitForAnchorViewAdd(view);
-        } else {
-            InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        }
-        final View popup = view.findViewById(R.id.dropdown_popup_window);
-
-        final String message = "Mismatched dropdown_popup_window for orientation: "
-                + (orientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE ? "landscape"
-                                                                            : "portrait");
-        if (shouldShowPopup) {
-            Assert.assertNotNull(message, popup);
-        } else {
-            Assert.assertNull(message, popup);
-        }
     }
 
     // Wait and assert helper methods -------------------------------------------------------------

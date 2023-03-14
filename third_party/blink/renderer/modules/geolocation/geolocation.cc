@@ -82,7 +82,6 @@ GeolocationPositionError* CreatePositionError(
       error_code = GeolocationPositionError::kPositionUnavailable;
       break;
     case device::mojom::blink::Geoposition::ErrorCode::NONE:
-    case device::mojom::blink::Geoposition::ErrorCode::TIMEOUT:
       NOTREACHED();
       break;
   }
@@ -98,6 +97,12 @@ static void ReportGeolocationViolation(LocalDOMWindow* window) {
         "Only request geolocation information in response to a user gesture.",
         base::TimeDelta(), nullptr);
   }
+}
+
+bool ValidateGeoposition(const device::mojom::blink::Geoposition& position) {
+  return position.latitude >= -90. && position.latitude <= 90. &&
+         position.longitude >= -180. && position.longitude <= 180. &&
+         position.accuracy >= 0. && !position.timestamp.is_null();
 }
 
 }  // namespace
@@ -497,7 +502,7 @@ void Geolocation::QueryNextPosition() {
 void Geolocation::OnPositionUpdated(
     device::mojom::blink::GeopositionPtr position) {
   disconnected_geolocation_ = false;
-  if (position->valid) {
+  if (ValidateGeoposition(*position)) {
     last_position_ = CreateGeoposition(*position);
     PositionChanged();
   } else {

@@ -7,7 +7,7 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
 import {DialogTask, UserAction} from './cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
-import {AccordionTopCardElement, CloudProviderCardElement, CloudProviderType, FileHandlerCardElement, LocalHandlerCardElement} from './file_handler_card.js';
+import {AccordionTopCardElement, BaseCardElement, CloudProviderCardElement, CloudProviderType, FileHandlerCardElement, LocalHandlerCardElement} from './file_handler_card.js';
 import {getTemplate} from './file_handler_page.html.js';
 
 /**
@@ -27,6 +27,7 @@ export class FileHandlerPageElement extends HTMLElement {
    */
   cloudProviderCards: CloudProviderCardElement[] = [];
   localHandlerCards: LocalHandlerCardElement[] = [];
+  cards: BaseCardElement[] = [];
 
   private proxy: CloudUploadBrowserProxy =
       CloudUploadBrowserProxy.getInstance();
@@ -36,16 +37,17 @@ export class FileHandlerPageElement extends HTMLElement {
     const shadowRoot = this.attachShadow({mode: 'open'});
 
     shadowRoot.innerHTML = getTemplate();
-    const openButton =
-        shadowRoot.querySelector<CrButtonElement>('.action-button');
-    const cancelButton =
-        shadowRoot.querySelector<CrButtonElement>('.cancel-button');
+    const openButton = this.$<CrButtonElement>('.action-button');
+    const cancelButton = this.$<CrButtonElement>('.cancel-button');
+    const header = this.$<HTMLDialogElement>('#header');
     assert(openButton);
     assert(cancelButton);
+    assert(header);
 
     openButton.disabled = true;
     openButton.addEventListener('click', () => this.onOpenButtonClick());
     cancelButton.addEventListener('click', () => this.onCancelButtonClick());
+    header.addEventListener('keydown', this.handleKeyDown.bind(this));
 
     this.initDynamicContent();
   }
@@ -62,29 +64,27 @@ export class FileHandlerPageElement extends HTMLElement {
       assert(dialogArgs.args.tasks);
       // Adjust the dialog's size if there are no local tasks to display.
       if (dialogArgs.args.tasks.length == 0) {
-        this.style.height = '411px';
+        this.style.height = '310px';
       }
 
-      const fileNameElement = this.$<HTMLSpanElement>('#file-name');
-      assert(fileNameElement);
-      fileNameElement.innerText = dialogArgs.args.fileNames[0] || '';
+      const {name, icon, type} =
+          this.getDriveAppInfo(dialogArgs.args.fileNames);
 
-      const {name, icon} = this.getDriveAppInfo(dialogArgs.args.fileNames);
+      const fileTypeElement = this.$<HTMLSpanElement>('#file-type');
+      assert(fileTypeElement);
+      fileTypeElement.innerText = type;
 
       const driveCard = new CloudProviderCardElement();
       driveCard.setParameters(
-          CloudProviderType.DRIVE, name,
-          'Requires Google Drive storage &#x2022; Free');
+          CloudProviderType.DRIVE, name, 'Uses Google Drive');
       driveCard.setIconClass(icon);
-      driveCard.autofocus;
       driveCard.id = 'drive';
       this.addCloudProviderCard(driveCard);
 
       const officeCard = new CloudProviderCardElement();
       officeCard.setParameters(
           CloudProviderType.ONE_DRIVE, 'Microsoft 365',
-          'Requires Microsoft OneDrive storage &#x2022; ' +
-              'Subscription fees may apply');
+          'Uses Microsoft OneDrive');
       officeCard.setIconClass('office');
       officeCard.id = 'onedrive';
       this.addCloudProviderCard(officeCard);
@@ -108,7 +108,7 @@ export class FileHandlerPageElement extends HTMLElement {
         localHandlerCard.id = this.toStringId(task.position);
         if (i == dialogArgs.args.tasks.length - 1) {
           // Round bottom for last card.
-          localHandlerCard.$('#card')!.classList.add('round-bottom');
+          localHandlerCard.$('#container')!.classList.add('round-bottom');
         }
         this.addLocalHandlerCard(localHandlerCard);
 
@@ -125,12 +125,14 @@ export class FileHandlerPageElement extends HTMLElement {
 
   addCloudProviderCard(providerCard: CloudProviderCardElement) {
     this.cloudProviderCards.push(providerCard);
+    this.cards.push(providerCard);
     this.$<HTMLDivElement>('#content').appendChild(providerCard);
     providerCard.addEventListener('click', () => this.selectCard(providerCard));
   }
 
   addTopAccordionCard(topCard: AccordionTopCardElement) {
     this.$<HTMLDivElement>('#content').appendChild(topCard);
+    this.cards.push(topCard);
     topCard.addEventListener('click', () => {
       const expanded = topCard.toggleExpandedState();
       for (const localhandlerCard of this.localHandlerCards) {
@@ -163,6 +165,7 @@ export class FileHandlerPageElement extends HTMLElement {
   addLocalHandlerCard(localHandlerCard: LocalHandlerCardElement) {
     localHandlerCard.hide();
     this.localHandlerCards.push(localHandlerCard);
+    this.cards.push(localHandlerCard);
     this.$<HTMLDivElement>('#content').appendChild(localHandlerCard);
     localHandlerCard.addEventListener(
         'click', () => this.selectCard(localHandlerCard));
@@ -177,6 +180,7 @@ export class FileHandlerPageElement extends HTMLElement {
     contentElement.addEventListener(
         'scroll', this.updateContentFade.bind(undefined, contentElement),
         {passive: true});
+    contentElement.addEventListener('keydown', this.handleKeyDown.bind(this));
   }
 
   private selectCard(card: FileHandlerCardElement) {
@@ -207,12 +211,50 @@ export class FileHandlerPageElement extends HTMLElement {
     // TODO(b:254586358): i18n these names.
     const fileName = fileNames[0] || '';
     if (/\.xlsx?$/.test(fileName)) {
-      return {name: 'Google Sheets', icon: 'sheets'};
+      return {name: 'Google Sheets', icon: 'sheets', type: 'Excel'};
     } else if (/\.pptx?$/.test(fileName)) {
-      return {name: 'Google Slides', icon: 'slides'};
+      return {name: 'Google Slides', icon: 'slides', type: 'Powerpoint'};
     } else {
-      return {name: 'Google Docs', icon: 'docs'};
+      return {name: 'Google Docs', icon: 'docs', type: 'Word'};
     }
+  }
+
+  handleKeyDown(e: KeyboardEvent): void {
+    // Prevent scroll on spacebar.
+    if (e.key === ' ') {
+      e.preventDefault();
+      return;
+    }
+
+    // Move card focus with arrow keys.
+    let direction = 0;
+    if (e.key === 'ArrowDown') {
+      direction = 1;
+    } else if (e.key === 'ArrowUp') {
+      direction = -1;
+    } else {
+      return;
+    }
+
+    let selectedIndex = -1;
+    for (let i = 0; i < this.cards.length; ++i) {
+      if (this.cards[i] === this.shadowRoot!.activeElement) {
+        selectedIndex = i;
+      }
+    }
+
+    // If no card is focused, select the first one.
+    if (selectedIndex === -1) {
+      this.cards[0]!.focus();
+      return;
+    }
+
+    const newSelectedIndex = selectedIndex + direction;
+    if (newSelectedIndex < 0 || newSelectedIndex > this.cards.length - 1 ||
+        this.cards[newSelectedIndex]?.style.display === 'none') {
+      return;
+    }
+    this.cards[newSelectedIndex]!.focus();
   }
 
   // Invoked when the open file button is clicked. If the user previously

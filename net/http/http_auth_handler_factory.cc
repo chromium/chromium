@@ -31,7 +31,7 @@
 
 namespace {
 
-base::Value NetLogParamsForCreateAuth(
+base::Value::Dict NetLogParamsForCreateAuth(
     const std::string& scheme,
     const std::string& challenge,
     const int net_error,
@@ -47,7 +47,7 @@ base::Value NetLogParamsForCreateAuth(
     dict.Set("allows_default_credentials", *allows_default_credentials);
   if (net_error < 0)
     dict.Set("net_error", net_error);
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 }  // namespace

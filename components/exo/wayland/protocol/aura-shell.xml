@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="50">
+  <interface name="zaura_shell" version="51">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -160,7 +160,7 @@
     </request>
   </interface>
 
-  <interface name="zaura_surface" version="47">
+  <interface name="zaura_surface" version="51">
     <description summary="aura shell interface to a wl_surface">
       An additional interface to a wl_surface object, which allows the
       client to access aura shell specific functionality for surface.
@@ -588,6 +588,15 @@
         Informs the client that the tooltip is hidden.
       </description>
     </event>
+
+    <!-- Version 51 additions -->
+    <request name="set_accessibility_id" since="51">
+      <description summary="set accessibility ID to the surface">
+        Set accessibility window ID to the surface. A negative number removes
+        the existing accessibility ID from the surface.
+      </description>
+      <arg name="id" type="int" summary="Accessibility ID. Negative number removes existing accessibility ID from the surface."/>
+    </request>
   </interface>
 
   <interface name="zaura_output" version="45">
@@ -1177,5 +1186,166 @@
       </description>
       <arg name="scale_factor_as_uint" type="uint"/>
     </request>
+  </interface>
+
+  <interface name="zaura_output_manager" version="1">
+    <description summary="aura shell interface to the output manager">
+      A global responsible for ensuring clients have a complete view of a given
+      output's state immediately following the bind of wl_output, and
+      subsequently as needed.
+
+      Clients can expect that all the manager's events for a given wl_output
+      arrive before the associated wl_output.done event. Clients must bind to
+      the manager global before any output globals.
+    </description>
+
+    <event name="done" since="1">
+      <description summary="sent all information about output">
+        This event is sent after all relevant properties of a
+        zaura_output_manager for a given wl_output have been sent.
+      </description>
+      <arg name="output" type="object" interface="wl_output" />
+    </event>
+
+    <event name="display_id" since="1">
+      <description summary="advertise the output's display id">
+        This event describes the 64bit display id assigned to each display by
+        ChromeOS. The value is opaque and should not be interpreted.
+
+        The event is sent when binding to the output object and subsequently as
+        output state changes.
+      </description>
+      <arg name="output" type="object" interface="wl_output" />
+      <arg name="display_id_hi" type="uint" />
+      <arg name="display_id_lo" type="uint" />
+    </event>
+
+    <event name="logical_position" since="1">
+      <description
+          summary="position of the output within the global compositor space">
+        The position event describes the location of the wl_output within the
+        global compositor space.
+
+        The event is sent when binding to the output object and subsequently as
+        output state changes.
+      </description>
+      <arg name="output" type="object" interface="wl_output" />
+      <arg name="x" type="int"
+          summary="x position within the global compositor space" />
+      <arg name="y" type="int"
+          summary="y position within the global compositor space" />
+    </event>
+
+    <event name="logical_size" since="1">
+      <description summary="size of the output in the global compositor space">
+        The logical_size event describes the logical size of the output in the
+        global compositor space.
+
+        The event is sent when binding to the output object and subsequently as
+        output state changes.
+      </description>
+      <arg name="output" type="object" interface="wl_output" />
+      <arg name="width" type="int" summary="width in global compositor space" />
+      <arg name="height" type="int"
+          summary="height in global compositor space" />
+    </event>
+
+    <event name="physical_size" since="1">
+      <description summary="size of the output in pixels">
+        The physical resolution of the display in pixels. The value should not
+        include any overscan insets or display rotation, except for any panel
+        orientation adjustment.
+
+        The event is sent when binding to the output object and subsequently as
+        output state changes.
+      </description>
+      <arg name="output" type="object" interface="wl_output" />
+      <arg name="width" type="int"
+          summary="width in global compositor space" />
+      <arg name="height" type="int"
+          summary="height in global compositor space" />
+    </event>
+
+    <event name="insets" since="1">
+      <description summary="advertise the insets for the output">
+        This event describes the insets for the output in logical screen
+        coordinates, from which the work area can be calculated.
+
+        The event is sent when binding to the output object and subsequently as
+        output state changes.
+      </description>
+      <arg name="output" type="object" interface="wl_output" />
+      <arg name="top" type="int" />
+      <arg name="left" type="int" />
+      <arg name="bottom" type="int" />
+      <arg name="right" type="int" />
+    </event>
+
+    <event name="device_scale_factor" since="1">
+      <description summary="advertise device scale factor for the output">
+        The scale factor of the output device. We reinterpret_cast the float
+        scale factor into a 32-bit uint and later cast back into a float. This
+        is because wayland does not support native transport of floats. As
+        different CPU architectures may use different endian representations for
+        IEEE 754 floats, this protocol implicitly assumes that the caller and
+        receiver are the same machine.
+
+        The event is sent when binding to the output object and subsequently as
+        output state changes.
+      </description>
+      <arg name="output" type="object" interface="wl_output" />
+      <arg name="device_scale_factor" type="uint"
+          summary="display scale factor, in float format" />
+    </event>
+
+    <event name="logical_transform" since="1">
+      <description summary="logical transform of the output">
+        This event describes the logical transform for the output. Whereas
+        panel transform corresponds to the display's panel rotation, the logical
+        transform corresponds to the display's logical rotation.
+
+        The event is sent when binding to the output object and subsequently as
+        output state changes.
+      </description>
+      <arg name="output" type="object" interface="wl_output" />
+      <arg name="transform" type="int" enum="wl_output.transform"
+        summary="transform that maps framebuffer to output" />
+    </event>
+
+    <event name="panel_transform" since="1">
+      <description summary="panel transform of the output">
+        This event describes the panel transform for the output, which is the
+        associated display's panel rotation.
+
+        The event is sent when binding to the output object and subsequently as
+        output state changes.
+      </description>
+      <arg name="output" type="object" interface="wl_output" />
+      <arg name="transform" type="int" enum="wl_output.transform"
+        summary="transform that maps framebuffer to output" />
+    </event>
+
+    <event name="name" since="1">
+      <description summary="human-readable name of this output">
+        The name is a UTF-8 string with no convention defined for its contents.
+
+        The event is sent when binding to the output object and subsequently as
+        output state changes.
+      </description>
+      <arg name="output" type="object" interface="wl_output" />
+      <arg name="name" type="string" summary="output name" />
+    </event>
+
+    <event name="description" since="1">
+      <description summary="human-readable description of this output">
+        The description is a UTF-8 string with no convention defined for its
+        contents.
+
+        The event is sent when binding to the output object and subsequently as
+        output state changes.
+      </description>
+      <arg name="output" type="object" interface="wl_output" />
+      <arg name="description" type="string" summary="output description" />
+    </event>
   </interface>
 </protocol>

@@ -5,6 +5,7 @@
 #include "chrome/test/base/extension_js_browser_test.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
@@ -14,6 +15,7 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/javascript_browser_test.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
@@ -22,6 +24,23 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "test_switches.h"
+#include "ui/base/ime/ash/extension_ime_util.h"
+
+namespace {
+
+const std::vector<std::string>& GetExtensionIdsToCollectCoverage() {
+  static const std::vector<std::string> extensions_for_coverage = {
+      extension_misc::kChromeVoxExtensionId,
+      extension_misc::kSelectToSpeakExtensionId,
+      extension_misc::kSwitchAccessExtensionId,
+      extension_misc::kAccessibilityCommonExtensionId,
+      extension_misc::kEnhancedNetworkTtsExtensionId,
+      ash::extension_ime_util::kBrailleImeExtensionId,
+  };
+  return extensions_for_coverage;
+}
+
+}  // namespace
 
 ExtensionJSBrowserTest::ExtensionJSBrowserTest() = default;
 
@@ -37,8 +56,14 @@ void ExtensionJSBrowserTest::SetUpOnMainThread() {
         command_line->GetSwitchValuePath(switches::kDevtoolsCodeCoverage);
     ShouldInspectDevToolsAgentHostCallback callback =
         base::BindRepeating([](content::DevToolsAgentHost* host) {
-          return base::StartsWith(host->GetTitle(), "ChromeVox") &&
-                 host->GetType() == "background_page";
+          const auto& ext_ids = GetExtensionIdsToCollectCoverage();
+          for (const auto& ext_id : ext_ids) {
+            if (base::Contains(host->GetURL().path(), ext_id) &&
+                host->GetType() == "background_page") {
+              return true;
+            }
+          }
+          return false;
         });
     coverage_handler_ = std::make_unique<DevToolsAgentCoverageObserver>(
         devtools_code_coverage_dir, std::move(callback));

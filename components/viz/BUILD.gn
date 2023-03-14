@@ -28,7 +28,7 @@ viz_test("viz_unittests") {
     "//mojo/core/embedder",
   ]
 
-  data = [ "test/data/" ]
+  data = [ "//components/test/data/viz/" ]
 
   data_deps = [
     "//testing/buildbot/filters:viz_unittests_filters",
@@ -50,6 +50,10 @@ viz_test("viz_unittests") {
       "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
     ]
   }
+
+  if (is_ios) {
+    public_deps = [ "//components/test:viz_test_bundle_data" ]
+  }
 }
 
 viz_test("viz_perftests") {
@@ -66,7 +70,7 @@ viz_test("viz_perftests") {
     "//skia",
   ]
 
-  data = [ "test/data/" ]
+  data = [ "//components/test/data/viz/" ]
 
   # This target should not require the Chrome executable to run.
   assert_no_deps = [ "//chrome" ]

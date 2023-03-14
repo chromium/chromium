@@ -1,0 +1,64 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/rust.gni")
+import("//build/rust/rust_static_library.gni")
+import("//build/rust/rust_unit_test.gni")
+import("//build/rust/rust_unit_tests_group.gni")
+
+assert(can_build_rust_unit_tests)
+
+rust_unit_test("mojo_rust_system_tests") {
+  testonly = true
+  allow_unsafe = true
+  crate_root = "system/lib.rs"
+  sources = [
+    "system/lib.rs",
+    "system/run_loop.rs",
+  ]
+  deps = [
+    ":c_test_support",
+    ":test_util",
+    "//mojo/public/rust:mojo_rust",
+    "//third_party/rust/lazy_static/v1:test_support",
+  ]
+}
+
+rust_unit_test("mojo_rust_integration_tests") {
+  testonly = true
+  allow_unsafe = true
+  crate_root = "integration/lib.rs"
+  sources = [
+    "integration/encoding.rs",
+    "integration/integration.rs",
+    "integration/lib.rs",
+    "integration/mojom_validation.rs",
+    "integration/regression.rs",
+    "integration/validation.rs",
+  ]
+  deps = [
+    ":c_test_support",
+    ":test_util",
+    "//mojo/public/rust:mojo_rust",
+  ]
+}
+
+rust_static_library("test_util") {
+  testonly = true
+  allow_unsafe = true
+  crate_root = "util/lib.rs"
+  edition = "2021"
+  sources = [ "util/lib.rs" ]
+}
+
+static_library("c_test_support") {
+  testonly = true
+  sources = [ "test_support.cc" ]
+  deps = [
+    "//base",
+    "//mojo/core/embedder",
+    "//mojo/public/cpp/bindings/tests:mojo_public_bindings_test_utils",
+  ]
+  visibility = [ ":*" ]
+}

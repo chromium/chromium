@@ -12,13 +12,17 @@
 
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/accelerator_configuration.h"
 #include "ash/public/cpp/accelerators.h"
+#include "ash/public/mojom/accelerator_configuration.mojom.h"
 #include "ash/public/mojom/accelerator_info.mojom-shared.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h"
+#include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-forward.h"
+#include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-test-utils.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -27,6 +31,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
+#include "device/udev_linux/fake_udev_loader.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,6 +39,7 @@
 #include "ui/base/ime/ash/mock_input_method_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/events/keyboard_capability.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
@@ -46,8 +52,74 @@ using NonConfigurableActionToParts =
                    const std::vector<mojom::TextAcceleratorPartPtr&>>;
 
 namespace {
+using shortcut_customization::mojom::AcceleratorResultDataPtr;
+using shortcut_customization::mojom::SimpleAccelerator;
+using shortcut_customization::mojom::SimpleAcceleratorPtr;
 
+using mojom::AcceleratorConfigResult;
+
+constexpr char kKbdTopRowPropertyName[] = "CROS_KEYBOARD_TOP_ROW_LAYOUT";
+constexpr char kKbdTopRowLayout2Tag[] = "2";
+
+class FakeDeviceManager {
+ public:
+  FakeDeviceManager() = default;
+  FakeDeviceManager(const FakeDeviceManager&) = delete;
+  FakeDeviceManager& operator=(const FakeDeviceManager&) = delete;
+  ~FakeDeviceManager() = default;
+
+  // Add a fake keyboard to DeviceDataManagerTestApi and provide layout info to
+  // fake udev.
+  void AddFakeKeyboard(const ui::InputDevice& fake_keyboard,
+                       const std::string& layout) {
+    fake_keyboard_devices_.push_back(fake_keyboard);
+
+    ui::DeviceDataManagerTestApi().SetKeyboardDevices({});
+    ui::DeviceDataManagerTestApi().SetKeyboardDevices(fake_keyboard_devices_);
+    ui::DeviceDataManagerTestApi().OnDeviceListsComplete();
+
+    std::map<std::string, std::string> sysfs_properties;
+    std::map<std::string, std::string> sysfs_attributes;
+    sysfs_properties[kKbdTopRowPropertyName] = layout;
+    fake_udev_.AddFakeDevice(fake_keyboard.name, fake_keyboard.sys_path.value(),
+                             /*subsystem=*/"input", /*devnode=*/absl::nullopt,
+                             /*devtype=*/absl::nullopt,
+                             std::move(sysfs_attributes),
+                             std::move(sysfs_properties));
+  }
+
+  void RemoveAllDevices() {
+    fake_udev_.Reset();
+    fake_keyboard_devices_.clear();
+  }
+
+ private:
+  testing::FakeUdevLoader fake_udev_;
+  std::vector<ui::InputDevice> fake_keyboard_devices_;
+};
 class FakeAcceleratorsUpdatedObserver
+    : public shortcut_ui::AcceleratorConfigurationProvider::
+          AcceleratorsUpdatedObserver {
+ public:
+  FakeAcceleratorsUpdatedObserver() = default;
+  ~FakeAcceleratorsUpdatedObserver() override = default;
+
+  int num_times_notified() const { return num_times_notified_; }
+
+  void clear_num_times_notified() { num_times_notified_ = 0; }
+
+  // AcceleratorConfigurationProvider::AcceleratorsUpdatedObserver:
+  void OnAcceleratorsUpdated(
+      shortcut_ui::AcceleratorConfigurationProvider::AcceleratorConfigurationMap
+          config) override {
+    ++num_times_notified_;
+  }
+
+ private:
+  int num_times_notified_ = 0;
+};
+
+class FakeAcceleratorsUpdatedMojoObserver
     : public shortcut_customization::mojom::AcceleratorsUpdatedObserver {
  public:
   void OnAcceleratorsUpdated(
@@ -86,7 +158,7 @@ bool AreAcceleratorsEqual(const ui::Accelerator& expected_accelerator,
       expected_accelerator ==
       actual_info->layout_properties->get_standard_accelerator()->accelerator;
   const bool key_display_equals =
-      shortcut_ui::GetKeyDisplay(expected_accelerator.key_code()) ==
+      ash::GetKeyDisplay(expected_accelerator.key_code()) ==
       actual_info->layout_properties->get_standard_accelerator()->key_display;
   return accelerator_equals && key_display_equals;
 }
@@ -176,6 +248,36 @@ std::vector<mojom::TextAcceleratorPartPtr> RemovePlainTextParts(
   return res;
 }
 
+std::vector<std::u16string> SplitStringOnOffsets(
+    const std::u16string& input,
+    const std::vector<size_t>& offsets) {
+  DCHECK(std::is_sorted(offsets.begin(), offsets.end()));
+
+  std::vector<std::u16string> parts;
+  // At most there will be len(offsets) + 1 text parts.
+  parts.reserve(offsets.size() + 1);
+  size_t upto = 0;
+
+  for (auto offset : offsets) {
+    DCHECK_LE(offset, input.size());
+
+    if (offset == upto) {
+      continue;
+    }
+
+    DCHECK(offset >= upto);
+    parts.push_back(input.substr(upto, offset - upto));
+    upto = offset;
+  }
+
+  // Handles the case where there's plain text after the last replacement.
+  if (upto < input.size()) {
+    parts.push_back(input.substr(upto));
+  }
+
+  return parts;
+}
+
 }  // namespace
 
 namespace shortcut_ui {
@@ -211,7 +313,9 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {::features::kImprovedKeyboardShortcuts}, {});
+        {::features::kImprovedKeyboardShortcuts,
+         ::features::kShortcutCustomization},
+        {});
     input_method_manager_ = new TestInputMethodManager();
     input_method::InputMethodManager::Initialize(input_method_manager_);
 
@@ -220,12 +324,19 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
     AshTestBase::SetUp();
 
     provider_ = std::make_unique<AcceleratorConfigurationProvider>();
+    provider_->AddObserver(&observer_);
+    // After the provider is constructed, the observer should not have been
+    // notified yet.
+    EXPECT_EQ(0, observer_.num_times_notified());
     non_configurable_actions_map_ =
         provider_->GetNonConfigurableAcceleratorsForTesting();
+    fake_keyboard_manager_ = std::make_unique<FakeDeviceManager>();
+    provider_->ignore_layouts_for_testing_ = true;
     base::RunLoop().RunUntilIdle();
   }
 
   void TearDown() override {
+    provider_->RemoveObserver(&observer_);
     // `provider_` has a dependency on `input_method_manager_`.
     provider_.reset();
     AshTestBase::TearDown();
@@ -238,8 +349,8 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
     return provider_->connected_keyboards_;
   }
 
-  void SetUpObserver(FakeAcceleratorsUpdatedObserver* observer) {
-    provider_->AddObserver(observer->pending_remote());
+  void SetUpObserver(FakeAcceleratorsUpdatedMojoObserver* mojo_observer) {
+    provider_->AddObserver(mojo_observer->pending_remote());
     base::RunLoop().RunUntilIdle();
   }
 
@@ -286,6 +397,8 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
   // Test global singleton. Delete is handled by InputMethodManager::Shutdown().
   base::raw_ptr<TestInputMethodManager> input_method_manager_;
+  std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
+  FakeAcceleratorsUpdatedObserver observer_;
 };
 
 TEST_F(AcceleratorConfigurationProviderTest, ResetReceiverOnBindInterface) {
@@ -322,22 +435,25 @@ TEST_F(AcceleratorConfigurationProviderTest, AshIsMutable) {
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, InitialAccelInitCalls) {
-  FakeAcceleratorsUpdatedObserver observer;
-  SetUpObserver(&observer);
-  EXPECT_EQ(0, observer.num_times_notified());
+  FakeAcceleratorsUpdatedMojoObserver mojo_observer;
+  SetUpObserver(&mojo_observer);
+  EXPECT_EQ(0, mojo_observer.num_times_notified());
+  EXPECT_EQ(0, observer_.num_times_notified());
 
   Shell::Get()->ash_accelerator_configuration()->Initialize();
   base::RunLoop().RunUntilIdle();
 
   // Observer is initially notified twice, one for ash accelerators and the
   // other for deprecated accelerators.
-  EXPECT_EQ(2, observer.num_times_notified());
+  EXPECT_EQ(2, mojo_observer.num_times_notified());
+  EXPECT_EQ(2, observer_.num_times_notified());
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, AshAcceleratorsUpdated) {
-  FakeAcceleratorsUpdatedObserver observer;
-  SetUpObserver(&observer);
-  EXPECT_EQ(0, observer.num_times_notified());
+  FakeAcceleratorsUpdatedMojoObserver mojo_observer;
+  SetUpObserver(&mojo_observer);
+  EXPECT_EQ(0, mojo_observer.num_times_notified());
+  EXPECT_EQ(0, observer_.num_times_notified());
 
   const AcceleratorData test_data[] = {
       {/*trigger_on_press=*/true, ui::VKEY_TAB, ui::EF_ALT_DOWN,
@@ -350,10 +466,11 @@ TEST_F(AcceleratorConfigurationProviderTest, AshAcceleratorsUpdated) {
   Shell::Get()->ash_accelerator_configuration()->Initialize(test_data);
   base::RunLoop().RunUntilIdle();
   // Notified once after instantiating the accelerators.
-  EXPECT_EQ(1, observer.num_times_notified());
+  EXPECT_EQ(1, mojo_observer.num_times_notified());
+  EXPECT_EQ(1, observer_.num_times_notified());
   // Verify observer received the correct accelerators.
   ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh, test_data,
-                               observer.config());
+                               mojo_observer.config());
 
   // Initialize with a new set of accelerators.
   const AcceleratorData updated_test_data[] = {
@@ -367,17 +484,18 @@ TEST_F(AcceleratorConfigurationProviderTest, AshAcceleratorsUpdated) {
   Shell::Get()->ash_accelerator_configuration()->Initialize(updated_test_data);
   base::RunLoop().RunUntilIdle();
   // Observers are notified again after a new set of accelerators are provided.
-  EXPECT_EQ(2, observer.num_times_notified());
+  EXPECT_EQ(2, mojo_observer.num_times_notified());
+  EXPECT_EQ(2, observer_.num_times_notified());
   // Verify observer has been updated with the new set of accelerators.
   ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh,
-                               updated_test_data, observer.config());
+                               updated_test_data, mojo_observer.config());
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, ConnectedKeyboardsUpdated) {
-  FakeAcceleratorsUpdatedObserver observer;
-  SetUpObserver(&observer);
+  FakeAcceleratorsUpdatedMojoObserver mojo_observer;
+  SetUpObserver(&mojo_observer);
 
-  EXPECT_EQ(0, observer.num_times_notified());
+  EXPECT_EQ(0, mojo_observer.num_times_notified());
 
   ui::InputDevice expected_test_keyboard(
       1, ui::InputDeviceType::INPUT_DEVICE_INTERNAL, "Keyboard");
@@ -393,7 +511,7 @@ TEST_F(AcceleratorConfigurationProviderTest, ConnectedKeyboardsUpdated) {
 
   base::RunLoop().RunUntilIdle();
   // Adding a new keyboard should trigger the UpdatedAccelerators observer.
-  EXPECT_EQ(1, observer.num_times_notified());
+  EXPECT_EQ(1, mojo_observer.num_times_notified());
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, ValidateAllAcceleratorLayouts) {
@@ -407,12 +525,22 @@ TEST_F(AcceleratorConfigurationProviderTest, ValidateAllAcceleratorLayouts) {
       [&](std::vector<mojom::AcceleratorLayoutInfoPtr> actual_layout_infos) {
         ValidateAcceleratorLayouts(actual_layout_infos);
       }));
+
+  // Validate that the non-callback version of this method returns correct data.
+  ValidateAcceleratorLayouts(provider_->GetAcceleratorLayoutInfos());
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, TopRowKeyAcceleratorRemapped) {
-  FakeAcceleratorsUpdatedObserver observer;
-  SetUpObserver(&observer);
-  EXPECT_EQ(0, observer.num_times_notified());
+  // Add a fake layout2 keyboard.
+  ui::InputDevice fake_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
+      /*name=*/"fake_Keyboard");
+  fake_keyboard.sys_path = base::FilePath("path1");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, kKbdTopRowLayout2Tag);
+
+  FakeAcceleratorsUpdatedMojoObserver mojo_observer;
+  SetUpObserver(&mojo_observer);
+  EXPECT_EQ(0, mojo_observer.num_times_notified());
 
   // Top row keys are not function keys by default.
   EXPECT_FALSE(Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys());
@@ -443,10 +571,10 @@ TEST_F(AcceleratorConfigurationProviderTest, TopRowKeyAcceleratorRemapped) {
   base::RunLoop().RunUntilIdle();
 
   // Notified once after instantiating the accelerators.
-  EXPECT_EQ(1, observer.num_times_notified());
+  EXPECT_EQ(1, mojo_observer.num_times_notified());
   // Verify observer received the correct accelerators.
   ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh, test_data,
-                               observer.config());
+                               mojo_observer.config());
 
   // Enable TopRowKeysAreFKeys.
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
@@ -454,7 +582,7 @@ TEST_F(AcceleratorConfigurationProviderTest, TopRowKeyAcceleratorRemapped) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys());
-  EXPECT_EQ(2, observer.num_times_notified());
+  EXPECT_EQ(2, mojo_observer.num_times_notified());
 
   // Initialize the same test_data again, but with
   // TopRowKeysAsFunctionKeysEnabled.
@@ -495,16 +623,16 @@ TEST_F(AcceleratorConfigurationProviderTest, TopRowKeyAcceleratorRemapped) {
        TOGGLE_FULLSCREEN},
   };
 
-  EXPECT_EQ(3, observer.num_times_notified());
+  EXPECT_EQ(3, mojo_observer.num_times_notified());
   // Verify observer received the top-row-remapped accelerators.
   ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh,
-                               expected_test_data, observer.config());
+                               expected_test_data, mojo_observer.config());
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, SixPackKeyAcceleratorRemapped) {
-  FakeAcceleratorsUpdatedObserver observer;
-  SetUpObserver(&observer);
-  EXPECT_EQ(0, observer.num_times_notified());
+  FakeAcceleratorsUpdatedMojoObserver mojo_observer;
+  SetUpObserver(&mojo_observer);
+  EXPECT_EQ(0, mojo_observer.num_times_notified());
 
   // kImprovedKeyboardShortcuts is enabled.
   EXPECT_TRUE(::features::IsImprovedKeyboardShortcutsEnabled());
@@ -591,17 +719,17 @@ TEST_F(AcceleratorConfigurationProviderTest, SixPackKeyAcceleratorRemapped) {
   Shell::Get()->ash_accelerator_configuration()->Initialize(test_data);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(1, observer.num_times_notified());
+  EXPECT_EQ(1, mojo_observer.num_times_notified());
   // Verify observer received the correct remapped accelerators.
   ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh, expected_data,
-                               observer.config());
+                               mojo_observer.config());
 }
 
 TEST_F(AcceleratorConfigurationProviderTest,
        ReversedSixPackKeyAcceleratorRemapped) {
-  FakeAcceleratorsUpdatedObserver observer;
-  SetUpObserver(&observer);
-  EXPECT_EQ(0, observer.num_times_notified());
+  FakeAcceleratorsUpdatedMojoObserver mojo_observer;
+  SetUpObserver(&mojo_observer);
+  EXPECT_EQ(0, mojo_observer.num_times_notified());
 
   // kImprovedKeyboardShortcuts is enabled.
   EXPECT_TRUE(::features::IsImprovedKeyboardShortcutsEnabled());
@@ -619,7 +747,7 @@ TEST_F(AcceleratorConfigurationProviderTest,
       {/*trigger_on_press=*/true, ui::VKEY_LEFT,
        ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN,
        TAKE_WINDOW_SCREENSHOT},
-      {/*trigger_on_press=*/true, ui::VKEY_PRIOR,
+      {/*trigger_on_press=*/true, ui::VKEY_UP,
        ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, DESKS_NEW_DESK},
       {/*trigger_on_press=*/true, ui::VKEY_RIGHT,
        ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN,
@@ -641,9 +769,9 @@ TEST_F(AcceleratorConfigurationProviderTest,
       // done. [Left]+[Alt]>[Left]+[Alt].
       {/*trigger_on_press=*/true, ui::VKEY_LEFT, ui::EF_ALT_DOWN,
        CYCLE_BACKWARD_MRU},
-      // When [Search] is the only modifier, no remapping is done.
-      // [Left]+[Search]->[Left]+[Search].
+      // When [Search] is the only modifier, [Left]+[Search]->[Home].
       {/*trigger_on_press=*/true, ui::VKEY_LEFT, ui::EF_COMMAND_DOWN, NEW_TAB},
+      {/*trigger_on_press=*/true, ui::VKEY_HOME, ui::EF_NONE, NEW_TAB},
       // When key code is not reversed six pack key, no remapping is done.
       // [Tab]+[Search]+[Alt]->[Tab]+[Search]+[Alt].
       {/*trigger_on_press=*/true, ui::VKEY_TAB,
@@ -660,10 +788,11 @@ TEST_F(AcceleratorConfigurationProviderTest,
        TAKE_WINDOW_SCREENSHOT},
       {/*trigger_on_press=*/true, ui::VKEY_HOME,
        ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, TAKE_WINDOW_SCREENSHOT},
-      // [Prior]+[Search]+[Alt]->[Up]+[Alt].
-      {/*trigger_on_press=*/true, ui::VKEY_PRIOR,
+      // [Up]+[Search]+[Alt]->[Prior]+[Alt].
+      {/*trigger_on_press=*/true, ui::VKEY_UP,
        ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, DESKS_NEW_DESK},
-      {/*trigger_on_press=*/true, ui::VKEY_UP, ui::EF_ALT_DOWN, DESKS_NEW_DESK},
+      {/*trigger_on_press=*/true, ui::VKEY_PRIOR, ui::EF_ALT_DOWN,
+       DESKS_NEW_DESK},
       // [Right]+[Search]+[Shift]+[Alt]->[End]+[Shift]+[Alt].
       {/*trigger_on_press=*/true, ui::VKEY_RIGHT,
        ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
@@ -687,55 +816,54 @@ TEST_F(AcceleratorConfigurationProviderTest,
        SHOW_TASK_MANAGER},
       {/*trigger_on_press=*/true, ui::VKEY_INSERT, ui::EF_ALT_DOWN,
        SHOW_TASK_MANAGER},
-
-      // If the accelerator is just the reverse of [Insert], no remapping is
-      // done. [Back]+[Search]+[Shift] -> [Back]+[Search]+[Shift].
+      // [Back]+[Search]+[Shift] -> [Insert].
       {/*trigger_on_press=*/true, ui::VKEY_BACK,
        ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN, BRIGHTNESS_UP},
+      {/*trigger_on_press=*/true, ui::VKEY_INSERT, ui::EF_NONE, BRIGHTNESS_UP},
   };
 
   Shell::Get()->ash_accelerator_configuration()->Initialize(test_data);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(1, observer.num_times_notified());
+  EXPECT_EQ(1, mojo_observer.num_times_notified());
   // Verify observer received the correct remapped accelerators.
   ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh, expected_data,
-                               observer.config());
+                               mojo_observer.config());
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, InputMethodChanged) {
-  FakeAcceleratorsUpdatedObserver observer;
-  SetUpObserver(&observer);
-  EXPECT_EQ(0, observer.num_times_notified());
+  FakeAcceleratorsUpdatedMojoObserver mojo_observer;
+  SetUpObserver(&mojo_observer);
+  EXPECT_EQ(0, mojo_observer.num_times_notified());
   Shell::Get()->ash_accelerator_configuration()->Initialize();
   base::RunLoop().RunUntilIdle();
   // Clear extraneous observer calls.
-  observer.clear_num_times_notified();
-  EXPECT_EQ(0, observer.num_times_notified());
+  mojo_observer.clear_num_times_notified();
+  EXPECT_EQ(0, mojo_observer.num_times_notified());
 
   // Change input method, expect observer to be called.
   input_method_manager_->NotifyInputMethodChanged();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1, observer.num_times_notified());
+  EXPECT_EQ(1, mojo_observer.num_times_notified());
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, TestGetKeyDisplay) {
-  EXPECT_EQ(u"c", GetKeyDisplay(ui::VKEY_C));
+  EXPECT_EQ(u"c", ash::GetKeyDisplay(ui::VKEY_C));
   EXPECT_EQ(u"MicrophoneMuteToggle",
-            GetKeyDisplay(ui::VKEY_MICROPHONE_MUTE_TOGGLE));
-  EXPECT_EQ(u"ToggleWifi", GetKeyDisplay(ui::VKEY_WLAN));
-  EXPECT_EQ(u"tab", GetKeyDisplay(ui::VKEY_TAB));
-  EXPECT_EQ(u"esc", GetKeyDisplay(ui::VKEY_ESCAPE));
-  EXPECT_EQ(u"backspace", GetKeyDisplay(ui::VKEY_BACK));
-  EXPECT_EQ(u"enter", GetKeyDisplay(ui::VKEY_RETURN));
-  EXPECT_EQ(u"Space", GetKeyDisplay(ui::VKEY_SPACE));
+            ash::GetKeyDisplay(ui::VKEY_MICROPHONE_MUTE_TOGGLE));
+  EXPECT_EQ(u"ToggleWifi", ash::GetKeyDisplay(ui::VKEY_WLAN));
+  EXPECT_EQ(u"tab", ash::GetKeyDisplay(ui::VKEY_TAB));
+  EXPECT_EQ(u"esc", ash::GetKeyDisplay(ui::VKEY_ESCAPE));
+  EXPECT_EQ(u"backspace", ash::GetKeyDisplay(ui::VKEY_BACK));
+  EXPECT_EQ(u"enter", ash::GetKeyDisplay(ui::VKEY_RETURN));
+  EXPECT_EQ(u"space", ash::GetKeyDisplay(ui::VKEY_SPACE));
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, NonConfigurableActions) {
-  FakeAcceleratorsUpdatedObserver observer;
-  SetUpObserver(&observer);
+  FakeAcceleratorsUpdatedMojoObserver mojo_observer;
+  SetUpObserver(&mojo_observer);
   base::RunLoop().RunUntilIdle();
-  auto config = observer.config();
+  auto config = mojo_observer.config();
   for (const auto& [id, accel_infos] :
        config[mojom::AcceleratorSource::kAmbient]) {
     for (const auto& info : accel_infos) {
@@ -805,6 +933,171 @@ TEST_F(AcceleratorConfigurationProviderTest, NonConfigurableReverseLookup) {
       }
     }
   }
+}
+
+TEST_F(AcceleratorConfigurationProviderTest, RemoveAccelerator) {
+  FakeAcceleratorsUpdatedMojoObserver observer;
+  SetUpObserver(&observer);
+
+  // Initialize with all custom accelerators.
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+       TOGGLE_MIRROR_MODE},
+  };
+  AshAcceleratorConfiguration* config =
+      Shell::Get()->ash_accelerator_configuration();
+  config->Initialize(test_data);
+  base::RunLoop().RunUntilIdle();
+
+  // Verify accelerators are populated.
+  EXPECT_EQ(sizeof(test_data) / sizeof(AcceleratorData),
+            config->GetAllAccelerators().size());
+
+  // Remove the accelerator.
+  provider_->RemoveAccelerator(
+      mojom::AcceleratorSource::kAsh, TOGGLE_MIRROR_MODE,
+      ui::Accelerator(ui::VKEY_SPACE, ui::EF_CONTROL_DOWN),
+      base::BindLambdaForTesting([&](AcceleratorResultDataPtr result) {
+        EXPECT_EQ(AcceleratorConfigResult::kSuccess, result->result);
+        EXPECT_FALSE(result->shortcut_name.has_value());
+        // Verify the accelerator was removed.
+        std::vector<ui::Accelerator> updated_accelerators =
+            config->GetAllAccelerators();
+        EXPECT_EQ(0u, updated_accelerators.size());
+
+        // Now verify that removing the default for `TOGGLE_MIRROR_MODE` will
+        // only disable it from the config.
+        base::RunLoop().RunUntilIdle();
+        AcceleratorConfigurationProvider::AcceleratorConfigurationMap
+            actual_config = observer.config();
+        ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh, test_data,
+                                     mojo::Clone(actual_config));
+        std::vector<mojom::AcceleratorInfoPtr> actual_infos(mojo::Clone(
+            actual_config[mojom::AcceleratorSource::kAsh][TOGGLE_MIRROR_MODE]));
+        EXPECT_EQ(1u, actual_infos.size());
+        // A disabled default accelerator should be marked as `kDisabledByUser`.
+        EXPECT_EQ(mojom::AcceleratorState::kDisabledByUser,
+                  actual_infos[0]->state);
+        EXPECT_EQ(mojom::AcceleratorType::kDefault, actual_infos[0]->type);
+      }));
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(AcceleratorConfigurationProviderTest, RemoveAcceleratorThatDoesntExist) {
+  // Initialize with all custom accelerators.
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+       TOGGLE_MIRROR_MODE},
+      {/*trigger_on_press=*/true, ui::VKEY_ZOOM, ui::EF_ALT_DOWN,
+       SWAP_PRIMARY_DISPLAY},
+  };
+  AshAcceleratorConfiguration* config =
+      Shell::Get()->ash_accelerator_configuration();
+  config->Initialize(test_data);
+  base::RunLoop().RunUntilIdle();
+
+  // Remove the accelerator.
+  provider_->RemoveAccelerator(
+      mojom::AcceleratorSource::kAsh, TOGGLE_MIRROR_MODE,
+      ui::Accelerator(ui::VKEY_C, ui::EF_CONTROL_DOWN),
+      base::BindLambdaForTesting([&](AcceleratorResultDataPtr result) {
+        EXPECT_EQ(AcceleratorConfigResult::kNotFound, result->result);
+        EXPECT_FALSE(result->shortcut_name.has_value());
+      }));
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(AcceleratorConfigurationProviderTest, RemoveAcceleratorNonAsh) {
+  // Initialize with all custom accelerators.
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+       TOGGLE_MIRROR_MODE},
+      {/*trigger_on_press=*/true, ui::VKEY_ZOOM, ui::EF_ALT_DOWN,
+       SWAP_PRIMARY_DISPLAY},
+  };
+  AshAcceleratorConfiguration* config =
+      Shell::Get()->ash_accelerator_configuration();
+  config->Initialize(test_data);
+  base::RunLoop().RunUntilIdle();
+
+  // Remove the accelerator.
+  provider_->RemoveAccelerator(
+      mojom::AcceleratorSource::kBrowser, TOGGLE_MIRROR_MODE,
+      ui::Accelerator(ui::VKEY_C, ui::EF_CONTROL_DOWN),
+      base::BindLambdaForTesting([&](AcceleratorResultDataPtr result) {
+        EXPECT_EQ(AcceleratorConfigResult::kActionLocked, result->result);
+        EXPECT_FALSE(result->shortcut_name.has_value());
+      }));
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(AcceleratorConfigurationProviderTest, RemoveAndResoreAllDefaults) {
+  FakeAcceleratorsUpdatedMojoObserver observer;
+  SetUpObserver(&observer);
+
+  // Initialize with all custom accelerators.
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+       TOGGLE_MIRROR_MODE},
+  };
+  AshAcceleratorConfiguration* config =
+      Shell::Get()->ash_accelerator_configuration();
+  config->Initialize(test_data);
+  base::RunLoop().RunUntilIdle();
+
+  // Verify accelerators are populated.
+  EXPECT_EQ(sizeof(test_data) / sizeof(AcceleratorData),
+            config->GetAllAccelerators().size());
+
+  AcceleratorResultDataPtr result;
+  // Remove the accelerator.
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .RemoveAccelerator(
+              mojom::AcceleratorSource::kAsh, TOGGLE_MIRROR_MODE,
+              ui::Accelerator(ui::VKEY_SPACE, ui::EF_CONTROL_DOWN), &result);
+  EXPECT_EQ(AcceleratorConfigResult::kSuccess, result->result);
+  EXPECT_FALSE(result->shortcut_name.has_value());
+  // Verify the accelerator was removed.
+  std::vector<ui::Accelerator> updated_accelerators =
+      config->GetAllAccelerators();
+  EXPECT_EQ(0u, updated_accelerators.size());
+
+  // Now verify that removing the default for `TOGGLE_MIRROR_MODE` will
+  // only disable it from the config.
+  base::RunLoop().RunUntilIdle();
+  AcceleratorConfigurationProvider::AcceleratorConfigurationMap actual_config =
+      observer.config();
+  ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh, test_data,
+                               mojo::Clone(actual_config));
+  std::vector<mojom::AcceleratorInfoPtr> actual_infos(mojo::Clone(
+      actual_config[mojom::AcceleratorSource::kAsh][TOGGLE_MIRROR_MODE]));
+  EXPECT_EQ(1u, actual_infos.size());
+  // A disabled default accelerator should be marked as `kDisabledByUser`.
+  EXPECT_EQ(mojom::AcceleratorState::kDisabledByUser, actual_infos[0]->state);
+  EXPECT_EQ(mojom::AcceleratorType::kDefault, actual_infos[0]->type);
+
+  // Restore all defaults.
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .RestoreAllDefaults(&result);
+
+  base::RunLoop().RunUntilIdle();
+
+  // Verify accelerators were restored.
+  updated_accelerators = config->GetAllAccelerators();
+  EXPECT_EQ(1u, updated_accelerators.size());
+
+  // Verify that the accelerator is back to their default states.
+  actual_config = observer.config();
+  ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh, test_data,
+                               mojo::Clone(actual_config));
+  actual_infos = mojo::Clone(
+      actual_config[mojom::AcceleratorSource::kAsh][TOGGLE_MIRROR_MODE]);
+  EXPECT_EQ(1u, actual_infos.size());
+  // Resetting to default will reset it back to `kEnabled`.
+  EXPECT_EQ(mojom::AcceleratorState::kEnabled, actual_infos[0]->state);
+  EXPECT_EQ(mojom::AcceleratorType::kDefault, actual_infos[0]->type);
 }
 
 using FlagsKeyboardCodesVariant =

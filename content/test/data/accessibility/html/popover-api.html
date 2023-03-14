@@ -1,38 +1,46 @@
 <!--
+@MAC-ALLOW:AXExpanded
 @WIN-ALLOW:details-roles*
+@WIN-ALLOW:EXPANDED*
+@WIN-ALLOW:HASPOPUP*
+@WIN-ALLOW:haspopup*
+@BLINK-ALLOW:haspopup*
+@BLINK-ALLOW:expanded*
 @AURALINUX-ALLOW:details-roles*
+@AURALINUX-ALLOW:expanded*
+@AURALINUX-ALLOW:haspopup:*
 -->
 <div popover>Div popover</div>
 <ul popover role=listbox><li>Listbox role on ul</li></ul>
 <ul popover role=listbox><li>Listbox role on ul</li></ul>
 <details popover><summary>summary/details popover</summary></details>
 
-<button popovertoggletarget=popover1>Button pointing to hidden popover</button>
-<input type=text popovertoggletarget=popover1>Text input pointing to hidden popover</button>
+<button popovertarget=popover1>Button pointing to hidden popover</button>
+<input type=text popovertarget=popover1>Text input pointing to hidden popover</button>
 <div popover id=popover1>Popover</div>
-<button popoverhidetarget=manual1>Hide button pointing to hidden manual</button>
-<input type=email popoverhidetarget=manual1>Email input pointing to hidden manual</button>
+<button popovertarget=manual1 popovertargetaction=hide>Hide button pointing to hidden manual</button>
+<input type=email popovertarget=manual1 popovertargetaction=hide>Email input pointing to hidden manual</button>
 <div popover=manual id=manual1>Manual</div>
 
-<button popovertoggletarget=noattr>Button pointing to non-popover</button>
-<input type=text popovertoggletarget=noattr>Text input pointing to non-popover</button>
+<button popovertarget=noattr>Button pointing to non-popover</button>
+<input type=text popovertarget=noattr>Text input pointing to non-popover</button>
 <div id=noattr>No popover attribute</div>
-<button popovertoggletarget=badattr>Button pointing to invalid popover value</button>
-<input type=text popovertoggletarget=badattr>Text input pointing to invalid popover value</button>
+<button popovertarget=badattr>Button pointing to invalid popover value</button>
+<input type=text popovertarget=badattr>Text input pointing to invalid popover value</button>
 <div id=badattr popover=invalid_value>Invalid popover attribute value</div>
 
 <p> Showing/visible popovers below </p>
 
-<button popovertoggletarget=popover2>Button pointing to showing popover</button>
-<input type=tel popovertoggletarget=popover2>Tel input pointing to showing popover</button>
-<button popovershowtarget=popover3>Show button pointing to nested popover</button>
-<input type=url popovershowtarget=popover3>Url input pointing to nested popover</button>
+<button popovertarget=popover2>Button pointing to showing popover</button>
+<input type=tel popovertarget=popover2>Tel input pointing to showing popover</button>
+<button popovertarget=popover3 popovertargetaction=show>Show button pointing to nested popover</button>
+<input type=url popovertarget=popover3 popovertargetaction=show>Url input pointing to nested popover</button>
 <div popover id=popover2>Popover (showing)
   <div popover id=popover3>Nested popover (showing)</div>
 </div>
-<button popoverhidetarget=manual2>Hide button pointing to showing manual (should add aria-details)</button>
-<input type=url popoverhidetarget=manual2>Url input pointing to showing manual</button>
-<button popoverhidetarget=manual2>Hide button pointing to showing manual (should NOT add aria-details)</button>
+<button popovertarget=manual2 popovertargetaction=hide>Hide button pointing to showing manual (should add aria-details)</button>
+<input type=url popovertarget=manual2 popovertargetaction=hide>Url input pointing to showing manual</button>
+<button popovertarget=manual2 popovertargetaction=hide>Hide button pointing to showing manual (should NOT add aria-details)</button>
 <div popover=manual id=manual2>Manual (showing)</div>
 <script>
   popover2.showPopover();

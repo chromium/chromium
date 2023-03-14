@@ -12,7 +12,6 @@ import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 import {TriggerAttestation} from './attribution.mojom-webui.js';
 import {Factory, HandlerInterface, HandlerRemote, ObserverInterface, ObserverReceiver, ReportID, SourceStatus, WebUIDebugReport, WebUIRegistration, WebUIReport, WebUISource, WebUISource_Attributability, WebUISourceRegistration, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
 import {AttributionInternalsTableElement} from './attribution_internals_table.js';
-import {ReportType} from './attribution_reporting.mojom-webui.js';
 import {SourceRegistrationError} from './source_registration_error.mojom-webui.js';
 import {SourceType} from './source_type.mojom-webui.js';
 import {StoreSourceResult} from './store_source_result.mojom-webui.js';
@@ -251,7 +250,7 @@ class Source {
     this.sourceEventId = mojo.sourceEventId;
     this.sourceOrigin = originToText(mojo.sourceOrigin);
     this.destinations =
-        mojo.destinations.map(d => originToText(d.siteAsOrigin));
+        mojo.destinations.destinations.map(d => originToText(d.siteAsOrigin));
     this.reportingOrigin = originToText(mojo.reportingOrigin);
     this.sourceTime = new Date(mojo.sourceTime);
     this.expiryTime = new Date(mojo.expiryTime);
@@ -526,9 +525,7 @@ class AggregatableAttributionReport extends Report {
         ' ');
 
     this.attestationToken =
-        mojo.data.aggregatableAttributionData!.attestationToken ?
-        `${mojo.data.aggregatableAttributionData!.attestationToken.value}` :
-        '';
+        mojo.data.aggregatableAttributionData!.attestationToken || '';
 
     this.aggregationCoordinator =
         mojo.data.aggregatableAttributionData!.aggregationCoordinator;
@@ -773,6 +770,8 @@ function sourceRegistrationErrorToText(error: SourceRegistrationError) {
       return 'destination missing';
     case SourceRegistrationError.kDestinationWrongType:
       return 'destination has wrong type (must be a string)';
+    case SourceRegistrationError.kDestinationListTooLong:
+      return 'number of destinations exceeds limit';
     case SourceRegistrationError.kDestinationUntrustworthy:
       return 'destination not potentially trustworthy';
     case SourceRegistrationError.kFilterDataWrongType:
@@ -1006,8 +1005,8 @@ class AttributionInternals implements ObserverInterface {
     this.updateSources();
   }
 
-  onReportsChanged(reportType: ReportType) {
-    this.updateReports(reportType);
+  onReportsChanged() {
+    this.updateReports();
   }
 
   onReportSent(mojo: WebUIReport) {
@@ -1075,8 +1074,7 @@ class AttributionInternals implements ObserverInterface {
     });
 
     this.updateSources();
-    this.updateReports(ReportType.kEventLevel);
-    this.updateReports(ReportType.kAggregatableAttribution);
+    this.updateReports();
   }
 
   private updateSources() {
@@ -1086,24 +1084,21 @@ class AttributionInternals implements ObserverInterface {
     });
   }
 
-  private updateReports(reportType: ReportType) {
-    this.handler.getReports(reportType).then((response) => {
-      switch (reportType) {
-        case ReportType.kEventLevel:
-          this.eventLevelReports.setStoredReports(
-              response.reports
-                  .filter((mojo) => mojo.data.eventLevelData !== undefined)
-                  .map((mojo) => new EventLevelReport(mojo)));
-          break;
-        case ReportType.kAggregatableAttribution:
-          this.aggregatableReports.setStoredReports(
-              response.reports
-                  .filter(
-                      (mojo) =>
-                          mojo.data.aggregatableAttributionData !== undefined)
-                  .map((mojo) => new AggregatableAttributionReport(mojo)));
-          break;
-      }
+  private updateReports() {
+    this.handler.getReports().then(response => {
+      const eventLevelReports: EventLevelReport[] = [];
+      const aggregatableReports: AggregatableAttributionReport[] = [];
+
+      response.reports.forEach(report => {
+        if (report.data.eventLevelData !== undefined) {
+          eventLevelReports.push(new EventLevelReport(report));
+        } else if (report.data.aggregatableAttributionData !== undefined) {
+          aggregatableReports.push(new AggregatableAttributionReport(report));
+        }
+      });
+
+      this.eventLevelReports.setStoredReports(eventLevelReports);
+      this.aggregatableReports.setStoredReports(aggregatableReports);
     });
   }
 }

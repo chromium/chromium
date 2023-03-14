@@ -172,24 +172,6 @@ void BrowserCompositorMac::UpdateSurfaceFromChild(
   client_->OnBrowserCompositorSurfaceIdChanged();
 }
 
-void BrowserCompositorMac::UpdateVSyncParameters(
-    const base::TimeTicks& timebase,
-    const base::TimeDelta& interval) {
-  ui::Compositor* compositor = nullptr;
-  if (recyclable_compositor_)
-    compositor = recyclable_compositor_->compositor();
-  // TODO(ccameron): VSync parameters for a ui::Compositor should be tracked
-  // with the owner of that ui::Compositor (which, in the case of MacViews, is
-  // BridgedNativeView). For the moment, push the VSync parameters from here to
-  // the BridgedNativeView's ui::Compositor because that is a small change and
-  // is easy to merge.
-  // https://crbug.com/869129
-  if (parent_ui_layer_)
-    compositor = parent_ui_layer_->GetCompositor();
-  if (compositor)
-    compositor->SetDisplayVSyncParameters(timebase, interval);
-}
-
 void BrowserCompositorMac::SetRenderWidgetHostIsHidden(bool hidden) {
   render_widget_host_is_hidden_ = hidden;
   UpdateState();

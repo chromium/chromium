@@ -38,10 +38,8 @@ class PrefRegistrySimple;
 
 namespace extensions {
 
-namespace api {
-namespace runtime {
+namespace api::runtime {
 struct PlatformInfo;
-}
 }
 
 class Extension;
@@ -235,7 +233,7 @@ class RuntimeGetBackgroundPageFunction : public ExtensionFunction {
                              RUNTIME_GETBACKGROUNDPAGE)
 
  protected:
-  ~RuntimeGetBackgroundPageFunction() override {}
+  ~RuntimeGetBackgroundPageFunction() override = default;
   ResponseAction Run() override;
 
  private:
@@ -248,7 +246,7 @@ class RuntimeOpenOptionsPageFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("runtime.openOptionsPage", RUNTIME_OPENOPTIONSPAGE)
 
  protected:
-  ~RuntimeOpenOptionsPageFunction() override {}
+  ~RuntimeOpenOptionsPageFunction() override = default;
   ResponseAction Run() override;
 };
 
@@ -257,7 +255,7 @@ class RuntimeSetUninstallURLFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("runtime.setUninstallURL", RUNTIME_SETUNINSTALLURL)
 
  protected:
-  ~RuntimeSetUninstallURLFunction() override {}
+  ~RuntimeSetUninstallURLFunction() override = default;
   ResponseAction Run() override;
 };
 
@@ -266,7 +264,7 @@ class RuntimeReloadFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("runtime.reload", RUNTIME_RELOAD)
 
  protected:
-  ~RuntimeReloadFunction() override {}
+  ~RuntimeReloadFunction() override = default;
   ResponseAction Run() override;
 };
 
@@ -276,7 +274,7 @@ class RuntimeRequestUpdateCheckFunction : public ExtensionFunction {
                              RUNTIME_REQUESTUPDATECHECK)
 
  protected:
-  ~RuntimeRequestUpdateCheckFunction() override {}
+  ~RuntimeRequestUpdateCheckFunction() override = default;
   ResponseAction Run() override;
 
  private:
@@ -288,7 +286,7 @@ class RuntimeRestartFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("runtime.restart", RUNTIME_RESTART)
 
  protected:
-  ~RuntimeRestartFunction() override {}
+  ~RuntimeRestartFunction() override = default;
   ResponseAction Run() override;
 };
 
@@ -298,7 +296,7 @@ class RuntimeRestartAfterDelayFunction : public ExtensionFunction {
                              RUNTIME_RESTARTAFTERDELAY)
 
  protected:
-  ~RuntimeRestartAfterDelayFunction() override {}
+  ~RuntimeRestartAfterDelayFunction() override = default;
   ResponseAction Run() override;
 };
 
@@ -307,7 +305,7 @@ class RuntimeGetPlatformInfoFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("runtime.getPlatformInfo", RUNTIME_GETPLATFORMINFO)
 
  protected:
-  ~RuntimeGetPlatformInfoFunction() override {}
+  ~RuntimeGetPlatformInfoFunction() override = default;
   ResponseAction Run() override;
 };
 
@@ -317,7 +315,7 @@ class RuntimeGetPackageDirectoryEntryFunction : public ExtensionFunction {
                              RUNTIME_GETPACKAGEDIRECTORYENTRY)
 
  protected:
-  ~RuntimeGetPackageDirectoryEntryFunction() override {}
+  ~RuntimeGetPackageDirectoryEntryFunction() override = default;
   ResponseAction Run() override;
 };
 

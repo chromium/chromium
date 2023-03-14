@@ -1265,26 +1265,6 @@ class ToplevelWindowEventHandlerDragTest : public AshTestBase {
 
 }  // namespace
 
-// In tablet mode, the window's resizability shouldn't be taken into account
-// when dragging from the top. Regression test for https://crbug.com/1444132
-TEST_F(ToplevelWindowEventHandlerDragTest,
-       NonResizableWindowsCanBeDraggedInTabletMode) {
-  TabletModeControllerTestApi().EnterTabletMode();
-
-  dragged_window_->SetProperty(aura::client::kResizeBehaviorKey,
-                               aura::client::kResizeBehaviorNone);
-
-  SendGestureEvent(gfx::Point(100, 0), 0, 5, ui::ET_GESTURE_SCROLL_BEGIN);
-  SendGestureEvent(gfx::Point(600, 500), 600, 500,
-                   ui::ET_GESTURE_SCROLL_UPDATE);
-  EXPECT_TRUE(WindowState::Get(dragged_window_.get())->is_dragged());
-
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
-  EXPECT_TRUE(overview_controller->InOverviewSession());
-  EXPECT_TRUE(overview_controller->overview_session()->IsWindowInOverview(
-      non_dragged_window_.get()));
-}
-
 // Contrary to tablet mode, in non-tablet mode, non resizable windows cannot be
 // dragged.
 TEST_F(ToplevelWindowEventHandlerDragTest,
@@ -1315,29 +1295,6 @@ TEST_F(ToplevelWindowEventHandlerDragTest, WindowDestroyedDuringDragging) {
 
   dragged_window_.reset();
   EXPECT_FALSE(event_handler->is_drag_in_progress());
-}
-
-// Test that if window destroyed during resize/dragging in tablet mode, no crash
-// should happen.
-TEST_F(ToplevelWindowEventHandlerDragTest,
-       WindowDestroyedDuringDraggingInTabletMode) {
-  TabletModeControllerTestApi().EnterTabletMode();
-
-  SendGestureEvent(gfx::Point(0, 0), 0, 5, ui::ET_GESTURE_SCROLL_BEGIN);
-  SendGestureEvent(gfx::Point(700, 500), 700, 500,
-                   ui::ET_GESTURE_SCROLL_UPDATE);
-  EXPECT_TRUE(WindowState::Get(dragged_window_.get())->is_dragged());
-  ToplevelWindowEventHandler* event_handler =
-      Shell::Get()->toplevel_window_event_handler();
-  EXPECT_TRUE(event_handler->is_drag_in_progress());
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
-  EXPECT_TRUE(overview_controller->InOverviewSession());
-  EXPECT_FALSE(overview_controller->overview_session()->IsWindowInOverview(
-      dragged_window_.get()));
-
-  dragged_window_.reset();
-  EXPECT_FALSE(event_handler->is_drag_in_progress());
-  EXPECT_TRUE(overview_controller->InOverviewSession());
 }
 
 // Showing the resize shadows when the mouse is over the window edges is

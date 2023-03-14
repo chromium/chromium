@@ -21,38 +21,36 @@ namespace shared_highlighting {
 // Tests the ParseRect utility function.
 TEST_F(ParsingUtilsTest, ParseRect) {
   CGRect expected_rect = CGRectMake(1, 2, 3, 4);
-  base::Value rect_value = base::Value(base::Value::Type::DICT);
-  rect_value.SetDoubleKey("x", expected_rect.origin.x);
-  rect_value.SetDoubleKey("y", expected_rect.origin.y);
-  rect_value.SetDoubleKey("width", expected_rect.size.width);
-  rect_value.SetDoubleKey("height", expected_rect.size.height);
+  base::Value::Dict rect_dict;
+  rect_dict.Set("x", expected_rect.origin.x);
+  rect_dict.Set("y", expected_rect.origin.y);
+  rect_dict.Set("width", expected_rect.size.width);
+  rect_dict.Set("height", expected_rect.size.height);
 
-  absl::optional<CGRect> opt_rect = ParseRect(&rect_value);
+  absl::optional<CGRect> opt_rect = ParseRect(&rect_dict);
   ASSERT_TRUE(opt_rect.has_value());
   EXPECT_TRUE(CGRectEqualToRect(expected_rect, opt_rect.value()));
 
   // Invalid values.
   EXPECT_FALSE(ParseRect(nil).has_value());
-  base::Value string_value = base::Value(base::Value::Type::STRING);
-  EXPECT_FALSE(ParseRect(&string_value).has_value());
-  base::Value empty_dict_value = base::Value(base::Value::Type::DICT);
-  EXPECT_FALSE(ParseRect(&empty_dict_value).has_value());
+  base::Value::Dict empty_dict;
+  EXPECT_FALSE(ParseRect(&empty_dict).has_value());
 
-  base::Value copied_value = rect_value.Clone();
-  copied_value.RemoveKey("x");
-  EXPECT_FALSE(ParseRect(&copied_value).has_value());
+  base::Value::Dict copied_dict = rect_dict.Clone();
+  copied_dict.Remove("x");
+  EXPECT_FALSE(ParseRect(&copied_dict).has_value());
 
-  copied_value = rect_value.Clone();
-  copied_value.RemoveKey("y");
-  EXPECT_FALSE(ParseRect(&copied_value).has_value());
+  copied_dict = rect_dict.Clone();
+  copied_dict.Remove("y");
+  EXPECT_FALSE(ParseRect(&copied_dict).has_value());
 
-  copied_value = rect_value.Clone();
-  copied_value.RemoveKey("width");
-  EXPECT_FALSE(ParseRect(&copied_value).has_value());
+  copied_dict = rect_dict.Clone();
+  copied_dict.Remove("width");
+  EXPECT_FALSE(ParseRect(&copied_dict).has_value());
 
-  copied_value = rect_value.Clone();
-  copied_value.RemoveKey("height");
-  EXPECT_FALSE(ParseRect(&copied_value).has_value());
+  copied_dict = rect_dict.Clone();
+  copied_dict.Remove("height");
+  EXPECT_FALSE(ParseRect(&copied_dict).has_value());
 }
 
 // Tests for the ParseURL utility function.

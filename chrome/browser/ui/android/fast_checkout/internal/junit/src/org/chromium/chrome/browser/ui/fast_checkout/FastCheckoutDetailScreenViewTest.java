@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.AutofillProfil
 import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.CreditCardItemProperties;
 import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.DetailScreenCoordinator;
 import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.FooterItemProperties;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -74,6 +75,8 @@ public class FastCheckoutDetailScreenViewTest {
     private Runnable mBackClickHandler;
     @Mock
     private Runnable mSettingsClickHandler;
+    @Mock
+    private BottomSheetController mBottomSheetController;
 
     private View mView;
     private PropertyModel mModel;
@@ -114,7 +117,7 @@ public class FastCheckoutDetailScreenViewTest {
                     R.layout.fast_checkout_detail_screen_sheet, null);
 
             // Let the coordinator connect model and view.
-            new DetailScreenCoordinator(activity, mView, mModel);
+            new DetailScreenCoordinator(activity, mView, mModel, mBottomSheetController);
             activity.setContentView(mView);
             assertNotNull(mView);
         });

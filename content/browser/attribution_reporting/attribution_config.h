@@ -9,7 +9,6 @@
 
 #include "base/time/time.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -99,9 +98,6 @@ struct CONTENT_EXPORT AttributionConfig {
 
   // Controls how many sources can be in the storage per source origin.
   int max_sources_per_origin = 1024;
-
-  // Controls the valid range of source event id. No limit if `absl::nullopt`.
-  absl::optional<uint64_t> source_event_id_cardinality = absl::nullopt;
 
   // Controls the maximum number of distinct attribution destinations that can
   // be in storage at any time for sources with the same <source site, reporting

@@ -91,8 +91,9 @@ class U2FClientImpl : public U2FClient {
   // U2FClient:
   void IsUvpaa(const u2f::IsUvpaaRequest& request,
                DBusMethodCallback<u2f::IsUvpaaResponse> callback) override;
-  void IsU2FEnabled(const u2f::IsUvpaaRequest& request,
-                    DBusMethodCallback<u2f::IsUvpaaResponse> callback) override;
+  void IsU2FEnabled(
+      const u2f::IsU2fEnabledRequest& request,
+      DBusMethodCallback<u2f::IsU2fEnabledResponse> callback) override;
   void MakeCredential(
       const u2f::MakeCredentialRequest& request,
       DBusMethodCallback<u2f::MakeCredentialResponse> callback) override;
@@ -161,8 +162,8 @@ void U2FClientImpl::IsUvpaa(const u2f::IsUvpaaRequest& request,
 }
 
 void U2FClientImpl::IsU2FEnabled(
-    const u2f::IsUvpaaRequest& request,
-    DBusMethodCallback<u2f::IsUvpaaResponse> callback) {
+    const u2f::IsU2fEnabledRequest& request,
+    DBusMethodCallback<u2f::IsU2fEnabledResponse> callback) {
   dbus::MethodCall method_call(u2f::kU2FInterface, u2f::kU2FIsU2fEnabled);
   dbus::MessageWriter writer(&method_call);
   writer.AppendProtoAsArrayOfBytes(request);
@@ -170,13 +171,13 @@ void U2FClientImpl::IsU2FEnabled(
       &method_call, kU2FShortTimeout,
       base::BindOnce(
           [](base::TimeTicks start,
-             DBusMethodCallback<u2f::IsUvpaaResponse> callback,
+             DBusMethodCallback<u2f::IsU2fEnabledResponse> callback,
              dbus::Response* dbus_response) {
             base::UmaHistogramTimes(
                 "WebAuthentication.ChromeOS.U2FClient.IsU2fEnabledDuration",
                 base::TimeTicks::Now() - start);
-            absl::optional<u2f::IsUvpaaResponse> response =
-                ConvertResponse<u2f::IsUvpaaResponse>(dbus_response);
+            absl::optional<u2f::IsU2fEnabledResponse> response =
+                ConvertResponse<u2f::IsU2fEnabledResponse>(dbus_response);
             base::UmaHistogramEnumeration(
                 "WebAuthentication.ChromeOS.U2FClient.IsU2fEnabledStatus",
                 response ? U2FClientStatus::kOk

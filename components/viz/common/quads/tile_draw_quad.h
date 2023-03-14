@@ -16,6 +16,7 @@ namespace viz {
 class VIZ_COMMON_EXPORT TileDrawQuad : public ContentDrawQuadBase {
  public:
   static const size_t kResourceIdIndex = 0;
+  static constexpr Material kMaterial = Material::kTiledContent;
 
   TileDrawQuad();
   ~TileDrawQuad() override;

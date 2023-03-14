@@ -22,7 +22,7 @@ import "components/segmentation_platform/public/proto/types.proto";
 // field.
 // Version 3 supports trigger configurations for training data collection.
 enum CurrentVersion {
-  METADATA_VERSION = 2;
+  METADATA_VERSION = 3;
 }
 
 // Version information for segmentation models.
@@ -128,11 +128,12 @@ message CustomInput {
     // Output type: float
     // Output length: 10
     // Additional arg:
-    //   `active_days_limit`: Number of days after which the device is
-    //   considered not active after last sync.
     //   `wait_for_device_info_in_seconds`: Number of seconds to wait for sync
     //   device info before timeout. If 0, then does not wait for sync and times
     //   out immediately if device info is not available.
+    // InputContext arg:
+    //   `active_days_limit`: Number of days after which the device is
+    //   considered not active after last sync. Must be INT.
     FILL_SYNC_DEVICE_INFO = 5;
   }
 

@@ -197,6 +197,7 @@ class AboutHandler : public settings::SettingsPageUIHandler,
                                      absl::optional<bool> enabled);
 
   void HandleSetConsumerAutoUpdate(const base::Value::List& args);
+  void HandleOpenProductLicenseOther(const base::Value::List& args);
 #endif
 
   const raw_ptr<Profile> profile_;

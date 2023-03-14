@@ -47,7 +47,7 @@ void AutoConfirmDialog(base::OnceCallback<void(bool)> callback) {
           FROM_HERE, base::BindOnce(std::move(callback), false));
       return;
     default:
-      NOTREACHED();
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -181,7 +181,7 @@ ExtensionInstallFrictionDialogView::~ExtensionInstallFrictionDialogView() {
 // override
 ui::ImageModel ExtensionInstallFrictionDialogView::GetWindowIcon() {
   return ui::ImageModel::FromVectorIcon(
-      vector_icons::kGppMaybeIcon, ui::kColorAlertMediumSeverity,
+      vector_icons::kGppMaybeIcon, ui::kColorAlertMediumSeverityIcon,
       extension_misc::EXTENSION_ICON_SMALLISH);
 }
 

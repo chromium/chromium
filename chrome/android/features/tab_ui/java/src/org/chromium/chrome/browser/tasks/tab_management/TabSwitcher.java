@@ -111,6 +111,11 @@ public interface TabSwitcher {
         void hideTabSwitcherView(boolean animate);
 
         /**
+         * Before tab switcher starts showing.
+         */
+        default void prepareShowTabSwitcherView(){};
+
+        /**
          * Show the tab switcher view.
          * @param animate Whether we should animate while showing.
          */

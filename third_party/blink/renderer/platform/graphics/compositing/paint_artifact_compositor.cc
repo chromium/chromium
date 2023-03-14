@@ -122,11 +122,11 @@ std::unique_ptr<JSONObject> PaintArtifactCompositor::GetLayersAsJSON(
 
   LayersAsJSON layers_as_json(flags);
   for (const auto& layer : root_layer_->children()) {
-    const LayerAsJSONClient* json_client = nullptr;
+    const ContentLayerClientImpl* layer_client = nullptr;
     const TransformPaintPropertyNode* transform = nullptr;
     for (const auto& pending_layer : pending_layers_) {
       if (layer.get() == &pending_layer.CcLayer()) {
-        json_client = pending_layer.GetContentLayerClient();
+        layer_client = pending_layer.GetContentLayerClient();
         transform = &pending_layer.GetPropertyTreeState().Transform();
         break;
       }
@@ -142,7 +142,7 @@ std::unique_ptr<JSONObject> PaintArtifactCompositor::GetLayersAsJSON(
       }
     }
     DCHECK(transform);
-    layers_as_json.AddLayer(*layer, *transform, json_client);
+    layers_as_json.AddLayer(*layer, *transform, layer_client);
   }
   return layers_as_json.Finalize();
 }
@@ -232,8 +232,8 @@ bool NeedsFullUpdateAfterPaintingChunk(
   }
   // Whether background color is transparent affects cc::Layers's contents
   // opaque property.
-  if ((previous.background_color == Color()) !=
-      (repainted.background_color == Color())) {
+  if ((previous.background_color.color == SkColors::kTransparent) !=
+      (repainted.background_color.color == SkColors::kTransparent)) {
     return true;
   }
 
@@ -247,6 +247,14 @@ bool NeedsFullUpdateAfterPaintingChunk(
   // |SwitchToEffectNodeWithSynthesizedClip|).
   if (previous.DrawsContent() != repainted.DrawsContent())
     return true;
+
+  // Solid color status change requires full update to change the cc::Layer
+  // type.
+  if (RuntimeEnabledFeatures::SolidColorLayersEnabled() &&
+      previous.background_color.is_solid_color !=
+          repainted.background_color.is_solid_color) {
+    return true;
+  }
 
   // Debugging for https://crbug.com/1237389 and https://crbug.com/1230104.
   // Before returning that a full update is not needed, check that the
@@ -263,28 +271,23 @@ bool NeedsFullUpdateAfterPaintingChunk(
 }  // namespace
 
 void PaintArtifactCompositor::SetNeedsFullUpdateAfterPaintIfNeeded(
-    const PaintChunkSubset& previous,
-    const PaintChunkSubset& repainted) {
+    const PaintArtifact& previous,
+    const PaintArtifact& repainted) {
   if (needs_update_)
     return;
 
   // Adding or removing chunks requires a full update to add/remove cc::layers.
-  if (previous.size() != repainted.size()) {
+  if (previous.PaintChunks().size() != repainted.PaintChunks().size()) {
     SetNeedsUpdate(PaintArtifactCompositorUpdateReason::
                        kPaintArtifactCompositorNeedsFullUpdateChunksChanged);
     return;
   }
 
   // Loop over both paint chunk subsets in order.
-  auto previous_chunk_it = previous.begin();
-  auto repainted_chunk_it = repainted.begin();
-  for (; previous_chunk_it != previous.end();
-       ++previous_chunk_it, ++repainted_chunk_it) {
-    const auto& previous_chunk = *previous_chunk_it;
-    const auto& repainted_chunk = *repainted_chunk_it;
-    if (NeedsFullUpdateAfterPaintingChunk(
-            previous_chunk, previous.GetPaintArtifact(), repainted_chunk,
-            repainted.GetPaintArtifact())) {
+  for (wtf_size_t i = 0; i < previous.PaintChunks().size(); i++) {
+    if (NeedsFullUpdateAfterPaintingChunk(previous.PaintChunks()[i], previous,
+                                          repainted.PaintChunks()[i],
+                                          repainted)) {
       SetNeedsUpdate(
           PaintArtifactCompositorUpdateReason::
               kPaintArtifactCompositorNeedsFullUpdateAfterPaintingChunk);
@@ -376,9 +379,9 @@ bool PaintArtifactCompositor::DecompositeEffect(
 }
 
 void PaintArtifactCompositor::LayerizeGroup(
-    const PaintChunkSubset& chunks,
+    scoped_refptr<const PaintArtifact> artifact,
     const EffectPaintPropertyNode& current_group,
-    PaintChunkIterator& chunk_cursor,
+    Vector<PaintChunk>::const_iterator& chunk_cursor,
     HashSet<const TransformPaintPropertyNode*>& directly_composited_transforms,
     bool force_draws_content) {
   wtf_size_t first_layer_in_current_group = pending_layers_.size();
@@ -400,14 +403,14 @@ void PaintArtifactCompositor::LayerizeGroup(
   // previous layer. Again finding the host costs O(qd). Merging would cost
   // O(p) due to copying the chunk list. Subtotal: O((qd + p)d) = O(qd^2 + pd)
   // Assuming p > d, the total complexity would be O(pqd + qd^2 + pd) = O(pqd)
-  while (chunk_cursor != chunks.end()) {
+  while (chunk_cursor != artifact->PaintChunks().end()) {
     // Look at the effect node of the next chunk. There are 3 possible cases:
     // A. The next chunk belongs to the current group but no subgroup.
     // B. The next chunk does not belong to the current group.
     // C. The next chunk belongs to some subgroup of the current group.
     const auto& chunk_effect = chunk_cursor->properties.Effect().Unalias();
     if (&chunk_effect == &current_group) {
-      pending_layers_.emplace_back(chunks, chunk_cursor);
+      pending_layers_.emplace_back(artifact, *chunk_cursor);
       ++chunk_cursor;
       // force_draws_content doesn't apply to pending layers that require own
       // layer, specifically scrollbar layers, foreign layers, scroll hit
@@ -424,7 +427,7 @@ void PaintArtifactCompositor::LayerizeGroup(
       // Case C: The following chunks belong to a subgroup. Process them by
       //         a recursion call.
       wtf_size_t first_layer_in_subgroup = pending_layers_.size();
-      LayerizeGroup(chunks, *subgroup, chunk_cursor,
+      LayerizeGroup(artifact, *subgroup, chunk_cursor,
                     directly_composited_transforms,
                     force_draws_content || subgroup->DrawsContent());
       // The above LayerizeGroup generated new layers in pending_layers_
@@ -480,12 +483,11 @@ void PaintArtifactCompositor::LayerizeGroup(
 
 void PaintArtifactCompositor::CollectPendingLayers(
     scoped_refptr<const PaintArtifact> artifact) {
-  PaintChunkSubset subset(artifact);
-  auto cursor = subset.begin();
   HashSet<const TransformPaintPropertyNode*> directly_composited_transforms;
-  LayerizeGroup(subset, EffectPaintPropertyNode::Root(), cursor,
+  Vector<PaintChunk>::const_iterator cursor = artifact->PaintChunks().begin();
+  LayerizeGroup(artifact, EffectPaintPropertyNode::Root(), cursor,
                 directly_composited_transforms, /*force_draws_content*/ false);
-  DCHECK(cursor == subset.end());
+  DCHECK(cursor == artifact->PaintChunks().end());
   pending_layers_.ShrinkToReasonableCapacity();
 }
 
@@ -664,7 +666,7 @@ void PaintArtifactCompositor::Update(
   pending_layers_.reserve(old_size);
 
   // Make compositing decisions, storing the result in |pending_layers_|.
-  CollectPendingLayers(artifact);
+  CollectPendingLayers(std::move(artifact));
   PendingLayer::DecompositeTransforms(pending_layers_);
 
   LayerListBuilder layer_list_builder;
@@ -1054,7 +1056,7 @@ void PaintArtifactCompositor::ClearPropertyTreeChangedState() {
     CHECK(!layer.Chunks().IsEmpty());
     const auto& layer_state = layer.GetPropertyTreeState();
     const auto& first_chunk_state =
-        layer.Chunks().begin()->properties.GetPropertyTreeState();
+        layer.Chunks()[0].properties.GetPropertyTreeState();
     CHECK(layer_state.Transform().IsAncestorOf(first_chunk_state.Transform()));
     CHECK(layer_state.Clip().IsAncestorOf(first_chunk_state.Clip()));
     CHECK(layer_state.Effect().IsAncestorOf(first_chunk_state.Effect()));

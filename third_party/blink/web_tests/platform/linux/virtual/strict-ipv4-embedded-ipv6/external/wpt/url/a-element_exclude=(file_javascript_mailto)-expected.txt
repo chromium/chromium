@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 624 tests; 343 PASS, 281 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 630 tests; 347 PASS, 283 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -75,7 +75,7 @@ FAIL Parsing: <http://2001::1]> against <http://example.org/foo/bar> assert_equa
 FAIL Parsing: <http://2001::1]:80> against <http://example.org/foo/bar> assert_equals: failure should set href to input expected "http://2001::1]:80" but got "http://2001::1]/"
 PASS Parsing: <http://[2001::1]> against <http://example.org/foo/bar>
 PASS Parsing: <http://[::127.0.0.1]> against <http://example.org/foo/bar>
-FAIL Parsing: <http://[::127.0.0.1.]> against <http://example.org/foo/bar> assert_unreached: Expected URL to fail parsing Reached unreachable code
+FAIL Parsing: <http://[::127.0.0.1.]> against <http://example.org/foo/bar> assert_equals: failure should set href to input expected "http://[::127.0.0.1.]" but got "http://[::127.0.0.1.]/"
 PASS Parsing: <http://[0:0:0:0:0:0:13.1.68.3]> against <http://example.org/foo/bar>
 PASS Parsing: <http://[2001::1]:80> against <http://example.org/foo/bar>
 PASS Parsing: <http:/example.com/> against <http://example.org/foo/bar>
@@ -635,5 +635,11 @@ FAIL Parsing: <non-special:￿y> against <about:blank> assert_equals: href expec
 FAIL Parsing: <non-special:x/￿y> against <about:blank> assert_equals: href expected "non-special:x/%EF%BF%BFy" but got "non-special:x/%EF%BF%BDy"
 FAIL Parsing: <non-special:x/?￿y> against <about:blank> assert_equals: href expected "non-special:x/?%EF%BF%BFy" but got "non-special:x/?%EF%BF%BDy"
 FAIL Parsing: <non-special:x/?#￿y> against <about:blank> assert_equals: href expected "non-special:x/?#%EF%BF%BFy" but got "non-special:x/?#%EF%BF%BDy"
+PASS Parsing: <> against <about:blank>
+PASS Parsing: <https://example.com/"quoted"> against <about:blank>
+PASS Parsing: <https://a%C2%ADb/> against <about:blank>
+FAIL Parsing: <https://­/> against <about:blank> assert_equals: failure should set href to input expected "https://­/" but got "https://%C2%AD/"
+PASS Parsing: <https://%C2%AD/> against <about:blank>
+FAIL Parsing: <https://xn--/> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
 Harness: the test ran to completion.
 

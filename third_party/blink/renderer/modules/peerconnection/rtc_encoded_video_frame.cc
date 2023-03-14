@@ -25,6 +25,11 @@ BASE_FEATURE(kAllowRTCEncodedVideoFrameSetMetadataAllFields,
              "AllowRTCEncodedVideoFrameSetMetadataAllFields",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Allow CSRCs to be set when calling RTCEncodedVideoFrame.setMetadata.
+BASE_FEATURE(kAllowRTCEncodedVideoFrameSetMetadataCsrcs,
+             "AllowRTCEncodedVideoFrameSetMetadataCsrcs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 V8RTCDecodeTargetIndication
 V8RTCDecodeTargetIndicationFromDecodeTargetIndication(
     webrtc::DecodeTargetIndication decode_target_indication) {
@@ -72,6 +77,8 @@ String RTCVideoCodecTypeFromVideoCodecType(
       return "vp9";
     case webrtc::VideoCodecType::kVideoCodecH264:
       return "h264";
+    case webrtc::VideoCodecType::kVideoCodecAV1:
+      return "av1";
     default:
       return "";
   }
@@ -85,6 +92,8 @@ webrtc::VideoCodecType VideoCodecTypeFromRTCVideoCodecType(
     return webrtc::VideoCodecType::kVideoCodecVP9;
   } else if (video_codec_type == "h264") {
     return webrtc::VideoCodecType::kVideoCodecH264;
+  } else if (video_codec_type == "av1") {
+    return webrtc::VideoCodecType::kVideoCodecAV1;
   } else {
     NOTREACHED();
     return webrtc::VideoCodecType::kVideoCodecGeneric;
@@ -184,8 +193,10 @@ void SetCodecSpecificsVP8(webrtc::VideoFrameMetadata& webrtc_metadata,
 bool IsAllowedSetMetadataChange(
     const RTCEncodedVideoFrameMetadata* original_metadata,
     const RTCEncodedVideoFrameMetadata* metadata) {
-  return metadata->contributingSources() ==
-             original_metadata->contributingSources() &&
+  return (metadata->contributingSources() ==
+              original_metadata->contributingSources() ||
+          base::FeatureList::IsEnabled(
+              kAllowRTCEncodedVideoFrameSetMetadataCsrcs)) &&
          (metadata->hasFrameId() == original_metadata->hasFrameId() &&
           (metadata->hasFrameId()
                ? metadata->frameId() == original_metadata->frameId()
@@ -237,7 +248,15 @@ RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata() const {
   if (delegate_->PayloadType()) {
     metadata->setPayloadType(*delegate_->PayloadType());
   }
-  const auto* webrtc_metadata = delegate_->GetMetadata();
+
+  if (RuntimeEnabledFeatures::RTCEncodedVideoFrameAdditionalMetadataEnabled()) {
+    if (delegate_->CaptureTimeIdentifier()) {
+      metadata->setCaptureTimestamp(delegate_->CaptureTimeIdentifier()->us());
+    }
+  }
+
+  const absl::optional<webrtc::VideoFrameMetadata> webrtc_metadata =
+      delegate_->GetMetadata();
   if (!webrtc_metadata)
     return metadata;
 
@@ -292,6 +311,8 @@ RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata() const {
         metadata->setCodecSpecifics(vp8_specifics);
         break;
       }
+      case webrtc::VideoCodecType::kVideoCodecAV1:
+        break;
       default:
         // TODO(https://crbug.com/webrtc/14709): Support more codecs.
         LOG(ERROR) << "Unsupported RTCCodecSpecifics "
@@ -318,7 +339,10 @@ void RTCEncodedVideoFrame::setMetadata(RTCEncodedVideoFrameMetadata* metadata,
       !metadata->hasTemporalIndex() ||
       !metadata->hasDecodeTargetIndications() ||
       !metadata->hasIsLastFrameInPicture() || !metadata->hasSimulcastIdx() ||
-      !metadata->hasCodec() || !metadata->hasCodecSpecifics() ||
+      !metadata->hasCodec() ||
+      (!metadata->hasCodecSpecifics() &&
+       (metadata->codec() == "vp8" || metadata->codec() == "vp9" ||
+        metadata->codec() == "h264")) ||
       !metadata->hasSynchronizationSource()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidModificationError,
@@ -341,7 +365,8 @@ void RTCEncodedVideoFrame::setMetadata(RTCEncodedVideoFrameMetadata* metadata,
     return;
   }
 
-  const auto* original_webrtc_metadata = delegate_->GetMetadata();
+  const absl::optional<webrtc::VideoFrameMetadata> original_webrtc_metadata =
+      delegate_->GetMetadata();
   if (!original_metadata) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidModificationError,
@@ -385,6 +410,8 @@ void RTCEncodedVideoFrame::setMetadata(RTCEncodedVideoFrameMetadata* metadata,
       }
       break;
     }
+    case webrtc::VideoCodecType::kVideoCodecAV1:
+      break;
     default:
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidModificationError,

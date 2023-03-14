@@ -68,7 +68,7 @@ class TabletModeToggleFullscreenEventHandlerTest : public AshTestBase {
     auto* multitask_menu = TabletModeControllerTestApi()
                                .tablet_mode_window_manager()
                                ->tablet_mode_multitask_menu_event_handler()
-                               ->multitask_menu_for_testing();
+                               ->multitask_menu();
     ASSERT_FALSE(multitask_menu);
   }
 
@@ -180,6 +180,28 @@ TEST_F(TabletModeToggleFullscreenEventHandlerTest, ToggleFullscreenDuringDrag) {
 
   GetEventGenerator()->set_current_screen_location(gfx::Point(400, 50));
   GetEventGenerator()->ReleaseTouch();
+  EXPECT_FALSE(IsFullscreen(foreground_window()));
+}
+
+// Tests that we do not have a crash when using this feature with multiple
+// fingers. Regression test for b/270155382.
+TEST_F(TabletModeToggleFullscreenEventHandlerTest, SwipingWithMultipleFingers) {
+  ASSERT_TRUE(IsFullscreen(foreground_window()));
+
+  const int kTouchId1 = 1;
+  const int kTouchId2 = 2;
+
+  GetEventGenerator()->PressTouchId(kTouchId1, gfx::Point(400, 1));
+  GetEventGenerator()->MoveTouchIdBy(kTouchId1, 0, 48);
+
+  // Swipe with a second finger while the first one is still touching the
+  // screen. There should be no crash.
+  GetEventGenerator()->PressTouchId(kTouchId2, gfx::Point(400, 1));
+  GetEventGenerator()->MoveTouchIdBy(kTouchId2, 0, 48);
+  GetEventGenerator()->ReleaseTouchId(kTouchId2);
+
+  // Release the first finger and verify the window is un-fullscreened.
+  GetEventGenerator()->ReleaseTouchId(kTouchId1);
   EXPECT_FALSE(IsFullscreen(foreground_window()));
 }
 

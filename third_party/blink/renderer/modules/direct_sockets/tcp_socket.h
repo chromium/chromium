@@ -61,25 +61,35 @@ class MODULES_EXPORT TCPSocket final
   ScriptPromise close(ScriptState*, ExceptionState&) override;
 
  public:
+  // Constructor for use from TCPServerSocket.
+  static TCPSocket* CreateFromAcceptedConnection(
+      ScriptState*,
+      mojo::PendingRemote<network::mojom::blink::TCPConnectedSocket>,
+      mojo::PendingReceiver<network::mojom::blink::SocketObserver>,
+      const net::IPEndPoint& remote_addr,
+      mojo::ScopedDataPipeConsumerHandle receive_stream,
+      mojo::ScopedDataPipeProducerHandle send_stream);
+
   explicit TCPSocket(ScriptState*);
   ~TCPSocket() override;
 
   // Validates options and calls
-  // DirectSocketsServiceMojoRemote::OpenTCPSocket(...) with Init(...) passed as
-  // callback.
+  // DirectSocketsServiceMojoRemote::OpenTCPSocket(...).
   bool Open(const String& remote_address,
             const uint16_t remote_port,
             const TCPSocketOptions*,
             ExceptionState&);
 
   // On net::OK initializes readable/writable streams and resolves opened
-  // promise. Otherwise rejects the opened promise. Serves as callback for
-  // Open(...).
-  void Init(int32_t result,
-            const absl::optional<net::IPEndPoint>& local_addr,
-            const absl::optional<net::IPEndPoint>& peer_addr,
-            mojo::ScopedDataPipeConsumerHandle receive_stream,
-            mojo::ScopedDataPipeProducerHandle send_stream);
+  // promise. Otherwise rejects the opened promise.
+  void OnTCPSocketOpened(
+      mojo::PendingRemote<network::mojom::blink::TCPConnectedSocket>,
+      mojo::PendingReceiver<network::mojom::blink::SocketObserver>,
+      int32_t result,
+      const absl::optional<net::IPEndPoint>& local_addr,
+      const absl::optional<net::IPEndPoint>& peer_addr,
+      mojo::ScopedDataPipeConsumerHandle receive_stream,
+      mojo::ScopedDataPipeProducerHandle send_stream);
 
   void Trace(Visitor*) const override;
 
@@ -90,10 +100,13 @@ class MODULES_EXPORT TCPSocket final
   void ContextDestroyed() override;
 
  private:
-  mojo::PendingReceiver<network::mojom::blink::TCPConnectedSocket>
-  GetTCPSocketReceiver();
-  mojo::PendingRemote<network::mojom::blink::SocketObserver>
-  GetTCPSocketObserver();
+  void FinishOpenOrAccept(
+      mojo::PendingRemote<network::mojom::blink::TCPConnectedSocket>,
+      mojo::PendingReceiver<network::mojom::blink::SocketObserver>,
+      const net::IPEndPoint& peer_addr,
+      const absl::optional<net::IPEndPoint>& local_addr,
+      mojo::ScopedDataPipeConsumerHandle receive_stream,
+      mojo::ScopedDataPipeProducerHandle send_stream);
 
   // Invoked if mojo pipe for |service_| breaks.
   void OnServiceConnectionError() override;

@@ -22,6 +22,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.compat.ApiHelperForQ;
+import org.chromium.ui.MotionEventUtils;
 
 import java.lang.reflect.UndeclaredThrowableException;
 
@@ -145,9 +146,12 @@ public class EventForwarder {
         try {
             // Android may batch multiple events together for efficiency. We
             // want to use the oldest event time as hardware time stamp.
+            //
+            // We can't get nanosecond for historical event time, so we get milliseconds and cast
+            // them to nanosecond.
             final long oldestEventTime = event.getHistorySize() > 0
-                    ? event.getHistoricalEventTime(0)
-                    : event.getEventTime();
+                    ? MotionEventUtils.getHistoricalEventTimeNano(event, 0)
+                    : MotionEventUtils.getEventTimeNano(event);
 
             int eventAction = event.getActionMasked();
 
@@ -267,9 +271,10 @@ public class EventForwarder {
             if (eventAction == MotionEvent.ACTION_HOVER_ENTER) {
                 if (mLastMouseButtonState == MotionEvent.BUTTON_PRIMARY) {
                     EventForwarderJni.get().onMouseEvent(mNativeEventForwarder, EventForwarder.this,
-                            event.getEventTime(), MotionEvent.ACTION_BUTTON_RELEASE, event.getX(),
-                            event.getY(), event.getPointerId(0), event.getPressure(0),
-                            event.getOrientation(0), event.getAxisValue(MotionEvent.AXIS_TILT, 0),
+                            MotionEventUtils.getEventTimeNano(event),
+                            MotionEvent.ACTION_BUTTON_RELEASE, event.getX(), event.getY(),
+                            event.getPointerId(0), event.getPressure(0), event.getOrientation(0),
+                            event.getAxisValue(MotionEvent.AXIS_TILT, 0),
                             MotionEvent.BUTTON_PRIMARY, event.getButtonState(),
                             event.getMetaState(), event.getToolType(0));
                 }
@@ -321,7 +326,7 @@ public class EventForwarder {
         }
 
         EventForwarderJni.get().onMouseEvent(mNativeEventForwarder, EventForwarder.this,
-                event.getEventTime(), eventAction, event.getX(), event.getY(),
+                MotionEventUtils.getEventTimeNano(event), eventAction, event.getX(), event.getY(),
                 event.getPointerId(0), event.getPressure(0), event.getOrientation(0),
                 event.getAxisValue(MotionEvent.AXIS_TILT, 0), getMouseEventActionButton(event),
                 event.getButtonState(), event.getMetaState(), event.getToolType(0));
@@ -430,8 +435,8 @@ public class EventForwarder {
             updateMouseEventState(event);
         }
 
-        return EventForwarderJni.get().onGenericMotionEvent(
-                mNativeEventForwarder, EventForwarder.this, event, event.getEventTime());
+        return EventForwarderJni.get().onGenericMotionEvent(mNativeEventForwarder,
+                EventForwarder.this, event, MotionEventUtils.getEventTimeNano(event));
     }
 
     /**
@@ -506,14 +511,14 @@ public class EventForwarder {
         WindowAndroid getJavaWindowAndroid(long nativeEventForwarder, EventForwarder caller);
         // All touch events (including flings, scrolls etc) accept coordinates in physical pixels.
         boolean onTouchEvent(long nativeEventForwarder, EventForwarder caller, MotionEvent event,
-                long timeMs, int action, int pointerCount, int historySize, int actionIndex,
+                long timeNs, int action, int pointerCount, int historySize, int actionIndex,
                 float x0, float y0, float x1, float y1, int pointerId0, int pointerId1,
                 float touchMajor0, float touchMajor1, float touchMinor0, float touchMinor1,
                 float orientation0, float orientation1, float tilt0, float tilt1, float rawX,
                 float rawY, int androidToolType0, int androidToolType1, int gestureClassification,
                 int androidButtonState, int androidMetaState, boolean isTouchHandleEvent);
 
-        void onMouseEvent(long nativeEventForwarder, EventForwarder caller, long timeMs, int action,
+        void onMouseEvent(long nativeEventForwarder, EventForwarder caller, long timeNs, int action,
                 float x, float y, int pointerId, float pressure, float orientation, float tilt,
                 int changedButton, int buttonState, int metaState, int toolType);
         void onDragEvent(long nativeEventForwarder, EventForwarder caller, int action, float x,
@@ -521,7 +526,7 @@ public class EventForwarder {
         boolean onGestureEvent(long nativeEventForwarder, EventForwarder caller, int type,
                 long timeMs, float delta);
         boolean onGenericMotionEvent(
-                long nativeEventForwarder, EventForwarder caller, MotionEvent event, long timeMs);
+                long nativeEventForwarder, EventForwarder caller, MotionEvent event, long timeNs);
         boolean onKeyUp(
                 long nativeEventForwarder, EventForwarder caller, KeyEvent event, int keyCode);
         boolean dispatchKeyEvent(long nativeEventForwarder, EventForwarder caller, KeyEvent event);

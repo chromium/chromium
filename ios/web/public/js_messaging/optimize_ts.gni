@@ -16,9 +16,6 @@ import("//ios/web/public/js_messaging/optimize_js.gni")
 #     A single TypeScript (or JavaScript) file to compile and bundle into the
 #     application.
 #
-#   allow_js (optional):
-#     Whether or not JavaScript files are allowed. Defaults to false.
-#
 template("optimize_ts") {
   assert(defined(invoker.sources), "sources must be set")
   _sources_count = 0
@@ -32,7 +29,6 @@ template("optimize_ts") {
   compile_ts(_compile_ts_target_name) {
     forward_variables_from(invoker,
                            [
-                             "allow_js",
                              "deps",
                              "sources",
                              "testonly",

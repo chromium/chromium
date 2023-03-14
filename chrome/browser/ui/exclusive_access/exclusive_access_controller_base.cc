@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_controller_base.h"
 
 #include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"

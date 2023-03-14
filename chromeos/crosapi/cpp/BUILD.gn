@@ -59,3 +59,11 @@ source_set("unit_tests") {
     "keystore_service_util_unittest.cc",
   ]
 }
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [ "input_method_test_interface_constants.h" ]
+
+  deps = [ "//base" ]
+}

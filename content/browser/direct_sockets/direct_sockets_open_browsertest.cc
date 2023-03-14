@@ -17,7 +17,9 @@
 #include "content/browser/direct_sockets/direct_sockets_service_impl.h"
 #include "content/browser/direct_sockets/direct_sockets_test_utils.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/direct_sockets_delegate.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -50,7 +52,7 @@ namespace content {
 
 namespace {
 
-using ProtocolType = blink::mojom::DirectSocketProtocolType;
+using ProtocolType = DirectSocketsDelegate::ProtocolType;
 
 struct RecordedCall {
   ProtocolType protocol_type;
@@ -139,7 +141,7 @@ class MockOpenUDPSocket : public content::test::MockUDPSocket {
     const net::Error result = (remote_addr.port() == 0)
                                   ? net::ERR_INVALID_ARGUMENT
                                   : network_context_->result();
-    network_context_->Record(RecordedCall{ProtocolType::kUdp,
+    network_context_->Record(RecordedCall{ProtocolType::kConnectedUdp,
                                           remote_addr.address().ToString(),
                                           remote_addr.port(),
                                           socket_options->send_buffer_size,
@@ -180,6 +182,13 @@ class DirectSocketsOpenBrowserTest : public ContentBrowserTest {
         url::Origin::Create(GetTestOpenPageURL()));
 
     ASSERT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // For TCPServerSocket support.
+    // TODO(crbug.com/1408140): remove after TCPServerSocket is fully supported.
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "DirectSocketsExperimental");
   }
 
   void SetUp() override {
@@ -379,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_OptionsOne) {
 
   ASSERT_EQ(1U, mock_network_context.history().size());
   const RecordedCall& call = mock_network_context.history()[0];
-  EXPECT_EQ(ProtocolType::kUdp, call.protocol_type);
+  EXPECT_EQ(ProtocolType::kConnectedUdp, call.protocol_type);
   EXPECT_EQ("12.34.56.78", call.remote_address);
   EXPECT_EQ(9012, call.remote_port);
   EXPECT_EQ(3456, call.send_buffer_size);
@@ -409,7 +418,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_OptionsTwo) {
 
   DCHECK_EQ(1U, mock_network_context.history().size());
   const RecordedCall& call = mock_network_context.history()[0];
-  EXPECT_EQ(ProtocolType::kUdp, call.protocol_type);
+  EXPECT_EQ(ProtocolType::kConnectedUdp, call.protocol_type);
   EXPECT_EQ("fedc:ba98:7654:3210:fedc:ba98:7654:3210", call.remote_address);
   EXPECT_EQ(789, call.remote_port);
   EXPECT_EQ(1243, call.send_buffer_size);
@@ -568,6 +577,48 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, Open_DnsQueryType) {
               .ExtractString(),
           testing::HasSubstr("openTcp succeeded"));
     }
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcpServerOptions) {
+  {
+    const std::string script = R"(
+      openTcpServer('direct-sockets.com');
+    )";
+    EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
+                testing::HasSubstr("localAddress must be a valid IP address"));
+  }
+
+  {
+    const std::string script = R"(
+      openTcpServer('127.0.0.1', {
+        localPort: 0,
+      });
+    )";
+    EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
+                testing::HasSubstr("localPort must be greater than zero"));
+  }
+
+  {
+    const std::string script = R"(
+      openTcpServer('127.0.0.1', {
+        backlog: 0,
+      });
+    )";
+    EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
+                testing::HasSubstr("backlog must be greater than zero"));
+  }
+
+  {
+    const std::string script = R"(
+      openTcpServer('127.0.0.1', {
+        ipv6Only: true,
+      });
+    )";
+    EXPECT_THAT(
+        EvalJs(shell(), script).ExtractString(),
+        testing::HasSubstr(
+            "ipv6Only can only be specified when localAddress is [::]"));
   }
 }
 

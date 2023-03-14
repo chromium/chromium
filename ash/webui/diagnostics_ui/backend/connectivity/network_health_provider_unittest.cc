@@ -182,8 +182,8 @@ class NetworkHealthProviderTest : public testing::Test {
     managed_network_configuration_handler->SetPolicy(
         ::onc::ONC_SOURCE_DEVICE_POLICY,
         /*userhash=*/std::string(),
-        /*network_configs_onc=*/base::Value(base::Value::Type::LIST),
-        /*global_network_config=*/base::Value(base::Value::Type::DICT));
+        /*network_configs_onc=*/base::Value::List(),
+        /*global_network_config=*/base::Value::Dict());
 
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     network_health_provider_ = std::make_unique<NetworkHealthProvider>();

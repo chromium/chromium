@@ -6,11 +6,6 @@ package org.chromium.chrome.browser.autofill;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.PorterDuff.Mode;
-import android.graphics.PorterDuffColorFilter;
 import android.text.format.DateUtils;
 
 import androidx.annotation.VisibleForTesting;
@@ -582,6 +577,7 @@ public class PersonalDataManager {
         private String mOrigin;
         private boolean mIsLocal;
         private boolean mIsCached;
+        private boolean mIsVirtual;
         private String mName;
         private String mNumber;
         private String mNetworkAndLastFourDigits;
@@ -605,14 +601,14 @@ public class PersonalDataManager {
 
         @CalledByNative("CreditCard")
         public static CreditCard create(String guid, String origin, boolean isLocal,
-                boolean isCached, String name, String number, String networkAndLastFourDigits,
-                String month, String year, String basicCardIssuerNetwork, int iconId,
-                String billingAddressId, String serverId, long instrumentId, String cardLabel,
-                String nickname, GURL cardArtUrl,
+                boolean isCached, boolean isVirtual, String name, String number,
+                String networkAndLastFourDigits, String month, String year,
+                String basicCardIssuerNetwork, int iconId, String billingAddressId, String serverId,
+                long instrumentId, String cardLabel, String nickname, GURL cardArtUrl,
                 @VirtualCardEnrollmentState int virtualCardEnrollmentState,
                 String productDescription, String cardNameForAutofillDisplay,
                 String obfuscatedLastFourDigits) {
-            return new CreditCard(guid, origin, isLocal, isCached, name, number,
+            return new CreditCard(guid, origin, isLocal, isCached, isVirtual, name, number,
                     networkAndLastFourDigits, month, year, basicCardIssuerNetwork, iconId,
                     billingAddressId, serverId, instrumentId, cardLabel, nickname, cardArtUrl,
                     virtualCardEnrollmentState, productDescription, cardNameForAutofillDisplay,
@@ -623,8 +619,9 @@ public class PersonalDataManager {
                 String name, String number, String networkAndLastFourDigits, String month,
                 String year, String basicCardIssuerNetwork, int issuerIconDrawableId,
                 String billingAddressId, String serverId) {
-            this(guid, origin, isLocal, isCached, name, number, networkAndLastFourDigits, month,
-                    year, basicCardIssuerNetwork, issuerIconDrawableId, billingAddressId, serverId,
+            this(guid, origin, isLocal, isCached, /* isVirtual= */ false, name, number,
+                    networkAndLastFourDigits, month, year, basicCardIssuerNetwork,
+                    issuerIconDrawableId, billingAddressId, serverId,
                     /* instrumentId= */ 0, /* cardLabel= */ networkAndLastFourDigits,
                     /* nickname= */ "",
                     /* cardArtUrl= */ null,
@@ -634,8 +631,8 @@ public class PersonalDataManager {
         }
 
         public CreditCard(String guid, String origin, boolean isLocal, boolean isCached,
-                String name, String number, String networkAndLastFourDigits, String month,
-                String year, String basicCardIssuerNetwork, int issuerIconDrawableId,
+                boolean isVirtual, String name, String number, String networkAndLastFourDigits,
+                String month, String year, String basicCardIssuerNetwork, int issuerIconDrawableId,
                 String billingAddressId, String serverId, long instrumentId, String cardLabel,
                 String nickname, GURL cardArtUrl,
                 @VirtualCardEnrollmentState int virtualCardEnrollmentState,
@@ -645,6 +642,7 @@ public class PersonalDataManager {
             mOrigin = origin;
             mIsLocal = isLocal;
             mIsCached = isCached;
+            mIsVirtual = isVirtual;
             mName = name;
             mNumber = number;
             mNetworkAndLastFourDigits = networkAndLastFourDigits;
@@ -720,6 +718,11 @@ public class PersonalDataManager {
         @CalledByNative("CreditCard")
         public boolean getIsCached() {
             return mIsCached;
+        }
+
+        @CalledByNative("CreditCard")
+        public boolean getIsVirtual() {
+            return mIsVirtual;
         }
 
         @CalledByNative("CreditCard")
@@ -1415,21 +1418,7 @@ public class PersonalDataManager {
             // If the image fetching was unsuccessful, silently return.
             if (bitmap == null) return;
 
-            // Create an empty mutable bitmap and set it in a canvas.
-            Bitmap cardArtImageWithOverlay = Bitmap.createBitmap(
-                    bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(cardArtImageWithOverlay);
-
-            // Create a black paint with 4% opacity.
-            Paint paint = new Paint();
-            paint.setColorFilter(new PorterDuffColorFilter(
-                    Color.argb(/* alpha= */ 10, /* red= */ 0, /* green= */ 0, /* blue= */ 0),
-                    Mode.DARKEN));
-
-            // Add the icon and the 4% overlay.
-            canvas.drawBitmap(
-                    /* bitmap= */ bitmap, /* left= */ 0, /* top= */ 0, /* paint= */ paint);
-            mCreditCardArtImages.put(customImageUrl.getSpec(), cardArtImageWithOverlay);
+            mCreditCardArtImages.put(customImageUrl.getSpec(), bitmap);
         });
         return null;
     }

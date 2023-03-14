@@ -103,6 +103,9 @@ int32_t AwMetricsServiceClient::GetProduct() {
 }
 
 int AwMetricsServiceClient::GetSampleRatePerMille() const {
+  if (base::FeatureList::IsEnabled(features::kWebViewServerSideSampling)) {
+    return 1000;
+  }
   // Down-sample unknown channel as a precaution in case it ends up being
   // shipped to Stable users.
   version_info::Channel channel = version_info::android::GetChannel();

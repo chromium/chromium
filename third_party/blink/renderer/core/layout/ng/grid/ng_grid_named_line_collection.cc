@@ -57,48 +57,107 @@ NGGridNamedLineCollection::NGGridNamedLineCollection(
   insertion_point_ = computed_grid_track_list.auto_repeat_insertion_point;
   auto_repeat_track_list_length_ =
       computed_grid_track_list.TrackList().AutoRepeatTrackCount();
+
+  // For standalone grids, auto repeaters guarantee a minimum of one repeat,
+  // but subgrids have a minimum of zero repeats. This can present issues, as
+  // various parts of the code expect each track specified to produce at least
+  // one grid track. To work around this, indices are incremented after a
+  // collapsed track by one in `Contains`. Keep `last_line_` in sync with this
+  // behavior.
+  if (HasCollapsedAutoRepeat()) {
+    DCHECK(!is_standalone_grid_);
+    ++last_line_;
+  }
 }
 
-bool NGGridNamedLineCollection::HasExplicitNamedLines() {
+bool NGGridNamedLineCollection::HasExplicitNamedLines() const {
   return named_lines_indexes_ || auto_repeat_named_lines_indexes_;
 }
 
-bool NGGridNamedLineCollection::HasNamedLines() {
+bool NGGridNamedLineCollection::HasCollapsedAutoRepeat() const {
+  // Collapsed repeaters are only possible for subgrids, as standalone grids
+  // guarantee a minimum of one repeat for auto repeaters.
+  if (is_standalone_grid_) {
+    return false;
+  }
+
+  // A collapsed auto repeater occurs when the author specifies auto repeat
+  // tracks, but they were collapsed to zero repeats.
+  return auto_repeat_track_list_length_ && !auto_repeat_total_tracks_;
+}
+
+bool NGGridNamedLineCollection::HasNamedLines() const {
   return HasExplicitNamedLines() || implicit_named_lines_indexes_;
 }
 
-bool NGGridNamedLineCollection::Contains(wtf_size_t line) {
+bool NGGridNamedLineCollection::Contains(wtf_size_t line) const {
   CHECK(HasNamedLines());
 
   if (line > last_line_)
     return false;
 
+  // If there's a collapsed auto repeater, the subsequent track indices will be
+  // one index too high, so we can account for that after the fact by
+  // incrementing `line` by one if it's at or after the insertion point.
+  // Collapsed auto repeaters are only possible for subgrids, as standalone
+  // grids guarantee a minimum of one repeat. The following methods expect each
+  // line name to consume at least one track:
+  //    `NGGridLineResolver::LookAheadForNamedGridLine`
+  //    `NGGridLineResolver::LookBackForNamedGridLine`
+  const bool has_collapsed_auto_repeat = HasCollapsedAutoRepeat();
+  if (has_collapsed_auto_repeat && line >= insertion_point_) {
+    DCHECK(!is_standalone_grid_);
+    ++line;
+
+    // The constructor should have updated `last_line_` in anticipation of this
+    // scenario.
+    DCHECK_LE(line, last_line_);
+  }
+
   auto find = [](const Vector<wtf_size_t>* indexes, wtf_size_t line) {
     return indexes && indexes->Find(line) != kNotFound;
   };
 
+  // First search implicit indices, as they have the highest precedence.
   if (find(implicit_named_lines_indexes_, line))
     return true;
 
-  if (auto_repeat_track_list_length_ == 0 || line < insertion_point_)
+  // This is the standard path for non-auto repeaters. We can also always go
+  // down this path and skip auto-repeat logic if the auto repeat track list
+  // length is 0 (possible for both standalone grids and subgrids), or if it has
+  // a collapsed auto repeat (only possible for subgrids).
+  if (auto_repeat_track_list_length_ == 0 || has_collapsed_auto_repeat ||
+      line < insertion_point_) {
     return find(named_lines_indexes_, line);
+  }
 
-  DCHECK(auto_repeat_total_tracks_);
-
-  if (line > insertion_point_ + auto_repeat_total_tracks_)
+  // Search named lines after auto repetitions.
+  if (line > insertion_point_ + auto_repeat_total_tracks_) {
     return find(named_lines_indexes_, line - (auto_repeat_total_tracks_ - 1));
+  }
 
+  // Subgrids are allowed to have an auto repeat count of zero.
+  if (auto_repeat_total_tracks_ == 0) {
+    DCHECK(!is_standalone_grid_);
+    return false;
+  }
+
+  // Search the line name at the insertion point. This line and any of the
+  // subsequent lines are of equal precedence and won't overlap, so it's safe
+  // to do them in any order.
   if (line == insertion_point_) {
     return find(named_lines_indexes_, line) ||
            find(auto_repeat_named_lines_indexes_, 0);
   }
 
+  // Search the final auto repetition line name.
   if (line == insertion_point_ + auto_repeat_total_tracks_) {
     return find(auto_repeat_named_lines_indexes_,
                 auto_repeat_track_list_length_) ||
            find(named_lines_indexes_, insertion_point_ + 1);
   }
 
+  // Search repeated line names.
   wtf_size_t auto_repeat_index_in_first_repetition =
       (line - insertion_point_) % auto_repeat_track_list_length_;
   if (!auto_repeat_index_in_first_repetition &&
@@ -109,7 +168,7 @@ bool NGGridNamedLineCollection::Contains(wtf_size_t line) {
               auto_repeat_index_in_first_repetition);
 }
 
-wtf_size_t NGGridNamedLineCollection::FirstExplicitPosition() {
+wtf_size_t NGGridNamedLineCollection::FirstExplicitPosition() const {
   DCHECK(HasExplicitNamedLines());
 
   wtf_size_t first_line = 0;
@@ -135,7 +194,7 @@ wtf_size_t NGGridNamedLineCollection::FirstExplicitPosition() {
   return named_lines_indexes_->at(first_line) + auto_repeat_counted_tracks;
 }
 
-wtf_size_t NGGridNamedLineCollection::FirstPosition() {
+wtf_size_t NGGridNamedLineCollection::FirstPosition() const {
   CHECK(HasNamedLines());
 
   if (!implicit_named_lines_indexes_)

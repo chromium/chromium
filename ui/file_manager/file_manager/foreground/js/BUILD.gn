@@ -82,7 +82,6 @@ group("js_modules") {
     ":task_history",
     ":thumbnail_loader",
     ":toolbar_controller",
-    ":webui_command_extender",
   ]
 }
 
@@ -157,7 +156,6 @@ js_type_check("closure_compile_jsmodules") {
     ":task_history",
     ":thumbnail_loader",
     ":toolbar_controller",
-    ":webui_command_extender",
     "//ui/file_manager:js_from_ts",
   ]
 }
@@ -657,7 +655,6 @@ js_library("file_manager_commands") {
     ":file_selection",
     ":holding_space_util",
     ":path_component",
-    ":webui_command_extender",
     "ui:command",
     "ui:context_menu_handler",
     "ui:directory_tree",
@@ -1208,13 +1205,6 @@ js_library("toolbar_controller") {
   ]
 }
 
-js_library("webui_command_extender") {
-  deps = [
-    "ui:command",
-    "//ash/webui/common/resources:cr_deprecated",
-  ]
-}
-
 js_test_type_check("js_test_type_check") {
   is_polymer3 = true
   deps = [
@@ -1254,10 +1244,14 @@ js_test_type_check("js_test_type_check") {
   extra_deps = [ "//ui/file_manager:js_from_ts" ]
 }
 
+# Root directory for the foreground bundle.
 tsc_folder =
     rebase_path("$target_gen_dir/../../../tsc/file_manager/foreground/js",
                 root_build_dir)
 
+# Path where chrome://file-manager should be mapped.
+files_app_path =
+    rebase_path("$target_gen_dir/../../../tsc/file_manager/", root_build_dir)
 image_loader_path =
     rebase_path("$root_gen_dir/ui/file_manager/preprocessed/image_loader",
                 root_build_dir)
@@ -1273,10 +1267,11 @@ optimize_webui("build") {
   ]
 
   external_paths = [
+    # Mapping for the absolute chrome://file-manager/common/js/lru_cache.js
+    # import in image_loader.
+    "chrome://file-manager|$files_app_path",
     "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp|$image_loader_path",
   ]
-
-  excludes = [ "chrome://resources/mojo/mojo/public/js/bindings.js" ]
 
   deps = [
     ":main",

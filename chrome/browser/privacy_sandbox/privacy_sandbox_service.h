@@ -10,6 +10,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/privacy_sandbox/canonical_topic.h"
@@ -127,6 +128,7 @@ class PrivacySandboxService : public KeyedService {
       content::InterestGroupManager* interest_group_manager,
       profile_metrics::BrowserProfileType profile_type,
       content::BrowsingDataRemover* browsing_data_remover,
+      HostContentSettingsMap* host_content_settings_map,
 #if !BUILDFLAG(IS_ANDROID)
       TrustSafetySentimentService* sentiment_service,
 #endif
@@ -509,6 +511,11 @@ class PrivacySandboxService : public KeyedService {
   // so, sets the default value based on the user's current cookie settings.
   void MaybeInitializeFirstPartySetsPref();
 
+  // Checks to see if initialization of the user's anti-abuse content setting is
+  // required, and if so, sets the default value based on the user's current
+  // cookie settings.
+  void MaybeInitializeAntiAbuseContentSetting();
+
   // Updates the preferences which store the current Topics consent information.
   void RecordUpdatedTopicsConsent(
       privacy_sandbox::TopicsConsentUpdateSource source,
@@ -521,6 +528,7 @@ class PrivacySandboxService : public KeyedService {
   raw_ptr<content::InterestGroupManager> interest_group_manager_;
   profile_metrics::BrowserProfileType profile_type_;
   raw_ptr<content::BrowsingDataRemover> browsing_data_remover_;
+  raw_ptr<HostContentSettingsMap> host_content_settings_map_;
 #if !BUILDFLAG(IS_ANDROID)
   raw_ptr<TrustSafetySentimentService> sentiment_service_;
 #endif

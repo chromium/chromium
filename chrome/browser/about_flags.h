@@ -21,6 +21,8 @@
 #include "components/flags_ui/feature_entry.h"
 #include "components/flags_ui/flags_state.h"
 
+class Profile;
+
 namespace base {
 class FeatureList;
 }
@@ -30,6 +32,15 @@ class FlagsStorage;
 }
 
 namespace about_flags {
+
+// This method returns the FlagsStorage instance to use for this platform. In
+// addition, this returns the access level for the flags. The callback may be
+// synchronously invoked.
+// Note that |profile| is only used in ash-chrome.
+using GetStorageCallback =
+    base::OnceCallback<void(std::unique_ptr<flags_ui::FlagsStorage> storage,
+                            flags_ui::FlagAccess access)>;
+void GetStorage(Profile* profile, GetStorageCallback callback);
 
 // Returns true if the FeatureEntry should not be shown.
 bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,

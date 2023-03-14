@@ -28,7 +28,6 @@ namespace web_app {
 // See detailed comments for functionality in corresponding
 // base/files/file_util.h functions.
 // Allows a testing implementation to intercept calls to the file system.
-// TODO(loyso): Add more tests and promote mocked methods to |virtual|.
 class FileUtilsWrapper : public base::RefCountedThreadSafe<FileUtilsWrapper> {
  public:
   FileUtilsWrapper() = default;

@@ -102,9 +102,9 @@ PrinterProviderInternalReportPrintResultFunction::
 
 ExtensionFunction::ResponseAction
 PrinterProviderInternalReportPrintResultFunction::Run() {
-  std::unique_ptr<internal_api::ReportPrintResult::Params> params(
-      internal_api::ReportPrintResult::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<internal_api::ReportPrintResult::Params> params =
+      internal_api::ReportPrintResult::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   PrinterProviderInternalAPI::GetFactoryInstance()
       ->Get(browser_context())
@@ -120,9 +120,9 @@ PrinterProviderInternalReportPrinterCapabilityFunction::
 
 ExtensionFunction::ResponseAction
 PrinterProviderInternalReportPrinterCapabilityFunction::Run() {
-  std::unique_ptr<internal_api::ReportPrinterCapability::Params> params(
-      internal_api::ReportPrinterCapability::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<internal_api::ReportPrinterCapability::Params> params =
+      internal_api::ReportPrinterCapability::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   if (params->capability) {
     PrinterProviderInternalAPI::GetFactoryInstance()
@@ -146,9 +146,9 @@ PrinterProviderInternalReportPrintersFunction::
 
 ExtensionFunction::ResponseAction
 PrinterProviderInternalReportPrintersFunction::Run() {
-  std::unique_ptr<internal_api::ReportPrinters::Params> params(
-      internal_api::ReportPrinters::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<internal_api::ReportPrinters::Params> params =
+      internal_api::ReportPrinters::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   if (params->printers) {
     PrinterProviderInternalAPI::GetFactoryInstance()
@@ -173,9 +173,9 @@ PrinterProviderInternalGetPrintDataFunction::
 
 ExtensionFunction::ResponseAction
 PrinterProviderInternalGetPrintDataFunction::Run() {
-  std::unique_ptr<internal_api::GetPrintData::Params> params(
-      internal_api::GetPrintData::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<internal_api::GetPrintData::Params> params =
+      internal_api::GetPrintData::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   const PrinterProviderPrintJob* job =
       PrinterProviderAPIFactory::GetInstance()
@@ -221,9 +221,9 @@ PrinterProviderInternalReportUsbPrinterInfoFunction::
 
 ExtensionFunction::ResponseAction
 PrinterProviderInternalReportUsbPrinterInfoFunction::Run() {
-  std::unique_ptr<internal_api::ReportUsbPrinterInfo::Params> params(
-      internal_api::ReportUsbPrinterInfo::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<internal_api::ReportUsbPrinterInfo::Params> params =
+      internal_api::ReportUsbPrinterInfo::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   PrinterProviderInternalAPI::GetFactoryInstance()
       ->Get(browser_context())

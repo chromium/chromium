@@ -4,15 +4,7 @@
 
 #include "ui/ozone/platform/drm/gpu/mock_drm_device.h"
 
-#include <stdint.h>
-#include <xf86drm.h>
-#include <xf86drmMode.h>
-
-#include <cstdint>
-#include <memory>
-#include <tuple>
 #include <utility>
-#include <vector>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -56,10 +48,7 @@ constexpr uint32_t kCommitModesetFlags = DRM_MODE_ATOMIC_ALLOW_MODESET;
 // pageflip, or other atomic property changes that do not require modesetting.
 constexpr uint32_t kSeamlessModesetFlags = 0;
 
-template <class Object>
-Object* DrmAllocator() {
-  return static_cast<Object*>(drmMalloc(sizeof(Object)));
-}
+const std::vector<uint32_t> kBlobProperyIds = {kEdidBlobPropId};
 
 const std::map<uint32_t, std::string> kCrtcRequiredPropertyNames = {
     {kActivePropId, "ACTIVE"},
@@ -80,6 +69,7 @@ const std::map<uint32_t, std::string> kCrtcOptionalPropertyNames = {
 const std::map<uint32_t, std::string> kConnectorRequiredPropertyNames = {
     {kCrtcIdPropId, "CRTC_ID"},
     {kLinkStatusPropId, "link-status"},
+    {kEdidBlobPropId, "EDID"},
 };
 
 const std::map<uint32_t, std::string> kPlaneRequiredPropertyNames = {
@@ -150,6 +140,10 @@ uint32_t GetUniqueNumber() {
   return ++value_generator;
 }
 
+bool IsPropertyValueBlob(uint32_t prop_id) {
+  return base::Contains(kBlobProperyIds, prop_id);
+}
+
 }  // namespace
 
 MockDrmDevice::CrtcProperties::CrtcProperties() = default;
@@ -160,6 +154,11 @@ MockDrmDevice::ConnectorProperties::ConnectorProperties() = default;
 MockDrmDevice::ConnectorProperties::ConnectorProperties(
     const ConnectorProperties&) = default;
 MockDrmDevice::ConnectorProperties::~ConnectorProperties() = default;
+
+MockDrmDevice::EncoderProperties::EncoderProperties() = default;
+MockDrmDevice::EncoderProperties::EncoderProperties(const EncoderProperties&) =
+    default;
+MockDrmDevice::EncoderProperties::~EncoderProperties() = default;
 
 MockDrmDevice::PlaneProperties::PlaneProperties() = default;
 MockDrmDevice::PlaneProperties::PlaneProperties(const PlaneProperties&) =
@@ -245,12 +244,10 @@ MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
   return state;
 }
 
-std::pair<MockDrmDevice::CrtcProperties&, MockDrmDevice::ConnectorProperties&>
-MockDrmDevice::MockDrmState::AddCrtcAndConnector() {
+MockDrmDevice::ConnectorProperties&
+MockDrmDevice::MockDrmState::AddConnector() {
   uint32_t next_connector_id =
       GetNextId(connector_properties, kConnectorIdBase);
-  uint32_t next_crtc_id = GetNextId(crtc_properties, kCrtcIdBase);
-
   auto& connector_property = connector_properties.emplace_back();
   connector_property.id = next_connector_id;
   for (const auto& pair : kConnectorRequiredPropertyNames) {
@@ -259,6 +256,19 @@ MockDrmDevice::MockDrmState::AddCrtcAndConnector() {
       property_names.emplace(pair.first, pair.second);
   }
 
+  return {connector_property};
+}
+
+MockDrmDevice::EncoderProperties& MockDrmDevice::MockDrmState::AddEncoder() {
+  uint32_t next_encoder_id = GetNextId(crtc_properties, kEncoderIdBase);
+  auto& encoder_property = encoder_properties.emplace_back();
+  encoder_property.id = next_encoder_id;
+
+  return {encoder_property};
+}
+
+MockDrmDevice::CrtcProperties& MockDrmDevice::MockDrmState::AddCrtc() {
+  uint32_t next_crtc_id = GetNextId(crtc_properties, kCrtcIdBase);
   auto& crtc_property = crtc_properties.emplace_back();
   crtc_property.id = next_crtc_id;
   for (const auto& pair : kCrtcRequiredPropertyNames) {
@@ -267,7 +277,12 @@ MockDrmDevice::MockDrmState::AddCrtcAndConnector() {
       property_names.emplace(pair.first, pair.second);
   }
 
-  return {crtc_property, connector_property};
+  return {crtc_property};
+}
+
+std::pair<MockDrmDevice::CrtcProperties&, MockDrmDevice::ConnectorProperties&>
+MockDrmDevice::MockDrmState::AddCrtcAndConnector() {
+  return {AddCrtc(), AddConnector()};
 }
 
 MockDrmDevice::PlaneProperties& MockDrmDevice::MockDrmState::AddPlane(
@@ -304,26 +319,34 @@ MockDrmDevice::PlaneProperties& MockDrmDevice::MockDrmState::AddPlane(
   return plane;
 }
 
+bool MockDrmDevice::MockDrmState::HasResources() const {
+  return !connector_properties.empty() || !crtc_properties.empty() ||
+         !encoder_properties.empty();
+}
+
 MockDrmDevice::MockDrmDevice(std::unique_ptr<GbmDevice> gbm_device)
     : DrmDevice(base::FilePath(),
                 base::ScopedFD(),
                 true /* is_primary_device */,
-                std::move(gbm_device)),
-      set_crtc_call_count_(0),
-      add_framebuffer_call_count_(0),
-      remove_framebuffer_call_count_(0),
-      page_flip_call_count_(0),
-      overlay_clear_call_count_(0),
-      allocate_buffer_count_(0),
-      set_crtc_expectation_(true),
-      add_framebuffer_expectation_(true),
-      page_flip_expectation_(true),
-      create_dumb_buffer_expectation_(true),
-      current_framebuffer_(0) {
+                std::move(gbm_device)) {
   plane_manager_ = std::make_unique<HardwareDisplayPlaneManagerLegacy>(this);
 }
 
-MockDrmDevice::~MockDrmDevice() = default;
+MockDrmDevice::MockDrmDevice(const base::FilePath& path,
+                             std::unique_ptr<GbmDevice> gbm_device,
+                             bool is_primary_device)
+    : DrmDevice(std::move(path),
+                base::ScopedFD(),
+                is_primary_device,
+                std::move(gbm_device)) {
+  plane_manager_ = std::make_unique<HardwareDisplayPlaneManagerLegacy>(this);
+}
+
+MockDrmDevice::~MockDrmDevice() {
+  if (plane_manager_) {
+    plane_manager_.reset();
+  }
+}
 
 // static
 ScopedDrmPropertyBlobPtr MockDrmDevice::AllocateInFormatsBlob(
@@ -353,22 +376,47 @@ ScopedDrmPropertyBlobPtr MockDrmDevice::AllocateInFormatsBlob(
   return blob;
 }
 
-void MockDrmDevice::InitializeState(const MockDrmState& state,
-                                    bool use_atomic) {
+void MockDrmDevice::InitializeState(MockDrmState& state, bool use_atomic) {
   CHECK(InitializeStateWithResult(state, use_atomic));
 }
 
-bool MockDrmDevice::InitializeStateWithResult(const MockDrmState& state,
+bool MockDrmDevice::InitializeStateWithResult(MockDrmState& state,
                                               bool use_atomic) {
-  UpdateStateBesidesPlaneManager(state);
-
   if (use_atomic) {
     plane_manager_ = std::make_unique<HardwareDisplayPlaneManagerAtomic>(this);
   } else {
     plane_manager_ = std::make_unique<HardwareDisplayPlaneManagerLegacy>(this);
   }
+  SetCapability(DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1);
+
+  MaybeSetEdidBlobsForConnectors(state);
+  UpdateStateBesidesPlaneManager(state);
 
   return plane_manager_->Initialize();
+}
+
+void MockDrmDevice::MaybeSetEdidBlobsForConnectors(MockDrmState& state) {
+  for (auto& mock_connector : state.connector_properties) {
+    const std::vector<uint8_t> edid_blob = mock_connector.edid_blob;
+    if (edid_blob.empty()) {
+      continue;
+    }
+
+    DrmWrapper::Property* mock_blob_prop =
+        FindObjectById(kEdidBlobPropId, mock_connector.properties);
+    DCHECK(mock_blob_prop);
+    // Update the mock EDID property's value to the EDID blob's ID.
+    mock_blob_prop->value = GetNextId(state.blobs, kBaseBlobId);
+    state.blobs.push_back(*mock_blob_prop);
+
+    ScopedDrmPropertyBlobPtr drm_prop_blob(
+        DrmAllocator<drmModePropertyBlobRes>());
+    drm_prop_blob->id = mock_blob_prop->value;
+    drm_prop_blob->length = mock_connector.edid_blob.size();
+    drm_prop_blob->data = drmMalloc(drm_prop_blob->length);
+    memcpy(drm_prop_blob->data, edid_blob.data(), edid_blob.size());
+    SetPropertyBlob(std::move(drm_prop_blob));
+  }
 }
 
 void MockDrmDevice::UpdateStateBesidesPlaneManager(const MockDrmState& state) {
@@ -386,6 +434,9 @@ void MockDrmDevice::SetSystemLimitOfModifiers(uint64_t limit) {
 }
 
 ScopedDrmResourcesPtr MockDrmDevice::GetResources() const {
+  if (!drm_state_.HasResources())
+    return nullptr;
+
   ScopedDrmResourcesPtr resources(DrmAllocator<drmModeRes>());
   resources->count_crtcs = drm_state_.crtc_properties.size();
   resources->crtcs = static_cast<uint32_t*>(
@@ -398,6 +449,12 @@ ScopedDrmResourcesPtr MockDrmDevice::GetResources() const {
       drmMalloc(sizeof(uint32_t) * resources->count_connectors));
   for (size_t i = 0; i < drm_state_.connector_properties.size(); ++i)
     resources->connectors[i] = drm_state_.connector_properties[i].id;
+
+  resources->count_encoders = drm_state_.encoder_properties.size();
+  resources->encoders = static_cast<uint32_t*>(
+      drmMalloc(sizeof(uint32_t) * resources->count_encoders));
+  for (size_t i = 0; i < drm_state_.encoder_properties.size(); ++i)
+    resources->encoders[i] = drm_state_.encoder_properties[i].id;
 
   return resources;
 }
@@ -437,7 +494,15 @@ ScopedDrmObjectPropertyPtr MockDrmDevice::GetObjectProperties(
 }
 
 ScopedDrmCrtcPtr MockDrmDevice::GetCrtc(uint32_t crtc_id) const {
-  return ScopedDrmCrtcPtr(DrmAllocator<drmModeCrtc>());
+  const CrtcProperties* mock_crtc =
+      FindObjectById(crtc_id, drm_state_.crtc_properties);
+  if (!mock_crtc)
+    return nullptr;
+
+  ScopedDrmCrtcPtr crtc(DrmAllocator<drmModeCrtc>());
+  crtc->crtc_id = mock_crtc->id;
+
+  return crtc;
 }
 
 bool MockDrmDevice::SetCrtc(uint32_t crtc_id,
@@ -456,7 +521,59 @@ bool MockDrmDevice::DisableCrtc(uint32_t crtc_id) {
 }
 
 ScopedDrmConnectorPtr MockDrmDevice::GetConnector(uint32_t connector_id) const {
-  return ScopedDrmConnectorPtr(DrmAllocator<drmModeConnector>());
+  const ConnectorProperties* mock_connector =
+      FindObjectById(connector_id, drm_state_.connector_properties);
+  if (!mock_connector)
+    return nullptr;
+
+  ScopedDrmConnectorPtr connector(DrmAllocator<drmModeConnector>());
+  connector->connector_id = mock_connector->id;
+  connector->connection =
+      mock_connector->connection ? DRM_MODE_CONNECTED : DRM_MODE_DISCONNECTED;
+
+  // Copy props.
+  const uint32_t count_props = mock_connector->properties.size();
+  connector->count_props = count_props;
+  connector->props = DrmAllocator<uint32_t>(count_props);
+  connector->prop_values = DrmAllocator<uint64_t>(count_props);
+  for (uint32_t i = 0; i < count_props; ++i) {
+    connector->props[i] = mock_connector->properties[i].id;
+    connector->prop_values[i] = mock_connector->properties[i].value;
+  }
+
+  // Copy modes.
+  const uint32_t count_modes = mock_connector->modes.size();
+  connector->count_modes = count_modes;
+  connector->modes = DrmAllocator<drmModeModeInfo>(count_modes);
+  for (uint32_t i = 0; i < count_modes; ++i) {
+    const gfx::Size resoluton = mock_connector->modes[i].first;
+    const uint32_t vrefresh = mock_connector->modes[i].second;
+    connector->modes[i].hdisplay = resoluton.width();
+    connector->modes[i].vdisplay = resoluton.height();
+    connector->modes[i].vrefresh = vrefresh;
+  }
+
+  // Copy associated encoders.
+  const uint32_t count_encoders = mock_connector->encoders.size();
+  connector->count_encoders = count_encoders;
+  connector->encoders = DrmAllocator<uint32_t>(count_encoders);
+  for (uint32_t i = 0; i < count_encoders; ++i)
+    connector->encoders[i] = mock_connector->encoders[i];
+
+  return connector;
+}
+
+ScopedDrmEncoderPtr MockDrmDevice::GetEncoder(uint32_t encoder_id) const {
+  const EncoderProperties* mock_encoder =
+      FindObjectById(encoder_id, drm_state_.encoder_properties);
+  if (!mock_encoder)
+    return nullptr;
+
+  ScopedDrmEncoderPtr encoder(DrmAllocator<drmModeEncoder>());
+  encoder->encoder_id = mock_encoder->id;
+  encoder->possible_crtcs = mock_encoder->possible_crtcs;
+
+  return encoder;
 }
 
 bool MockDrmDevice::AddFramebuffer2(uint32_t width,
@@ -538,6 +655,9 @@ ScopedDrmPropertyPtr MockDrmDevice::GetProperty(uint32_t id) const {
   ScopedDrmPropertyPtr property(DrmAllocator<drmModePropertyRes>());
   property->prop_id = id;
   strcpy(property->name, it->second.c_str());
+  if (IsPropertyValueBlob(property->prop_id))
+    property->flags = DRM_MODE_PROP_BLOB;
+
   return property;
 }
 
@@ -559,6 +679,11 @@ void MockDrmDevice::DestroyPropertyBlob(uint32_t id) {
 }
 
 bool MockDrmDevice::GetCapability(uint64_t capability, uint64_t* value) const {
+  const auto it = capabilities_.find(capability);
+  if (it == capabilities_.end())
+    return false;
+
+  *value = it->second;
   return true;
 }
 
@@ -580,7 +705,24 @@ ScopedDrmPropertyBlobPtr MockDrmDevice::GetPropertyBlob(
 ScopedDrmPropertyBlobPtr MockDrmDevice::GetPropertyBlob(
     drmModeConnector* connector,
     const char* name) const {
-  return ScopedDrmPropertyBlobPtr(DrmAllocator<drmModePropertyBlobRes>());
+  const ConnectorProperties* mock_connector =
+      FindObjectById(connector->connector_id, drm_state_.connector_properties);
+  if (!mock_connector)
+    return nullptr;
+
+  ScopedDrmPropertyBlobPtr blob(DrmAllocator<drmModePropertyBlobRes>());
+  for (const auto& prop : mock_connector->properties) {
+    auto prop_name_it = drm_state_.property_names.find(prop.id);
+    if (prop_name_it == drm_state_.property_names.end())
+      continue;
+
+    if (prop_name_it->second.compare(name) != 0)
+      continue;
+
+    return GetPropertyBlob(prop.value);
+  }
+
+  return nullptr;
 }
 
 bool MockDrmDevice::SetObjectProperty(uint32_t object_id,
@@ -647,7 +789,7 @@ bool MockDrmDevice::CloseBufferHandle(uint32_t handle) {
   return true;
 }
 
-bool MockDrmDevice::CommitPropertiesInternal(
+bool MockDrmDevice::CommitProperties(
     drmModeAtomicReq* request,
     uint32_t flags,
     uint32_t crtc_count,
@@ -712,6 +854,10 @@ bool MockDrmDevice::CommitPropertiesInternal(
       return false;
   }
 
+  // Increment modeset sequence ID upon success.
+  if (flags == DRM_MODE_ATOMIC_ALLOW_MODESET)
+    ++modeset_sequence_id_;
+
   // Count all committed planes at the end just before returning true to
   // reflect the number of planes that have successfully been committed.
   last_planes_committed_count_ = 0;
@@ -737,6 +883,7 @@ void MockDrmDevice::SetDriverName(absl::optional<std::string> name) {
 }
 
 bool MockDrmDevice::SetCapability(uint64_t capability, uint64_t value) {
+  capabilities_.insert({capability, value});
   return true;
 }
 
@@ -806,6 +953,10 @@ bool MockDrmDevice::ValidatePropertyValue(uint32_t id, uint64_t value) {
     return base::Contains(allocated_property_blobs_, value);
 
   return true;
+}
+
+int MockDrmDevice::modeset_sequence_id() const {
+  return modeset_sequence_id_;
 }
 
 }  // namespace ui

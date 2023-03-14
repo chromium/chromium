@@ -822,23 +822,6 @@ TEST_F(PrivacySandboxSettingsTest, FledgeJoinSettingTimeRangeDeletion) {
       url::Origin::Create(GURL("https://third.com"))));
 }
 
-TEST_F(PrivacySandboxSettingsTest, TrustTokensAllowed) {
-  // IsTrustTokensAllowed() should follow the top level privacy sandbox setting
-  base::test::ScopedFeatureList feature_list_;
-  privacy_sandbox_test_util::MockPrivacySandboxObserver observer;
-  privacy_sandbox_settings()->AddObserver(&observer);
-  EXPECT_CALL(observer, OnTrustTokenBlockingChanged(/*blocked=*/true));
-
-  privacy_sandbox_settings()->SetPrivacySandboxEnabled(false);
-  EXPECT_FALSE(privacy_sandbox_settings()->IsTrustTokensAllowed());
-  testing::Mock::VerifyAndClearExpectations(&observer);
-
-  EXPECT_CALL(observer, OnTrustTokenBlockingChanged(/*blocked=*/false));
-  privacy_sandbox_settings()->SetPrivacySandboxEnabled(true);
-  EXPECT_TRUE(privacy_sandbox_settings()->IsTrustTokensAllowed());
-  testing::Mock::VerifyAndClearExpectations(&observer);
-}
-
 TEST_F(PrivacySandboxSettingsTest, OnFirstPartySetsEnabledChanged) {
   // OnFirstPartySetsEnabledChanged() should only call observers when the
   // base::Feature is enabled and the pref changes.

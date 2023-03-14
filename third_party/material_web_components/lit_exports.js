@@ -2,6 +2,7 @@
 
 export * from "./components-chromium/node_modules/lit/index.js";
 export * from "./components-chromium/node_modules/lit/decorators.js";
+export * from './components-chromium/node_modules/lit/directive.js';
 export * from "./components-chromium/node_modules/lit/directives/async-append.js";
 export * from "./components-chromium/node_modules/lit/directives/async-replace.js";
 export * from "./components-chromium/node_modules/lit/directives/cache.js";

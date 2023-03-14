@@ -32,7 +32,15 @@ void ArcAppsFactory::ShutDownForTesting(content::BrowserContext* context) {
   factory->BrowserContextDestroyed(context);
 }
 
-ArcAppsFactory::ArcAppsFactory() : ProfileKeyedServiceFactory("ArcApps") {
+ArcAppsFactory::ArcAppsFactory()
+    : ProfileKeyedServiceFactory(
+          "ArcApps",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(AppServiceProxyFactory::GetInstance());
   DependsOn(ArcAppListPrefsFactory::GetInstance());
   DependsOn(arc::ArcIntentHelperBridge::GetFactory());

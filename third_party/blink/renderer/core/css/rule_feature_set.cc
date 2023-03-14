@@ -180,13 +180,13 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoXrOverlay:
     case CSSSelector::kPseudoIs:
     case CSSSelector::kPseudoWhere:
-    case CSSSelector::kPseudoParent:          // Same as kPseudoIs.
-    case CSSSelector::kPseudoParentUnparsed:  // Never invalidates.
+    case CSSSelector::kPseudoParent:  // Same as kPseudoIs.
     case CSSSelector::kPseudoTargetText:
     case CSSSelector::kPseudoHighlight:
     case CSSSelector::kPseudoSpellingError:
     case CSSSelector::kPseudoGrammarError:
     case CSSSelector::kPseudoHas:
+    case CSSSelector::kPseudoUnparsed:  // Never invalidates.
     case CSSSelector::kPseudoViewTransition:
     case CSSSelector::kPseudoViewTransitionGroup:
     case CSSSelector::kPseudoViewTransitionImagePair:
@@ -586,7 +586,7 @@ void RuleFeatureSet::UpdateFeaturesFromStyleScope(
     if (!scope->From()) {
       continue;
     }
-    for (const CSSSelector* selector = scope->From()->First(); selector;
+    for (const CSSSelector* selector = scope->From(); selector;
          selector = CSSSelectorList::Next(*selector)) {
       InvalidationSetFeatures scope_features;
       ExtractInvalidationSetFeaturesFromCompound(
@@ -1555,9 +1555,9 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForSelectorList(
 void RuleFeatureSet::AddFeaturesToInvalidationSetsForStyleScope(
     const StyleScope& style_scope,
     InvalidationSetFeatures& descendant_features) {
-  auto add_features = [this](const CSSSelectorList& selector_list,
+  auto add_features = [this](const CSSSelector& selector_list,
                              InvalidationSetFeatures& features) {
-    for (const CSSSelector* selector = selector_list.First(); selector;
+    for (const CSSSelector* selector = &selector_list; selector;
          selector = CSSSelectorList::Next(*selector)) {
       AddFeaturesToInvalidationSets(*selector, /*in_nth_child=*/false,
                                     nullptr /* sibling_features */, features);

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 626 tests; 480 PASS, 146 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 632 tests; 486 PASS, 146 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -77,9 +77,7 @@ PASS Parsing: <http://2001::1]> against <http://example.org/foo/bar>
 PASS Parsing: <http://2001::1]:80> against <http://example.org/foo/bar>
 PASS Parsing: <http://[2001::1]> against <http://example.org/foo/bar>
 PASS Parsing: <http://[::127.0.0.1]> against <http://example.org/foo/bar>
-FAIL Parsing: <http://[::127.0.0.1.]> against <http://example.org/foo/bar> assert_throws_js: function "function() {
-          bURL(expected.input, expected.base)
-        }" did not throw
+PASS Parsing: <http://[::127.0.0.1.]> against <http://example.org/foo/bar>
 PASS Parsing: <http://[0:0:0:0:0:0:13.1.68.3]> against <http://example.org/foo/bar>
 PASS Parsing: <http://[2001::1]:80> against <http://example.org/foo/bar>
 PASS Parsing: <http:/example.com/> against <http://example.org/foo/bar>
@@ -723,5 +721,13 @@ FAIL Parsing: <non-special:￿y> against <about:blank> assert_equals: href expec
 FAIL Parsing: <non-special:x/￿y> against <about:blank> assert_equals: href expected "non-special:x/%EF%BF%BFy" but got "non-special:x/%EF%BF%BDy"
 FAIL Parsing: <non-special:x/?￿y> against <about:blank> assert_equals: href expected "non-special:x/?%EF%BF%BFy" but got "non-special:x/?%EF%BF%BDy"
 FAIL Parsing: <non-special:x/?#￿y> against <about:blank> assert_equals: href expected "non-special:x/?#%EF%BF%BFy" but got "non-special:x/?#%EF%BF%BDy"
+PASS Parsing: <> against <about:blank>
+PASS Parsing: <https://example.com/"quoted"> against <about:blank>
+PASS Parsing: <https://a%C2%ADb/> against <about:blank>
+PASS Parsing: <https://­/> against <about:blank>
+PASS Parsing: <https://%C2%AD/> against <about:blank>
+FAIL Parsing: <https://xn--/> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
 Harness: the test ran to completion.
 

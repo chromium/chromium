@@ -88,7 +88,7 @@ LoginScreenStorageStorePersistentDataFunction::
 
 ExtensionFunction::ResponseAction
 LoginScreenStorageStorePersistentDataFunction::Run() {
-  std::unique_ptr<login_screen_storage::StorePersistentData::Params> params =
+  absl::optional<login_screen_storage::StorePersistentData::Params> params =
       login_screen_storage::StorePersistentData::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -125,7 +125,7 @@ LoginScreenStorageRetrievePersistentDataFunction::
 
 ExtensionFunction::ResponseAction
 LoginScreenStorageRetrievePersistentDataFunction::Run() {
-  std::unique_ptr<login_screen_storage::RetrievePersistentData::Params> params =
+  absl::optional<login_screen_storage::RetrievePersistentData::Params> params =
       login_screen_storage::RetrievePersistentData::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -151,7 +151,7 @@ LoginScreenStorageStoreCredentialsFunction::
 
 ExtensionFunction::ResponseAction
 LoginScreenStorageStoreCredentialsFunction::Run() {
-  std::unique_ptr<login_screen_storage::StoreCredentials::Params> params =
+  absl::optional<login_screen_storage::StoreCredentials::Params> params =
       login_screen_storage::StoreCredentials::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 

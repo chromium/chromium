@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 
 #include <memory>
@@ -37,6 +38,7 @@ struct EnterpriseWelcomeTestParam {
   PixelTestParam pixel_test_param;
   bool profile_creation_required_by_policy = false;
   bool show_link_data_checkbox = false;
+  bool use_tangible_sync_style = false;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -57,16 +59,17 @@ const EnterpriseWelcomeTestParam kWindowTestParams[] = {
     {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeSmallWindow",
                           .use_small_window = true}},
     {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFre",
-                          .use_fre_style = true}},
+                          .use_fre_style = true},
+     .use_tangible_sync_style = true},
     {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFreDarkTheme",
-                          .use_dark_theme = true,
-                          .use_fre_style = true}},
+                          .use_dark_theme = true},
+     .use_tangible_sync_style = true},
     {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFreRtl",
-                          .use_right_to_left_language = true,
-                          .use_fre_style = true}},
+                          .use_right_to_left_language = true},
+     .use_tangible_sync_style = true},
     {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFreSmallWindow",
-                          .use_small_window = true,
-                          .use_fre_style = true}},
+                          .use_small_window = true},
+     .use_tangible_sync_style = true},
 };
 
 const EnterpriseWelcomeTestParam kDialogTestParams[] = {
@@ -83,23 +86,23 @@ const EnterpriseWelcomeTestParam kDialogTestParams[] = {
     {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeRtl",
                           .use_right_to_left_language = true},
      .show_link_data_checkbox = true},
-    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFre",
-                          .use_fre_style = true}},
+    {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFre"},
+     .use_tangible_sync_style = true},
     {.pixel_test_param = {.test_suffix =
-                              "EnterpriseWelcomeFreWithLinkDataCheckbox",
-                          .use_fre_style = true},
-     .show_link_data_checkbox = true},
+                              "EnterpriseWelcomeFreWithLinkDataCheckbox"},
+     .show_link_data_checkbox = true,
+     .use_tangible_sync_style = true},
     {.pixel_test_param =
          {.test_suffix = "EnterpriseWelcomeFreWithProfileCreationRequired"},
      .profile_creation_required_by_policy = true},
     {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFreDarkTheme",
-                          .use_dark_theme = true,
-                          .use_fre_style = true},
-     .show_link_data_checkbox = true},
+                          .use_dark_theme = true},
+     .show_link_data_checkbox = true,
+     .use_tangible_sync_style = true},
     {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFreRtl",
-                          .use_right_to_left_language = true,
-                          .use_fre_style = true},
-     .show_link_data_checkbox = true},
+                          .use_right_to_left_language = true},
+     .show_link_data_checkbox = true,
+     .use_tangible_sync_style = true},
 };
 
 // Creates a step to represent the enterprise-profile-welcome
@@ -128,7 +131,7 @@ class EnterpriseWelcomeStepControllerForTest
             weak_ptr_factory_.GetWeakPtr(), std::move(step_shown_callback)));
   }
 
-  void OnNavigateBackRequested() override { NOTREACHED(); }
+  void OnNavigateBackRequested() override { NOTREACHED_NORETURN(); }
 
   void OnEnterpriseWelcomeLoaded(
       StepSwitchFinishedCallback step_shown_callback) {
@@ -165,6 +168,12 @@ class EnterpriseWelcomeUIWindowPixelTest
   EnterpriseWelcomeUIWindowPixelTest() {
     std::vector<base::test::FeatureRef> enabled_features = {};
     std::vector<base::test::FeatureRef> disabled_features = {};
+
+    if (GetParam().use_tangible_sync_style) {
+      enabled_features.push_back(kEnterpriseWelcomeTangibleSyncStyle);
+    } else {
+      disabled_features.push_back(kEnterpriseWelcomeTangibleSyncStyle);
+    }
     InitPixelTestFeatures(GetParam().pixel_test_param, scoped_feature_list_,
                           enabled_features, disabled_features);
   }
@@ -241,6 +250,12 @@ class EnterpriseWelcomeUIDialogPixelTest
   EnterpriseWelcomeUIDialogPixelTest() {
     std::vector<base::test::FeatureRef> enabled_features = {};
     std::vector<base::test::FeatureRef> disabled_features = {};
+
+    if (GetParam().use_tangible_sync_style) {
+      enabled_features.push_back(kEnterpriseWelcomeTangibleSyncStyle);
+    } else {
+      disabled_features.push_back(kEnterpriseWelcomeTangibleSyncStyle);
+    }
     InitPixelTestFeatures(GetParam().pixel_test_param, scoped_feature_list_,
                           enabled_features, disabled_features);
   }

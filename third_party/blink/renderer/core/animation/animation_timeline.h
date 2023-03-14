@@ -58,6 +58,7 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   virtual bool IsViewTimeline() const { return false; }
 
   virtual bool IsActive() const = 0;
+  virtual bool IsResolved() const { return true; }
   virtual AnimationTimeDelta ZeroTime() = 0;
   // https://w3.org/TR/web-animations-1/#monotonically-increasing-timeline
   // A timeline is monotonically increasing if its reported current time is
@@ -76,17 +77,6 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
       const Animation*,
       const Timing&) {
     return AnimationTimeDelta();
-  }
-
-  // Converts timeline offsets to start and end delays in time units based on
-  // the timeline duration. In the event that the timeline is not an instance
-  // of a view timeline, the delays are zero.
-  using TimeDelayPair = std::pair<AnimationTimeDelta, AnimationTimeDelta>;
-  virtual TimeDelayPair ComputeEffectiveAnimationDelays(
-      const Animation* animation,
-      const Timing& timing) const {
-    return std::make_pair(timing.start_delay.AsTimeValue(),
-                          timing.end_delay.AsTimeValue());
   }
 
   Document* GetDocument() const { return document_; }

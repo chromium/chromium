@@ -41,8 +41,10 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
+#include "services/network/public/cpp/no_vary_search_header_parser.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/timing_allow_origin_parser.h"
+#include "services/network/public/mojom/no_vary_search.mojom-blink-forward.h"
 #include "services/network/public/mojom/no_vary_search.mojom-blink.h"
 #include "services/network/public/mojom/parsed_headers.mojom-blink.h"
 #include "services/network/public/mojom/supports_loading_mode.mojom-blink.h"
@@ -252,21 +254,33 @@ blink::VariantsHeaderPtr ConvertToBlink(const VariantsHeaderPtr& in) {
                                     ConvertToBlink(in->available_values));
 }
 
-blink::NoVarySearchPtr ConvertToBlink(const NoVarySearchPtr& in) {
+blink::NoVarySearchWithParseErrorPtr ConvertToBlink(
+    const NoVarySearchWithParseErrorPtr& in) {
   if (!in)
     return nullptr;
 
-  DCHECK(in->search_variance);
-  if (in->search_variance->is_no_vary_params()) {
-    return blink::NoVarySearch::New(
-        blink::SearchParamsVariance::NewNoVaryParams(
-            ConvertToBlink(in->search_variance->get_no_vary_params())),
-        in->vary_on_key_order);
+  if (in->is_parse_error()) {
+    return blink::NoVarySearchWithParseError::NewParseError(
+        in->get_parse_error());
   }
-  return blink::NoVarySearch::New(
-      blink::SearchParamsVariance::NewVaryParams(
-          ConvertToBlink(in->search_variance->get_vary_params())),
-      in->vary_on_key_order);
+
+  const NoVarySearchPtr& no_vary_search = in->get_no_vary_search();
+  CHECK(no_vary_search);
+  CHECK(no_vary_search->search_variance);
+  if (no_vary_search->search_variance->is_no_vary_params()) {
+    return blink::NoVarySearchWithParseError::NewNoVarySearch(
+        blink::NoVarySearch::New(
+            blink::SearchParamsVariance::NewNoVaryParams(ConvertToBlink(
+                no_vary_search->search_variance->get_no_vary_params())),
+            no_vary_search->vary_on_key_order));
+  }
+
+  CHECK(no_vary_search->search_variance->is_vary_params());
+  return blink::NoVarySearchWithParseError::NewNoVarySearch(
+      blink::NoVarySearch::New(
+          blink::SearchParamsVariance::NewVaryParams(ConvertToBlink(
+              no_vary_search->search_variance->get_vary_params())),
+          no_vary_search->vary_on_key_order));
 }
 
 blink::ParsedHeadersPtr ConvertToBlink(const ParsedHeadersPtr& in) {
@@ -293,7 +307,7 @@ blink::ParsedHeadersPtr ConvertToBlink(const ParsedHeadersPtr& in) {
       in->content_language.has_value()
           ? absl::make_optional(ConvertToBlink(in->content_language.value()))
           : absl::nullopt,
-      ConvertToBlink(in->no_vary_search));
+      ConvertToBlink(in->no_vary_search_with_parse_error));
 }
 
 }  // namespace mojom
@@ -917,4 +931,25 @@ network::mojom::blink::TimingAllowOriginPtr ParseTimingAllowOrigin(
       network::ParseTimingAllowOrigin(header_value.Latin1()));
 }
 
+network::mojom::blink::NoVarySearchWithParseErrorPtr ParseNoVarySearch(
+    const String& header_value) {
+  // Parse the No-Vary-Search hint value by making a header in order to
+  // reuse existing code.
+  auto headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
+  headers->AddHeader("No-Vary-Search", header_value.Utf8());
+
+  auto parsed_nvs_with_error =
+      ConvertToBlink(network::ParseNoVarySearch(*headers));
+  // `parsed_nvs_with_error` cannot be null here. Because we know the header is
+  // available, we will get a parse error or a No-Vary-Search.
+  CHECK(parsed_nvs_with_error);
+  return parsed_nvs_with_error;
+}
+
+String GetNoVarySearchHintConsoleMessage(
+    const network::mojom::NoVarySearchParseError& error) {
+  return network::mojom::ConvertToBlink(
+      network::GetNoVarySearchHintConsoleMessage(error));
+}
 }  // namespace blink

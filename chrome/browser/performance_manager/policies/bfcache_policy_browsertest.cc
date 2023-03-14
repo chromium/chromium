@@ -20,6 +20,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -84,13 +85,6 @@ class BFCachePolicyBrowserTest
   ~BFCachePolicyBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    EnableFeature(::features::kBackForwardCache,
-                  {{"foreground_cache_size", "10"},
-                   {"cache_size", "10"},
-                   {"ignore_outstanding_network_request_for_testing", "true"}});
-    EnableFeature(::features::kBackForwardCacheTimeToLiveControl,
-                  {{"time_to_live_seconds", "3600"}});
-    DisableFeature(::features::kBackForwardCacheMemoryControls);
     // Occlusion can cause the web_contents to be marked visible between the
     // time the test calls WasHidden and BFCachePolicy::MaybeFlushBFCache is
     // called, which kills the timer set by BFCachePolicy::OnIsVisibleChanged.
@@ -117,8 +111,11 @@ class BFCachePolicyBrowserTest
           performance_manager::features::kBFCachePerformanceManagerPolicy);
     }
 
-    feature_list_.InitWithFeaturesAndParameters(enabled_features_,
-                                                disabled_features_);
+    feature_list_.InitWithFeaturesAndParameters(
+        content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(
+            enabled_features_, /*cache_size=*/10, /*foreground_cache_size=*/10),
+        content::GetDefaultDisabledBackForwardCacheFeaturesForTesting(
+            disabled_features_));
   }
 
   void SetUpOnMainThread() override {

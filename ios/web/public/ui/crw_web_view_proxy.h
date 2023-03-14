@@ -47,12 +47,6 @@
 // A Boolean value indicating whether or not the web page is in fullscreen mode.
 @property(nonatomic, readonly) BOOL isWebPageInFullscreenMode;
 
-// Adds a webview gesture recognizers.
-- (void)addGestureRecognizer:(UIGestureRecognizer*)gestureRecognizer;
-
-// Removes a webview gesture recognizers.
-- (void)removeGestureRecognizer:(UIGestureRecognizer*)gestureRecognizer;
-
 // Whether or not the content view should use the content inset when setting
 // `contentInset`. Implementations may or may not respect the setting of this
 // property.
@@ -64,17 +58,11 @@
 // Unregister the registered insets for the given caller.
 - (void)unregisterInsetsForCaller:(id)caller;
 
-// Sets the content view to `nil` and adds a placeholder scroll view if needed.
-// Setting up the placeholder can be costly, so we don't want to proceed with
-// the setup when clearing the content view, unless we intend to set a non-nil
-// content view in the future and wish to preserve state.
-- (void)clearContentViewAndAddPlaceholder:(BOOL)addPlaceholder;
-
 // Wrapper around the addSubview method of the webview.
 - (void)addSubview:(UIView*)view;
 
-// Returns the currently visible keyboard accessory, or nil.
-- (UIView*)keyboardAccessory;
+// YES if the keyboard is currently visible for use in the web view.
+@property(nonatomic, readonly, getter=isKeyboardVisible) BOOL keyboardVisible;
 
 // Wrapper around the becomeFirstResponder method of the webview.
 - (BOOL)becomeFirstResponder;

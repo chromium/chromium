@@ -59,6 +59,7 @@
     height: 40px;
     justify-content: center;
     margin-inline-end: 16px;
+    overflow: hidden;
     width: 40px;
   }
 
@@ -76,9 +77,21 @@
     width: 16px;
   }
 
+  :host-context([chrome-refresh-2023]) #iconContainer {
+    background: var(--color-list-item-url-favicon-background,
+        var(--cr-fallback-color-neutral-container));
+  }
+
+  :host-context([chrome-refresh-2023]):host([is-folder_]) #iconContainer {
+    background: var(--color-list-item-folder-icon-background,
+        var(--cr-fallback-color-primary-container));
+    color: var(--color-list-item-folder-icon-foreground,
+        var(--cr-fallback-color-on-primary-container));
+  }
+
   :host-context([chrome-refresh-2023]):host([size=compact]) #iconContainer {
     height: 24px;
-    marign-inline-end: 8px;
+    margin-inline-end: 8px;
     width: 24px;
   }
 
@@ -111,6 +124,7 @@
   }
 
   .folder {
+    --cr-icon-color: currentColor;
     height: 16px;
     margin: 0;
     width: 16px;
@@ -156,27 +170,24 @@
     gap: 2px;
   }
 
-  ::slotted([slot=title]) {
-    color: var(--cr-primary-text-color);
-    font-size: 13px;
-    font-weight: 400;
-  }
-
-  :host-context([chrome-refresh-2023]) ::slotted([slot=title]) {
-    font-size: 12px;
-    font-weight: 500;
-  }
-
-  ::slotted(button[slot=title]) {
+  .title {
     appearance: none;
     background: transparent;
     border: 0;
+    color: var(--cr-primary-text-color);
     display: inline;
+    font-size: 13px;
+    font-weight: 400;
     padding: 0;
     text-align: start;
   }
 
-  ::slotted(button[slot=title]:focus) {
+  :host-context([chrome-refresh-2023]) .title {
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .title:focus {
     outline: none;
   }
 
@@ -198,19 +209,23 @@
     height: auto;
   }
 
-  ::slotted([slot=description]) {
+  :host(:not([has-descriptions_])) .descriptions {
+    display: none;
+  }
+
+  .description {
     color: var(--cr-secondary-text-color);
     font-size: 13px;
     font-weight: 400;
   }
 
-  :host-context([chrome-refresh-2023]) ::slotted([slot=description]) {
+  :host-context([chrome-refresh-2023]) .description {
     font-size: 11px;
     font-weight: 400;
   }
 
-  ::slotted([slot=title]),
-  ::slotted([slot=description]) {
+  .title,
+  .description {
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -222,6 +237,10 @@
     display: flex;
     gap: 4px;
     min-width: fit-content;
+  }
+
+  :host(:not([has-badges_])) .badges {
+    display: none;
   }
 
   .suffix-icons {
@@ -246,25 +265,45 @@
       ::slotted(cr-icon-button[slot=suffix-icon]) {
     display: block;
   }
+
+  .url-image {
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    width: 100%;
+  }
 </style>
 
 <slot name="prefix"></slot>
 <div id="iconContainer">
-  <div class="favicon" hidden$="[[!shouldShowFavicon_(url, count)]]"
+  <div class="favicon" hidden$="[[!shouldShowFavicon_(url, size, imageUrl, count)]]"
       style$="background-image: [[getFavicon_(url)]];">
   </div>
-  <div class="folder-and-count" hidden$="[[shouldShowFavicon_(url, count)]]">
+  <img class="url-image" is="cr-auto-img"
+      hidden$="[[!shouldShowUrlImage_(url, size, imageUrl)]]"
+      auto-src="[[imageUrl]]">
+  <div class="folder-and-count" hidden$="[[!shouldShowFolderCount_(url, count)]]">
     <div class="folder cr-icon icon-folder-open"></div>
     <div class="count">[[getDisplayedCount_(count)]]</div>
   </div>
 </div>
-<div class="metadata">
-  <slot name="title"></slot>
-  <div class="descriptions">
-    <slot name="description"></slot>
-    <div class="badges"><slot name="badges"></slot></div>
+<slot name="content">
+  <div id="metadata" class="metadata">
+    <button class="title"
+        aria-label="[[getButtonAriaLabel_(title, buttonAriaLabel)]]"
+        aria-description="[[
+            getButtonAriaDescription_(description, buttonAriaDescription)]]">
+      [[title]]
+    </button>
+    <div class="descriptions">
+      <div class="description" hidden$="[[!description]]">[[description]]</div>
+      <div class="badges">
+        <slot id="badges" name="badges" on-slotchange="onBadgesSlotChange_">
+        </slot>
+      </div>
+    </div>
   </div>
-</div>
+</slot>
 <div class="suffix-icons">
   <slot name="suffix-icon"></slot>
 </div>

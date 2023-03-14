@@ -42,6 +42,9 @@ class ScreenAILibraryWrapper {
                           std::vector<int32_t>& node_ids);
 
  private:
+  template <typename T>
+  bool LoadFunction(T& function_variable, const char* function_name);
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Sets a function to receive library logs and add them to Chrome logs.
   typedef void (*SetLoggerFn)(void (*logger_func)(int /*severity*/,

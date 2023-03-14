@@ -93,6 +93,7 @@ if (is_win || is_mac || is_linux) {
       "device_management/dm_storage.h",
       "installer.cc",
       "installer.h",
+      "lock.h",
       "net/network.h",
       "persisted_data.cc",
       "persisted_data.h",
@@ -177,6 +178,7 @@ if (is_win || is_mac || is_linux) {
         "device_management/dm_storage_mac.mm",
         "installer_mac.cc",
         "ipc/ipc_security_mac.cc",
+        "lock_mac.mm",
         "mac/install_from_archive.h",
         "mac/install_from_archive.mm",
         "mac/setup/keystone.h",
@@ -187,7 +189,6 @@ if (is_win || is_mac || is_linux) {
         "policy/mac/managed_preference_policy_manager.mm",
         "policy/mac/managed_preference_policy_manager_impl.h",
         "policy/mac/managed_preference_policy_manager_impl.mm",
-        "prefs_mac.mm",
         "setup_mac.mm",
         "update_service_internal_impl_qualifying_mac.cc",
         "update_usage_stats_task_mac.mm",
@@ -227,10 +228,10 @@ if (is_win || is_mac || is_linux) {
         "device_management/dm_storage_win.cc",
         "ipc/update_service_internal_proxy_win.cc",
         "ipc/update_service_internal_proxy_win.h",
+        "lock_win.cc",
         "net/network_fetcher_win.cc",
         "policy/win/group_policy_manager.cc",
         "policy/win/group_policy_manager.h",
-        "prefs_win.cc",
         "remove_uninstalled_apps_task_win.cc",
         "setup_win.cc",
         "update_block_check_win.cc",
@@ -342,8 +343,8 @@ if (is_win || is_mac || is_linux) {
         "linux/setup/setup.cc",
         "linux/systemd_util.cc",
         "linux/systemd_util.h",
+        "lock_linux.cc",
         "net/network_fetcher_linux.cc",
-        "prefs_linux.cc",
         "setup_linux.cc",
         "update_service_internal_impl_qualifying_linux.cc",
         "update_usage_stats_task_linux.cc",
@@ -443,6 +444,7 @@ if (is_win || is_mac || is_linux) {
   }
 
   process_version("branding_header") {
+    sources = [ "//chrome/VERSION" ]
     extra_args = [
       "-e",
       "BROWSER_NAME=\"$browser_name\"",
@@ -483,7 +485,11 @@ if (is_win || is_mac || is_linux) {
       "-e",
       "LEGACY_GOOGLE_UPDATE_APPID=\"$legacy_google_update_appid\"",
       "-e",
+      "LEGACY_SERVICE_NAME_PREFIX=\"$legacy_service_name_prefix\"",
+      "-e",
       "PREFS_ACCESS_MUTEX=\"$prefs_access_mutex\"",
+      "-e",
+      "SETUP_MUTEX=\"$setup_mutex_prefix.%s.%s.%s.%s\"%(MAJOR,MINOR,BUILD,PATCH)",
     ]
 
     template_file = "updater_branding.h.in"
@@ -660,6 +666,7 @@ if (is_win || is_mac || is_linux) {
     testonly = true
     sources = [
       "app/app_server_unittest.cc",
+      "constants_unittest.cc",
       "device_management/dm_client_unittest.cc",
       "device_management/dm_message_unittest.cc",
       "device_management/dm_policy_builder_for_testing.cc",
@@ -671,6 +678,7 @@ if (is_win || is_mac || is_linux) {
       "external_constants_builder.h",
       "external_constants_builder_unittest.cc",
       "external_constants_override_unittest.cc",
+      "lock_unittest.cc",
       "net/network_unittest.cc",
       "persisted_data_unittest.cc",
       "policy/dm_policy_manager_unittest.cc",
@@ -688,6 +696,7 @@ if (is_win || is_mac || is_linux) {
       "test/server.cc",
       "test/server.h",
       "test_scope.h",
+      "update_service_impl_inactive_unittest.cc",
       "update_service_unittest.cc",
       "update_usage_stats_task_unittest.cc",
       "updater_scope_unittest.cc",
@@ -742,6 +751,7 @@ if (is_win || is_mac || is_linux) {
         "win/installer_api_unittest.cc",
         "win/manifest_util_unittest.cc",
         "win/protocol_parser_xml_unittest.cc",
+        "win/setup/setup_util_unittest.cc",
         "win/tag_extractor_unittest.cc",
         "win/task_scheduler_unittest.cc",
         "win/ui/l10n_util_unittest.cc",
@@ -901,7 +911,10 @@ if (is_win || is_mac || is_linux) {
     }
 
     if (is_posix) {
-      sources += [ "app/server/posix/rpc_unittests.cc" ]
+      sources += [
+        "app/server/posix/rpc_unittests.cc",
+        "util/posix_util_unittest.cc",
+      ]
 
       deps += [ "//chrome/updater/app/server/posix/mojom" ]
     }

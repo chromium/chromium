@@ -48,6 +48,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_shm.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_drag_controller.h"
+#include "ui/ozone/platform/wayland/host/wayland_zaura_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_management_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_manager.h"
@@ -138,6 +139,8 @@ bool WaylandConnection::Initialize() {
                               &OverlayPrioritizer::Instantiate);
   RegisterGlobalObjectFactory(SurfaceAugmenter::kInterfaceName,
                               &SurfaceAugmenter::Instantiate);
+  RegisterGlobalObjectFactory(WaylandZAuraOutputManager::kInterfaceName,
+                              &WaylandZAuraOutputManager::Instantiate);
   RegisterGlobalObjectFactory(WaylandDataDeviceManager::kInterfaceName,
                               &WaylandDataDeviceManager::Instantiate);
   RegisterGlobalObjectFactory(WaylandDrm::kInterfaceName,

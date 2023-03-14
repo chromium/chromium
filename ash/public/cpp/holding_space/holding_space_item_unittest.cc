@@ -155,6 +155,31 @@ TEST_P(HoldingSpaceItemTest, InProgressCommands) {
   EXPECT_TRUE(holding_space_item->in_progress_commands().empty());
 }
 
+// Tests identification of screen capture holding space item types.
+TEST_P(HoldingSpaceItemTest, IsScreenCapture) {
+  const HoldingSpaceItem::Type type = GetParam();
+  switch (type) {
+    case HoldingSpaceItem::Type::kScreenRecording:
+    case HoldingSpaceItem::Type::kScreenRecordingGif:
+    case HoldingSpaceItem::Type::kScreenshot:
+      EXPECT_TRUE(HoldingSpaceItem::IsScreenCapture(type));
+      return;
+    case HoldingSpaceItem::Type::kArcDownload:
+    case HoldingSpaceItem::Type::kDiagnosticsLog:
+    case HoldingSpaceItem::Type::kDownload:
+    case HoldingSpaceItem::Type::kDriveSuggestion:
+    case HoldingSpaceItem::Type::kLacrosDownload:
+    case HoldingSpaceItem::Type::kLocalSuggestion:
+    case HoldingSpaceItem::Type::kNearbyShare:
+    case HoldingSpaceItem::Type::kPhoneHubCameraRoll:
+    case HoldingSpaceItem::Type::kPinnedFile:
+    case HoldingSpaceItem::Type::kPrintedPdf:
+    case HoldingSpaceItem::Type::kScan:
+      EXPECT_FALSE(HoldingSpaceItem::IsScreenCapture(type));
+      return;
+  }
+}
+
 // Tests progress for each holding space item type.
 TEST_P(HoldingSpaceItemTest, Progress) {
   // Create a `holding_space_item` w/ explicitly specified progress.

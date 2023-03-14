@@ -6,9 +6,11 @@ found in the LICENSE file.
 -->
 
 <resources>
-  <dimen name="privacy_guide_illustration_height">120dp</dimen>
-  <dimen name="privacy_guide_illustration_width">215dp</dimen>
-  <dimen name="done_step_explanation_marginHorizontal">16dp</dimen>
+  <dimen name="all_content_marginHorizontal">16dp</dimen>
+  <dimen name="welcome_done_step_illustration_marginVertical">32dp</dimen>
+  <dimen name="setting_step_illustration_marginVertical">16dp</dimen>
+  <dimen name="setting_step_illustration_height">130dp</dimen>
+  <dimen name="setting_step_illustration_width">300dp</dimen>
   <dimen name="done_step_explanation_marginBottom">8dp</dimen>
   <dimen name="done_step_link_button_size">20dp</dimen>
   <dimen name="done_step_link_button_marginHorizontal">4dp</dimen>

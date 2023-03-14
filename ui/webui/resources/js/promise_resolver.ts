@@ -17,8 +17,8 @@
  */
 
 export class PromiseResolver<T> {
-  private resolve_: (arg: T) => void;
-  private reject_: (arg: any) => void;
+  private resolve_: (arg: T) => void = () => {};
+  private reject_: (arg: any) => void = () => {};
   private isFulfilled_: boolean = false;
   private promise_: Promise<T>;
 

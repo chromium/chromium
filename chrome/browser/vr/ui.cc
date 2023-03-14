@@ -273,7 +273,6 @@ void Ui::SetOmniboxSuggestions(std::vector<OmniboxSuggestion> suggestions) {
 
 void Ui::ShowSoftInput(bool show) {
   if (model_->needs_keyboard_update) {
-    browser_->OnUnsupportedMode(UiUnsupportedMode::kNeedsKeyboardUpdate);
     return;
   }
   model_->editing_web_input = show;
@@ -362,18 +361,13 @@ void Ui::OnMenuButtonClicked() {
   }
 
   if (model_->hosted_platform_ui.hosted_ui_enabled) {
-    browser_->CloseHostedDialog();
     return;
   }
 
   // Menu button click exits the WebVR presentation and fullscreen.
   browser_->ExitPresent();
-  browser_->ExitFullscreen();
 
   switch (model_->get_last_opaque_mode()) {
-    case kModeVoiceSearch:
-      browser_->SetVoiceSearchActive(false);
-      break;
     case kModeEditingOmnibox:
       model_->pop_mode(kModeEditingOmnibox);
       break;

@@ -73,6 +73,27 @@ class HeadlessModeBrowserTestWithStartWindowMode
 // Toggles browser fullscreen mode synchronously.
 void ToggleFullscreenModeSync(Browser* browser);
 
+class HeadlessModeBrowserTestWithWindowSize : public HeadlessModeBrowserTest {
+ public:
+  static constexpr gfx::Size kWindowSize = {4096, 2160};
+
+  HeadlessModeBrowserTestWithWindowSize() = default;
+  ~HeadlessModeBrowserTestWithWindowSize() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override;
+};
+
+class HeadlessModeBrowserTestWithWindowSizeAndScale
+    : public HeadlessModeBrowserTest {
+ public:
+  static constexpr gfx::Size kWindowSize = {800, 600};
+
+  HeadlessModeBrowserTestWithWindowSizeAndScale() = default;
+  ~HeadlessModeBrowserTestWithWindowSizeAndScale() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override;
+};
+
 }  // namespace headless
 
 #endif  // CHROME_BROWSER_HEADLESS_HEADLESS_MODE_BROWSERTEST_H_

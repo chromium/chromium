@@ -47,7 +47,9 @@ class NavigateEvent final : public Event,
                 const AtomicString& type,
                 NavigateEventInit* init);
 
-  void SetUrl(const KURL& url) { url_ = url; }
+  void SetDispatchParams(NavigateEventDispatchParams* dispatch_params) {
+    dispatch_params_ = dispatch_params;
+  }
 
   String navigationType() { return navigation_type_; }
   NavigationDestination* destination() { return destination_; }
@@ -61,19 +63,17 @@ class NavigateEvent final : public Event,
 
   void intercept(NavigationInterceptOptions*, ExceptionState&);
 
+  void DoCommit();
+
   void scroll(ExceptionState&);
-  void PotentiallyProcessScrollBehavior();
 
-  const HeapVector<ScriptPromise>& GetNavigationActionPromisesList() {
-    return navigation_action_promises_list_;
+  void Finish(bool did_fulfill);
+
+  ScriptPromise GetReactionPromiseAll(ScriptState*);
+  bool HasNavigationActions() const {
+    return intercept_state_ != InterceptState::kNone;
   }
-  bool HasNavigationActions() const { return has_navigation_actions_; }
   void FinalizeNavigationActionPromisesList();
-
-  void ResetFocusIfNeeded();
-  bool ShouldSendAxEvents() const;
-
-  void SaveStateFromDestinationItem(HistoryItem*);
 
   // FocusedElementChangeObserver implementation:
   void DidChangeFocus() final;
@@ -82,7 +82,11 @@ class NavigateEvent final : public Event,
   void Trace(Visitor*) const final;
 
  private:
-  void DefinitelyProcessScrollBehavior();
+  bool PerformSharedChecks(const String& function_name, ExceptionState&);
+
+  void PotentiallyResetTheFocus();
+  void PotentiallyProcessScrollBehavior();
+  void ProcessScrollBehavior();
 
   String navigation_type_;
   Member<NavigationDestination> destination_;
@@ -95,16 +99,21 @@ class NavigateEvent final : public Event,
   ScriptValue info_;
   absl::optional<V8NavigationFocusReset> focus_reset_behavior_ = absl::nullopt;
   absl::optional<V8NavigationScrollBehavior> scroll_behavior_ = absl::nullopt;
-  absl::optional<HistoryItem::ViewState> history_item_view_state_;
 
-  KURL url_;
-  bool has_navigation_actions_ = false;
+  Member<NavigateEventDispatchParams> dispatch_params_;
+
+  enum class InterceptState {
+    kNone,
+    kIntercepted,
+    kCommitted,
+    kScrolled,
+    kFinished
+  };
+  InterceptState intercept_state_ = InterceptState::kNone;
+
   HeapVector<ScriptPromise> navigation_action_promises_list_;
   HeapVector<Member<V8NavigationInterceptHandler>>
       navigation_action_handlers_list_;
-
-  bool did_process_scroll_behavior_ = false;
-  bool did_finish_ = false;
   bool did_change_focus_during_intercept_ = false;
 };
 

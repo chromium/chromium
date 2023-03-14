@@ -7,6 +7,7 @@
 #include <algorithm>
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_data.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_named_line_collection.h"
+#include "third_party/blink/renderer/core/style/computed_grid_track_list.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/grid_area.h"
 #include "third_party/blink/renderer/core/style/grid_position.h"
@@ -29,8 +30,12 @@ static inline String ImplicitNamedGridLineForSide(const String& line_name,
 NGGridLineResolver::NGGridLineResolver(
     const ComputedStyle& grid_style,
     const NGGridLineResolver& parent_line_resolver,
-    GridArea subgrid_area)
+    GridArea subgrid_area,
+    wtf_size_t column_auto_repetitions,
+    wtf_size_t row_auto_repetitions)
     : style_(&grid_style),
+      column_auto_repetitions_(column_auto_repetitions),
+      row_auto_repetitions_(row_auto_repetitions),
       subgridded_columns_merged_explicit_grid_line_names_(
           grid_style.GridTemplateColumns().named_grid_lines),
       subgridded_rows_merged_explicit_grid_line_names_(
@@ -44,13 +49,17 @@ NGGridLineResolver::NGGridLineResolver(
   if (subgrid_area.rows.IsTranslatedDefinite())
     subgridded_row_span_size_ = subgrid_area.SpanSize(kForRows);
 
+  // TODO(kschmi) - use a collector design (similar to
+  // `OrderedNamedLinesCollector`) to collect all of the lines first and then
+  // do a single step of filtering and adding them to the subgrid list. Also
+  // consider moving these to class methods.
   auto MergeNamedGridLinesWithParent =
       [](NamedGridLinesMap& subgrid_map, const NamedGridLinesMap& parent_map,
          GridSpan subgrid_span, bool is_opposite_direction_to_parent) -> void {
     // Update `subgrid_map` to a merged map from a parent grid or subgrid map
     // (`parent_map`). The map is a key-value store with keys as the line name
     // and the value as an array of ascending indices.
-    for (auto& pair : parent_map) {
+    for (const auto& pair : parent_map) {
       // TODO(kschmi) : Benchmark whether this is faster with an std::map, which
       // would eliminate the need for sorting and removing duplicates below.
       // Perf will vary based on the number of named lines defined.
@@ -74,9 +83,12 @@ NGGridLineResolver::NGGridLineResolver(
       // to index 0 and don't need to be offset.
       const auto& existing_entry = subgrid_map.find(pair.key);
       if (existing_entry != subgrid_map.end()) {
-        for (auto& value : existing_entry->value)
+        for (const auto& value : existing_entry->value) {
           merged_list.push_back(value);
+        }
 
+        // TODO(kschmi): Reverse the list if `is_opposite_direction_to_parent`
+        // and there was no existing entry, as it will be sorted backwards.
         std::sort(merged_list.begin(), merged_list.end());
 
         // Remove any duplicated entries in the sorted list. Duplicates can
@@ -93,16 +105,13 @@ NGGridLineResolver::NGGridLineResolver(
                           merged_list.end());
       }
 
-      // Override the existing subgrid's line names map with the new merged list
-      // for this particular line name entry. If `merged_list` list is empty,
-      // (this can happen when all entries for a particular line name are out
-      // of the subgrid range), erase the entry entirely, as
-      // `NGGridNamedLineCollection` doesn't support named line entries without
-      // values.
-      if (merged_list.empty())
-        subgrid_map.erase(pair.key);
-      else
+      // Override the existing subgrid's line names map with the new merged
+      // list for this particular line name entry. `merged_list` list can be
+      // empty if all entries for a particular line name are out of the
+      // subgrid range.
+      if (!merged_list.empty()) {
         subgrid_map.Set(pair.key, merged_list);
+      }
     }
   };
   auto MergeImplicitLinesWithParent = [&](NamedGridLinesMap& subgrid_map,
@@ -112,7 +121,7 @@ NGGridLineResolver::NGGridLineResolver(
     // First, clamp the existing `subgrid_map` to the subgrid range before
     // merging. These are positive and relative to index 0, so we only need to
     // clamp values above `subgrid_span_size`.
-    for (auto& pair : subgrid_map) {
+    for (const auto& pair : subgrid_map) {
       WTF::Vector<wtf_size_t> clamped_list;
       for (const auto& position : pair.value) {
         if (position > subgrid_span_size)
@@ -126,7 +135,7 @@ NGGridLineResolver::NGGridLineResolver(
     // Update `subgrid_map` to a merged map from a parent grid or subgrid map
     // (`parent_map`). The map is a key-value store with keys as the implicit
     // line name and the value as an array of ascending indices.
-    for (auto& pair : parent_map) {
+    for (const auto& pair : parent_map) {
       WTF::Vector<wtf_size_t> merged_list;
       for (const auto& position : pair.value) {
         auto IsGridAreaInSubgridRange = [&]() -> bool {
@@ -159,7 +168,8 @@ NGGridLineResolver::NGGridLineResolver(
               const auto& opposite_line_entry =
                   parent_map.find(opposite_line_name);
               if (opposite_line_entry != parent_map.end()) {
-                for (auto& opposite_position : opposite_line_entry->value) {
+                for (const auto& opposite_position :
+                     opposite_line_entry->value) {
                   if (subgrid_span.Contains(opposite_position))
                     return true;
                 }
@@ -194,21 +204,107 @@ NGGridLineResolver::NGGridLineResolver(
         // index 0 and don't need to be offset.
         const auto& existing_entry = subgrid_map.find(pair.key);
         if (existing_entry != subgrid_map.end()) {
-          for (auto& value : existing_entry->value)
+          for (const auto& value : existing_entry->value) {
             merged_list.push_back(value);
+          }
           std::sort(merged_list.begin(), merged_list.end());
         }
 
         // Override the existing subgrid's line names map with the new merged
-        // list for this particular line name entry. If `merged_list` list is
-        // empty, (this can happen when all entries for a particular line name
-        // are out of the subgrid range), erase the entry entirely, as
-        // `NGGridNamedLineCollection` doesn't support named line entries
-        // without values.
-        if (merged_list.empty())
-          subgrid_map.erase(pair.key);
-        else
+        // list for this particular line name entry. `merged_list` list can be
+        // empty if all entries for a particular line name are out of the
+        // subgrid range.
+        if (!merged_list.empty()) {
           subgrid_map.Set(pair.key, merged_list);
+        }
+      }
+    }
+  };
+  auto ExpandAutoRepeatTracksFromParent =
+      [](NamedGridLinesMap& subgrid_map,
+         const NamedGridLinesMap& parent_auto_repeat_map,
+         const blink::ComputedGridTrackList& track_list, GridSpan subgrid_span,
+         wtf_size_t auto_repetitions,
+         bool is_opposite_direction_to_parent) -> void {
+    const wtf_size_t auto_repeat_track_count =
+        track_list.TrackList().AutoRepeatTrackCount();
+    const wtf_size_t auto_repeat_total_tracks =
+        auto_repeat_track_count * auto_repetitions;
+    if (auto_repeat_total_tracks == 0) {
+      return;
+    }
+
+    // First, we need to offset the existing (non auto repeat) line names that
+    // come after the auto repeater. This is because they were parsed without
+    // knowledge of the number of repeats. Now that we know how many auto
+    // repeats there are, we need to shift the existing entries by the total
+    // number of auto repeat tracks.
+    // TODO(kschmi): Do we also need to do this for implicit lines?
+    const wtf_size_t insertion_point = track_list.auto_repeat_insertion_point;
+    const wtf_size_t last_auto_repeat_index =
+        insertion_point + auto_repeat_total_tracks;
+    for (const auto& pair : subgrid_map) {
+      WTF::Vector<wtf_size_t> shifted_list;
+      for (const auto& position : pair.value) {
+        if (position >= insertion_point) {
+          wtf_size_t expanded_position = position + last_auto_repeat_index;
+          // These have already been offset relative to index 0, so explicitly
+          // do not offset by `subgrid_span` like we do below.
+          if (subgrid_span.Contains(expanded_position)) {
+            shifted_list.push_back(expanded_position);
+          }
+        }
+      }
+      subgrid_map.Set(pair.key, shifted_list);
+    }
+
+    // Now expand the auto repeaters into `subgrid_map`.
+    for (const auto& pair : parent_auto_repeat_map) {
+      Vector<wtf_size_t, 16> merged_list;
+      for (const auto& position : pair.value) {
+        // The outer loop is the number of repeats.
+        for (wtf_size_t i = 0; i < auto_repetitions; ++i) {
+          // The inner loop expands out a single repeater.
+          for (wtf_size_t j = 0; j < auto_repeat_track_count; ++j) {
+            // The expanded position always starts at the insertion point, then
+            // factors in the line name index, incremented by both auto repeat
+            // loops.
+            wtf_size_t expanded_position = insertion_point + position + i + j;
+
+            // Filter out parent named lines that are out of the subgrid range.
+            // Also offset entries by `subgrid_start_line` before inserting them
+            // into the merged map so they are all relative to offset 0. These
+            // are already in ascending order so there's no need to sort.
+            if (subgrid_span.Contains(expanded_position)) {
+              if (is_opposite_direction_to_parent) {
+                merged_list.push_back(subgrid_span.EndLine() -
+                                      expanded_position);
+              } else {
+                merged_list.push_back(expanded_position -
+                                      subgrid_span.StartLine());
+              }
+            }
+          }
+        }
+
+        // If there's a name collision, merge the values and sort. These are
+        // from the subgrid and not the parent, so they are already relative to
+        // index 0 and don't need to be offset.
+        const auto& existing_entry = subgrid_map.find(pair.key);
+        if (existing_entry != subgrid_map.end()) {
+          for (const auto& value : existing_entry->value) {
+            merged_list.push_back(value);
+          }
+          // TODO(kschmi): Reverse the list if `is_opposite_direction_to_parent`
+          // and there was no existing entry, as it will be sorted backwards.
+          std::sort(merged_list.begin(), merged_list.end());
+        }
+
+        // If the merged list is empty, it means that all of the entries from
+        // the parent were out of the subgrid range.
+        if (!merged_list.empty()) {
+          subgrid_map.Set(pair.key, merged_list);
+        }
       }
     }
   };
@@ -226,6 +322,13 @@ NGGridLineResolver::NGGridLineResolver(
         *subgridded_columns_merged_implicit_grid_line_names_,
         parent_line_resolver.ImplicitNamedLinesMap(kForColumns),
         subgrid_area.columns);
+    // Expand auto repeaters from the parent into the named line map.
+    ExpandAutoRepeatTracksFromParent(
+        *subgridded_columns_merged_explicit_grid_line_names_,
+        parent_line_resolver.AutoRepeatLineNamesMap(kForColumns),
+        parent_line_resolver.ComputedGridTrackList(kForColumns),
+        subgrid_area.columns, parent_line_resolver.AutoRepetitions(kForColumns),
+        is_opposite_direction_to_parent);
   }
   if (subgrid_area.rows.IsTranslatedDefinite()) {
     MergeNamedGridLinesWithParent(
@@ -236,6 +339,13 @@ NGGridLineResolver::NGGridLineResolver(
         *subgridded_rows_merged_implicit_grid_line_names_,
         parent_line_resolver.ImplicitNamedLinesMap(kForRows),
         subgrid_area.rows);
+    // Expand auto repeaters from the parent into the named line map.
+    ExpandAutoRepeatTracksFromParent(
+        *subgridded_rows_merged_explicit_grid_line_names_,
+        parent_line_resolver.AutoRepeatLineNamesMap(kForRows),
+        parent_line_resolver.ComputedGridTrackList(kForRows), subgrid_area.rows,
+        parent_line_resolver.AutoRepetitions(kForRows),
+        is_opposite_direction_to_parent);
   }
 }
 
@@ -491,6 +601,13 @@ const NamedGridLinesMap& NGGridLineResolver::ExplicitNamedLinesMap(
   return subgrid_merged_grid_line_names
              ? *subgrid_merged_grid_line_names
              : ComputedGridTrackList(track_direction).named_grid_lines;
+}
+
+const NamedGridLinesMap& NGGridLineResolver::AutoRepeatLineNamesMap(
+    GridTrackSizingDirection track_direction) const {
+  // Auto repeat line names always come from the style object, as they get
+  // merged into the explicit line names map for subgrids.
+  return ComputedGridTrackList(track_direction).auto_repeat_named_grid_lines;
 }
 
 const blink::ComputedGridTrackList& NGGridLineResolver::ComputedGridTrackList(

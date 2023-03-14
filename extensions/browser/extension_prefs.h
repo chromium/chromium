@@ -78,7 +78,7 @@ class URLPatternSet;
 //       maintains as the underlying extensions change.
 class ExtensionPrefs : public KeyedService {
  public:
-  using ExtensionsInfo = std::vector<std::unique_ptr<ExtensionInfo>>;
+  using ExtensionsInfo = std::vector<ExtensionInfo>;
 
   // Vector containing identifiers for preferences.
   typedef std::set<std::string> PrefKeySet;
@@ -309,7 +309,7 @@ class ExtensionPrefs : public KeyedService {
 
   void UpdateExtensionPref(const std::string& id,
                            base::StringPiece key,
-                           std::unique_ptr<base::Value> value);
+                           absl::optional<base::Value> value);
 
   void DeleteExtensionPrefs(const std::string& id);
 
@@ -570,8 +570,8 @@ class ExtensionPrefs : public KeyedService {
       bool include_component_extensions = false) const;
 
   // Returns the ExtensionInfo from the prefs for the given extension. If the
-  // extension is not present, NULL is returned.
-  std::unique_ptr<ExtensionInfo> GetInstalledExtensionInfo(
+  // extension is not present, absl::nullopt is returned.
+  absl::optional<ExtensionInfo> GetInstalledExtensionInfo(
       const std::string& extension_id,
       bool include_component_extensions = false) const;
 
@@ -596,8 +596,8 @@ class ExtensionPrefs : public KeyedService {
   bool FinishDelayedInstallInfo(const std::string& extension_id);
 
   // Returns the ExtensionInfo from the prefs for delayed install information
-  // for |extension_id|, if we have any. Otherwise returns NULL.
-  std::unique_ptr<ExtensionInfo> GetDelayedInstallInfo(
+  // for |extension_id|, if we have any. Otherwise returns absl::nullopt.
+  absl::optional<ExtensionInfo> GetDelayedInstallInfo(
       const std::string& extension_id) const;
 
   DelayReason GetDelayedInstallReason(const std::string& extension_id) const;
@@ -823,7 +823,7 @@ class ExtensionPrefs : public KeyedService {
   // Helper function used by GetInstalledExtensionInfo() and
   // GetDelayedInstallInfo() to construct an ExtensionInfo from the provided
   // |extension| dictionary.
-  std::unique_ptr<ExtensionInfo> GetInstalledInfoHelper(
+  absl::optional<ExtensionInfo> GetInstalledInfoHelper(
       const std::string& extension_id,
       const base::Value::Dict& extension,
       bool include_component_extensions) const;

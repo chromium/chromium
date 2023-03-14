@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -24,6 +25,7 @@ constexpr char kRemoveAttemptResultHistogram[] =
 
 constexpr base::TimeDelta kDefaultOverrideInterval = base::Minutes(1);
 constexpr base::TimeDelta kOneDay = base::Days(1);
+constexpr base::TimeDelta kInitialDelay = base::Seconds(30);
 
 void OnRemoveConfigurationSuccess(const std::string guid) {
   base::UmaHistogramBoolean(kRemoveAttemptResultHistogram, true);
@@ -72,15 +74,20 @@ void HiddenNetworkHandler::Init(
 
 void HiddenNetworkHandler::SetNetworkMetadataStore(
     NetworkMetadataStore* network_metadata_store) {
-  if (network_metadata_store_)
+  if (network_metadata_store_) {
+    initial_delay_timer_.Stop();
     daily_event_timer_.Stop();
+  }
 
   network_metadata_store_ = network_metadata_store;
-  if (!network_metadata_store_)
+  if (!network_metadata_store_) {
     return;
+  }
 
-  CleanHiddenNetworks();
-
+  initial_delay_timer_.Start(
+      FROM_HERE, kInitialDelay,
+      base::BindOnce(&HiddenNetworkHandler::CleanHiddenNetworks,
+                     base::Unretained(this)));
   daily_event_timer_.Start(
       FROM_HERE, ComputeMigrationInterval(),
       base::BindRepeating(&HiddenNetworkHandler::CleanHiddenNetworks,
@@ -96,8 +103,9 @@ void HiddenNetworkHandler::CleanHiddenNetworks() {
   size_t remove_network_attempts = 0;
 
   for (const NetworkState* state : state_list) {
-    if (!state->hidden_ssid() || state->IsManagedByPolicy())
+    if (!state->hidden_ssid() || state->IsManagedByPolicy()) {
       continue;
+    }
 
     // The last connected timestamp for a network will be zero if the network
     // has never been connected to.

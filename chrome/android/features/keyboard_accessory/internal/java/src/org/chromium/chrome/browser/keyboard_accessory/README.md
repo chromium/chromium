@@ -37,8 +37,8 @@ a number of signals. One example:
 1. The component is in the HIDDEN state.
 1. The signal `showWhenKeyboardIsVisible()` sets the state to `FLOATING_BAR`.
 1. The component checks in `meetsStatePreconditions()` whether the set state
-   fulfills all state-dependent preconditions (e.g. "is VR mode active?" if so,
-   it would transition into the `HIDDEN` state instead.)
+   fulfills all state-dependent preconditions (if so, it would transition into
+   the `HIDDEN` state instead.)
 1. In `enforceStateProperties`, the filling component modifies the subcomponents
    according to the new state which means it:
    1. shows the keyboard accessory bar
@@ -70,16 +70,26 @@ since these untethered states either:
 * couldn't show a keyboard anyway (because multi-window/hardware suppresses it
   but Chrome doesn't know that beforehand)
 
-|   ID   | State              | Accessory Bar            | Fallback Sheet                          | Floats  | Transition into*
-|--------|--------------------|--------------------------|-----------------------------------------|---------|-
-| 0x0100 | HIDDEN             | Hidden                   | Hidden                                  | N/A     | FLOATING_BAR, REPLACING_KEYBOARD
-| 0x0101 | EXTENDING_KEYBOARD | **Visible**              | Hidden                                  | No      | WAITING_TO_REPLACE
-| 0x0001 | WAITING_TO_REPLACE | **Visible**              | N/A — waits for keyboard to (dis)appear | No      | REPLACING_KEYBOARD
-| 0x0011 | REPLACING_KEYBOARD | **Visible** as title bar | **Visible**                             | No      | FLOATING_SHEET
-| 0x1101 | FLOATING_BAR       | **Visible**              | Hidden                                  | **Yes** |FLOATING_SHEET
-| 0x1011 | FLOATING_SHEET     | **Visible** as title bar | **Visible**                             | **Yes** | FLOATING_BAR
+|   ID   | State                 | Accessory Bar            | Fallback Sheet                          | Floats  | Transition into*
+|--------|-----------------------|--------------------------|-----------------------------------------|---------|-
+| 0x0100 | HIDDEN                | Hidden                   | Hidden                                  | N/A     | FLOATING_BAR, REPLACING_KEYBOARD, REPLACING_KEYBOARD_V2
+| 0x0101 | EXTENDING_KEYBOARD    | **Visible**              | Hidden                                  | No      | WAITING_TO_REPLACE, WAITING_TO_REPLACE_V2
+| 0x0001 | WAITING_TO_REPLACE    | **Visible**              | N/A — waits for keyboard to (dis)appear | No      | REPLACING_KEYBOARD
+| 0x0000 | WAITING_TO_REPLACE_V2 | Hidden                   | N/A — waits for keyboard to (dis)appear | No      | REPLACING_KEYBOARD_V2
+| 0x0011 | REPLACING_KEYBOARD    | **Visible** as title bar | **Visible**                             | No      | FLOATING_SHEET
+| 0x0010 | REPLACING_KEYBOARD_V2 | Hidden                   | **Visible**                             | No      | FLOATING_SHEET_V2
+| 0x1101 | FLOATING_BAR          | **Visible**              | Hidden                                  | **Yes** | FLOATING_SHEET, FLOATING_SHEET_V2
+| 0x1011 | FLOATING_SHEET        | **Visible** as title bar | **Visible**                             | **Yes** | FLOATING_BAR
+| 0x1010 | FLOATING_SHEET_V2     | Hidden                   | **Visible**                             | **Yes** | FLOATING_BAR
 
 \* Excluding HIDDEN and EXTENDING_KEYBOARD which can be entered from any state.
+
+In V2 (See [Versioning](#versioning) below), the sheet selector component
+(KeyboardAccessoryTabLayoutComponent) is not visible to the user. Therefore
+REPLACING_KEYBOARD, FLOATING_SHEET and WAITING_TO_REPLACE states are not
+usable. States ending with V2 remove the bar requirement from those states and
+are available only if V2 is enabled. V2 states must not be used when V2 is not
+enabled. They must be replaced with non V2 equivalents once V2 is launched.
 
 ### Using providers to push data
 

@@ -11,7 +11,6 @@ import {ChromeVoxEvent} from '../common/custom_automation_event.js';
 import {EventSourceType} from '../common/event_source_type.js';
 
 import {ChromeVoxRange} from './chromevox_range.js';
-import {ChromeVoxState} from './chromevox_state.js';
 import {EventSource} from './event_source.js';
 import {Output} from './output/output.js';
 
@@ -35,7 +34,7 @@ export class BaseAutomationHandler {
   /**
    * Adds an event listener to this handler.
    * @param {EventType} eventType
-   * @param {!function(!AutomationEvent): void} eventCallback
+   * @param {!function(!AutomationEvent)} eventCallback
    * @protected
    */
   addListener_(eventType, eventCallback) {
@@ -99,7 +98,7 @@ export class BaseAutomationHandler {
     }
 
     // Decide whether to announce and sync this event.
-    const prevRange = ChromeVoxState.instance.getCurrentRangeWithoutRecovery();
+    const prevRange = ChromeVoxRange.getCurrentRangeWithoutRecovery();
     if ((prevRange && !prevRange.requiresRecovery()) &&
         BaseAutomationHandler.disallowEventFromAction(evt)) {
       return;

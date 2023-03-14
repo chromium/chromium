@@ -38,7 +38,7 @@ enum class NativePixmapSupportType {
   kDMABuf,
 
   // Native pixmaps are first imported as X11 pixmaps using DRI3 and then into
-  // EGL. Using pixmap imports is currently not supported.
+  // EGL.
   kX11Pixmap,
 };
 
@@ -70,9 +70,7 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
   }
 
   bool CanImportNativePixmap() override {
-    // TODO(crbug.com/1236697): enable X11Pixmap support when the Vaapi
-    // pipeline supports it.
-    return support_type_ == NativePixmapSupportType::kDMABuf;
+    return support_type_ != NativePixmapSupportType::kNone;
   }
 
   std::unique_ptr<NativePixmapGLBinding> ImportNativePixmap(

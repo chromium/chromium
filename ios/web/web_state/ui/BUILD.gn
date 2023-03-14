@@ -35,6 +35,7 @@ source_set("ui") {
     "//ios/web/navigation:wk_navigation_util",
     "//ios/web/net:net",
     "//ios/web/public",
+    "//ios/web/public/annotations",
     "//ios/web/public/deprecated",
     "//ios/web/public/download",
     "//ios/web/public/find_in_page",

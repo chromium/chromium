@@ -125,8 +125,14 @@ bool GetCommandDictAndOutputPaths(base::Value::Dict* commands,
     *pdf_file_path = path;
 
     base::Value::Dict params;
-    if (command_line->HasSwitch(switches::kPrintToPDFNoHeader)) {
+    if (command_line->HasSwitch(switches::kNoPDFHeaderFooter) ||
+        command_line->HasSwitch(switches::kPrintToPDFNoHeaderDeprecated)) {
       params.Set("noHeaderFooter", true);
+    }
+
+    if (command_line->HasSwitch(switches::kPrintToPDFNoHeaderDeprecated)) {
+      LOG(WARNING) << "--" << switches::kPrintToPDFNoHeaderDeprecated
+                   << " is deprecated, use --" << switches::kNoPDFHeaderFooter;
     }
 
     commands->Set("printToPDF", std::move(params));
@@ -275,7 +281,8 @@ bool HeadlessCommandHandler::HasHeadlessCommandSwitches(
       switches::kDefaultBackgroundColor,
       switches::kDumpDom,
       switches::kPrintToPDF,
-      switches::kPrintToPDFNoHeader,
+      switches::kPrintToPDFNoHeaderDeprecated,
+      switches::kNoPDFHeaderFooter,
       switches::kScreenshot,
       switches::kTimeout,
       switches::kVirtualTimeBudget,

@@ -9,7 +9,6 @@
 #include <mach/mach_vm.h>
 #include <sys/mman.h>
 
-#include "base/allocator/partition_allocator/partition_alloc_base/migration_adapter.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/check_op.h"
 #include "base/debug/proc_maps_linux.h"

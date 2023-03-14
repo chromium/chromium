@@ -125,7 +125,6 @@ public class TabGridIphTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1416886")
     public void testShowAndHideIphDialog() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
@@ -133,7 +132,7 @@ public class TabGridIphTest {
         CriteriaHelper.pollUiThread(
                 TabSwitcherCoordinator::hasAppendedMessagesForTesting);
         // Check the IPH message card is showing and open the IPH dialog.
-        onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
         onView(allOf(withId(R.id.action_button), withParent(withId(R.id.tab_grid_message_item))))
                 .perform(click());
         verifyIphDialogShowing(cta);
@@ -143,7 +142,7 @@ public class TabGridIphTest {
         verifyIphDialogHiding(cta);
 
         // Check the IPH message card is showing and open the IPH dialog.
-        onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
         onView(allOf(withId(R.id.action_button), withParent(withId(R.id.tab_grid_message_item))))
                 .perform(click());
         verifyIphDialogShowing(cta);
@@ -151,10 +150,10 @@ public class TabGridIphTest {
         // Press back should dismiss the IPH dialog.
         pressBack();
         verifyIphDialogHiding(cta);
-        onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
 
         // Check the IPH message card is showing and open the IPH dialog.
-        onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
         onView(allOf(withId(R.id.action_button), withParent(withId(R.id.tab_grid_message_item))))
                 .perform(click());
         verifyIphDialogShowing(cta);
@@ -180,7 +179,7 @@ public class TabGridIphTest {
         enterTabSwitcher(cta);
         assertTrue(cta.getTabModelSelector().getCurrentModel().isIncognito());
         CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
-        onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -192,7 +191,7 @@ public class TabGridIphTest {
         enterTabSwitcher(cta);
         CriteriaHelper.pollUiThread(
                 TabSwitcherCoordinator::hasAppendedMessagesForTesting);
-        onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
 
         // Restart chrome to verify that IPH message card is still there.
         TabUiTestHelper.finishActivity(mActivityTestRule.getActivity());
@@ -201,7 +200,7 @@ public class TabGridIphTest {
         enterTabSwitcher(cta);
         CriteriaHelper.pollUiThread(
                 TabSwitcherCoordinator::hasAppendedMessagesForTesting);
-        onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
 
         // Remove the message card and dismiss the feature by clicking close button.
         onView(allOf(withId(R.id.close_button), withParent(withId(R.id.tab_grid_message_item))))
@@ -219,15 +218,16 @@ public class TabGridIphTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "crbug.com/1412391")
+    @DisabledTest(message = "https://crbug.com/1424103")
     public void testRenderIph_Portrait() throws IOException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
         enterTabSwitcher(cta);
         CriteriaHelper.pollUiThread(
                 TabSwitcherCoordinator::hasAppendedMessagesForTesting);
-        onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
 
+        ChromeRenderTestRule.sanitize(cta.findViewById(R.id.tab_grid_message_item));
         mRenderTestRule.render(
                 cta.findViewById(R.id.tab_grid_message_item), "iph_entrance_portrait");
     }
@@ -242,11 +242,12 @@ public class TabGridIphTest {
         ActivityTestUtils.rotateActivityToOrientation(cta, Configuration.ORIENTATION_LANDSCAPE);
         CriteriaHelper.pollUiThread(
                 TabSwitcherCoordinator::hasAppendedMessagesForTesting);
-        onView(allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(cta))),
-                       withId(R.id.tab_list_view)))
+        onViewWaiting(allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(cta))),
+                              withId(R.id.tab_list_view)))
                 .perform(RecyclerViewActions.scrollTo(withId(R.id.tab_grid_message_item)));
-        onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
 
+        ChromeRenderTestRule.sanitize(cta.findViewById(R.id.tab_grid_message_item));
         mRenderTestRule.render(
                 cta.findViewById(R.id.tab_grid_message_item), "iph_entrance_landscape");
     }
@@ -259,7 +260,8 @@ public class TabGridIphTest {
 
         enterTabSwitcher(cta);
         CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
-        onView(allOf(withId(R.id.action_button), withParent(withId(R.id.tab_grid_message_item))))
+        onViewWaiting(
+                allOf(withId(R.id.action_button), withParent(withId(R.id.tab_grid_message_item))))
                 .perform(click());
         verifyIphDialogShowing(cta);
 
@@ -271,6 +273,7 @@ public class TabGridIphTest {
         Animatable iphAnimation = (Animatable) iphImageView.getDrawable();
         CriteriaHelper.pollUiThread(() -> !iphAnimation.isRunning());
 
+        ChromeRenderTestRule.sanitize(iphDialogView);
         mRenderTestRule.render(iphDialogView, "iph_dialog_portrait");
     }
 
@@ -286,8 +289,8 @@ public class TabGridIphTest {
         CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
         // Scroll to the position of the IPH entrance so that it is completely showing for Espresso
         // click.
-        onView(allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(cta))),
-                       withId(R.id.tab_list_view)))
+        onViewWaiting(allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(cta))),
+                              withId(R.id.tab_list_view)))
                 .perform(RecyclerViewActions.scrollToPosition(1));
         onView(allOf(withId(R.id.action_button), withParent(withId(R.id.tab_grid_message_item))))
                 .perform(click());
@@ -301,18 +304,19 @@ public class TabGridIphTest {
         Animatable iphAnimation = (Animatable) iphImageView.getDrawable();
         CriteriaHelper.pollUiThread(() -> !iphAnimation.isRunning());
 
+        ChromeRenderTestRule.sanitize(iphDialogView);
         mRenderTestRule.render(iphDialogView, "iph_dialog_landscape");
     }
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1412947")
+    @DisabledTest(message = "https://crbug.com/1424103")
     public void testIphItemChangeWithLastTab() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
         enterTabSwitcher(cta);
         CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
-        onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
 
         // Close the last tab in tab switcher and the IPH item should not be showing.
         closeFirstTabInTabSwitcher(cta);
@@ -322,7 +326,7 @@ public class TabGridIphTest {
 
         // Undo the closure of the last tab and the IPH item should reshow.
         CriteriaHelper.pollInstrumentationThread(TabUiTestHelper::verifyUndoBarShowingAndClickUndo);
-        onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
 
         // Close the last tab in the tab switcher.
         closeFirstTabInTabSwitcher(cta);
@@ -336,7 +340,7 @@ public class TabGridIphTest {
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 1);
         CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
-        onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -345,7 +349,7 @@ public class TabGridIphTest {
     public void testSwipeToDismiss_IPH() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         enterTabSwitcher(cta);
-        onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
         RecyclerView.ViewHolder viewHolder = ((RecyclerView) cta.findViewById(R.id.tab_list_view))
                                                      .findViewHolderForAdapterPosition(1);
         assertEquals(TabProperties.UiType.MESSAGE, viewHolder.getItemViewType());
@@ -364,7 +368,7 @@ public class TabGridIphTest {
     public void testNotShowIPHInMultiWindowMode() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         enterTabSwitcher(cta);
-        onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
 
         // Mock that user enters multi-window mode, and the IPH message should not show in tab
         // switcher.
@@ -382,7 +386,7 @@ public class TabGridIphTest {
 
     private void verifyIphDialogShowing(ChromeTabbedActivity cta) {
         // Verify IPH dialog view.
-        onView(withId(R.id.iph_dialog))
+        onViewWaiting(withId(R.id.iph_dialog))
                 .inRoot(withDecorView(not(cta.getWindow().getDecorView())))
                 .check((v, noMatchException) -> {
                     if (noMatchException != null) throw noMatchException;

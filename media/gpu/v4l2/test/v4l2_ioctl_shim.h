@@ -61,12 +61,9 @@ class MmapedBuffer : public base::RefCounted<MmapedBuffer> {
 
   MmapedPlanes mmaped_planes_;
   const uint32_t num_planes_;
-  // TODO(stevecho): might be better to use constructor for default value
-  uint32_t buffer_id_ = 0;
+  uint32_t buffer_id_;
   // Indicates which frame in input bitstream corresponds to this MmapedBuffer
   // in OUTPUT queue.
-  // TODO(stevecho): might need to consider |show_frame| flag in the frame
-  // header.
   uint32_t frame_number_;
 };
 
@@ -86,9 +83,9 @@ class V4L2Queue {
   V4L2Queue& operator=(const V4L2Queue&) = delete;
   ~V4L2Queue();
 
-  // Retrieves a mmaped buffer for the given |index|, which is a decoded
+  // Retrieves a mmaped buffer for the given |buffer_id|, which is a decoded
   // surface, from MmapedBuffers.
-  scoped_refptr<MmapedBuffer> GetBuffer(const size_t index) const;
+  scoped_refptr<MmapedBuffer> GetBuffer(const size_t buffer_id) const;
 
   enum v4l2_buf_type type() const { return type_; }
   uint32_t fourcc() const { return fourcc_; }
@@ -111,13 +108,9 @@ class V4L2Queue {
   uint32_t num_planes() const { return num_planes_; }
   void set_num_planes(uint32_t num_planes) { num_planes_ = num_planes; }
 
-  // TODO(stevecho): change naming from |last_queued_buffer_index| to
-  // |last_queued_buffer_id|
-  uint32_t last_queued_buffer_index() const {
-    return last_queued_buffer_index_;
-  }
-  void set_last_queued_buffer_index(uint32_t last_queued_buffer_index) {
-    last_queued_buffer_index_ = last_queued_buffer_index;
+  uint32_t last_queued_buffer_id() const { return last_queued_buffer_id_; }
+  void set_last_queued_buffer_id(uint32_t last_queued_buffer_id) {
+    last_queued_buffer_id_ = last_queued_buffer_id;
   }
 
   int media_request_fd() const { return media_request_fd_; }
@@ -125,19 +118,17 @@ class V4L2Queue {
     media_request_fd_ = media_request_fd;
   }
 
-  std::set<uint32_t> queued_buffer_indexes() const {
-    return queued_buffer_indexes_;
+  std::set<uint32_t> queued_buffer_ids() const { return queued_buffer_ids_; }
+
+  void QueueBufferId(uint32_t last_queued_buffer_id) {
+    queued_buffer_ids_.insert(last_queued_buffer_id);
   }
 
-  void QueueBufferIndex(uint32_t last_queued_buffer_index) {
-    queued_buffer_indexes_.insert(last_queued_buffer_index);
+  void DequeueBufferId(uint32_t buffer_id) {
+    queued_buffer_ids_.erase(buffer_id);
   }
 
-  void DequeueBufferIndex(uint32_t index) {
-    queued_buffer_indexes_.erase(index);
-  }
-
-  void DequeueAllBufferIndexes() { queued_buffer_indexes_.clear(); }
+  void DequeueAllBufferIds() { queued_buffer_ids_.clear(); }
 
  private:
   const enum v4l2_buf_type type_;
@@ -155,8 +146,8 @@ class V4L2Queue {
   // to submit requests.
   int media_request_fd_;
   // Tracks which CAPTURE buffer was queued in the previous frame.
-  uint32_t last_queued_buffer_index_;
-  std::set<uint32_t> queued_buffer_indexes_;
+  uint32_t last_queued_buffer_id_;
+  std::set<uint32_t> queued_buffer_ids_;
 };
 
 // V4L2IoctlShim is a shallow wrapper which wraps V4L2 ioctl requests
@@ -203,12 +194,12 @@ class V4L2IoctlShim {
   // Enqueues an empty (capturing) or filled (output) buffer
   // in the driver's incoming |queue|.
   [[nodiscard]] bool QBuf(const std::unique_ptr<V4L2Queue>& queue,
-                          const uint32_t index) const;
+                          const uint32_t buffer_id) const;
 
   // Dequeues a filled (capturing) or decoded (output) buffer
   // from the driver’s outgoing |queue|.
   [[nodiscard]] bool DQBuf(const std::unique_ptr<V4L2Queue>& queue,
-                           uint32_t* index) const;
+                           uint32_t* buffer_id) const;
 
   // Starts streaming |queue| (via VIDIOC_STREAMON).
   [[nodiscard]] bool StreamOn(const enum v4l2_buf_type type) const;

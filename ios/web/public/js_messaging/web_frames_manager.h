@@ -40,7 +40,7 @@ class WebFramesManager {
     // `web_frame` before it is removed from the WebFramesManager. Receivers of
     // this callback must clear any stored references to `web_frame`.
     virtual void WebFrameBecameUnavailable(WebFramesManager* web_frames_manager,
-                                           const std::string frame_id) {}
+                                           const std::string& frame_id) {}
   };
 
   WebFramesManager(const WebFramesManager&) = delete;

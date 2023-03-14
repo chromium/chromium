@@ -111,11 +111,12 @@ MenuItemView* MenuModelAdapter::AddMenuItemFromModelAt(ui::MenuModel* model,
 
   ui::ImageModel icon = model->GetIconAt(model_index);
   ui::ImageModel minor_icon = model->GetMinorIconAt(model_index);
-  auto* menu_item_view =
-      menu->AddMenuItemAt(menu_index, item_id, model->GetLabelAt(model_index),
-                          model->GetSecondaryLabelAt(model_index),
-                          model->GetMinorTextAt(model_index), minor_icon, icon,
-                          *type, ui::NORMAL_SEPARATOR);
+  auto* menu_item_view = menu->AddMenuItemAt(
+      menu_index, item_id, model->GetLabelAt(model_index),
+      model->GetSecondaryLabelAt(model_index),
+      model->GetMinorTextAt(model_index), minor_icon, icon, *type,
+      ui::NORMAL_SEPARATOR, model->GetSubmenuBackgroundColor(model_index),
+      model->GetForegroundColor(model_index));
 
   if (model->IsAlertedAt(model_index))
     menu_item_view->SetAlerted();

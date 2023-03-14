@@ -20,6 +20,7 @@
 #include "ash/system/time/calendar_event_list_item_view_jelly.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -190,8 +191,8 @@ CalendarEventListView::~CalendarEventListView() = default;
 void CalendarEventListView::OnThemeChanged() {
   views::View::OnThemeChanged();
   auto color =
-      features::IsCalendarJellyEnabled()
-          ? GetColorProvider()->GetColor((cros_tokens::kCrosSysSystemOnBase))
+      features::IsCalendarJellyEnabled() && chromeos::features::IsJellyEnabled()
+          ? GetColorProvider()->GetColor((cros_tokens::kCrosSysSurfaceVariant))
           : GetColorProvider()->GetColor(kColorAshShieldAndBaseOpaque);
   SetBackground(views::CreateSolidBackground(color));
 }
@@ -225,8 +226,10 @@ std::unique_ptr<views::View> CalendarEventListView::CreateChildEventListView(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       kChildEventListBetweenChildSpacing));
 
+  const int events_size = events.size();
   for (SingleDayEventList::iterator it = events.begin(); it != events.end();
        ++it) {
+    const int event_index = std::distance(events.begin(), it) + 1;
     container->AddChildView(std::make_unique<CalendarEventListItemViewJelly>(
         /*calendar_view_controller=*/calendar_view_controller_,
         /*selected_date_params=*/
@@ -235,9 +238,14 @@ std::unique_ptr<views::View> CalendarEventListView::CreateChildEventListView(
             calendar_view_controller_->selected_date_midnight(),
             calendar_view_controller_->selected_date_midnight_utc()}, /*event=*/
         *it,
-        /*round_top_corners=*/it == events.begin(),
-        /*round_bottom_corners=*/it->id() == events.rbegin()->id(),
-        /*show_event_list_dot=*/true));
+        /*ui_params=*/
+        UIParams{/*round_top_corners=*/it == events.begin(),
+                 /*round_bottom_corners=*/it->id() == events.rbegin()->id(),
+                 /*show_event_list_dot=*/true,
+                 /*fixed_width=*/0},
+        /*event_list_item_index=*/
+        EventListItemIndex{/*item_index=*/event_index,
+                           /*total_count_of_events=*/events_size}));
   }
 
   return container;

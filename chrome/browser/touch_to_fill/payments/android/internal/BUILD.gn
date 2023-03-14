@@ -19,6 +19,7 @@ android_library("java") {
     "//chrome/browser/touch_to_fill/payments/android:public_java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/payments/content/android:minimal_java_resources",
+    "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
@@ -43,8 +44,8 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/layout/touch_to_fill_credit_card_footer_item.xml",
     "java/res/layout/touch_to_fill_credit_card_header_item.xml",
-    "java/res/layout/touch_to_fill_credit_card_sheet.xml",
     "java/res/layout/touch_to_fill_credit_card_sheet_item.xml",
     "java/res/values/dimens.xml",
   ]
@@ -62,6 +63,7 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//chrome/browser/autofill/android:java",
     "//chrome/browser/autofill/test:test_support_java",
+    "//chrome/browser/touch_to_fill/common/android:java",
     "//chrome/browser/touch_to_fill/payments/android:public_java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/autofill/android:autofill_features_java",
@@ -90,6 +92,7 @@ android_library("javatests") {
     "//chrome/browser/autofill/android:java",
     "//chrome/browser/autofill/test:test_support_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/touch_to_fill/common/android:java",
     "//chrome/browser/touch_to_fill/payments/android:public_java",
     "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
     "//chrome/browser/util:java",

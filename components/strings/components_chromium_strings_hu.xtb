@@ -27,7 +27,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />,
           és gondoskodjon róla, hogy a konfiguráció beállítása „nincs proxy” vagy „közvetlen” legyen.</translation>
+<translation id="6549378540556750549">A Chromiumot létrejöttéhez más <ph name="BEGIN_LINK_OSS" />nyílt forráskódú szoftverek<ph name="END_LINK_OSS" /> is hozzájárultak.</translation>
 <translation id="6613594504749178791">Módosításai a Chromium újraindítása után lépnek érvénybe.</translation>
+<translation id="7681937895330411637">A Chromium a <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> nyílt forráskódú projektnek köszönhetően jött létre.</translation>
 <translation id="7861509383340276692">Lépjen ide:
         Chromium menü &gt;
         <ph name="SETTINGS_TITLE" />

@@ -16,6 +16,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
+#include "ash/style/pill_button.h"
 #include "ash/style/rounded_container.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/network_icon.h"
@@ -315,8 +316,6 @@ class VPNListNetworkEntry : public HoverHighlightView,
   TrayNetworkStateModel* model_;
   const std::string guid_;
 
-  views::LabelButton* disconnect_button_ = nullptr;
-
   base::WeakPtrFactory<VPNListNetworkEntry> weak_ptr_factory_{this};
 };
 
@@ -357,7 +356,6 @@ void VPNListNetworkEntry::UpdateFromNetworkState(
     return;
   }
   Reset();
-  disconnect_button_ = nullptr;
 
   gfx::ImageSkia image =
       network_icon::GetImageForVPN(vpn, network_icon::ICON_TYPE_LIST);
@@ -366,14 +364,15 @@ void VPNListNetworkEntry::UpdateFromNetworkState(
   if (chromeos::network_config::StateIsConnected(vpn->connection_state)) {
     SetupConnectedScrollListItem(this);
     if (IsVpnConfigAllowed()) {
-      disconnect_button_ = TrayPopupUtils::CreateTrayPopupButton(
+      auto disconnect_button = std::make_unique<PillButton>(
           // TODO(stevenjb): Replace with mojo API. https://crbug.com/862420.
           base::BindRepeating(&NetworkConnect::DisconnectFromNetworkId,
                               base::Unretained(NetworkConnect::Get()), guid_),
-          l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_VPN_DISCONNECT));
-      disconnect_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
+          l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_VPN_DISCONNECT),
+          PillButton::kPrimaryWithoutIcon);
+      disconnect_button->SetAccessibleName(l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_NETWORK_DISCONNECT_BUTTON_A11Y_LABEL, label));
-      AddRightView(disconnect_button_);
+      AddRightView(disconnect_button.release());
     }
     tri_view()->SetContainerBorder(
         TriView::Container::END,

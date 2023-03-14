@@ -285,10 +285,7 @@ config("runtime_library") {
   }
 }
 
-# Chromium supports running on Windows 7, but if these constants are set to
-# Windows 7, then newer APIs aren't made available by the Windows SDK.
-# So we set this to Windows 10 and then are careful to check at runtime
-# to only call newer APIs when they're available.
+# Chromium only supports Windowes 10+.
 # Some third-party libraries assume that these defines set what version of
 # Windows is available at runtime. Targets using these libraries need to
 # manually override this config for their compiles.

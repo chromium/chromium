@@ -81,11 +81,28 @@ DictationButtonTray::DictationButtonTray(
 }
 
 DictationButtonTray::~DictationButtonTray() {
+  // This may be called during shutdown in which case some of the
+  // ash objects may already be destroyed.
   Shell* shell = Shell::Get();
+  if (!shell) {
+    return;
+  }
   shell->RemoveShellObserver(this);
-  shell->accessibility_controller()->RemoveObserver(this);
-  shell->session_controller()->RemoveObserver(this);
-  shell->window_tree_host_manager()->input_method()->RemoveObserver(this);
+  auto* accessibility_controller = shell->accessibility_controller();
+  if (accessibility_controller) {
+    accessibility_controller->RemoveObserver(this);
+  }
+  auto* session_controller = shell->session_controller();
+  if (session_controller) {
+    session_controller->RemoveObserver(this);
+  }
+  auto* window_tree_host_manager = shell->window_tree_host_manager();
+  if (window_tree_host_manager) {
+    auto* input_method = window_tree_host_manager->input_method();
+    if (input_method) {
+      input_method->RemoveObserver(this);
+    }
+  }
 }
 
 void DictationButtonTray::OnDictationStarted() {

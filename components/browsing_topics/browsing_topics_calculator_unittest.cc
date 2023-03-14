@@ -1037,4 +1037,205 @@ TEST_F(BrowsingTopicsCalculatorTest, Metrics_MoreThan5HistoryTopics) {
       /*expected_bucket_count=*/1);
 }
 
+TEST_F(BrowsingTopicsCalculatorTest, NoDescendantTopics) {
+  base::Time begin_time = base::Time::Now();
+
+  AddHistoryEntries(
+      {
+          kHost1,
+          kHost2,
+          kHost3,
+          kHost4,
+          kHost5,
+      },
+      begin_time);
+  AddApiUsageContextEntries({{kHost1, {HashedDomain(1)}},
+                             {kHost2, {HashedDomain(2)}},
+                             {kHost3, {HashedDomain(3)}},
+                             {kHost4, {HashedDomain(4)}},
+                             {kHost5, {HashedDomain(5)}}});
+
+  test_page_content_annotator_.UsePageTopics(
+      *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build(),
+      {{kHost1, TopicsAndWeight({2, 3, 4, 5, 6}, 0.1)},
+       {kHost2, TopicsAndWeight({3, 4, 5, 6}, 0.1)},
+       {kHost3, TopicsAndWeight({4, 5, 6}, 0.1)},
+       {kHost4, TopicsAndWeight({5, 6}, 0.1)},
+       {kHost5, TopicsAndWeight({6}, 0.1)}});
+
+  task_environment_.AdvanceClock(base::Seconds(1));
+
+  EpochTopics result = CalculateTopics();
+  std::vector<std::pair<Topic, std::set<HashedDomain>>>
+      expected_top_topics_and_observing_domains = {
+          {Topic(6),
+           {HashedDomain(1), HashedDomain(2), HashedDomain(3), HashedDomain(4),
+            HashedDomain(5)}},
+          {Topic(5),
+           {HashedDomain(1), HashedDomain(2), HashedDomain(3),
+            HashedDomain(4)}},
+          {Topic(4), {HashedDomain(1), HashedDomain(2), HashedDomain(3)}},
+          {Topic(3), {HashedDomain(1), HashedDomain(2)}},
+          {Topic(2), {HashedDomain(1)}}};
+  ExpectResultTopicsEqual(result.top_topics_and_observing_domains(),
+                          expected_top_topics_and_observing_domains);
+}
+
+TEST_F(BrowsingTopicsCalculatorTest, DescendantTopicIsBlocked) {
+  base::Time begin_time = base::Time::Now();
+
+  AddHistoryEntries(
+      {
+          kHost1,
+          kHost2,
+          kHost3,
+          kHost4,
+          kHost5,
+      },
+      begin_time);
+  AddApiUsageContextEntries({{kHost1, {HashedDomain(1)}},
+                             {kHost2, {HashedDomain(2)}},
+                             {kHost3, {HashedDomain(3)}},
+                             {kHost4, {HashedDomain(4)}},
+                             {kHost5, {HashedDomain(5)}}});
+
+  test_page_content_annotator_.UsePageTopics(
+      *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build(),
+      {{kHost1,
+        TopicsAndWeight({1, 2, 3, 4, 5}, 0.1)},  // 1 is the parent topic of 2-5
+       {kHost2, TopicsAndWeight({2, 3, 4, 5}, 0.1)},
+       {kHost3, TopicsAndWeight(
+                    {
+                        3,
+                        4,
+                        5,
+                    },
+                    0.1)},
+       {kHost4, TopicsAndWeight({4, 5}, 0.1)},
+       {kHost5, TopicsAndWeight({5}, 0.1)}});
+
+  privacy_sandbox_settings_->SetTopicAllowed(
+      privacy_sandbox::CanonicalTopic(Topic(5), kTaxonomyVersion),
+      /*allowed=*/false);
+
+  task_environment_.AdvanceClock(base::Seconds(1));
+
+  EpochTopics result = CalculateTopics();
+  // topic 5 is cleared but topic 1 can still see its observing domains
+  std::vector<std::pair<Topic, std::set<HashedDomain>>>
+      expected_top_topics_and_observing_domains = {
+          {Topic(), {}},
+          {Topic(4),
+           {HashedDomain(1), HashedDomain(2), HashedDomain(3),
+            HashedDomain(4)}},
+          {Topic(3), {HashedDomain(1), HashedDomain(2), HashedDomain(3)}},
+          {Topic(2), {HashedDomain(1), HashedDomain(2)}},
+          {Topic(1),
+           {HashedDomain(1), HashedDomain(2), HashedDomain(3), HashedDomain(4),
+            HashedDomain(5)}}};
+
+  ExpectResultTopicsEqual(result.top_topics_and_observing_domains(),
+                          expected_top_topics_and_observing_domains);
+}
+
+TEST_F(BrowsingTopicsCalculatorTest, TopicHasDistantDescendant) {
+  base::Time begin_time = base::Time::Now();
+
+  AddHistoryEntries(
+      {
+          kHost1,
+          kHost2,
+          kHost3,
+          kHost4,
+          kHost5,
+      },
+      begin_time);
+  AddApiUsageContextEntries({{kHost1, {HashedDomain(1)}},
+                             {kHost2, {HashedDomain(2)}},
+                             {kHost3, {HashedDomain(3)}},
+                             {kHost4, {HashedDomain(4)}},
+                             {kHost5, {HashedDomain(5)}}});
+
+  test_page_content_annotator_.UsePageTopics(
+      *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build(),
+      {{kHost1,
+        TopicsAndWeight(
+            {1, 2, 3, 4, 21},
+            0.1)},  // 1 is the parent topic of 2-4, and grandparent of 21
+       {kHost2, TopicsAndWeight({2, 3, 4, 21}, 0.1)},
+       {kHost3, TopicsAndWeight({3, 4, 21}, 0.1)},
+       {kHost4, TopicsAndWeight({4, 21}, 0.1)},
+       {kHost5, TopicsAndWeight({21}, 0.1)}});
+
+  task_environment_.AdvanceClock(base::Seconds(1));
+  EpochTopics result = CalculateTopics();
+
+  std::vector<std::pair<Topic, std::set<HashedDomain>>>
+      expected_top_topics_and_observing_domains = {
+          {Topic(21),
+           {HashedDomain(1), HashedDomain(2), HashedDomain(3), HashedDomain(4),
+            HashedDomain(5)}},
+          {Topic(4),
+           {HashedDomain(1), HashedDomain(2), HashedDomain(3),
+            HashedDomain(4)}},
+          {Topic(3), {HashedDomain(1), HashedDomain(2), HashedDomain(3)}},
+          {Topic(2), {HashedDomain(1), HashedDomain(2)}},
+          {Topic(1),
+           {HashedDomain(1), HashedDomain(2), HashedDomain(3), HashedDomain(4),
+            HashedDomain(5)}}};
+
+  ExpectResultTopicsEqual(result.top_topics_and_observing_domains(),
+                          expected_top_topics_and_observing_domains);
+}
+
+TEST_F(BrowsingTopicsCalculatorTest, MultipleTopTopicsHaveDescendants) {
+  base::Time begin_time = base::Time::Now();
+
+  AddHistoryEntries(
+      {
+          kHost1,
+          kHost2,
+          kHost3,
+          kHost4,
+          kHost5,
+      },
+      begin_time);
+  AddApiUsageContextEntries({{kHost1, {HashedDomain(1)}},
+                             {kHost2, {HashedDomain(2)}},
+                             {kHost3, {HashedDomain(3)}},
+                             {kHost4, {HashedDomain(4)}},
+                             {kHost5, {HashedDomain(5)}}});
+
+  // 1 is the ancestor of 21, 57 is the ancestor of 63 and 64
+  test_page_content_annotator_.UsePageTopics(
+      *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build(),
+      {{kHost1, TopicsAndWeight({1, 57, 63, 64, 21}, 0.1)},
+       {kHost2, TopicsAndWeight({57, 63, 64, 21}, 0.1)},
+       {kHost3, TopicsAndWeight({63, 64, 21}, 0.1)},
+       {kHost4, TopicsAndWeight({64, 21}, 0.1)},
+       {kHost5, TopicsAndWeight({21}, 0.1)}});
+
+  task_environment_.AdvanceClock(base::Seconds(1));
+  EpochTopics result = CalculateTopics();
+
+  std::vector<std::pair<Topic, std::set<HashedDomain>>>
+      expected_top_topics_and_observing_domains = {
+          {Topic(21),
+           {HashedDomain(1), HashedDomain(2), HashedDomain(3), HashedDomain(4),
+            HashedDomain(5)}},
+          {Topic(64),
+           {HashedDomain(1), HashedDomain(2), HashedDomain(3),
+            HashedDomain(4)}},
+          {Topic(63), {HashedDomain(1), HashedDomain(2), HashedDomain(3)}},
+          {Topic(57),
+           {HashedDomain(1), HashedDomain(2), HashedDomain(3),
+            HashedDomain(4)}},
+          {Topic(1),
+           {HashedDomain(1), HashedDomain(2), HashedDomain(3), HashedDomain(4),
+            HashedDomain(5)}}};
+
+  ExpectResultTopicsEqual(result.top_topics_and_observing_domains(),
+                          expected_top_topics_and_observing_domains);
+}
+
 }  // namespace browsing_topics

@@ -435,7 +435,8 @@ TEST_F(DesktopWidgetTestInteractive, DISABLED_TouchNoActivateWindow) {
 
   {
     TouchEventHandler touch_event_handler(widget.get());
-    ASSERT_TRUE(ui_controls::SendTouchEvents(ui_controls::PRESS, 1, 100, 100));
+    ASSERT_TRUE(
+        ui_controls::SendTouchEvents(ui_controls::kTouchPress, 1, 100, 100));
     touch_event_handler.WaitForEvents();
   }
 }

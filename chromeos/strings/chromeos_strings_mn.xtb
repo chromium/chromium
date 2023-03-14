@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">Маш сайн (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Цааш</translation>
 <translation id="2364498172489649528">Давсан</translation>
+<translation id="2367335866686097760">Товч харгалзуулалтын товч</translation>
 <translation id="2380886658946992094">Хууль ёсны</translation>
 <translation id="2391082728065870591">Санал хүсэлтийн тайлан илгээх</translation>
 <translation id="2407209115954268704">SIM-н түгжээний төлөв</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">Аватар зургийг өөрчилсөн</translation>
 <translation id="3192947282887913208">Аудио файлууд</translation>
 <translation id="3199982728237701504">Документыг дамжуулах тавиур (Хоёр талаар нь)</translation>
+<translation id="3211671540163313381">Товч харгалзуулалтын D-pad</translation>
 <translation id="3226405216343213872">Сканнерыг хайж байна</translation>
+<translation id="3226657629376379887">Бүдүүвчийн үйлдлийн цэс</translation>
 <translation id="3246869037381808805">1 хоногоос дээш хугацаагаар хадгалсан хэвлэлийн ажлуудыг хасах болно</translation>
 <translation id="3268178239013324452">Амжилтгүй болсон - Таг нээлттэй</translation>
 <translation id="3275729367986477355">Аватар зураг</translation>
@@ -253,6 +256,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Нууцлал</translation>
 <translation id="3435896845095436175">Идэвхжүүл</translation>
+<translation id="345256797477978759">Дэлгэцийн <ph name="DIRECTION" /> талын том хэсэгт цонхыг суурилуулах</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" />-с <ph name="PRINTED_PAGES" /> хуудсыг хэвлэсэн.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" />-р хуудсыг скан хийж байна. <ph name="PERCENTAGE_VALUE" />% дууссан.</translation>
 <translation id="3459509316159669723">Хэвлэж байна</translation>
@@ -273,12 +277,14 @@
 <translation id="3595596368722241419">Цэнэг дүүрсэн.</translation>
 <translation id="3600339377155080675">Screen mirror</translation>
 <translation id="3602290021589620013">Мэдээллийг урьдчилж харах</translation>
+<translation id="360282891121575443">Дундын цомгийн зургуудыг бусад хэрэглэгч шинэчлэх боломжтой. Өдөр тутмын өөрчлөлт нь уг цомогт одоогоор байхгүй дэлгэцийн зургуудыг харуулж магадгүй.</translation>
 <translation id="3603829704940252505">Аватар</translation>
 <translation id="3604713164406837697">Дэлгэцийн зураг солих</translation>
 <translation id="360565022852130722">WiFi сүлжээ WEP 802.1x-н сул протоколоор хамгаалагдсан байна</translation>
 <translation id="3606583719724308068">HTTPS вебсайтууд руу өндөр хоцролттой</translation>
 <translation id="361575905210396100">Санал хүсэлт өгсөнд баярлалаа</translation>
 <translation id="3632579075709132555">Нууцлалын дэлгэцийг асаах/унтраах</translation>
+<translation id="3639846061339007994">дээд</translation>
 <translation id="3651050199673793219">Температурын нэгжийг сонгоно уу</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> тест</translation>
 <translation id="370665806235115550">Уншиж байна...</translation>
@@ -520,6 +526,7 @@
 <translation id="576835345334454681">Дэлгэцийн гэрэлтүүлгийг нэмэгдүүлэх</translation>
 <translation id="57838592816432529">Дууг хаах</translation>
 <translation id="5784136236926853061">HTTP-н өндөр хоцролт</translation>
+<translation id="5826644637650799838">Урлагийн тухай</translation>
 <translation id="5832805196449965646">Хүн нэм</translation>
 <translation id="583281660410589416">Үл мэдэгдэх</translation>
 <translation id="5843706793424741864">Фаренгейт</translation>
@@ -562,6 +569,7 @@
 <translation id="6117895505466548728"><ph name="TITLE" />, өөр +<ph name="NUMBER" /> цомог</translation>
 <translation id="6122191549521593678">Онлайн</translation>
 <translation id="6122277663991249694">ChromeOS-н оруулах аргын үйлчилгээ</translation>
+<translation id="6136285399872347291">устгах</translation>
 <translation id="6137767437444130246">Хэрэглэгчийн сертификат</translation>
 <translation id="6146993107019042706">Дуусгахын тулд шинэ нууц үгээ оруулна уу</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -609,6 +617,7 @@
 <translation id="650266656685499220">Цомог үүсгэхийн тулд Google Зураг руу очно уу</translation>
 <translation id="6516990319416533844">Батарейн цэнэглэх хурдыг туршихын тулд батарейгаа богино хугацаанд зарцуулна уу</translation>
 <translation id="6517239166834772319">Судлах</translation>
+<translation id="6526200165918397681">Дэлгэцийн зураг тааруулах</translation>
 <translation id="6527081081771465939">WiFi-н аюулгүй байдлын үл мэдэгдэх протокол</translation>
 <translation id="6535178685492749208">Та офлайн байна. Санал хүсэлтийг дараа нь илгээнэ.</translation>
 <translation id="65587193855025101">Тавцант</translation>
@@ -628,6 +637,7 @@
 <translation id="6657585470893396449">Нууц үг</translation>
 <translation id="6659594942844771486">Таб</translation>
 <translation id="6692996468359469499">Сонголттойгоо холбоотой мэдээлэл авах</translation>
+<translation id="6698459586333070823">Дундын цомгийг бусад хэрэглэгч шинэчлэх боломжтой</translation>
 <translation id="6704062477274546131">DNS-н тайлал</translation>
 <translation id="6723839937902243910">Эрчим хүч</translation>
 <translation id="6723847290197874913">Гарын дэвсгэр өнгө</translation>
@@ -664,6 +674,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Амжилтгүй боллоо - Баталгаажуулалт амжилтгүй боллоо</translation>
 <translation id="7103252855940681301"><ph name="NAME" /> гэсэн нэртэй <ph name="COUNT" />-н <ph name="INDEX" />-р төхөөрөмж.</translation>
+<translation id="7108668606237948702">оруулах</translation>
 <translation id="7130438335435247835">Хандах цэгийн нэрс (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Нэрийн сервер}other{Нэрийн серверүүд}}</translation>
 <translation id="7143207342074048698">Холбож байна</translation>
@@ -673,6 +684,7 @@
 <translation id="7155171745945906037">Камер эсвэл файлд байгаа зураг</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7170236477717446850">Профайлын зураг</translation>
+<translation id="7171919371520438592">Дэлгэцийн <ph name="DIRECTION" /> талын жижиг хэсэгт цонхыг суурилуулах</translation>
 <translation id="7172721935181587524">1 зураг</translation>
 <translation id="7177485034254901881">Энэ <ph name="DEVICE_TYPE" />-г <ph name="MANAGER" /> удирддаг. Администраторууд төхөөрөмжийг алсаас тохируулж магадгүй.</translation>
 <translation id="7180611975245234373">Дахин сэргээх</translation>
@@ -748,6 +760,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Нийлүүлэгчийн төрөл</translation>
 <translation id="7882501334836096755">Нийтийн түлхүүр</translation>
+<translation id="78957024357676568">зүүн</translation>
 <translation id="7915220255123750251">Сүлжээний APN-н тохиргоог удирдана уу. APN үүрэн холбооны сүлжээ болон интернэтийн хооронд холболт тогтоодог.</translation>
 <translation id="7936303884198020182">DNS олдсонгүй</translation>
 <translation id="7942349550061667556">Улаан</translation>
@@ -776,9 +789,11 @@
 <translation id="8183974620058026102">Хавсаргах</translation>
 <translation id="8206859287963243715">Үүрэн холбоо</translation>
 <translation id="8208861521865154048">Нэмэлтүүд</translation>
+<translation id="8210733748736414123">доод</translation>
 <translation id="8226628635270268143">Дуртай зураг, цомгуудаа сонгоно уу</translation>
 <translation id="8227119283605456246">Файл хавсаргах</translation>
 <translation id="8230672074305416752">Сүлжээний өгөгдмөл гэйтвэйд пин илгээж чадсангүй</translation>
+<translation id="8242426110754782860">Үргэлжлүүлнэ үү</translation>
 <translation id="8246209727385807362">Тодорхойгүй оператор компани</translation>
 <translation id="827422111966801947">Хөхөвтөр нил ягаан</translation>
 <translation id="8286154143153872371">Дэлгэцийн зургийг үзэхийн тулд сүлжээнд холбогдож, хуудсыг дахин ачаална уу.</translation>
@@ -789,9 +804,11 @@
 <translation id="8318753676953949627">Зураг байхгүй</translation>
 <translation id="8336739000755212683">Төхөөрөмжийн бүртгэлийн зургийг өөрчлөх</translation>
 <translation id="8347227221149377169">Хэвлэх ажлууд</translation>
+<translation id="8351855506390808906">Товч харгалзуулалтын хүрэх цэг</translation>
 <translation id="8352772353338965963">Олон хэрэглэгч бүхий нэвтрэх хэсэгт бүртгэл нэмж оруулах. Бүх нэвтэрсэн бүртгэлүүд нууц үггүйгээр нэвтрэх боломжтой учраас энэ горимыг зөвхөн итгэл хүлээсэн бүртгэлүүдэд ашиглахыг зөвлөж байна.</translation>
 <translation id="8364946094152050673">DNS хоосон байна</translation>
 <translation id="8372477600026034341">Нэмэлт хост</translation>
+<translation id="8380114448424469341">Дэлгэцийн <ph name="DIRECTION" /> талд цонхыг суурилуулах</translation>
 <translation id="8395584934117017006">Энэ <ph name="DEVICE_TYPE" />-г байгууллага удирддаг</translation>
 <translation id="8398927464629426868">Төхөөрөмжийн одоогийн цэнэглэгдэж эсвэл цэнэгээ алдаж байгаа хувь</translation>
 <translation id="8410244574650205435">Автоматаар таньсан</translation>
@@ -856,6 +873,7 @@
 <translation id="8930622219860340959">Утасгүй</translation>
 <translation id="8936793075252196307">Клиентийн IP хаяг</translation>
 <translation id="894617464444543719">Төхөөрөмж нь утас байна.</translation>
+<translation id="8957423540740801332">баруун</translation>
 <translation id="8968751544471797276">Цэнэглэх хурд</translation>
 <translation id="8970109610781093811">Дахин ажиллуулах</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -883,6 +901,7 @@
 <translation id="9137526406337347448">Google-н үйлчилгээнүүд</translation>
 <translation id="9138630967333032450">Зүүн талын shift</translation>
 <translation id="9149391708638971077">Санах ойн туршилтыг ажиллуулах</translation>
+<translation id="9161276708550942948">space</translation>
 <translation id="9173638680043580060">Минут хүрэхгүй хугацаа үлдлээ</translation>
 <translation id="917720651393141712">Шалгалт</translation>
 <translation id="9188992814426075118">Таны гар дэлгэцийн зурагтай тань автоматаар таарах боломжтой</translation>

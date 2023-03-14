@@ -22,8 +22,7 @@ scoped_refptr<gl::Presenter> ImageTransportSurface::CreatePresenter(
   if (gl::GetGLImplementation() == gl::kGLImplementationEGLGLES2 ||
       gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE) {
     return base::WrapRefCounted<gl::Presenter>(
-        new ImageTransportSurfaceOverlayMacEGL(
-            display->GetAs<gl::GLDisplayEGL>(), delegate));
+        new ImageTransportSurfaceOverlayMacEGL(delegate));
   }
 
   return nullptr;

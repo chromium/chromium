@@ -36,7 +36,7 @@ void AnsibleManagementTestHelper::SetUpAnsiblePlaybookPreference() {
   base::FilePath ansible_playbook_file_path =
       profile_->GetPath().AppendASCII("playbook.yaml");
   const char playbook[] = "---";
-  base::WriteFile(ansible_playbook_file_path, playbook, strlen(playbook));
+  base::WriteFile(ansible_playbook_file_path, playbook);
   profile_->GetPrefs()->SetFilePath(prefs::kCrostiniAnsiblePlaybookFilePath,
                                     ansible_playbook_file_path);
 }

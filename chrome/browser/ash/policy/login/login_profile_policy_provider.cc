@@ -37,7 +37,7 @@ const char kActionShutdown[] = "Shutdown";
 const char kActionDoNothing[] = "DoNothing";
 
 // All policies in this list should have a pref mapping test case in
-// chrome/test/data/policy/policy_test_cases.json with location
+// components/policy/test/data/policy_test_cases.json with location
 // "signin_profile".
 const DevicePolicyToUserPolicyMapEntry kDevicePoliciesWithPolicyOptionsMap[] = {
     {key::kDeviceLoginScreenAutoSelectCertificateForUrls,
@@ -81,6 +81,12 @@ const DevicePolicyToUserPolicyMapEntry kDevicePoliciesWithPolicyOptionsMap[] = {
     // generate a corresponding Accept-Languages header
     // (https://crbug.com/1336382).
     {key::kDeviceLoginScreenLocales, key::kForcedLanguages},
+    {key::kDeviceScreensaverLoginScreenEnabled,
+     key::kScreensaverLockScreenEnabled},
+    {key::kDeviceScreensaverLoginScreenIdleTimeoutSeconds,
+     key::kScreensaverLockScreenIdleTimeoutSeconds},
+    {key::kDeviceScreensaverLoginScreenImageDisplayIntervalSeconds,
+     key::kScreensaverLockScreenImageDisplayIntervalSeconds},
 };
 
 const DevicePolicyToUserPolicyMapEntry kRecommendedDevicePoliciesMap[] = {

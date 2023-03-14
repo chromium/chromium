@@ -134,9 +134,6 @@ ASH_EXPORT void CycleUser(CycleUserDirection direction);
 // Disables caps-lock.
 ASH_EXPORT void DisableCapsLock();
 
-// Logs a dump of CalendarModel internal data.
-ASH_EXPORT void DumpCalendarModel();
-
 // Focuses the camera preview if it is present.
 ASH_EXPORT void FocusCameraPreview();
 
@@ -235,6 +232,9 @@ ASH_EXPORT void OpenHelp();
 
 // Presses power button.
 ASH_EXPORT void PowerPressed(bool pressed);
+
+// Records when the user changes the output volume via keyboard to metrics.
+ASH_EXPORT void RecordVolumeSource();
 
 // Removes the current desk.
 ASH_EXPORT void RemoveCurrentDesk();

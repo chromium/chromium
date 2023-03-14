@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAcce
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
+import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutCoordinator;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
@@ -77,7 +78,9 @@ public class KeyboardAccessoryControllerTest {
     @Mock
     private ListObservable.ListObserver<Void> mMockActionListObserver;
     @Mock
-    private KeyboardAccessoryCoordinator.VisibilityDelegate mMockVisibilityDelegate;
+    private KeyboardAccessoryCoordinator.BarVisibilityDelegate mMockBarVisibilityDelegate;
+    @Mock
+    private AccessorySheetCoordinator.SheetVisibilityDelegate mMockSheetVisibilityDelegate;
     @Mock
     private KeyboardAccessoryModernView mMockView;
     @Mock
@@ -101,8 +104,8 @@ public class KeyboardAccessoryControllerTest {
         setAutofillFeature(false);
         when(mMockView.getTabLayout()).thenReturn(mock(TabLayout.class));
         when(mMockTabLayout.getTabSwitchingDelegate()).thenReturn(mMockTabSwitchingDelegate);
-        mCoordinator = new KeyboardAccessoryCoordinator(
-                mMockTabLayout, mMockVisibilityDelegate, new FakeViewProvider<>(mMockView));
+        mCoordinator = new KeyboardAccessoryCoordinator(mMockTabLayout, mMockBarVisibilityDelegate,
+                mMockSheetVisibilityDelegate, new FakeViewProvider<>(mMockView));
         mMediator = mCoordinator.getMediatorForTesting();
         mModel = mMediator.getModelForTesting();
     }
@@ -591,7 +594,7 @@ public class KeyboardAccessoryControllerTest {
     @Test
     public void testFowardsAnimationEventsToVisibilityDelegate() {
         mModel.get(ANIMATION_LISTENER).onFadeInEnd();
-        verify(mMockVisibilityDelegate).onBarFadeInAnimationEnd();
+        verify(mMockBarVisibilityDelegate).onBarFadeInAnimationEnd();
     }
 
     @Test
@@ -602,11 +605,11 @@ public class KeyboardAccessoryControllerTest {
         // First click should dismiss.
         mModel.get(SHOW_KEYBOARD_CALLBACK).run();
         setActiveTab(null); // Simulate the tab was reset by the click.
-        verify(mMockVisibilityDelegate, atLeast(1)).onChangeAccessorySheet(0);
-        verify(mMockVisibilityDelegate).onCloseAccessorySheet();
+        verify(mMockSheetVisibilityDelegate, atLeast(1)).onChangeAccessorySheet(0);
+        verify(mMockSheetVisibilityDelegate).onCloseAccessorySheet();
 
         // Second click should not crash but be noop.
-        verifyNoMoreInteractions(mMockVisibilityDelegate);
+        verifyNoMoreInteractions(mMockSheetVisibilityDelegate);
         mModel.get(SHOW_KEYBOARD_CALLBACK).run();
     }
 

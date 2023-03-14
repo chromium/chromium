@@ -16,6 +16,7 @@
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "url/gurl.h"
 
 namespace reading_list {
@@ -63,6 +64,7 @@ class DualReadingListModel : public ReadingListModel,
   scoped_refptr<const ReadingListEntry> GetEntryByURL(
       const GURL& gurl) const override;
   bool IsUrlSupported(const GURL& url) override;
+  CoreAccountId GetAccountWhereEntryIsSavedTo(const GURL& url) override;
   bool NeedsExplicitUploadToSyncServer(const GURL& url) const override;
   const ReadingListEntry& AddOrReplaceEntry(
       const GURL& url,
@@ -88,11 +90,20 @@ class DualReadingListModel : public ReadingListModel,
   void RemoveObserver(ReadingListModelObserver* observer) override;
 
   // ReadingListModelObserver overrides.
+  void ReadingListModelBeganBatchUpdates(
+      const ReadingListModel* model) override;
+  void ReadingListModelCompletedBatchUpdates(
+      const ReadingListModel* model) override;
   void ReadingListModelLoaded(const ReadingListModel* model) override;
   void ReadingListWillRemoveEntry(const ReadingListModel* model,
                                   const GURL& url) override;
   void ReadingListDidRemoveEntry(const ReadingListModel* model,
                                  const GURL& url) override;
+  void ReadingListWillAddEntry(const ReadingListModel* model,
+                               const ReadingListEntry& entry) override;
+  void ReadingListDidAddEntry(const ReadingListModel* model,
+                              const GURL& url,
+                              reading_list::EntrySource source) override;
   void ReadingListDidApplyChanges(ReadingListModel* model) override;
 
   class ScopedReadingListBatchUpdateImpl : public ScopedReadingListBatchUpdate {
@@ -114,14 +125,26 @@ class DualReadingListModel : public ReadingListModel,
  private:
   void NotifyObserversWithWillRemoveEntry(const GURL& url);
   void NotifyObserversWithDidRemoveEntry(const GURL& url);
+  void NotifyObserversWithWillMoveEntry(const GURL& url);
+  void NotifyObserversWithDidMoveEntry(const GURL& url);
+  void NotifyObserversWithWillUpdateEntry(const GURL& url);
+  void NotifyObserversWithDidUpdateEntry(const GURL& url);
   void NotifyObserversWithDidApplyChanges();
+
+  // Convenience function that safely "casts" to ReadingListModelImpl for
+  // codepaths where model is guaranteed to be either local_or_syncable_model_
+  // or account_model_.
+  const ReadingListModelImpl* ToReadingListModelImpl(
+      const ReadingListModel* model);
 
   const std::unique_ptr<ReadingListModelImpl> local_or_syncable_model_;
   const std::unique_ptr<ReadingListModelImpl> account_model_;
 
-  // Indicates whether a ReadingListModelImpl::RemoveEntryByURL is currently
-  // performing on `local_or_syncable_model_` and `account_model_`.
-  bool ongoing_remove_entry_by_url_ = false;
+  // Indicates whether the DualReadingListModel is currently handling the
+  // notifications.
+  bool suppress_observer_notifications_ = false;
+
+  unsigned int current_batch_updates_count_ = 0;
 
   base::ObserverList<ReadingListModelObserver>::Unchecked observers_;
 

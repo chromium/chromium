@@ -132,12 +132,13 @@ enum CameraState {
 
 [Stable]
 struct RemotePlaybackMetadata {
-  string video_codec;
-  string audio_codec;
-  bool remote_playback_disabled;
-  [MinVersion=17] bool remote_playback_started;
-  [MinVersion=17] string? remoting_device_friendly_name;
-  [MinVersion=18] bool is_encrypted_media;
+  string video_codec@0;
+  string audio_codec@1;
+  bool remote_playback_disabled@2;
+  [MinVersion=17] bool remote_playback_started@3;
+  // Deprecated, was remoting_device_friendly_name
+  [MinVersion=17] string? unused_field@4;
+  [MinVersion=18] bool is_encrypted_media@5;
 };
 
 // Contains state information about a MediaSession.

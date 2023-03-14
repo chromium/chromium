@@ -33,6 +33,7 @@
 #include <vector>
 
 #include "RawPtrHelpers.h"
+#include "RawPtrManualPathsToIgnore.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
 #include "clang/ASTMatchers/ASTMatchers.h"
@@ -82,7 +83,7 @@ const char kExcludeFieldsParamName[] = "exclude-fields";
 //
 // See also:
 // - PathFilterFile
-const char kExcludePathsParamName[] = "exclude-paths";
+const char kOverrideExcludePathsParamName[] = "override-exclude-paths";
 
 // OutputSectionHelper helps gather and emit a section of output.
 //
@@ -1403,9 +1404,10 @@ int main(int argc, const char* argv[]) {
   llvm::cl::opt<std::string> exclude_fields_param(
       kExcludeFieldsParamName, llvm::cl::value_desc("filepath"),
       llvm::cl::desc("file listing fields to be blocked (not rewritten)"));
-  llvm::cl::opt<std::string> exclude_paths_param(
-      kExcludePathsParamName, llvm::cl::value_desc("filepath"),
-      llvm::cl::desc("file listing paths to be blocked (not rewritten)"));
+  llvm::cl::opt<std::string> override_exclude_paths_param(
+      kOverrideExcludePathsParamName, llvm::cl::value_desc("filepath"),
+      llvm::cl::desc(
+          "override file listing paths to be blocked (not rewritten)"));
 
   llvm::cl::opt<bool> enable_raw_ref_rewrite(
       "enable_raw_ref_rewrite", llvm::cl::init(false),
@@ -1429,18 +1431,28 @@ int main(int argc, const char* argv[]) {
   OutputHelper output_helper;
   FilterFile fields_to_exclude(exclude_fields_param,
                                exclude_fields_param.ArgStr.str());
-  FilterFile paths_to_exclude(exclude_paths_param,
-                              exclude_paths_param.ArgStr.str());
 
+  std::unique_ptr<FilterFile> paths_to_exclude;
+  if (override_exclude_paths_param.ValueStr.empty()) {
+    std::vector<std::string> paths_to_exclude_lines;
+    for (auto* const line : kRawPtrManualPathsToIgnore) {
+      paths_to_exclude_lines.push_back(line);
+    }
+    paths_to_exclude = std::make_unique<FilterFile>(paths_to_exclude_lines);
+  } else {
+    paths_to_exclude =
+        std::make_unique<FilterFile>(override_exclude_paths_param,
+                                     override_exclude_paths_param.ArgStr.str());
+  }
   RawPtrRewriter raw_ptr_rewriter(&output_helper, match_finder,
-                                  fields_to_exclude, paths_to_exclude);
+                                  fields_to_exclude, *paths_to_exclude);
 
   if (rewrite_raw_ref_and_ptr || enable_raw_ptr_rewrite) {
     raw_ptr_rewriter.addMatchers();
   }
 
   RawRefRewriter raw_ref_rewriter(&output_helper, match_finder,
-                                  fields_to_exclude, paths_to_exclude);
+                                  fields_to_exclude, *paths_to_exclude);
 
   if (rewrite_raw_ref_and_ptr || enable_raw_ref_rewrite) {
     raw_ref_rewriter.addMatchers();

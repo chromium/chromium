@@ -7,7 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
+// **************
 // Element Colors
+// **************
 
 extern NSString* const kBackgroundColor;
 extern NSString* const kCloseButtonColor;
@@ -48,11 +50,14 @@ extern NSString* const kTextfieldPlaceholderColor;
 extern NSString* const kToolbarButtonColor;
 // Color used for a shadow/separator next to a toolbar.
 extern NSString* const kToolbarShadowColor;
-// Simple primary color based on theme. White for light theme, black for dark
-// theme.
-extern NSString* const kSolidPrimaryColor;
 
+// ***************
 // Standard Colors
+// ***************
+
+// Black/White and White/Black colors for light/dark styles.
+extern NSString* const kSolidBlackColor;
+extern NSString* const kSolidWhiteColor;
 
 // Standard blue color. This is most commonly used for the tint color on
 // standard buttons and controls.
@@ -115,5 +120,12 @@ extern NSString* const kGrey800Color;
 extern NSString* const kGrey900Color;
 // Static Grey palette (same color for light and dark modes).
 extern NSString* const kStaticGrey300Color;
+
+// **********************
+// Light Mode only colors (alpha = 0 in dark mode)
+// **********************
+
+// Grey palette
+extern NSString* const kLightOnlyGrey200Color;
 
 #endif  // IOS_CHROME_COMMON_UI_COLORS_SEMANTIC_COLOR_NAMES_H_

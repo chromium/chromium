@@ -22,8 +22,11 @@ class AnnotationsJavaScriptFeature : public JavaScriptFeature {
   static AnnotationsJavaScriptFeature* GetInstance();
 
   // Triggers the JS text extraction code. Async calls `OnTextExtracted` on
-  // `AnnotationsTextManager` when done.
-  virtual void ExtractText(WebState* web_state, int maximum_text_length);
+  // `AnnotationsTextManager` when done using provided `seq_id`.
+
+  virtual void ExtractText(WebState* web_state,
+                           int maximum_text_length,
+                           int seq_id);
 
   // Triggers the JS decoration code with given `annotations`. Async calls
   // `OnDecorated` on `AnnotationsTextManager` when done. Decorations will also

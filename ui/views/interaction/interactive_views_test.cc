@@ -4,6 +4,8 @@
 
 #include "ui/views/interaction/interactive_views_test.h"
 
+#include <functional>
+
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
@@ -194,7 +196,7 @@ InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::ReleaseMouse(
 }
 
 // static
-InteractiveViewsTestApi::FindViewCallback<View>
+InteractiveViewsTestApi::FindViewCallback
 InteractiveViewsTestApi::GetFindViewCallback(AbsoluteViewSpecifier spec) {
   if (View** view = absl::get_if<View*>(&spec)) {
     CHECK(*view) << "NameView(View*): view must be set.";
@@ -207,22 +209,23 @@ InteractiveViewsTestApi::GetFindViewCallback(AbsoluteViewSpecifier spec) {
         std::make_unique<ViewTracker>(*view));
   }
 
-  if (View*** view = absl::get_if<View**>(&spec)) {
-    CHECK(*view) << "NameView(View**): view pointer is null.";
+  if (std::reference_wrapper<View*>* view =
+          absl::get_if<std::reference_wrapper<View*>>(&spec)) {
     return base::BindOnce(
-        [](View** view, View*) {
-          LOG_IF(ERROR, !*view) << "NameView(View**): view pointer is null.";
-          return *view;
+        [](std::reference_wrapper<View*> view, View*) {
+          LOG_IF(ERROR, !view.get())
+              << "NameView(ref(View*)): view pointer is null.";
+          return view.get();
         },
-        base::Unretained(*view));
+        *view);
   }
 
-  return base::RectifyCallback<FindViewCallback<View>>(
+  return base::RectifyCallback<FindViewCallback>(
       std::move(absl::get<base::OnceCallback<View*()>>(spec)));
 }
 
 // static
-InteractiveViewsTestApi::FindViewCallback<View>
+InteractiveViewsTestApi::FindViewCallback
 InteractiveViewsTestApi::GetFindViewCallback(ChildViewSpecifier spec) {
   if (size_t* index = absl::get_if<size_t>(&spec)) {
     return base::BindOnce(
@@ -304,6 +307,7 @@ InteractiveViewsTestApi::GetPositionCallback(RelativePositionSpecifier spec) {
 
   CHECK(absl::holds_alternative<CenterPoint>(spec));
   return base::BindOnce([](ui::TrackedElement* el) {
+    CHECK(el->IsA<views::TrackedElementViews>());
     return el->AsA<views::TrackedElementViews>()
         ->view()
         ->GetBoundsInScreen()

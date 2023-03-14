@@ -8,6 +8,7 @@
 #include <atomic>
 #include <cstddef>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 
 namespace partition_alloc {
@@ -33,6 +34,12 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAllocHooks {
   // If it returns true, the underlying allocation is overridden and *out holds
   // the size of the underlying allocation.
   typedef bool ReallocOverrideHook(size_t* out, void* address);
+
+  // Special hook type, independent of the rest. Triggered when `free()` detects
+  // outstanding references to the allocation.
+  // IMPORTANT: Make sure the hook always overwrites `[address, address + size)`
+  // with a bit pattern that cannot be interpreted as a valid memory address.
+  typedef void QuarantineOverrideHook(void* address, size_t size);
 
   // To unhook, call Set*Hooks with nullptrs.
   static void SetObserverHooks(AllocationObserverHook* alloc_hook,
@@ -65,6 +72,12 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAllocHooks {
                                            const char* type_name);
   static bool ReallocOverrideHookIfEnabled(size_t* out, void* address);
 
+  PA_ALWAYS_INLINE static QuarantineOverrideHook* GetQuarantineOverrideHook() {
+    return quarantine_override_hook_.load(std::memory_order_acquire);
+  }
+
+  static void SetQuarantineOverrideHook(QuarantineOverrideHook* hook);
+
  private:
   // Single bool that is used to indicate whether observer or allocation hooks
   // are set to reduce the numbers of loads required to check whether hooking is
@@ -78,6 +91,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAllocHooks {
   static std::atomic<AllocationOverrideHook*> allocation_override_hook_;
   static std::atomic<FreeOverrideHook*> free_override_hook_;
   static std::atomic<ReallocOverrideHook*> realloc_override_hook_;
+
+  static std::atomic<QuarantineOverrideHook*> quarantine_override_hook_;
 };
 
 }  // namespace partition_alloc

@@ -1,7 +1,6 @@
 <style>
 #container {
   align-items: center;
-  display: inline-flex;
   margin-top: 10px;
   padding-inline-end: 20px;
   position: fixed;
@@ -21,7 +20,7 @@ html[dir='rtl'] #container {
 
 </style>
 
-<div id="container" hidden$="[[isHidden_(deprecationLinkString)]]">
+<div id="container" style$="display: [[display]];">
   <img src="chrome://resources/images/error_yellow900.svg">
   <a is="action-link"
      id="deprecated-apps-link"

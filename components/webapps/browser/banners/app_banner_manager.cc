@@ -485,8 +485,6 @@ void AppBannerManager::OnDidPerformInstallableWebAppCheck(
   }
 
   if (features::SkipServiceWorkerForInstallPromotion()) {
-    PerformWorkerCheckForAmbientBadge();
-
     SetInstallableWebAppCheckResult(
         InstallableWebAppCheckResult::kYes_Promotable);
     CheckSufficientEngagement();
@@ -533,11 +531,6 @@ void AppBannerManager::CheckSufficientEngagement() {
 
   SendBannerPromptRequest();
 }
-
-void AppBannerManager::PerformWorkerCheckForAmbientBadge() {}
-
-void AppBannerManager::OnDidPerformWorkerCheckForAmbientBadge(
-    const InstallableData& data) {}
 
 void AppBannerManager::RecordDidShowBanner() {
   content::WebContents* contents = web_contents();

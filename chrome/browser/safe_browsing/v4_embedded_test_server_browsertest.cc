@@ -117,7 +117,7 @@ class V4EmbeddedTestServerBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<net::MappedHostResolver> mapped_host_resolver_;
 
   // Owned by the V4Database.
-  raw_ptr<TestV4DatabaseFactory> v4_db_factory_ = nullptr;
+  raw_ptr<TestV4DatabaseFactory, DanglingUntriaged> v4_db_factory_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(V4EmbeddedTestServerBrowserTest, SimpleTest) {

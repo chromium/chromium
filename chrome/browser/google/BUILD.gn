@@ -9,19 +9,11 @@ source_set("google") {
   sources = [
     "google_brand.cc",
     "google_brand.h",
-    "google_search_domain_mixing_metrics_emitter.cc",
-    "google_search_domain_mixing_metrics_emitter.h",
-    "google_search_domain_mixing_metrics_emitter_factory.cc",
-    "google_search_domain_mixing_metrics_emitter_factory.h",
   ]
 
   deps = [
     "//base",
-    "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
-    "//components/history/core/browser:browser",
-    "//components/keyed_service/core:core",
-    "//components/pref_registry:pref_registry",
     "//components/prefs:prefs",
     "//content/public/browser",
   ]
@@ -86,25 +78,16 @@ source_set("google") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "google_search_domain_mixing_metrics_emitter_factory_unittest.cc",
-    "google_search_domain_mixing_metrics_emitter_unittest.cc",
-    "google_update_settings_unittest.cc",
-  ]
+  sources = [ "google_update_settings_unittest.cc" ]
 
   deps = [
     ":google",
     "//base",
     "//base/test:test_support",
     "//chrome/common:constants",
-    "//chrome/common:version_header",
     "//chrome/installer/util:with_no_strings",
-    "//components/history/core/browser:browser",
-    "//components/history/core/test:test",
-    "//components/prefs:test_support",
     "//content/test:test_support",
     "//testing/gtest:gtest",
-    "//url:url",
   ]
 
   if (is_chromeos_ash) {
@@ -118,6 +101,7 @@ source_set("unit_tests") {
     ]
 
     deps += [
+      "//chrome/common:version_header",
       "//chrome/install_static/test:test_support",
       "//components/policy/core/common",
       "//google_update",

@@ -7,15 +7,10 @@ package org.chromium.ui;
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.MeasureSpec;
 import android.view.View.OnLayoutChangeListener;
-import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.AdapterView;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.PopupWindow;
@@ -42,9 +37,7 @@ class DropdownPopupWindowImpl
     private AnchoredPopupWindow mAnchoredPopupWindow;
     ListAdapter mAdapter;
 
-    private final LinearLayout mContentView;
     private final ListView mListView;
-    private final FrameLayout mFooterView;
     private Drawable mBackground;
     private int mHorizontalPadding;
 
@@ -85,16 +78,13 @@ class DropdownPopupWindowImpl
             }
         };
 
-        mContentView =
-                (LinearLayout) LayoutInflater.from(context).inflate(R.layout.dropdown_window, null);
-        mListView = (ListView) mContentView.findViewById(R.id.dropdown_body_list);
-        mFooterView = (FrameLayout) mContentView.findViewById(R.id.dropdown_footer);
+        mListView = new ListView(context);
 
         ViewRectProvider rectProvider = new ViewRectProvider(mAnchorView);
         rectProvider.setIncludePadding(true);
         mBackground = AppCompatResources.getDrawable(context, R.drawable.menu_bg_baseline);
-        mAnchoredPopupWindow = new AnchoredPopupWindow(context, mAnchorView, mBackground,
-                mContentView, rectProvider, visibleWebContentsRectProvider);
+        mAnchoredPopupWindow = new AnchoredPopupWindow(context, mAnchorView, mBackground, mListView,
+                rectProvider, visibleWebContentsRectProvider);
         mAnchoredPopupWindow.addOnDismissListener(onDismissLitener);
         mAnchoredPopupWindow.setLayoutObserver(this);
         mAnchoredPopupWindow.setElevation(
@@ -222,18 +212,6 @@ class DropdownPopupWindowImpl
         mListView.setOnItemClickListener(clickListener);
     }
 
-    @Override
-    public void setFooterView(View footerView) {
-        boolean hasFooter = footerView != null;
-        View divider = mContentView.findViewById(R.id.dropdown_body_footer_divider);
-        divider.setVisibility(hasFooter ? View.VISIBLE : View.GONE);
-
-        mFooterView.removeAllViews();
-        if (hasFooter) {
-            mFooterView.addView(footerView);
-        }
-    }
-
     /**
      * Show the popup. Will have no effect if the popup is already showing.
      * Post a {@link #show()} call to the UI thread.
@@ -273,16 +251,6 @@ class DropdownPopupWindowImpl
      */
     private int measureContentWidth() {
         assert mAdapter != null : "Set the adapter before showing the popup.";
-        int adapterWidth = UiUtils.computeMaxWidthOfListAdapterItems(mAdapter);
-        if (mFooterView.getChildCount() > 0) {
-            if (mFooterView.getLayoutParams() == null) {
-                mFooterView.setLayoutParams(new FrameLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            }
-            int measureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
-            mFooterView.measure(measureSpec, measureSpec);
-            return Math.max(mFooterView.getMeasuredWidth(), adapterWidth);
-        }
-        return adapterWidth;
+        return UiUtils.computeMaxWidthOfListAdapterItems(mAdapter);
     }
 }

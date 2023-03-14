@@ -410,6 +410,9 @@
       <message translateable="false" name="IDS_TEXTFIELD_READ_ONLY_PLACEHOLDER">
         read only
       </message>
+      <message translateable="false" name="IDS_TEXTFIELD_INVALID_PLACEHOLDER">
+        invalid
+      </message>
       <message translateable="false" name="IDS_TEXTFIELD_NAME_LABEL">
         Name:
       </message>
@@ -425,6 +428,7 @@
       <message translateable="false" name="IDS_TEXTFIELD_INVALID_LABEL">
         Invalid:
       </message>
+
       <message translateable="false" name="IDS_TEXTFIELD_RTL_LABEL">
         RTL:
       </message>

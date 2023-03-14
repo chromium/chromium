@@ -9,6 +9,8 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 
+import static org.chromium.ui.test.util.MockitoHelper.doCallback;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -102,17 +104,11 @@ public class SkipTosDialogPolicyListenerUnitTest {
     @Before
     public void setUp() {
         UmaRecorderHolder.resetForTesting();
-        Mockito.doAnswer(invocation -> {
-                   mEnterpriseInfoCallback = invocation.getArgument(0);
-                   return null;
-               })
+        doCallback((Callback<OwnedState> callback) -> mEnterpriseInfoCallback = callback)
                 .when(mMockEnterpriseInfo)
                 .getDeviceEnterpriseInfo(any());
 
-        Mockito.doAnswer(invocation -> {
-                   mPolicyLoadListenerCallback = invocation.getArgument(0);
-                   return null;
-               })
+        doCallback((Callback<Boolean> callback) -> mPolicyLoadListenerCallback = callback)
                 .when(mMockPolicyLoadListener)
                 .onAvailable(any());
 

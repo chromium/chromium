@@ -67,7 +67,6 @@ const char kImeOptionsPage[] = "options_page";
 const char kIndicator[] = "indicator";
 const char kInputComponents[] = "input_components";
 const char kInputView[] = "input_view";
-const char kIsolation[] = "app.isolation";
 const char kKey[] = "key";
 const char kKiosk[] = "kiosk";
 const char kKioskAlwaysUpdate[] = "kiosk.always_update";
@@ -176,7 +175,6 @@ const char kBrowserActionCommandEvent[] = "_execute_browser_action";
 const char kIncognitoNotAllowed[] = "not_allowed";
 const char kIncognitoSplit[] = "split";
 const char kIncognitoSpanning[] = "spanning";
-const char kIsolatedStorage[] = "storage";
 const char kKeybindingPlatformChromeOs[] = "chromeos";
 const char kKeybindingPlatformDefault[] = "default";
 const char kKeybindingPlatformLinux[] = "linux";
@@ -673,10 +671,7 @@ const char kPermissionCannotBeOptional[] =
 const char kPermissionMarkedOptionalAndRequired[] =
     "Optional permission '*' is redundant with the required permissions;"
     "this permission will be omitted.";
-const char kPermissionNotAllowed[] =
-    "Access to permission '*' denied.";
-const char kPermissionNotAllowedInManifest[] =
-    "Permission '*' cannot be specified in the manifest.";
+const char kPermissionNotAllowed[] = "Access to permission '*' denied.";
 const char kPermissionUnknownOrMalformed[] =
     "Permission '*' is unknown or URL pattern is malformed.";
 const char kPluginsRequirementDeprecated[] =

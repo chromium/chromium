@@ -70,17 +70,18 @@ id<GREYMatcher> UploadModalSaveButtonMatcher() {
       IDS_IOS_AUTOFILL_SAVE_CARD);
 }
 
-id<GREYMatcher> LocalBannerMatcher() {
+id<GREYMatcher> LocalBannerLabelsMatcher() {
   NSString* bannerLabel =
       [NSString stringWithFormat:@"%@,%@",
                                  l10n_util::GetNSString(
                                      IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL),
                                  kSavedCardLabel];
-  return grey_allOf(grey_accessibilityID(kInfobarBannerViewIdentifier),
-                    grey_accessibilityLabel(bannerLabel), nil);
+  return grey_allOf(
+      grey_accessibilityID(kInfobarBannerLabelsStackViewIdentifier),
+      grey_accessibilityLabel(bannerLabel), nil);
 }
 
-id<GREYMatcher> UploadBannerMatcher() {
+id<GREYMatcher> UploadBannerLabelsMatcher() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   NSString* title =
       l10n_util::GetNSString(IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3);
@@ -90,8 +91,9 @@ id<GREYMatcher> UploadBannerMatcher() {
 #endif
   NSString* bannerLabel =
       [NSString stringWithFormat:@"%@,%@", title, kSavedCardLabel];
-  return grey_allOf(grey_accessibilityID(kInfobarBannerViewIdentifier),
-                    grey_accessibilityLabel(bannerLabel), nil);
+  return grey_allOf(
+      grey_accessibilityID(kInfobarBannerLabelsStackViewIdentifier),
+      grey_accessibilityLabel(bannerLabel), nil);
 }
 
 }  // namepsace
@@ -208,8 +210,9 @@ id<GREYMatcher> UploadBannerMatcher() {
                  @"Event was not triggered");
 
   // Wait until the save card infobar becomes visible.
-  GREYAssert([self waitForUIElementToAppearWithMatcher:LocalBannerMatcher()],
-             @"Save card infobar failed to show.");
+  GREYAssert(
+      [self waitForUIElementToAppearWithMatcher:LocalBannerLabelsMatcher()],
+      @"Save card infobar failed to show.");
 
   [AutofillAppInterface resetEventWaiterForEvents:@[
     @(CreditCardSaveManagerObserverEvent::kOnStrikeChangeCompleteCalled)
@@ -245,8 +248,9 @@ id<GREYMatcher> UploadBannerMatcher() {
                  @"Event was not triggered");
 
   // Wait until the save card infobar becomes visible.
-  GREYAssert([self waitForUIElementToAppearWithMatcher:LocalBannerMatcher()],
-             @"Save card infobar failed to show.");
+  GREYAssert(
+      [self waitForUIElementToAppearWithMatcher:LocalBannerLabelsMatcher()],
+      @"Save card infobar failed to show.");
 
   [AutofillAppInterface resetEventWaiterForEvents:@[
     @(CreditCardSaveManagerObserverEvent::kOnStrikeChangeCompleteCalled)
@@ -283,7 +287,7 @@ id<GREYMatcher> UploadBannerMatcher() {
 
   // Make sure the save card infobar does not become visible.
   GREYAssertFalse(
-      [self waitForUIElementToAppearWithMatcher:LocalBannerMatcher()],
+      [self waitForUIElementToAppearWithMatcher:LocalBannerLabelsMatcher()],
       @"Save card infobar should not show.");
 }
 
@@ -309,8 +313,9 @@ id<GREYMatcher> UploadBannerMatcher() {
                  @"Event was not triggered");
 
   // Wait until the save card infobar becomes visible.
-  GREYAssert([self waitForUIElementToAppearWithMatcher:UploadBannerMatcher()],
-             @"Save card infobar failed to show.");
+  GREYAssert(
+      [self waitForUIElementToAppearWithMatcher:UploadBannerLabelsMatcher()],
+      @"Save card infobar failed to show.");
 
   [AutofillAppInterface resetEventWaiterForEvents:@[
     @(CreditCardSaveManagerObserverEvent::kOnStrikeChangeCompleteCalled)
@@ -344,8 +349,9 @@ id<GREYMatcher> UploadBannerMatcher() {
                  @"Event was not triggered");
 
   // Wait until the save card infobar becomes visible.
-  GREYAssert([self waitForUIElementToAppearWithMatcher:UploadBannerMatcher()],
-             @"Save card infobar failed to show.");
+  GREYAssert(
+      [self waitForUIElementToAppearWithMatcher:UploadBannerLabelsMatcher()],
+      @"Save card infobar failed to show.");
 
   [AutofillAppInterface resetEventWaiterForEvents:@[
     @(CreditCardSaveManagerObserverEvent::kOnStrikeChangeCompleteCalled)
@@ -378,20 +384,21 @@ id<GREYMatcher> UploadBannerMatcher() {
                  @"Event was not triggered");
 
   // Wait until the save card infobar becomes visible.
-  GREYAssert([self waitForUIElementToAppearWithMatcher:UploadBannerMatcher()],
-             @"Save card infobar failed to show.");
+  GREYAssert(
+      [self waitForUIElementToAppearWithMatcher:UploadBannerLabelsMatcher()],
+      @"Save card infobar failed to show.");
 
   [AutofillAppInterface resetEventWaiterForEvents:@[
     @(CreditCardSaveManagerObserverEvent::kOnStrikeChangeCompleteCalled)
   ]
                                           timeout:kWaitForDownloadTimeout];
   // Dismiss Infobar banner
-  [[EarlGrey selectElementWithMatcher:UploadBannerMatcher()]
+  [[EarlGrey selectElementWithMatcher:UploadBannerLabelsMatcher()]
       performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
 
   // Wait until the save card infobar disappears.
   GREYAssert(
-      [self waitForUIElementToDisappearWithMatcher:UploadBannerMatcher()],
+      [self waitForUIElementToDisappearWithMatcher:UploadBannerLabelsMatcher()],
       @"Save card infobar failed to disappear.");
 
   // Ensure that UMA was logged correctly.
@@ -432,8 +439,9 @@ id<GREYMatcher> UploadBannerMatcher() {
                  @"Event was not triggered");
 
   // Wait until the save card infobar becomes visible.
-  GREYAssert([self waitForUIElementToAppearWithMatcher:UploadBannerMatcher()],
-             @"Save card infobar failed to show.");
+  GREYAssert(
+      [self waitForUIElementToAppearWithMatcher:UploadBannerLabelsMatcher()],
+      @"Save card infobar failed to show.");
 
   [AutofillAppInterface resetEventWaiterForEvents:@[
     @(CreditCardSaveManagerObserverEvent::kOnSentUploadCardRequestCalled)
@@ -457,7 +465,7 @@ id<GREYMatcher> UploadBannerMatcher() {
 
   // Wait until the save card infobar disappears.
   GREYAssert(
-      [self waitForUIElementToDisappearWithMatcher:UploadBannerMatcher()],
+      [self waitForUIElementToDisappearWithMatcher:UploadBannerLabelsMatcher()],
       @"Save card infobar failed to disappear.");
 
   // Ensure that UMA was logged correctly.
@@ -498,8 +506,9 @@ id<GREYMatcher> UploadBannerMatcher() {
                  @"Event was not triggered");
 
   // Wait until the save card infobar becomes visible.
-  GREYAssert([self waitForUIElementToAppearWithMatcher:LocalBannerMatcher()],
-             @"Save card infobar failed to show.");
+  GREYAssert(
+      [self waitForUIElementToAppearWithMatcher:LocalBannerLabelsMatcher()],
+      @"Save card infobar failed to show.");
 
   [AutofillAppInterface resetEventWaiterForEvents:@[
     @(CreditCardSaveManagerObserverEvent::kOnStrikeChangeCompleteCalled)
@@ -511,8 +520,9 @@ id<GREYMatcher> UploadBannerMatcher() {
       performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
 
   // Wait until the save card infobar disappears.
-  GREYAssert([self waitForUIElementToDisappearWithMatcher:LocalBannerMatcher()],
-             @"Save card infobar failed to disappear.");
+  GREYAssert(
+      [self waitForUIElementToDisappearWithMatcher:LocalBannerLabelsMatcher()],
+      @"Save card infobar failed to disappear.");
 
   // Ensure credit card is not saved locally.
   GREYAssertEqual(0U, [AutofillAppInterface localCreditCount],
@@ -547,16 +557,18 @@ id<GREYMatcher> UploadBannerMatcher() {
                  @"Event was not triggered");
 
   // Wait until the save card infobar becomes visible.
-  GREYAssert([self waitForUIElementToAppearWithMatcher:LocalBannerMatcher()],
-             @"Save card infobar failed to show.");
+  GREYAssert(
+      [self waitForUIElementToAppearWithMatcher:LocalBannerLabelsMatcher()],
+      @"Save card infobar failed to show.");
 
   // Tap the save button.
   [[EarlGrey selectElementWithMatcher:LocalSaveButtonMatcher()]
       performAction:grey_tap()];
 
   // Wait until the save card infobar disappears.
-  GREYAssert([self waitForUIElementToDisappearWithMatcher:LocalBannerMatcher()],
-             @"Save card infobar failed to disappear.");
+  GREYAssert(
+      [self waitForUIElementToDisappearWithMatcher:LocalBannerLabelsMatcher()],
+      @"Save card infobar failed to disappear.");
 
   // Ensure credit card is saved locally.
   GREYAssertEqual(1U, [AutofillAppInterface localCreditCount],
@@ -593,7 +605,7 @@ id<GREYMatcher> UploadBannerMatcher() {
 
   // Make sure the save card infobar does not become visible.
   GREYAssertFalse(
-      [self waitForUIElementToAppearWithMatcher:LocalBannerMatcher()],
+      [self waitForUIElementToAppearWithMatcher:LocalBannerLabelsMatcher()],
       @"Save card infobar should not show.");
 }
 

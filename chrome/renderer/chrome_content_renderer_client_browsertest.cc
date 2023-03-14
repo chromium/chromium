@@ -37,6 +37,10 @@
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/extensions_client.h"
+#endif
+
 using ChromeContentRendererClientSearchBoxTest = ChromeRenderViewTest;
 
 const char kHtmlWithIframe[] ="<iframe srcdoc=\"Nothing here\"></iframe>";
@@ -193,3 +197,24 @@ IN_PROC_BROWSER_TEST_P(ChromeContentRendererClientBrowserTest,
 INSTANTIATE_TEST_SUITE_P(FlashEmbeds,
                          ChromeContentRendererClientBrowserTest,
                          ::testing::ValuesIn(kFlashEmbedsTestData));
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+IN_PROC_BROWSER_TEST_F(ChromeContentRendererClientBrowserTest,
+                       ExtensionsClientInitialized) {
+  auto* extensions_client = extensions::ExtensionsClient::Get();
+  ASSERT_TRUE(extensions_client);
+
+  // Ensure that the availability map is initialized correctly.
+  const auto& map =
+      extensions_client->GetFeatureDelegatedAvailabilityCheckMap();
+  EXPECT_EQ(6u, map.size());
+  static constexpr const char* expected_delegated_features[] = {
+      "chromeWebViewInternal", "declarativeWebRequest",
+      "guestViewInternal",     "webRequest",
+      "webViewInternal",       "webViewRequest",
+  };
+  for (const auto* feature : expected_delegated_features) {
+    EXPECT_EQ(1u, map.count(feature));
+  }
+}
+#endif

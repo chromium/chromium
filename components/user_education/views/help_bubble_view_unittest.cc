@@ -27,8 +27,12 @@
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
+#include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -73,9 +77,10 @@ class HelpBubbleViewTest : public views::ViewsTestBase {
 
   HelpBubbleView* CreateHelpBubbleView(
       HelpBubbleParams params,
-      absl::optional<gfx::Rect> bounds = absl::nullopt) {
+      absl::optional<gfx::Rect> bounds = absl::nullopt,
+      absl::optional<views::View*> view = absl::nullopt) {
     internal::HelpBubbleAnchorParams anchor_params;
-    anchor_params.view = view_;
+    anchor_params.view = view.value_or(view_);
     anchor_params.rect = bounds;
     return new HelpBubbleView(&test_delegate_, anchor_params,
                               std::move(params));
@@ -209,6 +214,57 @@ TEST_F(HelpBubbleViewTest, AnchorRectUpdated) {
   gfx::Rect expected = bubble_bounds;
   expected.Offset(kAnchorOffset);
   EXPECT_EQ(expected, bubble->GetWidget()->GetWindowBoundsInScreen());
+}
+
+TEST_F(HelpBubbleViewTest, ScrollAnchorViewToVisible) {
+  views::ScrollView* scroll_view = nullptr;
+  views::View* anchor_view = nullptr;
+
+  // Add an `anchor_view` to the `view_` hierarchy that is hosted within a
+  // `scroll_view` and is initially outside the viewport.
+  views::Builder<views::View>(view_)
+      .SetUseDefaultFillLayout(true)
+      .AddChildren(
+          views::Builder<views::ScrollView>()
+              .CopyAddressTo(&scroll_view)
+              .ClipHeightTo(/*min_height=*/0, /*max_height=*/view_->height())
+              .SetContents(
+                  views::Builder<views::FlexLayoutView>()
+                      .SetCrossAxisAlignment(views::LayoutAlignment::kEnd)
+                      .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
+                      .SetOrientation(views::LayoutOrientation::kVertical)
+                      .AddChildren(
+                          views::Builder<views::View>().SetPreferredSize(
+                              view_->size()),
+                          views::Builder<views::View>()
+                              .CopyAddressTo(&anchor_view)
+                              .SetPreferredSize(gfx::Size(10, 10)))))
+      .BuildChildren();
+
+  // Ensure `widget_` has finished processing the layout changes.
+  views::test::RunScheduledLayout(widget_.get());
+
+  // Initially `anchor_view` should not be visible.
+  EXPECT_FALSE(scroll_view->GetBoundsInScreen().Contains(
+      anchor_view->GetBoundsInScreen()));
+
+  // Expect that `scroll_view` will scroll when creating a help bubble anchored
+  // to `anchor_view` since it is outside the viewport.
+  base::MockRepeatingClosure callback;
+  EXPECT_CALL(callback, Run()).Times(testing::AtLeast(1));
+  base::CallbackListSubscription subscription =
+      scroll_view->AddContentsScrolledCallback(callback.Get());
+
+  // Create the help bubble anchored to `anchor_view`.
+  HelpBubbleParams params;
+  params.body_text = u"To X, do Y";
+  params.arrow = HelpBubbleArrow::kTopRight;
+  CreateHelpBubbleView(std::move(params), /*bounds=*/absl::nullopt,
+                       anchor_view);
+
+  // Expect that `anchor_view` is now visible.
+  EXPECT_TRUE(scroll_view->GetBoundsInScreen().Contains(
+      anchor_view->GetBoundsInScreen()));
 }
 
 class HelpBubbleViewsTest : public HelpBubbleViewTest {

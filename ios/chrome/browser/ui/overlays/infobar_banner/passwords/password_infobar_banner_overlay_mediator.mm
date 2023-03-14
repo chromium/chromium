@@ -46,19 +46,15 @@
 // The icon image, can be from the config or not from it.
 - (UIImage*)iconImageWithConfig:
     (PasswordInfobarBannerOverlayRequestConfig*)config {
-  UIImage* image;
-  if (UseSymbols()) {
-    image = CustomSymbolWithPointSize(kPasswordSymbol, kInfobarSymbolPointSize);
+  UIImage* image =
+      CustomSymbolWithPointSize(kPasswordSymbol, kInfobarSymbolPointSize);
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::kIOSShowPasswordStorageInSaveInfobar)) {
-      image = MakeSymbolMulticolor(CustomSymbolWithPointSize(
-          kMulticolorPasswordSymbol, kInfobarSymbolPointSize));
-    }
-#endif  // BUILDFLAG(IS_IOS_MACCATALYST)
-  } else {
-    image = [UIImage imageNamed:@"password_key"];
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kIOSShowPasswordStorageInSaveInfobar)) {
+    image = MakeSymbolMulticolor(CustomSymbolWithPointSize(
+        kMulticolorPasswordSymbol, kInfobarSymbolPointSize));
   }
+#endif  // BUILDFLAG(IS_IOS_MACCATALYST)
   return image;
 }
 

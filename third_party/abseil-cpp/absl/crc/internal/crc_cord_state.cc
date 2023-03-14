@@ -121,7 +121,7 @@ void CrcCordState::Poison() {
     }
   } else {
     // Add a fake corrupt chunk.
-    rep->prefix_crc.push_back(PrefixCrc(0, crc32c_t{1}));
+    rep->prefix_crc.emplace_back(0, crc32c_t{1});
   }
 }
 

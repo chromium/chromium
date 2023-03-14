@@ -9,11 +9,9 @@
 #include "base/notreached.h"
 #include "base/pickle.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/custom_data_helper.h"
-#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace ash {
@@ -219,9 +217,9 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetFileSystemData(
           {{kFileSystemSourcesType, base::JoinString(source_list, u"\n")}}),
       &custom_data);
 
-  return SetCustomData(ui::ClipboardFormatType::WebCustomDataType().GetName(),
-                       std::string(static_cast<const char*>(custom_data.data()),
-                                   custom_data.size()));
+  return SetCustomData(
+      ui::ClipboardFormatType::WebCustomDataType().GetName(),
+      std::string(custom_data.data_as_char(), custom_data.size()));
 }
 
 ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetWebSmartPaste(

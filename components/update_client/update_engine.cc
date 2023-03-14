@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/guid.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/prefs/pref_service.h"
@@ -45,7 +46,8 @@ UpdateContext::UpdateContext(
     UpdateClient::CrxStateChangeCallback crx_state_change_callback,
     const UpdateEngine::NotifyObserversCallback& notify_observers_callback,
     UpdateEngine::Callback callback,
-    PersistedData* persisted_data)
+    PersistedData* persisted_data,
+    bool is_update_check_only)
     : config(config),
       crx_cache_(crx_cache),
       is_foreground(is_foreground),
@@ -55,14 +57,14 @@ UpdateContext::UpdateContext(
       notify_observers_callback(notify_observers_callback),
       callback(std::move(callback)),
       session_id(base::StrCat({"{", base::GenerateGUID(), "}"})),
-      persisted_data(persisted_data) {
+      persisted_data(persisted_data),
+      is_update_check_only(is_update_check_only) {
   for (const auto& id : ids) {
     components.insert(
         std::make_pair(id, std::make_unique<Component>(*this, id)));
   }
 }
 #else
-
 UpdateContext::UpdateContext(
     scoped_refptr<Configurator> config,
     bool is_foreground,
@@ -71,7 +73,8 @@ UpdateContext::UpdateContext(
     UpdateClient::CrxStateChangeCallback crx_state_change_callback,
     const UpdateEngine::NotifyObserversCallback& notify_observers_callback,
     UpdateEngine::Callback callback,
-    PersistedData* persisted_data)
+    PersistedData* persisted_data,
+    bool is_update_check_only)
     : config(config),
       is_foreground(is_foreground),
       is_install(is_install),
@@ -80,7 +83,8 @@ UpdateContext::UpdateContext(
       notify_observers_callback(notify_observers_callback),
       callback(std::move(callback)),
       session_id(base::StrCat({"{", base::GenerateGUID(), "}"})),
-      persisted_data(persisted_data) {
+      persisted_data(persisted_data),
+      is_update_check_only(is_update_check_only) {
   for (const auto& id : ids) {
     components.insert(
         std::make_pair(id, std::make_unique<Component>(*this, id)));
@@ -127,7 +131,35 @@ base::RepeatingClosure UpdateEngine::Update(
     UpdateClient::CrxStateChangeCallback crx_state_change_callback,
     Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  absl::optional<base::RepeatingClosure> cancel_closure = InvokeOperation(
+      is_foreground, /*is_update_check_only=*/false, is_install, ids,
+      std::move(crx_data_callback), std::move(crx_state_change_callback),
+      std::move(callback));
+  DCHECK(cancel_closure.has_value());
+  return *cancel_closure;
+}
 
+void UpdateEngine::CheckForUpdate(
+    bool is_foreground,
+    const std::string& id,
+    UpdateClient::CrxDataCallback crx_data_callback,
+    UpdateClient::CrxStateChangeCallback crx_state_change_callback,
+    Callback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  InvokeOperation(is_foreground, /*is_update_check_only=*/true,
+                  /*is_install=*/false, {id}, std::move(crx_data_callback),
+                  std::move(crx_state_change_callback), std::move(callback));
+}
+
+absl::optional<base::RepeatingClosure> UpdateEngine::InvokeOperation(
+    bool is_foreground,
+    bool is_update_check_only,
+    bool is_install,
+    const std::vector<std::string>& ids,
+    UpdateClient::CrxDataCallback crx_data_callback,
+    UpdateClient::CrxStateChangeCallback crx_state_change_callback,
+    Callback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ids.empty()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -159,7 +191,8 @@ base::RepeatingClosure UpdateEngine::Update(
       crx_cache_,
 #endif
       is_foreground, is_install, ids, crx_state_change_callback,
-      notify_observers_callback_, std::move(callback), metadata_.get());
+      notify_observers_callback_, std::move(callback), metadata_.get(),
+      is_update_check_only);
   DCHECK(!update_context->session_id.empty());
 
   const auto result = update_contexts_.insert(
@@ -188,18 +221,18 @@ base::RepeatingClosure UpdateEngine::Update(
       update_context->component_queue.push(id);
     }
   }
-
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(update_context->components_to_check_for_updates.empty()
                          ? &UpdateEngine::HandleComponent
                          : &UpdateEngine::DoUpdateCheck,
                      this, update_context));
-  return base::BindRepeating(
-      [](scoped_refptr<UpdateContext> context) {
-        context->is_cancelled = true;
-      },
-      update_context);
+  return is_update_check_only ? absl::nullopt
+                              : absl::make_optional(base::BindRepeating(
+                                    [](scoped_refptr<UpdateContext> context) {
+                                      context->is_cancelled = true;
+                                    },
+                                    update_context));
 }
 
 void UpdateEngine::DoUpdateCheck(scoped_refptr<UpdateContext> update_context) {
@@ -449,7 +482,7 @@ void UpdateEngine::SendUninstallPing(const CrxComponent& crx_component,
       false, false, std::vector<std::string>{id},
       UpdateClient::CrxStateChangeCallback(),
       UpdateEngine::NotifyObserversCallback(), std::move(callback),
-      metadata_.get());
+      metadata_.get(), /*is_update_check_only=*/false);
   DCHECK(!update_context->session_id.empty());
 
   const auto result = update_contexts_.insert(

@@ -5,8 +5,11 @@
 #ifndef IOS_WEB_WEB_STATE_WEB_STATE_IMPL_REALIZED_WEB_STATE_H_
 #define IOS_WEB_WEB_STATE_WEB_STATE_IMPL_REALIZED_WEB_STATE_H_
 
+#include <map>
+
 #import "ios/web/web_state/web_state_impl.h"
 
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state_observer.h"
 
 namespace web {
@@ -25,7 +28,8 @@ class WebUIIOS;
 //
 // A few methods are not part of the API of WebStateImpl and thus will be
 // documented.
-class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
+class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate,
+                                             public WebFramesManager::Observer {
  public:
   // Creates a RealizedWebState with a non-null pointer to the owning
   // WebStateImpl.
@@ -54,10 +58,6 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   // Returns the NavigationManagerImpl associated with the owning WebStateImpl.
   const NavigationManagerImpl& GetNavigationManager() const;
   NavigationManagerImpl& GetNavigationManager();
-
-  // Returns the WebFrameManagerImpl associated with the owning WebStateImpl.
-  const WebFramesManagerImpl& GetPageWorldWebFramesManager() const;
-  WebFramesManagerImpl& GetPageWorldWebFramesManager();
 
   // Returns the SessionCertificationPolicyCacheImpl associated with the owning
   // WebStateImpl.
@@ -128,10 +128,7 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   void OnAuthRequired(NSURLProtectionSpace* protection_space,
                       NSURLCredential* proposed_credential,
                       WebStateDelegate::AuthCallback callback);
-  void WebFrameBecameAvailable(std::unique_ptr<WebFrame> frame);
-  void WebFrameBecameUnavailable(const std::string& frame_id);
   void RetrieveExistingFrames();
-  void RemoveAllWebFrames();
 
   // WebState:
   WebStateDelegate* GetDelegate();
@@ -180,6 +177,7 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   void CloseWebState();
   bool SetSessionStateData(NSData* data);
   NSData* SessionStateData() const;
+  void SetSwipeRecognizerProvider(id<CRWSwipeRecognizerProvider> delegate);
   PermissionState GetStateForPermission(Permission permission) const
       API_AVAILABLE(ios(15.0));
   void SetStateForPermission(PermissionState state, Permission permission)
@@ -211,8 +209,11 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   NavigationItemImpl* GetPendingItem() final;
 
  private:
-  // Notifies observers that `frame` will be removed and then removes it.
-  void NotifyObserversAndRemoveWebFrame(WebFrame* frame);
+  // WebFramesManager::Observer:
+  void WebFrameBecameAvailable(WebFramesManager* web_frames_manager,
+                               WebFrame* web_frame) override;
+  void WebFrameBecameUnavailable(WebFramesManager* web_frames_manager,
+                                 const std::string& frame_id) override;
 
   // Creates a WebUIIOS object for `url` that is owned by the called. Returns
   // nullptr if `url` does not correspond to a WebUI page.

@@ -10,11 +10,13 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/media_controller.h"
+#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/privacy_hub/privacy_hub_notification.h"
 #include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
@@ -274,16 +276,17 @@ std::string PrivacySwitchOnNotificationIdForDevice(
 MediaClientImpl::MediaClientImpl()
     : notification_(
           kCameraPrivacySwitchNotifierId,
-          IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_TITLE,
-          ash::PrivacyHubNotification::MessageIds{
-              IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_MESSAGE},
-          ash::PrivacyHubNotification::SensorSet{},
-          base::MakeRefCounted<ash::PrivacyHubNotificationClickDelegate>(
-              base::BindRepeating(
-                  ash::PrivacyHubNotificationController::OpenSupportUrl,
-                  ash::PrivacyHubNotificationController::Sensor::kCamera)),
           ash::NotificationCatalogName::kCameraPrivacySwitch,
-          IDS_ASH_LEARN_MORE) {
+          ash::PrivacyHubNotificationDescriptor{
+              ash::SensorDisabledNotificationDelegate::SensorSet{},
+              IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_TITLE,
+              std::vector<int>{IDS_ASH_LEARN_MORE},
+              std::vector<int>{
+                  IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_MESSAGE},
+              base::MakeRefCounted<
+                  ash::PrivacyHubNotificationClickDelegate>(base::BindRepeating(
+                  ash::PrivacyHubNotificationController::OpenSupportUrl,
+                  ash::SensorDisabledNotificationDelegate::Sensor::kCamera))}) {
   MediaCaptureDevicesDispatcher::GetInstance()->AddObserver(this);
   BrowserList::AddObserver(this);
 

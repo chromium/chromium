@@ -10,11 +10,14 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_sdk_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
+#include "components/device_signals/core/common/mojom/system_signals.mojom.h"
 
 namespace enterprise_connectors {
 
@@ -64,7 +67,7 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
     std::unique_ptr<base::OneShotTimer> timer;
   };
 
-  LocalBinaryUploadService();
+  explicit LocalBinaryUploadService(Profile* profile);
   ~LocalBinaryUploadService() override;
 
   // Send the given file contents to local partners for deep scanning.
@@ -90,17 +93,75 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
 
   void OnTimeoutForTesting(RequestKey key) { OnTimeout(key); }
 
+ protected:
+  // Map to keep track of whether the agent's authenticity has been
+  // verified and if a check is in progress.  If a given agent's `config` is
+  // not in the map, then the agent is not verified and no verification is
+  // in progress.  If the `config` is in the map and the value is false,
+  // an agent verification is in progress.  If the `config` is in the map
+  // and the value is true, the agent has been verified.
+  using AgentVerifiedMap =
+      std::map<content_analysis::sdk::Client::Config,
+               bool,
+               decltype(ContentAnalysisSdkManager::CompareConfig)>;
+
+  AgentVerifiedMap& GetAgentVerifiedMapForTesting() {
+    return is_agent_verified_;
+  }
+
+  // Starts verification of the agent specified by the given config.  This
+  // method virtual so that tests can override the dependency on
+  // SystemsignalsServiceHost.
+  virtual void StartAgentVerification(
+      const content_analysis::sdk::Client::Config& config,
+      base::span<const char* const> subject_names);
+
+  // Called when the verification of the agent specified by the given config
+  // is complete.
+  void OnFileSystemSignals(
+      content_analysis::sdk::Client::Config config,
+      base::span<const char* const> subject_names,
+      const std::vector<device_signals::FileSystemItem>& items);
+
+  // Determines if the authenticity of the agent specified by the given config
+  // has been verified.  This method virtual so that tests can override the
+  // dependency on SystemsignalsServiceHost.
+  virtual bool IsAgentVerified(
+      const content_analysis::sdk::Client::Config& config);
+
  private:
-  // Starts a local content analysis for the request given by `key`.
+  // If an error occurs with a client, reset its state.
+  void ResetClient(const content_analysis::sdk::Client::Config& config);
+
+  // Starts a local content analysis for the analysis request given by `key`.
   void DoLocalContentAnalysis(RequestKey key,
                               Result result,
                               Request::Data data);
 
   // Handles a response from the agent for a given request.
+  // `data` is not used directly by this function, but is needed to keep a
+  // scoped handle alive.
   void HandleResponse(
       scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
+      safe_browsing::BinaryUploadService::Request::Data data,
       absl::optional<content_analysis::sdk::ContentAnalysisResponse>
           sdk_response);
+
+  // Starts a local content analysis ack request.
+  void DoSendAck(
+      scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
+      std::unique_ptr<safe_browsing::BinaryUploadService::Ack> ack);
+
+  // Starts a local content analysis cancel request.
+  void DoSendCancel(
+      scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
+      std::unique_ptr<safe_browsing::BinaryUploadService::CancelRequests>
+          cancel);
+
+  // Handles a response from the agent for a given ask or cancel.
+  void HandleAckOrCancelResponse(
+      scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
+      int status);
 
   // Find the request that corresponds to the given response.
   RequestKey FindRequestByToken(
@@ -111,8 +172,9 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
   void ProcessNextPendingRequest();
 
   // Starts the request given by `key` that is already on the active
-  // list.
-  void ProcessRequest(RequestKey key);
+  // list.  If this function returns true the active request list is still
+  // valid.  Otherwise the active request list has been cleared.
+  bool ProcessRequest(RequestKey key);
 
   // Finish the request given by `key` and inform caller of the the resulting
   // verdict.
@@ -134,6 +196,9 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
   // automatically.
   void RetryActiveRequestsSoonOrFailAllRequests();
 
+  // Attempts to reconnect to agent if a connection is not already in progress.
+  void StartConnectionRetry();
+
   // Called when BinaryUploadService should attempt to reconnect and retry
   // requests to the agent.  This method is called by the timer set in
   // RetryRequest().
@@ -143,6 +208,8 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
       const RequestInfo& info,
       Result result,
       const enterprise_connectors::ContentAnalysisResponse& response);
+
+  raw_ptr<Profile> profile_;
 
   // Keeps track of outstanding requests sent to the agent.
   std::map<RequestKey, RequestInfo> active_requests_;
@@ -156,6 +223,10 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
   // Number of times LBUS has retried to connect to agent.  This count is
   // reset once a successful connection is established.
   size_t retry_count_ = 0;
+
+  // Map to keep track of whether the agent's authenticity has been
+  // verified and if a check is in progress.
+  AgentVerifiedMap is_agent_verified_;
 
   // As the last data member of class.
   base::WeakPtrFactory<LocalBinaryUploadService> factory_{this};

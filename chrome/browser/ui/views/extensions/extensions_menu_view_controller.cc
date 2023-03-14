@@ -11,9 +11,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
-#include "chrome/browser/ui/views/extensions/extensions_menu_page_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_site_permissions_page_view.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/metadata/metadata_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -34,6 +34,33 @@ std::vector<std::string> SortExtensionsByName(
   return sorted_ids;
 }
 
+// Returns the index of `action_id` in the toolbar model actions based on the
+// extensions name alphabetical order.
+size_t FindIndex(ToolbarActionsModel* toolbar_model,
+                 const ToolbarActionsModel::ActionId action_id) {
+  std::u16string extension_name =
+      base::i18n::ToLower(toolbar_model->GetExtensionName(action_id));
+  auto sorted_action_ids = SortExtensionsByName(toolbar_model);
+  return static_cast<size_t>(
+      base::ranges::lower_bound(sorted_action_ids, extension_name, {},
+                                [toolbar_model](std::string id) {
+                                  return base::i18n::ToLower(
+                                      toolbar_model->GetExtensionName(id));
+                                }) -
+      sorted_action_ids.begin());
+}
+
+// Returns the main page, if it is the correct type.
+ExtensionsMenuMainPageView* GetMainPage(views::View* page) {
+  return views::AsViewClass<ExtensionsMenuMainPageView>(page);
+}
+
+// Returns the site permissions page, if it is the correct type.
+ExtensionsMenuSitePermissionsPageView* GetSitePermissionsPage(
+    views::View* page) {
+  return views::AsViewClass<ExtensionsMenuSitePermissionsPageView>(page);
+}
+
 }  // namespace
 
 ExtensionsMenuViewController::ExtensionsMenuViewController(
@@ -47,25 +74,17 @@ ExtensionsMenuViewController::ExtensionsMenuViewController(
       bubble_delegate_(bubble_delegate),
       toolbar_model_(ToolbarActionsModel::Get(browser_->profile())) {
   browser_->tab_strip_model()->AddObserver(this);
+  toolbar_model_observation_.Observe(toolbar_model_.get());
+}
+
+ExtensionsMenuViewController::~ExtensionsMenuViewController() {
+  // Note: No need to call TabStripModel::RemoveObserver(), because it's handled
+  // directly within TabStripModelObserver::~TabStripModelObserver().
 }
 
 void ExtensionsMenuViewController::OpenMainPage() {
   auto main_page = std::make_unique<ExtensionsMenuMainPageView>(browser_, this);
-
-  // Populate.
-  bool allow_pinning = extensions_container_->CanShowActionsInToolbar();
-
-  std::vector<std::string> sorted_ids = SortExtensionsByName(toolbar_model_);
-  for (size_t i = 0; i < sorted_ids.size(); ++i) {
-    // TODO(emiliapaz): Under MVC architecture, view should not own the view
-    // controller. However, the current extensions structure depends on this
-    // thus a major restructure is needed.
-    std::unique_ptr<ExtensionActionViewController> action_controller =
-        ExtensionActionViewController::Create(sorted_ids[i], browser_,
-                                              extensions_container_);
-    main_page->CreateAndInsertMenuItem(std::move(action_controller),
-                                       sorted_ids[i], allow_pinning, i);
-  }
+  PopulateMainPage(main_page.get());
 
   SwitchToPage(std::move(main_page));
 }
@@ -96,8 +115,7 @@ void ExtensionsMenuViewController::CloseBubble() {
 void ExtensionsMenuViewController::TabChangedAt(content::WebContents* contents,
                                                 int index,
                                                 TabChangeType change_type) {
-  DCHECK(current_page_);
-  current_page_->Update(contents);
+  UpdatePage(contents);
 }
 
 void ExtensionsMenuViewController::OnTabStripModelChanged(
@@ -109,28 +127,118 @@ void ExtensionsMenuViewController::OnTabStripModelChanged(
     return;
   }
 
-  current_page_->Update(GetActiveWebContents());
+  UpdatePage(GetActiveWebContents());
 }
 
-// TODO(crbug.com/1390952): Listen for "toolbar pinned actions changed" to
-// update the pin button. Currently pin button icon is not updated after
-// clicking on it.
+void ExtensionsMenuViewController::UpdatePage(
+    content::WebContents* web_contents) {
+  DCHECK(current_page_);
+
+  ExtensionsMenuMainPageView* main_page = GetMainPage(current_page_);
+  if (main_page && web_contents) {
+    main_page->Update(web_contents);
+  }
+}
+
+void ExtensionsMenuViewController::OnToolbarActionAdded(
+    const ToolbarActionsModel::ActionId& action_id) {
+  DCHECK(current_page_);
+
+  // Do nothing when site permission page is opened as a new extension doesn't
+  // affect the site permissions page of another extension.
+  if (GetSitePermissionsPage(current_page_)) {
+    return;
+  }
+
+  // Insert a menu item for the extension when main page is opened.
+  auto* main_page = GetMainPage(current_page_);
+  DCHECK(main_page);
+
+  int index = FindIndex(toolbar_model_, action_id);
+  std::unique_ptr<ExtensionActionViewController> action_controller =
+      ExtensionActionViewController::Create(action_id, browser_,
+                                            extensions_container_);
+
+  main_page->CreateAndInsertMenuItem(
+      std::move(action_controller), action_id,
+      extensions_container_->CanShowActionsInToolbar(), index);
+
+  // TODO(crbug.com/1390952): Update requests access section once such section
+  // is implemented (if the extension added requests site access, it needs to be
+  // added to such section).
+  bubble_delegate_->SizeToContents();
+}
+
+void ExtensionsMenuViewController::OnToolbarActionRemoved(
+    const ToolbarActionsModel::ActionId& action_id) {
+  DCHECK(current_page_);
+
+  auto* site_permissions_page = GetSitePermissionsPage(current_page_);
+  if (site_permissions_page) {
+    // Return to the main page if site permissions page belongs to the extension
+    // removed.
+    if (site_permissions_page->extension_id() == action_id) {
+      OpenMainPage();
+    }
+    return;
+  }
+
+  // Remove the menu item for the extension when main page is opened.
+  auto* main_page = GetMainPage(current_page_);
+  DCHECK(main_page);
+  main_page->RemoveMenuItem(action_id);
+
+  // TODO(crbug.com/1390952): Update requests access section (if the extension
+  // removed was in the section, it needs to be removed).
+  bubble_delegate_->SizeToContents();
+}
+
+void ExtensionsMenuViewController::OnToolbarActionUpdated(
+    const ToolbarActionsModel::ActionId& action_id) {
+  UpdatePage(GetActiveWebContents());
+}
+
+void ExtensionsMenuViewController::OnToolbarModelInitialized() {
+  DCHECK(current_page_);
+
+  // Toolbar model should have been initialized if site permissions page is
+  // open, since this page can only be reached after main page was populated
+  // after toolbar model was initialized.
+  CHECK(!GetSitePermissionsPage(current_page_));
+
+  auto* main_page = GetMainPage(current_page_);
+  DCHECK(main_page);
+  PopulateMainPage(main_page);
+}
+
+void ExtensionsMenuViewController::OnToolbarPinnedActionsChanged() {
+  DCHECK(current_page_);
+
+  // Do nothing when site permissions page is opened as it doesn't have pin
+  // buttons.
+  if (GetSitePermissionsPage(current_page_)) {
+    return;
+  }
+
+  auto* main_page = GetMainPage(current_page_);
+  DCHECK(main_page);
+  main_page->UpdatePinButtons();
+}
 
 ExtensionsMenuMainPageView*
 ExtensionsMenuViewController::GetMainPageViewForTesting() {
   DCHECK(current_page_);
-  return views::AsViewClass<ExtensionsMenuMainPageView>(current_page_);
+  return GetMainPage(current_page_);
 }
 
 ExtensionsMenuSitePermissionsPageView*
 ExtensionsMenuViewController::GetSitePermissionsPageForTesting() {
   DCHECK(current_page_);
-  return views::AsViewClass<ExtensionsMenuSitePermissionsPageView>(
-      current_page_);
+  return GetSitePermissionsPage(current_page_);
 }
 
 void ExtensionsMenuViewController::SwitchToPage(
-    std::unique_ptr<ExtensionsMenuPageView> page) {
+    std::unique_ptr<views::View> page) {
   if (current_page_) {
     bubble_contents_->RemoveChildViewT(current_page_.get());
   }
@@ -140,6 +248,22 @@ void ExtensionsMenuViewController::SwitchToPage(
   // the menu beforehand and delegate wouldn't know the bubble bounds.
   if (bubble_delegate_->GetBubbleFrameView()) {
     bubble_delegate_->SizeToContents();
+  }
+}
+
+void ExtensionsMenuViewController::PopulateMainPage(
+    ExtensionsMenuMainPageView* main_page) {
+  bool allow_pinning = extensions_container_->CanShowActionsInToolbar();
+  std::vector<std::string> sorted_ids = SortExtensionsByName(toolbar_model_);
+  for (size_t i = 0; i < sorted_ids.size(); ++i) {
+    // TODO(emiliapaz): Under MVC architecture, view should not own the view
+    // controller. However, the current extensions structure depends on this
+    // thus a major restructure is needed.
+    std::unique_ptr<ExtensionActionViewController> action_controller =
+        ExtensionActionViewController::Create(sorted_ids[i], browser_,
+                                              extensions_container_);
+    main_page->CreateAndInsertMenuItem(std::move(action_controller),
+                                       sorted_ids[i], allow_pinning, i);
   }
 }
 

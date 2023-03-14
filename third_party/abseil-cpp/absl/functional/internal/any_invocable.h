@@ -810,6 +810,14 @@ using CanAssignReferenceWrapper = TrueAlias<
         : Core(absl::in_place_type<absl::decay_t<T> inv_quals>,                \
                std::forward<Args>(args)...) {}                                 \
                                                                                \
+    /*Raises a fatal error when the AnyInvocable is invoked after a move*/     \
+    static ReturnType InvokedAfterMove(                                        \
+      TypeErasedState*,                                                        \
+      ForwardedParameterType<P>...) noexcept(noex) {                           \
+      ABSL_HARDENING_ASSERT(false && "AnyInvocable use-after-move");           \
+      std::terminate();                                                        \
+    }                                                                          \
+                                                                               \
     InvokerType<noex, ReturnType, P...>* ExtractInvoker() cv {                 \
       using QualifiedTestType = int cv ref;                                    \
       auto* invoker = this->invoker_;                                          \
@@ -817,12 +825,7 @@ using CanAssignReferenceWrapper = TrueAlias<
           std::is_rvalue_reference<QualifiedTestType>::value) {                \
         ABSL_HARDENING_ASSERT([this]() {                                       \
           /* We checked that this isn't const above, so const_cast is safe */  \
-          const_cast<Impl*>(this)->invoker_ =                                  \
-              [](TypeErasedState*,                                             \
-                 ForwardedParameterType<P>...) noexcept(noex) -> ReturnType {  \
-            ABSL_HARDENING_ASSERT(false && "AnyInvocable use-after-move");     \
-            std::terminate();                                                  \
-          };                                                                   \
+          const_cast<Impl*>(this)->invoker_ = InvokedAfterMove;                \
           return this->HasValue();                                             \
         }());                                                                  \
       }                                                                        \

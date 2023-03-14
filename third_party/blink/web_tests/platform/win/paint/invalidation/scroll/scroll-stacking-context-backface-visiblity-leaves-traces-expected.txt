@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [785, 5056],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
@@ -10,7 +10,6 @@
     {
       "name": "LayoutNGBlockFlow (relative positioned) HEADER",
       "bounds": [769, 20],
-      "contentsOpaqueForText": true,
       "drawsContent": false,
       "backfaceVisibility": "hidden",
       "transform": 2

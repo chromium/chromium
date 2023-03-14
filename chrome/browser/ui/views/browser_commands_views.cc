@@ -72,8 +72,7 @@ void ExecuteUIDebugCommand(int id, const Browser* browser) {
         PrintViewHierarchy(view, /* verbose= */ true);
       break;
     default:
-      NOTREACHED() << "Unimplemented UI Debug command: " << id;
-      break;
+      NOTREACHED_NORETURN() << "Unimplemented UI Debug command: " << id;
   }
 }
 

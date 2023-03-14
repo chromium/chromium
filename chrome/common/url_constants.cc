@@ -470,6 +470,9 @@ const char kWifiSyncLearnMoreURL[] =
 const char kWifiHiddenNetworkURL[] =
     "https://support.google.com/chromebook?p=hidden_networks";
 
+const char kWifiPasspointURL[] =
+    "https://support.google.com/chromebook?p=wifi_passpoint";
+
 const char kNearbyShareLearnMoreURL[] =
     "https://support.google.com/chromebook?p=nearby_share";
 

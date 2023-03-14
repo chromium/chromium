@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">Препознаен е линк. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Страницата <ph name="PAGE_NUMBER" /> е избришана</translation>
 <translation id="1258009455399840361">Ротирајте 90 степени во насока на стрелките на часовникот</translation>
-<translation id="1300209025925956156">Скенирајте го документот</translation>
-<translation id="1309250603447638106">Преземете ги ажурирањата за скенирање документи</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Search + стрелка налево за пристап.</translation>
 <translation id="1417314334557041815">Изменете ја страницата <ph name="INDEX" /></translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> е исклучена.</translation>
 <translation id="1473110567575736769">Тајмер од 3 секунди</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">Ништо не е снимено</translation>
 <translation id="1838104802459806957">Навалeте нагоре</translation>
 <translation id="1843105061469674856">Скенирај дополнителна страница</translation>
-<translation id="1851169887664797861">Достапни се дополнителни контроли за камерата</translation>
 <translation id="1851616744363735765">ПАУЗИРАНО</translation>
 <translation id="1899697626337024495">Фоторезолуција</translation>
 <translation id="1925845977604399247">Оди во галеријата</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">Тип скенирање</translation>
 <translation id="28682968802727151">Преглед на отсликување</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> е приклучена.</translation>
-<translation id="2904654629665923749">Достапно е скенирање документи</translation>
 <translation id="3067436040345934772">Движење надесно</translation>
 <translation id="3081586908890909590">Префрли на снимање видео</translation>
 <translation id="313467653172006084">30 FPS</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">Копирај ја адресата на линкот</translation>
 <translation id="4281620174117014503">Резолуција на аудиовизуелни содржини</translation>
 <translation id="428234092390943511">Сликичка на страница</translation>
-<translation id="4340659173795395806">Сега можете да создавате PDF-датотеки со повеќе страници</translation>
 <translation id="4383571725254449280">Евиденција за изведба на печатењето</translation>
 <translation id="4445542136948522167">Сопри го фотографирањето</translation>
 <translation id="4570032796877367747">Предна камера</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">Зачувај</translation>
 <translation id="5320594929574852403">Се преместува налево</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5444515100983837161">Поставете ги сите рабови на документот во рамката. Скенирањето функционира најдобро кога документот и заднината имаат различни бои.</translation>
 <translation id="5662366948659129155">Се скенира страницата <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Квадрат</translation>
 <translation id="5746169159649715125">Зачувај како ПДФ</translation>
@@ -157,7 +150,6 @@
 <translation id="8428213095426709021">Поставки</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Исклучете го звукот на микрофонот. Копчето за исклучување звук е вклучено</translation>
-<translation id="8712637175834984815">Сфатив</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8732462232047530626">Прегледувај метаподатоци</translation>
 <translation id="8815966864175525708">Префрли за фотографирање во портрет</translation>

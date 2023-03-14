@@ -5,6 +5,7 @@
 #ifndef CC_BENCHMARKS_MICRO_BENCHMARK_CONTROLLER_IMPL_H_
 #define CC_BENCHMARKS_MICRO_BENCHMARK_CONTROLLER_IMPL_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 

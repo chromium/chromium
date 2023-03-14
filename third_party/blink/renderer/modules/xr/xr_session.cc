@@ -119,6 +119,9 @@ const char kImageTrackingFeatureNotSupported[] =
 const char kEntityTypesNotSpecified[] =
     "No entityTypes specified: the array cannot be empty!";
 
+const char kSessionNotHaveSetFrameRate[] =
+    "Session does not have a set frame rate.";
+
 const float kMinDefaultFramebufferScale = 0.1f;
 const float kMaxDefaultFramebufferScale = 1.0f;
 
@@ -590,6 +593,13 @@ void XRSession::UpdateStageParameters(
   }
 }
 
+ScriptPromise XRSession::updateTargetFrameRate(float rate,
+    ExceptionState& exception_state) {
+  exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                    kSessionNotHaveSetFrameRate);
+  return ScriptPromise();
+}
+
 ScriptPromise XRSession::requestReferenceSpace(
     ScriptState* script_state,
     const String& type,
@@ -666,7 +676,8 @@ ScriptPromise XRSession::requestReferenceSpace(
   DCHECK(reference_space);
   reference_spaces_.push_back(reference_space);
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
   resolver->Resolve(reference_space);
 
@@ -1305,7 +1316,8 @@ ScriptPromise XRSession::requestLightProbe(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
 
   if (!world_light_probe_) {
@@ -1333,8 +1345,8 @@ ScriptPromise XRSession::end(ScriptState* script_state,
 
   ForceEnd(ShutdownPolicy::kWaitForResponse);
 
-  end_session_resolver_ =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  end_session_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = end_session_resolver_->Promise();
 
   DVLOG(1) << __func__ << ": returning promise";

@@ -12,6 +12,7 @@
 #include "base/auto_reset.h"
 #include "base/base64.h"
 #include "base/functional/bind.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -169,9 +170,9 @@ struct TypeConverter<mojom::AutocompleteMatchPtr, AutocompleteMatch> {
                                                           &subtypes);
     std::vector<std::string> subtypes_str;
     subtypes_str.push_back(base::NumberToString(type));
-    std::transform(subtypes.begin(), subtypes.end(),
-                   std::back_inserter(subtypes_str),
-                   static_cast<std::string (*)(int)>(base::NumberToString));
+    base::ranges::transform(
+        subtypes, std::back_inserter(subtypes_str),
+        [](int subtype) { return base::NumberToString(subtype); });
     result->aqs_type_subtypes = base::JoinString(subtypes_str, ",");
     result->has_tab_match = input.has_tab_match.value_or(false);
     if (input.associated_keyword.get()) {

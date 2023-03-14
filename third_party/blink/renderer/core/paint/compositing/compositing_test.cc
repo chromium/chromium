@@ -49,6 +49,14 @@ const char* ViewLayerName() {
 
 }  // namespace
 
+#define EXPECT_SKCOLOR4F_NEAR(expected, actual, error) \
+  do {                                                 \
+    EXPECT_NEAR(expected.fR, actual.fR, error);        \
+    EXPECT_NEAR(expected.fG, actual.fG, error);        \
+    EXPECT_NEAR(expected.fB, actual.fB, error);        \
+    EXPECT_NEAR(expected.fA, actual.fA, error);        \
+  } while (false)
+
 // Tests the integration between blink and cc where a layer list is sent to cc.
 class CompositingTest : public PaintTestConfigurations, public testing::Test {
  public:
@@ -474,7 +482,7 @@ TEST_P(CompositingTest, BackgroundColorInScrollingContentsLayer) {
   auto* scrollable_area = GetLocalFrameView()->LayoutViewport();
   layer = ScrollingContentsCcLayerByScrollElementId(
       RootCcLayer(), scrollable_area->GetScrollElementId());
-  EXPECT_EQ(layer->background_color(), expected_color);
+  EXPECT_SKCOLOR4F_NEAR(layer->background_color(), expected_color, 0.005f);
 
   // Non-root layers set background_color based on the CSS background color of
   // the layer-defining element.
@@ -484,7 +492,7 @@ TEST_P(CompositingTest, BackgroundColorInScrollingContentsLayer) {
   scrollable_area = scroller_box->GetScrollableArea();
   layer = ScrollingContentsCcLayerByScrollElementId(
       RootCcLayer(), scrollable_area->GetScrollElementId());
-  EXPECT_EQ(layer->background_color(), expected_color);
+  EXPECT_SKCOLOR4F_NEAR(layer->background_color(), expected_color, 0.005f);
 }
 
 TEST_P(CompositingTest, BackgroundColorInGraphicsLayer) {
@@ -543,7 +551,7 @@ TEST_P(CompositingTest, BackgroundColorInGraphicsLayer) {
   SkColor4f expected_color =
       SkColor4f::FromColor(SkColorSetARGB(roundf(255. * 0.6), 30, 40, 50));
   layer = CcLayerByDOMElementId("scroller");
-  EXPECT_EQ(layer->background_color(), expected_color);
+  EXPECT_SKCOLOR4F_NEAR(layer->background_color(), expected_color, 0.005f);
   scrollable_area = scroller_box->GetScrollableArea();
   layer = ScrollingContentsCcLayerByScrollElementId(
       RootCcLayer(), scrollable_area->GetScrollElementId());
@@ -1862,7 +1870,7 @@ TEST_P(CompositingSimTest, PromoteCrossOriginToParentIframeAfterDomainChange) {
 
 // Regression test for https://crbug.com/1095167. Render surfaces require that
 // EffectNode::stable_id is set.
-TEST_P(CompositingTest, EffectNodesShouldHaveStableIds) {
+TEST_P(CompositingTest, EffectNodesShouldHaveElementIds) {
   InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
     <div style="overflow: hidden; border-radius: 2px; height: 10px;">
       <div style="backdrop-filter: grayscale(3%);">
@@ -1873,8 +1881,9 @@ TEST_P(CompositingTest, EffectNodesShouldHaveStableIds) {
   )HTML");
   auto* property_trees = RootCcLayer()->layer_tree_host()->property_trees();
   for (const auto& effect_node : property_trees->effect_tree().nodes()) {
-    if (effect_node.parent_id != -1)
-      EXPECT_TRUE(!!effect_node.stable_id);
+    if (effect_node.parent_id != cc::kInvalidPropertyNodeId) {
+      EXPECT_TRUE(!!effect_node.element_id);
+    }
   }
 }
 
@@ -2779,12 +2788,19 @@ TEST_P(CompositingSimTest, SolidColorLayersWithSnapping) {
 
   Compositor().BeginFrame();
 
-  auto* snap_down =
-      static_cast<const cc::PictureLayer*>(CcLayerByDOMElementId("snapDown"));
-  EXPECT_TRUE(snap_down->GetRecordingSourceForTesting()->is_solid_color());
-  auto* snap_up =
-      static_cast<const cc::PictureLayer*>(CcLayerByDOMElementId("snapUp"));
-  EXPECT_TRUE(snap_up->GetRecordingSourceForTesting()->is_solid_color());
+  auto* snap_down = CcLayerByDOMElementId("snapDown");
+  auto* snap_up = CcLayerByDOMElementId("snapUp");
+  if (RuntimeEnabledFeatures::SolidColorLayersEnabled()) {
+    EXPECT_TRUE(snap_down->IsSolidColorLayerForTesting());
+    EXPECT_TRUE(snap_up->IsSolidColorLayerForTesting());
+  } else {
+    EXPECT_TRUE(static_cast<const cc::PictureLayer*>(snap_down)
+                    ->GetRecordingSourceForTesting()
+                    ->is_solid_color());
+    EXPECT_TRUE(static_cast<const cc::PictureLayer*>(snap_up)
+                    ->GetRecordingSourceForTesting()
+                    ->is_solid_color());
+  }
 }
 
 TEST_P(CompositingSimTest, SolidColorLayerWithSubpixelTransform) {
@@ -2813,9 +2829,14 @@ TEST_P(CompositingSimTest, SolidColorLayerWithSubpixelTransform) {
 
   Compositor().BeginFrame();
 
-  auto* target =
-      static_cast<const cc::PictureLayer*>(CcLayerByDOMElementId("target"));
-  EXPECT_TRUE(target->GetRecordingSourceForTesting()->is_solid_color());
+  auto* target = CcLayerByDOMElementId("target");
+  if (RuntimeEnabledFeatures::SolidColorLayersEnabled()) {
+    EXPECT_TRUE(target->IsSolidColorLayerForTesting());
+  } else {
+    EXPECT_TRUE(static_cast<const cc::PictureLayer*>(target)
+                    ->GetRecordingSourceForTesting()
+                    ->is_solid_color());
+  }
   EXPECT_NEAR(0.4, target->offset_to_transform_parent().x(), 0.001);
   EXPECT_NEAR(0.6, target->offset_to_transform_parent().y(), 0.001);
 }

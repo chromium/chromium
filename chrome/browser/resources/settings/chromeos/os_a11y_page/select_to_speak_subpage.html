@@ -173,20 +173,15 @@ found in the LICENSE file.
       aria-show-label aria-show-sublabel
       embedded>
   </cr-link-row>
-  <template is="dom-if"
-      if="[[isExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled_]]">
-    <!-- TODO(crbug.com/1354821): Disable and turn off or hide
-    voiceSwitchingToggle when enhanced network voices is enabled. -->
-    <settings-toggle-button
-        id="voiceSwitchingToggle"
-        class="settings-box"
-        pref="{{prefs.settings.a11y.select_to_speak_voice_switching}}"
-        label="$i18n{selectToSpeakOptionsVoiceSwitchingDescription}"
-        deep-link-focus-id$="[[Setting.kSelectToSpeakVoiceSwitching]]"
-        disabled="[[prefs.settings.a11y.select_to_speak_enhanced_network_voices.value]]"
-        aria-show-label aria-show-sublabel>
-    </settings-toggle-button>
-  </template>
+  <settings-toggle-button
+      id="voiceSwitchingToggle"
+      class="settings-box"
+      pref="{{prefs.settings.a11y.select_to_speak_voice_switching}}"
+      label="$i18n{selectToSpeakOptionsVoiceSwitchingDescription}"
+      deep-link-focus-id$="[[Setting.kSelectToSpeakVoiceSwitching]]"
+      disabled="[[prefs.settings.a11y.select_to_speak_enhanced_network_voices.value]]"
+      aria-show-label aria-show-sublabel>
+  </settings-toggle-button>
   <settings-toggle-button
       id="enhancedNetworkVoicesToggle"
       class="settings-box"

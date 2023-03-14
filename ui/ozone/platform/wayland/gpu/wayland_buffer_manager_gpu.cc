@@ -105,10 +105,12 @@ void WaylandBufferManagerGpu::Initialize(
   ProcessPendingTasks();
 }
 
-void WaylandBufferManagerGpu::OnSubmission(gfx::AcceleratedWidget widget,
-                                           uint32_t buffer_id,
-                                           gfx::SwapResult swap_result,
-                                           gfx::GpuFenceHandle release_fence) {
+void WaylandBufferManagerGpu::OnSubmission(
+    gfx::AcceleratedWidget widget,
+    uint32_t frame_id,
+    gfx::SwapResult swap_result,
+    gfx::GpuFenceHandle release_fence,
+    const std::vector<wl::WaylandPresentationInfo>& presentation_infos) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
   DCHECK_LE(commit_thread_runners_.count(widget), 1u);
@@ -118,21 +120,21 @@ void WaylandBufferManagerGpu::OnSubmission(gfx::AcceleratedWidget widget,
     return;
 
   if (it->second->BelongsToCurrentThread()) {
-    SubmitSwapResultOnOriginThread(widget, buffer_id, swap_result,
-                                   std::move(release_fence));
+    HandleSubmissionOnOriginThread(widget, frame_id, swap_result,
+                                   std::move(release_fence),
+                                   presentation_infos);
   } else {
     it->second->PostTask(
         FROM_HERE,
-        base::BindOnce(&WaylandBufferManagerGpu::SubmitSwapResultOnOriginThread,
-                       base::Unretained(this), widget, buffer_id, swap_result,
-                       std::move(release_fence)));
+        base::BindOnce(&WaylandBufferManagerGpu::HandleSubmissionOnOriginThread,
+                       base::Unretained(this), widget, frame_id, swap_result,
+                       std::move(release_fence), presentation_infos));
   }
 }
 
 void WaylandBufferManagerGpu::OnPresentation(
     gfx::AcceleratedWidget widget,
-    uint32_t buffer_id,
-    const gfx::PresentationFeedback& feedback) {
+    const std::vector<wl::WaylandPresentationInfo>& presentation_infos) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
   DCHECK_LE(commit_thread_runners_.count(widget), 1u);
@@ -142,13 +144,13 @@ void WaylandBufferManagerGpu::OnPresentation(
     return;
 
   if (it->second->BelongsToCurrentThread()) {
-    SubmitPresentationOnOriginThread(widget, buffer_id, feedback);
+    HandlePresentationOnOriginThread(widget, presentation_infos);
   } else {
     it->second->PostTask(
         FROM_HERE,
         base::BindOnce(
-            &WaylandBufferManagerGpu::SubmitPresentationOnOriginThread,
-            base::Unretained(this), widget, buffer_id, feedback));
+            &WaylandBufferManagerGpu::HandlePresentationOnOriginThread,
+            base::Unretained(this), widget, presentation_infos));
   }
 }
 
@@ -405,28 +407,37 @@ void WaylandBufferManagerGpu::ForgetTaskRunnerForWidgetOnIOThread(
   commit_thread_runners_.erase(widget);
 }
 
-void WaylandBufferManagerGpu::SubmitSwapResultOnOriginThread(
+void WaylandBufferManagerGpu::HandleSubmissionOnOriginThread(
     gfx::AcceleratedWidget widget,
     uint32_t frame_id,
     gfx::SwapResult swap_result,
-    gfx::GpuFenceHandle release_fence) {
+    gfx::GpuFenceHandle release_fence,
+    const std::vector<wl::WaylandPresentationInfo>& presentation_infos) {
   DCHECK_NE(widget, gfx::kNullAcceleratedWidget);
   auto* surface = GetSurface(widget);
   // The surface might be destroyed by the time the swap result is provided.
   if (surface)
     surface->OnSubmission(frame_id, swap_result, std::move(release_fence));
+
+  HandlePresentationOnOriginThread(widget, presentation_infos);
 }
 
-void WaylandBufferManagerGpu::SubmitPresentationOnOriginThread(
+void WaylandBufferManagerGpu::HandlePresentationOnOriginThread(
     gfx::AcceleratedWidget widget,
-    uint32_t frame_id,
-    const gfx::PresentationFeedback& feedback) {
+    const std::vector<wl::WaylandPresentationInfo>& presentation_infos) {
   DCHECK_NE(widget, gfx::kNullAcceleratedWidget);
+
   auto* surface = GetSurface(widget);
   // The surface might be destroyed by the time the presentation feedback is
   // provided.
-  if (surface)
-    surface->OnPresentation(frame_id, feedback);
+  if (!surface) {
+    return;
+  }
+
+  for (const auto& presentation_info : presentation_infos) {
+    surface->OnPresentation(presentation_info.frame_id,
+                            presentation_info.feedback);
+  }
 }
 
 #if defined(WAYLAND_GBM)

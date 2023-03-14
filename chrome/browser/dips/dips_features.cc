@@ -15,7 +15,7 @@ BASE_FEATURE(kFeature, "DIPS", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Set whether DIPS persists its database to disk.
 const base::FeatureParam<bool> kPersistedDatabaseEnabled{
-    &kFeature, "persist_database", true};
+    &kFeature, "persist_database", false};
 
 // Set whether DIPS performs deletion.
 const base::FeatureParam<bool> kDeletionEnabled{&kFeature, "delete", false};

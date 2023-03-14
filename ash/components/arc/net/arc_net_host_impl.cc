@@ -13,7 +13,10 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/net/arc_net_utils.h"
 #include "ash/components/arc/net/cert_manager.h"
+#include "ash/components/arc/net/passpoint_dialog_view.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/window_properties.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -39,6 +42,7 @@
 #include "chromeos/ash/components/network/onc/network_onc_utils.h"
 #include "chromeos/ash/components/network/technology_state_controller.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/exo/wm_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "dbus/object_path.h"
@@ -118,6 +122,17 @@ void ForgetNetworkSuccessCallback(
 }
 
 void ForgetNetworkFailureCallback(
+    base::OnceCallback<void(arc::mojom::NetworkResult)> callback,
+    const std::string& error_name) {
+  std::move(callback).Run(arc::mojom::NetworkResult::FAILURE);
+}
+
+void UpdateWifiNetworkSuccessCallback(
+    base::OnceCallback<void(arc::mojom::NetworkResult)> callback) {
+  std::move(callback).Run(arc::mojom::NetworkResult::SUCCESS);
+}
+
+void UpdateWifiNetworkFailureCallback(
     base::OnceCallback<void(arc::mojom::NetworkResult)> callback,
     const std::string& error_name) {
   std::move(callback).Run(arc::mojom::NetworkResult::FAILURE);
@@ -208,6 +223,15 @@ void StopLohsFailureCallback(const std::string& error_name,
                  << ", message: " << error_message;
 }
 
+aura::Window* GetActiveWindow() {
+  const exo::WMHelper* wm_helper =
+      exo::WMHelper::HasInstance() ? exo::WMHelper::GetInstance() : nullptr;
+  if (!wm_helper) {
+    return nullptr;
+  }
+  return wm_helper->GetActiveWindow();
+}
+
 }  // namespace
 
 namespace arc {
@@ -265,6 +289,11 @@ ArcNetHostImpl::~ArcNetHostImpl() {
 
 void ArcNetHostImpl::SetPrefService(PrefService* pref_service) {
   pref_service_ = pref_service;
+}
+
+void ArcNetHostImpl::SetArcAppMetadataProvider(
+    ArcAppMetadataProvider* app_metadata_provider) {
+  app_metadata_provider_ = app_metadata_provider;
 }
 
 void ArcNetHostImpl::SetCertManager(std::unique_ptr<CertManager> cert_manager) {
@@ -481,7 +510,7 @@ void ArcNetHostImpl::CreateNetwork(mojom::WifiConfigurationPtr cfg,
   // the callee interface.
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   GetManagedConfigurationHandler()->CreateConfiguration(
-      user_id_hash, base::Value(std::move(properties)),
+      user_id_hash, properties,
       base::BindOnce(&ArcNetHostImpl::CreateNetworkSuccessCallback,
                      weak_factory_.GetWeakPtr(),
                      std::move(split_callback.first)),
@@ -525,6 +554,37 @@ void ArcNetHostImpl::ForgetNetwork(const std::string& guid,
       base::BindOnce(&ForgetNetworkSuccessCallback,
                      std::move(split_callback.first)),
       base::BindOnce(&ForgetNetworkFailureCallback,
+                     std::move(split_callback.second)));
+}
+
+void ArcNetHostImpl::UpdateWifiNetwork(const std::string& guid,
+                                       mojom::WifiConfigurationPtr cfg,
+                                       UpdateWifiNetworkCallback callback) {
+  std::string path;
+  if (!GetNetworkPathFromGuid(guid, &path)) {
+    NET_LOG(ERROR) << "Could not retrieve Service path from GUID " << guid;
+    std::move(callback).Run(mojom::NetworkResult::FAILURE);
+    return;
+  }
+
+  // TODO(b/270089579): Add support for more properties to be updatable.
+  base::Value::Dict properties;
+  base::Value::Dict wifi_dict;
+
+  if (cfg->bssid_allowlist.has_value()) {
+    wifi_dict.Set(onc::wifi::kBSSIDAllowlist,
+                  TranslateStringListToValue(cfg->bssid_allowlist.value()));
+  }
+  properties.Set(onc::network_config::kWiFi, std::move(wifi_dict));
+
+  // TODO(crbug.com/730593): Remove SplitOnceCallback() by updating
+  // the callee interface.
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+  GetManagedConfigurationHandler()->SetProperties(
+      path, properties,
+      base::BindOnce(&UpdateWifiNetworkSuccessCallback,
+                     std::move(split_callback.first)),
+      base::BindOnce(&UpdateWifiNetworkFailureCallback,
                      std::move(split_callback.second)));
 }
 
@@ -719,7 +779,7 @@ void ArcNetHostImpl::AndroidVpnConnected(
   std::string service_path = LookupArcVpnServicePath();
   if (!service_path.empty()) {
     GetManagedConfigurationHandler()->SetProperties(
-        service_path, base::Value(TranslateVpnConfigurationToOnc(*cfg)),
+        service_path, TranslateVpnConfigurationToOnc(*cfg),
         base::BindOnce(&ArcNetHostImpl::ConnectArcVpn,
                        weak_factory_.GetWeakPtr(), service_path, std::string()),
         base::BindOnce(&ArcVpnErrorCallback,
@@ -729,7 +789,7 @@ void ArcNetHostImpl::AndroidVpnConnected(
 
   std::string user_id_hash = ash::LoginState::Get()->primary_user_hash();
   GetManagedConfigurationHandler()->CreateConfiguration(
-      user_id_hash, base::Value(TranslateVpnConfigurationToOnc(*cfg)),
+      user_id_hash, TranslateVpnConfigurationToOnc(*cfg),
       base::BindOnce(&ArcNetHostImpl::ConnectArcVpn,
                      weak_factory_.GetWeakPtr()),
       base::BindOnce(&ArcVpnErrorCallback, "connecting new ARC VPN"));
@@ -937,10 +997,47 @@ base::Value::Dict ArcNetHostImpl::TranslateProxyConfiguration(
 
 void ArcNetHostImpl::AddPasspointCredentials(
     mojom::PasspointCredentialsPtr credentials) {
+  if (!ash::features::IsPasspointARCSupportEnabled()) {
+    return;
+  }
   TranslatePasspointCredentialsToDict(
       std::move(credentials),
       base::BindOnce(&ArcNetHostImpl::AddPasspointCredentialsWithProperties,
                      weak_factory_.GetWeakPtr()));
+}
+
+void ArcNetHostImpl::RequestPasspointAppApproval(
+    mojom::PasspointApprovalRequestPtr request,
+    RequestPasspointAppApprovalCallback callback) {
+  if (!ash::features::IsPasspointARCSupportEnabled()) {
+    std::move(callback).Run(
+        mojom::PasspointApprovalResponse::New(/*allow=*/false));
+    return;
+  }
+  aura::Window* window = GetActiveWindow();
+  if (!window) {
+    NET_LOG(ERROR) << "Failed to get active window";
+    std::move(callback).Run(
+        mojom::PasspointApprovalResponse::New(/*allow=*/false));
+    return;
+  }
+  const std::string* app_id = window->GetProperty(ash::kAppIDKey);
+  if (!app_id || app_id->empty()) {
+    NET_LOG(ERROR) << "Failed to get app info";
+    std::move(callback).Run(
+        mojom::PasspointApprovalResponse::New(/*allow=*/false));
+    return;
+  }
+  const std::string package_name =
+      app_metadata_provider_->GetAppPackageName(*app_id);
+  if (request->package_name != package_name) {
+    NET_LOG(ERROR) << "Unexpected app package name of the active window: "
+                   << package_name;
+    std::move(callback).Run(
+        mojom::PasspointApprovalResponse::New(/*allow=*/false));
+    return;
+  }
+  PasspointDialogView::Show(window, request->app_name, std::move(callback));
 }
 
 void ArcNetHostImpl::AddPasspointCredentialsWithProperties(
@@ -1081,8 +1178,7 @@ void ArcNetHostImpl::ReceiveShillProperties(
     return;
   }
 
-  shill_network_properties_[service_path] =
-      base::Value(std::move(*shill_properties));
+  shill_network_properties_[service_path] = std::move(*shill_properties);
 
   // Get patchpanel devices and update active networks.
   ash::PatchPanelClient::Get()->GetDevices(base::BindOnce(
@@ -1121,15 +1217,14 @@ void ArcNetHostImpl::NetworkListChanged() {
 void ArcNetHostImpl::StartLohs(mojom::LohsConfigPtr config,
                                StartLohsCallback callback) {
   NET_LOG(USER) << "Starting LOHS";
-  base::Value dict(base::Value::Type::DICT);
+  base::Value::Dict dict;
 
   if (config->hexssid.empty()) {
     NET_LOG(ERROR) << "Cannot create local only hotspot without hex ssid";
     std::move(callback).Run(arc::mojom::LohsStatus::kErrorInvalidArgument);
     return;
   }
-  dict.GetDict().Set(shill::kTetheringConfSSIDProperty,
-                     base::Value(config->hexssid));
+  dict.Set(shill::kTetheringConfSSIDProperty, config->hexssid);
 
   if (config->band != arc::mojom::WifiBand::k2Ghz) {
     // TODO(b/257880335): Support 5Ghz band as well
@@ -1138,8 +1233,7 @@ void ArcNetHostImpl::StartLohs(mojom::LohsConfigPtr config,
     std::move(callback).Run(arc::mojom::LohsStatus::kErrorInvalidArgument);
     return;
   }
-  dict.GetDict().Set(shill::kTetheringConfBandProperty,
-                     base::Value(shill::kBand2GHz));
+  dict.Set(shill::kTetheringConfBandProperty, shill::kBand2GHz);
 
   if (config->security_type != arc::mojom::SecurityType::WPA_PSK) {
     NET_LOG(ERROR) << "Unsupported security for LOHS: " << config->security_type
@@ -1152,16 +1246,14 @@ void ArcNetHostImpl::StartLohs(mojom::LohsConfigPtr config,
     std::move(callback).Run(arc::mojom::LohsStatus::kErrorInvalidArgument);
     return;
   }
-  dict.GetDict().Set(shill::kTetheringConfSecurityProperty,
-                     base::Value(shill::kSecurityWpa2));
-  dict.GetDict().Set(shill::kTetheringConfPassphraseProperty,
-                     base::Value(config->passphrase.value()));
+  dict.Set(shill::kTetheringConfSecurityProperty, shill::kSecurityWpa2);
+  dict.Set(shill::kTetheringConfPassphraseProperty, config->passphrase.value());
 
   NET_LOG(USER) << "Set Shill Manager property: " << shill::kLOHSConfigProperty
                 << ": " << dict;
   auto callback_split = base::SplitOnceCallback(std::move(callback));
   ash::ShillManagerClient::Get()->SetProperty(
-      shill::kLOHSConfigProperty, dict,
+      shill::kLOHSConfigProperty, base::Value(std::move(dict)),
       base::BindOnce(&SetLohsConfigPropertySuccessCallback,
                      std::move(callback_split.first)),
       base::BindOnce(&SetLohsConfigPropertyFailureCallback,

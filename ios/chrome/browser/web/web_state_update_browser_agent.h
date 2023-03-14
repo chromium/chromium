@@ -7,7 +7,6 @@
 
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
-#include "ios/chrome/browser/main/browser_observer.h"
 #include "ios/chrome/browser/main/browser_user_data.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/browser/web_state_list/web_state_list_observer.h"
@@ -17,8 +16,7 @@
 // This browser agent monitors the browser's web states (when they become or
 // stop being active) and manages web state lifecycle updates.
 class WebStateUpdateBrowserAgent
-    : public BrowserObserver,
-      public BrowserUserData<WebStateUpdateBrowserAgent>,
+    : public BrowserUserData<WebStateUpdateBrowserAgent>,
       public WebStateListObserver,
       public web::WebStateObserver {
  public:
@@ -46,14 +44,10 @@ class WebStateUpdateBrowserAgent
                           web::WebState* web_state,
                           int index) override;
 
-  // BrowserObserver.
-  void BrowserDestroyed(Browser* browser) override;
+  void WebStateListDestroyed(WebStateList* web_state_list) override;
 
   WebStateList* web_state_list_ = nullptr;
-  // The browser associated with this agent.
-  Browser* browser_;
   // Scoped observations of Browser, WebStateList and WebStates.
-  base::ScopedObservation<Browser, BrowserObserver> browser_observation_{this};
   base::ScopedObservation<WebStateList, WebStateListObserver>
       web_state_list_observation_{this};
   base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>

@@ -27,14 +27,13 @@ constexpr int kPaddingWide = 12;
 constexpr int kPaddingNarrow = 8;
 
 // Dogfood feedback button layout values.
-constexpr int kButtonWidth = 130;
+constexpr int kButtonWidth = 120;
 constexpr int kButtonHeight = 28;
 
 }  // namespace
 
 MultitaskMenu::MultitaskMenu(views::View* anchor,
-                             views::Widget* parent_widget,
-                             base::OnceClosure close_callback) {
+                             views::Widget* parent_widget) {
   DCHECK(parent_widget);
 
   set_corner_radius(kMultitaskMenuBubbleCornerRadius);
@@ -46,8 +45,6 @@ MultitaskMenu::MultitaskMenu(views::View* anchor,
   SetArrow(views::BubbleBorder::Arrow::TOP_CENTER);
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetUseDefaultFillLayout(true);
-
-  RegisterWindowClosingCallback(std::move(close_callback));
 
   uint8_t buttons = MultitaskMenuView::kFullscreen;
 
@@ -95,54 +92,24 @@ MultitaskMenu::MultitaskMenu(views::View* anchor,
       kButtonHeight);
 
   display_observer_.emplace(this);
+  parent_window_observation_.Observe(parent_window());
 }
 
 MultitaskMenu::~MultitaskMenu() = default;
 
-bool MultitaskMenu::IsBubbleShown() const {
-  return bubble_widget_ && !bubble_widget_->IsClosed();
-}
-
-void MultitaskMenu::ToggleBubble() {
-  if (!bubble_widget_) {
-    ShowBubble();
-  } else {
-    // If the menu is toggle closed by the accelerator on a browser window, the
-    // menu will get closed by deactivation and `HideBubble()` will do nothing
-    // since `IsClosed()` would be true. For non-browser Ash windows and
-    // non-accelerator close actions, `HideBubble()` will call `CloseNow()`.
-    HideBubble();
-  }
-}
-
-void MultitaskMenu::ShowBubble() {
-  DCHECK(parent_window());
-  bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(this);
-
-  // This gets reset to the platform default when we call `CreateBubble()`,
-  // which for Lacros is false.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  set_adjust_if_offscreen(true);
-  SizeToContents();
-#endif
-
-  bubble_widget_->Show();
-  bubble_widget_observer_.Observe(bubble_widget_.get());
-  parent_window_observation_.Observe(parent_window());
-}
-
 void MultitaskMenu::HideBubble() {
-  // `CloseWithReason` calls into `OnWidgetDestroying()` asynchronously so
-  // `bubble_widget_` will be reset to nullptr safely. And since
-  // `bubble_widget_` owns `MultitaskMenu`, no house keeping is needed at
-  // destructor.
-  if (bubble_widget_ && !bubble_widget_->IsClosed()) {
-    bubble_widget_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
-  }
+  // Callers of this function are expected to alter the bounds of the parent
+  // window. Do not animate in this case otherwise the bubble may fade out while
+  // outside of the parent window's bounds.
+  views::Widget* widget = GetWidget();
+  widget->SetVisibilityAnimationTransition(views::Widget::ANIMATE_NONE);
+
+  // Destroys `this`.
+  widget->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
 }
 
-void MultitaskMenu::OnWindowDestroying(aura::Window* root_window) {
-  DCHECK(parent_window_observation_.IsObservingSource(root_window));
+void MultitaskMenu::OnWindowDestroying(aura::Window* parent_window) {
+  DCHECK(parent_window_observation_.IsObservingSource(parent_window));
   HideBubble();
 }
 
@@ -152,13 +119,6 @@ void MultitaskMenu::OnWindowBoundsChanged(aura::Window* window,
                                           ui::PropertyChangeReason reason) {
   DCHECK(parent_window_observation_.IsObservingSource(window));
   HideBubble();
-}
-
-void MultitaskMenu::OnWidgetDestroying(views::Widget* widget) {
-  DCHECK_EQ(bubble_widget_, widget);
-  bubble_widget_observer_.Reset();
-  parent_window_observation_.Reset();
-  bubble_widget_ = nullptr;
 }
 
 void MultitaskMenu::OnDisplayTabletStateChanged(display::TabletState state) {
@@ -175,8 +135,7 @@ void MultitaskMenu::OnDisplayMetricsChanged(const display::Display& display,
           .id()) {
     return;
   }
-  // TODO(shidi): Will do the rotate transition on a separate cl. Close the
-  // bubble at rotation for now.
+
   if (changed_metrics & display::DisplayObserver::DISPLAY_METRIC_ROTATION)
     HideBubble();
 }

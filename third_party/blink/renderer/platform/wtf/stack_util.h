@@ -20,7 +20,7 @@ WTF_EXPORT void* GetStackStart();
 // SafeStack. Must be marked noinline because it relies on compiler intrinsics
 // that report the current stack frame and if inlined it could report a position
 // above the current stack position.
-WTF_EXPORT NOINLINE uintptr_t GetCurrentStackPosition();
+NOINLINE WTF_EXPORT uintptr_t GetCurrentStackPosition();
 
 namespace internal {
 

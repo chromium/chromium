@@ -426,6 +426,11 @@ void AuthFactorEditor::OnListAuthFactors(
     if (proto_type == user_data_auth::AUTH_FACTOR_TYPE_LEGACY_FINGERPRINT) {
       continue;
     }
+    // TODO(b/272312302): Actually handle the AUTH_FACTORY_TYPE_FINGERPRINT
+    // value.
+    if (proto_type == user_data_auth::AUTH_FACTOR_TYPE_FINGERPRINT) {
+      continue;
+    }
     cryptohome::AuthFactorType type = cryptohome::ConvertFactorTypeFromProto(
         static_cast<user_data_auth::AuthFactorType>(proto_type));
     if (type == cryptohome::AuthFactorType::kUnknownLegacy) {

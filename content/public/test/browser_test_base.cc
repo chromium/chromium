@@ -715,7 +715,6 @@ void BrowserTestBase::SetUp() {
   // thread tear down.
   base::PermanentThreadAllowance::AllowBlocking();
 
-  base::PostTaskAndroid::SignalNativeSchedulerShutdownForTesting();
   BrowserTaskExecutor::Shutdown();
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -880,20 +879,24 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
     }
     initial_web_contents_ = nullptr;
     SetUpOnMainThread();
-    initial_navigation_observer.reset();
 
-    // Tests would have added their host_resolver() rules by now, so copy them
-    // to the network process if it's in use.
-    InitializeNetworkProcess();
+    if (!IsSkipped()) {
+      initial_navigation_observer.reset();
 
-    {
-      auto* test = ::testing::UnitTest::GetInstance()->current_test_info();
-      TRACE_EVENT("test", "RunTestOnMainThread", "test_name",
-                  test->test_suite_name() + std::string(".") + test->name(),
-                  "file", test->file(), "line", test->line());
-      base::ScopedDisallowBlocking disallow_blocking;
-      RunTestOnMainThread();
+      // Tests would have added their host_resolver() rules by now, so copy them
+      // to the network process if it's in use.
+      InitializeNetworkProcess();
+
+      {
+        auto* test = ::testing::UnitTest::GetInstance()->current_test_info();
+        TRACE_EVENT("test", "RunTestOnMainThread", "test_name",
+                    test->test_suite_name() + std::string(".") + test->name(),
+                    "file", test->file(), "line", test->line());
+        base::ScopedDisallowBlocking disallow_blocking;
+        RunTestOnMainThread();
+      }
     }
+
     TearDownOnMainThread();
     AssertThatNetworkServiceDidNotCrash();
   }

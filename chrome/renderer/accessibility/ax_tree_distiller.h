@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/scoped_observation.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/accessibility/ax_node_id_forward.h"
@@ -60,6 +61,10 @@ class AXTreeDistiller {
   virtual void Distill(const ui::AXTree& tree,
                        const ui::AXTreeUpdate& snapshot,
                        const ukm::SourceId& ukm_source_id);
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  void ScreenAIServiceReady();
+#endif
 
  private:
   // Distills the AXTree via a rules-based algorithm. Runs the callback on

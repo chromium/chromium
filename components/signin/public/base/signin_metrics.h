@@ -204,7 +204,10 @@ enum class AccessPoint : int {
   // find ways to attribute the changes accurately.
   ACCESS_POINT_DESKTOP_SIGNIN_MANAGER = 44,
 
+  // Access point for the "For You" First Run Experience on Desktop. See
+  // go/for-you-fre or launch/4223982 for more info.
   ACCESS_POINT_FOR_YOU_FRE = 45,
+
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in tools/metrics/histograms/enums.xml
   ACCESS_POINT_MAX,  // This must be last.
@@ -497,6 +500,16 @@ void LogSigninAccessPointCompleted(AccessPoint access_point,
 // Tracks the reason of sign in.
 void LogSigninReason(Reason reason);
 
+// Logs sign in offered events and their associated access points.
+// Access points (or features) are responsible for recording this where relevant
+// for them.
+void LogSignInOffered(AccessPoint access_point);
+
+// Logs sign in start events and their associated access points. The
+// completion events are automatically logged when the primary account state
+// changes, see `signin::PrimaryAccountMutator`.
+void LogSignInStarted(AccessPoint access_point);
+
 // Logs sync opt-in start events and their associated access points. The
 // completion events are automatically logged when the primary account state
 // changes, see `signin::PrimaryAccountMutator`.
@@ -568,9 +581,11 @@ void RecordRefreshTokenUpdatedFromSource(bool refresh_token_is_valid,
 // Records the source that revoked a refresh token.
 void RecordRefreshTokenRevokedFromSource(SourceForRefreshTokenOperation source);
 
+#if BUILDFLAG(IS_IOS)
 // Records the account type when the user signs in.
 void RecordSigninAccountType(signin::ConsentLevel consent_level,
                              bool is_managed_account);
+#endif
 
 // -----------------------------------------------------------------------------
 // User actions

@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
@@ -22,7 +23,13 @@ namespace test {
 // structure type is given as an input, and returned as an output.
 template <typename MojomType,
           typename UserStructType,
-          std::enable_if_t<!std::is_enum<UserStructType>::value, int> = 0>
+          std::enable_if_t<
+              !std::is_same<mojo::InlinedStructPtr<MojomType>,
+                            std::remove_const_t<UserStructType>>::value &&
+                  !std::is_same<mojo::StructPtr<MojomType>,
+                                std::remove_const_t<UserStructType>>::value &&
+                  !std::is_enum<UserStructType>::value,
+              int> = 0>
 bool SerializeAndDeserialize(UserStructType& input,
                              std::remove_const_t<UserStructType>& output) {
   mojo::Message message = MojomType::SerializeAsMessage(&input);
@@ -134,11 +141,11 @@ class ScopedSwapImplForTesting {
 
   ScopedSwapImplForTesting(T& receiver, ImplPointerType new_impl)
       : receiver_(receiver) {
-    old_impl_ = receiver_.SwapImplForTesting(new_impl);
+    old_impl_ = receiver_->SwapImplForTesting(new_impl);
   }
 
   ~ScopedSwapImplForTesting() {
-    std::ignore = receiver_.SwapImplForTesting(old_impl_);
+    std::ignore = receiver_->SwapImplForTesting(old_impl_);
   }
 
   ImplPointerType old_impl() const { return old_impl_; }
@@ -147,7 +154,7 @@ class ScopedSwapImplForTesting {
   ScopedSwapImplForTesting& operator=(const ScopedSwapImplForTesting&) = delete;
 
  private:
-  T& receiver_;
+  const raw_ref<T> receiver_;
   ImplPointerType old_impl_;
 };
 

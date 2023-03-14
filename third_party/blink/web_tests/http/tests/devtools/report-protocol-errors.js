@@ -13,7 +13,7 @@
   }
 
 
-  const frameTargetSession = SDK.targetManager.mainFrameTarget().sessionId;
+  const frameTargetSession = SDK.targetManager.primaryPageTarget().sessionId;
 
   var messages = [
     'some wrong string',

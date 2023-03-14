@@ -93,6 +93,33 @@
                 "project": "chromium"
               }
             }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "win-network-sandbox-tester",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.fyi",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "Win x64 Builder",
+                "project": "chromium"
+              }
+            }
           }
         ]
       },
@@ -112,6 +139,11 @@
         {
           "bucket": "ci",
           "builder": "Win11 Tests x64",
+          "project": "chromium"
+        },
+        {
+          "bucket": "ci",
+          "builder": "win-network-sandbox-tester",
           "project": "chromium"
         }
       ],

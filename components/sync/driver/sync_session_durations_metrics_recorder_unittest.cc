@@ -45,21 +45,16 @@ class SyncSessionDurationsMetricsRecorderTest : public testing::Test {
   }
 
   void SetInvalidCredentialsAuthError() {
-    sync_service_.SetPersistentAuthErrorOtherThanWebSignout();
+    sync_service_.SetPersistentAuthError();
 
-    const GoogleServiceAuthError auth_error = sync_service_.GetAuthError();
-    CHECK_EQ(auth_error.state(),
-             GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
+    DCHECK_EQ(sync_service_.GetTransportState(),
+              SyncService::TransportState::PAUSED);
 
     identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
         identity_test_env_.identity_manager()->GetPrimaryAccountId(
             signin::ConsentLevel::kSync),
-        auth_error);
-
-    // TODO(crbug.com/1156584): This below seems off since
-    // GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS doesn't actually lead to
-    // the PAUSED state.
-    sync_service_.SetTransportState(SyncService::TransportState::PAUSED);
+        GoogleServiceAuthError(
+            GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
   }
 
   void ClearAuthError() {

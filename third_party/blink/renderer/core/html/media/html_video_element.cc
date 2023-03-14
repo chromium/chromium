@@ -555,6 +555,7 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
 }
 
 scoped_refptr<Image> HTMLVideoElement::GetSourceImageForCanvas(
+    CanvasResourceProvider::FlushReason,
     SourceImageStatus* status,
     const gfx::SizeF&,
     const AlphaDisposition alpha_disposition) {

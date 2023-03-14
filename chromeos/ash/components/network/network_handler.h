@@ -32,6 +32,7 @@ class HiddenNetworkHandler;
 class HotspotAllowedFlagHandler;
 class HotspotCapabilitiesProvider;
 class HotspotController;
+class HotspotMetricsHelper;
 class HotspotStateHandler;
 class ManagedCellularPrefHandler;
 class ManagedNetworkConfigurationHandler;
@@ -140,7 +141,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
 
   // The order of these determines the (inverse) destruction order.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  std::unique_ptr<NetworkStateHandler> network_state_handler_;
+  const std::unique_ptr<NetworkStateHandler> network_state_handler_;
   std::unique_ptr<NetworkDeviceHandlerImpl> network_device_handler_;
   std::unique_ptr<CellularInhibitor> cellular_inhibitor_;
   std::unique_ptr<CellularESimProfileHandler> cellular_esim_profile_handler_;
@@ -164,6 +165,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   std::unique_ptr<HotspotAllowedFlagHandler> hotspot_allowed_flag_handler_;
   std::unique_ptr<HotspotCapabilitiesProvider> hotspot_capabilities_provider_;
   std::unique_ptr<HotspotStateHandler> hotspot_state_handler_;
+  std::unique_ptr<HotspotMetricsHelper> hotspot_metrics_helper_;
   std::unique_ptr<HotspotController> hotspot_controller_;
   std::unique_ptr<ESimPolicyLoginMetricsLogger>
       esim_policy_login_metrics_logger_;

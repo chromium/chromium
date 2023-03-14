@@ -4,14 +4,13 @@
 
 #include "ash/style/color_util.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/cxx17_backports.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/gfx/color_analysis.h"
 #include "ui/gfx/color_utils.h"
 
 namespace ash {
@@ -20,10 +19,6 @@ namespace {
 
 // Alpha value that is used to calculate themed color. Please see function
 // GetBackgroundThemedColor() about how the themed color is calculated.
-constexpr int kDarkBackgroundBlendAlpha = 127;   // 50%
-constexpr int kLightBackgroundBlendAlpha = 127;  // 50%
-
-// Alternate alpha values used when `kDarkLightModeKMeansColor` is active.
 constexpr int kDarkBackgroundBlendKMeansAlpha = 165;   // 65%
 constexpr int kLightBackgroundBlendKMeansAlpha = 230;  // 90%
 
@@ -57,31 +52,13 @@ SkColor GetUserWallpaperColor(bool use_dark_color) {
     return kInvalidWallpaperColor;
   }
 
-  if (features::IsJellyEnabled()) {
+  if (chromeos::features::IsJellyEnabled()) {
     return calculated_colors->celebi_color;
   }
 
-  if (features::IsDarkLightModeKMeansColorEnabled()) {
-    // If feature is enabled, always use k mean color. Mixing with black/white
-    // will handle adapting it to dark or light mode.
-    return wallpaper_controller->GetKMeanColor();
-  }
-
-  color_utils::LumaRange luma_range = use_dark_color
-                                          ? color_utils::LumaRange::DARK
-                                          : color_utils::LumaRange::LIGHT;
-
-  return wallpaper_controller->GetProminentColor(color_utils::ColorProfile(
-      luma_range, color_utils::SaturationRange::MUTED));
-}
-
-int GetForegroundAlpha(bool use_dark_color) {
-  if (features::IsDarkLightModeKMeansColorEnabled()) {
-    return use_dark_color ? kDarkBackgroundBlendKMeansAlpha
-                          : kLightBackgroundBlendKMeansAlpha;
-  }
-  return use_dark_color ? kDarkBackgroundBlendAlpha
-                        : kLightBackgroundBlendAlpha;
+  // Always use k mean color. Mixing with black/white
+  // will handle adapting it to dark or light mode.
+  return wallpaper_controller->GetKMeanColor();
 }
 
 SkColor ClampLightness(bool use_dark_color, SkColor color) {
@@ -117,7 +94,7 @@ SkColor ColorUtil::GetBackgroundThemedColor(SkColor default_color,
     return default_color;
   }
 
-  if (features::IsJellyEnabled()) {
+  if (chromeos::features::IsJellyEnabled()) {
     return wallpaper_color;
   }
 
@@ -127,7 +104,9 @@ SkColor ColorUtil::GetBackgroundThemedColor(SkColor default_color,
   const SkColor foreground_color =
       use_dark_color ? SK_ColorBLACK : SK_ColorWHITE;
 
-  const int foreground_alpha = GetForegroundAlpha(use_dark_color);
+  const int foreground_alpha = use_dark_color
+                                   ? kDarkBackgroundBlendKMeansAlpha
+                                   : kLightBackgroundBlendKMeansAlpha;
 
   // Put a slightly transparent screen of white/black on top of the user's
   // wallpaper color.

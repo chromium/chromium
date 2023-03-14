@@ -12,12 +12,16 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "media/audio/aecdump_recording_manager.h"
+#include "media/audio/audio_io.h"
 #include "media/audio/audio_manager.h"
 #include "media/audio/fake_audio_input_stream.h"
 #include "media/audio/fake_audio_log_factory.h"
 #include "media/audio/fake_audio_manager.h"
+#include "media/audio/mock_audio_manager.h"
 #include "media/audio/test_audio_thread.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/audio_processing.h"
 #include "media/base/media_switches.h"
 #include "media/base/user_input_monitor.h"
@@ -83,11 +87,12 @@ class MockSyncWriter : public InputController::SyncWriter {
  public:
   MockSyncWriter() = default;
 
-  MOCK_METHOD4(Write,
+  MOCK_METHOD5(Write,
                void(const media::AudioBus* data,
                     double volume,
                     bool key_pressed,
-                    base::TimeTicks capture_time));
+                    base::TimeTicks capture_time,
+                    const media::AudioGlitchInfo& audio_glitch_info));
   MOCK_METHOD0(Close, void());
 };
 
@@ -101,16 +106,46 @@ class MockUserInputMonitor : public media::UserInputMonitor {
   MOCK_METHOD0(DisableKeyPressMonitoring, void());
 };
 
+class MockAudioInputStream : public media::AudioInputStream {
+ public:
+  MOCK_METHOD0(Open, OpenOutcome());
+  MOCK_METHOD0(Stop, void());
+  MOCK_METHOD0(Close, void());
+  MOCK_METHOD0(GetMaxVolume, double());
+  MOCK_METHOD1(SetVolume, void(double volume));
+  MOCK_METHOD0(GetVolume, double());
+  MOCK_METHOD1(SetAutomaticGainControl, bool(bool enabled));
+  MOCK_METHOD0(GetAutomaticGainControl, bool());
+  MOCK_METHOD0(IsMuted, bool());
+  MOCK_METHOD1(SetOutputDeviceForAec,
+               void(const std::string& output_device_id));
+
+  void Start(AudioInputCallback* callback) override {
+    captured_callback_ = callback;
+  }
+
+  absl::optional<AudioInputCallback*> captured_callback_;
+};
+
+enum class AudioManagerType { MOCK, FAKE };
+
 template <base::test::TaskEnvironment::TimeSource TimeSource =
-              base::test::TaskEnvironment::TimeSource::MOCK_TIME>
+              base::test::TaskEnvironment::TimeSource::MOCK_TIME,
+          AudioManagerType audio_manager_type = AudioManagerType::FAKE>
 class TimeSourceInputControllerTest
     : public ::testing::TestWithParam<ProcessingFifoSetting> {
  public:
   TimeSourceInputControllerTest()
       : task_environment_(TimeSource),
-        audio_manager_(std::make_unique<media::FakeAudioManager>(
-            std::make_unique<media::TestAudioThread>(false),
-            &log_factory_)),
+        audio_manager_(
+            audio_manager_type == AudioManagerType::FAKE
+                ? static_cast<std::unique_ptr<media::AudioManager>>(
+                      std::make_unique<media::FakeAudioManager>(
+                          std::make_unique<media::TestAudioThread>(false),
+                          &log_factory_))
+                : static_cast<std::unique_ptr<media::AudioManager>>(
+                      std::make_unique<media::MockAudioManager>(
+                          std::make_unique<media::TestAudioThread>(false)))),
         aecdump_recording_manager_(audio_manager_->GetTaskRunner()),
         params_(media::AudioParameters::AUDIO_FAKE,
                 kChannelLayoutConfig,
@@ -189,6 +224,9 @@ auto test_name_generator =
 using SystemTimeInputControllerTest = TimeSourceInputControllerTest<
     base::test::TaskEnvironment::TimeSource::SYSTEM_TIME>;
 using InputControllerTest = TimeSourceInputControllerTest<>;
+using InputControllerTestWithMockAudioManager = TimeSourceInputControllerTest<
+    base::test::TaskEnvironment::TimeSource::MOCK_TIME,
+    AudioManagerType::MOCK>;
 
 TEST_P(InputControllerTest, CreateAndCloseWithoutRecording) {
   EXPECT_CALL(event_handler_, OnCreated(_));
@@ -215,8 +253,8 @@ TEST_P(SystemTimeInputControllerTest, CreateRecordAndClose) {
     // Wait for Write() to be called ten times.
     testing::InSequence s;
     EXPECT_CALL(user_input_monitor_, EnableKeyPressMonitoring());
-    EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _)).Times(Exactly(9));
-    EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _))
+    EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _, _)).Times(Exactly(9));
+    EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _, _))
         .Times(AtLeast(1))
         .WillOnce(InvokeWithoutArgs([&]() { loop.Quit(); }));
   }
@@ -231,6 +269,36 @@ TEST_P(SystemTimeInputControllerTest, CreateRecordAndClose) {
   controller_->Close();
 
   task_environment_.RunUntilIdle();
+}
+
+TEST_P(InputControllerTestWithMockAudioManager, PropagatesGlitchInfo) {
+  MockAudioInputStream mock_stream;
+  static_cast<media::MockAudioManager*>(audio_manager_.get())
+      ->SetMakeInputStreamCB(base::BindRepeating(
+          [](media::AudioInputStream* stream,
+             const media::AudioParameters& params,
+             const std::string& device_id) { return stream; },
+          &mock_stream));
+  auto audio_bus = media::AudioBus::Create(params_);
+
+  CreateAudioController();
+  ASSERT_TRUE(controller_.get());
+  controller_->Record();
+
+  ASSERT_TRUE(mock_stream.captured_callback_);
+  media::AudioInputStream::AudioInputCallback* callback =
+      *mock_stream.captured_callback_;
+
+  for (int i = 0; i < 5; i++) {
+    media::AudioGlitchInfo audio_glitch_info{
+        .duration = base::Milliseconds(123 + i), .count = 5};
+    EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _, audio_glitch_info));
+    callback->OnData(audio_bus.get(), base::TimeTicks(), 1, audio_glitch_info);
+    testing::Mock::VerifyAndClearExpectations(&sync_writer_);
+  }
+
+  EXPECT_CALL(sync_writer_, Close());
+  controller_->Close();
 }
 
 TEST_P(InputControllerTest, RecordTwice) {
@@ -314,6 +382,14 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     SystemTimeInputControllerTest,
     SystemTimeInputControllerTest,
+    testing::Values(ProcessingFifoSetting::kEnabled,
+                    ProcessingFifoSetting::kEnabledWithSizeZero,
+                    ProcessingFifoSetting::kDisabled),
+    test_name_generator);
+
+INSTANTIATE_TEST_SUITE_P(
+    InputControllerTestWithMockAudioManager,
+    InputControllerTestWithMockAudioManager,
     testing::Values(ProcessingFifoSetting::kEnabled,
                     ProcessingFifoSetting::kEnabledWithSizeZero,
                     ProcessingFifoSetting::kDisabled),
@@ -610,8 +686,8 @@ TEST_P(SystemTimeInputControllerTestWithDeviceListener, CreateRecordAndClose) {
     // Wait for Write() to be called ten times.
     testing::InSequence s;
     EXPECT_CALL(user_input_monitor_, EnableKeyPressMonitoring());
-    EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _)).Times(Exactly(9));
-    EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _))
+    EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _, _)).Times(Exactly(9));
+    EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _, _))
         .Times(AtLeast(1))
         .WillOnce(InvokeWithoutArgs([&]() { loop.Quit(); }));
   }

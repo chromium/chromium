@@ -9,6 +9,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/ownership/ownership_histograms.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -17,7 +18,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/rsa_private_key.h"
@@ -30,6 +30,8 @@ using testing::ElementsAre;
 
 namespace ash {
 
+constexpr char kUserEmail[] = "user@example.com";
+
 std::vector<uint8_t> ExtractBytes(
     const std::unique_ptr<crypto::RSAPrivateKey>& key) {
   std::vector<uint8_t> bytes;
@@ -41,20 +43,23 @@ class OwnerKeyLoaderTest : public testing::Test {
  public:
   // testing::Test:
   void SetUp() override {
-    auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
+    auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
     user_manager_ = fake_user_manager.get();
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(fake_user_manager));
 
-    user_manager_->set_local_state(&local_state_);
-    user_manager_->RegisterPrefs(local_state_.registry());
+    user_manager_->CreateLocalState();
 
     owner_key_util_ = base::MakeRefCounted<ownership::MockOwnerKeyUtil>();
 
     device_settings_service_.SetSessionManager(&session_manager_client_,
                                                owner_key_util_);
 
-    profile_ = TestingProfile::Builder().Build();
+    profile_ = TestingProfile::Builder().SetProfileName(kUserEmail).Build();
+
+    user_manager_->AddUserWithAffiliationAndTypeAndProfile(
+        AccountId::FromUserEmail(kUserEmail), /*is_affiliated=*/false,
+        user_manager::USER_TYPE_REGULAR, profile_.get());
 
     FakeNssService::InitializeForBrowserContext(profile_.get(),
                                                 /*enable_system_slot=*/false);
@@ -78,10 +83,9 @@ class OwnerKeyLoaderTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  TestingPrefServiceSimple local_state_;
 
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-  user_manager::FakeUserManager* user_manager_ = nullptr;
+  ash::FakeChromeUserManager* user_manager_ = nullptr;
 
   scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util_;
   FakeSessionManagerClient session_manager_client_;

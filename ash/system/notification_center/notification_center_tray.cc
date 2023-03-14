@@ -81,7 +81,7 @@ std::u16string NotificationCenterTray::GetAccessibleNameForBubble() {
 }
 
 std::u16string NotificationCenterTray::GetAccessibleNameForTray() {
-  return std::u16string();
+  return l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_ACCESSIBLE_NAME);
 }
 
 void NotificationCenterTray::HandleLocaleChange() {}

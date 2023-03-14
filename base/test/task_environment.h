@@ -284,6 +284,8 @@ class TaskEnvironment {
   // specifically handle more time than expected to have passed.
   void AdvanceClock(TimeDelta delta);
 
+  bool UsesMockTime() const { return !!mock_clock_; }
+
   // Only valid for instances using TimeSource::MOCK_TIME. Returns a
   // TickClock whose time is updated by FastForward(By|UntilNoTasksRemain).
   const TickClock* GetMockTickClock() const;
@@ -441,6 +443,7 @@ class TaskEnvironment {
   class MockTimeDomain;
 
   void InitializeThreadPool();
+  void ShutdownAndJoinThreadPool();
   void DestroyThreadPool();
 
   void CompleteInitialization();

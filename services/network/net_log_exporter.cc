@@ -172,17 +172,16 @@ void NetLogExporter::StartWithScratchDir(
 
   base::Value::Dict constants = net::GetNetConstants();
   constants.Merge(std::move(extra_constants));
-  std::unique_ptr<base::Value> constants_value =
-      std::make_unique<base::Value>(std::move(constants));
 
   if (max_file_size != kUnlimitedFileSize) {
     file_net_observer_ = net::FileNetLogObserver::CreateBoundedPreExisting(
         scratch_dir_path, std::move(destination_), max_file_size, capture_mode,
-        std::move(constants_value));
+        std::make_unique<base::Value::Dict>(std::move(constants)));
   } else {
     DCHECK(scratch_dir_path.empty());
     file_net_observer_ = net::FileNetLogObserver::CreateUnboundedPreExisting(
-        std::move(destination_), capture_mode, std::move(constants_value));
+        std::move(destination_), capture_mode,
+        std::make_unique<base::Value::Dict>(std::move(constants)));
   }
 
   // There might not be a NetworkService object e.g. on iOS; in that case

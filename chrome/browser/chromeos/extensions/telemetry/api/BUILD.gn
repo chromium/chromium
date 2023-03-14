@@ -2,210 +2,27 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-import("//chrome/common/chromeos/extensions/api/api_sources.gni")
-import("//chrome/common/features.gni")
 import("//extensions/buildflags/buildflags.gni")
-import("//tools/json_schema_compiler/json_schema_api.gni")
 
 assert(enable_extensions,
        "Cannot depend on extensions because enable_extensions=false.")
 
-source_set("api") {
-  sources = [
-    "api_guard_delegate.cc",
-    "api_guard_delegate.h",
-    "base_telemetry_extension_api_guard_function.cc",
-    "base_telemetry_extension_api_guard_function.h",
-    "diagnostics_api.cc",
-    "diagnostics_api.h",
-    "diagnostics_api_converters.cc",
-    "diagnostics_api_converters.h",
-    "hardware_info_delegate.cc",
-    "hardware_info_delegate.h",
-    "remote_diagnostics_service_strategy.cc",
-    "remote_diagnostics_service_strategy.h",
-    "remote_probe_service_strategy.cc",
-    "remote_probe_service_strategy.h",
-    "telemetry_api.cc",
-    "telemetry_api.h",
-    "telemetry_api_converters.cc",
-    "telemetry_api_converters.h",
-  ]
-
-  deps = [
-    "//base",
-    "//build:chromeos_buildflags",
-    "//chrome/browser/extensions",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
-    "//chrome/common/chromeos/extensions",
-    "//chrome/common/chromeos/extensions/api",
-    "//chromeos/crosapi/mojom",
-    "//chromeos/services/network_health/public/mojom:types",
-    "//components/security_state/content",
-    "//components/security_state/core",
-    "//components/user_manager",
-    "//content/public/browser",
-    "//extensions/browser",
-    "//extensions/common",
-    "//third_party/abseil-cpp:absl",
-    "//url",
-  ]
-
-  if (is_chromeos_ash) {
-    deps += [
-      "//chrome/browser/ash/crosapi",
-      "//chrome/browser/ash/telemetry_extension",
-      "//components/user_manager",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/lacros",
-      "//chromeos/startup",
-      "//components/policy/core/common",
-    ]
-  }
-}
-
-function_registration("api_registration") {
-  sources = chromeos_system_extensions_api_schema_sources
-  impl_dir = "//chrome/browser/chromeos/extensions/telemetry/api"
-  configs = [ "//build/config:precompiled_headers" ]
-  bundle_name = "ChromeOS"
-  root_namespace = chromeos_system_extensions_api_root_namespace
-  schema_include_rules = chromeos_system_extensions_api_schema_include_rules
-
-  deps = [
-    ":api",
-    "//base",
-    "//extensions/common",
-  ]
-}
-
 source_set("browser_tests") {
   testonly = true
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [
-    "base_telemetry_extension_api_guard_function_browsertest.cc",
-    "base_telemetry_extension_browser_test.cc",
-    "base_telemetry_extension_browser_test.h",
-    "diagnostics_api_browsertest.cc",
-    "fake_api_guard_delegate.cc",
-    "fake_api_guard_delegate.h",
-    "fake_diagnostics_service.cc",
-    "fake_diagnostics_service.h",
-    "fake_probe_service.cc",
-    "fake_probe_service.h",
-    "telemetry_api_browsertest.cc",
-    "telemetry_extension_capabilities_browser_test.cc",
-  ]
 
   deps = [
-    ":api",
-    ":fake_hardware_info_delegate",
-    "//base",
-    "//build:chromeos_buildflags",
-    "//chrome/common/chromeos/extensions",
-    "//chrome/test:test_support",
-    "//chrome/test:test_support_ui",
-    "//chromeos/crosapi/mojom",
-    "//chromeos/services/network_config/public/mojom:network_types",
-    "//chromeos/services/network_health/public/mojom:types",
-    "//content/public/browser",
-    "//content/test:test_support",
-    "//extensions:test_support",
-    "//extensions/common",
-    "//mojo/public/cpp/bindings",
-    "//net",
-    "//net:test_support",
-    "//testing/gtest",
-    "//third_party/abseil-cpp:absl",
-    "//url",
+    "common:browser_tests",
+    "diagnostics:browser_tests",
+    "telemetry:browser_tests",
   ]
-
-  data = [ "//chrome/test/data" ]
-
-  if (is_chromeos_ash) {
-    sources += [
-      "fake_diagnostics_service_factory.cc",
-      "fake_diagnostics_service_factory.h",
-      "fake_probe_service_factory.cc",
-      "fake_probe_service_factory.h",
-    ]
-
-    deps += [
-      "//chrome/browser/ash:test_support",
-      "//chrome/browser/ash/telemetry_extension",
-      "//components/user_manager",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/lacros",
-      "//chromeos/startup",
-      "//components/policy/core/common",
-    ]
-  }
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "api_guard_delegate_unittest.cc",
-    "diagnostics_api_converters_unittest.cc",
-    "telemetry_api_converters_unittest.cc",
-  ]
-  deps = [
-    ":api",
-    ":fake_hardware_info_delegate",
-    "//base",
-    "//base/test:test_support",
-    "//build:chromeos_buildflags",
-    "//chrome/browser/extensions:test_support",
-    "//chrome/common/chromeos/extensions/api",
-    "//chrome/test:test_support",
-    "//chromeos/crosapi/mojom",
-    "//chromeos/services/network_config/public/mojom:network_types",
-    "//chromeos/services/network_health/public/mojom:types",
-    "//components/sync_preferences:test_support",
-    "//content/public/browser",
-    "//extensions:test_support",
-    "//extensions/common",
-    "//net",
-    "//net:test_support",
-    "//testing/gtest",
-    "//third_party/abseil-cpp:absl",
-  ]
-
-  if (is_chromeos_ash) {
-    deps += [
-      "//chrome/browser/ash:test_support",
-      "//components/account_id",
-      "//components/user_manager",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/startup",
-      "//components/policy/core/common",
-    ]
-  }
-}
-
-source_set("fake_hardware_info_delegate") {
-  testonly = true
-  sources = [
-    "fake_hardware_info_delegate.cc",
-    "fake_hardware_info_delegate.h",
-  ]
 
   deps = [
-    ":api",
-    "//base",
+    "common:unit_tests",
+    "diagnostics:unit_tests",
+    "telemetry:unit_tests",
   ]
 }

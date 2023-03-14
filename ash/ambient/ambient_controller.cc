@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/ambient/ambient_constants.h"
+#include "ash/ambient/ambient_managed_photo_controller.h"
 #include "ash/ambient/ambient_weather_controller.h"
 #include "ash/ambient/metrics/ambient_multi_screen_metrics_recorder.h"
 #include "ash/ambient/model/ambient_animation_photo_config.h"
@@ -184,6 +185,17 @@ void AmbientController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDoublePref(
       ambient::prefs::kAmbientModeAnimationPlaybackSpeed,
       kAnimationPlaybackSpeed);
+
+  registry->RegisterBooleanPref(
+      ash::ambient::prefs::kAmbientModeManagedScreensaverEnabled, false);
+
+  registry->RegisterIntegerPref(
+      ambient::prefs::kAmbientModeManagedScreensaverIdleTimeoutSeconds,
+      kManagedScreensaverInactivityTimeout.InSeconds());
+
+  registry->RegisterIntegerPref(
+      ambient::prefs::kAmbientModeManagedScreensaverImageDisplayIntervalSeconds,
+      kManagedScreensaverImageRefreshInterval.InSeconds());
 }
 
 AmbientController::AmbientController(
@@ -577,7 +589,9 @@ void AmbientController::CloseUi(bool immediately) {
 
   close_widgets_immediately_ = immediately;
   ambient_ui_model_.SetUiVisibility(AmbientUiVisibility::kClosed);
-  Shell::Get()->cursor_manager()->ShowCursor();
+  if (!Shell::Get()->IsInTabletMode()) {
+    Shell::Get()->cursor_manager()->ShowCursor();
+  }
 }
 
 void AmbientController::ToggleInSessionUi() {
@@ -676,14 +690,21 @@ void AmbientController::OnEnabledPrefChanged() {
     OnThemePrefChanged();
     OnAnimationPlaybackSpeedChanged();
 
-    DCHECK(AmbientClient::Get());
-    ambient_photo_controller_ = std::make_unique<AmbientPhotoController>(
-        *AmbientClient::Get(), access_token_controller_, delegate_,
-        // The type of photo config specified here is actually irrelevant as it
-        // always gets reset with the correct configuration anyways in
-        // StartRefreshingImages() before ambient mode starts.
-        CreateAmbientSlideshowPhotoConfig());
-
+    if (ash::features::IsAmbientModeManagedScreensaverEnabled()) {
+      // TODO (b/269576509) : Integrate with managed screensaver policy
+      // TODO (b/269576821) : Use a new PhotoConfig.
+      ambient_managed_photo_controller_ =
+          std::make_unique<AmbientManagedPhotoController>(
+              delegate_, CreateAmbientSlideshowPhotoConfig());
+    } else {
+      DCHECK(AmbientClient::Get());
+      ambient_photo_controller_ = std::make_unique<AmbientPhotoController>(
+          *AmbientClient::Get(), access_token_controller_, delegate_,
+          // The type of photo config specified here is actually irrelevant as
+          // it always gets reset with the correct configuration anyways in
+          // StartRefreshingImages() before ambient mode starts.
+          CreateAmbientSlideshowPhotoConfig());
+    }
     ambient_ui_model_observer_.Observe(&ambient_ui_model_);
 
     ambient_backend_model_observer_.Observe(GetAmbientBackendModel());
@@ -722,6 +743,7 @@ void AmbientController::OnEnabledPrefChanged() {
       fingerprint_observer_receiver_.reset();
 
     ambient_photo_controller_.reset();
+    ambient_managed_photo_controller_.reset();
     current_theme_from_pref_.reset();
   }
 }
@@ -838,6 +860,12 @@ void AmbientController::DismissUI() {
 }
 
 AmbientBackendModel* AmbientController::GetAmbientBackendModel() {
+  // TODO (b/269576509) : Integrate with managed screensaver policy
+  if (ash::features::IsAmbientModeManagedScreensaverEnabled()) {
+    DCHECK(ambient_managed_photo_controller_);
+    return ambient_managed_photo_controller_->ambient_backend_model();
+  }
+
   DCHECK(ambient_photo_controller_);
   return ambient_photo_controller_->ambient_backend_model();
 }

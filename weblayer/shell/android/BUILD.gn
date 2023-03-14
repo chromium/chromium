@@ -106,7 +106,6 @@ android_apk("weblayer_support_apk") {
 
   apk_name = "WebLayerSupport"
   android_manifest = weblayer_support_manifest
-  min_sdk_version = default_min_sdk_version
   target_sdk_version = 28
   android_manifest_dep = ":weblayer_support_manifest"
   shared_resources = true
@@ -128,6 +127,10 @@ jinja_template("webengine_shell_strings") {
 
 android_resources("webengine_shell_resources") {
   sources = [
+    "webengine_shell_apk/res/drawable-night/ic_refresh.xml",
+    "webengine_shell_apk/res/drawable-night/ic_stop.xml",
+    "webengine_shell_apk/res/drawable/ic_refresh.xml",
+    "webengine_shell_apk/res/drawable/ic_stop.xml",
     "webengine_shell_apk/res/layout/main.xml",
     "webengine_shell_apk/res/layout/navigation_test.xml",
     "webengine_shell_apk/res/layout/state_test.xml",
@@ -147,6 +150,9 @@ android_library("webengine_shell_java") {
     "webengine_shell_apk/src/org/chromium/webengine/shell/WebEngineNavigationTestActivity.java",
     "webengine_shell_apk/src/org/chromium/webengine/shell/WebEngineShellActivity.java",
     "webengine_shell_apk/src/org/chromium/webengine/shell/WebEngineStateTestActivity.java",
+    "webengine_shell_apk/src/org/chromium/webengine/shell/topbar/TopBar.java",
+    "webengine_shell_apk/src/org/chromium/webengine/shell/topbar/TopBarImpl.java",
+    "webengine_shell_apk/src/org/chromium/webengine/shell/topbar/TopBarObservers.java",
   ]
 
   deps = [
@@ -190,7 +196,6 @@ template("webengine_shell_apk_helper") {
 
     android_manifest = _webengine_shell_manifest
     android_manifest_dep = ":$_manifest_target"
-    min_sdk_version = default_min_sdk_version
     target_sdk_version = 28
   }
 }
@@ -237,7 +242,6 @@ android_apk("browser_sandbox_apk") {
   apk_name = "WESandbox"
   android_manifest = webengine_services_manifest
   android_manifest_dep = ":webengine_services_manifest"
-  min_sdk_version = default_min_sdk_version
   target_sdk_version = 28
   shared_resources = true
 }

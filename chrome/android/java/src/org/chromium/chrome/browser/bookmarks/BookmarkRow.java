@@ -21,6 +21,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkAddEditFolderActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -42,7 +43,7 @@ import java.util.List;
  * Common logic for bookmark and folder rows.
  */
 public abstract class BookmarkRow
-        extends SelectableItemView<BookmarkId> implements BookmarkUIObserver {
+        extends SelectableItemView<BookmarkId> implements BookmarkUiObserver {
     protected ListMenuButton mMoreIcon;
     protected ImageView mDragHandle;
     protected BookmarkDelegate mDelegate;
@@ -146,7 +147,7 @@ public abstract class BookmarkRow
     }
 
     private void initialize() {
-        mDelegate.addUIObserver(this);
+        mDelegate.addUiObserver(this);
         mPopupListener = () -> mDelegate.onBookmarkItemMenuOpened();
         mMoreIcon.addPopupListener(mPopupListener);
     }
@@ -154,7 +155,7 @@ public abstract class BookmarkRow
     private void cleanup() {
         mMoreIcon.dismiss();
         mMoreIcon.removePopupListener(mPopupListener);
-        if (mDelegate != null) mDelegate.removeUIObserver(this);
+        if (mDelegate != null) mDelegate.removeUiObserver(this);
     }
 
     private ModelList getItems() {
@@ -190,9 +191,9 @@ public abstract class BookmarkRow
             listItems.add(buildMenuListItem(R.string.bookmark_item_delete, 0, 0));
         }
 
-        if (mDelegate.getCurrentState() == BookmarkUIState.STATE_SEARCHING) {
+        if (mDelegate.getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
             listItems.add(buildMenuListItem(R.string.bookmark_show_in_folder, 0, 0));
-        } else if (mDelegate.getCurrentState() == BookmarkUIState.STATE_FOLDER
+        } else if (mDelegate.getCurrentUiMode() == BookmarkUiMode.FOLDER
                 && mLocation != Location.SOLO && canReorder) {
             // Only add move up / move down buttons if there is more than 1 item
             if (mLocation != Location.TOP) {
@@ -304,7 +305,7 @@ public abstract class BookmarkRow
         updateVisualState();
     }
 
-    // BookmarkUIObserver implementation.
+    // BookmarkUiObserver implementation.
     @Override
     public void onDestroy() {
         cleanup();
@@ -316,7 +317,6 @@ public abstract class BookmarkRow
     @Override
     public void onSearchStateSet() {}
 
-    @VisibleForTesting
     public boolean isItemSelected() {
         return mDelegate.getSelectionDelegate().isItemSelected(mBookmarkId);
     }
@@ -354,7 +354,7 @@ public abstract class BookmarkRow
     }
 
     @VisibleForTesting
-    public View getDragHandleViewForTests() {
+    public View getDragHandleViewForTesting() {
         return mDragHandle;
     }
 }

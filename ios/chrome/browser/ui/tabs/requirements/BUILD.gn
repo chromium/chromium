@@ -12,6 +12,6 @@ source_set("requirements") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/shared/ui/util",
   ]
 }

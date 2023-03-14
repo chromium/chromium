@@ -1,0 +1,30 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+enum ScriptTimingType {
+    "classic-script",
+    "module-script",
+    "execute-script",
+    "event-listener",
+    "user-callback",
+    "resolve-promise",
+    "reject-promise"
+};
+
+enum ScriptWindowAttribution {
+    "self", "descendant", "ancestor", "same-page", "other"
+};
+
+// https://github.com/w3c/longtasks/blob/loaf-explainer/loaf-explainer.md
+[Exposed=Window, RuntimeEnabled=LongAnimationFrameTiming]
+interface PerformanceScriptTiming : PerformanceEntry {
+    readonly attribute ScriptTimingType type;
+    readonly attribute ScriptWindowAttribution windowAttribution;
+    readonly attribute DOMHighResTimeStamp executionStart;
+    readonly attribute DOMHighResTimeStamp forcedStyleAndLayoutDuration;
+    readonly attribute DOMHighResTimeStamp desiredExecutionStart;
+    readonly attribute Window? window;
+    readonly attribute DOMString? sourceLocation;
+    [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
+};

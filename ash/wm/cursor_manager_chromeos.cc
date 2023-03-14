@@ -15,7 +15,11 @@
 #include "ui/aura/env.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_factory.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/events/event.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/wm/core/cursor_manager.h"
 #include "ui/wm/core/native_cursor_manager.h"
@@ -31,18 +35,19 @@ void CursorManager::Init() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceShowCursor)) {
     // Set a custom cursor so users know that the switch is turned on.
-    gfx::NativeCursor cursor(ui::mojom::CursorType::kCustom);
     const gfx::ImageSkia custom_icon =
         gfx::CreateVectorIcon(kTouchIndicatorIcon, SK_ColorBLACK);
-    SkBitmap bitmap = *custom_icon.bitmap();
+    const float dsf =
+        display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor();
+    SkBitmap bitmap = custom_icon.GetRepresentation(dsf).GetBitmap();
     gfx::Point hotspot(bitmap.width() / 2, bitmap.height() / 2);
-    auto* cursor_factory = ui::CursorFactory::GetInstance();
+    ui::Cursor cursor =
+        ui::Cursor::NewCustom(std::move(bitmap), std::move(hotspot), dsf);
     cursor.SetPlatformCursor(
-        cursor_factory->CreateImageCursor(cursor.type(), bitmap, hotspot));
-    cursor.set_custom_bitmap(bitmap);
-    cursor.set_custom_hotspot(hotspot);
+        ui::CursorFactory::GetInstance()->CreateImageCursor(
+            cursor.type(), cursor.custom_bitmap(), cursor.custom_hotspot()));
 
-    SetCursor(cursor);
+    SetCursor(std::move(cursor));
     LockCursor();
     return;
   }

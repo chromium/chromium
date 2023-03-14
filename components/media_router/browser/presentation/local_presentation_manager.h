@@ -55,7 +55,7 @@ namespace media_router {
 //
 //   manager->RegisterLocalPresentationController(
 //       presentation_info,
-//       std::move(controller_connection_remote,
+//       std::move(controller_connection_remote),
 //       std::move(receiver_connection_receiver));
 //
 // Invoked on receiver's PresentationServiceImpl when controller connection is

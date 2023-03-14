@@ -473,13 +473,13 @@ class V4LocalDatabaseManagerTest : public PlatformTest {
   void ResetV4Database() { v4_local_database_manager_->v4_database_.reset(); }
 
   void StartLocalDatabaseManager() {
-    v4_local_database_manager_->StartOnIOThread(test_shared_loader_factory_,
+    v4_local_database_manager_->StartOnSBThread(test_shared_loader_factory_,
                                                 GetTestV4ProtocolConfig());
   }
 
   void StopLocalDatabaseManager() {
     if (v4_local_database_manager_) {
-      v4_local_database_manager_->StopOnIOThread(true);
+      v4_local_database_manager_->StopOnSBThread(true);
     }
 
     // Force destruction of the database.
@@ -1049,7 +1049,7 @@ TEST_F(V4LocalDatabaseManagerTest, UsingWeakPtrDropsCallback) {
   EXPECT_FALSE(v4_local_database_manager_->CheckBrowseUrl(
       url_bad, usual_threat_types_, &client,
       MechanismExperimentHashDatabaseCache::kNoExperiment));
-  v4_local_database_manager_->StopOnIOThread(true);
+  v4_local_database_manager_->StopOnSBThread(true);
 
   // Release the V4LocalDatabaseManager object right away before the callback
   // gets called. When the callback gets called, without using a weak-ptr
@@ -1057,7 +1057,7 @@ TEST_F(V4LocalDatabaseManagerTest, UsingWeakPtrDropsCallback) {
   // that the callback is simply dropped.
   v4_local_database_manager_ = nullptr;
 
-  // Wait for the tasks scheduled by StopOnIOThread to complete.
+  // Wait for the tasks scheduled by StopOnSBThread to complete.
   WaitForTasksOnTaskRunner();
 }
 
@@ -1576,7 +1576,7 @@ TEST_F(V4LocalDatabaseManagerTest, RenameStoreFile_RenameSuccess) {
   ASSERT_FALSE(base::PathExists(old_store_path));
 
   // Now write an empty file at |old_store_path|.
-  base::WriteFile(old_store_path, "", 0);
+  base::WriteFile(old_store_path, "");
   ASSERT_TRUE(base::PathExists(old_store_path));
 
   WaitForTasksOnTaskRunner();
@@ -1637,7 +1637,7 @@ TEST_F(V4LocalDatabaseManagerTest, RenameStoreFile_RenameSuccessMultiple) {
     ASSERT_FALSE(base::PathExists(new_store_path));
 
     // Now write an empty file at |old_store_path|.
-    base::WriteFile(old_store_path, "", 0);
+    base::WriteFile(old_store_path, "");
     ASSERT_TRUE(base::PathExists(old_store_path));
   }
 
@@ -1734,7 +1734,7 @@ TEST_F(V4LocalDatabaseManagerTest, RenameStoreNewFileExists_DoesNotRename) {
   ASSERT_FALSE(base::PathExists(old_store_path));
 
   // Now write an empty old file.
-  base::WriteFile(old_store_path, "", 0);
+  base::WriteFile(old_store_path, "");
   ASSERT_TRUE(base::PathExists(old_store_path));
 
   auto new_store_path =
@@ -1742,7 +1742,7 @@ TEST_F(V4LocalDatabaseManagerTest, RenameStoreNewFileExists_DoesNotRename) {
   ASSERT_FALSE(base::PathExists(new_store_path));
 
   // Now write an empty new file.
-  base::WriteFile(new_store_path, "", 0);
+  base::WriteFile(new_store_path, "");
   ASSERT_TRUE(base::PathExists(new_store_path));
 
   WaitForTasksOnTaskRunner();

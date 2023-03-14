@@ -38,4 +38,6 @@
           és törölje a jelet innen: „Proxykiszolgáló használata a helyi hálózaton”.</translation>
 <translation id="7230956101631259640">Jelenleg biztonságos Chrome-oldalt tekint meg</translation>
 <translation id="8187289872471304532">Az Applications &gt; System Preferences &gt; Network &gt; Advanced &gt; Proxies (Alkalmazások &gt; Rendszerbeállítások &gt; Hálózat &gt; Speciális &gt; Proxyk) menüpont alatt törölje a jelet minden kijelölt proxy mellől.</translation>
+<translation id="8232971017369963250">A Chrome a <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> nyílt forráskódú projektnek köszönhetően jött létre.</translation>
+<translation id="8279509328145658601">A Chrome létrejöttéhez más <ph name="BEGIN_LINK_OSS" />nyílt forráskódú szoftverek<ph name="END_LINK_OSS" /> is hozzájárultak.</translation>
 </translationbundle>

@@ -37,10 +37,14 @@ class DeviceSwitcherResultDispatcher : public base::SupportsUserData::Data,
   DeviceSwitcherResultDispatcher& operator=(
       const DeviceSwitcherResultDispatcher&) = delete;
 
+  // Called to get the classification result synchronously. If none, returns
+  // empty result.
+  ClassificationResult GetCachedClassificationResult();
+
   // Called to get the classification results from prefs if it exists, else it
   // will wait for results and return when available. Handles only one request
   // at a time.
-  void GetClassificationResult(ClassificationResultCallback callback);
+  void WaitForClassificationResult(ClassificationResultCallback callback);
 
   // Registers preferences used by this class in the provided |registry|.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -61,7 +65,7 @@ class DeviceSwitcherResultDispatcher : public base::SupportsUserData::Data,
   const raw_ptr<SegmentationPlatformService> segmentation_service_;
   const raw_ptr<syncer::SyncService> sync_service_;
   const raw_ptr<PrefService> prefs_;
-  const raw_ptr<FieldTrialRegister> field_trial_register_;
+  const raw_ptr<FieldTrialRegister, DanglingUntriaged> field_trial_register_;
   ClassificationResultCallback waiting_callback_;
   absl::optional<ClassificationResult> latest_result_;
 

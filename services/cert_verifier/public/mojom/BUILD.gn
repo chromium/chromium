@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//crypto/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//net/features.gni")
 
@@ -19,7 +20,14 @@ mojom("mojom") {
     sources += [ "trial_comparison_cert_verifier.mojom" ]
   }
 
+  if (chrome_root_store_optional) {
+    enabled_features += [ "is_chrome_root_store_optional" ]
+  }
   if (chrome_root_store_supported) {
     enabled_features += [ "is_chrome_root_store_supported" ]
+  }
+
+  if (use_nss_certs) {
+    enabled_features += [ "use_nss_certs" ]
   }
 }

@@ -17,7 +17,7 @@
       // Inform web_engine_shell that it is running as the sub-process in which
       // WebInstanceHost may be used. In this scenario, the main test component
       // is running only as a launcher of this child.
-      "--from-launcher",
+      "--no-relaunch",
     ],
 
     // Required to allow JIT in child processes such as renderers.
@@ -32,6 +32,9 @@
 
         // TODO(crbug.com/1402457): Remove fuchsia.ui.policy.Presenter.
         "fuchsia.ui.policy.Presenter",
+
+        // TODO(crbug.com/1418433): Remove fuchsia.ui.scenic.Scenic.
+        "fuchsia.ui.scenic.Scenic",
       ],
       availability: "optional",
     },

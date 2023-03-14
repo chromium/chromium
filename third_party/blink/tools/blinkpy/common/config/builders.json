@@ -66,7 +66,7 @@
         "specifiers": ["Trusty", "Release"],
         "is_try_builder": true,
         "steps": {
-            "wpt_tests_suite (with patch, experimental)": {
+            "wpt_tests_suite (with patch)": {
                 "uses_wptrunner": true,
                 "product": "chrome"
             }
@@ -78,16 +78,27 @@
         "specifiers": ["Trusty", "Release"],
         "is_try_builder": true,
         "steps": {
-            "wpt_tests_suite (with patch, experimental)": {
+            "wpt_tests_suite (with patch)": {
                 "uses_wptrunner": true
             },
-            "wpt_tests_suite_highdpi (with patch, experimental)": {
+            "wpt_tests_suite_highdpi (with patch)": {
                 "uses_wptrunner": true,
                 "flag_specific": "highdpi"
             },
-            "wpt_tests_suite_not_site_per_process (with patch, experimental)": {
+            "wpt_tests_suite_not_site_per_process (with patch)": {
                 "uses_wptrunner": true,
                 "flag_specific": "disable-site-isolation-trials"
+            }
+        }
+    },
+    "mac12-wpt-content-shell-fyi-rel": {
+        "main": "chromium.fyi",
+        "port_name": "mac-mac12",
+        "specifiers": ["Mac12", "Release"],
+        "is_try_builder": true,
+        "steps": {
+            "wpt_tests_suite (with patch)": {
+                "uses_wptrunner": true
             }
         }
     },
@@ -97,7 +108,7 @@
         "specifiers": ["Win10.20h2", "Release"],
         "is_try_builder": true,
         "steps": {
-            "wpt_tests_suite (with patch, experimental)": {
+            "wpt_tests_suite (with patch)": {
                 "uses_wptrunner": true
             }
         }
@@ -108,7 +119,7 @@
         "specifiers": ["Win11", "Release"],
         "is_try_builder": true,
         "steps": {
-            "wpt_tests_suite (with patch, experimental)": {
+            "wpt_tests_suite (with patch)": {
                 "uses_wptrunner": true
             }
         }

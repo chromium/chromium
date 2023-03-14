@@ -36,7 +36,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -89,7 +89,7 @@ public class BookmarkPersonalizedSigninPromoTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE);
+        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE);
         SyncConsentActivityLauncherImpl.setLauncherForTest(mMockSyncConsentActivityLauncher);
     }
 
@@ -98,21 +98,22 @@ public class BookmarkPersonalizedSigninPromoTest {
         SharedPreferencesManager.getInstance().removeKey(
                 ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
         SyncConsentActivityLauncherImpl.setLauncherForTest(null);
-        BookmarkPromoHeader.forcePromoStateForTests(null);
+        BookmarkPromoHeader.forcePromoStateForTesting(null);
     }
 
     @Test
     @MediumTest
     @DisabledTest(message = "https://crbug.com/1406333")
     public void testSigninButtonDefaultAccount() {
-        final HistogramDelta continuedHistogram = new HistogramDelta(CONTINUED_HISTOGRAM_NAME, 1);
+        var continuedHistogram =
+                HistogramWatcher.newSingleRecordWatcher(CONTINUED_HISTOGRAM_NAME, 1);
         final CoreAccountInfo accountInfo =
                 mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         showBookmarkManagerAndCheckSigninPromoIsDisplayed();
 
         onView(allOf(withId(R.id.sync_promo_signin_button), activeInRecyclerView()))
                 .perform(click());
-        Assert.assertEquals(1, continuedHistogram.getDelta());
+        continuedHistogram.assertExpected();
         Assert.assertEquals(
                 mMockSyncConsentActivityLauncher, SyncConsentActivityLauncherImpl.get());
         verify(mMockSyncConsentActivityLauncher)
@@ -123,14 +124,15 @@ public class BookmarkPersonalizedSigninPromoTest {
     @Test
     @MediumTest
     public void testSigninButtonNotDefaultAccount() {
-        HistogramDelta continuedHistogram = new HistogramDelta(CONTINUED_HISTOGRAM_NAME, 1);
+        var continuedHistogram =
+                HistogramWatcher.newSingleRecordWatcher(CONTINUED_HISTOGRAM_NAME, 1);
         final CoreAccountInfo accountInfo =
                 mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         showBookmarkManagerAndCheckSigninPromoIsDisplayed();
 
         onView(allOf(withId(R.id.sync_promo_choose_account_button), activeInRecyclerView()))
                 .perform(click());
-        Assert.assertEquals(1, continuedHistogram.getDelta());
+        continuedHistogram.assertExpected();
         Assert.assertEquals(
                 mMockSyncConsentActivityLauncher, SyncConsentActivityLauncherImpl.get());
         verify(mMockSyncConsentActivityLauncher)
@@ -141,12 +143,13 @@ public class BookmarkPersonalizedSigninPromoTest {
     @Test
     @MediumTest
     public void testSigninButtonNewAccount() {
-        final HistogramDelta continuedHistogram = new HistogramDelta(CONTINUED_HISTOGRAM_NAME, 1);
+        var continuedHistogram =
+                HistogramWatcher.newSingleRecordWatcher(CONTINUED_HISTOGRAM_NAME, 1);
         showBookmarkManagerAndCheckSigninPromoIsDisplayed();
 
         onView(allOf(withId(R.id.sync_promo_signin_button), activeInRecyclerView()))
                 .perform(click());
-        Assert.assertEquals(1, continuedHistogram.getDelta());
+        continuedHistogram.assertExpected();
         Assert.assertEquals(
                 mMockSyncConsentActivityLauncher, SyncConsentActivityLauncherImpl.get());
         verify(mMockSyncConsentActivityLauncher)
@@ -155,9 +158,9 @@ public class BookmarkPersonalizedSigninPromoTest {
     }
 
     private void showBookmarkManagerAndCheckSigninPromoIsDisplayed() {
-        final HistogramDelta shownHistogram = new HistogramDelta(SHOWN_HISTOGRAM_NAME, 1);
+        var shownHistogram = HistogramWatcher.newSingleRecordWatcher(SHOWN_HISTOGRAM_NAME, 1);
         mBookmarkTestRule.showBookmarkManager(sActivityTestRule.getActivity());
-        Assert.assertEquals(1, shownHistogram.getDelta());
+        shownHistogram.assertExpected();
 
         // TODO(https://cbug.com/1383638): If this stops the flakes, consider removing
         // activeInRecyclerView.

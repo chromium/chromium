@@ -19,8 +19,10 @@
 // be returned synchronously and the actual favicon returned asynchronously. In
 // another example, the image returned synchronously may be the actual favicon,
 // so there is no need to call the completion block.
-- (void)faviconForURL:(CrURL*)URL
-           completion:(void (^)(FaviconAttributes*))completion;
+//
+// `URL` must be something like foo.com, not foo.com/favicon.ico.
+- (void)faviconForPageURL:(CrURL*)URL
+               completion:(void (^)(FaviconAttributes*))completion;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TABLE_VIEW_TABLE_VIEW_FAVICON_DATA_SOURCE_H_

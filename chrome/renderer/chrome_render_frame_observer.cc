@@ -640,7 +640,7 @@ void ChromeRenderFrameObserver::CapturePageText(
   }
 
   // Language detection should run only once. Parsing finishes before the page
-  // loads, so let's pick that timing.
+  // loads, so attempt detection here first.
   if (translate_agent_ &&
       (layout_type == blink::WebMeaningfulLayout::kFinishedParsing)) {
     // Under kRetryLanguageDetection, do not attempt language detection if no

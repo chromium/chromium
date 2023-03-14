@@ -53,10 +53,12 @@ export function start(): Promise<void> {
       } else {
         const sound = sounds.get(tickCounter);
         if (sound !== undefined) {
-          play(dom.get(sound, HTMLAudioElement));
+          // Not waiting for audio to finish playing.
+          void play(dom.get(sound, HTMLAudioElement));
         }
         tickMsg.textContent = tickCounter + '';
-        animate.play(tickMsg);
+        // Not waiting for animation to finish playing.
+        void animate.play(tickMsg);
         tickTimeout = setTimeout(onTimerTick, 1000);
         tickCounter--;
       }

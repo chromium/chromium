@@ -79,7 +79,7 @@ class PermissionServiceContext::PermissionSubscription {
 
   void NotifyPermissionStatusChangedIfNeeded() {
     DCHECK(status_at_bf_cache_entry_.has_value());
-    if (status_at_bf_cache_entry_.value() != last_known_status_) {
+    if (status_at_bf_cache_entry_ != last_known_status_) {
       observer_->OnPermissionStatusChange(last_known_status_);
     }
     status_at_bf_cache_entry_.reset();
@@ -187,6 +187,12 @@ void PermissionServiceContext::CreateSubscription(
 
   if (current_status != last_known_status) {
     subscription->OnPermissionStatusChanged(current_status);
+  }
+
+  if (render_frame_host_ &&
+      render_frame_host_->IsInLifecycleState(
+          content::RenderFrameHost::LifecycleState::kInBackForwardCache)) {
+    subscription->StoreStatusAtBFCacheEntry();
   }
 
   GURL requesting_origin(origin.Serialize());

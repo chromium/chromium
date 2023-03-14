@@ -79,7 +79,7 @@ static bool CheckChunkInvalidation(
     const gfx::Vector2dF& layer_offset,
     const absl::optional<gfx::Rect>& chunk_rect = absl::nullopt,
     const MapFunction& mapper = base::DoNothing()) {
-  const auto& chunk = *(chunks.begin() + index);
+  const auto& chunk = chunks[index];
   return ChunkRectToLayer(chunk_rect ? *chunk_rect : chunk.drawable_bounds,
                           layer_offset, mapper) == info.rect &&
          chunk.id.client_id == info.client_id && reason == info.reason;
@@ -734,9 +734,9 @@ TEST_P(RasterInvalidatorTest, TransformPropertyTinyChange) {
 
   auto matrix_with_tiny_change = [](const gfx::Transform matrix) {
     gfx::Transform m = matrix;
-    m.Translate(0.0000001, -0.0000001);
-    m.Scale(1.0000001);
-    m.Rotate(0.0000001);
+    m.Translate(0.0001, -0.0001);
+    m.Scale(1.000001);
+    m.Rotate(0.000001);
     return m;
   };
 

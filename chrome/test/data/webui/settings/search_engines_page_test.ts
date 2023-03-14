@@ -8,7 +8,7 @@ import 'chrome://settings/lazy_load.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CrInputElement, SettingsOmniboxExtensionEntryElement, SettingsSearchEngineEditDialogElement, SettingsSearchEngineEntryElement, SettingsSearchEnginesListElement, SettingsSearchEnginesPageElement} from 'chrome://settings/lazy_load.js';
-import {ExtensionControlBrowserProxyImpl, loadTimeData, SearchEngine, SearchEnginesBrowserProxyImpl, SearchEnginesInfo, SearchEnginesInteractions} from 'chrome://settings/settings.js';
+import {ExtensionControlBrowserProxyImpl, SearchEngine, SearchEnginesBrowserProxyImpl, SearchEnginesInfo, SearchEnginesInteractions} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -151,7 +151,6 @@ suite('SearchEngineEntryTests', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     entry = document.createElement('settings-search-engine-entry');
     entry.set('engine', searchEngine);
-    entry.set('isActiveSearchEnginesFlagEnabled', false);
     document.body.appendChild(entry);
   });
 
@@ -160,8 +159,7 @@ suite('SearchEngineEntryTests', function() {
   });
 
   // Test that the <search-engine-entry> is populated according to its
-  // underlying SearchEngine model. If the #omnibox-active-search-engines flag
-  // is enabled, show the shortcut column instead of the keyword column.
+  // underlying SearchEngine model.
   test('Initialization', function() {
     flush();
     assertEquals(
@@ -423,7 +421,6 @@ suite('SearchEnginePageTests', function() {
       others: searchEnginesInfo.others.slice(),
       extensions: searchEnginesInfo.extensions.slice(),
     });
-    loadTimeData.overrideValues({'isActiveSearchEnginesFlagEnabled': false});
     SearchEnginesBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-search-engines-page');

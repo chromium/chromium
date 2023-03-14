@@ -179,6 +179,7 @@ void ChromeOsFeedbackDelegate::SendReport(
   feedback_params.send_histograms = report->include_system_logs_and_histograms;
   feedback_params.send_bluetooth_logs = report->send_bluetooth_logs;
   feedback_params.send_tab_titles = report->include_screenshot;
+  feedback_params.send_autofill_metadata = report->include_autofill_metadata;
   feedback_params.is_internal_email =
       report->feedback_context->is_internal_account;
 
@@ -209,6 +210,11 @@ void ChromeOsFeedbackDelegate::SendReport(
 
   if (feedback_context->category_tag.has_value()) {
     feedback_data->set_category_tag(feedback_context->category_tag.value());
+  }
+
+  if (feedback_params.send_autofill_metadata &&
+      feedback_context->autofill_metadata.has_value()) {
+    feedback_data->set_autofill_metadata(*feedback_context->autofill_metadata);
   }
 
   scoped_refptr<base::RefCountedMemory> png_data = GetScreenshotData();
@@ -336,7 +342,7 @@ void ChromeOsFeedbackDelegate::OpenWebDialog(GURL url) {
   ChildWebDialog* child_dialog = new ChildWebDialog(
       profile_, widget, url,
       /*title=*/std::u16string(),
-      /*modal_type=*/ui::MODAL_TYPE_NONE, /*dialog_width=*/640,
+      /*modal_type=*/ui::MODAL_TYPE_NONE, /*args=*/"", /*dialog_width=*/640,
       /*dialog_height=*/400, /*can_resize=*/true,
       /*can_minimize=*/true);
 

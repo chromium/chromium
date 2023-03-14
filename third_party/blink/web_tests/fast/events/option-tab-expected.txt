@@ -3,8 +3,8 @@ This tests that option-tab moves you from a text field to a link, but plain old 
 Note: Option is the Mac name for what other platforms call Alt.
 
  link  link
-SUCCESS: Option-tab did tab to the link (textField).
+FAIL: Option-tab did not tab to the link (textField).
 SUCCESS: Plain old tab did not tab to the link (textField).
-SUCCESS: Option-tab did tab to the link (searchField).
+FAIL: Option-tab did not tab to the link (searchField).
 SUCCESS: Plain old tab did not tab to the link (searchField).
 

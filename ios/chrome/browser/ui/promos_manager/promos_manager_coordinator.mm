@@ -19,11 +19,11 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/promos_manager/promo_config.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/ui/app_store_rating/app_store_rating_display_handler.h"
 #import "ios/chrome/browser/ui/app_store_rating/features.h"
-#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/commands/credential_provider_promo_commands.h"
-#import "ios/chrome/browser/ui/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_display_handler.h"
 #import "ios/chrome/browser/ui/post_restore_signin/features.h"
 #import "ios/chrome/browser/ui/post_restore_signin/post_restore_signin_provider.h"
@@ -155,11 +155,6 @@
   auto provider_it = _viewProviderPromos.find(promo);
   auto bannered_provider_it = _banneredViewProviderPromos.find(promo);
   auto alert_provider_it = _alertProviderPromos.find(promo);
-
-  DCHECK(handler_it == _displayHandlerPromos.end() ||
-         provider_it == _viewProviderPromos.end() ||
-         bannered_provider_it == _banneredViewProviderPromos.end() ||
-         alert_provider_it == _alertProviderPromos.end());
 
   id<PromosManagerCommands> promosManagerCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), PromosManagerCommands);
@@ -302,10 +297,16 @@
       [alertProvider promoWasDisplayed];
     }
   } else {
-    // Early return (and avoid calling NOTREACHED) when promos are
-    // forced for display (via Experimental Settings toggle) but not properly
-    // enabled (via chrome://flags). This is a niche edge case—likely to only
-    // occur during local, manual testing.
+    // Deregister the promo in edge cases:
+    //
+    // 1. When promos are forced for display (via Experimental Settings toggle)
+    // but not properly enabled (via chrome://flags).
+    //
+    // 2. When the promo's flag is disabled but was registered before and hasn't
+    // been displayed yet.
+    //
+    // These are niche edge cases that almost exclusively occur during local,
+    // manual testing.
     absl::optional<promos_manager::Promo> maybeForcedPromo =
         promos_manager::PromoForName(base::SysNSStringToUTF8(
             experimental_flags::GetForcedPromoToDisplay()));
@@ -314,11 +315,15 @@
       promos_manager::Promo forcedPromo = maybeForcedPromo.value();
 
       if ([self isPromoUnregistered:forcedPromo]) {
-        return;
+        base::UmaHistogramEnumeration(
+            "IOS.PromosManager.Promo.ForcedDisplayFailure", forcedPromo);
       }
-    }
+    } else {
+      base::UmaHistogramEnumeration("IOS.PromosManager.Promo.DisplayFailure",
+                                    promo);
 
-    NOTREACHED();
+      [self.mediator deregisterPromo:promo];
+    }
   }
 }
 

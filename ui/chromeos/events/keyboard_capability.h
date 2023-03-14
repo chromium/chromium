@@ -6,14 +6,33 @@
 #define UI_CHROMEOS_EVENTS_KEYBOARD_CAPABILITY_H_
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/flat_map.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/chromeos/events/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/events/devices/input_device_event_observer.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/events/ozone/evdev/event_device_info.h"
 
 namespace ui {
 
-// A map between top row keys to function keys.
+// Keyboard layout1 map between top row keys to function keys.
+inline constexpr auto kLayout1TopRowKeyToFKeyMap =
+    base::MakeFixedFlatMap<KeyboardCode, KeyboardCode>({
+        {KeyboardCode::VKEY_BROWSER_BACK, KeyboardCode::VKEY_F1},
+        {KeyboardCode::VKEY_BROWSER_FORWARD, KeyboardCode::VKEY_F2},
+        {KeyboardCode::VKEY_BROWSER_REFRESH, KeyboardCode::VKEY_F3},
+        {KeyboardCode::VKEY_ZOOM, KeyboardCode::VKEY_F4},
+        {KeyboardCode::VKEY_MEDIA_LAUNCH_APP1, KeyboardCode::VKEY_F5},
+        {KeyboardCode::VKEY_BRIGHTNESS_DOWN, KeyboardCode::VKEY_F6},
+        {KeyboardCode::VKEY_BRIGHTNESS_UP, KeyboardCode::VKEY_F7},
+        {KeyboardCode::VKEY_VOLUME_MUTE, KeyboardCode::VKEY_F8},
+        {KeyboardCode::VKEY_VOLUME_DOWN, KeyboardCode::VKEY_F9},
+        {KeyboardCode::VKEY_VOLUME_UP, KeyboardCode::VKEY_F10},
+    });
+
+// Keyboard layout2 map between top row keys to function keys.
 inline constexpr auto kLayout2TopRowKeyToFKeyMap =
     base::MakeFixedFlatMap<KeyboardCode, KeyboardCode>({
         {KeyboardCode::VKEY_BROWSER_BACK, KeyboardCode::VKEY_F1},
@@ -28,12 +47,28 @@ inline constexpr auto kLayout2TopRowKeyToFKeyMap =
         {KeyboardCode::VKEY_VOLUME_UP, KeyboardCode::VKEY_F10},
     });
 
+// Keyboard wilco/drallion map between top row keys to function keys.
+// TODO(zhangwenyu): Both F3 and F12 map to VKEY_ZOOM for wilco. Handle edge
+// case when creating the top row accelerator alias for VKEY_ZOOM key.
+inline constexpr auto kLayoutWilcoDrallionTopRowKeyToFKeyMap =
+    base::MakeFixedFlatMap<KeyboardCode, KeyboardCode>({
+        {KeyboardCode::VKEY_BROWSER_BACK, KeyboardCode::VKEY_F1},
+        {KeyboardCode::VKEY_BROWSER_REFRESH, KeyboardCode::VKEY_F2},
+        {KeyboardCode::VKEY_ZOOM, KeyboardCode::VKEY_F3},
+        {KeyboardCode::VKEY_MEDIA_LAUNCH_APP1, KeyboardCode::VKEY_F4},
+        {KeyboardCode::VKEY_BRIGHTNESS_DOWN, KeyboardCode::VKEY_F5},
+        {KeyboardCode::VKEY_BRIGHTNESS_UP, KeyboardCode::VKEY_F6},
+        {KeyboardCode::VKEY_VOLUME_MUTE, KeyboardCode::VKEY_F7},
+        {KeyboardCode::VKEY_VOLUME_DOWN, KeyboardCode::VKEY_F8},
+        {KeyboardCode::VKEY_VOLUME_UP, KeyboardCode::VKEY_F9},
+    });
+
 // A map between six pack keys to system keys.
 inline constexpr auto kSixPackKeyToSystemKeyMap =
     base::MakeFixedFlatMap<KeyboardCode, KeyboardCode>({
         {KeyboardCode::VKEY_DELETE, KeyboardCode::VKEY_BACK},
         {KeyboardCode::VKEY_HOME, KeyboardCode::VKEY_LEFT},
-        {KeyboardCode::VKEY_UP, KeyboardCode::VKEY_PRIOR},
+        {KeyboardCode::VKEY_PRIOR, KeyboardCode::VKEY_UP},
         {KeyboardCode::VKEY_END, KeyboardCode::VKEY_RIGHT},
         {KeyboardCode::VKEY_NEXT, KeyboardCode::VKEY_DOWN},
         {KeyboardCode::VKEY_INSERT, KeyboardCode::VKEY_BACK},
@@ -44,14 +79,14 @@ inline constexpr auto kSixPackKeyToSystemKeyMap =
 inline constexpr auto kReversedSixPackKeyToSystemKeyMap =
     base::MakeFixedFlatMap<KeyboardCode, KeyboardCode>({
         {KeyboardCode::VKEY_LEFT, KeyboardCode::VKEY_HOME},
-        {KeyboardCode::VKEY_PRIOR, KeyboardCode::VKEY_UP},
+        {KeyboardCode::VKEY_UP, KeyboardCode::VKEY_PRIOR},
         {KeyboardCode::VKEY_RIGHT, KeyboardCode::VKEY_END},
         {KeyboardCode::VKEY_DOWN, KeyboardCode::VKEY_NEXT},
     });
 
 // A keyboard util API to provide various keyboard capability information, such
 // as top row key layout, existence of certain keys, what is top right key, etc.
-class KeyboardCapability {
+class KeyboardCapability : public InputDeviceEventObserver {
  public:
   enum class DeviceType {
     kDeviceUnknown = 0,
@@ -108,10 +143,26 @@ class KeyboardCapability {
     virtual void SetTopRowKeysAsFKeysEnabledForTesting(bool enabled) = 0;
   };
 
+  struct KeyboardInfo {
+    KeyboardInfo();
+    KeyboardInfo(KeyboardInfo&&);
+    KeyboardInfo& operator=(KeyboardInfo&&);
+    KeyboardInfo(const KeyboardInfo&) = delete;
+    KeyboardInfo& operator=(const KeyboardInfo&) = delete;
+    ~KeyboardInfo();
+
+    DeviceType device_type;
+    std::unique_ptr<EventDeviceInfo> event_device_info;
+  };
+
   explicit KeyboardCapability(std::unique_ptr<Delegate> delegate);
   KeyboardCapability(const KeyboardCapability&) = delete;
   KeyboardCapability& operator=(const KeyboardCapability&) = delete;
-  ~KeyboardCapability();
+  ~KeyboardCapability() override;
+
+  // Generates an `EventDeviceInfo` from a given input device.
+  static std::unique_ptr<EventDeviceInfo> CreateEventDeviceInfoFromInputDevice(
+      const InputDevice& keyboard);
 
   void AddObserver(Observer* observer);
 
@@ -134,16 +185,49 @@ class KeyboardCapability {
   // kReversedSixPackKeyToSystemKeyMap.
   static bool IsReversedSixPackKey(const KeyboardCode& key_code);
 
-  // Check if a key code is one of the top row keys.
-  // TODO(zhangwenyu): Support all 4 legacy layouts and custom vivaldi layouts.
-  bool IsTopRowKey(const ui::KeyboardCode& key_code) const;
+  // Find the mapped function key if the given key code is a top row key for the
+  // given keyboard.
+  // TODO(zhangwenyu): Support custom vivaldi layouts.
+  absl::optional<KeyboardCode> GetMappedFKeyIfExists(
+      const KeyboardCode& key_code,
+      const InputDevice& keyboard) const;
 
   // Check if a keyboard has a launcher button rather than a search button.
   // TODO(zhangwenyu): Handle command key and window key cases.
   bool HasLauncherButton(
       const absl::optional<InputDevice>& keyboard = absl::nullopt);
 
+  // Check if a keyboard has a six pack key.
+  static bool HasSixPackKey(const InputDevice& keyboard);
+
+  // Check if any of the connected keyboards has a six pack key.
+  static bool HasSixPackOnAnyKeyboard();
+
+  // Returns the set of modifier keys present on the given keyboard.
+  std::vector<mojom::ModifierKey> GetModifierKeys(const InputDevice& keyboard);
+
+  // Returns the device type of the given keyboard.
+  DeviceType GetDeviceType(const InputDevice& keyboard);
+
+  // Takes a `KeyboardInfo` to use for testing the passed in keyboard.
+  void SetKeyboardInfoForTesting(const InputDevice& keyboard,
+                                 KeyboardInfo keyboard_info);
+
+  // InputDeviceEventObserver:
+  void OnDeviceListsComplete() override;
+  void OnInputDeviceConfigurationChanged(uint8_t input_device_types) override;
+
+  const base::flat_map<int, KeyboardInfo>& keyboard_info_map() {
+    return keyboard_info_map_;
+  }
+
  private:
+  const KeyboardInfo* GetKeyboardInfo(const InputDevice& keyboard);
+  void TrimKeyboardInfoMap();
+
+  // Stores event device info objects so they do not need to be constructed
+  // multiple times.
+  base::flat_map<int, KeyboardInfo> keyboard_info_map_;
   std::unique_ptr<Delegate> delegate_;
 };
 

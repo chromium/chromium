@@ -9,7 +9,7 @@ function testGetIncludedServices() {
     chrome.test.sendMessage('fail');
     chrome.test.fail(error);
   }
-  chrome.test.assertTrue(services != null, '\'services\' is null');
+  chrome.test.assertNe(null, services, '\'services\' is null');
   chrome.test.assertEq(1, services.length);
   chrome.test.assertEq(includedId, services[0].instanceId);
 

@@ -4,8 +4,8 @@
 
 package org.chromium.components.policy.test;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.times;
 
 import org.junit.Assert;

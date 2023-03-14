@@ -17,21 +17,19 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:animateLayoutChanges="true"
-        android:gravity="center_horizontal"
         android:orientation="vertical">
 
         <ImageView
             android:id="@+id/image"
-            android:layout_marginVertical="16dp"
-            android:layout_height="@dimen/privacy_guide_illustration_height"
-            android:layout_width="@dimen/privacy_guide_illustration_width"
+            android:layout_height="@dimen/setting_step_illustration_height"
+            android:layout_width="@dimen/setting_step_illustration_width"
+            android:layout_gravity="center_horizontal"
             android:src="@drawable/privacy_guide_sb_image"
             android:importantForAccessibility="no" />
 
         <TextView
             android:drawablePadding="16dp"
-            android:layout_gravity="start"
-            android:layout_marginHorizontal="16dp"
+            android:layout_marginHorizontal="@dimen/all_content_marginHorizontal"
             android:layout_marginVertical="8dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

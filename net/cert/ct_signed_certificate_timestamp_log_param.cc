@@ -71,16 +71,16 @@ base::Value::List SCTListToPrintableValues(
 
 }  // namespace
 
-base::Value NetLogSignedCertificateTimestampParams(
+base::Value::Dict NetLogSignedCertificateTimestampParams(
     const SignedCertificateTimestampAndStatusList* scts) {
   base::Value::Dict dict;
 
   dict.Set("scts", SCTListToPrintableValues(*scts));
 
-  return base::Value(std::move(dict));
+  return dict;
 }
 
-base::Value NetLogRawSignedCertificateTimestampParams(
+base::Value::Dict NetLogRawSignedCertificateTimestampParams(
     base::StringPiece embedded_scts,
     base::StringPiece sct_list_from_ocsp,
     base::StringPiece sct_list_from_tls_extension) {
@@ -90,7 +90,7 @@ base::Value NetLogRawSignedCertificateTimestampParams(
   SetBinaryData("scts_from_ocsp_response", sct_list_from_ocsp, dict);
   SetBinaryData("scts_from_tls_extension", sct_list_from_tls_extension, dict);
 
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 }  // namespace net

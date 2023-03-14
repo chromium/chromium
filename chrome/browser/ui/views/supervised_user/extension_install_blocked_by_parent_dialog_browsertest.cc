@@ -25,10 +25,9 @@ class ExtensionInstallBlockedByParentDialogViewTest : public DialogBrowserTest {
         extensions::ExtensionBuilder::Type::EXTENSION;
     if (name == "extension") {
       // type EXTENSION is correct.
-    } else if (name == "app") {
-      type = extensions::ExtensionBuilder::Type::PLATFORM_APP;
     } else {
-      NOTREACHED();
+      CHECK_EQ(name, "app");
+      type = extensions::ExtensionBuilder::Type::PLATFORM_APP;
     }
     extension_ = extensions::ExtensionBuilder("test extension", type).Build();
 

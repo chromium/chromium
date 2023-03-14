@@ -51,13 +51,18 @@ struct TransportAvailabilityCallbackReadiness {
   // request.
   bool platform_credential_check_pending = false;
 
+  // win_is_uvpaa_check_pending is true if |OnTransportAvailabilityEnumerated|
+  // callback is pending |OnIsUvpaa| being called.
+  bool win_is_uvpaa_check_pending = false;
+
   // num_discoveries_pending is the number of discoveries that are still yet to
   // signal that they have started.
   unsigned num_discoveries_pending = 0;
 
   bool CanMakeCallback() const {
     return !callback_made && !ble_information_pending &&
-           !platform_credential_check_pending && num_discoveries_pending == 0;
+           !platform_credential_check_pending && !win_is_uvpaa_check_pending &&
+           num_discoveries_pending == 0;
   }
 };
 
@@ -121,16 +126,20 @@ void FidoRequestHandlerBase::InitDiscoveries(
     // The Windows WebAuthn API is available. On this platform, communicating
     // with authenticator devices directly is blocked by the OS, so we need to
     // go through the native API instead. No device discoveries may be
-    // instantiated.
+    // instantiated. The embedder will be responsible for dispatch of the
+    // authenticator and whether they display any UI in addition to the one
+    // provided by the OS.
     win_discovery->set_observer(this);
     discoveries_.push_back(std::move(win_discovery));
 
-    //  Setting |has_win_native_api_authenticator| ensures
-    //  NotifyObserverTransportAvailability() will not be invoked before
-    //  Windows Authenticator has been added. The embedder will be
-    //  responsible for dispatch of the authenticator and whether they
-    //  display any UI in addition to the one provided by the OS.
     transport_availability_info_.has_win_native_api_authenticator = true;
+    transport_availability_callback_readiness_->win_is_uvpaa_check_pending =
+        true;
+    WinWebAuthnApiAuthenticator::IsUserVerifyingPlatformAuthenticatorAvailable(
+        transport_availability_info_.is_off_the_record_context,
+        fido_discovery_factory->win_webauthn_api(),
+        base::BindOnce(&FidoRequestHandlerBase::OnWinIsUvpaa,
+                       weak_factory_.GetWeakPtr()));
 
     // Allow caBLE as a potential additional transport if requested by
     // the implementing class because it is not subject to the OS'
@@ -374,7 +383,7 @@ void FidoRequestHandlerBase::AuthenticatorAdded(
   }
 
 #if BUILDFLAG(IS_WIN)
-  if (authenticator->GetType() == FidoAuthenticator::Type::kWinNative) {
+  if (authenticator->GetType() == AuthenticatorType::kWinNative) {
     DCHECK(transport_availability_info_.has_win_native_api_authenticator);
     transport_availability_info_.win_native_api_authenticator_id =
         authenticator->GetId();
@@ -443,6 +452,13 @@ void FidoRequestHandlerBase::InitializeAuthenticatorAndDispatchRequest(
 
 void FidoRequestHandlerBase::ConstructBleAdapterPowerManager() {
   bluetooth_adapter_manager_ = std::make_unique<BleAdapterManager>(this);
+}
+
+void FidoRequestHandlerBase::OnWinIsUvpaa(bool is_uvpaa) {
+  transport_availability_info_.win_is_uvpaa = is_uvpaa;
+  transport_availability_callback_readiness_->win_is_uvpaa_check_pending =
+      false;
+  MaybeSignalTransportsEnumerated();
 }
 
 void FidoRequestHandlerBase::StopDiscoveries() {

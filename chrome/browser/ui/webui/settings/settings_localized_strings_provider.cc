@@ -729,6 +729,8 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_SAVE_BUTTON_ARIA_LABEL},
       {"tabDiscardingExceptionsHeader",
        IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_HEADER},
+      {"tabDiscardingExceptionsAdditionalSites",
+       IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADDITIONAL_SITES},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -1143,10 +1145,15 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
      IDS_SETTINGS_PASSWORD_ROW_PASSWORD_DETAIL_PAGE},
     {"importMenuItem", IDS_SETTINGS_PASSWORDS_IMPORT_MENU_ITEM},
     {"importPasswordsTitle", IDS_SETTINGS_PASSWORDS_IMPORT_TITLE},
+    {"importPasswordsErrorTitle", IDS_SETTINGS_PASSWORDS_IMPORT_ERROR_TITLE},
+    {"importPasswordsCompleteTitle",
+     IDS_SETTINGS_PASSWORDS_IMPORT_COMPLETE_TITLE},
+    {"importPasswordsSuccessTitle",
+     IDS_SETTINGS_PASSWORDS_IMPORT_SUCCESS_TITLE},
     {"importPasswordsChooseFile", IDS_SETTINGS_PASSWORDS_IMPORT_CHOOSE_FILE},
     {"importPasswordsSuccessTip", IDS_SETTINGS_PASSWORDS_IMPORT_SUCCESS_TIP},
-    {"importPasswordsFailuresSummary",
-     IDS_SETTINGS_PASSWORDS_IMPORT_FAILURES_SUMMARY},
+    {"importPasswordsDeleteFileOption",
+     IDS_SETTINGS_PASSWORDS_IMPORT_DELETE_FILE_OPTION},
     {"importPasswordsMissingPassword",
      IDS_SETTINGS_PASSWORDS_IMPORT_MISSING_PASSWORD},
     {"importPasswordsMissingURL", IDS_SETTINGS_PASSWORDS_IMPORT_MISSING_URL},
@@ -1322,8 +1329,9 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                             /*log_manager=*/nullptr));
 
   html_source->AddBoolean("showIbansSettings",
-                          base::FeatureList::IsEnabled(
-                              autofill::features::kAutofillFillIbanFields));
+                          autofill::ShouldShowIbanOnSettingsPage(
+                              personal_data->GetCountryCodeForExperimentGroup(),
+                              profile->GetPrefs()));
 
   html_source->AddBoolean(
       "fidoAuthenticationAvailableForAutofill",
@@ -1666,6 +1674,8 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
      IDS_SETTINGS_ADVANCED_PROTECTION_PROGRAM_DESC},
     {"httpsOnlyModeTitle", IDS_SETTINGS_HTTPS_ONLY_MODE},
     {"httpsOnlyModeDescription", IDS_SETTINGS_HTTPS_ONLY_MODE_DESCRIPTION},
+    {"httpsOnlyModeDescriptionAdvancedProtection",
+     IDS_SETTINGS_HTTPS_ONLY_MODE_DESCRIPTION_ADVANCED_PROTECTION},
     {"manageCertificates", IDS_SETTINGS_MANAGE_CERTIFICATES},
     {"manageCertificatesDescription",
      IDS_SETTINGS_MANAGE_CERTIFICATES_DESCRIPTION},
@@ -1831,8 +1841,13 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   html_source->AddBoolean(
       "showChromeRootStoreCertificates",
-      GetChromeCertVerifierServiceParams(/*localstate=*/nullptr)
-          ->use_chrome_root_store);
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+      GetChromeCertVerifierServiceParams(/*local_state=*/nullptr)
+          ->use_chrome_root_store
+#else
+      true
+#endif
+  );
 
   html_source->AddString("chromeRootStoreHelpCenterURL",
                          chrome::kChromeRootStoreSettingsHelpCenterURL);
@@ -3258,6 +3273,19 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
      IDS_SETTINGS_SITE_SETTINGS_PAGE_SITE_DATA_BLOCKED_SUB_LABEL},
     {"siteSettingsSiteDataClearOnExitSubLabel",
      IDS_SETTINGS_SITE_SETTINGS_PAGE_SITE_DATA_CLEAR_ON_EXIT_SUB_LABEL},
+    {"siteSettingsAntiAbuse", IDS_SITE_SETTINGS_TYPE_ANTI_ABUSE},
+    {"siteSettingsAntiAbuseDescription", IDS_SETTINGS_ANTI_ABUSE_DESCRIPTION},
+    {"siteSettingsAntiAbuseEnabledSubLabel",
+     IDS_SETTINGS_ANTI_ABUSE_ENABLED_SUB_LABEL},
+    {"siteSettingsAntiAbuseDisabledSubLabel",
+     IDS_SETTINGS_ANTI_ABUSE_DISABLED_SUB_LABEL},
+    {"antiAbuseWhenOnHeader", IDS_SETTINGS_ANTI_ABUSE_WHEN_ON_HEADER},
+    {"antiAbuseWhenOnSectionOne", IDS_SETTINGS_ANTI_ABUSE_WHEN_ON_SECTION_ONE},
+    {"antiAbuseWhenOnSectionTwo", IDS_SETTINGS_ANTI_ABUSE_WHEN_ON_SECTION_TWO},
+    {"antiAbuseThingsToConsiderHeader",
+     IDS_SETTINGS_ANTI_ABUSE_THINGS_TO_CONSIDER_HEADER},
+    {"antiAbuseThingsToConsiderSectionOne",
+     IDS_SETTINGS_ANTI_ABUSE_THINGS_TO_CONSIDER_SECTION_ONE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

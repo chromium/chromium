@@ -198,11 +198,20 @@ void ExpectInstalled(UpdaterScope scope) {
   Launchd::Domain launchd_domain = LaunchdDomain(scope);
   Launchd::Type launchd_type = LaunchdType(scope);
 
+  absl::optional<base::FilePath> keystone_path = GetKeystoneFolderPath(scope);
+  ASSERT_TRUE(keystone_path);
+  absl::optional<base::FilePath> ksadmin_symlink =
+      keystone_path->Append(FILE_PATH_LITERAL(KEYSTONE_NAME ".bundle"))
+          .Append(FILE_PATH_LITERAL("Contents"))
+          .Append(FILE_PATH_LITERAL("MacOS"))
+          .Append(FILE_PATH_LITERAL("ksadmin"));
+
   // Files must exist on the file system.
-  absl::optional<base::FilePath> path = GetInstallDirectory(scope);
-  EXPECT_TRUE(path);
-  if (path)
-    EXPECT_TRUE(base::PathExists(*path));
+  for (const auto& path : {GetInstallDirectory(scope), keystone_path,
+                           GetKSAdminPath(scope), ksadmin_symlink}) {
+    ASSERT_TRUE(path) << path;
+    EXPECT_TRUE(base::PathExists(*path)) << path;
+  }
 
   EXPECT_TRUE(Launchd::GetInstance()->PlistExists(launchd_domain, launchd_type,
                                                   CopyWakeLaunchdName(scope)));
@@ -293,7 +302,7 @@ void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
   ASSERT_EQ(exit_code, 0);
 }
 
-void SetupFakeLegacyUpdaterData(UpdaterScope scope) {
+void SetupFakeLegacyUpdater(UpdaterScope scope) {
   base::FilePath test_ticket_store_path;
   ASSERT_TRUE(
       base::PathService::Get(chrome::DIR_TEST_DATA, &test_ticket_store_path));
@@ -309,7 +318,7 @@ void SetupFakeLegacyUpdaterData(UpdaterScope scope) {
                                  FILE_PATH_LITERAL("Keystone.ticketstore"))));
 }
 
-void ExpectLegacyUpdaterDataMigrated(UpdaterScope scope) {
+void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {
   scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(scope);
   auto persisted_data = base::MakeRefCounted<PersistedData>(
       scope, global_prefs->GetPrefService());

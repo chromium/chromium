@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "ash/components/arc/session/arc_vm_data_migration_status.h"
+#include "base/time/time.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 
 namespace aura {
@@ -81,6 +82,10 @@ constexpr int kArcVersionP = 28;
 constexpr int kArcVersionR = 30;
 constexpr int kArcVersionT = 33;
 constexpr int kMaxArcVersion = 999;
+
+// How long ARCVM /data migration notification and dialog are dismissible.
+constexpr base::TimeDelta kArcVmDataMigrationDismissibleTimeDelta =
+    base::Days(30);
 
 // Returns true if ARC is installed and the current device is officially
 // supported to run ARC.
@@ -235,6 +240,17 @@ void SetArcVmDataMigrationStatus(PrefService* prefs,
 
 // Returns whether ARCVM should use virtio-blk for /data.
 bool ShouldUseVirtioBlkData(PrefService* prefs);
+
+// Returns ARCVM /data migration should be done within how many days. Calculated
+// from the time when the ARCVM /data migration notification is shown for the
+// first time. The minimum return value is 1 (which means the migration should
+// be done within a day = today).
+int GetDaysUntilArcVmDataMigrationDeadline(PrefService* prefs);
+
+// Whether ARCVM /data migration notification and/or dialog should be
+// dismissible given the number of days returned by
+// GetDaysUntilArcVmDataMigrationDeadline().
+bool ArcVmDataMigrationShouldBeDismissible(int days_until_deadline);
 
 }  // namespace arc
 

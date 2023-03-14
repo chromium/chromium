@@ -30,7 +30,14 @@ AboutThisSiteServiceFactory* AboutThisSiteServiceFactory::GetInstance() {
 }
 
 AboutThisSiteServiceFactory::AboutThisSiteServiceFactory()
-    : ProfileKeyedServiceFactory("AboutThisSiteServiceFactory") {
+    : ProfileKeyedServiceFactory(
+          "AboutThisSiteServiceFactory",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
   DependsOn(TemplateURLServiceFactory::GetInstance());
 }
@@ -51,7 +58,7 @@ KeyedService* AboutThisSiteServiceFactory::BuildServiceInstanceFor(
           OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
           profile->IsOffTheRecord(), profile->GetPrefs()),
       TemplateURLServiceFactory::GetForProfile(profile),
-      page_info::IsDescriptionPlaceholderFeatureEnabled(),
+      page_info::IsMoreAboutThisSiteFeatureEnabled(),
       page_info::IsAboutThisSiteForNonMsbbFeatureEnabled());
 }
 

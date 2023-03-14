@@ -5,6 +5,7 @@
 #ifndef CC_TILES_EVICTION_TILE_PRIORITY_QUEUE_H_
 #define CC_TILES_EVICTION_TILE_PRIORITY_QUEUE_H_
 
+#include <memory>
 #include <set>
 #include <utility>
 #include <vector>

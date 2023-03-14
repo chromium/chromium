@@ -6,9 +6,9 @@ import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://nearby/nearby_discovery_page.js';
 
 import {setDiscoveryManagerForTesting} from 'chrome://nearby/discovery_manager.js';
-import {SelectShareTargetResult, ShareTarget, ShareTargetListenerRemote, StartDiscoveryResult} from 'chrome://nearby/mojo/nearby_share.mojom-webui.js';
-import {ShareType} from 'chrome://nearby/mojo/nearby_share_share_type.mojom-webui.js';
 import {NearbyDiscoveryPageElement} from 'chrome://nearby/nearby_discovery_page.js';
+import {SelectShareTargetResult, ShareTarget, ShareTargetListenerRemote, StartDiscoveryResult} from 'chrome://nearby/shared/mojo/nearby_share.mojom-webui.js';
+import {ShareType} from 'chrome://nearby/shared/mojo/nearby_share_share_type.mojom-webui.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {ShareTargetType} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom-webui.js';
 import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';

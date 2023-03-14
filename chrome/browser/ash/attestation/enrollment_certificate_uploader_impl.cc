@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
 #include "chrome/browser/ash/attestation/certificate_util.h"
+#include "chromeos/ash/components/attestation/attestation_features.h"
 #include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "chromeos/ash/components/attestation/attestation_flow_adaptive.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
@@ -97,32 +98,61 @@ void EnrollmentCertificateUploaderImpl::GetCertificate(bool force_new_key) {
     RunCallbacks(Status::kInvalidClient);
     return;
   }
+  auto callback = base::BindOnce(
+      [](base::RepeatingCallback<void(const std::string&)> on_success,
+         base::RepeatingCallback<void(AttestationStatus)> on_failure,
+         const base::Location& from_here, AttestationStatus status,
+         const std::string& data) {
+        DBusPrivacyCACallback(on_success, on_failure, from_here, status, data);
+      },
+      base::BindRepeating(
+          &EnrollmentCertificateUploaderImpl::CheckCertificateExpiry,
+          weak_factory_.GetWeakPtr()),
+      base::BindRepeating(
+          &EnrollmentCertificateUploaderImpl::HandleGetCertificateFailure,
+          weak_factory_.GetWeakPtr()),
+      FROM_HERE);
+  AttestationFeatures::GetFeatures(base::BindOnce(
+      &EnrollmentCertificateUploaderImpl::OnGetFeaturesReady,
+      weak_factory_.GetWeakPtr(), force_new_key, std::move(callback)));
+}
+
+void EnrollmentCertificateUploaderImpl::OnGetFeaturesReady(
+    bool force_new_key,
+    AttestationFlow::CertificateCallback callback,
+    const AttestationFeatures* features) {
+  if (!features) {
+    LOG(ERROR) << "Failed to get AttestationFeatures.";
+    std::move(callback).Run(ATTESTATION_UNSPECIFIED_FAILURE, "");
+    return;
+  }
+  if (!features->IsAttestationAvailable()) {
+    LOG(ERROR) << "The Attestation is not available.";
+    std::move(callback).Run(ATTESTATION_UNSPECIFIED_FAILURE, "");
+    return;
+  }
+
+  // prefers ECC certificate if available
+  ::attestation::KeyType key_crypto_type;
+  if (features->IsEccSupported()) {
+    key_crypto_type = ::attestation::KEY_TYPE_ECC;
+  } else if (features->IsRsaSupported()) {
+    key_crypto_type = ::attestation::KEY_TYPE_RSA;
+  } else {
+    LOG(ERROR) << "No appropriate crypto key type supported.";
+    std::move(callback).Run(ATTESTATION_UNSPECIFIED_FAILURE, "");
+    return;
+  }
 
   VLOG_IF(1, force_new_key) << "Fetching certificate with new key";
   attestation_flow_->GetCertificate(
       /*certificate_profile=*/PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
       /*account_id=*/EmptyAccountId(),   // Not used.
       /*request_origin=*/std::string(),  // Not used.
-      /*force_new_key=*/force_new_key,
-      /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
+      /*force_new_key=*/force_new_key, key_crypto_type,
       /*key_name=*/kEnterpriseEnrollmentKey,
       /*profile_specific_data=*/absl::nullopt,
-      /*callback=*/
-      base::BindOnce(
-          [](const base::RepeatingCallback<void(const std::string&)> on_success,
-             const base::RepeatingCallback<void(AttestationStatus)> on_failure,
-             const base::Location& from_here, AttestationStatus status,
-             const std::string& data) {
-            DBusPrivacyCACallback(on_success, on_failure, from_here, status,
-                                  std::move(data));
-          },
-          base::BindRepeating(
-              &EnrollmentCertificateUploaderImpl::CheckCertificateExpiry,
-              weak_factory_.GetWeakPtr()),
-          base::BindRepeating(
-              &EnrollmentCertificateUploaderImpl::HandleGetCertificateFailure,
-              weak_factory_.GetWeakPtr()),
-          FROM_HERE));
+      /*callback=*/std::move(callback));
 }
 
 void EnrollmentCertificateUploaderImpl::HandleGetCertificateFailure(

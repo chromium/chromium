@@ -179,9 +179,14 @@ int LayoutProvider::GetCornerRadiusMetric(Emphasis emphasis,
 ShapeSysTokens GetShapeSysToken(ShapeContextTokens id) {
   static constexpr auto shape_token_map =
       base::MakeFixedFlatMap<ShapeContextTokens, ShapeSysTokens>({
+          {ShapeContextTokens::kBadgeRadius, ShapeSysTokens::kXSmall},
           {ShapeContextTokens::kButtonRadius, ShapeSysTokens::kFull},
-          {ShapeContextTokens::kTextfieldRadius, ShapeSysTokens::kSmall},
           {ShapeContextTokens::kComboboxRadius, ShapeSysTokens::kSmall},
+          {ShapeContextTokens::kDialogRadius, ShapeSysTokens::kMediumSmall},
+          {ShapeContextTokens::kMenuRadius, ShapeSysTokens::kMedium},
+          {ShapeContextTokens::kMenuAuxRadius, ShapeSysTokens::kMedium},
+          {ShapeContextTokens::kMenuTouchRadius, ShapeSysTokens::kMedium},
+          {ShapeContextTokens::kTextfieldRadius, ShapeSysTokens::kSmall},
       });
   const auto* it = shape_token_map.find(id);
   return it == shape_token_map.end() ? ShapeSysTokens::kDefault : it->second;
@@ -191,9 +196,18 @@ int LayoutProvider::GetCornerRadiusMetric(ShapeContextTokens id,
                                           const gfx::Size& size) const {
   if (!features::IsChromeRefresh2023()) {
     switch (id) {
+      case ShapeContextTokens::kBadgeRadius:
+        return 3;
       case ShapeContextTokens::kButtonRadius:
-        return 4;
+        return GetCornerRadiusMetric(Emphasis::kMedium, size);
       case ShapeContextTokens::kComboboxRadius:
+      case ShapeContextTokens::kDialogRadius:
+        return GetCornerRadiusMetric(Emphasis::kMedium, size);
+      case ShapeContextTokens::kMenuRadius:
+      case ShapeContextTokens::kMenuAuxRadius:
+        return GetCornerRadiusMetric(Emphasis::kNone);
+      case ShapeContextTokens::kMenuTouchRadius:
+        return GetCornerRadiusMetric(Emphasis::kHigh);
       case ShapeContextTokens::kTextfieldRadius:
         return FocusRing::kDefaultCornerRadiusDp;
       default:
@@ -209,6 +223,8 @@ int LayoutProvider::GetCornerRadiusMetric(ShapeContextTokens id,
       return 4;
     case ShapeSysTokens::kSmall:
       return 8;
+    case ShapeSysTokens::kMediumSmall:
+      return 12;
     case ShapeSysTokens::kMedium:
       return 16;
     case ShapeSysTokens::kLarge:

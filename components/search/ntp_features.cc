@@ -115,6 +115,11 @@ BASE_FEATURE(kNtpHandleMostVisitedNavigationExplicitly,
 // If enabled, logo will be shown.
 BASE_FEATURE(kNtpLogo, "NtpLogo", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, logo will fill up less vertical space.
+BASE_FEATURE(kNtpReducedLogoSpace,
+             "NtpReducedLogoSpace",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, middle slot promo will be shown.
 BASE_FEATURE(kNtpMiddleSlotPromo,
              "NtpMiddleSlotPromo",
@@ -233,6 +238,33 @@ BASE_FEATURE(kNtpHistoryClustersModule,
              "NtpHistoryClustersModule",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Dummy feature to set kNtpHistoryClustersModuleBeginTimeDurationHoursParam.
+BASE_FEATURE(kNtpHistoryClustersModuleBeginTimeDuration,
+             "NtpHistoryClustersModuleBeginTimeDuration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Dummy feature to set kNtpHistoryClustersModuleMinimumImagesRequiredParam.
+BASE_FEATURE(kNtpHistoryClustersModuleMinimumImagesRequired,
+             "NtpHistoryClustersModuleMinimumImagesRequired",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Dummy feature to set kNtpHistoryClustersModuleCategoriesParam.
+BASE_FEATURE(kNtpHistoryClustersModuleCategories,
+             "NtpHistoryClustersModuleCategories",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, the history clusters module will be loaded but not shown. This is
+// useful to determine if a user would have seen modules in order to
+// counterfactually log or trigger.
+BASE_FEATURE(kNtpHistoryClustersModuleLoad,
+             "NtpHistoryClustersModuleLoad",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, module headers will display an associated icon.
+BASE_FEATURE(kNtpModulesHeaderIcon,
+             "NtpModulesHeaderIcon",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<double>
     kNtpElementLuminosityChangeForLightBackgroundParam{
         &kNtpComprehensiveTheming,
@@ -270,6 +302,8 @@ const char kNtpDriveModuleCacheMaxAgeSParam[] =
     "NtpDriveModuleCacheMaxAgeSParam";
 const char kNtpDriveModuleExperimentGroupParam[] =
     "NtpDriveModuleExperimentGroupParam";
+const char kNtpHistoryClustersModuleDataParam[] =
+    "NtpRecipeTasksModuleDataParam";
 const char kNtpMiddleSlotPromoDismissalParam[] =
     "NtpMiddleSlotPromoDismissalParam";
 const char kNtpPhotosModuleDataParam[] = "NtpPhotosModuleDataParam";
@@ -287,6 +321,12 @@ const char kNtpRecipeTasksModuleCacheMaxAgeSParam[] =
     "NtpRecipeTasksModuleCacheMaxAgeSParam";
 const char kNtpRecipeTasksModuleExperimentGroupParam[] =
     "NtpRecipeTasksModuleExperimentGroupParam";
+const char kNtpHistoryClustersModuleBeginTimeDurationHoursParam[] =
+    "NtpHistoryClustersModuleBeginTimeDurationHoursParam";
+const char kNtpHistoryClustersModuleMinimumImagesRequiredParam[] =
+    "NtpHistoryClustersModuleMinimumImagesRequiredParam";
+const char kNtpHistoryClustersModuleCategoriesParam[] =
+    "NtpHistoryClustersModuleCategoriesParam";
 
 base::TimeDelta GetModulesLoadTimeout() {
   std::string param_value = base::GetFieldTrialParamValueByFeature(

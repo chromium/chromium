@@ -40,7 +40,6 @@ source_set("share") {
   if (is_android) {
     sources += [
       "bitmap_download_request.cc",
-      "crow_bridge.cc",
       "default_ranking_android.cc",
       "editor_screenshot_task.cc",
       "link_to_text_bridge.cc",
@@ -50,8 +49,6 @@ source_set("share") {
     deps += [
       ":jni_headers",
       "//chrome/browser/share/android:jni_headers",
-      "//chrome/browser/share/core/crow:crow_configuration",
-      "//chrome/browser/share/proto:crow_proto",
       "//components/history/core/browser:browser",
       "//components/ukm/content:content",
       "//ui/android",
@@ -67,7 +64,6 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/share/ShareDelegate.java",
       "android/java/src/org/chromium/chrome/browser/share/ShareHistoryBridge.java",
       "android/java/src/org/chromium/chrome/browser/share/ShareRankingBridge.java",
-      "android/java/src/org/chromium/chrome/browser/share/crow/CrowButtonDelegate.java",
       "android/java/src/org/chromium/chrome/browser/share/share_sheet/ChromeOptionShareCallback.java",
     ]
 

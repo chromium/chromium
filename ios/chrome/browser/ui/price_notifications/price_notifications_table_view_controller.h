@@ -24,6 +24,9 @@
 // Handler for displaying snackbar messages on the UI.
 @property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
 
+// Indicates whether this is the user's first time using price tracking.
+@property(nonatomic, assign) BOOL hasPreviouslyViewed;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_PRICE_NOTIFICATIONS_PRICE_NOTIFICATIONS_TABLE_VIEW_CONTROLLER_H_

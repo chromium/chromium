@@ -63,6 +63,20 @@ void AddRecordToStorage(scoped_refptr<StorageModuleInterface> storage,
     record.set_reserved_space(reserved_space);
   }
 
+  // Additional record augmentation for keeping local record copy.
+  // Note: that must be done before calling `storage->AddRecord` below,
+  // because later the handler might call it with no need to set this flag.
+  switch (destination) {
+    case LOG_UPLOAD:
+      // It would be better to base the decision on `upload_settings` presence
+      // in the event, but that would require protobuf reflecion, that is not
+      // included in Chromium build. So instead we just use `destination`.
+      record.set_needs_local_unencrypted_copy(true);
+      break;
+    default:  // Do nothing.
+      break;
+  }
+
   // |record| with no DM token is assumed to be associated with device DM token
   if (!dm_token.empty()) {
     *record.mutable_dm_token() = std::move(dm_token);

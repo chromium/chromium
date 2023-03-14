@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/logging.h"
 #include "media/audio/mac/audio_auhal_mac.h"
 
 namespace media {

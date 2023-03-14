@@ -9,9 +9,9 @@ package org.chromium.chrome.browser.feed.webfeed;
  */
 public final class CreatorIntentConstants {
     public static final String CREATOR_WEB_FEED_ID = "CREATOR_WEB_FEED_ID";
-    public static final String CREATOR_TITLE = "CREATOR_TITLE";
     public static final String CREATOR_URL = "CREATOR_URL";
     public static final String CREATOR_ENTRY_POINT = "CREATOR_ENTRY_POINT";
+    public static final String CREATOR_FOLLOWING = "CREATOR_FOLLOWING";
 
     private CreatorIntentConstants() {}
 }

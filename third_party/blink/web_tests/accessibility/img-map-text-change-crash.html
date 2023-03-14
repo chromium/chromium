@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<style>
+map { display: list-item; }
+</style>
+<aside></aside>
+<script>
+// This should be implemented as a WPT crashtest in
+// external/wpt/accessibility/crashtests/, but it did not
+// crash when converted to one, even with class="test-wait".
+const image = document.createElement('img');
+image.setAttribute('usemap', '#map');
+document.documentElement.appendChild(image);
+const aside = document.querySelector('aside');
+const map = document.createElement('map');
+map.setAttribute('name', 'map');
+document.documentElement.appendChild(map);
+requestAnimationFrame(() => {
+  requestAnimationFrame(() => {
+    aside.appendChild(image);
+  });
+});
+</script>
+</html>

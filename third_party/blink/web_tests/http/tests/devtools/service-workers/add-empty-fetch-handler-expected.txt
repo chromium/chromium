@@ -1,0 +1,5 @@
+Tests that a warning is shown in the console if addEventListener adds an empty fetch handler.
+
+Message count: 1
+Fetch event handler is recognized as no-op. No-op fetch handler may bring overhead during navigation. Consider removing the handler if possible.
+

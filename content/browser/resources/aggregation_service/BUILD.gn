@@ -19,10 +19,9 @@ build_webui("build") {
 
   web_component_files = [ "aggregation_service_internals_table.ts" ]
 
-  ts_use_local_config = false
   ts_deps = [
     "//ui/webui/resources/js:build_ts",
-    "//ui/webui/resources/mojo:library",
+    "//ui/webui/resources/mojo:build_ts",
   ]
 
   aggregation_service_content_folder = "content/browser/aggregation_service"

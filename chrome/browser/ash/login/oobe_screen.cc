@@ -42,4 +42,8 @@ OobeScreenId StaticOobeScreenId::AsId() const {
   return OobeScreenId(name);
 }
 
+ScreenSummary::ScreenSummary() = default;
+ScreenSummary::~ScreenSummary() = default;
+ScreenSummary::ScreenSummary(const ScreenSummary& summary) = default;
+
 }  // namespace ash

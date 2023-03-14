@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -133,9 +134,9 @@ class BrowsingDataRemoverFunction
   // Parses the developer-provided list of origins into |result|.
   // Returns whether or not parsing was successful. In case of parse failure,
   // |error_response| will contain the error response.
-  bool ParseOrigins(const base::Value::List& list_value,
-                    std::vector<url::Origin>* result,
-                    ResponseValue* error_response);
+  using OriginParsingResult =
+      base::expected<std::vector<url::Origin>, ResponseValue>;
+  OriginParsingResult ParseOrigins(const base::Value::List& list_value);
 
   // Called when we're ready to start removing data.
   void StartRemoving();

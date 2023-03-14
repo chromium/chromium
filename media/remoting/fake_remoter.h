@@ -14,9 +14,9 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace cast_streaming {
+namespace media::cast {
 class DecoderBufferReader;
-}  // namespace cast_streaming
+}  // namespace media::cast
 
 namespace media::remoting {
 
@@ -52,7 +52,7 @@ class FakeRemotingDataStreamSender : public mojom::RemotingDataStreamSender {
   void OnFrameRead(scoped_refptr<media::DecoderBuffer> buffer);
 
   mojo::Receiver<RemotingDataStreamSender> receiver_;
-  std::unique_ptr<cast_streaming::DecoderBufferReader> decoder_buffer_reader_;
+  std::unique_ptr<media::cast::DecoderBufferReader> decoder_buffer_reader_;
   SendFrameCallback send_frame_callback_;
 
   std::vector<scoped_refptr<media::DecoderBuffer>> received_frame_list_;

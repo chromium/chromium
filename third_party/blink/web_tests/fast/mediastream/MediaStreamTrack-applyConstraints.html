@@ -30,15 +30,16 @@ promise_test(() => {
 
 // The deviceId constraint must be rejected, since the source of a track cannot
 // be changed with applyConstraints.
-promise_test(test => {
-  return promise_rejects_js(test,
-                            OverconstrainedError,
-                            navigator.mediaDevices.getUserMedia({audio: true})
-      .then(s => {
-    return s.getAudioTracks()[0].applyConstraints(
-        { deviceId: {exact: 'mydevice-id'}});
-  }));
-}, 'Attempting to change the deviceId with applyConstraints() fails');
+promise_test(async t => {
+  let stream = await navigator.mediaDevices.getUserMedia({audio: true});
+  let audioTrack = stream.getAudioTracks()[0];
+  return audioTrack.applyConstraints(
+        { deviceId: {exact: 'mydevice-id'}}).catch((error) => {
+          assert_equals(error.name, "OverconstrainedError");
+          assert_equals(error.constraint, "deviceId");
+
+        });
+}, `Attempting to change the deviceId with applyConstraints() fails`);
 
 promise_test(() => {
   let track;

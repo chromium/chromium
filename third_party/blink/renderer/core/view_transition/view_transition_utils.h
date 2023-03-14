@@ -18,6 +18,10 @@ class CORE_EXPORT ViewTransitionUtils {
  public:
   template <typename Functor>
   static void ForEachTransitionPseudo(Document& document, Functor& func) {
+    if (!document.documentElement()) {
+      return;
+    }
+
     auto* transition_pseudo =
         document.documentElement()->GetPseudoElement(kPseudoIdViewTransition);
     if (!transition_pseudo)
@@ -56,6 +60,10 @@ class CORE_EXPORT ViewTransitionUtils {
   template <typename Functor>
   static PseudoElement* FindPseudoIf(const Document& document,
                                      const Functor& condition) {
+    if (!document.documentElement()) {
+      return nullptr;
+    }
+
     auto* transition_pseudo =
         document.documentElement()->GetPseudoElement(kPseudoIdViewTransition);
     if (!transition_pseudo) {

@@ -142,7 +142,7 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegate {
   //   that the node should not be exposed to the platform.)
   const ui::AXNodeData& GetData() const override;
   size_t GetChildCount() const override;
-  gfx::NativeViewAccessible ChildAtIndex(size_t index) override;
+  gfx::NativeViewAccessible ChildAtIndex(size_t index) const override;
   gfx::NativeViewAccessible GetNSWindow() override;
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   gfx::NativeViewAccessible GetParent() const override;

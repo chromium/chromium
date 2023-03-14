@@ -76,7 +76,6 @@ static_library("cardboard") {
     "src/sdk/head_tracker.cc",
     "src/sdk/head_tracker.h",
     "src/sdk/include/cardboard.h",
-    "src/sdk/jni_utils/android/jni_utils.cc",
     "src/sdk/jni_utils/android/jni_utils.h",
     "src/sdk/lens_distortion.cc",
     "src/sdk/lens_distortion.h",
@@ -130,8 +129,11 @@ static_library("cardboard") {
     "src/sdk/util/vector.h",
     "src/sdk/util/vectorutils.cc",
     "src/sdk/util/vectorutils.h",
+    "src_overrides/sdk/jni_utils/android/jni_utils.cc",
     "src_overrides/sdk/sensors/android/device_gyroscope_sensor.cc",
   ]
+
+  deps = [ "//base" ]
 
   include_dirs = [ "src/sdk" ]
 

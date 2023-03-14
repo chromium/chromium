@@ -23,10 +23,11 @@ namespace ash {
 
 namespace {
 
-bool DefaultShillPropertiesMatcher(const base::Value& onc_network_configuration,
-                                   const base::Value& shill_properties) {
-  return policy_util::IsPolicyMatching(onc_network_configuration.GetDict(),
-                                       shill_properties.GetDict());
+bool DefaultShillPropertiesMatcher(
+    const base::Value::Dict& onc_network_configuration,
+    const base::Value::Dict& shill_properties) {
+  return policy_util::IsPolicyMatching(onc_network_configuration,
+                                       shill_properties);
 }
 
 base::flat_map<std::string, std::string> GetAllExpansions(
@@ -42,14 +43,14 @@ base::flat_map<std::string, std::string> GetAllExpansions(
   return result;
 }
 
-base::Value DefaultRuntimeValuesSetter(
-    const base::Value& onc_network_configuration,
+base::Value::Dict DefaultRuntimeValuesSetter(
+    const base::Value::Dict& onc_network_configuration,
     const base::flat_map<std::string, std::string>& profile_wide_expansions,
     const client_cert::ResolvedCert& resolved_cert) {
-  // TODO(b/215163180): Change this to return a NONE base::Value instead of
+  // TODO(b/215163180): Change this to return a nullopt or the like instead of
   // cloning if the variable expansion doesn't change anything when this is the
   // only caller of ExpandStringsInOncObject.
-  base::Value expanded = onc_network_configuration.Clone();
+  base::Value::Dict expanded = onc_network_configuration.Clone();
   chromeos::VariableExpander variable_expander(
       GetAllExpansions(profile_wide_expansions, resolved_cert));
   chromeos::onc::ExpandStringsInOncObject(
@@ -62,7 +63,7 @@ base::Value DefaultRuntimeValuesSetter(
 }  // namespace
 
 ProfilePolicies::NetworkPolicy::NetworkPolicy(const ProfilePolicies* parent,
-                                              base::Value onc_policy)
+                                              base::Value::Dict onc_policy)
     : parent_(parent), original_policy_(std::move(onc_policy)) {
   // There could already be profile-wide variable expansions (through parent_).
   ReapplyRuntimeValues();
@@ -75,7 +76,7 @@ ProfilePolicies::NetworkPolicy& ProfilePolicies::NetworkPolicy::operator=(
     NetworkPolicy&& other) = default;
 
 ProfilePolicies::ChangeEffect ProfilePolicies::NetworkPolicy::UpdateFrom(
-    const base::Value& new_onc_policy) {
+    const base::Value::Dict& new_onc_policy) {
   if (new_onc_policy == original_policy_)
     return ChangeEffect::kNoChange;
   original_policy_ = new_onc_policy.Clone();
@@ -104,12 +105,13 @@ ProfilePolicies::NetworkPolicy::OnProfileWideExpansionsChanged() {
   return ReapplyRuntimeValues();
 }
 
-const base::Value& ProfilePolicies::NetworkPolicy::GetOriginalPolicy() const {
+const base::Value::Dict& ProfilePolicies::NetworkPolicy::GetOriginalPolicy()
+    const {
   return original_policy_;
 }
 
-const base::Value& ProfilePolicies::NetworkPolicy::GetPolicyWithRuntimeValues()
-    const {
+const base::Value::Dict&
+ProfilePolicies::NetworkPolicy::GetPolicyWithRuntimeValues() const {
   if (!policy_with_runtime_values_.has_value()) {
     // Memory optimization to avoid storing the same value twice if setting
     // runtime values resulted in no change.
@@ -120,7 +122,7 @@ const base::Value& ProfilePolicies::NetworkPolicy::GetPolicyWithRuntimeValues()
 
 ProfilePolicies::ChangeEffect
 ProfilePolicies::NetworkPolicy::ReapplyRuntimeValues() {
-  absl::optional<base::Value> old_policy_with_runtime_values =
+  absl::optional<base::Value::Dict> old_policy_with_runtime_values =
       std::move(policy_with_runtime_values_);
 
   policy_with_runtime_values_ = parent_->runtime_values_setter_.Run(
@@ -137,15 +139,16 @@ ProfilePolicies::NetworkPolicy::ReapplyRuntimeValues() {
 }
 
 base::flat_set<std::string> ProfilePolicies::ApplyOncNetworkConfigurationList(
-    const base::Value& network_configs_onc) {
-  DCHECK(network_configs_onc.is_list());
+    const base::Value::List& network_configs_onc) {
   base::flat_set<std::string> processed_guids;
   base::flat_set<std::string> new_or_modified_guids;
   base::flat_set<std::string> removed_guids = GetAllPolicyGuids();
 
-  for (const base::Value& network : network_configs_onc.GetList()) {
+  for (const base::Value& network_value : network_configs_onc) {
+    const base::Value::Dict& network = network_value.GetDict();
+
     const std::string* guid_str =
-        network.FindStringKey(::onc::network_config::kGUID);
+        network.FindString(::onc::network_config::kGUID);
     DCHECK(guid_str && !guid_str->empty());
     std::string guid = *guid_str;
     if (processed_guids.find(guid) != processed_guids.end()) {
@@ -177,8 +180,7 @@ base::flat_set<std::string> ProfilePolicies::ApplyOncNetworkConfigurationList(
 }
 
 void ProfilePolicies::SetGlobalNetworkConfig(
-    const base::Value& global_network_config) {
-  DCHECK(global_network_config.is_dict());
+    const base::Value::Dict& global_network_config) {
   global_network_config_ = global_network_config.Clone();
 }
 
@@ -208,20 +210,20 @@ bool ProfilePolicies::SetResolvedClientCertificate(
          ChangeEffect::kEffectivePolicyChanged;
 }
 
-const base::Value* ProfilePolicies::GetPolicyByGuid(
+const base::Value::Dict* ProfilePolicies::GetPolicyByGuid(
     const std::string& guid) const {
   const NetworkPolicy* policy = FindPolicy(guid);
   return policy ? &policy->GetPolicyWithRuntimeValues() : nullptr;
 }
 
-const base::Value* ProfilePolicies::GetOriginalPolicyByGuid(
+const base::Value::Dict* ProfilePolicies::GetOriginalPolicyByGuid(
     const std::string& guid) const {
   const NetworkPolicy* policy = FindPolicy(guid);
   return policy ? &policy->GetOriginalPolicy() : nullptr;
 }
 
 bool ProfilePolicies::HasPolicyMatchingShillProperties(
-    const base::Value& shill_properties) const {
+    const base::Value::Dict& shill_properties) const {
   for (const auto& [guid, policy] : guid_to_policy_) {
     if (shill_properties_matcher_.Run(policy.GetPolicyWithRuntimeValues(),
                                       shill_properties)) {
@@ -236,8 +238,7 @@ ProfilePolicies::GetGuidToPolicyMap() const {
   std::vector<std::pair<std::string, base::Value::Dict>> result;
   result.reserve(guid_to_policy_.size());
   for (const auto& [guid, policy] : guid_to_policy_) {
-    result.emplace_back(guid,
-                        policy.GetPolicyWithRuntimeValues().GetDict().Clone());
+    result.emplace_back(guid, policy.GetPolicyWithRuntimeValues().Clone());
   }
   return base::flat_map<std::string, base::Value::Dict>(std::move(result));
 }

@@ -67,8 +67,6 @@ class MODULES_EXPORT Path2D final : public ScriptWrappable, public CanvasPath {
     return MakeGarbageCollected<Path2D>(context, path);
   }
 
-  const Path& GetPath() const { return path_; }
-
   void addPath(Path2D* path,
                DOMMatrix2DInit* transform,
                ExceptionState& exception_state) {
@@ -79,7 +77,7 @@ class MODULES_EXPORT Path2D final : public ScriptWrappable, public CanvasPath {
         !std::isfinite(matrix->m22()) || !std::isfinite(matrix->m41()) ||
         !std::isfinite(matrix->m42()))
       return;
-    path_.AddPath(path->GetPath(), matrix->GetAffineTransform());
+    GetModifiablePath().AddPath(path->GetPath(), matrix->GetAffineTransform());
     if (identifiability_study_helper_.ShouldUpdateBuilder()) {
       identifiability_study_helper_.UpdateBuilder(CanvasOps::kAddPath,
                                                   path->GetIdentifiableToken());
@@ -92,20 +90,20 @@ class MODULES_EXPORT Path2D final : public ScriptWrappable, public CanvasPath {
 
   explicit Path2D(ExecutionContext* context) : context_(context) {
     identifiability_study_helper_.SetExecutionContext(context);
-    path_.SetIsVolatile(false);
+    GetModifiablePath().SetIsVolatile(false);
   }
   Path2D(ExecutionContext* context, const Path& path)
       : CanvasPath(path), context_(context) {
     identifiability_study_helper_.SetExecutionContext(context);
-    path_.SetIsVolatile(false);
+    GetModifiablePath().SetIsVolatile(false);
   }
   Path2D(ExecutionContext* context, Path2D* path)
       : Path2D(context, path->GetPath()) {}
   Path2D(ExecutionContext* context, const String& path_data)
       : context_(context) {
     identifiability_study_helper_.SetExecutionContext(context);
-    BuildPathFromString(path_data, path_);
-    path_.SetIsVolatile(false);
+    BuildPathFromString(path_data, GetModifiablePath());
+    GetModifiablePath().SetIsVolatile(false);
   }
 
   Path2D(const Path2D&) = delete;

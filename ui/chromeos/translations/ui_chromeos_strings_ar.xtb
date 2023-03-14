@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">التالي</translation>
 <translation id="1209796539517632982">خوادم الأسماء التلقائية</translation>
 <translation id="1210831758834677569">اللاوية</translation>
+<translation id="1221555006497674479">مساحة التخزين منخفضة. يتبقى %<ph name="REMAINING_PERCENTAGE" /> من إجمالي مساحة التخزين السحابي المشتركة التي تبلغ <ph name="TOTAL_SPACE" />.</translation>
 <translation id="1243314992276662751">تحميل</translation>
 <translation id="1249250836236328755">النوع</translation>
 <translation id="1254593899333212300">اتصال مباشر بالإنترنت</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">‏الصينية باستخدام لوحة مفاتيح Pinyin</translation>
 <translation id="1646019627374511909">جارٍ إتاحة <ph name="NUMBER_OF_ITEMS" /> ملف بلا إنترنت</translation>
 <translation id="164969095109328410">‏جهاز Chrome</translation>
+<translation id="1661207570040737402">‏لقد استهلكت كل مساحة التخزين السحابي المشتركة في Google Workspace.</translation>
 <translation id="1661867754829461514">رقم التعريف الشخصي غير موجود</translation>
 <translation id="166439687370499867">لا يُسمح بتغيير عمليات ضبط الشبكة المشتركة.</translation>
 <translation id="1665611772925418501">تعذر تعديل على الملف.</translation>
@@ -82,6 +84,7 @@
 <translation id="1722487484194605434">جارٍ ضغط <ph name="NUMBER_OF_ITEMS" /> من العناصر...</translation>
 <translation id="1722687688096767818">جارٍ إضافة الملف الشخصي...</translation>
 <translation id="1726100011689679555">خوادم الأسماء</translation>
+<translation id="1727562178154619254">الملف جاهز للمزامنة.</translation>
 <translation id="1729953886957086472">الألمانية (ألمانيا)</translation>
 <translation id="1730235522912993863">‏الصينية باستخدام لوحة مفاتيح Cangjie</translation>
 <translation id="1731889557567069540">تم نسخ <ph name="NUMBER_OF_ITEMS" /> عنصر.</translation>
@@ -349,11 +352,11 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">لصق</translation>
 <translation id="3952872973865944257">التيلوغوية الصوتية</translation>
-<translation id="3954354850384043518">جارية</translation>
 <translation id="3958548648197196644">كيوي</translation>
 <translation id="3971140002794351170">‏تنزيل الملف الشخصي لشريحة eSIM على الجهاز الجوّال، الشبكة رقم <ph name="NETWORK_INDEX" /> من أصل <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">الإنجليزية (المملكة المتحدة)</translation>
 <translation id="3975895378829046965">البنغالية الصوتية</translation>
+<translation id="3999574733850440202">‏ملفات Microsoft التي تم فتحها مؤخرًا متوفّرة الآن في OneDrive.</translation>
 <translation id="4002066346123236978">العنوان</translation>
 <translation id="4017788180641807848">‏الإنجليزية (الولايات المتحدة) باستخدام لوحة مفاتيح Workman</translation>
 <translation id="4019998208269143058">التثبيت في قائمة "الوصول سريعًا إلى الملفات"</translation>
@@ -362,6 +365,7 @@
 <translation id="4092890906744441904">الأيرلندية</translation>
 <translation id="4124935795427217608">أحادي القرن</translation>
 <translation id="4131235941541910880">يمكنك نقل العناصر التي لا تحتاج إليها إلى "المهملات".</translation>
+<translation id="4134804435730168042">الشبكة <ph name="NETWORK_INDEX" /> من إجمالي الشبكات البالغ عددها <ph name="NETWORK_COUNT" />، شبكة "<ph name="NETWORK_NAME" />" من "<ph name="NETWORK_PROVIDER_NAME" />"، يمكنك تفعيل الشبكة بعد إعداد الجهاز</translation>
 <translation id="4153015322587141338">انقر بزر الماوس الأيمن على ملف واختَر "<ph name="PIN_COMMAND" />" للوصول سريعًا إلى هذا الملف في الرف.</translation>
 <translation id="4157569377477607576">لا تنصح سياسة المشرف بما يلي:</translation>
 <translation id="4159731583141908892">تم نقل <ph name="FILE_NAME" />.</translation>
@@ -404,6 +408,7 @@
 <translation id="4414834425328380570">سيتم حذف "<ph name="FILE_NAME" />" ولن تتمكّن من استعادته.</translation>
 <translation id="4418686080762064601">إنشاء اختصار للملفات</translation>
 <translation id="4425149324548788773">ملفاتي</translation>
+<translation id="4432921877815220091">الشبكة <ph name="NETWORK_INDEX" /> من إجمالي الشبكات البالغ عددها <ph name="NETWORK_COUNT" />، شبكة "<ph name="NETWORK_NAME" />"، يمكنك تفعيل الشبكة بعد إعداد الجهاز، هذه الشبكة يديرها المشرف</translation>
 <translation id="4439427728133035643">اتصال الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، الاتصال</translation>
 <translation id="4442424173763614572">تعذّر البحث في نظام أسماء النطاقات</translation>
 <translation id="4462159676511157176">خوادم أسماء مخصصة</translation>
@@ -611,8 +616,10 @@
 <translation id="5911887972742538906">‏حدث خطأ أثناء تثبيت تطبيق Linux.</translation>
 <translation id="5912396950572065471">التنسيق</translation>
 <translation id="5913638992615760742">تعذَّر إتمام عملية النسخ، خطأ غير متوقِّع: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">تتوفّر ميزات بحث جديدة.</translation>
 <translation id="5926082595146149752">الهولندية (هولندا) باستخدام لوحة مفاتيح الكمبيوتر الشخصي الأمريكية الدولية</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">الشبكة <ph name="NETWORK_INDEX" /> من إجمالي الشبكات البالغ عددها <ph name="NETWORK_COUNT" />، شبكة "<ph name="NETWORK_NAME" />"، يمكنك تفعيل الشبكة بعد إعداد الجهاز</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> من العناصر</translation>
 <translation id="5957366693331451795">‏أجهزة Chromebox</translation>
 <translation id="5982621672636444458">خيارات التصنيف</translation>
@@ -699,6 +706,7 @@
 <translation id="6732801395666424405">لم يتم تحميل الشهادات</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">‏مشاركة المجلد مع الجهاز الافتراضي Bruschetta</translation>
+<translation id="6750737795876287924">الدليل الحالي</translation>
 <translation id="6751256176799620176">تم اختيار مجلد واحد</translation>
 <translation id="6755827872271341378">‏جهاز ChromeOS Flex</translation>
 <translation id="6790428901817661496">التشغيل</translation>
@@ -736,7 +744,6 @@
 <translation id="6973630695168034713">المجلدات</translation>
 <translation id="6976795442547527108">أسد</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">جميع الأوقات</translation>
 <translation id="6989942356279143254">السويدية</translation>
 <translation id="6990081529015358884">لقد نفدت المساحة</translation>
 <translation id="6993826899923627728">هذه العناصر موضوعة في "المهملات"</translation>
@@ -759,6 +766,7 @@
 <translation id="7126604456862387217">‏'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;البحث في Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">الكنادية الصوتية</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">لم يتم العثور على "مطابقة الاسم البديل للموضوع" أو "مطابقة لاحقة النطاق" للتحقّق من هوية خادم المصادقة.</translation>
 <translation id="7165320105431587207">تعذّر إعداد الشبكة</translation>
 <translation id="7170041865419449892">خارج النطاق</translation>
 <translation id="7180611975245234373">إعادة التحميل</translation>
@@ -791,7 +799,6 @@
 <translation id="7458955835361612701">ما مِن صور حديثة.</translation>
 <translation id="7460898608667578234">الأوكرانية</translation>
 <translation id="7469894403370665791">الاتصال بهذه الشبكة تلقائيًا</translation>
-<translation id="7481358317100446445">جاهزة</translation>
 <translation id="7486315294984620427">‏لإفلات ملفات في Parallels Desktop، يجب نسخ الملف إلى مجلد ملفات Windows.</translation>
 <translation id="749452993132003881">هيراغانا</translation>
 <translation id="7495372004724182530">الماليالامية الصوتية</translation>
@@ -829,6 +836,7 @@
 <translation id="7724603315864178912">قص</translation>
 <translation id="7732111077498238432">هناك سياسة تحكم هذه الشبكة</translation>
 <translation id="7736003208887389532">هل تريد حذف هذه الملفات نهائيًا؟</translation>
+<translation id="7740287852186792672">نتائج البحث</translation>
 <translation id="7748626145866214022">‏تتوفر مزيد من الخيارات على شريط الإجراءات. يُرجى الضغط على "Alt + A" لتركيز هذا الشريط.</translation>
 <translation id="7760449188139285140">‏الصينية باستخدام لوحة مفاتيح Wubi</translation>
 <translation id="7765158879357617694">نقل</translation>
@@ -880,6 +888,7 @@
 <translation id="8116072619078571545">ماء مثلج</translation>
 <translation id="8128733386027980860">‏الإنجليزية (المملكة المتحدة) باستخدام لوحة مفاتيح Dvorak</translation>
 <translation id="8137331602592933310">تمت مشاركة "<ph name="FILENAME" />" معك. لا يمكنك حذفه، نظرًا لأنك لا تمتلكه.</translation>
+<translation id="8138705869659070104">يمكنك التفعيل بعد إعداد جهازك</translation>
 <translation id="813913629614996137">تجري التهيئة...</translation>
 <translation id="8147028810663464959">عرض الحرف هو عرض بالكامل</translation>
 <translation id="8151638057146502721">إعداد</translation>
@@ -905,6 +914,7 @@
 <translation id="8300849813060516376">‏تعذّرت OTASP</translation>
 <translation id="8312871300878166382">لصق في مجلد</translation>
 <translation id="8329978297633540474">نص عادي</translation>
+<translation id="8332007959299458842">‏ملفات Microsoft التي تم فتحها مؤخرًا متوفّرة الآن في Google Drive.</translation>
 <translation id="8335587457941836791">إزالة التثبيت من الرف</translation>
 <translation id="8335837413233998004">البيلاروسية</translation>
 <translation id="8336153091935557858">الأمس <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -931,6 +941,7 @@
 <translation id="8487700953926739672">التوفر بلا إنترنت</translation>
 <translation id="8492972329130824181">الشبكة المنزلية غير متوفّرة. وللاتصال بالشبكة، يجب تفعيل ميزة تجوال بيانات الجوَّال.</translation>
 <translation id="8499098729323186194">جارٍ استخراج <ph name="NUMBER_OF_ITEMS" /> عنصر...</translation>
+<translation id="8502913769543567768">الشبكة <ph name="NETWORK_INDEX" /> من إجمالي الشبكات البالغ عددها <ph name="NETWORK_COUNT" />، شبكة "<ph name="NETWORK_NAME" />" من "<ph name="NETWORK_PROVIDER_NAME" />"، يمكنك تفعيل الشبكة بعد إعداد الجهاز، هذه الشبكة يديرها المشرف</translation>
 <translation id="8521441079177373948">المملكة المتحدة</translation>
 <translation id="853494022971700746">الفرنسية (فرنسا)</translation>
 <translation id="8540608333167683902">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، التفاصيل</translation>
@@ -992,6 +1003,7 @@
 <translation id="9046895021617826162">تعذّر الاتصال</translation>
 <translation id="9065512565307033593">‏إذا تعذّر عليك تأكيد رمز PUK، سيتم إيقاف إمكانية الوصول إلى الشبكة.</translation>
 <translation id="908378762078012445">‏الروسية باستخدام لوحة مفاتيح AATSEEL الصوتية</translation>
+<translation id="9086302186042011942">جارٍ المزامنة</translation>
 <translation id="9099674669267916096">عدد الصفحات</translation>
 <translation id="9100610230175265781">عبارة المرور مطلوبة</translation>
 <translation id="9110990317705400362">‏نحن نبحث باستمرار عن طرق من شأنها زيادة أمان تجربة تصفحك. في السابق، كان من الممكن لأي موقع إلكتروني أن يطالبك بتثبيت إضافة في متصفحك. أما في أحدث إصدارات Google Chrome، فيجب أن تبلغ Chrome صراحة أنك تريد تثبيت هذه الإضافات عن طريق إضافتها عبر صفحة الإضافات. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>

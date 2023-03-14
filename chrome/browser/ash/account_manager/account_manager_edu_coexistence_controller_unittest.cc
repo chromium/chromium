@@ -10,6 +10,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/edu_coexistence_tos_store_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -132,19 +133,9 @@ void AccountManagerEducoexistenceControllerTest::UpdateEduCoexistenceToSVersion(
 
 bool AccountManagerEducoexistenceControllerTest::HasInvalidGaiaToken(
     const ::account_manager::Account& account) {
-  base::RunLoop run_loop;
-  bool is_dummy_return = false;
-  account_manager()->HasDummyGaiaToken(
-      account.key, base::BindOnce(
-                       [](const base::RepeatingClosure& run_loop_callback,
-                          bool* out, bool is_invalid) {
-                         *out = is_invalid;
-                         run_loop_callback.Run();
-                       },
-                       run_loop.QuitClosure(), &is_dummy_return));
-  run_loop.Run();
-
-  return is_dummy_return;
+  base::test::TestFuture<bool> future;
+  account_manager()->HasDummyGaiaToken(account.key, future.GetCallback());
+  return future.Get();
 }
 
 TEST_F(AccountManagerEducoexistenceControllerTest,

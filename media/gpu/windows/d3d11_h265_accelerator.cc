@@ -563,29 +563,48 @@ DecoderStatus D3D11H265Accelerator::SubmitSlice(
         pps->pps_scaling_list_data_present_flag ? &pps->scaling_list_data
                                                 : &sps->scaling_list_data;
 
-    for (int i = 0; i < 6; ++i) {
-      iq_matrix_buf.ucScalingListDCCoefSizeID2[i] =
-          scaling_lists->scaling_list_dc_coef_16x16[i];
-      for (int j = 0; j < 16; ++j) {
-        iq_matrix_buf.ucScalingLists0[i][j] =
-            scaling_lists->scaling_list_4x4[i][j];
-      }
+    static_assert(std::is_same<decltype(iq_matrix_buf.ucScalingLists0),
+                               decltype(scaling_lists->scaling_list_4x4)>()
+                      .value);
+    memcpy(iq_matrix_buf.ucScalingLists0, scaling_lists->scaling_list_4x4,
+           sizeof iq_matrix_buf.ucScalingLists0);
 
-      for (int j = 0; j < 64; ++j) {
-        iq_matrix_buf.ucScalingLists1[i][j] =
-            scaling_lists->scaling_list_8x8[i][j];
-        iq_matrix_buf.ucScalingLists2[i][j] =
-            scaling_lists->scaling_list_16x16[i][j];
-      }
-    }
-    for (int i = 0; i < 6; i += 3) {
-      iq_matrix_buf.ucScalingListDCCoefSizeID3[i / 3] =
-          scaling_lists->scaling_list_dc_coef_32x32[i];
-      for (int j = 0; j < 64; ++j) {
-        iq_matrix_buf.ucScalingLists3[i / 3][j] =
-            scaling_lists->scaling_list_32x32[i][j];
-      }
-    }
+    static_assert(std::is_same<decltype(iq_matrix_buf.ucScalingLists1),
+                               decltype(scaling_lists->scaling_list_8x8)>()
+                      .value);
+    memcpy(iq_matrix_buf.ucScalingLists1, scaling_lists->scaling_list_8x8,
+           sizeof iq_matrix_buf.ucScalingLists1);
+
+    static_assert(std::is_same<decltype(iq_matrix_buf.ucScalingLists2),
+                               decltype(scaling_lists->scaling_list_16x16)>()
+                      .value);
+    memcpy(iq_matrix_buf.ucScalingLists2, scaling_lists->scaling_list_16x16,
+           sizeof iq_matrix_buf.ucScalingLists2);
+
+    static_assert(
+        std::is_same<
+            std::remove_reference_t<decltype(iq_matrix_buf.ucScalingLists3[0])>,
+            std::remove_const_t<std::remove_reference_t<
+                decltype(scaling_lists->scaling_list_32x32[0])>>>()
+            .value);
+    memcpy(iq_matrix_buf.ucScalingLists3[0],
+           scaling_lists->scaling_list_32x32[0],
+           sizeof(iq_matrix_buf.ucScalingLists3[0]));
+    memcpy(iq_matrix_buf.ucScalingLists3[1],
+           scaling_lists->scaling_list_32x32[3],
+           sizeof(iq_matrix_buf.ucScalingLists3[1]));
+
+    static_assert(
+        std::is_same<decltype(iq_matrix_buf.ucScalingListDCCoefSizeID2),
+                     decltype(scaling_lists->scaling_list_dc_coef_16x16)>()
+            .value);
+    memcpy(iq_matrix_buf.ucScalingListDCCoefSizeID2,
+           scaling_lists->scaling_list_dc_coef_16x16,
+           sizeof(iq_matrix_buf.ucScalingListDCCoefSizeID2));
+    iq_matrix_buf.ucScalingListDCCoefSizeID3[0] =
+        scaling_lists->scaling_list_dc_coef_32x32[0];
+    iq_matrix_buf.ucScalingListDCCoefSizeID3[1] =
+        scaling_lists->scaling_list_dc_coef_32x32[3];
 
     hr = video_context_->GetDecoderBuffer(
         video_decoder_.Get(),

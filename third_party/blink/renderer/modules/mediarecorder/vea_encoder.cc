@@ -10,8 +10,8 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
+#include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_util.h"
@@ -246,7 +246,7 @@ void VEAEncoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
         video_frame->stride(media::VideoFrame::kVPlane),
         input_visible_size_.width(), input_visible_size_.height());
     video_frame->BackWithSharedMemory(&input_buffer->region);
-    video_frame->AddDestructionObserver(media::BindToCurrentLoop(
+    video_frame->AddDestructionObserver(base::BindPostTaskToCurrentDefault(
         WTF::BindOnce(&VEAEncoder::FrameFinished, weak_factory_.GetWeakPtr(),
                       std::move(input_buffer))));
   }

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/platform_auth/platform_auth_provider_manager.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -55,7 +56,8 @@ class PlatformAuthProviderManagerTest : public ::testing::Test {
   std::unique_ptr<::testing::StrictMock<MockPlatformAuthProvider>>
       owned_provider_{
           std::make_unique<::testing::StrictMock<MockPlatformAuthProvider>>()};
-  ::testing::StrictMock<MockPlatformAuthProvider>* mock_provider_ = nullptr;
+  raw_ptr<::testing::StrictMock<MockPlatformAuthProvider>> mock_provider_ =
+      nullptr;
   base::test::TaskEnvironment task_environment_;
 };
 

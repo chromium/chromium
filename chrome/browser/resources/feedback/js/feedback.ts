@@ -37,7 +37,7 @@ let feedbackInfo: chrome.feedbackPrivate.FeedbackInfo = {
 
 
 class FeedbackHelper {
-  getSystemInformation(): Promise<chrome.feedbackPrivate.SystemInformation[]> {
+  getSystemInformation(): Promise<chrome.feedbackPrivate.LogsMapEntry[]> {
     return new Promise(
         resolve => chrome.feedbackPrivate.getSystemInformation(resolve));
   }
@@ -101,7 +101,7 @@ class FeedbackHelper {
   }
 
   showAutofillMetadataInfo() {
-    chrome.send('showAutofillMetadataInfo');
+    chrome.send('showAutofillMetadataInfo', [feedbackInfo.autofillMetadata]);
   }
 }
 
@@ -154,6 +154,19 @@ const cellularRegEx: RegExp = buildWordMatcher([
   'SIM',  'eSIM',  'mmWave',  'mobile',   'APN',      'IMEI',
   'IMSI', 'eUICC', 'carrier', 'T.Mobile', 'TMO',      'Verizon',
   'VZW',  'AT&T',  'MVNO',    'pin.lock', 'cellular',
+]);
+
+/**
+ * Regular expression to check for display-related keywords.
+ */
+const displayRegEx = buildWordMatcher([
+  'display',
+  'displayport',
+  'dock',
+  'hdmi',
+  'monitor',
+  'panel',
+  'screen',
 ]);
 
 /**
@@ -324,6 +337,10 @@ function checkForShowQuestionnaire(inputEvent: Event) {
 
   if (cellularRegEx.test(matchedText)) {
     toAppend.push(...domainQuestions['cellular']);
+  }
+
+  if (displayRegEx.test(matchedText)) {
+    toAppend.push(...domainQuestions['display']);
   }
 
   if (toAppend.length === 0) {

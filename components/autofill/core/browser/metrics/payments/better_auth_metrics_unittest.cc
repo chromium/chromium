@@ -20,7 +20,7 @@ namespace autofill::autofill_metrics {
 // -- bool include_full_server_credit_card;
 // -- bool is_user_opted_in_to_fido;
 // -- bool is_unmask_details_request_in_progress;
-class BetterAuthMetricsTest : public metrics::AutofillMetricsBaseTest,
+class BetterAuthMetricsTest : public AutofillMetricsBaseTest,
                               public testing::Test,
                               public testing::WithParamInterface<
                                   std::tuple<bool, bool, bool, bool, bool>> {
@@ -33,8 +33,6 @@ class BetterAuthMetricsTest : public metrics::AutofillMetricsBaseTest,
   void TearDown() override { TearDownHelper(); }
 
   FormData SetUpCreditCardUnmaskingPreflightCallTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAutofillCreditCardAuthentication);
     auto* access_manager = autofill_manager().GetCreditCardAccessManager();
     access_manager->SetUnmaskDetailsRequestInProgressForTesting(
         IsUnmaskDetailsRequestInProgress());
@@ -70,9 +68,6 @@ class BetterAuthMetricsTest : public metrics::AutofillMetricsBaseTest,
       "Autofill.BetterAuth.CardUnmaskPreflightDuration";
   const std::string kPreflightFlowInitiatedMetrics =
       "Autofill.BetterAuth.CardUnmaskPreflightInitiated";
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test that we log preflight calls for credit card unmasking when the user is

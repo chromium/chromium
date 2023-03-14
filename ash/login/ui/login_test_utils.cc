@@ -40,8 +40,8 @@ const char* AuthTargetToString(AuthTarget target) {
   return "";
 }
 
-LockContentsView::TestApi MakeLockContentsViewTestApi(LockContentsView* view) {
-  return LockContentsView::TestApi(view);
+LockContentsViewTestApi MakeLockContentsViewTestApi(LockContentsView* view) {
+  return LockContentsViewTestApi(view);
 }
 
 LoginAuthUserView::TestApi MakeLoginAuthTestApi(LockContentsView* view,

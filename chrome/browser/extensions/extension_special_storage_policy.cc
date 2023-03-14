@@ -24,6 +24,7 @@
 #include "base/thread_annotations.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -35,7 +36,6 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
-#include "extensions/common/manifest_handlers/app_isolation_info.h"
 #include "extensions/common/manifest_handlers/content_capabilities_handler.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "url/gurl.h"
@@ -229,7 +229,7 @@ void ExtensionSpecialStoragePolicy::GrantRightsForExtension(
           APIPermissionID::kUnlimitedStorage) ||
       extension->permissions_data()->HasAPIPermission(
           APIPermissionID::kFileBrowserHandler) ||
-      extensions::AppIsolationInfo::HasIsolatedStorage(extension) ||
+      extensions::util::LegacyHasIsolatedStorage(extension) ||
       extension->is_app()) {
     if (NeedsProtection(extension) && protected_apps_.Add(extension)) {
       change_flags |= SpecialStoragePolicy::STORAGE_PROTECTED;
@@ -246,7 +246,7 @@ void ExtensionSpecialStoragePolicy::GrantRightsForExtension(
       file_handler_extensions_.Add(extension);
     }
 
-    if (extensions::AppIsolationInfo::HasIsolatedStorage(extension)) {
+    if (extensions::util::LegacyHasIsolatedStorage(extension)) {
       isolated_extensions_.Add(extension);
     }
   }
@@ -274,7 +274,7 @@ void ExtensionSpecialStoragePolicy::RevokeRightsForExtension(
           APIPermissionID::kUnlimitedStorage) ||
       extension->permissions_data()->HasAPIPermission(
           APIPermissionID::kFileBrowserHandler) ||
-      extensions::AppIsolationInfo::HasIsolatedStorage(extension) ||
+      extensions::util::LegacyHasIsolatedStorage(extension) ||
       extension->is_app()) {
     if (NeedsProtection(extension) && protected_apps_.Remove(extension)) {
       change_flags |= SpecialStoragePolicy::STORAGE_PROTECTED;
@@ -291,7 +291,7 @@ void ExtensionSpecialStoragePolicy::RevokeRightsForExtension(
       file_handler_extensions_.Remove(extension);
     }
 
-    if (extensions::AppIsolationInfo::HasIsolatedStorage(extension)) {
+    if (extensions::util::LegacyHasIsolatedStorage(extension)) {
       isolated_extensions_.Remove(extension);
     }
   }
@@ -365,7 +365,7 @@ ExtensionSpecialStoragePolicy::SpecialCollection::~SpecialCollection() {}
 
 bool ExtensionSpecialStoragePolicy::SpecialCollection::Contains(
     const GURL& origin) {
-  return !ExtensionsContaining(origin)->is_empty();
+  return !ExtensionsContaining(origin)->empty();
 }
 
 bool ExtensionSpecialStoragePolicy::SpecialCollection::GrantsCapabilitiesTo(

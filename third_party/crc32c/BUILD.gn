@@ -4,7 +4,6 @@
 
 import("//build/config/features.gni")
 import("//testing/test.gni")
-import("//third_party/google_benchmark/buildconfig.gni")
 
 # Only applied to CRC32C source and tests. (not exported)
 config("crc32c_config") {
@@ -168,16 +167,14 @@ test("crc32c_tests") {
   ]
 }
 
-if (enable_google_benchmarks) {
-  test("crc32c_benchmark") {
-    sources = [ "src/src/crc32c_benchmark.cc" ]
-    configs += [ ":crc32c_config" ]
-    deps = [
-      ":crc32c",
-      ":crc32c_arm64",
-      ":crc32c_internal_headers",
-      ":crc32c_sse42",
-      "//third_party/google_benchmark",
-    ]
-  }
+test("crc32c_benchmark") {
+  sources = [ "src/src/crc32c_benchmark.cc" ]
+  configs += [ ":crc32c_config" ]
+  deps = [
+    ":crc32c",
+    ":crc32c_arm64",
+    ":crc32c_internal_headers",
+    ":crc32c_sse42",
+    "//third_party/google_benchmark",
+  ]
 }

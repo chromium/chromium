@@ -178,7 +178,7 @@ constexpr int kChromeMessagePumpIndices[] = {1, 2, -1};
 constexpr MessageInfo kChromeMessagePump = {kChromeMessagePumpIndices, nullptr};
 
 // Proto Message: ChromeMojoEventInfo
-constexpr int kChromeMojoEventInfoIndices[] = {1, 2, 3, 4, 6, 7, -1};
+constexpr int kChromeMojoEventInfoIndices[] = {1, 2, 3, 4, 5, 6, 7, -1};
 constexpr MessageInfo kChromeMojoEventInfo = {kChromeMojoEventInfoIndices,
                                               nullptr};
 
@@ -264,7 +264,7 @@ constexpr MessageInfo kRenderProcessHost = {kRenderProcessHostIndices,
                                             kRenderProcessHostComplexMessages};
 
 // Proto Message: RenderProcessHostCleanup
-constexpr int kRenderProcessHostCleanupIndices[] = {1, 2, 3, 4, -1};
+constexpr int kRenderProcessHostCleanupIndices[] = {1, 2, 3, 4, 5, -1};
 constexpr MessageInfo kRenderProcessHostCleanup = {
     kRenderProcessHostCleanupIndices, nullptr};
 
@@ -387,14 +387,25 @@ constexpr MessageInfo kAndroidToolbar = {kAndroidToolbarIndices, nullptr};
 constexpr int kActiveProcessesIndices[] = {1, -1};
 constexpr MessageInfo kActiveProcesses = {kActiveProcessesIndices, nullptr};
 
+// Proto Message: TabSwitchMeasurement
+constexpr int kTabSwitchMeasurementIndices[] = {1, 2, 3, -1};
+constexpr MessageInfo kTabSwitchMeasurement = {kTabSwitchMeasurementIndices,
+                                               nullptr};
+
+// Proto Message: ScrollDeltas
+constexpr int kScrollDeltasIndices[] = {1, 2,  3,  4,  5,  6,  7, 8,
+                                        9, 10, 11, 12, 13, 14, -1};
+constexpr MessageInfo kScrollDeltas = {kScrollDeltasIndices, nullptr};
+
 // Proto Message: TrackEvent
 constexpr int kTrackEventIndices[] = {
-    1,    2,    3,    5,    6,    9,    10,   11,   12,   16,   17,   22,
-    23,   24,   25,   26,   27,   28,   29,   30,   31,   32,   33,   34,
-    35,   36,   38,   39,   40,   41,   42,   43,   47,   48,   1001, 1002,
-    1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010, 1011, 1012, 1013, 1014,
-    1015, 1016, 1017, 1018, 1019, 1020, 1021, 1022, 1023, 1024, 1025, 1028,
-    1031, 1032, 1033, 1034, 1036, 1038, 1039, 1040, 1041, 1042, -1};
+    1,    2,    3,    5,    6,    9,    10,   11,   12,   16,   17,
+    22,   23,   24,   25,   26,   27,   28,   29,   30,   31,   32,
+    33,   34,   35,   36,   38,   39,   40,   41,   42,   43,   47,
+    48,   1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010,
+    1011, 1012, 1013, 1014, 1015, 1016, 1017, 1018, 1019, 1020, 1021,
+    1022, 1023, 1024, 1025, 1028, 1031, 1032, 1033, 1034, 1036, 1038,
+    1039, 1040, 1041, 1042, 1046, 1047, -1};
 constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     nullptr,
     nullptr,
@@ -465,7 +476,9 @@ constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     &kChromeSqlDiagnostics,
     &kSequenceManagerTask,
     &kAndroidToolbar,
-    &kActiveProcesses};
+    &kActiveProcesses,
+    &kTabSwitchMeasurement,
+    &kScrollDeltas};
 constexpr MessageInfo kTrackEvent = {kTrackEventIndices,
                                      kTrackEventComplexMessages};
 

@@ -59,6 +59,10 @@
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/notreached.h"
+#endif
+
 namespace {
 // Whether we are warning about a dangerous/malicious download.
 bool is_download_warning(download::DownloadItemMode mode) {
@@ -70,6 +74,10 @@ ui::ImageModel GetDefaultIcon() {
   return ui::ImageModel::FromVectorIcon(
       vector_icons::kInsertDriveFileOutlineIcon, ui::kColorIcon,
       GetLayoutConstant(DOWNLOAD_ICON_SIZE));
+}
+
+gfx::Image GetDefaultIconImage(const ui::ColorProvider* color_provider) {
+  return gfx::Image(GetDefaultIcon().Rasterize(color_provider));
 }
 
 constexpr int kDownloadButtonHeight = 24;
@@ -167,7 +175,7 @@ void DownloadBubbleRowView::UpdateRow(bool initial_setup) {
   bool ui_info_changed = UpdateBubbleUIInfo(initial_setup);
   if (ui_info_changed) {
     RecordMetricsOnUpdate();
-    LoadIcon();
+    SetIcon();
     UpdateButtons();
   }
   RecordDownloadDisplayed();
@@ -183,7 +191,7 @@ void DownloadBubbleRowView::AddedToWidget() {
   const display::Screen* const screen = display::Screen::GetScreen();
   current_scale_ = screen->GetDisplayNearestView(GetWidget()->GetNativeView())
                        .device_scale_factor();
-  LoadIcon();
+  SetIcon();
   auto* focus_manager = GetFocusManager();
   if (focus_manager) {
     focus_manager->AddFocusChangeListener(this);
@@ -199,100 +207,120 @@ void DownloadBubbleRowView::RemovedFromWidget() {
   }
 }
 
-void DownloadBubbleRowView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  secondary_label_->SetEnabledColor(
-      GetColorProvider()->GetColor(ui_info_.secondary_color));
-}
-
 void DownloadBubbleRowView::OnDeviceScaleFactorChanged(
     float old_device_scale_factor,
     float new_device_scale_factor) {
   current_scale_ = new_device_scale_factor;
-  LoadIcon();
+  SetIcon();
 }
 
-void DownloadBubbleRowView::SetIconFromImageModel(bool use_over_last_override,
-                                                  base::Time load_start_time,
-                                                  const ui::ImageModel& icon) {
-  if (last_overriden_icon_ && !use_over_last_override)
-    return;
+void DownloadBubbleRowView::SetIconFromImageModel(const ui::ImageModel& icon) {
   if (icon.IsEmpty()) {
     icon_->SetImage(GetDefaultIcon());
   } else {
     icon_->SetImage(icon);
   }
-  base::UmaHistogramTimes("Download.Bubble.LoadAndSetIconLatency",
-                          base::Time::Now() - load_start_time);
 }
 
-void DownloadBubbleRowView::SetIconFromImage(bool use_over_last_override,
-                                             base::Time load_start_time,
-                                             gfx::Image icon) {
-  SetIconFromImageModel(use_over_last_override, load_start_time,
-                        ui::ImageModel::FromImage(icon));
+void DownloadBubbleRowView::SetIconFromImage(gfx::Image icon) {
+  SetIconFromImageModel(ui::ImageModel::FromImage(icon));
 }
 
-void DownloadBubbleRowView::LoadIcon() {
-  // The correct scale_factor is set only in the AddedToWidget()
-  if (!GetWidget())
-    return;
-
-  base::Time load_start_time = base::Time::Now();
-
-  if (ui_info_.icon_model_override) {
-    if (last_overriden_icon_ == ui_info_.icon_model_override)
-      return;
-    last_overriden_icon_ = ui_info_.icon_model_override;
-    SetIconFromImageModel(
-        /*use_over_last_override=*/true, load_start_time,
-        ui::ImageModel::FromVectorIcon(*ui_info_.icon_model_override,
-                                       ui_info_.secondary_color,
-                                       GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
-    return;
-  }
-
-  if (bubble_controller_->ShouldShowIncognitoIcon(model_.get())) {
-    if (last_overriden_icon_ == &kIncognitoIcon)
-      return;
-    last_overriden_icon_ = &kIncognitoIcon;
-    SetIconFromImageModel(
-        /*use_over_last_override=*/true, load_start_time,
-        ui::ImageModel::FromVectorIcon(kIncognitoIcon, ui::kColorIcon,
-                                       GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
-    return;
-  }
-
-  last_overriden_icon_ = nullptr;
-
+bool DownloadBubbleRowView::StartLoadFileIcon() {
   base::FilePath file_path = model_->GetTargetFilePath();
   // Use a default icon (drive file outline icon) in case we have an empty
   // target path, which is empty for non download offline items, and newly
   // started in-progress downloads.
   if (file_path.empty()) {
-    if (already_set_default_icon_)
-      return;
-    already_set_default_icon_ = true;
-    SetIconFromImageModel(/*use_over_last_override=*/true, load_start_time,
-                          GetDefaultIcon());
+    file_icon_ = GetDefaultIconImage(GetColorProvider());
+    SetFileIconAsIcon(/*is_default_icon=*/true);
+    return true;
+  }
+  IconManager* const im = g_browser_process->icon_manager();
+  // TODO(crbug.com/1399565): IconLoader::SMALL currently corresponds to the
+  // correct size (DOWNLOAD_ICON_SIZE == 16x16), but we want to change the icon
+  // size soon, so the fetched icon will need to be resized.
+  const gfx::Image* const image =
+      im->LookupIconFromFilepath(file_path, IconLoader::SMALL, current_scale_);
+  if (image && !image->IsEmpty()) {
+    file_icon_ = *image;
+    SetFileIconAsIcon(/*is_default_icon=*/false);
+    return true;
+  }
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS the LookupIconFromFilepath() call should always succeed.
+  NOTREACHED_NORETURN();
+#else
+  im->LoadIcon(file_path, IconLoader::SMALL, current_scale_,
+               base::BindOnce(&DownloadBubbleRowView::OnFileIconLoaded,
+                              weak_factory_.GetWeakPtr()),
+               &cancelable_task_tracker_);
+  return false;
+#endif
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+void DownloadBubbleRowView::OnFileIconLoaded(gfx::Image icon) {
+  file_icon_ = icon.IsEmpty() ? GetDefaultIconImage(GetColorProvider()) : icon;
+  // Don't overwrite an override icon from the most recent invocation of
+  // SetIcon.
+  if (last_overridden_icon_) {
+    return;
+  }
+  SetFileIconAsIcon(/*is_default_icon=*/icon.IsEmpty());
+}
+#endif
+
+void DownloadBubbleRowView::SetFileIconAsIcon(bool is_default_icon) {
+  DCHECK(!file_icon_.IsEmpty());
+  has_default_icon_ = is_default_icon;
+  SetIconFromImage(file_icon_);
+}
+
+void DownloadBubbleRowView::SetIcon() {
+  // The correct scale_factor is set only in the AddedToWidget()
+  if (!GetWidget()) {
     return;
   }
 
-  IconManager* const im = g_browser_process->icon_manager();
-  const gfx::Image* const file_icon_image =
-      im->LookupIconFromFilepath(file_path, IconLoader::SMALL, current_scale_);
+  // Load the file icon unconditionally because it is used for drag-and-drop,
+  // even if it is not used as the |icon_|. If this returns true, it set the
+  // |icon_| to a |file_icon_|, which may be a filetype icon or a default icon.
+  // But if there is an override, it will be re-set below.
+  bool file_type_icon_set = StartLoadFileIcon();
 
-  if (file_icon_image) {
-    SetIconFromImage(/*use_over_last_override=*/true, load_start_time,
-                     *file_icon_image);
-  } else {
-    im->LoadIcon(
-        file_path, IconLoader::SMALL, current_scale_,
-        base::BindOnce(&DownloadBubbleRowView::SetIconFromImage,
-                       weak_factory_.GetWeakPtr(),
-                       /*use_over_last_override=*/false, load_start_time),
-        &cancelable_task_tracker_);
+  if (ui_info_.icon_model_override) {
+    if (last_overridden_icon_ == ui_info_.icon_model_override) {
+      return;
+    }
+    last_overridden_icon_ = ui_info_.icon_model_override;
+    has_default_icon_ = false;
+    SetIconFromImageModel(ui::ImageModel::FromVectorIcon(
+        *ui_info_.icon_model_override, ui_info_.secondary_color,
+        GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
+    return;
   }
+
+  if (bubble_controller_->ShouldShowIncognitoIcon(model_.get())) {
+    if (last_overridden_icon_ == &kIncognitoIcon) {
+      return;
+    }
+    last_overridden_icon_ = &kIncognitoIcon;
+    has_default_icon_ = false;
+    SetIconFromImageModel(ui::ImageModel::FromVectorIcon(
+        kIncognitoIcon, ui::kColorIcon, GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
+    return;
+  }
+
+  last_overridden_icon_ = nullptr;
+
+  if (file_type_icon_set || has_default_icon_) {
+    return;
+  }
+  has_default_icon_ = true;
+  // Set the default icon. This may be overwritten with the filetype icon when
+  // the IconManager returns a real filetype icon from its lookup.
+  SetIconFromImageModel(GetDefaultIcon());
 }
 
 DownloadBubbleRowView::~DownloadBubbleRowView() {
@@ -518,11 +546,14 @@ bool DownloadBubbleRowView::OnMouseDragged(const ui::MouseEvent& event) {
     dragging_ = ExceededDragThreshold(event.location() - *drag_start_point_);
   } else if ((model_->GetState() == download::DownloadItem::COMPLETE) &&
              model_->GetDownloadItem()) {
-    const gfx::Image* const file_icon =
-        g_browser_process->icon_manager()->LookupIconFromFilepath(
-            model_->GetTargetFilePath(), IconLoader::SMALL, current_scale_);
     const views::Widget* const widget = GetWidget();
-    DragDownloadItem(model_->GetDownloadItem(), file_icon,
+    // In most cases we should either have a |file_icon_| already synchronously
+    // or the asynchronous lookup should have finished, but in case it hasn't,
+    // ensure that we have a nonempty icon to drag.
+    if (file_icon_.IsEmpty()) {
+      file_icon_ = GetDefaultIconImage(GetColorProvider());
+    }
+    DragDownloadItem(model_->GetDownloadItem(), &file_icon_,
                      widget ? widget->GetNativeView() : nullptr);
     RecordDownloadBubbleDragInfo(DownloadDragInfo::DRAG_STARTED);
   }
@@ -611,6 +642,7 @@ void DownloadBubbleRowView::Layout() {
 }
 
 void DownloadBubbleRowView::OnMainButtonPressed() {
+  bubble_controller_->RecordDownloadBubbleInteraction();
   if (ui_info_.has_subpage) {
     DownloadItemWarningData::AddWarningActionEvent(
         model_->GetDownloadItem(),
@@ -698,8 +730,7 @@ void DownloadBubbleRowView::UpdateLabels() {
   }
 
   if (GetWidget()) {
-    secondary_label_->SetEnabledColor(
-        GetColorProvider()->GetColor(ui_info_.secondary_color));
+    secondary_label_->SetEnabledColorId(ui_info_.GetColorForSecondaryText());
   }
 }
 
@@ -842,8 +873,7 @@ std::u16string DownloadBubbleRowView::GetAccessibleNameForQuickAction(
           IDS_DOWNLOAD_BUBBLE_SHOW_IN_FOLDER_QUICK_ACTION_ACCESSIBILITY,
           model_->GetFileNameToReportUser().LossyDisplayName());
     default:
-      NOTREACHED();
-      return u"";
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -907,8 +937,7 @@ std::u16string DownloadBubbleRowView::GetAccessibleNameForMainPageButton(
           IDS_DOWNLOAD_BUBBLE_RETRY_MAIN_BUTTON_ACCESSIBILITY,
           model_->GetFileNameToReportUser().LossyDisplayName());
     default:
-      NOTREACHED();
-      return u"";
+      NOTREACHED_NORETURN();
   }
 }
 

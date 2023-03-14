@@ -64,16 +64,12 @@ class FilesystemProxyTest : public testing::TestWithParam<bool> {
     CHECK(base::CreateDirectory(root.Append(kDir1)));
     CHECK(base::CreateDirectory(root.Append(kDir1).Append(kDir1Dir1)));
     CHECK(base::CreateDirectory(root.Append(kDir2)));
-    CHECK(base::WriteFile(root.Append(kFile1), kFile1Contents,
-                          std::size(kFile1Contents) - 1));
-    CHECK(base::WriteFile(root.Append(kFile2), kFile2Contents,
-                          std::size(kFile2Contents) - 1));
+    CHECK(base::WriteFile(root.Append(kFile1), kFile1Contents));
+    CHECK(base::WriteFile(root.Append(kFile2), kFile2Contents));
     CHECK(base::WriteFile(root.Append(kDir1).Append(kDir1File1),
-                          kDir1File1Contents,
-                          std::size(kDir1File1Contents) - 1));
+                          kDir1File1Contents));
     CHECK(base::WriteFile(root.Append(kDir1).Append(kDir1File2),
-                          kDir1File2Contents,
-                          std::size(kDir1File2Contents) - 1));
+                          kDir1File2Contents));
 
     if (UseRestrictedFilesystem()) {
       // Run a remote FilesystemImpl on a background thread to exercise

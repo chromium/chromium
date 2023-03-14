@@ -6,6 +6,7 @@
 
 #include <iterator>
 #include <string>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -31,23 +32,6 @@
 namespace updater {
 namespace {
 
-// Opens the registry ClientState subkey for the `app_id`.
-absl::optional<base::win::RegKey> ClientStateAppKeyOpen(
-    UpdaterScope updater_scope,
-    const std::string& app_id,
-    REGSAM regsam) {
-  std::wstring subkey;
-  if (!base::UTF8ToWide(app_id.c_str(), app_id.size(), &subkey)) {
-    return absl::nullopt;
-  }
-  base::win::RegKey key(UpdaterScopeToHKeyRoot(updater_scope), CLIENT_STATE_KEY,
-                        Wow6432(regsam));
-  if (key.OpenKey(subkey.c_str(), Wow6432(regsam)) != ERROR_SUCCESS) {
-    return absl::nullopt;
-  }
-  return key;
-}
-
 // Creates or opens the registry ClientState subkey for the `app_id`. `regsam`
 // must contain the KEY_WRITE access right for the creation of the subkey to
 // succeed.
@@ -67,11 +51,74 @@ absl::optional<base::win::RegKey> ClientStateAppKeyCreate(
   return key;
 }
 
+bool RegRenameValue(base::win::RegKey& key,
+                    const std::wstring& old_value_name,
+                    const std::wstring& new_value_name) {
+  DWORD size = 0;
+  if (key.ReadValue(old_value_name.c_str(), nullptr, &size, nullptr) !=
+      ERROR_SUCCESS) {
+    return false;
+  }
+
+  std::vector<char> raw_value(size);
+  DWORD dtype = 0;
+  if (key.ReadValue(old_value_name.c_str(), raw_value.data(), &size, &dtype) !=
+      ERROR_SUCCESS) {
+    return false;
+  }
+
+  if (key.WriteValue(new_value_name.c_str(), raw_value.data(), size, dtype) !=
+      ERROR_SUCCESS) {
+    PLOG(WARNING) << "could not write: " << new_value_name;
+    return false;
+  }
+
+  PLOG_IF(WARNING, key.DeleteValue(old_value_name.c_str()) != ERROR_SUCCESS);
+  return true;
+}
+
+void PersistLastInstallerResultValues(UpdaterScope updater_scope,
+                                      const std::string& app_id) {
+  absl::optional<base::win::RegKey> key =
+      ClientStateAppKeyOpen(updater_scope, app_id, KEY_READ | KEY_WRITE);
+  if (!key) {
+    return;
+  }
+
+  // Rename InstallerResultXXX values to LastXXX.
+  RegRenameValue(key.value(), kRegValueInstallerResult,
+                 kRegValueLastInstallerResult);
+  RegRenameValue(key.value(), kRegValueInstallerError,
+                 kRegValueLastInstallerError);
+  RegRenameValue(key.value(), kRegValueInstallerExtraCode1,
+                 kRegValueLastInstallerExtraCode1);
+  RegRenameValue(key.value(), kRegValueInstallerResultUIString,
+                 kRegValueLastInstallerResultUIString);
+  RegRenameValue(key.value(), kRegValueInstallerSuccessLaunchCmdLine,
+                 kRegValueLastInstallerSuccessLaunchCmdLine);
+}
+
 }  // namespace
 
 InstallerOutcome::InstallerOutcome() = default;
 InstallerOutcome::InstallerOutcome(const InstallerOutcome&) = default;
 InstallerOutcome::~InstallerOutcome() = default;
+
+absl::optional<base::win::RegKey> ClientStateAppKeyOpen(
+    UpdaterScope updater_scope,
+    const std::string& app_id,
+    REGSAM regsam) {
+  std::wstring subkey;
+  if (!base::UTF8ToWide(app_id.c_str(), app_id.size(), &subkey)) {
+    return absl::nullopt;
+  }
+  base::win::RegKey key(UpdaterScopeToHKeyRoot(updater_scope), CLIENT_STATE_KEY,
+                        Wow6432(regsam));
+  if (key.OpenKey(subkey.c_str(), Wow6432(regsam)) != ERROR_SUCCESS) {
+    return absl::nullopt;
+  }
+  return key;
+}
 
 bool ClientStateAppKeyDelete(UpdaterScope updater_scope,
                              const std::string& app_id) {
@@ -174,6 +221,8 @@ absl::optional<InstallerOutcome> GetInstallerOutcome(
       }
     }
   }
+
+  PersistLastInstallerResultValues(updater_scope, app_id);
 
   return installer_outcome;
 }

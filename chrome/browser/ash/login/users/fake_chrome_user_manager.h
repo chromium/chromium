@@ -42,7 +42,8 @@ class FakeChromeUserManager : public ChromeUserManager {
   user_manager::User* AddKioskAppUser(const AccountId& account_id);
   user_manager::User* AddArcKioskAppUser(const AccountId& account_id);
   user_manager::User* AddWebKioskAppUser(const AccountId& account_id);
-  user_manager::User* AddPublicAccountUser(const AccountId& account_id);
+  user_manager::User* AddPublicAccountUser(const AccountId& account_id,
+                                           bool with_saml = false);
   user_manager::User* AddActiveDirectoryUser(const AccountId& account_id);
 
   // Calculates the user name hash and calls UserLoggedIn to login a user.
@@ -112,8 +113,6 @@ class FakeChromeUserManager : public ChromeUserManager {
                             const std::string& display_email) override;
   void SaveUserType(const user_manager::User* user) override;
   absl::optional<std::string> GetOwnerEmail() override;
-  void UpdateUserAccountData(const AccountId& account_id,
-                             const UserAccountData& account_data) override;
   bool IsCurrentUserOwner() const override;
   bool IsCurrentUserNew() const override;
   bool IsCurrentUserCryptohomeDataEphemeral() const override;

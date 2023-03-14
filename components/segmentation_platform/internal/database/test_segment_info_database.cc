@@ -79,6 +79,38 @@ void TestSegmentInfoDatabase::SaveSegmentResult(
   std::move(callback).Run(true);
 }
 
+void TestSegmentInfoDatabase::SaveTrainingData(SegmentId segment_id,
+                                               const proto::TrainingData& data,
+                                               SuccessCallback callback) {
+  proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
+  info->add_training_data()->CopyFrom(data);
+  std::move(callback).Run(true);
+}
+
+void TestSegmentInfoDatabase::GetTrainingData(SegmentId segment_id,
+                                              TrainingRequestId request_id,
+                                              bool delete_from_db,
+                                              TrainingDataCallback callback) {
+  auto segment_info =
+      base::ranges::find(segment_infos_, segment_id,
+                         &std::pair<SegmentId, proto::SegmentInfo>::first);
+
+  absl::optional<proto::TrainingData> result;
+  if (segment_info != segment_infos_.end()) {
+    for (int i = 0; i < segment_info->second.training_data_size(); i++) {
+      if (segment_info->second.training_data(i).request_id() ==
+          request_id.GetUnsafeValue()) {
+        result = segment_info->second.training_data(i);
+        if (delete_from_db) {
+          segment_info->second.mutable_training_data()->DeleteSubrange(i, 1);
+        }
+        break;
+      }
+    }
+  }
+  std::move(callback).Run(result);
+}
+
 void TestSegmentInfoDatabase::AddUserActionFeature(
     SegmentId segment_id,
     const std::string& name,

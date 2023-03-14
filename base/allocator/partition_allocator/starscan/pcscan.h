@@ -16,14 +16,15 @@
 #include "base/allocator/partition_allocator/partition_page.h"
 #include "base/allocator/partition_allocator/starscan/pcscan_scheduling.h"
 #include "base/allocator/partition_allocator/tagging.h"
+
 namespace partition_alloc {
 
 class StatsReporter;
 
 namespace internal {
 
-[[noreturn]] PA_COMPONENT_EXPORT(PARTITION_ALLOC) PA_NOINLINE PA_NOT_TAIL_CALLED
-    void DoubleFreeAttempt();
+[[noreturn]] PA_NOINLINE PA_NOT_TAIL_CALLED
+    PA_COMPONENT_EXPORT(PARTITION_ALLOC) void DoubleFreeAttempt();
 
 // PCScan (Probabilistic Conservative Scanning) is the algorithm that eliminates
 // use-after-free bugs by verifying that there are no pointers in memory which
@@ -108,10 +109,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PCScan final {
   static void PerformDelayedScan(int64_t delay_in_microseconds);
 
   // Enables safepoints in mutator threads.
-  static void EnableSafepoints();
+  PA_ALWAYS_INLINE static void EnableSafepoints();
   // Join scan from safepoint in mutator thread. As soon as PCScan is scheduled,
   // mutators can join PCScan helping out with clearing and scanning.
-  static void JoinScanIfNeeded();
+  PA_ALWAYS_INLINE static void JoinScanIfNeeded();
 
   // Checks if there is a PCScan task currently in progress.
   PA_ALWAYS_INLINE static bool IsInProgress();
@@ -135,7 +136,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PCScan final {
 
   static void UninitForTesting();
 
-  inline static PCScanScheduler& scheduler();
+  static inline PCScanScheduler& scheduler();
 
   // Registers reporting class.
   static void RegisterStatsReporter(partition_alloc::StatsReporter* reporter);

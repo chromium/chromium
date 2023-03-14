@@ -1,46 +1,15 @@
 # Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/typescript/ts_library.gni")
+
+import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash, "Hotspot is Chrome OS only.")
 
-preprocessed_dir = "preprocessed"
-
-ts_files = [
-  "cros_hotspot_config.ts",
-  "fake_hotspot_config.ts",
-]
-
-preprocess_if_expr("preprocess") {
-  in_folder = "."
-  in_files = ts_files
-  out_folder = "$target_gen_dir/$preprocessed_dir"
-}
-
-copy("copy_files") {
-  deps =
-      [ "//chromeos/ash/services/hotspot_config/public/mojom:mojom_webui_js" ]
-  sources = [ "$root_gen_dir/mojom-webui/chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-webui.js" ]
-  outputs = [ "$target_gen_dir/$preprocessed_dir/{{source_file_part}}" ]
-}
-
-ts_library("build_ts") {
-  allow_js = true
-  root_dir = "$target_gen_dir/$preprocessed_dir"
-  out_dir = "$target_gen_dir"
-  in_files = ts_files + [ "cros_hotspot_config.mojom-webui.js" ]
-  composite = true
-  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+copy("copy_mojo_files") {
   deps = [
-    "//ui/webui/resources/js:build_ts",
-    "//ui/webui/resources/mojo:library",
+    "//chromeos/ash/services/hotspot_config/public/mojom:mojom_ts__generator",
   ]
-  extra_deps = [
-    ":copy_files",
-    ":preprocess",
-    "//ash/webui/common/resources:copy_checked_in_dts_files",
-  ]
+  sources = [ "$root_gen_dir/chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-webui.ts" ]
+  outputs = [ "$root_gen_dir/ash/webui/common/resources/preprocessed/hotspot/{{source_file_part}}" ]
 }

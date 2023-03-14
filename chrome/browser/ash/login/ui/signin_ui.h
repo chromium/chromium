@@ -12,6 +12,7 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/login/base_screen_handler_utils.h"
+#include "components/prefs/pref_service.h"
 
 namespace ash {
 
@@ -48,7 +49,8 @@ class SigninUI {
   // Starts user onboarding after successful sign-in for new users.
   virtual void StartUserOnboarding() = 0;
   // Resumes user onboarding after successful sign-in for returning users.
-  virtual void ResumeUserOnboarding(OobeScreenId screen_id) = 0;
+  virtual void ResumeUserOnboarding(const PrefService& prefs,
+                                    OobeScreenId screen_id) = 0;
   // Show UI for management transition flow.
   virtual void StartManagementTransition() = 0;
   // Show additional terms of service on login.

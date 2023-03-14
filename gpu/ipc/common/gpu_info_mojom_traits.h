@@ -308,6 +308,18 @@ struct GPU_EXPORT StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo> {
     return input.machine_model_version;
   }
 
+  static const std::string& gl_implementation(const gpu::GPUInfo& input) {
+    return input.gl_implementation;
+  }
+
+  static const std::string& angle_implementation(const gpu::GPUInfo& input) {
+    return input.angle_implementation;
+  }
+
+  static const std::string& display_type(const gpu::GPUInfo& input) {
+    return input.display_type;
+  }
+
   static const std::string& gl_version(const gpu::GPUInfo& input) {
     return input.gl_version;
   }

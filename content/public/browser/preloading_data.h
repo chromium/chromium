@@ -14,7 +14,10 @@
 namespace content {
 
 class WebContents;
+class NavigationHandle;
 using PreloadingURLMatchCallback = base::RepeatingCallback<bool(const GURL&)>;
+using PredictorDomainCallback =
+    base::RepeatingCallback<bool(NavigationHandle*)>;
 
 // PreloadingPrediction and PreloadingAttempt are the preloading logging APIs
 // which allows us to set various metrics and log the values.
@@ -114,6 +117,20 @@ class CONTENT_EXPORT PreloadingData {
       PreloadingPredictor predictor,
       int64_t confidence,
       PreloadingURLMatchCallback url_match_predicate) = 0;
+
+  // To calculate the recall score of the `predictor`, we need to know if the
+  // `predictor` is potentially responsible for predicting the next navigation
+  // or not. Here, if caller provided `is_navigation_in_domain_callback`
+  // callback returns true for the navigation, it will be considered in the
+  // predictor's domain. The predictor's domain is the set of navigations a
+  // predictor is meant to handle (predict). For example, for Omnibox DUI, this
+  // is the set of navigations to history URLs started from the Omnibox
+  // (navigations where the user ends up choosing a Search query or where the
+  // user closes the Omnibox and clicks on a link in the page are not part of
+  // the domain of the Omnibox DUI predictor).
+  virtual void SetIsNavigationInDomainCallback(
+      PreloadingPredictor predictor,
+      PredictorDomainCallback is_navigation_in_domain_callback) = 0;
 
  protected:
   virtual ~PreloadingData() = default;

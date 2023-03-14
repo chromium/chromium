@@ -77,12 +77,13 @@ bool IsInRemindMeLaterGroup();
 // description and "Learn More" text.
 bool IsInModifiedStringsGroup();
 
-// Returns true if the user is in the default browser blue dot experiment.
-bool IsInBlueDotExperiment();
+// Returns true if the user is not in the blue dot default browser experiment,
+// or if they are in the group with all DB promos enabled.
+bool AreDefaultBrowserPromosEnabled();
 
 // Returns true if the user is in the default browser blue dot experiment and in
-// the blue dot active/enabled group.
-bool IsInBlueDotExperimentEnabledGroup();
+// one of the blue dot active/enabled groups.
+bool IsBlueDotPromoEnabled();
 
 // Returns true if the user is in the CTA experiment in the open links group.
 bool IsInCTAOpenLinksGroup();

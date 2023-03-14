@@ -299,8 +299,15 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
     }
   }
 
-  void NavigateToPrerenderedResult(const GURL& expected_prerender_url) {
+  // `WaitEvent::kLoadStopped` is the default value for a
+  // TestNavigationObserver. Pass another event type to not wait until it
+  // finishes loading.
+  void NavigateToPrerenderedResult(
+      const GURL& expected_prerender_url,
+      content::TestNavigationObserver::WaitEvent wait_event =
+          content::TestNavigationObserver::WaitEvent::kLoadStopped) {
     content::TestNavigationObserver observer(GetActiveWebContents());
+    observer.set_wait_event(wait_event);
     GetActiveWebContents()->OpenURL(content::OpenURLParams(
         expected_prerender_url, content::Referrer(),
         WindowOpenDisposition::CURRENT_TAB,
@@ -392,7 +399,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
                                                     expected_prerender_url);
   histogram_tester.ExpectUniqueSample(
       "Omnibox.SearchPrefetch.PrefetchServingReason2.Prerender",
-      SearchPrefetchServingReason::kPrerendered, 1);
+      SearchPrefetchServingReason::kServed, 1);
 
   // Prefetch should be triggered as well.
   absl::optional<SearchPrefetchStatus> prefetch_status =
@@ -684,7 +691,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
       *GetActiveWebContents(), expected_prerender_url);
   histogram_tester.ExpectUniqueSample(
       "Omnibox.SearchPrefetch.PrefetchServingReason2.Prerender",
-      SearchPrefetchServingReason::kPrerendered, 1);
+      SearchPrefetchServingReason::kServed, 1);
 
   // 3. Type a different query which results in different suggestions.
   std::string search_query_2 = "pre";
@@ -893,6 +900,90 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
                 testing::UnorderedElementsAreArray(expected_entries))
         << content::test::ActualVsExpectedUkmEntriesToString(ukm_entries,
                                                              expected_entries);
+  }
+
+  // Prerender should not retry the request.
+  EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_prerender_url));
+  EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetch_url));
+}
+
+// Tests the prerender works well when running in the
+// `StreamingSearchPrefetchURLLoader::serving_from_data_` mode, even if the
+// server is slow.
+IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest, ChunkedResponseBody) {
+  base::HistogramTester histogram_tester;
+  set_service_deferral_type(
+      SearchPreloadTestResponseDeferralType::kDeferChunkedResponseBody);
+
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  const GURL kNavigatedUrl = embedded_test_server()->GetURL("/title1.html");
+
+  ASSERT_TRUE(GetActiveWebContents());
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
+  SetUpContext();
+
+  // 1. Type the first query.
+  std::string search_query = "prer";
+  std::string prerender_query = "prerender";
+
+  GURL expected_prefetch_url =
+      GetSearchUrl(prerender_query, UrlType::kPrefetch);
+  GURL expected_prerender_url =
+      GetSearchUrl(prerender_query, UrlType::kPrerender);
+
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetActiveWebContents());
+  ChangeAutocompleteResult(search_query.substr(0, search_query.size() - 1),
+                           prerender_query, PrerenderHint::kDisabled,
+                           PrefetchHint::kEnabled);
+
+  // 2. Trigger prefetch and serve the first part of response body.
+  WaitUntilStatusChangesTo(GetCanonicalSearchURL(expected_prerender_url),
+                           {SearchPrefetchStatus::kCanBeServed});
+  DispatchDelayedResponseTask();
+
+  // 3. Trigger prerender.
+  ChangeAutocompleteResult(search_query, prerender_query,
+                           PrerenderHint::kEnabled, PrefetchHint::kEnabled);
+  registry_observer.WaitForTrigger(expected_prerender_url);
+  WaitUntilStatusChangesTo(GetCanonicalSearchURL(expected_prerender_url),
+                           {SearchPrefetchStatus::kPrerendered});
+  content::test::PrerenderHostObserver prerender_observer(
+      *GetActiveWebContents(), expected_prerender_url);
+
+  // 4. Activate the prerendered page.
+  NavigateToPrerenderedResult(
+      expected_prerender_url,
+      content::TestNavigationObserver::WaitEvent::kNavigationFinished);
+
+  // To commit a navigation, we only need a valid header. So the prerendering
+  // navigation is ready for activation.
+  prerender_observer.WaitForActivation();
+
+  DispatchDelayedResponseTask();
+  content::WaitForLoadStop(GetActiveWebContents());
+
+  // TODO(https://crbug.com/1415185):
+  // `content::WaitForLoadStop(GetActiveWebContents())` would end before the
+  // page actually finishes loading. This is the workaround to ensure that the
+  // page is fully loaded.
+  std::string script_string = R"(
+      function get_inner_html () {
+        if(document.documentElement){
+          return document.documentElement.innerHTML;
+        }
+        return "";
+      }
+      get_inner_html();
+    )";
+  while (true) {
+    std::string inner_html =
+        content::EvalJs(GetActiveWebContents(), script_string).ExtractString();
+    if (base::Contains(inner_html, "PREFETCH")) {
+      break;
+    }
+    base::RunLoop run_loop;
+    run_loop.RunUntilIdle();
   }
 
   // Prerender should not retry the request.
@@ -1287,7 +1378,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest, TriggerAndActivate) {
   EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_prerender_url));
   histogram_tester.ExpectUniqueSample(
       "Omnibox.SearchPrefetch.PrefetchServingReason2.Prerender",
-      SearchPrefetchServingReason::kPrerendered, 1);
+      SearchPrefetchServingReason::kServed, 1);
 
   // 4. Click and activate.
   content::test::PrerenderHostObserver prerender_observer(
@@ -1355,7 +1446,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_prerender_url));
   histogram_tester.ExpectUniqueSample(
       "Omnibox.SearchPrefetch.PrefetchServingReason2.Prerender",
-      SearchPrefetchServingReason::kPrerendered, 1);
+      SearchPrefetchServingReason::kServed, 1);
 
   // 4. Fail the prerender.
   content::test::PrerenderHostObserver prerender_observer(
@@ -1445,7 +1536,7 @@ IN_PROC_BROWSER_TEST_F(NoCancelSearchPreloadUnifiedBrowserTest,
       *GetActiveWebContents(), expected_prerender_url);
   histogram_tester.ExpectUniqueSample(
       "Omnibox.SearchPrefetch.PrefetchServingReason2.Prerender",
-      SearchPrefetchServingReason::kPrerendered, 1);
+      SearchPrefetchServingReason::kServed, 1);
 
   // 3. Type a different query which results in different suggestions.
   std::string search_query_2 = "pre";

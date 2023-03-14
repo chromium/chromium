@@ -202,7 +202,7 @@
       role-description="$i18n{subpageArrowRoleDescription}">
   </cr-link-row>
 </template>
-<template is="dom-if" if="[[!isGuest_]]">
+<template is="dom-if" if="[[!isEphemeralUser_]]">
   <div id="systemSize"
       class="settings-box two-line single-column stretch settings-box-text"
       aria-describedby="systemSizeLabel"

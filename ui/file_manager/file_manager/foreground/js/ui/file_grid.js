@@ -12,6 +12,7 @@ import {FileType} from '../../../common/js/file_type.js';
 import {str, util} from '../../../common/js/util.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
+import {FilesTooltip} from '../../elements/files_tooltip.js';
 import {FileListModel, GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME, GroupValue} from '../file_list_model.js';
 import {ListThumbnailLoader} from '../list_thumbnail_loader.js';
 import {MetadataModel} from '../metadata/metadata_model.js';
@@ -842,6 +843,10 @@ export class FileGrid extends Grid {
       syncProgress.className = 'progress';
       inlineStatus.appendChild(syncProgress);
     }
+
+    /** @type {!FilesTooltip} */ (
+        li.ownerDocument.querySelector('files-tooltip'))
+        .addTarget(/** @type {!HTMLElement} */ (inlineStatus));
 
     frame.appendChild(inlineStatus);
 

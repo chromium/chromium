@@ -234,9 +234,9 @@ WebcamPrivateOpenSerialWebcamFunction::
 }
 
 ExtensionFunction::ResponseAction WebcamPrivateOpenSerialWebcamFunction::Run() {
-  std::unique_ptr<webcam_private::OpenSerialWebcam::Params> params(
-      webcam_private::OpenSerialWebcam::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<webcam_private::OpenSerialWebcam::Params> params =
+      webcam_private::OpenSerialWebcam::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   if (WebcamPrivateAPI::Get(browser_context())
           ->OpenSerialWebcam(
@@ -255,7 +255,7 @@ void WebcamPrivateOpenSerialWebcamFunction::OnOpenWebcam(
     const std::string& webcam_id,
     bool success) {
   if (success) {
-    Respond(OneArgument(base::Value(webcam_id)));
+    Respond(WithArguments(webcam_id));
   } else {
     Respond(Error(kOpenSerialWebcamError));
   }
@@ -268,9 +268,9 @@ WebcamPrivateCloseWebcamFunction::~WebcamPrivateCloseWebcamFunction() {
 }
 
 ExtensionFunction::ResponseAction WebcamPrivateCloseWebcamFunction::Run() {
-  std::unique_ptr<webcam_private::CloseWebcam::Params> params(
-      webcam_private::CloseWebcam::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<webcam_private::CloseWebcam::Params> params =
+      webcam_private::CloseWebcam::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   const bool success = WebcamPrivateAPI::Get(browser_context())
                            ->CloseWebcam(extension_id(), params->webcam_id);
@@ -284,9 +284,9 @@ WebcamPrivateSetFunction::~WebcamPrivateSetFunction() {
 }
 
 ExtensionFunction::ResponseAction WebcamPrivateSetFunction::Run() {
-  std::unique_ptr<webcam_private::Set::Params> params(
-      webcam_private::Set::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<webcam_private::Set::Params> params =
+      webcam_private::Set::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   std::string webcam_id = params->webcam_id;
 
@@ -300,7 +300,7 @@ ExtensionFunction::ResponseAction WebcamPrivateSetFunction::Run() {
 }
 
 void WebcamPrivateSetFunction::OnWebcam(
-    std::unique_ptr<webcam_private::Set::Params> params,
+    absl::optional<webcam_private::Set::Params> params,
     Webcam* webcam) {
   if (!webcam)
     return Respond(Error(kUnknownWebcam));
@@ -442,7 +442,7 @@ void WebcamPrivateSetFunction::OnSetWebcamParameters(bool success) {
 
   // Reply with a dummy, empty configuration.
   webcam_private::WebcamCurrentConfiguration result;
-  Respond(OneArgument(base::Value(result.ToValue())));
+  Respond(WithArguments(result.ToValue()));
 }
 
 WebcamPrivateGetFunction::WebcamPrivateGetFunction()
@@ -468,9 +468,9 @@ WebcamPrivateGetFunction::~WebcamPrivateGetFunction() {
 }
 
 ExtensionFunction::ResponseAction WebcamPrivateGetFunction::Run() {
-  std::unique_ptr<webcam_private::Get::Params> params(
-      webcam_private::Get::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<webcam_private::Get::Params> params =
+      webcam_private::Get::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   auto on_webcam = base::BindOnce(&WebcamPrivateGetFunction::OnWebcam, this);
 
@@ -574,7 +574,7 @@ void WebcamPrivateGetFunction::OnGetWebcamParameters(InquiryType type,
     result.tilt = tilt_;
     result.zoom = zoom_;
     result.focus = focus_;
-    Respond(OneArgument(base::Value(result.ToValue())));
+    Respond(WithArguments(result.ToValue()));
   }
 }
 
@@ -585,9 +585,9 @@ WebcamPrivateResetFunction::~WebcamPrivateResetFunction() {
 }
 
 ExtensionFunction::ResponseAction WebcamPrivateResetFunction::Run() {
-  std::unique_ptr<webcam_private::Reset::Params> params(
-      webcam_private::Reset::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<webcam_private::Reset::Params> params =
+      webcam_private::Reset::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   std::string webcam_id = params->webcam_id;
 
@@ -603,7 +603,7 @@ ExtensionFunction::ResponseAction WebcamPrivateResetFunction::Run() {
 }
 
 void WebcamPrivateResetFunction::OnWebcam(
-    std::unique_ptr<webcam_private::Reset::Params> params,
+    absl::optional<webcam_private::Reset::Params> params,
     Webcam* webcam) {
   if (!webcam)
     return Respond(Error(kUnknownWebcam));
@@ -622,7 +622,7 @@ void WebcamPrivateResetFunction::OnResetWebcam(bool success) {
 
   // Reply with a dummy, empty configuration.
   webcam_private::WebcamCurrentConfiguration result;
-  Respond(OneArgument(base::Value(result.ToValue())));
+  Respond(WithArguments(result.ToValue()));
 }
 
 WebcamPrivateSetHomeFunction::WebcamPrivateSetHomeFunction() = default;
@@ -630,9 +630,9 @@ WebcamPrivateSetHomeFunction::WebcamPrivateSetHomeFunction() = default;
 WebcamPrivateSetHomeFunction::~WebcamPrivateSetHomeFunction() = default;
 
 ExtensionFunction::ResponseAction WebcamPrivateSetHomeFunction::Run() {
-  std::unique_ptr<webcam_private::SetHome::Params> params(
-      webcam_private::SetHome::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<webcam_private::SetHome::Params> params =
+      webcam_private::SetHome::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   auto on_webcam =
       base::BindOnce(&WebcamPrivateSetHomeFunction::OnWebcam, this);
@@ -659,7 +659,7 @@ void WebcamPrivateSetHomeFunction::OnSetHomeWebcam(bool success) {
 
   // Reply with a dummy, empty configuration.
   webcam_private::WebcamCurrentConfiguration result;
-  Respond(OneArgument(base::Value(result.ToValue())));
+  Respond(WithArguments(result.ToValue()));
 }
 
 WebcamPrivateRestoreCameraPresetFunction::
@@ -670,9 +670,9 @@ WebcamPrivateRestoreCameraPresetFunction::
 
 ExtensionFunction::ResponseAction
 WebcamPrivateRestoreCameraPresetFunction::Run() {
-  std::unique_ptr<webcam_private::RestoreCameraPreset::Params> params(
-      webcam_private::RestoreCameraPreset::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<webcam_private::RestoreCameraPreset::Params> params =
+      webcam_private::RestoreCameraPreset::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   auto on_webcam =
       base::BindOnce(&WebcamPrivateRestoreCameraPresetFunction::OnWebcam, this,
@@ -707,7 +707,7 @@ void WebcamPrivateRestoreCameraPresetFunction::OnRestoreCameraPresetWebcam(
 
   // Reply with a dummy, empty configuration.
   webcam_private::WebcamCurrentConfiguration result;
-  Respond(OneArgument(base::Value(result.ToValue())));
+  Respond(WithArguments(result.ToValue()));
 }
 
 WebcamPrivateSetCameraPresetFunction::WebcamPrivateSetCameraPresetFunction() =
@@ -717,9 +717,9 @@ WebcamPrivateSetCameraPresetFunction::~WebcamPrivateSetCameraPresetFunction() =
     default;
 
 ExtensionFunction::ResponseAction WebcamPrivateSetCameraPresetFunction::Run() {
-  std::unique_ptr<webcam_private::SetCameraPreset::Params> params(
-      webcam_private::SetCameraPreset::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<webcam_private::SetCameraPreset::Params> params =
+      webcam_private::SetCameraPreset::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   auto on_webcam =
       base::BindOnce(&WebcamPrivateSetCameraPresetFunction::OnWebcam, this,
@@ -754,7 +754,7 @@ void WebcamPrivateSetCameraPresetFunction::OnSetCameraPresetWebcam(
 
   // Reply with a dummy, empty configuration.
   webcam_private::WebcamCurrentConfiguration result;
-  Respond(OneArgument(base::Value(result.ToValue())));
+  Respond(WithArguments(result.ToValue()));
 }
 
 static base::LazyInstance<BrowserContextKeyedAPIFactory<WebcamPrivateAPI>>::

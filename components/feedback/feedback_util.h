@@ -21,6 +21,9 @@ bool ZipString(const base::FilePath& filename,
 // creating a system_logs.txt file attached to feedback reports.
 std::string LogsToString(const FeedbackCommon::SystemLogsMap& sys_info);
 
+// Removes URL fields from the autofill logs.
+void RemoveUrlsFromAutofillData(std::string& autofill_metadata);
+
 #if !BUILDFLAG(IS_WIN)
 // Returns true if the data from the file specified by |path| is read into
 // |contents| successfully.

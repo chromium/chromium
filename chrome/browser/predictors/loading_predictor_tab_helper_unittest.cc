@@ -406,7 +406,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
   PreconnectPrediction preconnect_prediction = CreatePreconnectPrediction(
       "", false,
       {{url::Origin::Create(GURL("http://other.org")), 1,
-        net::NetworkAnonymizationKey(main_frame_site, main_frame_site)}});
+        net::NetworkAnonymizationKey::CreateSameSite(main_frame_site)}});
   prediction->preconnect_prediction = preconnect_prediction;
   prediction->predicted_subresources = {GURL("http://test.org/resource1"),
                                         GURL("http://other.org/resource2"),
@@ -461,7 +461,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
   PreconnectPrediction preconnect_prediction = CreatePreconnectPrediction(
       "", false,
       {{url::Origin::Create(GURL("http://other.org")), 1,
-        net::NetworkAnonymizationKey(main_frame_site, main_frame_site)}});
+        net::NetworkAnonymizationKey::CreateSameSite(main_frame_site)}});
   prediction->preconnect_prediction = preconnect_prediction;
   prediction->predicted_subresources = {GURL("http://test.org/resource1"),
                                         GURL("http://other.org/resource2"),
@@ -747,8 +747,8 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderWithPrefetchTest,
   prediction->decision = optimization_guide::OptimizationGuideDecision::kTrue;
   net::SchemefulSite main_frame_site =
       net::SchemefulSite(GURL("http://test.org"));
-  net::NetworkAnonymizationKey network_anonymization_key(main_frame_site,
-                                                         main_frame_site);
+  auto network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateSameSite(main_frame_site);
   network::mojom::RequestDestination destination =
       network::mojom::RequestDestination::kEmpty;
   PreconnectPrediction preconnect_prediction = CreatePreconnectPrediction(

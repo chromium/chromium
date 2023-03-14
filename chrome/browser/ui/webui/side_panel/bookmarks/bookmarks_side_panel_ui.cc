@@ -8,12 +8,15 @@
 #include <utility>
 
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/bookmarks/bookmark_prefs.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
@@ -26,10 +29,16 @@
 #include "chrome/grit/side_panel_shared_resources.h"
 #include "chrome/grit/side_panel_shared_resources_map.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/bookmarks/managed/managed_bookmark_service.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/webui/shopping_list_handler.h"
 #include "components/favicon_base/favicon_url_parser.h"
+#include "components/image_service/features.h"
+#include "components/image_service/image_service.h"
+#include "components/image_service/image_service_handler.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -62,6 +71,8 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
        IDS_PRICE_TRACKING_TRACK_PRODUCT_ACCESSIBILITY},
       {"shoppingListUntrackPriceButtonDescription",
        IDS_PRICE_TRACKING_UNTRACK_PRODUCT_ACCESSIBILITY},
+      {"shoppingListErrorMessage", IDS_PRICE_TRACKING_SIDE_PANEL_ERROR_MESSAGE},
+      {"shoppingListErrorButton", IDS_PRICE_TRACKING_SIDE_PANEL_ERROR_BUTTON},
       {"sortByType", IDS_BOOKMARKS_SORT_BY_TYPE},
       {"allBookmarks", IDS_BOOKMARKS_ALL_BOOKMARKS},
       {"priceTrackingLabel", IDS_BOOKMARKS_LABEL_TRACKED_PRODUCTS},
@@ -97,14 +108,31 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       {"menuMoveToBookmarksBar", IDS_BOOKMARKS_MOVE_TO_BOOKMARKS_BAR},
       {"menuMoveToAllBookmarks", IDS_BOOKMARKS_MOVE_TO_ALL_BOOKMARKS},
       {"menuTrackPrice", IDS_SIDE_PANEL_TRACK_BUTTON},
+      {"menuUntrackPrice", IDS_SIDE_PANEL_UNTRACK_BUTTON},
+      {"menuEdit", IDS_BOOKMARKS_EDIT},
       {"menuRename", IDS_BOOKMARKS_RENAME},
       {"newFolderTitle", IDS_BOOKMARK_EDITOR_NEW_FOLDER_NAME},
       {"undoBookmarkDeletion", IDS_UNDO_BOOKMARK_DELETION},
       {"urlFolderDescription", IDS_BOOKMARKS_URL_FOLDER_DESCRIPTION},
+      {"editBookmark", IDS_BOOKMARKS_EDIT_BOOKMARK},
       {"editMoveFolderTo", IDS_BOOKMARKS_EDIT_MOVE_TO},
       {"editNewFolder", IDS_BOOKMARKS_EDIT_NEW_FOLDER},
       {"editCancel", IDS_BOOKMARKS_EDIT_CANCEL},
       {"editSave", IDS_BOOKMARKS_EDIT_SAVE},
+      {"editName", IDS_BOOKMARKS_EDIT_NAME},
+      {"editUrl", IDS_BOOKMARKS_EDIT_URL},
+      {"disabledFeature", IDS_BOOKMARKS_DISABLED_FEATURE},
+      {"backButtonLabel", IDS_BOOKMARKS_BACK_BUTTON_LABEL},
+      {"forwardButtonLabel", IDS_BOOKMARKS_FORWARD_BUTTON_LABEL},
+      {"bookmarkOptionsA11yLabel", IDS_BOOKMARK_OPTIONS_LABEL},
+      {"openFolderLabel", IDS_BOOKMARKS_OPEN_FOLDER_LABEL},
+      {"openBookmarkLabel", IDS_BOOKMARKS_OPEN_BOOKMARK_LABEL},
+      {"a11yDescriptionPriceTracking",
+       IDS_BOOKMARK_ACCESSIBLE_DESCRIPTION_PRICE_TRACKING},
+      {"a11yDescriptionPriceChange",
+       IDS_BOOKMARK_ACCESSIBLE_DESCRIPTION_PRICE_CHANGE},
+      {"checkboxA11yLabel", IDS_BOOKMARKS_CHECKBOX_LABEL},
+      {"editInvalidUrl", IDS_BOOKMARK_MANAGER_INVALID_URL},
   };
   for (const auto& str : kLocalizedStrings)
     webui::AddLocalizedString(source, str.name, str.id);
@@ -113,11 +141,24 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
 
   PrefService* prefs = profile->GetPrefs();
   source->AddBoolean(
-      "bookmarksDragAndDropEnabled",
+      "editBookmarksEnabled",
       prefs->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled));
+  source->AddBoolean(
+      "hasManagedBookmarks",
+      !prefs->GetList(bookmarks::prefs::kManagedBookmarks).empty());
+  source->AddBoolean("shoppingListEnabled",
+                     commerce::IsShoppingListAllowedForEnterprise(prefs));
+  source->AddBoolean("urlImagesEnabled", base::FeatureList::IsEnabled(
+                                             image_service::kImageService));
 
   source->AddBoolean("guestMode", profile->IsGuestSession());
   source->AddBoolean("incognitoMode", profile->IsIncognitoProfile());
+  source->AddInteger(
+      "sortOrder",
+      prefs->GetInteger(bookmarks_webui::prefs::kBookmarksSortOrder));
+  source->AddInteger(
+      "viewType",
+      prefs->GetInteger(bookmarks_webui::prefs::kBookmarksViewType));
 
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile);
@@ -133,6 +174,12 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       "mobileBookmarksId",
       base::NumberToString(bookmark_model ? bookmark_model->mobile_node()->id()
                                           : -1));
+  bookmarks::ManagedBookmarkService* managed =
+      ManagedBookmarkServiceFactory::GetForProfile(profile);
+  source->AddString("managedBookmarksFolderId",
+                    managed && managed->managed_node()
+                        ? base::NumberToString(managed->managed_node()->id())
+                        : "");
 
   source->AddString(
       "chromeRefresh2023Attribute",
@@ -187,6 +234,19 @@ void BookmarksSidePanelUI::BindInterface(
         pending_receiver) {
   color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
       web_ui()->GetWebContents(), std::move(pending_receiver));
+}
+
+void BookmarksSidePanelUI::BindInterface(
+    mojo::PendingReceiver<image_service::mojom::ImageServiceHandler>
+        pending_image_handler) {
+  base::WeakPtr<image_service::ImageService> image_service_weak;
+  if (auto* image_service =
+          image_service::ImageServiceFactory::GetForBrowserContext(
+              Profile::FromWebUI(web_ui()))) {
+    image_service_weak = image_service->GetWeakPtr();
+  }
+  image_service_handler_ = std::make_unique<image_service::ImageServiceHandler>(
+      std::move(pending_image_handler), std::move(image_service_weak));
 }
 
 void BookmarksSidePanelUI::CreateBookmarksPageHandler(

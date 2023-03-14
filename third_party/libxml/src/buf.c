@@ -735,7 +735,8 @@ xmlBufResize(xmlBufPtr buf, size_t size)
 	if (buf->content == NULL) {
 	    rebuf = (xmlChar *) xmlMallocAtomic(newSize);
 	    buf->use = 0;
-	    rebuf[buf->use] = 0;
+            if (rebuf != NULL)
+	        rebuf[buf->use] = 0;
 	} else if (buf->size - buf->use < 100) {
 	    rebuf = (xmlChar *) xmlRealloc(buf->content, newSize);
         } else {
@@ -1068,7 +1069,7 @@ xmlBufGetInputBase(xmlBufPtr buf, xmlParserInputPtr input) {
     size_t base;
 
     if ((input == NULL) || (buf == NULL) || (buf->error))
-        return(-1);
+        return(0);
     CHECK_COMPAT(buf)
     base = input->base - buf->content;
     /*

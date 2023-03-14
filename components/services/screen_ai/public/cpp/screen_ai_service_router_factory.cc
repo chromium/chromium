@@ -42,4 +42,9 @@ content::BrowserContext* ScreenAIServiceRouterFactory::GetBrowserContextToUse(
   return context;
 }
 
+// static
+void ScreenAIServiceRouterFactory::EnsureFactoryBuilt() {
+  ScreenAIServiceRouterFactory::GetInstance();
+}
+
 }  // namespace screen_ai

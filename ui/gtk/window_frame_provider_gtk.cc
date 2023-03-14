@@ -40,7 +40,7 @@ std::string GetThemeName() {
 }
 
 GtkCssContext WindowContext(bool solid_frame, bool focused) {
-  std::string selector = "#window.background.";
+  std::string selector = "window.background.";
   selector += solid_frame ? "solid-csd" : "csd";
   if (!focused)
     selector += ":inactive";
@@ -51,7 +51,7 @@ GtkCssContext DecorationContext(bool solid_frame, bool focused) {
   auto context = WindowContext(solid_frame, focused);
   // GTK4 renders the decoration directly on the window.
   if (!GtkCheckVersion(4))
-    context = AppendCssNodeToStyleContext(context, "#decoration");
+    context = AppendCssNodeToStyleContext(context, "decoration");
   if (!focused)
     gtk_style_context_set_state(context, GTK_STATE_FLAG_BACKDROP);
 
@@ -68,7 +68,7 @@ GtkCssContext DecorationContext(bool solid_frame, bool focused) {
 GtkCssContext HeaderContext(bool solid_frame, bool focused) {
   auto context = WindowContext(solid_frame, focused);
   context =
-      AppendCssNodeToStyleContext(context, "#headerbar.header-bar.titlebar");
+      AppendCssNodeToStyleContext(context, "headerbar.header-bar.titlebar");
   if (!focused)
     gtk_style_context_set_state(context, GTK_STATE_FLAG_BACKDROP);
   return context;
@@ -87,13 +87,23 @@ SkBitmap PaintBitmap(const gfx::Size& bitmap_size,
 
   auto bounds = render_bounds;
 
+  double opacity = 1;
+  GtkStyleContextGet(context, "opacity", &opacity, nullptr);
+  if (opacity < 1)
+    cairo_push_group(cr);
+
   cairo_scale(cr, scale, scale);
   gtk_render_background(context, cr, bounds.x(), bounds.y(), bounds.width(),
                         bounds.height());
   gtk_render_frame(context, cr, bounds.x(), bounds.y(), bounds.width(),
                    bounds.height());
 
-  bitmap.notifyPixelsChanged();
+  if (opacity < 1) {
+    cairo_pop_group_to_source(cr);
+    cairo_set_operator(cr, CAIRO_OPERATOR_OVER);
+    cairo_paint_with_alpha(cr, opacity);
+  }
+
   bitmap.setImmutable();
   return bitmap;
 }
@@ -146,6 +156,10 @@ bool HeaderIsTranslucent() {
   // The arbitrary square size to render a sample header.
   constexpr int kHeaderSize = 32;
   auto context = HeaderContext(false, false);
+  double opacity = 1.0f;
+  GtkStyleContextGet(context, "opacity", &opacity, nullptr);
+  if (opacity < 1.0f)
+    return true;
   ApplyCssToContext(context, R"(window, headerbar {
     box-shadow: none;
     border: none;

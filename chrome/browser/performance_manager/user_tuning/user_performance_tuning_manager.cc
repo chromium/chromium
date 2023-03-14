@@ -12,6 +12,7 @@
 #include "chrome/browser/performance_manager/metrics/page_timeline_monitor.h"
 #include "chrome/browser/performance_manager/policies/high_efficiency_mode_policy.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
@@ -90,12 +91,19 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(
 
 UserPerformanceTuningManager::PreDiscardResourceUsage::PreDiscardResourceUsage(
     content::WebContents* contents,
-    uint64_t memory_footprint_estimate)
+    uint64_t memory_footprint_estimate,
+    ::mojom::LifecycleUnitDiscardReason discard_reason)
     : content::WebContentsUserData<PreDiscardResourceUsage>(*contents),
-      memory_footprint_estimate_(memory_footprint_estimate) {}
+      memory_footprint_estimate_(memory_footprint_estimate),
+      discard_reason_(discard_reason) {}
 
 UserPerformanceTuningManager::PreDiscardResourceUsage::
     ~PreDiscardResourceUsage() = default;
+
+// static
+bool UserPerformanceTuningManager::HasInstance() {
+  return g_user_performance_tuning_manager;
+}
 
 // static
 UserPerformanceTuningManager* UserPerformanceTuningManager::GetInstance() {
@@ -140,6 +148,24 @@ bool UserPerformanceTuningManager::IsBatterySaverModeDisabledForSession()
 bool UserPerformanceTuningManager::IsHighEfficiencyModeActive() const {
   return pref_change_registrar_.prefs()->GetBoolean(
       performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled);
+}
+
+bool UserPerformanceTuningManager::IsHighEfficiencyModeManaged() const {
+  auto* pref = pref_change_registrar_.prefs()->FindPreference(
+      performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled);
+  return pref->IsManaged();
+}
+
+bool UserPerformanceTuningManager::IsHighEfficiencyModeDefault() const {
+  auto* pref = pref_change_registrar_.prefs()->FindPreference(
+      performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled);
+  return pref->IsDefaultValue();
+}
+
+void UserPerformanceTuningManager::SetHighEfficiencyModeEnabled(bool enabled) {
+  pref_change_registrar_.prefs()->SetBoolean(
+      performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled,
+      enabled);
 }
 
 bool UserPerformanceTuningManager::IsBatterySaverActive() const {
@@ -284,6 +310,10 @@ void UserPerformanceTuningManager::OnHighEfficiencyModePrefChanged() {
   bool enabled = pref_change_registrar_.prefs()->GetBoolean(
       performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled);
   high_efficiency_mode_toggle_delegate_->ToggleHighEfficiencyMode(enabled);
+
+  for (auto& obs : observers_) {
+    obs.OnHighEfficiencyModeChanged();
+  }
 }
 
 void UserPerformanceTuningManager::OnBatterySaverModePrefChanged() {
@@ -447,7 +477,9 @@ void UserPerformanceTuningManager::DiscardPageForTesting(
             if (page_node) {
               performance_manager::policies::PageDiscardingHelper::GetFromGraph(
                   graph)
-                  ->ImmediatelyDiscardSpecificPage(page_node.get());
+                  ->ImmediatelyDiscardSpecificPage(
+                      page_node.get(),
+                      ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
               quit_closure.Run();
             }
           },

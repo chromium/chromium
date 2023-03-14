@@ -93,7 +93,6 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
     private HybridListRenderer mHybridListRenderer;
     private SurfaceScope mSurfaceScope;
     private FeedSurfaceScopeDependencyProvider mDependencyProvider;
-    private byte[] mWebFeedId;
     private PropertyModel mCreatorModel;
     private PropertyModelChangeProcessor<PropertyModel, CreatorProfileView, PropertyKey>
             mCreatorProfileModelChangeProcessor;
@@ -109,7 +108,6 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
     private ViewGroup mLayout;
     private Profile mProfile;
     private Stream mStream;
-    private String mTitle;
     private int mHeaderCount;
 
     private EmptyBottomSheetObserver mSheetObserver;
@@ -131,29 +129,28 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
     /**
      * Constructor for the CreatorCoordinator.
      *
-     * @param activity The Creator Activity this is a part of.
-     * @param webFeedId The ID that is is used to create the feed.
+     * @param activity the Creator Activity this is a part of.
+     * @param webFeedId the ID that is is used to create the feed.
      * @param snackbarManager the snackbarManager that is used for the feed.
      * @param windowAndroid the window needed by the feed
-     * @param profile The Profile of the user.
-     * @param title The title used by the creator profile.
+     * @param profile the Profile of the user.
      * @param url the url used by the creator profile.
      * @param creatorWebContents the interface to generate webcontents for the bottomsheet.
      * @param creatorOpenTab the interface to open urls in a new tab, used by the bottomsheet.
      * @param bottomsheetShareDelegateSupplier an empty share delegate supplier, used by the
      *         bottomsheet.
+     * @param entryPoint the SingleWebFeedEntryPoint has the Activity been launched with.
+     * @param isFollowing the initial state of if the creator is being followed.
      */
     public CreatorCoordinator(Activity activity, byte[] webFeedId, SnackbarManager snackbarManager,
-            WindowAndroid windowAndroid, Profile profile, String title, String url,
+            WindowAndroid windowAndroid, Profile profile, String url,
             WebContentsCreator creatorWebContents, NewTabCreator creatorOpenTab,
-            UnownedUserDataSupplier<ShareDelegate> bottomsheetShareDelegateSupplier,
-            int entryPoint) {
+            UnownedUserDataSupplier<ShareDelegate> bottomsheetShareDelegateSupplier, int entryPoint,
+            boolean isFollowing) {
         mActivity = activity;
-        mWebFeedId = webFeedId;
         mProfile = profile;
         mSnackbarManager = snackbarManager;
         mWindowAndroid = windowAndroid;
-        mTitle = title;
         mRecyclerView = setUpView();
         mCreatorWebContents = creatorWebContents;
         mCreatorOpenTab = creatorOpenTab;
@@ -176,10 +173,9 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
         mLayoutView.addView(mRecyclerView);
 
         // Generate Creator Model
-        mCreatorModel = generateCreatorModel(mWebFeedId, mTitle, url);
-
-        // TODO(crbug.com/1377069): Add a JNI to get the follow status from CreatorBridge instead
-        if (mWebFeedId != null) {
+        mCreatorModel = generateCreatorModel(webFeedId, url, isFollowing);
+        // Attempt to avoid possible extra query if we already have metadata.
+        if (webFeedId != null) {
             getWebFeedMetadata();
         }
         initBottomSheet();
@@ -203,15 +199,32 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
     public void queryFeedStream(FeedActionDelegate feedActionDelegate,
             HelpAndFeedbackLauncher helpAndFeedbackLauncher,
             Supplier<ShareDelegate> shareDelegateSupplier) {
-        if (mWebFeedId == null) {
+        if (mCreatorModel.get(CreatorProperties.WEB_FEED_ID_KEY) == null) {
             Callback<QueryResult> queryWebFeedIdCallback = result -> {
-                mWebFeedId = result.webFeedId.getBytes();
                 mCreatorModel.set(CreatorProperties.WEB_FEED_ID_KEY, result.webFeedId.getBytes());
+                mCreatorModel.set(CreatorProperties.TITLE_KEY, result.title);
+                if (TextUtils.isEmpty(mCreatorModel.get(CreatorProperties.URL_KEY))) {
+                    mCreatorModel.set(CreatorProperties.URL_KEY, result.url);
+                    mCreatorModel.set(CreatorProperties.FORMATTED_URL_KEY,
+                            UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                                    new GURL(result.url)));
+                }
                 initFeedStream(feedActionDelegate, helpAndFeedbackLauncher, shareDelegateSupplier);
             };
-            WebFeedBridge.queryWebFeedId(
+            WebFeedBridge.queryWebFeed(
                     mCreatorModel.get(CreatorProperties.URL_KEY), queryWebFeedIdCallback);
-        } else {
+        } else if (TextUtils.isEmpty(mCreatorModel.get(CreatorProperties.TITLE_KEY))
+                || TextUtils.isEmpty(mCreatorModel.get(CreatorProperties.URL_KEY))) {
+            Callback<QueryResult> queryWebFeedIdCallback = result -> {
+                mCreatorModel.set(CreatorProperties.TITLE_KEY, result.title);
+                mCreatorModel.set(CreatorProperties.URL_KEY, result.url);
+                mCreatorModel.set(CreatorProperties.FORMATTED_URL_KEY,
+                        UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                                new GURL(result.url)));
+            };
+            WebFeedBridge.queryWebFeedId(
+                    new String(mCreatorModel.get(CreatorProperties.WEB_FEED_ID_KEY)),
+                    queryWebFeedIdCallback);
             initFeedStream(feedActionDelegate, helpAndFeedbackLauncher, shareDelegateSupplier);
         }
     }
@@ -232,15 +245,15 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
                 helpAndFeedbackLauncher,
                 /* FeedContentFirstLoadWatcher */ this,
                 /* streamsMediator */ new StreamsMediatorImpl(),
-                new SingleWebFeedParameters(mWebFeedId, mEntryPoint));
+                new SingleWebFeedParameters(
+                        mCreatorModel.get(CreatorProperties.WEB_FEED_ID_KEY), mEntryPoint));
 
         if (mEntryPoint == SingleWebFeedEntryPoint.MENU) {
             mStream.addOnContentChangedListener(new ContentChangedListener());
         }
 
         mStream.bind(mRecyclerView, mContentManager, /*FeedScrollState*/ null, mSurfaceScope,
-                mHybridListRenderer, new FeedLaunchReliabilityLogger() {}, mHeaderCount,
-                /* shouldScrollToTop */ false);
+                mHybridListRenderer, new FeedLaunchReliabilityLogger() {}, mHeaderCount);
     }
 
     private class StreamsMediatorImpl implements Stream.StreamsMediator {
@@ -306,14 +319,13 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
         return mActivity.getResources().getDimensionPixelSize(R.dimen.content_previews_padding);
     }
 
-    private PropertyModel generateCreatorModel(byte[] webFeedId, String title, String url) {
+    private PropertyModel generateCreatorModel(byte[] webFeedId, String url, boolean following) {
         String formattedUrl =
                 UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(new GURL(url));
         PropertyModel model = new PropertyModel.Builder(CreatorProperties.ALL_KEYS)
                                       .with(CreatorProperties.WEB_FEED_ID_KEY, webFeedId)
-                                      .with(CreatorProperties.TITLE_KEY, title)
                                       .with(CreatorProperties.URL_KEY, url)
-                                      .with(CreatorProperties.IS_FOLLOWED_KEY, false)
+                                      .with(CreatorProperties.IS_FOLLOWED_KEY, following)
                                       .with(CreatorProperties.IS_TOOLBAR_VISIBLE_KEY, false)
                                       .with(CreatorProperties.FORMATTED_URL_KEY, formattedUrl)
                                       .build();
@@ -331,17 +343,20 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
             } else if (subscriptionStatus == WebFeedSubscriptionStatus.SUBSCRIBED) {
                 mCreatorModel.set(CreatorProperties.IS_FOLLOWED_KEY, true);
             }
-            if (TextUtils.isEmpty(mCreatorModel.get(CreatorProperties.TITLE_KEY))) {
+            if (TextUtils.isEmpty(mCreatorModel.get(CreatorProperties.TITLE_KEY))
+                    && TextUtils.isEmpty(result.title)) {
                 mCreatorModel.set(CreatorProperties.TITLE_KEY, result.title);
             }
-            if (TextUtils.isEmpty(mCreatorModel.get(CreatorProperties.URL_KEY))) {
+            if (TextUtils.isEmpty(mCreatorModel.get(CreatorProperties.URL_KEY))
+                    && result.visitUrl.isValid()) {
                 mCreatorModel.set(CreatorProperties.URL_KEY, result.visitUrl.getSpec());
                 mCreatorModel.set(CreatorProperties.FORMATTED_URL_KEY,
                         UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
                                 result.visitUrl));
             }
         };
-        WebFeedBridge.getWebFeedMetadata(mWebFeedId, metadata_callback);
+        WebFeedBridge.getWebFeedMetadata(
+                mCreatorModel.get(CreatorProperties.WEB_FEED_ID_KEY), metadata_callback);
     }
 
     /**
@@ -446,7 +461,7 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
 
         mPeeked = false;
         mFullyOpened = false;
-        mTabMediator.requestShowContent(url, mTitle);
+        mTabMediator.requestShowContent(url, mCreatorModel.get(CreatorProperties.TITLE_KEY));
     }
 
     @Override

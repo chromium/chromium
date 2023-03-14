@@ -127,6 +127,16 @@ void LogSigninReason(Reason reason) {
   base::UmaHistogramEnumeration("Signin.SigninReason", reason);
 }
 
+void LogSignInOffered(AccessPoint access_point) {
+  base::UmaHistogramEnumeration("Signin.SignIn.Offered", access_point,
+                                AccessPoint::ACCESS_POINT_MAX);
+}
+
+void LogSignInStarted(AccessPoint access_point) {
+  base::UmaHistogramEnumeration("Signin.SignIn.Started", access_point,
+                                AccessPoint::ACCESS_POINT_MAX);
+}
+
 void LogSyncOptInStarted(AccessPoint access_point) {
   base::UmaHistogramEnumeration("Signin.SyncOptIn.Started", access_point,
                                 AccessPoint::ACCESS_POINT_MAX);
@@ -270,6 +280,7 @@ void RecordRefreshTokenRevokedFromSource(
   UMA_HISTOGRAM_ENUMERATION("Signin.RefreshTokenRevoked.Source", source);
 }
 
+#if BUILDFLAG(IS_IOS)
 void RecordSigninAccountType(signin::ConsentLevel consent_level,
                              bool is_managed_account) {
   SigninAccountType account_type = is_managed_account
@@ -286,6 +297,7 @@ void RecordSigninAccountType(signin::ConsentLevel consent_level,
       break;
   }
 }
+#endif
 
 // --------------------------------------------------------------
 // User actions

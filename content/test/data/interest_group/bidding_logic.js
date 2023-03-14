@@ -23,7 +23,13 @@ function generateBid(interestGroup, auctionSignals, perBuyerSignals,
 function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
                    browserSignals) {
   sendReportTo(browserSignals.interestGroupOwner + '/echoall?report_bidder');
-  registerAdBeacon({'auctionwinner':
-   browserSignals.interestGroupOwner.replace('a.test','d.test') +
-                                             '/echoall?report_win_beacon'});
+  registerAdBeacon({
+    'auctionwinner':
+        browserSignals.interestGroupOwner.replace('a.test', 'd.test') +
+        '/echoall?report_win_beacon'
+  });
+  if (typeof privateAggregation !== 'undefined') {
+    privateAggregation.reportContributionForEvent(
+        'auctionwinner', {bucket: 3n, value: 5});
+  }
 }

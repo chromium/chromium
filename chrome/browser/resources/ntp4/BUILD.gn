@@ -33,7 +33,6 @@ grit("apps_resources") {
 ts_library("build_ts") {
   root_dir = "."
   out_dir = "$target_gen_dir/tsc"
-  allow_js = true
   in_files = [
     "app_info.js",
     "apps_page.js",

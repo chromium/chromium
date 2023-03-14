@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/animation/transition_interpolation.h"
+#include <memory>
 
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_value.h"
 
@@ -11,8 +12,11 @@ namespace blink {
 void TransitionInterpolation::Interpolate(int iteration, double fraction) {
   if (!cached_fraction_ || *cached_fraction_ != fraction ||
       cached_iteration_ != iteration) {
-    merge_.start_interpolable_value->Interpolate(
-        *merge_.end_interpolable_value, fraction, *cached_interpolable_value_);
+    if (merge_) {
+      merge_.start_interpolable_value->Interpolate(
+          *merge_.end_interpolable_value, fraction,
+          *cached_interpolable_value_);
+    }
     cached_iteration_ = iteration;
     cached_fraction_.emplace(fraction);
   }
@@ -20,12 +24,20 @@ void TransitionInterpolation::Interpolate(int iteration, double fraction) {
 
 const InterpolableValue& TransitionInterpolation::CurrentInterpolableValue()
     const {
-  return *cached_interpolable_value_;
+  if (merge_) {
+    return *cached_interpolable_value_;
+  }
+  return cached_fraction_ < 0.5 ? *start_.interpolable_value
+                                : *end_.interpolable_value;
 }
 
 const NonInterpolableValue*
 TransitionInterpolation::CurrentNonInterpolableValue() const {
-  return merge_.non_interpolable_value.get();
+  if (merge_) {
+    return merge_.non_interpolable_value.get();
+  }
+  return cached_fraction_ < 0.5 ? start_.non_interpolable_value.get()
+                                : end_.non_interpolable_value.get();
 }
 
 void TransitionInterpolation::Apply(

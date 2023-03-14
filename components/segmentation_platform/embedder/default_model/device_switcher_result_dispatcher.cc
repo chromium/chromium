@@ -54,7 +54,15 @@ DeviceSwitcherResultDispatcher::DeviceSwitcherResultDispatcher(
 
 DeviceSwitcherResultDispatcher::~DeviceSwitcherResultDispatcher() = default;
 
-void DeviceSwitcherResultDispatcher::GetClassificationResult(
+ClassificationResult
+DeviceSwitcherResultDispatcher::GetCachedClassificationResult() {
+  absl::optional<ClassificationResult> result =
+      latest_result_ ? latest_result_ : ReadResultFromPref();
+  return result.has_value() ? result.value()
+                            : ClassificationResult(PredictionStatus::kNotReady);
+}
+
+void DeviceSwitcherResultDispatcher::WaitForClassificationResult(
     ClassificationResultCallback callback) {
   if (latest_result_) {
     std::move(callback).Run(std::move(*latest_result_));
@@ -77,9 +85,9 @@ void DeviceSwitcherResultDispatcher::OnStateChanged(syncer::SyncService* sync) {
   if (sync->HasSyncConsent()) {
     sync_consent_timestamp_ = base::Time::Now();
     sync_observation_.Reset();
-
-    if (!latest_result_ || latest_result_->ordered_labels[0] ==
-                               DeviceSwitcherModel::kNotSyncedLabel) {
+    if (!latest_result_ || (!latest_result_->ordered_labels.empty() &&
+                            latest_result_->ordered_labels[0] ==
+                                DeviceSwitcherModel::kNotSyncedLabel)) {
       RefreshSegmentResult();
     }
   }

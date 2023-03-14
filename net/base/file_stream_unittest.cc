@@ -62,7 +62,7 @@ class FileStreamTest : public PlatformTest, public WithTaskEnvironment {
     PlatformTest::SetUp();
 
     base::CreateTemporaryFile(&temp_file_path_);
-    base::WriteFile(temp_file_path_, kTestData, kTestDataSize);
+    base::WriteFile(temp_file_path_, kTestData);
   }
   void TearDown() override {
     // FileStreamContexts must be asynchronously closed on the file task runner
@@ -120,8 +120,7 @@ TEST_F(FileStreamTest, UseFileHandle) {
   TestCompletionCallback callback;
   TestInt64CompletionCallback callback64;
   // 1. Test reading with a file handle.
-  ASSERT_EQ(kTestDataSize,
-            base::WriteFile(temp_file_path(), kTestData, kTestDataSize));
+  ASSERT_TRUE(base::WriteFile(temp_file_path(), kTestData));
   int flags = base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
               base::File::FLAG_ASYNC;
   base::File file1(temp_file_path(), flags);

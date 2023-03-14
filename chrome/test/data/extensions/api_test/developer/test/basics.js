@@ -35,7 +35,7 @@ var tests = [
           break;
         }
       }
-      chrome.test.assertTrue(info != null);
+      chrome.test.assertNe(null, info);
       var extId = info.id;
       chrome.test.assertFalse(info.incognitoAccess.isActive);
       chrome.test.assertFalse(info.fileAccess.isActive);

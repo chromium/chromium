@@ -47,6 +47,9 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
     int available_pointer_types = ui::POINTER_TYPE_NONE;
     mojom::blink::HoverType primary_hover_type =
         mojom::blink::HoverType::kHoverNone;
+    mojom::blink::OutputDeviceUpdateAbilityType
+        output_device_update_ability_type =
+            mojom::blink::OutputDeviceUpdateAbilityType::kFastType;
     // Bitmask of |ui::HoverType|
     int available_hover_types = ui::HOVER_TYPE_NONE;
     float em_size = 16.f;
@@ -89,6 +92,8 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
       data.primary_pointer_type = primary_pointer_type;
       data.available_pointer_types = available_pointer_types;
       data.primary_hover_type = primary_hover_type;
+      data.output_device_update_ability_type =
+          output_device_update_ability_type;
       data.available_hover_types = available_hover_types;
       data.em_size = em_size;
       data.ex_size = ex_size;
@@ -127,6 +132,8 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
   mojom::blink::PointerType PrimaryPointerType() const override;
   int AvailablePointerTypes() const override;
   mojom::blink::HoverType PrimaryHoverType() const override;
+  mojom::blink::OutputDeviceUpdateAbilityType OutputDeviceUpdateAbilityType()
+      const override;
   int AvailableHoverTypes() const override;
   bool ThreeDEnabled() const override;
   bool StrictMode() const override;

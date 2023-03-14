@@ -178,6 +178,7 @@ constexpr const char* kManagedDefaultPrefs[] = {
     prefs::kManagedDefaultWebHidGuardSetting,
     prefs::kManagedDefaultWindowManagementSetting,
     prefs::kManagedDefaultLocalFontsSetting,
+    prefs::kManagedDefaultThirdPartyStoragePartitioningSetting,
 };
 
 }  // namespace
@@ -233,6 +234,8 @@ const PolicyProvider::PrefsForManagedDefaultMapEntry
          prefs::kManagedDefaultWindowManagementSetting},
         {ContentSettingsType::LOCAL_FONTS,
          prefs::kManagedDefaultLocalFontsSetting},
+        {ContentSettingsType::THIRD_PARTY_STORAGE_PARTITIONING,
+         prefs::kManagedDefaultThirdPartyStoragePartitioningSetting},
 };
 
 // static

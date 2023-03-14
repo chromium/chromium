@@ -25,6 +25,11 @@
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "net/base/backoff_entry.h"
 
+#if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS))
+#include "base/feature_list.h"
+#include "components/supervised_user/core/common/features.h"
+#endif
+
 class Profile;
 
 // This class handles detection of child accounts (on sign-in as well as on
@@ -37,13 +42,14 @@ class ChildAccountService : public KeyedService,
  public:
   enum class AuthState { AUTHENTICATED, NOT_AUTHENTICATED, PENDING };
 
-  static constexpr bool IsChildAccountDetectionEnabled() {
+  static bool IsChildAccountDetectionEnabled() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-    // Child account detection is always enabled on Android and ChromeOS, and
-    // disabled in other platforms.
+    // Supervision features are fully supported on Android and ChromeOS.
     return true;
 #else
-    return false;
+    // Supervision features are under development on other platforms.
+    return base::FeatureList::IsEnabled(
+        supervised_user::kEnableSupervisionOnDesktopAndIOS);
 #endif
   }
 

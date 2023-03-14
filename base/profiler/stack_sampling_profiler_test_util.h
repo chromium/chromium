@@ -17,6 +17,7 @@
 #include "base/profiler/frame.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
 #include "base/profiler/stack_sampling_profiler.h"
+#include "base/strings/string_piece.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
 
@@ -178,6 +179,9 @@ void ExpectStackContainsNames(const std::vector<Frame>& stack,
 void ExpectStackDoesNotContain(
     const std::vector<Frame>& stack,
     const std::vector<FunctionAddressRange>& functions);
+
+// Load test library with given name.
+NativeLibrary LoadTestLibrary(StringPiece library_name);
 
 // Loads the other library, which defines a function to be called in the
 // WITH_OTHER_LIBRARY configuration.

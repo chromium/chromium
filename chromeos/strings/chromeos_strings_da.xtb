@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">Meget godt (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Fortsæt</translation>
 <translation id="2364498172489649528">Bestået</translation>
+<translation id="2367335866686097760">Tastaturtilknytning for tast</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Send feedbackrapport</translation>
 <translation id="2407209115954268704">Status for SIM-lås</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">Avatarbilledet er ændret</translation>
 <translation id="3192947282887913208">Lydfiler</translation>
 <translation id="3199982728237701504">Dokumentindføring (to sider)</translation>
+<translation id="3211671540163313381">Tastaturtilknytning for D-pad</translation>
 <translation id="3226405216343213872">Søger efter scannere</translation>
+<translation id="3226657629376379887">Handlingsmenu for layout</translation>
 <translation id="3246869037381808805">Udskriftjobs, der er ældre end 1 dag, fjernes</translation>
 <translation id="3268178239013324452">Handlingen mislykkedes – Åben låge</translation>
 <translation id="3275729367986477355">Billede til avatar</translation>
@@ -253,6 +256,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435738964857648380">Sikkerhed</translation>
 <translation id="3435896845095436175">Aktivér</translation>
+<translation id="345256797477978759">Fastgør vinduet på den største del af skærmen (<ph name="DIRECTION" />)</translation>
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" /> ud af <ph name="TOTAL_PAGES" /> er blevet udskrevet.</translation>
 <translation id="345898999683440380">Scanner side <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" /> % er blevet scannet.</translation>
 <translation id="3459509316159669723">Udskrivning</translation>
@@ -273,12 +277,14 @@
 <translation id="3595596368722241419">Batteri helt opladet</translation>
 <translation id="3600339377155080675">Spejling af skærm</translation>
 <translation id="3602290021589620013">Forhåndsvisning</translation>
+<translation id="360282891121575443">Billeder i delte album kan opdateres af andre brugere. Hvis du skifter dagligt, vises der muligvis baggrunde, som ikke findes i albummet i øjeblikket.</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Skift baggrund</translation>
 <translation id="360565022852130722">Wi-Fi-netværket er beskyttet med den svage protokol WEP 802.1x</translation>
 <translation id="3606583719724308068">Stor forsinkelse til HTTPS-websites</translation>
 <translation id="361575905210396100">Tak for din feedback</translation>
 <translation id="3632579075709132555">Slå Privatlivsskærm til/fra</translation>
+<translation id="3639846061339007994">øverst</translation>
 <translation id="3651050199673793219">Vælg en temperaturenhed</translation>
 <translation id="3689839747745352263">Testen <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Indlæser...</translation>
@@ -520,6 +526,7 @@
 <translation id="576835345334454681">Øg skærmens lysstyrke</translation>
 <translation id="57838592816432529">Slå lyden fra</translation>
 <translation id="5784136236926853061">Stor HTTP-forsinkelse</translation>
+<translation id="5826644637650799838">Om baggrunden</translation>
 <translation id="5832805196449965646">Tilføj person</translation>
 <translation id="583281660410589416">Ukendt</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
@@ -562,6 +569,7 @@
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> flere album</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Indtastningsmetodetjeneste for ChromeOS</translation>
+<translation id="6136285399872347291">tilbage</translation>
 <translation id="6137767437444130246">Brugercertifikat</translation>
 <translation id="6146993107019042706">Angiv din nye adgangskode for at afslutte</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -609,6 +617,7 @@
 <translation id="650266656685499220">Gå til Google Fotos for at oprette album</translation>
 <translation id="6516990319416533844">Du kan teste, hvor hurtigt batteriet oplades, ved at aflade det i en kortere periode</translation>
 <translation id="6517239166834772319">Udforsk</translation>
+<translation id="6526200165918397681">Match baggrund</translation>
 <translation id="6527081081771465939">Ukendt Wi-Fi-sikkerhedsprotokol</translation>
 <translation id="6535178685492749208">Du er offline. Din feedback sendes senere.</translation>
 <translation id="65587193855025101">Flatbed</translation>
@@ -628,6 +637,7 @@
 <translation id="6657585470893396449">Adgangskode</translation>
 <translation id="6659594942844771486">Fane</translation>
 <translation id="6692996468359469499">Få oplysninger om det, du har markeret</translation>
+<translation id="6698459586333070823">Delte album kan opdateres af andre brugere</translation>
 <translation id="6704062477274546131">DNS-udførelse</translation>
 <translation id="6723839937902243910">Strøm</translation>
 <translation id="6723847290197874913">Tastaturlys</translation>
@@ -664,6 +674,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Handlingen mislykkedes – Godkendelse mislykkedes</translation>
 <translation id="7103252855940681301">Enhed <ph name="INDEX" /> af <ph name="COUNT" /> med navnet <ph name="NAME" />.</translation>
+<translation id="7108668606237948702">enter</translation>
 <translation id="7130438335435247835">Adgangspunkt (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Navneserver}one{Navneserver}other{Navneservere}}</translation>
 <translation id="7143207342074048698">Tilslutter</translation>
@@ -673,6 +684,7 @@
 <translation id="7155171745945906037">Eksisterende billede fra kamera eller fil</translation>
 <translation id="7162487448488904999">Galleri</translation>
 <translation id="7170236477717446850">Profilbillede</translation>
+<translation id="7171919371520438592">Fastgør vinduet på den mindste del af skærmen (<ph name="DIRECTION" />)</translation>
 <translation id="7172721935181587524">1 billede</translation>
 <translation id="7177485034254901881">Denne <ph name="DEVICE_TYPE" /> administreres af <ph name="MANAGER" />. Administratorer kan fjernkonfigurere enheden.</translation>
 <translation id="7180611975245234373">Opdater</translation>
@@ -748,6 +760,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Udbydertype</translation>
 <translation id="7882501334836096755">Offentlig nøgle</translation>
+<translation id="78957024357676568">venstre</translation>
 <translation id="7915220255123750251">Administrer indstillinger for netværksadgangspunkter. Adgangspunkter opretter forbindelse mellem et mobilnetværk og internettet.</translation>
 <translation id="7936303884198020182">Der blev ikke fundet nogen navneservere</translation>
 <translation id="7942349550061667556">Rød</translation>
@@ -776,9 +789,11 @@
 <translation id="8183974620058026102">Vedhæft</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Fordele</translation>
+<translation id="8210733748736414123">nederst</translation>
 <translation id="8226628635270268143">Vælg dine foretrukne billeder og album</translation>
 <translation id="8227119283605456246">Vedhæft fil</translation>
 <translation id="8230672074305416752">Kunne ikke pinge standardnetværkets gateway</translation>
+<translation id="8242426110754782860">Fortsæt</translation>
 <translation id="8246209727385807362">Ukendt mobilselskab</translation>
 <translation id="827422111966801947">Indigoblå</translation>
 <translation id="8286154143153872371">Opret forbindelse til et netværk, og genindlæs siden for at se baggrunden.</translation>
@@ -789,9 +804,11 @@
 <translation id="8318753676953949627">Der er ingen billeder</translation>
 <translation id="8336739000755212683">Skift kontobillede på enheden</translation>
 <translation id="8347227221149377169">Udskriftsjobs</translation>
+<translation id="8351855506390808906">Tastaturtilknytning for touchpunkt</translation>
 <translation id="8352772353338965963">Føj en konto til samlet login fra flere konti. Det er muligt at få adgang til alle de konti, der er logget ind på, uden en adgangskode, så denne funktion bør kun bruges til de konti, du har tillid til.</translation>
 <translation id="8364946094152050673">Navneserverne er ikke angivet</translation>
 <translation id="8372477600026034341">Ekstra hosts</translation>
+<translation id="8380114448424469341">Fastgør vinduet på halvdelen af skærmen (<ph name="DIRECTION" />)</translation>
 <translation id="8395584934117017006">Denne <ph name="DEVICE_TYPE" /> administreres af en virksomhed</translation>
 <translation id="8398927464629426868">Den aktuelle hastighed for opladning eller afladning på enheden</translation>
 <translation id="8410244574650205435">Fundet automatisk</translation>
@@ -856,6 +873,7 @@
 <translation id="8930622219860340959">Trådløs</translation>
 <translation id="8936793075252196307">Klient-IP-adresse</translation>
 <translation id="894617464444543719">Enheden er en telefon.</translation>
+<translation id="8957423540740801332">højre</translation>
 <translation id="8968751544471797276">Opladningshastighed</translation>
 <translation id="8970109610781093811">Kør igen</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -883,6 +901,7 @@
 <translation id="9137526406337347448">Google-tjenester</translation>
 <translation id="9138630967333032450">Shift i venstre side</translation>
 <translation id="9149391708638971077">Kør hukommelsestest</translation>
+<translation id="9161276708550942948">mellemrum</translation>
 <translation id="9173638680043580060">Mindre end ét minut tilbage</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Dit tastatur kan automatisk tilpasses din baggrund</translation>

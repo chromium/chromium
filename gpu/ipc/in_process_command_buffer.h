@@ -17,6 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
@@ -176,7 +177,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
 
  private:
   struct InitializeOnGpuThreadParams {
-    const ContextCreationAttribs& attribs;
+    const raw_ref<const ContextCreationAttribs> attribs;
     raw_ptr<Capabilities> capabilities;  // Ouptut.
     raw_ptr<gpu::raster::GrShaderCache> gr_shader_cache;
     raw_ptr<GpuProcessActivityFlags> activity_flags;

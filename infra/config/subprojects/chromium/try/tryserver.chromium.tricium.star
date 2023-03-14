@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders used by Tricium for Chromium."""
 
-load("//lib/builders.star", "goma", "os", "reclient", "xcode")
+load("//lib/builders.star", "os", "reclient", "xcode")
 load("//lib/consoles.star", "consoles")
 load("//lib/try.star", "SOURCELESS_BUILDER_CACHES", "try_")
 
@@ -65,8 +65,7 @@ try_.builder(
     builderless = False,
     cores = None,
     os = os.MAC_DEFAULT,
-    goma_backend = goma.backend.RBE_PROD,
-    goma_jobs = goma.jobs.J150,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     xcode = xcode.x13main,
 )
 
@@ -97,8 +96,7 @@ try_.builder(
     cores = None,
     os = os.MAC_DEFAULT,
     ssd = True,
-    goma_backend = goma.backend.RBE_PROD,
-    goma_jobs = goma.jobs.J150,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     # TODO(gbiv): Determine why this needs a system xcode and things like `Mac
     # Builder` don't.
     xcode = xcode.x13main,

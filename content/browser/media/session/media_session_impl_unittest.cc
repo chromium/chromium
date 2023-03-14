@@ -747,6 +747,25 @@ TEST_F(MediaSessionImplTest, SessionInfoPresentation) {
                    ->has_presentation);
 }
 
+TEST_F(MediaSessionImplTest, SessionInfoRemotePlaybackMetadata) {
+  EXPECT_FALSE(media_session::test::GetMediaSessionInfoSync(GetMediaSession())
+                   ->remote_playback_metadata);
+
+  int player1 = player_observer_->StartNewPlayer();
+  GetMediaSession()->AddPlayer(player_observer_.get(), player1);
+  GetMediaSession()->SetRemotePlaybackMetadata(
+      media_session::mojom::RemotePlaybackMetadata::New(
+          "video_codec", "audio_codec", false, true, "device_friendly_name",
+          false));
+  EXPECT_TRUE(media_session::test::GetMediaSessionInfoSync(GetMediaSession())
+                  ->remote_playback_metadata);
+
+  int player2 = player_observer_->StartNewPlayer();
+  GetMediaSession()->AddPlayer(player_observer_.get(), player2);
+  EXPECT_FALSE(media_session::test::GetMediaSessionInfoSync(GetMediaSession())
+                   ->remote_playback_metadata);
+}
+
 TEST_F(MediaSessionImplTest, RaiseActivatesWebContents) {
   MockWebContentsDelegate delegate;
   web_contents()->SetDelegate(&delegate);

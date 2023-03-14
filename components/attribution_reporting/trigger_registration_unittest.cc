@@ -4,8 +4,6 @@
 
 #include "components/attribution_reporting/trigger_registration.h"
 
-#include <stddef.h>
-
 #include <string>
 #include <utility>
 #include <vector>
@@ -19,7 +17,6 @@
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
-#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/test_utils.h"
@@ -39,25 +36,6 @@ TriggerRegistration TriggerRegistrationWith(
   TriggerRegistration r;
   f(r);
   return r;
-}
-
-base::expected<TriggerRegistration, TriggerRegistrationError>
-ParseWithAggregatableTriggerData(size_t n) {
-  base::Value::List list;
-  for (size_t i = 0; i < n; ++i) {
-    base::Value::Dict data;
-    data.Set("key_piece", "0x1");
-
-    base::Value::List source_keys;
-    source_keys.Append("abc");
-    data.Set("source_keys", std::move(source_keys));
-
-    list.Append(std::move(data));
-  }
-
-  base::Value::Dict dict;
-  dict.Set("aggregatable_trigger_data", std::move(list));
-  return TriggerRegistration::Parse(std::move(dict));
 }
 
 TEST(TriggerRegistrationTest, Parse) {
@@ -85,7 +63,7 @@ TEST(TriggerRegistrationTest, Parse) {
           "filters_valid",
           R"json({"filters":{"a":["b"]}})json",
           TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.filters.positive = *Filters::Create({{"a", {"b"}}});
+            r.filters.positive = FiltersDisjunction({{{"a", {"b"}}}});
           }),
       },
       {
@@ -97,7 +75,7 @@ TEST(TriggerRegistrationTest, Parse) {
           "not_filters_valid",
           R"json({"not_filters":{"a":["b"]}})json",
           TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.filters.negative = *Filters::Create({{"a", {"b"}}});
+            r.filters.negative = FiltersDisjunction({{{"a", {"b"}}}});
           }),
       },
       {
@@ -125,10 +103,10 @@ TEST(TriggerRegistrationTest, Parse) {
           "event_triggers_valid",
           R"json({"event_trigger_data":[{}, {"trigger_data":"5"}]})json",
           TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.event_triggers = *EventTriggerDataList::Create(
-                {EventTriggerData(),
-                 EventTriggerData(/*data=*/5, /*priority=*/0,
-                                  /*dedup_key=*/absl::nullopt, FilterPair())});
+            r.event_triggers = {
+                EventTriggerData(),
+                EventTriggerData(/*data=*/5, /*priority=*/0,
+                                 /*dedup_key=*/absl::nullopt, FilterPair())};
           }),
       },
       {
@@ -158,13 +136,13 @@ TEST(TriggerRegistrationTest, Parse) {
           ]
         })json",
           TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.aggregatable_trigger_data = *AggregatableTriggerDataList::Create(
-                {*AggregatableTriggerData::Create(
-                     /*key_piece=*/1,
-                     /*source_keys=*/{"a"}, FilterPair()),
-                 *AggregatableTriggerData::Create(
-                     /*key_piece=*/2,
-                     /*source_keys=*/{"b"}, FilterPair())});
+            r.aggregatable_trigger_data = {
+                *AggregatableTriggerData::Create(
+                    /*key_piece=*/1,
+                    /*source_keys=*/{"a"}, FilterPair()),
+                *AggregatableTriggerData::Create(
+                    /*key_piece=*/2,
+                    /*source_keys=*/{"b"}, FilterPair())};
           }),
       },
       {
@@ -232,9 +210,9 @@ TEST(TriggerRegistrationTest, Parse) {
             ]
           })json",
           TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.aggregatable_dedup_keys = *AggregatableDedupKeyList::Create(
-                {AggregatableDedupKey(),
-                 AggregatableDedupKey(/*dedup_key=*/5, FilterPair())});
+            r.aggregatable_dedup_keys = {
+                AggregatableDedupKey(),
+                AggregatableDedupKey(/*dedup_key=*/5, FilterPair())};
           }),
       },
       {
@@ -252,7 +230,7 @@ TEST(TriggerRegistrationTest, Parse) {
   };
 
   static constexpr char kTriggerRegistrationErrorMetric[] =
-      "Conversions.TriggerRegistrationError2";
+      "Conversions.TriggerRegistrationError4";
 
   for (const auto& test_case : kTestCases) {
     base::HistogramTester histograms;
@@ -269,84 +247,6 @@ TEST(TriggerRegistrationTest, Parse) {
   }
 }
 
-TEST(TriggerRegistrationTest, Parse_EventTriggerDataCount) {
-  const auto parse_with_event_triggers = [&](size_t n) {
-    base::Value::List list;
-    for (size_t i = 0; i < n; ++i) {
-      list.Append(base::Value::Dict());
-    }
-
-    base::Value::Dict dict;
-    dict.Set("event_trigger_data", std::move(list));
-    return TriggerRegistration::Parse(std::move(dict));
-  };
-
-  for (size_t count = 0; count <= kMaxEventTriggerData; ++count) {
-    EXPECT_TRUE(parse_with_event_triggers(count).has_value());
-  }
-
-  EXPECT_EQ(
-      parse_with_event_triggers(kMaxEventTriggerData + 1),
-      base::unexpected(TriggerRegistrationError::kEventTriggerDataListTooLong));
-}
-
-TEST(TriggerRegistrationTest, Parse_AggregatableTriggerDataCount) {
-  for (size_t count = 0; count <= kMaxAggregatableTriggerDataPerTrigger;
-       ++count) {
-    EXPECT_TRUE(ParseWithAggregatableTriggerData(count).has_value());
-  }
-
-  EXPECT_EQ(ParseWithAggregatableTriggerData(
-                kMaxAggregatableTriggerDataPerTrigger + 1),
-            base::unexpected(
-                TriggerRegistrationError::kAggregatableTriggerDataListTooLong));
-}
-
-TEST(TriggerRegistrationTest, Parse_AggregatableDedupKeyCount) {
-  const auto parse_with_aggregatable_dedup_key = [&](size_t n) {
-    base::Value::List list;
-    for (size_t i = 0; i < n; ++i) {
-      list.Append(base::Value::Dict());
-    }
-
-    base::Value::Dict dict;
-    dict.Set("aggregatable_deduplication_keys", std::move(list));
-    return TriggerRegistration::Parse(std::move(dict));
-  };
-
-  for (size_t count = 0; count <= kMaxAggregatableDedupKeys; ++count) {
-    EXPECT_TRUE(parse_with_aggregatable_dedup_key(count).has_value());
-  }
-
-  EXPECT_EQ(parse_with_aggregatable_dedup_key(kMaxAggregatableDedupKeys + 1),
-            base::unexpected(
-                TriggerRegistrationError::kAggregatableDedupKeyListTooLong));
-}
-
-TEST(TriggerRegistrationTest, Parse_RecordsMetrics) {
-  using ::base::Bucket;
-  using ::testing::ElementsAre;
-
-  base::HistogramTester histograms;
-
-  for (size_t count : {
-           0,
-           1,
-           1,
-           3,
-       }) {
-    ASSERT_TRUE(ParseWithAggregatableTriggerData(count).has_value());
-  }
-
-  ASSERT_FALSE(ParseWithAggregatableTriggerData(
-                   kMaxAggregatableTriggerDataPerTrigger + 1)
-                   .has_value());
-
-  EXPECT_THAT(
-      histograms.GetAllSamples("Conversions.AggregatableTriggerDataLength"),
-      ElementsAre(Bucket(0, 1), Bucket(1, 2), Bucket(3, 1)));
-}
-
 TEST(TriggerRegistrationTest, ToJson) {
   const struct {
     TriggerRegistration input;
@@ -361,17 +261,15 @@ TEST(TriggerRegistrationTest, ToJson) {
       },
       {
           TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.aggregatable_dedup_keys = *AggregatableDedupKeyList::Create(
-                {AggregatableDedupKey(/*dedup_key=*/1, FilterPair())});
-            r.aggregatable_trigger_data = *AggregatableTriggerDataList::Create(
-                {AggregatableTriggerData()});
+            r.aggregatable_dedup_keys = {
+                AggregatableDedupKey(/*dedup_key=*/1, FilterPair())};
+            r.aggregatable_trigger_data = {AggregatableTriggerData()};
             r.aggregatable_values = *AggregatableValues::Create({{"a", 2}});
             r.debug_key = 3;
             r.debug_reporting = true;
-            r.event_triggers =
-                *EventTriggerDataList::Create({EventTriggerData()});
-            r.filters.positive = *Filters::Create({{"b", {}}});
-            r.filters.negative = *Filters::Create({{"c", {}}});
+            r.event_triggers = {EventTriggerData()};
+            r.filters.positive = FiltersDisjunction({{{"b", {}}}});
+            r.filters.negative = FiltersDisjunction({{{"c", {}}}});
           }),
           R"json({
             "aggregation_coordinator_identifier": "aws-cloud",
@@ -381,8 +279,8 @@ TEST(TriggerRegistrationTest, ToJson) {
             "debug_key": "3",
             "debug_reporting": true,
             "event_trigger_data": [{"priority":"0","trigger_data":"0"}],
-            "filters": {"b": []},
-            "not_filters": {"c": []}
+            "filters": [{"b": []}],
+            "not_filters": [{"c": []}]
           })json",
       },
   };

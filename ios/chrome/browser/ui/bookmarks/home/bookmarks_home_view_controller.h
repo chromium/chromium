@@ -41,8 +41,7 @@ class GURL;
 
 // Class to navigate the bookmark hierarchy.
 @interface BookmarksHomeViewController
-    : ChromeTableViewController <KeyCommandActions,
-                                 UIAdaptivePresentationControllerDelegate>
+    : ChromeTableViewController <KeyCommandActions>
 
 // Delegate for presenters. Note that this delegate is currently being set only
 // in case of handset, and not tablet. In the future it will be used by both
@@ -55,15 +54,15 @@ class GURL;
 // Handler for Snackbar Commands.
 @property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
 
+// The bookmark folder currently being displayed.
+@property(nonatomic, assign) const bookmarks::BookmarkNode* displayedFolderNode;
+
 // Initializers.
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)tableViewStyle NS_UNAVAILABLE;
 
 // Called before the instance is deallocated.
 - (void)shutdown;
-
-// Setter to set _rootNode value.
-- (void)setRootNode:(const bookmarks::BookmarkNode*)rootNode;
 
 // Setter to set _externalBookmark value.
 - (void)setExternalBookmark:(const bookmarks::BookmarkNode*)node;
@@ -77,6 +76,10 @@ class GURL;
 
 // Whether the browser can be dismissed.
 - (BOOL)canDismiss;
+
+// Called when the user is swiping down the view, and
+// `BookmarksHomeViewController` is on the top of the navigation view.
+- (void)willDismissBySwipeDown;
 
 @end
 

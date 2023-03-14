@@ -23,13 +23,18 @@ def CheckChange(input_api, output_api):
         results += presubmit_support.CheckBundleData(
             input_api,
             output_api,
-            'test/test_support_bundle_data',
+            'data/test_bundle_data',
             globroot='.')
         results += presubmit_support.CheckBundleData(
             input_api,
             output_api,
-            'test/net_unittests_bundle_data',
+            'data/test_support_bundle_data',
             globroot='.')
+        results += presubmit_support.CheckBundleData(
+            input_api,
+            output_api,
+            'third_party/nist-pkits/test_bundle_data',
+            globroot='third_party/nist-pkits')
     finally:
         sys.path = old_sys_path
     return results

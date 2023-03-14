@@ -1,0 +1,27 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+visibility = [ "//components/cast_streaming/renderer/*" ]
+
+source_set("frame") {
+  public = [
+    "demuxer_connector.h",
+    "frame_injecting_demuxer.h",
+  ]
+  sources = [
+    "demuxer_connector.cc",
+    "frame_injecting_demuxer.cc",
+  ]
+  public_deps = [ "//components/cast_streaming/renderer:resource_provider" ]
+  deps = [
+    "//base",
+    "//components/cast_streaming/common:mojom",
+    "//components/cast_streaming/common/frame",
+    "//components/cast_streaming/renderer/common",
+    "//media",
+    "//media/mojo/common",
+    "//media/mojo/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+}

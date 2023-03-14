@@ -1,0 +1,25 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "url/mojom/origin.mojom";
+
+// Used in some clearing methods of URL-keyed data to specify the resources to
+// keep/delete.
+struct ClearDataFilter {
+  enum Type {DELETE_MATCHES, KEEP_MATCHES};
+
+  Type type;
+
+  // A list of registrable domains (e.g. google.com), internal hostnames
+  // (e.g. localhost), or IP addresses (e.g. 127.0.0.1). Other domains, such as
+  // third and lower level domains (e.g. www.google.com) are not accepted.
+  // Formally, it must hold that GetDomainAndRegistry(|domain|, _) is |domain|
+  // itself or an empty string.
+  array<string> domains;
+
+  // List of URL origins.
+  array<url.mojom.Origin> origins;
+};

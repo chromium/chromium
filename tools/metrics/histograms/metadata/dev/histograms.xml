@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="DevTools.ActionTaken" enum="DevToolsAction"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>alph@chromium.org</owner>
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>
@@ -68,6 +68,24 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="DevTools.ColorConvertedFrom" enum="DevToolsColorConvertedFrom"
+    expires_after="2023-12-01">
+  <owner>ergunsh@chromium.org</owner>
+  <owner>changhaohan@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <summary>Records the color conversion menu usage.</summary>
+</histogram>
+
+<histogram name="DevTools.ColorPickerOpenedFrom"
+    enum="DevToolsColorPickerOpenedFrom" expires_after="2023-12-01">
+  <owner>ergunsh@chromium.org</owner>
+  <owner>changhaohan@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <summary>Records the color picker usage.</summary>
+</histogram>
+
 <histogram name="DevTools.CSSHintShown" enum="DevToolsCSSHintShown"
     expires_after="2023-08-12">
   <owner>changhaohan@chromium.org</owner>
@@ -80,8 +98,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DevTools.CSSPropertyDocumentation"
+    enum="DevToolsCSSPropertyDocumentation" expires_after="2023-12-01">
+  <owner>ergunsh@chromium.org</owner>
+  <owner>changhaohan@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <summary>
+    Records the CSS Property documentation usage and feature toggles.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.DeveloperResourceLoaded"
-    enum="DevToolsDeveloperResourceLoaded" expires_after="2023-06-18">
+    enum="DevToolsDeveloperResourceLoaded" expires_after="2023-08-20">
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>
   <summary>
@@ -116,7 +145,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.DeveloperResourceScheme"
-    enum="DevToolsDeveloperResourceScheme" expires_after="2023-06-18">
+    enum="DevToolsDeveloperResourceScheme" expires_after="2023-08-20">
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>
   <summary>
@@ -134,7 +163,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.ExperimentDisabled" enum="DevtoolsExperiments"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>yangguo@chromium.org</owner>
   <owner>changhao@chromium.org</owner>
   <summary>
@@ -143,7 +172,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.ExperimentEnabled" enum="DevtoolsExperiments"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>yangguo@chromium.org</owner>
   <owner>changhao@chromium.org</owner>
   <summary>
@@ -152,7 +181,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.ExperimentEnabledAtLaunch" enum="DevtoolsExperiments"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>yangguo@chromium.org</owner>
   <owner>changhao@chromium.org</owner>
   <summary>
@@ -179,7 +208,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.IssuesPanelIssueExpanded"
-    enum="DevToolsIssuesPanelIssueExpanded" expires_after="2023-06-18">
+    enum="DevToolsIssuesPanelIssueExpanded" expires_after="2023-08-20">
   <owner>yangguo@chromium.org</owner>
   <owner>dsv@chromium.org</owner>
   <summary>
@@ -197,7 +226,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.IssuesPanelResourceOpened"
-    enum="DevToolsIssuesPanelResourceOpened" expires_after="2023-03-05">
+    enum="DevToolsIssuesPanelResourceOpened" expires_after="2024-03-05">
   <owner>yangguo@chromium.org</owner>
   <owner>dsv@chromium.org</owner>
   <summary>
@@ -218,7 +247,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.KeyboardShortcutFired"
-    enum="DevToolsKeyboardShortcutAction" expires_after="2023-06-18">
+    enum="DevToolsKeyboardShortcutAction" expires_after="2023-08-20">
   <owner>yangguo@chromium.org</owner>
   <owner>jalyn@microsoft.com</owner>
   <owner>leo.lee@microsoft.com</owner>
@@ -240,7 +269,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="DevTools.Launch" units="ms"
-    expires_after="2023-06-25">
+    expires_after="2023-08-27">
 <!-- Name completed by histogram_suffixes name="DevToolsLaunchPanels" -->
 
   <owner>yangguo@chromium.org</owner>
@@ -356,7 +385,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.RecordingEdited" enum="DevToolsRecordingEdited"
-    expires_after="2023-06-25">
+    expires_after="2023-09-03">
   <owner>alexrudenko@chromium.org</owner>
   <owner>mathias@chromium.org</owner>
   <owner>yangguo@chromium.org</owner>
@@ -364,7 +393,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.RecordingExported" enum="DevToolsRecordingExported"
-    expires_after="2023-07-02">
+    expires_after="2023-09-03">
   <owner>alexrudenko@chromium.org</owner>
   <owner>mathias@chromium.org</owner>
   <owner>yangguo@chromium.org</owner>
@@ -372,7 +401,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.RecordingReplayFinished"
-    enum="DevToolsRecordingReplayFinished" expires_after="2023-06-18">
+    enum="DevToolsRecordingReplayFinished" expires_after="2023-08-20">
   <owner>alexrudenko@chromium.org</owner>
   <owner>mathias@chromium.org</owner>
   <owner>yangguo@chromium.org</owner>
@@ -380,7 +409,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.RecordingReplaySpeed"
-    enum="DevToolsRecordingReplaySpeed" expires_after="2023-07-02">
+    enum="DevToolsRecordingReplaySpeed" expires_after="2023-09-03">
   <owner>ergunsh@chromium.org</owner>
   <owner>alexrudenko@chromium.org</owner>
   <owner>mathias@chromium.org</owner>
@@ -392,7 +421,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.RecordingReplayStarted"
-    enum="DevToolsRecordingReplayStarted" expires_after="2023-06-18">
+    enum="DevToolsRecordingReplayStarted" expires_after="2023-08-20">
   <owner>alexrudenko@chromium.org</owner>
   <owner>mathias@chromium.org</owner>
   <owner>yangguo@chromium.org</owner>
@@ -400,7 +429,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.RecordingToggled" enum="DevToolsRecordingToggled"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>alexrudenko@chromium.org</owner>
   <owner>mathias@chromium.org</owner>
   <owner>yangguo@chromium.org</owner>

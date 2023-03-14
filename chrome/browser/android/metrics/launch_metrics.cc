@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/android/jni_string.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "chrome/android/chrome_jni_headers/LaunchMetrics_jni.h"
@@ -68,22 +69,26 @@ static void JNI_LaunchMetrics_RecordLaunch(
     service->SetLastShortcutLaunchTime(web_contents, url);
   }
 
-  UMA_HISTOGRAM_ENUMERATION(
+  base::UmaHistogramEnumeration(
       "Launch.HomeScreenSource",
       static_cast<webapps::ShortcutInfo::Source>(histogram_source),
       webapps::ShortcutInfo::SOURCE_COUNT);
 
   if (!is_shortcut) {
-    UMA_HISTOGRAM_ENUMERATION(
+    base::UmaHistogramEnumeration(
         "Launch.WebAppDisplayMode",
+        static_cast<blink::mojom::DisplayMode>(display_mode));
+  } else {
+    base::UmaHistogramEnumeration(
+        "Launch.Window.CreateShortcutApp.WebAppDisplayMode",
         static_cast<blink::mojom::DisplayMode>(display_mode));
   }
 
   HomeScreenLaunchType action = is_shortcut ? HomeScreenLaunchType::SHORTCUT
                                             : HomeScreenLaunchType::STANDALONE;
 
-  UMA_HISTOGRAM_ENUMERATION("Launch.HomeScreen", action,
-                            HomeScreenLaunchType::COUNT);
+  base::UmaHistogramEnumeration("Launch.HomeScreen", action,
+                                HomeScreenLaunchType::COUNT);
 }
 
 static void JNI_LaunchMetrics_RecordHomePageLaunchMetrics(

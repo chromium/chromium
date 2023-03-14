@@ -23,7 +23,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/easy_unlock/chrome_proximity_auth_client.h"
-#include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_manager.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_names.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_notification_controller.h"
 #include "chrome/browser/ash/login/easy_unlock/smartlock_feature_usage_metrics.h"
@@ -279,8 +278,6 @@ void EasyUnlockServiceRegular::SetStoredRemoteDevices(
     pairing_update->Remove(kKeyDevices);
   else
     pairing_update->Set(kKeyDevices, devices.Clone());
-
-  CheckCryptohomeKeysAndMaybeHardlock();
 }
 
 proximity_auth::ProximityAuthPrefManager*
@@ -309,13 +306,6 @@ void EasyUnlockServiceRegular::InitializeInternal() {
   pref_manager_->StartSyncingToLocalState(g_browser_process->local_state(),
                                           GetAccountId());
 
-  registrar_.Init(profile()->GetPrefs());
-  registrar_.Add(
-      proximity_auth::prefs::kProximityAuthIsChromeOSLoginEnabled,
-      base::BindRepeating(
-          &EasyUnlockServiceRegular::CheckCryptohomeKeysAndMaybeHardlock,
-          weak_ptr_factory_.GetWeakPtr()));
-
   // If `device_sync_client_` is not ready yet, wait for it to call back on
   // OnReady().
   if (device_sync_client_->is_ready())
@@ -332,8 +322,6 @@ void EasyUnlockServiceRegular::InitializeInternal() {
 void EasyUnlockServiceRegular::ShutdownInternal() {
   pref_manager_.reset();
   notification_controller_.reset();
-
-  registrar_.RemoveAll();
 
   device_sync_client_->RemoveObserver(this);
 

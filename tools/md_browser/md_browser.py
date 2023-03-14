@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env vpython3
 # Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -20,12 +20,10 @@ import urllib.request, urllib.parse, urllib.error
 import webbrowser
 from xml.etree import ElementTree
 
+import markdown
 
 THIS_DIR = os.path.realpath(os.path.dirname(__file__))
 SRC_DIR = os.path.dirname(os.path.dirname(THIS_DIR))
-sys.path.insert(0, os.path.join(SRC_DIR, 'third_party', 'Python-Markdown'))
-import markdown
-
 
 def main(argv):
   parser = argparse.ArgumentParser(prog='md_browser')

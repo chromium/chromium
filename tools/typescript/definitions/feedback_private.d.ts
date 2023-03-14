@@ -12,7 +12,7 @@ declare namespace chrome {
       data?: Blob;
     }
 
-    export interface SystemInformation {
+    export interface LogsMapEntry {
       key: string;
       value: string;
     }
@@ -34,7 +34,7 @@ declare namespace chrome {
       productId?: number;
       screenshot?: Blob;
       traceId?: number;
-      systemInformation?: SystemInformation[];
+      systemInformation?: LogsMapEntry[];
       sendHistograms?: boolean;
       flow?: FeedbackFlow;
       attachedFileBlobUuid?: string;
@@ -101,6 +101,6 @@ declare namespace chrome {
         formOpenTime?: number): Promise<SendFeedbackResult>;
 
     export function getSystemInformation(
-        callback: (info: SystemInformation[]) => void): void;
+      callback: (info: LogsMapEntry[]) => void): void;
   }
 }

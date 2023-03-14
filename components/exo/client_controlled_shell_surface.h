@@ -234,6 +234,10 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   // Used to scale incoming coordinates from the client to DP.
   float GetClientToDpScale() const;
 
+  // Used to scale incoming coordinates from the client to DP before the pending
+  // scale is committed.
+  float GetClientToDpPendingScale() const;
+
   // Sets the resize lock type to the surface.
   void SetResizeLockType(ash::ArcResizeLockType resize_lock_type);
 
@@ -293,7 +297,6 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   const ash::NonClientFrameViewAsh* GetFrameView() const;
 
   void EnsurePendingScale(bool commit_immediately);
-  float GetClientToDpPendingScale() const;
 
   gfx::Rect GetClientBoundsForWindowBoundsAndWindowState(
       const gfx::Rect& window_bounds,

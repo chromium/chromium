@@ -16,7 +16,7 @@ public class ReauthenticatorBridge {
     private long mNativeReauthenticatorBridge;
     private Callback<Boolean> mAuthResultCallback;
 
-    public ReauthenticatorBridge(@BiometricAuthRequester int requester) {
+    public ReauthenticatorBridge(@DeviceAuthRequester int requester) {
         mNativeReauthenticatorBridge = ReauthenticatorBridgeJni.get().create(this, requester);
     }
 

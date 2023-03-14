@@ -9,8 +9,11 @@
 
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/values.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 
 namespace content {
@@ -29,10 +32,12 @@ PartitionedLockManager::LockRequest::LockRequest() = default;
 PartitionedLockManager::LockRequest::LockRequest(
     LockType type,
     base::WeakPtr<PartitionedLockHolder> locks_holder,
-    base::OnceClosure acquired_callback)
+    base::OnceClosure acquired_callback,
+    const base::Location& location)
     : requested_type(type),
       locks_holder(std::move(locks_holder)),
-      acquired_callback(std::move(acquired_callback)) {}
+      acquired_callback(std::move(acquired_callback)),
+      location(location) {}
 PartitionedLockManager::LockRequest::LockRequest(LockRequest&&) noexcept =
     default;
 PartitionedLockManager::LockRequest::~LockRequest() = default;
@@ -69,7 +74,8 @@ void PartitionedLockManager::AcquireLocks(
     base::flat_set<PartitionedLockRequest> lock_requests,
     base::WeakPtr<PartitionedLockHolder> locks_holder,
     LocksAcquiredCallback callback,
-    AcquireOptions acquire_options) {
+    AcquireOptions acquire_options,
+    const base::Location& location) {
   if (!locks_holder) {
     std::move(callback).Run();
     return;
@@ -96,15 +102,17 @@ void PartitionedLockManager::AcquireLocks(
             // All locks have been acquired.
             if (!holder || callback.IsCancelled() || callback.is_null())
               return;
-            if (run_synchronously->data)
+            if (run_synchronously->data) {
               std::move(callback).Run();
-            else
+            } else {
               runner->PostTask(FROM_HERE, std::move(callback));
+            }
           },
           task_runner_, run_callback_synchonously, locks_holder,
           std::move(callback)));
   for (PartitionedLockRequest& request : lock_requests) {
-    AcquireLock(std::move(request), locks_holder, all_locks_acquired_barrier);
+    AcquireLock(std::move(request), locks_holder, all_locks_acquired_barrier,
+                location);
   }
   // If the barrier wasn't run yet, then it will be run asynchronously.
   run_callback_synchonously->data = false;
@@ -115,6 +123,24 @@ PartitionedLockManager::TestLockResult PartitionedLockManager::TestLock(
   Lock& lock = locks_[request.lock_id];
   return lock.CanBeAcquired(request.type) ? TestLockResult::kFree
                                           : TestLockResult::kLocked;
+}
+
+std::vector<base::Location>
+PartitionedLockManager::GetHeldAndQueuedLockLocations(
+    const base::flat_set<PartitionedLockRequest>& requests) const {
+  std::vector<base::Location> result;
+  for (const auto& request : requests) {
+    auto lock_it = locks_.find(request.lock_id);
+    if (lock_it == locks_.end()) {
+      continue;
+    }
+    result.insert(result.end(), lock_it->second.request_locations.begin(),
+                  lock_it->second.request_locations.end());
+    for (const LockRequest& queued_request : lock_it->second.queue) {
+      result.push_back(queued_request.location);
+    }
+  }
+  return result;
 }
 
 std::vector<PartitionedLockId> PartitionedLockManager::GetUnacquirableLocks(
@@ -141,10 +167,38 @@ void PartitionedLockManager::RemoveLockId(const PartitionedLockId& lock_id) {
   }
 }
 
+base::Value PartitionedLockManager::ToDebugValue(
+    TransformLockIdToStringFn transform) const {
+  base::Value::Dict result;
+  for (const std::pair<PartitionedLockId, Lock>& id_lock_pair : locks_) {
+    const Lock& lock = id_lock_pair.second;
+    base::Value::Dict lock_state;
+    base::Value::List held_locations;
+    for (const base::Location& location : lock.request_locations) {
+      held_locations.Append(location.ToString());
+    }
+    lock_state.Set("held_locations", std::move(held_locations));
+
+    base::Value::List queued_locations;
+    for (const LockRequest& request : lock.queue) {
+      queued_locations.Append(request.location.ToString());
+    }
+    lock_state.Set("queue", std::move(queued_locations));
+
+    std::string id_as_str = transform(id_lock_pair.first);
+    DCHECK(!result.contains(id_as_str))
+        << id_as_str << " already exists in " << result.DebugString()
+        << ", cannot insert " << lock_state.DebugString();
+    result.Set(id_as_str, std::move(lock_state));
+  }
+  return base::Value(std::move(result));
+}
+
 void PartitionedLockManager::AcquireLock(
     PartitionedLockRequest request,
     base::WeakPtr<PartitionedLockHolder> locks_holder,
-    base::OnceClosure acquired_callback) {
+    base::OnceClosure acquired_callback,
+    const base::Location& location) {
   DCHECK(locks_holder);
 
   auto it = locks_.find(request.lock_id);
@@ -160,8 +214,10 @@ void PartitionedLockManager::AcquireLock(
   if (lock.CanBeAcquired(request.type)) {
     ++lock.acquired_count;
     lock.lock_mode = request.type;
-    auto released_callback = base::BindOnce(
-        &PartitionedLockManager::LockReleased, weak_factory_.GetWeakPtr());
+    lock.request_locations.insert(location);
+    auto released_callback =
+        base::BindOnce(&PartitionedLockManager::LockReleased,
+                       weak_factory_.GetWeakPtr(), location);
     locks_holder->locks.emplace_back(std::move(request.lock_id),
                                      std::move(released_callback));
     std::move(acquired_callback).Run();
@@ -170,11 +226,12 @@ void PartitionedLockManager::AcquireLock(
     // grant the given callback the lock when it is acquired in the future in
     // the |LockReleased| method.
     lock.queue.emplace_back(request.type, std::move(locks_holder),
-                            std::move(acquired_callback));
+                            std::move(acquired_callback), location);
   }
 }
 
-void PartitionedLockManager::LockReleased(PartitionedLockId lock_id) {
+void PartitionedLockManager::LockReleased(base::Location request_location,
+                                          PartitionedLockId lock_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = locks_.find(lock_id);
   DCHECK(it != locks_.end());
@@ -182,6 +239,7 @@ void PartitionedLockManager::LockReleased(PartitionedLockId lock_id) {
 
   DCHECK_GT(lock.acquired_count, 0);
   --(lock.acquired_count);
+  lock.request_locations.erase(request_location);
   if (lock.acquired_count == 0) {
     // Either the lock isn't acquired yet or more shared locks can be granted.
     while (!lock.queue.empty() &&
@@ -200,8 +258,10 @@ void PartitionedLockManager::LockReleased(PartitionedLockId lock_id) {
 
       ++lock.acquired_count;
       lock.lock_mode = requester.requested_type;
-      auto released_callback = base::BindOnce(
-          &PartitionedLockManager::LockReleased, weak_factory_.GetWeakPtr());
+      lock.request_locations.insert(requester.location);
+      auto released_callback =
+          base::BindOnce(&PartitionedLockManager::LockReleased,
+                         weak_factory_.GetWeakPtr(), requester.location);
       // Grant the lock.
       requester.locks_holder->locks.emplace_back(lock_id,
                                                  std::move(released_callback));

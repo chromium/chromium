@@ -6,11 +6,11 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/public/browser/touch_selection_controller_client_manager.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom-shared.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/pointer/touch_editing_controller.h"
@@ -174,10 +174,10 @@ bool TouchSelectionControllerClientChildFrame::IsCommandIdEnabled(
           ui::ClipboardBuffer::kCopyPaste, &data_dst, &result);
       return editable && !result.empty();
     }
-#if BUILDFLAG(IS_CHROMEOS)
     case ui::TouchEditable::kSelectAll:
-      return readable && features::IsTouchTextEditingRedesignEnabled();
-#endif
+      return true;
+    case ui::TouchEditable::kSelectWord:
+      return editable && !has_selection;
     default:
       return false;
   }
@@ -185,8 +185,11 @@ bool TouchSelectionControllerClientChildFrame::IsCommandIdEnabled(
 
 void TouchSelectionControllerClientChildFrame::ExecuteCommand(int command_id,
                                                               int event_flags) {
-  manager_->GetTouchSelectionController()
-      ->HideAndDisallowShowingAutomatically();
+  if (command_id != ui::TouchEditable::kSelectAll &&
+      command_id != ui::TouchEditable::kSelectWord) {
+    manager_->GetTouchSelectionController()
+        ->HideAndDisallowShowingAutomatically();
+  }
   RenderWidgetHostDelegate* host_delegate = rwhv_->host()->delegate();
   if (!host_delegate)
     return;
@@ -203,6 +206,12 @@ void TouchSelectionControllerClientChildFrame::ExecuteCommand(int command_id,
       break;
     case ui::TouchEditable::kSelectAll:
       host_delegate->SelectAll();
+      break;
+    case ui::TouchEditable::kSelectWord:
+      host_delegate->SelectAroundCaret(
+          blink::mojom::SelectionGranularity::kWord,
+          /*should_show_handle=*/true,
+          /*should_show_context_menu=*/false);
       break;
     default:
       NOTREACHED();

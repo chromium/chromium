@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 #include "content/browser/preloading/prefetch/prefetch_cookie_listener.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_network_context.h"
@@ -158,10 +159,11 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(
       // it. It is considered as a failure as the final response is never
       // served.
       case PrefetchStatus::kPrefetchIsPrivacyDecoy:
-      case PrefetchStatus::kPrefetchFailedRedirectsDisabled:
       case PrefetchStatus::kPrefetchFailedNetError:
       case PrefetchStatus::kPrefetchFailedNon2XX:
       case PrefetchStatus::kPrefetchFailedMIMENotSupported:
+      case PrefetchStatus::kPrefetchFailedInvalidRedirect:
+      case PrefetchStatus::kPrefetchFailedIneligibleRedirect:
         devtools_instrumentation::DidUpdatePrefetchStatus(
             ftn, url, PreloadingTriggeringOutcome::kFailure);
         attempt->SetFailureReason(
@@ -209,6 +211,7 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(
       case PrefetchStatus::kPrefetchIsStaleNSPNotStarted:
       case PrefetchStatus::kSubresourceThrottled:
       case PrefetchStatus::kPrefetchPositionIneligible:
+      case PrefetchStatus::kPrefetchFailedRedirectsDisabled_DEPRECATED:
         NOTIMPLEMENTED();
     }
   }
@@ -223,7 +226,7 @@ PrefetchContainer::PrefetchContainer(
     const blink::mojom::Referrer& referrer,
     base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager)
     : referring_render_frame_host_id_(referring_render_frame_host_id),
-      url_(url),
+      prefetch_url_(url),
       prefetch_type_(prefetch_type),
       referrer_(referrer),
       prefetch_document_manager_(prefetch_document_manager),
@@ -239,14 +242,16 @@ PrefetchContainer::PrefetchContainer(
     auto matcher =
         base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch)
             ? PreloadingDataImpl::GetSameURLAndNoVarySearchURLMatcher(
-                  prefetch_document_manager_, url_)
-            : PreloadingDataImpl::GetSameURLMatcher(url_);
+                  prefetch_document_manager_, prefetch_url_)
+            : PreloadingDataImpl::GetSameURLMatcher(prefetch_url_);
     auto* attempt = preloading_data->AddPreloadingAttempt(
         content_preloading_predictor::kSpeculationRules,
         PreloadingType::kPrefetch, std::move(matcher));
     attempt_ = attempt->GetWeakPtr();
     // `PreloadingPrediction` is added in `PreloadingDecider`.
   }
+
+  redirect_chain_.push_back(std::make_unique<SinglePrefetch>(prefetch_url_));
 }
 
 PrefetchContainer::~PrefetchContainer() {
@@ -280,7 +285,7 @@ void PrefetchContainer::SetPrefetchStatus(PrefetchStatus prefetch_status) {
   FrameTreeNode* ftn = FrameTreeNode::From(
       RenderFrameHostImpl::FromID(referring_render_frame_host_id_));
   SetTriggeringOutcomeAndFailureReasonFromStatus(
-      attempt_.get(), ftn, url_,
+      attempt_.get(), ftn, prefetch_url_,
       /*old_prefetch_status=*/prefetch_status_,
       /*new_prefetch_status=*/prefetch_status);
   prefetch_status_ = prefetch_status;
@@ -318,34 +323,98 @@ PrefetchDocumentManager* PrefetchContainer::GetPrefetchDocumentManager() const {
 }
 
 void PrefetchContainer::OnEligibilityCheckComplete(
+    const GURL& url,
     bool is_eligible,
     absl::optional<PrefetchStatus> status) {
-  is_eligible_ = is_eligible;
-  if (!is_eligible_) {
-    // Expect a reason (status) if not eligible.
-    DCHECK(status.has_value());
-    prefetch_status_ = status;
-    SetIneligibilityFromStatus(attempt_.get(), prefetch_status_.value());
-  } else if (attempt_) {
-    attempt_->SetEligibility(PreloadingEligibility::kEligible);
+  SinglePrefetch* this_prefetch = GetSinglePrefetch(url);
+  DCHECK(this_prefetch);
+  this_prefetch->is_eligible_ = is_eligible;
+  if (this_prefetch->on_eligibility_check_complete_callback_) {
+    std::move(this_prefetch->on_eligibility_check_complete_callback_)
+        .Run(is_eligible);
   }
-  prefetch_document_manager_->OnEligibilityCheckComplete(is_eligible);
+
+  if (url == prefetch_url_) {
+    // This case is for just the URL that was originally requested to be
+    // prefetched.
+    if (!is_eligible) {
+      // Expect a reason (status) if not eligible.
+      DCHECK(status.has_value());
+      prefetch_status_ = status;
+    }
+
+    if (attempt_) {
+      if (is_eligible) {
+        attempt_->SetEligibility(PreloadingEligibility::kEligible);
+      } else {
+        SetIneligibilityFromStatus(attempt_.get(), prefetch_status_.value());
+      }
+    }
+
+    prefetch_document_manager_->OnEligibilityCheckComplete(is_eligible);
+  } else {
+    // This case is for any URLs from redirects.
+    if (!is_eligible) {
+      SetPrefetchStatus(PrefetchStatus::kPrefetchFailedIneligibleRedirect);
+    }
+  }
+}
+
+bool PrefetchContainer::IsInitialPrefetchEligible() const {
+  DCHECK(redirect_chain_.size() > 0);
+  return redirect_chain_[0]->is_eligible_
+             ? redirect_chain_[0]->is_eligible_.value()
+             : false;
+}
+
+void PrefetchContainer::AddRedirectHop(const GURL& url) {
+  redirect_chain_.push_back(std::make_unique<SinglePrefetch>(url));
+}
+
+absl::optional<bool> PrefetchContainer::GetEligibilityResultForRedirect(
+    const GURL& url) {
+  SinglePrefetch* this_prefetch = GetSinglePrefetch(url);
+  DCHECK(this_prefetch);
+  return this_prefetch->is_eligible_;
+}
+
+void PrefetchContainer::SetOnEligibilityCheckCompleteCallback(
+    const GURL& url,
+    OnEligibilityCheckCompleteCallback on_eligibility_check_complete_callback) {
+  SinglePrefetch* this_prefetch = GetSinglePrefetch(url);
+  DCHECK(this_prefetch);
+
+  this_prefetch->on_eligibility_check_complete_callback_ =
+      std::move(on_eligibility_check_complete_callback);
 }
 
 void PrefetchContainer::RegisterCookieListener(
+    const GURL& url,
     network::mojom::CookieManager* cookie_manager) {
-  cookie_listener_ =
-      PrefetchCookieListener::MakeAndRegister(url_, cookie_manager);
+  SinglePrefetch* this_prefetch = GetSinglePrefetch(url);
+  DCHECK(this_prefetch);
+
+  this_prefetch->cookie_listener_ = PrefetchCookieListener::MakeAndRegister(
+      this_prefetch->url_, cookie_manager);
 }
 
-void PrefetchContainer::StopCookieListener() {
-  if (cookie_listener_)
-    cookie_listener_->StopListening();
+void PrefetchContainer::StopCookieListener(const GURL& url) {
+  SinglePrefetch* this_prefetch = GetSinglePrefetch(url);
+  DCHECK(this_prefetch);
+
+  if (this_prefetch->cookie_listener_) {
+    this_prefetch->cookie_listener_->StopListening();
+  }
 }
 
-bool PrefetchContainer::HaveDefaultContextCookiesChanged() const {
-  if (cookie_listener_)
-    return cookie_listener_->HaveCookiesChanged();
+bool PrefetchContainer::HaveDefaultContextCookiesChanged(
+    const GURL& url) const {
+  SinglePrefetch* this_prefetch = GetSinglePrefetch(url);
+  DCHECK(this_prefetch);
+
+  if (this_prefetch->cookie_listener_) {
+    return this_prefetch->cookie_listener_->HaveCookiesChanged();
+  }
   return false;
 }
 
@@ -374,7 +443,7 @@ void PrefetchContainer::OnIsolatedCookieCopyStart() {
 
   // We don't want the cookie listener for this URL to get the changes from the
   // copy.
-  StopCookieListener();
+  StopCookieListener(prefetch_url_);
 
   cookie_copy_status_ = CookieCopyStatus::kInProgress;
 
@@ -546,5 +615,40 @@ void PrefetchContainer::SimulateAttemptAtInterceptorForTest() {
   SetPrefetchStatus(PrefetchStatus::kPrefetchAllowed);
   SetPrefetchStatus(PrefetchStatus::kPrefetchSuccessful);
 }
+
+PrefetchContainer::SinglePrefetch* PrefetchContainer::GetSinglePrefetch(
+    const GURL& url) const {
+  for (auto itr = redirect_chain_.rbegin(); itr != redirect_chain_.rend();
+       itr++) {
+    GURL single_prefetch_url = (*itr)->url_;
+    if (single_prefetch_url == url ||
+        IsMatchingNoVarySearchUrl(single_prefetch_url, url)) {
+      return itr->get();
+    }
+  }
+  NOTREACHED();
+  return nullptr;
+}
+
+bool PrefetchContainer::IsMatchingNoVarySearchUrl(
+    const GURL& internal_url,
+    const GURL& external_url) const {
+  if (!no_vary_search_helper_) {
+    return false;
+  }
+
+  absl::optional<GURL> no_vary_search_match_url =
+      no_vary_search_helper_->MatchUrl(external_url);
+  if (!no_vary_search_match_url) {
+    return false;
+  }
+
+  return internal_url == no_vary_search_match_url.value();
+}
+
+PrefetchContainer::SinglePrefetch::SinglePrefetch(const GURL& url)
+    : url_(url) {}
+
+PrefetchContainer::SinglePrefetch::~SinglePrefetch() = default;
 
 }  // namespace content

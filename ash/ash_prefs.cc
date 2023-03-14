@@ -28,6 +28,7 @@
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
 #include "ash/session/fullscreen_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf_controller.h"
 #include "ash/style/color_palette_controller.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
@@ -163,7 +164,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry, bool for_test) {
     QuickSettingsFooter::RegisterLocalStatePrefs(registry);
   else
     TopShortcutsView::RegisterLocalStatePrefs(registry);
-  glanceables_util::RegisterLocalStatePrefs(registry);
   KeyboardBacklightColorController::RegisterPrefs(registry);
 }
 
@@ -175,6 +175,7 @@ void RegisterSigninProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
 void RegisterUserProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   RegisterProfilePrefs(registry, for_test);
   PowerPrefs::RegisterUserProfilePrefs(registry);
+  SessionControllerImpl::RegisterUserProfilePrefs(registry);
 }
 
 }  // namespace ash

@@ -40,17 +40,19 @@ bool CreateAPIPermission(const std::string& permission_str,
   const APIPermissionInfo* permission_info =
       PermissionsInfo::GetInstance()->GetByName(permission_str);
   if (permission_info) {
-    std::unique_ptr<APIPermission> permission(
-        permission_info->CreateAPIPermission());
     if (source != APIPermissionSet::kAllowInternalPermissions &&
         permission_info->is_internal()) {
-      // An internal permission specified in permissions list is an error.
-      if (error) {
-        *error = ErrorUtils::FormatErrorMessageUTF16(
-            errors::kPermissionNotAllowedInManifest, permission_str);
+      // Treat internal permissions as unhandled if we don't allow them. This
+      // prevents us from hard erroring in the case that we ever change a
+      // permission from internal to not or vice versa.
+      if (unhandled_permissions) {
+        unhandled_permissions->push_back(permission_str);
       }
-      return false;
+      return true;
     }
+
+    std::unique_ptr<APIPermission> permission(
+        permission_info->CreateAPIPermission());
 
     std::string error_details;
     if (!permission->FromValue(permission_value, &error_details,
@@ -154,8 +156,9 @@ bool APIPermissionSet::ParseFromJSON(
     // permission should be a string or a single key dict.
     if (permissions[i].is_string()) {
       permission_str = permissions[i].GetString();
-    } else if (permissions[i].is_dict() && permissions[i].DictSize() == 1) {
-      auto dict_iter = permissions[i].DictItems().begin();
+    } else if (permissions[i].is_dict() &&
+               permissions[i].GetDict().size() == 1) {
+      auto dict_iter = permissions[i].GetDict().begin();
       permission_str = dict_iter->first;
       permission_value = &dict_iter->second;
     } else {

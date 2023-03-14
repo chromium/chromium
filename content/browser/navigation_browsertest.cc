@@ -349,24 +349,6 @@ class NetworkIsolationNavigationBrowserTest : public ContentBrowserTest {
   }
 };
 
-class NetworkDoubleKeyIsolationNavigationBrowserTest
-    : public ContentBrowserTest {
- public:
-  NetworkDoubleKeyIsolationNavigationBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {net::features::kForceIsolationInfoFrameOriginToTopLevelFrame}, {});
-  }
-
- protected:
-  void SetUpOnMainThread() override {
-    ASSERT_TRUE(embedded_test_server()->Start());
-    ContentBrowserTest::SetUpOnMainThread();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 class NavigationBrowserTestReferrerPolicy
     : public NavigationBrowserTest,
       public ::testing::WithParamInterface<network::mojom::ReferrerPolicy> {
@@ -946,46 +928,6 @@ IN_PROC_BROWSER_TEST_F(NetworkIsolationNavigationBrowserTest,
                                  net::SiteForCookies::FromOrigin(origin),
                                  std::set<net::SchemefulSite>())
           .IsEqualForTesting(iframe_request->trusted_params->isolation_info));
-}
-
-IN_PROC_BROWSER_TEST_F(NetworkDoubleKeyIsolationNavigationBrowserTest,
-                       SubframeDoubleKeyNetworkIsolation) {
-  GURL url_top(embedded_test_server()->GetURL("/page_with_iframe.html"));
-  GURL url_iframe = embedded_test_server()->GetURL("/title1.html");
-  url::Origin origin = url::Origin::Create(url_top);
-  URLLoaderMonitor monitor({url_iframe});
-  EXPECT_TRUE(NavigateToURL(shell(), url_top));
-  monitor.WaitForUrls();
-
-  absl::optional<network::ResourceRequest> main_frame_request =
-      monitor.GetRequestInfo(url_top);
-  ASSERT_TRUE(main_frame_request.has_value());
-  ASSERT_TRUE(main_frame_request->trusted_params);
-  EXPECT_TRUE(net::IsolationInfo::Create(
-                  net::IsolationInfo::RequestType::kMainFrame, origin, origin,
-                  net::SiteForCookies::FromOrigin(origin),
-                  std::set<net::SchemefulSite>())
-                  .IsEqualForTesting(
-                      main_frame_request->trusted_params->isolation_info));
-
-  absl::optional<network::ResourceRequest> iframe_request =
-      monitor.GetRequestInfo(url_iframe);
-  ASSERT_TRUE(iframe_request->trusted_params);
-
-  // IsolationInfo and NIK of subframe should only reflect the main_frame's
-  // origin when these flags are on because double key does not include the
-  // subframe's origin.
-  EXPECT_TRUE(
-      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kSubFrame,
-                                 origin, origin,
-                                 net::SiteForCookies::FromOrigin(origin),
-                                 std::set<net::SchemefulSite>())
-          .IsEqualForTesting(iframe_request->trusted_params->isolation_info));
-
-  EXPECT_EQ(
-      main_frame_request->trusted_params->isolation_info
-          .network_isolation_key(),
-      iframe_request->trusted_params->isolation_info.network_isolation_key());
 }
 
 // Tests that the initiator is not set for a browser initiated top frame
@@ -4506,9 +4448,8 @@ class NetworkIsolationSplitCacheAppendIframeOrigin
     : public NavigationBaseBrowserTest {
  public:
   NetworkIsolationSplitCacheAppendIframeOrigin() {
-    feature_list_.InitWithFeatures(
-        {net::features::kSplitCacheByNetworkIsolationKey},
-        {net::features::kForceIsolationInfoFrameOriginToTopLevelFrame});
+    feature_list_.InitAndEnableFeature(
+        net::features::kSplitCacheByNetworkIsolationKey);
   }
 
  private:
@@ -6150,7 +6091,7 @@ class NavigationBrowserTestWarnSandboxIneffective
 
   static constexpr char kSandboxEscapeWarningMessage[] =
       "An iframe which has both allow-scripts and allow-same-origin for its "
-      "sandbox attribute can remove its sandboxing.";
+      "sandbox attribute can escape its sandboxing.";
 };
 
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTestWarnSandboxIneffective,

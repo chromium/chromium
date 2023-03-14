@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
+#include "chromeos/ash/services/hotspot_config/public/cpp/hotspot_enabled_state_provider.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -25,7 +26,8 @@ namespace ash {
 // configurations.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
     : public ShillPropertyChangedObserver,
-      public LoginState::Observer {
+      public LoginState::Observer,
+      public hotspot_config::HotspotEnabledStateProvider {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -80,6 +82,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
   // Update the cached hotspot_state_ and active_client_count_ from hotspot
   // status in Shill.
   void UpdateHotspotStatus(const base::Value::Dict& status);
+
+  // Updates the reason for hotspot getting disabled and notifies observers.
+  void UpdateDisableReason(const base::Value::Dict& status);
 
   // Notify observers that hotspot state or active client count was changed.
   void NotifyHotspotStatusChanged();

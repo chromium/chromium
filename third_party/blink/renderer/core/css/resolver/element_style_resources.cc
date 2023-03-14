@@ -33,7 +33,6 @@
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -131,7 +130,8 @@ StyleImage* StyleImageLoader::Load(
 
   if (auto* image_set_value = DynamicTo<CSSImageSetValue>(value)) {
     return image_set_value->CacheImage(document_, device_scale_factor_,
-                                       image_request_behavior, cross_origin);
+                                       image_request_behavior, cross_origin,
+                                       container_sizes);
   }
 
   NOTREACHED();
@@ -172,11 +172,8 @@ const PreCachedContainerSizes::ContainerSizes& PreCachedContainerSizes::Get()
 }
 
 ElementStyleResources::ElementStyleResources(Element& element,
-                                             float device_scale_factor,
-                                             PseudoElement* pseudo_element)
-    : element_(element),
-      device_scale_factor_(device_scale_factor),
-      pseudo_element_(pseudo_element) {}
+                                             float device_scale_factor)
+    : element_(element), device_scale_factor_(device_scale_factor) {}
 
 bool ElementStyleResources::IsPending(const CSSValue& value) const {
   if (auto* img_value = DynamicTo<CSSImageValue>(value)) {
@@ -340,8 +337,7 @@ void ElementStyleResources::LoadPendingImages(ComputedStyleBuilder& builder) {
             StyleImage* new_image =
                 loader.Load(*pending_value, image_request_behavior);
             if (new_image && new_image->IsLazyloadPossiblyDeferred()) {
-              LazyImageHelper::StartMonitoring(pseudo_element_ ? pseudo_element_
-                                                               : &element_);
+              LazyImageHelper::StartMonitoring(&element_);
             }
             background_layer->SetImage(new_image);
           }

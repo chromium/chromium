@@ -8,25 +8,24 @@
 
 namespace ui {
 
-namespace fup = fuchsia::ui::pointer;
-
 namespace {
+
+namespace fup = fuchsia_ui_pointer;
 
 fup::ViewParameters CreateViewParameters(gfx::RectF view,
                                          gfx::RectF viewport,
                                          std::array<float, 9> transform) {
-  fup::ViewParameters params;
-  fuchsia::ui::pointer::Rectangle view_rect;
-  view_rect.min = {view.x(), view.y()};
-  view_rect.max = {view.bottom_right().x(), view.bottom_right().y()};
-  params.view = view_rect;
-  fuchsia::ui::pointer::Rectangle viewport_rect;
-  viewport_rect.min = {viewport.x(), viewport.y()};
-  viewport_rect.max = {viewport.bottom_right().x(),
-                       viewport.bottom_right().y()};
-  params.viewport = viewport_rect;
-  params.viewport_to_view_transform = transform;
-  return params;
+  return {{
+      .view = fup::Rectangle{{
+          .min = {view.x(), view.y()},
+          .max = {view.bottom_right().x(), view.bottom_right().y()},
+      }},
+      .viewport = fup::Rectangle{{
+          .min = {viewport.x(), viewport.y()},
+          .max = {viewport.bottom_right().x(), viewport.bottom_right().y()},
+      }},
+      .viewport_to_view_transform = transform,
+  }};
 }
 
 }  // namespace
@@ -46,14 +45,12 @@ TouchEventBuilder& TouchEventBuilder::IncrementTime() {
   return *this;
 }
 
-TouchEventBuilder& TouchEventBuilder::SetId(
-    fuchsia::ui::pointer::TouchInteractionId id) {
+TouchEventBuilder& TouchEventBuilder::SetId(fup::TouchInteractionId id) {
   id_ = id;
   return *this;
 }
 
-TouchEventBuilder& TouchEventBuilder::SetPhase(
-    fuchsia::ui::pointer::EventPhase phase) {
+TouchEventBuilder& TouchEventBuilder::SetPhase(fup::EventPhase phase) {
   phase_ = phase;
   return *this;
 }
@@ -91,28 +88,32 @@ TouchEventBuilder& TouchEventBuilder::WithoutSample() {
 }
 
 fup::TouchPointerSample TouchEventBuilder::BuildSample() const {
-  fup::TouchPointerSample sample;
-  sample.set_interaction(id_);
-  sample.set_phase(phase_);
-  sample.set_position_in_viewport({position_.x(), position_.y()});
-  return sample;
+  return {{
+      .interaction = id_,
+      .phase = phase_,
+      .position_in_viewport = {{position_.x(), position_.y()}},
+  }};
 }
 
 fup::TouchInteractionResult TouchEventBuilder::BuildResult() const {
-  return {id_, touch_interaction_status_.value()};
+  return {{
+      .interaction = id_,
+      .status = touch_interaction_status_.value(),
+  }};
 }
 
 fup::TouchEvent TouchEventBuilder::Build() const {
-  fup::TouchEvent event;
-  event.set_timestamp(time_.get());
-  event.set_view_parameters(CreateViewParameters(view_, viewport_, transform_));
+  fup::TouchEvent event{{
+      .timestamp = time_.get(),
+      .view_parameters = CreateViewParameters(view_, viewport_, transform_),
+      .trace_flow_id = 123,
+  }};
   if (include_sample_) {
-    event.set_pointer_sample(BuildSample());
+    event.pointer_sample(BuildSample());
   }
   if (touch_interaction_status_) {
-    event.set_interaction_result(BuildResult());
+    event.interaction_result(BuildResult());
   }
-  event.set_trace_flow_id(123);
   return event;
 }
 
@@ -198,47 +199,48 @@ MouseEventBuilder& MouseEventBuilder::WithoutViewParameters() {
 
 fup::MousePointerSample MouseEventBuilder::MouseEventBuilder::BuildSample()
     const {
-  fup::MousePointerSample sample;
-  sample.set_device_id(device_id_);
+  fup::MousePointerSample sample{{
+      .device_id = device_id_,
+      .position_in_viewport = {{position_.x(), position_.y()}},
+      .is_precision_scroll = is_precision_scroll_,
+  }};
   if (!pressed_buttons_.empty()) {
-    sample.set_pressed_buttons(pressed_buttons_);
+    sample.pressed_buttons(pressed_buttons_);
   }
-  sample.set_position_in_viewport({position_.x(), position_.y()});
   if (scroll_.horizontal != 0) {
-    sample.set_scroll_h(scroll_.horizontal);
+    sample.scroll_h(scroll_.horizontal);
   }
   if (scroll_.vertical != 0) {
-    sample.set_scroll_v(scroll_.vertical);
+    sample.scroll_v(scroll_.vertical);
   }
   if (scroll_in_physical_pixel_.horizontal != 0) {
-    sample.set_scroll_h_physical_pixel(scroll_in_physical_pixel_.horizontal);
+    sample.scroll_h_physical_pixel(scroll_in_physical_pixel_.horizontal);
   }
   if (scroll_in_physical_pixel_.vertical != 0) {
-    sample.set_scroll_v_physical_pixel(scroll_in_physical_pixel_.vertical);
+    sample.scroll_v_physical_pixel(scroll_in_physical_pixel_.vertical);
   }
-  sample.set_is_precision_scroll(is_precision_scroll_);
   return sample;
 }
 
 fup::MouseDeviceInfo MouseEventBuilder::BuildDeviceInfo() const {
-  fup::MouseDeviceInfo device_info;
-  device_info.set_id(device_id_);
-  device_info.set_buttons(buttons_);
-  return device_info;
+  return {{
+      .id = device_id_,
+      .buttons = buttons_,
+  }};
 }
 
 fup::MouseEvent MouseEventBuilder::Build() const {
-  fup::MouseEvent event;
-  event.set_timestamp(time_.get());
+  fup::MouseEvent event{{
+      .timestamp = time_.get(),
+      .pointer_sample = BuildSample(),
+      .trace_flow_id = 123,
+  }};
   if (include_view_parameters_) {
-    event.set_view_parameters(
-        CreateViewParameters(view_, viewport_, transform_));
+    event.view_parameters(CreateViewParameters(view_, viewport_, transform_));
   }
-  event.set_pointer_sample(BuildSample());
   if (include_device_info_) {
-    event.set_device_info(BuildDeviceInfo());
+    event.device_info(BuildDeviceInfo());
   }
-  event.set_trace_flow_id(123);
   return event;
 }
 

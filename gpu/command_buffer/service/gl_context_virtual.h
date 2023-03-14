@@ -47,6 +47,9 @@ class GPU_GLES2_EXPORT GLContextVirtual : public gl::GLContext {
   void SetUnbindFboOnMakeCurrent() override;
   void ForceReleaseVirtuallyCurrent() override;
 #if BUILDFLAG(IS_APPLE)
+  void AddMetalSharedEventsForBackpressure(
+      std::vector<std::unique_ptr<BackpressureMetalSharedEvent>> events)
+      override;
   uint64_t BackpressureFenceCreate() override;
   void BackpressureFenceWait(uint64_t fence) override;
 #endif

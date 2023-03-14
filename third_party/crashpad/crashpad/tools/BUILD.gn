@@ -25,6 +25,22 @@ source_set("tool_support") {
   deps = [ "$mini_chromium_source_parent:base" ]
 }
 
+crashpad_executable("dump_minidump_annotations") {
+  sources = [ "dump_minidump_annotations.cc" ]
+
+  deps = [
+    ":tool_support",
+    "../client",
+    "../snapshot",
+    "../util",
+  ]
+
+  if (crashpad_is_win) {
+    cflags =
+        [ "/wd4201" ]  # nonstandard extension used : nameless struct/union
+  }
+}
+
 if (!crashpad_is_ios) {
   crashpad_executable("crashpad_database_util") {
     sources = [ "crashpad_database_util.cc" ]

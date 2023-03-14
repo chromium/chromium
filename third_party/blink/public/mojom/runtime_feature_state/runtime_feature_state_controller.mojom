@@ -4,6 +4,7 @@
 
 module blink.mojom;
 import "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom";
+import "url/mojom/origin.mojom";
 
 // For IPC messages that involve origin trial features, each
 // RuntimeFeatureState enum must be mapped to a corresponding FeatureValue
@@ -30,4 +31,12 @@ interface RuntimeFeatureStateController {
   // perform security checks. No data is returned.
   ApplyFeatureDiffForOriginTrial(map<blink.mojom.RuntimeFeatureState,
     FeatureValue> modified_features);
+
+  // Enable the trial represented by the |token|, provided the token represents
+  // a persistent origin trial. The |token| will be re-parsed and validated by
+  // the browser, so prior validation of the passed value is only required to
+  // prevent sending values that will definitely be rejected, such as invalid
+  // tokens. The |script_origins| is the list of scripts that could potentially
+  // have injected the token, to allow for third party token validation.
+  EnablePersistentTrial(string token, array<url.mojom.Origin> script_origins);
 };

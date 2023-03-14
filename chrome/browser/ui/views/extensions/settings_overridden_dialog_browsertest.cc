@@ -96,10 +96,9 @@ class SettingsOverriddenDialogViewBrowserTest : public DialogBrowserTest {
       ShowSearchOverriddenDialog(DefaultSearch::kUseDefault);
     } else if (name == "SearchOverriddenDialog_BackToOther") {
       ShowSearchOverriddenDialog(DefaultSearch::kUseNonGoogleFromDefaultList);
-    } else if (name == "SearchOverriddenDialog_Generic") {
-      ShowSearchOverriddenDialog(DefaultSearch::kUseNewSearch);
     } else {
-      NOTREACHED() << name;
+      CHECK_EQ(name, "SearchOverriddenDialog_Generic");
+      ShowSearchOverriddenDialog(DefaultSearch::kUseNewSearch);
     }
   }
 

@@ -17,7 +17,7 @@ import sys
 
 from gn_helpers import ToGNString
 
-# VS 2022 x.x with 10.0.22621.0 SDK with ARM64 libraries and UWP support.
+# VS 2022 17.4 with 10.0.22621.0 SDK with ARM64 libraries and UWP support.
 # See go/chromium-msvc-toolchain for instructions about how to update the
 # toolchain.
 #
@@ -33,6 +33,8 @@ from gn_helpers import ToGNString
 #   Affects the availability of APIs in the toolchain headers.
 # * //docs/windows_build_instructions.md mentions of VS or Windows SDK.
 #   Keeps the document consistent with the toolchain version.
+# * //tools/win/setenv.py
+#   Add/remove VS versions when upgrading to a new VS version.
 # * MSVC_TOOLSET_VERSION in this file
 #   Maps between Visual Studio version and MSVC toolset
 # * MSVS_VERSIONS in this file

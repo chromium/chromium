@@ -1455,6 +1455,7 @@ TEST(PeopleHandlerGuestModeTest, GetStoredAccountsList) {
   EXPECT_TRUE(accounts.empty());
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PeopleHandlerTest, TurnOffSync) {
   // Simulate a user who previously turned on sync.
   identity_test_env()->MakePrimaryAccountAvailable("user@gmail.com",
@@ -1467,6 +1468,7 @@ TEST_F(PeopleHandlerTest, TurnOffSync) {
   base::Value::Dict status = ExpectSyncStatusChanged();
   ExpectHasBoolKey(status, "signedIn", false);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(PeopleHandlerTest, GetStoredAccountsList) {
   // Chrome OS sets an unconsented primary account on login.

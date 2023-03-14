@@ -14,8 +14,14 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+class ProfileSelections;
+
 namespace base {
 class TimeDelta;
+}
+
+namespace content {
+class BrowserContext;
 }
 
 // A single cookie-accessing operation (either read or write). Not to be
@@ -23,9 +29,19 @@ class TimeDelta;
 // read+write.
 using CookieOperation = network::mojom::CookieAccessDetails::Type;
 
-// Constants:
 // The filename for the DIPS database.
 const base::FilePath::CharType kDIPSFilename[] = FILE_PATH_LITERAL("DIPS");
+
+// The FilePath for the ON-DISK DIPSDatabase associated with a BrowserContext,
+// if one exists.
+// NOTE: This returns the same value regardless of if there is actually a
+// persisted DIPSDatabase for the BrowserContext or not.
+base::FilePath GetDIPSFilePath(content::BrowserContext* context);
+
+// The ProfileSelections used to dictate when the DIPSService should be created,
+// if `dips::kFeature` is enabled, and when the DIPSCleanupService should be
+// created, if `dips::kFeature` is NOT enabled.
+ProfileSelections GetHumanProfileSelections();
 
 // CookieAccessType:
 // NOTE: We use this type as a bitfield, and will soon be logging it. Don't
@@ -38,7 +54,13 @@ enum class CookieAccessType {
   kReadWrite = 3
 };
 
+inline CookieAccessType ToCookieAccessType(CookieOperation op) {
+  return (op == CookieOperation::kChange ? CookieAccessType::kWrite
+                                         : CookieAccessType::kRead);
+}
+
 base::StringPiece CookieAccessTypeToString(CookieAccessType type);
+std::ostream& operator<<(std::ostream& os, CookieAccessType access_type);
 
 constexpr CookieAccessType operator|(CookieAccessType lhs,
                                      CookieAccessType rhs) {

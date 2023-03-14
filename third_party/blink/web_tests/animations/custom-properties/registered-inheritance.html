@@ -39,21 +39,21 @@ function read(element, property) {
 
 test(() => {
   container.style.animationDelay = '-0.25s';
-  assert_equals(read(container, '--inherited'), ' from', 'container at 25%');
-  assert_equals(read(child, '--inherited'), ' from', 'child at 25%');
+  assert_equals(read(container, '--inherited'), 'from', 'container at 25%');
+  assert_equals(read(child, '--inherited'), 'from', 'child at 25%');
 
   container.style.animationDelay = '-0.75s';
-  assert_equals(read(container, '--inherited'), ' to', 'container at 75%');
-  assert_equals(read(child, '--inherited'), ' to', 'child at 75%');
+  assert_equals(read(container, '--inherited'), 'to', 'container at 75%');
+  assert_equals(read(child, '--inherited'), 'to', 'child at 75%');
 }, 'CSS Animations on registered inherited custom properties should get inherited');
 
 test(() => {
   container.style.animationDelay = '-0.25s';
-  assert_equals(read(container, '--non-inherited'), ' from', 'container at 25%');
+  assert_equals(read(container, '--non-inherited'), 'from', 'container at 25%');
   assert_equals(read(child, '--non-inherited'), 'initialValue', 'child at 25%');
 
   container.style.animationDelay = '-0.75s';
-  assert_equals(read(container, '--non-inherited'), ' to', 'container at 75%');
+  assert_equals(read(container, '--non-inherited'), 'to', 'container at 75%');
   assert_equals(read(child, '--non-inherited'), 'initialValue', 'child at 75%');
 }, 'CSS Animations on registered non-inherited custom properties should not get inherited');
 </script>

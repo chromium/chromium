@@ -30,6 +30,7 @@
 #include "sandbox/policy/switches.h"
 #include "sandbox/policy/win/lpac_capability.h"
 #include "sandbox/win/src/app_container_base.h"
+#include "sandbox/win/src/broker_services.h"
 #include "sandbox/win/src/sandbox_factory.h"
 #include "sandbox/win/src/sandbox_policy.h"
 #include "sandbox/win/src/sandbox_policy_diagnostic.h"
@@ -447,6 +448,7 @@ class TestSandboxDelegate : public SandboxDelegate {
     return false;
   }
 
+  MOCK_METHOD1(InitializeConfig, bool(TargetConfig* config));
   MOCK_METHOD1(PreSpawnTarget, bool(TargetPolicy* policy));
 
   std::string GetSandboxTag() override { return std::string(); }
@@ -467,6 +469,8 @@ TEST_F(SandboxWinTest, GeneratedPolicyTest) {
   base::HandlesToInheritVector handles_to_inherit;
   BrokerServices* broker = SandboxFactory::GetBrokerServices();
   auto policy = broker->CreatePolicy();
+  EXPECT_CALL(test_renderer_delegate, InitializeConfig(_))
+      .WillOnce(Return(true));
   // PreSpawn should get called, but not modifying the policy for this test.
   EXPECT_CALL(test_renderer_delegate, PreSpawnTarget(_)).WillOnce(Return(true));
   ResultCode result = SandboxWin::GeneratePolicyForSandboxedProcess(
@@ -483,6 +487,32 @@ TEST_F(SandboxWinTest, GeneratedPolicyTest) {
             policy->GetConfig()->GetLockdownTokenLevel());
 }
 
+TEST_F(SandboxWinTest, GeneratedPolicyTestMultipleCalls) {
+  TestSandboxDelegate test_renderer_delegate(
+      sandbox::mojom::Sandbox::kRenderer);
+  base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
+  base::HandlesToInheritVector handles_to_inherit;
+  BrokerServices* broker = SandboxFactory::GetBrokerServices();
+  auto policy = broker->CreatePolicy();
+
+  // Checks that multiple initializations of the policy only initialize the
+  // configuration once but calls PreSpawnTarget twice.
+  EXPECT_CALL(test_renderer_delegate, InitializeConfig(_))
+      .WillOnce(Return(true));
+  EXPECT_CALL(test_renderer_delegate, PreSpawnTarget(_))
+      .Times(2)
+      .WillRepeatedly(Return(true));
+  ResultCode result = SandboxWin::GeneratePolicyForSandboxedProcess(
+      cmd_line, switches::kRendererProcess, handles_to_inherit,
+      &test_renderer_delegate, policy.get());
+  ASSERT_EQ(ResultCode::SBOX_ALL_OK, result);
+  BrokerServicesBase::FreezeTargetConfigForTesting(policy->GetConfig());
+  result = SandboxWin::GeneratePolicyForSandboxedProcess(
+      cmd_line, switches::kRendererProcess, handles_to_inherit,
+      &test_renderer_delegate, policy.get());
+  ASSERT_EQ(ResultCode::SBOX_ALL_OK, result);
+}
+
 TEST_F(SandboxWinTest, GeneratedPolicyTestNoSandbox) {
   TestSandboxDelegate test_unsandboxed_delegate(
       sandbox::mojom::Sandbox::kNoSandbox);
@@ -492,6 +522,7 @@ TEST_F(SandboxWinTest, GeneratedPolicyTestNoSandbox) {
   auto policy = broker->CreatePolicy();
   // Unsandboxed processes never call the delegate prespawn as there is no
   // policy.
+  EXPECT_CALL(test_unsandboxed_delegate, InitializeConfig(_)).Times(0);
   EXPECT_CALL(test_unsandboxed_delegate, PreSpawnTarget(_)).Times(0);
 
   ResultCode result = SandboxWin::GeneratePolicyForSandboxedProcess(

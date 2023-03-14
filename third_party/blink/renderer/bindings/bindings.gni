@@ -181,6 +181,20 @@ blink_core_sources_bindings =
                   ],
                   "abspath")
 
+declare_args() {
+  # Enable V8 to produce & consume hints regarding which functions to compile
+  # eagerly.
+  enable_v8_compile_hints = true
+}
+
+if (enable_v8_compile_hints) {
+  blink_core_sources_bindings += get_path_info([
+                                                 "core/v8/v8_compile_hints.cc",
+                                                 "core/v8/v8_compile_hints.h",
+                                               ],
+                                               "abspath")
+}
+
 # Source files to be part of
 # "//third_party/blink/renderer/modules:modules".
 blink_modules_sources_bindings = get_path_info(

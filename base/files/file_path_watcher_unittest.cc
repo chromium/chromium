@@ -1414,7 +1414,7 @@ TEST_F(FilePathWatcherTest, DirAttributesChanged) {
 
 #endif  // BUILDFLAG(IS_APPLE)
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 
 // Fail fast if trying to trivially watch a non-existent item.
 TEST_F(FilePathWatcherTest, TrivialNoDir) {
@@ -1486,7 +1486,7 @@ TEST_F(FilePathWatcherTest, TrivialDirMove) {
   ASSERT_TRUE(WaitForEvent());
 }
 
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE)
 
 }  // namespace
 

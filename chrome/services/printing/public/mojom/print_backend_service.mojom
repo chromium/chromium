@@ -89,16 +89,13 @@ interface SandboxedPrintBackendHost {
 // isolated process.
 interface PrintBackendService {
   // Establish the locale to be used for calls with this service and the
-  // interface to the underlying data source. If `remote` is valid, binds an
-  // interface that is used to communicate with the browser process to parse XML
-  // in a separate process.
-  [EnableIf=is_win]
-  Init(string locale, pending_remote<PrinterXmlParser>? remote);
-
-  // Establish the locale to be used for calls with this service and the
   // interface to the underlying data source.
-  [EnableIfNot=is_win]
-  Init(string locale);
+  // For Windows, also establish the interface to the underlying data source.
+  // If `remote` is valid, binds an interface that is used to communicate with
+  // the browser process to parse XML in a separate process.
+  Init(string locale,
+       [EnableIf=is_win]
+       pending_remote<PrinterXmlParser>? remote);
 
   // TODO(crbug.com/1225111)  Message with no arguments and no reply that is
   // useful to ensure that an idle timeout change takes effect.
@@ -120,6 +117,27 @@ interface PrintBackendService {
   // for a specific printer.
   FetchCapabilities(string printer_name)
     => (PrinterCapsAndInfoResult printer_caps_and_info);
+
+  // Creates a printing context that can persist across multiple calls.
+  // Necessary to ensure that the context used for system dialogs is still
+  // available by the time that printing is started.  The printing context
+  // is to be referenced by the provided `context_id` in all future calls that
+  // need to use it.
+  // Once an established printing context has been attached to a print job by
+  // calling StartPrinting() then it will be automatically cleaned up as a
+  // result of that print job completing successfully or being canceled.  It is
+  // automatically destroyed upon any failure during UseDefaultSettings() or
+  // AskUserForSettings().
+  // The `parent_window_id` parameter, for configurations where it is
+  // applicable, specifies an ID which is cross-process safe to represent the
+  // native window which owns the modal print dialog used for prompting the
+  // user. This can be needed if:
+  //   - The AskUserForSettings() call will be invoked.
+  //   - (Windows-specific)  If the job settings provided to StartPrinting()
+  //     signal to use a system dialog.
+  EstablishPrintingContext(uint32 context_id,
+                           [EnableIf=enable_oop_basic_print_dialog]
+                           uint32 parent_window_id);
 
   // Generates a print settings object based upon the default settings for the
   // default printer.

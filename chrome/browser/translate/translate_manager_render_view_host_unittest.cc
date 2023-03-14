@@ -75,7 +75,7 @@ namespace {
 
 class MockTranslateBubbleFactory : public TranslateBubbleFactory {
  public:
-  MockTranslateBubbleFactory() {}
+  MockTranslateBubbleFactory() = default;
 
   MockTranslateBubbleFactory(const MockTranslateBubbleFactory&) = delete;
   MockTranslateBubbleFactory& operator=(const MockTranslateBubbleFactory&) =

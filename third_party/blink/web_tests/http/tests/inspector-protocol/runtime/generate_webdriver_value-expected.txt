@@ -331,3 +331,8 @@ Testing 'document.querySelector('body > div')':
     }
 }
 
+Testing 'new URL('http://example.com')':
+{
+    type : platformobject
+}
+

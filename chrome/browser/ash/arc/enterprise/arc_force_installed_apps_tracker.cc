@@ -239,8 +239,8 @@ PolicyComplianceObserver::~PolicyComplianceObserver() {
 
 void PolicyComplianceObserver::OnComplianceReportReceived(
     const base::Value* compliance_report) {
-  const base::Value* const details = compliance_report->FindKeyOfType(
-      "nonComplianceDetails", base::Value::Type::LIST);
+  const base::Value::List* const details =
+      compliance_report->GetDict().FindList("nonComplianceDetails");
   if (!details) {
     // ARC policy compliant.
     if (!finish_callback_.is_null())
@@ -249,18 +249,20 @@ void PolicyComplianceObserver::OnComplianceReportReceived(
   }
 
   bool is_android_id_reset = true;
-  for (const auto& detail : details->GetList()) {
-    const base::Value* const reason =
-        detail.FindKeyOfType("nonComplianceReason", base::Value::Type::INTEGER);
-    const std::string* const settingName = detail.FindStringKey("settingName");
-    if (!reason || !settingName)
+  for (const auto& detail : *details) {
+    const base::Value::Dict& detail_dict = detail.GetDict();
+    absl::optional<int> reason = detail_dict.FindInt("nonComplianceReason");
+    const std::string* const setting_name =
+        detail_dict.FindString("settingName");
+    if (!reason || !setting_name) {
       continue;
+    }
     // Not compliant with ARC applications policy.
-    if (*settingName == policy_util::kArcPolicyKeyApplications) {
+    if (*setting_name == policy_util::kArcPolicyKeyApplications) {
       return;
     }
     // android_id is expected to be reset, but still not reset by clouddpc.
-    if (*settingName == ArcPolicyBridge::kResetAndroidIdEnabled) {
+    if (*setting_name == ArcPolicyBridge::kResetAndroidIdEnabled) {
       is_android_id_reset = false;
       continue;
     }

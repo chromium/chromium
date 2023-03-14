@@ -4,9 +4,13 @@
 
 #include "chrome/browser/ash/arc/session/arc_disk_space_monitor.h"
 
+#include "ash/components/arc/arc_features.h"
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "base/logging.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -42,6 +46,11 @@ class ArcDiskSpaceMonitorTest : public testing::Test {
     // Make the session manager skip creating UI.
     ArcSessionManager::SetUiEnabledForTesting(/*enabled=*/false);
 
+    // Enable the ArcEnableVirtioBlkForData feature by default. This can be
+    // overridden with another ScopedFeatureList in each test case.
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>(
+        kEnableVirtioBlkForData);
+
     // Initialize a testing profile and a fake user manager.
     // (Required for testing ARC.)
     testing_profile_ = std::make_unique<TestingProfile>();
@@ -73,6 +82,7 @@ class ArcDiskSpaceMonitorTest : public testing::Test {
     arc_session_manager_.reset();
     notification_tester_.reset();
     testing_profile_.reset();
+    scoped_feature_list_.reset();
     ash::SpacedClient::Shutdown();
     ash::ConciergeClient::Shutdown();
   }
@@ -93,9 +103,12 @@ class ArcDiskSpaceMonitorTest : public testing::Test {
     return arc_disk_space_monitor_.get();
   }
 
+  TestingProfile* testing_profile() const { return testing_profile_.get(); }
+
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
   std::unique_ptr<TestingProfile> testing_profile_;
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
@@ -208,6 +221,82 @@ TEST_F(ArcDiskSpaceMonitorTest, FreeSpaceIsLowerThanThresholdForStoppingArc) {
   EXPECT_FALSE(notification_tester()->GetNotification(
       kLowDiskSpacePreStopNotificationId));
   EXPECT_TRUE(notification_tester()->GetNotification(
+      kLowDiskSpacePostStopNotificationId));
+}
+
+TEST_F(ArcDiskSpaceMonitorTest, VirtioBlkNotEnabled) {
+  // ThresholdForStoppingArc < ThresholdForPreStopNotification < free_disk_space
+  ash::FakeSpacedClient::Get()->set_free_disk_space(
+      absl::make_optional(kDiskSpaceThresholdForPreStopNotification + 1));
+
+  base::test::ScopedFeatureList override_scoped_feature_list;
+  override_scoped_feature_list.InitAndDisableFeature(kEnableVirtioBlkForData);
+
+  arc_session_manager()->StartArcForTesting();
+  EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
+
+  base::RunLoop().RunUntilIdle();
+
+  // ARC should keep running but the timer should be stopped.
+  EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
+  EXPECT_FALSE(arc_disk_space_monitor()->IsTimerRunningForTesting());
+
+  // No notification should be shown.
+  EXPECT_FALSE(notification_tester()->GetNotification(
+      kLowDiskSpacePreStopNotificationId));
+  EXPECT_FALSE(notification_tester()->GetNotification(
+      kLowDiskSpacePostStopNotificationId));
+}
+
+TEST_F(ArcDiskSpaceMonitorTest, ArcVmDataMigrationNotFinished) {
+  // ThresholdForStoppingArc < ThresholdForPreStopNotification < free_disk_space
+  ash::FakeSpacedClient::Get()->set_free_disk_space(
+      absl::make_optional(kDiskSpaceThresholdForPreStopNotification + 1));
+
+  base::test::ScopedFeatureList override_scoped_feature_list;
+  override_scoped_feature_list.InitWithFeatures({kEnableArcVmDataMigration},
+                                                {kEnableVirtioBlkForData});
+
+  arc_session_manager()->StartArcForTesting();
+  EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
+
+  base::RunLoop().RunUntilIdle();
+
+  // ARC should keep running but the timer should be stopped.
+  EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
+  EXPECT_FALSE(arc_disk_space_monitor()->IsTimerRunningForTesting());
+
+  // No notification should be shown.
+  EXPECT_FALSE(notification_tester()->GetNotification(
+      kLowDiskSpacePreStopNotificationId));
+  EXPECT_FALSE(notification_tester()->GetNotification(
+      kLowDiskSpacePostStopNotificationId));
+}
+
+TEST_F(ArcDiskSpaceMonitorTest, ArcVmDataMigrationFinished) {
+  // ThresholdForStoppingArc < ThresholdForPreStopNotification < free_disk_space
+  ash::FakeSpacedClient::Get()->set_free_disk_space(
+      absl::make_optional(kDiskSpaceThresholdForPreStopNotification + 1));
+
+  base::test::ScopedFeatureList override_scoped_feature_list;
+  override_scoped_feature_list.InitWithFeatures({kEnableArcVmDataMigration},
+                                                {kEnableVirtioBlkForData});
+  SetArcVmDataMigrationStatus(testing_profile()->GetPrefs(),
+                              ArcVmDataMigrationStatus::kFinished);
+
+  arc_session_manager()->StartArcForTesting();
+  EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
+
+  base::RunLoop().RunUntilIdle();
+
+  // Both ARC and the timer should be running.
+  EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
+  EXPECT_TRUE(arc_disk_space_monitor()->IsTimerRunningForTesting());
+
+  // No notification should be shown.
+  EXPECT_FALSE(notification_tester()->GetNotification(
+      kLowDiskSpacePreStopNotificationId));
+  EXPECT_FALSE(notification_tester()->GetNotification(
       kLowDiskSpacePostStopNotificationId));
 }
 

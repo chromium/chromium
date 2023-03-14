@@ -39,51 +39,53 @@ export class AmbientPreviewLarge extends AmbientPreviewBase {
 
   static override get properties() {
     return {
-      googlePhotosAlbumsPreviews_: {
+      previewImages_: {
         type: Array,
         value: null,
       },
       collageImages_: {
         type: Array,
         computed:
-            'computeCollageImages_(topicSource_, previewAlbums_, googlePhotosAlbumsPreviews_)',
+            'computeCollageImages_(topicSource_, previewAlbums_, previewImages_)',
+      },
+      thumbnailImages_: {
+        type: Array,
+        computed: 'computeThumbnailImages_(topicSource_, previewImages_)',
       },
     };
   }
 
   private collageImages_: Url[];
+  private thumbnailImages_: Url[];
 
-  /**
-   * Return the array of images that form the collage.
-   * When topic source is Google Photos:
-   *   - if `googlePhotosAlbumsPreviews_` is non-empty but contains fewer than 4
-   *     images, only return one of them; otherwise return the first 4.
-   *   - if `googlePhotosAlbumsPreviews_` is empty:
-   *        - e.g. user selected art gallery albums
-   *        - if `previewAlbums_` contains fewer than 4 albums, return one of
-   *        their previews; otherwise return the first 4.
-   *
-   * If isPersonalizationJellyEnabled flag is on, max number of collage image
-   * will be 3 instead of 4.
-   */
+  /** Returns the array of images that form the collage when Jelly is off. */
   private computeCollageImages_(): Url[] {
-    const maxLength = this.isPersonalizationJellyEnabled_ ? 3 : 4;
     switch (this.topicSource_) {
       case TopicSource.kArtGallery:
-        return (this.previewAlbums_ || [])
-            .map(album => album.url)
-            .slice(0, maxLength);
+        return (this.previewAlbums_ || []).map(album => album.url).slice(0, 2);
       case TopicSource.kGooglePhotos:
-        if (isNonEmptyArray(this.googlePhotosAlbumsPreviews_)) {
-          return this.googlePhotosAlbumsPreviews_.length < maxLength ?
-              [this.googlePhotosAlbumsPreviews_[0]] :
-              this.googlePhotosAlbumsPreviews_.slice(0, maxLength);
+        const maxLength = 4;
+        if (isNonEmptyArray(this.previewImages_)) {
+          return this.previewImages_.length < maxLength ?
+              [this.previewImages_[0]] :
+              this.previewImages_.slice(0, maxLength);
         }
         if (isNonEmptyArray(this.previewAlbums_)) {
           return this.previewAlbums_.length < maxLength ?
               [this.previewAlbums_[0].url] :
               this.previewAlbums_.map(album => album.url).slice(0, maxLength);
         }
+    }
+    return [];
+  }
+
+  /** Returns the array of thumbnail images. */
+  private computeThumbnailImages_(): Url[] {
+    if (isNonEmptyArray(this.previewImages_)) {
+      const maxLength = Math.min(
+          this.previewImages_.length,
+          this.topicSource_ === TopicSource.kArtGallery ? 2 : 3);
+      return this.previewImages_.slice(0, maxLength);
     }
     return [];
   }
@@ -110,16 +112,16 @@ export class AmbientPreviewLarge extends AmbientPreviewBase {
 
   /**
    * Navigate directly to photo selection subpage. Should only be possible to
-   * call this function if |topic_source| is set and photo collage is visible.
+   * call this function if |topic_source| is set and thumbnail is visible.
    */
-  private onClickPhotoCollage_(event: Event) {
+  private onClickPhotoThumbnail_(event: Event) {
     assert(typeof this.topicSource_ === 'number', 'topic source required');
     event.stopPropagation();
     PersonalizationRouter.instance().selectAmbientAlbums(this.topicSource_);
   }
 
   private getThumbnailContainerClass_(): string {
-    return `thumbnail-${this.collageImages_.length} clickable`;
+    return `thumbnail-${this.thumbnailImages_.length} clickable`;
   }
 
   private getCollageContainerClass_(): string {

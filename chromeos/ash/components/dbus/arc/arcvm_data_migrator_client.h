@@ -42,6 +42,12 @@ class COMPONENT_EXPORT(ASH_DBUS_ARC) ArcVmDataMigratorClient {
       const arc::data_migrator::HasDataToMigrateRequest& request,
       chromeos::DBusMethodCallback<bool> callback) = 0;
 
+  // Obtains the total size of files under the host's
+  // /home/root/<hash>/android-data/data in bytes.
+  virtual void GetAndroidDataSize(
+      const arc::data_migrator::GetAndroidDataSizeRequest& request,
+      chromeos::DBusMethodCallback<int64_t> callback) = 0;
+
   // Starts the migration.
   virtual void StartMigration(
       const arc::data_migrator::StartMigrationRequest& request,

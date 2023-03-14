@@ -53,6 +53,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
@@ -442,10 +443,10 @@ void SearchProvider::OnURLLoadComplete(
   // request we're constructing here for on-focus inputs.
   if (input_.focus_type() == metrics::OmniboxFocusType::INTERACTION_DEFAULT &&
       request_succeeded) {
-    std::unique_ptr<base::Value> data(
+    absl::optional<base::Value> data =
         SearchSuggestionParser::DeserializeJsonData(
             SearchSuggestionParser::ExtractJsonData(source,
-                                                    std::move(response_body))));
+                                                    std::move(response_body)));
     if (data) {
       SearchSuggestionParser::Results* results =
           is_keyword ? &keyword_results_ : &default_results_;

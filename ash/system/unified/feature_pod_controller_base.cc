@@ -11,15 +11,6 @@
 
 namespace ash {
 
-// TODO(b/252871301): Remove after implementing every FeatureTile and making
-// this function pure virtual.
-std::unique_ptr<FeatureTile> FeaturePodControllerBase::CreateTile(
-    bool compact) {
-  return std::make_unique<FeatureTile>(compact
-                                           ? FeatureTile::TileType::kCompact
-                                           : FeatureTile::TileType::kPrimary);
-}
-
 void FeaturePodControllerBase::OnLabelPressed() {
   return OnIconPressed();
 }

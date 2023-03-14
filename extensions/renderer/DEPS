@@ -38,6 +38,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "extension_localization_throttle_unittest.cc": [
+    "+net/base/request_priority.h",
+    "+services/network/test/test_url_loader_client.h",
+  ],
   "extension_throttle_manager.cc": [
     # For net::IsLocalhost.
     "+net/base/url_util.h",

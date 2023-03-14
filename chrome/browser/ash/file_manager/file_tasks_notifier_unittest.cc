@@ -140,7 +140,7 @@ class FileTasksNotifierTest : public testing::Test {
 
     my_files_ = util::GetMyFilesFolderForProfile(profile_.get());
     ASSERT_TRUE(base::CreateDirectory(my_files_));
-    base::WriteFile(my_files_.Append("file"), "data", 4);
+    base::WriteFile(my_files_.Append("file"), "data");
     ASSERT_TRUE(mount_points->RegisterFileSystem(
         "downloads", storage::kFileSystemTypeLocal, {}, my_files_));
     ASSERT_TRUE(mount_points->RegisterFileSystem(

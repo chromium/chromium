@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/properties/shorthand.h"
 #include "third_party/blink/renderer/core/css/property_bitsets.h"
+#include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 
@@ -63,23 +64,30 @@ bool IsPropertyAllowedInRule(const CSSProperty& property,
 }  // namespace
 
 CSSPropertyParser::CSSPropertyParser(
-    const CSSParserTokenRange& range,
+    const CSSTokenizedValue& value,
     const CSSParserContext* context,
     HeapVector<CSSPropertyValue, 64>* parsed_properties)
-    : range_(range), context_(context), parsed_properties_(parsed_properties) {
-  range_.ConsumeWhitespace();
+    : value_(value), context_(context), parsed_properties_(parsed_properties) {
+  value_.range.ConsumeWhitespace();
+
+  wtf_size_t initial_whitespace_len = 0;
+  while (initial_whitespace_len < value.text.length() &&
+         IsHTMLSpace(value.text[initial_whitespace_len])) {
+    ++initial_whitespace_len;
+  }
+  value_.text = StringView(value_.text, initial_whitespace_len);
 }
 
 bool CSSPropertyParser::ParseValue(
     CSSPropertyID unresolved_property,
     bool important,
-    const CSSParserTokenRange& range,
+    const CSSTokenizedValue& value,
     const CSSParserContext* context,
     HeapVector<CSSPropertyValue, 64>& parsed_properties,
     StyleRule::RuleType rule_type) {
   int parsed_properties_size = parsed_properties.size();
 
-  CSSPropertyParser parser(range, context, &parsed_properties);
+  CSSPropertyParser parser(value, context, &parsed_properties);
   CSSPropertyID resolved_property = ResolveCSSPropertyID(unresolved_property);
   bool parse_success;
   if (rule_type == StyleRule::kFontFace) {
@@ -127,7 +135,7 @@ bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
     return true;
   }
 
-  CSSParserTokenRange original_range = range_;
+  CSSParserTokenRange original_range = value_.range;
   CSSPropertyID property_id = ResolveCSSPropertyID(unresolved_property);
   const CSSProperty& property = CSSProperty::Get(property_id);
   // If a CSSPropertyID is only a known descriptor (@fontface, @property), not a
@@ -147,14 +155,16 @@ bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
             .WithCurrentShorthand(property_id);
     // Variable references will fail to parse here and will fall out to the
     // variable ref parser below.
-    if (To<Shorthand>(property).ParseShorthand(
-            important, range_, *context_, local_context, *parsed_properties_)) {
+    if (To<Shorthand>(property).ParseShorthand(important, value_.range,
+                                               *context_, local_context,
+                                               *parsed_properties_)) {
       return true;
     }
   } else {
-    if (const CSSValue* parsed_value = ParseLonghand(
-            unresolved_property, CSSPropertyID::kInvalid, *context_, range_)) {
-      if (range_.AtEnd()) {
+    if (const CSSValue* parsed_value =
+            ParseLonghand(unresolved_property, CSSPropertyID::kInvalid,
+                          *context_, value_.range)) {
+      if (value_.range.AtEnd()) {
         AddProperty(property_id, CSSPropertyID::kInvalid, *parsed_value,
                     important, IsImplicitProperty::kNotImplicit,
                     *parsed_properties_);
@@ -163,11 +173,26 @@ bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
     }
   }
 
+#if DCHECK_IS_ON()
+  // Due to this requirement, we can use StripTrailingWhitespaceAndComments()
+  // instead of having to also strip from the beginning.
+  if (value_.range.size() > 0) {
+    DCHECK_NE(value_.range.Peek().GetType(), kCommentToken);
+    DCHECK_NE(value_.range.Peek().GetType(), kWhitespaceToken);
+  }
+  if (!value_.text.empty()) {
+    DCHECK(!IsHTMLSpace(value_.text[0]));
+    DCHECK(!value_.text.ToString().StartsWith("/*"));
+  }
+#endif
+
   if (CSSVariableParser::ContainsValidVariableReferences(original_range)) {
+    StringView text =
+        CSSVariableParser::StripTrailingWhitespaceAndComments(value_.text);
     bool is_animation_tainted = false;
     auto* variable = MakeGarbageCollected<CSSVariableReferenceValue>(
-        CSSVariableData::Create({original_range, StringView()},
-                                is_animation_tainted, true),
+        CSSVariableData::Create({original_range, text}, is_animation_tainted,
+                                true),
         *context_);
 
     if (is_shorthand) {
@@ -371,7 +396,7 @@ CSSValueID CssValueKeywordID(StringView string) {
 bool CSSPropertyParser::ConsumeCSSWideKeyword(CSSPropertyID unresolved_property,
                                               bool important,
                                               StyleRule::RuleType rule_type) {
-  CSSParserTokenRange range_copy = range_;
+  CSSParserTokenRange range_copy = value_.range;
 
   const CSSValue* value = MaybeConsumeCSSWideKeyword(range_copy);
   if (!value) {
@@ -397,7 +422,7 @@ bool CSSPropertyParser::ConsumeCSSWideKeyword(CSSPropertyID unresolved_property,
     css_parsing_utils::AddExpandedPropertyForValue(property, *value, important,
                                                    *parsed_properties_);
   }
-  range_ = range_copy;
+  value_.range = range_copy;
   return true;
 }
 
@@ -409,8 +434,8 @@ bool CSSPropertyParser::ParseFontFaceDescriptor(
   if (id == AtRuleDescriptorID::Invalid) {
     return false;
   }
-  CSSValue* parsed_value =
-      AtRuleDescriptorParser::ParseFontFaceDescriptor(id, range_, *context_);
+  CSSValue* parsed_value = AtRuleDescriptorParser::ParseFontFaceDescriptor(
+      id, value_.range, *context_);
   if (!parsed_value) {
     return false;
   }

@@ -8,10 +8,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "components/bookmarks/browser/base_bookmark_model_observer.h"
-#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/shopping_service.h"
-#include "components/image_fetcher/core/image_fetcher.h"
+#include "components/commerce/core/subscriptions/subscriptions_observer.h"
 #include "components/image_fetcher/core/request_metadata.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -19,24 +17,29 @@
 #include "ui/gfx/image/image.h"
 
 class GURL;
-class PrefService;
+
+namespace bookmarks {
+class BookmarkModel;
+}
 
 namespace content {
 class WebContents;
 }  // namespace content
 
 namespace image_fetcher {
-class ImageFetcherService;
+class ImageFetcher;
 }
 
 namespace commerce {
+
+struct CommerceSubscription;
 
 // This tab helper is used to update and maintain the state of the shopping list
 // and price tracking UI on desktop.
 class ShoppingListUiTabHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<ShoppingListUiTabHelper>,
-      public bookmarks::BaseBookmarkModelObserver {
+      public SubscriptionsObserver {
  public:
   ~ShoppingListUiTabHelper() override;
   ShoppingListUiTabHelper(const ShoppingListUiTabHelper& other) = delete;
@@ -62,25 +65,26 @@ class ShoppingListUiTabHelper
   void NavigationEntryCommitted(
       const content::LoadCommittedDetails& load_details) override;
 
-  // bookmarks::BaseBookmarkModelObserver
-  void BookmarkModelChanged() override;
-  void BookmarkNodeRemoved(bookmarks::BookmarkModel* model,
-                           const bookmarks::BookmarkNode* parent,
-                           size_t old_index,
-                           const bookmarks::BookmarkNode* node,
-                           const std::set<GURL>& no_longer_bookmarked) override;
-  void BookmarkMetaInfoChanged(bookmarks::BookmarkModel* model,
-                               const bookmarks::BookmarkNode* node) override;
+  // SubscriptionsObserver
+  void OnSubscribe(const std::vector<CommerceSubscription>& subscriptions,
+                   bool succeeded) override;
+
+  void OnUnsubscribe(const std::vector<CommerceSubscription>& subscriptions,
+                     bool succeeded) override;
+
+  // Update this tab helper (and associated observers) to use a different
+  // shopping service for the sake of testing.
+  void SetShoppingServiceForTesting(ShoppingService* shopping_service);
 
  protected:
-  ShoppingListUiTabHelper(
-      content::WebContents* contents,
-      ShoppingService* shopping_service,
-      image_fetcher::ImageFetcherService* image_fetcher_service,
-      PrefService* prefs);
+  ShoppingListUiTabHelper(content::WebContents* contents,
+                          ShoppingService* shopping_service,
+                          bookmarks::BookmarkModel* model,
+                          image_fetcher::ImageFetcher* image_fetcher);
 
  private:
   friend class content::WebContentsUserData<ShoppingListUiTabHelper>;
+  friend class ShoppingListUiTabHelperTest;
 
   void HandleProductInfoResponse(const GURL& url,
                                  const absl::optional<ProductInfo>& info);
@@ -99,7 +103,7 @@ class ShoppingListUiTabHelper
   // The shopping service is tied to the lifetime of the browser context
   // which will always outlive this tab helper.
   raw_ptr<ShoppingService, DanglingUntriaged> shopping_service_;
-  raw_ptr<PrefService> prefs_;
+  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   raw_ptr<image_fetcher::ImageFetcher> image_fetcher_;
 
   // The URL of the last product image that was fetched.
@@ -121,8 +125,7 @@ class ShoppingListUiTabHelper
   bool is_initial_navigation_committed_{false};
 
   // Automatically remove this observer from its host when destroyed.
-  base::ScopedObservation<bookmarks::BookmarkModel,
-                          bookmarks::BookmarkModelObserver>
+  base::ScopedObservation<ShoppingService, SubscriptionsObserver>
       scoped_observation_{this};
 
   base::WeakPtrFactory<ShoppingListUiTabHelper> weak_ptr_factory_{this};

@@ -26,7 +26,7 @@
 #include "gpu/command_buffer/service/test_helper.h"
 #include "gpu/command_buffer/service/test_memory_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gl/gl_image_stub.h"
+#include "ui/gl/gl_image.h"
 #include "ui/gl/gl_mock.h"
 #include "ui/gl/gl_switches.h"
 
@@ -39,6 +39,21 @@ using ::testing::_;
 
 namespace gpu {
 namespace gles2 {
+
+namespace {
+
+class GLImageStub : public gl::GLImage {
+ public:
+  GLImageStub() = default;
+
+  // GLImage:
+  gfx::Size GetSize() override { return gfx::Size(1, 1); }
+
+ private:
+  ~GLImageStub() override = default;
+};
+
+}  // namespace
 
 class TextureTestHelper {
  public:
@@ -1675,7 +1690,7 @@ TEST_F(TextureTest, GetLevelImage) {
   Texture* texture = texture_ref_->texture();
   EXPECT_TRUE(texture->GetLevelImage(GL_TEXTURE_2D, 1) == nullptr);
   // Set image.
-  scoped_refptr<gl::GLImage> image(new gl::GLImageStub);
+  scoped_refptr<gl::GLImage> image(new GLImageStub);
   manager_->SetBoundLevelImage(texture_ref_.get(), GL_TEXTURE_2D, 1,
                                image.get());
   EXPECT_FALSE(texture->GetLevelImage(GL_TEXTURE_2D, 1) == nullptr);
@@ -1698,7 +1713,7 @@ TEST_F(TextureTest, MarkLevelImageBound) {
                          0, GL_RGBA, GL_UNSIGNED_BYTE, gfx::Rect(2, 2));
   Texture* texture = texture_ref_->texture();
   // Set image, initially unbound.
-  scoped_refptr<gl::GLImage> image(new gl::GLImageStub);
+  scoped_refptr<gl::GLImage> image(new GLImageStub);
   manager_->SetUnboundLevelImage(texture_ref_.get(), GL_TEXTURE_2D, 0,
                                  image.get());
   EXPECT_TRUE(texture->HasUnboundLevelImage(GL_TEXTURE_2D, 0));
@@ -2087,7 +2102,7 @@ TEST_P(ProduceConsumeTextureTest, ProduceConsumeTextureWithImage) {
   Texture* texture = texture_ref_->texture();
   EXPECT_EQ(static_cast<GLenum>(target), texture->target());
 #if !BUILDFLAG(IS_ANDROID)
-  scoped_refptr<gl::GLImage> image(new gl::GLImageStub);
+  scoped_refptr<gl::GLImage> image(new GLImageStub);
 #endif
   manager_->SetLevelInfo(texture_ref_.get(), target, 0, GL_RGBA, 0, 0, 1, 0,
                          GL_RGBA, GL_UNSIGNED_BYTE, gfx::Rect());
@@ -2400,14 +2415,14 @@ TEST_F(SharedTextureTest, Images) {
   EXPECT_FALSE(ref2->texture()->HasImages());
   EXPECT_FALSE(texture_manager1_->HaveImages());
   EXPECT_FALSE(texture_manager2_->HaveImages());
-  scoped_refptr<gl::GLImage> image1(new gl::GLImageStub);
+  scoped_refptr<gl::GLImage> image1(new GLImageStub);
   texture_manager1_->SetBoundLevelImage(ref1.get(), GL_TEXTURE_2D, 1,
                                         image1.get());
   EXPECT_TRUE(ref1->texture()->HasImages());
   EXPECT_TRUE(ref2->texture()->HasImages());
   EXPECT_TRUE(texture_manager1_->HaveImages());
   EXPECT_TRUE(texture_manager2_->HaveImages());
-  scoped_refptr<gl::GLImage> image2(new gl::GLImageStub);
+  scoped_refptr<gl::GLImage> image2(new GLImageStub);
   texture_manager1_->SetBoundLevelImage(ref1.get(), GL_TEXTURE_2D, 1,
                                         image2.get());
   EXPECT_TRUE(ref1->texture()->HasImages());

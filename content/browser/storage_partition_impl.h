@@ -39,6 +39,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -209,8 +210,6 @@ class CONTENT_EXPORT StoragePartitionImpl
                           uint32_t quota_storage_remove_mask,
                           const GURL& storage_origin,
                           base::OnceClosure callback) override;
-  void ClearDataForAllBuckets(const blink::StorageKey& storage_key,
-                              base::OnceClosure callback) override;
   void ClearDataForBuckets(const blink::StorageKey& storage_key,
                            const std::set<std::string>& storage_buckets,
                            base::OnceClosure callback) override;
@@ -405,6 +404,7 @@ class CONTENT_EXPORT StoragePartitionImpl
       bool is_service_worker,
       int process_id,
       int routing_id,
+      net::CookieSettingOverrides cookie_setting_overrides,
       mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver,
       mojo::PendingRemote<network::mojom::CookieAccessObserver>
           cookie_observer);
@@ -575,11 +575,6 @@ class CONTENT_EXPORT StoragePartitionImpl
       const base::Time begin,
       const base::Time end,
       base::OnceClosure callback);
-
-  void RetrieveBucketsForClearingDone(
-      const blink::StorageKey& storage_key,
-      base::OnceClosure callback,
-      storage::QuotaErrorOr<std::set<storage::BucketInfo>> buckets);
 
   void ClearDataForBucketsDone(
       const blink::StorageKey& storage_key,

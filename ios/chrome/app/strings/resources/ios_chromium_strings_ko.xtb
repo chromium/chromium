@@ -32,6 +32,7 @@
 <translation id="2450140762465183767">이제 언제든 메시지, 문서 및 다른 앱에서 링크를 탭하여 Chromium을 사용할 수 있습니다</translation>
 <translation id="2478931088402984578"><ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />을 선택합니다.</translation>
 <translation id="2590893390871230428">Chromium 데이터 동기화</translation>
+<translation id="2618596336309823556">기기 설정에서 '<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />'을(를) 열고 'Chromium'을 선택하세요.</translation>
 <translation id="2650312721222849884">Chromium을 사용하는 어느 곳에서나 탭을 확인하려면 동기화를 사용 설정하세요.</translation>
 <translation id="2684230048001240293">Chromium을 모든 기기에서 탭, 비밀번호, 결제 정보를 동기화할 기본값으로 설정합니다.</translation>
 <translation id="2730884209570016437">다른 애플리케이션에서 카메라를 사용하고 있으므로 Chromium에서 카메라를 사용할 수 없습니다.</translation>
@@ -92,6 +93,7 @@
 <translation id="7118091470949186573">이제 언제든 메시지, 문서 및 다른 앱에서 링크를 탭하여 Chromium을 사용할 수 있습니다.</translation>
 <translation id="7165402419892018581">자동 완성에 사용할 Chromium 선택</translation>
 <translation id="7175400662502680481">정보 유출로 인해 비밀번호가 노출되었습니다. 비밀번호 관리자에서 지금 바로 비밀번호를 변경하시기 바랍니다.</translation>
+<translation id="7192111075364461693">현재 기기 설정에서 Chromium 알림이 사용 중지되어 있습니다.</translation>
 <translation id="7208566199746267865">Chromium에서는 계정 로그인 정보가 자동으로 채워지기 때문에 시간을 절약할 수 있습니다. 설정에서 계정을 추가하거나 삭제할 수 있습니다.</translation>
 <translation id="725427773388857052">Chromium에서는 정보 유출, 안전하지 않은 웹사이트 등으로부터 사용자를 보호합니다</translation>
 <translation id="7255976941681861701">새로운 Chromium 메뉴를 알아보세요.</translation>
@@ -115,7 +117,6 @@
 <translation id="8073677936375100957">기기에서 Chromium 데이터를 삭제하시겠습니까?</translation>
 <translation id="8240981428553046115">Chromium에서 업데이트를 확인할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="8409374867500149834">유해한 웹사이트에 대한 Chromium의 가장 강력한 보안 기능을 갖추고 있습니다.</translation>
-<translation id="8460301378281140593">iPhone 설정에서 '비밀번호 옵션'을 열고 'Chromium'을 선택하세요</translation>
 <translation id="858114650497379505">비밀번호 관리자에 저장된 비밀번호를 iPhone의 다른 앱에서 사용할 수 있습니다</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
 <translation id="865600487977764604">로그인 상태일 때 Chromium에서 사용자를 보호하고 기타 Google 앱에서 사용자의 보안을 강화하는 데 사용될 수 있습니다.</translation>
@@ -132,6 +133,7 @@
   • 동기화를 사용 설정하면 측정항목에 내가 방문한 URL에 관한 정보도 포함될 수 있습니다.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">이 계정 및 저장되지 않은 모든 데이터가 Chromium에서 삭제됩니다.</translation>
 <translation id="894437814105052438">로그아웃하면 Chromium에서 더 이상 새로운 데이터를 내 Google 계정에 동기화하지 않습니다. 이전에 동기화된 데이터는 계정에 그대로 유지됩니다.</translation>
+<translation id="8963279154877372067">Chromium에서 가격 인하 알림을 받도록 허용</translation>
 <translation id="9022552996538154597">Chromium에 로그인</translation>
 <translation id="9059693977935746710">이 비밀번호를 기억하지 않아도 됩니다. <ph name="EMAIL" />의 비밀번호 관리자에 비밀번호가 저장됩니다.</translation>
 <translation id="9089354809943900324">Chromium이 이전 버전임</translation>

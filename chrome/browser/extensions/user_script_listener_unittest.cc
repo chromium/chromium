@@ -147,7 +147,7 @@ class UserScriptListenerTest : public testing::Test {
   void UnloadTestExtension() {
     const extensions::ExtensionSet& extensions =
         ExtensionRegistry::Get(profile_)->enabled_extensions();
-    ASSERT_FALSE(extensions.is_empty());
+    ASSERT_FALSE(extensions.empty());
     service_->UnloadExtension((*extensions.begin())->id(),
                               UnloadedExtensionReason::DISABLE);
   }

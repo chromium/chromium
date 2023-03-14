@@ -20,4 +20,10 @@ BASE_FEATURE(kIPHDummyGroup,
              "IPH_DummyGroup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_IOS)
+BASE_FEATURE(kiOSFullscreenPromosGroup,
+             "IPH_iOSFullscreenPromosGroup",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_IOS)
+
 }  // namespace feature_engagement

@@ -7,6 +7,8 @@
 
 #include <vector>
 
+#include "base/functional/identity.h"
+#include "base/ranges/algorithm.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/manager/display_manager_export.h"
@@ -73,19 +75,11 @@ DISPLAY_MANAGER_EXPORT void SortDisplayIdList(DisplayIdList* list);
 // Check if the list is sorted using `CompareDisplayIds()` in display.h.
 DISPLAY_MANAGER_EXPORT bool IsDisplayIdListSorted(const DisplayIdList& list);
 
-// Default id generator.
-class DefaultDisplayIdGenerator {
- public:
-  int64_t operator()(int64_t id) { return id; }
-};
-
 // Generate sorted DisplayIdList from iterators.
-template <class ForwardIterator, class Generator = DefaultDisplayIdGenerator>
-DisplayIdList GenerateDisplayIdList(ForwardIterator first,
-                                    ForwardIterator last,
-                                    Generator generator = Generator()) {
+template <typename Range, typename UnaryOperation = base::identity>
+DisplayIdList GenerateDisplayIdList(Range&& range, UnaryOperation op = {}) {
   DisplayIdList list;
-  std::transform(first, last, std::back_inserter(list), generator);
+  base::ranges::transform(range, std::back_inserter(list), op);
   SortDisplayIdList(&list);
   return list;
 }

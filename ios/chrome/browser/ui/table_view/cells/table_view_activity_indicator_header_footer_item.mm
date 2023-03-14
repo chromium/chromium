@@ -7,8 +7,8 @@
 #import <MaterialComponents/MaterialActivityIndicator.h>
 
 #import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 
@@ -52,6 +52,9 @@
 - (instancetype)initWithReuseIdentifier:(NSString*)reuseIdentifier {
   self = [super initWithReuseIdentifier:reuseIdentifier];
   if (self) {
+    self.accessibilityIdentifier =
+        kTableViewActivityIndicatorHeaderFooterViewId;
+
     // Labels, set font sizes using dynamic type.
     self.titleLabel = [[UILabel alloc] init];
     self.titleLabel.font =

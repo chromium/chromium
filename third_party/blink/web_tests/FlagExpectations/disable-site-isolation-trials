@@ -37,6 +37,9 @@ fast/multicol/* [ Skip ]
 fast/table/* [ Skip ]
 external/wpt/webvtt/* [ Skip ]
 
+# These tests rely on site isolation to measure different OOPIF scenarios
+external/wpt/long-animation-frame/* [ Skip ]
+
 # The following tests fail with UserActivationSameOriginVisibility plus UAv2.
 crbug.com/922725 http/tests/media/autoplay/document-user-activation-cross-origin-feature-policy-disabled.html [ Failure ]
 crbug.com/922725 http/tests/media/autoplay/document-user-activation-cross-origin-feature-policy-header.html [ Failure ]
@@ -81,6 +84,8 @@ crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-
 crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-same-origin-domain.sub.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Timeout ]
+crbug.com/626703 external/wpt/png/cicp-chunk.html [ Timeout ]
 crbug.com/626703 external/wpt/html/semantics/popovers/popover-attribute-basic.html [ Pass ]
 crbug.com/626703 external/wpt/preload/prefetch-types.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/url/url-setters-a-area.window.html?exclude=(file|javascript|mailto) [ Crash Failure ]
@@ -144,4 +149,3 @@ crbug.com/626703 external/wpt/infrastructure/channels/test_serialize.html [ Time
 # reenable print ref tests
 crbug.com/1090628 external/wpt/html/browsers/windows/iframe-cross-origin-print.sub.html [ Pass ]
 crbug.com/1090628 external/wpt/html/browsers/windows/iframe-cross-origin-scaled-print.sub.html [ Pass ]
-

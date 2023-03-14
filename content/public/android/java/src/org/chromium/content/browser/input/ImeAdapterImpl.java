@@ -20,6 +20,7 @@ import android.text.style.BackgroundColorSpan;
 import android.text.style.CharacterStyle;
 import android.text.style.SuggestionSpan;
 import android.text.style.UnderlineSpan;
+import android.util.SparseArray;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -42,6 +43,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.blink.mojom.EventType;
 import org.chromium.blink.mojom.FocusType;
+import org.chromium.blink.mojom.HandwritingGestureResult;
 import org.chromium.blink.mojom.StylusWritingGestureData;
 import org.chromium.blink_public.web.WebInputEventModifier;
 import org.chromium.blink_public.web.WebTextInputMode;
@@ -147,6 +149,8 @@ public class ImeAdapterImpl
     private int mLastCompositionStart;
     private int mLastCompositionEnd;
     private boolean mRestartInputOnNextStateUpdate;
+    private StylusWritingImeCallback mStylusWritingImeCallback;
+    private SparseArray<OngoingGesture> mOngoingGestures = new SparseArray<>();
 
     // True if ImeAdapter is connected to render process.
     private boolean mIsConnected;
@@ -260,7 +264,29 @@ public class ImeAdapterImpl
         if (mWebContents.getStylusWritingHandler() != null) {
             mWebContents.getStylusWritingHandler().updateEditorInfo(outAttrs);
         }
-        return inputConnection;
+
+        return StylusGestureHandler.maybeProxyInputConnection(inputConnection, this::handleGesture);
+    }
+
+    private void handleGesture(OngoingGesture request) {
+        if (request.getGestureData() == null) {
+            request.onGestureHandled(HandwritingGestureResult.UNSUPPORTED);
+            return;
+        }
+        mOngoingGestures.put(request.getId(), request);
+        mStylusWritingImeCallback.handleStylusWritingGestureAction(
+                request.getId(), request.getGestureData());
+    }
+
+    @CalledByNative
+    private void onStylusWritingGestureActionCompleted(
+            int id, @HandwritingGestureResult.EnumType int result) {
+        if (mOngoingGestures.get(id) != null) {
+            mOngoingGestures.get(id).onGestureHandled(result);
+            mOngoingGestures.remove(id);
+        } else {
+            assert id == -1;
+        }
     }
 
     @Override
@@ -1028,71 +1054,70 @@ public class ImeAdapterImpl
         if (!ViewUtils.hasFocus(containerView)) ViewUtils.requestFocus(containerView);
 
         updateInputStateForStylusWriting();
+        mStylusWritingImeCallback = new StylusWritingImeCallback() {
+            @Override
+            public void setEditableSelectionOffsets(int start, int end) {
+                ImeAdapterImpl.this.setEditableSelectionOffsets(start, end);
+            }
+
+            @Override
+            public void sendCompositionToNative(
+                    CharSequence text, int newCursorPosition, boolean isCommit) {
+                ImeAdapterImpl.this.sendCompositionToNative(text, newCursorPosition, isCommit, 0);
+            }
+
+            @Override
+            public void performEditorAction(int actionCode) {
+                ImeAdapterImpl.this.performEditorAction(actionCode);
+            }
+
+            @Override
+            public void showSoftKeyboard() {
+                mForceShowKeyboardDuringStylusWriting = true;
+                ImeAdapterImpl.this.showSoftKeyboard();
+                mForceShowKeyboardDuringStylusWriting = false;
+            }
+
+            @Override
+            public void hideKeyboard() {
+                ImeAdapterImpl.this.hideKeyboard();
+            }
+
+            @Override
+            public View getContainerView() {
+                return mWebContents.getViewAndroidDelegate().getContainerView();
+            }
+
+            @Override
+            public void resetGestureDetection() {
+                GestureListenerManagerImpl gestureListenerManager =
+                        GestureListenerManagerImpl.fromWebContents(mWebContents);
+                if (gestureListenerManager != null) {
+                    gestureListenerManager.resetGestureDetection();
+                }
+            }
+
+            @Override
+            public void handleStylusWritingGestureAction(
+                    int id, StylusWritingGestureData gestureData) {
+                if (mNativeImeAdapterAndroid == 0) return;
+                int contentOffsetY =
+                        (int) mWebContents.getRenderCoordinates().getContentOffsetYPix();
+                gestureData.startRect.y -= contentOffsetY;
+                if (gestureData.endRect != null) {
+                    gestureData.endRect.y -= contentOffsetY;
+                }
+                ImeAdapterImplJni.get().handleStylusWritingGestureAction(
+                        mNativeImeAdapterAndroid, ImeAdapterImpl.this, id, gestureData.serialize());
+            }
+
+            @Override
+            public void finishComposingText() {
+                ImeAdapterImpl.this.finishComposingText();
+            }
+        };
         return mWebContents.getStylusWritingHandler().requestStartStylusWriting(
-                new StylusWritingImeCallback() {
-                    @Override
-                    public void setEditableSelectionOffsets(int start, int end) {
-                        ImeAdapterImpl.this.setEditableSelectionOffsets(start, end);
-                    }
-
-                    @Override
-                    public void sendCompositionToNative(
-                            CharSequence text, int newCursorPosition, boolean isCommit) {
-                        ImeAdapterImpl.this.sendCompositionToNative(
-                                text, newCursorPosition, isCommit, 0);
-                    }
-
-                    @Override
-                    public void performEditorAction(int actionCode) {
-                        ImeAdapterImpl.this.performEditorAction(actionCode);
-                    }
-
-                    @Override
-                    public void showSoftKeyboard() {
-                        mForceShowKeyboardDuringStylusWriting = true;
-                        ImeAdapterImpl.this.showSoftKeyboard();
-                        mForceShowKeyboardDuringStylusWriting = false;
-                    }
-
-                    @Override
-                    public void hideKeyboard() {
-                        ImeAdapterImpl.this.hideKeyboard();
-                    }
-
-                    @Override
-                    public View getContainerView() {
-                        return mWebContents.getViewAndroidDelegate().getContainerView();
-                    }
-
-                    @Override
-                    public void resetGestureDetection() {
-                        GestureListenerManagerImpl gestureListenerManager =
-                                GestureListenerManagerImpl.fromWebContents(mWebContents);
-                        if (gestureListenerManager != null) {
-                            gestureListenerManager.resetGestureDetection();
-                        }
-                    }
-
-                    @Override
-                    public void handleStylusWritingGestureAction(
-                            StylusWritingGestureData gestureData) {
-                        if (mNativeImeAdapterAndroid == 0) return;
-                        int contentOffsetY =
-                                (int) mWebContents.getRenderCoordinates().getContentOffsetYPix();
-                        gestureData.startRect.y -= contentOffsetY;
-                        if (gestureData.endRect != null) {
-                            gestureData.endRect.y -= contentOffsetY;
-                        }
-                        ImeAdapterImplJni.get().handleStylusWritingGestureAction(
-                                mNativeImeAdapterAndroid, ImeAdapterImpl.this,
-                                gestureData.serialize());
-                    }
-
-                    @Override
-                    public void finishComposingText() {
-                        ImeAdapterImpl.this.finishComposingText();
-                    }
-                });
+                mStylusWritingImeCallback);
     }
 
     @CalledByNative
@@ -1317,7 +1342,7 @@ public class ImeAdapterImpl
                 boolean immediateRequest, boolean monitorRequest);
         void advanceFocusForIME(long nativeImeAdapterAndroid, ImeAdapterImpl caller, int focusType);
         // Stylus Writing
-        void handleStylusWritingGestureAction(
-                long nativeImeAdapterAndroid, ImeAdapterImpl caller, ByteBuffer gestureData);
+        void handleStylusWritingGestureAction(long nativeImeAdapterAndroid, ImeAdapterImpl caller,
+                int id, ByteBuffer gestureData);
     }
 }

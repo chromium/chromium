@@ -105,9 +105,9 @@ struct UsbEventInfo {
   enum State {
     // This is required for backwards compatibility, should not be used.
     [Default] kUnmappedEnumField = 0,
-    // Usb plugs in.
+    // USB plugs in.
     kAdd = 1,
-    // Usb unplugs.
+    // USB unplugs.
     kRemove = 2,
   };
 
@@ -362,6 +362,78 @@ union TouchpadEventInfo {
   TouchpadConnectedEvent connected_event@3;
 };
 
+// HDMI event info.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct HdmiEventInfo {
+  [Stable, Extensible]
+  enum State {
+    // This is required for backwards compatibility, should not be used.
+    [Default] kUnmappedEnumField,
+    // Hdmi plugs in.
+    kAdd,
+    // Hdmi plugs out.
+    kRemove,
+  };
+
+  State state@0;
+};
+
+// Emitted when new touch points are updated.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct TouchscreenTouchEvent {
+  // The touch points reported by the touchscreen.
+  array<TouchPointInfo> touch_points@0;
+};
+
+// Emitted once the observer get connected to the touchscreen events. This will
+// be the first event from the touchscreen.
+//
+// NextMinVersion: 1, NextIndex: 3
+[Stable]
+struct TouchscreenConnectedEvent {
+  // The maximum possible x position of touch points.
+  uint32 max_x@0;
+  // The maximum possible y position of touch points.
+  uint32 max_y@1;
+  // The maximum possible pressure of touch points, or 0 if pressure is not
+  // supported.
+  uint32 max_pressure@2;
+};
+
+// Union of Touchscreen events.
+//
+// NextMinVersion: 1, NextIndex: 3
+[Stable, Extensible]
+union TouchscreenEventInfo {
+  // The default value for forward compatibility. All the unknown type will be
+  // mapped to this.
+  [Default] uint8 default_type@0;
+  TouchscreenTouchEvent touch_event@1;
+  TouchscreenConnectedEvent connected_event@2;
+};
+
+// Stylus garage event info.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct StylusGarageEventInfo {
+  [Stable, Extensible]
+  enum State {
+    // This is required for backwards compatibility, should not be used.
+    [Default] kUnmappedEnumField,
+    // Stylus inserted into the garage.
+    kInsert,
+    // Stylus removed from the garage.
+    kRemove,
+  };
+
+  State state@0;
+};
+
 // Implemented by clients who desire events.
 //
 // NextMinVersion: 1, NextIndex: 1
@@ -373,13 +445,13 @@ interface EventObserver {
 
 // Union of event info.
 //
-// NextMinVersion: 5, NextIndex: 11
+// NextMinVersion: 8, NextIndex: 14
 [Stable, Extensible]
 union EventInfo {
   // The default value for forward compatibility. All the unknown type will be
   // mapped to this.
   [Default] uint8 default_type@0;
-  // Usb event info.
+  // USB event info.
   UsbEventInfo usb_event_info@1;
   // Thunderbolt event info.
   ThunderboltEventInfo thunderbolt_event_info@2;
@@ -393,7 +465,7 @@ union EventInfo {
   AudioEventInfo audio_event_info@6;
   // Audio jack event info.
   [MinVersion=1] AudioJackEventInfo audio_jack_event_info@7;
-  // Sd Card event info.
+  // SD Card event info.
   [MinVersion=2] SdCardEventInfo sd_card_event_info@8;
   // Keyboard diagnostics event info. It is fired when users completed a
   // keyboard diagnostic in the Diagnostics App.
@@ -401,11 +473,17 @@ union EventInfo {
     keyboard_diagnostic_event_info@9;
   // Touchpad event info.
   [MinVersion=4] TouchpadEventInfo touchpad_event_info@10;
+  // HDMI event info.
+  [MinVersion=5] HdmiEventInfo hdmi_event_info@11;
+  // Touchscreen event info.
+  [MinVersion=6] TouchscreenEventInfo touchscreen_event_info@12;
+  // Stylus garagge event info.
+  [MinVersion=7] StylusGarageEventInfo stylus_garage_event_info@13;
 };
 
 // An enumeration of event categories.
 //
-// NextMinVersion: 6, NextIndex: 12
+// NextMinVersion: 9, NextIndex: 15
 [Stable, Extensible]
 enum EventCategoryEnum {
   // This is required for backwards compatibility, should not be used.
@@ -421,4 +499,7 @@ enum EventCategoryEnum {
   [MinVersion=3] kNetwork = 9,
   [MinVersion=4] kKeyboardDiagnostic = 10,
   [MinVersion=5] kTouchpad = 11,
+  [MinVersion=6] kHdmi = 12,
+  [MinVersion=7] kTouchscreen = 13,
+  [MinVersion=8] kStylusGarage = 14,
 };

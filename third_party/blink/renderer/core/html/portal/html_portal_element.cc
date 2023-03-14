@@ -323,8 +323,8 @@ ScriptPromise HTMLPortalElement::activate(ScriptState* script_state,
     return ScriptPromise();
 
   PortalContents* portal = std::exchange(portal_, nullptr);
-  ScriptPromiseResolver* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromiseResolver* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
   portal->Activate(std::move(data),
                    PortalActivationDelegate::ForPromise(

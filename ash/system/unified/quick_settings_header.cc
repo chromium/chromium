@@ -30,10 +30,10 @@ constexpr auto kHeaderPadding = gfx::Insets::TLBR(16, 16, 0, 16);
 constexpr int kButtonSpacing = 8;
 
 // Header button size when the button is narrow (e.g. two column layout).
-constexpr gfx::Size kNarrowButtonSize(200, 32);
+constexpr gfx::Size kNarrowButtonSize(180, 32);
 
 // Header button size when the button is wide (e.g. one column layout).
-constexpr gfx::Size kWideButtonSize(408, 32);
+constexpr gfx::Size kWideButtonSize(468, 32);
 
 }  // namespace
 

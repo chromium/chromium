@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
@@ -113,6 +114,9 @@ class ASH_EXPORT CaptureModeController
   // Returns true if audio recording is forced disabled by the
   // `AudioCaptureAllowed` policy.
   bool IsAudioCaptureDisabledByPolicy() const;
+
+  // Returns true if there's an active video recording that is recording audio.
+  bool IsAudioRecordingInProgress() const;
 
   // Sets the capture source/type, and recording type, which will be applied to
   // an ongoing capture session (if any), or to a future capture session when
@@ -245,6 +249,10 @@ class ASH_EXPORT CaptureModeController
   // 'kRegion', but in window's coordinate when it is 'kWindow' type.
   gfx::Rect GetCaptureSurfaceConfineBounds() const;
 
+  // Returns the windows that to be avoided for collision with other system
+  // windows such as the PIP window and the automatic click bubble menu.
+  std::vector<aura::Window*> GetWindowsForCollisionAvoidance() const;
+
   // recording::mojom::RecordingServiceClient:
   void OnRecordingEnded(recording::mojom::RecordingStatus status,
                         const gfx::ImageSkia& thumbnail) override;
@@ -337,14 +345,18 @@ class ASH_EXPORT CaptureModeController
   absl::optional<CaptureParams> GetCaptureParams() const;
 
   // Launches the mojo service that handles audio and video recording, and
-  // begins recording according to the given |capture_params|. It creates an
-  // overlay on the video capturer so that can be used to record the mouse
+  // begins recording according to the given `capture_params`. It creates an
+  // overlay on the video capturer so that it can be used to record the mouse
   // cursor. It gives the pending receiver end to that overlay on Viz, and the
-  // other end should be owned by the |video_recording_watcher_|.
+  // other end should be owned by the `video_recording_watcher_`. If the given
+  // `should_record_audio` is true, it will setup the needed mojo connections to
+  // the Audio Service so that audio recording can be done by the recording
+  // service.
   void LaunchRecordingServiceAndStartRecording(
       const CaptureParams& capture_params,
       mojo::PendingReceiver<viz::mojom::FrameSinkVideoCaptureOverlay>
-          cursor_overlay);
+          cursor_overlay,
+      bool should_record_audio);
 
   // Called back when the mojo pipe to the recording service gets disconnected.
   void OnRecordingServiceDisconnected();

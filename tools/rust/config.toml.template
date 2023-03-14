@@ -8,9 +8,10 @@ changelog-seen = 2
 [llvm]
 download-ci-llvm = false
 
-# Doesn't affect LLVM build (which we don't do) but rather how rustc_llvm crate
-# is linked.
+# These don't affect the LLVM build (which we don't do) but rather how the
+# rustc_llvm crate is linked.
 static-libstdcpp = true
+ldflags = "$RUSTC_LLVM_LDFLAGS"
 
 [rust]
 download-rustc = false
@@ -41,7 +42,7 @@ ranlib = "$LLVM_BIN/llvm-ranlib"
 ar = "$LLVM_BIN/llvm-lib"
 cc = "$LLVM_BIN/clang-cl"
 cxx = "$LLVM_BIN/clang-cl"
-# linker will be the system link.exe.
+linker = "$LLVM_BIN/lld-link"
 
 [target.arm64-apple-darwin]
 llvm-config = "$LLVM_LIB_ROOT/bin/llvm-config"
@@ -51,7 +52,7 @@ cc = "$LLVM_BIN/clang"
 cxx = "$LLVM_BIN/clang++"
 linker = "$LLVM_BIN/clang"
 
-[target.amd64-apple-darwin]
+[target.x86_64-apple-darwin]
 llvm-config = "$LLVM_LIB_ROOT/bin/llvm-config"
 ranlib = "$LLVM_BIN/llvm-ranlib"
 ar = "$LLVM_BIN/llvm-ar"

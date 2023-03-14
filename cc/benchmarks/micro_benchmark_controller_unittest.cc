@@ -58,20 +58,20 @@ class MicroBenchmarkControllerTest : public testing::Test {
   std::unique_ptr<FakeImplTaskRunnerProvider> impl_task_runner_provider_;
 };
 
-void IncrementCallCount(int* count, base::Value value) {
+void IncrementCallCount(int* count, base::Value::Dict value) {
   ++(*count);
 }
 
 TEST_F(MicroBenchmarkControllerTest, ScheduleFail) {
   int id = layer_tree_host_->ScheduleMicroBenchmark(
-      "non_existant_benchmark", base::Value(), base::DoNothing());
+      "non_existant_benchmark", base::Value::Dict(), base::DoNothing());
   EXPECT_EQ(id, 0);
 }
 
 TEST_F(MicroBenchmarkControllerTest, CommitScheduled) {
   layer_tree_host_->reset_needs_commit();
   int id = layer_tree_host_->ScheduleMicroBenchmark(
-      "unittest_only_benchmark", base::Value(), base::DoNothing());
+      "unittest_only_benchmark", base::Value::Dict(), base::DoNothing());
   EXPECT_GT(id, 0);
   EXPECT_TRUE(layer_tree_host_->needs_commit());
 }
@@ -79,7 +79,7 @@ TEST_F(MicroBenchmarkControllerTest, CommitScheduled) {
 TEST_F(MicroBenchmarkControllerTest, BenchmarkRan) {
   int run_count = 0;
   int id = layer_tree_host_->ScheduleMicroBenchmark(
-      "unittest_only_benchmark", base::Value(),
+      "unittest_only_benchmark", base::Value::Dict(),
       base::BindOnce(&IncrementCallCount, base::Unretained(&run_count)));
   EXPECT_GT(id, 0);
 
@@ -91,11 +91,11 @@ TEST_F(MicroBenchmarkControllerTest, BenchmarkRan) {
 TEST_F(MicroBenchmarkControllerTest, MultipleBenchmarkRan) {
   int run_count = 0;
   int id = layer_tree_host_->ScheduleMicroBenchmark(
-      "unittest_only_benchmark", base::Value(),
+      "unittest_only_benchmark", base::Value::Dict(),
       base::BindOnce(&IncrementCallCount, base::Unretained(&run_count)));
   EXPECT_GT(id, 0);
   id = layer_tree_host_->ScheduleMicroBenchmark(
-      "unittest_only_benchmark", base::Value(),
+      "unittest_only_benchmark", base::Value::Dict(),
       base::BindOnce(&IncrementCallCount, base::Unretained(&run_count)));
   EXPECT_GT(id, 0);
 
@@ -104,11 +104,11 @@ TEST_F(MicroBenchmarkControllerTest, MultipleBenchmarkRan) {
   EXPECT_EQ(2, run_count);
 
   id = layer_tree_host_->ScheduleMicroBenchmark(
-      "unittest_only_benchmark", base::Value(),
+      "unittest_only_benchmark", base::Value::Dict(),
       base::BindOnce(&IncrementCallCount, base::Unretained(&run_count)));
   EXPECT_GT(id, 0);
   id = layer_tree_host_->ScheduleMicroBenchmark(
-      "unittest_only_benchmark", base::Value(),
+      "unittest_only_benchmark", base::Value::Dict(),
       base::BindOnce(&IncrementCallCount, base::Unretained(&run_count)));
   EXPECT_GT(id, 0);
 
@@ -121,8 +121,8 @@ TEST_F(MicroBenchmarkControllerTest, MultipleBenchmarkRan) {
 
 TEST_F(MicroBenchmarkControllerTest, BenchmarkImplRan) {
   int run_count = 0;
-  base::Value settings(base::Value::Type::DICT);
-  settings.SetBoolKey("run_benchmark_impl", true);
+  base::Value::Dict settings;
+  settings.Set("run_benchmark_impl", true);
 
   // Schedule a main thread benchmark.
   int id = layer_tree_host_->ScheduleMicroBenchmark(
@@ -146,8 +146,8 @@ TEST_F(MicroBenchmarkControllerTest, BenchmarkImplRan) {
 
 TEST_F(MicroBenchmarkControllerTest, SendMessage) {
   // Send valid message to invalid benchmark (id = 0)
-  base::Value message(base::Value::Type::DICT);
-  message.SetBoolKey("can_handle", true);
+  base::Value::Dict message;
+  message.Set("can_handle", true);
   bool message_handled =
       layer_tree_host_->SendMessageToMicroBenchmark(0, std::move(message));
   EXPECT_FALSE(message_handled);
@@ -155,20 +155,20 @@ TEST_F(MicroBenchmarkControllerTest, SendMessage) {
   // Schedule a benchmark
   int run_count = 0;
   int id = layer_tree_host_->ScheduleMicroBenchmark(
-      "unittest_only_benchmark", base::Value(),
+      "unittest_only_benchmark", base::Value::Dict(),
       base::BindOnce(&IncrementCallCount, base::Unretained(&run_count)));
   EXPECT_GT(id, 0);
 
   // Send valid message to valid benchmark
-  message = base::Value(base::Value::Type::DICT);
-  message.SetBoolKey("can_handle", true);
+  message.clear();
+  message.Set("can_handle", true);
   message_handled =
       layer_tree_host_->SendMessageToMicroBenchmark(id, std::move(message));
   EXPECT_TRUE(message_handled);
 
   // Send invalid message to valid benchmark
-  message = base::Value(base::Value::Type::DICT);
-  message.SetBoolKey("can_handle", false);
+  message.clear();
+  message.Set("can_handle", false);
   message_handled =
       layer_tree_host_->SendMessageToMicroBenchmark(id, std::move(message));
   EXPECT_FALSE(message_handled);

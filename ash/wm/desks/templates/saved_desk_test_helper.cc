@@ -19,9 +19,6 @@ SavedDeskTestHelper::SavedDeskTestHelper()
   desk_model_ = std::make_unique<desks_storage::LocalDeskDataManager>(
       desk_model_data_dir_.GetPath(), account_id_);
 
-  desks_storage::LocalDeskDataManager::
-      SetExcludeSaveAndRecallDeskInMaxEntryCountForTesting(false);
-
   // Install desk model.
   static_cast<TestSavedDeskDelegate*>(Shell::Get()->saved_desk_delegate())
       ->set_desk_model(desk_model_.get());

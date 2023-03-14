@@ -38,6 +38,8 @@ class RTCEncodedAudioFrameDelegate
   absl::optional<uint16_t> SequenceNumber() const;
   Vector<uint32_t> ContributingSources() const;
   std::unique_ptr<webrtc::TransformableFrameInterface> PassWebRtcFrame();
+  std::unique_ptr<webrtc::TransformableFrameInterface> CloneWebRtcFrame(
+      String& exception_message);
 
  private:
   mutable base::Lock lock_;

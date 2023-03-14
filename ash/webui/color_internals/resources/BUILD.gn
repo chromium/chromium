@@ -9,7 +9,6 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 assert(is_chromeos_ash, "Color Internals is ash-chrome only")
 
 ash_ts_library("color_internals_ts") {
-  allow_js = true
   root_dir = "."
   out_dir = "$target_gen_dir/tsc"
   composite = true
@@ -21,7 +20,7 @@ ash_ts_library("color_internals_ts") {
   deps = [
     "../mojom:mojom_ts",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
-    "//ui/webui/resources/mojo:library",
+    "//ui/webui/resources/mojo:build_ts",
   ]
 
   # Allows TSC to check the generated mojom-webui/ directory when it encounters

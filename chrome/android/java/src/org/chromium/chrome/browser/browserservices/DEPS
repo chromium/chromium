@@ -1,4 +1,4 @@
 include_rules = [
   "+chrome/browser/android/browserservices",
-  "+components/digital_asset_links/android/java/src/org/chromium/components/digital_asset_links",
+  "+components/content_relationship_verification/android/java/src/org/chromium/components/content_relationship_verification",
 ]

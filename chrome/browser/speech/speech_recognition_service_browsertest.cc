@@ -329,7 +329,7 @@ void SpeechRecognitionServiceTest::SendAudioChunk(
     auto signed_buffer = media::mojom::AudioDataS16::New();
     signed_buffer->channel_count = kExpectedChannelCount;
     signed_buffer->frame_count = chunk_size;
-    signed_buffer->sample_rate = handler->sample_rate();
+    signed_buffer->sample_rate = handler->GetSampleRate();
     for (int i = 0; i < chunk_size; i++) {
       signed_buffer->data.push_back(audio_data[chunk_start + i]);
     }
@@ -365,13 +365,13 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, RecognizePhrase) {
 
   auto handler = media::WavAudioHandler::Create(buffer);
   ASSERT_TRUE(handler.get());
-  ASSERT_EQ(handler->num_channels(), kExpectedChannelCount);
+  ASSERT_EQ(handler->GetNumChannels(), kExpectedChannelCount);
 
-  auto bus =
-      media::AudioBus::Create(kExpectedChannelCount, handler->total_frames());
+  auto bus = media::AudioBus::Create(kExpectedChannelCount,
+                                     handler->total_frames_for_testing());
 
   size_t bytes_written = 0u;
-  ASSERT_TRUE(handler->CopyTo(bus.get(), 0, &bytes_written));
+  ASSERT_TRUE(handler->CopyTo(bus.get(), &bytes_written));
 
   std::vector<int16_t> audio_data(bus->frames());
   bus->ToInterleaved<media::SignedInt16SampleTypeTraits>(bus->frames(),
@@ -421,13 +421,13 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest,
 
   auto handler = media::WavAudioHandler::Create(buffer);
   ASSERT_TRUE(handler.get());
-  ASSERT_EQ(handler->num_channels(), kExpectedChannelCount);
+  ASSERT_EQ(handler->GetNumChannels(), kExpectedChannelCount);
 
-  auto bus =
-      media::AudioBus::Create(kExpectedChannelCount, handler->total_frames());
+  auto bus = media::AudioBus::Create(kExpectedChannelCount,
+                                     handler->total_frames_for_testing());
 
   size_t bytes_written = 0u;
-  ASSERT_TRUE(handler->CopyTo(bus.get(), 0, &bytes_written));
+  ASSERT_TRUE(handler->CopyTo(bus.get(), &bytes_written));
 
   std::vector<int16_t> audio_data(bus->frames());
   bus->ToInterleaved<media::SignedInt16SampleTypeTraits>(bus->frames(),
@@ -523,7 +523,7 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, CompromisedRenderer) {
   ASSERT_TRUE(base::PathExists(config_dir));
   base::FilePath config_file_path =
       config_dir.Append(FILE_PATH_LITERAL("config_file"));
-  ASSERT_EQ(base::WriteFile(config_file_path, nullptr, 0), 0);
+  ASSERT_TRUE(base::WriteFile(config_file_path, base::StringPiece()));
   ASSERT_TRUE(base::PathExists(config_file_path));
   g_browser_process->local_state()->SetFilePath(prefs::kSodaEnUsConfigPath,
                                                 config_file_path);

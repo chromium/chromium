@@ -18,6 +18,8 @@
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
+#include "chrome/browser/ash/crostini/fake_crostini_features.h"
+#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -690,7 +692,8 @@ TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceExtension) {
 class AppServiceFileHandlersTest : public AppServiceFileTasksTestEnabled {
  public:
   AppServiceFileHandlersTest() {
-    feature_list_.InitAndEnableFeature(extensions_features::kWebFileHandlers);
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kExtensionWebFileHandlers);
   }
 
  private:
@@ -918,6 +921,52 @@ TEST_F(AppServiceFileTasksTestEnabled, NoPluginVmAppsForFileSelection) {
       FindAppServiceTasks({{text_file_name}, {image_file_name}});
 
   // There shouldn't be any apps available.
+  ASSERT_EQ(0U, tasks.size());
+}
+
+TEST_F(AppServiceFileTasksTestEnabled, CrositiniTasksControlledByPolicy) {
+  std::string tini_task_name = "chrome://file-manager/?import-crostini-image";
+  std::string deb_task_name = "chrome://file-manager/?install-linux-package";
+  std::vector<apps::IntentFilterPtr> filters;
+  filters.push_back(
+      apps_util::MakeFileFilterForView("tini", "tini", "import-tini"));
+  filters[0]->activity_name = tini_task_name;
+  filters.push_back(
+      apps_util::MakeFileFilterForView("deb", "deb", "import-deb"));
+  filters[1]->activity_name = deb_task_name;
+  AddFakeAppWithIntentFilters(file_manager::kFileManagerSwaAppId,
+                              std::move(filters), apps::AppType::kWeb, true,
+                              app_service_proxy_);
+
+  std::string file_name = "test.tini";
+
+  crostini::FakeCrostiniFeatures crostini_features;
+  crostini_features.set_export_import_ui_allowed(true);
+  std::vector<FullTaskDescriptor> tasks = FindAppServiceTasks({{file_name}});
+
+  ASSERT_EQ(1U, tasks.size());
+  EXPECT_EQ(file_manager::kFileManagerSwaAppId,
+            tasks[0].task_descriptor.app_id);
+  EXPECT_EQ(tini_task_name, tasks[0].task_descriptor.action_id);
+
+  crostini_features.set_export_import_ui_allowed(false);
+  tasks = FindAppServiceTasks({{file_name}});
+
+  ASSERT_EQ(0U, tasks.size());
+
+  file_name = "test.deb";
+
+  crostini_features.set_root_access_allowed(true);
+  tasks = FindAppServiceTasks({{file_name}});
+
+  ASSERT_EQ(1U, tasks.size());
+  EXPECT_EQ(file_manager::kFileManagerSwaAppId,
+            tasks[0].task_descriptor.app_id);
+  EXPECT_EQ(deb_task_name, tasks[0].task_descriptor.action_id);
+
+  crostini_features.set_root_access_allowed(false);
+  tasks = FindAppServiceTasks({{file_name}});
+
   ASSERT_EQ(0U, tasks.size());
 }
 

@@ -357,9 +357,10 @@ HRESULT UpdateProfilePictures(const std::wstring& sid,
                  const base::FilePath& picture_path,
                  const std::vector<char>& picture_buffer) {
                 HRESULT hr = S_OK;
-                if (base::WriteFile(picture_path, picture_buffer.data(),
-                                    picture_buffer.size()) !=
-                    static_cast<int>(picture_buffer.size())) {
+                if (!base::WriteFile(
+                        picture_path,
+                        base::StringPiece(picture_buffer.data(),
+                                          picture_buffer.size()))) {
                   LOGFN(ERROR) << "Failed to write profile picture to file="
                                << picture_path;
                   hr = HRESULT_FROM_WIN32(::GetLastError());

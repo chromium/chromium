@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_EXTENSION_TELEMETRY_EXTENSION_TELEMETRY_CONFIG_MANAGER_H_
 #define CHROME_BROWSER_SAFE_BROWSING_EXTENSION_TELEMETRY_EXTENSION_TELEMETRY_CONFIG_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "extensions/common/extension_id.h"
 
@@ -88,5 +89,7 @@ class ExtensionTelemetryConfigManager {
   // the telemetry config.
   raw_ptr<PrefService> pref_service_;
 };
+
 }  // namespace safe_browsing
+
 #endif  // CHROME_BROWSER_SAFE_BROWSING_EXTENSION_TELEMETRY_EXTENSION_TELEMETRY_CONFIG_MANAGER_H_

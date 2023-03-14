@@ -172,6 +172,7 @@ public class BackgroundSyncBackgroundTaskScheduler {
      * @param taskType The Background Sync task to reschedule.
      */
     public void reschedule(@BackgroundSyncTask int taskType) {
+        // TODO(crbug.com/1414627): Investigate if this can be deleted.
         scheduleOneOffTask(taskType, MIN_SYNC_RECOVERY_TIME);
     }
 

@@ -31,15 +31,6 @@ class AppLaunchSplashScreenView {
     // Invoked when network state is changed. `online` is true if the device
     // is connected to the Internet.
     virtual void OnNetworkStateChanged(bool online) {}
-
-    // Invoked when the splash screen view is being deleted.
-    virtual void OnDeletingSplashScreenView() {}
-
-    // Returns the data needed to be displayed on the splash screen.
-    virtual KioskAppManagerBase::App GetAppData() = 0;
-
-    // Tells whether the network connection is required for app launch.
-    virtual bool IsNetworkRequired() = 0;
   };
 
   enum class AppLaunchState {
@@ -62,7 +53,7 @@ class AppLaunchSplashScreenView {
   virtual void SetDelegate(Delegate* delegate) = 0;
 
   // Shows the contents of the screen.
-  virtual void Show() = 0;
+  virtual void Show(KioskAppManagerBase::App app_data) = 0;
 
   // Hides the contents of the screen.
   virtual void Hide() = 0;
@@ -84,6 +75,9 @@ class AppLaunchSplashScreenView {
 
   // Continues app launch after error screen is shown.
   virtual void ContinueAppLaunch() = 0;
+
+  // Tells the splash screen view that network is required.
+  virtual void SetNetworkRequired() = 0;
 };
 
 // A class that handles the WebUI hooks for the app launch splash screen.
@@ -112,7 +106,7 @@ class AppLaunchSplashScreenHandler
   void RegisterMessages() override;
 
   // AppLaunchSplashScreenView implementation:
-  void Show() override;
+  void Show(KioskAppManagerBase::App app_data) override;
   void Hide() override;
   void ToggleNetworkConfig(bool visible) override;
   void UpdateAppLaunchState(AppLaunchState state) override;
@@ -121,6 +115,7 @@ class AppLaunchSplashScreenHandler
   void ShowErrorMessage(KioskAppLaunchError::Error error) override;
   bool IsNetworkReady() override;
   void ContinueAppLaunch() override;
+  void SetNetworkRequired() override;
 
   // NetworkStateInformer::NetworkStateInformerObserver implementation:
   void UpdateState(NetworkError::ErrorReason reason) override;
@@ -133,6 +128,7 @@ class AppLaunchSplashScreenHandler
 
   Delegate* delegate_ = nullptr;
   bool is_shown_ = false;
+  bool is_network_required_ = false;
   AppLaunchState state_ = AppLaunchState::kPreparingProfile;
 
   scoped_refptr<NetworkStateInformer> network_state_informer_;

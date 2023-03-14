@@ -81,7 +81,7 @@ def main():
         logging.info('Creating lcov report at %s',
                      params.javascript_coverage_dir)
         javascript_merger.generate_coverage_reports(
-            output_dir, parsed_scripts, params.javascript_coverage_dir)
+            output_dir, params.javascript_coverage_dir)
     except RuntimeError as e:
         logging.warn('Failed executing istanbul tasks: %s', e)
 

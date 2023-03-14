@@ -7,7 +7,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -182,8 +181,6 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
     profile_manager_.DeleteTestingProfile("primary_account");
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
-
  private:
   // Must be declared before anything that may make use of the
   // directory so as to ensure files are closed before cleanup.
@@ -208,211 +205,148 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
 // for Enhanced Protection and "Sb" for Safe Browsing.
 
 TEST_F(ChromeTailoredSecurityServiceTest,
-       WhenDesktopNoticeDisabledAndTailoredSecurityEnabledDoesNotShowDialog) {
-  scoped_feature_list_.InitAndDisableFeature(kTailoredSecurityDesktopNotice);
-  {
-    SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
-    const GURL google_url("https://www.google.com");
-    AddTab(google_url);
-    int initial_times_displayed =
-        tailored_security_service()->times_dialog_displayed();
-    tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
-                                                     base::Time::Now());
-    EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
-              initial_times_displayed);
-  }
+       TailoredSecurityEnabledShowsEnableDialog) {
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+  const GURL google_url("https://www.google.com");
+  AddTab(google_url);
+  int initial_times_displayed =
+      tailored_security_service()->times_dialog_displayed();
+
+  tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
+                                                   base::Time::Now());
+
+  EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
+            initial_times_displayed + 1);
+  EXPECT_TRUE(tailored_security_service()->previous_show_enable_dialog_value());
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest, TsEnabledEnablesEp) {
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+  const GURL google_url("https://www.google.com");
+  AddTab(google_url);
+  EXPECT_FALSE(IsEnhancedProtectionEnabled(*prefs()));
+  tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
+                                                   base::Time::Now());
+  EXPECT_TRUE(IsEnhancedProtectionEnabled(*prefs()));
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest, EpAlreadyEnabledDoesNotShowDialog) {
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::ENHANCED_PROTECTION);
+  const GURL google_url("https://www.google.com");
+  AddTab(google_url);
+  int initial_times_displayed =
+      tailored_security_service()->times_dialog_displayed();
+  tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
+                                                   base::Time::Now());
+  EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
+            initial_times_displayed);
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest, EpAlreadyEnabledLeavesEpEnabled) {
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::ENHANCED_PROTECTION);
+  const GURL google_url("https://www.google.com");
+  AddTab(google_url);
+  EXPECT_TRUE(IsEnhancedProtectionEnabled(*prefs()));
+  tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
+                                                   base::Time::Now());
+  EXPECT_TRUE(IsEnhancedProtectionEnabled(*prefs()));
 }
 
 TEST_F(ChromeTailoredSecurityServiceTest,
-       WhenDesktopNoticeDisabledAndTsEnabledDoesNotEnableEp) {
-  scoped_feature_list_.InitAndDisableFeature(kTailoredSecurityDesktopNotice);
-  {
-    SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
-    const GURL google_url("https://www.google.com");
-    AddTab(google_url);
-    tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
-                                                     base::Time::Now());
-    EXPECT_FALSE(IsEnhancedProtectionEnabled(*prefs()));
-  }
+       EpWasEnabledByTsAndTsNowDisabledShowsDialog) {
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+  const GURL google_url("https://www.google.com");
+  AddTab(google_url);
+  int initial_times_displayed =
+      tailored_security_service()->times_dialog_displayed();
+  // Enable ESB - this will display the dialog once.
+  tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
+                                                   base::Time::Now());
+
+  EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
+            initial_times_displayed + 1);
+  // Then detect that TailoredSecurity was disabled.
+  tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityDisabled,
+                                                   base::Time::Now());
+  EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
+            initial_times_displayed + 2);
+  EXPECT_FALSE(
+      tailored_security_service()->previous_show_enable_dialog_value());
 }
 
 TEST_F(ChromeTailoredSecurityServiceTest,
-       WhenDesktopNoticeEnabledAndTailoredSecurityEnabledShowsEnableDialog) {
-  scoped_feature_list_.InitAndEnableFeature(kTailoredSecurityDesktopNotice);
-  {
-    SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
-    const GURL google_url("https://www.google.com");
-    AddTab(google_url);
-    int initial_times_displayed =
-        tailored_security_service()->times_dialog_displayed();
+       EpEnabledByTsAndTsNowDisabledDisablesEp) {
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+  const GURL google_url("https://www.google.com");
+  AddTab(google_url);
+  // Enable ESB
+  tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
+                                                   base::Time::Now());
 
-    tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
-                                                     base::Time::Now());
+  EXPECT_TRUE(IsEnhancedProtectionEnabled(*prefs()));
+  // Then detect that TailoredSecurity was disabled.
+  tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityDisabled,
+                                                   base::Time::Now());
 
-    EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
-              initial_times_displayed + 1);
-    EXPECT_TRUE(
-        tailored_security_service()->previous_show_enable_dialog_value());
-  }
+  EXPECT_FALSE(IsEnhancedProtectionEnabled(*prefs()));
+  EXPECT_TRUE(IsSafeBrowsingEnabled(*prefs()));
 }
 
 TEST_F(ChromeTailoredSecurityServiceTest,
-       WhenDesktopNoticeEnabledAndTsEnabledEnablesEp) {
-  scoped_feature_list_.InitAndEnableFeature(kTailoredSecurityDesktopNotice);
-  {
-    SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
-    const GURL google_url("https://www.google.com");
-    AddTab(google_url);
-    EXPECT_FALSE(IsEnhancedProtectionEnabled(*prefs()));
-    tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
-                                                     base::Time::Now());
-    EXPECT_TRUE(IsEnhancedProtectionEnabled(*prefs()));
-  }
+       SpEnabledAndTsNowDisabledDoesNotShowDialog) {
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+  const GURL google_url("https://www.google.com");
+  AddTab(google_url);
+  int initial_times_displayed =
+      tailored_security_service()->times_dialog_displayed();
+  tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityDisabled,
+                                                   base::Time::Now());
+  EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
+            initial_times_displayed);
 }
 
 TEST_F(ChromeTailoredSecurityServiceTest,
-       WhenDesktopNoticeEnabledAndEpAlreadyEnabledDoesNotShowDialog) {
-  scoped_feature_list_.InitAndEnableFeature(kTailoredSecurityDesktopNotice);
-  {
-    SetSafeBrowsingState(prefs(), SafeBrowsingState::ENHANCED_PROTECTION);
-    const GURL google_url("https://www.google.com");
-    AddTab(google_url);
-    int initial_times_displayed =
-        tailored_security_service()->times_dialog_displayed();
-    tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
-                                                     base::Time::Now());
-    EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
-              initial_times_displayed);
-  }
+       SpEnabledAndTsNowDisabledDoesNotChangeSb) {
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+  const GURL google_url("https://www.google.com");
+  AddTab(google_url);
+
+  EXPECT_FALSE(IsEnhancedProtectionEnabled(*prefs()));
+  EXPECT_TRUE(IsSafeBrowsingEnabled(*prefs()));
+
+  tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityDisabled,
+                                                   base::Time::Now());
+  EXPECT_FALSE(IsEnhancedProtectionEnabled(*prefs()));
+  EXPECT_TRUE(IsSafeBrowsingEnabled(*prefs()));
 }
 
 TEST_F(ChromeTailoredSecurityServiceTest,
-       WhenDesktopNoticeEnabledAndEpAlreadyEnabledLeavesEpEnabled) {
-  scoped_feature_list_.InitAndEnableFeature(kTailoredSecurityDesktopNotice);
-  {
-    SetSafeBrowsingState(prefs(), SafeBrowsingState::ENHANCED_PROTECTION);
-    const GURL google_url("https://www.google.com");
-    AddTab(google_url);
-    EXPECT_TRUE(IsEnhancedProtectionEnabled(*prefs()));
-    tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
-                                                     base::Time::Now());
-    EXPECT_TRUE(IsEnhancedProtectionEnabled(*prefs()));
-  }
+       EpEnabledByUserTsDisabledDoesNotShowDialog) {
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::ENHANCED_PROTECTION);
+  const GURL google_url("https://www.google.com");
+  AddTab(google_url);
+
+  int times_dialog_displayed_before =
+      tailored_security_service()->times_dialog_displayed();
+  tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityDisabled,
+                                                   base::Time::Now());
+  EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
+            times_dialog_displayed_before);
 }
 
 TEST_F(ChromeTailoredSecurityServiceTest,
-       WhenDesktopNoticeEnabledAndEpWasEnabledByTsAndTsNowDisabledShowsDialog) {
-  scoped_feature_list_.InitAndEnableFeature(kTailoredSecurityDesktopNotice);
-  {
-    SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
-    const GURL google_url("https://www.google.com");
-    AddTab(google_url);
-    int initial_times_displayed =
-        tailored_security_service()->times_dialog_displayed();
-    // Enable ESB - this will display the dialog once.
-    tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
-                                                     base::Time::Now());
+       EpEnabledByUserTsDisabledDoesNotChangeSb) {
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::ENHANCED_PROTECTION);
+  const GURL google_url("https://www.google.com");
+  AddTab(google_url);
 
-    EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
-              initial_times_displayed + 1);
-    // Then detect that TailoredSecurity was disabled.
-    tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityDisabled,
-                                                     base::Time::Now());
-    EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
-              initial_times_displayed + 2);
-    EXPECT_FALSE(
-        tailored_security_service()->previous_show_enable_dialog_value());
-  }
-}
+  EXPECT_TRUE(IsEnhancedProtectionEnabled(*prefs()));
+  EXPECT_FALSE(prefs()->GetBoolean(
+      prefs::kEnhancedProtectionEnabledViaTailoredSecurity));
 
-TEST_F(ChromeTailoredSecurityServiceTest,
-       WhenDesktopNoticeEnabledAndEpEnabledByTsAndTsNowDisabledDisablesEp) {
-  scoped_feature_list_.InitAndEnableFeature(kTailoredSecurityDesktopNotice);
-  {
-    SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
-    const GURL google_url("https://www.google.com");
-    AddTab(google_url);
-    // Enable ESB
-    tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
-                                                     base::Time::Now());
-
-    EXPECT_TRUE(IsEnhancedProtectionEnabled(*prefs()));
-    // Then detect that TailoredSecurity was disabled.
-    tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityDisabled,
-                                                     base::Time::Now());
-
-    EXPECT_FALSE(IsEnhancedProtectionEnabled(*prefs()));
-    EXPECT_TRUE(IsSafeBrowsingEnabled(*prefs()));
-  }
-}
-
-TEST_F(ChromeTailoredSecurityServiceTest,
-       WhenDesktopNoticeEnabledAndSpEnabledAndTsNowDisabledDoesNotShowDialog) {
-  scoped_feature_list_.InitAndEnableFeature(kTailoredSecurityDesktopNotice);
-  {
-    SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
-    const GURL google_url("https://www.google.com");
-    AddTab(google_url);
-    int initial_times_displayed =
-        tailored_security_service()->times_dialog_displayed();
-    tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityDisabled,
-                                                     base::Time::Now());
-    EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
-              initial_times_displayed);
-  }
-}
-
-TEST_F(ChromeTailoredSecurityServiceTest,
-       WhenDesktopNoticeEnabledAndSpEnabledAndTsNowDisabledDoesNotChangeSb) {
-  scoped_feature_list_.InitAndEnableFeature(kTailoredSecurityDesktopNotice);
-  {
-    SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
-    const GURL google_url("https://www.google.com");
-    AddTab(google_url);
-
-    EXPECT_FALSE(IsEnhancedProtectionEnabled(*prefs()));
-    EXPECT_TRUE(IsSafeBrowsingEnabled(*prefs()));
-
-    tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityDisabled,
-                                                     base::Time::Now());
-    EXPECT_FALSE(IsEnhancedProtectionEnabled(*prefs()));
-    EXPECT_TRUE(IsSafeBrowsingEnabled(*prefs()));
-  }
-}
-
-TEST_F(ChromeTailoredSecurityServiceTest,
-       WhenDesktopNoticeEnabledAndEpEnabledByUserTsDisabledDoesNotShowDialog) {
-  scoped_feature_list_.InitAndEnableFeature(kTailoredSecurityDesktopNotice);
-  {
-    SetSafeBrowsingState(prefs(), SafeBrowsingState::ENHANCED_PROTECTION);
-    const GURL google_url("https://www.google.com");
-    AddTab(google_url);
-
-    int times_dialog_displayed_before =
-        tailored_security_service()->times_dialog_displayed();
-    tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityDisabled,
-                                                     base::Time::Now());
-    EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
-              times_dialog_displayed_before);
-  }
-}
-
-TEST_F(ChromeTailoredSecurityServiceTest,
-       WhenDesktopNoticeEnabledAndEpEnabledByUserTsDisabledDoesNotChangeSb) {
-  scoped_feature_list_.InitAndEnableFeature(kTailoredSecurityDesktopNotice);
-  {
-    SetSafeBrowsingState(prefs(), SafeBrowsingState::ENHANCED_PROTECTION);
-    const GURL google_url("https://www.google.com");
-    AddTab(google_url);
-
-    EXPECT_TRUE(IsEnhancedProtectionEnabled(*prefs()));
-    EXPECT_FALSE(prefs()->GetBoolean(
-        prefs::kEnhancedProtectionEnabledViaTailoredSecurity));
-
-    tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityDisabled,
-                                                     base::Time::Now());
-    EXPECT_TRUE(IsEnhancedProtectionEnabled(*prefs()));
-  }
+  tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityDisabled,
+                                                   base::Time::Now());
+  EXPECT_TRUE(IsEnhancedProtectionEnabled(*prefs()));
 }
 
 #endif

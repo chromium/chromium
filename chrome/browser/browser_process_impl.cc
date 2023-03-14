@@ -92,7 +92,6 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "components/breadcrumbs/core/application_breadcrumbs_logger.h"
-#include "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
 #include "components/breadcrumbs/core/breadcrumb_persistent_storage_util.h"
 #include "components/breadcrumbs/core/breadcrumbs_status.h"
 #include "components/breadcrumbs/core/crash_reporter_breadcrumb_observer.h"
@@ -194,6 +193,7 @@
 #include "chrome/common/extensions/chrome_extensions_client.h"
 #include "chrome/common/initialize_extensions_client.h"
 #include "components/storage_monitor/storage_monitor.h"
+#include "extensions/common/context_data.h"
 #include "extensions/common/extension_l10n_util.h"
 #endif
 
@@ -239,6 +239,34 @@ static const int kUpdateCheckIntervalHours = 6;
 // messageloop and there's some deadlock risk. Our only option is to exit
 // anyway.
 static constexpr base::TimeDelta kEndSessionTimeout = base::Seconds(10);
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+namespace {
+
+bool ControlledFrameBrowserAvailabilityCheck(
+    const std::string& api_full_name,
+    const extensions::Extension* extension,
+    extensions::Feature::Context context,
+    const GURL& url,
+    extensions::Feature::Platform platform,
+    int context_id,
+    bool check_developer_mode,
+    std::unique_ptr<extensions::ContextData> context_data) {
+  return false;
+}
+
+extensions::Feature::FeatureDelegatedAvailabilityCheckMap
+CreateBrowserAvailabilityCheckMap() {
+  extensions::Feature::FeatureDelegatedAvailabilityCheckMap map;
+  for (const auto* item : GetControlledFrameFeatureList()) {
+    map.emplace(item,
+                base::BindRepeating(&ControlledFrameBrowserAvailabilityCheck));
+  }
+  return map;
+}
+
+}  // namespace
 #endif
 
 using content::BrowserThread;
@@ -300,7 +328,7 @@ void BrowserProcessImpl::Init() {
   extension_event_router_forwarder_ =
       base::MakeRefCounted<extensions::EventRouterForwarder>();
 
-  EnsureExtensionsClientInitialized();
+  EnsureExtensionsClientInitialized(CreateBrowserAvailabilityCheckMap());
 
   extensions_browser_client_ =
       std::make_unique<extensions::ChromeExtensionsBrowserClient>();
@@ -997,14 +1025,6 @@ BuildState* BrowserProcessImpl::GetBuildState() {
 #endif
 }
 
-breadcrumbs::BreadcrumbPersistentStorageManager*
-BrowserProcessImpl::GetBreadcrumbPersistentStorageManager() {
-  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-  return application_breadcrumbs_logger_
-             ? application_breadcrumbs_logger_->GetPersistentStorageManager()
-             : nullptr;
-}
-
 // static
 void BrowserProcessImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kDefaultBrowserSettingEnabled,
@@ -1240,13 +1260,6 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
               return ChromeMetricsServiceAccessor::
                   IsMetricsAndCrashReportingEnabled();
             }));
-
-    // Get stored persistent breadcrumbs from last run to set on crash reports.
-    GetBreadcrumbPersistentStorageManager()->GetStoredEvents(
-        base::BindOnce([](std::vector<std::string> events) {
-          breadcrumbs::BreadcrumbManager::GetInstance()
-              .SetPreviousSessionEvents(events);
-        }));
   } else {
     breadcrumbs::DeleteBreadcrumbFiles(user_data_dir);
   }

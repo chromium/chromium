@@ -13,7 +13,7 @@ StubDevToolsClient::StubDevToolsClient() : id_("stub-id") {}
 
 StubDevToolsClient::StubDevToolsClient(const std::string& id) : id_(id) {}
 
-StubDevToolsClient::~StubDevToolsClient() {}
+StubDevToolsClient::~StubDevToolsClient() = default;
 
 const std::string& StubDevToolsClient::GetId() {
   return id_;
@@ -107,6 +107,13 @@ void StubDevToolsClient::AddListener(DevToolsEventListener* listener) {
   listeners_.push_back(listener);
 }
 
+void StubDevToolsClient::RemoveListener(DevToolsEventListener* listener) {
+  auto it = std::find(listeners_.begin(), listeners_.end(), listener);
+  if (it != listeners_.end()) {
+    listeners_.erase(it);
+  }
+}
+
 Status StubDevToolsClient::HandleEventsUntil(
     const ConditionalFunc& conditional_func,
     const Timeout& timeout) {
@@ -119,10 +126,12 @@ Status StubDevToolsClient::HandleReceivedEvents() {
 
 void StubDevToolsClient::SetDetached() {}
 
-void StubDevToolsClient::SetOwner(WebViewImpl* owner) {}
+void StubDevToolsClient::SetOwner(WebViewImpl* owner) {
+  owner_ = owner;
+}
 
 WebViewImpl* StubDevToolsClient::GetOwner() const {
-  return nullptr;
+  return owner_;
 }
 
 DevToolsClient* StubDevToolsClient::GetRootClient() {

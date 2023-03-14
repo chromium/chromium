@@ -542,10 +542,9 @@ TEST_F(ContextProviderImplTest, WithProfileDir) {
 
   // Setup data dir.
   ASSERT_TRUE(profile_temp_dir.CreateUniqueTempDir());
-  ASSERT_EQ(
+  ASSERT_TRUE(
       base::WriteFile(profile_temp_dir.GetPath().AppendASCII(kTestDataFileIn),
-                      nullptr, 0),
-      0);
+                      base::StringPiece()));
 
   // Pass a handle data dir to the context.
   create_params.set_data_directory(

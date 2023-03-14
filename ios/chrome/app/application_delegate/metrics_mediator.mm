@@ -363,14 +363,6 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
   base::UmaHistogramCounts100(
       "Startup.ConsecutiveDidFinishLaunchingWithoutLaunch",
       consecutiveDidFinishLaunching);
-
-  if ([connectionInformation startupParameters]) {
-    base::UmaHistogramTimes("Startup.ColdStartWithExternalURLTime",
-                            mainToNowTime);
-  } else {
-    base::UmaHistogramTimes("Startup.ColdStartWithoutExternalURLTime",
-                            mainToNowTime);
-  }
 #if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
   DumpEnvironment(startupInformation);
 #endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
@@ -636,8 +628,6 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
 
 + (void)applicationDidEnterBackground:(NSInteger)memoryWarningCount {
   base::RecordAction(base::UserMetricsAction("MobileEnteredBackground"));
-  base::UmaHistogramCounts100("MemoryWarning.OccurrencesPerSession",
-                              memoryWarningCount);
 
   task_vm_info task_info_data;
   mach_msg_type_number_t count = sizeof(task_vm_info) / sizeof(natural_t);

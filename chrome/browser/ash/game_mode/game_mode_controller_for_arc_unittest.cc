@@ -157,7 +157,7 @@ TEST_F(GameModeControllerForArcTest, SwitchToBorealisWindowAndBack) {
   auto game_widget = CreateArcTaskWidget(14, "jp.foo.game");
 
   std::unique_ptr<views::Widget> borealis_widget =
-      borealis::CreateFakeWidget("org.chromium.borealis.foo");
+      borealis::CreateFakeWidget("org.chromium.guest_os.borealis.foo");
 
   fake_resourced_client_->set_set_game_mode_response(
       ash::ResourcedClient::GameMode::OFF);

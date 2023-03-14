@@ -41,8 +41,10 @@ class TouchToFillControllerDelegate {
       base::OnceClosure action_completed) = 0;
 
   // Informs the controller that the user has tapped the "Manage Passwords"
-  // button. This will open the password preferences.
+  // button. This will open the password preferences of universal password
+  // manager.
   virtual void OnManagePasswordsSelected(
+      bool passkeys_shown,
       base::OnceClosure action_completed) = 0;
 
   // Informs the controller that the user has dismissed the sheet. No-op if

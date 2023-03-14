@@ -465,7 +465,7 @@
       include_paths: ["third_party/blink/renderer/core/style/applied_text_decoration.h"],
       default_value: "nullptr",
       wrapper_pointer_name: "scoped_refptr",
-      field_group: "*",
+      field_group: "visual",
       computed_style_custom_functions: ["getter"],
     },
     {
@@ -1182,6 +1182,17 @@
     },
     {
       name: "IsPseudoInitialStyle",
+      field_template: "monotonic_flag",
+      type_name: "bool",
+      field_group: "*",
+      default_value: "false",
+    },
+    {
+      // Need to persist this flag from MatchResult and set it back on
+      // StyleResolverState when we hit the MatchedPropertiesCache. Otherwise
+      // ShouldStoreOldStyle() in StyleResolver will not return the correct
+      // result.
+      name: "CanAffectAnimations",
       field_template: "monotonic_flag",
       type_name: "bool",
       field_group: "*",

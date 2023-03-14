@@ -33,6 +33,7 @@ component("backend") {
   ]
 
   public_configs = []
+  configs += [ "//printing/:strict" ]
   cflags = []
   defines = [ "IS_PRINT_BACKEND_IMPL" ]
 

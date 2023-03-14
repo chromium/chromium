@@ -41,6 +41,9 @@ using ::testing::_;
 using ::testing::StrictMock;
 
 const uint8_t kTestScannerId = 10;
+#if BUILDFLAG(IS_CHROMEOS)
+const uint8_t kTestScannerId2 = 11;
+#endif
 constexpr char kTestDeviceAddr[] = "11:22:33:44:55:66";
 constexpr char kTestDeviceName[] = "FlossDevice";
 
@@ -156,22 +159,39 @@ class BluetoothFlossTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  // Simulates getting a ScannerRegistered callback and then a
-  // ScanResultReceived
-  void RegisterScannerAndGetScanResult() {
+  // Simulates getting a ScannerRegistered callback.
+  void RegisterScanner(const device::BluetoothUUID& uuid, uint8_t scanner_id) {
     ASSERT_TRUE(adapter_.get() != nullptr);
     BluetoothAdapterFloss* floss_adapter =
         static_cast<BluetoothAdapterFloss*>(adapter_.get());
 
-    floss_adapter->ScannerRegistered(device::BluetoothUUID(kTestUuidStr),
-                                     kTestScannerId, GattStatus::kSuccess);
+    floss_adapter->ScannerRegistered(uuid, scanner_id, GattStatus::kSuccess);
 
     base::RunLoop().RunUntilIdle();
+  }
+
+  // Simulates getting OnScanResult.
+  void GetScanResult() {
+    ASSERT_TRUE(adapter_.get() != nullptr);
+    BluetoothAdapterFloss* floss_adapter =
+        static_cast<BluetoothAdapterFloss*>(adapter_.get());
 
     ScanResult scan_result;
     scan_result.address = kTestDeviceAddr;
     scan_result.name = kTestDeviceName;
     floss_adapter->ScanResultReceived(scan_result);
+  }
+
+  // Simulates getting OnAdvertisementFound.
+  void GetAdvFound() {
+    ASSERT_TRUE(adapter_.get() != nullptr);
+    BluetoothAdapterFloss* floss_adapter =
+        static_cast<BluetoothAdapterFloss*>(adapter_.get());
+
+    ScanResult scan_result;
+    scan_result.address = kTestDeviceAddr;
+    scan_result.name = kTestDeviceName;
+    floss_adapter->AdvertisementFound(kTestScannerId, scan_result);
   }
 
  protected:
@@ -701,22 +721,57 @@ TEST_F(BluetoothFlossTest, StartLowEnergyScanSessionWithScanResult) {
 
   FakeBluetoothLowEnergyScanSessionDelegate delegate;
   // TODO (b/217274013): Filter is currently being ignored
+  GetFakeLEScanClient()->SetNextScannerUUID(
+      device::BluetoothUUID(kTestUuidStr));
   auto background_scan_session = adapter_->StartLowEnergyScanSession(
       /*filter=*/nullptr, delegate.GetWeakPtr());
   base::RunLoop().RunUntilIdle();
 
+  FakeBluetoothLowEnergyScanSessionDelegate delegate2;
+  GetFakeLEScanClient()->SetNextScannerUUID(
+      device::BluetoothUUID(kTestUuidStr2));
+  auto background_scan_session2 = adapter_->StartLowEnergyScanSession(
+      /*filter=*/nullptr, delegate2.GetWeakPtr());
+  base::RunLoop().RunUntilIdle();
+
   // Initial conditions
   EXPECT_TRUE(GetFakeLEScanClient()->scanner_ids_.empty());
+
   EXPECT_EQ(0, delegate.sessions_started_);
   EXPECT_TRUE(delegate.devices_found_.empty());
   EXPECT_EQ(0, delegate.sessions_invalidated_);
 
-  // Simulate a scan result event
-  RegisterScannerAndGetScanResult();
+  EXPECT_EQ(0, delegate2.sessions_started_);
+  EXPECT_TRUE(delegate2.devices_found_.empty());
+  EXPECT_EQ(0, delegate2.sessions_invalidated_);
+
+  // Simulate OnScannerRegistered.
+  RegisterScanner(device::BluetoothUUID(kTestUuidStr), kTestScannerId);
   EXPECT_TRUE(
       base::Contains(GetFakeLEScanClient()->scanner_ids_, kTestScannerId));
   EXPECT_EQ(1, delegate.sessions_started_);
+  RegisterScanner(device::BluetoothUUID(kTestUuidStr2), kTestScannerId2);
+  EXPECT_TRUE(
+      base::Contains(GetFakeLEScanClient()->scanner_ids_, kTestScannerId2));
+  EXPECT_EQ(1, delegate2.sessions_started_);
+
+  // Simulate a scan result event
+  GetScanResult();
+  EXPECT_FALSE(base::Contains(delegate.devices_found_, kTestDeviceAddr));
+
+  base::RunLoop run_loop;
+  // Because of the workaround in BluetoothAdapterFloss::AdvertisementFound
+  // we need to wait for a bit before checking if OnDeviceFound is called.
+  // TODO(b/271165074): This is not needed when Floss daemon can consolidate
+  // the OnAdvertisementFound callback together with the first advertisement
+  // data.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Seconds(2));
+  GetAdvFound();
+  run_loop.Run();
+  // The device found should only affect the scanner that causes it.
   EXPECT_TRUE(base::Contains(delegate.devices_found_, kTestDeviceAddr));
+  EXPECT_FALSE(base::Contains(delegate2.devices_found_, kTestDeviceAddr));
 
   // Check that the scanned device is in the devices_ map so clients can
   // access the device.

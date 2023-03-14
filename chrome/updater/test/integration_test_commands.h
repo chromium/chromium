@@ -36,6 +36,7 @@ class IntegrationTestCommands
   virtual void ExpectInstalled() const = 0;
   virtual void ExpectCandidateUninstalled() const = 0;
   virtual void Install() const = 0;
+  virtual void InstallUpdaterAndApp(const std::string& app_id) const = 0;
   virtual void SetActive(const std::string& app_id) const = 0;
   virtual void ExpectActive(const std::string& app_id) const = 0;
   virtual void ExpectNotActive(const std::string& app_id) const = 0;
@@ -43,17 +44,19 @@ class IntegrationTestCommands
   virtual void ExpectUpdateCheckSequence(
       ScopedServer* test_server,
       const std::string& app_id,
-      const std::string& install_data_index,
+      UpdateService::Priority priority,
       const base::Version& from_version,
       const base::Version& to_version) const = 0;
   virtual void ExpectUpdateSequence(ScopedServer* test_server,
                                     const std::string& app_id,
                                     const std::string& install_data_index,
+                                    UpdateService::Priority priority,
                                     const base::Version& from_version,
                                     const base::Version& to_version) const = 0;
   virtual void ExpectInstallSequence(ScopedServer* test_server,
                                      const std::string& app_id,
                                      const std::string& install_data_index,
+                                     UpdateService::Priority priority,
                                      const base::Version& from_version,
                                      const base::Version& to_version) const = 0;
   virtual void ExpectVersionActive(const std::string& version) const = 0;
@@ -77,10 +80,9 @@ class IntegrationTestCommands
   virtual void RunWakeAll() const = 0;
   virtual void RunWakeActive(int exit_code) const = 0;
 
+  virtual void CheckForUpdate(const std::string& app_id) const = 0;
   virtual void Update(const std::string& app_id,
-                      const std::string& install_data_index,
-                      bool do_update_check_only) const = 0;
-
+                      const std::string& install_data_index) const = 0;
   virtual void UpdateAll() const = 0;
   virtual void DeleteUpdaterDirectory() const = 0;
   virtual void PrintLog() const = 0;
@@ -111,8 +113,8 @@ class IntegrationTestCommands
                                  UpdateService::PolicySameVersionUpdate
                                      policy_same_version_update) const = 0;
 
-  virtual void SetupFakeLegacyUpdaterData() const = 0;
-  virtual void ExpectLegacyUpdaterDataMigrated() const = 0;
+  virtual void SetupFakeLegacyUpdater() const = 0;
+  virtual void ExpectLegacyUpdaterMigrated() const = 0;
   virtual void RunRecoveryComponent(const std::string& app_id,
                                     const base::Version& version) const = 0;
   virtual void ExpectLastChecked() const = 0;

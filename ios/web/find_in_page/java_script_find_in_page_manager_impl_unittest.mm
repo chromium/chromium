@@ -287,23 +287,6 @@ TEST_F(JavaScriptFindInPageManagerImplTest, DelegateNotSet) {
   base::RunLoop().RunUntilIdle();
 }
 
-// Tests that Find In Page returns no matches if can't call JavaScript function.
-TEST_F(JavaScriptFindInPageManagerImplTest, FrameCannotCallJavaScriptFunction) {
-  auto one = std::make_unique<base::Value>(1.0);
-  auto frame_cannot_call_func =
-      CreateMainWebFrameWithJsResultForFind(one.get());
-  frame_cannot_call_func->set_can_call_function(false);
-  AddWebFrame(std::move(frame_cannot_call_func));
-
-  GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageSearch);
-
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-    base::RunLoop().RunUntilIdle();
-    return fake_delegate_.state();
-  }));
-  EXPECT_EQ(0, fake_delegate_.state()->match_count);
-}
-
 // Tests that  Find In Page responds with a total match count of zero when there
 // are no known webpage frames.
 TEST_F(JavaScriptFindInPageManagerImplTest, NoFrames) {
@@ -727,11 +710,25 @@ TEST_F(JavaScriptFindInPageManagerImplTest, FindInPageNextUpdatesMatchCount) {
 
 // Tests that Find in Page logs correct UserActions for given API calls.
 TEST_F(JavaScriptFindInPageManagerImplTest, FindUserActions) {
+  // Setup fake page with three matches.
+  auto three = std::make_unique<base::Value>(3.0);
+  auto frame_with_three_matches =
+      CreateMainWebFrameWithJsResultForFind(three.get());
+  AddWebFrame(std::move(frame_with_three_matches));
+
   ASSERT_EQ(0,
             user_action_tester_.GetActionCount("IOS.FindInPage.SearchStarted"));
   GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageSearch);
   EXPECT_EQ(1,
             user_action_tester_.GetActionCount("IOS.FindInPage.SearchStarted"));
+
+  // Wait for JavaScript completion. This is required as the FindNext
+  // and FindPrevious user actions are only recorded if a sufficient number of
+  // matches has been reported to the manager (>2).
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    base::RunLoop().RunUntilIdle();
+    return fake_delegate_.state() && fake_delegate_.state()->match_count == 3;
+  }));
 
   ASSERT_EQ(0, user_action_tester_.GetActionCount("IOS.FindInPage.FindNext"));
   GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageNext);

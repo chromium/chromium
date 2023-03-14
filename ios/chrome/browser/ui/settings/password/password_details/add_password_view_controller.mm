@@ -13,6 +13,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/common/password_manager_features.h"
+#import "components/sync/base/features.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
@@ -22,12 +25,12 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_multi_line_text_edit_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_multi_line_text_edit_item_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
@@ -52,7 +55,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierSite,
   SectionIdentifierDuplicate,
   SectionIdentifierFooter,
-  SectionIdentifierTLDFooter
+  SectionIdentifierTLDFooter,
+  SectionIdentifierNoteFooter
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
@@ -60,16 +64,22 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeUsername,
   ItemTypePassword,
   ItemTypeFooter,
+  ItemTypeNote,
   ItemTypeDuplicateCredentialButton,
   ItemTypeDuplicateCredentialMessage
 };
 
 // Size of the symbols.
 const CGFloat kSymbolSize = 15;
+// Minimal amount of characters in password note to display the warning.
+const int kMinNoteCharAmountForWarning = 901;
+// Maximal amount of characters that a password note can contain.
+const int kMaxNoteCharAmount = 1000;
 
 }  // namespace
 
-@interface AddPasswordViewController () <TableViewTextEditItemDelegate>
+@interface AddPasswordViewController () <TableViewTextEditItemDelegate,
+                                         TableViewMultiLineTextEditItemDelegate>
 
 // Whether the password is shown in plain text form or in masked form.
 @property(nonatomic, assign, getter=isPasswordShown) BOOL passwordShown;
@@ -82,6 +92,9 @@ const CGFloat kSymbolSize = 15;
 
 // The text item related to the password value.
 @property(nonatomic, strong) TableViewTextEditItem* passwordTextItem;
+
+// The text item related to the password note value.
+@property(nonatomic, strong) TableViewMultiLineTextEditItem* noteTextItem;
 
 // The view used to anchor error alert which is shown for the username. This is
 // image icon in the `usernameTextItem` cell.
@@ -99,11 +112,18 @@ const CGFloat kSymbolSize = 15;
 // Yes, when the message for top-level domain missing is shown.
 @property(nonatomic, assign) BOOL isTLDMissingMessageShown;
 
+// Yes, when the footer informing about the max note length is shown.
+@property(nonatomic, assign) BOOL isNoteFooterShown;
+
+// Yes, when the note's length is less or equal than `kMaxNoteCharAmount`.
+@property(nonatomic, assign) BOOL isNoteValid;
+
 // If YES, the password details are shown without requiring any authentication.
 @property(nonatomic, assign) BOOL showPasswordWithoutAuth;
 
-// Stores the user email if the user is authenticated amd syncing passwords.
-@property(nonatomic, readonly) NSString* syncingUserEmail;
+// The account where passwords are being saved to, or nil if passwords are only
+// being saved locally.
+@property(nonatomic, strong) NSString* accountSavingPasswords;
 
 // Stores the user current typed password. (Used for testing).
 @property(nonatomic, strong) NSString* passwordForTesting;
@@ -114,14 +134,15 @@ const CGFloat kSymbolSize = 15;
 
 #pragma mark - ViewController Life Cycle.
 
-- (instancetype)initWithSyncingUserEmail:(NSString*)syncingUserEmail {
+- (instancetype)init {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     _isDuplicatedCredential = NO;
     _shouldEnableSave = NO;
     _showPasswordWithoutAuth = NO;
     _isTLDMissingMessageShown = NO;
-    _syncingUserEmail = syncingUserEmail;
+    _isNoteFooterShown = NO;
+    _isNoteValid = YES;
   }
   return self;
 }
@@ -194,6 +215,13 @@ const CGFloat kSymbolSize = 15;
   self.passwordTextItem = [self passwordItem];
   [model addItem:self.passwordTextItem
       toSectionWithIdentifier:SectionIdentifierPassword];
+
+  if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
+    self.noteTextItem = [self noteItem];
+    [model addItem:self.noteTextItem
+        toSectionWithIdentifier:SectionIdentifierPassword];
+    [model addSectionWithIdentifier:SectionIdentifierNoteFooter];
+  }
 
   [model addSectionWithIdentifier:SectionIdentifierFooter];
   [model setFooter:[self footerItem]
@@ -276,6 +304,15 @@ const CGFloat kSymbolSize = 15;
   return item;
 }
 
+- (TableViewMultiLineTextEditItem*)noteItem {
+  TableViewMultiLineTextEditItem* item =
+      [[TableViewMultiLineTextEditItem alloc] initWithType:ItemTypeNote];
+  item.label = l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_NOTE);
+  item.editingEnabled = YES;
+  item.delegate = self;
+  return item;
+}
+
 - (TableViewTextItem*)duplicatePasswordViewButtonItem {
   TableViewTextItem* item = [[TableViewTextItem alloc]
       initWithType:ItemTypeDuplicateCredentialButton];
@@ -332,11 +369,19 @@ const CGFloat kSymbolSize = 15;
   return item;
 }
 
+- (TableViewLinkHeaderFooterItem*)tooLongNoteMessageFooterItem {
+  TableViewLinkHeaderFooterItem* item =
+      [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
+  item.text = l10n_util::GetNSString(
+      IDS_IOS_SETTINGS_PASSWORDS_TOO_LONG_NOTE_DESCRIPTION);
+  return item;
+}
+
 - (NSString*)footerText {
-  if (self.syncingUserEmail) {
+  if (self.accountSavingPasswords) {
     return l10n_util::GetNSStringF(
         IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_BRANDED,
-        base::SysNSStringToUTF16(self.syncingUserEmail));
+        base::SysNSStringToUTF16(self.accountSavingPasswords));
   }
 
   return l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORD_FOOTER_NOT_SYNCING);
@@ -437,11 +482,12 @@ const CGFloat kSymbolSize = 15;
       textFieldCell.textField.delegate = self;
       break;
     }
-    case ItemTypeDuplicateCredentialMessage:
-    case ItemTypeFooter:
-      break;
     case ItemTypeDuplicateCredentialButton:
       cell.selectionStyle = UITableViewCellSelectionStyleNone;
+      break;
+    case ItemTypeNote:
+    case ItemTypeDuplicateCredentialMessage:
+    case ItemTypeFooter:
       break;
   }
   return cell;
@@ -458,12 +504,17 @@ const CGFloat kSymbolSize = 15;
       return NO;
     case ItemTypeUsername:
     case ItemTypePassword:
+    case ItemTypeNote:
       return YES;
   }
   return NO;
 }
 
 #pragma mark - AddPasswordDetailsConsumer
+
+- (void)setAccountSavingPasswords:(NSString*)accountSavingPasswords {
+  _accountSavingPasswords = accountSavingPasswords;
+}
 
 - (void)onDuplicateCheckCompletion:(BOOL)duplicateFound {
   if (duplicateFound == self.isDuplicatedCredential) {
@@ -547,7 +598,7 @@ const CGFloat kSymbolSize = 15;
   BOOL siteValid = [self checkIfValidSite];
   BOOL passwordValid = [self checkIfValidPassword];
 
-  self.shouldEnableSave = (siteValid && passwordValid);
+  self.shouldEnableSave = (siteValid && passwordValid && self.isNoteValid);
   [self toggleNavigationBarRightButtonItem];
 
   [self.delegate checkForDuplicates:self.usernameTextItem.textFieldValue];
@@ -572,6 +623,50 @@ const CGFloat kSymbolSize = 15;
   }
 }
 
+#pragma mark - TableViewMultiLineTextEditItemDelegate
+
+- (void)textViewItemDidChange:(TableViewMultiLineTextEditItem*)tableViewItem {
+  DCHECK(tableViewItem == self.noteTextItem);
+
+  // Update save button state based on the note's length and validity of other
+  // input fields.
+  BOOL noteValid = tableViewItem.text.length <= kMaxNoteCharAmount;
+  if (self.isNoteValid != noteValid) {
+    self.isNoteValid = noteValid;
+    tableViewItem.validText = noteValid;
+
+    self.shouldEnableSave =
+        noteValid && [self checkIfValidSite] && [self checkIfValidPassword];
+    [self toggleNavigationBarRightButtonItem];
+  }
+
+  // Update note footer based on the note's length.
+  BOOL shouldDisplayNoteFooter =
+      tableViewItem.text.length >= kMinNoteCharAmountForWarning;
+  if (self.isNoteFooterShown != shouldDisplayNoteFooter) {
+    self.isNoteFooterShown = shouldDisplayNoteFooter;
+    [self
+        performBatchTableViewUpdates:^{
+          [self.tableViewModel
+                             setFooter:shouldDisplayNoteFooter
+                                           ? [self tooLongNoteMessageFooterItem]
+                                           : nil
+              forSectionWithIdentifier:SectionIdentifierNoteFooter];
+          NSUInteger index = [self.tableViewModel
+              sectionForSectionIdentifier:SectionIdentifierNoteFooter];
+          [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:index]
+                        withRowAnimation:UITableViewRowAnimationNone];
+        }
+                          completion:nil];
+  }
+
+  [self reconfigureCellsForItems:@[ tableViewItem ]];
+
+  // Refresh the cells' height.
+  [self.tableView beginUpdates];
+  [self.tableView endUpdates];
+}
+
 #pragma mark - Actions
 
 // Dimisses this view controller when Cancel button is tapped.
@@ -590,10 +685,10 @@ const CGFloat kSymbolSize = 15;
       LogUserInteractionsWhenAddingCredentialFromSettings(
           password_manager::metrics_util::
               AddCredentialFromSettingsUserInteractions::kCredentialAdded);
-  [self.delegate
-      addPasswordViewController:self
-          didAddPasswordDetails:self.usernameTextItem.textFieldValue
-                       password:self.passwordTextItem.textFieldValue];
+  [self.delegate addPasswordViewController:self
+                     didAddPasswordDetails:self.usernameTextItem.textFieldValue
+                                  password:self.passwordTextItem.textFieldValue
+                                      note:self.noteTextItem.text];
 }
 
 #pragma mark - SettingsRootTableViewController
@@ -610,6 +705,7 @@ const CGFloat kSymbolSize = 15;
     case ItemTypeUsername:
     case ItemTypePassword:
     case ItemTypeWebsite:
+    case ItemTypeNote:
       return YES;
     case ItemTypeDuplicateCredentialMessage:
     case ItemTypeDuplicateCredentialButton:

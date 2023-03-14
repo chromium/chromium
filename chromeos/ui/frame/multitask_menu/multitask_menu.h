@@ -13,6 +13,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/display/display_observer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 
 namespace views {
 class View;
@@ -21,45 +22,27 @@ class Widget;
 
 namespace chromeos {
 
-// MultitaskMenu is the window operation menu attached to frame
-// size button.
+// MultitaskMenu is the window layout menu attached to frame size button.
 class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenu
     : public views::BubbleDialogDelegateView,
-      public views::WidgetObserver,
       public aura::WindowObserver,
       public display::DisplayObserver {
  public:
   METADATA_HEADER(MultitaskMenu);
 
-  // Creates the multitask menu. Runs `close_callback` to keep menu references
-  // in sync with `views::Widget::CloseNow()`.
-  MultitaskMenu(views::View* anchor,
-                views::Widget* parent_widget,
-                base::OnceClosure close_callback);
-
+  MultitaskMenu(views::View* anchor, views::Widget* parent_widget);
   MultitaskMenu(const MultitaskMenu&) = delete;
   MultitaskMenu& operator=(const MultitaskMenu&) = delete;
-
   ~MultitaskMenu() override;
 
-  // Returns true if the bubble widget is created and shown.
-  bool IsBubbleShown() const;
+  MultitaskMenuView* multitask_menu_view() {
+    return multitask_menu_view_.get();
+  }
 
-  // Toggles the menu based on its state, i.e. shows the menu if it wasn't
-  // already shown, hides the menu if it was shown.
-  void ToggleBubble();
-
-  // Displays the MultitaskMenu.
-  void ShowBubble();
-
-  // Hides the currently-showing MultitaskMenu.
   void HideBubble();
 
-  // views::WidgetObserver:
-  void OnWidgetDestroying(views::Widget* widget) override;
-
   // aura::WindowObserver:
-  void OnWindowDestroying(aura::Window* root_window) override;
+  void OnWindowDestroying(aura::Window* parent_window) override;
   void OnWindowBoundsChanged(aura::Window* window,
                              const gfx::Rect& old_bounds,
                              const gfx::Rect& new_bounds,
@@ -70,17 +53,11 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenu
                                uint32_t changed_metrics) override;
   void OnDisplayTabletStateChanged(display::TabletState state) override;
 
-  MultitaskMenuView* multitask_menu_view() {
-    return multitask_menu_view_.get();
-  }
-
  private:
   raw_ptr<views::Widget> bubble_widget_ = nullptr;
 
   raw_ptr<MultitaskMenuView> multitask_menu_view_ = nullptr;
 
-  base::ScopedObservation<views::Widget, views::WidgetObserver>
-      bubble_widget_observer_{this};
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       parent_window_observation_{this};
   absl::optional<display::ScopedDisplayObserver> display_observer_;

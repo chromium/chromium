@@ -33,16 +33,20 @@ class ASH_EXPORT AcceleratorAliasConverter {
       const ui::Accelerator& accelerator) const;
 
  private:
-  // Create accelerator alias for |top_row_key| if applicable.
-  absl::optional<ui::Accelerator> CreateTopRowAlias(
+  // Create accelerator alias for |top_row_key| for all currently connected
+  // keyboards.
+  std::vector<ui::Accelerator> CreateTopRowAliases(
       const ui::Accelerator& accelerator) const;
 
-  // Create accelerator alias for |six_pack_key| if applicable.
-  absl::optional<ui::Accelerator> CreateSixPackAlias(
+  // Create accelerator alias for |six_pack_key|. Result could be either zero or
+  // one alias found. Use a vector to be more consistent and cleaner.
+  std::vector<ui::Accelerator> CreateSixPackAliases(
       const ui::Accelerator& accelerator) const;
 
-  // Create reversed six pack alias for |reversed_six_pack_key| if applicable.
-  absl::optional<ui::Accelerator> CreateReversedSixPackAlias(
+  // Create reversed six pack alias for |reversed_six_pack_key|. Result could be
+  // either zero or one alias found. Use a vector to be more consistent and
+  // cleaner.
+  std::vector<ui::Accelerator> CreateReversedSixPackAliases(
       const ui::Accelerator& accelerator) const;
 };
 

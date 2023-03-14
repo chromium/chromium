@@ -42,6 +42,7 @@ class PrefServiceSyncable : public PrefService,
       std::unique_ptr<PrefNotifierImpl> pref_notifier,
       std::unique_ptr<PrefValueStore> pref_value_store,
       scoped_refptr<PersistentPrefStore> user_prefs,
+      scoped_refptr<WriteablePrefStore> user_prefs_for_sync,
       scoped_refptr<PersistentPrefStore> standalone_browser_prefs,
       scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
       const PrefModelAssociatorClient* pref_model_associator_client,
@@ -108,7 +109,7 @@ class PrefServiceSyncable : public PrefService,
 
   // Whether CreateIncognitoPrefService() has been called to create a
   // "forked" PrefService.
-  bool pref_service_forked_;
+  bool pref_service_forked_ = false;
 
   PrefModelAssociator pref_sync_associator_;
   PrefModelAssociator priority_pref_sync_associator_;

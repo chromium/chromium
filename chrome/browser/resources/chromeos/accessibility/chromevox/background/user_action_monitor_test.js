@@ -15,7 +15,7 @@ ChromeVoxUserActionMonitorTest = class extends ChromeVoxE2ETest {
 
     // Alphabetical based on file path.
     await importModule(
-        'ChromeVoxState', '/chromevox/background/chromevox_state.js');
+        'ChromeVoxRange', '/chromevox/background/chromevox_range.js');
     await importModule(
         'BackgroundKeyboardHandler',
         '/chromevox/background/keyboard_handler.js');
@@ -34,7 +34,7 @@ ChromeVoxUserActionMonitorTest = class extends ChromeVoxE2ETest {
    * @return {AutomationNode}
    */
   getRangeStart() {
-    return ChromeVoxState.instance.getCurrentRange().start.node;
+    return ChromeVoxRange.current.start.node;
   }
 
   get simpleDoc() {

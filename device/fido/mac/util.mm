@@ -91,13 +91,17 @@ absl::optional<AttestedCredentialData> MakeAttestedCredentialData(
 AuthenticatorData MakeAuthenticatorData(
     CredentialMetadata::SignCounter counter_type,
     const std::string& rp_id,
-    absl::optional<AttestedCredentialData> attested_credential_data) {
-  const uint8_t flags =
-      static_cast<uint8_t>(AuthenticatorData::Flag::kTestOfUserPresence) |
-      static_cast<uint8_t>(AuthenticatorData::Flag::kTestOfUserVerification) |
-      (attested_credential_data
-           ? static_cast<uint8_t>(AuthenticatorData::Flag::kAttestation)
-           : 0);
+    absl::optional<AttestedCredentialData> attested_credential_data,
+    bool has_uv) {
+  uint8_t flags =
+      static_cast<uint8_t>(AuthenticatorData::Flag::kTestOfUserPresence);
+  if (has_uv) {
+    flags |=
+        static_cast<uint8_t>(AuthenticatorData::Flag::kTestOfUserVerification);
+  }
+  if (attested_credential_data) {
+    flags |= static_cast<uint8_t>(AuthenticatorData::Flag::kAttestation);
+  }
   return AuthenticatorData(fido_parsing_utils::CreateSHA256Hash(rp_id), flags,
                            MakeSignatureCounter(counter_type),
                            std::move(attested_credential_data));
@@ -166,6 +170,14 @@ CodeSigningState ProcessIsSigned() {
       SecTaskCopySigningIdentifier(task.get(), /* error= */ nullptr));
   return static_cast<bool>(sign_id) ? CodeSigningState::kSigned
                                     : CodeSigningState::kNotSigned;
+}
+
+bool DeviceHasBiometricsAvailable() {
+  base::scoped_nsobject<LAContext> context([[LAContext alloc] init]);
+  NSError* nserr;
+  return
+      [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
+                           error:&nserr];
 }
 
 }  // namespace mac

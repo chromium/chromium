@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_OMNIBOX_OMNIBOX_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_OMNIBOX_OMNIBOX_API_H_
 
-#include <memory>
 #include <set>
 #include <string>
 
@@ -95,7 +94,7 @@ class OmniboxSendSuggestionsFunction : public ExtensionFunction {
   void NotifySuggestionsReady();
 
   // The suggestion parameters passed by the extension API call.
-  std::unique_ptr<api::omnibox::SendSuggestions::Params> params_;
+  absl::optional<api::omnibox::SendSuggestions::Params> params_;
 };
 
 class OmniboxAPI : public BrowserContextKeyedAPI,

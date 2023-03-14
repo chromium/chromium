@@ -5,13 +5,10 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_BROWSER_TEST_AUTOFILL_CLIENT_INJECTOR_H_
 #define COMPONENTS_AUTOFILL_CONTENT_BROWSER_TEST_AUTOFILL_CLIENT_INJECTOR_H_
 
-#include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/content/browser/content_autofill_driver_factory_test_api.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "content/public/browser/navigation_handle.h"
+#include <type_traits>
+
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test_utils.h"
 
 namespace autofill {
@@ -38,33 +35,33 @@ class TestAutofillClientInjectorBase {
 // RAII type that installs new AutofillClients of type `T` in all newly created
 // WebContents.
 //
+// This happens *before* the production-code ContentAutofillClient is
+// associated. It thus avoids dangling pointers to the production-code
+// ContentAutofillClient.
+//
 // To prevent hard-to-find bugs, only one TestAutofillClientInjector may be
-// alive at a time, and that instance must not be created after a
-// TestAutofillManagerInjector (note: *Manager*Injector). These conditions are
-// CHECKed.
+// alive at a time. It is compatible with TestAutofillDriverInjector and/or
+// TestAutofillManagerInjector, but the client injector must be created first.
+// These conditions are CHECKed.
 //
 // Usage:
 //
 //   class AutofillFooTest : public ... {
 //    public:
-//     class MockAutofillClient : ChromeAutofillClient {
-//      public:
-//       MockAutofillClient(content::WebContents* web_contents)
-//           : ChromeAutofillClient(web_contents) {}
-//       MOCK_METHOD(...);
-//       ...
-//     };
-//
-//     MockAutofillClient* autofill_client(content::WebContents* web_contents) {
+//     TestContentAutofillClient* autofill_client(
+//         content::WebContents* web_contents) {
 //       return autofill_client_injector_[web_contents];
 //     }
 //
 //    private:
-//     TestAutofillClientInjector<MockAutofillClient> autofill_client_injector_;
+//     TestAutofillClientInjector<TestContentAutofillClient>
+//         autofill_client_injector_;
 //   };
 template <typename T>
 class TestAutofillClientInjector : public TestAutofillClientInjectorBase {
  public:
+  static_assert(std::is_base_of_v<ContentAutofillClient, T>);
+
   TestAutofillClientInjector() = default;
   TestAutofillClientInjector(const TestAutofillClientInjector&) = delete;
   TestAutofillClientInjector& operator=(const TestAutofillClientInjector&) =
@@ -79,11 +76,6 @@ class TestAutofillClientInjector : public TestAutofillClientInjectorBase {
  private:
   void InjectClient(content::WebContents* web_contents) {
     auto client = std::make_unique<T>(web_contents);
-    if (auto* driver_factory =
-            ContentAutofillDriverFactory::FromWebContents(web_contents)) {
-      ContentAutofillDriverFactoryTestApi(driver_factory)
-          .set_client(client.get());
-    }
     clients_[web_contents] = client.get();
     web_contents->SetUserData(T::UserDataKey(), std::move(client));
   }

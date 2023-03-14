@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_FRAME_COUNTER_H_
 
 #include "base/containers/flat_map.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/service/viz_service_export.h"
@@ -24,7 +25,8 @@ class VIZ_SERVICE_EXPORT FrameCounter {
   // Add a record for a frame sink.
   void AddFrameSink(const FrameSinkId& frame_sink_id,
                     mojom::CompositorFrameSinkType type,
-                    bool is_root);
+                    bool is_root,
+                    base::StringPiece debug_label);
 
   // Add a presented frame for the frame sink.
   void AddPresentedFrame(const FrameSinkId& frame_sink_id,
@@ -36,6 +38,9 @@ class VIZ_SERVICE_EXPORT FrameCounter {
   // Sets a frame sink's type.
   void SetFrameSinkType(const FrameSinkId& frame_sink_id,
                         mojom::CompositorFrameSinkType type);
+
+  void SetFrameSinkDebugLabel(const FrameSinkId& frame_sink_id,
+                              base::StringPiece debug_label);
 
  private:
   // Time when the frame counting is stated.

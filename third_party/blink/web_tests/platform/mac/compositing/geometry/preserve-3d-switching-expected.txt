@@ -12,7 +12,6 @@ transform: translateZ(-100px) rotateY(45deg);
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='container'",
       "bounds": [304, 304],
-      "contentsOpaqueForText": true,
       "transform": 1
     },
     {

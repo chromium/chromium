@@ -44,6 +44,11 @@ struct TCPConnectedSocketOptions {
   TCPKeepAliveOptions? keep_alive_options;
 };
 
+struct TCPServerSocketOptions {
+  // Sets the size of the OS accept queue. Should be greater than 0.
+  uint32 backlog;
+};
+
 // Represents a bound TCP socket. Once a call succeeds, cannot be reused.
 interface TCPBoundSocket {
   // Starts listening on the socket. |net_error| is set to net::OK on success,

@@ -51,8 +51,11 @@
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "content/browser/child_process_task_port_provider_mac.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
 #include "content/browser/sandbox_support_mac_impl.h"
 #include "content/common/sandbox_support_mac.mojom.h"
 #endif
@@ -141,7 +144,7 @@ BrowserChildProcessHost* BrowserChildProcessHost::FromID(int child_process_id) {
   return nullptr;
 }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 base::PortProvider* BrowserChildProcessHost::GetPortProvider() {
   return ChildProcessTaskPortProvider::GetInstance();
 }
@@ -365,6 +368,14 @@ void BrowserChildProcessHostImpl::HistogramBadMessageTerminated(
   UMA_HISTOGRAM_ENUMERATION("ChildProcess.BadMessgeTerminated", process_type,
                             PROCESS_TYPE_MAX);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void BrowserChildProcessHostImpl::SetProcessBackgrounded(bool is_background) {
+  DCHECK(child_process_);
+  DCHECK(!child_process_->IsStarting());
+  child_process_->SetProcessBackgrounded(is_background);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
 void BrowserChildProcessHostImpl::EnableWarmUpConnection() {

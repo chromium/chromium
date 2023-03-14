@@ -14,11 +14,11 @@
 
 #include "ipcz/ipcz.h"
 #include "test/test_base.h"
+#include "test_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-#include "third_party/ipcz/src/test_buildflags.h"
 #include "util/ref_counted.h"
 
 namespace ipcz::test {

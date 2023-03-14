@@ -92,13 +92,9 @@ AssistantClientImpl::AssistantClientImpl(
 AssistantClientImpl::~AssistantClientImpl() {
   // The following sequence is used to prevent unnecessary heart beats from
   // being sent during shutdown:
-  // 1. Stop GrpcHttpConnectionService by destroying the client and inform the
-  //    service. For the current implementation, it is the client to initialize
-  //    the stop request.
-  // 2. Stop other LibAssistant gRPC services by destroying the
+  // 1. Stop other LibAssistant gRPC services by destroying the
   // `assistant_manager_`.
-  // 3. Stop assistant_grpc service by destroying `grpc_services_`.
-  grpc_services_.StopGrpcHttpConnectionClient();
+  // 2. Stop assistant_grpc service by destroying `grpc_services_`.
   ResetAssistantManager();
 }
 

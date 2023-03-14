@@ -379,13 +379,17 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyIsolatedAppBrowserTest, Src) {
     std::string path;
     std::string expectation;
   } test_cases[] = {
-      // Only same-origin content can be loaded by default.
+      // Cross-origin HTTPS images and media are allowed (but need a
+      // Cross-Origin-Resource-Policy header, and will error otherwise)
       {"img", kHttps, kAppHost, "/single_face.jpg", "allowed"},
-      {"img", kHttps, kNonAppHost, "/single_face.jpg", "violation"},
+      {"img", kHttps, kNonAppHost, "/single_face.jpg", "error"},
+      {"img", kHttps, kNonAppHost, "/single_face_corp.jpg", "allowed"},
       {"audio", kHttps, kAppHost, "/media/bear.flac", "allowed"},
-      {"audio", kHttps, kNonAppHost, "/media/bear.flac", "violation"},
-      {"video", kHttps, kAppHost, "/media/bear.ogv", "allowed"},
-      {"video", kHttps, kNonAppHost, "/media/bear.obv", "violation"},
+      {"audio", kHttps, kNonAppHost, "/media/bear.flac", "error"},
+      {"audio", kHttps, kNonAppHost, "/media/bear_corp.flac", "allowed"},
+      {"video", kHttps, kAppHost, "/media/bear.webm", "allowed"},
+      {"video", kHttps, kNonAppHost, "/media/bear.webm", "error"},
+      {"video", kHttps, kNonAppHost, "/media/bear_corp.webm", "allowed"},
       // Plugins are disabled.
       {"embed", kHttps, kAppHost, "/single_face.jpg", "violation"},
       // Iframes can contain cross-origin HTTPS content.

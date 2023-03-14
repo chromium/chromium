@@ -1,3 +1,3 @@
 setTimeout(() => {
-    addEventListener('install', () => {});
+    addEventListener('install', () => {let a = 0;});
 }, 0);

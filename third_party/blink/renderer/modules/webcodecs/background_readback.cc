@@ -6,13 +6,13 @@
 
 #include "base/feature_list.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/command_buffer/client/raster_interface.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/video_frame_pool.h"
 #include "media/base/video_util.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
@@ -198,7 +198,8 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToMemory(
 
   auto* ri = GetSharedGpuRasterInterface();
   if (!ri || !result) {
-    media::BindToCurrentLoop(std::move(std::move(result_cb))).Run(nullptr);
+    base::BindPostTaskToCurrentDefault(std::move(std::move(result_cb)))
+        .Run(nullptr);
     return;
   }
 
@@ -263,13 +264,15 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToBuffer(
   if (dest_layout.NumPlanes() != 1) {
     NOTREACHED()
         << "This method shouldn't be called on anything but RGB frames";
-    media::BindToCurrentLoop(std::move(std::move(done_cb))).Run(false);
+    base::BindPostTaskToCurrentDefault(std::move(std::move(done_cb)))
+        .Run(false);
     return;
   }
 
   auto* ri = GetSharedGpuRasterInterface();
   if (!ri) {
-    media::BindToCurrentLoop(std::move(std::move(done_cb))).Run(false);
+    base::BindPostTaskToCurrentDefault(std::move(std::move(done_cb)))
+        .Run(false);
     return;
   }
 
@@ -280,7 +283,8 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToBuffer(
   size_t max_bytes_written = stride * src_rect.height();
   if (stride <= 0 || max_bytes_written > dest_buffer.size()) {
     DLOG(ERROR) << "Buffer is not sufficiently large for readback";
-    media::BindToCurrentLoop(std::move(std::move(done_cb))).Run(false);
+    base::BindPostTaskToCurrentDefault(std::move(std::move(done_cb)))
+        .Run(false);
     return;
   }
 

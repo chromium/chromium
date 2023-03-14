@@ -61,6 +61,7 @@
 <translation id="2573731672208488250">{HOURS,plural, =1{1 h pärast}other{# h pärast}}</translation>
 <translation id="2583543531130364912">Kalibreerige puuteekraan</translation>
 <translation id="2586657967955657006">Lõikelaud</translation>
+<translation id="2653844658857826081">UUS</translation>
 <translation id="2666092431469916601">Üles</translation>
 <translation id="2701330563083355633">Jagas <ph name="DEVICE_NAME" /></translation>
 <translation id="271033894570825754">Uus</translation>
@@ -75,6 +76,7 @@
 <translation id="3157931365184549694">Taasta</translation>
 <translation id="3183922693828471536">Keri siia</translation>
 <translation id="3234408098842461169">Allanool</translation>
+<translation id="3240426699337459095">Link on kopeeritud</translation>
 <translation id="3291688615589870984">{DAYS,plural, =1{1 päev}other{# päeva}}</translation>
 <translation id="3295886253693811851">Helistage rakenduses</translation>
 <translation id="3306688585798492231">Sisseehitatud ekraan</translation>

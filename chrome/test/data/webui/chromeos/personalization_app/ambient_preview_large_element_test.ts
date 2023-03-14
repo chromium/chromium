@@ -45,8 +45,7 @@ suite('AmbientPreviewLargeTest', function() {
         personalizationStore.data.ambient.albums = ambientProvider.albums;
         personalizationStore.data.ambient.topicSource = TopicSource.kArtGallery;
         personalizationStore.data.ambient.ambientModeEnabled = false;
-        personalizationStore.data.ambient.googlePhotosAlbumsPreviews =
-            ambientProvider.googlePhotosAlbumsPreviews;
+        personalizationStore.data.ambient.previews = ambientProvider.previews;
         ambientPreviewLargeElement = initElement(AmbientPreviewLarge);
         personalizationStore.notifyObservers();
         await waitAfterNextRender(ambientPreviewLargeElement);
@@ -70,8 +69,7 @@ suite('AmbientPreviewLargeTest', function() {
         personalizationStore.data.ambient.albums = ambientProvider.albums;
         personalizationStore.data.ambient.topicSource = TopicSource.kArtGallery;
         personalizationStore.data.ambient.ambientModeEnabled = false;
-        personalizationStore.data.ambient.googlePhotosAlbumsPreviews =
-            ambientProvider.googlePhotosAlbumsPreviews;
+        personalizationStore.data.ambient.previews = ambientProvider.previews;
         ambientPreviewLargeElement = initElement(AmbientPreviewLarge);
         personalizationStore.notifyObservers();
         await waitAfterNextRender(ambientPreviewLargeElement);
@@ -109,7 +107,7 @@ suite('AmbientPreviewLargeTest', function() {
       albums: ambientProvider.albums,
       topicSource: TopicSource.kArtGallery,
       ambientModeEnabled: true,
-      googlePhotosAlbumsPreviews: ambientProvider.googlePhotosAlbumsPreviews,
+      previews: ambientProvider.previews,
     };
     ambientPreviewLargeElement = initElement(AmbientPreviewLarge);
     personalizationStore.notifyObservers();
@@ -145,7 +143,7 @@ suite('AmbientPreviewLargeTest', function() {
       albums: ambientProvider.albums,
       topicSource: TopicSource.kArtGallery,
       ambientModeEnabled: true,
-      googlePhotosAlbumsPreviews: ambientProvider.googlePhotosAlbumsPreviews,
+      previews: ambientProvider.previews,
     };
     ambientPreviewLargeElement = initElement(AmbientPreviewLarge);
     personalizationStore.notifyObservers();
@@ -198,7 +196,7 @@ suite('AmbientPreviewLargeTest', function() {
       albums: ambientProvider.albums,
       topicSource: TopicSource.kArtGallery,
       ambientModeEnabled: true,
-      googlePhotosAlbumsPreviews: ambientProvider.googlePhotosAlbumsPreviews,
+      previews: ambientProvider.previews,
     };
     ambientPreviewLargeElement = initElement(AmbientPreviewLarge);
     personalizationStore.notifyObservers();
@@ -250,8 +248,7 @@ suite('AmbientPreviewLargeTest', function() {
     personalizationStore.data.ambient.albums = ambientProvider.albums;
     personalizationStore.data.ambient.topicSource = TopicSource.kArtGallery;
     personalizationStore.data.ambient.ambientModeEnabled = false;
-    personalizationStore.data.ambient.googlePhotosAlbumsPreviews =
-        ambientProvider.googlePhotosAlbumsPreviews;
+    personalizationStore.data.ambient.previews = ambientProvider.previews;
     ambientPreviewLargeElement = initElement(AmbientPreviewLarge);
     personalizationStore.notifyObservers();
     await waitAfterNextRender(ambientPreviewLargeElement);
@@ -278,8 +275,7 @@ suite('AmbientPreviewLargeTest', function() {
     personalizationStore.data.ambient.albums = ambientProvider.albums;
     personalizationStore.data.ambient.topicSource = TopicSource.kArtGallery;
     personalizationStore.data.ambient.ambientModeEnabled = false;
-    personalizationStore.data.ambient.googlePhotosAlbumsPreviews =
-        ambientProvider.googlePhotosAlbumsPreviews;
+    personalizationStore.data.ambient.previews = ambientProvider.previews;
     ambientPreviewLargeElement = initElement(AmbientPreviewLarge);
     personalizationStore.notifyObservers();
     await waitAfterNextRender(ambientPreviewLargeElement);

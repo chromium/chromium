@@ -39,6 +39,9 @@ int App::Run() {
 
 void App::Shutdown(int exit_code) {
   CHECK(!quit_.is_null()) << "App was shutdown previously.";
+
+  // TODO(crbug.com/1422360): for non-silent scenarios where UI is not
+  // otherwise shown, some UI is needed here.
   std::move(quit_).Run(exit_code);
 }
 

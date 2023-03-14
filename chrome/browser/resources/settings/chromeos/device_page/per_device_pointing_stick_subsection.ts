@@ -23,7 +23,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PointingStick} from './input_device_settings_types.js';
+import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
+import {InputDeviceSettingsProviderInterface, PointingStick} from './input_device_settings_types.js';
 import {getTemplate} from './per_device_pointing_stick_subsection.html.js';
 
 export class SettingsPerDevicePointingStickSubsectionElement extends
@@ -120,6 +121,8 @@ export class SettingsPerDevicePointingStickSubsectionElement extends
   private accelerationPref: chrome.settingsPrivate.PrefObject;
   private sensitivityPref: chrome.settingsPrivate.PrefObject;
   private isInitialized: boolean = false;
+  private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
+      getInputDeviceSettingsProvider();
 
   private updateSettingsToCurrentPrefs(): void {
     this.set('primaryRightPref.value', this.pointingStick.settings.swapRight);
@@ -147,6 +150,14 @@ export class SettingsPerDevicePointingStickSubsectionElement extends
     if (!this.isInitialized) {
       return;
     }
+    this.pointingStick.settings = {
+      ...this.pointingStick.settings,
+      swapRight: this.primaryRightPref.value,
+      accelerationEnabled: this.accelerationPref.value,
+      sensitivity: this.sensitivityPref.value,
+    };
+    this.inputDeviceSettingsProvider.setPointingStickSettings(
+        this.pointingStick.id, this.pointingStick.settings);
   }
 }
 

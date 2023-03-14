@@ -49,6 +49,7 @@ namespace ash::settings {
 namespace mojom {
 using ::chromeos::settings::mojom::kAccessibilitySectionPath;
 using ::chromeos::settings::mojom::kAudioAndCaptionsSubpagePath;
+using ::chromeos::settings::mojom::kChromeVoxSubpagePath;
 using ::chromeos::settings::mojom::kCursorAndTouchpadSubpagePath;
 using ::chromeos::settings::mojom::kDisplayAndMagnificationSubpagePath;
 using ::chromeos::settings::mojom::kKeyboardAndTextInputSubpagePath;
@@ -421,13 +422,12 @@ bool IsLiveCaptionEnabled() {
   return captions::IsLiveCaptionFeatureSupported();
 }
 
-bool IsAccessibilitySelectToSpeakPageMigrationEnabled() {
-  return ::features::IsAccessibilitySelectToSpeakPageMigrationEnabled();
+bool IsAccessibilityChromeVoxPageMigrationEnabled() {
+  return ::features::IsAccessibilityChromeVoxPageMigrationEnabled();
 }
 
-bool IsExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled() {
-  return ::features::
-      IsExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled();
+bool IsAccessibilitySelectToSpeakPageMigrationEnabled() {
+  return ::features::IsAccessibilitySelectToSpeakPageMigrationEnabled();
 }
 
 bool AreExperimentalAccessibilityColorEnhancementSettingsEnabled() {
@@ -562,6 +562,36 @@ void AccessibilitySection::AddLoadTimeData(
       {"chromeVoxDescriptionOn", IDS_SETTINGS_CHROMEVOX_DESCRIPTION_ON},
       {"chromeVoxLabel", IDS_SETTINGS_CHROMEVOX_LABEL},
       {"chromeVoxOptionsLabel", IDS_SETTINGS_CHROMEVOX_OPTIONS_LABEL},
+      {"chromeVoxGeneralLabel", IDS_SETTINGS_CHROMEVOX_GENERAL_LABEL},
+      {"chromeVoxVoicesLabel", IDS_SETTINGS_CHROMEVOX_VOICES_LABEL},
+      {"chromeVoxBrailleLabel", IDS_SETTINGS_CHROMEVOX_BRAILLE_LABEL},
+      {"chromeVoxDeveloperOptionsLabel",
+       IDS_SETTINGS_CHROMEVOX_DEVELOPER_OPTIONS_LABEL},
+      {"chromeVoxUseVerboseMode", IDS_SETTINGS_CHROMEVOX_USE_VERBOSE_MODE},
+      {"chromeVoxAutoRead", IDS_SETTINGS_CHROMEVOX_AUTO_READ},
+      {"chromeVoxSpeakTextUnderMouse",
+       IDS_SETTINGS_CHROMEVOX_SPEAK_TEXT_UNDER_MOUSE},
+      {"chromeVoxUsePitchChanges", IDS_SETTINGS_CHROMEVOX_USE_PITCH_CHANGES},
+      {"chromeVoxAnnounceRichTextAttributes",
+       IDS_SETTINGS_CHROMEVOX_ANNOUNCE_RICH_TEXT_ATTRIBUTES},
+      {"chromeVoxCapitalStrategy", IDS_SETTINGS_CHROMEVOX_CAPITAL_STRATEGY},
+      {"chromeVoxAnnounceCapitals", IDS_SETTINGS_CHROMEVOX_ANNOUNCE_CAPITALS},
+      {"chromeVoxIncreasePitch", IDS_SETTINGS_CHROMEVOX_INCREASE_PITCH},
+      {"chromeVoxNumberReadingStyle",
+       IDS_SETTINGS_CHROMEVOX_NUMBER_READING_STYLE},
+      {"chromeVoxAsWords", IDS_SETTINGS_CHROMEVOX_NUMBER_READING_STYLE_WORDS},
+      {"chromeVoxAsDigits", IDS_SETTINGS_CHROMEVOX_NUMBER_READING_STYLE_DIGITS},
+      {"chromeVoxPunctuationEcho", IDS_SETTINGS_CHROMEVOX_PUNCTUATION_ECHO},
+      {"chromeVoxNone", IDS_SETTINGS_CHROMEVOX_PUNCTUATION_ECHO_NONE},
+      {"chromeVoxSome", IDS_SETTINGS_CHROMEVOX_PUNCTUATION_ECHO_SOME},
+      {"chromeVoxAll", IDS_SETTINGS_CHROMEVOX_PUNCTUATION_ECHO_ALL},
+      {"chromeVoxAnnounceDownloadNotifications",
+       IDS_SETTINGS_CHROMEVOX_ANNOUNCE_DOWNLOAD_NOTIFICATIONS},
+      {"chromeVoxSmartStickyMode", IDS_SETTINGS_CHROMEVOX_SMART_STICKY_MODE},
+      {"chromeVoxAudioStrategy", IDS_SETTINGS_CHROMEVOX_AUDIO_STRATEGY},
+      {"chromeVoxAudioNormal", IDS_SETTINGS_CHROMEVOX_AUDIO_NORMAL},
+      {"chromeVoxAudioDuck", IDS_SETTINGS_CHROMEVOX_AUDIO_DUCK},
+      {"chromeVoxAudioSuspend", IDS_SETTINGS_CHROMEVOX_AUDIO_SUSPEND},
       {"chromeVoxTutorialLabel", IDS_SETTINGS_CHROMEVOX_TUTORIAL_LABEL},
       {"clickOnStopDescription", IDS_SETTINGS_CLICK_ON_STOP_DESCRIPTION},
       {"clickOnStopLabel", IDS_SETTINGS_CLICK_ON_STOP_LABEL},
@@ -650,6 +680,15 @@ void AccessibilitySection::AddLoadTimeData(
       {"highContrastDescription", IDS_SETTINGS_HIGH_CONTRAST_DESCRIPTION},
       {"highContrastLabel", IDS_SETTINGS_HIGH_CONTRAST_LABEL},
       {"hueRotationLabel", IDS_SETTINGS_HUE_ROTATION_LABEL},
+      {"protanomalyFilter", IDS_SETTINGS_PROTANOMALY_FILTER},
+      {"tritanomalyFilter", IDS_SETTINGS_TRITANOMALY_FILTER},
+      {"deuteranomalyFilter", IDS_SETTINGS_DEUTERANOMALY_FILTER},
+      {"colorFilteringLabel", IDS_SETTINGS_COLOR_FILTERING_LABEL},
+      {"colorFilteringDescription", IDS_SETTINGS_COLOR_FILTERING_DESCRIPTION},
+      {"colorVisionDeficiencyTypeLabel",
+       IDS_SETTINGS_COLOR_VISION_DEFICIENCY_TYPE_LABEL},
+      {"colorVisionFilterIntensityLabel",
+       IDS_SETTINGS_COLOR_VISION_FILTER_INTENSITY_LABEL},
       {"keyboardAndTextInputHeading",
        IDS_SETTINGS_ACCESSIBILITY_KEYBOARD_AND_TEXT_INPUT_HEADING},
       {"keyboardAndTextInputLinkDescription",
@@ -963,12 +1002,11 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddString("tabletModeShelfNavigationButtonsLearnMoreUrl",
                          chrome::kTabletModeGesturesLearnMoreURL);
 
+  html_source->AddBoolean("isAccessibilityChromeVoxPageMigrationEnabled",
+                          IsAccessibilityChromeVoxPageMigrationEnabled());
+
   html_source->AddBoolean("isAccessibilitySelectToSpeakPageMigrationEnabled",
                           IsAccessibilitySelectToSpeakPageMigrationEnabled());
-
-  html_source->AddBoolean(
-      "isExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled",
-      IsExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled());
 
   html_source->AddBoolean(
       "areExperimentalAccessibilityColorEnhancementSettingsEnabled",
@@ -1049,6 +1087,13 @@ void AccessibilitySection::RegisterHierarchy(
       IDS_SETTINGS_ACCESSIBILITY_TEXT_TO_SPEECH_LINK_TITLE,
       mojom::Subpage::kTextToSpeechPage, mojom::SearchResultIcon::kA11y,
       mojom::SearchResultDefaultRank::kMedium, mojom::kTextToSpeechPagePath);
+  // ChromeVox settings page.
+  if (IsAccessibilityChromeVoxPageMigrationEnabled()) {
+    generator->RegisterTopLevelSubpage(
+        IDS_SETTINGS_CHROMEVOX_OPTIONS_LABEL, mojom::Subpage::kChromeVox,
+        mojom::SearchResultIcon::kA11y, mojom::SearchResultDefaultRank::kMedium,
+        mojom::kChromeVoxSubpagePath);
+  }
   // Select to speak options page.
   if (IsAccessibilitySelectToSpeakPageMigrationEnabled()) {
     generator->RegisterTopLevelSubpage(

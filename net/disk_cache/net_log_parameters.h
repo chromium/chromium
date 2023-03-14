@@ -7,15 +7,12 @@
 
 #include <stdint.h>
 
+#include "base/values.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/log/net_log_with_source.h"
 
 namespace net {
 struct NetLogSource;
-}
-
-namespace base {
-class Value;
 }
 
 // This file contains a set of functions to create NetLogParametersCallbacks
@@ -27,8 +24,8 @@ class Entry;
 // Creates NetLog parameters for the creation of an Entry.  Contains the Entry's
 // key and whether it was created or opened. |entry| can't be nullptr, must
 // support GetKey().
-base::Value CreateNetLogParametersEntryCreationParams(const Entry* entry,
-                                                      bool created);
+base::Value::Dict CreateNetLogParametersEntryCreationParams(const Entry* entry,
+                                                            bool created);
 
 // Logs an event for the start of a non-sparse read or write of an Entry. For
 // reads, |truncate| must be false.
@@ -64,7 +61,7 @@ void NetLogSparseReadWrite(const net::NetLogWithSource& net_log,
                            int child_len);
 
 // Creates NetLog parameters for when a call to GetAvailableRange returns.
-base::Value CreateNetLogGetAvailableRangeResultParams(
+base::Value::Dict CreateNetLogGetAvailableRangeResultParams(
     const disk_cache::RangeResult result);
 
 }  // namespace disk_cache

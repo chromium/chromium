@@ -34,11 +34,11 @@ public abstract class ItemDividerBase extends RecyclerView.ItemDecoration {
         if (containsFillButton) { // Round all the corners of the only item.
             return R.drawable.touch_to_fill_credential_background_modern_rounded_all;
         }
+        if (position == itemCount - 1) { // Round the bottom of the last suggestion item.
+            return R.drawable.touch_to_fill_credential_background_modern_rounded_down;
+        }
         if (position == 1) { // Round the top of the first item.
             return R.drawable.touch_to_fill_credential_background_modern_rounded_up;
-        }
-        if (position == itemCount - 1) { // Round the bottom of the last item.
-            return R.drawable.touch_to_fill_credential_background_modern_rounded_down;
         }
         // The rest of the items have a background with no rounded edges.
         return R.drawable.touch_to_fill_credential_background_modern;
@@ -52,13 +52,23 @@ public abstract class ItemDividerBase extends RecyclerView.ItemDecoration {
      */
     @Override
     public void onDraw(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
+        int itemCount = parent.getAdapter().getItemCount();
+        if (itemCount > 1
+                && shouldSkipItemType(parent.getAdapter().getItemViewType(itemCount - 2))) {
+            // Avoid counting the button item.
+            itemCount = itemCount - 1;
+        }
+        if (itemCount > 0
+                && shouldSkipItemType(parent.getAdapter().getItemViewType(itemCount - 1))) {
+            // Avoid counting the footer item.
+            itemCount = itemCount - 1;
+        }
         for (int posInView = 0; posInView < parent.getChildCount(); posInView++) {
             View child = parent.getChildAt(posInView);
             int posInAdapter = parent.getChildAdapterPosition(child);
             if (shouldSkipItemType(parent.getAdapter().getItemViewType(posInAdapter))) continue;
             child.setBackground(AppCompatResources.getDrawable(mContext,
-                    selectBackgroundDrawable(posInAdapter, containsFillButton(parent),
-                            parent.getAdapter().getItemCount())));
+                    selectBackgroundDrawable(posInAdapter, containsFillButton(parent), itemCount)));
         }
     }
 

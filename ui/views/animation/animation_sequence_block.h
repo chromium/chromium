@@ -26,6 +26,7 @@ class LinearGradient;
 }  // namespace gfx
 
 namespace ui {
+class InterpolatedTransform;
 class Layer;
 class LayerOwner;
 }  // namespace ui
@@ -137,19 +138,41 @@ class VIEWS_EXPORT AnimationSequenceBlock {
       bool visible,
       gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
 
+  // NOTE: Generally an `ui::InterpolatedTransform` animation can be expressed
+  // more simply as a `gfx::Transform` animation. As such, `SetTransform()` APIs
+  // are preferred over `SetInterpolatedTransform()` APIs where possible.
+  //
+  // Exception #1: It may be preferable to use `SetInterpolatedTransform()` APIs
+  // to animate overlapping transforms on the same `target`.
+  //
+  // Exception #2: It may be preferable to use `SetInterpolatedTransform()` APIs
+  // when synchronous updates are required, as these APIs dispatch updates at
+  // each animation step whereas `SetTransform()` APIs dispatch updates only at
+  // animation start, complete, and abort.
+  AnimationSequenceBlock& SetInterpolatedTransform(
+      ui::Layer* target,
+      std::unique_ptr<ui::InterpolatedTransform> interpolated_transform,
+      gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
+  AnimationSequenceBlock& SetInterpolatedTransform(
+      ui::LayerOwner* target,
+      std::unique_ptr<ui::InterpolatedTransform> interpolated_transform,
+      gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
+
   // Creates a new block.
   AnimationSequenceBlock& At(base::TimeDelta since_sequence_start);
   AnimationSequenceBlock& Offset(base::TimeDelta since_last_block_start);
   AnimationSequenceBlock& Then();
 
  private:
-  using AnimationValue = absl::variant<gfx::Rect,
-                                       float,
-                                       SkColor,
-                                       gfx::RoundedCornersF,
-                                       gfx::LinearGradient,
-                                       bool,
-                                       gfx::Transform>;
+  using AnimationValue =
+      absl::variant<gfx::Rect,
+                    float,
+                    SkColor,
+                    gfx::RoundedCornersF,
+                    gfx::LinearGradient,
+                    bool,
+                    gfx::Transform,
+                    std::unique_ptr<ui::InterpolatedTransform>>;
 
   // Data for the animation of a given AnimationKey.
   struct Element {

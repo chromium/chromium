@@ -6,6 +6,7 @@
 #define CC_PAINT_TRANSFER_CACHE_SERIALIZE_HELPER_H_
 
 #include <set>
+#include <utility>
 #include <vector>
 
 #include "cc/paint/paint_export.h"

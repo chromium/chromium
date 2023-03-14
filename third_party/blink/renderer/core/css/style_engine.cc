@@ -722,14 +722,7 @@ RuleSet* StyleEngine::RuleSetForSheet(CSSStyleSheet& sheet) {
   if (!sheet.MatchesMediaQueries(EnsureMediaQueryEvaluator())) {
     return nullptr;
   }
-
-  AddRuleFlags add_rule_flags = kRuleHasNoSpecialState;
-  if (document_->GetExecutionContext()->GetSecurityOrigin()->CanRequest(
-          sheet.BaseURL())) {
-    add_rule_flags = kRuleHasDocumentSecurityOrigin;
-  }
-  return &sheet.Contents()->EnsureRuleSet(*media_query_evaluator_,
-                                          add_rule_flags);
+  return &sheet.Contents()->EnsureRuleSet(*media_query_evaluator_);
 }
 
 RuleSet* StyleEngine::RuleSetScope::RuleSetForSheet(StyleEngine& engine,
@@ -824,6 +817,7 @@ void StyleEngine::UpdateGenericFontFamilySettings() {
   if (resolver_) {
     resolver_->InvalidateMatchedPropertiesCache();
   }
+  FontCache::Get().InvalidateNGShapeCache();
   FontCache::Get().InvalidateShapeCache();
 }
 
@@ -945,11 +939,7 @@ CSSStyleSheet* StyleEngine::ParseSheet(
   style_sheet = CSSStyleSheet::CreateInline(element, NullURL(), start_position,
                                             GetDocument().Encoding());
   style_sheet->Contents()->SetRenderBlocking(render_blocking_behavior);
-  std::unique_ptr<CachedCSSTokenizer> tokenizer;
-  if (auto* parser = GetDocument().GetScriptableDocumentParser()) {
-    tokenizer = parser->TakeCSSTokenizer(text);
-  }
-  style_sheet->Contents()->ParseString(text, true, std::move(tokenizer));
+  style_sheet->Contents()->ParseString(text);
   return style_sheet;
 }
 
@@ -3318,7 +3308,8 @@ void StyleEngine::ViewportDefiningElementDidChange() {
     //
     // This update is also necessary if the first body element changes because
     // another body element is inserted or removed.
-    layout_object->SetStyle(ComputedStyle::Clone(*layout_object->Style()));
+    layout_object->SetStyle(
+        ComputedStyleBuilder(*layout_object->Style()).TakeStyle());
   }
 }
 

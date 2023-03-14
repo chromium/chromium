@@ -55,7 +55,7 @@ void OffloadingVideoEncoder::Initialize(VideoCodecProfile profile,
 }
 
 void OffloadingVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
-                                    bool key_frame,
+                                    const EncodeOptions& encode_options,
                                     EncoderStatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("media", "OffloadingVideoEncoder::Encode");
@@ -63,7 +63,7 @@ void OffloadingVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
       FROM_HERE,
       base::BindOnce(&VideoEncoder::Encode,
                      base::Unretained(wrapped_encoder_.get()), std::move(frame),
-                     key_frame, WrapCallback(std::move(done_cb))));
+                     encode_options, WrapCallback(std::move(done_cb))));
 }
 
 void OffloadingVideoEncoder::ChangeOptions(const Options& options,

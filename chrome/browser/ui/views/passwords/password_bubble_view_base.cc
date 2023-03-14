@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
-#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -124,7 +123,7 @@ PasswordBubbleViewBase* PasswordBubbleViewBase::CreateBubble(
                                                              anchor_view);
 #endif
   } else {
-    NOTREACHED();
+    NOTREACHED_NORETURN();
   }
 
   g_manage_passwords_bubble_ = view;
@@ -175,33 +174,6 @@ PasswordBubbleViewBase::PasswordBubbleViewBase(
 PasswordBubbleViewBase::~PasswordBubbleViewBase() {
   if (g_manage_passwords_bubble_ == this)
     g_manage_passwords_bubble_ = nullptr;
-}
-
-// static
-std::unique_ptr<views::Label> PasswordBubbleViewBase::CreateUsernameLabel(
-    const password_manager::PasswordForm& form) {
-  auto label = std::make_unique<views::Label>(
-      GetDisplayUsername(form), views::style::CONTEXT_DIALOG_BODY_TEXT,
-      views::style::STYLE_SECONDARY);
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  return label;
-}
-
-// static
-std::unique_ptr<views::Label> PasswordBubbleViewBase::CreatePasswordLabel(
-    const password_manager::PasswordForm& form) {
-  std::unique_ptr<views::Label> label = std::make_unique<views::Label>(
-      GetDisplayPassword(form), views::style::CONTEXT_DIALOG_BODY_TEXT);
-  if (form.federation_origin.opaque()) {
-    label->SetTextStyle(STYLE_SECONDARY_MONOSPACED);
-    label->SetObscured(true);
-    label->SetElideBehavior(gfx::TRUNCATE);
-  } else {
-    label->SetTextStyle(views::style::STYLE_SECONDARY);
-    label->SetElideBehavior(gfx::ELIDE_HEAD);
-  }
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  return label;
 }
 
 void PasswordBubbleViewBase::SetBubbleHeader(int light_image_id,

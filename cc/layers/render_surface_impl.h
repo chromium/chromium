@@ -54,7 +54,7 @@ struct RenderSurfacePropertyChangedFlags {
 
 class CC_EXPORT RenderSurfaceImpl {
  public:
-  RenderSurfaceImpl(LayerTreeImpl* layer_tree_impl, uint64_t stable_id);
+  RenderSurfaceImpl(LayerTreeImpl* layer_tree_impl, ElementId stable_id);
   RenderSurfaceImpl(const RenderSurfaceImpl&) = delete;
   virtual ~RenderSurfaceImpl();
 
@@ -176,9 +176,9 @@ class CC_EXPORT RenderSurfaceImpl {
     occlusion_in_content_space_ = occlusion;
   }
 
-  uint64_t id() const { return stable_id_; }
+  ElementId id() const { return id_; }
   viz::CompositorRenderPassId render_pass_id() const {
-    return viz::CompositorRenderPassId{id()};
+    return viz::CompositorRenderPassId(id().GetInternalValue());
   }
 
   bool HasMaskingContributingSurface() const;
@@ -216,7 +216,6 @@ class CC_EXPORT RenderSurfaceImpl {
 
   void ResetPropertyChangedFlags();
   bool SurfacePropertyChanged() const;
-  bool SurfacePropertyChangedOnlyFromDescendant() const;
   bool AncestorPropertyChanged() const;
   void NoteAncestorPropertyChanged();
   bool HasDamageFromeContributingContent() const;
@@ -252,7 +251,7 @@ class CC_EXPORT RenderSurfaceImpl {
                      const gfx::Rect& unoccluded_content_rect);
 
   raw_ptr<LayerTreeImpl> layer_tree_impl_;
-  uint64_t stable_id_;
+  ElementId id_;
   int effect_tree_index_;
 
   // Container for properties that render surfaces need to compute before they

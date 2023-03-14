@@ -55,34 +55,6 @@ SyncStatusLabels GetStatusForUnrecoverableError(
           IDS_SYNC_RELOGIN_BUTTON, SyncStatusActionType::kReauthenticate};
 }
 
-// Depending on the authentication state, returns labels to be used to display
-// information about the sync status.
-SyncStatusLabels GetStatusForAuthError(
-    const GoogleServiceAuthError& auth_error) {
-  DCHECK(auth_error.IsPersistentError());
-
-  switch (auth_error.state()) {
-    case GoogleServiceAuthError::NONE:
-    // Transient errors are unreachable.
-    case GoogleServiceAuthError::SERVICE_UNAVAILABLE:
-    case GoogleServiceAuthError::CONNECTION_FAILED:
-    case GoogleServiceAuthError::REQUEST_CANCELED:
-      NOTREACHED();
-      break;
-    case GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS:
-    case GoogleServiceAuthError::SERVICE_ERROR:
-    case GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE:
-    case GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR:
-    case GoogleServiceAuthError::USER_NOT_SIGNED_UP:
-    case GoogleServiceAuthError::NUM_STATES:
-      return {SyncStatusMessageType::kSyncError, IDS_SYNC_RELOGIN_ERROR,
-              IDS_SYNC_RELOGIN_BUTTON, SyncStatusActionType::kReauthenticate};
-  }
-
-  NOTREACHED();
-  return SyncStatusLabels();
-}
-
 SyncStatusLabels GetSyncStatusLabelsImpl(
     const syncer::SyncService* service,
     bool is_user_clear_primary_account_allowed,
@@ -114,7 +86,9 @@ SyncStatusLabels GetSyncStatusLabelsImpl(
 
   // Then check for an auth error.
   if (auth_error.state() != GoogleServiceAuthError::NONE) {
-    return GetStatusForAuthError(auth_error);
+    DCHECK(auth_error.IsPersistentError());
+    return {SyncStatusMessageType::kSyncError, IDS_SYNC_RELOGIN_ERROR,
+            IDS_SYNC_RELOGIN_BUTTON, SyncStatusActionType::kReauthenticate};
   }
 
   // Check if Sync is disabled by policy.

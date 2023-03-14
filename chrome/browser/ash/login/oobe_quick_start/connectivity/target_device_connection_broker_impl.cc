@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -15,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fast_pair_advertiser.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/incoming_connection.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/logging/logging.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -28,11 +30,10 @@ namespace {
 // Endpoint Info version number, currently version 1.
 constexpr uint8_t kEndpointInfoVersion = 1;
 
-// Smart Setup verification style, e.g. shapes, pin, etc.
-// 0 = "Default", since there isn't yet a QR code option.
-// Values come from this enum:
-// http://google3/logs/proto/wireless/android/smartsetup/smart_setup_extension.proto;l=876;rcl=458110957
-constexpr uint8_t kEndpointInfoVerificationStyle = 0;
+// Smart Setup verification style, e.g. QR code, pin, etc.
+// 6 = "DIGITS", which tells the phone to display a code for the user to match.
+// Values come from the TargetConnectionInfo VerificationStyle enum:
+constexpr uint8_t kEndpointInfoVerificationStyle = 6;
 
 // Device Type for Smart Setup, e.g. phone, tablet.  8 = "Chrome"
 // Values come from the DiscoveryEvent DeviceType enum:
@@ -48,6 +49,9 @@ constexpr size_t kMaxEndpointInfoDisplayNameLength = 18;
 // base64-encoded UTF-8 string that will be null-terminated if less than 10
 // characters.
 constexpr size_t kEndpointInfoAdvertisingIdLength = 10;
+
+// Base64 padding character
+constexpr char kBase64PaddingChar = '=';
 
 // The display name must:
 // - Be a variable-length string of utf-8 bytes
@@ -70,6 +74,22 @@ std::vector<uint8_t> GetEndpointInfoDisplayNameBytes(
   }
 
   return display_name_bytes;
+}
+
+std::vector<uint8_t> Base64EncodeOmitPadding(
+    const std::vector<uint8_t>& bytes) {
+  std::string input(bytes.begin(), bytes.end());
+  std::string output;
+  base::Base64Encode(input, &output);
+
+  // Strip padding characters from end.
+  const size_t last_non_padding_pos =
+      output.find_last_not_of(kBase64PaddingChar);
+  if (last_non_padding_pos != std::string::npos) {
+    output.resize(last_non_padding_pos + 1);
+  }
+
+  return std::vector<uint8_t>(output.begin(), output.end());
 }
 
 }  // namespace
@@ -238,7 +258,7 @@ void TargetDeviceConnectionBrokerImpl::OnStopFastPairAdvertising(
 // The EndpointInfo consists of the following fields:
 // - EndpointInfo version number, 1 byte
 // - Display name, max 18 bytes (see GetEndpointInfoDisplayNameBytes())
-// - Advertisement data, 13 bytes:
+// - Advertisement data, 13 bytes, base64 encoded:
 //   - Verification Style, byte[0]
 //   - Device Type, byte[1]
 //   - Advertising Id, byte[2-11], 10 UTF-8 bytes. (See RandomSessionId)
@@ -248,23 +268,28 @@ std::vector<uint8_t> TargetDeviceConnectionBrokerImpl::GenerateEndpointInfo() {
   std::vector<uint8_t> display_name_bytes =
       GetEndpointInfoDisplayNameBytes(random_session_id_);
 
-  std::vector<uint8_t> endpoint_info;
-  endpoint_info.reserve(32);
-
-  endpoint_info.push_back(kEndpointInfoVersion);
-  endpoint_info.insert(endpoint_info.end(), display_name_bytes.begin(),
-                       display_name_bytes.end());
-  endpoint_info.push_back(kEndpointInfoVerificationStyle);
-  endpoint_info.push_back(kEndpointInfoDeviceType);
-  endpoint_info.insert(endpoint_info.end(), session_id.begin(),
-                       session_id.end());
+  std::vector<uint8_t> advertisement_data;
+  advertisement_data.reserve(13);
+  advertisement_data.push_back(kEndpointInfoVerificationStyle);
+  advertisement_data.push_back(kEndpointInfoDeviceType);
+  advertisement_data.insert(advertisement_data.end(), session_id.begin(),
+                            session_id.end());
   for (size_t i = 0; i < kEndpointInfoAdvertisingIdLength - session_id.size();
        i++) {
     // Pad out the advertising id to the correct field length using null
     // terminators.
-    endpoint_info.push_back(0);
+    advertisement_data.push_back(0);
   }
-  endpoint_info.push_back(kEndpointInfoIsQuickStart);
+  advertisement_data.push_back(kEndpointInfoIsQuickStart);
+  std::vector<uint8_t> advertisement_data_b64 =
+      Base64EncodeOmitPadding(advertisement_data);
+
+  std::vector<uint8_t> endpoint_info;
+  endpoint_info.push_back(kEndpointInfoVersion);
+  endpoint_info.insert(endpoint_info.end(), display_name_bytes.begin(),
+                       display_name_bytes.end());
+  endpoint_info.insert(endpoint_info.end(), advertisement_data_b64.begin(),
+                       advertisement_data_b64.end());
 
   return endpoint_info;
 }
@@ -329,12 +354,33 @@ void TargetDeviceConnectionBrokerImpl::OnStopNearbyConnectionsAdvertising(
   std::move(callback).Run();
 }
 
-void TargetDeviceConnectionBrokerImpl::OnIncomingConnection(
+void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionInitiated(
+    const std::string& endpoint_id,
+    const std::vector<uint8_t>& endpoint_info) {
+  absl::optional<std::string> auth_token =
+      nearby_connections_manager_->GetAuthenticationToken(endpoint_id);
+  DCHECK(auth_token);
+  std::string pin = IncomingConnection::DerivePin(*auth_token);
+  QS_LOG(INFO) << "Incoming Nearby Connection Initiated: endpoint_id="
+               << endpoint_id << " pin=" << pin;
+
+  // TODO(b/234655072): Notify ConnectionLifecycleListener about the incoming
+  // connection if pin authentication is expected.
+}
+
+void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionAccepted(
     const std::string& endpoint_id,
     const std::vector<uint8_t>& endpoint_info,
     NearbyConnection* connection) {
-  QS_LOG(INFO) << "Nearby Connections incoming connection, endpoint_id="
-               << endpoint_id;
+  absl::optional<std::string> auth_token =
+      nearby_connections_manager_->GetAuthenticationToken(endpoint_id);
+  DCHECK(auth_token);
+  std::unique_ptr<IncomingConnection> incoming_connection =
+      std::make_unique<IncomingConnection>(connection, random_session_id_,
+                                           *auth_token);
+  QS_LOG(INFO) << "Incoming Nearby Connection Accepted: endpoint_id="
+               << endpoint_id << " pin="
+               << incoming_connection->GetConnectionVerificationPin();
 
   // TODO(b/234655072): Notify ConnectionLifecycleListener about the incoming
   // connection so that the Quick Start flow can proceed.

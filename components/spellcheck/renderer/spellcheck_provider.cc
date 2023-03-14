@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -286,9 +287,10 @@ void SpellCheckProvider::CheckSpelling(
     std::vector<std::u16string> suggestions;
     spellcheck::FillSuggestions(per_language_suggestions, &suggestions);
     WebVector<WebString> web_suggestions(suggestions.size());
-    std::transform(
-        suggestions.begin(), suggestions.end(), web_suggestions.begin(),
-        [](const std::u16string& s) { return WebString::FromUTF16(s); });
+    base::ranges::transform(suggestions, web_suggestions.begin(),
+                            [](const auto& suggestion) {
+                              return WebString::FromUTF16(suggestion);
+                            });
     *optional_suggestions = web_suggestions;
     spellcheck_renderer_metrics::RecordCheckedTextLengthWithSuggestions(
         base::saturated_cast<int>(word.size()));

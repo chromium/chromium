@@ -210,8 +210,9 @@ void IndexedDBContextImpl::BindIndexedDBImpl(
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver,
     storage::QuotaErrorOr<storage::BucketInfo> bucket_info) {
   absl::optional<storage::BucketInfo> bucket;
-  if (bucket_info.ok())
+  if (bucket_info.has_value()) {
     bucket = bucket_info.value();
+  }
   dispatcher_host_.AddReceiver(
       IndexedDBDispatcherHost::ReceiverContext(
           bucket, std::move(client_state_checker_remote)),
@@ -264,8 +265,8 @@ void IndexedDBContextImpl::DeleteForStorageKey(
 void IndexedDBContextImpl::OnGotBucketsForDeletion(
     base::OnceCallback<void(bool)> callback,
     storage::QuotaErrorOr<std::set<storage::BucketInfo>> buckets) {
-  if (!buckets.ok() || buckets.value().empty()) {
-    std::move(callback).Run(buckets.ok());
+  if (!buckets.has_value() || buckets.value().empty()) {
+    std::move(callback).Run(buckets.has_value());
     return;
   }
 
@@ -449,7 +450,7 @@ void IndexedDBContextImpl::OnBucketInfoReady(
       bucket_map;
 
   for (const auto& quota_error_or_bucket_info : bucket_infos) {
-    if (!quota_error_or_bucket_info.ok()) {
+    if (!quota_error_or_bucket_info.has_value()) {
       continue;
     }
     const storage::BucketInfo& bucket_info = quota_error_or_bucket_info.value();
@@ -1160,10 +1161,11 @@ void IndexedDBContextImpl::InitializeFromFilesIfNeeded(
   auto on_lookup_done = base::BindRepeating(
       [](Barrier barrier,
          storage::QuotaErrorOr<storage::BucketInfo> bucket_info) {
-        if (bucket_info.ok())
+        if (bucket_info.has_value()) {
           barrier.Run(bucket_info->ToBucketLocator());
-        else
+        } else {
           barrier.Run(absl::nullopt);
+        }
       },
       barrier);
 

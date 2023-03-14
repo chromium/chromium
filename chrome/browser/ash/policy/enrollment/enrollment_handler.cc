@@ -33,6 +33,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/attestation/attestation_features.h"
 #include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "chromeos/ash/components/dbus/authpolicy/authpolicy_client.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
@@ -515,12 +516,47 @@ void EnrollmentHandler::StartAttestationBasedEnrollmentFlow(
   ash::attestation::AttestationFlow::CertificateCallback callback =
       base::BindOnce(&EnrollmentHandler::HandleRegistrationCertificateResult,
                      weak_ptr_factory_.GetWeakPtr(), is_initial_attempt);
+  ash::attestation::AttestationFeatures::GetFeatures(base::BindOnce(
+      &EnrollmentHandler::OnGetFeaturesReady, weak_ptr_factory_.GetWeakPtr(),
+      force_new_key, std::move(callback)));
+}
+
+void EnrollmentHandler::OnGetFeaturesReady(
+    bool force_new_key,
+    ash::attestation::AttestationFlow::CertificateCallback callback,
+    const ash::attestation::AttestationFeatures* features) {
+  if (!features) {
+    LOG(ERROR) << "Failed to get AttestationFeatures.";
+    std::move(callback).Run(ash::attestation::ATTESTATION_UNSPECIFIED_FAILURE,
+                            "");
+    return;
+  }
+  if (!features->IsAttestationAvailable()) {
+    LOG(ERROR) << "The Attestation is not available.";
+    std::move(callback).Run(ash::attestation::ATTESTATION_UNSPECIFIED_FAILURE,
+                            "");
+    return;
+  }
+
+  // prefers ECC certificate if available
+  ::attestation::KeyType key_crypto_type;
+  if (features->IsEccSupported()) {
+    key_crypto_type = ::attestation::KEY_TYPE_ECC;
+  } else if (features->IsRsaSupported()) {
+    key_crypto_type = ::attestation::KEY_TYPE_RSA;
+  } else {
+    LOG(ERROR) << "No appropriate crypto key type supported.";
+    std::move(callback).Run(ash::attestation::ATTESTATION_UNSPECIFIED_FAILURE,
+                            "");
+    return;
+  }
+
   attestation_flow_->GetCertificate(
       /*certificate_profile=*/ash::attestation::
           PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
       /*account_id=*/EmptyAccountId(), /*request_origin=*/std::string(),
       /*force_new_key=*/force_new_key,
-      /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
+      /*key_crypto_type=*/key_crypto_type,
       /*key_name=*/ash::attestation::kEnterpriseEnrollmentKey,
       /*profile_specific_data=*/absl::nullopt,
       /*callback=*/std::move(callback));

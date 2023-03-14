@@ -12,6 +12,7 @@
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/task/task_traits.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/media_galleries/fileapi/media_file_system_backend.h"
 #include "chrome/common/url_constants.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
+#include "components/file_access/scoped_file_access_delegate.h"
 #include "components/user_manager/user.h"
 #include "storage/browser/file_system/async_file_util.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -421,7 +423,9 @@ FileSystemBackend::CreateFileStreamReader(
     int64_t offset,
     int64_t max_bytes_to_read,
     const base::Time& expected_modification_time,
-    storage::FileSystemContext* context) const {
+    storage::FileSystemContext* context,
+    file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
+        file_access) const {
   DCHECK(url.is_valid());
 
   if (!IsAccessAllowed(url))
@@ -431,8 +435,15 @@ FileSystemBackend::CreateFileStreamReader(
     case storage::kFileSystemTypeProvided:
       return file_system_provider_delegate_->CreateFileStreamReader(
           url, offset, max_bytes_to_read, expected_modification_time, context);
+    // The dlp file_access callback is needed for the local filesystem only.
     case storage::kFileSystemTypeLocal:
     case storage::kFileSystemTypeRestrictedLocal:
+      return storage::FileStreamReader::CreateForLocalFile(
+          base::ThreadPool::CreateTaskRunner(
+              {base::MayBlock(), base::TaskPriority::USER_VISIBLE})
+              .get(),
+          url.path(), offset, expected_modification_time,
+          std::move(file_access));
     case storage::kFileSystemTypeDriveFs:
     case storage::kFileSystemTypeSmbFs:
     case storage::kFileSystemTypeFuseBox:

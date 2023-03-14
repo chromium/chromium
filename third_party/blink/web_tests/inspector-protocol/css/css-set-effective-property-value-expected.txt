@@ -434,7 +434,7 @@ Running test: testChangeCustomProperty
     margin-top: 33px !important; @[0:19-0:47]
     --x: bar; @[0:48-0:57]
     padding-top: 55px; @[undefined-undefined]
-    --x:  bar; @[undefined-undefined]
+    --x: bar; @[undefined-undefined]
     margin-top: 33px !important; @[undefined-undefined]
 }
 @layer base

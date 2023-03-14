@@ -19,6 +19,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
+#include "components/file_access/scoped_file_access_delegate.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/cpp/quota_client_callback_wrapper.h"
@@ -445,7 +446,7 @@ void FileSystemContext::OpenFileSystem(
     if (!bucket->id) {
       // This branch can be hit if the bucket has been deleted but `BucketHost`
       // is still alive.
-      std::move(got_bucket).Run(QuotaError::kUnknownError);
+      std::move(got_bucket).Run(base::unexpected(QuotaError::kUnknownError));
     } else {
       quota_manager_proxy()->GetBucketById(bucket->id, io_task_runner_.get(),
                                            std::move(got_bucket));
@@ -466,7 +467,7 @@ void FileSystemContext::OnGetOrCreateBucket(
     OpenFileSystemMode mode,
     OpenFileSystemCallback callback,
     QuotaErrorOr<BucketInfo> result) {
-  if (!result.ok()) {
+  if (!result.has_value()) {
     std::move(callback).Run(FileSystemURL(), std::string(),
                             base::File::FILE_ERROR_FAILED);
     return;
@@ -595,14 +596,17 @@ std::unique_ptr<FileStreamReader> FileSystemContext::CreateFileStreamReader(
     const FileSystemURL& url,
     int64_t offset,
     int64_t max_bytes_to_read,
-    const base::Time& expected_modification_time) {
+    const base::Time& expected_modification_time,
+    file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
+        file_access) {
   if (!url.is_valid())
     return nullptr;
   FileSystemBackend* backend = GetFileSystemBackend(url.type());
   if (!backend)
     return nullptr;
   return backend->CreateFileStreamReader(url, offset, max_bytes_to_read,
-                                         expected_modification_time, this);
+                                         expected_modification_time, this,
+                                         std::move(file_access));
 }
 
 std::unique_ptr<FileStreamWriter> FileSystemContext::CreateFileStreamWriter(

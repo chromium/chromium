@@ -273,6 +273,21 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kRequestFileSystemSyncWorker,
           WebFeature::
               kHTMLPatternRegExpUnicodeSetIncompatibilitiesWithUnicodeMode,
+          WebFeature::kGetDisplayMediaWithPreferCurrentTabTrue,
+          WebFeature::kV8Database_ChangeVersion_Method,
+          WebFeature::kV8Database_Transaction_Method,
+          WebFeature::kV8Database_ReadTransaction_Method,
+          WebFeature::kV8SQLTransaction_ExecuteSql_Method,
+          WebFeature::kMediaStreamOnActive,
+          WebFeature::kMediaStreamOnInactive,
+          WebFeature::kPrivacySandboxAdsAPIs,
+          WebFeature::kV8Navigator_RunAdAuction_Method,
+          WebFeature::kConversionAPIAll,
+          WebFeature::kSharedStorageAPI_SharedStorage_DOMReference,
+          WebFeature::kSharedStorageAPI_Run_Method,
+          WebFeature::kSharedStorageAPI_SelectURL_Method,
+          WebFeature::kTopicsAPI_BrowsingTopics_Method,
+          WebFeature::kHTMLFencedFrameElement,
       }));
   return *opt_in_features;
 }

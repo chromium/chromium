@@ -8,35 +8,15 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 
 class SavedTabGroupModel;
 class TabStripModel;
 class Profile;
-
-class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
- public:
-  SavedTabGroupWebContentsListener(content::WebContents* web_contents,
-                                   base::Token token,
-                                   SavedTabGroupModel* model);
-  ~SavedTabGroupWebContentsListener() override;
-
-  // content::WebContentsObserver
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
-
-  base::Token token() { return token_; }
-  content::WebContents* web_contents() { return web_contents_; }
-
- private:
-  base::Token token_;
-  raw_ptr<content::WebContents> web_contents_;
-  raw_ptr<SavedTabGroupModel> model_;
-};
 
 // Manages the listening state for each individual tabstrip.
 class SavedTabGroupBrowserListener : public TabStripModelObserver {
@@ -51,8 +31,7 @@ class SavedTabGroupBrowserListener : public TabStripModelObserver {
   base::Token GetOrCreateTrackedIDForWebContents(
       content::WebContents* web_contents);
 
-  // Stops tracking the webcontents for changes. CHECKS if not currently
-  // tracked.
+  // Stops tracking the webcontents for changes.
   void StopTrackingWebContents(content::WebContents* web_contents);
 
   // TabStripModelObserver:

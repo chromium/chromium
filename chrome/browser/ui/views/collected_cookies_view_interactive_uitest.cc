@@ -51,7 +51,8 @@ class CollectedCookiesViewInteractiveUiTest : public InteractiveBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(CollectedCookiesViewInteractiveUiTest,
-                       CheckCookiesAreBlockedInIncognitoWindow) {
+                       // TODO(crbug.com/1417914): Re-enable this test
+                       DISABLED_CheckCookiesAreBlockedInIncognitoWindow) {
   const GURL third_party_cookie_page_url =
       embedded_test_server()->GetURL("a.com", "/third_party_cookie.html");
 

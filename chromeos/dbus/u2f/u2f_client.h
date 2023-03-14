@@ -57,8 +57,8 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_U2F) U2FClient {
   // that requires a power button press to register or sign with a credential is
   // enabled.
   virtual void IsU2FEnabled(
-      const u2f::IsUvpaaRequest& request,
-      DBusMethodCallback<u2f::IsUvpaaResponse> callback) = 0;
+      const u2f::IsU2fEnabledRequest& request,
+      DBusMethodCallback<u2f::IsU2fEnabledResponse> callback) = 0;
 
   // Registers a new credential.
   virtual void MakeCredential(

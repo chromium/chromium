@@ -355,12 +355,27 @@ TEST(CanonicalCookieTest, Create) {
                                    absl::nullopt /* cookie_partition_key */);
   EXPECT_EQ(cookie->SourcePort(), 443);
 
-  // GURL's port parsing will handle any invalid ports, but let's still make
-  // sure we get the expected result anyway.
-  cookie = CanonicalCookie::Create(GURL("http://www.foo.com:70000"), "B=1",
-                                   creation_time, server_time,
-                                   absl::nullopt /* cookie_partition_key */);
-  EXPECT_EQ(cookie->SourcePort(), url::PORT_INVALID);
+  // An invalid port leads to an invalid GURL, which causes cookie creation
+  // to fail.
+  CookieInclusionStatus status;
+  cookie = CanonicalCookie::Create(
+      GURL("http://www.foo.com:70000"), "B=1", creation_time, server_time,
+      absl::nullopt /* cookie_partition_key */, &status);
+  EXPECT_FALSE(cookie.get());
+  EXPECT_TRUE(status.HasExclusionReason(
+      CookieInclusionStatus::ExclusionReason::EXCLUDE_FAILURE_TO_STORE));
+}
+
+TEST(CanonicalCookieTest, CreateInvalidUrl) {
+  base::Time creation_time = base::Time::Now();
+  absl::optional<base::Time> server_time = absl::nullopt;
+  CookieInclusionStatus status;
+  std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::Create(
+      GURL("http://.127.0.0.1/path"), "A=2", creation_time, server_time,
+      absl::nullopt /* cookie_partition_key */, &status);
+  EXPECT_FALSE(cookie.get());
+  EXPECT_TRUE(status.HasExclusionReason(
+      CookieInclusionStatus::ExclusionReason::EXCLUDE_FAILURE_TO_STORE));
 }
 
 // Test that a cookie string with an empty domain attribute generates a

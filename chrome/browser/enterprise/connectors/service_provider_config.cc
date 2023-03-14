@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
 #include <iterator>
 
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
@@ -61,10 +62,14 @@ constexpr AnalysisConfig kLocalTestSystemAnalysisConfig = {
     .user_specific = false,
 };
 
+constexpr std::array<const char*, 1> kBrcmChrmCasSubjectNames = {
+    {"Broadcom Inc"}};
+
 constexpr AnalysisConfig kBrcmChrmCasAnalysisConfig = {
     .local_path = "brcm_chrm_cas",
     .supported_tags = base::span<const SupportedTag>(kBrcmChrmCasSupportedTags),
     .user_specific = false,
+    .subject_names = base::span<const char* const>(kBrcmChrmCasSubjectNames),
 };
 
 constexpr ReportingConfig kGoogleReportingConfig = {

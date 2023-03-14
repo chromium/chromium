@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/elements/chrome_activity_overlay_view_controller.h"
 
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 

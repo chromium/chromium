@@ -144,6 +144,9 @@ class LocationBarMediator
                 @Override
                 public void setValue(LocationBarMediator object, float value) {
                     ((LocationBarTablet) mLocationBarLayout).setWidthChangeAnimationFraction(value);
+                    if (OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext) && mUrlHasFocus) {
+                        mEmbedderImpl.recalculateOmniboxAlignment();
+                    }
                 }
             };
 
@@ -175,6 +178,7 @@ class LocationBarMediator
     private final SearchEngineLogoUtils mSearchEngineLogoUtils;
     private final SaveOfflineButtonState mSaveOfflineButtonState;
     private final OmniboxUma mOmniboxUma;
+    private final OmniboxSuggestionsDropdownEmbedderImpl mEmbedderImpl;
 
     private boolean mNativeInitialized;
     private boolean mUrlFocusedFromFakebox;
@@ -207,18 +211,17 @@ class LocationBarMediator
             @NonNull BackKeyBehaviorDelegate backKeyBehavior, @NonNull WindowAndroid windowAndroid,
             boolean isTablet, @NonNull SearchEngineLogoUtils searchEngineLogoUtils,
             @NonNull LensController lensController,
-            @NonNull Runnable launchAssistanceSettingsAction,
             @NonNull SaveOfflineButtonState saveOfflineButtonState, @NonNull OmniboxUma omniboxUma,
-            @NonNull BooleanSupplier isToolbarMicEnabledSupplier) {
+            @NonNull BooleanSupplier isToolbarMicEnabledSupplier,
+            @NonNull OmniboxSuggestionsDropdownEmbedderImpl dropdownEmbedder) {
         mContext = context;
         mLocationBarLayout = locationBarLayout;
         mLocationBarDataProvider = locationBarDataProvider;
         mLocationBarDataProvider.addObserver(this);
         mOverrideUrlLoadingDelegate = overrideUrlLoadingDelegate;
         mLocaleManager = localeManager;
-        mVoiceRecognitionHandler =
-                new VoiceRecognitionHandler(this, mAssistantVoiceSearchServiceSupplier,
-                        launchAssistanceSettingsAction, profileSupplier);
+        mVoiceRecognitionHandler = new VoiceRecognitionHandler(
+                this, mAssistantVoiceSearchServiceSupplier, profileSupplier);
         mVoiceRecognitionHandler.addObserver(this);
         mProfileSupplier = profileSupplier;
         mProfileSupplier.addObserver(mCallbackController.makeCancelable(this::setProfile));
@@ -233,6 +236,7 @@ class LocationBarMediator
         mSaveOfflineButtonState = saveOfflineButtonState;
         mOmniboxUma = omniboxUma;
         mIsToolbarMicEnabledSupplier = isToolbarMicEnabledSupplier;
+        mEmbedderImpl = dropdownEmbedder;
     }
 
     /**
@@ -1456,8 +1460,10 @@ class LocationBarMediator
     // BackPressHandler implementation.
     // Modern way to intercept back press starting from T.
     @Override
-    public void handleBackPress() {
+    public @BackPressResult int handleBackPress() {
+        int res = mUrlHasFocus ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
         backKeyPressed();
+        return res;
     }
 
     @Override

@@ -62,8 +62,10 @@ base::Version ClientFilterableState::GetOSVersion() {
 }
 
 ClientFilterableState::ClientFilterableState(
-    IsEnterpriseFunction is_enterprise_function)
-    : is_enterprise_function_(std::move(is_enterprise_function)) {
+    IsEnterpriseFunction is_enterprise_function,
+    GoogleGroupsFunction google_groups_function)
+    : is_enterprise_function_(std::move(is_enterprise_function)),
+      google_groups_function_(std::move(google_groups_function)) {
   // The callback is only used when processing a study that uses the
   // is_enterprise filter. If you're building a client that isn't expecting that
   // filter, you should use a callback that always returns false.
@@ -75,6 +77,13 @@ bool ClientFilterableState::IsEnterprise() const {
   if (!is_enterprise_.has_value())
     is_enterprise_ = std::move(is_enterprise_function_).Run();
   return is_enterprise_.value();
+}
+
+base::flat_set<uint64_t> ClientFilterableState::GoogleGroups() const {
+  if (!google_groups_.has_value()) {
+    google_groups_ = std::move(google_groups_function_).Run();
+  }
+  return google_groups_.value();
 }
 
 }  // namespace variations

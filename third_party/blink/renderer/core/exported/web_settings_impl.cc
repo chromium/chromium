@@ -271,6 +271,11 @@ void WebSettingsImpl::SetPrimaryHoverType(mojom::blink::HoverType type) {
   dev_tools_emulator_->SetPrimaryHoverType(type);
 }
 
+void WebSettingsImpl::SetOutputDeviceUpdateAbilityType(
+    mojom::blink::OutputDeviceUpdateAbilityType type) {
+  dev_tools_emulator_->SetOutputDeviceUpdateAbilityType(type);
+}
+
 void WebSettingsImpl::SetPreferHiddenVolumeControls(bool enabled) {
   settings_->SetPreferHiddenVolumeControls(enabled);
 }

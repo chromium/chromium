@@ -16,15 +16,14 @@ export enum AmbientActionName {
   SET_ALBUM_SELECTED = 'set_album_selected',
   SET_AMBIENT_MODE_ENABLED = 'set_ambient_mode_enabled',
   SET_ANIMATION_THEME = 'set_animation_theme',
-  SET_GOOGLE_PHOTOS_ALBUMS_PREVIEWS = 'set_google_photos_albums_previews',
+  SET_PREVIEWS = 'set_previews',
   SET_TEMPERATURE_UNIT = 'set_temperature_unit',
   SET_TOPIC_SOURCE = 'set_topic_source',
   SET_AMBIENT_UI_VISIBILITY = 'set_ambient_ui_visibility',
 }
 
-export type AmbientActions =
-    SetAlbumsAction|SetAlbumSelectedAction|SetAmbientModeEnabledAction|
-    SetAnimationThemeAction|SetGooglePhotosAlbumsPreviewsAction|
+export type AmbientActions = SetAlbumsAction|SetAlbumSelectedAction|
+    SetAmbientModeEnabledAction|SetAnimationThemeAction|SetPreviewsAction|
     SetTopicSourceAction|SetTemperatureUnitAction|SetAmbientUiVisibilityAction;
 
 export type SetAlbumsAction = Action&{
@@ -46,8 +45,8 @@ export type SetAnimationThemeAction = Action&{
   animationTheme: AnimationTheme,
 };
 
-export type SetGooglePhotosAlbumsPreviewsAction = Action&{
-  name: AmbientActionName.SET_GOOGLE_PHOTOS_ALBUMS_PREVIEWS,
+export type SetPreviewsAction = Action&{
+  name: AmbientActionName.SET_PREVIEWS,
   previews: Url[],
 };
 
@@ -94,11 +93,10 @@ export function setAnimationThemeAction(animationTheme: AnimationTheme):
 }
 
 /**
- * Sets the current value of Google Photos albums previews.
+ * Sets the current value of preview image URLs.
  */
-export function setGooglePhotosAlbumsPreviewsAction(previews: Url[]):
-    SetGooglePhotosAlbumsPreviewsAction {
-  return {name: AmbientActionName.SET_GOOGLE_PHOTOS_ALBUMS_PREVIEWS, previews};
+export function setPreviewsAction(previews: Url[]): SetPreviewsAction {
+  return {name: AmbientActionName.SET_PREVIEWS, previews};
 }
 
 /**

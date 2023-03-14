@@ -14,6 +14,7 @@ namespace autofill {
 
 class AutofillProvider;
 class ContentAutofillDriver;
+class FormEventLoggerWeblayerAndroid;
 
 // Creates an AndroidAutofillManager and attaches it to the `driver`.
 //
@@ -70,6 +71,9 @@ class AndroidAutofillManager : public AutofillManager {
 
   bool has_server_prediction() const { return has_server_prediction_; }
 
+  FieldTypeGroup ComputeFieldTypeGroupForField(const FormData& form,
+                                               const FormFieldData& field);
+
   // Send the |form| to the renderer for the specified |action|.
   //
   // |triggered_origin| is the origin of the field from which the autofill is
@@ -77,6 +81,7 @@ class AndroidAutofillManager : public AutofillManager {
   // AutofillDriver::FillOrPreviewForm() for further details.
   void FillOrPreviewForm(mojom::RendererFormDataAction action,
                          const FormData& form,
+                         const FieldTypeGroup field_type_group,
                          const url::Origin& triggered_origin);
 
  protected:
@@ -123,7 +128,7 @@ class AndroidAutofillManager : public AutofillManager {
   void OnBeforeProcessParsedForms() override {}
 
   void OnFormProcessed(const FormData& form,
-                       const FormStructure& form_structure) override {}
+                       const FormStructure& form_structure) override;
 
   void OnAfterProcessParsedForms(
       const DenseSet<FormType>& form_types) override {}
@@ -146,8 +151,26 @@ class AndroidAutofillManager : public AutofillManager {
  private:
   AutofillProvider* GetAutofillProvider();
 
+  // Records metrics for loggers and creates new logging session.
+  void StartNewLoggingSession();
+
+  // Returns logger associated with the passed-in `form` and `field`.
+  FormEventLoggerWeblayerAndroid* GetEventFormLogger(
+      const FormData& form,
+      const FormFieldData& field);
+
+  // Returns logger associated with the passed-in `field_type_group`.
+  FormEventLoggerWeblayerAndroid* GetEventFormLogger(
+      FieldTypeGroup field_type_group);
+
+  // Returns logger associated with the passed-in `form_type`.
+  FormEventLoggerWeblayerAndroid* GetEventFormLogger(FormType form_type);
+
   bool has_server_prediction_ = false;
   raw_ptr<AutofillProvider> autofill_provider_for_testing_ = nullptr;
+  std::unique_ptr<FormEventLoggerWeblayerAndroid> address_logger_;
+  std::unique_ptr<FormEventLoggerWeblayerAndroid> payments_logger_;
+
   base::WeakPtrFactory<AndroidAutofillManager> weak_ptr_factory_{this};
 };
 

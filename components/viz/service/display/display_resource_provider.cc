@@ -16,6 +16,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_sizes.h"
+#include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "ui/gfx/geometry/size.h"
@@ -95,11 +96,11 @@ bool DisplayResourceProvider::OnMemoryDump(
 
     // Resources may be shared across processes and require a shared GUID to
     // prevent double counting the memory.
-
-    // The client that owns the resource will use a higher importance (2), and
-    // the GPU service will use a lower one (0).
-    constexpr int kImportance = 1;
-
+    //
+    // The client that owns the resource will use a higher importance, and the
+    // GPU service will use a lower one.
+    constexpr int kImportance =
+        static_cast<int>(gpu::TracingImportance::kServiceOwner);
     if (resource.transferable.is_software) {
       pmd->CreateSharedMemoryOwnershipEdge(
           dump->guid(), resource.shared_bitmap_tracing_guid, kImportance);

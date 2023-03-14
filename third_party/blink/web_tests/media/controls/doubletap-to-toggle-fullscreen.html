@@ -15,11 +15,11 @@ async_test(t => {
     doubleTapAtCoordinates(coordinates[0], coordinates[1]);
   }, { once: true });
 
-  video.addEventListener('webkitfullscreenchange', t.step_func(() => {
+  video.addEventListener('fullscreenchange', t.step_func(() => {
     assert_equals(video, document.fullscreenElement);
 
     // We are now fullscreen, update the event handler and doubletap to exit
-    video.addEventListener('webkitfullscreenchange',
+    video.addEventListener('fullscreenchange',
         t.step_func_done(), { once: true });
 
     const coordinates = videoLeftEdgeCoordinates(video);

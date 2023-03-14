@@ -27,7 +27,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           i provjerite je li vaša konfiguracija postavljena na "bez proksi servera" ili "direktno".</translation>
+<translation id="6549378540556750549">Chromium su omogućili i drugi <ph name="BEGIN_LINK_OSS" />softveri otvorenog koda<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Vaše promjene će stupiti na snagu kada sljedeći put budete ponovo pokrenuli Chromium.</translation>
+<translation id="7681937895330411637">Chromium je omogućio <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> projekat otvorenog koda.</translation>
 <translation id="7861509383340276692">Idite na
           meni u Chromiumu &gt;
           <ph name="SETTINGS_TITLE" />

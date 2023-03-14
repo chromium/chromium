@@ -91,6 +91,11 @@ TEST_F(FilePathTest, DirName) {
     {FPL("//aa/bb"), FPL("//aa")},
     {FPL("//aa/"), FPL("//")},
     {FPL("//aa"), FPL("//")},
+#if BUILDFLAG(IS_POSIX)
+    {FPL("///aa/"), FPL("/")},
+    {FPL("///aa"), FPL("/")},
+    {FPL("///"), FPL("/")},
+#endif  // BUILDFLAG(IS_POSIX)
     {FPL("0:"), FPL(".")},
     {FPL("@:"), FPL(".")},
     {FPL("[:"), FPL(".")},
@@ -482,6 +487,9 @@ TEST_F(FilePathTest, PathComponentsTest) {
   const struct UnaryTestData cases[] = {
     { FPL("//foo/bar/baz/"),          FPL("|//|foo|bar|baz")},
     { FPL("///"),                     FPL("|/")},
+#if BUILDFLAG(IS_POSIX)
+    {FPL("///foo//bar/baz"),          FPL("|/|foo|bar|baz")},
+#endif  // BUILDFLAG(IS_POSIX)
     { FPL("/foo//bar//baz/"),         FPL("|/|foo|bar|baz")},
     { FPL("/foo/bar/baz/"),           FPL("|/|foo|bar|baz")},
     { FPL("/foo/bar/baz//"),          FPL("|/|foo|bar|baz")},

@@ -54,7 +54,7 @@ class RenderWidgetTest : public RenderViewTest {
 
   // Returns Compositor scrolling ElementId for a given id. If id is empty it
   // returns the document scrolling ElementId.
-  uint64_t GetCompositorElementId(const blink::WebString& id = "") {
+  cc::ElementId GetCompositorElementId(const blink::WebString& id = "") {
     blink::WebNode node;
     if (id.IsEmpty())
       node = GetMainFrame()->GetDocument();

@@ -9,18 +9,22 @@
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
-#import "ios/chrome/browser/ui/commands/application_commands.h"
-#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_coordinator.h"
+#import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator.h"
@@ -42,6 +46,8 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using password_manager::WarningType;
 
 @interface PasswordsCoordinator () <
     AddPasswordCoordinatorDelegate,
@@ -95,6 +101,9 @@
 @property(nonatomic, strong)
     PasswordSettingsCoordinator* passwordSettingsCoordinator;
 
+// Modal alert for interactions with passwords list.
+@property(nonatomic, strong) AlertCoordinator* alertCoordinator;
+
 @end
 
 @implementation PasswordsCoordinator
@@ -134,7 +143,8 @@
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
   self.mediator = [[PasswordsMediator alloc]
-      initWithPasswordCheckManager:[self passwordCheckManager]
+      initWithPasswordCheckManager:IOSChromePasswordCheckManagerFactory::
+                                       GetForBrowserState(browserState)
                   syncSetupService:SyncSetupServiceFactory::GetForBrowserState(
                                        browserState)
                      faviconLoader:faviconLoader
@@ -202,9 +212,9 @@
 - (void)showPasswordIssues {
   DCHECK(!self.passwordIssuesCoordinator);
   self.passwordIssuesCoordinator = [[PasswordIssuesCoordinator alloc]
-      initWithBaseNavigationController:self.baseNavigationController
-                               browser:self.browser
-                  passwordCheckManager:[self passwordCheckManager].get()];
+            initForWarningType:WarningType::kCompromisedPasswordsWarning
+      baseNavigationController:self.baseNavigationController
+                       browser:self.browser];
   self.passwordIssuesCoordinator.delegate = self;
   self.passwordIssuesCoordinator.reauthModule = self.reauthModule;
   [self.passwordIssuesCoordinator start];
@@ -218,7 +228,7 @@
                                browser:self.browser
                             credential:credential
                           reauthModule:self.reauthModule
-                  passwordCheckManager:[self passwordCheckManager].get()];
+                  supportMoveToAccount:YES];
   self.passwordDetailsCoordinator.delegate = self;
   [self.passwordDetailsCoordinator start];
 }
@@ -231,7 +241,7 @@
                                browser:self.browser
                        affiliatedGroup:affiliatedGroup
                           reauthModule:self.reauthModule
-                  passwordCheckManager:[self passwordCheckManager].get()];
+                  supportMoveToAccount:YES];
   self.passwordDetailsCoordinator.delegate = self;
   [self.passwordDetailsCoordinator start];
 }
@@ -241,8 +251,7 @@
   self.addPasswordCoordinator = [[AddPasswordCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
-                    reauthModule:self.reauthModule
-            passwordCheckManager:[self passwordCheckManager].get()];
+                    reauthModule:self.reauthModule];
   self.addPasswordCoordinator.delegate = self;
   [self.addPasswordCoordinator start];
 }
@@ -288,6 +297,36 @@
   [self.actionSheetCoordinator start];
 }
 
+- (void)showSetupPasscodeDialog {
+  NSString* title =
+      l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_TITLE);
+  NSString* message =
+      l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_CONTENT);
+  self.alertCoordinator =
+      [[AlertCoordinator alloc] initWithBaseViewController:self.viewController
+                                                   browser:self.browser
+                                                     title:title
+                                                   message:message];
+
+  __weak __typeof(self) weakSelf = self;
+  OpenNewTabCommand* command =
+      [OpenNewTabCommand commandWithURLFromChrome:GURL(kPasscodeArticleURL)];
+
+  [self.alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_OK)
+                                   action:nil
+                                    style:UIAlertActionStyleCancel];
+
+  [self.alertCoordinator
+      addItemWithTitle:l10n_util::GetNSString(
+                           IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_LEARN_HOW)
+                action:^{
+                  [weakSelf.dispatcher closeSettingsUIAndOpenURL:command];
+                }
+                 style:UIAlertActionStyleDefault];
+
+  [self.alertCoordinator start];
+}
+
 #pragma mark - PasswordManagerViewControllerPresentationDelegate
 
 - (void)PasswordManagerViewControllerDismissed {
@@ -315,12 +354,6 @@
   self.passwordIssuesCoordinator = nil;
 }
 
-- (BOOL)willHandlePasswordDeletion:
-    (const password_manager::CredentialUIEntry&)credential {
-  [self.mediator deleteCredential:credential];
-  return YES;
-}
-
 #pragma mark - PasswordCheckupCoordinatorDelegate
 
 - (void)passwordCheckupCoordinatorDidRemove:
@@ -339,21 +372,6 @@
   [self.passwordDetailsCoordinator stop];
   self.passwordDetailsCoordinator.delegate = nil;
   self.passwordDetailsCoordinator = nil;
-}
-
-- (void)passwordDetailsCoordinator:(PasswordDetailsCoordinator*)coordinator
-                  deleteCredential:
-                      (const password_manager::CredentialUIEntry&)credential
-                 shouldDismissView:(BOOL)shouldDismiss {
-  DCHECK_EQ(self.passwordDetailsCoordinator, coordinator);
-  [self.mediator deleteCredential:credential];
-
-  if (shouldDismiss) {
-    [self.baseNavigationController popViewControllerAnimated:YES];
-  } else {
-    [self.passwordDetailsCoordinator
-        removeCredentialFromCacheAndRefreshTableView:credential];
-  }
 }
 
 #pragma mark AddPasswordDetailsCoordinatorDelegate
@@ -402,13 +420,6 @@
   [self.passwordSettingsCoordinator stop];
   self.passwordSettingsCoordinator.delegate = nil;
   self.passwordSettingsCoordinator = nil;
-}
-
-#pragma mark Private
-
-- (scoped_refptr<IOSChromePasswordCheckManager>)passwordCheckManager {
-  return IOSChromePasswordCheckManagerFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
 }
 
 @end

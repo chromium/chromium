@@ -5,6 +5,7 @@
 #include "gpu/ipc/client/client_shared_image_interface.h"
 
 #include "build/build_config.h"
+#include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/client/shared_image_interface_proxy.h"
 #include "ui/gfx/gpu_fence.h"
@@ -76,19 +77,6 @@ scoped_refptr<gfx::NativePixmap> ClientSharedImageInterface::GetNativePixmap(
 }
 
 Mailbox ClientSharedImageInterface::CreateSharedImage(
-    viz::ResourceFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    gpu::SurfaceHandle surface_handle) {
-  return CreateSharedImage(viz::SharedImageFormat::SinglePlane(format), size,
-                           color_space, surface_origin, alpha_type, usage,
-                           surface_handle);
-}
-
-Mailbox ClientSharedImageInterface::CreateSharedImage(
     viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
@@ -110,6 +98,8 @@ Mailbox ClientSharedImageInterface::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     base::span<const uint8_t> pixel_data) {
+  // Pixel upload path only supports single-planar formats.
+  DCHECK(format.is_single_plane());
   DCHECK(gpu::IsValidClientUsage(usage));
   return AddMailbox(proxy_->CreateSharedImage(format, size, color_space,
                                               surface_origin, alpha_type, usage,
@@ -125,6 +115,7 @@ Mailbox ClientSharedImageInterface::CreateSharedImage(
     uint32_t usage,
     gfx::GpuMemoryBufferHandle buffer_handle) {
   DCHECK(gpu::IsValidClientUsage(usage));
+  DCHECK(viz::HasEquivalentBufferFormat(format));
   DCHECK(format.is_multi_plane());
   return AddMailbox(proxy_->CreateSharedImage(format, size, color_space,
                                               surface_origin, alpha_type, usage,
@@ -155,7 +146,7 @@ void ClientSharedImageInterface::CopyToGpuMemoryBuffer(
 #endif
 
 ClientSharedImageInterface::SwapChainMailboxes
-ClientSharedImageInterface::CreateSwapChain(viz::ResourceFormat format,
+ClientSharedImageInterface::CreateSwapChain(viz::SharedImageFormat format,
                                             const gfx::Size& size,
                                             const gfx::ColorSpace& color_space,
                                             GrSurfaceOrigin surface_origin,
@@ -179,6 +170,15 @@ void ClientSharedImageInterface::DestroySharedImage(const SyncToken& sync_token,
     mailboxes_.erase(mailbox);
   }
   proxy_->DestroySharedImage(sync_token, mailbox);
+}
+
+void ClientSharedImageInterface::AddReferenceToSharedImage(
+    const SyncToken& sync_token,
+    const Mailbox& mailbox,
+    uint32_t usage) {
+  DCHECK(!mailbox.IsZero());
+  AddMailbox(mailbox);
+  proxy_->AddReferenceToSharedImage(sync_token, mailbox, usage);
 }
 
 uint32_t ClientSharedImageInterface::UsageForMailbox(const Mailbox& mailbox) {

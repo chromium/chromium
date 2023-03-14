@@ -23,11 +23,10 @@ namespace content {
 
 namespace {
 
-static constexpr RenderFrameHost::WebExposedIsolationLevel kNotIsolated =
-    RenderFrameHost::WebExposedIsolationLevel::kNotIsolated;
-static constexpr RenderFrameHost::WebExposedIsolationLevel
-    kMaybeIsolatedApplication =
-        RenderFrameHost::WebExposedIsolationLevel::kMaybeIsolatedApplication;
+static constexpr WebExposedIsolationLevel kNotIsolated =
+    WebExposedIsolationLevel::kNotIsolated;
+static constexpr WebExposedIsolationLevel kMaybeIsolatedApplication =
+    WebExposedIsolationLevel::kMaybeIsolatedApplication;
 
 const char kAppHost[] = "app.com";
 const char kNonAppHost[] = "other.com";

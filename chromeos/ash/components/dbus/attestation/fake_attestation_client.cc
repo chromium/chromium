@@ -387,6 +387,11 @@ void FakeAttestationClient::GetCertifiedNvIndex(
   NOTIMPLEMENTED();
 }
 
+void FakeAttestationClient::WaitForServiceToBeAvailable(
+    chromeos::WaitForServiceToBeAvailableCallback callback) {
+  std::move(callback).Run(/*service_is_available=*/true);
+}
+
 void FakeAttestationClient::ConfigureEnrollmentPreparations(bool is_prepared) {
   preparations_status_ = ::attestation::STATUS_SUCCESS;
   is_prepared_ = is_prepared;

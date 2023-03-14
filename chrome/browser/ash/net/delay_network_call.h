@@ -18,7 +18,11 @@ namespace ash {
 // Default delay to be used as an argument to DelayNetworkCall().
 extern const unsigned kDefaultNetworkRetryDelayMS;
 
+// Returns `true` if network calls will be delayed by `DelayNetworkCall()`.
+bool AreNetworkCallsDelayed();
+
 // Delay callback until the network is connected or while on a captive portal.
+// Also see `AreNetworkCallsDelayed()`.
 void DelayNetworkCall(base::TimeDelta retry, base::OnceClosure callback);
 
 }  // namespace ash

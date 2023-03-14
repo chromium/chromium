@@ -14,4 +14,6 @@
 <translation id="6855094794438142393">依次转到 Chrome 菜单 &gt;“<ph name="SETTINGS_TITLE" />”&gt;“<ph name="ADVANCED_TITLE" />”&gt;“<ph name="PROXIES_TITLE" />”&gt;“LAN 设置”，然后取消选中“为 LAN 使用代理服务器”。</translation>
 <translation id="7230956101631259640">您正在查看一个安全的 Chrome 网页</translation>
 <translation id="8187289872471304532">依次转到“应用”&gt;“系统偏好设置”&gt;“网络”&gt;“高级”&gt;“代理”，然后取消选中所有已选的代理。</translation>
+<translation id="8232971017369963250">Chrome 的诞生离不开 <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> 开源项目。</translation>
+<translation id="8279509328145658601">Chrome 的诞生也离不开其他<ph name="BEGIN_LINK_OSS" />开源软件<ph name="END_LINK_OSS" />。</translation>
 </translationbundle>

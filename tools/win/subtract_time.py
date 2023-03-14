@@ -6,8 +6,6 @@ This script converts two %time% compatible strings passed to it into seconds,
 subtracts them, and prints the difference. That's it. It's used by timeit.bat.
 """
 
-from __future__ import print_function
-
 import re
 import sys
 

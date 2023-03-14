@@ -70,7 +70,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.AddedPerProfileType" enum="BrowserProfileType"
-    expires_after="2023-06-25">
+    expires_after="2023-08-27">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-privacy-core@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
@@ -284,7 +284,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Count.OnProfileLoad3" units="bookmarks"
-    expires_after="2023-06-25">
+    expires_after="2023-08-27">
   <owner>supertri@chromium.org</owner>
   <owner>isherman@chromium.org</owner>
   <owner>aidanday@google.com</owner>
@@ -303,29 +303,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Bookmarks.Count.OpenInIncognito" units="bookmarks"
-    expires_after="M82">
-  <owner>twellington@google.com</owner>
-  <owner>clank-app-team@google.com</owner>
-  <component>UI&gt;Browser&gt;Bookmarks</component>
-  <summary>
-    Records the number of bookmarks which are opened using the &quot;Open in
-    incognito tab&quot; button from selection mode in the Android bookmark
-    manager.
-  </summary>
-</histogram>
-
-<histogram name="Bookmarks.Count.OpenInNewTab" units="bookmarks"
-    expires_after="M82">
-  <owner>twellington@google.com</owner>
-  <owner>clank-app-team@google.com</owner>
-  <component>UI&gt;Browser&gt;Bookmarks</component>
-  <summary>
-    Records the number of bookmarks which are opened using the &quot;Open in new
-    tab&quot; button from selection mode in the Android bookmark manager.
-  </summary>
-</histogram>
-
 <histogram name="Bookmarks.EditLocation" enum="BookmarkLaunchLocation"
     expires_after="2023-08-08">
   <owner>dfried@chromium.org</owner>
@@ -339,7 +316,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.EditTitleSource" enum="BookmarkEditSource"
-    expires_after="2023-06-25">
+    expires_after="2023-08-27">
   <owner>wylieb@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
@@ -355,14 +332,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.EntryPoint" enum="BookmarksEntryPoint"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>ianwen@chromium.org</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>How users add a new bookmark.</summary>
 </histogram>
 
 <histogram name="Bookmarks.GetResultsMatching.AnyTermApproach.Used"
-    enum="Boolean" expires_after="2023-06-18">
+    enum="Boolean" expires_after="2023-08-20">
   <owner>manukh@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
@@ -405,7 +382,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.GetResultsMatching.Terms.TermLength"
-    units="characters" expires_after="2023-06-18">
+    units="characters" expires_after="2023-08-20">
   <owner>manukh@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
@@ -720,7 +697,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.LaunchLocation" enum="BookmarkLaunchLocation"
-    expires_after="2023-06-25">
+    expires_after="2023-08-27">
   <owner>ianwen@chromium.org</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>Logs a UI location from which a bookmark is launched.</summary>
@@ -786,20 +763,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Bookmarks.OnFaviconsChangedIconURL" enum="BooleanHit"
-    expires_after="M77">
-  <owner>pkotwicz@chromium.org</owner>
-  <component>UI&gt;Browser&gt;Bookmarks</component>
-  <summary>
-    Logs how frequently BookmarkModel::OnFaviconsChanged() is called with a
-    non-empty |icon_url| to determine whether BookmarkNodes should be cached
-    based on their favicon URLs (e.g. http://www.google.com/favicon.ico) in
-    addition to their page URLs (e.g. http://www.google.com). OnFaviconChanged()
-    is expected to be called less than 10 times per user per day with a
-    non-empty |icon_url|.
-  </summary>
-</histogram>
-
 <histogram name="Bookmarks.OpenBookmarkManager.PerProfileType"
     enum="BrowserProfileType" expires_after="2023-08-08">
   <owner>roagarwal@chromium.org</owner>
@@ -830,7 +793,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.OpenBookmarkType" enum="BookmarkType"
-    expires_after="2023-06-25">
+    expires_after="2023-08-27">
   <owner>wylieb@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
@@ -841,7 +804,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Opened.TimeSinceAdded" units="days"
-    expires_after="2023-06-25">
+    expires_after="2023-08-27">
   <owner>wylieb@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
@@ -854,7 +817,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Opened.TimeSinceLastUsed" units="days"
-    expires_after="2023-06-25">
+    expires_after="2023-08-27">
   <owner>wylieb@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
@@ -868,7 +831,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.ReadingList.NumberOfItems" units="items"
-    expires_after="2023-06-25">
+    expires_after="2023-08-27">
   <owner>shaktisahu@chromium.org</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
   <component>UI&gt;Browser&gt;Mobile&gt;ReadingList</component>
@@ -879,7 +842,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.ReadingList.NumberOfReadItems" units="items"
-    expires_after="2023-06-25">
+    expires_after="2023-08-27">
   <owner>shaktisahu@chromium.org</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
   <component>UI&gt;Browser&gt;Mobile&gt;ReadingList</component>
@@ -940,7 +903,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Storage.FileSizeAtStartup2" units="KB"
-    expires_after="2023-06-25">
+    expires_after="2023-08-27">
   <owner>wylieb@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
@@ -984,7 +947,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Storage.TimeToLoadAtStartup2" units="ms"
-    expires_after="2023-06-25">
+    expires_after="2023-08-27">
   <owner>wylieb@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>

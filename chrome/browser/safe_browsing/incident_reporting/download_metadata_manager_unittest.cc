@@ -140,8 +140,7 @@ class DownloadMetadataManagerTestBase : public ::testing::Test {
   void WriteTestMetadataFileForItem(uint32_t download_id) {
     std::string data;
     ASSERT_TRUE(GetTestMetadata(download_id)->SerializeToString(&data));
-    ASSERT_EQ(static_cast<int>(data.size()),
-              base::WriteFile(GetMetadataPath(), data.data(), data.size()));
+    ASSERT_TRUE(base::WriteFile(GetMetadataPath(), data));
   }
 
   // Writes a test DownloadMetadata file for kTestDownloadId to the test profile

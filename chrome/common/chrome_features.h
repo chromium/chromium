@@ -387,6 +387,8 @@ COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kHttpsUpgrades);
 #if BUILDFLAG(IS_MAC)
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kImmersiveFullscreen);
 COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kImmersiveFullscreenTabs);
+COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kImmersiveFullscreenPWAs);
 #endif
 
@@ -906,6 +908,17 @@ enum class SearchSuggestionPrerenderImplementationType {
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<SearchSuggestionPrerenderImplementationType>
     kSearchSuggestionPrerenderImplementationTypeParam;
+// Indicates whether to make search prefetch response shareable to prerender.
+// When allowing this, prerender can only copy the cache but cannot take over
+// the ownership.
+enum class SearchPreloadShareableCacheType {
+  kEnabled,
+  kDisabled,
+};
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<SearchPreloadShareableCacheType>
+    kSearchPreloadShareableCacheTypeParam;
 
 // This is used to enable an experiment for modifying confidence cutoff of
 // prerender and preconnect for autocomplete action predictor.

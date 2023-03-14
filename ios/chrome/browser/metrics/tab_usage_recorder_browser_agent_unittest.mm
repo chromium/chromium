@@ -238,44 +238,12 @@ TEST_F(TabUsageRecorderBrowserAgentTest, TestSwitchedModeTabs) {
       tab_usage_recorder::EVICTED, 2);
 }
 
-TEST_F(TabUsageRecorderBrowserAgentTest, TestEvictedTabReloadTime) {
-  web::FakeWebState* mock_tab_a = InsertFakeWebState(kURL, IN_MEMORY);
-  web::FakeWebState* mock_tab_b = InsertFakeWebState(kURL, NOT_IN_MEMORY);
-  tab_usage_recorder_->RecordTabSwitched(mock_tab_a, mock_tab_b);
-  tab_usage_recorder_->RecordPageLoadStart(mock_tab_b);
-  tab_usage_recorder_->RecordPageLoadDone(mock_tab_b, true);
-  histogram_tester_.ExpectTotalCount(tab_usage_recorder::kEvictedTabReloadTime,
-                                     1);
-}
-
-TEST_F(TabUsageRecorderBrowserAgentTest, TestEvictedTabReloadSuccess) {
-  web::FakeWebState* mock_tab_a = InsertFakeWebState(kURL, IN_MEMORY);
-  web::FakeWebState* mock_tab_b = InsertFakeWebState(kURL, NOT_IN_MEMORY);
-  tab_usage_recorder_->RecordTabSwitched(mock_tab_a, mock_tab_b);
-  tab_usage_recorder_->RecordPageLoadStart(mock_tab_b);
-  tab_usage_recorder_->RecordPageLoadDone(mock_tab_b, true);
-  histogram_tester_.ExpectUniqueSample(
-      tab_usage_recorder::kEvictedTabReloadSuccessRate,
-      tab_usage_recorder::LOAD_SUCCESS, 1);
-}
-
-TEST_F(TabUsageRecorderBrowserAgentTest, TestEvictedTabReloadFailure) {
-  web::FakeWebState* mock_tab_a = InsertFakeWebState(kURL, IN_MEMORY);
-  web::FakeWebState* mock_tab_b = InsertFakeWebState(kURL, NOT_IN_MEMORY);
-  tab_usage_recorder_->RecordTabSwitched(mock_tab_a, mock_tab_b);
-  tab_usage_recorder_->RecordPageLoadStart(mock_tab_b);
-  tab_usage_recorder_->RecordPageLoadDone(mock_tab_b, false);
-  histogram_tester_.ExpectUniqueSample(
-      tab_usage_recorder::kEvictedTabReloadSuccessRate,
-      tab_usage_recorder::LOAD_FAILURE, 1);
-}
-
 TEST_F(TabUsageRecorderBrowserAgentTest, TestUserWaitedForEvictedTabLoad) {
   web::FakeWebState* mock_tab_a = InsertFakeWebState(kURL, IN_MEMORY);
   web::FakeWebState* mock_tab_b = InsertFakeWebState(kURL, NOT_IN_MEMORY);
   tab_usage_recorder_->RecordTabSwitched(mock_tab_a, mock_tab_b);
   tab_usage_recorder_->RecordPageLoadStart(mock_tab_b);
-  tab_usage_recorder_->RecordPageLoadDone(mock_tab_b, true);
+  tab_usage_recorder_->RecordPageLoadDone(mock_tab_b);
   tab_usage_recorder_->RecordTabSwitched(mock_tab_b, mock_tab_a);
   histogram_tester_.ExpectUniqueSample(
       tab_usage_recorder::kDidUserWaitForEvictedTabReload,

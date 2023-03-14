@@ -17,14 +17,12 @@
       "name": "LayoutNGBlockFlow DIV id='container-absolute-grandchildren-not-contained' class='overflow'",
       "position": [2, 6],
       "bounds": [85, 136],
-      "contentsOpaqueForText": true,
       "transform": 2
     },
     {
       "name": "HorizontalScrollbar",
       "position": [10, 97],
-      "bounds": [104, 257],
-      "contentsOpaqueForText": true
+      "bounds": [104, 257]
     },
     {
       "name": "VerticalScrollbar",
@@ -36,14 +34,12 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='positioned-absolute-grandchildren-not-contained' class='positionAbsolute positioned'",
       "position": [35, 10],
-      "bounds": [199, 105],
-      "contentsOpaqueForText": true
+      "bounds": [199, 105]
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-absolute-grandchildren-not-contained' class='scrolled'",
       "position": [6, 6],
       "bounds": [75, 136],
-      "contentsOpaqueForText": true,
       "transform": 2
     },
     {
@@ -70,14 +66,12 @@
     {
       "name": "Scroll corner of LayoutNGBlockFlow (positioned) DIV id='container-absolute-grandchildren' class='positionAbsolute overflow'",
       "position": [217, 10],
-      "bounds": [137, 104],
-      "contentsOpaqueForText": true
+      "bounds": [137, 104]
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='container-absolute-grandchildren' class='positionAbsolute overflow'",
       "position": [2, 6],
       "bounds": [105, 136],
-      "contentsOpaqueForText": true,
       "transform": 4
     },
     {
@@ -91,7 +85,6 @@
       "name": "HorizontalScrollbar",
       "position": [2, 87],
       "bounds": [100, 15],
-      "contentsOpaqueForText": true,
       "transform": 5
     },
     {
@@ -104,14 +97,12 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='positioned-absolute-not-contained' class='positionAbsolute positioned'",
       "position": [275, 10],
-      "bounds": [199, 105],
-      "contentsOpaqueForText": true
+      "bounds": [199, 105]
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-absolute-not-contained' class='scrolled'",
       "position": [6, 6],
       "bounds": [75, 136],
-      "contentsOpaqueForText": true,
       "transform": 6
     },
     {
@@ -125,14 +116,12 @@
       "name": "LayoutNGBlockFlow DIV id='container-absolute-sibling-grandchildren-not-contained' class='overflow'",
       "position": [2, 6],
       "bounds": [85, 136],
-      "contentsOpaqueForText": true,
       "transform": 8
     },
     {
       "name": "HorizontalScrollbar",
       "position": [2, 87],
       "bounds": [100, 15],
-      "contentsOpaqueForText": true,
       "transform": 7
     },
     {
@@ -181,14 +170,12 @@
     {
       "name": "Scroll corner of LayoutNGBlockFlow (positioned) DIV id='container-absolute-sibling-grandchildren' class='positionAbsolute overflow'",
       "position": [97, 130],
-      "bounds": [137, 104],
-      "contentsOpaqueForText": true
+      "bounds": [137, 104]
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='container-absolute-sibling-grandchildren' class='positionAbsolute overflow'",
       "position": [2, 6],
       "bounds": [105, 136],
-      "contentsOpaqueForText": true,
       "transform": 10
     },
     {
@@ -201,8 +188,7 @@
     {
       "name": "HorizontalScrollbar",
       "position": [130, 217],
-      "bounds": [224, 137],
-      "contentsOpaqueForText": true
+      "bounds": [224, 137]
     },
     {
       "name": "VerticalScrollbar",
@@ -214,14 +200,12 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='positioned-absolute-sibling-not-contained' class='positionAbsolute positioned'",
       "position": [155, 130],
-      "bounds": [199, 105],
-      "contentsOpaqueForText": true
+      "bounds": [199, 105]
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-absolute-sibling-not-contained' class='scrolled'",
       "position": [6, 34],
       "bounds": [75, 80],
-      "contentsOpaqueForText": true,
       "transform": 12
     },
     {
@@ -248,14 +232,12 @@
     {
       "name": "Scroll corner of LayoutNGBlockFlow (positioned) DIV id='container-absolute-sibling' class='positionAbsolute overflow'",
       "position": [337, 130],
-      "bounds": [137, 104],
-      "contentsOpaqueForText": true
+      "bounds": [137, 104]
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='positioned-absolute-sibling' class='positionAbsolute positioned'",
       "position": [6, 34],
       "bounds": [101, 80],
-      "contentsOpaqueForText": true,
       "transform": 14
     },
     {
@@ -282,14 +264,12 @@
     {
       "name": "Scroll corner of LayoutNGBlockFlow (positioned) DIV id='container-absolute' class='positionAbsolute overflow'",
       "position": [370, 217],
-      "bounds": [104, 137],
-      "contentsOpaqueForText": true
+      "bounds": [104, 137]
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='positioned-absolute' class='positionAbsolute positioned'",
       "position": [6, 34],
       "bounds": [101, 80],
-      "contentsOpaqueForText": true,
       "transform": 16
     },
     {
@@ -303,7 +283,6 @@
       "name": "HorizontalScrollbar",
       "position": [2, 87],
       "bounds": [100, 15],
-      "contentsOpaqueForText": true,
       "transform": 17
     },
     {
@@ -317,7 +296,6 @@
       "name": "LayoutNGBlockFlow (positioned) DIV id='container-fixed-sibling-grandchildren' class='positionAbsolute overflow'",
       "position": [2, 6],
       "bounds": [85, 136],
-      "contentsOpaqueForText": true,
       "transform": 18
     },
     {
@@ -346,7 +324,6 @@
       "name": "HorizontalScrollbar",
       "position": [2, 87],
       "bounds": [100, 15],
-      "contentsOpaqueForText": true,
       "transform": 20
     },
     {
@@ -367,7 +344,6 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-fixed-sibling' class='scrolled'",
       "position": [6, 34],
       "bounds": [75, 80],
-      "contentsOpaqueForText": true,
       "transform": 22
     },
     {
@@ -381,7 +357,6 @@
       "name": "HorizontalScrollbar",
       "position": [2, 87],
       "bounds": [100, 15],
-      "contentsOpaqueForText": true,
       "transform": 23
     },
     {
@@ -395,7 +370,6 @@
       "name": "LayoutNGBlockFlow (positioned) DIV id='container-fixed-grandchildren' class='positionAbsolute overflow'",
       "position": [2, 6],
       "bounds": [85, 136],
-      "contentsOpaqueForText": true,
       "transform": 24
     },
     {
@@ -424,7 +398,6 @@
       "name": "HorizontalScrollbar",
       "position": [2, 87],
       "bounds": [100, 15],
-      "contentsOpaqueForText": true,
       "transform": 26
     },
     {
@@ -445,7 +418,6 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-fixed' class='scrolled'",
       "position": [6, 34],
       "bounds": [75, 80],
-      "contentsOpaqueForText": true,
       "transform": 28
     },
     {
@@ -494,63 +466,54 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-absolute-sibling-grandchildren-not-contained' class='scrolled onTop'",
       "position": [6, 6],
       "bounds": [75, 136],
-      "contentsOpaqueForText": true,
       "transform": 8
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-absolute-sibling-grandchildren' class='scrolled onTop'",
       "position": [6, 6],
       "bounds": [75, 136],
-      "contentsOpaqueForText": true,
       "transform": 10
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-absolute-sibling-not-contained' class='scrolled onTop'",
       "position": [6, 6],
       "bounds": [75, 136],
-      "contentsOpaqueForText": true,
       "transform": 12
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-absolute-sibling' class='scrolled onTop'",
       "position": [6, 6],
       "bounds": [75, 136],
-      "contentsOpaqueForText": true,
       "transform": 14
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-absolute' class='scrolled onTop'",
       "position": [6, 6],
       "bounds": [75, 136],
-      "contentsOpaqueForText": true,
       "transform": 16
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-fixed-sibling-grandchildren' class='scrolled onTop'",
       "position": [6, 6],
       "bounds": [75, 136],
-      "contentsOpaqueForText": true,
       "transform": 18
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-fixed-sibling' class='scrolled onTop'",
       "position": [6, 6],
       "bounds": [75, 136],
-      "contentsOpaqueForText": true,
       "transform": 22
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-fixed-grandchildren' class='scrolled onTop'",
       "position": [6, 6],
       "bounds": [75, 136],
-      "contentsOpaqueForText": true,
       "transform": 24
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-fixed' class='scrolled onTop'",
       "position": [6, 6],
       "bounds": [75, 136],
-      "contentsOpaqueForText": true,
       "transform": 28
     },
     {

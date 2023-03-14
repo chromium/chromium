@@ -17,7 +17,7 @@ source_set("gestures") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/web/public/ui",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]

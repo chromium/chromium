@@ -35,11 +35,13 @@ public class ReadingListBackPressHandler implements BackPressHandler, Destroyabl
     }
 
     @Override
-    public void handleBackPress() {
+    public @BackPressResult int handleBackPress() {
         Tab tab = mActivityTabProvider.get();
+        int result = shouldInterceptBackPress() ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
         ReadingListUtils.showReadingList(tab.isIncognito());
         WebContents webContents = tab.getWebContents();
         if (webContents != null) webContents.dispatchBeforeUnload(false);
+        return result;
     }
 
     @Override
@@ -53,8 +55,11 @@ public class ReadingListBackPressHandler implements BackPressHandler, Destroyabl
     }
 
     private void onBackPressStateChanged() {
+        mBackPressChangedSupplier.set(shouldInterceptBackPress());
+    }
+
+    private boolean shouldInterceptBackPress() {
         Tab tab = mActivityTabProvider.get();
-        mBackPressChangedSupplier.set(
-                tab != null && tab.getLaunchType() == TabLaunchType.FROM_READING_LIST);
+        return tab != null && tab.getLaunchType() == TabLaunchType.FROM_READING_LIST;
     }
 }

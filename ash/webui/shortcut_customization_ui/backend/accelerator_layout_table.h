@@ -120,13 +120,6 @@ enum NonConfigurableActions {
   kAmbientGoToEndOfLine,
   kAmbientMoveStartOfPreviousWord,
   kAmbientMoveToEndOfWord,
-  // Six-pack-key action ids:
-  kSixPackDelete,
-  kSixPackHome,
-  kSixPackPageUp,
-  kSixPackEnd,
-  kSixPackPageDown,
-  kSixPackInsert,
 };
 
 // Used to separate text accelerator parts in the UI e.g ctrl + 1.
@@ -211,6 +204,8 @@ using NonConfigurableActionsMap =
     std::map<NonConfigurableActions, NonConfigurableAcceleratorDetails>;
 
 const NonConfigurableActionsMap& GetNonConfigurableActionsMap();
+
+std::u16string GetKeyDisplay(ui::KeyboardCode key_code);
 
 // A fixed array of accelerator layouts used for categorization and styling of
 // accelerator actions. The ordering of the array is important and is used
@@ -612,38 +607,30 @@ constexpr AcceleratorLayoutDetails kAcceleratorLayouts[] = {
      mojom::AcceleratorSubcategory::kPages,
      /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
      mojom::AcceleratorSource::kAmbient},
-    // TODO(longbowei): Re-enable this shortcut. This conflicts with
-    // the 6-pack key.
-    //  {NonConfigurableActions::kBrowserPageUp,
-    //  IDS_BROWSER_ACCELERATOR_DESCRIPTION_PAGE_UP,
-    //  mojom::AcceleratorCategory::kBrowser,
-    //  mojom::AcceleratorSubcategory::kPages,
-    //  /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
-    //  mojom::AcceleratorSource::kAmbient},
-    // TODO(longbowei): Re-enable this shortcut. This conflicts with
-    // the 6-pack key.
-    //  {NonConfigurableActions::kBrowserPageDown,
-    //  IDS_BROWSER_ACCELERATOR_DESCRIPTION_PAGE_DOWN,
-    //  mojom::AcceleratorCategory::kBrowser,
-    //  mojom::AcceleratorSubcategory::kPages,
-    //  /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
-    //  mojom::AcceleratorSource::kAmbient},
-    // TODO(jimmyxgong): Re-enable this shortcut. This conflicts with
-    // the 6-pack key Home.
-    // {NonConfigurableActions::kBrowserTopPage,
-    //  IDS_BROWSER_ACCELERATOR_DESCRIPTION_TOP_PAGE,
-    //  mojom::AcceleratorCategory::kBrowser,
-    //  mojom::AcceleratorSubcategory::kPages,
-    //  /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
-    //  mojom::AcceleratorSource::kAmbient},
-    // TODO(jimmyxgong): Re-enable this shortcut. This conflicts with
-    // the 6-pack key End.
-    // {NonConfigurableActions::kBrowserBottomPage,
-    //  IDS_BROWSER_ACCELERATOR_DESCRIPTION_BOTTOM_PAGE,
-    //  mojom::AcceleratorCategory::kBrowser,
-    //  mojom::AcceleratorSubcategory::kPages,
-    //  /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
-    //  mojom::AcceleratorSource::kAmbient},
+    {NonConfigurableActions::kBrowserPageUp,
+     IDS_BROWSER_ACCELERATOR_DESCRIPTION_PAGE_UP,
+     mojom::AcceleratorCategory::kBrowser,
+     mojom::AcceleratorSubcategory::kPages,
+     /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
+     mojom::AcceleratorSource::kAmbient},
+    {NonConfigurableActions::kBrowserPageDown,
+     IDS_BROWSER_ACCELERATOR_DESCRIPTION_PAGE_DOWN,
+     mojom::AcceleratorCategory::kBrowser,
+     mojom::AcceleratorSubcategory::kPages,
+     /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
+     mojom::AcceleratorSource::kAmbient},
+    {NonConfigurableActions::kBrowserTopPage,
+     IDS_BROWSER_ACCELERATOR_DESCRIPTION_TOP_PAGE,
+     mojom::AcceleratorCategory::kBrowser,
+     mojom::AcceleratorSubcategory::kPages,
+     /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
+     mojom::AcceleratorSource::kAmbient},
+    {NonConfigurableActions::kBrowserBottomPage,
+     IDS_BROWSER_ACCELERATOR_DESCRIPTION_BOTTOM_PAGE,
+     mojom::AcceleratorCategory::kBrowser,
+     mojom::AcceleratorSubcategory::kPages,
+     /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
+     mojom::AcceleratorSource::kAmbient},
     {NonConfigurableActions::kBrowserZoomPlus,
      IDS_BROWSER_ACCELERATOR_DESCRIPTION_ZOOM_PLUS,
      mojom::AcceleratorCategory::kBrowser,
@@ -834,16 +821,14 @@ constexpr AcceleratorLayoutDetails kAcceleratorLayouts[] = {
      mojom::AcceleratorSubcategory::kTextNavigation,
      /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
      mojom::AcceleratorSource::kAmbient},
-    // TODO(longbowei): Re-enable this shortcut. This conflicts with
-    // the 6-pack key.
+    // TODO(longbowei): Re-enable these shortcuts. These conflict with
+    // the kBrowserTopPage and kBrowserBottomPage.
     // {NonConfigurableActions::kAmbientGoToBeginningOfLine,
     //  IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_BEGINNING_OF_LINE,
     //  mojom::AcceleratorCategory::kText,
     //  mojom::AcceleratorSubcategory::kTextNavigation,
     //  /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
     //  mojom::AcceleratorSource::kAmbient},
-    // TODO(longbowei): Re-enable this shortcut. This conflicts with
-    // the 6-pack key.
     // {NonConfigurableActions::kAmbientGoToEndOfLine,
     //  IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_END_OF_LINE,
     //  mojom::AcceleratorCategory::kText,
@@ -949,14 +934,12 @@ constexpr AcceleratorLayoutDetails kAcceleratorLayouts[] = {
      mojom::AcceleratorSubcategory::kTextEditing,
      /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
      mojom::AcceleratorSource::kAmbient},
-    // TODO(longbowei): Re-enable this shortcut. This conflicts with
-    // the 6-pack key.
-    // {NonConfigurableActions::kAmbientDeleteNextWord,
-    //  IDS_AMBIENT_ACCELERATOR_DESCRIPTION_DELETE_NEXT_WORD,
-    //  mojom::AcceleratorCategory::kText,
-    //  mojom::AcceleratorSubcategory::kTextEditing,
-    //  /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
-    //  mojom::AcceleratorSource::kAmbient},
+    {NonConfigurableActions::kAmbientDeleteNextWord,
+     IDS_AMBIENT_ACCELERATOR_DESCRIPTION_DELETE_NEXT_WORD,
+     mojom::AcceleratorCategory::kText,
+     mojom::AcceleratorSubcategory::kTextEditing,
+     /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
+     mojom::AcceleratorSource::kAmbient},
 
     // Windows and Desks
     {CYCLE_FORWARD_MRU, IDS_ASH_ACCELERATOR_DESCRIPTION_CYCLE_FORWARD_MRU,
@@ -1172,44 +1155,6 @@ constexpr AcceleratorLayoutDetails kAcceleratorLayouts[] = {
      mojom::AcceleratorCategory::kAccessibility,
      mojom::AcceleratorSubcategory::kAccessibilityNavigation,
      /*locked=*/true, mojom::AcceleratorLayoutStyle::kText,
-     mojom::AcceleratorSource::kAmbient},
-
-    // Event Rewriter
-    {NonConfigurableActions::kSixPackDelete,
-     IDS_EVENT_REWRITER_ACCELERATOR_SIX_PACK_DELETE_DESCRIPTION,
-     mojom::AcceleratorCategory::kEventRewriter,
-     mojom::AcceleratorSubcategory::kSixPackKeys,
-     /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
-     mojom::AcceleratorSource::kAmbient},
-    {NonConfigurableActions::kSixPackHome,
-     IDS_EVENT_REWRITER_ACCELERATOR_SIX_PACK_HOME_DESCRIPTION,
-     mojom::AcceleratorCategory::kEventRewriter,
-     mojom::AcceleratorSubcategory::kSixPackKeys,
-     /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
-     mojom::AcceleratorSource::kAmbient},
-    {NonConfigurableActions::kSixPackPageUp,
-     IDS_EVENT_REWRITER_ACCELERATOR_SIX_PACK_PAGE_UP_DESCRIPTION,
-     mojom::AcceleratorCategory::kEventRewriter,
-     mojom::AcceleratorSubcategory::kSixPackKeys,
-     /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
-     mojom::AcceleratorSource::kAmbient},
-    {NonConfigurableActions::kSixPackEnd,
-     IDS_EVENT_REWRITER_ACCELERATOR_SIX_PACK_END_DESCRIPTION,
-     mojom::AcceleratorCategory::kEventRewriter,
-     mojom::AcceleratorSubcategory::kSixPackKeys,
-     /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
-     mojom::AcceleratorSource::kAmbient},
-    {NonConfigurableActions::kSixPackPageDown,
-     IDS_EVENT_REWRITER_ACCELERATOR_SIX_PACK_PAGE_DOWN_DESCRIPTION,
-     mojom::AcceleratorCategory::kEventRewriter,
-     mojom::AcceleratorSubcategory::kSixPackKeys,
-     /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
-     mojom::AcceleratorSource::kAmbient},
-    {NonConfigurableActions::kSixPackInsert,
-     IDS_EVENT_REWRITER_ACCELERATOR_SIX_PACK_INSERT_DESCRIPTION,
-     mojom::AcceleratorCategory::kEventRewriter,
-     mojom::AcceleratorSubcategory::kSixPackKeys,
-     /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
      mojom::AcceleratorSource::kAmbient},
 };
 }  // namespace ash

@@ -16,6 +16,7 @@
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/rect.h"
@@ -81,6 +82,9 @@ class GifRecordingTest : public AshTestBase {
         CaptureModeSessionTestApi().GetCaptureModeBarView();
     LeftClickOn(bar_view->settings_button());
   }
+
+ protected:
+  base::HistogramTester histogram_tester_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -366,17 +370,42 @@ TEST_F(GifRecordingTest, RecordingTypeIsRespected) {
   // factory and should not be doing any audio recording.
   controller->EnableAudioRecording(true);
   StartVideoRecordingImmediately();
-  WaitForRecordingToStart();
+
+  // Test that the configuration histogram was reported correctly, and that the
+  // audio histogram was never reported.
+  histogram_tester_.ExpectUniqueSample(
+      "Ash.CaptureModeController.CaptureConfiguration.ClamshellMode",
+      CaptureModeConfiguration::kRegionGifRecording,
+      /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectTotalCount(
+      "Ash.CaptureModeController.CaptureAudioOnMetric.ClamshellMode",
+      /*expected_count=*/0);
+
   EXPECT_TRUE(controller->is_recording_in_progress());
   auto* test_delegate =
       static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
   CaptureModeTestApi().FlushRecordingServiceForTesting();
   EXPECT_FALSE(test_delegate->IsDoingAudioRecording());
+
+  // Record for one second so that we can test the recording length histogram.
+  WaitForSeconds(1);
   controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
 
   // The resulting file should have a ".gif" extension.
   const auto file = WaitForCaptureFileToBeSaved();
   EXPECT_TRUE(file.MatchesExtension(".gif"));
+
+  histogram_tester_.ExpectUniqueSample(
+      "Ash.CaptureModeController.GIFRecordingLength.ClamshellMode",
+      /*sample=*/1,  // 1 second.
+      /*expected_bucket_count=*/1);
+
+  // Since getting the file size is an async operation, we have to run a loop
+  // until that task the records the file size is done.
+  base::RunLoop().RunUntilIdle();
+  histogram_tester_.ExpectTotalCount(
+      "Ash.CaptureModeController.GIFRecordingFileSize.ClamshellMode",
+      /*expected_count=*/1);
 }
 
 class ProjectorGifRecordingTest : public GifRecordingTest {

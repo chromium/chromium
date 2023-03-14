@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -38,7 +39,7 @@
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/device_reauth/mock_biometric_authenticator.h"
+#include "components/device_reauth/mock_device_authenticator.h"
 #include "components/password_manager/content/browser/password_manager_log_router_factory.h"
 #include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
@@ -160,13 +161,13 @@ class MockPasswordManagerClient : public ChromePasswordManagerClient {
     return &mock_password_feature_manager_;
   }
 
-  scoped_refptr<device_reauth::BiometricAuthenticator>
-  GetBiometricAuthenticator() override {
+  scoped_refptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator()
+      override {
     return biometric_authenticator_;
   }
 
-  void SetBiometricAuthenticator(
-      scoped_refptr<device_reauth::MockBiometricAuthenticator>
+  void SetDeviceAuthenticator(
+      scoped_refptr<device_reauth::MockDeviceAuthenticator>
           biometric_authenticator) {
     biometric_authenticator_ = std::move(biometric_authenticator);
   }
@@ -176,7 +177,7 @@ class MockPasswordManagerClient : public ChromePasswordManagerClient {
       : ChromePasswordManagerClient(web_contents, nullptr) {}
 
   password_manager::MockPasswordFeatureManager mock_password_feature_manager_;
-  scoped_refptr<device_reauth::MockBiometricAuthenticator>
+  scoped_refptr<device_reauth::MockDeviceAuthenticator>
       biometric_authenticator_ = nullptr;
 };
 
@@ -317,7 +318,7 @@ class PasswordsPrivateDelegateImplTest : public WebAppTest {
   scoped_refptr<TestPasswordStore> profile_store_;
   scoped_refptr<TestPasswordStore> account_store_;
   raw_ptr<ui::TestClipboard> test_clipboard_;
-  scoped_refptr<device_reauth::MockBiometricAuthenticator>
+  scoped_refptr<device_reauth::MockDeviceAuthenticator>
       biometric_authenticator_;
 
  private:
@@ -334,7 +335,7 @@ void PasswordsPrivateDelegateImplTest::SetUp() {
   account_store_ = CreateAndUseTestAccountPasswordStore(profile());
   test_clipboard_ = ui::TestClipboard::CreateForCurrentThread();
   biometric_authenticator_ =
-      base::MakeRefCounted<device_reauth::MockBiometricAuthenticator>();
+      base::MakeRefCounted<device_reauth::MockDeviceAuthenticator>();
   AffiliationServiceFactory::GetInstance()->SetTestingSubclassFactoryAndUse(
       profile(), base::BindRepeating([](content::BrowserContext*) {
         return std::make_unique<password_manager::FakeAffiliationService>();
@@ -1205,15 +1206,11 @@ TEST_F(PasswordsPrivateDelegateImplTest,
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
-  client->SetBiometricAuthenticator(biometric_authenticator_);
+  client->SetDeviceAuthenticator(biometric_authenticator_);
   profile()->GetPrefs()->SetBoolean(
       password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
-  EXPECT_CALL(
-      *biometric_authenticator_.get(),
-      AuthenticateWithMessage(
-          device_reauth::BiometricAuthRequester::kPasswordsInSettings, _, _))
-      .WillOnce(testing::WithArgs<2>(
-          [](auto callback) { std::move(callback).Run(/*successful=*/true); }));
+  EXPECT_CALL(*biometric_authenticator_.get(), AuthenticateWithMessage)
+      .WillOnce(base::test::RunOnceCallback<1>(/*successful=*/true));
   auto delegate = CreateDelegate();
   delegate->SwitchBiometricAuthBeforeFillingState(web_contents.get());
   // Expects that the switch value will change.
@@ -1231,7 +1228,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
-  client->SetBiometricAuthenticator(biometric_authenticator_);
+  client->SetDeviceAuthenticator(biometric_authenticator_);
 
   auto delegate = CreateDelegate();
   EXPECT_CALL(*biometric_authenticator_.get(), AuthenticateWithMessage);

@@ -58,7 +58,7 @@ IMPL_FILE_TEMPLATE = """\
 // Generated from gen_events.py. DO NOT EDIT!
 // source: structured.xml
 
-#include "components/metrics/structured/structured_events.h"
+#include "components/metrics/structured/{file.rootname}.h"
 
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"

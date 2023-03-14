@@ -69,7 +69,7 @@ bool ReadCommandWithTimeout(Socket* socket,
   }
 
   StringPiece port_str(command_buffer, kPortStringSize);
-  if (!StringToInt(port_str, port_out)) {
+  if (!base::StringToInt(port_str, port_out)) {
     LOG(ERROR) << "Could not parse the command port string: "
                << port_str;
     return false;
@@ -78,7 +78,7 @@ bool ReadCommandWithTimeout(Socket* socket,
   StringPiece command_type_str(
       &command_buffer[kPortStringSize + 1], kCommandTypeStringSize);
   int command_type;
-  if (!StringToInt(command_type_str, &command_type)) {
+  if (!base::StringToInt(command_type_str, &command_type)) {
     LOG(ERROR) << "Could not parse the command type string: "
                << command_type_str;
     return false;

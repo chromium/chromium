@@ -33,9 +33,10 @@ export function getInputMethodSettings(
   }
   const settingsMap: SettingsMap = {
     // NOTE: Please group by SettingsType, and keep entries sorted
-    // alphabetically
-    // by ID within each group, just for readability.
+    // alphabetically by ID within each group, just for readability.
 
+    // The values here should be kept in sync with IsAutocorrectSupported in
+    // chrome/browser/ash/input_method/input_method_settings.cc
     // LATIN_SETTINGS
     'xkb:be::fra': [SettingsType.LATIN_SETTINGS],
     'xkb:be::ger': [SettingsType.LATIN_SETTINGS],

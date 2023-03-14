@@ -36,13 +36,17 @@ bool MainThreadWebSchedulingTaskQueueImpl::WebSchedulingTaskRunner::
 
 bool MainThreadWebSchedulingTaskQueueImpl::WebSchedulingTaskRunner::
     RunsTasksInCurrentSequence() const {
-  DCHECK_EQ(immediate_task_runner_->RunsTasksInCurrentSequence(),
-            delayed_task_runner_->RunsTasksInCurrentSequence());
+  // `delayed_task_runner_` will be null for continuation task queues.
+  DCHECK(!delayed_task_runner_ ||
+         immediate_task_runner_->RunsTasksInCurrentSequence() ==
+             delayed_task_runner_->RunsTasksInCurrentSequence());
   return immediate_task_runner_->RunsTasksInCurrentSequence();
 }
 
 base::SingleThreadTaskRunner* MainThreadWebSchedulingTaskQueueImpl::
     WebSchedulingTaskRunner::GetTaskRunnerForDelay(base::TimeDelta delay) {
+  // `delayed_task_runner_` will be null for continuation task queues.
+  DCHECK(delayed_task_runner_ || !delay.is_positive());
   return delay.is_positive() ? delayed_task_runner_.get()
                              : immediate_task_runner_.get();
 }
@@ -53,8 +57,9 @@ MainThreadWebSchedulingTaskQueueImpl::MainThreadWebSchedulingTaskQueueImpl(
     : task_runner_(base::MakeRefCounted<WebSchedulingTaskRunner>(
           immediate_task_queue->CreateTaskRunner(
               TaskType::kWebSchedulingPostedTask),
-          delayed_task_queue->CreateTaskRunner(
-              TaskType::kWebSchedulingPostedTask))),
+          delayed_task_queue ? delayed_task_queue->CreateTaskRunner(
+                                   TaskType::kWebSchedulingPostedTask)
+                             : nullptr)),
       immediate_task_queue_(std::move(immediate_task_queue)),
       delayed_task_queue_(std::move(delayed_task_queue)) {}
 

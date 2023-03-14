@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/history_clusters/history_clusters_metrics_logger.h"
+#include "components/image_service/mojom/image_service.mojom-forward.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
@@ -16,6 +17,10 @@
 
 namespace history_clusters {
 class HistoryClustersHandler;
+}
+
+namespace image_service {
+class ImageServiceHandler;
 }
 
 class HistoryClustersSidePanelUI : public ui::MojoBubbleWebUIController,
@@ -31,6 +36,9 @@ class HistoryClustersSidePanelUI : public ui::MojoBubbleWebUIController,
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(mojo::PendingReceiver<history_clusters::mojom::PageHandler>
                          pending_page_handler);
+  void BindInterface(
+      mojo::PendingReceiver<image_service::mojom::ImageServiceHandler>
+          pending_page_handler);
 
   // Gets a weak pointer to this object.
   base::WeakPtr<HistoryClustersSidePanelUI> GetWeakPtr();
@@ -56,6 +64,7 @@ class HistoryClustersSidePanelUI : public ui::MojoBubbleWebUIController,
  private:
   std::unique_ptr<history_clusters::HistoryClustersHandler>
       history_clusters_handler_;
+  std::unique_ptr<image_service::ImageServiceHandler> image_service_handler_;
 
   // The initial state that we have to cache here until the page finishes its
   // navigation to the WebUI host.

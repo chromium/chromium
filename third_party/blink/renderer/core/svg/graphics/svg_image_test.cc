@@ -672,6 +672,14 @@ TEST_F(SVGImageSimTest, ClippedStaticImageSpriteSheetCulling) {
   Compositor().BeginFrame();
   record = GetDocument().View()->GetPaintRecord();
   EXPECT_EQ(3U, CountPaintOpType(record, cc::PaintOpType::DrawOval));
+
+  // Adjust the div's position to be fractional and ensure only three blue
+  // circles are still recorded.
+  div_element->setAttribute(html_names::kStyleAttr,
+                            "margin-left: 0.5px; height: 200px;");
+  Compositor().BeginFrame();
+  record = GetDocument().View()->GetPaintRecord();
+  EXPECT_EQ(3U, CountPaintOpType(record, cc::PaintOpType::DrawOval));
 }
 
 // Similar to `SpriteSheetCulling` but using a regular scrolling interest rect
@@ -749,12 +757,24 @@ TEST_F(SVGImageSimTest, SpriteSheetNonDrawingCulling) {
       "    height: 100px;"
       "    background-image: url(\"data:image/svg+xml,"
       "      <svg xmlns='http://www.w3.org/2000/svg' width='100' height='300'>"
+      "        <g mask='url(does_not_exist)'>"
+      "          <circle cx='25' cy='50' r='10' fill='red'/>"
+      "        </g>"
       "        <g transform='translate(50, 50)'>"
       "          <circle cx='0' cy='0' r='10' fill='red'/>"
       "        </g>"
+      "        <g filter='blur(1px)'>"
+      "          <circle cx='75' cy='50' r='10' fill='red'/>"
+      "        </g>"
       "        <circle cx='50' cy='150' r='10' fill='green'/>"
+      "        <g mask='url(does_not_exist)'>"
+      "          <circle cx='25' cy='250' r='10' fill='red'/>"
+      "        </g>"
       "        <g transform='translate(50, 250)'>"
       "          <circle cx='0' cy='0' r='10' fill='red'/>"
+      "        </g>"
+      "        <g filter='blur(1px)'>"
+      "          <circle cx='75' cy='250' r='10' fill='red'/>"
       "        </g>"
       "      </svg>\");"
       "    background-position-y: -100px;"

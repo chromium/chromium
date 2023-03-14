@@ -14,15 +14,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ash/login/ui/captive_portal_window_proxy.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
-
-namespace base {
-class Value;
-}
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -44,8 +42,8 @@ class NetworkStateInformer : public NetworkStateHandlerObserver,
 
   class NetworkStateInformerObserver {
    public:
-    NetworkStateInformerObserver() {}
-    virtual ~NetworkStateInformerObserver() {}
+    NetworkStateInformerObserver() = default;
+    virtual ~NetworkStateInformerObserver() = default;
 
     virtual void UpdateState(NetworkError::ErrorReason reason) = 0;
     virtual void OnNetworkReady() {}
@@ -87,7 +85,7 @@ class NetworkStateInformer : public NetworkStateHandlerObserver,
 
   State state_;
   std::string network_path_;
-  base::Value proxy_config_;
+  absl::optional<base::Value::Dict> proxy_config_;
 
   base::ObserverList<NetworkStateInformerObserver>::Unchecked observers_;
 

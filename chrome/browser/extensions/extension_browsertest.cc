@@ -79,7 +79,6 @@
 #include "extensions/browser/updater/extension_cache_fake.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_set.h"
-#include "extensions/common/file_test_util.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
@@ -277,8 +276,7 @@ bool ModifyExtensionForServiceWorker(const base::FilePath& extension_root,
   }
   std::string generated_sw_script_content = base::StringPrintf(
       "importScripts(%s);", base::JoinString(script_filenames, ",").c_str());
-  if (!file_test_util::WriteFile(combined_script_filepath,
-                                 generated_sw_script_content)) {
+  if (!base::WriteFile(combined_script_filepath, generated_sw_script_content)) {
     ADD_FAILURE() << "Could not write combined Service Worker script to: "
                   << combined_script_filepath.value();
     return false;

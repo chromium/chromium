@@ -154,9 +154,13 @@
     out_sources = []
     repeated1 = []
     repeated2 = []
+    repeated3 = []
+    repeated4 = []
     out_sources_basenames = set()
     repeated1_basenames = set()
     repeated2_basenames = set()
+    repeated3_basenames = set()
+    repeated4_basenames = set()
     for s in sources:
       basename = os.path.basename(s)
       ext = os.path.splitext(basename)
@@ -164,9 +168,17 @@
         out_sources.append(s)
         continue
       if basename in out_sources_basenames:
-        if basename in repeated1_basenames:
-          # If there is a basename that appears more than 3 times,
+        if basename in repeated3_basenames:
+          # If there is a basename that appears more than 5 times,
           # we need to create more GN targets for it
+          assert(s not in repeated4_basenames)
+          repeated4_basenames.add(basename)
+          repeated4.append(s)
+        elif basename in repeated2_basenames:
+          assert(s not in repeated3_basenames)
+          repeated3_basenames.add(basename)
+          repeated3.append(s)
+        elif basename in repeated1_basenames:
           assert(s not in repeated2_basenames)
           repeated2_basenames.add(basename)
           repeated2.append(s)
@@ -176,7 +188,8 @@
       else:
         out_sources_basenames.add(basename)
         out_sources.append(s)
-    return (gn_sort(out_sources), gn_sort(repeated1), gn_sort(repeated2))
+    return (gn_sort(out_sources), gn_sort(repeated1), gn_sort(repeated2),
+            gn_sort(repeated3), gn_sort(repeated4))
 
   def is_xds_source(s):
     file_names = [
@@ -406,18 +419,22 @@
     sources = adjust_srcs(sources)
     sources = [f for f in sources if f not in upb_sources]
     sources = strip_sources(sources)
-    (sources, repeated1, repeated2) = find_repeated(sources)
+    (sources, repeated1, repeated2, repeated3, repeated4) = find_repeated(sources)
     deps = [d for d in deps if d not in (':gpr', ':grpc')]
     cc_lib_name = 'grpc++_cc'
     h_lib_name = 'grpc++_h'
     repeated_lib_name1 = 'grpc++_repeated1'
     repeated_lib_name2 = 'grpc++_repeated2'
+    repeated_lib_name3 = 'grpc++_repeated3'
+    repeated_lib_name4 = 'grpc++_repeated4'
     other_deps = deps[:]
     other_deps.append(":{}".format(h_lib_name))
     deps_so = [
       ':{}'.format(cc_lib_name),
       ':{}'.format(repeated_lib_name1),
       ':{}'.format(repeated_lib_name2),
+      ':{}'.format(repeated_lib_name3),
+      ':{}'.format(repeated_lib_name4),
     ]
     public_deps_so = [
       ':{}'.format(h_lib_name),
@@ -444,6 +461,8 @@
 
   ${cc_library_internal(repeated_lib_name1, '', repeated1, other_deps, extra_stuff, extra_configs)}
   ${cc_library_internal(repeated_lib_name2, '', repeated2, other_deps, extra_stuff, extra_configs)}
+  ${cc_library_internal(repeated_lib_name3, '', repeated3, other_deps, extra_stuff, extra_configs)}
+  ${cc_library_internal(repeated_lib_name4, '', repeated4, other_deps, extra_stuff, extra_configs)}
   </%def>\
   <%def name="cc_library(lib, indent, is_host)">\
   <%
@@ -451,7 +470,9 @@
       sources = strip_sources(sources)
       repeated_lib_name1 = "{}_repeated1".format(lib.name)
       repeated_lib_name2 = "{}_repeated2".format(lib.name)
-      (sources, repeated1, repeated2) = find_repeated(sources)
+      repeated_lib_name3 = "{}_repeated3".format(lib.name)
+      repeated_lib_name4 = "{}_repeated4".format(lib.name)
+      (sources, repeated1, repeated2, repeated3, repeated4) = find_repeated(sources)
       extra_configs = [':grpc_config_private']
       extra_stuff = []
       target_type = 'source_set'
@@ -463,6 +484,10 @@
         deps.append(":{}".format(repeated_lib_name1))
       if repeated2:
         deps.append(":{}".format(repeated_lib_name2))
+      if repeated3:
+        deps.append(":{}".format(repeated_lib_name3))
+      if repeated4:
+        deps.append(":{}".format(repeated_lib_name4))
     %>\
   ${cc_library_internal(lib.name, indent, sources, deps, extra_stuff, extra_configs)}
     % if repeated1:
@@ -477,6 +502,19 @@
   # that. Moving them to another target.
   ${cc_library_internal(repeated_lib_name2, indent, repeated2, repeated_deps, extra_stuff, extra_configs)}
     % endif
+    % if repeated3:
+
+  # There are some .cc files that are in multiple places. GN doesn't like
+  # that. Moving them to another target.
+  ${cc_library_internal(repeated_lib_name3, indent, repeated3, repeated_deps, extra_stuff, extra_configs)}
+    % endif
+    % if repeated4:
+
+  # There are some .cc files that are in multiple places. GN doesn't like
+  # that. Moving them to another target.
+  ${cc_library_internal(repeated_lib_name4, indent, repeated4, repeated_deps, extra_stuff, extra_configs)}
+    % endif
+
   </%def>\
   <%def name="cc_library_internal(name, indent, sources, lib_deps, extra_stuff, extra_configs)">\
   <%

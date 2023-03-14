@@ -53,7 +53,6 @@ class DownloadBubbleRowView : public views::View,
   // Overrides views::View:
   void AddedToWidget() override;
   void RemovedFromWidget() override;
-  void OnThemeChanged() override;
   void Layout() override;
   Views GetChildrenInZOrder() override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
@@ -126,19 +125,24 @@ class DownloadBubbleRowView : public views::View,
   void RecordMetricsOnUpdate();
   void RecordDownloadDisplayed();
 
-  // Load the icon, from the cache or from IconManager::LoadIcon.
-  void LoadIcon();
+  // Load the appropriate |file_icon_| from the IconManager, or a default icon.
+  // Returns whether we were able to synchronously set |icon_| to an appropriate
+  // icon for the file path.
+  bool StartLoadFileIcon();
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Callback invoked when the IconManager's asynchronous lookup returns.
+  void OnFileIconLoaded(gfx::Image icon);
+#endif
+  // Sets |icon_| to the image in |file_icon_|.
+  void SetFileIconAsIcon(bool is_default_icon);
 
-  // Called when icon has been loaded by IconManager::LoadIcon.
-  // |use_over_last_override| controls whether icon should be set if
-  // the current icon is an override_icon. |load_start_time| is the time when
-  // the calling LoadIcon() started, and is recorded for metrics.
-  void SetIconFromImage(bool use_over_last_override,
-                        base::Time load_start_time,
-                        gfx::Image icon);
-  void SetIconFromImageModel(bool use_over_last_override,
-                             base::Time load_start_time,
-                             const ui::ImageModel& icon);
+  // Set the |icon_|, which may be an override (warning or incognito icon),
+  // default icon, or loaded from the cache or from IconManager::LoadIcon.
+  void SetIcon();
+
+  // Sets |icon_| to |icon|, regardless of what kind of icon it is.
+  void SetIconFromImage(gfx::Image icon);
+  void SetIconFromImageModel(const ui::ImageModel& icon);
 
   void OnCancelButtonPressed();
   void OnDiscardButtonPressed();
@@ -150,10 +154,17 @@ class DownloadBubbleRowView : public views::View,
   void RegisterAccelerators(views::FocusManager* focus_manager);
   void UnregisterAccelerators(views::FocusManager* focus_manager);
 
-  // The icon for the file. We get platform-specific icons from IconLoader.
+  // The icon for the file. We get platform-specific file type icons from
+  // IconLoader (see below).
   raw_ptr<views::ImageView> icon_ = nullptr;
   raw_ptr<views::ImageView> subpage_icon_ = nullptr;
   raw_ptr<views::FlexLayoutView> subpage_icon_holder_ = nullptr;
+  // The icon for the filetype, fetched from the platform-specific IconLoader.
+  // This can differ from the image in |icon_| if |icon_| is not the file type
+  // icon, e.g. if it is the incognito icon or a warning icon. We cache it here
+  // in case |icon_| is different, because it is used when drag-and-dropping.
+  // If the IconLoader does not return a file icon, this stores a default icon.
+  gfx::Image file_icon_;
 
   // The primary label.
   raw_ptr<views::Label> primary_label_ = nullptr;
@@ -190,9 +201,6 @@ class DownloadBubbleRowView : public views::View,
   // Device scale factor, used to load icons.
   float current_scale_ = 1.0f;
 
-  // Tracks tasks requesting file icons.
-  base::CancelableTaskTracker cancelable_task_tracker_;
-
   // The model controlling this object's state.
   DownloadUIModel::DownloadUIModelPtr model_;
 
@@ -214,8 +222,11 @@ class DownloadBubbleRowView : public views::View,
   DownloadUIModel::BubbleUIInfo ui_info_;
   bool is_paused_;
 
-  raw_ptr<const gfx::VectorIcon> last_overriden_icon_ = nullptr;
-  bool already_set_default_icon_ = false;
+  // The last override icon, e.g. an incognito or warning icon. If this is
+  // null, we should either use the filetype icon or a default icon.
+  raw_ptr<const gfx::VectorIcon> last_overridden_icon_ = nullptr;
+  // Whether the currently set |icon_| is the default icon.
+  bool has_default_icon_ = false;
 
   // Button for transparent button click, inkdrop animations and drag and drop
   // events.
@@ -238,6 +249,9 @@ class DownloadBubbleRowView : public views::View,
 
   // A timer for updating the status text string.
   base::RepeatingTimer update_status_text_timer_;
+
+  // Tracks tasks requesting file icons.
+  base::CancelableTaskTracker cancelable_task_tracker_;
 
   base::WeakPtrFactory<DownloadBubbleRowView> weak_factory_{this};
 };

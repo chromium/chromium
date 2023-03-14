@@ -335,7 +335,8 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
   if (data->hasUrl())
     UseCounter::Count(execution_context, WebFeature::kWebShareContainingUrl);
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
 
   ShareClientImpl* client =
       MakeGarbageCollected<ShareClientImpl>(this, has_files, resolver);

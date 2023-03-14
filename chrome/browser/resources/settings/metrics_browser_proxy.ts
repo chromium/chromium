@@ -193,6 +193,32 @@ export enum PrivacyGuideSettingsStates {
   MAX_VALUE = 16,
 }
 
+/**
+ * This enum is used with metrics to record when a step in the privacy guide is
+ * eligible to be shown and/or reached by the user.
+ *
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ *
+ * Must be kept in sync with SettingsPrivacyGuideStepsEligibleAndReached in
+ * emus.xml and PrivacyGuideStepsEligibleAndReached in
+ * privacy_guide/privacy_guide.h.
+ */
+export enum PrivacyGuideStepsEligibleAndReached {
+  MSBB_ELIGIBLE = 0,
+  MSBB_REACHED = 1,
+  HISTORY_SYNC_ELIGIBLE = 2,
+  HISTORY_SYNC_REACHED = 3,
+  SAFE_BROWSING_ELIGIBLE = 4,
+  SAFE_BROWSING_REACHED = 5,
+  COOKIES_ELIGIBLE = 6,
+  COOKIES_REACHED = 7,
+  COMPLETION_ELIGIBLE = 8,
+  COMPLETION_REACHED = 9,
+  // Leave this at the end.
+  COUNT = 10,
+}
+
 export interface MetricsBrowserProxy {
   /**
    * Helper function that calls recordAction with one action from
@@ -286,6 +312,13 @@ export interface MetricsBrowserProxy {
    * Settings.PrivacyGuide.FlowLength histogram
    */
   recordPrivacyGuideFlowLengthHistogram(steps: number): void;
+
+  /**
+   * Helper function that calls recordHistogram for the
+   * Settings.PrivacyGuide.StepsEligibleAndReached histogram
+   */
+  recordPrivacyGuideStepsEligibleAndReachedHistogram(
+      status: PrivacyGuideStepsEligibleAndReached): void;
 }
 
 export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
@@ -398,6 +431,15 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
     chrome.send('metricsHandler:recordInHistogram', [
       'Settings.PrivacyGuide.FlowLength', steps,
       5, /*max number of the settings related steps in privacy guide is 4*/
+    ]);
+  }
+
+  recordPrivacyGuideStepsEligibleAndReachedHistogram(
+      status: PrivacyGuideStepsEligibleAndReached) {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.PrivacyGuide.StepsEligibleAndReached',
+      status,
+      PrivacyGuideStepsEligibleAndReached.COUNT,
     ]);
   }
 

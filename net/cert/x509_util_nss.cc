@@ -142,11 +142,17 @@ bool IsSameCertificate(CERTCertificate* a, CERTCertificate* b) {
 }
 
 bool IsSameCertificate(CERTCertificate* a, const X509Certificate* b) {
-  return a->derCert.len == CRYPTO_BUFFER_len(b->cert_buffer()) &&
-         memcmp(a->derCert.data, CRYPTO_BUFFER_data(b->cert_buffer()),
-                a->derCert.len) == 0;
+  return IsSameCertificate(a, b->cert_buffer());
 }
 bool IsSameCertificate(const X509Certificate* a, CERTCertificate* b) {
+  return IsSameCertificate(b, a->cert_buffer());
+}
+
+bool IsSameCertificate(CERTCertificate* a, const CRYPTO_BUFFER* b) {
+  return a->derCert.len == CRYPTO_BUFFER_len(b) &&
+         memcmp(a->derCert.data, CRYPTO_BUFFER_data(b), a->derCert.len) == 0;
+}
+bool IsSameCertificate(const CRYPTO_BUFFER* a, CERTCertificate* b) {
   return IsSameCertificate(b, a);
 }
 

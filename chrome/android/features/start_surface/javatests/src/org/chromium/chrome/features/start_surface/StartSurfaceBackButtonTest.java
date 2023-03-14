@@ -20,6 +20,7 @@ import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.runner.lifecycle.Stage;
 import android.view.View;
 
 import androidx.test.espresso.contrib.RecyclerViewActions;
@@ -36,6 +37,7 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -148,6 +150,39 @@ public class StartSurfaceBackButtonTest {
         });
 
         mMostVisitedSites = StartSurfaceTestUtils.setMVTiles(mSuggestionsDeps);
+    }
+
+    // Test that back press on start surface should exit app rather than closing tab.
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
+    public void testShow_SingleAsHomepage_BackButton_ClosableTab() {
+        if (!mImmediateReturn) {
+            StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
+        }
+
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
+        mActivityTestRule.loadUrlInNewTab("about:blank", false, TabLaunchType.FROM_LINK);
+        StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
+        onViewWaiting(withId(R.id.primary_tasks_surface_view));
+        StartSurfaceTestUtils.pressBack(mActivityTestRule);
+        TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
+        ApplicationTestUtils.waitForActivityState(cta, Stage.STOPPED);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
+    public void testShow_SingleAsHomepage_BackButton_ClosableTab_BackGestureRefactor() {
+        testShow_SingleAsHomepage_BackButton_ClosableTab();
     }
 
     @Test

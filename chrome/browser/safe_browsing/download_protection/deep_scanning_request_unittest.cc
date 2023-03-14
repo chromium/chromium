@@ -268,6 +268,7 @@ class DeepScanningRequestTest : public testing::Test {
         .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));
     EXPECT_CALL(item_, GetReceivedBytes()).WillRepeatedly(Return(0));
     EXPECT_CALL(item_, HasUserGesture()).WillRepeatedly(Return(false));
+    EXPECT_CALL(item_, RequireSafetyChecks()).WillRepeatedly(Return(true));
     content::DownloadItemUtils::AttachInfoForTesting(&item_, profile_, nullptr);
 
     SetDMTokenForTesting(

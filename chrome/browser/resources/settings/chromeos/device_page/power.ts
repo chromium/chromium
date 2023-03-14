@@ -21,10 +21,9 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
-import {SettingChangeValue} from '../../mojom-webui/search/user_action_recorder.mojom-webui.js';
-import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
@@ -314,8 +313,7 @@ class SettingsPowerElement extends SettingsPowerElementBase {
   private onAdaptiveChargingToggleChange_(): void {
     const enabled = this.$.adaptiveChargingToggle.checked;
     this.browserProxy_.setAdaptiveCharging(enabled);
-    recordSettingChange(
-        Setting.kAdaptiveCharging, {boolValue: enabled} as SettingChangeValue);
+    recordSettingChange(Setting.kAdaptiveCharging, {boolValue: enabled});
   }
 
   /**

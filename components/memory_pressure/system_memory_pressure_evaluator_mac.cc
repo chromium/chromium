@@ -13,12 +13,21 @@
 #include <cmath>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/task/sequenced_task_runner.h"
 
 namespace memory_pressure::mac {
+
+namespace {
+
+BASE_FEATURE(kMacRenotifyMemoryPressureSignal,
+             "MacRenotifyMemoryPressureSignal",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace
 
 base::MemoryPressureListener::MemoryPressureLevel
 SystemMemoryPressureEvaluator::MemoryPressureLevelForMacMemoryPressureLevel(
@@ -43,6 +52,12 @@ SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
           DISPATCH_MEMORYPRESSURE_WARN | DISPATCH_MEMORYPRESSURE_CRITICAL |
               DISPATCH_MEMORYPRESSURE_NORMAL,
           dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0))),
+      renotify_current_vote_timer_(
+          FROM_HERE,
+          kRenotifyVotePeriod,
+          base::BindRepeating(&SystemMemoryPressureEvaluator::SendCurrentVote,
+                              base::Unretained(this),
+                              /*notify=*/true)),
       weak_ptr_factory_(this) {
   // WeakPtr needed because there is no guarantee that |this| is still be alive
   // when the task posted to the TaskRunner or event handler runs.
@@ -105,6 +120,14 @@ void SystemMemoryPressureEvaluator::OnMemoryPressureChanged() {
   bool notify = current_vote() !=
                 base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
   SendCurrentVote(notify);
+
+  if (base::FeatureList::IsEnabled(kMacRenotifyMemoryPressureSignal)) {
+    if (notify) {
+      renotify_current_vote_timer_.Reset();
+    } else {
+      renotify_current_vote_timer_.Stop();
+    }
+  }
 }
 
 }  // namespace memory_pressure::mac

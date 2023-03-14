@@ -28,7 +28,6 @@ const std::map<std::string, UrlScheme>& GetSchemeOptions() {
           {url::kHttpsScheme, UrlScheme::kHttps},
           {url::kJavaScriptScheme, UrlScheme::kJavascript},
           {url::kMailToScheme, UrlScheme::kMailTo},
-          {url::kQuicTransportScheme, UrlScheme::kQuicTransport},
           {url::kTelScheme, UrlScheme::kTel},
           {url::kUrnScheme, UrlScheme::kUrn},
           {url::kUuidInPackageScheme, UrlScheme::kUuidInPackage},

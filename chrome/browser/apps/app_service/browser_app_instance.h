@@ -76,6 +76,7 @@ struct BrowserWindowInstance {
                         aura::Window* window,
                         uint32_t browser_session_id,
                         uint32_t restored_browser_session_id,
+                        bool is_incognito,
                         bool is_active);
   BrowserWindowInstance(BrowserWindowInstanceUpdate update,
                         aura::Window* window);
@@ -95,6 +96,7 @@ struct BrowserWindowInstance {
   const raw_ptr<aura::Window> window;
   const uint32_t browser_session_id;
   const uint32_t restored_browser_session_id;
+  const bool is_incognito;
 
   bool is_active;
 };

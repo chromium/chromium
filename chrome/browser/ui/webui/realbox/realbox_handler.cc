@@ -425,8 +425,6 @@ std::string RealboxHandler::AutocompleteMatchVectorIconToResourceName(
     return kAnswerTranslationIconResourceName;
   } else if (icon.name == omnibox::kAnswerWhenIsIcon.name) {
     return kAnswerWhenIsIconResourceName;
-  } else if (icon.name == omnibox::kBlankIcon.name) {
-    return "";  // An empty resource name is effectively a blank icon.
   } else if (icon.name == omnibox::kBookmarkIcon.name) {
     return kBookmarkIconResourceName;
   } else if (icon.name == omnibox::kCalculatorIcon.name) {
@@ -465,12 +463,14 @@ std::string RealboxHandler::AutocompleteMatchVectorIconToResourceName(
     return kSearchIconResourceName;
   } else if (icon.name == omnibox::kTrendingUpIcon.name) {
     return kTrendingUpIconResourceName;
+  } else if (icon.is_empty()) {
+    return "";  // An empty resource name is effectively a blank icon.
   } else {
     NOTREACHED()
         << "Every vector icon returned by AutocompleteMatch::GetVectorIcon "
            "must have an equivalent SVG resource for the NTP Realbox.";
-    return "";
   }
+  return "";
 }
 
 // static

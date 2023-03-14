@@ -33,4 +33,6 @@
 <translation id="8187289872471304532">Выберите
           Программы &gt; Системные настройки &gt; Сеть &gt; Дополнительно &gt; Прокси
           и снимите флажки напротив всех прокси-серверов.</translation>
+<translation id="8232971017369963250">Браузер Chrome создан на основе проекта <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> с открытым исходным кодом.</translation>
+<translation id="8279509328145658601">Chrome также работает благодаря другому <ph name="BEGIN_LINK_OSS" />программному обеспечению с открытым исходным кодом<ph name="END_LINK_OSS" />.</translation>
 </translationbundle>

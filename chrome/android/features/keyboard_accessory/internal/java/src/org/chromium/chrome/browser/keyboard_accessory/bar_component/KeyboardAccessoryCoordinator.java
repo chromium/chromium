@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAcce
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryViewBinder.BarItemViewHolder;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
+import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.tab_layout_component.KeyboardAccessoryTabLayoutCoordinator;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
@@ -47,22 +48,11 @@ public class KeyboardAccessoryCoordinator {
     private KeyboardAccessoryView mView;
 
     /**
-     * The keyboard accessory provides signals when to show or change the accessory sheet below it.
-     * The actual implementation isn't relevant for this component. Therefore, a class implementing
-     * this interface takes that responsibility, i.e. ManualFillingCoordinator.
+     * The interface to notify consumers about keyboard accessories visibility. E.g: the animation
+     * end. The actual implementation isn't relevant for this component. Therefore, a class
+     * implementing this interface takes that responsibility, i.e. ManualFillingCoordinator.
      */
-    public interface VisibilityDelegate {
-        /**
-         * Is triggered when a tab in the accessory was selected and the sheet needs to change.
-         * @param tabIndex The index of the selected tab in the tab bar.
-         */
-        void onChangeAccessorySheet(int tabIndex);
-
-        /**
-         * Called when the sheet needs to be hidden.
-         */
-        void onCloseAccessorySheet();
-
+    public interface BarVisibilityDelegate {
         /**
          * Signals that the accessory bar has completed the fade-in. This may be relevant to the
          * keyboard extensions state to adjust the scroll position.
@@ -123,12 +113,17 @@ public class KeyboardAccessoryCoordinator {
     /**
      * Initializes the component as soon as the native library is loaded by e.g. starting to listen
      * to keyboard visibility events.
+     * @param barVisibilityDelegate A {@link BarVisibilityDelegate} for delegating the bar
+     *         visibility changes.
+     * @param sheetVisibilityDelegate A {@link AccessorySheetCoordinator.SheetVisibilityDelegate}
+     *         for delegating the sheet visibility changes.
      * @param barStub A {@link AsyncViewStub} for the accessory bar layout.
      */
-    public KeyboardAccessoryCoordinator(
-            VisibilityDelegate visibilityDelegate, AsyncViewStub barStub) {
-        this(new KeyboardAccessoryTabLayoutCoordinator(), visibilityDelegate,
-                AsyncViewProvider.of(barStub, R.id.keyboard_accessory));
+    public KeyboardAccessoryCoordinator(BarVisibilityDelegate barVisibilityDelegate,
+            AccessorySheetCoordinator.SheetVisibilityDelegate sheetVisibilityDelegate,
+            AsyncViewStub barStub) {
+        this(new KeyboardAccessoryTabLayoutCoordinator(), barVisibilityDelegate,
+                sheetVisibilityDelegate, AsyncViewProvider.of(barStub, R.id.keyboard_accessory));
     }
 
     /**
@@ -137,12 +132,14 @@ public class KeyboardAccessoryCoordinator {
      */
     @VisibleForTesting
     public KeyboardAccessoryCoordinator(KeyboardAccessoryTabLayoutCoordinator tabLayout,
-            VisibilityDelegate visibilityDelegate,
+            BarVisibilityDelegate barVisibilityDelegate,
+            AccessorySheetCoordinator.SheetVisibilityDelegate sheetVisibilityDelegate,
             ViewProvider<KeyboardAccessoryView> viewProvider) {
         mTabLayout = tabLayout;
         mModel = KeyboardAccessoryProperties.defaultModelBuilder().build();
-        mMediator = new KeyboardAccessoryMediator(mModel, visibilityDelegate,
-                mTabLayout.getTabSwitchingDelegate(), mTabLayout.getSheetOpenerCallbacks());
+        mMediator = new KeyboardAccessoryMediator(mModel, barVisibilityDelegate,
+                sheetVisibilityDelegate, mTabLayout.getTabSwitchingDelegate(),
+                mTabLayout.getSheetOpenerCallbacks());
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)) {
             viewProvider.whenLoaded(barView -> mTabLayout.assignNewView(barView.getTabLayout()));
         }

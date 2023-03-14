@@ -141,7 +141,7 @@ class SocketsTcpConnectFunction
   void StartConnect();
   void OnCompleted(int net_result);
 
-  std::unique_ptr<sockets_tcp::Connect::Params> params_;
+  absl::optional<sockets_tcp::Connect::Params> params_;
   raw_ptr<TCPSocketEventDispatcher> socket_event_dispatcher_ = nullptr;
 };
 
@@ -174,7 +174,7 @@ class SocketsTcpSendFunction : public TCPSocketApiFunction {
   void OnCompleted(int net_result);
   void SetSendResult(int net_result, int bytes_sent);
 
-  std::unique_ptr<sockets_tcp::Send::Params> params_;
+  absl::optional<sockets_tcp::Send::Params> params_;
 };
 
 class SocketsTcpCloseFunction : public TCPSocketApiFunction {
@@ -240,7 +240,7 @@ class SocketsTcpSecureFunction : public TCPSocketApiFunction {
 
   bool paused_;
   bool persistent_;
-  std::unique_ptr<sockets_tcp::Secure::Params> params_;
+  absl::optional<sockets_tcp::Secure::Params> params_;
 };
 
 }  // namespace api

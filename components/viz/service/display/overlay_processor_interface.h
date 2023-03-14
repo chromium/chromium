@@ -49,15 +49,8 @@ class RendererSettings;
 // for overlay processing that each platform needs to implement.
 class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
  public:
-#if BUILDFLAG(IS_APPLE)
-  using PlatformOverlayCandidate = CALayerOverlay;
-  using CandidateList = CALayerOverlayList;
-#else
-  // Default.
   using PlatformOverlayCandidate = OverlayCandidate;
   using CandidateList = OverlayCandidateList;
-#endif
-
   using FilterOperationsMap =
       base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>;
 

@@ -78,9 +78,11 @@ class FakeImageSource : public CanvasImageSource {
  public:
   FakeImageSource(gfx::Size, BitmapOpacity);
 
-  scoped_refptr<Image> GetSourceImageForCanvas(SourceImageStatus*,
-                                               const gfx::SizeF&,
-                                               const AlphaDisposition) override;
+  scoped_refptr<Image> GetSourceImageForCanvas(
+      CanvasResourceProvider::FlushReason,
+      SourceImageStatus*,
+      const gfx::SizeF&,
+      const AlphaDisposition) override;
 
   bool WouldTaintOrigin() const override { return false; }
   gfx::SizeF ElementSize(const gfx::SizeF&,
@@ -108,6 +110,7 @@ FakeImageSource::FakeImageSource(gfx::Size size, BitmapOpacity opacity)
 }
 
 scoped_refptr<Image> FakeImageSource::GetSourceImageForCanvas(
+    CanvasResourceProvider::FlushReason,
     SourceImageStatus* status,
     const gfx::SizeF&,
     const AlphaDisposition alpha_disposition = kPremultiplyAlpha) {
@@ -143,10 +146,12 @@ class CanvasRenderingContext2DTest : public ::testing::Test,
   void DrawSomething() {
     CanvasElement().DidDraw();
     CanvasElement().PreFinalizeFrame();
-    Context2D()->FinalizeFrame();
-    CanvasElement().PostFinalizeFrame();
+    Context2D()->FinalizeFrame(CanvasResourceProvider::FlushReason::kTesting);
+    CanvasElement().PostFinalizeFrame(
+        CanvasResourceProvider::FlushReason::kTesting);
     // Grabbing an image forces a flush
-    CanvasElement().Snapshot(kBackBuffer);
+    CanvasElement().Snapshot(CanvasResourceProvider::FlushReason::kTesting,
+                             kBackBuffer);
   }
 
   enum LatencyMode { kNormalLatency, kLowLatency };
@@ -353,7 +358,8 @@ class FakeCanvasResourceProvider : public CanvasResourceProvider {
         is_accelerated_(hint != RasterModeHint::kPreferCPU) {}
   ~FakeCanvasResourceProvider() override = default;
   bool IsAccelerated() const override { return is_accelerated_; }
-  scoped_refptr<CanvasResource> ProduceCanvasResource() override {
+  scoped_refptr<CanvasResource> ProduceCanvasResource(
+      CanvasResourceProvider::FlushReason) override {
     return scoped_refptr<CanvasResource>();
   }
   bool SupportsDirectCompositing() const override { return false; }
@@ -362,8 +368,9 @@ class FakeCanvasResourceProvider : public CanvasResourceProvider {
     return sk_sp<SkSurface>();
   }
   scoped_refptr<StaticBitmapImage> Snapshot(
-      const ImageOrientation& orientation) override {
-    return SnapshotInternal(orientation);
+      CanvasResourceProvider::FlushReason reason,
+      ImageOrientation orientation) override {
+    return SnapshotInternal(orientation, reason);
   }
 
  private:
@@ -1454,7 +1461,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   EXPECT_TRUE(CanvasElement().GetCanvas2DLayerBridge()->IsAccelerated());
   // Take a snapshot to trigger lazy resource provider creation
-  CanvasElement().GetCanvas2DLayerBridge()->NewImageSnapshot();
+  CanvasElement().GetCanvas2DLayerBridge()->NewImageSnapshot(
+      CanvasResourceProvider::FlushReason::kTesting);
   EXPECT_TRUE(!!CanvasElement().ResourceProvider());
   EXPECT_TRUE(CanvasElement().ResourceProvider()->IsAccelerated());
   auto* box = CanvasElement().GetLayoutBoxModelObject();
@@ -1618,13 +1626,15 @@ TEST_P(CanvasRenderingContext2DTestImageChromium, LowLatencyIsSingleBuffered) {
   auto frame1_resource =
       CanvasElement()
           .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
-          ->ProduceCanvasResource();
+          ->ProduceCanvasResource(
+              CanvasResourceProvider::FlushReason::kTesting);
   EXPECT_TRUE(frame1_resource);
   DrawSomething();
   auto frame2_resource =
       CanvasElement()
           .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
-          ->ProduceCanvasResource();
+          ->ProduceCanvasResource(
+              CanvasResourceProvider::FlushReason::kTesting);
   EXPECT_TRUE(frame2_resource);
   EXPECT_EQ(frame1_resource.get(), frame2_resource.get());
 }
@@ -1664,13 +1674,15 @@ TEST_P(CanvasRenderingContext2DTestSwapChain, LowLatencyIsSingleBuffered) {
   auto frame1_resource =
       CanvasElement()
           .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
-          ->ProduceCanvasResource();
+          ->ProduceCanvasResource(
+              CanvasResourceProvider::FlushReason::kTesting);
   EXPECT_TRUE(frame1_resource);
   DrawSomething();
   auto frame2_resource =
       CanvasElement()
           .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
-          ->ProduceCanvasResource();
+          ->ProduceCanvasResource(
+              CanvasResourceProvider::FlushReason::kTesting);
   EXPECT_TRUE(frame2_resource);
   EXPECT_EQ(frame1_resource.get(), frame2_resource.get());
 }

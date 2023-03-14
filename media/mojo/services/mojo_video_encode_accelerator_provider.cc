@@ -7,10 +7,13 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "media/base/bind_to_current_loop.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "media/base/limits.h"
+#include "media/base/media_switches.h"
 #include "media/gpu/gpu_video_encode_accelerator_factory.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -64,9 +67,16 @@ MojoVideoEncodeAcceleratorProvider::~MojoVideoEncodeAcceleratorProvider() =
 
 void MojoVideoEncodeAcceleratorProvider::CreateVideoEncodeAccelerator(
     mojo::PendingReceiver<mojom::VideoEncodeAccelerator> receiver) {
-  MojoVideoEncodeAcceleratorService::Create(
-      std::move(receiver), create_vea_callback_, gpu_preferences_,
-      gpu_workarounds_, gpu_device_);
+  auto create_service_cb = base::BindOnce(
+      &MojoVideoEncodeAcceleratorService::Create, std::move(receiver),
+      create_vea_callback_, gpu_preferences_, gpu_workarounds_, gpu_device_);
+
+  if (base::FeatureList::IsEnabled(kUseSequencedTaskRunnerForMojoVEAService)) {
+    base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+        ->PostTask(FROM_HERE, std::move(create_service_cb));
+  } else {
+    std::move(create_service_cb).Run();
+  }
 }
 
 void MojoVideoEncodeAcceleratorProvider::

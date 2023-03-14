@@ -9,23 +9,10 @@
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/linux/test/mock_gbm_device.h"
-#include "ui/ozone/platform/drm/gpu/drm_device_generator.h"
-#include "ui/ozone/platform/drm/gpu/mock_drm_device.h"
-
+#include "ui/ozone/platform/drm/gpu/fake_drm_device_generator.h"
 namespace ui {
 
 namespace {
-
-class FakeDrmDeviceGenerator : public DrmDeviceGenerator {
-  // DrmDeviceGenerator:
-  scoped_refptr<DrmDevice> CreateDevice(const base::FilePath& path,
-                                        base::ScopedFD fd,
-                                        bool is_primary_device) override {
-    auto gbm_device = std::make_unique<MockGbmDevice>();
-    return base::MakeRefCounted<MockDrmDevice>(std::move(gbm_device));
-  }
-};
 
 void StubTask() {}
 

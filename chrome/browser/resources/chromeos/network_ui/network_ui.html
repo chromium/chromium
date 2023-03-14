@@ -137,12 +137,18 @@
   </div>
 
   <div class="tabpanel" id="select">
-    <div id="select-div">
-      <network-select
-          on-network-item-selected="onNetworkItemSelected_"
-          on-custom-item-selected="onCustomItemSelected_">
-      </network-select>
-    </div>
+    <div>$i18n{renderNetworkSelectButtonDescription}</div>
+    <cr-button class="action-button" on-click="renderNetworkSelect_">
+      $i18n{renderNetworkSelectButtonText}
+    </cr-button>
+    <template is="dom-if" if="[[showNetworkSelect_]]">
+      <div id="select-div">
+        <network-select
+            on-network-item-selected="onNetworkItemSelected_"
+            on-custom-item-selected="onCustomItemSelected_">
+        </network-select>
+      </div>
+    </template>
   </div>
 
   <div class="tabpanel" id="counters">

@@ -84,6 +84,7 @@ absl::variant<url::SchemeHostPort, std::string> GetCacheHost(
 }
 
 absl::optional<HostCache::Entry> CreateCacheEntry(
+    base::StringPiece canonical_name,
     const std::vector<HostResolverEndpointResult>& endpoint_results,
     const std::set<std::string>& aliases) {
   absl::optional<std::vector<net::IPEndPoint>> ip_endpoints;
@@ -107,6 +108,7 @@ absl::optional<HostCache::Entry> CreateCacheEntry(
   DCHECK(ip_endpoints);
   auto endpoint_entry = HostCache::Entry(OK, *ip_endpoints, aliases,
                                          HostCache::Entry::SOURCE_UNKNOWN);
+  endpoint_entry.set_canonical_names(std::set{std::string(canonical_name)});
   if (endpoint_metadatas.empty()) {
     return endpoint_entry;
   }
@@ -1028,13 +1030,10 @@ int MockHostResolverBase::ResolveFromIPLiteralOrCache(
     if (cache_result) {
       rv = cache_result->second.error();
       if (rv == OK) {
-        *out_endpoints = std::vector<HostResolverEndpointResult>(1);
-        (*out_endpoints)[0].ip_endpoints = *cache_result->second.ip_endpoints();
+        *out_endpoints = cache_result->second.GetEndpoints().value();
 
         if (cache_result->second.aliases()) {
-          const auto& aliasess = *cache_result->second.aliases();
-          *out_aliases =
-              std::set<std::string>(aliasess.begin(), aliasess.end());
+          *out_aliases = *cache_result->second.aliases();
         }
         *out_stale_info = std::move(stale_info);
       }
@@ -1073,7 +1072,8 @@ int MockHostResolverBase::DoSynchronousResolution(RequestImpl& request) {
     // TODO(crbug.com/1264933): Change `error` on empty results?
     error = OK;
     if (cache_.get()) {
-      cache_entry = CreateCacheEntry(endpoint_results, aliases);
+      cache_entry = CreateCacheEntry(request.request_endpoint().GetHostname(),
+                                     endpoint_results, aliases);
     }
   } else {
     DCHECK(absl::holds_alternative<RuleResolver::ErrorResult>(result));

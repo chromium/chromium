@@ -66,6 +66,16 @@ class TabNavigationControllerProxy extends ITabNavigationControllerProxy.Stub {
     }
 
     @Override
+    public void reload() {
+        mHandler.post(() -> { mNavigationController.reload(); });
+    }
+
+    @Override
+    public void stop() {
+        mHandler.post(() -> { mNavigationController.stop(); });
+    }
+
+    @Override
     public void setNavigationObserverDelegate(INavigationObserverDelegate navigationDelegate) {
         mNavigationObserverDelegate.setObserver(navigationDelegate);
     }

@@ -35,12 +35,13 @@ build_webui("build") {
     "$root_gen_dir/chrome/browser/ui/webui/discards/site_data.mojom-webui.ts",
   ]
 
+  ts_tsconfig_base = "tsconfig_base.json"
   ts_composite = true
   ts_deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
-    "//ui/webui/resources/mojo:library",
+    "//ui/webui/resources/mojo:build_ts",
   ]
 
   extra_grdp_files = [ "$target_gen_dir/discards_graph_tab.grdp" ]

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/file_system_provider/operations/add_watcher.h"
 
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -105,8 +104,7 @@ TEST_F(FileSystemProviderOperationsAddWatcherTest, OnSuccess) {
 
   EXPECT_TRUE(add_watcher.Execute(kRequestId));
 
-  add_watcher.OnSuccess(kRequestId, std::make_unique<RequestValue>(),
-                        false /* has_more */);
+  add_watcher.OnSuccess(kRequestId, RequestValue(), false /* has_more */);
   ASSERT_EQ(1u, callback_log.size());
   EXPECT_EQ(base::File::FILE_OK, callback_log[0]);
 }
@@ -122,7 +120,7 @@ TEST_F(FileSystemProviderOperationsAddWatcherTest, OnError) {
 
   EXPECT_TRUE(add_watcher.Execute(kRequestId));
 
-  add_watcher.OnError(kRequestId, std::make_unique<RequestValue>(),
+  add_watcher.OnError(kRequestId, RequestValue(),
                       base::File::FILE_ERROR_TOO_MANY_OPENED);
   ASSERT_EQ(1u, callback_log.size());
   EXPECT_EQ(base::File::FILE_ERROR_TOO_MANY_OPENED, callback_log[0]);

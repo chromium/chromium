@@ -21,6 +21,8 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
+using ::testing::Truly;
+
 namespace {
 
 void EnumerateDescendants(views::View* root,
@@ -77,9 +79,9 @@ views::View* FocusedViewOf(views::Widget* widget) {
 }
 
 const std::vector<sharing_hub::SharingHubAction> kFirstPartyActions = {
-    {0, u"Feed to Dino", nullptr, "feed-to-dino"},
-    {1, u"Reverse Star", nullptr, "reverse-star"},
-    {2, u"Pastelify", nullptr, "pastelify"},
+    {0, u"Feed to Dino", nullptr, "feed-to-dino", 0},
+    {1, u"Reverse Star", nullptr, "reverse-star", 0},
+    {2, u"Pastelify", nullptr, "pastelify", 0},
 };
 
 }  // namespace
@@ -121,9 +123,8 @@ class SharingHubBubbleTest : public ChromeViewsTestBase {
         bubble(),
         base::BindRepeating(&ViewHasClassName, "SharingHubBubbleActionButton"));
     std::vector<sharing_hub::SharingHubBubbleActionButton*> concrete_actions;
-    std::transform(
-        actions.begin(), actions.end(), std::back_inserter(concrete_actions),
-        [](views::View* view) {
+    base::ranges::transform(
+        actions, std::back_inserter(concrete_actions), [](views::View* view) {
           return static_cast<sharing_hub::SharingHubBubbleActionButton*>(view);
         });
     return concrete_actions;
@@ -153,9 +154,14 @@ TEST_F(SharingHubBubbleTest, AllFirstPartyActionsAppearInOrder) {
 TEST_F(SharingHubBubbleTest, ClickingActionsCallsController) {
   ShowBubble();
 
+  constexpr auto HasRightCommandId =
+      [](const sharing_hub::SharingHubAction& action) {
+        return action.command_id == 2;
+      };
+
   auto actions = GetActionButtons();
   ASSERT_GE(actions.size(), 3u);
-  EXPECT_CALL(*controller(), OnActionSelected(2, testing::_));
+  EXPECT_CALL(*controller(), OnActionSelected(Truly(HasRightCommandId)));
   Click(actions[2]);
 }
 

@@ -1,4 +1,4 @@
-Check that TrustTokenParams are included when an iframe requests a trust token'
-Main frame navigation not expected to contain trustTokenParams.
-Included trustTokenParams in request: {"operation":"Signing","refreshPolicy":"UseCached","issuers":["https://issuer.example"]}
+Check that PrivateTokenParams are included when an iframe requests a private token'
+Main frame navigation not expected to contain privateTokenParams.
+Included privateTokenParams in request: {"operation":"Signing","refreshPolicy":"UseCached","issuers":["https://issuer.example"]}
 

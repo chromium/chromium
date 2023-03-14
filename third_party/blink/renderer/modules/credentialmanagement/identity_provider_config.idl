@@ -11,3 +11,35 @@ dictionary IdentityProviderConfig {
   USVString nonce;
   [RuntimeEnabled=FedCmLoginHint] LoginHint loginHint;
 };
+
+// extends the IdentityProviderConfig with mDoc-specific attributes
+partial dictionary IdentityProviderConfig  {
+  [RuntimeEnabled=WebIdentityMDocs] MDocProvider mdoc;
+};
+
+dictionary MDocProvider  {
+  // base64-encoded reader HPKE public key.
+  required DOMString readerPublicKey;
+
+  // base64-encoded reader certification chain, if the platform requires it.
+  sequence<DOMString> certificates;
+
+  // Omitting `retention` implies that the identity information will not be stored.
+  MDocStorageDuration retention;
+
+  required DOMString documentType;
+  required sequence<MDocElement> requestedElements;
+};
+
+dictionary MDocElement {
+  // As defined in ISO 18013-5 clause 8.
+  [ImplementedAs=elementNamespace]
+  required DOMString _namespace;
+  required DOMString name;
+};
+
+dictionary MDocStorageDuration {
+  // Exactly one of the following must be provided.
+  boolean forever;
+  long days;
+};

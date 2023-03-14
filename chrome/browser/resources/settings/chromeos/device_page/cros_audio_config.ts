@@ -8,7 +8,7 @@
  * ability to override it with a fake implementation needed for tests.
  */
 
-import {CrosAudioConfig, CrosAudioConfigInterface as CrosAudioConfigMojomInterface} from '../../mojom-webui/cros_audio_config.mojom-webui.js';
+import {CrosAudioConfig, CrosAudioConfigInterface as CrosAudioConfigMojomInterface} from '../mojom-webui/cros_audio_config.mojom-webui.js';
 
 import {FakeCrosAudioConfig, FakeCrosAudioConfigInterface} from './fake_cros_audio_config.js';
 

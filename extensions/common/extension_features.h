@@ -42,7 +42,7 @@ BASE_DECLARE_FEATURE(kNewWebstoreDomain);
 
 BASE_DECLARE_FEATURE(kExtensionSidePanelIntegration);
 
-BASE_DECLARE_FEATURE(kWebFileHandlers);
+BASE_DECLARE_FEATURE(kExtensionWebFileHandlers);
 
 BASE_DECLARE_FEATURE(kExtensionSourceUrlEnforcement);
 
@@ -53,6 +53,8 @@ BASE_DECLARE_FEATURE(kExtensionsManifestV3Only);
 BASE_DECLARE_FEATURE(kMinimumMV3CSPWithInlineSpeculationRules);
 
 BASE_DECLARE_FEATURE(kTelemetryExtensionPendingApprovalApi);
+
+BASE_DECLARE_FEATURE(kExtensionsMenuAccessControlWithPermittedSites);
 
 }  // namespace extensions_features
 

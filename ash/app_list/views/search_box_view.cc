@@ -4,7 +4,6 @@
 
 #include "ash/app_list/views/search_box_view.h"
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -34,6 +33,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
@@ -145,11 +145,9 @@ std::u16string GetCategoryName(SearchResult* search_result) {
 bool IsSubstringCaseInsensitive(std::u16string haystack_expr,
                                 std::u16string needle_expr) {
   // Convert complete given String to lower case
-  std::transform(haystack_expr.begin(), haystack_expr.end(),
-                 haystack_expr.begin(), ::tolower);
+  base::ranges::transform(haystack_expr, haystack_expr.begin(), ::tolower);
   // Convert complete given Sub String to lower case
-  std::transform(needle_expr.begin(), needle_expr.end(), needle_expr.begin(),
-                 ::tolower);
+  base::ranges::transform(needle_expr, needle_expr.begin(), ::tolower);
   // Find sub string in given string
   return haystack_expr.find(needle_expr) != std::string::npos;
 }
@@ -911,6 +909,9 @@ void SearchBoxView::SetAutocompleteText(
   if (!ShouldProcessAutocomplete())
     return;
 
+  // Clear existing autocomplete text and reset the highlight range.
+  ClearAutocompleteText();
+
   const std::u16string& current_text = search_box()->GetText();
   // Currrent text is a prefix of autocomplete text.
   DCHECK(base::StartsWith(autocomplete_text, current_text,
@@ -918,6 +919,7 @@ void SearchBoxView::SetAutocompleteText(
   // Autocomplete text should not be the same as current search box text.
   DCHECK(autocomplete_text != current_text);
   // Autocomplete text should not be the same as highlighted text.
+
   const std::u16string& highlighted_text =
       autocomplete_text.substr(highlight_range_.start());
   DCHECK(highlighted_text != current_text);

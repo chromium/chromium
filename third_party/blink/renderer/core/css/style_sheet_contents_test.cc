@@ -21,7 +21,7 @@ TEST(StyleSheetContentsTest, InsertMediaRule) {
 
   style_sheet->SetMutable();
   style_sheet->WrapperInsertRule(
-      CSSParser::ParseRule(context, style_sheet,
+      CSSParser::ParseRule(context, style_sheet, CSSNestingType::kNone,
                            /*parent_rule_for_nesting=*/nullptr,
                            "@media all { div { color: pink } }"),
       0);
@@ -29,7 +29,7 @@ TEST(StyleSheetContentsTest, InsertMediaRule) {
   EXPECT_TRUE(style_sheet->HasMediaQueries());
 
   style_sheet->WrapperInsertRule(
-      CSSParser::ParseRule(context, style_sheet,
+      CSSParser::ParseRule(context, style_sheet, CSSNestingType::kNone,
                            /*parent_rule_for_nesting=*/nullptr,
                            "@media all { div { color: green } }"),
       1);
@@ -47,7 +47,7 @@ TEST(StyleSheetContentsTest, InsertFontFaceRule) {
 
   style_sheet->SetMutable();
   style_sheet->WrapperInsertRule(
-      CSSParser::ParseRule(context, style_sheet,
+      CSSParser::ParseRule(context, style_sheet, CSSNestingType::kNone,
                            /*parent_rule_for_nesting=*/nullptr,
                            "@font-face { font-family: a }"),
       0);
@@ -55,7 +55,7 @@ TEST(StyleSheetContentsTest, InsertFontFaceRule) {
   EXPECT_TRUE(style_sheet->HasFontFaceRule());
 
   style_sheet->WrapperInsertRule(
-      CSSParser::ParseRule(context, style_sheet,
+      CSSParser::ParseRule(context, style_sheet, CSSNestingType::kNone,
                            /*parent_rule_for_nesting=*/nullptr,
                            "@font-face { font-family: b }"),
       1);

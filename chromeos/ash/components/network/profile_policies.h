@@ -25,7 +25,7 @@ namespace ash {
 // Variable expansions can be set on the ProfilePolicies level using
 // ProfilePolicies::SetProfileWideExpansions where they apply to all network
 // configurations within that ProfilePolicies.
-// On a single network policy level (keyed by the network poilcy's GUID),
+// On a single network policy level (keyed by the network policy's GUID),
 // ProfilePolicies::SetResolvedClientCertificate can be used to set the resolved
 // certificate including variable expansions extracted from that certificate.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProfilePolicies {
@@ -35,7 +35,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProfilePolicies {
   // Stores policies for a network.
   class NetworkPolicy {
    public:
-    NetworkPolicy(const ProfilePolicies* parent, base::Value onc_policy);
+    NetworkPolicy(const ProfilePolicies* parent, base::Value::Dict onc_policy);
     ~NetworkPolicy();
 
     NetworkPolicy(const NetworkPolicy& other) = delete;
@@ -48,7 +48,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProfilePolicies {
     // NetworkConfiguration.
     // Returns an indication about whether the effective policy has changed as a
     // result of this call.
-    ChangeEffect UpdateFrom(const base::Value& new_onc_policy);
+    ChangeEffect UpdateFrom(const base::Value::Dict& new_onc_policy);
 
     // Sets the resolved client certificate for this network.
     // Returns an indication about whether the effective policy has changed as a
@@ -63,10 +63,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProfilePolicies {
     ChangeEffect OnProfileWideExpansionsChanged();
 
     // Returns the original ONC policy without runtime values.
-    const base::Value& GetOriginalPolicy() const;
+    const base::Value::Dict& GetOriginalPolicy() const;
 
     // Returns the effective ONC policy with runtime values set.
-    const base::Value& GetPolicyWithRuntimeValues() const;
+    const base::Value::Dict& GetPolicyWithRuntimeValues() const;
 
    private:
     // Applies the runtime values.
@@ -77,23 +77,23 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProfilePolicies {
     client_cert::ResolvedCert resolved_cert_ =
         client_cert::ResolvedCert::NotKnownYet();
 
-    base::Value original_policy_;
+    base::Value::Dict original_policy_;
 
     // The ONC NetworkConfiguration with runtime values set.  If this is absent,
     // it means that setting runtime values didn't change anything compared to
     // |original_onc_policy_|.
-    absl::optional<base::Value> policy_with_runtime_values_;
+    absl::optional<base::Value::Dict> policy_with_runtime_values_;
   };
 
   // Used to check whether an ONC NetworkConfiguration passed in
   // |onc_network_configuration| has the same identifying properties as the
   // shill properties dictionary |shill_properties|.
-  using ShillPropertiesMatcher =
-      base::RepeatingCallback<bool(const base::Value& onc_network_configuration,
-                                   const base::Value& shill_properties)>;
+  using ShillPropertiesMatcher = base::RepeatingCallback<bool(
+      const base::Value::Dict& onc_network_configuration,
+      const base::Value::Dict& shill_properties)>;
 
-  using RuntimeValuesSetter = base::RepeatingCallback<base::Value(
-      const base::Value& onc_network_configuration,
+  using RuntimeValuesSetter = base::RepeatingCallback<base::Value::Dict(
+      const base::Value::Dict& onc_network_configuration,
       const base::flat_map<std::string, std::string>& profile_wide_expansions,
       const client_cert::ResolvedCert& resolved_cert)>;
 
@@ -103,16 +103,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProfilePolicies {
   ProfilePolicies(const ProfilePolicies& other) = delete;
   ProfilePolicies& operator=(const ProfilePolicies& other) = delete;
 
-  // Applies the ONC NetworkConfiguration entries from |network_configs_onc|,
-  // which must be a LIST base::Value.
+  // Applies the ONC NetworkConfiguration entries from |network_configs_onc|.
   // Returns the set of policy GUIDs that have effectively changed as a result
   // of this operation.
   base::flat_set<std::string> ApplyOncNetworkConfigurationList(
-      const base::Value& network_configs_onc);
+      const base::Value::List& network_configs_onc);
 
-  // Overwirtes the ONC GlobalNetworkConfiguration dictionary with
-  // |global_network_config|, which must be a DICTIONARY base::Value.
-  void SetGlobalNetworkConfig(const base::Value& global_network_config);
+  // Overwrites the ONC GlobalNetworkConfiguration dictionary with
+  // |global_network_config|.
+  void SetGlobalNetworkConfig(const base::Value::Dict& global_network_config);
 
   // Sets the ONC variable expansions which should apply to all
   // NetworkConfigurations within this ProfilePolicies instance.
@@ -134,30 +133,29 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProfilePolicies {
   // expanded in the returned value. The returned pointer remains valid as long
   // as this instance is valid and is not modified (e.g. by calls to
   // SetProfileWideExpansions).
-  const base::Value* GetPolicyByGuid(const std::string& guid) const;
+  const base::Value::Dict* GetPolicyByGuid(const std::string& guid) const;
 
   // Returns the policy for |guid| without runtime values set (i.e. the
   // variable placeholders such as ${LOGIN_EMAIL} will still be present), or
   // nullptr if no such policy exists. The returned pointer remains valid as
   // long as this instance is valid and is not modified (e.g. by calls to
   // SetProfileWideExpansions).
-  const base::Value* GetOriginalPolicyByGuid(const std::string& guid) const;
+  const base::Value::Dict* GetOriginalPolicyByGuid(
+      const std::string& guid) const;
 
   // Returns the GlobalNetworkConfiguration ONC Dictionary.
   // This will never return nullptr (if no GlobalNetworkConfiguration has been
-  // set, it will return a pointer to an empty DICT base::Value). It returns a
-  // pointer for convenience at the call sites, which work with base::Value* to
-  // be consistent with GetPolicyByGuid return values.
+  // set, it will return a pointer to an empty dictionary).
   // The returned pointer remains valid as long as this instance is valid and is
   // not modified (e.g. by calls to SetGlobalNetworkConfig).
-  const base::Value* GetGlobalNetworkConfig() const {
+  const base::Value::Dict* GetGlobalNetworkConfig() const {
     return &global_network_config_;
   }
 
   // Returns true if ProfilePolicies contains a policy value which would apply
   // to the shill property dictionary |shill_properties|.
   bool HasPolicyMatchingShillProperties(
-      const base::Value& shill_properties) const;
+      const base::Value::Dict& shill_properties) const;
 
   // Returns the map of network policy GUID to ONC NetworkConfiguration.
   // The returned policy values will have ONC variables expanded, if they
@@ -195,7 +193,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProfilePolicies {
   RuntimeValuesSetter runtime_values_setter_;
 
   base::flat_map<std::string, NetworkPolicy> guid_to_policy_;
-  base::Value global_network_config_{base::Value::Type::DICT};
+  base::Value::Dict global_network_config_;
 
   base::flat_map<std::string, std::string> profile_wide_expansions_;
 };

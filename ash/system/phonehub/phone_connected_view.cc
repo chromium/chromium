@@ -29,6 +29,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
@@ -46,7 +47,8 @@ constexpr auto kDarkLightModeDisabledPadding =
 }  // namespace
 
 PhoneConnectedView::PhoneConnectedView(
-    phonehub::PhoneHubManager* phone_hub_manager) {
+    phonehub::PhoneHubManager* phone_hub_manager)
+    : phone_hub_manager_(phone_hub_manager) {
   SetID(PhoneHubViewID::kPhoneConnectedView);
 
   auto setup_layered_view = [](views::View* view) {
@@ -96,6 +98,11 @@ PhoneConnectedView::PhoneConnectedView(
   }
 
   phone_hub_manager->GetUserActionRecorder()->RecordUiOpened();
+
+  if (phone_hub_manager->GetAppStreamLauncherDataModel()) {
+    phone_hub_manager->GetAppStreamLauncherDataModel()->SetLauncherSize(
+        GetPreferredSize().height(), GetPreferredSize().width());
+  }
 }
 
 PhoneConnectedView::~PhoneConnectedView() = default;
@@ -103,11 +110,21 @@ PhoneConnectedView::~PhoneConnectedView() = default;
 void PhoneConnectedView::ChildPreferredSizeChanged(View* child) {
   // Resize the bubble when the child change its size.
   PreferredSizeChanged();
+  if (phone_hub_manager_ &&
+      phone_hub_manager_->GetAppStreamLauncherDataModel()) {
+    phone_hub_manager_->GetAppStreamLauncherDataModel()->SetLauncherSize(
+        GetPreferredSize().height(), GetPreferredSize().width());
+  }
 }
 
 void PhoneConnectedView::ChildVisibilityChanged(View* child) {
   // Resize the bubble when the child change its visibility.
   PreferredSizeChanged();
+  if (phone_hub_manager_ &&
+      phone_hub_manager_->GetAppStreamLauncherDataModel()) {
+    phone_hub_manager_->GetAppStreamLauncherDataModel()->SetLauncherSize(
+        GetPreferredSize().height(), GetPreferredSize().width());
+  }
 }
 
 const char* PhoneConnectedView::GetClassName() const {

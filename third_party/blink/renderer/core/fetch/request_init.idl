@@ -26,10 +26,10 @@ dictionary RequestInit {
     AbortSignal? signal;
     [RuntimeEnabled=FetchUploadStreaming] RequestDuplex duplex;
     [RuntimeEnabled=PrivateNetworkAccessPermissionPrompt] IPAddressSpace targetAddressSpace;
-    // Even though Trust Tokens operations are only available in secure
+    // Even though Private Token operations are only available in secure
     // contexts, this has to be enforced after the fact because the
     // SecureContext IDL attribute doesn't affect dictionary members.
-    [RuntimeEnabled=PrivateStateTokens] TrustToken trustToken;
+    [RuntimeEnabled=PrivateStateTokens] PrivateToken privateToken;
     // TODO(domfarolino): add support for RequestInit window member.
     //any window; // can only be set to null
 };

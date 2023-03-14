@@ -33,20 +33,19 @@ void ResultRefreshManager::RefreshModelResults(
         result_providers) {
   result_providers_ = std::move(result_providers);
   for (const auto& config : configs_) {
-    if (config->on_demand_execution) {
+    if (config->on_demand_execution ||
+        !metadata_utils::HasMigratedToMultiOutput(config.get())) {
       continue;
     }
     auto* segment_result_provider =
         result_providers_[config->segmentation_key].get();
-    GetCachedResultOrRunModel(segment_result_provider, config.get(),
-                              /*run_model=*/false);
+    GetCachedResultOrRunModel(segment_result_provider, config.get());
   }
 }
 
 void ResultRefreshManager::GetCachedResultOrRunModel(
     SegmentResultProvider* segment_result_provider,
-    Config* config,
-    bool run_model) {
+    Config* config) {
   auto result_options =
       std::make_unique<SegmentResultProvider::GetResultOptions>();
   // Not required, checking only for testing.
@@ -55,16 +54,12 @@ void ResultRefreshManager::GetCachedResultOrRunModel(
   }
   // Note that, this assumes that a client has only one model.
   result_options->segment_id = config->segments.begin()->first;
-  result_options->ignore_db_scores =
-      run_model;  // First time just get the result from DB.
+  result_options->ignore_db_scores = false;
+  result_options->save_results_to_db = true;
 
-  // TODO(ritikagup) : Fix the save_result_to_db callback and then set it to
-  // true.
-
-  result_options->callback =
-      base::BindOnce(&ResultRefreshManager::OnGetCachedResultOrRunModel,
-                     weak_ptr_factory_.GetWeakPtr(), segment_result_provider,
-                     config, run_model);
+  result_options->callback = base::BindOnce(
+      &ResultRefreshManager::OnGetCachedResultOrRunModel,
+      weak_ptr_factory_.GetWeakPtr(), segment_result_provider, config);
 
   segment_result_provider->GetSegmentResult(std::move(result_options));
 }
@@ -72,25 +67,14 @@ void ResultRefreshManager::GetCachedResultOrRunModel(
 void ResultRefreshManager::OnGetCachedResultOrRunModel(
     SegmentResultProvider* segment_result_provider,
     Config* config,
-    bool run_model,
     std::unique_ptr<SegmentResultProvider::SegmentResult> result) {
   SegmentResultProvider::ResultState result_state =
       result ? result->state : SegmentResultProvider::ResultState::kUnknown;
 
-  // If the model result is not available from database or has expired,
-  // evaluate the result by running the model.
-  bool has_expired_or_unavailable_result =
-      (result_state ==
-       SegmentResultProvider::ResultState::kDatabaseScoreNotReady);
-  if (run_model == false && has_expired_or_unavailable_result) {
-    GetCachedResultOrRunModel(segment_result_provider, config,
-                              /*run_model=*/true);
-    return;
-  }
-
   if (!SupportMultiOutput(result.get())) {
     return;
   }
+
   proto::PredictionResult pred_result = result->result;
   // If the model result is available either from database or running the
   // model, update prefs if expired.

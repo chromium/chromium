@@ -8872,5 +8872,56 @@
     "protocol": "non-special:",
     "search": "",
     "username": ""
+  },
+  {
+    "input": "",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "https://example.com/\"quoted\"",
+    "base": "about:blank",
+    "hash": "",
+    "host": "example.com",
+    "hostname": "example.com",
+    "href": "https://example.com/%22quoted%22",
+    "origin": "https://example.com",
+    "password": "",
+    "pathname": "/%22quoted%22",
+    "port": "",
+    "protocol": "https:",
+    "search": "",
+    "username": ""
+  },
+  {
+    "input": "https://a%C2%ADb/",
+    "base": "about:blank",
+    "hash": "",
+    "host": "ab",
+    "hostname": "ab",
+    "href": "https://ab/",
+    "origin": "https://ab",
+    "password": "",
+    "pathname": "/",
+    "port": "",
+    "protocol": "https:",
+    "search": "",
+    "username": ""
+  },
+  {
+    "comment": "Empty host after domain to ASCII",
+    "input": "https://\u00AD/",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "https://%C2%AD/",
+    "base": "about:blank",
+    "failure": true
+  },
+  {
+    "input": "https://xn--/",
+    "base": "about:blank",
+    "failure": true
   }
 ]

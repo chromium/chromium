@@ -73,8 +73,8 @@ TEST_P(NGHighlightPainterTest, FastSpellingGrammarPaintCase) {
                                                physical_rect, selection);
     NGHighlightPainter highlight_painter(
         cursor.Current()->TextPaintInfo(cursor.Items()), text_painter,
-        decoration_painter, paint_info, cursor, text_item, {}, physical_rect,
-        physical_offset, style, text_style, selection, false);
+        decoration_painter, paint_info, cursor, text_item, {}, physical_offset,
+        style, text_style, selection, false);
 
     EXPECT_EQ(highlight_painter.PaintCase(), expected)
         << "(line " << line << ")";

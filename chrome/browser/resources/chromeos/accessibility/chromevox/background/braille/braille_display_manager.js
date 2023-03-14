@@ -17,11 +17,7 @@ import {PanStrategy} from './pan_strategy.js';
 import {ValueSpan} from './spans.js';
 
 export class BrailleDisplayManager {
-  /**
-   * @param {!BrailleTranslatorManager} translatorManager Keeps track
-   *     of the current translator to use.
-   */
-  constructor(translatorManager) {
+  constructor() {
     /** @private {number|undefined} */
     this.blinkerId_;
 
@@ -57,15 +53,12 @@ export class BrailleDisplayManager {
      */
     this.realDisplayState_ = this.displayState_;
 
-    /** @private {!BrailleTranslatorManager} */
-    this.translatorManager_ = translatorManager;
-
     this.init_();
   }
 
   /** @private */
   init_() {
-    this.translatorManager_.addChangeListener(
+    BrailleTranslatorManager.instance.addChangeListener(
         () => this.translateContent_(this.content_, this.expansionType_));
 
     SettingsManager.addListenerForKey(
@@ -91,6 +84,13 @@ export class BrailleDisplayManager {
       // state in an API callback in this case.
       this.onCaptionsStateChanged_();
     }
+  }
+
+  static init() {
+    if (BrailleDisplayManager.instance) {
+      throw new Error('Cannot create two BrailleDisplayManager instances');
+    }
+    BrailleDisplayManager.instance = new BrailleDisplayManager();
   }
 
   /**
@@ -354,7 +354,8 @@ export class BrailleDisplayManager {
       this.refresh_();
     };
 
-    const translator = this.translatorManager_.getExpandingTranslator();
+    const translator =
+        BrailleTranslatorManager.instance.getExpandingTranslator();
     if (!translator) {
       writeTranslatedContent(new ArrayBuffer(0), [], []);
     } else {
@@ -526,3 +527,6 @@ BrailleDisplayManager.COORDS_TO_BRAILLE_DOT_ =
  * @const {number}
  */
 BrailleDisplayManager.CURSOR_BLINK_TIME_MS = 1000;
+
+/** @type {BrailleDisplayManager} */
+BrailleDisplayManager.instance;

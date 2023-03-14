@@ -149,6 +149,7 @@
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/resources/grit/webui_resources.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 
 namespace ash {
 
@@ -267,7 +268,8 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   const bool is_oobe_flow = display_type == OobeUI::kOobeDisplay;
   source->AddBoolean("isOsInstallAllowed", switches::IsOsInstallAllowed());
   source->AddBoolean("isOobeFlow", is_oobe_flow);
-  source->AddBoolean("isOobeJelly", features::IsOobeJellyEnabled());
+  // TODO (b/268463435) Cleanup OobeJelly
+  source->AddBoolean("isOobeJellyEnabled", features::IsOobeJellyEnabled());
   source->AddBoolean("isChoobeEnabled", features::IsOobeChoobeEnabled());
   source->AddBoolean(
       "isArcVmDataMigrationEnabled",
@@ -549,6 +551,17 @@ void OobeUI::BindInterface(
 void OobeUI::BindInterface(
     mojo::PendingReceiver<cellular_setup::mojom::ESimManager> receiver) {
   GetESimManager(std::move(receiver));
+}
+
+void OobeUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
+  if (!features::IsOobeJellyEnabled()) {
+    mojo::ReportBadMessage(
+        "Jelly not enabled: OOBE should not listen to color changes.");
+    return;
+  }
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 OobeUI::OobeUI(content::WebUI* web_ui, const GURL& url)

@@ -6,7 +6,7 @@
 
 #import "base/scoped_observation.h"
 #import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
+#import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/ui/text_zoom/text_zoom_consumer.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"

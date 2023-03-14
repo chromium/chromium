@@ -23,7 +23,6 @@
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/attribution_reporting/os_support.mojom.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_factory.h"
@@ -37,6 +36,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/child_process_binding_types.h"
+#include "components/attribution_reporting/os_support.mojom-forward.h"
 #include "content/public/browser/android/child_process_importance.h"
 #endif
 
@@ -187,6 +187,8 @@ class MockRenderProcessHost : public RenderProcessHost {
       const GlobalRenderFrameHostId& render_frame_host_id) override;
   void IncrementWorkerRefCount() override;
   void DecrementWorkerRefCount() override;
+  void IncrementPendingReuseRefCount() override;
+  void DecrementPendingReuseRefCount() override;
   bool AreRefCountsDisabled() override;
   mojom::Renderer* GetRendererInterface() override;
   void CreateURLLoaderFactory(
@@ -284,8 +286,11 @@ class MockRenderProcessHost : public RenderProcessHost {
 
   std::string GetInfoForBrowserContextDestructionCrashReporting() override;
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const override;
+
+#if BUILDFLAG(IS_ANDROID)
   void SetOsSupportForAttributionReporting(
       attribution_reporting::mojom::OsSupport os_support) override {}
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void ReinitializeLogging(uint32_t logging_dest,
@@ -350,6 +355,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   base::Process process;
   int keep_alive_ref_count_;
   int worker_ref_count_;
+  int pending_reuse_ref_count_;
   int foreground_service_worker_count_;
   std::unique_ptr<mojo::AssociatedRemote<mojom::Renderer>> renderer_interface_;
   std::map<std::string, InterfaceBinder> binder_overrides_;

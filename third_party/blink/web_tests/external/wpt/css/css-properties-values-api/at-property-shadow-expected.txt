@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL @property rules in shadow trees should have no effect assert_equals: expected "calc(1px + 1px)" but got " calc(1px + 1px)"
-Harness: the test ran to completion.
-

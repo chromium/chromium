@@ -66,13 +66,17 @@ class SharedImageInterfaceProxy {
                          const Mailbox& mailbox);
 
   void DestroySharedImage(const SyncToken& sync_token, const Mailbox& mailbox);
+  void AddReferenceToSharedImage(const SyncToken& sync_token,
+                                 const Mailbox& mailbox,
+                                 uint32_t usage);
+
   SyncToken GenVerifiedSyncToken();
   SyncToken GenUnverifiedSyncToken();
   void WaitSyncToken(const SyncToken& sync_token);
   void Flush();
 
   SharedImageInterface::SwapChainMailboxes CreateSwapChain(
-      viz::ResourceFormat format,
+      viz::SharedImageFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,

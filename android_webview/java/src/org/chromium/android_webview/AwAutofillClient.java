@@ -74,7 +74,7 @@ public class AwAutofillClient {
                 return;
             }
         }
-        mAutofillPopup.filterAndShow(suggestions, isRtl, false);
+        mAutofillPopup.filterAndShow(suggestions, isRtl);
     }
 
     @CalledByNative

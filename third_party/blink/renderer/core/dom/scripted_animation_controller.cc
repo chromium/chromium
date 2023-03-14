@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -192,83 +193,6 @@ PageAnimator* ScriptedAnimationController::GetPageAnimator() {
   if (GetWindow()->document() && GetWindow()->document()->GetPage())
     return &(GetWindow()->document()->GetPage()->Animator());
   return nullptr;
-}
-
-void ScriptedAnimationController::ServiceScriptedAnimations(
-    base::TimeTicks monotonic_time_now,
-    bool can_throttle) {
-  if (!GetExecutionContext() ||
-      GetExecutionContext()->IsContextFrozenOrPaused()) {
-    return;
-  }
-  auto* loader = GetWindow()->document()->Loader();
-  if (!loader)
-    return;
-
-  if (can_throttle) {
-    DispatchEvents([](const Event* event) {
-      return event->type() == event_type_names::kResize;
-    });
-    return;
-  }
-
-  current_frame_time_ms_ =
-      loader->GetTiming()
-          .MonotonicTimeToZeroBasedDocumentTime(monotonic_time_now)
-          .InMillisecondsF();
-  current_frame_legacy_time_ms_ =
-      loader->GetTiming()
-          .MonotonicTimeToPseudoWallTime(monotonic_time_now)
-          .InMillisecondsF();
-  auto* animator = GetPageAnimator();
-  if (animator && HasFrameCallback())
-    animator->SetCurrentFrameHadRaf();
-
-  if (!HasScheduledFrameTasks())
-    return;
-
-  // https://gpuweb.github.io/gpuweb/#abstract-opdef-expire-stale-external-textures
-  WebGPUCheckStateToExpireVideoFrame();
-
-  // https://html.spec.whatwg.org/C/#update-the-rendering
-
-  // 10.5. For each fully active Document in docs, flush autofocus
-  // candidates for that Document if its browsing context is a top-level
-  // browsing context.
-  GetWindow()->document()->FlushAutofocusCandidates();
-
-  // 10.8. For each fully active Document in docs, evaluate media
-  // queries and report changes for that Document, passing in now as the
-  // timestamp
-  CallMediaQueryListListeners();
-
-  // 10.6. For each fully active Document in docs, run the resize steps
-  // for that Document, passing in now as the timestamp.
-  // 10.7. For each fully active Document in docs, run the scroll steps
-  // for that Document, passing in now as the timestamp.
-  // 10.9. For each fully active Document in docs, update animations and
-  // send events for that Document, passing in now as the timestamp.
-  //
-  // We share a single event queue for them.
-  DispatchEvents();
-
-  // 10.10. For each fully active Document in docs, run the fullscreen
-  // steps for that Document, passing in now as the timestamp.
-  RunTasks();
-
-  // Run the fulfilled HTMLVideoELement.requestVideoFrameCallback() callbacks.
-  // See https://wicg.github.io/video-rvfc/.
-  ExecuteVideoFrameCallbacks();
-
-  // 10.11. For each fully active Document in docs, run the animation
-  // frame callbacks for that Document, passing in now as the timestamp.
-  ExecuteFrameCallbacks();
-  if (animator && HasFrameCallback())
-    animator->SetNextFrameHasPendingRaf();
-
-  // See LocalFrameView::RunPostLifecycleSteps() for 10.12.
-
-  ScheduleAnimationIfNeeded();
 }
 
 void ScriptedAnimationController::EnqueueTask(base::OnceClosure task) {

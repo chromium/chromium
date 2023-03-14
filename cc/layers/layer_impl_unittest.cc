@@ -448,6 +448,8 @@ TEST_F(LayerImplScrollTest, TouchActionRegionCacheInvalidation) {
   host_impl()->CreatePendingTree();
   std::unique_ptr<LayerImpl> pending_layer =
       LayerImpl::Create(host_impl()->pending_tree(), 2);
+  pending_layer->SetElementId(
+      LayerIdToElementIdForTesting(pending_layer->id()));
 
   TouchActionRegion region;
   region.Union(TouchAction::kNone, gfx::Rect(0, 0, 50, 50));

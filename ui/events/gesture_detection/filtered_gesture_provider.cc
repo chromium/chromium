@@ -47,7 +47,9 @@ FilteredGestureProvider::OnTouchEvent(const MotionEvent& event) {
   TouchDispositionGestureFilter::PacketResult filter_result =
       gesture_filter_.OnGesturePacket(pending_gesture_packet_);
   if (filter_result != TouchDispositionGestureFilter::SUCCESS) {
-    NOTREACHED() << "Invalid touch gesture sequence detected.";
+    DCHECK_EQ(filter_result,
+              TouchDispositionGestureFilter::EMPTY_GESTURE_SEQUENCE)
+        << "Invalid touch gesture sequence detected.";
     return TouchHandlingResult();
   }
 

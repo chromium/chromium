@@ -86,7 +86,7 @@ suite('AppListTest', () => {
     testAppInfo = {
       id: 'mmfbcljfglbokpmkimbfghdkjmjhdgbg',
       startUrl: {url: 'https://test.google.com/testapp3'},
-      name: 'Test App 3',
+      name: 'A Test App 3',
       iconUrl: {
         url: 'chrome://app-icon/mmfbcljfglbokpmkimbfghdkjmjhdgbg/128/1',
       },
@@ -162,10 +162,10 @@ suite('AppListTest', () => {
     flush();
     let appItemList =
         Array.from(appListElement.shadowRoot!.querySelectorAll('app-item'));
-    assertTrue(!!appItemList.find(
-        appItem =>
-            appItem.shadowRoot!.querySelector('#textContainer')!.textContent ===
-            testAppInfo.name));
+    assertTrue(
+        appItemList[0]!.shadowRoot!.querySelector(
+                                       '#textContainer')!.textContent ===
+        testAppInfo.name);
 
     // Test removing an app
     callbackRouterRemote.removeApp(testAppInfo);
@@ -257,9 +257,12 @@ suite('AppListTest', () => {
     assertTrue(
         contextMenu.querySelector<HTMLElement>('#createShortcut')!.hidden);
     assertTrue(contextMenu.querySelector<HTMLElement>('#appSettings')!.hidden);
-    assertFalse(contextMenu.querySelector<HTMLElement>('#uninstall')!.hidden);
+    assertTrue(contextMenu.querySelector<HTMLElement>('#uninstall')!.hidden);
+    assertFalse(
+        contextMenu.querySelector<HTMLElement>('#removeFromChrome')!.hidden);
     assertTrue(
-        contextMenu.querySelector<HTMLButtonElement>('#uninstall')!.disabled);
+        contextMenu.querySelector<HTMLButtonElement>(
+                       '#removeFromChrome')!.disabled);
     assertFalse(
         contextMenu.querySelector<HTMLElement>('#installLocally')!.hidden);
   });
@@ -491,6 +494,8 @@ suite('AppListTest', () => {
         appItem.shadowRoot!.querySelector<HTMLImageElement>('#iconImage')!.src,
         apps.appList[1]!.iconUrl.url + '?grayscale=true');
 
+    assertEquals(appItem.ariaLabel, 'Test App 2 (not locally installed)');
+
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
 
     const contextMenu = appItem.shadowRoot!.querySelector('cr-action-menu');
@@ -500,7 +505,9 @@ suite('AppListTest', () => {
     assertTrue(
         contextMenu.querySelector<HTMLElement>('#createShortcut')!.hidden);
     assertTrue(contextMenu.querySelector<HTMLElement>('#appSettings')!.hidden);
-    assertFalse(contextMenu.querySelector<HTMLElement>('#uninstall')!.hidden);
+    assertTrue(contextMenu.querySelector<HTMLElement>('#uninstall')!.hidden);
+    assertFalse(
+        contextMenu.querySelector<HTMLElement>('#removeFromChrome')!.hidden);
 
     const installLocally =
         appItem.shadowRoot!.querySelector<HTMLElement>('#installLocally');
@@ -516,6 +523,8 @@ suite('AppListTest', () => {
     assertEquals(
         appItem.shadowRoot!.querySelector<HTMLImageElement>('#iconImage')!.src,
         apps.appList[1]!.iconUrl.url);
+
+    assertEquals(appItem.ariaLabel, 'Test App 2');
 
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
 
@@ -554,6 +563,11 @@ suite('AppListTest', () => {
     assertEquals(clickEvent.ctrlKey, mouseEvent.ctrlKey);
     assertEquals(clickEvent.metaKey, mouseEvent.metaKey);
     assertEquals(clickEvent.shiftKey, mouseEvent.shiftKey);
+
+    assertEquals(
+        1,
+        metricsPrivateMock.getUserActionCount(
+            AppHomeUserAction.LAUNCH_WEB_APP));
   });
 
   test(
@@ -662,7 +676,8 @@ suite('AppListTest', () => {
     const linkContainer: HTMLElement =
         deprecatedAppsLink.shadowRoot!.querySelector<HTMLImageElement>(
             '#container')!;
-    assertTrue(linkContainer!.hidden, 'Deprecation link is not hidden');
+    assertEquals(
+        linkContainer!.style.display, 'none', 'Deprecation link is not hidden');
 
     const appItems = appListElement.shadowRoot!.querySelectorAll('app-item');
     assertTrue(!!appItems, 'No apps.');
@@ -676,32 +691,37 @@ suite('AppListTest', () => {
     });
   });
 
-  test('Deprecated app means deprecation ux', async () => {
-    // Test adding an app.
-    callbackRouterRemote.addApp(deprecatedAppInfo);
+  test('Deprecated link', async () => {
     testBrowserProxy.fakeHandler.addAppToList(deprecatedAppInfo);
-    await callbackRouterRemote.$.flushForTesting();
-    flush();
 
     const deprecatedAppsLink: DeprecatedAppsLinkElement =
         document.createElement('deprecated-apps-link');
     document.body.appendChild(deprecatedAppsLink);
     await waitAfterNextRender(deprecatedAppsLink);
-
     assertTrue(!!deprecatedAppsLink);
     const linkContainer: HTMLElement =
         deprecatedAppsLink.shadowRoot!.querySelector<HTMLImageElement>(
             '#container')!;
-    assertFalse(
-        linkContainer.hidden, 'Removal link is hidden when it shouldn\'t be.');
+    assertEquals(
+        linkContainer!.style.display, 'inline-flex',
+        'Removal link is hidden when it shouldn\'t be.');
+  });
 
-    const appItems = appListElement.shadowRoot!.querySelectorAll('app-item');
+  test('Deprecated app icon', async () => {
+    // Test adding an app.
+    callbackRouterRemote.addApp(deprecatedAppInfo);
+    await callbackRouterRemote.$.flushForTesting();
+    flush();
+
+    const appItems = appListElement.shadowRoot!.querySelectorAll('.item')!;
     assertTrue(!!appItems, 'No apps.');
 
+    let found = false;
     appItems.forEach((item) => {
       const deprecatedIcon: HTMLElement =
           item!.shadowRoot!.querySelector<HTMLImageElement>('#deprecatedIcon')!;
-      if (item.id === deprecatedAppInfo.id) {
+      if (item!.id === deprecatedAppInfo.id) {
+        found = true;
         assertFalse(
             deprecatedIcon.hidden,
             'Deprecated app should have deprecated icon visible');
@@ -711,6 +731,34 @@ suite('AppListTest', () => {
             'Non-deprecated app should not have deprecation icon');
       }
     });
+    assertTrue(found, 'Deprecated item not found.');
+  });
+
+  test('Clicking deprecated app', async () => {
+    // Test adding an app.
+    callbackRouterRemote.addApp(deprecatedAppInfo);
+    await callbackRouterRemote.$.flushForTesting();
+    flush();
+    waitAfterNextRender(appListElement);
+
+    const appItem =
+        appListElement.shadowRoot!.querySelector('#' + deprecatedAppInfo.id)!;
+    assertTrue(!!appItem, 'No apps.');
+
+    const mouseEvent: MouseEvent = new MouseEvent('click', {
+      button: 0,
+      altKey: false,
+      ctrlKey: false,
+      metaKey: false,
+      shiftKey: false,
+    });
+    appItem.dispatchEvent(mouseEvent);
+
+    await testBrowserProxy.fakeHandler.whenCalled('launchApp');
+    assertEquals(
+        1,
+        metricsPrivateMock.getUserActionCount(
+            AppHomeUserAction.LAUNCH_DEPRECATED_APP));
   });
 
   test('Clicking deprecation link calls handler', async () => {

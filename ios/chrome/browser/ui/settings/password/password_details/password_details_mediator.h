@@ -15,6 +15,12 @@ struct CredentialUIEntry;
 class PasswordManagerClient;
 }  // namespace password_manager
 
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
+class PrefService;
+
 class IOSChromePasswordCheckManager;
 @protocol PasswordDetailsConsumer;
 
@@ -30,6 +36,11 @@ class IOSChromePasswordCheckManager;
                         credentials
                       displayName:(NSString*)displayName
              passwordCheckManager:(IOSChromePasswordCheckManager*)manager
+                      prefService:(PrefService*)prefService
+                      syncService:(syncer::SyncService*)syncService
+             supportMoveToAccount:(BOOL)supportMoveToAccount
+            passwordManagerClient:
+                (password_manager::PasswordManagerClient*)passwordManagerClient
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -37,21 +48,14 @@ class IOSChromePasswordCheckManager;
 // Consumer of this mediator.
 @property(nonatomic, weak) id<PasswordDetailsConsumer> consumer;
 
-// Array of credentials passed to the mediator.
-@property(nonatomic, readonly) std::vector<password_manager::CredentialUIEntry>
-    credentials;
-
 // Disconnects the mediator from all observers.
 - (void)disconnect;
 
 // Remove credential from credentials cache.
-- (void)removeCredential:(const password_manager::CredentialUIEntry&)credential;
+- (void)removeCredential:(PasswordDetails*)password;
 
 // Moves credential and its duplicates to account store.
-- (void)moveCredentialToAccountStore:
-            (const password_manager::CredentialUIEntry&)credential
-                              client:(password_manager::PasswordManagerClient*)
-                                         client;
+- (void)moveCredentialToAccountStore:(PasswordDetails*)password;
 
 @end
 

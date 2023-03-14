@@ -74,7 +74,7 @@ class EmptyTrustedVaultClient : public TrustedVaultClient {
     NOTREACHED();
   }
 
-  void ClearDataForAccount(const CoreAccountInfo& account_info) override {
+  void ClearLocalDataForAccount(const CoreAccountInfo& account_info) override {
     // Never invoked by SyncServiceCrypto.
     NOTREACHED();
   }

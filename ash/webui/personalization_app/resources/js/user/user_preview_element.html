@@ -18,6 +18,10 @@
     grid-template-rows: 20px 96px;
   }
 
+  :host-context(body.jelly-enabled):host-context(user-subpage) #container {
+    grid-template-rows: 6px 96px;
+  }
+
   #imageContainer {
     grid-area: image;
     position: relative;
@@ -245,7 +249,8 @@
               role="button"
               on-click="onClickUserSubpageLink_"
               on-keypress="onClickUserSubpageLink_"
-              style$="[[getImgBackgroudStyle_(imageUrl_.url)]]">
+              on-error="onImgError_"
+              style$="[[getImgBackgroundStyle_(imageUrl_.url)]]">
         </div>
       </template>
       <template is="dom-if"

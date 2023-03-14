@@ -392,8 +392,8 @@ bool Textfield::HasSelection(bool primary_only) const {
 }
 
 SkColor Textfield::GetTextColor() const {
-  return text_color_.value_or(
-      style::GetColor(*this, style::CONTEXT_TEXTFIELD, GetTextStyle()));
+  return text_color_.value_or(GetColorProvider()->GetColor(
+      style::GetColorId(style::CONTEXT_TEXTFIELD, GetTextStyle())));
 }
 
 void Textfield::SetTextColor(SkColor color) {
@@ -804,9 +804,6 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
       break;
     case ui::ET_GESTURE_SCROLL_BEGIN:
       if (HasFocus()) {
-        touch_handles_hidden_due_to_scroll_ =
-            touch_selection_controller_ != nullptr;
-        DestroyTouchSelection();
 #if BUILDFLAG(IS_CHROMEOS)
         if (::features::IsTouchTextEditingRedesignEnabled()) {
           MaybeStartSelectionDragging(event);
@@ -816,12 +813,29 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
           drag_start_location_x_ = event->location().x();
           drag_start_display_offset_ =
               GetRenderText()->GetUpdatedDisplayOffset().x();
+          show_touch_handles_after_scroll_ =
+              touch_selection_controller_ != nullptr;
+        } else {
+          show_touch_handles_after_scroll_ = true;
         }
+        // Deactivate touch selection handles when scrolling or selection
+        // dragging.
+        DestroyTouchSelection();
         event->SetHandled();
       }
       break;
     case ui::ET_GESTURE_SCROLL_UPDATE:
       if (HasFocus()) {
+        // Switch from selection dragging to default scrolling behaviour if
+        // scroll update has multiple touch points.
+        if (selection_dragging_state_ != SelectionDraggingState::kNone &&
+            event->details().touch_points() > 1) {
+          selection_dragging_state_ = SelectionDraggingState::kNone;
+          drag_start_location_x_ = event->location().x();
+          drag_start_display_offset_ =
+              GetRenderText()->GetUpdatedDisplayOffset().x();
+          show_touch_handles_after_scroll_ = true;
+        }
         switch (selection_dragging_state_) {
           case SelectionDraggingState::kDraggingSelectionExtent:
             MoveRangeSelectionExtent(event->location() +
@@ -830,13 +844,14 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
           case SelectionDraggingState::kDraggingCursor:
             MoveCursorTo(event->location(), false);
             break;
-          case SelectionDraggingState::kNone:
+          case SelectionDraggingState::kNone: {
             int new_display_offset = drag_start_display_offset_ +
                                      event->location().x() -
                                      drag_start_location_x_;
             GetRenderText()->SetDisplayOffset(new_display_offset);
             SchedulePaint();
             break;
+          }
         }
         event->SetHandled();
       }
@@ -844,12 +859,11 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
     case ui::ET_GESTURE_SCROLL_END:
     case ui::ET_SCROLL_FLING_START:
       if (HasFocus()) {
-        if (selection_dragging_state_ != SelectionDraggingState::kNone ||
-            touch_handles_hidden_due_to_scroll_) {
+        if (show_touch_handles_after_scroll_) {
           CreateTouchSelectionControllerAndNotifyIt();
-          selection_dragging_state_ = SelectionDraggingState::kNone;
-          touch_handles_hidden_due_to_scroll_ = false;
+          show_touch_handles_after_scroll_ = false;
         }
+        selection_dragging_state_ = SelectionDraggingState::kNone;
         event->SetHandled();
       }
       break;
@@ -1353,10 +1367,6 @@ void Textfield::ConvertPointToScreen(gfx::Point* point) {
 
 void Textfield::ConvertPointFromScreen(gfx::Point* point) {
   View::ConvertPointFromScreen(this, point);
-}
-
-bool Textfield::DrawsHandles() {
-  return false;
 }
 
 void Textfield::OpenContextMenu(const gfx::Point& anchor) {
@@ -2569,11 +2579,11 @@ void Textfield::PaintTextAndCursor(gfx::Canvas* canvas) {
       placeholder_text_draw_flags |= gfx::Canvas::NO_SUBPIXEL_RENDERING;
 
     canvas->DrawStringRectWithFlags(
-        GetPlaceholderText(),
-        placeholder_font_list_.has_value() ? placeholder_font_list_.value()
-                                           : GetFontList(),
-        placeholder_text_color_.value_or(style::GetColor(
-            *this, style::CONTEXT_TEXTFIELD, style::STYLE_HINT)),
+        GetPlaceholderText(), placeholder_font_list_.value_or(GetFontList()),
+        placeholder_text_color_.value_or(
+            GetColorProvider()->GetColor(style::GetColorId(
+                style::CONTEXT_TEXTFIELD_PLACEHOLDER,
+                GetInvalid() ? style::STYLE_INVALID : style::STYLE_PRIMARY))),
         render_text->display_rect(), placeholder_text_draw_flags);
   }
 
@@ -2826,7 +2836,10 @@ float Textfield::GetCornerRadius() {
 
 #if BUILDFLAG(IS_CHROMEOS)
 void Textfield::MaybeStartSelectionDragging(ui::GestureEvent* event) {
-  if (event->type() != ui::ET_GESTURE_SCROLL_BEGIN) {
+  DCHECK_EQ(event->type(), ui::ET_GESTURE_SCROLL_BEGIN);
+  // Only start selection dragging if scrolling with one touch point.
+  if (event->details().touch_points() > 1) {
+    selection_dragging_state_ = SelectionDraggingState::kNone;
     return;
   }
 

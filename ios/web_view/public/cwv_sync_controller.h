@@ -34,11 +34,6 @@ CWV_EXPORT
 // The delegate of CWVSyncController.
 @property(nonatomic, weak, nullable) id<CWVSyncControllerDelegate> delegate;
 
-// Whether or not sync is running.
-// This property may change after |syncControllerDidUpdateState:| is invoked on
-// the |delegate|.
-@property(nonatomic, readonly, getter=isSyncing) BOOL syncing;
-
 // The user who is syncing.
 // This property may change after |syncControllerDidUpdateState:| is invoked on
 // the |delegate|.

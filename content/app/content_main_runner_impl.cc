@@ -186,6 +186,11 @@
 #include "media/base/media_switches.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_ZYGOTE)
+#include "base/rand_util.h"
+#include "chromeos/startup/startup_switches.h"
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 #include "base/system/sys_info.h"
 #include "content/browser/android/battery_metrics.h"
@@ -316,6 +321,9 @@ pid_t LaunchZygoteHelper(base::CommandLine* cmd_line,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     switches::kEnableResourcesFileSharing,
 #endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    chromeos::switches::kZygoteHugepageRemap,
+#endif
   };
   cmd_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
                              kForwardSwitches, std::size(kForwardSwitches));
@@ -356,6 +364,20 @@ void InitializeZygoteSandboxForBrowserProcess(
     return;
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // We determine whether to enable the zygote hugepage remap feature. We store
+  // the result in the current command line. This will automatically propagate
+  // to zygotes via LaunchZygoteHelper. Later,
+  // ChromeBrowserMainExtraPartsMetrics::PreBrowserStart will register the
+  // synthetic field trial.
+  // This is a 50/50 trial.
+  const bool enable_hugepage = base::RandInt(/*min=*/0, /*max=*/1) == 1;
+  if (enable_hugepage) {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        chromeos::switches::kZygoteHugepageRemap);
+  }
+#endif
+
   // Tickle the zygote host so it forks now.
   ZygoteHostImpl::GetInstance()->Init(parsed_command_line);
   if (!parsed_command_line.HasSwitch(switches::kNoUnsandboxedZygote)) {
@@ -390,7 +412,7 @@ void PreloadPepperPlugins() {
     }
   }
 }
-#endif
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 // Loads registered library CDMs but does not initialize them. This is needed by
@@ -407,8 +429,15 @@ void PreloadLibraryCdms() {
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
-#if BUILDFLAG(USE_ZYGOTE)
 void PreSandboxInit() {
+  // Ensure the /dev/urandom is opened.
+  base::GetUrandomFD();
+
+  // May use sysinfo(), sched_getaffinity(), and open various /sys/ and /proc/
+  // files.
+  base::SysInfo::AmountOfPhysicalMemory();
+  base::SysInfo::NumberOfProcessors();
+
   // Pre-acquire resources needed by BoringSSL. See
   // https://boringssl.googlesource.com/boringssl/+/HEAD/SANDBOXING.md
   CRYPTO_pre_sandbox_init();
@@ -473,7 +502,6 @@ void PreSandboxInit() {
   base::internal::CanUseBackgroundThreadTypeForWorkerThread();
   base::internal::CanUseUtilityThreadTypeForWorkerThread();
 }
-#endif  // BUILDFLAG(USE_ZYGOTE)
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
@@ -620,10 +648,6 @@ int NO_STACK_PROTECTOR RunZygote(ContentMainDelegate* delegate) {
   std::vector<std::unique_ptr<ZygoteForkDelegate>> zygote_fork_delegates;
   delegate->ZygoteStarting(&zygote_fork_delegates);
   media::InitializeMediaLibrary();
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  PreSandboxInit();
-#endif
 
   // This function call can return multiple times, once per fork().
   if (!ZygoteMain(std::move(zygote_fork_delegates))) {
@@ -838,7 +862,7 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
 // On Android, AtExitManager is set up when library is loaded.
 // A consequence of this is that you can't use the ctor/dtor-based
 // TRACE_EVENT methods on Linux or iOS builds till after we set this up.
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (!content_main_params_->ui_task) {
     // When running browser tests, don't create a second AtExitManager as that
     // interfers with shutdown when objects created before ContentMain is
@@ -1021,6 +1045,17 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
     // SeatbeltExecServer.
     CHECK(sandbox::Seatbelt::IsSandboxed());
   }
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // In sandboxed processes and zygotes, certain resource should be pre-warmed
+  // as they cannot be initialized under a sandbox. In addition, loading these
+  // resources in zygotes (including the unsandboxed zygote) allows them to be
+  // initialized just once in the zygote, rather than in every forked child
+  // process.
+  if (!sandbox::policy::IsUnsandboxedSandboxType(
+          sandbox::policy::SandboxTypeFromCommandLine(command_line)) ||
+      process_type == switches::kZygoteProcess) {
+    PreSandboxInit();
+  }
 #endif
 
   delegate_->SandboxInitialized(process_type);
@@ -1113,9 +1148,6 @@ int NO_STACK_PROTECTOR ContentMainRunnerImpl::Run() {
   main_params.sandbox_info = content_main_params_->sandbox_info;
 #elif BUILDFLAG(IS_MAC)
   main_params.autorelease_pool = content_main_params_->autorelease_pool;
-#elif BUILDFLAG(IS_IOS)
-  main_params.argc = content_main_params_->argc;
-  main_params.argv = content_main_params_->argv;
 #endif
 
   const bool start_minimal_browser = content_main_params_->minimal_browser_mode;

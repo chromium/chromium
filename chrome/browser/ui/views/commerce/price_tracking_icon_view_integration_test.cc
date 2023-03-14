@@ -109,6 +109,16 @@ class PriceTrackingIconViewIntegrationTest : public TestWithBrowserView {
                                  0, is_price_tracked);
   }
 
+  void SimulateSubscriptionChangeEvent(bool is_subscribed) {
+    if (is_subscribed) {
+      GetTabHelper()->OnSubscribe({commerce::CreateUserTrackedSubscription(0L)},
+                                  true);
+    } else {
+      GetTabHelper()->OnUnsubscribe(
+          {commerce::CreateUserTrackedSubscription(0L)}, true);
+    }
+  }
+
   void VerifyIconState(PriceTrackingIconView* icon_view,
                        bool is_price_tracked) {
     EXPECT_TRUE(icon_view->GetVisible());
@@ -185,31 +195,8 @@ TEST_F(PriceTrackingIconViewIntegrationTest,
   EXPECT_FALSE(icon_view->GetVisible());
 }
 
-TEST_F(PriceTrackingIconViewIntegrationTest, IconUpdatedWhenRemoveBookmark) {
-  SimulateServerPriceTrackState(/*is_price_tracked=*/true);
-
-  ON_CALL(*GetTabHelper(), ShouldShowPriceTrackingIconView)
-      .WillByDefault(testing::Return(true));
-
-  NavigateAndCommitActiveTab(GURL(kTrackableUrl));
-
-  auto* icon_view = GetChip();
-  VerifyIconState(icon_view, /*is_price_tracked=*/true);
-
-  // Assume there is only a single bookmark with the product cluster ID and that
-  // removal untracked it.
-  ON_CALL(*GetTabHelper(), IsPriceTracking)
-      .WillByDefault(testing::Return(false));
-
-  // Simulate removed bookmark.
-  bookmarks::BookmarkModel* bookmark_model =
-      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
-  bookmarks::RemoveAllBookmarks(bookmark_model, GURL(kTrackableUrl));
-
-  VerifyIconState(icon_view, /*is_price_tracked=*/false);
-}
-
-TEST_F(PriceTrackingIconViewIntegrationTest, IconUpdatedWhenMetaDataChanged) {
+TEST_F(PriceTrackingIconViewIntegrationTest,
+       IconUpdatedWhenSubscriptionChanged) {
   SimulateServerPriceTrackState(/*is_price_tracked=*/true);
 
   ON_CALL(*GetTabHelper(), ShouldShowPriceTrackingIconView)
@@ -224,6 +211,7 @@ TEST_F(PriceTrackingIconViewIntegrationTest, IconUpdatedWhenMetaDataChanged) {
 
   // Simulate meta data changed.
   SimulateServerPriceTrackState(false);
+  SimulateSubscriptionChangeEvent(false);
 
   VerifyIconState(icon_view, /*is_price_tracked=*/false);
 }

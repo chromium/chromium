@@ -20,7 +20,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/display/screen_base.h"
-#include "ui/display/test/scoped_screen_override.h"
 #include "ui/display/test/test_screen.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -117,7 +116,7 @@ IN_PROC_BROWSER_TEST_P(WindowManagementTest, DISABLED_OnScreensChangeEvent) {
   display::ScreenBase screen;
   screen.display_list().AddDisplay({1, gfx::Rect(100, 1, 801, 802)},
                                    display::DisplayList::Type::PRIMARY);
-  display::test::ScopedScreenOverride screen_override(&screen);
+  display::Screen::SetScreenInstance(&screen);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_EQ(1, display::Screen::GetScreen()->GetNumDisplays());
 
@@ -261,6 +260,9 @@ IN_PROC_BROWSER_TEST_P(WindowManagementTest, DISABLED_OnScreensChangeEvent) {
       EXPECT_EQ(result, EvalJs(remote_child, await_screens_change));
     }
   }
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  display::Screen::SetScreenInstance(nullptr);
+#endif
 }
 
 // TODO(crbug.com/1183791): Disabled on non-ChromeOS because of races with
@@ -283,7 +285,7 @@ IN_PROC_BROWSER_TEST_F(WindowManagementTest,
                                    display::DisplayList::Type::PRIMARY);
   screen.display_list().AddDisplay({2, gfx::Rect(901, 100, 802, 802)},
                                    display::DisplayList::Type::NOT_PRIMARY);
-  display::test::ScopedScreenOverride screen_override(&screen);
+  display::Screen::SetScreenInstance(&screen);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
 
@@ -393,6 +395,9 @@ IN_PROC_BROWSER_TEST_F(WindowManagementTest,
   } else {
     EXPECT_EQ(300, EvalJs(remote_child, await_change_height));
   }
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  display::Screen::SetScreenInstance(nullptr);
+#endif
 }
 
 // TODO(crbug.com/1183791): Disabled on non-ChromeOS because of races with
@@ -415,7 +420,7 @@ IN_PROC_BROWSER_TEST_P(WindowManagementTest, MAYBE_ScreenDetailedOnChange) {
                                    display::DisplayList::Type::PRIMARY);
   screen.display_list().AddDisplay({2, gfx::Rect(901, 100, 802, 802)},
                                    display::DisplayList::Type::NOT_PRIMARY);
-  display::test::ScopedScreenOverride screen_override(&screen);
+  display::Screen::SetScreenInstance(&screen);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
 
@@ -597,6 +602,9 @@ IN_PROC_BROWSER_TEST_P(WindowManagementTest, MAYBE_ScreenDetailedOnChange) {
   } else {
     EXPECT_EQ(true, EvalJs(remote_child, await_both_changes_width));
   }
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  display::Screen::SetScreenInstance(nullptr);
+#endif
 }
 
 INSTANTIATE_TEST_SUITE_P(,

@@ -193,7 +193,7 @@
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/login/users/mock_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chromeos/ash/components/dbus/attestation/fake_attestation_client.h"
 #include "chromeos/dbus/tpm_manager/fake_tpm_manager_client.h"  // nogncheck
 #include "components/account_id/account_id.h"
@@ -2187,12 +2187,12 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ZeroSuggestInMemoryCacheClear) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,
        ContentProtectionPlatformKeysRemoval) {
-  ash::MockUserManager* mock_user_manager =
-      new testing::NiceMock<ash::MockUserManager>();
-  mock_user_manager->SetActiveUser(
-      AccountId::FromUserEmail("test@example.com"));
-  user_manager::ScopedUserManager user_manager_enabler(
-      base::WrapUnique(mock_user_manager));
+  auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
+  auto* user =
+      user_manager->AddUser(AccountId::FromUserEmail("test@example.com"));
+  user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
+                             /*browser_restart=*/false, /*is_child=*/false);
+  user_manager::ScopedUserManager user_manager_enabler(std::move(user_manager));
 
   ash::AttestationClient::InitializeFake();
   BlockUntilBrowsingDataRemoved(

@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-forward.h"
 #include "url/origin.h"
 
 namespace blink {
@@ -52,6 +53,11 @@ struct BLINK_COMMON_EXPORT ParsedPermissionsPolicyDeclaration {
   // of the iframe to be present in |origins|, but for sandboxed iframes, this
   // flag is set instead.
   bool matches_opaque_src{false};
+
+  // Indicates that the parsed policy is deprecated.
+  // The feature specified here will be tracked via
+  // Deprecation::CountDeprecation once the document is installed.
+  absl::optional<mojom::WebFeature> deprecated_feature;
 };
 
 using ParsedPermissionsPolicy = std::vector<ParsedPermissionsPolicyDeclaration>;

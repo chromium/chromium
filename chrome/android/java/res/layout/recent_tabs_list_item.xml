@@ -5,12 +5,14 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
+
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/recent_tabs_list_item_layout"
-    android:layout_height="@dimen/recent_tabs_foreign_session_group_item_height"
+    android:layout_height="wrap_content"
     android:layout_width="match_parent"
+    android:minHeight="@dimen/recent_tabs_foreign_session_group_item_height"
     android:background="?attr/selectableItemBackground"
     android:paddingStart="@dimen/recent_tabs_list_item_side_padding"
     android:paddingEnd="@dimen/recent_tabs_list_item_side_padding">

@@ -8,15 +8,20 @@
 #include <iosfwd>
 #include <string>
 
+#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 
 namespace web_app {
 
+class WebApp;
 class WebAppRegistrar;
 
+constexpr SquareSizePx kIdentitySizes[] = {kInstallIconSize, kLauncherIconSize};
+
 // This enum is recorded by UMA, the numeric values must not change.
-enum ManifestUpdateResult {
+enum class ManifestUpdateResult {
   kNoAppInScope = 0,
   kThrottled = 1,
   kWebContentsDestroyed = 2,
@@ -32,37 +37,115 @@ enum ManifestUpdateResult {
   kAppIdMismatch = 12,
   // kAppAssociationsUpdateFailed = 13,
   // kAppAssociationsUpdated = 14,
-  kMaxValue = kAppIdMismatch,
+  kSystemShutdown = 15,
+  kAppIdentityUpdateRejectedAndUninstalled = 16,
+  kMaxValue = kAppIdentityUpdateRejectedAndUninstalled,
 };
 
 std::ostream& operator<<(std::ostream& os, ManifestUpdateResult result);
 
-enum class ManifestUpdateStage {
-  kPendingInstallableData,
-  kPendingIconDownload,
-  kPendingIconReadFromDisk,
-  kPendingAppIdentityCheck,
-  kAppWindowsClosed,
-  kPendingFinalizerUpdate,
+// Not actually used in production logic. This is just for async code
+// organisation and debugging output.
+enum class ManifestUpdateCheckStage {
+  kPendingAppLock,
+  kDownloadingNewManifestData,
+  kLoadingExistingManifestData,
+  kComparingManifestData,
+  kResolvingIdentityChanges,
+  kComplete,
 };
 
-std::ostream& operator<<(std::ostream& os, ManifestUpdateStage stage);
+std::ostream& operator<<(std::ostream& os, ManifestUpdateCheckStage stage);
 
-// Some apps, such as pre-installed apps, have been vetted and are therefore
-// considered safe and permitted to update their names.
-bool AllowUnpromptedNameUpdate(const AppId& app_id,
-                               const WebAppRegistrar& registrar);
+enum class ManifestUpdateCheckResult {
+  kAppIdMismatch,
+  kAppNotEligible,
+  kSystemShutdown,
+  kAppUpdateNeeded,
+  kAppIdentityUpdateRejectedAndUninstalled,
+  kAppUpToDate,
+  kIconDownloadFailed,
+  kIconReadFromDiskFailed,
+  kWebContentsDestroyed,
+};
 
-bool NeedsAppIdentityUpdateDialog(bool title_changing,
-                                  bool icons_changing,
-                                  const AppId& app_id,
-                                  const WebAppRegistrar& registrar);
+std::ostream& operator<<(std::ostream& os, ManifestUpdateCheckResult result);
 
-// Checks if a manifest update is required by reading the web_app fields and
-// comparing it with the passed install_info.
-bool IsUpdateNeededForManifest(const AppId& app_id,
-                               const WebAppInstallInfo& install_info,
-                               const WebAppRegistrar& registrar);
+ManifestUpdateResult FinalResultFromManifestUpdateCheckResult(
+    ManifestUpdateCheckResult check_result);
+
+void RecordIconDownloadMetrics(IconsDownloadedResult result,
+                               DownloadedIconsHttpResults icons_http_results);
+
+bool CanWebAppSilentlyUpdateIdentity(const WebApp& web_app);
+bool CanShowIdentityUpdateConfirmationDialog(const WebAppRegistrar& registrar,
+                                             const WebApp& web_app);
+
+struct AppIconIdentityChange {
+  SkBitmap before;
+  SkBitmap after;
+};
+
+enum class IdentityUpdateDecision {
+  kRevert,
+  kGetUserConfirmation,
+  kSilentlyAllow,
+};
+
+// Represents what's different between two sets of manifest data split up by
+// whether the parts are important to app identity. Also captures whether
+// identity changes are allowed/pending/reverted.
+struct ManifestDataChanges {
+  ManifestDataChanges();
+  ManifestDataChanges(ManifestDataChanges&&);
+  ManifestDataChanges& operator=(ManifestDataChanges&&);
+  ~ManifestDataChanges();
+
+  bool app_name_changed = false;
+
+  absl::optional<AppIconIdentityChange> app_icon_identity_change;
+
+  // `any_app_icon_changed` represents whether any app icon has changed
+  // including identity and non-identity affecting app icons because reverting
+  // changes to identity app icons will revert all app icon changes.
+  bool any_app_icon_changed = false;
+
+  bool other_fields_changed = false;
+
+  absl::optional<IdentityUpdateDecision> app_name_identity_update_decision;
+  absl::optional<IdentityUpdateDecision> app_icon_identity_update_decision;
+
+  bool HasIdentityChanges() const {
+    return app_name_changed || app_icon_identity_change;
+  }
+
+  bool RequiresConfirmation() const {
+    return app_name_identity_update_decision ==
+               IdentityUpdateDecision::kGetUserConfirmation ||
+           app_icon_identity_update_decision ==
+               IdentityUpdateDecision::kGetUserConfirmation;
+  }
+
+  explicit operator bool() const {
+    return app_name_changed || any_app_icon_changed || other_fields_changed;
+  }
+};
+
+// `existing_app_icon_bitmaps` and `existing_shortcuts_menu_icon_bitmaps` are
+// optional and will not be checked if not provided.
+ManifestDataChanges GetManifestDataChanges(
+    const WebApp& existing_web_app,
+    const IconBitmaps* existing_app_icon_bitmaps,
+    const ShortcutsMenuIconBitmaps* existing_shortcuts_menu_icon_bitmaps,
+    const WebAppInstallInfo& new_install_info);
+
+absl::optional<AppIconIdentityChange> CompareIdentityIconBitmaps(
+    const IconBitmaps& existing_app_icon_bitmaps,
+    const IconBitmaps& new_app_icon_bitmaps);
+
+void RecordIdentityConfirmationMetrics(
+    const ManifestDataChanges& manifest_data_changes,
+    const WebApp& web_app);
 
 }  // namespace web_app
 

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
@@ -110,6 +111,7 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
   friend class PrintBackendServiceTestImpl;
 
   class DocumentHelper;
+  struct ContextContainer;
 
   class PrintingContextDelegate : public PrintingContext::Delegate {
    public:
@@ -156,6 +158,12 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
   void FetchCapabilities(
       const std::string& printer_name,
       mojom::PrintBackendService::FetchCapabilitiesCallback callback) override;
+  void EstablishPrintingContext(uint32_t context_id
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+                                ,
+                                uint32_t parent_window_id
+#endif
+                                ) override;
   void UseDefaultSettings(
       mojom::PrintBackendService::UseDefaultSettingsCallback callback) override;
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
@@ -211,6 +219,7 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
                    mojom::PrintBackendService::CancelCallback callback);
 
   // Utility helpers.
+  std::unique_ptr<PrintingContextDelegate> CreatePrintingContextDelegate();
   DocumentHelper* GetDocumentHelper(int document_cookie);
   void RemoveDocumentHelper(DocumentHelper& document_helper);
 
@@ -221,6 +230,10 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
       const std::string& printer_name);
 #endif  // BUILDFLAG(IS_WIN)
 
+  // The locale provided at initialization that should be used with all
+  // PrintingContext::Delegate instances.
+  std::string locale_;
+
   // Crash key is kept at class level so that we can obtain printer driver
   // information for a prior call should the process be terminated by the
   // remote.  This can happen in the case of Mojo message validation.
@@ -228,6 +241,12 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
 
   scoped_refptr<PrintBackend> print_backend_;
 
+  // Map from a context ID to a printing device context.
+  base::flat_map<uint32_t, std::unique_ptr<ContextContainer>>
+      persistent_printing_contexts_;
+
+  // TODO(crbug.com/1414968):  Delete this once callers switch to complete
+  // local contexts or using `persistent_printing_contexts_`.
   PrintingContextDelegate context_delegate_;
 
   // Want all callbacks and document helper sequence manipulations to be made

@@ -239,10 +239,12 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
         }
 
         BackPressManager.record(BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
-        if (mTabController.onlyOneTabRemaining()) {
-            // If we're closing the last tab, just finish the Activity manually. If we had called
-            // mTabController.closeTab() and waited for the Activity to close as a result we would
-            // have a visual glitch: https://crbug.com/1087108.
+        if (mTabController.onlyOneTabRemaining()
+                && !mTabController.doesCurrentTabNeedToFireBeforeUnload()) {
+            // If we're closing the last tab and it it doesn't have beforeunload, just finish
+            // the Activity manually. If we had called mTabController.closeTab() and waited for
+            // the Activity to close as a result we would have a visual glitch:
+            // https://crbug.com/1087108.
             MinimizeAppAndCloseTabBackPressHandler.record(MinimizeAppAndCloseTabType.MINIMIZE_APP);
             finish(USER_NAVIGATION);
         } else {

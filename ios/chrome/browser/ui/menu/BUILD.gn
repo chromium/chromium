@@ -31,13 +31,11 @@ source_set("menu") {
     "resources:open_in_incognito",
     "resources:open_in_new_tab",
     "resources:open_new_window",
-    "resources:pin",
     "resources:read_later",
     "resources:remove",
     "resources:search_image",
     "resources:select",
     "resources:share",
-    "resources:unpin",
     "//base",
     "//components/open_from_clipboard",
     "//components/prefs",
@@ -47,12 +45,12 @@ source_set("menu") {
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/search_engines",
-    "//ios/chrome/browser/ui:feature_flags",
-    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
     "//ios/chrome/browser/ui/main:scene_state_header",
-    "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/window_activities",
     "//net",
@@ -66,10 +64,7 @@ source_set("tab_context_menu_delegate") {
 
   sources = [ "tab_context_menu_delegate.h" ]
 
-  deps = [
-    "//ios/chrome/browser/ui/sharing",
-    "//ios/chrome/browser/ui/sharing:public",
-  ]
+  deps = [ "//ios/chrome/browser/ui/sharing" ]
 }
 
 source_set("unit_tests") {
@@ -102,7 +97,6 @@ source_set("unit_tests") {
     "resources:search_image",
     "resources:select",
     "resources:share",
-    "resources:unpin",
     "//base",
     "//base/test:test_support",
     "//components/sync_preferences:test_support",
@@ -112,8 +106,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/sessions:test_support",
-    "//ios/chrome/browser/ui:feature_flags",
-    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/url_loading",

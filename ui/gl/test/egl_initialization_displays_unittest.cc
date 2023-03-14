@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_display.h"
 #include "ui/gl/gl_switches.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_display_initializer.h"
 
 namespace {
@@ -17,9 +18,12 @@ TEST(EGLInitializationDisplaysTest, DisableD3D11) {
 
   std::vector<gl::DisplayType> displays;
 
-  // using --disable-d3d11 with the default --use-angle should never return
-  // D3D11.
-  command_line->AppendSwitch(switches::kDisableD3D11);
+  // using disable-d3d11 workaround with the default --use-angle should never
+  // return D3D11.
+  gl::GlWorkarounds workarounds = {
+      .disable_d3d11 = true,
+  };
+  gl::SetGlWorkarounds(workarounds);
   gl::init::GetEGLInitDisplaysForTesting(true, true, true, true, true, true,
                                          true, command_line.get(), &displays);
   EXPECT_FALSE(base::Contains(displays, gl::ANGLE_D3D11));

@@ -40,6 +40,12 @@ class CONTENT_EXPORT DWriteFontProxyImpl
 
   void SetWindowsFontsPathForTesting(std::u16string path);
 
+  // Adds a font to the "system collection" for content_shell tests. Usually
+  // this is the Ahem.ttf font. The font will report as being `local()` as if
+  // it was installed on the system. Must be called before any instance of the
+  // class is instantiated.
+  static void SideLoadFontForTesting(base::FilePath path);
+
  protected:
   // blink::mojom::DWriteFontProxy:
   void FindFamily(const std::u16string& family_name,
@@ -47,8 +53,8 @@ class CONTENT_EXPORT DWriteFontProxyImpl
   void GetFamilyCount(GetFamilyCountCallback callback) override;
   void GetFamilyNames(uint32_t family_index,
                       GetFamilyNamesCallback callback) override;
-  void GetFontFiles(uint32_t family_index,
-                    GetFontFilesCallback callback) override;
+  void GetFontFileHandles(uint32_t family_index,
+                          GetFontFileHandlesCallback callback) override;
   void MapCharacters(const std::u16string& text,
                      blink::mojom::DWriteFontStylePtr font_style,
                      const std::u16string& locale_name,
@@ -67,8 +73,6 @@ class CONTENT_EXPORT DWriteFontProxyImpl
 
  private:
   bool IsLastResortFallbackFont(uint32_t font_index);
-
- private:
   bool direct_write_initialized_ = false;
   Microsoft::WRL::ComPtr<IDWriteFontCollection> collection_;
   Microsoft::WRL::ComPtr<IDWriteFactory> factory_;

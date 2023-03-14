@@ -196,16 +196,16 @@ class ExtensionsToolbarContainer
     std::string extension_id;
   };
 
-  // Check if the ExtensionsMenuView or ExtensionsTabbedMenuView is showing.
-  // TODO(crbug.com/1279986): This method will be removed once
-  // ExtensionsTabbedMenu is fully rolled out and we will call directly into the
-  // ExtensionsTabbedMenuCoordinator.
+  // Check if the extensions menu is showing.
+  // TODO(crbug.com/1279986): This method will be removed once extensions menu
+  // under kExtensionsMenuAccessControl feature is fully rolled out and we can
+  // call directly into the menu coordinator.
   bool IsExtensionsMenuShowing() const;
 
-  // // Hides the currently-showing ExtensionsMenuView or
-  // ExtensionsTabbedMenuView, if it exists. TODO(crbug.com/1279986): This
-  // method will be removed once ExtensionsTabbedMenu is fully rolled out and we
-  // will call directly into the ExtensionsTabbedMenuCoordinator.
+  // Hides the currently-showing extensions menu, if it exists.
+  // TODO(crbug.com/1279986): This method will be removed once extensions menu
+  // under kExtensionsMenuAccessControl feature is fully rolled out and we can
+  // call directly into the menu coordinator.
   void HideExtensionsMenu();
 
   // Determines whether an action must be visible (i.e. cannot be hidden for any
@@ -278,6 +278,7 @@ class ExtensionsToolbarContainer
   void OnUserPermissionsSettingsChanged(
       const extensions::PermissionsManager::UserPermissionsSettings& settings)
       override;
+  void OnShowAccessRequestsInToolbarChanged() override;
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;

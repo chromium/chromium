@@ -35,6 +35,7 @@ group("resources") {
     ":grey_900_color",
     ":grouped_primary_background_color",
     ":grouped_secondary_background_color",
+    ":light_only_grey_200_color",
     ":mdc_ink_color",
     ":mdc_secondary_ink_color",
     ":orange_500_color",
@@ -49,8 +50,9 @@ group("resources") {
     ":scrim_background_color",
     ":secondary_background_color",
     ":separator_color",
+    ":solid_black_color",
     ":solid_button_text_color",
-    ":solid_primary_color",
+    ":solid_white_color",
     ":static_blue_400_color",
     ":static_grey_300_color",
     ":table_view_row_highlight_color",
@@ -206,6 +208,10 @@ colorset("orange_500_color") {
   sources = [ "orange_500_color.colorset/Contents.json" ]
 }
 
+colorset("light_only_grey_200_color") {
+  sources = [ "light_only_grey_200_color.colorset/Contents.json" ]
+}
+
 colorset("mdc_ink_color") {
   sources = [ "mdc_ink_color.colorset/Contents.json" ]
 }
@@ -234,8 +240,12 @@ colorset("solid_button_text_color") {
   sources = [ "solid_button_text_color.colorset/Contents.json" ]
 }
 
-colorset("solid_primary_color") {
-  sources = [ "solid_primary_color.colorset/Contents.json" ]
+colorset("solid_black_color") {
+  sources = [ "solid_black_color.colorset/Contents.json" ]
+}
+
+colorset("solid_white_color") {
+  sources = [ "solid_white_color.colorset/Contents.json" ]
 }
 
 colorset("table_view_row_highlight_color") {

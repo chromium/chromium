@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_accessory_view_controller.h"
 
+#import "base/ios/ios_util.h"
 #import "base/metrics/user_metrics.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -188,7 +190,25 @@ static NSTimeInterval MFAnimationDuration = 0.2;
                                      IDS_IOS_MANUAL_FALLBACK_SHOW_PASSWORDS)];
 
   self.passwordButton.hidden = self.isPasswordButtonHidden;
-  self.passwordButton.contentEdgeInsets = UIEdgeInsetsMake(0, 2, 0, 2);
+
+  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
+  // iOS 15.
+  if (base::ios::IsRunningOnIOS15OrLater() &&
+      IsUIButtonConfigurationEnabled()) {
+    if (@available(iOS 15, *)) {
+      UIButtonConfiguration* buttonConfiguration =
+          [UIButtonConfiguration plainButtonConfiguration];
+      buttonConfiguration.contentInsets =
+          NSDirectionalEdgeInsetsMake(0, 2, 0, 2);
+      self.passwordButton.configuration = buttonConfiguration;
+    }
+  }
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+  else {
+    self.passwordButton.contentEdgeInsets = UIEdgeInsetsMake(0, 2, 0, 2);
+  }
+#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+
   [icons addObject:self.passwordButton];
 
   self.cardsButton =

@@ -4,9 +4,8 @@
 
 package org.chromium.components.background_task_scheduler.internal;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Mockito.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -37,8 +36,6 @@ public class BackgroundTaskJobServiceTest {
     @Mock
     private BackgroundTaskSchedulerDelegate mDelegate;
     @Mock
-    private BackgroundTaskSchedulerDelegate mAlarmManagerDelegate;
-    @Mock
     private BackgroundTaskSchedulerUma mBackgroundTaskSchedulerUma;
     @Mock
     private BackgroundTaskSchedulerImpl mBackgroundTaskSchedulerImpl;
@@ -47,9 +44,8 @@ public class BackgroundTaskJobServiceTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         BackgroundTaskSchedulerFactoryInternal.setSchedulerForTesting(
-                new BackgroundTaskSchedulerImpl(mDelegate, mAlarmManagerDelegate));
+                new BackgroundTaskSchedulerImpl(mDelegate));
         BackgroundTaskSchedulerUma.setInstanceForTesting(mBackgroundTaskSchedulerUma);
-        TestBackgroundTask.reset();
         BackgroundTaskSchedulerFactoryInternal.setBackgroundTaskFactory(
                 new TestBackgroundTaskFactory());
     }
@@ -63,7 +59,6 @@ public class BackgroundTaskJobServiceTest {
         assertFalse(jobService.onStartJob(jobParameters));
 
         verify(mBackgroundTaskSchedulerUma, times(1)).reportTaskStarted(eq(TaskIds.TEST));
-        assertEquals(0, TestBackgroundTask.getRescheduleCalls());
     }
 
     @Test
@@ -77,7 +72,6 @@ public class BackgroundTaskJobServiceTest {
         assertFalse(jobService.onStartJob(jobParameters));
 
         verify(mBackgroundTaskSchedulerUma, times(0)).reportTaskStarted(eq(TaskIds.TEST));
-        assertEquals(0, TestBackgroundTask.getRescheduleCalls());
     }
 
     @Test
@@ -91,7 +85,6 @@ public class BackgroundTaskJobServiceTest {
         assertFalse(jobService.onStartJob(jobParameters));
 
         verify(mBackgroundTaskSchedulerUma, times(0)).reportTaskStarted(eq(TaskIds.TEST));
-        assertEquals(0, TestBackgroundTask.getRescheduleCalls());
     }
 
     @Test
@@ -105,7 +98,6 @@ public class BackgroundTaskJobServiceTest {
         assertFalse(jobService.onStartJob(jobParameters));
 
         verify(mBackgroundTaskSchedulerUma, times(1)).reportTaskStarted(eq(TaskIds.TEST));
-        assertEquals(0, TestBackgroundTask.getRescheduleCalls());
     }
 
     @Test
@@ -123,7 +115,6 @@ public class BackgroundTaskJobServiceTest {
         verify(mBackgroundTaskSchedulerImpl, times(1))
                 .cancel(eq(ContextUtils.getApplicationContext()),
                         eq(TaskIds.OFFLINE_PAGES_BACKGROUND_JOB_ID));
-        assertEquals(0, TestBackgroundTask.getRescheduleCalls());
     }
 
     @Test
@@ -135,7 +126,6 @@ public class BackgroundTaskJobServiceTest {
         assertFalse(jobService.onStartJob(jobParameters));
 
         verify(mBackgroundTaskSchedulerUma, times(1)).reportTaskStarted(eq(TaskIds.TEST));
-        assertEquals(0, TestBackgroundTask.getRescheduleCalls());
     }
 
     @Test
@@ -150,7 +140,6 @@ public class BackgroundTaskJobServiceTest {
         assertFalse(jobService.onStartJob(jobParameters));
 
         verify(mBackgroundTaskSchedulerUma, times(1)).reportTaskStarted(eq(TaskIds.TEST));
-        assertEquals(0, TestBackgroundTask.getRescheduleCalls());
     }
 
     @Test
@@ -164,7 +153,6 @@ public class BackgroundTaskJobServiceTest {
         assertFalse(jobService.onStartJob(jobParameters));
 
         verify(mBackgroundTaskSchedulerUma, times(0)).reportTaskStarted(eq(TaskIds.TEST));
-        assertEquals(0, TestBackgroundTask.getRescheduleCalls());
     }
 
     @Test
@@ -179,7 +167,6 @@ public class BackgroundTaskJobServiceTest {
         assertFalse(jobService.onStartJob(jobParameters));
 
         verify(mBackgroundTaskSchedulerUma, times(0)).reportTaskStarted(eq(TaskIds.TEST));
-        assertEquals(0, TestBackgroundTask.getRescheduleCalls());
     }
 
     private static JobParameters buildOneOffJobParameters(

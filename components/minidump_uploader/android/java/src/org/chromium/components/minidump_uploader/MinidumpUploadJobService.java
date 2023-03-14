@@ -55,7 +55,7 @@ public abstract class MinidumpUploadJobService
                 (JobScheduler) ContextUtils.getApplicationContext().getSystemService(
                         Context.JOB_SCHEDULER_SERVICE);
         JobInfo uploadJob =
-                jobInfoBuilder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
+                jobInfoBuilder
                         .setBackoffCriteria(JOB_INITIAL_BACKOFF_TIME_IN_MS, JOB_BACKOFF_POLICY)
                         .build();
         int result = scheduler.schedule(uploadJob);

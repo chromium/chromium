@@ -5,12 +5,14 @@
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
-#include "ash/system/video_conference/video_conference_media_state.h"
+#include "ash/system/video_conference/video_conference_common.h"
 #include "ash/system/video_conference/video_conference_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-shared.h"
@@ -29,27 +31,20 @@ class VideoConferenceTrayControllerTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kVideoConference);
-
-    // Here we have to create the global instance of `CrasAudioHandler` before
-    // `FakeVideoConferenceTrayController`, so we do it here and not do it in
-    // `AshTestBase`.
-    CrasAudioClient::InitializeFake();
-    CrasAudioHandler::InitializeForTesting();
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kCameraEffectsSupportedByHardware);
 
     // Instantiates a fake controller (the real one is created in
     // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in
     // ash unit tests).
     controller_ = std::make_unique<FakeVideoConferenceTrayController>();
 
-    set_create_global_cras_audio_handler(false);
     AshTestBase::SetUp();
   }
 
   void TearDown() override {
     AshTestBase::TearDown();
     controller_.reset();
-    CrasAudioHandler::Shutdown();
-    CrasAudioClient::Shutdown();
   }
 
   VideoConferenceTray* video_conference_tray() {
@@ -116,6 +111,45 @@ TEST_F(VideoConferenceTrayControllerTest, UpdateButtonWhenMicrophoneMuted) {
       /*mute_on=*/false, CrasAudioHandler::InputMuteChangeMethod::kOther);
   EXPECT_FALSE(audio_icon()->toggled());
   EXPECT_TRUE(audio_icon()->show_privacy_indicator());
+}
+
+TEST_F(VideoConferenceTrayControllerTest, CameraHardwareMuted) {
+  // The camera icon should only be un-toggled if it is not hardware and
+  // software muted.
+  controller()->OnCameraHWPrivacySwitchStateChanged(
+      /*device_id=*/"device_id", cros::mojom::CameraPrivacySwitchState::ON);
+  controller()->OnCameraSWPrivacySwitchStateChanged(
+      cros::mojom::CameraPrivacySwitchState::ON);
+  EXPECT_TRUE(camera_icon()->toggled());
+
+  controller()->OnCameraHWPrivacySwitchStateChanged(
+      /*device_id=*/"device_id", cros::mojom::CameraPrivacySwitchState::ON);
+  controller()->OnCameraSWPrivacySwitchStateChanged(
+      cros::mojom::CameraPrivacySwitchState::OFF);
+  EXPECT_TRUE(camera_icon()->toggled());
+
+  controller()->OnCameraHWPrivacySwitchStateChanged(
+      /*device_id=*/"device_id", cros::mojom::CameraPrivacySwitchState::OFF);
+  controller()->OnCameraSWPrivacySwitchStateChanged(
+      cros::mojom::CameraPrivacySwitchState::ON);
+  EXPECT_TRUE(camera_icon()->toggled());
+
+  controller()->OnCameraHWPrivacySwitchStateChanged(
+      /*device_id=*/"device_id", cros::mojom::CameraPrivacySwitchState::OFF);
+  controller()->OnCameraSWPrivacySwitchStateChanged(
+      cros::mojom::CameraPrivacySwitchState::OFF);
+  EXPECT_FALSE(camera_icon()->toggled());
+}
+
+TEST_F(VideoConferenceTrayControllerTest, ClickCameraWhenHardwareMuted) {
+  controller()->OnCameraHWPrivacySwitchStateChanged(
+      /*device_id=*/"device_id", cros::mojom::CameraPrivacySwitchState::ON);
+  EXPECT_TRUE(camera_icon()->toggled());
+
+  // Clicking the camera button when it is hardware-muted should not un-toggle
+  // the button.
+  LeftClickOn(camera_icon());
+  EXPECT_TRUE(camera_icon()->toggled());
 }
 
 }  // namespace ash

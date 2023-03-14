@@ -60,7 +60,7 @@ class AHardwareBufferImageBackingFactoryTest : public testing::Test {
     scoped_refptr<gl::GLShareGroup> share_group = new gl::GLShareGroup();
     context_state_ = base::MakeRefCounted<SharedContextState>(
         std::move(share_group), surface_, context_,
-        false /* use_virtualized_gl_contexts */, base::DoNothing());
+        /*use_virtualized_gl_contexts=*/false, base::DoNothing());
     context_state_->InitializeGrContext(gpu_preferences, workarounds, nullptr);
     auto feature_info =
         base::MakeRefCounted<gles2::FeatureInfo>(workarounds, GpuFeatureInfo());
@@ -114,9 +114,8 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, Basic) {
     return;
 
   GlLegacySharedImage gl_legacy_shared_image{
-      backing_factory_.get(), false /* is_thread_safe */,
-      &shared_image_manager_, memory_type_tracker_.get(),
-      shared_image_representation_factory_.get()};
+      backing_factory_.get(), /*is_thread_safe=*/false, &shared_image_manager_,
+      memory_type_tracker_.get(), shared_image_representation_factory_.get()};
 
   // Validate a SkiaImageRepresentation.
   auto skia_representation = shared_image_representation_factory_->ProduceSkia(
@@ -172,7 +171,7 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, GLSkiaGL) {
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, false /* is_thread_safe */);
+      alpha_type, usage, /*is_thread_safe=*/false);
   EXPECT_TRUE(backing);
 
   GLenum expected_target = GL_TEXTURE_2D;
@@ -271,7 +270,7 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, InvalidFormat) {
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, false /* is_thread_safe */);
+      alpha_type, usage, /*is_thread_safe=*/false);
   EXPECT_FALSE(backing);
 }
 
@@ -290,13 +289,13 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, InvalidSize) {
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, false /* is_thread_safe */);
+      alpha_type, usage, /*is_thread_safe=*/false);
   EXPECT_FALSE(backing);
 
   size = gfx::Size(INT_MAX, INT_MAX);
   backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, false /* is_thread_safe */);
+      alpha_type, usage, /*is_thread_safe=*/false);
   EXPECT_FALSE(backing);
 }
 
@@ -314,7 +313,7 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, EstimatedSize) {
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, false /* is_thread_safe */);
+      alpha_type, usage, /*is_thread_safe=*/false);
   EXPECT_TRUE(backing);
 
   size_t backing_estimated_size = backing->GetEstimatedSize();
@@ -335,7 +334,7 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, DISABLED_OnlyOneWriter) {
     return;
 
   GlLegacySharedImage gl_legacy_shared_image{
-      backing_factory_.get(), true /* is_thread_safe */, &shared_image_manager_,
+      backing_factory_.get(), /*is_thread_safe=*/true, &shared_image_manager_,
       memory_type_tracker_.get(), shared_image_representation_factory_.get()};
 
   auto skia_representation = shared_image_representation_factory_->ProduceSkia(
@@ -376,7 +375,7 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, CanHaveMultipleReaders) {
     return;
 
   GlLegacySharedImage gl_legacy_shared_image{
-      backing_factory_.get(), true /* is_thread_safe */, &shared_image_manager_,
+      backing_factory_.get(), /*is_thread_safe=*/true, &shared_image_manager_,
       memory_type_tracker_.get(), shared_image_representation_factory_.get()};
 
   auto skia_representation = shared_image_representation_factory_->ProduceSkia(
@@ -413,7 +412,7 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, CannotWriteWhileReading) {
     return;
 
   GlLegacySharedImage gl_legacy_shared_image{
-      backing_factory_.get(), true /* is_thread_safe */, &shared_image_manager_,
+      backing_factory_.get(), /*is_thread_safe=*/true, &shared_image_manager_,
       memory_type_tracker_.get(), shared_image_representation_factory_.get()};
 
   auto skia_representation = shared_image_representation_factory_->ProduceSkia(
@@ -455,7 +454,7 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, CannotReadWhileWriting) {
     return;
 
   GlLegacySharedImage gl_legacy_shared_image{
-      backing_factory_.get(), true /* is_thread_safe */, &shared_image_manager_,
+      backing_factory_.get(), /*is_thread_safe=*/true, &shared_image_manager_,
       memory_type_tracker_.get(), shared_image_representation_factory_.get()};
 
   auto skia_representation = shared_image_representation_factory_->ProduceSkia(
@@ -543,9 +542,8 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, Overlay) {
     return;
 
   GlLegacySharedImage gl_legacy_shared_image{
-      backing_factory_.get(), false /* is_thread_safe */,
-      &shared_image_manager_, memory_type_tracker_.get(),
-      shared_image_representation_factory_.get()};
+      backing_factory_.get(), /*is_thread_safe=*/false, &shared_image_manager_,
+      memory_type_tracker_.get(), shared_image_representation_factory_.get()};
 
   auto skia_representation = shared_image_representation_factory_->ProduceSkia(
       gl_legacy_shared_image.mailbox(), context_state_.get());

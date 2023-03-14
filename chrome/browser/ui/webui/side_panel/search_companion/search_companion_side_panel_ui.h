@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/side_panel/search_companion/search_companion.mojom.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -51,7 +52,7 @@ class SearchCompanionSidePanelUI
   std::unique_ptr<SearchCompanionPageHandler> search_companion_page_handler_;
   mojo::Receiver<side_panel::mojom::SearchCompanionPageHandlerFactory>
       search_companion_page_factory_receiver_{this};
-  content::WebUI* web_ui_;
+  raw_ptr<content::WebUI> web_ui_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

@@ -16,7 +16,6 @@ import './shared/nearby_page_template.js';
 import './shared/nearby_preview.js';
 import './strings.m.js';
 
-import {ConfirmationManagerInterface, DiscoveryObserverInterface, DiscoveryObserverReceiver, PayloadPreview, SelectShareTargetResult, ShareTarget, ShareTargetListenerCallbackRouter, StartDiscoveryResult, TransferUpdateListenerPendingReceiver} from '/mojo/nearby_share.mojom-webui.js';
 import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
@@ -24,6 +23,7 @@ import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 
 import {getDiscoveryManager, observeDiscoveryManager} from './discovery_manager.js';
 import {getTemplate} from './nearby_discovery_page.html.js';
+import {ConfirmationManagerInterface, DiscoveryObserverInterface, DiscoveryObserverReceiver, PayloadPreview, SelectShareTargetResult, ShareTarget, ShareTargetListenerCallbackRouter, StartDiscoveryResult, TransferUpdateListenerPendingReceiver} from './shared/mojo/nearby_share.mojom-webui.js';
 
 /**
  * Converts an unguessable token to a string.

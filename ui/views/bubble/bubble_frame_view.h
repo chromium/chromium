@@ -315,7 +315,8 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   raw_ptr<View> header_view_ = nullptr;
 
   // A view to contain the footnote view, if it exists.
-  raw_ptr<FootnoteContainerView> footnote_container_ = nullptr;
+  raw_ptr<FootnoteContainerView, DanglingUntriaged> footnote_container_ =
+      nullptr;
 
   // Set preference for how the arrow will be adjusted if the window is outside
   // the available bounds.

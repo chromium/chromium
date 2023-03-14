@@ -27,16 +27,20 @@ resource_load_priority_test(
   'Parser-blocking scripts should be loaded with kHigh priority');
 
 resource_load_priority_test(
-  'async-script.html', kHigh,
+  'async-script.html', kLow,
   'Async scripts should be loaded with kLow priority');
 
 resource_load_priority_test(
-  'defer-script.html', kHigh,
+  'defer-script.html', kLow,
   'Deferred scripts should be loaded with kLow priority');
 
 resource_load_priority_test(
   'module-script.html', kHigh,
   'Module scripts should be loaded with kHigh priority');
+
+resource_load_priority_test(
+  'module-script-low.html', kLow,
+  'Module scripts with explicit fetchpriority=low should be loaded with kLow priority');
 
 resource_load_priority_test(
   'fetch.html', kHigh,

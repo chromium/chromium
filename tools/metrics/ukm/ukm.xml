@@ -2070,6 +2070,36 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Autofill.FastCheckoutFormStatus">
+  <owner>bwolfgang@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <summary>
+    Recorded at the end of a Fast Checkout run.
+  </summary>
+  <metric name="Filled" enum="Boolean">
+    <summary>
+      1 if the form was filled by Fast Checkout, 0 otherwise.
+    </summary>
+  </metric>
+  <metric name="FormSignature">
+    <summary>
+      An approximately 10-bit hash of the form's actual signature.
+    </summary>
+  </metric>
+  <metric name="FormTypes">
+    <summary>
+      Type of form. Stored as bitvector. A set i-th bit implies enum FormType's
+      i-th type was detected. Multiple types are possible.
+    </summary>
+  </metric>
+  <metric name="RunId">
+    <summary>
+      Unique run ID for linking to other UKM events.
+    </summary>
+  </metric>
+</event>
+
 <event name="Autofill.FastCheckoutRunOutcome">
   <owner>bwolfgang@google.com</owner>
   <owner>jkeitel@google.com</owner>
@@ -3207,8 +3237,11 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Blink.ContextMenu.ImageSelection">
-  <owner>benwgold@google.com</owner>
+  <obsolete>
+    No longer recorded after August 2022 launch of the feature.
+  </obsolete>
   <owner>flackr@chromium.org</owner>
+  <owner>blink-interactions-team@google.com</owner>
   <summary>
     Sent when a user long presses or right clicks a document (and that an image
     is found). Requires that the `EnablePenetratingImageSelection` feature is
@@ -3258,6 +3291,22 @@ be describing additional metrics about the same event.
   <summary>
     Records performance metrics for FedCM(Federated Credential Management) API.
   </summary>
+  <metric name="AutoReauthn.BlockedByContentSettings" enum="Boolean">
+    <summary>
+      Records whether the FedCM auto re-authn call is blocked because the auto
+      re-authn content settings permission is disabled. Records at most one
+      sample per FedCM API with auto re-authn enabled: some failures could occur
+      before this metric is recorded.
+    </summary>
+  </metric>
+  <metric name="AutoReauthn.BlockedByEmbargo" enum="Boolean">
+    <summary>
+      Records whether the FedCM auto re-authn call is blocked because the auto
+      re-authn is under embargo, i.e. due to cooldown. Records at most one
+      sample per FedCM API with auto re-authn enabled: some failures could occur
+      before this metric is recorded.
+    </summary>
+  </metric>
   <metric name="AutoReauthn.ReturningAccounts" enum="FedCmReturningAccounts">
     <summary>
       Records whether there was zero, one, or multiple returning accounts when a
@@ -3275,6 +3324,16 @@ be describing additional metrics about the same event.
       re-authn was blocked for some non-network related reason. Records at most
       one sample per FedCM API with auto re-authn enabled: some failures could
       occur before this metric is recorded.
+    </summary>
+  </metric>
+  <metric name="AutoReauthn.TimeFromEmbargoWhenBlocked">
+    <summary>
+      Records the amount of time that has passed from the time the FedCM auto
+      re-authn API was embargoed to the time in which the next call occurs. Only
+      records a sample when there is an auto re-authn FedCM API call which is
+      blocked due to embargo. Samples are exponentially bucketed, with a max
+      bucket of 10 minutes, the embargo duration (see
+      `kFederatedIdentityAutoReauthnEmbargoDuration`).
     </summary>
   </metric>
   <metric name="FedCmSessionID">
@@ -5392,7 +5451,7 @@ be describing additional metrics about the same event.
       will be recorded iff `CandidateTopic2` is recorded.
     </summary>
   </metric>
-  <metric name="FailureReason" enum="BrowsingTopicsApiAccessFailureReason">
+  <metric name="FailureReason" enum="BrowsingTopicsApiAccessResult">
     <summary>
       The reason why the API access is not allowed.
     </summary>
@@ -7305,6 +7364,159 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Extensions.OnNavigation" singular="True">
+  <owner>chikamune@chromium.org</owner>
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>sisidovski@chromium.org</owner>
+  <owner>hiroshige@chromium.org</owner>
+  <owner>kouhei@chromium.org</owner>
+  <summary>
+    Records the extension related metrics that might have negative impacts on
+    LCP. This is recorded when navigation is finished.
+  </summary>
+  <metric name="DeclarativeNetRequestFeedbackPermissionCount">
+    <summary>
+      The number of enabled extensions that have a DeclarativeNetRequestFeedback
+      permission. The exponential bucketing is applied for privacy reasons by
+      using ukm::GetExponentialBucketMin(value, 2).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="DeclarativeNetRequestPermissionCount">
+    <summary>
+      The number of enabled extensions that have a DeclarativeNetRequest
+      permission. The exponential bucketing is applied for privacy reasons by
+      using ukm::GetExponentialBucketMin(value, 2).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="DeclarativeNetRequestWithHostAccessPermissionCount">
+    <summary>
+      The number of enabled extensions that have a
+      DeclarativeNetRequestWithHostAccess permission. The exponential bucketing
+      is applied for privacy reasons by using
+      ukm::GetExponentialBucketMin(value, 2).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="DeclarativeWebRequestPermissionCount">
+    <summary>
+      The number of enabled extensions that have a DeclarativeWebRequest
+      permission. The exponential bucketing is applied for privacy reasons by
+      using ukm::GetExponentialBucketMin(value, 2).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="EnabledExtensionCount">
+    <summary>
+      The number of enabled extensions that are not themes nor apps nor
+      components. The exponential bucketing is applied for privacy reasons by
+      using ukm::GetExponentialBucketMin(value, 2).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="EnabledExtensionCount.HaveHostPermissions">
+    <summary>
+      The number of enabled extensions that have host permissions for the
+      navigation target URL. The exponential bucketing is applied for privacy
+      reasons by using ukm::GetExponentialBucketMin(value, 2).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="EnabledExtensionCount.InjectContentScript">
+    <summary>
+      The number of enabled extensions that inject content scripts. The
+      exponential bucketing is applied for privacy reasons by using
+      ukm::GetExponentialBucketMin(value, 2).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="WebRequestAuthProviderPermissionCount">
+    <summary>
+      The number of enabled extensions that have a WebRequestAuthProvider
+      permission. The exponential bucketing is applied for privacy reasons by
+      using ukm::GetExponentialBucketMin(value, 2).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="WebRequestBlockingPermissionCount">
+    <summary>
+      The number of enabled extensions that have a WebRequestBlocking
+      permission. The exponential bucketing is applied for privacy reasons by
+      using ukm::GetExponentialBucketMin(value, 2).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="WebRequestPermissionCount">
+    <summary>
+      The number of enabled extensions that have a WebRequest permission. The
+      exponential bucketing is applied for privacy reasons by using
+      ukm::GetExponentialBucketMin(value, 2).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="Extensions.WebRequest.KeepaliveRequestFinished">
   <owner>yhirano@chromium.org</owner>
   <owner>kinuko@chromium.org</owner>
@@ -7511,6 +7723,90 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="GamingInputOverlay.ActionRepositionOperationType">
+  <owner>pjlee@google.com</owner>
+  <owner>cuicuiruan@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    An event that is logged when key mapping position is changed.
+  </summary>
+  <metric name="OperationType" enum="ArcInputOverlayRepositionOperationType">
+    <summary>
+      Type about how the reposition is done.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="GamingInputOverlay.ActionRepositionWindowStateType">
+  <owner>pjlee@google.com</owner>
+  <owner>cuicuiruan@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    An event that is logged when key mapping position is changed.
+  </summary>
+  <metric name="WindowStateType" enum="ArcInputOverlayWindowStateType">
+    <summary>
+      Window state type when the reposition is done.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="GamingInputOverlay.ButtonGroupRepositionOperationType">
+  <owner>pjlee@google.com</owner>
+  <owner>cuicuiruan@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    An event that is logged when button group position is changed.
+  </summary>
+  <metric name="OperationType" enum="ArcInputOverlayRepositionOperationType">
+    <summary>
+      Type about how the reposition is done.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="GamingInputOverlay.ButtonGroupRepositionWindowStateType">
+  <owner>pjlee@google.com</owner>
+  <owner>cuicuiruan@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    An event that is logged when menu entry position is changed.
+  </summary>
+  <metric name="WindowStateType" enum="ArcInputOverlayWindowStateType">
+    <summary>
+      Window state type when the reposition is done.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="GamingInputOverlay.Customization">
   <owner>pjlee@google.com</owner>
   <owner>cuicuiruan@google.com</owner>
@@ -7566,6 +7862,48 @@ be describing additional metrics about the same event.
   <metric name="MappingHintStateOn" enum="Boolean">
     <summary>
       Whether the mapping hint for gaming input overlay is on.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="GamingInputOverlay.MenuEntryRepositionOperationType">
+  <owner>pjlee@google.com</owner>
+  <owner>cuicuiruan@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    An event that is logged when key mapping position is changed.
+  </summary>
+  <metric name="OperationType" enum="ArcInputOverlayRepositionOperationType">
+    <summary>
+      Type about how the reposition is done.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="GamingInputOverlay.MenuEntryRepositionWindowStateType">
+  <owner>pjlee@google.com</owner>
+  <owner>cuicuiruan@google.com</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    An event that is logged when menu entry position is changed.
+  </summary>
+  <metric name="WindowStateType" enum="ArcInputOverlayWindowStateType">
+    <summary>
+      Window state type when the reposition is done.
     </summary>
     <aggregation>
       <history>
@@ -13601,6 +13939,47 @@ be describing additional metrics about the same event.
   <metric name="Viewport.Width">
     <summary>
       The width of the viewport, in pixels.
+    </summary>
+  </metric>
+</event>
+
+<event name="NavigationPredictorPreloadOnHover">
+  <owner>ryansturm@chromium.org</owner>
+  <owner>domenic@chromium.org</owner>
+  <owner>isaboori@google.com</owner>
+  <summary>
+    This event records required data to assess and fine-tune the preloading
+    on-hover and on pointer down heuristics, and is submitted once per mouse
+    over, mouse out, mouse down and mouse up events for randomly selected anchor
+    elements.
+  </summary>
+  <metric name="HoverNotTakenMs">
+    <summary>
+      Duration that the user was hovering over the anchor element and it did not
+      result in a navigation to that link. Exponentially bucketed using
+      GetExponentialBucketMin with a spacing of 1.3.
+    </summary>
+  </metric>
+  <metric name="HoverTakenMs">
+    <summary>
+      Duration that the user was hovering over the anchor element and it
+      resulted in a navigation to that link. Exponentially bucketed using
+      GetExponentialBucketMin with a spacing of 1.3.
+    </summary>
+  </metric>
+  <metric name="MouseDownNotTakenMs">
+    <summary>
+      Time since the user pressed the left/middle mouse button over the anchor
+      element and that did not result in a navigation to that link.
+      Exponentially bucketed using GetExponentialBucketMin with a spacing of
+      1.3.
+    </summary>
+  </metric>
+  <metric name="MouseDownTakenMs">
+    <summary>
+      Time since the user presses the left/middle mouse button over the anchor
+      element and that resulted in a navigation to that link. Exponentially
+      bucketed using GetExponentialBucketMin with a spacing of 1.3.
     </summary>
   </metric>
 </event>
@@ -22991,6 +23370,272 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="V8CompileHints.Version1">
+  <owner>marja@chromium.org</owner>
+  <owner>v8-loading@google.com</owner>
+  <summary>
+    Data about which JavaScript functions are compiled. The collected data is
+    obfuscated to not reveal script URLs. The total data, 2048 B, is split into
+    separate int64s.
+  </summary>
+  <metric name="Data000"/>
+  <metric name="Data001"/>
+  <metric name="Data002"/>
+  <metric name="Data003"/>
+  <metric name="Data004"/>
+  <metric name="Data005"/>
+  <metric name="Data006"/>
+  <metric name="Data007"/>
+  <metric name="Data008"/>
+  <metric name="Data009"/>
+  <metric name="Data010"/>
+  <metric name="Data011"/>
+  <metric name="Data012"/>
+  <metric name="Data013"/>
+  <metric name="Data014"/>
+  <metric name="Data015"/>
+  <metric name="Data016"/>
+  <metric name="Data017"/>
+  <metric name="Data018"/>
+  <metric name="Data019"/>
+  <metric name="Data020"/>
+  <metric name="Data021"/>
+  <metric name="Data022"/>
+  <metric name="Data023"/>
+  <metric name="Data024"/>
+  <metric name="Data025"/>
+  <metric name="Data026"/>
+  <metric name="Data027"/>
+  <metric name="Data028"/>
+  <metric name="Data029"/>
+  <metric name="Data030"/>
+  <metric name="Data031"/>
+  <metric name="Data032"/>
+  <metric name="Data033"/>
+  <metric name="Data034"/>
+  <metric name="Data035"/>
+  <metric name="Data036"/>
+  <metric name="Data037"/>
+  <metric name="Data038"/>
+  <metric name="Data039"/>
+  <metric name="Data040"/>
+  <metric name="Data041"/>
+  <metric name="Data042"/>
+  <metric name="Data043"/>
+  <metric name="Data044"/>
+  <metric name="Data045"/>
+  <metric name="Data046"/>
+  <metric name="Data047"/>
+  <metric name="Data048"/>
+  <metric name="Data049"/>
+  <metric name="Data050"/>
+  <metric name="Data051"/>
+  <metric name="Data052"/>
+  <metric name="Data053"/>
+  <metric name="Data054"/>
+  <metric name="Data055"/>
+  <metric name="Data056"/>
+  <metric name="Data057"/>
+  <metric name="Data058"/>
+  <metric name="Data059"/>
+  <metric name="Data060"/>
+  <metric name="Data061"/>
+  <metric name="Data062"/>
+  <metric name="Data063"/>
+  <metric name="Data064"/>
+  <metric name="Data065"/>
+  <metric name="Data066"/>
+  <metric name="Data067"/>
+  <metric name="Data068"/>
+  <metric name="Data069"/>
+  <metric name="Data070"/>
+  <metric name="Data071"/>
+  <metric name="Data072"/>
+  <metric name="Data073"/>
+  <metric name="Data074"/>
+  <metric name="Data075"/>
+  <metric name="Data076"/>
+  <metric name="Data077"/>
+  <metric name="Data078"/>
+  <metric name="Data079"/>
+  <metric name="Data080"/>
+  <metric name="Data081"/>
+  <metric name="Data082"/>
+  <metric name="Data083"/>
+  <metric name="Data084"/>
+  <metric name="Data085"/>
+  <metric name="Data086"/>
+  <metric name="Data087"/>
+  <metric name="Data088"/>
+  <metric name="Data089"/>
+  <metric name="Data090"/>
+  <metric name="Data091"/>
+  <metric name="Data092"/>
+  <metric name="Data093"/>
+  <metric name="Data094"/>
+  <metric name="Data095"/>
+  <metric name="Data096"/>
+  <metric name="Data097"/>
+  <metric name="Data098"/>
+  <metric name="Data099"/>
+  <metric name="Data100"/>
+  <metric name="Data101"/>
+  <metric name="Data102"/>
+  <metric name="Data103"/>
+  <metric name="Data104"/>
+  <metric name="Data105"/>
+  <metric name="Data106"/>
+  <metric name="Data107"/>
+  <metric name="Data108"/>
+  <metric name="Data109"/>
+  <metric name="Data110"/>
+  <metric name="Data111"/>
+  <metric name="Data112"/>
+  <metric name="Data113"/>
+  <metric name="Data114"/>
+  <metric name="Data115"/>
+  <metric name="Data116"/>
+  <metric name="Data117"/>
+  <metric name="Data118"/>
+  <metric name="Data119"/>
+  <metric name="Data120"/>
+  <metric name="Data121"/>
+  <metric name="Data122"/>
+  <metric name="Data123"/>
+  <metric name="Data124"/>
+  <metric name="Data125"/>
+  <metric name="Data126"/>
+  <metric name="Data127"/>
+  <metric name="Data128"/>
+  <metric name="Data129"/>
+  <metric name="Data130"/>
+  <metric name="Data131"/>
+  <metric name="Data132"/>
+  <metric name="Data133"/>
+  <metric name="Data134"/>
+  <metric name="Data135"/>
+  <metric name="Data136"/>
+  <metric name="Data137"/>
+  <metric name="Data138"/>
+  <metric name="Data139"/>
+  <metric name="Data140"/>
+  <metric name="Data141"/>
+  <metric name="Data142"/>
+  <metric name="Data143"/>
+  <metric name="Data144"/>
+  <metric name="Data145"/>
+  <metric name="Data146"/>
+  <metric name="Data147"/>
+  <metric name="Data148"/>
+  <metric name="Data149"/>
+  <metric name="Data150"/>
+  <metric name="Data151"/>
+  <metric name="Data152"/>
+  <metric name="Data153"/>
+  <metric name="Data154"/>
+  <metric name="Data155"/>
+  <metric name="Data156"/>
+  <metric name="Data157"/>
+  <metric name="Data158"/>
+  <metric name="Data159"/>
+  <metric name="Data160"/>
+  <metric name="Data161"/>
+  <metric name="Data162"/>
+  <metric name="Data163"/>
+  <metric name="Data164"/>
+  <metric name="Data165"/>
+  <metric name="Data166"/>
+  <metric name="Data167"/>
+  <metric name="Data168"/>
+  <metric name="Data169"/>
+  <metric name="Data170"/>
+  <metric name="Data171"/>
+  <metric name="Data172"/>
+  <metric name="Data173"/>
+  <metric name="Data174"/>
+  <metric name="Data175"/>
+  <metric name="Data176"/>
+  <metric name="Data177"/>
+  <metric name="Data178"/>
+  <metric name="Data179"/>
+  <metric name="Data180"/>
+  <metric name="Data181"/>
+  <metric name="Data182"/>
+  <metric name="Data183"/>
+  <metric name="Data184"/>
+  <metric name="Data185"/>
+  <metric name="Data186"/>
+  <metric name="Data187"/>
+  <metric name="Data188"/>
+  <metric name="Data189"/>
+  <metric name="Data190"/>
+  <metric name="Data191"/>
+  <metric name="Data192"/>
+  <metric name="Data193"/>
+  <metric name="Data194"/>
+  <metric name="Data195"/>
+  <metric name="Data196"/>
+  <metric name="Data197"/>
+  <metric name="Data198"/>
+  <metric name="Data199"/>
+  <metric name="Data200"/>
+  <metric name="Data201"/>
+  <metric name="Data202"/>
+  <metric name="Data203"/>
+  <metric name="Data204"/>
+  <metric name="Data205"/>
+  <metric name="Data206"/>
+  <metric name="Data207"/>
+  <metric name="Data208"/>
+  <metric name="Data209"/>
+  <metric name="Data210"/>
+  <metric name="Data211"/>
+  <metric name="Data212"/>
+  <metric name="Data213"/>
+  <metric name="Data214"/>
+  <metric name="Data215"/>
+  <metric name="Data216"/>
+  <metric name="Data217"/>
+  <metric name="Data218"/>
+  <metric name="Data219"/>
+  <metric name="Data220"/>
+  <metric name="Data221"/>
+  <metric name="Data222"/>
+  <metric name="Data223"/>
+  <metric name="Data224"/>
+  <metric name="Data225"/>
+  <metric name="Data226"/>
+  <metric name="Data227"/>
+  <metric name="Data228"/>
+  <metric name="Data229"/>
+  <metric name="Data230"/>
+  <metric name="Data231"/>
+  <metric name="Data232"/>
+  <metric name="Data233"/>
+  <metric name="Data234"/>
+  <metric name="Data235"/>
+  <metric name="Data236"/>
+  <metric name="Data237"/>
+  <metric name="Data238"/>
+  <metric name="Data239"/>
+  <metric name="Data240"/>
+  <metric name="Data241"/>
+  <metric name="Data242"/>
+  <metric name="Data243"/>
+  <metric name="Data244"/>
+  <metric name="Data245"/>
+  <metric name="Data246"/>
+  <metric name="Data247"/>
+  <metric name="Data248"/>
+  <metric name="Data249"/>
+  <metric name="Data250"/>
+  <metric name="Data251"/>
+  <metric name="Data252"/>
+  <metric name="Data253"/>
+  <metric name="Data254"/>
+  <metric name="Data255"/>
+</event>
+
 <event name="VirtualKeyboard.Open">
   <owner>shend@chromium.org</owner>
   <summary>
@@ -23344,14 +23989,14 @@ be describing additional metrics about the same event.
     Features of a web app recorded at most once per day if a user interacted
     with the web app. Recorded for installed and/or promotable (installable) web
     apps unless noted otherwise on the metric. Keyed by start_url of the app.
-    Note: Changed in Feb 2022 to only record when App sync is enabled.
+    Note: Changed in Feb 2023 to only record when App sync is enabled.
   </summary>
   <metric name="BackgroundDuration">
     <summary>
       Records the total duration (seconds, bucketed) that the app was open in
       the background in the last calendar day. Summed during the day and emitted
       if the date changes. Recorded only for installed web apps that are
-      currently open in a web app window.
+      currently open in a web app window, and all preinstalled web apps.
     </summary>
     <aggregation>
       <history>
@@ -23360,6 +24005,23 @@ be describing additional metrics about the same event.
         <index fields="profile.system_ram"/>
         <statistics>
           <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="CapturesLinks" enum="Boolean">
+    <summary>
+      Whether the user has enabled link capturing to open in-scope links in the
+      app window. Recorded only for installed web apps that are currently open
+      in a web app window, and all preinstalled web apps.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <enumeration/>
         </statistics>
       </history>
     </aggregation>
@@ -23385,7 +24047,7 @@ be describing additional metrics about the same event.
       Records the total duration (seconds, bucketed) that the app was open in
       the foreground in the last calendar day. Summed during the day and emitted
       if the date changes. Recorded only for installed web apps that are
-      currently open in a web app window.
+      currently open in a web app window, and all preinstalled web apps.
     </summary>
     <aggregation>
       <history>
@@ -23432,7 +24094,7 @@ be describing additional metrics about the same event.
     <summary>
       Records the total number of times the app was focused in the foreground in
       the last calendar day. Recorded only for installed web apps that are
-      currently open in a web app window.
+      currently open in a web app window, and all preinstalled web apps.
     </summary>
     <aggregation>
       <history>
@@ -23441,6 +24103,41 @@ be describing additional metrics about the same event.
         <index fields="profile.system_ram"/>
         <statistics>
           <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="PreinstalledWindowExperimentHasLaunchedBefore" enum="Boolean">
+    <summary>
+      Records whether the user has launched this preinstalled app before the
+      preinstalled app window vs tab experiment started. Recorded only if the
+      user was eligible for the experiment, which is new Chrome OS users.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="PreinstalledWindowExperimentUserGroup"
+      enum="WebAppPreinstalledWindowExperimentUserGroup">
+    <summary>
+      Records the user group that the user is in, for an experiment on opening
+      preinstalled apps in windows vs tabs. Recorded only if the user was
+      eligible for the experiment, which is new Chrome OS users.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <enumeration/>
         </statistics>
       </history>
     </aggregation>

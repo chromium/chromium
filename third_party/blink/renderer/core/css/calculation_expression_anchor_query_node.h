@@ -54,7 +54,7 @@ class CORE_EXPORT CalculationExpressionAnchorQueryNode final
 
   // Implement |CalculationExpressionNode|:
   float Evaluate(float max_value, const Length::AnchorEvaluator*) const final;
-  bool operator==(const CalculationExpressionNode& other) const final;
+  bool Equals(const CalculationExpressionNode& other) const final;
   scoped_refptr<const CalculationExpressionNode> Zoom(
       double factor) const final;
   bool IsAnchorQuery() const final { return true; }

@@ -11,12 +11,14 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "components/aggregation_service/aggregation_service.mojom-shared.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/registration.mojom-shared.h"
@@ -100,11 +102,24 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
 
 template <>
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
+    StructTraits<attribution_reporting::mojom::DestinationSetDataView,
+                 attribution_reporting::DestinationSet> {
+  static const attribution_reporting::DestinationSet::Destinations&
+  destinations(const attribution_reporting::DestinationSet& set) {
+    return set.destinations();
+  }
+
+  static bool Read(attribution_reporting::mojom::DestinationSetDataView data,
+                   attribution_reporting::DestinationSet* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
                  attribution_reporting::SourceRegistration> {
-  static const net::SchemefulSite& destination(
+  static const attribution_reporting::DestinationSet& destinations(
       const attribution_reporting::SourceRegistration& source) {
-    return source.destination;
+    return source.destination_set;
   }
 
   static uint64_t source_event_id(
@@ -159,27 +174,14 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
 
 template <>
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
-    StructTraits<attribution_reporting::mojom::FiltersDataView,
-                 attribution_reporting::Filters> {
-  static const attribution_reporting::FilterValues& filter_values(
-      const attribution_reporting::Filters& filters) {
-    return filters.filter_values();
-  }
-
-  static bool Read(attribution_reporting::mojom::FiltersDataView data,
-                   attribution_reporting::Filters* out);
-};
-
-template <>
-struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     StructTraits<attribution_reporting::mojom::FilterPairDataView,
                  attribution_reporting::FilterPair> {
-  static const attribution_reporting::Filters& positive(
+  static const attribution_reporting::FiltersDisjunction& positive(
       const attribution_reporting::FilterPair& filters) {
     return filters.positive;
   }
 
-  static const attribution_reporting::Filters& negative(
+  static const attribution_reporting::FiltersDisjunction& negative(
       const attribution_reporting::FilterPair& filters) {
     return filters.negative;
   }
@@ -244,7 +246,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
                  attribution_reporting::TriggerRegistration> {
   static const std::vector<attribution_reporting::EventTriggerData>&
   event_triggers(const attribution_reporting::TriggerRegistration& trigger) {
-    return trigger.event_triggers.vec();
+    return trigger.event_triggers;
   }
 
   static const attribution_reporting::FilterPair& filters(
@@ -255,7 +257,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
   static const std::vector<attribution_reporting::AggregatableTriggerData>&
   aggregatable_trigger_data(
       const attribution_reporting::TriggerRegistration& trigger) {
-    return trigger.aggregatable_trigger_data.vec();
+    return trigger.aggregatable_trigger_data;
   }
 
   static const attribution_reporting::AggregatableValues::Values&
@@ -272,7 +274,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
   static const std::vector<attribution_reporting::AggregatableDedupKey>&
   aggregatable_dedup_keys(
       const attribution_reporting::TriggerRegistration& trigger) {
-    return trigger.aggregatable_dedup_keys.vec();
+    return trigger.aggregatable_dedup_keys;
   }
 
   static bool debug_reporting(

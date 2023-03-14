@@ -83,10 +83,10 @@ OncParsedCertificatesForPkcs12File(
   std::string pkcs12_base64_encoded;
   base::Base64Encode(pkcs12_raw, &pkcs12_base64_encoded);
 
-  base::Value onc_certificate(base::Value::Type::DICT);
-  onc_certificate.SetKey("GUID", base::Value(guid));
-  onc_certificate.SetKey("Type", base::Value("Client"));
-  onc_certificate.SetKey("PKCS12", base::Value(pkcs12_base64_encoded));
+  base::Value::Dict onc_certificate;
+  onc_certificate.Set("GUID", guid);
+  onc_certificate.Set("Type", "Client");
+  onc_certificate.Set("PKCS12", pkcs12_base64_encoded);
   base::Value::List onc_certificates;
   onc_certificates.Append(std::move(onc_certificate));
   return std::make_unique<chromeos::onc::OncParsedCertificates>(
@@ -385,8 +385,8 @@ class ClientCertResolverTest : public testing::Test,
     std::string user_hash =
         onc_source == ::onc::ONC_SOURCE_USER_POLICY ? kUserHash : "";
     managed_config_handler_->SetPolicy(
-        onc_source, user_hash, *parsed_json,
-        /*global_network_config=*/base::Value(base::Value::Type::DICT));
+        onc_source, user_hash, parsed_json->GetList(),
+        /*global_network_config=*/base::Value::Dict());
   }
 
   void SetWifiState(const std::string& state) {

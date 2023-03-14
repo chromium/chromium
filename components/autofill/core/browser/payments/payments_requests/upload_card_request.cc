@@ -24,6 +24,12 @@ const char kUploadCardRequestFormat[] =
 const char kUploadCardRequestFormatWithoutCvc[] =
     "requestContentType=application/json; charset=utf-8&request=%s"
     "&s7e_1_pan=%s";
+const char kUploadCardRequestFormatUsingAlternateType[] =
+    "requestContentType=application/json; charset=utf-8&request=%s"
+    "&s7e_38_pan=%s&s7e_13_cvc=%s";
+const char kUploadCardRequestFormatWithoutCvcUsingAlternateType[] =
+    "requestContentType=application/json; charset=utf-8&request=%s"
+    "&s7e_38_pan=%s";
 }  // namespace
 
 UploadCardRequest::UploadCardRequest(
@@ -48,7 +54,12 @@ std::string UploadCardRequest::GetRequestContentType() {
 
 std::string UploadCardRequest::GetRequestContent() {
   base::Value::Dict request_dict;
-  request_dict.Set("encrypted_pan", "__param:s7e_1_pan");
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillUpstreamUseAlternateSecureDataType)) {
+    request_dict.Set("encrypted_pan", "__param:s7e_38_pan");
+  } else {
+    request_dict.Set("encrypted_pan", "__param:s7e_1_pan");
+  }
   if (!request_details_.cvc.empty())
     request_dict.Set("encrypted_cvc", "__param:s7e_13_cvc");
   request_dict.Set("risk_data_encoded",
@@ -65,10 +76,10 @@ std::string UploadCardRequest::GetRequestContent() {
   }
   request_dict.Set("context", std::move(context));
 
-  base::Value::Dict chrome_user_context;
-  chrome_user_context.Set("full_sync_enabled", full_sync_enabled_);
-  request_dict.Set("chrome_user_context", std::move(chrome_user_context));
-
+  request_dict.Set(
+      "chrome_user_context",
+      BuildChromeUserContext(request_details_.client_behavior_signals,
+                             full_sync_enabled_));
   SetStringIfNotEmpty(request_details_.card, CREDIT_CARD_NAME_FULL, app_locale,
                       "cardholder_name", request_dict);
 
@@ -94,8 +105,6 @@ std::string UploadCardRequest::GetRequestContent() {
     request_dict.Set("nickname", request_details_.card.nickname());
   }
 
-  SetActiveExperiments(request_details_.active_experiments, request_dict);
-
   const std::u16string pan = request_details_.card.GetInfo(
       AutofillType(CREDIT_CARD_NUMBER), app_locale);
   std::string json_request;
@@ -103,12 +112,18 @@ std::string UploadCardRequest::GetRequestContent() {
   std::string request_content;
   if (request_details_.cvc.empty()) {
     request_content = base::StringPrintf(
-        kUploadCardRequestFormatWithoutCvc,
+        base::FeatureList::IsEnabled(
+            features::kAutofillUpstreamUseAlternateSecureDataType)
+            ? kUploadCardRequestFormatWithoutCvcUsingAlternateType
+            : kUploadCardRequestFormatWithoutCvc,
         base::EscapeUrlEncodedData(json_request, true).c_str(),
         base::EscapeUrlEncodedData(base::UTF16ToASCII(pan), true).c_str());
   } else {
     request_content = base::StringPrintf(
-        kUploadCardRequestFormat,
+        base::FeatureList::IsEnabled(
+            features::kAutofillUpstreamUseAlternateSecureDataType)
+            ? kUploadCardRequestFormatUsingAlternateType
+            : kUploadCardRequestFormat,
         base::EscapeUrlEncodedData(json_request, true).c_str(),
         base::EscapeUrlEncodedData(base::UTF16ToASCII(pan), true).c_str(),
         base::EscapeUrlEncodedData(base::UTF16ToASCII(request_details_.cvc),

@@ -1,146 +1,192 @@
 This is a testharness.js-based test.
-Found 142 tests; 0 PASS, 142 FAIL, 0 TIMEOUT, 0 NOTRUN.
-FAIL abs(1) should be used-value-equivalent to 1 assert_not_equals: abs(1) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(1) should be used-value-equivalent to 1 assert_not_equals: sign(1) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL abs(-1) should be used-value-equivalent to 1 assert_not_equals: abs(-1) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-1) should be used-value-equivalent to -1 assert_not_equals: sign(-1) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL abs(sign(1)) should be used-value-equivalent to 1 assert_not_equals: abs(sign(1)) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL abs(sign(sign(1))) should be used-value-equivalent to 1 assert_not_equals: abs(sign(sign(1))) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(sign(sign(1) + sign(1))) should be used-value-equivalent to 1 assert_not_equals: sign(sign(sign(1) + sign(1))) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL calc(abs(0.1 + 0.2) + 0.05) should be used-value-equivalent to 0.35 assert_not_equals: calc(abs(0.1 + 0.2) + 0.05) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
-FAIL calc(sign(0.1 + 0.2) - 0.05) should be used-value-equivalent to 0.95 assert_not_equals: calc(sign(0.1 + 0.2) - 0.05) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
-FAIL calc(abs(0.1 + 0.2) * 2) should be used-value-equivalent to 0.6 assert_not_equals: calc(abs(0.1 + 0.2) * 2) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
-FAIL calc(abs(sign(0.1) + 0.2) / 2) should be used-value-equivalent to 0.6 assert_not_equals: calc(abs(sign(0.1) + 0.2) / 2) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
-FAIL calc(abs(0.1 + 0.2) * -2) should be used-value-equivalent to -0.6 assert_not_equals: calc(abs(0.1 + 0.2) * -2) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
-FAIL calc(sign(0.1 - 0.2) - 0.05) should be used-value-equivalent to -1.05 assert_not_equals: calc(sign(0.1 - 0.2) - 0.05) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
-FAIL calc(sign(1) + sign(1) - 0.05) should be used-value-equivalent to 1.95 assert_not_equals: calc(sign(1) + sign(1) - 0.05) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
-FAIL calc(sign(-0)) should be used-value-equivalent to -0 assert_not_equals: calc(sign(-0)) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL calc(sign(0)) should be used-value-equivalent to 0 assert_not_equals: calc(sign(0)) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(1px) should be used-value-equivalent to 1 assert_not_equals: sign(1px) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(1cm) should be used-value-equivalent to 1 assert_not_equals: sign(1cm) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(1mm) should be used-value-equivalent to 1 assert_not_equals: sign(1mm) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(1Q) should be used-value-equivalent to 1 assert_not_equals: sign(1Q) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(1in) should be used-value-equivalent to 1 assert_not_equals: sign(1in) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(1pc) should be used-value-equivalent to 1 assert_not_equals: sign(1pc) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(1pt) should be used-value-equivalent to 1 assert_not_equals: sign(1pt) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(1em) should be used-value-equivalent to 1 assert_not_equals: sign(1em) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(1ex) should be used-value-equivalent to 1 assert_not_equals: sign(1ex) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(1ch) should be used-value-equivalent to 1 assert_not_equals: sign(1ch) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(1rem) should be used-value-equivalent to 1 assert_not_equals: sign(1rem) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(1vh) should be used-value-equivalent to 1 assert_not_equals: sign(1vh) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(1vw) should be used-value-equivalent to 1 assert_not_equals: sign(1vw) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(1vmin) should be used-value-equivalent to 1 assert_not_equals: sign(1vmin) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(1vmax) should be used-value-equivalent to 1 assert_not_equals: sign(1vmax) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-1px) should be used-value-equivalent to -1 assert_not_equals: sign(-1px) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-1cm) should be used-value-equivalent to -1 assert_not_equals: sign(-1cm) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-1mm) should be used-value-equivalent to -1 assert_not_equals: sign(-1mm) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-1Q) should be used-value-equivalent to -1 assert_not_equals: sign(-1Q) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-1in) should be used-value-equivalent to -1 assert_not_equals: sign(-1in) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-1pc) should be used-value-equivalent to -1 assert_not_equals: sign(-1pc) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-1pt) should be used-value-equivalent to -1 assert_not_equals: sign(-1pt) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-1em) should be used-value-equivalent to -1 assert_not_equals: sign(-1em) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-1ex) should be used-value-equivalent to -1 assert_not_equals: sign(-1ex) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-1ch) should be used-value-equivalent to -1 assert_not_equals: sign(-1ch) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-1rem) should be used-value-equivalent to -1 assert_not_equals: sign(-1rem) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-1vh) should be used-value-equivalent to -1 assert_not_equals: sign(-1vh) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-1vw) should be used-value-equivalent to -1 assert_not_equals: sign(-1vw) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-1vmin) should be used-value-equivalent to -1 assert_not_equals: sign(-1vmin) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-1vmax) should be used-value-equivalent to -1 assert_not_equals: sign(-1vmax) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(1s) should be used-value-equivalent to 1 assert_not_equals: sign(1s) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(1ms) should be used-value-equivalent to 1 assert_not_equals: sign(1ms) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-1s) should be used-value-equivalent to -1 assert_not_equals: sign(-1s) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-1ms) should be used-value-equivalent to -1 assert_not_equals: sign(-1ms) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(1deg) should be used-value-equivalent to 1 assert_not_equals: sign(1deg) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(1grad) should be used-value-equivalent to 1 assert_not_equals: sign(1grad) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(1rad) should be used-value-equivalent to 1 assert_not_equals: sign(1rad) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(1turn) should be used-value-equivalent to 1 assert_not_equals: sign(1turn) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-1deg) should be used-value-equivalent to -1 assert_not_equals: sign(-1deg) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-1grad) should be used-value-equivalent to -1 assert_not_equals: sign(-1grad) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-1rad) should be used-value-equivalent to -1 assert_not_equals: sign(-1rad) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-1turn) should be used-value-equivalent to -1 assert_not_equals: sign(-1turn) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(0px) should be used-value-equivalent to 0 assert_not_equals: sign(0px) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(0cm) should be used-value-equivalent to 0 assert_not_equals: sign(0cm) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(0mm) should be used-value-equivalent to 0 assert_not_equals: sign(0mm) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(0Q) should be used-value-equivalent to 0 assert_not_equals: sign(0Q) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(0in) should be used-value-equivalent to 0 assert_not_equals: sign(0in) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(0pc) should be used-value-equivalent to 0 assert_not_equals: sign(0pc) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(0pt) should be used-value-equivalent to 0 assert_not_equals: sign(0pt) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(0em) should be used-value-equivalent to 0 assert_not_equals: sign(0em) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(0ex) should be used-value-equivalent to 0 assert_not_equals: sign(0ex) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(0ch) should be used-value-equivalent to 0 assert_not_equals: sign(0ch) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(0rem) should be used-value-equivalent to 0 assert_not_equals: sign(0rem) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(0vh) should be used-value-equivalent to 0 assert_not_equals: sign(0vh) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(0vw) should be used-value-equivalent to 0 assert_not_equals: sign(0vw) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(0vmin) should be used-value-equivalent to 0 assert_not_equals: sign(0vmin) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(0vmax) should be used-value-equivalent to 0 assert_not_equals: sign(0vmax) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-0px) should be used-value-equivalent to -0 assert_not_equals: sign(-0px) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-0cm) should be used-value-equivalent to -0 assert_not_equals: sign(-0cm) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-0mm) should be used-value-equivalent to -0 assert_not_equals: sign(-0mm) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-0Q) should be used-value-equivalent to -0 assert_not_equals: sign(-0Q) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-0in) should be used-value-equivalent to -0 assert_not_equals: sign(-0in) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-0pc) should be used-value-equivalent to -0 assert_not_equals: sign(-0pc) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-0pt) should be used-value-equivalent to -0 assert_not_equals: sign(-0pt) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-0em) should be used-value-equivalent to -0 assert_not_equals: sign(-0em) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-0ex) should be used-value-equivalent to -0 assert_not_equals: sign(-0ex) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-0ch) should be used-value-equivalent to -0 assert_not_equals: sign(-0ch) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-0rem) should be used-value-equivalent to -0 assert_not_equals: sign(-0rem) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-0vh) should be used-value-equivalent to -0 assert_not_equals: sign(-0vh) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-0vw) should be used-value-equivalent to -0 assert_not_equals: sign(-0vw) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-0vmin) should be used-value-equivalent to -0 assert_not_equals: sign(-0vmin) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-0vmax) should be used-value-equivalent to -0 assert_not_equals: sign(-0vmax) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(0s) should be used-value-equivalent to 0 assert_not_equals: sign(0s) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(0ms) should be used-value-equivalent to 0 assert_not_equals: sign(0ms) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-0s) should be used-value-equivalent to 0 assert_not_equals: sign(-0s) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-0ms) should be used-value-equivalent to 0 assert_not_equals: sign(-0ms) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(0deg) should be used-value-equivalent to 0 assert_not_equals: sign(0deg) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(0grad) should be used-value-equivalent to 0 assert_not_equals: sign(0grad) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(0rad) should be used-value-equivalent to 0 assert_not_equals: sign(0rad) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(0turn) should be used-value-equivalent to 0 assert_not_equals: sign(0turn) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-0deg) should be used-value-equivalent to -0 assert_not_equals: sign(-0deg) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-0grad) should be used-value-equivalent to -0 assert_not_equals: sign(-0grad) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-0rad) should be used-value-equivalent to -0 assert_not_equals: sign(-0rad) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL sign(-0turn) should be used-value-equivalent to -0 assert_not_equals: sign(-0turn) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
-FAIL abs(1px) should be used-value-equivalent to 1px assert_not_equals: abs(1px) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
-FAIL abs(1cm) should be used-value-equivalent to 1cm assert_not_equals: abs(1cm) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
-FAIL abs(1mm) should be used-value-equivalent to 1mm assert_not_equals: abs(1mm) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
-FAIL abs(1Q) should be used-value-equivalent to 1Q assert_not_equals: abs(1Q) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
-FAIL abs(1in) should be used-value-equivalent to 1in assert_not_equals: abs(1in) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
-FAIL abs(1pc) should be used-value-equivalent to 1pc assert_not_equals: abs(1pc) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
-FAIL abs(1pt) should be used-value-equivalent to 1pt assert_not_equals: abs(1pt) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
-FAIL abs(1em) should be used-value-equivalent to 1em assert_not_equals: abs(1em) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
-FAIL abs(1ex) should be used-value-equivalent to 1ex assert_not_equals: abs(1ex) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
-FAIL abs(1ch) should be used-value-equivalent to 1ch assert_not_equals: abs(1ch) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
-FAIL abs(1rem) should be used-value-equivalent to 1rem assert_not_equals: abs(1rem) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
-FAIL abs(1vh) should be used-value-equivalent to 1vh assert_not_equals: abs(1vh) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
-FAIL abs(1vw) should be used-value-equivalent to 1vw assert_not_equals: abs(1vw) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
-FAIL abs(1vmin) should be used-value-equivalent to 1vmin assert_not_equals: abs(1vmin) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
-FAIL abs(1vmax) should be used-value-equivalent to 1vmax assert_not_equals: abs(1vmax) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
-FAIL abs(-1px) should be used-value-equivalent to 1px assert_not_equals: abs(-1px) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
-FAIL abs(-1cm) should be used-value-equivalent to 1cm assert_not_equals: abs(-1cm) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
-FAIL abs(-1mm) should be used-value-equivalent to 1mm assert_not_equals: abs(-1mm) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
-FAIL abs(-1Q) should be used-value-equivalent to 1Q assert_not_equals: abs(-1Q) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
-FAIL abs(-1in) should be used-value-equivalent to 1in assert_not_equals: abs(-1in) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
-FAIL abs(-1pc) should be used-value-equivalent to 1pc assert_not_equals: abs(-1pc) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
-FAIL abs(-1pt) should be used-value-equivalent to 1pt assert_not_equals: abs(-1pt) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
-FAIL abs(-1em) should be used-value-equivalent to 1em assert_not_equals: abs(-1em) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
-FAIL abs(-1ex) should be used-value-equivalent to 1ex assert_not_equals: abs(-1ex) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
-FAIL abs(-1ch) should be used-value-equivalent to 1ch assert_not_equals: abs(-1ch) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
-FAIL abs(-1rem) should be used-value-equivalent to 1rem assert_not_equals: abs(-1rem) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
-FAIL abs(-1vh) should be used-value-equivalent to 1vh assert_not_equals: abs(-1vh) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
-FAIL abs(-1vw) should be used-value-equivalent to 1vw assert_not_equals: abs(-1vw) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
-FAIL abs(-1vmin) should be used-value-equivalent to 1vmin assert_not_equals: abs(-1vmin) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
-FAIL abs(-1vmax) should be used-value-equivalent to 1vmax assert_not_equals: abs(-1vmax) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
-FAIL abs(1s) should be used-value-equivalent to 1s assert_not_equals: abs(1s) isn't valid in 'transition-delay'; got the default value instead. got disallowed value "0s"
-FAIL abs(1ms) should be used-value-equivalent to 1ms assert_not_equals: abs(1ms) isn't valid in 'transition-delay'; got the default value instead. got disallowed value "0s"
-FAIL abs(-1s) should be used-value-equivalent to 1s assert_not_equals: abs(-1s) isn't valid in 'transition-delay'; got the default value instead. got disallowed value "0s"
-FAIL abs(-1ms) should be used-value-equivalent to 1ms assert_not_equals: abs(-1ms) isn't valid in 'transition-delay'; got the default value instead. got disallowed value "0s"
-FAIL abs(1deg) should be used-value-equivalent to 1deg assert_not_equals: abs(1deg) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
-FAIL abs(1grad) should be used-value-equivalent to 1grad assert_not_equals: abs(1grad) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
-FAIL abs(1rad) should be used-value-equivalent to 1rad assert_not_equals: abs(1rad) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
-FAIL abs(1turn) should be used-value-equivalent to 1turn assert_not_equals: abs(1turn) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
-FAIL abs(-1deg) should be used-value-equivalent to 1deg assert_not_equals: abs(-1deg) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
-FAIL abs(-1grad) should be used-value-equivalent to 1grad assert_not_equals: abs(-1grad) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
-FAIL abs(-1rad) should be used-value-equivalent to 1rad assert_not_equals: abs(-1rad) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
-FAIL abs(-1turn) should be used-value-equivalent to 1turn assert_not_equals: abs(-1turn) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+Found 188 tests; 186 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS abs(1) should be used-value-equivalent to 1
+PASS sign(1) should be used-value-equivalent to 1
+PASS abs(-1) should be used-value-equivalent to 1
+PASS sign(-1) should be used-value-equivalent to -1
+PASS abs(sign(1)) should be used-value-equivalent to 1
+PASS abs(sign(sign(1))) should be used-value-equivalent to 1
+PASS sign(sign(sign(1) + sign(1))) should be used-value-equivalent to 1
+PASS calc(abs(0.1 + 0.2) + 0.05) should be used-value-equivalent to 0.35
+PASS calc(sign(0.1 + 0.2) - 0.05) should be used-value-equivalent to 0.95
+PASS calc(abs(0.1 + 0.2) * 2) should be used-value-equivalent to 0.6
+PASS calc(abs(sign(0.1) + 0.2) / 2) should be used-value-equivalent to 0.6
+PASS calc(abs(0.1 + 0.2) * -2) should be used-value-equivalent to -0.6
+PASS calc(sign(0.1 - 0.2) - 0.05) should be used-value-equivalent to -1.05
+PASS calc(sign(1) + sign(1) - 0.05) should be used-value-equivalent to 1.95
+PASS calc(calc(sign(-0))) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(calc(sign(-0)))), 1) should be used-value-equivalent to -1
+PASS calc(calc(sign(0))) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(calc(sign(0)))), 1) should be used-value-equivalent to 1
+PASS sign(1px) should be used-value-equivalent to 1
+PASS sign(1cm) should be used-value-equivalent to 1
+PASS sign(1mm) should be used-value-equivalent to 1
+PASS sign(1Q) should be used-value-equivalent to 1
+PASS sign(1in) should be used-value-equivalent to 1
+PASS sign(1pc) should be used-value-equivalent to 1
+PASS sign(1pt) should be used-value-equivalent to 1
+PASS sign(1em) should be used-value-equivalent to 1
+PASS sign(1ex) should be used-value-equivalent to 1
+PASS sign(1ch) should be used-value-equivalent to 1
+PASS sign(1rem) should be used-value-equivalent to 1
+PASS sign(1vh) should be used-value-equivalent to 1
+PASS sign(1vw) should be used-value-equivalent to 1
+PASS sign(1vmin) should be used-value-equivalent to 1
+PASS sign(1vmax) should be used-value-equivalent to 1
+PASS sign(-1px) should be used-value-equivalent to -1
+PASS sign(-1cm) should be used-value-equivalent to -1
+PASS sign(-1mm) should be used-value-equivalent to -1
+PASS sign(-1Q) should be used-value-equivalent to -1
+PASS sign(-1in) should be used-value-equivalent to -1
+PASS sign(-1pc) should be used-value-equivalent to -1
+PASS sign(-1pt) should be used-value-equivalent to -1
+PASS sign(-1em) should be used-value-equivalent to -1
+PASS sign(-1ex) should be used-value-equivalent to -1
+PASS sign(-1ch) should be used-value-equivalent to -1
+PASS sign(-1rem) should be used-value-equivalent to -1
+PASS sign(-1vh) should be used-value-equivalent to -1
+PASS sign(-1vw) should be used-value-equivalent to -1
+PASS sign(-1vmin) should be used-value-equivalent to -1
+PASS sign(-1vmax) should be used-value-equivalent to -1
+PASS sign(1s) should be used-value-equivalent to 1
+PASS sign(1ms) should be used-value-equivalent to 1
+PASS sign(-1s) should be used-value-equivalent to -1
+PASS sign(-1ms) should be used-value-equivalent to -1
+PASS sign(1deg) should be used-value-equivalent to 1
+PASS sign(1grad) should be used-value-equivalent to 1
+PASS sign(1rad) should be used-value-equivalent to 1
+PASS sign(1turn) should be used-value-equivalent to 1
+PASS sign(-1deg) should be used-value-equivalent to -1
+PASS sign(-1grad) should be used-value-equivalent to -1
+PASS sign(-1rad) should be used-value-equivalent to -1
+PASS sign(-1turn) should be used-value-equivalent to -1
+PASS calc(sign(0px)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(0px))), 1) should be used-value-equivalent to 1
+PASS calc(sign(0cm)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(0cm))), 1) should be used-value-equivalent to 1
+PASS calc(sign(0mm)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(0mm))), 1) should be used-value-equivalent to 1
+PASS calc(sign(0Q)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(0Q))), 1) should be used-value-equivalent to 1
+PASS calc(sign(0in)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(0in))), 1) should be used-value-equivalent to 1
+PASS calc(sign(0pc)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(0pc))), 1) should be used-value-equivalent to 1
+PASS calc(sign(0pt)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(0pt))), 1) should be used-value-equivalent to 1
+PASS calc(sign(0em)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(0em))), 1) should be used-value-equivalent to 1
+PASS calc(sign(0ex)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(0ex))), 1) should be used-value-equivalent to 1
+PASS calc(sign(0ch)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(0ch))), 1) should be used-value-equivalent to 1
+PASS calc(sign(0rem)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(0rem))), 1) should be used-value-equivalent to 1
+PASS calc(sign(0vh)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(0vh))), 1) should be used-value-equivalent to 1
+PASS calc(sign(0vw)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(0vw))), 1) should be used-value-equivalent to 1
+PASS calc(sign(0vmin)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(0vmin))), 1) should be used-value-equivalent to 1
+PASS calc(sign(0vmax)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(0vmax))), 1) should be used-value-equivalent to 1
+PASS calc(sign(-0px)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(-0px))), 1) should be used-value-equivalent to -1
+PASS calc(sign(-0cm)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(-0cm))), 1) should be used-value-equivalent to -1
+PASS calc(sign(-0mm)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(-0mm))), 1) should be used-value-equivalent to -1
+PASS calc(sign(-0Q)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(-0Q))), 1) should be used-value-equivalent to -1
+PASS calc(sign(-0in)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(-0in))), 1) should be used-value-equivalent to -1
+PASS calc(sign(-0pc)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(-0pc))), 1) should be used-value-equivalent to -1
+PASS calc(sign(-0pt)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(-0pt))), 1) should be used-value-equivalent to -1
+PASS calc(sign(-0em)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(-0em))), 1) should be used-value-equivalent to -1
+PASS calc(sign(-0ex)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(-0ex))), 1) should be used-value-equivalent to -1
+PASS calc(sign(-0ch)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(-0ch))), 1) should be used-value-equivalent to -1
+PASS calc(sign(-0rem)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(-0rem))), 1) should be used-value-equivalent to -1
+PASS calc(sign(-0vh)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(-0vh))), 1) should be used-value-equivalent to -1
+PASS calc(sign(-0vw)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(-0vw))), 1) should be used-value-equivalent to -1
+PASS calc(sign(-0vmin)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(-0vmin))), 1) should be used-value-equivalent to -1
+PASS calc(sign(-0vmax)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(-0vmax))), 1) should be used-value-equivalent to -1
+PASS calc(sign(0s)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(0s))), 1) should be used-value-equivalent to 1
+PASS calc(sign(0ms)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(0ms))), 1) should be used-value-equivalent to 1
+PASS calc(sign(-0s)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(-0s))), 1) should be used-value-equivalent to -1
+PASS calc(sign(-0ms)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(-0ms))), 1) should be used-value-equivalent to -1
+PASS calc(sign(0deg)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(0deg))), 1) should be used-value-equivalent to 1
+PASS calc(sign(0grad)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(0grad))), 1) should be used-value-equivalent to 1
+PASS calc(sign(0rad)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(0rad))), 1) should be used-value-equivalent to 1
+PASS calc(sign(0turn)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(0turn))), 1) should be used-value-equivalent to 1
+PASS calc(sign(-0deg)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(-0deg))), 1) should be used-value-equivalent to -1
+PASS calc(sign(-0grad)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(-0grad))), 1) should be used-value-equivalent to -1
+PASS calc(sign(-0rad)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(-0rad))), 1) should be used-value-equivalent to -1
+PASS calc(sign(-0turn)) should be used-value-equivalent to 0
+PASS clamp(-1, calc( 1 / sign(sign(-0turn))), 1) should be used-value-equivalent to -1
+PASS abs(1px) should be used-value-equivalent to 1px
+PASS abs(1cm) should be used-value-equivalent to 1cm
+PASS abs(1mm) should be used-value-equivalent to 1mm
+PASS abs(1Q) should be used-value-equivalent to 1Q
+PASS abs(1in) should be used-value-equivalent to 1in
+PASS abs(1pc) should be used-value-equivalent to 1pc
+PASS abs(1pt) should be used-value-equivalent to 1pt
+PASS abs(1em) should be used-value-equivalent to 1em
+PASS abs(1ex) should be used-value-equivalent to 1ex
+PASS abs(1ch) should be used-value-equivalent to 1ch
+PASS abs(1rem) should be used-value-equivalent to 1rem
+PASS abs(1vh) should be used-value-equivalent to 1vh
+PASS abs(1vw) should be used-value-equivalent to 1vw
+PASS abs(1vmin) should be used-value-equivalent to 1vmin
+PASS abs(1vmax) should be used-value-equivalent to 1vmax
+PASS abs(-1px) should be used-value-equivalent to 1px
+PASS abs(-1cm) should be used-value-equivalent to 1cm
+PASS abs(-1mm) should be used-value-equivalent to 1mm
+PASS abs(-1Q) should be used-value-equivalent to 1Q
+PASS abs(-1in) should be used-value-equivalent to 1in
+PASS abs(-1pc) should be used-value-equivalent to 1pc
+PASS abs(-1pt) should be used-value-equivalent to 1pt
+PASS abs(-1em) should be used-value-equivalent to 1em
+PASS abs(-1ex) should be used-value-equivalent to 1ex
+PASS abs(-1ch) should be used-value-equivalent to 1ch
+PASS abs(-1rem) should be used-value-equivalent to 1rem
+PASS abs(-1vh) should be used-value-equivalent to 1vh
+PASS abs(-1vw) should be used-value-equivalent to 1vw
+PASS abs(-1vmin) should be used-value-equivalent to 1vmin
+PASS abs(-1vmax) should be used-value-equivalent to 1vmax
+PASS abs(1s) should be used-value-equivalent to 1s
+PASS abs(1ms) should be used-value-equivalent to 1ms
+PASS abs(-1s) should be used-value-equivalent to 1s
+PASS abs(-1ms) should be used-value-equivalent to 1ms
+PASS abs(1deg) should be used-value-equivalent to 1deg
+PASS abs(1grad) should be used-value-equivalent to 1grad
+PASS abs(1rad) should be used-value-equivalent to 1rad
+PASS abs(1turn) should be used-value-equivalent to 1turn
+PASS abs(-1deg) should be used-value-equivalent to 1deg
+PASS abs(-1grad) should be used-value-equivalent to 1grad
+PASS abs(-1rad) should be used-value-equivalent to 1rad
+PASS abs(-1turn) should be used-value-equivalent to 1turn
+FAIL sign(10px - 1em) should be used-value-equivalent to 0; fontSize=10px assert_not_equals: sign(10px - 1em) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
+FAIL sign(10px - 2em) should be used-value-equivalent to -1; fontSize=10px assert_not_equals: sign(10px - 2em) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
 Harness: the test ran to completion.
 

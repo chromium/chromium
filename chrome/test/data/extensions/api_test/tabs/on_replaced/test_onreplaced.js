@@ -10,7 +10,7 @@ onload = function() {
             var tabId = tab.id;
 
             var onReplaceListener = function(new_tab_id, old_tab_id) {
-              chrome.test.assertTrue(tabId != new_tab_id);
+              chrome.test.assertNe(new_tab_id, tabId);
               chrome.test.assertEq(tabId, old_tab_id);
               chrome.tabs.onReplaced.removeListener(onReplaceListener);
               chrome.test.succeed();

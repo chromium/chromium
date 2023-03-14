@@ -42,6 +42,11 @@ extern NSString* const kLastUsedFeedForGoodVisitsKey;
 extern NSString* const kLastInteractionTimeForGoodVisits;
 extern NSString* const kLastInteractionTimeForDiscoverGoodVisits;
 extern NSString* const kLastInteractionTimeForFollowingGoodVisits;
+// Stores the last day the Time in Feed was reported on UMA. It stores the
+// midnight (beginning of the day) of the last interaction.
+extern NSString* const kLastDayTimeInFeedReportedKey;
+// Stores the time spent on the feed for a day.
+extern NSString* const kTimeSpentInFeedAggregateKey;
 
 #pragma mark - Enums
 
@@ -71,11 +76,14 @@ enum class FeedRefreshTrigger {
   kForegroundFeedStart = 3,
   kForegroundAccountChange = 4,
   kForegroundUserTriggered = 5,
-  kForegroundForced = 6,
+  kForegroundFeedVisibleOther = 6,
   kForegroundNotForced = 7,
+  kForegroundFeedNotVisible = 8,
+  kForegroundNewFeedViewController = 9,
+  kForegroundAppClose = 10,
 
   // Change this to match max value.
-  kMaxValue = 7,
+  kMaxValue = kForegroundAppClose,
 };
 
 // Enum class contains values indicating the type of follow request. Ex.
@@ -200,6 +208,8 @@ enum class FeedSortType {
 
 #pragma mark - Histograms
 
+// Histogram name for the Time Spent in Feed.
+extern const char kTimeSpentInFeedHistogram[];
 // Histogram name for the Discover feed user actions.
 extern const char kDiscoverFeedUserActionHistogram[];
 

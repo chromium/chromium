@@ -2,7 +2,7 @@ Before:
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [785, 802],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -18,7 +18,6 @@ Before:
       "name": "LayoutNGBlockFlow (relative positioned) DIV class='container'",
       "position": [46, 230],
       "bounds": [146, 452],
-      "contentsOpaqueForText": true,
       "backgroundColor": "#FFFFFF"
     },
     {
@@ -88,7 +87,7 @@ After:
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [785, 802],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -117,8 +116,7 @@ After:
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='first-green-box' class='box green rotate-45deg'",
       "position": [46, 328],
-      "bounds": [146, 344],
-      "contentsOpaqueForText": true
+      "bounds": [146, 344]
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV class='box yellow'",

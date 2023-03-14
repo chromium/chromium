@@ -41,8 +41,6 @@ target(link_target_type, "renderer_sources") {
     "render_thread_observer.cc",
     "render_thread_observer.h",
     "v8_value_converter.h",
-    "video_encode_accelerator.cc",
-    "video_encode_accelerator.h",
     "window_features_converter.cc",
     "window_features_converter.h",
     "worker_thread.h",

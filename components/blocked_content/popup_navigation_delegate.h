@@ -33,7 +33,7 @@ class PopupNavigationDelegate {
   virtual bool GetOriginalUserGesture() = 0;
 
   // Gets the URL to be loaded.
-  virtual const GURL& GetURL() = 0;
+  virtual GURL GetURL() = 0;
 
   // Performs the navigation.
   struct NavigateResult {

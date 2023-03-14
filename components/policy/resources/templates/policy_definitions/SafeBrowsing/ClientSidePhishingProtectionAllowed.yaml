@@ -1,0 +1,27 @@
+caption: Allow Safe Browsing Client Side Phishing Protection
+desc: |-
+  When this policy is enabled or left unset, client side phishing protection will be controlled by <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME">SafeBrowsingProtectionLevel</ph> for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. If <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME">SafeBrowsingProtectionLevel</ph> is set to <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_STANDARD">Standard</ph> or <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_ENHANCED">Enhanced Protection</ph>, client side phishing protection runs a local model to check if a page is phishing. If the model believes the page is phishing, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> sends a request to Google for a final verdict.
+  When this policy is disabled, client side phishing protection does not perform any protection and does not send data to Google for verdicts.
+default: true
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- android
+- chrome.*
+- chrome_os
+- fuchsia
+items:
+- caption: Safe Browsing Client Side Phishing Protection is controlled by <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME">SafeBrowsingProtectionLevel</ph> policy
+  value: true
+- caption: Disable Safe Browsing Client Side Phishing Protection
+  value: false
+owners:
+- alexwchen@chromium.org
+- file://components/safe_browsing/OWNERS
+schema:
+  type: boolean
+tags:
+- google-sharing
+type: main

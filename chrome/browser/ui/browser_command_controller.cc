@@ -112,8 +112,7 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
-using WebExposedIsolationLevel =
-    content::RenderFrameHost::WebExposedIsolationLevel;
+using WebExposedIsolationLevel = content::WebExposedIsolationLevel;
 
 using content::NavigationController;
 using content::NavigationEntry;
@@ -796,6 +795,14 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_MANAGE_EXTENSIONS:
       ShowExtensions(browser_->GetBrowserForOpeningWebUi());
       break;
+    case IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS:
+      CHECK(base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu));
+      ShowExtensions(browser_->GetBrowserForOpeningWebUi());
+      break;
+    case IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE:
+      CHECK(base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu));
+      ShowWebStore(browser_);
+      break;
     case IDC_PERFORMANCE:
       ShowSettingsSubPage(browser_->GetBrowserForOpeningWebUi(),
                           chrome::kPerformanceSubPage);
@@ -1255,6 +1262,7 @@ void BrowserCommandController::InitCommandState() {
   UpdateCommandsForContentRestrictionState();
   UpdateCommandsForBookmarkEditing();
   UpdateCommandsForIncognitoAvailability();
+  UpdateCommandsForExtensionsMenu();
   UpdateCommandsForTabKeyboardFocus(GetKeyboardFocusedTabIndex(browser_));
   UpdateCommandsForWebContentsFocus();
 }
@@ -1312,6 +1320,22 @@ void BrowserCommandController::UpdateCommandsForIncognitoAvailability() {
   if (!IsShowingMainUI()) {
     command_updater_.UpdateCommandEnabled(IDC_IMPORT_SETTINGS, false);
     command_updater_.UpdateCommandEnabled(IDC_OPTIONS, false);
+  }
+}
+
+void BrowserCommandController::UpdateCommandsForExtensionsMenu() {
+  // TODO(crbug.com/401026): Talk with isandrk@chromium.org about whether this
+  // is necessary for the experiment or not.
+  if (is_locked_fullscreen_) {
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu)) {
+    command_updater_.UpdateCommandEnabled(
+        IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS,
+        /*state=*/true);
+    command_updater_.UpdateCommandEnabled(
+        IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE, /*state=*/true);
   }
 }
 

@@ -32,7 +32,7 @@ for (const resolve_to_config of [true, false]) {
 
     promise_test(async() => {
       setupCSP(csp);
-      assert_false(HTMLFencedFrameElement.canLoadOpaqueURL());
+      assert_false(navigator.canLoadAdAuctionFencedFrame());
     }, "Opaque-ads can load API returns false for " + csp + " using " +
        (resolve_to_config ? "config" : "urn:uuid"));
   });
@@ -56,7 +56,7 @@ for (const resolve_to_config of [true, false]) {
         "another CSP allows loading a fenced frame.");
 
     // Test the canLoadOpaqueURL API to ensure it arrives at the same result.
-    assert_false(HTMLFencedFrameElement.canLoadOpaqueURL());
+    assert_false(navigator.canLoadAdAuctionFencedFrame());
   }, "Fenced frame not loaded using " +
      (resolve_to_config ? "config" : "urn:uuid") +
      " if any of CSPs in place disallow loading");

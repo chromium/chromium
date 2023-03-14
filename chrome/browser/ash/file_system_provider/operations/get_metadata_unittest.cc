@@ -40,8 +40,7 @@ const base::FilePath::CharType kDirectoryPath[] =
 const char kThumbnail[] = "DaTa:ImAgE/pNg;base64,";
 
 // Returns the request value as |result| in case of successful parse.
-void CreateRequestValueFromJSON(const std::string& json,
-                                std::unique_ptr<RequestValue>* result) {
+void CreateRequestValueFromJSON(const std::string& json, RequestValue* result) {
   using extensions::api::file_system_provider_internal::
       GetMetadataRequestedSuccess::Params;
 
@@ -49,10 +48,10 @@ void CreateRequestValueFromJSON(const std::string& json,
   ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
 
   ASSERT_TRUE(parsed_json->is_list());
-  std::unique_ptr<Params> params(Params::Create(parsed_json->GetList()));
-  ASSERT_TRUE(params.get());
-  *result = RequestValue::CreateForGetMetadataSuccess(std::move(params));
-  ASSERT_TRUE(result->get());
+  absl::optional<Params> params = Params::Create(parsed_json->GetList());
+  ASSERT_TRUE(params.has_value());
+  *result = RequestValue::CreateForGetMetadataSuccess(std::move(*params));
+  ASSERT_TRUE(result->is_valid());
 }
 
 // Callback invocation logger. Acts as a fileapi end-point.
@@ -304,7 +303,7 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, OnSuccess) {
       "  },\n"
       "  0\n"  // execution_time
       "]\n";
-  std::unique_ptr<RequestValue> request_value;
+  RequestValue request_value;
   ASSERT_NO_FATAL_FAILURE(CreateRequestValueFromJSON(input, &request_value));
 
   const bool has_more = false;
@@ -362,7 +361,7 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, OnSuccess_InvalidMetadata) {
       "  0\n"  // execution_time
       "]\n";
 
-  std::unique_ptr<RequestValue> request_value;
+  RequestValue request_value;
   ASSERT_NO_FATAL_FAILURE(CreateRequestValueFromJSON(input, &request_value));
 
   const bool has_more = false;
@@ -388,7 +387,7 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, OnError) {
 
   EXPECT_TRUE(get_metadata.Execute(kRequestId));
 
-  get_metadata.OnError(kRequestId, std::make_unique<RequestValue>(),
+  get_metadata.OnError(kRequestId, RequestValue(),
                        base::File::FILE_ERROR_TOO_MANY_OPENED);
 
   ASSERT_EQ(1u, callback_logger.events().size());

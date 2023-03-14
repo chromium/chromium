@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/browser_context_keyed_service_factories.h"
 
 #include "ash/webui/help_app_ui/help_app_manager_factory.h"
+#include "ash/webui/shortcut_customization_ui/shortcuts_app_manager_factory.h"
 #include "chrome/browser/accessibility/service/accessibility_service_router_factory.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service_factory.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
@@ -34,6 +35,7 @@
 #include "chrome/browser/ash/crosapi/persistent_forced_extension_keep_alive.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service_factory.h"
 #include "chrome/browser/ash/crostini/crostini_engagement_metrics_service.h"
+#include "chrome/browser/ash/crostini/crostini_export_import.h"
 #include "chrome/browser/ash/crostini/crostini_package_service.h"
 #include "chrome/browser/ash/crostini/crostini_port_forwarder.h"
 #include "chrome/browser/ash/crostini/crostini_upgrader.h"
@@ -85,15 +87,18 @@
 #include "chrome/browser/ash/printing/history/print_job_history_service_factory.h"
 #include "chrome/browser/ash/printing/print_management/printing_manager_factory.h"
 #include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
+#include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
 #include "chrome/browser/ash/secure_channel/nearby_connector_factory.h"
 #include "chrome/browser/ash/smb_client/smb_service_factory.h"
 #include "chrome/browser/ash/sync/sync_error_notifier_factory.h"
 #include "chrome/browser/ash/tether/tether_service_factory.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager_factory.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
+#include "chrome/browser/sharesheet/sharesheet_service_factory.h"
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
 #include "chrome/browser/ui/ash/calendar/calendar_keyed_service_factory.h"
+#include "chrome/browser/ui/ash/glanceables/glanceables_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/global_media_controls/cast_media_notification_producer_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_manager_factory.h"
@@ -128,6 +133,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   ash::OfflineSigninLimiterFactory::GetInstance();
   ash::PasswordSyncTokenVerifierFactory::GetInstance();
   ash::RecentModelFactory::GetInstance();
+  ash::RemoteAppsManagerFactory::GetInstance();
   ash::ScreenTimeControllerFactory::GetInstance();
   ash::SigninErrorNotifierFactory::GetInstance();
   ash::SyncErrorNotifierFactory::GetInstance();
@@ -135,6 +141,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   ash::TokenHandleFetcher::EnsureFactoryBuilt();
   ash::app_restore::AppRestoreArcTaskHandlerFactory::GetInstance();
   ash::help_app::HelpAppManagerFactory::GetInstance();
+  ash::shortcut_ui::ShortcutsAppManagerFactory::GetInstance();
   ash::multidevice_setup::AuthTokenValidatorFactory::GetInstance();
   ash::multidevice_setup::MultiDeviceSetupServiceFactory::GetInstance();
   ash::multidevice_setup::OobeCompletionTrackerFactory::GetInstance();
@@ -156,6 +163,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   CrosSpeechRecognitionServiceFactory::EnsureFactoryBuilt();
   crostini::AnsibleManagementServiceFactory::GetInstance();
   crostini::CrostiniEngagementMetricsService::Factory::GetInstance();
+  crostini::CrostiniExportImport::EnsureFactoryBuilt();
   crostini::CrostiniPackageService::EnsureFactoryBuilt();
   crostini::CrostiniPortForwarder::EnsureFactoryBuilt();
   crostini::CrostiniThrottle::EnsureFactoryBuilt();
@@ -177,6 +185,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   file_manager::VolumeManagerFactory::GetInstance();
   file_system_provider::ServiceFactory::GetInstance();
   full_restore::FullRestoreServiceFactory::GetInstance();
+  guest_os::GuestOsMimeTypesServiceFactory::GetInstance();
   guest_os::GuestOsRegistryServiceFactory::GetInstance();
   guest_os::GuestOsServiceFactory::GetInstance();
   guest_os::GuestOsSessionTrackerFactory::GetInstance();
@@ -202,10 +211,12 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   printing::print_management::PrintingManagerFactory::GetInstance();
   PrintJobHistoryServiceFactory::GetInstance();
   secure_channel::NearbyConnectorFactory::GetInstance();
+  sharesheet::SharesheetServiceFactory::GetInstance();
   smb_client::SmbServiceFactory::GetInstance();
   SyncedPrintersManagerFactory::GetInstance();
   tether::TetherServiceFactory::GetInstance();
   TtsEngineExtensionObserverChromeOS::EnsureFactoryBuilt();
+  GlanceablesKeyedServiceFactory::GetInstance();
 }
 
 }  // namespace ash

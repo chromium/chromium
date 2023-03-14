@@ -12,7 +12,14 @@
 #include "content/public/browser/browser_context.h"
 
 PerformanceControlsHatsServiceFactory::PerformanceControlsHatsServiceFactory()
-    : ProfileKeyedServiceFactory("PerformanceControlsHatsService") {
+    : ProfileKeyedServiceFactory(
+          "PerformanceControlsHatsService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(HatsServiceFactory::GetInstance());
   DependsOn(HostContentSettingsMapFactory::GetInstance());
 }
@@ -43,6 +50,12 @@ KeyedService* PerformanceControlsHatsServiceFactory::BuildServiceInstanceFor(
        !base::FeatureList::IsEnabled(
            performance_manager::features::
                kPerformanceControlsBatterySaverOptOutSurvey))) {
+    return nullptr;
+  }
+
+  // Restrict these surveys to users who have HighEfficiency mode available.
+  if (!base::FeatureList::IsEnabled(
+          performance_manager::features::kHighEfficiencyModeAvailable)) {
     return nullptr;
   }
   Profile* profile = Profile::FromBrowserContext(context);

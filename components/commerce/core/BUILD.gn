@@ -193,7 +193,6 @@ static_library("shopping_service") {
     ":proto",
     "//base",
     "//components/bookmarks/browser",
-    "//components/commerce/core/subscriptions:subscriptions",
     "//components/keyed_service/core",
     "//components/leveldb_proto",
     "//components/optimization_guide/core",
@@ -210,7 +209,10 @@ static_library("shopping_service") {
     "//url:url",
   ]
 
-  public_deps = [ "//services/data_decoder/public/cpp" ]
+  public_deps = [
+    "//components/commerce/core/subscriptions:subscriptions",
+    "//services/data_decoder/public/cpp",
+  ]
 
   if (is_android) {
     sources += [
@@ -262,6 +264,7 @@ source_set("shopping_service_test_support") {
     "//services/network:network_service",
     "//services/network:test_support",
     "//services/network/public/cpp",
+    "//testing/gmock",
     "//testing/gtest",
     "//url:url",
   ]
@@ -275,6 +278,7 @@ source_set("shopping_service_unit_tests") {
     "metrics/scheduled_metrics_manager_unittest.cc",
     "pdp_metrics_unittest.cc",
     "price_tracking_utils_unittest.cc",
+    "shopping_bookmark_model_observer_unittest.cc",
     "shopping_power_bookmark_data_provider_unittest.cc",
     "shopping_service_metrics_unittest.cc",
     "shopping_service_unittest.cc",
@@ -285,6 +289,7 @@ source_set("shopping_service_unit_tests") {
     ":metrics",
     ":pref_names",
     ":shopping_service_test_support",
+    "subscriptions:test_support",
     "webui:unit_tests",
   ]
 }

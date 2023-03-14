@@ -54,6 +54,12 @@ namespace autofill {
 
 namespace {
 
+// The duration for which clicks on the just-shown Autofill popup should be
+// ignored. This is to prevent users accidentally accepting suggestions
+// (crbug.com/1279268).
+static constexpr base::TimeDelta kIgnoreEarlyClicksOnPopupDuration =
+    base::Milliseconds(500);
+
 // Returns true if the given id refers to an element that can be accepted.
 bool CanAccept(int id) {
   return id != POPUP_ITEM_ID_SEPARATOR &&
@@ -138,12 +144,11 @@ void AutofillPopupControllerImpl::Show(
       return;
     }
 
-    time_view_shown_ = base::TimeTicks::Now();
-
     // We only fire the event when a new popup shows. We do not fire the
     // event when suggestions changed.
     FireControlsChangedEvent(true);
   }
+  time_view_shown_ = base::TimeTicks::Now();
 
   absl::visit(
       [&](auto* driver) {
@@ -271,9 +276,20 @@ void AutofillPopupControllerImpl::OnSuggestionsChanged() {
   std::ignore = view_.Call(&AutofillPopupView::OnSuggestionsChanged);
 }
 
-void AutofillPopupControllerImpl::AcceptSuggestion(
-    int index,
-    base::TimeDelta show_threshold) {
+void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
+  // Ignore clicks immediately after the popup was shown. This is to prevent
+  // users accidentally accepting suggestions (crbug.com/1279268).
+  DCHECK(!time_view_shown_.is_null());
+  if ((base::TimeTicks::Now() - time_view_shown_ <
+       kIgnoreEarlyClicksOnPopupDuration) &&
+      !disable_threshold_for_testing_) {
+    return;
+  }
+
+  AcceptSuggestionWithoutThreshold(index);
+}
+
+void AutofillPopupControllerImpl::AcceptSuggestionWithoutThreshold(int index) {
   if (static_cast<size_t>(index) >= suggestions_.size()) {
     // Prevents crashes from crbug.com/521133. It seems that in rare cases or
     // races the suggestions_ and the user-selected index may be out of sync.
@@ -284,13 +300,6 @@ void AutofillPopupControllerImpl::AcceptSuggestion(
 
   if (IsMouseLocked()) {
     Hide(PopupHidingReason::kMouseLocked);
-    return;
-  }
-
-  // Ignore clicks immediately after the popup was shown. This is to prevent
-  // users accidentally accepting suggestions (crbug.com/1279268).
-  DCHECK(!time_view_shown_.is_null());
-  if ((base::TimeTicks::Now() - time_view_shown_ < show_threshold)) {
     return;
   }
 
@@ -340,8 +349,9 @@ void AutofillPopupControllerImpl::SetElementBounds(const gfx::RectF& bounds) {
   controller_common_.element_bounds.set_size(bounds.size());
 }
 
-bool AutofillPopupControllerImpl::IsRTL() const {
-  return controller_common_.text_direction == base::i18n::RIGHT_TO_LEFT;
+base::i18n::TextDirection AutofillPopupControllerImpl::GetElementTextDirection()
+    const {
+  return controller_common_.text_direction;
 }
 
 std::vector<Suggestion> AutofillPopupControllerImpl::GetSuggestions() const {
@@ -524,8 +534,9 @@ AutofillPopupControllerImpl::GetDriver() {
   }
 }
 
-void AutofillPopupControllerImpl::SetViewForTesting(AutofillPopupView* view) {
-  view_ = view;
+void AutofillPopupControllerImpl::SetViewForTesting(
+    base::WeakPtr<AutofillPopupView> view) {
+  view_ = std::move(view);
   time_view_shown_ = base::TimeTicks::Now();
 }
 
@@ -589,5 +600,11 @@ AutofillPopupControllerImpl::GetRootAXPlatformNodeForWebContents() {
   // NativeViewAccessible corresponds to an AXPlatformNode.
   return ui::AXPlatformNode::FromNativeViewAccessible(native_view_accessible);
 }
+
+AutofillPopupControllerImpl::AutofillPopupViewPtr::AutofillPopupViewPtr() =
+    default;
+
+AutofillPopupControllerImpl::AutofillPopupViewPtr::~AutofillPopupViewPtr() =
+    default;
 
 }  // namespace autofill

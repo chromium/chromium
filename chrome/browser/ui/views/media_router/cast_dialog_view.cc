@@ -73,8 +73,8 @@ CastDialogView::CastDialogView(
           l10n_util::GetStringUTF16(
               IDS_MEDIA_ROUTER_ALTERNATIVE_SOURCES_BUTTON)));
   sources_button_->SetEnabled(false);
-  ShowNoSinksView();
   MaybeShowAccessCodeCastButton();
+  ShowNoSinksView();
 }
 
 CastDialogView::~CastDialogView() {
@@ -90,8 +90,7 @@ std::u16string CastDialogView::GetWindowTitle() const {
       return l10n_util::GetStringUTF16(
           IDS_MEDIA_ROUTER_DESKTOP_MIRROR_CAST_MODE);
     default:
-      NOTREACHED();
-      return std::u16string();
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -196,8 +195,7 @@ void CastDialogView::ShowAccessCodeCastDialog() {
       cast_mode_set = {MediaCastMode::DESKTOP_MIRROR};
       break;
     default:
-      NOTREACHED();
-      break;
+      NOTREACHED_NORETURN();
   }
 
   AccessCodeCastDialog::Show(

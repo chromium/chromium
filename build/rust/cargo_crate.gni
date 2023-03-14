@@ -150,6 +150,11 @@ template("cargo_crate") {
     if (defined(invoker.crate_type)) {
       crate_type = invoker.crate_type
     }
+
+    # TODO(crbug.com/1422745): don't default to true. This requires changes to
+    # third_party.toml and gnrt when generating third-party build targets.
+    allow_unsafe = true
+
     if (!defined(rustflags)) {
       rustflags = []
     }

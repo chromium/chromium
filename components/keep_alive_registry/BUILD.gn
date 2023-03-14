@@ -16,10 +16,6 @@ source_set("keep_alive_registry") {
   ]
 
   deps = [ "//base" ]
-
-  if (is_win) {
-    deps += [ "//components/browser_watcher:stability_client" ]
-  }
 }
 
 source_set("unit_tests") {

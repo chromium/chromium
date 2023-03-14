@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/auto_reset.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/debug/debugging_buildflags.h"
@@ -171,7 +172,7 @@ class BASE_EXPORT JNIStackFrameSaver {
   static void* SavedFrame();
 
  private:
-  void* previous_fp_;
+  const AutoReset<void*> resetter_;
 };
 
 #endif  // BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)

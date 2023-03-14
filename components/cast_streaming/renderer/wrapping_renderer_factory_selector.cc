@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "components/cast_streaming/renderer/playback_command_forwarding_renderer_factory.h"
+#include "components/cast_streaming/renderer/control/playback_command_forwarding_renderer_factory.h"
 #include "components/cast_streaming/renderer/public/resource_provider.h"
 
 namespace cast_streaming {

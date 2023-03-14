@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
+#include "chrome/browser/ash/smart_reader/smart_reader_manager_ash.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/emoji_picker.mojom-forward.h"
@@ -29,6 +30,7 @@ class DigitalGoodsFactoryAsh;
 namespace ash {
 class DiagnosticsServiceAsh;
 class ProbeServiceAsh;
+class SmartReaderManagerAsh;
 class VideoConferenceManagerAsh;
 }  // namespace ash
 
@@ -302,6 +304,8 @@ class CrosapiAsh : public mojom::Crosapi {
       override;
   void BindSharesheet(
       mojo::PendingReceiver<mojom::Sharesheet> receiver) override;
+  void BindSmartReaderClient(
+      mojo::PendingRemote<mojom::SmartReaderClient> remote) override;
   void BindSpeechRecognition(
       mojo::PendingReceiver<mojom::SpeechRecognition> receiver) override;
   void BindStableVideoDecoderFactory(
@@ -455,6 +459,10 @@ class CrosapiAsh : public mojom::Crosapi {
 
   SharesheetAsh* sharesheet_ash() { return sharesheet_ash_.get(); }
 
+  ash::SmartReaderManagerAsh* smart_reader_manager_ash() {
+    return smart_reader_manager_ash_.get();
+  }
+
   StructuredMetricsServiceAsh* structured_metrics_service_ash() {
     return structured_metrics_service_ash_.get();
   }
@@ -563,6 +571,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<SearchProviderAsh> search_provider_ash_;
   std::unique_ptr<SelectFileAsh> select_file_ash_;
   std::unique_ptr<SharesheetAsh> sharesheet_ash_;
+  std::unique_ptr<ash::SmartReaderManagerAsh> smart_reader_manager_ash_;
   std::unique_ptr<SpeechRecognitionAsh> speech_recognition_ash_;
   std::unique_ptr<StructuredMetricsServiceAsh> structured_metrics_service_ash_;
   std::unique_ptr<TaskManagerAsh> task_manager_ash_;

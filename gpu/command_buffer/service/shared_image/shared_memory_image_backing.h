@@ -70,10 +70,11 @@ class GPU_GLES2_EXPORT SharedMemoryImageBacking : public SharedImageBacking {
       MemoryTypeTracker* tracker) override;
 
  private:
-  void OnMemoryDump(const std::string& dump_name,
-                    base::trace_event::MemoryAllocatorDumpGuid client_guid,
-                    base::trace_event::ProcessMemoryDump* pmd,
-                    uint64_t client_tracing_id) override;
+  base::trace_event::MemoryAllocatorDump* OnMemoryDump(
+      const std::string& dump_name,
+      base::trace_event::MemoryAllocatorDumpGuid client_guid,
+      base::trace_event::ProcessMemoryDump* pmd,
+      uint64_t client_tracing_id) override;
 
   // Set for shared memory GMB.
   SharedMemoryRegionWrapper shared_memory_wrapper_;

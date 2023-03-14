@@ -66,6 +66,12 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
     wallpaper_sync_enabled_ = sync_enabled;
   }
 
+  void set_wallpaper_google_photos_integration_enabled_for_account_id(
+      const AccountId& account_id,
+      bool value) {
+    wallpaper_google_photos_integration_enabled_[account_id] = value;
+  }
+
   void ResetCounts();
 
   // WallpaperControllerClient:
@@ -106,6 +112,7 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
   bool fetch_images_for_collection_fails_ = false;
   bool fetch_google_photos_photo_fails_ = false;
   bool google_photo_has_been_deleted_ = false;
+  std::map<AccountId, bool> wallpaper_google_photos_integration_enabled_;
 
   int image_index_ = 0;
   base::flat_map<std::string, std::vector<backdrop::Image>> variations_;

@@ -418,22 +418,19 @@ bool SandboxLinux::InitializeSandbox(sandbox::mojom::Sandbox sandbox_type,
 
   InitLibcLocaltimeFunctions();
 
-  bool is_libassistant_sandbox = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-  // TODO(crbug.com/1312224, b/255771022): re-enable this check on kLibassistant
-  // sandbox when getaddrinfo() can sometimes run in the sandboxed process.
-  if (sandbox_type == sandbox::mojom::Sandbox::kLibassistant)
-    is_libassistant_sandbox = true;
-#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  if (!IsUnsandboxedSandboxType(sandbox_type) && !is_libassistant_sandbox) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (!IsUnsandboxedSandboxType(sandbox_type)) {
     // No sandboxed process should make use of getaddrinfo() as it is impossible
     // to sandbox (e.g. glibc loads arbitrary third party DNS resolution
     // libraries).
+    // On ChromeOS none of these third party libraries are installed, so there
+    // is no need to discourage getaddrinfo().
+    // TODO(crbug.com/1312224): in the future this should depend on the
+    // libraries listed in /etc/nsswitch.conf, and should be a
+    // SandboxLinux::Options option.
     DiscourageGetaddrinfo();
   }
+#endif  // BUILDFLAG(IS_LINUX)
 
   // Attempt to limit the future size of the address space of the process.
   // Fine to call with multiple threads as we don't use RLIMIT_STACK.

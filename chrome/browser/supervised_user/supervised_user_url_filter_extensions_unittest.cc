@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/supervised_user/supervised_user_url_filter.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 
 #include <map>
 #include <memory>
@@ -10,7 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/supervised_user/extensions_utils.h"
+#include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -20,14 +20,17 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS), "For Enabled extensions only");
 class SupervisedUserURLFilterExtensionsTest : public ::testing::Test {
  public:
   SupervisedUserURLFilterExtensionsTest() {
-    filter_.SetDefaultFilteringBehavior(SupervisedUserURLFilter::BLOCK);
+    filter_.SetDefaultFilteringBehavior(
+        supervised_user::SupervisedUserURLFilter::BLOCK);
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
   // Test with the real method for url extensions support.
-  SupervisedUserURLFilter filter_ = SupervisedUserURLFilter(
-      base::BindRepeating(supervised_user::IsSupportedChromeExtensionURL));
+  supervised_user::SupervisedUserURLFilter filter_ =
+      supervised_user::SupervisedUserURLFilter(
+          base::BindRepeating(supervised_user::IsSupportedChromeExtensionURL),
+          /*delegate=*/nullptr);
 };
 
 TEST_F(SupervisedUserURLFilterExtensionsTest,
@@ -58,16 +61,17 @@ TEST_F(SupervisedUserURLFilterExtensionsTest,
   GURL webstore_url("https://chrome.google.com/webstore");
   GURL new_webstore_url("https://chromewebstore.google.com/");
 
-  filter_.SetDefaultFilteringBehavior(SupervisedUserURLFilter::BLOCK);
-  EXPECT_EQ(SupervisedUserURLFilter::ALLOW,
+  filter_.SetDefaultFilteringBehavior(
+      supervised_user::SupervisedUserURLFilter::BLOCK);
+  EXPECT_EQ(supervised_user::SupervisedUserURLFilter::ALLOW,
             filter_.GetFilteringBehaviorForURL(crx_download_url1));
-  EXPECT_EQ(SupervisedUserURLFilter::ALLOW,
+  EXPECT_EQ(supervised_user::SupervisedUserURLFilter::ALLOW,
             filter_.GetFilteringBehaviorForURL(crx_download_url2));
-  EXPECT_EQ(SupervisedUserURLFilter::ALLOW,
+  EXPECT_EQ(supervised_user::SupervisedUserURLFilter::ALLOW,
             filter_.GetFilteringBehaviorForURL(crx_download_url3));
-  EXPECT_EQ(SupervisedUserURLFilter::ALLOW,
+  EXPECT_EQ(supervised_user::SupervisedUserURLFilter::ALLOW,
             filter_.GetFilteringBehaviorForURL(webstore_url));
-  EXPECT_EQ(SupervisedUserURLFilter::ALLOW,
+  EXPECT_EQ(supervised_user::SupervisedUserURLFilter::ALLOW,
             filter_.GetFilteringBehaviorForURL(new_webstore_url));
 
   // Set explicit host rules to block those website, and make sure the
@@ -78,15 +82,16 @@ TEST_F(SupervisedUserURLFilterExtensionsTest,
   hosts["chrome.google.com"] = false;
   hosts["chromewebstore.google.com"] = false;
   filter_.SetManualHosts(std::move(hosts));
-  filter_.SetDefaultFilteringBehavior(SupervisedUserURLFilter::ALLOW);
-  EXPECT_EQ(SupervisedUserURLFilter::ALLOW,
+  filter_.SetDefaultFilteringBehavior(
+      supervised_user::SupervisedUserURLFilter::ALLOW);
+  EXPECT_EQ(supervised_user::SupervisedUserURLFilter::ALLOW,
             filter_.GetFilteringBehaviorForURL(crx_download_url1));
-  EXPECT_EQ(SupervisedUserURLFilter::ALLOW,
+  EXPECT_EQ(supervised_user::SupervisedUserURLFilter::ALLOW,
             filter_.GetFilteringBehaviorForURL(crx_download_url2));
-  EXPECT_EQ(SupervisedUserURLFilter::ALLOW,
+  EXPECT_EQ(supervised_user::SupervisedUserURLFilter::ALLOW,
             filter_.GetFilteringBehaviorForURL(crx_download_url3));
-  EXPECT_EQ(SupervisedUserURLFilter::ALLOW,
+  EXPECT_EQ(supervised_user::SupervisedUserURLFilter::ALLOW,
             filter_.GetFilteringBehaviorForURL(webstore_url));
-  EXPECT_EQ(SupervisedUserURLFilter::ALLOW,
+  EXPECT_EQ(supervised_user::SupervisedUserURLFilter::ALLOW,
             filter_.GetFilteringBehaviorForURL(new_webstore_url));
 }

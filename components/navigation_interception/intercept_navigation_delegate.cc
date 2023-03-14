@@ -196,9 +196,16 @@ bool InterceptNavigationDelegate::ShouldIgnoreNavigation(
                              ->GetPrimaryMainFrame()
                              ->GetFrameToken();
 
+  // We don't care which sandbox flags are present, only that any sandbox flags
+  // are present, as we don't support persisting sandbox flags through fallback
+  // URL navigation.
+  bool is_sandboxed = navigation_handle->SandboxFlagsInherited() !=
+                      network::mojom::WebSandboxFlags::kNone;
+
   return Java_InterceptNavigationDelegate_shouldIgnoreNavigation(
       env, jdelegate, navigation_handle->GetJavaNavigationHandle(),
-      url::GURLAndroid::FromNativeGURL(env, escaped_url), cross_frame);
+      url::GURLAndroid::FromNativeGURL(env, escaped_url), cross_frame,
+      is_sandboxed);
 }
 
 void InterceptNavigationDelegate::HandleSubframeExternalProtocol(

@@ -34,8 +34,9 @@ namespace net {
 // sequence. For instance when using the NSS-based implementation of certificate
 // verification, the library requires a blocking callback for fetching OCSP and
 // AIA responses.
-class MultiThreadedCertVerifierScopedAllowBaseSyncPrimitives
-    : public base::ScopedAllowBaseSyncPrimitives {};
+class [[maybe_unused,
+        nodiscard]] MultiThreadedCertVerifierScopedAllowBaseSyncPrimitives
+    : public base::ScopedAllowBaseSyncPrimitives{};
 
 namespace {
 

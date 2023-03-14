@@ -24,7 +24,7 @@ class MockWorkingSetTrimmerPolicy : public WorkingSetTrimmerPolicy {
 
   ~MockWorkingSetTrimmerPolicy() override {}
 
-  MOCK_METHOD1(TrimWorkingSet, bool(const ProcessNode*));
+  MOCK_METHOD1(TrimWorkingSet, void(const ProcessNode*));
 };
 
 class WorkingSetTrimmerPolicyTest : public GraphTestHarness {

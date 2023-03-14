@@ -21,6 +21,8 @@ namespace viz {
 // Used for on-demand tile rasterization.
 class VIZ_COMMON_EXPORT PictureDrawQuad : public ContentDrawQuadBase {
  public:
+  static constexpr Material kMaterial = Material::kPictureContent;
+
   PictureDrawQuad();
   PictureDrawQuad(const PictureDrawQuad& other);
   ~PictureDrawQuad() override;

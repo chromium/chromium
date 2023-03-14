@@ -140,7 +140,7 @@ class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
 
   bool expected_failure_temporary_ = false;
   bool expected_failure_permanent_ = false;
-  scoped_refptr<content::MessageLoopRunner> runner_;
+  const scoped_refptr<content::MessageLoopRunner> runner_;
   base::WeakPtrFactory<TestCardUnmaskPromptController> weak_factory_{this};
 };
 
@@ -162,6 +162,12 @@ class CardUnmaskPromptViewBrowserTest : public DialogBrowserTest {
     controller_ =
         std::make_unique<TestCardUnmaskPromptController>(contents_, runner_);
     delegate_ = std::make_unique<TestCardUnmaskDelegate>();
+  }
+
+  void TearDownOnMainThread() override {
+    contents_ = nullptr;
+    controller_.reset();
+    DialogBrowserTest::TearDownOnMainThread();
   }
 
   void ShowUi(const std::string& name) override {
@@ -200,7 +206,7 @@ class CardUnmaskPromptViewBrowserTest : public DialogBrowserTest {
   scoped_refptr<content::MessageLoopRunner> runner_;
 
  private:
-  raw_ptr<content::WebContents, DanglingUntriaged> contents_;
+  raw_ptr<content::WebContents, DanglingUntriaged> contents_ = nullptr;
   std::unique_ptr<TestCardUnmaskPromptController> controller_;
   std::unique_ptr<TestCardUnmaskDelegate> delegate_;
 };

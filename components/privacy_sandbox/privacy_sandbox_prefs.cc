@@ -92,6 +92,9 @@ extern const char kPrivacySandboxTopicsConsentLastUpdateReason[] =
 extern const char kPrivacySandboxTopicsConsentTextAtLastUpdate[] =
     "privacy_sandbox.topics_consent.text_at_last_update";
 
+extern const char kPrivacySandboxAntiAbuseInitialized[] =
+    "privacy_sandbox.anti_abuse_initialized";
+
 }  // namespace prefs
 
 namespace privacy_sandbox {
@@ -153,6 +156,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       static_cast<int>(TopicsConsentUpdateSource::kDefaultValue));
   registry->RegisterStringPref(
       prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate, "");
+  registry->RegisterBooleanPref(prefs::kPrivacySandboxAntiAbuseInitialized,
+                                false);
 }
 
 }  // namespace privacy_sandbox

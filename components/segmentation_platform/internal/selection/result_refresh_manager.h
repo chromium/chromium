@@ -52,12 +52,11 @@ class ResultRefreshManager {
   // executing model. It also saves to the result to database after model
   // execution.
   void GetCachedResultOrRunModel(SegmentResultProvider* segment_result_provider,
-                                 Config* config,
-                                 bool run_model);
+                                 Config* config);
+
   void OnGetCachedResultOrRunModel(
       SegmentResultProvider* segment_result_provider,
       Config* config,
-      bool run_model,
       std::unique_ptr<SegmentResultProvider::SegmentResult> result);
 
   // Configs for all registered clients.

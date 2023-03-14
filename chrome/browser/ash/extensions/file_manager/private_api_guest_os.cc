@@ -44,7 +44,7 @@ FileManagerPrivateMountGuestFunction::~FileManagerPrivateMountGuestFunction() =
 
 ExtensionFunction::ResponseAction FileManagerPrivateMountGuestFunction::Run() {
   using extensions::api::file_manager_private::MountGuest::Params;
-  const std::unique_ptr<Params> params(Params::Create(args()));
+  const absl::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   Profile* profile = Profile::FromBrowserContext(browser_context());
   auto* registry =

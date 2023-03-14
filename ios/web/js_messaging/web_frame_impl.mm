@@ -89,10 +89,6 @@ GURL WebFrameImpl::GetSecurityOrigin() const {
   return security_origin_;
 }
 
-bool WebFrameImpl::CanCallJavaScriptFunction() const {
-  return frame_info_;
-}
-
 BrowserState* WebFrameImpl::GetBrowserState() {
   return GetWebState()->GetBrowserState();
 }
@@ -105,8 +101,7 @@ bool WebFrameImpl::CallJavaScriptFunctionInContentWorld(
   int message_id = next_message_id_;
   next_message_id_++;
 
-  if (CanCallJavaScriptFunction() && content_world &&
-      content_world->GetWKContentWorld()) {
+  if (content_world && content_world->GetWKContentWorld()) {
     return ExecuteJavaScriptFunction(content_world, name, parameters,
                                      message_id, reply_with_result);
   }

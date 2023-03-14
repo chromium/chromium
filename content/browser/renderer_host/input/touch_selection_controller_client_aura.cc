@@ -9,12 +9,12 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_view_host.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom-shared.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/env.h"
@@ -22,7 +22,6 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/pointer/touch_editing_controller.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/events/event_observer.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -473,10 +472,10 @@ bool TouchSelectionControllerClientAura::IsCommandIdEnabled(
           ui::ClipboardBuffer::kCopyPaste, &data_dst, &result);
       return editable && !result.empty();
     }
-#if BUILDFLAG(IS_CHROMEOS)
     case ui::TouchEditable::kSelectAll:
-      return readable && features::IsTouchTextEditingRedesignEnabled();
-#endif
+      return true;
+    case ui::TouchEditable::kSelectWord:
+      return editable && !has_selection;
     default:
       return false;
   }
@@ -484,7 +483,10 @@ bool TouchSelectionControllerClientAura::IsCommandIdEnabled(
 
 void TouchSelectionControllerClientAura::ExecuteCommand(int command_id,
                                                         int event_flags) {
-  rwhva_->selection_controller()->HideAndDisallowShowingAutomatically();
+  if (command_id != ui::TouchEditable::kSelectAll &&
+      command_id != ui::TouchEditable::kSelectWord) {
+    rwhva_->selection_controller()->HideAndDisallowShowingAutomatically();
+  }
   RenderWidgetHostDelegate* host_delegate = rwhva_->host()->delegate();
   if (!host_delegate)
     return;
@@ -501,6 +503,12 @@ void TouchSelectionControllerClientAura::ExecuteCommand(int command_id,
       break;
     case ui::TouchEditable::kSelectAll:
       host_delegate->SelectAll();
+      break;
+    case ui::TouchEditable::kSelectWord:
+      host_delegate->SelectAroundCaret(
+          blink::mojom::SelectionGranularity::kWord,
+          /*should_show_handle=*/true,
+          /*should_show_context_menu=*/false);
       break;
     default:
       NOTREACHED();

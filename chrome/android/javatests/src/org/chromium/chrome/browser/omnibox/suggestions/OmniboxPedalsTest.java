@@ -45,7 +45,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.action.OmniboxActionType;
 import org.chromium.chrome.browser.omnibox.action.OmniboxPedalType;
-import org.chromium.chrome.browser.omnibox.suggestions.pedal.PedalSuggestionView;
+import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 import org.chromium.chrome.browser.password_manager.settings.PasswordSettings;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.settings.MainSettings;
@@ -67,8 +67,8 @@ import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.action.HistoryClustersAction;
 import org.chromium.components.omnibox.action.OmniboxPedal;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -88,9 +88,10 @@ public class OmniboxPedalsTest {
             Arrays.asList(new ParameterSet().value(false).name("RegularTab"),
                     new ParameterSet().value(true).name("IncognitoTab"));
 
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
+    public static @ClassRule ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
+    public static @ClassRule DisableAnimationsTestRule sDisableAnimationsRule =
+            new DisableAnimationsTestRule();
 
     @Rule
     public HistogramTestRule mHistogramTester = new HistogramTestRule();
@@ -175,11 +176,11 @@ public class OmniboxPedalsTest {
     }
 
     private void clickOnPedal() {
-        SuggestionInfo<PedalSuggestionView> info =
-                mOmniboxUtils.getSuggestionByType(OmniboxSuggestionUiType.PEDAL_SUGGESTION);
+        SuggestionInfo<BaseSuggestionView> info = mOmniboxUtils.findSuggestionWithActionChips();
         CriteriaHelper.pollUiThread(() -> {
-            TestTouchUtils.performClickOnMainSync(
-                    InstrumentationRegistry.getInstrumentation(), info.view.getPedalChipView());
+            var adapter = info.view.getActionChipsView().getAdapter();
+            adapter.selectNextItem();
+            adapter.getSelectedView().performClick();
         }, DEFAULT_MAX_TIME_TO_POLL * 5, DEFAULT_POLLING_INTERVAL);
     }
 
@@ -473,8 +474,7 @@ public class OmniboxPedalsTest {
     @MediumTest
     public void testPedalsStartedOnCtrlEnterKeyStroke() throws Exception {
         typeInOmnibox("Chrome accessibility");
-        SuggestionInfo<PedalSuggestionView> pedal =
-                mOmniboxUtils.getSuggestionByType(OmniboxSuggestionUiType.PEDAL_SUGGESTION);
+        SuggestionInfo<BaseSuggestionView> pedal = mOmniboxUtils.findSuggestionWithActionChips();
         Assert.assertNotNull(pedal.view);
         mOmniboxUtils.focusSuggestion(pedal.index);
 
@@ -525,8 +525,7 @@ public class OmniboxPedalsTest {
                 AutocompleteResult.fromCache(suggestionsList, null), "Suggestion");
         mOmniboxUtils.checkSuggestionsShown();
 
-        SuggestionInfo<PedalSuggestionView> info =
-                mOmniboxUtils.getSuggestionByType(OmniboxSuggestionUiType.PEDAL_SUGGESTION);
+        SuggestionInfo<BaseSuggestionView> info = mOmniboxUtils.findSuggestionWithActionChips();
         Assert.assertNull(
                 "Should not show pedals if the suggestion is not in top 3 suggestions", info);
     }
@@ -543,8 +542,7 @@ public class OmniboxPedalsTest {
                 AutocompleteResult.fromCache(suggestionsList, null), "Suggestion");
         mOmniboxUtils.checkSuggestionsShown();
 
-        SuggestionInfo<PedalSuggestionView> info =
-                mOmniboxUtils.getSuggestionByType(OmniboxSuggestionUiType.PEDAL_SUGGESTION);
+        SuggestionInfo<BaseSuggestionView> info = mOmniboxUtils.findSuggestionWithActionChips();
         Assert.assertNotNull("Should show a pedal if the suggestion is in top 3 suggestions", info);
     }
 
@@ -561,8 +559,7 @@ public class OmniboxPedalsTest {
                 AutocompleteResult.fromCache(suggestionsList, null), "Suggestion");
         mOmniboxUtils.checkSuggestionsShown();
 
-        SuggestionInfo<PedalSuggestionView> info =
-                mOmniboxUtils.getSuggestionByType(OmniboxSuggestionUiType.PEDAL_SUGGESTION);
+        SuggestionInfo<BaseSuggestionView> info = mOmniboxUtils.findSuggestionWithActionChips();
         Assert.assertNotNull("Should show", info);
 
         clickOnPedal();

@@ -22,22 +22,19 @@ import './fingerprint_list.js';
 import './lock_screen.js';
 import './lock_screen_password_prompt_dialog.js';
 import './os_sync_controls.js';
-import './os_signout_dialog.js';
 import './os_sync_page.js';
 
 import {convertImageSequenceToPng} from 'chrome://resources/ash/common/cr_picture/png.js';
-import {focusWithoutInk} from 'chrome://resources/ash/common/focus_without_ink_js.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {getImage} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {afterNextRender, flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {ProfileInfo, ProfileInfoBrowserProxyImpl} from '../../people_page/profile_info_browser_proxy.js';
 import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '../../people_page/sync_browser_proxy.js';
-import {castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {LockStateMixin} from '../lock_state_mixin.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {OsPageVisibility} from '../os_page_visibility.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
@@ -89,8 +86,6 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
       profileEmail_: String,
 
       profileLabel_: String,
-
-      showSignoutDialog_: Boolean,
 
       fingerprintUnlockEnabled_: {
         type: Boolean,
@@ -178,7 +173,6 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
   private profileName_: string;
   private profileEmail_: string;
   private profileLabel_: string;
-  private showSignoutDialog_: boolean;
   private fingerprintUnlockEnabled_: boolean;
   private isAccountManagerEnabled_: boolean;
   private showParentalControls_: boolean;
@@ -314,17 +308,6 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
   }
 
   override currentRouteChanged(route: Route): void {
-    if (Router.getInstance().currentRoute === routes.OS_SIGN_OUT) {
-      // If the sync status has not been fetched yet, optimistically display
-      // the sign-out dialog. There is another check when the sync status is
-      // fetched. The dialog will be closed when the user is not signed in.
-      if (this.syncStatus && !this.syncStatus.signedIn) {
-        Router.getInstance().navigateToPreviousRoute();
-      } else {
-        this.showSignoutDialog_ = true;
-      }
-    }
-
     // The old sync page is a shared subpage, so we handle deep links for
     // both this page and the sync page. Not ideal.
     if (route === routes.SYNC || route === routes.OS_PEOPLE) {
@@ -397,22 +380,6 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
         syncStatus.signedInUsername) {
       this.profileLabel_ = syncStatus.signedInUsername;
     }
-  }
-
-  private onDisconnectDialogClosed_(): void {
-    this.showSignoutDialog_ = false;
-    focusWithoutInk(
-        castExists(this.shadowRoot!.querySelector<HTMLButtonElement>(
-            '#disconnectButton')),
-    );
-
-    if (Router.getInstance().currentRoute === routes.OS_SIGN_OUT) {
-      Router.getInstance().navigateToPreviousRoute();
-    }
-  }
-
-  private onDisconnectTap_(): void {
-    Router.getInstance().navigateTo(routes.OS_SIGN_OUT);
   }
 
   private onSyncTap_(): void {

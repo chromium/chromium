@@ -23,7 +23,14 @@ StrikeDatabaseFactory* StrikeDatabaseFactory::GetInstance() {
 }
 
 StrikeDatabaseFactory::StrikeDatabaseFactory()
-    : ProfileKeyedServiceFactory("AutofillStrikeDatabase") {}
+    : ProfileKeyedServiceFactory(
+          "AutofillStrikeDatabase",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {}
 
 StrikeDatabaseFactory::~StrikeDatabaseFactory() = default;
 

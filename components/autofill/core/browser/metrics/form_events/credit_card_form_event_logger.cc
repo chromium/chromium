@@ -23,7 +23,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
-namespace autofill {
+namespace autofill::autofill_metrics {
 
 CreditCardFormEventLogger::CreditCardFormEventLogger(
     bool is_in_any_main_frame,
@@ -68,8 +68,7 @@ void CreditCardFormEventLogger::OnDidShowSuggestions(
   suggestion_shown_timestamp_ = AutofillTickClock::NowTicks();
 
   // Log if metadata is shown for any of the suggestions.
-  if (metadata_logging_context_.card_product_description_shown ||
-      metadata_logging_context_.card_art_image_shown) {
+  if (metadata_logging_context_.IsCardMetadataShown()) {
     Log(FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SHOWN, form);
   }
 }
@@ -114,6 +113,13 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
   autofill_metrics::LogAcceptanceLatency(
       AutofillTickClock::NowTicks() - suggestion_shown_timestamp_,
       metadata_logging_context_, credit_card);
+
+  // Log if the selected suggestion had metadata shown.
+  metadata_logging_context_ =
+      autofill_metrics::GetMetadataLoggingContext({credit_card});
+  if (metadata_logging_context_.IsCardMetadataShown()) {
+    Log(FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SELECTED, form);
+  }
 }
 
 void CreditCardFormEventLogger::OnDidFillSuggestion(
@@ -391,4 +397,4 @@ bool CreditCardFormEventLogger::DoSuggestionsIncludeVirtualCard() {
   return base::ranges::any_of(suggestions_, is_virtual_card);
 }
 
-}  // namespace autofill
+}  // namespace autofill::autofill_metrics

@@ -47,10 +47,10 @@ class AsyncDestroyVideoEncoder final : public VideoEncoder {
   }
 
   void Encode(scoped_refptr<VideoFrame> frame,
-              bool key_frame,
+              const EncodeOptions& options,
               EncoderStatusCB done_cb) override {
     DCHECK(wrapped_encoder_);
-    wrapped_encoder_->Encode(std::move(frame), key_frame, std::move(done_cb));
+    wrapped_encoder_->Encode(std::move(frame), options, std::move(done_cb));
   }
 
   void ChangeOptions(const Options& options,

@@ -4,8 +4,8 @@
 
 #include "base/system/sys_info.h"
 
-#include <fuchsia/buildinfo/cpp/fidl.h>
-#include <fuchsia/hwinfo/cpp/fidl.h>
+#include <fidl/fuchsia.buildinfo/cpp/fidl.h>
+#include <fidl/fuchsia.hwinfo/cpp/fidl.h>
 #include <sys/statvfs.h>
 #include <zircon/syscalls.h>
 
@@ -174,7 +174,7 @@ void SysInfo::SetAmountOfTotalDiskSpace(const FilePath& path, int64_t bytes) {
 // static
 std::string SysInfo::OperatingSystemVersion() {
   const auto& build_info = GetCachedBuildInfo();
-  return build_info.has_version() ? build_info.version() : "";
+  return build_info.version().value_or("");
 }
 
 // static
@@ -221,9 +221,8 @@ SysInfo::HardwareInfo SysInfo::GetHardwareInfoSync() {
   const auto product_info = GetProductInfo();
 
   return {
-      .manufacturer =
-          product_info.has_manufacturer() ? product_info.manufacturer() : "",
-      .model = product_info.has_model() ? product_info.model() : "",
+      .manufacturer = product_info.manufacturer().value_or(""),
+      .model = product_info.model().value_or(""),
   };
 }
 

@@ -10,10 +10,13 @@ import {BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 
 /**
  * Tests that when the current folder is changed, the 'active' attribute
- * appears in the active folder .tree-row.
+ * appears in the active folder .tree-row and the "Current directory" aria
+ * description is present on the corresponding tree item.
  */
 testcase.directoryTreeActiveDirectory = async () => {
   const activeRow = '.tree-row[selected][active]';
+  const selectedAriaCurrentDirectory =
+      '.tree-item[selected][aria-description="Current directory"]';
 
   // Open FilesApp on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
@@ -24,6 +27,12 @@ testcase.directoryTreeActiveDirectory = async () => {
   // Check: the My files folder should be the active tree row.
   const myFiles = await remoteCall.waitForElement(appId, activeRow);
   chrome.test.assertTrue(myFiles.text.includes('My files'));
+  // Check: the corresponding tree item should be selected and have the "Current
+  // directory" aria description.
+  let currentDirectoryTreeItem =
+      await remoteCall.waitForElement(appId, selectedAriaCurrentDirectory);
+  chrome.test.assertEq(
+      currentDirectoryTreeItem.attributes['entry-label'], 'My files');
 
   // Change to Downloads folder.
   await navigateWithDirectoryTree(appId, '/My files/Downloads');
@@ -31,6 +40,12 @@ testcase.directoryTreeActiveDirectory = async () => {
   // Check: the Downloads folder should be the active tree row.
   const downloads = await remoteCall.waitForElement(appId, activeRow);
   chrome.test.assertTrue(downloads.text.includes('Downloads'));
+  // Check: the corresponding tree item should be selected and have the "Current
+  // directory" aria description.
+  currentDirectoryTreeItem =
+      await remoteCall.waitForElement(appId, selectedAriaCurrentDirectory);
+  chrome.test.assertEq(
+      currentDirectoryTreeItem.attributes['entry-label'], 'Downloads');
 
   // Change to Google Drive volume's My Drive folder.
   await navigateWithDirectoryTree(appId, '/My Drive');
@@ -38,6 +53,12 @@ testcase.directoryTreeActiveDirectory = async () => {
   // Check: the My Drive folder should be the active tree row.
   const myDrive = await remoteCall.waitForElement(appId, activeRow);
   chrome.test.assertTrue(myDrive.text.includes('My Drive'));
+  // Check: the corresponding tree item should be selected and have the "Current
+  // directory" aria description.
+  currentDirectoryTreeItem =
+      await remoteCall.waitForElement(appId, selectedAriaCurrentDirectory);
+  chrome.test.assertEq(
+      currentDirectoryTreeItem.attributes['entry-label'], 'My Drive');
 
   // Change to Recent folder.
   await navigateWithDirectoryTree(appId, '/Recent');
@@ -45,14 +66,26 @@ testcase.directoryTreeActiveDirectory = async () => {
   // Check: the Recent folder should be the active tree row.
   const recent = await remoteCall.waitForElement(appId, activeRow);
   chrome.test.assertTrue(recent.text.includes('Recent'));
+  // Check: the corresponding tree item should be selected and have the "Current
+  // directory" aria description.
+  currentDirectoryTreeItem =
+      await remoteCall.waitForElement(appId, selectedAriaCurrentDirectory);
+  chrome.test.assertEq(
+      currentDirectoryTreeItem.attributes['entry-label'], 'Recent');
 };
 
 /**
- * Tests that the active folder does not change when the directory tree
- * selected folder is changed, but does change when the selected folder
- * is activated (via the Enter key for example).
+ * Tests that when the selected folder in the directory tree changes, the active
+ * folder and the tree item that has the "Current directory" aria description do
+ * not change. Also tests that when the selected folder is activated (via the
+ * Enter key for example), both the active folder and the tree item with a
+ * "Current directory" aria description are updated.
  */
 testcase.directoryTreeSelectedDirectory = async () => {
+  const selectedActiveRow = '.tree-row[selected][active]';
+  const selectedAriaCurrentDirectory =
+      '.tree-item[selected][aria-description="Current directory"]';
+
   // Open FilesApp on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
@@ -60,9 +93,13 @@ testcase.directoryTreeSelectedDirectory = async () => {
   await navigateWithDirectoryTree(appId, '/My files');
 
   // Check: the My files folder should be [selected] and [active].
-  const selectedActiveRow = '.tree-row[selected][active]';
   let treeRow = await remoteCall.waitForElement(appId, selectedActiveRow);
   chrome.test.assertTrue(treeRow.text.includes('My files'));
+  // Check: the corresponding tree item should be selected and have the "Current
+  // directory" aria description.
+  let treeItem =
+      await remoteCall.waitForElement(appId, selectedAriaCurrentDirectory);
+  chrome.test.assertEq(treeItem.attributes['entry-label'], 'My files');
 
   // Send ArrowUp key to change the selected folder.
   const arrowUp = ['#directory-tree', 'ArrowUp', false, false, false];
@@ -70,14 +107,25 @@ testcase.directoryTreeSelectedDirectory = async () => {
 
   // Check: no folder should be [selected] and [active].
   await remoteCall.waitForElementLost(appId, selectedActiveRow);
+  // Check: no tree item should be [selected] and have the "Current directory"
+  // aria description.
+  await remoteCall.waitForElementLost(appId, selectedAriaCurrentDirectory);
 
   // Check: the My files folder should be [active].
   treeRow = await remoteCall.waitForElement(appId, '.tree-row[active]');
   chrome.test.assertTrue(treeRow.text.includes('My files'));
+  // Check: the corresponding tree item should have the "Current directory" aria
+  // description.
+  treeItem = await remoteCall.waitForElement(
+      appId, '.tree-item[aria-description="Current directory"]');
+  chrome.test.assertEq(treeItem.attributes['entry-label'], 'My files');
 
   // Check: the Recent Media View folder should be [selected].
   treeRow = await remoteCall.waitForElement(appId, '.tree-row[selected]');
   chrome.test.assertTrue(treeRow.text.includes('Recent'));
+  // Check: the corresponding tree item should be [selected].
+  treeItem = await remoteCall.waitForElement(appId, '.tree-item[selected]');
+  chrome.test.assertEq(treeItem.attributes['entry-label'], 'Recent');
 
   // Send Enter key to activate the selected folder.
   const enter = ['#directory-tree', 'Enter', false, false, false];
@@ -86,6 +134,11 @@ testcase.directoryTreeSelectedDirectory = async () => {
   // Check: the Recent folder should be [selected] and [active].
   treeRow = await remoteCall.waitForElement(appId, selectedActiveRow);
   chrome.test.assertTrue(treeRow.text.includes('Recent'));
+  // Check: the corresponding tree item should be selected and have the "Current
+  // directory" aria description.
+  treeItem =
+      await remoteCall.waitForElement(appId, selectedAriaCurrentDirectory);
+  chrome.test.assertEq(treeItem.attributes['entry-label'], 'Recent');
 };
 
 /**

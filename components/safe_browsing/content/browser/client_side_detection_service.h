@@ -152,6 +152,9 @@ class ClientSideDetectionService
   // override it.
   virtual const base::File& GetVisualTfLiteModel();
 
+  // Compare the scores from classification to TFLite model thresholds
+  void ClassifyPhishingThroughThresholds(ClientPhishingRequest* verdict);
+
   // Overrides the SharedURLLoaderFactory
   void SetURLLoaderFactoryForTesting(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
@@ -177,6 +180,7 @@ class ClientSideDetectionService
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest,
                            SendClientReportPhishingRequest);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest, GetNumReportTest);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest, GetNumReportTestESB);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionServiceTest,
                            TestModelFollowsPrefs);
 
@@ -236,6 +240,11 @@ class ClientSideDetectionService
 
   // content::RenderProcessHostCreationObserver:
   void OnRenderProcessHostCreated(content::RenderProcessHost* rph) override;
+
+  // Returns the visual TFLite model thresholds from the model class
+  virtual const google::protobuf::RepeatedPtrField<
+      TfLiteModelMetadata::Threshold>&
+  GetVisualTfLiteModelThresholds();
 
   // Whether the service is running or not.  When the service is not running,
   // it won't download the model nor report detected phishing URLs.

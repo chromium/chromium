@@ -374,14 +374,14 @@ void PaymentManifestParser::ParseWebAppInstallationInfo(
 // static
 void PaymentManifestParser::ParsePaymentMethodManifestIntoVectors(
     const GURL& manifest_url,
-    std::unique_ptr<base::Value> value,
+    base::Value value,
     const ErrorLogger& log,
     std::vector<GURL>* web_app_manifest_urls,
     std::vector<url::Origin>* supported_origins) {
   DCHECK(web_app_manifest_urls);
   DCHECK(supported_origins);
 
-  const base::Value::Dict* dict = value->GetIfDict();
+  const base::Value::Dict* dict = value.GetIfDict();
   if (!dict) {
     log.Error("Payment method manifest must be a JSON dictionary.");
     return;
@@ -401,10 +401,10 @@ void PaymentManifestParser::ParsePaymentMethodManifestIntoVectors(
 
 // static
 bool PaymentManifestParser::ParseWebAppManifestIntoVector(
-    std::unique_ptr<base::Value> value,
+    base::Value value,
     const ErrorLogger& log,
     std::vector<WebAppManifestSection>* output) {
-  const base::Value::Dict* dict = value->GetIfDict();
+  const base::Value::Dict* dict = value.GetIfDict();
   if (!dict) {
     log.Error("Web app manifest must be a JSON dictionary.");
     return false;
@@ -523,14 +523,14 @@ bool PaymentManifestParser::ParseWebAppManifestIntoVector(
 
 // static
 bool PaymentManifestParser::ParseWebAppInstallationInfoIntoStructs(
-    std::unique_ptr<base::Value> value,
+    base::Value value,
     const ErrorLogger& log,
     WebAppInstallationInfo* installation_info,
     std::vector<WebAppIcon>* icons) {
   DCHECK(installation_info);
   DCHECK(icons);
 
-  const base::Value::Dict* dict = value->GetIfDict();
+  const base::Value::Dict* dict = value.GetIfDict();
   if (!dict) {
     log.Error("Web app manifest must be a JSON dictionary.");
     return false;
@@ -643,9 +643,9 @@ void PaymentManifestParser::OnPaymentMethodParse(
   std::vector<url::Origin> supported_origins;
 
   if (result.has_value()) {
-    ParsePaymentMethodManifestIntoVectors(
-        manifest_url, base::Value::ToUniquePtrValue(std::move(*result)), *log_,
-        &web_app_manifest_urls, &supported_origins);
+    ParsePaymentMethodManifestIntoVectors(manifest_url, std::move(*result),
+                                          *log_, &web_app_manifest_urls,
+                                          &supported_origins);
   } else {
     log_->Error(result.error());
   }
@@ -662,8 +662,7 @@ void PaymentManifestParser::OnWebAppParse(
 
   std::vector<WebAppManifestSection> manifest;
   if (result.has_value()) {
-    ParseWebAppManifestIntoVector(
-        base::Value::ToUniquePtrValue(std::move(*result)), *log_, &manifest);
+    ParseWebAppManifestIntoVector(std::move(*result), *log_, &manifest);
   } else {
     log_->Error(result.error());
   }
@@ -683,8 +682,7 @@ void PaymentManifestParser::OnWebAppParseInstallationInfo(
     installation_info = std::make_unique<WebAppInstallationInfo>();
     icons = std::make_unique<std::vector<WebAppIcon>>();
     if (!ParseWebAppInstallationInfoIntoStructs(
-            base::Value::ToUniquePtrValue(std::move(*result)), *log_,
-            installation_info.get(), icons.get())) {
+            std::move(*result), *log_, installation_info.get(), icons.get())) {
       installation_info.reset();
       icons.reset();
     }

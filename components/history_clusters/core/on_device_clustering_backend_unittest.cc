@@ -210,12 +210,13 @@ class OnDeviceClusteringWithoutContentBackendTest : public ::testing::Test {
 
   std::vector<history::Cluster> GetClustersForUI(
       ClusteringRequestSource clustering_request_source,
+      QueryClustersFilterParams filter_params,
       const std::vector<history::Cluster>& in_clusters) {
     std::vector<history::Cluster> clusters;
 
     base::RunLoop run_loop;
     clustering_backend_->GetClustersForUI(
-        clustering_request_source,
+        clustering_request_source, std::move(filter_params),
         base::BindOnce(
             [](base::RunLoop* run_loop,
                std::vector<history::Cluster>* out_clusters,
@@ -395,7 +396,8 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest,
   clusters.push_back(cluster2);
 
   std::vector<history::Cluster> result_clusters =
-      GetClustersForUI(ClusteringRequestSource::kJourneysPage, clusters);
+      GetClustersForUI(ClusteringRequestSource::kJourneysPage,
+                       QueryClustersFilterParams(), clusters);
   EXPECT_THAT(testing::ToVisitResults(result_clusters),
               ElementsAre(ElementsAre(testing::VisitResult(
                   2, 1.0, {history::DuplicateClusterVisit{1}}))));
@@ -741,7 +743,8 @@ TEST_F(OnDeviceClusteringWithContentBackendTest, GetClustersForUIWithContent) {
   clusters.push_back(cluster2);
 
   std::vector<history::Cluster> result_clusters =
-      GetClustersForUI(ClusteringRequestSource::kJourneysPage, clusters);
+      GetClustersForUI(ClusteringRequestSource::kJourneysPage,
+                       QueryClustersFilterParams(), clusters);
   EXPECT_THAT(
       testing::ToVisitResults(result_clusters),
       ElementsAre(ElementsAre(

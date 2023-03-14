@@ -11,14 +11,14 @@
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/buildflag.h"
-#include "components/cast_streaming/public/decoder_buffer_reader.h"
+#include "media/cast/openscreen/decoder_buffer_reader.h"
 #include "media/media_buildflags.h"
 #include "media/remoting/renderer_controller.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING_RPC)
-#include "components/cast_streaming/public/remoting_proto_utils.h"  // nogncheck
+#include "media/cast/openscreen/remoting_proto_utils.h"  // nogncheck
 #endif
 
 namespace media {
@@ -28,11 +28,10 @@ FakeRemotingDataStreamSender::FakeRemotingDataStreamSender(
     mojo::PendingReceiver<mojom::RemotingDataStreamSender> stream_sender,
     mojo::ScopedDataPipeConsumerHandle consumer_handle)
     : receiver_(this, std::move(stream_sender)),
-      decoder_buffer_reader_(
-          std::make_unique<cast_streaming::DecoderBufferReader>(
-              base::BindRepeating(&FakeRemotingDataStreamSender::OnFrameRead,
-                                  base::Unretained(this)),
-              std::move(consumer_handle))) {
+      decoder_buffer_reader_(std::make_unique<media::cast::DecoderBufferReader>(
+          base::BindRepeating(&FakeRemotingDataStreamSender::OnFrameRead,
+                              base::Unretained(this)),
+          std::move(consumer_handle))) {
   decoder_buffer_reader_->ReadBufferAsync();
 }
 

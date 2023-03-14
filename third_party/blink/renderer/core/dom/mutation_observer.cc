@@ -103,6 +103,10 @@ class MutationObserverAgentData
     active_mutation_observers_.insert(observer);
   }
 
+  void ClearActiveObserver(MutationObserver* observer) {
+    active_mutation_observers_.erase(observer);
+  }
+
  private:
   void EnsureEnqueueMicrotask() {
     if (active_mutation_observers_.empty() &&
@@ -344,6 +348,16 @@ void MutationObserver::ContextLifecycleStateChanged(
     mojom::FrameLifecycleState state) {
   if (state == mojom::FrameLifecycleState::kRunning)
     ActivateObserver(this);
+}
+
+void MutationObserver::ContextDestroyed() {
+  // The 'DeliverMutations' micro task is *not* guaranteed to run.
+  // It's necessary to clear out this observer from the list of active observers
+  // in case the MutationObserverAgentData is reused across navigations.
+  // Otherwise no MutationObserver for the agent can fire again.
+  DCHECK(GetExecutionContext());
+  MutationObserverAgentData::From(*GetExecutionContext()->GetAgent())
+      .ClearActiveObserver(this);
 }
 
 void MutationObserver::CancelInspectorAsyncTasks() {

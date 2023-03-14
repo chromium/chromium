@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/secure_channel/ble_initiator_connection_attempt.h"
 #include "chromeos/ash/services/secure_channel/ble_listener_connection_attempt.h"
@@ -447,9 +448,8 @@ std::vector<ClientConnectionParameters*> ClientParamsListToRawPtrs(
     const std::vector<std::unique_ptr<ClientConnectionParameters>>&
         unique_ptr_list) {
   std::vector<ClientConnectionParameters*> raw_ptr_list;
-  std::transform(unique_ptr_list.begin(), unique_ptr_list.end(),
-                 std::back_inserter(raw_ptr_list),
-                 [](const auto& unique_ptr) { return unique_ptr.get(); });
+  base::ranges::transform(unique_ptr_list, std::back_inserter(raw_ptr_list),
+                          &std::unique_ptr<ClientConnectionParameters>::get);
   return raw_ptr_list;
 }
 

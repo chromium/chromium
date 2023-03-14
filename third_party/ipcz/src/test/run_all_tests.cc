@@ -4,13 +4,13 @@
 
 #include "standalone/base/logging.h"
 #include "standalone/base/stack_trace.h"
+#include "test/multinode_test.h"
+#include "test_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
-#include "third_party/ipcz/src/test/multinode_test.h"
-#include "third_party/ipcz/src/test_buildflags.h"
 
 #if BUILDFLAG(ENABLE_IPCZ_MULTIPROCESS_TESTS)
-#include "third_party/ipcz/src/test/test_child_launcher.h"
+#include "test/test_child_launcher.h"
 #endif
 
 int main(int argc, char** argv) {

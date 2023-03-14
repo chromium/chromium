@@ -31,6 +31,15 @@ namespace gles2 {
 class GLES2Implementation;
 }
 
+// Importance to use in tracing. Higher values get the memory cost attributed,
+// and equal values share the cost. We want the client to "win" over the
+// service, since the service is acting on its behalf.
+enum class TracingImportance : int {
+  kNotOwner = 0,
+  kServiceOwner = 1,
+  kClientOwner = 2,
+};
+
 // A mailbox is an unguessable name that references texture image data.
 // This name can be passed across processes permitting one context to share
 // texture image data with another. The mailbox name consists of a random

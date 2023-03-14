@@ -26,6 +26,8 @@ class CastDialogController {
 
     virtual void OnModelUpdated(const CastDialogModel& model) {}
 
+    virtual void OnCastingStarted() {}
+
     // Notifies observers that the observed object is being destroyed. Observers
     // MUST NOT try to destroy the observed object in response - to manage the
     // lifetime of a CastDialogController, use RegisterDestructor() below.

@@ -17,10 +17,6 @@ class CommandLine;
 class SequencedTaskRunner;
 }  // namespace base
 
-namespace breadcrumbs {
-class BreadcrumbPersistentStorageManager;
-}
-
 class ApplicationBreadcrumbsLogger;
 
 namespace network {
@@ -81,8 +77,6 @@ class ApplicationContextImpl : public ApplicationContext {
   network::NetworkConnectionTracker* GetNetworkConnectionTracker() override;
   BrowserPolicyConnectorIOS* GetBrowserPolicyConnector() override;
   PromosManager* GetPromosManager() override;
-  breadcrumbs::BreadcrumbPersistentStorageManager*
-  GetBreadcrumbPersistentStorageManager() override;
   id<SingleSignOnService> GetSSOService() override;
   SystemIdentityManager* GetSystemIdentityManager() override;
   segmentation_platform::OTRWebStateObserver*
@@ -112,7 +106,6 @@ class ApplicationContextImpl : public ApplicationContext {
   std::unique_ptr<BrowserPolicyConnectorIOS> browser_policy_connector_;
 
   // Promos Manager which coordinates the display of app-wide promos.
-  // Will be null if feature, kFullscreenPromosManager, is not enabled.
   std::unique_ptr<PromosManager> promos_manager_;
 
   std::unique_ptr<PrefService> local_state_;

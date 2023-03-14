@@ -1,0 +1,84 @@
+/* Copyright 2023 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=./sp_shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+.sp-card {
+  display: contents;
+}
+
+:host-context([chrome-refresh-2023]) .sp-card {
+  background: var(--color-side-panel-card-background);
+  border-radius: 12px;
+  display: block;
+  margin: 0 var(--sp-body-padding);
+  padding: var(--sp-card-block-padding) 0;
+}
+
+:host-context([chrome-refresh-2023]) .sp-card sp-heading {
+  margin: 0;
+  padding: 0 var(--sp-card-inline-padding);
+}
+
+.sp-scroller {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+:host-context([chrome-refresh-2023]) .sp-scroller {
+  --sp-scroller-scrollbar-width_: 4px;
+  --sp-scroller-scrollbar-half-width_: 2px;
+
+  display: block;
+  overflow-x: hidden;
+  overflow-y: overlay;
+}
+
+:host-context([chrome-refresh-2023]) .sp-scroller::-webkit-scrollbar {
+  background: transparent;
+  width: var(--sp-scroller-scrollbar-width_);
+}
+
+:host-context([chrome-refresh-2023]) .sp-scroller::-webkit-scrollbar-thumb {
+  background: var(--color-side-panel-scrollbar-thumb);
+  border-radius: 100px;
+}
+
+:host-context([chrome-refresh-2023]) .sp-card:has(.sp-scroller) {
+  padding-block-end: 0;
+}
+
+:host-context([chrome-refresh-2023]) .sp-card .sp-scroller {
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  box-sizing: border-box;
+  margin: 0 calc(-1 * var(--sp-scroller-scrollbar-half-width_));
+  padding: 0 var(--sp-scroller-scrollbar-half-width_);
+  padding-block-end: var(--sp-card-block-padding);
+}
+
+:host-context([chrome-refresh-2023]) .sp-labelless-input {
+  --cr-input-background-color: transparent;
+  --cr-input-border: 1px solid var(--color-side-panel-textfield-border);
+  --cr-input-border-bottom: none;
+  --cr-input-border-radius: 8px;
+  --cr-input-padding-bottom: 9px;
+  --cr-input-padding-end: 9px;
+  --cr-input-padding-start: 9px;
+  --cr-input-padding-top: 9px;
+  --cr-input-underline-display: none;
+  height: 36px;
+  line-height: 16px;
+}
+
+:host-context([chrome-refresh-2023]) .sp-labelless-input:focus {
+  --cr-input-border: 2px solid var(--cr-focus-outline-color);
+  --cr-input-padding-bottom: 8px;
+  --cr-input-padding-end: 8px;
+  --cr-input-padding-start: 8px;
+  --cr-input-padding-top: 8px;
+}

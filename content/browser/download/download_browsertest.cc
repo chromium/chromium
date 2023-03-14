@@ -3235,8 +3235,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, ResumeRestoredDownload_NoHash) {
       parameters.pattern_generator_seed, 0, kIntermediateSize);
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_EQ(kIntermediateSize, base::WriteFile(intermediate_file_path,
-                                                 output.data(), output.size()));
+    ASSERT_TRUE(base::WriteFile(intermediate_file_path, output));
   }
 
   url_chain.push_back(server_url);
@@ -3291,8 +3290,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
       parameters.pattern_generator_seed + 1, 0, kIntermediateSize);
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_EQ(kIntermediateSize, base::WriteFile(intermediate_file_path,
-                                                 output.data(), output.size()));
+    ASSERT_TRUE(base::WriteFile(intermediate_file_path, output));
   }
 
   url_chain.push_back(server_url);
@@ -3348,8 +3346,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
       parameters.pattern_generator_seed, 0, kIntermediateSize);
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_EQ(kIntermediateSize, base::WriteFile(intermediate_file_path,
-                                                 output.data(), output.size()));
+    ASSERT_TRUE(base::WriteFile(intermediate_file_path, output));
   }
   // SHA-256 hash of the pattern bytes in buffer.
   static const uint8_t kPartialHash[] = {
@@ -3416,8 +3413,8 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, ResumeRestoredDownload_WrongHash) {
   std::vector<char> buffer(kIntermediateSize);
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_EQ(kIntermediateSize, base::WriteFile(intermediate_file_path,
-                                                 buffer.data(), buffer.size()));
+    ASSERT_TRUE(base::WriteFile(intermediate_file_path,
+                                {buffer.data(), buffer.size()}));
   }
   // SHA-256 hash of the expected pattern bytes in buffer. This doesn't match
   // the current contents of the intermediate file which should all be 0.
@@ -3501,9 +3498,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, ResumeRestoredDownload_ShortFile) {
       parameters.pattern_generator_seed, 0, kIntermediateSize - 100);
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_EQ(
-        kIntermediateSize - 100,
-        base::WriteFile(intermediate_file_path, output.data(), output.size()));
+    ASSERT_TRUE(base::WriteFile(intermediate_file_path, output));
   }
   url_chain.push_back(server_url);
 
@@ -3577,9 +3572,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, ResumeRestoredDownload_LongFile) {
       parameters.pattern_generator_seed, 0, kIntermediateSize + 100);
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_EQ(
-        kIntermediateSize + 100,
-        base::WriteFile(intermediate_file_path, output.data(), output.size()));
+    ASSERT_TRUE(base::WriteFile(intermediate_file_path, output));
   }
   url_chain.push_back(server_url);
 

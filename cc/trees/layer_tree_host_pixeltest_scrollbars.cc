@@ -138,7 +138,8 @@ TEST_P(LayerTreeHostScrollbarsPixelTest, TransformScale) {
 }
 
 // Disabled on TSan due to frequent timeouts. crbug.com/848994
-#if defined(THREAD_SANITIZER)
+// TODO(crbug.com/1416306): currently do not pass on iOS.
+#if defined(THREAD_SANITIZER) || BUILDFLAG(IS_IOS)
 #define MAYBE_HugeTransformScale DISABLED_HugeTransformScale
 #else
 #define MAYBE_HugeTransformScale HugeTransformScale

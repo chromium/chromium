@@ -139,7 +139,7 @@ TEST_F(IndexedDBContextTest, DefaultBucketCreatedOnBindIndexedDB) {
       quota_manager_proxy_sync.GetBucket(example_storage_key_,
                                          storage::kDefaultBucketName,
                                          blink::mojom::StorageType::kTemporary);
-  ASSERT_TRUE(result.ok());
+  ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->name, storage::kDefaultBucketName);
   EXPECT_EQ(result->storage_key, example_storage_key_);
   EXPECT_GT(result->id.value(), 0);
@@ -148,7 +148,7 @@ TEST_F(IndexedDBContextTest, DefaultBucketCreatedOnBindIndexedDB) {
   result = quota_manager_proxy_sync.GetBucket(
       google_storage_key_, storage::kDefaultBucketName,
       blink::mojom::StorageType::kTemporary);
-  ASSERT_TRUE(result.ok());
+  ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->name, storage::kDefaultBucketName);
   EXPECT_EQ(result->storage_key, google_storage_key_);
   EXPECT_GT(result->id.value(), 0);

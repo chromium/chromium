@@ -126,9 +126,9 @@ int MapOpenSSLErrorSSL(uint32_t error_code) {
   }
 }
 
-base::Value NetLogOpenSSLErrorParams(int net_error,
-                                     int ssl_error,
-                                     const OpenSSLErrorInfo& error_info) {
+base::Value::Dict NetLogOpenSSLErrorParams(int net_error,
+                                           int ssl_error,
+                                           const OpenSSLErrorInfo& error_info) {
   base::Value::Dict dict;
   dict.Set("net_error", net_error);
   dict.Set("ssl_error", ssl_error);
@@ -140,7 +140,7 @@ base::Value NetLogOpenSSLErrorParams(int net_error,
     dict.Set("file", error_info.file);
   if (error_info.line != 0)
     dict.Set("line", error_info.line);
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 }  // namespace

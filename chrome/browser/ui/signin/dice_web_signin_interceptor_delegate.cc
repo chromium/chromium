@@ -112,6 +112,16 @@ DiceWebSigninInterceptorDelegate::DiceWebSigninInterceptorDelegate() = default;
 
 DiceWebSigninInterceptorDelegate::~DiceWebSigninInterceptorDelegate() = default;
 
+bool DiceWebSigninInterceptorDelegate::IsSigninInterceptionSupported(
+    const content::WebContents& web_contents) {
+  Browser* browser = chrome::FindBrowserWithWebContents(&web_contents);
+  // The profile creation flow has no browser.
+  if (!browser) {
+    return false;
+  }
+  return IsSigninInterceptionSupportedInternal(*browser);
+}
+
 std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>
 DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubble(
     content::WebContents* web_contents,

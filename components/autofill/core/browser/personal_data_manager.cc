@@ -70,11 +70,9 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/driver/sync_auth_util.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_utils.h"
 #include "components/version_info/version_info.h"
-#include "google_apis/gaia/gaia_auth_util.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_data.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_formatter.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/source.h"
@@ -641,7 +639,7 @@ absl::optional<CoreAccountInfo> PersonalDataManager::GetPrimaryAccountInfo()
 AutofillSyncSigninState PersonalDataManager::GetSyncSigninState() const {
   // Check if the user is signed out.
   if (!sync_service_ || !identity_manager_ ||
-      syncer::DetermineAccountToUse(identity_manager_).account_info.IsEmpty()) {
+      sync_service_->GetAccountInfo().IsEmpty()) {
     return AutofillSyncSigninState::kSignedOut;
   }
 
@@ -828,6 +826,14 @@ void PersonalDataManager::MigrateProfileToAccount(
 std::string PersonalDataManager::AddIBAN(const IBAN& iban) {
   if (!IsAutofillIBANEnabled())
     return std::string();
+
+  // Sets the `kAutofillHasSeenIban` pref to true indicating that the user has
+  // added an IBAN via Chrome payment settings page or accepted the save-IBAN
+  // prompt, which indicates that the user is familiar with IBANs as a concept.
+  // We set the pref so that even if the user travels to a country where IBAN
+  // functionality is not typically used, they will still be able to save new
+  // IBANs from the settings page using this pref.
+  SetAutofillHasSeenIban();
 
   // Early exit if `is_off_the_record_` is true, or an IBAN which has the same
   // guid exists in `local_ibans_`, or fail to get local database.
@@ -1370,12 +1376,21 @@ std::vector<AutofillProfile*> PersonalDataManager::GetProfilesToSuggest()
   if (profiles.size() > 1) {
     // Rank the suggestions by ranking score.
     const base::Time comparison_time = AutofillClock::Now();
-    std::sort(
-        profiles.begin(), profiles.end(),
-        [comparison_time](const AutofillProfile* a, const AutofillProfile* b) {
-          return a->HasGreaterRankingThan(b, comparison_time);
-        });
+    base::ranges::sort(profiles, [comparison_time](const AutofillProfile* a,
+                                                   const AutofillProfile* b) {
+      return a->HasGreaterRankingThan(b, comparison_time);
+    });
   }
+  return profiles;
+}
+
+std::vector<AutofillProfile*> PersonalDataManager::GetProfilesForSettings()
+    const {
+  std::vector<AutofillProfile*> profiles = GetProfiles();
+  base::ranges::sort(profiles,
+                     [](const AutofillProfile* a, const AutofillProfile* b) {
+                       return a->modification_date() > b->modification_date();
+                     });
   return profiles;
 }
 
@@ -1521,6 +1536,14 @@ bool PersonalDataManager::IsAutofillProfileEnabled() const {
 
 bool PersonalDataManager::IsAutofillCreditCardEnabled() const {
   return prefs::IsAutofillCreditCardEnabled(pref_service_);
+}
+
+bool PersonalDataManager::IsAutofillHasSeenIbanPrefEnabled() const {
+  return prefs::HasSeenIban(pref_service_);
+}
+
+void PersonalDataManager::SetAutofillHasSeenIban() {
+  prefs::SetAutofillHasSeenIban(pref_service_);
 }
 
 bool PersonalDataManager::IsAutofillIBANEnabled() const {
@@ -2115,51 +2138,22 @@ std::string PersonalDataManager::SaveImportedIBAN(IBAN& imported_iban) {
   return AddIBAN(imported_iban);
 }
 
-void PersonalDataManager::LogStoredProfileMetrics() const {
-  if (!has_logged_stored_profile_metrics_) {
-    autofill_metrics::LogStoredProfileMetrics(GetProfiles());
-    // Only log this info once per Chrome user profile load.
-    has_logged_stored_profile_metrics_ = true;
+void PersonalDataManager::LogStoredDataMetrics() const {
+  if (has_logged_stored_data_metrics_) {
+    return;
   }
-}
+  // Only log this info once per Chrome user profile load.
+  has_logged_stored_data_metrics_ = true;
 
-void PersonalDataManager::LogStoredCreditCardMetrics() const {
-  if (!has_logged_stored_credit_card_metrics_) {
-    AutofillMetrics::LogStoredCreditCardMetrics(
-        local_credit_cards_, server_credit_cards_,
-        GetServerCardWithArtImageCount(), kDisusedDataModelTimeDelta);
-
-    // Only log this info once per Chrome user profile load.
-    has_logged_stored_credit_card_metrics_ = true;
-  }
-}
-
-void PersonalDataManager::LogStoredIbanMetrics() const {
-  if (!has_logged_stored_iban_metrics_) {
-    autofill_metrics::LogStoredIbanMetrics(local_ibans_,
-                                           kDisusedDataModelTimeDelta);
-
-    // Only log this info once per Chrome user profile load.
-    has_logged_stored_iban_metrics_ = true;
-  }
-}
-
-void PersonalDataManager::LogStoredOfferMetrics() const {
-  if (!has_logged_stored_offer_metrics_) {
-    autofill_metrics::LogStoredOfferMetrics(autofill_offer_data_);
-    // Only log this info once per Chrome user profile load.
-    has_logged_stored_offer_metrics_ = true;
-  }
-}
-
-void PersonalDataManager::LogStoredVirtualCardUsageMetrics() const {
-  if (!has_logged_stored_virtual_card_usage_metrics_) {
-    autofill_metrics::LogStoredVirtualCardUsageCount(
-        autofill_virtual_card_usage_data_.size());
-
-    // Only log this info once per chrome user profile load.
-    has_logged_stored_virtual_card_usage_metrics_ = true;
-  }
+  autofill_metrics::LogStoredProfileMetrics(GetProfiles());
+  AutofillMetrics::LogStoredCreditCardMetrics(
+      local_credit_cards_, server_credit_cards_,
+      GetServerCardWithArtImageCount(), kDisusedDataModelTimeDelta);
+  autofill_metrics::LogStoredIbanMetrics(local_ibans_,
+                                         kDisusedDataModelTimeDelta);
+  autofill_metrics::LogStoredOfferMetrics(autofill_offer_data_);
+  autofill_metrics::LogStoredVirtualCardUsageCount(
+      autofill_virtual_card_usage_data_.size());
 }
 
 std::string PersonalDataManager::MostCommonCountryCodeFromProfiles() const {

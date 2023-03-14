@@ -59,7 +59,8 @@ class PLATFORM_EXPORT NonMainThreadSchedulerBase : public ThreadSchedulerBase {
 
   scoped_refptr<NonMainThreadTaskQueue> CreateTaskQueue(
       base::sequence_manager::QueueName name,
-      bool can_be_throttled = false);
+      NonMainThreadTaskQueue::QueueCreationParams params =
+          NonMainThreadTaskQueue::QueueCreationParams());
 
  protected:
   // ThreadSchedulerBase:

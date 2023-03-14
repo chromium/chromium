@@ -1,73 +1,266 @@
 <!DOCTYPE HTML>
 <html>
-<script src='test.js'></script>
-<script src='call_function.js'></script>
+<script src="test.js"></script>
+<script src="call_function.js"></script>
 <script>
-function wrap(value) {
-  return jsonSerialize(value, []);
-}
-
-function unwrap(value, opt_cache) {
-  return jsonDeserialize(value, [], opt_cache);
-}
-
-var initialCache = getPageCache().cache_;
-function clearCache() {
-  getPageCache().cache_ = Object.create(initialCache);
-}
-
-function isValidUUID(uuid) {
-  assertEquals(36, uuid.length);
-  var list = uuid.split("-").map(function(x) {return x.length;});
-  assertEquals(5, list.length);
-  assertEquals(8, list[0]);
-  assertEquals(4, list[1]);
-  assertEquals(4, list[2]);
-  assertEquals(4, list[3]);
-  assertEquals(12, list[4]);
-  assert(/[a-z0-9-]{36}/.test(uuid));
-}
-
-function testUUID() {
-  var uuids = {}
-  for (var i = 0; i < 100; i++) {
-    var uuid = generateUUID();
-    isValidUUID(uuid);
-    assertEquals(null, uuids[uuid]);
-    uuids[uuid] = 1;
+function wrapArgs(value, w3c) {
+  if (typeof w3c === "undefined") {
+    w3c = true;
   }
+  const nodes = [];
+  const preprocessed = preprocessResult(value, [], nodes);
+  const stringified = JSON.stringify(preprocessed);
+  return [JSON.parse(stringified), w3c, nodes];
+}
+
+function unwrapResult(value) {
+  return resolveReferences(JSON.parse(value[0]), [], value.slice(1));
+}
+
+function serialize(value) {
+  const nodes = [];
+  const preprocessed = preprocessResult(value, [], nodes);
+  return [JSON.stringify(preprocessed), ...nodes];
+}
+
+function deserialize(serialized) {
+  return resolveReferences(JSON.parse(serialized[0]), [], serialized.slice(1));
+}
+
+function roundtrip(value) {
+  return deserialize(serialize(value));
+}
+
+function testSerialize() {
+  assertEquals(1, roundtrip(1));
+  assertEquals("1", roundtrip("1"));
+  assertEquals("chromium", roundtrip("chromium"));
+  assertEquals(false, roundtrip(false));
+  assertEquals(null, roundtrip(null));
+  assertEquals(undefined, roundtrip(undefined));
+  assertEquals(JSON.stringify([]), JSON.stringify(roundtrip([])));
+  assertEquals(JSON.stringify(["uno", 2]), JSON.stringify(roundtrip(["uno", 2])));
+  assertEquals(JSON.stringify({}), JSON.stringify(roundtrip({})));
+  assertEquals(JSON.stringify({}),
+               JSON.stringify(roundtrip(function(){console.log("Hello, World!");})));
+
+  const div = document.querySelector("div");
+  assertEquals(div, roundtrip(div));
+  assertEquals(document, roundtrip(document));
+
+  const divs = document.querySelectorAll("div");
+  const deserialized = roundtrip(divs);
+  assertEquals(divs[0], deserialized[0]);
+  assertEquals(divs[1], deserialized[1]);
+}
+
+function testDeepSerialization() {
+  const original = [1, new Array(1, new Object({a: 1, b: {a: 1, b: {}, c: 3}}), 3)];
+  const originalJson = JSON.stringify(original);
+
+  original[1][1].b.b = document;
+  let deserialized = roundtrip(original);
+  assertEquals(document, deserialized[1][1].b.b);
+
+  const div = document.querySelector("div");
+  original[1][1].b.b = div;
+  deserialized = roundtrip(original);
+  assertEquals(div, deserialized[1][1].b.b);
+
+  deserialized[1][1].b.b = {};
+  assertEquals(originalJson, JSON.stringify(deserialized));
+}
+
+function testObjectWithLengthProperty() {
+  let obj = {length: 200};
+  assertEquals(200, roundtrip({length: 200})["length"])
+  assertEquals(JSON.stringify(obj), JSON.stringify(roundtrip({length: 200})))
+
+  obj = {bar: "foo", bazz: {length: 150}};
+  const deserialized = roundtrip(obj);
+  assertEquals("foo", deserialized["bar"])
+  assertEquals(150, deserialized["bazz"]["length"])
+  assertEquals(JSON.stringify(obj), JSON.stringify(deserialized));
+}
+
+function testDeserializeElementReference() {
+  const original = {};
+  original[ELEMENT_KEY] = 0;
+  const json = JSON.stringify(original);
+  deserialized = deserialize([json, document]);
+  assertEquals(deserialized, document);
+}
+
+function testDeserializeNegativeIndexThrows() {
+  const original = {};
+  original[ELEMENT_KEY] = -1;
+  const json = JSON.stringify(original);
+  let thrown = false;
+  try {
+    deserialize([json, document]);
+  } catch (e) {
+    thrown = true;
+  }
+  assert(thrown);
+}
+
+function testDeserializeIndexOutOfRange() {
+  const original = {};
+  original[ELEMENT_KEY] = 1;
+  const json = JSON.stringify(original);
+  let thrown = false;
+  try {
+    deserialize([json, document]);
+  } catch (e) {
+    thrown = true;
+  }
+  assert(thrown);
+}
+
+function testStaleRef() {
+  const img = document.createElement("img");
+  document.body.appendChild(img);
+  const serialized = serialize(img);
+  document.body.removeChild(img);
+  let thrown = false;
+  try {
+    deserialize(serialized);
+  } catch (e) {
+    thrown = true;
+    assertEquals(StatusCode.STALE_ELEMENT_REFERENCE, e.code);
+  }
+  assert(thrown);
+}
+
+function testSerializationWithShadowDomAttached() {
+  // Set up something in the shadow DOM.
+  const host = document.body.appendChild(document.createElement("div"));
+  const root = host.attachShadow({ mode: "open" });
+  const shadowDiv = root.appendChild(document.createElement("div"));
+
+  // Test with attached element in shadow DOM.
+  const deserialized = roundtrip(shadowDiv);
+  assertEquals(shadowDiv, deserialized);
+
+  document.body.removeChild(host);
+}
+
+function testSerializationWithShadowDomDetachedChild() {
+  // Set up something in the shadow DOM.
+  const host = document.body.appendChild(document.createElement("div"));
+  const root = host.attachShadow({ mode: "open" });
+  const shadowDiv = root.appendChild(document.createElement("div"));
+
+  // Test with detached element in shadow DOM.
+  const serialized = serialize(shadowDiv);
+  root.removeChild(shadowDiv);
+  let thrown = false;
+  try {
+    deserialize(serialized);
+    document.body.removeChild(host);
+  } catch (e) {
+    thrown = true;
+    document.body.removeChild(host);
+    assertEquals(StatusCode.STALE_ELEMENT_REFERENCE, e.code);
+  }
+
+  assert(thrown)
+}
+
+// Verify array serialization works when Array.prototype.toJSON is defined.
+function testSerializeArrayToJsonProto(runner) {
+  Array.prototype.toJSON = () => "proto";
+  const original = [1, 7, "tres"];
+  const result = roundtrip(original);
+  delete Array.prototype.toJSON;
+  assert(result instanceof Array);
+  assertEquals(result[0], 1);
+  assertEquals(result[1], 7);
+  assertEquals(result[2], "tres");
+  assertEquals(JSON.stringify(original), JSON.stringify(result));
+}
+
+function testSerializeArrayToJsonOwn(runner) {
+  const original = [10, 7, "tres"];
+  original.toJSON = () => "own";
+  const result = roundtrip(original);
+  assertEquals(result, "own");
+  assertEquals(JSON.stringify(original), JSON.stringify(result));
+}
+
+function testSerializeArrayToJsonOwnAndProto(runner) {
+  Array.prototype.toJSON = () => "proto";
+  const original = [10, 33, "tres"];
+  original.toJSON = () => "own";
+  const result = roundtrip(original);
+  delete Array.prototype.toJSON;
+  assertEquals(result, "own");
+  assertEquals(JSON.stringify(original), JSON.stringify(result));
+}
+
+function testDeepSerializationCustomToJson() {
+  const fancy = [4, 16, 64];
+  fancy.toJSON = () => "fancy-tojson";
+  const original = [1, Array(1, new Object({a: [3, 27], b: {a: 1, b: {}, c: fancy}}), 3)];
+  const originalJson = JSON.stringify(original);
+  const div = document.querySelector("div");
+  original[1][1].b.b = div;
+
+  Array.prototype.toJSON = () => "proto";
+  deserialized = roundtrip(original);
+  delete Array.prototype.toJSON;
+
+  assertEquals(div, deserialized[1][1].b.b);
+  assertEquals("fancy-tojson", deserialized[1][1].b.c);
+  deserialized[1][1].b.b = {};
+  assertEquals(originalJson, JSON.stringify(deserialized));
+}
+
+function testDeepSerializationCustomToJsonNestedArrays() {
+  const fancy = [4, [5, 55], 64];
+  fancy.toJSON = () => "fancy-tojson";
+  const original = [111, fancy, "third"];
+  const originalJson = JSON.stringify(original);
+
+  Array.prototype.toJSON = () => "proto";
+  deserialized = roundtrip(original);
+  delete Array.prototype.toJSON;
+
+  assertEquals(111, deserialized[0]);
+  assertEquals("fancy-tojson", deserialized[1]);
+  assertEquals("third", deserialized[2]);
+  assertEquals(originalJson, JSON.stringify(deserialized));
 }
 
 function testCallFunctionNoArgs(runner) {
-  clearCache();
-
-  callFunction(function() { return 1; }, []).then((result) => {
-    assertEquals(0, result.status);
-    assertEquals(1, result.value);
+  callFunction(function() { return 1; }, [], true, []).then((resultArray) => {
+    const value = unwrapResult(resultArray).value;
+    assertEquals(1, value);
     runner.continueTesting();
   });
   runner.waitForAsync();
 }
 
 function testCallFunctionThrows(runner) {
-  clearCache();
   let allComplete = 0;
-  callFunction(function() { throw new Error('fake error'); },
+  callFunction(function() { throw new Error("fake error"); },
     []).then((result) => {
-      assertEquals(StatusCode.JAVA_SCRIPT_ERROR, result.status);
-      assertEquals('fake error', result.value);
+      const unwrapped = unwrapResult(result);
+      assertEquals(StatusCode.JAVA_SCRIPT_ERROR, unwrapped.status);
+      assertEquals("fake error", unwrapped.value);
       if (allComplete)
         runner.continueTesting();
       allComplete += 1;
     });
   callFunction(function() {
-      var e = new Error('fake error');
+      const e = new Error("fake error");
       e.code = 77;
-      e.message = 'CUSTOM';
+      e.message = "CUSTOM";
       throw e;
   }, []).then((result) => {
-    assertEquals(77, result.status);
-    assertEquals('CUSTOM', result.value);
+    const unwrapped = unwrapResult(result);
+    assertEquals(77, unwrapped.status);
+    assertEquals("CUSTOM", unwrapped.value);
     if (allComplete)
       runner.continueTesting();
     allComplete += 1;
@@ -75,142 +268,53 @@ function testCallFunctionThrows(runner) {
   runner.waitForAsync();
 }
 
+function testCallWithMalformedIdThrows() {
+  const original = {};
+  original[ELEMENT_KEY] = "malformed_id";
+  callFunction(function(){}, ...wrapArgs([original]).then(resultArray) => {
+    const unwrapped = unwrapResult(result);
+    assertEquals(StatusCode.STALE_ELEMENT_REFERENCE, unwrapped.status);
+    assertEquals("stale element not found", unwrapped.value);
+  }
+}
+
 function testCallFunctionArgs(runner) {
-  clearCache();
-
   function func(primitive, elem) {
-    return [primitive, elem.querySelector('div')];
+    return [primitive, elem.querySelector("div")];
   }
-  callFunction(func, [1, wrap(document)]).then((result) => {
-    assertEquals(0, result.status);
-    assertEquals(1, result.value[0]);
-    const cache = getPageCache();
-    assertEquals(document.querySelector('div'), unwrap(result.value[1], cache));
+  callFunction(func, ...wrapArgs([1, document])).then((resultArray) => {
+    const values = unwrapResult(resultArray).value;
+    assertEquals(1, values[0]);
+    assertEquals(document.querySelector("div"), values[1]);
     runner.continueTesting();
   });
   runner.waitForAsync();
 }
 
-function testCallFunctionArgsUnwrappedReturn(runner) {
-  clearCache();
-
+function testCallFunctionArgsNonW3C(runner) {
   function func(elem) {
-    return elem.querySelector('div');
+    return elem.querySelector("div");
   }
-  callFunction(func, [wrap(document)], false, true).then((result) => {
-    assertEquals(document.querySelector('div'), result);
+  callFunction(func, ...wrapArgs([document], w3c=false)).then((resultArray) => {
+    const result = unwrapResult(resultArray).value;
+    assertEquals(document.querySelector("div"), result);
     runner.continueTesting();
   });
   runner.waitForAsync();
-}
-
-function testCacheWrap() {
-  clearCache();
-
-  assertEquals(1, wrap(1));
-  assertEquals(1, unwrap(1));
-  assertEquals("1", wrap("1"));
-  assertEquals("1", unwrap("1"));
-  assertEquals(false, wrap(false));
-  assertEquals(false, unwrap(false));
-  assertEquals(null, wrap(null));
-  assertEquals(null, unwrap(null));
-  assertEquals(undefined, wrap(undefined));
-  assertEquals(undefined, unwrap(undefined));
-
-  var cache = getPageCache();
-  var arr = [1, new Array(1, new Object({a: 1, b: {a: 1, b: {}, c: 3}}), 3)];
-  var originalJson = JSON.stringify(arr);
-  arr[1][1].b.b[ELEMENT_KEY] = cache.idPrefix_ + '-' + cache.nextId_;
-  var wrappedJson = JSON.stringify(arr);
-  arr[1][1].b.b = document;
-  assertEquals(wrappedJson, JSON.stringify(wrap(arr)));
-  var unwrapped = unwrap(JSON.parse(wrappedJson), cache);
-  assertEquals(document, unwrapped[1][1].b.b);
-  unwrapped[1][1].b.b = {};
-  assertEquals(originalJson, JSON.stringify(unwrapped));
-}
-
-function testObjectWithLengthProperty() {
-  clearCache();
-
-  let obj = {length: 200};
-  assertEquals(200, wrap({length: 200})['length'])
-  assertEquals(JSON.stringify(obj), JSON.stringify(wrap({length: 200})))
-
-  obj = {bar: 'foo', bazz: {length: 150}};
-  let wrappedObj = wrap(obj);
-  assertEquals('foo', wrappedObj['bar'])
-  assertEquals(150, wrappedObj['bazz']['length'])
-  assertEquals(JSON.stringify(obj), JSON.stringify(wrappedObj));
-
-  let unwrappedObj = unwrap(obj);
-  assertEquals('foo', unwrappedObj['bar'])
-  assertEquals(150, unwrappedObj['bazz']['length'])
-  assertEquals(JSON.stringify(obj), JSON.stringify(unwrappedObj));
-}
-
-function testCacheDoubleWrap() {
-  clearCache();
-
-  assertEquals(wrap(document)[ELEMENT_KEY], wrap(document)[ELEMENT_KEY]);
-}
-
-function testCacheUnwrapThrows() {
-  clearCache();
-
-  try {
-    var wrapped = {};
-    wrapped[ELEMENT_KEY] = '1';
-    unwrap(wrapped, getPageCache());
-    assert(false);
-  } catch (e) {
-  }
-}
-
-function testCacheQuerySelector() {
-  clearCache();
-
-  var cache = getPageCache();
-  assertEquals(document.querySelector('div'),
-               unwrap(wrap(document.querySelector('div')), cache));
-  assertEquals(document.querySelectorAll('div')[0],
-               unwrap(wrap(document.querySelectorAll('div')), cache)[0]);
-}
-
-function testCacheStaleRef() {
-  clearCache();
-
-  var cache = getPageCache();
-  var img = document.createElement('img');
-  document.body.appendChild(img);
-  var wrappedImg = wrap(img);
-  document.body.removeChild(img);
-  try {
-    unwrap(wrappedImg, cache);
-    assert(false);
-  } catch (e) {
-    assertEquals(StatusCode.STALE_ELEMENT_REFERENCE, e.code);
-  }
 }
 
 function testCallFunctionWithShadowHost(runner) {
-  clearCache();
-
   // Set up something in the shadow DOM.
-  var host = document.body.appendChild(document.createElement('div'));
-  var root = host.attachShadow({ mode: 'open' });
-  var shadowDiv = root.appendChild(document.createElement('div'));
+  const host = document.body.appendChild(document.createElement("div"));
+  const root = host.attachShadow({ mode: "open" });
+  const shadowDiv = root.appendChild(document.createElement("div"));
 
   function func(element) {
     return element;
   }
-  var wrappedHost = wrap(host);
-  callFunction(func, [wrappedHost]).then((result) => {
-    assertEquals(0, result.status);
-    assertEquals(wrappedHost['ELEMENT'], result.value['ELEMENT']);
-    var cache = getPageCache();
-    assertEquals(host, unwrap(result.value, cache));
+  callFunction(func, ...wrapArgs([host])).then((resultArray) => {
+    const result = unwrapResult(resultArray).value;
+    assertEquals(host, result);
     document.body.removeChild(host);
     runner.continueTesting();
   });
@@ -218,82 +322,34 @@ function testCallFunctionWithShadowHost(runner) {
 }
 
 function testCallFunctionWithShadowRoot(runner) {
-  clearCache();
-
   // Set up something in the shadow DOM.
-  var host = document.body.appendChild(document.createElement('div'));
-  var root = host.attachShadow({ mode: 'open' });
-  var shadowDiv = root.appendChild(document.createElement('div'));
+  const host = document.body.appendChild(document.createElement("div"));
+  const root = host.attachShadow({ mode: "open" });
+  const shadowDiv = root.appendChild(document.createElement("div"));
 
   function func(element) {
     return element;
   }
-  var wrappedHost = wrap(host);
-  var wrappedRoot = wrap(root);
-
   // Should handle shadow root as an argument.
-  callFunction(func, [wrappedRoot]).then((result) => {
-    assertEquals(0, result.status);
-    assertEquals(wrappedRoot['ELEMENT'], result.value['ELEMENT']);
-    var cache = getPageCache();
-    assertEquals(root, unwrap(result.value, cache));
-
+  callFunction(func, ...wrapArgs([root])).then((resultArray) => {
+    const result = unwrapResult(resultArray).value;
+    assertEquals(root, result);
     document.body.removeChild(host);
     runner.continueTesting();
   });
   runner.waitForAsync();
 }
 
-function testCacheWithShadowDomAttached() {
-  clearCache();
-  const pageCache = getPageCache();
-
-  // Set up something in the shadow DOM.
-  var host = document.body.appendChild(document.createElement('div'));
-  var root = host.attachShadow({ mode: 'open' });
-  var shadowDiv = root.appendChild(document.createElement('div'));
-
-  // Test with attached element in shadow DOM.
-  var wrappedDiv = wrap(shadowDiv);
-  var unwrappedDiv = unwrap(wrappedDiv, pageCache);
-  assertEquals(shadowDiv, unwrappedDiv);
-
-  document.body.removeChild(host);
-}
-
-function testCacheWithShadowDomDetachedChild() {
-  clearCache();
-
-  // Set up something in the shadow DOM.
-  var host = document.body.appendChild(document.createElement('div'));
-  var root = host.attachShadow({ mode: 'open' });
-  var shadowDiv = root.appendChild(document.createElement('div'));
-
-  // Test with detached element in shadow DOM.
-  var wrappedDiv = wrap(shadowDiv);
-  root.removeChild(shadowDiv);
-  var rootCache = getPageCache();
-  try {
-    unwrap(wrappedDiv, rootCache);
-    assert(false);
-  } catch (e) {
-    assertEquals(StatusCode.STALE_ELEMENT_REFERENCE, e.code);
-  }
-
-  document.body.removeChild(host);
-}
-
 // Verify callFunction works when Object.prototype has user-defined functions.
 // (https://crbug.com/chromedriver/3074)
 function testCallWithFunctionInObject(runner) {
-  clearCache();
-
   Object.prototype.f = () => {};
   function func(arg) {
     return { bar: arg };
   }
-  callFunction(func, [{ foo: 1 }]).then((result) => {
-    assertEquals(1, result.value.bar.foo);
+  callFunction(func, ...wrapArgs([{ foo: 1 }])).then((resultArray) => {
+    const result = unwrapResult(resultArray).value;
+    assertEquals(1, result.bar.foo);
     delete Object.prototype.f;
     runner.continueTesting();
   });
@@ -303,16 +359,17 @@ function testCallWithFunctionInObject(runner) {
 // Verify array serialization works when Array.prototype.toJSON is defined.
 // (https://crbug.com/chromedriver/3084)
 function testCallWithArrayToJsonProto(runner) {
-  clearCache();
-
-  Array.prototype.toJSON = () => '["testing"]';
+  Array.prototype.toJSON = () => "[\"testing\"]";
   function func() {
-    return [1, 2, 3];
+    return [111, "dos", 3];
   }
-  callFunction(func, []).then((result) => {
-    assert(result.value instanceof Array);
-    assertEquals(result.value.length, 3);
-    assertEquals(result.value[2], 3);
+  callFunction(func, ...wrapArgs([])).then((resultArray) => {
+    const result = unwrapResult(resultArray).value;
+    assert(result instanceof Array);
+    assertEquals(result.length, 3);
+    assertEquals(result[0], 111);
+    assertEquals(result[1], 'dos');
+    assertEquals(result[2], 3);
     delete Array.prototype.toJSON;
     runner.continueTesting();
   });
@@ -322,24 +379,40 @@ function testCallWithArrayToJsonProto(runner) {
 // Verify array serialization works when own property toJSON is defined.
 // (https://crbug.com/chromedriver/4325)
 function testCallWithArrayToJsonOwn(runner) {
-  clearCache();
-
   function func() {
-    let result = [1, 2, 3];
-    result.toJSON = () => '["testing"]';
+    const result = [1, 2, 3];
+    result.toJSON = () => "[\"testing\"]";
     return result;
   }
-  callFunction(func, []).then((result) => {
-    assertEquals(typeof result.value, 'string');
-    assertEquals(result.value, '["testing"]');
+  callFunction(func, ...wrapArgs([])).then((resultArray) => {
+    const result = unwrapResult(resultArray).value;
+    assertEquals(typeof result, "string");
+    assertEquals(result, "[\"testing\"]");
+    runner.continueTesting();
+  });
+  runner.waitForAsync();
+}
+
+function testCallWithArrayToJsonOwnAndProto(runner) {
+  Array.prototype.toJSON = () => "proto";
+  function func() {
+    const result = [1, 2, 3];
+    result.toJSON = () => "own";
+    return result;
+  }
+  callFunction(func, ...wrapArgs([])).then((resultArray) => {
+    const result = unwrapResult(resultArray).value;
+    assertEquals(typeof result, "string");
+    assertEquals(result, "own");
+    delete Array.prototype.toJSON;
     runner.continueTesting();
   });
   runner.waitForAsync();
 }
 
 function testCallWithModifiedObjectProto(runner) {
-  var callCount = 0;
-  Object.defineProperty(Object.prototype, 'f', {
+  let callCount = 0;
+  Object.defineProperty(Object.prototype, "f", {
     enumerable: true,
     configurable: true,
     get: function() {
@@ -357,8 +430,22 @@ function testCallWithModifiedObjectProto(runner) {
   });
   runner.waitForAsync();
 }
+
+function testCallFunctionWithLargeData(runner) {
+  const original = "0".repeat(10e6);
+  function func(arg) {
+    return arg;
+  }
+  callFunction(func, ...wrapArgs([original])).then((resultArray) => {
+    const result = unwrapResult(resultArray).value;
+    assertEquals(result, original);
+    runner.continueTesting();
+  });
+  runner.waitForAsync();
+}
 </script>
 <body>
-<div><span></span></div>
+<div><span>div1</span></div>
+<div><span>div2</span></div>
 </body>
 </html>

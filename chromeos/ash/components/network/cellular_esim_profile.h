@@ -38,7 +38,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfile {
   // properties. Should be provided a dictionary created via
   // ToDictionaryValue().
   static absl::optional<CellularESimProfile> FromDictionaryValue(
-      const base::Value& value);
+      const base::Value::Dict& value);
 
   CellularESimProfile(State state,
                       const dbus::ObjectPath& path,
@@ -61,7 +61,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfile {
   const std::u16string& service_provider() const { return service_provider_; }
   const std::string& activation_code() const { return activation_code_; }
 
-  base::Value ToDictionaryValue() const;
+  base::Value::Dict ToDictionaryValue() const;
 
   bool operator==(const CellularESimProfile& other) const;
   bool operator!=(const CellularESimProfile& other) const;

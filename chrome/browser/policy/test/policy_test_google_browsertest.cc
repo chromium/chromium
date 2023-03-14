@@ -12,13 +12,13 @@
 #include "chrome/browser/policy/safe_search_policy_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/net/safe_search_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/google/core/common/google_switches.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
+#include "components/safe_search_api/safe_search_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/http/http_request_headers.h"
@@ -32,28 +32,27 @@ namespace policy {
 void CheckYouTubeRestricted(int youtube_restrict_mode,
                             const net::HttpRequestHeaders& headers) {
   std::string header;
-  headers.GetHeader(safe_search_util::kYouTubeRestrictHeaderName, &header);
-  if (youtube_restrict_mode == safe_search_util::YOUTUBE_RESTRICT_OFF) {
+  headers.GetHeader(safe_search_api::kYouTubeRestrictHeaderName, &header);
+  if (youtube_restrict_mode == safe_search_api::YOUTUBE_RESTRICT_OFF) {
     EXPECT_TRUE(header.empty());
   } else if (youtube_restrict_mode ==
-             safe_search_util::YOUTUBE_RESTRICT_MODERATE) {
-    EXPECT_EQ(header, safe_search_util::kYouTubeRestrictHeaderValueModerate);
+             safe_search_api::YOUTUBE_RESTRICT_MODERATE) {
+    EXPECT_EQ(header, safe_search_api::kYouTubeRestrictHeaderValueModerate);
   } else if (youtube_restrict_mode ==
-             safe_search_util::YOUTUBE_RESTRICT_STRICT) {
-    EXPECT_EQ(header, safe_search_util::kYouTubeRestrictHeaderValueStrict);
+             safe_search_api::YOUTUBE_RESTRICT_STRICT) {
+    EXPECT_EQ(header, safe_search_api::kYouTubeRestrictHeaderValueStrict);
   }
 }
 
 void CheckAllowedDomainsHeader(const std::string& allowed_domain,
                                const net::HttpRequestHeaders& headers) {
   if (allowed_domain.empty()) {
-    EXPECT_TRUE(
-        !headers.HasHeader(safe_search_util::kGoogleAppsAllowedDomains));
+    EXPECT_TRUE(!headers.HasHeader(safe_search_api::kGoogleAppsAllowedDomains));
     return;
   }
 
   std::string header;
-  headers.GetHeader(safe_search_util::kGoogleAppsAllowedDomains, &header);
+  headers.GetHeader(safe_search_api::kGoogleAppsAllowedDomains, &header);
   EXPECT_EQ(header, allowed_domain);
 }
 
@@ -136,8 +135,8 @@ IN_PROC_BROWSER_TEST_P(PolicyTestGoogle, ForceGoogleSafeSearch) {
 IN_PROC_BROWSER_TEST_P(PolicyTestGoogle, ForceYouTubeRestrict) {
   GURL youtube_url(https_server()->GetURL("youtube.com", "/empty.html"));
   GURL youtube_script(https_server()->GetURL("youtube.com", "/json2.js"));
-  for (int youtube_restrict_mode = safe_search_util::YOUTUBE_RESTRICT_OFF;
-       youtube_restrict_mode < safe_search_util::YOUTUBE_RESTRICT_COUNT;
+  for (int youtube_restrict_mode = safe_search_api::YOUTUBE_RESTRICT_OFF;
+       youtube_restrict_mode < safe_search_api::YOUTUBE_RESTRICT_COUNT;
        ++youtube_restrict_mode) {
     ApplySafeSearchPolicy(absl::nullopt,  // ForceSafeSearch (legacy)
                           absl::nullopt,  // ForceGoogleSafeSearch
@@ -160,18 +159,17 @@ IN_PROC_BROWSER_TEST_P(PolicyTestGoogle, ForceYouTubeRestrict) {
                              urls_requested()[youtube_script.path()]);
     }
 
-    if (youtube_restrict_mode != safe_search_util::YOUTUBE_RESTRICT_OFF) {
+    if (youtube_restrict_mode != safe_search_api::YOUTUBE_RESTRICT_OFF) {
       // If a restriction is active, disable it while the page is open to check
       // that renderer rules are properly updated when a renderer is running.
-      ApplySafeSearchPolicy(
-          absl::nullopt,  // ForceSafeSearch (legacy)
-          absl::nullopt,  // ForceGoogleSafeSearch
-          absl::nullopt,  // ForceYouTubeSafetyMode (legacy)
-          base::Value(safe_search_util::YOUTUBE_RESTRICT_OFF));
+      ApplySafeSearchPolicy(absl::nullopt,  // ForceSafeSearch (legacy)
+                            absl::nullopt,  // ForceGoogleSafeSearch
+                            absl::nullopt,  // ForceYouTubeSafetyMode (legacy)
+                            base::Value(safe_search_api::YOUTUBE_RESTRICT_OFF));
       FetchSubresource(GetBrowser()->tab_strip_model()->GetActiveWebContents(),
                        youtube_script);
 
-      CheckYouTubeRestricted(safe_search_util::YOUTUBE_RESTRICT_OFF,
+      CheckYouTubeRestricted(safe_search_api::YOUTUBE_RESTRICT_OFF,
                              urls_requested()[youtube_script.path()]);
     }
   }

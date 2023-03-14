@@ -22,14 +22,4 @@ storage::FileSystemURL FilePathToFileSystemURL(
   return file_system_context->CrackURLInFirstPartyContext(url);
 }
 
-void CreateDirectoryOnIOThread(
-    scoped_refptr<storage::FileSystemContext> file_system_context,
-    storage::FileSystemURL destination_folder_url,
-    base::OnceCallback<void(base::File::Error)> complete_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  file_system_context->operation_runner()->CreateDirectory(
-      destination_folder_url, /*exclusive=*/false, /*recursive=*/false,
-      std::move(complete_callback));
-}
-
 }  // namespace ash::cloud_upload

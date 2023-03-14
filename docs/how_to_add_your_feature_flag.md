@@ -1,11 +1,11 @@
 # Adding a new feature flag in chrome://flags
 
 This document describes how to add a new Chrome feature flag visible to users
-via chrome://flag UI.
+via `chrome://flags` UI.
 
 *** note
 **NOTE:** It's NOT required if you don't intend to make your feature appear in
-chrome://flag UI.
+`chrome://flags` UI.
 ***
 
 See also the following for definitions:

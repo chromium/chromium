@@ -142,13 +142,15 @@ export class GalleryButton implements ResultSaver {
     this.coverPhoto.src = cover?.url ?? '';
 
     if (file !== null) {
-      ChromeHelper.getInstance().monitorFileDeletion(file.name, async () => {
-        try {
-          await this.checkCover();
-        } catch (e) {
-          reportError(ErrorType.CHECK_COVER_FAILURE, ErrorLevel.ERROR, e);
-        }
-      });
+      // The promise is only resolved after the file is deleted.
+      void ChromeHelper.getInstance().monitorFileDeletion(
+          file.name, async () => {
+            try {
+              await this.checkCover();
+            } catch (e) {
+              reportError(ErrorType.CHECK_COVER_FAILURE, ErrorLevel.ERROR, e);
+            }
+          });
     }
   }
 
@@ -163,7 +165,7 @@ export class GalleryButton implements ResultSaver {
 
     // Checks existence of cached cover photo.
     if (this.cover !== null) {
-      if (await dir.isExist(this.cover.name)) {
+      if (await dir.exists(this.cover.name)) {
         return;
       }
     }
@@ -242,14 +244,16 @@ export class GalleryButton implements ResultSaver {
   }
 
   async startSaveVideo(videoRotation: number): Promise<VideoSaver> {
-    const file = await filesystem.createVideoFile(VideoType.MP4);
-    return VideoSaver.createForFile(file, videoRotation);
+    return VideoSaver.create(videoRotation);
   }
 
   async finishSaveVideo(video: VideoSaver): Promise<void> {
     const file = await video.endWrite();
     assert(file !== null);
 
+    const videoName = (new Filenamer()).newVideoName(VideoType.MP4);
+    assert(this.directory !== null);
+    await file.moveTo(this.directory, videoName);
     ChromeHelper.getInstance().sendNewCaptureBroadcast(
         {isVideo: true, name: file.name});
     await this.updateCover(file);

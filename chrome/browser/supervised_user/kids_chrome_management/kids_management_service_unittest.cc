@@ -25,6 +25,7 @@
 #include "components/supervised_user/core/browser/proto/families_common.pb.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "components/supervised_user/core/common/pref_names.h"
+#include "components/sync/test/mock_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -50,6 +51,11 @@ std::unique_ptr<KeyedService> MakeTestSigninClient(
   return std::make_unique<TestSigninClient>(profile->GetPrefs());
 }
 
+std::unique_ptr<KeyedService> CreateMockSyncService(
+    content::BrowserContext* context) {
+  return std::make_unique<syncer::MockSyncService>();
+}
+
 std::unique_ptr<TestingProfile> MakeTestingProfile(
     network::TestURLLoaderFactory& test_url_loader_factory,
     bool is_supervised = true) {
@@ -60,7 +66,7 @@ std::unique_ptr<TestingProfile> MakeTestingProfile(
   builder.AddTestingFactory(ChromeSigninClientFactory::GetInstance(),
                             base::BindRepeating(&MakeTestSigninClient));
   builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                            SyncServiceFactory::GetDefaultFactory());
+                            base::BindRepeating(&CreateMockSyncService));
   if (is_supervised) {
     builder.SetIsSupervisedProfile();
   }

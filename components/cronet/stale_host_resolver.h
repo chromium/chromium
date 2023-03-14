@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/default_tick_clock.h"
+#include "base/values.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/dns/host_resolver.h"
@@ -101,7 +102,7 @@ class StaleHostResolver : public net::HostResolver {
   // The remaining public methods pass through to the inner resolver:
 
   net::HostCache* GetHostCache() override;
-  base::Value GetDnsConfigAsValue() const override;
+  base::Value::Dict GetDnsConfigAsValue() const override;
   void SetRequestContext(net::URLRequestContext* request_context) override;
 
  private:

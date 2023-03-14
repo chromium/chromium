@@ -25,6 +25,7 @@
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_filter.h"
 #include "components/prefs/prefs_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefFilter;
 
@@ -165,7 +166,7 @@ class COMPONENTS_PREFS_EXPORT JsonPrefStore
   void OnFileRead(std::unique_ptr<ReadResult> read_result);
 
   // ImportantFileWriter::DataSerializer overrides:
-  bool SerializeData(std::string* output) override;
+  absl::optional<std::string> SerializeData() override;
   // ImportantFileWriter::BackgroundDataSerializer implementation.
   base::ImportantFileWriter::BackgroundDataProducerCallback
   GetSerializedDataProducerForBackgroundSequence() override;

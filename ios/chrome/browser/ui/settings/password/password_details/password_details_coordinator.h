@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_COORDINATOR_H_
 
-#import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 namespace password_manager {
 class AffiliatedGroup;
@@ -14,7 +14,6 @@ struct CredentialUIEntry;
 
 @protocol ApplicationCommands;
 class Browser;
-class IOSChromePasswordCheckManager;
 @protocol PasswordDetailsCoordinatorDelegate;
 @class ReauthenticationModule;
 
@@ -29,7 +28,7 @@ class IOSChromePasswordCheckManager;
                               (const password_manager::CredentialUIEntry&)
                                   credential
                         reauthModule:(ReauthenticationModule*)reauthModule
-                passwordCheckManager:(IOSChromePasswordCheckManager*)manager
+                supportMoveToAccount:(BOOL)supportMoveToAccount
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)
@@ -39,7 +38,7 @@ class IOSChromePasswordCheckManager;
                      affiliatedGroup:(const password_manager::AffiliatedGroup&)
                                          affiliatedGroup
                         reauthModule:(ReauthenticationModule*)reauthModule
-                passwordCheckManager:(IOSChromePasswordCheckManager*)manager
+                supportMoveToAccount:(BOOL)supportMoveToAccount
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -47,11 +46,6 @@ class IOSChromePasswordCheckManager;
 
 // Displays the password data in edit mode without requiring any authentication.
 - (void)showPasswordDetailsInEditModeWithoutAuthentication;
-
-// Remove the credential from the cache and reload password details view
-// controller after a change was made.
-- (void)removeCredentialFromCacheAndRefreshTableView:
-    (const password_manager::CredentialUIEntry&)credential;
 
 // Delegate.
 @property(nonatomic, weak) id<PasswordDetailsCoordinatorDelegate> delegate;

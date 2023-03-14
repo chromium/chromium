@@ -74,23 +74,25 @@ bool AudioDevicesPrefHandlerStub::GetDeviceActive(const AudioDevice& device,
 void AudioDevicesPrefHandlerStub::SetUserPriorityHigherThan(
     const AudioDevice& target,
     const AudioDevice* base) {
-  int t = user_priority_map_[target.stable_device_id];
+  int t = GetUserPriority(target);
   int b = 0;
   if (base) {
-    b = user_priority_map_[base->stable_device_id];
+    b = GetUserPriority(*base);
   }
 
   // Don't need to update the user priority of `target` if it's already has
   // higher priority than base.
-  if (t > b)
+  if (t > b) {
     return;
+  }
 
   if (t != kUserPriorityNone) {
     // before: [. . . t - - - b . . .]
     // after:  [. . . - - - b t . . .]
     for (auto& it : user_priority_map_) {
-      if (it.second > t && it.second <= b)
+      if (it.second > t && it.second <= b) {
         user_priority_map_[it.first] -= 1;
+      }
     }
     user_priority_map_[target.stable_device_id] = b;
   } else {
@@ -98,18 +100,20 @@ void AudioDevicesPrefHandlerStub::SetUserPriorityHigherThan(
     // after : [. . . b t + + +]
     for (auto& it : user_priority_map_) {
       DCHECK(it.second > 0);
-      if (it.second > b)
+      if (it.second > b) {
         user_priority_map_[it.first] += 1;
+      }
     }
     user_priority_map_[target.stable_device_id] = b + 1;
   }
 }
 
 int AudioDevicesPrefHandlerStub::GetUserPriority(const AudioDevice& device) {
-  if (user_priority_map_.find(device.stable_device_id) ==
-      user_priority_map_.end())
-    return kUserPriorityNone;
-  return user_priority_map_[device.stable_device_id];
+  if (auto it = user_priority_map_.find(device.stable_device_id);
+      it != user_priority_map_.end()) {
+    return it->second;
+  }
+  return kUserPriorityNone;
 }
 
 void AudioDevicesPrefHandlerStub::DropLeastRecentlySeenDevices(

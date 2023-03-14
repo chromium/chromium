@@ -17,7 +17,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/authpolicy/kerberos_files_handler.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/ash/login/users/mock_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -144,14 +144,13 @@ class KerberosCredentialsManagerTest : public testing::Test {
   using Accounts = std::vector<Account>;
 
   KerberosCredentialsManagerTest()
-      : scoped_user_manager_(
-            std::make_unique<testing::NiceMock<MockUserManager>>()),
+      : scoped_user_manager_(std::make_unique<FakeChromeUserManager>()),
         local_state_(TestingBrowserProcess::GetGlobal()) {
     SessionManagerClient::InitializeFakeInMemory();
     KerberosClient::InitializeFake();
     client_test_interface()->SetTaskDelay(base::TimeDelta());
 
-    mock_user_manager()->AddUser(AccountId::FromUserEmail(kProfileEmail));
+    fake_user_manager()->AddUser(AccountId::FromUserEmail(kProfileEmail));
 
     // Setting the login password for the KerberosAccounts policy tests.
     UserContext* user_context =
@@ -194,8 +193,9 @@ class KerberosCredentialsManagerTest : public testing::Test {
   }
 
  protected:
-  MockUserManager* mock_user_manager() {
-    return static_cast<MockUserManager*>(user_manager::UserManager::Get());
+  FakeChromeUserManager* fake_user_manager() {
+    return static_cast<FakeChromeUserManager*>(
+        user_manager::UserManager::Get());
   }
 
   KerberosClient::TestInterface* client_test_interface() {

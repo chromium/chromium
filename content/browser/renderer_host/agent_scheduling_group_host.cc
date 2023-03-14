@@ -18,11 +18,11 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/renderer.mojom.h"
-#include "content/common/shared_storage_worklet_service.mojom.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/render_process_host.h"
 #include "ipc/ipc_channel_mojo.h"
 #include "ipc/ipc_message.h"
+#include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
 
 namespace content {
 
@@ -70,6 +70,22 @@ static features::MBIMode GetMBIMode() {
 }
 
 }  // namespace
+
+AgentSchedulingGroupHost::RouteOwner::RouteOwner(
+    Listener* listener,
+    AgentSchedulingGroupHost& agent_scheduling_group,
+    int32_t routing_id)
+    : agent_scheduling_group_(agent_scheduling_group), routing_id_(routing_id) {
+  CHECK_EQ(agent_scheduling_group_->state_, LifecycleState::kBound);
+  agent_scheduling_group_->listener_map_.AddWithID(listener, routing_id_);
+  agent_scheduling_group_->process_->AddRoute(routing_id_, listener);
+}
+
+AgentSchedulingGroupHost::RouteOwner::~RouteOwner() {
+  CHECK_EQ(agent_scheduling_group_->state_, LifecycleState::kBound);
+  agent_scheduling_group_->process_->RemoveRoute(routing_id_);
+  agent_scheduling_group_->listener_map_.Remove(routing_id_);
+}
 
 // static
 AgentSchedulingGroupHost* AgentSchedulingGroupHost::GetOrCreate(
@@ -299,19 +315,6 @@ bool AgentSchedulingGroupHost::Send(IPC::Message* message) {
   return channel_->Send(msg.release());
 }
 
-void AgentSchedulingGroupHost::AddRoute(int32_t routing_id,
-                                        Listener* listener) {
-  DCHECK_EQ(state_, LifecycleState::kBound);
-  DCHECK(!listener_map_.Lookup(routing_id));
-  listener_map_.AddWithID(listener, routing_id);
-  process_->AddRoute(routing_id, listener);
-}
-
-void AgentSchedulingGroupHost::RemoveRoute(int32_t routing_id) {
-  DCHECK_EQ(state_, LifecycleState::kBound);
-  listener_map_.Remove(routing_id);
-  process_->RemoveRoute(routing_id);
-}
 mojom::RouteProvider* AgentSchedulingGroupHost::GetRemoteRouteProvider() {
   DCHECK_EQ(state_, LifecycleState::kBound);
   return remote_route_provider_.get();
@@ -332,8 +335,7 @@ void AgentSchedulingGroupHost::CreateView(mojom::CreateViewParamsPtr params) {
 }
 
 void AgentSchedulingGroupHost::CreateSharedStorageWorkletService(
-    mojo::PendingReceiver<
-        shared_storage_worklet::mojom::SharedStorageWorkletService> receiver) {
+    mojo::PendingReceiver<blink::mojom::SharedStorageWorkletService> receiver) {
   DCHECK_EQ(state_, LifecycleState::kBound);
   DCHECK(process_->IsInitializedAndNotDead());
   DCHECK(mojo_remote_.is_bound());

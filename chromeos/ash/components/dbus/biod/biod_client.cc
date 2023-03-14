@@ -278,15 +278,20 @@ class BiodClientImpl : public BiodClient {
   void OnGetRecordsForUser(UserRecordsCallback callback,
                            dbus::Response* response) {
     std::vector<dbus::ObjectPath> result;
+    bool success = false;
     if (response) {
-      dbus::MessageReader reader(response);
-      if (!reader.PopArrayOfObjectPaths(&result)) {
+      success = response->GetMessageType() ==
+                dbus::Message::MessageType::MESSAGE_METHOD_RETURN;
+      if (!success) {
         LOG(ERROR) << biod::kBiometricsManagerGetRecordsForUserMethod
-                   << " had incorrect response.";
+                   << " had error response.";
+      } else if (response) {
+        dbus::MessageReader reader(response);
+        reader.PopArrayOfObjectPaths(&result);
       }
     }
 
-    std::move(callback).Run(result);
+    std::move(callback).Run(result, success);
   }
 
   void OnStartAuthSession(chromeos::ObjectPathCallback callback,

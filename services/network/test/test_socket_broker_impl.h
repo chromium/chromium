@@ -25,6 +25,9 @@ class TestSocketBrokerImpl : public network::mojom::SocketBroker {
   void CreateTcpSocket(net::AddressFamily address_family,
                        CreateTcpSocketCallback callback) override;
 
+  void CreateUdpSocket(net::AddressFamily address_family,
+                       CreateUdpSocketCallback callback) override;
+
   void SetMockSocketTest(bool is_mock_socket_test) {
     is_mock_socket_test_ = is_mock_socket_test;
   }

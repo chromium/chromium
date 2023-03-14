@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -26,7 +25,6 @@
 #include "extensions/browser/api/bluetooth/bluetooth_api_pairing_delegate.h"
 #include "extensions/browser/api/bluetooth/bluetooth_event_router.h"
 #include "extensions/common/api/bluetooth.h"
-#include "extensions/common/api/bluetooth_private.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
@@ -246,7 +244,7 @@ BluetoothPrivateSetAdapterStateFunction::
 
 bool BluetoothPrivateSetAdapterStateFunction::CreateParams() {
   params_ = bt_private::SetAdapterState::Params::Create(args());
-  return params_ != nullptr;
+  return params_.has_value();
 }
 
 void BluetoothPrivateSetAdapterStateFunction::DoWork(
@@ -357,7 +355,7 @@ BluetoothPrivateSetPairingResponseFunction::
 
 bool BluetoothPrivateSetPairingResponseFunction::CreateParams() {
   params_ = bt_private::SetPairingResponse::Params::Create(args());
-  return params_ != nullptr;
+  return params_.has_value();
 }
 
 void BluetoothPrivateSetPairingResponseFunction::DoWork(
@@ -416,7 +414,7 @@ BluetoothPrivateDisconnectAllFunction::
 
 bool BluetoothPrivateDisconnectAllFunction::CreateParams() {
   params_ = bt_private::DisconnectAll::Params::Create(args());
-  return params_ != nullptr;
+  return params_.has_value();
 }
 
 void BluetoothPrivateDisconnectAllFunction::DoWork(
@@ -466,7 +464,7 @@ BluetoothPrivateForgetDeviceFunction::~BluetoothPrivateForgetDeviceFunction() =
 
 bool BluetoothPrivateForgetDeviceFunction::CreateParams() {
   params_ = bt_private::ForgetDevice::Params::Create(args());
-  return params_ != nullptr;
+  return params_.has_value();
 }
 
 void BluetoothPrivateForgetDeviceFunction::DoWork(
@@ -503,7 +501,7 @@ BluetoothPrivateSetDiscoveryFilterFunction::
 
 bool BluetoothPrivateSetDiscoveryFilterFunction::CreateParams() {
   params_ = SetDiscoveryFilter::Params::Create(args());
-  return params_ != nullptr;
+  return params_.has_value();
 }
 
 void BluetoothPrivateSetDiscoveryFilterFunction::DoWork(
@@ -583,7 +581,7 @@ BluetoothPrivateConnectFunction::~BluetoothPrivateConnectFunction() = default;
 
 bool BluetoothPrivateConnectFunction::CreateParams() {
   params_ = bt_private::Connect::Params::Create(args());
-  return params_ != nullptr;
+  return params_.has_value();
 }
 
 void BluetoothPrivateConnectFunction::DoWork(
@@ -629,7 +627,7 @@ BluetoothPrivatePairFunction::BluetoothPrivatePairFunction() = default;
 BluetoothPrivatePairFunction::~BluetoothPrivatePairFunction() = default;
 bool BluetoothPrivatePairFunction::CreateParams() {
   params_ = bt_private::Pair::Params::Create(args());
-  return params_ != nullptr;
+  return params_.has_value();
 }
 
 void BluetoothPrivatePairFunction::DoWork(
@@ -675,7 +673,7 @@ BluetoothPrivateRecordPairingFunction::
 
 bool BluetoothPrivateRecordPairingFunction::CreateParams() {
   params_ = bt_private::RecordPairing::Params::Create(args());
-  return params_ != nullptr;
+  return params_.has_value();
 }
 
 void BluetoothPrivateRecordPairingFunction::DoWork(
@@ -706,7 +704,7 @@ BluetoothPrivateRecordReconnectionFunction::
 
 bool BluetoothPrivateRecordReconnectionFunction::CreateParams() {
   params_ = bt_private::RecordReconnection::Params::Create(args());
-  return params_ != nullptr;
+  return params_.has_value();
 }
 
 void BluetoothPrivateRecordReconnectionFunction::DoWork(
@@ -736,7 +734,7 @@ BluetoothPrivateRecordDeviceSelectionFunction::
 
 bool BluetoothPrivateRecordDeviceSelectionFunction::CreateParams() {
   params_ = bt_private::RecordDeviceSelection::Params::Create(args());
-  return params_ != nullptr;
+  return params_.has_value();
 }
 
 void BluetoothPrivateRecordDeviceSelectionFunction::DoWork(

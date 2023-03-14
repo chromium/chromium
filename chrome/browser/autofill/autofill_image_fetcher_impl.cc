@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "components/autofill/core/browser/data_model/credit_card_art_image.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/image_fetcher/core/cached_image_fetcher.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
@@ -101,7 +102,10 @@ void AutofillImageFetcherImpl::OnCardArtImageFetched(
       std::make_unique<CreditCardArtImage>(card_art_url, gfx::Image());
   if (!card_art_image.IsEmpty()) {
     credit_card_art_image->card_art_image =
-        AutofillImageFetcherImpl::ApplyGreyOverlay(card_art_image);
+        base::FeatureList::IsEnabled(
+            features::kAutofillEnableNewCardArtAndNetworkImages)
+            ? card_art_image
+            : AutofillImageFetcherImpl::ApplyGreyOverlay(card_art_image);
   }
 
   std::move(barrier_callback).Run(std::move(credit_card_art_image));
@@ -140,9 +144,14 @@ void AutofillImageFetcherImpl::FetchImageForURL(
           "https://www.gstatic.com/autofill/virtualcard/icon/capitalone.png")) {
     url = card_art_url;
   } else {
-    // A FIFE image fetching param suffix is appended to the URL. This means the
-    // image should be of Size(32, 20), and should be center cropped.
-    url = GURL(card_art_url.spec() + "=w32-h20-n");
+    // A FIFE image fetching param suffix is appended to the URL. The image
+    // should be center cropped and of Size(32, 20) unless the
+    // kAutofillEnableNewCardArtAndNetworkImages feature is enabled, in which
+    // case the image is of Size(40, 24).
+    url = base::FeatureList::IsEnabled(
+              features::kAutofillEnableNewCardArtAndNetworkImages)
+              ? GURL(card_art_url.spec() + "=w40-h24-n")
+              : GURL(card_art_url.spec() + "=w32-h20-n");
   }
 
   image_fetcher::ImageFetcherParams params(kCardArtImageTrafficAnnotation,

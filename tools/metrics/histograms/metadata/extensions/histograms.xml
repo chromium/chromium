@@ -139,7 +139,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ActiveScriptController.PermittedExtensions"
-    units="Extension Count" expires_after="2023-07-02">
+    units="Extension Count" expires_after="2023-09-03">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -164,7 +164,8 @@ chromium-metrics-reviews@google.com.
   <owner>tapted@chromium.org</owner>
   <summary>
     The number of times v1 apps are launched grouped by
-    extension_misc::AppLaunchBuckets. See also Apps.AppLaunch for v2 apps.
+    extension_misc::AppLaunchBuckets. See also Apps.AppLaunch for v2 apps. Note
+    this was changed in 2023-02 to no longer count web app launches.
   </summary>
 </histogram>
 
@@ -356,6 +357,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.BookmarkAppLaunchContainer"
     enum="AppLaunchContainer" expires_after="2023-08-14">
+  <obsolete>
+    Replaced by WebApp.LaunchContainer in M113.
+  </obsolete>
   <owner>phillis@chromium.org</owner>
   <owner>benwells@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
@@ -368,6 +372,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.BookmarkAppLaunchSource" enum="AppLaunchSource"
     expires_after="2023-07-09">
+  <obsolete>
+    Replaced by WebApp.LaunchSource in M113.
+  </obsolete>
   <owner>phillis@chromium.org</owner>
   <owner>benwells@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
@@ -731,7 +738,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.LoadRulesetResult"
-    enum="LoadRulesetResult" expires_after="2023-06-26">
+    enum="LoadRulesetResult" expires_after="2023-08-27">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -741,7 +748,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.ManifestEnabledRulesCount2"
-    units="rules" expires_after="2023-06-18">
+    units="rules" expires_after="2023-08-20">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -2111,7 +2118,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.Functions.SucceededTotalExecutionTime" units="ms"
-    expires_after="2023-07-02">
+    expires_after="2023-09-03">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3465,6 +3472,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Extensions.Navigation.Scheme" enum="NavigationScheme"
+    expires_after="2024-01-01">
+  <owner>jkokatsu@google.com</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Counts usage of various schemes (e.g. file:, chrome:, http:) when a
+    navigation is triggered from an extension (such as through tabs API).
+  </summary>
+</histogram>
+
 <histogram name="Extensions.NetworkDelay" units="ms" expires_after="2023-12-15">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
@@ -3988,7 +4005,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ServiceWorkerBackground.StartWorkerStatus"
-    enum="Boolean" expires_after="2023-06-18">
+    enum="Boolean" expires_after="2023-08-20">
   <owner>lazyboy@chromium.org</owner>
   <owner>dbertoni@chromium.org</owner>
   <summary>
@@ -4199,7 +4216,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     The source for the extension uninstall. This is only recorded if an
     uninstall dialog is shown to the user (i.e., it is not recorded for internal
-    &quot;cleanups&quot;).
+    &quot;cleanups&quot;). Note: this is no longer emitted for web app
+    uninstalls as of M113.
   </summary>
 </histogram>
 

@@ -37,6 +37,7 @@ class MEDIA_EXPORT MediaUrlDemuxer : public Demuxer {
                   const GURL& media_url,
                   const net::SiteForCookies& site_for_cookies,
                   const url::Origin& top_frame_origin,
+                  bool has_storage_access,
                   bool allow_credentials,
                   bool is_hls);
 

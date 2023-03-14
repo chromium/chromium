@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Келесі</translation>
 <translation id="1209796539517632982">Автоматты атау серверлері</translation>
 <translation id="1210831758834677569">Лаос</translation>
+<translation id="1221555006497674479">Орын аз, <ph name="TOTAL_SPACE" /> ортақ диск жадының <ph name="REMAINING_PERCENTAGE" />%-ы ғана қалды.</translation>
 <translation id="1243314992276662751">Жүктеп салу</translation>
 <translation id="1249250836236328755">Жанр</translation>
 <translation id="1254593899333212300">Тікелей интернет қосылысы</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">Қытай (пиньинь)</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> файл офлайн режимде қолжетімді етілуде</translation>
 <translation id="164969095109328410">Chrome құрылғысы</translation>
+<translation id="1661207570040737402">Ортақ дискінің Google Workspace жадын толық пайдаландыңыз.</translation>
 <translation id="1661867754829461514">PIN жоқ</translation>
 <translation id="166439687370499867">Ортақ желі конфигурацияларын өзгертуге рұқсат жоқ</translation>
 <translation id="1665611772925418501">Файлды өзгерту мүмкін болмады.</translation>
@@ -82,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> элемент қысылуда…</translation>
 <translation id="1722687688096767818">Профиль қосылуда…</translation>
 <translation id="1726100011689679555">Ат серверлері</translation>
+<translation id="1727562178154619254">Синхрондауға дайын</translation>
 <translation id="1729953886957086472">Неміс (Германия)</translation>
 <translation id="1730235522912993863">Қытай (цанцзе)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> элемент көшірілді.</translation>
@@ -349,11 +352,11 @@
 <translation id="3924145049010392604">Мета</translation>
 <translation id="3943857333388298514">Қою</translation>
 <translation id="3952872973865944257">Телугу (фонетикалық)</translation>
-<translation id="3954354850384043518">Орындалуда</translation>
 <translation id="3958548648197196644">Киви</translation>
 <translation id="3971140002794351170">Мобильдік профильді жүктеп алу, <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_PROVIDER_NAME" /> провайдерінің <ph name="NETWORK_NAME" /> желісі</translation>
 <translation id="3973925058222872294">Ағылшын (БK)</translation>
 <translation id="3975895378829046965">Бенгал (фонетикалық)</translation>
+<translation id="3999574733850440202">Жақында ашылған Microsoft файлдары OneDrive дискісіне көшірілді</translation>
 <translation id="4002066346123236978">Тақырып</translation>
 <translation id="4017788180641807848">Ағылшын (АҚШ), Workman пернетақтасымен</translation>
 <translation id="4019998208269143058">"Файлдарға жылдам өту" бөліміне бекіту</translation>
@@ -362,6 +365,7 @@
 <translation id="4092890906744441904">Ирланд</translation>
 <translation id="4124935795427217608">Пырақ</translation>
 <translation id="4131235941541910880">Қажетсіз элементтерді себетке жіберіңіз.</translation>
+<translation id="4134804435730168042"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Құрылғыны орнатудан кейін белсендіру</translation>
 <translation id="4153015322587141338">Сөредегі файлдарға жылдам кіру үшін файлды тінтуірдің оң жақ түймесімен басып, "<ph name="PIN_COMMAND" />" пәрменін таңдаңыз.</translation>
 <translation id="4157569377477607576">Әкімші саясаты бойынша ұсынылмайды:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> жылжытылды.</translation>
@@ -404,6 +408,7 @@
 <translation id="4414834425328380570">"<ph name="FILE_NAME" />" жойылады және оны қалпына келтіре алмайсыз.</translation>
 <translation id="4418686080762064601">Файлдардың таңбашасын жасау</translation>
 <translation id="4425149324548788773">Менің Drive дискім</translation>
+<translation id="4432921877815220091"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, Құрылғыны орнатудан кейін белсендіру, Әкімшіңіз басқарады</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, қосылу</translation>
 <translation id="4442424173763614572">DNS іздеу сәтсіз аяқталды</translation>
 <translation id="4462159676511157176">Реттелетін атау серверлері</translation>
@@ -610,8 +615,10 @@
 <translation id="5911887972742538906">Linux қолданбасын орнату кезінде қате кетті.</translation>
 <translation id="5912396950572065471">Формат</translation>
 <translation id="5913638992615760742">Көшіру операциясы сәтсіз аяқталды, күтпеген қате болды: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">Жаңа іздеу мүмкіндіктері қолжетімді</translation>
 <translation id="5926082595146149752">Нидерланд (Нидерланд) (АҚШ халықаралық дербес компьютер пернетақтасымен)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, Құрылғыны орнатудан кейін белсендіру</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> элемент</translation>
 <translation id="5957366693331451795">Chromebox құрылғылары</translation>
 <translation id="5982621672636444458">Сұрыптау параметрлері</translation>
@@ -698,6 +705,7 @@
 <translation id="6732801395666424405">Сертификаттар жүктелмеді</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Қалтаны Bruschetta-мен бөлісу</translation>
+<translation id="6750737795876287924">Ағымдағы каталог</translation>
 <translation id="6751256176799620176">1 қалта таңдалды</translation>
 <translation id="6755827872271341378">ChromeOS Flex құрылғысы</translation>
 <translation id="6790428901817661496">Ойнату</translation>
@@ -735,7 +743,6 @@
 <translation id="6973630695168034713">Қалталар</translation>
 <translation id="6976795442547527108">Арыстан</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">Барлық уақыт</translation>
 <translation id="6989942356279143254">Швед</translation>
 <translation id="6990081529015358884">Бос орын жоқ</translation>
 <translation id="6993826899923627728">Бұл элементтер себетте</translation>
@@ -758,6 +765,7 @@
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" – &lt;em&gt;Drive ішінен іздеу&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Каннада (фонетикалық)</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Аутентификация серверінің идентификациясын тексеру үшін "Балама атау тақырыбы сәйкестігі" немесе "Домен суффиксі сәйкестігі" жоқ.</translation>
 <translation id="7165320105431587207">Желіні реттеу мүмкін емес</translation>
 <translation id="7170041865419449892">Ауқымнан тыс</translation>
 <translation id="7180611975245234373">Жаңарту</translation>
@@ -790,7 +798,6 @@
 <translation id="7458955835361612701">Жаңа кескіндер жоқ</translation>
 <translation id="7460898608667578234">украин</translation>
 <translation id="7469894403370665791">Бұл желіге автоматты түрде қосылу</translation>
-<translation id="7481358317100446445">Дайын</translation>
 <translation id="7486315294984620427">Файлдарды Parallels Desktop-қа апару үшін "Windows файлдары" қалтасына көшіру керек.</translation>
 <translation id="749452993132003881">Хирагана</translation>
 <translation id="7495372004724182530">Малаялам (фонетикалық)</translation>
@@ -828,6 +835,7 @@
 <translation id="7724603315864178912">Қиып алу</translation>
 <translation id="7732111077498238432">Желі саясатпен бақыланады</translation>
 <translation id="7736003208887389532">Бұл файлдар біржола жойылсын ба?</translation>
+<translation id="7740287852186792672">Іздеу нәтижелері</translation>
 <translation id="7748626145866214022">Әрекеттер жолағында басқа да опциялар бар. Оны ерекшелеу үшін Alt + A пернелерін басыңыз.</translation>
 <translation id="7760449188139285140">Қытай (Wubi)</translation>
 <translation id="7765158879357617694">Жылжыту</translation>
@@ -879,6 +887,7 @@
 <translation id="8116072619078571545">Мұзды су</translation>
 <translation id="8128733386027980860">Ағылшын (БК), Дворак пернетақтасымен</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" сізбен бөлісілді. Өзіңіздікі болмағандықтан, оны жоя алмайсыз.</translation>
+<translation id="8138705869659070104">Орнатудан кейін белсендіру</translation>
 <translation id="813913629614996137">Дайындауда…</translation>
 <translation id="8147028810663464959">Таңба ені – толық</translation>
 <translation id="8151638057146502721">Конфигурациялау</translation>
@@ -904,6 +913,7 @@
 <translation id="8300849813060516376">OTASP сәтсіз аяқталды</translation>
 <translation id="8312871300878166382">Қалта ішіне қою</translation>
 <translation id="8329978297633540474">Қарапайым мәтін</translation>
+<translation id="8332007959299458842">Жақында ашылған Microsoft файлдары Google Drive дискісіне көшірілді</translation>
 <translation id="8335587457941836791">Сөреден босату</translation>
 <translation id="8335837413233998004">Белорус</translation>
 <translation id="8336153091935557858">Кеше <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -930,6 +940,7 @@
 <translation id="8487700953926739672">Желіден тыс істейді</translation>
 <translation id="8492972329130824181">Үй желісі қолжетімді емес. Байланысу үшін мобильдік интернет роумингін қосу қажет.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> элемент алынып жатыр…</translation>
+<translation id="8502913769543567768"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Құрылғыны орнатудан кейін белсендіру, Әкімшіңіз басқарады</translation>
 <translation id="8521441079177373948">Ұлыбритания</translation>
 <translation id="853494022971700746">Француз (Франция)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, мәліметтер</translation>
@@ -991,6 +1002,7 @@
 <translation id="9046895021617826162">Қосылмады</translation>
 <translation id="9065512565307033593">Растай алмасаңыз, желіге кіру мүмкіндігі өшіріледі.</translation>
 <translation id="908378762078012445">Орыс (фонетикалық AATSEEL пернетақтасымен)</translation>
+<translation id="9086302186042011942">Синхрондау</translation>
 <translation id="9099674669267916096">Бет саны</translation>
 <translation id="9100610230175265781">Құпия фраза қажет</translation>
 <translation id="9110990317705400362">Біз интернет шолуды барынша қауіпсіз ету жолдарын іздеуден жалықпаймыз. Бұрын кез келген сайт браузеріңізге кеңейтім қосу ұсынысын жасай алатын болса, Google Chrome соңғы нұсқасында енді кеңейтімдерді "Кеңейтімдер" бетіне кіріп қана орната аласыз. <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>

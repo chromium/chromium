@@ -55,7 +55,8 @@ class PLATFORM_EXPORT CullRect {
   bool ApplyPaintProperties(const PropertyTreeState& root,
                             const PropertyTreeState& source,
                             const PropertyTreeState& destination,
-                            const absl::optional<CullRect>& old_cull_rect);
+                            const absl::optional<CullRect>& old_cull_rect,
+                            bool disable_expansion);
 
   const gfx::Rect& Rect() const { return rect_; }
 
@@ -70,7 +71,8 @@ class PLATFORM_EXPORT CullRect {
   // Returns whether the cull rect is expanded.
   bool ApplyScrollTranslation(
       const TransformPaintPropertyNode& root_transform,
-      const TransformPaintPropertyNode& scroll_translation);
+      const TransformPaintPropertyNode& scroll_translation,
+      bool disable_expansion);
 
   // Returns false if the rect is clipped to be invisible. Otherwise returns
   // true, even if the cull rect is empty due to a special 3d transform in case

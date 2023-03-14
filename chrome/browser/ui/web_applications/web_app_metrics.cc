@@ -30,6 +30,8 @@
 #include "base/value_iterators.h"
 #include "base/values.h"
 #include "chrome/browser/after_startup_task_utils.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -53,6 +55,10 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/web_applications/preinstalled_web_app_window_experiment_utils.h"
+#endif
 
 using DisplayMode = blink::mojom::DisplayMode;
 using content::WebContents;
@@ -92,6 +98,14 @@ void RecordUserInstalledHistogram(
     site_engagement::EngagementType engagement_type) {
   const std::string histogram_prefix = "WebApp.Engagement.UserInstalled";
   RecordTabOrWindowHistogram(histogram_prefix, in_window, engagement_type);
+}
+
+bool IsPreferredAppForSupportedLinks(const AppId& app_id, Profile* profile) {
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
+    return false;
+  }
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
+  return proxy->PreferredAppsList().IsPreferredAppForSupportedLinks(app_id);
 }
 
 }  // namespace
@@ -375,20 +389,24 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
     features.start_url = provider->registrar_unsafe().GetAppStartUrl(*app_id);
     features.installed = true;
     auto install_source =
-        provider->registrar_unsafe().GetAppInstallSourceForMetrics(*app_id);
+        provider->registrar_unsafe().GetLatestAppInstallSource(*app_id);
     if (install_source)
       features.install_source = static_cast<int>(*install_source);
     DisplayMode display_mode =
         provider->registrar_unsafe().GetAppEffectiveDisplayMode(*app_id);
     features.effective_display_mode = static_cast<int>(display_mode);
+    features.captures_links =
+        IsPreferredAppForSupportedLinks(*app_id, profile_);
     // AppBannerManager treats already-installed web-apps as non-promotable, so
     // include already-installed findings as promotable.
     features.promotable = app_banner_manager->IsProbablyPromotableWebApp(
         /*ignore_existing_installations=*/true);
+    bool preinstalled_app =
+        provider->registrar_unsafe().IsInstalledByDefaultManagement(*app_id);
     // Record usage duration and session counts only for installed web apps that
-    // are currently open in a window.
+    // are currently open in a window, and all preinstalled apps.
     if (provider->ui_manager().IsInAppWindow(web_contents) ||
-        mode == TabSwitching::kForegroundClosing) {
+        preinstalled_app || mode == TabSwitching::kForegroundClosing) {
       base::Time now = base::Time::Now();
       if (app_last_interacted_time_.contains(*app_id)) {
         base::TimeDelta delta = now - app_last_interacted_time_[*app_id];
@@ -412,6 +430,19 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
       if (mode == TabSwitching::kTo)
         features.num_sessions = 1;
     }
+#if BUILDFLAG(IS_CHROMEOS)
+    auto user_group =
+        preinstalled_web_app_window_experiment_utils::GetUserGroupPref(
+            profile_->GetPrefs());
+    if (user_group !=
+        features::PreinstalledWebAppWindowExperimentUserGroup::kUnknown) {
+      features.preinstalled_web_app_window_experiment_user_group =
+          static_cast<int>(user_group);
+      features.preinstalled_web_app_window_experiment_has_launched_before =
+          preinstalled_web_app_window_experiment_utils::
+              HasLaunchedAppBeforeExperiment(*app_id, profile_->GetPrefs());
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS)
   } else if (app_banner_manager->IsPromotableWebApp()) {
     // App is not installed, but is promotable. Record a subset of features.
     features.start_url = app_banner_manager->GetManifestStartUrl();

@@ -69,6 +69,7 @@ PassthroughProgramCache::~PassthroughProgramCache() {
 }
 
 void PassthroughProgramCache::ClearBackend() {
+  base::AutoLock auto_lock(lock_);
   store_.Clear();
   DCHECK_EQ(0U, curr_size_bytes_);
 }
@@ -98,6 +99,7 @@ void PassthroughProgramCache::SaveLinkedProgram(
 
 void PassthroughProgramCache::LoadProgram(const std::string& key,
                                           const std::string& program) {
+  base::AutoLock auto_lock(lock_);
   if (!CacheEnabled()) {
     return;
   }
@@ -114,6 +116,7 @@ void PassthroughProgramCache::LoadProgram(const std::string& key,
 }
 
 size_t PassthroughProgramCache::Trim(size_t limit) {
+  base::AutoLock auto_lock(lock_);
   size_t initial_size = curr_size_bytes_;
   while (curr_size_bytes_ > limit) {
     DCHECK(!store_.empty());
@@ -127,41 +130,49 @@ bool PassthroughProgramCache::CacheEnabled() const {
 }
 
 void PassthroughProgramCache::Set(Key&& key, Value&& value) {
-  // If the value is so big it will never fit in the cache, throw it away.
-  if (value.size() > max_size_bytes())
-    return;
+  {
+    base::AutoLock auto_lock(lock_);
+    // If the value is so big it will never fit in the cache, throw it away.
+    if (value.size() > max_size_bytes()) {
+      return;
+    }
 
-  // Evict any cached program with the same key in favor of the least recently
-  // accessed.
-  ProgramLRUCache::iterator existing = store_.Peek(key);
-  if (existing != store_.end())
-    store_.Erase(existing);
+    // Evict any cached program with the same key in favor of the least recently
+    // accessed.
+    ProgramLRUCache::iterator existing = store_.Peek(key);
+    if (existing != store_.end()) {
+      store_.Erase(existing);
+    }
 
-  // If the cache is overflowing, remove some old entries.
-  DCHECK(max_size_bytes() >= value.size());
-  Trim(max_size_bytes() - value.size());
-
-  // If callback is set, notify that there was a new/updated blob entry so it
-  // can be soted in disk.  Note that this is done before the Put() call as that
-  // consumes `value`.
-  if (cache_program_callback_) {
-    // Convert the key and binary to string form.
-    base::StringPiece key_string(reinterpret_cast<const char*>(key.data()),
-                                 key.size());
-    base::StringPiece value_string(reinterpret_cast<const char*>(value.data()),
-                                   value.size());
-    std::string key_string_64;
-    std::string value_string_64;
-    base::Base64Encode(key_string, &key_string_64);
-    base::Base64Encode(value_string, &value_string_64);
-    cache_program_callback_.Run(key_string_64, value_string_64);
+    // If the cache is overflowing, remove some old entries.
+    DCHECK(max_size_bytes() >= value.size());
   }
+  Trim(max_size_bytes() - value.size());
+  {
+    base::AutoLock auto_lock(lock_);
+    // If callback is set, notify that there was a new/updated blob entry so it
+    // can be soted in disk.  Note that this is done before the Put() call as
+    // that consumes `value`.
+    if (cache_program_callback_) {
+      // Convert the key and binary to string form.
+      base::StringPiece key_string(reinterpret_cast<const char*>(key.data()),
+                                   key.size());
+      base::StringPiece value_string(
+          reinterpret_cast<const char*>(value.data()), value.size());
+      std::string key_string_64;
+      std::string value_string_64;
+      base::Base64Encode(key_string, &key_string_64);
+      base::Base64Encode(value_string, &value_string_64);
+      cache_program_callback_.Run(key_string_64, value_string_64);
+    }
 
-  store_.Put(key, ProgramCacheValue(std::move(value), this));
+    store_.Put(key, ProgramCacheValue(std::move(value), this));
+  }
 }
 
 const PassthroughProgramCache::ProgramCacheValue* PassthroughProgramCache::Get(
     const Key& key) {
+  base::AutoLock auto_lock(lock_);
   ProgramLRUCache::iterator found = store_.Get(key);
   return found == store_.end() ? nullptr : &found->second;
 }

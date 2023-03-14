@@ -54,6 +54,10 @@ class MediaFoundationServiceMonitor final
   // MediaFoundationCdm.
   void OnSignificantPlayback();
   void OnPlaybackOrCdmError(HRESULT hr);
+  void OnUnexpectedHardwareContextReset();
+
+  // Whether there was any recent power or display change.
+  bool HasRecentPowerOrDisplayChange() const;
 
  private:
   // Make constructor/destructor private since this is a singleton.
@@ -70,7 +74,7 @@ class MediaFoundationServiceMonitor final
   // playback or CDM errors caused by those events. For example, playback
   // failure caused by user plugging in a non-HDCP monitor, but the content
   // requires HDCP enforcement.
-  base::Time last_power_or_display_change_time_;
+  base::TimeTicks last_power_or_display_change_time_;
 
   // Keep track the last fixed length reported samples (scores). The average
   // score is used to decide whether to disable hardware secure decryption.

@@ -72,20 +72,40 @@ bool SidePanelRegistry::Register(std::unique_ptr<SidePanelEntry> entry) {
 }
 
 bool SidePanelRegistry::Deregister(const SidePanelEntry::Key& key) {
-  auto* entry = GetEntryForKey(key);
-  if (!entry)
+  if (!GetEntryForKey(key)) {
     return false;
+  }
+
+  DeregisterAndReturnView(key);
+  return true;
+}
+
+std::unique_ptr<views::View> SidePanelRegistry::DeregisterAndReturnView(
+    const SidePanelEntry::Key& key) {
+  auto* entry = GetEntryForKey(key);
+  if (!entry) {
+    return nullptr;
+  }
 
   entry->RemoveObserver(this);
   if (active_entry_.has_value() &&
       entry->key() == active_entry_.value()->key()) {
     active_entry_.reset();
   }
+
+  // If `entry` is currently shown, then its view is owned by the browser's side
+  // panel view instead of being cached.
+  // SidePanelCoordinator::OnEntryWillDeregister will retrieve the view from the
+  // side panel and cache it into `entry`.
   for (SidePanelRegistryObserver& observer : observers_) {
     observer.OnEntryWillDeregister(this, entry);
   }
+
+  std::unique_ptr<views::View> entry_view =
+      entry->CachedView() ? entry->GetContent() : nullptr;
+
   RemoveEntry(entry);
-  return true;
+  return entry_view;
 }
 
 void SidePanelRegistry::SetActiveEntry(SidePanelEntry* entry) {

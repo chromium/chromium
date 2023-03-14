@@ -21,6 +21,11 @@ namespace blink {
 class LocalFrame;
 class Page;
 class TreeScope;
+class ScriptedAnimationController;
+
+using DocumentsVector = HeapVector<std::pair<Member<Document>, bool>>;
+using ControllersVector =
+    HeapVector<std::pair<Member<ScriptedAnimationController>, bool>>;
 
 class CORE_EXPORT PageAnimator final : public GarbageCollected<PageAnimator> {
  public:
@@ -30,6 +35,11 @@ class CORE_EXPORT PageAnimator final : public GarbageCollected<PageAnimator> {
   void ScheduleVisualUpdate(LocalFrame*);
   void ServiceScriptedAnimations(
       base::TimeTicks monotonic_animation_start_time);
+  // Invokes callbacks, dispatches events, etc. The order is defined by HTML:
+  // https://html.spec.whatwg.org/C/#event-loop-processing-model
+  static void ServiceScriptedAnimations(
+      base::TimeTicks monotonic_time_now,
+      const ControllersVector& documents_vector);
   void PostAnimate();
 
   bool IsServicingAnimations() const { return servicing_animations_; }

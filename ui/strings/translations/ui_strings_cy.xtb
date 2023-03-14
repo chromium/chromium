@@ -61,6 +61,7 @@
 <translation id="2573731672208488250">{HOURS,plural, =1{mewn 1a}zero{mewn #a}two{mewn #a}few{mewn #a}many{mewn #a}other{mewn #a}}</translation>
 <translation id="2583543531130364912">Calibradu'ch sgrîn gyffwrdd</translation>
 <translation id="2586657967955657006">Clipfwrdd</translation>
+<translation id="2653844658857826081">NEWYDD</translation>
 <translation id="2666092431469916601">Brig</translation>
 <translation id="2701330563083355633">Rhannwyd o <ph name="DEVICE_NAME" /></translation>
 <translation id="271033894570825754">Newydd</translation>
@@ -75,6 +76,7 @@
 <translation id="3157931365184549694">Adfer</translation>
 <translation id="3183922693828471536">Sgrolio Yma</translation>
 <translation id="3234408098842461169">Saeth i lawr</translation>
+<translation id="3240426699337459095">Cafodd y ddolen ei chopïo</translation>
 <translation id="3291688615589870984">{DAYS,plural, =1{1 diwrnod}zero{# diwrnod}two{# ddiwrnod}few{# diwrnod}many{# diwrnod}other{# diwrnod}}</translation>
 <translation id="3295886253693811851">Gwneud galwad o</translation>
 <translation id="3306688585798492231">Sgrîn integredig</translation>

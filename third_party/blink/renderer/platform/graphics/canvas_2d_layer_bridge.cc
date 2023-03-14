@@ -35,6 +35,10 @@
 #include "base/task/task_traits.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/memory_dump_provider.h"
+#include "base/trace_event/memory_dump_request_args.h"
+#include "base/trace_event/process_memory_dump.h"
 #include "cc/layers/texture_layer.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/command_buffer/client/context_support.h"
@@ -73,14 +77,17 @@ bool Canvas2DLayerBridge::IsHibernationEnabled() {
   return base::FeatureList::IsEnabled(features::kCanvas2DHibernation);
 }
 
+HibernationHandler::~HibernationHandler() {
+  DCheckInvariant();
+  if (IsHibernating()) {
+    HibernatedCanvasMemoryDumpProvider::GetInstance().Unregister(this);
+  }
+}
+
 void HibernationHandler::TakeHibernationImage(sk_sp<SkImage>&& image) {
   DCheckInvariant();
   epoch_++;
   image_ = image;
-
-  if (!base::FeatureList::IsEnabled(features::kCanvasCompressHibernatedImage)) {
-    return;
-  }
 
   width_ = image_->width();
   height_ = image_->height();
@@ -89,10 +96,11 @@ void HibernationHandler::TakeHibernationImage(sk_sp<SkImage>&& image) {
   // If we had an encoded version, discard it.
   encoded_.reset();
 
+  HibernatedCanvasMemoryDumpProvider::GetInstance().Register(this);
+
   // Don't bother compressing very small canvases.
-  size_t memory_size = image_->height() * static_cast<size_t>(image_->width()) *
-                       static_cast<size_t>(image_->imageInfo().bytesPerPixel());
-  if (memory_size < 16 * 1024) {
+  if (ImageMemorySize(*image) < 16 * 1024 ||
+      !base::FeatureList::IsEnabled(features::kCanvasCompressHibernatedImage)) {
     return;
   }
 
@@ -179,6 +187,15 @@ void HibernationHandler::Encode(
   sk_sp<SkData> encoded =
       params->image->encodeToData(SkEncodedImageFormat::kPNG, 100);
 
+  size_t original_memory_size = ImageMemorySize(*params->image);
+  int compression_ratio_percentage = static_cast<int>(
+      (static_cast<size_t>(100) * encoded->size()) / original_memory_size);
+  UMA_HISTOGRAM_PERCENTAGE("Blink.Canvas.2DLayerBridge.Compression.Ratio",
+                           compression_ratio_percentage);
+  UMA_HISTOGRAM_CUSTOM_COUNTS(
+      "Blink.Canvas.2DLayerBridge.Compression.SnapshotSizeKb",
+      static_cast<int>(original_memory_size / 1024), 10, 500000, 50);
+
   auto* reply_task_runner = params->reply_task_runner.get();
   reply_task_runner->PostTask(
       FROM_HERE,
@@ -197,12 +214,20 @@ sk_sp<SkImage> HibernationHandler::GetImage() {
   DCHECK(
       base::FeatureList::IsEnabled(features::kCanvasCompressHibernatedImage));
 
+  base::TimeTicks before = base::TimeTicks::Now();
   // Note: not discarding the encoded image.
-  return SkImage::MakeFromEncoded(encoded_)->makeRasterImage();
+  auto image = SkImage::MakeFromEncoded(encoded_)->makeRasterImage();
+  base::TimeTicks after = base::TimeTicks::Now();
+  UMA_HISTOGRAM_TIMES(
+      "Blink.Canvas.2DLayerBridge.Compression.DecompressionTime",
+      after - before);
+  return image;
+  ;
 }
 
 void HibernationHandler::Clear() {
   DCheckInvariant();
+  HibernatedCanvasMemoryDumpProvider::GetInstance().Unregister(this);
   encoded_ = nullptr;
   image_ = nullptr;
 }
@@ -217,8 +242,81 @@ size_t HibernationHandler::memory_size() const {
   }
 }
 
+// static
+size_t HibernationHandler::ImageMemorySize(const SkImage& image) {
+  return static_cast<size_t>(image.height()) * image.width() *
+         image.imageInfo().bytesPerPixel();
+}
+
 size_t HibernationHandler::original_memory_size() const {
   return static_cast<size_t>(width_) * height_ * bytes_per_pixel_;
+}
+
+// static
+HibernatedCanvasMemoryDumpProvider&
+HibernatedCanvasMemoryDumpProvider::GetInstance() {
+  static base::NoDestructor<HibernatedCanvasMemoryDumpProvider> instance;
+  return *instance.get();
+}
+
+void HibernatedCanvasMemoryDumpProvider::Register(HibernationHandler* handler) {
+  DCHECK(IsMainThread());
+  base::AutoLock locker(lock_);
+  DCHECK(handler->IsHibernating());
+  handlers_.insert(handler);
+}
+
+void HibernatedCanvasMemoryDumpProvider::Unregister(
+    HibernationHandler* handler) {
+  DCHECK(IsMainThread());
+  base::AutoLock locker(lock_);
+  DCHECK(handlers_.Contains(handler));
+  handlers_.erase(handler);
+}
+
+bool HibernatedCanvasMemoryDumpProvider::OnMemoryDump(
+    const base::trace_event::MemoryDumpArgs& args,
+    base::trace_event::ProcessMemoryDump* pmd) {
+  DCHECK(IsMainThread());
+
+  size_t total_hibernated_size = 0;
+  size_t total_original_size = 0;
+  auto* dump = pmd->CreateAllocatorDump("canvas/hibernated");
+
+  {
+    base::AutoLock locker(lock_);
+    int index = 0;
+    for (HibernationHandler* handler : handlers_) {
+      DCHECK(handler->IsHibernating());
+      total_original_size += handler->original_memory_size();
+      total_hibernated_size += handler->memory_size();
+
+      if (args.level_of_detail ==
+          base::trace_event::MemoryDumpLevelOfDetail::DETAILED) {
+        auto* canvas_dump = pmd->CreateAllocatorDump(
+            base::StringPrintf("canvas/hibernated/canvas_%d", index));
+        canvas_dump->AddScalar("memory_size", "bytes", handler->memory_size());
+        canvas_dump->AddScalar("is_encoded", "boolean", handler->is_encoded());
+        canvas_dump->AddScalar("original_memory_size", "bytes",
+                               handler->original_memory_size());
+        canvas_dump->AddScalar("height", "pixels", handler->height());
+        canvas_dump->AddScalar("width", "pixels", handler->width());
+      }
+      index++;
+    }
+  }
+
+  dump->AddScalar("size", "bytes", total_hibernated_size);
+  dump->AddScalar("original_size", "bytes", total_original_size);
+
+  return true;
+}
+
+HibernatedCanvasMemoryDumpProvider::HibernatedCanvasMemoryDumpProvider() {
+  DCHECK(IsMainThread());
+  base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
+      this, "hibernated_canvas",
+      Thread::MainThread()->GetTaskRunner(MainThreadTaskRunnerRestricted()));
 }
 
 Canvas2DLayerBridge::Canvas2DLayerBridge(const gfx::Size& size,
@@ -293,6 +391,25 @@ bool Canvas2DLayerBridge::IsAccelerated() const {
   return ShouldAccelerate();
 }
 
+bool Canvas2DLayerBridge::IsComposited() const {
+  if (IsHibernating()) {
+    return false;
+  }
+
+  if (UNLIKELY(!resource_host_)) {
+    return false;
+  }
+
+  CanvasResourceProvider* resource_provider =
+      resource_host_->ResourceProvider();
+  if (UNLIKELY(!resource_provider)) {
+    return false;
+  }
+
+  return resource_provider->SupportsDirectCompositing() &&
+         !resource_host_->LowLatencyEnabled();
+}
+
 static void HibernateWrapper(base::WeakPtr<Canvas2DLayerBridge> bridge,
                              base::TimeTicks /*idleDeadline*/) {
   if (bridge) {
@@ -345,7 +462,7 @@ void Canvas2DLayerBridge::Hibernate() {
   // No HibernationEvent reported on success. This is on purppose to avoid
   // non-complementary stats. Each HibernationScheduled event is paired with
   // exactly one failure or exit event.
-  FlushRecording();
+  FlushRecording(CanvasResourceProvider::FlushReason::kHibernating);
   // The following checks that the flush succeeded, which should always be the
   // case because flushRecording should only fail it it fails to allocate
   // a surface, and we have an early exit at the top of this function for when
@@ -354,7 +471,8 @@ void Canvas2DLayerBridge::Hibernate() {
   SkPaint copy_paint;
   copy_paint.setBlendMode(SkBlendMode::kSrc);
   scoped_refptr<StaticBitmapImage> snapshot =
-      resource_host_->ResourceProvider()->Snapshot();
+      resource_host_->ResourceProvider()->Snapshot(
+          CanvasResourceProvider::FlushReason::kHibernating);
   if (!snapshot) {
     logger_->ReportHibernationEvent(kHibernationAbortedDueSnapshotFailure);
     return;
@@ -415,14 +533,13 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
 
   if (resource_provider && resource_provider->IsValid()) {
 #if DCHECK_IS_ON()
-    // If resource provider is accelerated, a layer should already exist.
+    // If resource provider is composited, a layer should already exist.
     // unless this is a canvas in low latency mode.
     // If this DCHECK fails, it probably means that
     // CanvasRenderingContextHost::GetOrCreateCanvasResourceProvider() was
     // called on a 2D context before this function.
-    if (IsAccelerated()) {
-      DCHECK(!!layer_ ||
-             (resource_host_ && resource_host_->LowLatencyEnabled()));
+    if (IsComposited()) {
+      DCHECK(!!layer_);
     }
 #endif
     return resource_provider;
@@ -457,7 +574,7 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
   // TODO crbug/1090081: Check possibility to move DidDraw inside Clear.
   DidDraw();
 
-  if (IsAccelerated() && !layer_) {
+  if (IsComposited() && !layer_) {
     layer_ = cc::TextureLayer::CreateForMailbox(this);
     layer_->SetIsDrawable(true);
     layer_->SetHitTestable(true);
@@ -467,6 +584,7 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
                                cc::PaintFlags::FilterQuality::kNone);
     layer_->SetHDRConfiguration(resource_host_->GetHDRMode(),
                                 resource_host_->GetHDRMetadata());
+    layer_->SetFlipped(!resource_provider->IsOriginTopLeft());
   }
   // After the page becomes visible and successfully restored the canvas
   // resource provider, set |lose_context_in_background_| to false.
@@ -601,7 +719,7 @@ bool Canvas2DLayerBridge::WritePixels(const SkImageInfo& orig_info,
       y + orig_info.height() >= size_.height()) {
     SkipQueuedDrawCommands();
   } else {
-    FlushRecording();
+    FlushRecording(CanvasResourceProvider::FlushReason::kWritePixels);
     if (!GetOrCreateResourceProvider())
       return false;
   }
@@ -685,7 +803,8 @@ void Canvas2DLayerBridge::FinishRasterTimers(
   }
 }
 
-void Canvas2DLayerBridge::FlushRecording(bool printing) {
+void Canvas2DLayerBridge::FlushRecording(
+    CanvasResourceProvider::FlushReason reason) {
   if (!have_recorded_draw_commands_ || !GetOrCreateResourceProvider())
     return;
 
@@ -721,8 +840,7 @@ void Canvas2DLayerBridge::FlushRecording(bool printing) {
     timer.emplace();
   }
 
-  last_recording_ =
-      ResourceProvider()->FlushCanvasAndMaybePreserveRecording(printing);
+  last_recording_ = ResourceProvider()->FlushCanvas(reason);
 
   last_record_tainted_by_write_pixels_ = false;
 
@@ -850,8 +968,12 @@ bool Canvas2DLayerBridge::PrepareTransferableResource(
   // the event listener and its associated FinalizeFrame call. So in order to
   // preserve the display list for printing, FlushRecording needs to know
   // whether any printing occurred in the current task.
-  FlushRecording(resource_host_->PrintedInCurrentTask() ||
-                 resource_host_->IsPrinting());
+  CanvasResourceProvider::FlushReason reason =
+      CanvasResourceProvider::FlushReason::kCanvasPushFrame;
+  if (resource_host_->PrintedInCurrentTask() || resource_host_->IsPrinting()) {
+    reason = CanvasResourceProvider::FlushReason::kCanvasPushFrameWhilePrinting;
+  }
+  FlushRecording(reason);
 
   // If the context is lost, we don't know if we should be producing GPU or
   // software frames, until we get a new context, since the compositor will
@@ -860,7 +982,7 @@ bool Canvas2DLayerBridge::PrepareTransferableResource(
     return false;
 
   scoped_refptr<CanvasResource> frame =
-      ResourceProvider()->ProduceCanvasResource();
+      ResourceProvider()->ProduceCanvasResource(reason);
   if (!frame || !frame->IsValid())
     return false;
 
@@ -892,7 +1014,8 @@ void Canvas2DLayerBridge::DidDraw() {
   have_recorded_draw_commands_ = true;
 }
 
-void Canvas2DLayerBridge::FinalizeFrame(bool printing) {
+void Canvas2DLayerBridge::FinalizeFrame(
+    CanvasResourceProvider::FlushReason reason) {
   TRACE_EVENT0("blink", "Canvas2DLayerBridge::FinalizeFrame");
 
   // Make sure surface is ready for painting: fix the rendering mode now
@@ -900,14 +1023,14 @@ void Canvas2DLayerBridge::FinalizeFrame(bool printing) {
   if (!GetOrCreateResourceProvider())
     return;
 
-  FlushRecording(printing);
+  FlushRecording(reason);
   if (is_being_displayed_) {
     ++frames_since_last_commit_;
     // Make sure the GPU is never more than two animation frames behind.
     constexpr unsigned kMaxCanvasAnimationBacklog = 2;
     if (frames_since_last_commit_ >=
         static_cast<int>(kMaxCanvasAnimationBacklog)) {
-      if (IsAccelerated() && !rate_limiter_) {
+      if (IsComposited() && !rate_limiter_) {
         rate_limiter_ = std::make_unique<SharedContextRateLimiter>(
             kMaxCanvasAnimationBacklog);
       }
@@ -919,12 +1042,13 @@ void Canvas2DLayerBridge::FinalizeFrame(bool printing) {
 }
 
 void Canvas2DLayerBridge::DoPaintInvalidation(const gfx::Rect& dirty_rect) {
-  if (layer_ && raster_mode_ == RasterMode::kGPU) {
+  if (layer_ && IsComposited()) {
     layer_->SetNeedsDisplayRect(dirty_rect);
   }
 }
 
-scoped_refptr<StaticBitmapImage> Canvas2DLayerBridge::NewImageSnapshot() {
+scoped_refptr<StaticBitmapImage> Canvas2DLayerBridge::NewImageSnapshot(
+    CanvasResourceProvider::FlushReason reason) {
   if (snapshot_state_ == kInitialSnapshotState)
     snapshot_state_ = kDidAcquireSnapshot;
   if (IsHibernating()) {
@@ -938,10 +1062,10 @@ scoped_refptr<StaticBitmapImage> Canvas2DLayerBridge::NewImageSnapshot() {
   // FlushRecording, in case the playback crashed the GPU context.
   if (!GetOrCreateResourceProvider())
     return nullptr;
-  FlushRecording();
+  FlushRecording(reason);
   if (!GetOrCreateResourceProvider())
     return nullptr;
-  return ResourceProvider()->Snapshot();
+  return ResourceProvider()->Snapshot(reason);
 }
 
 void Canvas2DLayerBridge::WillOverwriteCanvas() {

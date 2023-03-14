@@ -22,6 +22,7 @@
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/subresource_url_authorizations.h"
+#include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
@@ -40,7 +41,7 @@ struct AuctionConfig;
 
 namespace content {
 
-class AttributionDataHostManager;
+class AttributionManager;
 class AuctionWorkletManager;
 class InterestGroupManagerImpl;
 class PrivateAggregationManager;
@@ -79,13 +80,9 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   using PrivateAggregationRequests =
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
 
-  // Invoked before sending private aggregation requests. Logs that requests
-  // were made.
+  // Invoked when private aggregation requests are received from the worklet.
   using LogPrivateAggregationRequestsCallback = base::RepeatingCallback<void(
-      const std::map<
-          url::Origin,
-          std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>&
-          private_aggregation_requests)>;
+      const PrivateAggregationRequests& private_aggregation_requests)>;
 
   // Seller-specific information about the winning bid. The top-level seller and
   // (if present) component seller associated with the winning bid have separate
@@ -142,6 +139,9 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
     // Bid returned by the bidder.
     double bid;
 
+    // Ad cost returned by the bidder.
+    absl::optional<double> ad_cost;
+
     // How long it took to generate the bid.
     base::TimeDelta bid_duration;
 
@@ -155,7 +155,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // All passed in raw pointers, including those in *BidInfo fields must outlive
   // the created InterestGroupAuctionReporter.
   //
-  // `attribution_data_host_manager` is needed to create `FencedFrameReporter`
+  // `attribution_manager` is needed to create `FencedFrameReporter`
   // and could be null in Incognito mode or in test.
   //
   // `log_private_aggregation_requests_callback` will be passed all private
@@ -184,7 +184,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   InterestGroupAuctionReporter(
       InterestGroupManagerImpl* interest_group_manager,
       AuctionWorkletManager* auction_worklet_manager,
-      AttributionDataHostManager* attribution_data_host_manager,
+      AttributionManager* attribution_manager,
       PrivateAggregationManager* private_aggregation_manager,
       LogPrivateAggregationRequestsCallback
           log_private_aggregation_requests_callback,
@@ -231,12 +231,6 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
 
   const std::vector<std::string>& errors() const { return errors_; }
 
-  // TODO(mmenke): Remove this method, and report these directly.
-  std::map<std::string, PrivateAggregationRequests>
-  TakeNonReservedPrivateAggregationRequests() {
-    return std::move(private_aggregation_requests_non_reserved_);
-  }
-
   // The FencedFrameReporter that `this` will pass event-level ad beacon
   // information received from reporting worklets to, as they're received.
   // Created by `this`. The consumer is responsible for wiring this up to a
@@ -255,20 +249,21 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // the corresponding requests. Does nothing if `private_aggregation_requests`
   // is empty.
   //
-  // Only invokes `log_private_aggregation_requests_callback` if
-  // `private_aggregation_manager` is nullptr.
-  //
   // Static so that this can be invoked when there's no winner, and a reporter
   // isn't needed.
   static void OnFledgePrivateAggregationRequests(
       PrivateAggregationManager* private_aggregation_manager,
-      LogPrivateAggregationRequestsCallback
-          log_private_aggregation_requests_callback,
       const url::Origin& main_frame_origin,
       std::map<
           url::Origin,
           std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
           private_aggregation_requests);
+
+  // Returns the result of performing stochastic rounding on `value`. We limit
+  // the value to `k` bits of precision in the mantissa (not including sign) and
+  // 8 bits in the exponent. So k=8 would correspond to a 16 bit floating point
+  // number (more specifically, bfloat16). Public to enable testing.
+  static double RoundStochasticallyToKBits(double value, unsigned k);
 
  private:
   // Starts request for a seller worklet. Invokes OnSellerWorkletReceived() on

@@ -127,10 +127,10 @@ promise_test(async t => {
     const iframe = attachIFrameContext(
         {attributes: [["sandbox", flags_to_add]]});
     await iframe.execute(async (t) => {
-      assert_false(HTMLFencedFrameElement.canLoadOpaqueURL());
+      assert_false(navigator.canLoadAdAuctionFencedFrame());
     });
   }
-}, 'HTMLFencedFrameElement.canLoadOpaqueURL considers mandatory sandbox flags');
+}, 'navigator.canLoadAdAuctionFencedFrame considers mandatory sandbox flags');
 </script>
 
 </body>

@@ -17,6 +17,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-test-utils.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/drive/file_errors.h"
@@ -29,6 +30,7 @@ namespace {
 
 using base::BindOnce;
 using base::OnceCallback;
+using base::RunLoop;
 using base::SequencedTaskRunner;
 using base::test::RunClosure;
 using base::test::RunOnceCallback;
@@ -55,6 +57,7 @@ using testing::UnorderedElementsAre;
 
 using Id = PinManager::Id;
 using Path = base::FilePath;
+using CompletionCallback = base::MockOnceCallback<void(Stage)>;
 
 const FileError kFileOk = FileError::FILE_ERROR_OK;
 
@@ -325,7 +328,7 @@ TEST_F(DriveFsPinManagerTest, Add) {
     EXPECT_EQ(progress.pinned_bytes, 0);
     EXPECT_EQ(progress.bytes_to_pin, 0);
     EXPECT_EQ(progress.required_space, 0);
-    EXPECT_EQ(progress.skipped_files, 0);
+    EXPECT_EQ(progress.skipped_items, 0);
   }
 
   const Id id1 = Id(101);
@@ -399,7 +402,7 @@ TEST_F(DriveFsPinManagerTest, Add) {
     EXPECT_EQ(progress.required_space, 698249216);
     EXPECT_EQ(progress.syncing_files, 0);
     EXPECT_EQ(progress.files_to_pin, 1);
-    EXPECT_EQ(progress.skipped_files, 0);
+    EXPECT_EQ(progress.skipped_items, 0);
   }
 
   // Add a second item, but which is already pinned this time.
@@ -437,7 +440,7 @@ TEST_F(DriveFsPinManagerTest, Add) {
     EXPECT_EQ(progress.required_space, 777216000);
     EXPECT_EQ(progress.syncing_files, 1);
     EXPECT_EQ(progress.files_to_pin, 2);
-    EXPECT_EQ(progress.skipped_files, 0);
+    EXPECT_EQ(progress.skipped_items, 0);
   }
 
   // Add a third item, but which is not pinned yet, although already available
@@ -476,7 +479,7 @@ TEST_F(DriveFsPinManagerTest, Add) {
     EXPECT_EQ(progress.required_space, 777216000);
     EXPECT_EQ(progress.syncing_files, 1);
     EXPECT_EQ(progress.files_to_pin, 3);
-    EXPECT_EQ(progress.skipped_files, 0);
+    EXPECT_EQ(progress.skipped_items, 0);
   }
 
   // Try to add a forth item, but which is both pinned and already available
@@ -515,7 +518,7 @@ TEST_F(DriveFsPinManagerTest, Add) {
     EXPECT_EQ(progress.required_space, 777216000);
     EXPECT_EQ(progress.syncing_files, 1);
     EXPECT_EQ(progress.files_to_pin, 3);
-    EXPECT_EQ(progress.skipped_files, 1);
+    EXPECT_EQ(progress.skipped_items, 1);
   }
 }
 
@@ -774,19 +777,22 @@ TEST_F(DriveFsPinManagerTest, Remove) {
 
   // Put in place a file to track.
   {
-    const auto [it, ok] = manager.files_to_track_.try_emplace(
-        id1, PinManager::File{.path = path1,
-                              .transferred = 1200,
-                              .total = 3000,
-                              .pinned = false,
-                              .in_progress = true});
-    ASSERT_TRUE(ok);
+    ASSERT_TRUE(manager.files_to_track_
+                    .try_emplace(id1, PinManager::File{.path = path1,
+                                                       .transferred = 1200,
+                                                       .total = 3000,
+                                                       .pinned = false,
+                                                       .in_progress = true})
+                    .second);
+    ASSERT_TRUE(manager.files_to_pin_.insert(id1).second);
   }
 
+  EXPECT_THAT(manager.files_to_pin_, UnorderedElementsAre(id1));
   EXPECT_THAT(manager.files_to_track_, SizeIs(1));
 
   // Remove file while setting size to zero.
   EXPECT_TRUE(manager.Remove(id1, path2, 0));
+  EXPECT_THAT(manager.files_to_pin_, IsEmpty());
   EXPECT_THAT(manager.files_to_track_, IsEmpty());
 
   {
@@ -1359,21 +1365,22 @@ TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
   }
 }
 
-TEST_F(DriveFsPinManagerTest, CannotGetFreeSpace) {
-  base::MockOnceCallback<void(Stage)> mock_callback;
-
-  base::RunLoop run_loop;
+// Tests what happens when PinManager cannot get free space during initial
+// setup.
+TEST_F(DriveFsPinManagerTest, CannotGetFreeSpace1) {
+  CompletionCallback completion_callback;
+  RunLoop run_loop;
 
   EXPECT_CALL(drivefs_, OnStartSearchQuery(_)).Times(0);
   EXPECT_CALL(drivefs_, OnGetNextPage(_)).Times(0);
-  EXPECT_CALL(mock_callback, Run(Stage::kCannotGetFreeSpace))
+  EXPECT_CALL(completion_callback, Run(Stage::kCannotGetFreeSpace))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(-1));
 
   PinManager manager(temp_dir_.GetPath(), &drivefs_);
   manager.SetSpaceGetter(GetSpaceGetter());
-  manager.SetCompletionCallback(mock_callback.Get());
+  manager.SetCompletionCallback(completion_callback.Get());
   manager.Start();
   run_loop.Run();
 
@@ -1385,23 +1392,49 @@ TEST_F(DriveFsPinManagerTest, CannotGetFreeSpace) {
   EXPECT_EQ(progress.pinned_files, 0);
 }
 
-TEST_F(DriveFsPinManagerTest, CannotListFiles) {
-  base::MockOnceCallback<void(Stage)> mock_callback;
+// Tests what happens when PinManager cannot get free space during the periodic
+// check.
+TEST_F(DriveFsPinManagerTest, CannotGetFreeSpace2) {
+  CompletionCallback completion_callback;
+  RunLoop run_loop;
 
-  base::RunLoop run_loop;
+  EXPECT_CALL(completion_callback, Run(Stage::kCannotGetFreeSpace))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+  EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _))
+      .WillOnce(RunOnceCallback<1>(-1));
+
+  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  manager.SetSpaceGetter(GetSpaceGetter());
+  manager.SetCompletionCallback(completion_callback.Get());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
+  manager.progress_.stage = Stage::kSyncing;
+  manager.CheckFreeSpace();
+  run_loop.Run();
+
+  const Progress progress = manager.GetProgress();
+  EXPECT_EQ(progress.stage, Stage::kCannotGetFreeSpace);
+  EXPECT_EQ(progress.free_space, 0);
+  EXPECT_EQ(progress.required_space, 0);
+  EXPECT_EQ(progress.pinned_bytes, 0);
+  EXPECT_EQ(progress.pinned_files, 0);
+}
+
+TEST_F(DriveFsPinManagerTest, CannotListFiles) {
+  CompletionCallback completion_callback;
+  RunLoop run_loop;
 
   EXPECT_CALL(drivefs_, OnStartSearchQuery(_)).Times(1);
   EXPECT_CALL(drivefs_, OnGetNextPage(_))
       .WillOnce(
           DoAll(PopulateNoSearchItems(), Return(FileError::FILE_ERROR_FAILED)));
-  EXPECT_CALL(mock_callback, Run(Stage::kCannotListFiles))
+  EXPECT_CALL(completion_callback, Run(Stage::kCannotListFiles))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(1 << 30));  // 1 GB.
 
   PinManager manager(temp_dir_.GetPath(), &drivefs_);
   manager.SetSpaceGetter(GetSpaceGetter());
-  manager.SetCompletionCallback(mock_callback.Get());
+  manager.SetCompletionCallback(completion_callback.Get());
   manager.Start();
   run_loop.Run();
 
@@ -1414,20 +1447,19 @@ TEST_F(DriveFsPinManagerTest, CannotListFiles) {
 }
 
 TEST_F(DriveFsPinManagerTest, InvalidFileList) {
-  base::MockOnceCallback<void(Stage)> mock_callback;
-
-  base::RunLoop run_loop;
+  CompletionCallback completion_callback;
+  RunLoop run_loop;
 
   EXPECT_CALL(drivefs_, OnStartSearchQuery(_)).Times(1);
   EXPECT_CALL(drivefs_, OnGetNextPage(_)).WillOnce(Return(kFileOk));
-  EXPECT_CALL(mock_callback, Run(Stage::kCannotListFiles))
+  EXPECT_CALL(completion_callback, Run(Stage::kCannotListFiles))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(1 << 30));  // 1 GB.
 
   PinManager manager(temp_dir_.GetPath(), &drivefs_);
   manager.SetSpaceGetter(GetSpaceGetter());
-  manager.SetCompletionCallback(mock_callback.Get());
+  manager.SetCompletionCallback(completion_callback.Get());
   manager.Start();
   run_loop.Run();
 
@@ -1439,9 +1471,11 @@ TEST_F(DriveFsPinManagerTest, InvalidFileList) {
   EXPECT_EQ(progress.pinned_files, 0);
 }
 
+// Tests what happens when PinManager cannot get enough free space during
+// the initial setup.
 TEST_F(DriveFsPinManagerTest, NotEnoughSpace) {
-  base::MockOnceCallback<void(Stage)> mock_callback;
-  base::RunLoop run_loop;
+  CompletionCallback completion_callback;
+  RunLoop run_loop;
 
   // Mock Drive search to return 3 unpinned files that total just above 512 MB.
   // The available space of 1 GB is not enough if you take in account the 512 MB
@@ -1453,14 +1487,14 @@ TEST_F(DriveFsPinManagerTest, NotEnoughSpace) {
   EXPECT_CALL(drivefs_, OnGetNextPage(_))
       .WillOnce(DoAll(PopulateSearchItems(items), Return(kFileOk)))
       .WillOnce(DoAll(PopulateNoSearchItems(), Return(kFileOk)));
-  EXPECT_CALL(mock_callback, Run(Stage::kNotEnoughSpace))
+  EXPECT_CALL(completion_callback, Run(Stage::kNotEnoughSpace))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(1 << 30));  // 1 GB.
 
   PinManager manager(temp_dir_.GetPath(), &drivefs_);
   manager.SetSpaceGetter(GetSpaceGetter());
-  manager.SetCompletionCallback(mock_callback.Get());
+  manager.SetCompletionCallback(completion_callback.Get());
   manager.Start();
   run_loop.Run();
 
@@ -1472,9 +1506,94 @@ TEST_F(DriveFsPinManagerTest, NotEnoughSpace) {
   EXPECT_EQ(progress.pinned_files, 0);
 }
 
+// Tests what happens when PinManager cannot get enough free space during
+// the periodic check.
+TEST_F(DriveFsPinManagerTest, NotEnoughSpace2) {
+  CompletionCallback completion_callback;
+  RunLoop run_loop;
+
+  EXPECT_CALL(completion_callback, Run(Stage::kNotEnoughSpace))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+  EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _))
+      .WillOnce(RunOnceCallback<1>(200 << 20));  // 200 MB
+
+  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  manager.SetSpaceGetter(GetSpaceGetter());
+  manager.SetCompletionCallback(completion_callback.Get());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
+  manager.progress_.stage = Stage::kSyncing;
+  manager.CheckFreeSpace();
+  run_loop.Run();
+
+  const Progress progress = manager.GetProgress();
+  EXPECT_EQ(progress.stage, Stage::kNotEnoughSpace);
+  EXPECT_EQ(progress.free_space, 200 << 20);
+  EXPECT_EQ(progress.required_space, 0);
+  EXPECT_EQ(progress.pinned_bytes, 0);
+  EXPECT_EQ(progress.pinned_files, 0);
+}
+
+// Tests what happens when there is enough free space during the periodic check.
+TEST_F(DriveFsPinManagerTest, OnFreeSpaceRetrieved2) {
+  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
+  manager.progress_.stage = Stage::kSyncing;
+  manager.OnFreeSpaceRetrieved2(1 << 30);
+
+  const Progress progress = manager.GetProgress();
+  EXPECT_EQ(progress.stage, Stage::kSyncing);
+  EXPECT_EQ(progress.free_space, 1 << 30);
+  EXPECT_EQ(progress.required_space, 0);
+  EXPECT_EQ(progress.pinned_bytes, 0);
+  EXPECT_EQ(progress.pinned_files, 0);
+
+  manager.progress_.stage = Stage::kStopped;
+}
+
+// Tests that the space check is actually periodic.
+TEST_F(DriveFsPinManagerTest, PeriodicSpaceCheck) {
+  CompletionCallback completion_callback;
+  RunLoop run_loop;
+
+  EXPECT_CALL(completion_callback, Run(Stage::kNotEnoughSpace))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+  EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _))
+      .WillOnce(RunOnceCallback<1>(1 << 30))     // 1 GB is enough space
+      .WillOnce(RunOnceCallback<1>(800 << 20))   // 800 MB is enough space
+      .WillOnce(RunOnceCallback<1>(600 << 20))   // 600 MB is enough space
+      .WillOnce(RunOnceCallback<1>(400 << 20));  // 400 MB is not enough
+
+  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
+
+  // Check the original time interval.
+  EXPECT_EQ(manager.space_check_interval_, base::Seconds(60));
+
+  // But use a much shorter interval for this test.
+  manager.space_check_interval_ = base::Milliseconds(100);
+
+  manager.SetSpaceGetter(GetSpaceGetter());
+  manager.SetCompletionCallback(completion_callback.Get());
+  manager.progress_.stage = Stage::kSyncing;
+
+  manager.CheckFreeSpace();
+
+  // There should be 3 iterations of 100 ms each.
+  base::ElapsedTimer timer;
+  run_loop.Run();
+  EXPECT_GE(timer.Elapsed(), base::Milliseconds(300));
+
+  const Progress progress = manager.GetProgress();
+  EXPECT_EQ(progress.stage, Stage::kNotEnoughSpace);
+  EXPECT_EQ(progress.free_space, 400 << 20);
+  EXPECT_EQ(progress.required_space, 0);
+  EXPECT_EQ(progress.pinned_bytes, 0);
+  EXPECT_EQ(progress.pinned_files, 0);
+}
+
 TEST_F(DriveFsPinManagerTest, JustCheckRequiredSpace) {
-  base::MockOnceCallback<void(Stage)> mock_callback;
-  base::RunLoop run_loop;
+  CompletionCallback completion_callback;
+  RunLoop run_loop;
 
   // Mock Drive search to return 2 unpinned files that total to 512 MB. The
   // available space of 1 GB is just enough if you take in account the 512 MB
@@ -1485,7 +1604,7 @@ TEST_F(DriveFsPinManagerTest, JustCheckRequiredSpace) {
   EXPECT_CALL(drivefs_, OnGetNextPage(_))
       .WillOnce(DoAll(PopulateSearchItems(items), Return(kFileOk)))
       .WillOnce(DoAll(PopulateNoSearchItems(), Return(kFileOk)));
-  EXPECT_CALL(mock_callback, Run(Stage::kSuccess))
+  EXPECT_CALL(completion_callback, Run(Stage::kSuccess))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(1 << 30));  // 1 GB.
@@ -1493,7 +1612,7 @@ TEST_F(DriveFsPinManagerTest, JustCheckRequiredSpace) {
   PinManager manager(temp_dir_.GetPath(), &drivefs_);
   manager.SetSpaceGetter(GetSpaceGetter());
   manager.ShouldPin(false);
-  manager.SetCompletionCallback(mock_callback.Get());
+  manager.SetCompletionCallback(completion_callback.Get());
   manager.Start();
   run_loop.Run();
 
@@ -1507,9 +1626,8 @@ TEST_F(DriveFsPinManagerTest, JustCheckRequiredSpace) {
 
 TEST_F(DriveFsPinManagerTest,
        DISABLED_FailingToPinOneItemShouldNotFailCompletely) {
-  base::MockOnceCallback<void(Stage)> mock_callback;
-
-  base::RunLoop run_loop;
+  CompletionCallback completion_callback;
+  RunLoop run_loop;
 
   const vector<DriveItem> items = {{.size = 128}, {.size = 128}};
 
@@ -1522,7 +1640,7 @@ TEST_F(DriveFsPinManagerTest,
       // final empty list as this should be aborted due to one of the pinning
       // operations being mock failed.
       .WillOnce(DoAll(PopulateSearchItems(items), Return(kFileOk)));
-  EXPECT_CALL(mock_callback, Run(Stage::kSuccess))
+  EXPECT_CALL(completion_callback, Run(Stage::kSuccess))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(1 << 30));  // 1 GB.
@@ -1534,15 +1652,14 @@ TEST_F(DriveFsPinManagerTest,
 
   PinManager manager(temp_dir_.GetPath(), &drivefs_);
   manager.SetSpaceGetter(GetSpaceGetter());
-  manager.SetCompletionCallback(mock_callback.Get());
+  manager.SetCompletionCallback(completion_callback.Get());
   manager.Start();
   run_loop.Run();
 }
 
 TEST_F(DriveFsPinManagerTest, DISABLED_OnlyUnpinnedItemsShouldGetPinned) {
-  base::MockOnceCallback<void(Stage)> mock_callback;
-
-  base::RunLoop run_loop;
+  CompletionCallback completion_callback;
+  RunLoop run_loop;
 
   vector<DriveItem> items = {{.size = 128, .path = Path("/a")},
                              {.size = 128, .path = Path("/b")},
@@ -1584,12 +1701,12 @@ TEST_F(DriveFsPinManagerTest, DISABLED_OnlyUnpinnedItemsShouldGetPinned) {
             SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE, BindOnce(std::move(callback), kFileOk));
           });
-  EXPECT_CALL(mock_callback, Run(Stage::kSuccess))
+  EXPECT_CALL(completion_callback, Run(Stage::kSuccess))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
   PinManager manager(temp_dir_.GetPath(), &drivefs_);
   manager.SetSpaceGetter(GetSpaceGetter());
-  manager.SetCompletionCallback(mock_callback.Get());
+  manager.SetCompletionCallback(completion_callback.Get());
   manager.Start();
   run_loop.Run();
 
@@ -1614,9 +1731,8 @@ TEST_F(DriveFsPinManagerTest, DISABLED_OnlyUnpinnedItemsShouldGetPinned) {
 
 TEST_F(DriveFsPinManagerTest,
        DISABLED_ZeroByteItemsAndHostedItemsShouldBePeriodicallyCleaned) {
-  base::MockOnceCallback<void(Stage)> mock_callback;
-
-  base::RunLoop run_loop;
+  CompletionCallback completion_callback;
+  RunLoop run_loop;
 
   Path gdoc_path("/a.gdoc");
   Path b_path("/b");
@@ -1650,7 +1766,7 @@ TEST_F(DriveFsPinManagerTest,
 
   PinManager manager(temp_dir_.GetPath(), &drivefs_);
   manager.SetSpaceGetter(GetSpaceGetter());
-  manager.SetCompletionCallback(mock_callback.Get());
+  manager.SetCompletionCallback(completion_callback.Get());
   manager.Start();
   run_loop.Run();
 
@@ -1660,10 +1776,10 @@ TEST_F(DriveFsPinManagerTest,
 
   // Flipping all the events to `kCompleted` will not start the next search
   // query as the `a.gdoc` file is still remaining in the syncing items. As the
-  // task environment was started with a mock time, the `base::Runloop` will
-  // execute all tasks then automatically advance the clock until the periodic
-  // removal task is executed, cleaning the "a.gdoc" file.
-  base::RunLoop new_run_loop;
+  // task environment was started with a mock time, the `Runloop` will execute
+  // all tasks then automatically advance the clock until the periodic removal
+  // task is executed, cleaning the "a.gdoc" file.
+  RunLoop new_run_loop;
   EXPECT_CALL(drivefs_, GetMetadata(b_path, _))
       .WillOnce(RunOnceCallback<1>(
           kFileOk, MakeMetadata(/*available_offline=*/true, /*size=*/128)));
@@ -1673,7 +1789,7 @@ TEST_F(DriveFsPinManagerTest,
           kFileOk, MakeMetadata(/*available_offline=*/true, /*size=*/0)));
   EXPECT_CALL(drivefs_, OnGetNextPage(_))
       .WillOnce(DoAll(PopulateNoSearchItems(), Return(kFileOk)));
-  EXPECT_CALL(mock_callback, Run(Stage::kSuccess))
+  EXPECT_CALL(completion_callback, Run(Stage::kSuccess))
       .WillOnce(RunClosure(new_run_loop.QuitClosure()));
   SetState(status->item_events, ItemEvent::State::kCompleted);
   manager.OnSyncingStatusUpdate(*status);
@@ -1698,9 +1814,8 @@ TEST_F(DriveFsPinManagerTest, OnDrop) {
 
 TEST_F(DriveFsPinManagerTest,
        DISABLED_SyncingStatusUpdateProgressIsReportedBackToObserver) {
-  base::MockOnceCallback<void(Stage)> mock_callback;
-
-  base::RunLoop run_loop;
+  CompletionCallback completion_callback;
+  RunLoop run_loop;
 
   Path file_path("/b");
   const vector<DriveItem> items = {{.size = 128, .path = file_path}};
@@ -1732,7 +1847,7 @@ TEST_F(DriveFsPinManagerTest,
   PinManager manager(temp_dir_.GetPath(), &drivefs_);
   manager.SetSpaceGetter(GetSpaceGetter());
   manager.AddObserver(&observer);
-  manager.SetCompletionCallback(mock_callback.Get());
+  manager.SetCompletionCallback(completion_callback.Get());
   manager.Start();
   run_loop.Run();
 
@@ -1742,7 +1857,7 @@ TEST_F(DriveFsPinManagerTest,
 
   // Update the item in the syncing status to have transferred 10 bytes and
   // expect the progress to return that information.
-  base::RunLoop setup_progress_run_loop;
+  RunLoop setup_progress_run_loop;
   SetState(status->item_events, ItemEvent::State::kInProgress);
   status->item_events.at(0)->bytes_transferred = 10;
   EXPECT_CALL(observer,
@@ -1756,13 +1871,13 @@ TEST_F(DriveFsPinManagerTest,
   // Flip all the items to `kCompleted` and move the `bytes_transferred` size to
   // be the total size of the file. The reported progress should only add the
   // delta so we expect the pinned disk space to only equal the final file size.
-  base::RunLoop new_run_loop;
+  RunLoop new_run_loop;
   EXPECT_CALL(drivefs_, OnGetNextPage(_))
       .WillOnce(DoAll(PopulateNoSearchItems(), Return(kFileOk)));
   EXPECT_CALL(drivefs_, GetMetadata(_, _))
       .WillOnce(RunOnceCallback<1>(
           kFileOk, MakeMetadata(/*available_offline=*/true, /*size=*/128)));
-  EXPECT_CALL(mock_callback, Run(Stage::kSuccess))
+  EXPECT_CALL(completion_callback, Run(Stage::kSuccess))
       .WillOnce(RunClosure(new_run_loop.QuitClosure()));
   SetState(status->item_events, ItemEvent::State::kCompleted);
   status->item_events.at(0)->bytes_transferred = 128;

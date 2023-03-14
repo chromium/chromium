@@ -23,20 +23,30 @@ namespace {
 
 static base::Time g_fake_now;
 
+constexpr char kRpId[] = "example.com";
+
 TEST(MakeAuthenticatorDataTest, TestTimestampSignatureCounter) {
   ASSERT_TRUE(base::Time::FromUTCExploded({2106, 1, 0, 1}, &g_fake_now));
   base::subtle::ScopedTimeClockOverrides time_clock_overrides(
       []() { return g_fake_now; }, nullptr, nullptr);
 
-  const std::string rp_id = "example.com";
   EXPECT_THAT(MakeAuthenticatorData(CredentialMetadata::SignCounter::kTimestamp,
-                                    rp_id, absl::nullopt)
+                                    kRpId, absl::nullopt, /*has_uv=*/true)
                   .counter(),
               ElementsAre(0xff, 0xce, 0xdd, 0x80));
   EXPECT_THAT(MakeAuthenticatorData(CredentialMetadata::SignCounter::kZero,
-                                    rp_id, absl::nullopt)
+                                    kRpId, absl::nullopt, /*has_uv=*/true)
                   .counter(),
               ElementsAre(0x00, 0x00, 0x00, 0x00));
+}
+
+TEST(MakeAuthenticatorDataTest, UvBit) {
+  for (const bool has_uv : {false, true}) {
+    AuthenticatorData data = MakeAuthenticatorData(
+        CredentialMetadata::SignCounter::kZero, kRpId, absl::nullopt, has_uv);
+    EXPECT_TRUE(data.obtained_user_presence());
+    EXPECT_EQ(data.obtained_user_verification(), has_uv);
+  }
 }
 
 }  // namespace

@@ -17,6 +17,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/dialog_model_context_menu_controller.h"
+#include "ui/views/drag_controller.h"
 
 namespace gfx {
 class Canvas;
@@ -26,7 +27,8 @@ class Canvas;
 // Note: we currently recreate this button if any content (title, tabs, color,
 // etc.) changes
 // TODO(dljames): Find a way to not recreate the button for each update.
-class SavedTabGroupButton : public views::MenuButton {
+class SavedTabGroupButton : public views::MenuButton,
+                            public views::DragController {
  public:
   METADATA_HEADER(SavedTabGroupButton);
   SavedTabGroupButton(
@@ -47,6 +49,15 @@ class SavedTabGroupButton : public views::MenuButton {
       const override;
   void OnThemeChanged() override;
 
+  // views::DragController
+  void WriteDragDataForView(View* sender,
+                            const gfx::Point& press_pt,
+                            ui::OSExchangeData* data) override;
+  int GetDragOperationsForView(View* sender, const gfx::Point& p) override;
+  bool CanStartDragForView(View* sender,
+                           const gfx::Point& press_pt,
+                           const gfx::Point& p) override;
+
   // Updates the buttons visuals (title and color) alongside its list of tabs
   // displayed in the context menu.
   void UpdateButtonData(const SavedTabGroup& group);
@@ -57,7 +68,7 @@ class SavedTabGroupButton : public views::MenuButton {
     return tab_group_color_id_;
   }
 
-  const base::GUID guid() { return guid_; }
+  const base::GUID guid() const { return guid_; }
 
  private:
   std::unique_ptr<ui::DialogModel> CreateDialogModelForContextMenu();

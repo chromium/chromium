@@ -157,7 +157,7 @@ inline LayoutPoint operator-(const LayoutPoint& point) {
   return LayoutPoint(-point.X(), -point.Y());
 }
 
-constexpr ALWAYS_INLINE bool operator==(const LayoutPoint& a,
+ALWAYS_INLINE constexpr bool operator==(const LayoutPoint& a,
                                         const LayoutPoint& b) {
   return a.X() == b.X() && a.Y() == b.Y();
 }

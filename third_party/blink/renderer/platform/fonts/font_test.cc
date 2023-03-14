@@ -204,4 +204,12 @@ TEST_F(FontTest, TabWidthZero) {
   EXPECT_EQ(font.TabWidth(tab_size, LayoutUnit()), LayoutUnit());
 }
 
+TEST_F(FontTest, NullifyPrimaryFontForTesting) {
+  Font font =
+      CreateTestFont("Ahem", test::PlatformTestDataPath("Ahem.woff"), 0);
+  EXPECT_TRUE(font.PrimaryFont());
+  font.NullifyPrimaryFontForTesting();
+  EXPECT_FALSE(font.PrimaryFont());
+}
+
 }  // namespace blink

@@ -944,6 +944,109 @@ TEST_F(CaptureModeDemoToolsTest, FollowPreDeterminedOrder) {
             expected_modifier_key_vector);
 }
 
+// Tests that if a new capture mode session gets triggered by keyboard shortcut
+// while in video recording with demo tools on, the bounds of the key combo
+// widget will be updated to avoid collision.
+TEST_F(CaptureModeDemoToolsTest, KeyComboWidgetDeIntersectsWithCaptureBar) {
+  UpdateDisplay("800x700");
+  CaptureModeController* controller = StartCaptureSession(
+      CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  controller->EnableDemoTools(true);
+  StartVideoRecordingImmediately();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+  CaptureModeDemoToolsController* demo_tools_controller =
+      GetCaptureModeDemoToolsController();
+  EXPECT_TRUE(demo_tools_controller);
+  CaptureModeDemoToolsTestApi demo_tools_test_api(demo_tools_controller);
+
+  // Start a new capture mode session with keyboard shortcut.
+  PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1,
+                     ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+  auto* key_combo_widget = demo_tools_test_api.GetKeyComboWidget();
+  EXPECT_TRUE(key_combo_widget);
+  const gfx::Rect original_bounds = key_combo_widget->GetWindowBoundsInScreen();
+
+  const auto* capture_bar_view = GetCaptureModeBarView();
+  EXPECT_TRUE(capture_bar_view);
+  const auto capture_bar_bounds = capture_bar_view->GetBoundsInScreen();
+  const int capture_bar_y = capture_bar_bounds.y();
+  EXPECT_LT(capture_bar_y, original_bounds.bottom());
+
+  PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1,
+                     ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+  key_combo_widget = demo_tools_test_api.GetKeyComboWidget();
+  const gfx::Rect new_bounds = key_combo_widget->GetWindowBoundsInScreen();
+  EXPECT_GT(capture_bar_y, new_bounds.bottom());
+}
+
+// Tests that the auto click bar will be repositioned once there is a collision
+// with the key combo widget.
+TEST_F(CaptureModeDemoToolsTest, KeyComboWidgetDeIntersectsWithAutoClickBar) {
+  auto* autoclick_bubble_widget = EnableAndGetAutoClickBubbleWidget();
+  const gfx::Rect original_auto_click_widget_bounds =
+      autoclick_bubble_widget->GetWindowBoundsInScreen();
+
+  CaptureModeController* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kVideo);
+
+  // Intentionally create a `capture_region` within which the bounds of the key
+  // combo widget generated will mostly likely to collide with the
+  // `autoclick_bubble_widget`.
+  gfx::Rect capture_region = original_auto_click_widget_bounds;
+  capture_region.Inset(-16);
+
+  controller->SetUserCaptureRegion(capture_region,
+                                   /*by_user=*/true);
+  controller->EnableDemoTools(true);
+  StartVideoRecordingImmediately();
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressKey(ui::VKEY_CONTROL, ui::EF_NONE);
+  event_generator->PressKey(ui::VKEY_C, ui::EF_NONE);
+
+  CaptureModeDemoToolsTestApi demo_tools_test_api(
+      GetCaptureModeDemoToolsController());
+  auto* key_combo_widget = demo_tools_test_api.GetKeyComboWidget();
+  ASSERT_TRUE(key_combo_widget);
+  const gfx::Rect key_combo_widget_bounds =
+      key_combo_widget->GetWindowBoundsInScreen();
+  EXPECT_TRUE(
+      key_combo_widget_bounds.Intersects(original_auto_click_widget_bounds));
+
+  const gfx::Rect new_autoclick_widget_bounds =
+      autoclick_bubble_widget->GetWindowBoundsInScreen();
+  EXPECT_FALSE(key_combo_widget_bounds.Intersects(new_autoclick_widget_bounds));
+  controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+}
+
+// Tests that the key combo viewer widget will display for key event coming from
+// on-screen keyboard. For such key event, the key combo viewer will show on key
+// down of a modifier key whose `flags()` is not 0 or non-modifier key that is
+// allowed to show independently.
+TEST_F(CaptureModeDemoToolsTest, OnScreenKeyboardKeyEventTest) {
+  CaptureModeController* controller = StartCaptureSession(
+      CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  controller->EnableDemoTools(true);
+  StartVideoRecordingImmediately();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+  CaptureModeDemoToolsController* demo_tools_controller =
+      GetCaptureModeDemoToolsController();
+  EXPECT_TRUE(demo_tools_controller);
+  CaptureModeDemoToolsTestApi demo_tools_test_api(demo_tools_controller);
+
+  auto* event_generator = GetEventGenerator();
+  PressAndReleaseKeyOnVK(event_generator, ui::VKEY_A, ui::EF_CONTROL_DOWN);
+  EXPECT_THAT(demo_tools_test_api.GetShownModifiersKeyCodes(),
+              testing::ElementsAre(ui::VKEY_CONTROL));
+  EXPECT_EQ(demo_tools_test_api.GetShownNonModifierKeyCode(), ui::VKEY_A);
+  FireTimerAndVerifyWidget(/*should_hide_view=*/true);
+
+  PressAndReleaseKeyOnVK(event_generator, ui::VKEY_TAB, ui::EF_NONE);
+  EXPECT_TRUE(demo_tools_test_api.GetShownModifiersKeyCodes().empty());
+  EXPECT_EQ(demo_tools_test_api.GetShownNonModifierKeyCode(), ui::VKEY_TAB);
+  FireTimerAndVerifyWidget(/*should_hide_view=*/true);
+}
+
 // Tests that the metrics that record if a recording starts with demo tools
 // feature enabled are recorded correctly in a capture session both in clamshell
 // and tablet mode.

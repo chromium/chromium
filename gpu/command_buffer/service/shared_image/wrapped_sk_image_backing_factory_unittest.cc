@@ -28,6 +28,7 @@
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_share_group.h"
+#include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 
@@ -65,13 +66,24 @@ class WrappedSkImageBackingFactoryTest
  public:
   WrappedSkImageBackingFactoryTest() = default;
   ~WrappedSkImageBackingFactoryTest() override {
-    // |context_state_| must be destroyed while current.
-    context_state_->MakeCurrent(surface_.get(), /*needs_gl=*/true);
+    if (context_state_) {
+      // |context_state_| must be destroyed while current.
+      context_state_->MakeCurrent(surface_.get(), /*needs_gl=*/true);
+    }
   }
 
   viz::SharedImageFormat GetFormat() { return GetParam(); }
 
   void SetUp() override {
+    GpuPreferences preferences;
+
+    // We don't use WrappedSkImage with ALPHA8 if it's GL context.
+    // Note, that `gr_context_type` is not wired right now and is always GL.
+    if (GetFormat() == viz::SinglePlaneFormat::kALPHA_8 &&
+        preferences.gr_context_type == GrContextType::kGL) {
+      GTEST_SKIP();
+    }
+
     surface_ = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(),
                                                   gfx::Size());
     ASSERT_TRUE(surface_);
@@ -89,9 +101,9 @@ class WrappedSkImageBackingFactoryTest
     GpuDriverBugWorkarounds workarounds;
     scoped_refptr<gles2::FeatureInfo> feature_info =
         base::MakeRefCounted<gles2::FeatureInfo>(workarounds, GpuFeatureInfo());
-    ASSERT_TRUE(context_state_->InitializeGrContext(GpuPreferences(),
-                                                    workarounds, nullptr));
-    ASSERT_TRUE(context_state_->InitializeGL(GpuPreferences(), feature_info));
+    ASSERT_TRUE(
+        context_state_->InitializeGrContext(preferences, workarounds, nullptr));
+    ASSERT_TRUE(context_state_->InitializeGL(preferences, feature_info));
 
     backing_factory_ =
         std::make_unique<WrappedSkImageBackingFactory>(context_state_);

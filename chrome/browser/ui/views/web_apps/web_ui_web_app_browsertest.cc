@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -43,7 +44,7 @@ class WebUIWebAppBrowserTest : public WebAppControllerBrowserTest {
     std::string start_url;
     raw_ptr<Browser> browser;
     raw_ptr<BrowserView> browser_view;
-    content::WebContents* web_contents;
+    raw_ptr<content::WebContents> web_contents;
   };
 
   App InstallAndLaunch() {

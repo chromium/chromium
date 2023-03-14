@@ -17,6 +17,7 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableLongPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.lang.annotation.Retention;
@@ -188,6 +189,14 @@ public class ModalDialogProperties {
     public static final WritableObjectPropertyKey<OnBackPressedCallback>
             APP_MODAL_DIALOG_BACK_PRESS_HANDLER = new WritableObjectPropertyKey();
 
+    /**
+     * Duration of initial tap protection period after dialog is displayed to user. During this
+     * period, none of dialog buttons will respond to any click event; i.e.:
+     * {@link Controller#onClick(PropertyModel, int)} won't be triggered until it is elapsed.
+     */
+    public static final WritableLongPropertyKey BUTTON_TAP_PROTECTION_PERIOD_MS =
+            new WritableLongPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {CONTROLLER, CONTENT_DESCRIPTION,
             TITLE, TITLE_MAX_LINES, TITLE_ICON, MESSAGE_PARAGRAPH_1, MESSAGE_PARAGRAPH_2,
             CUSTOM_VIEW, CUSTOM_BUTTON_BAR_VIEW, POSITIVE_BUTTON_TEXT,
@@ -195,5 +204,6 @@ public class ModalDialogProperties {
             NEGATIVE_BUTTON_CONTENT_DESCRIPTION, NEGATIVE_BUTTON_DISABLED, FOOTER_MESSAGE,
             CANCEL_ON_TOUCH_OUTSIDE, FILTER_TOUCH_FOR_SECURITY, TOUCH_FILTERED_CALLBACK,
             TITLE_SCROLLABLE, BUTTON_STYLES, FULLSCREEN_DIALOG, DIALOG_WHEN_LARGE, FOCUS_DIALOG,
-            EXCEED_MAX_HEIGHT, APP_MODAL_DIALOG_BACK_PRESS_HANDLER};
+            EXCEED_MAX_HEIGHT, APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
+            BUTTON_TAP_PROTECTION_PERIOD_MS};
 }

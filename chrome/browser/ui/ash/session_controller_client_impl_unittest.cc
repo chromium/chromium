@@ -275,11 +275,11 @@ TEST_F(SessionControllerClientImplTest, MultiProfileDisallowedByUserPolicy) {
   EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
 
-  browser_manager_->set_is_running(true);
+  browser_manager_->StartRunning();
   EXPECT_EQ(ash::AddUserSessionPolicy::ERROR_LACROS_RUNNING,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
 
-  browser_manager_->set_is_running(false);
+  browser_manager_->StopRunning();
   EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
 

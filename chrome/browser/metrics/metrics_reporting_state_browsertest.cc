@@ -311,6 +311,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn<ChangeMetricsReportingStateCalledFrom>(
         {ChangeMetricsReportingStateCalledFrom::kUnknown,
          ChangeMetricsReportingStateCalledFrom::kUiSettings,
+         ChangeMetricsReportingStateCalledFrom::kUiFirstRun,
          ChangeMetricsReportingStateCalledFrom::kCrosMetricsSettingsChange}));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

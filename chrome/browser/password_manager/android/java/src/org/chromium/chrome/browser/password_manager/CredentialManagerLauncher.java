@@ -4,6 +4,7 @@
 package org.chromium.chrome.browser.password_manager;
 
 import android.app.PendingIntent;
+import android.content.Intent;
 
 import androidx.annotation.IntDef;
 
@@ -80,4 +81,17 @@ public interface CredentialManagerLauncher {
      */
     void getLocalCredentialManagerIntent(@ManagePasswordsReferrer int referrer,
             Callback<PendingIntent> successCallback, Callback<Exception> failureCallback);
+
+    /**
+     * Retrieves a pending AccountSettings API intent that can be used to launch the credential
+     * manager. Other than using a different GMS API, the main difference between this and
+     * CredentialManager intents above is that this can cause an account chooser to be shown before
+     * opening the credential manager. The intent is to either be used immediately or discarded.
+     *
+     * @param accountName the account name that is syncing passwords, or an empty string if there
+     *      is no such account.
+     * @param completionCallback callback called with the intent if the retrieving was successful,
+     *      or null if there was an error.
+     */
+    void getAccountSettingsIntent(String accountName, Callback<Intent> completionCallback);
 }

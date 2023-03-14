@@ -1,13 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-PT">
+<translation id="1347497506789975534">Mostrar métodos de pagamento guardados</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
-<translation id="1566281227936819866">A mostrar métodos de pagamento guardados…</translation>
 <translation id="1717486229951421299">Lista de credenciais a preencher com o toque aberta a meia altura.</translation>
 <translation id="207576718733492531">A lista de credenciais a preencher com o toque está fechada.</translation>
 <translation id="2610239185026711824">Sugerir palavra-passe</translation>
 <translation id="2652129567809778422">Selecione a palavra-passe</translation>
-<translation id="2803478378562657435">A mostrar palavras-passe guardadas e opções de palavra-passe</translation>
 <translation id="2903493209154104877">Moradas</translation>
 <translation id="3399357656427473483">Lista de credenciais a preencher com o toque.</translation>
 <translation id="3688051737190211318">Se confiar em <ph name="ORIGIN" />, pode usar uma palavra-passe guardada para iniciar sessão</translation>
@@ -15,16 +14,14 @@
 <translation id="4660011489602794167">Mostrar teclado</translation>
 <translation id="4694050069269396220">Se confiar em <ph name="ORIGIN" />, pode utilizar uma palavra-passe guardada para outro site.</translation>
 <translation id="5016175294846053194">Sugestões do preenchimento automático disponíveis acima do teclado.</translation>
-<translation id="5088366526685584589">A mostrar endereços guardados</translation>
 <translation id="5441504010984421144">Lista de credenciais a preencher com o toque aberta em ecrã cheio.</translation>
+<translation id="6296921860874265377">Mostrar palavras-passe guardadas e opções de palavras-passe</translation>
 <translation id="6393156038355142111">Sugerir palavra-passe forte</translation>
 <translation id="6558703547256592471">Experimente utilizar uma palavra-passe exclusiva para cada site.</translation>
 <translation id="7029809446516969842">Palavras-passe</translation>
-<translation id="7299100402441711551">Mostrar endereços</translation>
-<translation id="7494879913343971937">Mostrar palavras-passe</translation>
 <translation id="7594473730623999723">Deslize rapidamente para ver mais sugestões</translation>
+<translation id="7873973044507799456">Mostrar moradas guardadas</translation>
 <translation id="7992095260806105436">Utilize as sugestões de preenchimento automático do Chrome.</translation>
-<translation id="8037472847879765671">Mostrar métodos de pagamento</translation>
 <translation id="8507520749471379845">Palavras-passe disponíveis</translation>
 <translation id="8705308553596171387">Sem palavra-passe</translation>
 <translation id="879180780857354295">Opções de preenchimento alternativas disponíveis acima do teclado</translation>

@@ -96,7 +96,7 @@ class BASE_EXPORT WaitableEvent {
   //   SendToOtherThread(e);
   //   e->Wait();
   //   delete e;
-  void NOT_TAIL_CALLED Wait();
+  NOT_TAIL_CALLED void Wait();
 
   // Wait up until wait_delta has passed for the event to be signaled
   // (real-time; ignores time overrides).  Returns true if the event was
@@ -104,7 +104,7 @@ class BASE_EXPORT WaitableEvent {
   // have elapsed if this returns false.
   //
   // TimedWait can synchronise its own destruction like |Wait|.
-  bool NOT_TAIL_CALLED TimedWait(TimeDelta wait_delta);
+  NOT_TAIL_CALLED bool TimedWait(TimeDelta wait_delta);
 
 #if BUILDFLAG(IS_WIN)
   HANDLE handle() const { return handle_.get(); }
@@ -132,7 +132,7 @@ class BASE_EXPORT WaitableEvent {
   //
   // If more than one WaitableEvent is signaled to unblock WaitMany, the lowest
   // index among them is returned.
-  static size_t NOT_TAIL_CALLED WaitMany(WaitableEvent** waitables,
+  NOT_TAIL_CALLED static size_t WaitMany(WaitableEvent** waitables,
                                          size_t count);
 
   // For asynchronous waiting, see WaitableEventWatcher

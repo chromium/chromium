@@ -93,9 +93,13 @@ void NewlineThenWhitespaceStringsTable::Init() {
             std::end(whitespace_buffer), ' ');
 
   // Keep g_table_[0] uninitialized.
-  for (size_t i = 1; i < kTableSize; ++i) {
-    new (NotNullTag::kNotNull, (void*)(&g_table_[i]))
-        String(AtomicString(whitespace_buffer, i).GetString());
+  for (size_t length = 1; length < kTableSize; ++length) {
+    const unsigned hash =
+        StringHasher::ComputeHashAndMaskTop8Bits(whitespace_buffer, length);
+    auto* string_impl = StringImpl::CreateStatic(
+        reinterpret_cast<const char*>(whitespace_buffer), length, hash);
+    new (NotNullTag::kNotNull, (void*)(&g_table_[length]))
+        String(AtomicString(string_impl).GetString());
   }
 }
 

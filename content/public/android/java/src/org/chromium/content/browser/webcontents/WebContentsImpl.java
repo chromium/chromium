@@ -40,12 +40,10 @@ import org.chromium.content.browser.ViewEventSinkImpl;
 import org.chromium.content.browser.WindowEventObserver;
 import org.chromium.content.browser.WindowEventObserverManager;
 import org.chromium.content.browser.accessibility.ViewStructureBuilder;
-import org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl;
 import org.chromium.content.browser.framehost.RenderFrameHostDelegate;
 import org.chromium.content.browser.framehost.RenderFrameHostImpl;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
 import org.chromium.content_public.browser.ChildProcessImportance;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.ImageDownloadCallback;
 import org.chromium.content_public.browser.JavaScriptCallback;
@@ -606,12 +604,6 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     @Override
     public void onShow() {
         checkNotDestroyed();
-        WebContentsAccessibilityImpl wcax = WebContentsAccessibilityImpl.fromWebContents(this);
-        if (wcax != null) {
-            if (ContentFeatureList.isEnabled(ContentFeatureList.AUTO_DISABLE_ACCESSIBILITY)) {
-                wcax.updateAXModeFromNativeAccessibilityState();
-            }
-        }
         SelectionPopupControllerImpl controller = getSelectionPopupController();
         if (controller != null) controller.restoreSelectionPopupsIfNecessary();
         WebContentsImplJni.get().onShow(mNativeWebContentsAndroid);
@@ -1104,6 +1096,13 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         }
     }
 
+    @Override
+    public boolean needToFireBeforeUnloadOrUnloadEvents() {
+        if (mNativeWebContentsAndroid == 0) return false;
+        return WebContentsImplJni.get().needToFireBeforeUnloadOrUnloadEvents(
+                mNativeWebContentsAndroid);
+    }
+
     public void addTearDownDialogOverlaysHandler(Runnable handler) {
         if (mTearDownDialogOverlaysHandlers == null) {
             mTearDownDialogOverlaysHandlers = new ObserverList<>();
@@ -1215,5 +1214,6 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         void notifyRendererPreferenceUpdate(long nativeWebContentsAndroid);
         void notifyBrowserControlsHeightChanged(long nativeWebContentsAndroid);
         boolean isBeingDestroyed(long nativeWebContentsAndroid);
+        boolean needToFireBeforeUnloadOrUnloadEvents(long nativeWebContentsAndroid);
     }
 }

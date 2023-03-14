@@ -40,7 +40,7 @@ var run = function() {
           // Now remove the UA override.
           embedder.webview.setUserAgentOverride('');
         } else if (step == 3) {
-          chrome.test.assertTrue('foobar' != data[1]);
+          chrome.test.assertNe(data[1], 'foobar');
           chrome.test.assertFalse(embedder.webview.isUserAgentOverridden());
           chrome.test.succeed();
         }

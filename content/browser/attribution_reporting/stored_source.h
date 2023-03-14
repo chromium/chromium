@@ -9,9 +9,14 @@
 
 #include <vector>
 
+#include "base/time/time.h"
 #include "base/types/strong_alias.h"
+#include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/destination_set.h"
+#include "components/attribution_reporting/filters.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -38,9 +43,22 @@ class CONTENT_EXPORT StoredSource {
     kMaxValue = kReachedEventLevelAttributionLimit,
   };
 
+  static bool IsExpiryOrReportWindowTimeValid(
+      base::Time expiry_or_report_window_time,
+      base::Time source_time);
+
   StoredSource(CommonSourceInfo common_info,
-               AttributionLogic attribution_logic,
-               ActiveState active_state,
+               uint64_t source_event_id,
+               attribution_reporting::DestinationSet,
+               base::Time expiry_time,
+               base::Time event_report_window_time,
+               base::Time aggregatable_report_window_time,
+               int64_t priority,
+               attribution_reporting::FilterData,
+               absl::optional<uint64_t> debug_key,
+               attribution_reporting::AggregationKeys,
+               AttributionLogic,
+               ActiveState,
                Id source_id,
                int64_t aggregatable_budget_consumed);
 
@@ -53,6 +71,34 @@ class CONTENT_EXPORT StoredSource {
   StoredSource& operator=(StoredSource&&);
 
   const CommonSourceInfo& common_info() const { return common_info_; }
+
+  uint64_t source_event_id() const { return source_event_id_; }
+
+  const attribution_reporting::DestinationSet& destination_sites() const {
+    return destination_sites_;
+  }
+
+  base::Time expiry_time() const { return expiry_time_; }
+
+  base::Time event_report_window_time() const {
+    return event_report_window_time_;
+  }
+
+  base::Time aggregatable_report_window_time() const {
+    return aggregatable_report_window_time_;
+  }
+
+  int64_t priority() const { return priority_; }
+
+  const attribution_reporting::FilterData& filter_data() const {
+    return filter_data_;
+  }
+
+  absl::optional<uint64_t> debug_key() const { return debug_key_; }
+
+  const attribution_reporting::AggregationKeys& aggregation_keys() const {
+    return aggregation_keys_;
+  }
 
   AttributionLogic attribution_logic() const { return attribution_logic_; }
 
@@ -80,6 +126,16 @@ class CONTENT_EXPORT StoredSource {
 
  private:
   CommonSourceInfo common_info_;
+
+  uint64_t source_event_id_;
+  attribution_reporting::DestinationSet destination_sites_;
+  base::Time expiry_time_;
+  base::Time event_report_window_time_;
+  base::Time aggregatable_report_window_time_;
+  int64_t priority_;
+  attribution_reporting::FilterData filter_data_;
+  absl::optional<uint64_t> debug_key_;
+  attribution_reporting::AggregationKeys aggregation_keys_;
 
   AttributionLogic attribution_logic_;
 

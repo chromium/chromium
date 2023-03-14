@@ -110,9 +110,14 @@ using content::WebContents;
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kDownloadsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kHistoryMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kExtensionsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kMoreToolsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kIncognitoMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolsMenuModel, kPerformanceMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ExtensionsMenuModel,
+                                      kManageExtensionsMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ExtensionsMenuModel,
+                                      kVisitChromeWebStoreMenuItem);
 
 namespace {
 
@@ -246,7 +251,9 @@ void ToolsMenuModel::Build(Browser* browser) {
 
   AddSeparator(ui::NORMAL_SEPARATOR);
   AddItemWithStringId(IDC_CLEAR_BROWSING_DATA, IDS_CLEAR_BROWSING_DATA);
-  AddItemWithStringId(IDC_MANAGE_EXTENSIONS, IDS_SHOW_EXTENSIONS);
+  if (!base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu)) {
+    AddItemWithStringId(IDC_MANAGE_EXTENSIONS, IDS_SHOW_EXTENSIONS);
+  }
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kHighEfficiencyModeAvailable) ||
       base::FeatureList::IsEnabled(
@@ -267,6 +274,36 @@ void ToolsMenuModel::Build(Browser* browser) {
     AddSeparator(ui::NORMAL_SEPARATOR);
     AddCheckItemWithStringId(IDC_PROFILING_ENABLED, IDS_PROFILING_ENABLED);
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// ExtensionsMenuModel
+
+ExtensionsMenuModel::ExtensionsMenuModel(
+    ui::SimpleMenuModel::Delegate* delegate,
+    Browser* browser)
+    : SimpleMenuModel(delegate) {
+  Build(browser);
+}
+
+ExtensionsMenuModel::~ExtensionsMenuModel() = default;
+
+// Extensions (sub)menu is constructed as follows:
+// - An overflow with two items:
+//   - An item to manage extensions at chrome://extensions
+//   - An item to visit the Chrome Web Store
+void ExtensionsMenuModel::Build(Browser* browser) {
+  AddItemWithStringId(IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS,
+                      IDS_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS_ITEM);
+  SetElementIdentifierAt(
+      GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS).value(),
+      kManageExtensionsMenuItem);
+  AddItemWithStringId(IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE,
+                      IDS_EXTENSIONS_SUBMENU_CHROME_WEBSTORE_ITEM);
+  SetElementIdentifierAt(
+      GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE)
+          .value(),
+      kVisitChromeWebStoreMenuItem);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -478,7 +515,24 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_PIN_TO_START_SCREEN);
       break;
-
+    // Extensions menu.
+    case IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS:
+      CHECK(base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu));
+      // Logging the original histograms for experiment comparison purposes.
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ManageExtensions",
+                                   delta);
+      }
+      LogMenuAction(MENU_ACTION_MANAGE_EXTENSIONS);
+      break;
+    case IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE:
+      CHECK(base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu));
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES(
+            "WrenchMenu.TimeToAction.VisitChromeWebStore", delta);
+      }
+      LogMenuAction(MENU_ACTION_VISIT_CHROME_WEB_STORE);
+      break;
     // Recent tabs menu.
     case IDC_RESTORE_TAB:
       if (!uma_action_recorded_)
@@ -897,6 +951,15 @@ void AppMenuModel::Build() {
         std::make_unique<BookmarkSubMenuModel>(this, browser_);
     AddSubMenuWithStringId(IDC_BOOKMARKS_MENU, IDS_BOOKMARKS_MENU,
                            bookmark_sub_menu_model_.get());
+  }
+
+  if (base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu)) {
+    // Extensions sub menu.
+    sub_menus_.push_back(std::make_unique<ExtensionsMenuModel>(this, browser_));
+    AddSubMenuWithStringId(IDC_EXTENSIONS_SUBMENU, IDS_EXTENSIONS_SUBMENU,
+                           sub_menus_.back().get());
+    SetElementIdentifierAt(GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU).value(),
+                           kExtensionsMenuItem);
   }
 
   AddSeparator(ui::LOWER_SEPARATOR);

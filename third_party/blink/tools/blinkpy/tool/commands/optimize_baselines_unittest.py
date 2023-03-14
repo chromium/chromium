@@ -15,9 +15,6 @@ class TestOptimizeBaselines(BaseTestCase):
         abs_path = self.tool.filesystem.join(port.web_tests_dir(), path)
         self.tool.filesystem.write_text_file(abs_path, contents)
 
-    def setUp(self):
-        super(TestOptimizeBaselines, self).setUp()
-
     def test_optimize_all_suffixes_by_default(self):
         test_port = self.tool.port_factory.get('test')
         self._write_test_file(test_port, 'another/test.html',

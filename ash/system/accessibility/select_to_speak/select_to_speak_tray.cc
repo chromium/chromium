@@ -95,7 +95,16 @@ SelectToSpeakTray::SelectToSpeakTray(Shelf* shelf,
 }
 
 SelectToSpeakTray::~SelectToSpeakTray() {
-  Shell::Get()->accessibility_controller()->RemoveObserver(this);
+  // This may be called during shutdown in which case some of the
+  // ash objects may already be destroyed.
+  auto* shell = Shell::Get();
+  if (!shell) {
+    return;
+  }
+  auto* accessibility_controller = shell->accessibility_controller();
+  if (accessibility_controller) {
+    accessibility_controller->RemoveObserver(this);
+  }
 }
 
 void SelectToSpeakTray::Initialize() {

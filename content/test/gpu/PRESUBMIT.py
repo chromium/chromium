@@ -143,7 +143,7 @@ def CheckPytypePathsInSync(input_api, output_api):
   """Checks that run_pytype.py's paths are in sync with PRESUBMIT.py's"""
   filepath = input_api.os_path.join(input_api.PresubmitLocalPath(),
                                     'run_pytype.py')
-  with open(filepath) as infile:
+  with open(filepath, encoding='utf-8') as infile:
     contents = infile.read()
   # Grab the EXTRA_PATHS_COMPONENTS = [...] portion as a string.
   match = input_api.re.search(r'(EXTRA_PATHS_COMPONENTS\s*=\s*[^=]*\]\n)',

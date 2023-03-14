@@ -7,10 +7,8 @@
 #import "base/containers/circular_deque.h"
 #import "base/functional/bind.h"
 #import "components/breadcrumbs/core/breadcrumb_manager.h"
-#import "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"
-#import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 #import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_tab_helper.h"
 #import "ios/chrome/browser/download/confirm_download_replacing_overlay.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
@@ -23,7 +21,7 @@
 #import "ios/chrome/browser/overlays/public/web_content_area/java_script_confirm_dialog_overlay.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/java_script_prompt_dialog_overlay.h"
 #import "ios/chrome/browser/overlays/test/fake_overlay_presentation_context.h"
-#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
@@ -60,10 +58,6 @@ class BreadcrumbManagerBrowserAgentTest : public PlatformTest {
   BreadcrumbManagerBrowserAgentTest() {
     TestChromeBrowserState::Builder test_cbs_builder;
     browser_state_ = test_cbs_builder.Build();
-
-    BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-        browser_state_.get());
-
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
 
     OverlayPresenter::FromBrowser(browser_.get(),

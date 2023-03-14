@@ -10,6 +10,10 @@ static_library("shortcut_customization_ui") {
   sources = [
     "shortcut_customization_app_ui.cc",
     "shortcut_customization_app_ui.h",
+    "shortcuts_app_manager.cc",
+    "shortcuts_app_manager.h",
+    "shortcuts_app_manager_factory.cc",
+    "shortcuts_app_manager_factory.h",
     "url_constants.cc",
     "url_constants.h",
   ]
@@ -21,9 +25,47 @@ static_library("shortcut_customization_ui") {
     "//ash/webui/shortcut_customization_ui/backend/search:mojo_bindings",
     "//ash/webui/shortcut_customization_ui/mojom",
     "//ash/webui/system_apps/public:system_web_app_config",
+    "//chromeos/ash/components/local_search_service/public/cpp",
     "//chromeos/strings",
+    "//components/keyed_service/content:content",
     "//content/public/browser",
     "//ui/resources:webui_resources_grd_grit",
     "//ui/webui",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "backend/accelerator_configuration_provider_unittest.cc",
+    "backend/search/search_concept_registry_unittest.cc",
+    "backend/search/search_handler_unittest.cc",
+    "shortcuts_app_manager_unittest.cc",
+  ]
+
+  deps = [
+    ":shortcut_customization_ui",
+    "//ash",
+    "//ash:test_support",
+    "//ash/public/cpp",
+    "//ash/public/mojom",
+    "//ash/webui/shortcut_customization_ui/backend",
+    "//ash/webui/shortcut_customization_ui/backend/search:mojo_bindings",
+    "//ash/webui/shortcut_customization_ui/mojom",
+    "//base/test:test_support",
+    "//chromeos/ash/components:test_support",
+    "//chromeos/ash/components/local_search_service/public/cpp:cpp",
+    "//chromeos/ash/components/local_search_service/public/mojom",
+    "//chromeos/ash/components/local_search_service/public/mojom:mojom",
+    "//content/test:test_support",
+    "//device/udev_linux:test_support",
+    "//mojo/public/cpp/bindings:bindings",
+    "//testing/gtest",
+    "//ui/base:test_support",
+    "//ui/base/ime/ash",
+    "//ui/chromeos/events",
+    "//ui/events/devices",
+    "//ui/events/devices:test_support",
   ]
 }

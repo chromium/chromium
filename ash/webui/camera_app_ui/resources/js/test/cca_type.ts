@@ -26,8 +26,6 @@ export const SELECTOR_MAP = {
   documentCancelButton:
       '.document-preview-mode button[i18n-text=cancel_review_button]',
   documentCornerOverlay: '#preview-document-corner-overlay',
-  documentDialogButton: `#view-document-mode-dialog ` +
-      `button[i18n-text=document_mode_dialog_got_it]`,
   documentDoneFixButton: `.document-fix-mode ` +
       `button[i18n-text=label_crop_done]`,
   documentFixButton:

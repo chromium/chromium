@@ -689,7 +689,8 @@ ScriptPromise RTCPeerConnection::createOffer(ScriptState* script_state,
                                       kSignalingStateClosedMessage);
     return ScriptPromise();
   }
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
   RTCSessionDescriptionRequest* request =
       RTCSessionDescriptionRequestPromiseImpl::Create(
@@ -756,7 +757,8 @@ ScriptPromise RTCPeerConnection::createAnswer(ScriptState* script_state,
   UseCounter::Count(context, WebFeature::kRTCPeerConnectionCreateAnswer);
   UseCounter::Count(context, WebFeature::kRTCPeerConnectionCreateAnswerPromise);
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
   RTCSessionDescriptionRequest* request =
       RTCSessionDescriptionRequestPromiseImpl::Create(
@@ -957,7 +959,8 @@ ScriptPromise RTCPeerConnection::setLocalDescription(
   UseCounter::Count(context,
                     WebFeature::kRTCPeerConnectionSetLocalDescriptionPromise);
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
   auto* request = MakeGarbageCollected<RTCVoidRequestPromiseImpl>(
       this, resolver, "RTCPeerConnection", "setLocalDescription");
@@ -1077,7 +1080,8 @@ ScriptPromise RTCPeerConnection::setRemoteDescription(
   if (ContainsCandidate(session_description_init->sdp()))
     DisableBackForwardCache(context);
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
   auto* request = MakeGarbageCollected<RTCVoidRequestPromiseImpl>(
       this, resolver, "RTCPeerConnection", "setRemoteDescription");
@@ -1385,7 +1389,8 @@ ScriptPromise RTCPeerConnection::generateCertificate(
     return ScriptPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
 
   // Helper closure callback for RTCPeerConnection::generateCertificate.
@@ -1444,7 +1449,8 @@ ScriptPromise RTCPeerConnection::addIceCandidate(
 
   DisableBackForwardCache(GetExecutionContext());
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
   auto* request = MakeGarbageCollected<RTCVoidRequestPromiseImpl>(
       this, resolver, "RTCPeerConnection", "addIceCandidate");
@@ -1679,8 +1685,21 @@ ScriptPromise RTCPeerConnection::LegacyCallbackBasedGetStats(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  UseCounter::Count(context,
-                    WebFeature::kRTCPeerConnectionGetStatsLegacyNonCompliant);
+  bool deprecation_trial_enabled =
+      RuntimeEnabledFeatures::RTCLegacyCallbackBasedGetStatsEnabled(context);
+  if (deprecation_trial_enabled) {
+    // The deprecation trial is enabled, allow API usage without the warning.
+    // TODO(https://crbug.com/822696): In M122, delete this API.
+    UseCounter::Count(context,
+                      WebFeature::kRTCPeerConnectionLegacyGetStatsTrial);
+  } else {
+    // The deprecation trial is NOT enabled: show a deprecation warning.
+    // TODO(https://crbug.com/822696): In M114 add a base::Feature to control
+    // the throwing of an exception here. The plan is to throw in Canary/Beta in
+    // M114 and to throw in Stable in M117.
+    Deprecation::CountDeprecation(
+        context, WebFeature::kRTCPeerConnectionGetStatsLegacyNonCompliant);
+  }
   auto* stats_request = MakeGarbageCollected<RTCStatsRequestImpl>(
       GetExecutionContext(), this, success_callback, selector);
   // FIXME: Add passing selector as part of the statsRequest.
@@ -1704,7 +1723,8 @@ ScriptPromise RTCPeerConnection::PromiseBasedGetStats(
                                         "Internal error: release in progress");
       return ScriptPromise();
     }
-    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+        script_state, exception_state.GetContext());
     ScriptPromise promise = resolver->Promise();
     if (peer_handler_unregistered_) {
       LOG(ERROR) << "Internal error: context is destroyed";

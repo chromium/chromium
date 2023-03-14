@@ -129,11 +129,16 @@ void NotificationSwipeControlView::UpdateButtonsVisibility() {
   message_center::NotificationControlButtonsView* buttons =
       message_view_->GetControlButtonsView();
   // Ignore when GetControlButtonsView() returns null.
-  if (!buttons)
+  if (!buttons) {
     return;
+  }
   bool has_settings_button = buttons->settings_button();
 
   if (features::IsNotificationsRefreshEnabled()) {
+    if (!has_settings_button) {
+      return;
+    }
+
     int extra_padding = button_position == ButtonPosition::RIGHT
                             ? kNotificationSwipeControlPadding.left()
                             : kNotificationSwipeControlPadding.right();
@@ -180,8 +185,9 @@ void NotificationSwipeControlView::UpdateButtonsVisibility() {
 void NotificationSwipeControlView::UpdateCornerRadius(int top_radius,
                                                       int bottom_radius) {
   // In the new notification UI, there will be no swipe control background.
-  if (features::IsNotificationsRefreshEnabled())
+  if (features::IsNotificationsRefreshEnabled()) {
     return;
+  }
   SetBackground(views::CreateBackgroundFromPainter(
       std::make_unique<message_center::NotificationBackgroundPainter>(
           top_radius, bottom_radius,
@@ -194,17 +200,19 @@ void NotificationSwipeControlView::ShowSettingsButton(bool show) {
   settings_button_->SetVisible(show);
 
   // Fade in animation if the visibility changes from false to true.
-  if (!was_visible && show)
+  if (!was_visible && show) {
     message_center_utils::FadeInView(
         settings_button_, /*delay_in_ms=*/0,
         kNotificationSwipeControlFadeInDurationMs, gfx::Tween::Type::LINEAR,
         "Ash.Notification.SwipeControl.FadeIn.AnimationSmoothness");
+  }
 }
 
 void NotificationSwipeControlView::ShowSnoozeButton(bool show) {
   // We don't show the snooze button in the new feature.
-  if (features::IsNotificationsRefreshEnabled())
+  if (features::IsNotificationsRefreshEnabled()) {
     return;
+  }
 
   if (show && !snooze_button_) {
     snooze_button_ = new views::ImageButton(
@@ -261,8 +269,9 @@ void NotificationSwipeControlView::ButtonPressed(ButtonId button,
   }
 
   // Button handlers of |message_view_| may have closed |this|.
-  if (!weak_this)
+  if (!weak_this) {
     return;
+  }
 
   HideButtons();
 

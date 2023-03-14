@@ -108,7 +108,7 @@ std::unique_ptr<views::Button> CreateTodaysEventsButton(
     views::Button::PressedCallback callback) {
   return views::Builder<views::Button>(
              std::make_unique<IconButton>(
-                 std::move(callback), IconButton::Type::kXSmall,
+                 std::move(callback), IconButton::Type::kXSmallFloating,
                  &kCalendarUpNextTodaysEventsButtonIcon,
                  IDS_ASH_CALENDAR_UP_NEXT_TODAYS_EVENTS_BUTTON))
       .Build();
@@ -146,6 +146,14 @@ int GetFirstVisibleChildIndex(std::vector<views::View*> event_views,
   }
 
   return 0;
+}
+
+// Checks if both lists contain the same events by comparing their event IDs.
+// The event IDs should be the same (unique per Calendar) and in the same order.
+bool SameEventIds(const std::list<google_apis::calendar::CalendarEvent>& a,
+                  const std::list<google_apis::calendar::CalendarEvent>& b) {
+  auto proj = &google_apis::calendar::CalendarEvent::id;
+  return base::ranges::equal(a, b, base::ranges::equal_to(), proj, proj);
 }
 
 }  // namespace
@@ -207,12 +215,14 @@ CalendarUpNextView::CalendarUpNextView(
                               base::Unretained(this)),
           IconButton::Type::kXSmallFloating, &kCaretLeftIcon,
           IDS_ASH_CALENDAR_UP_NEXT_SCROLL_LEFT_BUTTON));
+  left_scroll_button_->SetFocusBehavior(FocusBehavior::NEVER);
   right_scroll_button_ =
       button_container->AddChildView(std::make_unique<IconButton>(
           base::BindRepeating(&CalendarUpNextView::OnScrollRightButtonPressed,
                               base::Unretained(this)),
           IconButton::Type::kXSmallFloating, &kCaretRightIcon,
           IDS_ASH_CALENDAR_UP_NEXT_SCROLL_RIGHT_BUTTON));
+  right_scroll_button_->SetFocusBehavior(FocusBehavior::NEVER);
   header_view_->AddChildView(std::move(button_container));
 
   // Scroll view.
@@ -222,22 +232,27 @@ CalendarUpNextView::CalendarUpNextView(
   scroll_view_->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kHiddenButEnabled);
   scroll_view_->SetTreatAllScrollEventsAsHorizontal(true);
+  // Set the `scroll_view_` contents to receive focus first, followed by the
+  // todays events button.
+  scroll_view_->InsertBeforeInFocusList(todays_events_button_container_);
 
   // Contents.
-  const auto events = calendar_view_controller_->UpcomingEvents();
-  auto* content_layout_manager =
-      content_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
-          calendar_utils::kUpNextBetweenChildSpacing));
+  content_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+      calendar_utils::kUpNextBetweenChildSpacing));
 
   // Populate the contents of the scroll view.
-  UpdateEvents(events, content_layout_manager);
+  RefreshEvents();
 }
 
 CalendarUpNextView::~CalendarUpNextView() = default;
 
 SkPath CalendarUpNextView::GetClipPath() const {
   return CalendarUpNextViewBackground::GetPath(size());
+}
+
+void CalendarUpNextView::RefreshEvents() {
+  UpdateEvents(calendar_view_controller_->UpcomingEvents());
 }
 
 void CalendarUpNextView::Layout() {
@@ -262,8 +277,12 @@ void CalendarUpNextView::Layout() {
 }
 
 void CalendarUpNextView::UpdateEvents(
-    const std::list<google_apis::calendar::CalendarEvent>& events,
-    views::BoxLayout* content_layout_manager) {
+    const std::list<google_apis::calendar::CalendarEvent>& events) {
+  if (SameEventIds(displayed_events_, events)) {
+    return;
+  }
+
+  displayed_events_ = events;
   content_view_->RemoveAllChildViews();
 
   calendar_metrics::RecordUpNextEventCount(events.size());
@@ -280,37 +299,52 @@ void CalendarUpNextView::UpdateEvents(
             calendar_view_controller_,
             SelectedDateParams{now, selected_date_midnight,
                                selected_date_midnight_utc},
-            /*event=*/event, /*round_top_corners=*/true,
-            /*round_bottom_corners=*/true,
-            /*show_event_list_dot=*/false,
-            /*fixed_width=*/kLabelFullWidth));
+            /*event=*/event, /*ui_params=*/
+            UIParams{/*round_top_corners=*/true,
+                     /*round_bottom_corners=*/true,
+                     /*show_event_list_dot=*/false,
+                     /*fixed_width=*/kLabelFullWidth},
+            /*event_list_item_index=*/
+            EventListItemIndex{/*item_index=*/1,
+                               /*total_count_of_events=*/1}));
 
-    content_layout_manager->SetFlexForView(child_view, 1);
+    static_cast<views::BoxLayout*>(content_view_->GetLayoutManager())
+        ->SetFlexForView(child_view, 1);
 
     // Hide scroll buttons if we have a single event.
     left_scroll_button_->SetVisible(false);
     right_scroll_button_->SetVisible(false);
+
+    content_view_->InvalidateLayout();
 
     return;
   }
 
   // Multiple events are displayed in a scroll view of events with a max item
   // width. Longer event names will have an ellipsis applied.
-  for (auto& event : events) {
+  const int events_size = events.size();
+  for (auto it = events.begin(); it != events.end(); ++it) {
+    const int event_index = std::distance(events.begin(), it) + 1;
     content_view_->AddChildView(
         std::make_unique<CalendarEventListItemViewJelly>(
             calendar_view_controller_,
             SelectedDateParams{now, selected_date_midnight,
                                selected_date_midnight_utc},
-            /*event=*/event, /*round_top_corners=*/true,
-            /*round_bottom_corners=*/true,
-            /*show_event_list_dot=*/false,
-            /*fixed_width=*/kLabelCappedWidth));
+            /*event=*/*it,
+            /*ui_params=*/
+            UIParams{/*round_top_corners=*/true, /*round_bottom_corners=*/true,
+                     /*show_event_list_dot=*/false,
+                     /*fixed_width=*/kLabelCappedWidth},
+            /*event_list_item_index=*/
+            EventListItemIndex{/*item_index=*/event_index,
+                               /*total_count_of_events=*/events_size}));
   }
 
   // Show scroll buttons if we have multiple events.
   left_scroll_button_->SetVisible(true);
   right_scroll_button_->SetVisible(true);
+
+  content_view_->InvalidateLayout();
 }
 
 void CalendarUpNextView::OnScrollLeftButtonPressed(const ui::Event& event) {

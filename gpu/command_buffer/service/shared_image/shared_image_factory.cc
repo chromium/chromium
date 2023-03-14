@@ -313,7 +313,6 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
                                            SkAlphaType alpha_type,
                                            gpu::SurfaceHandle surface_handle,
                                            uint32_t usage) {
-  DCHECK(format.is_single_plane());
   auto* factory = GetFactoryByUsage(usage, format, size,
                                     /*pixel_data=*/{}, gfx::EMPTY_BUFFER);
   if (!factory) {
@@ -329,7 +328,7 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
     DVLOG(1) << "CreateSharedImage[" << backing->GetName()
              << "] size=" << size.ToString()
              << " usage=" << CreateLabelForSharedImageUsage(usage)
-             << " resource_format=" << format.ToString();
+             << " format=" << format.ToString();
   }
   return RegisterBacking(std::move(backing));
 }
@@ -342,7 +341,12 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
                                            SkAlphaType alpha_type,
                                            uint32_t usage,
                                            base::span<const uint8_t> data) {
-  DCHECK(format.is_single_plane());
+  if (!format.is_single_plane()) {
+    // Pixel upload path only supports single-planar formats.
+    LOG(ERROR) << "Invalid format " << format.ToString();
+    return false;
+  }
+
   SharedImageBackingFactory* factory = nullptr;
   if (backing_factory_for_testing_) {
     factory = backing_factory_for_testing_;
@@ -362,7 +366,7 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
     DVLOG(1) << "CreateSharedImagePixels[" << backing->GetName()
              << "] with pixels size=" << size.ToString()
              << " usage=" << CreateLabelForSharedImageUsage(usage)
-             << " resource_format=" << format.ToString();
+             << " format=" << format.ToString();
 
     backing->OnWriteSucceeded();
   }
@@ -378,15 +382,20 @@ bool SharedImageFactory::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     gfx::GpuMemoryBufferHandle buffer_handle) {
-  // Only use this for new multi-planar path for now. All legacy multi-planar
-  // and single planar GMBs can go through CreateSharedImage() that takes
-  // BufferPlane parameter.
-  DCHECK(format.is_multi_plane());
+  if (!format.is_multi_plane()) {
+    // Only use this for new multi-planar path for now. All legacy multi-planar
+    // and single planar GMBs can go through CreateSharedImage() that takes
+    // BufferPlane parameter.
+    LOG(ERROR) << "Invalid format " << format.ToString();
+    return false;
+  }
 
-  // Since client GMB code still operates on BufferFormat the SharedImageFormat
-  // received here must have an equivalent BufferFormat or something has gone
-  // wrong.
-  DCHECK(HasEquivalentBufferFormat(format));
+  if (!viz::HasEquivalentBufferFormat(format)) {
+    // Client GMB code still operates on BufferFormat so the SharedImageFormat
+    // received here must have an equivalent BufferFormat.
+    LOG(ERROR) << "Invalid format " << format.ToString();
+    return false;
+  }
 
   gfx::GpuMemoryBufferType gmb_type = buffer_handle.type;
 
@@ -534,7 +543,7 @@ void SharedImageFactory::DestroyAllSharedImages(bool have_context) {
 #if BUILDFLAG(IS_WIN)
 bool SharedImageFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
                                          const Mailbox& back_buffer_mailbox,
-                                         viz::ResourceFormat format,
+                                         viz::SharedImageFormat format,
                                          const gfx::Size& size,
                                          const gfx::ColorSpace& color_space,
                                          GrSurfaceOrigin surface_origin,
@@ -676,6 +685,24 @@ bool SharedImageFactory::RegisterBacking(
   }
 
   shared_image->RegisterImageFactory(this);
+
+  shared_images_.emplace(std::move(shared_image));
+  return true;
+}
+
+bool SharedImageFactory::AddSecondaryReference(const gpu::Mailbox& mailbox) {
+  if (shared_images_.contains(mailbox)) {
+    LOG(ERROR) << "AddSecondaryReference: Can't have more than one reference.";
+    return false;
+  }
+
+  std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
+      shared_image_manager_->AddSecondaryReference(mailbox,
+                                                   memory_tracker_.get());
+
+  if (!shared_image) {
+    return false;
+  }
 
   shared_images_.emplace(std::move(shared_image));
   return true;

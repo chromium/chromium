@@ -19,11 +19,7 @@ import {LibLouis} from './liblouis.js';
 import {ExtraCellsSpan, ValueSelectionSpan, ValueSpan} from './spans.js';
 
 export class BrailleInputHandler {
-  /**
-   * @param {!BrailleTranslatorManager} translatorManager Keeps track of
-   *     the current braille translator(s).
-   */
-  constructor(translatorManager) {
+  constructor() {
     /**
      * Port of the connected IME if any.
      * @private {Port}
@@ -41,8 +37,6 @@ export class BrailleInputHandler {
      * @private {?{contextID: number, type: string}}
      */
     this.inputContext_ = null;
-    /** @private {!BrailleTranslatorManager} */
-    this.translatorManager_ = translatorManager;
     /**
      * Text that currently precedes the first selection end-point.
      * @private {string}
@@ -70,19 +64,26 @@ export class BrailleInputHandler {
     /** @private {function()?} */
     this.uncommittedCellsChangedListener_ = null;
 
-    this.init_();
+    this.initListeners_();
   }
 
   /**
    * Starts to listen for connections from the Chrome OS braille IME.
    * @private
    */
-  init_() {
-    this.translatorManager_.addChangeListener(
+  initListeners_() {
+    BrailleTranslatorManager.instance.addChangeListener(
         () => this.commitAndClearEntryState_());
 
     chrome.runtime.onConnectExternal.addListener(
         port => this.onImeConnect_(port));
+  }
+
+  static init() {
+    if (BrailleInputHandler.instance) {
+      throw new Error('Cannot create two BrailleInputHandler instances');
+    }
+    BrailleInputHandler.instance = new BrailleInputHandler();
   }
 
   /**
@@ -164,7 +165,7 @@ export class BrailleInputHandler {
     }
     if (this.entryState_ &&
         this.entryState_.translator ===
-            this.translatorManager_.getDefaultTranslator()) {
+            BrailleTranslatorManager.instance.getDefaultTranslator()) {
       return ExpandingBrailleTranslator.ExpansionType.NONE;
     }
     return ExpandingBrailleTranslator.ExpansionType.SELECTION;
@@ -227,12 +228,12 @@ export class BrailleInputHandler {
    * @private
    */
   createEntryState_() {
-    let translator = this.translatorManager_.getDefaultTranslator();
+    let translator = BrailleTranslatorManager.instance.getDefaultTranslator();
     if (!translator) {
       return null;
     }
     const uncontractedTranslator =
-        this.translatorManager_.getUncontractedTranslator();
+        BrailleTranslatorManager.instance.getUncontractedTranslator();
     let constructor = BrailleInputHandler.EditsEntryState_;
     if (uncontractedTranslator) {
       const textBefore = this.currentTextBefore_;
@@ -678,3 +679,6 @@ BrailleInputHandler.LateCommitEntryState_ =
     });
   }
 };
+
+/** @type {BrailleInputHandler} */
+BrailleInputHandler.instance;

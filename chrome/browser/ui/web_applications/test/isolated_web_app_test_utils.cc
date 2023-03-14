@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
@@ -72,45 +73,13 @@ IsolatedWebAppBrowserTestHarness::~IsolatedWebAppBrowserTestHarness() = default;
 std::unique_ptr<net::EmbeddedTestServer>
 IsolatedWebAppBrowserTestHarness::CreateAndStartServer(
     const base::FilePath::StringPieceType& chrome_test_data_relative_root) {
-  base::FilePath server_root =
-      GetChromeTestDataDir().Append(chrome_test_data_relative_root);
-  auto server = std::make_unique<net::EmbeddedTestServer>();
-  server->AddDefaultHandlers(server_root);
-  CHECK(server->Start());
-  return server;
-}
-
-AppId IsolatedWebAppBrowserTestHarness::InstallIsolatedWebApp(
-    const std::string& host) {
-  GURL app_url = https_server()->GetURL(host,
-                                        "/banners/manifest_test_page.html"
-                                        "?manifest=manifest_isolated.json");
-  return InstallIsolatedWebApp(app_url);
-}
-
-AppId IsolatedWebAppBrowserTestHarness::InstallIsolatedWebApp(
-    const GURL& app_url) {
-  EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), app_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  return test::InstallPwaForCurrentUrl(browser());
+  return CreateAndStartDevServer(chrome_test_data_relative_root);
 }
 
 IsolatedWebAppUrlInfo
 IsolatedWebAppBrowserTestHarness::InstallDevModeProxyIsolatedWebApp(
     const url::Origin& origin) {
-  base::test::TestFuture<base::expected<InstallIsolatedWebAppCommandSuccess,
-                                        InstallIsolatedWebAppCommandError>>
-      future;
-
-  auto url_info = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-      web_package::SignedWebBundleId::CreateRandomForDevelopment());
-  WebAppProvider::GetForWebApps(profile())->scheduler().InstallIsolatedWebApp(
-      url_info, DevModeProxy{.proxy_url = origin}, future.GetCallback());
-
-  CHECK(future.Get().has_value()) << future.Get().error();
-
-  return url_info;
+  return web_app::InstallDevModeProxyIsolatedWebApp(profile(), origin);
 }
 
 Browser* IsolatedWebAppBrowserTestHarness::GetBrowserFromFrame(
@@ -143,15 +112,7 @@ void IsolatedWebAppBrowserTestHarness::CreateIframe(
 
 content::RenderFrameHost* IsolatedWebAppBrowserTestHarness::OpenApp(
     const AppId& app_id) {
-  WebAppRegistrar& registrar =
-      WebAppProvider::GetForWebApps(profile())->registrar_unsafe();
-  const WebApp* app = registrar.GetAppById(app_id);
-  EXPECT_TRUE(app);
-  Browser* app_window = Browser::Create(Browser::CreateParams::CreateForApp(
-      GenerateApplicationNameFromAppId(app->app_id()),
-      /*trusted_source=*/true, gfx::Rect(), profile(),
-      /*user_gesture=*/true));
-  return NavigateToURLInNewTab(app_window, app->start_url());
+  return OpenIsolatedWebApp(profile(), app_id);
 }
 
 content::RenderFrameHost*
@@ -165,6 +126,54 @@ IsolatedWebAppBrowserTestHarness::NavigateToURLInNewTab(
                                                /*foreground=*/true);
   return ui_test_utils::NavigateToURLWithDisposition(
       window, url, disposition, ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+}
+
+std::unique_ptr<net::EmbeddedTestServer> CreateAndStartDevServer(
+    const base::FilePath::StringPieceType& chrome_test_data_relative_root) {
+  base::FilePath server_root =
+      base::FilePath(FILE_PATH_LITERAL("chrome/test/data"))
+          .Append(chrome_test_data_relative_root);
+  auto server = std::make_unique<net::EmbeddedTestServer>();
+  server->AddDefaultHandlers(server_root);
+  CHECK(server->Start());
+  return server;
+}
+
+IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
+    Profile* profile,
+    const url::Origin& proxy_origin) {
+  base::test::TestFuture<base::expected<InstallIsolatedWebAppCommandSuccess,
+                                        InstallIsolatedWebAppCommandError>>
+      future;
+
+  auto url_info = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+      web_package::SignedWebBundleId::CreateRandomForDevelopment());
+  WebAppProvider::GetForWebApps(profile)->scheduler().InstallIsolatedWebApp(
+      url_info, DevModeProxy{.proxy_url = proxy_origin}, future.GetCallback());
+
+  CHECK(future.Get().has_value()) << future.Get().error();
+
+  return url_info;
+}
+
+content::RenderFrameHost* OpenIsolatedWebApp(Profile* profile,
+                                             const AppId& app_id) {
+  WebAppRegistrar& registrar =
+      WebAppProvider::GetForWebApps(profile)->registrar_unsafe();
+  const WebApp* app = registrar.GetAppById(app_id);
+  EXPECT_TRUE(app);
+  Browser* app_window = Browser::Create(Browser::CreateParams::CreateForApp(
+      GenerateApplicationNameFromAppId(app->app_id()),
+      /*trusted_source=*/true, gfx::Rect(), profile,
+      /*user_gesture=*/true));
+
+  auto new_contents =
+      content::WebContents::Create(content::WebContents::CreateParams(profile));
+  app_window->tab_strip_model()->AppendWebContents(std::move(new_contents),
+                                                   /*foreground=*/true);
+  return ui_test_utils::NavigateToURLWithDisposition(
+      app_window, app->start_url(), WindowOpenDisposition::NEW_WINDOW,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 }
 
 TestSignedWebBundle::TestSignedWebBundle(
@@ -223,5 +232,24 @@ TestSignedWebBundle BuildDefaultTestSignedWebBundle() {
   builder.AddManifest(kTestManifest);
   builder.AddPngImage(kTestIconUrl, GetTestIconInString());
   return builder.Build();
+}
+
+AppId AddDummyIsolatedAppToRegistry(Profile* profile,
+                                    const GURL& start_url,
+                                    const std::string& name) {
+  CHECK(profile);
+  WebAppProvider* provider = WebAppProvider::GetForTest(profile);
+  CHECK(provider);
+
+  std::unique_ptr<WebApp> isolated_web_app = test::CreateWebApp(start_url);
+  const AppId app_id = isolated_web_app->app_id();
+  isolated_web_app->SetName(name);
+  isolated_web_app->SetScope(isolated_web_app->start_url());
+  isolated_web_app->SetIsolationData(
+      WebApp::IsolationData(InstalledBundle{.path = base::FilePath()}));
+
+  ScopedRegistryUpdate update(&provider->sync_bridge_unsafe());
+  update->CreateApp(std::move(isolated_web_app));
+  return app_id;
 }
 }  // namespace web_app

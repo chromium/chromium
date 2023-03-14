@@ -38,8 +38,8 @@ class SecureDnsManager {
 
   // Computes a collection of secure DNS providers to use based on the |mode|
   // and |templates| prefs applied to |local_doh_providers_|.
-  base::Value GetProviders(const std::string& mode,
-                           const std::string& templates);
+  base::Value::Dict GetProviders(const std::string& mode,
+                                 const std::string& templates);
 
   // Callback for the registrar. Evaluates the current settings and publishes
   // the result to shill.

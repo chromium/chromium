@@ -13,16 +13,17 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_interstitial.h"
 #include "chrome/browser/supervised_user/supervised_user_navigation_throttle.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_url_filter.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "components/history/content/browser/history_context_helper.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -89,7 +90,7 @@ void SupervisedUserNavigationObserver::OnRequestBlocked(
 }
 
 void SupervisedUserNavigationObserver::UpdateMainFrameFilteringStatus(
-    SupervisedUserURLFilter::FilteringBehavior behavior,
+    supervised_user::SupervisedUserURLFilter::FilteringBehavior behavior,
     supervised_user::FilteringBehaviorReason reason) {
   main_frame_filtering_behavior_ = behavior;
   main_frame_filtering_behavior_reason_ = reason;
@@ -119,7 +120,8 @@ void SupervisedUserNavigationObserver::DidFinishNavigation(
     int process_id = render_frame_host->GetProcess()->GetID();
     int routing_id = render_frame_host->GetRoutingID();
     bool skip_manual_parent_filter =
-        url_filter_->ShouldSkipParentManualAllowlistFiltering(web_contents());
+        supervised_user::ShouldContentSkipParentAllowlistFiltering(
+            web_contents());
     url_filter_->GetFilteringBehaviorForURLWithAsyncChecks(
         web_contents()->GetLastCommittedURL(),
         base::BindOnce(
@@ -160,7 +162,8 @@ void SupervisedUserNavigationObserver::OnURLFilterChanged() {
   int main_frame_process_id = main_frame->GetProcess()->GetID();
   int routing_id = main_frame->GetRoutingID();
   bool skip_manual_parent_filter =
-      url_filter_->ShouldSkipParentManualAllowlistFiltering(web_contents());
+      supervised_user::ShouldContentSkipParentAllowlistFiltering(
+          web_contents());
   url_filter_->GetFilteringBehaviorForURLWithAsyncChecks(
       web_contents()->GetLastCommittedURL(),
       base::BindOnce(&SupervisedUserNavigationObserver::URLFilterCheckCallback,
@@ -231,7 +234,7 @@ void SupervisedUserNavigationObserver::URLFilterCheckCallback(
     const GURL& url,
     int render_frame_process_id,
     int render_frame_routing_id,
-    SupervisedUserURLFilter::FilteringBehavior behavior,
+    supervised_user::SupervisedUserURLFilter::FilteringBehavior behavior,
     supervised_user::FilteringBehaviorReason reason,
     bool uncertain) {
   auto* render_frame_host = content::RenderFrameHost::FromID(
@@ -248,7 +251,8 @@ void SupervisedUserNavigationObserver::URLFilterCheckCallback(
   bool is_showing_interstitial =
       base::Contains(supervised_user_interstitials_, frame_id);
   bool should_show_interstitial =
-      behavior == SupervisedUserURLFilter::FilteringBehavior::BLOCK;
+      behavior ==
+      supervised_user::SupervisedUserURLFilter::FilteringBehavior::BLOCK;
 
   // If an interstitial is being shown where it shouldn't (for e.g. because a
   // parent just approved a request) reloading will clear it. On the other hand,
@@ -369,14 +373,16 @@ void SupervisedUserNavigationObserver::RequestCreated(
 }
 
 void SupervisedUserNavigationObserver::MaybeUpdateRequestedHosts() {
-  SupervisedUserURLFilter::FilteringBehavior filtering_behavior;
+  supervised_user::SupervisedUserURLFilter::FilteringBehavior
+      filtering_behavior;
 
   for (auto iter = requested_hosts_.begin(); iter != requested_hosts_.end();) {
     bool is_manual = url_filter_->GetManualFilteringBehaviorForURL(
         GURL(*iter), &filtering_behavior);
 
     if (is_manual && filtering_behavior ==
-                         SupervisedUserURLFilter::FilteringBehavior::ALLOW) {
+                         supervised_user::SupervisedUserURLFilter::
+                             FilteringBehavior::ALLOW) {
       iter = requested_hosts_.erase(iter);
     } else {
       iter++;

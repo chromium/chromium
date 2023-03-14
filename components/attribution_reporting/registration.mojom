@@ -32,20 +32,14 @@ struct FilterData {
 // Filters for selectively matching attribution sources and triggers.
 // See https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#optional-attribution-filters
 // for details.
-struct Filters {
-  // Map of filter name to a possibly empty set of values. May contain a
-  // `source_type` key.
-  map<string, array<string>> filter_values;
-};
-
 struct FilterPair {
   // If non-empty, this trigger will be ignored unless the attributed source's
   // filter data matches.
-  Filters positive;
+  array<map<string, array<string>>> positive;
 
   // If non-empty, this trigger will be ignored unless the attributed source's
   // filter data does *NOT* match.
-  Filters negative;
+  array<map<string, array<string>>> negative;
 };
 
 // See https://github.com/WICG/attribution-reporting-api/blob/main/AGGREGATE.md#attribution-source-registration
@@ -61,13 +55,13 @@ struct AggregatableTriggerData {
   FilterPair filters;
 };
 
+// Target site(s) where a source can be attributed.
+struct DestinationSet {
+  array<network.mojom.SchemefulSite> destinations;
+};
+
 struct SourceRegistration {
-  // Target site where this source will be triggered.
-  //
-  // For sources associated with a navigation, the destination site must be
-  // same-site with the final committed url of the navigation. If they are not
-  // same-site, this source will be ignored by the browser.
-  network.mojom.SchemefulSite destination;
+  DestinationSet destinations;
 
   // Data that will be sent in attribution reports to identify this source.
   uint64 source_event_id = 0;

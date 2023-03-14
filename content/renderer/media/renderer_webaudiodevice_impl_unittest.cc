@@ -458,7 +458,8 @@ TEST_F(RendererWebAudioDeviceImplTest,
         .WillOnce(testing::Return(kErrorDevice));
     EXPECT_CALL(*mock_audio_renderer_sink_, Start).Times(0);
     EXPECT_CALL(*mock_audio_renderer_sink_, Play).Times(0);
-    EXPECT_CALL(*mock_audio_renderer_sink_, Stop).Times(0);
+    // Stop() is necessary before destruction per AudioRendererSink contract.
+    EXPECT_CALL(*mock_audio_renderer_sink_, Stop).Times(1);
   }
 
   media::ChannelLayout layout = media::GuessChannelLayout(2);

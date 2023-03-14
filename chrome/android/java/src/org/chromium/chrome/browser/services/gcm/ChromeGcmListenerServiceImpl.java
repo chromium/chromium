@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.services.gcm;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -40,8 +39,7 @@ public class ChromeGcmListenerServiceImpl extends ChromeGcmListenerService.Impl 
 
     @Override
     public void onMessageReceived(final String from, final Bundle data) {
-        boolean hasCollapseKey = !TextUtils.isEmpty(data.getString("collapse_key"));
-        GcmUma.recordDataMessageReceived(ContextUtils.getApplicationContext(), hasCollapseKey);
+        GcmUma.recordDataMessageReceived(ContextUtils.getApplicationContext());
 
         // Dispatch the message to the GCM Driver for native features.
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
@@ -73,7 +71,6 @@ public class ChromeGcmListenerServiceImpl extends ChromeGcmListenerService.Impl 
         Log.w(TAG,
                 "Push messages were deleted, but we can't tell the Service Worker as we don't"
                         + "know what subtype (app ID) it occurred for.");
-        GcmUma.recordDeletedMessages(ContextUtils.getApplicationContext());
     }
 
     @Override
@@ -143,18 +140,10 @@ public class ChromeGcmListenerServiceImpl extends ChromeGcmListenerService.Impl 
      * delayed by Android if the device is currently in doze mode.
      */
     private static void scheduleBackgroundTask(GCMMessage message) {
-        BundleToPersistableBundleConverter.Result convertedData =
-                BundleToPersistableBundleConverter.convert(message.toBundle());
-        if (convertedData.hasErrors()) {
-            Log.w(TAG,
-                    "Failed converting extras to PersistableBundle: "
-                            + convertedData.getFailedKeysErrorString());
-        }
-
         // TODO(peter): Add UMA for measuring latency introduced by the BackgroundTaskScheduler.
         TaskInfo backgroundTask =
                 TaskInfo.createOneOffTask(TaskIds.GCM_BACKGROUND_TASK_JOB_ID, 0 /* immediately */)
-                        .setExtras(convertedData.getPersistableBundle())
+                        .setExtras(message.toPersistableBundle())
                         .build();
         BackgroundTaskSchedulerFactory.getScheduler().schedule(
                 ContextUtils.getApplicationContext(), backgroundTask);

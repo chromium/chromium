@@ -17,7 +17,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
-#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -31,14 +31,14 @@ class ScriptPromiseResolver;
 class ScriptState;
 
 class CookieStore final : public EventTargetWithInlineData,
-                          public ExecutionContextLifecycleObserver,
+                          public ExecutionContextClient,
                           public network::mojom::blink::CookieChangeListener {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   CookieStore(
       ExecutionContext*,
-      mojo::Remote<network::mojom::blink::RestrictedCookieManager> backend);
+      HeapMojoRemote<network::mojom::blink::RestrictedCookieManager> backend);
   // Needed because of the
   // mojo::Remote<network::mojom::blink::RestrictedCookieManager>
   ~CookieStore() override;
@@ -64,9 +64,6 @@ class CookieStore final : public EventTargetWithInlineData,
 
   // GarbageCollected
   void Trace(Visitor* visitor) const override;
-
-  // ExecutionContextLifecycleObserver
-  void ContextDestroyed() override;
 
   // EventTargetWithInlineData
   DEFINE_ATTRIBUTE_EVENT_LISTENER(change, kChange)
@@ -130,8 +127,7 @@ class CookieStore final : public EventTargetWithInlineData,
   void StopObserving();
 
   // Wraps an always-on Mojo pipe for sending requests to the Network Service.
-  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
-  mojo::Remote<network::mojom::blink::RestrictedCookieManager> backend_;
+  HeapMojoRemote<network::mojom::blink::RestrictedCookieManager> backend_;
 
   // Wraps a Mojo pipe used to receive cookie change notifications.
   //

@@ -85,7 +85,7 @@ def ExtractModuleIdIfValidBreakpad(file_path):
     Module id if file is a valid breakpad file; None, otherwise.
   """
   module_id = None
-  with open(file_path, 'r') as file_handle:
+  with open(file_path, 'r', encoding='utf-8') as file_handle:
     # Reads a maximum of 200 bytes/characters. Malformed file or binary will
     # not have '\n' character.
     first_line = file_handle.readline(200)

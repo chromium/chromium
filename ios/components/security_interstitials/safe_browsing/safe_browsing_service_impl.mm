@@ -15,6 +15,7 @@
 #import "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #import "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #import "components/safe_browsing/core/browser/url_checker_delegate.h"
+#import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safebrowsing_constants.h"
 #import "ios/components/cookie_util/cookie_util.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
@@ -35,6 +36,29 @@
 #endif
 
 #pragma mark - SafeBrowsingServiceImpl
+
+namespace {
+
+void StartSafeBrowsingDBManagerInternal(
+    scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
+        safe_browsing_db_manager,
+    scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
+        shared_url_loader_factory) {
+  std::string client_name;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  client_name = "googlechrome";
+#else
+  client_name = "chromium";
+#endif
+
+  safe_browsing::V4ProtocolConfig config =
+      safe_browsing::GetV4ProtocolConfig(client_name,
+                                         /*disable_auto_update=*/false);
+
+  safe_browsing_db_manager->StartOnSBThread(shared_url_loader_factory, config);
+}
+
+}  // namespace
 
 SafeBrowsingServiceImpl::SafeBrowsingServiceImpl() = default;
 
@@ -106,6 +130,11 @@ void SafeBrowsingServiceImpl::ShutDown() {
   web::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&IOThreadEnabler::ShutDown, io_thread_enabler_));
+  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread) &&
+      enabled_) {
+    enabled_ = false;
+    safe_browsing_db_manager_->StopOnSBThread(true);
+  }
   network_context_client_.reset();
 }
 
@@ -167,9 +196,23 @@ void SafeBrowsingServiceImpl::SetUpURLLoaderFactory(
 void SafeBrowsingServiceImpl::UpdateSafeBrowsingEnabledState() {
   bool enabled =
       pref_change_registrar_->prefs()->GetBoolean(prefs::kSafeBrowsingEnabled);
-  web::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&IOThreadEnabler::SetSafeBrowsingEnabled,
-                                io_thread_enabler_, enabled));
+  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
+    if (enabled_ == enabled) {
+      return;
+    }
+
+    enabled_ = enabled;
+    if (enabled_) {
+      StartSafeBrowsingDBManagerInternal(safe_browsing_db_manager_,
+                                         shared_url_loader_factory_);
+    } else {
+      safe_browsing_db_manager_->StopOnSBThread(false);
+    }
+  } else {
+    web::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&IOThreadEnabler::SetSafeBrowsingEnabled,
+                                  io_thread_enabler_, enabled));
+  }
 }
 
 #pragma mark - SafeBrowsingServiceImpl::IOThreadEnabler
@@ -190,13 +233,17 @@ void SafeBrowsingServiceImpl::IOThreadEnabler::Initialize(
   network_context_ = std::make_unique<network::NetworkContext>(
       /*network_service=*/nullptr, std::move(network_context_receiver),
       url_request_context_.get(), cors_exempt_header_list);
-  SetUpURLLoaderFactory(safe_browsing_service);
+  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
+    SetUpURLLoaderFactory(safe_browsing_service);
+  }
 }
 
 void SafeBrowsingServiceImpl::IOThreadEnabler::ShutDown() {
   DCHECK_CURRENTLY_ON(web::WebThread::IO);
   shutting_down_ = true;
-  SetSafeBrowsingEnabled(false);
+  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
+    SetSafeBrowsingEnabled(false);
+  }
   url_loader_factory_.reset();
   network_context_.reset();
   shared_url_loader_factory_.reset();
@@ -206,6 +253,7 @@ void SafeBrowsingServiceImpl::IOThreadEnabler::ShutDown() {
 void SafeBrowsingServiceImpl::IOThreadEnabler::SetSafeBrowsingEnabled(
     bool enabled) {
   DCHECK_CURRENTLY_ON(web::WebThread::IO);
+  DCHECK(!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread));
   if (enabled_ == enabled)
     return;
 
@@ -213,7 +261,7 @@ void SafeBrowsingServiceImpl::IOThreadEnabler::SetSafeBrowsingEnabled(
   if (enabled_)
     StartSafeBrowsingDBManager();
   else
-    safe_browsing_db_manager_->StopOnIOThread(shutting_down_);
+    safe_browsing_db_manager_->StopOnSBThread(shutting_down_);
 }
 
 void SafeBrowsingServiceImpl::IOThreadEnabler::ClearAllCookies(
@@ -228,18 +276,8 @@ void SafeBrowsingServiceImpl::IOThreadEnabler::ClearAllCookies(
 void SafeBrowsingServiceImpl::IOThreadEnabler::StartSafeBrowsingDBManager() {
   DCHECK_CURRENTLY_ON(web::WebThread::IO);
 
-  std::string client_name;
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  client_name = "googlechrome";
-#else
-  client_name = "chromium";
-#endif
-
-  safe_browsing::V4ProtocolConfig config = safe_browsing::GetV4ProtocolConfig(
-      client_name, /*disable_auto_update=*/false);
-
-  safe_browsing_db_manager_->StartOnIOThread(shared_url_loader_factory_,
-                                             config);
+  StartSafeBrowsingDBManagerInternal(safe_browsing_db_manager_,
+                                     shared_url_loader_factory_);
 }
 
 void SafeBrowsingServiceImpl::IOThreadEnabler::SetUpURLRequestContext(

@@ -137,8 +137,7 @@ void FlagsDOMHandler::HandleRequestExperimentalFeatures(
   results.Set(flags_ui::kSupportedFeatures, std::move(supported_features));
   results.Set(flags_ui::kUnsupportedFeatures, std::move(unsupported_features));
 
-  // Cannot restart the browser on iOS.
-  results.Set(flags_ui::kNeedsRestart, false);
+  results.Set(flags_ui::kNeedsRestart, IsRestartNeededToCommitChanges());
   results.Set(flags_ui::kShowOwnerWarning,
               access_ == flags_ui::kGeneralAccessFlagsOnly);
 

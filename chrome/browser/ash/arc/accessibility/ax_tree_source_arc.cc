@@ -248,7 +248,7 @@ void AXTreeSourceArc::NotifyAccessibilityEventInternal(
   update_ids.push_back(node_id_to_clear);
 
   for (const int32_t update_id : update_ids)
-    current_tree_serializer_->InvalidateSubtree(GetFromId(update_id));
+    current_tree_serializer_->MarkSubtreeDirty(GetFromId(update_id));
 
   std::vector<ui::AXTreeUpdate> updates;
   for (const int32_t update_id : update_ids) {
@@ -307,6 +307,8 @@ void AXTreeSourceArc::ComputeEnclosingBoundsInternal(
   if (info_data->IsFocusableInFullFocusMode())
     computed_bounds->Union(info_data->GetBounds());
 
+  // NOTE: |AXTreeSourceArc::GetChildren| depends on ComputeEnclosingBounds.
+  // To get children, directly call wrapper's GetChildren here.
   std::vector<AccessibilityInfoDataWrapper*> children;
   info_data->GetChildren(&children);
   for (AccessibilityInfoDataWrapper* child : children)
@@ -323,9 +325,7 @@ AXTreeSourceArc::FindFirstFocusableNodeInFullFocusMode(
   if (info_data->IsVisibleToUser() && info_data->IsFocusableInFullFocusMode())
     return info_data;
 
-  std::vector<AccessibilityInfoDataWrapper*> children;
-  GetChildren(info_data, &children);
-  for (AccessibilityInfoDataWrapper* child : children) {
+  for (AccessibilityInfoDataWrapper* child : GetChildren(info_data)) {
     AccessibilityInfoDataWrapper* candidate =
         FindFirstFocusableNodeInFullFocusMode(child);
     if (candidate)
@@ -549,24 +549,90 @@ int32_t AXTreeSourceArc::GetId(AccessibilityInfoDataWrapper* info_data) const {
   return info_data->GetId();
 }
 
-void AXTreeSourceArc::GetChildren(
-    AccessibilityInfoDataWrapper* info_data,
-    std::vector<AccessibilityInfoDataWrapper*>* out_children) const {
-  if (!info_data)
-    return;
+void AXTreeSourceArc::CacheChildrenIfNeeded(
+    AccessibilityInfoDataWrapper* info_data) {
+  ComputeAndCacheChildren(info_data);
+}
 
-  info_data->GetChildren(out_children);
-  if (out_children->size() < 2)
+size_t AXTreeSourceArc::GetChildCount(
+    AccessibilityInfoDataWrapper* info_data) const {
+  if (!info_data) {
+    return 0;
+  }
+  DCHECK(info_data->cached_children_);
+  return info_data->cached_children_->size();
+}
+
+AccessibilityInfoDataWrapper* AXTreeSourceArc::ChildAt(
+    AccessibilityInfoDataWrapper* info_data,
+    size_t i) const {
+  DCHECK(info_data->cached_children_);
+  DCHECK(i >= 0 && i < info_data->cached_children_->size());
+  return (*info_data->cached_children_)[i];
+}
+
+// We don't need to handle cache clearing here, because each
+// AccessibilityInfoDataWrapper is created during
+// AXTreeSourceArc::NotifyAccessibilityEvent(), and destructed at the end of it
+// that method.
+void AXTreeSourceArc::ClearChildCache(AccessibilityInfoDataWrapper* info_data) {
+}
+
+bool AXTreeSourceArc::IsIgnored(AccessibilityInfoDataWrapper* info_data) const {
+  return false;
+}
+
+bool AXTreeSourceArc::IsValid(AccessibilityInfoDataWrapper* info_data) const {
+  return info_data;
+}
+
+bool AXTreeSourceArc::IsEqual(AccessibilityInfoDataWrapper* info_data1,
+                              AccessibilityInfoDataWrapper* info_data2) const {
+  if (!info_data1 || !info_data2) {
+    return false;
+  }
+  return info_data1->GetId() == info_data2->GetId();
+}
+
+AccessibilityInfoDataWrapper* AXTreeSourceArc::GetNull() const {
+  return nullptr;
+}
+
+void AXTreeSourceArc::PerformAction(const ui::AXActionData& data) {
+  delegate_->OnAction(data);
+}
+
+std::vector<AccessibilityInfoDataWrapper*>& AXTreeSourceArc::GetChildren(
+    AccessibilityInfoDataWrapper* info_data) const {
+  DCHECK(info_data);
+  ComputeAndCacheChildren(info_data);
+  return info_data->cached_children_.value();
+}
+
+void AXTreeSourceArc::ComputeAndCacheChildren(
+    AccessibilityInfoDataWrapper* info_data) const {
+  if (info_data->cached_children_) {
     return;
+  }
+
+  std::vector<AccessibilityInfoDataWrapper*>& children =
+      info_data->cached_children_.emplace();
+
+  info_data->GetChildren(&children);
+  if (children.size() < 2) {
+    return;
+  }
 
   // We sort output nodes only in full focus mode.
-  // Also don't sort for virtual nodes (e.g. WebView).
-  if (!UseFullFocusMode() || info_data->IsVirtualNode())
+  if (!UseFullFocusMode() || info_data->IsVirtualNode()) {
     return;
+  }
 
-  for (size_t i = 0; i < out_children->size(); i++) {
-    if (out_children->at(i)->IsVirtualNode())
+  // Also don't sort for virtual nodes (e.g. WebView).
+  for (const AccessibilityInfoDataWrapper* child : children) {
+    if (child->IsVirtualNode()) {
       return;
+    }
   }
 
   // This is a kind of bubble sort, but we reorder nodes only when the original
@@ -587,43 +653,19 @@ void AXTreeSourceArc::GetChildren(
   // Here, NeedReorder(a, b) = false, NeedReorder(b, c) = false, but
   // NeedReorder(a, c) = true.
 
-  for (int i = out_children->size() - 2; i >= 0; i--) {
-    auto original_bounds = out_children->at(i)->GetBounds();
-    auto enclosing_bounds = ComputeEnclosingBounds(out_children->at(i));
+  for (int i = children.size() - 2; i >= 0; i--) {
+    auto original_bounds = children.at(i)->GetBounds();
+    auto enclosing_bounds = ComputeEnclosingBounds(children.at(i));
     if (original_bounds == enclosing_bounds)
       continue;
 
     // move the current node to be visited later if necessary.
-    for (size_t j = i;
-         j + 1 < out_children->size() &&
-         NeedReorder(out_children->at(j), out_children->at(j + 1));
+    for (size_t j = i; j + 1 < children.size() &&
+                       NeedReorder(children.at(j), children.at(j + 1));
          j++) {
-      std::swap(out_children->at(j), out_children->at(j + 1));
+      std::swap(children.at(j), children.at(j + 1));
     }
   }
-}
-
-bool AXTreeSourceArc::IsIgnored(AccessibilityInfoDataWrapper* info_data) const {
-  return false;
-}
-
-bool AXTreeSourceArc::IsValid(AccessibilityInfoDataWrapper* info_data) const {
-  return info_data;
-}
-
-bool AXTreeSourceArc::IsEqual(AccessibilityInfoDataWrapper* info_data1,
-                              AccessibilityInfoDataWrapper* info_data2) const {
-  if (!info_data1 || !info_data2)
-    return false;
-  return info_data1->GetId() == info_data2->GetId();
-}
-
-AccessibilityInfoDataWrapper* AXTreeSourceArc::GetNull() const {
-  return nullptr;
-}
-
-void AXTreeSourceArc::PerformAction(const ui::AXActionData& data) {
-  delegate_->OnAction(data);
 }
 
 }  // namespace arc

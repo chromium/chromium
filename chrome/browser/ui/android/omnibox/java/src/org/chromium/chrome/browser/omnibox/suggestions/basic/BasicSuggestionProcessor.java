@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.ActionChipsDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
@@ -50,9 +51,10 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
      */
     public BasicSuggestionProcessor(@NonNull Context context,
             @NonNull SuggestionHost suggestionHost,
+            @NonNull ActionChipsDelegate actionChipsDelegate,
             @NonNull UrlBarEditingTextStateProvider editingTextProvider,
             @NonNull FaviconFetcher faviconFetcher, @NonNull BookmarkState bookmarkState) {
-        super(context, suggestionHost, faviconFetcher);
+        super(context, suggestionHost, actionChipsDelegate, faviconFetcher);
 
         mUrlBarEditingTextProvider = editingTextProvider;
         mBookmarkState = bookmarkState;

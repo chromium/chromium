@@ -19,6 +19,7 @@
 #include "ash/public/ash_interfaces.h"
 #include "ash/public/cpp/event_rewriter_controller.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
+#include "ash/public/cpp/session/session_controller.h"
 #include "ash/shell.h"
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
 #include "ash/system/pcie_peripheral/pcie_peripheral_notification_controller.h"
@@ -190,8 +191,10 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/logging_chrome.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/attestation/attestation_features.h"
 #include "chromeos/ash/components/audio/audio_devices_pref_handler_impl.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_flusher.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
@@ -217,6 +220,7 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector_stub.h"
 #include "chromeos/ash/components/network/system_token_cert_db_storage.h"
+#include "chromeos/ash/components/osauth/public/auth_parts.h"
 #include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "chromeos/ash/components/power/dark_resume_controller.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -831,6 +835,8 @@ int ChromeBrowserMainPartsAsh::PreMainMessageLoopRun() {
   auth_metrics_recorder_ =
       base::WrapUnique<AuthMetricsRecorder>(new AuthMetricsRecorder());
 
+  auth_parts_ = AuthParts::Create();
+
   return ChromeBrowserMainPartsLinux::PreMainMessageLoopRun();
 }
 
@@ -1006,12 +1012,6 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   lacros_data_backward_migration_mode_policy_observer_ = std::make_unique<
       crosapi::LacrosDataBackwardMigrationModePolicyObserver>();
 
-  // Only creates VideoConferenceAppServiceClient if VcControlsUi is enabled.
-  if (features::IsVideoConferenceEnabled()) {
-    vc_app_service_client_ =
-        std::make_unique<VideoConferenceAppServiceClient>();
-  }
-
   chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
 
   // Needs to be initialized after crosapi_manager_.
@@ -1152,8 +1152,9 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
     if (ProfileHelper::IsSigninProfile(profile)) {
       // Flush signin profile if it is just created (new device or after
       // recovery) to ensure it is correctly persisted.
-      if (profile->IsNewProfile())
-        ProfileHelper::Get()->FlushProfile(profile);
+      if (profile->IsNewProfile()) {
+        BrowserContextFlusher::Get()->ScheduleFlush(profile);
+      }
 
       ApplySigninProfileModifications(profile);
     } else {
@@ -1216,6 +1217,11 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
     DCHECK(session_manager);
 
     manager->SetState(session_manager->GetDefaultIMEState(profile));
+
+    misconfigured_user_cleaner_ = std::make_unique<MisconfiguredUserCleaner>(
+        g_browser_process->local_state(), ash::SessionController::Get());
+
+    misconfigured_user_cleaner_->ScheduleCleanup();
 
     g_browser_process->platform_part()->session_manager()->Initialize(
         *base::CommandLine::ForCurrentProcess(), profile,
@@ -1390,6 +1396,8 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
   if (features::IsVideoConferenceEnabled()) {
     video_conference_manager_client_ =
         std::make_unique<video_conference::VideoConferenceManagerClientImpl>();
+    vc_app_service_client_ =
+        std::make_unique<VideoConferenceAppServiceClient>();
   }
 
   ChromeBrowserMainPartsLinux::PostBrowserStart();
@@ -1663,6 +1671,7 @@ void ChromeBrowserMainPartsAsh::PostDestroyThreads() {
   // Shutdown these services after g_browser_process.
   InstallAttributes::Shutdown();
   DeviceSettingsService::Shutdown();
+  attestation::AttestationFeatures::Shutdown();
 }
 
 void ChromeBrowserMainPartsAsh::StartDeviceActivityController() {
@@ -1690,6 +1699,11 @@ void ChromeBrowserMainPartsAsh::StartDeviceActivityController() {
     return;
   }
 
+  // Create a repeating callback to check the time delta that elapsed since the
+  // oobe completed file was written.
+  base::RepeatingCallback<base::TimeDelta()> check_oobe_completed_callback =
+      base::BindRepeating(&StartupUtils::GetTimeSinceOobeFlagFileCreation);
+
   // CrosSettingsProvider::TRUSTED: device policies are loaded and trusted.
   device_activity_controller_ =
       std::make_unique<device_activity::DeviceActivityController>(
@@ -1706,7 +1720,8 @@ void ChromeBrowserMainPartsAsh::StartDeviceActivityController() {
           g_browser_process->local_state(),
           g_browser_process->system_network_context_manager()
               ->GetSharedURLLoaderFactory(),
-          first_run::GetFirstRunSentinelCreationTime());
+          first_run::GetFirstRunSentinelCreationTime(),
+          std::move(check_oobe_completed_callback));
 #endif
 }
 

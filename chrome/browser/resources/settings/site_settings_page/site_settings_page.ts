@@ -53,6 +53,15 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
           loadTimeData.getBoolean('enableSafeBrowsingSubresourceFilter'),
     },
     {
+      route: routes.SITE_SETTINGS_AUTO_VERIFY,
+      id: Id.ANTI_ABUSE,
+      label: 'siteSettingsAntiAbuse',
+      icon: 'settings20:account-attention',
+      enabledLabel: 'siteSettingsAntiAbuseEnabledSubLabel',
+      disabledLabel: 'siteSettingsAntiAbuseDisabledSubLabel',
+      shouldShow: () => loadTimeData.getBoolean('privateStateTokensEnabled'),
+    },
+    {
       route: routes.SITE_SETTINGS_AR,
       id: Id.AR,
       label: 'siteSettingsAr',
@@ -344,6 +353,12 @@ function buildItemListFromIds(orderedIdList: ContentSettingsTypes[]):
   return orderedList;
 }
 
+export interface SettingsSiteSettingsPageElement {
+  $: {
+    advancedContentList: HTMLElement,
+  };
+}
+
 const SettingsSiteSettingsPageElementBase = WebUiListenerMixin(PolymerElement);
 
 export class SettingsSiteSettingsPageElement extends
@@ -410,6 +425,7 @@ export class SettingsSiteSettingsPageElement extends
               Id.PROTECTED_CONTENT,
               Id.MIXEDSCRIPT,
               Id.FEDERATED_IDENTITY_API,
+              Id.ANTI_ABUSE,
               Id.SITE_DATA,
             ]),
           };

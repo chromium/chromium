@@ -141,7 +141,7 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::Test {
       } else {
         net::SchemefulSite buyer_site{GURL(kScriptUrl)};
         EXPECT_EQ(preconnect_network_anonymization_key_,
-                  net::NetworkAnonymizationKey(buyer_site, buyer_site));
+                  net::NetworkAnonymizationKey::CreateSameSite(buyer_site));
       }
     } else {
       // This check is not strictly needed, since `preconnect_url_` being equal
@@ -660,8 +660,8 @@ TEST_F(AuctionUrlLoaderFactoryProxyTest, SameUrl) {
 TEST_F(AuctionUrlLoaderFactoryProxyTest, ClientSecurityState) {
   is_for_seller_ = false;
 
-  for (auto ip_address_space : {network::mojom::IPAddressSpace::kLocal,
-                                network::mojom::IPAddressSpace::kPrivate,
+  for (auto ip_address_space : {network::mojom::IPAddressSpace::kLoopback,
+                                network::mojom::IPAddressSpace::kLocal,
                                 network::mojom::IPAddressSpace::kPublic,
                                 network::mojom::IPAddressSpace::kUnknown}) {
     client_security_state_->ip_address_space = ip_address_space;
@@ -673,14 +673,14 @@ TEST_F(AuctionUrlLoaderFactoryProxyTest, ClientSecurityState) {
     TryMakeRequest(kTrustedSignalsUrl, kAcceptJson, ExpectedResponse::kAllow);
   }
 
-  for (auto private_network_request_policy :
-       {network::mojom::PrivateNetworkRequestPolicy::kAllow,
-        network::mojom::PrivateNetworkRequestPolicy::kWarn,
-        network::mojom::PrivateNetworkRequestPolicy::kBlock,
-        network::mojom::PrivateNetworkRequestPolicy::kPreflightBlock,
-        network::mojom::PrivateNetworkRequestPolicy::kPreflightBlock}) {
-    client_security_state_->private_network_request_policy =
-        private_network_request_policy;
+  for (auto local_network_request_policy :
+       {network::mojom::LocalNetworkRequestPolicy::kAllow,
+        network::mojom::LocalNetworkRequestPolicy::kWarn,
+        network::mojom::LocalNetworkRequestPolicy::kBlock,
+        network::mojom::LocalNetworkRequestPolicy::kPreflightBlock,
+        network::mojom::LocalNetworkRequestPolicy::kPreflightBlock}) {
+    client_security_state_->local_network_request_policy =
+        local_network_request_policy;
     // Force creation of a new proxy, with correct `ip_address_space` value.
     remote_url_loader_factory_.reset();
     CreateUrlLoaderFactoryProxy();

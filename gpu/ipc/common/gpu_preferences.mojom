@@ -55,7 +55,6 @@ struct GpuPreferences {
   bool enable_low_latency_dxva;
   bool enable_zero_copy_dxgi_video;
   bool enable_nv12_dxgi_video;
-  bool enable_media_foundation_vea_on_windows7;
   bool disable_software_rasterizer;
   bool log_gpu_control_list_decisions;
 
@@ -110,4 +109,6 @@ struct GpuPreferences {
 
   [EnableIf=is_chromeos]
   bool enable_chromeos_direct_video_decoder;
+
+  bool force_separate_egl_display_for_webgl_testing;
 };

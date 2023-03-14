@@ -73,7 +73,11 @@ class PA_LOCKABLE PA_COMPONENT_EXPORT(PARTITION_ALLOC) SpinningMutex {
 
  private:
   PA_NOINLINE void AcquireSpinThenBlock() PA_EXCLUSIVE_LOCK_FUNCTION();
+#if PA_CONFIG(HAS_FAST_MUTEX)
   void LockSlow() PA_EXCLUSIVE_LOCK_FUNCTION();
+#else
+  PA_ALWAYS_INLINE void LockSlow() PA_EXCLUSIVE_LOCK_FUNCTION();
+#endif
 
   // See below, the latency of PA_YIELD_PROCESSOR can be as high as ~150
   // cycles. Meanwhile, sleeping costs a few us. Spinning 64 times at 3GHz would
@@ -119,8 +123,9 @@ PA_ALWAYS_INLINE void SpinningMutex::Acquire() {
   // 1. We don't know how much contention the lock would experience
   // 2. This may lead to weird-looking code layout when inlined into a caller
   // with PA_(UN)LIKELY() annotations.
-  if (Try())
+  if (Try()) {
     return;
+  }
 
   return AcquireSpinThenBlock();
 }

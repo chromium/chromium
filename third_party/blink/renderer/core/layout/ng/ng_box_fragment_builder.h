@@ -428,23 +428,12 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     previous_break_after_ = break_after;
   }
 
-  void SetStartPageNameIfNeeded(AtomicString name) {
-    if (start_page_name_ == g_null_atom)
-      start_page_name_ = name;
-  }
-  void SetPreviousPageName(AtomicString name) { previous_page_name_ = name; }
-  AtomicString PreviousPageName() const { return previous_page_name_; }
-
-  void SetPageName(const AtomicString name) {
-    if (!name)
-      return;
-    if (page_name_) {
-      DCHECK_EQ(page_name_, name);
-      return;
+  void SetPageNameIfNeeded(AtomicString name) {
+    if (page_name_ == g_null_atom) {
+      page_name_ = name;
     }
-    page_name_ = name;
   }
-  AtomicString PageName() const { return page_name_; }
+  const AtomicString& PageName() const { return page_name_; }
 
   // Join/"collapse" the previous (stored) break-after value with the next
   // break-before value, to determine how to deal with breaking between two
@@ -790,10 +779,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // The break-after value of the previous in-flow sibling.
   EBreakBetween previous_break_after_ = EBreakBetween::kAuto;
 
-  AtomicString start_page_name_ = g_null_atom;
-  AtomicString previous_page_name_;
-
-  AtomicString page_name_;
+  AtomicString page_name_ = g_null_atom;
 
   absl::optional<LayoutUnit> first_baseline_;
   absl::optional<LayoutUnit> last_baseline_;

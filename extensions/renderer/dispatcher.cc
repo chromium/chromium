@@ -548,11 +548,11 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
     std::unique_ptr<IPCMessageSender> ipc_sender =
         IPCMessageSender::CreateWorkerThreadIPCMessageSender(
             worker_dispatcher, service_worker_version_id);
-    ActivationSequence worker_activation_sequence =
-        *RendererExtensionRegistry::Get()->GetWorkerActivationSequence(
+    base::UnguessableToken worker_activation_token =
+        *RendererExtensionRegistry::Get()->GetWorkerActivationToken(
             extension->id());
     worker_dispatcher->AddWorkerData(
-        service_worker_version_id, worker_activation_sequence, context,
+        service_worker_version_id, worker_activation_token, context,
         CreateBindingsSystem(std::move(ipc_sender)));
     worker_thread_util::SetWorkerContextProxy(context_proxy);
 
@@ -1061,8 +1061,8 @@ void Dispatcher::LoadExtensions(
   for (auto& param : loaded_extensions) {
     std::string error;
     std::string id = param->id;
-    absl::optional<ActivationSequence> worker_activation_sequence =
-        param->worker_activation_sequence;
+    absl::optional<base::UnguessableToken> worker_activation_token =
+        param->worker_activation_token;
 
     scoped_refptr<const Extension> extension =
         ConvertToExtension(std::move(param), kRendererProfileId, &error);
@@ -1091,9 +1091,9 @@ void Dispatcher::LoadExtensions(
       NOTREACHED();
     }
 
-    if (worker_activation_sequence.has_value()) {
-      extension_registry->SetWorkerActivationSequence(
-          extension, std::move(*worker_activation_sequence));
+    if (worker_activation_token.has_value()) {
+      extension_registry->SetWorkerActivationToken(
+          extension, std::move(*worker_activation_token));
     }
 
     ExtensionsRendererClient::Get()->OnExtensionLoaded(*extension);

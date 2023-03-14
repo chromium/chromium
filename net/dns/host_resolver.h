@@ -13,7 +13,9 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/strings/string_piece.h"
+#include "base/values.h"
 #include "net/base/address_family.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
@@ -33,10 +35,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/scheme_host_port.h"
-
-namespace base {
-class Value;
-}
 
 namespace net {
 
@@ -441,7 +439,7 @@ class NET_EXPORT HostResolver {
   virtual HostCache* GetHostCache();
 
   // Returns the current DNS configuration |this| is using, as a Value.
-  virtual base::Value GetDnsConfigAsValue() const;
+  virtual base::Value::Dict GetDnsConfigAsValue() const;
 
   // Set the associated URLRequestContext, generally expected to be called by
   // URLRequestContextBuilder on passing ownership of |this| to a context. May
@@ -516,12 +514,18 @@ class NET_EXPORT HostResolver {
   // TODO(crbug.com/1264933): Delete once `AddressList` usage is fully replaced
   // in `HostResolver` and results.
   static AddressList EndpointResultToAddressList(
-      const std::vector<HostResolverEndpointResult>& endpoints,
+      base::span<const HostResolverEndpointResult> endpoints,
       const std::set<std::string>& aliases);
 
-  // Utility to get the non protocol endpoints.
+  // Utility to get the non-protocol endpoints.
   static std::vector<IPEndPoint> GetNonProtocolEndpoints(
-      const std::vector<HostResolverEndpointResult>& endpoints);
+      base::span<const HostResolverEndpointResult> endpoints);
+
+  // Returns whether there is at least one protocol endpoint in `endpoints`, and
+  // all such endpoints have ECH parameters. This can be used to implement the
+  // guidance in section 10.1 of draft-ietf-dnsop-svcb-https-11.
+  static bool AllProtocolEndpointsHaveEch(
+      base::span<const HostResolverEndpointResult> endpoints);
 
  protected:
   HostResolver();

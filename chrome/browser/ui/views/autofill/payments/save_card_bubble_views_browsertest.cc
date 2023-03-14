@@ -228,6 +228,13 @@ class SaveCardBubbleViewsFullFormBrowserTest
             kFakeGeolocationLatitude, kFakeGeolocationLongitude);
   }
 
+  void TearDownOnMainThread() override {
+    // Explicitly reset this pointer to avoid that it becomes dangling.
+    credit_card_save_manager_ = nullptr;
+
+    SyncTest::TearDownOnMainThread();
+  }
+
   // The primary main frame's AutofillManager.
   TestAutofillManager* autofill_manager() {
     return autofill_manager_injector_[GetActiveWebContents()];
@@ -692,12 +699,13 @@ class SaveCardBubbleViewsFullFormBrowserTest
   }
 
   SaveCardBubbleViews* GetSaveCardBubbleViews() {
-    SaveCardBubbleController* save_card_bubble_controller =
-        SaveCardBubbleController::Get(GetActiveWebContents());
+    SaveCardBubbleControllerImpl::CreateForWebContents(GetActiveWebContents());
+    SaveCardBubbleControllerImpl* save_card_bubble_controller =
+        SaveCardBubbleControllerImpl::FromWebContents(GetActiveWebContents());
     if (!save_card_bubble_controller)
       return nullptr;
     AutofillBubbleBase* save_card_bubble_view =
-        save_card_bubble_controller->GetSaveCardBubbleView();
+        save_card_bubble_controller->GetPaymentBubbleView();
     if (!save_card_bubble_view)
       return nullptr;
     return static_cast<SaveCardBubbleViews*>(save_card_bubble_view);

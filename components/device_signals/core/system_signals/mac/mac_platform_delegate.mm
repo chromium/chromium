@@ -87,35 +87,36 @@ MacPlatformDelegate::GetProductMetadata(const base::FilePath& file_path) {
       bundle_path.value_or(file_path));
 }
 
-absl::optional<std::vector<std::string>>
-MacPlatformDelegate::GetSigningCertificatesPublicKeyHashes(
+absl::optional<PlatformDelegate::SigningCertificatesPublicKeys>
+MacPlatformDelegate::GetSigningCertificatesPublicKeys(
     const base::FilePath& file_path) {
-  std::vector<std::string> spki_hashes;
+  SigningCertificatesPublicKeys public_keys;
+
   base::ScopedCFTypeRef<CFURLRef> file_url =
       base::mac::FilePathToCFURL(file_path);
   base::ScopedCFTypeRef<SecStaticCodeRef> file_code;
   if (SecStaticCodeCreateWithPath(file_url, kSecCSDefaultFlags,
                                   file_code.InitializeInto()) !=
       errSecSuccess) {
-    return spki_hashes;
+    return public_keys;
   }
 
   base::ScopedCFTypeRef<CFDictionaryRef> signing_information;
   if (SecCodeCopySigningInformation(file_code, kSecCSSigningInformation,
                                     signing_information.InitializeInto()) !=
       errSecSuccess) {
-    return spki_hashes;
+    return public_keys;
   }
 
   CFArrayRef cert_chain = base::mac::GetValueFromDictionary<CFArrayRef>(
       signing_information, kSecCodeInfoCertificates);
   if (!cert_chain) {
-    return spki_hashes;
+    return public_keys;
   }
 
   if (CFArrayGetCount(cert_chain) < 1) {
     // Empty cert chain.
-    return spki_hashes;
+    return public_keys;
   }
 
   // Retrieve leaf certificate.
@@ -124,7 +125,7 @@ MacPlatformDelegate::GetSigningCertificatesPublicKeyHashes(
 
   base::ScopedCFTypeRef<CFDataRef> der_data(SecCertificateCopyData(leaf_cert));
   if (!der_data) {
-    return spki_hashes;
+    return public_keys;
   }
 
   base::StringPiece spki_bytes;
@@ -133,11 +134,11 @@ MacPlatformDelegate::GetSigningCertificatesPublicKeyHashes(
               reinterpret_cast<const char*>(CFDataGetBytePtr(der_data)),
               CFDataGetLength(der_data)),
           &spki_bytes)) {
-    return spki_hashes;
+    return public_keys;
   }
 
-  spki_hashes.push_back(crypto::SHA256HashString(spki_bytes));
-  return spki_hashes;
+  public_keys.hashes.push_back(crypto::SHA256HashString(spki_bytes));
+  return public_keys;
 }
 
 }  // namespace device_signals

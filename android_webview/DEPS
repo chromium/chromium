@@ -15,7 +15,6 @@ include_rules = [
   "+components/heap_profiling",
   "+components/keyed_service/content",
   "+components/google/core",
-  "+components/gwp_asan",
   "+components/js_injection",
   "+components/network_session_configurator/common",
   "+components/metrics",

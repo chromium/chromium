@@ -606,7 +606,8 @@ class AutofillTable : public WebDatabaseTable,
       const std::string& guid,
       AutofillProfile::Source profile_source);
 
-  // Retrieves local/server profiles in the database.
+  // Retrieves local/server profiles in the database. They are returned in
+  // unspecified order.
   // The `profile_source` specifies if profiles from the legacy or the remote
   // backend should be retrieved.
   virtual bool GetAutofillProfiles(
@@ -781,6 +782,9 @@ class AutofillTable : public WebDatabaseTable,
   // with it.
   bool GetAllSyncMetadata(syncer::ModelType model_type,
                           syncer::MetadataBatch* metadata_batch);
+
+  // Deletes all metadata for |model_type|.
+  bool DeleteAllSyncMetadata(syncer::ModelType model_type);
 
   // syncer::SyncMetadataStore implementation.
   bool UpdateEntityMetadata(syncer::ModelType model_type,

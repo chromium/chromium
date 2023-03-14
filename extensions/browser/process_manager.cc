@@ -33,7 +33,6 @@
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_external_request_result.h"
 #include "content/public/browser/site_instance.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_host.h"
@@ -767,8 +766,8 @@ std::string ProcessManager::IncrementServiceWorkerKeepaliveCount(
 
   std::string request_uuid = base::GenerateGUID();
   content::ServiceWorkerContext* service_worker_context =
-      util::GetStoragePartitionForExtensionId(extension->id(), browser_context_)
-          ->GetServiceWorkerContext();
+      util::GetServiceWorkerContextForExtensionId(extension->id(),
+                                                  browser_context_);
 
   service_worker_context->StartingExternalRequest(service_worker_version_id,
                                                   timeout_type, request_uuid);
@@ -824,8 +823,8 @@ void ProcessManager::DecrementServiceWorkerKeepaliveCount(
 
   int64_t service_worker_version_id = worker_id.version_id;
   content::ServiceWorkerContext* service_worker_context =
-      util::GetStoragePartitionForExtensionId(extension->id(), browser_context_)
-          ->GetServiceWorkerContext();
+      util::GetServiceWorkerContextForExtensionId(extension->id(),
+                                                  browser_context_);
 
   content::ServiceWorkerExternalRequestResult result =
       service_worker_context->FinishedExternalRequest(service_worker_version_id,

@@ -13,6 +13,7 @@ import "sandbox/policy/mojom/context.mojom";
 import "services/network/public/mojom/address_list.mojom";
 import "services/network/public/mojom/url_loader_network_service_observer.mojom";
 import "services/network/public/mojom/cert_verifier_service.mojom";
+import "services/network/public/mojom/clear_data_filter.mojom";
 import "services/network/public/mojom/client_security_state.mojom";
 import "services/network/public/mojom/cookie_access_observer.mojom";
 import "services/network/public/mojom/cookie_manager.mojom";
@@ -567,24 +568,6 @@ struct NetworkConditions {
   double upload_throughput;
 };
 
-// Used in some clearing methods of URL-keyed data to specify the resources to
-// keep/delete.
-struct ClearDataFilter {
-  enum Type {DELETE_MATCHES, KEEP_MATCHES};
-
-  Type type;
-
-  // A list of registrable domains (e.g. google.com), internal hostnames
-  // (e.g. localhost), or IP addresses (e.g. 127.0.0.1). Other domains, such as
-  // third and lower level domains (e.g. www.google.com) are not accepted.
-  // Formally, it must hold that GetDomainAndRegistry(|domain|, _) is |domain|
-  // itself or an empty string.
-  array<string> domains;
-
-  // List of URL origins.
-  array<url.mojom.Origin> origins;
-};
-
 // Represents a signed exchange report.
 // Spec: https://wicg.github.io/webpackage/loading.html#queue-report
 struct SignedExchangeReport {
@@ -897,6 +880,7 @@ interface NetworkContext {
       RestrictedCookieManagerRole role,
       url.mojom.Origin origin,
       IsolationInfo isolation_info,
+      CookieSettingOverrides cookie_setting_overrides,
       pending_remote<CookieAccessObserver>? cookie_observer);
 
   // Provides a TrustTokenQueryAnswerer scoped to the given top-frame origin
@@ -1161,15 +1145,14 @@ interface NetworkContext {
   // and cannot be re-used for other purposes. Caller must specify an address
   // family in |local_addr| to be either IPv4 or IPv6. If port in |local_addr|
   // is 0, the OS will pick an available port. If address bytes are 0, the OS
-  // will pick a local address of the specified address family. |backlog| will
-  // be passed to the OS to set the size of accept queue.
+  // will pick a local address of the specified address family.
   // On success, the resulting local address will be written to |local_addr_out|
   // and |result| is net::OK. On failure, |result| is a network error code.
   //
   // Any sockets that are created but are yet to be destroyed will be destroyed
   // when NetworkContext goes away.
   CreateTCPServerSocket(IPEndPoint local_addr,
-                        uint32 backlog,
+                        TCPServerSocketOptions options,
                         MutableNetworkTrafficAnnotationTag traffic_annotation,
                         pending_receiver<TCPServerSocket> socket)
       => (int32 result, IPEndPoint? local_addr_out);

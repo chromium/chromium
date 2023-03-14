@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #include "base/ios/block_types.h"
-#import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 // A coordinator specialization for the case where the coordinator is creating
 // and managing a modal alert to be displayed to the user.
@@ -48,7 +48,14 @@
 // Adds an item at the end of the menu. It does nothing if `visible` is true or
 // if trying to add an item with a UIAlertActionStyleCancel while
 // `cancelButtonAdded` is true. If `enabled` is NO, the action appears dimmed
-// and non-interactable.
+// and non-interactable. If `preferred` is YES, the action will be in bold
+// letters. Only one item can be preferred.
+- (void)addItemWithTitle:(NSString*)title
+                  action:(ProceduralBlock)actionBlock
+                   style:(UIAlertActionStyle)style
+               preferred:(BOOL)preferred
+                 enabled:(BOOL)enabled;
+// Shorthand for the above method, with `preferred` = NO.
 - (void)addItemWithTitle:(NSString*)title
                   action:(ProceduralBlock)actionBlock
                    style:(UIAlertActionStyle)style

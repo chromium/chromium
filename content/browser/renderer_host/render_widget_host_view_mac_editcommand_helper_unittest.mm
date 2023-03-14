@@ -150,9 +150,8 @@ TEST_F(RenderWidgetHostViewMacEditCommandHelperWithTaskEnvTest,
   MockRenderProcessHostFactory process_host_factory;
   RenderProcessHost* process_host =
       process_host_factory.CreateRenderProcessHost(&browser_context, nullptr);
-  scoped_refptr<SiteInstanceGroup> site_instance_group =
-      base::WrapRefCounted(new SiteInstanceGroup(
-          SiteInstanceImpl::NextBrowsingInstanceId(), process_host));
+  scoped_refptr<SiteInstanceGroup> site_instance_group = base::WrapRefCounted(
+      SiteInstanceGroup::CreateForTesting(&browser_context, process_host));
   // Populates |g_supported_scale_factors|.
   std::vector<ui::ResourceScaleFactor> supported_factors;
   supported_factors.push_back(ui::k100Percent);

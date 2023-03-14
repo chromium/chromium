@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/ranges/algorithm.h"
 #include "ui/display/types/display_snapshot.h"
 
 namespace display::test {
@@ -50,9 +51,8 @@ bool TestDisplayLayoutManager::GetDisplayLayout(
 std::vector<DisplaySnapshot*> TestDisplayLayoutManager::GetDisplayStates()
     const {
   std::vector<DisplaySnapshot*> snapshots(displays_.size());
-  std::transform(
-      displays_.cbegin(), displays_.cend(), snapshots.begin(),
-      [](const std::unique_ptr<DisplaySnapshot>& item) { return item.get(); });
+  base::ranges::transform(displays_, snapshots.begin(),
+                          &std::unique_ptr<DisplaySnapshot>::get);
   return snapshots;
 }
 

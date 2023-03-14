@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_FORM_EVENTS_FORM_EVENTS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_FORM_EVENTS_FORM_EVENTS_H_
 
-namespace autofill {
+namespace autofill::autofill_metrics {
 
 // Form Events for autofill.
 // These events are triggered separately for address and credit card forms.
@@ -146,10 +146,12 @@ enum FormEvent {
   // Suggestions were shown, and they included a credit card that had metadata
   // shown.
   FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SHOWN = 58,
+  // The selected card suggestion had metadata shown.
+  FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SELECTED = 59,
 
   NUM_FORM_EVENTS,
 };
 
-}  // namespace autofill
+}  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_FORM_EVENTS_FORM_EVENTS_H_

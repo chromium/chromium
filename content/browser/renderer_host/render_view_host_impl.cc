@@ -286,9 +286,9 @@ RenderViewHostImpl::RenderViewHostImpl(
     : render_widget_host_(std::move(widget)),
       delegate_(delegate),
       render_view_host_map_id_(frame_tree->GetRenderViewHostMapId(group)),
-      site_instance_group_(group->GetSafeRef()),
       storage_partition_config_(storage_partition_config),
       routing_id_(routing_id),
+      site_instance_group_(group->GetSafeRef()),
       main_frame_routing_id_(main_frame_routing_id),
       frame_tree_(frame_tree),
       main_browsing_context_state_(
@@ -312,7 +312,6 @@ RenderViewHostImpl::RenderViewHostImpl(
       g_routing_id_view_map.Get().emplace(
           RenderViewHostID(GetProcess()->GetID(), routing_id_), this);
   CHECK(result.second) << "Inserting a duplicate item!";
-  GetAgentSchedulingGroup().AddRoute(routing_id_, this);
 
   GetProcess()->AddObserver(this);
   ui::GpuSwitchingManager::GetInstance()->AddObserver(this);
@@ -351,7 +350,6 @@ RenderViewHostImpl::~RenderViewHostImpl() {
   ui::GpuSwitchingManager::GetInstance()->RemoveObserver(this);
 
   // Detach the routing ID as the object is going away.
-  GetAgentSchedulingGroup().RemoveRoute(GetRoutingID());
   g_routing_id_view_map.Get().erase(
       RenderViewHostID(GetProcess()->GetID(), GetRoutingID()));
 

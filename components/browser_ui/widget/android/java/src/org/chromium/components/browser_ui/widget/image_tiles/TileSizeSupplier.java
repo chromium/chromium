@@ -7,7 +7,6 @@ package org.chromium.components.browser_ui.widget.image_tiles;
 import android.content.Context;
 import android.content.res.Resources;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.components.browser_ui.widget.image_tiles.TileSizeSupplier.TileSize;
@@ -67,12 +66,6 @@ class TileSizeSupplier implements Supplier<TileSize> {
 
         mComputedTileSize.interTilePadding = mInterTilePadding;
         mComputedTileSize.width = (int) tileWidthToUse;
-
-        int tileWidthToUseInDp = (int) (tileWidthToUse / mResources.getDisplayMetrics().density);
-        RecordHistogram.recordLinearCountHistogram(
-                "Search.QueryTiles.TileWidth", tileWidthToUseInDp, 50, 150, 101);
-        RecordHistogram.recordLinearCountHistogram(
-                "Search.QueryTiles.TilesFitPerRow", (int) adjustedSpanCount, 0, 20, 21);
     }
 
     private int getAvailableWidth() {

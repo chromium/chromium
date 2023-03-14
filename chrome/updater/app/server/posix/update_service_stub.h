@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/updater/app/server/posix/mojom/updater_service.mojom.h"
@@ -39,13 +41,13 @@ class UpdateServiceStub : public mojom::UpdateService {
                    RegisterAppCallback callback) override;
   void GetAppStates(GetAppStatesCallback callback) override;
   void RunPeriodicTasks(RunPeriodicTasksCallback callback) override;
-  void UpdateAll(UpdateAllCallback callback) override;
   void Update(const std::string& app_id,
               const std::string& install_data_index,
               UpdateService::Priority priority,
               UpdateService::PolicySameVersionUpdate policy_same_version_update,
               bool do_update_check_only,
               UpdateCallback callback) override;
+  void UpdateAll(UpdateAllCallback callback) override;
   void Install(mojom::RegistrationRequestPtr registration,
                const std::string& client_install_data,
                const std::string& install_data_index,
@@ -58,8 +60,23 @@ class UpdateServiceStub : public mojom::UpdateService {
                     const std::string& install_data,
                     const std::string& install_settings,
                     RunInstallerCallback callback) override;
+  void CheckForUpdate(
+      const std::string& app_id,
+      UpdateService::Priority priority,
+      UpdateService::PolicySameVersionUpdate policy_same_version_update,
+      UpdateCallback callback) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(UpdaterIPCTestCase, AllRpcsComplete);
+  // Creates an `UpdateServiceStub` and invokes a callback when the server
+  // endpoint is created. This is useful for tests.
+  UpdateServiceStub(
+      scoped_refptr<updater::UpdateService> impl,
+      UpdaterScope scope,
+      base::RepeatingClosure task_start_listener,
+      base::RepeatingClosure task_end_listener,
+      base::RepeatingClosure endpoint_created_listener_for_testing);
+
   std::unique_ptr<mojom::UpdateService> filter_;
   named_mojo_ipc_server::NamedMojoIpcServer<mojom::UpdateService> server_;
   scoped_refptr<updater::UpdateService> impl_;

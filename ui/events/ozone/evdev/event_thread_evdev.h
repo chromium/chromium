@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "ui/events/ozone/evdev/input_controller_evdev.h"
 
 namespace base {
 class Thread;
@@ -37,7 +38,8 @@ class EventThreadEvdev {
   // must be synchronized accordingly.
   void Start(std::unique_ptr<DeviceEventDispatcherEvdev> dispatcher,
              CursorDelegateEvdev* cursor,
-             EventThreadStartCallback callback);
+             EventThreadStartCallback callback,
+             InputControllerEvdev* input_controller);
 
  private:
   std::unique_ptr<base::Thread> thread_;

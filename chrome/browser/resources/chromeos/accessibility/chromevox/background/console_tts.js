@@ -6,11 +6,11 @@
  * @fileoverview A TTS engine that writes to globalThis.console.
  */
 import {SpeechLog} from '../common/log_types.js';
-import {TtsInterface} from '../common/tts_interface.js';
 import {QueueMode, TtsCategory} from '../common/tts_types.js';
 
 import {LogStore} from './logging/log_store.js';
 import {ChromeVoxPrefs} from './prefs.js';
+import {TtsInterface} from './tts_interface.js';
 
 /** @implements {TtsInterface} */
 export class ConsoleTts {
@@ -30,11 +30,8 @@ export class ConsoleTts {
    * @return {!ConsoleTts}
    */
   speak(textString, queueMode, properties) {
-    if (this.enabled_ && window['console']) {
-      let category = TtsCategory.NAV;
-      if (properties && properties.category) {
-        category = properties.category;
-      }
+    if (this.enabled_ && globalThis.console) {
+      const category = properties?.category ?? TtsCategory.NAV;
 
       const speechLog = new SpeechLog(textString, queueMode, category);
       LogStore.instance.writeLog(speechLog);

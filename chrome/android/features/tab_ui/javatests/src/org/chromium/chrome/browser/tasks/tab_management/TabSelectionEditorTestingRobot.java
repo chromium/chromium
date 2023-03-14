@@ -147,11 +147,10 @@ public class TabSelectionEditorTestingRobot {
         }
 
         public TabSelectionEditorTestingRobot.Action clickToolbarNavigationButton() {
-            onView(inTabSelectionEditor(allOf(
-                           withContentDescription(TabUiFeatureUtilities.isLaunchPolishEnabled()
-                                           ? R.string.accessibility_tab_selection_editor_back_button
-                                           : R.string.close),
-                           withParent(withId(R.id.action_bar)))))
+            onView(inTabSelectionEditor(
+                           allOf(withContentDescription(
+                                         R.string.accessibility_tab_selection_editor_back_button),
+                                   withParent(withId(R.id.action_bar)))))
                     .perform(click());
             return this;
         }

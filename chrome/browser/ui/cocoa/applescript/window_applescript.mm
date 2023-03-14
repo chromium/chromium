@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/cocoa/applescript/constants_applescript.h"
 #include "chrome/browser/ui/cocoa/applescript/error_applescript.h"
-#include "chrome/browser/ui/cocoa/applescript/metrics_applescript.h"
 #import "chrome/browser/ui/cocoa/applescript/tab_applescript.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -117,8 +116,9 @@
 
 - (NSWindow*)nativeHandle {
   // window() can be NULL during startup.
-  if (_browser->window())
+  if (_browser->window()) {
     return _browser->window()->GetNativeWindow().GetNativeNSWindow();
+  }
   return nil;
 }
 
@@ -152,8 +152,9 @@
 
 - (NSString*)mode {
   Profile* profile = _browser->profile();
-  if (profile->IsOffTheRecord())
+  if (profile->IsOffTheRecord()) {
     return AppleScript::kIncognitoWindowMode;
+  }
   return AppleScript::kNormalWindowMode;
 }
 
@@ -231,8 +232,9 @@
 }
 
 - (void)removeFromTabsAtIndex:(int)index {
-  if (index < 0 || index >= _browser->tab_strip_model()->count())
+  if (index < 0 || index >= _browser->tab_strip_model()->count()) {
     return;
+  }
   _browser->tab_strip_model()->CloseWebContentsAt(
       index, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
 }
@@ -253,10 +255,11 @@
 - (NSComparisonResult)windowComparator:(WindowAppleScript*)otherWindow {
   int thisIndex = [[self orderedIndex] intValue];
   int otherIndex = [[otherWindow orderedIndex] intValue];
-  if (thisIndex < otherIndex)
+  if (thisIndex < otherIndex) {
     return NSOrderedAscending;
-  else if (thisIndex > otherIndex)
+  } else if (thisIndex > otherIndex) {
     return NSOrderedDescending;
+  }
   // Indexes can never be same.
   NOTREACHED();
   return NSOrderedSame;
@@ -272,11 +275,10 @@
 }
 
 - (void)handlesCloseScriptCommand:(NSCloseCommand*)command {
-  AppleScript::LogAppleScriptUMA(AppleScript::AppleScriptCommand::WINDOW_CLOSE);
-
   // window() can be NULL during startup.
-  if (_browser->window())
+  if (_browser->window()) {
     _browser->window()->Close();
+  }
 }
 
 @end

@@ -219,9 +219,12 @@ class RenderViewTest : public testing::Test {
   mojo::AssociatedRemote<blink::mojom::PageBroadcast> page_broadcast_;
   raw_ptr<blink::WebView> web_view_ = nullptr;
   RendererBlinkPlatformImplTestOverride blink_platform_impl_;
-  std::unique_ptr<ContentClient> content_client_;
+
+  // These must outlive `content_client_`.
   std::unique_ptr<ContentBrowserClient> content_browser_client_;
   std::unique_ptr<ContentRendererClient> content_renderer_client_;
+
+  std::unique_ptr<ContentClient> content_client_;
   std::unique_ptr<MockRenderThread> render_thread_;
   std::unique_ptr<AgentSchedulingGroup> agent_scheduling_group_;
   std::unique_ptr<FakeRenderWidgetHost> render_widget_host_;

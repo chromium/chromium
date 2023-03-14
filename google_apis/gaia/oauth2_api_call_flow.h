@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
@@ -26,7 +27,7 @@ class HttpRequestHeaders;
 // given an access token to the service.  This class abstracts the basic steps
 // and exposes template methods for sub-classes to implement for API specific
 // details.
-class OAuth2ApiCallFlow {
+class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2ApiCallFlow {
  public:
   OAuth2ApiCallFlow();
 

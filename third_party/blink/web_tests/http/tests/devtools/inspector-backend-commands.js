@@ -65,7 +65,7 @@
   var sendMessageToBackendOriginal = InspectorFrontendHost.sendMessageToBackend;
   InspectorFrontendHost.sendMessageToBackend = sendMessageToBackendLoopback;
 
-  var agent = SDK.targetManager.mainTarget().profilerAgent();
+  var agent = SDK.targetManager.rootTarget().profilerAgent();
   await processResult(
       'commandError',
       agent.commandError({'message': 'this is the error message'}));  // Error: error in the protocol response

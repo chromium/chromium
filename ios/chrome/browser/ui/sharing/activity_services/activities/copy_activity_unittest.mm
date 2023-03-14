@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/ui/sharing/activity_services/activities/copy_activity.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/data/share_to_data.h"
-#import "ios/chrome/browser/ui/util/pasteboard_util.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"

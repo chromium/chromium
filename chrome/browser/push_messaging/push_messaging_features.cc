@@ -17,7 +17,7 @@ BASE_FEATURE(kPushSubscriptionWithExpirationTime,
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kRevokeNotificationsPermissionIfDisabledOnAppLevel,
              "RevokeNotificationsPermissionIfDisabledOnAppLevel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kNotificationRevocationGracePeriodInDays[] =
     "notifications_revocation_grace_period";

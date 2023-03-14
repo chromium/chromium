@@ -58,6 +58,9 @@ TEST_F(HoldingSpaceUtilTest, ToString) {
       case HoldingSpaceItem::Type::kScreenRecording:
         expected_string = "ScreenRecording";
         break;
+      case HoldingSpaceItem::Type::kScreenRecordingGif:
+        expected_string = "ScreenRecordingGif";
+        break;
       case HoldingSpaceItem::Type::kScreenshot:
         expected_string = "Screenshot";
         break;

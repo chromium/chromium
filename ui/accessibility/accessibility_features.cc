@@ -121,24 +121,6 @@ bool IsDictationOfflineAvailable() {
       ash::features::kOnDeviceSpeechRecognition);
 }
 
-BASE_FEATURE(kExperimentalAccessibilityDictationWithPumpkin,
-             "ExperimentalAccessibilityDictationWithPumpkin",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsExperimentalAccessibilityDictationWithPumpkinEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kExperimentalAccessibilityDictationWithPumpkin);
-}
-
-BASE_FEATURE(kExperimentalAccessibilityDictationMoreCommands,
-             "ExperimentalAccessibilityDictationMoreCommands",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsExperimentalAccessibilityDictationMoreCommandsEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kExperimentalAccessibilityDictationMoreCommands);
-}
-
 BASE_FEATURE(kExperimentalAccessibilityDictationContextChecking,
              "ExperimentalAccessibilityDictationContextChecking",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -155,15 +137,6 @@ BASE_FEATURE(kExperimentalAccessibilityGoogleTtsLanguagePacks,
 bool IsExperimentalAccessibilityGoogleTtsLanguagePacksEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kExperimentalAccessibilityGoogleTtsLanguagePacks);
-}
-
-BASE_FEATURE(kExperimentalAccessibilitySelectToSpeakVoiceSwitching,
-             "ExperimentalAccessibilitySelectToSpeakVoiceSwitching",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kExperimentalAccessibilitySelectToSpeakVoiceSwitching);
 }
 
 BASE_FEATURE(kExperimentalAccessibilityColorEnhancementSettings,

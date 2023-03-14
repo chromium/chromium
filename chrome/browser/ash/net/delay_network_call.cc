@@ -16,45 +16,68 @@
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
 
 const unsigned kDefaultNetworkRetryDelayMS = 3000;
 
-void DelayNetworkCall(base::TimeDelta retry, base::OnceClosure callback) {
-  bool delay_network_call = false;
+namespace {
+
+bool IsCaptivePortal(const NetworkState* default_network) {
+  if (!network_portal_detector::IsInitialized()) {
+    // Network portal detector is not initialized yet so we can't reliably
+    // detect network portals. We will optimistically return false here,
+    // assuming that a network portal doesn't exist.
+    return false;
+  }
+
+  if (const NetworkPortalDetector::CaptivePortalStatus status =
+          network_portal_detector::GetInstance()->GetCaptivePortalStatus();
+      status != NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE) {
+    DVLOG(1) << "DelayNetworkCall: Captive portal status for "
+             << default_network->name() << ": "
+             << NetworkPortalDetector::CaptivePortalStatusString(status);
+    return true;
+  }
+
+  return false;
+}
+
+}  // namespace
+
+bool AreNetworkCallsDelayed() {
   const NetworkState* default_network =
       NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
   if (!default_network) {
-    delay_network_call = true;
     DVLOG(1) << "DelayNetworkCall: No default network.";
-  } else {
-    std:: string default_connection_state = default_network->connection_state();
-    if (!NetworkState::StateIsConnected(default_connection_state)) {
-      delay_network_call = true;
-      DVLOG(1) << "DelayNetworkCall: "
-               << "Default network: " << default_network->name()
-               << " State: " << default_connection_state;
-    }
+    return true;
   }
-  if (!delay_network_call && network_portal_detector::IsInitialized()) {
-    NetworkPortalDetector::CaptivePortalStatus status =
-        network_portal_detector::GetInstance()->GetCaptivePortalStatus();
-    if (status != NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE) {
-      delay_network_call = true;
-      DVLOG(1) << "DelayNetworkCall: Captive portal status for "
-              << default_network->name() << ": "
-              << NetworkPortalDetector::CaptivePortalStatusString(status);
-    }
+
+  if (const std::string default_connection_state =
+          default_network->connection_state();
+      !NetworkState::StateIsConnected(default_connection_state)) {
+    DVLOG(1) << "DelayNetworkCall: "
+             << "Default network: " << default_network->name()
+             << " State: " << default_connection_state;
+    return true;
   }
-  if (delay_network_call) {
+
+  if (IsCaptivePortal(default_network)) {
+    return true;
+  }
+
+  return false;
+}
+
+void DelayNetworkCall(base::TimeDelta retry, base::OnceClosure callback) {
+  if (AreNetworkCallsDelayed()) {
     content::GetUIThreadTaskRunner({})->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&DelayNetworkCall, retry, std::move(callback)), retry);
-  } else {
-    std::move(callback).Run();
+    return;
   }
+
+  std::move(callback).Run();
 }
 
 }  // namespace ash

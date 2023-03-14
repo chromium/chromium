@@ -5,8 +5,10 @@
 #include "components/sync/driver/non_ui_syncable_service_based_model_type_controller.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -19,6 +21,52 @@
 namespace syncer {
 
 namespace {
+
+// ModelTypeSyncBridge implementation for test-only code-path :(
+// This is required to allow calling
+// ModelTypeController::ClearMetadataWhileStopped() in browser tests.
+// TODO(crbug.com/1418351): Remove test-only code-path.
+class FakeSyncableServiceBasedBridge : public ModelTypeSyncBridge {
+ public:
+  explicit FakeSyncableServiceBasedBridge(
+      std::unique_ptr<ModelTypeChangeProcessor> change_processor)
+      : ModelTypeSyncBridge(std::move(change_processor)) {
+    CHECK_IS_TEST();
+  }
+
+  // ModelTypeSyncBridge implementation.
+  std::unique_ptr<MetadataChangeList> CreateMetadataChangeList() override {
+    NOTREACHED();
+    return nullptr;
+  }
+  absl::optional<ModelError> MergeSyncData(
+      std::unique_ptr<MetadataChangeList> /*metadata_change_list*/,
+      EntityChangeList /*entity_data*/) override {
+    NOTREACHED();
+    return {};
+  }
+  absl::optional<ModelError> ApplySyncChanges(
+      std::unique_ptr<MetadataChangeList> /*metadata_change_list*/,
+      EntityChangeList /*entity_changes*/) override {
+    NOTREACHED();
+    return {};
+  }
+  void GetData(StorageKeyList /*storage_keys*/,
+               DataCallback /*callback*/) override {
+    NOTREACHED();
+  }
+  void GetAllDataForDebugging(DataCallback /*callback*/) override {
+    NOTREACHED();
+  }
+  std::string GetClientTag(const EntityData& /*entity_data*/) override {
+    NOTREACHED();
+    return {};
+  }
+  std::string GetStorageKey(const EntityData& /*entity_data*/) override {
+    NOTREACHED();
+    return {};
+  }
+};
 
 // Helper object that allows constructing and destructing the
 // SyncableServiceBasedBridge on the model thread. Gets constructed on the UI
@@ -70,12 +118,18 @@ class BridgeBuilder {
 
     base::WeakPtr<SyncableService> syncable_service =
         std::move(syncable_service_provider).Run();
+    auto processor =
+        std::make_unique<ClientTagBasedModelTypeProcessor>(type, dump_stack);
+
     // |syncable_service| can be null in tests.
+    // TODO(crbug.com/897628): Remove test-only code-path.
     if (syncable_service) {
       bridge_ = std::make_unique<SyncableServiceBasedBridge>(
-          type, std::move(store_factory),
-          std::make_unique<ClientTagBasedModelTypeProcessor>(type, dump_stack),
+          type, std::move(store_factory), std::move(processor),
           syncable_service.get());
+    } else {
+      bridge_ = std::make_unique<FakeSyncableServiceBasedBridge>(
+          std::move(processor));
     }
   }
 

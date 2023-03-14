@@ -167,7 +167,10 @@ TEST_F(KidsExternalFetcherTest, HandlesServerError) {
       net::HTTP_BAD_REQUEST);
   EXPECT_FALSE(receiver.GetResult().has_value());
   EXPECT_EQ(receiver.GetResult().error().state(),
-            KidsExternalFetcherStatus::State::HTTP_ERROR);
+            KidsExternalFetcherStatus::State::NET_OR_HTTP_ERROR);
+  EXPECT_EQ(receiver.GetResult().error().net_or_http_error_code(),
+            KidsExternalFetcherStatus::NetOrHttpErrorType(
+                net::ERR_HTTP_RESPONSE_CODE_FAILURE));
 }
 
 }  // namespace

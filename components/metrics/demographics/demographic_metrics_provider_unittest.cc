@@ -77,7 +77,7 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
       case SYNC_FEATURE_ENABLED_BUT_PAUSED:
         sync_service_ = std::make_unique<syncer::TestSyncService>();
         // Mimic the user signing out from content are (sync paused).
-        sync_service_->SetPersistentAuthErrorWithWebSignout();
+        sync_service_->SetPersistentAuthError();
 
         CHECK(sync_service_->GetUserSettings()->IsSyncRequested());
         CHECK(sync_service_->GetDisableReasons().Empty());

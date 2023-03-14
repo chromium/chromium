@@ -119,11 +119,11 @@ class CalendarEvent {
     all_day_event_ = all_day_event;
   }
 
-  // Google Meet video conference URL, if one is attached to the event.
-  const std::string& hangout_link() const { return hangout_link_; }
-  void set_hangout_link(const std::string& hangout_link) {
-    hangout_link_ = hangout_link;
-  }
+  // Video conference URL, if one is attached to the event and using the
+  // conferenceData.uri field. This could be 1P like Google Meet or any 3P
+  // provider as long as they have integrated with the calendar API correctly.
+  GURL conference_data_uri() const { return conference_data_uri_; }
+  void set_conference_data_uri(const GURL& uri) { conference_data_uri_ = uri; }
 
   // Return the approximate size of this event, in bytes.
   int GetApproximateSizeInBytes() const;
@@ -138,7 +138,7 @@ class CalendarEvent {
   DateTime start_time_;
   DateTime end_time_;
   bool all_day_event_ = false;
-  std::string hangout_link_;
+  GURL conference_data_uri_;
 };
 
 // Parses a list of calendar events.

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
+#include "components/image_service/mojom/image_service.mojom-forward.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/layout.h"
@@ -22,6 +23,10 @@ namespace history_clusters {
 class HistoryClustersHandler;
 }
 
+namespace image_service {
+class ImageServiceHandler;
+}
+
 class HistoryUI : public ui::MojoWebUIController {
  public:
   explicit HistoryUI(content::WebUI* web_ui);
@@ -32,11 +37,12 @@ class HistoryUI : public ui::MojoWebUIController {
   static base::RefCountedMemory* GetFaviconResourceBytes(
       ui::ResourceScaleFactor scale_factor);
 
-  // Instantiates the implementor of the history_clusters::mojom::PageHandler
-  // mojo interface passing to it the pending receiver that will be internally
-  // bound.
+  // Instantiates the implementors of mojom interfaces.
   void BindInterface(mojo::PendingReceiver<history_clusters::mojom::PageHandler>
                          pending_page_handler);
+  void BindInterface(
+      mojo::PendingReceiver<image_service::mojom::ImageServiceHandler>
+          pending_page_handler);
 
   // For testing only.
   history_clusters::HistoryClustersHandler*
@@ -47,6 +53,7 @@ class HistoryUI : public ui::MojoWebUIController {
  private:
   std::unique_ptr<history_clusters::HistoryClustersHandler>
       history_clusters_handler_;
+  std::unique_ptr<image_service::ImageServiceHandler> image_service_handler_;
   PrefChangeRegistrar pref_change_registrar_;
 
   void UpdateDataSource();

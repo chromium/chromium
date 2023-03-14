@@ -68,7 +68,7 @@ namespace enterprise_connectors {
 class WinKeyPersistenceDelegateTest : public testing::Test {
  public:
   void SetUp() override {
-    persistence_delegate_ = absl::WrapUnique(new WinKeyPersistenceDelegate());
+    persistence_delegate_ = std::make_unique<WinKeyPersistenceDelegate>();
     key_path_ = GetKeyPath();
     registry_override_manager_.OverrideRegistry(HKEY_LOCAL_MACHINE, &key_path_);
   }

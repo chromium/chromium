@@ -4,7 +4,7 @@
 
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
-import {BacklightColor} from '../../personalization_app.mojom-webui.js';
+import {CurrentBacklightState} from '../../personalization_app.mojom-webui.js';
 import {Actions} from '../personalization_actions.js';
 import {ReducerFunction} from '../personalization_reducers.js';
 import {PersonalizationState} from '../personalization_state.js';
@@ -12,12 +12,12 @@ import {PersonalizationState} from '../personalization_state.js';
 import {KeyboardBacklightActionName} from './keyboard_backlight_actions.js';
 import {KeyboardBacklightState} from './keyboard_backlight_state.js';
 
-export function backlightColorReducer(
-    state: BacklightColor|null, action: Actions,
-    _: PersonalizationState): BacklightColor|null {
+export function currentBacklightStateReducer(
+    state: CurrentBacklightState|null, action: Actions,
+    _: PersonalizationState): CurrentBacklightState|null {
   switch (action.name) {
-    case KeyboardBacklightActionName.SET_BACKLIGHT_COLOR:
-      return action.backlightColor;
+    case KeyboardBacklightActionName.SET_CURRENT_BACKLIGHT_STATE:
+      return action.currentBacklightState;
     default:
       return state;
   }
@@ -48,7 +48,7 @@ export const keyboardBacklightReducers: {
   [K in keyof KeyboardBacklightState]:
       ReducerFunction<KeyboardBacklightState[K]>
 } = {
-  backlightColor: backlightColorReducer,
+  currentBacklightState: currentBacklightStateReducer,
   shouldShowNudge: shouldShowNudgeReducer,
   wallpaperColor: wallpaperColorReducer,
 };

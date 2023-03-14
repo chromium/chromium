@@ -20,6 +20,7 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/request_type.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -173,6 +174,7 @@ class PermissionRequestManager
   void SetManageClicked() override;
   void SetLearnMoreClicked() override;
   base::WeakPtr<PermissionPrompt::Delegate> GetWeakPtr() override;
+  content::WebContents* GetAssociatedWebContents() override;
   bool RecreateView() override;
 
   void set_manage_clicked() { did_click_manage_ = true; }
@@ -278,10 +280,10 @@ class PermissionRequestManager
   // Return true if we keep showing the current request, otherwise return false
   bool ReprioritizeCurrentRequestIfNeeded();
 
-  // Validate the input request. If the request is invalid, cancel and remove it
-  // from *_map_ and *_set_.
+  // Validate the input request. If the request is invalid and |should_finalize|
+  // is set, cancel and remove it from *_map_ and *_set_.
   // Return true if the request is valid, otherwise false.
-  bool ValidateRequest(PermissionRequest* request);
+  bool ValidateRequest(PermissionRequest* request, bool should_finalize = true);
 
   // Adds `request` into `pending_permission_requests_`, and request's
   // `source_frame` into `request_sources_map_`.

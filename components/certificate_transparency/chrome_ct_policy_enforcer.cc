@@ -88,19 +88,18 @@ const char* CTPolicyComplianceToString(CTPolicyCompliance status) {
   return "unknown";
 }
 
-base::Value NetLogCertComplianceCheckResultParams(
+base::Value::Dict NetLogCertComplianceCheckResultParams(
     net::X509Certificate* cert,
     bool build_timely,
     CTPolicyCompliance compliance) {
-  base::Value dict(base::Value::Type::DICT);
+  base::Value::Dict dict;
   // TODO(mattm): This double-wrapping of the certificate list is weird. Remove
   // this (probably requires updates to netlog-viewer).
-  base::Value certificate_dict(base::Value::Type::DICT);
-  certificate_dict.SetKey("certificates", net::NetLogX509CertificateList(cert));
-  dict.SetKey("certificate", std::move(certificate_dict));
-  dict.SetBoolKey("build_timely", build_timely);
-  dict.SetStringKey("ct_compliance_status",
-                    CTPolicyComplianceToString(compliance));
+  base::Value::Dict certificate_dict;
+  certificate_dict.Set("certificates", net::NetLogX509CertificateList(cert));
+  dict.Set("certificate", std::move(certificate_dict));
+  dict.Set("build_timely", build_timely);
+  dict.Set("ct_compliance_status", CTPolicyComplianceToString(compliance));
   return dict;
 }
 

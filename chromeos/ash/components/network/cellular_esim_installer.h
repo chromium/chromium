@@ -25,14 +25,14 @@ class NetworkConnectionHandler;
 class NetworkProfileHandler;
 class NetworkStateHandler;
 
-// Handles installation of an eSIM profile and it's corresponding network.
+// Handles installation of an eSIM profile and its corresponding network.
 //
 // Installing an eSIM profile involves the following operations:
 // 1. Inhibit cellular scans.
 // 2. Install eSIM profile in Hermes with activation code.
 // 3. Create cellular Shill service configuration.
 // 4. Prepare newly installed cellular network for connection (ie. profile
-// enable).
+//    enable).
 // 5. Connect to network with the new profile.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
  public:

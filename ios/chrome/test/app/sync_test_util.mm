@@ -103,21 +103,23 @@ void TearDownFakeSyncServer() {
 }
 
 void StartSync() {
-  DCHECK(!IsSyncEngineInitialized());
   ChromeBrowserState* browser_state =
       chrome_test_util::GetOriginalBrowserState();
   SyncSetupService* sync_setup_service =
       SyncSetupServiceFactory::GetForBrowserState(browser_state);
+  DCHECK(!sync_setup_service->IsSyncRequested());
   sync_setup_service->SetSyncEnabled(true);
+  sync_setup_service->CommitSyncChanges();
 }
 
 void StopSync() {
-  DCHECK(IsSyncEngineInitialized());
   ChromeBrowserState* browser_state =
       chrome_test_util::GetOriginalBrowserState();
   SyncSetupService* sync_setup_service =
       SyncSetupServiceFactory::GetForBrowserState(browser_state);
+  DCHECK(sync_setup_service->IsSyncRequested());
   sync_setup_service->SetSyncEnabled(false);
+  sync_setup_service->CommitSyncChanges();
 }
 
 void TriggerSyncCycle(syncer::ModelType type) {
@@ -258,7 +260,7 @@ void DeleteAutofillProfileFromFakeSyncServer(std::string guid) {
   for (const sync_pb::SyncEntity& autofill_profile : autofill_profiles) {
     if (autofill_profile.specifics().autofill_profile().guid() == guid) {
       entity_id = autofill_profile.id_string();
-      client_tag_hash = autofill_profile.client_defined_unique_tag();
+      client_tag_hash = autofill_profile.client_tag_hash();
       break;
     }
   }

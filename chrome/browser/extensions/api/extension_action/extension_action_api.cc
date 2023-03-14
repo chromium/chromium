@@ -696,22 +696,19 @@ ExtensionFunction::ResponseAction ActionOpenPopupFunction::Run() {
 void ActionOpenPopupFunction::OnShowPopupComplete(ExtensionHost* popup_host) {
   DCHECK(!did_respond());
 
-  ResponseValue response_value;
   if (popup_host) {
     // TODO(https://crbug.com/1245093): Return the tab for which the extension
     // popup was shown?
     DCHECK(popup_host->document_element_available());
-    response_value = NoArguments();
+    Respond(NoArguments());
   } else {
     // NOTE(devlin): We could have the callback pass more information here about
     // why the popup didn't open (e.g., another active popup vs popup closing
     // before display, as may happen if the window closes), but it's not clear
     // whether that would be significantly helpful to developers and it may
     // leak other information about the user's browser.
-    response_value = Error(kFailedToOpenPopupGenericError);
+    Respond(Error(kFailedToOpenPopupGenericError));
   }
-
-  Respond(std::move(response_value));
 }
 
 BrowserActionOpenPopupFunction::BrowserActionOpenPopupFunction() = default;

@@ -146,7 +146,7 @@ class WebcamPrivateSetFunction : public ExtensionFunction {
 
  private:
   void OnWebcam(
-      std::unique_ptr<extensions::api::webcam_private::Set::Params> params,
+      absl::optional<extensions::api::webcam_private::Set::Params> params,
       Webcam* webcam);
   void OnSetWebcamParameters(bool success);
 
@@ -226,7 +226,7 @@ class WebcamPrivateResetFunction : public ExtensionFunction {
 
  private:
   void OnWebcam(
-      std::unique_ptr<extensions::api::webcam_private::Reset::Params> params,
+      absl::optional<extensions::api::webcam_private::Reset::Params> params,
       Webcam* webcam);
   void OnResetWebcam(bool success);
 };

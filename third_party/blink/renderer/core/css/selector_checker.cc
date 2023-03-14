@@ -356,7 +356,7 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
   if ((!context.is_sub_selector || context.in_nested_complex_selector) &&
       (context.element->IsLink() || (relation != CSSSelector::kDescendant &&
                                      relation != CSSSelector::kChild))) {
-    next_context.is_inside_visited_link = false;
+    next_context.match_visited = false;
   }
 
   next_context.in_rightmost_compound = false;
@@ -388,7 +388,7 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
           return kSelectorFailsCompletely;
         }
         if (next_context.element->IsLink()) {
-          next_context.is_inside_visited_link = false;
+          next_context.match_visited = false;
         }
       }
       return kSelectorFailsCompletely;
@@ -1173,7 +1173,7 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
   DCHECK(document.GetCheckPseudoHasCacheScope());
   SelectorCheckingContext sub_context(has_anchor_element);
   sub_context.scope = context.scope;
-  // sub_context.is_inside_visited_link is false (by default) to disable
+  // sub_context.match_visited is false (by default) to disable
   // :visited matching when it is in the :has argument
   sub_context.is_inside_has_pseudo_class = true;
   sub_context.pseudo_has_in_rightmost_compound = context.in_rightmost_compound;
@@ -1487,9 +1487,9 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoWebkitAnyLink:
       return element.IsLink();
     case CSSSelector::kPseudoLink:
-      return element.IsLink() && !context.is_inside_visited_link;
+      return element.IsLink() && !context.match_visited;
     case CSSSelector::kPseudoVisited:
-      return element.IsLink() && context.is_inside_visited_link;
+      return element.IsLink() && context.match_visited;
     case CSSSelector::kPseudoDrag:
       if (mode_ == kResolvingStyle) {
         if (!context.in_rightmost_compound) {
@@ -1840,7 +1840,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         return !toggle->ValueMatches(State(0));
       }
     }
-    case CSSSelector::kPseudoParentUnparsed:
+    case CSSSelector::kPseudoUnparsed:
       // Only kept around for parsing; can never match anything
       // (because we don't know what it's supposed to mean).
       return false;
@@ -2217,6 +2217,43 @@ bool SelectorChecker::MatchesSpatialNavigationInterestPseudoClass(
   return interested_element && *interested_element == element;
 }
 
+namespace {
+
+// CalculateActivations will not produce any activations unless there is
+// an outer activation (i.e. an activation of the outer StyleScope). If there
+// is no outer StyleScope, we use this DefaultActivation as the outer
+// activation. The scope provided to DefaultActivation is typically
+// a ShadowTree.
+StyleScopeActivation DefaultActivation(const ContainerNode* scope) {
+  return StyleScopeActivation{scope, std::numeric_limits<unsigned>::max()};
+}
+
+// The activation ceiling is the highest ancestor element that can
+// match inside some StyleScopeActivation.
+//
+// You would think that only elements inside the scoping root (activation.root)
+// could match, but it is possible for a selector to be matched with respect to
+// some scoping root [1] without actually being scoped to that root [2].
+//
+// This is relevant when matching elements inside a shadow tree, where the root
+// of the default activation will be the ShadowRoot, but the host element (which
+// sits *above* the ShadowRoot) should still be reached with :host.
+//
+// [1] https://drafts.csswg.org/selectors-4/#the-scope-pseudo
+// [2] https://drafts.csswg.org/selectors-4/#scoped-selector
+const Element* ActivationCeiling(const StyleScopeActivation& activation) {
+  if (!activation.root) {
+    return nullptr;
+  }
+  if (auto* element = DynamicTo<Element>(activation.root.Get())) {
+    return element;
+  }
+  ShadowRoot* shadow_root = activation.root->GetShadowRoot();
+  return shadow_root ? &shadow_root->host() : nullptr;
+}
+
+}  // namespace
+
 const StyleScopeActivations& SelectorChecker::EnsureActivations(
     const SelectorCheckingContext& context,
     const StyleScope& style_scope) const {
@@ -2229,16 +2266,10 @@ const StyleScopeActivations& SelectorChecker::EnsureActivations(
   // Must not be confused with the *parent activations* (seen in
   // CalculateActivations), which are the activations (for the same StyleScope)
   // of the *parent element*.
-  //
-  // TODO(crbug.com/1280240): Pass context.scope instead of nullptr for the
-  // default activation.
   const StyleScopeActivations* outer_activations =
-      style_scope.Parent()
-          ? &EnsureActivations(context, *style_scope.Parent())
-          : MakeGarbageCollected<StyleScopeActivations>(
-                1, StyleScopeActivation{nullptr /* scope */,
-                                        std::numeric_limits<unsigned>::max(),
-                                        false});
+      style_scope.Parent() ? &EnsureActivations(context, *style_scope.Parent())
+                           : MakeGarbageCollected<StyleScopeActivations>(
+                                 1, DefaultActivation(context.scope));
   const StyleScopeActivations* activations =
       CalculateActivations(context.style_scope_frame->element_, style_scope,
                            *outer_activations, context.style_scope_frame);
@@ -2276,9 +2307,8 @@ const StyleScopeActivations* SelectorChecker::CalculateActivations(
 
     // Remain within the outer scope. I.e. don't look at elements above the
     // highest outer activation.
-    if (outer_activations.front().root != &element) {
-      // TODO(crbug.com/1280240): Consider :host (etc).
-      if (Element* parent = element.parentElement()) {
+    if (&element != ActivationCeiling(outer_activations.front())) {
+      if (Element* parent = element.ParentOrShadowHostElement()) {
         // When calculating the activations on the parent element, we pass
         // the parent StyleScopeFrame (if we have it) to be able to use the
         // cached results, and avoid traversing the ancestor chain.
@@ -2291,38 +2321,30 @@ const StyleScopeActivations* SelectorChecker::CalculateActivations(
     }
 
     // The activations of the parent element are still active for this element,
-    // unless the activation was limited.
+    // unless this element is a scoping limit.
     if (parent_activations) {
       for (const StyleScopeActivation& activation : *parent_activations) {
-        if (!activation.limit) {
-          activations->push_back(StyleScopeActivation{
-              activation.root, activation.proximity + 1, false});
+        if (!ElementIsScopingLimit(style_scope, activation, element)) {
+          activations->push_back(
+              StyleScopeActivation{activation.root, activation.proximity + 1});
         }
       }
     }
 
     // Check if we need to add a new activation for this element.
-    for (const StyleScopeActivation& activation : outer_activations) {
-      if (style_scope.From()
-              ? MatchesWithScope(element, *style_scope.From(), activation.root)
-              : style_scope.HasImplicitRoot(&element)) {
-        activations->push_back(StyleScopeActivation{&element, 0, false});
+    for (const StyleScopeActivation& outer_activation : outer_activations) {
+      if (style_scope.From() ? MatchesWithScope(element, *style_scope.From(),
+                                                outer_activation.root)
+                             : style_scope.HasImplicitRoot(&element)) {
+        StyleScopeActivation activation{&element, 0};
+        // It's possible for a newly created activation to be immediately
+        // limited (e.g. @scope (.x) to (.x)).
+        if (!ElementIsScopingLimit(style_scope, activation, element)) {
+          activations->push_back(activation);
+        }
         break;
       }
       // TODO(crbug.com/1280240): Break if we don't depend on :scope.
-    }
-
-    if (style_scope.To()) {
-      DCHECK(style_scope.From());
-      for (StyleScopeActivation& activation : *activations) {
-        DCHECK(!activation.limit);
-        if (MatchesWithScope(element, *style_scope.To(),
-                             activation.root.Get())) {
-          // TODO(crbug.com/1280240): If we don't depend on :scope, just set all
-          // to limit=true.
-          activation.limit = true;
-        }
-      }
     }
   }
 
@@ -2335,11 +2357,11 @@ const StyleScopeActivations* SelectorChecker::CalculateActivations(
 }
 
 bool SelectorChecker::MatchesWithScope(Element& element,
-                                       const CSSSelectorList& selector_list,
-                                       Element* scope) const {
+                                       const CSSSelector& selector_list,
+                                       const ContainerNode* scope) const {
   SelectorCheckingContext context(&element);
   context.scope = scope;
-  for (context.selector = selector_list.First(); context.selector;
+  for (context.selector = &selector_list; context.selector;
        context.selector = CSSSelectorList::Next(*context.selector)) {
     SelectorChecker::MatchResult ignore_result;
     if (MatchSelector(context, ignore_result) ==
@@ -2350,22 +2372,30 @@ bool SelectorChecker::MatchesWithScope(Element& element,
   return false;
 }
 
+bool SelectorChecker::ElementIsScopingLimit(
+    const StyleScope& style_scope,
+    const StyleScopeActivation& activation,
+    Element& element) const {
+  if (!style_scope.To()) {
+    return false;
+  }
+  return MatchesWithScope(element, *style_scope.To(), activation.root.Get());
+}
+
 bool SelectorChecker::CheckInStyleScope(const SelectorCheckingContext& context,
                                         MatchResult& result) const {
-  SelectorCheckingContext local_context(context);
+  const StyleScopeActivations& activations =
+      EnsureActivations(context, *context.style_scope);
 
-  // TODO(crbug.com/1280240): We can probably skip this if the main selector
-  // contained :scope.
-
-  for (; local_context.element;
-       local_context.element = ParentElement(local_context)) {
-    if (CheckPseudoScope(local_context, result)) {
-      return true;
-    }
-    // TODO(crbug.com/1280240): Early-out if there are no activations.
+  if (activations.empty()) {
+    return false;
   }
 
-  return false;
+  for (const StyleScopeActivation& activation : activations) {
+    result.proximity = std::min(activation.proximity, result.proximity);
+  }
+
+  return true;
 }
 
 }  // namespace blink

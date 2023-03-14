@@ -74,17 +74,17 @@ source_set("passwords") {
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/safe_browsing",
     "//ios/chrome/browser/safe_browsing:features",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ssl",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/sync/glue",
     "//ios/chrome/browser/translate:translate",
-    "//ios/chrome/browser/ui:feature_flags",
-    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/infobars/coordinators",
     "//ios/chrome/browser/ui/ntp:logo",
-    "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/webdata_services",
     "//ios/chrome/common/ui/util",
@@ -97,11 +97,14 @@ source_set("passwords") {
     "//url",
   ]
   public_deps = [
-    ":passwords_generation_utils",
+    ":password_controller_delegate",
     ":store_factory",
   ]
+}
 
-  allow_circular_includes_from = [ ":passwords_generation_utils" ]
+source_set("password_controller_delegate") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "password_controller_delegate.h" ]
 }
 
 source_set("save_passwords_consumer") {
@@ -180,16 +183,6 @@ source_set("public") {
   deps = [ "//base" ]
 }
 
-source_set("passwords_generation_utils") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "password_generation_utils.h",
-    "password_generation_utils.mm",
-  ]
-  deps = [ "//base:i18n" ]
-  frameworks = [ "CoreGraphics.framework" ]
-}
-
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
@@ -224,8 +217,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/autofill",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/passwords/test",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/autofill/form_input_accessory",
-    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/web:web_internal",
     "//ios/testing:ocmock_support",
     "//ios/web",

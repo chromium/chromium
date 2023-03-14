@@ -149,22 +149,22 @@ V4Database::V4Database(
       db_task_runner_(db_task_runner),
       pending_store_updates_(0) {
   DCHECK(db_task_runner->RunsTasksInCurrentSequence());
-  // This method executes on the DB sequence, whereas |io_sequence_checker_|
-  // is meant to verify methods that should execute on the IO sequence. Detach
-  // that sequence checker here; it will be bound to the IO sequence in
-  // InitializeOnIOSequence().
-  DETACH_FROM_SEQUENCE(io_sequence_checker_);
+  // This method executes on the DB sequence, whereas |sb_sequence_checker_|
+  // is meant to verify methods that should execute on the IO sequence (or UI
+  // if kSafeBrowsingOnUIThread is enabled). Detach that sequence checker here;
+  // it will be bound to the SB sequence in InitializeOnSBThread().
+  DETACH_FROM_SEQUENCE(sb_sequence_checker_);
 }
 
-void V4Database::InitializeOnIOSequence() {
-  // This invocation serves to bind |io_sequence_checker_| to the IO sequence
+void V4Database::InitializeOnSBThread() {
+  // This invocation serves to bind |sb_sequence_checker_| to the IO sequence
   // after its having been detached from the DB sequence in this object's
   // constructor.
-  DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sb_sequence_checker_);
 }
 
-void V4Database::StopOnIO() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
+void V4Database::StopOnSBThread() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sb_sequence_checker_);
   weak_factory_on_io_.InvalidateWeakPtrs();
 }
 
@@ -175,7 +175,7 @@ V4Database::~V4Database() {
 void V4Database::ApplyUpdate(
     std::unique_ptr<ParsedServerResponse> parsed_server_response,
     DatabaseUpdatedCallback db_updated_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sb_sequence_checker_);
   DCHECK(!pending_store_updates_);
   DCHECK(db_updated_callback_.is_null());
 
@@ -218,7 +218,7 @@ void V4Database::ApplyUpdate(
 
 void V4Database::UpdatedStoreReady(ListIdentifier identifier,
                                    std::unique_ptr<V4Store> new_store) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sb_sequence_checker_);
   DCHECK(pending_store_updates_);
   if (new_store) {
     (*store_map_)[identifier].swap(new_store);
@@ -246,7 +246,7 @@ std::unique_ptr<StoreStateMap> V4Database::GetStoreStateMap() {
 
 bool V4Database::AreAnyStoresAvailable(
     const StoresToCheck& stores_to_check) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sb_sequence_checker_);
   for (const ListIdentifier& identifier : stores_to_check) {
     if (IsStoreAvailable(identifier))
       return true;
@@ -256,7 +256,7 @@ bool V4Database::AreAnyStoresAvailable(
 
 bool V4Database::AreAllStoresAvailable(
     const StoresToCheck& stores_to_check) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sb_sequence_checker_);
   for (const ListIdentifier& identifier : stores_to_check) {
     if (!IsStoreAvailable(identifier))
       return false;
@@ -268,7 +268,7 @@ void V4Database::GetStoresMatchingFullHash(
     const FullHashStr& full_hash,
     const StoresToCheck& stores_to_check,
     StoreAndHashPrefixes* matched_store_and_hash_prefixes) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sb_sequence_checker_);
   matched_store_and_hash_prefixes->clear();
   for (const ListIdentifier& identifier : stores_to_check) {
     if (!IsStoreAvailable(identifier))
@@ -285,7 +285,7 @@ void V4Database::GetStoresMatchingFullHash(
 
 void V4Database::ResetStores(
     const std::vector<ListIdentifier>& stores_to_reset) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sb_sequence_checker_);
   for (const ListIdentifier& identifier : stores_to_reset) {
     store_map_->at(identifier)->Reset();
   }
@@ -293,7 +293,7 @@ void V4Database::ResetStores(
 
 void V4Database::VerifyChecksum(
     DatabaseReadyForUpdatesCallback db_ready_for_updates_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sb_sequence_checker_);
 
   // Make a threadsafe copy of store_map_ w/raw pointers that we can hand to
   // the DB thread. The V4Stores ptrs are guaranteed to be valid because their
@@ -314,7 +314,7 @@ void V4Database::VerifyChecksum(
 void V4Database::OnChecksumVerified(
     DatabaseReadyForUpdatesCallback db_ready_for_updates_callback,
     const std::vector<ListIdentifier>& stores_to_reset) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sb_sequence_checker_);
   std::move(db_ready_for_updates_callback).Run(stores_to_reset);
 }
 

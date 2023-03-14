@@ -7,7 +7,7 @@
 
 #import "ios/chrome/browser/ui/promos_manager/standard_promo_display_handler.h"
 
-#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 
 @protocol CredentialProviderPromoCommands;
 

@@ -16,6 +16,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/cxx17_backports.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/field_trial_params.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/android/compositor/layer/thumbnail_layer.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/thumbnail/cc/features.h"
 #include "chrome/browser/thumbnail/cc/thumbnail.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -130,7 +132,7 @@ TabContentManager::TabContentManager(JNIEnv* env,
                                      jboolean save_jpeg_thumbnails,
                                      jdouble jpeg_aspect_ratio)
     : weak_java_tab_content_manager_(env, obj) {
-  thumbnail_cache_ = std::make_unique<ThumbnailCache>(
+  thumbnail_cache_ = std::make_unique<thumbnail::ThumbnailCache>(
       static_cast<size_t>(default_cache_size),
       static_cast<size_t>(approximation_cache_size),
       static_cast<size_t>(compression_queue_max_size),
@@ -152,6 +154,19 @@ void TabContentManager::SetUIResourceProvider(
 }
 
 scoped_refptr<cc::slim::Layer> TabContentManager::GetLiveLayer(int tab_id) {
+  if (base::FeatureList::IsEnabled(thumbnail::kThumbnailCacheRefactor)) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    ScopedJavaLocalRef<jobject> jtab = Java_TabContentManager_getTabById(
+        env, weak_java_tab_content_manager_.get(env), tab_id);
+    if (!jtab) {
+      return nullptr;
+    }
+    TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
+    if (!tab) {
+      return nullptr;
+    }
+    return tab->GetContentLayer();
+  }
   return live_layer_list_[tab_id];
 }
 
@@ -159,10 +174,16 @@ scoped_refptr<ThumbnailLayer> TabContentManager::GetStaticLayer(int tab_id) {
   return static_layer_cache_[tab_id];
 }
 
+// TODO(crbug.com/1402843): ThumbnailCache::PruneCache() shouldn't cause issues
+// with `static_layer_cache_` as Thumbnails referenced by this cache may already
+// expire even without eager pruning. Investigate whether entries in
+// `static_layer_cache_` can and should be removed when their thumbnail is
+// dropped from the ThumbnailCache.
 scoped_refptr<ThumbnailLayer> TabContentManager::GetOrCreateStaticLayer(
     int tab_id,
     bool force_disk_read) {
-  Thumbnail* thumbnail = thumbnail_cache_->Get(tab_id, force_disk_read, true);
+  thumbnail::Thumbnail* thumbnail =
+      thumbnail_cache_->Get(tab_id, force_disk_read, true);
   scoped_refptr<ThumbnailLayer> static_layer = static_layer_cache_[tab_id];
 
   if (!thumbnail || !thumbnail->ui_resource_id()) {
@@ -185,6 +206,7 @@ scoped_refptr<ThumbnailLayer> TabContentManager::GetOrCreateStaticLayer(
 void TabContentManager::AttachTab(JNIEnv* env,
                                   const JavaParamRef<jobject>& jtab,
                                   jint tab_id) {
+  DCHECK(!base::FeatureList::IsEnabled(thumbnail::kThumbnailCacheRefactor));
   TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
   scoped_refptr<cc::slim::Layer> layer = tab->GetContentLayer();
   if (!layer.get()) {
@@ -200,6 +222,7 @@ void TabContentManager::AttachTab(JNIEnv* env,
 void TabContentManager::DetachTab(JNIEnv* env,
                                   const JavaParamRef<jobject>& jtab,
                                   jint tab_id) {
+  DCHECK(!base::FeatureList::IsEnabled(thumbnail::kThumbnailCacheRefactor));
   scoped_refptr<cc::slim::Layer> current_layer = live_layer_list_[tab_id];
   if (!current_layer.get()) {
     // Empty cached layer should not exist but it is ok if it happens.

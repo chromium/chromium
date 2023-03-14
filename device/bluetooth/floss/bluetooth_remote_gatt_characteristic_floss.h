@@ -8,6 +8,7 @@
 
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
+#include "device/bluetooth/floss/bluetooth_gatt_characteristic_floss.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
 #include "device/bluetooth/floss/floss_gatt_manager_client.h"
 
@@ -20,7 +21,8 @@ namespace floss {
 class BluetoothRemoteGattServiceFloss;
 
 class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicFloss
-    : public device::BluetoothRemoteGattCharacteristic,
+    : public BluetoothGattCharacteristicFloss,
+      public device::BluetoothRemoteGattCharacteristic,
       public FlossGattClientObserver {
  public:
   // Construct remote characteristic.
@@ -114,7 +116,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicFloss
   void OnWriteCharacteristic(base::OnceClosure callback,
                              ErrorCallback error_callback,
                              std::vector<uint8_t> data,
-                             DBusResult<Void> result);
+                             DBusResult<GattWriteRequestStatus> result);
 
  private:
   friend class BluetoothRemoteGattServiceFloss;

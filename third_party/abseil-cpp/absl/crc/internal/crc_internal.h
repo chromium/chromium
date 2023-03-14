@@ -64,7 +64,7 @@ class CRCImpl : public CRC {  // Implemention of the abstract class CRC
  public:
   using Uint32By256 = uint32_t[256];
 
-  CRCImpl() {}
+  CRCImpl() = default;
   ~CRCImpl() override = default;
 
   // The internal version of CRC::New().
@@ -96,8 +96,8 @@ class CRCImpl : public CRC {  // Implemention of the abstract class CRC
 // This is the 32-bit implementation.  It handles all sizes from 8 to 32.
 class CRC32 : public CRCImpl {
  public:
-  CRC32() {}
-  ~CRC32() override {}
+  CRC32() = default;
+  ~CRC32() override = default;
 
   void Extend(uint32_t* crc, const void* bytes, size_t length) const override;
   void ExtendByZeroes(uint32_t* crc, size_t length) const override;

@@ -146,7 +146,8 @@ TEST_F(EventProcessorTest, NestedEventProcessing) {
   // first event processor should be handled by |target_handler| instead.
   auto target_handler = std::make_unique<ReDispatchEventHandler>(
       second_processor.get(), root()->child_at(0));
-  std::ignore = root()->child_at(0)->SetTargetHandler(target_handler.get());
+  EventHandler* old_handler =
+      root()->child_at(0)->SetTargetHandler(target_handler.get());
 
   // Dispatch a mouse event to the tree of event targets owned by the first
   // event processor, checking in ReDispatchEventHandler that the phase and
@@ -174,6 +175,9 @@ TEST_F(EventProcessorTest, NestedEventProcessing) {
   EXPECT_EQ(1, target_handler->num_mouse_events());
   EXPECT_TRUE(second_root->child_at(0)->DidReceiveEvent(ET_MOUSE_MOVED));
   EXPECT_TRUE(mouse2.handled());
+
+  old_handler = root()->child_at(0)->SetTargetHandler(old_handler);
+  EXPECT_EQ(old_handler, target_handler.get());
 }
 
 // Verifies that OnEventProcessingFinished() is called when an event
@@ -375,9 +379,13 @@ TEST_F(EventProcessorTest, HandlerSequence) {
   EXPECT_EQ(std::vector<std::string>(expected, expected + std::size(expected)),
             recorder);
 
-  root()->RemovePreTargetHandler(&pre_root);
-  child_r->RemovePreTargetHandler(&pre_child);
   grandchild_r->RemovePreTargetHandler(&pre_grandchild);
+  child_r->RemovePreTargetHandler(&pre_child);
+  root()->RemovePreTargetHandler(&pre_root);
+
+  grandchild_r->set_recorder(nullptr);
+  child_r->set_recorder(nullptr);
+  root()->set_recorder(nullptr);
 }
 
 namespace {

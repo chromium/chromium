@@ -542,7 +542,7 @@ TEST_F(WebApkInstallerTest, UpdateSuccessWithEmptyTokenInResponse) {
 TEST_F(WebApkInstallerTest, UpdateFailsUpdateRequestWrongFormat) {
   ScopedTempFile scoped_file;
   base::FilePath update_request_path = scoped_file.GetFilePath();
-  base::WriteFile(update_request_path, "😀", 1);
+  base::WriteFile(update_request_path, "😀");
 
   WebApkInstallerRunner runner;
   runner.RunUpdateWebApk(CreateDefaultWebApkInstaller(), update_request_path);

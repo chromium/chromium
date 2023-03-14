@@ -64,6 +64,8 @@ class NavigationPredictor
       blink::mojom::AnchorElementPointerOverPtr pointer_over_event) override;
   void ReportAnchorElementPointerOut(
       blink::mojom::AnchorElementPointerOutPtr hover_event) override;
+  void ReportAnchorElementPointerDown(
+      blink::mojom::AnchorElementPointerDownPtr pointer_down_event) override;
   void ReportNewAnchorElements(
       std::vector<blink::mojom::AnchorElementMetricsPtr> elements) override;
 

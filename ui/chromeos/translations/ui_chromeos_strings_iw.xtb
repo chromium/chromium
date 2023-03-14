@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">הבא</translation>
 <translation id="1209796539517632982">שרתי שמות אוטומטיים</translation>
 <translation id="1210831758834677569">לאו</translation>
+<translation id="1221555006497674479">נפח האחסון כמעט ריק. יש עוד <ph name="REMAINING_PERCENTAGE" />% מתוך האחסון השיתופי שמוקצה לך בנפח <ph name="TOTAL_SPACE" />.</translation>
 <translation id="1243314992276662751">העלאה</translation>
 <translation id="1249250836236328755">ז'אנר</translation>
 <translation id="1254593899333212300">חיבור אינטרנט ישיר</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">‏סינית Pinyin</translation>
 <translation id="1646019627374511909">המערכת מגדירה <ph name="NUMBER_OF_ITEMS" /> קבצים כזמינים אופליין</translation>
 <translation id="164969095109328410">‏מכשיר Chrome</translation>
+<translation id="1661207570040737402">‏השתמשת בכל נפח האחסון השיתופי שמוקצה לך ב-Google Workspace.</translation>
 <translation id="1661867754829461514">‏חסר PIN</translation>
 <translation id="166439687370499867">אין אישור לשנות את תצורת הרשתות המשותפות</translation>
 <translation id="1665611772925418501">הקובץ לא ניתן לשינוי.</translation>
@@ -82,6 +84,7 @@
 <translation id="1722487484194605434">מתבצע כיווץ של <ph name="NUMBER_OF_ITEMS" /> פריטים…</translation>
 <translation id="1722687688096767818">בתהליך הוספת פרופיל…</translation>
 <translation id="1726100011689679555">שרתי שמות</translation>
+<translation id="1727562178154619254">הקבצים מוכנים לסנכרון</translation>
 <translation id="1729953886957086472">גרמנית (גרמניה)</translation>
 <translation id="1730235522912993863">‏סינית Cangjie</translation>
 <translation id="1731889557567069540">הועתקו <ph name="NUMBER_OF_ITEMS" /> פריטים.</translation>
@@ -349,11 +352,11 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">הדבקה</translation>
 <translation id="3952872973865944257">טלוגו פונטית</translation>
-<translation id="3954354850384043518">מתבצע</translation>
 <translation id="3958548648197196644">קיווי</translation>
 <translation id="3971140002794351170">הורדה של פרופיל נייד, רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">אנגלית (בריטניה)</translation>
 <translation id="3975895378829046965">בנגלית פונטית</translation>
+<translation id="3999574733850440202">‏קובצי Microsoft שנפתחו לאחרונה עברו ל-OneDrive</translation>
 <translation id="4002066346123236978">כותרת</translation>
 <translation id="4017788180641807848">‏מקלדת Workman באנגלית (ארה"ב)</translation>
 <translation id="4019998208269143058">הצמדה לקבצים המהירים</translation>
@@ -362,6 +365,7 @@
 <translation id="4092890906744441904">אירית</translation>
 <translation id="4124935795427217608">חד-קרן</translation>
 <translation id="4131235941541910880">אפשר להעביר לאשפה פריטים שאין לך צורך בהם</translation>
+<translation id="4134804435730168042">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, הפעלה בסיום הגדרת המכשיר</translation>
 <translation id="4153015322587141338">כדי לגשת במהירות לקבצים שבמדף, יש ללחוץ לחיצה ימנית על קובץ ולבחור באפשרות '<ph name="PIN_COMMAND" />'.</translation>
 <translation id="4157569377477607576">לפי מדיניות האדמין, הפעולות הבאות לא מומלצות:</translation>
 <translation id="4159731583141908892">ההעברה של <ph name="FILE_NAME" /> הסתיימה.</translation>
@@ -404,6 +408,7 @@
 <translation id="4414834425328380570">הקובץ '<ph name="FILE_NAME" />' יימחק ולא תהיה אפשרות לשחזר אותו.</translation>
 <translation id="4418686080762064601">יצירת קיצור דרך לקבצים</translation>
 <translation id="4425149324548788773">האחסון שלי</translation>
+<translation id="4432921877815220091">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, הפעלה בסיום הגדרת המכשיר, בניהול האדמין</translation>
 <translation id="4439427728133035643">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, התחברות</translation>
 <translation id="4442424173763614572">‏חיפוש ה-DNS נכשל</translation>
 <translation id="4462159676511157176">שרתי שמות מותאמים אישית</translation>
@@ -612,8 +617,10 @@
 <translation id="5911887972742538906">‏קרתה שגיאה במהלך ההתקנה של אפליקציית Linux.</translation>
 <translation id="5912396950572065471">פורמט</translation>
 <translation id="5913638992615760742">פעולת ההעתקה נכשלה, שגיאה בלתי צפויה: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">יש תכונות חיפוש חדשות</translation>
 <translation id="5926082595146149752">‏הולנדית (הולנד) עם מקלדת בינלאומית של ארה"ב ל-PC</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, הפעלה בסיום הגדרת המכשיר</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> פריטים</translation>
 <translation id="5957366693331451795">‏מכשירי Chromebox</translation>
 <translation id="5982621672636444458">אפשרויות מיון</translation>
@@ -737,7 +744,6 @@
 <translation id="6973630695168034713">תיקיות</translation>
 <translation id="6976795442547527108">אריה</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">משחר ההיסטוריה</translation>
 <translation id="6989942356279143254">שוודית</translation>
 <translation id="6990081529015358884">לא נשאר לך מקום פנוי</translation>
 <translation id="6993826899923627728">הפריטים האלה נמצאים באשפה</translation>
@@ -760,6 +766,7 @@
 <translation id="7126604456862387217">‏'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' – &lt;em&gt;חיפוש ב-‏Drive‏&lt;/em‏&gt;</translation>
 <translation id="7135561821015524160">קאנדה פונטית</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">חסר ערך בשדה 'התאמה של שמות נושאים חלופיים' או בשדה 'התאמה של סיומות אתרים' לצורך אימות הזהות של השרת</translation>
 <translation id="7165320105431587207">כשל בהגדרת התצורה של הרשת</translation>
 <translation id="7170041865419449892">מחוץ לטווח</translation>
 <translation id="7180611975245234373">רענון</translation>
@@ -792,7 +799,6 @@
 <translation id="7458955835361612701">אין תמונות מהזמן האחרון</translation>
 <translation id="7460898608667578234">אוקראינית</translation>
 <translation id="7469894403370665791">התחברות באופן אוטומטי לרשת זו.</translation>
-<translation id="7481358317100446445">מוכן</translation>
 <translation id="7486315294984620427">‏כדי לשחרר קובץ ב-Parallels Desktop, צריך להעתיק אותו לקובצי Windows.</translation>
 <translation id="749452993132003881">היראגאנה</translation>
 <translation id="7495372004724182530">מליאלאם פונטית</translation>
@@ -830,6 +836,7 @@
 <translation id="7724603315864178912">חיתוך</translation>
 <translation id="7732111077498238432">הרשת כפופה למדיניות</translation>
 <translation id="7736003208887389532">האם למחוק את הקבצים האלה לתמיד?</translation>
+<translation id="7740287852186792672">תוצאות חיפוש</translation>
 <translation id="7748626145866214022">‏אפשרויות נוספות זמינות בסרגל הפעולות. הקשה על Alt + A תדגיש את סרגל הפעולות.</translation>
 <translation id="7760449188139285140">‏סינית Wubi</translation>
 <translation id="7765158879357617694">העברה</translation>
@@ -881,6 +888,7 @@
 <translation id="8116072619078571545">מים עם קרח</translation>
 <translation id="8128733386027980860">‏מקלדת Dvorak באנגלית (ארה"ב)</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" שותף איתך. אין באפשרותך למחוק אותו מאחר שאינך הבעלים שלו.</translation>
+<translation id="8138705869659070104">הפעלה לאחר הגדרת המכשיר</translation>
 <translation id="813913629614996137">מתבצע אתחול...</translation>
 <translation id="8147028810663464959">רוחב התווים הוא מלא</translation>
 <translation id="8151638057146502721">הגדרה</translation>
@@ -906,6 +914,7 @@
 <translation id="8300849813060516376">‏OTASP נכשל</translation>
 <translation id="8312871300878166382">הדבקה בתיקייה</translation>
 <translation id="8329978297633540474">טקסט רגיל</translation>
+<translation id="8332007959299458842">‏קובצי Microsoft שנפתחו לאחרונה עברו ל-Google Drive</translation>
 <translation id="8335587457941836791">ביטול הצמדה למדף</translation>
 <translation id="8335837413233998004">בלארוסית</translation>
 <translation id="8336153091935557858">אתמול <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -932,6 +941,7 @@
 <translation id="8487700953926739672">זמין אופליין</translation>
 <translation id="8492972329130824181">הרשת הביתית אינה זמינה. יש להפעיל נדידה בחבילת גלישה כדי להתחבר.</translation>
 <translation id="8499098729323186194">מתבצע חילוץ של <ph name="NUMBER_OF_ITEMS" /> פריטים…</translation>
+<translation id="8502913769543567768">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, הפעלה בסיום הגדרת המכשיר, בניהול האדמין</translation>
 <translation id="8521441079177373948">בריטניה</translation>
 <translation id="853494022971700746">צרפתית (צרפת)</translation>
 <translation id="8540608333167683902">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, פרטים</translation>
@@ -993,6 +1003,7 @@
 <translation id="9046895021617826162">החיבור נכשל</translation>
 <translation id="9065512565307033593">אם האימות ייכשל, הגישה שלך לרשת תושבת.</translation>
 <translation id="908378762078012445">‏רוסית עם מקלדת פונטית AATSEEL</translation>
+<translation id="9086302186042011942">הסנכרון מתבצע</translation>
 <translation id="9099674669267916096">מספר עמודים</translation>
 <translation id="9100610230175265781">יש להזין ביטוי סיסמה</translation>
 <translation id="9110990317705400362">‏אנחנו מחפשים כל הזמן דרכים לגלישה בטוחה יותר. בעבר, כל אתר יכול היה להציע לך להוסיף תוסף לדפדפן. בגרסאות האחרונות של Google Chrome, עליך לציין באופן מפורש ל-Chrome שברצונך להתקין תוספים אלה על-ידי הוספתם דרך הדף 'תוספים'. <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>

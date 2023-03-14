@@ -36,9 +36,13 @@ class PLATFORM_EXPORT DrawingDisplayItem : public DisplayItem {
   }
 
   gfx::Rect RectKnownToBeOpaque() const;
-  SkColor BackgroundColor(float& area) const;
 
-  bool IsSolidColor() const;
+  struct BackgroundColorInfo {
+    SkColor4f color = SkColors::kTransparent;
+    float area = 0;
+    bool is_solid_color = false;
+  };
+  BackgroundColorInfo BackgroundColor() const;
 
  private:
   friend class DisplayItem;

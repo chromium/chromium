@@ -5,10 +5,6 @@
 import("//build/config/ui.gni")
 import("//testing/test.gni")
 
-if (is_ios) {
-  import("//build/config/ios/bundle_data_from_filelist.gni")
-}
-
 component("compositor") {
   sources = [
     "animation_throughput_reporter.cc",
@@ -226,13 +222,6 @@ static_library("test_support") {
   }
 }
 
-if (is_ios) {
-  bundle_data_from_filelist("unit_tests_bundle_data") {
-    testonly = true
-    filelist_name = "unit_tests_bundle_data.filelist"
-  }
-}
-
 test("compositor_unittests") {
   use_xvfb = use_xvfb_in_this_config
 
@@ -296,6 +285,6 @@ test("compositor_unittests") {
   }
 
   if (is_ios) {
-    public_deps = [ ":unit_tests_bundle_data" ]
+    public_deps = [ "//ui/gfx:unit_tests_bundle_data" ]
   }
 }

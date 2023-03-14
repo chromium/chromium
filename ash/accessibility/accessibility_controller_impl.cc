@@ -1183,6 +1183,9 @@ void AccessibilityControllerImpl::RegisterProfilePrefs(
 
   if (::features::
           AreExperimentalAccessibilityColorEnhancementSettingsEnabled()) {
+    registry->RegisterBooleanPref(
+        prefs::kAccessibilityColorFiltering, false,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
     registry->RegisterIntegerPref(
         prefs::kAccessibilityGreyscaleAmount, 0,
         user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
@@ -1194,6 +1197,13 @@ void AccessibilityControllerImpl::RegisterProfilePrefs(
         user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
     registry->RegisterIntegerPref(
         prefs::kAccessibilityHueRotationAmount, 0,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+    registry->RegisterIntegerPref(
+        prefs::kAccessibilityColorVisionCorrectionAmount, 100,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+    registry->RegisterIntegerPref(
+        prefs::kAccessibilityColorVisionDeficiencyType,
+        ColorVisionDeficiencyType::kDeuteranomaly,
         user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   }
 }
@@ -2000,24 +2010,39 @@ void AccessibilityControllerImpl::ObservePrefs(PrefService* prefs) {
           base::Unretained(this)));
   if (color_enhancement_feature_enabled) {
     pref_change_registrar_->Add(
+        prefs::kAccessibilityColorFiltering,
+        base::BindRepeating(
+            &AccessibilityControllerImpl::UpdateColorFilteringFromPrefs,
+            base::Unretained(this)));
+    pref_change_registrar_->Add(
         prefs::kAccessibilityGreyscaleAmount,
         base::BindRepeating(
-            &AccessibilityControllerImpl::UpdateFilterGreyscaleFromPrefs,
+            &AccessibilityControllerImpl::UpdateColorFilteringFromPrefs,
             base::Unretained(this)));
     pref_change_registrar_->Add(
         prefs::kAccessibilitySaturationAmount,
         base::BindRepeating(
-            &AccessibilityControllerImpl::UpdateFilterSaturationFromPrefs,
+            &AccessibilityControllerImpl::UpdateColorFilteringFromPrefs,
             base::Unretained(this)));
     pref_change_registrar_->Add(
         prefs::kAccessibilitySepiaAmount,
         base::BindRepeating(
-            &AccessibilityControllerImpl::UpdateFilterSepiaFromPrefs,
+            &AccessibilityControllerImpl::UpdateColorFilteringFromPrefs,
             base::Unretained(this)));
     pref_change_registrar_->Add(
         prefs::kAccessibilityHueRotationAmount,
         base::BindRepeating(
-            &AccessibilityControllerImpl::UpdateFilterHueRotationFromPrefs,
+            &AccessibilityControllerImpl::UpdateColorFilteringFromPrefs,
+            base::Unretained(this)));
+    pref_change_registrar_->Add(
+        prefs::kAccessibilityColorVisionCorrectionAmount,
+        base::BindRepeating(
+            &AccessibilityControllerImpl::UpdateColorFilteringFromPrefs,
+            base::Unretained(this)));
+    pref_change_registrar_->Add(
+        prefs::kAccessibilityColorVisionDeficiencyType,
+        base::BindRepeating(
+            &AccessibilityControllerImpl::UpdateColorFilteringFromPrefs,
             base::Unretained(this)));
   }
 
@@ -2038,10 +2063,7 @@ void AccessibilityControllerImpl::ObservePrefs(PrefService* prefs) {
   UpdateShortcutsEnabledFromPref();
   UpdateTabletModeShelfNavigationButtonsFromPref();
   if (color_enhancement_feature_enabled) {
-    UpdateFilterGreyscaleFromPrefs();
-    UpdateFilterSaturationFromPrefs();
-    UpdateFilterSepiaFromPrefs();
-    UpdateFilterHueRotationFromPrefs();
+    UpdateColorFilteringFromPrefs();
   }
 }
 
@@ -2214,42 +2236,47 @@ void AccessibilityControllerImpl::UpdateCursorColorFromPrefs() {
   shell->UpdateCursorCompositingEnabled();
 }
 
-void AccessibilityControllerImpl::UpdateFilterGreyscaleFromPrefs() {
+void AccessibilityControllerImpl::UpdateColorFilteringFromPrefs() {
   DCHECK(active_user_prefs_);
 
-  const float amount =
+  auto* color_enhancement_controller =
+      Shell::Get()->color_enhancement_controller();
+
+  if (!active_user_prefs_->GetBoolean(prefs::kAccessibilityColorFiltering)) {
+    color_enhancement_controller->SetColorFilteringEnabledAndUpdateDisplays(
+        false);
+    return;
+  }
+  const float greyscale_amount =
       active_user_prefs_->GetInteger(prefs::kAccessibilityGreyscaleAmount) /
       100.f;
+  color_enhancement_controller->SetGreyscaleAmount(greyscale_amount);
 
-  Shell::Get()->color_enhancement_controller()->SetGreyscaleAmount(amount);
-}
-
-void AccessibilityControllerImpl::UpdateFilterSaturationFromPrefs() {
-  DCHECK(active_user_prefs_);
-
-  const float amount =
+  const float saturation_amount =
       active_user_prefs_->GetInteger(prefs::kAccessibilitySaturationAmount) /
       100.f;
+  color_enhancement_controller->SetSaturationAmount(saturation_amount);
 
-  Shell::Get()->color_enhancement_controller()->SetSaturationAmount(amount);
-}
-
-void AccessibilityControllerImpl::UpdateFilterSepiaFromPrefs() {
-  DCHECK(active_user_prefs_);
-
-  const float amount =
+  const float sepia_amount =
       active_user_prefs_->GetInteger(prefs::kAccessibilitySepiaAmount) / 100.f;
+  color_enhancement_controller->SetSepiaAmount(sepia_amount);
 
-  Shell::Get()->color_enhancement_controller()->SetSepiaAmount(amount);
-}
-
-void AccessibilityControllerImpl::UpdateFilterHueRotationFromPrefs() {
-  DCHECK(active_user_prefs_);
-
-  const int amount =
+  const int hue_rotation_amount =
       active_user_prefs_->GetInteger(prefs::kAccessibilityHueRotationAmount);
+  color_enhancement_controller->SetHueRotationAmount(hue_rotation_amount);
 
-  Shell::Get()->color_enhancement_controller()->SetHueRotationAmount(amount);
+  const float cvd_correction_amount =
+      active_user_prefs_->GetInteger(
+          prefs::kAccessibilityColorVisionCorrectionAmount) /
+      100.0f;
+  ColorVisionDeficiencyType type =
+      static_cast<ColorVisionDeficiencyType>(active_user_prefs_->GetInteger(
+          prefs::kAccessibilityColorVisionDeficiencyType));
+  color_enhancement_controller->SetColorVisionCorrectionFilter(
+      type, cvd_correction_amount);
+
+  // Ensure displays get updated.
+  color_enhancement_controller->SetColorFilteringEnabledAndUpdateDisplays(true);
 }
 
 void AccessibilityControllerImpl::UpdateAccessibilityHighlightingFromPrefs() {

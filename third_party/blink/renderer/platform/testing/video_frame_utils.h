@@ -20,7 +20,8 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
     media::VideoFrame::StorageType storage_type,
-    media::VideoPixelFormat pixel_format);
+    media::VideoPixelFormat pixel_format,
+    base::TimeDelta timestamp);
 
 }  // namespace blink
 

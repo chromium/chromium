@@ -190,18 +190,20 @@ class NonIsolatedReportingBrowserTest : public BaseReportingBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-std::unique_ptr<base::Value> ParseReportUpload(const std::string& payload) {
-  base::Value parsed_payload = base::test::ParseJson(payload);
+base::Value::List ParseReportUpload(const std::string& payload) {
+  base::Value::List parsed_payload = base::test::ParseJsonList(payload);
+
   // Clear out any non-reproducible fields.
-  for (auto& report : parsed_payload.GetList()) {
-    report.RemoveKey("age");
-    report.RemovePath("body.elapsed_time");
-    auto* user_agent =
-        report.FindKeyOfType("user_agent", base::Value::Type::STRING);
-    if (user_agent)
-      *user_agent = base::Value("Mozilla/1.0");
+  for (auto& report_value : parsed_payload) {
+    base::Value::Dict& report = report_value.GetDict();
+    report.Remove("age");
+    report.RemoveByDottedPath("body.elapsed_time");
+    std::string* user_agent = report.FindString("user_agent");
+    if (user_agent) {
+      *user_agent = "Mozilla/1.0";
+    }
   }
-  return base::Value::ToUniquePtrValue(std::move(parsed_payload));
+  return parsed_payload;
 }
 
 }  // namespace
@@ -223,15 +225,14 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, TestNELHeadersProcessed) {
   original_response()->Done();
 
   upload_response()->WaitForRequest();
-  std::unique_ptr<base::Value> actual =
+  base::Value::List actual =
       ParseReportUpload(upload_response()->http_request()->content);
   upload_response()->Send("HTTP/1.1 204 OK\r\n");
   upload_response()->Send("\r\n");
   upload_response()->Done();
 
   // Verify the contents of the report that we received.
-  ASSERT_TRUE(actual);
-  base::Value expected = base::test::ParseJson(base::StringPrintf(
+  base::Value::List expected = base::test::ParseJsonList(base::StringPrintf(
       R"json(
         [
           {
@@ -252,7 +253,7 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, TestNELHeadersProcessed) {
         ]
       )json",
       GetReportingEnabledURL().spec().c_str()));
-  EXPECT_EQ(expected, *actual);
+  EXPECT_EQ(expected, actual);
 }
 
 // Tests that CSP reports are delivered properly whether configured with the
@@ -272,15 +273,14 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, TestReportingHeadersProcessed) {
   original_response()->Done();
 
   upload_response()->WaitForRequest();
-  std::unique_ptr<base::Value> actual =
+  base::Value::List actual =
       ParseReportUpload(upload_response()->http_request()->content);
   upload_response()->Send("HTTP/1.1 204 OK\r\n");
   upload_response()->Send("\r\n");
   upload_response()->Done();
 
   // Verify the contents of the report that we received.
-  ASSERT_TRUE(actual);
-  base::Value expected = base::test::ParseJson(base::StringPrintf(
+  base::Value::List expected = base::test::ParseJsonList(base::StringPrintf(
       R"json(
         [ {
            "body": {
@@ -303,7 +303,7 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, TestReportingHeadersProcessed) {
       GetReportingEnabledURL().spec().c_str(),
       GetReportingEnabledURL().spec().c_str(),
       GetReportingEnabledURL().spec().c_str()));
-  EXPECT_EQ(expected, *actual);
+  EXPECT_EQ(expected, actual);
 }
 
 // Tests that CSP reports are delivered properly whether configured with the
@@ -328,15 +328,14 @@ IN_PROC_BROWSER_TEST_P(NonIsolatedReportingBrowserTest,
   // Ensure that the correct endpoint was found, and that a report was sent.
   // (If the endpoint cannot not be found, then a report will be sent at all.)
   upload_response()->WaitForRequest();
-  std::unique_ptr<base::Value> actual =
+  base::Value::List actual =
       ParseReportUpload(upload_response()->http_request()->content);
   upload_response()->Send("HTTP/1.1 204 OK\r\n");
   upload_response()->Send("\r\n");
   upload_response()->Done();
 
   // Verify the contents of the report that we received.
-  ASSERT_TRUE(actual);
-  base::Value expected = base::test::ParseJson(base::StringPrintf(
+  base::Value::List expected = base::test::ParseJsonList(base::StringPrintf(
       R"json(
         [ {
            "body": {
@@ -359,7 +358,7 @@ IN_PROC_BROWSER_TEST_P(NonIsolatedReportingBrowserTest,
       GetReportingEnabledURL().spec().c_str(),
       GetReportingEnabledURL().spec().c_str(),
       GetReportingEnabledURL().spec().c_str()));
-  EXPECT_EQ(expected, *actual);
+  EXPECT_EQ(expected, actual);
 }
 
 IN_PROC_BROWSER_TEST_P(ReportingBrowserTest,
@@ -395,12 +394,11 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest,
       server()->GetURL(kReportingHost, "/close-socket?should-be-reported");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), expect_reported_url));
   upload_response()->WaitForRequest();
-  std::unique_ptr<base::Value> actual =
+  base::Value::List actual =
       ParseReportUpload(upload_response()->http_request()->content);
 
   // Verify the contents of the received report.
-  ASSERT_TRUE(actual);
-  const base::Value expected = base::test::ParseJson(base::StringPrintf(
+  base::Value::List expected = base::test::ParseJsonList(base::StringPrintf(
       R"json(
         [
           {
@@ -421,7 +419,7 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest,
         ]
       )json",
       expect_reported_url.spec().c_str()));
-  EXPECT_EQ(expected, *actual);
+  EXPECT_EQ(expected, actual);
 }
 
 // These tests intentionally crash a render process, and so fail ASan tests.
@@ -432,12 +430,9 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest,
 #define MAYBE_CrashReport CrashReport
 
 // Flaky on Mac (multiple versions), see https://crbug.com/1261749
-#if BUILDFLAG(IS_MAC)
+// Flaky on other platforms as well, see https://crbug.com/1377031
 #define MAYBE_CrashReportUnresponsive DISABLED_CrashReportUnresponsive
-#else
-#define MAYBE_CrashReportUnresponsive CrashReportUnresponsive
-#endif
-#endif
+#endif  // defined(ADDRESS_SANITIZER)
 
 IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReport) {
   content::WebContents* contents =
@@ -463,19 +458,19 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReport) {
                                     ui::PAGE_TRANSITION_TYPED, std::string());
 
   upload_response()->WaitForRequest();
-  auto response = ParseReportUpload(upload_response()->http_request()->content);
+  base::Value::List response =
+      ParseReportUpload(upload_response()->http_request()->content);
   upload_response()->Send("HTTP/1.1 200 OK\r\n");
   upload_response()->Send("\r\n");
   upload_response()->Done();
 
   // Verify the contents of the report that we received.
-  EXPECT_TRUE(response != nullptr);
-  auto report = response->GetList().begin();
-  auto* type = report->FindKeyOfType("type", base::Value::Type::STRING);
-  auto* url = report->FindKeyOfType("url", base::Value::Type::STRING);
+  const base::Value::Dict& report = response.begin()->GetDict();
+  const std::string* type = report.FindString("type");
+  const std::string* url = report.FindString("url");
 
-  EXPECT_EQ("crash", type->GetString());
-  EXPECT_EQ(GetReportingEnabledURL().spec(), url->GetString());
+  EXPECT_EQ("crash", *type);
+  EXPECT_EQ(GetReportingEnabledURL().spec(), *url);
 }
 
 IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReportUnresponsive) {
@@ -501,22 +496,22 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReportUnresponsive) {
       content::RESULT_CODE_HUNG);
 
   upload_response()->WaitForRequest();
-  auto response = ParseReportUpload(upload_response()->http_request()->content);
+  base::Value::List response =
+      ParseReportUpload(upload_response()->http_request()->content);
   upload_response()->Send("HTTP/1.1 200 OK\r\n");
   upload_response()->Send("\r\n");
   upload_response()->Done();
 
   // Verify the contents of the report that we received.
-  EXPECT_TRUE(response != nullptr);
-  auto report = response->GetList().begin();
-  auto* type = report->FindKeyOfType("type", base::Value::Type::STRING);
-  auto* url = report->FindKeyOfType("url", base::Value::Type::STRING);
-  auto* body = report->FindKeyOfType("body", base::Value::Type::DICT);
-  auto* reason = body->FindKeyOfType("reason", base::Value::Type::STRING);
+  const base::Value::Dict& report = response.begin()->GetDict();
+  const std::string* type = report.FindString("type");
+  const std::string* url = report.FindString("url");
+  const base::Value::Dict* body = report.FindDict("body");
+  const std::string* reason = body->FindString("reason");
 
-  EXPECT_EQ("crash", type->GetString());
-  EXPECT_EQ(GetReportingEnabledURL().spec(), url->GetString());
-  EXPECT_EQ("unresponsive", reason->GetString());
+  EXPECT_EQ("crash", *type);
+  EXPECT_EQ(GetReportingEnabledURL().spec(), *url);
+  EXPECT_EQ("unresponsive", *reason);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, ReportingBrowserTest, ::testing::Bool());

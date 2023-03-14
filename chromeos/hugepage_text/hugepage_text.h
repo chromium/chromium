@@ -12,21 +12,9 @@
 #ifndef CHROMEOS_HUGEPAGE_TEXT_HUGEPAGE_TEXT_H_
 #define CHROMEOS_HUGEPAGE_TEXT_HUGEPAGE_TEXT_H_
 
-#include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "chromeos/chromeos_export.h"
 
-#if defined(__clang__) || defined(__GNUC__)
-#define ATTRIBUTE_NO_SANITIZE_ADDRESS __attribute__((no_sanitize_address))
-#else
-#define ATTRIBUTE_NO_SANITIZE_ADDRESS
-#endif
-
 namespace chromeos {
-
-// A feature which controls remapping the zygotes hot text section as hugepages
-// and locking.
-BASE_DECLARE_FEATURE(kCrOSHugepageRemapAndLockZygote);
 
 // This function will scan ELF segments and attempt to do two things:
 // - Reload some of .text into hugepages

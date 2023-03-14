@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">Link detected. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Page <ph name="PAGE_NUMBER" /> deleted</translation>
 <translation id="1258009455399840361">Rotate 90 degrees clockwise</translation>
-<translation id="1300209025925956156">Scan your document</translation>
-<translation id="1309250603447638106">Downloading updates for document scanning</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Search + left arrow to access.</translation>
 <translation id="1417314334557041815">Edit page <ph name="INDEX" /></translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> is unplugged.</translation>
 <translation id="1473110567575736769">Three seconds timer</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">Nothing recorded</translation>
 <translation id="1838104802459806957">Tilt up</translation>
 <translation id="1843105061469674856">Scan additional page</translation>
-<translation id="1851169887664797861">Additional camera controls available</translation>
 <translation id="1851616744363735765">PAUSED</translation>
 <translation id="1899697626337024495">Photo resolution</translation>
 <translation id="1925845977604399247">Go to Gallery</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">Scan type</translation>
 <translation id="28682968802727151">Mirror preview</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> is plugged in.</translation>
-<translation id="2904654629665923749">Document scan available</translation>
 <translation id="3067436040345934772">Pan right</translation>
 <translation id="3081586908890909590">Switch to record video</translation>
 <translation id="313467653172006084">30 FPS</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">Copy link address</translation>
 <translation id="4281620174117014503">Medium resolution</translation>
 <translation id="428234092390943511">Page thumbnail</translation>
-<translation id="4340659173795395806">You can now create multi-page PDF</translation>
 <translation id="4383571725254449280">Print performance logs</translation>
 <translation id="4445542136948522167">Stop taking photo</translation>
 <translation id="4570032796877367747">Front camera</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">Save</translation>
 <translation id="5320594929574852403">Moving in left direction</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5444515100983837161">Place all edges of the document within the frame. Scanning works best if the document and background are different colours.</translation>
 <translation id="5662366948659129155">Scanning page <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Square</translation>
 <translation id="5746169159649715125">Save as PDF</translation>
@@ -157,7 +150,6 @@ If your feedback is about image or video quality, please attach a sample photo o
 <translation id="8428213095426709021">Settings</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Toggle microphone mute. Mute is on</translation>
-<translation id="8712637175834984815">Got it</translation>
 <translation id="8730621377337864115">Done</translation>
 <translation id="8732462232047530626">Preview metadata</translation>
 <translation id="8815966864175525708">Switch to take portrait photo</translation>

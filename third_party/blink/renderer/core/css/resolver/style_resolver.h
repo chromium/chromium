@@ -154,10 +154,9 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
     kUACSSRules = 1 << 1,
     kUserCSSRules = 1 << 2,
     kAuthorCSSRules = 1 << 3,
-    kCrossOriginCSSRules = 1 << 4,
     kUAAndUserCSSRules = kUACSSRules | kUserCSSRules,
-    kAllButUACSSRules = kUserCSSRules | kAuthorCSSRules | kCrossOriginCSSRules,
-    kAllCSSRules = kUAAndUserCSSRules | kAuthorCSSRules | kCrossOriginCSSRules,
+    kAllButUACSSRules = kUserCSSRules | kAuthorCSSRules,
+    kAllCSSRules = kUAAndUserCSSRules | kAuthorCSSRules,
   };
   RuleIndexList* CssRulesForElement(Element*,
                                     unsigned rules_to_include = kAllCSSRules);
@@ -166,6 +165,8 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
       PseudoId,
       const AtomicString& view_transition_name,
       unsigned rules_to_include = kAllCSSRules);
+  // Note that StyleRulesForElement will behave as if all links are
+  // unvisited; the :visited pseudo class will never match.
   StyleRuleList* StyleRulesForElement(Element*, unsigned rules_to_include);
   HeapHashMap<CSSPropertyName, Member<const CSSValue>> CascadedValuesForElement(
       Element*,

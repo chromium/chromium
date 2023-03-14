@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "build/build_config.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/sync/driver/sync_service.h"
 
@@ -23,12 +24,14 @@ PasswordAccountStorageSettingsWatcher::PasswordAccountStorageSettingsWatcher(
   // account used by Sync changes.
   if (sync_service_)
     sync_service_->AddObserver(this);
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   // The opt-in state is stored in a pref, so changes to the pref might indicate
   // a change to the opt-in state.
   pref_change_registrar_.Init(pref_service);
   pref_change_registrar_.Add(
       password_manager::prefs::kAccountStoragePerAccountSettings,
       change_callback_);
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 }
 
 PasswordAccountStorageSettingsWatcher::

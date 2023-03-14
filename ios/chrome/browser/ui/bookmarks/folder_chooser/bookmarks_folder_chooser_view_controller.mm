@@ -9,13 +9,16 @@
 
 #import "base/check.h"
 #import "base/containers/contains.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
-#import "ios/chrome/browser/ui/bookmarks/cells/bookmark_folder_item.h"
+#import "ios/chrome/browser/ui/bookmarks/cells/table_view_bookmarks_folder_item.h"
+#import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_mutator.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
@@ -32,13 +35,8 @@ namespace {
 // The estimated height of every folder cell.
 const CGFloat kEstimatedFolderCellHeight = 48.0;
 
-// Height of section headers/footers.
-const CGFloat kSectionHeaderHeight = 8.0;
-const CGFloat kSectionFooterHeight = 8.0;
-
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
-  SectionIdentifierAddFolder = kSectionIdentifierEnumZero,
-  SectionIdentifierBookmarkFolders,
+  SectionIdentifierBookmarkFolders = kSectionIdentifierEnumZero,
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
@@ -50,102 +48,33 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 using bookmarks::BookmarkNode;
 
-@interface BookmarksFolderChooserViewController () <BookmarkModelBridgeObserver,
-                                                    UITableViewDataSource,
-                                                    UITableViewDelegate> {
-  std::set<const BookmarkNode*> _editedNodes;
-  std::vector<const BookmarkNode*> _folders;
-  std::unique_ptr<BookmarkModelBridge> _modelBridge;
-}
-
-// Should the controller setup Cancel and Done buttons instead of a back button.
-@property(nonatomic, assign) BOOL allowsCancel;
-
-// Should the controller setup a new-folder button.
-@property(nonatomic, assign) BOOL allowsNewFolders;
-
-// Reference to the main bookmark model.
-@property(nonatomic, assign) bookmarks::BookmarkModel* bookmarkModel;
-
-// The currently selected folder.
-@property(nonatomic, readonly) const BookmarkNode* selectedFolder;
-
-// A linear list of folders.
-@property(nonatomic, assign, readonly)
-    const std::vector<const BookmarkNode*>& folders;
-
-// The browser for this ViewController.
-@property(nonatomic, readonly) Browser* browser;
-
-// Reloads the model and the updates `self.tableView` to reflect any model
-// changes.
-- (void)reloadModel;
-
-// Pushes on the navigation controller a view controller to create a new folder.
-- (void)pushFolderAddViewController;
-
-// Called when the user taps on a folder row. The cell is checked, the UI is
-// locked so that the user can't interact with it, then the delegate is
-// notified. Usual implementations of this delegate callback are to pop or
-// dismiss this controller on selection. The delay is here to let the user get a
-// visual feedback of the selection before this view disappears.
-- (void)delayedNotifyDelegateOfSelection;
-
+@interface BookmarksFolderChooserViewController () <UITableViewDataSource,
+                                                    UITableViewDelegate>
 @end
 
-@implementation BookmarksFolderChooserViewController
+@implementation BookmarksFolderChooserViewController {
+  // Should the controller setup Cancel and Done buttons instead of a back
+  // button.
+  BOOL _allowsCancel;
+  // Should the controller setup a new-folder button.
+  BOOL _allowsNewFolders;
+  // A linear list of folders. This will be populated in `reloadModel` when the
+  // UI is updated.
+  std::vector<const BookmarkNode*> _folders;
+}
 
-@synthesize allowsCancel = _allowsCancel;
-@synthesize allowsNewFolders = _allowsNewFolders;
-@synthesize bookmarkModel = _bookmarkModel;
-@synthesize editedNodes = _editedNodes;
-@synthesize delegate = _delegate;
-@synthesize folders = _folders;
-@synthesize selectedFolder = _selectedFolder;
-
-- (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
-                     allowsNewFolders:(BOOL)allowsNewFolders
-                          editedNodes:
-                              (const std::set<const BookmarkNode*>&)nodes
-                         allowsCancel:(BOOL)allowsCancel
-                       selectedFolder:(const BookmarkNode*)selectedFolder
-                              browser:(Browser*)browser {
-  DCHECK(bookmarkModel);
-  DCHECK(bookmarkModel->loaded());
-  DCHECK(browser);
-  DCHECK(selectedFolder == NULL || selectedFolder->is_folder());
-
+- (instancetype)initWithAllowsCancel:(BOOL)allowsCancel
+                    allowsNewFolders:(BOOL)allowsNewFolders {
   UITableViewStyle style = ChromeTableViewStyle();
   self = [super initWithStyle:style];
   if (self) {
-    _browser = browser;
     _allowsCancel = allowsCancel;
     _allowsNewFolders = allowsNewFolders;
-    _bookmarkModel = bookmarkModel;
-    _editedNodes = nodes;
-    _selectedFolder = selectedFolder;
-
-    // Set up the bookmark model oberver.
-    _modelBridge.reset(new BookmarkModelBridge(self, _bookmarkModel));
   }
   return self;
 }
 
-- (void)changeSelectedFolder:(const BookmarkNode*)selectedFolder {
-  DCHECK(selectedFolder);
-  DCHECK(selectedFolder->is_folder());
-  _selectedFolder = selectedFolder;
-  [self reloadModel];
-}
-
-- (void)notifyFolderNodeAdded:(const BookmarkNode*)folder {
-  DCHECK(folder);
-  [self reloadModel];
-  [self changeSelectedFolder:folder];
-  [self delayedNotifyDelegateOfSelection];
-}
-
-#pragma mark - View lifecycle
+#pragma mark - UIViewController
 
 - (void)viewDidLoad {
   [super viewDidLoad];
@@ -155,7 +84,7 @@ using bookmarks::BookmarkNode;
       kBookmarkFolderPickerViewContainerIdentifier;
   self.title = l10n_util::GetNSString(IDS_IOS_BOOKMARK_CHOOSE_GROUP_BUTTON);
 
-  if (self.allowsCancel) {
+  if (_allowsCancel) {
     UIBarButtonItem* cancelItem = [[UIBarButtonItem alloc]
         initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                              target:self
@@ -177,7 +106,14 @@ using bookmarks::BookmarkNode;
   self.navigationController.toolbarHidden = YES;
 
   // Load the model.
-  [self reloadModel];
+  [self reloadView];
+}
+
+- (void)didMoveToParentViewController:(UIViewController*)parent {
+  [super didMoveToParentViewController:parent];
+  if (!parent) {
+    [self.delegate bookmarksFolderChooserViewControllerDidDismiss:self];
+  }
 }
 
 #pragma mark - Accessibility
@@ -189,158 +125,62 @@ using bookmarks::BookmarkNode;
 
 #pragma mark - UITableViewDelegate
 
-- (CGFloat)tableView:(UITableView*)tableView
-    heightForHeaderInSection:(NSInteger)section {
-  return kSectionHeaderHeight;
-}
-
-- (UIView*)tableView:(UITableView*)tableView
-    viewForHeaderInSection:(NSInteger)section {
-  CGRect headerViewFrame = CGRectMake(0, 0, CGRectGetWidth(tableView.frame),
-                                      [self tableView:tableView
-                                          heightForHeaderInSection:section]);
-  UIView* headerView = [[UIView alloc] initWithFrame:headerViewFrame];
-  if (section ==
-          [self.tableViewModel
-              sectionForSectionIdentifier:SectionIdentifierBookmarkFolders] &&
-      self.allowsNewFolders) {
-    CGRect separatorFrame =
-        CGRectMake(0, 0, CGRectGetWidth(headerView.bounds),
-                   1.0 / [[UIScreen mainScreen] scale]);  // 1-pixel divider.
-    UIView* separator = [[UIView alloc] initWithFrame:separatorFrame];
-    separator.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin |
-                                 UIViewAutoresizingFlexibleWidth;
-    separator.backgroundColor = [UIColor colorNamed:kSeparatorColor];
-    [headerView addSubview:separator];
-  }
-  return headerView;
-}
-
-- (CGFloat)tableView:(UITableView*)tableView
-    heightForFooterInSection:(NSInteger)section {
-  return kSectionFooterHeight;
-}
-
-- (UIView*)tableView:(UITableView*)tableView
-    viewForFooterInSection:(NSInteger)section {
-  return [[UIView alloc] init];
-}
-
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
   switch ([self.tableViewModel
       sectionIdentifierForSectionIndex:indexPath.section]) {
-    case SectionIdentifierAddFolder:
-      [self pushFolderAddViewController];
-      break;
-
     case SectionIdentifierBookmarkFolders: {
       int folderIndex = indexPath.row;
       // If new folders are allowed, the first cell on this section
-      // should call `pushFolderAddViewController`.
-      if (self.allowsNewFolders) {
+      // should call `showBookmarksFolderEditor`.
+      if (_allowsNewFolders) {
         NSInteger itemType =
             [self.tableViewModel itemTypeForIndexPath:indexPath];
         if (itemType == ItemTypeCreateNewFolder) {
-          [self pushFolderAddViewController];
+          [self.delegate
+              showBookmarksFolderEditorWithParentFolder:[_dataSource
+                                                            selectedFolder]];
           return;
         }
         // If new folders are allowed, we need to offset by 1 to get
-        // the right BookmarkNode from `self.folders`.
+        // the right BookmarkNode from folders.
         folderIndex--;
       }
-      const BookmarkNode* folder = self.folders[folderIndex];
-      [self changeSelectedFolder:folder];
+      const BookmarkNode* folder = _folders[folderIndex];
+      [_mutator setSelectedFolder:folder];
       [self delayedNotifyDelegateOfSelection];
       break;
     }
   }
 }
 
-#pragma mark - BookmarkModelBridgeObserver
+#pragma mark - BookmarksFolderChooserConsumer
 
-- (void)bookmarkModelLoaded {
-  // The bookmark model is assumed to be loaded when this controller is created.
-  NOTREACHED();
-}
-
-- (void)bookmarkNodeChanged:(const BookmarkNode*)bookmarkNode {
-  if (!bookmarkNode->is_folder()) {
-    return;
-  }
-  [self reloadModel];
-}
-
-- (void)bookmarkNodeChildrenChanged:(const BookmarkNode*)bookmarkNode {
-  [self reloadModel];
-}
-
-- (void)bookmarkNode:(const BookmarkNode*)bookmarkNode
-     movedFromParent:(const BookmarkNode*)oldParent
-            toParent:(const BookmarkNode*)newParent {
-  if (bookmarkNode->is_folder()) {
-    [self reloadModel];
-  }
-}
-
-- (void)bookmarkNodeDeleted:(const BookmarkNode*)bookmarkNode
-                 fromFolder:(const BookmarkNode*)folder {
-  // Remove node from editedNodes if it is already deleted (possibly remotely by
-  // another sync device).
-  if (base::Contains(_editedNodes, bookmarkNode)) {
-    _editedNodes.erase(bookmarkNode);
-    // if editedNodes becomes empty, nothing to move.  Exit the folder picker.
-    if (_editedNodes.empty()) {
-      [self.delegate bookmarksFolderChooserViewControllerDidCancel:self];
-    }
-    // Exit here because nodes in editedNodes cannot be any visible folders in
-    // folder picker.
-    return;
-  }
-
-  if (!bookmarkNode->is_folder()) {
-    return;
-  }
-
-  if (bookmarkNode == self.selectedFolder) {
-    // The selected folder has been deleted. Fallback on the Mobile Bookmarks
-    // node.
-    [self changeSelectedFolder:self.bookmarkModel->mobile_node()];
-  }
-  [self reloadModel];
-}
-
-- (void)bookmarkModelRemovedAllNodes {
-  // The selected folder is no longer valid. Fallback on the Mobile Bookmarks
-  // node.
-  [self changeSelectedFolder:self.bookmarkModel->mobile_node()];
-  [self reloadModel];
+- (void)notifyModelUpdated {
+  [self reloadView];
 }
 
 #pragma mark - Actions
 
 - (void)done:(id)sender {
-  [self.delegate bookmarksFolderChooserViewController:self
-                                  didFinishWithFolder:self.selectedFolder];
+  base::RecordAction(
+      base::UserMetricsAction("MobileBookmarksFolderChooserDone"));
+  [self.delegate
+      bookmarksFolderChooserViewController:self
+                       didFinishWithFolder:[_dataSource selectedFolder]];
 }
 
 - (void)cancel:(id)sender {
+  base::RecordAction(
+      base::UserMetricsAction("MobileBookmarksFolderChooserCanceled"));
   [self.delegate bookmarksFolderChooserViewControllerDidCancel:self];
 }
 
 #pragma mark - Private
 
-- (void)reloadModel {
-  _folders = bookmark_utils_ios::VisibleNonDescendantNodes(self.editedNodes,
-                                                           self.bookmarkModel);
-
+- (void)reloadView {
   // Delete any existing section.
-  if ([self.tableViewModel
-          hasSectionForSectionIdentifier:SectionIdentifierAddFolder]) {
-    [self.tableViewModel
-        removeSectionWithIdentifier:SectionIdentifierAddFolder];
-  }
   if ([self.tableViewModel
           hasSectionForSectionIdentifier:SectionIdentifierBookmarkFolders]) {
     [self.tableViewModel
@@ -351,32 +191,35 @@ using bookmarks::BookmarkNode;
   [self.tableViewModel
       addSectionWithIdentifier:SectionIdentifierBookmarkFolders];
 
-  // Adds default "Add Folder" item if needed.
-  if (self.allowsNewFolders) {
-    BookmarkFolderItem* createFolderItem =
-        [[BookmarkFolderItem alloc] initWithType:ItemTypeCreateNewFolder
-                                           style:BookmarkFolderStyleNewFolder];
-    // Add the "Add Folder" Item to the same section as the rest of the folder
+  // Adds default "New Folder" item if needed.
+  if (_allowsNewFolders) {
+    TableViewBookmarksFolderItem* createFolderItem =
+        [[TableViewBookmarksFolderItem alloc]
+            initWithType:ItemTypeCreateNewFolder
+                   style:BookmarksFolderStyleNewFolder];
+    // Add the "New Folder" Item to the same section as the rest of the folder
     // entries.
     [self.tableViewModel addItem:createFolderItem
          toSectionWithIdentifier:SectionIdentifierBookmarkFolders];
   }
 
   // Add Folders entries.
+  _folders = [_dataSource visibleFolders];
+  const BookmarkNode* rootFolder = [_dataSource rootFolder];
   for (NSUInteger row = 0; row < _folders.size(); row++) {
-    const BookmarkNode* folderNode = self.folders[row];
-    BookmarkFolderItem* folderItem = [[BookmarkFolderItem alloc]
-        initWithType:ItemTypeBookmarkFolder
-               style:BookmarkFolderStyleFolderEntry];
+    const BookmarkNode* folderNode = _folders[row];
+    TableViewBookmarksFolderItem* folderItem =
+        [[TableViewBookmarksFolderItem alloc]
+            initWithType:ItemTypeBookmarkFolder
+                   style:BookmarksFolderStyleFolderEntry];
     folderItem.title = bookmark_utils_ios::TitleForBookmarkNode(folderNode);
-    folderItem.currentFolder = (self.selectedFolder == folderNode);
+    folderItem.currentFolder = ([_dataSource selectedFolder] == folderNode);
 
     // Indentation level.
     NSInteger level = 0;
-    const BookmarkNode* node = folderNode;
-    while (node && !(self.bookmarkModel->is_root_node(node))) {
+    while (folderNode && folderNode != rootFolder) {
       ++level;
-      node = node->parent();
+      folderNode = folderNode->parent();
     }
     // The root node is not shown as a folder, so top level folders have a
     // level strictly positive.
@@ -388,11 +231,6 @@ using bookmarks::BookmarkNode;
   }
 
   [self.tableView reloadData];
-}
-
-- (void)pushFolderAddViewController {
-  DCHECK(self.allowsNewFolders);
-  [self.delegate showBookmarksFolderEditor];
 }
 
 - (void)delayedNotifyDelegateOfSelection {
@@ -409,12 +247,6 @@ using bookmarks::BookmarkNode;
         strongSelf.view.userInteractionEnabled = YES;
         [strongSelf done:nil];
       });
-}
-
-#pragma mark - Properties
-
-- (const std::set<const bookmarks::BookmarkNode*>&)editedNodes {
-  return _editedNodes;
 }
 
 @end

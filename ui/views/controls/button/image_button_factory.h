@@ -73,7 +73,8 @@ VIEWS_EXPORT void SetImageFromVectorIconWithColorId(
     ImageButton* button,
     const gfx::VectorIcon& icon,
     ui::ColorId icon_color_id,
-    ui::ColorId icon_disabled_color_id);
+    ui::ColorId icon_disabled_color_id,
+    absl::optional<int> icon_size = absl::nullopt);
 
 // Sets images on a `ToggleImageButton` |button| for STATE_NORMAL and
 // STATE_DISABLED with the default size from the given vector icon and colors.

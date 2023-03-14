@@ -70,6 +70,26 @@ enum class WebauthnOptInParameters {
   kMaxValue = kWithRequestChallenge,
 };
 
+// The reason that the FIDO opt-in dialog was not offered to the user.
+enum class WebauthnOptInPromoNotOfferedReason {
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+
+  // Default value, should never be used.
+  kUnknown = 0,
+  // Not offered because we authenticated a virtual card, and we do not offer
+  // FIDO opt-in for virtual cards.
+  kVirtualCard = 1,
+  // Not offered because the UnmaskDetails response denoted that we should not
+  // offer FIDO opt-in.
+  kUnmaskDetailsOfferFidoOptInFalse = 2,
+  // Not offered because the card authorization token was empty.
+  kCardAuthorizationTokenEmpty = 3,
+  // Not offered because it was blocked by the FidoAuthenticationStrikeDatabase.
+  kBlockedByStrikeDatabase = 4,
+  kMaxValue = kBlockedByStrikeDatabase,
+};
+
 // The user decision for the WebAuthn opt-in promo.
 enum class WebauthnOptInPromoUserDecisionMetric {
   // These values are persisted to logs. Entries should not be renumbered and
@@ -152,6 +172,14 @@ void LogUserVerifiabilityCheckDuration(const base::TimeDelta& duration);
 void LogWebauthnOptChangeCalled(bool request_to_opt_in,
                                 bool is_checkout_flow,
                                 WebauthnOptInParameters metric);
+
+// Records when the Better Auth (FIDO) opt-in promo could have been offered on
+// Desktop, but wasn't. Logged at the time of the promo not being shown. This
+// metric can only be logged from the checkout flow, as we do not block opting
+// in to FIDO from the settings page. `reason` will be used to log the reason
+// why we are not offering the FIDO opt-in dialog.
+void LogWebauthnOptInPromoNotOfferedReason(
+    WebauthnOptInPromoNotOfferedReason reason);
 
 // Logs the number of times the opt-in promo for enabling FIDO authentication
 // for card unmasking has been shown.

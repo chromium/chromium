@@ -216,11 +216,6 @@ void ModuleScriptLoader::FetchInternal(
   fetch_params.SetRenderBlockingBehavior(
       module_request.Options().GetRenderBlockingBehavior());
 
-  // [nospec] Unlike defer/async classic scripts, module scripts are fetched at
-  // High priority.
-  fetch_params.MutableResourceRequest().SetPriority(
-      ResourceLoadPriority::kHigh);
-
   // <spec step="12.1">Let source text be the result of UTF-8 decoding
   // response's body.</spec>
   fetch_params.SetDecoderOptions(

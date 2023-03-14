@@ -591,4 +591,36 @@ TEST_F(BufferQueueTest, RecreateBuffers) {
   EXPECT_EQ(buffer_queue_->GetCurrentBuffer(), mb4);
 }
 
+TEST_F(BufferQueueTest, DestroyBuffers) {
+  EXPECT_TRUE(buffer_queue_->Reshape(screen_size, kBufferQueueColorSpace,
+                                     kBufferQueueFormat));
+  auto mb1 = SendDamagedFrame(small_damage);
+  auto mb2 = SendDamagedFrame(small_damage);
+  auto mb3 = SendDamagedFrame(small_damage);
+  std::vector<gpu::Mailbox> original_buffers = {mb1, mb2, mb3};
+
+  EXPECT_EQ(buffer_queue_->GetCurrentBuffer(), mb1);
+  buffer_queue_->SwapBuffers(small_damage);
+  EXPECT_EQ(buffer_queue_->GetCurrentBuffer(), mb2);
+  buffer_queue_->SwapBuffers(small_damage);
+
+  buffer_queue_->DestroyBuffers();
+
+  // All buffers are destroyed, and GetLastSwappedBuffer should not recreate
+  // them.
+  EXPECT_TRUE(buffer_queue_->GetLastSwappedBuffer().IsZero());
+  buffer_queue_->SwapBuffersComplete();  // mb1
+  EXPECT_TRUE(buffer_queue_->GetLastSwappedBuffer().IsZero());
+  // Reshape should not reallocate buffers.
+  EXPECT_TRUE(buffer_queue_->Reshape(gfx::Size(20, 20), kBufferQueueColorSpace,
+                                     kBufferQueueFormat));
+  EXPECT_TRUE(buffer_queue_->GetLastSwappedBuffer().IsZero());
+
+  // GetCurrentBuffer should create the new buffers.
+  auto mb4 = buffer_queue_->GetCurrentBuffer();
+  EXPECT_FALSE(mb4.IsZero());
+  EXPECT_THAT(original_buffers, Not(Contains(mb4)));
+  EXPECT_FALSE(buffer_queue_->GetLastSwappedBuffer().IsZero());
+}
+
 }  // namespace viz

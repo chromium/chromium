@@ -45,9 +45,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
+import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.device.geolocation.LocationProviderOverrider;
@@ -67,7 +67,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
-@DisableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class IncognitoPermissionLeakageTest {
     private static final String PERMISSION_HTML_PATH =
@@ -96,10 +95,12 @@ public class IncognitoPermissionLeakageTest {
         // Ensuring native is initialized before we access the CCT_INCOGNITO feature flag.
         IncognitoDataTestUtils.fireAndWaitForCctWarmup();
         assertTrue(ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_INCOGNITO));
+        ModalDialogTestUtils.overrideEnableButtonTapProtection(false);
     }
 
     @After
     public void tearDown() {
+        ModalDialogTestUtils.overrideEnableButtonTapProtection(true);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> IncognitoDataTestUtils.closeTabs(mChromeActivityTestRule));
         mTestServer.stopAndDestroyServer();

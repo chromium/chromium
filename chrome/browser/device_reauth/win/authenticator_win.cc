@@ -45,11 +45,6 @@ using ABI::Windows::Security::Credentials::UI::
     UserConsentVerifierAvailability_NotConfiguredForUser;
 using Microsoft::WRL::ComPtr;
 
-bool ResolveCoreWinRT() {
-  return base::win::ResolveCoreWinRTDelayload() &&
-         base::win::ScopedHString::ResolveCoreWinRTStringDelayload();
-}
-
 BiometricAuthenticationStatusWin ConvertUserConsentVerifierAvailability(
     UserConsentVerifierAvailability availability) {
   switch (availability) {
@@ -94,11 +89,6 @@ void ReportCantCheckAvailability(
 void GetBiometricAvailabilityFromWindows(
     AvailabilityCallback callback,
     scoped_refptr<base::SequencedTaskRunner> thread) {
-  if (!ResolveCoreWinRT()) {
-    ReportCantCheckAvailability(thread, std::move(callback));
-    return;
-  }
-
   // Mitigate the issues caused by loading DLLs on a background thread
   // (http://crbug/973868).
   SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();

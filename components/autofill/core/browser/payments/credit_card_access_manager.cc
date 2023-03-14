@@ -60,7 +60,7 @@ CreditCardAccessManager::CreditCardAccessManager(
     AutofillDriver* driver,
     AutofillClient* client,
     PersonalDataManager* personal_data_manager,
-    CreditCardFormEventLogger* form_event_logger)
+    autofill_metrics::CreditCardFormEventLogger* form_event_logger)
     : driver_(driver),
       client_(client),
       payments_client_(client_->GetPaymentsClient()),
@@ -857,24 +857,38 @@ bool CreditCardAccessManager::ShouldOfferFidoOptInDialog(
   return false;
 #else
   // We should not offer FIDO opt-in for virtual cards.
-  if (!card_ || card_->record_type() == CreditCard::VIRTUAL_CARD)
+  if (!card_ || card_->record_type() == CreditCard::VIRTUAL_CARD) {
+    autofill_metrics::LogWebauthnOptInPromoNotOfferedReason(
+        autofill_metrics::WebauthnOptInPromoNotOfferedReason::kVirtualCard);
     return false;
+  }
 
   // If this card is not eligible for offering FIDO opt-in, we should not offer
   // the FIDO opt-in dialog.
-  if (!unmask_details_.offer_fido_opt_in)
+  if (!unmask_details_.offer_fido_opt_in) {
+    autofill_metrics::LogWebauthnOptInPromoNotOfferedReason(
+        autofill_metrics::WebauthnOptInPromoNotOfferedReason::
+            kUnmaskDetailsOfferFidoOptInFalse);
     return false;
+  }
 
   // A card authorization token is required for FIDO opt-in, so if we did not
   // receive one from the server we should not offer the FIDO opt-in dialog.
-  if (response.card_authorization_token.empty())
+  if (response.card_authorization_token.empty()) {
+    autofill_metrics::LogWebauthnOptInPromoNotOfferedReason(
+        autofill_metrics::WebauthnOptInPromoNotOfferedReason::
+            kCardAuthorizationTokenEmpty);
     return false;
+  }
 
   // If the strike limit was reached for the FIDO opt-in dialog, we should not
   // offer it.
   if (GetOrCreateFidoAuthenticator()
           ->GetOrCreateFidoAuthenticationStrikeDatabase()
           ->ShouldBlockFeature()) {
+    autofill_metrics::LogWebauthnOptInPromoNotOfferedReason(
+        autofill_metrics::WebauthnOptInPromoNotOfferedReason::
+            kBlockedByStrikeDatabase);
     return false;
   }
 

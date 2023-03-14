@@ -44,8 +44,7 @@ class ExtensionCreatorFilterTest : public PlatformTest {
     EXPECT_TRUE(base::CreateDirectory(path.DirName()));
 
     std::string contents = "test";
-    EXPECT_EQ(static_cast<int>(contents.size()),
-              base::WriteFile(path, contents.c_str(), contents.size()));
+    EXPECT_TRUE(base::WriteFile(path, contents));
     return path;
   }
 

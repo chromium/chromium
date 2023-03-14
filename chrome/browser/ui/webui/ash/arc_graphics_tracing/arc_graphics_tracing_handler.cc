@@ -185,13 +185,11 @@ std::pair<base::Value, std::string> BuildGraphicsModel(
         model_path.DirName().Append(model_path.BaseName().value() + "_raw");
     const base::FilePath system_path =
         model_path.DirName().Append(model_path.BaseName().value() + "_system");
-    if (!base::WriteFile(base::FilePath(raw_path), data.c_str(),
-                         data.length())) {
+    if (!base::WriteFile(base::FilePath(raw_path), data)) {
       LOG(ERROR) << "Failed to save raw trace model to " << raw_path.value();
     }
     const std::string system_raw = system_stat_collector->SerializeToJson();
-    if (!base::WriteFile(base::FilePath(system_path), system_raw.c_str(),
-                         system_raw.length())) {
+    if (!base::WriteFile(base::FilePath(system_path), system_raw)) {
       LOG(ERROR) << "Failed to save system model to " << system_path.value();
     }
   }
@@ -231,8 +229,7 @@ std::pair<base::Value, std::string> BuildGraphicsModel(
       model, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json_content);
   DCHECK(!json_content.empty());
 
-  if (!base::WriteFile(model_path, json_content.c_str(),
-                       json_content.length())) {
+  if (!base::WriteFile(model_path, json_content)) {
     LOG(ERROR) << "Failed serialize model to " << model_path.value() << ".";
   }
 

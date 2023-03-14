@@ -33,7 +33,9 @@ class PLATFORM_EXPORT CalculationExpressionNode
  public:
   virtual float Evaluate(float max_value,
                          const Length::AnchorEvaluator*) const = 0;
-  virtual bool operator==(const CalculationExpressionNode& other) const = 0;
+  bool operator==(const CalculationExpressionNode& other) const {
+    return Equals(other);
+  }
   bool operator!=(const CalculationExpressionNode& other) const {
     return !operator==(other);
   }
@@ -60,6 +62,8 @@ class PLATFORM_EXPORT CalculationExpressionNode
 #endif
 
  protected:
+  virtual bool Equals(const CalculationExpressionNode& other) const = 0;
+
   bool has_anchor_queries_ = false;
 };
 
@@ -76,7 +80,7 @@ class PLATFORM_EXPORT CalculationExpressionNumberNode final
 
   // Implement |CalculationExpressionNode|:
   float Evaluate(float max_value, const Length::AnchorEvaluator*) const final;
-  bool operator==(const CalculationExpressionNode& other) const final;
+  bool Equals(const CalculationExpressionNode& other) const final;
   scoped_refptr<const CalculationExpressionNode> Zoom(
       double factor) const final;
   bool IsNumber() const final { return true; }
@@ -113,7 +117,7 @@ class PLATFORM_EXPORT CalculationExpressionPixelsAndPercentNode final
 
   // Implement |CalculationExpressionNode|:
   float Evaluate(float max_value, const Length::AnchorEvaluator*) const final;
-  bool operator==(const CalculationExpressionNode& other) const final;
+  bool Equals(const CalculationExpressionNode& other) const final;
   scoped_refptr<const CalculationExpressionNode> Zoom(
       double factor) const final;
   bool IsPixelsAndPercent() const final { return true; }
@@ -151,7 +155,7 @@ class PLATFORM_EXPORT CalculationExpressionOperationNode final
 
   // Implement |CalculationExpressionNode|:
   float Evaluate(float max_value, const Length::AnchorEvaluator*) const final;
-  bool operator==(const CalculationExpressionNode& other) const final;
+  bool Equals(const CalculationExpressionNode& other) const final;
   scoped_refptr<const CalculationExpressionNode> Zoom(
       double factor) const final;
   bool IsOperation() const final { return true; }

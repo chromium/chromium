@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/login/easy_unlock/chrome_proximity_auth_client.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_auth_attempt.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_metrics.h"
-#include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"
 #include "chrome/browser/ash/login/easy_unlock/smartlock_state_handler.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/proximity_auth/smart_lock_metrics_recorder.h"
@@ -110,6 +109,9 @@ class EasyUnlockService : public KeyedService,
   virtual SmartLockState GetInitialSmartLockState() const;
 
   // Sets the hardlock state for the associated user.
+  // TODO(b/227674947): Delete any hardlock logic and deprecate its
+  // corresponding pref. Now that Sign in with Smart Lock is deprecated and the
+  // UI revamp is launched, we can remove it.
   void SetHardlockState(SmartLockStateHandler::HardlockState state);
 
   // Returns the hardlock state for the associated user.
@@ -138,12 +140,6 @@ class EasyUnlockService : public KeyedService,
 
   // Handles Easy Unlock auth failure for the user.
   void HandleAuthFailure(const AccountId& account_id);
-
-  // Checks the consistency between pairing data and cryptohome keys. Set
-  // hardlock state if the two do not match.
-  // TODO(b/227674947): Delete this method now that sign in with Smart Lock is
-  // deprecated.
-  void CheckCryptohomeKeysAndMaybeHardlock();
 
   ChromeProximityAuthClient* proximity_auth_client() {
     return &proximity_auth_client_;
@@ -250,20 +246,11 @@ class EasyUnlockService : public KeyedService,
   // Unlock gets disabled.
   SmartLockStateHandler* GetSmartLockStateHandler();
 
-  // Callback for get key operation from CheckCryptohomeKeysAndMaybeHardlock.
-  void OnCryptohomeKeysFetchedForChecking(
-      const AccountId& account_id,
-      const std::set<std::string> paired_devices,
-      bool success,
-      const EasyUnlockDeviceKeyDataList& key_data_list);
-
   // Updates the service to state for handling system suspend.
   void PrepareForSuspend();
 
   // Called when the system resumes from a suspended state.
   void OnSuspendDone();
-
-  void EnsureTpmKeyPresentIfNeeded();
 
   // Determines whether failure to unlock with phone should be handled as an
   // authentication failure.
@@ -296,8 +283,6 @@ class EasyUnlockService : public KeyedService,
 
   // Whether the service has been shut down.
   bool shut_down_;
-
-  bool tpm_key_checked_;
 
   base::WeakPtrFactory<EasyUnlockService> weak_ptr_factory_{this};
 };

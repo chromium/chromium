@@ -12,16 +12,19 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/common/extension_builder.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/test/test_extension_dir.h"
 #include "url/gurl.h"
 
 namespace extensions {
 
-using ExtensionUtilUnittest = ExtensionServiceTestBase;
+class ExtensionUtilUnittest : public ExtensionServiceTestBase {
+ public:
+  void SetUp() override { InitializeEmptyExtensionService(); }
+};
 
 TEST_F(ExtensionUtilUnittest, SetAllowFileAccess) {
-  InitializeEmptyExtensionService();
   constexpr char kManifest[] =
       R"({
            "name": "foo",
@@ -78,7 +81,6 @@ TEST_F(ExtensionUtilUnittest, SetAllowFileAccess) {
 }
 
 TEST_F(ExtensionUtilUnittest, SetAllowFileAccessWhileDisabled) {
-  InitializeEmptyExtensionService();
   constexpr char kManifest[] =
       R"({
            "name": "foo",
@@ -144,6 +146,21 @@ TEST_F(ExtensionUtilUnittest, SetAllowFileAccessWhileDisabled) {
   EXPECT_FALSE(util::AllowFileAccess(extension_id, profile()));
   EXPECT_FALSE(extension->permissions_data()->CanCaptureVisiblePage(
       file_url, tab_id, nullptr, CaptureRequirement::kActiveTabOrAllUrls));
+}
+
+TEST_F(ExtensionUtilUnittest, HasIsolatedStorage) {
+  // Platform apps should have isolated storage.
+  scoped_refptr<const Extension> app =
+      ExtensionBuilder("foo_app", ExtensionBuilder::Type::PLATFORM_APP).Build();
+  EXPECT_TRUE(app->is_platform_app());
+  EXPECT_TRUE(extensions::util::HasIsolatedStorage(*app.get(), profile()));
+
+  // Extensions should not have isolated storage.
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("foo_ext", ExtensionBuilder::Type::EXTENSION).Build();
+  EXPECT_FALSE(extension->is_platform_app());
+  EXPECT_FALSE(
+      extensions::util::HasIsolatedStorage(*extension.get(), profile()));
 }
 
 }  // namespace extensions

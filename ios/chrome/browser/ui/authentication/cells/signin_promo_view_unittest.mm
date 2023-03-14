@@ -6,9 +6,9 @@
 
 #import <MaterialComponents/MaterialOverlayWindow.h>
 
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/signin_util.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
 #import "testing/platform_test.h"
@@ -94,20 +94,13 @@ TEST_F(SigninPromoViewTest, ChangeLayout) {
   EXPECT_GT(view.primaryButton.layer.cornerRadius, 0.0);
 
   // Switch to compact layout.
-  view.promoViewStyle = SigninPromoViewStyleTitledCompact;
-  EXPECT_EQ(view.promoViewStyle, SigninPromoViewStyleTitledCompact);
+  view.promoViewStyle = SigninPromoViewStyleCompactTitled;
+  EXPECT_EQ(view.promoViewStyle, SigninPromoViewStyleCompactTitled);
   // In compact layout, the primary button is plain.
   EXPECT_FALSE(view.primaryButton.backgroundColor);
   EXPECT_EQ(view.primaryButton.layer.cornerRadius, 0.0);
   // The secondary button should be hidden.
   EXPECT_TRUE(view.secondaryButton.hidden);
 
-  // Switch to titled layout.
-  view.promoViewStyle = SigninPromoViewStyleTitled;
-  EXPECT_EQ(view.promoViewStyle, SigninPromoViewStyleTitled);
-  // In titled layout, the primary button is rounded with a background color.
-  EXPECT_TRUE(view.primaryButton.backgroundColor);
-  EXPECT_GT(view.primaryButton.layer.cornerRadius, 0.0);
-  // The secondary button should be hidden.
-  EXPECT_TRUE(view.secondaryButton.hidden);
+  // TODO(crbug.com/1412758): Test new promo styles.
 }

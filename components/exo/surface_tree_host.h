@@ -81,8 +81,9 @@ class SurfaceTreeHost : public SurfaceDelegate,
 
   using PresentationCallbacks = std::list<Surface::PresentationCallback>;
 
-  const PresentationCallbacks& presentation_callbacks() const {
-    return presentation_callbacks_;
+  base::queue<std::list<Surface::FrameCallback>>&
+  GetFrameCallbacksForTesting() {
+    return frame_callbacks_;
   }
 
   base::flat_map<uint32_t, PresentationCallbacks>&
@@ -193,9 +194,8 @@ class SurfaceTreeHost : public SurfaceDelegate,
   // fire when the effect of the Commit() is scheduled to be drawn.
   base::queue<std::list<Surface::FrameCallback>> frame_callbacks_;
 
-  // These lists contains the callbacks to notify the client when surface
+  // These lists contain the callbacks to notify the client when surface
   // contents have been presented.
-  PresentationCallbacks presentation_callbacks_;
   base::flat_map<uint32_t, PresentationCallbacks>
       active_presentation_callbacks_;
 

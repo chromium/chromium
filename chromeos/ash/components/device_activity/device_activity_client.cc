@@ -171,6 +171,34 @@ base::Time ConvertToPT(base::Time ts) {
   return ts + base::Minutes(gmt_offset / kMillisecondsPerMinute);
 }
 
+base::Time GetNextMonth(base::Time ts) {
+  base::Time::Exploded exploded;
+  ts.UTCExplode(&exploded);
+
+  // Set new time to the first midnight of the next month.
+  exploded.day_of_month = 1;
+  exploded.month += 1;
+  exploded.hour = 0;
+  exploded.minute = 0;
+  exploded.second = 0;
+  exploded.millisecond = 0;
+
+  // Handle case when month is December.
+  if (exploded.month > 12) {
+    exploded.year += 1;
+    exploded.month = 1;
+  }
+
+  base::Time new_month_ts;
+  bool success = base::Time::FromUTCExploded(exploded, &new_month_ts);
+
+  if (!success) {
+    return base::Time();
+  }
+
+  return new_month_ts;
+}
+
 // Generates the full histogram name for histogram variants based on state.
 std::string HistogramVariantName(const std::string& histogram_prefix,
                                  DeviceActivityClient::State state) {
@@ -377,6 +405,173 @@ std::vector<DeviceActiveUseCase*> DeviceActivityClient::GetUseCases() const {
   return use_cases_ptr;
 }
 
+DeviceActiveUseCase* DeviceActivityClient::GetUseCasePtr(
+    psm_rlwe::RlweUseCase psm_use_case) const {
+  for (auto* use_case : GetUseCases()) {
+    if (use_case->GetPsmUseCase() == psm_use_case) {
+      return use_case;
+    }
+  }
+
+  VLOG(1) << "Use Case is not supported yet.";
+  return nullptr;
+}
+
+void DeviceActivityClient::UpdateChurnLocalStateAfterCheckIn(
+    DeviceActiveUseCase* current_use_case) {
+  if (current_use_case->GetPsmUseCase() ==
+      private_membership::rlwe::RlweUseCase::
+          CROS_FRESNEL_CHURN_MONTHLY_COHORT) {
+    base::Time prev_active_month =
+        churn_active_status_ptr_->GetCurrentActiveMonth();
+
+    // Update the active value based on the new ping timestamp.
+    // This will also require updating the booleans in local state that store
+    // whether a device has pinged in the past 3 months relative to the current
+    // month.
+    churn_active_status_ptr_->UpdateValue(last_transition_out_of_idle_time_);
+    base::Time new_active_month =
+        churn_active_status_ptr_->GetCurrentActiveMonth();
+    int new_active_value = churn_active_status_ptr_->GetValueAsInt();
+
+    // No updates were made to the churn active status.
+    if (prev_active_month == new_active_month) {
+      return;
+    }
+
+    // Read the current relative observation period reported status.
+    bool is_active_current_period_minus_0 = local_state_->GetBoolean(
+        prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus0);
+    bool is_active_current_period_minus_1 = local_state_->GetBoolean(
+        prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1);
+    bool is_active_current_period_minus_2 = local_state_->GetBoolean(
+        prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2);
+
+    // Determine how many months have passed between new_active_value and
+    // prev_active_value. This will tell us how many months the relative
+    // observation status should shift by in the local state.
+    for (int i = 0; i < 3; i++) {
+      if (prev_active_month == new_active_month) {
+        break;
+      }
+
+      // Shift relative observation windows reported status by 1.
+      // This is for the cohort use case, which happens before the observation
+      // use case. This means that after a successful churn cohort ping in a
+      // new month, the device may have false observation report statuses.
+      is_active_current_period_minus_2 = is_active_current_period_minus_1;
+      is_active_current_period_minus_1 = is_active_current_period_minus_0;
+      is_active_current_period_minus_0 = false;
+
+      prev_active_month = GetNextMonth(prev_active_month);
+    }
+
+    // Update the local state values after determining all other values.
+    local_state_->SetBoolean(
+        prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus0,
+        is_active_current_period_minus_0);
+    local_state_->SetBoolean(
+        prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1,
+        is_active_current_period_minus_1);
+    local_state_->SetBoolean(
+        prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2,
+        is_active_current_period_minus_2);
+    local_state_->SetInteger(prefs::kDeviceActiveLastKnownChurnActiveStatus,
+                             new_active_value);
+  }
+
+  // Update the relative local state observation period boolean if the
+  // observation use case had set a value for the observation period.
+  if (current_use_case->GetPsmUseCase() ==
+      private_membership::rlwe::RlweUseCase::
+          CROS_FRESNEL_CHURN_MONTHLY_OBSERVATION) {
+    if (!current_use_case->GetObservationPeriod(0).empty()) {
+      local_state_->SetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus0, true);
+    }
+
+    if (!current_use_case->GetObservationPeriod(1).empty()) {
+      local_state_->SetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1, true);
+    }
+
+    if (!current_use_case->GetObservationPeriod(2).empty()) {
+      local_state_->SetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2, true);
+    }
+  }
+}
+
+void DeviceActivityClient::ReadChurnPreservedFile(
+    const private_computing::ActiveStatus& status) {
+  private_computing::PrivateComputingUseCase use_case = status.use_case();
+
+  if (use_case == private_computing::PrivateComputingUseCase::
+                      CROS_FRESNEL_CHURN_MONTHLY_COHORT) {
+    int churn_status_value = 0;
+    if (status.has_churn_active_status()) {
+      churn_status_value = status.churn_active_status();
+    }
+    if (local_state_->GetInteger(
+            prefs::kDeviceActiveLastKnownChurnActiveStatus) == 0 &&
+        churn_status_value != 0) {
+      churn_active_status_ptr_->InitializeValue(churn_status_value);
+      local_state_->SetInteger(prefs::kDeviceActiveLastKnownChurnActiveStatus,
+                               churn_status_value);
+    }
+  }
+
+  if (use_case == private_computing::PrivateComputingUseCase::
+                      CROS_FRESNEL_CHURN_MONTHLY_OBSERVATION) {
+    bool is_active_current_period_minus_0 = false;
+    bool is_active_current_period_minus_1 = false;
+    bool is_active_current_period_minus_2 = false;
+
+    // Get preserved file period status values.
+    if (status.has_period_status()) {
+      private_computing::ChurnObservationStatus period_status =
+          status.period_status();
+      is_active_current_period_minus_0 =
+          period_status.is_active_current_period_minus_0();
+      is_active_current_period_minus_1 =
+          period_status.is_active_current_period_minus_1();
+      is_active_current_period_minus_2 =
+          period_status.is_active_current_period_minus_2();
+    }
+
+    // Try to update the local state using the preserved file values.
+    // The preserved file may update the period status to true if the device
+    // sent the observation window previously and then was powerwashed.
+    // The local state will not currently be updated on recovery since that data
+    // needs to be recovered using check membership requests in the future.
+    if (!local_state_->GetBoolean(
+            prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus0)) {
+      local_state_->SetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus0,
+          is_active_current_period_minus_0);
+    }
+    if (!local_state_->GetBoolean(
+            prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1)) {
+      local_state_->SetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1,
+          is_active_current_period_minus_1);
+    }
+    if (!local_state_->GetBoolean(
+            prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2)) {
+      local_state_->SetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2,
+          is_active_current_period_minus_2);
+    }
+
+    // Update churn observation last ping timestamp in local state based on
+    // active status value. The cohort use case is recovered before the
+    // observation use case, so we use the latest active status value.
+    local_state_->SetTime(
+        prefs::kDeviceActiveChurnObservationMonthlyPingTimestamp,
+        churn_active_status_ptr_->GetCurrentActiveMonth());
+  }
+}
+
 private_computing::SaveStatusRequest
 DeviceActivityClient::GetSaveStatusRequest() {
   // private_computing:
@@ -390,17 +585,6 @@ DeviceActivityClient::GetSaveStatusRequest() {
   }
 
   return request;
-}
-
-DeviceActiveUseCase* DeviceActivityClient::GetUseCasePtr(
-    psm_rlwe::RlweUseCase psm_use_case) const {
-  for (auto* use_case : GetUseCases()) {
-    if (use_case->GetPsmUseCase() == psm_use_case)
-      return use_case;
-  }
-
-  VLOG(1) << "Use Case is not supported yet.";
-  return nullptr;
 }
 
 void DeviceActivityClient::SaveLastPingDatesStatus() {
@@ -465,12 +649,6 @@ void DeviceActivityClient::OnGetLastPingDatesStatusFetched(
         }
       }
 
-      // TODO(hirthanan): Get/Set active_status from the churn cohort use case
-      // in a future CL. We will also update the local state with the retrieved
-      // preserved file value.
-      (void)churn_active_status_ptr_;
-      (void)local_state_;
-
       // TODO(hirthanan): Get/Set period status for churn observation status in
       // future CL.
       private_computing::ChurnObservationStatus period_status;
@@ -512,6 +690,10 @@ void DeviceActivityClient::OnGetLastPingDatesStatusFetched(
         LOG(ERROR) << "Device active use case is not defined.";
         return;
       }
+
+      // Recover the churn active value and ChurnActiveStatus
+      // if set in preserved file but not in local state.
+      ReadChurnPreservedFile(status);
 
       if (!device_active_use_case_ptr->IsLastKnownPingTimestampSet()) {
         if (use_case ==
@@ -1157,6 +1339,10 @@ void DeviceActivityClient::OnCheckInDone(
     // Update local state pref to record reporting device active.
     current_use_case->SetLastKnownPingTimestamp(
         last_transition_out_of_idle_time_);
+
+    // Update churn local state and active status values after successful
+    // churn use case ping (either cohort or observation).
+    UpdateChurnLocalStateAfterCheckIn(current_use_case);
   }
 
   RecordDurationStateMetric(state_, state_timer_.Elapsed());

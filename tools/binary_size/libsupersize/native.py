@@ -719,7 +719,8 @@ def CreateSymbols(*,
     pak_id_map: Instance of PakIdMap.
 
   Returns:
-    A tuple of (section_ranges, raw_symbols, elf_info).
+    A tuple of (section_ranges, raw_symbols, elf_info, metrics_by_file), where
+    metrics_by_file is a dict from file name to a dict of {metric_name: value}.
   """
   apk_elf_info_result = None
   if apk_spec and native_spec.apk_so_path:
@@ -732,6 +733,7 @@ def CreateSymbols(*,
   dwarf_source_mapper = None
   section_ranges = {}
   ninja_elf_object_paths = None
+  metrics_by_file = {}
   if output_directory and native_spec.map_path:
     # Finds all objects passed to the linker and creates a map of .o -> .cc.
     ninja_source_mapper, ninja_elf_object_paths = _ParseNinjaFiles(
@@ -804,6 +806,11 @@ def CreateSymbols(*,
 
   if elf_info:
     section_ranges = elf_info.section_ranges.copy()
+    if native_spec.elf_path:
+      metrics_by_file[posixpath.basename(native_spec.elf_path)] = {
+          'SIZE/' + k: size
+          for (k, (offset, size)) in section_ranges.items()
+      }
 
   source_path = ''
   if native_spec.apk_so_path:
@@ -848,4 +855,4 @@ def CreateSymbols(*,
     logging.debug('Connecting nm aliases')
     _ConnectNmAliases(raw_symbols)
 
-  return section_ranges, raw_symbols, elf_info
+  return section_ranges, raw_symbols, elf_info, metrics_by_file

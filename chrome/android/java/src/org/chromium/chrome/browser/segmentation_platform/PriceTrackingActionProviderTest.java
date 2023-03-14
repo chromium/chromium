@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.segmentation_platform;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 
 import android.os.Handler;
@@ -18,8 +19,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -97,8 +100,8 @@ public class PriceTrackingActionProviderTest {
     @Test
     public void priceTrackingActionShownSuccessfully() {
         List<ActionProvider> providers = new ArrayList<>();
-        PriceTrackingActionProvider provider =
-                new PriceTrackingActionProvider(() -> mShoppingService, () -> mBookmarkModel);
+        PriceTrackingActionProvider provider = new PriceTrackingActionProvider(
+                () -> mShoppingService, () -> mBookmarkModel, () -> mProfile);
         providers.add(provider);
         SignalAccumulator accumulator = new SignalAccumulator(new Handler(), mMockTab, providers);
         setPriceTrackingBackendResult(true);
@@ -109,15 +112,18 @@ public class PriceTrackingActionProviderTest {
     @Test
     public void priceTrackingNotShownForAlreadyPriceTrackedPages() {
         List<ActionProvider> providers = new ArrayList<>();
-        PriceTrackingActionProvider provider =
-                new PriceTrackingActionProvider(() -> mShoppingService, () -> mBookmarkModel);
+        PriceTrackingActionProvider provider = new PriceTrackingActionProvider(
+                () -> mShoppingService, () -> mBookmarkModel, () -> mProfile);
         providers.add(provider);
         SignalAccumulator accumulator = new SignalAccumulator(new Handler(), mMockTab, providers);
         Profile.setLastUsedProfileForTesting(mProfile);
         doReturn(new BookmarkId(1L, 0)).when(mBookmarkModel).getUserBookmarkIdForTab(mMockTab);
-        doReturn(true)
+        doAnswer((InvocationOnMock invocation) -> {
+            ((Callback<Boolean>) invocation.getArgument(2)).onResult(true);
+            return null;
+        })
                 .when(mMockPriceTrackingUtilsJni)
-                .isBookmarkPriceTracked(any(Profile.class), anyLong());
+                .isBookmarkPriceTracked(any(Profile.class), anyLong(), any());
         setPriceTrackingBackendResult(true);
         provider.getAction(mMockTab, accumulator);
         Assert.assertFalse(accumulator.hasPriceTracking());

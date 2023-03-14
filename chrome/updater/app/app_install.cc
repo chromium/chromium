@@ -97,9 +97,29 @@ AppInstall::AppInstall(SplashScreen::Maker splash_screen_maker,
 
 AppInstall::~AppInstall() = default;
 
+void AppInstall::Initialize() {
+  setup_lock_ =
+      ScopedLock::Create(kSetupMutex, updater_scope(), kWaitForSetupLock);
+}
+
 void AppInstall::FirstTaskRun() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
+
+  if (WrongUser(updater_scope())) {
+    VLOG(0) << "The current user is not compatible with the current scope. "
+            << (updater_scope() == UpdaterScope::kSystem
+                    ? "Did you mean to run as admin/root?"
+                    : "Did you mean to run as a non-admin/non-root user?");
+    Shutdown(kErrorWrongUser);
+    return;
+  }
+
+  if (!setup_lock_) {
+    VLOG(0) << "Failed to acquire setup mutex; shutting down.";
+    Shutdown(kErrorFailedToLockSetupMutex);
+    return;
+  }
 
   const TagParsingResult tag_parsing_result =
       GetTagArgsForCommandLine(GetCommandLineLegacyCompatible());
@@ -178,8 +198,10 @@ void AppInstall::InstallCandidateDone(bool valid_version, int result) {
           base::BindOnce(
               [](UpdaterScope scope) {
                 scoped_refptr<GlobalPrefs> prefs = CreateGlobalPrefs(scope);
-                prefs->SetActiveVersion("");
-                PrefsCommitPendingWrites(prefs->GetPrefService());
+                if (prefs) {
+                  prefs->SetActiveVersion("");
+                  PrefsCommitPendingWrites(prefs->GetPrefService());
+                }
               },
               updater_scope()),
           base::BindOnce(&AppInstall::WakeCandidate, this));

@@ -26,19 +26,6 @@ export class ChromeVoxState {
   /** Can be overridden to initialize values and state when first created. */
   init() {}
 
-  /** @return {CursorRange} */
-  get currentRange() {
-    return this.getCurrentRange();
-  }
-
-  /**
-   * @return {CursorRange} The current range.
-   * @protected
-   */
-  getCurrentRange() {
-    return null;
-  }
-
   /** @return {boolean} */
   get isReadingContinuously() {
     return false;
@@ -53,17 +40,6 @@ export class ChromeVoxState {
   get talkBackEnabled() {
     return false;
   }
-
-  /**
-   * Return the current range, but focus recovery is not applied to it.
-   * @return {CursorRange} The current range.
-   */
-  getCurrentRangeWithoutRecovery() {}
-
-  /**
-   * @param {CursorRange} newRange The new range.
-   */
-  setCurrentRange(newRange) {}
 
   /**
    * @param {boolean} newValue

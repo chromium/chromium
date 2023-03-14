@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_SCHEDULED_TASK_HANDLER_REBOOT_NOTIFICATIONS_SCHEDULER_H_
 #define CHROME_BROWSER_ASH_POLICY_SCHEDULED_TASK_HANDLER_REBOOT_NOTIFICATIONS_SCHEDULER_H_
 
+#include <vector>
+
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -16,6 +19,12 @@
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace base {
+class Clock;
+class TickClock;
+}  // namespace base
 
 namespace policy {
 
@@ -28,6 +37,16 @@ namespace policy {
 class RebootNotificationsScheduler
     : public session_manager::SessionManagerObserver {
  public:
+  // Represents the source of notification request. `kMaxValue` is used to
+  // determine the number of items, update it when adding a new item.
+  enum class Requester {
+    kScheduledRebootPolicy,
+    kRebootCommand,
+    kMaxValue = kRebootCommand
+  };
+
+  using RebootButtonCallback = base::OnceClosure;
+
   RebootNotificationsScheduler();
   RebootNotificationsScheduler(const RebootNotificationsScheduler&) = delete;
   RebootNotificationsScheduler& operator=(const RebootNotificationsScheduler&) =
@@ -46,20 +65,22 @@ class RebootNotificationsScheduler
   static bool ShouldShowPostRebootNotification(Profile* profile);
 
   // Schedules timers for showing pending reboot notification and dialog or
-  // shows them right away if the scheduled reboot time is soon. Notifications
-  // are not shown when grace time applies.
-  void SchedulePendingRebootNotifications(base::OnceClosure reboot_callback,
-                                          const base::Time& reboot_time);
+  // shows them right away if the scheduled reboot time is soon. If there
+  // already is a scheduled notification, either reschedules notification or
+  // puts the new one in the pending queue. Always picks the earliest
+  // notification from the queue and the new one.
+  void SchedulePendingRebootNotifications(
+      RebootButtonCallback reboot_button_callback,
+      const base::Time& reboot_time,
+      Requester requester);
 
   // Sets pref for showing the post reboot notification for the active user.
   void SchedulePostRebootNotification();
 
-  // Resets timers and closes notification and dialog if open.
-  void ResetState();
-
-  // Grace time applies if the reboot is scheduled in less then an hour from the
-  // last device reboot.
-  bool ShouldApplyGraceTime(const base::Time& reboot_time) const;
+  // Resets the state of `requester`. If it is the current requester showing
+  // notifications, takes another requester from the pending queue. Otherwise,
+  // removes `requester` from the pending queue if present.
+  void CancelRebootNotifications(Requester requester);
 
   // SessionManagerObserver:
   void OnUserSessionStarted(bool is_primary_user) override;
@@ -76,22 +97,25 @@ class RebootNotificationsScheduler
   // dialog or notification.
   void OnRebootButtonClicked();
 
+  absl::optional<Requester> GetCurrentRequesterForTesting() const;
+
+  std::vector<Requester> GetRequestersForTesting() const;
+
   // Sets RebootNotificationsScheduler instance.
   static void SetInstance(
       RebootNotificationsScheduler* reboot_notifications_scheduler);
 
  private:
+  // Queue of notification requests prioritized by reboot time from the earliest
+  // to the latest.
+  class RequestQueue;
+
+  void SchedulePendingRebootNotificationsForCurrentRequester();
   virtual void MaybeShowPendingRebootNotification();
   virtual void MaybeShowPendingRebootDialog();
 
   // Returns prefs for active profile or nullptr.
   virtual PrefService* GetPrefsForActiveProfile() const;
-
-  // Returns current time.
-  virtual const base::Time GetCurrentTime() const;
-
-  // Returns time since last reboot.
-  virtual const base::TimeDelta GetSystemUptime() const;
 
   // Returns delay from now until |reboot_time|.
   base::TimeDelta GetRebootDelay(const base::Time& reboot_time) const;
@@ -103,6 +127,9 @@ class RebootNotificationsScheduler
   // we need to wait for full restore service initialization.
   virtual bool ShouldWaitFullRestoreInit() const;
 
+  // Resets timers and closes notification and dialog if open.
+  void ResetNotificationState();
+
   // Returns true if the pref for showing the post reboot notification is set in
   // |prefs|.
   static bool IsPostRebootPrefSet(PrefService* prefs);
@@ -111,17 +138,17 @@ class RebootNotificationsScheduler
   // owned.
   static RebootNotificationsScheduler* instance;
 
+  std::unique_ptr<RequestQueue> requester_queue_;
+
   // Timers for scheduling notification or dialog displaying.
   base::WallClockTimer notification_timer_, dialog_timer_;
   // Controller responsible for creating notifications and dialog.
   RebootNotificationController notification_controller_;
-  // Scheduled reboot time.
-  base::Time reboot_time_;
-  // Callback to run on "Reboot now" button click.
-  base::OnceClosure reboot_callback_;
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       observation_{this};
+
+  base::raw_ptr<const base::Clock> clock_;
 
   base::WeakPtrFactory<RebootNotificationsScheduler> weak_ptr_factory_{this};
 };

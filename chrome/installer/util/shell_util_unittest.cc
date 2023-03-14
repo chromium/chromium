@@ -61,19 +61,19 @@ class ShellUtilShortcutTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     chrome_exe_ = temp_dir_.GetPath().Append(installer::kChromeExe);
-    EXPECT_EQ(0, base::WriteFile(chrome_exe_, "", 0));
+    EXPECT_TRUE(base::WriteFile(chrome_exe_, ""));
 
     chrome_proxy_exe_ = temp_dir_.GetPath().Append(installer::kChromeProxyExe);
-    EXPECT_EQ(0, base::WriteFile(chrome_proxy_exe_, "", 0));
+    EXPECT_TRUE(base::WriteFile(chrome_proxy_exe_, ""));
 
     manganese_exe_ = temp_dir_.GetPath().Append(kManganeseExe);
-    EXPECT_EQ(0, base::WriteFile(manganese_exe_, "", 0));
+    EXPECT_TRUE(base::WriteFile(manganese_exe_, ""));
 
     iron_exe_ = temp_dir_.GetPath().Append(kIronExe);
-    EXPECT_EQ(0, base::WriteFile(iron_exe_, "", 0));
+    EXPECT_TRUE(base::WriteFile(iron_exe_, ""));
 
     other_ico_ = temp_dir_.GetPath().Append(kOtherIco);
-    EXPECT_EQ(0, base::WriteFile(other_ico_, "", 0));
+    EXPECT_TRUE(base::WriteFile(other_ico_, ""));
 
     ASSERT_TRUE(fake_user_desktop_.CreateUniqueTempDir());
     ASSERT_TRUE(fake_common_desktop_.CreateUniqueTempDir());
@@ -1064,7 +1064,7 @@ TEST_F(ShellUtilShortcutTest, DontRemoveChromeShortcutIfPointsToAnotherChrome) {
   ASSERT_TRUE(other_exe_dir.CreateUniqueTempDir());
   base::FilePath other_chrome_exe =
       other_exe_dir.GetPath().Append(installer::kChromeExe);
-  EXPECT_EQ(0, base::WriteFile(other_chrome_exe, "", 0));
+  EXPECT_TRUE(base::WriteFile(other_chrome_exe, ""));
 
   test_properties_.set_target(other_chrome_exe);
   ASSERT_TRUE(ShellUtil::CreateOrUpdateShortcut(

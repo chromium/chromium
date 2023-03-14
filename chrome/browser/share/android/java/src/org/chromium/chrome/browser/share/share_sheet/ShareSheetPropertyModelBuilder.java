@@ -9,18 +9,15 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
-import android.text.TextUtils;
 import android.view.View.OnClickListener;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.share.ChromeShareExtras;
-import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
+import org.chromium.chrome.browser.share.ShareContentTypeHelper.ContentType;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleMetricsHelper.LinkToggleMetricsDetails;
@@ -28,12 +25,9 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -41,37 +35,15 @@ import java.util.Set;
  * Handles displaying the share sheet. The version used depends on several conditions:
  *
  * <ul>
- *   <li>Android K and below: custom share dialog
  *   <li>Android L+: system share sheet
  *   <li>#chrome-sharing-hub enabled: custom share sheet
  * </ul>
  */
-// TODO(crbug/1022172): Should be package-protected once modularization is complete.
-public class ShareSheetPropertyModelBuilder {
-    @IntDef({ContentType.LINK_PAGE_VISIBLE, ContentType.LINK_PAGE_NOT_VISIBLE, ContentType.TEXT,
-            ContentType.HIGHLIGHTED_TEXT, ContentType.LINK_AND_TEXT, ContentType.IMAGE,
-            ContentType.OTHER_FILE_TYPE, ContentType.IMAGE_AND_LINK})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface ContentType {
-        int LINK_PAGE_VISIBLE = 0;
-        int LINK_PAGE_NOT_VISIBLE = 1;
-        int TEXT = 2;
-        int HIGHLIGHTED_TEXT = 3;
-        int LINK_AND_TEXT = 4;
-        int IMAGE = 5;
-        int OTHER_FILE_TYPE = 6;
-        int IMAGE_AND_LINK = 7;
-    }
-
+class ShareSheetPropertyModelBuilder {
     public static final int MAX_NUM_APPS = 7;
-    private static final String IMAGE_TYPE = "image/";
     // Variations parameter name for the comma-separated list of third-party activity names.
     private static final String PARAM_SHARING_HUB_THIRD_PARTY_APPS = "sharing-hub-third-party-apps";
 
-    static final HashSet<Integer> ALL_CONTENT_TYPES_FOR_TEST = new HashSet<>(
-            Arrays.asList(ContentType.LINK_PAGE_VISIBLE, ContentType.LINK_PAGE_NOT_VISIBLE,
-                    ContentType.TEXT, ContentType.HIGHLIGHTED_TEXT, ContentType.LINK_AND_TEXT,
-                    ContentType.IMAGE, ContentType.OTHER_FILE_TYPE, ContentType.IMAGE_AND_LINK));
     private static final ArrayList<String> FALLBACK_ACTIVITIES =
             new ArrayList<>(Arrays.asList("com.whatsapp.ContactPicker",
                     "com.facebook.composer.shareintent.ImplicitShareIntentHandlerDefaultAlias",
@@ -93,62 +65,11 @@ public class ShareSheetPropertyModelBuilder {
     private final PackageManager mPackageManager;
     private final Profile mProfile;
 
-    // TODO(crbug/1022172): Should be package-protected once modularization is complete.
-    public ShareSheetPropertyModelBuilder(BottomSheetController bottomSheetController,
+    ShareSheetPropertyModelBuilder(BottomSheetController bottomSheetController,
             PackageManager packageManager, Profile profile) {
         mBottomSheetController = bottomSheetController;
         mPackageManager = packageManager;
         mProfile = profile;
-    }
-
-    /**
-     * Returns a set of {@link ContentType}s for the current share.
-     *
-     * Adds {@link ContentType}s according to the following logic:
-     *
-     * <ul>
-     *     <li>If a URL is present, {@code isUrlOfVisiblePage} determines whether to add
-     *     {@link ContentType.LINK_PAGE_VISIBLE} or {@link ContentType.LINK_PAGE_NOT_VISIBLE}.
-     *     <li>If the text being shared is not the same as the URL, add {@link ContentType.TEXT}
-     *     <li>If text is highlighted by user, add {@link ContentType.HIGHLIGHTED_TEXT}.
-     *     <li>If the share contains files and the {@code fileContentType} is an image, add
-     *     {@link ContentType.IMAGE}. Otherwise, add {@link ContentType.OTHER_FILE_TYPE}.
-     * </ul>
-     */
-    static Set<Integer> getContentTypes(ShareParams params, ChromeShareExtras chromeShareExtras) {
-        Set<Integer> contentTypes = new HashSet<>();
-        boolean hasUrl = !TextUtils.isEmpty(params.getUrl());
-        if (hasUrl && !chromeShareExtras.skipPageSharingActions()) {
-            if (chromeShareExtras.isUrlOfVisiblePage()) {
-                contentTypes.add(ContentType.LINK_PAGE_VISIBLE);
-            } else {
-                contentTypes.add(ContentType.LINK_PAGE_NOT_VISIBLE);
-            }
-        }
-        if (!TextUtils.isEmpty(params.getText())) {
-            if (chromeShareExtras.getDetailedContentType()
-                    == DetailedContentType.HIGHLIGHTED_TEXT) {
-                contentTypes.add(ContentType.HIGHLIGHTED_TEXT);
-            } else {
-                contentTypes.add(ContentType.TEXT);
-            }
-        }
-        if (hasUrl && !TextUtils.isEmpty(params.getText())) {
-            contentTypes.add(ContentType.LINK_AND_TEXT);
-        }
-        if (params.getFileUris() != null) {
-            if (!TextUtils.isEmpty(params.getFileContentType())
-                    && params.getFileContentType().startsWith(IMAGE_TYPE)) {
-                if (hasUrl) {
-                    contentTypes.add(ContentType.IMAGE_AND_LINK);
-                } else {
-                    contentTypes.add(ContentType.IMAGE);
-                }
-            } else {
-                contentTypes.add(ContentType.OTHER_FILE_TYPE);
-            }
-        }
-        return contentTypes;
     }
 
     public PropertyModel buildThirdPartyAppModel(ShareSheetBottomSheetContent bottomSheet,

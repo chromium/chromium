@@ -53,8 +53,8 @@ bool ignore_user_gesture_for_tests = false;
 }  // namespace
 
 ExtensionFunction::ResponseAction PermissionsContainsFunction::Run() {
-  std::unique_ptr<api::permissions::Contains::Params> params(
-      api::permissions::Contains::Params::Create(args()));
+  absl::optional<api::permissions::Contains::Params> params =
+      api::permissions::Contains::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   std::string error;
@@ -112,8 +112,8 @@ ExtensionFunction::ResponseAction PermissionsGetAllFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction PermissionsRemoveFunction::Run() {
-  std::unique_ptr<api::permissions::Remove::Params> params(
-      api::permissions::Remove::Params::Create(args()));
+  absl::optional<api::permissions::Remove::Params> params =
+      api::permissions::Remove::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   std::string error;
@@ -204,8 +204,8 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
   if (!native_window && auto_confirm_for_tests == DO_NOT_SKIP)
     return RespondNow(Error("Could not find an active window."));
 
-  std::unique_ptr<api::permissions::Request::Params> params(
-      api::permissions::Request::Params::Create(args()));
+  absl::optional<api::permissions::Request::Params> params =
+      api::permissions::Request::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   std::string error;
@@ -274,7 +274,7 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
   // If all permissions are already active, nothing left to do.
   if (total_new_permissions->IsEmpty()) {
     constexpr bool granted = true;
-    return RespondNow(OneArgument(base::Value(granted)));
+    return RespondNow(WithArguments(granted));
   }
 
   // Automatically declines api permissions requests, which are blocked by

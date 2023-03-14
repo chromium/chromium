@@ -27,14 +27,16 @@
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
-#import "ios/chrome/browser/ui/commands/application_commands.h"
-#import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
-#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/commands/omnibox_commands.h"
-#import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
@@ -58,8 +60,6 @@
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -160,19 +160,18 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
   self.contentSuggestionsMediator.webStateList =
       self.browser->GetWebStateList();
   self.contentSuggestionsMediator.webState = self.webState;
-  [self configureStartSurfaceIfNeeded];
 
-    self.contentSuggestionsViewController =
-        [[ContentSuggestionsViewController alloc] init];
-    self.contentSuggestionsViewController.suggestionCommandHandler =
-        self.contentSuggestionsMediator;
-    self.contentSuggestionsViewController.audience = self;
-    self.contentSuggestionsViewController.menuProvider = self;
-    self.contentSuggestionsViewController.urlLoadingBrowserAgent =
-        UrlLoadingBrowserAgent::FromBrowser(self.browser);
+  self.contentSuggestionsViewController =
+      [[ContentSuggestionsViewController alloc] init];
+  self.contentSuggestionsViewController.suggestionCommandHandler =
+      self.contentSuggestionsMediator;
+  self.contentSuggestionsViewController.audience = self;
+  self.contentSuggestionsViewController.menuProvider = self;
+  self.contentSuggestionsViewController.urlLoadingBrowserAgent =
+      UrlLoadingBrowserAgent::FromBrowser(self.browser);
 
-    self.contentSuggestionsMediator.consumer =
-        self.contentSuggestionsViewController;
+  self.contentSuggestionsMediator.consumer =
+      self.contentSuggestionsViewController;
 }
 
 - (void)stop {
@@ -204,7 +203,7 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
 
 #pragma mark - ContentSuggestionsViewControllerAudience
 
-- (void)viewDidDisappear {
+- (void)viewWillDisappear {
   // Start no longer showing
   self.contentSuggestionsMediator.showingStartSurface = NO;
   DiscoverFeedServiceFactory::GetForBrowserState(
@@ -334,11 +333,8 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
     return;
   }
 
-  if (self.contentSuggestionsMediator.showingStartSurface) {
-    // Start has already been configured. Don't try again or else another Return
-    // To Recent Tab tile will be added.
-    return;
-  }
+  // Shouldn't be calling this if start has already been configured.
+  DCHECK(!self.contentSuggestionsMediator.showingStartSurface);
 
   // Update Mediator property to signal the NTP is currently showing Start.
   self.contentSuggestionsMediator.showingStartSurface = YES;

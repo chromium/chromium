@@ -22,7 +22,10 @@ config("xnnpack_config") {
     "src/src",
   ]
 
-  cflags = [ "-Wno-unused-function" ]
+  cflags = [
+    "-Wno-unused-function",
+    "-Wno-deprecated-comma-subscript",
+  ]
 
   defines = [
     # Don't enable this without first talking to Chrome Security!
@@ -104,7 +107,7 @@ source_set("xnnpack") {
 source_set("amalgam") {
   cflags = []
 
-  sources = [ "src/src/amalgam/scalar.c" ]
+  sources = [ "src/src/amalgam/gen/scalar.c" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -123,7 +126,7 @@ source_set("amalgam") {
 source_set("amalgam_avx") {
   cflags = [ "-mavx" ]
 
-  sources = [ "src/src/amalgam/avx.c" ]
+  sources = [ "src/src/amalgam/gen/avx.c" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -142,7 +145,7 @@ source_set("amalgam_avx") {
 source_set("amalgam_avx512f") {
   cflags = [ "-mavx512f" ]
 
-  sources = [ "src/src/amalgam/avx512f.c" ]
+  sources = [ "src/src/amalgam/gen/avx512f.c" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -167,7 +170,7 @@ source_set("amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl") {
     "-mavx512vl",
   ]
 
-  sources = [ "src/src/amalgam/avx512skx.c" ]
+  sources = [ "src/src/amalgam/gen/avx512skx.c" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -193,7 +196,7 @@ source_set("amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vbmi") {
     "-mavx512vl",
   ]
 
-  sources = [ "src/src/amalgam/avx512vbmi.c" ]
+  sources = [ "src/src/amalgam/gen/avx512vbmi.c" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -212,7 +215,7 @@ source_set("amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vbmi") {
 source_set("amalgam_f16c") {
   cflags = [ "-mf16c" ]
 
-  sources = [ "src/src/amalgam/f16c.c" ]
+  sources = [ "src/src/amalgam/gen/f16c.c" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -234,7 +237,7 @@ source_set("amalgam_f16c-fma") {
     "-mfma",
   ]
 
-  sources = [ "src/src/amalgam/fma3.c" ]
+  sources = [ "src/src/amalgam/gen/fma3.c" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -257,7 +260,7 @@ source_set("amalgam_f16c-fma-avx2") {
     "-mfma",
   ]
 
-  sources = [ "src/src/amalgam/avx2.c" ]
+  sources = [ "src/src/amalgam/gen/avx2.c" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -277,8 +280,8 @@ source_set("amalgam_sse2") {
   cflags = [ "-msse2" ]
 
   sources = [
-    "src/src/amalgam/sse.c",
-    "src/src/amalgam/sse2.c",
+    "src/src/amalgam/gen/sse.c",
+    "src/src/amalgam/gen/sse2.c",
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -298,7 +301,7 @@ source_set("amalgam_sse2") {
 source_set("amalgam_sse4.1") {
   cflags = [ "-msse4.1" ]
 
-  sources = [ "src/src/amalgam/sse41.c" ]
+  sources = [ "src/src/amalgam/gen/sse41.c" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -317,7 +320,7 @@ source_set("amalgam_sse4.1") {
 source_set("amalgam_ssse3") {
   cflags = [ "-mssse3" ]
 
-  sources = [ "src/src/amalgam/ssse3.c" ]
+  sources = [ "src/src/amalgam/gen/ssse3.c" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -336,7 +339,7 @@ source_set("amalgam_ssse3") {
 source_set("amalgam_xop") {
   cflags = [ "-mxop" ]
 
-  sources = [ "src/src/amalgam/xop.c" ]
+  sources = [ "src/src/amalgam/gen/xop.c" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -465,6 +468,7 @@ source_set("subgraph") {
     "src/src/subgraph/floor.c",
     "src/src/subgraph/fully-connected.c",
     "src/src/subgraph/global-average-pooling.c",
+    "src/src/subgraph/global-sum-pooling.c",
     "src/src/subgraph/hardswish.c",
     "src/src/subgraph/leaky-relu.c",
     "src/src/subgraph/max-pooling-2d.c",

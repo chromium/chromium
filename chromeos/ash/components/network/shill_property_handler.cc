@@ -220,16 +220,6 @@ void ShillPropertyHandler::SetProhibitedTechnologies(
                      network_handler::ErrorCallback()));
 }
 
-void ShillPropertyHandler::SetCheckPortalList(
-    const std::string& check_portal_list) {
-  base::Value value(check_portal_list);
-  shill_manager_->SetProperty(
-      shill::kCheckPortalListProperty, value, base::DoNothing(),
-      base::BindOnce(&network_handler::ShillErrorCallbackFunction,
-                     "SetCheckPortalList Failed", "Manager",
-                     network_handler::ErrorCallback()));
-}
-
 void ShillPropertyHandler::SetWakeOnLanEnabled(bool enabled) {
   base::Value value(enabled);
   shill_manager_->SetProperty(
@@ -392,8 +382,9 @@ void ShillPropertyHandler::ManagerPropertyChanged(const std::string& key,
                                                   const base::Value& value) {
   if (key == shill::kDefaultServiceProperty) {
     std::string service_path;
-    if (value.is_string())
+    if (value.is_string()) {
       service_path = value.GetString();
+    }
     NET_LOG(EVENT) << "Manager.DefaultService = "
                    << NetworkPathId(service_path);
     listener_->DefaultNetworkServiceChanged(service_path);
@@ -402,34 +393,46 @@ void ShillPropertyHandler::ManagerPropertyChanged(const std::string& key,
   NET_LOG(DEBUG) << "ManagerPropertyChanged: " << key << " = " << value;
   if (key == shill::kServiceCompleteListProperty) {
     if (CheckListValue(key, value)) {
-      listener_->UpdateManagedList(ManagedState::MANAGED_TYPE_NETWORK, value);
+      listener_->UpdateManagedList(ManagedState::MANAGED_TYPE_NETWORK,
+                                   value.GetList());
       UpdateProperties(ManagedState::MANAGED_TYPE_NETWORK, value);
       UpdateObserved(ManagedState::MANAGED_TYPE_NETWORK, value);
     }
   } else if (key == shill::kDevicesProperty) {
     if (CheckListValue(key, value)) {
-      listener_->UpdateManagedList(ManagedState::MANAGED_TYPE_DEVICE, value);
+      listener_->UpdateManagedList(ManagedState::MANAGED_TYPE_DEVICE,
+                                   value.GetList());
       UpdateProperties(ManagedState::MANAGED_TYPE_DEVICE, value);
       UpdateObserved(ManagedState::MANAGED_TYPE_DEVICE, value);
     }
   } else if (key == shill::kAvailableTechnologiesProperty) {
-    if (CheckListValue(key, value))
+    if (CheckListValue(key, value)) {
       UpdateAvailableTechnologies(value);
+    }
   } else if (key == shill::kEnabledTechnologiesProperty) {
-    if (CheckListValue(key, value))
+    if (CheckListValue(key, value)) {
       UpdateEnabledTechnologies(value);
+    }
   } else if (key == shill::kUninitializedTechnologiesProperty) {
-    if (CheckListValue(key, value))
+    if (CheckListValue(key, value)) {
       UpdateUninitializedTechnologies(value);
-  } else if (key == shill::kProhibitedTechnologiesProperty &&
-             value.is_string()) {
-    UpdateProhibitedTechnologies(value.GetString());
+    }
+  } else if (key == shill::kProhibitedTechnologiesProperty) {
+    if (value.is_string()) {
+      UpdateProhibitedTechnologies(value.GetString());
+    }
   } else if (key == shill::kProfilesProperty) {
-    listener_->ProfileListChanged(value);
-  } else if (key == shill::kCheckPortalListProperty && value.is_string()) {
-    listener_->CheckPortalListChanged(value.GetString());
-  } else if (key == shill::kDhcpPropertyHostnameProperty && value.is_string()) {
-    listener_->HostnameChanged(value.GetString());
+    if (value.is_list()) {
+      listener_->ProfileListChanged(value.GetList());
+    }
+  } else if (key == shill::kCheckPortalListProperty) {
+    if (value.is_string()) {
+      listener_->CheckPortalListChanged(value.GetString());
+    }
+  } else if (key == shill::kDhcpPropertyHostnameProperty) {
+    if (value.is_string()) {
+      listener_->HostnameChanged(value.GetString());
+    }
   } else {
     VLOG(2) << "Ignored Manager Property: " << key;
   }

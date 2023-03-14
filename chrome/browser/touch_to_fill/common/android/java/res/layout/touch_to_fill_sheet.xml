@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/drag_handlebar"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginEnd="@dimen/touch_to_fill_sheet_margin_modern"
+        android:layout_marginStart="@dimen/touch_to_fill_sheet_margin_modern"
+        android:layout_marginTop="@dimen/ttf_drag_handlebar_margin"
+        android:layout_marginBottom="@dimen/ttf_drag_handlebar_margin"
+        android:importantForAccessibility="no"
+        app:srcCompat="@drawable/drag_handlebar" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/sheet_item_list"
+        android:layout_below="@id/drag_handlebar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/touch_to_fill_sheet_margin_modern"
+        android:layout_marginStart="@dimen/touch_to_fill_sheet_margin_modern"
+        android:clipToPadding="false"
+        android:divider="@null"
+        tools:listitem="@layout/touch_to_fill_credential_item_modern"/>
+</RelativeLayout>

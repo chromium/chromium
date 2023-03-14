@@ -83,6 +83,11 @@ void AnimationEffect::EnsureNormalizedTiming() const {
     // offsets. What happens if you have an animation range and time based
     // delays?
     if (timing_.iteration_duration) {
+      // TODO(kevers): We can probably get rid of this branch and just
+      // ignore all timing that is not % based.  A fair number of tests still
+      // rely on this branch though, so will need to update the tests
+      // accordingly to see if they are still relevant.
+
       // Scaling up iteration_duration allows animation effect to be able to
       // handle values produced by progress based timelines. At this point it
       // can be assumed that EndTimeInternal() will give us a good value.
@@ -141,13 +146,24 @@ void AnimationEffect::EnsureNormalizedTiming() const {
       // Default (auto) duration with a non-monotonic timeline case.
       // TODO(crbug.com/1216527): Update timing once ratified in the spec.
       // Normalized timing is purely used internally in order to keep the bulk
-      // of the animation code time-based. Range start and end is combined with
-      // delay and endDelay.
+      // of the animation code time-based.
       normalized_->iteration_duration = IntrinsicIterationDuration();
-      std::pair<AnimationTimeDelta, AnimationTimeDelta> delay_pair =
-          ComputeEffectiveAnimationDelays();
-      normalized_->start_delay = delay_pair.first;
-      normalized_->end_delay = delay_pair.second;
+      AnimationTimeDelta active_duration =
+          normalized_->iteration_duration * timing_.iteration_count;
+      double start_delay = timing_.start_delay.relative_delay.value_or(0);
+      double end_delay = timing_.end_delay.relative_delay.value_or(0);
+
+      if (active_duration > AnimationTimeDelta()) {
+        double active_percent = (1 - start_delay - end_delay);
+        AnimationTimeDelta end_time = active_duration / active_percent;
+        normalized_->start_delay = end_time * start_delay;
+        normalized_->end_delay = end_time * end_delay;
+      } else {
+        // TODO(kevers): This is not quite correct as the delays should probably
+        // be divided proportionately.
+        normalized_->start_delay = AnimationTimeDelta();
+        normalized_->end_delay = TimelineDuration().value();
+      }
     }
   } else {
     // Monotonic timeline case.
@@ -222,8 +238,9 @@ ComputedEffectTiming* AnimationEffect::getComputedTiming() {
   if (Animation* animation = GetAnimation()) {
     absl::optional<AnimationTimeDelta> current_time =
         animation->CurrentTimeInternal();
-    if (current_time != last_update_time_)
+    if (current_time != last_update_time_ || animation->Outdated()) {
       animation->Update(kTimingUpdateOnDemand);
+    }
   }
 
   return SpecifiedTiming().getComputedTiming(
@@ -363,15 +380,6 @@ Animation* AnimationEffect::GetAnimation() {
 }
 const Animation* AnimationEffect::GetAnimation() const {
   return owner_ ? owner_->GetAnimation() : nullptr;
-}
-
-AnimationEffect::TimeDelayPair
-AnimationEffect::ComputeEffectiveAnimationDelays() const {
-  if (GetAnimation() && GetAnimation()->timeline()) {
-    return GetAnimation()->timeline()->ComputeEffectiveAnimationDelays(
-        owner_->GetAnimation(), timing_);
-  }
-  return std::make_pair(AnimationTimeDelta(), AnimationTimeDelta());
 }
 
 void AnimationEffect::Trace(Visitor* visitor) const {

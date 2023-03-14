@@ -41,10 +41,9 @@ import org.robolectric.shadows.ShadowAccountManager;
 import org.robolectric.shadows.ShadowUserManager;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.metrics.UmaRecorder;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.AccountManagerDelegate.CapabilityResponse;
 import org.chromium.components.signin.AccountManagerFacade.ChildAccountStatusListener;
@@ -74,9 +73,6 @@ public class AccountManagerFacadeImplTest {
             GrantPermissionRule.grant(Manifest.permission.GET_ACCOUNTS);
 
     @Mock
-    private UmaRecorder mUmaRecorderMock;
-
-    @Mock
     ExternalAuthUtils mExternalAuthUtilsMock;
 
     @Mock
@@ -97,7 +93,6 @@ public class AccountManagerFacadeImplTest {
 
     @Before
     public void setUp() {
-        UmaRecorderHolder.setNonNativeDelegate(mUmaRecorderMock);
         when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(true);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
 
@@ -126,12 +121,13 @@ public class AccountManagerFacadeImplTest {
 
     @Test
     public void testCountOfAccountLoggedAfterAccountsFetched() {
+        HistogramWatcher numberOfAccountsHistogram =
+                HistogramWatcher.newSingleRecordWatcher("Signin.AndroidNumberOfDeviceAccounts", 1);
         addTestAccount("test@gmail.com");
 
         AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegate);
 
-        verify(mUmaRecorderMock)
-                .recordLinearHistogram("Signin.AndroidNumberOfDeviceAccounts", 1, 1, 50, 51);
+        numberOfAccountsHistogram.assertExpected();
     }
 
     @Test

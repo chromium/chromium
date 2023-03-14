@@ -108,7 +108,6 @@ void GeolocationImpl::OnLocationUpdate(const mojom::Geoposition& position) {
   DCHECK(context_);
 
   current_position_ = position;
-  current_position_.valid = ValidateGeoposition(position);
   has_position_to_report_ = true;
 
   if (!position_callback_.is_null())

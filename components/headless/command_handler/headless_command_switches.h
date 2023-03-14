@@ -10,7 +10,8 @@ namespace headless::switches {
 extern const char kDefaultBackgroundColor[];
 extern const char kDumpDom[];
 extern const char kPrintToPDF[];
-extern const char kPrintToPDFNoHeader[];
+extern const char kPrintToPDFNoHeaderDeprecated[];
+extern const char kNoPDFHeaderFooter[];
 extern const char kScreenshot[];
 extern const char kTimeout[];
 extern const char kVirtualTimeBudget[];

@@ -154,8 +154,9 @@ void PrintingAPIHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 void PrintingAPIHandler::SubmitJob(
     gfx::NativeWindow native_window,
     scoped_refptr<const extensions::Extension> extension,
-    std::unique_ptr<api::printing::SubmitJob::Params> params,
+    absl::optional<api::printing::SubmitJob::Params> params,
     SubmitJobCallback callback) {
+  DCHECK(params);
   // PrintingAPIHandler must outlive PrintJobSubmitter. Even if the WeakPtr
   // expires, PrintJobSubmitter will continue to access PrintingAPIHandler
   // member variables.

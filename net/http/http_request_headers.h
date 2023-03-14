@@ -16,15 +16,12 @@
 
 #include "base/containers/flat_set.h"
 #include "base/strings/string_piece.h"
+#include "base/values.h"
 #include "net/base/net_export.h"
 #include "net/filter/source_stream.h"
 #include "net/log/net_log_capture_mode.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
-
-namespace base {
-class Value;
-}
 
 namespace net {
 
@@ -192,8 +189,8 @@ class NET_EXPORT HttpRequestHeaders {
 
   // Takes in the request line and returns a Value for use with the NetLog
   // containing both the request line and all headers fields.
-  base::Value NetLogParams(const std::string& request_line,
-                           NetLogCaptureMode capture_mode) const;
+  base::Value::Dict NetLogParams(const std::string& request_line,
+                                 NetLogCaptureMode capture_mode) const;
 
   const HeaderVector& GetHeaderVector() const { return headers_; }
 

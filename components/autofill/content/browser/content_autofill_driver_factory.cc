@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -49,27 +50,15 @@ void BrowserDriverInitHook(AutofillClient* client,
     driver->GetAutofillAgent()->EnableHeavyFormDataScraping();
 }
 
-const char ContentAutofillDriverFactory::
-    kContentAutofillDriverFactoryWebContentsUserDataKey[] =
-        "web_contents_autofill_driver_factory";
-
-// static
-void ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
-    content::WebContents* contents,
-    AutofillClient* client,
-    DriverInitCallback driver_init_hook) {
-  if (FromWebContents(contents))
-    return;
-  contents->SetUserData(kContentAutofillDriverFactoryWebContentsUserDataKey,
-                        base::WrapUnique(new ContentAutofillDriverFactory(
-                            contents, client, std::move(driver_init_hook))));
-}
-
 // static
 ContentAutofillDriverFactory* ContentAutofillDriverFactory::FromWebContents(
     content::WebContents* contents) {
-  return static_cast<ContentAutofillDriverFactory*>(contents->GetUserData(
-      kContentAutofillDriverFactoryWebContentsUserDataKey));
+  ContentAutofillClient* client =
+      ContentAutofillClient::FromWebContents(contents);
+  if (!client) {
+    return nullptr;
+  }
+  return client->GetAutofillDriverFactory();
 }
 
 // static
@@ -101,7 +90,11 @@ ContentAutofillDriverFactory::ContentAutofillDriverFactory(
       client_(client),
       driver_init_hook_(std::move(driver_init_hook)) {}
 
-ContentAutofillDriverFactory::~ContentAutofillDriverFactory() = default;
+ContentAutofillDriverFactory::~ContentAutofillDriverFactory() {
+  for (Observer& observer : observers_) {
+    observer.OnContentAutofillDriverFactoryDestroyed(*this);
+  }
+}
 
 std::unique_ptr<ContentAutofillDriver>
 ContentAutofillDriverFactory::CreateDriver(content::RenderFrameHost* rfh) {
@@ -140,6 +133,9 @@ ContentAutofillDriver* ContentAutofillDriverFactory::DriverForFrame(
     // 5. `render_frame_host->~RenderFrameHostImpl()` finishes.
     if (render_frame_host->IsRenderFrameLive()) {
       driver = CreateDriver(render_frame_host);
+      for (Observer& observer : observers_) {
+        observer.OnContentAutofillDriverCreated(*this, *driver);
+      }
       DCHECK_EQ(driver_map_.find(render_frame_host)->second.get(),
                 driver.get());
     } else {
@@ -180,6 +176,9 @@ void ContentAutofillDriverFactory::RenderFrameDeleted(
     driver->renderer_events().HidePopup();
   }
 
+  for (Observer& observer : observers_) {
+    observer.OnContentAutofillDriverWillBeDeleted(*this, *driver);
+  }
   driver_map_.erase(it);
 }
 
@@ -223,8 +222,6 @@ void ContentAutofillDriverFactory::OnVisibilityChanged(
     content::Visibility visibility) {
   if (visibility == content::Visibility::HIDDEN) {
     client_->HideAutofillPopup(PopupHidingReason::kTabGone);
-    if (client_->IsTouchToFillCreditCardSupported())
-      client_->HideTouchToFillCreditCard();
   }
 }
 

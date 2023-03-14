@@ -1467,12 +1467,12 @@ TEST_F(NetworkQualityEstimatorTest, TestTransportRttUsedForHttpRttComputation) {
   for (const auto& test : tests) {
     std::map<std::string, std::string> variation_params;
     variation_params["add_default_platform_observations"] = "false";
-    TestNetworkQualityEstimator estimator(variation_params);
 
     base::SimpleTestTickClock tick_clock;
     tick_clock.Advance(base::Seconds(1));
-    estimator.SetTickClockForTesting(&tick_clock);
 
+    TestNetworkQualityEstimator estimator(variation_params);
+    estimator.SetTickClockForTesting(&tick_clock);
     estimator.SetStartTimeNullHttpRtt(test.http_rtt);
     estimator.SetStartTimeNullTransportRtt(test.transport_rtt);
 
@@ -1557,12 +1557,12 @@ TEST_F(NetworkQualityEstimatorTest, TestEndToEndRttUsedForHttpRttComputation) {
     std::map<std::string, std::string> variation_params;
     variation_params["add_default_platform_observations"] = "false";
     variation_params["use_end_to_end_rtt"] = "true";
-    TestNetworkQualityEstimator estimator(variation_params);
 
-    base::SimpleTestTickClock tick_clock;
+    base::SimpleTestTickClock tick_clock;  // Must outlive `estimator`.
     tick_clock.Advance(base::Seconds(1));
-    estimator.SetTickClockForTesting(&tick_clock);
 
+    TestNetworkQualityEstimator estimator(variation_params);
+    estimator.SetTickClockForTesting(&tick_clock);
     estimator.SetStartTimeNullHttpRtt(test.http_rtt);
     estimator.set_start_time_null_end_to_end_rtt(test.end_to_end_rtt);
 
@@ -2894,14 +2894,15 @@ TEST_F(NetworkQualityEstimatorTest, HangingRequestUsingTransportAndHttpOnly) {
 }
 
 TEST_F(NetworkQualityEstimatorTest, PeerToPeerConnectionCounts) {
-  TestNetworkQualityEstimator estimator;
   base::SimpleTestTickClock tick_clock;
+  TestNetworkQualityEstimator estimator;
   estimator.SetTickClockForTesting(&tick_clock);
-  base::HistogramTester histogram_tester;
-
   estimator.OnPeerToPeerConnectionsCountChange(3u);
+
   base::TimeDelta advance_1 = base::Minutes(4);
   tick_clock.Advance(advance_1);
+
+  base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount("NQE.PeerToPeerConnectionsDuration", 0);
 
   estimator.OnPeerToPeerConnectionsCountChange(1u);

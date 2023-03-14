@@ -49,11 +49,11 @@ void RunRead2CallbackTypical(ReadWriter::Read2Callback callback,
 }
 
 void RunWrite2CallbackFailure(ReadWriter::Write2Callback callback,
-                              base::File::Error error_code) {
+                              int posix_error_code) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   Write2ResponseProto response_proto;
-  response_proto.set_posix_error_code(FileErrorToErrno(error_code));
+  response_proto.set_posix_error_code(posix_error_code);
   std::move(callback).Run(response_proto);
 }
 
@@ -82,6 +82,33 @@ ReadWriter::WriteTempFileResult WriteTempFile(
     return std::make_pair(std::move(scoped_fd), errno);
   }
   return std::make_pair(std::move(scoped_fd), 0);
+}
+
+void SaveCallback2(base::ScopedFD scoped_fd,
+                   scoped_refptr<storage::FileSystemContext> fs_context,
+                   ReadWriter::Close2Callback callback,
+                   base::File::Error file_error) {
+  Close2ResponseProto response_proto;
+  if (file_error != base::File::Error::FILE_OK) {
+    response_proto.set_posix_error_code(FileErrorToErrno(file_error));
+  }
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), response_proto));
+}
+
+void SaveCallback1(const std::string src_path,
+                   storage::FileSystemURL fs_url,
+                   base::ScopedFD scoped_fd,
+                   scoped_refptr<storage::FileSystemContext> fs_context,
+                   ReadWriter::Close2Callback callback,
+                   base::File::Error file_error) {
+  // Ignore file_error. We're essentially doing "/usr/bin/rm -f" instead
+  // of a bare "/usr/bin/rm".
+
+  fs_context->operation_runner()->CopyInForeignFile(
+      base::FilePath(src_path), fs_url,
+      base::BindOnce(&SaveCallback2, std::move(scoped_fd), fs_context,
+                     std::move(callback)));
 }
 
 }  // namespace
@@ -132,27 +159,26 @@ void ReadWriter::Save() {
   DCHECK(!is_loaning_temp_file_scoped_fd_);
   DCHECK(use_temp_file_);
 
+  if (write_posix_error_code_ != 0) {
+    Close2ResponseProto response_proto;
+    response_proto.set_posix_error_code(write_posix_error_code_);
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(close2_callback_), response_proto));
+    return;
+  }
+
   std::string src_path =
       created_temp_file_
           ? base::StringPrintf("/proc/self/fd/%d", temp_file_.get())
           : "/dev/null";
 
-  constexpr auto outer_callback =
-      [](base::ScopedFD scoped_fd,
-         scoped_refptr<storage::FileSystemContext> fs_context,
-         Close2Callback callback, base::File::Error file_error) {
-        Close2ResponseProto response_proto;
-        if (file_error != base::File::Error::FILE_OK) {
-          response_proto.set_posix_error_code(FileErrorToErrno(file_error));
-        }
-        content::GetUIThreadTaskRunner({})->PostTask(
-            FROM_HERE, base::BindOnce(std::move(callback), response_proto));
-      };
-
-  close2_fs_context_->operation_runner()->CopyInForeignFile(
-      base::FilePath(src_path), fs_url_,
-      base::BindOnce(outer_callback, std::move(temp_file_), close2_fs_context_,
-                     std::move(close2_callback_)));
+  // Delete the file if it already it exists, or a no-op if it doesn't. Either
+  // way, SaveCallback1 will then copy from src_path to fs_url_, before
+  // SaveCallback2 runs the close2_callback_.
+  close2_fs_context_->operation_runner()->RemoveFile(
+      fs_url_,
+      base::BindOnce(&SaveCallback1, src_path, fs_url_, std::move(temp_file_),
+                     close2_fs_context_, std::move(close2_callback_)));
 }
 
 void ReadWriter::Read(scoped_refptr<storage::FileSystemContext> fs_context,
@@ -253,11 +279,11 @@ void ReadWriter::Write(scoped_refptr<storage::FileSystemContext> fs_context,
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(!is_in_flight_);
 
-  if (closed_) {
+  if (closed_ || (write_posix_error_code_ != 0)) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&RunWrite2CallbackFailure, std::move(callback),
-                       base::File::Error::FILE_ERROR_FAILED));
+                       closed_ ? EFAULT : write_posix_error_code_));
     return;
   }
 
@@ -276,9 +302,8 @@ void ReadWriter::Write(scoped_refptr<storage::FileSystemContext> fs_context,
       if (!temp_file_.is_valid()) {
         PLOG(WARNING) << "could not create O_TMPFILE file";
         content::GetUIThreadTaskRunner({})->PostTask(
-            FROM_HERE,
-            base::BindOnce(&RunWrite2CallbackFailure, std::move(callback),
-                           base::File::Error::FILE_ERROR_NO_SPACE));
+            FROM_HERE, base::BindOnce(&RunWrite2CallbackFailure,
+                                      std::move(callback), ENOSPC));
         return;
       }
       created_temp_file_ = true;
@@ -307,9 +332,8 @@ void ReadWriter::Write(scoped_refptr<storage::FileSystemContext> fs_context,
     fs_writer = fs_context->CreateFileStreamWriter(fs_url_, offset);
     if (!fs_writer) {
       content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&RunWrite2CallbackFailure, std::move(callback),
-                         base::File::Error::FILE_ERROR_INVALID_URL));
+          FROM_HERE, base::BindOnce(&RunWrite2CallbackFailure,
+                                    std::move(callback), EINVAL));
       return;
     }
   }
@@ -416,6 +440,7 @@ void ReadWriter::OnWriteTempFile(base::WeakPtr<ReadWriter> weak_ptr,
   Write2ResponseProto response_proto;
   if (result.second) {
     response_proto.set_posix_error_code(result.second);
+    self->write_posix_error_code_ = result.second;
   }
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), response_proto));
@@ -425,6 +450,7 @@ void ReadWriter::OnWriteTempFile(base::WeakPtr<ReadWriter> weak_ptr,
   }
 }
 
+// static
 void ReadWriter::OnWriteDirect(
     base::WeakPtr<ReadWriter> weak_ptr,
     Write2Callback callback,
@@ -453,6 +479,7 @@ void ReadWriter::OnWriteDirect(
   } else {
     self->fs_writer_.reset();
     self->write_offset_ = -1;
+    self->write_posix_error_code_ = NetErrorToErrno(length);
   }
 
   content::GetUIThreadTaskRunner({})->PostTask(

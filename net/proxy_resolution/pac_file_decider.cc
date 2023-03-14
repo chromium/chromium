@@ -66,7 +66,7 @@ PacFileDataWithSource::PacFileDataWithSource(const PacFileDataWithSource&) =
 PacFileDataWithSource& PacFileDataWithSource::operator=(
     const PacFileDataWithSource&) = default;
 
-base::Value PacFileDecider::PacSource::NetLogParams(
+base::Value::Dict PacFileDecider::PacSource::NetLogParams(
     const GURL& effective_pac_url) const {
   base::Value::Dict dict;
   std::string source;
@@ -84,7 +84,7 @@ base::Value PacFileDecider::PacSource::NetLogParams(
       break;
   }
   dict.Set("source", source);
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 PacFileDecider::PacFileDecider(PacFileFetcher* pac_file_fetcher,

@@ -43,7 +43,6 @@ class NavigationManager;
 enum Permission : NSUInteger;
 enum PermissionState : NSUInteger;
 class SessionCertificatePolicyCacheImpl;
-class WebFrame;
 class WebFramesManagerImpl;
 
 // Implementation of WebState.
@@ -124,8 +123,8 @@ class WebStateImpl final : public WebState {
   // Returns the NavigationManager for this WebState.
   NavigationManagerImpl& GetNavigationManagerImpl();
 
-  // Returns the associated WebFramesManagerImpl.
-  WebFramesManagerImpl& GetWebFramesManagerImpl();
+  // Returns the WebFramesManagerImpl associated with the page content world.
+  WebFramesManagerImpl& GetWebFramesManagerImpl(ContentWorld world);
 
   // Returns/Sets the SessionCertificatePolicyCacheImpl for this WebStateImpl.
   SessionCertificatePolicyCacheImpl& GetSessionCertificatePolicyCacheImpl();
@@ -250,13 +249,6 @@ class WebStateImpl final : public WebState {
   // navigation related functions on the main WKWebView.
   id<CRWWebViewNavigationProxy> GetWebViewNavigationProxy() const;
 
-  // Registers `frame` as a new web frame and notifies any observers.
-  void WebFrameBecameAvailable(std::unique_ptr<WebFrame> frame);
-
-  // Removes the web frame with `frame_id`, if one exists and notifies any
-  // observers.
-  void WebFrameBecameUnavailable(const std::string& frame_id);
-
   // Broadcasts a JavaScript message to request the frameId of all frames.
   void RetrieveExistingFrames();
 
@@ -297,8 +289,8 @@ class WebStateImpl final : public WebState {
   void Stop() final;
   const NavigationManager* GetNavigationManager() const final;
   NavigationManager* GetNavigationManager() final;
-  const WebFramesManager* GetPageWorldWebFramesManager() const final;
   WebFramesManager* GetPageWorldWebFramesManager() final;
+  WebFramesManager* GetWebFramesManager(ContentWorld world) final;
   const SessionCertificatePolicyCache* GetSessionCertificatePolicyCache()
       const final;
   SessionCertificatePolicyCache* GetSessionCertificatePolicyCache() final;
@@ -336,6 +328,8 @@ class WebStateImpl final : public WebState {
   void CloseWebState() final;
   bool SetSessionStateData(NSData* data) final;
   NSData* SessionStateData() final;
+  void SetSwipeRecognizerProvider(
+      id<CRWSwipeRecognizerProvider> delegate) final;
   PermissionState GetStateForPermission(Permission permission) const final
       API_AVAILABLE(ios(15.0));
   void SetStateForPermission(PermissionState state, Permission permission) final
@@ -350,6 +344,7 @@ class WebStateImpl final : public WebState {
   bool IsFindInteractionEnabled() final;
   void SetFindInteractionEnabled(bool enabled) final;
   id<CRWFindInteraction> GetFindInteraction() final API_AVAILABLE(ios(16));
+  id GetActivityItem() final API_AVAILABLE(ios(16.4));
 
  protected:
   // WebState:
@@ -385,6 +380,12 @@ class WebStateImpl final : public WebState {
   // observers to an "unrealized" WebState (which is required to listen for
   // `WebStateRealized`).
   WebStateObserverList observers_;
+
+  // A map which stores the web frame manager for each content world. This is
+  // not stored in RealizedWebState because observers are added to
+  // WebFramesManagerImpl during the AttachTabHelpers phase leading to over
+  // realizing all WebStates.
+  std::map<ContentWorld, std::unique_ptr<WebFramesManagerImpl>> managers_;
 
   // All the WebStatePolicyDeciders asked for navigation decision. Weak
   // references. This is not stored in RealizedWebState/SerializedData to

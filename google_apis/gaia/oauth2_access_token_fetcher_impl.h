@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
@@ -39,7 +40,8 @@ class SharedURLLoaderFactory;
 // This class can handle one request at a time. To parallelize requests,
 // create multiple instances.  Prefer `GaiaAccessTokenFetcher` over this class
 // while talking to Google's OAuth servers.
-class OAuth2AccessTokenFetcherImpl : public OAuth2AccessTokenFetcher {
+class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2AccessTokenFetcherImpl
+    : public OAuth2AccessTokenFetcher {
  public:
   // Enumerated constants of server responses, matching RFC 6749.
   // These values are persisted to logs. Entries should not be renumbered and

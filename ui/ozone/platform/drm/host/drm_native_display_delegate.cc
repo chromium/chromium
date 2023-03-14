@@ -58,6 +58,14 @@ void DrmNativeDisplayDelegate::Configure(
                                       modeset_flag);
 }
 
+void DrmNativeDisplayDelegate::SetHdcpKeyProp(
+    int64_t display_id,
+    const std::string& key,
+    display::SetHdcpKeyPropCallback callback) {
+  DrmDisplayHost* display = display_manager_->GetDisplay(display_id);
+  display->SetHdcpKeyProp(key, std::move(callback));
+}
+
 void DrmNativeDisplayDelegate::GetHDCPState(
     const display::DisplaySnapshot& output,
     display::GetHDCPStateCallback callback) {

@@ -80,7 +80,6 @@ void BrowserUpdaterClient::CheckForUpdate(
   update_service_->Update(
       GetAppId(), {}, updater::UpdateService::Priority::kForeground,
       updater::UpdateService::PolicySameVersionUpdate::kNotAllowed,
-      /*do_update_check_only=*/false,
       base::BindPostTaskToCurrentDefault(version_updater_callback),
       base::BindPostTaskToCurrentDefault(
           base::BindOnce(&BrowserUpdaterClient::UpdateCompleted, this,

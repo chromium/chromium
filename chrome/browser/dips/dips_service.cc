@@ -35,6 +35,7 @@
 #include "content/public/browser/browsing_data_remover.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/network/public/mojom/clear_data_filter.mojom.h"
 
 namespace {
 
@@ -153,13 +154,22 @@ DIPSService::DIPSService(content::BrowserContext* context)
           Profile::FromBrowserContext(context))),
       repeating_timer_(CreateTimer(Profile::FromBrowserContext(context))) {
   DCHECK(base::FeatureList::IsEnabled(dips::kFeature));
-  absl::optional<base::FilePath> path;
+  absl::optional<base::FilePath> path_to_use;
+  base::FilePath dips_path = GetDIPSFilePath(browser_context_);
 
   if (dips::kPersistedDatabaseEnabled.Get() &&
       !browser_context_->IsOffTheRecord()) {
-    path = browser_context_->GetPath().Append(kDIPSFilename);
+    path_to_use = dips_path;
+    // Existing database files won't be deleted, so quit the
+    // `wait_for_file_deletion_` RunLoop.
+    wait_for_file_deletion_.Quit();
+  } else {
+    // If opening in-memory, delete any database files that may exist.
+    DIPSStorage::DeleteDatabaseFiles(dips_path,
+                                     wait_for_file_deletion_.QuitClosure());
   }
-  storage_ = base::SequenceBound<DIPSStorage>(CreateTaskRunner(), path);
+
+  storage_ = base::SequenceBound<DIPSStorage>(CreateTaskRunner(), path_to_use);
 
   storage_.AsyncCall(&DIPSStorage::IsPrepopulated)
       .Then(base::BindOnce(&DIPSService::InitializeStorageWithEngagedSites,

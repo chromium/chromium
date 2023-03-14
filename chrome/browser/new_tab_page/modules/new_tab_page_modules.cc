@@ -26,6 +26,11 @@ const std::vector<std::pair<const std::string, int>> MakeModuleIdNames(
     bool drive_module_enabled) {
   std::vector<std::pair<const std::string, int>> details;
 
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpHistoryClustersModule)) {
+    details.emplace_back("history_clusters",
+                         IDS_HISTORY_CLUSTERS_JOURNEYS_TAB_LABEL);
+  }
+
   if (IsRecipeTasksModuleEnabled()) {
     std::vector<std::string> splitExperimentGroup = base::SplitString(
         base::GetFieldTrialParamValueByFeature(
@@ -56,11 +61,6 @@ const std::vector<std::pair<const std::string, int>> MakeModuleIdNames(
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpFeedModule)) {
     details.emplace_back("feed", IDS_NTP_MODULES_FEED_TITLE);
-  }
-
-  if (base::FeatureList::IsEnabled(ntp_features::kNtpHistoryClustersModule)) {
-    details.emplace_back("history-clusters",
-                         IDS_HISTORY_CLUSTERS_JOURNEYS_TAB_LABEL);
   }
 
 #if !defined(OFFICIAL_BUILD)

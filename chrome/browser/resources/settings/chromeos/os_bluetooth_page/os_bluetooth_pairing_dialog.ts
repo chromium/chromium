@@ -8,6 +8,7 @@
  */
 import 'chrome://resources/ash/common/bluetooth/bluetooth_pairing_ui.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import '../../settings_shared.css.js';
 
 import {BluetoothUiSurface, recordBluetoothUiSurfaceMetrics} from 'chrome://resources/ash/common/bluetooth/bluetooth_metrics_utils.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';

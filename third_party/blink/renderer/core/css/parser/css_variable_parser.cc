@@ -8,6 +8,8 @@
 #include "third_party/blink/renderer/core/css/css_variable_reference_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
+#include "third_party/blink/renderer/core/css/resolver/style_cascade.h"
+#include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 
 namespace blink {
 
@@ -187,31 +189,82 @@ CSSCustomPropertyDeclaration* CSSVariableParser::ParseDeclarationValue(
   if (!IsValidVariable(tokenized_value.range, has_references)) {
     return nullptr;
   }
+  if (tokenized_value.text.length() > CSSVariableData::kMaxVariableBytes) {
+    return nullptr;
+  }
+
+  StringView text = StripTrailingWhitespaceAndComments(tokenized_value.text);
   return MakeGarbageCollected<CSSCustomPropertyDeclaration>(
-      CSSVariableData::Create(tokenized_value, is_animation_tainted,
-                              has_references),
+      CSSVariableData::Create(CSSTokenizedValue{tokenized_value.range, text},
+                              is_animation_tainted, has_references),
       &context);
 }
 
 CSSVariableReferenceValue* CSSVariableParser::ParseVariableReferenceValue(
-    CSSParserTokenRange range,
+    CSSTokenizedValue value,
     const CSSParserContext& context,
     bool is_animation_tainted) {
-  if (range.AtEnd()) {
+  if (value.range.AtEnd()) {
     return nullptr;
   }
 
   bool has_references;
-  if (!IsValidVariable(range, has_references)) {
+  if (!IsValidVariable(value.range, has_references)) {
     return nullptr;
   }
-  if (ParseCSSWideValue(range)) {
+  if (ParseCSSWideValue(value.range)) {
     return nullptr;
   }
   return MakeGarbageCollected<CSSVariableReferenceValue>(
-      CSSVariableData::Create({range, StringView()}, is_animation_tainted,
-                              has_references),
+      CSSVariableData::Create(value, is_animation_tainted, has_references),
       context);
+}
+
+StringView CSSVariableParser::StripTrailingWhitespaceAndComments(
+    StringView text) {
+  // Leading whitespace should already have been stripped.
+  DCHECK(text.empty() || !IsHTMLSpace(text[0]));
+
+  // Comments may (unfortunately!) be unfinished, so we can't rely on
+  // looking for */; if there's /* anywhere, we'll need to scan through
+  // the string from the start. We do a very quick heuristic first
+  // to get rid of the most common cases.
+  //
+  // TODO(sesse): In the cases where we've tokenized the string before
+  // (i.e. not CSSOM, where we just get a string), we know we can't
+  // have unfinished comments, so consider piping that knowledge all
+  // the way through here.
+  if (text.Is8Bit() &&
+      memchr(text.Characters8(), '/', text.length()) == nullptr) {
+    // No comments, so we can strip whitespace only.
+    while (!text.empty() && IsHTMLSpace(text[text.length() - 1])) {
+      text = StringView(text, 0, text.length() - 1);
+    }
+    return text;
+  }
+
+  wtf_size_t string_len = 0;
+  bool in_comment = false;
+  for (wtf_size_t i = 0; i < text.length(); ++i) {
+    if (in_comment) {
+      // See if we can end this comment.
+      if (text[i] == '*' && i + 1 < text.length() && text[i + 1] == '/') {
+        ++i;
+        in_comment = false;
+      }
+    } else {
+      // See if we must start a comment.
+      if (text[i] == '/' && i + 1 < text.length() && text[i + 1] == '*') {
+        ++i;
+        in_comment = true;
+      } else if (!IsHTMLSpace(text[i])) {
+        // A non-space outside a comment, so the string
+        // must go at least to here.
+        string_len = i + 1;
+      }
+    }
+  }
+  return StringView(text, 0, string_len);
 }
 
 }  // namespace blink

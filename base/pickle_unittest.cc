@@ -282,7 +282,7 @@ TEST(PickleTest, PeekNext) {
 
   pickle.WriteString("Goooooooooooogle");
 
-  const char* pickle_data = static_cast<const char*>(pickle.data());
+  const char* pickle_data = pickle.data_as_char();
 
   size_t pickle_size;
 
@@ -488,8 +488,7 @@ TEST(PickleTest, EqualsOperator) {
   Pickle source;
   source.WriteInt(1);
 
-  Pickle copy_refs_source_buffer(static_cast<const char*>(source.data()),
-                                 source.size());
+  Pickle copy_refs_source_buffer(source.data_as_char(), source.size());
   Pickle copy;
   copy = copy_refs_source_buffer;
   ASSERT_EQ(source.size(), copy.size());

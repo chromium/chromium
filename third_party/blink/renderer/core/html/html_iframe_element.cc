@@ -190,6 +190,18 @@ void HTMLIFrameElement::ParseAttribute(
       UseCounter::Count(GetDocument(), WebFeature::kFrameNameContainsNewline);
     if (name_.Contains('<'))
       UseCounter::Count(GetDocument(), WebFeature::kFrameNameContainsBrace);
+    if (name_.Contains('\n') && name_.Contains('<')) {
+      UseCounter::Count(GetDocument(), WebFeature::kDanglingMarkupInWindowName);
+      if (!name_.EndsWith('>')) {
+        UseCounter::Count(GetDocument(),
+                          WebFeature::kDanglingMarkupInWindowNameNotEndsWithGT);
+        if (!name_.EndsWith('\n')) {
+          UseCounter::Count(
+              GetDocument(),
+              WebFeature::kDanglingMarkupInWindowNameNotEndsWithNewLineOrGT);
+        }
+      }
+    }
   } else if (name == html_names::kSandboxAttr) {
     sandbox_->DidUpdateAttributeValue(params.old_value, value);
 
@@ -293,7 +305,7 @@ void HTMLIFrameElement::ParseAttribute(
       required_policy_ = value;
       UpdateRequiredPolicy();
     }
-  } else if (name == html_names::kTrusttokenAttr) {
+  } else if (name == html_names::kPrivatetokenAttr) {
     UseCounter::Count(GetDocument(), WebFeature::kTrustTokenIframe);
     trust_token_ = value;
   } else {

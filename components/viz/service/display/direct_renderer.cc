@@ -99,9 +99,6 @@ DirectRenderer::~DirectRenderer() = default;
 
 void DirectRenderer::Initialize() {
   use_partial_swap_ = settings_->partial_swap_enabled && CanPartialSwap();
-  allow_empty_swap_ =
-      use_partial_swap_ ||
-      output_surface_->capabilities().supports_commit_overlay_planes;
 
   initialized_ = true;
 }
@@ -381,6 +378,14 @@ void DirectRenderer::DrawFrame(
     // TODO(penghuang): verify this logic with SkiaRenderer.
     if (!output_surface_->capabilities().supports_surfaceless)
       needs_full_frame_redraw = true;
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+    // If compositing is delegated, then there will be no output_surface_plane,
+    // and we should not trigger a redraw of the root render pass.
+    // Pixel tests will not be displayed as overlay planes, so they need redraw.
+    if (current_frame()->output_surface_plane ||
+        !output_surface_->IsDisplayedAsOverlayPlane()) {
+      needs_full_frame_redraw = true;
+    }
 #else
     // The entire surface has to be redrawn if reshape is requested.
     needs_full_frame_redraw = true;
@@ -395,7 +400,7 @@ void DirectRenderer::DrawFrame(
   }
 
   bool skip_drawing_root_render_pass =
-      current_frame()->root_damage_rect.IsEmpty() && allow_empty_swap_ &&
+      current_frame()->root_damage_rect.IsEmpty() && use_partial_swap_ &&
       !needs_full_frame_redraw;
 
   // If partial swap is not used, and the frame can not be skipped, the whole
@@ -632,6 +637,12 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
 
   if (can_skip_rp) {
     skipped_render_pass_ids_.insert(render_pass->id);
+
+    int pixel_size =
+        render_pass->output_rect.width() * render_pass->output_rect.height();
+    UMA_HISTOGRAM_COUNTS_10M(
+        "Compositing.DirectRenderer.SkippedNonRootRenderPassOutputSize",
+        pixel_size);
     return;
   }
 
@@ -670,17 +681,10 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
   const bool should_clear_surface =
       !is_root_render_pass || settings_->should_clear_root_render_pass;
 
-  SurfaceInitializationMode mode;
-  if (should_clear_surface && render_pass_requires_scissor) {
-    mode = SURFACE_INITIALIZATION_MODE_SCISSORED_CLEAR;
-  } else if (should_clear_surface) {
-    mode = SURFACE_INITIALIZATION_MODE_FULL_SURFACE_CLEAR;
-  } else {
-    mode = SURFACE_INITIALIZATION_MODE_PRESERVE;
-  }
-
-  PrepareSurfaceForPass(
-      mode, MoveFromDrawToWindowSpace(render_pass_scissor_in_draw_space));
+  const gfx::Rect render_pass_update_rect = MoveFromDrawToWindowSpace(
+      render_pass_requires_scissor ? render_pass_scissor_in_draw_space
+                                   : surface_rect_in_draw_space);
+  BeginDrawingRenderPass(should_clear_surface, render_pass_update_rect);
 
   if (is_root_render_pass)
     last_root_render_pass_scissor_rect_ = render_pass_scissor_in_draw_space;
@@ -694,8 +698,9 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
        ++it) {
     const DrawQuad& quad = **it;
 
-    if (render_pass_is_clipped &&
-        ShouldSkipQuad(quad, render_pass_scissor_in_draw_space)) {
+    if (ShouldSkipQuad(quad, render_pass_is_clipped
+                                 ? render_pass_scissor_in_draw_space
+                                 : surface_rect_in_draw_space)) {
       continue;
     }
 
@@ -737,7 +742,7 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
   }
   FlushPolygons(&poly_list, render_pass_scissor_in_draw_space,
                 render_pass_requires_scissor);
-  FinishDrawingQuadList();
+  FinishDrawingRenderPass();
 
   if (render_pass->generate_mipmap)
     GenerateMipmap();
@@ -857,9 +862,7 @@ gfx::Rect DirectRenderer::ComputeScissorRectForRenderPass(
           // Sanity check: we should not have a Compositor
           // CompositorRenderPassDrawQuad here.
           DCHECK_NE(quad->material, DrawQuad::Material::kCompositorRenderPass);
-          if (quad->material == DrawQuad::Material::kAggregatedRenderPass) {
-            const auto* rpdq = AggregatedRenderPassDrawQuad::MaterialCast(quad);
-
+          if (auto* rpdq = quad->DynamicCast<AggregatedRenderPassDrawQuad>()) {
             // For render pass with pixel moving backdrop filters.
             if (auto iter =
                     backdrop_filter_output_rects_.find(rpdq->render_pass_id);

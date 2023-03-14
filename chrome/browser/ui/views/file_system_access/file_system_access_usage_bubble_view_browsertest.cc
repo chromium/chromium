@@ -78,7 +78,8 @@ class FileSystemAccessUsageBubbleViewTest : public DialogBrowserTest {
       origin = url::Origin::Create(GURL(
           "https://"
           "some-really-long-origin-chrome-test-foo-bar-sample.appspot.com"));
-    } else if (name == "default") {
+    } else {
+      CHECK_EQ(name, "default");
       usage.readable_directories.emplace_back(
           FILE_PATH_LITERAL("/home/me/Images"));
       usage.readable_directories.emplace_back(
@@ -90,8 +91,6 @@ class FileSystemAccessUsageBubbleViewTest : public DialogBrowserTest {
       usage.writable_files.emplace_back(FILE_PATH_LITERAL("README.md"));
       usage.writable_directories.emplace_back(
           FILE_PATH_LITERAL("/foo/bar/Code"));
-    } else {
-      NOTREACHED() << "Unimplemented test: " << name;
     }
 
     FileSystemAccessUsageBubbleView::ShowBubble(

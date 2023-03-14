@@ -7,6 +7,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import {$$, IframeElement, LogoElement, NewTabPageProxy, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {Doodle, DoodleImageType, DoodleShareChannel, PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_utils.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertLE, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -108,7 +109,7 @@ suite('NewTabPageLogoTest', () => {
     const darkStr = dark ? 'dark' : 'light';
     test(`setting ${darkStr} simple doodle shows image`, async () => {
       // Arrange.
-      const doodle = createImageDoodle(/*width=*/ 500, /*height=*/ 200);
+      const doodle = createImageDoodle(/*width=*/ 500, /*height=*/ 168);
       assertTrue(!!doodle.image);
       const imageDoodle = dark ? doodle.image.dark : doodle.image.light;
       assertTrue(!!imageDoodle);
@@ -127,7 +128,7 @@ suite('NewTabPageLogoTest', () => {
           imageDoodle.imageUrl.url, $$<HTMLImageElement>(logo, '#image')!.src);
       assertNotStyle($$(logo, '#image')!, 'display', 'none');
       assertEquals(500, $$<HTMLElement>(logo, '#image')!.offsetWidth);
-      assertEquals(200, $$<HTMLElement>(logo, '#image')!.offsetHeight);
+      assertEquals(168, $$<HTMLElement>(logo, '#image')!.offsetHeight);
       assertNotStyle($$(logo, '#shareButton')!, 'display', 'none');
       assertStyle(
           $$(logo, '#shareButton')!, 'background-color',
@@ -183,34 +184,42 @@ suite('NewTabPageLogoTest', () => {
     });
   });
 
-  [[1000, 500] /* too large */,
-   [100, 50] /* too small */,
-  ].forEach(([width, height]) => {
-    test(`${width}x${height} doodle aligned correctly`, async () => {
-      // Act.
-      const logo = await createLogo(createImageDoodle(width, height));
-      logo.backgroundColor = {value: 0xffffffff};
+  [true, false].forEach(short => {
+    suite(`${short ? 'short' : 'regular'} height`, () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({reducedLogoSpaceEnabled: short});
+      });
 
-      // Assert.
-      assertEquals(200, logo.offsetHeight);
-      assertGE(200, $$<HTMLElement>(logo, '#image')!.offsetHeight);
-      const pos = getRelativePosition($$(logo, '#imageDoodle')!, logo);
-      assertLE(0, pos.top);
-      assertEquals(0, pos.bottom);
-    });
+      [[1000, 500] /* too large */,
+       [100, 50] /* too small */,
+      ].forEach(([width, height]) => {
+        test(`${width}x${height} doodle aligned correctly`, async () => {
+          // Act.
+          const logo = await createLogo(createImageDoodle(width, height));
+          logo.backgroundColor = {value: 0xffffffff};
 
-    test(`${width}x${height} boxed doodle aligned correctly`, async () => {
-      // Act.
-      const logo = await createLogo(createImageDoodle(width, height));
-      logo.dark = true;
-      logo.backgroundColor = {value: 0xff0000ff};
+          // Assert.
+          assertEquals(short ? 168 : 200, logo.offsetHeight);
+          assertGE(200, $$<HTMLElement>(logo, '#image')!.offsetHeight);
+          const pos = getRelativePosition($$(logo, '#imageDoodle')!, logo);
+          assertLE(0, pos.top);
+          assertEquals(0, pos.bottom);
+        });
 
-      // Assert.
-      assertEquals(200, logo.offsetHeight);
-      assertGE(160, $$<HTMLElement>(logo, '#image')!.offsetHeight);
-      const pos = getRelativePosition($$(logo, '#imageDoodle')!, logo);
-      assertGE(pos.top, 8);
-      assertEquals(0, pos.bottom);
+        test(`${width}x${height} boxed doodle aligned correctly`, async () => {
+          // Act.
+          const logo = await createLogo(createImageDoodle(width, height));
+          logo.dark = true;
+          logo.backgroundColor = {value: 0xff0000ff};
+
+          // Assert.
+          assertEquals(short ? 168 : 200, logo.offsetHeight);
+          assertGE(160, $$<HTMLElement>(logo, '#image')!.offsetHeight);
+          const pos = getRelativePosition($$(logo, '#imageDoodle')!, logo);
+          assertGE(pos.top, 8);
+          assertEquals(0, pos.bottom);
+        });
+      });
     });
   });
 
@@ -228,24 +237,37 @@ suite('NewTabPageLogoTest', () => {
     assertFalse(!!$$(logo, '#logo'));
   });
 
-  test('setting too large image doodle resizes image', async () => {
-    // Arrange.
-    const doodle = createImageDoodle(/*width=*/ 1000, /*height=*/ 500);
-    doodle.image!.light!.shareButton!.x = 10;
-    doodle.image!.light!.shareButton!.y = 20;
+  [true, false].forEach(short => {
+    suite(`${short ? 'short' : 'regular'} height`, () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({reducedLogoSpaceEnabled: short});
+      });
 
-    // Act.
-    const logo = await createLogo(doodle);
+      test('setting too large image doodle resizes image', async () => {
+        // Arrange.
+        const doodle = createImageDoodle(/*width=*/ 1000, /*height=*/ 500);
+        doodle.image!.light!.shareButton!.x = 10;
+        doodle.image!.light!.shareButton!.y = 20;
 
-    // Assert.
-    assertEquals(400, $$<HTMLElement>(logo, '#image')!.offsetWidth);
-    assertEquals(200, $$<HTMLElement>(logo, '#image')!.offsetHeight);
-    const shareButtonPosition =
-        getRelativePosition($$(logo, '#shareButton')!, $$(logo, '#image')!);
-    assertEquals(4, Math.round(shareButtonPosition.left));
-    assertEquals(8, Math.round(shareButtonPosition.top));
-    assertEquals(10, $$<HTMLElement>(logo, '#shareButton')!.offsetWidth);
-    assertEquals(10, $$<HTMLElement>(logo, '#shareButton')!.offsetHeight);
+        // Act.
+        const logo = await createLogo(doodle);
+
+        // Assert.
+        assertEquals(
+            short ? 336 : 400, $$<HTMLElement>(logo, '#image')!.offsetWidth);
+        assertEquals(
+            short ? 168 : 200, $$<HTMLElement>(logo, '#image')!.offsetHeight);
+        const shareButtonPosition =
+            getRelativePosition($$(logo, '#shareButton')!, $$(logo, '#image')!);
+        assertEquals(short ? 3 : 4, Math.round(shareButtonPosition.left));
+        assertEquals(short ? 7 : 8, Math.round(shareButtonPosition.top));
+        assertEquals(
+            short ? 9 : 10, $$<HTMLElement>(logo, '#shareButton')!.offsetWidth);
+        assertEquals(
+            short ? 9 : 10,
+            $$<HTMLElement>(logo, '#shareButton')!.offsetHeight);
+      });
+    });
   });
 
   test('setting animated doodle shows image', async () => {
@@ -385,22 +407,31 @@ suite('NewTabPageLogoTest', () => {
     assertEquals(0, pos.bottom);
   });
 
-  test('too large interactive doodle sized correctly', async () => {
-    // Arrange.
-    const logo = await createLogo({
-      interactive: {
-        url: {url: 'https://foo.com'},
-        width: 1000,
-        height: 500,
-      },
-      description: '',
-    });
+  [true, false].forEach(short => {
+    suite(`${short ? 'short' : 'regular'} height`, () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({reducedLogoSpaceEnabled: short});
+      });
 
-    // Assert.
-    assertEquals(200, logo.offsetHeight);
-    assertEquals(200, $$<HTMLElement>(logo, '#iframe')!.offsetHeight);
-    const pos = getRelativePosition($$(logo, '#doodle')!, logo);
-    assertEquals(0, pos.bottom);
+      test('too large interactive doodle sized correctly', async () => {
+        // Arrange.
+        const logo = await createLogo({
+          interactive: {
+            url: {url: 'https://foo.com'},
+            width: 1000,
+            height: 500,
+          },
+          description: '',
+        });
+
+        // Assert.
+        assertEquals(short ? 168 : 200, logo.offsetHeight);
+        assertEquals(
+            short ? 168 : 200, $$<HTMLElement>(logo, '#iframe')!.offsetHeight);
+        const pos = getRelativePosition($$(logo, '#doodle')!, logo);
+        assertEquals(0, pos.bottom);
+      });
+    });
   });
 
   test('receiving resize message resizes doodle', async () => {

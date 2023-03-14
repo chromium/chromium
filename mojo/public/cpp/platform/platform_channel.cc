@@ -16,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "mojo/buildflags.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -36,7 +37,7 @@
 #include "base/posix/global_descriptors.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
 #include <mach/port.h>
 
 #include "base/mac/mach_logging.h"
@@ -101,7 +102,7 @@ void CreateChannel(PlatformHandle* local_endpoint,
   DCHECK(local_endpoint->is_valid());
   DCHECK(remote_endpoint->is_valid());
 }
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
 void CreateChannel(PlatformHandle* local_endpoint,
                    PlatformHandle* remote_endpoint) {
   // Mach messaging is simplex; and in order to enable full-duplex

@@ -8,7 +8,8 @@
 #include "base/component_export.h"
 #include "base/strings/string_piece_forward.h"
 #include "components/attribution_reporting/os_support.mojom-forward.h"
-#include "url/gurl.h"
+
+class GURL;
 
 namespace attribution_reporting {
 

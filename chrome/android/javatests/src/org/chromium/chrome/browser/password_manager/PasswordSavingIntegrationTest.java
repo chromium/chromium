@@ -26,7 +26,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.touch_to_fill.R;
+import org.chromium.chrome.browser.touch_to_fill.common.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
@@ -229,7 +229,6 @@ public class PasswordSavingIntegrationTest {
     }
 
     private RecyclerView getCredentials() {
-        RecyclerView r = mActivityTestRule.getActivity().findViewById(R.id.sheet_item_list);
         return mActivityTestRule.getActivity().findViewById(R.id.sheet_item_list);
     }
 }

@@ -1,13 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
+<translation id="1347497506789975534">Mostra les formes de pagament desades</translation>
 <translation id="1383876407941801731">Cerca</translation>
-<translation id="1566281227936819866">S'estan mostrant les formes de pagament desades</translation>
 <translation id="1717486229951421299">La llista de credencials que s'emplenen amb un toc s'ha obert a mitja alçada.</translation>
 <translation id="207576718733492531">La llista de credencials que s'emplenaran amb un toc està tancada.</translation>
 <translation id="2610239185026711824">Suggereix una contrasenya</translation>
 <translation id="2652129567809778422">Selecciona una contrasenya</translation>
-<translation id="2803478378562657435">S'estan mostrant les contrasenyes desades i les opcions de contrasenyes</translation>
 <translation id="2903493209154104877">Adreces</translation>
 <translation id="3399357656427473483">Llista de credencials que s'emplenaran amb un toc.</translation>
 <translation id="3688051737190211318">Si confies en <ph name="ORIGIN" />, pots utilitzar una contrasenya desada per iniciar la sessió</translation>
@@ -15,16 +14,14 @@
 <translation id="4660011489602794167">Mostra el teclat</translation>
 <translation id="4694050069269396220">Si confies en <ph name="ORIGIN" />, pots utilitzar una contrasenya desada per a un altre lloc web.</translation>
 <translation id="5016175294846053194">A sobre del teclat hi ha suggeriments d'Emplenament automàtic</translation>
-<translation id="5088366526685584589">S'estan mostrant les adreces desades</translation>
 <translation id="5441504010984421144">La llista de credencials que s'emplenaran amb un toc s'ha obert a alçada completa.</translation>
+<translation id="6296921860874265377">Mostra les contrasenyes desades i les opcions de contrasenya</translation>
 <translation id="6393156038355142111">Suggereix una contrasenya segura</translation>
 <translation id="6558703547256592471">Prova d'utilitzar una contrasenya única per a cada lloc web.</translation>
 <translation id="7029809446516969842">Contrasenyes</translation>
-<translation id="7299100402441711551">Mostra les adreces</translation>
-<translation id="7494879913343971937">Mostra les contrasenyes</translation>
 <translation id="7594473730623999723">Llisca per veure més suggeriments</translation>
+<translation id="7873973044507799456">Mostra les adreces desades</translation>
 <translation id="7992095260806105436">Utilitza el suggeriment d'Emplenament automàtic de Chrome</translation>
-<translation id="8037472847879765671">Mostra les formes de pagament</translation>
 <translation id="8507520749471379845">Contrasenyes disponibles</translation>
 <translation id="8705308553596171387">Sense contrasenya</translation>
 <translation id="879180780857354295">Opcions alternatives d'emplenament disponibles a sobre del teclat</translation>

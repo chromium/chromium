@@ -316,6 +316,12 @@ class TranslatePrefs {
   // Gets the user selected language list from language settings.
   void GetUserSelectedLanguageList(std::vector<std::string>* languages) const;
 
+  // Returns true if translate should trigger the UI on English
+  // pages, even when the UI language is English. This function also records
+  // whether the backoff threshold was reached in UMA.
+  bool ShouldForceTriggerTranslateOnEnglishPages();
+  static void SetShouldForceTriggerTranslateOnEnglishPagesForTesting();
+
   bool CanTranslateLanguage(base::StringPiece language);
   bool ShouldAutoTranslate(base::StringPiece source_language,
                            std::string* target_language);
@@ -330,16 +336,16 @@ class TranslatePrefs {
   std::string GetRecentTargetLanguage() const;
 
   // Gets the value for the pref that represents how often the
-  // kOverrideTranslateTriggerInIndia experiment made translate trigger on an
+  // force English in India feature made translate trigger on an
   // English page when it otherwise wouldn't have. This pref is used to
-  // determine whether the experiment should be suppressed for a particular user
+  // determine whether the feature should be suppressed for a particular user
   int GetForceTriggerOnEnglishPagesCount() const;
   // Increments the pref that represents how often the
-  // kOverrideTranslateTriggerInIndia experiment made translate trigger on an
+  // force English in India feature made translate trigger on an
   // English page when it otherwise wouldn't have.
   void ReportForceTriggerOnEnglishPages();
   // Sets to -1 the pref that represents how often the
-  // kOverrideTranslateTriggerInIndia experiment made translate trigger on an
+  // force English in India feature made translate trigger on an
   // English page when it otherwise wouldn't have. This is a special value that
   // signals that the backoff should not happen for that user.
   void ReportAcceptedAfterForceTriggerOnEnglishPages();
@@ -394,6 +400,8 @@ class TranslatePrefs {
   std::string country_;  // The country the app runs in.
 
   std::unique_ptr<language::LanguagePrefs> language_prefs_;
+
+  static bool force_translate_on_english_for_testing_;
 };
 
 }  // namespace translate

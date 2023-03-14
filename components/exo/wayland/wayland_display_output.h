@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_EXO_WAYLAND_WAYLAND_DISPLAY_OUTPUT_H_
 #define COMPONENTS_EXO_WAYLAND_WAYLAND_DISPLAY_OUTPUT_H_
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "base/containers/flat_map.h"
+#include "base/time/time.h"
 
 struct wl_client;
 struct wl_global;
@@ -16,11 +17,12 @@ struct wl_resource;
 namespace exo {
 namespace wayland {
 
-// Class that represent a wayland output. Tied to a specific display ID and
+// Class that represents a wayland output. Tied to a specific display ID and
 // associated with a global, and wl_outputs created by clients.  This object
-// will self destruct upon the display removal aftrer delays up to 9 seconds (3
-// seconds x 3 times) to give time for clients to release the output they
-// created, except for the shutdown scenario where they're removed immediately.
+// will self destruct upon the display removal after delays up to 12 seconds
+// (3 seconds x (1 initial delay + 3 retries)) to give time for clients to
+// release the output they created, except for the shutdown scenario where
+// they're removed immediately.
 class WaylandDisplayOutput {
  public:
   explicit WaylandDisplayOutput(int64_t display_id);
@@ -29,6 +31,11 @@ class WaylandDisplayOutput {
   WaylandDisplayOutput& operator=(const WaylandDisplayOutput&) = delete;
 
   ~WaylandDisplayOutput();
+
+  // Delay interval between delete attempts.
+  static constexpr base::TimeDelta kDeleteTaskDelay = base::Seconds(3);
+  // Number of times to retry deletion.
+  static constexpr int kDeleteRetries = 3;
 
   int64_t id() const;
   void set_global(wl_global* global);
@@ -41,14 +48,18 @@ class WaylandDisplayOutput {
   wl_resource* GetOutputResourceForClient(wl_client* client);
 
   // Self destruct in 5 seconeds.
+  // Caller must not access this object after calling this.
   void OnDisplayRemoved();
 
   int output_counts() const { return output_ids_.size(); }
+  bool had_registered_output() const { return had_registered_output_; }
 
  private:
   const int64_t id_;
   wl_global* global_ = nullptr;
   base::flat_map<wl_client*, wl_resource*> output_ids_;
+  bool had_registered_output_ = false;
+  bool is_destructing_ = false;
 };
 
 }  // namespace wayland

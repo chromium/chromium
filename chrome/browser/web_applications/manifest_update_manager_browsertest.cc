@@ -1419,6 +1419,10 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTest_UpdateDialog,
   OverrideManifest(kManifestTemplate, {"/banners/", kInstallableIconList});
   AppId app_id = InstallWebApp();
 
+  if (IsUpdateDialogEnabled()) {
+    AcceptAppIdentityUpdateDialogForTesting();
+  }
+
   OverrideManifest(kManifestTemplate, {"/", kAnotherInstallableIconList});
   EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
@@ -2951,9 +2955,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   run_loop.Run();
 }
 
-// TODO(crbug.com/1402886) Currently disabled due to bug in the code.
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
-                       DISABLED_CheckIconChangeForOemInstallation) {
+                       CheckIconChangeForOemInstallation) {
   constexpr char kNewName[] = "New app name";
   constexpr char kManifest[] = R"(
     {
@@ -3042,6 +3045,10 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTest_UpdateDialog,
         }
         return false;
       }));
+
+  if (IsUpdateDialogEnabled()) {
+    AcceptAppIdentityUpdateDialogForTesting();
+  }
 
   OverrideManifest(kManifest, {kAnotherInstallableIconList});
   EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
@@ -3863,94 +3870,6 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   EXPECT_TRUE(web_app->note_taking_new_note_url().is_empty());
 }
 
-class BrowserAddedWaiter final : public BrowserListObserver {
- public:
-  BrowserAddedWaiter() { BrowserList::AddObserver(this); }
-  ~BrowserAddedWaiter() override { BrowserList::RemoveObserver(this); }
-
-  void Wait() { run_loop_.Run(); }
-
-  // BrowserListObserver
-  void OnBrowserAdded(Browser* browser) override {
-    BrowserList::RemoveObserver(this);
-    // Post a task to ensure the Remove event has been dispatched to all
-    // observers.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, run_loop_.QuitClosure());
-  }
-
- private:
-  base::RunLoop run_loop_;
-};
-
-AppId InstallShortcutAppForCurrentUrl(Browser* browser,
-                                      bool open_as_window = false,
-                                      const char* override_title = nullptr) {
-  chrome::SetAutoAcceptWebAppDialogForTesting(
-      /*auto_accept=*/true,
-      /*auto_open_in_window=*/open_as_window);
-  chrome::SetOverrideTitleForTesting(override_title);
-  WebAppTestInstallWithOsHooksObserver observer(browser->profile());
-  observer.BeginListening();
-  BrowserAddedWaiter browser_added_waiter;
-  CHECK(chrome::ExecuteCommand(browser, IDC_CREATE_SHORTCUT));
-  AppId app_id = observer.Wait();
-  chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
-  chrome::SetOverrideTitleForTesting(nullptr);
-  return app_id;
-}
-
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
-                       CheckShortcutAppDoesntUpdate) {
-  // Override with a manifest that is missing a few things, so it is not
-  // installable, but we can create a shortcut for it.
-  constexpr char kManifestTemplate[] = R"(
-    {
-      "name": "$1",
-      "icons": $2,
-      "scope": "/banners/",
-      "start_url": "/banners/"
-    }
-  )";
-
-  OverrideManifest(kManifestTemplate, {"Test app", kInstallableIconList});
-
-  GURL app_url = GetAppURL();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
-
-  // Install a shortcut to the app, but use a different name for it (necessary
-  // to reproduce the bug).
-  const char* override_title = "foo";
-  AppId app_id =
-      InstallShortcutAppForCurrentUrl(browser(), false, override_title);
-
-  // The app installed should be the only app installed.
-  auto app_ids = GetProvider().registrar_unsafe().GetAppIds();
-  ASSERT_EQ(1u, app_ids.size());
-  app_id = app_ids[0];
-  EXPECT_EQ(override_title,
-            GetProvider().registrar_unsafe().GetAppShortName(app_id));
-
-  // Simulate the user accepting the App Identity update dialog (if it appears).
-  base::AutoReset<absl::optional<AppIdentityUpdate>> update_dialog_scope =
-      SetIdentityUpdateDialogActionForTesting(AppIdentityUpdate::kAllowed);
-
-  views::AnyWidgetObserver observer(views::test::AnyWidgetTestPasskey{});
-  observer.set_shown_callback(
-      base::BindLambdaForTesting([&](views::Widget* widget) {
-        // If the App Identity dialog was shown for the shortcut app, then
-        // something is wrong.
-        ASSERT_FALSE(widget->GetName() ==
-                     "WebAppIdentityUpdateConfirmationView");
-      }));
-
-  // Now navigate to the same url and allow the update mechanism to run.
-  UpdateCheckResultAwaiter result_awaiter(app_url);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
-  EXPECT_EQ(std::move(result_awaiter).AwaitNextResult(),
-            ManifestUpdateResult::kAppUpToDate);
-}
-
 using ManifestUpdateManagerBrowserTest_ManifestId =
     ManifestUpdateManagerBrowserTest;
 
@@ -4095,9 +4014,87 @@ class ManifestUpdateManagerAppIdentityBrowserTest
         {features::kWebAppManifestImmediateUpdating});
   }
 
- private:
+ protected:
+  AppId InstallShortcutAppForCurrentUrl(Browser* browser,
+                                        bool open_as_window = false,
+                                        const char* override_title = nullptr) {
+    chrome::SetAutoAcceptWebAppDialogForTesting(
+        /*auto_accept=*/true,
+        /*auto_open_in_window=*/open_as_window);
+    chrome::SetOverrideTitleForTesting(override_title);
+    WebAppTestInstallWithOsHooksObserver observer(browser->profile());
+    observer.BeginListening();
+    CHECK(chrome::ExecuteCommand(browser, IDC_CREATE_SHORTCUT));
+    AppId app_id = observer.Wait();
+    chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
+    chrome::SetOverrideTitleForTesting(nullptr);
+    return app_id;
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+// This test verifies that shortcut apps with custom name overrides don't try to
+// update the name back to the manifest app name.
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerAppIdentityBrowserTest,
+                       CheckShortcutAppDoesntPromptForUpdates) {
+  constexpr char kAppName[] = "Test app";
+  constexpr char kOverrideName[] = "Override name";
+
+  // Override with a manifest that is missing a few things, so it is not
+  // installable, but we can create a shortcut for it.
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "$1",
+      "icons": [{
+        "src": "$2",
+        "sizes": "256x256",
+        "type": "image/png"
+      }],
+      "scope": "/banners/",
+      "start_url": "/banners/"
+    }
+  )";
+
+  OverrideManifest(kManifestTemplate, {kAppName, "256x256-red.png"});
+
+  GURL app_url = GetAppURL();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
+
+  // Install a shortcut to the app, but use a different name for it (necessary
+  // to reproduce the bug).
+  AppId app_id =
+      InstallShortcutAppForCurrentUrl(browser(), false, kOverrideName);
+
+  // The app installed should be the only app installed.
+  auto app_ids = GetProvider().registrar_unsafe().GetAppIds();
+  ASSERT_EQ(1u, app_ids.size());
+  ASSERT_EQ(app_id, app_ids[0]);
+  EXPECT_EQ(kOverrideName,
+            GetProvider().registrar_unsafe().GetAppShortName(app_id));
+
+  // Expect no updates with a custom name and out of date icons.
+  OverrideManifest(kManifestTemplate, {kAppName, "256x256-green.png"});
+
+  views::AnyWidgetObserver observer(views::test::AnyWidgetTestPasskey{});
+  observer.set_shown_callback(
+      base::BindLambdaForTesting([&](views::Widget* widget) {
+        // If the App Identity dialog was shown for the shortcut app, then
+        // something is wrong.
+        ASSERT_FALSE(widget->GetName() ==
+                     "WebAppIdentityUpdateConfirmationView");
+      }));
+
+  // Now navigate to the same url and allow the update mechanism to run.
+  UpdateCheckResultAwaiter result_awaiter(app_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
+  EXPECT_EQ(std::move(result_awaiter).AwaitNextResult(),
+            ManifestUpdateResult::kAppUpToDate);
+
+  EXPECT_EQ(kOverrideName,
+            GetProvider().registrar_unsafe().GetAppShortName(app_id));
+  EXPECT_EQ(SK_ColorRED, ReadAppIconPixel(app_id, /*size=*/256));
+}
 
 // This test exercises the upgrade path for App Identity manifest updates with
 // the update pending while Chrome is in the process of shutting down.
@@ -4463,10 +4460,17 @@ class ManifestUpdateManagerBrowserTest_AppIdentityParameterized
   }
 
   bool AnyIconUpdate() const {
+    return IdentityIconUpdate() || NonIdentityIconUpdate();
+  }
+
+  bool IdentityIconUpdate() const {
     return LauncherIconUpdate() || LauncherIconRemove() ||
            InstallIconUpdate() || InstallIconRemove() ||
-           UnimportantIconUpdate() || UnimportantIconRemove() ||
            IconSwitchFromLauncher() || IconSwitchToLauncher();
+  }
+
+  bool NonIdentityIconUpdate() const {
+    return UnimportantIconUpdate() || UnimportantIconRemove();
   }
 
   bool LauncherIconUpdate() const {
@@ -4531,13 +4535,17 @@ class ManifestUpdateManagerBrowserTest_AppIdentityParameterized
   // of an app to change. It should mirror exactly the expectations we have of
   // the implementation and be simple to read for easy verification.
   bool ExpectIconUpdate() const {
-    if (!AnyIconUpdate())
-      return false;  // Icons should not update without a request to update.
+    return AnyIconUpdate() && IconUpdatesAllowed();
+  }
 
-    if (IsDefaultApp() || IsKioskApp())
+  bool IconUpdatesAllowed() const {
+    if (!IdentityIconUpdate() || IsDefaultApp() || IsKioskApp()) {
       return true;
-    if (IsPolicyApp())
+    }
+
+    if (IsPolicyApp()) {
       return IsPolicyAppIdentityOverrideEnabled();
+    }
 
     // User-installed apps don't get title updates unless App Id dialog is
     // enabled for icons.
@@ -4953,9 +4961,9 @@ IN_PROC_BROWSER_TEST_P(
   SCOPED_TRACE(trace + "Icons before: \n" + starting_stage + "\n" +
                "Icons afer (requested): \n" + ending_stage + "\n");
 
-  bool expect_update = (TitleUpdate() && ExpectTitleUpdate()) ||
-                       (AnyIconUpdate() && ExpectIconUpdate());
-  if ((TitleUpdate() || AnyIconUpdate()) && expect_update) {
+  if (ExpectTitleUpdate() || ExpectIconUpdate()) {
+    DCHECK(!ExpectTitleUpdate() || TitleUpdate());
+    DCHECK(!ExpectIconUpdate() || AnyIconUpdate());
     ASSERT_EQ(ManifestUpdateResult::kAppUpdated,
               GetResultAfterPageLoad(GetAppURL()));
     histogram_tester_.ExpectBucketCount(kUpdateHistogramName,

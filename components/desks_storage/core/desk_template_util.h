@@ -12,9 +12,10 @@
 #include "base/containers/flat_map.h"
 #include "base/guid.h"
 
-namespace desks_storage {
+namespace desks_storage::desk_template_util {
 
-namespace desk_template_util {
+inline constexpr char kFloatingWorkspaceTemplateUuid[] =
+    "c098bdcf-5803-484b-9bfd-d3a9a4b497ab";
 
 ash::DeskTemplate* FindOtherEntryWithName(
     const std::u16string& name,
@@ -22,8 +23,6 @@ ash::DeskTemplate* FindOtherEntryWithName(
     const base::flat_map<base::GUID, std::unique_ptr<ash::DeskTemplate>>&
         entries);
 
-}  // namespace desk_template_util
-
-}  // namespace desks_storage
+}  // namespace desks_storage::desk_template_util
 
 #endif  // COMPONENTS_DESKS_STORAGE_CORE_DESK_TEMPLATE_UTIL_H_

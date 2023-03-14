@@ -9,7 +9,7 @@
 #include "base/strings/sys_string_conversions.h"
 #import "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#import "device/bluetooth/bluetooth_adapter_mac.h"
+#include "device/bluetooth/bluetooth_low_energy_adapter_apple.h"
 #import "device/bluetooth/bluetooth_remote_gatt_characteristic_mac.h"
 
 using base::mac::ObjCCast;
@@ -48,7 +48,8 @@ BluetoothRemoteGattDescriptorMac::BluetoothRemoteGattDescriptorMac(
     CBDescriptor* descriptor)
     : gatt_characteristic_(characteristic),
       cb_descriptor_(descriptor, base::scoped_policy::RETAIN) {
-  uuid_ = BluetoothAdapterMac::BluetoothUUIDWithCBUUID([cb_descriptor_ UUID]);
+  uuid_ = BluetoothLowEnergyAdapterApple::BluetoothUUIDWithCBUUID(
+      [cb_descriptor_ UUID]);
   identifier_ = base::SysNSStringToUTF8(
       [NSString stringWithFormat:@"%s-%p", uuid_.canonical_value().c_str(),
                                  cb_descriptor_.get()]);
@@ -139,7 +140,7 @@ void BluetoothRemoteGattDescriptorMac::DidUpdateValueForDescriptor(
     BluetoothGattService::GattErrorCode error_code =
         BluetoothDeviceMac::GetGattErrorCodeFromNSError(error);
     DVLOG(1) << *this << ": Read value failed with error: "
-             << BluetoothAdapterMac::String(error)
+             << BluetoothLowEnergyAdapterApple::String(error)
              << ", converted to error code: " << static_cast<int>(error_code);
     std::move(read_value_callback_)
         .Run(error_code,
@@ -163,7 +164,7 @@ void BluetoothRemoteGattDescriptorMac::DidWriteValueForDescriptor(
     BluetoothGattService::GattErrorCode error_code =
         BluetoothDeviceMac::GetGattErrorCodeFromNSError(error);
     DVLOG(1) << *this << ": Write value failed with error: "
-             << BluetoothAdapterMac::String(error)
+             << BluetoothLowEnergyAdapterApple::String(error)
              << ", converted to error code: " << static_cast<int>(error_code);
     std::move(callbacks.second).Run(error_code);
     return;

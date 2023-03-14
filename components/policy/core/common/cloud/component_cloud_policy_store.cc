@@ -446,8 +446,9 @@ bool ComponentCloudPolicyStore::ParsePolicy(const std::string& data,
     return false;
   }
 
-  return ParseComponentPolicy(std::move(json), domain_constants_->scope,
-                              POLICY_SOURCE_CLOUD, policy, error);
+  return ParseComponentPolicy(std::move(json).TakeDict(),
+                              domain_constants_->scope, POLICY_SOURCE_CLOUD,
+                              policy, error);
 }
 
 ComponentPolicyMap ComponentCloudPolicyStore::GetJsonPolicyMap() {

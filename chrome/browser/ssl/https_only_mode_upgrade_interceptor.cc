@@ -10,10 +10,13 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ssl/https_only_mode_tab_helper.h"
 #include "chrome/browser/ssl/https_only_mode_upgrade_url_loader.h"
+#include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/common/pref_names.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
+#include "components/security_interstitials/core/https_only_mode_metrics.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
@@ -28,6 +31,9 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "components/guest_view/browser/guest_view_base.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+using security_interstitials::https_only_mode::Event;
+using security_interstitials::https_only_mode::RecordHttpsFirstModeNavigation;
 
 namespace {
 
@@ -75,13 +81,6 @@ void HttpsOnlyModeUpgradeInterceptor::MaybeCreateLoader(
     return;
   }
 
-  // Don't upgrade if the HTTPS-Only Mode setting isn't enabled.
-  auto* prefs = profile->GetPrefs();
-  if (!prefs || !prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled)) {
-    std::move(callback).Run({});
-    return;
-  }
-
   auto* web_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id_);
   // Could be null if the FrameTreeNode's RenderFrameHost is shutting down.
@@ -99,6 +98,26 @@ void HttpsOnlyModeUpgradeInterceptor::MaybeCreateLoader(
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+  auto* tab_helper = HttpsOnlyModeTabHelper::FromWebContents(web_contents);
+  if (!tab_helper) {
+    HttpsOnlyModeTabHelper::CreateForWebContents(web_contents);
+    tab_helper = HttpsOnlyModeTabHelper::FromWebContents(web_contents);
+  }
+
+  // If the navigation doesn't meet upgrade criteria, don't intercept it.
+  if (!ShouldCreateLoader(tentative_resource_request, tab_helper)) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  // Check if the hostname is in the enterprise policy HTTP allowlist.
+  PrefService* prefs = profile->GetPrefs();
+  if (IsHostnameInAllowlist(tentative_resource_request.url,
+                            prefs->GetList(prefs::kHttpAllowlist))) {
+    std::move(callback).Run({});
+    return;
+  }
+
   // Check whether this host would be upgraded to HTTPS by HSTS. This requires a
   // Mojo call to the network service, so set up a callback to continue the rest
   // of the MaybeCreateLoader() logic (passing along the necessary state). The
@@ -109,7 +128,7 @@ void HttpsOnlyModeUpgradeInterceptor::MaybeCreateLoader(
   auto query_complete_callback = base::BindOnce(
       &HttpsOnlyModeUpgradeInterceptor::MaybeCreateLoaderOnHstsQueryCompleted,
       weak_factory_.GetWeakPtr(), tentative_resource_request, browser_context,
-      std::move(callback), profile, prefs, web_contents);
+      std::move(callback), profile, web_contents);
   network::mojom::NetworkContext* network_context =
       profile->GetDefaultStoragePartition()->GetNetworkContext();
   network_context->IsHSTSActiveForHost(
@@ -124,7 +143,6 @@ void HttpsOnlyModeUpgradeInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
     content::BrowserContext* browser_context,
     content::URLLoaderRequestInterceptor::LoaderCallback callback,
     Profile* profile,
-    PrefService* prefs,
     content::WebContents* web_contents,
     bool is_hsts_active_for_host) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -135,54 +153,51 @@ void HttpsOnlyModeUpgradeInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
     return;
   }
 
+  // If the navigation is a fallback, redirect to the original URL.
   auto* tab_helper = HttpsOnlyModeTabHelper::FromWebContents(web_contents);
-  if (!tab_helper) {
-    HttpsOnlyModeTabHelper::CreateForWebContents(web_contents);
-    tab_helper = HttpsOnlyModeTabHelper::FromWebContents(web_contents);
-  }
-  if (ShouldCreateLoader(tentative_resource_request, tab_helper)) {
-    // If the navigation is a fallback, redirect to the original URL.
-    if (tab_helper->is_navigation_fallback()) {
-      tab_helper->set_is_navigation_fallback(false);
-      CreateHttpsRedirectLoader(tentative_resource_request,
-                                std::move(callback));
-      redirect_url_loader_->StartRedirectToOriginalURL(
-          tab_helper->fallback_url());
-      return;
-    }
-
-    // Don't upgrade navigation if it is allowlisted.
-    StatefulSSLHostStateDelegate* state =
-        static_cast<StatefulSSLHostStateDelegate*>(
-            profile->GetSSLHostStateDelegate());
-    // StatefulSSLHostStateDelegate can be null during tests.
-    auto* storage_partition =
-        web_contents->GetPrimaryMainFrame()->GetStoragePartition();
-    if (state &&
-        state->IsHttpAllowedForHost(tentative_resource_request.url.host(),
-                                    storage_partition)) {
-      // Renew the allowlist expiration for this host as the user is still
-      // actively using it. This means that the allowlist entry will stay
-      // valid until the user stops visiting this host for the entire
-      // expiration period (one week).
-      state->AllowHttpForHost(tentative_resource_request.url.host(),
-                              storage_partition);
-
-      std::move(callback).Run({});
-      return;
-    }
-
-    // Mark navigation as upgraded.
-    tab_helper->set_is_navigation_upgraded(true);
-    tab_helper->set_fallback_url(tentative_resource_request.url);
+  if (tab_helper->is_navigation_fallback()) {
+    tab_helper->set_is_navigation_fallback(false);
     CreateHttpsRedirectLoader(tentative_resource_request, std::move(callback));
-    // `redirect_url_loader_` can be null after this call.
-    redirect_url_loader_->StartRedirectToHttps(frame_tree_node_id_);
+    redirect_url_loader_->StartRedirectToOriginalURL(
+        tab_helper->fallback_url());
     return;
   }
 
-  // Navigation doesn't meet upgrade criteria, so don't intercept it.
-  std::move(callback).Run({});
+  // Don't upgrade if HTTPS-Only Mode isn't enabled, but record metrics.
+  auto* prefs = profile->GetPrefs();
+  if (!prefs || !prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled)) {
+    RecordHttpsFirstModeNavigation(Event::kUpgradeNotAttempted);
+    std::move(callback).Run({});
+    return;
+  }
+
+  // Don't upgrade navigation if it is allowlisted.
+  StatefulSSLHostStateDelegate* state =
+      static_cast<StatefulSSLHostStateDelegate*>(
+          profile->GetSSLHostStateDelegate());
+  // StatefulSSLHostStateDelegate can be null during tests.
+  auto* storage_partition =
+      web_contents->GetPrimaryMainFrame()->GetStoragePartition();
+  if (state && state->IsHttpAllowedForHost(
+                   tentative_resource_request.url.host(), storage_partition)) {
+    // Renew the allowlist expiration for this host as the user is still
+    // actively using it. This means that the allowlist entry will stay
+    // valid until the user stops visiting this host for the entire
+    // expiration period (one week).
+    state->AllowHttpForHost(tentative_resource_request.url.host(),
+                            storage_partition);
+
+    std::move(callback).Run({});
+    return;
+  }
+
+  // Mark navigation as upgraded.
+  tab_helper->set_is_navigation_upgraded(true);
+  tab_helper->set_fallback_url(tentative_resource_request.url);
+  CreateHttpsRedirectLoader(tentative_resource_request, std::move(callback));
+  // `redirect_url_loader_` can be null after this call.
+  redirect_url_loader_->StartRedirectToHttps(frame_tree_node_id_);
+  return;
 }
 
 // static

@@ -46,7 +46,7 @@ class DevToolsTrustTokenBrowsertest : public DevToolsProtocolTest,
     EXPECT_GT(tokens.size(), 0ul);
 
     for (const auto& token : tokens) {
-      const std::string* issuer = token.FindStringKey("issuerOrigin");
+      const std::string* issuer = token.GetDict().FindString("issuerOrigin");
       if (*issuer == issuerOrigin) {
         const absl::optional<int> actualCount = token.FindIntPath("count");
         EXPECT_THAT(actualCount, ::testing::Optional(expectedCount));
@@ -68,13 +68,15 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest,
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { version: 1, operation: 'token-request' } })
+        { privateToken: { type: 'private-state-token',
+                        version: 1, operation: 'token-request' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("a.test", "/issue"))));
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { version: 1, operation: 'token-redemption' } })
+        { privateToken: { type: 'private-state-token',
+                        version: 1, operation: 'token-redemption' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("a.test", "/redeem"))));
 
@@ -88,7 +90,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest,
   // 3) Issue another redemption, and verify its served from cache.
   EXPECT_EQ("NoModificationAllowedError",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { version: 1, operation: 'token-redemption' } })
+        { privateToken: { type: 'private-state-token',
+                        version: 1, operation: 'token-redemption' } })
         .catch(err => err.name); )",
                                       server_.GetURL("a.test", "/redeem"))));
 
@@ -128,11 +131,14 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest, FetchEndToEnd) {
   // request.
   std::string command = R"(
   (async () => {
-    await fetch('/issue', {trustToken: {version: 1,
+    await fetch('/issue', {privateToken: {type: 'private-state-token',
+                                        version: 1,
                                         operation: 'token-request'}});
-    await fetch('/redeem', {trustToken: {version: 1,
+    await fetch('/redeem', {privateToken: {type: 'private-state-token',
+                                         version: 1,
                                          operation: 'token-redemption'}});
-    await fetch('/sign', {trustToken: {version: 1,
+    await fetch('/sign', {privateToken: {type: 'private-state-token',
+                                       version: 1,
                                        operation: 'send-redemption-record',
                                   issuers: [$1]}});
     return 'Success'; })(); )";
@@ -167,9 +173,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest, IframeEndToEnd) {
   // request.
   std::string command = R"(
   (async () => {
-    await fetch('/issue', {trustToken: {version: 1,
+    await fetch('/issue', {privateToken: {type: 'private-state-token',
+                                        version: 1,
                                         operation: 'token-request'}});
-    await fetch('/redeem', {trustToken: {version: 1,
+    await fetch('/redeem', {privateToken: {type: 'private-state-token',
+                                         version: 1,
                                          operation: 'token-redemption'}});
     return 'Success'; })(); )";
 
@@ -188,18 +196,18 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest, IframeEndToEnd) {
     EXPECT_TRUE(ExecJs(
         shell(), JsReplace(
                      R"( const myFrame = document.getElementById('test_iframe');
-                         myFrame.trustToken = $1;
+                         myFrame.privateToken = $1;
                          myFrame.src = $2;)",
                      trust_token, path)));
     TestNavigationObserver load_observer(shell()->web_contents());
     load_observer.WaitForNavigationFinished();
   };
 
-  execute_op_via_iframe(
-      "/sign", JsReplace(
-                   R"({"version": 1, "operation": "send-redemption-record",
+  execute_op_via_iframe("/sign", JsReplace(
+                                     R"({"type": "private-state-token",
+                       "version": 1, "operation": "send-redemption-record",
               "issuers": [$1]})",
-                   IssuanceOriginFromHost("a.test")));
+                                     IssuanceOriginFromHost("a.test")));
 
   // 4) Verify that we received three successful events.
   WaitForMatchingNotification("Network.trustTokenOperationDone",
@@ -230,7 +238,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest,
 
   // 3) Request some Trust Tokens.
   EXPECT_EQ("OperationError", EvalJs(shell(), R"(fetch('/issue',
-        { trustToken: { version: 1, operation: 'token-request' } })
+        { privateToken: { type: 'private-state-token',
+                        version: 1, operation: 'token-request' } })
         .then(()=>'Success').catch(err => err.name); )"));
 
   // 4) Verify that we received an Trust Token operation failed event.
@@ -257,7 +266,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest, GetTrustTokens) {
   // 4) Request some Trust Tokens.
   std::string command = R"(
   (async () => {
-    await fetch('/issue', {trustToken: {version: 1,
+    await fetch('/issue', {privateToken: {type: 'private-state-token',
+                                        version: 1,
                                         operation: 'token-request'}});
     return 'Success'; })(); )";
 
@@ -282,7 +292,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest, ClearTrustTokens) {
   // 3) Request some Trust Tokens.
   std::string command = R"(
   (async () => {
-    await fetch('/issue', {trustToken: {version: 1,
+    await fetch('/issue', {privateToken: {type: 'private-state-token',
+                                        version: 1,
                                         operation: 'token-request'}});
     return 'Success'; })(); )";
 

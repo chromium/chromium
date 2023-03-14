@@ -32,10 +32,6 @@ class PlatformSensorProviderBase {
   // Shared memory region getters.
   base::ReadOnlySharedMemoryRegion CloneSharedMemoryRegion();
 
-  // Returns 'true' if some of sensor instances produced by this provider are
-  // alive; 'false' otherwise.
-  bool HasSensors() const;
-
  protected:
   PlatformSensorProviderBase();
   virtual ~PlatformSensorProviderBase();

@@ -201,11 +201,6 @@ void AccelerometerProviderMojo::SetECLidAngleDriverSupported() {
     // status and revert some changes.
     LOG(WARNING) << "Overwriting ECLidAngleDriverStatus from NOT_SUPPORTED "
                     "to SUPPORTED";
-
-    // Restarts to listen to TabletPhysicalStateChanged from
-    // TabletModeController. Allows the enabled samples when setting
-    // ECLidAngleDriverStatus to SUPPORTED.
-    StartListenToTabletModeController();
   }
 
   SetECLidAngleDriverStatus(ECLidAngleDriverStatus::SUPPORTED);

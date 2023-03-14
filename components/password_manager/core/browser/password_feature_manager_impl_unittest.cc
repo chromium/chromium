@@ -24,8 +24,11 @@ class PasswordFeatureManagerImplTest : public ::testing::Test {
       : password_feature_manager_(&pref_service_,
                                   &pref_service_,
                                   &sync_service_) {
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
     pref_service_.registry()->RegisterDictionaryPref(
         password_manager::prefs::kAccountStoragePerAccountSettings);
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+
     account_.email = "account@gmail.com";
     account_.gaia = "account";
     account_.account_id = CoreAccountId::FromGaiaId(account_.gaia);
@@ -57,7 +60,9 @@ TEST_F(PasswordFeatureManagerImplTest, GenerationEnabledIfUserIsOptedIn) {
   sync_service_.SetDisableReasons({});
   sync_service_.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
 
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   password_feature_manager_.OptInToAccountStorage();
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
   ASSERT_EQ(
       password_manager_util::GetPasswordSyncState(&sync_service_),
@@ -76,14 +81,26 @@ TEST_F(PasswordFeatureManagerImplTest,
   sync_service_.SetHasSyncConsent(false);
   sync_service_.SetDisableReasons({});
   sync_service_.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+  // Hack: Mark Passwords as not user-selected, so that the TestSyncService will
+  // not report it as active.
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/syncer::UserSelectableTypeSet());
-
   ASSERT_EQ(password_manager_util::GetPasswordSyncState(&sync_service_),
             password_manager::SyncState::kNotSyncing);
+
   // The user must be eligible for account storage opt in now.
   ASSERT_TRUE(password_feature_manager_.ShouldShowAccountStorageOptIn());
+#else
+  // On Android and iOS, no explicit opt-in exists, so the user is treated as
+  // opted-in by default.
+  ASSERT_TRUE(password_feature_manager_.IsOptedInForAccountStorage());
+  ASSERT_EQ(
+      password_manager_util::GetPasswordSyncState(&sync_service_),
+      password_manager::SyncState::kAccountPasswordsActiveNormalEncryption);
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
   EXPECT_TRUE(password_feature_manager_.IsGenerationEnabled());
 }
@@ -112,27 +129,11 @@ TEST_F(PasswordFeatureManagerImplTest,
   EXPECT_FALSE(password_feature_manager_.IsGenerationEnabled());
 }
 
-TEST_F(PasswordFeatureManagerImplTest,
-       GenerationDisabledIfSyncPausedWithWebSignout) {
+TEST_F(PasswordFeatureManagerImplTest, GenerationDisabledIfSyncPaused) {
   sync_service_.SetAccountInfo(account_);
   sync_service_.SetHasSyncConsent(true);
   sync_service_.SetDisableReasons({});
-  sync_service_.SetPersistentAuthErrorWithWebSignout();
-
-  ASSERT_EQ(sync_service_.GetTransportState(),
-            syncer::SyncService::TransportState::PAUSED);
-  ASSERT_EQ(password_manager_util::GetPasswordSyncState(&sync_service_),
-            password_manager::SyncState::kNotSyncing);
-
-  EXPECT_FALSE(password_feature_manager_.IsGenerationEnabled());
-}
-
-TEST_F(PasswordFeatureManagerImplTest,
-       GenerationDisabledIfSyncAuthErrorOtherThanWebSignout) {
-  sync_service_.SetAccountInfo(account_);
-  sync_service_.SetHasSyncConsent(true);
-  sync_service_.SetDisableReasons({});
-  sync_service_.SetPersistentAuthErrorOtherThanWebSignout();
+  sync_service_.SetPersistentAuthError();
 
   ASSERT_EQ(sync_service_.GetTransportState(),
             syncer::SyncService::TransportState::PAUSED);

@@ -1,13 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
+<translation id="1347497506789975534">Visa sparade betalningsmetoder</translation>
 <translation id="1383876407941801731">Sök</translation>
-<translation id="1566281227936819866">Sparade betalningsmetoder visas</translation>
 <translation id="1717486229951421299">Listan över användaruppgifter som ska fyllas i med ett tryck har öppnats över halva skärmen.</translation>
 <translation id="207576718733492531">Listan över användaruppgifter som ska fyllas i med ett tryck är stängd.</translation>
 <translation id="2610239185026711824">Föreslå lösenord</translation>
 <translation id="2652129567809778422">Välj lösenord</translation>
-<translation id="2803478378562657435">Sparade lösenord och lösenordsalternativ visas</translation>
 <translation id="2903493209154104877">Adresser</translation>
 <translation id="3399357656427473483">Lista över användaruppgifter som ska fyllas i med ett tryck.</translation>
 <translation id="3688051737190211318">Om du litar på <ph name="ORIGIN" /> kan du använda ett sparat lösenord när du loggar in.</translation>
@@ -15,16 +14,14 @@
 <translation id="4660011489602794167">Visa tangentbord</translation>
 <translation id="4694050069269396220">Om du litar på <ph name="ORIGIN" /> kan du använda ett lösenord du sparat för en annan webbplats.</translation>
 <translation id="5016175294846053194">Det finns tillgängliga förslag från autofyll ovanför tangentbordet</translation>
-<translation id="5088366526685584589">Visa sparade adresser</translation>
 <translation id="5441504010984421144">Listan över användaruppgifter som ska fyllas i med ett tryck har öppnats över hela skärmen.</translation>
+<translation id="6296921860874265377">Visa sparade lösenord och lösenordsalternativ</translation>
 <translation id="6393156038355142111">Föreslå ett starkt lösenord</translation>
 <translation id="6558703547256592471">Sträva efter att använda ett unikt lösenord för varje webbplats.</translation>
 <translation id="7029809446516969842">Lösenord</translation>
-<translation id="7299100402441711551">Visa adresser</translation>
-<translation id="7494879913343971937">Visa lösenord</translation>
 <translation id="7594473730623999723">Svep om du vill se fler förslag</translation>
+<translation id="7873973044507799456">Visa sparade adresser</translation>
 <translation id="7992095260806105436">Använd förslag från Autofyll i Chrome</translation>
-<translation id="8037472847879765671">Visa betalningsmetoder</translation>
 <translation id="8507520749471379845">Lösenord finns tillgängliga</translation>
 <translation id="8705308553596171387">Inget lösenord</translation>
 <translation id="879180780857354295">Alternativa fyllnadsalternativ är tillgängliga ovanför tangentbordet</translation>

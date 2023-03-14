@@ -12,7 +12,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
+#include "components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5_alpha1.pb.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "google_apis/google_api_keys.h"
@@ -23,6 +25,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "services/network/public/mojom/oblivious_http_request.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace safe_browsing {
@@ -62,14 +65,51 @@ SBThreatType MapThreatTypeToSbThreatType(const V5::ThreatType& threat_type) {
   }
 }
 
+// The OHTTP client that accepts OnCompleted calls and forwards them to the
+// provided callback. It also calls the callback with empty response and
+// net::ERR_FAILED error if it is destroyed before the callback is called.
+class ObliviousHttpClient : public network::mojom::ObliviousHttpClient {
+ public:
+  using OnCompletedCallback =
+      base::OnceCallback<void(const absl::optional<std::string>&, int)>;
+
+  explicit ObliviousHttpClient(OnCompletedCallback callback)
+      : callback_(std::move(callback)) {}
+
+  ~ObliviousHttpClient() override {
+    if (!called_) {
+      std::move(callback_).Run(absl::nullopt, net::ERR_FAILED);
+    }
+  }
+
+  void OnCompleted(const absl::optional<std::string>& response,
+                   int net_error) override {
+    if (called_) {
+      mojo::ReportBadMessage("OnCompleted called more than once");
+      return;
+    }
+    called_ = true;
+    std::move(callback_).Run(response, net_error);
+  }
+
+ private:
+  bool called_ = false;
+  OnCompletedCallback callback_;
+};
+
 }  // namespace
 
 HashRealTimeService::HashRealTimeService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    base::RepeatingCallback<network::mojom::NetworkContext*()>
+        get_network_context,
     VerdictCacheManager* cache_manager,
+    OhttpKeyService* ohttp_key_service,
     base::RepeatingCallback<bool()> get_is_enhanced_protection_enabled)
     : url_loader_factory_(url_loader_factory),
+      get_network_context_(std::move(get_network_context)),
       cache_manager_(cache_manager),
+      ohttp_key_service_(ohttp_key_service),
       backoff_operator_(std::make_unique<BackoffOperator>(
           /*num_failures_to_enforce_backoff=*/kNumFailuresToEnforceBackoff,
           /*min_backoff_reset_duration_in_seconds=*/
@@ -142,13 +182,6 @@ bool HashRealTimeService::IsThreatTypeMoreSevere(
   return candidate_severity < baseline_severity;
 }
 
-bool HashRealTimeService::IsInBackoffMode() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  bool in_backoff = backoff_operator_->IsInBackoffMode();
-  base::UmaHistogramBoolean("SafeBrowsing.HPRT.Backoff.State", in_backoff);
-  return in_backoff;
-}
-
 std::set<std::string> HashRealTimeService::GetHashPrefixesSet(
     const GURL& url) const {
   std::vector<std::string> full_hashes;
@@ -216,57 +249,166 @@ void HashRealTimeService::StartLookup(
     return;
   }
 
+  // If the service is in backoff mode, don't send a request.
+  bool in_backoff = backoff_operator_->IsInBackoffMode();
+  base::UmaHistogramBoolean("SafeBrowsing.HPRT.BackoffState", in_backoff);
+  if (in_backoff) {
+    callback_task_runner->PostTask(
+        FROM_HERE, base::BindOnce(std::move(response_callback),
+                                  /*is_lookup_successful=*/false,
+                                  /*sb_threat_type=*/absl::nullopt));
+    return;
+  }
+
   // Prepare request.
   auto request = std::make_unique<V5::SearchHashesRequest>();
   for (const auto& hash_prefix : hash_prefixes_to_request) {
     request->add_hash_prefixes(hash_prefix);
   }
-
-  // Send request.
-  std::unique_ptr<network::SimpleURLLoader> owned_loader =
-      network::SimpleURLLoader::Create(GetResourceRequest(std::move(request)),
-                                       GetTrafficAnnotationTag());
   base::UmaHistogramCounts100("SafeBrowsing.HPRT.Request.CountOfPrefixes",
                               hash_prefixes_to_request.size());
-  owned_loader->SetTimeoutDuration(
-      base::Seconds(kLookupTimeoutDurationInSeconds));
-  owned_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      url_loader_factory_.get(),
-      base::BindOnce(&HashRealTimeService::OnURLLoaderComplete,
-                     weak_factory_.GetWeakPtr(), url,
-                     std::move(hash_prefixes_to_request),
-                     std::move(cached_full_hashes), owned_loader.get(),
-                     base::TimeTicks::Now(), std::move(callback_task_runner)));
-  pending_requests_[owned_loader.release()] = std::move(response_callback);
+
+  // Send request.
+  if (base::FeatureList::IsEnabled(kHashRealTimeOverOhttp)) {
+    // OHTTP
+    ohttp_key_service_->GetOhttpKey(base::BindOnce(
+        &HashRealTimeService::OnGetOhttpKey, weak_factory_.GetWeakPtr(),
+        std::move(request), url, std::move(hash_prefixes_to_request),
+        std::move(cached_full_hashes), base::TimeTicks::Now(),
+        std::move(callback_task_runner), std::move(response_callback)));
+  } else {
+    // Direct fetch
+    std::unique_ptr<network::SimpleURLLoader> url_loader =
+        network::SimpleURLLoader::Create(
+            GetDirectFetchResourceRequest(std::move(request)),
+            GetTrafficAnnotationTag());
+    url_loader->SetTimeoutDuration(
+        base::Seconds(kLookupTimeoutDurationInSeconds));
+    url_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+        url_loader_factory_.get(),
+        base::BindOnce(&HashRealTimeService::OnDirectURLLoaderComplete,
+                       weak_factory_.GetWeakPtr(), url,
+                       std::move(hash_prefixes_to_request),
+                       std::move(cached_full_hashes), url_loader.get(),
+                       base::TimeTicks::Now(), std::move(callback_task_runner),
+                       std::move(response_callback)));
+    pending_requests_.emplace(std::move(url_loader));
+  }
 }
 
-void HashRealTimeService::OnURLLoaderComplete(
+void HashRealTimeService::OnGetOhttpKey(
+    std::unique_ptr<V5::SearchHashesRequest> request,
+    const GURL& url,
+    const std::vector<std::string>& hash_prefixes_in_request,
+    std::vector<V5::FullHash> result_full_hashes,
+    base::TimeTicks request_start_time,
+    scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
+    HPRTLookupResponseCallback response_callback,
+    absl::optional<std::string> key) {
+  // TODO(crbug.com/1407283): Add a histogram to log the key fetch result.
+  if (!key.has_value()) {
+    backoff_operator_->ReportError();
+    response_callback_task_runner->PostTask(
+        FROM_HERE, base::BindOnce(std::move(response_callback),
+                                  /*is_lookup_successful=*/false,
+                                  /*sb_threat_type=*/absl::nullopt));
+    return;
+  }
+  // Construct OHTTP request.
+  network::mojom::ObliviousHttpRequestPtr ohttp_request =
+      network::mojom::ObliviousHttpRequest::New();
+  ohttp_request->relay_url = GURL(kHashRealTimeOverOhttpRelayUrl.Get());
+  ohttp_request->traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(GetTrafficAnnotationTag());
+  ohttp_request->key_config = key.value();
+  ohttp_request->resource_url = GURL(GetResourceUrl(std::move(request)));
+  ohttp_request->method = net::HttpRequestHeaders::kGetMethod;
+
+  mojo::PendingReceiver<network::mojom::ObliviousHttpClient> pending_receiver;
+  get_network_context_.Run()->GetViaObliviousHttp(
+      std::move(ohttp_request),
+      pending_receiver.InitWithNewPipeAndPassRemote());
+  ohttp_client_receivers_.Add(
+      std::make_unique<ObliviousHttpClient>(base::BindOnce(
+          &HashRealTimeService::OnOhttpComplete, weak_factory_.GetWeakPtr(),
+          url, std::move(hash_prefixes_in_request),
+          std::move(result_full_hashes), request_start_time,
+          std::move(response_callback_task_runner),
+          std::move(response_callback))),
+      std::move(pending_receiver));
+}
+
+void HashRealTimeService::OnOhttpComplete(
+    const GURL& url,
+    const std::vector<std::string>& hash_prefixes_in_request,
+    std::vector<V5::FullHash> result_full_hashes,
+    base::TimeTicks request_start_time,
+    scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
+    HPRTLookupResponseCallback response_callback,
+    const absl::optional<std::string>& response_body,
+    int net_error) {
+  // TODO(crbug.com/1407283): Notify ohttp_key_service_ if the error is key
+  // related.
+  auto response_body_ptr =
+      std::make_unique<std::string>(response_body.value_or(""));
+  // TODO(crbug.com/1407283): Set response_code when the mojo interface exposes
+  // response_code.
+  OnURLLoaderComplete(
+      url, std::move(hash_prefixes_in_request), std::move(result_full_hashes),
+      request_start_time, std::move(response_callback_task_runner),
+      std::move(response_callback), std::move(response_body_ptr), net_error,
+      /*response_code=*/net::HTTP_OK);
+}
+
+void HashRealTimeService::OnDirectURLLoaderComplete(
     const GURL& url,
     const std::vector<std::string>& hash_prefixes_in_request,
     std::vector<V5::FullHash> result_full_hashes,
     network::SimpleURLLoader* url_loader,
     base::TimeTicks request_start_time,
     scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
+    HPRTLookupResponseCallback response_callback,
     std::unique_ptr<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto pending_request_it = pending_requests_.find(url_loader);
   DCHECK(pending_request_it != pending_requests_.end()) << "Request not found";
 
-  base::UmaHistogramTimes("SafeBrowsing.HPRT.Network.Time",
-                          base::TimeTicks::Now() - request_start_time);
-
-  int net_error = url_loader->NetError();
   int response_code = 0;
   if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers) {
     response_code = url_loader->ResponseInfo()->headers->response_code();
   }
+
+  OnURLLoaderComplete(url, std::move(hash_prefixes_in_request),
+                      std::move(result_full_hashes), request_start_time,
+                      std::move(response_callback_task_runner),
+                      std::move(response_callback), std::move(response_body),
+                      url_loader->NetError(), response_code);
+
+  pending_requests_.erase(pending_request_it);
+}
+
+void HashRealTimeService::OnURLLoaderComplete(
+    const GURL& url,
+    const std::vector<std::string>& hash_prefixes_in_request,
+    std::vector<V5::FullHash> result_full_hashes,
+    base::TimeTicks request_start_time,
+    scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
+    HPRTLookupResponseCallback response_callback,
+    std::unique_ptr<std::string> response_body,
+    int net_error,
+    int response_code) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::UmaHistogramTimes("SafeBrowsing.HPRT.Network.Time",
+                          base::TimeTicks::Now() - request_start_time);
   RecordHttpResponseOrErrorCode("SafeBrowsing.HPRT.Network.Result", net_error,
                                 response_code);
 
-  auto response = ParseResponseAndUpdateBackoff(net_error, response_code,
-                                                std::move(response_body),
-                                                hash_prefixes_in_request);
+  base::expected<std::unique_ptr<V5::SearchHashesResponse>, OperationResult>
+      response = ParseResponseAndUpdateBackoff(net_error, response_code,
+                                               std::move(response_body),
+                                               hash_prefixes_in_request);
   absl::optional<SBThreatType> sb_threat_type;
   if (response.has_value()) {
     if (cache_manager_) {
@@ -285,12 +427,9 @@ void HashRealTimeService::OnURLLoaderComplete(
   }
 
   response_callback_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(std::move(pending_request_it->second),
+      FROM_HERE, base::BindOnce(std::move(response_callback),
                                 /*is_lookup_successful=*/response.has_value(),
                                 sb_threat_type));
-
-  delete pending_request_it->first;
-  pending_requests_.erase(pending_request_it);
 }
 
 base::expected<std::unique_ptr<V5::SearchHashesResponse>,
@@ -395,7 +534,17 @@ HashRealTimeService::ParseResponse(
 }
 
 std::unique_ptr<network::ResourceRequest>
-HashRealTimeService::GetResourceRequest(
+HashRealTimeService::GetDirectFetchResourceRequest(
+    std::unique_ptr<V5::SearchHashesRequest> request) const {
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->url = GURL(GetResourceUrl(std::move(request)));
+  resource_request->method = net::HttpRequestHeaders::kGetMethod;
+  resource_request->load_flags = net::LOAD_DISABLE_CACHE;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  return resource_request;
+}
+
+std::string HashRealTimeService::GetResourceUrl(
     std::unique_ptr<V5::SearchHashesRequest> request) const {
   std::string request_data, request_base64;
   request->SerializeToString(&request_data);
@@ -413,25 +562,20 @@ HashRealTimeService::GetResourceRequest(
     base::StringAppendF(&url, "&key=%s",
                         base::EscapeQueryParamValue(api_key, true).c_str());
   }
-  resource_request->url = GURL(url);
-  resource_request->method = "GET";
-  resource_request->load_flags = net::LOAD_DISABLE_CACHE;
-  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  return resource_request;
+  return url;
 }
 
 void HashRealTimeService::Shutdown() {
   is_shutdown_ = true;
-  for (auto& pending : pending_requests_) {
-    // Pending requests are not posted back to the IO thread during shutdown,
-    // because it is too late to post a task to the IO thread when the UI
-    // thread is shutting down.
-    delete pending.first;
-  }
+  weak_factory_.InvalidateWeakPtrs();
+  // Pending requests are not posted back to the IO thread during shutdown,
+  // because it is too late to post a task to the IO thread when the UI
+  // thread is shutting down.
   pending_requests_.clear();
 
   // Clear references to other KeyedServices.
   cache_manager_ = nullptr;
+  ohttp_key_service_ = nullptr;
 }
 
 base::WeakPtr<HashRealTimeService> HashRealTimeService::GetWeakPtr() {
@@ -449,7 +593,9 @@ net::NetworkTrafficAnnotationTag HashRealTimeService::GetTrafficAnnotationTag()
       "When Safe Browsing can't detect that a URL is safe based on its "
       "local database, it sends partial hashes of the URL to Google to check "
       "whether to show a warning to the user. These partial hashes do not "
-      "expose the URL to Google."
+      "expose the URL to Google. The partial hashes are sent to a proxy via "
+      "Oblivious HTTP first and then relayed to Google. The source of the "
+      "requests (e.g. IP address) is anonymized to Google."
     trigger:
       "When a main frame URL fails to match the local hash-prefix "
       "database of known safe URLs and a valid result from a prior "

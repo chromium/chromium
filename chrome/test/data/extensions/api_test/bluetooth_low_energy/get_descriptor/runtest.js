@@ -9,7 +9,7 @@ function testGetDescriptor() {
     chrome.test.sendMessage('fail');
     chrome.test.fail(error);
   }
-  chrome.test.assertTrue(descriptor != null, '\'descriptor\' is null');
+  chrome.test.assertNe(null, descriptor, '\'descriptor\' is null');
 
   chrome.test.assertEq('desc_id0', descriptor.instanceId);
   chrome.test.assertEq('00001221-0000-1000-8000-00805f9b34fb', descriptor.uuid);

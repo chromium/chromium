@@ -4,9 +4,14 @@
 
 #include <unistd.h>
 #include <algorithm>
+#include <cstddef>
 #include <string>
 
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog_browsertest.h"
+
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_parser.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
@@ -26,6 +31,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/web_contents.h"
@@ -129,6 +135,16 @@ std::string ScriptFillPlaceholder(const char script_with_placeholder[],
   return base::StringPrintf(script_with_placeholder, element_script.c_str());
 }
 
+// Set email (using a domain from |kNonManagedDomainPatterns|) to login a
+// non-managed user. Intended to be used in the override of |SetUpCommandLine|
+// from |InProcessBrowserTest| to ensure
+// |IsEligibleAndEnabledUploadOfficeToCloud| returns the result of
+// |IsUploadOfficeToCloudEnabled| in browser tests.
+void SetUpCommandLineForNonManagedUser(base::CommandLine* command_line) {
+  command_line->AppendSwitchASCII(switches::kLoginUser, "testuser@gmail.com");
+  command_line->AppendSwitchASCII(switches::kLoginProfile, "user");
+}
+
 }  // namespace
 
 // Tests the `kFileHandlerDialog` dialog page of the `CloudUploadDialog`.
@@ -169,6 +185,13 @@ class FileHandlerDialogBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
+  // Use a non-managed user in this browser test to ensure
+  // |IsEligibleAndEnabledUploadOfficeToCloud| returns the result of
+  // |IsUploadOfficeToCloudEnabled|.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SetUpCommandLineForNonManagedUser(command_line);
+  }
+
   std::vector<std::string> urls_;
   std::vector<file_manager::file_tasks::TaskDescriptor> tasks_;
   std::vector<storage::FileSystemURL> files_;
@@ -195,13 +218,13 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, OpenFileTaskFromDialog) {
   navigation_observer_dialog.StartWatchingNewWebContents();
 
   // Check that the Setup flow has never run and so the File
-  // Handler dialog will be launched when OpenFilesWithCloudProvider() is
+  // Handler dialog will be launched when CloudOpenTask::Execute() is
   // called.
   ASSERT_FALSE(file_manager::file_tasks::OfficeSetupComplete(profile()));
 
   // Launch File Handler dialog.
-  ASSERT_TRUE(OpenFilesWithCloudProvider(profile(), files_,
-                                         CloudProvider::kGoogleDrive));
+  ASSERT_TRUE(
+      CloudOpenTask::Execute(profile(), files_, CloudProvider::kGoogleDrive));
 
   // Wait for File Handler dialog to open at chrome://cloud-upload.
   navigation_observer_dialog.Wait();
@@ -327,6 +350,10 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
   int num_tasks = 3;
   SetUpTasksAndFiles({kXlsFileExtension}, num_tasks);
 
+  auto cloud_open_task = base::WrapRefCounted(
+      new CloudOpenTask(profile(), files_, CloudProvider::kGoogleDrive));
+  cloud_open_task->SetTasksForTest(tasks_);
+
   for (int selected_task = 0; selected_task < num_tasks; selected_task++) {
     std::string user_response = base::NumberToString(selected_task);
     // Watch for the selected task to open.
@@ -334,10 +361,8 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
         (GURL(urls_[selected_task])));
     navigation_observer_task.StartWatchingNewWebContents();
 
-    std::vector<file_manager::file_tasks::TaskDescriptor> tasks = tasks_;
-
     // Simulate user selecting this task.
-    OnDialogComplete(profile(), files_, user_response, std::move(tasks));
+    cloud_open_task->OnDialogComplete(user_response);
 
     // Wait for the selected task to open.
     navigation_observer_task.Wait();
@@ -356,11 +381,15 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, OnDialogCompleteNoCrash) {
   int num_tasks = 3;
   SetUpTasksAndFiles({kPptFileExtension}, num_tasks);
 
+  auto cloud_open_task = base::WrapRefCounted(
+      new CloudOpenTask(profile(), files_, CloudProvider::kGoogleDrive));
+  cloud_open_task->SetTasksForTest(tasks_);
+
   int out_of_range_task = 3;
   std::string user_response = base::NumberToString(out_of_range_task);
 
   // Simulate user selecting a nonexistent selected task.
-  OnDialogComplete(profile(), files_, user_response, std::move(tasks_));
+  cloud_open_task->OnDialogComplete(user_response);
 }
 
 // Tests the Fixup flow. Ensures that it is run when the conditions are met: the
@@ -403,11 +432,17 @@ class FixUpFlowBrowserTest : public InProcessBrowserTest {
 
   void AddFakeOfficePWA() {
     file_manager::test::AddFakeWebApp(
-        web_app::kMicrosoftOfficeAppId, kDocMimeType, kDocFileExtension, "",
-        true, apps::AppServiceProxyFactory::GetForProfile(profile()));
+        web_app::kMicrosoft365AppId, kDocMimeType, kDocFileExtension, "", true,
+        apps::AppServiceProxyFactory::GetForProfile(profile()));
   }
 
  protected:
+  // Use a non-managed user in this browser test to ensure
+  // |IsEligibleAndEnabledUploadOfficeToCloud| returns the result of
+  // |IsUploadOfficeToCloudEnabled|.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SetUpCommandLineForNonManagedUser(command_line);
+  }
   std::vector<storage::FileSystemURL> files_;
 
  private:
@@ -432,7 +467,7 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest, FixUpFlowWhenODFSNotMounted) {
       (GURL(chrome::kChromeUICloudUploadURL)));
   navigation_observer_dialog.StartWatchingNewWebContents();
 
-  OpenFilesWithCloudProvider(profile(), files_, CloudProvider::kOneDrive);
+  CloudOpenTask::Execute(profile(), files_, CloudProvider::kOneDrive);
 
   // Wait for Welcome Page to open at chrome://cloud-upload.
   navigation_observer_dialog.Wait();
@@ -475,7 +510,7 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
       (GURL(chrome::kChromeUICloudUploadURL)));
   navigation_observer_dialog.StartWatchingNewWebContents();
 
-  OpenFilesWithCloudProvider(profile(), files_, CloudProvider::kOneDrive);
+  CloudOpenTask::Execute(profile(), files_, CloudProvider::kOneDrive);
 
   // Wait for Welcome Page to open at chrome://cloud-upload.
   navigation_observer_dialog.Wait();
@@ -533,6 +568,15 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
   AddFakeODFS();
   AddFakeOfficePWA();
 
+  auto cloud_open_task = base::WrapRefCounted(
+      new CloudOpenTask(profile(), files_, CloudProvider::kOneDrive));
+  mojom::DialogArgsPtr args =
+      cloud_open_task->CreateDialogArgs(mojom::DialogPage::kOneDriveSetup);
+  // Self-deleted on close.
+  CloudUploadDialog* dialog =
+      new CloudUploadDialog(std::move(args), base::DoNothing(),
+                            mojom::DialogPage::kOneDriveSetup, false);
+
   // Watch for OneDrive Setup dialog URL chrome://cloud-upload.
   content::TestNavigationObserver navigation_observer_dialog(
       (GURL(chrome::kChromeUICloudUploadURL)));
@@ -545,8 +589,7 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
 
   // Open the Welcome Page for the OneDrive set up part of the Setup flow. This
   // will lead to the Office PWA being set as the default task.
-  CloudUploadDialog::SetUpAndShowDialog(profile(), files_,
-                                        mojom::DialogPage::kOneDriveSetup);
+  dialog->ShowSystemDialog();
 
   // Wait for Welcome Page to open at chrome://cloud-upload.
   navigation_observer_dialog.Wait();
@@ -596,6 +639,15 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
   AddFakeODFS();
   AddFakeOfficePWA();
 
+  auto cloud_open_task = base::WrapRefCounted(
+      new CloudOpenTask(profile(), files_, CloudProvider::kOneDrive));
+  mojom::DialogArgsPtr args =
+      cloud_open_task->CreateDialogArgs(mojom::DialogPage::kOneDriveSetup);
+  // Self-deleted on close.
+  CloudUploadDialog* dialog =
+      new CloudUploadDialog(std::move(args), base::DoNothing(),
+                            mojom::DialogPage::kOneDriveSetup, false);
+
   // Watch for OneDrive Setup dialog URL chrome://cloud-upload.
   content::TestNavigationObserver navigation_observer_dialog(
       (GURL(chrome::kChromeUICloudUploadURL)));
@@ -609,8 +661,7 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
   // Open the Welcome Page for the OneDrive set up part of the Setup flow. This
   // will not lead to the Office PWA being set as the default task because the
   // Setup flow has already been completed.
-  CloudUploadDialog::SetUpAndShowDialog(profile(), files_,
-                                        mojom::DialogPage::kOneDriveSetup);
+  dialog->ShowSystemDialog();
 
   // Wait for Welcome Page to open at chrome://cloud-upload.
   navigation_observer_dialog.Wait();
@@ -638,4 +689,86 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
   ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
       *profile()->GetPrefs(), kDocMimeType, kDocFileExtension, &default_task));
 }
+
+// Tests that the preference |kOfficeMoveConfirmationShown| is False before the
+// `kMoveConfirmationOneDrive` and `kMoveConfirmationGoogleDrive` dialogs and
+// True afterwards.
+class MoveConfirmationDialogBrowserTest : public InProcessBrowserTest {
+ public:
+  MoveConfirmationDialogBrowserTest() {
+    feature_list_.InitAndEnableFeature(features::kUploadOfficeToCloud);
+  }
+
+  MoveConfirmationDialogBrowserTest(const MoveConfirmationDialogBrowserTest&) =
+      delete;
+  MoveConfirmationDialogBrowserTest& operator=(
+      const MoveConfirmationDialogBrowserTest&) = delete;
+
+  Profile* profile() { return browser()->profile(); }
+
+ protected:
+  // Use a non-managed user in this browser test to ensure
+  // |IsEligibleAndEnabledUploadOfficeToCloud| returns the result of
+  // |IsUploadOfficeToCloudEnabled|.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SetUpCommandLineForNonManagedUser(command_line);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that the preference |kOfficeMoveConfirmationShown| is False before the
+// `kMoveConfirmationGoogleDrive` dialog and True afterwards.
+IN_PROC_BROWSER_TEST_F(MoveConfirmationDialogBrowserTest,
+                       MoveConfirmationGoogleDriveSetsPref) {
+  ASSERT_FALSE(
+      file_manager::file_tasks::OfficeMoveConfirmationShown(profile()));
+  {
+    base::RunLoop run_loop;
+    PrefChangeRegistrar change_observer;
+    change_observer.Init(profile()->GetPrefs());
+    change_observer.Add(prefs::kOfficeMoveConfirmationShown,
+                        run_loop.QuitClosure());
+    mojom::DialogArgsPtr args = mojom::DialogArgs::New();
+    args->dialog_page = mojom::DialogPage::kMoveConfirmationGoogleDrive;
+    CloudUploadDialog* dialog = new CloudUploadDialog(
+        std::move(args), base::DoNothing(),
+        mojom::DialogPage::kMoveConfirmationGoogleDrive, false);
+    dialog->ShowSystemDialog();
+
+    // Wait for preference change.
+    run_loop.Run();
+  }
+}
+
+// Tests that the preference |kOfficeMoveConfirmationShown| is False before the
+// `kMoveConfirmationOneDrive` dialog and True afterwards.
+IN_PROC_BROWSER_TEST_F(MoveConfirmationDialogBrowserTest,
+                       MoveConfirmationOneDriveSetsPref) {
+  ASSERT_FALSE(
+      file_manager::file_tasks::OfficeMoveConfirmationShown(profile()));
+  {
+    base::RunLoop run_loop;
+    PrefChangeRegistrar change_observer;
+    change_observer.Init(profile()->GetPrefs());
+    change_observer.Add(prefs::kOfficeMoveConfirmationShown,
+                        run_loop.QuitClosure());
+    mojom::DialogArgsPtr args = mojom::DialogArgs::New();
+    args->dialog_page = mojom::DialogPage::kMoveConfirmationOneDrive;
+    CloudUploadDialog* dialog = new CloudUploadDialog(
+        std::move(args), base::DoNothing(),
+        mojom::DialogPage::kMoveConfirmationOneDrive, false);
+    dialog->ShowSystemDialog();
+
+    // Wait for preference change.
+    run_loop.Run();
+  }
+}
+
 }  // namespace ash::cloud_upload
+
+void NonManagedUserWebUIBrowserTest::SetUpCommandLine(
+    base::CommandLine* command_line) {
+  ash::cloud_upload::SetUpCommandLineForNonManagedUser(command_line);
+}

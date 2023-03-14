@@ -82,6 +82,7 @@ void ScopedTouchIdTestEnvironment::SimulateTouchIdPromptFailure() {
 }
 
 void ScopedTouchIdTestEnvironment::DoNotResolveNextPrompt() {
+  next_touch_id_context_.reset(new FakeTouchIdContext);
   next_touch_id_context_->DoNotResolveNextPrompt();
 }
 

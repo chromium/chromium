@@ -100,7 +100,7 @@ void MediaToolbarButtonContextualMenu::ExecuteCommand(int command_id,
       break;
 #endif
     default:
-      NOTREACHED();
+      NOTREACHED_NORETURN();
   }
 }
 

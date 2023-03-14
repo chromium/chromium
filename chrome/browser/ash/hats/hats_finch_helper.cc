@@ -17,6 +17,8 @@ namespace ash {
 
 // These values should match the param key values in the finch config file.
 // static
+const char HatsFinchHelper::kEnabledForGooglersParam[] = "enabled_for_googlers";
+// static
 const char HatsFinchHelper::kCustomClientDataParam[] = "custom_client_data";
 // static
 const char HatsFinchHelper::kProbabilityParam[] = "prob";
@@ -69,6 +71,12 @@ std::string HatsFinchHelper::GetCustomClientDataAsString(
   DCHECK(base::FeatureList::IsEnabled(hats_config.feature));
   return base::GetFieldTrialParamValueByFeature(hats_config.feature,
                                                 kCustomClientDataParam);
+}
+
+bool HatsFinchHelper::IsEnabledForGooglers(const HatsConfig& hats_config) {
+  DCHECK(base::FeatureList::IsEnabled(hats_config.feature));
+  return base::GetFieldTrialParamByFeatureAsBool(
+      hats_config.feature, kEnabledForGooglersParam, false);
 }
 
 HatsFinchHelper::HatsFinchHelper(Profile* profile,

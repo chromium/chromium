@@ -11,7 +11,8 @@
 
 void PopulateHttpsOnlyModeStringsForBlockingPage(
     base::Value::Dict& load_time_data,
-    const GURL& url) {
+    const GURL& url,
+    bool is_under_advanced_protection) {
   load_time_data.Set("tabTitle",
                      l10n_util::GetStringUTF16(IDS_HTTPS_ONLY_MODE_TITLE));
   load_time_data.Set(
@@ -22,7 +23,11 @@ void PopulateHttpsOnlyModeStringsForBlockingPage(
               url)));
   load_time_data.Set(
       "primaryParagraph",
-      l10n_util::GetStringUTF16(IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH));
+      is_under_advanced_protection
+          ? l10n_util::GetStringUTF16(
+                IDS_HTTPS_ONLY_MODE_WITH_ADVANCED_PROTECTION_PRIMARY_PARAGRAPH)
+          : l10n_util::GetStringUTF16(IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH));
+
   // TODO(crbug.com/1302509): Change this button to "Close" when we can't go
   // back:
   load_time_data.Set(

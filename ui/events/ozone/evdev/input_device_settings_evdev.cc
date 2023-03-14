@@ -8,16 +8,103 @@
 #include "ui/events/ozone/features.h"
 
 namespace ui {
+namespace {
+// Used to denote the global instance of settings within the maps which is used
+// when per device settings are disabled.
+constexpr int kSharedSettingsDeviceId = -1;
+}  // namespace
 
 InputDeviceSettingsEvdev::InputDeviceSettingsEvdev() {
   touch_event_logging_enabled =
       base::FeatureList::IsEnabled(ui::kEnableInputEventLogging);
 }
-
 InputDeviceSettingsEvdev::InputDeviceSettingsEvdev(
-    const InputDeviceSettingsEvdev& other) = default;
+    const InputDeviceSettingsEvdev& input_device_settings) = default;
+InputDeviceSettingsEvdev::~InputDeviceSettingsEvdev() = default;
 
-InputDeviceSettingsEvdev::~InputDeviceSettingsEvdev() {
+void InputDeviceSettingsEvdev::RemoveDeviceFromSettings(int device_id) {
+  touchpad_settings_.erase(device_id);
+  pointing_stick_settings_.erase(device_id);
+  mouse_settings_.erase(device_id);
 }
+
+TouchpadSettingsEvdev& InputDeviceSettingsEvdev::GetTouchpadSettings() {
+  return touchpad_settings_[kSharedSettingsDeviceId];
+}
+
+MouseSettingsEvdev& InputDeviceSettingsEvdev::GetMouseSettings() {
+  return mouse_settings_[kSharedSettingsDeviceId];
+}
+
+PointingStickSettingsEvdev&
+InputDeviceSettingsEvdev::GetPointingStickSettings() {
+  return pointing_stick_settings_[kSharedSettingsDeviceId];
+}
+
+const TouchpadSettingsEvdev& InputDeviceSettingsEvdev::GetTouchpadSettings()
+    const {
+  return touchpad_settings_.at(kSharedSettingsDeviceId);
+}
+
+const MouseSettingsEvdev& InputDeviceSettingsEvdev::GetMouseSettings() const {
+  return mouse_settings_.at(kSharedSettingsDeviceId);
+}
+
+const PointingStickSettingsEvdev&
+InputDeviceSettingsEvdev::GetPointingStickSettings() const {
+  return pointing_stick_settings_.at(kSharedSettingsDeviceId);
+}
+
+TouchpadSettingsEvdev& InputDeviceSettingsEvdev::GetTouchpadSettings(
+    int device_id) {
+  if (!enable_per_device_settings) {
+    return GetTouchpadSettings();
+  }
+  return touchpad_settings_[device_id];
+}
+
+MouseSettingsEvdev& InputDeviceSettingsEvdev::GetMouseSettings(int device_id) {
+  if (!enable_per_device_settings) {
+    return GetMouseSettings();
+  }
+  return mouse_settings_[device_id];
+}
+
+PointingStickSettingsEvdev& InputDeviceSettingsEvdev::GetPointingStickSettings(
+    int device_id) {
+  if (!enable_per_device_settings) {
+    return GetPointingStickSettings();
+  }
+  return pointing_stick_settings_[device_id];
+}
+
+const TouchpadSettingsEvdev& InputDeviceSettingsEvdev::GetTouchpadSettings(
+    int device_id) const {
+  if (!enable_per_device_settings) {
+    return GetTouchpadSettings();
+  }
+  return touchpad_settings_.at(device_id);
+}
+
+const MouseSettingsEvdev& InputDeviceSettingsEvdev::GetMouseSettings(
+    int device_id) const {
+  if (!enable_per_device_settings) {
+    return GetMouseSettings();
+  }
+  return mouse_settings_.at(device_id);
+}
+
+const PointingStickSettingsEvdev&
+InputDeviceSettingsEvdev::GetPointingStickSettings(int device_id) const {
+  if (!enable_per_device_settings) {
+    return GetPointingStickSettings();
+  }
+  return pointing_stick_settings_.at(device_id);
+}
+
+TouchpadSettingsEvdev::TouchpadSettingsEvdev() = default;
+TouchpadSettingsEvdev::TouchpadSettingsEvdev(
+    const TouchpadSettingsEvdev& touchpad_settings) = default;
+TouchpadSettingsEvdev::~TouchpadSettingsEvdev() = default;
 
 }  // namespace ui

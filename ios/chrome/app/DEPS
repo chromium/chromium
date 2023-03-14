@@ -22,6 +22,7 @@ include_rules = [
   "+components/prefs",
   "+components/previous_session_info/previous_session_info.h",
   "+components/reading_list/core",
+  "+components/reading_list/ios",
   "+components/search_engines",
   "+components/signin/public/identity_manager/identity_manager.h",
   "+components/suggestions",

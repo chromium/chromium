@@ -24,7 +24,7 @@ class WaylandDisplayOutput;
 // "done" event through WaylandDisplayHandler.
 class WaylandDisplayObserver : public base::CheckedObserver {
  public:
-  WaylandDisplayObserver() {}
+  WaylandDisplayObserver();
 
   // Returns |true| if the observer reported any changes and needs
   // to be followed by "done" event, |false| otherwise.
@@ -39,7 +39,7 @@ class WaylandDisplayObserver : public base::CheckedObserver {
   virtual void OnOutputDestroyed() = 0;
 
  protected:
-  ~WaylandDisplayObserver() override {}
+  ~WaylandDisplayObserver() override;
 };
 
 class WaylandDisplayHandler : public display::DisplayObserver,

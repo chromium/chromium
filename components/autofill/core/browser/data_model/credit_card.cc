@@ -141,6 +141,28 @@ std::u16string GetObfuscatedStringForCardDigits(const std::u16string& digits,
 
 }  // namespace internal
 
+// static
+CreditCard CreditCard::CreateVirtualCard(const CreditCard& card) {
+  // Virtual cards can be created only from masked server cards.
+  DCHECK_EQ(card.record_type(), MASKED_SERVER_CARD);
+  CreditCard virtual_card = card;
+  virtual_card.set_record_type(VIRTUAL_CARD);
+  return virtual_card;
+}
+
+// static
+std::unique_ptr<CreditCard> CreditCard::CreateVirtualCardWithGuidSuffix(
+    const CreditCard& card) {
+  // Virtual cards can be created only from masked server cards.
+  DCHECK_EQ(card.record_type(), MASKED_SERVER_CARD);
+  auto virtual_card = std::make_unique<CreditCard>(card);
+  virtual_card->set_record_type(VIRTUAL_CARD);
+  // Add a suffix to the guid to help differentiate the virtual card from the
+  // server card.
+  virtual_card->set_guid(card.guid() + kVirtualCardIdentifierSuffix);
+  return virtual_card;
+}
+
 CreditCard::CreditCard(const std::string& guid, const std::string& origin)
     : AutofillDataModel(guid, origin),
       record_type_(LOCAL_CARD),
@@ -157,8 +179,7 @@ CreditCard::CreditCard(RecordType type, const std::string& server_id)
   server_id_ = server_id;
 }
 
-CreditCard::CreditCard(RecordType type, const int64_t& instrument_id)
-    : CreditCard() {
+CreditCard::CreditCard(RecordType type, int64_t instrument_id) : CreditCard() {
   DCHECK(type == MASKED_SERVER_CARD || type == FULL_SERVER_CARD);
   record_type_ = type;
   instrument_id_ = instrument_id;
@@ -166,9 +187,10 @@ CreditCard::CreditCard(RecordType type, const int64_t& instrument_id)
 
 CreditCard::CreditCard() : CreditCard(base::GenerateGUID(), std::string()) {}
 
-CreditCard::CreditCard(const CreditCard& credit_card) : CreditCard() {
-  operator=(credit_card);
-}
+CreditCard::CreditCard(const CreditCard& credit_card) = default;
+CreditCard::CreditCard(CreditCard&& credit_card) = default;
+CreditCard& CreditCard::operator=(const CreditCard& credit_card) = default;
+CreditCard& CreditCard::operator=(CreditCard&& credit_card) = default;
 
 CreditCard::~CreditCard() = default;
 
@@ -234,7 +256,7 @@ const char* CreditCard::GetCardNetwork(const std::u16string& number) {
   // American Express       34,37                                      15
   // Diners Club            300-305,309,36,38-39                       14
   // Discover Card          6011,644-649,65                            16
-  // Elo                    431274,451416,5067,5090,627780,636297      16
+  // Elo                    See Elo regex pattern below                16
   // JCB                    3528-3589                                  16
   // Mastercard             2221-2720, 51-55                           16
   // MIR                    2200-2204                                  16
@@ -245,15 +267,85 @@ const char* CreditCard::GetCardNetwork(const std::u16string& number) {
   // (most specific) prefix to the shortest (most general) prefix.
   std::u16string stripped_number = CreditCard::StripSeparators(number);
 
+  // Original Elo parsing included only 6 BIN prefixes. This regex pattern,
+  // sourced from the official Elo documentation, attempts to cover missing gaps
+  // via a more comprehensive solution.
+  static constexpr char16_t kEloRegexPattern[] =
+      // clang-format off
+    u"^("
+      u"50("
+        u"67("
+          u"0[78]|"
+          u"1[5789]|"
+          u"2[012456789]|"
+          u"3[01234569]|"
+          u"4[0-7]|"
+          u"53|"
+          u"7[4-8]"
+        u")|"
+        u"9("
+          u"0(0[0-9]|1[34]|2[013457]|3[0359]|4[0123568]|5[01456789]|6[012356789]|7[013]|8[123789]|9[1379])|"
+          u"1(0[34568]|4[6-9]|5[1245678]|8[36789])|"
+          u"2(2[02]|57|6[0-9]|7[1245689]|8[023456789]|9[1-6])|"
+          u"3(0[78]|5[78])|"
+          u"4(0[7-9]|1[012456789]|2[02]|5[7-9]|6[0-5]|8[45])|"
+          u"55[01]|"
+          u"636|"
+          u"7(2[3-8]|32|6[5-9])"
+        u")"
+      u")|"
+      u"4("
+        u"0117[89]|3(1274|8935)|5(1416|7(393|63[12]))"
+      u")|"
+      u"6("
+        u"27780|"
+        u"36368|"
+        u"5("
+          u"0("
+            u"0(3[1258]|4[026]|69|7[0178])|"
+            u"4(0[67]|1[0-3]|2[2345689]|3[0568]|8[5-9]|9[0-9])|"
+            u"5(0[01346789]|1[01246789]|2[0-9]|3[0178]|5[2-9]|6[012356789]|7[01789]|8[0134679]|9[0-8])|"
+            u"72[0-7]|"
+            u"9(0[1-9]|1[0-9]|2[0128]|3[89]|4[6-9]|5[01578]|6[2-9]|7[01])"
+          u")|"
+          u"16("
+            u"5[236789]|"
+            u"6[025678]|"
+            u"7[013456789]|"
+            u"88"
+          u")|"
+          u"50("
+            u"0[01356789]|"
+            u"1[2568]|"
+            u"26|"
+            u"3[6-8]|"
+            u"5[1267]"
+          u")"
+        u")"
+      u")"
+    u")$";
+  // clang-format on
+
   // Check for prefixes of length 6.
   if (stripped_number.size() >= 6) {
     int first_six_digits = 0;
     if (!base::StringToInt(stripped_number.substr(0, 6), &first_six_digits))
       return kGenericCard;
 
-    if (first_six_digits == 431274 || first_six_digits == 451416 ||
-        first_six_digits == 627780 || first_six_digits == 636297)
+    // This is a flag controlled rollout to update the way we recognize Elo BIN.
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillUseEloRegexForBinMatching) &&
+        MatchesRegex<kEloRegexPattern>(
+            base::NumberToString16(first_six_digits))) {
       return kEloCard;
+    }
+
+    if (!base::FeatureList::IsEnabled(
+            features::kAutofillUseEloRegexForBinMatching) &&
+        (first_six_digits == 431274 || first_six_digits == 451416 ||
+         first_six_digits == 627780 || first_six_digits == 636297)) {
+      return kEloCard;
+    }
   }
 
   // Check for prefixes of length 5.
@@ -286,8 +378,11 @@ const char* CreditCard::GetCardNetwork(const std::u16string& number) {
     if (first_four_digits >= 3528 && first_four_digits <= 3589)
       return kJCBCard;
 
-    if (first_four_digits == 5067 || first_four_digits == 5090)
+    if (!base::FeatureList::IsEnabled(
+            features::kAutofillUseEloRegexForBinMatching) &&
+        (first_four_digits == 5067 || first_four_digits == 5090)) {
       return kEloCard;
+    }
 
     if (first_four_digits == 6011)
       return kDiscoverCard;
@@ -605,38 +700,6 @@ void CreditCard::SetNickname(const std::u16string& nickname) {
   base::ReplaceChars(nickname, u"\t\r\n", u" ", &nickname_);
   // Then trim leading/trailing whitespaces from |nickname_|.
   base::TrimString(nickname_, u" ", &nickname_);
-}
-
-void CreditCard::operator=(const CreditCard& credit_card) {
-  set_use_count(credit_card.use_count());
-  set_use_date(credit_card.use_date());
-  set_modification_date(credit_card.modification_date());
-
-  if (this == &credit_card)
-    return;
-
-  record_type_ = credit_card.record_type_;
-  number_ = credit_card.number_;
-  name_on_card_ = credit_card.name_on_card_;
-  network_ = credit_card.network_;
-  expiration_month_ = credit_card.expiration_month_;
-  expiration_year_ = credit_card.expiration_year_;
-  server_id_ = credit_card.server_id_;
-  billing_address_id_ = credit_card.billing_address_id_;
-  bank_name_ = credit_card.bank_name_;
-  temp_card_first_name_ = credit_card.temp_card_first_name_;
-  temp_card_last_name_ = credit_card.temp_card_last_name_;
-  nickname_ = credit_card.nickname_;
-  card_issuer_ = credit_card.card_issuer_;
-  issuer_id_ = credit_card.issuer_id_;
-  instrument_id_ = credit_card.instrument_id_;
-  virtual_card_enrollment_state_ = credit_card.virtual_card_enrollment_state_;
-  virtual_card_enrollment_type_ = credit_card.virtual_card_enrollment_type_;
-  card_art_url_ = GURL(credit_card.card_art_url_);
-  product_description_ = credit_card.product_description_;
-
-  set_guid(credit_card.guid());
-  set_origin(credit_card.origin());
 }
 
 bool CreditCard::UpdateFromImportedCard(const CreditCard& imported_card,
@@ -1073,19 +1136,6 @@ bool CreditCard::HasNonEmptyValidNickname() const {
 
 std::u16string CreditCard::NicknameAndLastFourDigitsForTesting() const {
   return NicknameAndLastFourDigits();
-}
-
-// static
-std::unique_ptr<CreditCard> CreditCard::CreateVirtualCard(
-    const CreditCard& card) {
-  // Virtual cards can be created only from masked server cards.
-  DCHECK_EQ(card.record_type(), MASKED_SERVER_CARD);
-  auto virtual_card = std::make_unique<CreditCard>(card);
-  virtual_card->set_record_type(VIRTUAL_CARD);
-  // Add a suffix to the guid to help differentiate the virtual card from the
-  // server card.
-  virtual_card->set_guid(card.guid() + kVirtualCardIdentifierSuffix);
-  return virtual_card;
 }
 
 void CreditCard::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {

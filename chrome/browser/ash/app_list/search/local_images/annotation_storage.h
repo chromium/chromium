@@ -13,9 +13,9 @@
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace app_list {
 
@@ -60,10 +60,9 @@ struct FileSearchResult {
 };
 
 // A persistent storage to efficiently store, retrieve and search annotations.
-// It maintains and runs tasks on its own background task runner.
-// Constructor and all *Async() methods can be called on any sequence.
-// TODO(b/260646344): Pass SQL review.
-class AnnotationStorage : public base::RefCountedThreadSafe<AnnotationStorage> {
+// Creates or opens a database under `path_to_db`. If `annotation_worker` is
+// not null, it updates the database on file changes.
+class AnnotationStorage {
  public:
   enum class TableColumnName {
     kLabel,
@@ -71,65 +70,38 @@ class AnnotationStorage : public base::RefCountedThreadSafe<AnnotationStorage> {
     kLastModifiedTime,
   };
 
-  AnnotationStorage(const base::FilePath& path,
+  AnnotationStorage(const base::FilePath& path_to_db,
                     const std::string& histogram_tag,
                     int current_version_number,
                     std::unique_ptr<ImageAnnotationWorker> annotation_worker);
   AnnotationStorage(const AnnotationStorage&) = delete;
   AnnotationStorage& operator=(const AnnotationStorage&) = delete;
+  ~AnnotationStorage();
 
   // Initializes the db. Must be called before any other method.
-  // Can be called from any sequence.
-  bool InitializeAsync();
+  void Initialize();
 
-  // Adds a new image to the storage. Can be called from any sequence.
-  bool InsertOrReplaceAsync(ImageInfo image_info);
+  // Adds a new image to the storage.
+  void Insert(const ImageInfo& image_info);
 
   // Removes an image from the storage. It does nothing if the file does not
-  // exist. Can be called from any sequence.
-  bool RemoveAsync(base::FilePath image_path);
+  void Remove(const base::FilePath& image_path);
 
   // TODO(b/260646344): Remove after implementing a more efficient search.
-  // Returns all the stored annotations. Can be called from any sequence.
-  bool GetAllAnnotationsAsync(
-      base::OnceCallback<void(std::vector<ImageInfo>)> callback);
+  // Returns all the stored annotations.
+  std::vector<ImageInfo> GetAllAnnotations();
 
   // Searches the database for a desired `image_path`.
-  // Can be called from any sequence.
-  bool FindImagePathAsync(
-      base::FilePath image_path,
-      base::OnceCallback<void(std::vector<ImageInfo>)> callback);
+  std::vector<ImageInfo> FindImagePath(const base::FilePath& image_path);
 
   // Searches for annotations using FuzzyTokenizedStringMatch with relevance to
-  // `query` above a fixed threshold. Can be called from any sequence.
-  bool LinearSearchAnnotationsAsync(
-      std::u16string query,
-      base::OnceCallback<void(std::vector<FileSearchResult>)> callback);
+  // `query` above a fixed threshold.
+  std::vector<FileSearchResult> LinearSearchAnnotations(
+      const std::u16string& query);
 
  private:
-  friend class base::RefCountedThreadSafe<AnnotationStorage>;
-  ~AnnotationStorage();
-  // Runs the worker in the background.
-  void StartWorkerOnBackgroundSequence(bool is_error);
-  bool InsertOnBackgroundSequence(ImageInfo image_info);
-  bool RemoveOnBackgroundSequence(base::FilePath image_path);
-
-  // Searches the database for a desired `value` in the `column_name`.
-  // Yields all annotations if `column_name` and `value` are empty.
-  std::vector<ImageInfo> FindAnnotationsOnBackgroundSequence(
-      absl::optional<TableColumnName> column_name,
-      absl::optional<std::string> value);
-
-  // Searches annotations using FuzzyTokenizedStringMatch.
-  std::vector<FileSearchResult> LinearSearchAnnotationsOnBackgroundSequence(
-      std::u16string query);
-
-  // Initialized and operates in the background sequence.
   std::unique_ptr<ImageAnnotationWorker> annotation_worker_;
-
   std::unique_ptr<SqlDatabase> sql_database_;
-
-  const scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

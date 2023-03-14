@@ -25,19 +25,19 @@ using json_schema_compiler::test_util::Vector;
 
 TEST(JsonSchemaCompilerChoicesTest, TakesIntegersParamsCreate) {
   {
-    std::unique_ptr<TakesIntegers::Params> params(
+    absl::optional<TakesIntegers::Params> params(
         TakesIntegers::Params::Create(List(base::Value(true)).GetList()));
     EXPECT_FALSE(params);
   }
   {
-    std::unique_ptr<TakesIntegers::Params> params(
+    absl::optional<TakesIntegers::Params> params(
         TakesIntegers::Params::Create(List(base::Value(6)).GetList()));
     ASSERT_TRUE(params);
     EXPECT_FALSE(params->nums.as_integers);
     EXPECT_EQ(6, *params->nums.as_integer);
   }
   {
-    std::unique_ptr<TakesIntegers::Params> params(TakesIntegers::Params::Create(
+    absl::optional<TakesIntegers::Params> params(TakesIntegers::Params::Create(
         List(List(base::Value(2), base::Value(6), base::Value(8))).GetList()));
     ASSERT_TRUE(params);
     ASSERT_TRUE(params->nums.as_integers);
@@ -47,7 +47,7 @@ TEST(JsonSchemaCompilerChoicesTest, TakesIntegersParamsCreate) {
 
 TEST(JsonSchemaCompilerChoicesTest, ObjectWithChoicesParamsCreate) {
   {
-    std::unique_ptr<choices::ObjectWithChoices::Params> params(
+    absl::optional<choices::ObjectWithChoices::Params> params(
         choices::ObjectWithChoices::Params::Create(
             List(Dictionary("strings", base::Value("asdf"))).GetList()));
     ASSERT_TRUE(params);
@@ -56,7 +56,7 @@ TEST(JsonSchemaCompilerChoicesTest, ObjectWithChoicesParamsCreate) {
     EXPECT_FALSE(params->string_info.integers);
   }
   {
-    std::unique_ptr<choices::ObjectWithChoices::Params> params(
+    absl::optional<choices::ObjectWithChoices::Params> params(
         choices::ObjectWithChoices::Params::Create(
             List(Dictionary("strings", base::Value("asdf"), "integers",
                             base::Value(6)))
@@ -79,10 +79,10 @@ TEST(JsonSchemaCompilerChoicesTest, ObjectWithChoicesParamsCreateFail) {
     object_param.Set("strings", 5);
     base::Value::List params_value;
     params_value.Append(std::move(object_param));
-    std::unique_ptr<choices::ObjectWithChoices::Params> params(
+    absl::optional<choices::ObjectWithChoices::Params> params(
         choices::ObjectWithChoices::Params::Create(
             base::Value(std::move(params_value)).GetList()));
-    EXPECT_FALSE(params.get());
+    EXPECT_FALSE(params.has_value());
   }
   {
     base::Value::Dict object_param;
@@ -90,20 +90,20 @@ TEST(JsonSchemaCompilerChoicesTest, ObjectWithChoicesParamsCreateFail) {
     object_param.Set("integers", "asdf");
     base::Value::List params_value;
     params_value.Append(std::move(object_param));
-    std::unique_ptr<choices::ObjectWithChoices::Params> params(
+    absl::optional<choices::ObjectWithChoices::Params> params(
         choices::ObjectWithChoices::Params::Create(
             base::Value(std::move(params_value)).GetList()));
-    EXPECT_FALSE(params.get());
+    EXPECT_FALSE(params.has_value());
   }
   {
     base::Value::Dict object_param;
     object_param.Set("integers", 6);
     base::Value::List params_value;
     params_value.Append(std::move(object_param));
-    std::unique_ptr<choices::ObjectWithChoices::Params> params(
+    absl::optional<choices::ObjectWithChoices::Params> params(
         choices::ObjectWithChoices::Params::Create(
             base::Value(std::move(params_value)).GetList()));
-    EXPECT_FALSE(params.get());
+    EXPECT_FALSE(params.has_value());
   }
 }
 

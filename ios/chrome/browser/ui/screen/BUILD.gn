@@ -11,7 +11,7 @@ source_set("screen_provider") {
   deps = [
     ":screen_type",
     "//base",
-    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/shared/public/features",
   ]
 }
 

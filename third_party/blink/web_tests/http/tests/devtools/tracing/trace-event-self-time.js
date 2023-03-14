@@ -237,7 +237,7 @@
   };
 
   var timelineController = PerformanceTestRunner.createTimelineController();
-  timelineController.addCpuProfile(SDK.targetManager.mainFrameTarget().id(), cpuProfile);
+  timelineController.addCpuProfile(SDK.targetManager.primaryPageTarget().id(), cpuProfile);
   timelineController.traceEventsCollected(rawTraceEvents);
   await timelineController.finalizeTrace();
   var events = UI.panels.timeline.performanceModel.timelineModel().inspectedTargetEvents();

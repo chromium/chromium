@@ -26,7 +26,7 @@ class CreditCardCvcAuthenticatorTest;
 class CreditCard;
 class PersonalDataManager;
 
-namespace metrics {
+namespace autofill_metrics {
 class AutofillMetricsBaseTest;
 }
 
@@ -185,7 +185,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
  private:
   friend class autofill::BrowserAutofillManagerTest;
   friend class autofill::AutofillMetricsTest;
-  friend class autofill::metrics::AutofillMetricsBaseTest;
+  friend class autofill::autofill_metrics::AutofillMetricsBaseTest;
   friend class autofill::CreditCardAccessManagerTest;
   friend class autofill::CreditCardCvcAuthenticatorTest;
 

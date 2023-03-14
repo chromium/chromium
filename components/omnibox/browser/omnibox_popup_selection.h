@@ -66,8 +66,9 @@ struct OmniboxPopupSelection {
   // The sentinel value for `line` which means no line is selected.
   static const size_t kNoMatch;
 
-  // The selected line.  This is kNoMatch when nothing is selected,
-  // which should only be true when the popup is closed.
+  // The selected line. This is `kNoMatch` when nothing is selected, which
+  // should only be true when a) the popup is closed or b) an empty suggestion
+  // is selected (e.g. the default suggestion in zero-input mode).
   size_t line;
 
   // If the selected line has both a normal match and a keyword match, this

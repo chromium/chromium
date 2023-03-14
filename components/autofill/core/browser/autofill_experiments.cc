@@ -76,6 +76,16 @@ const char* const kAutofillUpstreamLaunchedCountries[] = {
     "NC", "NL", "NO", "NZ", "PA", "PL", "PR", "PT", "RE", "RO", "RU", "SE",
     "SG", "SI", "SK", "TH", "TR", "TT", "TW", "UA", "US", "VI", "VN", "ZA"};
 
+// The list of countries that are familiar with IBAN functionality.
+const char* const kAutofillIbanApplicableCountries[] = {
+    "AD", "AE", "AL", "AT", "AZ", "BA", "BE", "BG", "BH", "BR", "BY",
+    "CH", "CR", "CY", "CZ", "DE", "DK", "DO", "EE", "EG", "ES", "FI",
+    "FO", "FR", "GB", "GE", "GI", "GL", "GR", "GT", "HR", "HU", "IE",
+    "IL", "IQ", "IS", "IT", "JO", "KZ", "KW", "LB", "LC", "LI", "LT",
+    "LU", "LV", "LY", "MC", "MD", "ME", "MK", "MR", "MT", "MU", "NL",
+    "NO", "PK", "PL", "PS", "PT", "QA", "RO", "RS", "SA", "SC", "SD",
+    "SE", "SI", "SK", "SM", "ST", "TL", "TN", "TR", "UA", "VG", "XK"};
+
 // The list of supported additional email domains for credit card upload if the
 // AutofillUpstreamAllowAdditionalEmailDomains flag is enabled. Specifically
 // contains only the first part of the domain, so example.com, example.co.uk,
@@ -289,16 +299,26 @@ bool IsInAutofillSuggestionsDisabledExperiment() {
 }
 
 bool IsCreditCardFidoAuthenticationEnabled() {
-  // The feature is enabled if the flag is enabled.
-  if (base::FeatureList::IsEnabled(features::kAutofillCreditCardAuthentication))
-    return true;
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
-  // Better Auth project is fully launched on Windows, Android, and the Mac.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+  // Better Auth project is fully launched on Windows/Mac for Desktop, and
+  // Android for mobile.
   return true;
 #else
   return false;
 #endif
+}
+
+bool ShouldShowIbanOnSettingsPage(const std::string& user_country_code,
+                                  PrefService* pref_service) {
+  if (!base::FeatureList::IsEnabled(features::kAutofillFillIbanFields)) {
+    return false;
+  }
+
+  std::string country_code = base::ToUpperASCII(user_country_code);
+  auto* const* country_iter =
+      base::ranges::find(kAutofillIbanApplicableCountries, country_code);
+  return country_iter != std::end(kAutofillIbanApplicableCountries) ||
+         prefs::HasSeenIban(pref_service);
 }
 
 }  // namespace autofill

@@ -66,6 +66,7 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/page_state/page_state.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
@@ -324,6 +325,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -385,7 +387,8 @@ enum class RequestStorageResult {
   REJECTED_INCORRECT_FRAME = 8,
   REJECTED_INSECURE_CONTEXT = 9,
   APPROVED_PRIMARY_FRAME = 10,
-  kMaxValue = APPROVED_PRIMARY_FRAME,
+  APPROVED_SAMEORIGIN_WITH_PRIMARY_FRAME = 11,
+  kMaxValue = APPROVED_SAMEORIGIN_WITH_PRIMARY_FRAME,
 };
 void FireRequestStorageAccessHistogram(RequestStorageResult result) {
   base::UmaHistogramEnumeration("API.StorageAccess.RequestStorageAccess",
@@ -1466,7 +1469,17 @@ void Document::SetReadyState(DocumentReadyState ready_state) {
   }
 
   ready_state_ = ready_state;
-  DispatchEvent(*Event::Create(event_type_names::kReadystatechange));
+  if (GetFrame() && GetFrame()->GetPage() &&
+      GetFrame()->GetPage()->GetPageScheduler()->IsInBackForwardCache()) {
+    // Enqueue the event when the page is in back/forward cache, so that it
+    // would not cause JavaScript execution. The event will be dispatched upon
+    // restore.
+    EnqueueEvent(*Event::Create(event_type_names::kReadystatechange),
+                 TaskType::kInternalDefault);
+  } else {
+    // Synchronously dispatch event when the page is not in back/forward cache.
+    DispatchEvent(*Event::Create(event_type_names::kReadystatechange));
+  }
 }
 
 bool Document::IsLoadCompleted() const {
@@ -3283,6 +3296,17 @@ void Document::open(LocalDOMWindow* entered_window,
   // for this document with the entered window's url.
   if (dom_window_ && entered_window) {
     KURL new_url = entered_window->Url();
+    if (new_url.IsAboutSrcdocURL() &&
+        blink::features::IsNewBaseUrlInheritanceBehaviorEnabled()) {
+      // When updating the URL to about:srcdoc due to a document.open() call,
+      // the opened document should also end up with the same base URL as the
+      // opener about:srcdoc document. Propagate the fallback information here
+      // so that SetURL() below will take it into account.
+      // TODO(https://crbug.com/751329): about:blank should also be handled
+      // here once it supports the new base url inheritance behavior.
+      fallback_base_url_for_srcdoc_ = entered_window->BaseURL();
+      is_srcdoc_document_ = new_url.IsAboutSrcdocURL();
+    }
     // Clear the hash fragment from the inherited URL to prevent a
     // scroll-into-view for any document.open()'d frame.
     if (dom_window_ != entered_window)
@@ -4890,15 +4914,15 @@ void Document::SetActiveElement(Element* new_active_element) {
 
 void Document::RemoveFocusedElementOfSubtree(Node& node,
                                              bool among_children_only) {
-  if (!focused_element_)
+  if (!node.isConnected() || !focused_element_ ||
+      !node.IsShadowIncludingInclusiveAncestorOf(*focused_element_)) {
     return;
-
-  // We can't be focused if we're not in the document.
-  if (!node.isConnected())
-    return;
-  bool contains = node.IsShadowIncludingInclusiveAncestorOf(*focused_element_);
-  if (contains && (focused_element_ != &node || !among_children_only))
+  }
+  const auto& focused_element = *node.GetTreeScope().AdjustedFocusedElement();
+  if (focused_element.IsDescendantOf(&node) ||
+      (!among_children_only && node == focused_element)) {
     ClearFocusedElement();
+  }
 }
 
 static Element* SkipDisplayNoneAncestors(Element* element) {
@@ -6077,20 +6101,13 @@ void Document::PermissionServiceConnectionError() {
   data_->permission_service_.reset();
 }
 
-// TODO(crbug.com/1401089): This method currently always returns false since
-// nothing sets the HasStorageAccess member in `dom_window_`. It's not tied
-// to an end point yet thus not affecting current behavior.
-bool Document::HasStorageAccess() const {
-  DCHECK(GetExecutionContext());
-  DCHECK(dom_window_);
-  return TopFrameOrigin() &&
-         !GetExecutionContext()->GetSecurityOrigin()->IsOpaque() &&
-         dom_window_->isSecureContext() && dom_window_->HasStorageAccess();
-}
-
-// TODO(crbug.com/1401089): Update the method to return the result from
-// `HasStorageAccess()`;
 ScriptPromise Document::hasStorageAccess(ScriptState* script_state) {
+  // See
+  // https://privacycg.github.io/storage-access/#dom-document-hasstorageaccess
+  // for the steps implemented here.
+
+  // Step #2: if doc is not fully active, reject p with an InvalidStateError and
+  // return p.
   if (!GetFrame()) {
     // Note that in detached frames, resolvers are not able to return a promise.
     return ScriptPromise::RejectWithDOMException(
@@ -6100,16 +6117,43 @@ ScriptPromise Document::hasStorageAccess(ScriptState* script_state) {
                           "document is fully active."));
   }
 
-  const bool has_access =
-      TopFrameOrigin() && GetExecutionContext() &&
-      !GetExecutionContext()->GetSecurityOrigin()->IsOpaque() &&
-      dom_window_->isSecureContext() &&
-      (IsInOutermostMainFrame() || CookiesEnabled());
   ScriptPromiseResolver* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
   ScriptPromise promise = resolver->Promise();
-  resolver->Resolve(has_access);
+  resolver->Resolve([&]() -> bool {
+    // #3: if doc's origin is opaque, return false.
+    if (GetExecutionContext()->GetSecurityOrigin()->IsOpaque()) {
+      return false;
+    }
+
+    // #5: if global is not a secure context, return false.
+    if (!dom_window_->isSecureContext()) {
+      return false;
+    }
+
+    // #6: if doc's browsing context is a top-level browsing context, return
+    // true.
+    if (IsInOutermostMainFrame()) {
+      return true;
+    }
+
+    // #7: if the top-level origin of doc's relevant settings object is an
+    // opaque origin, return false.
+    if (TopFrameOrigin()->IsOpaque()) {
+      return false;
+    }
+
+    // #8: if doc's origin is same-origin with the top-level origin of doc's
+    // relevant settings object, return true.
+    if (GetExecutionContext()->GetSecurityOrigin()->IsSameOriginWith(
+            &*TopFrameOrigin())) {
+      return true;
+    }
+
+    // #9: return global's `has storage access`.
+    return dom_window_->HasStorageAccess();
+  }());
   return promise;
 }
 
@@ -6239,7 +6283,6 @@ ScriptPromise Document::requestStorageAccessForOrigin(
 
                 switch (status) {
                   case mojom::blink::PermissionStatus::GRANTED:
-                    document->expressly_denied_storage_access_ = false;
                     FireRequestStorageAccessForOriginHistogram(
                         RequestStorageResult::APPROVED_NEW_GRANT);
                     resolver->Resolve();
@@ -6247,7 +6290,6 @@ ScriptPromise Document::requestStorageAccessForOrigin(
                   case mojom::blink::PermissionStatus::DENIED:
                     LocalFrame::ConsumeTransientUserActivation(
                         document->GetFrame());
-                    document->expressly_denied_storage_access_ = true;
                     [[fallthrough]];
                   case mojom::blink::PermissionStatus::ASK:
                   default:
@@ -6306,23 +6348,6 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
     // If this is the outermost frame we no longer need to make a request and
     // can resolve the promise.
     resolver->Resolve();
-    dom_window_->SetHasStorageAccess();
-    return promise;
-  }
-
-  const bool has_user_gesture =
-      LocalFrame::HasTransientUserActivation(GetFrame());
-  if (!has_user_gesture) {
-    AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kSecurity,
-        mojom::blink::ConsoleMessageLevel::kError,
-        "requestStorageAccess: Must be handling a user gesture to use."));
-    FireRequestStorageAccessHistogram(
-        RequestStorageResult::REJECTED_NO_USER_GESTURE);
-
-    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
-        "requestStorageAccess not allowed"));
     return promise;
   }
 
@@ -6337,6 +6362,38 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
         "requestStorageAccess not allowed"));
+    return promise;
+  }
+
+  if (GetExecutionContext()->GetSecurityOrigin()->IsSameOriginWith(
+          &*TopFrameOrigin())) {
+    FireRequestStorageAccessHistogram(
+        RequestStorageResult::APPROVED_PRIMARY_FRAME);
+
+    // If this frame is same-origin with the outermost frame we no longer need
+    // to make a request and can resolve the promise.
+
+    // Deviation from spec: we set the has_storage_access bool here, so that
+    // downstream cookie accesses will know that this frame opted into storage
+    // access. This knowledge is necessary since Chromium considers the entire
+    // frame hierarchy when deciding if a context is first-party or third-party;
+    // rather than just considering the current frame and top frame.
+    //
+    // As a concrete example, consider an A(B(A)) embedding context. The inner A
+    // iframe is same-origin with the top-level A document. However, because
+    // Chromium's block-third-party-cookies behavior considers the whole frame
+    // hierarchy, block-third-party-cookies would still prevent the inner A
+    // iframe from accessing its cookies, even though document.hasStorageAccess
+    // and document.requestStorageAccess are written (in the spec) with early
+    // returns to imply that access should be granted in such a same-origin
+    // scenario. If we set the has_storage_access bool here, and modify
+    // consumers of the storage-access permission such that they do not require
+    // an explicit permission for contexts in which the frame and the top-level
+    // frame are same-origin, then the "actual" cookie access will match the
+    // "implied" cookie access in the spec.
+    dom_window_->SetHasStorageAccess();
+
+    resolver->Resolve();
     return promise;
   }
 
@@ -6362,57 +6419,112 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
     return promise;
   }
 
-  if (expressly_denied_storage_access_) {
+  if (dom_window_->HasStorageAccess()) {
     FireRequestStorageAccessHistogram(
-        RequestStorageResult::REJECTED_EXISTING_DENIAL);
+        RequestStorageResult::APPROVED_EXISTING_ACCESS);
 
-    // If a previous rejection has been received the promise can be immediately
-    // rejected without further action.
-    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
-        "requestStorageAccess not allowed"));
+    // If there is current access to storage for this document we no longer need
+    // to make a request and can resolve the promise.
+    resolver->Resolve();
     return promise;
   }
 
   auto descriptor = mojom::blink::PermissionDescriptor::New();
   descriptor->name = mojom::blink::PermissionName::STORAGE_ACCESS;
   GetPermissionService(ExecutionContext::From(script_state))
-      ->RequestPermission(
-          std::move(descriptor), has_user_gesture,
-          WTF::BindOnce(
-              [](ScriptPromiseResolver* resolver, Document* document,
-                 mojom::blink::PermissionStatus status) {
-                DCHECK(resolver);
-                DCHECK(document->GetFrame());
-
-                switch (status) {
-                  case mojom::blink::PermissionStatus::GRANTED:
-                    document->expressly_denied_storage_access_ = false;
-                    FireRequestStorageAccessHistogram(
-                        RequestStorageResult::APPROVED_NEW_GRANT);
-                    document->dom_window_->SetHasStorageAccess();
-                    resolver->Resolve();
-                    break;
-                  case mojom::blink::PermissionStatus::DENIED:
-                    LocalFrame::ConsumeTransientUserActivation(
-                        document->GetFrame());
-                    document->expressly_denied_storage_access_ = true;
-                    [[fallthrough]];
-                  case mojom::blink::PermissionStatus::ASK:
-                  default:
-                    FireRequestStorageAccessHistogram(
-                        RequestStorageResult::REJECTED_GRANT_DENIED);
-                    ScriptState* state = resolver->GetScriptState();
-                    DCHECK(state->ContextIsValid());
-                    ScriptState::Scope scope(state);
-                    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-                        state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
-                        "requestStorageAccess not allowed"));
-                }
-              },
-              WrapPersistent(resolver), WrapPersistent(this)));
+      ->HasPermission(
+          std::move(descriptor),
+          WTF::BindOnce(&Document::OnGotExistingStorageAccessPermissionState,
+                        WrapPersistent(this), WrapPersistent(resolver),
+                        LocalFrame::HasTransientUserActivation(GetFrame())));
 
   return promise;
+}
+
+void Document::OnGotExistingStorageAccessPermissionState(
+    ScriptPromiseResolver* resolver,
+    bool has_user_gesture,
+    mojom::blink::PermissionStatus previous_status) {
+  DCHECK(resolver);
+  DCHECK(GetFrame());
+  ScriptState* script_state = resolver->GetScriptState();
+  DCHECK(script_state);
+  ScriptState::Scope scope(script_state);
+
+  if (previous_status != mojom::blink::PermissionStatus::ASK) {
+    // Permission state already exists, resolve with the existing value.
+    ProcessStorageAccessPermissionState(resolver, /*use_existing_status=*/true,
+                                        previous_status);
+    return;
+  }
+  // Proceed to request permission.
+  if (!has_user_gesture) {
+    AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kSecurity,
+        mojom::blink::ConsoleMessageLevel::kError,
+        "requestStorageAccess: Must be handling a user gesture to use."));
+    FireRequestStorageAccessHistogram(
+        RequestStorageResult::REJECTED_NO_USER_GESTURE);
+
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
+        "requestStorageAccess not allowed"));
+    return;
+  }
+
+  auto descriptor = mojom::blink::PermissionDescriptor::New();
+  descriptor->name = mojom::blink::PermissionName::STORAGE_ACCESS;
+  GetPermissionService(ExecutionContext::From(resolver->GetScriptState()))
+      ->RequestPermission(
+          std::move(descriptor), has_user_gesture,
+          WTF::BindOnce(&Document::OnRequestedStorageAccessPermissionState,
+                        WrapPersistent(this), WrapPersistent(resolver)));
+}
+
+void Document::OnRequestedStorageAccessPermissionState(
+    ScriptPromiseResolver* resolver,
+    mojom::blink::PermissionStatus status) {
+  DCHECK(resolver);
+  DCHECK(GetFrame());
+  ScriptState* script_state = resolver->GetScriptState();
+  DCHECK(script_state);
+  ScriptState::Scope scope(script_state);
+
+  ProcessStorageAccessPermissionState(resolver,
+                                      /*use_existing_status=*/false, status);
+}
+
+void Document::ProcessStorageAccessPermissionState(
+    ScriptPromiseResolver* resolver,
+    bool use_existing_status,
+    mojom::blink::PermissionStatus status) {
+  DCHECK(resolver);
+  DCHECK(GetFrame());
+
+  if (status == mojom::blink::PermissionStatus::GRANTED) {
+    if (use_existing_status) {
+      FireRequestStorageAccessHistogram(
+          RequestStorageResult::APPROVED_EXISTING_ACCESS);
+    } else {
+      FireRequestStorageAccessHistogram(
+          RequestStorageResult::APPROVED_NEW_GRANT);
+    }
+    dom_window_->SetHasStorageAccess();
+    resolver->Resolve();
+  } else {
+    LocalFrame::ConsumeTransientUserActivation(GetFrame());
+    FireRequestStorageAccessHistogram(
+        RequestStorageResult::REJECTED_GRANT_DENIED);
+    AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kSecurity,
+        mojom::blink::ConsoleMessageLevel::kError,
+        "requestStorageAccess: Permission denied."));
+    ScriptState* script_state = resolver->GetScriptState();
+    DCHECK(script_state);
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
+        "requestStorageAccess not allowed"));
+  }
 }
 
 FragmentDirective& Document::fragmentDirective() const {
@@ -6423,8 +6535,8 @@ ScriptPromise Document::hasPrivateToken(ScriptState* script_state,
                                         const String& issuer,
                                         const String& type,
                                         ExceptionState& exception_state) {
-  ScriptPromiseResolver* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromiseResolver* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
 
   ScriptPromise promise = resolver->Promise();
 
@@ -6547,8 +6659,8 @@ ScriptPromise Document::hasRedemptionRecord(ScriptState* script_state,
                                             const String& issuer,
                                             const String& type,
                                             ExceptionState& exception_state) {
-  ScriptPromiseResolver* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromiseResolver* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
 
   ScriptPromise promise = resolver->Promise();
 
@@ -7745,16 +7857,6 @@ void Document::AddToTopLayer(Element* element, const Element* before) {
   DCHECK(!top_layer_elements_pending_removal_.Contains(element));
   DCHECK(!before || top_layer_elements_.Contains(before));
 
-  // The view transition root pseudo-element should always be the last element
-  // in the top layer so it paints on top of all other top layer elements.
-  auto* transition_pseudo =
-      documentElement()->GetPseudoElement(kPseudoIdViewTransition);
-  if (transition_pseudo && element != transition_pseudo) {
-    DCHECK(transition_pseudo->IsInTopLayer());
-    DCHECK(top_layer_elements_.back() == *transition_pseudo);
-    top_layer_elements_.pop_back();
-  }
-
   if (before) {
     DCHECK(element->IsBackdropPseudoElement())
         << "If this invariant changes, we might need to revisit Container "
@@ -7764,9 +7866,6 @@ void Document::AddToTopLayer(Element* element, const Element* before) {
   } else {
     top_layer_elements_.push_back(element);
   }
-
-  if (transition_pseudo && element != transition_pseudo)
-    top_layer_elements_.push_back(transition_pseudo);
 
   element->SetIsInTopLayer(true);
   display_lock_document_state_->ElementAddedToTopLayer(element);
@@ -7786,10 +7885,9 @@ void Document::ScheduleForTopLayerRemoval(Element* element) {
   ScheduleLayoutTreeUpdateIfNeeded();
 }
 
-bool Document::RemoveFinishedTopLayerElements() {
-  pending_top_layer_update_ = false;
+void Document::RemoveFinishedTopLayerElements() {
   if (top_layer_elements_pending_removal_.empty()) {
-    return false;
+    return;
   }
   DCHECK(RuntimeEnabledFeatures::CSSTopLayerForTransitionsEnabled());
   HeapVector<Member<Element>> to_remove;
@@ -7799,14 +7897,9 @@ bool Document::RemoveFinishedTopLayerElements() {
       to_remove.push_back(element);
     }
   }
-  if (to_remove.empty()) {
-    return false;
-  }
   for (Element* remove_element : to_remove) {
     RemoveFromTopLayerImmediately(remove_element);
   }
-  pending_top_layer_update_ = true;
-  return true;
 }
 
 void Document::RemoveFromTopLayerImmediately(Element* element) {
@@ -7841,7 +7934,17 @@ HTMLDialogElement* Document::ActiveModalDialog() const {
   return nullptr;
 }
 
-HTMLElement* Document::TopmostPopover() const {
+void Document::SetPopoverHintShowing(HTMLElement* element) {
+  DCHECK(!element || element->HasPopoverAttribute());
+  DCHECK(RuntimeEnabledFeatures::HTMLPopoverHintEnabled());
+  popover_hint_showing_ = element;
+}
+
+HTMLElement* Document::TopmostPopoverOrHint() const {
+  if (PopoverHintShowing()) {
+    DCHECK(RuntimeEnabledFeatures::HTMLPopoverHintEnabled());
+    return PopoverHintShowing();
+  }
   if (PopoverStack().empty())
     return nullptr;
   return PopoverStack().back();
@@ -7924,19 +8027,6 @@ int Document::RequestAnimationFrame(FrameCallback* callback) {
 
 void Document::CancelAnimationFrame(int id) {
   scripted_animation_controller_->CancelFrameCallback(id);
-}
-
-void Document::ServiceScriptedAnimations(
-    base::TimeTicks monotonic_animation_start_time,
-    bool can_throttle) {
-  base::TimeTicks start_time =
-      can_throttle ? base::TimeTicks() : base::TimeTicks::Now();
-  scripted_animation_controller_->ServiceScriptedAnimations(
-      monotonic_animation_start_time, can_throttle);
-  if (!can_throttle && GetFrame()) {
-    GetFrame()->GetFrameScheduler()->AddTaskTime(base::TimeTicks::Now() -
-                                                 start_time);
-  }
 }
 
 ScriptedIdleTaskController& Document::EnsureScriptedIdleTaskController() {
@@ -8612,6 +8702,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(top_layer_elements_);
   visitor->Trace(top_layer_elements_pending_removal_);
   visitor->Trace(popover_stack_);
+  visitor->Trace(popover_hint_showing_);
   visitor->Trace(popover_pointerdown_target_);
   visitor->Trace(popovers_waiting_to_hide_);
   visitor->Trace(elements_with_css_toggles_);

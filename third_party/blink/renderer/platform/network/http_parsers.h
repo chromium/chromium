@@ -33,6 +33,7 @@
 
 #include "base/time/time.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
+#include "services/network/public/mojom/no_vary_search.mojom-blink-forward.h"
 #include "services/network/public/mojom/parsed_headers.mojom-blink-forward.h"
 #include "services/network/public/mojom/timing_allow_origin.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -186,6 +187,13 @@ PLATFORM_EXPORT
 network::mojom::blink::TimingAllowOriginPtr ParseTimingAllowOrigin(
     const String& header_value);
 
+PLATFORM_EXPORT
+network::mojom::blink::NoVarySearchWithParseErrorPtr ParseNoVarySearch(
+    const String& header_value);
+
+PLATFORM_EXPORT
+String GetNoVarySearchHintConsoleMessage(
+    const network::mojom::NoVarySearchParseError& error);
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_NETWORK_HTTP_PARSERS_H_

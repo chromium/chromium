@@ -44,9 +44,19 @@ class GPU_GLES2_EXPORT GLES2ExternalFramebuffer {
   // image. Detaches shared image from the framebuffer.
   void ResolveAndDetach();
 
-  GLuint GetFramebufferId();
-  bool IsSharedImageAttached();
+  GLuint GetFramebufferId() const;
+  bool IsSharedImageAttached() const;
   void Destroy(bool have_context);
+
+  // Validating command decoder needs these for validation.
+  gfx::Size GetSize() const;
+  GLenum GetColorFormat() const;
+  GLenum GetDepthFormat() const;
+  GLenum GetStencilFormat() const;
+  int GetSamplesCount() const;
+  bool HasAlpha() const;
+  bool HasDepth() const;
+  bool HasStencil() const;
 
  private:
   class Attachment;

@@ -85,7 +85,6 @@ void DeviceSwitcherModel::InitAndFetchModel(
       .name = "SyncDeviceInfo"});
   (*sync_input->mutable_additional_args())["wait_for_device_info_in_seconds"] =
       "60";
-  (*sync_input->mutable_additional_args())["active_days_limit"] = "14";
 
   writer.AddOutputConfigForMultiClassClassifier(
       kOutputLabels.begin(), kOutputLabels.size(), kOutputLabels.size(), 0.1);
@@ -113,22 +112,22 @@ void DeviceSwitcherModel::ExecuteModelWithInput(
     // Inputs failed to fetch from sync.
     result[RANK(DeviceSwitcherClass::kNotSynced)] = 1;
   } else {
-    // Assign a priority to the labels for the result. 0 labels will not be
-    // returned to the client.
-    result[RANK(DeviceSwitcherClass::kAndroidPhone)] = inputs[1] >= 1 ? 10 : 0;
-    result[RANK(DeviceSwitcherClass::kIosPhoneChrome)] = inputs[3] >= 1 ? 9 : 0;
-    result[RANK(DeviceSwitcherClass::kAndroidTablet)] = inputs[2] >= 1 ? 8 : 0;
-    result[RANK(DeviceSwitcherClass::kIosTablet)] = inputs[4] >= 1 ? 7 : 0;
+    // Order the labels based on the count of devices and additionally increase
+    // by a priority factor to break ties.
+    result[RANK(DeviceSwitcherClass::kAndroidPhone)] = inputs[1] * 1.10;
+    result[RANK(DeviceSwitcherClass::kIosPhoneChrome)] = inputs[3] * 1.09;
+    result[RANK(DeviceSwitcherClass::kAndroidTablet)] = inputs[2] * 1.08;
+    result[RANK(DeviceSwitcherClass::kIosTablet)] = inputs[4] * 1.07;
     result[RANK(DeviceSwitcherClass::kDesktop)] =
-        (inputs[5] + inputs[6] + inputs[7] + inputs[8]) >= 1 ? 6 : 0;
-    result[RANK(DeviceSwitcherClass::kOther)] = inputs[9] >= 1 ? 3 : 0;
+        (inputs[5] + inputs[6] + inputs[7] + inputs[8]) * 1.06;
+    result[RANK(DeviceSwitcherClass::kOther)] = inputs[9] * 1.05;
 
     int total = 0;
     for (unsigned i = 1; i < 10; ++i) {
       total += inputs[i];
     }
     result[RANK(DeviceSwitcherClass::kSyncedAndFirstDevice)] =
-        total == 0 ? 2 : 0;
+        total == 0 ? 1 : 0;
   }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

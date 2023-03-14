@@ -69,6 +69,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) BrokeredClientSocketFactory
       net::AddressFamily address_family,
       mojom::SocketBroker::CreateTcpSocketCallback callback);
 
+  // Sends an IPC to the SocketBroker to create a new UDP socket.
+  void BrokerCreateUdpSocket(
+      net::AddressFamily address_family,
+      mojom::SocketBroker::CreateUdpSocketCallback callback);
+
  private:
   // Whether or not a socket for `addresses` should be brokered or not.
   bool ShouldBroker(const net::AddressList& addresses) const;

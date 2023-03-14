@@ -101,13 +101,11 @@ class BufferedFileReader : public courgette::BasicBuffer {
 
 void WriteSinkToFile(const courgette::SinkStream* sink,
                      const base::FilePath& output_file) {
-  int count = base::WriteFile(output_file,
-                              reinterpret_cast<const char*>(sink->Buffer()),
-                              static_cast<int>(sink->Length()));
-  if (count == -1)
+  bool success = base::WriteFile(
+      output_file, base::make_span(sink->Buffer(), sink->Length()));
+  if (!success) {
     Problem("Can't write output.");
-  if (static_cast<size_t>(count) != sink->Length())
-    Problem("Incomplete write.");
+  }
 }
 
 bool Supported(const base::FilePath& input_file) {

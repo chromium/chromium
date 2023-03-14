@@ -9,9 +9,9 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
+class DOMTaskSignal;
 
 // The scheduler uses `ScriptWrappableTaskState` objects to store continuation
 // preserved embedder data, which is data stored on V8 promise reactions at
@@ -28,14 +28,20 @@ class MODULES_EXPORT ScriptWrappableTaskState final : public ScriptWrappable {
   // preserved embedder data.
   static void SetCurrent(ScriptState*, ScriptWrappableTaskState*);
 
-  explicit ScriptWrappableTaskState(scheduler::TaskAttributionId id);
+  ScriptWrappableTaskState(scheduler::TaskAttributionId id,
+                           DOMTaskSignal* signal);
 
   scheduler::TaskAttributionId GetTaskAttributionId() const {
     return task_attribution_id_;
   }
 
+  DOMTaskSignal* GetSignal() { return signal_; }
+
+  void Trace(Visitor*) const override;
+
  private:
   const scheduler::TaskAttributionId task_attribution_id_;
+  const Member<DOMTaskSignal> signal_;
 };
 
 }  // namespace blink

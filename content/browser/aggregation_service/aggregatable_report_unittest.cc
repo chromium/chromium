@@ -24,11 +24,11 @@
 #include "components/cbor/values.h"
 #include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
-#include "content/common/aggregatable_report.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -107,7 +107,7 @@ void VerifyReport(
               "histogram");
 
     switch (expected_payload_contents.aggregation_mode) {
-      case mojom::AggregationServiceMode::kTeeBased: {
+      case blink::mojom::AggregationServiceMode::kTeeBased: {
         ASSERT_TRUE(CborMapContainsKeyAndType(payload_map, "data",
                                               cbor::Value::Type::ARRAY));
         const cbor::Value::ArrayValue& data_array =
@@ -149,7 +149,7 @@ void VerifyReport(
         EXPECT_FALSE(payload_map.contains(cbor::Value("dpf_key")));
         break;
       }
-      case mojom::AggregationServiceMode::kExperimentalPoplar: {
+      case blink::mojom::AggregationServiceMode::kExperimentalPoplar: {
         EXPECT_TRUE(CborMapContainsKeyAndType(payload_map, "dpf_key",
                                               cbor::Value::Type::BYTE_STRING));
 
@@ -166,7 +166,7 @@ void VerifyReport(
 TEST(AggregatableReportTest,
      ValidExperimentalPoplarRequest_ValidReportReturned) {
   AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
-      mojom::AggregationServiceMode::kExperimentalPoplar);
+      blink::mojom::AggregationServiceMode::kExperimentalPoplar);
 
   AggregationServicePayloadContents expected_payload_contents =
       request.payload_contents();
@@ -190,7 +190,7 @@ TEST(AggregatableReportTest,
 
 TEST(AggregatableReportTest, ValidTeeBasedRequest_ValidReportReturned) {
   AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
-      mojom::AggregationServiceMode::kTeeBased);
+      blink::mojom::AggregationServiceMode::kTeeBased);
 
   AggregationServicePayloadContents expected_payload_contents =
       request.payload_contents();
@@ -215,15 +215,15 @@ TEST(AggregatableReportTest,
      ValidMultipleContributionsRequest_ValidReportReturned) {
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest(
-          mojom::AggregationServiceMode::kTeeBased);
+          blink::mojom::AggregationServiceMode::kTeeBased);
 
   AggregationServicePayloadContents expected_payload_contents =
       example_request.payload_contents();
   expected_payload_contents.contributions = {
-      mojom::AggregatableReportHistogramContribution(
+      blink::mojom::AggregatableReportHistogramContribution(
           /*bucket=*/123,
           /*value=*/456),
-      mojom::AggregatableReportHistogramContribution(
+      blink::mojom::AggregatableReportHistogramContribution(
           /*bucket=*/7890,
           /*value=*/1234)};
 
@@ -367,15 +367,15 @@ TEST(AggregatableReportTest, RequestCreatedWithZeroContributions) {
 TEST(AggregatableReportTest, RequestCreatedWithTooManyContributions) {
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest(
-          mojom::AggregationServiceMode::kExperimentalPoplar);
+          blink::mojom::AggregationServiceMode::kExperimentalPoplar);
 
   AggregationServicePayloadContents payload_contents =
       example_request.payload_contents();
   payload_contents.contributions = {
-      mojom::AggregatableReportHistogramContribution(
+      blink::mojom::AggregatableReportHistogramContribution(
           /*bucket=*/123,
           /*value=*/456),
-      mojom::AggregatableReportHistogramContribution(
+      blink::mojom::AggregatableReportHistogramContribution(
           /*bucket=*/7890,
           /*value=*/1234)};
 
@@ -575,7 +575,7 @@ TEST(AggregatableReportTest, SharedInfoAdditionalFields) {
 TEST(AggregatableReportTest, ReportingPathSet_SetInRequest) {
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest(
-          mojom::AggregationServiceMode::kExperimentalPoplar);
+          blink::mojom::AggregationServiceMode::kExperimentalPoplar);
 
   std::string reporting_path = "/example-path";
 
@@ -614,7 +614,7 @@ TEST(AggregatableReportTest, FailedSendAttempts) {
 
   AggregatableReportRequest example_request_with_failed_attempts =
       aggregation_service::CreateExampleRequest(
-          /*aggregation_mode=*/mojom::AggregationServiceMode::kDefault,
+          /*aggregation_mode=*/blink::mojom::AggregationServiceMode::kDefault,
           /*failed_send_attempts=*/2);
 
   // The failed attempts are correctly serialized & deserialized
@@ -627,7 +627,7 @@ TEST(AggregatableReportTest, FailedSendAttempts) {
 TEST(AggregatableReportTest, ReportingPathEmpty_NotSetInRequest) {
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest(
-          mojom::AggregationServiceMode::kExperimentalPoplar);
+          blink::mojom::AggregationServiceMode::kExperimentalPoplar);
 
   absl::optional<AggregatableReportRequest> request =
       AggregatableReportRequest::Create(example_request.payload_contents(),
@@ -673,9 +673,9 @@ TEST(AggregatableReportProtoMigrationTest,
       AggregatableReportRequest::Create(
           AggregationServicePayloadContents(
               AggregationServicePayloadContents::Operation::kHistogram,
-              {mojom::AggregatableReportHistogramContribution(
+              {blink::mojom::AggregatableReportHistogramContribution(
                   /*bucket=*/123, /*value=*/456)},
-              mojom::AggregationServiceMode::kDefault,
+              blink::mojom::AggregationServiceMode::kDefault,
               ::aggregation_service::mojom::AggregationCoordinator::kDefault),
           AggregatableReportSharedInfo(
               base::Time::FromJavaTime(1652984901234),
@@ -716,9 +716,9 @@ TEST(AggregatableReportProtoMigrationTest, NegativeDebugKey_ParsesCorrectly) {
       AggregatableReportRequest::Create(
           AggregationServicePayloadContents(
               AggregationServicePayloadContents::Operation::kHistogram,
-              {mojom::AggregatableReportHistogramContribution(
+              {blink::mojom::AggregatableReportHistogramContribution(
                   /*bucket=*/123, /*value=*/456)},
-              mojom::AggregationServiceMode::kDefault,
+              blink::mojom::AggregationServiceMode::kDefault,
               ::aggregation_service::mojom::AggregationCoordinator::kDefault),
           AggregatableReportSharedInfo(
               base::Time::FromJavaTime(1652984901234),
@@ -753,7 +753,7 @@ TEST(AggregatableReportTest, AggregationCoordinator_ProcessingUrlSet) {
   for (const auto& test_case : kTestCases) {
     AggregatableReportRequest request =
         aggregation_service::CreateExampleRequest(
-            mojom::AggregationServiceMode::kDefault,
+            blink::mojom::AggregationServiceMode::kDefault,
             /*failed_send_attempts=*/0, test_case.aggregation_coordinator);
     EXPECT_THAT(request.processing_urls(),
                 ::testing::ElementsAre(GURL(test_case.expected_url)));
@@ -765,7 +765,7 @@ TEST(AggregatableReportTest, AggregationCoordinator_ProtoSet) {
        {::aggregation_service::mojom::AggregationCoordinator::kAwsCloud}) {
     AggregatableReportRequest request =
         aggregation_service::CreateExampleRequest(
-            mojom::AggregationServiceMode::kDefault,
+            blink::mojom::AggregationServiceMode::kDefault,
             /*failed_send_attempts=*/0, aggregation_coordinator);
 
     // The aggregation coordinator identifier is correctly serialized and

@@ -27,6 +27,10 @@ struct FormFieldDataPredictions {
   std::string overall_type;
   std::string parseable_name;
   std::string section;
+  size_t rank = 0;
+  size_t rank_in_signature_group = 0;
+  size_t rank_in_host_form = 0;
+  size_t rank_in_host_form_signature_group = 0;
 };
 
 }  // namespace autofill

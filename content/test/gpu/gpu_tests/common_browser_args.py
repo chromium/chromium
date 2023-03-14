@@ -10,7 +10,7 @@ AUTOPLAY_POLICY_NO_USER_GESTURE_REQUIRED =\
 DISABLE_ACCELERATED_2D_CANVAS = '--disable-accelerated-2d-canvas'
 DISABLE_DEVICE_DISCOVERY_NOTIFICATIONS = '--disable-features=MediaRouter'
 DISABLE_DIRECT_COMPOSITION_VIDEO_OVERLAYS =\
-    '--disable-direct-composition-video-overlays'
+    '--disable_direct_composition_video_overlays=1'
 DISABLE_DIRECT_COMPOSITION_VP_SCALING = '--disable_vp_scaling=1'
 DISABLE_DOMAIN_BLOCKING_FOR_3D_APIS = '--disable-domain-blocking-for-3d-apis'
 DISABLE_D3D11_VIDEO_DECODER = '--disable_d3d11_video_decoder=1'
@@ -29,8 +29,12 @@ ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES =\
 ENABLE_GPU_BENCHMARKING = '--enable-gpu-benchmarking'
 ENABLE_GPU_RASTERIZATION = '--enable-gpu-rasterization'
 ENABLE_LOGGING = '--enable-logging'
-ENABLE_UNSAFE_WEBGPU = '--enable-unsafe-webgpu'
 ENSURE_FORCED_COLOR_PROFILE = '--ensure-forced-color-profile'
 FORCE_BROWSER_CRASH_ON_GPU_CRASH = '--force-browser-crash-on-gpu-crash'
 FORCE_COLOR_PROFILE_SRGB = '--force-color-profile=srgb'
 TEST_TYPE_GPU = '--test-type=gpu'
+
+# Combinations of flags for specific purpose.
+ENABLE_WEBGPU_FOR_TESTING = [
+    '--enable-unsafe-webgpu', '--enable-webgpu-developer-features'
+]

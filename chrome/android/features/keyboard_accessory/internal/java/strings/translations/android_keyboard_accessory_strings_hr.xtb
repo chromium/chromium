@@ -1,13 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hr">
+<translation id="1347497506789975534">Prikaži spremljene načine plaćanja</translation>
 <translation id="1383876407941801731">Traži</translation>
-<translation id="1566281227936819866">Prikazuju se spremljeni načini plaćanja</translation>
 <translation id="1717486229951421299">Popis vjerodajnica za unos dodirom otvoren je na pola visine.</translation>
 <translation id="207576718733492531">Popis vjerodajnica za unos dodirom zatvoren je.</translation>
 <translation id="2610239185026711824">Predloži zaporku</translation>
 <translation id="2652129567809778422">Odaberite zaporku</translation>
-<translation id="2803478378562657435">Prikazivanje spremljenih zaporki i opcija zaporki</translation>
 <translation id="2903493209154104877">Adrese</translation>
 <translation id="3399357656427473483">Popis vjerodajnica za unos dodirom.</translation>
 <translation id="3688051737190211318">Ako web-lokaciju <ph name="ORIGIN" /> smatrate pouzdanom, možete upotrijebiti spremljenu zaporku za prijavu</translation>
@@ -15,16 +14,14 @@
 <translation id="4660011489602794167">Prikaži tipkovnicu</translation>
 <translation id="4694050069269396220">Ako web-lokaciju <ph name="ORIGIN" /> smatrate pouzdanom, možete upotrijebiti spremljenu zaporku za neku drugu web-lokaciju.</translation>
 <translation id="5016175294846053194">Prijedlozi automatskog popunjavanja dostupni iznad tipkovnice</translation>
-<translation id="5088366526685584589">Prikazivanje spremljenih adresa</translation>
 <translation id="5441504010984421144">Popis vjerodajnica za unos dodirom otvoren je preko cijelog zaslona.</translation>
+<translation id="6296921860874265377">Prikaži spremljene zaporke i opcije zaporki</translation>
 <translation id="6393156038355142111">Predloži snažnu zaporku</translation>
 <translation id="6558703547256592471">Pokušajte koristiti jedinstvenu zaporku za svaku web-lokaciju.</translation>
 <translation id="7029809446516969842">Zaporke</translation>
-<translation id="7299100402441711551">Prikaži adrese</translation>
-<translation id="7494879913343971937">Prikaz zaporki</translation>
 <translation id="7594473730623999723">Prijeđite prstom da biste vidjeli više prijedloga</translation>
+<translation id="7873973044507799456">Prikaži spremljene adrese</translation>
 <translation id="7992095260806105436">Upotrijebite Chromeov prijedlog za automatsko popunjavanje</translation>
-<translation id="8037472847879765671">Prikaz načina plaćanja</translation>
 <translation id="8507520749471379845">Dostupne zaporke</translation>
 <translation id="8705308553596171387">Nema zaporke</translation>
 <translation id="879180780857354295">Alternativne opcije popunjavanja dostupne iznad tipkovnice</translation>

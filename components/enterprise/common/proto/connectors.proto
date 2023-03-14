@@ -194,6 +194,8 @@ message ContentAnalysisResponse {
       // to the OU-based message found in the client-side policy or at the
       // top-level of the Result message.
       optional CustomMessage custom_message = 4;
+      // Matched URL Category of the URL.
+      optional string url_category = 5;
     }
     repeated TriggeredRule triggered_rules = 3;
 

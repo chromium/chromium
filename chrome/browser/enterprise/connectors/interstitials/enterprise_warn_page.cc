@@ -68,7 +68,9 @@ void EnterpriseWarnPage::PopulateInterstitialStrings(
       l10n_util::GetStringFUTF16(
           IDS_ENTERPRISE_WARN_PRIMARY_PARAGRAPH,
           security_interstitials::common_string_util::GetFormattedHostName(
-              request_url())));
+              request_url()),
+          l10n_util::GetStringUTF16(
+              IDS_ENTERPRISE_INTERSTITIALS_LEARN_MORE_ACCCESSIBILITY_TEXT)));
   load_time_data.Set(
       "proceedButtonText",
       l10n_util::GetStringUTF16(IDS_ENTERPRISE_WARN_CONTINUE_TO_SITE));

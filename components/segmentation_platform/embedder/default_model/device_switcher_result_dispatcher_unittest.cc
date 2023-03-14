@@ -93,13 +93,13 @@ TEST_F(DeviceSwitcherResultDispatcherTest, SegmentationFailed) {
       &field_trial_register_);
 
   base::RunLoop loop;
-  device_switcher_result_dispatcher.GetClassificationResult(base::BindOnce(
+  device_switcher_result_dispatcher.WaitForClassificationResult(base::BindOnce(
       &DeviceSwitcherResultDispatcherTest::OnGetClassificationResult,
       base::Unretained(this), loop.QuitClosure(), result));
   loop.Run();
 }
 
-TEST_F(DeviceSwitcherResultDispatcherTest, TestGetClassificationResult) {
+TEST_F(DeviceSwitcherResultDispatcherTest, TestWaitForClassificationResult) {
   // Create a classification result.
   ClassificationResult result(PredictionStatus::kSucceeded);
   result.ordered_labels.emplace_back("test_label1");
@@ -119,7 +119,7 @@ TEST_F(DeviceSwitcherResultDispatcherTest, TestGetClassificationResult) {
       &field_trial_register_);
 
   base::RunLoop loop;
-  device_switcher_result_dispatcher.GetClassificationResult(base::BindOnce(
+  device_switcher_result_dispatcher.WaitForClassificationResult(base::BindOnce(
       &DeviceSwitcherResultDispatcherTest::OnGetClassificationResult,
       base::Unretained(this), loop.QuitClosure(), result));
   loop.Run();
@@ -161,10 +161,43 @@ TEST_F(DeviceSwitcherResultDispatcherTest, ResultRefreshedOnSyncConsent) {
   base::RunLoop().RunUntilIdle();
 
   base::RunLoop loop;
-  device_switcher_result_dispatcher.GetClassificationResult(base::BindOnce(
+  device_switcher_result_dispatcher.WaitForClassificationResult(base::BindOnce(
       &DeviceSwitcherResultDispatcherTest::OnGetClassificationResult,
       base::Unretained(this), loop.QuitClosure(), result2));
   loop.Run();
+}
+
+TEST_F(DeviceSwitcherResultDispatcherTest, TestGetCachedClassificationResult) {
+  // Create initial and updated classification results.
+  ClassificationResult expected_initial_result(PredictionStatus::kSucceeded);
+  expected_initial_result.ordered_labels.emplace_back(
+      DeviceSwitcherModel::kNotSyncedLabel);
+  ClassificationResult expected_updated_result(PredictionStatus::kSucceeded);
+  expected_updated_result.ordered_labels.emplace_back("test_label1");
+
+  EXPECT_CALL(segmentation_platform_service_,
+              GetClassificationResult(_, _, _, _))
+      .WillOnce(RunOnceCallback<3>(expected_initial_result))
+      .WillOnce(RunOnceCallback<3>(expected_updated_result));
+
+  // Setup DeviceSwitcherResultDispatcher; sync consent will be updated during
+  // test execution to verify cached result update.
+  sync_service_->SetHasSyncConsent(false);
+  DeviceSwitcherResultDispatcher device_switcher_result_dispatcher(
+      &segmentation_platform_service_, sync_service_.get(), prefs_.get(),
+      &field_trial_register_);
+
+  ClassificationResult actual_initial_result =
+      device_switcher_result_dispatcher.GetCachedClassificationResult();
+  ASSERT_EQ(actual_initial_result.ordered_labels[0],
+            DeviceSwitcherModel::kNotSyncedLabel);
+  sync_service_->SetHasSyncConsent(true);
+  sync_service_->FireStateChanged();
+  ClassificationResult actual_updated_result =
+      device_switcher_result_dispatcher.GetCachedClassificationResult();
+  EXPECT_EQ(actual_updated_result.status, PredictionStatus::kSucceeded);
+  ASSERT_EQ(actual_updated_result.ordered_labels.size(), 1U);
+  EXPECT_EQ(actual_updated_result.ordered_labels[0], "test_label1");
 }
 
 TEST_F(DeviceSwitcherResultDispatcherTest,
@@ -190,7 +223,7 @@ TEST_F(DeviceSwitcherResultDispatcherTest,
       &field_trial_register_);
 
   base::RunLoop loop;
-  device_switcher_result_dispatcher.GetClassificationResult(base::BindOnce(
+  device_switcher_result_dispatcher.WaitForClassificationResult(base::BindOnce(
       &DeviceSwitcherResultDispatcherTest::OnGetClassificationResult,
       base::Unretained(this), loop.QuitClosure(), result));
   sync_service_->SetHasSyncConsent(true);

@@ -1,10 +1,9 @@
-noparent = True
-
 include_rules = [
   "+base",
   "+build/build_config.h",
   "+cc",
   "+cc/resources",
+  "+chrome/browser/flags",
   "+chrome/browser/image_decoder",
   "+chrome/browser/util/android",
   "+chrome/common",

@@ -146,12 +146,9 @@ class IsolatedWebAppResponseReaderFactoryTest : public ::testing::Test {
               return std::make_unique<FakeSignatureVerifier>(absl::nullopt);
             }));
 
-    std::string test_file_data = kResponseBody;
     CHECK(temp_dir_.CreateUniqueTempDir());
     CHECK(CreateTemporaryFileInDir(temp_dir_.GetPath(), &web_bundle_path_));
-    CHECK_EQ(test_file_data.size(), static_cast<size_t>(base::WriteFile(
-                                        web_bundle_path_, test_file_data.data(),
-                                        test_file_data.size())));
+    CHECK(base::WriteFile(web_bundle_path_, kResponseBody));
 
     in_process_data_decoder_.service()
         .SetWebBundleParserFactoryBinderForTesting(base::BindRepeating(

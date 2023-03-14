@@ -32,8 +32,8 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/signatures.h"
-#include "components/device_reauth/biometric_authenticator.h"
-#include "components/device_reauth/mock_biometric_authenticator.h"
+#include "components/device_reauth/device_authenticator.h"
+#include "components/device_reauth/mock_device_authenticator.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/password_manager/core/browser/credential_cache.h"
@@ -65,8 +65,8 @@ using autofill::FooterCommand;
 using autofill::UserInfo;
 using autofill::mojom::FocusedFieldType;
 using base::test::RunOnceCallback;
-using device_reauth::BiometricAuthRequester;
-using device_reauth::MockBiometricAuthenticator;
+using device_reauth::DeviceAuthRequester;
+using device_reauth::MockDeviceAuthenticator;
 using password_manager::CreateEntry;
 using password_manager::CredentialCache;
 using password_manager::MockPasswordStoreInterface;
@@ -133,8 +133,8 @@ class MockPasswordManagerClient
               (const GURL&),
               (const, override));
 
-  MOCK_METHOD(scoped_refptr<device_reauth::BiometricAuthenticator>,
-              GetBiometricAuthenticator,
+  MOCK_METHOD(scoped_refptr<device_reauth::DeviceAuthenticator>,
+              GetDeviceAuthenticator,
               (),
               (override));
 
@@ -267,8 +267,8 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
   base::MockCallback<AccessoryController::FillingSourceObserver>
       filling_source_observer_;
   scoped_refptr<MockPasswordStoreInterface> mock_password_store_;
-  scoped_refptr<MockBiometricAuthenticator> mock_authenticator_ =
-      base::MakeRefCounted<MockBiometricAuthenticator>();
+  scoped_refptr<MockDeviceAuthenticator> mock_authenticator_ =
+      base::MakeRefCounted<MockDeviceAuthenticator>();
 
  private:
   password_manager::PasswordManagerDriver* GetBaseDriver(
@@ -931,9 +931,9 @@ TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfNoAuthAvailable) {
       /*display_text=*/u"S3cur3", /*text_to_fill=*/u"S3cur3",
       /*a11y_description=*/u"S3cur3", /*id=*/"", /*is_obfuscated=*/true,
       /*selectable=*/true);
-  EXPECT_CALL(*password_client(), GetBiometricAuthenticator)
+  EXPECT_CALL(*password_client(), GetDeviceAuthenticator)
       .WillOnce(Return(mock_authenticator_));
-  EXPECT_CALL(*mock_authenticator_.get(), CanAuthenticate)
+  EXPECT_CALL(*mock_authenticator_.get(), CanAuthenticateWithBiometrics)
       .WillOnce(Return(false));
   EXPECT_CALL(*driver(),
               FillIntoFocusedField(selected_field.is_obfuscated(),
@@ -963,12 +963,12 @@ TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfAuthSuccessful) {
       /*display_text=*/u"S3cur3", /*text_to_fill=*/u"S3cur3",
       /*a11y_description=*/u"S3cur3", /*id=*/"", /*is_obfuscated=*/true,
       /*selectable=*/true);
-  ON_CALL(*password_client(), GetBiometricAuthenticator)
+  ON_CALL(*password_client(), GetDeviceAuthenticator)
       .WillByDefault(Return(mock_authenticator_));
-  EXPECT_CALL(*mock_authenticator_.get(), CanAuthenticate)
+  EXPECT_CALL(*mock_authenticator_.get(), CanAuthenticateWithBiometrics)
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_authenticator_.get(),
-              Authenticate(BiometricAuthRequester::kFallbackSheet, _,
+              Authenticate(DeviceAuthRequester::kFallbackSheet, _,
                            /*use_last_valid_auth=*/true))
       .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
   EXPECT_CALL(*driver(),
@@ -999,12 +999,12 @@ TEST_F(PasswordAccessoryControllerTest, DoesntFillPasswordIfAuthFails) {
       /*display_text=*/u"S3cur3", /*text_to_fill=*/u"S3cur3",
       /*a11y_description=*/u"S3cur3", /*id=*/"", /*is_obfuscated=*/true,
       /*selectable=*/true);
-  ON_CALL(*password_client(), GetBiometricAuthenticator)
+  ON_CALL(*password_client(), GetDeviceAuthenticator)
       .WillByDefault(Return(mock_authenticator_));
-  EXPECT_CALL(*mock_authenticator_.get(), CanAuthenticate)
+  EXPECT_CALL(*mock_authenticator_.get(), CanAuthenticateWithBiometrics)
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_authenticator_.get(),
-              Authenticate(BiometricAuthRequester::kFallbackSheet, _,
+              Authenticate(DeviceAuthRequester::kFallbackSheet, _,
                            /*use_last_valid_auth=*/true))
       .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/false));
   EXPECT_CALL(*driver(),
@@ -1036,12 +1036,12 @@ TEST_F(PasswordAccessoryControllerTest, CancelsOngoingAuthIfDestroyed) {
       /*display_text=*/u"S3cur3", /*text_to_fill=*/u"S3cur3",
       /*a11y_description=*/u"S3cur3", /*id=*/"", /*is_obfuscated=*/true,
       /*selectable=*/true);
-  ON_CALL(*password_client(), GetBiometricAuthenticator)
+  ON_CALL(*password_client(), GetDeviceAuthenticator)
       .WillByDefault(Return(mock_authenticator_));
-  EXPECT_CALL(*mock_authenticator_.get(), CanAuthenticate)
+  EXPECT_CALL(*mock_authenticator_.get(), CanAuthenticateWithBiometrics)
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_authenticator_.get(),
-              Authenticate(BiometricAuthRequester::kFallbackSheet, _,
+              Authenticate(DeviceAuthRequester::kFallbackSheet, _,
                            /*use_last_valid_auth=*/true));
 
   EXPECT_CALL(*driver(),
@@ -1051,7 +1051,7 @@ TEST_F(PasswordAccessoryControllerTest, CancelsOngoingAuthIfDestroyed) {
   controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
 
   EXPECT_CALL(*mock_authenticator_.get(),
-              Cancel(BiometricAuthRequester::kFallbackSheet));
+              Cancel(DeviceAuthRequester::kFallbackSheet));
 }
 
 class PasswordAccessoryControllerWithTestStoreTest

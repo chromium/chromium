@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/signout_screenshot_handler.h"
 #include "ash/metrics/user_metrics_recorder.h"
@@ -72,6 +73,12 @@ SessionControllerImpl::~SessionControllerImpl() {
   // Abort pending start lock request.
   if (!start_lock_callback_.is_null())
     std::move(start_lock_callback_).Run(false /* locked */);
+}
+
+// static
+void SessionControllerImpl::RegisterUserProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterTimePref(prefs::kTimeOfLastSessionActivation, base::Time());
 }
 
 int SessionControllerImpl::NumberOfLoggedInUsers() const {
@@ -424,6 +431,14 @@ void SessionControllerImpl::SetUserSessionOrder(
           user_sessions_[0]->user_info.account_id);
     }
 
+    // NOTE: This pref is intentionally set *after* notifying observers of
+    // active user session changes so observers can use time of last activation
+    // during event handling.
+    if (state_ == SessionState::ACTIVE && user_pref_service) {
+      user_pref_service->SetTime(prefs::kTimeOfLastSessionActivation,
+                                 base::Time::Now());
+    }
+
     UpdateLoginStatus();
   }
 }
@@ -540,6 +555,15 @@ void SessionControllerImpl::SetSessionState(SessionState state) {
   state_ = state;
   for (auto& observer : observers_)
     observer.OnSessionStateChanged(state_);
+
+  // NOTE: This pref is intentionally set *after* notifying observers of state
+  // changes so observers can use time of last activation during event handling.
+  if (state_ == SessionState::ACTIVE) {
+    if (auto* pref_service = GetUserPrefServiceForUser(GetActiveAccountId())) {
+      pref_service->SetTime(prefs::kTimeOfLastSessionActivation,
+                            base::Time::Now());
+    }
+  }
 
   UpdateLoginStatus();
 

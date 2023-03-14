@@ -17,6 +17,8 @@
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
+#include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
 
@@ -580,9 +582,16 @@ TEST_F(ShapeResultBloberizerTest, SupplementaryMultiRunNG) {
   HarfBuzzShaper shaper_b(string.Substring(range_b.from, range_b.to));
   HarfBuzzShaper shaper_c(string.Substring(range_c.from, range_c.to));
 
-  FontDescription font2_description(font_description);
-  font2_description.SetComputedSize(20);
-  Font font2(font2_description);
+  Font font = blink::test::CreateTestFont(
+      "NotoSansCJK",
+      blink::test::BlinkRootDir() +
+          "/web_tests/third_party/NotoSansCJK/NotoSansCJKjp-Regular-subset.otf",
+      12);
+  Font font2 = blink::test::CreateTestFont(
+      "NotoSansCJK",
+      blink::test::BlinkRootDir() +
+          "/web_tests/third_party/NotoSansCJK/NotoSansCJKjp-Regular-subset.otf",
+      20);
 
   // Combine four separate results into a single one to ensure we have a result
   // with multiple runs. Interleave fonts to ensure run changes.

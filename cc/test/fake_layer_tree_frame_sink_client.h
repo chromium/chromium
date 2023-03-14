@@ -5,9 +5,10 @@
 #ifndef CC_TEST_FAKE_LAYER_TREE_FRAME_SINK_CLIENT_H_
 #define CC_TEST_FAKE_LAYER_TREE_FRAME_SINK_CLIENT_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
-
 #include "cc/trees/managed_memory_policy.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 

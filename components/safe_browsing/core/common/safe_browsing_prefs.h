@@ -26,6 +26,11 @@ namespace prefs {
 // A list of times at which CSD pings were sent.
 extern const char kSafeBrowsingCsdPingTimestamps[];
 
+// A boolean indicating if client side phishing protection is allowed
+// by policy. If false, no protection is performed. If true, follow other Safe
+// Browsing settings.
+extern const char kSafeBrowsingCsdPhishingProtectionAllowedByPolicy[];
+
 // Boolean that is true when SafeBrowsing is enabled.
 extern const char kSafeBrowsingEnabled[];
 
@@ -134,6 +139,17 @@ extern const char kExtensionTelemetryLastUploadTime[];
 // The saved copy of the current configuration that will be used by
 // the Extension Telemetry Service.
 extern const char kExtensionTelemetryConfig[];
+
+// A dictionary of extension ids and their file data from the
+// Telemetry Service's file processor.
+extern const char kExtensionTelemetryFileData[];
+
+// A boolean indicating if Real Time File Download Protection requests are
+// allowed to be sent to Google by policy. If false, no ClientDownloadRequest
+// will be sent to Safe Browsing regardless of Safe Browsing Protection Level.
+// If true, follow Safe Browsing Protection Level.
+extern const char kRealTimeDownloadProtectionRequestAllowedByPolicy[];
+
 }  // namespace prefs
 
 namespace safe_browsing {
@@ -243,6 +259,16 @@ bool IsExtendedReportingPolicyManaged(const PrefService& prefs);
 // SafeBrowsingProtectionLevel policy(new).
 bool IsSafeBrowsingPolicyManaged(const PrefService& prefs);
 
+// Returns whether Safe Browsing Real Time Download Protection request uploads
+// are allowed for the user. If this returns false, Download Protection
+// request uploads are disabled. Otherwise, Download Protection will depend on
+// other Safe Browsing settings.
+bool IsRealTimeDownloadProtectionRequestAllowed(const PrefService& prefs);
+
+// Returns whether Safe Browsing client side phishing protection is allowed for
+// the user.
+bool IsCsdPhishingProtectionAllowed(const PrefService& prefs);
+
 // Updates UMA metrics about Safe Browsing Extended Reporting states.
 void RecordExtendedReportingMetrics(const PrefService& prefs);
 
@@ -268,6 +294,11 @@ void SetExtensionTelemetryConfig(PrefService& prefs,
 
 // Get the current configuration being used by the Extension Telemetry Service
 const base::Value::Dict& GetExtensionTelemetryConfig(const PrefService& prefs);
+
+// Get the current processed file data stored in the Extension Telemetry
+// Service.
+const base::Value::Dict& GetExtensionTelemetryFileData(
+    const PrefService& prefs);
 
 // Sets the last time the Extension Telemetry Service successfully uploaded
 // its data.

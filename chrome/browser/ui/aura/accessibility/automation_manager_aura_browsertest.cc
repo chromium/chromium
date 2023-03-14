@@ -54,12 +54,14 @@ void FindAllHostsOfWebContentsWithAXTreeID(
     web_hosts->push_back(node);
   }
 
-  std::vector<views::AXAuraObjWrapper*> children;
-  tree->GetChildren(node, &children);
-  for (auto* child : children) {
+  tree->CacheChildrenIfNeeded(node);
+  auto num_children = tree->GetChildCount(node);
+  for (size_t i = 0; i < num_children; i++) {
+    auto* child = tree->ChildAt(node, i);
     FindAllHostsOfWebContentsWithAXTreeID(tree, child, target_ax_tree_id,
                                           web_hosts);
   }
+  tree->ClearChildCache(node);
 }
 
 // A helper to retrieve an ax tree id given a RenderFrameHost.

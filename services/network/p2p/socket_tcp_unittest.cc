@@ -583,9 +583,9 @@ TEST(P2PSocketTcpWithPseudoTlsTest, Hostname) {
       url::Origin::Create(GURL(base::StringPrintf("https://%s", kHostname)));
   const net::NetworkAnonymizationKey kOtherNaks[] = {
       net::NetworkAnonymizationKey(),
-      net::NetworkAnonymizationKey(
-          net::SchemefulSite(kDestinationOrigin) /* top_frame_origin */,
-          net::SchemefulSite(kDestinationOrigin) /* frame_origin */)};
+      net::NetworkAnonymizationKey::CreateSameSite(
+          net::SchemefulSite(kDestinationOrigin)),
+  };
   for (const auto& other_nak : kOtherNaks) {
     std::unique_ptr<net::HostResolver::ResolveHostRequest> request2 =
         context->host_resolver()->CreateRequest(

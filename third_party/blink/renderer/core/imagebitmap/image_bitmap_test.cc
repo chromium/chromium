@@ -261,7 +261,8 @@ TEST_F(ImageBitmapTest, AvoidGPUReadback) {
       RasterMode::kGPU, true /*is_origin_top_left*/,
       0u /*shared_image_usage_flags*/);
 
-  scoped_refptr<StaticBitmapImage> bitmap = resource_provider->Snapshot();
+  scoped_refptr<StaticBitmapImage> bitmap = resource_provider->Snapshot(
+      CanvasResourceProvider::FlushReason::kTesting);
   ASSERT_TRUE(bitmap->IsTextureBacked());
 
   auto* image_bitmap = MakeGarbageCollected<ImageBitmap>(bitmap);

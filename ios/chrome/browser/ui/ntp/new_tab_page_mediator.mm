@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/search_engines/search_engine_observer_bridge.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
@@ -37,7 +38,6 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_consumer.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
@@ -346,16 +346,19 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 // Fetches and update user's avatar on NTP, or use default avatar if user is
 // not signed in.
 - (void)updateAccountImage {
-  UIImage* image = nil;
   // Fetches user's identity from Authentication Service.
   id<SystemIdentity> identity =
       self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   if (identity) {
     // Only show an avatar if the user is signed in.
-    image = self.accountManagerService->GetIdentityAvatarWithIdentity(
+    UIImage* image = self.accountManagerService->GetIdentityAvatarWithIdentity(
         identity, IdentityAvatarSize::SmallSize);
+    [self.imageUpdater updateAccountImage:image
+                                     name:identity.userFullName
+                                    email:identity.userEmail];
+  } else {
+    [self.imageUpdater setSignedOutAccountImage];
   }
-  [self.imageUpdater updateAccountImage:image];
 }
 
 @end

@@ -51,6 +51,5 @@ if (enable_arcore) {
   chrome_java_sources += [
     "java/src/org/chromium/chrome/browser/vr/ArCompositorDelegateImpl.java",
     "java/src/org/chromium/chrome/browser/vr/ArCompositorDelegateProviderImpl.java",
-    "java/src/org/chromium/chrome/browser/vr/ArDelegateImpl.java",
   ]
 }

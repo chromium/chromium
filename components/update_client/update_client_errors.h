@@ -101,6 +101,10 @@ enum class ServiceError {
   SERVICE_WAIT_FAILED = 1,
   UPDATE_DISABLED = 2,
   CANCELLED = 3,
+
+  // Returned when a `CheckForUpdate` call is made, the server returns a
+  // update response indicating an update is available, and updates are enabled.
+  CHECK_FOR_UPDATE_ONLY = 4,
 };
 
 // These errors are related to serialization, deserialization, and parsing of

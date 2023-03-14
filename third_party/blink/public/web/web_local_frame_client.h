@@ -674,9 +674,7 @@ class BLINK_EXPORT WebLocalFrameClient {
     return nullptr;
   }
 
-  virtual std::unique_ptr<URLLoader> CreateURLLoaderForTesting() {
-    return nullptr;
-  }
+  virtual std::unique_ptr<URLLoader> CreateURLLoaderForTesting();
 
   virtual void OnStopLoading() {}
 

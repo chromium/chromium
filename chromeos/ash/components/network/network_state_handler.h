@@ -85,7 +85,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
     virtual ~StubCellularNetworksProvider() = default;
 
     // Checks |network_list| to add or remove stub cellular networks. New
-    // stub networks will be addeded to |new_stub_networks| list. Stub networks
+    // stub networks will be added to |new_stub_networks| list. Stub networks
     // that are not required anymore are removed from |network_list|. Returns
     // true if networks were removed from |network_list| or |new_stub_networks|
     // is non empty.
@@ -306,7 +306,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   bool RemoveTetherNetworkState(const std::string& guid);
 
   // Disassociates the Tether network specified by |tether_network_guid| from
-  // its associated Wi-Fi network. Returns whether the networkd were
+  // its associated Wi-Fi network. Returns whether the networks were
   // successfully disassociated.
   bool DisassociateTetherNetworkStateFromWifiNetwork(
       const std::string& tether_network_guid);
@@ -370,9 +370,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
 
   // Clears the last_error value for the NetworkState for |service_path|.
   void ClearLastErrorForNetwork(const std::string& service_path);
-
-  // Sets the list of devices on which portal check is enabled.
-  void SetCheckPortalList(const std::string& check_portal_list);
 
   // Sets the Manager.WakeOnLan property. Note: we do not track this state, we
   // only set it.
@@ -484,11 +481,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // This adds new entries to |network_list_| or |device_list_| and deletes any
   // entries that are no longer in the list.
   void UpdateManagedList(ManagedState::ManagedType type,
-                         const base::Value& entries) override;
+                         const base::Value::List& entries) override;
 
   // The list of profiles changed (i.e. a user has logged in). Re-request
   // properties for all services since they may have changed.
-  void ProfileListChanged(const base::Value& profile_list) override;
+  void ProfileListChanged(const base::Value::List& profile_list) override;
 
   // Parses the properties for the network service or device. Mostly calls
   // managed->PropertyChanged(key, value) for each dictionary entry.
@@ -746,7 +743,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   void SetDefaultNetworkValues(const std::string& path, bool metered);
 
   // Determines whether the user is logged in and sets |is_user_logged_in_|.
-  void ProcessIsUserLoggedIn(const base::Value& profile_list);
+  void ProcessIsUserLoggedIn(const base::Value::List& profile_list);
 
   // Shill property handler instance, owned by this class.
   std::unique_ptr<internal::ShillPropertyHandler> shill_property_handler_;
@@ -791,7 +788,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   absl::optional<base::ElapsedTimer> time_in_portal_;
 
   // Tracks the default network proxy config for triggering PortalStateChanged.
-  base::Value default_network_proxy_config_;
+  absl::optional<base::Value::Dict> default_network_proxy_config_;
 
   // DHCP Hostname.
   std::string hostname_;

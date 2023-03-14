@@ -24,6 +24,7 @@
 #include "cc/base/switches.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/crash/core/common/crash_keys.h"
+#include "components/devtools/devtools_pipe/devtools_pipe.h"
 #include "components/viz/common/switches.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/common/content_switches.h"
@@ -171,6 +172,15 @@ HeadlessContentMainDelegate::~HeadlessContentMainDelegate() {
 
 absl::optional<int> HeadlessContentMainDelegate::BasicStartupComplete() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+
+  // The DevTools remote debugging pipe file descriptors need to be checked
+  // before any other files are opened, see https://crbug.com/1423048.
+  const bool is_browser = !command_line->HasSwitch(::switches::kProcessType);
+  if (is_browser && command_line->HasSwitch(::switches::kRemoteDebuggingPipe) &&
+      !devtools_pipe::AreFileDescriptorsOpen()) {
+    LOG(ERROR) << "Remote debugging pipe file descriptors are not open.";
+    return EXIT_FAILURE;
+  }
 
   // Make sure all processes know that we're in headless mode.
   if (!command_line->HasSwitch(::switches::kHeadless))
@@ -376,16 +386,20 @@ HeadlessContentMainDelegate::RunProcess(
   std::unique_ptr<content::BrowserMainRunner> browser_runner =
       content::BrowserMainRunner::Create();
 
-  int exit_code = browser_runner->Initialize(std::move(main_function_params));
-  DCHECK_LT(exit_code, 0) << "content::BrowserMainRunner::Initialize failed in "
-                             "HeadlessContentMainDelegate::RunProcess";
+  int result_code = browser_runner->Initialize(std::move(main_function_params));
+  DCHECK_LT(result_code, 0)
+      << "content::BrowserMainRunner::Initialize failed in "
+         "HeadlessContentMainDelegate::RunProcess";
 
   browser_runner->Run();
   browser_runner->Shutdown();
+
+  int exit_code = browser_->exit_code();
+
   browser_.reset();
 
   // Return an int here to disable calling content::BrowserMain.
-  return 0;
+  return exit_code;
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

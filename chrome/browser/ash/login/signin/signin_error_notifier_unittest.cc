@@ -12,7 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier_factory.h"
-#include "chrome/browser/ash/login/users/mock_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -51,9 +51,8 @@ class SigninErrorNotifierTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
-    mock_user_manager_ = new MockUserManager();
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(mock_user_manager_));
+        std::make_unique<FakeChromeUserManager>());
 
     SigninErrorNotifierFactory::GetForProfile(GetProfile());
     display_service_ =
@@ -88,7 +87,6 @@ class SigninErrorNotifierTest : public BrowserWithTestWindowTest {
 
  protected:
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
-  MockUserManager* mock_user_manager_;  // Not owned.
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;

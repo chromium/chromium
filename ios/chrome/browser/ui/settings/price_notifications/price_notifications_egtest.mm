@@ -35,9 +35,12 @@ using chrome_test_util::SettingsPriceNotificationsTableView;
   std::string priceNotificationsFlag =
       std::string(commerce::kCommercePriceTracking.name) + params;
   std::string shoppingListFlag = std::string("ShoppingList");
+  std::string notificationMenuItemFlag =
+      std::string("NotificationSettingsMenuItem");
 
   config.additional_args.push_back(
-      "--enable-features=" + priceNotificationsFlag + "," + shoppingListFlag);
+      "--enable-features=" + priceNotificationsFlag + "," + shoppingListFlag +
+      "," + notificationMenuItemFlag);
   return config;
 }
 

@@ -19,7 +19,9 @@
 #include "base/test/gtest_util.h"
 #include "base/threading/simple_thread.h"
 #include "build/build_config.h"
+#include "components/gwp_asan/common/lightweight_detector.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gwp_asan {
 namespace internal {
@@ -32,11 +34,15 @@ class BaseGpaTest : public testing::Test {
   BaseGpaTest(size_t max_allocated_pages,
               size_t max_metadata,
               size_t max_slots,
-              bool is_partition_alloc) {
+              bool is_partition_alloc,
+              LightweightDetectorState lightweight_detector_state =
+                  LightweightDetectorState::kDisabled,
+              size_t max_lightweight_detector_metadata = 0) {
     gpa_.Init(max_allocated_pages, max_metadata, max_slots,
               base::BindLambdaForTesting(
                   [&](size_t allocations) { allocator_oom_ = true; }),
-              is_partition_alloc);
+              is_partition_alloc, lightweight_detector_state,
+              max_lightweight_detector_metadata);
   }
 
   GuardedPageAllocator gpa_;
@@ -387,6 +393,71 @@ TEST_F(GuardedPageAllocatorRawPtrTest, DeferDeallocation) {
   EXPECT_EQ(gpa_.Allocate(1), nullptr);
 }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE)
+
+constexpr size_t kMaxLightweightDetectorMetadata = 1;
+class LightweightDetectorAllocatorTest : public BaseGpaTest {
+ public:
+  LightweightDetectorAllocatorTest()
+      : BaseGpaTest(kMaxMetadata,
+                    kMaxMetadata,
+                    kMaxSlots,
+                    /* is_partition_alloc = */ true,
+                    LightweightDetectorState::kEnabled,
+                    kMaxLightweightDetectorMetadata) {}
+};
+
+TEST_F(LightweightDetectorAllocatorTest, PoisonAlloc) {
+  uint64_t alloc;
+
+  gpa_.RecordLightweightDeallocation(&alloc, sizeof(alloc));
+  auto metadata_id = LightweightDetector::ExtractMetadataId(alloc);
+  EXPECT_TRUE(metadata_id.has_value());
+
+  auto& metadata = gpa_.state_.GetLightweightSlotMetadataById(
+      *metadata_id, gpa_.lightweight_detector_metadata_.get());
+  EXPECT_EQ(metadata.alloc_ptr, reinterpret_cast<uintptr_t>(&alloc));
+  EXPECT_EQ(metadata.alloc_size, sizeof(alloc));
+  EXPECT_EQ(metadata.alloc.trace_collected, false);
+  EXPECT_EQ(metadata.alloc.trace_len, 0u);
+  EXPECT_EQ(metadata.dealloc.trace_collected, true);
+  EXPECT_NE(metadata.dealloc.trace_len, 0u);
+}
+
+TEST_F(LightweightDetectorAllocatorTest, PoisonAllocUnaligned) {
+  // Allocations that aren't 64-bit aligned.
+  uint8_t alloc1[7];
+  uint8_t alloc2[9];
+
+  gpa_.RecordLightweightDeallocation(&alloc1, sizeof(alloc1));
+  gpa_.RecordLightweightDeallocation(&alloc2, sizeof(alloc2));
+
+  for (auto byte : alloc1) {
+    EXPECT_EQ(byte, LightweightDetector::kMetadataRemainder);
+  }
+  EXPECT_EQ(alloc2[sizeof(alloc2) - 1],
+            LightweightDetector::kMetadataRemainder);
+}
+
+TEST_F(LightweightDetectorAllocatorTest, SlotReuse) {
+  uint64_t alloc1;
+  uint64_t alloc2;
+
+  gpa_.RecordLightweightDeallocation(&alloc1, sizeof(alloc1));
+  auto alloc1_metadata_id = LightweightDetector::ExtractMetadataId(alloc1);
+  EXPECT_TRUE(alloc1_metadata_id.has_value());
+  auto& metadata_alloc1 = gpa_.state_.GetLightweightSlotMetadataById(
+      *alloc1_metadata_id, gpa_.lightweight_detector_metadata_.get());
+
+  gpa_.RecordLightweightDeallocation(&alloc2, sizeof(alloc2));
+  auto alloc2_metadata_id = LightweightDetector::ExtractMetadataId(alloc2);
+  auto& metadata_alloc2 = gpa_.state_.GetLightweightSlotMetadataById(
+      *alloc2_metadata_id, gpa_.lightweight_detector_metadata_.get());
+
+  // Since there's only one slot, it should be reused.
+  EXPECT_EQ(&metadata_alloc1, &metadata_alloc2);
+  EXPECT_NE(metadata_alloc1.lightweight_id, alloc1_metadata_id);
+  EXPECT_EQ(metadata_alloc2.lightweight_id, alloc2_metadata_id);
+}
 
 }  // namespace internal
 }  // namespace gwp_asan

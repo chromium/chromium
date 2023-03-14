@@ -27,7 +27,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           ja veenduge, et konfiguratsioon on määratud valikule „Puhverserverita” või „Otse”.</translation>
+<translation id="6549378540556750549">Chromiumi võimaldab pakkuda ka muu <ph name="BEGIN_LINK_OSS" />avatud lähtekoodiga tarkvara<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Teie muudatused jõustuvad järgmine kord, kui Chromiumi taaskäivitate.</translation>
+<translation id="7681937895330411637">Chromiumi võimaldab pakkuda <ph name="BEGIN_LINK_CHROMIUM" />Chromiumi<ph name="END_LINK_CHROMIUM" /> avatud lähtekoodi projekt.</translation>
 <translation id="7861509383340276692">Avage
         Chromiumi menüü &gt;
         <ph name="SETTINGS_TITLE" />

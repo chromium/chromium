@@ -62,7 +62,7 @@ blink::AuctionConfig* LookupAuction(
 std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
     AuctionWorkletManager* auction_worklet_manager,
     InterestGroupManagerImpl* interest_group_manager,
-    AttributionDataHostManager* attribution_data_host_manager,
+    AttributionManager* attribution_manager,
     PrivateAggregationManager* private_aggregation_manager,
     InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback
         log_private_aggregation_requests_callback,
@@ -75,11 +75,12 @@ std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
     mojo::PendingReceiver<AbortableAdAuction> abort_receiver,
     RunAuctionCallback callback) {
   std::unique_ptr<AuctionRunner> instance(new AuctionRunner(
-      auction_worklet_manager, interest_group_manager,
-      attribution_data_host_manager, private_aggregation_manager,
-      log_private_aggregation_requests_callback, DetermineKAnonMode(),
-      std::move(auction_config), main_frame_origin, frame_origin,
-      std::move(client_security_state), std::move(url_loader_factory),
+      auction_worklet_manager, interest_group_manager, attribution_manager,
+      private_aggregation_manager,
+      std::move(log_private_aggregation_requests_callback),
+      DetermineKAnonMode(), std::move(auction_config), main_frame_origin,
+      frame_origin, std::move(client_security_state),
+      std::move(url_loader_factory),
       std::move(is_interest_group_api_allowed_callback),
       std::move(abort_receiver), std::move(callback)));
   instance->StartAuction();
@@ -259,8 +260,7 @@ void AuctionRunner::FailAuction(
         *client_security_state_, url_loader_factory_);
 
     InterestGroupAuctionReporter::OnFledgePrivateAggregationRequests(
-        private_aggregation_manager_,
-        log_private_aggregation_requests_callback_, main_frame_origin_,
+        private_aggregation_manager_, main_frame_origin_,
         auction_.TakeReservedPrivateAggregationRequests());
   }
 
@@ -272,15 +272,16 @@ void AuctionRunner::FailAuction(
   // types cannot be triggered anyway, so no need to pass it along.
   std::move(callback_).Run(this, manually_aborted,
                            /*winning_group_key=*/absl::nullopt,
-                           /*render_url=*/absl::nullopt,
-                           /*ad_component_urls=*/{}, auction_.TakeErrors(),
+                           /*ad_descriptor=*/absl::nullopt,
+                           /*ad_component_descriptors=*/{},
+                           auction_.TakeErrors(),
                            /*reporter=*/nullptr);
 }
 
 AuctionRunner::AuctionRunner(
     AuctionWorkletManager* auction_worklet_manager,
     InterestGroupManagerImpl* interest_group_manager,
-    AttributionDataHostManager* attribution_data_host_manager,
+    AttributionManager* attribution_manager,
     PrivateAggregationManager* private_aggregation_manager,
     InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback
         log_private_aggregation_requests_callback,
@@ -294,10 +295,8 @@ AuctionRunner::AuctionRunner(
     mojo::PendingReceiver<AbortableAdAuction> abort_receiver,
     RunAuctionCallback callback)
     : interest_group_manager_(interest_group_manager),
-      attribution_data_host_manager_(attribution_data_host_manager),
+      attribution_manager_(attribution_manager),
       private_aggregation_manager_(private_aggregation_manager),
-      log_private_aggregation_requests_callback_(
-          log_private_aggregation_requests_callback),
       main_frame_origin_(main_frame_origin),
       frame_origin_(frame_origin),
       client_security_state_(std::move(client_security_state)),
@@ -315,7 +314,8 @@ AuctionRunner::AuctionRunner(
                /*parent=*/nullptr,
                auction_worklet_manager,
                interest_group_manager,
-               /*auction_start_time=*/base::Time::Now()) {}
+               /*auction_start_time=*/base::Time::Now(),
+               std::move(log_private_aggregation_requests_callback)) {}
 
 void AuctionRunner::StartAuction() {
   auction_.StartLoadInterestGroupsPhase(
@@ -341,7 +341,7 @@ void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
   DCHECK(callback_);
 
   blink::InterestGroupSet interest_groups_that_bid;
-  auction_.GetInterestGroupsThatBid(interest_groups_that_bid);
+  auction_.GetInterestGroupsThatBidAndReportBidCounts(interest_groups_that_bid);
   if (!success) {
     FailAuction(/*manually_aborted=*/false,
                 std::move(interest_groups_that_bid));
@@ -360,17 +360,17 @@ void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
 
   std::unique_ptr<InterestGroupAuctionReporter> reporter =
       auction_.CreateReporter(
-          attribution_data_host_manager_, private_aggregation_manager_,
-          log_private_aggregation_requests_callback_, url_loader_factory_,
-          std::move(owned_auction_config_), main_frame_origin_, frame_origin_,
-          client_security_state_.Clone(), std::move(interest_groups_that_bid));
+          attribution_manager_, private_aggregation_manager_,
+          url_loader_factory_, std::move(owned_auction_config_),
+          main_frame_origin_, frame_origin_, client_security_state_.Clone(),
+          std::move(interest_groups_that_bid));
   DCHECK(reporter);
 
   state_ = State::kSucceeded;
   std::move(callback_).Run(this, /*manually_aborted=*/false,
                            std::move(winning_group_key),
-                           auction_.top_bid()->bid->render_url,
-                           auction_.top_bid()->bid->ad_components,
+                           auction_.top_bid()->bid->ad_descriptor,
+                           auction_.top_bid()->bid->ad_component_descriptors,
                            std::move(errors), std::move(reporter));
 }
 

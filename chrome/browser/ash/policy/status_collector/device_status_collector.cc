@@ -585,23 +585,23 @@ em::CrashReportInfo::CrashReportUploadStatus GetCrashReportUploadStatus(
 void CrashReportsLoaded(
     scoped_refptr<UploadList> upload_list,
     DeviceStatusCollector::CrashReportInfoReceiver callback) {
-  std::vector<UploadList::UploadInfo> uploads;
-  upload_list->GetUploads(kCrashReportEntryMaxSize, &uploads);
+  const std::vector<const UploadList::UploadInfo*> uploads =
+      upload_list->GetUploads(kCrashReportEntryMaxSize);
 
   const auto end_time = base::Time::Now();
   const auto start_time = end_time - kCrashReportInfoDuration;
 
   std::vector<em::CrashReportInfo> contents;
-  for (const UploadList::UploadInfo& crash_report : uploads) {
-    if (crash_report.upload_time >= start_time &&
-        crash_report.upload_time < end_time &&
-        (crash_report.source == kCrashReportSourceKernel ||
-         crash_report.source == kCrashReportSourceEC)) {
+  for (const UploadList::UploadInfo* crash_report : uploads) {
+    if (crash_report->upload_time >= start_time &&
+        crash_report->upload_time < end_time &&
+        (crash_report->source == kCrashReportSourceKernel ||
+         crash_report->source == kCrashReportSourceEC)) {
       em::CrashReportInfo info;
-      info.set_remote_id(crash_report.upload_id);
-      info.set_capture_timestamp(crash_report.capture_time.ToJavaTime());
-      info.set_cause(crash_report.source);
-      info.set_upload_status(GetCrashReportUploadStatus(crash_report.state));
+      info.set_remote_id(crash_report->upload_id);
+      info.set_capture_timestamp(crash_report->capture_time.ToJavaTime());
+      info.set_cause(crash_report->source);
+      info.set_upload_status(GetCrashReportUploadStatus(crash_report->state));
       contents.push_back(info);
     }
   }

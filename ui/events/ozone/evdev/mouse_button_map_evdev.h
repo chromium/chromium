@@ -8,6 +8,8 @@
 #include <stdint.h>
 
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 
@@ -29,14 +31,23 @@ class COMPONENT_EXPORT(EVDEV) MouseButtonMapEvdev {
 
   ~MouseButtonMapEvdev();
 
-  // Swaps left & right mouse buttons.
-  void SetPrimaryButtonRight(bool primary_button_right);
+  // Swaps left & right mouse buttons. If `device_id` has no value, settings are
+  // configured as though per device settings are disabled.
+  void SetPrimaryButtonRight(absl::optional<int> device_id,
+                             bool primary_button_right);
 
   // Return the mapped button.
-  int GetMappedButton(uint16_t button) const;
+  int GetMappedButton(int device_id, uint16_t button) const;
+
+  // Removes saved mouse button settings for a given `device_id`.
+  void RemoveDeviceFromSettings(int device_id);
+
+  // Enables per-device handling of mouse button mapping.
+  void EnablePerDeviceSettings();
 
  private:
-  bool primary_button_right_ = false;
+  bool enable_per_device_settings_ = false;
+  base::flat_map<int, bool> primary_button_right_map_;
 };
 
 }  // namespace ui

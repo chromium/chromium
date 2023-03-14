@@ -26,11 +26,32 @@ struct FakeGeocoordinateData {
   absl::optional<DOUBLE> speed;
 };
 
+class FakeGeopoint
+    : public Microsoft::WRL::RuntimeClass<
+          Microsoft::WRL::RuntimeClassFlags<
+              Microsoft::WRL::WinRt | Microsoft::WRL::InhibitRoOriginateError>,
+          ABI::Windows::Devices::Geolocation::IGeopoint> {
+ public:
+  explicit FakeGeopoint(const FakeGeocoordinateData& position_data);
+  FakeGeopoint(const FakeGeopoint&) = delete;
+  FakeGeopoint(FakeGeopoint&&) = delete;
+  FakeGeopoint& operator=(const FakeGeopoint&) = delete;
+  FakeGeopoint& operator=(FakeGeopoint&&) = delete;
+  ~FakeGeopoint() override;
+
+  IFACEMETHODIMP get_Position(
+      ABI::Windows::Devices::Geolocation::BasicGeoposition* value) override;
+
+ private:
+  const FakeGeocoordinateData position_data_;
+};
+
 class FakeGeocoordinate
     : public Microsoft::WRL::RuntimeClass<
           Microsoft::WRL::RuntimeClassFlags<
               Microsoft::WRL::WinRt | Microsoft::WRL::InhibitRoOriginateError>,
-          ABI::Windows::Devices::Geolocation::IGeocoordinate> {
+          ABI::Windows::Devices::Geolocation::IGeocoordinate,
+          ABI::Windows::Devices::Geolocation::IGeocoordinateWithPoint> {
  public:
   explicit FakeGeocoordinate(
       std::unique_ptr<FakeGeocoordinateData> position_data);
@@ -39,6 +60,8 @@ class FakeGeocoordinate
   FakeGeocoordinate& operator=(const FakeGeocoordinate&) = delete;
 
   ~FakeGeocoordinate() override;
+  IFACEMETHODIMP get_Point(
+      ABI::Windows::Devices::Geolocation::IGeopoint** point) override;
   IFACEMETHODIMP get_Latitude(DOUBLE* value) override;
   IFACEMETHODIMP get_Longitude(DOUBLE* value) override;
   IFACEMETHODIMP get_Altitude(

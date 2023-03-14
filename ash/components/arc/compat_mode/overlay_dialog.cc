@@ -5,7 +5,6 @@
 #include "ash/components/arc/compat_mode/overlay_dialog.h"
 
 #include "ash/components/arc/compat_mode/style/arc_color_provider.h"
-#include "ash/constants/ash_features.h"
 #include "ash/style/ash_color_id.h"
 #include "base/functional/bind.h"
 #include "components/exo/shell_surface_base.h"
@@ -54,10 +53,8 @@ void OverlayDialog::AddedToWidget() {
 
 void OverlayDialog::OnThemeChanged() {
   views::View::OnThemeChanged();
-  const ui::ColorId color_id = ash::features::IsDarkLightModeEnabled()
-                                   ? ash::kColorAshShieldAndBase60
-                                   : ash::kColorAshShieldAndBase60Light;
-  SetBackground(views::CreateThemedSolidBackground(color_id));
+  SetBackground(
+      views::CreateThemedSolidBackground(ash::kColorAshShieldAndBase60));
 }
 
 OverlayDialog::OverlayDialog(base::OnceClosure on_destroying,

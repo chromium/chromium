@@ -36,7 +36,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.InitialDisplayTime" units="ms"
-    expires_after="2023-06-25">
+    expires_after="2023-08-27">
   <owner>thestig@chromium.org</owner>
   <owner>dhoss@chromium.org</owner>
   <summary>
@@ -87,7 +87,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.PrintDocumentType"
-    enum="PrintPreviewPrintDocumentTypeBuckets" expires_after="2023-07-02">
+    enum="PrintPreviewPrintDocumentTypeBuckets" expires_after="2023-09-03">
   <owner>rbpotter@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>
@@ -133,6 +133,35 @@ chromium-metrics-reviews@google.com.
     Records true if the user printed, or false if the user canceled, while being
     shown a grey/unknown status for their selected printer on Chrome OS.
   </summary>
+</histogram>
+
+<histogram name="PrintPreview.PrinterStatus.{StatusReason}.PrintJobSuccess"
+    enum="BooleanSuccess" expires_after="2024-02-15">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Tracks the success rate of a print job on ChromeOS while the {StatusReason}
+    status is shown for the selected printer in Print Preview. The metric is
+    recorded once the print job completes.
+  </summary>
+  <token key="StatusReason">
+    <variant name="DeviceError" summary="Device Error"/>
+    <variant name="DoorOpen" summary="Door Open"/>
+    <variant name="LowOnInk" summary="Low On Ink"/>
+    <variant name="LowOnPaper" summary="Low On Paper"/>
+    <variant name="NoError" summary="No Error"/>
+    <variant name="OutOfInk" summary="Out Of Ink"/>
+    <variant name="OutOfPaper" summary="Out Of Paper"/>
+    <variant name="OutputAlmostFull" summary="Output Almost Full"/>
+    <variant name="OutputFull" summary="Output Full"/>
+    <variant name="PaperJam" summary="Paper Jam"/>
+    <variant name="Paused" summary="Printer Paused"/>
+    <variant name="PrinterQueueFull" summary="Printer Queue Full"/>
+    <variant name="PrinterUnreachable" summary="Printer Unreachable"/>
+    <variant name="Stopped" summary="Printer Stopped"/>
+    <variant name="TrayMissing" summary="Tray Missing"/>
+    <variant name="UnknownReason" summary="Unknown Reason"/>
+  </token>
 </histogram>
 
 <histogram name="PrintPreview.PrintSettings" enum="PrintSettings"
@@ -190,7 +219,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.RendererError" enum="PrintPreviewFailureType"
-    expires_after="2023-06-25">
+    expires_after="2023-09-03">
   <owner>thestig@chromium.org</owner>
   <owner>dhoss@chromium.org</owner>
   <summary>
@@ -228,7 +257,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.UserAction" enum="PrintPreviewUserActionType"
-    expires_after="2023-07-02">
+    expires_after="2023-09-03">
   <owner>thestig@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>

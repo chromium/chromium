@@ -6,10 +6,12 @@
 
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
+#include "chrome/browser/accessibility/pdf_ocr_controller.h"
+#include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/renderer_context_menu/render_view_context_menu_proxy.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/context_menu_params.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -82,24 +84,23 @@ void PdfOcrMenuObserver::ExecuteCommand(int command_id) {
       // update the profile and change it to the original menu item when the
       // user disables this item.
       DCHECK(is_always_active);
+      VLOG(2) << "Turning off PDF OCR from the context menu";
       profile->GetPrefs()->SetBoolean(prefs::kAccessibilityPdfOcrAlwaysActive,
                                       false);
-      // TODO(crbug.com/1393069): Stop the PDF OCR if running.
-      NOTIMPLEMENTED() << "Need to stop PDF OCR accordingly";
       break;
     case IDC_CONTENT_CONTEXT_PDF_OCR_ALWAYS:
       // When a user choose "Always" to run the PDF OCR, we save this
       // preference and change this item to a check item in the context menu.
       if (!is_always_active) {
+        VLOG(2) << "Setting PDF OCR to be always active from the context menu";
         profile->GetPrefs()->SetBoolean(prefs::kAccessibilityPdfOcrAlwaysActive,
                                         true);
-        // TODO(crbug.com/1393069): Start the PDF OCR if true is set.
-        NOTIMPLEMENTED() << "Need to start PDF OCR accordingly";
       }
       break;
     case IDC_CONTENT_CONTEXT_PDF_OCR_ONCE:
-      // TODO(crbug.com/1393069): Run PDF OCR once to convert image to text.
-      NOTIMPLEMENTED() << "Need to run PDF OCR once to convert image to text";
+      VLOG(2) << "Running PDF OCR only once from the context menu";
+      screen_ai::PdfOcrControllerFactory::GetForProfile(profile)
+          ->RunPdfOcrOnlyOnce(proxy_->GetWebContents());
       break;
     default:
       NOTREACHED();

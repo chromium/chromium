@@ -4,31 +4,33 @@
 
 #import "ios/web_view/internal/passwords/web_view_password_manager_client.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/memory/scoped_refptr.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
-#include "components/autofill/core/browser/logging/stub_log_manager.h"
-#include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
-#include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_form_manager_for_ui.h"
-#include "components/password_manager/core/browser/password_manager.h"
-#include "components/password_manager/core/browser/password_manager_features_util.h"
-#include "components/password_manager/core/browser/test_password_store.h"
-#include "components/password_manager/core/common/password_manager_features.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/testing_pref_service.h"
-#include "components/signin/public/identity_manager/account_info.h"
+#import "base/memory/scoped_refptr.h"
+#import "base/test/scoped_feature_list.h"
+#import "base/test/task_environment.h"
+#import "components/autofill/core/browser/logging/stub_log_manager.h"
+#import "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
+#import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/password_form_manager_for_ui.h"
+#import "components/password_manager/core/browser/password_manager.h"
+#import "components/password_manager/core/browser/password_manager_features_util.h"
+#import "components/password_manager/core/browser/test_password_store.h"
+#import "components/password_manager/core/common/password_manager_features.h"
+#import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/prefs/pref_registry_simple.h"
+#import "components/prefs/testing_pref_service.h"
+#import "components/signin/public/identity_manager/account_info.h"
+#import "components/sync/base/user_selectable_type.h"
+#import "components/sync/driver/sync_service.h"
 #import "components/sync/test/test_sync_service.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "ios/web/public/test/scoped_testing_web_client.h"
-#include "ios/web_view/internal/web_view_browser_state.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "ios/web/public/test/scoped_testing_web_client.h"
+#import "ios/web_view/internal/web_view_browser_state.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
-#include "url/gurl.h"
+#import "testing/platform_test.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -53,8 +55,6 @@ class WebViewPasswordManagerClientTest : public PlatformTest {
 
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kCredentialsEnableService, true);
-    pref_service_.registry()->RegisterDictionaryPref(
-        password_manager::prefs::kAccountStoragePerAccountSettings);
 
     profile_store_->Init(&pref_service_, /*affiliated_match_helper=*/nullptr);
     account_store_->Init(&pref_service_, /*affiliated_match_helper=*/nullptr);
@@ -94,15 +94,37 @@ TEST_F(WebViewPasswordManagerClientTest, NoPromptIfBlocklisted) {
       std::move(password_manager_for_ui), /*update_password=*/false));
 }
 
+TEST_F(WebViewPasswordManagerClientTest, NoPromptIfNotSignedIn) {
+  auto password_manager_for_ui =
+      std::make_unique<password_manager::MockPasswordFormManagerForUI>();
+
+  EXPECT_CALL(*password_manager_for_ui, IsBlocklisted())
+      .WillOnce(Return(false));
+
+  // There's no signed-in user.
+  sync_service_.SetAccountInfo(CoreAccountInfo());
+  sync_service_.SetHasSyncConsent(false);
+  sync_service_.SetTransportState(
+      syncer::SyncService::TransportState::DISABLED);
+
+  EXPECT_FALSE(password_manager_client_->PromptUserToSaveOrUpdatePassword(
+      std::move(password_manager_for_ui), /*update_password=*/false));
+}
+
 TEST_F(WebViewPasswordManagerClientTest, NoPromptIfNotOptedInToAccountStorage) {
   auto password_manager_for_ui =
       std::make_unique<password_manager::MockPasswordFormManagerForUI>();
 
   EXPECT_CALL(*password_manager_for_ui, IsBlocklisted())
       .WillOnce(Return(false));
+
+  // There is a signed-in user, but they have chosen not to enable passwords.
   CoreAccountInfo account_info;
   account_info.gaia = "1337";
   sync_service_.SetAccountInfo(account_info);
+  sync_service_.SetHasSyncConsent(false);
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, syncer::UserSelectableTypeSet());
 
   EXPECT_FALSE(password_manager_client_->PromptUserToSaveOrUpdatePassword(
       std::move(password_manager_for_ui), /*update_password=*/false));
@@ -118,8 +140,10 @@ TEST_F(WebViewPasswordManagerClientTest, PromptIfAllConditionsPass) {
   CoreAccountInfo account_info;
   account_info.gaia = "1337";
   sync_service_.SetAccountInfo(account_info);
-  password_manager::features_util::OptInToAccountStorage(&pref_service_,
-                                                         &sync_service_);
+  sync_service_.SetHasSyncConsent(false);
+  // The user chose to enable passwords (along with all other types).
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/true, syncer::UserSelectableTypeSet());
 
   EXPECT_TRUE(password_manager_client_->PromptUserToSaveOrUpdatePassword(
       std::move(password_manager_for_ui), /*update_password=*/false));

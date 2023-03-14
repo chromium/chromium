@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/network/metrics/connection_results.h"
 
 #include "chromeos/ash/components/network/network_connection_handler.h"
+#include "chromeos/ash/components/network/technology_state_controller.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
@@ -129,6 +130,9 @@ ShillConnectResult ShillErrorToConnectResult(const std::string& error_name) {
     return ShillConnectResult::kErrorEapRemoteTlsFailed;
   else if (error_name == shill::kErrorResultWepNotSupported)
     return ShillConnectResult::kErrorResultWepNotSupported;
+  else if (error_name == TechnologyStateController::kErrorDisableHotspot) {
+    return ShillConnectResult::kErrorDisableHotspotFailed;
+  }
 
   return ShillConnectResult::kUnknown;
 }

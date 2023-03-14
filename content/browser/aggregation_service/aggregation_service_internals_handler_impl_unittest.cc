@@ -100,11 +100,7 @@ void VerifyWebUIAggregatableReport(
 class AggregationServiceInternalsHandlerImplTest
     : public RenderViewHostTestHarness {
  public:
-  AggregationServiceInternalsHandlerImplTest()
-      : internals_handler_(
-            std::make_unique<AggregationServiceInternalsHandlerImpl>(
-                &web_ui_,
-                remote_handler_.BindNewPipeAndPassReceiver())) {}
+  AggregationServiceInternalsHandlerImplTest() : receiver_(&observer_) {}
 
  protected:
   void SetUp() override {
@@ -118,6 +114,11 @@ class AggregationServiceInternalsHandlerImplTest
                                            ->GetBrowserContext()
                                            ->GetDefaultStoragePartition())
         ->OverrideAggregationServiceForTesting(std::move(aggregation_service));
+
+    internals_handler_ =
+        std::make_unique<AggregationServiceInternalsHandlerImpl>(
+            &web_ui_, receiver_.BindNewPipeAndPassRemote(),
+            remote_handler_.BindNewPipeAndPassReceiver());
   }
 
   void TearDown() override {
@@ -127,14 +128,6 @@ class AggregationServiceInternalsHandlerImplTest
     aggregation_service_ = nullptr;
     web_ui_.set_web_contents(nullptr);
     RenderViewHostTestHarness::TearDown();
-  }
-
-  void ShutdownAggregationService() {
-    aggregation_service_ = nullptr;
-    static_cast<StoragePartitionImpl*>(web_ui_.GetWebContents()
-                                           ->GetBrowserContext()
-                                           ->GetDefaultStoragePartition())
-        ->OverrideAggregationServiceForTesting(nullptr);
   }
 
   void OnRequestStorageModified() {
@@ -153,6 +146,8 @@ class AggregationServiceInternalsHandlerImplTest
   TestWebUI web_ui_;
   raw_ptr<MockAggregationService> aggregation_service_;
   mojo::Remote<aggregation_service_internals::mojom::Handler> remote_handler_;
+  MockObserver observer_;
+  mojo::Receiver<aggregation_service_internals::mojom::Observer> receiver_;
   std::unique_ptr<AggregationServiceInternalsHandlerImpl> internals_handler_;
 };
 
@@ -210,14 +205,8 @@ TEST_F(AggregationServiceInternalsHandlerImplTest, ClearStorage) {
 }
 
 TEST_F(AggregationServiceInternalsHandlerImplTest, NotifyReportsChanged) {
-  MockObserver observer;
-  mojo::Receiver<aggregation_service_internals::mojom::Observer> receiver(
-      &observer);
-  internals_handler_->AddObserver(receiver.BindNewPipeAndPassRemote(),
-                                  base::DoNothing());
-
   base::RunLoop run_loop;
-  EXPECT_CALL(observer, OnRequestStorageModified)
+  EXPECT_CALL(observer_, OnRequestStorageModified)
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
   OnRequestStorageModified();
@@ -225,15 +214,9 @@ TEST_F(AggregationServiceInternalsHandlerImplTest, NotifyReportsChanged) {
 }
 
 TEST_F(AggregationServiceInternalsHandlerImplTest, NotifyReportHandled) {
-  MockObserver observer;
-  mojo::Receiver<aggregation_service_internals::mojom::Observer> receiver(
-      &observer);
-  internals_handler_->AddObserver(receiver.BindNewPipeAndPassRemote(),
-                                  base::DoNothing());
-
   aggregation_service_internals::mojom::WebUIAggregatableReportPtr web_report;
   base::RunLoop run_loop;
-  EXPECT_CALL(observer, OnReportHandled)
+  EXPECT_CALL(observer_, OnReportHandled)
       .WillOnce(testing::DoAll(base::test::RunClosure(run_loop.QuitClosure()),
                                MoveArg<0>(&web_report)));
 
@@ -260,15 +243,9 @@ TEST_F(AggregationServiceInternalsHandlerImplTest, NotifyReportHandled) {
 }
 
 TEST_F(AggregationServiceInternalsHandlerImplTest, NotifyReportHandled_NoId) {
-  MockObserver observer;
-  mojo::Receiver<aggregation_service_internals::mojom::Observer> receiver(
-      &observer);
-  internals_handler_->AddObserver(receiver.BindNewPipeAndPassRemote(),
-                                  base::DoNothing());
-
   aggregation_service_internals::mojom::WebUIAggregatableReportPtr web_report;
   base::RunLoop run_loop;
-  EXPECT_CALL(observer, OnReportHandled)
+  EXPECT_CALL(observer_, OnReportHandled)
       .WillOnce(testing::DoAll(base::test::RunClosure(run_loop.QuitClosure()),
                                MoveArg<0>(&web_report)));
 
@@ -292,28 +269,6 @@ TEST_F(AggregationServiceInternalsHandlerImplTest, NotifyReportHandled_NoId) {
   VerifyWebUIAggregatableReport(
       *web_report, request, /*id=*/absl::nullopt, report, now,
       aggregation_service_internals::mojom::ReportStatus::kSent);
-}
-
-TEST_F(AggregationServiceInternalsHandlerImplTest,
-       AggregationServiceDisabled_NoCrash) {
-  ShutdownAggregationService();
-
-  internals_handler_->GetReports(/*callback=*/base::DoNothing());
-  internals_handler_->SendReports(
-      {/*ids=*/AggregationServiceStorage::RequestId(1)},
-      /*callback=*/base::DoNothing());
-  internals_handler_->ClearStorage(/*callback=*/base::DoNothing());
-
-  MockObserver observer;
-  mojo::Receiver<aggregation_service_internals::mojom::Observer> receiver(
-      &observer);
-  base::RunLoop run_loop;
-  internals_handler_->AddObserver(receiver.BindNewPipeAndPassRemote(),
-                                  base::BindLambdaForTesting([&](bool success) {
-                                    EXPECT_FALSE(success);
-                                    run_loop.Quit();
-                                  }));
-  run_loop.Run();
 }
 
 }  // namespace content

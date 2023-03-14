@@ -4,8 +4,8 @@
 
 import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {setHotspotConfigForTesting} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.js';
+import {HotspotAllowStatus, HotspotControlResult, HotspotState} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';
 import {FakeHotspotConfig} from 'chrome://resources/ash/common/hotspot/fake_hotspot_config.js';
-import {CrosHotspotConfigInterface, CrosHotspotConfigObserverInterface, HotspotAllowStatus, HotspotConfig, HotspotControlResult, HotspotInfo, HotspotState, WiFiSecurityMode} from 'chrome://resources/mojo/chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';

@@ -731,11 +731,16 @@ void X11Window::Minimize() {
 }
 
 void X11Window::Restore() {
-  should_maximize_after_map_ = false;
-  restore_in_flight_ = true;
-  SetWMSpecState(false, x11::GetAtom("_NET_WM_STATE_MAXIMIZED_VERT"),
-                 x11::GetAtom("_NET_WM_STATE_MAXIMIZED_HORZ"));
-  SetWMSpecState(false, x11::GetAtom("_NET_WM_STATE_HIDDEN"), x11::Atom::None);
+  if (IsMinimized()) {
+    restore_in_flight_ = true;
+    SetWMSpecState(false, x11::GetAtom("_NET_WM_STATE_HIDDEN"),
+                   x11::Atom::None);
+  } else if (IsMaximized()) {
+    restore_in_flight_ = true;
+    should_maximize_after_map_ = false;
+    SetWMSpecState(false, x11::GetAtom("_NET_WM_STATE_MAXIMIZED_VERT"),
+                   x11::GetAtom("_NET_WM_STATE_MAXIMIZED_HORZ"));
+  }
 }
 
 PlatformWindowState X11Window::GetPlatformWindowState() const {
@@ -1890,6 +1895,10 @@ bool X11Window::IsMinimized() const {
 }
 
 bool X11Window::IsMaximized() const {
+  // In X11, if a maximized window is minimized, it will have both the "hidden"
+  // and "maximized" states.
+  if (IsMinimized())
+    return false;
   return (HasWMSpecProperty(window_properties_,
                             x11::GetAtom("_NET_WM_STATE_MAXIMIZED_VERT")) &&
           HasWMSpecProperty(window_properties_,

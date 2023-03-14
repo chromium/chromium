@@ -41,6 +41,9 @@ import("//build/rust/rust_target.gni")
 #     Edition of the Rust language to be used.
 #     Options are "2015", "2018" and "2021". Defaults to "2021".
 #
+#   allow_unsafe (optional)
+#     Set to true to allow unsafe code in this target. Defaults to false.
+#
 #   configs (optional)
 #     A list of config labels (in the GN meaning) applying to this target.
 #

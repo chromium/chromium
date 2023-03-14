@@ -161,12 +161,8 @@ class ArrayBufferSharedMemoryMapper : public base::SharedMemoryMapper {
     size_t allocation_granularity = address_space->allocation_granularity();
 
     v8::PlatformSharedMemoryHandle v8_handle;
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
     v8_handle = v8::SharedMemoryHandleFromMachMemoryEntry(handle);
-#elif BUILDFLAG(IS_IOS)
-    // TODO(https://crbug.com/1412835): Use the same as Android until we get
-    // mach_vm support, then roll this into the IS_MAC block.
-    v8_handle = v8::SharedMemoryHandleFromFileDescriptor(handle);
 #elif BUILDFLAG(IS_FUCHSIA)
     v8_handle = v8::SharedMemoryHandleFromVMO(handle->get());
 #elif BUILDFLAG(IS_WIN)

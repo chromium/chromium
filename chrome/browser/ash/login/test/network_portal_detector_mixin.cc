@@ -135,12 +135,12 @@ void NetworkPortalDetectorMixin::SetShillDefaultNetwork(
           "State": "%s", "Strength": 100, "AutoConnect": true})";
   std::string json_str = base::StringPrintf(
       json.c_str(), network_guid.c_str(), network_type.c_str(), state.c_str());
-  base::Value json_dict = chromeos::onc::ReadDictionaryFromJson(json_str);
-  CHECK(json_dict.is_dict());
+  absl::optional<base::Value::Dict> json_dict =
+      chromeos::onc::ReadDictionaryFromJson(json_str);
+  CHECK(json_dict.has_value());
   ShillManagerClient::Get()->ConfigureServiceForProfile(
       dbus::ObjectPath(NetworkProfileHandler::GetSharedProfilePath()),
-      json_dict.GetDict(),
-      base::BindOnce([](const dbus::ObjectPath& result) {}),
+      *json_dict, base::BindOnce([](const dbus::ObjectPath& result) {}),
       base::BindOnce([](const std::string& err, const std::string& msg) {
         LOG(WARNING) << "Error: " << err << " Msg: " << msg;
       }));

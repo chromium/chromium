@@ -33,39 +33,39 @@ constexpr const char* const kNonCallbackTrailingFunctionAPINames[] = {
 };
 
 std::vector<std::unique_ptr<ArgumentSpec>> ValueListToArgumentSpecs(
-    const base::Value& specification_list,
+    const base::Value::List& specification_list,
     bool uses_returns_async) {
-  std::vector<std::unique_ptr<ArgumentSpec>> signature;
-  auto size = specification_list.GetList().size();
+  std::vector<std::unique_ptr<ArgumentSpec>> signatures;
+  auto size = specification_list.size();
   // If the API specification uses the returns_async format we will be pushing a
   // callback onto the end of the argument spec list during the call to the ctor
   // later, so we make room for it now when we reserve the size.
   if (uses_returns_async)
     size++;
-  signature.reserve(size);
-  for (const auto& value : specification_list.GetList()) {
-    CHECK(value.is_dict());
-    signature.push_back(std::make_unique<ArgumentSpec>(value));
+  signatures.reserve(size);
+  for (const auto& signature : specification_list) {
+    CHECK(signature.is_dict());
+    signatures.push_back(std::make_unique<ArgumentSpec>(signature));
   }
 
-  return signature;
+  return signatures;
 }
 
 std::unique_ptr<APISignature::ReturnsAsync> BuildReturnsAsyncFromValues(
-    const base::Value& returns_async_spec,
+    const base::Value::Dict& returns_async_spec,
     bool api_supports_promises) {
   auto returns_async = std::make_unique<APISignature::ReturnsAsync>();
   if (api_supports_promises)
     returns_async->promise_support = binding::APIPromiseSupport::kSupported;
-  const base::Value* callback_optional =
-      returns_async_spec.FindKeyOfType("optional", base::Value::Type::BOOLEAN);
-  returns_async->optional = callback_optional && callback_optional->GetBool();
+  absl::optional<bool> callback_optional =
+      returns_async_spec.FindBool("optional");
+  returns_async->optional = callback_optional.value_or(false);
 
   // If response validation is enabled, parse the callback signature. Otherwise,
   // there's no reason to, so don't bother.
   if (binding::IsResponseValidationEnabled()) {
-    const base::Value* callback_params =
-        returns_async_spec.FindKeyOfType("parameters", base::Value::Type::LIST);
+    const base::Value::List* callback_params =
+        returns_async_spec.FindList("parameters");
     if (callback_params) {
       returns_async->signature =
           ValueListToArgumentSpecs(*callback_params, false);
@@ -558,7 +558,8 @@ std::unique_ptr<APISignature> APISignature::CreateFromValues(
     const std::string& api_name,
     bool is_event_signature) {
   bool uses_returns_async = returns_async != nullptr;
-  auto argument_specs = ValueListToArgumentSpecs(spec_list, uses_returns_async);
+  auto argument_specs =
+      ValueListToArgumentSpecs(spec_list.GetList(), uses_returns_async);
 
   // Asynchronous returns for an API are either defined in the returns_async
   // part of the specification or as a trailing function argument.
@@ -580,8 +581,8 @@ std::unique_ptr<APISignature> APISignature::CreateFromValues(
   std::unique_ptr<APISignature::ReturnsAsync> returns_async_struct;
   if (returns_async_spec) {
     bool api_supports_promises = returns_async != nullptr;
-    returns_async_struct =
-        BuildReturnsAsyncFromValues(*returns_async_spec, api_supports_promises);
+    returns_async_struct = BuildReturnsAsyncFromValues(
+        returns_async_spec->GetDict(), api_supports_promises);
   }
 
   return std::make_unique<APISignature>(std::move(argument_specs),

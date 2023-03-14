@@ -77,11 +77,10 @@ void PrePaintTreeWalk::WalkTree(LocalFrameView& root_frame_view) {
   }
 #endif
 
-  bool was_opacity_updated = root_frame_view.UpdateAllPendingOpacityUpdates();
-  bool was_transform_updated = root_frame_view.UpdateAllPendingTransforms();
-
-  if (was_opacity_updated || was_transform_updated)
+  bool updates_executed = root_frame_view.ExecuteAllPendingUpdates();
+  if (updates_executed) {
     needs_invalidate_chrome_client_ = true;
+  }
 
   // If the page has anything changed, we need to inform the chrome client
   // so that the client will initiate repaint of the contents if needed (e.g.
@@ -476,7 +475,11 @@ void PrePaintTreeWalk::UpdateContextForOOFContainer(
   // fragment of an OOF fragment is always simply the parent.
   if (!context.current_container.IsInFragmentationContext() ||
       (fragment && fragment->IsMonolithic())) {
-    context.current_container.fragment = fragment;
+    // Anonymous blocks are not allowed to be containing blocks, so we should
+    // skip over any such elements.
+    if (!fragment || !fragment->IsAnonymousBlock()) {
+      context.current_container.fragment = fragment;
+    }
   }
 
   if (!object.CanContainAbsolutePositionObjects())

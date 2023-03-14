@@ -9,6 +9,7 @@ source_set("web_state") {
     ":policy_decision_state_tracker",
     ":web_state_impl_header",
     "//base",
+    "//build:blink_buildflags",
     "//ios/third_party/webkit",
     "//ios/web/common",
     "//ios/web/js_messaging",
@@ -33,6 +34,10 @@ source_set("web_state") {
     "//ui/gfx",
   ]
 
+  if (use_blink) {
+    deps += [ "//ios/web/content" ]
+  }
+
   sources = [
     "global_web_state_event_tracker.h",
     "global_web_state_event_tracker.mm",
@@ -40,6 +45,7 @@ source_set("web_state") {
     "web_state.mm",
     "web_state_delegate.mm",
     "web_state_delegate_bridge.mm",
+    "web_state_factory.mm",
     "web_state_impl.mm",
     "web_state_impl_realized_web_state.h",
     "web_state_impl_realized_web_state.mm",

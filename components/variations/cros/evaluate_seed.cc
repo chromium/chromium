@@ -5,13 +5,14 @@
 #include "components/variations/cros/evaluate_seed.h"
 
 #include "base/check.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/system/sys_info.h"
 #include "build/branding_buildflags.h"
 #include "chromeos/crosapi/cpp/channel_to_enum.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
-#include "components/variations/cros/featured.pb.h"
+#include "components/variations/proto/cros_safe_seed.pb.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/service/variations_field_trial_creator.h"
 
@@ -48,8 +49,10 @@ std::unique_ptr<ClientFilterableState> GetClientFilterableState(
   bool enterprise_enrolled = command_line->HasSwitch(kEnterpriseEnrolledSwitch);
 
   // TODO(b/263975722): Fill in the rest of ClientFilterableState.
-  auto state = std::make_unique<ClientFilterableState>(base::BindOnce(
-      [](bool enrolled) { return enrolled; }, enterprise_enrolled));
+  auto state = std::make_unique<ClientFilterableState>(
+      base::BindOnce([](bool enrolled) { return enrolled; },
+                     enterprise_enrolled),
+      base::BindOnce([] { return base::flat_set<uint64_t>(); }));
 
   state->channel = GetChannel(command_line);
   return state;
@@ -57,7 +60,7 @@ std::unique_ptr<ClientFilterableState> GetClientFilterableState(
 
 absl::optional<SafeSeed> GetSafeSeedData(const base::CommandLine* command_line,
                                          FILE* stream) {
-  featured::SeedDetails safe_seed;
+  variations::SeedDetails safe_seed;
   if (command_line->HasSwitch(kSafeSeedSwitch)) {
     // Read safe seed from |stream|.
     std::string safe_seed_data;

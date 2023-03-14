@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "base/json/json_writer.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
@@ -59,6 +60,9 @@ constexpr char kQueryParamSeparator[] = "&";
 constexpr char kQueryParamKeyValueSeparator[] = "=";
 constexpr char kFromAssistantQueryParamValue[] = "true";
 constexpr char kSettingsSearchFeedbackQueryParamValue[] = "true";
+constexpr char kFromAutofillQueryParam[] = "from_autofill";
+constexpr char kFromAutofillParamValue[] = "true";
+constexpr char kAutofillMetadataQueryParam[] = "autofill_metadata";
 
 // Concat query parameter with escaped value.
 std::string StrCatQueryParam(const std::string query_param,
@@ -73,7 +77,8 @@ GURL BuildFeedbackUrl(const std::string extra_diagnostics,
                       const std::string description_placeholder_text,
                       const std::string category_tag,
                       const GURL page_url,
-                      FeedbackSource source) {
+                      FeedbackSource source,
+                      base::Value::Dict autofill_metadata) {
   std::vector<std::string> query_params;
 
   if (!extra_diagnostics.empty()) {
@@ -109,6 +114,16 @@ GURL BuildFeedbackUrl(const std::string extra_diagnostics,
     query_params.emplace_back(
         StrCatQueryParam(kSettingsSearchFeedbackQueryParam,
                          kSettingsSearchFeedbackQueryParamValue));
+  }
+
+  if (source == kFeedbackSourceAutofillContextMenu) {
+    query_params.emplace_back(
+        StrCatQueryParam(kFromAutofillQueryParam, kFromAutofillParamValue));
+
+    std::string autofill_metadata_json;
+    base::JSONWriter::Write(autofill_metadata, &autofill_metadata_json);
+    query_params.emplace_back(
+        StrCatQueryParam(kAutofillMetadataQueryParam, autofill_metadata_json));
   }
 
   // Use default URL if no extra parameters to be added.
@@ -210,9 +225,9 @@ void RequestFeedbackFlow(const GURL& page_url,
     // TODO(crbug.com/1407646): Include autofill metadata into CrOS new feedback
     // tool.
     ash::SystemAppLaunchParams params{};
-    params.url = BuildFeedbackUrl(extra_diagnostics, description_template,
-                                  description_placeholder_text, category_tag,
-                                  page_url, source);
+    params.url = BuildFeedbackUrl(
+        extra_diagnostics, description_template, description_placeholder_text,
+        category_tag, page_url, source, std::move(autofill_metadata));
 
     ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::OS_FEEDBACK,
                                  std::move(params));

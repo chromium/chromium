@@ -94,6 +94,11 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
   // Should be called only after the bubble has been displayed.
   void UpdateFootnote();
 
+  // Invoked when the user clicks on the eye image button in the password
+  // dropdown. It invokes the controller to determine if the user should be able
+  // to unmask the password.
+  void TogglePasswordRevealed();
+
   SaveUpdateBubbleController controller_;
 
   // True iff it is an update password bubble on creation. False iff it is a

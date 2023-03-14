@@ -71,6 +71,11 @@ TEST(ScopedMockLogDeathTest, StopCapturingLogsCannotBeCalledWhenNotCapturing) {
       },
       "StopCapturingLogs");
 }
+
+TEST(ScopedMockLogDeathTest, FailsCheckIfStartCapturingLogsIsNeverCalled) {
+  EXPECT_DEATH({ absl::ScopedMockLog log; },
+               "Did you forget to call StartCapturingLogs");
+}
 #endif
 
 // Tests that ScopedMockLog intercepts LOG()s when it's alive.

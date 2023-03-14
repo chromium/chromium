@@ -8,6 +8,7 @@
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "build/build_config.h"');
+GEN('#include "components/history_clusters/core/features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 /** Test fixture for shared Polymer 3 components using Mojo. */
@@ -58,6 +59,15 @@ var CrComponentsHistoryClustersTest =
   /** @override */
   get browsePreload() {
     return 'chrome://history/test_loader.html?module=cr_components/history_clusters_test.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        'history_clusters::internal::kJourneysImages',
+      ],
+    };
   }
 };
 

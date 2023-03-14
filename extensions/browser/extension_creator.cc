@@ -183,8 +183,7 @@ std::unique_ptr<crypto::RSAPrivateKey> ExtensionCreator::GenerateKey(
   }
 
   if (!output_private_key_path.empty()) {
-    if (-1 == base::WriteFile(output_private_key_path, pem_output.c_str(),
-                              pem_output.size())) {
+    if (!base::WriteFile(output_private_key_path, pem_output)) {
       error_message_ =
           l10n_util::GetStringUTF8(IDS_EXTENSION_PRIVATE_KEY_FAILED_TO_OUTPUT);
       return nullptr;

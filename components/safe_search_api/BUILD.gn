@@ -4,6 +4,8 @@
 
 source_set("safe_search_api") {
   sources = [
+    "safe_search_util.cc",
+    "safe_search_util.h",
     "url_checker.cc",
     "url_checker.h",
     "url_checker_client.h",
@@ -58,6 +60,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "safe_search/safe_search_url_checker_client_unittest.cc",
+    "safe_search_util_unittest.cc",
     "url_checker_unittest.cc",
   ]
   deps = [

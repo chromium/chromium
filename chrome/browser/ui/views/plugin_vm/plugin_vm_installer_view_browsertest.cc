@@ -373,7 +373,9 @@ IN_PROC_BROWSER_TEST_F(PluginVmInstallerViewBrowserTestWithFeatureEnabled,
   // Setup concierge and the dispatcher for VM already imported.
   vm_tools::concierge::ListVmDisksResponse list_vm_disks_response;
   list_vm_disks_response.set_success(true);
-  list_vm_disks_response.add_images();
+  auto* image = list_vm_disks_response.add_images();
+  image->set_name(plugin_vm::kPluginVmName);
+  image->set_storage_location(vm_tools::concierge::STORAGE_CRYPTOHOME_PLUGINVM);
   fake_concierge_client_->set_list_vm_disks_response(list_vm_disks_response);
 
   vm_tools::plugin_dispatcher::ListVmResponse list_vms_response;

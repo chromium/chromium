@@ -70,7 +70,7 @@ void UIResourceLayer::SetLayerTreeHost(LayerTreeHost* host) {
   // Recreate the resource held against the new LTH.
   RecreateUIResourceIdFromBitmap();
 
-  SetDrawsContent(HasDrawableContent());
+  UpdateDrawsContent();
 }
 
 void UIResourceLayer::SetBitmap(const SkBitmap& bitmap) {
@@ -123,7 +123,7 @@ void UIResourceLayer::RecreateUIResourceIdFromBitmap() {
 
 void UIResourceLayer::SetUIResourceIdInternal(UIResourceId resource_id) {
   resource_id_.Write(*this) = resource_id;
-  SetDrawsContent(HasDrawableContent());
+  UpdateDrawsContent();
   SetNeedsCommit();
 }
 

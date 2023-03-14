@@ -12,7 +12,7 @@ from contextlib import ExitStack
 from typing import List
 
 from common import register_common_args, register_device_args, \
-                   register_log_args, resolve_packages, \
+                   register_log_args, resolve_packages, run_ffx_command, \
                    set_ffx_isolate_dir
 from compatible_utils import running_unattended
 from ffx_integration import ScopedFfxConfig, test_connection
@@ -82,6 +82,11 @@ def main():
         if running_unattended():
             set_ffx_isolate_dir(
                 stack.enter_context(tempfile.TemporaryDirectory()))
+        # crbug.com/1408189: overnet.cso causes flakes in overnet.
+        # Need to restart daemon before we start
+        stack.enter_context(ScopedFfxConfig('overnet.cso', 'disabled'))
+        run_ffx_command(('daemon', 'stop'), check=False)
+        if running_unattended():
             stack.enter_context(
                 ScopedFfxConfig('repository.server.listen', '"[::]:0"'))
         log_manager = stack.enter_context(LogManager(runner_args.logs_dir))

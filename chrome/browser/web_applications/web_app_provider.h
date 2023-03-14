@@ -16,6 +16,10 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+#if (BUILDFLAG(IS_CHROMEOS))
+#include "chrome/browser/web_applications/web_app_run_on_os_login_manager.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 class Profile;
 
 namespace content {
@@ -207,6 +211,9 @@ class WebAppProvider : public KeyedService {
   std::unique_ptr<WebAppAudioFocusIdMap> audio_focus_id_map_;
   std::unique_ptr<WebAppInstallManager> install_manager_;
   std::unique_ptr<WebAppPolicyManager> web_app_policy_manager_;
+#if (BUILDFLAG(IS_CHROMEOS))
+  std::unique_ptr<WebAppRunOnOsLoginManager> web_app_run_on_os_login_manager_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<WebAppUiManager> ui_manager_;
   std::unique_ptr<OsIntegrationManager> os_integration_manager_;
   std::unique_ptr<WebAppCommandManager> command_manager_;

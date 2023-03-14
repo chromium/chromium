@@ -478,6 +478,7 @@ HistoryFuzzyProvider::HistoryFuzzyProvider(AutocompleteProviderClient* client)
   penalty_high_ = OmniboxFieldTrial::kFuzzyUrlSuggestionsPenaltyHigh.Get();
   penalty_taper_length_ =
       OmniboxFieldTrial::kFuzzyUrlSuggestionsPenaltyTaperLength.Get();
+  counterfactual_ = OmniboxFieldTrial::kFuzzyUrlSuggestionsCounterfactual.Get();
 
   if (ShouldBypassForLowEndDevice()) {
     // Note, this early return will prevent loading from database, which saves
@@ -498,6 +499,10 @@ HistoryFuzzyProvider::HistoryFuzzyProvider(AutocompleteProviderClient* client)
                            weak_ptr_factory_.GetWeakPtr())),
         &task_tracker_);
   }
+}
+
+void HistoryFuzzyProvider::SetCounterfactualRelevanceHint(int relevance_hint) {
+  counterfactual_relevance_hint_ = relevance_hint;
 }
 
 void HistoryFuzzyProvider::Start(const AutocompleteInput& input,
@@ -530,16 +535,25 @@ void HistoryFuzzyProvider::Start(const AutocompleteInput& input,
   }
 
   if (!matches_.empty()) {
-    // This will likely produce some false positives.
-    client()->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
-        OmniboxTriggeredFeatureService::Feature::kFuzzyUrlSuggestions);
+    // This will likely produce some false positives, but the likelihood
+    // is reduced by only triggering when one of the matches exceeds
+    // the relevance hint, an estimated cutoff value at which we expect fuzzy
+    // matches could persist after sorting and culling the full match set.
+    const bool met_threshold = std::any_of(
+        matches_.begin(), matches_.end(), [=](const AutocompleteMatch& match) {
+          return match.relevance > counterfactual_relevance_hint_;
+        });
+    if (met_threshold) {
+      client()->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
+          OmniboxTriggeredFeatureService::Feature::kFuzzyUrlSuggestions);
+    }
 
     // When in the counterfactual group, we do all the work of finding fuzzy
     // matches, but do not provide the benefit. To reduce risk of unintended
     // consequences downstream (for example showing fewer suggestions than
     // normal), the matches are cleared here instead of at end of result
     // processing pipeline so they won't interact or dedupe with other matches.
-    if (OmniboxFieldTrial::kFuzzyUrlSuggestionsCounterfactual.Get()) {
+    if (counterfactual_) {
       matches_.clear();
     }
   }

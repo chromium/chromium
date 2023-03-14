@@ -28,8 +28,7 @@ class DeviceCommandRemotePowerwashJob : public RemoteCommandJob {
  protected:
   // RemoteCommandJob:
   bool IsExpired(base::TimeTicks now) override;
-  void RunImpl(CallbackWithResult succeeded_callback,
-               CallbackWithResult failed_callback) override;
+  void RunImpl(CallbackWithResult result_callback) override;
 
  private:
   RemoteCommandsService* const service_;

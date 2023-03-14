@@ -88,7 +88,9 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
 
     // Provide a mock cloud policy client.
     test_env_.client()->SetDMToken(kDMToken);
-    test_reporting_ = std::make_unique<ReportingClient::TestEnvironment>(
+
+    // Provide client test environment with local storage.
+    test_reporting_ = ReportingClient::TestEnvironment::CreateWithLocalStorage(
         base::FilePath(location_.GetPath()),
         base::StringPiece(
             reinterpret_cast<const char*>(signature_verification_public_key_),

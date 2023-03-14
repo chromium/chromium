@@ -2,7 +2,7 @@ Initial
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [785, 626],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -10,14 +10,12 @@ Initial
     {
       "name": "LayoutNGBlockFlow DIV class='composited container'",
       "bounds": [749, 145],
-      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 1
     },
     {
       "name": "LayoutImage IMG class='visible composited box'",
       "bounds": [100, 100],
-      "contentsOpaqueForText": true,
       "transform": 3
     },
     {
@@ -63,28 +61,25 @@ After step 1
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
-      "bounds": [785, 1590],
+      "name": "Scrolling background of LayoutNGView #document",
+      "bounds": [785, 1558],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
       "name": "LayoutNGBlockFlow DIV class='composited container'",
       "bounds": [749, 145],
-      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 1
     },
     {
       "name": "LayoutImage IMG class='hidden composited box'",
       "bounds": [100, 100],
-      "contentsOpaqueForText": true,
       "transform": 2
     },
     {
       "name": "LayoutImage IMG class='visible composited box'",
       "bounds": [100, 100],
-      "contentsOpaqueForText": true,
       "transform": 4
     },
     {
@@ -140,41 +135,36 @@ After step 2
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
-      "bounds": [785, 2809],
+      "name": "Scrolling background of LayoutNGView #document",
+      "bounds": [785, 2729],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
       "name": "LayoutNGBlockFlow DIV class='composited container'",
       "bounds": [749, 145],
-      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 1
     },
     {
       "name": "LayoutImage IMG class='hidden composited box'",
       "bounds": [100, 100],
-      "contentsOpaqueForText": true,
       "transform": 2
     },
     {
       "name": "LayoutNGBlockFlow DIV class='composited hidden container'",
       "position": [-4, -4],
       "bounds": [757, 153],
-      "contentsOpaqueForText": true,
       "transform": 3
     },
     {
       "name": "LayoutImage IMG class='composited box'",
       "bounds": [100, 100],
-      "contentsOpaqueForText": true,
       "transform": 4
     },
     {
       "name": "LayoutImage IMG class='visible composited box'",
       "bounds": [100, 100],
-      "contentsOpaqueForText": true,
       "transform": 6
     },
     {

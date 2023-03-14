@@ -30,7 +30,8 @@
             var(--color-toggle-button-track-off,
                 var(--cr-fallback-color-surface-variant));
         --cr-toggle-unchecked-button-color:
-            var(--color-toggle-button-thumb-off, #74777f);
+            var(--color-toggle-button-thumb-off,
+                var(--cr-fallback-color-outline));
 
         --cr-toggle-checked-ripple-color: var(--cr-active-background-color);
         --cr-toggle-unchecked-ripple-color: var(--cr-active-background-color);
@@ -64,11 +65,6 @@
           --cr-toggle-unchecked-button-color: var(--google-grey-300);
           --cr-toggle-unchecked-ripple-color:
               rgba(var(--google-grey-300-rgb), .4);
-        }
-
-        :host-context([chrome-refresh-2023]):host {
-          --cr-toggle-unchecked-button-color:
-              var(--color-toggle-button-thumb-off, #8e9099);
         }
       }
       /* Keep the prefers-color-scheme and [dark] rules the same. */
@@ -188,9 +184,24 @@
         width: var(--cr-toggle-knob-diameter_);
       }
 
+      :host-context([chrome-refresh-2023]):host(:active) #knob {
+        --cr-toggle-knob-diameter_: 10px;
+      }
+
       :host-context([chrome-refresh-2023]):host([checked]) #knob {
         --cr-toggle-knob-diameter_: 12px;
         left: calc(100% - var(--cr-toggle-knob-center-edge-distance_));
+      }
+
+      :host-context([chrome-refresh-2023]):host([checked]:active) #knob {
+        --cr-toggle-knob-diameter_: 14px;
+      }
+
+      :host-context([chrome-refresh-2023]):host([checked]:active) #knob,
+      :host-context([chrome-refresh-2023]):host([checked]:hover) #knob {
+        --cr-toggle-checked-button-color:
+            var(--color-toggle-button-thumb-on-hover-pressed,
+                var(--cr-fallback-color-primary-container));
       }
 
       :host-context([chrome-refresh-2023]):host(:hover) #knob::before {
@@ -204,7 +215,6 @@
         transform: translate(-50%, -50%);
         width: var(--cr-toggle-ripple-diameter);
       }
-
 
       paper-ripple {
         --paper-ripple-opacity: 1;

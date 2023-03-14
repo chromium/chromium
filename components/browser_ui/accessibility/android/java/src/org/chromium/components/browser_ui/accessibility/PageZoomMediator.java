@@ -25,6 +25,7 @@ public class PageZoomMediator {
     private final PropertyModel mModel;
     private WebContents mWebContents;
     private double mLatestZoomValue;
+    private double mDefaultZoomFactor;
 
     public PageZoomMediator(PropertyModel model) {
         mModel = model;
@@ -89,6 +90,10 @@ public class PageZoomMediator {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     void handleSeekBarValueChanged(int newValue) {
+        if (PageZoomUtils.shouldSnapSeekBarValueToDefaultZoom(newValue, mDefaultZoomFactor)) {
+            newValue = PageZoomUtils.convertZoomFactorToSeekBarValue(mDefaultZoomFactor);
+        }
+
         setZoomLevel(mWebContents, PageZoomUtils.convertSeekBarValueToZoomFactor(newValue));
         mModel.set(PageZoomProperties.CURRENT_SEEK_VALUE, newValue);
         updateButtonStates(PageZoomUtils.convertSeekBarValueToZoomFactor(newValue));
@@ -102,6 +107,8 @@ public class PageZoomMediator {
         // The seekbar should start at the seek value that corresponds to this zoom factor.
         mModel.set(PageZoomProperties.CURRENT_SEEK_VALUE,
                 convertZoomFactorToSeekBarValue(currentZoomFactor));
+
+        mDefaultZoomFactor = mModel.get(PageZoomProperties.DEFAULT_ZOOM_FACTOR);
 
         updateButtonStates(currentZoomFactor);
 

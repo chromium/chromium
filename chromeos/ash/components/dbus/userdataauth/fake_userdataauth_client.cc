@@ -89,6 +89,10 @@ struct FakeUserDataAuthClient::UserCryptohomeState {
   // A flag describing how we pretend that the user's home directory migration
   // was not completed correctly.
   bool incomplete_migration = false;
+
+  // If users are created in test constructor, UserDataDir is not available
+  // yet, so actual directory creation needs to be postponed.
+  bool postponed_directory_creation = false;
 };
 
 namespace {
@@ -496,9 +500,9 @@ void FakeUserDataAuthClient::TestApi::AddExistingUser(
   if (!profile_dir) {
     LOG(WARNING) << "User data directory has not been set, will not create "
                     "user profile directory";
+    user_it->second.postponed_directory_creation = true;
     return;
   }
-
   base::ScopedAllowBlockingForTesting allow_blocking;
   CHECK(base::CreateDirectory(*profile_dir));
 }
@@ -507,6 +511,19 @@ absl::optional<base::FilePath>
 FakeUserDataAuthClient::TestApi::GetUserProfileDir(
     const cryptohome::AccountIdentifier& account_id) const {
   return FakeUserDataAuthClient::Get()->GetUserProfileDir(account_id);
+}
+
+void FakeUserDataAuthClient::TestApi::CreatePostponedDirectories() {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  for (auto& user_it : FakeUserDataAuthClient::Get()->users_) {
+    if (!user_it.second.postponed_directory_creation) {
+      continue;
+    }
+    const absl::optional<base::FilePath> profile_dir =
+        FakeUserDataAuthClient::Get()->GetUserProfileDir(user_it.first);
+    CHECK(profile_dir) << "User data directory has not been set";
+    CHECK(base::CreateDirectory(*profile_dir));
+  }
 }
 
 void FakeUserDataAuthClient::TestApi::AddKey(
@@ -1274,6 +1291,13 @@ void FakeUserDataAuthClient::UpdateAuthFactor(
     UpdateAuthFactorCallback callback) {
   ::user_data_auth::UpdateAuthFactorReply reply;
   ReplyOnReturn auto_reply(&reply, std::move(callback));
+  RememberRequest<Operation::kUpdateAuthFactor>(request);
+
+  if (auto error = TakeOperationError(Operation::kUpdateAuthFactor);
+      error != CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
+    reply.set_error(error);
+    return;
+  }
 
   auto error = CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
   auto* session =

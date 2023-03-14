@@ -44,6 +44,10 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionKeyManager {
     provisioned_key_request_ = std::move(request);
   }
 
+  void set_native_display_delegate(NativeDisplayDelegate* delegate) {
+    native_display_delegate_ = delegate;
+  }
+
   // Check for the key prop of |displays_states|, request the key by calling
   // |provisioned_key_request_| and inject the key into the kernel if
   // required. When the displays config is done, call |on_key_set|.
@@ -63,6 +67,8 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionKeyManager {
   // It is assumed that the key is the same for all the displays and doesn't
   // change throughout the life of the process.
   std::string cached_provisioned_key_;
+
+  NativeDisplayDelegate* native_display_delegate_ = nullptr;  // Not owned.
 
   base::flat_map<int64_t, KeySetCallback> pending_display_callbacks_;
   base::flat_set<int64_t> displays_pending_set_key_;

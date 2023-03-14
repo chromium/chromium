@@ -85,15 +85,11 @@ class BLINK_EXPORT WebPerformanceMetricsForReporting {
   double LargestTextPaintForMetrics() const;
   uint64_t LargestTextPaintSizeForMetrics() const;
   base::TimeTicks LargestContentfulPaintAsMonotonicTimeForMetrics() const;
-  double ExperimentalLargestImagePaint() const;
-  uint64_t ExperimentalLargestImagePaintSize() const;
   blink::LargestContentfulPaintType LargestContentfulPaintTypeForMetrics()
       const;
   double LargestContentfulPaintImageBPPForMetrics() const;
   absl::optional<WebURLRequest::Priority>
   LargestContentfulPaintImageRequestPriorityForMetrics() const;
-  double ExperimentalLargestTextPaint() const;
-  uint64_t ExperimentalLargestTextPaintSize() const;
   double FirstEligibleToPaint() const;
   double FirstInputOrScrollNotifiedTimestamp() const;
   absl::optional<base::TimeDelta> FirstInputDelay() const;

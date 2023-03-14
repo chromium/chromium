@@ -15,6 +15,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -205,9 +206,9 @@ TEST_F(ShillDataCollectorTest, CollectAndExportUnmaskedData) {
   PIIMap detected_pii = data_collector.GetDetectedPII();
   // Get the types of all PII data detected
   std::set<redaction::PIIType> detected_pii_types;
-  std::transform(detected_pii.begin(), detected_pii.end(),
-                 std::inserter(detected_pii_types, detected_pii_types.end()),
-                 [](auto pair) { return pair.first; });
+  base::ranges::transform(
+      detected_pii, std::inserter(detected_pii_types, detected_pii_types.end()),
+      &PIIMap::value_type::first);
   // If set A is a subset of set B, then A unioned with B equals B
   EXPECT_THAT(detected_pii_types, IsSupersetOf(kAllPIITypesInData));
 
@@ -263,9 +264,9 @@ TEST_F(ShillDataCollectorTest, CollectAndExportMaskedData) {
   PIIMap detected_pii = data_collector.GetDetectedPII();
   // Get the types of all PII data detected
   std::set<redaction::PIIType> detected_pii_types;
-  std::transform(detected_pii.begin(), detected_pii.end(),
-                 std::inserter(detected_pii_types, detected_pii_types.end()),
-                 [](auto pair) { return pair.first; });
+  base::ranges::transform(
+      detected_pii, std::inserter(detected_pii_types, detected_pii_types.end()),
+      &PIIMap::value_type::first);
   // If set A is a subset of set B, then A unioned with B equals B
   EXPECT_THAT(detected_pii_types, IsSupersetOf(kAllPIITypesInData));
 

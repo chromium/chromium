@@ -14,6 +14,7 @@
 #include "ui/android/resources/ui_resource_provider.h"
 #include "ui/gfx/geometry/size_conversions.h"
 
+namespace thumbnail {
 namespace {
 
 SkBitmap CreateSmallHolderBitmap() {
@@ -63,6 +64,7 @@ void Thumbnail::SetBitmap(const SkBitmap& bitmap) {
   scaled_content_size_ =
       gfx::ScaleSize(gfx::SizeF(bitmap.width(), bitmap.height()), 1.f / scale_);
   scaled_data_size_ = scaled_content_size_;
+  size_in_bytes_ = bitmap.height() * bitmap.rowBytes();
   bitmap_ = cc::UIResourceBitmap(bitmap);
 }
 
@@ -75,6 +77,7 @@ void Thumbnail::SetCompressedBitmap(sk_sp<SkPixelRef> compressed_bitmap,
   gfx::Size data_size(compressed_bitmap->width(), compressed_bitmap->height());
   scaled_content_size_ = gfx::ScaleSize(gfx::SizeF(content_size), 1.f / scale_);
   scaled_data_size_ = gfx::ScaleSize(gfx::SizeF(data_size), 1.f / scale_);
+  size_in_bytes_ = compressed_bitmap->height() * compressed_bitmap->rowBytes();
   bitmap_ = cc::UIResourceBitmap(std::move(compressed_bitmap), data_size);
 }
 
@@ -117,3 +120,5 @@ void Thumbnail::ClearUIResourceId() {
   }
   ui_resource_id_ = 0;
 }
+
+}  // namespace thumbnail

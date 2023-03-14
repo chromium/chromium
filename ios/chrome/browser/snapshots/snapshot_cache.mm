@@ -26,9 +26,10 @@
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
 #import "base/time/time.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache_observer.h"
 #import "ios/chrome/browser/snapshots/snapshot_lru_cache.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/tabs/features.h"
 #import "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -74,6 +75,18 @@ const CGFloat kJPEGImageQuality = 1.0;  // Highest quality. No compression.
 // Maximum size in number of elements that the LRU cache can hold before
 // starting to evict elements.
 const NSUInteger kLRUCacheMaxCapacity = 6;
+
+// Maximum size in number of elements that the LRU cache can hold before
+// starting to evict elements when PinnedTabs feature is enabled.
+//
+// To calculate the cache size number we'll start with the assumption that
+// currently snapshot preloading feature "works fine". In the reality it might
+// not be the case for large screen devices such as iPad. Another assumption
+// here is that pinned tabs feature requires on average 4 more snapshots to be
+// used. Based on that kLRUCacheMaxCapacityForPinnedTabsEnabled is
+// kLRUCacheMaxCapacity which "works fine" + on average 4 more snapshots needed
+// for pinned tabs feature.
+const NSUInteger kLRUCacheMaxCapacityForPinnedTabsEnabled = 10;
 
 // Returns the path of the image for `snapshot_id`, in `cache_directory`,
 // of type `image_type` and scale `image_scale`.
@@ -369,8 +382,10 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
 - (instancetype)initWithStoragePath:(const base::FilePath&)storagePath {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if ((self = [super init])) {
-    _lruCache =
-        [[SnapshotLRUCache alloc] initWithCacheSize:kLRUCacheMaxCapacity];
+    NSUInteger cacheSize = IsPinnedTabsEnabled()
+                               ? kLRUCacheMaxCapacityForPinnedTabsEnabled
+                               : kLRUCacheMaxCapacity;
+    _lruCache = [[SnapshotLRUCache alloc] initWithCacheSize:cacheSize];
     _cacheDirectory = storagePath;
     _snapshotsScale = ImageScaleForDevice();
 

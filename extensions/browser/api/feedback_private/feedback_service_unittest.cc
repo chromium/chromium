@@ -117,7 +117,8 @@ class FeedbackServiceTest : public ApiUnitTest {
                                 /*load_system_info=*/false,
                                 /*send_tab_titles=*/send_tab_titles,
                                 /*send_histograms=*/true,
-                                /*send_bluetooth_logs=*/true};
+                                /*send_bluetooth_logs=*/true,
+                                /*send_autofill_metadata=*/false};
 
     EXPECT_CALL(*mock_uploader_, QueueReport).Times(1);
     base::MockCallback<SendFeedbackCallback> mock_callback;
@@ -149,7 +150,8 @@ TEST_F(FeedbackServiceTest, SendFeedbackWithoutSysInfo) {
                               /*load_system_info=*/false,
                               /*send_tab_titles=*/true,
                               /*send_histograms=*/true,
-                              /*send_bluetooth_logs=*/true};
+                              /*send_bluetooth_logs=*/true,
+                              /*send_autofill_metadata=*/false};
 
   EXPECT_CALL(*mock_uploader_, QueueReport).Times(1);
   base::MockCallback<SendFeedbackCallback> mock_callback;
@@ -167,7 +169,8 @@ TEST_F(FeedbackServiceTest, SendFeedbackLoadSysInfo) {
                               /*load_system_info=*/true,
                               /*send_tab_titles=*/true,
                               /*send_histograms=*/true,
-                              /*send_bluetooth_logs=*/true};
+                              /*send_bluetooth_logs=*/true,
+                              /*send_autofill_metadata=*/false};
 
   EXPECT_CALL(*mock_uploader_, QueueReport).Times(1);
   base::MockCallback<SendFeedbackCallback> mock_callback;
@@ -200,6 +203,24 @@ TEST_F(FeedbackServiceTest, SendFeedbackDoSendTabTitles) {
   EXPECT_EQ(1u, feedback_data_->sys_info()->count(
                     feedback::FeedbackReport::kMemUsageWithTabTitlesKey));
   EXPECT_EQ(1u, feedback_data_->sys_info()->count(kLacrosMemUsageWithTitleKey));
+}
+
+TEST_F(FeedbackServiceTest, SendFeedbackAutofillMetadata) {
+  const FeedbackParams params{/*is_internal_email=*/true,
+                              /*load_system_info=*/false,
+                              /*send_tab_titles=*/false,
+                              /*send_histograms=*/true,
+                              /*send_bluetooth_logs=*/true,
+                              /*send_autofill_metadata=*/true};
+  feedback_data_->set_autofill_metadata("Autofill Metadata");
+  EXPECT_CALL(*mock_uploader_, QueueReport).Times(1);
+  base::MockCallback<SendFeedbackCallback> mock_callback;
+  EXPECT_CALL(mock_callback, Run(true));
+
+  auto feedback_service =
+      base::MakeRefCounted<FeedbackService>(browser_context(), nullptr);
+
+  feedback_service->SendFeedback(params, feedback_data_, mock_callback.Get());
 }
 
 }  // namespace extensions

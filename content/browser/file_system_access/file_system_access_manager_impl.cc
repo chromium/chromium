@@ -925,7 +925,7 @@ void FileSystemAccessManagerImpl::DeserializeHandle(
           [](storage::FileSystemURL url,
              base::OnceCallback<void(const storage::FileSystemURL&)> callback,
              storage::QuotaErrorOr<storage::BucketInfo> result) {
-            if (!result.ok()) {
+            if (!result.has_value()) {
               // Drop `token`, and directly return.
               return;
             }

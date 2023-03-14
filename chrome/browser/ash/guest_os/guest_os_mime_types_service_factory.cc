@@ -24,7 +24,14 @@ GuestOsMimeTypesServiceFactory* GuestOsMimeTypesServiceFactory::GetInstance() {
 }
 
 GuestOsMimeTypesServiceFactory::GuestOsMimeTypesServiceFactory()
-    : ProfileKeyedServiceFactory("GuestOsMimeTypesService") {}
+    : ProfileKeyedServiceFactory(
+          "GuestOsMimeTypesService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {}
 
 GuestOsMimeTypesServiceFactory::~GuestOsMimeTypesServiceFactory() = default;
 

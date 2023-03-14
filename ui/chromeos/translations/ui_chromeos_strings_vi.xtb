@@ -84,6 +84,7 @@
 <translation id="1722487484194605434">Đang nén <ph name="NUMBER_OF_ITEMS" /> mục...</translation>
 <translation id="1722687688096767818">Đang thêm hồ sơ...</translation>
 <translation id="1726100011689679555">Máy chủ định danh</translation>
+<translation id="1727562178154619254">Sẵn sàng đồng bộ hoá</translation>
 <translation id="1729953886957086472">Tiếng Đức (Đức)</translation>
 <translation id="1730235522912993863">Tiếng Trung (Thương Hiệt)</translation>
 <translation id="1731889557567069540">Đã sao chép <ph name="NUMBER_OF_ITEMS" /> mục.</translation>
@@ -351,11 +352,11 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Dán</translation>
 <translation id="3952872973865944257">Tiếng Telugu (phiên âm)</translation>
-<translation id="3954354850384043518">Đang diễn ra</translation>
 <translation id="3958548648197196644">Kiwi</translation>
 <translation id="3971140002794351170">Tải hồ sơ mạng di động xuống, Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Tiếng Anh (Anh)</translation>
 <translation id="3975895378829046965">Tiếng Bangla (phiên âm)</translation>
+<translation id="3999574733850440202">Các tệp Microsoft mới mở gần đây đã được chuyển sang OneDrive</translation>
 <translation id="4002066346123236978">Tiêu đề</translation>
 <translation id="4017788180641807848">Tiếng Anh (Mỹ) bằng bàn phím Workman</translation>
 <translation id="4019998208269143058">Ghim vào tệp nhanh</translation>
@@ -364,6 +365,7 @@
 <translation id="4092890906744441904">Tiếng Ireland</translation>
 <translation id="4124935795427217608">Kỳ lân</translation>
 <translation id="4131235941541910880">Chuyển các mục bạn không cần vào thùng rác</translation>
+<translation id="4134804435730168042">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Kích hoạt sau khi thiết lập thiết bị</translation>
 <translation id="4153015322587141338">Nhấp chuột phải vào một tệp rồi chọn "<ph name="PIN_COMMAND" />" để truy cập nhanh vào các tệp trong kệ.</translation>
 <translation id="4157569377477607576">Chính sách của quản trị viên không khuyến khích:</translation>
 <translation id="4159731583141908892">Đã di chuyển <ph name="FILE_NAME" />.</translation>
@@ -406,6 +408,7 @@
 <translation id="4414834425328380570">"<ph name="FILE_NAME" />" sẽ bị xoá và không thể khôi phục.</translation>
 <translation id="4418686080762064601">Tạo một lối tắt cho tệp của bạn</translation>
 <translation id="4425149324548788773">Drive của tôi</translation>
+<translation id="4432921877815220091">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Kích hoạt sau khi thiết lập thiết bị, Do quản trị viên của bạn quản lý</translation>
 <translation id="4439427728133035643">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Kết nối</translation>
 <translation id="4442424173763614572">Tìm kiếm DNS không thành công</translation>
 <translation id="4462159676511157176">Máy chủ có tên tùy chỉnh</translation>
@@ -613,8 +616,10 @@
 <translation id="5911887972742538906">Đã xảy ra lỗi trong quá trình cài đặt ứng dụng Linux.</translation>
 <translation id="5912396950572065471">Định dạng</translation>
 <translation id="5913638992615760742">Không sao chép được, lỗi ngoài mong đợi: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">Hiện đã có các tính năng tìm kiếm mới</translation>
 <translation id="5926082595146149752">Tiếng Hà Lan (Hà Lan) bằng bàn phím quốc tế Hoa Kỳ cho máy tính để bàn</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Kích hoạt sau khi thiết lập thiết bị</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> mục</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Tùy chọn sắp xếp</translation>
@@ -701,6 +706,7 @@
 <translation id="6732801395666424405">Không tải được chứng chỉ</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Chia sẻ thư mục với Bruschetta</translation>
+<translation id="6750737795876287924">Thư mục hiện tại</translation>
 <translation id="6751256176799620176">Đã chọn 1 thư mục</translation>
 <translation id="6755827872271341378">Thiết bị ChromeOS Flex</translation>
 <translation id="6790428901817661496">Phát</translation>
@@ -738,7 +744,6 @@
 <translation id="6973630695168034713">Thư mục</translation>
 <translation id="6976795442547527108">Sư tử</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">Từ trước đến nay</translation>
 <translation id="6989942356279143254">Tiếng Thụy Điển</translation>
 <translation id="6990081529015358884">Bạn đã hết dung lượng lưu trữ</translation>
 <translation id="6993826899923627728">Các mục này đang nằm trong thùng rác</translation>
@@ -761,6 +766,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;tìm kiếm trong Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Tiếng Kannada (phiên âm)</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Trường "Khớp tên thay thế của chủ đề" hoặc "Khớp hậu tố tên miền" còn trống nên chưa thể xác thực danh tính máy chủ xác thực</translation>
 <translation id="7165320105431587207">Không định cấu hình mạng được</translation>
 <translation id="7170041865419449892">Ngoài vùng phủ sóng</translation>
 <translation id="7180611975245234373">Làm mới</translation>
@@ -793,7 +799,6 @@
 <translation id="7458955835361612701">Không có hình ảnh nào gần đây</translation>
 <translation id="7460898608667578234">Tiếng Ukraina</translation>
 <translation id="7469894403370665791">Tự động kết nối vào mạng này</translation>
-<translation id="7481358317100446445">Sẵn sàng</translation>
 <translation id="7486315294984620427">Để thả tệp vào Parallels Desktop, bạn phải sao chép tệp đó vào thư mục tệp Windows.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Tiếng Malayalam (phiên âm)</translation>
@@ -831,6 +836,7 @@
 <translation id="7724603315864178912">Cắt</translation>
 <translation id="7732111077498238432">Mạng được kiểm soát bằng chính sách</translation>
 <translation id="7736003208887389532">Xoá vĩnh viễn các tệp này?</translation>
+<translation id="7740287852186792672">Kết quả tìm kiếm</translation>
 <translation id="7748626145866214022">Trên thanh hành động có các tùy chọn khác. Nhấn tổ hợp phím Alt + A để đặt tiêu điểm vào thanh hành động.</translation>
 <translation id="7760449188139285140">Tiếng Trung Ngũ bút</translation>
 <translation id="7765158879357617694">Di chuyển</translation>
@@ -882,6 +888,7 @@
 <translation id="8116072619078571545">Nước đá</translation>
 <translation id="8128733386027980860">Tiếng Anh (Anh) bằng bàn phím Dvorak</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" đã được chia sẻ với bạn. Bạn không thể xóa tệp vì bạn không sở hữu tệp.</translation>
+<translation id="8138705869659070104">Kích hoạt sau khi thiết lập thiết bị</translation>
 <translation id="813913629614996137">Đang khởi chạy...</translation>
 <translation id="8147028810663464959">Độ rộng ký tự là Đầy đủ</translation>
 <translation id="8151638057146502721">Định cấu hình</translation>
@@ -907,6 +914,7 @@
 <translation id="8300849813060516376">OTASP không thành công</translation>
 <translation id="8312871300878166382">Dán vào thư mục</translation>
 <translation id="8329978297633540474">Văn bản thuần túy</translation>
+<translation id="8332007959299458842">Các tệp Microsoft mới mở gần đây đã được chuyển sang Google Drive</translation>
 <translation id="8335587457941836791">Bỏ ghim khỏi kệ</translation>
 <translation id="8335837413233998004">Tiếng Belarus</translation>
 <translation id="8336153091935557858">Hôm qua <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -933,6 +941,7 @@
 <translation id="8487700953926739672">Có thể dùng khi không có mạng</translation>
 <translation id="8492972329130824181">Mạng gia đình không hoạt động. Bạn phải bật chế độ chuyển vùng dữ liệu di động để kết nối.</translation>
 <translation id="8499098729323186194">Đang trích xuất <ph name="NUMBER_OF_ITEMS" /> mục...</translation>
+<translation id="8502913769543567768">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Kích hoạt sau khi thiết lập thiết bị, Do quản trị viên của bạn quản lý</translation>
 <translation id="8521441079177373948">Vương quốc Anh</translation>
 <translation id="853494022971700746">Tiếng Pháp (Pháp)</translation>
 <translation id="8540608333167683902">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Thông tin chi tiết</translation>
@@ -957,7 +966,7 @@
 <translation id="8688591111840995413">Mật khẩu không chính xác</translation>
 <translation id="8698464937041809063">Bản vẽ Google</translation>
 <translation id="8698877009525468705">Tệp này được bảo mật và phải tuân thủ các hạn chế theo chính sách dành cho quản trị viên.</translation>
-<translation id="8712637175834984815">Bỏ qua</translation>
+<translation id="8712637175834984815">Tôi hiểu</translation>
 <translation id="8713112442029511308">Tiếng Malta</translation>
 <translation id="8714406895390098252">Xe đạp</translation>
 <translation id="8719721339511222681">Đã chọn <ph name="ENTRY_NAME" />.</translation>
@@ -994,6 +1003,7 @@
 <translation id="9046895021617826162">Kết nối không thành công</translation>
 <translation id="9065512565307033593">Nếu không xác minh được, bạn sẽ không thể dùng mạng.</translation>
 <translation id="908378762078012445">Tiếng Nga bằng bàn phím phiên âm AATSEEL</translation>
+<translation id="9086302186042011942">Đang đồng bộ hóa</translation>
 <translation id="9099674669267916096">Số lượng trang</translation>
 <translation id="9100610230175265781">Yêu cầu cụm mật khẩu</translation>
 <translation id="9110990317705400362">Chúng tôi không ngừng tìm cách để giúp cho quá trình duyệt web của bạn trở nên an toàn hơn. Trước đây, bất kỳ trang web nào cũng có thể nhắc bạn thêm tiện ích vào trình duyệt. Trong các phiên bản mới nhất của Google Chrome, bạn phải cho Chrome biết rõ rằng bạn muốn cài đặt các tiện ích này bằng cách thêm chúng thông qua trang Tiện ích. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>

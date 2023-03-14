@@ -1,0 +1,22 @@
+<style include="cros-button-style">
+  #dailyRefreshDialog::part(dialog) {
+    min-width: 288px;
+    width: 288px;
+  }
+
+  cr-button + cr-button {
+    margin-inline-start: 8px;
+  }
+</style>
+<cr-dialog id="dialog" show-on-attach>
+  <div slot="title">$i18n{googlePhotosSharedAlbumDialogTitle}</div>
+  <div slot="body">$i18n{googlePhotosSharedAlbumDialogContent}</div>
+  <div slot="button-container">
+    <cr-button id="close" on-click="onClickClose_" class="secondary">
+      <span>$i18n{googlePhotosSharedAlbumDialogCloseButton}</span>
+    </cr-button>
+    <cr-button id="accept" on-click="onClickAccept_" class="primary">
+      <span>$i18n{googlePhotosSharedAlbumDialogAcceptButton}</span>
+    </cr-button>
+  </div>
+</cr-dialog>

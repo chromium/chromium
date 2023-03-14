@@ -69,6 +69,7 @@ component("typemap_traits") {
   public_deps = [
     ":shared_typemap_traits",
     "//base",
+    "//mojo:buildflags",
     "//mojo/public/cpp/base",
     "//mojo/public/mojom/base:base_shared",
   ]
@@ -158,6 +159,7 @@ source_set("tests") {
     ":shared_typemap_traits",
     "//base",
     "//base/test:test_support",
+    "//build:blink_buildflags",
     "//mojo/public/cpp/test_support:test_utils",
     "//mojo/public/mojom/base",
     "//testing/gtest",

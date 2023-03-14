@@ -73,14 +73,5 @@ bool IsDriveModuleEnabled() {
           ntp_features::kNtpDriveModule.name)) {
     return base::FeatureList::IsEnabled(ntp_features::kNtpDriveModule);
   }
-  return IsOsSupportedForDrive() && IsInUS();
-}
-
-bool IsModuleFreEnabled() {
-  if (base::FeatureList::GetInstance()->IsFeatureOverridden(
-          ntp_features::kNtpModulesFirstRunExperience.name)) {
-    return base::FeatureList::IsEnabled(
-        ntp_features::kNtpModulesFirstRunExperience);
-  }
-  return IsInUS();
+  return IsOsSupportedForDrive();
 }

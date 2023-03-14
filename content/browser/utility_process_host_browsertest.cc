@@ -192,7 +192,7 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
     GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(done_closure_));
   }
 
-  raw_ptr<UtilityProcessHost> host_;
+  raw_ptr<UtilityProcessHost, DanglingUntriaged> host_;
   mojo::Remote<mojom::TestService> service_;
   base::OnceClosure done_closure_;
   bool expect_crashed_ = false;

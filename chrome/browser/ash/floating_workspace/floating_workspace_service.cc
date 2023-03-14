@@ -262,7 +262,7 @@ void FloatingWorkspaceService::StopCaptureAndUploadActiveDesk() {
 }
 
 void FloatingWorkspaceService::CaptureAndUploadActiveDesk() {
-  DesksClient::Get()->CaptureActiveDeskAndSaveTemplate(
+  DesksClient::Get()->CaptureActiveDesk(
       base::BindOnce(&FloatingWorkspaceService::OnTemplateCaptured,
                      weak_pointer_factory_.GetWeakPtr()),
       DeskTemplateType::kFloatingWorkspace);

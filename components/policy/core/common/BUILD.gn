@@ -558,12 +558,13 @@ source_set("unit_tests") {
       "android/policy_converter_unittest.cc",
       "android/policy_map_android_unittest.cc",
       "android/policy_service_android_unittest.cc",
-      "policy_logger_unittest.cc",
     ]
   } else {
     sources += [ "async_policy_provider_unittest.cc" ]
   }
-  if (!is_android && !is_ios) {
+  if (is_android || is_ios) {
+    sources += [ "policy_logger_unittest.cc" ]
+  } else {
     sources += [
       "cloud/cloud_external_data_store_unittest.cc",
       "cloud/component_cloud_policy_service_unittest.cc",

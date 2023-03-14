@@ -183,6 +183,13 @@ public class SiteSettingsTest {
             new String[] {"binary_toggle", "os_permissions_warning_extra"};
     private static final String[] CLEAR_BROWSING_DATA_LINK =
             new String[] {"clear_browsing_data_link", "clear_browsing_divider"};
+    private static final String[] ANTI_ABUSE_PREF_KEYS = {"anti_abuse_when_on_header",
+            "anti_abuse_when_on_section_one", "anti_abuse_when_on_section_two",
+            "anti_abuse_things_to_consider_header", "anti_abuse_things_to_consider_section_one"};
+    private static final String[] BINARY_TOGGLE_WITH_ANTI_ABUSE_PREF_KEYS = {"binary_toggle",
+            "anti_abuse_when_on_header", "anti_abuse_when_on_section_one",
+            "anti_abuse_when_on_section_two", "anti_abuse_things_to_consider_header",
+            "anti_abuse_things_to_consider_section_one"};
 
     @Before
     public void setUp() throws TimeoutException {
@@ -1268,6 +1275,34 @@ public class SiteSettingsTest {
     }
 
     /**
+     * Test that showing the Site Settings menu does not contain the "Anti-abuse" row.
+     */
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @DisableFeatures(ChromeFeatureList.PRIVATE_STATE_TOKENS)
+    public void testSiteSettingsMenuWithPrivateStateTokensDisabled() {
+        final SettingsActivity settingsActivity = SiteSettingsTestUtils.startSiteSettingsMenu("");
+        SiteSettings websitePreferences = (SiteSettings) settingsActivity.getMainFragment();
+        assertNull(websitePreferences.findPreference("anti_abuse"));
+        settingsActivity.finish();
+    }
+
+    /**
+     * Test that showing the Site Settings menu contains the "Anti-abuse" row.
+     */
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(ChromeFeatureList.PRIVATE_STATE_TOKENS)
+    public void testSiteSettingsMenuWithPrivateStateTokensEnabled() {
+        final SettingsActivity settingsActivity = SiteSettingsTestUtils.startSiteSettingsMenu("");
+        SiteSettings websitePreferences = (SiteSettings) settingsActivity.getMainFragment();
+        assertNotNull(websitePreferences.findPreference("anti_abuse"));
+        settingsActivity.finish();
+    }
+
+    /**
      * Tests that only expected Preferences are shown for a category. This santiy checks the number
      * of categories only. Each category has its own individual test below.
      */
@@ -1277,7 +1312,7 @@ public class SiteSettingsTest {
     public void testOnlyExpectedPreferencesShown() {
         // If you add a category in the SiteSettings UI, please update this total AND add a test for
         // it below, named "testOnlyExpectedPreferences<Category>".
-        Assert.assertEquals(28, SiteSettingsCategory.Type.NUM_ENTRIES);
+        Assert.assertEquals(29, SiteSettingsCategory.Type.NUM_ENTRIES);
     }
 
     @Test
@@ -1301,6 +1336,15 @@ public class SiteSettingsTest {
     @Feature({"Preferences"})
     public void testOnlyExpectedPreferencesADS() {
         testExpectedPreferences(SiteSettingsCategory.Type.ADS, BINARY_TOGGLE, BINARY_TOGGLE);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(ChromeFeatureList.PRIVATE_STATE_TOKENS)
+    public void testOnlyExpectedPreferencesAntiAbuse() {
+        testExpectedPreferences(SiteSettingsCategory.Type.ANTI_ABUSE,
+                BINARY_TOGGLE_WITH_ANTI_ABUSE_PREF_KEYS, BINARY_TOGGLE_WITH_ANTI_ABUSE_PREF_KEYS);
     }
 
     @Test
@@ -1896,6 +1940,26 @@ public class SiteSettingsTest {
         NfcSystemLevelSetting.setNfcSettingForTesting(true);
         new TwoStatePermissionTestCase(
                 "NFC", SiteSettingsCategory.Type.NFC, ContentSettingsType.NFC, false)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testAllowAntiAbuse() {
+        new TwoStatePermissionTestCase("AntiAbuse", SiteSettingsCategory.Type.ANTI_ABUSE,
+                ContentSettingsType.ANTI_ABUSE, true)
+                .withExpectedPrefKeys(ANTI_ABUSE_PREF_KEYS)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testBlockAntiAbuse() {
+        new TwoStatePermissionTestCase("AntiAbuse", SiteSettingsCategory.Type.ANTI_ABUSE,
+                ContentSettingsType.ANTI_ABUSE, false)
+                .withExpectedPrefKeys(ANTI_ABUSE_PREF_KEYS)
                 .run();
     }
 
@@ -2582,6 +2646,11 @@ public class SiteSettingsTest {
         /** Set extra expected pref keys for category settings screen. */
         PermissionTestCase withExpectedPrefKeys(String expectedPrefKeys) {
             mExpectedPreferenceKeys.add(expectedPrefKeys);
+            return this;
+        }
+
+        PermissionTestCase withExpectedPrefKeys(String[] expectedPrefKeys) {
+            mExpectedPreferenceKeys.addAll(Arrays.asList(expectedPrefKeys));
             return this;
         }
 

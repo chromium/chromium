@@ -66,17 +66,15 @@
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/prerender/prerender_pref.h"
 #import "ios/chrome/browser/push_notification/push_notification_service.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_mediator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_path_cache.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
-#import "ios/chrome/browser/ui/content_suggestions/tile_ablation_field_trial.h"
 #import "ios/chrome/browser/ui/first_run/trending_queries_field_trial.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
-#import "ios/chrome/browser/ui/ntp/ios_popular_sites_field_trial.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_retention_field_trial.h"
 #import "ios/chrome/browser/voice/voice_search_prefs_registration.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
 #import "ios/web/common/features.h"
@@ -189,8 +187,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   update_client::RegisterPrefs(registry);
   variations::VariationsService::RegisterPrefs(registry);
   trending_queries_field_trial::RegisterLocalStatePrefs(registry);
-  ios_popular_sites_field_trial::RegisterLocalStatePrefs(registry);
-  tile_ablation_field_trial::RegisterLocalStatePrefs(registry);
+  new_tab_page_retention_field_trial::RegisterLocalStatePrefs(registry);
   component_updater::RegisterComponentUpdateServicePrefs(registry);
   component_updater::AutofillStatesComponentInstallerPolicy::RegisterPrefs(
       registry);
@@ -267,6 +264,17 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterBooleanPref(prefs::kIosCredentialProviderPromoStopPromo,
                                 false);
+
+  registry->RegisterIntegerPref(prefs::kIosCredentialProviderPromoSource, 0);
+
+  registry->RegisterBooleanPref(
+      prefs::kIosCredentialProviderPromoHasRegisteredWithPromoManager, false);
+
+  registry->RegisterBooleanPref(prefs::kIosCredentialProviderPromoPolicyEnabled,
+                                true);
+  // Preferences related to tab grid.
+  // Default to 0 which is the unassigned value.
+  registry->RegisterIntegerPref(prefs::kInactiveTabsTimeThreshold, 0);
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -404,6 +412,9 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
       base::to_underlying(
           prerender_prefs::NetworkPredictionSetting::kEnabledWifiOnly),
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+
+  // Register pref used to determine if the Price Tracking UI has been shown.
+  registry->RegisterBooleanPref(prefs::kPriceNotificationsHasBeenShown, false);
 }
 
 // This method should be periodically pruned of year+ old migrations.

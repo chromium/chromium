@@ -446,14 +446,25 @@ class Port(object):
         }
 
     @memoized
-    def _build_has_dcheck_always_on(self):
+    def _build_args_gn_content(self):
         args_gn_file = self._build_path('args.gn')
         if not self._filesystem.exists(args_gn_file):
             _log.error('Unable to find %s', args_gn_file)
-            return False
-        contents = self._filesystem.read_text_file(args_gn_file)
+            return ''
+        return self._filesystem.read_text_file(args_gn_file)
+
+    @memoized
+    def _build_has_dcheck_always_on(self):
+        contents = self._build_args_gn_content()
         return bool(
             re.search(r'^\s*dcheck_always_on\s*=\s*true\s*(#.*)?$', contents,
+                      re.MULTILINE))
+
+    @memoized
+    def _build_is_chrome_branded(self):
+        contents = self._build_args_gn_content()
+        return bool(
+            re.search(r'^\s*is_chrome_branded\s*=\s*true\s*(#.*)?$', contents,
                       re.MULTILINE))
 
     def driver_stop_timeout(self):
@@ -1654,6 +1665,10 @@ class Port(object):
         return self.results_directory()
 
     def inspector_build_directory(self):
+        if self._build_is_chrome_branded():
+            return self._build_path('gen', 'third_party',
+                                    'devtools-frontend-internal',
+                                    'devtools-frontend', 'front_end')
         return self._build_path('gen', 'third_party', 'devtools-frontend',
                                 'src', 'front_end')
 

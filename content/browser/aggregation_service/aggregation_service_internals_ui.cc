@@ -53,10 +53,19 @@ void AggregationServiceInternalsUI::WebUIRenderFrameCreated(
 }
 
 void AggregationServiceInternalsUI::BindInterface(
+    mojo::PendingReceiver<aggregation_service_internals::mojom::Factory>
+        factory) {
+  factory_.reset();
+  factory_.Bind(std::move(factory));
+}
+
+void AggregationServiceInternalsUI::Create(
+    mojo::PendingRemote<aggregation_service_internals::mojom::Observer>
+        observer,
     mojo::PendingReceiver<aggregation_service_internals::mojom::Handler>
-        receiver) {
+        handler) {
   ui_handler_ = std::make_unique<AggregationServiceInternalsHandlerImpl>(
-      web_ui(), std::move(receiver));
+      web_ui(), std::move(observer), std::move(handler));
 }
 
 }  // namespace content

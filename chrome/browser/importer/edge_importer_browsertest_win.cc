@@ -125,7 +125,7 @@ bool DecompressDatabase(const base::FilePath& data_path) {
     return false;
   if (!compression::GzipUncompress(gzip_data, &gzip_data))
     return false;
-  return base::WriteFile(output_file, gzip_data.c_str(), gzip_data.size()) >= 0;
+  return base::WriteFile(output_file, gzip_data);
 }
 
 const char kDummyFaviconImageData[] =
@@ -265,10 +265,9 @@ IN_PROC_BROWSER_TEST_F(EdgeImporterBrowserTest, EdgeImporterLegacyFallback) {
   base::FilePath source_path = temp_dir_.GetPath().AppendASCII("edge_profile");
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_NE(
-        -1, base::WriteFile(
-                source_path.AppendASCII("Favorites\\Google.url:favicon:$DATA"),
-                kDummyFaviconImageData, sizeof(kDummyFaviconImageData)));
+    ASSERT_TRUE(base::WriteFile(
+        source_path.AppendASCII("Favorites\\Google.url:favicon:$DATA"),
+        kDummyFaviconImageData));
   }
   source_profile.source_path = source_path;
 

@@ -22,12 +22,28 @@ source_set("subscriptions") {
     "//components/commerce/core:feature_list",
     "//components/endpoint_fetcher:endpoint_fetcher",
     "//components/leveldb_proto",
-    "//components/session_proto_db:core",
     "//components/signin/public/identity_manager:identity_manager",
     "//net:net",
     "//net/traffic_annotation:traffic_annotation",
     "//services/data_decoder/public/cpp",
     "//services/network/public/cpp:cpp",
+  ]
+
+  public_deps = [ "//components/session_proto_db:core" ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_subscriptions_manager.cc",
+    "mock_subscriptions_manager.h",
+  ]
+
+  deps = [
+    ":subscriptions",
+    "//services/data_decoder/public/cpp",
+    "//testing/gmock",
   ]
 }
 

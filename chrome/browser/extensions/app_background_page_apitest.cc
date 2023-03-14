@@ -141,12 +141,8 @@ class AppBackgroundPageApiTest : public extensions::ExtensionApiTest {
     }
     base::FilePath manifest_path =
         app_dir_.GetPath().AppendASCII("manifest.json");
-    int bytes_written = base::WriteFile(manifest_path,
-                                        app_manifest.data(),
-                                        app_manifest.size());
-    if (bytes_written != static_cast<int>(app_manifest.size())) {
-      LOG(ERROR) << "Unable to write complete manifest to file. Return code="
-                 << bytes_written;
+    if (!base::WriteFile(manifest_path, app_manifest)) {
+      LOG(ERROR) << "Unable to write manifest to file.";
       return false;
     }
     *app_dir = app_dir_.GetPath();

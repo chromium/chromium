@@ -35,6 +35,7 @@ void RegistryHandler(void* data,
             registry, id, &interface_type##_interface,             \
             CalculateVersion(version, globals->requested_versions, \
                              #interface_type))));                  \
+    globals->global_member.set_name(id);                           \
     return;                                                        \
   }
 
@@ -52,11 +53,11 @@ void RegistryHandler(void* data,
   BIND(wl_output, output)
   BIND(zwp_linux_explicit_synchronization_v1, linux_explicit_synchronization)
   BIND(zcr_vsync_feedback_v1, vsync_feedback)
-  BIND(zxdg_shell_v6, xdg_shell_v6)
   BIND(xdg_wm_base, xdg_wm_base)
   BIND(zcr_stylus_v2, stylus)
   BIND(zcr_remote_shell_v1, cr_remote_shell_v1)
   BIND(zcr_remote_shell_v2, cr_remote_shell_v2)
+  BIND(surface_augmenter, surface_augmenter)
 
 #undef BIND
 }

@@ -7,7 +7,14 @@
 
 #include <string>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace sync_preferences {
+
+struct SyncablePrefMetadata {
+  // A unique ID corresponding to each syncable preference.
+  int syncable_pref_id_;
+};
 
 // This class provides an interface to define the list of syncable
 // preferences (and in the future, some additional metadata).
@@ -24,9 +31,14 @@ class SyncablePrefsDatabase {
   SyncablePrefsDatabase(const SyncablePrefsDatabase&) = delete;
   SyncablePrefsDatabase& operator=(const SyncablePrefsDatabase&) = delete;
 
+  // Returns the metadata associated to the pref and null if `pref_name` is not
+  // syncable.
+  virtual absl::optional<SyncablePrefMetadata> GetSyncablePrefMetadata(
+      const std::string& pref_name) const = 0;
+
   // Returns true if `pref_name` is part of the allowlist of syncable
   // preferences.
-  virtual bool IsPreferenceSyncable(const std::string& pref_name) const = 0;
+  bool IsPreferenceSyncable(const std::string& pref_name) const;
 };
 
 }  // namespace sync_preferences

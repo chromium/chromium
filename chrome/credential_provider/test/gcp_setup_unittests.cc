@@ -106,8 +106,7 @@ class GcpSetupTest : public ::testing::Test {
   }
 
   void CreateJsonFile(const base::FilePath& path, const std::string& data) {
-    ASSERT_EQ(static_cast<int>(data.size()),
-              base::WriteFile(path, data.data(), data.size()));
+    ASSERT_TRUE(base::WriteFile(path, data));
   }
 
   void assert_addremove_reg_exists() {

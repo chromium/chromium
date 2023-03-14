@@ -22,7 +22,9 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonControl
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.components.commerce.core.ShoppingService;
-import org.chromium.url.GURL;
+import org.chromium.components.segmentation_platform.Constants;
+import org.chromium.components.segmentation_platform.InputContext;
+import org.chromium.components.segmentation_platform.ProcessedValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,7 +109,7 @@ public class ContextualPageActionController {
         mActionProviders.clear();
         if (AdaptiveToolbarFeatures.isPriceTrackingPageActionEnabled()) {
             mActionProviders.add(new PriceTrackingActionProvider(
-                    shoppingServiceSupplier, bookmarkModelSupplier));
+                    shoppingServiceSupplier, bookmarkModelSupplier, mProfileSupplier));
         }
         if (AdaptiveToolbarFeatures.isReaderModePageActionEnabled()) {
             mActionProviders.add(new ReaderModeActionProvider());
@@ -147,9 +149,15 @@ public class ContextualPageActionController {
     private void findBestAction(SignalAccumulator signalAccumulator) {
         Tab tab = getValidActiveTab();
         if (tab == null) return;
-        ContextualPageActionControllerJni.get().computeContextualPageAction(mProfileSupplier.get(),
-                tab.getUrl(), signalAccumulator.hasPriceTracking(),
-                signalAccumulator.hasReaderMode(), result -> {
+        InputContext inputContext = new InputContext();
+        inputContext.addEntry(Constants.CONTEXTUAL_PAGE_ACTIONS_PRICE_TRACKING_INPUT,
+                ProcessedValue.fromFloat(signalAccumulator.hasPriceTracking() ? 1.0f : 0.0f));
+        inputContext.addEntry(Constants.CONTEXTUAL_PAGE_ACTIONS_READER_MODE_INPUT,
+                ProcessedValue.fromFloat(signalAccumulator.hasReaderMode() ? 1.0f : 0.0f));
+        inputContext.addEntry("url", ProcessedValue.fromGURL(tab.getUrl()));
+
+        ContextualPageActionControllerJni.get().computeContextualPageAction(
+                mProfileSupplier.get(), inputContext, result -> {
                     if (tab.isDestroyed()) return;
 
                     boolean isSameTab =
@@ -180,7 +188,7 @@ public class ContextualPageActionController {
 
     @NativeMethods
     interface Natives {
-        void computeContextualPageAction(Profile profile, GURL url, boolean canTrackPrice,
-                boolean hasReaderMode, Callback<Integer> callback);
+        void computeContextualPageAction(
+                Profile profile, InputContext inputContext, Callback<Integer> callback);
     }
 }

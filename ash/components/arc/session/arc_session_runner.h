@@ -123,6 +123,7 @@ class ArcSessionRunner : public ArcSession::Observer {
     default_device_scale_factor_ = scale_factor;
   }
 
+  bool use_virtio_blk_data() { return use_virtio_blk_data_; }
   void set_use_virtio_blk_data(bool use_virtio_blk_data) {
     use_virtio_blk_data_ = use_virtio_blk_data;
   }

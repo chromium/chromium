@@ -21,7 +21,7 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
     : public network::mojom::URLLoader,
       public network::mojom::URLLoaderClient {
  public:
-  // This callback is used fo the owner to determine if the prefetch is valid
+  // This callback is used by the owner to determine if the prefetch is valid
   // based on |head|. If the prefetch should be servable based on |head|, then
   // the callback should return |kHeadReceivedWaitingOnBody|. Otherwise it
   // should return a valid failure reason.
@@ -31,10 +31,19 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
 
   using OnPrefetchResponseCompletedCallback = base::OnceCallback<void(
       const network::URLLoaderCompletionStatus& completion_status)>;
-  using OnPrefetchRedirectCallback = base::RepeatingCallback<void(
-      const net::RedirectInfo& redirect_info,
-      const network::mojom::URLResponseHead& response_head,
-      std::vector<std::string>* removed_headers)>;
+
+  // This callback is used by the owner to determine if the redirect should be
+  // followed. If the redirect should be followed, then the callback should
+  // return |kFollowRedirect|. If the redirect should not be followed, then the
+  // callback should return |kFailedInvalidRedirect|. If eligibility check is
+  // still being run on the redirect URL, then
+  // |kPauseRedirectForEligibilityCheck| should be returned and then
+  // |OnEligibilityCheckForRedirectComplete| should be called later with the
+  // result of the eligibility check.
+  using OnPrefetchRedirectCallback =
+      base::RepeatingCallback<PrefetchStreamingURLLoaderStatus(
+          const net::RedirectInfo& redirect_info,
+          const network::mojom::URLResponseHead& response_head)>;
 
   PrefetchStreamingURLLoader(
       network::mojom::URLLoaderFactory* url_loader_factory,
@@ -50,6 +59,11 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   PrefetchStreamingURLLoader(const PrefetchStreamingURLLoader&) = delete;
   PrefetchStreamingURLLoader& operator=(const PrefetchStreamingURLLoader&) =
       delete;
+
+  // Informs the URL loader of the result of the eligibility check on a redirect
+  // URL after |kPauseRedirectForEligibilityCheck| was returned by
+  // |on_prefetch_redirect_callback_|.
+  void OnEligibilityCheckForRedirectComplete(bool is_eligible);
 
   // Registers a callback that is called once the head of the response is
   // received via either |OnReceiveResponse| or |OnReceiveRedirect|. The
@@ -97,6 +111,11 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   void DisconnectPrefetchURLLoaderMojo();
   void OnServingURLLoaderMojoDisconnect();
   void PostTaskToDeleteSelf();
+
+  // Helper function to handle redirects. The input status must be one of
+  // |kFollowRedirect|, |kFailedInvalidRedirect|, or
+  // |kPauseRedirectForEligibilityCheck|.
+  void HandleRedirect(PrefetchStreamingURLLoaderStatus new_status);
 
   // network::mojom::URLLoaderClient
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;

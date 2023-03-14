@@ -572,20 +572,7 @@ network::mojom::NetworkService* GetNetworkService() {
 
       g_network_service_is_responding = false;
       g_network_service_remote->QueryVersion(base::BindOnce(
-          [](base::Time start_time, uint32_t) {
-            g_network_service_is_responding = true;
-            base::TimeDelta delta = base::Time::Now() - start_time;
-            UMA_HISTOGRAM_MEDIUM_TIMES("NetworkService.TimeToFirstResponse",
-                                       delta);
-            if (g_last_network_service_crash.is_null()) {
-              UMA_HISTOGRAM_MEDIUM_TIMES(
-                  "NetworkService.TimeToFirstResponse.OnStartup", delta);
-            } else {
-              UMA_HISTOGRAM_MEDIUM_TIMES(
-                  "NetworkService.TimeToFirstResponse.AfterCrash", delta);
-            }
-          },
-          base::Time::Now()));
+          [](uint32_t) { g_network_service_is_responding = true; }));
 
       const base::CommandLine* command_line =
           base::CommandLine::ForCurrentProcess();

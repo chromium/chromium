@@ -32,9 +32,12 @@ if (optimize_webui) {
     deps = [
       ":preprocess",
       ":preprocess_generated",
+      "//ash/webui/common/resources:css_wrapper_files",
+      "//ash/webui/common/resources:html_wrapper_files",
+      "//ash/webui/common/resources:preprocess",
       "//ui/webui/resources/cr_components/localized_link:build_ts",
       "//ui/webui/resources/cr_elements:build_ts",
-      "//ui/webui/resources/mojo:library",
+      "//ui/webui/resources/mojo:build_ts",
     ]
   }
 }

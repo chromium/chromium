@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -207,9 +208,20 @@ absl::optional<gfx::Size> GetResolution(ipp_attribute_t* attr, int i) {
 // `printer_info.default_dpi` with default resolution provided by `printer`.
 void ExtractResolutions(const CupsOptionProvider& printer,
                         PrinterSemanticCapsAndDefaults* printer_info) {
+  // Provide a default DPI if no valid DPI is found.
+#if BUILDFLAG(IS_MAC)
+  constexpr gfx::Size kDefaultMissingDpi(kDefaultMacDpi, kDefaultMacDpi);
+#elif BUILDFLAG(IS_LINUX)
+  constexpr gfx::Size kDefaultMissingDpi(kPixelsPerInch, kPixelsPerInch);
+#else
+  constexpr gfx::Size kDefaultMissingDpi(kDefaultPdfDpi, kDefaultPdfDpi);
+#endif
+
   ipp_attribute_t* attr = printer.GetSupportedOptionValues(kIppResolution);
-  if (!attr)
+  if (!attr) {
+    printer_info->dpis.push_back(kDefaultMissingDpi);
     return;
+  }
 
   int num_options = ippGetCount(attr);
   for (int i = 0; i < num_options; i++) {
@@ -219,8 +231,17 @@ void ExtractResolutions(const CupsOptionProvider& printer,
   }
   ipp_attribute_t* def_attr = printer.GetDefaultOptionValue(kIppResolution);
   absl::optional<gfx::Size> size = GetResolution(def_attr, 0);
-  if (size)
+  if (size) {
     printer_info->default_dpi = size.value();
+  } else if (!printer_info->dpis.empty()) {
+    printer_info->default_dpi = printer_info->dpis[0];
+  } else {
+    printer_info->default_dpi = kDefaultMissingDpi;
+  }
+
+  if (printer_info->dpis.empty()) {
+    printer_info->dpis.push_back(printer_info->default_dpi);
+  }
 }
 
 PrinterSemanticCapsAndDefaults::Papers SupportedPapers(
@@ -284,10 +305,18 @@ size_t AddAttributes(const CupsOptionProvider& printer,
 
   int num_options = ippGetCount(attr);
   static const base::NoDestructor<HandlerMap> handlers(GenerateHandlers());
+  // The names of attributes that we know are not supported (b/266573545).
+  static constexpr auto kOptionsToIgnore =
+      base::MakeFixedFlatSet<base::StringPiece>(
+          {"finishings-col", "ipp-attribute-fidelity", "job-name",
+           "number-up-layout"});
   std::vector<std::string> unknown_options;
   size_t attr_count = 0;
   for (int i = 0; i < num_options; i++) {
     const char* option_name = ippGetString(attr, i, nullptr);
+    if (base::Contains(kOptionsToIgnore, option_name)) {
+      continue;
+    }
     auto it = handlers->find(option_name);
     if (it == handlers->end()) {
       unknown_options.emplace_back(option_name);

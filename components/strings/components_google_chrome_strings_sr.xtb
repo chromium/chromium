@@ -38,4 +38,6 @@
           и опозовите избор опције „Use a proxy server for your LAN“ (Користи прокси сервер за локалну мрежу).</translation>
 <translation id="7230956101631259640">Прегледате безбедну Chrome страницу</translation>
 <translation id="8187289872471304532">Идите на Applications (Апликације) &gt; System Preferences (Подешавања система) &gt; Network (Мрежа) &gt; Advanced (Више опција) &gt; Proxies (Проксији) и опозовите избор свих проксија који су изабрани.</translation>
+<translation id="8232971017369963250">Chrome омогућава <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> пројекат отвореног кода.</translation>
+<translation id="8279509328145658601">Chrome омогућава и други <ph name="BEGIN_LINK_OSS" />софтвер отвореног кода<ph name="END_LINK_OSS" />.</translation>
 </translationbundle>

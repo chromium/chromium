@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Næste</translation>
 <translation id="1209796539517632982">Automatiske navneservere</translation>
 <translation id="1210831758834677569">Laotisk</translation>
+<translation id="1221555006497674479">Der er kun <ph name="REMAINING_PERCENTAGE" /> % ledig lagerplads tilbage af dit fællesdrev på <ph name="TOTAL_SPACE" /></translation>
 <translation id="1243314992276662751">Upload</translation>
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Direkte internetforbindelse</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">Kinesisk pinyin</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> filer gøres tilgængelige offline</translation>
 <translation id="164969095109328410">Chrome-enhed</translation>
+<translation id="1661207570040737402">Du har brugt al din Google Workspace-lagerplads for fællesdrevet.</translation>
 <translation id="1661867754829461514">Pinkode mangler</translation>
 <translation id="166439687370499867">Det er ikke tilladt at ændre delte netværkskonfigurationer</translation>
 <translation id="1665611772925418501">Filen kunne ikke ændres.</translation>
@@ -82,6 +84,7 @@
 <translation id="1722487484194605434">Komprimerer <ph name="NUMBER_OF_ITEMS" /> elementer...</translation>
 <translation id="1722687688096767818">Tilføjer profilen...</translation>
 <translation id="1726100011689679555">Navneservere</translation>
+<translation id="1727562178154619254">Klar til synkronisering</translation>
 <translation id="1729953886957086472">Tysk (Tyskland)</translation>
 <translation id="1730235522912993863">Kinesisk cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> elementer blev kopieret.</translation>
@@ -349,11 +352,11 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Indsæt</translation>
 <translation id="3952872973865944257">Telugu fonetisk</translation>
-<translation id="3954354850384043518">I gang</translation>
 <translation id="3958548648197196644">Kiwi</translation>
 <translation id="3971140002794351170">Download mobilprofil. Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Engelsk (Storbritannien)</translation>
 <translation id="3975895378829046965">Bangla fonetisk</translation>
+<translation id="3999574733850440202">Microsoft-filer, der er åbnet for nylig, er blevet flyttet til OneDrive</translation>
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4017788180641807848">Engelsk (USA) med Workman-tastatur</translation>
 <translation id="4019998208269143058">Fastgør til Genvej til foretrukne filer</translation>
@@ -362,6 +365,7 @@
 <translation id="4092890906744441904">Irsk</translation>
 <translation id="4124935795427217608">Enhjørning</translation>
 <translation id="4131235941541910880">Flyt overflødige elementer til papirkurven</translation>
+<translation id="4134804435730168042">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktivér efter konfiguration af enhed</translation>
 <translation id="4153015322587141338">Højreklik på en fil, og vælg "<ph name="PIN_COMMAND" />" for at få hurtig adgang til dine filer på hylden.</translation>
 <translation id="4157569377477607576">Administratorpolitikken fraråder:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> blev flyttet.</translation>
@@ -404,6 +408,7 @@
 <translation id="4414834425328380570">"<ph name="FILE_NAME" />" slettes, og du kan ikke gendanne den.</translation>
 <translation id="4418686080762064601">Opret en genvej til dine filer</translation>
 <translation id="4425149324548788773">Mit drev</translation>
+<translation id="4432921877815220091">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, aktivér efter konfiguration af enhed, administreret af din administrator</translation>
 <translation id="4439427728133035643">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, opret forbindelse</translation>
 <translation id="4442424173763614572">DNS-opslag mislykkedes</translation>
 <translation id="4462159676511157176">Tilpassede navneservere</translation>
@@ -611,8 +616,10 @@
 <translation id="5911887972742538906">Der opstod en fejl ved installationen af Linux-appen.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5913638992615760742">Kopiering mislykkedes, uventet fejl: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">Der er kommet nye søgefunktioner</translation>
 <translation id="5926082595146149752">Hollandsk (Holland) med amerikansk internationalt computertastatur</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, aktivér efter konfiguration af enhed</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elementer</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">Sorteringsmuligheder</translation>
@@ -699,6 +706,7 @@
 <translation id="6732801395666424405">Certifikaterne blev ikke indlæst</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Del mappe med Bruschetta</translation>
+<translation id="6750737795876287924">Aktuel mappe</translation>
 <translation id="6751256176799620176">1 mappe er valgt</translation>
 <translation id="6755827872271341378">ChromeOS Flex-enhed</translation>
 <translation id="6790428901817661496">Afspil</translation>
@@ -736,7 +744,6 @@
 <translation id="6973630695168034713">Mapper</translation>
 <translation id="6976795442547527108">Løve</translation>
 <translation id="6979158407327259162">Google Drev</translation>
-<translation id="6979737339423435258">Altid</translation>
 <translation id="6989942356279143254">Svensk</translation>
 <translation id="6990081529015358884">Der er ikke mere plads</translation>
 <translation id="6993826899923627728">Disse elementer er i din papirkurv</translation>
@@ -759,6 +766,7 @@
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" – &lt;em&gt;søg i Drev&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannada (fonetisk)</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Der mangler et "Match af alternativt emnenavn" eller "Match af domænesuffiks" for at validere identiteten for godkendelsesserveren</translation>
 <translation id="7165320105431587207">Netværket kunne ikke konfigureres</translation>
 <translation id="7170041865419449892">Intet signal</translation>
 <translation id="7180611975245234373">Opdater</translation>
@@ -791,7 +799,6 @@
 <translation id="7458955835361612701">Du har ikke åbnet nogen billeder for nylig</translation>
 <translation id="7460898608667578234">ukrainsk</translation>
 <translation id="7469894403370665791">Opret automatisk forbindelse til dette netværk</translation>
-<translation id="7481358317100446445">Klar</translation>
 <translation id="7486315294984620427">Filer skal først kopieres til mappen med Windows-filer, før du kan trække dem til Parallels Desktop.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam fonetisk</translation>
@@ -829,6 +836,7 @@
 <translation id="7724603315864178912">Klip</translation>
 <translation id="7732111077498238432">Netværket er underlagt politikker</translation>
 <translation id="7736003208887389532">Vil du slette disse filer permanent?</translation>
+<translation id="7740287852186792672">Søgeresultater</translation>
 <translation id="7748626145866214022">Der er flere tilgængelige muligheder på handlingslinjen. Tryk på Alt+A for at fokusere på handlingslinjen.</translation>
 <translation id="7760449188139285140">Kinesisk wubi</translation>
 <translation id="7765158879357617694">Flyt</translation>
@@ -880,6 +888,7 @@
 <translation id="8116072619078571545">Isvand</translation>
 <translation id="8128733386027980860">Engelsk (Storbritannien) med Dvorak-tastatur</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" er blevet delt med dig. Du kan ikke slette filen, fordi du ikke ejer den.</translation>
+<translation id="8138705869659070104">Aktivér efter enhedskonfiguration</translation>
 <translation id="813913629614996137">Initialiserer...</translation>
 <translation id="8147028810663464959">Tegnbredden er Fuld</translation>
 <translation id="8151638057146502721">Konfigurer</translation>
@@ -905,6 +914,7 @@
 <translation id="8300849813060516376">OTASP mislykkedes</translation>
 <translation id="8312871300878166382">Indsæt i mappe</translation>
 <translation id="8329978297633540474">Almindelig tekst</translation>
+<translation id="8332007959299458842">Microsoft-filer, der er åbnet for nylig, er blevet flyttet til Google Drev</translation>
 <translation id="8335587457941836791">Frigør fra hylden</translation>
 <translation id="8335837413233998004">Hviderussisk</translation>
 <translation id="8336153091935557858">I går <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -931,6 +941,7 @@
 <translation id="8487700953926739672">Tilgængelig offline</translation>
 <translation id="8492972329130824181">Hjemmenetværket er ikke tilgængeligt. Dataroaming med mobildata skal være aktiveret, før du kan oprette forbindelse.</translation>
 <translation id="8499098729323186194">Udtrækker <ph name="NUMBER_OF_ITEMS" /> elementer…</translation>
+<translation id="8502913769543567768">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktivér efter konfiguration af enhed, administreret af din administrator</translation>
 <translation id="8521441079177373948">Britisk</translation>
 <translation id="853494022971700746">Fransk (Frankrig)</translation>
 <translation id="8540608333167683902">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, info</translation>
@@ -992,6 +1003,7 @@
 <translation id="9046895021617826162">Forbindelsen mislykkedes</translation>
 <translation id="9065512565307033593">Hvis du ikke bekræfter, mister du adgangen til netværket.</translation>
 <translation id="908378762078012445">Russisk med fonetisk AATSEEL-tastatur</translation>
+<translation id="9086302186042011942">Synkroniserer</translation>
 <translation id="9099674669267916096">Sideantal</translation>
 <translation id="9100610230175265781">Adgangssætning kræves</translation>
 <translation id="9110990317705400362">Vi leder hele tiden efter nye metoder til at gøre din browsing mere sikker. Før kunne ethvert website anmode dig om at tilføje en udvidelse i din browser. I de nyeste versioner af Google Chrome skal du udtrykkeligt give Chrome besked om, at du vil installere udvidelser, ved at tilføje dem via siden Udvidelser. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>

@@ -155,7 +155,6 @@ sheriff_rotations = struct(
     CFT = _rotation("cft"),
     FUCHSIA = _rotation("fuchsia"),
     CHROMIUM_CLANG = _rotation("chromium.clang"),
-    CHROMIUM_FUZZ = _rotation("chromium.fuzz"),
     CHROMIUM_GPU = _rotation("chromium.gpu"),
     IOS = _rotation("ios"),
 )
@@ -321,7 +320,6 @@ def _reclient_property(*, instance, service, jobs, rewrapper_env, profiler_servi
                      ", ".join(_VALID_REPROXY_ENV_PREFIX_LIST) +
                      "), got '%s'" % k)
         reclient["bootstrap_env"] = bootstrap_env
-    scandeps_server = defaults.get_value("reclient_scandeps_server", scandeps_server)
     if scandeps_server:
         reclient["scandeps_server"] = scandeps_server
     profiler_service = defaults.get_value("reclient_profiler_service", profiler_service)
@@ -410,15 +408,11 @@ defaults = args.defaults(
     reclient_bootstrap_env = None,
     reclient_profiler_service = None,
     reclient_publish_trace = None,
-    reclient_scandeps_server = False,
+    reclient_scandeps_server = args.COMPUTE,
     reclient_cache_silo = None,
     reclient_ensure_verified = None,
     reclient_disable_bq_upload = None,
     health_spec = None,
-
-    # This is to enable luci.buildbucket.omit_python2 experiment.
-    # TODO(crbug.com/1362440): remove this after enabling this in all builders.
-    omit_python2 = True,
 
     # Provide vars for bucket and executable so users don't have to
     # unnecessarily make wrapper functions
@@ -482,7 +476,6 @@ def builder(
         reclient_cache_silo = None,
         reclient_ensure_verified = None,
         reclient_disable_bq_upload = None,
-        omit_python2 = args.DEFAULT,
         health_spec = args.DEFAULT,
         **kwargs):
     """Define a builder.
@@ -665,9 +658,6 @@ def builder(
             effect if reclient_instance is not set.
         reclient_disable_bq_upload: If True, rbe_metrics will not be uploaded to
             BigQuery after each build
-        omit_python2: If True, set luci.buildbucket.omit_python2 experiment.
-            TODO(crbug.com/1362440): remove this after enabling this in all
-            builders.
         **kwargs: Additional keyword arguments to forward on to `luci.builder`.
 
     Returns:
@@ -808,6 +798,15 @@ def builder(
     if code_coverage != None:
         properties["$build/code_coverage"] = code_coverage
 
+    reclient_scandeps_server = defaults.get_value(
+        "reclient_scandeps_server",
+        reclient_scandeps_server,
+    )
+
+    # Enable scandeps_server on Mac by default.
+    if reclient_scandeps_server == args.COMPUTE:
+        reclient_scandeps_server = os and os.category == os_category.MAC
+
     reclient = _reclient_property(
         instance = reclient_instance,
         service = reclient_service,
@@ -844,13 +843,6 @@ def builder(
     if triggered_by != args.COMPUTE:
         kwargs["triggered_by"] = triggered_by
 
-    experiments = kwargs.pop("experiments", None) or {}
-
-    # TODO: remove this after this experiment is removed from
-    # cr-buildbucket/settings.cfg (http://shortn/_cz2s9ql61X).
-    if not defaults.get_value("omit_python2", omit_python2):
-        experiments["luci.buildbucket.omit_python2"] = 0
-
     builder = branches.builder(
         name = name,
         branch_selector = branch_selector,
@@ -861,7 +853,6 @@ def builder(
             resultdb_bigquery_exports = resultdb_bigquery_exports,
             resultdb_index_by_timestamp = resultdb_index_by_timestamp,
         ),
-        experiments = experiments,
         **kwargs
     )
 

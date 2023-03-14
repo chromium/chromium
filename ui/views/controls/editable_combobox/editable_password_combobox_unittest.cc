@@ -14,6 +14,7 @@
 #include "base/strings/string_piece.h"
 #include "base/test/mock_callback.h"
 #include "build/build_config.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/menu_model.h"
@@ -22,6 +23,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/render_text.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/editable_combobox/editable_combobox.h"
 #include "ui/views/test/views_test_base.h"
@@ -64,10 +66,14 @@ class EditablePasswordComboboxTest : public ViewsTestBase {
   }
 
   EditablePasswordCombobox* combobox() { return combobox_.get(); }
+  base::MockCallback<Button::PressedCallback::Callback>* eye_mock_callback() {
+    return &eye_callback_;
+  }
 
  private:
   raw_ptr<Widget> widget_ = nullptr;
   raw_ptr<EditablePasswordCombobox> combobox_ = nullptr;
+  base::MockCallback<Button::PressedCallback::Callback> eye_callback_;
 
   // Used for simulating eye button clicks.
   std::unique_ptr<ui::test::EventGenerator> generator_;
@@ -81,7 +87,9 @@ void EditablePasswordComboboxTest::SetUp() {
       std::make_unique<ui::SimpleComboboxModel>(
           std::vector<ui::SimpleComboboxModel::Item>{
               ui::SimpleComboboxModel::Item(u"item0"),
-              ui::SimpleComboboxModel::Item(u"item1")}));
+              ui::SimpleComboboxModel::Item(u"item1")}),
+      style::CONTEXT_BUTTON, style::STYLE_PRIMARY, /* display_arrow=*/true,
+      Button::PressedCallback(eye_callback_.Get()));
   // Set dummy tooltips and name to avoid running into a11y-related DCHECKs.
   combobox->SetPasswordIconTooltips(u"Show password", u"Hide password");
   combobox->SetAccessibleName(u"Password field");
@@ -142,52 +150,9 @@ TEST_F(EditablePasswordComboboxTest, PasswordCanBeHiddenAndRevealed) {
   EXPECT_EQ(kObscuredPassword, GetItemAt(1));
 }
 
-TEST_F(EditablePasswordComboboxTest, EyeButtonClickRevealsAndHidesPassword) {
-  const std::u16string kObscuredPassword(
-      5, gfx::RenderText::kPasswordReplacementChar);
-
-  ASSERT_EQ(2u, GetItemCount());
-  EXPECT_EQ(kObscuredPassword, GetItemAt(0));
-  EXPECT_EQ(kObscuredPassword, GetItemAt(1));
-
+TEST_F(EditablePasswordComboboxTest, EyeButtonClickInvokesCallback) {
+  EXPECT_CALL(*eye_mock_callback(), Run);
   ClickEye();
-  EXPECT_EQ(u"item0", GetItemAt(0));
-  EXPECT_EQ(u"item1", GetItemAt(1));
-
-  ClickEye();
-  EXPECT_EQ(kObscuredPassword, GetItemAt(0));
-  EXPECT_EQ(kObscuredPassword, GetItemAt(1));
-}
-
-TEST_F(EditablePasswordComboboxTest, EyeButtonClickRequestsPermission) {
-  const std::u16string kObscuredPassword(
-      5, gfx::RenderText::kPasswordReplacementChar);
-
-  StrictMock<base::MockCallback<
-      EditablePasswordCombobox::IsPasswordRevealPermittedCheck>>
-      reveal_check;
-  combobox()->SetIsPasswordRevealPermittedCheck(reveal_check.Get());
-
-  ASSERT_EQ(2u, GetItemCount());
-  EXPECT_EQ(kObscuredPassword, GetItemAt(0));
-  EXPECT_EQ(kObscuredPassword, GetItemAt(1));
-
-  // If the reveal check returns `false`, the passwords remain obscured.
-  EXPECT_CALL(reveal_check, Run).WillOnce(Return(false));
-  ClickEye();
-  EXPECT_EQ(kObscuredPassword, GetItemAt(0));
-  EXPECT_EQ(kObscuredPassword, GetItemAt(1));
-
-  // If the reveal check returns `true`, the passwords are revealed.
-  EXPECT_CALL(reveal_check, Run).WillOnce(Return(true));
-  ClickEye();
-  EXPECT_EQ(u"item0", GetItemAt(0));
-  EXPECT_EQ(u"item1", GetItemAt(1));
-
-  // Unrevealing the passwords does not trigger a check.
-  ClickEye();
-  EXPECT_EQ(kObscuredPassword, GetItemAt(0));
-  EXPECT_EQ(kObscuredPassword, GetItemAt(1));
 }
 
 TEST_F(EditablePasswordComboboxTest, NoCrashWithoutWidget) {

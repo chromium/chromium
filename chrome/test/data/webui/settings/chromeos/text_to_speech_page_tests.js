@@ -5,6 +5,8 @@
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
 import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -87,20 +89,23 @@ suite('TextToSpeechPageTests', function() {
     });
   });
 
-  test('pdf ocr pref enabled when pdf ocr enabled', async function() {
-    loadTimeData.overrideValues({pdfOcrEnabled: true});
-    await initPage();
+  test(
+      'pdf ocr pref enabled when both pdf ocr and screen reader enabled',
+      async function() {
+        loadTimeData.overrideValues({pdfOcrEnabled: true});
+        await initPage();
+        // Simulate enabling the ChromeVox.
+        this.hasScreenReader = true;
 
-    const pdfOcrToggle = page.shadowRoot.querySelector('#crosPdfOcrToggle');
-    assertTrue(!!pdfOcrToggle);
-    assertTrue(isVisible(pdfOcrToggle));
-    assertFalse(pdfOcrToggle.checked);
-    assertFalse(page.prefs.settings.a11y.pdf_ocr_always_active.value);
-    pdfOcrToggle.click();
+        const pdfOcrToggle = page.shadowRoot.querySelector('#crosPdfOcrToggle');
+        assertTrue(!!pdfOcrToggle);
+        assertTrue(isVisible(pdfOcrToggle));
+        assertFalse(pdfOcrToggle.checked);
+        assertFalse(page.prefs.settings.a11y.pdf_ocr_always_active.value);
+        pdfOcrToggle.click();
 
-    await waitBeforeNextRender(page);
-    flush();
-    assertTrue(pdfOcrToggle.checked);
-    assertTrue(page.prefs.settings.a11y.pdf_ocr_always_active.value);
-  });
+        await waitAfterNextRender(pdfOcrToggle);
+        assertTrue(pdfOcrToggle.checked);
+        assertTrue(page.prefs.settings.a11y.pdf_ocr_always_active.value);
+      });
 });

@@ -194,7 +194,7 @@ void ArgumentSpecUnitTest::RunTest(RunTestParams& params) {
 
 TEST_F(ArgumentSpecUnitTest, Test) {
   {
-    ArgumentSpec spec(*DeprecatedValueFromString("{'type': 'integer'}"));
+    ArgumentSpec spec(ValueFromString("{'type': 'integer'}"));
     ExpectSuccess(spec, "1", "1");
     ExpectSuccess(spec, "-1", "-1");
     ExpectSuccess(spec, "0", "0");
@@ -215,7 +215,7 @@ TEST_F(ArgumentSpecUnitTest, Test) {
   }
 
   {
-    ArgumentSpec spec(*DeprecatedValueFromString("{'type': 'number'}"));
+    ArgumentSpec spec(ValueFromString("{'type': 'number'}"));
     ExpectSuccess(spec, "1", "1.0");
     ExpectSuccess(spec, "-1", "-1.0");
     ExpectSuccess(spec, "0", "0.0");
@@ -233,8 +233,7 @@ TEST_F(ArgumentSpecUnitTest, Test) {
   }
 
   {
-    ArgumentSpec spec(
-        *DeprecatedValueFromString("{'type': 'integer', 'minimum': 1}"));
+    ArgumentSpec spec(ValueFromString("{'type': 'integer', 'minimum': 1}"));
     ExpectSuccess(spec, "2", "2");
     ExpectSuccess(spec, "1", "1");
     ExpectFailure(spec, "0", api_errors::NumberTooSmall(1));
@@ -242,15 +241,14 @@ TEST_F(ArgumentSpecUnitTest, Test) {
   }
 
   {
-    ArgumentSpec spec(
-        *DeprecatedValueFromString("{'type': 'integer', 'maximum': 10}"));
+    ArgumentSpec spec(ValueFromString("{'type': 'integer', 'maximum': 10}"));
     ExpectSuccess(spec, "10", "10");
     ExpectSuccess(spec, "1", "1");
     ExpectFailure(spec, "11", api_errors::NumberTooLarge(10));
   }
 
   {
-    ArgumentSpec spec(*DeprecatedValueFromString("{'type': 'string'}"));
+    ArgumentSpec spec(ValueFromString("{'type': 'string'}"));
     ExpectSuccess(spec, "'foo'", "'foo'");
     ExpectSuccess(spec, "''", "''");
     ExpectFailure(spec, "1", InvalidType(kTypeString, kTypeInteger));
@@ -259,8 +257,8 @@ TEST_F(ArgumentSpecUnitTest, Test) {
   }
 
   {
-    ArgumentSpec spec(*DeprecatedValueFromString(
-        "{'type': 'string', 'enum': ['foo', 'bar']}"));
+    ArgumentSpec spec(
+        ValueFromString("{'type': 'string', 'enum': ['foo', 'bar']}"));
     std::set<std::string> valid_enums = {"foo", "bar"};
     ExpectSuccess(spec, "'foo'", "'foo'");
     ExpectSuccess(spec, "'bar'", "'bar'");
@@ -272,7 +270,7 @@ TEST_F(ArgumentSpecUnitTest, Test) {
   }
 
   {
-    ArgumentSpec spec(*DeprecatedValueFromString(
+    ArgumentSpec spec(ValueFromString(
         "{'type': 'string', 'enum': [{'name': 'foo'}, {'name': 'bar'}]}"));
     std::set<std::string> valid_enums = {"foo", "bar"};
     ExpectSuccess(spec, "'foo'", "'foo'");
@@ -285,7 +283,7 @@ TEST_F(ArgumentSpecUnitTest, Test) {
   }
 
   {
-    ArgumentSpec spec(*DeprecatedValueFromString("{'type': 'boolean'}"));
+    ArgumentSpec spec(ValueFromString("{'type': 'boolean'}"));
     ExpectSuccess(spec, "true", "true");
     ExpectSuccess(spec, "false", "false");
     ExpectFailure(spec, "1", InvalidType(kTypeBoolean, kTypeInteger));
@@ -294,8 +292,8 @@ TEST_F(ArgumentSpecUnitTest, Test) {
   }
 
   {
-    ArgumentSpec spec(*DeprecatedValueFromString(
-        "{'type': 'array', 'items': {'type': 'string'}}"));
+    ArgumentSpec spec(
+        ValueFromString("{'type': 'array', 'items': {'type': 'string'}}"));
     ExpectSuccess(spec, "[]", "[]");
     ExpectSuccess(spec, "['foo']", "['foo']");
     ExpectSuccess(spec, "['foo', 'bar']", "['foo','bar']");
@@ -329,7 +327,7 @@ TEST_F(ArgumentSpecUnitTest, Test) {
         "    'prop2': {'type': 'integer', 'optional': true}"
         "  }"
         "}";
-    ArgumentSpec spec(*DeprecatedValueFromString(kObjectSpec));
+    ArgumentSpec spec(ValueFromString(kObjectSpec));
     ExpectSuccess(spec, "({prop1: 'foo', prop2: 2})",
                   "{'prop1':'foo','prop2':2}");
     ExpectSuccess(spec, "({prop1: 'foo'})", "{'prop1':'foo'}");
@@ -390,7 +388,7 @@ TEST_F(ArgumentSpecUnitTest, Test) {
 
   {
     const char kFunctionSpec[] = "{ 'type': 'function' }";
-    ArgumentSpec spec(*DeprecatedValueFromString(kFunctionSpec));
+    ArgumentSpec spec(ValueFromString(kFunctionSpec));
     // Functions are serialized as empty dictionaries.
     ExpectSuccess(spec, "(function() {})", "{}");
     ExpectSuccessWithNoConversion(spec, "(function() {})");
@@ -406,7 +404,7 @@ TEST_F(ArgumentSpecUnitTest, Test) {
 
   {
     const char kBinarySpec[] = "{ 'type': 'binary' }";
-    ArgumentSpec spec(*DeprecatedValueFromString(kBinarySpec));
+    ArgumentSpec spec(ValueFromString(kBinarySpec));
     // Simple case: empty ArrayBuffer -> empty BinaryValue.
     ExpectSuccess(spec, "(new ArrayBuffer())",
                   base::Value(base::Value::Type::BINARY));
@@ -432,7 +430,7 @@ TEST_F(ArgumentSpecUnitTest, Test) {
   }
   {
     const char kAnySpec[] = "{ 'type': 'any' }";
-    ArgumentSpec spec(*DeprecatedValueFromString(kAnySpec));
+    ArgumentSpec spec(ValueFromString(kAnySpec));
     ExpectSuccess(spec, "42", "42");
     ExpectSuccess(spec, "'foo'", "'foo'");
     ExpectSuccess(spec, "({prop1:'bar'})", "{'prop1':'bar'}");
@@ -469,10 +467,10 @@ TEST_F(ArgumentSpecUnitTest, TypeRefsTest) {
       "}";
   const char kEnumType[] =
       "{'id': 'refEnum', 'type': 'string', 'enum': ['alpha', 'beta']}";
-  AddTypeRef("refObj", std::make_unique<ArgumentSpec>(
-                           *DeprecatedValueFromString(kObjectType)));
-  AddTypeRef("refEnum", std::make_unique<ArgumentSpec>(
-                            *DeprecatedValueFromString(kEnumType)));
+  AddTypeRef("refObj",
+             std::make_unique<ArgumentSpec>(ValueFromString(kObjectType)));
+  AddTypeRef("refEnum",
+             std::make_unique<ArgumentSpec>(ValueFromString(kEnumType)));
   std::set<std::string> valid_enums = {"alpha", "beta"};
 
   {
@@ -485,7 +483,7 @@ TEST_F(ArgumentSpecUnitTest, TypeRefsTest) {
         "    'sub': {'type': 'integer'}"
         "  }"
         "}";
-    ArgumentSpec spec(*DeprecatedValueFromString(kObjectWithRefEnumSpec));
+    ArgumentSpec spec(ValueFromString(kObjectWithRefEnumSpec));
     ExpectSuccess(spec, "({e: 'alpha', sub: 1})", "{'e':'alpha','sub':1}");
     ExpectSuccess(spec, "({e: 'beta', sub: 1})", "{'e':'beta','sub':1}");
     ExpectFailure(spec, "({e: 'gamma', sub: 1})",
@@ -503,7 +501,7 @@ TEST_F(ArgumentSpecUnitTest, TypeRefsTest) {
         "    'o': {'$ref': 'refObj'}"
         "  }"
         "}";
-    ArgumentSpec spec(*DeprecatedValueFromString(kObjectWithRefObjectSpec));
+    ArgumentSpec spec(ValueFromString(kObjectWithRefObjectSpec));
     ExpectSuccess(spec, "({o: {prop1: 'foo'}})", "{'o':{'prop1':'foo'}}");
     ExpectSuccess(spec, "({o: {prop1: 'foo', prop2: 2}})",
                   "{'o':{'prop1':'foo','prop2':2}}");
@@ -517,7 +515,7 @@ TEST_F(ArgumentSpecUnitTest, TypeRefsTest) {
   {
     const char kRefEnumListSpec[] =
         "{'type': 'array', 'items': {'$ref': 'refEnum'}}";
-    ArgumentSpec spec(*DeprecatedValueFromString(kRefEnumListSpec));
+    ArgumentSpec spec(ValueFromString(kRefEnumListSpec));
     ExpectSuccess(spec, "['alpha']", "['alpha']");
     ExpectSuccess(spec, "['alpha', 'alpha']", "['alpha','alpha']");
     ExpectSuccess(spec, "['alpha', 'beta']", "['alpha','beta']");
@@ -530,7 +528,7 @@ TEST_F(ArgumentSpecUnitTest, TypeChoicesTest) {
   {
     const char kSimpleChoices[] =
         "{'choices': [{'type': 'string'}, {'type': 'integer'}]}";
-    ArgumentSpec spec(*DeprecatedValueFromString(kSimpleChoices));
+    ArgumentSpec spec(ValueFromString(kSimpleChoices));
     ExpectSuccess(spec, "'alpha'", "'alpha'");
     ExpectSuccess(spec, "42", "42");
     const char kChoicesType[] = "[string|integer]";
@@ -545,7 +543,7 @@ TEST_F(ArgumentSpecUnitTest, TypeChoicesTest) {
         "    {'type': 'object', 'properties': {'prop1': {'type': 'string'}}}"
         "  ]"
         "}";
-    ArgumentSpec spec(*DeprecatedValueFromString(kComplexChoices));
+    ArgumentSpec spec(ValueFromString(kComplexChoices));
     ExpectSuccess(spec, "['alpha']", "['alpha']");
     ExpectSuccess(spec, "['alpha', 'beta']", "['alpha','beta']");
     ExpectSuccess(spec, "({prop1: 'alpha'})", "{'prop1':'alpha'}");
@@ -564,7 +562,7 @@ TEST_F(ArgumentSpecUnitTest, AdditionalPropertiesTest) {
         "  'type': 'object',"
         "  'additionalProperties': {'type': 'any'}"
         "}";
-    ArgumentSpec spec(*DeprecatedValueFromString(kOnlyAnyAdditionalProperties));
+    ArgumentSpec spec(ValueFromString(kOnlyAnyAdditionalProperties));
     ExpectSuccess(spec, "({prop1: 'alpha', prop2: 42, prop3: {foo: 'bar'}})",
                   "{'prop1':'alpha','prop2':42,'prop3':{'foo':'bar'}}");
     ExpectSuccess(spec, "({})", "{}");
@@ -633,8 +631,7 @@ TEST_F(ArgumentSpecUnitTest, AdditionalPropertiesTest) {
         "  },"
         "  'additionalProperties': {'type': 'any'}"
         "}";
-    ArgumentSpec spec(
-        *DeprecatedValueFromString(kPropertiesAndAnyAdditionalProperties));
+    ArgumentSpec spec(ValueFromString(kPropertiesAndAnyAdditionalProperties));
     ExpectSuccess(spec, "({prop1: 'alpha', prop2: 42, prop3: {foo: 'bar'}})",
                   "{'prop1':'alpha','prop2':42,'prop3':{'foo':'bar'}}");
     // Additional properties are optional.
@@ -651,7 +648,7 @@ TEST_F(ArgumentSpecUnitTest, AdditionalPropertiesTest) {
         "  'type': 'object',"
         "  'additionalProperties': {'type': 'string'}"
         "}";
-    ArgumentSpec spec(*DeprecatedValueFromString(kTypedAdditionalProperties));
+    ArgumentSpec spec(ValueFromString(kTypedAdditionalProperties));
     ExpectSuccess(spec, "({prop1: 'alpha', prop2: 'beta', prop3: 'gamma'})",
                   "{'prop1':'alpha','prop2':'beta','prop3':'gamma'}");
     ExpectFailure(spec, "({prop1: 'alpha', prop2: 42})",
@@ -667,7 +664,7 @@ TEST_F(ArgumentSpecUnitTest, InstanceOfTest) {
         "  'type': 'object',"
         "  'isInstanceOf': 'RegExp'"
         "}";
-    ArgumentSpec spec(*DeprecatedValueFromString(kInstanceOfRegExp));
+    ArgumentSpec spec(ValueFromString(kInstanceOfRegExp));
     ExpectSuccess(spec, "(new RegExp())", "{}");
     ExpectSuccess(spec, "({ __proto__: RegExp.prototype })", "{}");
     ExpectSuccess(spec,
@@ -696,7 +693,7 @@ TEST_F(ArgumentSpecUnitTest, InstanceOfTest) {
         "  'type': 'object',"
         "  'isInstanceOf': 'customClass'"
         "}";
-    ArgumentSpec spec(*DeprecatedValueFromString(kInstanceOfCustomClass));
+    ArgumentSpec spec(ValueFromString(kInstanceOfCustomClass));
     ExpectSuccess(spec,
                   "(function() {\n"
                   "  function customClass() {}\n"
@@ -725,7 +722,7 @@ TEST_F(ArgumentSpecUnitTest, InstanceOfTest) {
 TEST_F(ArgumentSpecUnitTest, MinAndMaxLengths) {
   {
     const char kMinLengthString[] = "{'type': 'string', 'minLength': 3}";
-    ArgumentSpec spec(*DeprecatedValueFromString(kMinLengthString));
+    ArgumentSpec spec(ValueFromString(kMinLengthString));
     ExpectSuccess(spec, "'aaa'", "'aaa'");
     ExpectSuccess(spec, "'aaaa'", "'aaaa'");
     ExpectFailure(spec, "'aa'", api_errors::TooFewStringChars(3, 2));
@@ -734,7 +731,7 @@ TEST_F(ArgumentSpecUnitTest, MinAndMaxLengths) {
 
   {
     const char kMaxLengthString[] = "{'type': 'string', 'maxLength': 3}";
-    ArgumentSpec spec(*DeprecatedValueFromString(kMaxLengthString));
+    ArgumentSpec spec(ValueFromString(kMaxLengthString));
     ExpectSuccess(spec, "'aaa'", "'aaa'");
     ExpectSuccess(spec, "'aa'", "'aa'");
     ExpectSuccess(spec, "''", "''");
@@ -744,7 +741,7 @@ TEST_F(ArgumentSpecUnitTest, MinAndMaxLengths) {
   {
     const char kMinLengthArray[] =
         "{'type': 'array', 'items': {'type': 'integer'}, 'minItems': 3}";
-    ArgumentSpec spec(*DeprecatedValueFromString(kMinLengthArray));
+    ArgumentSpec spec(ValueFromString(kMinLengthArray));
     ExpectSuccess(spec, "[1, 2, 3]", "[1,2,3]");
     ExpectSuccess(spec, "[1, 2, 3, 4]", "[1,2,3,4]");
     ExpectFailure(spec, "[1, 2]", api_errors::TooFewArrayItems(3, 2));
@@ -754,7 +751,7 @@ TEST_F(ArgumentSpecUnitTest, MinAndMaxLengths) {
   {
     const char kMaxLengthArray[] =
         "{'type': 'array', 'items': {'type': 'integer'}, 'maxItems': 3}";
-    ArgumentSpec spec(*DeprecatedValueFromString(kMaxLengthArray));
+    ArgumentSpec spec(ValueFromString(kMaxLengthArray));
     ExpectSuccess(spec, "[1, 2, 3]", "[1,2,3]");
     ExpectSuccess(spec, "[1, 2]", "[1,2]");
     ExpectSuccess(spec, "[]", "[]");
@@ -770,7 +767,7 @@ TEST_F(ArgumentSpecUnitTest, PreserveNull) {
         "  'additionalProperties': {'type': 'any'},"
         "  'preserveNull': true"
         "}";
-    ArgumentSpec spec(*DeprecatedValueFromString(kObjectSpec));
+    ArgumentSpec spec(ValueFromString(kObjectSpec));
     ExpectSuccess(spec, "({foo: 1, bar: null})", "{'bar':null,'foo':1}");
     // Subproperties shouldn't preserve null (if not specified).
     ExpectSuccess(spec, "({prop: {subprop1: 'foo', subprop2: null}})",
@@ -784,7 +781,7 @@ TEST_F(ArgumentSpecUnitTest, PreserveNull) {
         "  'additionalProperties': {'type': 'any', 'preserveNull': true},"
         "  'preserveNull': true"
         "}";
-    ArgumentSpec spec(*DeprecatedValueFromString(kObjectSpec));
+    ArgumentSpec spec(ValueFromString(kObjectSpec));
     ExpectSuccess(spec, "({foo: 1, bar: null})", "{'bar':null,'foo':1}");
     // Here, subproperties should preserve null.
     ExpectSuccess(spec, "({prop: {subprop1: 'foo', subprop2: null}})",
@@ -798,7 +795,7 @@ TEST_F(ArgumentSpecUnitTest, PreserveNull) {
         "  'properties': {'prop1': {'type': 'string', 'optional': true}},"
         "  'preserveNull': true"
         "}";
-    ArgumentSpec spec(*DeprecatedValueFromString(kObjectSpec));
+    ArgumentSpec spec(ValueFromString(kObjectSpec));
     ExpectSuccess(spec, "({})", "{}");
     ExpectSuccess(spec, "({prop1: null})", "{'prop1':null}");
     ExpectSuccess(spec, "({prop1: 'foo'})", "{'prop1':'foo'}");
@@ -814,14 +811,14 @@ TEST_F(ArgumentSpecUnitTest, PreserveNull) {
 TEST_F(ArgumentSpecUnitTest, NaNFun) {
   {
     const char kAnySpec[] = "{'type': 'any'}";
-    ArgumentSpec spec(*DeprecatedValueFromString(kAnySpec));
+    ArgumentSpec spec(ValueFromString(kAnySpec));
     ExpectFailure(spec, "NaN", api_errors::UnserializableValue());
   }
 
   {
     const char kObjectWithAnyPropertiesSpec[] =
         "{'type': 'object', 'additionalProperties': {'type': 'any'}}";
-    ArgumentSpec spec(*DeprecatedValueFromString(kObjectWithAnyPropertiesSpec));
+    ArgumentSpec spec(ValueFromString(kObjectWithAnyPropertiesSpec));
     ExpectSuccess(spec, "({foo: NaN, bar: 'baz'})", "{'bar':'baz'}");
   }
 }
@@ -1033,7 +1030,7 @@ TEST_F(ArgumentSpecUnitTest, SerializableFunctions) {
            "type": "function",
            "serializableFunction": true
          })";
-  ArgumentSpec spec(*DeprecatedValueFromString(kFunctionSpec));
+  ArgumentSpec spec(ValueFromString(kFunctionSpec));
 
   constexpr char kExpectedSerialization[] = R"("function() { }")";
   ExpectSuccess(spec, "(function() { })", kExpectedSerialization);

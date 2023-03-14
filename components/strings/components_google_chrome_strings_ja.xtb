@@ -39,4 +39,6 @@
 <translation id="8187289872471304532">このオプションを無効にするには:
           [アプリケーション] &gt; [システム環境設定] &gt; [ネットワーク] &gt; [詳細] &gt; [プロキシ] の順に移動して、
           選択されているプロキシの選択を解除します。</translation>
+<translation id="8232971017369963250">Chrome は <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> のオープンソース プロジェクトによって実現しました。</translation>
+<translation id="8279509328145658601">Chrome の実現には、他の<ph name="BEGIN_LINK_OSS" />オープンソース ソフトウェア<ph name="END_LINK_OSS" />もかかわっています。</translation>
 </translationbundle>

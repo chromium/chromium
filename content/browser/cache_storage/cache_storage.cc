@@ -399,8 +399,7 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
       const std::string& data,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
       const storage::BucketLocator& bucket_locator) {
-    int bytes_written = base::WriteFile(tmp_path, data.c_str(), data.size());
-    if (bytes_written != base::checked_cast<int>(data.size())) {
+    if (!base::WriteFile(tmp_path, data)) {
       base::DeleteFile(tmp_path);
       quota_manager_proxy->NotifyWriteFailed(bucket_locator.storage_key);
       return false;

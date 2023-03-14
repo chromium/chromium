@@ -53,19 +53,9 @@ typedef AutocompleteMatchType ACMatchType;
 
 namespace {
 
-constexpr bool is_android =
-#if BUILDFLAG(IS_ANDROID)
-    true;
-#else
-    false;
-#endif
-
-constexpr bool is_ios =
-#if BUILDFLAG(IS_IOS)
-    true;
-#else
-    false;
-#endif
+constexpr bool is_android = !!BUILDFLAG(IS_ANDROID);
+constexpr bool is_ios = !!BUILDFLAG(IS_IOS);
+constexpr bool is_desktop = !(is_android || is_ios);
 
 // Rotates |it| to be in the front of |matches|.
 // |it| must be a valid iterator of |matches| or equal to |matches->end()|.
@@ -90,7 +80,7 @@ constexpr size_t kMaxPedalMatchIndex =
 // static
 size_t AutocompleteResult::GetMaxMatches(bool is_zero_suggest) {
   constexpr size_t kDefaultMaxAutocompleteMatches =
-      is_android ? 10 : (is_ios ? 6 : 8);
+      is_android ? 10 : (is_ios ? 10 : 8);
   constexpr size_t kDefaultMaxZeroSuggestMatches =
       is_android ? 15 : (is_ios ? 20 : 8);
 #if BUILDFLAG(IS_IOS)
@@ -348,9 +338,13 @@ void AutocompleteResult::SortAndCull(
 
   // If `kGroupingFramework` is enabled and the current input & platform are
   // supported, delegate to the framework.
+  //
+  // - Include both Desktop ZPS and prefixed suggestions.
+  // - Include Android ZPS only (no prefixed suggestions),
+  // - IOS is currently not included.
   const bool is_zero_suggest = input.IsZeroSuggest();
   if (base::FeatureList::IsEnabled(omnibox::kGroupingFramework) &&
-      !is_android && !is_ios) {
+      (is_desktop || (is_android && is_zero_suggest))) {
     // Grouping requires all matches have a group ID. To keep providers 'dumb',
     // they only assign IDs when their ID isn't obvious from the match type.
     // Most matches will instead set IDs here to keep providers 'dumb' and the
@@ -370,14 +364,20 @@ void AutocompleteResult::SortAndCull(
 
     PSections sections;
     if (is_zero_suggest) {
+#if BUILDFLAG(IS_ANDROID)
+      sections.push_back(
+          std::make_unique<AndroidZpsSection>(suggestion_groups_map_));
+#else   // !BUILDFLAG(IS_ANDROID)
       sections.push_back(
           std::make_unique<DesktopZpsSection>(suggestion_groups_map_));
+
       if (page_classification == OmniboxEventProto::NTP_REALBOX &&
           base::FeatureList::IsEnabled(omnibox::kKeepSecondaryZeroSuggest)) {
         // Allow secondary zero-prefix suggestions in the NTP realbox, if any.
         sections.push_back(std::make_unique<DesktopSecondaryZpsSection>(
             suggestion_groups_map_));
       }
+#endif  // !BUILDFLAG(IS_ANDROID)
     } else {
       sections.push_back(
           std::make_unique<DesktopNonZpsSection>(suggestion_groups_map_));
@@ -1116,73 +1116,71 @@ bool AutocompleteResult::HasMatchByDestination(const AutocompleteMatch& match,
 void AutocompleteResult::MaybeCullTailSuggestions(
     ACMatches* matches,
     const CompareWithDemoteByType<AutocompleteMatch>& comparing_object) {
-  // This function implements the following logic:
-  // ('E' == 'There exists', '!E' == 'There does not exist')
-  // 1) !E default non-tail and E tail default? remove non-tails
-  // 2) !E any tails at all? do nothing
-  // 3) E default non-tail and other non-tails? remove tails
-  // 4) E default non-tail and no other non-tails? mark tails as non-default
-  // 5) E non-default non-tails? remove non-tails
   std::function<bool(const AutocompleteMatch&)> is_tail =
       [](const AutocompleteMatch& match) {
         return match.type == ACMatchType::SEARCH_SUGGEST_TAIL;
       };
-  auto default_non_tail = matches->end();
-  auto default_tail = matches->end();
-  bool other_non_tails = false, any_tails = false;
-  for (auto i = matches->begin(); i != matches->end(); ++i) {
-    if (comparing_object.GetDemotedRelevance(*i) == 0)
+  bool prefer_tail_over_history_cluster = base::FeatureList::IsEnabled(
+      omnibox::kPreferTailOverHistoryClusterSuggestions);
+  std::function<bool(const AutocompleteMatch&)> is_history_cluster =
+      [&](const AutocompleteMatch& match) {
+        return prefer_tail_over_history_cluster &&
+               match.type == ACMatchType::HISTORY_CLUSTER;
+      };
+  // 'normal' refers to a suggestion that is neither a tail nor history cluster.
+  bool default_normal = false;
+  bool other_normals = false;
+  bool any_normals = false;
+  bool default_tail = false;
+  bool any_tails = false;
+  bool any_history_clusters = false;
+  for (const auto& match : *matches) {
+    if (comparing_object.GetDemotedRelevance(match) == 0)
       continue;
-    if (!is_tail(*i)) {
-      // We allow one default non-tail match. For non-default matches,
-      // don't consider if we'd remove them later.
-      if (default_non_tail == matches->end() && i->allowed_to_be_default_match)
-        default_non_tail = i;
-      else
-        other_non_tails = true;
-    } else {
+    if (is_tail(match)) {
       any_tails = true;
-      if (default_tail == matches->end() && i->allowed_to_be_default_match)
-        default_tail = i;
+      if (!default_tail && match.allowed_to_be_default_match)
+        default_tail = true;
+    } else if (is_history_cluster(match)) {
+      DCHECK(!match.allowed_to_be_default_match);
+      any_history_clusters = true;
+    } else {
+      any_normals = true;
+      if (!default_normal && match.allowed_to_be_default_match)
+        default_normal = true;
+      else
+        other_normals = true;
     }
   }
-  // If the only default matches are tail suggestions, let them remain and
-  // instead remove the non-tail suggestions.  This is necessary because we do
-  // not want to display tail suggestions mixed with other suggestions in the
-  // dropdown below the first item (the default match).  In this case, we
-  // cannot remove the tail suggestions because we'll be left without a legal
-  // default match--the non-tail ones much go.  This situation though is
-  // unlikely, as we normally would expect the search-what-you-typed suggestion
-  // as a default match (and that's a non-tail suggestion).
-  // 1) above.
-  if (default_tail != matches->end() && default_non_tail == matches->end()) {
+
+  // If there are only non-tail or only tail suggestions, then cull none.
+  if (!any_normals || !any_tails)
+    return;
+
+  // Cull non-tail suggestions when the default is a tail suggestion.
+  if (!default_normal && default_tail) {
     base::EraseIf(*matches, std::not_fn(is_tail));
     return;
   }
-  // 2) above.
-  if (!any_tails)
-    return;
-  // If both tail and non-tail matches, remove tail. Note that this can
-  // remove the highest rated suggestions.
-  if (default_non_tail != matches->end()) {
-    // 3) above.
-    if (other_non_tails) {
-      base::EraseIf(*matches, is_tail);
-    } else {
-      // 4) above.
-      // We want the non-tail default match to be placed first. Mark tail
-      // suggestions as not a legal default match, so that the default match
-      // will be moved up explicitly.
-      for (auto& match : *matches) {
-        if (is_tail(match))
-          match.allowed_to_be_default_match = false;
-      }
-    }
-  } else if (other_non_tails && default_tail == matches->end()) {
-    // 5) above.
-    // If there are no defaults at all, but non-tail suggestions exist, remove
-    // the tail suggestions.
+
+  // Cull tail suggestions when there is a non-tail, non-default suggestion.
+  if (other_normals) {
     base::EraseIf(*matches, is_tail);
+    return;
+  }
+
+  // If showing tail suggestions, hide history cluster suggestions.
+  if (any_history_clusters)
+    base::EraseIf(*matches, is_history_cluster);
+
+  // If showing tail suggestions with a default non-tail, make sure the tail
+  // suggestions are not defaulted.
+  if (default_tail) {
+    DCHECK(default_normal);
+    for (auto& match : *matches) {
+      if (is_tail(match))
+        match.allowed_to_be_default_match = false;
+    }
   }
 }
 

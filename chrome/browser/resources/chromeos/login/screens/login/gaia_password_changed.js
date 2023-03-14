@@ -186,6 +186,17 @@ class GaiaPasswordChanged extends GaiaPasswordChangedBase {
   }
 
   /**
+   * Returns the subtitle message for the data loss warning screen.
+   * @param {string} locale The i18n locale.
+   * @param {string} email The email address that the user is trying to recover.
+   * @returns {string} The translated subtitle message.
+   */
+  getDataLossWarningSubtitleMessage_(locale, email) {
+    return this.i18nAdvancedDynamic(
+        locale, 'dataLossWarningSubtitle', {substitutions: [email]});
+  }
+
+  /**
    * @private
    */
   submit_() {
@@ -211,6 +222,11 @@ class GaiaPasswordChanged extends GaiaPasswordChangedBase {
 
   /** @private */
   onTryAgainClicked_() {
+    this.setUIStep(GaiaPasswordChangedUIState.PASSWORD);
+  }
+
+  /** @private */
+  onBackButtonClicked_() {
     this.setUIStep(GaiaPasswordChangedUIState.PASSWORD);
   }
 

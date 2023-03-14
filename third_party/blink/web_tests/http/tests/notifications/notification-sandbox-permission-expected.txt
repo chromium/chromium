@@ -1,4 +1,4 @@
-CONSOLE WARNING: An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can remove its sandboxing.
+CONSOLE WARNING: An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing.
 Tests that the <iframe sandbox> attribute influences whether notification permissions will be inherit by an iframe.
 
 Normal iframe. Should inherit permissions.

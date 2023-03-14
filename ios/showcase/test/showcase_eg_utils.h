@@ -15,6 +15,12 @@ void Open(NSString* name);
 // Returns to the Showcase home screen from a particular screen.
 void Close();
 
+// Enters a search query into the Showcase table view search bar.
+void Search(NSString* query);
+
+// Clears the search query in the Showcase table view search bar.
+void ClearSearch();
+
 }  // namespace showcase_utils
 
 #endif  // IOS_SHOWCASE_TEST_SHOWCASE_EG_UTILS_H_

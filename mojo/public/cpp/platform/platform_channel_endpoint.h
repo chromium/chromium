@@ -10,6 +10,7 @@
 #include "base/process/launch.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
+#include "mojo/buildflags.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 
 namespace mojo {
@@ -26,7 +27,7 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformChannelEndpoint {
   using HandlePassingInfo = base::HandlesToInheritVector;
 #elif BUILDFLAG(IS_FUCHSIA)
   using HandlePassingInfo = base::HandlesToTransferVector;
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
   using HandlePassingInfo = base::MachPortsForRendezvous;
 #elif BUILDFLAG(IS_POSIX)
   using HandlePassingInfo = base::FileHandleMappingVector;

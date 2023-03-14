@@ -32,8 +32,6 @@ BASE_DECLARE_FEATURE(kNukeProfileBeforeCreateMultiAsync);
 BASE_DECLARE_FEATURE(kPromoBrowserCommands);
 extern const char kBrowserCommandIdParam[];
 
-BASE_DECLARE_FEATURE(kUseManagementService);
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 BASE_DECLARE_FEATURE(kQuickSettingsPWANotifications);
 #endif

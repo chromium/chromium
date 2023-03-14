@@ -39,9 +39,11 @@ enum class ScreenAILoadLibraryResult {
   kMainContentExtractionFailed = 2,
   kLayoutExtractionFailed = 3,
   kOcrFailed = 4,
-  kMaxValue = kOcrFailed,
+  kFunctionsLoadFailed = 5,
+  kMaxValue = kFunctionsLoadFailed,
 };
 
+// Returns an empty result if load or initialization fail.
 std::unique_ptr<ScreenAILibraryWrapper> LoadAndInitializeLibraryInternal(
     base::File model_config,
     base::File model_tflite,
@@ -50,25 +52,32 @@ std::unique_ptr<ScreenAILibraryWrapper> LoadAndInitializeLibraryInternal(
   std::unique_ptr<ScreenAILibraryWrapper> library =
       std::make_unique<ScreenAILibraryWrapper>();
 
-  // TODO(crbug.com/1413983): Replace CHECK with an UMA and a process
-  // termination similar to below cases when the bug is fixed.
-  CHECK(library->Init(library_path));
+  bool init_ok = true;
 
-  uint32_t version_major;
-  uint32_t version_minor;
-  library->GetLibraryVersion(version_major, version_minor);
-  VLOG(2) << "Screen AI library version: " << version_major << "."
-          << version_minor;
+  if (!library->Init(library_path)) {
+    init_ok = false;
+    base::UmaHistogramEnumeration(
+        "Accessibility.ScreenAI.LoadLibraryResult",
+        ScreenAILoadLibraryResult::kFunctionsLoadFailed);
+  }
+
+  if (init_ok) {
+    uint32_t version_major;
+    uint32_t version_minor;
+    library->GetLibraryVersion(version_major, version_minor);
+    VLOG(2) << "Screen AI library version: " << version_major << "."
+            << version_minor;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  library->SetLogger();
+    library->SetLogger();
 #endif
 
-  if (features::IsScreenAIDebugModeEnabled())
-    library->EnableDebugMode();
+    if (features::IsScreenAIDebugModeEnabled()) {
+      library->EnableDebugMode();
+    }
+  }
 
-  bool init_ok = true;
-  if (features::IsPdfOcrEnabled()) {
+  if (init_ok && features::IsPdfOcrEnabled()) {
     if (!library->InitOCR(library_path.DirName())) {
       init_ok = false;
       base::UmaHistogramEnumeration("Accessibility.ScreenAI.LoadLibraryResult",
@@ -94,13 +103,13 @@ std::unique_ptr<ScreenAILibraryWrapper> LoadAndInitializeLibraryInternal(
     }
   }
 
-  if (!init_ok) {
+  if (init_ok) {
+    base::UmaHistogramEnumeration("Accessibility.ScreenAI.LoadLibraryResult",
+                                  ScreenAILoadLibraryResult::kAllOk);
+  } else {
     VLOG(0) << "Screen AI library initialization failed.";
-    base::Process::TerminateCurrentProcessImmediately(-1);
+    library.reset();
   }
-
-  base::UmaHistogramEnumeration("Accessibility.ScreenAI.LoadLibraryResult",
-                                ScreenAILoadLibraryResult::kAllOk);
 
   return library;
 }
@@ -118,20 +127,28 @@ ScreenAIService::~ScreenAIService() = default;
 void ScreenAIService::LoadAndInitializeLibrary(
     base::File model_config,
     base::File model_tflite,
-    const base::FilePath& library_path) {
+    const base::FilePath& library_path,
+    LoadAndInitializeLibraryCallback callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&LoadAndInitializeLibraryInternal, std::move(model_config),
                      std::move(model_tflite), library_path),
       base::BindOnce(&ScreenAIService::SetLibraryAndStartTaskRunner,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ScreenAIService::SetLibraryAndStartTaskRunner(
+    LoadAndInitializeLibraryCallback success_callback,
     std::unique_ptr<ScreenAILibraryWrapper> library) {
-  library_ = std::move(library);
-  task_runner_->Start();
+  std::move(success_callback).Run((bool)library);
+
+  if (library) {
+    library_ = std::move(library);
+    task_runner_->Start();
+  } else {
+    base::Process::TerminateCurrentProcessImmediately(-1);
+  }
 }
 
 void ScreenAIService::BindAnnotator(
@@ -155,7 +172,7 @@ void ScreenAIService::BindMainContentExtractor(
 void ScreenAIService::PerformVisualAnnotation(
     const SkBitmap& image,
     const ui::AXTreeID& parent_tree_id,
-    AnnotationCallback callback,
+    PerformOcrCallback callback,
     bool run_ocr,
     bool run_layout_extraction) {
   std::unique_ptr<ui::AXTreeUpdate> annotation =
@@ -176,7 +193,7 @@ void ScreenAIService::PerformVisualAnnotation(
                      base::Unretained(annotation_ptr)),
       base::BindOnce(
           [](mojo::Remote<mojom::ScreenAIAnnotatorClient>* client,
-             AnnotationCallback callback,
+             PerformOcrCallback callback,
              std::unique_ptr<ui::AXTreeUpdate> update) {
             // The original caller is always replied to, and an AXTreeIDUnknown
             // is sent to tell it that the annotation function was not
@@ -192,7 +209,7 @@ void ScreenAIService::PerformVisualAnnotation(
 
 void ScreenAIService::ExtractSemanticLayout(const SkBitmap& image,
                                             const ui::AXTreeID& parent_tree_id,
-                                            AnnotationCallback callback) {
+                                            PerformOcrCallback callback) {
   PerformVisualAnnotation(std::move(image), parent_tree_id, std::move(callback),
                           /*run_ocr=*/false,
                           /*run_layout_extraction=*/true);
@@ -200,7 +217,7 @@ void ScreenAIService::ExtractSemanticLayout(const SkBitmap& image,
 
 void ScreenAIService::PerformOcr(const SkBitmap& image,
                                  const ui::AXTreeID& parent_tree_id,
-                                 AnnotationCallback callback) {
+                                 PerformOcrCallback callback) {
   PerformVisualAnnotation(std::move(image), parent_tree_id, std::move(callback),
                           /*run_ocr=*/true,
                           /*run_layout_extraction=*/false);
@@ -247,7 +264,7 @@ void ScreenAIService::VisualAnnotationInternal(
 
 void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,
                                          ukm::SourceId ukm_source_id,
-                                         ContentExtractionCallback callback) {
+                                         ExtractMainContentCallback callback) {
   std::unique_ptr<std::vector<int32_t>> content_node_ids =
       std::make_unique<std::vector<int32_t>>();
   std::vector<int32_t>* node_ids_ptr = content_node_ids.get();
@@ -260,7 +277,7 @@ void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,
                      weak_ptr_factory_.GetWeakPtr(), std::move(snapshot),
                      std::move(ukm_source_id), base::Unretained(node_ids_ptr)),
       base::BindOnce(
-          [](ContentExtractionCallback callback,
+          [](ExtractMainContentCallback callback,
              std::unique_ptr<std::vector<int32_t>> content_node_ids) {
             std::move(callback).Run(*content_node_ids);
           },

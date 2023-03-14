@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.editurl.EditUrlSuggestion
 import org.chromium.chrome.browser.omnibox.suggestions.entity.EntitySuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.MostVisitedTilesProcessor;
-import org.chromium.chrome.browser.omnibox.suggestions.pedal.PedalSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.tail.TailSuggestionProcessor;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -52,7 +51,7 @@ class DropdownItemViewInfoListBuilder {
 
     private final @NonNull List<SuggestionProcessor> mPriorityOrderedSuggestionProcessors;
     private final @NonNull Supplier<Tab> mActivityTabSupplier;
-    private final @NonNull OmniboxPedalDelegate mOmniboxPedalDelegate;
+    private final @NonNull ActionChipsDelegate mActionChipsDelegate;
 
     private @Nullable DividerLineProcessor mDividerLineProcessor;
     private @Nullable HeaderProcessor mHeaderProcessor;
@@ -65,12 +64,12 @@ class DropdownItemViewInfoListBuilder {
     private int mDropdownHeight;
 
     DropdownItemViewInfoListBuilder(@NonNull Supplier<Tab> tabSupplier, BookmarkState bookmarkState,
-            @NonNull OmniboxPedalDelegate omniboxPedalDelegate) {
+            @NonNull ActionChipsDelegate actionChipsDelegate) {
         mPriorityOrderedSuggestionProcessors = new ArrayList<>();
         mDropdownHeight = DROPDOWN_HEIGHT_UNKNOWN;
         mActivityTabSupplier = tabSupplier;
         mBookmarkState = bookmarkState;
-        mOmniboxPedalDelegate = omniboxPedalDelegate;
+        mActionChipsDelegate = actionChipsDelegate;
     }
 
     /**
@@ -101,18 +100,17 @@ class DropdownItemViewInfoListBuilder {
         mHeaderProcessor = new HeaderProcessor(context);
         registerSuggestionProcessor(new EditUrlSuggestionProcessor(
                 context, host, delegate, mFaviconFetcher, mActivityTabSupplier, shareSupplier));
-        registerSuggestionProcessor(
-                new AnswerSuggestionProcessor(context, host, textProvider, imageFetcherSupplier));
+        registerSuggestionProcessor(new AnswerSuggestionProcessor(
+                context, host, mActionChipsDelegate, textProvider, imageFetcherSupplier));
         registerSuggestionProcessor(
                 new ClipboardSuggestionProcessor(context, host, mFaviconFetcher));
+        registerSuggestionProcessor(new EntitySuggestionProcessor(
+                context, host, mActionChipsDelegate, imageFetcherSupplier));
         registerSuggestionProcessor(
-                new EntitySuggestionProcessor(context, host, imageFetcherSupplier));
-        registerSuggestionProcessor(new TailSuggestionProcessor(context, host));
+                new TailSuggestionProcessor(context, host, mActionChipsDelegate));
         registerSuggestionProcessor(new MostVisitedTilesProcessor(context, host, mFaviconFetcher));
-        registerSuggestionProcessor(new PedalSuggestionProcessor(context, host, textProvider,
-                mFaviconFetcher, mBookmarkState, mOmniboxPedalDelegate, delegate));
-        registerSuggestionProcessor(new BasicSuggestionProcessor(
-                context, host, textProvider, mFaviconFetcher, mBookmarkState));
+        registerSuggestionProcessor(new BasicSuggestionProcessor(context, host,
+                mActionChipsDelegate, textProvider, mFaviconFetcher, mBookmarkState));
     }
 
     void destroy() {

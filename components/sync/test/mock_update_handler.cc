@@ -40,7 +40,8 @@ void MockUpdateHandler::ProcessGetUpdatesResponse(
   progress_marker_.CopyFrom(progress_marker);
 }
 
-void MockUpdateHandler::ApplyUpdates(StatusController* status) {
+void MockUpdateHandler::ApplyUpdates(StatusController* status,
+                                     bool cycle_done) {
   apply_updates_count_++;
 }
 

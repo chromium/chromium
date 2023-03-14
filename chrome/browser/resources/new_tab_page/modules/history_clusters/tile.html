@@ -1,0 +1,132 @@
+<style include="history-clusters-shared-style">
+  :host {
+    background:
+        var(--color-new-tab-page-history-clusters-module-item-background);
+    border-radius: 25px;
+    color: var(--color-new-tab-page-primary-foreground);
+    height: 100%;
+    width: 100%;
+  }
+
+  a:link,
+  a:visited,
+  a:hover,
+  a:active {
+    text-decoration: none;
+  }
+
+  :host-context(.focus-outline-visible) :focus {
+    box-shadow: var(--ntp-focus-shadow);
+    outline: none;
+  }
+
+  :host([medium-format]) #content {
+    display: flex;
+    flex-direction: row;
+  }
+
+  #image {
+    background: red;
+    border-radius: 25px;
+  }
+
+  :host([large-format]) #image {
+    height: 152px;
+    margin: 16px auto;
+    width: 320px;
+  }
+
+  :host([medium-format]) #image {
+    height: 128px;
+    margin: 8px;
+    width: 128px;
+  }
+
+  :host([small-format]) #image {
+    display: none;
+  }
+
+  #icon {
+    height: 16px;
+    margin-inline-end: 8px;
+    width: 16px;
+  }
+
+  #title {
+    color: var(--color-new-tab-page-primary-foreground);
+    font-size: 16px;
+    white-space: initial;
+  }
+
+  :host([large-format]) #title {
+    height: 48px;
+    max-width: 298px;
+    padding: 16px 16px 24px;
+  }
+
+  :host([medium-format]) #title {
+    height: 60px;
+    max-width: 184px;
+    padding: 18px 16px 32px 8px;
+  }
+
+  :host([small-format]) #title {
+    height: 60px;
+    max-width: 136px;
+    padding: 18px 16px 32px 16px;
+  }
+
+  #info-container {
+    color: var(--color-new-tab-page-secondary-foreground);
+    display: flex;
+    flex-direction: row;
+    font-size: 11px;
+    margin-inline: 16px;
+  }
+
+  :host([medium-format]) #info-container {
+    margin-inline-start: 8px;
+  }
+
+  :host([small-format]) #info-container {
+    height: 20px;
+    margin-bottom: 14px;
+  }
+
+  #label,
+  #date {
+    bottom: -2px;
+    position: relative;
+  }
+
+  :host([large-format]) #label {
+    max-width: 220px;
+  }
+
+  :host([medium-format]) #label {
+    max-width: 90px;
+  }
+
+  :host([small-format]) #label,
+  :host([small-format]) #dot {
+    display: none;
+  }
+
+  #dot {
+    line-height: 16px;
+  }
+</style>
+<a id="content" href="[[visit.normalizedUrl.url]]">
+  <div id="image"></div>
+  <div id="text-container">
+    <div id="title" class="truncate">[[visit.pageTitle]]</div>
+    <div id="info-container">
+      <page-favicon id="icon" url="[[visit.normalizedUrl]]"
+        is-known-to-sync="[[visit.isKnownToSync]]">
+      </page-favicon>
+      <div id="label" class="truncate"> [[label_]]</div>
+      <span id="dot">&nbsp&#8226&nbsp</span>
+      <div id="date">[[visit.relativeDate]]</div>
+    </div>
+  </div>
+</a>

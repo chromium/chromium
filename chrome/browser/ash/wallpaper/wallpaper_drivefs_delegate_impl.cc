@@ -306,11 +306,12 @@ void WallpaperDriveFsDelegateImpl::OnGetDownloadUrlMetadata(
 
   drive_integration_service->GetReadOnlyAuthenticationToken(base::BindOnce(
       &WallpaperDriveFsDelegateImpl::OnGetDownloadUrlAndAuthentication,
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+      weak_ptr_factory_.GetWeakPtr(), account_id, std::move(callback),
       GURL(metadata->download_url)));
 }
 
 void WallpaperDriveFsDelegateImpl::OnGetDownloadUrlAndAuthentication(
+    const AccountId& account_id,
     ImageDownloader::DownloadCallback callback,
     const GURL& download_url,
     google_apis::ApiErrorCode error_code,
@@ -325,7 +326,7 @@ void WallpaperDriveFsDelegateImpl::OnGetDownloadUrlAndAuthentication(
   headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
                     "Bearer " + authentication_token);
   ImageDownloader::Get()->Download(download_url, kDriveFsDownloadWallpaperTag,
-                                   std::move(headers), absl::nullopt,
+                                   account_id, std::move(headers),
                                    std::move(callback));
 }
 

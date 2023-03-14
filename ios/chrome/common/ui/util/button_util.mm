@@ -18,6 +18,7 @@ UIButton* PrimaryActionButton(BOOL pointer_interaction_enabled) {
   UIButton* primary_blue_button = [UIButton buttonWithType:UIButtonTypeSystem];
   primary_blue_button.contentEdgeInsets =
       UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
+
   [primary_blue_button setBackgroundColor:[UIColor colorNamed:kBlueColor]];
   UIColor* titleColor = [UIColor colorNamed:kSolidButtonTextColor];
   [primary_blue_button setTitleColor:titleColor forState:UIControlStateNormal];

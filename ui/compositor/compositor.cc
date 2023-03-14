@@ -225,11 +225,6 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   settings.wait_for_all_pipeline_stages_before_draw =
       command_line->HasSwitch(switches::kRunAllCompositorStagesBeforeDraw);
 
-  if (base::FeatureList::IsEnabled(
-          features::kCompositorThreadedScrollbarScrolling)) {
-    settings.compositor_threaded_scrollbar_scrolling = true;
-  }
-
   if (features::IsPercentBasedScrollingEnabled()) {
     settings.percent_based_scrolling = true;
   }

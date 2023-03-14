@@ -195,6 +195,7 @@ component("evdev") {
   visibility += [
     "//ash/webui/diagnostics_ui/*",
     "//ui/chromeos/*",
+    "//ui/events/*",
     "//ui/ozone/*",
   ]
 }
@@ -212,6 +213,7 @@ source_set("event_device_info") {
   ]
 
   visibility += [
+    "//ash:ash_unittests",
     "//ash/webui/diagnostics_ui/backend:*",
     "//chromeos/ash/services/cros_healthd/*",
     "//ui/chromeos/*",
@@ -232,7 +234,10 @@ source_set("event_device_info_test_utils") {
     "//base",
   ]
 
-  visibility += [ "//ash/webui/diagnostics_ui/backend:unit_tests" ]
+  visibility += [
+    "//ash:ash_unittests",
+    "//ash/webui/diagnostics_ui/backend:unit_tests",
+  ]
 }
 
 source_set("unittests") {
@@ -251,6 +256,7 @@ source_set("unittests") {
     "libgestures_glue/haptic_touchpad_handler.h",
     "libgestures_glue/haptic_touchpad_handler_unittest.cc",
     "microphone_mute_switch_event_converter_evdev_unittest.cc",
+    "mouse_button_map_evdev_unittest.cc",
     "stylus_button_event_converter_evdev_unittest.cc",
     "tablet_event_converter_evdev_unittest.cc",
     "testing/fake_cursor_delegate_evdev.h",

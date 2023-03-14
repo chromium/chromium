@@ -23,7 +23,6 @@ import '../os_settings_page_styles.css.js';
 import '../../settings_shared.css.js';
 import '../os_settings_icons.html.js';
 import '../os_reset_page/os_powerwash_dialog.js';
-import './detailed_build_info.js';
 import './update_warning_dialog.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -34,10 +33,10 @@ import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LifetimeBrowserProxyImpl} from '../../lifetime_browser_proxy.js';
-import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {MainPageMixin} from '../main_page_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {routes} from '../os_settings_routes.js';
 import {Route, Router} from '../router.js';
 
@@ -365,6 +364,14 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
     // Stop the propagation of events, so that clicking on links inside
     // actionable items won't trigger action.
     event.stopPropagation();
+  }
+
+  private onProductLicenseOtherClicked_(event: CustomEvent<{event: Event}>) {
+    // Prevent the default link click behavior
+    event.detail.event.preventDefault();
+
+    // Programmatically open license.
+    this.aboutBrowserProxy_.openProductLicenseOther();
   }
 
   private onReleaseNotesTap_() {

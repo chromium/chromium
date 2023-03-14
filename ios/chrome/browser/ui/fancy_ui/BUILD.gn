@@ -19,7 +19,7 @@ source_set("fancy_ui") {
   deps = [
     "//base",
     "//base:i18n",
-    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
   ]

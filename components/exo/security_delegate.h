@@ -51,6 +51,13 @@ class SecurityDelegate {
   // can lock the location of the pointer and disable movement, or return false
   // to reject the pointer lock request.
   virtual bool CanLockPointer(aura::Window* window) const;
+
+  // If server-side decoration is used, clients normally should not set their
+  // own window bounds, as they may not be able to compute them correctly
+  // (accounting for the size of the window decorations).
+  //
+  // Return true if this client is allowed to set its own window bounds anyway.
+  virtual bool CanSetBoundsWithServerSideDecoration(aura::Window* window) const;
 };
 
 }  // namespace exo

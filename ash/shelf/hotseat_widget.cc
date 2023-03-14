@@ -833,10 +833,18 @@ int HotseatWidget::CalculateHotseatYInScreen(
       break;
     case HotseatState::kShownHomeLauncher:
       // When the hotseat state is HotseatState::kShownHomeLauncher, the home
-      // launcher is showing in tablet mode. Elevate the hotseat a few px to
-      // match the navigation and status area.
+      // launcher is showing in tablet mode. Elevate the hotseat
+      // to be hotseat_bottom_padding() above the bottom of the screen to be
+      // in line with the navigation and status area.
       hotseat_distance_from_bottom_of_display =
           hotseat_size + ShelfConfig::Get()->hotseat_bottom_padding();
+      // Elevate the hotseat app bar to a second row above the navigation and
+      // status area if needed.
+      if (ShelfConfig::Get()->elevate_tablet_mode_app_bar()) {
+        hotseat_distance_from_bottom_of_display +=
+            hotseat_size +
+            ShelfConfig::Get()->GetHomecherElevatedAppBarOffset();
+      }
       break;
     case HotseatState::kHidden:
       // Show the hotseat offscreen.
@@ -874,9 +882,25 @@ gfx::Size HotseatWidget::CalculateTargetBoundsSize(
     return gfx::Size(shelf_bounds.width(), hotseat_size);
   }
 
+  gfx::Size app_bar_size = CalculateInlineAppBarSize();
+
+  if (hotseat_target_state == HotseatState::kShownHomeLauncher) {
+    if (ShelfConfig::Get()->elevate_tablet_mode_app_bar()) {
+      return gfx::Size(shelf_bounds.width(), hotseat_size);
+    }
+  }
+  return app_bar_size;
+}
+
+gfx::Size HotseatWidget::CalculateInlineAppBarSize() const {
+  const gfx::Rect shelf_bounds = shelf_->shelf_widget()->GetTargetBounds();
   const gfx::Size status_size =
       shelf_->status_area_widget()->GetTargetBounds().size();
   const gfx::Rect nav_bounds = shelf_->navigation_widget()->GetVisibleBounds();
+
+  // |hotseat_size| is the height in horizontal alignment or the width in
+  // vertical alignment.
+  const int hotseat_size = GetHotseatSize();
 
   // The navigation widget has extra padding on the hotseat side, to center the
   // buttons inside of it. Make sure to get the extra nav widget padding and
@@ -910,6 +934,12 @@ void HotseatWidget::CalculateTargetBounds() {
   const HotseatState hotseat_target_state =
       layout_manager->CalculateHotseatState(layout_manager->visibility_state(),
                                             layout_manager->auto_hide_state());
+
+  gfx::Size app_bar_size = CalculateInlineAppBarSize();
+  if (hotseat_target_state == HotseatState::kShownHomeLauncher) {
+    ShelfConfig::Get()->UpdateShowElevatedAppBar(app_bar_size);
+  }
+
   const gfx::Size hotseat_target_size =
       CalculateTargetBoundsSize(hotseat_target_state);
 
@@ -932,10 +962,15 @@ void HotseatWidget::CalculateTargetBounds() {
         hotseat_target_state != HotseatState::kShownClamshell) {
       hotseat_x = shelf_bounds.x();
     } else {
-      hotseat_x = base::i18n::IsRTL()
-                      ? status_area_bounds.right() + group_margin
-                      : status_area_bounds.x() - group_margin -
-                            hotseat_target_size.width();
+      if (hotseat_target_state == HotseatState::kShownHomeLauncher &&
+          ShelfConfig::Get()->elevate_tablet_mode_app_bar()) {
+        hotseat_x = shelf_bounds.x();
+      } else {
+        hotseat_x = base::i18n::IsRTL()
+                        ? status_area_bounds.right() + group_margin
+                        : status_area_bounds.x() - group_margin -
+                              hotseat_target_size.width();
+      }
     }
 
     hotseat_origin =

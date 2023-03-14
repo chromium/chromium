@@ -184,7 +184,9 @@ void UpdateMetricsPrefsOnPermissionChange(
       metrics::prefs::kUsePostFREFixSamplingTrial, true);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  // Clear the client id and low entropy sources pref when opting out.
+  // Clear the client id and low entropy sources pref when the user opts out
+  // from a non-FRE source. In the FRE flow the entropy source is not cleared
+  // since no data has been uploaded yet.
   // Note: This will not affect the running state (e.g. field trial
   // randomization), as the pref is only read on startup.
 
@@ -200,21 +202,20 @@ void UpdateMetricsPrefsOnPermissionChange(
 
   local_state->ClearPref(metrics::prefs::kMetricsClientID);
   local_state->ClearPref(metrics::prefs::kMetricsProvisionalClientID);
-  metrics::EntropyState::ClearPrefs(local_state);
+  local_state->ClearPref(metrics::prefs::kMetricsLogRecordId);
+
+  // Don't clear the entropy state if the user opted out in the FRE. This is to
+  // prevent experiments that have been randomized based on the low-entropy
+  // source from having their state re-rolled on a subsequent session.
+  if (called_from != ChangeMetricsReportingStateCalledFrom::kUiFirstRun) {
+    metrics::EntropyState::ClearPrefs(local_state);
+  }
   metrics::ClonedInstallDetector::ClearClonedInstallInfo(local_state);
   local_state->ClearPref(metrics::prefs::kMetricsReportingEnabledTimestamp);
   crash_keys::ClearMetricsClientId();
 }
 
 void ApplyMetricsReportingPolicy() {
-#if BUILDFLAG(IS_ANDROID)
-  // Android must verify if this policy is feature-enabled.
-  if (!base::FeatureList::IsEnabled(
-          policy::features::kActivateMetricsReportingEnabledPolicyAndroid)) {
-    return;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-
   GoogleUpdateSettings::CollectStatsConsentTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(

@@ -10,6 +10,7 @@ import("//build/config/linux/pkg_config.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//gpu/vulkan/features.gni")
+import("//media/gpu/args.gni")
 import("//testing/test.gni")
 import("//third_party/angle/gni/angle.gni")
 import("//third_party/dawn/scripts/dawn_features.gni")
@@ -151,8 +152,6 @@ component("gl") {
     sources += [
       "gl_image.cc",
       "gl_image.h",
-      "gl_image_stub.cc",
-      "gl_image_stub.h",
     ]
   }
 
@@ -224,15 +223,6 @@ component("gl") {
       ]
     }
 
-    if (is_linux || is_chromeos || use_ozone) {
-      sources += [
-        "gl_image_gl_texture.cc",
-        "gl_image_gl_texture.h",
-        "gl_image_native_pixmap.cc",
-        "gl_image_native_pixmap.h",
-      ]
-    }
-
     if (is_android) {
       sources += [
         "android/egl_fence_utils.cc",
@@ -275,12 +265,12 @@ component("gl") {
 
   if (ozone_platform_x11) {
     sources += [
-      "gl_image_egl_pixmap.cc",
-      "gl_image_egl_pixmap.h",
       "gl_surface_egl_x11.cc",
       "gl_surface_egl_x11.h",
       "gl_surface_egl_x11_gles2.cc",
       "gl_surface_egl_x11_gles2.h",
+      "native_pixmap_egl_x11_binding_helper.cc",
+      "native_pixmap_egl_x11_binding_helper.h",
     ]
 
     deps += [
@@ -326,8 +316,6 @@ component("gl") {
       "gl_angle_util_win.h",
       "gl_fence_win.cc",
       "gl_fence_win.h",
-      "gl_image_d3d.cc",
-      "gl_image_d3d.h",
       "hdr_metadata_helper_win.cc",
       "hdr_metadata_helper_win.h",
       "swap_chain_presenter.cc",
@@ -371,13 +359,9 @@ component("gl") {
       "dual_gpu_state_mac.h",
       "egl_surface_io_surface.cc",
       "egl_surface_io_surface.h",
-      "gl_context_cgl.cc",
-      "gl_context_cgl.h",
       "gl_display_egl.mm",
       "gl_fence_apple.cc",
       "gl_fence_apple.h",
-      "gl_image_io_surface.h",
-      "gl_image_io_surface.mm",
       "scoped_cgl.cc",
       "scoped_cgl.h",
     ]
@@ -415,8 +399,6 @@ component("gl") {
       "gl_display_egl.mm",
       "gl_fence_apple.cc",
       "gl_fence_apple.h",
-      "gl_image_io_surface.h",
-      "gl_image_io_surface.mm",
     ]
     frameworks = [
       "CoreFoundation.framework",
@@ -597,12 +579,11 @@ test("gl_unittests") {
       "delegated_ink_point_renderer_gpu_unittest.cc",
       "direct_composition_surface_win_unittest.cc",
       "gl_fence_win_unittest.cc",
-      "gl_image_d3d_unittest.cc",
       "hdr_metadata_helper_win_unittest.cc",
     ]
   }
 
-  if (is_linux || is_chromeos_lacros) {
+  if (use_vaapi) {
     sources += [ "gl_image_gl_texture_unittest.cc" ]
   }
 
@@ -625,6 +606,19 @@ test("gl_unittests") {
     "//ui/platform_window:platform_impls",
   ]
 
+  if (use_vaapi) {
+    # gl_image_gl_texture_unittest.cc cannot easily be made to run as part of
+    # media_unittests due to its reliance on particular GL environment setup
+    # necessary for gl_image_test_template.h. Instead just leave it here until
+    # it is eliminated, at which point these deps can also be eliminated.
+    # TODO(crbug.com/1310018): Eliminate these deps once
+    # gl_image_gl_texture_unittest.cc is eliminated.
+    deps += [
+      "//media/gpu",
+      "//media/gpu/vaapi",
+    ]
+  }
+
   data_deps = [
     "//testing/buildbot/filters:gl_unittests_filters",
     "//third_party/mesa_headers",
@@ -633,6 +627,10 @@ test("gl_unittests") {
   if (is_win) {
     deps += [ "//media/base/win:test_support" ]
     libs = [ "dxguid.lib" ]
+  }
+
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
   }
 }
 

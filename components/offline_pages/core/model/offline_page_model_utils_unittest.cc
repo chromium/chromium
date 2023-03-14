@@ -87,7 +87,7 @@ TEST(OfflinePageModelUtilsTest, MAYBE_TestGenerateUniqueFilename) {
     base::FilePath path = model_utils::GenerateUniqueFilenameForOfflinePage(
         test_case.page_title, test_case.page_url, temp_dir.GetPath());
     // Writing a dummy file so the uniquifier can increase.
-    base::WriteFile(path, nullptr, 0);
+    base::WriteFile(path, base::StringPiece());
     EXPECT_EQ(path.BaseName().value(), test_case.expected_basename);
   }
 }

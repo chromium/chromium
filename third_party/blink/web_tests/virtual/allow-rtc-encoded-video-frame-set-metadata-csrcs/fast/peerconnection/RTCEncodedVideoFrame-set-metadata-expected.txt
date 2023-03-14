@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL setMetadata() does not allow changes to contributingSources without a flag assert_throws_dom: For field "contributingSources", function "() => clone.setMetadata(metadata)" did not throw
+PASS setMetadata() does not allow changes to fields other than contributingSources without a flag
+FAIL setMetadata() allows changes when AllowRTCEncodedVideoFrameSetMetadataAllFields is enabled promise_test: Unhandled rejection with value: object "InvalidModificationError: Failed to execute 'setMetadata' on 'RTCEncodedVideoFrame': Invalid modification of RTCEncodedVideoFrameMetadata."
+FAIL setMetadata() allows metadata with no generic dependency descriptor - ie no frameId promise_test: Unhandled rejection with value: object "InvalidModificationError: Failed to execute 'setMetadata' on 'RTCEncodedVideoFrame': Invalid modification of RTCEncodedVideoFrameMetadata."
+PASS modified csrcs are propagated over a PeerConnection
+Harness: the test ran to completion.
+

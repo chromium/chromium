@@ -13,7 +13,7 @@ class FederatedAuthRequestImpl;
 class FederatedAuthRequestPageData
     : public PageUserData<FederatedAuthRequestPageData> {
  public:
-  ~FederatedAuthRequestPageData() override = default;
+  ~FederatedAuthRequestPageData() override;
 
   // The currently pending web identity request, if any.
   // Used to ensure that we do not allow two separate calls on the same page.

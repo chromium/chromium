@@ -32,6 +32,7 @@
         },
         "responses": [{
           "url": "https://reporter2.test/register-source",
+          "debug_permission": true,
           "response": {
             "Attribution-Reporting-Register-Source": {
               "destination": "https://destination1.test",
@@ -40,7 +41,7 @@
           }
         }]
       },
-       // Should be dropped due to the unattributed reporting origin limit.
+      // Should be dropped due to the unattributed reporting origin limit.
       {
         "timestamp": "1643235575000",
         "registration_request": {
@@ -50,10 +51,35 @@
         },
         "responses": [{
           "url": "https://reporter2.test/register-source",
+          "debug_permission": true,
           "response": {
             "Attribution-Reporting-Register-Source": {
               "destination": "https://destination1.test",
-              "source_event_id": "999"
+              "source_event_id": "999",
+              "debug_reporting": true
+            }
+          }
+        }]
+      },
+      // Should be dropped due to the unattributed reporting origin limit is
+      // reached for one of the destinations.
+      {
+        "timestamp": "1643235575001",
+        "registration_request": {
+          "source_origin": "https://source1.test",
+          "attribution_src_url": "https://reporter2.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://reporter2.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": [
+                "https://destination1.test",
+                "https://destination2.test"
+              ],
+              "source_event_id": "987",
+              "priority": "2"
             }
           }
         }]
@@ -76,7 +102,8 @@
           }
         }]
       },
-      // Should be dropped due to the unattributed reporting origin limit.
+      // Should be dropped due to the unattributed reporting origin limit, but
+      // verbose debug report is not created as debug_permission is not set.
       {
         "timestamp": "1643235577000",
         "registration_request": {
@@ -89,7 +116,8 @@
           "response": {
             "Attribution-Reporting-Register-Source": {
               "destination": "https://destination1.test",
-              "source_event_id": "444"
+              "source_event_id": "444",
+              "debug_reporting": true
             }
           }
         }]
@@ -265,6 +293,20 @@
         },
         "report_url": "https://reporter3.test/.well-known/attribution-reporting/report-event-attribution",
         "report_time": "1648423173000"
+      }
+    ],
+    "verbose_debug_reports": [
+      {
+        "payload": [ {
+          "body": {
+             "attribution_destination": "https://destination1.test",
+             "source_event_id": "999",
+             "source_site": "https://source1.test"
+          },
+          "type": "source-success"
+       } ],
+       "report_time": "1643235575000",
+       "report_url": "https://reporter2.test/.well-known/attribution-reporting/debug/verbose"
       }
     ]
   }

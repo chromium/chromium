@@ -15,12 +15,9 @@
 #include "ui/gfx/x/xproto.h"
 #include "ui/gl/gl_bindings.h"
 
-namespace gl {
-class GLImageEGLPixmap;
-}
-
 namespace media {
 
+class GLImageEGLPixmap;
 class VaapiWrapper;
 
 // Implementation of VaapiPictureNativePixmap for ANGLE backends.
@@ -57,7 +54,7 @@ class VaapiPictureNativePixmapAngle : public VaapiPictureNativePixmap {
   x11::Pixmap x_pixmap_ = x11::Pixmap::None;
 
   // GLImage bound to the GL textures used by the VDA client.
-  scoped_refptr<gl::GLImageEGLPixmap> gl_image_;
+  scoped_refptr<GLImageEGLPixmap> gl_image_;
 };
 
 }  // namespace media

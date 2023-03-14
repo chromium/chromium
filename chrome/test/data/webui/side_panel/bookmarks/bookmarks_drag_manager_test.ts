@@ -84,7 +84,7 @@ suite('SidePanelBookmarkDragManagerTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     loadTimeData.overrideValues({
-      bookmarksDragAndDropEnabled: true,
+      editBookmarksEnabled: true,
     });
 
     const bookmarksApi = new TestBookmarksApiProxy();

@@ -12,7 +12,6 @@ static_library("browser") {
     "base_bookmark_model_observer.h",
     "bookmark_client.h",
     "bookmark_codec.h",
-    "bookmark_expanded_state_tracker.h",
     "bookmark_model.h",
     "bookmark_model_observer.h",
     "bookmark_node.h",
@@ -35,7 +34,6 @@ static_library("browser") {
     "base_bookmark_model_observer.cc",
     "bookmark_client.cc",
     "bookmark_codec.cc",
-    "bookmark_expanded_state_tracker.cc",
     "bookmark_load_details.cc",
     "bookmark_load_details.h",
     "bookmark_model.cc",
@@ -128,7 +126,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "bookmark_codec_unittest.cc",
-    "bookmark_expanded_state_tracker_unittest.cc",
     "bookmark_model_unittest.cc",
     "bookmark_storage_unittest.cc",
     "bookmark_utils_unittest.cc",

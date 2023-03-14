@@ -104,6 +104,11 @@ export class WebuiGalleryAppElement extends PolymerElement {
               src: 'md_select/index.html',
             },
             {
+              name: 'Side panel',
+              path: 'side-panel',
+              src: 'side_panel/index.html',
+            },
+            {
               name: 'Sliders',
               path: 'sliders',
               src: 'cr_slider/index.html',

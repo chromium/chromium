@@ -30,6 +30,12 @@ class StyledMarkupSerializerTest : public EditingTestBase {
         .Build();
   }
 
+  CreateMarkupOptions ShouldSkipUnselectableContent() const {
+    return CreateMarkupOptions::Builder()
+        .SetShouldSkipUnselectableContent(true)
+        .Build();
+  }
+
   template <typename Strategy>
   std::string Serialize(
       const CreateMarkupOptions& options = CreateMarkupOptions());
@@ -327,6 +333,67 @@ TEST_F(StyledMarkupSerializerTest, DisplayContentsStyle) {
   SetBodyContent(body_content);
   EXPECT_EQ(expected_result, Serialize<EditingStrategy>());
   EXPECT_EQ(expected_result, Serialize<EditingInFlatTreeStrategy>());
+}
+
+// Test serialization of selectable and unselectable content.
+TEST_F(StyledMarkupSerializerTest, SkipUnselectableContent) {
+  // Mix of unnested selectable and unselectable content.
+  const char* body_content =
+      "<span>KEEP_1</span><span style='user-select: none;'>SKIP_2</span><span "
+      "style='user-select: none;'>SKIP_3</span><span>KEEP_4</span>";
+  const char* expected_result = "<span>KEEP_1</span><span>KEEP_4</span>";
+  SetBodyContent(body_content);
+  EXPECT_EQ(expected_result,
+            Serialize<EditingStrategy>(ShouldSkipUnselectableContent()));
+  EXPECT_EQ(expected_result, Serialize<EditingInFlatTreeStrategy>(
+                                 ShouldSkipUnselectableContent()));
+
+  // Shadow elements should be serialized, regardless if they're unselectable.
+  body_content = "<span id='with-shadow-root' style='user-select:none;'>";
+  const char* shadow_content = "<span>Shadow Content</span>";
+  expected_result =
+      "<span id=\"with-shadow-root\" style=\"user-select: none;\"></span>";
+  const char* flat_tree_expected_result =
+      "<span id=\"with-shadow-root\" style=\"user-select: none;\"><span>Shadow "
+      "Content</span></span>";
+  SetBodyContent(body_content);
+  SetShadowContent(shadow_content, "with-shadow-root");
+  EXPECT_EQ(expected_result,
+            Serialize<EditingStrategy>(ShouldSkipUnselectableContent()));
+  EXPECT_EQ(flat_tree_expected_result, Serialize<EditingInFlatTreeStrategy>(
+                                           ShouldSkipUnselectableContent()));
+
+  // Test nested selectable and unselectable descendants.
+  // Selectable descendants of unselectable content should not be skipped and
+  // those descendants should inherit any styling from its unselectable
+  // ancestors.
+  body_content =
+      "<span>KEEP_1<span style='user-select: none; color: red;'>SKIP_2<span "
+      "style='user-select: all;'>KEEP_3<span style='user-select: "
+      "none; background-color: yellow;'>SKIP_4<img src='SKIP_5.png'><span "
+      "id='shadow-root-6'></span><span style='user-select: "
+      "all;'>KEEP_7</span></span></span></span></span><span>KEEP_8</span></"
+      "span>";
+  shadow_content = "<span style='user-select: none;'>KEEP_6</span>";
+  expected_result =
+      "<span>KEEP_1<span style=\"user-select: none; color: red;\"><span "
+      "style=\"user-select: all;\">KEEP_3<span style=\"user-select: none; "
+      "background-color: yellow;\"><span id=\"shadow-root-6\"></span><span "
+      "style=\"user-select: "
+      "all;\">KEEP_7</span></span></span></span></span><span>KEEP_8</span>";
+  flat_tree_expected_result =
+      "<span>KEEP_1<span style=\"user-select: none; color: red;\"><span "
+      "style=\"user-select: all;\">KEEP_3<span style=\"user-select: none; "
+      "background-color: yellow;\"><span id=\"shadow-root-6\"><span "
+      "style=\"user-select: none;\">KEEP_6</span></span><span "
+      "style=\"user-select: "
+      "all;\">KEEP_7</span></span></span></span></span><span>KEEP_8</span>";
+  SetBodyContent(body_content);
+  SetShadowContent(shadow_content, "shadow-root-6");
+  EXPECT_EQ(expected_result,
+            Serialize<EditingStrategy>(ShouldSkipUnselectableContent()));
+  EXPECT_EQ(flat_tree_expected_result, Serialize<EditingInFlatTreeStrategy>(
+                                           ShouldSkipUnselectableContent()));
 }
 
 }  // namespace blink

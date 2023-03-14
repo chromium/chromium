@@ -80,6 +80,7 @@ class MEDIA_EXPORT MediaPlayerBridge {
   MediaPlayerBridge(const GURL& url,
                     const net::SiteForCookies& site_for_cookies,
                     const url::Origin& top_frame_origin,
+                    bool has_storage_access,
                     const std::string& user_agent,
                     bool hide_url_log,
                     Client* client,
@@ -225,6 +226,10 @@ class MEDIA_EXPORT MediaPlayerBridge {
 
   // Used to check for cookie content settings.
   url::Origin top_frame_origin_;
+
+  // Used when determining if first-party cookies may be accessible in a
+  // third-party context.
+  bool has_storage_access_;
 
   // Waiting to retrieve cookies for `url_`.
   bool pending_retrieve_cookies_;

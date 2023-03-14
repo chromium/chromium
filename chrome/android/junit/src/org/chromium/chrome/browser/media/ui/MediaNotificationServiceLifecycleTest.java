@@ -8,12 +8,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyBoolean;
-import static org.mockito.Mockito.anyInt;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -26,6 +26,7 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ServiceInfo;
 import android.os.Build;
 
 import org.junit.Test;
@@ -250,8 +251,8 @@ public class MediaNotificationServiceLifecycleTest extends MediaNotificationTest
         getController().updateNotification(false, false);
 
         verify(mMockForegroundServiceUtils)
-                .startForeground(
-                        eq(mService), eq(getNotificationId()), any(Notification.class), eq(0));
+                .startForeground(eq(mService), eq(getNotificationId()), any(Notification.class),
+                        eq(ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK));
     }
 
     @Test
@@ -263,8 +264,8 @@ public class MediaNotificationServiceLifecycleTest extends MediaNotificationTest
         getController().updateNotification(false, false);
 
         verify(mMockForegroundServiceUtils)
-                .startForeground(
-                        eq(mService), eq(getNotificationId()), any(Notification.class), eq(0));
+                .startForeground(eq(mService), eq(getNotificationId()), any(Notification.class),
+                        eq(ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK));
     }
 
     private ShadowNotificationManager getShadowNotificationManager() {

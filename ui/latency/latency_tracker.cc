@@ -15,6 +15,8 @@
 #include "base/time/time.h"
 #include "services/metrics/public/cpp/ukm_entry_builder.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "ui/latency/jank_tracker_for_experiments_buildflags.h"
+#include "ui/latency/janky_duration_tracker.h"
 
 // Impose some restrictions for tests etc, but also be lenient since some of the
 // data come from untrusted sources.
@@ -125,6 +127,9 @@ void EmitScrollUpdateTime(base::TimeDelta dur, bool janky) {
       "Event.Jank.ScrollUpdate.TotalJankyAndNonJankyDuration2",
       base::HistogramBase::kUmaTargetedHistogramFlag);
   histogram->AddCount(janky ? kJanky : kNonJanky, count);
+#if BUILDFLAG(JANK_TRACKER_FOR_EXPERIMENTS)
+  AdvanceJankyDurationForBenchmarking(janky, count);
+#endif
 }
 
 }  // namespace

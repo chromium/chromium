@@ -94,10 +94,10 @@ export const FilesTooltip = Polymer({
    * @param {!HTMLElement} target
    */
   addTarget: function(target) {
-    target.addEventListener('mouseover', this.onMouseOver_.bind(this, target));
-    target.addEventListener('mouseout', this.onMouseOut_.bind(this, target));
-    target.addEventListener('focus', this.onFocus_.bind(this, target));
-    target.addEventListener('blur', this.onBlur_.bind(this, target));
+    target.addEventListener('mouseover', this.onMouseOver_.bind(this));
+    target.addEventListener('mouseout', this.onMouseOut_.bind(this));
+    target.addEventListener('focus', this.onFocus_.bind(this));
+    target.addEventListener('blur', this.onBlur_.bind(this));
   },
 
   /**
@@ -289,26 +289,24 @@ export const FilesTooltip = Polymer({
   },
 
   /**
-   * @param {?HTMLElement} target Element with 'has-tooltip' attribute or null.
    * @param {Event} event The event that triggered this handler.
    * @private
    */
-  onMouseOver_: function(target, event) {
-    const actualTarget = target || this.visibleTooltipTarget_;
+  onMouseOver_: function(event) {
+    const actualTarget = event?.currentTarget || this.visibleTooltipTarget_;
     if (actualTarget) {
-      this.initShowingTooltip_(actualTarget);
+      this.initShowingTooltip_(/** @type {!HTMLElement} */ (actualTarget));
     }
   },
 
   /**
-   * @param {?HTMLElement} target Element with 'has-tooltip' attribute or null.
    * @param {Event} event The event that triggered this handler.
    * @private
    */
-  onMouseOut_: function(target, event) {
-    const actualTarget = target || this.visibleTooltipTarget_;
+  onMouseOut_: function(event) {
+    const actualTarget = event?.currentTarget || this.visibleTooltipTarget_;
     if (actualTarget) {
-      this.initHidingTooltip_(actualTarget);
+      this.initHidingTooltip_(/** @type {!HTMLElement} */ (actualTarget));
     }
   },
 
@@ -316,16 +314,16 @@ export const FilesTooltip = Polymer({
    * @param {Event} event
    * @private
    */
-  onFocus_: function(target, event) {
-    this.initShowingTooltip_(target);
+  onFocus_: function(event) {
+    this.initShowingTooltip_(/** @type {!HTMLElement} */ (event.currentTarget));
   },
 
   /**
    * @param {Event} event
    * @private
    */
-  onBlur_: function(target, event) {
-    this.initHidingTooltip_(target);
+  onBlur_: function(event) {
+    this.initHidingTooltip_(/** @type {!HTMLElement} */ (event.currentTarget));
   },
 
   /**
@@ -377,4 +375,5 @@ export const FilesTooltip = Polymer({
   },
 });
 
-//# sourceURL=//ui/file_manager/file_manager/foreground/elements/files_tooltip.js
+// #
+// sourceURL=//ui/file_manager/file_manager/foreground/elements/files_tooltip.js

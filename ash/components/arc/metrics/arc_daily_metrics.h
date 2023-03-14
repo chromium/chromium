@@ -12,7 +12,7 @@
 #include "ash/components/arc/mojom/process.mojom.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
-#include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
+#include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "components/metrics/daily_event.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

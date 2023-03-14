@@ -184,8 +184,7 @@ int main(int argc, char* argv[]) {
   }
 
   base::FilePath output_path = base::FilePath::FromUTF8Unsafe(args[2]);
-  if (base::WriteFile(output_path, output.c_str(),
-                      static_cast<uint32_t>(output.size())) <= 0) {
+  if (!base::WriteFile(output_path, output)) {
     LOG(ERROR) << "Failed to write output: " << output_path;
     return 1;
   }

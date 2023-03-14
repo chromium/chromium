@@ -94,8 +94,9 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsBrowserTest,
       extended_scope_page_);
 }
 
+// Flaky. https://crbug.com/1422071.
 IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsBrowserTest,
-                       FallbackPageThemeColor) {
+                       DISABLED_FallbackPageThemeColor) {
   // Pages in the extended scope should have a fallback page theme color applied
   // when their URL contains certain substrings.
   Browser* app_browser = LaunchWebAppBrowser(app_id_);

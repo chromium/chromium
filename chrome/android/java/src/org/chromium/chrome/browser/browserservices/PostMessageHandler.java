@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.browserservices;
 
 import android.net.Uri;
+import android.os.Bundle;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsService;
@@ -12,11 +13,13 @@ import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.PostMessageBackend;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.digital_asset_links.OriginVerifier;
-import org.chromium.components.digital_asset_links.OriginVerifier.OriginVerificationListener;
+import org.chromium.components.content_relationship_verification.OriginVerifier;
+import org.chromium.components.content_relationship_verification.OriginVerifier.OriginVerificationListener;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LifecycleState;
@@ -27,11 +30,19 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.net.GURLUtils;
+import org.chromium.url.GURL;
 
 /**
  * A class that handles postMessage communications with a designated {@link CustomTabsSessionToken}.
  */
 public class PostMessageHandler implements OriginVerificationListener {
+    private static final String TAG = "PostMessageHandler";
+
+    // TODO(crbug.com/1418044): This should get moved into androidx.browser.
+    private static final String POST_MESSAGE_ORIGIN =
+            "androidx.browser.customtabs.POST_MESSAGE_ORIGIN";
+
     private final MessageCallback mMessageCallback;
     private final PostMessageBackend mPostMessageBackend;
     private WebContents mWebContents;
@@ -48,12 +59,23 @@ public class PostMessageHandler implements OriginVerificationListener {
      */
     public PostMessageHandler(PostMessageBackend postMessageBackend) {
         mPostMessageBackend = postMessageBackend;
-        mMessageCallback = new MessageCallback() {
-            @Override
-            public void onMessage(MessagePayload messagePayload, MessagePort[] sentPorts) {
-                mPostMessageBackend.onPostMessage(messagePayload.getAsString(), null);
-                RecordHistogram.recordBooleanHistogram("CustomTabs.PostMessage.OnMessage", true);
+        mMessageCallback = (messagePayload, sentPorts) -> {
+            if (mChannel[0].isTransferred()) {
+                Log.e(TAG, "Discarding postMessage as channel has been transferred.");
+                return;
             }
+
+            Bundle bundle = null;
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_POST_MESSAGE_ORIGIN)) {
+                GURL url = mWebContents.getMainFrame().getLastCommittedURL();
+                if (url != null) {
+                    String origin = GURLUtils.getOrigin(url.getSpec());
+                    bundle = new Bundle();
+                    bundle.putString(POST_MESSAGE_ORIGIN, origin);
+                }
+            }
+            mPostMessageBackend.onPostMessage(messagePayload.getAsString(), bundle);
+            RecordHistogram.recordBooleanHistogram("CustomTabs.PostMessage.OnMessage", true);
         };
     }
 
@@ -143,6 +165,10 @@ public class PostMessageHandler implements OriginVerificationListener {
             return CustomTabsService.RESULT_FAILURE_MESSAGING_ERROR;
         }
         if (mWebContents == null || mWebContents.isDestroyed()) {
+            return CustomTabsService.RESULT_FAILURE_MESSAGING_ERROR;
+        }
+        if (mChannel[0].isTransferred()) {
+            Log.e(TAG, "Not sending postMessage as channel has been transferred.");
             return CustomTabsService.RESULT_FAILURE_MESSAGING_ERROR;
         }
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {

@@ -6,13 +6,16 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
+#include "chromeos/ash/components/network/metrics/hotspot_metrics_helper.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
+#include "chromeos/ash/services/hotspot_config/public/cpp/hotspot_enabled_state_test_observer.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -105,15 +108,91 @@ class HotspotStateHandlerTest : public ::testing::Test {
     task_environment_.RunUntilIdle();
   }
 
+  void SetupObserver() {
+    hotspot_enabled_state_observer_ =
+        std::make_unique<hotspot_config::HotspotEnabledStateTestObserver>();
+    hotspot_state_handler_->ObserveEnabledStateChanges(
+        hotspot_enabled_state_observer_->GenerateRemote());
+  }
+
+  hotspot_config::HotspotEnabledStateTestObserver* hotspotStateObserver() {
+    return hotspot_enabled_state_observer_.get();
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_;
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<HotspotStateHandler> hotspot_state_handler_;
   TestObserver observer_;
+  std::unique_ptr<hotspot_config::HotspotEnabledStateTestObserver>
+      hotspot_enabled_state_observer_;
   NetworkStateTestHelper network_state_test_helper_{
       /*use_default_devices_and_services=*/false};
 };
+
+TEST_F(HotspotStateHandlerTest, DisableReason) {
+  SetupObserver();
+  base::Value::Dict status_dict;
+  status_dict.Set(shill::kTetheringStatusStateProperty,
+                  shill::kTetheringStateIdle);
+
+  status_dict.Set(shill::kTetheringStatusIdleReasonProperty,
+                  shill::kTetheringIdleReasonInitialState);
+  network_state_test_helper_.manager_test()->SetManagerProperty(
+      shill::kTetheringStatusProperty, base::Value(status_dict.Clone()));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0u, hotspotStateObserver()->hotspot_turned_off_count());
+
+  status_dict.Set(shill::kTetheringStatusIdleReasonProperty,
+                  shill::kTetheringIdleReasonInactive);
+  network_state_test_helper_.manager_test()->SetManagerProperty(
+      shill::kTetheringStatusProperty, base::Value(status_dict.Clone()));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(hotspot_config::mojom::DisableReason::kAutoDisabled,
+            hotspotStateObserver()->last_disable_reason());
+
+  status_dict.Set(shill::kTetheringStatusIdleReasonProperty,
+                  shill::kTetheringIdleReasonUpstreamDisconnect);
+  network_state_test_helper_.manager_test()->SetManagerProperty(
+      shill::kTetheringStatusProperty, base::Value(status_dict.Clone()));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(hotspot_config::mojom::DisableReason::kUpstreamNetworkNotAvailable,
+            hotspotStateObserver()->last_disable_reason());
+
+  status_dict.Set(shill::kTetheringStatusIdleReasonProperty,
+                  shill::kTetheringIdleReasonError);
+  network_state_test_helper_.manager_test()->SetManagerProperty(
+      shill::kTetheringStatusProperty, base::Value(status_dict.Clone()));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(hotspot_config::mojom::DisableReason::kInternalError,
+            hotspotStateObserver()->last_disable_reason());
+
+  status_dict.Set(shill::kTetheringStatusIdleReasonProperty,
+                  shill::kTetheringIdleReasonSuspend);
+  network_state_test_helper_.manager_test()->SetManagerProperty(
+      shill::kTetheringStatusProperty, base::Value(status_dict.Clone()));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(hotspot_config::mojom::DisableReason::kSuspended,
+            hotspotStateObserver()->last_disable_reason());
+
+  status_dict.Set(shill::kTetheringStatusIdleReasonProperty,
+                  shill::kTetheringIdleReasonUserExit);
+  network_state_test_helper_.manager_test()->SetManagerProperty(
+      shill::kTetheringStatusProperty, base::Value(status_dict.Clone()));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(hotspot_config::mojom::DisableReason::kUserInitiated,
+            hotspotStateObserver()->last_disable_reason());
+
+  status_dict.Set(shill::kTetheringStatusIdleReasonProperty,
+                  shill::kTetheringIdleReasonClientStop);
+  network_state_test_helper_.manager_test()->SetManagerProperty(
+      shill::kTetheringStatusProperty, base::Value(status_dict.Clone()));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(hotspot_config::mojom::DisableReason::kUserInitiated,
+            hotspotStateObserver()->last_disable_reason());
+}
 
 TEST_F(HotspotStateHandlerTest, GetHotspotState) {
   EXPECT_EQ(hotspot_state_handler_->GetHotspotState(),
@@ -236,6 +315,11 @@ TEST_F(HotspotStateHandlerTest, UpdateHotspotConfigWhenProfileLoaded) {
 TEST_F(HotspotStateHandlerTest, SetAndGetHotspotConfig) {
   EXPECT_EQ(hotspot_config::mojom::SetHotspotConfigResult::kFailedNotLogin,
             SetHotspotConfig(GenerateTestConfig()));
+  histogram_tester_.ExpectTotalCount(
+      HotspotMetricsHelper::kHotspotSetConfigResultHistogram, 1);
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotSetConfigResultHistogram,
+      HotspotMetricsHelper::HotspotMetricsSetConfigResult::kFailedNotLogin, 1);
   ASSERT_FALSE(hotspot_state_handler_->GetHotspotConfig());
   EXPECT_EQ(0u, observer_.hotspot_status_changed_count());
 
@@ -252,6 +336,11 @@ TEST_F(HotspotStateHandlerTest, SetAndGetHotspotConfig) {
   EXPECT_EQ(hotspot_config->ssid, kHotspotConfigSSID);
   EXPECT_EQ(hotspot_config->passphrase, kHotspotConfigPassphrase);
   EXPECT_FALSE(hotspot_config->bssid_randomization);
+  histogram_tester_.ExpectTotalCount(
+      HotspotMetricsHelper::kHotspotSetConfigResultHistogram, 2);
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotSetConfigResultHistogram,
+      HotspotMetricsHelper::HotspotMetricsSetConfigResult::kSuccess, 1);
 
   Logout();
   ASSERT_FALSE(hotspot_state_handler_->GetHotspotConfig());

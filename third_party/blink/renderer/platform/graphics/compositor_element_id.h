@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COMPOSITOR_ELEMENT_ID_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COMPOSITOR_ELEMENT_ID_H_
 
+#include <type_traits>
+
 #include "cc/paint/element_id.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -12,6 +14,10 @@
 namespace blink {
 
 const int kCompositorNamespaceBitCount = 5;
+
+// The functions in this header requires cc::ElementId::InternalValue to be
+// uint64_t.
+static_assert(std::is_same_v<cc::ElementId::InternalValue, uint64_t>);
 
 enum class CompositorElementIdNamespace {
   kPrimary,
@@ -29,6 +35,7 @@ enum class CompositorElementIdNamespace {
   kTranslateTransform,
   kVerticalScrollbar,
   kHorizontalScrollbar,
+  kScrollCorner,
   kViewTransitionElement,
   kDOMNodeId,
   // The following values are for internal usage only.
@@ -39,8 +46,7 @@ enum class CompositorElementIdNamespace {
 };
 
 static_assert(CompositorElementIdNamespace::kMax <
-                  CompositorElementIdNamespace::kMaxRepresentable,
-              "");
+              CompositorElementIdNamespace::kMaxRepresentable);
 
 using CompositorElementId = cc::ElementId;
 using ScrollbarId = uint64_t;
@@ -59,6 +65,12 @@ CompositorElementId PLATFORM_EXPORT
 // required for the given UniqueObjectId.
 CompositorElementId PLATFORM_EXPORT
     CompositorElementIdFromUniqueObjectId(UniqueObjectId);
+
+// Returns a CompositorElementId with namespace of `element_id` replaced with
+// `namespace_id`.
+CompositorElementId PLATFORM_EXPORT
+CompositorElementIdWithNamespace(CompositorElementId element_id,
+                                 CompositorElementIdNamespace namespace_id);
 
 // TODO(chrishtr): refactor ScrollState to remove this dependency.
 CompositorElementId PLATFORM_EXPORT CompositorElementIdFromDOMNodeId(DOMNodeId);

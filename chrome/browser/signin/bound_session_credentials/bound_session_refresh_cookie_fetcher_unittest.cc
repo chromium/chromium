@@ -41,7 +41,7 @@ class BoundSessionRefreshCookieFetcherTest : public testing::Test {
   }
 
   void OnCookieSet(base::OnceClosure on_done,
-                   absl::optional<const base::Time> result) {
+                   absl::optional<base::Time> result) {
     expected_expiry_date_ = result.value_or(base::Time());
     std::move(on_done).Run();
   }

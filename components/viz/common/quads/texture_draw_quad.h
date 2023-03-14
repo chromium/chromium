@@ -11,7 +11,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/video_types.h"
 
@@ -23,6 +22,7 @@ enum class OverlayPriority { kLow, kRegular, kRequired };
 class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
  public:
   static const size_t kResourceIdIndex = 0;
+  static constexpr Material kMaterial = Material::kTextureContent;
 
   TextureDrawQuad();
   TextureDrawQuad(const TextureDrawQuad& other);
@@ -92,6 +92,41 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
 
   // This optional damage is in target render pass coordinate space.
   absl::optional<gfx::Rect> damage_rect;
+
+  struct RoundedDisplayMasksInfo {
+    static constexpr size_t kMaxRoundedDisplayMasksCount = 2;
+    static constexpr size_t kOriginRoundedDisplayMaskIndex = 0;
+    static constexpr size_t kOtherRoundedDisplayMaskIndex = 1;
+
+    static RoundedDisplayMasksInfo CreateRoundedDisplayMasksInfo(
+        int origin_rounded_display_mask_radius,
+        int other_rounded_display_mask_radius,
+        bool is_horizontally_positioned = true);
+
+    RoundedDisplayMasksInfo();
+
+    bool IsEmpty() const;
+
+    bool is_horizontally_positioned : 1;
+
+    // Radii of display's rounded corners masks in pixels.
+    uint8_t radii[kMaxRoundedDisplayMasksCount] = {0, 0};
+  };
+
+  // Encodes the radii(in pixels) and position of rounded-display mask textures
+  // in target space.
+  //
+  // Radius at index `kOriginRoundedDisplayMaskIndex` is always drawn at origin,
+  // whereas radius at index `kOtherRoundedDisplayMaskIndex` is drawn either at
+  // the upper right corner or lower left corner based on
+  // `is_horizontally_positioned`.
+  //
+  // For example: If the resource in target space has dimensions of (10, 10,
+  // 100, 50) and both radii has value of 15, the masks are drawn at bounds (10,
+  // 10, 15, 15) and (95, 10, 15, 15) if `is_horizontally_positioned` is true
+  // otherwise the masks are drawn at bounds (10, 10, 15, 15) and (10, 45, 15,
+  // 15).
+  RoundedDisplayMasksInfo rounded_display_masks_info;
 
   struct OverlayResources {
     OverlayResources();

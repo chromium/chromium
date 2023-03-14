@@ -13,6 +13,7 @@
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -202,22 +203,13 @@ class MediaActionButton : public views::ImageButton {
     UpdateIcon();
   }
 
-  // views::ImageButton:
-  void OnThemeChanged() override {
-    views::ImageButton::OnThemeChanged();
-    UpdateIcon();
-  }
-
  private:
   void UpdateIcon() {
-    SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kIconColorPrimary);
-    SkColor icon_disabled_color =
-        SkColorSetA(icon_color, gfx::kDisabledControlAlpha);
-    views::SetImageFromVectorIconWithColor(
+    views::SetImageFromVectorIconWithColorId(
         this,
         GetVectorIconForMediaAction(static_cast<MediaSessionAction>(tag())),
-        icon_size_, icon_color, icon_disabled_color);
+        kColorAshIconColorPrimary, kColorAshIconPrimaryDisabledColor,
+        icon_size_);
   }
 
   int const icon_size_;
@@ -270,6 +262,8 @@ LockScreenMediaControlsView::LockScreenMediaControlsView(
 
   contents_view_->SetPaintToLayer();  // Needed for opacity animation.
   contents_view_->layer()->SetFillsBoundsOpaquely(false);
+  contents_view_->SetBackground(views::CreateThemedRoundedRectBackground(
+      kColorAshShieldAndBase80, kMediaControlsCornerRadius));
 
   // |header_row_| contains the app icon and source title of the current media
   // session. It also contains the close button.
@@ -313,6 +307,7 @@ LockScreenMediaControlsView::LockScreenMediaControlsView(
   title_label->SetElideBehavior(gfx::ELIDE_TAIL);
   title_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   title_label_ = track_column->AddChildView(std::move(title_label));
+  title_label_->SetEnabledColorId(kColorAshTextColorPrimary);
 
   auto artist_label = std::make_unique<views::Label>();
   artist_label->SetFontList(base_font_list.Derive(
@@ -321,6 +316,7 @@ LockScreenMediaControlsView::LockScreenMediaControlsView(
   artist_label->SetElideBehavior(gfx::ELIDE_TAIL);
   artist_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   artist_label_ = track_column->AddChildView(std::move(artist_label));
+  artist_label_->SetEnabledColorId(kColorAshTextColorSecondary);
 
   artwork_row->AddChildView(std::move(track_column));
 
@@ -924,17 +920,6 @@ void LockScreenMediaControlsView::RunResetControlsAnimation() {
 
 void LockScreenMediaControlsView::UpdateColors() {
   const auto* color_provider = AshColorProvider::Get();
-
-  contents_view_->SetBackground(views::CreateRoundedRectBackground(
-      color_provider->GetBaseLayerColor(
-          AshColorProvider::BaseLayerType::kTransparent80),
-      kMediaControlsCornerRadius));
-
-  title_label_->SetEnabledColor(color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
-
-  artist_label_->SetEnabledColor(color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorSecondary));
 
   progress_->SetForegroundColor(color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kProgressBarColorForeground));

@@ -8,6 +8,6 @@
     Exposed(Window WebGPU, DedicatedWorker WebGPU),
     SecureContext
 ] interface GPUShaderModule {
-    [CallWith=ScriptState] Promise<GPUCompilationInfo> compilationInfo();
+    [CallWith=ScriptState] Promise<GPUCompilationInfo> getCompilationInfo();
 };
 GPUShaderModule includes GPUObjectBase;

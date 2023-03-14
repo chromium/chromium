@@ -90,7 +90,7 @@ class OverlayImage final : public base::RefCounted<OverlayImage> {
         : ScopedHardwareBufferFenceSync(std::move(handle),
                                         base::ScopedFD(),
                                         std::move(available_fence_fd),
-                                        false /* is_video */),
+                                        /*is_video=*/false),
           image_(std::move(image)) {}
     ~ScopedHardwareBufferFenceSyncImpl() override = default;
 
@@ -142,7 +142,8 @@ constexpr uint32_t kSupportedUsage =
     SHARED_IMAGE_USAGE_SCANOUT | SHARED_IMAGE_USAGE_WEBGPU |
     SHARED_IMAGE_USAGE_VIDEO_DECODE |
     SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
-    SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU;
+    SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU |
+    SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE;
 
 }  // namespace
 
@@ -806,13 +807,7 @@ bool AHardwareBufferImageBackingFactory::IsSupported(
   if (gmb_type != gfx::EMPTY_BUFFER && !CanImportGpuMemoryBuffer(gmb_type)) {
     return false;
   }
-  // TODO(crbug.com/969114): Not all shared image factory implementations
-  // support concurrent read/write usage.
-  constexpr uint32_t kInvalidUsage =
-      SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE | SHARED_IMAGE_USAGE_CPU_UPLOAD;
-  if (usage & kInvalidUsage) {
-    return false;
-  }
+
   if (!IsFormatSupported(format)) {
     return false;
   }

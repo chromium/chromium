@@ -27,8 +27,10 @@ void OnInstallCompleted(
 
   VLOG(0) << "ScreenAI installation completed in path: "
           << install_result.root_path;
-  screen_ai::ScreenAIInstallState::GetInstance()->SetComponentFolder(
-      base::FilePath(install_result.root_path));
+  if (!install_result.root_path.empty()) {
+    screen_ai::ScreenAIInstallState::GetInstance()->SetComponentFolder(
+        base::FilePath(install_result.root_path));
+  }
 }
 
 void OnUninstallCompleted(const std::string& err) {

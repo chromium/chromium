@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">Świetna (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Dalej</translation>
 <translation id="2364498172489649528">Zaliczone</translation>
+<translation id="2367335866686097760">Mapowanie klawisza</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Prześlij zgłoszenie opinii</translation>
 <translation id="2407209115954268704">Stan blokady karty SIM</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">Zmieniono obraz awatara</translation>
 <translation id="3192947282887913208">Pliki dźwiękowe</translation>
 <translation id="3199982728237701504">Podajnik dokumentów (dwustronny)</translation>
+<translation id="3211671540163313381">Mapowanie pada kierunkowego</translation>
 <translation id="3226405216343213872">Szukam skanerów</translation>
+<translation id="3226657629376379887">Menu działań dotyczących układu</translation>
 <translation id="3246869037381808805">Zadania drukowania starsze niż 1 dzień zostaną usunięte</translation>
 <translation id="3268178239013324452">Niepowodzenie – otwarte drzwiczki drukarki</translation>
 <translation id="3275729367986477355">Awatar</translation>
@@ -253,6 +256,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Bezpieczeństwo</translation>
 <translation id="3435896845095436175">Włącz</translation>
+<translation id="345256797477978759">Zadokuj okno po tej stronie: <ph name="DIRECTION" />, na większej części ekranu</translation>
 <translation id="3456078764689556234">Wydrukowano stronę <ph name="PRINTED_PAGES" /> z <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Skanuję stronę <ph name="PAGE_NUM" />. Ukończono <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Drukowanie</translation>
@@ -273,12 +277,14 @@
 <translation id="3595596368722241419">Bateria naładowana</translation>
 <translation id="3600339377155080675">Odbicie lustrzane ekranu</translation>
 <translation id="3602290021589620013">Podgląd</translation>
+<translation id="360282891121575443">Inni użytkownicy mogą aktualizować zdjęcia w albumach udostępnionych Opcja codziennej zmiany może powodować wyświetlanie tapet, których nie ma teraz w albumie.</translation>
 <translation id="3603829704940252505">Awatar</translation>
 <translation id="3604713164406837697">Zmień tapetę</translation>
 <translation id="360565022852130722">Sieć Wi-Fi jest zabezpieczona słabym protokołem WEP 802.1x</translation>
 <translation id="3606583719724308068">Duże opóźnienie połączeń z witrynami HTTPS</translation>
 <translation id="361575905210396100">Dziękujemy za opinię</translation>
 <translation id="3632579075709132555">Przełącznik filtra prywatności</translation>
+<translation id="3639846061339007994">na górze</translation>
 <translation id="3651050199673793219">Wybierz jednostkę temperatury</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> – test</translation>
 <translation id="370665806235115550">Ładuję...</translation>
@@ -520,6 +526,7 @@
 <translation id="576835345334454681">Zwiększ jasność wyświetlacza</translation>
 <translation id="57838592816432529">Wycisz</translation>
 <translation id="5784136236926853061">Duże opóźnienie HTTP</translation>
+<translation id="5826644637650799838">Informacje o grafice</translation>
 <translation id="5832805196449965646">Dodaj osobę</translation>
 <translation id="583281660410589416">Nieznany</translation>
 <translation id="5843706793424741864">Stopnie Fahrenheita</translation>
@@ -562,6 +569,7 @@
 <translation id="6117895505466548728"><ph name="TITLE" /> i jeszcze <ph name="NUMBER" /> albumów</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Usługa metod wprowadzania w Chrome OS</translation>
+<translation id="6136285399872347291">backspace</translation>
 <translation id="6137767437444130246">Certyfikat użytkownika</translation>
 <translation id="6146993107019042706">Aby zakończyć, wpisz nowe hasło</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -609,6 +617,7 @@
 <translation id="650266656685499220">Aby utworzyć albumy, otwórz Zdjęcia Google</translation>
 <translation id="6516990319416533844">Aby sprawdzić szybkość ładowania, zaczekaj, aż bateria trochę się rozładuje</translation>
 <translation id="6517239166834772319">Odkrywaj</translation>
+<translation id="6526200165918397681">Dopasuj do tapety</translation>
 <translation id="6527081081771465939">Nieznany protokół zabezpieczeń Wi-Fi</translation>
 <translation id="6535178685492749208">Jesteś offline. Opinia zostanie wysłana później.</translation>
 <translation id="65587193855025101">Szyba</translation>
@@ -628,6 +637,7 @@
 <translation id="6657585470893396449">Hasło</translation>
 <translation id="6659594942844771486">Karta</translation>
 <translation id="6692996468359469499">Uzyskiwanie informacji związanych z zaznaczoną treścią</translation>
+<translation id="6698459586333070823">Inni użytkownicy mogą aktualizować albumy udostępnione</translation>
 <translation id="6704062477274546131">Rozwiązywanie nazw DNS</translation>
 <translation id="6723839937902243910">Zasilanie</translation>
 <translation id="6723847290197874913">Podświetlenie klawiatury</translation>
@@ -664,6 +674,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Niepowodzenie – nieudana autoryzacja</translation>
 <translation id="7103252855940681301">Urządzenie <ph name="INDEX" /> z <ph name="COUNT" /> o nazwie <ph name="NAME" />.</translation>
+<translation id="7108668606237948702">wpisz</translation>
 <translation id="7130438335435247835">Nazwa punktu dostępu (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Serwer nazw}few{Serwery nazw}many{Serwery nazw}other{Serwery nazw}}</translation>
 <translation id="7143207342074048698">Łączenie</translation>
@@ -673,6 +684,7 @@
 <translation id="7155171745945906037">Istniejące zdjęcie z kamery lub pliku</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7170236477717446850">Zdjęcie profilowe</translation>
+<translation id="7171919371520438592">Zadokuj okno po tej stronie: <ph name="DIRECTION" />, na mniejszej części ekranu</translation>
 <translation id="7172721935181587524">1 obraz</translation>
 <translation id="7177485034254901881">Tym urządzeniem <ph name="DEVICE_TYPE" /> zarządza <ph name="MANAGER" />. Administratorzy mogą je zdalnie konfigurować.</translation>
 <translation id="7180611975245234373">Odśwież</translation>
@@ -748,6 +760,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Typ dostawcy</translation>
 <translation id="7882501334836096755">Klucz publiczny</translation>
+<translation id="78957024357676568">w lewo</translation>
 <translation id="7915220255123750251">Zarządzaj ustawieniami APN sieci. Punkty APN nawiązują połączenie między siecią komórkową a internetem.</translation>
 <translation id="7936303884198020182">Nie znaleziono serwerów nazw</translation>
 <translation id="7942349550061667556">Czerwony</translation>
@@ -776,9 +789,11 @@
 <translation id="8183974620058026102">Załącz</translation>
 <translation id="8206859287963243715">Komórka</translation>
 <translation id="8208861521865154048">Korzyści</translation>
+<translation id="8210733748736414123">na dole</translation>
 <translation id="8226628635270268143">Wybierz ulubione zdjęcia i albumy</translation>
 <translation id="8227119283605456246">Załącz plik</translation>
 <translation id="8230672074305416752">Nie udało się sprawdzić pingiem domyślnej bramy sieciowej</translation>
+<translation id="8242426110754782860">Dalej</translation>
 <translation id="8246209727385807362">Nieznany operator</translation>
 <translation id="827422111966801947">Indygo</translation>
 <translation id="8286154143153872371">Aby wyświetlić tapetę, połącz się z siecią i załaduj ponownie stronę.</translation>
@@ -789,9 +804,11 @@
 <translation id="8318753676953949627">Brak obrazów</translation>
 <translation id="8336739000755212683">Zmień obraz konta na urządzeniu</translation>
 <translation id="8347227221149377169">Zadania drukowania</translation>
+<translation id="8351855506390808906">Mapowanie punktu styku</translation>
 <translation id="8352772353338965963">Tu możesz dodać konto do wielokrotnego logowania. Ponieważ dostęp do wszystkich zalogowanych kont można uzyskać bez podawania hasła, tej funkcji należy używać tylko z zaufanymi kontami.</translation>
 <translation id="8364946094152050673">Puste serwery nazw</translation>
 <translation id="8372477600026034341">Dodatkowe hosty</translation>
+<translation id="8380114448424469341">Zadokuj okno po tej stronie ekranu: <ph name="DIRECTION" /></translation>
 <translation id="8395584934117017006">Tym urządzeniem (<ph name="DEVICE_TYPE" />) zarządza firma</translation>
 <translation id="8398927464629426868">Obecne tempo, w jakim urządzenie się ładuje lub rozładowuje</translation>
 <translation id="8410244574650205435">Wykryty automatycznie</translation>
@@ -856,6 +873,7 @@
 <translation id="8930622219860340959">Sieć bezprzewodowa</translation>
 <translation id="8936793075252196307">Adres IP klienta</translation>
 <translation id="894617464444543719">Urządzenie to telefon.</translation>
+<translation id="8957423540740801332">w prawo</translation>
 <translation id="8968751544471797276">Szybkość ładowania</translation>
 <translation id="8970109610781093811">Uruchom ponownie</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -883,6 +901,7 @@
 <translation id="9137526406337347448">Usługi Google</translation>
 <translation id="9138630967333032450">Lewy shift</translation>
 <translation id="9149391708638971077">Przeprowadź test pamięci</translation>
+<translation id="9161276708550942948">spacja</translation>
 <translation id="9173638680043580060">Jeszcze niecała minuta</translation>
 <translation id="917720651393141712">Przetestuj</translation>
 <translation id="9188992814426075118">Twoja klawiatura może automatycznie dopasować się do tapety</translation>

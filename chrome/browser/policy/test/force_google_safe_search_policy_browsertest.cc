@@ -10,13 +10,13 @@
 #include "chrome/browser/policy/safe_search_policy_test.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/net/safe_search_util.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_search_api/safe_search_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -27,17 +27,17 @@
 namespace policy {
 
 IN_PROC_BROWSER_TEST_F(SafeSearchPolicyTest, LegacySafeSearch) {
-  static_assert(safe_search_util::YOUTUBE_RESTRICT_OFF == 0 &&
-                    safe_search_util::YOUTUBE_RESTRICT_MODERATE == 1 &&
-                    safe_search_util::YOUTUBE_RESTRICT_STRICT == 2 &&
-                    safe_search_util::YOUTUBE_RESTRICT_COUNT == 3,
+  static_assert(safe_search_api::YOUTUBE_RESTRICT_OFF == 0 &&
+                    safe_search_api::YOUTUBE_RESTRICT_MODERATE == 1 &&
+                    safe_search_api::YOUTUBE_RESTRICT_STRICT == 2 &&
+                    safe_search_api::YOUTUBE_RESTRICT_COUNT == 3,
                 "This test relies on mapping ints to enum values.");
 
   // Go over all combinations of (undefined, true, false) for the policies
   // ForceSafeSearch, ForceGoogleSafeSearch and ForceYouTubeSafetyMode as well
   // as (undefined, off, moderate, strict) for ForceYouTubeRestrict and make
   // sure the prefs are set as expected.
-  const int num_restrict_modes = 1 + safe_search_util::YOUTUBE_RESTRICT_COUNT;
+  const int num_restrict_modes = 1 + safe_search_api::YOUTUBE_RESTRICT_COUNT;
   for (int i = 0; i < 3 * 3 * 3 * num_restrict_modes; i++) {
     int val = i;
     int legacy_safe_search = val % 3;
@@ -102,10 +102,10 @@ IN_PROC_BROWSER_TEST_F(SafeSearchPolicyTest, LegacySafeSearch) {
                 prefs->GetInteger(prefs::kForceYouTubeRestrict));
     } else {
       // The legacy modes should result in MODERATE strictness, if enabled.
-      safe_search_util::YouTubeRestrictMode expected_mode =
+      safe_search_api::YouTubeRestrictMode expected_mode =
           legacy_safe_search_enabled || legacy_youtube_enabled
-              ? safe_search_util::YOUTUBE_RESTRICT_MODERATE
-              : safe_search_util::YOUTUBE_RESTRICT_OFF;
+              ? safe_search_api::YOUTUBE_RESTRICT_MODERATE
+              : safe_search_api::YOUTUBE_RESTRICT_OFF;
       EXPECT_EQ(prefs->GetInteger(prefs::kForceYouTubeRestrict), expected_mode);
     }
   }

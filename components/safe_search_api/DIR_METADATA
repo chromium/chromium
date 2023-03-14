@@ -1,7 +1,5 @@
-# Enterprise
+# This first mixin gets clobbered by the second one, but exists
+# for you, the reader, to know that this directory is co-owned by
+# the "Enterprise" component.
 mixins: "//components/policy/COMMON_METADATA"
-# Chrome Browser
-mixins: "//chrome/browser/supervised_user/android/COMMON_METADATA"
-# ChromeOS
-mixins: "//chrome/browser/supervised_user/chromeos/COMMON_METADATA"
-
+mixins: "//components/supervised_user/COMMON_METADATA.chromeos"

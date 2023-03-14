@@ -63,11 +63,13 @@ void ScrollableAreaPainter::PaintResizer(GraphicsContext& context,
     larger_corner.set_size(
         gfx::Size(larger_corner.width() + 1, larger_corner.height() + 1));
     context.SetStrokeColor(Color(217, 217, 217));
-    context.SetStrokeThickness(1.0f);
-    context.SetFillColor(Color::kTransparent);
-    AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
-        box->StyleRef(), DarkModeFilter::ElementRole::kBackground));
-    context.DrawRect(larger_corner, auto_dark_mode);
+    context.SetStrokeStyle(kSolidStroke);
+    gfx::RectF corner_outline(larger_corner);
+    corner_outline.Inset(0.5f);
+    context.StrokeRect(
+        corner_outline, 1,
+        PaintAutoDarkMode(box->StyleRef(),
+                          DarkModeFilter::ElementRole::kBackground));
   }
 }
 
@@ -333,6 +335,15 @@ void ScrollableAreaPainter::PaintScrollCorner(GraphicsContext& context,
   }
 
   const auto& client = GetScrollableArea().GetScrollCornerDisplayItemClient();
+
+  absl::optional<ScopedPaintChunkProperties> chunk_properties;
+  const auto* properties =
+      GetScrollableArea().GetLayoutBox()->FirstFragment().PaintProperties();
+  if (const auto* effect = properties->ScrollCornerEffect()) {
+    chunk_properties.emplace(context.GetPaintController(), *effect, client,
+                             DisplayItem::kScrollCorner);
+  }
+
   theme->PaintScrollCorner(context, GetScrollableArea().VerticalScrollbar(),
                            client, visual_rect,
                            GetScrollableArea().UsedColorScheme());

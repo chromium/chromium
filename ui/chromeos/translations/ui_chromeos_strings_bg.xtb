@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Напред</translation>
 <translation id="1209796539517632982">Автоматично избиране на сървъри за имена</translation>
 <translation id="1210831758834677569">Лаоски</translation>
+<translation id="1221555006497674479">Хранилището е почти пълно. Имате още <ph name="REMAINING_PERCENTAGE" />% от хранилището за споделения ви диск от <ph name="TOTAL_SPACE" />.</translation>
 <translation id="1243314992276662751">Качване</translation>
 <translation id="1249250836236328755">Жанр</translation>
 <translation id="1254593899333212300">Директна връзка с интернет</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">Китайски (пинин)</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> файла се правят налични офлайн</translation>
 <translation id="164969095109328410">Устройство с Chrome</translation>
+<translation id="1661207570040737402">Използвахте цялото хранилище за споделения си диск в Google Workspace.</translation>
 <translation id="1661867754829461514">Липсва PIN</translation>
 <translation id="166439687370499867">Промените в конфигурациите за споделени мрежи не са разрешени</translation>
 <translation id="1665611772925418501">Файлът не можа да бъде променен.</translation>
@@ -82,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> елемента се компресират...</translation>
 <translation id="1722687688096767818">Потребителският профил се добавя...</translation>
 <translation id="1726100011689679555">Сървъри за имена</translation>
+<translation id="1727562178154619254">Готово за синхронизиране</translation>
 <translation id="1729953886957086472">Немски (Германия)</translation>
 <translation id="1730235522912993863">Китайски (цандзие)</translation>
 <translation id="1731889557567069540">Копирахте <ph name="NUMBER_OF_ITEMS" /> елемента.</translation>
@@ -349,11 +352,11 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Поставяне</translation>
 <translation id="3952872973865944257">Телугу (фонетична клавиатура)</translation>
-<translation id="3954354850384043518">В ход</translation>
 <translation id="3958548648197196644">Киви</translation>
 <translation id="3971140002794351170">Изтегляне на мобилния потребителски профил, мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Английски (ОК)</translation>
 <translation id="3975895378829046965">Бенгалски (фонетична клавиатура)</translation>
+<translation id="3999574733850440202">Наскоро отворените файлове в Microsoft са преместени в OneDrive</translation>
 <translation id="4002066346123236978">Заглавие</translation>
 <translation id="4017788180641807848">Английски (САЩ) с клавиатура „Уъркман“</translation>
 <translation id="4019998208269143058">Фиксиране в пространството за бърз достъп до файловете</translation>
@@ -362,6 +365,7 @@
 <translation id="4092890906744441904">Ирландски</translation>
 <translation id="4124935795427217608">Еднорог</translation>
 <translation id="4131235941541910880">Преместете в кошчето елементите, от които нямате нужда</translation>
+<translation id="4134804435730168042">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, активиране след настройването на устройството</translation>
 <translation id="4153015322587141338">Кликнете с десния бутон върху даден файл и изберете „<ph name="PIN_COMMAND" />“, за да имате бърз достъп до него в лентата.</translation>
 <translation id="4157569377477607576">Според администраторско правило не се препоръчва:</translation>
 <translation id="4159731583141908892">Преместихте „<ph name="FILE_NAME" />“.</translation>
@@ -404,6 +408,7 @@
 <translation id="4414834425328380570">Файлът <ph name="FILE_NAME" /> ще бъде изтрит и няма да можете да го възстановите.</translation>
 <translation id="4418686080762064601">Създавайте преки пътища към файловете си</translation>
 <translation id="4425149324548788773">Моят диск</translation>
+<translation id="4432921877815220091">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, активиране след настройване на устройството, управлява се от администратора ви</translation>
 <translation id="4439427728133035643">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, свързване</translation>
 <translation id="4442424173763614572">Търсенето в DNS не бе успешно</translation>
 <translation id="4462159676511157176">Специално зададени сървъри за имена</translation>
@@ -611,8 +616,10 @@
 <translation id="5911887972742538906">Възникна грешка при инсталирането на приложението за Linux.</translation>
 <translation id="5912396950572065471">Формат</translation>
 <translation id="5913638992615760742">Копирането не бе успешно. Възникна неочаквана грешка: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">Налице са нови функции за търсене</translation>
 <translation id="5926082595146149752">Нидерландски (Нидерландия) с американска международна клавиатура (PC)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, активиране след настройване на устройството</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> елемента</translation>
 <translation id="5957366693331451795">Устройствата Chromebox</translation>
 <translation id="5982621672636444458">Опции за сортиране</translation>
@@ -699,6 +706,7 @@
 <translation id="6732801395666424405">Сертификатите не са заредени</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Споделяне на папката с Bruschetta</translation>
+<translation id="6750737795876287924">Текуща директория</translation>
 <translation id="6751256176799620176">Избрахте 1 папка</translation>
 <translation id="6755827872271341378">Устройство с ChromeOS Flex</translation>
 <translation id="6790428901817661496">Пускане</translation>
@@ -736,7 +744,6 @@
 <translation id="6973630695168034713">Папки</translation>
 <translation id="6976795442547527108">Лъв</translation>
 <translation id="6979158407327259162">Google Диск</translation>
-<translation id="6979737339423435258">За цялото време</translation>
 <translation id="6989942356279143254">Шведски</translation>
 <translation id="6990081529015358884">Нямате свободно място</translation>
 <translation id="6993826899923627728">Тези елементи са в кошчето ви</translation>
@@ -759,6 +766,7 @@
 <translation id="7126604456862387217">&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt; – &lt;em&gt;търсене в Диск&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Каннада (фонетична клавиатура)</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">„Съответствие на алтернативното име на субекта“ или „Съответствие на суфикса на домейна“ не са конфигурирани с цел потвърждаване на самоличността на сървъра за удостоверяване</translation>
 <translation id="7165320105431587207">Конфигурирането на мрежата не бе успешно</translation>
 <translation id="7170041865419449892">Извън обхват</translation>
 <translation id="7180611975245234373">Опресняване</translation>
@@ -791,7 +799,6 @@
 <translation id="7458955835361612701">Няма скорошни изображения</translation>
 <translation id="7460898608667578234">украински</translation>
 <translation id="7469894403370665791">Автоматично свързване с тази мрежа</translation>
-<translation id="7481358317100446445">Готова</translation>
 <translation id="7486315294984620427">За да хванете и преместите файлове в Parallels Desktop, те трябва да бъдат копирани в папката с файлове на Windows.</translation>
 <translation id="749452993132003881">хирагана</translation>
 <translation id="7495372004724182530">Малаялам (фонетична клавиатура)</translation>
@@ -829,6 +836,7 @@
 <translation id="7724603315864178912">Изрязване</translation>
 <translation id="7732111077498238432">Мрежата се контролира чрез правила</translation>
 <translation id="7736003208887389532">Да се изтрият ли за постоянно тези файлове?</translation>
+<translation id="7740287852186792672">Резултати от търсенето</translation>
 <translation id="7748626145866214022">В лентата за действия има още опции. Натиснете Alt + A, за да поставите фокуса върху нея.</translation>
 <translation id="7760449188139285140">Китайски (уби)</translation>
 <translation id="7765158879357617694">Преместване</translation>
@@ -880,6 +888,7 @@
 <translation id="8116072619078571545">Вода с лед</translation>
 <translation id="8128733386027980860">Английски (САЩ) с клавиатура „Дворак“</translation>
 <translation id="8137331602592933310">Файлът „<ph name="FILENAME" />“ е споделен с вас. Не можете да го изтриете, защото не го притежавате.</translation>
+<translation id="8138705869659070104">Актив. след настр. на у-вото</translation>
 <translation id="813913629614996137">Подготвя се за работа...</translation>
 <translation id="8147028810663464959">Ширината на знаците е пълна</translation>
 <translation id="8151638057146502721">Конфигуриране</translation>
@@ -905,6 +914,7 @@
 <translation id="8300849813060516376">Безжичното осигуряване на услуга не бе успешно</translation>
 <translation id="8312871300878166382">Поставяне в папка</translation>
 <translation id="8329978297633540474">Неформатиран текст</translation>
+<translation id="8332007959299458842">Наскоро отворените файлове в Microsoft са преместени в Google Диск</translation>
 <translation id="8335587457941836791">Освобождаване от лавицата</translation>
 <translation id="8335837413233998004">Беларуски</translation>
 <translation id="8336153091935557858">Вчера, <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -931,6 +941,7 @@
 <translation id="8487700953926739672">Налице офлайн</translation>
 <translation id="8492972329130824181">Няма достъп до домашната мрежа. Роумингът на мобилни данни трябва да е активиран, за да се установи връзка.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> елемента се извличат...</translation>
+<translation id="8502913769543567768">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, активиране след настройването на устройството, управлява се от администратора ви</translation>
 <translation id="8521441079177373948">Британска клавиатура</translation>
 <translation id="853494022971700746">Френски (Франция)</translation>
 <translation id="8540608333167683902">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, подробности</translation>
@@ -992,6 +1003,7 @@
 <translation id="9046895021617826162">Свързването не бе успешно</translation>
 <translation id="9065512565307033593">Ако не успеете да потвърдите самоличността си, достъпът ви до мрежата ще бъде прекратен.</translation>
 <translation id="908378762078012445">Руски с фонетична клавиатура AATSEEL</translation>
+<translation id="9086302186042011942">Синхронизира се</translation>
 <translation id="9099674669267916096">Брой страници</translation>
 <translation id="9100610230175265781">Изисква се пропуск</translation>
 <translation id="9110990317705400362">Непрекъснато търсим начини да правим сърфирането ви по-безопасно. По-рано всеки уебсайт можеше да ви подкани да добавите разширение в браузъра си. В най-новите версии на Google Chrome трябва изрично да укажете на браузъра, че искате да инсталирате съответния софтуер, като го добавите чрез страницата „Разширения“. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>

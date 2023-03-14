@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 
@@ -23,15 +24,15 @@ class SharedURLLoaderFactory;
 // instances.
 namespace gaia {
 
-struct OAuthClientInfo {
+struct COMPONENT_EXPORT(GOOGLE_APIS) OAuthClientInfo {
   std::string client_id;
   std::string client_secret;
   std::string redirect_uri;
 };
 
-class GaiaOAuthClient {
+class COMPONENT_EXPORT(GOOGLE_APIS) GaiaOAuthClient {
  public:
-  class Delegate {
+  class COMPONENT_EXPORT(GOOGLE_APIS) Delegate {
    public:
     // Invoked on a successful response to the GetTokensFromAuthCode request.
     virtual void OnGetTokensResponse(const std::string& refresh_token,
@@ -154,6 +155,7 @@ class GaiaOAuthClient {
   class Core;
   scoped_refptr<Core> core_;
 };
-}
+
+}  // namespace gaia
 
 #endif  // GOOGLE_APIS_GAIA_GAIA_OAUTH_CLIENT_H_

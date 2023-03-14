@@ -20,6 +20,7 @@ async_test(t => {
       assert_true(muteBtn.disabled);
 
       // Test that the fullscreen button is actually disabled.
+      video.addEventListener("fullscreenchange", t.unreached_func());
       video.addEventListener("webkitfullscreenchange", t.unreached_func());
       singleTapOnControl(fullscreenBtn, t.step_func(() => {
         // Test that the mute button is actually disabled.

@@ -5,6 +5,7 @@
 #include "components/attribution_reporting/test_utils.h"
 
 #include <ostream>
+#include <string>
 #include <tuple>
 
 #include "base/values.h"
@@ -12,9 +13,12 @@
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration.h"
+#include "components/attribution_reporting/source_type.h"
+#include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "net/base/schemeful_site.h"
@@ -22,6 +26,14 @@
 #include "url/origin.h"
 
 namespace attribution_reporting {
+
+FiltersDisjunction FiltersForSourceType(mojom::SourceType source_type) {
+  return {{
+      {
+          {FilterData::kSourceTypeFilterKey, {SourceTypeName(source_type)}},
+      },
+  }};
+}
 
 bool operator==(const AggregationKeys& a, const AggregationKeys& b) {
   return a.keys() == b.keys();
@@ -50,17 +62,18 @@ std::ostream& operator<<(std::ostream& out, const FilterPair& filters) {
   return out << dict;
 }
 
-bool operator==(const Filters& a, const Filters& b) {
-  return a.filter_values() == b.filter_values();
+bool operator==(const DestinationSet& a, const DestinationSet& b) {
+  return a.destinations() == b.destinations();
 }
 
-std::ostream& operator<<(std::ostream& out, const Filters& filters) {
-  return out << filters.ToJson();
+std::ostream& operator<<(std::ostream& out,
+                         const DestinationSet& destination_set) {
+  return out << destination_set.ToJson();
 }
 
 bool operator==(const SourceRegistration& a, const SourceRegistration& b) {
   auto tie = [](const SourceRegistration& s) {
-    return std::make_tuple(s.source_event_id, s.destination, s.expiry,
+    return std::make_tuple(s.source_event_id, s.destination_set, s.expiry,
                            s.event_report_window, s.aggregatable_report_window,
                            s.priority, s.filter_data, s.debug_key,
                            s.aggregation_keys, s.debug_reporting);

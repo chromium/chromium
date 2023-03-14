@@ -16,6 +16,7 @@
 namespace content {
 
 class RenderWidgetHostViewIOS;
+class RenderWidgetHostImpl;
 class WebContentsImpl;
 class WebContentsViewDelegate;
 class WebContentsUIViewHolder;
@@ -61,6 +62,10 @@ class WebContentsViewIOS : public WebContentsView,
   void OnCapturerCountChanged() override;
   void FullscreenStateChanged(bool is_fullscreen) override;
   void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) override;
+
+  // RenderViewHostDelegateView:
+  void GotFocus(RenderWidgetHostImpl* render_widget_host) override;
+  void LostFocus(RenderWidgetHostImpl* render_widget_host) override;
 
   using RenderWidgetHostViewCreateFunction =
       RenderWidgetHostViewIOS* (*)(RenderWidgetHost*);

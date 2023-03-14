@@ -90,14 +90,6 @@
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #endif
 
-namespace {
-void DoWritePoliciesToJSONFile(const base::FilePath& path,
-                               const std::string& data) {
-  base::WriteFile(path, data.c_str(), data.size());
-}
-
-}  // namespace
-
 PolicyUIHandler::PolicyUIHandler() = default;
 
 PolicyUIHandler::~PolicyUIHandler() {
@@ -133,6 +125,7 @@ void PolicyUIHandler::AddCommonLocalizedStringsToSource(
     {"ok", IDS_POLICY_OK},
     {"scopeDevice", IDS_POLICY_SCOPE_DEVICE},
     {"scopeUser", IDS_POLICY_SCOPE_USER},
+    {"scopeAllUsers", IDS_POLICY_SCOPE_ALL_USERS},
     {"title", IDS_POLICY_TITLE},
     {"unknown", IDS_POLICY_UNKNOWN},
     {"unset", IDS_POLICY_UNSET},
@@ -372,5 +365,9 @@ void PolicyUIHandler::WritePoliciesToJSONFile(const base::FilePath& path) {
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-      base::BindOnce(&DoWritePoliciesToJSONFile, path, json_policies));
+      base::BindOnce(
+          [](const base::FilePath& path, base::StringPiece content) {
+            base::WriteFile(path, content);
+          },
+          path, json_policies));
 }

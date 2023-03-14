@@ -58,10 +58,9 @@ class FileSystemAccessPermissionDialogTest : public DialogBrowserTest {
     } else if (name == "FileReadWrite") {
       request.path = base::FilePath(FILE_PATH_LITERAL("/foo/README.txt"));
       request.access = AccessType::kReadWrite;
-    } else if (name == "default") {
-      request.path = base::FilePath(FILE_PATH_LITERAL("/foo/README.txt"));
     } else {
-      NOTREACHED() << "Unimplemented test: " << name;
+      CHECK_EQ(name, "default");
+      request.path = base::FilePath(FILE_PATH_LITERAL("/foo/README.txt"));
     }
     ShowFileSystemAccessPermissionDialog(
         request,

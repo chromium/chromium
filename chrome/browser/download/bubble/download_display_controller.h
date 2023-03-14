@@ -78,16 +78,21 @@ class DownloadDisplayController
   void HandleButtonPressed();
 
   // Common methods for new downloads or new offline items.
-  // Called from bubble controller when new item(s) are added, with
-  // |show_details| as argument if the partial view should be shown.
-  // |show_animation| specifies whether a small animated arrow should be shown.
   // These methods are virtual so that they can be overridden for fake
   // controllers in testing.
-  virtual void OnNewItem(bool show_details, bool show_animation);
+
+  // Called from bubble controller when new item(s) are added.
+  // |show_animation| specifies whether a small animated arrow should be shown.
+  virtual void OnNewItem(bool show_animation);
   // Called from bubble controller when an item is updated, with |is_done|
-  // indicating if it was marked done, and with
-  // |show_details_if_done| as argument if the partial view should be shown.
-  virtual void OnUpdatedItem(bool is_done, bool show_details_if_done);
+  // indicating if it was marked done, |is_pending_deep_scanning| indicating
+  // whether it is dangerous and pending deep scanning, and with
+  // |may_show_details| indicating whether the partial view can be shown.
+  // (Whether the partial view is actually shown may depend on the state of the
+  // other downloads.)
+  virtual void OnUpdatedItem(bool is_done,
+                             bool is_pending_deep_scanning,
+                             bool may_show_details);
   // Called from bubble controller when an item is deleted.
   virtual void OnRemovedItem(const ContentId& id);
 
@@ -165,7 +170,7 @@ class DownloadDisplayController
   base::OneShotTimer icon_inactive_timer_;
   IconInfo icon_info_;
   bool fullscreen_notification_shown_ = false;
-  bool download_completed_while_fullscreen_ = false;
+  bool details_shown_while_fullscreen_ = false;
   // DownloadDisplayController and DownloadBubbleUIController have the same
   // lifetime. Both are owned, constructed together, and destructed together by
   // DownloadToolbarButtonView. If one is valid, so is the other.

@@ -27,49 +27,29 @@ class SegmentInfoCache {
  public:
   using SegmentInfoList = std::vector<std::pair<SegmentId, proto::SegmentInfo>>;
 
-  enum class CachedItemState {
-    // SegmentId was never checked in database or cache before, hence was not
-    // cached.
-    kNotCached = 0,
-    // SegmentId is checked in database and not found result was cached.
-    kCachedAndNotFound = 1,
-    // SegmentId is present in database and was cached.
-    kCachedAndFound = 2,
-  };
-
-  explicit SegmentInfoCache(bool cache_enabled);
+  SegmentInfoCache();
   ~SegmentInfoCache();
 
   // Disallow copy/assign.
   SegmentInfoCache(const SegmentInfoCache&) = delete;
   SegmentInfoCache& operator=(const SegmentInfoCache&) = delete;
 
-  // Returns CachedItemState and SegmentInfo for a `segment_id`.
-  std::pair<CachedItemState, absl::optional<SegmentInfo>> GetSegmentInfo(
-      SegmentId segment_id) const;
+  // Returns an optional SegmentInfo for a `segment_id`.
+  absl::optional<SegmentInfo> GetSegmentInfo(SegmentId segment_id) const;
 
-  // Returns list of segment info for list of `segment_ids` with state
-  // `kCachedAndFound` and adds the remaining list of `segment_ids` with state
-  // `kNotCached` to `ids_needing_update`. If cached item state of segment id is
-  // `kCachedAndNotFound`, nothing is returned for it.
+  // Returns list of segment info for list of `segment_ids` found in the cache.
+  // If segment info is not found for a segment id, nothing is returned for it.
   std::unique_ptr<SegmentInfoList> GetSegmentInfoForSegments(
-      const base::flat_set<SegmentId>& segment_ids,
-      base::flat_set<SegmentId>& ids_needing_update) const;
+      const base::flat_set<SegmentId>& segment_ids) const;
 
   // Updates cache with `segment_info` for a `segment_id`.
-  // It saves the entry in cache with cached item state `kCachedAndNotFound` if
-  // `segment_info` is null or is erased.
+  // It deletes the entry in cache if `segment_info` is nullopt.
   void UpdateSegmentInfo(SegmentId segment_id,
                          absl::optional<SegmentInfo> segment_info);
 
  private:
-  // Map storing CachedItemState and SegmentInfo for a SegmentId.
-  base::flat_map<SegmentId,
-                 std::pair<CachedItemState, absl::optional<SegmentInfo>>>
-      segment_info_cache_;
-
-  // Flag representing if cache is enabled or not.
-  const bool cache_enabled_;
+  // Map storing SegmentInfo for a SegmentId.
+  base::flat_map<SegmentId, SegmentInfo> segment_info_cache_;
 };
 
 }  // namespace segmentation_platform

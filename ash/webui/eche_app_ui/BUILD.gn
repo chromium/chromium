@@ -24,6 +24,8 @@ static_library("eche_app_ui_pref") {
 
 static_library("eche_app_ui") {
   sources = [
+    "accessibility_tree_converter.cc",
+    "accessibility_tree_converter.h",
     "apps_access_manager.cc",
     "apps_access_manager.h",
     "apps_access_manager_impl.cc",
@@ -41,6 +43,8 @@ static_library("eche_app_ui") {
     "eche_connection_scheduler.h",
     "eche_connection_scheduler_impl.cc",
     "eche_connection_scheduler_impl.h",
+    "eche_connection_status_observer.cc",
+    "eche_connection_status_observer.h",
     "eche_connector.h",
     "eche_connector_impl.cc",
     "eche_connector_impl.h",
@@ -142,6 +146,7 @@ source_set("unit_tests") {
     "eche_alert_generator_unittest.cc",
     "eche_app_manager_unittest.cc",
     "eche_connection_scheduler_impl_unittest.cc",
+    "eche_connection_status_observer_unittest.cc",
     "eche_connector_impl_unittest.cc",
     "eche_feature_status_provider_unittest.cc",
     "eche_message_receiver_impl_unittest.cc",

@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 
@@ -20,7 +21,7 @@ class GetUploadDetailsRequest : public PaymentsRequest {
   GetUploadDetailsRequest(
       const std::vector<AutofillProfile>& addresses,
       const int detected_values,
-      const std::vector<const char*>& active_experiments,
+      const std::vector<ClientBehaviorConstants>& client_behavior_signals,
       const bool full_sync_enabled,
       const std::string& app_locale,
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
@@ -52,7 +53,7 @@ class GetUploadDetailsRequest : public PaymentsRequest {
 
   const std::vector<AutofillProfile> addresses_;
   const int detected_values_;
-  const std::vector<const char*> active_experiments_;
+  const std::vector<ClientBehaviorConstants> client_behavior_signals_;
   const bool full_sync_enabled_;
   std::string app_locale_;
   base::OnceCallback<void(AutofillClient::PaymentsRpcResult,

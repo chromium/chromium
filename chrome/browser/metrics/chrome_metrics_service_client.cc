@@ -43,6 +43,7 @@
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/metrics/cached_metrics_profile.h"
+#include "chrome/browser/metrics/chrome_browser_main_extra_parts_metrics.h"
 #include "chrome/browser/metrics/chrome_metrics_extensions_helper.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
@@ -105,6 +106,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/sync/driver/passphrase_type_metrics_provider.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync_device_info/device_count_metrics_provider.h"
@@ -234,6 +236,9 @@ void RegisterFileMetricsPreferences(PrefRegistrySimple* registry) {
                                                     kBrowserMetricsName);
 
   metrics::FileMetricsProvider::RegisterSourcePrefs(
+      registry, kDeferredBrowserMetricsName);
+
+  metrics::FileMetricsProvider::RegisterSourcePrefs(
       registry, kCrashpadHistogramAllocatorName);
 
 #if BUILDFLAG(IS_WIN)
@@ -294,6 +299,8 @@ std::unique_ptr<metrics::FileMetricsProvider> CreateFileMetricsProvider(
 
     base::FilePath browser_metrics_upload_dir =
         user_data_dir.AppendASCII(kBrowserMetricsName);
+    base::FilePath deferred_browser_metrics_upload_dir =
+        user_data_dir.AppendASCII(kDeferredBrowserMetricsName);
     if (metrics_reporting_enabled) {
       metrics::FileMetricsProvider::Params browser_metrics_params(
           browser_metrics_upload_dir,
@@ -304,6 +311,14 @@ std::unique_ptr<metrics::FileMetricsProvider> CreateFileMetricsProvider(
       browser_metrics_params.filter = base::BindRepeating(
           &ChromeMetricsServiceClient::FilterBrowserMetricsFiles);
       file_metrics_provider->RegisterSource(browser_metrics_params);
+
+      metrics::FileMetricsProvider::Params deferred_browser_metrics_params(
+          deferred_browser_metrics_upload_dir,
+          metrics::FileMetricsProvider::SOURCE_HISTOGRAMS_ATOMIC_DIR,
+          metrics::FileMetricsProvider::ASSOCIATE_CURRENT_RUN,
+          kDeferredBrowserMetricsName);
+      deferred_browser_metrics_params.max_dir_kib = kMaxHistogramStorageKiB;
+      file_metrics_provider->RegisterSource(deferred_browser_metrics_params);
 
       base::FilePath crashpad_active_path =
           base::GlobalHistogramAllocator::ConstructFilePathForActiveFile(
@@ -324,6 +339,12 @@ std::unique_ptr<metrics::FileMetricsProvider> CreateFileMetricsProvider(
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
           base::GetDeletePathRecursivelyCallback(
               std::move(browser_metrics_upload_dir)));
+      base::ThreadPool::PostTask(
+          FROM_HERE,
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+          base::GetDeletePathRecursivelyCallback(
+              std::move(deferred_browser_metrics_upload_dir)));
     }
   }
 
@@ -521,6 +542,7 @@ std::unique_ptr<ChromeMetricsServiceClient> ChromeMetricsServiceClient::Create(
 
 // static
 void ChromeMetricsServiceClient::RegisterPrefs(PrefRegistrySimple* registry) {
+  ChromeBrowserMainExtraPartsMetrics::RegisterPrefs(registry);
   metrics::MetricsService::RegisterPrefs(registry);
   ukm::UkmService::RegisterPrefs(registry);
   metrics::StabilityMetricsHelper::RegisterPrefs(registry);
@@ -903,8 +925,10 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<HttpsEngagementMetricsProvider>());
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<CertificateReportingMetricsProvider>());
+#endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   metrics_service_->RegisterMetricsProvider(

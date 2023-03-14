@@ -15,15 +15,22 @@
 // policy.
 class IdleDialog {
  public:
-  IdleDialog() = delete;
-  IdleDialog(const IdleDialog&) = delete;
-  IdleDialog& operator=(const IdleDialog&) = delete;
+  // The dialog needs to know what actions are configured, so it can display a
+  // more helpful string to the user.
+  //
+  // SetActions() can't take a flat_set<ActionType>, because we can't include
+  // action.h from here. Pass this struct instead, which is what we really need
+  // to know.
+  struct ActionSet {
+    bool close;  // True if ActionType::kCloseBrowsers is present.
+    bool clear;  // True if any of ActionType::kClear* is present.
+  };
 
   // Implemented in //chrome/browser/ui/views/idle_dialog_view.cc
-  static base::WeakPtr<views::Widget> Show(
-      base::TimeDelta dialog_duration,
-      base::TimeDelta idle_threshold,
-      base::RepeatingClosure on_close_by_user);
+  static base::WeakPtr<views::Widget> Show(base::TimeDelta dialog_duration,
+                                           base::TimeDelta idle_threshold,
+                                           ActionSet actions,
+                                           base::OnceClosure on_close_by_user);
 };
 
 #endif  // CHROME_BROWSER_UI_IDLE_DIALOG_H_

@@ -5,6 +5,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
+#include "cc/paint/record_paint_canvas.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
@@ -3046,15 +3047,9 @@ INSTANTIATE_TEST_SUITE_P(NonOverlay,
                          ScrollbarColorSchemeTest,
                          testing::Values(false));
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
-// Not able to paint non-overlay scrollbars through ThemeEngine on Android or
-// Mac.
-#define MAYBE_ThemeEnginePaint DISABLED_ThemeEnginePaint
-#else
-#define MAYBE_ThemeEnginePaint ThemeEnginePaint
-#endif
+TEST_P(ScrollbarColorSchemeTest, ThemeEnginePaint) {
+  USE_NON_OVERLAY_SCROLLBARS();
 
-TEST_P(ScrollbarColorSchemeTest, MAYBE_ThemeEnginePaint) {
   ScopedStubThemeEngine scoped_theme;
 
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
@@ -3437,6 +3432,53 @@ TEST_P(ScrollbarsTest, ScrollbarGutterBothEdgesKeywordWithClassicScrollbars) {
 
   Compositor().BeginFrame();
   EXPECT_EQ(container->scrollTop(), 0);
+}
+
+TEST_P(ScrollbarsTest, ScrollbarsRestoredAfterCapturePaintPreview) {
+  ENABLE_OVERLAY_SCROLLBARS(false);
+
+  ResizeView(gfx::Size(800, 600));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body {
+        margin: 0;
+      }
+      #content {
+        width: 1200px;
+        height: 1200px;
+      }
+    </style>
+    <div id="content">A</div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  Document& document = GetDocument();
+  LocalFrameView* frame_view = document.View();
+  PaintLayerScrollableArea* layout_viewport = frame_view->LayoutViewport();
+  HTMLElement* content_div =
+      To<HTMLElement>(document.getElementById("content"));
+
+  ASSERT_TRUE(layout_viewport->VerticalScrollbar() &&
+              layout_viewport->HorizontalScrollbar());
+
+  // Make layout dirty.
+  content_div->setInnerText("B");
+
+  cc::RecordPaintCanvas canvas;
+  MainFrame().CapturePaintPreview(gfx::Rect(1000, 1000), &canvas, false, false);
+
+  // Scrollbars are removed during the capture (see LocalFrame::ClipsContent).
+  ASSERT_FALSE(layout_viewport->VerticalScrollbar() ||
+               layout_viewport->HorizontalScrollbar());
+  ASSERT_TRUE(frame_view->NeedsLayout());
+
+  // Update lifecycle to restore the scrollbars.
+  Compositor().BeginFrame();
+  ASSERT_TRUE(layout_viewport->VerticalScrollbar() &&
+              layout_viewport->HorizontalScrollbar());
 }
 
 }  // namespace blink

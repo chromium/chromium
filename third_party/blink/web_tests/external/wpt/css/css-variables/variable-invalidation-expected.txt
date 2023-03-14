@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-FAIL css rule test assert_equals: cssText initial. expected "--var1: red;" but got "--var1:red;"
-FAIL css rule test important assert_equals: cssText initial. expected "--var2: red !important;" but got "--var2:red !important;"
-FAIL inline style test assert_equals: cssText initial. expected "--var3: red;" but got "--var3:red;"
-FAIL inline style test important assert_equals: cssText initial. expected "--var4: red !important;" but got "--var4:red !important;"
-Harness: the test ran to completion.
-

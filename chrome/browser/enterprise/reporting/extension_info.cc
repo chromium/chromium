@@ -10,6 +10,7 @@
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_set.h"
+#include "extensions/common/manifest.h"
 #include "extensions/common/manifest_url_handlers.h"
 #include "extensions/common/permissions/permissions_data.h"
 
@@ -67,8 +68,9 @@ void AddExtensions(const extensions::ExtensionSet& extensions,
                    bool enabled) {
   for (const auto& extension : extensions) {
     // Skip the component extension.
-    if (!extension->ShouldExposeViaManagementAPI())
+    if (extensions::Manifest::IsComponentLocation(extension->location())) {
       continue;
+    }
 
     auto* extension_info = profile_info->add_extensions();
     extension_info->set_id(extension->id());

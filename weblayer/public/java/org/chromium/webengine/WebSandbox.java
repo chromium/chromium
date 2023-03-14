@@ -133,6 +133,14 @@ public class WebSandbox {
 
                         sPendingBrowserProcessInitialization = false;
                     }
+
+                    @Override
+                    public void onBrowserProcessInitializationFailure() {
+                        mCompleter.setException(
+                                new IllegalStateException("Failed to initialize WebSandbox"));
+                        mCompleter = null;
+                        sPendingBrowserProcessInitialization = false;
+                    }
                 });
             } catch (RemoteException e) {
                 mCompleter.setException(e);

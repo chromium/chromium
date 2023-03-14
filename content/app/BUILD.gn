@@ -93,6 +93,9 @@ source_set("content_main_runner_app") {
       "//chromeos/startup:constants",
     ]
   }
+  if (is_chromeos_ash) {
+    deps += [ "//chromeos/startup:constants" ]
+  }
   if (build_tflite_with_xnnpack) {
     deps += [ "//third_party/cpuinfo" ]
   }

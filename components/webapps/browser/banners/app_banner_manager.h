@@ -321,16 +321,6 @@ class AppBannerManager : public content::WebContentsObserver,
   // service worker.
   virtual void OnDidPerformWorkerCheck(const InstallableData& data);
 
-  // Run at the conclusion of OnDidPerformInstallableWebAppCheck. This calls
-  // back to the InstallableManager to continue checking service worker criteria
-  // for showing ambient badge.
-  virtual void PerformWorkerCheckForAmbientBadge();
-
-  // Callback invoked by the InstallableManager once it has finished checking
-  // service worker for showing ambient badge.
-  virtual void OnDidPerformWorkerCheckForAmbientBadge(
-      const InstallableData& data);
-
   // Records that a banner was shown.
   void RecordDidShowBanner();
 

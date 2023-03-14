@@ -35,7 +35,7 @@ bool g_provide_signin_pref_service = true;
 // without introducing dependency on google_api.
 std::string GetUserIdFromEmail(const std::string& email) {
   std::string user_id = email;
-  std::transform(user_id.begin(), user_id.end(), user_id.begin(), ::tolower);
+  base::ranges::transform(user_id, user_id.begin(), ::tolower);
   return user_id;
 }
 

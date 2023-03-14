@@ -50,6 +50,8 @@ class TestShellDelegate : public ShellDelegate {
   std::unique_ptr<SavedDeskDelegate> CreateSavedDeskDelegate() const override;
   std::unique_ptr<SystemSoundsDelegate> CreateSystemSoundsDelegate()
       const override;
+  std::unique_ptr<UserEducationDelegate> CreateUserEducationDelegate()
+      const override;
   scoped_refptr<network::SharedURLLoaderFactory>
   GetGeolocationUrlLoaderFactory() const override;
   bool CanGoBack(gfx::NativeWindow window) const override;

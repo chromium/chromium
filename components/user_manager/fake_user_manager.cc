@@ -110,6 +110,11 @@ void FakeUserManager::RemoveUserFromList(const AccountId& account_id) {
   }
 }
 
+void FakeUserManager::RemoveUserFromListForRecreation(
+    const AccountId& account_id) {
+  RemoveUserFromList(account_id);
+}
+
 const UserList& FakeUserManager::GetUsers() const {
   return users_;
 }

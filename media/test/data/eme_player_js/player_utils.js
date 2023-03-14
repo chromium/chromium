@@ -71,6 +71,9 @@ PlayerUtils.registerEMEEventListeners = function(player) {
                   Utils.convertToUint8Array(item[0]))},status:${item[1]}}`);
         }
         Utils.timeLog('KeyStatusesChange: ' + result.join(','));
+        if (player.testConfig.playCount == 0) {
+          Utils.setResultInTitle('ENDED');
+        }
       });
     }
 

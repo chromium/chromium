@@ -139,7 +139,8 @@ id<GREYMatcher> SearchBarScrim() {
       [self isRunningTest:@selector(testCountrySelection)] ||
       [self isRunningTest:@selector(testRequiredFields)] ||
       [self isRunningTest:@selector(testAutoScrollInCountrySelector)] ||
-      [self isRunningTest:@selector(testDoneButtonByRequirementsOfCountries)]) {
+      [self isRunningTest:@selector(testDoneButtonByRequirementsOfCountries)] ||
+      [self isRunningTest:@selector(testFooterWithMultipleErrors)]) {
     config.features_enabled.push_back(
         autofill::features::kAutofillAccountProfilesUnionView);
   }
@@ -182,10 +183,24 @@ id<GREYMatcher> SearchBarScrim() {
 }
 
 // Returns the delete button on the deletion confirmation action sheet.
-- (id<GREYMatcher>)confirmDeleteAddressButton {
-  return grey_allOf(grey_accessibilityLabel(@"Test Delete Address"),
-                    grey_accessibilityTrait(UIAccessibilityTraitButton),
-                    grey_userInteractionEnabled(), nil);
+- (id<GREYMatcher>)confirmButtonForNumberOfAddressesBeingDeleted:
+    (int)numberOfAddresses {
+  return grey_allOf(
+      grey_accessibilityLabel(l10n_util::GetPluralNSStringF(
+          IDS_IOS_SETTINGS_AUTOFILL_DELETE_ADDRESS_CONFIRMATION_BUTTON,
+          numberOfAddresses)),
+      grey_accessibilityTrait(UIAccessibilityTraitButton),
+      grey_userInteractionEnabled(), nil);
+}
+
+// Returns the footer based on the count of errors due to the empty required
+// fields.
+- (id<GREYMatcher>)footerWithCountOfEmptyRequiredFields:(int)countOfrrors {
+  return grey_allOf(
+      grey_accessibilityLabel(l10n_util::GetPluralNSStringF(
+          IDS_IOS_SETTINGS_EDIT_AUTOFILL_ADDRESS_REQUIREMENT_ERROR,
+          countOfrrors)),
+      grey_sufficientlyVisible(), nil);
 }
 
 // Test that the page for viewing Autofill profile details is as expected.
@@ -365,7 +380,8 @@ id<GREYMatcher> SearchBarScrim() {
                                           SettingsBottomToolbarDeleteButton()]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:[self confirmDeleteAddressButton]]
+  [[EarlGrey selectElementWithMatcher:
+                 [self confirmButtonForNumberOfAddressesBeingDeleted:1]]
       performAction:grey_tap()];
   WaitForActivityOverlayToDisappear();
 
@@ -397,7 +413,8 @@ id<GREYMatcher> SearchBarScrim() {
                                        UIAccessibilityTraitNotEnabled)),
                                    nil)] performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:[self confirmDeleteAddressButton]]
+  [[EarlGrey selectElementWithMatcher:
+                 [self confirmButtonForNumberOfAddressesBeingDeleted:1]]
       performAction:grey_tap()];
   WaitForActivityOverlayToDisappear();
 
@@ -625,6 +642,33 @@ id<GREYMatcher> SearchBarScrim() {
   // field for "India".
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
       assertWithMatcher:grey_not(grey_enabled())];
+}
+
+// Tests that the footer text is correctly displayed when there are multiple
+// required empty fields.
+- (void)testFooterWithMultipleErrors {
+  [AutofillAppInterface saveExampleAccountProfile];
+  [self openEditProfile:kProfileLabel];
+
+  // Change text of city to empty.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TextFieldForCellWithLabelId(
+                                   IDS_IOS_AUTOFILL_CITY)]
+      performAction:grey_replaceText(@"")];
+
+  [[EarlGrey
+      selectElementWithMatcher:[self footerWithCountOfEmptyRequiredFields:1]]
+      assertWithMatcher:grey_nil()];
+
+  // Change text of state to empty.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TextFieldForCellWithLabelId(
+                                   IDS_IOS_AUTOFILL_STATE)]
+      performAction:grey_replaceText(@"")];
+
+  [[EarlGrey
+      selectElementWithMatcher:[self footerWithCountOfEmptyRequiredFields:2]]
+      assertWithMatcher:grey_nil()];
 }
 
 @end

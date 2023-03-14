@@ -11,7 +11,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
 #include "gpu/command_buffer/common/gl2_types.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/gpu_gles2_export.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
 
 namespace gpu {
 
@@ -54,6 +56,14 @@ class GPU_GLES2_EXPORT CopySharedImageHelper {
       GLsizei height,
       GLboolean unpack_flip_y,
       const volatile GLbyte* mailboxes);
+  base::expected<void, GLError> ReadPixels(
+      GLint src_x,
+      GLint src_y,
+      GLint plane_index,
+      GLuint row_bytes,
+      SkImageInfo dst_info,
+      void* pixel_address,
+      std::unique_ptr<SkiaImageRepresentation> source_shared_image);
 
  private:
   raw_ptr<SharedImageRepresentationFactory> representation_factory_ = nullptr;

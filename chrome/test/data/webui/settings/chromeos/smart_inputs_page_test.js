@@ -24,24 +24,6 @@ suite('SmartInputsPage', function() {
     Router.getInstance().resetRouteForTesting();
   });
 
-  test(
-      'assistPersonalInfoNotNullWhenAllowAssistivePersonalInfoIsTrue',
-      function() {
-        loadTimeData.overrideValues({allowAssistivePersonalInfo: true});
-        createSmartInputsPage();
-        assertTrue(
-            !!smartInputsPage.shadowRoot.querySelector('#assistPersonalInfo'));
-      });
-
-  test(
-      'assistPersonalInfoNullWhenAllowAssistivePersonalInfoIsFalse',
-      function() {
-        loadTimeData.overrideValues({allowAssistivePersonalInfo: false});
-        createSmartInputsPage();
-        assertFalse(
-            !!smartInputsPage.shadowRoot.querySelector('#assistPersonalInfo'));
-      });
-
   test('emojiSuggestAdditionNotNullWhenAllowEmojiSuggestionIsTrue', function() {
     loadTimeData.overrideValues({allowEmojiSuggestion: true});
     createSmartInputsPage();

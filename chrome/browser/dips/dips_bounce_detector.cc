@@ -81,7 +81,7 @@ DIPSWebContentsObserver::DIPSWebContentsObserver(
 
 DIPSWebContentsObserver::~DIPSWebContentsObserver() = default;
 
-const base::TimeDelta DIPSBounceDetector::kInteractionUpdateInterval =
+const base::TimeDelta DIPSBounceDetector::kTimestampUpdateInterval =
     base::Minutes(1);
 
 DIPSBounceDetector::DIPSBounceDetector(DIPSBounceDetectorDelegate* delegate,
@@ -118,6 +118,9 @@ DIPSRedirectContext::~DIPSRedirectContext() = default;
 void DIPSRedirectContext::AppendClientRedirect(
     DIPSRedirectInfoPtr client_redirect) {
   DCHECK_EQ(client_redirect->redirect_type, DIPSRedirectType::kClient);
+  if (client_redirect->access_type > CookieAccessType::kNone) {
+    update_offset_ = redirects_.size();
+  }
   redirects_.push_back(std::move(client_redirect));
 }
 
@@ -125,6 +128,9 @@ void DIPSRedirectContext::AppendServerRedirects(
     std::vector<DIPSRedirectInfoPtr> server_redirects) {
   for (auto& redirect : server_redirects) {
     DCHECK_EQ(redirect->redirect_type, DIPSRedirectType::kServer);
+    if (redirect->access_type > CookieAccessType::kNone) {
+      update_offset_ = redirects_.size();
+    }
     redirects_.push_back(std::move(redirect));
   }
 }
@@ -192,6 +198,21 @@ void DIPSRedirectContext::EndChain(GURL url) {
 
   initial_url_ = std::move(url);
   redirects_.clear();
+  update_offset_ = 0;
+}
+
+bool DIPSRedirectContext::AddLateCookieAccess(GURL url, CookieOperation op) {
+  while (update_offset_ < redirects_.size()) {
+    if (redirects_[update_offset_]->url == url) {
+      redirects_[update_offset_]->access_type =
+          redirects_[update_offset_]->access_type | ToCookieAccessType(op);
+      return true;
+    }
+
+    update_offset_++;
+  }
+
+  return false;
 }
 
 void DIPSWebContentsObserver::RecordEvent(DIPSRecordedEvent event,
@@ -318,7 +339,9 @@ void DIPSBounceDetector::DidStartNavigation(
 void DIPSWebContentsObserver::OnCookiesAccessed(
     content::RenderFrameHost* render_frame_host,
     const content::CookieAccessDetails& details) {
-  if (!render_frame_host->IsInPrimaryMainFrame()) {
+  if (!render_frame_host->IsInPrimaryMainFrame() || details.blocked_by_policy ||
+      !net::SiteForCookies::FromUrl(details.first_party_url)
+           .IsFirstParty(details.url)) {
     return;
   }
 
@@ -327,22 +350,46 @@ void DIPSWebContentsObserver::OnCookiesAccessed(
 
 void DIPSBounceDetector::OnClientCookiesAccessed(const GURL& url,
                                                  CookieOperation op) {
-  if (op == CookieOperation::kChange) {
-    delegate_->RecordEvent(DIPSRecordedEvent::kStorage, url, clock_->Now());
+  base::Time now = clock_->Now();
+
+  // We might be called for "late" server cookie accesses, not just client
+  // cookies. Before completing other checks, attempt to attribute the cookie
+  // access to the current redirect chain to handle that case.
+  //
+  // TODO(rtarpine): Is it possible for cookie accesses to be reported late for
+  // uncommitted navigations?
+  if (redirect_context_.AddLateCookieAccess(url, op)) {
+    if (op == CookieOperation::kChange) {
+      delegate_->RecordEvent(DIPSRecordedEvent::kStorage, url, now);
+    }
+    return;
   }
+
   if (client_detection_state_ &&
       GetSiteForDIPS(url) == client_detection_state_->current_site) {
     client_detection_state_->cookie_access_type =
-        client_detection_state_->cookie_access_type |
-        (op == CookieOperation::kChange ? CookieAccessType::kWrite
-                                        : CookieAccessType::kRead);
+        client_detection_state_->cookie_access_type | ToCookieAccessType(op);
+
+    // To decrease the number of writes made to the database, after a site
+    // storage event (cookie write) on the page, new storage events will not
+    // be recorded for the next |kTimestampUpdateInterval|.
+    if (op == CookieOperation::kChange &&
+        ShouldUpdateTimestamp(client_detection_state_->last_storage_time,
+                              now)) {
+      client_detection_state_->last_storage_time = now;
+      delegate_->RecordEvent(DIPSRecordedEvent::kStorage, url, now);
+    }
+  } else if (op == CookieOperation::kChange) {
+    delegate_->RecordEvent(DIPSRecordedEvent::kStorage, url, now);
   }
 }
 
 void DIPSWebContentsObserver::OnCookiesAccessed(
     NavigationHandle* navigation_handle,
     const content::CookieAccessDetails& details) {
-  if (!navigation_handle->IsInPrimaryMainFrame()) {
+  if (!navigation_handle->IsInPrimaryMainFrame() || details.blocked_by_policy ||
+      !net::SiteForCookies::FromUrl(details.first_party_url)
+           .IsFirstParty(details.url)) {
     return;
   }
 
@@ -451,10 +498,9 @@ void DIPSBounceDetector::OnUserActivation() {
   if (client_detection_state_.has_value()) {
     // To decrease the number of writes made to the database, after a user
     // activation event on the page, new activation events will not be recorded
-    // for the next |kInteractionUpdateInterval|.
-    if (client_detection_state_->last_activation_time.has_value() &&
-        (now - client_detection_state_->last_activation_time.value()) <
-            kInteractionUpdateInterval) {
+    // for the next |kTimestampUpdateInterval|.
+    if (!ShouldUpdateTimestamp(client_detection_state_->last_activation_time,
+                               now)) {
       return;
     }
 
@@ -462,6 +508,13 @@ void DIPSBounceDetector::OnUserActivation() {
   }
 
   delegate_->RecordEvent(DIPSRecordedEvent::kInteraction, url, now);
+}
+
+bool DIPSBounceDetector::ShouldUpdateTimestamp(
+    base::optional_ref<const base::Time> last_time,
+    base::Time now) {
+  return (!last_time.has_value() ||
+          (now - last_time.value()) >= kTimestampUpdateInterval);
 }
 
 void DIPSWebContentsObserver::WebContentsDestroyed() {

@@ -150,7 +150,7 @@ void AnimationTimeline::getReplaceableAnimations(
     if (!animation->IsReplaceable())
       continue;
     DCHECK(animation->effect());
-    Element* target = To<KeyframeEffect>(animation->effect())->target();
+    Element* target = To<KeyframeEffect>(animation->effect())->EffectTarget();
     DCHECK(target);
     if (target->GetDocument() != animation->GetDocument())
       continue;

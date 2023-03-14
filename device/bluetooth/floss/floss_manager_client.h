@@ -90,32 +90,6 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
     virtual void DefaultAdapterChanged(int previous, int adapter) {}
   };
 
-  class PoweredCallback {
-   public:
-    explicit PoweredCallback(ResponseCallback<Void> cb, int timeout_ms);
-    ~PoweredCallback();
-
-    static std::unique_ptr<FlossManagerClient::PoweredCallback>
-    CreateWithTimeout(ResponseCallback<Void> cb, int timeout_ms);
-    void RunError() {
-      if (cb_) {
-        std::move(cb_).Run(base::unexpected(Error(kErrorNoResponse, "")));
-      }
-    }
-    void RunNoError() {
-      if (cb_) {
-        std::move(cb_).Run(Void{});
-      }
-    }
-
-   private:
-    void PostDelayedError();
-
-    ResponseCallback<Void> cb_;
-    int timeout_ms_;
-    base::WeakPtrFactory<PoweredCallback> weak_ptr_factory_{this};
-  };
-
   // Creates the instance.
   static std::unique_ptr<FlossManagerClient> Create();
 
@@ -150,6 +124,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
 
   // Invoke D-Bus API to enable or disable LL privacy.
   virtual void SetLLPrivacy(ResponseCallback<Void> callback, const bool enable);
+
+  // Invoke D-Bus API to enable or disable devcoredump.
+  virtual void SetDevCoredump(ResponseCallback<Void> callback,
+                              const bool enable);
 
   // Initializes the manager client.
   void Init(dbus::Bus* bus,
@@ -274,10 +252,11 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
   static const int kSetFlossEnabledDBusTimeoutMs;
 
   // Powered callback called only when adapter actually powers on
-  std::unique_ptr<PoweredCallback> powered_callback_;
+  std::unique_ptr<WeaklyOwnedResponseCallback<Void>> powered_callback_;
 
   // Callback sent for SetFlossEnabled completion.
-  std::unique_ptr<WeaklyOwnedCallback<bool>> set_floss_enabled_callback_;
+  std::unique_ptr<WeaklyOwnedResponseCallback<bool>>
+      set_floss_enabled_callback_;
 
   template <typename R, typename... Args>
   void CallManagerMethod(ResponseCallback<R> callback,

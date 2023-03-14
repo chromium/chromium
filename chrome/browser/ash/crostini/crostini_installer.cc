@@ -62,7 +62,14 @@ class CrostiniInstallerFactory : public ProfileKeyedServiceFactory {
   friend class base::NoDestructor<CrostiniInstallerFactory>;
 
   CrostiniInstallerFactory()
-      : ProfileKeyedServiceFactory("CrostiniInstallerService") {
+      : ProfileKeyedServiceFactory(
+            "CrostiniInstallerService",
+            ProfileSelections::Builder()
+                .WithRegular(ProfileSelection::kOriginalOnly)
+                // TODO(crbug.com/1418376): Check if this service is needed in
+                // Guest mode.
+                .WithGuest(ProfileSelection::kOriginalOnly)
+                .Build()) {
     DependsOn(crostini::CrostiniManagerFactory::GetInstance());
   }
 

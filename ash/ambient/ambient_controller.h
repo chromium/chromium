@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/ambient/ambient_access_token_controller.h"
+#include "ash/ambient/ambient_managed_photo_controller.h"
 #include "ash/ambient/ambient_photo_controller.h"
 #include "ash/ambient/ambient_view_delegate_impl.h"
 #include "ash/ambient/model/ambient_backend_model.h"
@@ -155,6 +156,10 @@ class ASH_EXPORT AmbientController
     return ambient_photo_controller_.get();
   }
 
+  AmbientManagedPhotoController* ambient_managed_photo_controller() {
+    return ambient_managed_photo_controller_.get();
+  }
+
   AmbientWeatherController* ambient_weather_controller() {
     return ambient_weather_controller_.get();
   }
@@ -223,6 +228,8 @@ class ASH_EXPORT AmbientController
   AmbientAccessTokenController access_token_controller_;
   std::unique_ptr<AmbientBackendController> ambient_backend_controller_;
   std::unique_ptr<AmbientPhotoController> ambient_photo_controller_;
+  std::unique_ptr<AmbientManagedPhotoController>
+      ambient_managed_photo_controller_;
   std::unique_ptr<AmbientWeatherController> ambient_weather_controller_;
   std::unique_ptr<AmbientAnimationProgressTracker>
       ambient_animation_progress_tracker_;

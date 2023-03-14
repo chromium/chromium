@@ -11,8 +11,7 @@ This directory contains benchmarks and infrastructure to test Chrome and
 Chromium and output performance measurements. These benchmarks are continuously
 run on the [perf waterfall](https://ci.chromium.org/p/chrome/g/chrome.perf/console).
 
-For more information on how Chrome measures performance, see
-[here](/docs/speed/how_does_chrome_measure_performance.md).
+Also, see more information on [how Chrome measures performance](/docs/speed/how_does_chrome_measure_performance.md).
 
 # Using The Chrome Benchmarking System
 
@@ -32,7 +31,7 @@ run_benchmark and Pinpoint.
 run_benchmark is useful for creating and debugging benchmarks using local
 devices. Run from the command line, it has a number of flags useful for
 determining the internal state of the benchmark. For more information, see
-[here](https://chromium.googlesource.com/catapult.git/+/HEAD/telemetry/docs/run_benchmarks_locally.md).
+[Run Benchmarks Locally](https://chromium.googlesource.com/catapult.git/+/HEAD/telemetry/docs/run_benchmarks_locally.md).
 
 [Pinpoint](https://pinpoint-dot-chromeperf.appspot.com/) wraps run_benchmark and
 provides the ability to remotely run A/B benchmarks using any platform available
@@ -46,7 +45,7 @@ the easiest way is to set up the debugger in VSCode (guide
 
 ## Creating New Tests (stories)
 
-[This document](https://chromium.googlesource.com/catapult.git/+/HEAD/telemetry)
+[The telemetry readme](https://chromium.googlesource.com/catapult.git/+/HEAD/telemetry)
 provides an overview of how tests are structured and some of the underlying
 technologies. After reading that doc, figure out if your story fits into an
 existing benchmark by checking
@@ -55,7 +54,7 @@ existing benchmark by checking
 
 * If it does, follow the instructions next to it. If there are no instructions,
   find the test type in src/tools/perf/page_sets.
-* Otherwise, read [this](https://docs.google.com/document/d/1ni2MIeVnlH4bTj4yvEDMVNxgL73PqK_O9_NUm3NW3BA/edit).
+* Otherwise, read the [Guideline for adding new benchmark](https://docs.google.com/document/d/1ni2MIeVnlH4bTj4yvEDMVNxgL73PqK_O9_NUm3NW3BA/edit).
 
 After figuring out where your story fits, create a new one. There is a
 considerable amount of variation between different benchmarks, so use a nearby
@@ -72,7 +71,7 @@ This directory contains a variety of tools that can be used to run benchmarks,
 interact with speed services, and manage performance waterfall configurations.
 It also has commands for running functional unittests.
 
-## run_tests
+## `run_tests`
 
 This command allows you to run functional tests against the python code in this
 directory. For example, try:
@@ -85,7 +84,7 @@ Note that the positional argument can be any substring within the test name.
 
 This may require you to set up your `gsutil config` first.
 
-## run_benchmark
+## `run_benchmark`
 
 This command allows running benchmarks defined in the chromium repository,
 specifically in [tools/perf/benchmarks][benchmarks_dir]. If you need it,
@@ -94,9 +93,9 @@ how to properly [set up your device][device_setup].
 
 [benchmarks_dir]: https://cs.chromium.org/chromium/src/tools/perf/benchmarks/
 [run_locally]: https://chromium.googlesource.com/catapult.git/+/HEAD/telemetry/docs/run_benchmarks_locally.md
-[device_setup]: /docs/speed/benchmark/telemetry_device_setup.md
+[device_setup]: https://source.chromium.org/chromium/chromium/src/+/main:docs/speed/benchmark/telemetry_device_setup.md
 
-## update_wpr
+## `update_wpr`
 
 A helper script to automate various tasks related to the update of
 [Web Page Recordings][wpr] for our benchmarks. In can help creating new
@@ -105,17 +104,17 @@ to cloud storage, and finally send a CL to review with the new recordings.
 
 [wpr]: https://github.com/catapult-project/catapult/tree/master/web_page_replay_go
 
-## soundwave
+## `soundwave`
 
 Allows to fetch data from the [Chrome Performance Dashboard][chromeperf] and
 stores it locally on a SQLite database for further analysis and processing. It
 also allows defining [studies][], pre-sets of measurements a team is interested
 in tracking, and uploads them to cloud storage to visualize with the help of
-[Data Studio][]. This currently backs the [v8][v8_dashboard] and
+[Looker Studio][]. This currently backs the [v8][v8_dashboard] and
 [health][health_dashboard] dashboards.
 
 [chromeperf]: https://chromeperf.appspot.com/
 [studies]: https://cs.chromium.org/chromium/src/tools/perf/cli_tools/soundwave/studies/
-[Data Studio]: https://datastudio.google.com/
-[v8_dashboard]: https://datastudio.google.com/s/iNcXppkP3DI
-[health_dashboard]: https://datastudio.google.com/s/jUXfKZXXfT8
+[Looker Studio]: https://lookerstudio.google.com/
+[v8_dashboard]: https://lookerstudio.google.com/s/iNcXppkP3DI
+[health_dashboard]: https://lookerstudio.google.com/s/jUXfKZXXfT8

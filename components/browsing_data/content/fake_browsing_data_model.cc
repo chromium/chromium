@@ -4,7 +4,8 @@
 
 #include "components/browsing_data/content/fake_browsing_data_model.h"
 
-FakeBrowsingDataModel::FakeBrowsingDataModel() : BrowsingDataModel(nullptr) {}
+FakeBrowsingDataModel::FakeBrowsingDataModel()
+    : BrowsingDataModel(nullptr, nullptr) {}
 FakeBrowsingDataModel::~FakeBrowsingDataModel() = default;
 
 void FakeBrowsingDataModel::RemoveBrowsingData(const std::string& primary_host,

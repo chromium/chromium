@@ -161,6 +161,10 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   // Opens the Ash account settings page in a new window.
   void HandleOpenAshAccountSettingsPage(const base::Value::List& args);
 
+  // Called when the user clicks the "use device guest" link in the account
+  // selection dialog.
+  void HandleOpenDeviceGuestLinkLacros(const base::Value::List& args);
+
   // List of available accounts used by the profile choice and the account
   // selection screens.
   void HandleGetAvailableAccounts(const base::Value::List& args);

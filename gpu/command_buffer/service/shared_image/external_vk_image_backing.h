@@ -26,6 +26,7 @@
 
 namespace gpu {
 
+class GLTextureHolder;
 class VulkanCommandPool;
 class VulkanImage;
 
@@ -42,8 +43,7 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
       SkAlphaType alpha_type,
       uint32_t usage,
       const base::flat_map<VkFormat, VkImageUsageFlags>& image_usage_cache,
-      base::span<const uint8_t> pixel_data,
-      bool using_gmb = false);
+      base::span<const uint8_t> pixel_data);
 
   static std::unique_ptr<ExternalVkImageBacking> CreateFromGMB(
       scoped_refptr<SharedContextState> context_state,
@@ -77,9 +77,6 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
 
   SharedContextState* context_state() const { return context_state_.get(); }
   const GrBackendTexture& backend_texture() const { return backend_texture_; }
-  sk_sp<SkPromiseImageTexture> promise_texture() const {
-    return promise_texture_;
-  }
   VulkanImage* image() const { return image_.get(); }
   viz::VulkanContextProvider* context_provider() const {
     return context_state()->vk_context_provider();
@@ -100,7 +97,7 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
     }
 
     if (usage() & SHARED_IMAGE_USAGE_GLES2) {
-      return !use_separate_gl_texture() && (texture_ || texture_passthrough_);
+      return !use_separate_gl_texture() && gl_texture_;
     }
 
     if ((usage() & SHARED_IMAGE_USAGE_RASTER) &&
@@ -112,6 +109,12 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
   }
   uint32_t reads_in_progress() const { return reads_in_progress_; }
   uint32_t gl_reads_in_progress() const { return gl_reads_in_progress_; }
+
+  // Returns VkImage layouts for each plane as GL layouts.
+  std::vector<GLenum> GetVkImageLayoutsForGL();
+
+  // Returns skia promise images for each plane.
+  std::vector<sk_sp<SkPromiseImageTexture>> GetPromiseTextures();
 
   // Notifies the backing that an access will start. Return false if there is
   // currently any other conflict access in progress. Otherwise, returns true
@@ -176,14 +179,8 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
   // Allocates GL texture and returns true if successful.
   bool ProduceGLTextureInternal(bool is_passthrough);
 
-  using WriteBufferCallback = base::OnceCallback<void(void* buffer)>;
-  // TODO(penghuang): Remove it when GrContext::updateBackendTexture() supports
-  // compressed texture and callback.
-  bool WritePixelsWithCallback(WriteBufferCallback callback);
-  using ReadBufferCallback = base::OnceCallback<void(const SkPixmap& pixmap)>;
-  bool ReadPixelsWithCallback(ReadBufferCallback callback);
   bool UploadToVkImage(const SkPixmap& pixmap);
-  void UploadToGLTexture(int alignment, const SkPixmap& pixmap);
+  void UploadToGLTexture(const SkPixmap& pixmap);
   void CopyPixelsFromGLTextureToVkImage();
   void CopyPixelsFromVkImageToGLTexture();
 
@@ -200,8 +197,8 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
   bool is_write_in_progress_ = false;
   uint32_t reads_in_progress_ = 0;
   uint32_t gl_reads_in_progress_ = 0;
-  raw_ptr<gles2::Texture> texture_ = nullptr;
-  scoped_refptr<gles2::TexturePassthrough> texture_passthrough_;
+
+  std::unique_ptr<GLTextureHolder> gl_texture_;
 
   enum LatestContent {
     kInVkImage = 1 << 0,

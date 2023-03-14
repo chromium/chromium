@@ -40,4 +40,6 @@
 <translation id="8187289872471304532">Avaa
           Sovellukset &gt; Järjestelmäasetukset &gt; Verkko &gt; Lisäasetukset &gt; Välityspalvelimet
           ja poista valinta kaikkien valittujen välityspalvelimien kohdalta.</translation>
+<translation id="8232971017369963250">Chromen mahdollistivat avoimen lähdekoodin projekti <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="8279509328145658601">Muu <ph name="BEGIN_LINK_OSS" />avoimen lähdekoodin ohjelmisto<ph name="END_LINK_OSS" /> tukee Chromea.</translation>
 </translationbundle>

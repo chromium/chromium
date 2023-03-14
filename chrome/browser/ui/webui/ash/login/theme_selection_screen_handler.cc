@@ -43,6 +43,8 @@ void ThemeSelectionScreenHandler::DeclareLocalizedValues(
   builder->Add("darkThemeDescription", IDS_THEME_DARK_DESCRIPTION);
   builder->Add("autoThemeLabel", IDS_THEME_AUTO_LABEL);
   builder->Add("autoThemeDescription", IDS_THEME_AUTO_DESCRIPTION);
+  builder->Add("choobeThemeSelectionTitle",
+               IDS_OOBE_CHOOBE_THEME_SELECTION_TILE_TITLE);
 }
 
 }  // namespace ash

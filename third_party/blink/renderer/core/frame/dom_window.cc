@@ -783,6 +783,9 @@ void DOMWindow::DoPostMessage(scoped_refptr<SerializedScriptValue> message,
     } else if (capability_list.Contains("fullscreen")) {
       delegated_capability =
           mojom::blink::DelegatedCapability::kFullscreenRequest;
+    } else if (capability_list.Contains("display-capture")) {
+      delegated_capability =
+          mojom::blink::DelegatedCapability::kDisplayCaptureRequest;
     } else {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotSupportedError,

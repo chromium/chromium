@@ -122,8 +122,6 @@ VisitedLinkEventListener::VisitedLinkEventListener(
     content::BrowserContext* browser_context)
     : coalesce_timer_(&default_coalesce_timer_),
       browser_context_(browser_context) {
-  registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_TERMINATED,
-                 content::NotificationService::AllBrowserContextsAndSources());
   registrar_.Add(this, content::NOTIFICATION_RENDER_WIDGET_VISIBILITY_CHANGED,
                  content::NotificationService::AllBrowserContextsAndSources());
 }
@@ -199,6 +197,18 @@ void VisitedLinkEventListener::OnRenderProcessHostCreated(
 
   updaters_[rph->GetID()] = std::make_unique<VisitedLinkUpdater>(rph->GetID());
   updaters_[rph->GetID()]->SendVisitedLinkTable(&table_region_);
+
+  if (!host_observation_.IsObservingSource(rph)) {
+    host_observation_.AddObservation(rph);
+  }
+}
+
+void VisitedLinkEventListener::RenderProcessHostDestroyed(
+    content::RenderProcessHost* host) {
+  if (host_observation_.IsObservingSource(host)) {
+    updaters_.erase(host->GetID());
+    host_observation_.RemoveObservation(host);
+  }
 }
 
 void VisitedLinkEventListener::Observe(
@@ -206,14 +216,6 @@ void VisitedLinkEventListener::Observe(
     const content::NotificationSource& source,
     const content::NotificationDetails& details) {
   switch (type) {
-    case content::NOTIFICATION_RENDERER_PROCESS_TERMINATED: {
-      content::RenderProcessHost* process =
-          content::Source<content::RenderProcessHost>(source).ptr();
-      if (updaters_.count(process->GetID())) {
-        updaters_.erase(process->GetID());
-      }
-      break;
-    }
     case content::NOTIFICATION_RENDER_WIDGET_VISIBILITY_CHANGED: {
       RenderWidgetHost* widget =
           content::Source<RenderWidgetHost>(source).ptr();

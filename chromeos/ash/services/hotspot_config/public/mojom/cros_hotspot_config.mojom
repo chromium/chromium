@@ -97,6 +97,26 @@ enum HotspotControlResult {
   kUnknownFailure,
 };
 
+// Reason for why hotspot was turned off.
+enum DisableReason {
+  // Disabled automatically because no clients were connected for a
+  // fixed amount of time. Note that HotspotConfig’s |auto_disabled|
+  // has to be true for this to have happened.
+  kAutoDisabled,
+  // Disabled because of an internal reason.
+  kInternalError,
+  // Disabled because user switched off Hotspot tethering manually.
+  kUserInitiated,
+  // Disabled because WiFi was enabled.
+  kWifiEnabled,
+  // Disabled because Hotspot was prohibited by policy.
+  kProhibitedByPolicy,
+  // Disabled because there is no Mobile Data.
+  kUpstreamNetworkNotAvailable,
+  // Disabled because the device has been suspended.
+  kSuspended,
+};
+
 // Information about Hotspot feature including current state, active client
 // count, supported security modes and configuration.
 struct HotspotInfo {
@@ -120,6 +140,10 @@ interface CrosHotspotConfig {
   // Adds an observer that can listen to hotspot related events.
   AddObserver(pending_remote<CrosHotspotConfigObserver> observer);
 
+  // Adds an observer to listen to hotspot turned on/off events.
+  ObserveEnabledStateChanges(
+    pending_remote<HotspotEnabledStateObserver> observer);
+
   // Returns HotspotInfo structure containing state, client count, capabilities,
   // supported security modes and configuration properties of Hotspot.
   GetHotspotInfo() => (HotspotInfo hotspot_info);
@@ -141,4 +165,16 @@ interface CrosHotspotConfigObserver {
   // Called when there is a state, client count, configuration or capability
   // change within Hotspot.
   OnHotspotInfoChanged();
+};
+
+// HotspotEnabledStateObserver is implemented by any module that needs
+// to observe changes to the hotspot enabled state.
+interface HotspotEnabledStateObserver {
+  // Called when Hotspot is successfully turned on. `wifi_turned_off`
+  // indicates that WiFi was disabled in order to turn on Hotspot.
+  OnHotspotTurnedOn(bool wifi_turned_off);
+
+  // Called when Hotspot is successfully turned off. `disable_reason`
+  // indicates the reason why Hotspot was turned off.
+  OnHotspotTurnedOff(DisableReason reason);
 };

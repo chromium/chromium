@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -98,6 +99,7 @@ class StyledMarkupTraverser {
   bool ShouldAnnotate() const;
   bool ShouldConvertBlocksToInlines() const;
   bool IsForMarkupSanitization() const;
+  bool ShouldSkipUnselectableContent() const;
   void AppendStartMarkup(Node&);
   void AppendEndMarkup(Node&);
   EditingStyle* CreateInlineStyle(Element&);
@@ -105,6 +107,12 @@ class StyledMarkupTraverser {
   bool ShouldApplyWrappingStyle(const Node&) const;
   bool ContainsOnlyBRElement(const Element&) const;
   bool ShouldSerializeUnrenderedElement(const Node&) const;
+  bool IsSkippedUnselectableContent(const Node&) const;
+  bool IsSelectableOrShadow(const Node&) const;
+  Node* FindSelectableNodeInUnselectableSubtree(
+      Node* unselectable_start_node,
+      Node* past_end,
+      HeapVector<Member<ContainerNode>>&) const;
 
   StyledMarkupAccumulator* accumulator_;
   Node* last_closed_;
@@ -124,6 +132,11 @@ bool StyledMarkupTraverser<Strategy>::IsForMarkupSanitization() const {
 template <typename Strategy>
 bool StyledMarkupTraverser<Strategy>::ShouldConvertBlocksToInlines() const {
   return accumulator_->ShouldConvertBlocksToInlines();
+}
+
+template <typename Strategy>
+bool StyledMarkupTraverser<Strategy>::ShouldSkipUnselectableContent() const {
+  return accumulator_ && accumulator_->ShouldSkipUnselectableContent();
 }
 
 template <typename Strategy>
@@ -338,6 +351,42 @@ StyledMarkupTraverser<Strategy>::StyledMarkupTraverser(
       EditingStyleUtilities::CreateWrappingStyleForSerialization(parent);
 }
 
+// Returns the first selectable descendant in an unselectable node's subtree
+// or |past_end| if there isn't a selectable node.
+// |unselectable_ancestors_to_add| contains the ancestors of the selectable
+// descendant, in order of from its parent to |unselectable_start_node|.
+template <typename Strategy>
+Node* StyledMarkupTraverser<Strategy>::FindSelectableNodeInUnselectableSubtree(
+    Node* unselectable_start_node,
+    Node* past_end,
+    HeapVector<Member<ContainerNode>>& unselectable_ancestors_to_add) const {
+  // Base case.
+  if (unselectable_start_node == nullptr ||
+      unselectable_start_node == past_end) {
+    return past_end;
+  }
+
+  for (Node* node = unselectable_start_node; node && node != past_end;
+       node = Strategy::Next(*node)) {
+    // If we encounter either:
+    // a) selectable descendant
+    // b) shadow host or shadow element (even if they're unselectable)
+    // then get all of its ancestors.
+    if (IsSelectableOrShadow(*node)) {
+      for (Node* parent = Strategy::Parent(*node);
+           parent && parent != unselectable_start_node;
+           parent = Strategy::Parent(*parent)) {
+        unselectable_ancestors_to_add.push_back(To<ContainerNode>(parent));
+      }
+      unselectable_ancestors_to_add.push_back(
+          To<ContainerNode>(unselectable_start_node));
+      return node;
+    }
+  }
+  // No selectable descendant found.
+  return past_end;
+}
+
 template <typename Strategy>
 Node* StyledMarkupTraverser<Strategy>::Traverse(Node* start_node,
                                                 Node* past_end) {
@@ -363,24 +412,53 @@ Node* StyledMarkupTraverser<Strategy>::Traverse(Node* start_node,
 
       auto* element = DynamicTo<Element>(n);
       if (n->GetLayoutObject() || ShouldSerializeUnrenderedElement(*n)) {
-        // Add the node to the markup if we're not skipping the descendants
-        AppendStartMarkup(*n);
+        // If |n| is an unselectable, non-shadow node that should be skipped,
+        // check its subtree for any selectable descendants.
+        // We currently don't skip unselectable shadow hosts or shadow elements.
+        if (!IsSelectableOrShadow(*n)) {
+          HeapVector<Member<ContainerNode>> unselectable_ancestors_to_add;
 
-        // If node has no children, close the tag now.
-        if (Strategy::HasChildren(*n)) {
-          if (next == past_end && ContainsOnlyBRElement(*element)) {
-            // node is not fully selected and node contains only one br element
-            // as child. Close the br tag now.
-            AppendStartMarkup(*next);
-            AppendEndMarkup(*next);
-            last_closed = next;
-          } else {
-            ancestors_to_close.push_back(To<ContainerNode>(n));
+          // Calculate the node to not check past within |n|'s subtree.
+          Node* past_unselectable_end =
+              (past_end && Strategy::IsDescendantOf(*past_end, *n))
+                  ? past_end
+                  : Strategy::NextSkippingChildren(*n);
+
+          // Update |next| with the next node to traverse, which is either:
+          // 1. a selectable descendant of unselectable node |n|
+          // 2. |past_unselectable_end|.
+          next = FindSelectableNodeInUnselectableSubtree(
+              n, past_unselectable_end, unselectable_ancestors_to_add);
+
+          // Add any unselectable ancestors to the markup.
+          while (!unselectable_ancestors_to_add.empty()) {
+            ContainerNode* ancestor = unselectable_ancestors_to_add.back();
+            DCHECK(ancestor);
+            AppendStartMarkup(*ancestor);
+            ancestors_to_close.push_back(ancestor);
+            unselectable_ancestors_to_add.pop_back();
           }
+          // Continue traversing with |next|.
           continue;
+        } else {
+          // Add the node to the markup if we're not skipping the descendants.
+          AppendStartMarkup(*n);
+          // If node has no children, close the tag now.
+          if (Strategy::HasChildren(*n)) {
+            if (next == past_end && ContainsOnlyBRElement(*element)) {
+              // node is not fully selected and node contains only one br
+              // element as child. Close the br tag now.
+              AppendStartMarkup(*next);
+              AppendEndMarkup(*next);
+              last_closed = next;
+            } else {
+              ancestors_to_close.push_back(To<ContainerNode>(n));
+            }
+            continue;
+          }
+          AppendEndMarkup(*n);
+          last_closed = n;
         }
-        AppendEndMarkup(*n);
-        last_closed = n;
       } else {
         next = Strategy::NextSkippingChildren(*n);
         // Don't skip over pastEnd.
@@ -400,8 +478,9 @@ Node* StyledMarkupTraverser<Strategy>::Traverse(Node* start_node,
       ContainerNode* ancestor = ancestors_to_close.back();
       DCHECK(ancestor);
       if (next && next != past_end &&
-          Strategy::IsDescendantOf(*next, *ancestor))
+          Strategy::IsDescendantOf(*next, *ancestor)) {
         break;
+      }
       // Not at the end of the range, close ancestors up to sibling of next
       // node.
       AppendEndMarkup(*ancestor);
@@ -424,10 +503,12 @@ Node* StyledMarkupTraverser<Strategy>::Traverse(Node* start_node,
              Strategy::Parent(*last_ancestor_closed_or_self);
          parent && parent != next_parent; parent = Strategy::Parent(*parent)) {
       // All ancestors that aren't in the ancestorsToClose list should either be
-      // a) unrendered:
-      if (!parent->GetLayoutObject())
+      // a) unrendered
+      // b) skipped unselectable content
+      if (!parent->GetLayoutObject() || IsSkippedUnselectableContent(*parent)) {
         continue;
-      // or b) ancestors that we never encountered during a pre-order traversal
+      }
+      // or c) ancestors that we never encountered during a pre-order traversal
       // starting at startNode:
       DCHECK(start_node);
       DCHECK(Strategy::IsDescendantOf(*start_node, *parent));
@@ -603,6 +684,22 @@ bool StyledMarkupTraverser<Strategy>::ShouldSerializeUnrenderedElement(
       return true;
   }
   return false;
+}
+
+template <typename Strategy>
+bool StyledMarkupTraverser<Strategy>::IsSkippedUnselectableContent(
+    const Node& node) const {
+  LayoutObject* layout_object = node.GetLayoutObject();
+  return (layout_object)
+             ? ShouldSkipUnselectableContent() && !layout_object->IsSelectable()
+             : false;
+}
+
+template <typename Strategy>
+bool StyledMarkupTraverser<Strategy>::IsSelectableOrShadow(
+    const Node& node) const {
+  return IsShadowHost(node) || node.IsInShadowTree() ||
+         !IsSkippedUnselectableContent(node);
 }
 
 template class StyledMarkupSerializer<EditingStrategy>;

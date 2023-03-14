@@ -60,6 +60,11 @@ enum PowerButtonUpState {
   UP_MENU_WAS_OPENED = 1 << 4,
 };
 
+aura::Window* GetPowerMenuContainer() {
+  return Shell::GetPrimaryRootWindow()->GetChildById(
+      kShellWindowId_PowerMenuContainer);
+}
+
 // Creates a fullscreen widget responsible for showing the power button menu.
 std::unique_ptr<views::Widget> CreateMenuWidget() {
   auto menu_widget = std::make_unique<views::Widget>();
@@ -71,8 +76,7 @@ std::unique_ptr<views::Widget> CreateMenuWidget() {
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.name = "PowerButtonMenuWindow";
   params.layer_type = ui::LAYER_SOLID_COLOR;
-  params.parent = Shell::GetPrimaryRootWindow()->GetChildById(
-      kShellWindowId_PowerMenuContainer);
+  params.parent = GetPowerMenuContainer();
   menu_widget->Init(std::move(params));
 
   gfx::Rect widget_bounds =
@@ -446,6 +450,16 @@ void PowerButtonController::OnTabletModeStarted() {
 void PowerButtonController::OnTabletModeEnded() {
   in_tablet_mode_ = false;
   StopTimersAndDismissMenu();
+}
+
+void PowerButtonController::OnSecurityCurtainEnabled() {
+  Shell::GetPrimaryRootWindow()->AddChild(GetPowerMenuContainer());
+}
+
+void PowerButtonController::OnSecurityCurtainDisabled() {
+  Shell::GetPrimaryRootWindow()
+      ->GetChildById(kShellWindowId_LockScreenRelatedContainersContainer)
+      ->AddChild(GetPowerMenuContainer());
 }
 
 void PowerButtonController::OnLockStateEvent(

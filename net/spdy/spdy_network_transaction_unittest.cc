@@ -327,8 +327,7 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment {
     ASSERT_FALSE(upload_data_stream_);
     base::FilePath file_path;
     CHECK(base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &file_path));
-    CHECK_EQ(static_cast<int>(kUploadDataSize),
-             base::WriteFile(file_path, kUploadData, kUploadDataSize));
+    CHECK(base::WriteFile(file_path, kUploadData));
 
     std::vector<std::unique_ptr<UploadElementReader>> element_readers;
     element_readers.push_back(std::make_unique<UploadFileElementReader>(
@@ -347,8 +346,7 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment {
     ASSERT_FALSE(upload_data_stream_);
     base::FilePath file_path;
     CHECK(base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &file_path));
-    CHECK_EQ(static_cast<int>(kUploadDataSize),
-             base::WriteFile(file_path, kUploadData, kUploadDataSize));
+    CHECK(base::WriteFile(file_path, kUploadData));
     CHECK(base::MakeFileUnreadable(file_path));
 
     std::vector<std::unique_ptr<UploadElementReader>> element_readers;
@@ -370,8 +368,7 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment {
 
     base::FilePath file_path;
     CHECK(base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &file_path));
-    CHECK_EQ(static_cast<int>(kUploadDataSize),
-             base::WriteFile(file_path, kUploadData, kUploadDataSize));
+    CHECK(base::WriteFile(file_path, kUploadData));
 
     std::vector<std::unique_ptr<UploadElementReader>> element_readers;
     element_readers.push_back(std::make_unique<UploadBytesElementReader>(
@@ -4952,7 +4949,7 @@ TEST_F(SpdyNetworkTransactionTest, NetLog) {
                                    NetLogEventPhase::NONE);
 
   ASSERT_TRUE(entries[pos].HasParams());
-  auto* header_list = entries[pos].params.GetDict().FindList("headers");
+  auto* header_list = entries[pos].params.FindList("headers");
   ASSERT_TRUE(header_list);
   ASSERT_EQ(5u, header_list->size());
 
@@ -5896,8 +5893,10 @@ TEST_F(SpdyNetworkTransactionTest,
        HTTP11RequiredProxyRetryWithNetworkAnonymizationKey) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const SchemefulSite kSite2(GURL("https://bar.test/"));
-  const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
-  const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
+  const auto kNetworkAnonymizationKey1 =
+      NetworkAnonymizationKey::CreateSameSite(kSite1);
+  const auto kNetworkAnonymizationKey2 =
+      NetworkAnonymizationKey::CreateSameSite(kSite2);
   const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
   const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
@@ -10591,9 +10590,8 @@ TEST_F(SpdyNetworkTransactionTest, GreaseSettings) {
       NetLogEventPhase::NONE);
   ASSERT_LT(pos, entries.size());
 
-  const base::Value& params = entries[pos].params;
-  const base::Value::List* const settings =
-      params.GetDict().FindList("settings");
+  const base::Value::Dict& params = entries[pos].params;
+  const base::Value::List* const settings = params.FindList("settings");
   ASSERT_TRUE(settings);
 
   ASSERT_FALSE(settings->empty());

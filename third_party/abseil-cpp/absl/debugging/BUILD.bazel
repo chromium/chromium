@@ -83,6 +83,10 @@ cc_library(
     linkopts = ABSL_DEFAULT_LINKOPTS + select({
         "//absl:msvc_compiler": ["-DEFAULTLIB:dbghelp.lib"],
         "//absl:clang-cl_compiler": ["-DEFAULTLIB:dbghelp.lib"],
+        "//absl:mingw_compiler": [
+            "-DEFAULTLIB:dbghelp.lib",
+            "-ldbghelp",
+        ],
         "//conditions:default": [],
     }),
     deps = [

@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">Холбоос илэрсэн. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" /> хуудсыг устгасан</translation>
 <translation id="1258009455399840361">Цагийн зүүний дагуу 90 хэм эргүүлэх</translation>
-<translation id="1300209025925956156">Документоо скан хийх</translation>
-<translation id="1309250603447638106">Документийг скан хийхийн тулд шинэчлэлтүүдийг татаж байна</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Хандахын тулд Хайлт + Зүүн сумыг дарна уу.</translation>
 <translation id="1417314334557041815"><ph name="INDEX" /> хуудсыг засах</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" />-г салгасан байна.</translation>
 <translation id="1473110567575736769">3 секундийн цаг тоологч</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">Бичсэн зүйл алга</translation>
 <translation id="1838104802459806957">Дээш хазайлгах</translation>
 <translation id="1843105061469674856">Нэмэлт хуудас скан хийх</translation>
-<translation id="1851169887664797861">Камерын нэмэлт хяналт боломжтой</translation>
 <translation id="1851616744363735765">ТҮР ЗОГСООСОН</translation>
 <translation id="1899697626337024495">Зургийн нягтрал</translation>
 <translation id="1925845977604399247">Зургийн цомог руу очих</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">Скан хийх төрөл</translation>
 <translation id="28682968802727151">Тусгалын урьдчилан үзэх</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" />-г залгасан байна.</translation>
-<translation id="2904654629665923749">Документ скан хийх боломжтой</translation>
 <translation id="3067436040345934772">Баруун тийш чиглүүлэх</translation>
 <translation id="3081586908890909590">Видео бичих рүү сэлгэх</translation>
 <translation id="313467653172006084">30 FPS</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">Холбоосын хаягийг хуулах</translation>
 <translation id="4281620174117014503">Дундаж нягтрал</translation>
 <translation id="428234092390943511">Хуудасны өнгөц зураг</translation>
-<translation id="4340659173795395806">Та одоо олон хуудастай PDF үүсгэх боломжтой</translation>
 <translation id="4383571725254449280">Хэвлэх гүйцэтгэлийн логууд</translation>
 <translation id="4445542136948522167">Зураг авахыг зогсоох</translation>
 <translation id="4570032796877367747">Урд камер</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">Хадгалах</translation>
 <translation id="5320594929574852403">Зүүн тийш зөөж байна</translation>
 <translation id="5374917190292010970">4000 (2160p)</translation>
-<translation id="5444515100983837161">Документын бүх ирмэгийг хүрээнд байрлуулна уу. Документ болон дэвсгэр өөр өөр өнгөтэй тохиолдолд илүү сайн скан хийнэ.</translation>
 <translation id="5662366948659129155"><ph name="COUNT" />-р хуудсыг скан хийж байна</translation>
 <translation id="5671277269877808209">Дөрвөлжин</translation>
 <translation id="5746169159649715125">PDF хэлбэрээр хадгалах</translation>
@@ -157,7 +150,6 @@
 <translation id="8428213095426709021">Тохиргоо</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Микрофоны дууг хаах тохиргоог асаана уу/унтраана уу. Дууг хаах тохиргоо асаалттай байна</translation>
-<translation id="8712637175834984815">Ойлголоо</translation>
 <translation id="8730621377337864115">хийсэн</translation>
 <translation id="8732462232047530626">Мета өгөгдлийг урьдчилан үзэх</translation>
 <translation id="8815966864175525708">Хөрөг зураг авахын тулд сэлгэх</translation>

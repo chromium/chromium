@@ -4,9 +4,6 @@
 
 #include "media/capture/video/mac/video_capture_device_mac.h"
 
-#include <IOKit/IOCFPlugIn.h>
-#include <IOKit/usb/IOUSBLib.h>
-#include <IOKit/usb/USBSpec.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -16,12 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/mac/foundation_util.h"
-#include "base/mac/mac_util.h"
-#include "base/mac/scoped_cftyperef.h"
-#include "base/mac/scoped_ioobject.h"
-#include "base/mac/scoped_ioplugininterface.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -29,12 +20,10 @@
 #include "base/trace_event/trace_event.h"
 #include "media/base/timestamp_constants.h"
 #include "media/capture/mojom/image_capture_types.h"
+#include "media/capture/video/mac/uvc_control_mac.h"
 #import "media/capture/video/mac/video_capture_device_avfoundation_mac.h"
 #include "media/capture/video/mac/video_capture_device_avfoundation_utils_mac.h"
 #include "ui/gfx/geometry/size.h"
-
-using ScopedIOUSBInterfaceInterface =
-    base::mac::ScopedIOPluginInterface<IOUSBInterfaceInterface220>;
 
 @implementation DeviceNameAndTransportType
 
@@ -59,552 +48,76 @@ using ScopedIOUSBInterfaceInterface =
 
 namespace media {
 
+namespace {
+
 // Mac specific limits for minimum and maximum frame rate.
 const float kMinFrameRate = 1.0f;
 const float kMaxFrameRate = 60.0f;
 
-// In device identifiers, the USB VID and PID are stored in 4 bytes each.
-const size_t kVidPidSize = 4;
+struct PanTilt {
+  int32_t pan;
+  int32_t tilt;
+};
 
-// The following constants are extracted from the specification "Universal
-// Serial Bus Device Class Definition for Video Devices", Rev. 1.1 June 1, 2005.
-// http://www.usb.org/developers/devclass_docs/USB_Video_Class_1_1.zip
-// Sec. A.4 "Video Class-Specific Descriptor Types".
-const int kVcCsInterface = 0x24;  // CS_INTERFACE
-// Sec. A.5 "Video Class-Specific VC Interface Descriptor Subtypes".
-const int kVcInputTerminal = 0x2;   // VC_INPUT_TERMINAL
-const int kVcProcessingUnit = 0x5;  // VC_PROCESSING_UNIT
-// Sec. A.8 "Video Class-Specific Request Codes".
-const int kVcRequestCodeSetCur = 0x1;   // SET_CUR
-const int kVcRequestCodeGetCur = 0x81;  // GET_CUR
-const int kVcRequestCodeGetMin = 0x82;  // GET_MIN
-const int kVcRequestCodeGetMax = 0x83;  // GET_MAX
-const int kVcRequestCodeGetRes = 0x84;  // GET_RES
-// Sec. A.9.4. "Camera Terminal Control Selectors".
-const int kCtZoomAbsoluteControl = 0x0b;     // CT_ZOOM_ABSOLUTE_CONTROL
-const int kCtPanTiltAbsoluteControl = 0x0d;  // CT_PANTILT_ABSOLUTE_CONTROL
-// Sec. A.9.5 "Processing Unit Control Selectors".
-const int kPuPowerLineFrequencyControl =
-    0x5;  // PU_POWER_LINE_FREQUENCY_CONTROL
-// Sec. 4.2.2.3.5 "Power Line Frequency Control".
-const int k50Hz = 1;
-const int k60Hz = 2;
-const int kPuPowerLineFrequencyControlCommandSize = 1;
-// Sec. 4.2.2.1.11 "Zoom (Absolute) Control".
-const int kCtZoomAbsoluteControlCommandSize = 2;
-// Sec. 4.2.2.1.13 "PanTilt (Absolute) Control".
-const int kCtPanTiltAbsoluteControlCommandSize = 8;
-
-// Addition to the IOUSB family of structures, with subtype and unit ID.
-// Sec. 3.7.2 "Class-Specific VC Interface Descriptor"
-typedef struct VcCsInterfaceDescriptor {
-  IOUSBDescriptorHeader header;
-  UInt8 bDescriptorSubType;
-  UInt8 bUnitID;
-} VcCsInterfaceDescriptor;
-
-static bool FindDeviceWithVendorAndProductIds(int vendor_id,
-                                              int product_id,
-                                              io_iterator_t* usb_iterator) {
-  // Compose a search dictionary with vendor and product ID.
-  base::ScopedCFTypeRef<CFMutableDictionaryRef> query_dictionary(
-      IOServiceMatching(kIOUSBDeviceClassName));
-  CFDictionarySetValue(query_dictionary, CFSTR(kUSBVendorName),
-                       base::mac::NSToCFCast(@(vendor_id)));
-  CFDictionarySetValue(query_dictionary, CFSTR(kUSBProductName),
-                       base::mac::NSToCFCast(@(product_id)));
-
-  kern_return_t kr = IOServiceGetMatchingServices(
-      kIOMasterPortDefault, query_dictionary.release(), usb_iterator);
-  if (kr != kIOReturnSuccess) {
-    VLOG(1) << "No devices found with specified Vendor and Product ID.";
-    return false;
-  }
-  return true;
+// Print the pan-tilt values. Used for friendly log messages.
+::std::ostream& operator<<(::std::ostream& os, const PanTilt& pan_tilt) {
+  return os << " pan: " << pan_tilt.pan << ", tilt " << pan_tilt.tilt;
 }
 
-// Tries to create a user-side device interface for a given USB device. Returns
-// true if interface was found and passes it back in |device_interface|. The
-// caller should release |device_interface|.
-static bool FindDeviceInterfaceInUsbDevice(
-    const int vendor_id,
-    const int product_id,
-    const io_service_t usb_device,
-    IOUSBDeviceInterface*** device_interface) {
-  // Create a plugin, i.e. a user-side controller to manipulate USB device.
-  IOCFPlugInInterface** plugin;
-  SInt32 score;  // Unused, but required for IOCreatePlugInInterfaceForService.
-  kern_return_t kr = IOCreatePlugInInterfaceForService(
-      usb_device, kIOUSBDeviceUserClientTypeID, kIOCFPlugInInterfaceID, &plugin,
-      &score);
-  if (kr != kIOReturnSuccess || !plugin) {
-    VLOG(1) << "IOCreatePlugInInterfaceForService";
-    return false;
-  }
-  base::mac::ScopedIOPluginInterface<IOCFPlugInInterface> plugin_ref(plugin);
-
-  // Fetch the Device Interface from the plugin.
-  HRESULT res = (*plugin)->QueryInterface(
-      plugin, CFUUIDGetUUIDBytes(kIOUSBDeviceInterfaceID),
-      reinterpret_cast<LPVOID*>(device_interface));
-  if (!SUCCEEDED(res) || !*device_interface) {
-    VLOG(1) << "QueryInterface, couldn't create interface to USB";
-    return false;
-  }
-  return true;
-}
-
-// Tries to find a Video Control type interface inside a general USB device
-// interface |device_interface|, and returns it in |video_control_interface| if
-// found. The returned interface must be released in the caller.
-static bool FindVideoControlInterfaceInDeviceInterface(
-    IOUSBDeviceInterface** device_interface,
-    IOCFPlugInInterface*** video_control_interface) {
-  // Create an iterator to the list of Video-AVControl interfaces of the device,
-  // then get the first interface in the list.
-  io_iterator_t interface_iterator;
-  IOUSBFindInterfaceRequest interface_request = {
-      .bInterfaceClass = kUSBVideoInterfaceClass,
-      .bInterfaceSubClass = kUSBVideoControlSubClass,
-      .bInterfaceProtocol = kIOUSBFindInterfaceDontCare,
-      .bAlternateSetting = kIOUSBFindInterfaceDontCare};
-  kern_return_t kr =
-      (*device_interface)
-          ->CreateInterfaceIterator(device_interface, &interface_request,
-                                    &interface_iterator);
-  if (kr != kIOReturnSuccess) {
-    VLOG(1) << "Could not create an iterator to the device's interfaces.";
-    return false;
-  }
-  base::mac::ScopedIOObject<io_iterator_t> iterator_ref(interface_iterator);
-
-  // There should be just one interface matching the class-subclass desired.
-  io_service_t found_interface;
-  found_interface = IOIteratorNext(interface_iterator);
-  if (!found_interface) {
-    VLOG(1) << "Could not find a Video-AVControl interface in the device.";
-    return false;
-  }
-  base::mac::ScopedIOObject<io_service_t> found_interface_ref(found_interface);
-
-  // Create a user side controller (i.e. a "plugin") for the found interface.
-  SInt32 score;
-  kr = IOCreatePlugInInterfaceForService(
-      found_interface, kIOUSBInterfaceUserClientTypeID, kIOCFPlugInInterfaceID,
-      video_control_interface, &score);
-  if (kr != kIOReturnSuccess || !*video_control_interface) {
-    VLOG(1) << "IOCreatePlugInInterfaceForService";
-    return false;
-  }
-  return true;
-}
-
-// Creates a control interface for |plugin_interface| and produces a command to
-// set the appropriate Power Line frequency for flicker removal.
-static void SetAntiFlickerInVideoControlInterface(
-    IOCFPlugInInterface** plugin_interface,
-    const PowerLineFrequency frequency) {
-  // Create, the control interface for the found plugin, and release
-  // the intermediate plugin.
-  ScopedIOUSBInterfaceInterface control_interface;
-  HRESULT res =
-      (*plugin_interface)
-          ->QueryInterface(
-              plugin_interface, CFUUIDGetUUIDBytes(kIOUSBInterfaceInterfaceID),
-              reinterpret_cast<LPVOID*>(control_interface.InitializeInto()));
-  if (!SUCCEEDED(res) || !control_interface) {
-    VLOG(1) << "Couldn’t create control interface";
+// Update the control range and current value of pan-tilt control if
+// possible.
+static void MaybeUpdatePanTiltControlRange(UvcControl& uvc,
+                                           mojom::Range* pan_range,
+                                           mojom::Range* tilt_range) {
+  PanTilt pan_tilt_max, pan_tilt_min, pan_tilt_step, pan_tilt_current;
+  if (!uvc.GetControlMax<PanTilt>(uvc::kCtPanTiltAbsoluteControl, &pan_tilt_max,
+                                  "pan-tilt") ||
+      !uvc.GetControlMin<PanTilt>(uvc::kCtPanTiltAbsoluteControl, &pan_tilt_min,
+                                  "pan-tilt") ||
+      !uvc.GetControlStep<PanTilt>(uvc::kCtPanTiltAbsoluteControl,
+                                   &pan_tilt_step, "pan-tilt") ||
+      !uvc.GetControlCurrent<PanTilt>(uvc::kCtPanTiltAbsoluteControl,
+                                      &pan_tilt_current, "pan-tilt")) {
     return;
   }
-
-  // Find the device's unit ID presenting type 0x24 (kVcCsInterface) and
-  // subtype 0x5 (kVcProcessingUnit). Inside this unit is where we find the
-  // power line frequency removal setting, and this id is device dependent.
-  int real_unit_id = -1;
-  IOUSBDescriptorHeader* descriptor = NULL;
-  while ((descriptor =
-              (*control_interface)
-                  ->FindNextAssociatedDescriptor(control_interface.get(),
-                                                 descriptor, kVcCsInterface))) {
-    auto* cs_descriptor =
-        reinterpret_cast<VcCsInterfaceDescriptor*>(descriptor);
-    if (cs_descriptor->bDescriptorSubType == kVcProcessingUnit) {
-      real_unit_id = cs_descriptor->bUnitID;
-      break;
-    }
-  }
-  VLOG_IF(1, real_unit_id == -1)
-      << "This USB device doesn't seem to have a "
-      << " VC_PROCESSING_UNIT, anti-flicker not available";
-  if (real_unit_id == -1)
-    return;
-
-  IOReturn ret = (*control_interface)->USBInterfaceOpen(control_interface);
-  if (ret != kIOReturnSuccess) {
-    VLOG(1) << "Unable to open control interface";
-    // On macOS 12+, VDCAssistant takes ownership of USB devices. So, we should
-    // not bail out if kIOReturnExclusiveAccess is returned from
-    // USBInterfaceOpen().
-    if (!(base::mac::IsAtLeastOS12() && ret == kIOReturnExclusiveAccess)) {
-      return;
-    }
-  }
-
-  // Create the control request and launch it to the device's control interface.
-  // Note how the wIndex needs the interface number OR'ed in the lowest bits.
-  IOUSBDevRequest command;
-  command.bmRequestType = USBmakebmRequestType(UInt8{kUSBOut}, UInt8{kUSBClass},
-                                               UInt8{kUSBInterface});
-  command.bRequest = kVcRequestCodeSetCur;
-  UInt8 interface_number;
-  (*control_interface)
-      ->GetInterfaceNumber(control_interface, &interface_number);
-  command.wIndex = (real_unit_id << 8) | interface_number;
-  const int selector = kPuPowerLineFrequencyControl;
-  command.wValue = (selector << 8);
-  command.wLength = kPuPowerLineFrequencyControlCommandSize;
-  command.wLenDone = 0;
-  int power_line_flag_value =
-      (frequency == PowerLineFrequency::FREQUENCY_50HZ) ? k50Hz : k60Hz;
-  command.pData = &power_line_flag_value;
-
-  ret = (*control_interface)->ControlRequest(control_interface, 0, &command);
-  VLOG_IF(1, ret != kIOReturnSuccess) << "Anti-flicker control request"
-                                          << " failed (0x" << std::hex << ret
-                                          << "), unit id: " << real_unit_id;
-  VLOG_IF(1, ret == kIOReturnSuccess) << "Anti-flicker set to "
-                                       << static_cast<int>(frequency) << "Hz";
-
-  (*control_interface)->USBInterfaceClose(control_interface);
+  pan_range->max = pan_tilt_max.pan;
+  pan_range->min = pan_tilt_min.pan;
+  pan_range->step = pan_tilt_step.pan;
+  pan_range->current = pan_tilt_current.pan;
+  tilt_range->max = pan_tilt_max.tilt;
+  tilt_range->min = pan_tilt_min.tilt;
+  tilt_range->step = pan_tilt_step.tilt;
+  tilt_range->current = pan_tilt_current.tilt;
 }
 
-// Sets the flicker removal in a USB webcam identified by |vendor_id| and
-// |product_id|, if available. The process includes first finding all USB
-// devices matching the specified |vendor_id| and |product_id|; for each
-// matching device, a device interface, and inside it a video control interface
-// are created. The latter is used to a send a power frequency setting command.
-static void SetAntiFlickerInUsbDevice(const int vendor_id,
-                                      const int product_id,
-                                      const PowerLineFrequency frequency) {
-  if (frequency == PowerLineFrequency::FREQUENCY_DEFAULT)
-    return;
-  DVLOG(1) << "Setting Power Line Frequency to " << static_cast<int>(frequency)
-           << " Hz, device " << std::hex << vendor_id << "-" << product_id;
+// Set pan and tilt values for a USB camera device.
+static void SetPanTiltCurrent(UvcControl& uvc,
+                              absl::optional<int> pan,
+                              absl::optional<int> tilt) {
+  DCHECK(pan.has_value() || tilt.has_value());
 
-  base::mac::ScopedIOObject<io_iterator_t> usb_iterator;
-  if (!FindDeviceWithVendorAndProductIds(vendor_id, product_id,
-                                         usb_iterator.InitializeInto())) {
-    return;
-  }
-
-  while (io_service_t usb_device = IOIteratorNext(usb_iterator)) {
-    base::mac::ScopedIOObject<io_service_t> usb_device_ref(usb_device);
-
-    IOUSBDeviceInterface** device_interface = NULL;
-    if (!FindDeviceInterfaceInUsbDevice(vendor_id, product_id, usb_device,
-                                        &device_interface)) {
-      return;
-    }
-    base::mac::ScopedIOPluginInterface<IOUSBDeviceInterface>
-        device_interface_ref(device_interface);
-
-    IOCFPlugInInterface** video_control_interface = NULL;
-    if (!FindVideoControlInterfaceInDeviceInterface(device_interface,
-                                                    &video_control_interface)) {
-      return;
-    }
-    base::mac::ScopedIOPluginInterface<IOCFPlugInInterface>
-        plugin_interface_ref(video_control_interface);
-
-    SetAntiFlickerInVideoControlInterface(video_control_interface, frequency);
-  }
-}
-
-// Create an empty IOUSBDevRequest for a USB device to either control or get
-// information from pan, tilt, and zoom controls.
-static IOUSBDevRequest CreateEmptyPanTiltZoomRequest(
-    IOUSBInterfaceInterface220** control_interface,
-    int unit_id,
-    int request_code,
-    int endpoint_direction,
-    int control_selector,
-    int control_command_size) {
-  DCHECK((endpoint_direction == kUSBIn) || (endpoint_direction == kUSBOut));
-  UInt8 interface_number;
-  (*control_interface)
-      ->GetInterfaceNumber(control_interface, &interface_number);
-  IOUSBDevRequest command;
-  command.bmRequestType = USBmakebmRequestType(
-      endpoint_direction, UInt8{kUSBClass}, UInt8{kUSBInterface});
-  command.bRequest = request_code;
-  command.wIndex = (unit_id << 8) | interface_number;
-  command.wValue = (control_selector << 8);
-  command.wLength = control_command_size;
-  command.wLenDone = 0;
-  return command;
-}
-
-// Send USB request to get information about pan and tilt controls.
-// Returns true if the request is successful. To send the request, the interface
-// must be opened already.
-static bool SendPanTiltControlRequest(
-    IOUSBInterfaceInterface220** control_interface,
-    int unit_id,
-    int request_code,
-    int* pan_result,
-    int* tilt_result) {
-  IOUSBDevRequest command = CreateEmptyPanTiltZoomRequest(
-      control_interface, unit_id, request_code, kUSBIn,
-      kCtPanTiltAbsoluteControl, kCtPanTiltAbsoluteControlCommandSize);
-  int32_t data[2];
-  command.pData = &data;
-
-  IOReturn ret =
-      (*control_interface)->ControlRequest(control_interface, 0, &command);
-  VLOG_IF(1, ret != kIOReturnSuccess)
-      << "Control pan tilt request"
-      << " failed (0x" << std::hex << ret << "), unit id: " << unit_id;
-  if (ret != kIOReturnSuccess)
-    return false;
-
-  *pan_result = USBToHostLong(data[0]);
-  *tilt_result = USBToHostLong(data[1]);
-  return true;
-}
-
-// Send USB request to get information about zoom control.
-// Returns true if the request is successful. To send the request, the interface
-// must be opened already.
-static bool SendZoomControlRequest(
-    IOUSBInterfaceInterface220** control_interface,
-    int unit_id,
-    int request_code,
-    int* result) {
-  IOUSBDevRequest command = CreateEmptyPanTiltZoomRequest(
-      control_interface, unit_id, request_code, kUSBIn, kCtZoomAbsoluteControl,
-      kCtZoomAbsoluteControlCommandSize);
-  uint16_t data;
-  command.pData = &data;
-
-  IOReturn ret =
-      (*control_interface)->ControlRequest(control_interface, 0, &command);
-  VLOG_IF(1, ret != kIOReturnSuccess)
-      << "Control zoom request"
-      << " failed (0x" << std::hex << ret << "), unit id: " << unit_id;
-  if (ret != kIOReturnSuccess)
-    return false;
-
-  *result = USBToHostLong(data);
-  return true;
-}
-
-// Retrieves the control range and current value of pan and tilt controls.
-// The interface must be opened already.
-static void GetPanTiltControlRangeAndCurrent(
-    IOUSBInterfaceInterface220** control_interface,
-    int unit_id,
-    mojom::Range* pan_range,
-    mojom::Range* tilt_range) {
-  int pan_max, pan_min, pan_step, pan_current;
-  int tilt_max, tilt_min, tilt_step, tilt_current;
-  if (!SendPanTiltControlRequest(control_interface, unit_id,
-                                 kVcRequestCodeGetMax, &pan_max, &tilt_max) ||
-      !SendPanTiltControlRequest(control_interface, unit_id,
-                                 kVcRequestCodeGetMin, &pan_min, &tilt_min) ||
-      !SendPanTiltControlRequest(control_interface, unit_id,
-                                 kVcRequestCodeGetRes, &pan_step, &tilt_step) ||
-      !SendPanTiltControlRequest(control_interface, unit_id,
-                                 kVcRequestCodeGetCur, &pan_current,
-                                 &tilt_current)) {
-    return;
-  }
-  pan_range->max = pan_max;
-  pan_range->min = pan_min;
-  pan_range->step = pan_step;
-  pan_range->current = pan_current;
-  tilt_range->max = tilt_max;
-  tilt_range->min = tilt_min;
-  tilt_range->step = tilt_step;
-  tilt_range->current = tilt_current;
-}
-
-// Retrieves the control range and current value of a zoom control. The
-// interface must be opened already.
-static void GetZoomControlRangeAndCurrent(
-    IOUSBInterfaceInterface220** control_interface,
-    int unit_id,
-    mojom::Range* zoom_range) {
-  int max, min, step, current;
-  if (!SendZoomControlRequest(control_interface, unit_id, kVcRequestCodeGetMax,
-                              &max) ||
-      !SendZoomControlRequest(control_interface, unit_id, kVcRequestCodeGetMin,
-                              &min) ||
-      !SendZoomControlRequest(control_interface, unit_id, kVcRequestCodeGetRes,
-                              &step) ||
-      !SendZoomControlRequest(control_interface, unit_id, kVcRequestCodeGetCur,
-                              &current)) {
-    return;
-  }
-  zoom_range->max = max;
-  zoom_range->min = min;
-  zoom_range->step = step;
-  zoom_range->current = current;
-}
-
-// Set pan and tilt values for a USB camera device. The interface must be opened
-// already.
-static void SetPanTiltInUsbDevice(
-    IOUSBInterfaceInterface220** control_interface,
-    int unit_id,
-    absl::optional<int> pan,
-    absl::optional<int> tilt) {
-  if (!pan.has_value() && !tilt.has_value())
-    return;
-
-  int pan_current, tilt_current;
+  PanTilt pan_tilt_current;
   if ((!pan.has_value() || !tilt.has_value()) &&
-      !SendPanTiltControlRequest(control_interface, unit_id,
-                                 kVcRequestCodeGetCur, &pan_current,
-                                 &tilt_current)) {
+      !uvc.GetControlCurrent<PanTilt>(uvc::kCtPanTiltAbsoluteControl,
+                                      &pan_tilt_current, "pan-tilt")) {
     return;
   }
 
-  uint32_t pan_tilt_data[2];
-  pan_tilt_data[0] =
-      CFSwapInt32HostToLittle((uint32_t)pan.value_or(pan_current));
-  pan_tilt_data[1] =
-      CFSwapInt32HostToLittle((uint32_t)tilt.value_or(tilt_current));
+  PanTilt pan_tilt_data;
+  pan_tilt_data.pan =
+      CFSwapInt32HostToLittle((int32_t)pan.value_or(pan_tilt_current.pan));
+  pan_tilt_data.tilt =
+      CFSwapInt32HostToLittle((int32_t)tilt.value_or(pan_tilt_current.tilt));
 
-  IOUSBDevRequest command = CreateEmptyPanTiltZoomRequest(
-      control_interface, unit_id, kVcRequestCodeSetCur, kUSBOut,
-      kCtPanTiltAbsoluteControl, kCtPanTiltAbsoluteControlCommandSize);
-  command.pData = pan_tilt_data;
-
-  IOReturn ret =
-      (*control_interface)->ControlRequest(control_interface, 0, &command);
-  VLOG_IF(1, ret != kIOReturnSuccess)
-      << "Control request"
-      << " failed (0x" << std::hex << ret << "), unit id: " << unit_id
-      << " pan value: " << pan.value_or(pan_current)
-      << " tilt value: " << tilt.value_or(tilt_current);
-  VLOG_IF(1, ret == kIOReturnSuccess)
-      << "Setting pan value to " << pan.value_or(pan_current)
-      << " and tilt value to " << tilt.value_or(tilt_current);
+  uvc.SetControlCurrent<PanTilt>(uvc::kCtPanTiltAbsoluteControl, pan_tilt_data,
+                                 "pan-tilt");
 }
 
-// Set zoom value for a USB camera device. The interface must be opened already.
-static void SetZoomInUsbDevice(IOUSBInterfaceInterface220** control_interface,
-                               int unit_id,
-                               int zoom) {
-  IOUSBDevRequest command = CreateEmptyPanTiltZoomRequest(
-      control_interface, unit_id, kVcRequestCodeSetCur, kUSBOut,
-      kCtZoomAbsoluteControl, kCtZoomAbsoluteControlCommandSize);
-  command.pData = &zoom;
-
-  IOReturn ret =
-      (*control_interface)->ControlRequest(control_interface, 0, &command);
-  VLOG_IF(1, ret != kIOReturnSuccess)
-      << "Control request"
-      << " failed (0x" << std::hex << ret << "), unit id: " << unit_id
-      << " zoom value: " << zoom;
-  VLOG_IF(1, ret == kIOReturnSuccess) << "Setting zoom value to " << zoom;
+static bool IsNonEmptyRange(const mojom::RangePtr& range) {
+  return range->min < range->max;
 }
 
-// Open the pan, tilt, zoom interface in a USB webcam identified by
-// |device_model|. Returns interface when it is succcessfully opened. You have
-// to close the interface manually when you're done.
-static ScopedIOUSBInterfaceInterface OpenPanTiltZoomControlInterface(
-    std::string device_model,
-    int* unit_id) {
-  if (device_model.length() <= 2 * kVidPidSize) {
-    return ScopedIOUSBInterfaceInterface();
-  }
-  std::string vendor_id = device_model.substr(0, kVidPidSize);
-  std::string product_id = device_model.substr(kVidPidSize + 1);
-  int vendor_id_as_int, product_id_as_int;
-  if (!base::HexStringToInt(vendor_id, &vendor_id_as_int) ||
-      !base::HexStringToInt(product_id, &product_id_as_int)) {
-    return ScopedIOUSBInterfaceInterface();
-  }
-
-  base::mac::ScopedIOObject<io_iterator_t> usb_iterator;
-  if (!FindDeviceWithVendorAndProductIds(vendor_id_as_int, product_id_as_int,
-                                         usb_iterator.InitializeInto())) {
-    return ScopedIOUSBInterfaceInterface();
-  }
-
-  base::mac::ScopedIOPluginInterface<IOCFPlugInInterface>
-      video_control_interface;
-
-  while (io_service_t usb_device = IOIteratorNext(usb_iterator)) {
-    base::mac::ScopedIOObject<io_service_t> usb_device_ref(usb_device);
-    base::mac::ScopedIOPluginInterface<IOUSBDeviceInterface> device_interface;
-
-    if (!FindDeviceInterfaceInUsbDevice(vendor_id_as_int, product_id_as_int,
-                                        usb_device,
-                                        device_interface.InitializeInto())) {
-      continue;
-    }
-
-    if (FindVideoControlInterfaceInDeviceInterface(
-            device_interface, video_control_interface.InitializeInto())) {
-      break;
-    }
-  }
-
-  if (video_control_interface == nullptr) {
-    return ScopedIOUSBInterfaceInterface();
-  }
-
-  // Create the control interface for the found plugin, and release
-  // the intermediate plugin.
-  ScopedIOUSBInterfaceInterface control_interface;
-  HRESULT res =
-      (*video_control_interface)
-          ->QueryInterface(
-              video_control_interface,
-              CFUUIDGetUUIDBytes(kIOUSBInterfaceInterfaceID220),
-              reinterpret_cast<LPVOID*>(control_interface.InitializeInto()));
-  if (!SUCCEEDED(res) || !control_interface) {
-    VLOG(1) << "Couldn’t get control interface";
-    return ScopedIOUSBInterfaceInterface();
-  }
-
-  // Find the device's unit ID presenting type 0x24 (kVcCsInterface) and
-  // subtype 0x2 (kVcInputTerminal). Inside this unit is where we find the
-  // settings for pan, tilt, and zoom, and this id is device dependent.
-  IOUSBDescriptorHeader* descriptor = nullptr;
-  while ((descriptor =
-              (*control_interface)
-                  ->FindNextAssociatedDescriptor(control_interface.get(),
-                                                 descriptor, kVcCsInterface))) {
-    auto* cs_descriptor =
-        reinterpret_cast<VcCsInterfaceDescriptor*>(descriptor);
-    if (cs_descriptor->bDescriptorSubType == kVcInputTerminal) {
-      *unit_id = cs_descriptor->bUnitID;
-      break;
-    }
-  }
-
-  VLOG_IF(1, *unit_id == -1)
-      << "This USB device doesn't seem to have a "
-      << " VC_INPUT_TERMINAL. Pan, tilt, zoom are not available.";
-  if (*unit_id == -1)
-    return ScopedIOUSBInterfaceInterface();
-
-  IOReturn ret = (*control_interface)->USBInterfaceOpen(control_interface);
-  if (ret != kIOReturnSuccess) {
-    VLOG(1) << "Unable to open control interface";
-    // On macOS 12+, VDCAssistant takes ownership of USB devices. So, we should
-    // not bail out if kIOReturnExclusiveAccess is returned from
-    // USBInterfaceOpen().
-    if (!(base::mac::IsAtLeastOS12() && ret == kIOReturnExclusiveAccess)) {
-      return ScopedIOUSBInterfaceInterface();
-    }
-  }
-
-  return control_interface;
-}
+}  // namespace
 
 VideoCaptureDeviceMac::VideoCaptureDeviceMac(
     const VideoCaptureDeviceDescriptor& device_descriptor)
@@ -656,22 +169,26 @@ void VideoCaptureDeviceMac::AllocateAndStart(
   if (!UpdateCaptureResolution())
     return;
 
-  // Try setting the power line frequency removal (anti-flicker). The built-in
-  // cameras are normally suspended so the configuration must happen right
-  // before starting capture and during configuration.
-  const std::string device_model = GetDeviceModelId(
-      device_descriptor_.device_id, device_descriptor_.capture_api,
-      device_descriptor_.transport_type);
-  if (device_model.length() > 2 * kVidPidSize) {
-    std::string vendor_id = device_model.substr(0, kVidPidSize);
-    std::string product_id = device_model.substr(kVidPidSize + 1);
-    int vendor_id_as_int, product_id_as_int;
-    if (base::HexStringToInt(vendor_id, &vendor_id_as_int) &&
-        base::HexStringToInt(product_id, &product_id_as_int)) {
-      SetAntiFlickerInUsbDevice(vendor_id_as_int, product_id_as_int,
-                                GetPowerLineFrequency(params));
+  PowerLineFrequency frequency = GetPowerLineFrequency(params);
+  if (frequency != PowerLineFrequency::FREQUENCY_DEFAULT) {
+    // Try setting the power line frequency removal (anti-flicker). The built-in
+    // cameras are normally suspended so the configuration must happen right
+    // before starting capture and during configuration.
+    const std::string device_model = GetDeviceModelId(
+        device_descriptor_.device_id, device_descriptor_.capture_api,
+        device_descriptor_.transport_type);
+    if (device_model.length() > 2 * kVidPidSize) {
+      if (UvcControl uvc(device_model, uvc::kVcProcessingUnit); uvc.Good()) {
+        int power_line_flag_value =
+            (frequency == PowerLineFrequency::FREQUENCY_50HZ) ? uvc::k50Hz
+                                                              : uvc::k60Hz;
+        uvc.SetControlCurrent<uint8_t>(uvc::kPuPowerLineFrequencyControl,
+                                       power_line_flag_value,
+                                       "power line frequency");
+      }
     }
   }
+
   {
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                  "startCapture");
@@ -725,16 +242,85 @@ void VideoCaptureDeviceMac::GetPhotoState(GetPhotoStateCallback callback) {
   const std::string device_model = GetDeviceModelId(
       device_descriptor_.device_id, device_descriptor_.capture_api,
       device_descriptor_.transport_type);
-  int unit_id = -1;
-  ScopedIOUSBInterfaceInterface control_interface(
-      OpenPanTiltZoomControlInterface(device_model, &unit_id));
-  if (control_interface) {
-    GetPanTiltControlRangeAndCurrent(control_interface, unit_id,
-                                     photo_state->pan.get(),
-                                     photo_state->tilt.get());
-    GetZoomControlRangeAndCurrent(control_interface, unit_id,
-                                  photo_state->zoom.get());
-    (*control_interface)->USBInterfaceClose(control_interface);
+  if (UvcControl uvc(device_model, uvc::kVcInputTerminal); uvc.Good()) {
+    photo_state->current_focus_mode = mojom::MeteringMode::NONE;
+    uvc.MaybeUpdateControlRange<uint16_t>(uvc::kCtFocusAbsoluteControl,
+                                          photo_state->focus_distance.get(),
+                                          "focus");
+    if (IsNonEmptyRange(photo_state->focus_distance)) {
+      photo_state->supported_focus_modes.push_back(mojom::MeteringMode::MANUAL);
+    }
+    bool current_auto_focus;
+    if (uvc.GetControlCurrent<bool>(uvc::kCtFocusAutoControl,
+
+                                    &current_auto_focus, "focus auto")) {
+      photo_state->current_focus_mode = current_auto_focus
+                                            ? mojom::MeteringMode::CONTINUOUS
+                                            : mojom::MeteringMode::MANUAL;
+      photo_state->supported_focus_modes.push_back(
+          mojom::MeteringMode::CONTINUOUS);
+    }
+
+    photo_state->current_exposure_mode = mojom::MeteringMode::NONE;
+    uvc.MaybeUpdateControlRange<uint16_t>(uvc::kCtExposureTimeAbsoluteControl,
+                                          photo_state->exposure_time.get(),
+                                          "exposure time");
+    if (IsNonEmptyRange(photo_state->exposure_time)) {
+      photo_state->supported_exposure_modes.push_back(
+          mojom::MeteringMode::MANUAL);
+    }
+    uint8_t current_auto_exposure;
+    if (uvc.GetControlCurrent<uint8_t>(uvc::kCtAutoExposureModeControl,
+                                       &current_auto_exposure,
+                                       "auto-exposure mode")) {
+      if (current_auto_exposure & uvc::kExposureManual ||
+          current_auto_exposure & uvc::kExposureShutterPriority) {
+        photo_state->current_exposure_mode = mojom::MeteringMode::MANUAL;
+      } else {
+        photo_state->current_exposure_mode = mojom::MeteringMode::CONTINUOUS;
+      }
+      photo_state->supported_exposure_modes.push_back(
+          mojom::MeteringMode::CONTINUOUS);
+    }
+
+    MaybeUpdatePanTiltControlRange(uvc, photo_state->pan.get(),
+                                   photo_state->tilt.get());
+
+    uvc.MaybeUpdateControlRange<uint16_t>(uvc::kCtZoomAbsoluteControl,
+                                          photo_state->zoom.get(), "zoom");
+  }
+  if (UvcControl uvc(device_model, uvc::kVcProcessingUnit); uvc.Good()) {
+    uvc.MaybeUpdateControlRange<int16_t>(uvc::kPuBrightnessAbsoluteControl,
+                                         photo_state->brightness.get(),
+                                         "brightness");
+    uvc.MaybeUpdateControlRange<uint16_t>(uvc::kPuContrastAbsoluteControl,
+                                          photo_state->contrast.get(),
+                                          "contrast");
+    uvc.MaybeUpdateControlRange<uint16_t>(uvc::kPuBrightnessAbsoluteControl,
+                                          photo_state->saturation.get(),
+                                          "saturation");
+    uvc.MaybeUpdateControlRange<uint16_t>(uvc::kPuSharpnessAbsoluteControl,
+                                          photo_state->sharpness.get(),
+                                          "sharpness");
+
+    photo_state->current_white_balance_mode = mojom::MeteringMode::NONE;
+    uvc.MaybeUpdateControlRange<uint16_t>(
+        uvc::kPuWhiteBalanceTemperatureControl,
+        photo_state->color_temperature.get(), "white balance temperature");
+    if (IsNonEmptyRange(photo_state->color_temperature)) {
+      photo_state->supported_white_balance_modes.push_back(
+          mojom::MeteringMode::MANUAL);
+    }
+    bool current_auto_white_balance;
+    if (uvc.GetControlCurrent<bool>(uvc::kPuWhiteBalanceTemperatureAutoControl,
+                                    &current_auto_white_balance,
+                                    "white balance temperature auto")) {
+      photo_state->current_white_balance_mode =
+          current_auto_white_balance ? mojom::MeteringMode::CONTINUOUS
+                                     : mojom::MeteringMode::MANUAL;
+      photo_state->supported_white_balance_modes.push_back(
+          mojom::MeteringMode::CONTINUOUS);
+    }
   }
 
   if ([capture_device_ isPortraitEffectSupported]) {
@@ -773,28 +359,79 @@ void VideoCaptureDeviceMac::SetPhotoOptions(mojom::PhotoSettingsPtr settings,
     return;
   }
 
-  if (settings->has_pan || settings->has_tilt || settings->has_zoom) {
-    const std::string device_model = GetDeviceModelId(
-        device_descriptor_.device_id, device_descriptor_.capture_api,
-        device_descriptor_.transport_type);
-    int unit_id = -1;
-    ScopedIOUSBInterfaceInterface control_interface(
-        OpenPanTiltZoomControlInterface(device_model, &unit_id));
-    if (!control_interface)
-      return;
-
+  const std::string device_model = GetDeviceModelId(
+      device_descriptor_.device_id, device_descriptor_.capture_api,
+      device_descriptor_.transport_type);
+  if (UvcControl uvc(device_model, uvc::kVcInputTerminal); uvc.Good()) {
+    if (settings->has_focus_mode &&
+        (settings->focus_mode == mojom::MeteringMode::CONTINUOUS ||
+         settings->focus_mode == mojom::MeteringMode::MANUAL)) {
+      int focus_auto =
+          (settings->focus_mode == mojom::MeteringMode::CONTINUOUS);
+      uvc.SetControlCurrent<bool>(uvc::kCtFocusAutoControl, focus_auto,
+                                  "focus auto");
+    }
+    if (settings->has_focus_distance) {
+      uvc.SetControlCurrent<uint16_t>(uvc::kCtFocusAbsoluteControl,
+                                      settings->focus_distance, "focus");
+    }
+    if (settings->has_exposure_mode &&
+        (settings->exposure_mode == mojom::MeteringMode::CONTINUOUS ||
+         settings->exposure_mode == mojom::MeteringMode::MANUAL)) {
+      int auto_exposure_mode =
+          settings->exposure_mode == mojom::MeteringMode::CONTINUOUS
+              ? uvc::kExposureAperturePriority
+              : uvc::kExposureManual;
+      uvc.SetControlCurrent<uint8_t>(uvc::kCtAutoExposureModeControl,
+                                     auto_exposure_mode, "auto-exposure mode");
+    }
+    if (settings->has_exposure_time) {
+      uvc.SetControlCurrent<uint16_t>(uvc::kCtExposureTimeAbsoluteControl,
+                                      settings->exposure_time, "exposure time");
+    }
     if (settings->has_pan || settings->has_tilt) {
-      SetPanTiltInUsbDevice(
-          control_interface, unit_id,
-          settings->has_pan ? absl::make_optional(settings->pan)
-                            : absl::nullopt,
-          settings->has_tilt ? absl::make_optional(settings->tilt)
-                             : absl::nullopt);
+      SetPanTiltCurrent(uvc,
+                        settings->has_pan ? absl::make_optional(settings->pan)
+                                          : absl::nullopt,
+                        settings->has_tilt ? absl::make_optional(settings->tilt)
+                                           : absl::nullopt);
     }
     if (settings->has_zoom) {
-      SetZoomInUsbDevice(control_interface, unit_id, settings->zoom);
+      uvc.SetControlCurrent<uint16_t>(uvc::kCtZoomAbsoluteControl,
+                                      settings->zoom, "zoom");
     }
-    (*control_interface)->USBInterfaceClose(control_interface);
+  }
+  if (UvcControl uvc(device_model, uvc::kVcProcessingUnit); uvc.Good()) {
+    if (settings->has_brightness) {
+      uvc.SetControlCurrent<int16_t>(uvc::kPuBrightnessAbsoluteControl,
+                                     settings->brightness, "brightness");
+    }
+    if (settings->has_contrast) {
+      uvc.SetControlCurrent<uint16_t>(uvc::kPuContrastAbsoluteControl,
+                                      settings->contrast, "contrast");
+    }
+    if (settings->has_saturation) {
+      uvc.SetControlCurrent<uint16_t>(uvc::kPuSaturationAbsoluteControl,
+                                      settings->saturation, "saturation");
+    }
+    if (settings->has_sharpness) {
+      uvc.SetControlCurrent<uint16_t>(uvc::kPuSharpnessAbsoluteControl,
+                                      settings->sharpness, "sharpness");
+    }
+    if (settings->has_white_balance_mode &&
+        (settings->white_balance_mode == mojom::MeteringMode::CONTINUOUS ||
+         settings->white_balance_mode == mojom::MeteringMode::MANUAL)) {
+      int white_balance_temperature_auto =
+          (settings->white_balance_mode == mojom::MeteringMode::CONTINUOUS);
+      uvc.SetControlCurrent<uint8_t>(uvc::kPuWhiteBalanceTemperatureAutoControl,
+                                     white_balance_temperature_auto,
+                                     "white balance temperature auto");
+    }
+    if (settings->has_color_temperature) {
+      uvc.SetControlCurrent<uint16_t>(uvc::kPuWhiteBalanceTemperatureControl,
+                                      settings->color_temperature,
+                                      "white balance temperature");
+    }
   }
 
   std::move(callback).Run(true);
@@ -952,33 +589,32 @@ VideoCaptureControlSupport VideoCaptureDeviceMac::GetControlSupport(
     const std::string& device_model) {
   VideoCaptureControlSupport control_support;
 
-  int unit_id = -1;
-  ScopedIOUSBInterfaceInterface control_interface(
-      OpenPanTiltZoomControlInterface(device_model, &unit_id));
-  if (!control_interface)
+  UvcControl uvc(device_model, uvc::kVcInputTerminal);
+  if (!uvc.Good()) {
     return control_support;
+  }
 
-  int zoom_max, zoom_min = 0;
-  if (SendZoomControlRequest(control_interface, unit_id, kVcRequestCodeGetMax,
-                             &zoom_max) &&
-      SendZoomControlRequest(control_interface, unit_id, kVcRequestCodeGetMin,
-                             &zoom_min) &&
+  uint16_t zoom_max, zoom_min = 0;
+  if (uvc.GetControlMax<uint16_t>(uvc::kCtZoomAbsoluteControl, &zoom_max,
+                                  "zoom") &&
+      uvc.GetControlMin<uint16_t>(uvc::kCtZoomAbsoluteControl, &zoom_min,
+                                  "zoom") &&
       zoom_min < zoom_max) {
     control_support.zoom = true;
   }
-  int pan_max, pan_min = 0;
-  int tilt_max, tilt_min = 0;
-  if (SendPanTiltControlRequest(control_interface, unit_id,
-                                kVcRequestCodeGetMax, &pan_max, &tilt_max) &&
-      SendPanTiltControlRequest(control_interface, unit_id,
-                                kVcRequestCodeGetMin, &pan_min, &tilt_min)) {
-    if (pan_min < pan_max)
+  PanTilt pan_tilt_max, pan_tilt_min;
+  if (uvc.GetControlMax<PanTilt>(uvc::kCtPanTiltAbsoluteControl, &pan_tilt_max,
+                                 "pan-tilt") &&
+      uvc.GetControlMin<PanTilt>(uvc::kCtPanTiltAbsoluteControl, &pan_tilt_min,
+                                 "pan-tilt")) {
+    if (pan_tilt_min.pan < pan_tilt_max.pan) {
       control_support.pan = true;
-    if (tilt_min < tilt_max)
+    }
+    if (pan_tilt_min.tilt < pan_tilt_max.tilt) {
       control_support.tilt = true;
+    }
   }
 
-  (*control_interface)->USBInterfaceClose(control_interface);
   return control_support;
 }
 

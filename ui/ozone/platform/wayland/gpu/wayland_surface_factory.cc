@@ -136,12 +136,9 @@ scoped_refptr<gl::Presenter> GLOzoneEGLWayland::CreateSurfacelessViewGLSurface(
   // If there is a gbm device available, use surfaceless gl surface.
   if (!buffer_manager_->GetGbmDevice())
     return nullptr;
-  scoped_refptr<gl::Presenter> presenter =
-      base::MakeRefCounted<GbmSurfacelessWayland>(
-          display->GetAs<gl::GLDisplayEGL>(), buffer_manager_, window);
-  if (!presenter->Initialize(gl::GLSurfaceFormat()))
-    return nullptr;
-  return presenter;
+
+  return base::MakeRefCounted<GbmSurfacelessWayland>(
+      display->GetAs<gl::GLDisplayEGL>(), buffer_manager_, window);
 #else
   return nullptr;
 #endif

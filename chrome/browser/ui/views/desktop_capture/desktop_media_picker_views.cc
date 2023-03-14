@@ -142,28 +142,24 @@ void RecordUmaSelection(DialogType dialog_type,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   switch (source_type) {
-    case DesktopMediaList::Type::kNone: {
-      NOTREACHED();
-      break;
-    }
+    case DesktopMediaList::Type::kNone:
+      NOTREACHED_NORETURN();
 
-    case DesktopMediaList::Type::kScreen: {
+    case DesktopMediaList::Type::kScreen:
       if (dialog_type == DialogType::kPreferCurrentTab) {
         RecordUma(GDMPreferCurrentTabResult::kUserSelectedScreen);
       } else {
         RecordUma(GDMResult::kUserSelectedScreen);
       }
       break;
-    }
 
-    case DesktopMediaList::Type::kWindow: {
+    case DesktopMediaList::Type::kWindow:
       if (dialog_type == DialogType::kPreferCurrentTab) {
         RecordUma(GDMPreferCurrentTabResult::kUserSelectedWindow);
       } else {
         RecordUma(GDMResult::kUserSelectedWindow);
       }
       break;
-    }
 
     case DesktopMediaList::Type::kWebContents: {
       // Whether the current tab was selected. Note that this can happen
@@ -187,10 +183,9 @@ void RecordUmaSelection(DialogType dialog_type,
       break;
     }
 
-    case DesktopMediaList::Type::kCurrentTab: {
+    case DesktopMediaList::Type::kCurrentTab:
       RecordUma(GDMPreferCurrentTabResult::kUserSelectedThisTab);
       break;
-    }
   }
 }
 
@@ -223,8 +218,7 @@ std::u16string GetLabelForAudioCheckbox(DesktopMediaList::Type type,
     case DesktopMediaList::Type::kNone:
       break;
   }
-  NOTREACHED();
-  return u"";
+  NOTREACHED_NORETURN();
 }
 
 std::u16string GetLabelForReselectButton(DesktopMediaList::Type type) {
@@ -241,8 +235,7 @@ std::u16string GetLabelForReselectButton(DesktopMediaList::Type type) {
       break;
   }
 
-  NOTREACHED();
-  return u"";
+  NOTREACHED_NORETURN();
 }
 
 bool AreEquivalentTypesForAudioCheckbox(DesktopMediaList::Type lhs,
@@ -296,8 +289,7 @@ bool ShouldSelectTab(DesktopMediaList::Type type,
     case DesktopMediaList::Type::kCurrentTab:
       return display_surface == blink::mojom::PreferredDisplaySurface::BROWSER;
   }
-  NOTREACHED();
-  return false;
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace
@@ -317,8 +309,7 @@ bool DesktopMediaPickerDialogView::AudioSupported(DesktopMediaList::Type type) {
     case DesktopMediaList::Type::kNone:
       break;
   }
-  NOTREACHED();
-  return false;
+  NOTREACHED_NORETURN();
 }
 
 DesktopMediaPickerDialogView::DisplaySurfaceCategory::DisplaySurfaceCategory(
@@ -402,10 +393,8 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
 
   for (auto& source_list : source_lists) {
     switch (source_list->GetMediaListType()) {
-      case DesktopMediaList::Type::kNone: {
-        NOTREACHED();
-        break;
-      }
+      case DesktopMediaList::Type::kNone:
+        NOTREACHED_NORETURN();
       case DesktopMediaList::Type::kScreen: {
         const DesktopMediaSourceViewStyle kSingleScreenStyle(
             1,                                       // columns

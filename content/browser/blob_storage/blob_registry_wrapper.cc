@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -30,6 +31,11 @@ class BindingDelegate : public storage::BlobRegistryImpl::Delegate {
   }
   bool CanAccessDataForOrigin(const url::Origin& origin) override {
     return security_policy_handle_.CanAccessDataForOrigin(origin);
+  }
+  file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
+  GetAccessCallback() override {
+    // TODO (b/262203074) create actual callback
+    return base::NullCallback();
   }
 
  private:

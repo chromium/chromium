@@ -263,7 +263,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   bool OnNativeSetSequentialFocusNavigationStartingPointAction() final;
 
   // Notifications that this object may have changed.
-  void ChildrenChangedWithCleanLayout() override;
   void HandleAriaExpandedChanged() override;
   void HandleActiveDescendantChanged() override;
 

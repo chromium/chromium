@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/style/system_shadow.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/animation/animation_delegate.h"
@@ -71,6 +72,7 @@ class ASH_EXPORT CaptureLabelView : public views::View,
   bool IsInCountDownAnimation() const;
 
   // views::View:
+  void AddedToWidget() override;
   void Layout() override;
   gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
@@ -117,6 +119,8 @@ class ASH_EXPORT CaptureLabelView : public views::View,
   // button at the end of the count down.
   std::unique_ptr<DropToStopRecordingButtonAnimation>
       drop_to_stop_button_animation_;
+
+  std::unique_ptr<SystemShadow> shadow_;
 
   base::WeakPtrFactory<CaptureLabelView> weak_factory_{this};
 };

@@ -7,8 +7,6 @@
 #include <string>
 
 #include "base/check_op.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -44,53 +42,9 @@ TaskTabHelper::TaskTabHelper(content::WebContents* web_contents)
 
 TaskTabHelper::~TaskTabHelper() {}
 
-TaskTabHelper::HubType TaskTabHelper::GetSpokeEntryHubType() const {
-  content::NavigationEntry* entry =
-      web_contents()->GetController().GetLastCommittedEntry();
-
-  DCHECK(entry);
-
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  TemplateURLService* url_service =
-      TemplateURLServiceFactory::GetForProfile(profile);
-
-  if (url_service && url_service->IsSearchResultsPageFromDefaultSearchProvider(
-                         entry->GetURL())) {
-    return HubType::DEFAULT_SEARCH_ENGINE;
-  } else if (ui::PageTransitionCoreTypeIs(
-                 entry->GetTransitionType(),
-                 ui::PageTransition::PAGE_TRANSITION_FORM_SUBMIT)) {
-    return HubType::FORM_SUBMIT;
-  } else {
-    return HubType::OTHER;
-  }
-}
-
 void TaskTabHelper::NavigationEntryCommitted(
     const content::LoadCommittedDetails& load_details) {
-  int current_entry_index =
-      web_contents()->GetController().GetCurrentEntryIndex();
-
-  if (current_entry_index > last_pruned_navigation_entry_index_)
-    entry_index_to_spoke_count_map_[current_entry_index] = 1;
-
   UpdateAndRecordTaskIds(load_details);
-}
-
-void TaskTabHelper::NavigationListPruned(
-    const content::PrunedDetails& pruned_details) {
-  int current_entry_index =
-      web_contents()->GetController().GetCurrentEntryIndex();
-
-  if (entry_index_to_spoke_count_map_.count(current_entry_index) == 0)
-    entry_index_to_spoke_count_map_[current_entry_index] = 1;
-
-  entry_index_to_spoke_count_map_[current_entry_index]++;
-  last_pruned_navigation_entry_index_ = current_entry_index;
-
-  RecordHubAndSpokeNavigationUsage(
-      entry_index_to_spoke_count_map_[current_entry_index]);
 }
 
 sessions::NavigationTaskId* TaskTabHelper::GetCurrentTaskId(
@@ -143,32 +97,6 @@ void TaskTabHelper::UpdateAndRecordTaskIds(
   }
   local_navigation_task_id_map_.emplace(load_details.entry->GetUniqueID(),
                                         *navigation_task_id);
-}
-
-void TaskTabHelper::RecordHubAndSpokeNavigationUsage(int spokes) {
-  DCHECK_GT(spokes, 1);
-
-  std::string histogram_name;
-  switch (GetSpokeEntryHubType()) {
-    case HubType::DEFAULT_SEARCH_ENGINE: {
-      histogram_name =
-          "Tabs.Tasks.HubAndSpokeNavigationUsage.FromDefaultSearchEngine";
-      break;
-    }
-    case HubType::FORM_SUBMIT: {
-      histogram_name = "Tabs.Tasks.HubAndSpokeNavigationUsage.FromFormSubmit";
-      break;
-    }
-    case HubType::OTHER: {
-      histogram_name = "Tabs.Tasks.HubAndSpokeNavigationUsage.FromOther";
-      break;
-    }
-    default: {
-      NOTREACHED() << "Unknown HubType";
-    }
-  }
-
-  base::UmaHistogramExactLinear(histogram_name, spokes, 100);
 }
 
 int64_t TaskTabHelper::GetParentTaskId() {

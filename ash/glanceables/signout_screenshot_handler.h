@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace gfx {
@@ -62,9 +61,6 @@ class ASH_EXPORT SignoutScreenshotHandler {
 
   // Invoked when the screenshot is done.
   base::OnceClosure done_callback_;
-
-  // Time when the screenshot process started.
-  base::TimeTicks start_time_;
 
   // Size of the output screenshot.
   gfx::Size screenshot_size_;

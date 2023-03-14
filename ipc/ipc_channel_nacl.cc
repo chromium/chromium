@@ -295,9 +295,8 @@ bool ChannelNacl::ProcessOutgoingMessages() {
                         .TakePlatformFile());
     }
 
-    NaClAbiNaClImcMsgIoVec iov = {
-      const_cast<void*>(msg->data()), msg->size()
-    };
+    NaClAbiNaClImcMsgIoVec iov = {const_cast<uint8_t*>(msg->data()),
+                                  msg->size()};
     NaClAbiNaClImcMsgHdr msgh = {&iov, 1, fds.data(), num_fds};
     ssize_t bytes_written = imc_sendmsg(pipe_, &msgh, 0);
 

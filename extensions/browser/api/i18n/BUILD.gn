@@ -13,6 +13,8 @@ source_set("i18n") {
     "i18n_api.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//components/language/core/browser:browser",

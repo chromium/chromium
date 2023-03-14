@@ -33,7 +33,7 @@
 
 - (PromoConfig)config {
   return PromoConfig(promos_manager::Promo::AppStoreRating,
-                     &feature_engagement::kIPHiOSAppStorePromoFeature,
+                     &feature_engagement::kIPHiOSPromoAppStoreFeature,
                      @[ [[ImpressionLimit alloc] initWithLimit:1
                                                     forNumDays:365] ]);
 }

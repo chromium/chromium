@@ -1119,6 +1119,9 @@ external/wpt/css/css-animations/animation-timing-function-012-manual.html [ Skip
 external/wpt/css/css-animations/animationstart-and-animationend-events-manual.html [ Skip ]
 external/wpt/css/css-counter-styles/counter-style-at-rule/speak-as-manual.html [ Skip ]
 external/wpt/css/css-text/text-transform/text-transform-copy-paste-001-manual.html [ Skip ]
+# Sheriff added this line to skip newly added test.
+# TODO(https://crbug.com/1423788): Move this to appropriate file or remove this comment.
+crbug.com/1423788 external/wpt/css/css-transitions/all-with-discrete.tentative.html [ Skip ]
 external/wpt/css/css-transitions/transition-delay-000-manual.html [ Skip ]
 external/wpt/css/css-transitions/transition-delay-002-manual.html [ Skip ]
 external/wpt/css/css-transitions/transition-delay-003-manual.html [ Skip ]
@@ -1622,6 +1625,10 @@ crbug.com/626703 external/wpt/html/browsers/windows/restore-window-name-manual.h
 crbug.com/626703 external/wpt/pointerevents/html/pointerevent_drag_interaction-manual.html [ Skip ]
 crbug.com/626703 external/wpt/pointerevents/pointerevent_multiple_primary_pointers_boundary_events-manual.html [ Skip ]
 crbug.com/626703 external/wpt/uievents/order-of-events/focus-events/legacy-manual.html [ Skip ]
+
+
+# Tests that require support for <meta name="viewport">
+crbug.com/1343368 external/wpt/css/mediaqueries/viewport-script-dynamic.html [ Skip ]
 
 # Predefined counter styles that we support a larger range than the spec.
 external/wpt/css/css-counter-styles/armenian/css3-counter-styles-008.html [ Skip ]

@@ -7,7 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/cast_config_controller.h"
-#include "ash/system/privacy/screen_capture_observer.h"
+#include "ash/system/privacy/screen_security_observer.h"
 #include "ui/display/display_observer.h"
 
 namespace ash::input_method {
@@ -17,7 +17,7 @@ namespace ash::input_method {
 class ASH_EXPORT ScreenProjectionChangeMonitor
     : public display::DisplayObserver,
       public CastConfigController::Observer,
-      public ScreenCaptureObserver {
+      public ScreenSecurityObserver {
  public:
   using OnScreenProjectionChangedCallback =
       base::RepeatingCallback<void(bool is_projected)>;
@@ -36,12 +36,11 @@ class ASH_EXPORT ScreenProjectionChangeMonitor
   // CastConfigController::Observer:
   void OnDevicesUpdated(const std::vector<SinkAndRoute>& devices) override;
 
-  // ScreenCaptureObserver:
-  void OnScreenCaptureStart(
-      base::OnceClosure stop_callback,
-      const base::RepeatingClosure& source_callback,
-      const std::u16string& screen_capture_status) override;
-  void OnScreenCaptureStop() override;
+  // ScreenSecurityObserver:
+  void OnScreenAccessStart(base::OnceClosure stop_callback,
+                           const base::RepeatingClosure& source_callback,
+                           const std::u16string& access_app_name) override;
+  void OnScreenAccessStop() override;
 
   bool IsProjecting() const;
 

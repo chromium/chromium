@@ -384,8 +384,7 @@ public class TabUiTestHelper {
      * @return View Id of GTS parent view.
      */
     public static int getTabSwitcherParentId(Context context) {
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                && TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(context)) {
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
             return R.id.grid_tab_switcher_view_holder;
         }
 

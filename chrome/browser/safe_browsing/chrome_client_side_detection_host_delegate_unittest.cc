@@ -45,8 +45,6 @@ class ChromeClientSideDetectionHostDelegateTest
         browser()->tab_strip_model()->GetWebContentsAt(0),
         HostContentSettingsMapFactory::GetForProfile(profile),
         navigation_observer_manager_);
-    scoped_feature_list_.InitAndEnableFeature(
-        kClientSideDetectionReferrerChain);
   }
 
   void TearDown() override {
@@ -61,18 +59,16 @@ class ChromeClientSideDetectionHostDelegateTest
  protected:
   raw_ptr<SafeBrowsingNavigationObserverManager> navigation_observer_manager_;
   std::unique_ptr<SafeBrowsingNavigationObserver> navigation_observer_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ChromeClientSideDetectionHostDelegateTest, GetReferrerChain) {
   base::Time now = base::Time::Now();
-  base::Time one_hour_ago =
-      base::Time::FromDoubleT(now.ToDoubleT() - 60.0 * 60.0);
+  base::Time one_second_ago = base::Time::FromDoubleT(now.ToDoubleT() - 1.0);
 
   std::unique_ptr<NavigationEvent> first_navigation =
       std::make_unique<NavigationEvent>();
   first_navigation->original_request_url = GURL("http://a.com/");
-  first_navigation->last_updated = one_hour_ago;
+  first_navigation->last_updated = one_second_ago;
   first_navigation->navigation_initiation =
       ReferrerChainEntry::BROWSER_INITIATED;
   navigation_event_list()->RecordNavigationEvent(std::move(first_navigation));
@@ -104,13 +100,12 @@ TEST_F(ChromeClientSideDetectionHostDelegateTest, GetReferrerChain) {
 
 TEST_F(ChromeClientSideDetectionHostDelegateTest, NoNavigationObserverManager) {
   base::Time now = base::Time::Now();
-  base::Time one_hour_ago =
-      base::Time::FromDoubleT(now.ToDoubleT() - 60.0 * 60.0);
+  base::Time one_second_ago = base::Time::FromDoubleT(now.ToDoubleT() - 1.0);
 
   std::unique_ptr<NavigationEvent> first_navigation =
       std::make_unique<NavigationEvent>();
   first_navigation->original_request_url = GURL("http://a.com/");
-  first_navigation->last_updated = one_hour_ago;
+  first_navigation->last_updated = one_second_ago;
   first_navigation->navigation_initiation =
       ReferrerChainEntry::BROWSER_INITIATED;
   navigation_event_list()->RecordNavigationEvent(std::move(first_navigation));

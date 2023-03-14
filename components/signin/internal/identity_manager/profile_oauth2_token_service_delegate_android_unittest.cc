@@ -11,6 +11,7 @@
 
 using ::testing::_;
 using ::testing::InSequence;
+using ::testing::Pointwise;
 using ::testing::Return;
 using ::testing::Sequence;
 using ::testing::StrictMock;
@@ -34,6 +35,13 @@ class TestObserver : public ProfileOAuth2TokenServiceObserver {
   MOCK_METHOD1(OnRefreshTokenRevoked, void(const CoreAccountId&));
   MOCK_METHOD0(OnRefreshTokensLoaded, void());
 };
+
+MATCHER(CoreAccountInfoEq,
+        /* std::tuple<const AccountInfo&, const AccountInfo&> arg, */
+        "") {
+  return static_cast<const CoreAccountInfo&>(std::get<0>(arg)) ==
+         static_cast<const CoreAccountInfo&>(std::get<1>(arg));
+}
 }  // namespace
 
 class OAuth2TokenServiceDelegateAndroidTest : public testing::Test {
@@ -108,8 +116,9 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
   EXPECT_CALL(*delegate_, SetAccounts(kEmptyVector)).WillOnce(Return());
   // No observer call expected
   delegate_->UpdateAccountList(CoreAccountId(), {}, {account1_.account_id});
-  EXPECT_EQ(std::vector<AccountInfo>{account1_},
-            account_tracker_service_.GetAccounts());
+  EXPECT_THAT(
+      std::vector<AccountInfo>{account1_},
+      Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
 }
 
 TEST_F(OAuth2TokenServiceDelegateAndroidTest,
@@ -125,8 +134,9 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
 
   delegate_->UpdateAccountList(CoreAccountId(), {account1_.account_id},
                                {account1_.account_id});
-  EXPECT_EQ(std::vector<AccountInfo>{account1_},
-            account_tracker_service_.GetAccounts());
+  EXPECT_THAT(
+      std::vector<AccountInfo>{account1_},
+      Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
 }
 
 TEST_F(OAuth2TokenServiceDelegateAndroidTest,
@@ -142,8 +152,9 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
 
   delegate_->UpdateAccountList(account1_.account_id, {},
                                {account1_.account_id});
-  EXPECT_EQ(std::vector<AccountInfo>{account1_},
-            account_tracker_service_.GetAccounts());
+  EXPECT_THAT(
+      std::vector<AccountInfo>{account1_},
+      Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
 }
 
 TEST_F(OAuth2TokenServiceDelegateAndroidTest,
@@ -159,8 +170,9 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
 
   delegate_->UpdateAccountList(account1_.account_id, {account1_.account_id},
                                {account1_.account_id});
-  EXPECT_EQ(std::vector<AccountInfo>{account1_},
-            account_tracker_service_.GetAccounts());
+  EXPECT_THAT(
+      std::vector<AccountInfo>{account1_},
+      Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
 }
 
 TEST_F(OAuth2TokenServiceDelegateAndroidTest,
@@ -180,8 +192,9 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
 
   delegate_->UpdateAccountList(account1_.account_id, {account2_.account_id},
                                {account1_.account_id});
-  EXPECT_EQ(std::vector<AccountInfo>{account1_},
-            account_tracker_service_.GetAccounts());
+  EXPECT_THAT(
+      std::vector<AccountInfo>{account1_},
+      Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
 }
 
 TEST_F(OAuth2TokenServiceDelegateAndroidTest,
@@ -205,8 +218,9 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
 
   delegate_->UpdateAccountList(account2_.account_id, {},
                                {account1_.account_id});
-  EXPECT_EQ(std::vector<AccountInfo>{account1_},
-            account_tracker_service_.GetAccounts());
+  EXPECT_THAT(
+      std::vector<AccountInfo>{account1_},
+      Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
 }
 
 // Test Getsysaccounts return a user != from signed user while GetAccounts not
@@ -223,8 +237,9 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
 
   delegate_->UpdateAccountList(account2_.account_id, {account1_.account_id},
                                {account1_.account_id});
-  EXPECT_EQ(std::vector<AccountInfo>{account1_},
-            account_tracker_service_.GetAccounts());
+  EXPECT_THAT(
+      std::vector<AccountInfo>{account1_},
+      Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
 }
 
 TEST_F(OAuth2TokenServiceDelegateAndroidTest,
@@ -244,8 +259,9 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
 
   delegate_->UpdateAccountList(account2_.account_id, {},
                                {account1_.account_id, account2_.account_id});
-  EXPECT_EQ(std::vector<AccountInfo>({account1_, account2_}),
-            account_tracker_service_.GetAccounts());
+  EXPECT_THAT(
+      std::vector<AccountInfo>({account1_, account2_}),
+      Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
 }
 
 TEST_F(OAuth2TokenServiceDelegateAndroidTest,
@@ -264,8 +280,9 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
       .WillOnce(Return());
   delegate_->UpdateAccountList(account1_.account_id, {account2_.account_id},
                                {account1_.account_id, account2_.account_id});
-  EXPECT_EQ(std::vector<AccountInfo>({account1_, account2_}),
-            account_tracker_service_.GetAccounts());
+  EXPECT_THAT(
+      std::vector<AccountInfo>({account1_, account2_}),
+      Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
 }
 
 TEST_F(OAuth2TokenServiceDelegateAndroidTest,
@@ -286,8 +303,9 @@ TEST_F(OAuth2TokenServiceDelegateAndroidTest,
   delegate_->UpdateAccountList(account1_.account_id,
                                {account1_.account_id, account2_.account_id},
                                {account1_.account_id});
-  EXPECT_EQ(std::vector<AccountInfo>({account1_}),
-            account_tracker_service_.GetAccounts());
+  EXPECT_THAT(
+      std::vector<AccountInfo>({account1_}),
+      Pointwise(CoreAccountInfoEq(), account_tracker_service_.GetAccounts()));
 }
 
 }  // namespace signin

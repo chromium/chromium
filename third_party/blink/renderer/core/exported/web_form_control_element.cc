@@ -208,6 +208,9 @@ WebString WebFormControlElement::Value() const {
     return textarea->Value();
   if (auto* select = ::blink::DynamicTo<HTMLSelectElement>(*private_))
     return select->Value();
+  if (auto* selectmenu = ::blink::DynamicTo<HTMLSelectMenuElement>(*private_)) {
+    return selectmenu->value();
+  }
   return WebString();
 }
 

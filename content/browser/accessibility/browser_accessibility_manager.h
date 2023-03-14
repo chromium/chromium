@@ -257,10 +257,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   // Retrieve the bounds of the parent View in screen coordinates.
   gfx::Rect GetViewBoundsInScreenCoordinates() const;
 
-  // Fire an event telling native assistive technology to move focus to the
-  // given find in page result.
-  void ActivateFindInPageResult(int request_id, int match_index);
-
   // Called when the renderer process has notified us of tree changes. Returns
   // false in fatal-error conditions, in which case the caller should destroy
   // the manager.

@@ -62,7 +62,9 @@ PaintInvalidationReason RasterInvalidator::ChunkPropertiesChanged(
     const PaintChunk& old_chunk,
     const PaintChunkInfo& new_chunk_info,
     const PaintChunkInfo& old_chunk_info,
-    const PropertyTreeState& layer_state) const {
+    const PropertyTreeState& layer_state,
+    const float absolute_translation_tolerance,
+    const float other_transform_tolerance) const {
   if (new_chunk.effectively_invisible != old_chunk.effectively_invisible)
     return PaintInvalidationReason::kPaintProperty;
 
@@ -70,10 +72,10 @@ PaintInvalidationReason RasterInvalidator::ChunkPropertiesChanged(
   // transform nodes when no raster invalidation is needed. For example, when
   // a composited layer previously not transformed now gets transformed.
   // Check for real accumulated transform change instead.
-  static constexpr double kTolerance = 1e-5f;
   if (!new_chunk_info.chunk_to_layer_transform.ApproximatelyEqual(
-          old_chunk_info.chunk_to_layer_transform, kTolerance, kTolerance,
-          kTolerance)) {
+          old_chunk_info.chunk_to_layer_transform,
+          absolute_translation_tolerance, other_transform_tolerance,
+          other_transform_tolerance)) {
     return PaintInvalidationReason::kPaintProperty;
   }
 
@@ -169,6 +171,12 @@ void RasterInvalidator::GenerateRasterInvalidations(
   old_chunks_matched.resize(old_paint_chunks_info_.size());
   wtf_size_t old_index = 0;
   wtf_size_t max_matched_old_index = 0;
+
+  const float absolute_translation_tolerance =
+      RuntimeEnabledFeatures::SvgRasterOptimizationsEnabled() ? 1e-2f : 1e-5f;
+  const float other_transform_tolerance =
+      RuntimeEnabledFeatures::SvgRasterOptimizationsEnabled() ? 1e-4f : 1e-5f;
+
   for (auto it = new_chunks.begin(); it != new_chunks.end(); ++it) {
     if (ShouldSkipForRasterInvalidation(it))
       continue;
@@ -219,7 +227,9 @@ void RasterInvalidator::GenerateRasterInvalidations(
           reason = PaintInvalidationReason::kPaintProperty;
         } else {
           reason = ChunkPropertiesChanged(new_chunk, old_chunk, new_chunk_info,
-                                          old_chunk_info, layer_state_);
+                                          old_chunk_info, layer_state_,
+                                          absolute_translation_tolerance,
+                                          other_transform_tolerance);
         }
       }
 

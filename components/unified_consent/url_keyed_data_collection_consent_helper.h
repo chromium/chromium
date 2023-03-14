@@ -48,6 +48,14 @@ class UrlKeyedDataCollectionConsentHelper {
   static std::unique_ptr<UrlKeyedDataCollectionConsentHelper>
   NewPersonalizedDataCollectionConsentHelper(syncer::SyncService* sync_service);
 
+  // Creates a new |UrlKeyedDataCollectionConsentHelper| instance that checks
+  // whether *bookmarks* data collection is enabled. This should be used when
+  // the client needs to check whether the user has granted consent for
+  // bookmarks data collection keyed by their Google account.
+  static std::unique_ptr<UrlKeyedDataCollectionConsentHelper>
+  NewPersonalizedBookmarksDataCollectionConsentHelper(
+      syncer::SyncService* sync_service);
+
   UrlKeyedDataCollectionConsentHelper(
       const UrlKeyedDataCollectionConsentHelper&) = delete;
   UrlKeyedDataCollectionConsentHelper& operator=(

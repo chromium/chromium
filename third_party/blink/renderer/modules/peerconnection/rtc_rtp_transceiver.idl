@@ -23,9 +23,8 @@ interface RTCRtpTransceiver {
     readonly attribute RTCRtpTransceiverDirection? currentDirection;
     [Measure, RaisesException] void stop();
     [RaisesException] void setCodecPreferences(sequence<RTCRtpCodecCapability> codecs);
-    [RaisesException, RuntimeEnabled=RTCRtpHeaderExtensionControl] void setOfferedRtpHeaderExtensions(
-            sequence<RTCRtpHeaderExtensionCapability>
-            headerExtensionsToOffer);
-    [RuntimeEnabled=RTCRtpHeaderExtensionControl] readonly attribute FrozenArray<RTCRtpHeaderExtensionCapability> headerExtensionsToOffer;
-    [RuntimeEnabled=RTCRtpHeaderExtensionControl] readonly attribute FrozenArray<RTCRtpHeaderExtensionCapability> headerExtensionsNegotiated;
+    [RuntimeEnabled=RTCRtpHeaderExtensionControl] sequence<RTCRtpHeaderExtensionCapability> getHeaderExtensionsToNegotiate();
+    [RaisesException, RuntimeEnabled=RTCRtpHeaderExtensionControl] void setHeaderExtensionsToNegotiate(
+            sequence<RTCRtpHeaderExtensionCapability> extensions);
+    [RuntimeEnabled=RTCRtpHeaderExtensionControl] sequence<RTCRtpHeaderExtensionCapability> getNegotiatedHeaderExtensions();
 };

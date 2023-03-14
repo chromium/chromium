@@ -36,7 +36,7 @@ if (is_android) {
 # Writable mmap isn't supported on Fuchsia, so it should be bypassed.
 posix_bypass_mmap = (is_android && current_cpu != "x86") || is_fuchsia
 
-enable_built_in_dns = !is_ios
+enable_built_in_dns = use_blink
 
 # Unix sockets are not supported on iOS.
 enable_unix_sockets = is_posix && !is_ios
@@ -53,7 +53,8 @@ enable_python_utils =
 
 # Platforms that cannot use python_utils (like Android but see full
 # list above) will instead use a remote server.
-use_remote_test_server = !enable_python_utils && enable_websockets
+use_remote_test_server =
+    !enable_python_utils && (enable_websockets || (is_cronet_build && !is_ios))
 
 # Whether //net should use an external GSSAPI library for implementing HTTP
 # Negotiate authentication. All platforms for which use_kerberos is true should
@@ -85,6 +86,8 @@ buildflag_header("buildflags") {
     "USE_KERBEROS=$use_kerberos",
     "USE_EXTERNAL_GSSAPI=$use_external_gssapi",
     "TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED=$trial_comparison_cert_verifier_supported",
+    "CHROME_ROOT_STORE_OPTIONAL=$chrome_root_store_optional",
+    "CHROME_ROOT_STORE_ONLY=$chrome_root_store_only",
     "CHROME_ROOT_STORE_SUPPORTED=$chrome_root_store_supported",
   ]
 }
@@ -1160,8 +1163,6 @@ component("net") {
       "android/network_change_notifier_factory_android.h",
       "android/network_library.cc",
       "android/network_library.h",
-      "android/radio_activity_tracker.cc",
-      "android/radio_activity_tracker.h",
       "android/traffic_stats.cc",
       "android/traffic_stats.h",
       "cert/cert_verify_proc_android.cc",
@@ -1188,6 +1189,7 @@ component("net") {
     sources += [
       "cert/cert_verify_proc_ios.cc",
       "cert/cert_verify_proc_ios.h",
+      "cert/test_root_certs_ios.cc",
       "disk_cache/blockfile/file_ios.cc",
       "proxy_resolution/proxy_config_service_ios.cc",
       "proxy_resolution/proxy_config_service_ios.h",
@@ -1222,16 +1224,11 @@ component("net") {
       "base/network_notification_thread_mac.cc",
       "base/network_notification_thread_mac.h",
       "cert/cert_database_mac.cc",
-      "cert/cert_verify_proc_mac.cc",
-      "cert/cert_verify_proc_mac.h",
       "cert/internal/trust_store_mac.cc",
       "cert/internal/trust_store_mac.h",
-      "cert/known_roots_mac.cc",
-      "cert/known_roots_mac.h",
       "cert/test_keychain_search_list_mac.cc",
       "cert/test_keychain_search_list_mac.h",
-      "cert/x509_util_mac.cc",
-      "cert/x509_util_mac.h",
+      "cert/test_root_certs_builtin.cc",
       "proxy_resolution/proxy_config_service_mac.cc",
       "proxy_resolution/proxy_config_service_mac.h",
       "ssl/client_cert_identity_mac.cc",
@@ -1253,7 +1250,6 @@ component("net") {
       "base/network_config_watcher_mac.h",
       "base/platform_mime_util_mac.mm",
       "base/proxy_string_util_mac.cc",
-      "cert/test_root_certs_mac.cc",
       "cert/x509_util_apple.cc",
       "cert/x509_util_apple.h",
       "proxy_resolution/proxy_resolver_mac.cc",
@@ -1829,7 +1825,7 @@ if (is_ios) {
   bundle_data_from_filelist("test_support_bundle_data") {
     visibility = [ ":test_support" ]
     testonly = true
-    filelist_name = "test/test_support_bundle_data.filelist"
+    filelist_name = "data/test_support_bundle_data.filelist"
   }
 }
 
@@ -2042,7 +2038,7 @@ static_library("test_support") {
     configs += [ "//build/config/linux/nss" ]
   }
 
-  if (enable_websockets) {
+  if (enable_websockets || (is_cronet_build && !is_ios)) {
     sources += [
       "test/spawned_test_server/base_test_server.cc",
       "test/spawned_test_server/base_test_server.h",
@@ -2450,9 +2446,9 @@ if (!is_ios) {
 }
 
 if (is_ios) {
-  bundle_data_from_filelist("net_unittests_bundle_data") {
+  bundle_data_from_filelist("net_test_bundle_data") {
     testonly = true
-    filelist_name = "test/net_unittests_bundle_data.filelist"
+    filelist_name = "data/test_bundle_data.filelist"
   }
 }
 
@@ -2835,7 +2831,6 @@ test("net_unittests") {
 
   if (is_mac) {
     sources += [
-      "cert/cert_verify_proc_mac_unittest.cc",
       "cert/internal/trust_store_mac_unittest.cc",
       "ssl/client_cert_store_mac_unittest.cc",
       "ssl/ssl_platform_key_mac_unittest.cc",
@@ -3079,7 +3074,10 @@ test("net_unittests") {
   }
 
   if (is_ios) {
-    bundle_deps = [ ":net_unittests_bundle_data" ]
+    bundle_deps = [
+      ":net_test_bundle_data",
+      "//net/third_party/nist-pkits:test_bundle_data",
+    ]
   }
 
   if (enable_unix_sockets) {

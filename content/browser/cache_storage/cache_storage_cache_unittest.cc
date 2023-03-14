@@ -596,7 +596,7 @@ class CacheStorageCacheTest : public testing::Test {
         base::SingleThreadTaskRunner::GetCurrentDefault(),
         future.GetCallback());
     auto bucket = future.Take();
-    EXPECT_TRUE(bucket.ok());
+    EXPECT_TRUE(bucket.has_value());
     return bucket->ToBucketLocator();
   }
 

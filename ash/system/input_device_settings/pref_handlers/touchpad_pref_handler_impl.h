@@ -28,6 +28,7 @@ class ASH_EXPORT TouchpadPrefHandlerImpl : public TouchpadPrefHandler {
 
  private:
   mojom::TouchpadSettingsPtr GetNewTouchpadSettings(
+      PrefService* prefs,
       const mojom::Touchpad& touchpad);
   mojom::TouchpadSettingsPtr RetreiveTouchpadSettings(
       PrefService* prefs,

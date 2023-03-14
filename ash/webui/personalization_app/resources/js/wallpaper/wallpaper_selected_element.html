@@ -60,33 +60,8 @@
     --iron-icon-width: 20px;
   }
 
-  cr-button {
-    border-color: var(--cros-button-stroke-color-secondary);
-    border-radius: 16px;
-  }
-
   cr-button + cr-button {
     margin-inline-start: 8px;
-  }
-
-  #dailyRefreshDialog::part(dialog) {
-    min-width: 288px;
-    width: 288px;
-  }
-
-  /* TODO(b/268566678) use existing cr-button.primary styles */
-  #dialogProceedButton {
-    background-color: var(--cros-button-background-color-primary);
-    border: 0;
-    --text-color: var(--cros-button-label-color-primary);
-  }
-
-  #dialogProceedButton:hover {
-    background-color: var(--cros-button-background-color-primary-hover-preblended);
-  }
-
-  #dialogProceedButton:active {
-    box-shadow: 0 1px 2px rgba(66, 133, 244, 0.3), 0 1px 3px rgba(66, 133, 244, 0.15);
   }
 
   #descriptionDialog h3[slot='title'],
@@ -131,12 +106,14 @@
       <template is="dom-if" if="[[shouldShowLayoutOptions_]]">
         <div id="wallpaperOptions">
           <cr-button id="fill" data-layout="FILL" on-click="onClickLayoutIcon_"
+              class="secondary"
               aria-pressed$="[[getFillAriaPressed_(image_)]]">
             <iron-icon icon="[[fillIcon_]]"></iron-icon>
             <div class="text">$i18n{fill}</div>
           </cr-button>
           <cr-button id="center" data-layout="CENTER"
               on-click="onClickLayoutIcon_"
+              class="secondary"
               aria-pressed$="[[getCenterAriaPressed_(image_)]]">
             <iron-icon icon="[[centerIcon_]]"></iron-icon>
             <div class="text">$i18n{center}</div>
@@ -145,7 +122,7 @@
       </template>
       <template is="dom-if" if="[[showCollectionOptions_]]">
         <div id="collectionOptions">
-          <cr-button id="dailyRefresh"
+          <cr-button id="dailyRefresh" class="secondary"
               aria-label="$i18n{ariaLabelChangeDaily}"
               aria-pressed$="[[ariaPressed_]]"
               on-click="onClickDailyRefreshToggle_"
@@ -153,7 +130,7 @@
             <iron-icon icon="[[dailyRefreshIcon_]]"></iron-icon>
             <div class="text">$i18n{changeDaily}</div>
           </cr-button>
-          <cr-button id="refreshWallpaper"
+          <cr-button id="refreshWallpaper" class="secondary"
               aria-label="$i18n{ariaLabelRefresh}"
               on-click="onClickUpdateDailyRefreshWallpaper_"
               hidden$="[[!showRefreshButton_]]">
@@ -171,22 +148,14 @@
         </div>
       </template>
     </div>
-    <template is="dom-if" if="[[shouldShowDailyRefreshConfirmationDialog_]]" restamp>
-      <cr-dialog id="dailyRefreshDialog" on-close="closeDailyRefreshConfirmationDialog_" show-on-attach>
-        <div slot="title">[temp]Shared albums can be updated by other users</div>
-        <div slot="body">
-          [temp]Photos in shared albums can be updated by other users. Change
-          daily might show wallpapers not currently in the album
-        </div>
-        <div slot="button-container">
-          <cr-button id="dialogCancelButton" on-click="closeDailyRefreshConfirmationDialog_">
-            [temp]Cancel
-          </cr-button>
-          <cr-button id="dialogProceedButton" on-click="onClickProceed_">
-            [temp]Proceed
-          </cr-button>
-        </div>
-      </cr-dialog>
+    <template
+        is="dom-if"
+        if="[[shouldShowDailyRefreshConfirmationDialog_]]"
+        restamp>
+      <google-photos-shared-album-dialog
+          on-shared-album-dialog-accept="onAcceptDailyRefreshDialog_"
+          on-cancel="closeDailyRefreshConfirmationDialog_">
+      </google-photos-shared-album-dialog>
     </template>
     <template is="dom-if" if="[[shouldShowDescriptionDialog_]]" restamp>
       <cr-dialog id="descriptionDialog" on-close="closeDescriptionDialog_" show-on-attach>

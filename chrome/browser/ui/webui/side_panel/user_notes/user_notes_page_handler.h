@@ -10,10 +10,15 @@
 #include "chrome/browser/ui/webui/side_panel/user_notes/user_notes.mojom.h"
 #include "components/power_bookmarks/common/power_bookmark_observer.h"
 #include "components/power_bookmarks/core/power_bookmark_service.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+
+namespace bookmarks {
+class BookmarkModel;
+}
 
 namespace power_bookmarks {
 class PowerBookmarkService;
@@ -33,6 +38,7 @@ class UserNotesPageHandler : public side_panel::mojom::UserNotesPageHandler,
       mojo::PendingRemote<side_panel::mojom::UserNotesPage> page,
       Profile* profile,
       Browser* browser,
+      bool start_creation_flow,
       UserNotesSidePanelUI* user_notes_ui);
   UserNotesPageHandler(const UserNotesPageHandler&) = delete;
   UserNotesPageHandler& operator=(const UserNotesPageHandler&) = delete;
@@ -55,6 +61,15 @@ class UserNotesPageHandler : public side_panel::mojom::UserNotesPageHandler,
   void NoteOverviewSelected(
       const ::GURL& url,
       ui::mojom::ClickModifiersPtr click_modifiers) override;
+  void SetSortOrder(bool sort_by_newest) override;
+  void HasNotesInAnyPages(HasNotesInAnyPagesCallback callback) override;
+  void OpenInNewTab(const ::GURL& url) override;
+  void OpenInNewWindow(const ::GURL& url) override;
+  void OpenInIncognitoWindow(const ::GURL& url) override;
+
+  void OnSortByNewestPrefChanged();
+
+  void StartNoteCreation(bool wait_for_tab_change);
 
   void SetCurrentTabUrlForTesting(GURL url) { current_tab_url_ = url; }
 
@@ -74,13 +89,22 @@ class UserNotesPageHandler : public side_panel::mojom::UserNotesPageHandler,
   void PrimaryPageChanged(content::Page& page) override;
 
   void UpdateCurrentTabUrl();
+  void OpenUrl(const ::GURL& url, WindowOpenDisposition open_location);
 
   mojo::Receiver<side_panel::mojom::UserNotesPageHandler> receiver_;
   mojo::Remote<side_panel::mojom::UserNotesPage> page_;
   const raw_ptr<Profile> profile_;
+  PrefChangeRegistrar pref_change_registrar_;
   const raw_ptr<power_bookmarks::PowerBookmarkService> service_;
   const raw_ptr<Browser> browser_;
+
   raw_ptr<UserNotesSidePanelUI> user_notes_ui_ = nullptr;
+
+  // Use a week pointer here because BookmarkModel may outlive the callback in
+  // `GetNoteOverviews`.
+  base::WeakPtr<bookmarks::BookmarkModel> bookmark_model_;
+
+  bool start_creation_after_tab_change_ = false;
   GURL current_tab_url_;
 };
 

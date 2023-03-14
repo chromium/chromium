@@ -45,7 +45,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/overlays/test",
     "//ios/chrome/browser/passwords:infobar_delegates",
     "//ios/chrome/browser/passwords/test",
-    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/infobars/banners/test",
     "//ios/chrome/browser/ui/infobars/test",

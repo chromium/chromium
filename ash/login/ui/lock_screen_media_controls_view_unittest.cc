@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/login/ui/lock_screen_media_controls_view.h"
+#include "ash/login/ui/lock_contents_view_test_api.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/login/ui/fake_login_detachable_base_model.h"
@@ -126,7 +127,7 @@ class LockScreenMediaControlsViewTest : public LoginTestBase {
         mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
         DataDispatcher(),
         std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
-    LockContentsView::TestApi lock_contents(lock_contents_view_);
+    LockContentsViewTestApi lock_contents(lock_contents_view_);
 
     std::unique_ptr<views::Widget> widget =
         CreateWidgetWithContent(lock_contents_view_);

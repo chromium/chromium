@@ -173,7 +173,11 @@ You may need to log in to `https://chromium-swarm.appspot.com` to do this
 $ tools/luci-go/isolate login
 ```
 
-Use your google.com account for this.
+Use your google.com account for this. On Windows the command would be:
+
+```
+$ tools\luci-go\isolate.exe login
+```
 
 ## Uploading an isolate
 

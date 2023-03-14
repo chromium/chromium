@@ -32,11 +32,10 @@ class DialInternalMessageUtilTest : public ::testing::Test {
 
   void ExpectMessagesEqual(const std::string& expected_message,
                            const std::string& message) {
-    auto expected_message_value =
-        base::JSONReader::ReadDeprecated(expected_message);
+    auto expected_message_value = base::JSONReader::Read(expected_message);
     ASSERT_TRUE(expected_message_value);
 
-    auto message_value = base::JSONReader::ReadDeprecated(message);
+    auto message_value = base::JSONReader::Read(message);
     ASSERT_TRUE(message_value);
 
     EXPECT_EQ(*expected_message_value, *message_value);

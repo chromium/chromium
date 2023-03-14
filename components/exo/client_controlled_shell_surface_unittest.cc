@@ -14,15 +14,9 @@
 #include "ash/shell.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/test_widget_builder.h"
-#include "ash/wm/drag_window_resizer.h"
-#include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/pip/pip_positioner.h"
 #include "ash/wm/splitview/split_view_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_browser_window_drag_delegate.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_window_drag_delegate.h"
-#include "ash/wm/tablet_mode/tablet_mode_window_resizer.h"
-#include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_resizer.h"
 #include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state.h"
@@ -30,10 +24,6 @@
 #include "ash/wm/wm_event.h"
 #include "ash/wm/work_area_insets.h"
 #include "ash/wm/workspace_controller_test_api.h"
-#include "base/functional/bind.h"
-#include "base/memory/ptr_util.h"
-#include "base/run_loop.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "cc/paint/display_item_list.h"
 #include "chromeos/ui/base/window_pin_type.h"
@@ -41,30 +31,27 @@
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/header_view.h"
-#include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_properties.h"
 #include "components/exo/buffer.h"
 #include "components/exo/display.h"
 #include "components/exo/permission.h"
-#include "components/exo/pointer.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/sub_surface.h"
 #include "components/exo/surface.h"
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_helper.h"
 #include "components/exo/test/shell_surface_builder.h"
-#include "components/exo/wm_helper.h"
+#include "components/exo/test/surface_tree_host_test_util.h"
 #include "third_party/skia/include/utils/SkNoDrawCanvas.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/env.h"
-#include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
-#include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor_extra/shadow.h"
 #include "ui/display/display.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -82,7 +69,22 @@ using chromeos::WindowStateType;
 
 namespace exo {
 namespace {
-using ClientControlledShellSurfaceTest = test::ExoTestBase;
+
+class ClientControlledShellSurfaceTest
+    : public test::ExoTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  ClientControlledShellSurfaceTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(kExoReactiveFrameSubmission);
+    } else {
+      feature_list_.InitAndDisableFeature(kExoReactiveFrameSubmission);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 bool HasBackdrop() {
   ash::WorkspaceController* wc = ash::ShellTestApi().workspace_controller();
@@ -126,7 +128,13 @@ class TestCanvas : public SkNoDrawCanvas {
 
 }  // namespace
 
-TEST_F(ClientControlledShellSurfaceTest, SetPinned) {
+// Instantiate the values of disabling/enabling reactive frame submission in the
+// parameterized tests.
+INSTANTIATE_TEST_SUITE_P(All,
+                         ClientControlledShellSurfaceTest,
+                         testing::Values(false, true));
+
+TEST_P(ClientControlledShellSurfaceTest, SetPinned) {
   auto shell_surface = exo::test::ShellSurfaceBuilder({256, 256})
                            .BuildClientControlledShellSurface();
 
@@ -151,7 +159,7 @@ TEST_F(ClientControlledShellSurfaceTest, SetPinned) {
   EXPECT_FALSE(IsWidgetPinned(shell_surface->GetWidget()));
 }
 
-TEST_F(ClientControlledShellSurfaceTest, SetSystemUiVisibility) {
+TEST_P(ClientControlledShellSurfaceTest, SetSystemUiVisibility) {
   auto shell_surface = exo::test::ShellSurfaceBuilder({256, 256})
                            .BuildClientControlledShellSurface();
 
@@ -166,7 +174,7 @@ TEST_F(ClientControlledShellSurfaceTest, SetSystemUiVisibility) {
           ->autohide_shelf_when_maximized_or_fullscreen());
 }
 
-TEST_F(ClientControlledShellSurfaceTest, SetTopInset) {
+TEST_P(ClientControlledShellSurfaceTest, SetTopInset) {
   auto shell_surface = exo::test::ShellSurfaceBuilder({64, 64})
                            .BuildClientControlledShellSurface();
   auto* surface = shell_surface->root_surface();
@@ -180,7 +188,7 @@ TEST_F(ClientControlledShellSurfaceTest, SetTopInset) {
   EXPECT_EQ(top_inset_height, window->GetProperty(aura::client::kTopViewInset));
 }
 
-TEST_F(ClientControlledShellSurfaceTest, UpdateModalWindow) {
+TEST_P(ClientControlledShellSurfaceTest, UpdateModalWindow) {
   auto shell_surface = exo::test::ShellSurfaceBuilder({640, 480})
                            .SetUseSystemModalContainer()
                            .SetInputRegion(cc::Region())
@@ -241,7 +249,7 @@ TEST_F(ClientControlledShellSurfaceTest, UpdateModalWindow) {
   EXPECT_TRUE(shell_surface->GetWidget()->IsActive());
 }
 
-TEST_F(ClientControlledShellSurfaceTest,
+TEST_P(ClientControlledShellSurfaceTest,
        ModalWindowSetSystemModalBeforeCommit) {
   auto shell_surface = exo::test::ShellSurfaceBuilder({640, 480})
                            .SetUseSystemModalContainer()
@@ -267,7 +275,7 @@ TEST_F(ClientControlledShellSurfaceTest,
   EXPECT_FALSE(ash::Shell::IsSystemModalWindowOpen());
 }
 
-TEST_F(ClientControlledShellSurfaceTest,
+TEST_P(ClientControlledShellSurfaceTest,
        NonSystemModalContainerCantChangeModality) {
   auto shell_surface = exo::test::ShellSurfaceBuilder({640, 480})
                            .SetInputRegion(cc::Region())
@@ -278,7 +286,7 @@ TEST_F(ClientControlledShellSurfaceTest,
   EXPECT_FALSE(ash::Shell::IsSystemModalWindowOpen());
 }
 
-TEST_F(ClientControlledShellSurfaceTest, SurfaceShadow) {
+TEST_P(ClientControlledShellSurfaceTest, SurfaceShadow) {
   auto shell_surface = exo::test::ShellSurfaceBuilder({128, 128})
                            .BuildClientControlledShellSurface();
   auto* surface = shell_surface->root_surface();
@@ -338,7 +346,7 @@ TEST_F(ClientControlledShellSurfaceTest, SurfaceShadow) {
   EXPECT_TRUE(shadow->layer()->visible());
 }
 
-TEST_F(ClientControlledShellSurfaceTest, ShadowWithStateChange) {
+TEST_P(ClientControlledShellSurfaceTest, ShadowWithStateChange) {
   const gfx::Size content_size(100, 100);
   // Position the widget at 10,10 so that we get non zero offset.
   auto shell_surface = exo::test::ShellSurfaceBuilder(content_size)
@@ -385,7 +393,7 @@ TEST_F(ClientControlledShellSurfaceTest, ShadowWithStateChange) {
   EXPECT_EQ(shadow_bounds, shadow->content_bounds());
 }
 
-TEST_F(ClientControlledShellSurfaceTest, ShadowWithTransform) {
+TEST_P(ClientControlledShellSurfaceTest, ShadowWithTransform) {
   const gfx::Size content_size(100, 100);
   // Position the widget at 10,10 so that we get non zero offset.
   auto shell_surface = exo::test::ShellSurfaceBuilder(content_size)
@@ -409,7 +417,7 @@ TEST_F(ClientControlledShellSurfaceTest, ShadowWithTransform) {
   EXPECT_EQ(gfx::Rect(-10, -10, 100, 100), shadow->content_bounds());
 }
 
-TEST_F(ClientControlledShellSurfaceTest, ShadowStartMaximized) {
+TEST_P(ClientControlledShellSurfaceTest, ShadowStartMaximized) {
   auto shell_surface =
       exo::test::ShellSurfaceBuilder({256, 256})
           .SetWindowState(chromeos::WindowStateType::kMaximized)
@@ -436,7 +444,7 @@ TEST_F(ClientControlledShellSurfaceTest, ShadowStartMaximized) {
   EXPECT_EQ(gfx::Rect(10, 10, 100, 100), shadow->content_bounds());
 }
 
-TEST_F(ClientControlledShellSurfaceTest, Frame) {
+TEST_P(ClientControlledShellSurfaceTest, Frame) {
   UpdateDisplay("800x600");
 
   gfx::Rect client_bounds(20, 50, 300, 200);
@@ -595,7 +603,7 @@ class TestEventHandler : public ui::EventHandler {
 
 }  // namespace
 
-TEST_F(ClientControlledShellSurfaceTest, NoSynthesizedEventOnFrameChange) {
+TEST_P(ClientControlledShellSurfaceTest, NoSynthesizedEventOnFrameChange) {
   UpdateDisplay("800x600");
 
   auto shell_surface = exo::test::ShellSurfaceBuilder({256, 256})
@@ -611,7 +619,7 @@ TEST_F(ClientControlledShellSurfaceTest, NoSynthesizedEventOnFrameChange) {
   surface->Commit();
 
   // AutoHide
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
   aura::Env* env = aura::Env::GetInstance();
   gfx::Rect cropped_fullscreen_bounds(0, 0, 800, 400);
   env->SetLastMouseLocation(gfx::Point(100, 30));
@@ -620,7 +628,7 @@ TEST_F(ClientControlledShellSurfaceTest, NoSynthesizedEventOnFrameChange) {
   surface->SetFrame(SurfaceFrameType::AUTOHIDE);
   shell_surface->SetGeometry(cropped_fullscreen_bounds);
   surface->Commit();
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
   EXPECT_TRUE(handler.mouse_events().empty());
   env->RemovePreTargetHandler(&handler);
 }
@@ -628,7 +636,7 @@ TEST_F(ClientControlledShellSurfaceTest, NoSynthesizedEventOnFrameChange) {
 // Shell surfaces should not emit extra events on commit even if using pixel
 // coordinates and a cursor is hovering over the window.
 // https://crbug.com/1296315.
-TEST_F(ClientControlledShellSurfaceTest,
+TEST_P(ClientControlledShellSurfaceTest,
        NoSynthesizedEventsForPixelCoordinates) {
   TestEventHandler event_handler;
 
@@ -654,7 +662,7 @@ TEST_F(ClientControlledShellSurfaceTest,
   // synthetic events.
   for (int i = 0; i < 5; i++) {
     surface->Commit();
-    task_environment()->RunUntilIdle();
+    test::WaitForLastFrameAck(shell_surface.get());
   }
 
   // There should be 2 events.  One for mouse enter and the other for move.
@@ -666,7 +674,7 @@ TEST_F(ClientControlledShellSurfaceTest,
   shell_surface->host_window()->RemovePreTargetHandler(&event_handler);
 }
 
-TEST_F(ClientControlledShellSurfaceTest, CompositorLockInRotation) {
+TEST_P(ClientControlledShellSurfaceTest, CompositorLockInRotation) {
   UpdateDisplay("800x600");
 
   ash::Shell* shell = ash::Shell::Get();
@@ -696,14 +704,15 @@ TEST_F(ClientControlledShellSurfaceTest, CompositorLockInRotation) {
 
   shell_surface->SetOrientation(Orientation::PORTRAIT);
   surface->Commit();
-  shell_surface->DidReceiveCompositorFrameAck();
+
+  test::WaitForLastFrameAck(shell_surface.get());
 
   EXPECT_FALSE(compositor->IsLocked());
 }
 
 // If system tray is shown by click. It should be activated if user presses tab
 // key while shell surface is active.
-TEST_F(ClientControlledShellSurfaceTest,
+TEST_P(ClientControlledShellSurfaceTest,
        KeyboardNavigationWithUnifiedSystemTray) {
   auto shell_surface = exo::test::ShellSurfaceBuilder({800, 600})
                            .BuildClientControlledShellSurface();
@@ -729,7 +738,7 @@ TEST_F(ClientControlledShellSurfaceTest,
   EXPECT_TRUE(system_tray->IsBubbleActive());
 }
 
-TEST_F(ClientControlledShellSurfaceTest, Maximize) {
+TEST_P(ClientControlledShellSurfaceTest, Maximize) {
   auto shell_surface = exo::test::ShellSurfaceBuilder({256, 256})
                            .BuildClientControlledShellSurface();
   auto* surface = shell_surface->root_surface();
@@ -767,7 +776,7 @@ TEST_F(ClientControlledShellSurfaceTest, Maximize) {
   EXPECT_TRUE(HasBackdrop());
 }
 
-TEST_F(ClientControlledShellSurfaceTest, Restore) {
+TEST_P(ClientControlledShellSurfaceTest, Restore) {
   auto shell_surface = exo::test::ShellSurfaceBuilder({256, 256})
                            .BuildClientControlledShellSurface();
   auto* surface = shell_surface->root_surface();
@@ -784,7 +793,7 @@ TEST_F(ClientControlledShellSurfaceTest, Restore) {
   EXPECT_FALSE(HasBackdrop());
 }
 
-TEST_F(ClientControlledShellSurfaceTest, SetFullscreen) {
+TEST_P(ClientControlledShellSurfaceTest, SetFullscreen) {
   auto shell_surface =
       exo::test::ShellSurfaceBuilder({256, 256})
           .SetWindowState(chromeos::WindowStateType::kFullscreen)
@@ -813,7 +822,7 @@ TEST_F(ClientControlledShellSurfaceTest, SetFullscreen) {
             shell_surface->GetWidget()->GetWindowBoundsInScreen().ToString());
 }
 
-TEST_F(ClientControlledShellSurfaceTest, ToggleFullscreen) {
+TEST_P(ClientControlledShellSurfaceTest, ToggleFullscreen) {
   auto shell_surface = exo::test::ShellSurfaceBuilder({256, 256})
                            .BuildClientControlledShellSurface();
   auto* surface = shell_surface->root_surface();
@@ -835,7 +844,7 @@ TEST_F(ClientControlledShellSurfaceTest, ToggleFullscreen) {
   EXPECT_TRUE(HasBackdrop());
 }
 
-TEST_F(ClientControlledShellSurfaceTest,
+TEST_P(ClientControlledShellSurfaceTest,
        DefaultDeviceScaleFactorForcedScaleFactor) {
   double scale = 1.5;
   display::Display::SetForceDeviceScaleFactor(scale);
@@ -854,7 +863,7 @@ TEST_F(ClientControlledShellSurfaceTest,
       shell_surface->host_window()->layer()->GetTargetTransform().ToString());
 }
 
-TEST_F(ClientControlledShellSurfaceTest,
+TEST_P(ClientControlledShellSurfaceTest,
        DefaultDeviceScaleFactorFromDisplayManager) {
   int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
   display::SetInternalDisplayIds({display_id});
@@ -893,7 +902,7 @@ TEST_F(ClientControlledShellSurfaceTest,
       shell_surface->host_window()->layer()->GetTargetTransform().ToString());
 }
 
-TEST_F(ClientControlledShellSurfaceTest, MouseAndTouchTarget) {
+TEST_P(ClientControlledShellSurfaceTest, MouseAndTouchTarget) {
   auto shell_surface = exo::test::ShellSurfaceBuilder({256, 256})
                            .SetGeometry({0, 0, 256, 256})
                            .BuildClientControlledShellSurface();
@@ -934,7 +943,7 @@ TEST_F(ClientControlledShellSurfaceTest, MouseAndTouchTarget) {
 }
 
 // The shell surface in SystemModal container should be unresizable.
-TEST_F(ClientControlledShellSurfaceTest,
+TEST_P(ClientControlledShellSurfaceTest,
        ShellSurfaceInSystemModalIsUnresizable) {
   auto shell_surface = exo::test::ShellSurfaceBuilder({256, 256})
                            .SetUseSystemModalContainer()
@@ -945,7 +954,7 @@ TEST_F(ClientControlledShellSurfaceTest,
 
 // The shell surface in SystemModal container should be a target
 // at the edge.
-TEST_F(ClientControlledShellSurfaceTest, ShellSurfaceInSystemModalHitTest) {
+TEST_P(ClientControlledShellSurfaceTest, ShellSurfaceInSystemModalHitTest) {
   display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
   auto shell_surface = exo::test::ShellSurfaceBuilder({640, 480})
                            .SetUseSystemModalContainer()
@@ -965,7 +974,7 @@ TEST_F(ClientControlledShellSurfaceTest, ShellSurfaceInSystemModalHitTest) {
 }
 
 // Test the snap functionalities in splitscreen in tablet mode.
-TEST_F(ClientControlledShellSurfaceTest, SnapWindowInSplitViewModeTest) {
+TEST_P(ClientControlledShellSurfaceTest, SnapWindowInSplitViewModeTest) {
   UpdateDisplay("807x607");
   ash::Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
@@ -1014,7 +1023,7 @@ TEST_F(ClientControlledShellSurfaceTest, SnapWindowInSplitViewModeTest) {
 
 // The shell surface in SystemModal container should not become target
 // at the edge.
-TEST_F(ClientControlledShellSurfaceTest, ClientIniatedResize) {
+TEST_P(ClientControlledShellSurfaceTest, ClientIniatedResize) {
   display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
   auto shell_surface = exo::test::ShellSurfaceBuilder({100, 100})
                            .SetGeometry(gfx::Rect({0, 0, 100, 100}))
@@ -1043,7 +1052,7 @@ TEST_F(ClientControlledShellSurfaceTest, ClientIniatedResize) {
   ASSERT_FALSE(window_state->is_dragged());
 }
 
-TEST_F(ClientControlledShellSurfaceTest, ResizabilityAndSizeConstraints) {
+TEST_P(ClientControlledShellSurfaceTest, ResizabilityAndSizeConstraints) {
   auto shell_surface = exo::test::ShellSurfaceBuilder()
                            .SetMinimumSize(gfx::Size(0, 0))
                            .SetMaximumSize(gfx::Size(0, 0))
@@ -1109,7 +1118,7 @@ class ShellSurfaceWindowObserver : public aura::WindowObserver {
 
 // Test that when a shell surface is destroyed during its dragging, its window
 // delegate should be reset properly.
-TEST_F(ClientControlledShellSurfaceTest, CloseWindowWhenDraggingTest) {
+TEST_P(ClientControlledShellSurfaceTest, CloseWindowWhenDraggingTest) {
   auto shell_surface = exo::test::ShellSurfaceBuilder({256, 256})
                            .SetGeometry({0, 0, 256, 256})
                            .BuildClientControlledShellSurface();
@@ -1128,93 +1137,6 @@ TEST_F(ClientControlledShellSurfaceTest, CloseWindowWhenDraggingTest) {
   // Destroy the window.
   shell_surface.reset();
   EXPECT_FALSE(observer->has_delegate());
-}
-
-namespace {
-
-class ClientControlledShellSurfaceDragTest : public test::ExoTestBase {
- public:
-  ClientControlledShellSurfaceDragTest() = default;
-
-  ClientControlledShellSurfaceDragTest(
-      const ClientControlledShellSurfaceDragTest&) = delete;
-  ClientControlledShellSurfaceDragTest& operator=(
-      const ClientControlledShellSurfaceDragTest&) = delete;
-
-  ~ClientControlledShellSurfaceDragTest() override = default;
-
-  // Sends a gesture scroll sequence to TabletModeAppWindowDragController.
-  void SendGestureEvents(aura::Window* window,
-                         const gfx::Point& location,
-                         bool fling = false,
-                         float velocity = 0.f) {
-    ash::WindowState* window_state = ash::WindowState::Get(window);
-    window_state->CreateDragDetails(gfx::PointF(0, 0), HTCLIENT,
-                                    ::wm::WINDOW_MOVE_SOURCE_TOUCH);
-    std::unique_ptr<ash::TabletModeWindowResizer> controller_ =
-        std::make_unique<ash::TabletModeWindowResizer>(
-            window_state,
-            std::make_unique<ash::TabletModeBrowserWindowDragDelegate>());
-    controller_->drag_delegate_for_testing()
-        ->set_drag_start_deadline_for_testing(base::Time::Now());
-    controller_->Drag(gfx::PointF(location), 0);
-    if (fling) {
-      ui::GestureEventDetails details =
-          ui::GestureEventDetails(ui::ET_SCROLL_FLING_START, 0, velocity);
-      ui::GestureEvent event =
-          ui::GestureEvent(location.x(), location.y(), ui::EF_NONE,
-                           base::TimeTicks::Now(), details);
-      ui::Event::DispatcherApi(&event).set_target(window);
-      controller_->FlingOrSwipe(&event);
-    } else {
-      controller_->CompleteDrag();
-    }
-    ash::WindowState::Get(window)->DeleteDragDetails();
-  }
-};
-
-}  // namespace
-
-// Test the functionalities of dragging a window from top in tablet mode.
-TEST_F(ClientControlledShellSurfaceDragTest, DragWindowFromTopInTabletMode) {
-  UpdateDisplay("800x600");
-  ash::Shell* shell = ash::Shell::Get();
-  shell->tablet_mode_controller()->SetEnabledForTest(true);
-
-  auto shell_surface =
-      exo::test::ShellSurfaceBuilder({800, 552})
-          .SetGeometry({0, 0, 800, 552})
-          .SetWindowState(chromeos::WindowStateType::kMaximized)
-          .BuildClientControlledShellSurface();
-  auto* surface = shell_surface->root_surface();
-
-  aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
-  ASSERT_TRUE(ash::WindowState::Get(window)->IsMaximized());
-  surface->SetFrame(SurfaceFrameType::AUTOHIDE);
-  surface->Commit();
-
-  // Drag the window by a small amount of distance will maximize the window
-  // again.
-  SendGestureEvents(window, gfx::Point(0, 10));
-  EXPECT_TRUE(ash::WindowState::Get(window)->IsMaximized());
-  EXPECT_FALSE(shell->overview_controller()->InOverviewSession());
-
-  // FLING the window not inisde preview area with large enough y veloicty
-  // (larger than kFlingToOverviewThreshold) will drop the window into overview.
-  SendGestureEvents(
-      window, gfx::Point(400, 10), /*fling=*/true,
-      ash::TabletModeWindowDragDelegate::kFlingToOverviewThreshold + 10.f);
-  ASSERT_TRUE(shell->overview_controller()->InOverviewSession());
-  EXPECT_TRUE(
-      shell->overview_controller()->overview_session()->IsWindowInOverview(
-          window));
-
-  // Drag the window long enough (pass one fourth of the screen vertical
-  // height) to snap the window to splitscreen.
-  shell->overview_controller()->EndOverview(ash::OverviewEndAction::kTests);
-  SendGestureEvents(window, gfx::Point(0, 210));
-  EXPECT_EQ(ash::WindowState::Get(window)->GetStateType(),
-            WindowStateType::kPrimarySnapped);
 }
 
 namespace {
@@ -1419,7 +1341,7 @@ TEST_F(ClientControlledShellSurfaceDisplayTest,
   EXPECT_EQ(primary_display.id(), delegate->requested_display_ids()[0]);
 }
 
-TEST_F(ClientControlledShellSurfaceTest, CaptionButtonModel) {
+TEST_P(ClientControlledShellSurfaceTest, CaptionButtonModel) {
   auto shell_surface = exo::test::ShellSurfaceBuilder({64, 64})
                            .SetGeometry(gfx::Rect(0, 0, 64, 64))
                            .BuildClientControlledShellSurface();
@@ -1451,8 +1373,9 @@ TEST_F(ClientControlledShellSurfaceTest, CaptionButtonModel) {
     shell_surface->SetFrameButtons(visible_buttons, 0);
     const chromeos::CaptionButtonModel* model = container->model();
     for (auto not_visible : kAllButtons) {
-      if (not_visible != visible)
+      if (not_visible != visible) {
         EXPECT_FALSE(model->IsVisible(not_visible));
+      }
     }
     EXPECT_TRUE(model->IsVisible(visible));
     EXPECT_FALSE(model->IsEnabled(visible));
@@ -1464,8 +1387,9 @@ TEST_F(ClientControlledShellSurfaceTest, CaptionButtonModel) {
     shell_surface->SetFrameButtons(kAllButtonMask, enabled_buttons);
     const chromeos::CaptionButtonModel* model = container->model();
     for (auto not_enabled : kAllButtons) {
-      if (not_enabled != enabled)
+      if (not_enabled != enabled) {
         EXPECT_FALSE(model->IsEnabled(not_enabled));
+      }
     }
     EXPECT_TRUE(model->IsEnabled(enabled));
     EXPECT_TRUE(model->IsVisible(enabled));
@@ -1482,7 +1406,7 @@ TEST_F(ClientControlledShellSurfaceTest, CaptionButtonModel) {
 // set, there should be no text in the window frame, but the window's name
 // should still be set (for overview mode, accessibility, etc.). When the debug
 // text is set, the window frame should paint it.
-TEST_F(ClientControlledShellSurfaceTest, SetExtraTitle) {
+TEST_P(ClientControlledShellSurfaceTest, SetExtraTitle) {
   auto shell_surface = exo::test::ShellSurfaceBuilder({640, 64})
                            .BuildClientControlledShellSurface();
   auto* surface = shell_surface->root_surface();
@@ -1528,7 +1452,7 @@ TEST_F(ClientControlledShellSurfaceTest, SetExtraTitle) {
       shell_surface->GetWidget()->widget_delegate()->ShouldShowWindowTitle());
 }
 
-TEST_F(ClientControlledShellSurfaceTest, WideFrame) {
+TEST_P(ClientControlledShellSurfaceTest, WideFrame) {
   auto shell_surface =
       exo::test::ShellSurfaceBuilder({64, 64})
           .SetWindowState(chromeos::WindowStateType::kMaximized)
@@ -1677,7 +1601,7 @@ TEST_F(ClientControlledShellSurfaceTest, WideFrame) {
 }
 
 // Tests that a WideFrameView is created for an unparented ARC task and that the
-TEST_F(ClientControlledShellSurfaceTest, NoFrameOnModalContainer) {
+TEST_P(ClientControlledShellSurfaceTest, NoFrameOnModalContainer) {
   auto shell_surface = exo::test::ShellSurfaceBuilder({64, 64})
                            .SetUseSystemModalContainer()
                            .SetGeometry(gfx::Rect(100, 0, 64, 64))
@@ -1690,7 +1614,7 @@ TEST_F(ClientControlledShellSurfaceTest, NoFrameOnModalContainer) {
   EXPECT_FALSE(shell_surface->frame_enabled());
 }
 
-TEST_F(ClientControlledShellSurfaceTest,
+TEST_P(ClientControlledShellSurfaceTest,
        SetGeometryReparentsToDisplayOnFirstCommit) {
   UpdateDisplay("100x200,100x200");
   const auto* screen = display::Screen::GetScreen();
@@ -1724,7 +1648,7 @@ TEST_F(ClientControlledShellSurfaceTest,
   }
 }
 
-TEST_F(ClientControlledShellSurfaceTest, SetBoundsReparentsToDisplay) {
+TEST_P(ClientControlledShellSurfaceTest, SetBoundsReparentsToDisplay) {
   UpdateDisplay("100x200,100x200");
 
   const auto* screen = display::Screen::GetScreen();
@@ -1782,7 +1706,7 @@ TEST_F(ClientControlledShellSurfaceTest, SetBoundsReparentsToDisplay) {
 
 // Test if the surface bounds is correctly set when default scale cancellation
 // is enabled or disabled.
-TEST_F(ClientControlledShellSurfaceTest,
+TEST_P(ClientControlledShellSurfaceTest,
        SetBoundsWithAndWithoutDefaultScaleCancellation) {
   UpdateDisplay("800x600*2,800x600*2");
 
@@ -1808,8 +1732,9 @@ TEST_F(ClientControlledShellSurfaceTest,
       // Set display id, bounds origin, bounds size at the same time via
       // SetBounds method.
       auto builder = exo::test::ShellSurfaceBuilder();
-      if (default_scale_cancellation)
+      if (default_scale_cancellation) {
         builder.EnableDefaultScaleCancellation();
+      }
       auto shell_surface =
           builder.SetNoCommit().BuildClientControlledShellSurface();
       auto* surface = shell_surface->root_surface();
@@ -1845,8 +1770,9 @@ TEST_F(ClientControlledShellSurfaceTest,
       const auto bounds_to_set =
           default_scale_cancellation ? bounds_dp : bounds_px_for_4x;
       auto builder = exo::test::ShellSurfaceBuilder();
-      if (default_scale_cancellation)
+      if (default_scale_cancellation) {
         builder.EnableDefaultScaleCancellation();
+      }
       auto shell_surface =
           builder.SetNoCommit().BuildClientControlledShellSurface();
       auto* surface = shell_surface->root_surface();
@@ -1865,7 +1791,7 @@ TEST_F(ClientControlledShellSurfaceTest,
 }
 
 // Set orientation lock to a window.
-TEST_F(ClientControlledShellSurfaceTest, SetOrientationLock) {
+TEST_P(ClientControlledShellSurfaceTest, SetOrientationLock) {
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .SetFirstDisplayAsInternalDisplay();
 
@@ -1891,7 +1817,7 @@ TEST_F(ClientControlledShellSurfaceTest, SetOrientationLock) {
   EnableTabletMode(false);
 }
 
-TEST_F(ClientControlledShellSurfaceTest, SetClientAccessibilityId) {
+TEST_P(ClientControlledShellSurfaceTest, SetClientAccessibilityId) {
   auto shell_surface = exo::test::ShellSurfaceBuilder({64, 64})
                            .SetNoCommit()
                            .BuildClientControlledShellSurface();
@@ -1910,7 +1836,7 @@ TEST_F(ClientControlledShellSurfaceTest, SetClientAccessibilityId) {
 }
 
 // Tests adjust bounds locally should also request remote client bounds update.
-TEST_F(ClientControlledShellSurfaceTest, AdjustBoundsLocally) {
+TEST_P(ClientControlledShellSurfaceTest, AdjustBoundsLocally) {
   UpdateDisplay("800x600");
   gfx::Rect client_bounds(900, 0, 200, 300);
   auto shell_surface = exo::test::ShellSurfaceBuilder({64, 64})
@@ -1934,7 +1860,7 @@ TEST_F(ClientControlledShellSurfaceTest, AdjustBoundsLocally) {
   EXPECT_EQ(0, delegate->bounds_change_count());
 }
 
-TEST_F(ClientControlledShellSurfaceTest, SnappedInTabletMode) {
+TEST_P(ClientControlledShellSurfaceTest, SnappedInTabletMode) {
   gfx::Rect client_bounds(256, 256);
   auto shell_surface = exo::test::ShellSurfaceBuilder(client_bounds.size())
                            .SetGeometry(client_bounds)
@@ -1959,7 +1885,7 @@ TEST_F(ClientControlledShellSurfaceTest, SnappedInTabletMode) {
   EXPECT_TRUE(frame_view->GetHeaderView()->in_immersive_mode());
 }
 
-TEST_F(ClientControlledShellSurfaceTest, PipWindowCannotBeActivated) {
+TEST_P(ClientControlledShellSurfaceTest, PipWindowCannotBeActivated) {
   auto shell_surface = exo::test::ShellSurfaceBuilder({256, 256})
                            .BuildClientControlledShellSurface();
   auto* surface = shell_surface->root_surface();
@@ -2043,7 +1969,7 @@ TEST_F(ClientControlledShellSurfaceDisplayTest,
   EXPECT_EQ(gfx::Rect(0, 0, 100, 100), delegate->requested_bounds().back());
 }
 
-TEST_F(ClientControlledShellSurfaceTest, SetPipWindowBoundsAnimates) {
+TEST_P(ClientControlledShellSurfaceTest, SetPipWindowBoundsAnimates) {
   gfx::Rect client_bounds(256, 256);
   auto shell_surface = exo::test::ShellSurfaceBuilder(client_bounds.size())
                            .SetWindowState(chromeos::WindowStateType::kPip)
@@ -2066,7 +1992,7 @@ TEST_F(ClientControlledShellSurfaceTest, SetPipWindowBoundsAnimates) {
   EXPECT_EQ(gfx::Rect(8, 8, 256, 256), window->layer()->bounds());
 }
 
-TEST_F(ClientControlledShellSurfaceTest, PipWindowDragDoesNotAnimate) {
+TEST_P(ClientControlledShellSurfaceTest, PipWindowDragDoesNotAnimate) {
   gfx::Rect client_bounds(256, 256);
   auto shell_surface = exo::test::ShellSurfaceBuilder(client_bounds.size())
                            .SetWindowState(chromeos::WindowStateType::kPip)
@@ -2086,7 +2012,7 @@ TEST_F(ClientControlledShellSurfaceTest, PipWindowDragDoesNotAnimate) {
   resizer->CompleteDrag();
 }
 
-TEST_F(ClientControlledShellSurfaceTest,
+TEST_P(ClientControlledShellSurfaceTest,
        PipWindowDragDoesNotAnimateWithExtraCommit) {
   gfx::Rect client_bounds(256, 256);
   auto shell_surface = exo::test::ShellSurfaceBuilder({client_bounds.size()})
@@ -2113,7 +2039,7 @@ TEST_F(ClientControlledShellSurfaceTest,
   resizer->CompleteDrag();
 }
 
-TEST_F(ClientControlledShellSurfaceTest,
+TEST_P(ClientControlledShellSurfaceTest,
        ExpandingPipInTabletModeEndsSplitView) {
   EnableTabletMode(true);
 
@@ -2141,7 +2067,7 @@ TEST_F(ClientControlledShellSurfaceTest,
   EXPECT_FALSE(split_view_controller->InSplitViewMode());
 }
 
-TEST_F(ClientControlledShellSurfaceTest,
+TEST_P(ClientControlledShellSurfaceTest,
        DismissingPipInTabletModeDoesNotEndSplitView) {
   EnableTabletMode(true);
 
@@ -2196,7 +2122,7 @@ class StateChangeCounterDelegate
   }
 };
 
-TEST_F(ClientControlledShellSurfaceTest, DoNotReplayWindowStateRequest) {
+TEST_P(ClientControlledShellSurfaceTest, DoNotReplayWindowStateRequest) {
   auto shell_surface =
       exo::test::ShellSurfaceBuilder({64, 64})
           .SetWindowState(chromeos::WindowStateType::kMinimized)
@@ -2208,7 +2134,7 @@ TEST_F(ClientControlledShellSurfaceTest, DoNotReplayWindowStateRequest) {
   surface->Commit();
 }
 
-TEST_F(ClientControlledShellSurfaceTest, UnPinTriggersStateChangeRequest) {
+TEST_P(ClientControlledShellSurfaceTest, UnPinTriggersStateChangeRequest) {
   // Only test in tablet mode. Because after restore from pin state, in tablet
   // mode the window will still be fullscreen.
   EnableTabletMode(true);
@@ -2248,7 +2174,7 @@ TEST_F(ClientControlledShellSurfaceDisplayTest,
   ASSERT_EQ(1, delegate->bounds_change_count());
 }
 
-TEST_F(ClientControlledShellSurfaceTest,
+TEST_P(ClientControlledShellSurfaceTest,
        DoNotSavePipBoundsAcrossMultiplePipTransition) {
   // Create a PIP window:
   constexpr gfx::Size buffer_size(100, 100);
@@ -2285,7 +2211,7 @@ TEST_F(ClientControlledShellSurfaceTest,
   EXPECT_EQ(gfx::Rect(8, 20, 100, 100), window->bounds());
 }
 
-TEST_F(ClientControlledShellSurfaceTest,
+TEST_P(ClientControlledShellSurfaceTest,
        DoNotApplyCollisionDetectionWhileDragged) {
   constexpr gfx::Size buffer_size(256, 256);
   constexpr gfx::Rect original_bounds({8, 50}, buffer_size);
@@ -2309,7 +2235,7 @@ TEST_F(ClientControlledShellSurfaceTest,
   EXPECT_EQ(gfx::Rect(20, 50, 256, 256), window->bounds());
 }
 
-TEST_F(ClientControlledShellSurfaceTest, EnteringPipSavesPipSnapFraction) {
+TEST_P(ClientControlledShellSurfaceTest, EnteringPipSavesPipSnapFraction) {
   constexpr gfx::Size buffer_size(100, 100);
   constexpr gfx::Rect original_bounds({8, 50}, buffer_size);
   auto shell_surface = exo::test::ShellSurfaceBuilder(buffer_size)
@@ -2326,7 +2252,7 @@ TEST_F(ClientControlledShellSurfaceTest, EnteringPipSavesPipSnapFraction) {
             window->bounds());
 }
 
-TEST_F(ClientControlledShellSurfaceTest,
+TEST_P(ClientControlledShellSurfaceTest,
        ShadowBoundsChangedIsResetAfterCommit) {
   auto shell_surface =
       exo::test::ShellSurfaceBuilder().BuildClientControlledShellSurface();
@@ -2482,7 +2408,7 @@ TEST_F(ClientControlledShellSurfaceScaleTest,
   EXPECT_GE(delegate->bounds_change_count(), 1);
 }
 
-TEST_F(ClientControlledShellSurfaceTest, SnappedClientBounds) {
+TEST_P(ClientControlledShellSurfaceTest, SnappedClientBounds) {
   UpdateDisplay("800x600");
 
   auto shell_surface = exo::test::ShellSurfaceBuilder({256, 256})
@@ -2541,7 +2467,7 @@ TEST_F(ClientControlledShellSurfaceTest, SnappedClientBounds) {
 }
 
 // The shell surface with resize lock on should be unresizable.
-TEST_F(ClientControlledShellSurfaceTest,
+TEST_P(ClientControlledShellSurfaceTest,
        ShellSurfaceWithResizeLockOnIsUnresizable) {
   auto shell_surface = exo::test::ShellSurfaceBuilder({256, 256})
                            .BuildClientControlledShellSurface();
@@ -2560,7 +2486,7 @@ TEST_F(ClientControlledShellSurfaceTest,
   EXPECT_TRUE(shell_surface->CanResize());
 }
 
-TEST_F(ClientControlledShellSurfaceTest, OverlayShadowBounds) {
+TEST_P(ClientControlledShellSurfaceTest, OverlayShadowBounds) {
   gfx::Rect initial_bounds(150, 10, 200, 200);
   auto shell_surface = exo::test::ShellSurfaceBuilder({1, 1})
                            .BuildClientControlledShellSurface();
@@ -2589,7 +2515,7 @@ TEST_F(ClientControlledShellSurfaceTest, OverlayShadowBounds) {
 
 // WideFrameView follows its respective surface when it is eventually parented.
 // See crbug.com/1223135.
-TEST_F(ClientControlledShellSurfaceTest, WideframeForUnparentedTasks) {
+TEST_P(ClientControlledShellSurfaceTest, WideframeForUnparentedTasks) {
   auto shell_surface = exo::test::ShellSurfaceBuilder({64, 64})
                            .SetGeometry(gfx::Rect(100, 0, 64, 64))
                            .SetInputRegion(gfx::Rect(0, 0, 64, 64))
@@ -2628,7 +2554,7 @@ TEST_F(ClientControlledShellSurfaceTest, WideframeForUnparentedTasks) {
             wide_frame->GetWidget()->GetNativeWindow()->parent());
 }
 
-TEST_F(ClientControlledShellSurfaceTest,
+TEST_P(ClientControlledShellSurfaceTest,
        InitializeWindowStateGrantsPermissionToActivate) {
   auto shell_surface =
       exo::test::ShellSurfaceBuilder().BuildClientControlledShellSurface();

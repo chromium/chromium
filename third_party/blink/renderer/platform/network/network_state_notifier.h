@@ -318,13 +318,6 @@ class PLATFORM_EXPORT NetworkStateNotifier {
  private:
   friend class NetworkStateObserverHandle;
 
-  struct ObserverList {
-    ObserverList() : iterating(false) {}
-    bool iterating;
-    Vector<NetworkStateObserver*> observers;
-    Vector<wtf_size_t> zeroed_observers;  // Indices in observers that are 0.
-  };
-
   // This helper scope issues required notifications when mutating the state if
   // something has changed.  It's only possible to mutate the state on the main
   // thread.  Note that ScopedNotifier must be destroyed when not holding a lock
@@ -343,35 +336,20 @@ class PLATFORM_EXPORT NetworkStateNotifier {
 
   // The ObserverListMap is cross-thread accessed, adding/removing Observers
   // running on a task runner.
-  using ObserverListMap = HashMap<scoped_refptr<base::SingleThreadTaskRunner>,
-                                  std::unique_ptr<ObserverList>>;
+  using ObserverListMap = HashMap<NetworkStateObserver*,
+                                  scoped_refptr<base::SingleThreadTaskRunner>>;
 
   void NotifyObservers(ObserverListMap&, ObserverType, const NetworkState&);
-  void NotifyObserversOnTaskRunner(ObserverListMap*,
-                                   ObserverType,
-                                   scoped_refptr<base::SingleThreadTaskRunner>,
-                                   const NetworkState&);
-
+  void NotifyObserverOnTaskRunner(MayBeDangling<NetworkStateObserver>,
+                                  ObserverType,
+                                  const NetworkState&);
+  ObserverListMap& GetObserverMapFor(ObserverType);
   void AddObserverToMap(ObserverListMap&,
                         NetworkStateObserver*,
                         scoped_refptr<base::SingleThreadTaskRunner>);
   void RemoveObserver(ObserverType,
                       NetworkStateObserver*,
                       scoped_refptr<base::SingleThreadTaskRunner>);
-  void RemoveObserverFromMap(ObserverListMap&,
-                             NetworkStateObserver*,
-                             scoped_refptr<base::SingleThreadTaskRunner>);
-
-  ObserverList* LockAndFindObserverList(
-      ObserverListMap&,
-      scoped_refptr<base::SingleThreadTaskRunner>);
-
-  // Removed observers are nulled out in the list in case the list is being
-  // iterated over. Once done iterating, call this to clean up nulled
-  // observers.
-  void CollectZeroedObservers(ObserverListMap&,
-                              ObserverList*,
-                              scoped_refptr<base::SingleThreadTaskRunner>);
 
   // A random number by which the RTT and downlink estimates are multiplied
   // with. The returned random multiplier is a function of the hostname.

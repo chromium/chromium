@@ -62,6 +62,7 @@
 #include "net/cert/coalescing_cert_verifier.h"
 #include "net/cookies/cookie_access_delegate.h"
 #include "net/cookies/cookie_monster.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/mapped_host_resolver.h"
 #include "net/extras/sqlite/sqlite_persistent_cookie_store.h"
@@ -108,6 +109,7 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/simple_host_resolver.h"
+#include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/reporting_service.mojom.h"
@@ -758,12 +760,14 @@ void NetworkContext::GetRestrictedCookieManager(
     mojom::RestrictedCookieManagerRole role,
     const url::Origin& origin,
     const net::IsolationInfo& isolation_info,
+    const net::CookieSettingOverrides& cookie_setting_overrides,
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer) {
   RestrictedCookieManager::ComputeFirstPartySetMetadata(
       origin, url_request_context_->cookie_store(), isolation_info,
       base::BindOnce(&NetworkContext::OnComputedFirstPartySetMetadata,
                      weak_factory_.GetWeakPtr(), std::move(receiver), role,
-                     origin, isolation_info, std::move(cookie_observer)));
+                     origin, isolation_info, cookie_setting_overrides,
+                     std::move(cookie_observer)));
 }
 
 void NetworkContext::OnComputedFirstPartySetMetadata(
@@ -771,13 +775,15 @@ void NetworkContext::OnComputedFirstPartySetMetadata(
     mojom::RestrictedCookieManagerRole role,
     const url::Origin& origin,
     const net::IsolationInfo& isolation_info,
+    const net::CookieSettingOverrides& cookie_setting_overrides,
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
     net::FirstPartySetMetadata first_party_set_metadata) {
   restricted_cookie_manager_receivers_.Add(
       std::make_unique<RestrictedCookieManager>(
           role, url_request_context_->cookie_store(),
           cookie_manager_->cookie_settings(), origin, isolation_info,
-          std::move(cookie_observer), std::move(first_party_set_metadata),
+          cookie_setting_overrides, std::move(cookie_observer),
+          std::move(first_party_set_metadata),
           network_service_->metrics_updater()),
       std::move(receiver));
 }
@@ -1485,12 +1491,12 @@ void NetworkContext::CreateRestrictedUDPSocket(
 
 void NetworkContext::CreateTCPServerSocket(
     const net::IPEndPoint& local_addr,
-    uint32_t backlog,
+    mojom::TCPServerSocketOptionsPtr options,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     mojo::PendingReceiver<mojom::TCPServerSocket> receiver,
     CreateTCPServerSocketCallback callback) {
   socket_factory_->CreateTCPServerSocket(
-      local_addr, backlog,
+      local_addr, std::move(options),
       static_cast<net::NetworkTrafficAnnotationTag>(traffic_annotation),
       std::move(receiver), std::move(callback));
 }

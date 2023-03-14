@@ -97,6 +97,8 @@ class COMPONENT_EXPORT(ASH_DBUS_ATTESTATION) FakeAttestationClient
   void GetCertifiedNvIndex(
       const ::attestation::GetCertifiedNvIndexRequest& request,
       GetCertifiedNvIndexCallback callback) override;
+  void WaitForServiceToBeAvailable(
+      chromeos::WaitForServiceToBeAvailableCallback callback) override;
 
   // AttestationClient::TestInterface:
   void ConfigureEnrollmentPreparations(bool is_prepared) override;

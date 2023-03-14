@@ -16,6 +16,7 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
@@ -41,16 +42,17 @@ class BASE_EXPORT ImportantFileWriter {
   // Promise-like callback that returns (via output parameter) the serialized
   // data to be written. This callback is invoked on the sequence where I/O
   // operations are executed. Returning false indicates an error.
-  using BackgroundDataProducerCallback = base::OnceCallback<bool(std::string*)>;
+  using BackgroundDataProducerCallback =
+      base::OnceCallback<absl::optional<std::string>()>;
 
   // Used by ScheduleSave to lazily provide the data to be saved. Allows us
   // to also batch data serializations.
   class BASE_EXPORT DataSerializer {
    public:
-    // Should put serialized string in |data| and return true on successful
-    // serialization. Will be called on the same thread on which
-    // ImportantFileWriter has been created.
-    virtual bool SerializeData(std::string* data) = 0;
+    // Returns a string for serialisation when successful, or a nullopt in case
+    // it failed to generate the data. Will be called on the same thread on
+    // which ImportantFileWriter has been created.
+    virtual absl::optional<std::string> SerializeData() = 0;
 
    protected:
     virtual ~DataSerializer() = default;
@@ -108,7 +110,7 @@ class BASE_EXPORT ImportantFileWriter {
 
   // Save |data| to target filename. Does not block. If there is a pending write
   // scheduled by ScheduleWrite(), it is cancelled.
-  void WriteNow(std::unique_ptr<std::string> data);
+  void WriteNow(std::string data);
 
   // Schedule a save to target filename. Data will be serialized and saved
   // to disk after the commit interval. If another ScheduleWrite is issued

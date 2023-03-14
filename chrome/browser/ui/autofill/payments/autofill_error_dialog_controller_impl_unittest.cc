@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/autofill/payments/autofill_error_dialog_controller_impl.h"
 
-#include "base/memory/raw_ptr.h"
+#include <memory>
+
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/autofill/payments/autofill_error_dialog_controller.h"
@@ -24,14 +25,25 @@ class AutofillErrorDialogControllerImplTest
  public:
   AutofillErrorDialogControllerImplTest() = default;
 
-  AutofillErrorDialogControllerImpl* controller() {
-    if (!controller_)
-      controller_ = new AutofillErrorDialogControllerImpl(web_contents());
-    return controller_;
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    controller_ =
+        std::make_unique<AutofillErrorDialogControllerImpl>(web_contents());
   }
 
+  void TearDown() override {
+    // Reset explicitly to avoid a dangling pointer to the `WebContents` inside
+    // of the controller. This mirrors the behavior in production
+    // code in which `ChromeAutofillClient` owns the controller and is destroyed
+    // prior to the destruction of the respective `WebContents`.
+    controller_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  AutofillErrorDialogControllerImpl* controller() { return controller_.get(); }
+
  private:
-  raw_ptr<AutofillErrorDialogControllerImpl> controller_ = nullptr;
+  std::unique_ptr<AutofillErrorDialogControllerImpl> controller_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,

@@ -187,12 +187,32 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
     gpu_preference = gl::GpuPreference::kDefault;
   }
 
+  // Query and initialize the default display for this GPU preference,
+  // ignoring any queried display key for now. For simplicity we need
+  // to initialize the default display per-GPU first.
   // We may be requesting a new GPU/display, so get or initialize the display.
   gl::GLDisplay* display =
       gl::init::GetOrInitializeGLOneOffPlatformImplementation(
           /*fallback_to_software_gl=*/false, /*disable_gl_drawing=*/false,
           /*init_extensions=*/true,
           /*gpu_preference=*/gpu_preference);
+
+  // If the user queries a key to create a distinct display on this GPU,
+  // check if this display already exists, and if not, initialize it from
+  // the default display on this GPU.
+  gl::DisplayKey display_key = gl::DisplayKey::kDefault;
+  if (manager->gpu_preferences().force_separate_egl_display_for_webgl_testing &&
+      features::SupportsEGLDualGPURendering()) {
+    display_key = gl::DisplayKey::kSeparateEGLDisplayForWebGLTesting;
+  }
+
+  if (display_key != gl::DisplayKey::kDefault) {
+    gl::GLDisplay* keyed_display = gl::GetDisplay(gpu_preference, display_key);
+    if (!keyed_display->IsInitialized()) {
+      keyed_display->InitializeFromDisplay(display);
+    }
+    display = keyed_display;
+  }
 
   if (offscreen) {
     // Do we want to create an offscreen rendering context suitable

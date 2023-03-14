@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -80,6 +81,9 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
 - (void)appDidEnterBackground {
   if (IsFeedBackgroundRefreshEnabled()) {
     [self scheduleBackgroundRefresh];
+  }
+  if (IsFeedRefreshOnAppBackgroundingEnabled()) {
+    [self feedService]->RefreshFeed(FeedRefreshTrigger::kForegroundAppClose);
   }
 }
 

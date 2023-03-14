@@ -492,17 +492,21 @@ bool DoIPv6AddressToNumber(const CHAR* spec,
   if (ipv6_parsed.ipv4_component.is_valid()) {
     // Append the 32-bit number to |address|.
     int num_ipv4_components = 0;
+    // IPv4AddressToNumber will remove the trailing dot from the component.
+    bool trailing_dot = ipv6_parsed.ipv4_component.is_nonempty() &&
+                        spec[ipv6_parsed.ipv4_component.end() - 1] == '.';
     // The URL standard requires the embedded IPv4 address to be concisely
-    // composed of 4 parts. See https://url.spec.whatwg.org/#concept-ipv6-parser
+    // composed of 4 parts and disallows terminal dots.
+    // See https://url.spec.whatwg.org/#concept-ipv6-parser
     if (CanonHostInfo::IPV4 !=
             IPv4AddressToNumber(spec, ipv6_parsed.ipv4_component,
                                 &address[cur_index_in_address],
                                 &num_ipv4_components)) {
       return false;
     }
-    if (num_ipv4_components != 4 &&
+    if ((num_ipv4_components != 4 || trailing_dot) &&
         base::FeatureList::IsEnabled(
-          url::kStrictIPv4EmbeddedIPv6AddressParsing)) {
+            url::kStrictIPv4EmbeddedIPv6AddressParsing)) {
       return false;
     }
   }

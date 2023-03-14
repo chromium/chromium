@@ -51,9 +51,12 @@ java_cpp_template("cast_shell_build_config_gen") {
 common_resources = [
   "apk/res-values/values-v17/styles.xml",
   "apk/res-values/values/strings.xml",
+  "apk/res-values/values/colors.xml",
 ]
 
 extra_resources = [
+  "apk/res/drawable-anydpi-v26/ic_settings_cast.xml",
+  "apk/res/drawable-nodpi/ic_cast_vector.xml",
   "apk/res/drawable-hdpi/ic_notification_cast.png",
   "apk/res/drawable-hdpi/ic_settings_cast.png",
   "apk/res/drawable-mdpi/ic_notification_cast.png",
@@ -156,6 +159,7 @@ common_java_src_dir = "//chromecast/browser/android/apk/src"
 common_java_sources = [
   "$common_java_src_dir/org/chromium/chromecast/shell/AndroidAppLogcatProvider.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastAccessibilityHelper.java",
+  "$common_java_src_dir/org/chromium/chromecast/shell/CastApplication.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastBrowser.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastBrowserHelper.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastBrowserImpl.java",
@@ -177,6 +181,11 @@ common_java_sources = [
   "$common_java_src_dir/org/chromium/chromecast/shell/WebContentsRegistry.java",
 ]
 
+generate_product_config_srcjar("product_config_for_browser") {
+  java_package = "org.chromium.chromecast.shell"
+  is_bundle_module = false
+}
+
 android_library("cast_shell_java") {
   sources = common_java_sources
 
@@ -184,6 +193,7 @@ android_library("cast_shell_java") {
   srcjar_deps = [
     ":cast_shell_build_config_gen",
     ":logs_provider_aidl",
+    ":product_config_for_browser",
     "//chromecast/browser:java_enums",
   ]
 

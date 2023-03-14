@@ -108,7 +108,7 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
                        kQualificationAppId, "",
                        UpdateService::Priority::kBackground,
                        UpdateService::PolicySameVersionUpdate::kNotAllowed,
-                       /*do_update_check_only=*/false, base::DoNothing()))
+                       base::DoNothing()))
         ->Run(base::BindOnce(
             &UpdateServiceInternalQualifyingImpl::UpdateCheckDone, this,
             std::move(callback)));

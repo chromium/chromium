@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Zoom'u azaldın</translation>
 <translation id="1510341833810331442">Saytlara cihazınızda data saxlamaq icazəsi verilmir</translation>
 <translation id="1547123415014299762">Üçüncü tərəf kukilərinə icazə verilir</translation>
+<translation id="1593426485665524382">Ekranın yuxarısına yaxın hissədə yeni əməliyyatlar əlçatandır</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Əlaqəli saytlar</translation>
 <translation id="1644574205037202324">Tarixçə</translation>
@@ -59,6 +60,7 @@
 <translation id="216989819110952009">Doroti və dostları gözlərini yaşıl eynəklə qoruduğu halda, əvvəlcə gözləri qamaşdı</translation>
 <translation id="2176704795966505152">Əsas menyuda zoom seçimini göstərin</translation>
 <translation id="2182457891543959921">Saytların ətrafınızdakı sahələrin 3D xəritəsini yaratmasına və ya kamera mövqeyini izləməsinə icazə verməzdən əvvəl icazə tələb edin (tövsiyə edilir)</translation>
+<translation id="2194856509914051091">Nəzərə alınmalı amillər</translation>
 <translation id="2212565012507486665">Kukilərə icazə verin</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> tətbiqinə kameranıza giriş icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> kameranı da aktiv edin.</translation>
 <translation id="2235344399760031203">Üçüncü tərəf kukiləri bloklanıb</translation>
@@ -98,7 +100,6 @@
 <translation id="2713106313042589954">Kameranı deaktiv edin</translation>
 <translation id="2717722538473713889">E-poçt ünvanları</translation>
 <translation id="2750481671343847896">Saytlar kimlik xidmətlərindən daxil olma sorğularını göstərə bilər.</translation>
-<translation id="2779966372261694284">Bu saytdan çıxacaqsınız</translation>
 <translation id="2822354292072154809"><ph name="CHOSEN_OBJECT_NAME" /> üçün bütün sayt icazələrini sıfırlamaq istədiyinizə əminsiniz?</translation>
 <translation id="2870560284913253234">Sayt</translation>
 <translation id="2874939134665556319">Öncəki trek</translation>
@@ -144,6 +145,9 @@
 <translation id="3600792891314830896">Səs oxudan saytları səssiz rejimə keçirin</translation>
 <translation id="3602290021589620013">Önizləmə</translation>
 <translation id="3628308229821498208">Təklif edilən axtarışlar</translation>
+<translation id="3636279694100170143">Daxil olduğunuz saytlar bot yox, real istifadəçi olduğunuzu doğrulaya bilər</translation>
+<translation id="3649190289964910441">Daxil olduğunuz sayt məlumatları real istifadəçi olduğunuzu doğrulayan Chrome ilə yadda saxlaya bilər. Nəzər salmağa davam etdikcə saytlar Chrome ilə yoxlaya və birinci saytdan etibarlı istifadəçi olduğunuzu doğrulaya bilər.</translation>
+<translation id="3721953990244350188">İmtina edin və növbəti əlçatan əməliyyatı göstərin</translation>
 <translation id="3744111561329211289">Arxa fon sinx</translation>
 <translation id="3763247130972274048">10 saniyə keçmək üçün videonun sol və ya sağına iki dəfə toxunun</translation>
 <translation id="3794286421982011626">Ziyarət etdiyiniz sayt gözlədiyiniz kimi işləmək üçün (məsələn, sizi sayta daxil olmuş vəziyyətdə saxlamaq və ya alış-veriş səbətinizdəki elementləri saxlamaq üçün) gördüyünüz iş haqqında məlumatı yadda saxlaya bilər. Adətən saytlar bu məlumatı müvəqqəti olaraq cihazınızda saxlayır.</translation>
@@ -191,11 +195,11 @@
 <translation id="4534723447064627427"><ph name="APP_NAME" /> tətbiqinə mikrofonunuza giriş icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> mikrofonu da aktiv edin.</translation>
 <translation id="4566417217121906555">Mikrofonu susdurun</translation>
 <translation id="4570913071927164677">Ətraflı</translation>
-<translation id="4575264539271661854">Ziyarət etdiyiniz sayt üçün mətn və şəkilləri böyütməyi asanlaşdırın</translation>
 <translation id="4598549027014564149">Anonim rejimdə olduqda, saytlar müxtəlif saytlarda, eləcə də əlaqəli saytlarda axtarış fəaliyyətinizi görmək üçün kukilərinizdən istifadə edə bilmir. Axtarış fəaliyyətiniz reklamların fərdiləşdirilməsi kimi işlər üçün istifadə edilmir. Bəzi saytlardakı funksiyalar işləməyə bilər.</translation>
 <translation id="4645575059429386691">Valideyniniz tərəfindən idarə olunur</translation>
 <translation id="4670064810192446073">Virtual reallıq</translation>
 <translation id="4751476147751820511">Hərəkət və ışıq sensorları</translation>
+<translation id="477781522763920796">Bu ayar kimliyinizi müəyyən etmədən və ya saytlara brauzer tarixçəsini görmək imkanı vermədən işləyir.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4811450222531576619">Onun mənbəyi və mövzusu haqqında məlumat əldə edin</translation>
 <translation id="4836046166855586901">Sayt bu cihazdan nə zaman aktiv şəkildə istifadə etdiyinizi bilmək istədikdə icazə istəsin</translation>
@@ -257,6 +261,7 @@
 <translation id="5740126560802162366">Saytlar cihazınızda data saxlaya bilər</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> bloklanıb</translation>
 <translation id="5804241973901381774">İcazələr</translation>
+<translation id="5810805850857689118">Bu əməliyyat ilə <ph name="ORIGIN" /> və ona aid saytların data və kukiləri silinəcək</translation>
 <translation id="5860033963881614850">Deaktiv</translation>
 <translation id="5876056640971328065">Videoya pauza verin</translation>
 <translation id="5884085660368669834">Sayt tərcihi</translation>
@@ -273,6 +278,7 @@
 <translation id="6040143037577758943">Qapat</translation>
 <translation id="6042308850641462728">Daha çox</translation>
 <translation id="6064125863973209585">Tamamlanmış endirmələr</translation>
+<translation id="6071501408666570960">Bu saytdan çıxarıla bilərsiniz</translation>
 <translation id="6165508094623778733">Ətraflı öyrənin</translation>
 <translation id="6177111841848151710">Cari axtarış sistemi üçün blok edildi</translation>
 <translation id="6177128806592000436">Bu sayta olan bağlantınız güvənli deyil</translation>
@@ -323,6 +329,7 @@
 <translation id="7016516562562142042">Cari axtarış sistemi üçün icazə verildi</translation>
 <translation id="702275896380648118">Bu sayt bəyəndiklərinizi müəyyənləşdirir və sonra digər saytlara reklam təklif edir. Bu sayt sizə daha uyğun reklamlar göstərmək üçün Chrome'dan reklam mövzularınızı da əldə edir.</translation>
 <translation id="702463548815491781">TalkBack və ya Keçid Düyməsi aktiv olduqda tövsiyə olunur</translation>
+<translation id="7050519587566342213">Bir saytdan digərinə keçid zamanı etibarlı istifadəçi kimi tanındığınız üçün nəzər salmaq daha rahat olur.</translation>
 <translation id="7053983685419859001">Bloklayın</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 element seçildi}other{# element seçildi}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> seçildi. Seçimlər ekranın yuxarısında əlçatandır</translation>
@@ -347,6 +354,7 @@
 <translation id="757524316907819857">Saytların qorunan kontenti oxutmasını blok edin</translation>
 <translation id="7577900504646297215">Maraqları idarə edin</translation>
 <translation id="7594634374516752650">Bluetooth cihazına qoşulub</translation>
+<translation id="7634280112532283638">Spam və dələduzluğun azaldılması</translation>
 <translation id="7641339528570811325">Brauzinq datasını təmizləyin...</translation>
 <translation id="7649070708921625228">Yardım</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>
@@ -407,6 +415,7 @@
 <translation id="8514955299594277296">Saytlara cihazınızda məlumat saxlamağa icazə verməyin (tövsiyə edilmir)</translation>
 <translation id="851751545965956758">Saytların cihazlara qoşulmasını blok edin</translation>
 <translation id="8525306231823319788">Tam ekran</translation>
+<translation id="8528440122773422556">Bu əməliyyat ilə <ph name="ORIGIN" /> üzrə saytlar və ya onun tətbiqi vasitəsilə Ana ekranda saxlanan data və kukilər silinəcək</translation>
 <translation id="8541410041357371550">Bu sayt həmçinin sizə daha uyğun reklamlar göstərmək üçün Chrome'dan reklam mövzularınızı da əldə edir</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> saytı üçün kukilərə icazə verilir}other{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> saytı üçün kukilərə icazə verilir}}</translation>
 <translation id="857943718398505171">İcazə verilib (tövsiyə olunur)</translation>
@@ -421,6 +430,7 @@
 <translation id="8737217482364735741">Bununla <ph name="ORIGIN" /> tərəfindən saxlanılan bütün data və kukilər silinəcək.</translation>
 <translation id="8751914237388039244">Şəkil seçin</translation>
 <translation id="8801436777607969138">JavaScript'i bəzi saytlarda blok edin.</translation>
+<translation id="8803526663383843427">Aktiv olduqda</translation>
 <translation id="8816026460808729765">Saytların sensorlara girişini blok edin</translation>
 <translation id="8823559166155093873">Kukiləri bloklayın</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -434,6 +444,7 @@
 <translation id="8986362086234534611">Unudun</translation>
 <translation id="8990043154272859344">Bütün saytlardan çıxacaqsınız</translation>
 <translation id="9019902583201351841">Valideynləriniz tərəfindən idarə olunur</translation>
+<translation id="9039697262778250930">Bu saytlardan çıxarıla bilərsiniz</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Bu sayt fəaliyyətinizi görə bilən qrupdadır. Qrup <ph name="FPS_OWNER" /> tərəfindən təyin edilib.</translation>
 <translation id="9106233582039520022">Kukilər silinsin?</translation>

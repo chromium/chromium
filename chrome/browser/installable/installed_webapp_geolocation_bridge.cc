@@ -105,7 +105,6 @@ void InstalledWebappGeolocationBridge::OnLocationUpdate(
   DCHECK(context_);
 
   current_position_ = position;
-  current_position_.valid = device::ValidateGeoposition(position);
   has_position_to_report_ = true;
 
   if (!position_callback_.is_null())

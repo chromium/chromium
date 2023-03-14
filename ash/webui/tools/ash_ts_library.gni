@@ -88,7 +88,6 @@ template("ash_ts_library") {
       # All lit code is bundled into 1 file, the below mappings simply rewrite
       # any import to lit or a lit sub package to point at the bundle.
       "lit|//resources/mwc/lit/index.js",
-      "lit/.*|//resources/mwc/lit/index.js",
     ]
 
     deps = [

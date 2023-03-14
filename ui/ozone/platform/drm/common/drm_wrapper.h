@@ -232,6 +232,11 @@ class DrmWrapper {
   // Creates a property blob with data |blob| of size |size|.
   virtual ScopedDrmPropertyBlob CreatePropertyBlob(const void* blob,
                                                    size_t size);
+  // Creates a property blob with |size| for data |blob| which user space
+  // can't read back.
+  virtual ScopedDrmPropertyBlob CreatePropertyBlobWithFlags(const void* blob,
+                                                            size_t size,
+                                                            uint32_t flags);
   virtual void DestroyPropertyBlob(uint32_t id);
 
   // Returns a binary blob associated with |property_id|. May be nullptr if the
@@ -266,26 +271,33 @@ class DrmWrapper {
   static base::ScopedFD ToScopedFD(std::unique_ptr<DrmWrapper> drm);
 
   base::FilePath device_path() const { return device_path_; }
-  bool allow_addfb2_modifiers() const { return allow_addfb2_modifiers_; }
-  int modeset_sequence_id() const { return modeset_sequence_id_; }
   bool is_atomic() const { return is_atomic_; }
   bool is_primary_device() const { return is_primary_device_; }
 
  protected:
+  // TODO(gildekel): move CommitProperties() and PageFlip() to the public API
+  // once DrmWrapper DrmDevice are completely decoupled. Consider changing the
+  // signature to `void* user_data` instead of |page_flip_id|, which is too
+  // specific.
+  bool CommitProperties(drmModeAtomicReq* properties,
+                        uint32_t flags,
+                        uint64_t page_flip_id);
+
+  bool PageFlip(uint32_t crtc_id, uint32_t framebuffer, uint64_t page_flip_id);
+
+  const int& GetFd() const { return drm_fd_.get(); }
+
+ private:
   // Path to the DRM device (in sysfs).
   const base::FilePath device_path_;
+
   // DRM device FD.
   base::ScopedFD drm_fd_;
 
+  // Whether or not DRM was successfully set to atomic during the initialization
+  // of this DRM device.
   bool is_atomic_ = false;
-  bool allow_addfb2_modifiers_ = false;
 
-  // Sequence ID incremented at each modeset.
-  // Currently used by DRM Framebuffer to indicate when was the fb initialized
-  // wrt the preceding modeset.
-  int modeset_sequence_id_ = 0;
-
- private:
   const bool is_primary_device_;
 };
 

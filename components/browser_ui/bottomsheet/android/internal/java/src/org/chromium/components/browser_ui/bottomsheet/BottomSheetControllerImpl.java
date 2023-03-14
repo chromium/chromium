@@ -123,17 +123,18 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
 
         mBackPressHandler = new BackPressHandler() {
             @Override
-            public void handleBackPress() {
+            public @BackPressResult int handleBackPress() {
                 assert mBottomSheet != null && !mSuppressionTokens.hasTokens()
                         && mBottomSheet.getCurrentSheetContent() != null;
                 if (Boolean.TRUE.equals(mBottomSheet.getCurrentSheetContent()
                                                 .getBackPressStateChangedSupplier()
                                                 .get())) {
                     mBottomSheet.getCurrentSheetContent().onBackPressed();
-                    return;
+                    return BackPressResult.SUCCESS;
                 }
                 int sheetState = mBottomSheet.getMinSwipableSheetState();
                 mBottomSheet.setSheetState(sheetState, true, StateChangeReason.BACK_PRESS);
+                return BackPressResult.SUCCESS;
             }
 
             @Override

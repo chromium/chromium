@@ -10,11 +10,13 @@
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/contact_info_sync_util.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
+#include "components/sync/base/features.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/test/mock_model_type_change_processor.h"
 #include "components/webdata/common/web_database.h"
@@ -81,6 +83,10 @@ class ContactInfoSyncBridgeTest : public testing::Test {
         mock_processor_.CreateForwardingProcessor(), &backend_);
     ON_CALL(mock_processor(), IsTrackingMetadata)
         .WillByDefault(testing::Return(true));
+
+    ON_CALL(mock_processor_, GetPossiblyTrimmedRemoteSpecifics)
+        .WillByDefault(
+            testing::ReturnRef(sync_pb::EntitySpecifics::default_instance()));
   }
 
   // Tells the processor to starts syncing with pre-existing `remote_profiles`.
@@ -121,7 +127,8 @@ class ContactInfoSyncBridgeTest : public testing::Test {
   }
 
   syncer::EntityData ProfileToEntity(const AutofillProfile& profile) {
-    return std::move(*CreateContactInfoEntityDataFromAutofillProfile(profile));
+    return std::move(*CreateContactInfoEntityDataFromAutofillProfile(
+        profile, /*base_contact_info_specifics=*/{}));
   }
 
   MockAutofillWebDataBackend& backend() { return backend_; }
@@ -145,7 +152,8 @@ class ContactInfoSyncBridgeTest : public testing::Test {
 TEST_F(ContactInfoSyncBridgeTest, IsEntityDataValid) {
   // Valid case.
   std::unique_ptr<syncer::EntityData> entity =
-      CreateContactInfoEntityDataFromAutofillProfile(TestProfile(kGUID1));
+      CreateContactInfoEntityDataFromAutofillProfile(
+          TestProfile(kGUID1), /*base_contact_info_specifics=*/{});
   EXPECT_TRUE(bridge().IsEntityDataValid(*entity));
   // Invalid case.
   entity->specifics.mutable_contact_info()->set_guid(kInvalidGUID);
@@ -154,7 +162,8 @@ TEST_F(ContactInfoSyncBridgeTest, IsEntityDataValid) {
 
 TEST_F(ContactInfoSyncBridgeTest, GetStorageKey) {
   std::unique_ptr<syncer::EntityData> entity =
-      CreateContactInfoEntityDataFromAutofillProfile(TestProfile(kGUID1));
+      CreateContactInfoEntityDataFromAutofillProfile(
+          TestProfile(kGUID1), /*base_contact_info_specifics=*/{});
   ASSERT_TRUE(bridge().IsEntityDataValid(*entity));
   EXPECT_EQ(kGUID1, bridge().GetStorageKey(*entity));
 }
@@ -318,4 +327,40 @@ TEST_F(ContactInfoSyncBridgeTest, ApplyStopSyncChanges_SyncStopping) {
   ASSERT_THAT(GetAllDataFromTable(), ElementsAre(remote));
 }
 
+// Tests that trimming `ContactInfoSpecifics` with only supported values set
+// results in a zero-length specifics.
+TEST_F(ContactInfoSyncBridgeTest,
+       TrimAllSupportedFieldsFromRemoteSpecificsPreservesOnlySupportedFields) {
+  sync_pb::EntitySpecifics specifics;
+  sync_pb::ContactInfoSpecifics* contact_info_specifics =
+      specifics.mutable_contact_info();
+  contact_info_specifics->mutable_address_city()->set_value("City");
+
+  EXPECT_EQ(bridge()
+                .TrimAllSupportedFieldsFromRemoteSpecifics(specifics)
+                .ByteSizeLong(),
+            0u);
+}
+
+// Tests that trimming `ContactInfoSpecifics` with unsupported fields will only
+// preserve the unknown fields.
+TEST_F(ContactInfoSyncBridgeTest,
+       TrimRemoteSpecificsReturnsEmptyProtoWhenAllFieldsAreSupported) {
+  sync_pb::EntitySpecifics specifics_with_only_unknown_fields;
+  *specifics_with_only_unknown_fields.mutable_contact_info()
+       ->mutable_unknown_fields() = "unsupported_fields";
+
+  sync_pb::EntitySpecifics specifics_with_known_and_unknown_fields =
+      specifics_with_only_unknown_fields;
+  sync_pb::ContactInfoSpecifics* contact_info_specifics =
+      specifics_with_known_and_unknown_fields.mutable_contact_info();
+  contact_info_specifics->mutable_address_city()->set_value("City");
+  contact_info_specifics->mutable_address_country()->set_value("Country");
+
+  EXPECT_EQ(bridge()
+                .TrimAllSupportedFieldsFromRemoteSpecifics(
+                    specifics_with_known_and_unknown_fields)
+                .SerializeAsString(),
+            specifics_with_only_unknown_fields.SerializePartialAsString());
+}
 }  // namespace autofill

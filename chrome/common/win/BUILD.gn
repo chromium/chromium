@@ -39,3 +39,22 @@ shared_library("eventlog_provider") {
     ":eventlog_provider_dll_version",
   ]
 }
+
+# The delay load hook must be a source_set to ensure that it has external
+# linkage and will correctly emplace over the correct symbols in delayimp.lib at
+# link time.
+source_set("delay_load_failure_hook") {
+  sources = [ "delay_load_failure_hook.cc" ]
+  deps = [
+    ":delay_load_failure_support",
+    "//base",
+  ]
+}
+
+source_set("delay_load_failure_support") {
+  sources = [
+    "delay_load_failure_support.cc",
+    "delay_load_failure_support.h",
+  ]
+  deps = [ "//base" ]
+}

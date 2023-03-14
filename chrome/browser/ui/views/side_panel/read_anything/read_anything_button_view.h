@@ -7,7 +7,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/view.h"
@@ -34,6 +33,10 @@ class ReadAnythingButtonView : public views::View {
   void UpdateIcon(const gfx::VectorIcon& icon,
                   int icon_size,
                   SkColor icon_color);
+
+  void Enable();
+  void Disable();
+  views::Button::ButtonState GetStateForTesting();
 
  private:
   raw_ptr<views::ImageButton> button_;

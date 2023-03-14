@@ -20,8 +20,10 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
@@ -29,7 +31,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.view.OneShotPreDrawListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
 
@@ -216,11 +217,19 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mButton.setEnabled(buttonData.isEnabled());
         mContentDescription = buttonSpec.getContentDescription();
 
-        // If the button hasn't been laid out then try again before the next draw. This may happen
-        // if the view gets initialized while the activity is not visible (e.g. when a setting
-        // change forces an activity reset).
-        if (!ViewCompat.isLaidOut(this)) {
-            OneShotPreDrawListener.add(this, () -> startTransitionToNewButton(canAnimate));
+        // If the transition root hasn't been laid out then try again after the next layout. This
+        // may happen if the view gets initialized while the activity is not visible (e.g. when a
+        // setting change forces an activity reset).
+        if (!ViewCompat.isLaidOut(mTransitionRoot)) {
+            getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    if(ViewCompat.isLaidOut(mTransitionRoot)){
+                        startTransitionToNewButton(canAnimate);
+                        getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    }
+                }
+            });
         } else {
             startTransitionToNewButton(canAnimate);
         }
@@ -640,6 +649,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
         mButton.setVisibility(GONE);
         mBackground.setVisibility(GONE);
+        mActionChipLabel.setVisibility(GONE);
         setWidth(0);
 
         if (mOnBeforeHideTransitionCallback != null) {
@@ -647,6 +657,21 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         }
 
         mState = State.RUNNING_HIDE_TRANSITION;
+    }
+
+    @Override
+    public void onRtlPropertiesChanged(int layoutDirection) {
+        if (mButton == null || mAnimationImage == null) return;
+
+        // ImageView's scale type does not take into account the layout's direction, FIT_START
+        // always aligns from the left and FIT_END always aligns from the right.
+        if (layoutDirection == LAYOUT_DIRECTION_LTR) {
+            mButton.setScaleType(ScaleType.FIT_START);
+            mAnimationImage.setScaleType(ScaleType.FIT_START);
+        } else {
+            mButton.setScaleType(ScaleType.FIT_END);
+            mAnimationImage.setScaleType(ScaleType.FIT_END);
+        }
     }
 
     private void showIcon(boolean animate) {
@@ -662,6 +687,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mButton.setVisibility(GONE);
         mBackground.setVisibility(GONE);
         mAnimationImage.setVisibility(GONE);
+        mActionChipLabel.setVisibility(GONE);
 
         mButton.setImageDrawable(mIconDrawable);
 

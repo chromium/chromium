@@ -549,9 +549,6 @@ absl::optional<gfx::RectF> OptimizeToSingleTileDraw(
   // Subset computation needs the same location as was used above, but needs the
   // unsnapped destination size to correctly calculate sprite subsets in the
   // presence of zoom.
-  // TODO(schenney): Re-enable this after determining why it fails for
-  // CAP, and maybe other cases.
-  // DCHECK(one_tile_rect.Contains(dest_rect_for_subset));
   const gfx::SizeF scale(
       geometry.TileSize().width / intrinsic_tile_size.width(),
       geometry.TileSize().height / intrinsic_tile_size.height());

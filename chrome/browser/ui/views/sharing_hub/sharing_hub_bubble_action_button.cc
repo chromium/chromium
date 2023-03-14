@@ -42,8 +42,7 @@ ui::ImageModel ImageForAction(const SharingHubAction& action_info) {
 SharingHubBubbleActionButton::SharingHubBubbleActionButton(
     SharingHubBubbleViewImpl* bubble,
     const SharingHubAction& action_info)
-    : action_command_id_(action_info.command_id),
-      action_name_for_metrics_(action_info.feature_name_for_metrics) {
+    : action_info_(action_info) {
   auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetMainAxisAlignment(views::LayoutAlignment::kStart)

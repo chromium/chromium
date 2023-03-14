@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -19,6 +20,7 @@ namespace password_manager {
 namespace features_util {
 namespace {
 
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 base::Value::Dict CreateOptedInAccountPref() {
   base::Value::Dict global_pref;
   base::Value::Dict account_pref;
@@ -26,13 +28,17 @@ base::Value::Dict CreateOptedInAccountPref() {
   global_pref.Set("some_gaia_hash", std::move(account_pref));
   return global_pref;
 }
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+
 }  // namespace
 
 class PasswordManagerFeaturesUtilTestBase {
  public:
   PasswordManagerFeaturesUtilTestBase() {
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
     pref_service_.registry()->RegisterDictionaryPref(
         prefs::kAccountStoragePerAccountSettings);
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   }
 
  protected:
@@ -124,22 +130,32 @@ TEST_F(PasswordManagerFeaturesUtilWithoutAccountStorageTest,
 }
 
 TEST_F(PasswordManagerFeaturesUtilTest, ShowAccountStorageResignIn) {
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   // Add an account to prefs which opted into using the account-storage.
   pref_service_.SetDict(prefs::kAccountStoragePerAccountSettings,
                         CreateOptedInAccountPref());
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
   // SyncService is not running (because no user is signed-in).
   SetSyncStateNotSignedIn();
 
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(
       ShouldShowAccountStorageReSignin(&pref_service_, &sync_service_, GURL()));
+#else
+  // The re-signin doesn't exist on mobile.
+  EXPECT_FALSE(
+      ShouldShowAccountStorageReSignin(&pref_service_, &sync_service_, GURL()));
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 }
 
 TEST_F(PasswordManagerFeaturesUtilWithoutAccountStorageTest,
        ShowAccountStorageReSignin) {
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   // Add an account to prefs which opted into using the account-storage.
   pref_service_.SetDict(prefs::kAccountStoragePerAccountSettings,
                         CreateOptedInAccountPref());
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
   // SyncService is not running (because no user is signed-in).
   SetSyncStateNotSignedIn();
@@ -150,9 +166,11 @@ TEST_F(PasswordManagerFeaturesUtilWithoutAccountStorageTest,
 
 TEST_F(PasswordManagerFeaturesUtilTest,
        DontShowAccountStorageResignIn_SyncActive) {
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   // Add an account to prefs which opted into using the account-storage.
   pref_service_.SetDict(prefs::kAccountStoragePerAccountSettings,
                         CreateOptedInAccountPref());
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
   // SyncService is running (for a different signed-in user).
   CoreAccountInfo account;
@@ -176,6 +194,7 @@ TEST_F(PasswordManagerFeaturesUtilTest,
       ShouldShowAccountStorageReSignin(&pref_service_, &sync_service_, GURL()));
 }
 
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordManagerFeaturesUtilTest,
        DontShowAccountStorageResignIn_GaiaUrl) {
   // Add an account to prefs which opted into using the account-storage.
@@ -338,6 +357,36 @@ TEST_F(PasswordManagerFeaturesUtilTest, SyncSuppressesAccountStorageOptIn) {
   EXPECT_FALSE(
       ShouldShowAccountStorageBubbleUi(&pref_service_, &sync_service_));
 }
+#else
+TEST_F(PasswordManagerFeaturesUtilTest, AccountStorageOptInOnMobile) {
+  CoreAccountInfo account;
+  account.email = "name@account.com";
+  account.gaia = "name";
+  account.account_id = CoreAccountId::FromGaiaId(account.gaia);
+
+  // Initial state: Not signed in.
+  SetSyncStateNotSignedIn();
+
+  // Without a signed-in user, there can be no opt-in.
+  EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
+
+  // Sign in and enable Sync-transport.
+  SetSyncStateTransportActive(account);
+
+  // Now the user should be considered opted-in.
+  EXPECT_TRUE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
+
+  // Disable the Passwords data type, which corresponds to the user opting out.
+  syncer::UserSelectableTypeSet selected_types =
+      sync_service_.GetUserSettings()->GetSelectedTypes();
+  selected_types.Remove(syncer::UserSelectableType::kPasswords);
+  sync_service_.GetUserSettings()->SetSelectedTypes(/*sync_everything=*/false,
+                                                    selected_types);
+
+  // The user should not be considered opted-in anymore.
+  EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
+}
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 TEST_F(PasswordManagerFeaturesUtilTest, SyncDisablesAccountStorage) {
   CoreAccountInfo account;
@@ -345,9 +394,12 @@ TEST_F(PasswordManagerFeaturesUtilTest, SyncDisablesAccountStorage) {
   account.gaia = "name";
   account.account_id = CoreAccountId::FromGaiaId(account.gaia);
 
+  ASSERT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
+
   // The SyncService is running in transport mode.
   SetSyncStateTransportActive(account);
 
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   // The account storage is available in principle, so the opt-in will be shown.
   ASSERT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
   ASSERT_TRUE(ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
@@ -356,6 +408,8 @@ TEST_F(PasswordManagerFeaturesUtilTest, SyncDisablesAccountStorage) {
 
   // Opt in.
   OptInToAccountStorage(&pref_service_, &sync_service_);
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+
   ASSERT_TRUE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
   ASSERT_FALSE(ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
   ASSERT_TRUE(ShouldShowAccountStorageBubbleUi(&pref_service_, &sync_service_));
@@ -364,11 +418,16 @@ TEST_F(PasswordManagerFeaturesUtilTest, SyncDisablesAccountStorage) {
             PasswordForm::Store::kAccountStore);
 
   // Now enable Sync-the-feature. This should effectively turn *off* the account
-  // storage again (since with Sync, there's only a single combined storage),
-  // even though the opt-in wasn't actually cleared.
+  // storage again (since with Sync, there's only a single combined storage).
   SetSyncStateFeatureActive(account);
   ASSERT_TRUE(sync_service_.IsSyncFeatureEnabled());
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+  // On desktop, the opt-in wasn't actually cleared.
   EXPECT_TRUE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
+#else
+  // On mobile, since no explicit opt-in exists, the (implicit) opt-in is gone.
+  EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(ShouldShowAccountStorageOptIn(&pref_service_, &sync_service_));
   EXPECT_FALSE(
       ShouldShowAccountStorageBubbleUi(&pref_service_, &sync_service_));
@@ -397,6 +456,7 @@ TEST_F(PasswordManagerFeaturesUtilTest, LocalSyncDisablesAccountStorage) {
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
             PasswordForm::Store::kProfileStore);
 
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   // Even if the user is opted in (e.g. from a previous browser run, before
   // local-sync was enabled), the account-scoped storage should remain
   // unavailable.
@@ -409,8 +469,10 @@ TEST_F(PasswordManagerFeaturesUtilTest, LocalSyncDisablesAccountStorage) {
       ShouldShowAccountStorageBubbleUi(&pref_service_, &sync_service_));
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
             PasswordForm::Store::kProfileStore);
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 }
 
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordManagerFeaturesUtilTest, OptOutClearsStorePreference) {
   base::HistogramTester histogram_tester;
 
@@ -513,6 +575,7 @@ TEST_F(PasswordManagerFeaturesUtilTest,
   EXPECT_EQ(
       2, GetMoveOfferedToNonOptedInUserCount(&pref_service_, &sync_service_));
 }
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace features_util
 }  // namespace password_manager

@@ -9,7 +9,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.components.digital_asset_links.VerificationResultStore;
+import org.chromium.components.content_relationship_verification.VerificationResultStore;
 
 import java.util.HashSet;
 import java.util.Set;

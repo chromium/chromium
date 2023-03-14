@@ -8,6 +8,9 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/sequence_bound.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
 
@@ -44,7 +47,7 @@ class LocalImageSearchProvider : public SearchProvider {
   ash::ThumbnailLoader thumbnail_loader_;
   base::FilePath root_path_;
 
-  scoped_refptr<AnnotationStorage> annotation_storage_;
+  base::SequenceBound<AnnotationStorage> annotation_storage_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<LocalImageSearchProvider> weak_factory_{this};

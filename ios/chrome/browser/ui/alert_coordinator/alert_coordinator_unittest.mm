@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/test/scoped_key_window.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -71,14 +72,14 @@ TEST_F(AlertCoordinatorTest, ValidateIsVisible) {
   AlertCoordinator* alert_coordinator = GetAlertCoordinator(view_controller);
 
   ASSERT_FALSE(alert_coordinator.visible);
-  ASSERT_EQ(nil, view_controller.presentedViewController);
+  EXPECT_NSEQ(nil, view_controller.presentedViewController);
 
   // Action.
   StartAlertCoordinator();
 
   // Test.
   EXPECT_TRUE(alert_coordinator.visible);
-  EXPECT_TRUE([view_controller.presentedViewController
+  ASSERT_TRUE([view_controller.presentedViewController
       isKindOfClass:[UIAlertController class]]);
   UIAlertController* alert_controller =
       base::mac::ObjCCastStrict<UIAlertController>(
@@ -102,7 +103,7 @@ TEST_F(AlertCoordinatorTest, ValidateIsNotVisible) {
 
   // Test.
   EXPECT_FALSE(alert_coordinator.visible);
-  EXPECT_EQ(nil, [view_controller presentedViewController]);
+  EXPECT_NSEQ(nil, [view_controller presentedViewController]);
 }
 
 // Tests the alert coordinator has a correct title and message.
@@ -119,15 +120,15 @@ TEST_F(AlertCoordinatorTest, TitleAndMessage) {
 
   // Test.
   // Get the alert.
-  EXPECT_TRUE([view_controller.presentedViewController
+  ASSERT_TRUE([view_controller.presentedViewController
       isKindOfClass:[UIAlertController class]]);
   UIAlertController* alert_controller =
       base::mac::ObjCCastStrict<UIAlertController>(
           view_controller.presentedViewController);
 
   // Test the results.
-  EXPECT_EQ(title, alert_controller.title);
-  EXPECT_EQ(message, alert_controller.message);
+  EXPECT_NSEQ(title, alert_controller.title);
+  EXPECT_NSEQ(message, alert_controller.message);
 }
 
 // Tests the alert coordinator dismissal.
@@ -139,7 +140,7 @@ TEST_F(AlertCoordinatorTest, ValidateDismissalOnStop) {
   StartAlertCoordinator();
 
   ASSERT_TRUE(alert_coordinator.visible);
-  ASSERT_NE(nil, view_controller.presentedViewController);
+  ASSERT_NSNE(nil, view_controller.presentedViewController);
   ASSERT_TRUE([view_controller.presentedViewController
       isKindOfClass:[UIAlertController class]]);
 
@@ -184,7 +185,7 @@ TEST_F(AlertCoordinatorTest, ValidateActions) {
   StartAlertCoordinator();
 
   // Get the alert.
-  EXPECT_TRUE([view_controller.presentedViewController
+  ASSERT_TRUE([view_controller.presentedViewController
       isKindOfClass:[UIAlertController class]]);
   UIAlertController* alert_controller =
       base::mac::ObjCCastStrict<UIAlertController>(
@@ -223,7 +224,7 @@ TEST_F(AlertCoordinatorTest, OnlyOneCancelAction) {
   StartAlertCoordinator();
 
   // Get the alert.
-  EXPECT_TRUE([view_controller.presentedViewController
+  ASSERT_TRUE([view_controller.presentedViewController
       isKindOfClass:[UIAlertController class]]);
   UIAlertController* alert_controller =
       base::mac::ObjCCastStrict<UIAlertController>(
@@ -233,7 +234,7 @@ TEST_F(AlertCoordinatorTest, OnlyOneCancelAction) {
   EXPECT_EQ(1LU, alert_controller.actions.count);
 
   UIAlertAction* action = [alert_controller.actions objectAtIndex:0];
-  EXPECT_EQ(firstButtonTitle, action.title);
+  EXPECT_NSEQ(firstButtonTitle, action.title);
   EXPECT_EQ(UIAlertActionStyleCancel, action.style);
 }
 
@@ -303,4 +304,45 @@ TEST_F(AlertCoordinatorTest, AlertDismissedOnDestroy) {
   alert_coordinator = nil;
 
   EXPECT_FALSE(block_called);
+}
+
+// Tests that the preferred item sets the preferred action.
+TEST_F(AlertCoordinatorTest, AlertHasPreferredAction) {
+  // Setup.
+  UIViewController* view_controller = GetViewController();
+  AlertCoordinator* alert_coordinator = GetAlertCoordinator(view_controller);
+
+  NSString* firstButtonTitle = @"firstButtonTitle";
+  NSString* secondButtonTitle = @"secondButtonTitle";
+  NSString* thirdButtonTitle = @"thirdButtonTitle";
+  // Action.
+  [alert_coordinator addItemWithTitle:firstButtonTitle
+                               action:nil
+                                style:UIAlertActionStyleDefault];
+  [alert_coordinator addItemWithTitle:secondButtonTitle
+                               action:nil
+                                style:UIAlertActionStyleDefault
+                            preferred:YES
+                              enabled:NO];
+  [alert_coordinator addItemWithTitle:thirdButtonTitle
+                               action:nil
+                                style:UIAlertActionStyleDefault];
+
+  // Test.
+  // Present the alert.
+  StartAlertCoordinator();
+
+  // Get the alert.
+  ASSERT_TRUE([view_controller.presentedViewController
+      isKindOfClass:[UIAlertController class]]);
+  UIAlertController* alert_controller =
+      base::mac::ObjCCastStrict<UIAlertController>(
+          view_controller.presentedViewController);
+
+  // Test the results.
+  EXPECT_EQ(3LU, alert_controller.actions.count);
+
+  UIAlertAction* preferredAction = alert_controller.preferredAction;
+  EXPECT_NSEQ(secondButtonTitle, preferredAction.title);
+  EXPECT_EQ(UIAlertActionStyleDefault, preferredAction.style);
 }

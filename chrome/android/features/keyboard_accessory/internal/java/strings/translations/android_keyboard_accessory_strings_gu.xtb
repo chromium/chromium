@@ -1,13 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
+<translation id="1347497506789975534">સાચવેલી ચુકવણી પદ્ધતિઓ બતાવો</translation>
 <translation id="1383876407941801731">શોધો</translation>
-<translation id="1566281227936819866">સાચવેલી ચુકવણી પદ્ધતિઓ બતાવી રહ્યાં છીએ</translation>
 <translation id="1717486229951421299">Touch પર લૉગ ઇન વિગતો ભરવાની સૂચિ અડધી ઊંચાઈએ ખૂલી.</translation>
 <translation id="207576718733492531">Touch પર લૉગ ઇન વિગતો ભરવાની સૂચિ બંધ છે.</translation>
 <translation id="2610239185026711824">પાસવર્ડ સૂચવો</translation>
 <translation id="2652129567809778422">પાસવર્ડ પસંદ કરો</translation>
-<translation id="2803478378562657435">સાચવેલા પાસવર્ડ અને પાસવર્ડ માટેના વિકલ્પો બતાવી રહ્યા છીએ</translation>
 <translation id="2903493209154104877">સરનામાંઓ</translation>
 <translation id="3399357656427473483">Touch પર લૉગ ઇન વિગતો ભરવાની સૂચિ.</translation>
 <translation id="3688051737190211318">જો <ph name="ORIGIN" /> તમારા માટે વિશ્વસનીય હોય, તો તમે સાઇન ઇન કરવા માટે સાચવેલા પાસવર્ડનો ઉપયોગ કરી શકો છો</translation>
@@ -15,16 +14,14 @@
 <translation id="4660011489602794167">કીબોર્ડ બતાવો</translation>
 <translation id="4694050069269396220">જો <ph name="ORIGIN" /> તમારા માટે વિશ્વસનીય હોય, તો તમે અન્ય સાઇટ માટે સાચવેલા પાસવર્ડનો ઉપયોગ કરી શકો છો.</translation>
 <translation id="5016175294846053194">કીબોર્ડની ઉપર ઉપલબ્ધ સૂચનોને ઑટોમૅટિક રીતે ભરો</translation>
-<translation id="5088366526685584589">સાચવેલાં સરનામાં</translation>
 <translation id="5441504010984421144">Touch પર લૉગ ઇન વિગતો ભરવાની સૂચિ સંપૂર્ણ ઊંચાઈએ ખૂલી.</translation>
+<translation id="6296921860874265377">સાચવેલા પાસવર્ડ અને પાસવર્ડના વિકલ્પો બતાવો</translation>
 <translation id="6393156038355142111">સશક્ત પાસવર્ડ સૂચવો</translation>
 <translation id="6558703547256592471">દરેક સાઇટ માટે વિશિષ્ટ પાસવર્ડનો ઉપયોગ કરી જુઓ.</translation>
 <translation id="7029809446516969842">પાસવર્ડ</translation>
-<translation id="7299100402441711551">સરનામાં બતાવો</translation>
-<translation id="7494879913343971937">પાસવર્ડ બતાવો</translation>
 <translation id="7594473730623999723">વધુ સૂચનો જોવા માટે સ્વાઇપ કરો</translation>
+<translation id="7873973044507799456">સાચવેલા સરનામા બતાવો</translation>
 <translation id="7992095260806105436">Chromeમાં ઑટોમૅટિક રીતે ભરવાની સુવિધાના સૂચનનો ઉપયોગ કરો</translation>
-<translation id="8037472847879765671">ચુકવણી પદ્ધતિઓ બતાવો</translation>
 <translation id="8507520749471379845">પાસવર્ડ ઉપલબ્ધ છે</translation>
 <translation id="8705308553596171387">કોઈ પાસવર્ડ જરૂરી નથી</translation>
 <translation id="879180780857354295">ભરણ માટેના વૈકલ્પિક વિકલ્પો કીબોર્ડની ઉપર ઉપલબ્ધ છે</translation>

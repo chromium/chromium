@@ -39,7 +39,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/font_util.h"
 #include "ui/gfx/image/image.h"
-#include "ui/gl/gl_switches.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 #include "ui/views/buildflags.h"
 #include "ui/views/examples/example_base.h"
@@ -89,7 +89,7 @@ ExamplesExitCode ExamplesMainProc(bool under_test) {
   // Disabling Direct Composition works around the limitation that
   // InProcessContextFactory doesn't work with Direct Composition, causing the
   // window to not render. See http://crbug.com/936249.
-  command_line->AppendSwitch(switches::kDisableDirectComposition);
+  gl::SetGlWorkarounds(gl::GlWorkarounds{.disable_direct_composition = true});
 
   base::FeatureList::InitializeInstance(
       command_line->GetSwitchValueASCII(switches::kEnableFeatures),

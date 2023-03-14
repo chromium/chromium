@@ -42,4 +42,7 @@ typedef (USVString or FencedFrameConfig) UrnOrConfig;
 
   [RuntimeEnabled=Parakeet, CallWith=ScriptState, Measure, RaisesException]
   Promise<URL> finalizeAd(Ads ads, AuctionAdConfig config);
+
+  [RuntimeEnabled=FencedFrames, CallWith=ScriptState]
+  boolean canLoadAdAuctionFencedFrame();
 };

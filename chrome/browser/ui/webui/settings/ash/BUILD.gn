@@ -11,10 +11,13 @@ static_library("test_support") {
   sources = [
     "os_settings_browser_test_mixin.cc",
     "os_settings_browser_test_mixin.h",
+    "os_settings_lock_screen_browser_test_base.cc",
+    "os_settings_lock_screen_browser_test_base.h",
   ]
   deps = [
     "//ash/constants",
     "//chrome:browser_tests_pak",
+    "//chrome/browser/ash:test_support",
     "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//chrome/test/data/webui:resources_grit",

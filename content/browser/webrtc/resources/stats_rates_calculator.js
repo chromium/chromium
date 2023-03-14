@@ -565,6 +565,10 @@ export class StatsRatesCalculator {
               'packetsReceived', 'timestamp'),
           totalRoundTripTime:
               new RateCalculator('totalRoundTripTime', 'responsesReceived'),
+          lastPacketReceivedTimestamp: new DateCalculator(
+              'lastPacketReceivedTimestamp'),
+          lastPacketSentTimestamp: new DateCalculator(
+              'lastPacketSentTimestamp'),
         },
       },
     ];

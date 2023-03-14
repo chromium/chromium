@@ -11,6 +11,7 @@
 
 #include <lib/async/dispatcher.h>
 #include <lib/fidl/cpp/interface_request.h>
+#include <lib/fidl/cpp/wire/connect_service.h>
 #include <lib/sys/cpp/outgoing_directory.h>
 #include <lib/vfs/cpp/pseudo_dir.h>
 #include <lib/vfs/cpp/service.h>
@@ -48,6 +49,49 @@ class BASE_EXPORT ScopedServicePublisher {
   ScopedServicePublisher& operator=(const ScopedServicePublisher&) = delete;
 
   ~ScopedServicePublisher() { pseudo_dir_->RemoveEntry(name_); }
+
+ private:
+  vfs::PseudoDir* const pseudo_dir_ = nullptr;
+  std::string name_;
+};
+
+template <typename Protocol>
+class BASE_EXPORT ScopedNaturalServicePublisher {
+ public:
+  // Publishes a public service in the specified |outgoing_directory|.
+  // |outgoing_directory| and |handler| must outlive the binding. The service is
+  // unpublished on destruction.
+  ScopedNaturalServicePublisher(
+      sys::OutgoingDirectory* outgoing_directory,
+      fidl::ProtocolHandler<Protocol> handler,
+      base::StringPiece name = fidl::DiscoverableProtocolName<Protocol>)
+      : ScopedNaturalServicePublisher(
+            outgoing_directory->GetOrCreateDirectory("svc"),
+            std::move(handler),
+            name) {}
+
+  // Publishes a service in the specified |pseudo_dir|. |pseudo_dir| and
+  // |handler| must outlive the binding. The service is unpublished on
+  // destruction.
+  ScopedNaturalServicePublisher(
+      vfs::PseudoDir* pseudo_dir,
+      fidl::ProtocolHandler<Protocol> handler,
+      base::StringPiece name = fidl::DiscoverableProtocolName<Protocol>)
+      : pseudo_dir_(pseudo_dir), name_(name) {
+    zx_status_t status = pseudo_dir_->AddEntry(
+        name_, std::make_unique<vfs::Service>(
+                   [handler = std::move(handler)](
+                       zx::channel channel, async_dispatcher_t* dispatcher) {
+                     handler(fidl::ServerEnd<Protocol>(std::move(channel)));
+                   }));
+    ZX_DCHECK(status == ZX_OK, status) << "vfs::PseudoDir::AddEntry";
+  }
+
+  ScopedNaturalServicePublisher(const ScopedNaturalServicePublisher&) = delete;
+  ScopedNaturalServicePublisher& operator=(
+      const ScopedNaturalServicePublisher&) = delete;
+
+  ~ScopedNaturalServicePublisher() { pseudo_dir_->RemoveEntry(name_); }
 
  private:
   vfs::PseudoDir* const pseudo_dir_ = nullptr;

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input_style.css.js';
 import 'chrome://resources/cr_elements/mwb_element_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -41,6 +42,13 @@ export class UserNoteElement extends PolymerElement {
         observer: 'onNoteChanged_',
       },
 
+      startNoteCreation: {
+        type: Boolean,
+        notify: true,
+        observer: 'startNoteCreation_',
+        value: false,
+      },
+
       editing_: {
         type: Boolean,
         reflectToAttribute: true,
@@ -61,14 +69,22 @@ export class UserNoteElement extends PolymerElement {
         type: String,
         value: '',
       },
+
+      characterLimitExceeded_: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: false,
+      },
     };
   }
 
   note: Note|null;
+  startNoteCreation: boolean;
   private characterCounter_: string;
   private editing_: boolean;
   private noteContent_: string;
   private showPlaceholder_: boolean;
+  private characterLimitExceeded_: boolean;
 
   private userNotesApi_: UserNotesApiProxy =
       UserNotesApiProxyImpl.getInstance();
@@ -78,11 +94,22 @@ export class UserNoteElement extends PolymerElement {
     this.editing_ = this.note === null;
   }
 
+  private startNoteCreation_() {
+    // Focus the persistent entry point note if creation is triggered.
+    if (this.note === null && this.startNoteCreation) {
+      setTimeout(() => {
+        this.$.noteContent.focus();
+      }, 0);
+      this.startNoteCreation = false;
+    }
+  }
+
   private onNoteContentInput_() {
     this.noteContent_ = this.$.noteContent.textContent!;
   }
 
   private computeCharacterCounter_(): number {
+    this.characterLimitExceeded_ = this.noteContent_.length > 176;
     return this.noteContent_.length;
   }
 

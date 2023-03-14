@@ -25,6 +25,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/run_loop.h"
 #include "fuchsia_web/common/test/test_realm_support.h"
 #include "fuchsia_web/runners/cast/fidl/fidl/hlcpp/chromium/cast/cpp/fidl.h"
 #include "media/fuchsia/audio/fake_audio_device_enumerator_local_component.h"
@@ -43,7 +44,14 @@ namespace test {
 CastRunnerLauncher::CastRunnerLauncher(CastRunnerFeatures runner_features)
     : runner_features_(runner_features) {}
 
-CastRunnerLauncher::~CastRunnerLauncher() = default;
+CastRunnerLauncher::~CastRunnerLauncher() {
+  if (realm_root_.has_value()) {
+    base::RunLoop run_loop;
+    realm_root_.value().Teardown(
+        [quit = run_loop.QuitClosure()](auto result) { quit.Run(); });
+    run_loop.Run();
+  }
+}
 
 std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncher::StartCastRunner() {
   auto realm_builder = RealmBuilder::Create();

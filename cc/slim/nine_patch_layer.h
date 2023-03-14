@@ -25,6 +25,8 @@ class COMPONENT_EXPORT(CC_SLIM) NinePatchLayer : public UIResourceLayer {
   // size of the left and top boundary, respectively.
   // |border.width()-border.x()| and |border.height()-border.y()| are the size
   // of the right and bottom boundary, respectively.
+  // TODO(boliu): Should use gfx::Inset instead of gfx::Rect once this can
+  // diverge from cc.
   void SetBorder(const gfx::Rect& border);
 
   // aperture is in the pixel space of the bitmap resource and refers to
@@ -40,6 +42,13 @@ class COMPONENT_EXPORT(CC_SLIM) NinePatchLayer : public UIResourceLayer {
   // Use nearest neighbor sampling instead of linear (weighted average of 4
   // closest pixels) when sampling from the bitmap.
   void SetNearestNeighbor(bool nearest_neighbor);
+
+  void AppendQuads(viz::CompositorRenderPass& render_pass,
+                   FrameData& data,
+                   const gfx::Transform& transform_to_root,
+                   const gfx::Transform& transform_to_target,
+                   const gfx::Rect* clip_in_target,
+                   const gfx::Rect& visible_rect) override;
 
  private:
   explicit NinePatchLayer(scoped_refptr<cc::NinePatchLayer> cc_layer);

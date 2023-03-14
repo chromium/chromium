@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.carousel;
 
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.eq;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;

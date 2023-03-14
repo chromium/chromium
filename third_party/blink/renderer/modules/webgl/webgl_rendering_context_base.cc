@@ -709,14 +709,16 @@ void WebGLRenderingContextBase::commit() {
 
   if (PaintRenderingResultsToCanvas(kBackBuffer)) {
     if (Host()->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)) {
-      Host()->Commit(Host()->ResourceProvider()->ProduceCanvasResource(),
+      Host()->Commit(Host()->ResourceProvider()->ProduceCanvasResource(
+                         CanvasResourceProvider::FlushReason::kNone),
                      SkIRect::MakeWH(width, height));
     }
   }
   MarkLayerComposited();
 }
 
-scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
+scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage(
+    CanvasResourceProvider::FlushReason reason) {
   if (!GetDrawingBuffer())
     return nullptr;
 
@@ -760,7 +762,7 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
     NOTREACHED();
     return nullptr;
   }
-  return resource_provider->Snapshot();
+  return resource_provider->Snapshot(reason);
 }
 
 ScriptPromise WebGLRenderingContextBase::makeXRCompatible(
@@ -782,8 +784,8 @@ ScriptPromise WebGLRenderingContextBase::makeXRCompatible(
   if (make_xr_compatible_resolver_)
     return make_xr_compatible_resolver_->Promise();
 
-  make_xr_compatible_resolver_ =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  make_xr_compatible_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = make_xr_compatible_resolver_->Promise();
 
   MakeXrCompatibleAsync();
@@ -1535,16 +1537,18 @@ bool WebGLRenderingContextBase::PushFrameWithCopy() {
     if (Host()->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)) {
       const int width = GetDrawingBuffer()->Size().width();
       const int height = GetDrawingBuffer()->Size().height();
-      submitted_frame =
-          Host()->PushFrame(Host()->ResourceProvider()->ProduceCanvasResource(),
-                            SkIRect::MakeWH(width, height));
+      submitted_frame = Host()->PushFrame(
+          Host()->ResourceProvider()->ProduceCanvasResource(
+              CanvasResourceProvider::FlushReason::kNon2DCanvas),
+          SkIRect::MakeWH(width, height));
     }
   }
   MarkLayerComposited();
   return submitted_frame;
 }
 
-void WebGLRenderingContextBase::FinalizeFrame(bool /*printing*/) {
+void WebGLRenderingContextBase::FinalizeFrame(
+    CanvasResourceProvider::FlushReason) {
   if (Host()->LowLatencyEnabled()) {
     // PaintRenderingResultsToCanvas will export drawing buffer if the resource
     // provider is single buffered.  Otherwise it will copy the drawing buffer.
@@ -1690,14 +1694,8 @@ bool WebGLRenderingContextBase::IsOriginTopLeft() const {
 }
 
 void WebGLRenderingContextBase::SetIsInHiddenPage(bool hidden) {
-  is_hidden_ = hidden;
   if (GetDrawingBuffer())
     GetDrawingBuffer()->SetIsInHiddenPage(hidden);
-
-  if (!hidden && isContextLost() && restore_allowed_ &&
-      auto_recovery_method_ == kAuto && !restore_timer_.IsActive()) {
-    restore_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
-  }
 }
 
 bool WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
@@ -5465,7 +5463,8 @@ scoped_refptr<Image> WebGLRenderingContextBase::DrawImageIntoBufferForTexImage(
   draw_options.clamping_mode = Image::kDoNotClampImageToSourceRect;
   image->Draw(resource_provider->Canvas(), flags, gfx::RectF(dest_rect),
               gfx::RectF(src_rect), draw_options);
-  return resource_provider->Snapshot();
+  return resource_provider->Snapshot(
+      CanvasResourceProvider::FlushReason::kWebGLTexImage);
 }
 
 WebGLTexture* WebGLRenderingContextBase::ValidateTexImageBinding(
@@ -5957,7 +5956,8 @@ void WebGLRenderingContextBase::TexImageHelperCanvasRenderingContextHost(
 
   SourceImageStatus source_image_status = kInvalidSourceImageStatus;
   scoped_refptr<Image> image = context_host->GetSourceImageForCanvas(
-      &source_image_status, gfx::SizeF(*params.width, *params.height));
+      CanvasResourceProvider::FlushReason::kWebGLTexImage, &source_image_status,
+      gfx::SizeF(*params.width, *params.height));
   if (source_image_status != kNormalSourceImageStatus)
     return;
 
@@ -8541,13 +8541,11 @@ void WebGLRenderingContextBase::DispatchContextLostEvent(TimerBase*) {
       WebGLContextEvent::Create(event_type_names::kWebglcontextlost, "");
   Host()->HostDispatchEvent(event);
   restore_allowed_ = event->defaultPrevented();
-  if (restore_allowed_ && !is_hidden_) {
-    if (auto_recovery_method_ == kAuto) {
-      // Defer the restore timer to give the context loss
-      // notifications time to propagate through the system: in
-      // particular, to the browser process.
-      restore_timer_.StartOneShot(kDurationBetweenRestoreAttempts, FROM_HERE);
-    }
+  if (restore_allowed_ && auto_recovery_method_ == kAuto) {
+    // Defer the restore timer to give the context loss
+    // notifications time to propagate through the system: in
+    // particular, to the browser process.
+    restore_timer_.StartOneShot(kDurationBetweenRestoreAttempts, FROM_HERE);
   }
 
   if (!restore_allowed_) {

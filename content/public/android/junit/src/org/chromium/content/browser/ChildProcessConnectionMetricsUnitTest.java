@@ -24,11 +24,8 @@ import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.base.process_launcher.TestChildProcessConnection;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.content_public.common.ContentFeatures;
 
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 /**
  * Unit test for {@link ChildProcessConnectionMetrics}.
@@ -36,13 +33,6 @@ import java.util.Map;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.Q)
 public class ChildProcessConnectionMetricsUnitTest {
-    private static final Map<String, Boolean> DISABLE_NOT_PERCEPTIBLE_BINDING = new HashMap<>() {
-        { put(ContentFeatures.BINDING_MANAGER_USE_NOT_PERCEPTIBLE_BINDING, false); }
-    };
-    private static final Map<String, Boolean> ENABLE_NOT_PERCEPTIBLE_BINDING = new HashMap<>() {
-        { put(ContentFeatures.BINDING_MANAGER_USE_NOT_PERCEPTIBLE_BINDING, true); }
-    };
-
     private LinkedList<ChildProcessConnection> mRanking;
     private BindingManager mBindingManager;
     private ChildProcessConnectionMetrics mConnectionMetrics;
@@ -461,13 +451,11 @@ public class ChildProcessConnectionMetricsUnitTest {
     }
 
     private void setupBindingType(boolean useNotPerceptibleBinding) {
-        BindingManager.resetUseNotPerceptibleBindingForTesting();
+        BindingManager.setUseNotPerceptibleBindingForTesting(useNotPerceptibleBinding);
         if (useNotPerceptibleBinding) {
-            FeatureList.setTestFeatures(ENABLE_NOT_PERCEPTIBLE_BINDING);
             Assert.assertTrue(BindingManager.useNotPerceptibleBinding());
             return;
         }
-        FeatureList.setTestFeatures(DISABLE_NOT_PERCEPTIBLE_BINDING);
         Assert.assertFalse(BindingManager.useNotPerceptibleBinding());
     }
 }

@@ -1,11 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
+import filecmp
 import hashlib
 import json
 import os
@@ -40,33 +39,28 @@ def BuildForArch(arch):
   Run('scripts/fx', 'build', 'sdk', 'build/images')
 
 
-def _CopyFilesIntoExistingDirectory(src, dst):
-  for entry in os.listdir(src):
-    src_path = os.path.join(src, entry)
-    dst_path = os.path.join(dst, entry)
-    if os.path.isdir(src_path):
-      if not os.path.exists(dst_path):
-        os.mkdir(dst_path)
-      _CopyFilesIntoExistingDirectory(src_path, dst_path)
-    else:
-      shutil.copy(src_path, dst_path)
+def Copy(src, dst):
+  if os.path.exists(dst) and filecmp.cmp(src, dst, shallow=False):
+    return
+  shutil.copy2(src, dst)
 
 
 def main(args):
-  if len(args) == 0 or len(args) > 2 or not os.path.isdir(args[0]):
+  if len(args) == 0 or not os.path.isdir(args[0]):
     print("""usage: %s <path_to_fuchsia_tree> [architecture]""" % SELF_FILE)
     return 1
 
-  target_archs = []
-  if len(args) > 1:
-    arch = args[1]
-    if arch not in ['x64', 'arm64']:
-      print('Unknown architecture: ' + arch)
-      print('Must be "x64" or "arm64".')
-      return 1
-    target_archs = [arch]
+  ALL_ARCHS = set(['x64', 'arm64'])
+  if len(args) == 1:
+    target_archs = ALL_ARCHS
   else:
-    target_archs = ['x64', 'arm64']
+    target_archs = set(args[1:])
+    unknown_archs = target_archs - ALL_ARCHS
+    if unknown_archs:
+      print(
+          f'Unknown architectures: {unknown_archs}. Known architectures: {ALL_ARCHS}'
+      )
+      return 1
 
   # Nuke the SDK from DEPS, put our just-built one there, and set a fake .hash
   # file. This means that on next gclient runhooks, we'll restore to the
@@ -101,7 +95,10 @@ def main(args):
       Run('scripts/sdk/gn/generate.py', '--archive', sdk_tar_path, '--output',
           sdk_gn_dir)
 
-      _CopyFilesIntoExistingDirectory(sdk_gn_dir, sdk_output_dir)
+      shutil.copytree(sdk_gn_dir,
+                      sdk_output_dir,
+                      copy_function=Copy,
+                      dirs_exist_ok=True)
 
       # Merge the manifests.
       manifest_path = os.path.join(sdk_output_dir, 'meta', 'manifest.json')

@@ -1369,7 +1369,7 @@ bool HttpResponseHeaders::GetContentRangeFor206(
       instance_length);
 }
 
-base::Value HttpResponseHeaders::NetLogParams(
+base::Value::Dict HttpResponseHeaders::NetLogParams(
     NetLogCaptureMode capture_mode) const {
   base::Value::Dict dict;
   base::Value::List headers;
@@ -1383,7 +1383,7 @@ base::Value HttpResponseHeaders::NetLogParams(
     headers.Append(NetLogStringValue(base::StrCat({name, ": ", log_value})));
   }
   dict.Set("headers", std::move(headers));
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 bool HttpResponseHeaders::IsChunkEncoded() const {

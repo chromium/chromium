@@ -31,6 +31,8 @@ struct PhoneticsInfo;
 // A bubble style view to show QuickAnswer.
 class QuickAnswersView : public views::View {
  public:
+  static constexpr char kWidgetName[] = "QuickAnswersViewWidget";
+
   QuickAnswersView(const gfx::Rect& anchor_view_bounds,
                    const std::string& title,
                    bool is_internal,

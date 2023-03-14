@@ -461,20 +461,17 @@ void StyleSheetContents::ParseAuthorStyleSheet(
 
   const auto* context =
       MakeGarbageCollected<CSSParserContext>(ParserContext(), this);
-  CSSParser::ParseSheet(
-      context, this, sheet_text, CSSDeferPropertyParsing::kYes, true,
-      sheet_text.IsNull() ? nullptr : cached_style_sheet->TakeTokenizer());
+  CSSParser::ParseSheet(context, this, sheet_text,
+                        CSSDeferPropertyParsing::kYes);
 }
 
-ParseSheetResult StyleSheetContents::ParseString(
-    const String& sheet_text,
-    bool allow_import_rules,
-    std::unique_ptr<CachedCSSTokenizer> tokenizer) {
+ParseSheetResult StyleSheetContents::ParseString(const String& sheet_text,
+                                                 bool allow_import_rules) {
   const auto* context =
       MakeGarbageCollected<CSSParserContext>(ParserContext(), this);
   return CSSParser::ParseSheet(context, this, sheet_text,
-                               CSSDeferPropertyParsing::kNo, allow_import_rules,
-                               std::move(tokenizer));
+                               CSSDeferPropertyParsing::kNo,
+                               allow_import_rules);
 }
 
 bool StyleSheetContents::IsLoading() const {
@@ -631,6 +628,7 @@ static bool ChildRulesHaveFailedOrCanceledSubresources(
       case StyleRuleBase::kMedia:
       case StyleRuleBase::kLayerBlock:
       case StyleRuleBase::kScope:
+      case StyleRuleBase::kInitial:
         if (ChildRulesHaveFailedOrCanceledSubresources(
                 To<StyleRuleGroup>(rule)->ChildRules())) {
           return true;
@@ -748,14 +746,13 @@ void StyleSheetContents::ClearReferencedFromResource() {
   referenced_from_resource_ = nullptr;
 }
 
-RuleSet& StyleSheetContents::EnsureRuleSet(const MediaQueryEvaluator& medium,
-                                           AddRuleFlags add_rule_flags) {
+RuleSet& StyleSheetContents::EnsureRuleSet(const MediaQueryEvaluator& medium) {
   if (rule_set_ && rule_set_->DidMediaQueryResultsChange(medium)) {
     rule_set_ = nullptr;
   }
   if (!rule_set_) {
     rule_set_ = MakeGarbageCollected<RuleSet>();
-    rule_set_->AddRulesFromSheet(this, medium, add_rule_flags);
+    rule_set_->AddRulesFromSheet(this, medium);
   }
   return *rule_set_.Get();
 }

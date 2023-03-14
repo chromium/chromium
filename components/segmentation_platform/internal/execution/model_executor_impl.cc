@@ -59,7 +59,7 @@ struct ModelExecutorImpl::ExecutionState {
   std::unique_ptr<ModelExecutionTraceEvent> trace_event;
 
   proto::SegmentInfo segment_info;
-  raw_ptr<ModelProvider> model_provider = nullptr;
+  raw_ptr<ModelProvider, DanglingUntriaged> model_provider = nullptr;
   bool record_metrics_for_default = false;
   ModelExecutionCallback callback;
   ModelProvider::Request input_tensor;
@@ -191,9 +191,16 @@ void ModelExecutorImpl::OnModelExecutionComplete(
             << proto::SegmentId_Name(state->segment_info.segment_id());
     const proto::SegmentationModelMetadata& model_metadata =
         state->segment_info.model_metadata();
-    stats::RecordModelExecutionResult(state->segment_info.segment_id(),
-                                      result.value().at(0),
-                                      model_metadata.return_type());
+    if (model_metadata.has_output_config()) {
+      stats::RecordModelExecutionResult(state->segment_info.segment_id(),
+                                        result.value(),
+                                        model_metadata.output_config());
+    } else {
+      stats::RecordModelExecutionResult(state->segment_info.segment_id(),
+                                        result.value().at(0),
+                                        model_metadata.return_type());
+    }
+
     base::TimeDelta signal_storage_length =
         model_metadata.signal_storage_length() *
         metadata_utils::GetTimeUnit(model_metadata);
@@ -204,7 +211,7 @@ void ModelExecutorImpl::OnModelExecutionComplete(
         SegmentationUkmHelper::GetInstance()->RecordModelExecutionResult(
             state->segment_info.segment_id(),
             state->segment_info.model_version(), state->input_tensor,
-            result.value().at(0));
+            result.value());
       }
     }
     ModelProvider::Request input_tensor = state->input_tensor;

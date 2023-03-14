@@ -13,10 +13,14 @@
 namespace extensions {
 namespace image_writer {
 
+namespace {
+
 // Number of bytes for the maximum partition table size.  GUID partition tables
 // reside in the second sector of the disk.  Disks can have up to 4k sectors.
 // See http://crbug.com/328246 for more information.
-const int kPartitionTableSize = 2 * 4096;
+constexpr size_t kPartitionTableSize = 2 * 4096;
+
+}  // namespace
 
 DestroyPartitionsOperation::DestroyPartitionsOperation(
     base::WeakPtr<OperationManager> manager,
@@ -37,11 +41,8 @@ void DestroyPartitionsOperation::StartImpl() {
     return;
   }
 
-  std::unique_ptr<char[]> buffer(new char[kPartitionTableSize]);
-  memset(buffer.get(), 0, kPartitionTableSize);
-
-  if (base::WriteFile(image_path_, buffer.get(), kPartitionTableSize) !=
-      kPartitionTableSize) {
+  std::vector<uint8_t> buffer(kPartitionTableSize, 0);
+  if (!base::WriteFile(image_path_, buffer)) {
     Error(error::kTempFileError);
     return;
   }

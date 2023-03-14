@@ -7,10 +7,10 @@ package org.chromium.chrome.browser.dom_distiller;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -128,10 +128,10 @@ public class ReaderModeManagerTest {
         when(mWebContents.getNavigationController()).thenReturn(mNavController);
         when(mNavController.getUseDesktopUserAgent()).thenReturn(false);
 
-        when(DomDistillerUrlUtils.isDistilledPage(MOCK_DISTILLER_URL)).thenReturn(true);
-        when(DomDistillerUrlUtils.isDistilledPage(MOCK_URL)).thenReturn(false);
+        when(mDistillerUrlUtilsJniMock.isDistilledPage(MOCK_DISTILLER_URL.getSpec()))
+                .thenReturn(true);
 
-        when(DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(MOCK_DISTILLER_URL))
+        when(mDistillerUrlUtilsJniMock.getOriginalUrlFromDistillerUrl(MOCK_DISTILLER_URL.getSpec()))
                 .thenReturn(MOCK_URL);
 
         mManager = new ReaderModeManager(mTab, () -> mMessageDispatcher);

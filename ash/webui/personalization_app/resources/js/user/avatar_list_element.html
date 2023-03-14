@@ -117,7 +117,8 @@
         <div class="image-border-container">
           <img class$="[[getImageClassForOption_(item)]]"
               src="[[item.imgSrc]]"
-              style$="[[getImgBackgroundStyle_(item.imgSrc, item.defaultImageIndex)]]">
+              style$="[[getImgBackgroundStyle_(item.imgSrc, item.defaultImageIndex)]]"
+              on-error="onImgError_">
           <iron-icon icon$="[[item.icon]]"></iron-icon>
         </div>
       </div>

@@ -69,8 +69,6 @@ SkiaOutputDeviceGL::SkiaOutputDeviceGL(
   }
   capabilities_.pending_swap_params.max_pending_swaps =
       gl_surface_->GetBufferCount() - 1;
-  capabilities_.supports_commit_overlay_planes =
-      gl_surface_->SupportsCommitOverlayPlanes();
   capabilities_.supports_gpu_vsync = gl_surface_->SupportsGpuVSync();
 #if BUILDFLAG(IS_ANDROID)
   // TODO(weiliangc): This capability is used to check whether we should do
@@ -225,8 +223,9 @@ bool SkiaOutputDeviceGL::Reshape(
   return !!sk_surface_;
 }
 
-void SkiaOutputDeviceGL::SwapBuffers(BufferPresentedCallback feedback,
-                                     OutputSurfaceFrame frame) {
+void SkiaOutputDeviceGL::Present(const absl::optional<gfx::Rect>& update_rect,
+                                 BufferPresentedCallback feedback,
+                                 OutputSurfaceFrame frame) {
   StartSwapBuffers({});
 
   gfx::Size surface_size =
@@ -237,58 +236,25 @@ void SkiaOutputDeviceGL::SwapBuffers(BufferPresentedCallback feedback,
     auto callback = base::BindOnce(
         &SkiaOutputDeviceGL::DoFinishSwapBuffersAsync,
         weak_ptr_factory_.GetWeakPtr(), surface_size, std::move(frame));
-    gl_surface_->SwapBuffersAsync(std::move(callback), std::move(feedback),
-                                  data);
+
+    if (update_rect) {
+      gl_surface_->PostSubBufferAsync(
+          update_rect->x(), update_rect->y(), update_rect->width(),
+          update_rect->height(), std::move(callback), std::move(feedback),
+          std::move(data));
+    } else {
+      gl_surface_->SwapBuffersAsync(std::move(callback), std::move(feedback),
+                                    std::move(data));
+    }
   } else {
-    gfx::SwapResult result =
-        gl_surface_->SwapBuffers(std::move(feedback), data);
-    DoFinishSwapBuffers(surface_size, std::move(frame),
-                        gfx::SwapCompletionResult(result));
-  }
-}
-
-void SkiaOutputDeviceGL::PostSubBuffer(const gfx::Rect& rect,
-                                       BufferPresentedCallback feedback,
-                                       OutputSurfaceFrame frame) {
-  StartSwapBuffers({});
-
-  gfx::Size surface_size =
-      gfx::Size(sk_surface_->width(), sk_surface_->height());
-
-  auto data = frame.data;
-  if (supports_async_swap_) {
-    auto callback = base::BindOnce(
-        &SkiaOutputDeviceGL::DoFinishSwapBuffersAsync,
-        weak_ptr_factory_.GetWeakPtr(), surface_size, std::move(frame));
-    gl_surface_->PostSubBufferAsync(rect.x(), rect.y(), rect.width(),
-                                    rect.height(), std::move(callback),
-                                    std::move(feedback), data);
-  } else {
-    gfx::SwapResult result =
-        gl_surface_->PostSubBuffer(rect.x(), rect.y(), rect.width(),
-                                   rect.height(), std::move(feedback), data);
-    DoFinishSwapBuffers(surface_size, std::move(frame),
-                        gfx::SwapCompletionResult(result));
-  }
-}
-
-void SkiaOutputDeviceGL::CommitOverlayPlanes(BufferPresentedCallback feedback,
-                                             OutputSurfaceFrame frame) {
-  StartSwapBuffers({});
-
-  gfx::Size surface_size =
-      gfx::Size(sk_surface_->width(), sk_surface_->height());
-
-  auto data = frame.data;
-  if (supports_async_swap_) {
-    auto callback = base::BindOnce(
-        &SkiaOutputDeviceGL::DoFinishSwapBuffersAsync,
-        weak_ptr_factory_.GetWeakPtr(), surface_size, std::move(frame));
-    gl_surface_->CommitOverlayPlanesAsync(std::move(callback),
-                                          std::move(feedback), data);
-  } else {
-    gfx::SwapResult result =
-        gl_surface_->CommitOverlayPlanes(std::move(feedback), data);
+    gfx::SwapResult result;
+    if (update_rect) {
+      result = gl_surface_->PostSubBuffer(
+          update_rect->x(), update_rect->y(), update_rect->width(),
+          update_rect->height(), std::move(feedback), std::move(data));
+    } else {
+      result = gl_surface_->SwapBuffers(std::move(feedback), std::move(data));
+    }
     DoFinishSwapBuffers(surface_size, std::move(frame),
                         gfx::SwapCompletionResult(result));
   }

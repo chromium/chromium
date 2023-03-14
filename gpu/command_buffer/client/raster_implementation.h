@@ -201,6 +201,7 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
                            GLuint dst_row_bytes,
                            int src_x,
                            int src_y,
+                           int plane_index,
                            void* dst_pixels) override;
   GLuint CreateAndConsumeForGpuRaster(const gpu::Mailbox& mailbox) override;
   void DeleteGpuRasterTexture(GLuint texture) override;
@@ -345,6 +346,7 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
                                    GLuint dst_row_bytes,
                                    int src_x,
                                    int src_y,
+                                   int plane_index,
                                    base::OnceCallback<void(bool)> readback_done,
                                    void* dst_pixels);
 

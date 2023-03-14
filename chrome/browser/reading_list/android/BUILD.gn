@@ -12,8 +12,6 @@ group("android") {
 
 source_set("reading_list") {
   sources = [
-    "empty_reading_list_manager.cc",
-    "empty_reading_list_manager.h",
     "reading_list_manager.h",
     "reading_list_manager_impl.cc",
     "reading_list_manager_impl.h",

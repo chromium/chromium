@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">ലിങ്ക് തിരിച്ചറിഞ്ഞു. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">പേജ് <ph name="PAGE_NUMBER" /> ഇല്ലാതാക്കി</translation>
 <translation id="1258009455399840361">ഘടികാരദിശയിൽ 90 ഡിഗ്രി റൊട്ടേറ്റ് ചെയ്യുക</translation>
-<translation id="1300209025925956156">നിങ്ങളുടെ ഡോക്യുമെന്റ് സ്‌കാൻ ചെയ്യുക</translation>
-<translation id="1309250603447638106">ഡോക്യുമെന്റ് സ്‌കാൻ ചെയ്യലിനുള്ള അപ്ഡേറ്റുകൾ ഡൗൺലോഡ് ചെയ്യുന്നു</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. ആക്‌സസ് ചെയ്യാൻ തിരയൽ + ഇടത്തേയ്ക്കുള്ള അമ്പടയാളം അമർത്തുക.</translation>
 <translation id="1417314334557041815"><ph name="INDEX" />-ാമത്തെ പേജ് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> അൺപ്ലഗ് ചെയ്‌തിരിക്കുന്നു.</translation>
 <translation id="1473110567575736769">3 സെക്കൻഡ് ടൈമർ</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">ഒന്നും റെക്കോർഡ് ചെയ്‌തില്ല</translation>
 <translation id="1838104802459806957">മുകളിലേക്ക് ടിൽറ്റ് ചെയ്യുക</translation>
 <translation id="1843105061469674856">മറ്റൊരു പേജ് സ്കാൻ ചെയ്യുക</translation>
-<translation id="1851169887664797861">അധിക ക്യാമറാ നിയന്ത്രണങ്ങൾ ലഭ്യമാണ്</translation>
 <translation id="1851616744363735765">താൽക്കാലികമായി നിർത്തി</translation>
 <translation id="1899697626337024495">ഫോട്ടോ റെസല്യൂഷൻ</translation>
 <translation id="1925845977604399247">ഗാലറിയിലേക്ക് പോകുക</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">സ്‌കാൻ തരം</translation>
 <translation id="28682968802727151">മിറർ പ്രിവ്യു</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> പ്ലഗ്-ഇൻ ചെയ്‌തിരിക്കുന്നു.</translation>
-<translation id="2904654629665923749">ഡോക്യുമെന്റ് സ്‌കാൻ ലഭ്യമാണ്</translation>
 <translation id="3067436040345934772">വലത്തേക്ക് പാൻ ചെയ്യുക</translation>
 <translation id="3081586908890909590">വീഡിയോ റെക്കോർഡ് ചെയ്യുന്നതിലേക്ക് മാറുക</translation>
 <translation id="313467653172006084">30 FPS</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">ലിങ്ക് വിലാസം പകർത്തുക</translation>
 <translation id="4281620174117014503">മീഡിയം റെസല്യൂഷൻ</translation>
 <translation id="428234092390943511">പേജിന്റെ ലഘുചിത്രം</translation>
-<translation id="4340659173795395806">ഇപ്പോൾ നിങ്ങൾക്ക് ഒന്നിലധികം പേജുള്ള PDF സൃഷ്ടിക്കാം</translation>
 <translation id="4383571725254449280">പ്രകടന ലോഗുകൾ പ്രിന്റ് ചെയ്യുക</translation>
 <translation id="4445542136948522167">ഫോട്ടോ എടുക്കുന്നത് നിർത്തുക</translation>
 <translation id="4570032796877367747">മുൻ ക്യാമറ</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">സംരക്ഷിക്കുക</translation>
 <translation id="5320594929574852403">ഇടത് ദിശയിൽ നീങ്ങുന്നു</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5444515100983837161">ഡോക്യുമെന്റിന്റെ എല്ലാ അരികുകളും ഫ്രെയിമിനകത്ത് വയ്ക്കുക. ഡോക്യുമെന്റും അതിന്റെ പശ്ചാത്തലവും വ്യത്യസ്ത നിറങ്ങളിലാണെങ്കിൽ സ്‌കാൻ ചെയ്യൽ മികച്ച രീതിയിൽ പ്രവർത്തിക്കുന്നു.</translation>
 <translation id="5662366948659129155"><ph name="COUNT" />-ാമത്തെ പേജ് സ്‌കാൻ ചെയ്യുന്നു</translation>
 <translation id="5671277269877808209">ചതുരം</translation>
 <translation id="5746169159649715125">PDF ആയി സംരക്ഷിക്കുക</translation>
@@ -157,7 +150,6 @@
 <translation id="8428213095426709021">ക്രമീകരണം</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">മൈക്രോഫോൺ മ്യൂട്ട് ചെയ്യൽ മാറ്റുക. മ്യൂട്ട് ചെയ്യൽ ഓണാണ്</translation>
-<translation id="8712637175834984815">മനസ്സിലായി</translation>
 <translation id="8730621377337864115">പൂർത്തിയാക്കി</translation>
 <translation id="8732462232047530626">മെറ്റാഡാറ്റ പ്രിവ്യൂ ചെയ്യൂ</translation>
 <translation id="8815966864175525708">പോർട്രെയ്റ്റ് ഫോട്ടോയെടുക്കാൻ സ്വിച്ച് ചെയ്യൂ</translation>

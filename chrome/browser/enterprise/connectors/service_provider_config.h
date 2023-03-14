@@ -5,10 +5,6 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_SERVICE_PROVIDER_CONFIG_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_SERVICE_PROVIDER_CONFIG_H_
 
-#include <array>
-#include <map>
-#include <vector>
-
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -31,6 +27,7 @@ struct AnalysisConfig {
 
   const base::span<const SupportedTag> supported_tags;
   const bool user_specific = false;
+  const base::span<const char* const> subject_names;
 };
 
 struct ReportingConfig {

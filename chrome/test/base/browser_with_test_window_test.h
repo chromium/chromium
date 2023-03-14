@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
@@ -279,6 +280,11 @@ class BrowserWithTestWindowTest : public testing::Test {
   // Initialize the variations provider.
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
+
+  // Some of the UI elements in top chrome need to observe the
+  // UserPerformanceTuningManager, so create and install a fake.
+  performance_manager::user_tuning::TestUserPerformanceTuningManagerEnvironment
+      user_performance_tuning_manager_environment_;
 };
 
 #endif  // CHROME_TEST_BASE_BROWSER_WITH_TEST_WINDOW_TEST_H_

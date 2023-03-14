@@ -4,6 +4,7 @@
 
 #include "ui/views/interaction/interactive_views_test.h"
 
+#include <functional>
 #include <memory>
 
 #include "base/test/bind.h"
@@ -181,7 +182,7 @@ TEST_F(InteractiveViewsTestTest, NameViewAbsoluteDeferred) {
   View* view = nullptr;
   RunTestSequence(
       Do(base::BindLambdaForTesting([&]() { view = button2_.get(); })),
-      NameView(kViewName, &view),
+      NameView(kViewName, std::ref(view)),
       WithElement(kViewName,
                   base::BindLambdaForTesting([&](ui::TrackedElement* el) {
                     EXPECT_EQ(view, AsView(el));
@@ -284,20 +285,69 @@ TEST_F(InteractiveViewsTestTest, NameDescendantViewByTypeAndIndex) {
 TEST_F(InteractiveViewsTestTest, IfViewTrue) {
   UNCALLED_MOCK_CALLBACK(base::OnceCallback<bool(const LabelButton*)>,
                          condition);
-  UNCALLED_MOCK_CALLBACK(base::OnceClosure, step);
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, step1);
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, step2);
 
   EXPECT_CALL(condition, Run(button1_.get())).WillOnce(testing::Return(true));
-  EXPECT_CALL(step, Run);
-  RunTestSequence(IfView(kButton1Id, condition.Get(), Do(step.Get())));
+  EXPECT_CALL(step1, Run);
+  RunTestSequence(
+      IfView(kButton1Id, condition.Get(), Do(step1.Get()), Do(step2.Get())));
 }
 
 TEST_F(InteractiveViewsTestTest, IfViewFalse) {
   UNCALLED_MOCK_CALLBACK(base::OnceCallback<bool(const LabelButton*)>,
                          condition);
-  UNCALLED_MOCK_CALLBACK(base::OnceClosure, step);
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, step1);
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, step2);
 
   EXPECT_CALL(condition, Run(button1_.get())).WillOnce(testing::Return(false));
-  RunTestSequence(IfView(kButton1Id, condition.Get(), Do(step.Get())));
+  EXPECT_CALL(step2, Run);
+  RunTestSequence(
+      IfView(kButton1Id, condition.Get(), Do(step1.Get()), Do(step2.Get())));
+}
+
+TEST_F(InteractiveViewsTestTest, IfViewMatchesTrue) {
+  UNCALLED_MOCK_CALLBACK(base::OnceCallback<int(const LabelButton*)>,
+                         condition);
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, step1);
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, step2);
+
+  EXPECT_CALL(condition, Run(button1_.get())).WillOnce(testing::Return(1));
+  EXPECT_CALL(step1, Run);
+  RunTestSequence(IfViewMatches(kButton1Id, condition.Get(), 1, Do(step1.Get()),
+                                Do(step2.Get())));
+}
+
+TEST_F(InteractiveViewsTestTest, IfViewMatchesFalse) {
+  UNCALLED_MOCK_CALLBACK(base::OnceCallback<int(const LabelButton*)>,
+                         condition);
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, step1);
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, step2);
+
+  EXPECT_CALL(condition, Run(button1_.get())).WillOnce(testing::Return(2));
+  EXPECT_CALL(step2, Run);
+  RunTestSequence(IfViewMatches(kButton1Id, condition.Get(), 1, Do(step1.Get()),
+                                Do(step2.Get())));
+}
+
+TEST_F(InteractiveViewsTestTest, IfViewPropertyMatchesTrue) {
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, step1);
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, step2);
+
+  EXPECT_CALL(step1, Run);
+  RunTestSequence(IfViewPropertyMatches(kButton1Id, &LabelButton::GetText,
+                                        std::u16string(kButton1Caption),
+                                        Do(step1.Get()), Do(step2.Get())));
+}
+
+TEST_F(InteractiveViewsTestTest, IfViewPropertyMatchesFalse) {
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, step1);
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, step2);
+
+  EXPECT_CALL(step2, Run);
+  RunTestSequence(IfViewPropertyMatches(kButton1Id, &LabelButton::GetText,
+                                        testing::Ne(kButton1Caption),
+                                        Do(step1.Get()), Do(step2.Get())));
 }
 
 // Test that elements named in the main test sequence are available in
@@ -314,6 +364,27 @@ TEST_F(InteractiveViewsTestTest, InParallelNamedView) {
       // the outer sequence. Both should succeed.
       InParallel(CheckView(kViewName, is_view(), button1_),
                  CheckView(kViewName2, is_view(), button2_)));
+}
+
+// Test that various automatic binding methods work with verbs and conditions.
+TEST_F(InteractiveViewsTestTest, BindingMethods) {
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, correct);
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, incorrect);
+
+  auto get_second_tab = [](TabbedPane* tabs) { return tabs->GetTabAt(1U); };
+
+  EXPECT_CALL(correct, Run).Times(2);
+  RunTestSequence(
+      SelectTab(kTabbedPaneId, 1U),
+      NameViewRelative(kTabbedPaneId, kViewName, get_second_tab),
+      WithView(kViewName, [](TabbedPaneTab* tab) { EXPECT_NE(nullptr, tab); }),
+      IfView(
+          kViewName, [](const TabbedPaneTab* tab) { return tab != nullptr; },
+          Do(correct.Get()), Do(incorrect.Get())),
+      IfViewMatches(
+          kViewName,
+          [this](const TabbedPaneTab* tab) { return tabs_->GetIndexOf(tab); },
+          0U, Do(incorrect.Get()), Do(correct.Get())));
 }
 
 }  // namespace views::test

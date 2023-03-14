@@ -198,7 +198,7 @@ FeatureInfo::FeatureInfo(
   feature_flags_.chromium_image_ycbcr_420v = base::Contains(
       gpu_feature_info.supported_buffer_formats_for_allocation_and_texturing,
       gfx::BufferFormat::YUV_420_BIPLANAR);
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
   feature_flags_.chromium_image_ycbcr_420v = true;
 #endif
 
@@ -1246,9 +1246,9 @@ void FeatureInfo::InitializeFeatures() {
         gfx::BufferFormat::YUV_420_BIPLANAR);
   }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   // Mac can create GLImages out of AR30 IOSurfaces only after 10.13 which is
-  // required for Chromium.
+  // required for Chromium. iOS based devices seem to handle well also.
   feature_flags_.chromium_image_ar30 = true;
 #elif !BUILDFLAG(IS_WIN)
   // TODO(mcasas): connect in Windows, https://crbug.com/803451

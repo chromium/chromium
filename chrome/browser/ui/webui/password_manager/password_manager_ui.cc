@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
 
+#include "base/i18n/message_formatter.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
+#include "chrome/browser/ui/webui/password_manager/sync_handler.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -26,6 +28,7 @@
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -66,6 +69,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
      IDS_PASSWORD_MANAGER_UI_ADD_SHORTCUT_DESCRIPTION},
     {"alreadyChangedPasswordLink",
      IDS_PASSWORD_MANAGER_UI_ALREADY_CHANGED_PASSWORD},
+    {"authTimedOut", IDS_PASSWORD_MANAGER_UI_AUTH_TIMED_OUT},
     {"autosigninDescription", IDS_PASSWORD_MANAGER_UI_AUTOSIGNIN_TOGGLE_DESC},
     {"autosigninLabel", IDS_PASSWORD_MANAGER_UI_AUTOSIGNIN_TOGGLE_LABEL},
     {"blockedSitesDescription",
@@ -124,6 +128,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     {"exportPasswordsTryAgain", IDS_PASSWORD_MANAGER_UI_EXPORT_TRY_AGAIN},
     {"exportSuccessful", IDS_PASSWORD_MANAGER_UI_EXPORT_SUCCESSFUL},
     {"federationLabel", IDS_PASSWORD_MANAGER_UI_FEDERATION_LABEL},
+    {"gotIt", IDS_SETTINGS_GOT_IT},
     {"help", IDS_PASSWORD_MANAGER_UI_HELP},
     {"hidePassword", IDS_PASSWORD_MANAGER_UI_HIDE_PASSWORD},
     {"importPasswords", IDS_PASSWORD_MANAGER_UI_IMPORT_BANNER_TITLE},
@@ -134,25 +139,36 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     {"localPasswordManager",
      IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE},
     {"menu", IDS_MENU},
+    {"missingTLD", IDS_PASSWORD_MANAGER_UI_MISSING_TLD},
     {"moreActions", IDS_PASSWORD_MANAGER_UI_MORE_ACTIONS},
     {"muteCompromisedPassword", IDS_PASSWORD_MANAGER_UI_MUTE_ISSUE},
     {"mutedCompromisedCredentials",
      IDS_PASSWORD_MANAGER_UI_MUTED_COMPROMISED_PASSWORDS},
+    {"notValidWebsite", IDS_PASSWORD_MANAGER_UI_NOT_VALID_WEB_ADDRESS},
     {"notesLabel", IDS_PASSWORD_MANAGER_UI_NOTES_LABEL},
+    {"opensInNewTab", IDS_PASSWORD_MANAGER_UI_OPENS_IN_NEW_TAB},
     {"passwordCopiedToClipboard",
      IDS_PASSWORD_MANAGER_UI_PASSWORD_COPIED_TO_CLIPBOARD},
     {"passwordDeleted", IDS_PASSWORD_MANAGER_UI_PASSWORD_DELETED},
     {"passwordLabel", IDS_PASSWORD_MANAGER_UI_PASSWORD_LABEL},
     {"passwordManager",
      IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT},
+    {"passwordNoteCharacterCount",
+     IDS_PASSWORD_MANAGER_UI_NOTE_CHARACTER_COUNT},
+    {"passwordNoteCharacterCountWarning",
+     IDS_PASSWORD_MANAGER_UI_NOTE_CHARACTER_COUNT_WARNING},
     {"passwords", IDS_PASSWORD_MANAGER_UI_PASSWORDS},
     {"phishedAndLeakedPassword",
      IDS_PASSWORD_MANAGER_UI_PASSWORD_PHISHED_AND_LEAKED},
     {"phishedPassword", IDS_PASSWORD_MANAGER_UI_PASSWORD_PHISHED},
+    {"removeBlockedAriaDescription",
+     IDS_PASSWORD_MANAGER_UI_REMOVE_BLOCKED_SITE_ARIA_DESCRIPTION},
     {"reusedPasswordsDescription",
      IDS_PASSWORD_MANAGER_UI_REUSED_PASSWORDS_DESCRIPTION},
     {"reusedPasswordsEmpty", IDS_PASSWORD_MANAGER_UI_NO_REUSED_PASSWORDS},
     {"reusedPasswordsTitle", IDS_PASSWORD_MANAGER_UI_HAS_REUSED_PASSWORDS},
+    {"runCheckupAriaDescription",
+     IDS_PASSWORD_MANAGER_UI_RUN_CHECKUP_ARIA_DESCRIPTION},
     {"save", IDS_SAVE},
     {"savePasswordsLabel", IDS_PASSWORD_MANAGER_UI_SAVE_PASSWORDS_TOGGLE_LABEL},
     {"searchPrompt", IDS_PASSWORD_MANAGER_UI_SEARCH_PROMPT},
@@ -164,13 +180,23 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     {"trustedVaultBannerLabelOfferOptIn",
      IDS_PASSWORD_MANAGER_UI_TRUSTED_VAULT_OPT_IN_TITLE},
     {"trustedVaultBannerSubLabelOfferOptIn",
-     IDS_PASSWORD_MANAGER_UI_RUSTED_VAULT_OPT_IN_DESCRIPTION},
+     IDS_PASSWORD_MANAGER_UI_TRUSTED_VAULT_OPT_IN_DESCRIPTION},
+    {"trustedVaultBannerLabelOptedIn",
+     IDS_PASSWORD_MANAGER_UI_TRUSTED_VAULT_OPTED_IN_TITLE},
+    {"trustedVaultBannerSubLabelOptedIn",
+     IDS_PASSWORD_MANAGER_UI_TRUSTED_VAULT_OPTED_IN_DESCRIPTION},
     {"tryAgain", IDS_PASSWORD_MANAGER_UI_CHECK_PASSWORDS_AFTER_ERROR},
     {"undoRemovePassword", IDS_PASSWORD_MANAGER_UI_UNDO},
     {"unmuteCompromisedPassword", IDS_PASSWORD_MANAGER_UI_UNMUTE_ISSUE},
+    {"usernameAlreadyUsed", IDS_PASSWORD_MANAGER_UI_USERNAME_ALREADY_USED},
     {"usernameCopiedToClipboard",
      IDS_PASSWORD_MANAGER_UI_USERNAME_COPIED_TO_CLIPBOARD},
     {"usernameLabel", IDS_PASSWORD_MANAGER_UI_USERNAME_LABEL},
+    {"viewExistingPassword", IDS_PASSWORD_MANAGER_UI_VIEW_EXISTING_PASSWORD},
+    {"viewExistingPasswordAriaDescription",
+     IDS_PASSWORD_MANAGER_UI_VIEW_EXISTING_PASSWORD_ARIA_DESCRIPTION},
+    {"viewPasswordAriaDescription",
+     IDS_PASSWORD_MANAGER_UI_VIEW_PASSWORD_ARIA_DESCRIPTION},
     {"weakPasswordsDescription",
      IDS_PASSWORD_MANAGER_UI_WEAK_PASSWORDS_DESCRIPTION},
     {"weakPasswordsEmpty", IDS_PASSWORD_MANAGER_UI_NO_WEAK_PASSWORDS},
@@ -179,9 +205,13 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
 #if BUILDFLAG(IS_MAC)
     {"biometricAuthenticaionForFillingLabel",
      IDS_PASSWORD_MANAGER_UI_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_LABEL_MAC},
+    {"biometricAuthenticaionForFillingSublabel",
+     IDS_PASSWORD_MANAGER_UI_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_SUBLABEL_MAC},
 #elif BUILDFLAG(IS_WIN)
     {"biometricAuthenticaionForFillingLabel",
      IDS_PASSWORD_MANAGER_UI_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_LABEL_WIN},
+    {"biometricAuthenticaionForFillingSublabel",
+     IDS_PASSWORD_MANAGER_UI_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_SUBLABEL_WIN},
 #endif
   };
   for (const auto& str : kStrings)
@@ -220,6 +250,16 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
                                            IDS_UNDO_DESCRIPTION,
                                            undo_accelerator.GetShortcutText()));
 
+  // Password details page timeouts in 5 minutes:
+  source->AddString(
+      "authTimedOutDescription",
+      base::i18n::MessageFormatter::FormatWithNumberedArgs(
+          l10n_util::GetStringUTF16(
+              IDS_PASSWORD_MANAGER_UI_AUTH_TIMED_OUT_DESCRIPTION),
+          l10n_util::GetStringUTF16(
+              IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE),
+          syncer::kPasswordNotesAuthValidity.Get().InMinutes()));
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Overwrite ubranded logo for Chrome-branded builds.
   source->AddResourcePath("images/password_manager_logo.svg",
@@ -231,6 +271,10 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
   source->AddResourcePath("images/password_manager_pwa_icon.svg",
                           IDR_CHROME_PASSWORD_MANAGER_PWA_ICON);
 #endif
+
+  source->AddString("trustedVaultOptInUrl", chrome::kSyncTrustedVaultOptInURL);
+  source->AddString("trustedVaultLearnMoreUrl",
+                    chrome::kSyncTrustedVaultLearnMoreURL);
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
@@ -260,6 +304,8 @@ void AddPluralStrings(content::WebUI* web_ui) {
       "weakPasswords", IDS_PASSWORD_MANAGER_UI_WEAK_PASSWORDS_COUNT);
   plural_string_handler->AddLocalizedString(
       "searchResults", IDS_PASSWORD_MANAGER_UI_SEARCH_RESULT);
+  plural_string_handler->AddLocalizedString(
+      "movePasswords", IDS_PASSWORD_MANAGER_UI_MOVE_PASSWORDS_TO_ACCOUNT);
   web_ui->AddMessageHandler(std::move(plural_string_handler));
 }
 
@@ -272,6 +318,8 @@ PasswordManagerUI::PasswordManagerUI(content::WebUI* web_ui)
   passwords_private_delegate_ =
       extensions::PasswordsPrivateDelegateFactory::GetForBrowserContext(profile,
                                                                         true);
+  web_ui->AddMessageHandler(
+      std::make_unique<password_manager::SyncHandler>(profile));
   auto* source = CreateAndAddPasswordsUIHTMLSource(profile, web_ui);
   AddPluralStrings(web_ui);
   ManagedUIHandler::Initialize(web_ui, source);

@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/apps/apk_web_app_installer.h"
@@ -780,6 +781,36 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerBrowserTest,
     ExpectInitialManifestFieldsFromWebAppInstallInfo(icon_manager(), web_app,
                                                      GURL(kAppUrl));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerDelayedArcStartBrowserTest,
+                       RemoveWebAppWhenArcDisabled) {
+  EnableArc();
+  app_instance_->SendRefreshPackageList({});
+
+  ApkWebAppService* service = apk_web_app_service();
+  service->SetArcAppListPrefsForTesting(arc_app_list_prefs_);
+
+  // Install the Web App from ARC.
+  base::test::TestFuture<const std::string&, const web_app::AppId&>
+      installed_future;
+  service->SetWebAppInstalledCallbackForTesting(installed_future.GetCallback());
+  app_instance_->SendPackageAdded(GetWebAppPackage(kPackageName, kAppTitle));
+
+  web_app::AppId installed_app_id = installed_future.Get<1>();
+  ASSERT_TRUE(service->IsWebAppInstalledFromArc(installed_app_id));
+
+  // Disable ARC through settings and check that the app was uninstalled.
+  base::test::TestFuture<const std::string&, const web_app::AppId&>
+      uninstalled_future;
+  service->SetWebAppUninstalledCallbackForTesting(
+      uninstalled_future.GetCallback());
+
+  arc::SetArcPlayStoreEnabledForProfile(browser()->profile(), false);
+  DisableArc();
+
+  ASSERT_TRUE(installed_future.Wait());
+  ASSERT_EQ(uninstalled_future.Get<1>(), installed_app_id);
 }
 
 }  // namespace ash

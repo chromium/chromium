@@ -161,6 +161,7 @@ android_library("full_java") {
     "java/src/org/chromium/components/payments/CanMakePaymentQuery.java",
     "java/src/org/chromium/components/payments/CurrencyFormatter.java",
     "java/src/org/chromium/components/payments/ErrorMessageUtil.java",
+    "java/src/org/chromium/components/payments/InputProtector.java",
     "java/src/org/chromium/components/payments/InvalidPaymentRequest.java",
     "java/src/org/chromium/components/payments/JniPaymentApp.java",
     "java/src/org/chromium/components/payments/JourneyLogger.java",
@@ -328,6 +329,7 @@ java_cpp_enum("pre_purchase_query_enum_javagen") {
 
 robolectric_library("junit_test_support") {
   sources = [
+    "junit/src/org/chromium/components/payments/test_support/FakeClock.java",
     "junit/src/org/chromium/components/payments/test_support/PaymentRequestServiceBuilder.java",
     "junit/src/org/chromium/components/payments/test_support/ShadowPaymentFeatureList.java",
     "junit/src/org/chromium/components/payments/test_support/ShadowWebContentsStatics.java",

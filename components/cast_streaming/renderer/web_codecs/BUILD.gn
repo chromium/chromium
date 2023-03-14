@@ -1,0 +1,47 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+visibility = [ "//components/cast_streaming/renderer/*" ]
+
+source_set("web_codecs") {
+  # TODO(crbug.com/1357085): Move public headers here when they are used and move
+  # associated `deps` to `public_deps`.
+  public = []
+  sources = [
+    "delegating_decoder_buffer_provider.h",
+    "stream_control_channel.cc",
+    "stream_control_channel.h",
+  ]
+  deps = [
+    "//base",
+    "//components/cast_streaming/common:mojom",
+    "//components/cast_streaming/renderer:decoder_buffer_provider",
+    "//components/cast_streaming/renderer/common",
+    "//media/mojo/common",
+    "//media/mojo/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+  friend = [ ":unit_tests" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  public = []
+  sources = [ "delegating_decoder_buffer_provider_unittest.cc" ]
+  deps = [
+    ":web_codecs",
+    "//base",
+    "//base/test:test_support",
+    "//components/cast_streaming/common:mojom",
+    "//components/cast_streaming/renderer:decoder_buffer_provider",
+    "//media:test_support",
+    "//media/",
+    "//media/mojo/common",
+    "//media/mojo/mojom",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx",
+  ]
+}

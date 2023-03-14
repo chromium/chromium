@@ -262,17 +262,7 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   // for (const auto& child : AllChildren()) {}.
   AllChildrenRange AllChildren() const { return AllChildrenRange(this); }
 
-  // Derivative utils for AXPlatformNodeDelegate::GetHypertextRangeBoundsRect
-  gfx::Rect GetUnclippedRootFrameHypertextRangeBoundsRect(
-      const int start_offset,
-      const int end_offset,
-      ui::AXOffscreenResult* offscreen_result = nullptr) const;
-
   // Derivative utils for AXPlatformNodeDelegate::GetInnerTextRangeBoundsRect
-  gfx::Rect GetUnclippedScreenInnerTextRangeBoundsRect(
-      const int start_offset,
-      const int end_offset,
-      ui::AXOffscreenResult* offscreen_result = nullptr) const;
   gfx::Rect GetUnclippedRootFrameInnerTextRangeBoundsRect(
       const int start_offset,
       const int end_offset,
@@ -373,11 +363,11 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   // `AXPlatformNodeDelegate` implementation.
   gfx::NativeViewAccessible GetParent() const override;
   size_t GetChildCount() const override;
-  gfx::NativeViewAccessible ChildAtIndex(size_t index) override;
-  gfx::NativeViewAccessible GetFirstChild() override;
-  gfx::NativeViewAccessible GetLastChild() override;
-  gfx::NativeViewAccessible GetNextSibling() override;
-  gfx::NativeViewAccessible GetPreviousSibling() override;
+  gfx::NativeViewAccessible ChildAtIndex(size_t index) const override;
+  gfx::NativeViewAccessible GetFirstChild() const override;
+  gfx::NativeViewAccessible GetLastChild() const override;
+  gfx::NativeViewAccessible GetNextSibling() const override;
+  gfx::NativeViewAccessible GetPreviousSibling() const override;
   bool IsPlatformDocument() const override;
   bool IsLeaf() const override;
   bool IsFocused() const override;
@@ -386,8 +376,8 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   gfx::NativeViewAccessible GetSelectionContainer() const override;
   gfx::NativeViewAccessible GetTableAncestor() const override;
 
-  std::unique_ptr<ui::ChildIterator> ChildrenBegin() override;
-  std::unique_ptr<ui::ChildIterator> ChildrenEnd() override;
+  std::unique_ptr<ui::ChildIterator> ChildrenBegin() const override;
+  std::unique_ptr<ui::ChildIterator> ChildrenEnd() const override;
 
   bool SetHypertextSelection(int start_offset, int end_offset) override;
   gfx::Rect GetBoundsRect(
@@ -412,7 +402,7 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   ui::AXPlatformNode* GetFromNodeID(int32_t id) override;
   ui::AXPlatformNode* GetFromTreeIDAndNodeID(const ui::AXTreeID& ax_tree_id,
                                              int32_t id) override;
-  absl::optional<size_t> GetIndexInParent() override;
+  absl::optional<size_t> GetIndexInParent() const override;
   gfx::AcceleratedWidget GetTargetForNativeAccessibilityEvent() override;
 
   const std::vector<gfx::NativeViewAccessible> GetUIADirectChildrenInRange(

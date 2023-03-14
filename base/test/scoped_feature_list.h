@@ -48,6 +48,9 @@ class FeatureRef {
   const Feature* operator->() const { return &*feature_; }
 
  private:
+  friend bool operator==(const FeatureRef& lhs, const FeatureRef& rhs) {
+    return &*lhs == &*rhs;
+  }
   friend bool operator<(const FeatureRef& lhs, const FeatureRef& rhs) {
     return &*lhs < &*rhs;
   }

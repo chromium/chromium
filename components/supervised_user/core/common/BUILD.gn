@@ -35,7 +35,10 @@ static_library("common") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "features_unittest.cc" ]
+  sources = [
+    "features_unittest.cc",
+    "supervised_user_denylist_unittest.cc",
+  ]
   deps = [
     ":common",
     "//base",

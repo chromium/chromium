@@ -68,10 +68,13 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   void OnSubmission(gfx::AcceleratedWidget widget,
                     uint32_t frame_id,
                     gfx::SwapResult swap_result,
-                    gfx::GpuFenceHandle release_fence_handle) override;
+                    gfx::GpuFenceHandle release_fence_handle,
+                    const std::vector<wl::WaylandPresentationInfo>&
+                        presentation_infos) override;
+
   void OnPresentation(gfx::AcceleratedWidget widget,
-                      uint32_t frame_id,
-                      const gfx::PresentationFeedback& feedback) override;
+                      const std::vector<wl::WaylandPresentationInfo>&
+                          presentation_infos) override;
 
   // If the client, which uses this manager and implements WaylandSurfaceGpu,
   // wants to receive OnSubmission and OnPresentation callbacks and know the
@@ -195,14 +198,15 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
 
   // Provides the WaylandSurfaceGpu, which backs the |widget|, with swap and
   // presentation results.
-  void SubmitSwapResultOnOriginThread(gfx::AcceleratedWidget widget,
-                                      uint32_t frame_id,
-                                      gfx::SwapResult swap_result,
-                                      gfx::GpuFenceHandle release_fence);
-  void SubmitPresentationOnOriginThread(
+  void HandleSubmissionOnOriginThread(
       gfx::AcceleratedWidget widget,
       uint32_t frame_id,
-      const gfx::PresentationFeedback& feedback);
+      gfx::SwapResult swap_result,
+      gfx::GpuFenceHandle release_fence,
+      const std::vector<wl::WaylandPresentationInfo>& presentation_infos);
+  void HandlePresentationOnOriginThread(
+      gfx::AcceleratedWidget widget,
+      const std::vector<wl::WaylandPresentationInfo>& presentation_infos);
 
   void OnHostDisconnected();
 

@@ -12,11 +12,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/supervised_user/supervised_user_navigation_throttle.h"
-#include "chrome/browser/supervised_user/supervised_user_service_observer.h"
-#include "chrome/browser/supervised_user/supervised_user_url_filter.h"
 #include "chrome/common/supervised_user_commands.mojom.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
+#include "components/supervised_user/core/browser/supervised_user_service_observer.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/supervised_users.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -66,11 +66,11 @@ class SupervisedUserNavigationObserver
                                const OnInterstitialResultCallback& callback);
 
   void UpdateMainFrameFilteringStatus(
-      SupervisedUserURLFilter::FilteringBehavior behavior,
+      supervised_user::SupervisedUserURLFilter::FilteringBehavior behavior,
       supervised_user::FilteringBehaviorReason reason);
 
-  SupervisedUserURLFilter::FilteringBehavior main_frame_filtering_behavior()
-      const {
+  supervised_user::SupervisedUserURLFilter::FilteringBehavior
+  main_frame_filtering_behavior() const {
     return main_frame_filtering_behavior_;
   }
 
@@ -117,7 +117,7 @@ class SupervisedUserNavigationObserver
       const GURL& url,
       int render_frame_process_id,
       int render_frame_routing_id,
-      SupervisedUserURLFilter::FilteringBehavior behavior,
+      supervised_user::SupervisedUserURLFilter::FilteringBehavior behavior,
       supervised_user::FilteringBehaviorReason reason,
       bool uncertain);
 
@@ -150,7 +150,7 @@ class SupervisedUserNavigationObserver
   void MaybeUpdateRequestedHosts();
 
   // Owned by SupervisedUserService.
-  raw_ptr<SupervisedUserURLFilter> url_filter_;
+  raw_ptr<supervised_user::SupervisedUserURLFilter> url_filter_;
 
   // Owned by SupervisedUserServiceFactory (lifetime of Profile).
   raw_ptr<SupervisedUserService> supervised_user_service_;
@@ -162,8 +162,9 @@ class SupervisedUserNavigationObserver
 
   std::set<std::string> requested_hosts_;
 
-  SupervisedUserURLFilter::FilteringBehavior main_frame_filtering_behavior_ =
-      SupervisedUserURLFilter::FilteringBehavior::ALLOW;
+  supervised_user::SupervisedUserURLFilter::FilteringBehavior
+      main_frame_filtering_behavior_ =
+          supervised_user::SupervisedUserURLFilter::FilteringBehavior::ALLOW;
   supervised_user::FilteringBehaviorReason
       main_frame_filtering_behavior_reason_ =
           supervised_user::FilteringBehaviorReason::DEFAULT;

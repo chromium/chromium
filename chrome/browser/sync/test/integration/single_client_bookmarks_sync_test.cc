@@ -1843,7 +1843,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   std::vector<sync_pb::SyncEntity> server_bookmarks =
       GetFakeServer()->GetSyncEntitiesByModelType(syncer::BOOKMARKS);
   ASSERT_EQ(1u, server_bookmarks.size());
-  EXPECT_EQ(server_bookmarks[0].client_defined_unique_tag(),
+  EXPECT_EQ(server_bookmarks[0].client_tag_hash(),
             syncer::ClientTagHash::FromUnhashed(
                 syncer::BOOKMARKS, folder->guid().AsLowercaseString())
                 .value());

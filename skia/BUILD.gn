@@ -87,11 +87,9 @@ config("skia_config") {
   if (skia_support_gpu) {
     workaround_header = "gpu/config/gpu_driver_bug_workaround_autogen.h"
     defines += [
-      "SK_SUPPORT_GPU=1",
+      "SK_GANESH",
       "SK_GPU_WORKAROUNDS_HEADER=\"$workaround_header\"",
     ]
-  } else {
-    defines += [ "SK_SUPPORT_GPU=0" ]
   }
 
   if (is_android) {
@@ -129,6 +127,15 @@ config("skia_library_config") {
 
   if (use_blink && !use_system_freetype) {
     defines += [ "SK_FREETYPE_MINIMUM_RUNTIME_VERSION=(((FREETYPE_MAJOR) * 0x01000000) | ((FREETYPE_MINOR) * 0x00010000) | ((FREETYPE_PATCH) * 0x00000100))" ]
+  }
+  if (use_blink) {
+    defines += [ "SK_TYPEFACE_FACTORY_FREETYPE" ]
+  }
+  if (is_win) {
+    defines += [ "SK_TYPEFACE_FACTORY_DIRECTWRITE" ]
+  }
+  if (is_apple) {
+    defines += [ "SK_TYPEFACE_FACTORY_CORETEXT" ]
   }
 
   if (current_cpu == "arm") {
@@ -338,6 +345,7 @@ component("skia") {
       "//third_party/skia/src/codec/SkIcoCodec.cpp",
       "//third_party/skia/src/codec/SkJpegCodec.cpp",
       "//third_party/skia/src/codec/SkJpegDecoderMgr.cpp",
+      "//third_party/skia/src/codec/SkJpegMultiPicture.cpp",
       "//third_party/skia/src/codec/SkJpegSegmentScan.cpp",
       "//third_party/skia/src/codec/SkJpegSourceMgr.cpp",
       "//third_party/skia/src/codec/SkJpegUtility.cpp",
@@ -371,6 +379,7 @@ component("skia") {
   # FreeType is needed everywhere where blink is used, on Linux and Android as main
   # font backend, on Windows and Mac as fallback backend for Variations.
   if (use_blink) {
+    # See SK_TYPEFACE_FACTORY_FREETYPE
     sources += [
       "//third_party/skia/src/ports/SkFontHost_FreeType.cpp",
       "//third_party/skia/src/ports/SkFontHost_FreeType_common.cpp",
@@ -378,6 +387,7 @@ component("skia") {
   }
 
   if (is_win) {
+    # See SK_TYPEFACE_FACTORY_DIRECTWRITE
     sources += [
       "//third_party/skia/src/ports/SkFontHost_win.cpp",
       "//third_party/skia/src/ports/SkFontMgr_win_dw.cpp",
@@ -391,6 +401,7 @@ component("skia") {
   }
 
   if (is_apple) {
+    # See SK_TYPEFACE_FACTORY_CORETEXT
     sources += [
       "//third_party/skia/include/ports/SkFontMgr_mac_ct.h",
       "//third_party/skia/src/ports/SkFontMgr_mac_ct.cpp",

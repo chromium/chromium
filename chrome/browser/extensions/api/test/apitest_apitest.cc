@@ -184,6 +184,10 @@ IN_PROC_BROWSER_TEST_P(TestAPITestWithContextType, AssertNe_Success) {
              chrome.test.assertNe(null, {});
              chrome.test.succeed();
            },
+           function assertNeTestsWithErrorMessage() {
+             chrome.test.assertNe(3, 2, '3 does not equal 2');
+             chrome.test.succeed();
+           },
          ]);)";
   ASSERT_TRUE(LoadExtensionScriptWithContext(kBackgroundJs, GetParam()));
   EXPECT_TRUE(result_catcher.GetNextResult());
@@ -214,8 +218,26 @@ IN_PROC_BROWSER_TEST_P(TestAPITestWithContextType, AssertNe_Failure_Object) {
   ResultCatcher result_catcher;
   static constexpr char kBackgroundJs[] =
       R"(chrome.test.runTests([
-           function assertNeTestsWithPrimitiveTypes() {
+           function assertNeTestsWithObjectTypes() {
              chrome.test.assertNe({x: 42}, {x: 42});
+           },
+         ]);)";
+  ASSERT_TRUE(LoadExtensionScriptWithContext(kBackgroundJs, GetParam()));
+  EXPECT_FALSE(result_catcher.GetNextResult());
+  EXPECT_EQ(kExpectedFailureMessage, result_catcher.message());
+}
+
+// Exercises chrome.test.assertNe() in failure cases (i.e., the passed values
+// are equal). We can only test one case at a time since otherwise we'd be
+// unable to determine which part of the test failed (since "failure" here is
+// a successful assertNe() check).
+IN_PROC_BROWSER_TEST_P(TestAPITestWithContextType,
+                       AssertNe_Failure_AdditionalErrorMessage) {
+  ResultCatcher result_catcher;
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.test.runTests([
+           function assertNeTestsWithAdditionalErrorMessage() {
+             chrome.test.assertNe(2, 2, '2 does equal 2');
            },
          ]);)";
   ASSERT_TRUE(LoadExtensionScriptWithContext(kBackgroundJs, GetParam()));

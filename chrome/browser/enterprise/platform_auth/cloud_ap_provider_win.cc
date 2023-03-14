@@ -14,11 +14,12 @@
 #include <windows.security.authentication.web.core.h>
 #include <wrl/client.h>
 
+#include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/callback_list.h"
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -41,7 +42,6 @@
 #include "base/win/post_async_results.h"
 #include "base/win/scoped_hstring.h"
 #include "chrome/browser/enterprise/platform_auth/cloud_ap_utils_win.h"
-#include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
 #include "net/cookies/cookie_util.h"
 #include "net/http/http_request_headers.h"
 #include "url/gurl.h"
@@ -85,11 +85,6 @@ class WebAccountSupportFinder
   void Find() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     base::win::AssertComApartmentType(base::win::ComApartmentType::MTA);
-
-    if (!base::win::ResolveCoreWinRTDelayload())
-      return;  // Unsupported.
-    if (!base::win::ScopedHString::ResolveCoreWinRTStringDelayload())
-      return;  // Unsupported.
 
     // Get the `WebAuthenticationCoreManager`.
     ComPtr<IWebAuthenticationCoreManagerStatics> auth_manager;
@@ -203,30 +198,11 @@ net::HttpRequestHeaders GetAuthData(const GURL& url) {
     if (SUCCEEDED(hresult)) {
       DCHECK(!cookie_info_count || cookie_info);
       net::cookie_util::ParsedRequestCookies parsed_cookies;
-      if (base::FeatureList::IsEnabled(
-              enterprise_auth::kCloudApAuthAttachAsHeader)) {
-        // If the auth cookie name begins with 'x-ms-', attach the cookie as a
-        // new header. Otherwise, append it to the existing list of cookies.
-        static constexpr base::StringPiece kHeaderPrefix("x-ms-");
-        for (DWORD i = 0; i < cookie_info_count; ++i) {
-          const ProofOfPossessionCookieInfo& cookie = cookie_info[i];
-          auto ascii_name = base::WideToASCII(cookie.name);
-          if (base::StartsWith(ascii_name, kHeaderPrefix,
-                               base::CompareCase::INSENSITIVE_ASCII)) {
-            auth_headers.SetHeader(std::move(ascii_name),
-                                   base::WideToASCII(cookie.data));
-          } else {
-            parsed_cookies.emplace_back(std::move(ascii_name),
-                                        base::WideToASCII(cookie.data));
-          }
-        }
-      } else {
-        // Append all auth cookies to the existing set of cookies.
-        for (DWORD i = 0; i < cookie_info_count; ++i) {
-          const ProofOfPossessionCookieInfo& cookie = cookie_info[i];
-          parsed_cookies.emplace_back(base::WideToASCII(cookie.name),
-                                      base::WideToASCII(cookie.data));
-        }
+      // Append all auth cookies to the existing set of cookies.
+      for (DWORD i = 0; i < cookie_info_count; ++i) {
+        const ProofOfPossessionCookieInfo& cookie = cookie_info[i];
+        parsed_cookies.emplace_back(base::WideToASCII(cookie.name),
+                                    base::WideToASCII(cookie.data));
       }
       if (parsed_cookies.size() > 0) {
         auth_headers.SetHeader(

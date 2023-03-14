@@ -27,7 +27,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           och kontrollera att "ingen proxy" eller "direkt" har angetts i konfigurationen</translation>
+<translation id="6549378540556750549">Chromium möjliggörs även av andra <ph name="BEGIN_LINK_OSS" />program med öppen källkod<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Ändringarna tillämpas nästa gång du startar om Chromium.</translation>
+<translation id="7681937895330411637">Chromium finns tack vare det öppna källkodsprojektet <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="7861509383340276692">Öppna
         Chromium-menyn &gt;
         <ph name="SETTINGS_TITLE" />

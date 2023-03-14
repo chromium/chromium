@@ -122,7 +122,7 @@ class CORE_EXPORT NavigationApi final
   void InformAboutCanceledNavigation(
       CancelNavigationReason reason = CancelNavigationReason::kOther);
 
-  // Called when a traverse is cancelled in the browser process.
+  // Called when a traverse is cancelled before its navigate event is fired.
   void TraverseCancelled(const String& key,
                          mojom::blink::TraverseCancelledReason reason);
 
@@ -145,15 +145,12 @@ class CORE_EXPORT NavigationApi final
 
  private:
   friend class NavigateReaction;
-  friend class NavigationApiNavigation;
   NavigationHistoryEntry* GetEntryForRestore(
       const mojom::blink::NavigationApiHistoryEntryPtr&);
   void PopulateKeySet();
-  void FinalizeWithAbortedNavigationError(ScriptState*,
-                                          NavigationApiNavigation*);
-  void ResolvePromisesAndFireNavigateSuccessEvent(NavigationApiNavigation*);
-  void RejectPromisesAndFireNavigateErrorEvent(NavigationApiNavigation*,
-                                               ScriptValue);
+  void AbortOngoingNavigation(ScriptState*);
+  void DidFinishOngoingNavigation();
+  void DidFailOngoingNavigation(ScriptValue);
 
   NavigationResult* PerformNonTraverseNavigation(
       ScriptState*,
@@ -166,7 +163,6 @@ class CORE_EXPORT NavigationApi final
       const String& method_name_for_error_message);
 
   void PromoteUpcomingNavigationToOngoing(const String& key);
-  void CleanupApiNavigation(NavigationApiNavigation&);
 
   scoped_refptr<SerializedScriptValue> SerializeState(const ScriptValue&,
                                                       ExceptionState&);

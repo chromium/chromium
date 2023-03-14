@@ -29,6 +29,10 @@ namespace {
 
 constexpr OsSettingsIdentifier kAudioPageOsSettingsId = {
     .subpage = mojom::Subpage::kAudio};
+constexpr OsSettingsIdentifier kKeyboardOsSettingsId = {
+    .subpage = mojom::Subpage::kKeyboard};
+constexpr OsSettingsIdentifier kPerDeviceKeyboardOsSettingsId = {
+    .subpage = mojom::Subpage::kPerDeviceKeyboard};
 
 // Provides a correctly formatted result_id based on `SearchConcept`
 // configuration in `device_section.cc`. Based on private static function in
@@ -104,6 +108,30 @@ TEST_F(DeviceSectionTest, SearchResultExcludeAudioWithoutFlag) {
   std::string result_id = GetSubpageSearchResultId(
       kAudioPageOsSettingsId, IDS_OS_SETTINGS_TAG_AUDIO_SETTINGS);
   EXPECT_FALSE(search_tag_registry()->GetTagMetadata(result_id));
+}
+
+// Verify registry updated with per device settings search tags when flag is
+// enabled.
+TEST_F(DeviceSectionTest, SearchResultChangeToSettingsSplitWithFlag) {
+  feature_list_.InitAndEnableFeature(ash::features::kInputDeviceSettingsSplit);
+  device_section_ = std::make_unique<DeviceSection>(
+      profile(), search_tag_registry(), pref_service());
+
+  std::string result_id = GetSubpageSearchResultId(
+      kPerDeviceKeyboardOsSettingsId, IDS_OS_SETTINGS_TAG_KEYBOARD);
+  EXPECT_TRUE(search_tag_registry()->GetTagMetadata(result_id));
+}
+
+// Verify registry updated with regular settings search tags when flag is
+// disabled.
+TEST_F(DeviceSectionTest, SearchResultChangeBackWithoutFlag) {
+  feature_list_.Reset();
+  device_section_ = std::make_unique<DeviceSection>(
+      profile(), search_tag_registry(), pref_service());
+
+  std::string result_id = GetSubpageSearchResultId(
+      kKeyboardOsSettingsId, IDS_OS_SETTINGS_TAG_KEYBOARD);
+  EXPECT_TRUE(search_tag_registry()->GetTagMetadata(result_id));
 }
 
 }  // namespace ash::settings

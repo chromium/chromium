@@ -60,6 +60,7 @@ class ItemSuggestCache {
   };
 
   ItemSuggestCache(
+      const std::string& locale,
       Profile* profile,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   virtual ~ItemSuggestCache();
@@ -164,6 +165,7 @@ class ItemSuggestCache {
   const GURL server_url_;
   // Whether we should query item suggest more than once per session.
   const bool multiple_queries_per_session_;
+  const std::string locale_;
 
   // List of callbacks to run when results are updated.
   OnResultsCallbackList on_results_callback_list_;

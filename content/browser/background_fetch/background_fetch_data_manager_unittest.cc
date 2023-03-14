@@ -2406,12 +2406,9 @@ TEST_F(BackgroundFetchDataManagerTest, StorageErrorsReported) {
       sw_id, storage_key(), kExampleDeveloperId, kExampleUniqueId);
 
   {
-    base::HistogramTester histogram_tester;
     CreateRegistration(registration_id, CloneRequestVector(requests),
                        options.Clone(), SkBitmap(), &error);
     ASSERT_EQ(error, blink::mojom::BackgroundFetchError::NONE);
-    histogram_tester.ExpectBucketCount(
-        "BackgroundFetch.Storage.CreateMetadataTask", 0 /* kNone */, 1);
   }
 
   BackgroundFetchRegistrationId registration_id2(
@@ -2420,14 +2417,10 @@ TEST_F(BackgroundFetchDataManagerTest, StorageErrorsReported) {
       kAlternativeDeveloperId, kAlternativeUniqueId);
 
   {
-    base::HistogramTester histogram_tester;
     // This should fail because the Service Worker doesn't exist.
     CreateRegistration(registration_id2, CloneRequestVector(requests),
                        std::move(options), SkBitmap(), &error);
     ASSERT_EQ(error, blink::mojom::BackgroundFetchError::STORAGE_ERROR);
-    histogram_tester.ExpectBucketCount(
-        "BackgroundFetch.Storage.CreateMetadataTask",
-        1 /* kServiceWorkerStorageError */, 1);
   }
 
   scoped_refptr<BackgroundFetchRequestInfo> request_info;
@@ -2456,15 +2449,11 @@ TEST_F(BackgroundFetchDataManagerTest, StorageErrorsReported) {
   }
 
   {
-    base::HistogramTester histogram_tester;
     MatchRequests(registration_id, /* request_to_match= */ nullptr,
                   /* cache_query_options= */ nullptr, /* match_all= */ true,
                   &error, &settled_fetches);
 
     ASSERT_EQ(error, blink::mojom::BackgroundFetchError::STORAGE_ERROR);
-    histogram_tester.ExpectBucketCount(
-        "BackgroundFetch.Storage.MatchRequestsTask", 2 /* kCacheStorageError */,
-        1);
   }
 }
 

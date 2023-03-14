@@ -21,9 +21,9 @@ void StructuredMetricsServiceAsh::BindReceiver(
 }
 
 void StructuredMetricsServiceAsh::Record(
-    const std::vector<::metrics::structured::Event>& events) {
-  for (const auto& event : events) {
-    metrics::structured::Recorder::GetInstance()->RecordEvent(event.Clone());
+    std::vector<::metrics::structured::Event> events) {
+  for (auto& event : events) {
+    metrics::structured::Recorder::GetInstance()->RecordEvent(std::move(event));
   }
 }
 

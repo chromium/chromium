@@ -49,8 +49,6 @@ class MarkRegistrationForDeletionTask : public background_fetch::DatabaseTask {
 
   void FinishWithError(blink::mojom::BackgroundFetchError error) override;
 
-  std::string HistogramName() const override;
-
   BackgroundFetchRegistrationId registration_id_;
   bool check_for_failure_;
   MarkRegistrationForDeletionCallback callback_;

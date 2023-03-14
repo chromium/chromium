@@ -125,8 +125,8 @@ class VersionUpdaterTest : public testing::Test {
     managed_network_configuration_handler_->SetPolicy(
         ::onc::ONC_SOURCE_DEVICE_POLICY,
         /*userhash=*/std::string(),
-        /*network_configs_onc=*/base::Value(base::Value::Type::LIST),
-        /*global_network_config=*/base::Value(base::Value::Type::DICT));
+        /*network_configs_onc=*/base::Value::List(),
+        /*global_network_config=*/base::Value::Dict());
 
     // Wait until the |managed_network_configuration_handler_| is initialized
     // and set up.

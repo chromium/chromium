@@ -6,7 +6,7 @@
 
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 
-assert(use_libfuzzer)
+assert(use_fuzzing_engine_with_lpm)
 
 group("fuzzer") {
   deps = [

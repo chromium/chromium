@@ -5554,6 +5554,7 @@ $L$epilogue_avx2:
 	DB	0F3h,0C3h		;repret
 
 $L$SEH_end_sha1_block_data_order_avx2:
+section	.rdata rdata align=8
 ALIGN	64
 K_XX_XX:
 	DD	0x5a827999,0x5a827999,0x5a827999,0x5a827999
@@ -5573,6 +5574,8 @@ K_XX_XX:
 	DB	97,112,112,114,111,64,111,112,101,110,115,115,108,46,111,114
 	DB	103,62,0
 ALIGN	64
+section	.text
+
 EXTERN	__imp_RtlVirtualUnwind
 
 ALIGN	16

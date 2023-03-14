@@ -23,6 +23,7 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
 #include "components/subresource_filter/content/browser/devtools_interaction_tracker.h"
@@ -150,7 +151,9 @@ class SubresourceFilterSafeBrowsingActivationThrottleTest
     : public content::RenderViewHostTestHarness,
       public content::WebContentsObserver {
  public:
-  SubresourceFilterSafeBrowsingActivationThrottleTest() {}
+  SubresourceFilterSafeBrowsingActivationThrottleTest()
+      : content::RenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   SubresourceFilterSafeBrowsingActivationThrottleTest(
       const SubresourceFilterSafeBrowsingActivationThrottleTest&) = delete;
@@ -970,13 +973,28 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
 
   // Flush the pending tasks on the IO thread, so the delayed task surely gets
   // posted.
-  test_io_task_runner()->RunUntilIdle();
+  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
+    task_environment()->RunUntilIdle();
+  } else {
+    test_io_task_runner()->RunUntilIdle();
+  }
 
   // Expect one delayed task, and fast forward time.
   base::TimeDelta expected_delay =
       SubresourceFilterSafeBrowsingClientRequest::kCheckURLTimeout;
-  EXPECT_EQ(expected_delay, test_io_task_runner()->NextPendingTaskDelay());
-  test_io_task_runner()->FastForwardBy(expected_delay);
+
+  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
+    // When the safe browsing code runs on the UI thread, can't check
+    // task_environment()->NextMainThreadPendingTaskDelay() since there are many
+    // other tasks posted.
+    // EXPECT_EQ(expected_delay,
+    // task_environment()->NextMainThreadPendingTaskDelay());
+    task_environment()->FastForwardBy(expected_delay);
+  } else {
+    EXPECT_EQ(expected_delay, test_io_task_runner()->NextPendingTaskDelay());
+    test_io_task_runner()->FastForwardBy(expected_delay);
+  }
+
   SimulateCommitAndExpectProceed();
   EXPECT_EQ(mojom::ActivationLevel::kDisabled,
             *observer()->GetPageActivationForLastCommittedLoad());

@@ -35,8 +35,10 @@ enum AssistantAllowedState {
   DISALLOWED_BY_ACCOUNT_TYPE = 8,
   // Disallowed because the device is in Kiosk mode.
   DISALLOWED_BY_KIOSK_MODE = 9,
+  // Disallowed because no libassistant binary available.
+  DISALLOWED_BY_NO_BINARY = 10,
 
-  MAX_VALUE = DISALLOWED_BY_KIOSK_MODE,
+  MAX_VALUE = DISALLOWED_BY_NO_BINARY,
 };
 
 // Enumeration of possible completions for an Assistant interaction.

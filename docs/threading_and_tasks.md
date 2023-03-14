@@ -465,21 +465,28 @@ com_sta_task_runner->PostTask(FROM_HERE, base::BindOnce(&TaskBUsingCOMSTA));
 ## Memory ordering guarantees for posted Tasks
 
 This task system guarantees that all the memory effects of sequential execution
-before posting a task are _visible_ to the task when it starts running. In
-other words, a call to `PostTask()` and the execution of the posted task are in
-the [happens-before
+before posting a task are _visible_ to the task when it starts running. More
+formally, a call to `PostTask()` and the execution of the posted task are in the
+[happens-before
 relationship](https://preshing.com/20130702/the-happens-before-relation/) with
-each other. This is true for all variants of posting a task in `::base`. The
-guarantee is also provided when posting a reply with `PostTaskAndReply()`.
+each other. This is true for all variants of posting a task in `::base`,
+including `PostTaskAndReply()`. Similarly the happens-before relationship is
+present for tasks running in a sequence as part of the same SequencedTaskRunner.
 
-Chrome tasks commonly access memory beyond the immediate data copied into the
-`base::OnceCallback`, and this happens-before relationship allows to avoid
-additional synchronization within the tasks themselves.
+This guarantee is important to know about because Chrome tasks commonly access
+memory beyond the immediate data copied into the `base::OnceCallback`, and this
+happens-before relationship allows to avoid additional synchronization within
+the tasks themselves. As a very specific example, consider a callback that binds
+a pointer to memory which was just initialized in the thread posting the task.
 
-It helps to think of the task posting operation as implying a _transfer_ of all
-data necessary for task execution to the target task runner. In particular, this
-means that after posting to a different task runner, the (transferred) data
-should not be accessed until the task starts running.
+A more constrained model is also worth noting. Execution can be split into tasks
+running on different task runners, where each task _exclusively_ accesses
+certain objects in memory without explicit synchronization. Posting another task
+transfers this 'ownership' (of the objects) to the next task. With this the
+notion of object ownership can often be extended to the level of task runners,
+which provides useful invariants to reason about. This model allows to avoid
+race conditions while also avoiding locks and atomic operations. Because of its
+simplicity this model is commonly used in Chrome.
 
 ## Annotating Tasks with TaskTraits
 

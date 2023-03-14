@@ -94,6 +94,8 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual void ImageLoaded(const LayoutObject*) = 0;
 
   // Removes AXObject backed by passed-in object, if there is one.
+  // Will also notify the parent that its children have changed, so that the
+  // parent will recompute its children and be reserialized.
   virtual void Remove(AccessibleNode*) = 0;
   virtual void Remove(LayoutObject*) = 0;
   virtual void Remove(Node*) = 0;
@@ -215,6 +217,8 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
                                    size_t max_node_count,
                                    base::TimeDelta timeout,
                                    ui::AXTreeUpdate*) = 0;
+
+  virtual void MarkElementDirty(const Node*) = 0;
 
   virtual void MarkAllImageAXObjectsDirty() = 0;
 

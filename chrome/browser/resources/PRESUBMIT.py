@@ -31,7 +31,7 @@ def InternalCheckUserActionUpdate(input_api, output_api, action_xml_path):
         # Loads contents in tools/metrics/actions/actions.xml to memory. It's
         # loaded only once.
         if not current_actions:
-          with open(action_xml_path) as actions_f:
+          with open(action_xml_path, encoding='utf-8') as actions_f:
             current_actions = actions_f.read()
 
         metric_name = match.group(2)

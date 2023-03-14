@@ -39,9 +39,7 @@ class TextLogUploadListTest : public testing::Test {
 
  protected:
   void WriteUploadLog(const std::string& log_data) {
-    ASSERT_GT(base::WriteFile(log_path(), log_data.c_str(),
-                              static_cast<int>(log_data.size())),
-              0);
+    ASSERT_TRUE(base::WriteFile(log_path(), log_data));
   }
 
   base::FilePath log_path() {
@@ -74,15 +72,15 @@ TEST_F(TextLogUploadListTest, ParseUploadTimeUploadId) {
   upload_list->Load(run_loop.QuitClosure());
   run_loop.Run();
 
-  std::vector<UploadList::UploadInfo> uploads;
-  upload_list->GetUploads(999, &uploads);
+  const std::vector<const UploadList::UploadInfo*> uploads =
+      upload_list->GetUploads(999);
 
   EXPECT_EQ(1u, uploads.size());
-  double time_double = uploads[0].upload_time.ToDoubleT();
+  double time_double = uploads[0]->upload_time.ToDoubleT();
   EXPECT_STREQ(kTestUploadTime, base::NumberToString(time_double).c_str());
-  EXPECT_STREQ(kTestUploadId, uploads[0].upload_id.c_str());
-  EXPECT_STREQ("", uploads[0].local_id.c_str());
-  time_double = uploads[0].capture_time.ToDoubleT();
+  EXPECT_STREQ(kTestUploadId, uploads[0]->upload_id.c_str());
+  EXPECT_STREQ("", uploads[0]->local_id.c_str());
+  time_double = uploads[0]->capture_time.ToDoubleT();
   EXPECT_STREQ("0", base::NumberToString(time_double).c_str());
 }
 
@@ -101,15 +99,15 @@ TEST_F(TextLogUploadListTest, ParseUploadTimeUploadId_JSON) {
   upload_list->Load(run_loop.QuitClosure());
   run_loop.Run();
 
-  std::vector<UploadList::UploadInfo> uploads;
-  upload_list->GetUploads(999, &uploads);
+  const std::vector<const UploadList::UploadInfo*> uploads =
+      upload_list->GetUploads(999);
 
   EXPECT_EQ(1u, uploads.size());
-  double time_double = uploads[0].upload_time.ToDoubleT();
+  double time_double = uploads[0]->upload_time.ToDoubleT();
   EXPECT_STREQ(kTestUploadTime, base::NumberToString(time_double).c_str());
-  EXPECT_STREQ(kTestUploadId, uploads[0].upload_id.c_str());
-  EXPECT_STREQ("", uploads[0].local_id.c_str());
-  time_double = uploads[0].capture_time.ToDoubleT();
+  EXPECT_STREQ(kTestUploadId, uploads[0]->upload_id.c_str());
+  EXPECT_STREQ("", uploads[0]->local_id.c_str());
+  time_double = uploads[0]->capture_time.ToDoubleT();
   EXPECT_STREQ("0", base::NumberToString(time_double).c_str());
 }
 
@@ -130,15 +128,15 @@ TEST_F(TextLogUploadListTest, ParseUploadTimeUploadIdLocalId) {
   upload_list->Load(run_loop.QuitClosure());
   run_loop.Run();
 
-  std::vector<UploadList::UploadInfo> uploads;
-  upload_list->GetUploads(999, &uploads);
+  const std::vector<const UploadList::UploadInfo*> uploads =
+      upload_list->GetUploads(999);
 
   EXPECT_EQ(1u, uploads.size());
-  double time_double = uploads[0].upload_time.ToDoubleT();
+  double time_double = uploads[0]->upload_time.ToDoubleT();
   EXPECT_STREQ(kTestUploadTime, base::NumberToString(time_double).c_str());
-  EXPECT_STREQ(kTestUploadId, uploads[0].upload_id.c_str());
-  EXPECT_STREQ(kTestLocalID, uploads[0].local_id.c_str());
-  time_double = uploads[0].capture_time.ToDoubleT();
+  EXPECT_STREQ(kTestUploadId, uploads[0]->upload_id.c_str());
+  EXPECT_STREQ(kTestLocalID, uploads[0]->local_id.c_str());
+  time_double = uploads[0]->capture_time.ToDoubleT();
   EXPECT_STREQ("0", base::NumberToString(time_double).c_str());
 }
 
@@ -158,15 +156,15 @@ TEST_F(TextLogUploadListTest, ParseUploadTimeUploadIdLocalId_JSON) {
   upload_list->Load(run_loop.QuitClosure());
   run_loop.Run();
 
-  std::vector<UploadList::UploadInfo> uploads;
-  upload_list->GetUploads(999, &uploads);
+  const std::vector<const UploadList::UploadInfo*> uploads =
+      upload_list->GetUploads(999);
 
   EXPECT_EQ(1u, uploads.size());
-  double time_double = uploads[0].upload_time.ToDoubleT();
+  double time_double = uploads[0]->upload_time.ToDoubleT();
   EXPECT_STREQ(kTestUploadTime, base::NumberToString(time_double).c_str());
-  EXPECT_STREQ(kTestUploadId, uploads[0].upload_id.c_str());
-  EXPECT_STREQ(kTestLocalID, uploads[0].local_id.c_str());
-  time_double = uploads[0].capture_time.ToDoubleT();
+  EXPECT_STREQ(kTestUploadId, uploads[0]->upload_id.c_str());
+  EXPECT_STREQ(kTestLocalID, uploads[0]->local_id.c_str());
+  time_double = uploads[0]->capture_time.ToDoubleT();
   EXPECT_STREQ("0", base::NumberToString(time_double).c_str());
 }
 
@@ -188,15 +186,15 @@ TEST_F(TextLogUploadListTest, ParseUploadTimeUploadIdCaptureTime) {
   upload_list->Load(run_loop.QuitClosure());
   run_loop.Run();
 
-  std::vector<UploadList::UploadInfo> uploads;
-  upload_list->GetUploads(999, &uploads);
+  const std::vector<const UploadList::UploadInfo*> uploads =
+      upload_list->GetUploads(999);
 
   EXPECT_EQ(1u, uploads.size());
-  double time_double = uploads[0].upload_time.ToDoubleT();
+  double time_double = uploads[0]->upload_time.ToDoubleT();
   EXPECT_STREQ(kTestUploadTime, base::NumberToString(time_double).c_str());
-  EXPECT_STREQ(kTestUploadId, uploads[0].upload_id.c_str());
-  EXPECT_STREQ("", uploads[0].local_id.c_str());
-  time_double = uploads[0].capture_time.ToDoubleT();
+  EXPECT_STREQ(kTestUploadId, uploads[0]->upload_id.c_str());
+  EXPECT_STREQ("", uploads[0]->local_id.c_str());
+  time_double = uploads[0]->capture_time.ToDoubleT();
   EXPECT_STREQ(kTestCaptureTime, base::NumberToString(time_double).c_str());
 }
 
@@ -216,15 +214,15 @@ TEST_F(TextLogUploadListTest, ParseUploadTimeUploadIdCaptureTime_JSON) {
   upload_list->Load(run_loop.QuitClosure());
   run_loop.Run();
 
-  std::vector<UploadList::UploadInfo> uploads;
-  upload_list->GetUploads(999, &uploads);
+  const std::vector<const UploadList::UploadInfo*> uploads =
+      upload_list->GetUploads(999);
 
   EXPECT_EQ(1u, uploads.size());
-  double time_double = uploads[0].upload_time.ToDoubleT();
+  double time_double = uploads[0]->upload_time.ToDoubleT();
   EXPECT_STREQ(kTestUploadTime, base::NumberToString(time_double).c_str());
-  EXPECT_STREQ(kTestUploadId, uploads[0].upload_id.c_str());
-  EXPECT_STREQ("", uploads[0].local_id.c_str());
-  time_double = uploads[0].capture_time.ToDoubleT();
+  EXPECT_STREQ(kTestUploadId, uploads[0]->upload_id.c_str());
+  EXPECT_STREQ("", uploads[0]->local_id.c_str());
+  time_double = uploads[0]->capture_time.ToDoubleT();
   EXPECT_STREQ(kTestCaptureTime, base::NumberToString(time_double).c_str());
 }
 
@@ -245,15 +243,15 @@ TEST_F(TextLogUploadListTest, ParseLocalIdCaptureTime) {
   upload_list->Load(run_loop.QuitClosure());
   run_loop.Run();
 
-  std::vector<UploadList::UploadInfo> uploads;
-  upload_list->GetUploads(999, &uploads);
+  const std::vector<const UploadList::UploadInfo*> uploads =
+      upload_list->GetUploads(999);
 
   EXPECT_EQ(1u, uploads.size());
-  double time_double = uploads[0].upload_time.ToDoubleT();
+  double time_double = uploads[0]->upload_time.ToDoubleT();
   EXPECT_STREQ("0", base::NumberToString(time_double).c_str());
-  EXPECT_STREQ("", uploads[0].upload_id.c_str());
-  EXPECT_STREQ(kTestLocalID, uploads[0].local_id.c_str());
-  time_double = uploads[0].capture_time.ToDoubleT();
+  EXPECT_STREQ("", uploads[0]->upload_id.c_str());
+  EXPECT_STREQ(kTestLocalID, uploads[0]->local_id.c_str());
+  time_double = uploads[0]->capture_time.ToDoubleT();
   EXPECT_STREQ(kTestCaptureTime, base::NumberToString(time_double).c_str());
 }
 
@@ -272,15 +270,15 @@ TEST_F(TextLogUploadListTest, ParseLocalIdCaptureTime_JSON) {
   upload_list->Load(run_loop.QuitClosure());
   run_loop.Run();
 
-  std::vector<UploadList::UploadInfo> uploads;
-  upload_list->GetUploads(999, &uploads);
+  const std::vector<const UploadList::UploadInfo*> uploads =
+      upload_list->GetUploads(999);
 
   EXPECT_EQ(1u, uploads.size());
-  double time_double = uploads[0].upload_time.ToDoubleT();
+  double time_double = uploads[0]->upload_time.ToDoubleT();
   EXPECT_STREQ("0", base::NumberToString(time_double).c_str());
-  EXPECT_STREQ("", uploads[0].upload_id.c_str());
-  EXPECT_STREQ(kTestLocalID, uploads[0].local_id.c_str());
-  time_double = uploads[0].capture_time.ToDoubleT();
+  EXPECT_STREQ("", uploads[0]->upload_id.c_str());
+  EXPECT_STREQ(kTestLocalID, uploads[0]->local_id.c_str());
+  time_double = uploads[0]->capture_time.ToDoubleT();
   EXPECT_STREQ(kTestCaptureTime, base::NumberToString(time_double).c_str());
 }
 
@@ -305,15 +303,15 @@ TEST_F(TextLogUploadListTest, ParseUploadTimeUploadIdLocalIdCaptureTime) {
   upload_list->Load(run_loop.QuitClosure());
   run_loop.Run();
 
-  std::vector<UploadList::UploadInfo> uploads;
-  upload_list->GetUploads(999, &uploads);
+  const std::vector<const UploadList::UploadInfo*> uploads =
+      upload_list->GetUploads(999);
 
   EXPECT_EQ(1u, uploads.size());
-  double time_double = uploads[0].upload_time.ToDoubleT();
+  double time_double = uploads[0]->upload_time.ToDoubleT();
   EXPECT_STREQ(kTestUploadTime, base::NumberToString(time_double).c_str());
-  EXPECT_STREQ(kTestUploadId, uploads[0].upload_id.c_str());
-  EXPECT_STREQ(kTestLocalID, uploads[0].local_id.c_str());
-  time_double = uploads[0].capture_time.ToDoubleT();
+  EXPECT_STREQ(kTestUploadId, uploads[0]->upload_id.c_str());
+  EXPECT_STREQ(kTestLocalID, uploads[0]->local_id.c_str());
+  time_double = uploads[0]->capture_time.ToDoubleT();
   EXPECT_STREQ(kTestCaptureTime, base::NumberToString(time_double).c_str());
 }
 
@@ -334,15 +332,15 @@ TEST_F(TextLogUploadListTest, ParseUploadTimeUploadIdLocalIdCaptureTime_JSON) {
   upload_list->Load(run_loop.QuitClosure());
   run_loop.Run();
 
-  std::vector<UploadList::UploadInfo> uploads;
-  upload_list->GetUploads(999, &uploads);
+  const std::vector<const UploadList::UploadInfo*> uploads =
+      upload_list->GetUploads(999);
 
   EXPECT_EQ(1u, uploads.size());
-  double time_double = uploads[0].upload_time.ToDoubleT();
+  double time_double = uploads[0]->upload_time.ToDoubleT();
   EXPECT_STREQ(kTestUploadTime, base::NumberToString(time_double).c_str());
-  EXPECT_STREQ(kTestUploadId, uploads[0].upload_id.c_str());
-  EXPECT_STREQ(kTestLocalID, uploads[0].local_id.c_str());
-  time_double = uploads[0].capture_time.ToDoubleT();
+  EXPECT_STREQ(kTestUploadId, uploads[0]->upload_id.c_str());
+  EXPECT_STREQ(kTestLocalID, uploads[0]->local_id.c_str());
+  time_double = uploads[0]->capture_time.ToDoubleT();
   EXPECT_STREQ(kTestCaptureTime, base::NumberToString(time_double).c_str());
 }
 
@@ -367,17 +365,17 @@ TEST_F(TextLogUploadListTest, ParseMultipleEntries) {
   upload_list->Load(run_loop.QuitClosure());
   run_loop.Run();
 
-  std::vector<UploadList::UploadInfo> uploads;
-  upload_list->GetUploads(999, &uploads);
+  const std::vector<const UploadList::UploadInfo*> uploads =
+      upload_list->GetUploads(999);
 
   EXPECT_EQ(4u, uploads.size());
   // The entries order should be reversed during the parsing.
   for (size_t i = 0; i < uploads.size(); ++i) {
-    double time_double = uploads[i].upload_time.ToDoubleT();
+    double time_double = uploads[i]->upload_time.ToDoubleT();
     EXPECT_STREQ(kTestUploadTime, base::NumberToString(time_double).c_str());
-    EXPECT_STREQ(kTestUploadId, uploads[i].upload_id.c_str());
-    EXPECT_EQ(base::NumberToString(uploads.size() - i), uploads[i].local_id);
-    time_double = uploads[i].capture_time.ToDoubleT();
+    EXPECT_STREQ(kTestUploadId, uploads[i]->upload_id.c_str());
+    EXPECT_EQ(base::NumberToString(uploads.size() - i), uploads[i]->local_id);
+    time_double = uploads[i]->capture_time.ToDoubleT();
     EXPECT_STREQ(kTestCaptureTime, base::NumberToString(time_double).c_str());
   }
 }
@@ -401,17 +399,17 @@ TEST_F(TextLogUploadListTest, ParseMultipleEntries_JSON) {
   upload_list->Load(run_loop.QuitClosure());
   run_loop.Run();
 
-  std::vector<UploadList::UploadInfo> uploads;
-  upload_list->GetUploads(999, &uploads);
+  const std::vector<const UploadList::UploadInfo*> uploads =
+      upload_list->GetUploads(999);
 
   EXPECT_EQ(4u, uploads.size());
   // The entries order should be reversed during the parsing.
   for (size_t i = 0; i < uploads.size(); ++i) {
-    double time_double = uploads[i].upload_time.ToDoubleT();
+    double time_double = uploads[i]->upload_time.ToDoubleT();
     EXPECT_STREQ(kTestUploadTime, base::NumberToString(time_double).c_str());
-    EXPECT_STREQ(kTestUploadId, uploads[i].upload_id.c_str());
-    EXPECT_EQ(base::NumberToString(uploads.size() - i), uploads[i].local_id);
-    time_double = uploads[i].capture_time.ToDoubleT();
+    EXPECT_STREQ(kTestUploadId, uploads[i]->upload_id.c_str());
+    EXPECT_EQ(base::NumberToString(uploads.size() - i), uploads[i]->local_id);
+    time_double = uploads[i]->capture_time.ToDoubleT();
     EXPECT_STREQ(kTestCaptureTime, base::NumberToString(time_double).c_str());
   }
 }
@@ -440,18 +438,18 @@ TEST_F(TextLogUploadListTest, ParseWithState) {
   upload_list->Load(run_loop.QuitClosure());
   run_loop.Run();
 
-  std::vector<UploadList::UploadInfo> uploads;
-  upload_list->GetUploads(999, &uploads);
+  const std::vector<const UploadList::UploadInfo*> uploads =
+      upload_list->GetUploads(999);
 
   EXPECT_EQ(4u, uploads.size());
-  for (size_t i = 0; i < uploads.size(); ++i) {
-    double time_double = uploads[i].upload_time.ToDoubleT();
+  for (const auto* upload : uploads) {
+    double time_double = upload->upload_time.ToDoubleT();
     EXPECT_STREQ(kTestUploadTime, base::NumberToString(time_double).c_str());
-    EXPECT_STREQ(kTestUploadId, uploads[i].upload_id.c_str());
-    EXPECT_STREQ(kTestLocalID, uploads[i].local_id.c_str());
-    time_double = uploads[i].capture_time.ToDoubleT();
+    EXPECT_STREQ(kTestUploadId, upload->upload_id.c_str());
+    EXPECT_STREQ(kTestLocalID, upload->local_id.c_str());
+    time_double = upload->capture_time.ToDoubleT();
     EXPECT_STREQ(kTestCaptureTime, base::NumberToString(time_double).c_str());
-    EXPECT_EQ(UploadList::UploadInfo::State::Uploaded, uploads[i].state);
+    EXPECT_EQ(UploadList::UploadInfo::State::Uploaded, upload->state);
   }
 }
 
@@ -476,18 +474,18 @@ TEST_F(TextLogUploadListTest, ParseWithState_JSON) {
   upload_list->Load(run_loop.QuitClosure());
   run_loop.Run();
 
-  std::vector<UploadList::UploadInfo> uploads;
-  upload_list->GetUploads(999, &uploads);
+  const std::vector<const UploadList::UploadInfo*> uploads =
+      upload_list->GetUploads(999);
 
   EXPECT_EQ(4u, uploads.size());
-  for (const UploadList::UploadInfo& upload : uploads) {
-    double time_double = upload.upload_time.ToDoubleT();
+  for (const UploadList::UploadInfo* upload : uploads) {
+    double time_double = upload->upload_time.ToDoubleT();
     EXPECT_STREQ(kTestUploadTime, base::NumberToString(time_double).c_str());
-    EXPECT_STREQ(kTestUploadId, upload.upload_id.c_str());
-    EXPECT_STREQ(kTestLocalID, upload.local_id.c_str());
-    time_double = upload.capture_time.ToDoubleT();
+    EXPECT_STREQ(kTestUploadId, upload->upload_id.c_str());
+    EXPECT_STREQ(kTestLocalID, upload->local_id.c_str());
+    time_double = upload->capture_time.ToDoubleT();
     EXPECT_STREQ(kTestCaptureTime, base::NumberToString(time_double).c_str());
-    EXPECT_EQ(UploadList::UploadInfo::State::Uploaded, upload.state);
+    EXPECT_EQ(UploadList::UploadInfo::State::Uploaded, upload->state);
   }
 }
 
@@ -513,19 +511,19 @@ TEST_F(TextLogUploadListTest, ParseWithSource_JSON) {
   upload_list->Load(run_loop.QuitClosure());
   run_loop.Run();
 
-  std::vector<UploadList::UploadInfo> uploads;
-  upload_list->GetUploads(999, &uploads);
+  const std::vector<const UploadList::UploadInfo*> uploads =
+      upload_list->GetUploads(999);
 
   EXPECT_EQ(4u, uploads.size());
-  for (const UploadList::UploadInfo& upload : uploads) {
-    double time_double = upload.upload_time.ToDoubleT();
+  for (const UploadList::UploadInfo* upload : uploads) {
+    double time_double = upload->upload_time.ToDoubleT();
     EXPECT_STREQ(kTestUploadTime, base::NumberToString(time_double).c_str());
-    EXPECT_STREQ(kTestUploadId, upload.upload_id.c_str());
-    EXPECT_STREQ(kTestLocalID, upload.local_id.c_str());
-    time_double = upload.capture_time.ToDoubleT();
+    EXPECT_STREQ(kTestUploadId, upload->upload_id.c_str());
+    EXPECT_STREQ(kTestLocalID, upload->local_id.c_str());
+    time_double = upload->capture_time.ToDoubleT();
     EXPECT_STREQ(kTestCaptureTime, base::NumberToString(time_double).c_str());
-    EXPECT_EQ(UploadList::UploadInfo::State::Uploaded, upload.state);
-    EXPECT_STREQ(kTestSource, upload.source.c_str());
+    EXPECT_EQ(UploadList::UploadInfo::State::Uploaded, upload->state);
+    EXPECT_STREQ(kTestSource, upload->source.c_str());
   }
 }
 
@@ -552,20 +550,20 @@ TEST_F(TextLogUploadListTest, ParseWithPathHash_JSON) {
   upload_list->Load(run_loop.QuitClosure());
   run_loop.Run();
 
-  std::vector<UploadList::UploadInfo> uploads;
-  upload_list->GetUploads(999, &uploads);
+  const std::vector<const UploadList::UploadInfo*> uploads =
+      upload_list->GetUploads(999);
 
   EXPECT_EQ(4u, uploads.size());
-  for (const UploadList::UploadInfo& upload : uploads) {
-    double time_double = upload.upload_time.ToDoubleT();
+  for (const UploadList::UploadInfo* upload : uploads) {
+    double time_double = upload->upload_time.ToDoubleT();
     EXPECT_STREQ(kTestUploadTime, base::NumberToString(time_double).c_str());
-    EXPECT_STREQ(kTestUploadId, upload.upload_id.c_str());
-    EXPECT_STREQ(kTestLocalID, upload.local_id.c_str());
-    time_double = upload.capture_time.ToDoubleT();
+    EXPECT_STREQ(kTestUploadId, upload->upload_id.c_str());
+    EXPECT_STREQ(kTestLocalID, upload->local_id.c_str());
+    time_double = upload->capture_time.ToDoubleT();
     EXPECT_STREQ(kTestCaptureTime, base::NumberToString(time_double).c_str());
-    EXPECT_EQ(UploadList::UploadInfo::State::Uploaded, upload.state);
-    EXPECT_STREQ(kTestSource, upload.source.c_str());
-    EXPECT_STREQ(kTestPathHash, upload.path_hash.c_str());
+    EXPECT_EQ(UploadList::UploadInfo::State::Uploaded, upload->state);
+    EXPECT_STREQ(kTestSource, upload->source.c_str());
+    EXPECT_STREQ(kTestPathHash, upload->path_hash.c_str());
   }
 }
 
@@ -596,16 +594,16 @@ TEST_F(TextLogUploadListTest, ParseHybridFormat) {
   upload_list->Load(run_loop.QuitClosure());
   run_loop.Run();
 
-  std::vector<UploadList::UploadInfo> uploads;
-  upload_list->GetUploads(999, &uploads);
+  const std::vector<const UploadList::UploadInfo*> uploads =
+      upload_list->GetUploads(999);
 
   EXPECT_EQ(8u, uploads.size());
-  for (const UploadList::UploadInfo& upload : uploads) {
-    double time_double = upload.upload_time.ToDoubleT();
+  for (const UploadList::UploadInfo* upload : uploads) {
+    double time_double = upload->upload_time.ToDoubleT();
     EXPECT_STREQ(kTestUploadTime, base::NumberToString(time_double).c_str());
-    EXPECT_STREQ(kTestUploadId, upload.upload_id.c_str());
-    EXPECT_STREQ(kTestLocalID, upload.local_id.c_str());
-    time_double = upload.capture_time.ToDoubleT();
+    EXPECT_STREQ(kTestUploadId, upload->upload_id.c_str());
+    EXPECT_STREQ(kTestLocalID, upload->local_id.c_str());
+    time_double = upload->capture_time.ToDoubleT();
     EXPECT_STREQ(kTestCaptureTime, base::NumberToString(time_double).c_str());
   }
 }
@@ -631,8 +629,8 @@ TEST_F(TextLogUploadListTest, SkipInvalidEntry_JSON) {
   upload_list->Load(run_loop.QuitClosure());
   run_loop.Run();
 
-  std::vector<UploadList::UploadInfo> uploads;
-  upload_list->GetUploads(999, &uploads);
+  const std::vector<const UploadList::UploadInfo*> uploads =
+      upload_list->GetUploads(999);
 
   // The invalid JSON entry should be skipped.
   EXPECT_EQ(1u, uploads.size());
@@ -660,8 +658,8 @@ TEST_F(TextLogUploadListTest, SkipBlankOrCorruptedEntry) {
   upload_list->Load(run_loop.QuitClosure());
   run_loop.Run();
 
-  std::vector<UploadList::UploadInfo> uploads;
-  upload_list->GetUploads(999, &uploads);
+  const std::vector<const UploadList::UploadInfo*> uploads =
+      upload_list->GetUploads(999);
 
   EXPECT_EQ(0u, uploads.size());
 }
@@ -844,15 +842,15 @@ TEST_F(TextLogUploadListTest, SimultaneousAccess) {
 
   // Read the list a few times to try and race one of the loads above.
   for (int i = 1; i <= 4; ++i) {
-    std::vector<UploadList::UploadInfo> uploads;
-    upload_list->GetUploads(999, &uploads);
+    const std::vector<const UploadList::UploadInfo*> uploads =
+        upload_list->GetUploads(999);
 
     EXPECT_EQ(1u, uploads.size());
-    double time_double = uploads[0].upload_time.ToDoubleT();
+    double time_double = uploads[0]->upload_time.ToDoubleT();
     EXPECT_STREQ(kTestUploadTime, base::NumberToString(time_double).c_str());
-    EXPECT_STREQ(kTestUploadId, uploads[0].upload_id.c_str());
-    EXPECT_STREQ(kTestLocalID, uploads[0].local_id.c_str());
-    time_double = uploads[0].capture_time.ToDoubleT();
+    EXPECT_STREQ(kTestUploadId, uploads[0]->upload_id.c_str());
+    EXPECT_STREQ(kTestLocalID, uploads[0]->local_id.c_str());
+    time_double = uploads[0]->capture_time.ToDoubleT();
     EXPECT_STREQ(kTestCaptureTime, base::NumberToString(time_double).c_str());
   }
 
@@ -884,15 +882,15 @@ TEST_F(TextLogUploadListTest, SimultaneousAccess_JSON) {
 
   // Read the list a few times to try and race one of the loads above.
   for (int i = 1; i <= 4; ++i) {
-    std::vector<UploadList::UploadInfo> uploads;
-    upload_list->GetUploads(999, &uploads);
+    const std::vector<const UploadList::UploadInfo*> uploads =
+        upload_list->GetUploads(999);
 
     EXPECT_EQ(1u, uploads.size());
-    double time_double = uploads[0].upload_time.ToDoubleT();
+    double time_double = uploads[0]->upload_time.ToDoubleT();
     EXPECT_STREQ(kTestUploadTime, base::NumberToString(time_double).c_str());
-    EXPECT_STREQ(kTestUploadId, uploads[0].upload_id.c_str());
-    EXPECT_STREQ(kTestLocalID, uploads[0].local_id.c_str());
-    time_double = uploads[0].capture_time.ToDoubleT();
+    EXPECT_STREQ(kTestUploadId, uploads[0]->upload_id.c_str());
+    EXPECT_STREQ(kTestLocalID, uploads[0]->local_id.c_str());
+    time_double = uploads[0]->capture_time.ToDoubleT();
     EXPECT_STREQ(kTestCaptureTime, base::NumberToString(time_double).c_str());
   }
 

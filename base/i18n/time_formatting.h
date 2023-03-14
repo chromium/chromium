@@ -113,16 +113,16 @@ BASE_I18N_EXPORT std::u16string TimeFormatWithPattern(const Time& time,
 // "3:07" or "3 hours, 7 minutes", and returns true on success. See
 // DurationFormatWidth for details.
 [[nodiscard]] BASE_I18N_EXPORT bool TimeDurationFormat(
-    const TimeDelta time,
-    const DurationFormatWidth width,
+    TimeDelta time,
+    DurationFormatWidth width,
     std::u16string* out);
 
 // Formats a time duration of hours, minutes and seconds into various formats,
 // e.g., "3:07:30" or "3 hours, 7 minutes, 30 seconds", and returns true on
 // success. See DurationFormatWidth for details.
 [[nodiscard]] BASE_I18N_EXPORT bool TimeDurationFormatWithSeconds(
-    const TimeDelta time,
-    const DurationFormatWidth width,
+    TimeDelta time,
+    DurationFormatWidth width,
     std::u16string* out);
 
 // Formats a date interval into various formats, e.g. "2 December - 4 December"

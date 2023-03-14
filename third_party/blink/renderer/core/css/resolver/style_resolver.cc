@@ -1448,7 +1448,7 @@ void StyleResolver::ApplyBaseStyleNoCache(
     state.StyleBuilder().SetHasRootFontRelativeUnits();
   }
   if (match_result.ConditionallyAffectsAnimations()) {
-    state.SetCanAffectAnimations();
+    state.SetConditionallyAffectsAnimations();
   }
   if (!match_result.CustomHighlightNames().empty()) {
     state.StyleBuilder().SetCustomHighlightNames(
@@ -1492,7 +1492,7 @@ void StyleResolver::ApplyBaseStyle(
     StyleCascade& cascade) {
   DCHECK(style_request.pseudo_id != kPseudoIdFirstLineInherited);
 
-  if (state.CanCacheBaseStyle() && CanReuseBaseComputedStyle(state)) {
+  if (state.CanTriggerAnimations() && CanReuseBaseComputedStyle(state)) {
     const ComputedStyle* animation_base_computed_style =
         CachedAnimationBaseComputedStyle(state);
     DCHECK(animation_base_computed_style);
@@ -1749,6 +1749,7 @@ StyleRuleList* StyleResolver::StyleRulesForElement(Element* element,
       state.ElementContext(), StyleRecalcContext::FromAncestors(*element),
       selector_filter_, match_result, EInsideLink::kNotInsideLink);
   collector.SetMode(SelectorChecker::kCollectingStyleRules);
+  collector.SetSuppressVisited(true);
   CollectPseudoRulesForElement(*element, collector, kPseudoIdNone, g_null_atom,
                                rules_to_include);
   return collector.MatchedStyleRuleList();
@@ -1835,7 +1836,6 @@ void StyleResolver::CollectPseudoRulesForElement(
   collector.FinishAddingPresentationalHints();
 
   if (rules_to_include & kAuthorCSSRules) {
-    collector.SetSameOriginOnly(!(rules_to_include & kCrossOriginCSSRules));
     MatchAuthorRules(element, ScopedResolverFor(element), collector);
   }
 }
@@ -1865,9 +1865,12 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
 
   // TODO(crbug.com/1276575) : This assert is currently hit for nested ::marker
   // pseudo elements.
-  DCHECK(animating_element == &element ||
-         DynamicTo<PseudoElement>(animating_element)->OriginatingElement() ==
-             &element);
+  DCHECK(
+      animating_element == &element ||
+      (animating_element->IsSVGElement() &&
+       To<SVGElement>(animating_element)->CorrespondingElement() == &element) ||
+      DynamicTo<PseudoElement>(animating_element)->OriginatingElement() ==
+          &element);
 
   if (!IsAnimationStyleChange(*animating_element) ||
       !state.StyleBuilder().BaseData()) {
@@ -1877,10 +1880,11 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
 
   CSSAnimations::CalculateAnimationUpdate(
       state.AnimationUpdate(), *animating_element, state.GetElement(),
-      state.StyleBuilder(), state.ParentStyle(), this);
+      state.StyleBuilder(), state.ParentStyle(), this,
+      state.CanTriggerAnimations());
   CSSAnimations::CalculateTransitionUpdate(
       state.AnimationUpdate(), *animating_element, state.StyleBuilder(),
-      state.OldStyle());
+      state.OldStyle(), state.CanTriggerAnimations());
 
   bool apply = !state.AnimationUpdate().IsEmpty();
   if (apply) {
@@ -2038,6 +2042,15 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
   if (cached_matched_properties && MatchedPropertiesCache::IsCacheable(state)) {
     INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),
                                   matched_property_cache_hit, 1);
+
+    if (cached_matched_properties->computed_style->CanAffectAnimations()) {
+      // Need to set this flag from the cached ComputedStyle to make
+      // ShouldStoreOldStyle() correctly return true. We do not collect matching
+      // rules when the cache is hit, and the flag is set as part of that
+      // process for the full style resolution.
+      state.StyleBuilder().SetCanAffectAnimations();
+    }
+
     // We can build up the style by copying non-inherited properties from an
     // earlier style object built using the same exact style declarations. We
     // then only need to apply the inherited properties, if any, as their values
@@ -2114,7 +2127,7 @@ void StyleResolver::MaybeAddToMatchedPropertiesCache(
                                   matched_property_cache_added, 1);
     matched_properties_cache_.Add(cache_success.key,
                                   state.StyleBuilder().CloneStyle(),
-                                  ComputedStyle::Clone(*state.ParentStyle()));
+                                  state.ParentStyle());
   }
 }
 

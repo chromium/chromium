@@ -7,8 +7,6 @@ source_set("browser") {
     "media_router.h",
     "media_router_base.cc",
     "media_router_base.h",
-    "media_router_debugger.cc",
-    "media_router_debugger.h",
     "media_router_dialog_controller.cc",
     "media_router_dialog_controller.h",
     "media_router_factory.cc",
@@ -19,6 +17,8 @@ source_set("browser") {
     "media_routes_observer.h",
     "media_sinks_observer.cc",
     "media_sinks_observer.h",
+    "mirroring_media_controller_host.cc",
+    "mirroring_media_controller_host.h",
     "presentation/browser_presentation_connection_proxy.cc",
     "presentation/browser_presentation_connection_proxy.h",
     "presentation/local_presentation_manager.cc",
@@ -88,6 +88,10 @@ source_set("browser") {
       "log_util.h",
       "logger_impl.cc",
       "logger_impl.h",
+      "media_router_debugger.cc",
+      "media_router_debugger.h",
+      "mirroring_to_flinging_switcher.cc",
+      "mirroring_to_flinging_switcher.h",
       "presentation/presentation_navigation_policy.cc",
       "presentation/presentation_navigation_policy.h",
     ]
@@ -117,11 +121,11 @@ source_set("unit_tests") {
 
   sources = [
     "media_router_base_unittest.cc",
-    "media_router_debugger_unittest.cc",
     "media_router_dialog_controller_unittest.cc",
     "media_router_factory_unittest.cc",
     "media_router_metrics_unittest.cc",
     "media_sinks_observer_unittest.cc",
+    "mirroring_media_controller_host_unittest.cc",
     "presentation/browser_presentation_connection_proxy_unittest.cc",
     "presentation/local_presentation_manager_unittest.cc",
     "presentation/presentation_media_sinks_observer_unittest.cc",
@@ -145,6 +149,8 @@ source_set("unit_tests") {
     sources += [
       "issue_manager_unittest.cc",
       "logger_impl_unittest.cc",
+      "media_router_debugger_unittest.cc",
+      "mirroring_to_flinging_switcher_unittest.cc",
     ]
   }
 }

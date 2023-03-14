@@ -9,16 +9,21 @@
 
 <input id=emptyOnFirstVisit>
 <div id=parent>
-<form action="../../resources/back.html" id=form1 autocomplete=off>
-<input name=user id=input1>
-<textarea name=comment id=textarea1></textarea>
-<select name=os id=select1><option>Mac<option>Windows<option>BSD</select>
-</form>
-<form action="../../resources/back.html" id=form2>
-<input name=user id=input2>
-<textarea name=comment id=textarea2></textarea>
-<select name=os id=select2><option>Mac<option>Windows<option>BSD</select>
-</form>
+  <form action="../../resources/back.html" id=form1 autocomplete=off>
+    <input name=user id=input1>
+    <textarea name=comment id=textarea1></textarea>
+    <select name=os id=select1><option>Mac<option>Windows<option>BSD</select>
+  </form>
+  <form action="../../resources/back.html" id=form2>
+    <input name=user id=input2>
+    <textarea name=comment id=textarea2></textarea>
+    <select name=os id=select2><option>Mac<option>Windows<option>BSD</select>
+  </form>
+  <form action="../../resources/back.html" id=form3>
+    <input name=user id=input3 autocomplete=off>
+    <textarea name=comment id=textarea3 autocomplete=off></textarea>
+    <select name=os id=select3 autocomplete=off><option>Mac<option>Windows<option>BSD</select>
+  </form>
 </div>
 
 <script>
@@ -38,6 +43,9 @@ function runTest()
         document.getElementById('input2').value = 'value2';
         document.getElementById('textarea2').value = 'good';
         document.getElementById('select2').value = 'BSD';
+        document.getElementById('input3').value = 'value3';
+        document.getElementById('textarea3').value = 'great';
+        document.getElementById('select3').value = 'BSD';
         // Submit form in a timeout to make sure that we create a new back/forward list item.
         setTimeout(function() {document.getElementById('form2').submit();}, 0);
     } else {
@@ -50,6 +58,10 @@ function runTest()
         shouldBe('document.getElementById("input2").value', '"value2"');
         shouldBe('document.getElementById("textarea2").value', '"good"');
         shouldBe('document.getElementById("select2").value', '"BSD"');
+        debug('Controls in the third form should have their default values:');
+        shouldBe('document.getElementById("input3").value', '""');
+        shouldBe('document.getElementById("textarea3").value', '""');
+        shouldBe('document.getElementById("select3").value', '"Mac"');
         finishJSTest();
     }
  }

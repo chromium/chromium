@@ -334,25 +334,24 @@ public class ContextualSearchInstrumentationBase {
      */
     protected static final ImmutableMap<String, Boolean> ENABLE_NONE = ImmutableMap.of(
             // All false
-            ChromeFeatureList.RELATED_SEARCHES, false, ChromeFeatureList.RELATED_SEARCHES_UI, false,
+            ChromeFeatureList.RELATED_SEARCHES, false,
             ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, false);
 
     /** This is the Related Searches Feature in the MVP configuration. */
     private static final ImmutableMap<String, Boolean> ENABLE_RELATED_SEARCHES = ImmutableMap.of(
             // Related Searches needs these 3:
-            ChromeFeatureList.RELATED_SEARCHES, true, ChromeFeatureList.RELATED_SEARCHES_UI, true,
+            ChromeFeatureList.RELATED_SEARCHES, true,
             ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, false);
 
     /** This is the helper-text Feature. */
-    private static final ImmutableMap<String, Boolean> ENABLE_FORCE_CAPTION = ImmutableMap.of(
-            ChromeFeatureList.RELATED_SEARCHES, false, ChromeFeatureList.RELATED_SEARCHES_UI, false,
-            // Just this one enabled:
-            ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, true);
+    private static final ImmutableMap<String, Boolean> ENABLE_FORCE_CAPTION =
+            ImmutableMap.of(ChromeFeatureList.RELATED_SEARCHES, false,
+                    // Just this one enabled:
+                    ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, true);
 
     /** This is the helper-text Feature with Related Searches */
     private static final ImmutableMap<String, Boolean> ENABLE_FORCE_CAPTION_WITH_RELATED_SEARCHES =
             ImmutableMap.of(ChromeFeatureList.RELATED_SEARCHES, true,
-                    ChromeFeatureList.RELATED_SEARCHES_UI, true,
                     ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, true);
 
     //--------------------------------------------------------------------------------------------

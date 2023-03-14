@@ -102,8 +102,8 @@ void HTMLEmbedElement::ParseAttribute(
           "Embed type changed");
     }
   } else if (params.name == html_names::kCodeAttr) {
-    // TODO(schenney): Remove this branch? It's not in the spec and we're not in
-    // the HTMLAppletElement hierarchy.
+    // TODO(rendering-core): Remove this branch? It's not in the spec and we're
+    // not in the HTMLAppletElement hierarchy.
     SetUrl(StripLeadingAndTrailingHTMLSpaces(params.new_value));
     SetDisposeView();
   } else if (params.name == html_names::kSrcAttr) {

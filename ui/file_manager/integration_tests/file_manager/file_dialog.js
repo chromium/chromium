@@ -516,6 +516,15 @@ testcase.openFileDialogDriveCSEGrey = () => {
 };
 
 /**
+ * Tests that selecting an encrypted (via CSE) file from a dialog requiring
+ * a real file is disabled.
+ */
+testcase.openFileDialogDriveCSENeedsFile = () => {
+  return openFileDialogExpectOkButtonDisabled(
+      'drive', ENTRIES.testCSEFile.nameText, TEST_DRIVE_FILE);
+};
+
+/**
  * Tests opening file dialog on Drive and selecting an office file.
  */
 testcase.openFileDialogDriveOfficeFile = () => {

@@ -5,8 +5,11 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 #if DCHECK_IS_ON()
@@ -53,6 +56,8 @@ ScriptPromiseResolver::ScriptPromiseResolver(
     const ExceptionContext& exception_context)
     : ScriptPromiseResolver(script_state) {
   exception_context_ = exception_context;
+  class_like_name_ = exception_context.GetClassName();
+  property_like_name_ = exception_context.GetPropertyName();
 }
 
 ScriptPromiseResolver::~ScriptPromiseResolver() = default;
@@ -139,6 +144,9 @@ void ScriptPromiseResolver::KeepAliveWhilePending() {
 void ScriptPromiseResolver::ResolveOrRejectImmediately() {
   DCHECK(!GetExecutionContext()->IsContextDestroyed());
   DCHECK(!GetExecutionContext()->IsContextPaused());
+
+  probe::WillHandlePromise(GetExecutionContext(), state_ == kResolving,
+                           class_like_name_, property_like_name_);
   {
     if (state_ == kResolving) {
       resolver_.Resolve(value_.Get(script_state_->GetIsolate()));

@@ -737,7 +737,7 @@ TEST_F(AutofillDownloadManagerTest, UploadToAPITest) {
       {},
       // Disabled
       // We don't want upload throttling for testing purpose.
-      {features::kAutofillUploadThrottling});
+      {features::test::kAutofillUploadThrottling});
 
   // Build the form structures that we want to upload.
   FormData form;
@@ -812,7 +812,7 @@ TEST_F(AutofillDownloadManagerTest, UploadWithRawMetadata) {
       {},
       // Disabled
       // We don't want upload throttling for testing purpose.
-      {features::kAutofillUploadThrottling});
+      {features::test::kAutofillUploadThrottling});
 
   for (bool is_raw_metadata_uploading_enabled : {false, true}) {
     SCOPED_TRACE(testing::Message() << "is_raw_metadata_uploading_enabled = "
@@ -1402,7 +1402,7 @@ class AutofillServerCommunicationTest
 
     scoped_feature_list_1_.InitWithFeatures(
         // Enabled
-        {features::kAutofillUploadThrottling},
+        {features::test::kAutofillUploadThrottling},
         // Disabled
         {});
 
@@ -1430,11 +1430,11 @@ class AutofillServerCommunicationTest
     switch (GetParam()) {
       case DISABLED:
         scoped_feature_list_2_.InitAndDisableFeature(
-            features::kAutofillServerCommunication);
+            features::test::kAutofillServerCommunication);
         break;
       case FINCHED_URL:
         scoped_feature_list_2_.InitAndEnableFeatureWithParameters(
-            features::kAutofillServerCommunication,
+            features::test::kAutofillServerCommunication,
             {{switches::kAutofillServerURL, autofill_server_url.spec()}});
         break;
       case COMMAND_LINE_URL:
@@ -1443,7 +1443,7 @@ class AutofillServerCommunicationTest
         [[fallthrough]];
       case DEFAULT_URL:
         scoped_feature_list_2_.InitAndEnableFeature(
-            features::kAutofillServerCommunication);
+            features::test::kAutofillServerCommunication);
         break;
       default:
         ASSERT_TRUE(false);
@@ -2095,7 +2095,7 @@ TEST_P(AutofillUploadTest, ThrottlingDisabled) {
       // Enabled.
       {},
       // Disabled
-      {features::kAutofillUploadThrottling});
+      {features::test::kAutofillUploadThrottling});
 
   FormData form;
   FormData small_form;
@@ -2184,7 +2184,7 @@ TEST_P(AutofillUploadTest, PeriodicReset) {
 
   base::test::ScopedFeatureList local_feature;
   local_feature.InitAndEnableFeatureWithParameters(
-      features::kAutofillUploadThrottling,
+      features::test::kAutofillUploadThrottling,
       {{switches::kAutofillUploadThrottlingPeriodInDays, "16"}});
 
   FormData form;

@@ -11,10 +11,10 @@
 import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
-import '../../shared/nearby_page_template.js';
-import '../../shared/nearby_shared_icons.html.js';
+import '/shared/nearby_page_template.js';
+import '/shared/nearby_shared_icons.html.js';
 
-import {RegisterReceiveSurfaceResult} from '/mojo/nearby_share.mojom-webui.js';
+import {RegisterReceiveSurfaceResult} from '/shared/mojo/nearby_share.mojom-webui.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

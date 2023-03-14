@@ -49,7 +49,7 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
                       DecisionType type) override;
 
   void OnObservationTrigger(const absl::optional<ImmediaCollectionParam>& param,
-                            TrainingDataCache::RequestId request_id,
+                            TrainingRequestId request_id,
                             const proto::SegmentInfo& segment_info) override;
 
   // HistogramSignalHandler::Observer implementation.
@@ -71,22 +71,26 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
 
   void OnGetSegmentInfoAtDecisionTime(
       proto::SegmentId segment_id,
-      TrainingDataCache::RequestId request_id,
+      TrainingRequestId request_id,
       DecisionType type,
       scoped_refptr<InputContext> input_context,
       DefaultModelManager::SegmentInfoList segment_list);
 
   void OnGetTrainingTensorsAtDecisionTime(
-      TrainingDataCache::RequestId request_id,
+      TrainingRequestId request_id,
       const TrainingTimings& training_request,
       const proto::SegmentInfo& segment_info,
       bool has_error,
       const ModelProvider::Request& input_tensors,
       const ModelProvider::Response& output_tensors);
 
+  void OnGetStoredTrainingData(
+      const absl::optional<ImmediaCollectionParam>& param,
+      const proto::SegmentInfo& segment_info,
+      absl::optional<proto::TrainingData> input);
+
   void OnGetOutputsOnObservationTrigger(
       const absl::optional<ImmediaCollectionParam>& param,
-      TrainingDataCache::RequestId request_id,
       const proto::SegmentInfo& segment_info,
       const ModelProvider::Request& cached_input_tensors,
       bool has_error,
@@ -108,6 +112,13 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
   TrainingTimings ComputeDecisionTiming(const proto::SegmentInfo& info) const;
   base::Time ComputeObservationTiming(const proto::SegmentInfo& info,
                                       base::Time prediction_time) const;
+
+  // Returns whether to store the training data to disk.
+  bool FillTrainingData(TrainingRequestId request_id,
+                        const TrainingTimings& training_request,
+                        const ModelProvider::Request& input_tensors,
+                        const proto::SegmentInfo& segment_info,
+                        proto::TrainingData& training_data);
 
   const raw_ptr<SegmentInfoDatabase> segment_info_database_;
   const raw_ptr<processing::FeatureListQueryProcessor>

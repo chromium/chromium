@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/threading/thread_checker.h"
@@ -67,7 +68,10 @@ class PPAPI_SHARED_EXPORT ProxyLock {
   class PPAPI_SHARED_EXPORT LockingDisablerForTest {
    public:
     LockingDisablerForTest();
-    ~LockingDisablerForTest();
+    ~LockingDisablerForTest() = default;
+
+   private:
+    const base::AutoReset<bool> resetter_;
   };
 
  private:

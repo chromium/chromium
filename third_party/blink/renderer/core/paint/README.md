@@ -471,11 +471,16 @@ the requirements for a quick update, and if so we add it to a list of pending
 updates (Those updates can't be executed on the fly because then paint offset
 changes can't be detected correctly).
 
-The updates are executed later in `PrePaintTreeWalk::WalkTree` using the
-the designated functions (For example -
-`LocalFrameView::UpdateAllPendingTransforms`). If at some point during
-pre-paint we reach a node that has a pending update, we mark that node as needs
-full update, and remove the pending update from the list.
+The updates are executed later in `PrePaintTreeWalk::WalkTree`.
+If at some point during pre-paint we reach a node that has a pending update,
+we mark that node as needs full update, and remove the pending update from the
+list
+
+When setting the display-locked property of an object (or ending a forced
+scope, effectively locking it), we remove all the pending opacity updates of
+that document. We actually need to remove only the updates for objects that are
+in that display, but the check is too expensive, so we remove all of the
+pending updates.
 
 Current updates that are checked for an optimized update are transform updates
 and opacity updates.

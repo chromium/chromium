@@ -49,6 +49,7 @@
 using testing::_;
 using testing::AllOf;
 using testing::AnyNumber;
+using testing::AtLeast;
 using testing::ByMove;
 using testing::Eq;
 using testing::Not;
@@ -951,9 +952,10 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
             service()->GetTransportState());
   ASSERT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
 
-  EXPECT_CALL(*trusted_vault_client(),
-              ClearDataForAccount(Eq(identity_manager()->GetPrimaryAccountInfo(
-                  signin::ConsentLevel::kSync))));
+  EXPECT_CALL(
+      *trusted_vault_client(),
+      ClearLocalDataForAccount(Eq(identity_manager()->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSync))));
 
   SyncProtocolError client_cmd;
   client_cmd.action = DISABLE_SYNC_ON_CLIENT;
@@ -987,7 +989,7 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
   EXPECT_TRUE(service()->GetLastSyncedTimeForDebugging().is_null());
 #endif
 
-  EXPECT_EQ(1, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
+  EXPECT_GT(get_controller(BOOKMARKS)->model()->clear_metadata_call_count(), 0);
 
   EXPECT_FALSE(service()->IsSyncFeatureEnabled());
   EXPECT_FALSE(service()->IsSyncFeatureActive());
@@ -1178,7 +1180,11 @@ TEST_F(SyncServiceImplTest,
        ShouldActivateSyncInvalidationsServiceWhenSyncIsInitialized) {
   SignIn();
   CreateService(SyncServiceImpl::MANUAL_START);
-  EXPECT_CALL(*sync_invalidations_service(), StartListening());
+
+  // Invalidations may start listening twice. The first one during
+  // initialization, the second once everything is configured.
+  EXPECT_CALL(*sync_invalidations_service(), StartListening())
+      .Times(AtLeast(1));
   InitializeForFirstSync();
 }
 

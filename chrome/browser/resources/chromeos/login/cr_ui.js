@@ -258,14 +258,7 @@ export class Oobe extends DisplayManager {
       document.documentElement.setAttribute(attribute, localizedString);
     }
 
-    const missingApiId = 'missingAPIKeysNotice';
-    if (!loadTimeData.valueExists(missingApiId)) {
-      return;
-    }
-    // Update this standalone div in the main document.
-    const apiKeysNoticeDiv = $('api-keys-notice');
-    apiKeysNoticeDiv.textContent = loadTimeData.getValue(missingApiId);
-    $('api-keys-notice-container').hidden = false;
+    $('api-keys-notice').updateLocaleAndMaybeShowNotice();
   }
 
   /**
@@ -286,17 +279,16 @@ export class Oobe extends DisplayManager {
 
 }  // class Oobe
 
-  Oobe.initializationComplete = false;
-  Oobe.initCallbacks = [];
-  /**
-   * Some ForTesting APIs directly access to DOM. Because this script is loaded
-   * in header, DOM tree may not be available at beginning.
-   * In DOMContentLoaded, after Oobe.initialize() is done, this is marked to
-   * true, indicating ForTesting methods can be called.
-   * External script using ForTesting APIs should wait for this condition.
-   * @type {boolean}
-   */
-  Oobe.readyForTesting = false;
+Oobe.initializationComplete = false;
+Oobe.initCallbacks = [];
+/**
+ * Some ForTesting APIs directly access to DOM. Because this script is loaded
+ * in header, DOM tree may not be available at beginning.
+ * In DOMContentLoaded, after Oobe.initialize() is done, this is marked to
+ * true, indicating ForTesting methods can be called.
+ * External script using ForTesting APIs should wait for this condition.
+ * @type {boolean}
+ */
+Oobe.readyForTesting = false;
 
-  addSingletonGetter(Oobe);
-
+addSingletonGetter(Oobe);

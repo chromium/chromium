@@ -176,6 +176,7 @@ void ChipController::OnWidgetDestroying(views::Widget* widget) {
     OnPromptBubbleDismissed();
   }
 
+  disallowed_custom_cursors_scope_.RunAndReset();
   widget->RemoveObserver(this);
 
   CollapsePrompt(/*allow_restart=*/false);
@@ -308,6 +309,7 @@ void ChipController::ResetChipCallbacks() {
 void ChipController::RemoveBubbleObserverAndResetTimersAndChipCallbacks() {
   views::Widget* const bubble_widget = GetBubbleWidget();
   if (bubble_widget) {
+    disallowed_custom_cursors_scope_.RunAndReset();
     bubble_widget->RemoveObserver(this);
     bubble_widget->Close();
   }
@@ -478,6 +480,11 @@ void ChipController::OpenPermissionPromptBubble() {
       !permission_prompt_model_->GetDelegate().has_value()) {
     return;
   }
+
+  disallowed_custom_cursors_scope_ = permission_prompt_model_->GetDelegate()
+                                         .value()
+                                         ->GetAssociatedWebContents()
+                                         ->CreateDisallowCustomCursorScope();
 
   // prevent chip from collapsing while prompt bubble is open
   ResetTimers();

@@ -6,8 +6,9 @@
 
 #include <tuple>
 
+#include "base/feature_list.h"
 #include "base/observer_list.h"
-#include "net/ssl/ssl_config_service_defaults.h"
+#include "net/base/features.h"
 
 namespace net {
 
@@ -34,6 +35,11 @@ SSLContextConfig::~SSLContextConfig() = default;
 SSLContextConfig& SSLContextConfig::operator=(const SSLContextConfig&) =
     default;
 SSLContextConfig& SSLContextConfig::operator=(SSLContextConfig&&) = default;
+
+bool SSLContextConfig::EncryptedClientHelloEnabled() const {
+  return ech_enabled &&
+         base::FeatureList::IsEnabled(features::kEncryptedClientHello);
+}
 
 SSLConfigService::SSLConfigService()
     : observer_list_(base::ObserverListPolicy::EXISTING_ONLY) {}

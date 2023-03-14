@@ -458,7 +458,7 @@ const internal::PropertiesNode kProperties[] = {
 };
 
 const internal::SchemaData* GetChromeSchemaData() {
-  static const internal::SchemaData kChromeSchemaData = {
+  static constexpr internal::SchemaData chrome_schema_data = {
     kSchemas,
     kPropertyNodes,
     kProperties,
@@ -469,7 +469,7 @@ const internal::SchemaData* GetChromeSchemaData() {
     -1,  // validation_schema root index
   };
 
-  return &kChromeSchemaData;
+  return &chrome_schema_data;
 }
 
 
@@ -498,9 +498,9 @@ void SetEnterpriseUsersDefaults(PolicyMap* policy_map) {
 
 const PolicyDetails* GetChromePolicyDetails(const std::string& policy) {
   // First index in kPropertyNodes of the Chrome policies.
-  static const int begin_index = 0;
+  static constexpr int begin_index = 0;
   // One-past-the-end of the Chrome policies in kPropertyNodes.
-  static const int end_index = 12;
+  static constexpr int end_index = 12;
   const internal::PropertyNode* begin =
      kPropertyNodes + begin_index;
   const internal::PropertyNode* end = kPropertyNodes + end_index;

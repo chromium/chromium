@@ -159,8 +159,8 @@ ScriptPromise BluetoothDevice::watchAdvertisements(
 
   // 'not-watching' 2.1. Set this.[[watchAdvertisementsState]] to
   // 'pending-watch'.
-  watch_advertisements_resolver_ =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  watch_advertisements_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   mojo::PendingAssociatedRemote<mojom::blink::WebBluetoothAdvertisementClient>
       client;
   client_receiver_.Bind(client.InitWithNewEndpointAndPassReceiver(),
@@ -208,7 +208,8 @@ ScriptPromise BluetoothDevice::forget(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
   bluetooth_->Service()->ForgetDevice(
       device_->id,

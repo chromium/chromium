@@ -8,6 +8,15 @@ import re
 import sys
 import json
 
+from pathlib import Path
+
+_HERE_DIR = Path(__file__).parent
+_SOURCE_MAP_CREATOR = (_HERE_DIR / 'rewrite_imports.mjs').resolve()
+
+_NODE_PATH = (_HERE_DIR.parent.parent / 'third_party' / 'node').resolve()
+sys.path.append(str(_NODE_PATH))
+import node
+
 _CWD = os.getcwd()
 
 # TODO(crbug.com/1320176): Consider either integrating this functionality into
@@ -42,8 +51,13 @@ def main(argv):
 
     def _map_import(import_path):
         for regex in import_mappings.keys():
-            if re.match(f"^{regex}$", import_path):
-                return import_mappings[regex]
+            import_match = re.match(f"^{regex}(.*)", import_path)
+            if import_match:
+                is_targetting_directory = regex[-1] == "/"
+                if is_targetting_directory:
+                    return import_mappings[regex] + import_match.group(1)
+                else:
+                    return import_mappings[regex]
         generated_import_match = re.match(r'^generated:(.*)', import_path)
         if generated_import_match:
             return generated_import_match.group(1)
@@ -51,16 +65,30 @@ def main(argv):
 
     for f in args.in_files:
         output = []
+        line_no = 0
+        changed_lines_list = list()
         for line in open(os.path.join(args.base_dir, f), 'r').readlines():
+            # Keep line counter to pass in rewrite info to rewrite_imports.js
+            line_no += 1
             # Investigate JS parsing if this is insufficient.
             match = re.match(r'^(import .*["\'])(.*)(["\'];)$', line)
             if match and _map_import(match.group(2)):
                 new_import = _map_import(match.group(2))
-                line = f"{match.group(1)}{new_import}{match.group(3)};\n"
+                line = f"{match.group(1)}{new_import}{match.group(3)}\n"
+                generated_column = len(match.group(1)) + len(match.group(2))
+                rewritten_column = len(match.group(1)) + len(new_import)
+                changed_line = {
+                    "lineNum": line_no,
+                    "generatedColumn": generated_column,
+                    "rewrittenColumn": rewritten_column
+                }
+                changed_lines_list.append(changed_line)
             output.append(line)
         with open(os.path.join(args.out_dir, f), 'w') as out_file:
             out_file.write(''.join(output))
         manifest['files'].append(f)
+
+        node.RunNode([str(_SOURCE_MAP_CREATOR), args.base_dir, f, args.out_dir, json.dumps(changed_lines_list)])
 
     with open(args.manifest_out, 'w') as manifest_file:
         json.dump(manifest, manifest_file)

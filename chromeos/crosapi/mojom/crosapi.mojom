@@ -78,6 +78,7 @@ import "chromeos/crosapi/mojom/resource_manager.mojom";
 import "chromeos/crosapi/mojom/screen_manager.mojom";
 import "chromeos/crosapi/mojom/select_file.mojom";
 import "chromeos/crosapi/mojom/sharesheet.mojom";
+import "chromeos/crosapi/mojom/smart_reader.mojom";
 import "chromeos/crosapi/mojom/speech_recognition.mojom";
 import "chromeos/crosapi/mojom/structured_metrics_service.mojom";
 import "chromeos/crosapi/mojom/sync.mojom";
@@ -134,8 +135,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 104
-// Next method id: 107
+// Next version: 105
+// Next method id: 108
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -499,6 +500,11 @@ interface Crosapi {
   [MinVersion=66]
   BindSharesheet@70(
       pending_receiver<Sharesheet> receiver);
+
+  // Binds the Smart Reader manager to the Smart Reader client.
+  [MinVersion=103]
+  BindSmartReaderClient@107(
+      pending_remote<crosapi.mojom.SmartReaderClient> remote);
 
   // Binds the SpeechRecognition interface to access on-device speech
   // recognition.

@@ -16,7 +16,7 @@ static_files = [
   "policy.html",
 ]
 
-if (is_android) {
+if (is_android || is_ios) {
   static_files += [ "logs/policy_logs.html" ]
 }
 
@@ -45,7 +45,7 @@ non_web_component_files = [
   "policy.js",
 ]
 
-if (is_android) {
+if (is_android || is_ios) {
   non_web_component_files += [
     "logs/types.ts",
     "logs/policy_logs.ts",
@@ -78,7 +78,6 @@ ts_library("build_ts") {
   root_dir = preprocess_dir
   out_dir = tsc_dir
   tsconfig_base = "tsconfig_base.json"
-  allow_js = true
 
   in_files = html_wrapper_files + web_component_files + non_web_component_files
 

@@ -1,13 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
+<translation id="1347497506789975534">محفوظ کردہ ادائیگی کے طریقے دکھائیں</translation>
 <translation id="1383876407941801731">تلاش کریں</translation>
-<translation id="1566281227936819866">ادائیگی کے محفوظ کردہ طریقے دکھائے جا رہے ہیں</translation>
 <translation id="1717486229951421299">ٹچ پر پُر کی جانے والی اسناد کی فہرست نصف اونچائی پر کھلی ہوئی ہے۔</translation>
 <translation id="207576718733492531">ٹچ پر پُر کی جانے والی اسناد کی فہرست بند ہے۔</translation>
 <translation id="2610239185026711824">پاس ورڈ تجویز کریں</translation>
 <translation id="2652129567809778422">پاس ورڈ منتخب کریں</translation>
-<translation id="2803478378562657435">محفوظ کردہ پاس ورڈز اور پاس ورڈز کے اختیارات دکھائے جا رہے ہیں</translation>
 <translation id="2903493209154104877">پتے</translation>
 <translation id="3399357656427473483">ٹچ پر پُر کی جانے والی اسناد کی فہرست۔</translation>
 <translation id="3688051737190211318">اگر آپ کو <ph name="ORIGIN" /> پر اعتماد ہے تو آپ سائن ان کرنے کے لیے محفوظ کردہ پاس ورڈ استعمال کر سکتے ہیں</translation>
@@ -15,16 +14,14 @@
 <translation id="4660011489602794167">کی بورڈ دکھائیں</translation>
 <translation id="4694050069269396220">اگر آپ کو <ph name="ORIGIN" /> پر اعتماد ہے تو آپ کسی اور سائٹ کے لئے محفوظ کردہ پاس ورڈ استعمال کر سکتے ہیں۔</translation>
 <translation id="5016175294846053194">کی بورڈ کے اوپر آٹو فل تجاویز دستیاب ہیں</translation>
-<translation id="5088366526685584589">محفوظہ پتے دکھائے جا رہے ہیں</translation>
 <translation id="5441504010984421144">ٹچ پر پُر کی جانے والی اسناد کی فہرست مکمل اونچائی پر کھلی ہوئی ہے۔</translation>
+<translation id="6296921860874265377">محفوظ کردہ پاس ورڈز اور پاس ورڈ کے اختیارات دکھائیں</translation>
 <translation id="6393156038355142111">مضبوط پاس ورڈ تجویز کریں</translation>
 <translation id="6558703547256592471">ہر سائٹ کے لئے ایک منفرد پاس ورڈ استعمال کرنے کی کوشش کریں۔</translation>
 <translation id="7029809446516969842">پاس ورڈز</translation>
-<translation id="7299100402441711551">پتے دکھائیں</translation>
-<translation id="7494879913343971937">پاس ورڈز دکھائیں</translation>
 <translation id="7594473730623999723">مزید تجاویز دیکھنے کے لئے سوائپ کریں</translation>
+<translation id="7873973044507799456">محفوظ کردہ پتے دکھائیں</translation>
 <translation id="7992095260806105436">‏Chrome آٹو فل تجویز استعمال کریں</translation>
-<translation id="8037472847879765671">ادائیگی کے طریقے دکھائیں</translation>
 <translation id="8507520749471379845">پاس ورڈز دستیاب ہیں</translation>
 <translation id="8705308553596171387">کوئی پاس ورڈ نہیں</translation>
 <translation id="879180780857354295">کی بورڈ کے اوپر پُر کرنے کے متبادل اختیارات دستیاب ہیں</translation>

@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -61,7 +62,8 @@ void HTMLDialogElement::SetFocusForDialogLegacy(HTMLDialogElement* dialog) {
           document.GetExecutionContext())) {
     HTMLElement::HideAllPopoversUntil(
         nullptr, document, HidePopoverFocusBehavior::kNone,
-        HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
+        HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
+        HidePopoverIndependence::kHideUnrelated);
   }
 
   dialog->previously_focused_element_ = document.FocusedElement();
@@ -357,7 +359,8 @@ void HTMLDialogElement::SetFocusForDialog() {
           GetDocument().GetExecutionContext())) {
     HTMLElement::HideAllPopoversUntil(
         nullptr, GetDocument(), HidePopoverFocusBehavior::kNone,
-        HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
+        HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
+        HidePopoverIndependence::kHideUnrelated);
   }
 
   Element* control = GetFocusDelegate(/*autofocus_only=*/false);

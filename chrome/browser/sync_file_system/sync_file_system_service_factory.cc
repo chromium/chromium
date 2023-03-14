@@ -39,7 +39,14 @@ void SyncFileSystemServiceFactory::set_mock_remote_file_service(
 }
 
 SyncFileSystemServiceFactory::SyncFileSystemServiceFactory()
-    : ProfileKeyedServiceFactory("SyncFileSystemService") {
+    : ProfileKeyedServiceFactory(
+          "SyncFileSystemService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   typedef std::set<BrowserContextKeyedServiceFactory*> FactorySet;
   FactorySet factories;
   factories.insert(extensions::ExtensionRegistryFactory::GetInstance());

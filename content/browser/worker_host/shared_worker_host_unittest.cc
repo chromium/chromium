@@ -458,9 +458,9 @@ TEST_F(SharedWorkerHostTestWithPNAEnabled,
   ASSERT_TRUE(params->client_security_state);
   EXPECT_TRUE(params->client_security_state->is_web_secure_context);
   EXPECT_EQ(params->client_security_state->ip_address_space,
-            network::mojom::IPAddressSpace::kLocal);
-  EXPECT_EQ(params->client_security_state->private_network_request_policy,
-            network::mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
+            network::mojom::IPAddressSpace::kLoopback);
+  EXPECT_EQ(params->client_security_state->local_network_request_policy,
+            network::mojom::LocalNetworkRequestPolicy::kPreflightWarn);
   EXPECT_EQ(params->client_security_state->cross_origin_embedder_policy.value,
             network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless);
 }

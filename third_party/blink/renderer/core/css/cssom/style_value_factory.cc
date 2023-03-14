@@ -298,8 +298,8 @@ CSSStyleValueVector StyleValueFactory::FromString(
 
   HeapVector<CSSPropertyValue, 64> parsed_properties;
   if (property_id != CSSPropertyID::kVariable &&
-      CSSPropertyParser::ParseValue(property_id, false, range, parser_context,
-                                    parsed_properties,
+      CSSPropertyParser::ParseValue(property_id, false, {range, css_text},
+                                    parser_context, parsed_properties,
                                     StyleRule::RuleType::kStyle)) {
     if (parsed_properties.size() == 1) {
       const auto result = StyleValueFactory::CssValueToStyleValueVector(

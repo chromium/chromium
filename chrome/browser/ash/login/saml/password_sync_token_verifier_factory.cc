@@ -29,7 +29,14 @@ PasswordSyncTokenVerifier* PasswordSyncTokenVerifierFactory::GetForProfile(
 }
 
 PasswordSyncTokenVerifierFactory::PasswordSyncTokenVerifierFactory()
-    : ProfileKeyedServiceFactory("PasswordSyncTokenVerifier") {
+    : ProfileKeyedServiceFactory(
+          "PasswordSyncTokenVerifier",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(InSessionPasswordSyncManagerFactory::GetInstance());
 }
 

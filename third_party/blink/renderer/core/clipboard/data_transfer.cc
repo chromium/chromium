@@ -128,7 +128,8 @@ class DraggedNodeImageBuilder {
     cull_rect.Offset(
         gfx::Vector2dF(layer->GetLayoutObject().FirstFragment().PaintOffset()));
     OverriddenCullRectScope cull_rect_scope(
-        *layer, CullRect(gfx::ToEnclosingRect(cull_rect)));
+        *layer, CullRect(gfx::ToEnclosingRect(cull_rect)),
+        /*disable_expansion*/ true);
     auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
 
     dragged_layout_object->GetDocument().Lifecycle().AdvanceTo(

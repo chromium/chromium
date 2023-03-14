@@ -1,13 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
+<translation id="1347497506789975534">Mostrar formas de pagamento salvas</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
-<translation id="1566281227936819866">Mostrando formas de pagamento salvas</translation>
 <translation id="1717486229951421299">Lista de credenciais a serem preenchidas por toque aberta na metade da altura.</translation>
 <translation id="207576718733492531">A lista de credenciais a serem preenchidas por toque está fechada.</translation>
 <translation id="2610239185026711824">Sugerir senha</translation>
 <translation id="2652129567809778422">Selecionar senha</translation>
-<translation id="2803478378562657435">Mostrando as senhas salvas e as opções de senha</translation>
 <translation id="2903493209154104877">Endereços</translation>
 <translation id="3399357656427473483">Lista de credenciais a serem preenchidas por toque.</translation>
 <translation id="3688051737190211318">Se você confia em <ph name="ORIGIN" />, pode usar uma senha salva para fazer login</translation>
@@ -15,16 +14,14 @@
 <translation id="4660011489602794167">Mostrar teclado</translation>
 <translation id="4694050069269396220">Se você confia em <ph name="ORIGIN" />, use uma senha salva para outro site.</translation>
 <translation id="5016175294846053194">Sugestões do preenchimento automático disponíveis acima do teclado</translation>
-<translation id="5088366526685584589">Mostrando endereços salvos</translation>
 <translation id="5441504010984421144">Lista de credenciais a serem preenchidas por toque aberta no tamanho máximo.</translation>
+<translation id="6296921860874265377">Mostrar senhas salvas e opções de senha</translation>
 <translation id="6393156038355142111">Sugerir senha forte</translation>
 <translation id="6558703547256592471">Tente usar uma senha exclusiva para cada site.</translation>
 <translation id="7029809446516969842">Senhas</translation>
-<translation id="7299100402441711551">Mostrar endereços</translation>
-<translation id="7494879913343971937">Mostrar senhas</translation>
 <translation id="7594473730623999723">Deslize para ver mais sugestões</translation>
+<translation id="7873973044507799456">Mostrar endereços salvos</translation>
 <translation id="7992095260806105436">Usar a sugestão de preenchimento automático do Chrome</translation>
-<translation id="8037472847879765671">Mostrar formas de pagamento</translation>
 <translation id="8507520749471379845">Senhas disponíveis</translation>
 <translation id="8705308553596171387">Nenhuma senha</translation>
 <translation id="879180780857354295">Opções alternativas de preenchimento disponíveis acima do teclado</translation>

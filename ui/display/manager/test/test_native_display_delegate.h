@@ -84,6 +84,9 @@ class TestNativeDisplayDelegate : public NativeDisplayDelegate {
       const std::vector<display::DisplayConfigurationParams>& config_requests,
       ConfigureCallback callback,
       uint32_t modeset_flag) override;
+  void SetHdcpKeyProp(int64_t display_id,
+                      const std::string& key,
+                      SetHdcpKeyPropCallback callback) override;
   void GetHDCPState(const DisplaySnapshot& output,
                     GetHDCPStateCallback callback) override;
   void SetHDCPState(const DisplaySnapshot& output,

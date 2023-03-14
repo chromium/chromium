@@ -184,7 +184,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   void ProcessFeedback(const media::VideoCaptureFeedback& feedback);
 
   // Called by OpenscreenFrameSender to determine bitrate.
-  int GetSuggestedVideoBitrate() const;
+  int GetSuggestedVideoBitrate(int min_bitrate, int max_bitrate) const;
 
   // Called periodically to update the `bandwidth_estimate_`.
   void UpdateBandwidthEstimate();
@@ -311,11 +311,15 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
 
   // Used to periodically update the currently used bandwidth estimate.
   base::RepeatingTimer bandwidth_update_timer_;
-  int bandwidth_estimate_ = 0;
+
   // Used to override getting the bandwidth from the session. Setting to a
-  // positive  value causes the session's bandwidth estimation to not be called.
-  int forced_bandwidth_estimate_ = 0;
-  int bandwidth_being_utilized_ = kDefaultBitrate;
+  // positive value causes the session's bandwidth estimation to not be called.
+  int forced_bandwidth_estimate_for_testing_ = 0;
+
+  // The portion of the bandwidth estimate that is currently available for use.
+  // Note that the actual bandwidth will be effectively capped at the sum of the
+  // current video and audio bitrates.
+  int usable_bandwidth_ = kDefaultBitrate;
 
   // Indicate whether we're in the middle of switching tab sources.
   bool switching_tab_source_ = false;

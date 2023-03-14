@@ -21,12 +21,15 @@ namespace autofill {
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 constexpr char kIbanValue[] = "DE91 1000 0000 0123 4567 89";
+constexpr char kIbanValueWithoutWhitespaces[] = "DE91100000000123456789";
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 class IBANSaveManagerTest : public testing::Test {
  public:
   IBANSaveManagerTest() {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
+    autofill_client_.set_personal_data_manager(
+        std::make_unique<TestPersonalDataManager>());
     std::unique_ptr<TestStrikeDatabase> test_strike_database =
         std::make_unique<TestStrikeDatabase>();
     strike_database_ = test_strike_database.get();
@@ -53,9 +56,8 @@ class IBANSaveManagerTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  test::AutofillEnvironment autofill_environment_;
-  TestAutofillClient autofill_client_{
-      std::make_unique<TestPersonalDataManager>()};
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
+  TestAutofillClient autofill_client_;
 
   std::unique_ptr<IBANSaveManager> iban_save_manager_;
   raw_ptr<TestStrikeDatabase> strike_database_;
@@ -91,7 +93,8 @@ TEST_F(IBANSaveManagerTest, OnUserDidDecideOnLocalSave_Accepted) {
   // Verify IBAN has been successfully updated with the new nickname on accept.
   EXPECT_EQ(ibans.size(), 1U);
   EXPECT_EQ(ibans[0]->nickname(), u"My teacher's IBAN");
-  EXPECT_EQ(ibans[0]->value(), base::UTF8ToUTF16(std::string(kIbanValue)));
+  EXPECT_EQ(ibans[0]->value(),
+            base::UTF8ToUTF16(std::string(kIbanValueWithoutWhitespaces)));
 }
 
 TEST_F(IBANSaveManagerTest, OnUserDidDecideOnLocalSave_Declined) {
@@ -127,10 +130,11 @@ TEST_F(IBANSaveManagerTest, LocallySaveIBAN_NotEnoughStrikesShouldOfferToSave) {
   iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue)));
 
   IBANSaveStrikeDatabase iban_save_strike_database(strike_database_);
-  iban_save_strike_database.AddStrike(kIbanValue);
+  iban_save_strike_database.AddStrike(kIbanValueWithoutWhitespaces);
 
   // Verify `kIbanValue` has been successfully added to the strike database.
-  EXPECT_EQ(1, iban_save_strike_database.GetStrikes(kIbanValue));
+  EXPECT_EQ(1,
+            iban_save_strike_database.GetStrikes(kIbanValueWithoutWhitespaces));
   EXPECT_TRUE(GetIBANSaveManager().AttemptToOfferIBANLocalSave(iban));
 }
 
@@ -140,10 +144,11 @@ TEST_F(IBANSaveManagerTest, LocallySaveIBAN_MaxStrikesShouldNotOfferToSave) {
 
   IBANSaveStrikeDatabase iban_save_strike_database(strike_database_);
   iban_save_strike_database.AddStrikes(
-      iban_save_strike_database.GetMaxStrikesLimit(), kIbanValue);
+      iban_save_strike_database.GetMaxStrikesLimit(),
+      kIbanValueWithoutWhitespaces);
 
   EXPECT_EQ(iban_save_strike_database.GetMaxStrikesLimit(),
-            iban_save_strike_database.GetStrikes(kIbanValue));
+            iban_save_strike_database.GetStrikes(kIbanValueWithoutWhitespaces));
   EXPECT_FALSE(GetIBANSaveManager().AttemptToOfferIBANLocalSave(iban));
 }
 
@@ -153,16 +158,20 @@ TEST_F(IBANSaveManagerTest, OnUserDidDecideOnLocalSave_Accepted_ClearsStrikes) {
   EXPECT_TRUE(GetIBANSaveManager().AttemptToOfferIBANLocalSave(iban));
 
   IBANSaveStrikeDatabase iban_save_strike_database(strike_database_);
-  iban_save_strike_database.AddStrike(kIbanValue);
+  iban_save_strike_database.AddStrike(kIbanValueWithoutWhitespaces);
 
-  // Verify `kIbanValue` has been successfully added to the strike database.
-  EXPECT_EQ(1, iban_save_strike_database.GetStrikes(kIbanValue));
+  // Verify `kIbanValueWithoutWhitespaces` has been successfully added to the
+  // strike database.
+  EXPECT_EQ(1,
+            iban_save_strike_database.GetStrikes(kIbanValueWithoutWhitespaces));
   GetIBANSaveManager().OnUserDidDecideOnLocalSaveForTesting(
       AutofillClient::SaveIBANOfferUserDecision::kAccepted,
       u"My teacher's IBAN");
 
-  // Verify `kIbanValue` has been cleared in the strike database.
-  EXPECT_EQ(0, iban_save_strike_database.GetStrikes(kIbanValue));
+  // Verify `kIbanValueWithoutWhitespaces` has been cleared in the strike
+  // database.
+  EXPECT_EQ(0,
+            iban_save_strike_database.GetStrikes(kIbanValueWithoutWhitespaces));
 }
 
 TEST_F(IBANSaveManagerTest, OnUserDidDecideOnLocalSave_Declined_AddsStrike) {
@@ -172,15 +181,17 @@ TEST_F(IBANSaveManagerTest, OnUserDidDecideOnLocalSave_Declined_AddsStrike) {
 
   IBANSaveStrikeDatabase iban_save_strike_database(strike_database_);
 
-  // Verify `kIbanValue` has been successfully added to the strike database.
-  EXPECT_EQ(0, iban_save_strike_database.GetStrikes(kIbanValue));
+  EXPECT_EQ(0,
+            iban_save_strike_database.GetStrikes(kIbanValueWithoutWhitespaces));
 
   GetIBANSaveManager().OnUserDidDecideOnLocalSaveForTesting(
       AutofillClient::SaveIBANOfferUserDecision::kDeclined,
       u"My teacher's IBAN");
 
-  // Verify `kIbanValue` has been added to the strike database.
-  EXPECT_EQ(1, iban_save_strike_database.GetStrikes(kIbanValue));
+  // Verify `kIbanValueWithoutWhitespaces` has been added to the strike
+  // database.
+  EXPECT_EQ(1,
+            iban_save_strike_database.GetStrikes(kIbanValueWithoutWhitespaces));
 }
 
 TEST_F(IBANSaveManagerTest, OnUserDidDecideOnLocalSave_Ignored_AddsStrike) {
@@ -191,15 +202,17 @@ TEST_F(IBANSaveManagerTest, OnUserDidDecideOnLocalSave_Ignored_AddsStrike) {
 
   IBANSaveStrikeDatabase iban_save_strike_database(strike_database_);
 
-  // Verify `kIbanValue` has been successfully added to the strike database.
-  EXPECT_EQ(0, iban_save_strike_database.GetStrikes(kIbanValue));
+  EXPECT_EQ(0,
+            iban_save_strike_database.GetStrikes(kIbanValueWithoutWhitespaces));
 
   GetIBANSaveManager().OnUserDidDecideOnLocalSaveForTesting(
       AutofillClient::SaveIBANOfferUserDecision::kDeclined,
       u"My teacher's IBAN");
 
-  // Verify `kIbanValue` has been added to the strike database.
-  EXPECT_EQ(1, iban_save_strike_database.GetStrikes(kIbanValue));
+  // Verify `kIbanValueWithoutWhitespaces` has been added to the strike
+  // database.
+  EXPECT_EQ(1,
+            iban_save_strike_database.GetStrikes(kIbanValueWithoutWhitespaces));
 }
 
 TEST_F(IBANSaveManagerTest, LocallySaveIBAN_AttemptToOfferIBANLocalSave) {
@@ -217,10 +230,11 @@ TEST_F(IBANSaveManagerTest,
   iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue)));
   IBANSaveStrikeDatabase iban_save_strike_database(strike_database_);
   iban_save_strike_database.AddStrikes(
-      iban_save_strike_database.GetMaxStrikesLimit(), kIbanValue);
+      iban_save_strike_database.GetMaxStrikesLimit(),
+      kIbanValueWithoutWhitespaces);
 
   EXPECT_EQ(iban_save_strike_database.GetMaxStrikesLimit(),
-            iban_save_strike_database.GetStrikes(kIbanValue));
+            iban_save_strike_database.GetStrikes(kIbanValueWithoutWhitespaces));
   EXPECT_FALSE(GetIBANSaveManager().AttemptToOfferIBANLocalSave(iban));
   histogram_tester.ExpectBucketCount(
       "Autofill.StrikeDatabase.IbanSaveNotOfferedDueToMaxStrikes",
@@ -232,7 +246,7 @@ TEST_F(IBANSaveManagerTest, StrikesPresentWhenIBANSaved_Local) {
   IBAN iban(base::GenerateGUID());
   iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue)));
   IBANSaveStrikeDatabase iban_save_strike_database(strike_database_);
-  iban_save_strike_database.AddStrike(kIbanValue);
+  iban_save_strike_database.AddStrike(kIbanValueWithoutWhitespaces);
 
   EXPECT_TRUE(GetIBANSaveManager().AttemptToOfferIBANLocalSave(iban));
   GetIBANSaveManager().OnUserDidDecideOnLocalSaveForTesting(

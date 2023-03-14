@@ -47,32 +47,46 @@ class StubInputController : public InputController {
   void SetTouchEventLoggingEnabled(bool enabled) override {
     NOTIMPLEMENTED_LOG_ONCE();
   }
-  void SetTouchpadSensitivity(int value) override {}
-  void SetTouchpadScrollSensitivity(int value) override {}
-  void SetTapToClick(bool enabled) override {}
-  void SetThreeFingerClick(bool enabled) override {}
-  void SetTapDragging(bool enabled) override {}
-  void SetNaturalScroll(bool enabled) override {}
-  void SetMouseSensitivity(int value) override {}
-  void SetMouseScrollSensitivity(int value) override {}
-  void SetPrimaryButtonRight(bool right) override {}
-  void SetMouseReverseScroll(bool enabled) override {}
-  void SetMouseAcceleration(bool enabled) override {}
   void SuspendMouseAcceleration() override {}
   void EndMouseAccelerationSuspension() override {}
-  void SetMouseScrollAcceleration(bool enabled) override {}
-  void SetPointingStickSensitivity(int value) override {}
-  void SetPointingStickPrimaryButtonRight(bool right) override {}
-  void SetPointingStickAcceleration(bool enabled) override {}
+  void SetThreeFingerClick(bool enabled) override {}
+  void SetTouchpadSensitivity(absl::optional<int> device_id,
+                              int value) override {}
+  void SetTouchpadScrollSensitivity(absl::optional<int> device_id,
+                                    int value) override {}
+  void SetTouchpadHapticFeedback(absl::optional<int> device_id,
+                                 bool enabled) override {}
+  void SetTouchpadHapticClickSensitivity(absl::optional<int> device_id,
+                                         int value) override {}
+  void SetTapToClick(absl::optional<int> device_id, bool enabled) override {}
+  void SetTapDragging(absl::optional<int> device_id, bool enabled) override {}
+  void SetNaturalScroll(absl::optional<int> device_id, bool enabled) override {}
+  void SetMouseSensitivity(absl::optional<int> device_id, int value) override {}
+  void SetMouseScrollSensitivity(absl::optional<int> device_id,
+                                 int value) override {}
+  void SetMouseReverseScroll(absl::optional<int> device_id,
+                             bool enabled) override {}
+  void SetMouseAcceleration(absl::optional<int> device_id,
+                            bool enabled) override {}
+  void SetMouseScrollAcceleration(absl::optional<int> device_id,
+                                  bool enabled) override {}
+  void SetPointingStickSensitivity(absl::optional<int> device_id,
+                                   int value) override {}
+  void SetPointingStickAcceleration(absl::optional<int> device_id,
+                                    bool enabled) override {}
+  void SetTouchpadAcceleration(absl::optional<int> device_id,
+                               bool enabled) override {}
+  void SetTouchpadScrollAcceleration(absl::optional<int> device_id,
+                                     bool enabled) override {}
+  void SetPrimaryButtonRight(absl::optional<int> device_id,
+                             bool right) override {}
+  void SetPointingStickPrimaryButtonRight(absl::optional<int> device_id,
+                                          bool right) override {}
   void SetGamepadKeyBitsMapping(
       base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) override {}
   std::vector<uint64_t> GetGamepadKeyBits(int id) override {
     return std::vector<uint64_t>();
   }
-  void SetTouchpadAcceleration(bool enabled) override {}
-  void SetTouchpadScrollAcceleration(bool enabled) override {}
-  void SetTouchpadHapticFeedback(bool enabled) override {}
-  void SetTouchpadHapticClickSensitivity(int value) override {}
   void SetTapToClickPaused(bool state) override {}
   void GetTouchDeviceStatus(GetTouchDeviceStatusReply reply) override {
     std::move(reply).Run(std::string());

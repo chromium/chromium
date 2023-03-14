@@ -195,7 +195,7 @@ public class BookmarkAddEditFolderActivity
                                   .setIcon(drawable)
                                   .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         } else {
-            mDeleteButton = menu.add(R.string.bookmark_action_bar_delete)
+            mDeleteButton = menu.add(R.string.bookmark_toolbar_delete)
                                     .setIcon(TintedDrawable.constructTintedDrawable(
                                             this, R.drawable.ic_delete_white_24dp))
                                     .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);

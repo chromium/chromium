@@ -39,7 +39,7 @@ class TouchToFillCreditCardController
   // was successfully shown.
   bool Show(std::unique_ptr<TouchToFillCreditCardView> view,
             base::WeakPtr<TouchToFillDelegate> delegate,
-            base::span<const autofill::CreditCard* const> cards_to_suggest);
+            base::span<const autofill::CreditCard> cards_to_suggest);
 
   // Hides the surface if it is currently shown.
   void Hide();
@@ -48,14 +48,11 @@ class TouchToFillCreditCardController
   void OnDismissed(JNIEnv* env, bool dismissed_by_user) override;
   void ScanCreditCard(JNIEnv* env) override;
   void ShowCreditCardSettings(JNIEnv* env) override;
-  void SuggestionSelected(
-      JNIEnv* env,
-      base::android::JavaParamRef<jstring> unique_id) override;
+  void SuggestionSelected(JNIEnv* env,
+                          base::android::JavaParamRef<jstring> unique_id,
+                          bool is_virtual) override;
 
  private:
-  // Called after the surface gets shown or hidden.
-  void SetShouldSuppressKeyboard(bool suppress);
-
   // Gets or creates the Java counterpart.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() override;
 

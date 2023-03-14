@@ -11,7 +11,7 @@
 
 // Class used to store common test data used to validate the functioning of the
 // credential provider sign in dialog. This class stores the expected login
-// complte information that the dialog is supposed to received from the gaia
+// complete information that the dialog is supposed to received from the gaia
 // sign in as well as the expected values for any additional token / info
 // fetches needed to complete the sign in using the credential provider.
 // On a successful sign in result, we expect the final json result to match
@@ -21,13 +21,13 @@ class CredentialProviderSigninDialogTestDataStorage {
  public:
   CredentialProviderSigninDialogTestDataStorage();
 
-  static base::Value MakeSignInResponseValue(
+  static base::Value::Dict MakeSignInResponseValue(
       const std::string& id = std::string(),
       const std::string& password = std::string(),
       const std::string& email = std::string(),
       const std::string& access_token = std::string(),
       const std::string& refresh_token = std::string());
-  base::Value MakeValidSignInResponseValue() const;
+  base::Value::Dict MakeValidSignInResponseValue() const;
 
   void SetSigninPassword(const std::string& password);
 

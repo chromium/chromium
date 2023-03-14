@@ -4,7 +4,9 @@
 
 #include "components/update_client/utils.h"
 
-#include <iterator>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -16,8 +18,6 @@
 #if BUILDFLAG(IS_WIN)
 #include <shlobj.h>
 #endif  // BUILDFLAG(IS_WIN)
-
-using std::string;
 
 namespace {
 
@@ -231,7 +231,8 @@ TEST(UpdateClientUtils, GetArchitecture) {
   const std::string arch = GetArchitecture();
 
 #if BUILDFLAG(IS_WIN)
-  EXPECT_TRUE(arch == kArchIntel || arch == kArchAmd64) << arch;
+  EXPECT_TRUE(arch == kArchIntel || arch == kArchAmd64 || arch == kArchArm64)
+      << arch;
 #endif  // BUILDFLAG(IS_WIN)
 }
 

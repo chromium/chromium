@@ -9,12 +9,12 @@
  */
 
 import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
-import '../../shared/nearby_page_template.js';
-import '../../shared/nearby_device.js';
-import '../../shared/nearby_preview.js';
-import '../../shared/nearby_progress.js';
+import '/shared/nearby_page_template.js';
+import '/shared/nearby_device.js';
+import '/shared/nearby_preview.js';
+import '/shared/nearby_progress.js';
 
-import {ShareTarget, TransferStatus} from '/mojo/nearby_share.mojom-webui.js';
+import {ShareTarget, TransferStatus} from '/shared/mojo/nearby_share.mojom-webui.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

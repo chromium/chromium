@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.chromium.sdk_sandbox.webview_sdk">
+
+  <application>
+    <sdk-library android:name="org.chromium.sdk_sandbox.webview_sdk"
+        android:versionMajor="1" />
+    <property android:name="android.sdksandbox.PROPERTY_SDK_PROVIDER_CLASS_NAME"
+        android:value="org.chromium.sdk_sandbox.webview_sdk.WebViewSandboxedSdkProvider" />
+  </application>
+
+</manifest>

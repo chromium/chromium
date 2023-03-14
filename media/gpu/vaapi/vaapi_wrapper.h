@@ -41,7 +41,7 @@
 #endif                        // BUILDFLAG(USE_VAAPI_X11)
 
 namespace gfx {
-enum class BufferFormat;
+enum class BufferFormat : uint8_t;
 class NativePixmap;
 class NativePixmapDmaBuf;
 class Rect;

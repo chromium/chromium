@@ -43,6 +43,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(FocusRing*, kFocusRingIdKey, nullptr)
 
 constexpr int kMinFocusRingInset = 2;
 constexpr float kOutlineThickness = 1.0f;
+constexpr float kFocusRingOutset = 2.0f;
 
 bool IsPathUsable(const SkPath& path) {
   return !path.isEmpty() && (path.isRect(nullptr) || path.isOval(nullptr) ||
@@ -203,11 +204,14 @@ void FocusRing::Layout() {
     expansion_insets.set_right(min_x_inset);
     focus_bounds.Inset(expansion_insets);
   }
-
-  focus_bounds.Inset(gfx::Insets(halo_inset_));
-
-  if (parent()->GetProperty(kDrawFocusRingBackgroundOutline))
-    focus_bounds.Inset(gfx::Insets(-2 * kOutlineThickness));
+  if (ShouldSetOutsetFocusRing()) {
+    focus_bounds.Outset(halo_thickness_ + kFocusRingOutset);
+  } else {
+    focus_bounds.Inset(gfx::Insets(halo_inset_));
+    if (parent()->GetProperty(kDrawFocusRingBackgroundOutline)) {
+      focus_bounds.Inset(gfx::Insets(-2 * kOutlineThickness));
+    }
+  }
 
   SetBoundsRect(focus_bounds);
 
@@ -237,20 +241,24 @@ void FocusRing::OnPaint(gfx::Canvas* canvas) {
   if (!ShouldPaint()) {
     return;
   }
-
-  const SkRRect ring_rect = GetRingRoundRect();
+  SkRRect ring_rect = GetRingRoundRect();
   cc::PaintFlags paint;
   paint.setAntiAlias(true);
   paint.setStyle(cc::PaintFlags::kStroke_Style);
-
-  if (parent()->GetProperty(kDrawFocusRingBackgroundOutline)) {
-    // Draw with full stroke width + 2x outline thickness to effectively paint
-    // the outline thickness on both sides of the FocusRing.
-    paint.setStrokeWidth(halo_thickness_ + 2 * kOutlineThickness);
-    paint.setColor(GetCascadingBackgroundColor(this));
-    canvas->sk_canvas()->drawRRect(ring_rect, paint);
+  if (ShouldSetOutsetFocusRing()) {
+    float focus_ring_adjustment = halo_thickness_ / 2 + kFocusRingOutset;
+    ring_rect.outset(focus_ring_adjustment, focus_ring_adjustment);
+  } else {
+    // TODO(crbug.com/1417057): kDrawFocusRingBackgroundOutline should be
+    // removed when ChromeRefresh is fully rolled out.
+    if (parent()->GetProperty(kDrawFocusRingBackgroundOutline)) {
+      // Draw with full stroke width + 2x outline thickness to effectively paint
+      // the outline thickness on both sides of the FocusRing.
+      paint.setStrokeWidth(halo_thickness_ + 2 * kOutlineThickness);
+      paint.setColor(GetCascadingBackgroundColor(this));
+      canvas->sk_canvas()->drawRRect(ring_rect, paint);
+    }
   }
-
   paint.setColor(GetPaintColor(this, !invalid_));
   paint.setStrokeWidth(halo_thickness_);
   canvas->sk_canvas()->drawRRect(ring_rect, paint);
@@ -339,6 +347,15 @@ void FocusRing::RefreshLayer() {
   } else {
     DestroyLayer();
   }
+}
+
+bool FocusRing::ShouldSetOutsetFocusRing() const {
+  // TODO(crbug.com/1417057): Some places set a custom `halo_inset_` value to
+  // move the focus ring away from the host. If those places want to outset the
+  // focus ring in the chrome refresh style, they need to be audited separately
+  // with UX.
+  return features::IsChromeRefresh2023() && !outset_focus_ring_disabled_ &&
+         halo_inset_ == FocusRing::kDefaultHaloInset;
 }
 
 bool FocusRing::ShouldPaint() {

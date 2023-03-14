@@ -185,6 +185,14 @@ _BANNED_JAVA_IMPORTS : Sequence[BanRule] = (
         'components/cronet/',
       ),
     ),
+    BanRule(
+      'import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;',
+      (
+       'Do not use VectorDrawableCompat, use getResources().getDrawable() to '
+       'avoid extra indirections. Please also add trace event as the call '
+       'might take more than 20 ms to complete.',
+      ),
+    ),
 )
 
 _BANNED_JAVA_FUNCTIONS : Sequence[BanRule] = (
@@ -263,6 +271,30 @@ _BANNED_JAVA_FUNCTIONS : Sequence[BanRule] = (
       False,
       excluded_paths=(
         r'.*Test[A-Z]?.*\.java',
+      ),
+    ),
+    BanRule(
+      r'/(ResourcesCompat|getResources\(\))\.getDrawable\(\)',
+      (
+       'getDrawable() can be expensive. If you have a lot of calls to '
+       'GetDrawable() or your code may introduce janks, please put your calls '
+       'inside a trace().',
+      ),
+      False,
+      excluded_paths=(
+        r'.*Test[A-Z]?.*\.java',
+      ),
+    ),
+    BanRule(
+      r'/RecordHistogram\.getHistogram(ValueCount|TotalCount|Samples)ForTesting\(',
+      (
+       'Raw histogram counts are easy to misuse; for example they don\'t reset '
+       'between batched tests. Use HistogramWatcher to check histogram records instead.',
+      ),
+      False,
+      excluded_paths=(
+        'base/android/javatests/src/org/chromium/base/metrics/RecordHistogramTest.java',
+        'base/test/android/javatests/src/org/chromium/base/test/util/HistogramWatcher.java',
       ),
     ),
 )
@@ -1142,6 +1174,14 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       r'/(\b(co_await|co_return|co_yield)\b|#include <coroutine>)',
       (
         'Coroutines are not yet allowed (https://crbug.com/1403840).',
+      ),
+      True,
+      [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
+    ),
+    BanRule(
+      r'/^\s*(import|export|module)\b',
+      (
+        'Modules are disallowed for now due to lack of toolchain support.',
       ),
       True,
       [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
@@ -2949,7 +2989,6 @@ def CheckSpamLogging(input_api, output_api):
             r"^chrome/chrome_elf/dll_hash/dll_hash_main\.cc$",
             r"^chrome/installer/setup/.*",
             r"^chromecast/",
-            r"^components/browser_watcher/dump_stability_report_main_win\.cc$",
             r"^components/media_control/renderer/media_playback_options\.cc$",
             r"^components/policy/core/common/policy_logger\.cc$",
             r"^components/viz/service/display/"
@@ -3186,8 +3225,8 @@ def CheckUserActionUpdate(input_api, output_api):
                 # Loads contents in tools/metrics/actions/actions.xml to memory. It's
                 # loaded only once.
                 if not current_actions:
-                    with open(
-                            'tools/metrics/actions/actions.xml') as actions_f:
+                    with open('tools/metrics/actions/actions.xml',
+                              encoding='utf-8') as actions_f:
                         current_actions = actions_f.read()
                 # Search for the matched user action name in |current_actions|.
                 for action_name in match.groups():
@@ -3778,7 +3817,7 @@ def CheckSetNoParent(input_api, output_api):
 
     allowed_owners_files_file = 'build/OWNERS.setnoparent'
     allowed_owners_files = set()
-    with open(allowed_owners_files_file, 'r') as f:
+    with open(allowed_owners_files_file, 'r', encoding='utf-8') as f:
         for line in f:
             line = line.strip()
             if not line or line.startswith('#'):
@@ -5319,7 +5358,7 @@ def ChecksCommon(input_api, output_api):
             continue
 
         use_python3 = False
-        with open(f.LocalPath()) as fp:
+        with open(f.LocalPath(), encoding='utf-8') as fp:
             use_python3 = any(
                 line.startswith('USE_PYTHON3 = True')
                 for line in fp.readlines())
@@ -6629,6 +6668,7 @@ Instrumentation tests should use either @Batch or @DoNotBatch. Use
 @Batch(Batch.PER_CLASS) in most cases. Use @Batch(Batch.UNIT_TESTS) when tests
 have no side-effects. If the tests are not safe to run in batch, please use
 @DoNotBatch with reasons.
+See https://source.chromium.org/chromium/chromium/src/+/main:docs/testing/batching_instrumentation_tests.md
 """, missing_annotation_errors))
     if extra_annotation_errors:
         results.append(

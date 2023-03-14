@@ -7,14 +7,15 @@ window.jsTestIsAsync = true;
 if (window.testRunner)
     testRunner.dumpAsText();
 
-testXMLType("foo,bar/baz+xml", false);
-testXMLType("foo;bar/baz+xml", false);
-testXMLType("foo:bar/baz+xml", false);
-testXMLType("foo\\bar/baz+xml", false);
-testXMLType('foo"bar/baz+xml', false);
-testXMLType("foo/bar/baz+xml", false);
-testXMLType("foo?bar/baz+xml", false);
-testXMLType("foo=bar/baz+xml", false);
+// if invalid type, default to text/xml https://xhr.spec.whatwg.org/#response-body
+testXMLType("foo,bar/baz+xml", true);
+testXMLType("foo;bar/baz+xml", true);
+testXMLType("foo:bar/baz+xml", true);
+testXMLType("foo\\bar/baz+xml", true);
+testXMLType('foo"bar/baz+xml', true);
+testXMLType("foo/bar/baz+xml", true);
+testXMLType("foo?bar/baz+xml", true);
+testXMLType("foo=bar/baz+xml", true);
 
 runNextTest();
 </script>

@@ -41,8 +41,7 @@ class EdgeDatabaseReaderTest : public ::testing::Test {
                  const std::string& contents,
                  base::FilePath* output_path) {
     *output_path = temp_dir_.GetPath().Append(name);
-    return base::WriteFile(*output_path, contents.c_str(), contents.size()) >=
-           0;
+    return base::WriteFile(*output_path, contents);
   }
 
   void SetUp() override {
@@ -59,8 +58,7 @@ class EdgeDatabaseReaderTest : public ::testing::Test {
       return false;
     if (!compression::GzipUncompress(gzip_data, &gzip_data))
       return false;
-    return base::WriteFile(output_file, gzip_data.c_str(), gzip_data.size()) >=
-           0;
+    return base::WriteFile(output_file, gzip_data);
   }
 
   base::ScopedTempDir temp_dir_;

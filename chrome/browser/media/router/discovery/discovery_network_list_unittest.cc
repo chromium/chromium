@@ -4,10 +4,10 @@
 
 #include "chrome/browser/media/router/discovery/discovery_network_list.h"
 
-#include <algorithm>
 #include <iterator>
 #include <set>
 
+#include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media_router {
@@ -22,12 +22,10 @@ TEST(DiscoveryNetworkListTest, GetDiscoveryNetworkInfoList) {
 
   // Also check that at most one ID is returned per interface name.
   std::set<std::string> interface_name_set;
-  std::transform(begin(network_ids), end(network_ids),
-                 std::insert_iterator<std::set<std::string>>{
-                     interface_name_set, end(interface_name_set)},
-                 [](const DiscoveryNetworkInfo& network_info) {
-                   return network_info.name;
-                 });
+  base::ranges::transform(network_ids,
+                          std::insert_iterator<std::set<std::string>>{
+                              interface_name_set, end(interface_name_set)},
+                          &DiscoveryNetworkInfo::name);
 
   EXPECT_EQ(interface_name_set.size(), network_ids.size());
 }

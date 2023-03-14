@@ -22,7 +22,6 @@ class Profile;
 namespace autofill {
 
 class CreditCard;
-class AutofillBubbleBase;
 enum class BubbleType;
 
 // Interface that exposes controller functionality to save card bubbles.
@@ -63,10 +62,6 @@ class SaveCardBubbleController {
 
   // Returns the card that will be uploaded if the user accepts.
   virtual const CreditCard& GetCard() const = 0;
-
-  // Returns the currently active save card bubble view. Can be nullptr if no
-  // bubble is visible.
-  virtual AutofillBubbleBase* GetSaveCardBubbleView() const = 0;
 
   // Returns whether the dialog should include a textfield requesting the user
   // to confirm/provide cardholder name.

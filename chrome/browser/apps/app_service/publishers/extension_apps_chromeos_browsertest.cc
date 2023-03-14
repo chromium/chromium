@@ -35,7 +35,8 @@ class ExtensionAppsChromeOsBrowserTest
     : public extensions::ExtensionBrowserTest {
  public:
   ExtensionAppsChromeOsBrowserTest() {
-    feature_list_.InitAndEnableFeature(extensions_features::kWebFileHandlers);
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kExtensionWebFileHandlers);
   }
 
  protected:
@@ -53,8 +54,7 @@ class ExtensionAppsChromeOsBrowserTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  extensions::ScopedCurrentChannel current_channel_{
-      version_info::Channel::CANARY};
+  extensions::ScopedCurrentChannel current_channel_{version_info::Channel::DEV};
 };
 
 // Open the extension action url when opening a matching file type.

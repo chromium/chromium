@@ -72,6 +72,9 @@ verbs, like `Check()` and `Do()` don't care about specific elements.
 
 Verbs fall into a number of different categories:
 - **Do** performs an action you specify.
+- **Log** prints its arguments to the output at log level `INFO`.
+    - By default, arguments are captured by value when the sequence is built.
+    - If you want a variable's value read at runtime, use `std::ref(var)`.
 - **Check** verbs ensure that some condition is true; if it is not, the test
   fails. Some *Check* verbs use `Matcher`s, some use callbacks, etc. Examples
   include:
@@ -89,8 +92,8 @@ Verbs fall into a number of different categories:
     - `WaitForHide()`
     - `WaitForActivated()`
     - `WaitForEvent()`
-- **After** verbs allow you to take some action (specified as a callback) when a
-  given event takes place or condition becomes true. The callback can be a full
+- **After** verbs allow you to take some action when a given event takes place
+  or condition becomes true. The action can be a full
   `InteractionSequence::StepStartCallback` or it can omit any number of leading
   arguments; try to be as concise as possible. Examples:
     - `AfterShow()`
@@ -197,6 +200,44 @@ RunTestSequence(
     PressButton(kFirstButton));
 ```
 
+### Test Functions and Callbacks
+
+Many verbs and modifiers, such as `Do`, `After...`, `With...`, `Check...`, and
+`If...` take a test function or callback as an argument.
+
+Kombucha allows you to specify these functions in whatever way is clearest and
+most concise. You may use any of the following:
+ - A callback (resulting from `base::Bind...()`)
+ - A function pointer
+ - A bare lambda or reference to a lambda, with or without bound arguments
+
+The following are, therefore, all valid:
+```cpp
+void Func() {
+  LOG(INFO) << "Normal function.";
+}
+
+IN_PROC_BROWSER_TEST_F(MyTest, TestDo) {
+  auto lambda = [](){ LOG(INFO) << "Stored lambda."; };
+  auto once_callback = base::BindOnce([](){ LOG(INFO) << "Once callback."; });
+  auto repeating_callback =
+      base::BindRepeating([](){ LOG(INFO) << "Repeating callback."; });
+  int x = 1;
+  int y = 2;
+  RunTestSequence(
+      Do(&Func),
+      Do(lambda),
+      Do(std::move(once_callback)),
+      Do(repeating_callback),
+      Do([x, &y](){ LOG(INFO) << "Bound args " << x << ", " << y; }));
+}
+```
+
+Note that a few cases do still require you to use `base::Bind...`; specifically,
+the arguments to actions like `NameChildView` and `NameDescendantView`. When a
+verb does require an explicit argument it will be provided in the verb's method
+signature.
+
 ### Modifiers
 
 A modifier wraps around a step or steps and change their behavior.
@@ -255,12 +296,21 @@ Kombucha now provides two options for control flow:
 In some cases, you may want to execute part of a test only if, for example, a
 particular flag is set. In order to do this, we provide the various `If()`
 control-flow statements:
- - `If(condition, step[s])` - executes `step[s]` if `condition` returns true.
- - `IfElement(element, condition, step[s])` - executes `step[s]` if `condition`
-   returns true when `element` is passed to it.
- - `IfView(view, condition, step[s])` - executes `step[s]` if `condition`
-   returns true when `view` is converted to the type accepted by `condition` and
-   passed to it (the element must be of the correct type).
+ - `If(condition, then_steps[, else_steps])` - executes `then_steps`, which can
+   be a single step or a `MultiStep`, if `condition` returns true. If
+   `else_steps` is present, it will be executed if `condition` returns false.
+ - `IfMatches(function, matcher, then_steps[, else_steps])` - same as above
+   but `then_steps` executes if the result of `function` matches `matcher`.
+ - `IfElement()`, `IfElementMatches()` - same as above, but the `condition` or
+   `function` receives a const pointer to the specified element as an argument.
+   If the element is not visible, the condition receives `nullptr` (it does not
+   fail).
+ - `IfView()`, `IfViewMatches()` - same as above, except that the condition
+   takes a const pointer to a `View` or `View` subclass; if the element is not
+   present, null is passed, but if it is the wrong type, the test fails.
+ - `IfViewPropertyMatches()` - same as above, but you specify a readonly method
+   on the View rather than an arbitrary function. Syntax is similar to
+   `CheckViewProperty()`.
 
 Example:
 ```cpp
@@ -268,9 +318,9 @@ RunTestSequence(
   /* ... */
   // If MyFeature is enabled, it may interfere with the rest of this test, so
   // toggle its UI off:
-  If(base::BindOnce([](){ return base::FeatureList::IsEnabled(kMyFeature); }),
+  If(base::Bind(&base::FeatureList::IsEnabled, kMyFeature)),
      Steps(PressButton(kFeatureToggleButtonElementId),
-           WaitForHide(kMyFeatureUiElementId))),
+           WaitForHide(kMyFeatureUiElementId)),
   /* Proceed with test... */
 )
 ```
@@ -282,12 +332,28 @@ RunTestSequence(
   /* ... */
   // If the side panel is still visible, close it.
   IfView(kSidePanelElementId,
-         base::BindOnce([](const SidePanel* side_panel) {
-              // If the element is visible, it will be passed here, otherwise it
-              // will be null.
-              return side_panel != nullptr;
-            }),
-            PressButton(kSidePanelButtonElementId))
+         // If the side panel is visible...
+         [](const SidePanel* side_panel) { return side_panel != nullptr; },
+         // Then press the side panel button to close the side panel.
+         Steps(PressButton(kSidePanelButtonElementId),
+               WaitForHide(kSidePanelElementId)),
+         // Else note that it was not open.
+         Log("Side panel was already closed.")),
+  /* ... */
+)
+```
+
+Matchers are straightforward; consider the following case where we want to open
+a new tab, but only if there are fewer than two tabs open:
+```cpp
+RunTestSequence(
+  /* ... */
+  IfMatches(
+      // If there are fewer than two tabs...
+      [this]() { return browser()->tab_strip_model()->count(); },
+      testing::Lt(2),
+      // Then open a new tab:
+      PressButton(kNewTabButtonElementId)),
   /* ... */
 )
 ```
@@ -441,7 +507,7 @@ for (let selector of deepQuery) {
   if (cur.shadowRoot)
     cur = cur.shadowRoot;
   cur = cur.querySelector(selector);
-}  
+}
 ```
 
 If at any point the selector fails, the target DOM element is determined not to
@@ -450,19 +516,19 @@ exist. Often, this fails the test, but might not in all cases.
 ### Automatic Conversion
 
 The following convenience methods are provided to convert a `TrackedElement*` to
-a more specific object, primarily used in callbacks supplied to `WithElement()`
+a more specific object, primarily used in functions supplied to `WithElement()`
 or one of the **After** verbs:
-- `AsView<T>` - converts the element to a view of the specific type; fails if it
-  is not
+- `AsView<T>()` - converts the element to a view of the specific type; fails if
+  it is not
 - `AsInstrumentedWebContents()` - converts the element to an instrumented
   `WebContents`; fails if it is not
 
 Example:
 ```cpp
-  WithElement(kComboBoxId, base::BindOnce([](ui::TrackedElement* el){
-    // Note to self: we should probably just have a verb for this.
+  WithElement(kComboBoxId, [](ui::TrackedElement* el) {
+    // Could have also used SelectDropdownItem for this:
     AsView<ComboBox>(el)->SelectItem(1);
-  })),
+  }),
 ```
 
 ### Custom Verbs
@@ -483,8 +549,7 @@ class MyHistoryTest : public InteractiveBrowserTest {
   // This custom verb will be used across multiple test cases.
   auto OpenHistoryPageInNewTab() {
     return Steps(
-        Do(base::BindLambdaForTesting(
-            [this](){ InstrumentNextTab(browser(), kHistoryPageTab); }))
+        InstrumentNextTab(kHistoryPageTabId),
         PressButton(kNewTabButton),
         PressButton(kAppMenuButton),
         SelectMenuItem(kHistoryMenuItem),

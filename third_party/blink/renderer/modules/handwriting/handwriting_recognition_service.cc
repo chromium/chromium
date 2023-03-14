@@ -129,8 +129,8 @@ ScriptPromise HandwritingRecognitionService::CreateHandwritingRecognizer(
     return ScriptPromise();
   }
 
-  ScriptPromiseResolver* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromiseResolver* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
   auto mojo_model_constraint =
@@ -166,8 +166,8 @@ ScriptPromise HandwritingRecognitionService::QueryHandwritingRecognizer(
     return ScriptPromise();
   }
 
-  ScriptPromiseResolver* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromiseResolver* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
   remote_service_->QueryHandwritingRecognizer(

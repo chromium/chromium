@@ -1,0 +1,51 @@
+owners:
+- cthomp@chromium.org
+- trusty-transport@chromium.org
+
+caption: HTTP Allowlist
+
+desc: |-
+  Setting the policy specifies a list of hostnames or hostname patterns (such as
+  '[*.]example.com') that will not be upgraded to HTTPS and will not show an
+  error interstitial if HTTPS-First Mode is enabled. Organizations can use this
+  policy to maintain access to servers that do not support HTTPS, without
+  needing to disable HTTPS Upgrades and/or HTTPS-First Mode.
+
+  Supplied hostnames must be canonicalized: Any IDNs must be converted to their
+  A-label format, and all ASCII letters must be lowercase.
+
+  Blanket host wildcards (i.e., "*" or "[*]") are not allowed. Instead,
+  HTTPS-First Mode and HTTPS Upgrades should be explicitly disabled via their
+  specific policies.
+
+  Note: This policy does not apply to HSTS upgrades.
+
+supported_on:
+- android:112-
+- chrome.*:112-
+- chrome_os:112-
+- fuchsia:112-
+
+features:
+  # Whether Chrome respects the changes to the policy immediately without having
+  # to restart the browser.
+  dynamic_refresh: true
+
+  # Whether a user policy applies to every user logging into the browser or only
+  # one profile.
+  per_profile: true
+
+type: list
+
+schema:
+  items:
+    type: string
+  type: array
+
+example_value:
+- 'testserver.example.com'
+- '[*.]example.org'
+
+# This policy disables HTTPS upgrades for some hostnames, potentially decreasing
+# user security.
+tags: [ system-security ]

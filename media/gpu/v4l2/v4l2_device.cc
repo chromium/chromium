@@ -28,7 +28,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_types.h"
@@ -2315,7 +2314,7 @@ V4L2RequestsQueue* V4L2Device::GetRequestsQueue() {
         strlen(reinterpret_cast<const char*>(media_info.bus_info)) > 0 &&
         strncmp(reinterpret_cast<const char*>(caps.bus_info),
                 reinterpret_cast<const char*>(media_info.bus_info),
-                sizeof(caps.driver))) {
+                sizeof(caps.bus_info))) {
       continue;
     }
 

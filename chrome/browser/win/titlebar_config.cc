@@ -10,6 +10,7 @@
 bool ShouldCustomDrawSystemTitlebar() {
   // Cache flag lookup.
   static const bool custom_titlebar_disabled =
+      base::CommandLine::InitializedForCurrentProcess() &&
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableWindows10CustomTitlebar);
 

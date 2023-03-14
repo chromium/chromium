@@ -60,8 +60,9 @@ class ActionTap::ActionTapView : public ActionView {
   void SetViewContent(BindingOption binding_option) override {
     InputElement* input_binding =
         GetInputBindingByBindingOption(action_, binding_option);
-    if (!input_binding)
+    if (!input_binding) {
       return;
+    }
 
     if (labels_.empty()) {
       // Create new action label when initializing.
@@ -90,8 +91,9 @@ class ActionTap::ActionTapView : public ActionView {
   void OnKeyBindingChange(ActionLabel* action_label,
                           ui::DomCode code) override {
     DCHECK(labels_.size() == 1 && labels_[0] == action_label);
-    if (labels_.size() != 1 || labels_[0] != action_label)
+    if (labels_.size() != 1 || labels_[0] != action_label) {
       return;
+    }
 
     auto input_element = InputElement::CreateActionTapKeyElement(code);
     ChangeInputBinding(action_, action_label, std::move(input_element));
@@ -99,8 +101,9 @@ class ActionTap::ActionTapView : public ActionView {
 
   void OnBindingToKeyboard() override {
     const auto& input_binding = action_->GetCurrentDisplayedInput();
-    if (!IsMouseBound(input_binding))
+    if (!IsMouseBound(input_binding)) {
       return;
+    }
 
     auto input_element = std::make_unique<InputElement>();
     action_->set_pending_input(std::move(input_element));
@@ -109,8 +112,9 @@ class ActionTap::ActionTapView : public ActionView {
 
   void OnBindingToMouse(std::string mouse_action) override {
     DCHECK(mouse_action == kPrimaryClick || mouse_action == kSecondaryClick);
-    if (mouse_action != kPrimaryClick && mouse_action != kSecondaryClick)
+    if (mouse_action != kPrimaryClick && mouse_action != kSecondaryClick) {
       return;
+    }
     const auto& input_binding = action_->GetCurrentDisplayedInput();
     if (IsMouseBound(input_binding) &&
         input_binding.mouse_action() ==
@@ -127,8 +131,9 @@ class ActionTap::ActionTapView : public ActionView {
   void OnMenuEntryPressed() override {
     display_overlay_controller_->AddActionEditMenu(this, ActionType::TAP);
     DCHECK(menu_entry_);
-    if (!menu_entry_)
+    if (!menu_entry_) {
       return;
+    }
     menu_entry_->RequestFocus();
   }
 
@@ -142,8 +147,9 @@ class ActionTap::ActionTapView : public ActionView {
 
     labels_[0]->UpdateLabelPositionType(
         GetTapLabelPosition(GetTouchCenterInWindow()));
-    if (!moving)
+    if (!moving) {
       SetSize(GetBoundingBoxOfChildren(this));
+    }
   }
 
   void ChildPreferredSizeChanged(View* child) override {
@@ -207,8 +213,9 @@ bool ActionTap::ParseFromJson(const base::Value& value) {
 }
 
 bool ActionTap::InitFromEditor() {
-  if (!Action::InitFromEditor())
+  if (!Action::InitFromEditor()) {
     return false;
+  }
 
   original_input_ = InputElement::CreateActionTapKeyElement(ui::DomCode::NONE);
   current_input_ = InputElement::CreateActionTapKeyElement(ui::DomCode::NONE);
@@ -223,8 +230,9 @@ bool ActionTap::ParseJsonFromKeyboard(const base::Value& value) {
   }
   original_input_ = InputElement::CreateActionTapKeyElement(key->first);
   current_input_ = InputElement::CreateActionTapKeyElement(key->first);
-  if (original_input_->is_modifier_key())
+  if (original_input_->is_modifier_key()) {
     support_modifier_key_ = true;
+  }
   return true;
 }
 
@@ -267,8 +275,9 @@ bool ActionTap::RewriteEvent(const ui::Event& origin,
     return rewritten;
   }
   // Rewrite for mouse event.
-  if (!is_mouse_locked)
+  if (!is_mouse_locked) {
     return false;
+  }
   auto* mouse_event = origin.AsMouseEvent();
   bool rewritten = RewriteMouseEvent(mouse_event, content_bounds,
                                      rotation_transform, touch_events);
@@ -290,11 +299,13 @@ std::unique_ptr<ActionView> ActionTap::CreateView(
 }
 
 void ActionTap::UnbindInput(const InputElement& input_element) {
-  if (pending_input_)
+  if (pending_input_) {
     pending_input_.reset();
+  }
   pending_input_ = std::make_unique<InputElement>();
-  if (action_view_)
+  if (action_view_) {
     action_view_->set_unbind_label_index(0);
+  }
   PostUnbindInputProcess();
 }
 
@@ -304,20 +315,24 @@ bool ActionTap::RewriteKeyEvent(const ui::KeyEvent* key_event,
                                 std::list<ui::TouchEvent>& rewritten_events,
                                 bool& keep_original_event) {
   DCHECK(key_event);
-  if (!IsSameDomCode(key_event->code(), current_input_->keys()[0]))
+  if (!IsSameDomCode(key_event->code(), current_input_->keys()[0])) {
     return false;
+  }
 
   // Ignore repeated key events, but consider it as processed.
-  if (IsRepeatedKeyEvent(*key_event))
+  if (IsRepeatedKeyEvent(*key_event)) {
     return true;
+  }
 
   if (key_event->type() == ui::ET_KEY_PRESSED) {
     DCHECK_LT(current_position_idx_, touch_down_positions_.size());
-    if (current_position_idx_ >= touch_down_positions_.size())
+    if (current_position_idx_ >= touch_down_positions_.size()) {
       return false;
+    }
     last_touch_root_location_ = touch_down_positions_[current_position_idx_];
-    if (!CreateTouchPressedEvent(key_event->time_stamp(), rewritten_events))
+    if (!CreateTouchPressedEvent(key_event->time_stamp(), rewritten_events)) {
       return false;
+    }
 
     if (!current_input_->is_modifier_key()) {
       keys_pressed_.emplace(key_event->code());
@@ -330,8 +345,9 @@ bool ActionTap::RewriteKeyEvent(const ui::KeyEvent* key_event,
       CreateTouchReleasedEvent(key_event->time_stamp(), rewritten_events);
     }
   } else {
-    if (!VerifyOnKeyRelease(key_event->code()))
+    if (!VerifyOnKeyRelease(key_event->code())) {
       return true;
+    }
 
     CreateTouchReleasedEvent(key_event->time_stamp(), rewritten_events);
     keys_pressed_.erase(key_event->code());
@@ -352,10 +368,11 @@ bool ActionTap::RewriteMouseEvent(const ui::MouseEvent* mouse_event,
     return false;
   }
 
-  if (type == ui::ET_MOUSE_PRESSED)
+  if (type == ui::ET_MOUSE_PRESSED) {
     DCHECK(!touch_id_);
-  if (type == ui::ET_MOUSE_RELEASED)
+  } else if (type == ui::ET_MOUSE_RELEASED) {
     DCHECK(touch_id_);
+  }
 
   if (!touch_id_) {
     if (current_position_idx_ < touch_down_positions_.size()) {
@@ -368,8 +385,9 @@ bool ActionTap::RewriteMouseEvent(const ui::MouseEvent* mouse_event,
       last_touch_root_location_.Scale(scale);
     }
 
-    if (!CreateTouchPressedEvent(mouse_event->time_stamp(), rewritten_events))
+    if (!CreateTouchPressedEvent(mouse_event->time_stamp(), rewritten_events)) {
       return false;
+    }
   } else {
     CreateTouchReleasedEvent(mouse_event->time_stamp(), rewritten_events);
   }
@@ -378,8 +396,9 @@ bool ActionTap::RewriteMouseEvent(const ui::MouseEvent* mouse_event,
 
 std::unique_ptr<ActionProto> ActionTap::ConvertToProtoIfCustomized() const {
   auto action_proto = Action::ConvertToProtoIfCustomized();
-  if (!action_proto)
+  if (!action_proto) {
     return nullptr;
+  }
 
   action_proto->set_action_type(ActionType::TAP);
   return action_proto;

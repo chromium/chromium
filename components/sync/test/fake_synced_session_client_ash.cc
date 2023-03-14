@@ -15,14 +15,33 @@ namespace syncer {
 FakeSyncedSessionClientAsh::FakeSyncedSessionClientAsh() = default;
 FakeSyncedSessionClientAsh::~FakeSyncedSessionClientAsh() = default;
 
-void FakeSyncedSessionClientAsh::OnForeignSyncedPhoneSessionsUpdated(
-    std::vector<crosapi::mojom::SyncedSessionPtr> sessions) {
-  NOTIMPLEMENTED();
-}
-
 void FakeSyncedSessionClientAsh::BindReceiver(
     mojo::PendingReceiver<crosapi::mojom::SyncedSessionClient> receiver) {
   receivers_.Add(this, std::move(receiver));
+}
+
+void FakeSyncedSessionClientAsh::OnForeignSyncedPhoneSessionsUpdated(
+    std::vector<crosapi::mojom::SyncedSessionPtr> sessions) {
+  last_foreign_synced_phone_sessions_ = std::move(sessions);
+  if (on_foreign_synced_phone_sessions_updated_complete_callback_) {
+    std::move(on_foreign_synced_phone_sessions_updated_complete_callback_)
+        .Run();
+  }
+}
+
+void FakeSyncedSessionClientAsh::SetOnForeignSyncedPhoneSessionsUpdatedCallback(
+    base::RepeatingClosure callback) {
+  on_foreign_synced_phone_sessions_updated_complete_callback_ =
+      std::move(callback);
+}
+
+const std::vector<crosapi::mojom::SyncedSessionPtr>&
+FakeSyncedSessionClientAsh::LookupForeignSyncedPhoneSessions() {
+  return last_foreign_synced_phone_sessions_;
+}
+
+void FakeSyncedSessionClientAsh::OnSessionSyncEnabledChanged(bool enabled) {
+  NOTIMPLEMENTED();
 }
 
 }  // namespace syncer

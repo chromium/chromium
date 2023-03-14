@@ -48,6 +48,9 @@ public final class BrowserViewController
         implements WebContentsGestureStateTracker.OnGestureStateChangedListener,
                    ModalDialogManager.ModalDialogManagerObserver {
     private final ContentViewRenderView mContentViewRenderView;
+
+    private final Context mWeblayerContext;
+
     // Child of mContentViewRenderView. Be very careful adding Views to this, as any Views are not
     // accessible (ContentView provides it's own accessible implementation that interacts with
     // WebContents).
@@ -78,6 +81,9 @@ public final class BrowserViewController
     public BrowserViewController(Context embedderContext, FragmentWindowAndroid windowAndroid,
             boolean recreateForConfigurationChange) {
         mWindowAndroid = windowAndroid;
+
+        mWeblayerContext = windowAndroid.getContext().get();
+
         mContentViewRenderView =
                 new ContentViewRenderView(embedderContext, recreateForConfigurationChange);
 
@@ -93,16 +99,18 @@ public final class BrowserViewController
                 new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
         mWebContentsOverlayView = new FrameLayout(embedderContext);
-        RelativeLayout.LayoutParams overlayParams =
-                new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0);
+        RelativeLayout.LayoutParams overlayParams = new RelativeLayout.LayoutParams(
+                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         mContentViewRenderView.addView(mWebContentsOverlayView, overlayParams);
         mWindowAndroid.setAnimationPlaceholderView(mWebContentsOverlayView);
 
         mModalDialogManager = new ModalDialogManager(
-                new AppModalPresenter(embedderContext), ModalDialogManager.ModalDialogType.APP);
+                new AppModalPresenter(mWeblayerContext), ModalDialogManager.ModalDialogType.APP);
+
         mModalDialogManager.addObserver(this);
         mModalDialogManager.registerPresenter(
-                new WebLayerTabModalPresenter(this, embedderContext), ModalDialogType.TAB);
+                new WebLayerTabModalPresenter(this, mWeblayerContext), ModalDialogType.TAB);
+
         mWindowAndroid.setModalDialogManager(mModalDialogManager);
 
         SystemUiScrimDelegate systemUiDelegate = new SystemUiScrimDelegate() {
@@ -115,9 +123,8 @@ public final class BrowserViewController
             public void setNavigationBarScrimFraction(float scrimFraction) {}
         };
         mScrim = new ScrimCoordinator(embedderContext, systemUiDelegate, mContentViewRenderView,
-                mWindowAndroid.getContext().get().getResources().getColor(
-                        R.color.default_scrim_color));
-        mBottomSheetContainer = new FrameLayout(embedderContext);
+                mWeblayerContext.getResources().getColor(R.color.default_scrim_color));
+        mBottomSheetContainer = new FrameLayout(mWeblayerContext);
         mBottomSheetContainer.setLayoutParams(
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         mBottomSheetContainer.setClipChildren(false);
@@ -145,8 +152,8 @@ public final class BrowserViewController
                 KeyboardVisibilityDelegate.getInstance(), () -> mBottomSheetContainer);
         BottomSheetControllerFactory.attach(mWindowAndroid, mBottomSheetController);
 
-        mPwaBottomSheetController = PwaBottomSheetControllerFactory.createPwaBottomSheetController(
-                mWindowAndroid.getContext().get());
+        mPwaBottomSheetController =
+                PwaBottomSheetControllerFactory.createPwaBottomSheetController(mWeblayerContext);
         PwaBottomSheetControllerFactory.attach(mWindowAndroid, mPwaBottomSheetController);
         mBottomSheetObserver = new EmptyBottomSheetObserver() {
             /** A token for suppressing app modal dialogs. */
@@ -267,7 +274,7 @@ public final class BrowserViewController
 
         if (mOnscreenContentProvider == null) {
             mOnscreenContentProvider = new OnscreenContentProvider(
-                    mWindowAndroid.getContext().get(), mContentViewRenderView, webContents);
+                    mWeblayerContext, mContentViewRenderView, webContents);
         } else {
             mOnscreenContentProvider.onWebContentsChanged(webContents);
         }
@@ -350,7 +357,7 @@ public final class BrowserViewController
                     }
                 });
 
-        Resources resources = mWindowAndroid.getContext().get().getResources();
+        Resources resources = mWeblayerContext.getResources();
         PropertyModel dialogModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, dialogController)

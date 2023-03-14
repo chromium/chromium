@@ -2575,6 +2575,7 @@ $L$key_expansion_256b:
 	DB	0F3h,0C3h		;repret
 
 
+section	.rdata rdata align=8
 ALIGN	64
 $L$bswap_mask:
 	DB	15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0
@@ -2600,6 +2601,8 @@ $L$key_rcon1b:
 	DB	32,98,121,32,60,97,112,112,114,111,64,111,112,101,110,115
 	DB	115,108,46,111,114,103,62,0
 ALIGN	64
+section	.text
+
 EXTERN	__imp_RtlVirtualUnwind
 
 ALIGN	16

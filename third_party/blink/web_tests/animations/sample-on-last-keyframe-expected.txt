@@ -1,2 +1,0 @@
-PASS - "opacity" property for "test" element at 0s saw something close to: 1
-

@@ -41,9 +41,6 @@ class ContentIndexMetrics {
   // Records when a Content Index entry is deleted by a user.
   void RecordContentDeletedByUser(const url::Origin& origin);
 
-  // Records the number of Content Index entries available when requested.
-  static void RecordContentIndexEntries(size_t num_entries);
-
  private:
   raw_ptr<ukm::UkmBackgroundRecorderService> ukm_background_service_;
 };

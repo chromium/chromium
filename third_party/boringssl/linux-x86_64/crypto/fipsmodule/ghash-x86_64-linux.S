@@ -1118,6 +1118,7 @@ gcm_ghash_avx:
 .cfi_endproc	
 
 .size	gcm_ghash_avx,.-gcm_ghash_avx
+.section	.rodata
 .align	64
 .Lbswap_mask:
 .byte	15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0
@@ -1129,6 +1130,7 @@ gcm_ghash_avx:
 
 .byte	71,72,65,83,72,32,102,111,114,32,120,56,54,95,54,52,44,32,67,82,89,80,84,79,71,65,77,83,32,98,121,32,60,97,112,112,114,111,64,111,112,101,110,115,115,108,46,111,114,103,62,0
 .align	64
+.text	
 #endif
 #if defined(__ELF__)
 // See https://www.airs.com/blog/archives/518.

@@ -87,10 +87,12 @@ class CloudBinaryUploadService : public BinaryUploadService {
   // called on the UI thread.
   virtual void UploadForDeepScanning(std::unique_ptr<Request> request);
 
+  // This may destroy `request`.
   void OnGetInstanceID(Request* request, const std::string& token);
 
   void OnGetAccessToken(Request* request, const std::string& access_token);
 
+  // This may destroy `request`.
   void OnGetRequestData(Request* request, Result result, Request::Data data);
 
   void OnUploadComplete(Request* request,

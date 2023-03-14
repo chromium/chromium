@@ -2323,12 +2323,9 @@ void EnsureCustomPinchZoomInvoked(content::RenderFrameHost* guest_mainframe,
   zoom_watcher.Wait();
 
   // Check that the browser's native pinch zoom was prevented.
-  double scale_factor;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractDouble(
-      contents,
-      "window.domAutomationController.send(window.visualViewport.scale);",
-      &scale_factor));
-  EXPECT_DOUBLE_EQ(1.0, scale_factor);
+  EXPECT_DOUBLE_EQ(
+      1.0,
+      content::EvalJs(contents, "window.visualViewport.scale").ExtractDouble());
 }
 
 // Ensure that touchpad pinch events are handled by the PDF viewer.

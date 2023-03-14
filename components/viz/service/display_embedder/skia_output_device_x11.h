@@ -41,11 +41,9 @@ class SkiaOutputDeviceX11 final : public SkiaOutputDeviceOffscreen {
                const gfx::ColorSpace& color_space,
                float device_scale_factor,
                gfx::OverlayTransform transform) override;
-  void SwapBuffers(BufferPresentedCallback feedback,
-                   OutputSurfaceFrame frame) override;
-  void PostSubBuffer(const gfx::Rect& rect,
-                     BufferPresentedCallback feedback,
-                     OutputSurfaceFrame frame) override;
+  void Present(const absl::optional<gfx::Rect>& update_rect,
+               BufferPresentedCallback feedback,
+               OutputSurfaceFrame frame) override;
 
  private:
   const raw_ptr<x11::Connection> connection_;

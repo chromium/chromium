@@ -62,16 +62,8 @@ SessionRestoreStatsCollector* SessionRestoreStatsCollector::GetOrCreateInstance(
 
 void SessionRestoreStatsCollector::TrackTabs(
     const std::vector<SessionRestoreDelegate::RestoredTab>& tabs) {
-  const base::TimeTicks now = base::TimeTicks::Now();
   tab_loader_stats_.tab_count += tabs.size();
   for (const auto& tab : tabs) {
-    // Report the time since the tab was active. If the tab is visible the
-    // last active time is right now, so report zero.
-    base::TimeDelta time_since_active;
-    if (tab.contents()->GetVisibility() != content::Visibility::VISIBLE)
-      time_since_active = now - tab.contents()->GetLastActiveTime();
-    reporting_delegate_->ReportTabTimeSinceActive(time_since_active);
-
     RegisterObserverForTab(tab.contents());
   }
 
@@ -186,10 +178,4 @@ void SessionRestoreStatsCollector::UmaStatsReportingDelegate::
   UMA_HISTOGRAM_ENUMERATION(
       "SessionRestore.ForegroundTabFirstPaint4.FinishReason",
       tab_loader_stats.tab_first_paint_reason, PAINT_FINISHED_UMA_MAX);
-}
-
-void SessionRestoreStatsCollector::UmaStatsReportingDelegate::
-    ReportTabTimeSinceActive(base::TimeDelta elapsed) {
-  UMA_HISTOGRAM_CUSTOM_TIMES("SessionRestore.RestoredTab.TimeSinceActive",
-                             elapsed, base::Seconds(10), base::Days(7), 100);
 }

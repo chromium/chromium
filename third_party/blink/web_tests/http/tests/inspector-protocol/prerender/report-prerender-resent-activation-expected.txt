@@ -1,6 +1,6 @@
 Test that prerender navigations report the resent activation.
 {
-    method : Page.prerenderAttemptCompleted
+    method : Preload.prerenderAttemptCompleted
     params : {
         finalStatus : Activated
         initiatingFrameId : <string>
@@ -9,7 +9,7 @@ Test that prerender navigations report the resent activation.
     sessionId : <string>
 }
 {
-    method : Page.prerenderAttemptCompleted
+    method : Preload.prerenderAttemptCompleted
     params : {
         finalStatus : Activated
         initiatingFrameId : <string>

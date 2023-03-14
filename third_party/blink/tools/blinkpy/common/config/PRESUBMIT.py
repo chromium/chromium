@@ -20,9 +20,9 @@ def CheckEnsureSpecifier(input_api, output_api):
     generic_test_expectation = input_api.os_path.join(this_dir,
         '..', '..', '..', '..', 'web_tests', 'TestExpectations')
     if builders_json_file in input_api.AbsoluteLocalPaths():
-        with open(generic_test_expectation) as f:
+        with open(generic_test_expectation, encoding='utf-8') as f:
             tags = f.readline().rstrip()
-        with open(builders_json_file) as f:
+        with open(builders_json_file, encoding='utf-8') as f:
             builders = input_api.json.load(f)
             for key, value in builders.items():
                 tag = value["specifiers"][0]

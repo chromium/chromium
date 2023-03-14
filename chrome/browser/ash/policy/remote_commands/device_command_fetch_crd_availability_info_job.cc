@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_logging.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
+#include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "extensions/common/value_builder.h"
 
 namespace policy {
@@ -75,11 +76,10 @@ DeviceCommandFetchCrdAvailabilityInfoJob::GetType() const {
 }
 
 void DeviceCommandFetchCrdAvailabilityInfoJob::RunImpl(
-    CallbackWithResult succeed_callback,
-    CallbackWithResult failed_callback) {
+    CallbackWithResult result_callback) {
   CalculateIsInManagedEnvironmentAsync(base::BindOnce(
       &DeviceCommandFetchCrdAvailabilityInfoJob::SendPayload,
-      weak_ptr_factory_.GetWeakPtr(), std::move(succeed_callback)));
+      weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
 }
 
 void DeviceCommandFetchCrdAvailabilityInfoJob::SendPayload(
@@ -101,7 +101,7 @@ void DeviceCommandFetchCrdAvailabilityInfoJob::SendPayload(
 
   CRD_DVLOG(1) << "Finished FETCH_CRD_AVAILABILITY_INFO remote command: "
                << payload;
-  std::move(callback).Run(std::move(payload));
+  std::move(callback).Run(ResultType::kSuccess, std::move(payload));
 }
 
 }  // namespace policy

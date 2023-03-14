@@ -145,12 +145,15 @@ void PrefetchStreamingURLLoader::OnReceiveResponse(
       servable_ = false;
       break;
     case PrefetchStreamingURLLoaderStatus::kWaitingOnHead:
-    case PrefetchStreamingURLLoaderStatus::kRedirected:
+    case PrefetchStreamingURLLoaderStatus::kRedirected_DEPRECATED:
     case PrefetchStreamingURLLoaderStatus::kSuccessfulNotServed:
     case PrefetchStreamingURLLoaderStatus::kSuccessfulServedAfterCompletion:
     case PrefetchStreamingURLLoaderStatus::kSuccessfulServedBeforeCompletion:
     case PrefetchStreamingURLLoaderStatus::kFailedNetError:
     case PrefetchStreamingURLLoaderStatus::kFailedNetErrorButServed:
+    case PrefetchStreamingURLLoaderStatus::kFollowRedirect:
+    case PrefetchStreamingURLLoaderStatus::kPauseRedirectForEligibilityCheck:
+    case PrefetchStreamingURLLoaderStatus::kFailedInvalidRedirect:
       NOTREACHED();
       break;
   }
@@ -175,18 +178,58 @@ void PrefetchStreamingURLLoader::OnReceiveResponse(
 void PrefetchStreamingURLLoader::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr head) {
-  servable_ = false;
-  status_ = PrefetchStreamingURLLoaderStatus::kRedirected;
-
-  // Redirects are currently not supported by prefetch, so is just to inform
-  // the owner of the callback of the redirect.
-  std::vector<std::string> removed_headers;
   DCHECK(on_prefetch_redirect_callback_);
-  on_prefetch_redirect_callback_.Run(redirect_info, *head.get(),
-                                     &removed_headers);
+  HandleRedirect(
+      on_prefetch_redirect_callback_.Run(redirect_info, *head.get()));
+}
 
-  if (on_received_head_callback_) {
-    std::move(on_received_head_callback_).Run();
+void PrefetchStreamingURLLoader::OnEligibilityCheckForRedirectComplete(
+    bool is_eligible) {
+  DCHECK(status_ ==
+         PrefetchStreamingURLLoaderStatus::kPauseRedirectForEligibilityCheck);
+  HandleRedirect(
+      is_eligible ? PrefetchStreamingURLLoaderStatus::kFollowRedirect
+                  : PrefetchStreamingURLLoaderStatus::kFailedInvalidRedirect);
+}
+
+void PrefetchStreamingURLLoader::HandleRedirect(
+    PrefetchStreamingURLLoaderStatus new_status) {
+  status_ = new_status;
+  switch (status_) {
+    case PrefetchStreamingURLLoaderStatus::kFollowRedirect:
+      prefetch_url_loader_->FollowRedirect(
+          /*removed_headers=*/std::vector<std::string>(),
+          /*modified_headers=*/net::HttpRequestHeaders(),
+          /*modified_cors_exempt_headers=*/net::HttpRequestHeaders(),
+          /*new_url=*/absl::nullopt);
+      break;
+    case PrefetchStreamingURLLoaderStatus::kPauseRedirectForEligibilityCheck:
+      // The eligibility check is still running on the redirect URL. Once it is
+      // completed, then |OnEligibilityCheckForRedirectComplete| will be called
+      // with the result, and then either the redirect will be followed or the
+      // URL loader will stop.
+      break;
+    case PrefetchStreamingURLLoaderStatus::kFailedInvalidRedirect:
+      servable_ = false;
+      if (on_received_head_callback_) {
+        std::move(on_received_head_callback_).Run();
+      }
+      break;
+    case PrefetchStreamingURLLoaderStatus::kWaitingOnHead:
+    case PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody:
+    case PrefetchStreamingURLLoaderStatus::kRedirected_DEPRECATED:
+    case PrefetchStreamingURLLoaderStatus::kSuccessfulNotServed:
+    case PrefetchStreamingURLLoaderStatus::kSuccessfulServedAfterCompletion:
+    case PrefetchStreamingURLLoaderStatus::kSuccessfulServedBeforeCompletion:
+    case PrefetchStreamingURLLoaderStatus::kPrefetchWasDecoy:
+    case PrefetchStreamingURLLoaderStatus::kFailedInvalidHead:
+    case PrefetchStreamingURLLoaderStatus::kFailedInvalidHeaders:
+    case PrefetchStreamingURLLoaderStatus::kFailedNon2XX:
+    case PrefetchStreamingURLLoaderStatus::kFailedMIMENotSupported:
+    case PrefetchStreamingURLLoaderStatus::kFailedNetError:
+    case PrefetchStreamingURLLoaderStatus::kFailedNetErrorButServed:
+      NOTREACHED();
+      break;
   }
 }
 

@@ -1778,6 +1778,36 @@ TEST_P(DesksTest, DragWindowToDesk) {
   EXPECT_TRUE(shadow->layer()->GetTargetVisibility());
 }
 
+// Tests that theme change during drag to close does not trigger any crashes.
+// Regression test for b/270171802.
+TEST_P(DesksTest, DragWindowToCloseWithThemeChange) {
+  // Create two windows.
+  auto win1 = CreateAppWindow();
+  auto win2 = CreateAppWindow();
+
+  // Enter overview.
+  EnterOverview();
+  auto* overview_item = Shell::Get()
+                            ->overview_controller()
+                            ->overview_session()
+                            ->GetOverviewItemForWindow(win1.get());
+  ASSERT_TRUE(overview_item);
+
+  // Drag `win1` to close and simulate multiple theme changes at the same time.
+  // There should not be any crashes.
+  auto* event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(
+      gfx::ToRoundedPoint(overview_item->target_bounds().CenterPoint()));
+  event_generator->PressTouch();
+  overview_item->item_widget()->ThemeChanged();
+  event_generator->MoveTouchBy(0, -50);
+  overview_item->item_widget()->ThemeChanged();
+  event_generator->MoveTouchBy(0, -200);
+  overview_item->item_widget()->ThemeChanged();
+  event_generator->ReleaseTouch();
+  overview_item->item_widget()->ThemeChanged();
+}
+
 TEST_P(DesksTest, DragMinimizedWindowToDesk) {
   auto* controller = DesksController::Get();
   NewDesk();
@@ -4828,11 +4858,13 @@ class DesksAcceleratorsTest : public DesksTest,
   // ui::EventRewriterChromeOS::Delegate:
   bool RewriteModifierKeys() override { return true; }
   void SuppressModifierKeyRewrites(bool should_supress) override {}
+  bool RewriteMetaTopRowKeyComboEvents() const override { return true; }
+  void SuppressMetaTopRowKeyComboRewrites(bool should_suppress) override {}
   bool GetKeyboardRemappedPrefValue(const std::string& pref_name,
                                     int* result) const override {
     return false;
   }
-  bool TopRowKeysAreFunctionKeys() const override { return false; }
+  bool TopRowKeysAreFunctionKeys(int device_id) const override { return false; }
   bool IsExtensionCommandRegistered(ui::KeyboardCode key_code,
                                     int flags) const override {
     return false;
@@ -6771,7 +6803,7 @@ TEST_P(DesksTest, ReorderDesksInRTLMode) {
   base::i18n::SetRTLForTesting(default_rtl);
 }
 
-// Tests the behavior when drag a desk on the scroll button.
+// Tests the behavior when dragging a desk on the scroll button.
 TEST_P(DesksTest, ScrollBarByDraggedDesk) {
   // Make a flat long window to generate multiple pages on desks bar.
   UpdateDisplay("800x150");
@@ -9109,6 +9141,48 @@ TEST_P(DesksTest, DeskGuidsReorder) {
 
   EXPECT_THAT(GetDeskRestoreGuids(GetPrimaryUserPrefService()),
               testing::ElementsAre(desk1_guid, desk3_guid, desk2_guid));
+}
+
+// Tests that windows are closed when the user interacts with the shelf.
+TEST_P(DesksCloseAllTest, InteractingWithShelfClosesToast) {
+  auto* shelf_model = ShelfModel::Get();
+  NewDesk();
+
+  // Create a window and a shelf item for the window.
+  WindowHolder window(CreateAppWindow());
+  const ash::ShelfID shelf_id("cool_app");
+  window.window()->SetProperty(ash::kShelfIDKey, shelf_id.Serialize());
+  window.window()->SetProperty(ash::kAppIDKey, shelf_id.app_id);
+  window.window()->SetProperty<int>(ash::kShelfItemTypeKey,
+                                    ShelfItemType::TYPE_PINNED_APP);
+  ShelfItem item;
+  item.status = ShelfItemStatus::STATUS_RUNNING;
+  item.type = ShelfItemType::TYPE_PINNED_APP;
+  item.id = shelf_id;
+  shelf_model->Add(item, std::make_unique<TestShelfItemDelegate>(item.id));
+
+  // Enter overview and close the desk.
+  EnterOverview();
+  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  ClickOnCloseAllButtonForDesk(0);
+
+  // Get the view for the shelf item.
+  int item_index = shelf_model->ItemIndexByID(shelf_id);
+  auto* view_model = GetPrimaryShelf()->GetShelfViewForTesting()->view_model();
+  views::View* item_view = view_model->view_at(item_index);
+
+  // Try opening the context menu for the shelf item with a right click.
+  gfx::Point item_view_center = item_view->GetBoundsInScreen().CenterPoint();
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(item_view_center);
+  event_generator->ClickRightButton();
+
+  // The right click should destroy the desk and the window.
+  EXPECT_FALSE(DesksTestApi::DesksControllerCanUndoDeskRemoval());
+
+  // The window will destroy asynchronously.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(window.is_valid());
 }
 
 // TODO(afakhry): Add more tests:

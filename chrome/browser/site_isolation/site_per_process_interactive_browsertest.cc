@@ -789,10 +789,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
 
   // Verify that the browser has entered fullscreen for the current tab.
   EXPECT_TRUE(browser()->window()->IsFullscreen());
-  EXPECT_TRUE(browser()
-                  ->exclusive_access_manager()
-                  ->fullscreen_controller()
-                  ->IsFullscreenForTabOrPending(web_contents));
+  EXPECT_TRUE(web_contents->IsFullscreen());
 
   // Verify that the <div> has fullscreen style (:-webkit-full-screen) in the
   // subframe.
@@ -888,10 +885,7 @@ void SitePerProcessInteractiveBrowserTest::FullscreenElementInABA(
 
   // Verify that the browser has entered fullscreen for the current tab.
   EXPECT_TRUE(browser()->window()->IsFullscreen());
-  EXPECT_TRUE(browser()
-                  ->exclusive_access_manager()
-                  ->fullscreen_controller()
-                  ->IsFullscreenForTabOrPending(web_contents));
+  EXPECT_TRUE(web_contents->IsFullscreen());
 
   // Verify that the <div> has fullscreen style in the bottom frame, and that
   // the proper <iframe> elements have fullscreen style in its ancestor frames.
@@ -1049,10 +1043,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
 
   // Verify that the browser has entered fullscreen for the current tab.
   EXPECT_TRUE(browser()->window()->IsFullscreen());
-  EXPECT_TRUE(browser()
-                  ->exclusive_access_manager()
-                  ->fullscreen_controller()
-                  ->IsFullscreenForTabOrPending(web_contents));
+  EXPECT_TRUE(web_contents->IsFullscreen());
 
   // Check document.webkitFullscreenElement.  It should point to corresponding
   // <iframe> element IDs on |c_middle|'s ancestor chain, and it should be null
@@ -1178,8 +1169,17 @@ class SitePerProcessInteractivePDFTest
 
 // This test loads a PDF inside an OOPIF and then verifies that context menu
 // shows up at the correct position.
-IN_PROC_BROWSER_TEST_F(SitePerProcessInteractivePDFTest,
-                       ContextMenuPositionForEmbeddedPDFInCrossOriginFrame) {
+// Flaky on win-asan. See https://crbug.com/1423184
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_ContextMenuPositionForEmbeddedPDFInCrossOriginFrame \
+  DISABLED_ContextMenuPositionForEmbeddedPDFInCrossOriginFrame
+#else
+#define MAYBE_ContextMenuPositionForEmbeddedPDFInCrossOriginFrame \
+  ContextMenuPositionForEmbeddedPDFInCrossOriginFrame
+#endif
+IN_PROC_BROWSER_TEST_F(
+    SitePerProcessInteractivePDFTest,
+    MAYBE_ContextMenuPositionForEmbeddedPDFInCrossOriginFrame) {
   // Navigate to a page with an <iframe>.
   GURL main_url(embedded_test_server()->GetURL("a.com", "/iframe.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));

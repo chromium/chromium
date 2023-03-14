@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS There can only be one open access handle at any given time
+PASS An access handle from one file does not interfere with the creation of an access handle on another file
+PASS A writable stream from one file does not interfere with the creation of an access handle on another file
+PASS An access handle from one file does not interfere with the creation of a writable stream on another file
+FAIL Writable streams cannot be created if there is an open access handle promise_test: Unhandled rejection with value: object "ReferenceError: cleanup_writable is not defined"
+PASS Access handles cannot be created if there are open Writable streams
+Harness: the test ran to completion.
+

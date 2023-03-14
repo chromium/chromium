@@ -289,8 +289,9 @@ class InputRouterImplTestBase : public testing::Test {
     browser_context_ = std::make_unique<TestBrowserContext>();
     process_host_ =
         std::make_unique<MockRenderProcessHost>(browser_context_.get());
-    site_instance_group_ = base::WrapRefCounted(new SiteInstanceGroup(
-        SiteInstanceImpl::NextBrowsingInstanceId(), process_host_.get()));
+    site_instance_group_ =
+        base::WrapRefCounted(SiteInstanceGroup::CreateForTesting(
+            browser_context_.get(), process_host_.get()));
     widget_host_ = MakeNewWidgetHost();
     mock_view_ =
         new MockRenderWidgetHostViewForStylusWriting(widget_host_.get());

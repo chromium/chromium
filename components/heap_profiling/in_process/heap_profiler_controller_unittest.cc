@@ -234,13 +234,13 @@ class HeapProfilerControllerTest : public ::testing::Test {
 
   void AddOneSampleAndWait() {
     auto* sampler = base::PoissonAllocationSampler::Get();
-    sampler->RecordAlloc(reinterpret_cast<void*>(0x1337), kAllocationSize,
-                         AllocationSubsystem::kManualForTesting, nullptr);
+    sampler->OnAllocation(reinterpret_cast<void*>(0x1337), kAllocationSize,
+                          AllocationSubsystem::kManualForTesting, nullptr);
     // Advance several days to be sure the sample isn't scheduled right on the
     // boundary of the fast-forward.
     task_environment_.FastForwardBy(base::Days(2));
     // Free the allocation so that other tests can re-use the address.
-    sampler->RecordFree(reinterpret_cast<void*>(0x1337));
+    sampler->OnFree(reinterpret_cast<void*>(0x1337));
   }
 
   void ConnectRemoteProfileCollector(
@@ -334,10 +334,10 @@ TEST_F(HeapProfilerControllerTest, ProfileCollectionsScheduler) {
                      base::BindLambdaForTesting(check_profile));
 
   auto* sampler = base::PoissonAllocationSampler::Get();
-  sampler->RecordAlloc(reinterpret_cast<void*>(0x1337), kAllocationSize,
-                       AllocationSubsystem::kManualForTesting, nullptr);
-  sampler->RecordAlloc(reinterpret_cast<void*>(0x7331), kAllocationSize,
-                       AllocationSubsystem::kManualForTesting, nullptr);
+  sampler->OnAllocation(reinterpret_cast<void*>(0x1337), kAllocationSize,
+                        AllocationSubsystem::kManualForTesting, nullptr);
+  sampler->OnAllocation(reinterpret_cast<void*>(0x7331), kAllocationSize,
+                        AllocationSubsystem::kManualForTesting, nullptr);
 
   // The profiler should continue to collect snapshots as long as this memory is
   // allocated. If not the test will time out.
@@ -346,8 +346,8 @@ TEST_F(HeapProfilerControllerTest, ProfileCollectionsScheduler) {
   }
 
   // Free all recorded memory so the address list is empty for the next test.
-  sampler->RecordFree(reinterpret_cast<void*>(0x1337));
-  sampler->RecordFree(reinterpret_cast<void*>(0x7331));
+  sampler->OnFree(reinterpret_cast<void*>(0x1337));
+  sampler->OnFree(reinterpret_cast<void*>(0x7331));
 }
 #endif
 

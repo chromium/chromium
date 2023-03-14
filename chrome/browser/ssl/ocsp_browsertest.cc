@@ -25,6 +25,7 @@
 #include "content/public/common/network_service_util.h"
 #include "content/public/test/browser_test.h"
 #include "net/cert/ev_root_ca_metadata.h"
+#include "net/net_buildflags.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/test_data_directory.h"
@@ -296,6 +297,7 @@ IN_PROC_BROWSER_TEST_F(OCSPBrowserTest,
         AuthState::SHOWING_INTERSTITIAL);
   } else {
 #if BUILDFLAG(IS_WIN)
+    // TODO(https://crbug.com/1380536): cleanup the IS_WIN blocks in this file.
     // TODO(mattm): Seems to be flaky on Windows. Either returns
     // CERT_STATUS_UNABLE_TO_CHECK_REVOCATION (which gets masked off due to
     // soft-fail), or CERT_STATUS_REVOKED.
@@ -503,8 +505,8 @@ IN_PROC_BROWSER_TEST_F(OCSPBrowserTest, TestHTTPSOCSPOldStapledButValidAIA) {
   EXPECT_TRUE(cert_status & net::CERT_STATUS_REV_CHECKING_ENABLED);
 }
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA) || \
+    BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 IN_PROC_BROWSER_TEST_F(OCSPBrowserTest, HardFailOnOCSPInvalid) {
   if (!ssl_test_util::SystemSupportsHardFailRevocationChecking()) {
     LOG(WARNING) << "Skipping test because system doesn't support hard fail "
@@ -706,8 +708,8 @@ IN_PROC_BROWSER_TEST_F(OCSPBrowserTest,
   net::CertStatus cert_status = GetCurrentCertStatus();
   EXPECT_TRUE(cert_status & net::CERT_STATUS_REV_CHECKING_ENABLED);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-        // || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC)
+#endif  //  BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
+        //  BUILDFLAG(IS_FUCHSIA) ||  BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 using AIABrowserTest = OCSPBrowserTest;
 

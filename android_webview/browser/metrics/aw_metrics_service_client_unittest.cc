@@ -418,4 +418,26 @@ TEST_F(AwMetricsServiceClientTest,
       "Android.WebView.AppDataDirectory.TimeToComputeSize", 0);
 }
 
+TEST_F(AwMetricsServiceClientTest, TestClientSideSamplingOn) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      android_webview::features::kWebViewServerSideSampling);
+
+  // Both metrics consent and app consent true;
+  GetClient()->SetHaveMetricsConsent(true, true);
+
+  EXPECT_EQ(GetClient()->GetSampleRatePerMille(), 20);
+}
+
+TEST_F(AwMetricsServiceClientTest, TestClientSideSamplingOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      android_webview::features::kWebViewServerSideSampling);
+
+  // Both metrics consent and app consent true;
+  GetClient()->SetHaveMetricsConsent(true, true);
+
+  EXPECT_EQ(GetClient()->GetSampleRatePerMille(), 1000);
+}
+
 }  // namespace android_webview

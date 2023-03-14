@@ -6,6 +6,8 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chromeos/ash/components/audio/audio_device.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 
@@ -15,12 +17,25 @@ namespace {
 
 constexpr int kDefaultInternalMicId = 0;
 constexpr char kStubInternalMicDisplayName[] = "Internal Mic";
+constexpr base::TimeDelta kMetricsDelayTimerInterval = base::Seconds(2);
 
 // Histogram names.
 constexpr char kOutputMuteChangeHistogramName[] =
-    "ChromeOS.Settings.Device.Audio.OutputMuteStateChange";
+    "ChromeOS.CrosAudioConfig.OutputMuteStateChange";
 constexpr char kInputMuteChangeHistogramName[] =
-    "ChromeOS.Settings.Device.Audio.InputMuteStateChange";
+    "ChromeOS.CrosAudioConfig.InputMuteStateChange";
+constexpr char kNoiseCancellationEnabledHistogramName[] =
+    "ChromeOS.CrosAudioConfig.NoiseCancellationEnabled";
+constexpr char kOutputVolumeChangeHistogramName[] =
+    "ChromeOS.CrosAudioConfig.OutputVolumeSetTo";
+constexpr char kInputGainChangeHistogramName[] =
+    "ChromeOS.CrosAudioConfig.InputGainSetTo";
+constexpr char kAudioDeviceChangeHistogramName[] =
+    "ChromeOS.CrosAudioConfig.DeviceChange";
+constexpr char kOutputDeviceTypeHistogramName[] =
+    "ChromeOS.CrosAudioConfig.OutputDeviceTypeChangedTo";
+constexpr char kInputDeviceTypeHistogramName[] =
+    "ChromeOS.CrosAudioConfig.InputDeviceTypeChangedTo";
 
 // Creates an inactive input device with default property configuration.
 AudioDevice CreateStubInternalMic() {
@@ -130,7 +145,16 @@ mojom::AudioDevicePtr GenerateMojoAudioDevice(const AudioDevice& device) {
   return mojo_device;
 }
 
-CrosAudioConfigImpl::CrosAudioConfigImpl() {
+CrosAudioConfigImpl::CrosAudioConfigImpl()
+    : output_volume_metric_delay_timer_(
+          FROM_HERE,
+          kMetricsDelayTimerInterval,
+          this,
+          &CrosAudioConfigImpl::RecordOutputVolume),
+      input_gain_metric_delay_timer_(FROM_HERE,
+                                     kMetricsDelayTimerInterval,
+                                     this,
+                                     &CrosAudioConfigImpl::RecordInputGain) {
   CrasAudioHandler::Get()->AddAudioObserver(this);
 }
 
@@ -233,6 +257,10 @@ void CrosAudioConfigImpl::SetOutputVolumePercent(int8_t volume) {
       volume > audio_handler->GetOutputDefaultVolumeMuteThreshold()) {
     audio_handler->SetOutputMute(false);
   }
+
+  last_set_output_volume_ = volume;
+  // Start or reset timer for recording to metrics.
+  output_volume_metric_delay_timer_.Reset();
 }
 
 void CrosAudioConfigImpl::SetInputGainPercent(uint8_t gain) {
@@ -244,6 +272,10 @@ void CrosAudioConfigImpl::SetInputGainPercent(uint8_t gain) {
     audio_handler->SetInputMute(
         false, CrasAudioHandler::InputMuteChangeMethod::kOther);
   }
+
+  last_set_input_gain_ = gain;
+  // Start or reset timer for recording to metrics.
+  input_gain_metric_delay_timer_.Reset();
 }
 
 void CrosAudioConfigImpl::SetActiveDevice(uint64_t device_id) {
@@ -268,6 +300,17 @@ void CrosAudioConfigImpl::SetActiveDevice(uint64_t device_id) {
         *next_active_device, /*notify=*/true,
         CrasAudioHandler::DeviceActivateType::ACTIVATE_BY_USER);
   }
+
+  // Record if it was an output or input device that changed.
+  base::UmaHistogramEnumeration(kAudioDeviceChangeHistogramName,
+                                next_active_device->is_input
+                                    ? AudioDeviceChange::kInputDevice
+                                    : AudioDeviceChange::kOutputDevice);
+  // Record the type of audio device changed.
+  base::UmaHistogramEnumeration(next_active_device->is_input
+                                    ? kInputDeviceTypeHistogramName
+                                    : kOutputDeviceTypeHistogramName,
+                                next_active_device->type);
 }
 
 void CrosAudioConfigImpl::SetInputMuted(bool muted) {
@@ -292,6 +335,25 @@ void CrosAudioConfigImpl::SetNoiseCancellationEnabled(bool enabled) {
   }
 
   audio_handler->SetNoiseCancellationState(enabled);
+  base::UmaHistogramBoolean(kNoiseCancellationEnabledHistogramName, enabled);
+}
+
+void CrosAudioConfigImpl::RecordOutputVolume() {
+  base::UmaHistogramExactLinear(kOutputVolumeChangeHistogramName,
+                                last_set_output_volume_,
+                                /*exclusive_max=*/101);
+  base::UmaHistogramEnumeration(
+      CrasAudioHandler::kOutputVolumeChangedSourceHistogramName,
+      CrasAudioHandler::AudioSettingsChangeSource::kOsSettings);
+}
+
+void CrosAudioConfigImpl::RecordInputGain() {
+  base::UmaHistogramExactLinear(kInputGainChangeHistogramName,
+                                last_set_input_gain_,
+                                /*exclusive_max=*/101);
+  base::UmaHistogramEnumeration(
+      CrasAudioHandler::kInputGainChangedSourceHistogramName,
+      CrasAudioHandler::AudioSettingsChangeSource::kOsSettings);
 }
 
 void CrosAudioConfigImpl::OnOutputNodeVolumeChanged(uint64_t node_id,

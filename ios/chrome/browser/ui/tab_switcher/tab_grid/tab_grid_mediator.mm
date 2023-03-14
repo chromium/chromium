@@ -31,20 +31,22 @@
 #import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/main/browser_util.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
+#import "ios/chrome/browser/shared/public/commands/bookmark_add_command.h"
+#import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache_observer.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/features.h"
-#import "ios/chrome/browser/tabs/inactive_tabs/features.h"
+#import "ios/chrome/browser/tabs/inactive_tabs/utils.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/tabs_search/tabs_search_service.h"
 #import "ios/chrome/browser/tabs_search/tabs_search_service_factory.h"
-#import "ios/chrome/browser/ui/commands/bookmark_add_command.h"
-#import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
-#import "ios/chrome/browser/ui/commands/browser_commands.h"
-#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
@@ -53,8 +55,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/browser/ui/util/url_with_title.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/url/url_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -251,12 +251,6 @@ void RecordTabGridCloseTabsCount(int count) {
     if (self.webStateList->count() > 0) {
       [self populateConsumerItems];
     }
-  }
-
-  if (IsInactiveTabsEnabled() && !self.browserState->IsOffTheRecord()) {
-    // TODO(crbug.com/1408053): Use the count of tabs in the inactive browser
-    // instead.
-    [self.consumer advertizeInactiveTabsWithCount:10];
   }
 }
 
@@ -468,8 +462,9 @@ void RecordTabGridCloseTabsCount(int count) {
   int index = GetTabIndex(self.webStateList, itemID, /*pinned=*/NO);
   WebStateList* itemWebStateList = self.webStateList;
   if (index == WebStateList::kInvalidIndex) {
-    // If this is a search result, it may contain items from other windows -
-    // check other windows first before giving up.
+    // If this is a search result, it may contain items from other windows or
+    // from the inactive browser - check inactive browser and other windows
+    // before giving up.
     BrowserList* browserList =
         BrowserListFactory::GetForBrowserState(self.browserState);
     Browser* browser = GetBrowserForTabWithId(
@@ -479,26 +474,36 @@ void RecordTabGridCloseTabsCount(int count) {
       return;
     }
 
-    itemWebStateList = browser->GetWebStateList();
-    index = GetTabIndex(itemWebStateList, itemID, /*pinned=*/NO);
-    SceneState* targetSceneState =
-        SceneStateBrowserAgent::FromBrowser(browser)->GetSceneState();
-    SceneState* currentSceneState =
-        SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+    if (browser->IsInactive()) {
+      WebStateList* inactiveWebStateList = browser->GetWebStateList();
+      int selectedInactiveTabIndex =
+          GetTabIndex(inactiveWebStateList, itemID, /*pinned=*/NO);
+      index = itemWebStateList->count();
+      MoveTab(inactiveWebStateList, selectedInactiveTabIndex, itemWebStateList,
+              index);
+    } else {
+      // Other windows case.
+      itemWebStateList = browser->GetWebStateList();
+      index = GetTabIndex(itemWebStateList, itemID, /*pinned=*/NO);
+      SceneState* targetSceneState =
+          SceneStateBrowserAgent::FromBrowser(browser)->GetSceneState();
+      SceneState* currentSceneState =
+          SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
 
-    UISceneActivationRequestOptions* options =
-        [[UISceneActivationRequestOptions alloc] init];
-    options.requestingScene = currentSceneState.scene;
+      UISceneActivationRequestOptions* options =
+          [[UISceneActivationRequestOptions alloc] init];
+      options.requestingScene = currentSceneState.scene;
 
-    [[UIApplication sharedApplication]
-        requestSceneSessionActivation:targetSceneState.scene.session
-                         userActivity:nil
-                              options:options
-                         errorHandler:^(NSError* error) {
-                           LOG(ERROR) << base::SysNSStringToUTF8(
-                               error.localizedDescription);
-                           NOTREACHED();
-                         }];
+      [[UIApplication sharedApplication]
+          requestSceneSessionActivation:targetSceneState.scene.session
+                           userActivity:nil
+                                options:options
+                           errorHandler:^(NSError* error) {
+                             LOG(ERROR) << base::SysNSStringToUTF8(
+                                 error.localizedDescription);
+                             NOTREACHED();
+                           }];
+    }
   }
 
   web::WebState* selectedWebState = itemWebStateList->GetWebStateAt(index);
@@ -622,6 +627,8 @@ void RecordTabGridCloseTabsCount(int count) {
 - (void)saveAndCloseNonPinnedItems {
   DCHECK(IsPinnedTabsEnabled());
 
+  base::RecordAction(
+      base::UserMetricsAction("MobileTabGridCloseAllNonPinnedTabs"));
   BOOL hasPinnedWebStatesOnly =
       self.webStateList->GetIndexOfFirstNonPinnedWebState() ==
       self.webStateList->count();
@@ -866,8 +873,8 @@ void RecordTabGridCloseTabsCount(int count) {
     // If the dropped tab is from the same Chrome window and has been removed,
     // cancel the drop operation.
     if (_dragItemID == tabInfo.tabID &&
-        GetTabIndex(self.webStateList, tabInfo.tabID,
-                    /*pinned=*/NO) == WebStateList::kInvalidIndex) {
+        GetWebStateIndex(self.webStateList, tabInfo.tabID) ==
+            WebStateList::kInvalidIndex) {
       return UIDropOperationCancel;
     }
     if (self.browserState->IsOffTheRecord() && tabInfo.incognito) {
@@ -1019,8 +1026,9 @@ void RecordTabGridCloseTabsCount(int count) {
       continue;
     }
 
+    __weak __typeof(self) weakSelf = self;
     auto cacheImage = ^(UIImage* image) {
-      self.appearanceCache[identifier] = image;
+      weakSelf.appearanceCache[identifier] = image;
     };
 
     [self snapshotForIdentifier:identifier completion:cacheImage];
@@ -1109,7 +1117,8 @@ void RecordTabGridCloseTabsCount(int count) {
     return;
   }
   [self.delegate dismissPopovers];
-
+  base::RecordAction(
+      base::UserMetricsAction("MobileTabGridAddedMultipleNewBookmarks"));
   base::UmaHistogramCounts100("IOS.TabGrid.Selection.AddToBookmarks",
                               items.count);
 

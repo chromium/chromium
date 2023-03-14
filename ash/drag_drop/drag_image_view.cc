@@ -28,7 +28,7 @@ DragImageView::DragImageView(ui::mojom::DragEventSource event_source)
 DragImageView::~DragImageView() = default;
 
 // static
-views::UniqueWidgetPtr DragImageView::Create(
+std::unique_ptr<views::Widget> DragImageView::Create(
     aura::Window* root_window,
     ui::mojom::DragEventSource event_source) {
   views::Widget::InitParams params;
@@ -37,12 +37,12 @@ views::UniqueWidgetPtr DragImageView::Create(
   params.accept_events = false;
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.parent =
       root_window->GetChildById(kShellWindowId_DragImageAndTooltipContainer);
   if (!params.parent)
     params.context = root_window;  // Happens in tests.
-  auto drag_widget = views::UniqueWidgetPtr(
-      std::make_unique<views::Widget>(std::move(params)));
+  auto drag_widget = std::make_unique<views::Widget>(std::move(params));
   drag_widget->SetOpacity(1.f);
   drag_widget->SetContentsView(
       base::WrapUnique(new DragImageView(event_source)));

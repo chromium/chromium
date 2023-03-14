@@ -24,6 +24,7 @@
 #include "gpu/command_buffer/service/service_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gl/gl_implementation.h"
 
@@ -90,15 +91,15 @@ void SkiaOutputSurfaceImplTest::SetUpSkiaOutputSurfaceImpl() {
 }
 
 gpu::SyncToken SkiaOutputSurfaceImplTest::PaintRootRenderPass(
-    const gfx::Rect& rect,
+    const gfx::Rect& output_rect,
     base::OnceClosure closure,
     base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence) {
   SkPaint paint;
   paint.setColor(kOutputColor);
   SkCanvas* root_canvas = output_surface_->BeginPaintCurrentFrame();
-  root_canvas->drawRect(
-      SkRect::MakeXYWH(rect.x(), rect.y(), rect.height(), rect.width()), paint);
+  root_canvas->drawRect(gfx::RectToSkRect(output_rect), paint);
   output_surface_->EndPaint(std::move(closure), std::move(return_release_fence),
+                            output_rect,
                             /*is_overlay=*/false);
   return output_surface_->Flush();
 }

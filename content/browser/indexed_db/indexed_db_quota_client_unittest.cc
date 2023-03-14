@@ -189,7 +189,7 @@ class IndexedDBQuotaClientTest : public testing::Test,
     quota_manager_->GetBucketForTesting(storage_key, name, kTemp,
                                         future.GetCallback());
     auto bucket = future.Take();
-    EXPECT_TRUE(bucket.ok());
+    EXPECT_TRUE(bucket.has_value());
     return bucket->ToBucketLocator();
   }
 
@@ -199,7 +199,7 @@ class IndexedDBQuotaClientTest : public testing::Test,
     storage::BucketInitParams params(storage_key, name);
     quota_manager_->UpdateOrCreateBucket(params, future.GetCallback());
     auto bucket = future.Take();
-    EXPECT_TRUE(bucket.ok());
+    EXPECT_TRUE(bucket.has_value());
     return bucket->ToBucketLocator();
   }
 
@@ -500,7 +500,7 @@ TEST_P(IndexedDBQuotaClientTest, IncognitoQuotaFirstParty) {
                                         storage::kDefaultBucketName, kTemp,
                                         bucket_future.GetCallback());
   auto bucket_a = bucket_future.Take();
-  EXPECT_TRUE(bucket_a.ok());
+  EXPECT_TRUE(bucket_a.has_value());
 
   // No FakeIndexDB is added.
   EXPECT_TRUE(GetStorageKeysForType(client, kTemp).empty());
@@ -529,7 +529,7 @@ TEST_P(IndexedDBQuotaClientTest, IncognitoQuotaThirdParty) {
                                         storage::kDefaultBucketName, kTemp,
                                         bucket_future.GetCallback());
   auto bucket_a = bucket_future.Take();
-  EXPECT_TRUE(bucket_a.ok());
+  EXPECT_TRUE(bucket_a.has_value());
 
   // No FakeIndexDB is added.
   EXPECT_TRUE(GetStorageKeysForType(client, kTemp).empty());

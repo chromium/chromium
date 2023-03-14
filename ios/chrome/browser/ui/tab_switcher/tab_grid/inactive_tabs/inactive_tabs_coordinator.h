@@ -5,12 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_INACTIVE_TABS_INACTIVE_TABS_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_INACTIVE_TABS_INACTIVE_TABS_COORDINATOR_H_
 
-#import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @class InactiveTabsCoordinator;
 
 // Delegate for the coordinator.
 @protocol InactiveTabsCoordinatorDelegate
+
+// Tells the delegate that the user selected an item.
+- (void)inactiveTabsCoordinator:
+            (InactiveTabsCoordinator*)inactiveTabsCoordinator
+            didSelectItemWithID:(NSString*)itemID;
 
 // Tells the delegate that the coordinator should be dismissed.
 - (void)inactiveTabsCoordinatorDidFinish:

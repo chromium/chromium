@@ -118,7 +118,6 @@ CSSToLengthConversionData::FontSizes::FontSizes(const FontSizeStyle& style,
 float CSSToLengthConversionData::FontSizes::Ex(float zoom) const {
   DCHECK(font_);
   const SimpleFontData* font_data = font_->PrimaryFont();
-  DCHECK(font_data);
   if (!font_data || !font_data->GetFontMetrics().HasXHeight()) {
     return em_ / 2.0f;
   }
@@ -130,7 +129,6 @@ float CSSToLengthConversionData::FontSizes::Ex(float zoom) const {
 float CSSToLengthConversionData::FontSizes::Rex(float zoom) const {
   DCHECK(root_font_);
   const SimpleFontData* font_data = root_font_->PrimaryFont();
-  DCHECK(font_data);
   if (!font_data || !font_data->GetFontMetrics().HasXHeight()) {
     return rem_ / 2.0f;
   }
@@ -142,7 +140,9 @@ float CSSToLengthConversionData::FontSizes::Rex(float zoom) const {
 float CSSToLengthConversionData::FontSizes::Ch(float zoom) const {
   DCHECK(font_);
   const SimpleFontData* font_data = font_->PrimaryFont();
-  DCHECK(font_data);
+  if (!font_data) {
+    return 0;
+  }
   // Font-metrics-based units are pre-zoomed with a factor of `font_zoom_`,
   // we need to unzoom using that factor before applying the target zoom.
   return font_data->GetFontMetrics().ZeroWidth() / font_zoom_ * zoom;
@@ -151,7 +151,9 @@ float CSSToLengthConversionData::FontSizes::Ch(float zoom) const {
 float CSSToLengthConversionData::FontSizes::Rch(float zoom) const {
   DCHECK(root_font_);
   const SimpleFontData* font_data = root_font_->PrimaryFont();
-  DCHECK(font_data);
+  if (!font_data) {
+    return 0;
+  }
   // Font-metrics-based units are pre-zoomed with a factor of `root_font_zoom_`,
   // we need to unzoom using that factor before applying the target zoom.
   return font_data->GetFontMetrics().ZeroWidth() / root_font_zoom_ * zoom;
@@ -160,9 +162,10 @@ float CSSToLengthConversionData::FontSizes::Rch(float zoom) const {
 float CSSToLengthConversionData::FontSizes::Ic(float zoom) const {
   DCHECK(font_);
   const SimpleFontData* font_data = font_->PrimaryFont();
-  DCHECK(font_data);
-  absl::optional<float> full_width =
-      font_data->GetFontMetrics().IdeographicFullWidth();
+  absl::optional<float> full_width;
+  if (font_data) {
+    full_width = font_data->GetFontMetrics().IdeographicFullWidth();
+  }
   if (!full_width.has_value()) {
     return Em(zoom);
   }
@@ -174,9 +177,10 @@ float CSSToLengthConversionData::FontSizes::Ic(float zoom) const {
 float CSSToLengthConversionData::FontSizes::Ric(float zoom) const {
   DCHECK(root_font_);
   const SimpleFontData* font_data = root_font_->PrimaryFont();
-  DCHECK(font_data);
-  absl::optional<float> full_width =
-      font_data->GetFontMetrics().IdeographicFullWidth();
+  absl::optional<float> full_width;
+  if (font_data) {
+    full_width = font_data->GetFontMetrics().IdeographicFullWidth();
+  }
   if (!full_width.has_value()) {
     return Rem(zoom);
   }

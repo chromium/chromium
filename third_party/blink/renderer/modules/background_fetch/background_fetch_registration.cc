@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/metrics/histogram_macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
@@ -182,10 +181,6 @@ ScriptPromise BackgroundFetchRegistration::MatchImpl(
     ExceptionState& exception_state,
     bool match_all) {
   DCHECK(script_state);
-  UMA_HISTOGRAM_BOOLEAN("BackgroundFetch.MatchCalledFromDocumentScope",
-                        LocalDOMWindow::From(script_state));
-  UMA_HISTOGRAM_BOOLEAN("BackgroundFetch.MatchCalledWhenFetchIsIncomplete",
-                        result_ == mojom::BackgroundFetchResult::UNSET);
 
   if (!records_available_) {
     exception_state.ThrowDOMException(
@@ -195,7 +190,8 @@ ScriptPromise BackgroundFetchRegistration::MatchImpl(
     return ScriptPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
 
   // Convert |request| to mojom::blink::FetchAPIRequestPtr.

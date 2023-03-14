@@ -21,18 +21,23 @@
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
+#import "ios/chrome/browser/shared/public/commands/thumb_strip_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/named_guide.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
+#import "ios/chrome/browser/tabs/inactive_tabs/utils.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
-#import "ios/chrome/browser/ui/commands/application_commands.h"
-#import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
-#import "ios/chrome/browser/ui/commands/browser_commands.h"
-#import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
-#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
-#import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
-#import "ios/chrome/browser/ui/commands/thumb_strip_commands.h"
 #import "ios/chrome/browser/ui/commerce/price_card/price_card_mediator.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/gestures/view_controller_trait_collection_observer.h"
@@ -51,10 +56,12 @@
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_presentation_delegate.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller.h"
 #import "ios/chrome/browser/ui/recent_tabs/synced_sessions.h"
+#import "ios/chrome/browser/ui/recent_tabs/synced_sessions_util.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/ui/snackbar/snackbar_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_button_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_context_menu_helper.h"
@@ -65,12 +72,9 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/tab_grid_transition_handler.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_coordinator.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/browser/ui/util/named_guide.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/util/util_swift.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
@@ -96,11 +100,17 @@
   // ivar.
   Browser* _incognitoBrowser;
 
+  // Browser that contain tabs, from the regular browser, that have not been
+  // open since a certain amount of time.
+  Browser* _inactiveBrowser;
+
   // The coordinator that shows the bookmarking UI after the user taps the Add
   // to Bookmarks button.
   BookmarksCoordinator* _bookmarksCoordinator;
 }
 
+// Browser that contain tabs from the main pane (i.e. non-incognito).
+// TODO(crbug.com/1416934): Make regular ivar as incognito and inactive.
 @property(nonatomic, assign, readonly) Browser* regularBrowser;
 // Superclass property specialized for the class that this coordinator uses.
 @property(nonatomic, weak) TabGridViewController* baseViewController;
@@ -123,6 +133,9 @@
 @property(nonatomic, strong) RecentTabsMediator* remoteTabsMediator;
 // Mediator for pinned Tabs.
 @property(nonatomic, strong) PinnedTabsMediator* pinnedTabsMediator;
+// Mediator for the inactive tabs button.
+@property(nonatomic, strong)
+    InactiveTabsButtonMediator* inactiveTabsButtonMediator;
 // Coordinator for history, which can be started from recent tabs.
 @property(nonatomic, strong) HistoryCoordinator* historyCoordinator;
 // Coordinator for the thumb strip.
@@ -161,7 +174,7 @@
 @implementation TabGridCoordinator
 // Superclass property.
 @synthesize baseViewController = _baseViewController;
-// Ivars are not auto-synthesized when both accessor and mutator are overridden.
+// Ivars are not auto-synthesized when accessors are overridden.
 @synthesize regularBrowser = _regularBrowser;
 
 - (instancetype)initWithWindow:(nullable UIWindow*)window
@@ -170,6 +183,7 @@
     browsingDataCommandEndpoint:
         (id<BrowsingDataCommands>)browsingDataCommandEndpoint
                  regularBrowser:(Browser*)regularBrowser
+                inactiveBrowser:(Browser*)inactiveBrowser
                incognitoBrowser:(Browser*)incognitoBrowser {
   if ((self = [super initWithBaseViewController:nil browser:nullptr])) {
     _window = window;
@@ -186,6 +200,7 @@
                               forProtocol:@protocol(BrowsingDataCommands)];
 
     _regularBrowser = regularBrowser;
+    _inactiveBrowser = inactiveBrowser;
     _incognitoBrowser = incognitoBrowser;
 
     if (IsIncognitoModeDisabled(
@@ -664,6 +679,12 @@
     baseViewController.pinnedTabsImageDataSource = self.pinnedTabsMediator;
   }
 
+  if (IsInactiveTabsEnabled()) {
+    self.inactiveTabsButtonMediator = [[InactiveTabsButtonMediator alloc]
+        initWithConsumer:baseViewController.regularTabsConsumer
+            webStateList:_inactiveBrowser->GetWebStateList()];
+  }
+
   self.incognitoTabsMediator = [[TabGridMediator alloc]
       initWithConsumer:baseViewController.incognitoTabsConsumer];
   self.incognitoTabsMediator.browser = _incognitoBrowser;
@@ -1052,15 +1073,37 @@
     return;
   }
 
-  // TODO(crbug.com/1414536): Pass the inactive tabs browser instead.
   self.inactiveTabsCoordinator = [[InactiveTabsCoordinator alloc]
       initWithBaseViewController:self.baseViewController
-                         browser:self.regularBrowser];
+                         browser:_inactiveBrowser];
   self.inactiveTabsCoordinator.delegate = self;
   [self.inactiveTabsCoordinator start];
 }
 
 #pragma mark - InactiveTabsCoordinatorDelegate
+
+- (void)inactiveTabsCoordinator:
+            (InactiveTabsCoordinator*)inactiveTabsCoordinator
+            didSelectItemWithID:(NSString*)itemID {
+  // TODO(crbug.com/1418021): Add metrics when the user activate back an
+  // inactive tab and bring it back to the active tab list.
+  WebStateList* regularWebStateList = self.regularBrowser->GetWebStateList();
+  int toInsertIndex = regularWebStateList->count();
+
+  WebStateList* inactiveWebStateList = _inactiveBrowser->GetWebStateList();
+  int toRemoveIndex = GetTabIndex(inactiveWebStateList, itemID, /*pinned=*/NO);
+
+  MoveTab(inactiveWebStateList, toRemoveIndex, regularWebStateList,
+          toInsertIndex);
+
+  // TODO(crbug.com/1420938): Adapt the animation so the grid animation is
+  // coming from the inactive panel.
+  regularWebStateList->ActivateWebStateAt(toInsertIndex);
+  [self.delegate tabGrid:self
+      shouldActivateBrowser:self.regularBrowser
+             dismissTabGrid:YES
+               focusOmnibox:NO];
+}
 
 - (void)inactiveTabsCoordinatorDidFinish:
     (InactiveTabsCoordinator*)inactiveTabsCoordinator {
@@ -1110,16 +1153,9 @@
       "Mobile.RecentTabsManager.TotalTabsFromOtherDevicesOpenAll",
       session->tabs.size());
 
-  for (auto const& tab : session->tabs) {
-    UrlLoadParams params = UrlLoadParams::InNewTab(tab->virtual_url);
-    params.SetInBackground(YES);
-    params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
-    params.load_strategy =
-        self.baseViewController.remoteTabsViewController.loadStrategy;
-    params.in_incognito =
-        self.regularBrowser->GetBrowserState()->IsOffTheRecord();
-    UrlLoadingBrowserAgent::FromBrowser(self.regularBrowser)->Load(params);
-  }
+  OpenDistantTabsInBackground(
+      session->tabs, self.regularBrowser,
+      self.baseViewController.remoteTabsViewController.loadStrategy);
 
   [self showActiveRegularTabFromRecentTabs];
 }
@@ -1161,11 +1197,15 @@
   if (currentlyBookmarked) {
     [self editBookmarkWithURL:URL];
   } else {
+    base::RecordAction(base::UserMetricsAction(
+        "MobileTabGridOpenedBookmarkEditorForNewBookmark"));
     [self.bookmarksCoordinator bookmarkURL:URL title:title];
   }
 }
 
 - (void)editBookmarkWithURL:(const GURL&)URL {
+  base::RecordAction(base::UserMetricsAction(
+      "MobileTabGridOpenedBookmarkEditorForExistingBookmark"));
   [self.bookmarksCoordinator presentBookmarkEditorForURL:URL];
 }
 

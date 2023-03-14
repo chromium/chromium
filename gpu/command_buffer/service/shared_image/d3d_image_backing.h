@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/types/pass_key.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -22,7 +23,7 @@
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gl/buildflags.h"
-#include "ui/gl/gl_image_d3d.h"
+#include "ui/gl/scoped_egl_image.h"
 
 // Usage of BUILDFLAG(USE_DAWN) needs to be after the include for
 // ui/gl/buildflags.h
@@ -130,6 +131,11 @@ class GPU_GLES2_EXPORT D3DImageBacking
 
   absl::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage();
 
+  bool has_keyed_mutex() const {
+    return dxgi_shared_handle_state_ &&
+           dxgi_shared_handle_state_->has_keyed_mutex();
+  }
+
   scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state_for_testing()
       const {
     return dxgi_shared_handle_state_;
@@ -139,7 +145,33 @@ class GPU_GLES2_EXPORT D3DImageBacking
     return d3d11_texture_;
   }
 
-  static scoped_refptr<gles2::TexturePassthrough> CreateGLTexture(
+  // Holds a gles2::TexturePassthrough and corresponding egl image.
+  class GLTextureHolder : public base::RefCounted<GLTextureHolder> {
+   public:
+    GLTextureHolder(
+        base::PassKey<D3DImageBacking>,
+        scoped_refptr<gles2::TexturePassthrough> texture_passthrough,
+        gl::ScopedEGLImage egl_image);
+
+    const scoped_refptr<gles2::TexturePassthrough>& texture_passthrough()
+        const {
+      return texture_passthrough_;
+    }
+
+    void* egl_image() const { return egl_image_.get(); }
+
+    void MarkContextLost();
+
+   private:
+    friend class base::RefCounted<GLTextureHolder>;
+
+    ~GLTextureHolder();
+
+    const scoped_refptr<gles2::TexturePassthrough> texture_passthrough_;
+    const gl::ScopedEGLImage egl_image_;
+  };
+
+  static scoped_refptr<GLTextureHolder> CreateGLTexture(
       viz::SharedImageFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
@@ -148,6 +180,14 @@ class GPU_GLES2_EXPORT D3DImageBacking
       unsigned array_slice = 0u,
       unsigned plane_index = 0u,
       Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain = nullptr);
+
+  // Only for test use.
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> GetSwapChainForTesting() {
+    return swap_chain_;
+  }
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> GetD3D11TextureForTesting() {
+    return d3d11_texture_;
+  }
 
  protected:
   std::unique_ptr<GLTexturePassthroughImageRepresentation>
@@ -196,7 +236,7 @@ class GPU_GLES2_EXPORT D3DImageBacking
       SkAlphaType alpha_type,
       uint32_t usage,
       Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-      std::vector<scoped_refptr<gles2::TexturePassthrough>> gl_textures,
+      std::vector<scoped_refptr<GLTextureHolder>> gl_texture_holders,
       scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state = nullptr,
       GLenum texture_target = GL_TEXTURE_2D,
       size_t array_slice = 0u,
@@ -205,9 +245,10 @@ class GPU_GLES2_EXPORT D3DImageBacking
       bool is_back_buffer = false);
 
   WGPUTextureUsageFlags GetAllowedDawnUsages(
+      WGPUDevice device,
       const WGPUTextureFormat wgpu_format) const;
 
-  gl::GLImage* GetGLImage() const;
+  void* GetEGLImage() const;
 
   ID3D11Texture2D* GetOrCreateStagingTexture();
 
@@ -219,7 +260,7 @@ class GPU_GLES2_EXPORT D3DImageBacking
   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture_;
 
   // Can be null for backings owned by non-GL producers e.g. WebGPU.
-  std::vector<scoped_refptr<gles2::TexturePassthrough>> gl_textures_;
+  std::vector<scoped_refptr<GLTextureHolder>> gl_texture_holders_;
 
   // Holds DXGI shared handle and the keyed mutex if present.  Can be shared
   // between plane shared image backings of a multi-plane texture, or between

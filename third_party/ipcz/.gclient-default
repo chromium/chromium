@@ -1,0 +1,8 @@
+solutions = [
+  {
+    "name"        : '.',
+    "url"         : 'https://chromium.googlesource.com/chromium/src/third_party/ipcz',
+    "deps_file"   : 'DEPS',
+    "managed"     : False,
+  },
+]

@@ -581,7 +581,7 @@ IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest, FileURLSuccess) {
   std::string main_frame_data = "foo";
   if (GetParam() != RequestType::kMainFrame)
     main_frame_data = GetMainFrameContents(kSubresourcePath);
-  ASSERT_TRUE(base::WriteFile(main_frame_path, main_frame_data.c_str()));
+  ASSERT_TRUE(base::WriteFile(main_frame_path, main_frame_data));
   if (GetParam() != RequestType::kMainFrame) {
     std::string subresource_data = "foo";
     ASSERT_TRUE(base::WriteFile(

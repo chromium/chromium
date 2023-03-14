@@ -67,14 +67,14 @@ void TransferBuffer::Free() {
       return;
     }
     buffer_id_ = -1;
-    buffer_ = nullptr;
-    result_buffer_ = nullptr;
     result_shm_offset_ = 0;
     DCHECK_EQ(ring_buffer_->NumUsedBlocks(), 0u);
     previous_ring_buffers_.push_back(std::move(ring_buffer_));
     last_allocated_size_ = 0;
     high_water_mark_ = GetPreviousRingBufferUsedBytes();
     bytes_since_last_shrink_ = 0;
+    result_buffer_ = nullptr;
+    buffer_ = nullptr;
   }
 }
 

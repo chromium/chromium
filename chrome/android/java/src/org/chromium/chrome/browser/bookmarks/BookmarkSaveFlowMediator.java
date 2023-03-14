@@ -43,6 +43,7 @@ public class BookmarkSaveFlowMediator
     private BookmarkId mBookmarkId;
     private PowerBookmarkMeta mPowerBookmarkMeta;
     private boolean mWasBookmarkMoved;
+    private boolean mIsNewBookmark;
     private ShoppingService mShoppingService;
     private CommerceSubscription mSubscription;
     private Callback<Boolean> mSubscriptionsManagerCallback;
@@ -80,15 +81,17 @@ public class BookmarkSaveFlowMediator
      *         point. This will change the UI of the bookmark save flow, either adding type-specific
      *         text (e.g. price tracking text) or adding UI bits to allow users to upgrade a regular
      *         bookmark.
-     * @param wasBookmarkMoved Whether the save flow is shown as a reslult of a moved bookmark.
+     * @param wasBookmarkMoved Whether the save flow is shown as a result of a moved bookmark.
+     * @param isNewBookmark Whether the bookmark is newly created.
      */
     public void show(BookmarkId bookmarkId, @Nullable PowerBookmarkMeta meta,
-            boolean fromExplicitTrackUi, boolean wasBookmarkMoved) {
+            boolean fromExplicitTrackUi, boolean wasBookmarkMoved, boolean isNewBookmark) {
         RecordUserAction.record("MobileBookmark.SaveFlow.Show");
 
         mBookmarkId = bookmarkId;
         mPowerBookmarkMeta = meta;
         mWasBookmarkMoved = wasBookmarkMoved;
+        mIsNewBookmark = isNewBookmark;
 
         mPropertyModel.set(BookmarkSaveFlowProperties.EDIT_ONCLICK_LISTENER, (v) -> {
             RecordUserAction.record("MobileBookmark.SaveFlow.EditBookmark");
@@ -167,7 +170,7 @@ public class BookmarkSaveFlowMediator
         }
         setPriceTrackingIconForEnabledState(toggled);
         PriceTrackingUtils.setPriceTrackingStateForBookmark(Profile.getLastUsedRegularProfile(),
-                mBookmarkId.getId(), toggled, mSubscriptionsManagerCallback);
+                mBookmarkId.getId(), toggled, mSubscriptionsManagerCallback, mIsNewBookmark);
         PowerBookmarkMetrics.reportBookmarkSaveFlowPriceTrackingState(toggled
                         ? PriceTrackingState.PRICE_TRACKING_ENABLED
                         : PriceTrackingState.PRICE_TRACKING_DISABLED);

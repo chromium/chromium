@@ -160,7 +160,6 @@ ci.builder(
         category = "debug|mac",
         short_name = "bld",
     ),
-    reclient_scandeps_server = True,
 )
 
 ci.builder(
@@ -186,7 +185,6 @@ ci.builder(
         category = "release|mac",
         short_name = "bld",
     ),
-    reclient_scandeps_server = True,
 )
 
 ci.builder(
@@ -213,7 +211,6 @@ ci.builder(
         category = "debug|mac",
         short_name = "bld",
     ),
-    reclient_scandeps_server = True,
 )
 
 ci.builder(
@@ -240,7 +237,6 @@ ci.builder(
         category = "release|mac",
         short_name = "bld",
     ),
-    reclient_scandeps_server = True,
 )
 
 ci.builder(
@@ -266,7 +262,6 @@ ci.builder(
         category = "debug|mac",
         short_name = "bld-asan",
     ),
-    reclient_scandeps_server = True,
 )
 
 ci.thin_tester(

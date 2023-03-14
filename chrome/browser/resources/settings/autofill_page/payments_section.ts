@@ -197,32 +197,10 @@ export class SettingsPaymentsSectionElement extends
   private migrationEnabled_: boolean;
   private removeCardExpirationAndTypeTitlesEnabled_: boolean;
   private virtualCardEnrollmentEnabled_: boolean;
-  private activeDialogAnchor_: HTMLElement|null;
+  private activeDialogAnchor_: HTMLElement|null = null;
   private paymentsManager_: PaymentsManagerProxy =
       PaymentsManagerImpl.getInstance();
   private setPersonalDataListener_: PersonalDataChangedListener|null = null;
-
-  constructor() {
-    super();
-
-    /**
-     * The element to return focus to; when the currently active dialog is
-     * closed.
-     */
-    this.activeDialogAnchor_ = null;
-  }
-
-  override ready() {
-    super.ready();
-
-    // TODO(crbug.com/1409766): Add the listener declaratively for all above.
-    this.addEventListener('save-credit-card', this.saveCreditCard_);
-    this.addEventListener(
-        'dots-card-menu-click', this.onCreditCardDotsMenuClick_);
-    this.addEventListener(
-        'remote-card-menu-click', this.onRemoteEditCreditCardClick_);
-    this.addEventListener('unenroll-virtual-card', this.unenrollVirtualCard_);
-  }
 
   override connectedCallback() {
     super.connectedCallback();

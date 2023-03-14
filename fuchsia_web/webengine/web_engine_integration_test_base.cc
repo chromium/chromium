@@ -5,6 +5,7 @@
 #include "fuchsia_web/webengine/web_engine_integration_test_base.h"
 
 #include <lib/fdio/directory.h>
+#include <zircon/status.h>
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -91,7 +92,8 @@ void WebEngineIntegrationTestBase::CreateContext(
   CHECK(!context_);
   GetContextProvider()->Create(std::move(context_params),
                                context_.NewRequest());
-  context_.set_error_handler([](zx_status_t status) { ADD_FAILURE(); });
+  context_.set_error_handler(
+      [](zx_status_t status) { FAIL() << zx_status_get_string(status); });
 }
 
 void WebEngineIntegrationTestBase::CreateContextAndFrame(
@@ -101,7 +103,8 @@ void WebEngineIntegrationTestBase::CreateContextAndFrame(
   CreateContext(std::move(context_params));
 
   context_->CreateFrame(frame_.NewRequest());
-  frame_.set_error_handler([](zx_status_t status) { ADD_FAILURE(); });
+  frame_.set_error_handler(
+      [](zx_status_t status) { FAIL() << zx_status_get_string(status); });
 
   CreateNavigationListener();
 }
@@ -112,7 +115,8 @@ void WebEngineIntegrationTestBase::CreateFrameWithParams(
   CHECK(context_);
 
   context_->CreateFrameWithParams(std::move(frame_params), frame_.NewRequest());
-  frame_.set_error_handler([](zx_status_t status) { ADD_FAILURE(); });
+  frame_.set_error_handler(
+      [](zx_status_t status) { FAIL() << zx_status_get_string(status); });
 
   CreateNavigationListener();
 }
@@ -152,7 +156,7 @@ void WebEngineIntegrationTestBase::LoadUrlAndExpectResponse(
   fuchsia::web::NavigationControllerPtr navigation_controller;
   frame_->GetNavigationController(navigation_controller.NewRequest());
   navigation_controller.set_error_handler(
-      [](zx_status_t status) { ADD_FAILURE(); });
+      [](zx_status_t status) { FAIL() << zx_status_get_string(status); });
   ASSERT_TRUE(::LoadUrlAndExpectResponse(navigation_controller.get(),
                                          std::move(load_url_params), url));
 }

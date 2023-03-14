@@ -5,6 +5,8 @@
 #include "cc/layers/layer_list_iterator.h"
 
 #include <memory>
+#include <unordered_map>
+#include <utility>
 
 #include "base/containers/adapters.h"
 #include "cc/animation/animation_host.h"

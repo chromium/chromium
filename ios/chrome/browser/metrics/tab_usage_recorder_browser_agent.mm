@@ -232,21 +232,11 @@ void TabUsageRecorderBrowserAgent::RecordPageLoadStart(
   }
 }
 
-void TabUsageRecorderBrowserAgent::RecordPageLoadDone(web::WebState* web_state,
-                                                      bool success) {
+void TabUsageRecorderBrowserAgent::RecordPageLoadDone(
+    web::WebState* web_state) {
   if (!web_state)
     return;
   if (web_state == evicted_web_state_) {
-    if (success) {
-      LOCAL_HISTOGRAM_TIMES(
-          tab_usage_recorder::kEvictedTabReloadTime,
-          base::TimeTicks::Now() - evicted_web_state_reload_start_time_);
-    }
-    UMA_HISTOGRAM_ENUMERATION(tab_usage_recorder::kEvictedTabReloadSuccessRate,
-                              success ? tab_usage_recorder::LOAD_SUCCESS
-                                      : tab_usage_recorder::LOAD_FAILURE,
-                              tab_usage_recorder::LOAD_DONE_STATE_COUNT);
-
     UMA_HISTOGRAM_ENUMERATION(
         tab_usage_recorder::kDidUserWaitForEvictedTabReload,
         tab_usage_recorder::USER_WAITED,
@@ -534,8 +524,7 @@ void TabUsageRecorderBrowserAgent::DidStartNavigation(
 void TabUsageRecorderBrowserAgent::PageLoaded(
     web::WebState* web_state,
     web::PageLoadCompletionStatus load_completion_status) {
-  RecordPageLoadDone(web_state, load_completion_status ==
-                                    web::PageLoadCompletionStatus::SUCCESS);
+  RecordPageLoadDone(web_state);
 }
 
 void TabUsageRecorderBrowserAgent::RenderProcessGone(web::WebState* web_state) {

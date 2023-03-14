@@ -45,6 +45,7 @@ public class BookmarkSaveFlowCoordinator {
     private final PropertyModelChangeProcessor<PropertyModel, ViewLookupCachingFrameLayout,
             PropertyKey> mChangeProcessor;
     private final DestroyChecker mDestroyChecker;
+    private final Profile mProfile;
 
     private BottomSheetController mBottomSheetController;
     private BookmarkSaveFlowBottomSheetContent mBottomSheetContent;
@@ -63,12 +64,13 @@ public class BookmarkSaveFlowCoordinator {
      */
     public BookmarkSaveFlowCoordinator(@NonNull Context context,
             @NonNull BottomSheetController bottomSheetController, ShoppingService shoppingService,
-            @NonNull UserEducationHelper userEducationHelper) {
+            @NonNull UserEducationHelper userEducationHelper, Profile profile) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
         mUserEducationHelper = userEducationHelper;
         mBookmarkModel = BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
         mDestroyChecker = new DestroyChecker();
+        mProfile = profile;
 
         mBookmarkSaveFlowView = LayoutInflater.from(mContext).inflate(
                 org.chromium.chrome.R.layout.bookmark_save_flow, /*root=*/null);
@@ -84,7 +86,8 @@ public class BookmarkSaveFlowCoordinator {
      * @param bookmarkId The {@link BookmarkId} which was saved.
      */
     public void show(BookmarkId bookmarkId) {
-        show(bookmarkId, /*fromExplicitTrackUi=*/false, /*wasBookmarkMoved=*/false);
+        show(bookmarkId, /*fromExplicitTrackUi=*/false, /*wasBookmarkMoved=*/false,
+                /*isNewBookmark=*/false);
     }
 
     /**
@@ -95,21 +98,23 @@ public class BookmarkSaveFlowCoordinator {
      *         text (e.g. price tracking text) or adding UI bits to allow users to upgrade a regular
      *         bookmark. This will be false when adding a normal bookmark.
      * @param wasBookmarkMoved Whether the save flow is shown as a reslult of a moved bookmark.
+     * @param isNewBookmark Whether the bookmark is newly created.
      */
-    public void show(BookmarkId bookmarkId, boolean fromExplicitTrackUi, boolean wasBookmarkMoved) {
+    public void show(BookmarkId bookmarkId, boolean fromExplicitTrackUi, boolean wasBookmarkMoved,
+            boolean isNewBookmark) {
         mBookmarkModel.finishLoadingBookmarkModel(() -> {
-            show(bookmarkId, fromExplicitTrackUi, wasBookmarkMoved,
+            show(bookmarkId, fromExplicitTrackUi, wasBookmarkMoved, isNewBookmark,
                     mBookmarkModel.getPowerBookmarkMeta(bookmarkId));
         });
     }
 
     void show(BookmarkId bookmarkId, boolean fromExplicitTrackUi, boolean wasBookmarkMoved,
-            @Nullable PowerBookmarkMeta meta) {
+            boolean isNewBookmark, @Nullable PowerBookmarkMeta meta) {
         mDestroyChecker.checkNotDestroyed();
         mBottomSheetContent = new BookmarkSaveFlowBottomSheetContent(mBookmarkSaveFlowView);
         // Order matters here: Calling show on the mediator first allows the height to be fully
         // determined before the sheet is shown.
-        mMediator.show(bookmarkId, meta, fromExplicitTrackUi, wasBookmarkMoved);
+        mMediator.show(bookmarkId, meta, fromExplicitTrackUi, wasBookmarkMoved, isNewBookmark);
         boolean shown =
                 mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true);
 
@@ -119,21 +124,25 @@ public class BookmarkSaveFlowCoordinator {
             setupAutodismiss();
         }
 
-        if (ShoppingFeatures.isShoppingListEligible()
-                && PriceTrackingUtils.isBookmarkPriceTracked(
-                        Profile.getLastUsedRegularProfile(), bookmarkId.getId())) {
-            if (shown) {
-                showShoppingSaveFlowIPH();
-            } else {
-                mBottomSheetController.addObserver(new EmptyBottomSheetObserver() {
-                    @Override
-                    public void onSheetContentChanged(BottomSheetContent newContent) {
-                        if (newContent == mBottomSheetContent) showShoppingSaveFlowIPH();
+        if (ShoppingFeatures.isShoppingListEligible()) {
+            PriceTrackingUtils.isBookmarkPriceTracked(mProfile, bookmarkId.getId(), (isTracked) -> {
+                if (isTracked) return;
 
-                        mBottomSheetController.removeObserver(this);
-                    }
-                });
-            }
+                if (shown) {
+                    showShoppingSaveFlowIPH();
+                } else {
+                    mBottomSheetController.addObserver(new EmptyBottomSheetObserver() {
+                        @Override
+                        public void onSheetContentChanged(BottomSheetContent newContent) {
+                            if (newContent == mBottomSheetContent) {
+                                showShoppingSaveFlowIPH();
+                            }
+
+                            mBottomSheetController.removeObserver(this);
+                        }
+                    });
+                }
+            });
         }
     }
 

@@ -546,7 +546,7 @@ TEST_F(AnimationTest, SwitchToLayer) {
   EXPECT_EQ(animation_impl_->keyframe_effect()->element_id(), element_id_);
   CheckKeyframeEffectTimelineNeedsPushProperties(false);
 
-  const ElementId new_element_id(element_id_.GetStableId() + 1);
+  const ElementId new_element_id(element_id_.GetInternalValue() + 1);
   animation_->DetachElement();
   animation_->AttachElement(new_element_id);
 

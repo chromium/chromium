@@ -5,6 +5,7 @@
 #include "ui/gtk/native_theme_gtk.h"
 
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "cc/paint/paint_canvas.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -46,6 +47,11 @@ SkBitmap GetWidgetBitmap(const gfx::Size& size,
   CairoSurface surface(bitmap);
   cairo_t* cr = surface.cairo();
 
+  double opacity = 1;
+  GtkStyleContextGet(context, "opacity", &opacity, nullptr);
+  if (opacity < 1)
+    cairo_push_group(cr);
+
   switch (bg_mode) {
     case BG_RENDER_NORMAL:
       gtk_render_background(context, cr, 0, 0, size.width(), size.height());
@@ -59,6 +65,13 @@ SkBitmap GetWidgetBitmap(const gfx::Size& size,
   if (render_frame) {
     gtk_render_frame(context, cr, 0, 0, size.width(), size.height());
   }
+
+  if (opacity < 1) {
+    cairo_pop_group_to_source(cr);
+    cairo_set_operator(cr, CAIRO_OPERATOR_OVER);
+    cairo_paint_with_alpha(cr, opacity);
+  }
+
   bitmap.setImmutable();
   return bitmap;
 }
@@ -84,40 +97,6 @@ NativeThemeGtk* NativeThemeGtk::instance() {
 NativeThemeGtk::NativeThemeGtk()
     : NativeThemeBase(/*should_only_use_dark_colors=*/false,
                       ui::SystemTheme::kGtk) {
-  // g_type_from_name() is only used in GTK3.
-  if (!GtkCheckVersion(4)) {
-    // These types are needed by g_type_from_name(), but may not be registered
-    // at this point.  We need the g_type_class magic to make sure the compiler
-    // doesn't optimize away this code.
-    g_type_class_unref(g_type_class_ref(gtk_button_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_entry_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_frame_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_header_bar_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_image_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_info_bar_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_label_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_menu_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_menu_bar_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_menu_item_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_range_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_scrollbar_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_scrolled_window_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_separator_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_spinner_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_text_view_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_toggle_button_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_tree_view_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_window_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_combo_box_text_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_cell_view_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_scale_get_type()));
-
-    // Initialize the GtkTreeMenu type.  _gtk_tree_menu_get_type() is private,
-    // so we need to initialize it indirectly.
-    auto model = TakeGObject(GTK_TREE_MODEL(GtkTreeStoreNew(G_TYPE_STRING)));
-    auto combo = TakeGObject(gtk_combo_box_new_with_model(model));
-  }
-
   ui::ColorProviderManager::Get().AppendColorProviderInitializer(
       base::BindRepeating(AddGtkNativeColorMixer));
 
@@ -192,8 +171,7 @@ void NativeThemeGtk::OnThemeChanged(GtkSettings* settings,
   // HighContrast (GNOME) and ContrastHighInverse (MATE).  So infer the contrast
   // based on if the theme name contains both "high" and "contrast",
   // case-insensitive.
-  std::transform(theme_name.begin(), theme_name.end(), theme_name.begin(),
-                 ::tolower);
+  base::ranges::transform(theme_name, theme_name.begin(), ::tolower);
   bool high_contrast = theme_name.find("high") != std::string::npos &&
                        theme_name.find("contrast") != std::string::npos;
   SetPreferredContrast(
@@ -255,8 +233,8 @@ void NativeThemeGtk::PaintMenuSeparator(
         return (rect.height() - separator_thickness) / 2;
     }
   };
-  auto context = GetStyleContextFromCss(
-      StrCat({GtkCssMenu(), " GtkSeparator#separator.horizontal"}));
+  auto context =
+      GetStyleContextFromCss(StrCat({GtkCssMenu(), " separator.horizontal"}));
   int min_height = 1;
   auto margin = GtkStyleContextGetMargin(context);
   auto border = GtkStyleContextGetBorder(context);
@@ -282,8 +260,8 @@ void NativeThemeGtk::PaintFrameTopArea(
     const FrameTopAreaExtraParams& frame_top_area,
     ColorScheme color_scheme) const {
   auto context = GetStyleContextFromCss(frame_top_area.use_custom_frame
-                                            ? "#headerbar.header-bar.titlebar"
-                                            : "GtkMenuBar#menubar");
+                                            ? "headerbar.header-bar.titlebar"
+                                            : "menubar");
   ApplyCssToContext(context, "* { border-radius: 0px; border-style: none; }");
   gtk_style_context_set_state(context, frame_top_area.is_active
                                            ? GTK_STATE_FLAG_NORMAL

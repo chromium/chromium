@@ -106,7 +106,14 @@ class DeviceSyncClientHolder : public KeyedService {
 };
 
 DeviceSyncClientFactory::DeviceSyncClientFactory()
-    : ProfileKeyedServiceFactory("DeviceSyncClient") {
+    : ProfileKeyedServiceFactory(
+          "DeviceSyncClient",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(ClientAppMetadataProviderServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(gcm::GCMProfileServiceFactory::GetInstance());

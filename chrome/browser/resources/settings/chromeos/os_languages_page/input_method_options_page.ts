@@ -20,6 +20,8 @@ import {afterNextRender, DomRepeatEvent, PolymerElement} from 'chrome://resource
 
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {assertExhaustive} from '../assert_extras.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {OsSettingsSubpageElement} from '../os_settings_page/os_settings_subpage.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
@@ -57,6 +59,7 @@ interface Option {
   value: OptionValue;
   label: string;
   subtitle: string;
+  deepLink: number;
   menuItems: Array<{name?: string, value: unknown}>;
   url: Route|undefined;
   dependentOptions: Option[];
@@ -85,7 +88,7 @@ type OptionDomRepeatEvent<T = unknown, E extends Event = Event> =
 type AutocorrectOptionMapKey = keyof typeof AUTOCORRECT_OPTION_MAP_OVERRIDE;
 
 const SettingsInputMethodOptionsPageElementBase =
-    I18nMixin(PrefsMixin(RouteObserverMixin(PolymerElement)));
+    RouteObserverMixin(PrefsMixin(I18nMixin(DeepLinkingMixin(PolymerElement))));
 
 class SettingsInputMethodOptionsPageElement extends
     SettingsInputMethodOptionsPageElementBase {
@@ -144,6 +147,13 @@ class SettingsInputMethodOptionsPageElement extends
   // Public API: Downwards data flow.
   languageHelper: LanguageHelper;
 
+  // Internal properties for mixins.
+  // From DeepLinkingMixin.
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kShowPKAutoCorrection,
+    Setting.kShowVKAutoCorrection,
+  ]);
+
   // Internal state.
   // This property does not have a default value in `static get properties()`,
   // but is set in `currentRouteChanged()`.
@@ -193,6 +203,7 @@ class SettingsInputMethodOptionsPageElement extends
     assert(displayName !== '', `Input method ID '${this.id_}' is invalid`);
     this.engineId_ = getFirstPartyInputMethodEngineId(this.id_);
     this.populateOptionSections_();
+    this.attemptDeepLink();
   }
 
   private onSubmenuButtonClick_(e: DomRepeatEvent<Option, MouseEvent>): void {
@@ -309,12 +320,21 @@ class SettingsInputMethodOptionsPageElement extends
       const subtitleStringName = getOptionSubtitleName(name);
       const subtitle = subtitleStringName && this.i18n(subtitleStringName);
 
+      let link = -1;
+      if (name === OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL) {
+        link = Setting.kShowPKAutoCorrection;
+      }
+      if (name === OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL) {
+        link = Setting.kShowVKAutoCorrection;
+      }
+
       return {
         name: name,
         uiType: uiType,
         value: value,
         label: label,
         subtitle: subtitle,
+        deepLink: link,
         menuItems: this.getMenuItems(name, value),
         url: getOptionUrl(name),
         dependentOptions: option.dependentOptions ?

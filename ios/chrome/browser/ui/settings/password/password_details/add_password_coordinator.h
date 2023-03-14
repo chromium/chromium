@@ -5,10 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_ADD_PASSWORD_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_ADD_PASSWORD_COORDINATOR_H_
 
-#import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol AddPasswordCoordinatorDelegate;
-class IOSChromePasswordCheckManager;
 @class ReauthenticationModule;
 
 // This coordinator presents add password sheet for the user.
@@ -17,8 +16,6 @@ class IOSChromePasswordCheckManager;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                               reauthModule:(ReauthenticationModule*)reauthModule
-                      passwordCheckManager:
-                          (IOSChromePasswordCheckManager*)manager
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

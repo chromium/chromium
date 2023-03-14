@@ -102,10 +102,9 @@ void ExtensionTestingProfile::AddExtension(std::string extension_id,
 
   extension_prefs_->UpdateExtensionPref(
       extension_id, "last_update_time",
-      std::make_unique<base::Value>(
-          base::NumberToString(install_time.ToInternalValue())));
-  extension_prefs_->UpdateExtensionPref(
-      extension_id, "state", std::make_unique<base::Value>(state_value));
+      base::Value(base::NumberToString(install_time.ToInternalValue())));
+  extension_prefs_->UpdateExtensionPref(extension_id, "state",
+                                        base::Value(state_value));
 }
 
 void ExtensionTestingProfile::SetInstallSignature(

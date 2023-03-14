@@ -34,7 +34,14 @@ UserPermissionServiceFactory::GetForProfile(Profile* profile) {
 }
 
 UserPermissionServiceFactory::UserPermissionServiceFactory()
-    : ProfileKeyedServiceFactory("UserPermissionService") {
+    : ProfileKeyedServiceFactory(
+          "UserPermissionService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(policy::ManagementServiceFactory::GetInstance());
 }

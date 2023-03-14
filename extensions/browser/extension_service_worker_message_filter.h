@@ -13,11 +13,14 @@
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_thread.h"
-#include "extensions/common/activation_sequence.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/frame.mojom-forward.h"
 
 class GURL;
+
+namespace base {
+class UnguessableToken;
+}
 
 namespace content {
 class BrowserContext;
@@ -70,19 +73,18 @@ class ExtensionServiceWorkerMessageFilter
                         int64_t service_worker_version_id,
                         int thread_id,
                         int event_id);
-  void OnDidInitializeServiceWorkerContext(const ExtensionId& extension_id,
-                                           int64_t service_worker_version_id,
-                                           int thread_id);
-  void OnDidStartServiceWorkerContext(const ExtensionId& extension_id,
-                                      ActivationSequence activation_sequence,
-                                      const GURL& service_worker_scope,
-                                      int64_t service_worker_version_id,
-                                      int thread_id);
-  void OnDidStopServiceWorkerContext(const ExtensionId& extension_id,
-                                     ActivationSequence activation_sequence,
-                                     const GURL& service_worker_scope,
-                                     int64_t service_worker_version_id,
-                                     int thread_id);
+  void OnDidStartServiceWorkerContext(
+      const ExtensionId& extension_id,
+      const base::UnguessableToken& activation_sequence,
+      const GURL& service_worker_scope,
+      int64_t service_worker_version_id,
+      int thread_id);
+  void OnDidStopServiceWorkerContext(
+      const ExtensionId& extension_id,
+      const base::UnguessableToken& activation_sequence,
+      const GURL& service_worker_scope,
+      int64_t service_worker_version_id,
+      int thread_id);
 
   void DidFailDecrementInflightEvent();
 

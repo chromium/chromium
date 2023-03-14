@@ -53,12 +53,28 @@ public class CreatorActivity extends SnackbarActivity {
     private ObservableSupplierImpl<Profile> mProfileSupplier;
     private Profile mProfile;
 
+    private static class TabShareDelegateImpl extends ShareDelegateImpl {
+        public TabShareDelegateImpl(BottomSheetController controller,
+                ActivityLifecycleDispatcherImpl lifecycleDispatcher,
+                ActivityTabProvider tabProvider, ObservableSupplierImpl tabModelSelectorProvider,
+                ObservableSupplierImpl profileSupplier, ShareSheetDelegate delegate,
+                boolean isCustomTab) {
+            super(controller, lifecycleDispatcher, tabProvider, tabModelSelectorProvider,
+                    profileSupplier, delegate, isCustomTab);
+        }
+
+        @Override
+        public boolean isSharingHubEnabled() {
+            return false;
+        }
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         byte[] mWebFeedId =
                 getIntent().getByteArrayExtra(CreatorIntentConstants.CREATOR_WEB_FEED_ID);
-        String mTitle = getIntent().getStringExtra(CreatorIntentConstants.CREATOR_TITLE);
-        String mUrl = getIntent().getStringExtra(CreatorIntentConstants.CREATOR_URL);
+        String url = getIntent().getStringExtra(CreatorIntentConstants.CREATOR_URL);
+        boolean following =
+                getIntent().getBooleanExtra(CreatorIntentConstants.CREATOR_FOLLOWING, false);
         int mEntryPoint = getIntent().getIntExtra(
                 CreatorIntentConstants.CREATOR_ENTRY_POINT, SingleWebFeedEntryPoint.OTHER);
         mActivityTabProvider = new ActivityTabProvider();
@@ -72,12 +88,20 @@ public class CreatorActivity extends SnackbarActivity {
         super.onCreate(savedInstanceState);
         IntentRequestTracker intentRequestTracker = IntentRequestTracker.createFromActivity(this);
         mWindowAndroid = new ActivityWindowAndroid(this, false, intentRequestTracker);
-        CreatorCoordinator coordinator =
-                new CreatorCoordinator(this, mWebFeedId, getSnackbarManager(), mWindowAndroid,
-                        mProfile, mTitle, mUrl, this::createWebContents, this::createNewTab,
-                        mTabShareDelegateSupplier, mEntryPoint);
+
+        TabShareDelegateImpl tabshareDelegate = new TabShareDelegateImpl(mBottomSheetController,
+                mLifecycleDispatcher, mActivityTabProvider,
+                /* tabModelSelectProvider */ new ObservableSupplierImpl<>(), mProfileSupplier,
+                new ShareDelegateImpl.ShareSheetDelegate(),
+                /* isCustomTab */ false);
+        mTabShareDelegateSupplier.set(tabshareDelegate);
+
+        CreatorCoordinator coordinator = new CreatorCoordinator(this, mWebFeedId,
+                getSnackbarManager(), mWindowAndroid, mProfile, url, this::createWebContents,
+                this::createNewTab, mTabShareDelegateSupplier, mEntryPoint, following);
 
         mBottomSheetController = coordinator.getBottomSheetController();
+
         ShareDelegate shareDelegate = new ShareDelegateImpl(mBottomSheetController,
                 mLifecycleDispatcher, mActivityTabProvider,
                 /* tabModelSelectProvider */ new ObservableSupplierImpl<>(), mProfileSupplier,

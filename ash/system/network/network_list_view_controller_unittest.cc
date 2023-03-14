@@ -1119,7 +1119,7 @@ TEST_P(NetworkListViewControllerTest, ConnectionWarningSystemIconVpn) {
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_MONITORED_WARNING),
       GetConnectionLabelView()->GetText());
-  EXPECT_EQ(network_list(NetworkType::kAll)->children().at(0),
+  EXPECT_EQ(network_list(NetworkType::kEthernet)->children().at(0),
             GetConnectionWarning());
   views::ImageView* icon = GetConnectionWarningIcon();
   ASSERT_THAT(icon, NotNull());
@@ -1144,7 +1144,7 @@ TEST_P(NetworkListViewControllerTest, ConnectionWarningManagedIconVpn) {
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_MONITORED_WARNING),
       GetConnectionLabelView()->GetText());
-  EXPECT_EQ(network_list(NetworkType::kAll)->children().at(0),
+  EXPECT_EQ(network_list(NetworkType::kEthernet)->children().at(0),
             GetConnectionWarning());
   views::ImageView* icon = GetConnectionWarningIcon();
   ASSERT_THAT(icon, NotNull());

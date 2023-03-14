@@ -9,10 +9,12 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_init.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/core/speculation_rules/speculation_rules_features.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -229,9 +231,7 @@ class CSSSelectorPredicate : public DocumentRulePredicate {
     DCHECK(!link.GetDocument().NeedsLayoutTreeUpdate());
     const ComputedStyle* computed_style = link.GetComputedStyle();
     DCHECK(computed_style);
-    // TODO(crbug.com/1371522): If the link has a display-locked ancestor,
-    // it will have a ComputedStyle with a stale list of matched selectors
-    // (styling is skipped but the old ComputedStyle is still kept).
+    DCHECK(!DisplayLockUtilities::LockedAncestorPreventingStyle(link));
     const Persistent<HeapHashSet<WeakMember<StyleRule>>>& matched_selectors =
         computed_style->DocumentRulesSelectors();
     if (!matched_selectors) {
@@ -570,8 +570,8 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
 
   // If predicateType is "selector_matches"
   if (predicate_type == "selector_matches" && input->size() == 1) {
-    const bool selector_matches_enabled = RuntimeEnabledFeatures::
-        SpeculationRulesDocumentRulesSelectorMatchesEnabled(execution_context);
+    const bool selector_matches_enabled =
+        speculation_rules::SelectorMatchesEnabled(execution_context);
     if (!selector_matches_enabled) {
       SetParseErrorMessage(out_error,
                            "\"selector_matches\" is currently unsupported.");
@@ -609,8 +609,10 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
 
       // Parse a selector from rawSelector. If the result is failure, then
       // return null. Otherwise, let selector be the result.
-      base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
-          css_parser_context, nullptr, nullptr, raw_selector_string, arena);
+      base::span<CSSSelector> selector_vector =
+          CSSParser::ParseSelector(css_parser_context, CSSNestingType::kNone,
+                                   /*parent_rule_for_nesting=*/nullptr, nullptr,
+                                   raw_selector_string, arena);
       if (selector_vector.empty()) {
         SetParseErrorMessage(
             out_error, String::Format("\"%s\" is not a valid selector.",

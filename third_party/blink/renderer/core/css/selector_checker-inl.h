@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/selector_checker.h"
+#include "third_party/blink/renderer/core/html/html_document.h"
 
 namespace blink {
 
@@ -132,9 +133,27 @@ bool EasySelectorChecker::MatchOne(const CSSSelector* selector,
   switch (selector->Match()) {
     case CSSSelector::kTag: {
       const QualifiedName& tag_q_name = selector->TagQName();
-      return element->localName() == tag_q_name.LocalName() &&
-             (element->namespaceURI() == tag_q_name.NamespaceURI() ||
-              tag_q_name.NamespaceURI() == g_star_atom);
+      if (element->namespaceURI() != tag_q_name.NamespaceURI() &&
+          tag_q_name.NamespaceURI() != g_star_atom) {
+        // Namespace mismatch.
+        return false;
+      }
+      if (element->localName() == tag_q_name.LocalName()) {
+        return true;
+      }
+      if (!element->IsHTMLElement() &&
+          IsA<HTMLDocument>(element->GetDocument())) {
+        // If we have a non-HTML element in a HTML document, we need to
+        // also check case-insensitively (see MatchesTagName()). Ideally,
+        // we'd like to not have to handle this case in easy selector matching,
+        // but it turns out to be hard to reliably check that a tag in a
+        // descendant selector doesn't hit this issue (the subject element
+        // could be checked once, outside EasySelectorChecker).
+        return element->TagQName().LocalNameUpper() ==
+               tag_q_name.LocalNameUpper();
+      } else {
+        return false;
+      }
     }
     case CSSSelector::kClass:
       return element->HasClass() &&
@@ -158,7 +177,7 @@ bool EasySelectorChecker::AttributeIsSet(const Element& element,
   element.SynchronizeAttribute(attr.LocalName());
   AttributeCollection attributes = element.AttributesWithoutUpdate();
   for (const auto& attribute_item : attributes) {
-    if (attribute_item.Matches(attr)) {
+    if (AttributeItemHasName(attribute_item, element, attr)) {
       return true;
     }
   }
@@ -171,11 +190,22 @@ bool EasySelectorChecker::AttributeMatches(const Element& element,
   element.SynchronizeAttribute(attr.LocalName());
   AttributeCollection attributes = element.AttributesWithoutUpdate();
   for (const auto& attribute_item : attributes) {
-    if (attribute_item.Matches(attr)) {
+    if (AttributeItemHasName(attribute_item, element, attr)) {
       return attribute_item.Value() == value;
     }
   }
   return false;
+}
+
+bool EasySelectorChecker::AttributeItemHasName(const Attribute& attribute_item,
+                                               const Element& element,
+                                               const QualifiedName& name) {
+  // See MatchesTagName() and the comment in MatchOne() for information
+  // on the extra check on IsHTMLElement() etc..
+  return attribute_item.Matches(name) ||
+         (!element.IsHTMLElement() &&
+          IsA<HTMLDocument>(element.GetDocument()) &&
+          attribute_item.MatchesCaseInsensitive(name));
 }
 
 }  // namespace blink

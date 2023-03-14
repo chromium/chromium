@@ -97,7 +97,6 @@ void ContentStabilityMetricsProvider::Observe(
     }
 
     case content::NOTIFICATION_RENDER_WIDGET_HOST_HANG: {
-      helper_.LogRendererHang();
       break;
     }
 

@@ -40,11 +40,13 @@
 
 namespace {
 
-const std::u16string kRpETLDPlusOne = u"rp-example.com";
+const std::u16string kTopFrameETLDPlusOne = u"top-frame-example.com";
+const std::u16string kIframeETLDPlusOne = u"iframe-example.com";
 const std::u16string kIdpETLDPlusOne = u"idp-example.com";
 const std::u16string kTitleSignIn =
-    u"Sign in to rp-example.com with idp-example.com";
-const std::u16string kTitleSignInWithoutIdp = u"Sign in to rp-example.com";
+    u"Sign in to top-frame-example.com with idp-example.com";
+const std::u16string kTitleSignInWithoutIdp =
+    u"Sign in to top-frame-example.com";
 const std::u16string kTitleSigningIn = u"Verifying…";
 const std::u16string kTitleSigningInWithAutoReauthn = u"Signing you in…";
 
@@ -111,6 +113,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
 
  protected:
   void CreateAccountSelectionBubble(bool exclude_title,
+                                    bool exclude_iframe,
                                     bool show_auto_reauthn_checkbox) {
     views::Widget::InitParams params =
         CreateParams(views::Widget::InitParams::TYPE_WINDOW);
@@ -123,10 +126,14 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
     absl::optional<std::u16string> title =
         exclude_title ? absl::nullopt
                       : absl::make_optional<std::u16string>(kIdpETLDPlusOne);
+    absl::optional<std::u16string> iframe_etld_plus_one =
+        exclude_iframe
+            ? absl::nullopt
+            : absl::make_optional<std::u16string>(kIframeETLDPlusOne);
     dialog_ = new AccountSelectionBubbleView(
-        kRpETLDPlusOne, title, blink::mojom::RpContext::kSignIn,
-        show_auto_reauthn_checkbox, anchor_widget_->GetContentsView(),
-        shared_url_loader_factory(),
+        kTopFrameETLDPlusOne, iframe_etld_plus_one, title,
+        blink::mojom::RpContext::kSignIn, show_auto_reauthn_checkbox,
+        anchor_widget_->GetContentsView(), shared_url_loader_factory(),
         /*observer=*/nullptr);
     views::BubbleDialogDelegateView::CreateBubble(dialog_)->Show();
   }
@@ -134,19 +141,25 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
   void CreateSingleAccountPicker(bool show_back_button,
                                  const content::IdentityRequestAccount& account,
                                  const std::string& terms_of_service_url,
-                                 bool show_auto_reauthn_checkbox = false) {
-    CreateAccountSelectionBubble(/*exclude_title=*/false,
+                                 bool show_auto_reauthn_checkbox = false,
+                                 bool exclude_iframe = true) {
+    CreateAccountSelectionBubble(/*exclude_title=*/false, exclude_iframe,
                                  show_auto_reauthn_checkbox);
     IdentityProviderDisplayData idp_data(
         kIdpETLDPlusOne, content::IdentityProviderMetadata(),
         CreateTestClientMetadata(terms_of_service_url), {account});
-    dialog_->ShowSingleAccountConfirmDialog(kRpETLDPlusOne, account, idp_data,
-                                            show_back_button);
+    dialog_->ShowSingleAccountConfirmDialog(
+        kTopFrameETLDPlusOne,
+        exclude_iframe
+            ? absl::nullopt
+            : absl::make_optional<std::u16string>(kIframeETLDPlusOne),
+        account, idp_data, show_back_button);
   }
 
   void CreateMultiIdpAccountPicker(
       const std::vector<IdentityProviderDisplayData>& idp_data_list) {
     CreateAccountSelectionBubble(/*exclude_title=*/true,
+                                 /*exclude_iframe=*/true,
                                  /*show_auto_reauthn_checkbox=*/false);
     dialog_->ShowMultiAccountPicker(idp_data_list);
   }
@@ -276,6 +289,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
               content::IdentityRequestAccount::LoginState::kSignUp);
 
       CreateAccountSelectionBubble(/*exclude_title=*/false,
+                                   /*exclude_iframe=*/true,
                                    /*show_auto_reauthn_checkbox=*/false);
       std::vector<IdentityProviderDisplayData> idp_data;
       idp_data.emplace_back(
@@ -472,7 +486,7 @@ TEST_F(AccountSelectionBubbleViewTest, Verifying) {
       kIdpETLDPlusOne, content::IdentityProviderMetadata(),
       content::ClientMetadata(GURL(), GURL()), {account});
 
-  CreateAccountSelectionBubble(/*exclude_title=*/false,
+  CreateAccountSelectionBubble(/*exclude_title=*/false, /*exclude_iframe=*/true,
                                /*show_auto_reauthn_checkbox=*/false);
   dialog_->ShowVerifyingSheet(
       account, idp_data, l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE));
@@ -495,7 +509,7 @@ TEST_F(AccountSelectionBubbleViewTest, VerifyingForAutoReauthn) {
       kIdpETLDPlusOne, content::IdentityProviderMetadata(),
       content::ClientMetadata(GURL(), GURL()), {account});
 
-  CreateAccountSelectionBubble(/*exclude_title=*/false,
+  CreateAccountSelectionBubble(/*exclude_title=*/false, /*exclude_iframe=*/true,
                                /*show_auto_reauthn_checkbox=*/false);
   const auto title =
       l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE_AUTO_REAUTHN);
@@ -540,6 +554,52 @@ TEST_F(AccountSelectionBubbleViewTest, AutoReauthnCheckboxDisplayed) {
       static_cast<views::Checkbox*>(single_account_chooser->children()[2]);
 
   ASSERT_TRUE(checkbox->GetEnabled());
+}
+
+// Tests that when an iframe URL is provided, it is appropriately added to the
+// header.
+TEST_F(AccountSelectionBubbleViewTest, IframeSubtitleInHeader) {
+  const std::string kAccountSuffix = "suffix";
+  content::IdentityRequestAccount account = CreateTestIdentityRequestAccount(
+      {kAccountSuffix}, content::IdentityRequestAccount::LoginState::kSignUp);
+  CreateSingleAccountPicker(
+      /*show_back_button=*/false, account, /*terms_of_service_url=*/"",
+      /*show_auto_reauthn_checkbox=*/false, /*exclude_iframe=*/false);
+
+  std::vector<views::View*> children = dialog()->children();
+  ASSERT_EQ(children.size(), 3u);
+
+  // Perform some basic dialog checks.
+  EXPECT_FALSE(dialog()->ShouldShowCloseButton());
+  EXPECT_FALSE(dialog()->ShouldShowWindowTitle());
+
+  EXPECT_FALSE(dialog()->GetOkButton());
+  EXPECT_FALSE(dialog()->GetCancelButton());
+
+  views::View* header = children[0];
+  EXPECT_THAT(GetChildClassNames(header),
+              testing::ElementsAreArray({"View", "Label"}));
+  ASSERT_EQ(header->children().size(), 2u);
+  // Order: Potentially hidden IDP brand icon, potentially hidden back button,
+  // title, close button.
+  views::View* inner_header = header->children()[0];
+  std::vector<std::string> expected_class_names = {"ImageView", "ImageButton",
+                                                   "Label", "ImageButton"};
+  EXPECT_THAT(GetChildClassNames(inner_header),
+              testing::ElementsAreArray(expected_class_names));
+
+  // Check title text.
+  views::Label* title_view =
+      static_cast<views::Label*>(GetViewWithClassName(inner_header, "Label"));
+  ASSERT_TRUE(title_view);
+  EXPECT_EQ(title_view->GetText(),
+            u"Sign in to iframe-example.com with idp-example.com");
+
+  // Check subtitle text.
+  views::Label* subtitle_view =
+      static_cast<views::Label*>(header->children()[1]);
+  ASSERT_TRUE(subtitle_view);
+  EXPECT_EQ(subtitle_view->GetText(), u"on top-frame-example.com");
 }
 
 class MultipleIdpAccountSelectionBubbleViewTest

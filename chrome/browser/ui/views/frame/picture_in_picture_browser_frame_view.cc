@@ -706,13 +706,9 @@ void PictureInPictureBrowserFrameView::AnimationProgressed(
     return;
   }
 
-  if (animation == &show_close_button_animation_ ||
-      animation == &hide_close_button_animation_) {
-    close_image_button_->layer()->SetOpacity(animation->GetCurrentValue());
-    return;
-  }
-
-  NOTREACHED();
+  CHECK(animation == &show_close_button_animation_ ||
+        animation == &hide_close_button_animation_);
+  close_image_button_->layer()->SetOpacity(animation->GetCurrentValue());
 }
 
 ///////////////////////////////////////////////////////////////////////////////

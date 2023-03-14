@@ -802,7 +802,7 @@ TEST_F(FirmwareUpdateManagerTest, RequestInstallLocalPatch) {
       std::string(kFakeDeviceIdForTesting) + std::string(kCabExtension);
   base::FilePath full_path = root_path.Append(test_filename);
   // Create a temporary file to simulate a .cab available for install.
-  base::WriteFile(full_path, "", 0);
+  base::WriteFile(full_path, "");
   EXPECT_TRUE(base::PathExists(full_path));
   const std::string uri = kFilePathIdentifier + full_path.value();
 

@@ -27,9 +27,9 @@ void PrintingSubmitJobFunction::GetQuotaLimitHeuristics(
 }
 
 ExtensionFunction::ResponseAction PrintingSubmitJobFunction::Run() {
-  std::unique_ptr<api::printing::SubmitJob::Params> params(
-      api::printing::SubmitJob::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<api::printing::SubmitJob::Params> params =
+      api::printing::SubmitJob::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   PrintingAPIHandler::Get(browser_context())
       ->SubmitJob(ChromeExtensionFunctionDetails(this).GetNativeWindowForUI(),
                   extension_, std::move(params),
@@ -51,15 +51,15 @@ void PrintingSubmitJobFunction::OnPrintJobSubmitted(
   DCHECK(status.has_value());
   response.status = status.value();
   response.job_id = std::move(job_id);
-  Respond(OneArgument(base::Value(response.ToValue())));
+  Respond(WithArguments(response.ToValue()));
 }
 
 PrintingCancelJobFunction::~PrintingCancelJobFunction() = default;
 
 ExtensionFunction::ResponseAction PrintingCancelJobFunction::Run() {
-  std::unique_ptr<api::printing::CancelJob::Params> params(
-      api::printing::CancelJob::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<api::printing::CancelJob::Params> params =
+      api::printing::CancelJob::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   absl::optional<std::string> error =
       PrintingAPIHandler::Get(browser_context())
           ->CancelJob(extension_id(), params->job_id);
@@ -96,8 +96,8 @@ void PrintingGetPrinterInfoFunction::GetQuotaLimitHeuristics(
 }
 
 ExtensionFunction::ResponseAction PrintingGetPrinterInfoFunction::Run() {
-  std::unique_ptr<api::printing::GetPrinterInfo::Params> params(
-      api::printing::GetPrinterInfo::Params::Create(args()));
+  absl::optional<api::printing::GetPrinterInfo::Params> params =
+      api::printing::GetPrinterInfo::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   PrintingAPIHandler::Get(browser_context())
       ->GetPrinterInfo(
@@ -128,7 +128,7 @@ void PrintingGetPrinterInfoFunction::OnPrinterInfoRetrieved(
   }
   DCHECK(status.has_value());
   response.status = status.value();
-  Respond(OneArgument(base::Value(response.ToValue())));
+  Respond(WithArguments(response.ToValue()));
 }
 
 }  // namespace extensions

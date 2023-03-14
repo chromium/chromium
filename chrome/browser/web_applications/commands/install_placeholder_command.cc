@@ -13,11 +13,11 @@
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
-#include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_uninstall_and_replace_job.h"
+#include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/web_contents.h"
 
@@ -78,7 +78,7 @@ void InstallPlaceholderCommand::Abort(webapps::InstallResultCode code) {
   if (!callback_) {
     return;
   }
-  debug_value_.Set("result_code", base::StreamableToString(code));
+  debug_value_.Set("result_code", base::ToString(code));
   webapps::InstallableMetrics::TrackInstallResult(false);
   SignalCompletionAndSelfDestruct(
       CommandResult::kFailure,
@@ -173,7 +173,7 @@ void InstallPlaceholderCommand::OnInstallFinalized(
     const AppId& app_id,
     webapps::InstallResultCode code,
     OsHooksErrors os_hooks_errors) {
-  debug_value_.Set("result_code", base::StreamableToString(code));
+  debug_value_.Set("result_code", base::ToString(code));
 
   if (!web_contents_ || web_contents_->IsBeingDestroyed()) {
     Abort(webapps::InstallResultCode::kWebContentsDestroyed);

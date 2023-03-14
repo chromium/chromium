@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.Acc
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.HEIGHT;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.NO_ACTIVE_TAB;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.PAGE_CHANGE_LISTENER;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.SHOW_KEYBOARD_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TABS;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TOP_SHADOW_VISIBLE;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.VISIBLE;
@@ -15,7 +16,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.Acc
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -32,30 +32,26 @@ class AccessorySheetViewBinder {
         } else if (propertyKey == VISIBLE) {
             view.bringToFront(); // Ensure toolbars and other containers are overlaid.
             view.setVisibility(model.get(VISIBLE) ? View.VISIBLE : View.GONE);
-            if (model.get(VISIBLE) && model.get(ACTIVE_TAB_INDEX) != NO_ACTIVE_TAB) {
-                announceOpenedTab(view, model.get(TABS).get(model.get(ACTIVE_TAB_INDEX)));
-            }
         } else if (propertyKey == HEIGHT) {
             ViewGroup.LayoutParams p = view.getLayoutParams();
             p.height = model.get(HEIGHT);
             view.setLayoutParams(p);
+            view.setFrameHeight(model.get(HEIGHT));
         } else if (propertyKey == TOP_SHADOW_VISIBLE) {
             view.setTopShadowVisible(model.get(TOP_SHADOW_VISIBLE));
         } else if (propertyKey == ACTIVE_TAB_INDEX) {
             if (model.get(ACTIVE_TAB_INDEX) != NO_ACTIVE_TAB) {
                 view.setCurrentItem(model.get(ACTIVE_TAB_INDEX));
+                view.setTitle(model.get(TABS).get(model.get(ACTIVE_TAB_INDEX)).getTitle());
             }
         } else if (propertyKey == PAGE_CHANGE_LISTENER) {
             if (model.get(PAGE_CHANGE_LISTENER) != null) {
                 view.addOnPageChangeListener(model.get(PAGE_CHANGE_LISTENER));
             }
+        } else if (propertyKey == SHOW_KEYBOARD_CALLBACK) {
+            view.setShowKeyboardCallback(model.get(SHOW_KEYBOARD_CALLBACK));
         } else {
             assert false : "Every possible property update needs to be handled!";
         }
-    }
-
-    static void announceOpenedTab(View announcer, KeyboardAccessoryData.Tab tab) {
-        if (tab.getOpeningAnnouncement() == null) return;
-        announcer.announceForAccessibility(tab.getOpeningAnnouncement());
     }
 }

@@ -12,17 +12,21 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
+#include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
-#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
-#include "services/network/public/cpp/trigger_attestation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 
@@ -41,7 +45,9 @@ class TimeTicks;
 namespace content {
 
 class AttributionManager;
-class StorableSource;
+class AttributionTrigger;
+
+struct GlobalRenderFrameHostId;
 
 // Manages a receiver set of all ongoing `AttributionDataHost`s and forwards
 // events to the `AttributionManager` that owns `this`. Because attributionsrc
@@ -75,7 +81,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       AttributionInputEvent input_event) override;
   void NotifyNavigationRedirectRegistration(
       const blink::AttributionSrcToken& attribution_src_token,
-      std::string header_value,
+      const net::HttpResponseHeaders* headers,
       attribution_reporting::SuitableOrigin reporting_origin,
       const attribution_reporting::SuitableOrigin& source_origin,
       AttributionInputEvent input_event,
@@ -96,9 +102,8 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       BeaconId beacon_id,
       attribution_reporting::SuitableOrigin source_origin,
       bool is_within_fenced_frame,
-      absl::optional<AttributionInputEvent> input_event,
+      AttributionInputEvent input_event,
       GlobalRenderFrameHostId render_frame_id) override;
-  void NotifyFencedFrameReportingBeaconSent(BeaconId beacon_id) override;
   void NotifyFencedFrameReportingBeaconData(
       BeaconId beacon_id,
       url::Origin reporting_origin,
@@ -112,12 +117,18 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   struct NavigationDataHost;
 
   // Represents a set of attribution sources which registered in a top-level
-  // navigation redirect chain, and associated info to process them.
-  struct NavigationRedirectSourceRegistrations;
+  // navigation redirect or a beacon chain, and associated info to process them.
+  struct SourceRegistrations;
 
-  // Represents a set of attribution sources which registered in a beacon, and
-  // associated info to process them.
-  struct BeaconSourceRegistrations;
+  using SourceRegistrationsId =
+      absl::variant<blink::AttributionSrcToken, BeaconId>;
+
+#if BUILDFLAG(IS_ANDROID)
+  struct OsTrigger;
+  using TriggerPayload = absl::variant<AttributionTrigger, OsTrigger>;
+#else
+  using TriggerPayload = AttributionTrigger;
+#endif
 
   // blink::mojom::AttributionDataHost:
   void SourceDataAvailable(
@@ -127,32 +138,26 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       attribution_reporting::SuitableOrigin reporting_origin,
       attribution_reporting::TriggerRegistration,
       absl::optional<network::TriggerAttestation> attestation) override;
+#if BUILDFLAG(IS_ANDROID)
+  void OsSourceDataAvailable(const GURL& registration_url) override;
+  void OsTriggerDataAvailable(const GURL& registration_url) override;
+#endif
 
+  const ReceiverContext* GetReceiverContextForSource();
   void OnReceiverDisconnected();
   void OnSourceEligibleDataHostFinished(base::TimeTicks register_time);
 
-  void OnRedirectSourceParsed(
-      const blink::AttributionSrcToken& attribution_src_token,
+  void OnSourceParsed(
+      SourceRegistrationsId,
       const attribution_reporting::SuitableOrigin& reporting_origin,
       const std::string& header_value,
       data_decoder::DataDecoder::ValueOrError result);
 
-  void OnBeaconSourceParsed(
-      BeaconId beacon_id,
-      const attribution_reporting::SuitableOrigin& reporting_origin,
-      const std::string& header_value,
-      data_decoder::DataDecoder::ValueOrError result);
+  void MaybeOnRegistrationsFinished(SourceRegistrationsId);
 
-  absl::optional<StorableSource> ParseStorableSource(
-      data_decoder::DataDecoder::ValueOrError result,
-      const std::string& header_value,
-      const attribution_reporting::SuitableOrigin& reporting_origin,
-      const attribution_reporting::SuitableOrigin& source_origin,
-      AttributionSourceType source_type,
-      bool is_within_fenced_frame);
-
-  void MaybeOnBeaconRegistrationsFinished(BeaconId beacon_id);
-
+  void HandleTrigger(TriggerPayload, GlobalRenderFrameHostId);
+  void MaybeBufferTrigger(
+      base::FunctionRef<TriggerPayload(const ReceiverContext&)>);
   void SetTriggerTimer(base::TimeDelta delay);
   void ProcessDelayedTrigger();
 
@@ -169,14 +174,9 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   base::flat_map<blink::AttributionSrcToken, NavigationDataHost>
       navigation_data_host_map_;
 
-  // Stores registrations received for redirects within a navigation with a
-  // given token.
-  base::flat_map<blink::AttributionSrcToken,
-                 NavigationRedirectSourceRegistrations>
-      redirect_registrations_;
-
-  // Stores registrations received for a beacon.
-  base::flat_map<BeaconId, BeaconSourceRegistrations> beacon_registrations_;
+  // Stores registrations received for redirects within a navigation or a
+  // beacon.
+  base::flat_set<SourceRegistrations> registrations_;
 
   // The number of connected receivers that may register a source. Used to
   // determine whether to buffer triggers. Event receivers are counted here

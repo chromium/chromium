@@ -16,6 +16,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/messaging/message_service.h"
@@ -45,18 +46,18 @@ class ExtensionBackForwardCacheBrowserTest : public ExtensionBrowserTest {
     if (extension_message_support)
       DCHECK(allow_content_scripts && all_extensions_allowed);
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kBackForwardCache,
-          {{"content_injection_supported",
-            allow_content_scripts ? "true" : "false"},
-           {"extension_message_supported",
-            extension_message_support ? "true" : "false"},
-           {"all_extensions_allowed",
-            all_extensions_allowed ? "true" : "false"},
-           {"blocked_extensions", blocked_extensions},
-           {"ignore_outstanding_network_request_for_testing", "true"}}},
-         {features::kBackForwardCacheTimeToLiveControl,
-          {{"time_to_live_seconds", "3600"}}}},
-        {features::kBackForwardCacheMemoryControls});
+        content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(
+            {{features::kBackForwardCache,
+              {
+                  {"content_injection_supported",
+                   allow_content_scripts ? "true" : "false"},
+                  {"extension_message_supported",
+                   extension_message_support ? "true" : "false"},
+                  {"all_extensions_allowed",
+                   all_extensions_allowed ? "true" : "false"},
+                  {"blocked_extensions", blocked_extensions},
+              }}}),
+        content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
   }
 
   void SetUpOnMainThread() override {

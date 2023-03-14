@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/touch_to_fill_footer_item"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:layout_marginBottom="@dimen/ttf_buttons_vertical_margin"
+    android:layout_marginTop="@dimen/ttf_sheet_padding">
+  <!-- Divider -->
+  <View style="@style/HorizontalDivider"
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/divider_height"
+      android:layout_marginBottom="@dimen/ttf_buttons_vertical_margin"/>
+  <TextView
+      android:id="@+id/scan_new_card"
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/ttf_buttons_height"
+      android:clickable="true"
+      android:drawablePadding="@dimen/ttf_for_payments_menu_item_icon_padding"
+      android:focusable="true"
+      android:gravity="center_vertical|start"
+      android:paddingHorizontal="8dp"
+      android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+      android:text="@string/autofill_scan_credit_card"
+      android:visibility="gone"
+      app:drawableStartCompat="@drawable/ic_photo_camera"
+      app:drawableTint="@color/default_icon_color_secondary_tint_list"
+      android:background="?android:attr/selectableItemBackground"
+      android:textDirection="locale"
+      android:textAlignment="viewStart"/>
+  <TextView
+      android:id="@+id/manage_payment_methods"
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/ttf_buttons_height"
+      android:clickable="true"
+      android:drawablePadding="@dimen/ttf_for_payments_menu_item_icon_padding"
+      android:focusable="true"
+      android:gravity="center_vertical|start"
+      android:paddingHorizontal="8dp"
+      android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+      android:text="@string/autofill_bottom_sheet_manage_payment_methods"
+      app:drawableStartCompat="@drawable/infobar_chrome"
+      app:drawableTint="@color/default_icon_color_secondary_tint_list"
+      android:background="?android:attr/selectableItemBackground"
+      android:textDirection="locale"
+      android:textAlignment="viewStart"/>
+</LinearLayout>

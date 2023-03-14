@@ -69,6 +69,18 @@ void SyncedNetworkUpdaterImpl::StartAddOrUpdateOperation(
   network_config::mojom::ConfigPropertiesPtr config =
       MojoNetworkConfigFromProto(specifics);
 
+  // We can get into this state when the SSID's are improperly encoded hex
+  // strings, which causes the proto conversion above to return a nullptr.
+  //
+  // TODO(b/270151177) : Dig into to understand why we are getting improperly
+  // encoded SSIDs.
+  if (!config) {
+    NET_LOG(ERROR) << "Failed to generate local network config";
+    metrics_logger_->RecordApplyGenerateLocalNetworkConfig(/*success=*/false);
+    return;
+  }
+
+  metrics_logger_->RecordApplyGenerateLocalNetworkConfig(/*success=*/true);
   StartTimer(change_guid, id);
 
   if (existing_network) {

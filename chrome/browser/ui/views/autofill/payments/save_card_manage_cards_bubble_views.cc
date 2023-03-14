@@ -26,14 +26,15 @@ SaveCardManageCardsBubbleViews::SaveCardManageCardsBubbleViews(
     SaveCardBubbleController* controller)
     : SaveCardBubbleViews(anchor_view, web_contents, controller) {
   SetButtons(ui::DIALOG_BUTTON_OK);
-  SetExtraView(std::make_unique<views::MdTextButton>(
-                   base::BindRepeating(
-                       [](SaveCardManageCardsBubbleViews* bubble) {
-                         bubble->controller()->OnManageCardsClicked();
-                         bubble->CloseBubble();
-                       },
-                       base::Unretained(this)),
-                   l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_CARDS)))
+  SetExtraView(
+      std::make_unique<views::MdTextButton>(
+          base::BindRepeating(
+              [](SaveCardManageCardsBubbleViews* bubble) {
+                bubble->controller()->OnManageCardsClicked();
+                bubble->CloseBubble();
+              },
+              base::Unretained(this)),
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_SAVED_PAYMENT_METHODS)))
       ->SetID(autofill::DialogViewId::MANAGE_CARDS_BUTTON);
 }
 

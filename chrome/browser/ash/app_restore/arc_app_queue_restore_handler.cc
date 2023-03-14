@@ -89,9 +89,6 @@ constexpr char kRestoreArcAppStatesHistogram[] = "Apps.RestoreArcAppStates";
 
 constexpr char kGhostWindowPopToArcHistogram[] = "Arc.LaunchedWithGhostWindow";
 
-constexpr char kNoGhostWindowReasonHistogram[] =
-    "Apps.RestoreNoGhostWindowReason";
-
 }  // namespace
 
 ArcAppQueueRestoreHandler::ArcAppQueueRestoreHandler() {
@@ -459,10 +456,6 @@ void ArcAppQueueRestoreHandler::PrepareAppLaunching(const std::string& app_id) {
           window_handler_->OnAppStatesUpdate(app_id, app_info->ready,
                                              app_info->need_fixup);
       }
-    } else {
-      // Only record bounds state when no ghost window launch.
-      RecordLaunchBoundsState(app_restore_data->bounds_in_root.has_value(),
-                              app_restore_data->current_bounds.has_value());
     }
 #endif
     RecordArcGhostWindowLaunch(launch_ghost_window);
@@ -834,36 +827,6 @@ void ArcAppQueueRestoreHandler::RecordArcGhostWindowLaunch(
     bool is_arc_ghost_window) {
   base::UmaHistogramBoolean(kArcGhostWindowLaunchHistogram,
                             is_arc_ghost_window);
-
-  if (!is_arc_ghost_window && !exo::WMHelper::HasInstance()) {
-    base::UmaHistogramEnumeration(kNoGhostWindowReasonHistogram,
-                                  NoGhostWindowReason::kNoExoHelper);
-  }
-}
-
-void ArcAppQueueRestoreHandler::RecordLaunchBoundsState(
-    bool has_root_bounds,
-    bool has_screen_bounds) {
-  bool is_from_crash = ExitTypeService::GetLastSessionExitType(
-                           handler_->profile()) == ExitType::kCrashed;
-  if (!has_root_bounds) {
-    base::UmaHistogramEnumeration(
-        kNoGhostWindowReasonHistogram,
-        is_from_crash ? NoGhostWindowReason::kNoRootBoundsFromCrash
-                      : NoGhostWindowReason::kNoRootBounds);
-  }
-  if (!has_screen_bounds) {
-    base::UmaHistogramEnumeration(
-        kNoGhostWindowReasonHistogram,
-        is_from_crash ? NoGhostWindowReason::kNoScreenBoundsFromCrash
-                      : NoGhostWindowReason::kNoScreenBounds);
-  }
-  if (!window_handler_) {
-    base::UmaHistogramEnumeration(kNoGhostWindowReasonHistogram,
-                                  is_from_crash
-                                      ? NoGhostWindowReason::kNoHandlerFromCrash
-                                      : NoGhostWindowReason::kNoHandler);
-  }
 }
 
 void ArcAppQueueRestoreHandler::RecordRestoreResult() {

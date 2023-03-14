@@ -20,6 +20,7 @@
 <translation id="2339201583852607431">Din adgangskode gemmes på din Google-konto (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome deler din lokation med godkendte websites.</translation>
 <translation id="2347208864470321755">Når denne funktion er aktiveret, vil Chrome tilbyde at oversætte sider, der er skrevet på andre sprog, ved hjælp af Google Oversæt. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
+<translation id="2414068465746584414">Åbn "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" via indstillingerne på din enhed, og vælg "Chrome"</translation>
 <translation id="2427791862912929107">Google Chrome har funktioner, der hjælper dig med at administrere internetdata og hastigheden, som websider indlæses med.
 <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Du kan nemt få adgang til dine gemte adgangskoder i dine andre apps ved hjælp af Autofyld i Chrome</translation>
@@ -31,6 +32,7 @@
 <translation id="2689064829982324496">Hvis du vil logge ud af din Google-konto på alle websites, skal du <ph name="BEGIN_LINK" />logge ud af Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome kunne ikke søge efter opdateringer. Prøv igen senere.</translation>
 <translation id="2732745070297234559">Chrome kunne ikke tjekke alle adgangskoder. Prøv igen i morgen.</translation>
+<translation id="2736805085127235148">Chrome-notifikationer er i øjeblikket deaktiveret i enhedsindstillingerne.</translation>
 <translation id="2767464022270041271">Der er ingen gemte adgangskoder. Google Adgangskodeadministrator kan tjekke dine adgangskoder, når du gemmer dem.</translation>
 <translation id="2869959624320573933">Log ind i Chrome</translation>
 <translation id="2957447865124070833">Vælg <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
@@ -112,8 +114,8 @@
 <translation id="7754633291442704733">Din organisation <ph name="DOMAIN" /> får adgang til din Chrome-historik samt dine Chrome-data, -bogmærker, -adgangskoder og andre indstillinger, som du har gemt på denne konto. Når du logger ud, ryddes dine data fra denne enhed.  Dine data vil dog fortsat være gemt på din managerstyrede Google-konto, og de vil fortsat være tilgængelige for din organisation. Din organisation kan også konfigurere brugerpolitikker, der gælder specifikt for den pågældende konto, og som kan ændre Chromes adfærd.</translation>
 <translation id="7780154209050837198">Log ind i Chrome med din Google-konto for at få mest muligt ud af Chrome.</translation>
 <translation id="7855730255114109580">Google Chrome er opdateret</translation>
-<translation id="7939179037291298976">Gå til Indstillinger på din iPhone, åbn "Indstillinger til adgangskode", og vælg "Chrome"</translation>
 <translation id="8022947259858476807">Brug som standard Chrome til at åbne links, søge efter widgets og udfylde adgangskoder automatisk i andre apps</translation>
+<translation id="804638182476029347">Tillad Chrome-notifikationer for at få underretninger om prisfald</translation>
 <translation id="81358522153858150">Chrome understøtter nu brugerpolitikker for din administrerede konto</translation>
 <translation id="8160472928944011082">Chrome kan ikke opdateres</translation>
 <translation id="8357607116237445042">Vælg, om du vil rydde dine Chrome-data fra denne enhed eller beholde dem</translation>

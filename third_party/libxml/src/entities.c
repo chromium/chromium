@@ -38,35 +38,35 @@ static xmlEntity xmlEntityLt = {
     NULL, NULL, NULL, NULL, NULL, NULL,
     BAD_CAST "<", BAD_CAST "<", 1,
     XML_INTERNAL_PREDEFINED_ENTITY,
-    NULL, NULL, NULL, NULL, 0, 1
+    NULL, NULL, NULL, NULL, 0, 0, 0
 };
 static xmlEntity xmlEntityGt = {
     NULL, XML_ENTITY_DECL, BAD_CAST "gt",
     NULL, NULL, NULL, NULL, NULL, NULL,
     BAD_CAST ">", BAD_CAST ">", 1,
     XML_INTERNAL_PREDEFINED_ENTITY,
-    NULL, NULL, NULL, NULL, 0, 1
+    NULL, NULL, NULL, NULL, 0, 0, 0
 };
 static xmlEntity xmlEntityAmp = {
     NULL, XML_ENTITY_DECL, BAD_CAST "amp",
     NULL, NULL, NULL, NULL, NULL, NULL,
     BAD_CAST "&", BAD_CAST "&", 1,
     XML_INTERNAL_PREDEFINED_ENTITY,
-    NULL, NULL, NULL, NULL, 0, 1
+    NULL, NULL, NULL, NULL, 0, 0, 0
 };
 static xmlEntity xmlEntityQuot = {
     NULL, XML_ENTITY_DECL, BAD_CAST "quot",
     NULL, NULL, NULL, NULL, NULL, NULL,
     BAD_CAST "\"", BAD_CAST "\"", 1,
     XML_INTERNAL_PREDEFINED_ENTITY,
-    NULL, NULL, NULL, NULL, 0, 1
+    NULL, NULL, NULL, NULL, 0, 0, 0
 };
 static xmlEntity xmlEntityApos = {
     NULL, XML_ENTITY_DECL, BAD_CAST "apos",
     NULL, NULL, NULL, NULL, NULL, NULL,
     BAD_CAST "'", BAD_CAST "'", 1,
     XML_INTERNAL_PREDEFINED_ENTITY,
-    NULL, NULL, NULL, NULL, 0, 1
+    NULL, NULL, NULL, NULL, 0, 0, 0
 };
 
 /**
@@ -163,8 +163,6 @@ xmlCreateEntity(xmlDictPtr dict, const xmlChar *name, int type,
     }
     memset(ret, 0, sizeof(xmlEntity));
     ret->type = XML_ENTITY_DECL;
-    ret->checked = 0;
-    ret->guard = XML_ENTITY_NOT_BEING_CHECKED;
 
     /*
      * fill the structure.
@@ -983,7 +981,6 @@ xmlCopyEntity(void *payload, const xmlChar *name ATTRIBUTE_UNUSED) {
 	cur->orig = xmlStrdup(ent->orig);
     if (ent->URI != NULL)
 	cur->URI = xmlStrdup(ent->URI);
-    cur->guard = 0;
     return(cur);
 }
 

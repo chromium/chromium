@@ -34,6 +34,7 @@
   "disable-webrtc-hw-encoding",
   "disallow-doc-written-script-loads",
   "enable-autofill-credit-card-upload",
+  "enable-benchmarking",
   "enable-command-line-on-non-rooted-devices",
   "enable-data-reduction-proxy-server-experiment",
   "enable-debug-for-store-billing",

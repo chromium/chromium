@@ -4,7 +4,19 @@
 
 #include "chrome/browser/web_applications/daily_metrics_helper.h"
 
+#include <stdint.h>
+#include <algorithm>
+#include <string>
+#include <utility>
+
+#include "base/check.h"
 #include "base/cxx17_backports.h"
+#include "base/functional/bind.h"
+#include "base/numerics/clamped_math.h"
+#include "base/strings/string_piece_forward.h"
+#include "base/types/pass_key.h"
+#include "base/value_iterators.h"
+#include "base/values.h"
 #include "chrome/browser/metrics/ukm_background_recorder_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -12,11 +24,13 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/sync/driver/sync_service.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/driver/sync_service_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/origin.h"
 
 namespace web_app {
@@ -60,6 +74,7 @@ class DesktopWebAppUkmRecorder {
     builder.SetUsed(true)
         .SetInstalled(record.installed)
         .SetDisplayMode(record.effective_display_mode)
+        .SetCapturesLinks(record.captures_links)
         .SetPromotable(record.promotable);
     if (record.install_source)
       builder.SetInstallSource(record.install_source.value());
@@ -71,6 +86,17 @@ class DesktopWebAppUkmRecorder {
           BucketedDailySeconds(record.background_duration));
     if (record.num_sessions > 0)
       builder.SetNumSessions(record.num_sessions);
+#if BUILDFLAG(IS_CHROMEOS)
+    if (record.preinstalled_web_app_window_experiment_user_group) {
+      builder.SetPreinstalledWindowExperimentUserGroup(
+          record.preinstalled_web_app_window_experiment_user_group.value());
+    }
+    if (record.preinstalled_web_app_window_experiment_has_launched_before) {
+      builder.SetPreinstalledWindowExperimentHasLaunchedBefore(
+          record.preinstalled_web_app_window_experiment_has_launched_before
+              .value());
+    }
+#endif
     builder.Record(ukm::UkmRecorder::Get());
   }
 };
@@ -84,10 +110,17 @@ bool skip_origin_check_for_testing_ = false;
 const char kInstalled[] = "installed";
 const char kInstallSource[] = "install_source";
 const char kEffectiveDisplayMode[] = "effective_display_mode";
+const char kCapturesLinks[] = "captures_links";
 const char kPromotable[] = "promotable";
 const char kForegroundDurationSec[] = "foreground_duration_sec";
 const char kBackgroundDurationSec[] = "background_duration_sec";
 const char kNumSessions[] = "num_sessions";
+#if BUILDFLAG(IS_CHROMEOS)
+const char kPreinstalledWebAppWindowExperimentUserGroup[] =
+    "preinstalled_app_experiment_user_group";
+const char kPreinstalledWebAppWindowExperimentHasLaunchedBefore[] =
+    "preinstalled_app_experiment_has_launched_before";
+#endif
 
 optional<DailyInteraction> DictToRecord(const std::string& url,
                                         const base::Value::Dict& record_dict) {
@@ -108,6 +141,8 @@ optional<DailyInteraction> DictToRecord(const std::string& url,
   if (!effective_display_mode.has_value())
     return absl::nullopt;
   record.effective_display_mode = *effective_display_mode;
+
+  record.captures_links = record_dict.FindBool(kCapturesLinks).value_or(false);
 
   optional<bool> promotable = record_dict.FindBool(kPromotable);
   if (!promotable.has_value())
@@ -130,6 +165,14 @@ optional<DailyInteraction> DictToRecord(const std::string& url,
   if (num_sessions)
     record.num_sessions = *num_sessions;
 
+#if BUILDFLAG(IS_CHROMEOS)
+  record.preinstalled_web_app_window_experiment_user_group =
+      record_dict.FindInt(kPreinstalledWebAppWindowExperimentUserGroup);
+  record.preinstalled_web_app_window_experiment_has_launched_before =
+      record_dict.FindBool(
+          kPreinstalledWebAppWindowExperimentHasLaunchedBefore);
+#endif
+
   return record;
 }
 
@@ -140,12 +183,27 @@ base::Value::Dict RecordToDict(DailyInteraction& record) {
   if (record.install_source.has_value())
     record_dict.Set(kInstallSource, *record.install_source);
   record_dict.Set(kEffectiveDisplayMode, record.effective_display_mode);
+  record_dict.Set(kCapturesLinks, record.captures_links);
   record_dict.Set(kPromotable, record.promotable);
   record_dict.Set(kForegroundDurationSec,
                   static_cast<int>(record.foreground_duration.InSeconds()));
   record_dict.Set(kBackgroundDurationSec,
                   static_cast<int>(record.background_duration.InSeconds()));
   record_dict.Set(kNumSessions, record.num_sessions);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (record.preinstalled_web_app_window_experiment_user_group.has_value()) {
+    record_dict.Set(kPreinstalledWebAppWindowExperimentUserGroup,
+                    *record.preinstalled_web_app_window_experiment_user_group);
+  }
+  if (record.preinstalled_web_app_window_experiment_has_launched_before
+          .has_value()) {
+    record_dict.Set(
+        kPreinstalledWebAppWindowExperimentHasLaunchedBefore,
+        *record.preinstalled_web_app_window_experiment_has_launched_before);
+  }
+#endif
+
   return record_dict;
 }
 

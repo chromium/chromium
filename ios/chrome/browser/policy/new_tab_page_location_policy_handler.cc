@@ -26,16 +26,15 @@ NewTabPageLocationPolicyHandler::NewTabPageLocationPolicyHandler()
 NewTabPageLocationPolicyHandler::~NewTabPageLocationPolicyHandler() {}
 
 std::string NewTabPageLocationPolicyHandler::FormatNewTabPageLocationURL(
-    const std::string ntp_location) {
+    const std::string& ntp_location) {
   url::Component scheme;
-  std::string new_ntp_location = ntp_location;
   if (!ntp_location.empty() &&
       !url::ExtractScheme(ntp_location.data(),
                           static_cast<int>(ntp_location.length()), &scheme)) {
-    new_ntp_location = base::StrCat(
+    return base::StrCat(
         {url::kHttpsScheme, url::kStandardSchemeSeparator, ntp_location});
   }
-  return new_ntp_location;
+  return ntp_location;
 }
 
 bool NewTabPageLocationPolicyHandler::ValidateNewTabPageLocationURL(

@@ -10,6 +10,10 @@
 // Sets the Add Password details for consumer.
 @protocol AddPasswordDetailsConsumer <NSObject>
 
+// Sets the account where passwords are being saved to, or nil if passwords are
+// only being saved locally.
+- (void)setAccountSavingPasswords:(NSString*)email;
+
 // Called when the validation to find duplicate existing credentials has been
 // completed.
 - (void)onDuplicateCheckCompletion:(BOOL)duplicateFound;

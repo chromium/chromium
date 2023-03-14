@@ -13,8 +13,8 @@ import '../../components/gaia_dialog.js';
 import '../../components/oobe_icons.html.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
+import '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/dialogs/oobe_loading_dialog.js';
-import '../../components/dialogs/oobe_modal_dialog.js';
 
 import {assert} from '//resources/ash/common/assert.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
@@ -27,7 +27,7 @@ import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/beha
 import {OobeBackButton} from '../../components/buttons/oobe_back_button.js';
 import {OobeNextButton} from '../../components/buttons/oobe_next_button.js';
 import {OobeTextButton} from '../../components/buttons/oobe_text_button.js';
-import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
+import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
 import {OOBE_UI_STATE, SCREEN_GAIA_SIGNIN} from '../../components/display_manager_types.js';
 import {InjectedKeyboardUtils} from '../../components/keyboard_utils.js';
 import {globalOobeKeyboard, KEYBOARD_UTILS_FOR_INJECTION} from '../../components/keyboard_utils_oobe.js';
@@ -46,6 +46,13 @@ import {ActiveDirectoryErrorState, ADLoginStep, JoinConfigType} from '../common/
  */
 const EnterpriseEnrollmentElementBase = mixinBehaviors(
     [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
+
+/**
+ * @typedef {{
+ *   skipConfirmationDialog:  OobeModalDialog,
+ * }}
+ */
+EnterpriseEnrollmentElementBase.$;
 
 /**
  * @polymer

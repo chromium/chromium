@@ -15,9 +15,9 @@
  */
 import {LocalStorage} from '../../../common/local_storage.js';
 import {Msgs} from '../../common/msgs.js';
-import {TtsInterface} from '../../common/tts_interface.js';
 import {Personality, QueueMode, TtsCategory, TtsSpeechProperties} from '../../common/tts_types.js';
 import {ChromeVoxState} from '../chromevox_state.js';
+import {TtsInterface} from '../tts_interface.js';
 
 /**
  * A class containing the information needed to speak
@@ -261,7 +261,7 @@ export class ChromeVoxEditableTextBase {
     if (opt_triggeredByUser === true) {
       queueMode = QueueMode.CATEGORY_FLUSH;
     }
-    const props = opt_personality || new TtsSpeechProperties();
+    const props = opt_personality ?? new TtsSpeechProperties();
     props.category = TtsCategory.NAV;
     this.tts.speak(str, queueMode, props);
   }

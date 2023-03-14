@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS offset-position supports calc
+FAIL offset-path supports calc assert_equals: expected "ray(270deg)" but got "ray(270deg closest-side)"
+PASS offset-distance supports calc
+PASS offset-rotate supports calc
+PASS offset-anchor supports calc
+Harness: the test ran to completion.
+

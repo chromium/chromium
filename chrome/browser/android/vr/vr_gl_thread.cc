@@ -96,50 +96,7 @@ void VrGLThread::ExitPresent() {
   browser_renderer_->OnExitPresent();
 }
 
-void VrGLThread::ExitFullscreen() {}
-
-void VrGLThread::Navigate(GURL gurl, NavigationMethod method) {}
-
-void VrGLThread::NavigateBack() {}
-
-void VrGLThread::NavigateForward() {}
-
-void VrGLThread::ReloadTab() {}
-
-void VrGLThread::OpenNewTab(bool incognito) {}
-
-void VrGLThread::OpenBookmarks() {}
-
-void VrGLThread::OpenRecentTabs() {}
-
-void VrGLThread::OpenHistory() {}
-
-void VrGLThread::OpenDownloads() {}
-
-void VrGLThread::OpenShare() {}
-
-void VrGLThread::OpenSettings() {}
-
-void VrGLThread::CloseAllIncognitoTabs() {}
-
-void VrGLThread::OpenFeedback() {}
-
-void VrGLThread::CloseHostedDialog() {}
-
 void VrGLThread::ToggleCardboardGamepad(bool enabled) {}
-
-void VrGLThread::OnUnsupportedMode(UiUnsupportedMode mode) {}
-
-void VrGLThread::OnExitVrPromptResult(ExitVrPromptChoice choice,
-                                      UiUnsupportedMode reason) {}
-
-void VrGLThread::SetVoiceSearchActive(bool active) {}
-
-void VrGLThread::StartAutocomplete(const AutocompleteRequest& request) {}
-
-void VrGLThread::StopAutocomplete() {}
-
-void VrGLThread::ShowPageInfo() {}
 
 void VrGLThread::SetFullscreen(bool enabled) {}
 

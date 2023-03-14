@@ -53,6 +53,19 @@ const cellularRegEx = buildWordMatcher([
 ]);
 
 /**
+ * Regular expression to check for display-related keywords.
+ */
+const displayRegEx = buildWordMatcher([
+  'display',
+  'displayport',
+  'dock',
+  'hdmi',
+  'monitor',
+  'panel',
+  'screen',
+]);
+
+/**
  * @fileoverview
  * 'search-page' is the first step of the feedback tool. It displays live help
  *  contents relevant to the text entered by the user.
@@ -464,13 +477,16 @@ export class SearchPageElement extends SearchPageElementBase {
       toAppend.push(...domainQuestions['bluetooth']);
     }
 
-
     if (wifiRegEx.test(matchedText)) {
       toAppend.push(...domainQuestions['wifi']);
     }
 
     if (cellularRegEx.test(matchedText)) {
       toAppend.push(...domainQuestions['cellular']);
+    }
+
+    if (displayRegEx.test(matchedText)) {
+      toAppend.push(...domainQuestions['display']);
     }
 
     if (toAppend.length === 0) {

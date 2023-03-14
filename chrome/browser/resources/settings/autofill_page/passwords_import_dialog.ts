@@ -17,11 +17,15 @@ import '../site_favicon.js';
 import './passwords_shared.css.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../i18n_setup.js';
 
 import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 import {getTemplate} from './passwords_import_dialog.html.js';
@@ -29,13 +33,14 @@ import {getTemplate} from './passwords_import_dialog.html.js';
 export interface PasswordsImportDialogElement {
   $: {
     dialog: CrDialogElement,
+    dialogTitle: HTMLElement,
     descriptionText: HTMLElement,
     successTip: HTMLElement,
     failuresSummary: HTMLElement,
     storePicker: HTMLSelectElement,
     chooseFile: CrButtonElement,
     close: CrButtonElement,
-    expandButton: HTMLElement,
+    deleteFileOption: CrCheckboxElement,
   };
 }
 
@@ -108,8 +113,17 @@ export class PasswordsImportDialogElement extends
         value: false,
       },
 
+      enablePasswordsImportM2_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enablePasswordsImportM2');
+        },
+      },
+
+      descriptionText_: String,
       results_: Object,
       failedImportsWithKnownErrors_: Array,
+      failedImportsSummary_: String,
 
       rowsWithUnknownErrorsSummary_: String,
 
@@ -125,7 +139,10 @@ export class PasswordsImportDialogElement extends
   isAccountStoreUser: boolean;
   accountEmail: string;
   private results_: chrome.passwordsPrivate.ImportResults|null;
+  private descriptionText_: TrustedHTML;
   private failedImportsWithKnownErrors_: chrome.passwordsPrivate.ImportEntry[];
+  private failedImportsSummary_: string;
+  private enablePasswordsImportM2_: boolean;
   private rowsWithUnknownErrorsSummary_: string;
   private showRowsWithUnknownErrorsSummary_: boolean;
   // Refers both to syncing users with sync enabled for passwords and account
@@ -139,8 +156,8 @@ export class PasswordsImportDialogElement extends
     super.connectedCallback();
 
     if (this.isAccountStoreUser) {
-      this.$.descriptionText.textContent =
-          this.i18n('importPasswordsGenericDescription');
+      this.descriptionText_ =
+          this.i18nAdvanced('importPasswordsGenericDescription');
       PasswordManagerImpl.getInstance().isAccountStoreDefault().then(
           isAccountStoreDefault => {
             this.passwordsSavedToAccount_ = isAccountStoreDefault;
@@ -150,12 +167,13 @@ export class PasswordsImportDialogElement extends
           });
     } else if (this.isUserSyncingPasswords) {
       this.passwordsSavedToAccount_ = true;
-      this.$.descriptionText.textContent =
-          this.i18n('importPasswordsDescriptionAccount', this.accountEmail);
+      this.descriptionText_ = this.i18nAdvanced(
+          'importPasswordsDescriptionAccount',
+          {substitutions: [this.accountEmail]});
     } else {
       this.passwordsSavedToAccount_ = false;
-      this.$.descriptionText.textContent =
-          this.i18n('importPasswordsDescriptionDevice');
+      this.descriptionText_ =
+          this.i18nAdvanced('importPasswordsDescriptionDevice');
     }
     this.dialogState = ImportDialogState.START;
   }
@@ -169,17 +187,38 @@ export class PasswordsImportDialogElement extends
         this.isState_(ImportDialogState.ERROR);
   }
 
-  private isTipBoxHidden_(): boolean {
+  private shouldHideTipBox_(): boolean {
     // Tip box is only shown in "success" state if all passwords were imported.
-    return !this.isState_(ImportDialogState.SUCCESS) ||
-        (this.isState_(ImportDialogState.SUCCESS) &&
-         !!this.results_!.failedImports.length);
+    // Only shown in Passwords Import M1.
+    if (this.enablePasswordsImportM2_) {
+      return true;
+    }
+    if (!this.isState_(ImportDialogState.SUCCESS)) {
+      return true;
+    }
+    assert(this.results_);
+    return !!this.results_.failedImports.length;
   }
 
-  private isFailuresSummaryHidden_(): boolean {
-    return !this.isState_(ImportDialogState.SUCCESS) ||
-        (this.isState_(ImportDialogState.SUCCESS) &&
-         !this.results_!.failedImports.length);
+  private shouldHideDeleteFileOption_(): boolean {
+    // "Delete file" checkbox is only shown in "success" state if all passwords
+    // were imported.
+    if (!this.enablePasswordsImportM2_) {
+      return true;
+    }
+    if (!this.isState_(ImportDialogState.SUCCESS)) {
+      return true;
+    }
+    assert(this.results_);
+    return !!this.results_.failedImports.length;
+  }
+
+  private shouldHideFailuresSummary_(): boolean {
+    if (!this.isState_(ImportDialogState.SUCCESS)) {
+      return true;
+    }
+    assert(this.results_);
+    return !this.results_.failedImports.length;
   }
 
   private shouldShowStorePicker_(): boolean {
@@ -209,35 +248,35 @@ export class PasswordsImportDialogElement extends
         this.handleSuccess_();
         return;
       case chrome.passwordsPrivate.ImportResultsStatus.MAX_FILE_SIZE:
-        this.$.descriptionText.textContent =
-            this.i18n('importPasswordsFileSizeExceeded');
+        this.descriptionText_ =
+            this.i18nAdvanced('importPasswordsFileSizeExceeded');
         this.dialogState = ImportDialogState.ERROR;
         break;
       case chrome.passwordsPrivate.ImportResultsStatus.IO_ERROR:
       case chrome.passwordsPrivate.ImportResultsStatus.UNKNOWN_ERROR:
-        this.$.descriptionText.textContent =
-            this.i18n('importPasswordsUnknownError');
+        this.descriptionText_ =
+            this.i18nAdvanced('importPasswordsUnknownError');
         this.dialogState = ImportDialogState.ERROR;
         break;
       case chrome.passwordsPrivate.ImportResultsStatus.NUM_PASSWORDS_EXCEEDED:
-        this.$.descriptionText.textContent =
-            this.i18n('importPasswordsLimitExceeded', 3000);
+        this.descriptionText_ = this.i18nAdvanced(
+            'importPasswordsLimitExceeded', {substitutions: ['3000']});
         this.dialogState = ImportDialogState.ERROR;
         break;
       case chrome.passwordsPrivate.ImportResultsStatus.BAD_FORMAT:
-        this.$.descriptionText.innerHTML = this.i18nAdvanced(
-            'importPasswordsBadFormatError',
-            {substitutions: [IMPORT_HELP_LANDING_PAGE]});
-        this.$.descriptionText.querySelector('b')!.textContent =
-            this.results_.fileName;
+        this.descriptionText_ =
+            this.i18nAdvanced('importPasswordsBadFormatError', {
+              attrs: ['class'],
+              substitutions: [this.results_.fileName, IMPORT_HELP_LANDING_PAGE],
+            });
         this.dialogState = ImportDialogState.ERROR;
         break;
       case chrome.passwordsPrivate.ImportResultsStatus.DISMISSED:
         // Dialog state should not change if a system file picker was dismissed.
         break;
       case chrome.passwordsPrivate.ImportResultsStatus.IMPORT_ALREADY_ACTIVE:
-        this.$.descriptionText.textContent =
-            this.i18n('importPasswordsAlreadyActive');
+        this.descriptionText_ =
+            this.i18nAdvanced('importPasswordsAlreadyActive');
         this.dialogState = ImportDialogState.ALREADY_ACTIVE;
         break;
       default:
@@ -248,9 +287,7 @@ export class PasswordsImportDialogElement extends
 
   private async handleSuccess_() {
     assert(this.results_);
-    if (!this.results_.failedImports.length) {
-      this.setSuccessTip_();
-    } else {
+    if (this.results_.failedImports.length) {
       const rowsWithUnknownErrorCount =
           this.results_.failedImports
               .filter(
@@ -260,6 +297,10 @@ export class PasswordsImportDialogElement extends
       this.failedImportsWithKnownErrors_ = this.results_.failedImports.filter(
           (entry) => entry.status !==
               chrome.passwordsPrivate.ImportEntryStatus.UNKNOWN_ERROR);
+      this.failedImportsSummary_ =
+          await PluralStringProxyImpl.getInstance().getPluralString(
+              'importPasswordsFailuresSummary',
+              this.results_.failedImports.length);
       if (rowsWithUnknownErrorCount) {
         this.rowsWithUnknownErrorsSummary_ =
             await PluralStringProxyImpl.getInstance().getPluralString(
@@ -272,44 +313,36 @@ export class PasswordsImportDialogElement extends
           await PluralStringProxyImpl.getInstance().getPluralString(
               'importPasswordsSuccessSummaryAccount',
               this.results_.numberImported);
-      this.$.descriptionText.textContent =
-          descriptionText.replace('$1', this.accountEmail);
+      this.descriptionText_ =
+          sanitizeInnerHtml(descriptionText.replace('$1', this.accountEmail));
     } else {
-      this.$.descriptionText.textContent =
+      const descriptionText =
           await PluralStringProxyImpl.getInstance().getPluralString(
               'importPasswordsSuccessSummaryDevice',
               this.results_.numberImported);
+      this.descriptionText_ = sanitizeInnerHtml(descriptionText);
     }
     this.dialogState = ImportDialogState.SUCCESS;
 
-    if (this.isFailuresSummaryHidden_()) {
-      this.$.close.focus();
-    } else {
-      this.$.expandButton.focus();
-    }
+    this.$.close.focus();
   }
 
   private getStoreOptionAccountText_(): string {
     return this.i18n('addPasswordStoreOptionAccount', this.accountEmail!);
   }
 
-  private setSuccessTip_() {
-    this.$.successTip.innerHTML =
-        this.i18nAdvanced('importPasswordsSuccessTip');
-    this.$.successTip.querySelector('b')!.textContent = this.results_!.fileName;
+  private getSuccessTipHtml_(): TrustedHTML {
+    assert(this.results_);
+    return this.i18nAdvanced(
+        'importPasswordsSuccessTip',
+        {attrs: ['class'], substitutions: [this.results_.fileName]});
   }
 
-  private getFailedImportsSummary_(): string {
-    return this.i18n(
-        'importPasswordsFailuresSummary', this.results_!.failedImports.length);
-  }
-
-  private getFailedEntryTextDelimiter_(
-      entry: chrome.passwordsPrivate.ImportEntry): string {
-    if (entry.url && entry.username) {
-      return ' • ';
-    }
-    return '';
+  private getCheckboxLabelHtml_(): TrustedHTML {
+    assert(this.results_);
+    return this.i18nAdvanced(
+        'importPasswordsDeleteFileOption',
+        {attrs: ['class'], substitutions: [this.results_.fileName]});
   }
 
   private getFailedEntryError_(
@@ -344,6 +377,25 @@ export class PasswordsImportDialogElement extends
         assertNotReached();
     }
   }
+
+  private getDialogTitleText_(): string {
+    switch (this.dialogState) {
+      case ImportDialogState.START:
+      case ImportDialogState.ALREADY_ACTIVE:
+        return this.i18n('importPasswordsTitle');
+      case ImportDialogState.ERROR:
+        return this.i18n('importPasswordsErrorTitle');
+      case ImportDialogState.SUCCESS:
+        assert(this.results_);
+        if (!this.results_.failedImports.length) {
+          return this.i18n('importPasswordsSuccessTitle');
+        }
+        return this.i18n('importPasswordsCompleteTitle');
+      default:
+        assertNotReached();
+    }
+  }
+
   private getCloseButtonText_(): string {
     switch (this.dialogState) {
       case ImportDialogState.START:
@@ -372,6 +424,8 @@ export class PasswordsImportDialogElement extends
   }
 
   private onCloseClick_() {
+    // TODO(crbug/1417650): Trigger the file deletion with Passwords Private API
+    // if checkbox is ticked in SUCCESS (with no errors) state.
     if (this.isState_(ImportDialogState.START)) {
       recordPasswordsImportInteraction(
           PasswordsImportDesktopInteractions.CANCELED_BEFORE_FILE_SELECT);

@@ -12,6 +12,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/ash_prefs.h"
 #include "ash/public/cpp/schedule_enums.h"
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/session/session_controller_impl.h"
@@ -28,13 +29,17 @@
 #include "ash/test_shell_delegate.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/strings/pattern.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/vector3d_f.h"
@@ -43,13 +48,25 @@ namespace ash {
 
 namespace {
 
+using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Pair;
 
 constexpr char kUser1Email[] = "user1@featuredschedule";
 constexpr char kUser2Email[] = "user2@featuredschedule";
 
-const char* kFeaturePrefName = prefs::kNightLightEnabled;
+constexpr char kTestEnabledPref[] = "ash.test.scheduled_feature.enabled";
+constexpr char kTestScheduleTypePref[] =
+    "ash.test.scheduled_feature.schedule_type";
+constexpr char kTestCustomStartTimePref[] =
+    "ash.test.scheduled_feature.custom_start_time";
+constexpr char kTestCustomEndTimePref[] =
+    "ash.test.scheduled_feature.custom_end_time";
+
+// 6:00 PM
+constexpr int kTestCustomStartTimeOffsetMinutes = 18 * 60;
+// 6:00 AM
+constexpr int kTestCustomEndTimeOffsetMinutes = 6 * 60;
 
 enum AmPm { kAM, kPM };
 
@@ -78,7 +95,7 @@ class PrefChangeObserver {
       : clock_(clock) {
     pref_registrar_.Init(pref_service);
     pref_registrar_.Add(
-        kFeaturePrefName,
+        kTestEnabledPref,
         base::BindRepeating(&PrefChangeObserver::OnEnabledPrefChanged,
                             base::Unretained(this)));
   }
@@ -96,12 +113,42 @@ class PrefChangeObserver {
   void OnEnabledPrefChanged() {
     changes_.emplace_back(
         TimeOfDay::FromTime(clock_->Now()),
-        pref_registrar_.prefs()->GetBoolean(kFeaturePrefName));
+        pref_registrar_.prefs()->GetBoolean(kTestEnabledPref));
   }
 
   PrefChangeRegistrar pref_registrar_;
   const base::Clock* const clock_;
   std::vector<std::pair<TimeOfDay, bool>> changes_;
+};
+
+class CheckpointObserver : public ScheduledFeature::CheckpointObserver {
+ public:
+  CheckpointObserver(ScheduledFeature* feature, const base::Clock* clock)
+      : clock_(clock) {
+    observation_.Observe(feature);
+  }
+  CheckpointObserver(const CheckpointObserver&) = delete;
+  CheckpointObserver& operator=(const CheckpointObserver&) = delete;
+  ~CheckpointObserver() override = default;
+
+  // ScheduledFeature::CheckpointObserver:
+  void OnCheckpointChanged(const ScheduledFeature* src,
+                           ScheduleCheckpoint new_checkpoint) override {
+    changes_.emplace_back(TimeOfDay::FromTime(clock_->Now()), new_checkpoint);
+  }
+
+  // Elements appear in chronological order:
+  // <Time of the checkpoint change, the checkpoint received>
+  const std::vector<std::pair<TimeOfDay, ScheduleCheckpoint>>& changes() const {
+    return changes_;
+  }
+
+ private:
+  base::ScopedObservation<ScheduledFeature,
+                          ScheduledFeature::CheckpointObserver>
+      observation_{this};
+  const base::raw_ptr<const base::Clock> clock_;
+  std::vector<std::pair<TimeOfDay, ScheduleCheckpoint>> changes_;
 };
 
 class TestScheduledFeature : public ScheduledFeature {
@@ -171,10 +218,9 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
     // Simulate user 1 login.
     SimulateNewUserFirstLogin(kUser1Email);
 
-    // Use user prefs of NightLight, which is an example of ScheduledFeature.
     feature_ = std::make_unique<TestScheduledFeature>(
-        kFeaturePrefName, prefs::kNightLightScheduleType,
-        prefs::kNightLightCustomStartTime, prefs::kNightLightCustomEndTime);
+        kTestEnabledPref, kTestScheduleTypePref, kTestCustomStartTimePref,
+        kTestCustomEndTimePref);
     ASSERT_FALSE(feature_->GetEnabled());
 
     feature_->SetClockForTesting(this);
@@ -200,10 +246,27 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
   base::TimeTicks NowTicks() const override { return tick_clock_.NowTicks(); }
 
   void CreateTestUserSessions() {
-    auto* session_controller_client = GetSessionControllerClient();
-    session_controller_client->Reset();
-    session_controller_client->AddUserSession(kUser1Email);
-    session_controller_client->AddUserSession(kUser2Email);
+    GetSessionControllerClient()->Reset();
+    AddUserSession(kUser1Email);
+    AddUserSession(kUser2Email);
+  }
+
+  void AddUserSession(const std::string& user_email) {
+    auto prefs = std::make_unique<TestingPrefServiceSimple>();
+    prefs->registry()->RegisterBooleanPref(kTestEnabledPref, false);
+    prefs->registry()->RegisterIntegerPref(
+        kTestScheduleTypePref, static_cast<int>(ScheduleType::kNone));
+    prefs->registry()->RegisterIntegerPref(kTestCustomStartTimePref,
+                                           kTestCustomStartTimeOffsetMinutes);
+    prefs->registry()->RegisterIntegerPref(kTestCustomEndTimePref,
+                                           kTestCustomEndTimeOffsetMinutes);
+    RegisterUserProfilePrefs(prefs->registry(), /*for_test=*/true);
+    auto* const session_controller_client = GetSessionControllerClient();
+    session_controller_client->AddUserSession(user_email,
+                                              user_manager::USER_TYPE_REGULAR,
+                                              /*provide_pref_service=*/false);
+    session_controller_client->SetUserPrefService(
+        AccountId::FromUserEmail(user_email), std::move(prefs));
   }
 
   void SwitchActiveUser(const std::string& email) {
@@ -326,7 +389,7 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
 // user's prefs.
 TEST_F(ScheduledFeatureTest, UserSwitchAndSettingsPersistence) {
   // Start with user1 logged in and update to sunset-to-sunrise schedule type.
-  const std::string kScheduleTypePrefString = prefs::kNightLightScheduleType;
+  const std::string kScheduleTypePrefString = kTestScheduleTypePref;
   const ScheduleType user1_schedule_type = ScheduleType::kSunsetToSunrise;
   feature()->SetScheduleType(user1_schedule_type);
   EXPECT_EQ(user1_schedule_type, GetScheduleType());
@@ -353,7 +416,7 @@ TEST_F(ScheduledFeatureTest, UserSwitchAndSettingsPersistence) {
 // geoposition when the scheduler is enabled.
 TEST_F(ScheduledFeatureTest, InitScheduleTypeFromUserPrefs) {
   // Start with user1 logged in with the default disabled scheduler, `kNone`.
-  const std::string kScheduleTypePrefString = prefs::kNightLightScheduleType;
+  const std::string kScheduleTypePrefString = kTestScheduleTypePref;
   const ScheduleType user1_schedule_type = ScheduleType::kNone;
   EXPECT_EQ(user1_schedule_type, GetScheduleType());
   // Check that the feature does not observe the geoposition when the schedule
@@ -560,13 +623,19 @@ TEST_F(ScheduledFeatureTest, MAYBE_ChangingStartTimesThatDontChangeTheStatus) {
 // time.
 TEST_F(ScheduledFeatureTest, SunsetSunrise) {
   EXPECT_FALSE(GetEnabled());
+  EXPECT_EQ(feature()->current_checkpoint(), ScheduleCheckpoint::kDisabled);
 
   // Set time now to 10:00 AM.
   FastForwardTo(MakeTimeOfDay(10, AmPm::kAM));
+  const CheckpointObserver checkpoint_observer(feature(), test_clock());
   feature()->SetScheduleType(ScheduleType::kSunsetToSunrise);
   EXPECT_FALSE(GetEnabled());
 
   const PrefChangeObserver change_log(user1_pref_service(), test_clock());
+
+  // Set time now to 4:00 PM.
+  FastForwardTo(MakeTimeOfDay(4, AmPm::kPM));
+  EXPECT_FALSE(GetEnabled());
 
   // Firing a timer should to advance the time to sunset and automatically turn
   // on the feature.
@@ -584,6 +653,13 @@ TEST_F(ScheduledFeatureTest, SunsetSunrise) {
 
   EXPECT_THAT(change_log.changes(),
               ElementsAre(Pair(sunset_time, true), Pair(sunrise_time, false)));
+  EXPECT_THAT(
+      checkpoint_observer.changes(),
+      ElementsAre(
+          Pair(MakeTimeOfDay(10, AmPm::kAM), ScheduleCheckpoint::kMorning),
+          Pair(MakeTimeOfDay(4, AmPm::kPM), ScheduleCheckpoint::kLateAfternoon),
+          Pair(sunset_time, ScheduleCheckpoint::kSunset),
+          Pair(sunrise_time, ScheduleCheckpoint::kSunrise)));
 }
 
 // Tests that scheduled start time and end time of sunset-to-sunrise feature
@@ -918,6 +994,92 @@ TEST_F(ScheduledFeatureTest,
 
   EXPECT_THAT(change_log.changes(),
               ElementsAre(Pair(MakeTimeOfDay(9, AmPm::kPM), false)));
+}
+
+TEST_F(ScheduledFeatureTest, CurrentCheckpointForNoneSchedule) {
+  ASSERT_EQ(feature()->current_checkpoint(), ScheduleCheckpoint::kDisabled);
+
+  const CheckpointObserver checkpoint_observer(feature(), test_clock());
+
+  feature()->SetEnabled(true);
+  feature()->SetEnabled(true);
+  feature()->SetEnabled(false);
+  feature()->SetEnabled(false);
+  EXPECT_THAT(checkpoint_observer.changes(),
+              ElementsAre(Pair(_, ScheduleCheckpoint::kEnabled),
+                          Pair(_, ScheduleCheckpoint::kDisabled)));
+}
+
+TEST_F(ScheduledFeatureTest, CurrentCheckpointForCustomSchedule) {
+  FastForwardTo(MakeTimeOfDay(12, kAM));
+  ASSERT_EQ(feature()->current_checkpoint(), ScheduleCheckpoint::kDisabled);
+
+  const CheckpointObserver checkpoint_observer(feature(), test_clock());
+  // Checkpoint 0:
+  // Custom schedule is enabled from 6 PM to 6 AM, so it should immediately
+  // flip to enabled.
+  feature()->SetScheduleType(ScheduleType::kCustom);
+  // Checkpoint 1:
+  // Fast forward to sunrise
+  FastForwardTo(MakeTimeOfDay(6, kAM));
+  // Checkpoint 2:
+  // Fast forward to sunset.
+  FastForwardTo(MakeTimeOfDay(6, kPM));
+  EXPECT_THAT(
+      checkpoint_observer.changes(),
+      ElementsAre(Pair(MakeTimeOfDay(12, kAM), ScheduleCheckpoint::kEnabled),
+                  Pair(MakeTimeOfDay(6, kAM), ScheduleCheckpoint::kDisabled),
+                  Pair(MakeTimeOfDay(6, kPM), ScheduleCheckpoint::kEnabled)));
+}
+
+// These reflect real-world combinations of schedule type + feature enabled pref
+// changes that can happen with D/L mode.
+TEST_F(ScheduledFeatureTest, CurrentCheckpointForSwitchingScheduleTypes) {
+  FastForwardTo(MakeTimeOfDay(12, kAM));
+  ASSERT_EQ(feature()->current_checkpoint(), ScheduleCheckpoint::kDisabled);
+
+  const CheckpointObserver checkpoint_observer(feature(), test_clock());
+
+  // Checkpoint 0:
+  // Sunset is 6 PM and sunrise is 6 AM, so it should immediately flip to
+  // enabled.
+  feature()->SetScheduleType(ScheduleType::kSunsetToSunrise);
+
+  // Checkpoint 1:
+  // Flip back to no schedule type. It should stay enabled.
+  feature()->SetScheduleType(ScheduleType::kNone);
+
+  // Checkpoint 2:
+  // Fast forward to 10 AM and flip back to sunset to sunrise schedule type.
+  // It should automatically flip to disabled, but at the morning checkpoint.
+  FastForwardTo(MakeTimeOfDay(10, kAM));
+  feature()->SetScheduleType(ScheduleType::kSunsetToSunrise);
+
+  // Checkpoint 2:
+  // Flip back to no schedule type. It should stay disabled, but the default
+  // checkpoint for disabled is sunrise, not morning, so the checkpoint should
+  // change again.
+  feature()->SetScheduleType(ScheduleType::kNone);
+
+  // Checkpoint 3:
+  // Fast forward to 12 AM again and switch to sunset to sunrise. Feature should
+  // automatically flip to enabled.
+  FastForwardTo(MakeTimeOfDay(12, kAM));
+  feature()->SetScheduleType(ScheduleType::kSunsetToSunrise);
+
+  // Checkpoint 4:
+  // Now manually toggle the feature to disabled (opposite of what the schedule
+  // says). The current checkpoint should reflect the feature being disabled.
+  feature()->SetEnabled(false);
+
+  EXPECT_THAT(
+      checkpoint_observer.changes(),
+      ElementsAre(Pair(MakeTimeOfDay(12, kAM), ScheduleCheckpoint::kSunset),
+                  Pair(MakeTimeOfDay(12, kAM), ScheduleCheckpoint::kEnabled),
+                  Pair(MakeTimeOfDay(10, kAM), ScheduleCheckpoint::kMorning),
+                  Pair(MakeTimeOfDay(10, kAM), ScheduleCheckpoint::kDisabled),
+                  Pair(MakeTimeOfDay(12, kAM), ScheduleCheckpoint::kSunset),
+                  Pair(MakeTimeOfDay(12, kAM), ScheduleCheckpoint::kSunrise)));
 }
 
 }  // namespace

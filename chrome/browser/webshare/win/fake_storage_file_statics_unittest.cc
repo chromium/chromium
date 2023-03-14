@@ -36,9 +36,6 @@ namespace webshare {
 
 TEST(FakeStorageFileStaticsTest, CreateStreamedFileAsync) {
   base::test::SingleThreadTaskEnvironment task_environment;
-  if (!base::win::ScopedHString::ResolveCoreWinRTStringDelayload())
-    GTEST_SKIP();
-
   auto file_statics = Make<FakeStorageFileStatics>();
 
   // Create a streamed file, populated on-demand by the provided callback.

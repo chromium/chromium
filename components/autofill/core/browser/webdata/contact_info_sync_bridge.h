@@ -13,10 +13,12 @@
 #include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
 #include "base/threading/thread_checker.h"
+#include "components/autofill/core/browser/contact_info_sync_util.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/sync/model/entity_change.h"
+#include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_change_processor.h"
@@ -64,11 +66,20 @@ class ContactInfoSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
   void ApplyStopSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
                                 delete_metadata_change_list) override;
+  sync_pb::EntitySpecifics TrimAllSupportedFieldsFromRemoteSpecifics(
+      const sync_pb::EntitySpecifics& entity_specifics) const override;
 
   // AutofillWebDataServiceObserverOnDBSequence implementation.
   void AutofillProfileChanged(const AutofillProfileChange& change) override;
 
  private:
+  const sync_pb::ContactInfoSpecifics&
+  GetPossiblyTrimmedContactInfoSpecificsDataFromProcessor(
+      const std::string& storage_key);
+
+  bool SyncMetadataCacheContainsSupportedFields(
+      const syncer::EntityMetadataMap& metadata_map) const;
+
   // Returns the `AutofillTable` associated with the `web_data_backend_`.
   AutofillTable* GetAutofillTable();
 

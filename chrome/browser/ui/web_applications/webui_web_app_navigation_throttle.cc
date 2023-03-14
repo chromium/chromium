@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/web_applications/webui_web_app_navigation_throttle.h"
 
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"

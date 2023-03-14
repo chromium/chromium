@@ -98,7 +98,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.NetworkLocationRequest.Event"
-    enum="NetworkLocationRequestEvent" expires_after="2023-06-18">
+    enum="NetworkLocationRequestEvent" expires_after="2023-08-20">
   <owner>mattreynolds@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
@@ -109,15 +109,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Geolocation.NetworkLocationRequest.NetError"
-    enum="NetErrorCodes" expires_after="2023-04-16">
-  <owner>JamesHollyer@chromium.org</owner>
-  <owner>device-dev@chromium.org</owner>
-  <summary>Network errors in NetworkLocationRequest.</summary>
-</histogram>
-
 <histogram name="Geolocation.NetworkLocationRequest.ResponseCode"
-    enum="HttpResponseCode" expires_after="2023-06-18">
+    enum="HttpResponseCode" expires_after="2023-08-20">
   <owner>mattreynolds@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
@@ -148,46 +141,6 @@ chromium-metrics-reviews@google.com.
 
     Warning: this histogram was expired after 2021-03-10 and brought back
     2021-05-21; data may be missing.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Geolocation.SettingsDialog.AcceptEvent"
-    enum="GeolocationSettingsDialogBackOff" expires_after="M89">
-  <owner>engedy@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records the backoff level when the Location Settings Dialog is accepted by
-    the user.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Geolocation.SettingsDialog.DenyEvent"
-    enum="GeolocationSettingsDialogBackOff" expires_after="M89">
-  <owner>engedy@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records the backoff level when the Location Settings Dialog is rejected by
-    the user.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Geolocation.SettingsDialog.ShowEvent"
-    enum="GeolocationSettingsDialogBackOff" expires_after="M89">
-  <owner>engedy@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records the backoff level when the Location Settings Dialog is shown to the
-    user.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Geolocation.SettingsDialog.SuppressEvent"
-    enum="GeolocationSettingsDialogBackOff" expires_after="M89">
-  <owner>engedy@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records the backoff level when the Location Settings Dialog is suppressed
-    due to backoff.
   </summary>
 </histogram>
 

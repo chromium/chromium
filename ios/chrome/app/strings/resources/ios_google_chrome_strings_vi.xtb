@@ -20,6 +20,7 @@
 <translation id="2339201583852607431">Mật khẩu của bạn sẽ được lưu trong Tài khoản Google (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome chia sẻ thông tin vị trí của bạn với những trang web mà bạn cho phép.</translation>
 <translation id="2347208864470321755">Khi tính năng này được bật, Chrome sẽ đề xuất sử dụng Google Dịch để dịch các trang viết bằng ngôn ngữ khác. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
+<translation id="2414068465746584414">Trong phần Cài đặt của thiết bị, hãy mở "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" rồi chọn "Chrome"</translation>
 <translation id="2427791862912929107">Chrome có tính năng giúp bạn quản lý dữ liệu Internet của mình và tốc độ mà bạn có thể tải trang web.
 <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Để dễ dàng sử dụng mật khẩu đã lưu trong các ứng dụng khác, hãy dùng Chrome làm dịch vụ tự động điền</translation>
@@ -31,6 +32,7 @@
 <translation id="2689064829982324496">Để đăng xuất khỏi Tài khoản Google trên tất cả trang web, hãy <ph name="BEGIN_LINK" />đăng xuất khỏi Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome không thể kiểm tra xem có bản cập nhật mới nào không. Hãy thử lại sau.</translation>
 <translation id="2732745070297234559">Chrome không thể kiểm tra một số mật khẩu. Hãy thử lại vào ngày mai.</translation>
+<translation id="2736805085127235148">Thông báo của Chrome hiện đang tắt trong phần cài đặt của thiết bị.</translation>
 <translation id="2767464022270041271">Bạn chưa lưu mật khẩu nào. Trình quản lý mật khẩu của Google có thể kiểm tra mật khẩu của bạn khi bạn lưu các mật khẩu đó.</translation>
 <translation id="2869959624320573933">Đăng nhập vào Chrome</translation>
 <translation id="2957447865124070833">Chọn <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
@@ -112,9 +114,8 @@
 <translation id="7754633291442704733">Tổ chức của bạn (<ph name="DOMAIN" />) sẽ có quyền truy cập vào dữ liệu của bạn trên Chrome, dấu trang, nhật ký, mật khẩu và các chế độ cài đặt khác mà bạn lưu trữ trong tài khoản này. Khi bạn đăng xuất, dữ liệu của bạn sẽ bị xoá khỏi thiết bị này.  Tuy nhiên, dữ liệu vẫn được lưu trữ trong Tài khoản Google được quản lý của bạn và tổ chức có thể sử dụng dữ liệu này. Tổ chức của bạn cũng có thể thiết lập chính sách người dùng dành riêng cho tài khoản đó và việc này có thể làm thay đổi hành vi của Chrome.</translation>
 <translation id="7780154209050837198">Để khai thác tối đa Chrome, hãy đăng nhập vào Chrome bằng Tài khoản Google của bạn.</translation>
 <translation id="7855730255114109580">Google Chrome đã được cập nhật</translation>
-<translation id="7939179037291298976">Trong phần Cài đặt của iPhone, hãy mở "Tuỳ chọn mật khẩu" rồi chọn "Chrome"</translation>
-<translation id="7975131781538454817">Bạn đã tắt thông báo của Chrome trong phần cài đặt của thiết bị. Trước tiên, bạn cần bật thông báo.</translation>
 <translation id="8022947259858476807">Hãy dùng Chrome theo mặc định để mở đường liên kết, tìm kiếm trong tiện ích và tự động điền mật khẩu trên các ứng dụng khác</translation>
+<translation id="804638182476029347">Cho phép thông báo của Chrome để nhận thông báo giảm giá</translation>
 <translation id="81358522153858150">Chrome giờ đây hỗ trợ chính sách người dùng cho tài khoản được quản lý</translation>
 <translation id="8160472928944011082">Chrome không thể cập nhật</translation>
 <translation id="8357607116237445042">Chọn xem bạn muốn xóa dữ liệu của mình trên Chrome khỏi thiết bị này hay giữ lại dữ liệu đó</translation>
@@ -141,7 +142,6 @@ Những yếu tố cần xem xét:
 <ph name="BEGIN_INDENT" />  • Thông tin về mức sử dụng Chrome được gửi cho Google, tuy nhiên thông tin đó sẽ không gắn liền với bạn.
   • Nếu Chrome gặp sự cố, thông tin chi tiết về sự cố có thể sẽ bao gồm một số thông tin cá nhân.
   • Nếu bạn bật chế độ đồng bộ hoá, các chỉ số có thể sẽ còn bao gồm cả thông tin về các URL bạn từng truy cập.<ph name="END_INDENT" /></translation>
-<translation id="9101160735177453133">Để bật tính năng "Theo dõi giá", hãy cho phép thông báo của Chrome trong phần cài đặt của thiết bị</translation>
 <translation id="9103442491611662960">Bạn đang sử dụng biện pháp bảo mật tiêu chuẩn cho hồ sơ Chrome này</translation>
 <translation id="9112744793181547300">Đặt Chrome làm trình duyệt mặc định?</translation>
 <translation id="9122931302567044771">Tức là lần nào Chrome cũng yêu cầu trang web dành cho máy tính.</translation>

@@ -74,7 +74,14 @@ FaviconServiceFactory::GetDefaultFactory() {
 }
 
 FaviconServiceFactory::FaviconServiceFactory()
-    : ProfileKeyedServiceFactory("FaviconService") {
+    : ProfileKeyedServiceFactory(
+          "FaviconService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(HistoryServiceFactory::GetInstance());
   favicon::SetLargeFaviconProviderGetter(
       base::BindRepeating(&GetLargeFaviconProvider));

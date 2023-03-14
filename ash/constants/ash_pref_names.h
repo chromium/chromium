@@ -57,6 +57,14 @@ extern const char kDeviceWiFiFastTransitionEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kInputNoiseCancellationEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kMultitaskMenuNudgeClamshellShownCount[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kMultitaskMenuNudgeTabletShownCount[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kMultitaskMenuNudgeClamshellLastShown[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kMultitaskMenuNudgeTabletLastShown[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSamlPasswordModifiedTime[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSamlPasswordExpirationTime[];
@@ -194,6 +202,8 @@ extern const char kAccessibilityAutoclickMovementThreshold[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAccessibilityAutoclickMenuPosition[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityColorFiltering[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAccessibilityGreyscaleAmount[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAccessibilitySaturationAmount[];
@@ -201,6 +211,10 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAccessibilitySepiaAmount[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAccessibilityHueRotationAmount[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityColorVisionCorrectionAmount[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityColorVisionDeficiencyType[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAccessibilityCaretHighlightEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -601,6 +615,12 @@ extern const char kPersonalizationKeyboardBacklightColor[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kPersonalizationKeyboardBacklightZoneColors[];
 
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kPersonalizationKeyboardBacklightColorDisplayType[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kShowTouchpadScrollScreenEnabled[];
+
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAutozoomState[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAutozoomNudges[];
@@ -616,6 +636,47 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kBackgroundReplace[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kPortraitRelighting[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kRecordArcAppSyncMetrics[];
+
+// Input device settings.
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kPrimaryMouseButtonRight[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kMouseSensitivity[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kMouseAcceleration[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kMouseScrollSensitivity[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kMouseScrollAcceleration[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kTouchpadSensitivity[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kTouchpadAcceleration[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kEnableTouchpadThreeFingerClick[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kTapToClickEnabled[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kTouchpadScrollSensitivity[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kTouchpadScrollAcceleration[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kTouchpadHapticFeedback[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kTouchpadHapticClickSensitivity[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kPointingStickSensitivity[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kPrimaryPointingStickButtonRight[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kPointingStickAcceleration[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kTimeOfLastSessionActivation[];
 
 }  // namespace prefs
 }  // namespace ash

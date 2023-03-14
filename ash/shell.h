@@ -12,13 +12,11 @@
 #include "ash/accessibility/accessibility_event_handler_manager.h"
 #include "ash/ash_export.h"
 #include "ash/constants/ash_features.h"
+#include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/in_session_auth/in_session_auth_dialog_controller_impl.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/system_sounds_delegate.h"
-#include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
-#include "ash/system/input_device_settings/input_device_tracker.h"
-#include "ash/system/input_device_settings/keyboard_modifier_metrics_recorder.h"
 #include "ash/wm/system_modal_container_event_filter_delegate.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
@@ -146,15 +144,19 @@ class FrameThrottlingController;
 class FullscreenMagnifierController;
 class GeolocationController;
 class GlanceablesController;
+class GlanceablesV2Controller;
 class ColorEnhancementController;
 class HoldingSpaceController;
 class HumanPresenceOrientationController;
 class ImeControllerImpl;
+class InputDeviceSettingsControllerImpl;
+class InputDeviceTracker;
 class WebAuthNDialogControllerImpl;
 class KeyAccessibilityEnabler;
 class KeyboardBacklightColorController;
 class KeyboardBrightnessControlDelegate;
 class KeyboardControllerImpl;
+class KeyboardModifierMetricsRecorder;
 class LaserPointerController;
 class LocaleUpdateControllerImpl;
 class LockStateController;
@@ -193,6 +195,7 @@ class PrivacyHubController;
 class PrivacyScreenController;
 class ProjectingObserver;
 class ProjectorControllerImpl;
+class RasterScaleController;
 class RgbKeyboardManager;
 class RefreshRateThrottleController;
 class ResizeShadowController;
@@ -229,6 +232,7 @@ class ClipboardHistoryControllerImpl;
 class TouchDevicesController;
 class TouchSelectionMagnifierRunnerAsh;
 class TrayAction;
+class UserEducationController;
 class UserMetricsRecorder;
 class VideoActivityNotifier;
 class VideoDetector;
@@ -248,6 +252,10 @@ class DiagnosticsLogController;
 namespace federated {
 class FederatedServiceControllerImpl;
 }  // namespace federated
+
+namespace game_dashboard {
+class GameDashboardController;
+}  // namespace game_dashboard
 
 namespace quick_pair {
 class Mediator;
@@ -506,11 +514,17 @@ class ASH_EXPORT Shell : public SessionObserver,
   FullscreenMagnifierController* fullscreen_magnifier_controller() {
     return fullscreen_magnifier_controller_.get();
   }
+  GameDashboardController* game_dashboard_controller() {
+    return game_dashboard_controller_.get();
+  }
   GeolocationController* geolocation_controller() {
     return geolocation_controller_.get();
   }
   GlanceablesController* glanceables_controller() {
     return glanceables_controller_.get();
+  }
+  GlanceablesV2Controller* glanceables_v2_controller() {
+    return glanceables_v2_controller_.get();
   }
   ColorEnhancementController* color_enhancement_controller() {
     return color_enhancement_controller_.get();
@@ -613,6 +627,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   }
   MultiCaptureServiceClient* multi_capture_service_client() {
     return multi_capture_service_client_.get();
+  }
+  RasterScaleController* raster_scale_controller() {
+    return raster_scale_controller_.get();
   }
   ResizeShadowController* resize_shadow_controller() {
     return resize_shadow_controller_.get();
@@ -904,8 +921,10 @@ class ASH_EXPORT Shell : public SessionObserver,
       firmware_update_notification_controller_;
   std::unique_ptr<FocusCycler> focus_cycler_;
   std::unique_ptr<FloatController> float_controller_;
+  std::unique_ptr<GameDashboardController> game_dashboard_controller_;
   std::unique_ptr<GeolocationController> geolocation_controller_;
   std::unique_ptr<GlanceablesController> glanceables_controller_;
+  std::unique_ptr<GlanceablesV2Controller> glanceables_v2_controller_;
   std::unique_ptr<HoldingSpaceController> holding_space_controller_;
   std::unique_ptr<PowerPrefs> power_prefs_;
   std::unique_ptr<SnapGroupController> snap_group_controller_;
@@ -949,6 +968,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<PersistentDesksBarController>
       persistent_desks_bar_controller_;
   std::unique_ptr<RgbKeyboardManager> rgb_keyboard_manager_;
+  std::unique_ptr<RasterScaleController> raster_scale_controller_;
   std::unique_ptr<ResizeShadowController> resize_shadow_controller_;
   std::unique_ptr<SessionControllerImpl> session_controller_;
   std::unique_ptr<FeatureDiscoveryDurationReporterImpl>
@@ -974,6 +994,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<ClipboardHistoryControllerImpl> clipboard_history_controller_;
   std::unique_ptr<TouchDevicesController> touch_devices_controller_;
   std::unique_ptr<TrayAction> tray_action_;
+  std::unique_ptr<UserEducationController> user_education_controller_;
   std::unique_ptr<WallpaperControllerImpl> wallpaper_controller_;
   std::unique_ptr<WindowCycleController> window_cycle_controller_;
   std::unique_ptr<WindowRestoreController> window_restore_controller_;

@@ -66,8 +66,6 @@ class ASH_EXPORT LoginBaseBubbleView : public views::View,
   gfx::Size CalculatePreferredSize() const override;
   void Layout() override;
   void OnBlur() override;
-  // Persistent bubbles need to react to theme changes.
-  void OnThemeChanged() override;
 
   void set_positioning_strategy(PositioningStrategy positioning_strategy) {
     positioning_strategy_ = positioning_strategy;

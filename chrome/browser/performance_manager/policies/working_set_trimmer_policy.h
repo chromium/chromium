@@ -71,9 +71,7 @@ class WorkingSetTrimmerPolicy : public GraphOwned,
   // Sets the last trim time to TimeTicks::Now().
   void SetLastTrimTimeNow(const ProcessNode* process_node);
 
-  // TrimWorkingSet will trim a ProcessNode's working set, it will return true
-  // on success. This is virtual for testing.
-  virtual bool TrimWorkingSet(const ProcessNode* process_node);
+  virtual void TrimWorkingSet(const ProcessNode* process_node);
 
  private:
   friend class WorkingSetTrimmerPolicyTest;

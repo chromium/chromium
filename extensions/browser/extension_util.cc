@@ -12,6 +12,7 @@
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -23,7 +24,9 @@
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "extensions/grit/extensions_browser_resources.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -115,6 +118,13 @@ content::StoragePartition* GetStoragePartitionForExtensionId(
       browser_context->GetStoragePartition(storage_partition_config,
                                            can_create);
   return storage_partition;
+}
+
+content::ServiceWorkerContext* GetServiceWorkerContextForExtensionId(
+    const ExtensionId& extension_id,
+    content::BrowserContext* browser_context) {
+  return GetStoragePartitionForExtensionId(extension_id, browser_context)
+      ->GetServiceWorkerContext();
 }
 
 // This function is security sensitive. Bugs could cause problems that break
@@ -246,6 +256,16 @@ void InitializeFileSchemeAccessForExtension(
   }
 }
 
+const gfx::ImageSkia& GetDefaultAppIcon() {
+  return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+      IDR_APP_DEFAULT_ICON);
+}
+
+const gfx::ImageSkia& GetDefaultExtensionIcon() {
+  return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+      IDR_EXTENSION_DEFAULT_ICON);
+}
+
 ExtensionId GetExtensionIdForSiteInstance(
     content::SiteInstance& site_instance) {
   // <webview> guests always store the ExtensionId in the partition domain.
@@ -288,6 +308,14 @@ bool CanRendererHostExtensionOrigin(int render_process_id,
       Extension::CreateOriginFromExtensionId(extension_id);
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
   return policy->CanAccessDataForOrigin(render_process_id, extension_origin);
+}
+
+bool IsChromeApp(const std::string& extension_id,
+                 content::BrowserContext* context) {
+  const Extension* extension =
+      ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
+          extension_id);
+  return extension->is_platform_app();
 }
 
 bool IsAppLaunchable(const std::string& extension_id,

@@ -222,9 +222,9 @@ public class LogoMediatorUnitTest {
     @Test
     public void testInitWithoutNativeWhenDseDoesNotHaveLogo() {
         LogoMediator logoMediator = createMediatorWithoutNative(true, true);
-        boolean origin_key_value = SharedPreferencesManager.getInstance().readBoolean(
+        boolean originKeyValue = SharedPreferencesManager.getInstance().readBoolean(
                 APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO,
-                TemplateUrlServiceFactory.get().doesDefaultSearchEngineHaveLogo());
+                mTemplateUrlService.doesDefaultSearchEngineHaveLogo());
         SharedPreferencesManager.getInstance().writeBoolean(
                 APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO, false);
         logoMediator.updateVisibilityAndMaybeCleanUp(
@@ -234,7 +234,7 @@ public class LogoMediatorUnitTest {
         Assert.assertFalse(logoMediator.getIsLoadPendingForTesting());
         verify(mLogoBridge, times(0)).destroy();
         SharedPreferencesManager.getInstance().writeBoolean(
-                APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO, origin_key_value);
+                APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO, originKeyValue);
     }
 
     @Test

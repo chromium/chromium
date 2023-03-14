@@ -22,7 +22,7 @@ class FakeBrowserManager : public BrowserManager {
   void set_new_fullscreen_window_creation_result(mojom::CreationResult result) {
     new_fullscreen_window_creation_result_ = result;
   }
-  void set_is_running(bool value) { is_running_ = value; }
+
   void set_wait_for_mojo_disconnect(bool value) {
     wait_for_mojo_disconnect_ = value;
   }
@@ -37,20 +37,20 @@ class FakeBrowserManager : public BrowserManager {
   // registered observers.
   void StartRunning();
 
+  // Sets the state of `BrowserManager` to `Stopped`, and triggers all
+  // registered observers.
+  void StopRunning();
+
   // BrowserManager:
-  bool IsRunning() const override;
-  bool IsRunningOrWillRun() const override;
   void NewFullscreenWindow(const GURL& url,
                            NewFullscreenWindowCallback callback) override;
   void GetFeedbackData(GetFeedbackDataCallback callback) override;
+  void InitializeAndStartIfNeeded() override;
 
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override;
 
  private:
-  // State indicating Lacros is running or not.
-  bool is_running_ = false;
-
   // If this flag is set to true, simulate the case that mojo disconnect
   // signal is received before the log data is fetched.
   bool wait_for_mojo_disconnect_ = false;

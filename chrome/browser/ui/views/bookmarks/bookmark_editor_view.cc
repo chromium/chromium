@@ -13,6 +13,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/bookmarks/bookmark_expanded_state_tracker_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
@@ -22,6 +23,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/locale_settings.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -50,7 +52,6 @@
 #include "ui/aura/window.h"
 #endif  // !BUILDFLAG(IS_MAC)
 
-using bookmarks::BookmarkExpandedStateTracker;
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
@@ -64,10 +65,13 @@ BookmarkEditorView::BookmarkEditorView(
       parent_(parent),
       details_(details),
       bb_model_(BookmarkModelFactory::GetForBrowserContext(profile)),
+      expanded_state_tracker_(
+          BookmarkExpandedStateTrackerFactory::GetForProfile(profile)),
       show_tree_(configuration == SHOW_TREE),
       on_save_callback_(std::move(on_save_callback)) {
   DCHECK(profile);
   DCHECK(bb_model_);
+  DCHECK(expanded_state_tracker_);
   DCHECK(bb_model_->client()->CanBeEditedByUser(parent));
   SetCanResize(true);
   SetModalType(ui::MODAL_TYPE_WINDOW);
@@ -163,8 +167,7 @@ bool BookmarkEditorView::IsCommandIdEnabled(int command_id) const {
     case kContextMenuItemNewFolder:
       return true;
     default:
-      NOTREACHED();
-      return false;
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -401,10 +404,10 @@ BookmarkEditorView::EditorNode* BookmarkEditorView::AddNewFolder(
 
 void BookmarkEditorView::ExpandAndSelect() {
   BookmarkExpandedStateTracker::Nodes expanded_nodes =
-      bb_model_->expanded_state_tracker()->GetExpandedNodes();
-  for (auto i(expanded_nodes.begin()); i != expanded_nodes.end(); ++i) {
+      expanded_state_tracker_->GetExpandedNodes();
+  for (const BookmarkNode* node : expanded_nodes) {
     EditorNode* editor_node =
-        FindNodeWithID(tree_model_->GetRoot(), (*i)->id());
+        FindNodeWithID(tree_model_->GetRoot(), node->id());
     if (editor_node)
       tree_view_->Expand(editor_node);
   }
@@ -498,7 +501,7 @@ void BookmarkEditorView::ApplyEdits(EditorNode* parent) {
 
     BookmarkExpandedStateTracker::Nodes expanded_nodes;
     UpdateExpandedNodes(tree_model_->GetRoot(), &expanded_nodes);
-    bb_model_->expanded_state_tracker()->SetExpandedNodes(expanded_nodes);
+    expanded_state_tracker_->SetExpandedNodes(expanded_nodes);
 
     // Remove the folders that were removed. This has to be done after all the
     // other changes have been committed.

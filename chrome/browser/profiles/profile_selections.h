@@ -97,6 +97,21 @@ class ProfileSelections {
 
   // Regular builders (independent of the experiments):
 
+  // Only select the regular profile.
+  // Note: Ash internal profiles are of type Regular. In order to have a
+  // different filter for those profiles, a specific builder should be
+  // constructed with a value for
+  // `ProfileSelections::Builder::WithAshInternals()`.
+  // +---------+------------+------------+
+  // |         |  Original  |    OTR     |
+  // +---------+------------+------------+
+  // | Regular | self       | no profile |
+  // | Guest   | no profile | no profile |
+  // | System  | no profile | no profile |
+  // | Ash Int.| self       | no profile |
+  // +---------+------------+------------+
+  static ProfileSelections BuildForRegularProfile();
+
   // All Profiles are selected.
   // +---------+------------+------------+
   // |         |  Original  |    OTR     |
@@ -118,21 +133,6 @@ class ProfileSelections {
   // | Ash Int.| no profile | no profile |
   // +---------+------------+------------+
   static ProfileSelections BuildNoProfilesSelected();
-
-  // Only select the regular profile.
-  // Note: Ash internal profiles are of type Regular. In order to have a
-  // different filter for those profiles, a specific builder should be
-  // constructed with a value for
-  // `ProfileSelections::Builder::WithAshInternals()`.
-  // +---------+------------+------------+
-  // |         |  Original  |    OTR     |
-  // +---------+------------+------------+
-  // | Regular | self       | no profile |
-  // | Guest   | no profile | no profile |
-  // | System  | no profile | no profile |
-  // | Ash Int.| self       | no profile |
-  // +---------+------------+------------+
-  static ProfileSelections BuildForRegularProfile();
 
   // Only select the regular profile and incognito for regular profiles. No
   // profiles for Guest and System profiles. "NonExperimental" is added to
@@ -195,30 +195,34 @@ class ProfileSelections {
   // behavior is described per experimental builder. The parameters force_* will
   // allow to have an easier transition when adapting to the experiment.
 
-  // Default implementation, without the experiment:
-  // +---------+------------+------------+
-  // |         |  Original  |    OTR     |
-  // +---------+------------+------------+
-  // | Regular | self       | no profile |
-  // | Guest   | self       | no profile |
-  // | System  | self       | no profile |
-  // | Ash Int.| self       | no profile |
-  // +---------+------------+------------+
-  //
-  // After the migration(crbug.com/1284664) this default behaviour will change.
+  // Default implementation:
+  // Without any parameters explicitly set, this is equivalent to
+  // `ProfileSlections::Builder().Build()`, where the following selection
+  // happens:
   // +---------+------------+------------+
   // |         |  Original  |    OTR     |
   // +---------+------------+------------+
   // | Regular | self       | no profile |
   // | Guest   | no profile | no profile |
-  // | System  | no profile | no profile |
+  // | System  | experiment*| no profile |
   // | Ash Int.| self       | no profile |
   // +---------+------------+------------+
   //
-  // Parameters: (used during the experiment)
-  // - force_guest: true, force Guest with `ProfileSelection::kOriginalOnly`.
-  // - force_system: true, force System with `ProfileSelection::kOriginalOnly`.
-  static ProfileSelections BuildDefault(bool force_guest = true,
+  // experiment*: System Profile default value is set through this constructor,
+  // however the default value is experiment dependant
+  // (`kSystemProfileSelectionDefaultNone`):
+  // - enabled (future behavior): no profile
+  // - disabled: self
+  //
+  // Parameters:
+  // - force_guest: if true, force Guest with `ProfileSelection::kOriginalOnly`,
+  // note* below. This is not recommended, consider using explicit
+  // `ProfileSlections::Builder::WithGuest()` instead.
+  // - force_system: if true, force System with
+  // `ProfileSelection::kOriginalOnly` to by pass the
+  // `kSystemProfileSelectionDefaultNone`. This is not recommended, use explicit
+  // `ProfileSlections::Builder::WithSystem()` instead.
+  static ProfileSelections BuildDefault(bool force_guest = false,
                                         bool force_system = false);
 
   // Without the experiment:

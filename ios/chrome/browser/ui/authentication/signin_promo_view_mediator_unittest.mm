@@ -58,6 +58,8 @@ using user_prefs::PrefRegistrySyncable;
 using web::WebTaskEnvironment;
 
 namespace {
+// The image name of the SigninPromoViewStyleCompactTitled view's icon.
+NSString* const kPromoViewImageName = @"ntp_feed_signin_promo_icon";
 
 class SigninPromoViewMediatorTest : public PlatformTest {
  protected:
@@ -183,7 +185,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   void ExpectNoAccountsConfiguration(SigninPromoViewStyle style) {
     OCMExpect([signin_promo_view_ setMode:SigninPromoViewModeNoAccounts]);
     NSString* title = nil;
-    if (style != SigninPromoViewStyleStandard) {
+    if (style == SigninPromoViewStyleCompactTitled) {
       title = GetNSString(IDS_IOS_NTP_FEED_SIGNIN_PROMO_CONTINUE);
     } else {
       title = GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC);
@@ -200,6 +202,10 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     OCMExpect([close_button_ setHidden:close_button_hidden_]);
     OCMExpect([title_label_ setHidden:(style == SigninPromoViewStyleStandard)]);
     OCMExpect([signin_promo_view_ setPromoViewStyle:style]);
+    if (style == SigninPromoViewStyleCompactTitled) {
+      OCMExpect([signin_promo_view_
+          setNonProfileImage:[UIImage imageNamed:kPromoViewImageName]]);
+    }
     [configurator configureSigninPromoView:signin_promo_view_ withStyle:style];
     EXPECT_EQ(nil, image_view_profile_image_);
   }
@@ -229,11 +235,15 @@ class SigninPromoViewMediatorTest : public PlatformTest {
             forState:UIControlStateNormal]);
         break;
       }
-      case SigninPromoViewStyleTitled:
-      case SigninPromoViewStyleTitledCompact: {
+      case SigninPromoViewStyleCompactTitled: {
         OCMExpect([primary_button_
             setTitle:GetNSString(IDS_IOS_NTP_FEED_SIGNIN_PROMO_CONTINUE)
             forState:UIControlStateNormal]);
+        break;
+      }
+      case SigninPromoViewStyleCompactHorizontal:
+      case SigninPromoViewStyleCompactVertical: {
+        // TODO(crbug.com/1412758): Test the new styles when implemented.
         break;
       }
     }
@@ -250,12 +260,21 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     OCMExpect([signin_promo_view_ setPromoViewStyle:style]);
     [configurator configureSigninPromoView:signin_promo_view_ withStyle:style];
     switch (style) {
-      case SigninPromoViewStyleStandard:
+      case SigninPromoViewStyleStandard: {
         EXPECT_NE(nil, image_view_profile_image_);
         break;
-      case SigninPromoViewStyleTitled:
-      case SigninPromoViewStyleTitledCompact:
+      }
+      case SigninPromoViewStyleCompactTitled: {
+        OCMExpect([signin_promo_view_
+            setNonProfileImage:[UIImage imageNamed:kPromoViewImageName]]);
         EXPECT_EQ(nil, image_view_profile_image_);
+        break;
+      }
+      case SigninPromoViewStyleCompactHorizontal:
+      case SigninPromoViewStyleCompactVertical: {
+        // TODO(crbug.com/1412758): Test the new styles when implemented.
+        break;
+      }
     }
   }
 
@@ -374,23 +393,26 @@ TEST_F(SigninPromoViewMediatorTest, ConfigureSigninPromoViewWithColdAndWarm) {
 }
 
 // Tests the sign-in promo with and without account when the promo style is
-// titled.
+// compact horizontal.
 TEST_F(SigninPromoViewMediatorTest,
-       ConfigureTitledSigninPromoViewWithColdAndWarm) {
-  close_button_hidden_ = NO;
-  CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO);
-  TestSigninPromoWithNoAccounts(SigninPromoViewStyleTitled);
-  TestSigninPromoWithAccount(SigninPromoViewStyleTitled);
+       ConfigureCompactHorizontalSigninPromoViewWithColdAndWarm) {
+  // TODO(crbug.com/1412758): Test the new styles when implemented.
 }
 
 // Tests the sign-in promo with and without account when the promo style is
-// titled compact.
+// compact vertical.
+TEST_F(SigninPromoViewMediatorTest,
+       ConfigureCompactVerticalSigninPromoViewWithColdAndWarm) {
+  // TODO(crbug.com/1412758): Test the new styles when implemented.
+}
+
+// Tests the sign-in promo without account when the promo style is titled
+// compact.
 TEST_F(SigninPromoViewMediatorTest,
        ConfigureCompactTitledSigninPromoViewWithColdAndWarm) {
   close_button_hidden_ = NO;
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO);
-  TestSigninPromoWithNoAccounts(SigninPromoViewStyleTitledCompact);
-  TestSigninPromoWithAccount(SigninPromoViewStyleTitledCompact);
+  TestSigninPromoWithNoAccounts(SigninPromoViewStyleCompactTitled);
 }
 
 // Tests the scenario with the sign-in promo with accounts on the device, and

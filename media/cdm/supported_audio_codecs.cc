@@ -13,6 +13,9 @@ const base::flat_set<AudioCodec> GetCdmSupportedAudioCodecs() {
     AudioCodec::kOpus, AudioCodec::kVorbis, AudioCodec::kFLAC,
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
         AudioCodec::kAAC,
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+        AudioCodec::kDTS, AudioCodec::kDTSE, AudioCodec::kDTSXP2,
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
   };
 }

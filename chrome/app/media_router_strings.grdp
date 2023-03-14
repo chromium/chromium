@@ -45,7 +45,7 @@
   <!-- Issue Messaging -->
   <message name="IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT_WITH_HOSTNAME" desc="Title of an issue to show when the user attempts to cast from a website and it times out while waiting for a cast session to start.">
     Unable to cast <ph name="HOST_NAME">$1<ex>youtube.com</ex></ph>.
-  </message> 
+  </message>
   <message name="IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT" desc="Title of a generic issue to show when the user attempts to create a route and it times out while waiting for a cast session to start.">
     Unable to cast.
   </message>
@@ -60,6 +60,9 @@
   </message>
   <message name="IDS_MEDIA_ROUTER_ISSUE_TAB_AUDIO_NOT_SUPPORTED" desc="Title of an issue shown when the user is casting a tab, but only its visual content can be cast and not its audio output.">
     Casting tab audio is not supported on this device.
+  </message>
+  <message name="IDS_MEDIA_ROUTER_ISSUE_DESKTOP_AUDIO_NOT_SUPPORTED" desc="Title of an issue shown when the user is casting their screen, but only its visual content can be cast and not its audio output.">
+    Casting desktop audio is not supported on this device.
   </message>
   <if expr="is_macosx">
     <message name="IDS_MEDIA_ROUTER_ISSUE_MAC_SCREEN_CAPTURE_PERMISSION_ERROR" desc="Message shown when a macOS user attempts to cast their screen, but the Screen Recording system permission has not been granted.">
@@ -77,6 +80,9 @@
   </message>
   <message name="IDS_MEDIA_ROUTER_ISSUE_FAILED_TO_CAST" desc="Title of an issue shown when cast intialization failed with no clear reason">
       Failed to cast. Please try again.
+  </message>
+  <message name="IDS_MEDIA_ROUTER_ISSUE_CANNOT_TERMINATE" desc="Title of an issue shown when a Cast session cannot be stopped from Chrome side, and needs to be stopped from the Cast device where the Cast session is running.">
+      Cast isn't responding. Stop from <ph name="DEVICE_NAME">$1</ph>.
   </message>
 
 

@@ -4,7 +4,7 @@
 """Definitions of builders in the tryserver.chromium.swangle builder group."""
 
 load("//lib/branches.star", "branches")
-load("//lib/builders.star", "goma", "os", "reclient")
+load("//lib/builders.star", "os", "reclient")
 load("//lib/consoles.star", "consoles")
 load("//lib/try.star", "try_")
 
@@ -34,7 +34,6 @@ try_.builder(
     mirrors = [
         "ci/Dawn Android arm DEPS Release (Pixel 4)",
     ],
-    goma_backend = goma.backend.RBE_PROD,
     main_list_view = "try",
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
@@ -181,7 +180,6 @@ try_.builder(
     mirrors = [
         "ci/Dawn Android arm Release (Pixel 4)",
     ],
-    goma_backend = goma.backend.RBE_PROD,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -208,7 +206,6 @@ try_.builder(
         "ci/Dawn Mac x64 Release (Intel)",
     ],
     os = os.MAC_ANY,
-    goma_backend = goma.backend.RBE_PROD,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -223,7 +220,6 @@ try_.builder(
     pool = "luci.chromium.gpu.mac.retina.amd.try",
     builderless = True,
     os = os.MAC_ANY,
-    goma_backend = goma.backend.RBE_PROD,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -238,7 +234,6 @@ try_.builder(
     pool = "luci.chromium.gpu.mac.mini.intel.try",
     builderless = True,
     os = os.MAC_ANY,
-    goma_backend = goma.backend.RBE_PROD,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),

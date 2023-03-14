@@ -119,7 +119,11 @@
                 "gen/content/web_test/common/fake_bluetooth_chooser.mojom.m.js",
                 "gen/services/device/public/mojom/nfc.mojom.m.js",
                 "gen/services/device/public/mojom/serial.mojom.m.js",
-                "gen/third_party/blink/public/mojom/serial/serial.mojom.m.js"
+                "gen/third_party/blink/public/mojom/serial/serial.mojom.m.js",
+                "gen/services/device/public/mojom/battery_monitor.mojom.m.js",
+                "gen/services/device/public/mojom/battery_status.mojom.m.js",
+                "gen/services/device/public/mojom/pressure_manager.mojom.m.js",
+                "gen/services/device/public/mojom/pressure_update.mojom.m.js"
             ],
             "file_globs": [
                 "gen/gpu/ipc/common/mailbox*.mojom.m.js",
@@ -144,6 +148,14 @@
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "Linux_x64/{%position%}/pnacl.zip",
             "archive_type": "ARCHIVE_TYPE_ZIP"
+        },
+        {
+            "files": [
+                "updater.zip"
+            ],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "Linux_x64/{%position%}",
+            "archive_type": "ARCHIVE_TYPE_FILES"
         }
     ]
 }

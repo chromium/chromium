@@ -172,6 +172,7 @@ class SkiaOutputSurfaceImplOnGpu
   void SwapBuffersSkipped();
   void EnsureBackbuffer();
   void DiscardBackbuffer();
+  // |update_rect| is in buffer space.
   // If is |is_overlay| is true, the ScopedWriteAccess will be saved and kept
   // open until PostSubmit().
   void FinishPaintRenderPass(
@@ -182,6 +183,7 @@ class SkiaOutputSurfaceImplOnGpu
       std::vector<gpu::SyncToken> sync_tokens,
       base::OnceClosure on_finished,
       base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb,
+      const gfx::Rect& update_rect,
       bool is_overlay);
   // Deletes resources for RenderPasses in |ids|. Also takes ownership of
   // |images_contexts| and destroys them on GPU thread.

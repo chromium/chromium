@@ -12,10 +12,13 @@
 #import "components/commerce/core/shopping_service.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/payments/core/currency_formatter.h"
+#import "components/power_bookmarks/core/power_bookmark_utils.h"
+#import "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
+#import "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
 #import "ios/chrome/browser/push_notification/push_notification_util.h"
-#import "ios/chrome/browser/ui/commands/bookmark_add_command.h"
-#import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
-#import "ios/chrome/browser/ui/commands/price_notifications_commands.h"
+#import "ios/chrome/browser/shared/public/commands/bookmark_add_command.h"
+#import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
+#import "ios/chrome/browser/shared/public/commands/price_notifications_commands.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_table_view_item.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_alert_presenter.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_consumer.h"
@@ -40,6 +43,10 @@ using PriceNotificationItems =
 @property(nonatomic, assign) bookmarks::BookmarkModel* bookmarkModel;
 // The current browser state's webstate.
 @property(nonatomic, assign) web::WebState* webState;
+// The product data for the product contained on the site the user is currently
+// viewing.
+@property(nonatomic, assign) absl::optional<commerce::ProductInfo>
+    currentSiteProductInfo;
 
 @end
 
@@ -72,8 +79,7 @@ using PriceNotificationItems =
   }
 
   _consumer = consumer;
-  [self fetchTrackableItemDataAtSite:self.webState->GetVisibleURL()];
-  [self fetchTrackedItems];
+  [self fetchPriceTrackingData];
 }
 
 #pragma mark - PriceNotificationsMutator
@@ -100,6 +106,7 @@ using PriceNotificationItems =
   // tracking.
   const bookmarks::BookmarkNode* bookmark =
       self.bookmarkModel->GetMostRecentlyAddedUserNodeForURL(item.entryURL);
+  bool isNewBookmark = bookmark == nullptr;
   if (!bookmark) {
     const bookmarks::BookmarkNode* defaultFolder =
         self.bookmarkModel->mobile_node();
@@ -112,7 +119,8 @@ using PriceNotificationItems =
       self.shoppingService, self.bookmarkModel, bookmark, true,
       base::BindOnce(^(bool success) {
         [weakSelf didTrackItem:item successfully:success];
-      }));
+      }),
+      isNewBookmark);
 }
 
 - (void)stopTrackingItem:(PriceNotificationsTableViewItem*)item {
@@ -157,26 +165,12 @@ using PriceNotificationItems =
 // This function fetches the product data for the item on the currently visible
 // page and populates the data into the Price Notifications UI.
 - (void)fetchTrackableItemDataAtSite:(const GURL&)URL {
-  // Checks if the item being offered on the current site is already being
-  // tracked.
-  if (self.bookmarkModel->IsBookmarked(URL)) {
-    std::vector<const bookmarks::BookmarkNode*> nodes;
-    self.bookmarkModel->GetNodesByURL(URL, &nodes);
-    const bookmarks::BookmarkNode* node = nodes[0];
-    if (commerce::IsBookmarkPriceTracked(self.bookmarkModel, node)) {
-      [self.consumer setTrackableItem:nil currentlyTracking:YES];
-      return;
-    }
+  if ([self isPriceTrackingURL:URL]) {
+    [self.consumer setTrackableItem:nil currentlyTracking:YES];
+    return;
   }
 
-  __weak PriceNotificationsPriceTrackingMediator* weakSelf = self;
-
-  self.shoppingService->GetProductInfoForUrl(
-      URL, base::BindOnce(
-               ^(const GURL& productURL,
-                 const absl::optional<commerce::ProductInfo>& productInfo) {
-                 [weakSelf displayProduct:productInfo fromSite:productURL];
-               }));
+  [self displayProduct:self.currentSiteProductInfo fromSite:URL];
 }
 
 // Creates a `PriceNotificationsTableViewItem` object and sends the newly
@@ -266,28 +260,89 @@ using PriceNotificationItems =
 // This function handles the response from the user attempting to unsubscribe to
 // an item with the ShoppingService.
 - (void)didStopTrackingItem:(PriceNotificationsTableViewItem*)item {
-  [self.consumer
-      didStopPriceTrackingItem:item
-                 onCurrentSite:self.webState->GetVisibleURL() == item.entryURL];
+  __weak PriceNotificationsPriceTrackingMediator* weakSelf = self;
+  self.shoppingService->GetProductInfoForUrl(
+      item.entryURL,
+      base::BindOnce(^(
+          const GURL& productURL,
+          const absl::optional<commerce::ProductInfo>& productInfo) {
+        PriceNotificationsPriceTrackingMediator* strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+
+        BOOL isProductOnCurrentSite =
+            [strongSelf isCurrentSiteEqualToProductInfo:productInfo];
+        [strongSelf.consumer didStopPriceTrackingItem:item
+                                        onCurrentSite:isProductOnCurrentSite];
+      }));
 }
 
 // This function fetches the product data for the items the user has subscribed
 // to and populates the data into the Price Notifications UI.
 - (void)fetchTrackedItems {
-  std::vector<const bookmarks::BookmarkNode*> subscribedItems =
-      commerce::GetAllPriceTrackedBookmarks(self.bookmarkModel);
-  std::vector<int64_t> bookmarkIDs;
-  for (const bookmarks::BookmarkNode* bookmark : subscribedItems) {
-    bookmarkIDs.push_back(bookmark->id());
-  }
-
   __weak PriceNotificationsPriceTrackingMediator* weakSelf = self;
-  self.shoppingService->GetUpdatedProductInfoForBookmarks(
-      bookmarkIDs,
-      base::BindRepeating(^(const int64_t bookmarkID, const GURL& productURL,
-                            absl::optional<commerce::ProductInfo> productInfo) {
-        [weakSelf addTrackedItem:productInfo fromSite:productURL];
-      }));
+  commerce::GetAllPriceTrackedBookmarks(
+      self.shoppingService, self.bookmarkModel,
+      base::BindOnce(
+          ^(std::vector<const bookmarks::BookmarkNode*> subscribedItems) {
+            if (!weakSelf) {
+              return;
+            }
+            for (const bookmarks::BookmarkNode* bookmark : subscribedItems) {
+              std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
+                  power_bookmarks::GetNodePowerBookmarkMeta(
+                      weakSelf.bookmarkModel, bookmark);
+              if (!meta || !meta->has_shopping_specifics()) {
+                continue;
+              }
+              const power_bookmarks::ShoppingSpecifics specifics =
+                  meta->shopping_specifics();
+              // To build the PriceNotificationTableViewItem for product on
+              // current page which are not being tracked, we have to use its
+              // ProductInfo. To avoid duplicate APIs, here we also convert
+              // BookmarkMeta to ProductInfo to build the
+              // PriceNotificationTableViewItem for tracked products, instead of
+              // passing BookmarkMeta directly.
+              absl::optional<commerce::ProductInfo> info;
+              info.emplace();
+              info->title = specifics.title();
+              info->image_url = GURL(meta->lead_image().url());
+              info->product_cluster_id = specifics.product_cluster_id();
+              info->offer_id = specifics.offer_id();
+              info->currency_code = specifics.current_price().currency_code();
+              info->amount_micros = specifics.current_price().amount_micros();
+              info->country_code = specifics.country_code();
+              if (specifics.has_previous_price() &&
+                  specifics.previous_price().amount_micros() >
+                      specifics.current_price().amount_micros()) {
+                info->previous_amount_micros.emplace(
+                    specifics.previous_price().amount_micros());
+              }
+              [weakSelf addTrackedItem:info fromSite:bookmark->url()];
+            }
+          }));
+}
+
+// Retrieves the product data for the items the user has subscribed to and the
+// item contained on the webpage the user is currently viewing.
+- (void)fetchPriceTrackingData {
+  const GURL& currentSiteURL = self.webState->GetVisibleURL();
+  __weak PriceNotificationsPriceTrackingMediator* weakSelf = self;
+  self.shoppingService->GetProductInfoForUrl(
+      currentSiteURL,
+      base::BindOnce(
+          ^(const GURL& productURL,
+            const absl::optional<commerce::ProductInfo>& productInfo) {
+            PriceNotificationsPriceTrackingMediator* strongSelf = weakSelf;
+            if (!strongSelf) {
+              return;
+            }
+
+            strongSelf.currentSiteProductInfo = productInfo;
+            [strongSelf fetchTrackableItemDataAtSite:currentSiteURL];
+            [strongSelf fetchTrackedItems];
+          }));
 }
 
 // Creates a `PriceNotificationsTableViewItem` object and sends the newly
@@ -302,8 +357,9 @@ using PriceNotificationItems =
       [self createPriceNotificationTableViewItem:YES
                                  fromProductInfo:productInfo
                                            atURL:URL];
-  [self.consumer addTrackedItem:item
-                    toBeginning:self.webState->GetVisibleURL() == URL];
+  [self.consumer
+      addTrackedItem:item
+         toBeginning:[self isCurrentSiteEqualToProductInfo:productInfo]];
 
   __weak PriceNotificationsPriceTrackingMediator* weakSelf = self;
   // Fetches the current item's trackable image.
@@ -339,6 +395,47 @@ using PriceNotificationItems =
   }
 
   return item;
+}
+
+// Compares two commerce::ProductInfo objects for equality based on the
+// `product_cluster_id` property.
+- (BOOL)isCurrentSiteEqualToProductInfo:
+    (const absl::optional<commerce::ProductInfo>&)productInfo {
+  if (!productInfo || !self.currentSiteProductInfo) {
+    return false;
+  }
+
+  return productInfo->product_cluster_id ==
+         self.currentSiteProductInfo->product_cluster_id;
+}
+
+// Checks if the item being offered at `URL` is already
+// bookmarked and being price tracked.
+- (BOOL)isPriceTrackingURL:(const GURL&)URL {
+  if (!self.bookmarkModel->IsBookmarked(URL)) {
+    return false;
+  }
+
+  std::vector<const bookmarks::BookmarkNode*> nodes;
+  self.bookmarkModel->GetNodesByURL(URL, &nodes);
+  for (const bookmarks::BookmarkNode* node : nodes) {
+    std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
+        power_bookmarks::GetNodePowerBookmarkMeta(self.bookmarkModel, node);
+
+    if (!meta || !meta->has_shopping_specifics() ||
+        !meta->shopping_specifics().has_product_cluster_id()) {
+      continue;
+    }
+
+    // TODO: This should use the async version of IsSubscribed.
+    if (self.shoppingService->IsSubscribedFromCache(
+            commerce::BuildUserSubscriptionForClusterId(
+                meta->shopping_specifics().product_cluster_id()))) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 @end

@@ -5,6 +5,8 @@
 #ifndef CC_TEST_FAKE_MASK_LAYER_IMPL_H_
 #define CC_TEST_FAKE_MASK_LAYER_IMPL_H_
 
+#include <memory>
+
 #include "cc/layers/picture_layer_impl.h"
 #include "cc/raster/raster_source.h"
 

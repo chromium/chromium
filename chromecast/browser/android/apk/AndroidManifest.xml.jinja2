@@ -12,13 +12,28 @@
     <uses-sdk android:minSdkVersion="24"/>
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.START_ACTIVITIES_FROM_BACKGROUND"
+                     tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
     <!-- Needed because CastWebContentsActivity sets orientation to landscape. -->
     <uses-feature android:name="android.hardware.screen.landscape" android:required="false" />
 
-    <application android:icon="@drawable/ic_settings_cast">
+    <application android:name="org.chromium.chromecast.shell.CastApplication"
+                 android:icon="@drawable/ic_settings_cast">
+        <service android:name="org.chromium.chromecast.shell.CastBrowserService"
+                 android:hardwareAccelerated="true"
+                 android:label="Chromecast Web Browser"
+                 android:exported="true"
+                 tools:ignore="ExportedService">
+            <intent-filter>
+                <action android:name="com.google.cast.action.START_CAST_BROWSER" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
         <service android:name="org.chromium.chromecast.shell.CastWebContentsService"/>
 
         <activity android:name="org.chromium.chromecast.shell.CastWebContentsActivity"

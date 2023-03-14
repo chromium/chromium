@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/test_future.h"
+#include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
@@ -35,10 +36,12 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/window_controls_overlay_toggle_button.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -76,6 +79,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+#include "chrome/browser/ui/views/frame/opaque_browser_frame_view_layout.h"
 #endif
 
 namespace {
@@ -442,69 +449,42 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_NoElidedExtensionsMenu,
 
 // Borderless has not been implemented for win/mac.
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
-class WebAppFrameToolbarBrowserTest_Borderless
-    : public WebAppFrameToolbarBrowserTest {
+class BorderlessIsolatedWebAppBrowserTest
+    : public web_app::IsolatedWebAppBrowserTestHarness {
  public:
-  WebAppFrameToolbarBrowserTest_Borderless() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kWebAppBorderless);
+  BorderlessIsolatedWebAppBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode,
+         blink::features::kWebAppBorderless},
+        {});
   }
 
-  void SetUp() override {
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    embedded_test_server()->ServeFilesFromDirectory(temp_dir_.GetPath());
-    ASSERT_TRUE(embedded_test_server()->Start());
-    WebAppFrameToolbarBrowserTest::SetUp();
-  }
-
-  web_app::AppId InstallAndLaunchWebApp(bool uses_borderless) {
-    EXPECT_TRUE(https_server()->Start());
-
-    GURL start_url = helper()->LoadBorderlessTestPageWithDataAndGetURL(
-        embedded_test_server(), &temp_dir_);
-
-    auto web_app_info = std::make_unique<WebAppInstallInfo>();
-    web_app_info->start_url = start_url;
-    web_app_info->scope = start_url.GetWithoutFilename();
-    web_app_info->title = u"A borderless app";
-    web_app_info->display_mode = web_app::DisplayMode::kStandalone;
-    web_app_info->user_display_mode =
-        web_app::mojom::UserDisplayMode::kStandalone;
+  void InstallAndLaunchIsolatedWebApp(bool uses_borderless) {
+    isolated_web_app_dev_server_ = CreateAndStartServer(
+        FILE_PATH_LITERAL(uses_borderless ? "web_apps/borderless_isolated_app"
+                                          : "web_apps/simple_isolated_app"));
+    web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
+        isolated_web_app_dev_server().GetOrigin());
+    browser_ = GetBrowserFromFrame(OpenApp(url_info.app_id()));
+    browser_view_ = BrowserView::GetBrowserViewForBrowser(browser_);
 
     if (uses_borderless) {
-      web_app_info->display_override = {web_app::DisplayMode::kBorderless};
+      // In web_apps/borderless_isolated_app/borderless.js the title is set on
+      // `window.onload`. This is to make sure that the web contents have loaded
+      // before doing any checks and to reduce the flakiness of the tests.
+      content::TitleWatcher title_watcher(
+          browser_view()->GetActiveWebContents(), kBorderlessAppOnloadTitle);
+      EXPECT_EQ(title_watcher.WaitAndGetTitle(), kBorderlessAppOnloadTitle);
     }
+    EXPECT_EQ(uses_borderless, browser_view()->AppUsesBorderlessMode());
 
-    web_app::AppId app_id = helper()->InstallAndLaunchCustomWebApp(
-        browser(), std::move(web_app_info), start_url);
-
-    {
-      // TODO(b/267797051): Use IWA installation commands to install the app.
-      auto* provider = web_app::WebAppProvider::GetForTest(profile());
-      web_app::ScopedRegistryUpdate(&provider->sync_bridge_unsafe())
-          ->UpdateApp(app_id)
-          ->SetIsolationData(
-              web_app::WebApp::IsolationData(web_app::DevModeProxy{
-                  .proxy_url = url::Origin::Create(start_url)}));
-    }
-
-    // Inside LoadBorderlessTestPageWithDataAndGetURL() the title is set on
-    // window.onload. This is to make sure that the web contents have loaded
-    // before doing any checks and to reduce the flakiness of the tests.
-    content::TitleWatcher title_watcher(
-        helper()->browser_view()->GetActiveWebContents(),
-        kBorderlessAppOnloadTitle);
-    EXPECT_EQ(title_watcher.WaitAndGetTitle(), kBorderlessAppOnloadTitle);
-
-    EXPECT_EQ(uses_borderless,
-              helper()->browser_view()->AppUsesBorderlessMode());
-    helper()->browser_view()->set_isolated_web_app_true_for_testing();
-    return app_id;
+    views::NonClientFrameView* frame_view =
+        browser_view()->GetWidget()->non_client_view()->frame_view();
+    frame_view_ = static_cast<BrowserNonClientFrameView*>(frame_view);
   }
 
   void GrantWindowManagementPermission() {
-    auto* web_contents = helper()->browser_view()->GetActiveWebContents();
-
+    auto* web_contents = browser_view()->GetActiveWebContents();
     std::string permission_auto_approve_script = R"(
       const draggable = document.getElementById('draggable');
       draggable.setAttribute('allow', 'window-placement');
@@ -534,34 +514,106 @@ class WebAppFrameToolbarBrowserTest_Borderless
     ASSERT_EQ(title_watcher.WaitAndGetTitle(), kExpectedMatchMediaTitle);
   }
 
+  BorderlessIsolatedWebAppBrowserTest(
+      const BorderlessIsolatedWebAppBrowserTest&) = delete;
+  BorderlessIsolatedWebAppBrowserTest& operator=(
+      const BorderlessIsolatedWebAppBrowserTest&) = delete;
+
  protected:
-  // This string must match with the title set on
-  // WebAppFrameToolbarTestHelper::LoadBorderlessTestPageWithDataAndGetURL().
+  // This string must match with the title set in the `window.onload` function
+  // in web_apps/borderless_isolated_app/borderless.js.
   const std::u16string kBorderlessAppOnloadTitle = u"Borderless";
+
+  BrowserView* browser_view() { return browser_view_; }
+
+  WebAppFrameToolbarView* web_app_frame_toolbar() {
+    return browser_view()->web_app_frame_toolbar_for_testing();
+  }
+
+  BrowserNonClientFrameView* frame_view() { return frame_view_; }
+
+  const net::EmbeddedTestServer& isolated_web_app_dev_server() {
+    return *isolated_web_app_dev_server_.get();
+  }
+
+  // Opens a new popup window from `browser_` by running
+  // `window_open_script` and returns the `BrowserView` of the popup it opened.
+  BrowserView* OpenPopup(const std::string& window_open_script) {
+    content::ExecuteScriptAsync(browser_view_->GetActiveWebContents(),
+                                window_open_script);
+    Browser* popup = ui_test_utils::WaitForBrowserToOpen();
+    EXPECT_NE(browser_, popup);
+    EXPECT_TRUE(popup);
+
+    BrowserView* popup_browser_view =
+        BrowserView::GetBrowserViewForBrowser(popup);
+    EXPECT_TRUE(content::WaitForRenderFrameReady(
+        popup_browser_view->GetActiveWebContents()->GetPrimaryMainFrame()));
+
+    return popup_browser_view;
+  }
+
+  bool IsWindowSizeCorrect(BrowserView* browser_view,
+                           gfx::Size& expected_inner_size,
+                           gfx::Size& expected_outer_size) {
+    auto* web_contents = browser_view->GetActiveWebContents();
+
+    const auto& client_view_size = browser_view->frame()->client_view()->size();
+
+    return client_view_size.height() == expected_inner_size.height() &&
+           client_view_size.width() == expected_inner_size.width() &&
+           EvalJs(web_contents, "window.innerHeight").ExtractInt() ==
+               expected_inner_size.height() &&
+           EvalJs(web_contents, "window.outerHeight").ExtractInt() ==
+               expected_outer_size.height() &&
+           EvalJs(web_contents, "window.innerWidth").ExtractInt() ==
+               expected_inner_size.width() &&
+           EvalJs(web_contents, "window.outerWidth").ExtractInt() ==
+               expected_outer_size.width();
+  }
+
+  void WaitForWindowSizeCorrectlyUpdated(BrowserView* browser_view,
+                                         gfx::Size& expected_inner_size,
+                                         gfx::Size& expected_outer_size) {
+    auto* web_contents = browser_view->GetActiveWebContents();
+
+    while (!(web_contents->CompletedFirstVisuallyNonEmptyPaint() &&
+             !web_contents->IsLoading() &&
+             web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame() &&
+             IsWindowSizeCorrect(browser_view, expected_inner_size,
+                                 expected_outer_size))) {
+      base::RunLoop run_loop;
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
+      run_loop.Run();
+    }
+
+    ASSERT_TRUE(content::WaitForLoadStop(web_contents));
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::ScopedTempDir temp_dir_;
+  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server_;
+  Browser* browser_;
+  BrowserView* browser_view_;
+  BrowserNonClientFrameView* frame_view_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
+IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
                        AppUsesBorderlessModeAndHasWindowManagementPermission) {
-  InstallAndLaunchWebApp(/*uses_borderless=*/true);
+  InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
   GrantWindowManagementPermission();
 
-  ASSERT_TRUE(helper()->browser_view()->borderless_mode_enabled_for_testing());
-  ASSERT_TRUE(helper()
-                  ->browser_view()
-                  ->window_management_permission_granted_for_testing());
-  ASSERT_TRUE(helper()->browser_view()->IsBorderlessModeEnabled());
-  ASSERT_FALSE(
-      helper()->web_app_frame_toolbar()->GetAppMenuButton()->GetVisible());
+  ASSERT_TRUE(
+      browser_view()->window_management_permission_granted_for_testing());
+  ASSERT_TRUE(browser_view()->IsBorderlessModeEnabled());
+  ASSERT_FALSE(web_app_frame_toolbar()->GetAppMenuButton()->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
+IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
                        DisplayModeMediaCSS) {
-  InstallAndLaunchWebApp(/*uses_borderless=*/true);
-  auto* web_contents = helper()->browser_view()->GetActiveWebContents();
+  InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
+  auto* web_contents = browser_view()->GetActiveWebContents();
 
   std::string get_background_color = R"(
     window.getComputedStyle(document.body, null)
@@ -580,7 +632,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
   ASSERT_EQ(blue, EvalJs(web_contents, get_background_color));
 
   GrantWindowManagementPermission();
-  ASSERT_TRUE(helper()->browser_view()->IsBorderlessModeEnabled());
+  ASSERT_TRUE(browser_view()->IsBorderlessModeEnabled());
 
   // Validate that after granting the permission the display-mode matches with
   // "borderless" and updates the background-color accordingly.
@@ -589,70 +641,65 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    WebAppFrameToolbarBrowserTest_Borderless,
+    BorderlessIsolatedWebAppBrowserTest,
     AppUsesBorderlessModeAndDoesNotHaveWindowManagementPermission) {
-  InstallAndLaunchWebApp(/*uses_borderless=*/true);
-  ASSERT_TRUE(helper()->browser_view()->borderless_mode_enabled_for_testing());
-  ASSERT_FALSE(helper()
-                   ->browser_view()
-                   ->window_management_permission_granted_for_testing());
-  ASSERT_FALSE(helper()->browser_view()->IsBorderlessModeEnabled());
+  InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
+  ASSERT_TRUE(browser_view()->borderless_mode_enabled_for_testing());
+  ASSERT_FALSE(
+      browser_view()->window_management_permission_granted_for_testing());
+  ASSERT_FALSE(browser_view()->IsBorderlessModeEnabled());
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
+IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
                        AppDoesntUseBorderlessMode) {
-  InstallAndLaunchWebApp(/*uses_borderless=*/false);
-  ASSERT_FALSE(helper()->browser_view()->borderless_mode_enabled_for_testing());
-  ASSERT_FALSE(helper()
-                   ->browser_view()
-                   ->window_management_permission_granted_for_testing());
-  ASSERT_FALSE(helper()->browser_view()->IsBorderlessModeEnabled());
-  ASSERT_TRUE(
-      helper()->web_app_frame_toolbar()->GetAppMenuButton()->GetVisible());
+  InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/false);
+  ASSERT_FALSE(browser_view()->borderless_mode_enabled_for_testing());
+  ASSERT_FALSE(
+      browser_view()->window_management_permission_granted_for_testing());
+  ASSERT_FALSE(browser_view()->IsBorderlessModeEnabled());
+  ASSERT_TRUE(web_app_frame_toolbar()->GetAppMenuButton()->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
+IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
                        PopupToItselfIsBorderless) {
-  InstallAndLaunchWebApp(/*uses_borderless=*/true);
+  InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
   GrantWindowManagementPermission();
-  ASSERT_TRUE(helper()->browser_view()->IsBorderlessModeEnabled());
+  ASSERT_TRUE(browser_view()->IsBorderlessModeEnabled());
 
   // Popup to itself.
-  auto url = EvalJs(helper()->browser_view()->GetActiveWebContents(),
-                    "window.location.href")
-                 .ExtractString();
+  auto url =
+      EvalJs(browser_view()->GetActiveWebContents(), "window.location.href")
+          .ExtractString();
   BrowserView* popup_browser_view =
-      helper()->OpenPopup("window.open('" + url + "', '_blank', 'popup');");
-  popup_browser_view->set_isolated_web_app_true_for_testing();
+      OpenPopup("window.open('" + url + "', '_blank', 'popup');");
   EXPECT_TRUE(popup_browser_view->IsBorderlessModeEnabled());
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
+IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
                        PopupToAnyOtherOriginIsNotBorderless) {
-  InstallAndLaunchWebApp(/*uses_borderless=*/true);
+  InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
   GrantWindowManagementPermission();
-  ASSERT_TRUE(helper()->browser_view()->IsBorderlessModeEnabled());
+  ASSERT_TRUE(browser_view()->IsBorderlessModeEnabled());
 
   // Popup to any other website outside of the same origin.
-  BrowserView* popup_browser_view = helper()->OpenPopup(
-      "window.open('https://google.com', '_blank', 'popup');");
+  BrowserView* popup_browser_view =
+      OpenPopup("window.open('https://google.com', '_blank', 'popup');");
   EXPECT_FALSE(popup_browser_view->IsBorderlessModeEnabled());
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless, PopupSize) {
-  InstallAndLaunchWebApp(/*uses_borderless=*/true);
+IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest, PopupSize) {
+  InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
   GrantWindowManagementPermission();
-  ASSERT_TRUE(helper()->browser_view()->IsBorderlessModeEnabled());
+  ASSERT_TRUE(browser_view()->IsBorderlessModeEnabled());
 
-  auto url = EvalJs(helper()->browser_view()->GetActiveWebContents(),
-                    "window.location.href")
-                 .ExtractString();
+  auto url =
+      EvalJs(browser_view()->GetActiveWebContents(), "window.location.href")
+          .ExtractString();
 
   BrowserView* popup_browser_view =
-      helper()->OpenPopup("window.open('" + url +
-                          "', '', 'location=0, status=0, scrollbars=0, "
-                          "left=0, top=0, width=400, height=300');");
-  popup_browser_view->set_isolated_web_app_true_for_testing();
+      OpenPopup("window.open('" + url +
+                "', '', 'location=0, status=0, scrollbars=0, "
+                "left=0, top=0, width=400, height=300');");
   EXPECT_TRUE(popup_browser_view->IsBorderlessModeEnabled());
   auto* popup_web_contents = popup_browser_view->GetActiveWebContents();
 
@@ -663,34 +710,38 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless, PopupSize) {
   EXPECT_EQ(init_title_watcher.WaitAndGetTitle(), kBorderlessAppOnloadTitle);
 
   constexpr int kExpectedWidth = 400, kExpectedHeight = 300;
-  const auto& client_view_size =
-      popup_browser_view->frame()->client_view()->size();
-  EXPECT_EQ(client_view_size.height(), kExpectedHeight);
-  EXPECT_EQ(client_view_size.width(), kExpectedWidth);
-  EXPECT_EQ(EvalJs(popup_web_contents, "window.innerHeight").ExtractInt(),
-            kExpectedHeight);
-  EXPECT_EQ(EvalJs(popup_web_contents, "window.outerHeight").ExtractInt(),
-            kExpectedHeight);
-  EXPECT_EQ(EvalJs(popup_web_contents, "window.innerWidth").ExtractInt(),
-            kExpectedWidth);
-  EXPECT_EQ(EvalJs(popup_web_contents, "window.outerWidth").ExtractInt(),
-            kExpectedWidth);
+  gfx::Size expected_size(kExpectedWidth, kExpectedHeight);
+
+// For ChromeOS the resizable borders are "outside of the window" where as for
+// Linux they are "inside of the window".
+#if BUILDFLAG(IS_CHROMEOS)
+  WaitForWindowSizeCorrectlyUpdated(popup_browser_view, expected_size,
+                                    expected_size);
+#elif BUILDFLAG(IS_LINUX)
+  constexpr int kFrameInsets =
+      2 * OpaqueBrowserFrameViewLayout::kFrameBorderThickness;
+  // window.open() sets the inner size to match with the given size.
+  gfx::Size expected_outer_size(kExpectedWidth + kFrameInsets,
+                                kExpectedHeight + kFrameInsets);
+  WaitForWindowSizeCorrectlyUpdated(popup_browser_view, expected_size,
+                                    expected_outer_size);
+#endif
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless, PopupResize) {
-  InstallAndLaunchWebApp(/*uses_borderless=*/true);
+IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest, PopupResize) {
+  InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
   GrantWindowManagementPermission();
-  ASSERT_TRUE(helper()->browser_view()->IsBorderlessModeEnabled());
+  ASSERT_TRUE(browser_view()->IsBorderlessModeEnabled());
 
-  auto url = EvalJs(helper()->browser_view()->GetActiveWebContents(),
-                    "window.location.href")
-                 .ExtractString();
+  auto url =
+      EvalJs(browser_view()->GetActiveWebContents(), "window.location.href")
+          .ExtractString();
 
   BrowserView* popup_browser_view =
-      helper()->OpenPopup("window.open('" + url +
-                          "', '', 'location=0, status=0, scrollbars=0, "
-                          "left=0, top=0, width=400, height=300');");
-  popup_browser_view->set_isolated_web_app_true_for_testing();
+      OpenPopup("window.open('" + url +
+                "', '', 'location=0, status=0, scrollbars=0, "
+                "left=0, top=0, width=400, height=300');");
+
   EXPECT_TRUE(popup_browser_view->IsBorderlessModeEnabled());
   auto* popup_web_contents = popup_browser_view->GetActiveWebContents();
 
@@ -700,64 +751,59 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless, PopupResize) {
                                            kBorderlessAppOnloadTitle);
   EXPECT_EQ(init_title_watcher.WaitAndGetTitle(), kBorderlessAppOnloadTitle);
 
-  content::TitleWatcher resized_title_watcher(popup_web_contents, u"resized");
-  EXPECT_TRUE(ExecJs(popup_web_contents,
-                     "document.title = 'beforeevent';"
-                     "window.onresize = (e) => {"
-                     "  document.title = 'resized';"
-                     "}"));
-  EXPECT_TRUE(ExecJs(popup_web_contents, "window.resizeTo(600,500);"));
+  const std::u16string kResizeTitle = u"resized";
+  content::TitleWatcher resized_title_watcher(popup_web_contents, kResizeTitle);
+
+  const std::string kOnResizeScript = content::JsReplace(R"(
+    document.title = 'beforeevent';
+    window.onresize = (e) => {
+      document.title = $1;
+    }
+  )",
+                                                         kResizeTitle);
+
+  EXPECT_TRUE(ExecJs(popup_web_contents, kOnResizeScript));
+  EXPECT_TRUE(ExecJs(popup_web_contents, "window.resizeTo(600,500)"));
   std::ignore = resized_title_watcher.WaitAndGetTitle();
-  EXPECT_EQ(popup_web_contents->GetTitle(), u"resized");
+  EXPECT_EQ(popup_web_contents->GetTitle(), kResizeTitle);
 
   constexpr int kExpectedWidth = 600, kExpectedHeight = 500;
-  const auto& client_view_size =
-      popup_browser_view->frame()->client_view()->size();
-  EXPECT_EQ(client_view_size.height(), kExpectedHeight);
-  EXPECT_EQ(client_view_size.width(), kExpectedWidth);
+  gfx::Size expected_size(kExpectedWidth, kExpectedHeight);
 
-#if !BUILDFLAG(IS_LINUX)  // TODO(crbug.com/1412331): Flaky on Linux.
-  EXPECT_EQ(EvalJs(popup_web_contents, "window.innerHeight").ExtractInt(),
-            kExpectedHeight);
-  EXPECT_EQ(EvalJs(popup_web_contents, "window.outerHeight").ExtractInt(),
-            kExpectedHeight);
-  EXPECT_EQ(EvalJs(popup_web_contents, "window.innerWidth").ExtractInt(),
-            kExpectedWidth);
-  EXPECT_EQ(EvalJs(popup_web_contents, "window.outerWidth").ExtractInt(),
-            kExpectedWidth);
+#if BUILDFLAG(IS_CHROMEOS)
+  WaitForWindowSizeCorrectlyUpdated(popup_browser_view, expected_size,
+                                    expected_size);
+#elif BUILDFLAG(IS_LINUX)
+  constexpr int kFrameInsets =
+      2 * OpaqueBrowserFrameViewLayout::kFrameBorderThickness;
+  // window.resizeTo() sets the outer size to match with the given size.
+  gfx::Size expected_inner_size(kExpectedWidth - kFrameInsets,
+                                kExpectedHeight - kFrameInsets);
+  WaitForWindowSizeCorrectlyUpdated(popup_browser_view, expected_inner_size,
+                                    expected_size);
 #endif
 }
 
 // Test to ensure that the minimum size for a borderless app is as small as
 // possible. To test the fix for b/265935069.
-IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
-                       FrameMinimumSize) {
-  InstallAndLaunchWebApp(/*uses_borderless=*/true);
+IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest, FrameMinimumSize) {
+  InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
   GrantWindowManagementPermission();
 
-  ASSERT_TRUE(helper()->browser_view()->borderless_mode_enabled_for_testing());
-  ASSERT_TRUE(helper()
-                  ->browser_view()
-                  ->window_management_permission_granted_for_testing());
-  ASSERT_TRUE(helper()->browser_view()->IsBorderlessModeEnabled());
+  ASSERT_TRUE(browser_view()->borderless_mode_enabled_for_testing());
+  ASSERT_TRUE(
+      browser_view()->window_management_permission_granted_for_testing());
+  ASSERT_TRUE(browser_view()->IsBorderlessModeEnabled());
 
   // The minimum size of a window is smaller for a borderless mode app than for
   // a normal app. The size of the borders is inconsistent (and we don't have
   // access to the exact borders from here) and varies by OS.
 #if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_LT(helper()->frame_view()->GetMinimumSize().width(),
+  EXPECT_LT(frame_view()->GetMinimumSize().width(),
             BrowserViewLayout::kMainBrowserContentsMinimumWidth);
 #elif BUILDFLAG(IS_LINUX)
-  EXPECT_EQ(helper()->frame_view()->GetMinimumSize(), gfx::Size(1, 1));
+  EXPECT_EQ(frame_view()->GetMinimumSize(), gfx::Size(1, 1));
 #endif
-}
-
-// TODO(https://crbug.com/1277860): Flaky.
-IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
-                       DISABLED_DraggableRegions) {
-  InstallAndLaunchWebApp(/*uses_borderless=*/true);
-
-  helper()->TestDraggableRegions();
 }
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 
@@ -1214,7 +1260,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   EXPECT_EQ(initial_height_value, updated_rect_list[3].GetInt());
 }
 
-// TODO(https://crbug.com/1277860): Flaky.
+// TODO(https://crbug.com/1277860): Flaky. Also enable for borderless mode when
+// fixed.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                        DISABLED_WindowControlsOverlayDraggableRegions) {
   InstallAndLaunchWebApp();

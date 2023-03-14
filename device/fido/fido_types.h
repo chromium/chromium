@@ -90,6 +90,15 @@ enum class LargeBlobSupportType {
   kExtension,
 };
 
+// AuthenticatorType enumerates the different types of authenticators that this
+// code handles.
+enum class AuthenticatorType {
+  kWinNative,  // i.e. webauthn.dll
+  kTouchID,    // the Chrome-native Touch ID integration on macOS
+  kChromeOS,   // the platform authenticator on Chrome OS
+  kOther,
+};
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FIDO_TYPES_H_

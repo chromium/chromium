@@ -4,12 +4,13 @@
 
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -146,7 +147,7 @@ base::StringPiece TransportAvailabilityParamToString(
 template <typename T, base::StringPiece (*F)(T)>
 std::string SetToString(base::flat_set<T> s) {
   std::vector<base::StringPiece> names;
-  std::transform(s.begin(), s.end(), std::back_inserter(names), F);
+  base::ranges::transform(s, std::back_inserter(names), F);
   return base::JoinString(names, ", ");
 }
 
@@ -204,9 +205,12 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
   const auto use_pk = Step::kPreSelectSingleAccount;
   const auto use_pk_multi = Step::kPreSelectAccount;
   const auto qr = Step::kCableV2QRCode;
+
   const auto qr1st = base::test::FeatureRef(device::kWebAuthPasskeysUI);
+  const std::vector<base::test::FeatureRef> kAllFeatures = {qr1st};
 
   const struct {
+    int line_num;
     RequestType request_type;
     base::flat_set<AuthenticatorTransport> transports;
     base::flat_set<TransportAvailabilityParam> params;
@@ -216,23 +220,26 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
     Step expected_first_step;
     std::vector<base::test::FeatureRef> features;
   } kTests[] = {
+#define L __LINE__
       // If there's only a single mechanism, it should activate.
-      {mc, {usb}, {}, {}, {t(usb)}, usb_ui},
-      {ga, {usb}, {}, {}, {t(usb)}, usb_ui},
+      {L, mc, {usb}, {}, {}, {t(usb)}, usb_ui},
+      {L, ga, {usb}, {}, {}, {t(usb)}, usb_ui},
       // ... otherwise should the selection sheet.
-      {ga, {usb, cable}, {}, {}, {t(usb), add}, mss},
-      {ga, {usb, cable}, {}, {}, {t(usb), add}, mss},
+      {L, ga, {usb, cable}, {}, {}, {add, t(usb)}, mss},
+      {L, ga, {usb, cable}, {}, {}, {add, t(usb)}, mss},
 
       // If the platform authenticator has a credential it should activate.
-      {ga, {usb, internal}, {has_plat}, {}, {t(internal), t(usb)}, plat_ui},
+      {L, ga, {usb, internal}, {has_plat}, {}, {t(internal), t(usb)}, plat_ui},
       // ... but with an empty allow list the user should be prompted first.
-      {ga,
+      {L,
+       ga,
        {usb, internal},
        {has_plat, one_cred, empty_al},
        {},
        {t(internal), t(usb)},
        use_pk},
-      {ga,
+      {L,
+       ga,
        {usb, internal},
        {has_plat, two_cred, empty_al},
        {},
@@ -241,7 +248,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
 
       // MakeCredential with attachment=platform shows the 'Create a passkey'
       // step, but only on macOS. On other OSes, we defer to the platform.
-      {mc,
+      {L,
+       mc,
        {internal},
        {},
        {},
@@ -254,7 +262,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
       },
       // MakeCredential with attachment=undefined also shows the 'Create a
       // passkey' step on macOS. On other OSes, we show mechanism selection.
-      {mc,
+      {L,
+       mc,
        {usb, internal},
        {},
        {},
@@ -267,57 +276,72 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
       },
 
       // If the Windows API is available without caBLE, it should activate.
-      {mc, {}, {has_winapi}, {}, {winapi}, plat_ui},
-      {ga, {}, {has_winapi}, {}, {winapi}, plat_ui},
+      {L, mc, {}, {has_winapi}, {}, {winapi}, plat_ui},
+      {L, ga, {}, {has_winapi}, {}, {winapi}, plat_ui},
       // ... even if, somehow, there's another transport.
-      {mc, {usb}, {has_winapi}, {}, {winapi, t(usb)}, plat_ui},
-      {ga, {usb}, {has_winapi}, {}, {winapi, t(usb)}, plat_ui},
+      {L, mc, {usb}, {has_winapi}, {}, {winapi, t(usb)}, plat_ui},
+      {L, ga, {usb}, {has_winapi}, {}, {winapi, t(usb)}, plat_ui},
 
       // A caBLEv1 extension should cause us to go directly to caBLE.
-      {ga, {usb, cable}, {v1}, {}, {t(usb), t(cable)}, cable_ui},
+      {L, ga, {usb, cable}, {v1}, {}, {t(usb), t(cable)}, cable_ui},
       // A caBLEv2 extension should cause us to go directly to caBLE, but also
       // show the AOA option.
-      {ga, {usb, aoa, cable}, {v2}, {}, {t(usb), t(aoa), t(cable)}, cable_ui},
+      {L,
+       ga,
+       {usb, aoa, cable},
+       {v2},
+       {},
+       {t(usb), t(aoa), t(cable)},
+       cable_ui},
 
       // If there are linked phones then AOA doesn't show up, but the phones do,
       // and sorted. The selection sheet should show.
-      {mc,
+      {L,
+       mc,
        {usb, aoa, cable},
        {},
        {"a", "b"},
-       {p("a"), p("b"), t(usb), add},
+       {p("a"), p("b"), add, t(usb)},
        mss},
-      {ga,
+      {L,
+       ga,
        {usb, aoa, cable},
        {},
        {"a", "b"},
-       {p("a"), p("b"), t(usb), add},
+       {p("a"), p("b"), add, t(usb)},
        mss},
 
       // If this is a Conditional UI request, don't offer the platform
       // authenticator.
-      {ga, {usb, internal}, {c_ui}, {}, {t(usb)}, usb_ui},
-      {ga, {usb, internal, cable}, {c_ui}, {"a"}, {p("a"), t(usb), add}, mss},
+      {L, ga, {usb, internal}, {c_ui}, {}, {t(usb)}, usb_ui},
+      {L,
+       ga,
+       {usb, internal, cable},
+       {c_ui},
+       {"a"},
+       {p("a"), add, t(usb)},
+       mss},
 
       // On Windows, mc with rk=required shows mechanism selection, unless caBLE
       // isn't an option.
-      {mc, {cable}, {has_winapi, rk}, {}, {winapi, add}, mss},
-      {mc, {}, {has_winapi, rk}, {}, {winapi}, plat_ui},
+      {L, mc, {cable}, {has_winapi, rk}, {}, {winapi, add}, mss},
+      {L, mc, {}, {has_winapi, rk}, {}, {winapi}, plat_ui},
       // But for rk=discouraged, always jump to Windows UI.
-      {mc, {cable}, {has_winapi}, {}, {winapi, add}, plat_ui},
-      {mc, {}, {has_winapi}, {}, {winapi}, plat_ui},
+      {L, mc, {cable}, {has_winapi}, {}, {winapi, add}, plat_ui},
+      {L, mc, {}, {has_winapi}, {}, {winapi}, plat_ui},
 
       // On Windows, ga with empty allow list shows mechanism selection, unless
       // caBLE isn't an option.
-      {ga, {cable}, {has_winapi, empty_al}, {}, {winapi, add}, mss},
-      {ga, {}, {has_winapi, empty_al}, {}, {winapi}, plat_ui},
+      {L, ga, {cable}, {has_winapi, empty_al}, {}, {winapi, add}, mss},
+      {L, ga, {}, {has_winapi, empty_al}, {}, {winapi}, plat_ui},
       // But with a non-empty allow list containing non phone credentials,
       // always jump to Windows UI.
-      {ga, {cable}, {has_winapi}, {}, {winapi, add}, plat_ui},
-      {ga, {}, {has_winapi}, {}, {winapi}, plat_ui},
+      {L, ga, {cable}, {has_winapi}, {}, {winapi, add}, plat_ui},
+      {L, ga, {}, {has_winapi}, {}, {winapi}, plat_ui},
       // Except when the request is legacy cable.
-      {ga, {cable, aoa}, {has_winapi, v1}, {}, {winapi, t(cable)}, cable_ui},
-      {ga,
+      {L, ga, {cable, aoa}, {has_winapi, v1}, {}, {winapi, t(cable)}, cable_ui},
+      {L,
+       ga,
        {cable, aoa},
        {has_winapi, v2},
        {},
@@ -325,27 +349,30 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        cable_ui},
 
       // QR code first: Make credential should jump to the QR code with RK=true.
-      {mc,
+      {L,
+       mc,
        {usb, internal, cable},
        {rk},
        {},
-       {t(internal), t(usb), add},
+       {add, t(internal), t(usb)},
        qr,
        {qr1st}},
       // Unless there is a phone paired already.
-      {mc,
+      {L,
+       mc,
        {usb, internal, cable},
        {rk},
        {"a"},
-       {p("a"), t(internal), t(usb), add},
+       {p("a"), add, t(internal), t(usb)},
        mss,
        {qr1st}},
       // If RK=false, go to the default for the platform instead.
-      {mc,
+      {L,
+       mc,
        {usb, internal, cable},
        {},
        {},
-       {t(internal), t(usb), add},
+       {add, t(internal), t(usb)},
 #if BUILDFLAG(IS_MAC)
        create_pk,
 #else
@@ -353,62 +380,69 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
 #endif
        {qr1st}},
       // Windows should also jump to the QR code first.
-      {mc, {cable}, {rk, has_winapi}, {}, {winapi, add}, qr, {qr1st}},
+      {L, mc, {cable}, {rk, has_winapi}, {}, {winapi, add}, qr, {qr1st}},
 
       // QR code first: Get assertion should jump to the QR code with empty
       // allow-list.
-      {ga,
+      {L,
+       ga,
        {usb, internal, cable},
        {empty_al},
        {},
-       {t(internal), t(usb), add},
+       {add, t(internal), t(usb)},
        qr,
        {qr1st}},
       // And if the allow list only contains phones.
-      {ga,
+      {L,
+       ga,
        {internal, cable},
        {only_hybrid_or_internal},
        {},
-       {t(internal), add},
+       {add, t(internal)},
        qr,
        {qr1st}},
       // Unless there is a phone paired already.
-      {ga,
+      {L,
+       ga,
        {usb, internal, cable},
        {empty_al},
        {"a"},
-       {p("a"), t(internal), t(usb), add},
+       {p("a"), add, t(internal), t(usb)},
        mss,
        {qr1st}},
       // Or a recognized platform credential.
-      {ga,
+      {L,
+       ga,
        {usb, internal, cable},
        {empty_al, has_plat},
        {},
-       {t(internal), t(usb), add},
+       {add, t(internal), t(usb)},
        plat_ui,
        {qr1st}},
       // Ignore the platform credential for conditional ui requests
-      {ga,
+      {L,
+       ga,
        {usb, internal, cable},
        {c_ui, empty_al, has_plat},
        {},
-       {t(usb), add},
+       {add, t(usb)},
        qr,
        {qr1st}},
       // If there is an allow-list containing USB, go to transport selection
       // instead.
-      {ga,
+      {L,
+       ga,
        {usb, internal, cable},
        {},
        {},
-       {t(internal), t(usb), add},
+       {add, t(internal), t(usb)},
        mss,
        {qr1st}},
       // Windows should also jump to the QR code first.
-      {ga, {cable}, {empty_al, has_winapi}, {}, {winapi, add}, qr, {qr1st}},
+      {L, ga, {cable}, {empty_al, has_winapi}, {}, {winapi, add}, qr, {qr1st}},
       // Unless there is a recognized platform credential.
-      {ga,
+      {L,
+       ga,
        {cable},
        {empty_al, has_winapi, has_plat},
        {},
@@ -417,16 +451,17 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {qr1st}},
       // For <=Win 10, we can't tell if there is a credential or not. Show the
       // mechanism selection screen instead.
-      {ga,
+      {L,
+       ga,
        {cable},
        {empty_al, has_winapi, maybe_plat},
        {},
        {winapi, add},
        mss,
        {qr1st}},
+#undef L
   };
 
-  unsigned test_num = 0;
   for (const auto& test : kTests) {
     SCOPED_TRACE(static_cast<int>(test.expected_first_step));
     SCOPED_TRACE(
@@ -435,10 +470,14 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
     SCOPED_TRACE((SetToString<device::FidoTransportProtocol, device::ToString>(
         test.transports)));
     SCOPED_TRACE(RequestTypeToString(test.request_type));
-    SCOPED_TRACE(test_num++);
+    SCOPED_TRACE(testing::Message() << "At line number: " << test.line_num);
 
-    base::test::ScopedFeatureList features;
-    features.InitWithFeatures(test.features, {});
+    std::vector<base::test::FeatureRef> disabled_features = kAllFeatures;
+    base::EraseIf(disabled_features, [&test](const auto& feature) {
+      return base::Contains(test.features, feature);
+    });
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(test.features, disabled_features);
 
     TransportAvailabilityInfo transports_info;
     transports_info.is_ble_powered = true;
@@ -559,6 +598,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, WinCancel) {
     tai.resident_key_requirement =
         is_passkey_request ? device::ResidentKeyRequirement::kRequired
                            : device::ResidentKeyRequirement::kDiscouraged;
+    tai.is_ble_powered = true;
 
     AuthenticatorRequestDialogModel model(/*render_frame_host=*/nullptr);
     model.set_cable_transport_info(absl::nullopt, {}, base::DoNothing(),
@@ -576,11 +616,28 @@ TEST_F(AuthenticatorRequestDialogModelTest, WinCancel) {
     }
 
     // The mechanism selection sheet should now be showing.
-    EXPECT_EQ(model.current_step(), Step::kMechanismSelection);
+    EXPECT_EQ(model.current_step(), is_passkey_request
+                                        ? Step::kCableV2QRCode
+                                        : Step::kMechanismSelection);
     // Canceling the Windows UI ends the request because the user must have
     // selected the Windows option first.
     EXPECT_FALSE(model.OnWinUserCancelled());
   }
+}
+
+TEST_F(AuthenticatorRequestDialogModelTest, WinNoPlatformAuthenticator) {
+  AuthenticatorRequestDialogModel::TransportAvailabilityInfo tai;
+  tai.request_type = device::FidoRequestType::kMakeCredential;
+  tai.request_is_internal_only = true;
+  tai.win_is_uvpaa = false;
+  tai.has_win_native_api_authenticator = true;
+  AuthenticatorRequestDialogModel model(/*render_frame_host=*/nullptr);
+  model.StartFlow(std::move(tai), /*is_conditional_mediation=*/false,
+                  /*prefer_native_api=*/false);
+  EXPECT_EQ(
+      model.current_step(),
+      AuthenticatorRequestDialogModel::Step::kErrorWindowsHelloNotEnabled);
+  EXPECT_FALSE(model.offer_try_again_in_ui());
 }
 #endif
 

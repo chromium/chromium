@@ -140,11 +140,10 @@ HRESULT FontFilePathAndTtcIndex(IDWriteFontFace* font_face,
 
 HRESULT AddFilesForFont(IDWriteFont* font,
                         const std::u16string& windows_fonts_path,
-                        std::set<std::wstring>* path_set,
-                        std::set<std::wstring>* custom_font_path_set,
-                        uint32_t* ttc_index) {
+                        std::set<std::wstring>* path_set) {
   std::wstring file_path;
-  HRESULT hr = FontFilePathAndTtcIndex(font, file_path, *ttc_index);
+  uint32_t dummy_ttc_index;
+  HRESULT hr = FontFilePathAndTtcIndex(font, file_path, dummy_ttc_index);
   if (FAILED(hr)) {
     return hr;
   }
@@ -158,7 +157,7 @@ HRESULT AddFilesForFont(IDWriteFont* font,
   if (!base::StartsWith(file_path_folded, windows_fonts_path,
                         base::CompareCase::SENSITIVE)) {
     LogLoaderType(DirectWriteFontLoaderType::FILE_OUTSIDE_SANDBOX);
-    custom_font_path_set->insert(file_path);
+    path_set->insert(file_path);
   } else {
     LogLoaderType(DirectWriteFontLoaderType::FILE_SYSTEM_FONT_DIR);
     path_set->insert(file_path);

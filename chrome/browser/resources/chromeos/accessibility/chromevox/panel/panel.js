@@ -316,7 +316,7 @@ export class Panel extends PanelInterface {
       const touchScreen = (eventSource === EventSourceType.TOUCH_GESTURE);
 
       // Build the top-level menus.
-      const searchMenu = this.addSearchMenu_('panel_search_menu');
+      const searchMenu = this.menuManager_.addSearchMenu('panel_search_menu');
       const jumpMenu = this.menuManager_.addMenu('panel_menu_jump');
       const speechMenu = this.menuManager_.addMenu('panel_menu_speech');
       const touchMenu = touchScreen ?
@@ -355,6 +355,7 @@ export class Panel extends PanelInterface {
 
         [CommandCategory.BRAILLE]: null,
         [CommandCategory.DEVELOPER]: null,
+        [CommandCategory.NO_CATEGORY]: null,
       };
 
       // TODO(accessibility): Commands should be based off of CommandStore and
@@ -682,43 +683,6 @@ export class Panel extends PanelInterface {
   }
 
   /**
-   * Create a new search menu with the given name and add it to the menu bar.
-   * @param {string} menuMsg The msg id of the new menu to add.
-   * @return {!PanelMenu} The menu just created.
-   * @private
-   */
-  addSearchMenu_(menuMsg) {
-    this.menuManager_.searchMenu = new PanelSearchMenu(menuMsg);
-    // Add event listeners to search bar.
-    this.menuManager_.searchMenu.searchBar.addEventListener(
-        'input', event => this.onSearchBarQuery_(event), false);
-    this.menuManager_.searchMenu.searchBar.addEventListener(
-        'mouseup', event => {
-          // Clicking in the panel causes us to either activate an item or close
-          // the menus altogether. Prevent that from happening if we click the
-          // search bar.
-          event.preventDefault();
-          event.stopPropagation();
-        }, false);
-
-    $('menu-bar').appendChild(this.menuManager_.searchMenu.menuBarItemElement);
-    this.menuManager_.searchMenu.menuBarItemElement.addEventListener(
-        'mouseover',
-        () => this.menuManager_.activateMenu(
-            this.menuManager_.searchMenu, false /* activateFirstItem */),
-        false);
-    this.menuManager_.searchMenu.menuBarItemElement.addEventListener(
-        'mouseup',
-        event => this.menuManager_.onMouseUpOnMenuTitle(
-            this.menuManager_.searchMenu, event),
-        false);
-    $('menus_background')
-        .appendChild(this.menuManager_.searchMenu.menuContainerElement);
-    this.menuManager_.menus.push(this.menuManager_.searchMenu);
-    return this.menuManager_.searchMenu;
-  }
-
-  /**
    * Sets the index of the current active menu to be 0.
    * @private
    */
@@ -760,31 +724,14 @@ export class Panel extends PanelInterface {
       }
     }
 
-    activeIndex = this.findEnabledMenuIndex_(activeIndex, delta > 0 ? 1 : -1);
+    activeIndex =
+        this.menuManager_.findEnabledMenuIndex(activeIndex, delta > 0 ? 1 : -1);
     if (activeIndex === -1) {
       return;
     }
 
     this.menuManager_.activateMenu(
         this.menuManager_.menus[activeIndex], true /* activateFirstItem */);
-  }
-
-  /**
-   * Starting at |startIndex|, looks for an enabled menu.
-   * @param {number} startIndex
-   * @param {number} delta
-   * @return {number} The index of the enabled menu. -1 if not found.
-   * @private
-   */
-  findEnabledMenuIndex_(startIndex, delta) {
-    const endIndex = (delta > 0) ? this.menuManager_.menus.length : -1;
-    while (startIndex !== endIndex) {
-      if (this.menuManager_.menus[startIndex].enabled) {
-        return startIndex;
-      }
-      startIndex += delta;
-    }
-    return -1;
   }
 
   /**
@@ -954,7 +901,7 @@ export class Panel extends PanelInterface {
 
     // Prepare the watcher before close the panel so that the watcher won't miss
     // panel collapse signal.
-    await BackgroundBridge.PanelBackground.setPanelCollapseWatcher;
+    await BackgroundBridge.PanelBackground.setPanelCollapseWatcher();
 
     // Make sure all menus are cleared to avoid bogus output when we re-open.
     this.menuManager_.clearMenus();
@@ -1100,56 +1047,6 @@ export class Panel extends PanelInterface {
    */
   onCloseTutorial_() {
     this.setMode_(PanelMode.COLLAPSED);
-  }
-
-  /**
-   * Listens to changes in the menu search bar. Populates the search menu
-   * with items that match the search bar's contents.
-   * Note: we ignore PanelNodeMenu items and items without shortcuts.
-   * @param {Event} event The input event.
-   * @private
-   */
-  onSearchBarQuery_(event) {
-    if (!this.menuManager_.searchMenu) {
-      throw Error('MenuManager.searchMenu_ must be defined');
-    }
-    const query = event.target.value.toLowerCase();
-    this.menuManager_.searchMenu.clear();
-    // Show the search results menu.
-    this.menuManager_.activateMenu(
-        this.menuManager_.searchMenu, false /* activateFirstItem */);
-    // Populate.
-    if (query) {
-      for (let i = 0; i < this.menuManager_.menus.length; ++i) {
-        const menu = this.menuManager_.menus[i];
-        if (menu === this.menuManager_.searchMenu ||
-            menu instanceof PanelNodeMenu) {
-          continue;
-        }
-        const items = menu.items;
-        for (let j = 0; j < items.length; ++j) {
-          const item = items[j];
-          if (!item.menuItemShortcut) {
-            // Only add menu items that have shortcuts.
-            continue;
-          }
-          const itemText = item.text.toLowerCase();
-          const match = itemText.includes(query) &&
-              (itemText !==
-               Msgs.getMsg('panel_menu_item_none').toLowerCase()) &&
-              item.enabled;
-          if (match) {
-            this.menuManager_.searchMenu.copyAndAddMenuItem(item);
-          }
-        }
-      }
-    }
-
-    if (this.menuManager_.searchMenu.items.length === 0) {
-      this.menuManager_.searchMenu.addMenuItem(
-          Msgs.getMsg('panel_menu_item_none'), '', '', '', function() {});
-    }
-    this.menuManager_.searchMenu.activateItem(0);
   }
 
   /** @private */

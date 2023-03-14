@@ -18,6 +18,7 @@
 #include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
+#include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
@@ -25,6 +26,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ash::standalone_browser::BrowserSupport;
 using testing::Return;
 
 namespace crosapi {
@@ -102,7 +104,7 @@ class BrowserLoaderTest : public testing::Test {
 
  private:
   base::AutoReset<bool> set_lacros_enabled_ =
-      browser_util::SetLacrosEnabledForTest(true);
+      BrowserSupport::SetLacrosEnabledForTest(true);
 };
 
 TEST_F(BrowserLoaderTest, OnLoadSelectionQuicklyChooseRootfs) {
@@ -274,22 +276,6 @@ TEST_F(BrowserLoaderTest, OnLoadSelectionPolicyIsRootfs) {
 
   const LacrosSelection selection = future.Get<1>();
   EXPECT_EQ(selection, LacrosSelection::kRootfs);
-}
-
-TEST_F(BrowserLoaderTest, OnLoadSelectionPolicyIsStateful) {
-  ScopedLacrosSelectionCache cache(
-      browser_util::LacrosSelectionPolicy::kStateful);
-  base::test::ScopedCommandLine command_line;
-  command_line.GetProcessCommandLine()->AppendSwitchASCII(
-      browser_util::kLacrosSelectionSwitch,
-      browser_util::kLacrosSelectionRootfs);
-
-  base::test::TestFuture<base::FilePath, LacrosSelection, base::Version> future;
-  browser_loader_->Load(future.GetCallback<const base::FilePath&,
-                                           LacrosSelection, base::Version>());
-
-  const LacrosSelection selection = future.Get<1>();
-  EXPECT_EQ(selection, LacrosSelection::kStateful);
 }
 
 TEST_F(BrowserLoaderTest,

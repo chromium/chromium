@@ -66,6 +66,11 @@ class MockAnchorElementMetricsHost
     pointer_hover_dwell_time_.emplace_back(std::move(hover_event));
   }
 
+  void ReportAnchorElementPointerDown(
+      mojom::blink::AnchorElementPointerDownPtr pointer_down_event) override {
+    pointer_down_.emplace_back(std::move(pointer_down_event));
+  }
+
   void ReportNewAnchorElements(
       WTF::Vector<mojom::blink::AnchorElementMetricsPtr> elements) override {
     for (auto& element : elements) {
@@ -85,6 +90,7 @@ class MockAnchorElementMetricsHost
   std::vector<mojom::blink::AnchorElementPointerOverPtr> pointer_over_;
   std::vector<mojom::blink::AnchorElementPointerOutPtr>
       pointer_hover_dwell_time_;
+  std::vector<mojom::blink::AnchorElementPointerDownPtr> pointer_down_;
   std::vector<mojom::blink::AnchorElementMetricsPtr> elements_;
   std::set<int32_t> anchor_ids_;
 
@@ -353,6 +359,20 @@ TEST_F(AnchorElementMetricsSenderTest,
     GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
         event, Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
   };
+  using Button = WebPointerProperties::Button;
+  auto mouse_press = [this](const auto x, const auto y, const auto button) {
+    gfx::PointF coordinates(x, y);
+    WebInputEvent::Modifiers modifier = WebInputEvent::kLeftButtonDown;
+    if (button == Button::kMiddle) {
+      modifier = WebInputEvent::kMiddleButtonDown;
+    } else if (button == Button::kMiddle) {
+      modifier = WebInputEvent::kRightButtonDown;
+    }
+    WebMouseEvent event(WebInputEvent::Type::kMouseDown, coordinates,
+                        coordinates, button, 0, modifier,
+                        WebInputEvent::GetStaticTimeStampForTests());
+    GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(event);
+  };
 
   SetMockClock();
   AnchorElementMetricsSender::From(GetDocument())
@@ -429,6 +449,28 @@ TEST_F(AnchorElementMetricsSenderTest,
             mock_host->pointer_hover_dwell_time_[1]->anchor_id);
   EXPECT_EQ(hover_dwell_time_2,
             mock_host->pointer_hover_dwell_time_[1]->hover_dwell_time);
+
+  // Check mouse right button down event.
+  move_to(0, 0);
+  mouse_press(0, 0, /*button=*/Button::kRight);
+  ProcessEvents(1);
+  EXPECT_EQ(0u, mock_host->pointer_down_.size());
+
+  // Check mouse left button down event.
+  move_to(0, 0);
+  mouse_press(0, 0, /*button=*/Button::kLeft);
+  ProcessEvents(1);
+  EXPECT_EQ(1u, mock_host->pointer_down_.size());
+  EXPECT_EQ(wait_time_1 + hover_dwell_time_1 + wait_time_2 + hover_dwell_time_2,
+            mock_host->pointer_down_[0]->navigation_start_to_pointer_down);
+
+  // Check mouse middle button down event.
+  move_to(0, 0);
+  mouse_press(0, 0, /*button=*/Button::kMiddle);
+  ProcessEvents(1);
+  EXPECT_EQ(2u, mock_host->pointer_down_.size());
+  EXPECT_EQ(wait_time_1 + hover_dwell_time_1 + wait_time_2 + hover_dwell_time_2,
+            mock_host->pointer_down_[1]->navigation_start_to_pointer_down);
 }
 
 TEST_F(AnchorElementMetricsSenderTest, AnchorElementEnteredViewportLater) {

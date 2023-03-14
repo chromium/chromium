@@ -253,6 +253,7 @@ constexpr size_t kDefaultElementTimingBufferSize = 150;
 constexpr size_t kDefaultLayoutShiftBufferSize = 150;
 constexpr size_t kDefaultLargestContenfulPaintSize = 150;
 constexpr size_t kDefaultLongTaskBufferSize = 200;
+constexpr size_t kDefaultLongAnimationFrameBufferSize = 200;
 constexpr size_t kDefaultBackForwardCacheRestorationBufferSize = 200;
 constexpr size_t kDefaultSoftNavigationBufferSize = 50;
 // Paint timing entries is more than twice as much as the soft navigation buffer
@@ -424,6 +425,13 @@ PerformanceEntryVector Performance::GetEntriesForCurrentFrame(
                                            maybe_name);
   }
 
+  if (RuntimeEnabledFeatures::LongAnimationFrameTimingEnabled(
+          GetExecutionContext()) &&
+      long_animation_frame_buffer_.size()) {
+    entries = MergePerformanceEntryVectors(
+        entries, long_animation_frame_buffer_, maybe_name);
+  }
+
   return entries;
 }
 
@@ -536,8 +544,9 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
       entries = &longtask_buffer_;
       break;
 
-    // TaskAttribution entries are only associated to longtask entries.
+    // TaskAttribution & script entries are only associated to longtask entries.
     case PerformanceEntry::kTaskAttribution:
+    case PerformanceEntry::kScript:
       break;
 
     case PerformanceEntry::kLayoutShift:
@@ -565,6 +574,13 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
         UseCounter::Count(GetExecutionContext(),
                           WebFeature::kSoftNavigationHeuristics);
         entries = &soft_navigation_buffer_;
+      }
+      break;
+
+    case PerformanceEntry::kLongAnimationFrame:
+      if (RuntimeEnabledFeatures::LongAnimationFrameTimingEnabled(
+              GetExecutionContext())) {
+        entries = &long_animation_frame_buffer_;
       }
       break;
 
@@ -709,17 +725,6 @@ void Performance::AddResourceTiming(mojom::blink::ResourceTimingInfoPtr info,
   resource_timing_secondary_buffer_.push_back(entry);
 }
 
-void Performance::AddResourceTimingWithUnparsedServerTiming(
-    mojom::blink::ResourceTimingInfoPtr info,
-    const String& server_timing_value,
-    const AtomicString& initiator_type) {
-  if (info->allow_timing_details) {
-    info->server_timing =
-        ParseServerTimingFromHeaderValueToMojo(server_timing_value);
-  }
-  AddResourceTiming(std::move(info), initiator_type);
-}
-
 // Called after loadEventEnd happens.
 void Performance::NotifyNavigationTimingToObservers() {
   if (navigation_timing_)
@@ -732,6 +737,11 @@ bool Performance::IsElementTimingBufferFull() const {
 
 bool Performance::IsEventTimingBufferFull() const {
   return event_timing_buffer_.size() >= event_timing_buffer_max_size_;
+}
+
+bool Performance::IsLongAnimationFrameBufferFull() const {
+  return long_animation_frame_buffer_.size() >=
+         kDefaultLongAnimationFrameBufferSize;
 }
 
 void Performance::CopySecondaryBuffer() {
@@ -1292,6 +1302,7 @@ void Performance::Trace(Visitor* visitor) const {
   visitor->Trace(visibility_state_buffer_);
   visitor->Trace(back_forward_cache_restoration_buffer_);
   visitor->Trace(soft_navigation_buffer_);
+  visitor->Trace(long_animation_frame_buffer_);
   visitor->Trace(navigation_timing_);
   visitor->Trace(user_timing_);
   visitor->Trace(paint_entries_timing_);

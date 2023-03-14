@@ -460,9 +460,7 @@ inline constexpr size_t CordBuffer::MaximumPayload() {
 }
 
 inline constexpr size_t CordBuffer::MaximumPayload(size_t block_size) {
-  // TODO(absl-team): Use std::min when C++11 support is dropped.
-  return (kCustomLimit < block_size ? kCustomLimit : block_size) -
-         cord_internal::kFlatOverhead;
+  return (std::min)(kCustomLimit, block_size) - cord_internal::kFlatOverhead;
 }
 
 inline CordBuffer CordBuffer::CreateWithDefaultLimit(size_t capacity) {

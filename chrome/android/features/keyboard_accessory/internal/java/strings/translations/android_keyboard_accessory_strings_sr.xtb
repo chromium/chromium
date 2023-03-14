@@ -1,13 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
+<translation id="1347497506789975534">Прикажи сачуване начине плаћања</translation>
 <translation id="1383876407941801731">Претражи</translation>
-<translation id="1566281227936819866">Приказују се сачувани начини плаћања</translation>
 <translation id="1717486229951421299">Листа акредитива који треба да се унесу на додир се отворила до половине екрана.</translation>
 <translation id="207576718733492531">Листа акредитива који треба да се унесу на додир је затворена.</translation>
 <translation id="2610239185026711824">Предложи лозинку</translation>
 <translation id="2652129567809778422">Изаберите лозинку</translation>
-<translation id="2803478378562657435">Приказују се сачуване лозинке и опције за лозинке</translation>
 <translation id="2903493209154104877">Адресе</translation>
 <translation id="3399357656427473483">Листа акредитива који треба да се унесу на додир.</translation>
 <translation id="3688051737190211318">Ако веб-сајт <ph name="ORIGIN" /> сматрате поузданим, можете да користите сачувану лозинку за пријављивање</translation>
@@ -15,16 +14,14 @@
 <translation id="4660011489602794167">Прикажи тастатуру</translation>
 <translation id="4694050069269396220">Ако веб-сајт <ph name="ORIGIN" /> сматрате поузданим, можете да користите сачувану лозинку за други сајт.</translation>
 <translation id="5016175294846053194">Предлози за аутоматско попуњавање су доступни изнад тастатуре</translation>
-<translation id="5088366526685584589">Приказују се сачуване адресе</translation>
 <translation id="5441504010984421144">Листа акредитива који треба да се унесу на додир се отворила на целом екрану,</translation>
+<translation id="6296921860874265377">Прикажи сачуване лозинке и опције за лозинке</translation>
 <translation id="6393156038355142111">Предложи јаку лозинку</translation>
 <translation id="6558703547256592471">Потрудите се да користите јединствену лозинку за сваки сајт.</translation>
 <translation id="7029809446516969842">Лозинке</translation>
-<translation id="7299100402441711551">Прикажи адресе</translation>
-<translation id="7494879913343971937">Приказуј лозинке</translation>
 <translation id="7594473730623999723">Превуците да бисте видели још предлога</translation>
+<translation id="7873973044507799456">Прикажи сачуване адресе</translation>
 <translation id="7992095260806105436">Користите предлог Chrome аутоматског попуњавања</translation>
-<translation id="8037472847879765671">Прикажи начине плаћања</translation>
 <translation id="8507520749471379845">Доступне су лозинке</translation>
 <translation id="8705308553596171387">Без лозинке</translation>
 <translation id="879180780857354295">Алтернативне опције попуњавања су доступне изнад тастатуре</translation>

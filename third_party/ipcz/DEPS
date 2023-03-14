@@ -1,3 +1,5 @@
+use_relative_paths = True
+
 gclient_gn_args_file = 'build/config/gclient_args.gni'
 gclient_gn_args = [
   'build_with_chromium',
@@ -14,19 +16,20 @@ vars = {
 
   'chromium_git': 'https://chromium.googlesource.com',
 
-  'abseil_revision': 'cfdfe8d1453ed2762d8e68d06b2e0a9fbf0f57bb',
-  'build_revision': '9d31c5f0204d7e806723266ed38b8485214a996b',
-  'buildtools_revision': 'f78b4b9f33bd8ef9944d5ce643daff1c31880189',
-  'catapult_revision': 'd90eeee99383928afa92d6960ad9d3b5f51f8b76',
-  'chromium_testing_revision': '1b963e718e4b6945c8c86b558abcd67e34491ea2',
-  'clang_format_revision': 'e435ad79c17b1888b34df88d6a30a094936e3836',
-  'clang_revision': '946a41a51f44207941b3729a0733dfc1e236644e',
-  'depot_tools_revision': 'd05a2e03953bf7e58696a0401ba41360b627401c',
-  'gn_version': 'git_revision:0725d7827575b239594fbc8fd5192873a1d62f44',
-  'chromium_googletest_revision': '2617f568c87dc512e52d686d9e2e61479e330991',
-  'googletest_revision': 'f45d5865ed0b2b8912244627cdf508a24cc6ccb4',
-  'libcxx_revision':       '79a2e924d96e2fc1e4b937c42efd08898fa472d7',
-  'libcxxabi_revision':    'df43e1b0396fbd3a0e511b804eeec54f3b62e3f0',
+  'abseil_revision': 'c1aaebb624a60dacbc75547ff8771d8cae57293f',
+  'build_revision': '6be968106c392e4d179622e443ba586b73a958a6',
+  'buildtools_revision': '2ff42d2008f09f65de12e70c6ff0ad58ddb090ad',
+  'catapult_revision': 'bdf25f32dca0cdcc633b6d19d886c0aeeba23527',
+  'chromium_googletest_revision': '39342c077fc0eaa3ba17d5f51a774b843a20df48',
+  'chromium_testing_revision': 'e0a8fc7153fbd4f2d19f58cb60c981c5dcb528d0',
+  'clang_format_revision': 'f97059df7f8b205064625cdb5f97b56668a125ef',
+  'clang_revision': 'effd9257d456f2d42e9e22fa4f37a24d8cf0b5b5',
+  'depot_tools_revision': '62c7a8bad074fdb4339e544b0053206a4f820e15',
+  'gn_version': 'git_revision:edf6ef4b06b42c58292faea78498aff76bdf68ed',
+  'googletest_revision': 'af29db7ec28d6df1c7f0f745186884091e602e07',
+  'libcxx_revision':       '6f4617b9efc36525e030ec9855114f3c93550ec1',
+  'libcxxabi_revision':    'f7460fc60ab56553f0b3b0853f1ea60aa51b9478',
+  'ninja_version': 'version:2@1.11.1.chromium.6',
 }
 
 deps = {
@@ -83,6 +86,16 @@ deps = {
   'third_party/googletest/src':
       '{chromium_git}/external/github.com/google/googletest@{googletest_revision}',
 
+  'third_party/ninja': {
+    'packages': [
+      {
+        'package': 'infra/3pp/tools/ninja/${{platform}}',
+        'version': Var('ninja_version'),
+      }
+    ],
+    'dep_type': 'cipd',
+  },
+
   'tools/clang': {
     'url': '{chromium_git}/chromium/src/tools/clang.git@{clang_revision}',
     'condition': 'not build_with_chromium',
@@ -90,20 +103,6 @@ deps = {
 }
 
 hooks = [
-  # Download and initialize "vpython" VirtualEnv environment packages for
-  # Python2. We do this before running any other hooks so that any other
-  # hooks that might use vpython don't trip over unexpected issues and
-  # don't run slower than they might otherwise need to.
-  {
-    'name': 'vpython_common',
-    'pattern': '.',
-    # TODO(https://crbug.com/1205263): Run this on mac/arm too once it works.
-    'condition': 'not (host_os == "mac" and host_cpu == "arm64")',
-    'action': [ 'vpython',
-                '-vpython-spec', '.vpython',
-                '-vpython-tool', 'install',
-    ],
-  },
   # Download and initialize "vpython" VirtualEnv environment packages for
   # Python3. We do this before running any other hooks so that any other
   # hooks that might use vpython don't trip over unexpected issues and
@@ -132,7 +131,7 @@ hooks = [
                '--arch=x64'],
   },
 
-{
+  {
     # Case-insensitivity for the Win SDK. Must run before win_toolchain below.
     'name': 'ciopfs_linux',
     'pattern': '.',

@@ -133,7 +133,7 @@ class SelectFileDialog : public ui::SelectFileDialog::Listener {
 void WriteToFile(const base::FilePath& path, const std::string& content) {
   DCHECK(!path.empty());
 
-  base::WriteFile(path, content.c_str(), content.length());
+  base::WriteFile(path, content);
 }
 
 void AppendToFile(const base::FilePath& path, const std::string& content) {

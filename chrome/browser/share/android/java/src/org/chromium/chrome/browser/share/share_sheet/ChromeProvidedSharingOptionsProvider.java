@@ -15,11 +15,11 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeProvidedSharingOptionsProviderBase;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
+import org.chromium.chrome.browser.share.ShareContentTypeHelper.ContentType;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 import org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsCoordinator;
 import org.chromium.chrome.browser.share.screenshot.ScreenshotCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleMetricsHelper.LinkToggleMetricsDetails;
-import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder.ContentType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -148,7 +148,7 @@ public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingO
 
     private boolean hideBottomSheetContentOnTap(FirstPartyOption firstPartyOption) {
         if (USER_ACTION_SCREENSHOT_SELECTED.equals(firstPartyOption.featureNameForMetrics)
-                || USER_ACTION_WEB_STYLE_NOTES_SELECTED.equals(
+                || USER_ACTION_LONG_SCREENSHOT_SELECTED.equals(
                         firstPartyOption.featureNameForMetrics)) {
             return false;
         }

@@ -33,6 +33,9 @@
 
 namespace content {
 
+using MediaLicenseStorageHostOpenError =
+    MediaLicenseStorageHost::MediaLicenseStorageHostOpenError;
+
 namespace {
 
 // Creates a task runner suitable for running SQLite database operations.
@@ -134,7 +137,7 @@ void MediaLicenseManager::DidGetBucket(
   DCHECK_GT(receivers_list.size(), 0u);
 
   storage::BucketLocator bucket_locator;
-  if (result.ok()) {
+  if (result.has_value()) {
     bucket_locator = result->ToBucketLocator();
   } else {
     // Use the null locator, but update the `storage_key` field so
@@ -143,8 +146,7 @@ void MediaLicenseManager::DidGetBucket(
     // case, but failing here seems easier to reason about from a website
     // author's point of view.
     MediaLicenseStorageHost::ReportDatabaseOpenError(
-        MediaLicenseStorageHost::MediaLicenseStorageHostOpenError::
-            kBucketLocatorError);
+        MediaLicenseStorageHostOpenError::kBucketLocatorError, in_memory());
     DCHECK(bucket_locator.id.is_null());
     bucket_locator.storage_key = storage_key;
   }

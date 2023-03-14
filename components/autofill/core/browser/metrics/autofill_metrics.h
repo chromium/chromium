@@ -46,9 +46,11 @@ namespace autofill {
 
 class AutofillField;
 class CreditCard;
-class FormEventLoggerBase;
 
+namespace autofill_metrics {
+class FormEventLoggerBase;
 struct FormGroupFillingStats;
+}  // namespace autofill_metrics
 
 // A given maximum is enforced to minimize the number of buckets generated.
 extern const int kMaxBucketsCount;
@@ -108,7 +110,21 @@ class AutofillMetrics {
     // An Autocomplete suggestion was selected.
     AUTOCOMPLETE_SUGGESTION_SELECTED,
 
+    // An Autocomplete suggestion was deleted. Added in M113.
+    AUTOCOMPLETE_SUGGESTION_DELETED,
+
     NUM_AUTOCOMPLETE_EVENTS
+  };
+
+  // The user action that triggered the deletion of an Autocomplete entry.
+  // These values are used in enums.xml; do not reorder or renumber entries!
+  enum class AutocompleteSingleEntryRemovalMethod {
+    // The user pressed shift delete while an Autofill popup menu entry was
+    // selected.
+    kKeyboardShiftDeletePressed = 0,
+    // The user clicked the delete button in the Autofill popup menu.
+    kDeleteButtonClicked = 1,
+    kMaxValue = kDeleteButtonClicked
   };
 
   // Represents card submitted state.
@@ -608,7 +624,8 @@ class AutofillMetrics {
     kMaxValue = kLeftEmpty
   };
 
-  using FormEventSet = DenseSet<FormEvent, NUM_FORM_EVENTS>;
+  using FormEventSet =
+      DenseSet<autofill_metrics::FormEvent, autofill_metrics::NUM_FORM_EVENTS>;
 
   // Utility class for determining the seamlessness of a credit card fill.
   class CreditCardSeamlessness {
@@ -641,8 +658,8 @@ class AutofillMetrics {
 
     // TODO(crbug.com/1275953): Remove once the new UKM metric has gained
     // traction.
-    FormEvent QualitativeFillableFormEvent() const;
-    FormEvent QualitativeFillFormEvent() const;
+    autofill_metrics::FormEvent QualitativeFillableFormEvent() const;
+    autofill_metrics::FormEvent QualitativeFillFormEvent() const;
 
     // Returns a four-bit bitmask.
     uint8_t BitmaskMetric() const;
@@ -727,7 +744,7 @@ class AutofillMetrics {
                        const FormInteractionCounts& form_interaction_counts,
                        const FormInteractionsFlowId& flow_id,
                        absl::optional<int64_t> fast_checkout_run_id);
-    void LogFormEvent(FormEvent form_event,
+    void LogFormEvent(autofill_metrics::FormEvent form_event,
                       const DenseSet<FormType>& form_types,
                       const base::TimeTicks& form_parsed_timestamp);
 
@@ -1053,6 +1070,11 @@ class AutofillMetrics {
   // Log the fact that an autocomplete popup was shown.
   static void OnAutocompleteSuggestionsShown();
 
+  // Log that an autocomplete suggestion was deleted directly from the popup
+  // menu.
+  static void OnAutocompleteSuggestionDeleted(
+      AutocompleteSingleEntryRemovalMethod removal_method);
+
   // Log how many autofilled fields in a given form were edited before the
   // submission or when the user unfocused the form (depending on
   // |observed_submission|).
@@ -1063,8 +1085,9 @@ class AutofillMetrics {
   // Logs the `filling_stats` of the fields within a `form_type`. The filling
   // status consistent of the number of accepted, corrected or and unfilled
   // fields.
-  static void LogFieldFillingStats(FormType form_type,
-                                   const FormGroupFillingStats& filling_stats);
+  static void LogFieldFillingStats(
+      FormType form_type,
+      const autofill_metrics::FormGroupFillingStats& filling_stats);
 
   // Logs the number of sections and the number of fields/section.
   static void LogSectioningMetrics(
@@ -1094,7 +1117,7 @@ class AutofillMetrics {
   static void LogAutofillPerfectFilling(bool is_address, bool perfect_filling);
 
   struct LogCreditCardSeamlessnessParam {
-    const raw_ref<FormEventLoggerBase> event_logger;
+    const raw_ref<autofill_metrics::FormEventLoggerBase> event_logger;
     const raw_ref<const FormStructure> form;
     const raw_ref<const AutofillField> field;
     const raw_ref<const base::flat_set<FieldGlobalId>> newly_filled_fields;
@@ -1286,8 +1309,14 @@ class AutofillMetrics {
 
   // Logs the context menu impressions based on the autofill type as well as
   // based on the autocomplete type.
-  static void LogContextMenuImpressions(ServerFieldType field_type,
-                                        AutocompleteState autocomplete_state);
+  static void LogContextMenuImpressionsForField(
+      ServerFieldType field_type,
+      AutocompleteState autocomplete_state);
+
+  // Logs the context menu impressions for a submitted form. Mainly logs the
+  // number of fields in the form where the context menu was shown.
+  static void LogContextMenuImpressionsForForm(
+      int num_of_fields_with_context_menu_shown);
 
   // Returns 64-bit hash of the string of form global id, which consists of
   // |frame_token| and |renderer_id|.

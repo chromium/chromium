@@ -19,6 +19,7 @@
 #include "chromeos/components/onc/onc_parsed_certificates.h"
 #include "chromeos/components/onc/onc_test_utils.h"
 #include "components/onc/onc_constants.h"
+#include "crypto/scoped_nss_types.h"
 #include "crypto/scoped_test_nss_db.h"
 #include "net/base/hash_value.h"
 #include "net/cert/cert_type.h"
@@ -164,7 +165,7 @@ class ONCCertificateImporterImplTest : public testing::Test {
 
   net::ScopedCERTCertificateList ListCertsInSlot(PK11SlotInfo* slot) {
     net::ScopedCERTCertificateList result;
-    CERTCertList* cert_list = PK11_ListCertsInSlot(slot);
+    crypto::ScopedCERTCertList cert_list(PK11_ListCertsInSlot(slot));
     if (!cert_list)
       return result;
     for (CERTCertListNode* node = CERT_LIST_HEAD(cert_list);
@@ -172,7 +173,6 @@ class ONCCertificateImporterImplTest : public testing::Test {
          node = CERT_LIST_NEXT(node)) {
       result.push_back(net::x509_util::DupCERTCertificate(node->cert));
     }
-    CERT_DestroyCertList(cert_list);
 
     std::sort(result.begin(), result.end(),
               [](const net::ScopedCERTCertificate& lhs,

@@ -73,7 +73,7 @@ class VIZ_SERVICE_EXPORT VizDebugger {
     uint8_t color_a;
   };
 
-  static ALWAYS_INLINE bool IsEnabled() {
+  ALWAYS_INLINE static bool IsEnabled() {
     return enabled_.load(std::memory_order_acquire);
   }
 

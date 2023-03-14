@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -63,6 +64,9 @@ class DIPSStorage {
   std::vector<std::string> GetSitesToClear() const;
 
   // Utility Methods -----------------------------------------------------------
+
+  static void DeleteDatabaseFiles(base::FilePath path,
+                                  base::OnceClosure on_complete);
 
   static size_t SetPrepopulateChunkSizeForTesting(size_t size);
   void SetClockForTesting(base::Clock* clock) {

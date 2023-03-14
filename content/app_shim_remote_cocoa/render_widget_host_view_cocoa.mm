@@ -1674,6 +1674,7 @@ void ExtractUnderlines(NSAttributedString* string,
   // TODO(suzhe): Plumb the "can*" methods up from WebCore.
   if (action == @selector(undo:) || action == @selector(redo:) ||
       action == @selector(cut:) || action == @selector(copy:) ||
+      action == @selector(centerSelectionInVisibleArea:) ||
       action == @selector(copyToFindPboard:) || action == @selector(paste:) ||
       action == @selector(pasteAndMatchStyle:)) {
     return is_for_main_frame;
@@ -2175,6 +2176,10 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
 
 - (void)copyToFindPboard:(id)sender {
   _host->CopyToFindPboard();
+}
+
+- (void)centerSelectionInVisibleArea:(id)sender {
+  _host->CenterSelection();
 }
 
 - (void)paste:(id)sender {

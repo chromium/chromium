@@ -11,6 +11,5 @@ build_webui("build") {
   static_files = [ "enterprise_reporting.html" ]
   non_web_component_files = [ "enterprise_reporting.ts" ]
 
-  ts_use_local_config = false
   ts_deps = [ "//ui/webui/resources/js:build_ts" ]
 }

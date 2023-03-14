@@ -67,7 +67,7 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
 
     @Before
     public void setUp() throws Exception {
-        BookmarkPromoHeader.forcePromoStateForTests(null);
+        BookmarkPromoHeader.forcePromoStateForTesting(null);
         SyncPromoController.setPrefSigninPromoDeclinedBookmarksForTests(false);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {

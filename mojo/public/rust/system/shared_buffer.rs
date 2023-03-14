@@ -5,12 +5,12 @@
 use std::ptr;
 use std::slice;
 
-use crate::system::ffi;
+use crate::ffi;
 // This full import is intentional; nearly every type in mojo_types needs to be
 // used.
-use crate::system::handle;
-use crate::system::handle::{CastHandle, Handle};
-use crate::system::mojo_types::*;
+use crate::handle;
+use crate::handle::{CastHandle, Handle};
+use crate::mojo_types::*;
 
 use super::UntypedHandle;
 
@@ -165,9 +165,8 @@ impl SharedBuffer {
         }
     }
 
-    /// Retrieves information about a shared buffer the this handle. The return
-    /// value is a set of flags (a bit vector in a u32) representing different
-    /// aspects of the shared buffer and the size of the shared buffer.
+    /// Retrieves information about this shared buffer. The return value is just
+    /// the size of the shared buffer.
     pub fn get_info(&self) -> Result<u64, MojoResult> {
         let mut info = ffi::MojoSharedBufferInfo::new(0);
         let r = MojoResult::from_code(unsafe {
@@ -183,13 +182,13 @@ impl SharedBuffer {
 
 impl CastHandle for SharedBuffer {
     /// Generates a SharedBuffer from an untyped handle wrapper
-    /// See mojo::system::handle for information on untyped vs. typed
+    /// See crate::handle for information on untyped vs. typed
     unsafe fn from_untyped(handle: handle::UntypedHandle) -> Self {
         SharedBuffer { handle: handle }
     }
 
     /// Consumes this object and produces a plain handle wrapper
-    /// See mojo::system::handle for information on untyped vs. typed
+    /// See crate::handle for information on untyped vs. typed
     fn as_untyped(self) -> handle::UntypedHandle {
         self.handle
     }
@@ -198,7 +197,7 @@ impl CastHandle for SharedBuffer {
 impl Handle for SharedBuffer {
     /// Returns the native handle wrapped by this structure.
     ///
-    /// See mojo::system::handle for information on handle wrappers
+    /// See crate::handle for information on handle wrappers
     fn get_native_handle(&self) -> MojoHandle {
         self.handle.get_native_handle()
     }

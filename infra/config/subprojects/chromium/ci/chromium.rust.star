@@ -12,7 +12,7 @@ ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
     builder_group = "chromium.rust",
     pool = ci.DEFAULT_POOL,
-    builderless = False,
+    builderless = True,
     cores = 8,
     os = os.LINUX_DEFAULT,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
@@ -27,39 +27,14 @@ consoles.console_view(
 )
 
 ci.builder(
-    name = "android-rust-arm-dbg",
+    name = "android-rust-arm32-rel",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
-                "use_rust",
                 "android",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "android",
-            apply_configs = ["android"],
-            build_config = builder_config.build_config.DEBUG,
-            target_arch = builder_config.target_arch.ARM,
-            target_bits = 32,
-            target_platform = builder_config.target_platform.ANDROID,
-        ),
-        android_config = builder_config.android_config(config = "base_config"),
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "Android",
-        short_name = "dbg",
-    ),
-)
-
-ci.builder(
-    name = "android-rust-arm-rel",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "use_rust",
-                "android",
+                "checkout_clang_libs",
+                "fetch_android_chromium_rust_toolchain",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -73,7 +48,61 @@ ci.builder(
         android_config = builder_config.android_config(config = "base_config"),
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "Android",
+        category = "Android 32bit",
+        short_name = "rel",
+    ),
+)
+
+ci.builder(
+    name = "android-rust-arm64-dbg",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "checkout_clang_libs",
+                "fetch_android_chromium_rust_toolchain",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            apply_configs = ["android"],
+            build_config = builder_config.build_config.DEBUG,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(config = "base_config"),
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Android 64bit",
+        short_name = "dbg",
+    ),
+)
+
+ci.builder(
+    name = "android-rust-arm64-rel",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "checkout_clang_libs",
+                "fetch_android_chromium_rust_toolchain",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            apply_configs = ["android"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(config = "base_config"),
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "Android 64bit",
         short_name = "rel",
     ),
 )
@@ -83,7 +112,9 @@ ci.builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["use_rust"],
+            apply_configs = [
+                "checkout_clang_libs",
+            ],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
@@ -103,7 +134,9 @@ ci.builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["use_rust"],
+            apply_configs = [
+                "checkout_clang_libs",
+            ],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
@@ -114,6 +147,71 @@ ci.builder(
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Linux",
+        short_name = "rel",
+    ),
+)
+
+ci.builder(
+    name = "mac-rust-x64-rel",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["checkout_rust", "checkout_clang_libs"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
+    cores = 12,
+    os = os.MAC_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "Mac x64",
+        short_name = "rel",
+    ),
+)
+
+ci.builder(
+    name = "win-rust-x64-dbg",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["checkout_rust", "checkout_clang_libs"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+        ),
+    ),
+    os = os.WINDOWS_ANY,
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows x64",
+        short_name = "dbg",
+    ),
+)
+
+ci.builder(
+    name = "win-rust-x64-rel",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["checkout_rust", "checkout_clang_libs"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+    ),
+    os = os.WINDOWS_ANY,
+    console_view_entry = consoles.console_view_entry(
+        category = "Windows x64",
         short_name = "rel",
     ),
 )

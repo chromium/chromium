@@ -237,7 +237,8 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     @CallSuper
     protected void applyThemeOverlays() {
         if (ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()) {
-            setTheme(R.style.SurfaceColorsThemeOverlay);
+            getTheme().applyStyle(R.style.SurfaceColorsThemeOverlay, /* force= */ true);
+            mThemeResIds.add(R.style.SurfaceColorsThemeOverlay);
         }
         DynamicColors.applyToActivityIfAvailable(this);
 

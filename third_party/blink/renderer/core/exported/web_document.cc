@@ -156,6 +156,10 @@ net::SiteForCookies WebDocument::SiteForCookies() const {
   return ConstUnwrap<Document>()->SiteForCookies();
 }
 
+bool WebDocument::HasStorageAccess() const {
+  return ConstUnwrap<Document>()->GetExecutionContext()->HasStorageAccess();
+}
+
 WebSecurityOrigin WebDocument::TopFrameOrigin() const {
   return ConstUnwrap<Document>()->TopFrameOrigin();
 }
@@ -289,12 +293,11 @@ void WebDocument::SetShowBeforeUnloadDialog(bool show_dialog) {
   doc->SetShowBeforeUnloadDialog(show_dialog);
 }
 
-uint64_t WebDocument::GetVisualViewportScrollingElementIdForTesting() {
+cc::ElementId WebDocument::GetVisualViewportScrollingElementIdForTesting() {
   return blink::To<Document>(private_.Get())
       ->GetPage()
       ->GetVisualViewport()
-      .GetScrollElementId()
-      .GetStableId();
+      .GetScrollElementId();
 }
 
 bool WebDocument::IsLoaded() {

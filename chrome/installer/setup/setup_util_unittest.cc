@@ -95,7 +95,7 @@ TEST(SetupUtilTest, DeleteFileFromTempProcess) {
   base::FilePath test_file;
   base::CreateTemporaryFileInDir(test_dir.GetPath(), &test_file);
   ASSERT_TRUE(base::PathExists(test_file));
-  base::WriteFile(test_file, "foo", 3);
+  base::WriteFile(test_file, "foo");
   EXPECT_TRUE(installer::DeleteFileFromTempProcess(test_file, 0));
   base::PlatformThread::Sleep(TestTimeouts::tiny_timeout() * 3);
   EXPECT_FALSE(base::PathExists(test_file)) << test_file.value();
@@ -426,9 +426,9 @@ class FindArchiveToPatchTest : public testing::Test {
     // Create archives in the two version dirs.
     ASSERT_TRUE(
         base::CreateDirectory(GetProductVersionArchivePath().DirName()));
-    ASSERT_EQ(1, base::WriteFile(GetProductVersionArchivePath(), "a", 1));
+    ASSERT_TRUE(base::WriteFile(GetProductVersionArchivePath(), "a"));
     ASSERT_TRUE(base::CreateDirectory(GetMaxVersionArchivePath().DirName()));
-    ASSERT_EQ(1, base::WriteFile(GetMaxVersionArchivePath(), "b", 1));
+    ASSERT_TRUE(base::WriteFile(GetMaxVersionArchivePath(), "b"));
   }
 
   void TearDown() override { original_state_.reset(); }

@@ -162,6 +162,7 @@ source_set("video_frame_mapper") {
     "//media/gpu:command_buffer_helper",
     "//media/gpu:common",
     "//media/gpu:video_frame_mapper_common",
+    "//third_party/libyuv",
   ]
 }
 

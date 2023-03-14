@@ -1,13 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
+<translation id="1347497506789975534">نمایش روش‌های پرداخت ذخیره‌شده</translation>
 <translation id="1383876407941801731">جستجو</translation>
-<translation id="1566281227936819866">درحال نمایش روش‌های پرداخت ذخیره‌شده</translation>
 <translation id="1717486229951421299">فهرست اطلاعات کاربری که باید با لمس کردن تکمیل شود، به‌صورت نیمه باز شده است.</translation>
 <translation id="207576718733492531">فهرست اطلاعات کاربری که باید با لمس کردن تکمیل شود بسته شده است.</translation>
 <translation id="2610239185026711824">پیشنهاد گذرواژه</translation>
 <translation id="2652129567809778422">گذرواژه را انتخاب کنید</translation>
-<translation id="2803478378562657435">درحال نمایش گذرواژه‌های ذخیره‌شده و گزینه‌های گذرواژه</translation>
 <translation id="2903493209154104877">آدرس‌ها</translation>
 <translation id="3399357656427473483">فهرست اطلاعات کاربری که باید با لمس کردن تکمیل شود.</translation>
 <translation id="3688051737190211318">اگر به <ph name="ORIGIN" /> اعتماد دارید، می‌توانید از گذرواژه ذخیره‌شده برای ورود به سیستم استفاده کنید</translation>
@@ -15,16 +14,14 @@
 <translation id="4660011489602794167">نمایش صفحه‌کلید</translation>
 <translation id="4694050069269396220">اگر به <ph name="ORIGIN" /> اعتماد دارید، می‌توانید از گذرواژه ذخیره‌شده برای سایتی دیگر استفاده کنید.</translation>
 <translation id="5016175294846053194">پیشنهادهای تکمیل خودکار در بالای صفحه‌کلید در دسترس است</translation>
-<translation id="5088366526685584589">درحال نمایش نشانی‌های ذخیره‌شده</translation>
 <translation id="5441504010984421144">فهرست اطلاعات کاربری که باید با لمس کردن تکمیل شود کاملاً باز شد.</translation>
+<translation id="6296921860874265377">نمایش گذرواژه‌ها و گزینه‌های گذرواژه ذخیره‌شده</translation>
 <translation id="6393156038355142111">پیشنهاد گذرواژه قوی</translation>
 <translation id="6558703547256592471">از گذرواژه غیرتکراری برای همه سایت‌ها استفاده کنید.</translation>
 <translation id="7029809446516969842">گذرواژه‌ها</translation>
-<translation id="7299100402441711551">نمایش نشانی‌ها</translation>
-<translation id="7494879913343971937">نمایش گذرواژه‌ها</translation>
 <translation id="7594473730623999723">برای دیدن پیشنهادهای بیشتر، تند بکشید</translation>
+<translation id="7873973044507799456">نمایش نشانی‌های ذخیره‌شده</translation>
 <translation id="7992095260806105436">‏از پیشنهاد تکمیل خودکار Chrome استفاده کنید</translation>
-<translation id="8037472847879765671">نمایش روش‌های پرداخت</translation>
 <translation id="8507520749471379845">گذرواژه‌ها دردسترس است</translation>
 <translation id="8705308553596171387">گذرواژه لازم نیست</translation>
 <translation id="879180780857354295">گزینه‌های تکمیل جایگزین در بالای صفحه‌کلید دردسترس است</translation>

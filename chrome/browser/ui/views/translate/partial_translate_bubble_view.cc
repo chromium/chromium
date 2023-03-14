@@ -23,7 +23,6 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_service.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -177,7 +176,7 @@ void PartialTranslateBubbleView::TabSelectedAt(int index) {
       ShowTranslated();
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -337,7 +336,7 @@ void PartialTranslateBubbleView::ExecuteCommand(int command_id,
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -401,8 +400,7 @@ views::View* PartialTranslateBubbleView::GetCurrentView() const {
     case PartialTranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE:
       return advanced_view_target_;
   }
-  NOTREACHED();
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 
 void PartialTranslateBubbleView::ShowTranslated() {

@@ -958,6 +958,4 @@
 -dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
 
 # File: //build/android/gyp/proguard.py (generated rules)
--ignorewarnings
-# THIS LINE WAS OMITTED
 -repackageclasses ''

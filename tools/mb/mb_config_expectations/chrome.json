@@ -300,6 +300,16 @@
       "use_remoteexec": true
     }
   },
+  "win-branded-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_chrome_branded": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "use_remoteexec": true
+    }
+  },
   "win-chrome": {
     "gn_args": {
       "is_chrome_branded": true,

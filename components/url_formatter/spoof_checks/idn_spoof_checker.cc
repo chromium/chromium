@@ -150,6 +150,12 @@ IDNSpoofChecker::HuffmanTrieParams g_trie_params{
     kTopDomainsHuffmanTree, sizeof(kTopDomainsHuffmanTree), kTopDomainsTrie,
     kTopDomainsTrieBits, kTopDomainsRootPosition};
 
+// Allow these common words that are whole script confusables. They aren't
+// confusable with any words in Latin scripts.
+const char16_t* kAllowedWholeScriptConfusableWords[] = {
+    u"секс",  u"как",   u"коса",    u"курс",    u"парк",
+    u"такий", u"укроп", u"сахарок", u"покраска"};
+
 }  // namespace
 
 IDNSpoofChecker::WholeScriptConfusable::WholeScriptConfusable(
@@ -223,7 +229,7 @@ IDNSpoofChecker::IDNSpoofChecker() {
        {"am"}},
       {// Cyrillic
        "[[:Cyrl:]]",
-       "[аысԁеԍһіюјӏорԗԛѕԝхуъьҽпгѵѡ]",
+       "[аысԁеԍһіюкјӏорԗԛѕԝхуъьҽпгѵѡ]",
        // TLDs containing most of the Cyrillic domains.
        {"bg", "by", "kz", "pyc", "ru", "su", "ua", "uz"}},
       {// Ethiopic (Ge'ez). Variants of these characters such as ሁ and ሡ could
@@ -417,7 +423,8 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
     for (auto const& script : wholescriptconfusables_) {
       if (IsLabelWholeScriptConfusableForScript(*script, label_string) &&
           !IsWholeScriptConfusableAllowedForTLD(*script, top_level_domain,
-                                                top_level_domain_unicode)) {
+                                                top_level_domain_unicode) &&
+          !base::Contains(kAllowedWholeScriptConfusableWords, label)) {
         return Result::kWholeScriptConfusable;
       }
     }

@@ -21,6 +21,7 @@
 #include "content/public/browser/hid_delegate.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/back_forward_cache_util.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/test_web_contents_factory.h"
@@ -29,6 +30,8 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/device/public/cpp/test/fake_hid_manager.h"
 #include "services/device/public/cpp/test/hid_test_util.h"
 #include "services/device/public/cpp/test/test_report_descriptors.h"
@@ -1293,6 +1296,31 @@ TEST_F(HidServiceServiceWorkerBrowserContextDestroyedTest, Forget) {
   base::RunLoop run_loop;
   service_->Forget(std::move(device_info), run_loop.QuitClosure());
   run_loop.Run();
+}
+
+TEST_F(HidServiceServiceWorkerBrowserContextDestroyedTest, RejectOpaqueOrigin) {
+  // Create a fake dispatch context to trigger a bad message in.
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  auto response_headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>(std::string());
+  response_headers->SetHeader("Content-Security-Policy",
+                              "sandbox allow-scripts");
+  auto* web_contents = static_cast<TestWebContents*>(
+      web_contents_factory_.CreateWebContents(&browser_context_));
+  auto navigation_simulator = NavigationSimulator::CreateRendererInitiated(
+      GURL("http://whatever.com"), web_contents->GetPrimaryMainFrame());
+  navigation_simulator->SetResponseHeaders(response_headers);
+  navigation_simulator->Start();
+  navigation_simulator->Commit();
+
+  mojo::Remote<blink::mojom::HidService> service;
+  web_contents->GetPrimaryMainFrame()->GetHidService(
+      service.BindNewPipeAndPassReceiver());
+
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "WebHID is not allowed from an opaque origin.");
 }
 
 }  // namespace content

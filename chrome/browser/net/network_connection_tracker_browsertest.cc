@@ -150,6 +150,10 @@ IN_PROC_BROWSER_TEST_F(NetworkConnectionTrackerBrowserTest,
 // binds to the restarted network service.
 IN_PROC_BROWSER_TEST_F(NetworkConnectionTrackerBrowserTest,
                        SimulateNetworkServiceCrash) {
+  // NetworkService on ChromeOS doesn't yet have a NetworkChangeManager
+  // implementation. OSX uses a separate binary for service processes and
+  // browser test fixture doesn't have NetworkServiceTest mojo code.
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_MAC)
   // Out-of-process network service is not enabled, so network service's crash
   // and restart aren't applicable.
   if (!content::IsOutOfProcessNetworkService())
@@ -215,4 +219,5 @@ IN_PROC_BROWSER_TEST_F(NetworkConnectionTrackerBrowserTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(2u, network_connection_observer.num_notifications());
+#endif
 }

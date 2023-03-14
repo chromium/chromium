@@ -34,16 +34,17 @@ class BrowserListImpl : public BrowserList, public BrowserObserver {
   std::set<Browser*> AllIncognitoBrowsers() const override;
   void AddObserver(BrowserListObserver* observer) override;
   void RemoveObserver(BrowserListObserver* observer) override;
-  bool IsShutdown() override;
 
   // BrowserObserver:
   void BrowserDestroyed(Browser* browser) override;
 
  private:
-  bool is_shutdown_ = false;
   std::set<Browser*> browsers_;
   std::set<Browser*> incognito_browsers_;
-  base::ObserverList<BrowserListObserver, true>::Unchecked observers_;
+
+  // TODO(crbug.com/1421255): This should check that the list is empty
+  // when it is destroyed, and the Observers should be checked.
+  base::ObserverList<BrowserListObserver, false>::Unchecked observers_;
 };
 
 #endif  // IOS_CHROME_BROWSER_MAIN_BROWSER_LIST_IMPL_H_

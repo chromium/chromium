@@ -26,6 +26,7 @@ class CORE_EXPORT CSSURLImageValue final : public CSSStyleImageValue {
   // CanvasImageSource
   ResourceStatus Status() const final;
   scoped_refptr<Image> GetSourceImageForCanvas(
+      CanvasResourceProvider::FlushReason,
       SourceImageStatus*,
       const gfx::SizeF&,
       const AlphaDisposition alpha_disposition = kPremultiplyAlpha) final;

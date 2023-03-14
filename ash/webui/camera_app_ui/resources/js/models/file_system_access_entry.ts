@@ -71,6 +71,14 @@ export class FileAccessEntry {
     return this.parent.removeEntry(this.name);
   }
 
+  /**
+   * Moves the file to given directory and given name.
+   */
+  async moveTo(dir: DirectoryAccessEntry, name: string): Promise<void> {
+    const dirHandle = await dir.getHandle();
+    await this.handle.move(dirHandle, name);
+  }
+
   get name(): string {
     return this.handle.name;
   }
@@ -89,6 +97,11 @@ export interface DirectoryAccessEntry {
    * Gets the name of the directory.
    */
   readonly name: string;
+
+  /**
+   * Gets the handle of the directory.
+   */
+  getHandle(): Promise<FileSystemDirectoryHandle>;
 
   /**
    * Gets files in this directory.
@@ -111,7 +124,7 @@ export interface DirectoryAccessEntry {
   /**
    * Checks if file or directory with the target name exists.
    */
-  isExist(name: string): Promise<boolean>;
+  exists(name: string): Promise<boolean>;
 
   /**
    * Create the file given by its |name|. If there is already a file with same
@@ -153,6 +166,10 @@ export class DirectoryAccessEntryImpl implements DirectoryAccessEntry {
     return this.handle.name;
   }
 
+  async getHandle(): Promise<FileSystemDirectoryHandle> {
+    return this.handle;
+  }
+
   async getFiles(): Promise<FileAccessEntry[]> {
     const results = [];
     for await (const handle of this.handle.values()) {
@@ -179,7 +196,7 @@ export class DirectoryAccessEntryImpl implements DirectoryAccessEntry {
     return new FileAccessEntry(handle, this);
   }
 
-  async isExist(name: string): Promise<boolean> {
+  async exists(name: string): Promise<boolean> {
     try {
       await this.getFile(name);
       return true;
@@ -199,7 +216,7 @@ export class DirectoryAccessEntryImpl implements DirectoryAccessEntry {
   async createFile(name: string): Promise<FileAccessEntry> {
     return createFileJobs.push(async () => {
       let uniqueName = name;
-      for (let i = 0; await this.isExist(uniqueName);) {
+      for (let i = 0; await this.exists(uniqueName);) {
         uniqueName = name.replace(/^(.*?)(?=\.)/, `$& (${++i})`);
       }
       const handle =
@@ -226,6 +243,8 @@ export class DirectoryAccessEntryImpl implements DirectoryAccessEntry {
   }
 
   async removeEntry(name: string): Promise<void> {
-    return this.handle.removeEntry(name);
+    if (await this.exists(name)) {
+      await this.handle.removeEntry(name);
+    }
   }
 }

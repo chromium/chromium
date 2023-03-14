@@ -220,25 +220,3 @@ Styles related to the `md-screen-container`
   min-height: 0;
   width: 100%;
 }
-
-/* Styles related to the `api-keys-container` */
-
-#api-keys-notice-container {
-  display: flex;
-  justify-content: center;
-  min-height: 0;
-  position: fixed;
-  top: 10px;
-  width: 100%;
-  z-index: 10;
-}
-
-#api-keys-notice {
-  background-color: rgba(0, 0, 0, 0.75);
-  border-radius: 4px;
-  color: whitesmoke;
-  font-size: 15px;
-  padding: 20px;
-  text-align: center;
-  width: 722px; /* same as #signin-banner */
-}

@@ -27,11 +27,7 @@
 
 namespace borealis {
 
-// TODO(b/244651040): Remove legacy prefix when sommelier changes are complete.
-const char kBorealisWindowPrefixLegacy[] = "org.chromium.borealis.";
 const char kBorealisWindowPrefix[] = "org.chromium.guest_os.borealis.";
-const char kFullscreenClientShellIdLegacy[] =
-    "org.chromium.borealis.wmclass.steam";
 const char kFullscreenClientShellId[] =
     "org.chromium.guest_os.borealis.wmclass.steam";
 const char kBorealisClientSuffix[] = "wmclass.Steam";
@@ -65,10 +61,6 @@ std::string BorealisIdToAppId(Profile* profile, unsigned borealis_id) {
   return {};
 }
 
-bool IsBorealisWindowIdLegacy(const std::string& window_id) {
-  return base::StartsWith(window_id, borealis::kBorealisWindowPrefixLegacy);
-}
-
 std::string WindowToAppId(Profile* profile, const aura::Window* window) {
   // The Borealis app ID is the most reliable method, if known.
   absl::optional<int> borealis_id = GetBorealisAppId(window);
@@ -79,31 +71,13 @@ std::string WindowToAppId(Profile* profile, const aura::Window* window) {
   }
 
   // Fall back to GuestOS's logic for associating windows with apps.
-  // The legacy way to do this was to spoof a Crostini app ID. This will be
-  // supported until the new window ID version is fully supported. Once it is,
-  // this replacement will be removed and GetGuestOsShelfAppId should handle
-  // all borealis cases.
-  // TODO(b/244651040): remove the string replacement after new window_id format
-  // is deployed.
-  std::string window_id(*GetWindowId(window));
-  if (IsBorealisWindowIdLegacy(window_id)) {
-    base::ReplaceFirstSubstringAfterOffset(
-        &window_id, 0, borealis::kBorealisWindowPrefixLegacy,
-        "org.chromium.termina.");
-  }
-  std::string guest_os_shelf_app_id =
-      guest_os::GetGuestOsShelfAppId(profile, &window_id, nullptr);
-
-  // If this app is registered by GuestOsRegistry, then it's actually registered
-  // for Borealis.
-  if (!guest_os::IsUnregisteredGuestOsShelfAppId(guest_os_shelf_app_id)) {
-    return guest_os_shelf_app_id;
-  }
-
-  // Unregistered app. Unlike Crostini, we expect all Borealis apps to be
-  // registered, so we consider this a bug.
-  // TODO(cpelling): Log a warning here once this function is memoized.
-  return kBorealisAnonymousPrefix + *GetWindowId(window);
+  // GetGuestOsShelfAppId will handle both registered and anonymous borealis app
+  // windows correctly. For registered apps, it will return a matching shelf app
+  // ID. For unregistered apps, it will return an app_id prefixed with
+  // "borealis_anon:".
+  // TODO(cpelling): Log a warning here once all Steam startup windows and
+  // games are correctly registered.
+  return guest_os::GetGuestOsShelfAppId(profile, GetWindowId(window), nullptr);
 }
 
 }  // namespace
@@ -118,8 +92,7 @@ bool BorealisWindowManager::IsBorealisWindow(const aura::Window* window) {
 
 // static
 bool BorealisWindowManager::IsBorealisWindowId(const std::string& window_id) {
-  return base::StartsWith(window_id, borealis::kBorealisWindowPrefix) ||
-         base::StartsWith(window_id, borealis::kBorealisWindowPrefixLegacy);
+  return base::StartsWith(window_id, borealis::kBorealisWindowPrefix);
 }
 
 // static
@@ -147,8 +120,7 @@ bool BorealisWindowManager::ShouldNewWindowBeMinimized(
 
   // If the fullscreen window is the borealis client, then we allow windows to
   // take focus.
-  if (*active_window_id == borealis::kFullscreenClientShellId ||
-      *active_window_id == borealis::kFullscreenClientShellIdLegacy) {
+  if (*active_window_id == borealis::kFullscreenClientShellId) {
     return false;
   }
 

@@ -44,8 +44,7 @@ suite('AmbientPreviewSmallTest', function() {
         personalizationStore.data.ambient.albums = ambientProvider.albums;
         personalizationStore.data.ambient.topicSource = TopicSource.kArtGallery;
         personalizationStore.data.ambient.ambientModeEnabled = false;
-        personalizationStore.data.ambient.googlePhotosAlbumsPreviews =
-            ambientProvider.googlePhotosAlbumsPreviews;
+        personalizationStore.data.ambient.previews = ambientProvider.previews;
         ambientPreviewSmallElement = initElement(AmbientPreviewSmall);
         personalizationStore.notifyObservers();
         await waitAfterNextRender(ambientPreviewSmallElement);
@@ -89,8 +88,7 @@ suite('AmbientPreviewSmallTest', function() {
     personalizationStore.data.ambient.albums = ambientProvider.albums;
     personalizationStore.data.ambient.topicSource = TopicSource.kArtGallery;
     personalizationStore.data.ambient.ambientModeEnabled = true;
-    personalizationStore.data.ambient.googlePhotosAlbumsPreviews =
-        ambientProvider.googlePhotosAlbumsPreviews;
+    personalizationStore.data.ambient.previews = ambientProvider.previews;
     ambientPreviewSmallElement = initElement(AmbientPreviewSmall);
     personalizationStore.notifyObservers();
     await waitAfterNextRender(ambientPreviewSmallElement);

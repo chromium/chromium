@@ -16,6 +16,7 @@ source_set("bookmarks") {
   deps = [
     ":constants",
     ":core",
+    ":utils",
     "resources:bookmark_blue_check",
     "resources:bookmark_blue_folder",
     "resources:bookmark_blue_new_folder",
@@ -29,6 +30,10 @@ source_set("bookmarks") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/metrics:metrics_internal",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:url_with_title",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/tabs",
@@ -38,12 +43,8 @@ source_set("bookmarks") {
     "//ios/chrome/browser/ui/bookmarks/folder_chooser",
     "//ios/chrome/browser/ui/bookmarks/folder_editor",
     "//ios/chrome/browser/ui/bookmarks/home",
-    "//ios/chrome/browser/ui/commands",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/ui/table_view",
-    "//ios/chrome/browser/ui/util",
-    "//ios/chrome/browser/ui/util:url_with_title",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/common/ui/colors",
@@ -66,6 +67,33 @@ source_set("core") {
     "bookmark_navigation_controller.mm",
     "bookmark_path_cache.h",
     "bookmark_path_cache.mm",
+  ]
+  deps = [
+    ":constants",
+    ":utils",
+    "//base",
+    "//components/bookmarks/browser",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:url_with_title",
+    "//ios/chrome/browser/ui/default_promo:utils",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/common/ui/colors",
+    "//ios/third_party/material_components_ios",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("utils") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
     "bookmark_utils_ios.h",
     "bookmark_utils_ios.mm",
     "undo_manager_bridge_observer.h",
@@ -76,9 +104,8 @@ source_set("core") {
   deps = [
     ":constants",
     "//base",
+    "//base:i18n",
     "//components/bookmarks/browser",
-    "//components/pref_registry",
-    "//components/prefs",
     "//components/query_parser",
     "//components/strings",
     "//components/undo",
@@ -86,18 +113,14 @@ source_set("core") {
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/flags:system_flags",
-    "//ios/chrome/browser/main:public",
-    "//ios/chrome/browser/prefs:pref_names",
-    "//ios/chrome/browser/ui/default_promo:utils",
-    "//ios/chrome/browser/ui/table_view",
-    "//ios/chrome/browser/ui/util",
-    "//ios/chrome/browser/ui/util:url_with_title",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/undo",
     "//ios/chrome/common/ui/colors",
     "//ios/third_party/material_components_ios",
     "//ui/base",
   ]
-  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("constants") {
@@ -119,6 +142,7 @@ source_set("unit_tests") {
   deps = [
     ":bookmarks",
     ":core",
+    ":utils",
     "//base",
     "//components/bookmarks/browser",
     "//components/sync_preferences:test_support",
@@ -151,8 +175,8 @@ source_set("eg2_tests") {
     "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/policy:eg_test_support+eg2",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin:fake_system_identity",
-    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/browser/ui/popup_menu:constants",
@@ -181,6 +205,7 @@ source_set("eg_app_support+eg2") {
     ":bookmarks",
     ":constants",
     ":core",
+    ":utils",
     "//base",
     "//base/test:test_support",
     "//components/bookmarks/browser",
@@ -221,7 +246,7 @@ source_set("eg_test_support+eg2") {
     "//base/test:test_support",
     "//components/strings",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/table_view:constants",
     "//ios/chrome/test:eg_test_support+eg2",

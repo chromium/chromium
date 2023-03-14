@@ -14,6 +14,7 @@ class AccountTrackerService;
 class PrefService;
 class ProfileOAuth2TokenService;
 class PrimaryAccountManager;
+class SigninClient;
 
 namespace signin {
 
@@ -26,6 +27,7 @@ class PrimaryAccountMutatorImpl : public PrimaryAccountMutator {
       ProfileOAuth2TokenService* token_service,
       PrimaryAccountManager* primary_account_manager,
       PrefService* pref_service,
+      SigninClient* signin_client,
       signin::AccountConsistencyMethod account_consistency);
   ~PrimaryAccountMutatorImpl() override;
 
@@ -34,13 +36,13 @@ class PrimaryAccountMutatorImpl : public PrimaryAccountMutator {
       const CoreAccountId& account_id,
       ConsentLevel consent_level,
       signin_metrics::AccessPoint access_point) override;
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   void RevokeSyncConsent(signin_metrics::ProfileSignout source_metric,
                          signin_metrics::SignoutDelete delete_metric) override;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   bool ClearPrimaryAccount(
       signin_metrics::ProfileSignout source_metric,
       signin_metrics::SignoutDelete delete_metric) override;
-#endif
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -57,6 +59,7 @@ class PrimaryAccountMutatorImpl : public PrimaryAccountMutator {
   raw_ptr<PrimaryAccountManager, DanglingUntriaged> primary_account_manager_ =
       nullptr;
   raw_ptr<PrefService> pref_service_ = nullptr;
+  raw_ptr<SigninClient> signin_client_ = nullptr;
   signin::AccountConsistencyMethod account_consistency_;
 };
 

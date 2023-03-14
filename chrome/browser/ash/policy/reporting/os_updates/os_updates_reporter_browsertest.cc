@@ -1,0 +1,183 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include <string>
+
+#include "ash/constants/ash_switches.h"
+#include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
+#include "chrome/browser/ash/login/test/login_manager_mixin.h"
+#include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
+#include "chrome/browser/ash/login/test/user_policy_mixin.h"
+#include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
+#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
+#include "chrome/browser/policy/messaging_layer/proto/synced/os_events.pb.h"
+#include "chrome/test/base/fake_gaia_mixin.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/dbus/missive/missive_client.h"
+#include "chromeos/dbus/missive/missive_client_test_observer.h"
+#include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+using ::chromeos::MissiveClientTestObserver;
+using ::reporting::Destination;
+using ::reporting::Priority;
+using ::reporting::Record;
+using ::testing::Eq;
+
+namespace ash::reporting {
+namespace {
+
+constexpr char kTestUserEmail[] = "test@example.com";
+constexpr char kTestAffiliationId[] = "test_affiliation_id";
+constexpr char kNewPlatformVersion[] = "1235.0.0";
+static const AccountId kTestAccountId = AccountId::FromUserEmailGaiaId(
+    kTestUserEmail,
+    signin::GetTestGaiaIdForEmail(kTestUserEmail));
+
+struct OsUpdatesReporterBrowserTestCase {
+  update_engine::Operation operation;
+  bool enterprise_rollback;
+};
+
+Record GetNextOsEventsRecord(MissiveClientTestObserver* observer) {
+  std::tuple<Priority, Record> enqueued_record =
+      observer->GetNextEnqueuedRecord();
+  Priority priority = std::get<0>(enqueued_record);
+  Record record = std::get<1>(enqueued_record);
+
+  EXPECT_THAT(priority, Eq(Priority::SECURITY));
+  return record;
+}
+
+class OsUpdatesReporterBrowserTest
+    : public policy::DevicePolicyCrosBrowserTest {
+ protected:
+  OsUpdatesReporterBrowserTest() {
+    login_manager_mixin_.AppendRegularUsers(1);
+    scoped_testing_cros_settings_.device_settings()->SetBoolean(
+        kReportOsUpdateStatus, true);
+  }
+
+  void SetUpOnMainThread() override {
+    login_manager_mixin_.set_should_launch_browser(true);
+    policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    policy::DevicePolicyCrosBrowserTest::SetUpInProcessBrowserTestFixture();
+    fake_update_engine_client_ =
+        ash::UpdateEngineClient::InitializeFakeForTest();
+
+    // Set up affiliation for the test user.
+    auto device_policy_update = device_state_.RequestDevicePolicyUpdate();
+    auto user_policy_update = user_policy_mixin_.RequestPolicyUpdate();
+
+    device_policy_update->policy_data()->add_device_affiliation_ids(
+        kTestAffiliationId);
+    user_policy_update->policy_data()->add_user_affiliation_ids(
+        kTestAffiliationId);
+  }
+
+  void SendFakeUpdateEngineStatus(const std::string& version,
+                                  bool is_rollback,
+                                  update_engine::Operation current_operation) {
+    update_engine::StatusResult status;
+    status.set_new_version(version);
+    status.set_is_enterprise_rollback(is_rollback);
+    status.set_will_powerwash_after_reboot(false);
+    status.set_current_operation(current_operation);
+    fake_update_engine_client_->set_default_status(status);
+    fake_update_engine_client_->NotifyObserversThatStatusChanged(status);
+  }
+
+  ash::FakeSessionManagerClient* session_manager_client();
+
+  UserPolicyMixin user_policy_mixin_{&mixin_host_, kTestAccountId};
+
+  FakeGaiaMixin fake_gaia_mixin_{&mixin_host_};
+
+  LoginManagerMixin login_manager_mixin_{
+      &mixin_host_, LoginManagerMixin::UserList(), &fake_gaia_mixin_};
+
+  ScopedTestingCrosSettings scoped_testing_cros_settings_;
+
+  FakeUpdateEngineClient* fake_update_engine_client_ = nullptr;
+};
+
+IN_PROC_BROWSER_TEST_F(OsUpdatesReporterBrowserTest, ReportUpdateSuccessEvent) {
+  MissiveClientTestObserver observer(Destination::OS_EVENTS);
+
+  SendFakeUpdateEngineStatus(
+      /*version=*/kNewPlatformVersion, /*is_rollback=*/false,
+      /*current_operation=*/update_engine::Operation::UPDATED_NEED_REBOOT);
+
+  const Record& update_record = GetNextOsEventsRecord(&observer);
+  OsEventsRecord update_record_data;
+  ASSERT_TRUE(update_record_data.ParseFromString(update_record.data()));
+
+  ASSERT_TRUE(update_record_data.has_update_event());
+  EXPECT_TRUE(update_record_data.has_event_timestamp_sec());
+  EXPECT_EQ(update_record_data.target_os_version(), kNewPlatformVersion);
+  EXPECT_EQ(update_record_data.os_operation_type(),
+            reporting::OsOperationType::SUCCESS);
+}
+
+class OsUpdatesReporterBrowserErrorTest
+    : public OsUpdatesReporterBrowserTest,
+      public ::testing::WithParamInterface<OsUpdatesReporterBrowserTestCase> {
+ protected:
+  OsUpdatesReporterBrowserErrorTest() {}
+};
+
+IN_PROC_BROWSER_TEST_P(OsUpdatesReporterBrowserErrorTest, ReportErrorEvent) {
+  const auto test_case = GetParam();
+  MissiveClientTestObserver observer(Destination::OS_EVENTS);
+
+  SendFakeUpdateEngineStatus(
+      /*version=*/kNewPlatformVersion,
+      /*is_rollback=*/test_case.enterprise_rollback,
+      /*current_operation=*/test_case.operation);
+
+  const Record& update_record = GetNextOsEventsRecord(&observer);
+  OsEventsRecord update_record_data;
+  ASSERT_TRUE(update_record_data.ParseFromString(update_record.data()));
+
+  if (test_case.enterprise_rollback) {
+    ASSERT_TRUE(update_record_data.has_rollback_event());
+  } else {
+    ASSERT_TRUE(update_record_data.has_update_event());
+  }
+
+  EXPECT_TRUE(update_record_data.has_event_timestamp_sec());
+  EXPECT_EQ(update_record_data.target_os_version(), kNewPlatformVersion);
+  // The reported os_operation_type is FAILURE regardless of the
+  // test_case.operation.
+  EXPECT_EQ(update_record_data.os_operation_type(),
+            reporting::OsOperationType::FAILURE);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    OsUpdatesReporterBrowserErrorTest,
+    ::testing::ValuesIn<OsUpdatesReporterBrowserTestCase>(
+        {{/*operation=*/update_engine::Operation::ERROR,
+          /*enterprise_rollback=*/true},
+         {/*operation=*/update_engine::Operation::ERROR,
+          /*enterprise_rollback=*/false},
+         {/*operation=*/update_engine::Operation::REPORTING_ERROR_EVENT,
+          /*enterprise_rollback=*/true},
+         {/*operation=*/update_engine::Operation::REPORTING_ERROR_EVENT,
+          /*enterprise_rollback=*/false}}));
+
+}  // namespace
+}  // namespace ash::reporting

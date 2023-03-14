@@ -116,8 +116,7 @@ HTMLImageElement::HTMLImageElement(Document& document, bool created_by_parser)
       is_lcp_element_(false),
       is_changed_shortly_after_mouseover_(false),
       has_sizes_attribute_in_img_or_sibling_(false),
-      is_lazy_loaded_(false),
-      referrer_policy_(network::mojom::ReferrerPolicy::kDefault) {}
+      is_lazy_loaded_(false) {}
 
 HTMLImageElement::~HTMLImageElement() = default;
 
@@ -316,20 +315,28 @@ void HTMLImageElement::ParseAttribute(
   } else if (name == html_names::kUsemapAttr) {
     SetIsLink(!params.new_value.IsNull());
   } else if (name == html_names::kReferrerpolicyAttr) {
-    network::mojom::ReferrerPolicy old_referrer_policy = referrer_policy_;
-    referrer_policy_ = network::mojom::ReferrerPolicy::kDefault;
+    network::mojom::ReferrerPolicy new_referrer_policy =
+        network::mojom::ReferrerPolicy::kDefault;
     if (!params.new_value.IsNull()) {
       UseCounter::Count(GetDocument(),
                         WebFeature::kHTMLImageElementReferrerPolicyAttribute);
 
       SecurityPolicy::ReferrerPolicyFromString(
           params.new_value, kSupportReferrerPolicyLegacyKeywords,
-          &referrer_policy_);
+          &new_referrer_policy);
     }
 
-    if (referrer_policy_ != old_referrer_policy) {
+    network::mojom::ReferrerPolicy old_referrer_policy =
+        network::mojom::ReferrerPolicy::kDefault;
+    if (!params.old_value.IsNull()) {
+      SecurityPolicy::ReferrerPolicyFromString(
+          params.old_value, kSupportReferrerPolicyLegacyKeywords,
+          &old_referrer_policy);
+    }
+
+    if (new_referrer_policy != old_referrer_policy) {
       GetImageLoader().UpdateFromElement(
-          ImageLoader::kUpdateIgnorePreviousError, referrer_policy_);
+          ImageLoader::kUpdateIgnorePreviousError);
     }
   } else if (name == html_names::kDecodingAttr) {
     UseCounter::Count(GetDocument(), WebFeature::kImageDecodingAttribute);
@@ -338,7 +345,7 @@ void HTMLImageElement::ParseAttribute(
     LoadingAttributeValue loading = GetLoadingAttributeValue(params.new_value);
     if (loading == LoadingAttributeValue::kEager ||
         (loading == LoadingAttributeValue::kAuto)) {
-      GetImageLoader().LoadDeferredImage(referrer_policy_);
+      GetImageLoader().LoadDeferredImage();
     } else {
       is_lazy_loaded_ = true;
     }
@@ -365,7 +372,7 @@ void HTMLImageElement::ParseAttribute(
     if (new_crossorigin_state != old_crossorigin_state) {
       // Update the current state so we can detect future state changes.
       GetImageLoader().UpdateFromElement(
-          ImageLoader::kUpdateIgnorePreviousError, referrer_policy_);
+          ImageLoader::kUpdateIgnorePreviousError);
     }
   } else if (name == html_names::kAttributionsrcAttr) {
     LocalDOMWindow* window = GetDocument().domWindow();
@@ -508,10 +515,8 @@ Node::InsertionNotificationRequest HTMLImageElement::InsertedInto(
 
   if (was_added_to_picture_parent) {
     SelectSourceURL(ImageLoader::kUpdateIgnorePreviousError);
-  } else if (GetImageLoader().ShouldUpdateOnInsertedInto(insertion_point,
-                                                         referrer_policy_)) {
-    GetImageLoader().UpdateFromElement(ImageLoader::kUpdateNormal,
-                                       referrer_policy_);
+  } else if (GetImageLoader().ShouldUpdateOnInsertedInto(insertion_point)) {
+    GetImageLoader().UpdateFromElement(ImageLoader::kUpdateNormal);
   }
   return HTMLElement::InsertedInto(insertion_point);
 }
@@ -600,11 +605,8 @@ LayoutSize HTMLImageElement::DensityCorrectedIntrinsicDimensions() const {
       image_content->DevicePixelRatioHeaderValue() > 0)
     pixel_density = 1 / image_content->DevicePixelRatioHeaderValue();
 
-  RespectImageOrientationEnum respect_image_orientation =
-      LayoutObject::ShouldRespectImageOrientation(GetLayoutObject());
-
   LayoutSize natural_size(
-      image_content->IntrinsicSize(respect_image_orientation));
+      image_content->GetImage()->Size(kRespectImageOrientation));
   natural_size.Scale(pixel_density);
   return natural_size;
 }
@@ -843,8 +845,7 @@ float HTMLImageElement::SourceSize(Element& element) {
 }
 
 void HTMLImageElement::ForceReload() const {
-  GetImageLoader().UpdateFromElement(ImageLoader::kUpdateForcedReload,
-                                     referrer_policy_);
+  GetImageLoader().UpdateFromElement(ImageLoader::kUpdateForcedReload);
 }
 
 void HTMLImageElement::SelectSourceURL(
@@ -873,7 +874,7 @@ void HTMLImageElement::SelectSourceURL(
   // spurious downloads. See https://github.com/whatwg/html/issues/4646
   if (behavior != HTMLImageLoader::kUpdateSizeChanged ||
       best_fit_image_url_ != old_url) {
-    GetImageLoader().UpdateFromElement(behavior, referrer_policy_);
+    GetImageLoader().UpdateFromElement(behavior);
   }
 
   if (GetImageLoader().ImageIsPotentiallyAvailable())

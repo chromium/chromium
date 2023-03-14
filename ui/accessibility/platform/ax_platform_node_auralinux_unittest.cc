@@ -2131,42 +2131,14 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkPopupWindowActive) {
 }
 
 TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkSelectionInterface) {
-  AXNodeData root;
-  root.id = 1;
-  root.role = ax::mojom::Role::kListBox;
-  root.AddState(ax::mojom::State::kFocusable);
-  root.AddState(ax::mojom::State::kMultiselectable);
-  root.child_ids.push_back(2);
-  root.child_ids.push_back(3);
-  root.child_ids.push_back(4);
-  root.child_ids.push_back(5);
+  ui::TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kListBox states=kFocusable,kMultiselectable
+    ++++2 kListBoxOption
+    ++++3 kListBoxOption
+    ++++4 kListBoxOption
+    ++++5 kListItem
+  )HTML"));
 
-  AXNodeData item_1;
-  item_1.id = 2;
-  item_1.role = ax::mojom::Role::kListBoxOption;
-
-  AXNodeData item_2;
-  item_2.id = 3;
-  item_2.role = ax::mojom::Role::kListBoxOption;
-
-  AXNodeData item_3;
-  item_3.id = 4;
-  item_3.role = ax::mojom::Role::kListBoxOption;
-
-  // Add a final item which is not selectable.
-  AXNodeData item_4;
-  item_4.id = 5;
-  item_4.role = ax::mojom::Role::kListItem;
-
-  AXTreeUpdate update;
-  update.root_id = 1;
-  update.nodes.push_back(root);
-  update.nodes.push_back(item_1);
-  update.nodes.push_back(item_2);
-  update.nodes.push_back(item_3);
-  update.nodes.push_back(item_4);
-  update.has_tree_data = true;
-  update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
   Init(update);
 
   AtkObject* root_atk_object(GetRootAtkObject());

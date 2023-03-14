@@ -4,10 +4,10 @@
 
 #include "chromeos/ash/services/secure_channel/fake_pending_connection_manager.h"
 
-#include <algorithm>
 #include <iterator>
 
 #include "base/check_op.h"
+#include "base/ranges/algorithm.h"
 #include "chromeos/ash/services/secure_channel/authenticated_channel.h"
 
 namespace ash::secure_channel {
@@ -41,9 +41,8 @@ FakePendingConnectionManager::NotifyConnectionForHandledRequests(
 
   // Make a copy of the client list to pass as a return value for this function.
   std::vector<ClientConnectionParameters*> client_list_raw;
-  std::transform(client_list.begin(), client_list.end(),
-                 std::back_inserter(client_list_raw),
-                 [](auto& client) { return client.get(); });
+  base::ranges::transform(client_list, std::back_inserter(client_list_raw),
+                          &std::unique_ptr<ClientConnectionParameters>::get);
 
   NotifyOnConnection(std::move(authenticated_channel), std::move(client_list),
                      connection_details);

@@ -21,7 +21,14 @@ ProfileStatisticsFactory* ProfileStatisticsFactory::GetInstance() {
 }
 
 ProfileStatisticsFactory::ProfileStatisticsFactory()
-    : ProfileKeyedServiceFactory("ProfileStatistics") {}
+    : ProfileKeyedServiceFactory(
+          "ProfileStatistics",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {}
 
 KeyedService* ProfileStatisticsFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

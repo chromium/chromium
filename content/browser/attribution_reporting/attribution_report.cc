@@ -19,7 +19,9 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
+#include "content/browser/attribution_reporting/stored_source.h"
 #include "net/http/http_request_headers.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -149,31 +151,28 @@ base::Value::Dict AttributionReport::ReportBody() const {
           [this](const EventLevelData& data) {
             base::Value::Dict dict;
 
-            const CommonSourceInfo& common_source_info =
-                this->attribution_info().source.common_info();
+            const StoredSource& source = this->attribution_info().source;
 
             dict.Set("attribution_destination",
-                     common_source_info.SerializeDestinationSites());
+                     source.destination_sites().ToJson());
 
             // The API denotes these values as strings; a `uint64_t` cannot be
             // put in a dict as an integer in order to be opaque to various API
             // configurations.
-            dict.Set(
-                "source_event_id",
-                base::NumberToString(common_source_info.source_event_id()));
+            dict.Set("source_event_id",
+                     base::NumberToString(source.source_event_id()));
 
             dict.Set("trigger_data", base::NumberToString(data.trigger_data));
 
             dict.Set("source_type", attribution_reporting::SourceTypeName(
-                                        common_source_info.source_type()));
+                                        source.common_info().source_type()));
 
             dict.Set("report_id",
                      this->external_report_id().AsLowercaseString());
 
             dict.Set("randomized_trigger_rate", data.randomized_trigger_rate);
 
-            if (absl::optional<uint64_t> debug_key =
-                    common_source_info.debug_key()) {
+            if (absl::optional<uint64_t> debug_key = source.debug_key()) {
               dict.Set("source_debug_key", base::NumberToString(*debug_key));
             }
 
@@ -203,10 +202,8 @@ base::Value::Dict AttributionReport::ReportBody() const {
                        "not generated prior to send");
             }
 
-            const CommonSourceInfo& common_info =
-                this->attribution_info().source.common_info();
-
-            if (absl::optional<uint64_t> debug_key = common_info.debug_key()) {
+            if (absl::optional<uint64_t> debug_key =
+                    this->attribution_info().source.debug_key()) {
               dict.Set("source_debug_key", base::NumberToString(*debug_key));
             }
 
@@ -236,17 +233,19 @@ void AttributionReport::SetExternalReportIdForTesting(
 }
 
 base::Time AttributionReport::OriginalReportTime() const {
-  return absl::visit(base::Overloaded{
-                         [this](const EventLevelData&) {
-                           return ComputeReportTime(
-                               this->attribution_info_.source.common_info(),
-                               this->attribution_info_.time);
-                         },
-                         [](const AggregatableAttributionData& data) {
-                           return data.initial_report_time;
-                         },
-                     },
-                     data_);
+  return absl::visit(
+      base::Overloaded{
+          [this](const EventLevelData&) {
+            return ComputeReportTime(
+                this->attribution_info_.source.common_info(),
+                this->attribution_info_.source.event_report_window_time(),
+                this->attribution_info_.time);
+          },
+          [](const AggregatableAttributionData& data) {
+            return data.initial_report_time;
+          },
+      },
+      data_);
 }
 
 // static

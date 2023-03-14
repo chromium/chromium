@@ -62,15 +62,17 @@ class AccountSelectionProperties {
                 new ReadableObjectPropertyKey<>("close_on_click_listener");
         static final ReadableObjectPropertyKey<String> IDP_FOR_DISPLAY =
                 new ReadableObjectPropertyKey<>("idp_for_display");
-        static final ReadableObjectPropertyKey<String> RP_FOR_DISPLAY =
-                new ReadableObjectPropertyKey<>("rp_for_display");
+        static final ReadableObjectPropertyKey<String> TOP_FRAME_FOR_DISPLAY =
+                new ReadableObjectPropertyKey<>("top_frame_for_display");
+        static final ReadableObjectPropertyKey<String> IFRAME_FOR_DISPLAY =
+                new ReadableObjectPropertyKey<>("iframe_for_display");
         static final ReadableObjectPropertyKey<Bitmap> IDP_BRAND_ICON =
                 new ReadableObjectPropertyKey<>("brand_icon");
         static final ReadableObjectPropertyKey<HeaderType> TYPE =
                 new ReadableObjectPropertyKey<>("type");
 
-        static final PropertyKey[] ALL_KEYS = {
-                CLOSE_ON_CLICK_LISTENER, IDP_FOR_DISPLAY, RP_FOR_DISPLAY, IDP_BRAND_ICON, TYPE};
+        static final PropertyKey[] ALL_KEYS = {CLOSE_ON_CLICK_LISTENER, IDP_FOR_DISPLAY,
+                TOP_FRAME_FOR_DISPLAY, IFRAME_FOR_DISPLAY, IDP_BRAND_ICON, TYPE};
 
         private HeaderProperties() {}
     }

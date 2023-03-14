@@ -843,7 +843,7 @@ bool operator==(const absl::InlinedVector<T, N, A>& a,
                 const absl::InlinedVector<T, N, A>& b) {
   auto a_data = a.data();
   auto b_data = b.data();
-  return absl::equal(a_data, a_data + a.size(), b_data, b_data + b.size());
+  return std::equal(a_data, a_data + a.size(), b_data, b_data + b.size());
 }
 
 // `operator!=(...)`

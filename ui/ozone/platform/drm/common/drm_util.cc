@@ -337,8 +337,8 @@ gfx::Size GetMaximumCursorSize(const DrmWrapper& drm) {
   uint64_t width = 0, height = 0;
   // Querying cursor dimensions is optional and is unsupported on older Chrome
   // OS kernels.
-  if (drm.GetCapability(DRM_CAP_CURSOR_WIDTH, &width) != 0 ||
-      drm.GetCapability(DRM_CAP_CURSOR_HEIGHT, &height) != 0) {
+  if (!drm.GetCapability(DRM_CAP_CURSOR_WIDTH, &width) ||
+      !drm.GetCapability(DRM_CAP_CURSOR_HEIGHT, &height)) {
     return gfx::Size(kDefaultCursorWidth, kDefaultCursorHeight);
   }
   return gfx::Size(width, height);
@@ -391,12 +391,12 @@ GetDisplayInfosAndInvalidCrtcs(const DrmWrapper& drm) {
 
   std::vector<ScopedDrmConnectorPtr> connectors;
   std::vector<drmModeConnector*> available_connectors;
-  for (int i = 0; i < resources->count_connectors; ++i) {
+  const size_t count_connectors = resources->count_connectors;
+  for (size_t i = 0; i < count_connectors; ++i) {
     if (i >= kMaxDrmConnectors) {
       LOG(WARNING) << "Reached the current limit of " << kMaxDrmConnectors
                    << " connectors per DRM. Ignoring the remaining "
-                   << resources->count_connectors - kMaxDrmConnectors
-                   << " connectors.";
+                   << count_connectors - kMaxDrmConnectors << " connectors.";
       break;
     }
 
@@ -540,7 +540,6 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
     const DrmWrapper& drm,
     HardwareDisplayControllerInfo* info,
     uint8_t device_index,
-    const gfx::Point& origin,
     const display::DrmFormatsAndModifiers& drm_formats_and_modifiers) {
   const uint8_t display_index =
       display::ConnectorIndex8(device_index, info->index());
@@ -578,7 +577,7 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
   std::string display_name;
   // Make sure the ID contains non index part.
   int64_t port_display_id = display_index | 0x100;
-  int64_t edid_display_id = display::kInvalidDisplayId;
+  int64_t edid_display_id = port_display_id;
   int64_t product_code = display::DisplaySnapshot::kInvalidProductCode;
   int32_t year_of_manufacture = display::kInvalidYearOfManufacture;
   bool has_overscan = false;
@@ -631,7 +630,7 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
 
   return std::make_unique<display::DisplaySnapshot>(
       port_display_id, port_display_id, edid_display_id, connector_index,
-      origin, physical_size, type, base_connector_id, path_topology,
+      gfx::Point(), physical_size, type, base_connector_id, path_topology,
       is_aspect_preserving_scaling, has_overscan, privacy_screen_state,
       has_content_protection_key, has_color_correction_matrix,
       color_correction_in_linear_space, display_color_space, bits_per_channel,
@@ -741,6 +740,12 @@ std::vector<uint64_t> ParsePathBlob(const drmModePropertyBlobRes& path_blob) {
   }
 
   return path;
+}
+
+bool IsAddfb2ModifierCapable(const DrmWrapper& drm) {
+  uint64_t addfb2_mod_cap = 0;
+  return drm.GetCapability(DRM_CAP_ADDFB2_MODIFIERS, &addfb2_mod_cap) &&
+         addfb2_mod_cap;
 }
 
 std::string GetEnumNameForProperty(

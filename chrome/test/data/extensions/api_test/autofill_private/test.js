@@ -21,7 +21,7 @@ var CARD_NAME = 'CardName';
 var NUMBER = '4111 1111 1111 1111';
 var EXP_MONTH = '02';
 var EXP_YEAR = '2999';
-var IBAN_VALUE = 'AD14 0008 0001 0012 3456 7890';
+var IBAN_VALUE = 'AD1400080001001234567890';
 
 var failOnceCalled = function() {
   chrome.test.fail();
@@ -59,7 +59,7 @@ function addNewIban(nickname) {
 };
 
 function updateExistingIban(updatedNickname) {
-  var UPDATED_IBAN_VALUE = 'AL35 2021 1109 0000 0000 0123 4567';
+  var UPDATED_IBAN_VALUE = 'AL35202111090000000001234567';
 
   function filterIbanProperties(ibans) {
     return ibans.map(iban => {

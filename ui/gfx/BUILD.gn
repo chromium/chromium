@@ -9,6 +9,10 @@ import("//device/vr/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
+if (is_ios) {
+  import("//build/config/ios/bundle_data_from_filelist.gni")
+}
+
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
@@ -980,3 +984,11 @@ fuzzer_test("render_text_api_fuzzer") {
 
   dict = "test/data/render_text/unicode_text_fuzzer.dict"
 }
+
+if (is_ios) {
+  bundle_data_from_filelist("unit_tests_bundle_data") {
+    testonly = true
+    filelist_name = "test/data/unit_tests_bundle_data.filelist"
+  }
+}
+

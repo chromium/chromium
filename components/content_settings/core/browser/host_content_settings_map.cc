@@ -664,7 +664,7 @@ void HostContentSettingsMap::RecordExceptionMetrics() {
     }
     if (content_type == ContentSettingsType::COOKIES) {
       base::UmaHistogramCustomCounts(
-          "ContentSettings.RegaularProfile.Exceptions.cookies.AllowThirdParty",
+          "ContentSettings.RegularProfile.Exceptions.cookies.AllowThirdParty",
           num_third_party_cookie_allow_exceptions, 1, 1000, 30);
     }
   }
@@ -1014,11 +1014,6 @@ void HostContentSettingsMap::
         pattern.secondary_pattern == ContentSettingsPattern::Wildcard()) {
       continue;
     }
-
-    // Users were never allowed to add user-specified patterns for these types
-    // so we can assume they are all origin scoped.
-    DCHECK(GURL(pattern.primary_pattern.ToString()).is_valid());
-    DCHECK(GURL(pattern.secondary_pattern.ToString()).is_valid());
 
     if (pattern.secondary_pattern.IsValid() &&
         pattern.secondary_pattern != pattern.primary_pattern) {

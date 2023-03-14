@@ -9,6 +9,8 @@
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/ios/ios_util.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -88,6 +90,14 @@ void AutocompleteClassifier::Classify(
     metrics::OmniboxEventProto::PageClassification page_classification,
     AutocompleteMatch* match,
     GURL* alternate_nav_url) {
+  TRACE_EVENT1("omnibox", "AutocompleteClassifier::Classify", "text",
+               base::UTF16ToUTF8(text));
+
+  // TODO(manukh): Remove this histogram when `kRedoCurrentMatch` &
+  //   `kRevertModelBeforeClosingPopup` launch or are abandoned.
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "Omnibox.AutocompleteClassifierClassifyTime");
+
   DCHECK(!inside_classify_);
   base::AutoReset<bool> reset(&inside_classify_, true);
   AutocompleteInput input(text, page_classification, *scheme_classifier_);

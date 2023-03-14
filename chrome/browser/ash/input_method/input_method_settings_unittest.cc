@@ -765,6 +765,24 @@ TEST(CreateSettingsFromPrefsTest, CreateZhuyinSettings) {
   EXPECT_EQ(zhuyin_settings.page_size, 8u);
 }
 
+TEST(CreateSettingsFromPrefsTest, AutocorrectIsSupportedForLatin) {
+  ASSERT_TRUE(IsAutocorrectSupported("xkb:ca:multix:fra"));
+  ASSERT_TRUE(IsAutocorrectSupported("xkb:de::ger"));
+  ASSERT_TRUE(IsAutocorrectSupported("xkb:us::eng"));
+  ASSERT_TRUE(IsAutocorrectSupported("xkb:us:intl_pc:por"));
+  ASSERT_TRUE(IsAutocorrectSupported("xkb:us:workman-intl:eng"));
+}
+
+TEST(CreateSettingsFromPrefsTest, AutocorrectIsNotSupportedForNonLatin) {
+  ASSERT_FALSE(IsAutocorrectSupported("ko-t-i0-und"));
+  ASSERT_FALSE(IsAutocorrectSupported("nacl_mozc_us"));
+  ASSERT_FALSE(IsAutocorrectSupported("xkb:am:phonetic:arm"));
+  ASSERT_FALSE(IsAutocorrectSupported("xkb:in::eng"));
+  ASSERT_FALSE(IsAutocorrectSupported("zh-hant-t-i0-pinyin"));
+  ASSERT_FALSE(IsAutocorrectSupported("zh-hant-t-i0-und"));
+  ASSERT_FALSE(IsAutocorrectSupported("zh-t-i0-pinyin"));
+}
+
 }  // namespace
 }  // namespace input_method
 }  // namespace ash

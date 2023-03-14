@@ -92,6 +92,13 @@ enum class DEVICE_BLUETOOTH_EXPORT GattStatus {
   kOutOfRange = 0xFF,
 };
 
+// GATT WriteCharacteristic D-Bus method results.
+enum class DEVICE_BLUETOOTH_EXPORT GattWriteRequestStatus {
+  kSuccess = 0,
+  kFail = 1,
+  kBusy = 2,
+};
+
 struct DEVICE_BLUETOOTH_EXPORT GattDescriptor {
   device::BluetoothUUID uuid;
   int32_t instance_id;
@@ -102,6 +109,28 @@ struct DEVICE_BLUETOOTH_EXPORT GattDescriptor {
 };
 
 struct DEVICE_BLUETOOTH_EXPORT GattCharacteristic {
+  enum Property {
+    GATT_CHAR_PROP_BIT_BROADCAST = (1 << 0),
+    GATT_CHAR_PROP_BIT_READ = (1 << 1),
+    GATT_CHAR_PROP_BIT_WRITE_NR = (1 << 2),
+    GATT_CHAR_PROP_BIT_WRITE = (1 << 3),
+    GATT_CHAR_PROP_BIT_NOTIFY = (1 << 4),
+    GATT_CHAR_PROP_BIT_INDICATE = (1 << 5),
+    GATT_CHAR_PROP_BIT_AUTH = (1 << 6),
+    GATT_CHAR_PROP_BIT_EXT_PROP = (1 << 7),
+  };
+
+  enum Permission {
+    GATT_PERM_READ = (1 << 0),
+    GATT_PERM_READ_ENCRYPTED = (1 << 1),
+    GATT_PERM_READ_ENC_MITM = (1 << 2),
+    GATT_PERM_WRITE = (1 << 4),
+    GATT_PERM_WRITE_ENCRYPTED = (1 << 5),
+    GATT_PERM_WRITE_ENC_MITM = (1 << 6),
+    GATT_PERM_WRITE_SIGNED = (1 << 7),
+    GATT_PERM_WRITE_SIGNED_MITM = (1 << 8),
+  };
+
   device::BluetoothUUID uuid;
   int32_t instance_id;
   int32_t properties;
@@ -116,6 +145,10 @@ struct DEVICE_BLUETOOTH_EXPORT GattCharacteristic {
 };
 
 struct DEVICE_BLUETOOTH_EXPORT GattService {
+  enum ServiceType {
+    GATT_SERVICE_TYPE_PRIMARY = 0,
+    GATT_SERVICE_TYPE_SECONDARY = 1,
+  };
   device::BluetoothUUID uuid;
   int32_t instance_id;
   int32_t service_type;
@@ -379,12 +412,13 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
                                            const AuthRequired auth_required);
 
   // Writes a characteristic on a connected device with given |handle|.
-  virtual void WriteCharacteristic(ResponseCallback<Void> callback,
-                                   const std::string& remote_device,
-                                   const int32_t handle,
-                                   const WriteType write_type,
-                                   const AuthRequired auth_required,
-                                   const std::vector<uint8_t> data);
+  virtual void WriteCharacteristic(
+      ResponseCallback<GattWriteRequestStatus> callback,
+      const std::string& remote_device,
+      const int32_t handle,
+      const WriteType write_type,
+      const AuthRequired auth_required,
+      const std::vector<uint8_t> data);
 
   // Reads the descriptor for a given characteristic |handle|.
   virtual void ReadDescriptor(ResponseCallback<Void> callback,

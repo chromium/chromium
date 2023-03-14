@@ -11,7 +11,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/check.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
-#include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 
 namespace base::internal {
@@ -75,37 +74,10 @@ bool RawPtrBackupRefImpl<AllowDangling>::IsPointeeAlive(uintptr_t address) {
       ->IsAlive();
 }
 
-template <bool AllowDangling>
-template <typename Z>
-partition_alloc::PtrPosWithinAlloc
-RawPtrBackupRefImpl<AllowDangling>::IsValidDelta(
-    uintptr_t address,
-    partition_alloc::internal::PtrDelta<Z> delta) {
-  return partition_alloc::internal::PartitionAllocIsValidPtrDelta(address,
-                                                                  delta);
-}
-
 // Explicitly instantiates the two BackupRefPtr variants in the .cc. This
 // ensures the definitions not visible from the .h are available in the binary.
 template struct RawPtrBackupRefImpl</*AllowDangling=*/false>;
 template struct RawPtrBackupRefImpl</*AllowDangling=*/true>;
-
-template PA_COMPONENT_EXPORT(RAW_PTR)
-    partition_alloc::PtrPosWithinAlloc RawPtrBackupRefImpl<false>::IsValidDelta(
-        uintptr_t,
-        partition_alloc::internal::PtrDelta<size_t>);
-template PA_COMPONENT_EXPORT(RAW_PTR)
-    partition_alloc::PtrPosWithinAlloc RawPtrBackupRefImpl<false>::IsValidDelta(
-        uintptr_t,
-        partition_alloc::internal::PtrDelta<ptrdiff_t>);
-template PA_COMPONENT_EXPORT(RAW_PTR)
-    partition_alloc::PtrPosWithinAlloc RawPtrBackupRefImpl<true>::IsValidDelta(
-        uintptr_t,
-        partition_alloc::internal::PtrDelta<size_t>);
-template PA_COMPONENT_EXPORT(RAW_PTR)
-    partition_alloc::PtrPosWithinAlloc RawPtrBackupRefImpl<true>::IsValidDelta(
-        uintptr_t,
-        partition_alloc::internal::PtrDelta<ptrdiff_t>);
 
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
 void CheckThatAddressIsntWithinFirstPartitionPage(uintptr_t address) {

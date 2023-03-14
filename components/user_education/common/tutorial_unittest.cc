@@ -9,6 +9,7 @@
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/mock_callback.h"
+#include "base/test/task_environment.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
 #include "components/user_education/common/help_bubble_params.h"
@@ -89,7 +90,15 @@ void ClickRestartButton(HelpBubble* bubble) {
 
 }  // namespace
 
-class TutorialTest : public testing::Test {};
+class TutorialTest : public testing::Test {
+ public:
+  TutorialTest() = default;
+  ~TutorialTest() override = default;
+
+ protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+};
 
 TEST_F(TutorialTest, TutorialBuilder) {
   const auto bubble_factory_registry =
@@ -304,6 +313,66 @@ TEST_F(TutorialTest, SingleInteractionTutorialRuns) {
   EXPECT_CALL_IN_SCOPE(
       completed, Run,
       ClickCloseButton(service.currently_displayed_bubble_for_testing()));
+}
+
+TEST_F(TutorialTest, StartTutorialAbortsExistingTutorial) {
+  UNCALLED_MOCK_CALLBACK(TutorialService::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(TutorialService::CompletedCallback, aborted);
+
+  const auto bubble_factory_registry =
+      CreateTestTutorialBubbleFactoryRegistry();
+  TutorialRegistry registry;
+  TestTutorialService service(&registry, bubble_factory_registry.get());
+
+  // build elements and keep them for triggering show/hide
+  ui::test::TestElement element_1(kTestIdentifier1, kTestContext1);
+  element_1.Show();
+
+  // Build the tutorial Description. This has two steps, the second of which
+  // will not
+  TutorialDescription description;
+  description.steps.emplace_back(IDS_OK, IDS_OK,
+                                 ui::InteractionSequence::StepType::kShown,
+                                 kTestIdentifier1, "", HelpBubbleArrow::kNone);
+  description.steps.emplace_back(IDS_OK, IDS_OK,
+                                 ui::InteractionSequence::StepType::kShown,
+                                 kTestIdentifier2, "", HelpBubbleArrow::kNone);
+  registry.AddTutorial(kTestTutorial1, std::move(description));
+
+  service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get(),
+                        aborted.Get());
+  EXPECT_CALL_IN_SCOPE(
+      aborted, Run, service.StartTutorial(kTestTutorial1, element_1.context()));
+  EXPECT_TRUE(service.IsRunningTutorial());
+}
+
+TEST_F(TutorialTest, StartTutorialCompletesExistingTutorial) {
+  UNCALLED_MOCK_CALLBACK(TutorialService::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(TutorialService::CompletedCallback, aborted);
+
+  const auto bubble_factory_registry =
+      CreateTestTutorialBubbleFactoryRegistry();
+  TutorialRegistry registry;
+  TestTutorialService service(&registry, bubble_factory_registry.get());
+
+  // build elements and keep them for triggering show/hide
+  ui::test::TestElement element_1(kTestIdentifier1, kTestContext1);
+  element_1.Show();
+
+  // Build the tutorial Description. This has two steps, the second of which
+  // will not
+  TutorialDescription description;
+  description.steps.emplace_back(IDS_OK, IDS_OK,
+                                 ui::InteractionSequence::StepType::kShown,
+                                 kTestIdentifier1, "", HelpBubbleArrow::kNone);
+  registry.AddTutorial(kTestTutorial1, std::move(description));
+
+  service.StartTutorial(kTestTutorial1, element_1.context(), completed.Get(),
+                        aborted.Get());
+  EXPECT_CALL_IN_SCOPE(
+      completed, Run,
+      service.StartTutorial(kTestTutorial1, element_1.context()));
+  EXPECT_TRUE(service.IsRunningTutorial());
 }
 
 TEST_F(TutorialTest, TutorialWithCustomEvent) {
@@ -533,6 +602,96 @@ TEST_F(TutorialTest, BubbleClosingProgrammaticallyOnlyEndsTutorialOnLastStep) {
   EXPECT_CALL_IN_SCOPE(
       completed, Run,
       service.currently_displayed_bubble_for_testing()->Close());
+}
+
+TEST_F(TutorialTest, TimeoutBeforeFirstBubble) {
+  UNCALLED_MOCK_CALLBACK(TutorialService::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(TutorialService::AbortedCallback, aborted);
+
+  const auto bubble_factory_registry =
+      CreateTestTutorialBubbleFactoryRegistry();
+  TutorialRegistry registry;
+  TestTutorialService service(&registry, bubble_factory_registry.get());
+
+  ui::test::TestElement el(kTestIdentifier1, kTestContext1);
+
+  TutorialDescription description;
+  description.steps.emplace_back(IDS_OK, IDS_OK,
+                                 ui::InteractionSequence::StepType::kShown,
+                                 kTestIdentifier1, "", HelpBubbleArrow::kNone);
+  registry.AddTutorial(kTestTutorial1, std::move(description));
+
+  service.StartTutorial(kTestTutorial1, el.context(), completed.Get(),
+                        aborted.Get());
+  EXPECT_FALSE(service.currently_displayed_bubble_for_testing());
+  EXPECT_CALL_IN_SCOPE(aborted, Run,
+                       task_environment_.FastForwardUntilNoTasksRemain());
+}
+
+TEST_F(TutorialTest, TimeoutBetweenBubbles) {
+  UNCALLED_MOCK_CALLBACK(TutorialService::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(TutorialService::AbortedCallback, aborted);
+
+  const auto bubble_factory_registry =
+      CreateTestTutorialBubbleFactoryRegistry();
+  TutorialRegistry registry;
+  TestTutorialService service(&registry, bubble_factory_registry.get());
+
+  ui::test::TestElement el1(kTestIdentifier1, kTestContext1);
+  ui::test::TestElement el2(kTestIdentifier1, kTestContext1);
+  el1.Show();
+
+  TutorialDescription description;
+  description.steps.emplace_back(
+      IDS_OK, IDS_OK, ui::InteractionSequence::StepType::kShown,
+      kTestIdentifier1, "", HelpBubbleArrow::kNone,
+      ui::CustomElementEventType(), /* must_remain_visible */ false);
+  description.steps.emplace_back(IDS_OK, IDS_OK,
+                                 ui::InteractionSequence::StepType::kShown,
+                                 kTestIdentifier2, "", HelpBubbleArrow::kNone);
+  registry.AddTutorial(kTestTutorial1, std::move(description));
+
+  service.StartTutorial(kTestTutorial1, el1.context(), completed.Get(),
+                        aborted.Get());
+
+  // This closes the bubble but does not advance the tutorial.
+  el1.Hide();
+  EXPECT_FALSE(service.currently_displayed_bubble_for_testing());
+  EXPECT_CALL_IN_SCOPE(aborted, Run,
+                       task_environment_.FastForwardUntilNoTasksRemain());
+}
+
+TEST_F(TutorialTest, NoTimeoutIfBubbleShowing) {
+  UNCALLED_MOCK_CALLBACK(TutorialService::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(TutorialService::AbortedCallback, aborted);
+
+  const auto bubble_factory_registry =
+      CreateTestTutorialBubbleFactoryRegistry();
+  TutorialRegistry registry;
+  TestTutorialService service(&registry, bubble_factory_registry.get());
+
+  ui::test::TestElement el1(kTestIdentifier1, kTestContext1);
+  ui::test::TestElement el2(kTestIdentifier1, kTestContext1);
+  el1.Show();
+
+  TutorialDescription description;
+  description.steps.emplace_back(IDS_OK, IDS_OK,
+                                 ui::InteractionSequence::StepType::kShown,
+                                 kTestIdentifier1, "", HelpBubbleArrow::kNone);
+  description.steps.emplace_back(IDS_OK, IDS_OK,
+                                 ui::InteractionSequence::StepType::kShown,
+                                 kTestIdentifier2, "", HelpBubbleArrow::kNone);
+  registry.AddTutorial(kTestTutorial1, std::move(description));
+
+  service.StartTutorial(kTestTutorial1, el1.context(), completed.Get(),
+                        aborted.Get());
+
+  // Since there is a bubble, there is no timeout.
+  EXPECT_TRUE(service.currently_displayed_bubble_for_testing());
+  task_environment_.FastForwardUntilNoTasksRemain();
+
+  // When we exit and destroy the service, the callback will be called.
+  EXPECT_CALL(aborted, Run).Times(1);
 }
 
 }  // namespace user_education

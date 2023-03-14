@@ -13,7 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/cast/message_port/platform_message_port.h"
 #include "components/cast_receiver/browser/streaming_controller_base.h"
-#include "components/cast_streaming/public/cast_streaming_url.h"
+#include "components/cast_streaming/common/public/cast_streaming_url.h"
 #include "media/base/video_decoder_config.h"
 
 namespace cast_receiver {
@@ -162,6 +162,18 @@ void StreamingReceiverSessionClient::OnVideoConfigUpdated(
     const ::media::VideoDecoderConfig& video_config) {
   handler_->OnResolutionChanged(video_config.visible_rect(),
                                 video_config.video_transformation());
+}
+
+void StreamingReceiverSessionClient::OnStreamingSessionEnded() {
+  // The streaming session will only "end" (as opposed to being "renegotated"
+  // when a new config is sent or the stream changes between mirroring and
+  // remoting) when the session completely exits. This occurs either when there
+  // is an error in the runtime or the when sender-side ends the streaming
+  // session.
+  //
+  // In either case, the result is an unsupported state for the
+  // StreamingRuntimeApplication, so an error.
+  TriggerError();
 }
 
 void StreamingReceiverSessionClient::TriggerError() {

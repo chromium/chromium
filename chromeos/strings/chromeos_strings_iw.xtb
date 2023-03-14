@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">מצוין (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">המשך</translation>
 <translation id="2364498172489649528">הילד או הילדה עברו את הבדיקה בהצלחה</translation>
+<translation id="2367335866686097760">מקש למיפוי מקשים</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">שליחת דוח המשוב</translation>
 <translation id="2407209115954268704">‏סטטוס נעילת ה-SIM</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">תמונת הדמות שונתה</translation>
 <translation id="3192947282887913208">קובצי אודיו</translation>
 <translation id="3199982728237701504">הכנסת מסמכים (שני צדדים)</translation>
+<translation id="3211671540163313381">‏לחצני החיצים (D-pad) למיפוי מקשים</translation>
 <translation id="3226405216343213872">מתבצע חיפוש של סורקים</translation>
+<translation id="3226657629376379887">תפריט הפעולות בפריסה</translation>
 <translation id="3246869037381808805">משימות הדפסה בנות יותר מיום אחד יוסרו</translation>
 <translation id="3268178239013324452">נכשלה – דלת המדפסת פתוחה</translation>
 <translation id="3275729367986477355">תמונת הדמות</translation>
@@ -253,6 +256,7 @@
 <translation id="3434107140712555581">‎<ph name="BATTERY_PERCENTAGE" />%‎</translation>
 <translation id="3435738964857648380">אבטחה</translation>
 <translation id="3435896845095436175">הפעלה</translation>
+<translation id="345256797477978759">קיבוע החלון בחלק הגדול יותר בצד <ph name="DIRECTION" /> של המסך</translation>
 <translation id="3456078764689556234">הודפס עמוד <ph name="PRINTED_PAGES" /> מתוך <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">מתבצעת סריקה של עמוד <ph name="PAGE_NUM" />. החלק שהושלם: <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">הדפסה</translation>
@@ -273,12 +277,14 @@
 <translation id="3595596368722241419">סוללה מלאה</translation>
 <translation id="3600339377155080675">שיקוף מסך</translation>
 <translation id="3602290021589620013">תצוגה מקדימה</translation>
+<translation id="360282891121575443">משתמשים אחרים יכולים לעדכן תמונות באלבומים משותפים. אם עורכים שינויים כל יום, עשויים להופיע טפטים שלא שמורים באלבום באותו זמן.</translation>
 <translation id="3603829704940252505">דמות</translation>
 <translation id="3604713164406837697">החלפת הטפט</translation>
 <translation id="360565022852130722">‏רשת ה-Wi-Fi מאובטחת בפרוטוקול WEP 802.1x חלש.</translation>
 <translation id="3606583719724308068">‏זמן אחזור ארוך לאתרי HTTPS</translation>
 <translation id="361575905210396100">תודה על המשוב</translation>
 <translation id="3632579075709132555">לחצן להחלפת מצב של מסך הפרטיות</translation>
+<translation id="3639846061339007994">העליון</translation>
 <translation id="3651050199673793219">בחירת יחידת מידה לטמפרטורה</translation>
 <translation id="3689839747745352263">בדיקת <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">בטעינה...</translation>
@@ -520,6 +526,7 @@
 <translation id="576835345334454681">הגברה של בהירות התצוגה</translation>
 <translation id="57838592816432529">השתקה</translation>
 <translation id="5784136236926853061">‏משך זמן ההמתנה ל-HTTP ארוך</translation>
+<translation id="5826644637650799838">מידע על יצירת האומנות</translation>
 <translation id="5832805196449965646">הוספת משתמש</translation>
 <translation id="583281660410589416">לא ידוע</translation>
 <translation id="5843706793424741864">פרנהייט</translation>
@@ -562,6 +569,7 @@
 <translation id="6117895505466548728"><ph name="TITLE" /> ועוד <ph name="NUMBER" /> אלבומים</translation>
 <translation id="6122191549521593678">אונליין</translation>
 <translation id="6122277663991249694">‏שירות שיטת הקלט של ChromeOS</translation>
+<translation id="6136285399872347291">מחיקת תו אחד</translation>
 <translation id="6137767437444130246">אישור משתמש</translation>
 <translation id="6146993107019042706">כדי לסיים, יש להזין את הסיסמה החדשה</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -609,6 +617,7 @@
 <translation id="650266656685499220">‏כדי ליצור אלבומים, יש לעבור ל-Google Photos</translation>
 <translation id="6516990319416533844">כדי לבדוק את מהירות הטעינה של הסוללה, יש להמתין זמן מה שתתרוקן</translation>
 <translation id="6517239166834772319">‏מה חדש ב-Chromebook</translation>
+<translation id="6526200165918397681">התאמת הטפט</translation>
 <translation id="6527081081771465939">‏פרוטוקול אבטחת Wi-Fi לא מזוהה</translation>
 <translation id="6535178685492749208">אין לך חיבור לאינטרנט. המשוב יישלח מאוחר יותר.</translation>
 <translation id="65587193855025101">שטוח</translation>
@@ -628,6 +637,7 @@
 <translation id="6657585470893396449">סיסמה</translation>
 <translation id="6659594942844771486">כרטיסייה</translation>
 <translation id="6692996468359469499">קבלת מידע בקשר לבחירה שלך</translation>
+<translation id="6698459586333070823">משתמשים אחרים יכולים לעדכן את האלבומים המשותפים</translation>
 <translation id="6704062477274546131">‏פענוח DNS</translation>
 <translation id="6723839937902243910">חשמל</translation>
 <translation id="6723847290197874913">התאורה האחורית של המקלדת</translation>
@@ -664,6 +674,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">נכשל – ההרשאה נכשלה</translation>
 <translation id="7103252855940681301">מכשיר <ph name="INDEX" /> מתוך <ph name="COUNT" /> בשם <ph name="NAME" />.</translation>
+<translation id="7108668606237948702">הזנת מפתח</translation>
 <translation id="7130438335435247835">‏שם נקודת גישה (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{שרת שמות}one{שרתי שמות}two{שרתי שמות}other{שרתי שמות}}</translation>
 <translation id="7143207342074048698">מתבצע חיבור</translation>
@@ -673,6 +684,7 @@
 <translation id="7155171745945906037">תמונה קיימת ממצלמה או מקובץ</translation>
 <translation id="7162487448488904999">גלריה</translation>
 <translation id="7170236477717446850">תמונת פרופיל</translation>
+<translation id="7171919371520438592">קיבוע החלון בחלק הקטן יותר בצד <ph name="DIRECTION" /> של המסך</translation>
 <translation id="7172721935181587524">תמונה אחת</translation>
 <translation id="7177485034254901881">מכשיר <ph name="DEVICE_TYPE" /> זה מנוהל על ידי <ph name="MANAGER" />. מנהלי מערכת עשויים להגדיר את המכשיר הזה מרחוק.</translation>
 <translation id="7180611975245234373">רענון</translation>
@@ -748,6 +760,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">סוג ספק</translation>
 <translation id="7882501334836096755">מפתח ציבורי</translation>
+<translation id="78957024357676568">שמאל</translation>
 <translation id="7915220255123750251">‏ניהול הגדרות APN של הרשת. נקודות APN יוצרות חיבור בין רשת סלולרית לבין האינטרנט.</translation>
 <translation id="7936303884198020182">לא נמצאו שרתי שמות</translation>
 <translation id="7942349550061667556">אדום</translation>
@@ -776,9 +789,11 @@
 <translation id="8183974620058026102">צירוף</translation>
 <translation id="8206859287963243715">סלולארי</translation>
 <translation id="8208861521865154048">הטבות</translation>
+<translation id="8210733748736414123">התחתון</translation>
 <translation id="8226628635270268143">בחירת התמונות והאלבומים האהובים עליך</translation>
 <translation id="8227119283605456246">צירוף קובץ</translation>
 <translation id="8230672074305416752">לא ניתן היה לבצע פינג לשער הרשת המוגדרת כברירת מחדל</translation>
+<translation id="8242426110754782860">המשך</translation>
 <translation id="8246209727385807362">ספק לא ידוע</translation>
 <translation id="827422111966801947">כחול כהה</translation>
 <translation id="8286154143153872371">כדי לצפות בטפט, מתחברים לרשת וטוענים מחדש את הדף.</translation>
@@ -789,9 +804,11 @@
 <translation id="8318753676953949627">אין תמונות</translation>
 <translation id="8336739000755212683">שינוי תמונת החשבון במכשיר</translation>
 <translation id="8347227221149377169">משימות הדפסה</translation>
+<translation id="8351855506390808906">נקודת מגע למיפוי מקשים</translation>
 <translation id="8352772353338965963">יש להוסיף חשבון לכניסה עם מספר חשבונות. כל החשבונות שאליהם נכנסת נגישים ללא סיסמה, לכן יש להשתמש בתכונה זו עם חשבונות אמינים בלבד.</translation>
 <translation id="8364946094152050673">שרתי שמות ריקים</translation>
 <translation id="8372477600026034341">מארחים נוספים</translation>
+<translation id="8380114448424469341">קיבוע החלון בחצי המסך בצד <ph name="DIRECTION" /></translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> זה מנוהל על ידי ארגון</translation>
 <translation id="8398927464629426868">קצב הטעינה או קצב הפריקה הנוכחיים של המכשיר</translation>
 <translation id="8410244574650205435">זיהוי אוטומטי</translation>
@@ -856,6 +873,7 @@
 <translation id="8930622219860340959">אלחוטי</translation>
 <translation id="8936793075252196307">‏כתובת ה-IP של הלקוח</translation>
 <translation id="894617464444543719">המכשיר הוא טלפון.</translation>
+<translation id="8957423540740801332">ימין</translation>
 <translation id="8968751544471797276">שיעור הטעינה</translation>
 <translation id="8970109610781093811">הפעל שוב</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -883,6 +901,7 @@
 <translation id="9137526406337347448">‏שירותי Google</translation>
 <translation id="9138630967333032450">‏shift שמאלי</translation>
 <translation id="9149391708638971077">הפעלה של בדיקת זיכרון</translation>
+<translation id="9161276708550942948">מקש רווח</translation>
 <translation id="9173638680043580060">נותרה פחות מדקה</translation>
 <translation id="917720651393141712">בדיקה</translation>
 <translation id="9188992814426075118">אפשר להגדיר התאמה אוטומטית של המקלדת לטפט</translation>

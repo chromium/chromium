@@ -92,6 +92,14 @@ class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread
  public:
   static std::unique_ptr<GpuWatchdogThread> Create(
       bool start_backgrounded,
+      bool software_rendering,
+      const std::string& thread_name);
+
+  // Use the existing GpuWatchdogThread to create a second one. This is used
+  // for DrDC thread only.
+  static std::unique_ptr<GpuWatchdogThread> Create(
+      bool start_backgrounded,
+      const GpuWatchdogThread* existing_watchdog,
       const std::string& thread_name);
 
   static std::unique_ptr<GpuWatchdogThread> Create(

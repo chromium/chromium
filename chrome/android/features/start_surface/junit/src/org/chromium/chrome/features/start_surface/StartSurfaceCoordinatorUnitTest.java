@@ -9,10 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 import android.view.View;
 
@@ -32,9 +29,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.UmaRecorder;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -72,8 +68,6 @@ public class StartSurfaceCoordinatorUnitTest {
     private static final String TEST_URL = "https://www.example.com/";
 
     @Mock
-    private UmaRecorder mUmaRecorder;
-    @Mock
     private Callback mOnVisitComplete;
     @Mock
     private Runnable mOnPageLoaded;
@@ -87,7 +81,6 @@ public class StartSurfaceCoordinatorUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        UmaRecorderHolder.resetForTesting();
         mCoordinator = mTestRule.getCoordinator();
         mCoordinator.initWithNative();
     }
@@ -453,8 +446,6 @@ public class StartSurfaceCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testRecordUserActionMostVisitedItemClick_StartSurface() {
-        UmaRecorderHolder.setNonNativeDelegate(mUmaRecorder);
-
         Tile tileForTest =
                 new Tile(new SiteSuggestion("0 TOP_SITES", new GURL("https://www.foo.com"),
                                  TileTitleSource.TITLE_TAG, TileSource.TOP_SITES,
@@ -463,32 +454,30 @@ public class StartSurfaceCoordinatorUnitTest {
         TileGroupDelegateImpl tileGroupDelegate = mCoordinator.getTileGroupDelegateForTesting();
 
         // Test clicking on MV tiles.
+        HistogramWatcher mvtClickHistogram = expectMvtClickHistogramRecords(1);
         tileGroupDelegate.openMostVisitedItem(WindowOpenDisposition.CURRENT_TAB, tileForTest);
-        verify(mUmaRecorder, times(1))
-                .recordUserAction(eq(USER_ACTION_START_SURFACE_MVT_CLICK), anyLong());
+        mvtClickHistogram.assertExpected();
 
         // Test long press then open in new tab on MV tiles.
+        mvtClickHistogram = expectMvtClickHistogramRecords(1);
         tileGroupDelegate.openMostVisitedItem(
                 WindowOpenDisposition.NEW_BACKGROUND_TAB, tileForTest);
-        verify(mUmaRecorder, times(1))
-                .recordUserAction(eq(USER_ACTION_START_SURFACE_MVT_CLICK), anyLong());
+        mvtClickHistogram.assertExpected();
 
         // Test long press then open in other window on MV tiles.
+        mvtClickHistogram = expectMvtClickHistogramRecords(1);
         tileGroupDelegate.openMostVisitedItem(WindowOpenDisposition.NEW_WINDOW, tileForTest);
-        verify(mUmaRecorder, times(1))
-                .recordUserAction(eq(USER_ACTION_START_SURFACE_MVT_CLICK), anyLong());
+        mvtClickHistogram.assertExpected();
 
         // Test long press then download link on MV tiles.
+        mvtClickHistogram = expectMvtClickHistogramRecords(1);
         tileGroupDelegate.openMostVisitedItem(WindowOpenDisposition.SAVE_TO_DISK, tileForTest);
-        verify(mUmaRecorder, times(1))
-                .recordUserAction(eq(USER_ACTION_START_SURFACE_MVT_CLICK), anyLong());
+        mvtClickHistogram.assertExpected();
 
         // Test long press then open in Incognito tab on MV tiles.
+        mvtClickHistogram = expectMvtClickHistogramRecords(2);
         tileGroupDelegate.openMostVisitedItem(WindowOpenDisposition.OFF_THE_RECORD, tileForTest);
-        verify(mUmaRecorder, times(2))
-                .recordUserAction(eq(USER_ACTION_START_SURFACE_MVT_CLICK), anyLong());
-
-        UmaRecorderHolder.resetForTesting();
+        mvtClickHistogram.assertExpected();
     }
 
     /**
@@ -598,5 +587,11 @@ public class StartSurfaceCoordinatorUnitTest {
 
         // Resets the decision.
         manager.writeBoolean(ChromePreferenceKeys.START_SHOW_ON_STARTUP, false);
+    }
+
+    private static HistogramWatcher expectMvtClickHistogramRecords(int times) {
+        return HistogramWatcher.newBuilder()
+                .expectAnyRecords(USER_ACTION_START_SURFACE_MVT_CLICK, times)
+                .build();
     }
 }

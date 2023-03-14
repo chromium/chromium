@@ -1,3 +1,0 @@
-CONSOLE ERROR: Refused to execute inline script because it violates the following Content Security Policy directive: "script-src 'self'". Either the 'unsafe-inline' keyword, a hash ('sha256-Oyx3ttLvegYcsNPXU1IceH1NLku4Or68MYQJkVE4Igk='), or a nonce ('nonce-...') is required to enable inline execution.
-
-This test passes if it doesn't alert fail. 

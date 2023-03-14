@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ash/app_list/search/federated_metrics_manager.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
@@ -25,18 +27,28 @@ using chromeos::federated::mojom::Features;
 
 constexpr char kClientName[] = "launcher_query_analytics_v1";
 
-// Prefixes are short, for bandwidth conservation.
-constexpr char kExamplePrefixOnAbandon[] = "A_";
-constexpr char kExamplePrefixOnLaunch[] = "L_";
-
+std::string SearchSessionConclusionToString(
+    ash::SearchSessionConclusion conclusion) {
+  switch (conclusion) {
+    case ash::SearchSessionConclusion::kQuit:
+      return "q";
+    case ash::SearchSessionConclusion::kLaunch:
+      return "l";
+    case ash::SearchSessionConclusion::kAnswerCardSeen:
+      return "ac";
+    default:
+      NOTREACHED();
+  }
+}
 bool IsLoggingEnabled() {
   // TODO(b/262611120): Also check user metrics opt-in/out, any other relevant
   // federated flags, etc.
-  return search_features::IsLauncherQueryFederatedAnalyticsPHHEnabled();
+  return ash::features::IsFederatedServiceEnabled() &&
+         search_features::IsLauncherQueryFederatedAnalyticsPHHEnabled();
 }
 
-void LogAction(FederatedMetricsManager::Action action) {
-  base::UmaHistogramEnumeration(kHistogramAction, action);
+void LogSearchSessionConclusion(ash::SearchSessionConclusion conclusion) {
+  base::UmaHistogramEnumeration(kHistogramSearchSessionConclusion, conclusion);
 }
 
 void LogInitStatus(FederatedMetricsManager::InitStatus status) {
@@ -59,7 +71,10 @@ std::string CreateExampleString(const std::string& prefix,
                                 const std::u16string& query) {
   // TODO(b/262611120): To be decided: Conversion to lowercase, white space
   // stripping, truncation, etc.
-  return base::StrCat({prefix, base::UTF16ToUTF8(query)});
+
+  // TODO(b/262611120): Don't annotate via prefixes. Use a different method.
+  // This will give greater flexibility in subsequent processing.
+  return base::StrCat({prefix, "_", base::UTF16ToUTF8(query)});
 }
 
 }  // namespace
@@ -95,14 +110,38 @@ FederatedMetricsManager::FederatedMetricsManager(
 
 FederatedMetricsManager::~FederatedMetricsManager() = default;
 
-void FederatedMetricsManager::OnAbandon(Location location,
-                                        const std::vector<Result>& results,
-                                        const std::u16string& query) {
+void FederatedMetricsManager::OnSearchSessionStarted() {
+  if (!IsLoggingEnabled()) {
+    return;
+  }
+  session_active_ = true;
+}
+
+void FederatedMetricsManager::OnSearchSessionEnded(
+    const std::u16string& query) {
+  if (!IsLoggingEnabled() || query.empty() || !session_active_) {
+    return;
+  }
+  // UMA logging:
+  LogSearchSessionConclusion(session_result_);
+  // Federated logging:
+  LogExample(CreateExampleString(
+      SearchSessionConclusionToString(session_result_), query));
+
+  session_result_ = ash::SearchSessionConclusion::kQuit;
+  session_active_ = false;
+}
+
+void FederatedMetricsManager::OnSeen(Location location,
+                                     const std::vector<Result>& results,
+                                     const std::u16string& query) {
   if (!IsLoggingEnabled() || query.empty()) {
     return;
   }
-  LogAction(Action::kAbandon);
-  LogExample(CreateExampleString(kExamplePrefixOnAbandon, query));
+  if (location == Location::kAnswerCard) {
+    DCHECK(session_active_);
+    session_result_ = ash::SearchSessionConclusion::kAnswerCardSeen;
+  }
 }
 
 void FederatedMetricsManager::OnLaunch(Location location,
@@ -112,8 +151,10 @@ void FederatedMetricsManager::OnLaunch(Location location,
   if (!IsLoggingEnabled() || query.empty()) {
     return;
   }
-  LogAction(Action::kLaunch);
-  LogExample(CreateExampleString(kExamplePrefixOnLaunch, query));
+  if (location == Location::kList || location == Location::kAnswerCard) {
+    DCHECK(session_active_);
+    session_result_ = ash::SearchSessionConclusion::kLaunch;
+  }
 }
 
 bool FederatedMetricsManager::IsFederatedServiceAvailable() {

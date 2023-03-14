@@ -5,7 +5,7 @@ Case: No src, no poster
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -18,7 +18,7 @@ Case: Displaying poster
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -31,7 +31,7 @@ Case: Displaying movie
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [785, 813],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -44,7 +44,6 @@ Case: Displaying movie
     {
       "name": "LayoutNGFlexibleBox DIV class='sizing-small phase-pre-ready state-no-source'",
       "bounds": [352, 288],
-      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 1
     },

@@ -74,7 +74,9 @@ class WebFramesManagerJavaScriptFeatureTest : public WebTestWithWebState {
     OCMStub([message name]).andReturn(kFrameBecameAvailableMessageName);
     OCMStub([message webView]).andReturn(web_view_);
 
-    WebFramesManagerJavaScriptFeature::FromBrowserState(GetBrowserState())
+    WebFramesManagerJavaScriptFeature::Container::FromBrowserState(
+        GetBrowserState())
+        ->FeatureForContentWorld(ContentWorld::kPageContentWorld)
         ->FrameAvailableMessageReceived(message);
   }
 
@@ -105,12 +107,15 @@ class WebFramesManagerJavaScriptFeatureTest : public WebTestWithWebState {
     OCMStub([message name]).andReturn(kFrameBecameUnavailableMessageName);
     OCMStub([message webView]).andReturn(web_view_);
 
-    WebFramesManagerJavaScriptFeature::FromBrowserState(GetBrowserState())
+    WebFramesManagerJavaScriptFeature::Container::FromBrowserState(
+        GetBrowserState())
+        ->FeatureForContentWorld(ContentWorld::kPageContentWorld)
         ->FrameUnavailableMessageReceived(message);
   }
 
   WebFramesManagerImpl& GetPageWorldWebFramesManager() {
-    return WebStateImpl::FromWebState(web_state())->GetWebFramesManagerImpl();
+    return WebStateImpl::FromWebState(web_state())
+        ->GetWebFramesManagerImpl(ContentWorld::kPageContentWorld);
   }
 
   void SetUp() override {

@@ -15,7 +15,6 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "cc/paint/skia_paint_canvas.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "media/muxers/webm_muxer.h"
@@ -387,7 +386,7 @@ void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
     // Explicit reasons for the frame drop are already logged.
     return;
   }
-  frame->AddDestructionObserver(media::BindToCurrentLoop(
+  frame->AddDestructionObserver(base::BindPostTaskToCurrentDefault(
       WTF::BindOnce(&VideoTrackRecorderImpl::Counter::DecreaseCount,
                     num_frames_in_encode_->GetWeakPtr())));
   num_frames_in_encode_->IncreaseCount();
@@ -640,7 +639,7 @@ VideoTrackRecorderImpl::VideoTrackRecorderImpl(
       &VideoTrackRecorderImpl::InitializeEncoder, weak_factory_.GetWeakPtr(),
       codec_profile, std::move(on_encoded_video_cb), bits_per_second);
   // InitializeEncoder() will be called on Render Main thread.
-  ConnectToTrack(media::BindToCurrentLoop(WTF::BindRepeating(
+  ConnectToTrack(base::BindPostTaskToCurrentDefault(WTF::BindRepeating(
       initialize_encoder_cb_, true /* allow_vea_encoder */)));
 }
 
@@ -767,7 +766,7 @@ void VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown(
 
     auto vea_encoder = std::make_unique<VEAEncoder>(
         on_encoded_video_cb,
-        media::BindToCurrentLoop(WTF::BindRepeating(
+        base::BindPostTaskToCurrentDefault(WTF::BindRepeating(
             &VideoTrackRecorderImpl::OnError, weak_factory_.GetWeakPtr())),
         bitrate_mode, bits_per_second, vea_profile, codec_profile.level,
         input_size, use_import_mode);
@@ -823,7 +822,7 @@ void VideoTrackRecorderImpl::OnError() {
   // thread.
   DisconnectFromTrack();
   encoder_.Reset();
-  ConnectToTrack(media::BindToCurrentLoop(
+  ConnectToTrack(base::BindPostTaskToCurrentDefault(
       WTF::BindRepeating(initialize_encoder_cb_, false /*allow_vea_encoder*/)));
 }
 
@@ -853,7 +852,7 @@ VideoTrackRecorderPassthrough::VideoTrackRecorderPassthrough(
   // request, no need to RequestRefreshFrame().
   ConnectEncodedToTrack(
       WebMediaStreamTrack(track_),
-      media::BindToCurrentLoop(WTF::BindRepeating(
+      base::BindPostTaskToCurrentDefault(WTF::BindRepeating(
           &VideoTrackRecorderPassthrough::HandleEncodedVideoFrame,
           weak_factory_.GetWeakPtr())));
 }

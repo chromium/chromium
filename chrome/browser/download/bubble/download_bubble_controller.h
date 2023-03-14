@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_CONTROLLER_H_
 #define CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_CONTROLLER_H_
 
+#include <set>
+
 #include "base/scoped_observation.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"
 #include "chrome/browser/download/offline_item_model.h"
@@ -52,6 +54,11 @@ class DownloadBubbleUIController
   // offline items.
   std::vector<DownloadUIModelPtr> GetAllItemsToDisplay();
 
+  // Gets all entries that are in-progress (as determined by IsModelInProgress).
+  // Includes downloads and offline items. Also prunes invalid guids from
+  // |in_progress_download_item_guids_|. Virtual for testing.
+  virtual std::vector<DownloadUIModelPtr> GetInProgressItems();
+
   // The list is needed to populate GetAllItemsToDisplay.
   virtual const OfflineItemList& GetOfflineItems();
 
@@ -70,8 +77,10 @@ class DownloadBubbleUIController
                                   bool is_main_view);
 
   // Notify when a new download is ready to be shown on UI, and if the window
-  // this controller belongs to should show the partial view.
-  void OnNewItem(download::DownloadItem* item, bool show_details);
+  // this controller belongs to may show the animation. (Whether the animation
+  // is actually shown may depend on the download and the device's graphics
+  // capabilities.)
+  void OnNewItem(download::DownloadItem* item, bool may_show_animation);
 
   // Notify when a download toolbar button (in any window) is pressed.
   void HandleButtonPressed();
@@ -90,6 +99,11 @@ class DownloadBubbleUIController
   // observers.
   void HideDownloadUi();
 
+  // Records that the download bubble was interacted with. This only records
+  // the fact that an interaction occurred, and should not be used
+  // quantitatively to count the number of such interactions.
+  void RecordDownloadBubbleInteraction();
+
   // Returns the DownloadDisplayController. Should always return a valid
   // controller.
   DownloadDisplayController* GetDownloadDisplayController() {
@@ -106,6 +120,10 @@ class DownloadBubbleUIController
 
   void set_manager_for_testing(content::DownloadManager* manager) {
     download_manager_ = manager;
+  }
+
+  OfflineItemModelManager* offline_manager_for_testing() {
+    return offline_manager_;
   }
 
  private:
@@ -144,6 +162,18 @@ class DownloadBubbleUIController
   // Kick off retrying an eligible interrupted download.
   void RetryDownload(DownloadUIModel* model, DownloadCommands::Command command);
 
+  // Implements OnNewItem().
+  void DoOnNewItem(download::DownloadItem* item, bool may_show_animation);
+
+  // Called by OnNewItem() if the new download UI notification should be
+  // delayed. If the guid no longer corresponds to a live DownloadItem, this
+  // does not notify the UI. This also removes the guid from the set of delayed
+  // guids.
+  void OnDelayedNewItemByGuid(const std::string& guid,
+                              bool will_show_animation);
+
+  void UpdateInProgressDownloadItems(const DownloadUIModel& model);
+
   raw_ptr<Browser, DanglingUntriaged> browser_;
   raw_ptr<Profile, DanglingUntriaged> profile_;
   raw_ptr<content::DownloadManager, DanglingUntriaged> download_manager_;
@@ -164,6 +194,14 @@ class DownloadBubbleUIController
   OfflineItemList offline_items_;
 
   absl::optional<base::Time> last_partial_view_shown_time_ = absl::nullopt;
+
+  // Set of GUIDs for extension/theme (crx) downloads that are pending notifying
+  // the UI. GUIDs are added here when the download begins, and are removed
+  // when the 2 second delay is up.
+  std::set<std::string> delayed_crx_guids_;
+
+  // Currently in-progress downloads.
+  std::set<std::string> in_progress_download_item_guids_;
 
   base::WeakPtrFactory<DownloadBubbleUIController> weak_factory_{this};
 };

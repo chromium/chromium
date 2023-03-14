@@ -14,9 +14,9 @@
 
 class PrefService;
 
-namespace bookmarks {
-class BookmarkModel;
-}  // namespace bookmarks
+namespace commerce {
+class ShoppingService;
+}  // namespace commerce
 
 namespace commerce::metrics {
 
@@ -39,7 +39,7 @@ enum class PriceNotificationEmailState {
 class ScheduledMetricsManager {
  public:
   ScheduledMetricsManager(PrefService* prefs,
-                          bookmarks::BookmarkModel* bookmark_model);
+                          ShoppingService* shopping_service);
   ScheduledMetricsManager(const ScheduledMetricsManager&) = delete;
   ScheduledMetricsManager& operator=(const ScheduledMetricsManager&) = delete;
   ~ScheduledMetricsManager();
@@ -48,7 +48,7 @@ class ScheduledMetricsManager {
   void RunDailyTask();
 
   raw_ptr<PrefService> pref_service_;
-  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  raw_ptr<ShoppingService> shopping_service_;
 
   // Keep track of the last run time in memory in case there is a failure in
   // the pref service.

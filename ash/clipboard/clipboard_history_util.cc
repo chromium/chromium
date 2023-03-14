@@ -11,21 +11,29 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/files/file_path.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "cc/paint/paint_flags.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/models/image_model.h"
-#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/gfx/canvas.h"
+#include "ui/gfx/image/canvas_image_source.h"
+#include "ui/gfx/paint_vector_icon.h"
 
 namespace ash::clipboard_history_util {
 
 namespace {
 
 constexpr char16_t kFileSystemSourcesType[] = u"fs/sources";
+
+constexpr int kPlaceholderImageWidth = 234;
+constexpr int kPlaceholderImageHeight = 74;
+constexpr int kPlaceholderImageOutlineCornerRadius = 8;
+constexpr int kPlaceholderImageSVGSize = 32;
 
 // The array of formats in order of decreasing priority.
 constexpr ui::ClipboardInternalFormat kPrioritizedFormats[] = {
@@ -37,6 +45,43 @@ constexpr ui::ClipboardInternalFormat kPrioritizedFormats[] = {
     ui::ClipboardInternalFormat::kBookmark,
     ui::ClipboardInternalFormat::kWeb,
     ui::ClipboardInternalFormat::kCustom};
+
+// Used to draw a placeholder HTML preview to be shown while the real HTML is
+// rendering.
+class UnrenderedHtmlPlaceholderImage : public gfx::CanvasImageSource {
+ public:
+  UnrenderedHtmlPlaceholderImage()
+      : gfx::CanvasImageSource(
+            gfx::Size(kPlaceholderImageWidth, kPlaceholderImageHeight)) {}
+  UnrenderedHtmlPlaceholderImage(const UnrenderedHtmlPlaceholderImage&) =
+      delete;
+  UnrenderedHtmlPlaceholderImage& operator=(
+      const UnrenderedHtmlPlaceholderImage&) = delete;
+  ~UnrenderedHtmlPlaceholderImage() override = default;
+
+  // gfx::CanvasImageSource:
+  void Draw(gfx::Canvas* canvas) override {
+    cc::PaintFlags flags;
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    flags.setAntiAlias(true);
+    // TODO(b/269680517): Update to use a semantic color token.
+    flags.setColor(gfx::kGoogleGrey100);
+    canvas->DrawRoundRect(
+        /*rect=*/{kPlaceholderImageWidth, kPlaceholderImageHeight},
+        kPlaceholderImageOutlineCornerRadius, flags);
+
+    flags = cc::PaintFlags();
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    flags.setAntiAlias(true);
+    // TODO(b/269680517): Update to use a semantic color token.
+    const gfx::ImageSkia center_image =
+        gfx::CreateVectorIcon(kUnrenderedHtmlPlaceholderIcon,
+                              kPlaceholderImageSVGSize, gfx::kGoogleGrey600);
+    canvas->DrawImageInt(
+        center_image, (size().width() - center_image.size().width()) / 2,
+        (size().height() - center_image.size().height()) / 2, flags);
+  }
+};
 
 }  // namespace
 
@@ -163,26 +208,29 @@ bool IsEnabledInCurrentMode() {
   }
 }
 
-ui::ImageModel GetIconForFileClipboardItem(const ClipboardHistoryItem* item,
-                                           const std::string& file_name) {
-  DCHECK_EQ(item->display_format(), ClipboardHistoryItem::DisplayFormat::kFile);
-  const int copied_files_count = GetCountOfCopiedFiles(item->data());
-
+ui::ImageModel GetIconForFileClipboardItem(const ClipboardHistoryItem& item) {
+  DCHECK_EQ(item.display_format(), ClipboardHistoryItem::DisplayFormat::kFile);
+  const int copied_files_count = GetCountOfCopiedFiles(item.data());
   if (copied_files_count == 0)
     return ui::ImageModel();
 
-  if (copied_files_count == 1) {
-    return ui::ImageModel::FromImageSkia(chromeos::GetIconForPath(
-        base::FilePath(file_name),
-        ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()));
-  }
   constexpr std::array<const gfx::VectorIcon*, 9> icons = {
       &kTwoFilesIcon,   &kThreeFilesIcon, &kFourFilesIcon,
       &kFiveFilesIcon,  &kSixFilesIcon,   &kSevenFilesIcon,
       &kEightFilesIcon, &kNineFilesIcon,  &kMoreThanNineFilesIcon};
   int icon_index = std::min(copied_files_count - 2, (int)icons.size() - 1);
-  return ui::ImageModel::FromVectorIcon(*icons[icon_index],
-                                        cros_tokens::kColorPrimary);
+
+  const auto* vector_icon = copied_files_count == 1
+                                ? &chromeos::GetIconForPath(base::FilePath(
+                                      base::UTF16ToUTF8(item.display_text())))
+                                : icons[icon_index];
+  return ui::ImageModel::FromVectorIcon(*vector_icon, ui::kColorSysSecondary);
+}
+
+ui::ImageModel GetHtmlPreviewPlaceholder() {
+  static base::NoDestructor<ui::ImageModel> model(ui::ImageModel::FromImageSkia(
+      gfx::CanvasImageSource::MakeImageSkia<UnrenderedHtmlPlaceholderImage>()));
+  return *model;
 }
 
 }  // namespace ash::clipboard_history_util

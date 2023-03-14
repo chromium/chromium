@@ -20,15 +20,19 @@ namespace {
 // Defines necessary types for the rationalization logic, meaning that fields of
 // `type` are only filled if at least one field of some `GetNecessaryTypesFor()`
 // is present.
-// TODO(crbug.com/1311937) Cleanup PHONE_HOME_CITY_AND_NUMBER when launched.
+// TODO(crbug.com/1311937) Cleanup when launched.
 ServerFieldTypeSet GetNecessaryTypesFor(ServerFieldType type) {
   switch (type) {
-    case PHONE_HOME_COUNTRY_CODE:
-      return {PHONE_HOME_NUMBER, PHONE_HOME_NUMBER_PREFIX,
-              base::FeatureList::IsEnabled(
-                  features::kAutofillEnableSupportForPhoneNumberTrunkTypes)
-                  ? PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX
-                  : PHONE_HOME_CITY_AND_NUMBER};
+    case PHONE_HOME_COUNTRY_CODE: {
+      ServerFieldTypeSet necessary_types{PHONE_HOME_NUMBER,
+                                         PHONE_HOME_NUMBER_PREFIX,
+                                         PHONE_HOME_CITY_AND_NUMBER};
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillEnableSupportForPhoneNumberTrunkTypes)) {
+        necessary_types.insert(PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX);
+      }
+      return necessary_types;
+    }
     default:
       return {};
   }
@@ -331,6 +335,50 @@ void FormStructureRationalizer::RationalizeStreetAddressAndHouseNumber(
            "address/address-line1, house number) to (street name, house "
            "number)";
     previous_field.SetTypeTo(AutofillType(ADDRESS_HOME_STREET_NAME));
+  }
+}
+
+void FormStructureRationalizer::RationalizePhoneNumberTrunkTypes(
+    LogManager* log_manager) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForPhoneNumberTrunkTypes)) {
+    return;
+  }
+
+  // Changes the `field`'s type to `new_type` if it isn't `new_type` already.
+  // If the type is changed, logs to `log_manager`.
+  auto change_type_and_log =
+      [&](AutofillField& field, ServerFieldType new_type) {
+        ServerFieldType current_type = field.ComputedType().GetStorableType();
+        if (current_type == new_type) {
+          return;
+        }
+        field.SetTypeTo(AutofillType(new_type));
+        LOG_AF(log_manager)
+            << LoggingScope::kRationalization << LogMessage::kRationalization
+            << "Converting "
+            << AutofillType::ServerFieldTypeToString(current_type) << " to "
+            << AutofillType::ServerFieldTypeToString(new_type)
+            << " as part of phone number trunk type rationalization";
+      };
+
+  // Indicates whether the previous field was a phone country code.
+  bool preceding_phone_country_code = false;
+  for (const std::unique_ptr<AutofillField>& field : *fields_) {
+    ServerFieldType type = field->ComputedType().GetStorableType();
+    if (type == PHONE_HOME_CITY_AND_NUMBER ||
+        type == PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX) {
+      change_type_and_log(*field,
+                          preceding_phone_country_code
+                              ? PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX
+                              : PHONE_HOME_CITY_AND_NUMBER);
+    } else if (type == PHONE_HOME_CITY_CODE ||
+               type == PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX) {
+      change_type_and_log(*field, preceding_phone_country_code
+                                      ? PHONE_HOME_CITY_CODE
+                                      : PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX);
+    }
+    preceding_phone_country_code = type == PHONE_HOME_COUNTRY_CODE;
   }
 }
 
@@ -650,6 +698,7 @@ void FormStructureRationalizer::RationalizeFieldTypePredictions(
   RationalizeCreditCardFieldPredictions(log_manager);
   RationalizeStreetAddressAndAddressLine(log_manager);
   RationalizeStreetAddressAndHouseNumber(log_manager);
+  RationalizePhoneNumberTrunkTypes(log_manager);
   for (const auto& field : *fields_)
     field->SetTypeTo(field->Type());
   RationalizeTypeRelationships(log_manager);

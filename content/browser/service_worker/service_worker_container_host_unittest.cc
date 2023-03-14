@@ -33,6 +33,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/origin_util.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/test_content_browser_client.h"
@@ -292,11 +293,7 @@ class ServiceWorkerContainerHostTest : public testing::Test {
   bool CanFindClientContainerHost(ServiceWorkerContainerHost* container_host) {
     for (std::unique_ptr<ServiceWorkerContextCore::ContainerHostIterator> it =
              context_->GetClientContainerHostIterator(
-                 // TODO(crbug.com/1199077): Update this when
-                 // ServiceWorkerContainerHost implements StorageKey.
-                 blink::StorageKey::CreateFirstParty(
-                     url::Origin::Create(container_host->url())),
-                 false /* include_reserved_clients */,
+                 container_host->key(), false /* include_reserved_clients */,
                  false /* include_back_forward_cached_clients */);
          !it->IsAtEnd(); it->Advance()) {
       if (container_host == it->GetContainerHost())
@@ -1278,11 +1275,9 @@ class ServiceWorkerContainerHostTestWithBackForwardCache
  public:
   ServiceWorkerContainerHostTestWithBackForwardCache() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kBackForwardCache, {{}}},
-         {features::kBackForwardCacheTimeToLiveControl,
-          {{"time_to_live_seconds", "3600"}}}},
-        // Allow BackForwardCache for all devices regardless of their memory.
-        /*disabled_features=*/{features::kBackForwardCacheMemoryControls});
+        GetDefaultEnabledBackForwardCacheFeaturesForTesting(
+            /*ignore_outstanding_network_request=*/false),
+        GetDefaultDisabledBackForwardCacheFeaturesForTesting());
   }
 
  private:

@@ -87,6 +87,8 @@ struct GL_EXPORT GLImplementationParts {
   bool IsValid() const;
   bool IsAllowed(const std::vector<GLImplementationParts>& allowed_impls) const;
   std::string ToString() const;
+  std::string GLString() const;
+  std::string ANGLEString() const;
 
  private:
   static constexpr ANGLEImplementation MakeANGLEImplementation(

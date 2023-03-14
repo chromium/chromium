@@ -34,6 +34,8 @@ component("app_shim") {
     "immersive_mode_controller.h",
     "immersive_mode_controller.mm",
     "immersive_mode_delegate_mac.h",
+    "immersive_mode_tabbed_controller.h",
+    "immersive_mode_tabbed_controller.mm",
     "mouse_capture.h",
     "mouse_capture.mm",
     "mouse_capture_delegate.h",

@@ -4,8 +4,10 @@
 
 #include "ui/ozone/platform/scenic/scenic_window.h"
 
+#include <fidl/fuchsia.ui.pointer/cpp/hlcpp_conversion.h>
 #include <fuchsia/sys/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
+
 #include <algorithm>
 #include <memory>
 #include <string>
@@ -64,15 +66,27 @@ ScenicWindow::ScenicWindow(ScenicWindowManager* window_manager,
     fuchsia::ui::scenic::SessionListenerHandle listener_handle;
     auto listener_request = listener_handle.NewRequest();
     endpoints.set_session_listener(std::move(listener_handle));
-    fuchsia::ui::pointer::TouchSourceHandle touch_source;
-    endpoints.set_touch_source(touch_source.NewRequest());
-    fuchsia::ui::pointer::MouseSourceHandle mouse_source;
-    endpoints.set_mouse_source(mouse_source.NewRequest());
+
+    auto touch_source_endpoints =
+        fidl::CreateEndpoints<fuchsia_ui_pointer::TouchSource>();
+    ZX_CHECK(touch_source_endpoints.is_ok(),
+             touch_source_endpoints.status_value());
+    endpoints.set_touch_source(
+        fidl::NaturalToHLCPP(std::move(touch_source_endpoints->server)));
+
+    auto mouse_source_endpoints =
+        fidl::CreateEndpoints<fuchsia_ui_pointer::MouseSource>();
+    ZX_CHECK(mouse_source_endpoints.is_ok(),
+             mouse_source_endpoints.status_value());
+    endpoints.set_mouse_source(
+        fidl::NaturalToHLCPP(std::move(mouse_source_endpoints->server)));
+
     endpoints.set_view_ref_focused(view_ref_focused_.NewRequest());
     manager_->GetScenic()->CreateSessionT(std::move(endpoints), [] {});
 
     // Set up pointer and focus event processors.
-    pointer_handler_.emplace(std::move(touch_source), std::move(mouse_source));
+    pointer_handler_.emplace(std::move(touch_source_endpoints->client),
+                             std::move(mouse_source_endpoints->client));
     pointer_handler_->StartWatching(base::BindRepeating(
         &ScenicWindow::DispatchEvent,
         // This is safe since |pointer_handler_| is a class member.
@@ -93,8 +107,7 @@ ScenicWindow::ScenicWindow(ScenicWindowManager* window_manager,
         fit::bind_member(this, &ScenicWindow::OnScenicEvents));
     scenic_session_->SetDebugName("Chromium ScenicWindow");
 
-    view_.emplace(&scenic_session_.value(),
-                  std::move(std::move(properties.view_token)),
+    view_.emplace(&scenic_session_.value(), std::move(properties.view_token),
                   std::move(properties.view_ref_pair.control_ref),
                   CloneViewRef(), "chromium window");
 

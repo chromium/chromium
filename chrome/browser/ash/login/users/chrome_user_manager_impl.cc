@@ -84,6 +84,7 @@
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/network/proxy/proxy_config_service_impl.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/timezone/timezone_resolver.h"
@@ -136,11 +137,10 @@ constexpr char kBluetoothLoggingUpstartJob[] = "bluetoothlog";
 
 // Callback that is called after user removal is complete.
 void OnRemoveUserComplete(const AccountId& account_id,
-                          absl::optional<user_data_auth::RemoveReply> reply) {
-  cryptohome::MountError error = user_data_auth::ReplyToMountError(reply);
-  if (error != cryptohome::MOUNT_ERROR_NONE) {
+                          absl::optional<AuthenticationError> error) {
+  if (error.has_value()) {
     LOG(ERROR) << "Removal of cryptohome for " << account_id.Serialize()
-               << " failed, return code: " << error;
+               << " failed, return code: " << error->get_cryptohome_code();
   }
 }
 
@@ -281,7 +281,8 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
                             : nullptr),
       cros_settings_(CrosSettings::Get()),
       device_local_account_policy_service_(nullptr),
-      supervised_user_manager_(new SupervisedUserManagerImpl(this)) {
+      supervised_user_manager_(new SupervisedUserManagerImpl(this)),
+      mount_performer_(std::make_unique<MountPerformer>()) {
   UpdateNumberOfUsers();
 
   // UserManager instance should be used only on UI thread.
@@ -1304,13 +1305,10 @@ bool ChromeUserManagerImpl::IsFirstExecAfterBoot() const {
 
 void ChromeUserManagerImpl::AsyncRemoveCryptohome(
     const AccountId& account_id) const {
-  cryptohome::AccountIdentifier account_id_proto;
-  account_id_proto.set_account_id(cryptohome::Identification(account_id).id());
-
-  user_data_auth::RemoveRequest request;
-  *request.mutable_identifier() = account_id_proto;
-  UserDataAuthClient::Get()->Remove(
-      request, base::BindOnce(&OnRemoveUserComplete, account_id));
+  cryptohome::AccountIdentifier identifier =
+      cryptohome::CreateAccountIdentifierFromAccountId(account_id);
+  mount_performer_->RemoveUserDirectoryByIdentifier(
+      identifier, base::BindOnce(&OnRemoveUserComplete, account_id));
 }
 
 bool ChromeUserManagerImpl::IsGuestAccountId(

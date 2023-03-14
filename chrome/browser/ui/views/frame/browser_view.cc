@@ -69,7 +69,7 @@
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/performance_controls/high_efficiency_iph_controller.h"
+#include "chrome/browser/ui/performance_controls/high_efficiency_opt_in_iph_controller.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
@@ -205,7 +205,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
-#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/common/command.h"
@@ -526,6 +525,36 @@ class OverlayWidget : public ThemeCopyingWidget {
     return parent()->GetAccelerator(cmd_id, accelerator);
   }
 };
+
+// TabContainerOverlayView is a view that hosts the TabStripRegionView during
+// immersive fullscreen. The TopContainerView usually draws the background for
+// the tab strip. Since the tab strip has been reparented we need to handle
+// drawing the background here.
+class TabContainerOverlayView : public views::View {
+ public:
+  METADATA_HEADER(TabContainerOverlayView);
+  explicit TabContainerOverlayView(base::WeakPtr<BrowserView> browser_view)
+      : browser_view_(std::move(browser_view)) {}
+  ~TabContainerOverlayView() override = default;
+
+  // views::View override
+  void OnPaintBackground(gfx::Canvas* canvas) override {
+    SkColor frame_color = browser_view_->frame()->GetFrameView()->GetFrameColor(
+        BrowserFrameActiveState::kUseCurrent);
+    canvas->DrawColor(frame_color);
+
+    // TODO(https://crbug.com/1414521): Support extension based themes /
+    // backgrounds.
+  }
+
+ private:
+  // The BrowserView this overlay is created for. WeakPtr is used since
+  // this view is held in a different hierarchy.
+  base::WeakPtr<BrowserView> browser_view_;
+};
+
+BEGIN_METADATA(TabContainerOverlayView, views::View)
+END_METADATA
 #endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace
@@ -579,11 +608,18 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
 
   int GetTopInsetInBrowserView() const override {
     // BrowserView should fill the full window when window controls overlay
-    // is enabled.
+    // is enabled or when immersive fullscreen with tabs is enabled.
     if (browser_view_->IsWindowControlsOverlayEnabled() ||
         browser_view_->IsBorderlessModeEnabled()) {
       return 0;
     }
+#if BUILDFLAG(IS_MAC)
+    if (base::FeatureList::IsEnabled(features::kImmersiveFullscreenTabs) &&
+        browser_view_->immersive_mode_controller()->IsEnabled()) {
+      return 0;
+    }
+#endif
+
     return browser_view_->frame()->GetTopInset() - browser_view_->y();
   }
 
@@ -677,6 +713,18 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
         available_titlebar_area.IsEmpty()
             ? gfx::Rect()
             : browser_view_->GetMirroredRect(available_titlebar_area));
+  }
+
+  bool ShouldLayoutTabStrip() const override {
+#if BUILDFLAG(IS_MAC)
+    // The tab strip is hosted in a separate widget in immersive fullscreen on
+    // macOS.
+    if (base::FeatureList::IsEnabled(features::kImmersiveFullscreenTabs) &&
+        browser_view_->immersive_mode_controller()->IsEnabled()) {
+      return false;
+    }
+#endif
+    return true;
   }
 
  private:
@@ -1022,8 +1070,8 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   if (!performance_manager::features::kHighEfficiencyModeDefaultState.Get() &&
       base::FeatureList::IsEnabled(
           performance_manager::features::kHighEfficiencyModeAvailable)) {
-    high_efficiency_iph_controller_ =
-        std::make_unique<HighEfficiencyIPHController>(browser_.get());
+    high_efficiency_opt_in_iph_controller_ =
+        std::make_unique<HighEfficiencyOptInIPHController>(browser_.get());
   }
 }
 
@@ -1123,10 +1171,6 @@ void BrowserView::SetDownloadShelfForTest(DownloadShelf* download_shelf) {
 // static
 void BrowserView::SetDisableRevealerDelayForTesting(bool disable) {
   g_disable_revealer_delay_for_testing = disable;
-}
-
-void BrowserView::DisableTopControlsSlideForTesting() {
-  top_controls_slide_controller_.reset();
 }
 
 void BrowserView::InitStatusBubble() {
@@ -1697,7 +1741,6 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
   // one subscriber per web contents.
   if (AppUsesBorderlessMode() && !old_contents) {
     SetWindowManagementPermissionSubscriptionForBorderlessMode(new_contents);
-    UpdateIsIsolatedWebApp();
   }
 }
 
@@ -2237,7 +2280,6 @@ void BrowserView::UpdateBorderlessModeEnabled() {
     // null. These get overridden when the app is launched and its web contents
     // are ready.
     window_management_permission_granted_ = borderless_mode_enabled;
-    is_isolated_web_app_ = borderless_mode_enabled;
   }
 
   if (borderless_mode_enabled == borderless_mode_enabled_)
@@ -2286,11 +2328,6 @@ void BrowserView::SetWindowManagementPermissionSubscriptionForBorderlessMode(
                               base::Unretained(this)));
 }
 
-void BrowserView::UpdateIsIsolatedWebApp() {
-  is_isolated_web_app_ = browser()->app_controller() &&
-                         browser()->app_controller()->IsIsolatedWebApp();
-}
-
 void BrowserView::ToggleWindowControlsOverlayEnabled(base::OnceClosure done) {
   browser()->app_controller()->ToggleWindowControlsOverlayEnabled(
       base::BindOnce(&BrowserView::UpdateWindowControlsOverlayEnabled,
@@ -2299,8 +2336,7 @@ void BrowserView::ToggleWindowControlsOverlayEnabled(base::OnceClosure done) {
 }
 
 bool BrowserView::IsBorderlessModeEnabled() const {
-  return borderless_mode_enabled_ && window_management_permission_granted_ &&
-         is_isolated_web_app_;
+  return borderless_mode_enabled_ && window_management_permission_granted_;
 }
 
 bool BrowserView::AppUsesBorderlessMode() const {
@@ -2924,13 +2960,13 @@ bool BrowserView::HandleKeyboardEvent(const NativeWebKeyboardEvent& event) {
 namespace {
 remote_cocoa::mojom::CutCopyPasteCommand CommandFromBrowserCommand(
     int command_id) {
-  if (command_id == IDC_CUT)
+  if (command_id == IDC_CUT) {
     return remote_cocoa::mojom::CutCopyPasteCommand::kCut;
-  else if (command_id == IDC_COPY)
+  }
+  if (command_id == IDC_COPY) {
     return remote_cocoa::mojom::CutCopyPasteCommand::kCopy;
-  else if (command_id == IDC_PASTE)
-    return remote_cocoa::mojom::CutCopyPasteCommand::kPaste;
-  NOTREACHED();
+  }
+  CHECK_EQ(command_id, IDC_PASTE);
   return remote_cocoa::mojom::CutCopyPasteCommand::kPaste;
 }
 }  // namespace
@@ -3270,8 +3306,7 @@ std::u16string BrowserView::GetAccessibleTabLabel(bool include_app_name,
       return l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_VR_PRESENTING, title);
   }
 
-  NOTREACHED();
-  return std::u16string();
+  NOTREACHED_NORETURN();
 }
 
 std::vector<views::NativeViewHost*>
@@ -3511,22 +3546,30 @@ views::View* BrowserView::CreateOverlayView() {
 #if BUILDFLAG(IS_MAC)
 views::View* BrowserView::CreateMacOverlayView() {
   DCHECK(UsesImmersiveFullscreenMode());
-  views::Widget::InitParams params;
-  params.type = views::Widget::InitParams::TYPE_POPUP;
-  params.child = true;
-  params.parent = GetWidget()->GetNativeView();
-  overlay_widget_ = new OverlayWidget(GetWidget());
-  overlay_widget_->Init(std::move(params));
-  overlay_widget_->SetNativeWindowProperty(kBrowserViewKey, this);
 
-  // Disable sublevel widget layering because in fullscreen the NSWindow of
-  // `overlay_widget_` is reparented to a AppKit-owned NSWindow that does not
-  // have an associated Widget. This will cause issues in sublevel manager
-  // which operates at the Widget level.
-  if (overlay_widget_->GetSublevelManager()) {
-    overlay_widget_->parent()->GetSublevelManager()->UntrackChildWidget(
-        overlay_widget_);
-  }
+  auto create_overlay_widget = [this](views::Widget* parent) -> views::Widget* {
+    views::Widget::InitParams params;
+    params.type = views::Widget::InitParams::TYPE_POPUP;
+    params.child = true;
+    params.parent = parent->GetNativeView();
+    OverlayWidget* overlay_widget = new OverlayWidget(GetWidget());
+    overlay_widget->Init(std::move(params));
+    overlay_widget->SetNativeWindowProperty(kBrowserViewKey, this);
+
+    // Disable sublevel widget layering because in fullscreen the NSWindow of
+    // `overlay_widget_` is reparented to a AppKit-owned NSWindow that does not
+    // have an associated Widget. This will cause issues in sublevel manager
+    // which operates at the Widget level.
+    if (overlay_widget->GetSublevelManager()) {
+      overlay_widget->parent()->GetSublevelManager()->UntrackChildWidget(
+          overlay_widget);
+    }
+
+    return overlay_widget;
+  };
+
+  // Create the toolbar overlay widget.
+  overlay_widget_ = create_overlay_widget(GetWidget());
 
   // Create a new TopContainerOverlayView. The tab strip, omnibox, bookmarks
   // etc. will be contained within this view. Right clicking on the blank space
@@ -3542,6 +3585,23 @@ views::View* BrowserView::CreateMacOverlayView() {
       std::make_unique<views::ViewTargeter>(overlay_view_targeter_.get()));
   overlay_view_ = overlay_view.get();
   overlay_widget_->GetRootView()->AddChildView(std::move(overlay_view));
+
+  if (base::FeatureList::IsEnabled(features::kImmersiveFullscreenTabs)) {
+    // Create the tab overlay widget as a child of overlay_widget_.
+    tab_overlay_widget_ = create_overlay_widget(overlay_widget_);
+    std::unique_ptr<TabContainerOverlayView> tab_overlay_view =
+        std::make_unique<TabContainerOverlayView>(
+            weak_ptr_factory_.GetWeakPtr());
+    tab_overlay_view->set_context_menu_controller(frame());
+    tab_overlay_view_targeter_ =
+        std::make_unique<OverlayViewTargeterDelegate>();
+    tab_overlay_view->SetEventTargeter(std::make_unique<views::ViewTargeter>(
+        tab_overlay_view_targeter_.get()));
+    tab_overlay_view_ = tab_overlay_view.get();
+    tab_overlay_widget_->GetRootView()->AddChildView(
+        std::move(tab_overlay_view));
+  }
+
   return overlay_view_;
 }
 #endif  // IS_MAC

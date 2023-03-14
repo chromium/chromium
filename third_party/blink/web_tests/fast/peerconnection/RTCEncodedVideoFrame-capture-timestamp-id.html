@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<title>Test RTCEncodedVideoFrame.capture_time_identifier_ms in a RTCPeerConnection</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/RTCPeerConnection-helper.js"></script>
+<script>
+"use strict";
+
+promise_test(async t => {
+const caller = new RTCPeerConnection({ encodedInsertableStreams: true });
+t.add_cleanup(() => caller.close());
+const callee = new RTCPeerConnection({ encodedInsertableStreams: true });
+t.add_cleanup(() => callee.close());
+exchangeIceCandidates(caller, callee);
+
+const stream = await getNoiseStream({ video: true });
+const videoTrack = stream.getVideoTracks()[0];
+t.add_cleanup(() => videoTrack.stop());
+
+const trackProcessor = new MediaStreamTrackProcessor({ track: videoTrack });
+const trackGenerator = new MediaStreamTrackGenerator({ kind: 'video' });
+t.add_cleanup(() => trackGenerator.stop());
+
+const senderTransceiver = caller.addTransceiver(trackGenerator);
+const senderStreams = senderTransceiver.sender.createEncodedStreams();
+const senderReader = senderStreams.readable.getReader();
+
+await exchangeOfferAnswer(caller, callee);
+
+let originalTimestamp;
+const transformer = new TransformStream({
+    async transform(videoFrame, controller) {
+        originalTimestamp = videoFrame.timestamp;
+        controller.enqueue(videoFrame);
+    },
+});
+
+trackProcessor.readable.pipeThrough(transformer).pipeTo(trackGenerator.writable);
+const metadata = (await senderReader.read()).value.getMetadata();
+assert_equals(originalTimestamp, metadata.captureTimestamp);
+}, "captureTimestamp identifier is propagated from VideoFrame to RTCEncodedVideoFrame");
+</script>

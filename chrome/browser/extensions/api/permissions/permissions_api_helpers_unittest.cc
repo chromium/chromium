@@ -36,8 +36,6 @@ namespace extensions {
 TEST(ExtensionPermissionsAPIHelpers, Pack) {
   APIPermissionSet apis;
   apis.insert(APIPermissionID::kTab);
-  apis.insert(APIPermissionID::kFileBrowserHandler);
-  // Note: kFileBrowserHandler implies kFileBrowserHandlerInternal.
 
   URLPatternSet explicit_hosts(
       {URLPattern(Extension::kValidHostPermissionSchemes, "http://a.com/*"),
@@ -52,9 +50,7 @@ TEST(ExtensionPermissionsAPIHelpers, Pack) {
                     std::move(explicit_hosts), std::move(scriptable_hosts))));
   ASSERT_TRUE(pack_result);
   ASSERT_TRUE(pack_result->permissions);
-  EXPECT_THAT(*pack_result->permissions,
-              testing::UnorderedElementsAre("tabs", "fileBrowserHandler",
-                                            "fileBrowserHandlerInternal"));
+  EXPECT_THAT(*pack_result->permissions, testing::UnorderedElementsAre("tabs"));
 
   ASSERT_TRUE(pack_result->origins);
   EXPECT_THAT(*pack_result->origins, testing::UnorderedElementsAre(

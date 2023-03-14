@@ -6,6 +6,8 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/image_service/image_service.h"
@@ -26,7 +28,15 @@ ImageServiceFactory& ImageServiceFactory::GetInstance() {
 }
 
 ImageServiceFactory::ImageServiceFactory()
-    : ProfileKeyedServiceFactory("ImageService") {
+    : ProfileKeyedServiceFactory(
+          "ImageService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
+  DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
 }
 
@@ -37,6 +47,7 @@ KeyedService* ImageServiceFactory::BuildServiceInstanceFor(
   auto* profile = Profile::FromBrowserContext(context);
   return new ImageService(
       std::make_unique<ChromeAutocompleteProviderClient>(profile),
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
       SyncServiceFactory::GetForProfile(profile));
 }
 

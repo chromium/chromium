@@ -34,14 +34,6 @@ PASS cssRule is ""
 
 Too many scale factor parameters : -webkit-image-set(url('#a') 1x 2x
 PASS cssRule is ""
-
-
-Scale factor is 0 : image-set(url('#a') 0x
-PASS cssRule is ""
-
-
-Scale factor is 0 : -webkit-image-set(url('#a') 0x
-PASS cssRule is ""
 PASS successfullyParsed is true
 
 TEST COMPLETE

@@ -1043,33 +1043,6 @@ TEST_F(HoldingSpaceTrayTest,
   test_api()->Close();
 }
 
-// Screen recordings should have an overlaying play icon.
-TEST_F(HoldingSpaceTrayTest, PlayIconForScreenRecordings) {
-  StartSession();
-  test_api()->Show();
-
-  // Add one screenshot item and one screen recording item.
-  HoldingSpaceItem* screenshot_item = AddItem(
-      HoldingSpaceItem::Type::kScreenshot, base::FilePath("/tmp/fake_1"));
-  HoldingSpaceItem* screen_recording_item = AddItem(
-      HoldingSpaceItem::Type::kScreenRecording, base::FilePath("/tmp/fake_2"));
-  EXPECT_TRUE(test_api()->RecentFilesBubbleShown());
-
-  std::vector<views::View*> screen_capture_chips =
-      test_api()->GetScreenCaptureViews();
-
-  EXPECT_EQ(2u, screen_capture_chips.size());
-
-  EXPECT_EQ(screenshot_item->id(),
-            HoldingSpaceItemView::Cast(screen_capture_chips[1])->item()->id());
-  EXPECT_FALSE(screen_capture_chips[1]->GetViewByID(
-      kHoldingSpaceScreenCapturePlayIconId));
-  EXPECT_EQ(screen_recording_item->id(),
-            HoldingSpaceItemView::Cast(screen_capture_chips[0])->item()->id());
-  EXPECT_TRUE(screen_capture_chips[0]->GetViewByID(
-      kHoldingSpaceScreenCapturePlayIconId));
-}
-
 // Until the user has pinned an item, a placeholder should exist in the pinned
 // files bubble which contains a chip to open the Files app.
 TEST_F(HoldingSpaceTrayTest, PlaceholderContainsFilesAppChip) {
@@ -1699,7 +1672,8 @@ TEST_F(HoldingSpaceTrayTest, SelectionUi) {
   for (HoldingSpaceItemView* item_view : item_views) {
     EXPECT_TRUE(item_view->selected());
     expect_checkmark_visible(item_view, true);
-    expect_image_visible(item_view, item_view->item()->IsScreenCapture());
+    expect_image_visible(item_view, HoldingSpaceItem::IsScreenCapture(
+                                        item_view->item()->type()));
   }
 
   // Remove the second holding space item. Note that its view was selected.
@@ -3973,7 +3947,7 @@ TEST_P(HoldingSpaceTrayPrimaryAndSecondaryActionsTest, HasExpectedActions) {
   EXPECT_FALSE(IsShowingPrimaryAction(item_views.front()));
   EXPECT_FALSE(IsShowingSecondaryAction(item_views.front()));
 
-  if (!item->IsScreenCapture()) {
+  if (!HoldingSpaceItem::IsScreenCapture(item->type())) {
     // For non-screen capture items, the inner icon of the progress indicator
     // should be shown when the secondary action container is hidden.
     EXPECT_TRUE(IsProgressIndicatorInnerIconVisible(item_views.front()));
@@ -3996,7 +3970,7 @@ TEST_P(HoldingSpaceTrayPrimaryAndSecondaryActionsTest, HasExpectedActions) {
   EXPECT_EQ(IsShowingSecondaryAction(item_views.front()),
             HoldingSpaceItem::IsDownload(item->type()));
 
-  if (!item->IsScreenCapture()) {
+  if (!HoldingSpaceItem::IsScreenCapture(item->type())) {
     // For non-screen capture items, the inner icon of the progress indicator
     // should only be shown if the secondary action container is hidden.
     EXPECT_NE(IsProgressIndicatorInnerIconVisible(item_views.front()),

@@ -100,7 +100,9 @@ void TextFragmentsJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  const std::string* command = response->FindStringKey("command");
+  const base::Value::Dict& dict = response->GetDict();
+
+  const std::string* command = dict.FindString("command");
   if (!command) {
     return;
   }
@@ -115,9 +117,9 @@ void TextFragmentsJavaScriptFeature::ScriptMessageReceived(
   if (*command == "textFragments.processingComplete") {
     // Extract success metrics.
     absl::optional<double> optional_fragment_count =
-        response->FindDoublePath("result.fragmentsCount");
+        dict.FindDoubleByDottedPath("result.fragmentsCount");
     absl::optional<double> optional_success_count =
-        response->FindDoublePath("result.successCount");
+        dict.FindDoubleByDottedPath("result.successCount");
 
     // Since the response can't be trusted, don't log metrics if the results
     // look invalid.
@@ -143,11 +145,10 @@ void TextFragmentsJavaScriptFeature::ScriptMessageReceived(
     manager->OnClick();
   } else if (*command == "textFragments.onClickWithSender") {
     absl::optional<CGRect> rect =
-        shared_highlighting::ParseRect(response->FindDictKey("rect"));
-    const std::string* text = response->FindStringKey("text");
+        shared_highlighting::ParseRect(dict.FindDict("rect"));
+    const std::string* text = dict.FindString("text");
 
-    const base::Value::List* fragment_values_list =
-        response->GetDict().FindList("fragments");
+    const base::Value::List* fragment_values_list = dict.FindList("fragments");
     std::vector<shared_highlighting::TextFragment> fragments;
     if (fragment_values_list) {
       for (const base::Value& val : *fragment_values_list) {

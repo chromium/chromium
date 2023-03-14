@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
-#import "ios/chrome/browser/ui/util/url_with_title.h"
+#import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 
 #import "url/gurl.h"
 

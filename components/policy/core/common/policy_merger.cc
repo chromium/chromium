@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/policy/core/common/policy_merger.h"
+
 #include <array>
 #include <map>
 #include <set>
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/policy/core/common/policy_merger.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
 #include "components/strings/grit/components_strings.h"
@@ -112,8 +115,19 @@ bool PolicyListMerger::CanMerge(const std::string& policy_name,
   if (policy.source == POLICY_SOURCE_MERGED)
     return false;
 
-  if (policies_to_merge_.find("*") != policies_to_merge_.end())
-    return policy.value(base::Value::Type::LIST) != nullptr;
+  // `base::FeatureList` is not initialized when platform policies are first
+  // applied during browser startup. The feature value is eventually used to
+  // apply the correct merging logic before the browser launches since policies
+  // are applied multiple times during startup.
+  const bool can_merge_conflicts =
+      !base::FeatureList::GetInstance() ||
+      !base::FeatureList::IsEnabled(
+          policy::features::kPolicyMergeMultiSource) ||
+      policy.HasConflicts();
+  if (policies_to_merge_.find("*") != policies_to_merge_.end()) {
+    return can_merge_conflicts &&
+           policy.value(base::Value::Type::LIST) != nullptr;
+  }
 
   if (policies_to_merge_.find(policy_name) == policies_to_merge_.end())
     return false;
@@ -124,7 +138,7 @@ bool PolicyListMerger::CanMerge(const std::string& policy_name,
     return false;
   }
 
-  return true;
+  return can_merge_conflicts;
 }
 
 bool PolicyListMerger::AllowUserCloudPolicyMerging() const {
@@ -217,8 +231,19 @@ bool PolicyDictionaryMerger::CanMerge(const std::string& policy_name,
   const bool allowed_to_merge =
       allowed_policies_.find(policy_name) != allowed_policies_.end();
 
-  if (policies_to_merge_.find("*") != policies_to_merge_.end())
-    return allowed_to_merge && policy.value(base::Value::Type::DICT);
+  // `base::FeatureList` is not initialized when platform policies are first
+  // applied during browser startup. The feature value is eventually used to
+  // apply the correct merging logic before the browser launches since policies
+  // are applied multiple times during startup.
+  const bool can_merge_conflicts =
+      !base::FeatureList::GetInstance() ||
+      !base::FeatureList::IsEnabled(
+          policy::features::kPolicyMergeMultiSource) ||
+      policy.HasConflicts();
+  if (policies_to_merge_.find("*") != policies_to_merge_.end()) {
+    return allowed_to_merge && can_merge_conflicts &&
+           policy.value(base::Value::Type::DICT);
+  }
 
   if (policies_to_merge_.find(policy_name) == policies_to_merge_.end())
     return false;
@@ -236,7 +261,7 @@ bool PolicyDictionaryMerger::CanMerge(const std::string& policy_name,
     return false;
   }
 
-  return true;
+  return can_merge_conflicts;
 }
 
 bool PolicyDictionaryMerger::AllowUserCloudPolicyMerging() const {

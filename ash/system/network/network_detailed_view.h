@@ -70,13 +70,13 @@ class ASH_EXPORT NetworkDetailedView : public TrayDetailedView,
     kSettingsButton = 2,
   };
 
-  void CreateTitleRowButtons();
   void OnInfoClicked();
   bool CloseInfoBubble();
   void OnSettingsClicked();
 
   // TrayDetailedView:
   void HandleViewClicked(views::View* view) override;
+  void CreateExtraTitleRowButtons() override;
 
   // NetworkInfoBubble::Delegate:
   bool ShouldIncludeDeviceAddresses() override;

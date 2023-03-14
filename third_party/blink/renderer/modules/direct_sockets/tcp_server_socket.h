@@ -31,16 +31,32 @@ class MODULES_EXPORT TCPServerSocket final : public ScriptWrappable,
   // Socket:
   ScriptPromise close(ScriptState*, ExceptionState&) override;
 
- public:
   explicit TCPServerSocket(ScriptState*);
   ~TCPServerSocket() override;
+
+  // Validates options and calls OpenTCPServerSocket(...).
+  bool Open(const String& local_address,
+            const TCPServerSocketOptions*,
+            ExceptionState&);
+
+  // On net::OK initializes readable stream and resolves opened promise.
+  // Otherwise rejects the opened promise.
+  void OnTCPServerSocketOpened(
+      mojo::PendingRemote<network::mojom::blink::TCPServerSocket>,
+      int32_t result,
+      const absl::optional<net::IPEndPoint>& local_addr);
 
   void Trace(Visitor*) const override;
 
   // Socket:
-  void ContextDestroyed() override {}
+  void ContextDestroyed() override;
 
  private:
+  // Resets mojo resources held by this class.
+  void ReleaseResources();
+
+  void OnReadableStreamClosed(ScriptValue exception);
+
   Member<TCPServerReadableStreamWrapper> readable_stream_wrapper_;
 };
 

@@ -306,6 +306,7 @@ source_set("connections_implementation_mediums") {
     ":platform_public_comm",
     ":platform_public_logging",
     ":platform_public_types",
+    ":ble_frames_proto",
     ":web_rtc_signaling_frames_proto",
     "//third_party/abseil-cpp:absl",
     "//third_party/smhasher:murmurhash3",
@@ -940,6 +941,12 @@ proto_library("error_code_enums_proto") {
 }
 
 # src/proto/mediums
+proto_library("ble_frames_proto") {
+  proto_in_dir = "src"
+  sources = [ "${proto_in_dir}/proto/mediums/ble_frames.proto" ]
+  proto_out_dir = "third_party/nearby"
+}
+
 proto_library("web_rtc_signaling_frames_proto") {
   proto_in_dir = "src"
   sources = [ "${proto_in_dir}/proto/mediums/web_rtc_signaling_frames.proto" ]

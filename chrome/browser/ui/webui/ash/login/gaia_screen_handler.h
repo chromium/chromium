@@ -346,6 +346,9 @@ class GaiaScreenHandler
   void SAMLConfirmPassword(::login::StringList scraped_saml_passwords,
                            std::unique_ptr<UserContext> user_context);
 
+  bool MaybeTriggerEnrollmentNudge(const std::string& user_email);
+  void CheckIfAllowlisted(const std::string& user_email);
+
   // Current state of Gaia frame.
   FrameState frame_state_ = FRAME_STATE_UNKNOWN;
 
@@ -440,7 +443,7 @@ class GaiaScreenHandler
   // Network state informer used to keep signin screen up.
   scoped_refptr<NetworkStateInformer> network_state_informer_;
 
-  const base::raw_ptr<ErrorScreen> error_screen_;
+  const base::raw_ptr<ErrorScreen, DanglingUntriaged> error_screen_;
 
   NetworkStateInformer::State last_network_state_ =
       NetworkStateInformer::UNKNOWN;

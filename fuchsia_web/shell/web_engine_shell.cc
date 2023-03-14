@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <fuchsia/component/cpp/fidl.h>
 #include <fuchsia/element/cpp/fidl.h>
-#include <fuchsia/sys/cpp/fidl.h>
+#include <fuchsia/io/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fdio/directory.h>
 #include <lib/fidl/cpp/interface_ptr.h>
-#include <lib/sys/component/cpp/testing/realm_builder.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/sys/cpp/service_directory.h>
 
@@ -33,11 +31,12 @@
 #include "build/build_config.h"
 #include "components/fuchsia_component_support/annotations_manager.h"
 #include "fuchsia_web/common/init_logging.h"
-#include "fuchsia_web/common/test/test_realm_support.h"
 #include "fuchsia_web/shell/present_frame.h"
 #include "fuchsia_web/shell/remote_debugging_port.h"
+#include "fuchsia_web/shell/shell_relauncher.h"
 #include "fuchsia_web/webinstance_host/web_instance_host.h"
 #include "fuchsia_web/webinstance_host/web_instance_host_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/widevine/cdm/buildflags.h"
 #include "url/gurl.h"
 
@@ -46,10 +45,10 @@ namespace {
 constexpr char kHeadlessSwitch[] = "headless";
 constexpr char kEnableProtectedMediaIdentifier[] =
     "enable-protected-media-identifier";
-// Included on the command line when the shell is relaunched for use of
-// WebInstanceHost; see web_engine_shell_for_web_instance_host.cml.
-constexpr char kFromLauncher[] = "from-launcher";
+// TODO(crbug.com/1421342): This flag will be removed. Keep for now to prevent
+// users from failing.
 constexpr char kUseWebInstance[] = "use-web-instance";
+constexpr char kUseContextProvider[] = "use-context-provider";
 constexpr char kEnableWebInstanceTmp[] = "enable-web-instance-tmp";
 
 void PrintUsage() {
@@ -80,36 +79,6 @@ GURL GetUrlFromArgs(const base::CommandLine::StringVector& args) {
   return url;
 }
 
-// web_engine_shell needs to provide capabilities to children it launches (via
-// WebInstanceHost, for example). Test components are not able to do this, so
-// use RealmBuilder to relaunch web_engine_shell via
-// `web_engine_shell_for_web_instance_host_component` (which includes
-// `--from-launcher` on its command line) with the contents of this process's
-// command line.
-int RelaunchForWebInstanceHost(const base::CommandLine& command_line) {
-  auto realm_builder = component_testing::RealmBuilder::CreateFromRelativeUrl(
-      "#meta/web_engine_shell_for_web_instance_host.cm");
-  test::AppendCommandLineArgumentsForRealm(realm_builder,  // IN-TEST
-                                           command_line);
-
-  auto realm = realm_builder.Build();
-
-  fuchsia::component::BinderPtr binder_proxy =
-      realm.component().Connect<fuchsia::component::Binder>();
-
-  // Wait for binder_proxy to be closed.
-  base::RunLoop run_loop;
-  binder_proxy.set_error_handler(
-      [quit_closure = run_loop.QuitClosure()](zx_status_t status) {
-        std::move(quit_closure).Run();
-      });
-  run_loop.Run();
-
-  // Nothing depends on the process exit code of web_engine_shell today, so
-  // simply return success in all cases.
-  return 0;
-}
-
 }  // namespace
 
 int main(int argc, char** argv) {
@@ -120,10 +89,27 @@ int main(int argc, char** argv) {
 
   base::SingleThreadTaskExecutor executor(base::MessagePumpType::IO);
 
-  const bool is_run_from_launcher = command_line->HasSwitch(kFromLauncher);
-  const bool use_context_provider = !command_line->HasSwitch(kUseWebInstance);
-  if (!is_run_from_launcher && !use_context_provider) {
-    return RelaunchForWebInstanceHost(*command_line);
+  const bool use_web_instance = command_line->HasSwitch(kUseWebInstance);
+  const bool use_context_provider =
+      command_line->HasSwitch(kUseContextProvider);
+
+  if (use_web_instance && use_context_provider) {
+    LOG(ERROR) << "Cannot use " << kUseWebInstance << " and "
+               << kUseContextProvider << " simultaneously.";
+    return 1;
+  }
+
+  if (use_web_instance) {
+    LOG(WARNING) << "Flag " << kUseWebInstance << " is deprecated and has no "
+                 << "effect as WebInstance is used by default.";
+  }
+
+  if (!use_context_provider) {
+    if (auto optional_exit_code = RelaunchForWebInstanceHostIfParent(
+            "#meta/web_engine_shell_for_web_instance_host.cm", *command_line);
+        optional_exit_code.has_value()) {
+      return optional_exit_code.value();
+    }
   }
 
   absl::optional<uint16_t> remote_debugging_port =
@@ -231,7 +217,8 @@ int main(int argc, char** argv) {
     web_context_provider->Create(std::move(create_context_params),
                                  context.NewRequest());
   } else {
-    web_instance_host = std::make_unique<WebInstanceHost>();
+    web_instance_host = std::make_unique<WebInstanceHost>(
+        *base::ComponentContextForProcess()->outgoing());
     if (enable_web_instance_tmp) {
       const zx_status_t status = fdio_open(
           "/tmp",
@@ -327,10 +314,12 @@ int main(int argc, char** argv) {
   fuchsia::element::AnnotationControllerPtr annotation_controller;
   annotations_manager->Connect(annotation_controller.NewRequest());
 
+  absl::optional<fuchsia::element::GraphicalPresenterPtr> maybe_presenter;
   if (is_headless) {
     frame->EnableHeadlessRendering();
   } else {
-    PresentFrame(frame.get(), std::move(annotation_controller));
+    auto result = PresentFrame(frame.get(), std::move(annotation_controller));
+    maybe_presenter.swap(result);
   }
 
   LOG(INFO) << "Launched browser at URL " << url.spec();

@@ -173,7 +173,6 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
   // The request delegate decides whether to present the user with a visual
   // error before the request is finally resolved with |status|.
   void SignalFailureToRequestDelegate(
-      const device::FidoAuthenticator* authenticator,
       AuthenticatorRequestClientDelegate::InterestingFailureReason reason,
       blink::mojom::AuthenticatorStatus status);
 

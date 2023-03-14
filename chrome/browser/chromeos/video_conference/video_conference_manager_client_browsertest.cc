@@ -7,8 +7,20 @@
 #include <string>
 #include <vector>
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
+#include "ash/system/video_conference/fake_video_conference_tray_controller.h"
+#include "ash/system/video_conference/video_conference_tray_controller.h"
+#endif
+#include "base/command_line.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
+#include "chrome/browser/chromeos/video_conference/video_conference_media_listener.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_web_app.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_activity_simulator.h"
@@ -20,7 +32,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/test/browser_test.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace video_conference {
@@ -50,9 +61,15 @@ class FakeVideoConferenceManagerClient
     return id_to_webcontents_;
   }
 
-  bool camera_system_disabled() { return camera_system_disabled_; }
+  const base::UnguessableToken& client_id() { return client_id_; }
 
-  bool microphone_system_disabled() { return microphone_system_disabled_; }
+  bool camera_system_disabled() {
+    return media_listener_->camera_system_disabled_;
+  }
+
+  bool microphone_system_disabled() {
+    return media_listener_->microphone_system_disabled_;
+  }
 
   crosapi::mojom::VideoConferenceMediaUsageStatusPtr& status() {
     return status_;
@@ -74,6 +91,13 @@ class VideoConferenceManagerClientTest : public InProcessBrowserTest {
 
   ~VideoConferenceManagerClientTest() override = default;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(
+        ::ash::switches::kCameraEffectsSupportedByHardware);
+  }
+#endif
+
   // Creates and returns a new `WebContents` at the given tab `index`.
   content::WebContents* CreateWebContentsAt(int index) {
     EXPECT_TRUE(
@@ -94,6 +118,12 @@ class VideoConferenceManagerClientTest : public InProcessBrowserTest {
     ASSERT_TRUE(entry);
     contents->UpdateTitleForEntry(entry, title);
   }
+
+ private:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ash::features::kVideoConference};
+#endif
 };
 
 // Tests creating VcWebApps and removing them by closing tabs.
@@ -202,47 +232,52 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, GetMediaApps) {
       }));
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Tests setting/clearing system statuses for camera and microphone.
 IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest,
                        SetSystemMediaDeviceStatus) {
   std::unique_ptr<FakeVideoConferenceManagerClient> client =
       std::make_unique<FakeVideoConferenceManagerClient>();
 
+  auto* vc_manager = crosapi::CrosapiManager::Get()
+                         ->crosapi_ash()
+                         ->video_conference_manager_ash();
+  vc_manager->RegisterCppClient(client.get(), client->client_id());
+
+  ash::FakeVideoConferenceTrayController* controller =
+      static_cast<ash::FakeVideoConferenceTrayController*>(
+          ash::VideoConferenceTrayController::Get());
+  ASSERT_TRUE(controller);
+  EXPECT_EQ(controller->device_used_while_disabled_records().size(), 0u);
+
   EXPECT_FALSE(client->camera_system_disabled());
   EXPECT_FALSE(client->microphone_system_disabled());
 
-  client->SetSystemMediaDeviceStatus(
-      crosapi::mojom::VideoConferenceMediaDevice::kCamera, /*disabled=*/true,
-      base::BindLambdaForTesting([&](bool success) {
-        EXPECT_TRUE(success);
-        EXPECT_TRUE(client->camera_system_disabled());
-        EXPECT_FALSE(client->microphone_system_disabled());
-      }));
+  vc_manager->SetSystemMediaDeviceStatus(
+      crosapi::mojom::VideoConferenceMediaDevice::kCamera,
+      /*disabled=*/true);
+  EXPECT_TRUE(client->camera_system_disabled());
+  EXPECT_FALSE(client->microphone_system_disabled());
 
-  client->SetSystemMediaDeviceStatus(
+  vc_manager->SetSystemMediaDeviceStatus(
       crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
-      /*disabled=*/true, base::BindLambdaForTesting([&](bool success) {
-        EXPECT_TRUE(success);
-        EXPECT_TRUE(client->camera_system_disabled());
-        EXPECT_TRUE(client->microphone_system_disabled());
-      }));
+      /*disabled=*/true);
+  EXPECT_TRUE(client->camera_system_disabled());
+  EXPECT_TRUE(client->microphone_system_disabled());
 
-  client->SetSystemMediaDeviceStatus(
+  vc_manager->SetSystemMediaDeviceStatus(
       crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
-      /*disabled=*/false, base::BindLambdaForTesting([&](bool success) {
-        EXPECT_TRUE(success);
-        EXPECT_TRUE(client->camera_system_disabled());
-        EXPECT_FALSE(client->microphone_system_disabled());
-      }));
+      /*disabled=*/false);
+  EXPECT_TRUE(client->camera_system_disabled());
+  EXPECT_FALSE(client->microphone_system_disabled());
 
-  client->SetSystemMediaDeviceStatus(
-      crosapi::mojom::VideoConferenceMediaDevice::kCamera, /*disabled=*/false,
-      base::BindLambdaForTesting([&](bool success) {
-        EXPECT_TRUE(success);
-        EXPECT_FALSE(client->camera_system_disabled());
-        EXPECT_FALSE(client->microphone_system_disabled());
-      }));
+  vc_manager->SetSystemMediaDeviceStatus(
+      crosapi::mojom::VideoConferenceMediaDevice::kCamera,
+      /*disabled=*/false);
+  EXPECT_FALSE(client->camera_system_disabled());
+  EXPECT_FALSE(client->microphone_system_disabled());
 }
+#endif
 
 // Tests aggregated media usage status received on `HandleMediaUsageUpdate`.
 IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, MediaUsageUpdate) {

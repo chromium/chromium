@@ -4,6 +4,7 @@
 
 #include "media/gpu/vaapi/vaapi_picture_native_pixmap_ozone.h"
 
+#include "gpu/command_buffer/service/shared_image/gl_image_native_pixmap.h"
 #include "media/base/format_utils.h"
 #include "media/gpu/buffer_validation.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
@@ -15,8 +16,6 @@
 #include "ui/gfx/linux/native_pixmap_dmabuf.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_image_native_pixmap.h"
-#include "ui/gl/scoped_binders.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 
@@ -82,21 +81,19 @@ VaapiStatus VaapiPictureNativePixmapOzone::Initialize(
   if (make_context_current_cb_ && !make_context_current_cb_.Run())
     return VaapiStatus::Codes::kBadContext;
 
-  gl::ScopedTextureBinder texture_binder(texture_target_, texture_id_);
-
   const gfx::BufferFormat format = pixmap->GetBufferFormat();
 
   // TODO(b/220336463): plumb the right color space.
-  auto image =
-      gl::GLImageNativePixmap::Create(visible_size_, format, std::move(pixmap));
+  auto image = gpu::GLImageNativePixmap::Create(
+      visible_size_, format, std::move(pixmap),
+      base::strict_cast<GLenum>(texture_target_),
+      base::strict_cast<GLuint>(texture_id_));
   if (!image) {
     LOG(ERROR) << "Failed to create GLImage";
     return VaapiStatus::Codes::kFailedToInitializeImage;
   }
 
   gl_image_ = std::move(image);
-
-  gl_image_->BindTexImage(texture_target_);
 
   if (bind_image_cb_ &&
       !bind_image_cb_.Run(client_texture_id_, texture_target_, gl_image_)) {

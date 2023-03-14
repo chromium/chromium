@@ -127,7 +127,7 @@ class TranslateController : public web::WebFramesManager::Observer,
   void WebFrameBecameAvailable(web::WebFramesManager* web_frames_manager,
                                web::WebFrame* web_frame) override;
   void WebFrameBecameUnavailable(web::WebFramesManager* web_frames_manager,
-                                 const std::string frame_id) override;
+                                 const std::string& frame_id) override;
 
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.

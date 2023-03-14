@@ -1447,6 +1447,8 @@ struct EnumTraits<media::stable::mojom::WaitingReason, media::WaitingReason> {
         return media::stable::mojom::WaitingReason::kNoDecryptionKey;
       case media::WaitingReason::kDecoderStateLost:
         return media::stable::mojom::WaitingReason::kDecoderStateLost;
+      case media::WaitingReason::kSecureSurfaceLost:
+        return media::stable::mojom::WaitingReason::kSecureSurfaceLost;
     }
 
     NOTREACHED();
@@ -1466,6 +1468,9 @@ struct EnumTraits<media::stable::mojom::WaitingReason, media::WaitingReason> {
         return true;
       case media::stable::mojom::WaitingReason::kDecoderStateLost:
         *output = media::WaitingReason::kDecoderStateLost;
+        return true;
+      case media::stable::mojom::WaitingReason::kSecureSurfaceLost:
+        *output = media::WaitingReason::kSecureSurfaceLost;
         return true;
     }
 

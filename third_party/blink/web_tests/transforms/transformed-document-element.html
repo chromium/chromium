@@ -7,7 +7,7 @@
   <title>Transform on Document</title>
 </head>
 <body style="background-image:url('../paint/invalidation/resources/grid.png')">
-<p>The background of root element shall respect transform but expands to the whole viewport.</p>
+<p>The background of root element shall NOT respect transform and expands to the whole viewport.</p>
 <script type="text/javascript" charset="utf-8">
   // do this dynamically to avoid pixels from the previous test in potentially unpainted areas
   document.documentElement.style.webkitTransform = 'translateY(200px) rotate(20deg)';

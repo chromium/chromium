@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/builders.star", "cpu", "goma", "os", "reclient")
+load("//lib/builders.star", "cpu", "os", "reclient")
 load("//lib/try.star", "try_")
 
 try_.defaults.set(
@@ -13,12 +13,6 @@ try_.defaults.set(
     os = os.LINUX_DEFAULT,
     cpu = cpu.X86_64,
     build_numbers = True,
-    caches = [
-        swarming.cache(
-            name = "win_toolchain",
-            path = "win_toolchain",
-        ),
-    ],
     cq_group = "cq",
     execution_timeout = 6 * time.hour,
     # Max. pending time for builds. CQ considers builds pending >2h as timed
@@ -103,7 +97,6 @@ gpu_android_builder(
         "ci/Android Release (Nexus 5X)",
     ],
     pool = "luci.chromium.gpu.android.nexus5x.try",
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 def gpu_chromeos_builder(*, name, **kwargs):
@@ -229,7 +222,6 @@ gpu_linux_builder(
         "ci/Linux Debug (NVIDIA)",
     ],
     pool = "luci.chromium.gpu.linux.nvidia.try",
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 gpu_linux_builder(
@@ -239,7 +231,6 @@ gpu_linux_builder(
         "ci/Linux Release (NVIDIA)",
     ],
     pool = "luci.chromium.gpu.linux.nvidia.try",
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 def gpu_mac_builder(*, name, **kwargs):
@@ -305,7 +296,7 @@ gpu_mac_builder(
         "ci/Mac FYI Experimental Release (Apple M1)",
     ],
     pool = "luci.chromium.gpu.mac.arm64.apple.m1.try",
-    goma_backend = goma.backend.RBE_PROD,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 gpu_mac_builder(
@@ -391,7 +382,7 @@ gpu_mac_builder(
         "ci/Mac Debug (Intel)",
     ],
     pool = "luci.chromium.gpu.mac.mini.intel.try",
-    goma_backend = goma.backend.RBE_PROD,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 def gpu_win_builder(*, name, **kwargs):

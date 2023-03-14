@@ -14,6 +14,7 @@
 #include "components/commerce/core/mojom/shopping_list.mojom.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/price_tracking_utils.h"
+#include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/commerce/core/webui/shopping_list_handler.h"
 #include "components/feature_engagement/test/mock_tracker.h"
@@ -42,6 +43,8 @@ class MockPage : public shopping_list::mojom::Page {
   MOCK_METHOD1(PriceTrackedForBookmark,
                void(shopping_list::mojom::BookmarkProductInfoPtr product));
   MOCK_METHOD1(PriceUntrackedForBookmark, void(int64_t bookmark_id));
+  MOCK_METHOD2(OperationFailedForBookmark,
+               void(int64_t bookmark_id, bool is_tracked));
 };
 
 void GetEvaluationProductInfos(
@@ -54,7 +57,7 @@ void GetEvaluationProductInfos(
   for (auto& item : found) {
     found_map[item->bookmark_id] = &item;
   }
-  // for (size_t i = 0; i < expected.size(); i++) {
+
   for (auto& item : expected) {
     auto find_it = found_map.find(item->bookmark_id);
     ASSERT_FALSE(find_it == found_map.end());
@@ -69,6 +72,12 @@ void GetEvaluationProductInfos(
               (*found_item)->info->image_url.spec());
   }
   std::move(closure).Run();
+}
+
+// A matcher for checking if a mojo bookmark info has the specified bookmark ID
+// (uint64_t).
+MATCHER_P(MojoBookmarkInfoWithId, expected_id, "") {
+  return arg->bookmark_id == expected_id;
 }
 
 class ShoppingListHandlerTest : public testing::Test {
@@ -167,64 +176,94 @@ TEST_F(ShoppingListHandlerTest, ConvertToMojoTypes_PriceIncrease) {
   EXPECT_EQ(mojo_list[0]->info->image_url.spec(), image_url);
 }
 
-TEST_F(ShoppingListHandlerTest, TestTrackProdcutSuccess) {
+TEST_F(ShoppingListHandlerTest, TestTrackProductSuccess) {
+  uint64_t cluster_id = 123L;
   const bookmarks::BookmarkNode* product = AddProductBookmark(
-      bookmark_model_.get(), u"product 1", GURL("http://example.com/1"), 123L,
-      false, 1230000, "usd");
-  EXPECT_FALSE(IsBookmarkPriceTracked(bookmark_model_.get(), product));
+      bookmark_model_.get(), u"product 1", GURL("http://example.com/1"),
+      cluster_id, false, 1230000, "usd");
 
-  EXPECT_CALL(page_, PriceUntrackedForBookmark(product->id())).Times(1);
-  EXPECT_CALL(page_, PriceTrackedForBookmark(testing::_)).Times(1);
+  EXPECT_CALL(*shopping_service_,
+              Subscribe(VectorHasSubscriptionWithId("123"), testing::_))
+      .Times(1);
+  EXPECT_CALL(page_,
+              PriceTrackedForBookmark(MojoBookmarkInfoWithId(product->id())))
+      .Times(1);
+  EXPECT_CALL(page_, OperationFailedForBookmark(testing::_, testing::_))
+      .Times(0);
+
   handler_->TrackPriceForBookmark(product->id());
+
+  // Assume the subscription callback fires with a success.
+  handler_->OnSubscribe({CreateUserTrackedSubscription(cluster_id)}, true);
+
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(IsBookmarkPriceTracked(bookmark_model_.get(), product));
 }
 
 TEST_F(ShoppingListHandlerTest, TestUntrackProductSuccess) {
+  uint64_t cluster_id = 123L;
   const bookmarks::BookmarkNode* product = AddProductBookmark(
-      bookmark_model_.get(), u"product 1", GURL("http://example.com/1"), 123L,
-      true, 1230000, "usd");
-  EXPECT_TRUE(IsBookmarkPriceTracked(bookmark_model_.get(), product));
+      bookmark_model_.get(), u"product 1", GURL("http://example.com/1"),
+      cluster_id, true, 1230000, "usd");
 
-  EXPECT_CALL(page_, PriceTrackedForBookmark(testing::_)).Times(1);
+  EXPECT_CALL(*shopping_service_,
+              Unsubscribe(VectorHasSubscriptionWithId("123"), testing::_))
+      .Times(1);
   EXPECT_CALL(page_, PriceUntrackedForBookmark(product->id())).Times(1);
+  EXPECT_CALL(page_, OperationFailedForBookmark(testing::_, testing::_))
+      .Times(0);
+
   handler_->UntrackPriceForBookmark(product->id());
+
+  // Assume the subscription callback fires with a success.
+  handler_->OnUnsubscribe({CreateUserTrackedSubscription(cluster_id)}, true);
+
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(IsBookmarkPriceTracked(bookmark_model_.get(), product));
 }
 
-TEST_F(ShoppingListHandlerTest, TestTrackProdcutFailure) {
+TEST_F(ShoppingListHandlerTest, TestTrackProductFailure) {
+  uint64_t cluster_id = 123L;
   const bookmarks::BookmarkNode* product = AddProductBookmark(
-      bookmark_model_.get(), u"product 1", GURL("http://example.com/1"), 123L,
-      false, 1230000, "usd");
-  EXPECT_FALSE(IsBookmarkPriceTracked(bookmark_model_.get(), product));
+      bookmark_model_.get(), u"product 1", GURL("http://example.com/1"),
+      cluster_id, false, 1230000, "usd");
 
   // Simulate failed calls in the subscriptions manager.
   shopping_service_->SetSubscribeCallbackValue(false);
   shopping_service_->SetUnsubscribeCallbackValue(false);
 
-  EXPECT_CALL(page_, PriceUntrackedForBookmark(product->id())).Times(2);
+  // "untrack" should be called once to undo the "track" change in the UI.
+  EXPECT_CALL(page_, PriceUntrackedForBookmark(product->id())).Times(1);
   EXPECT_CALL(page_, PriceTrackedForBookmark(testing::_)).Times(0);
+  EXPECT_CALL(page_, OperationFailedForBookmark(product->id(), true)).Times(1);
+
   handler_->TrackPriceForBookmark(product->id());
+
+  // Assume the subscription callback fires with a failure.
+  handler_->OnUnsubscribe({CreateUserTrackedSubscription(cluster_id)}, false);
+
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(IsBookmarkPriceTracked(bookmark_model_.get(), product));
 }
 
 TEST_F(ShoppingListHandlerTest, TestUntrackProductFailure) {
+  uint64_t cluster_id = 123L;
   const bookmarks::BookmarkNode* product = AddProductBookmark(
-      bookmark_model_.get(), u"product 1", GURL("http://example.com/1"), 123L,
-      true, 1230000, "usd");
-  EXPECT_TRUE(IsBookmarkPriceTracked(bookmark_model_.get(), product));
+      bookmark_model_.get(), u"product 1", GURL("http://example.com/1"),
+      cluster_id, true, 1230000, "usd");
 
   // Simulate failed calls in the subscriptions manager.
   shopping_service_->SetSubscribeCallbackValue(false);
   shopping_service_->SetUnsubscribeCallbackValue(false);
 
-  EXPECT_CALL(page_, PriceTrackedForBookmark(testing::_)).Times(2);
+  // "track" should be called once to undo the "untrack" change in the UI.
+  EXPECT_CALL(page_, PriceTrackedForBookmark(testing::_)).Times(1);
   EXPECT_CALL(page_, PriceUntrackedForBookmark(product->id())).Times(0);
+  EXPECT_CALL(page_, OperationFailedForBookmark(product->id(), false)).Times(1);
+
   handler_->UntrackPriceForBookmark(product->id());
+
+  // Assume the subscription callback fires with a failure.
+  handler_->OnUnsubscribe({CreateUserTrackedSubscription(cluster_id)}, false);
+
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(IsBookmarkPriceTracked(bookmark_model_.get(), product));
 }
 
 TEST_F(ShoppingListHandlerTest, PageUpdateForPriceTrackChange) {
@@ -233,33 +272,14 @@ TEST_F(ShoppingListHandlerTest, PageUpdateForPriceTrackChange) {
       true, 1230000, "usd");
 
   EXPECT_CALL(page_, PriceUntrackedForBookmark(product->id()));
-  base::RunLoop run_loop;
-  SetPriceTrackingStateForBookmark(
-      shopping_service_.get(), bookmark_model_.get(), product, false,
-      base::BindOnce(
-          [](base::RunLoop* run_loop, bool success) {
-            EXPECT_TRUE(success);
-            run_loop->Quit();
-          },
-          &run_loop));
-  run_loop.Run();
+
+  // Assume the plumbing for subscriptions works and fake an unsubscribe event.
+  handler_->OnUnsubscribe({CreateUserTrackedSubscription(123L)}, true);
+
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(IsBookmarkPriceTracked(bookmark_model_.get(), product));
-}
-
-TEST_F(ShoppingListHandlerTest, PageNotUpdateForIrrelevantChange) {
-  const bookmarks::BookmarkNode* node =
-      bookmark_model_->AddNewURL(bookmark_model_->other_node(), 0, u"product 1",
-                                 GURL("http://example.com/1"));
-  EXPECT_FALSE(IsBookmarkPriceTracked(bookmark_model_.get(), node));
-
-  EXPECT_CALL(page_, PriceTrackedForBookmark(testing::_)).Times(0);
-  EXPECT_CALL(page_, PriceUntrackedForBookmark(node->id())).Times(0);
-  bookmark_model_->SetNodeMetaInfo(node, "test_key", "test_value");
 }
 
 TEST_F(ShoppingListHandlerTest, TestGetProductInfo_FeatureEnabled) {
-  base::RunLoop run_loop;
   EXPECT_CALL(tracker_, NotifyEvent("price_tracking_side_panel_shown"));
 
   const bookmarks::BookmarkNode* product = AddProductBookmark(
@@ -267,6 +287,8 @@ TEST_F(ShoppingListHandlerTest, TestGetProductInfo_FeatureEnabled) {
       true, 1230000, "usd");
   AddProductBookmark(bookmark_model_.get(), u"product 2",
                      GURL("http://example.com/2"), 456L, false, 4560000, "usd");
+  shopping_service_->SetGetAllSubscriptionsCallbackValue(
+      {CreateUserTrackedSubscription(123L)});
 
   std::vector<const bookmarks::BookmarkNode*> bookmark_list;
   bookmark_list.push_back(product);
@@ -274,9 +296,10 @@ TEST_F(ShoppingListHandlerTest, TestGetProductInfo_FeatureEnabled) {
       ShoppingListHandler::BookmarkListToMojoList(*bookmark_model_,
                                                   bookmark_list, "en-us");
 
-  handler_->GetAllPriceTrackedBookmarkProductInfo(
-      base::BindOnce(&GetEvaluationProductInfos, run_loop.QuitClosure(),
-                     std::move(mojo_list)));
+  handler_->GetAllPriceTrackedBookmarkProductInfo(base::BindOnce(
+      &GetEvaluationProductInfos, base::DoNothing(), std::move(mojo_list)));
+
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(ShoppingListHandlerTest, TestGetAllShoppingInfo_FeatureEnabled) {
@@ -331,7 +354,6 @@ class ShoppingListHandlerFeatureDisableTest : public testing::Test {
 TEST_F(ShoppingListHandlerFeatureDisableTest,
        TestGetProductInfo_FeatureDisabled) {
   shopping_service_->SetIsShoppingListEligible(false);
-  base::RunLoop run_loop;
   EXPECT_CALL(tracker_, NotifyEvent("price_tracking_side_panel_shown"))
       .Times(0);
 
@@ -343,9 +365,8 @@ TEST_F(ShoppingListHandlerFeatureDisableTest,
   bookmark_list.push_back(product);
   std::vector<shopping_list::mojom::BookmarkProductInfoPtr> empty_list;
 
-  handler_->GetAllPriceTrackedBookmarkProductInfo(
-      base::BindOnce(&GetEvaluationProductInfos, run_loop.QuitClosure(),
-                     std::move(empty_list)));
+  handler_->GetAllPriceTrackedBookmarkProductInfo(base::BindOnce(
+      &GetEvaluationProductInfos, base::DoNothing(), std::move(empty_list)));
 }
 
 }  // namespace

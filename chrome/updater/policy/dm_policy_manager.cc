@@ -225,6 +225,28 @@ absl::optional<std::vector<std::string>> DMPolicyManager::GetForceInstallApps()
   return absl::nullopt;
 }
 
+absl::optional<std::vector<std::string>> DMPolicyManager::GetAppsWithPolicy()
+    const {
+  std::vector<std::string> apps_with_policy;
+
+  for (const auto& app_settings_proto :
+       omaha_settings_.application_settings()) {
+#if BUILDFLAG(IS_MAC)
+    // BundleIdentifier is preferred over AppGuid as product ID on Mac.
+    // If not found, fall back to AppGuid below.
+    if (app_settings_proto.has_bundle_identifier()) {
+      apps_with_policy.push_back(app_settings_proto.bundle_identifier());
+      continue;
+    }
+#endif  // BUILDFLAG(IS_MAC)
+    if (app_settings_proto.has_app_guid()) {
+      apps_with_policy.push_back(app_settings_proto.app_guid());
+    }
+  }
+
+  return apps_with_policy;
+}
+
 scoped_refptr<PolicyManagerInterface> CreateDMPolicyManager() {
   std::unique_ptr<
       ::wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto>

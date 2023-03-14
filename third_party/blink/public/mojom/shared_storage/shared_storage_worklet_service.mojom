@@ -1,0 +1,135 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+import "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom";
+import "services/network/public/mojom/url_loader_factory.mojom";
+import "third_party/blink/public/mojom/shared_storage/shared_storage.mojom";
+import "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom";
+import "url/mojom/url.mojom";
+
+// Used to denote a shared storage's key, value, or the [key, value] pair. This
+// would unify the handling for different type of iterators, such as for
+// sharedStorage.keys() and for sharedStorage.entries().
+struct SharedStorageKeyAndOrValue {
+  mojo_base.mojom.String16 key;
+  mojo_base.mojom.String16 value;
+};
+
+// Used by the SharedStorageWorkletServiceClient receiver (i.e. the worklet
+// environment) to listen for new entries sent from the browser process.
+interface SharedStorageEntriesListener {
+  // Called by the SharedStorageWorkletServiceClient remote (i.e. in the browser
+  // process) when some entries have been obtained. `has_more_entries` is false
+  // when all the entries have been obtained, and indicates that the callback
+  // will not be called again. `total_queued_to_send` indicates the total
+  // number of entries that the database had prepared to send for this origin
+  // via this iterator (including any already sent on previous calls to
+  // `DidReadEntries()`), even if this call indicates that an error was
+  // encountered in retrieving the keys/entries.
+  DidReadEntries(
+      bool success, string error_message,
+      array<SharedStorageKeyAndOrValue> entries,
+      bool has_more_entries,
+      int32 total_queued_to_send);
+};
+
+enum SharedStorageGetStatus {
+  kSuccess,
+  kNotFound,
+  kError,
+};
+
+// Used by the shared storage worklet environment to access the shared storage,
+// log messages, etc.
+interface SharedStorageWorkletServiceClient {
+ // Handle sharedStorage.set(): set `key`’s entry to `value`. If
+  // `ignoreIfPresent` is true, the entry is not updated if `key` already
+  // exists.
+  SharedStorageSet(SharedStorageKeyArgument key,
+                   SharedStorageValueArgument value,
+                   bool ignore_if_present)
+    => (bool success, string error_message);
+
+  // Handle sharedStorage.append(): append `value` to the entry for `key`.
+  // Equivalent to "set" if the `key` is not present.
+  SharedStorageAppend(SharedStorageKeyArgument key,
+                      SharedStorageValueArgument value)
+    => (bool success, string error_message);
+
+  // Handle sharedStorage.delete(): delete the entry at the given `key`.
+  SharedStorageDelete(SharedStorageKeyArgument key)
+    => (bool success, string error_message);
+
+  // Handle sharedStorage.clear(): delete all entries.
+  SharedStorageClear()
+    => (bool success, string error_message);
+
+  // Handle sharedStorage.get(): get the entry at `key`, or an empty string if
+  // `key` is not present.
+  SharedStorageGet(SharedStorageKeyArgument key)
+    => (SharedStorageGetStatus status, string error_message,
+      mojo_base.mojom.String16 value);
+
+  // Returns (potentially in batches) the keys of the shared storage.
+  SharedStorageKeys(pending_remote<SharedStorageEntriesListener> listener);
+
+  // Returns (potentially in batches) the [key, value] pairs of the
+  // shared storage.
+  SharedStorageEntries(pending_remote<SharedStorageEntriesListener> listener);
+
+  // Handle sharedStorage.length(): get the number of keys.
+  SharedStorageLength()
+    => (bool success, string error_message, uint32 length);
+
+  // Handle sharedStorage.remainingBudget(): get the number of bits remaining
+  // in the privacy budget.
+  SharedStorageRemainingBudget()
+    => (bool success, string error_message, double bits);
+
+  // Handle console.log(): log the message to the DevTools console.
+  ConsoleLog(string message);
+
+  // Record use counters for APIs used within the worklet.
+  RecordUseCounters(array<WebFeature> features);
+};
+
+// Used by the browser to load shared storage worklet script and run operations
+// in the worklet environment.
+// See https://github.com/pythagoraskitty/shared-storage/blob/main/README.md
+interface SharedStorageWorkletService {
+  // Binds `client` and, if not null, `pa_host`. Also initializes the
+  // "private-aggregation" permisisons policy's status to
+  // `private_aggregation_permissions_policy_allowed`. Must be the first call on
+  // this interface.
+  Initialize(
+    pending_associated_remote<SharedStorageWorkletServiceClient> client,
+    bool private_aggregation_permissions_policy_allowed,
+    pending_remote<PrivateAggregationHost>? pa_host,
+    mojo_base.mojom.String16? embedder_context);
+
+  // Handle sharedStorage.worklet.addModule(): download and load the script in
+  // the worklet environment. The origin of the `script_source_url` should be
+  // checked at the Mojo boundary to ensure it's from the same origin of the
+  // current context.
+  AddModule(pending_remote<network.mojom.URLLoaderFactory> url_loader_factory,
+            url.mojom.Url script_source_url)
+    => (bool success, string error_message);
+
+  // Handle sharedStorage.runURLSelectionOperation(): run the operation
+  // previously registered by registerURLSelectionOperation() with matching
+  // `name`. The size limit on `urls` should be checked at the Mojo boundary.
+  // When the operation succeeds, the return value `index` will be set to the
+  // uint32 value that the promise resolves to; otherwise it will be set to 0.
+  RunURLSelectionOperation(string name, array<url.mojom.Url> urls,
+                           array<uint8> serialized_data)
+    => (bool success, string error_message, uint32 index);
+
+  // Handle sharedStorage.runOperation(): run the operation previously
+  // registered by registerOperation() with matching `name`.
+  RunOperation(string name, array<uint8> serialized_data)
+    => (bool success, string error_message);
+};

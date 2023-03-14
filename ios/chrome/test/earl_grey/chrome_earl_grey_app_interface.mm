@@ -13,6 +13,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/threading/thread_restrictions.h"
 #import "base/values.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_features.h"
@@ -35,9 +36,13 @@
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/search_engines/search_engines_util.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
+#import "ios/chrome/browser/sessions/session_service_ios.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils_test_support.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
@@ -45,8 +50,6 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -168,6 +171,18 @@ NSString* SerializedValue(const base::Value* value) {
 
   return testing::NSErrorWithLocalizedDescription(
       @"Clearing browser cache for main tabs timed out");
+}
+
++ (void)saveSessionImmediately {
+  SessionRestorationBrowserAgent::FromBrowser(
+      chrome_test_util::GetMainBrowser())
+      ->SaveSession(/*immediately=*/true);
+  dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+  ProceduralBlock completionBlock = ^{
+    dispatch_semaphore_signal(semaphore);
+  };
+  [[SessionServiceIOS sharedService] shutdownWithCompletion:completionBlock];
+  dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
 }
 
 + (NSError*)clearAllWebStateBrowsingData {
@@ -513,6 +528,22 @@ NSString* SerializedValue(const base::Value* value) {
 + (NSUInteger)incognitoTabCountInWindowWithNumber:(int)windowNumber {
   return chrome_test_util::GetIncognitoTabCountForWindowWithNumber(
       windowNumber);
+}
+
++ (UIWindow*)keyWindow {
+  NSSet<UIScene*>* scenes = UIApplication.sharedApplication.connectedScenes;
+  for (UIScene* scene in scenes) {
+    UIWindowScene* windowScene =
+        base::mac::ObjCCastStrict<UIWindowScene>(scene);
+
+    for (UIWindow* window in windowScene.windows) {
+      if (window.isKeyWindow) {
+        return window;
+      }
+    }
+  }
+
+  return nil;
 }
 
 #pragma mark - WebState Utilities (EG2)
@@ -898,7 +929,13 @@ NSString* SerializedValue(const base::Value* value) {
            syncer::SyncService::TransportState::ACTIVE;
   });
   if (!success) {
-    NSString* errorDescription = @"Sync feature must be active";
+    ChromeBrowserState* browser_state =
+        chrome_test_util::GetOriginalBrowserState();
+    NSString* errorDescription = [NSString
+        stringWithFormat:
+            @"Sync transport must be active, but actual state was: %d",
+            (int)SyncServiceFactory::GetForBrowserState(browser_state)
+                ->GetTransportState()];
     return testing::NSErrorWithLocalizedDescription(errorDescription);
   }
   return nil;
@@ -1020,8 +1057,12 @@ NSString* SerializedValue(const base::Value* value) {
     return handlerCalled;
   });
 
-  BOOL success = completed && !blockError;
+  DLOG_IF(ERROR, !completed) << "JavaScript execution timed out.";
+  DLOG_IF(ERROR, blockError) << "JavaScript execution of:\n"
+                             << script << "\nfailed with error:\n"
+                             << base::SysNSStringToUTF8(blockError.description);
 
+  BOOL success = completed && !blockError;
   JavaScriptExecutionResult* result =
       [[JavaScriptExecutionResult alloc] initWithResult:blockResult
                                     successfulExecution:success];
@@ -1139,6 +1180,9 @@ NSString* SerializedValue(const base::Value* value) {
   return UseSymbols();
 }
 
++ (BOOL)isUIButtonConfigurationEnabled {
+  return IsUIButtonConfigurationEnabled();
+}
 #pragma mark - ContentSettings
 
 + (ContentSetting)popupPrefValue {
@@ -1320,8 +1364,15 @@ int watchRunNumber = 0;
           if (!watchingButtons.count || runNumber != watchRunNumber)
             return;
 
-          [self findButtonsWithLabelsInViews:[UIApplication sharedApplication]
-                                                 .windows];
+          NSMutableArray<UIWindow*>* windows = [[NSMutableArray alloc] init];
+          for (UIScene* scene in UIApplication.sharedApplication
+                   .connectedScenes) {
+            UIWindowScene* windowScene =
+                base::mac::ObjCCastStrict<UIWindowScene>(scene);
+            [windows addObjectsFromArray:windowScene.windows];
+          }
+
+          [self findButtonsWithLabelsInViews:windows];
 
           if (watchingButtons.count && timeout.is_positive()) {
             [self scheduleNextWatchForButtonsWithTimeout:timeout -

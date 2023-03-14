@@ -129,19 +129,6 @@ TestSharedImageInterface::TestSharedImageInterface() = default;
 TestSharedImageInterface::~TestSharedImageInterface() = default;
 
 gpu::Mailbox TestSharedImageInterface::CreateSharedImage(
-    ResourceFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    gpu::SurfaceHandle surface_handle) {
-  return CreateSharedImage(SharedImageFormat::SinglePlane(format), size,
-                           color_space, surface_origin, alpha_type, usage,
-                           surface_handle);
-}
-
-gpu::Mailbox TestSharedImageInterface::CreateSharedImage(
     SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
@@ -215,6 +202,13 @@ void TestSharedImageInterface::UpdateSharedImage(
   DCHECK(shared_images_.find(mailbox) != shared_images_.end());
 }
 
+void TestSharedImageInterface::AddReferenceToSharedImage(
+    const gpu::SyncToken& sync_token,
+    const gpu::Mailbox& mailbox,
+    uint32_t usage) {
+  shared_images_.insert(mailbox);
+}
+
 void TestSharedImageInterface::DestroySharedImage(
     const gpu::SyncToken& sync_token,
     const gpu::Mailbox& mailbox) {
@@ -224,7 +218,7 @@ void TestSharedImageInterface::DestroySharedImage(
 }
 
 gpu::SharedImageInterface::SwapChainMailboxes
-TestSharedImageInterface::CreateSwapChain(ResourceFormat format,
+TestSharedImageInterface::CreateSwapChain(SharedImageFormat format,
                                           const gfx::Size& size,
                                           const gfx::ColorSpace& color_space,
                                           GrSurfaceOrigin surface_origin,

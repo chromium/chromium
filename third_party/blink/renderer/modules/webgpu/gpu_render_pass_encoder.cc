@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_render_pass_encoder.h"
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_index_format.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_doublesequence_gpucolordict.h"
 #include "third_party/blink/renderer/core/typed_arrays/typed_flexible_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_bind_group.h"
@@ -55,12 +54,11 @@ void GPURenderPassEncoder::setBindGroup(
 
 void GPURenderPassEncoder::setBlendConstant(const V8GPUColor* color,
                                             ExceptionState& exception_state) {
-  if (color->IsDoubleSequence() && color->GetAsDoubleSequence().size() != 4) {
-    exception_state.ThrowRangeError("color size must be 4");
+  WGPUColor dawn_color;
+  if (!ConvertToDawn(color, &dawn_color, exception_state)) {
     return;
   }
 
-  WGPUColor dawn_color = AsDawnType(color);
   GetProcs().renderPassEncoderSetBlendConstant(GetHandle(), &dawn_color);
 }
 

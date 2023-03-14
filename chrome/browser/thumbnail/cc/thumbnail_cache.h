@@ -34,6 +34,8 @@ namespace base {
 class Time;
 }
 
+namespace thumbnail {
+
 typedef std::list<TabId> TabIdList;
 
 class ThumbnailCacheObserver {
@@ -89,6 +91,8 @@ class ThumbnailCache : ThumbnailDelegate {
   static base::FilePath GetJpegFilePath(TabId tab_id);
 
  private:
+  friend class ThumbnailCacheTest;
+
   class ThumbnailMetaData {
    public:
     ThumbnailMetaData() = default;
@@ -103,6 +107,11 @@ class ThumbnailCache : ThumbnailDelegate {
 
   using ExpiringThumbnailCache = ScopedPtrExpiringCache<TabId, Thumbnail>;
   using ThumbnailMetaDataMap = std::map<TabId, ThumbnailMetaData>;
+
+  void ScheduleRecordCacheMetrics(base::TimeDelta mean_delay);
+  void RecordCacheMetrics();
+  static size_t ComputeCacheSize(ExpiringThumbnailCache& cache);
+  void PruneCache();
 
   void RemoveFromDisk(TabId tab_id);
   static void RemoveFromDiskTask(TabId tab_id);
@@ -201,5 +210,7 @@ class ThumbnailCache : ThumbnailDelegate {
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_;
   base::WeakPtrFactory<ThumbnailCache> weak_factory_{this};
 };
+
+}  // namespace thumbnail
 
 #endif  // CHROME_BROWSER_THUMBNAIL_CC_THUMBNAIL_CACHE_H_

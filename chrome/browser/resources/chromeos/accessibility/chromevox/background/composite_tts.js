@@ -5,10 +5,10 @@
 /**
  * @fileoverview A composite TTS allows ChromeVox to use multiple TTS engines at
  * the same time.
- *
  */
-import {TtsInterface} from '../common/tts_interface.js';
 import {QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
+
+import {TtsInterface} from './tts_interface.js';
 
 /**
  * A Composite Tts
@@ -73,38 +73,26 @@ export class CompositeTts {
         engine => engine.removeCapturingEventListener(listener));
   }
 
-  /**
-   * @override
-   */
+  /** @override */
   increaseOrDecreaseProperty(propertyName, increase) {
     this.ttsEngines_.forEach(
         engine => engine.increaseOrDecreaseProperty(propertyName, increase));
   }
 
-  /**
-   * @override
-   */
+  /** @override */
   propertyToPercentage(property) {
-    for (let i = 0, engine; engine = this.ttsEngines_[i]; i++) {
-      const value = engine.propertyToPercentage(property);
-      if (value !== undefined) {
-        return value;
-      }
-    }
-    return null;
+    const percentages =
+        this.ttsEngines_.map(engine => engine.propertyToPercentage(property));
+    // Return the first non-null percent, or null if all values are null.
+    return percentages.find(percent => percent !== undefined) ?? null;
   }
 
-  /**
-   * @override
-   */
+  /** @override */
   getDefaultProperty(property) {
-    for (let i = 0, engine; engine = this.ttsEngines_[i]; i++) {
-      const value = engine.getDefaultProperty(property);
-      if (value !== undefined) {
-        return value;
-      }
-    }
-    return null;
+    const defaultValues =
+        this.ttsEngines_.map(engine => engine.getDefaultProperty(property));
+    // Return the first non-null value, or null if all values are null.
+    return defaultValues.find(value => value !== null) ?? null;
   }
 
   /** @override */

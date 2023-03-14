@@ -277,7 +277,7 @@ test("variations_unittests") {
   ]
 }
 
-if (use_libfuzzer) {
+if (use_fuzzing_engine_with_lpm) {
   fuzzable_proto_library("test_cases_proto") {
     sources = [ "fuzzers/create_trials_from_seed_test_case.proto" ]
 
@@ -298,6 +298,7 @@ if (use_libfuzzer) {
   fuzzer_test("create_trials_from_seed_fuzzer") {
     sources = [ "fuzzers/create_trials_from_seed_fuzzer.cc" ]
     deps = [
+      ":test_support",
       ":variations",
       "proto",
       "//base/test:test_support",

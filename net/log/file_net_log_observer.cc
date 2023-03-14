@@ -213,7 +213,7 @@ class FileNetLogObserver::FileWriter {
 
   // Writes |constants_value| to disk and opens the events array (closed in
   // Stop()).
-  void Initialize(std::unique_ptr<base::Value> constants_value);
+  void Initialize(std::unique_ptr<base::Value::Dict> constants_value);
 
   // Closes the events array opened in Initialize() and writes |polled_data| to
   // disk. If |polled_data| cannot be converted to proper JSON, then it
@@ -268,8 +268,9 @@ class FileNetLogObserver::FileWriter {
   size_t FileNumberToIndex(size_t file_number) const;
 
   // Writes |constants_value| to a file.
-  static void WriteConstantsToFile(std::unique_ptr<base::Value> constants_value,
-                                   base::File* file);
+  static void WriteConstantsToFile(
+      std::unique_ptr<base::Value::Dict> constants_value,
+      base::File* file);
 
   // Writes |polled_data| to a file.
   static void WritePolledDataToFile(std::unique_ptr<base::Value> polled_data,
@@ -335,7 +336,7 @@ std::unique_ptr<FileNetLogObserver> FileNetLogObserver::CreateBounded(
     const base::FilePath& log_path,
     uint64_t max_total_size,
     NetLogCaptureMode capture_mode,
-    std::unique_ptr<base::Value> constants) {
+    std::unique_ptr<base::Value::Dict> constants) {
   return CreateInternal(log_path, SiblingInprogressDirectory(log_path),
                         absl::nullopt, max_total_size, kDefaultNumFiles,
                         capture_mode, std::move(constants));
@@ -344,7 +345,7 @@ std::unique_ptr<FileNetLogObserver> FileNetLogObserver::CreateBounded(
 std::unique_ptr<FileNetLogObserver> FileNetLogObserver::CreateUnbounded(
     const base::FilePath& log_path,
     NetLogCaptureMode capture_mode,
-    std::unique_ptr<base::Value> constants) {
+    std::unique_ptr<base::Value::Dict> constants) {
   return CreateInternal(log_path, base::FilePath(), absl::nullopt, kNoLimit,
                         kDefaultNumFiles, capture_mode, std::move(constants));
 }
@@ -355,7 +356,7 @@ FileNetLogObserver::CreateBoundedPreExisting(
     base::File output_file,
     uint64_t max_total_size,
     NetLogCaptureMode capture_mode,
-    std::unique_ptr<base::Value> constants) {
+    std::unique_ptr<base::Value::Dict> constants) {
   return CreateInternal(base::FilePath(), inprogress_dir_path,
                         absl::make_optional<base::File>(std::move(output_file)),
                         max_total_size, kDefaultNumFiles, capture_mode,
@@ -366,7 +367,7 @@ std::unique_ptr<FileNetLogObserver>
 FileNetLogObserver::CreateUnboundedPreExisting(
     base::File output_file,
     NetLogCaptureMode capture_mode,
-    std::unique_ptr<base::Value> constants) {
+    std::unique_ptr<base::Value::Dict> constants) {
   return CreateInternal(base::FilePath(), base::FilePath(),
                         absl::make_optional<base::File>(std::move(output_file)),
                         kNoLimit, kDefaultNumFiles, capture_mode,
@@ -411,7 +412,7 @@ void FileNetLogObserver::StopObserving(std::unique_ptr<base::Value> polled_data,
 void FileNetLogObserver::OnAddEntry(const NetLogEntry& entry) {
   auto json = std::make_unique<std::string>();
 
-  *json = SerializeNetLogValueToJson(entry.ToValue());
+  *json = SerializeNetLogValueToJson(entry.ToDict());
 
   size_t queue_size = write_queue_->AddEntryToQueue(std::move(json));
 
@@ -432,7 +433,7 @@ std::unique_ptr<FileNetLogObserver> FileNetLogObserver::CreateBoundedForTests(
     uint64_t max_total_size,
     size_t total_num_event_files,
     NetLogCaptureMode capture_mode,
-    std::unique_ptr<base::Value> constants) {
+    std::unique_ptr<base::Value::Dict> constants) {
   return CreateInternal(log_path, SiblingInprogressDirectory(log_path),
                         absl::nullopt, max_total_size, total_num_event_files,
                         capture_mode, std::move(constants));
@@ -445,7 +446,7 @@ std::unique_ptr<FileNetLogObserver> FileNetLogObserver::CreateInternal(
     uint64_t max_total_size,
     size_t total_num_event_files,
     NetLogCaptureMode capture_mode,
-    std::unique_ptr<base::Value> constants) {
+    std::unique_ptr<base::Value::Dict> constants) {
   DCHECK_GT(total_num_event_files, 0u);
 
   scoped_refptr<base::SequencedTaskRunner> file_task_runner =
@@ -485,17 +486,16 @@ FileNetLogObserver::FileNetLogObserver(
     std::unique_ptr<FileWriter> file_writer,
     scoped_refptr<WriteQueue> write_queue,
     NetLogCaptureMode capture_mode,
-    std::unique_ptr<base::Value> constants)
+    std::unique_ptr<base::Value::Dict> constants)
     : file_task_runner_(std::move(file_task_runner)),
       write_queue_(std::move(write_queue)),
       file_writer_(std::move(file_writer)),
       capture_mode_(capture_mode) {
   if (!constants)
-    constants = std::make_unique<base::Value>(GetNetConstants());
+    constants = std::make_unique<base::Value::Dict>(GetNetConstants());
 
-  DCHECK(constants->is_dict());
-  DCHECK(!constants->GetDict().Find("logCaptureMode"));
-  constants->GetDict().Set("logCaptureMode", CaptureModeToString(capture_mode));
+  DCHECK(!constants->Find("logCaptureMode"));
+  constants->Set("logCaptureMode", CaptureModeToString(capture_mode));
   file_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&FileNetLogObserver::FileWriter::Initialize,
                                 base::Unretained(file_writer_.get()),
@@ -568,7 +568,7 @@ FileNetLogObserver::FileWriter::FileWriter(
 FileNetLogObserver::FileWriter::~FileWriter() = default;
 
 void FileNetLogObserver::FileWriter::Initialize(
-    std::unique_ptr<base::Value> constants_value) {
+    std::unique_ptr<base::Value::Dict> constants_value) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   // Open the final log file, and keep it open for the duration of logging (even
@@ -710,7 +710,7 @@ size_t FileNetLogObserver::FileWriter::FileNumberToIndex(
 }
 
 void FileNetLogObserver::FileWriter::WriteConstantsToFile(
-    std::unique_ptr<base::Value> constants_value,
+    std::unique_ptr<base::Value::Dict> constants_value,
     base::File* file) {
   // Print constants to file and open events array.
   std::string json = SerializeNetLogValueToJson(*constants_value);
@@ -829,7 +829,7 @@ void FileNetLogObserver::FileWriter::CreateInprogressDirectory() {
       "stitch_net_log_files.py\n");
 }
 
-std::string SerializeNetLogValueToJson(const base::Value& value) {
+std::string SerializeNetLogValueToJson(const base::ValueView& value) {
   // Omit trailing ".0" when printing a DOUBLE that is representable as a 64-bit
   // integer. This makes the values returned by NetLogNumberValue() look more
   // pleasant (for representing integers between 32 and 53 bits large).

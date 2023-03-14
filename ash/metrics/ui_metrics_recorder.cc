@@ -5,12 +5,31 @@
 #include "ash/metrics/ui_metrics_recorder.h"
 
 #include "base/check_op.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "cc/metrics/event_metrics.h"
+
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
+using EventType = cc::EventMetrics::EventType;
 
 namespace ash {
+
+namespace {
+
+bool IsCoreMeric(EventType event_type) {
+  return event_type == EventType::kMouseDragged ||
+         event_type == EventType::kMousePressed ||
+         event_type == EventType::kMouseReleased ||
+         event_type == EventType::kKeyPressed ||
+         event_type == EventType::kKeyReleased;
+}
+
+}  // namespace
 
 UiMetricsRecorder::UiMetricsRecorder() = default;
 UiMetricsRecorder::~UiMetricsRecorder() = default;
@@ -122,15 +141,31 @@ void UiMetricsRecorder::ReportPercentDroppedFramesInOneSecondWindow2(
 void UiMetricsRecorder::ReportEventLatency(
     std::vector<cc::EventLatencyTracker::LatencyData> latencies) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  constexpr base::TimeDelta kLongLatency = base::Milliseconds(500);
   for (auto& latency : latencies) {
+    const char* event_type = cc::EventMetrics::GetTypeName(latency.event_type);
     base::UmaHistogramCustomMicrosecondsTimes(
-        base::StrCat({"Ash.EventLatency.",
-                      cc::EventMetrics::GetTypeName(latency.event_type),
-                      ".TotalLatency"}),
+        base::StrCat({"Ash.EventLatency.", event_type, ".TotalLatency"}),
         latency.total_latency, base::Milliseconds(1), base::Seconds(5), 100);
     UMA_HISTOGRAM_CUSTOM_TIMES("Ash.EventLatency.TotalLatency",
                                latency.total_latency, base::Milliseconds(1),
                                base::Seconds(5), 100);
+
+    if (IsCoreMeric(latency.event_type)) {
+      UMA_HISTOGRAM_CUSTOM_TIMES("Ash.EventLatency.Core.TotalLatency",
+                                 latency.total_latency, base::Milliseconds(1),
+                                 base::Seconds(5), 100);
+    }
+
+    if (latency.event_type != EventType::kGestureLongPress &&
+        latency.event_type != EventType::kGestureLongTap &&
+        latency.total_latency > kLongLatency) {
+      VLOG(1) << "Ash event latency is longer than usual"
+              << ", type=" << event_type
+              << ", latency= " << latency.total_latency.InMilliseconds()
+              << " ms";
+    }
   }
 }
 }  // namespace ash

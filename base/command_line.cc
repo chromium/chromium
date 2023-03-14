@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
+#include "base/debug/debugging_buildflags.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -282,6 +283,9 @@ FilePath CommandLine::GetProgram() const {
 }
 
 void CommandLine::SetProgram(const FilePath& program) {
+#if BUILDFLAG(ENABLE_COMMANDLINE_SEQUENCE_CHECKS)
+  sequence_checker_.Check();
+#endif
 #if BUILDFLAG(IS_WIN)
   argv_[0] = StringType(TrimWhitespace(program.value(), TRIM_ALL));
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -339,6 +343,9 @@ void CommandLine::AppendSwitchPath(StringPiece switch_string,
 
 void CommandLine::AppendSwitchNative(StringPiece switch_string,
                                      CommandLine::StringPieceType value) {
+#if BUILDFLAG(ENABLE_COMMANDLINE_SEQUENCE_CHECKS)
+  sequence_checker_.Check();
+#endif
 #if BUILDFLAG(IS_WIN)
   const std::string switch_key = ToLowerASCII(switch_string);
   StringType combined_switch_string(UTF8ToWide(switch_key));
@@ -379,6 +386,9 @@ void CommandLine::AppendSwitchASCII(StringPiece switch_string,
 }
 
 void CommandLine::RemoveSwitch(base::StringPiece switch_key_without_prefix) {
+#if BUILDFLAG(ENABLE_COMMANDLINE_SEQUENCE_CHECKS)
+  sequence_checker_.Check();
+#endif
 #if BUILDFLAG(IS_WIN)
   StringType switch_key_native = UTF8ToWide(switch_key_without_prefix);
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -445,6 +455,9 @@ void CommandLine::AppendArgPath(const FilePath& path) {
 }
 
 void CommandLine::AppendArgNative(StringPieceType value) {
+#if BUILDFLAG(ENABLE_COMMANDLINE_SEQUENCE_CHECKS)
+  sequence_checker_.Check();
+#endif
   argv_.push_back(StringType(value));
 }
 
@@ -456,6 +469,9 @@ void CommandLine::AppendArguments(const CommandLine& other,
 }
 
 void CommandLine::PrependWrapper(StringPieceType wrapper) {
+#if BUILDFLAG(ENABLE_COMMANDLINE_SEQUENCE_CHECKS)
+  sequence_checker_.Check();
+#endif
   if (wrapper.empty())
     return;
   // Split the wrapper command based on whitespace (with quoting).
@@ -484,7 +500,7 @@ void CommandLine::ParseFromString(StringPieceType command_line) {
   int num_args = 0;
   wchar_t** args = NULL;
   // When calling CommandLineToArgvW, use the apiset if available.
-  // Doing so will bypass loading shell32.dll on Win8+.
+  // Doing so will bypass loading shell32.dll on Windows.
   HMODULE downlevel_shell32_dll =
       ::LoadLibraryEx(L"api-ms-win-downlevel-shell32-l1-1-0.dll", nullptr,
                       LOAD_LIBRARY_SEARCH_SYSTEM32);
@@ -680,5 +696,11 @@ void CommandLine::ParseAsSingleArgument(
   }
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+void CommandLine::DetachFromCurrentSequence() {
+#if BUILDFLAG(ENABLE_COMMANDLINE_SEQUENCE_CHECKS)
+  sequence_checker_.Detach();
+#endif  // BUILDFLAG(ENABLE_COMMANDLINE_SEQUENCE_CHECKS)
+}
 
 }  // namespace base

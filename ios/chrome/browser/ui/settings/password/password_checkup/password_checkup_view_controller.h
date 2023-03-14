@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 
 @protocol PasswordCheckupCommands;
+@protocol PasswordCheckupViewControllerDelegate;
 
 // Screen that presents the Password Checkup homepage.
 @interface PasswordCheckupViewController
@@ -18,6 +19,9 @@
 
 // Handler for PasswordCheckupCommands.
 @property(nonatomic, weak) id<PasswordCheckupCommands> handler;
+
+// Delegate.
+@property(nonatomic, weak) id<PasswordCheckupViewControllerDelegate> delegate;
 
 @end
 

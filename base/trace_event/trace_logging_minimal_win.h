@@ -346,49 +346,43 @@ class TlmUtf8StringField
 // Helper for creating event descriptors for use with WriteEvent.
 constexpr EVENT_DESCRIPTOR TlmEventDescriptor(uint8_t level,
                                               uint64_t keyword) noexcept {
-  return {
-      // Id
-      // TraceLogging generally uses the event's Name instead of Id+Version,
-      // so Id is normally set to 0 for TraceLogging events.
-      0,
+  return {// Id
+          // TraceLogging generally uses the event's Name instead of Id+Version,
+          // so Id is normally set to 0 for TraceLogging events.
+          0,
 
-      // Version
-      // TraceLogging generally uses the event's Name instead of Id+Version,
-      // so Version is normally set to 0 for TraceLogging events.
-      0,
+          // Version
+          // TraceLogging generally uses the event's Name instead of Id+Version,
+          // so Version is normally set to 0 for TraceLogging events.
+          0,
 
-      // Channel (WINEVENT_CHANNEL_*)
-      // Setting Channel = 11 allows TraceLogging events to be decoded
-      // correctly even if they were collected on older operating systems.
-      // If a TraceLogging event sets channel to a value other than 11, the
-      // event will only decode correctly if it was collected on an
-      // operating system that has built-in TraceLogging support, i.e.
-      // Windows 7sp1 + patch, Windows 8.1 + patch, or Windows 10+.
-      11,  // = WINEVENT_CHANNEL_TRACELOGGING
+          // Channel (WINEVENT_CHANNEL_*)
+          // TraceLogging-based events normally use channel 11.
+          11,  // = WINEVENT_CHANNEL_TRACELOGGING
 
-      // Level (WINEVENT_LEVEL_*)
-      // 0=always, 1=fatal, 2=error, 3=warning, 4=info, 5=verbose.
-      // Levels higher than 5 are for user-defined debug levels.
-      level,
+          // Level (WINEVENT_LEVEL_*)
+          // 0=always, 1=fatal, 2=error, 3=warning, 4=info, 5=verbose.
+          // Levels higher than 5 are for user-defined debug levels.
+          level,
 
-      // Opcode (WINEVENT_OPCODE_*)
-      // Set Opcode for special semantics such as starting/ending an
-      // activity.
-      0,  // = WINEVENT_OPCODE_INFO
+          // Opcode (WINEVENT_OPCODE_*)
+          // Set Opcode for special semantics such as starting/ending an
+          // activity.
+          0,  // = WINEVENT_OPCODE_INFO
 
-      // Task
-      // Set Task for user-defined semantics.
-      0,  // = WINEVENT_TASK_NONE
+          // Task
+          // Set Task for user-defined semantics.
+          0,  // = WINEVENT_TASK_NONE
 
-      // Keyword
-      // A keyword is a 64-bit value used for filtering events. Each bit of
-      // the keyword indicates whether the event belongs to a particular
-      // category of events. The top 16 bits of keyword have
-      // Microsoft-defined semantics and should be set to 0. The low 48 bits
-      // of keyword have user-defined semantics. All events should use a
-      // nonzero keyword to support effective event filtering (events with
-      // keyword set to 0 always pass keyword filtering).
-      keyword};
+          // Keyword
+          // A keyword is a 64-bit value used for filtering events. Each bit of
+          // the keyword indicates whether the event belongs to a particular
+          // category of events. The top 16 bits of keyword have
+          // Microsoft-defined semantics and should be set to 0. The low 48 bits
+          // of keyword have user-defined semantics. All events should use a
+          // nonzero keyword to support effective event filtering (events with
+          // keyword set to 0 always pass keyword filtering).
+          keyword};
 }
 
 #endif  // BASE_TRACE_EVENT_TRACE_LOGGING_MINIMAL_WIN_H_

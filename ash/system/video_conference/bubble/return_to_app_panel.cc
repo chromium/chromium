@@ -5,6 +5,7 @@
 #include "ash/system/video_conference/bubble/return_to_app_panel.h"
 
 #include <memory>
+#include <string>
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -80,10 +81,19 @@ std::unique_ptr<views::View> CreateReturnToAppIconsContainer(
 // panel.
 std::u16string GetMediaAppDisplayText(
     mojo::StructPtr<crosapi::mojom::VideoConferenceMediaAppInfo>& media_app) {
-  // Displays the url if it is valid. Otherwise, display app title.
   auto url = media_app->url;
-  return url && url->is_valid() ? base::UTF8ToUTF16(url->GetContent())
-                                : media_app->title;
+  auto title = media_app->title;
+
+  // Displays the title if it is not empty. Otherwise, display app url.
+  if (!title.empty()) {
+    return title;
+  }
+
+  if (url) {
+    return base::UTF8ToUTF16(url->GetContent());
+  }
+
+  return std::u16string();
 }
 
 // A customized toggle button for the return to app panel, which rotates

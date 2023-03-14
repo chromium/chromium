@@ -75,6 +75,8 @@ export class FakeMethodResolver {
 export class FakeInputDeviceSettingsProvider implements
     InputDeviceSettingsProviderInterface {
   private methods: FakeMethodResolver = new FakeMethodResolver();
+  private keyboardObservers: KeyboardObserverInterface[] = [];
+  private pointingStickObservers: PointingStickObserverInterface[] = [];
 
   constructor() {
     // Setup method resolvers.
@@ -86,6 +88,7 @@ export class FakeInputDeviceSettingsProvider implements
 
   setFakeKeyboards(keyboards: Keyboard[]): void {
     this.methods.setResult('fakeKeyboards', keyboards);
+    this.notifyKeboardListUpdated();
   }
 
   getConnectedKeyboardSettings(): Promise<Keyboard[]> {
@@ -110,6 +113,7 @@ export class FakeInputDeviceSettingsProvider implements
 
   setFakePointingSticks(pointingSticks: PointingStick[]): void {
     this.methods.setResult('fakePointingSticks', pointingSticks);
+    this.notifyPointingStickListUpdated();
   }
 
   getConnectedPointingStickSettings(): Promise<PointingStick[]> {
@@ -156,8 +160,23 @@ export class FakeInputDeviceSettingsProvider implements
     this.methods.setResult('fakePointingSticks', pointingSticks);
   }
 
-  observeKeyboardSettings(_observer: KeyboardObserverInterface): void {
-    // TODO(yyhyyh): Implement observeKeyboardSettings().
+  notifyKeboardListUpdated(): void {
+    const keyboards = this.methods.getResult('fakeKeyboards');
+    for (const observer of this.keyboardObservers) {
+      observer.onKeyboardListUpdated(keyboards);
+    }
+  }
+
+  notifyPointingStickListUpdated(): void {
+    const pointingSticks = this.methods.getResult('fakePointingSticks');
+    for (const observer of this.pointingStickObservers) {
+      observer.onPointingStickListUpdated(pointingSticks);
+    }
+  }
+
+  observeKeyboardSettings(observer: KeyboardObserverInterface): void {
+    this.keyboardObservers.push(observer);
+    this.notifyKeboardListUpdated();
   }
 
   observeTouchpadSettings(_observer: TouchpadObserverInterface): void {
@@ -168,8 +187,8 @@ export class FakeInputDeviceSettingsProvider implements
     // TODO(yyhyyh): Implement observeMouseSettings().
   }
 
-  observePointingStickSettings(_observer: PointingStickObserverInterface):
-      void {
-    // TODO(yyhyyh): Implement observePointingStickSettings().
+  observePointingStickSettings(observer: PointingStickObserverInterface): void {
+    this.pointingStickObservers.push(observer);
+    this.notifyPointingStickListUpdated();
   }
 }

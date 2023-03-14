@@ -4,7 +4,12 @@
   <title>reply</title>
   <script>
     myObject.onmessage = function (event) {
-      myObject.postMessage(event.data.byteLength.toString());
+      try {
+        myObject.postMessage(event.data);
+      } catch (e) {
+        // ArrayBuffer may not supported, echo error back.
+        myObject.postMessage(e.toString());
+      }
     };
     myObject.postMessage("Hello");
   </script>

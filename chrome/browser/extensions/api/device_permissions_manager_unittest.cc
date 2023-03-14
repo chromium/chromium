@@ -308,9 +308,8 @@ TEST_F(DevicePermissionsManagerTest, LoadPrefs) {
       "    \"vendor_id\": 0"
       "  }"
       "]");
-  env_->GetExtensionPrefs()->UpdateExtensionPref(
-      extension_->id(), "devices",
-      base::Value::ToUniquePtrValue(std::move(prefs_value)));
+  env_->GetExtensionPrefs()->UpdateExtensionPref(extension_->id(), "devices",
+                                                 std::move(prefs_value));
 
   DevicePermissionsManager* manager =
       DevicePermissionsManager::Get(env_->profile());

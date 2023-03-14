@@ -113,6 +113,7 @@ void CrosStateSender::OnAttestationCertificateGenerated(
     bool is_valid) {
   if (!is_valid) {
     SendCrosStateMessage(/*attestation_certs=*/nullptr);
+    return;
   }
 
   SendCrosStateMessage(std::move(&attestation_certs));

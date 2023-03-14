@@ -88,6 +88,10 @@ ApplicationLaunchSource ConvertLaunchSourceToProtoApplicationLaunchSource(
       return ApplicationLaunchSource::APPLICATION_LAUNCH_SOURCE_LOCK_SCREEN;
     case LaunchSource::kFromAppHomePage:
       return ApplicationLaunchSource::APPLICATION_LAUNCH_SOURCE_APP_HOME_PAGE;
+    case LaunchSource::kFromReparenting:
+      return ApplicationLaunchSource::APPLICATION_LAUNCH_SOURCE_REPARENTING;
+    case LaunchSource::kFromProfileMenu:
+      return ApplicationLaunchSource::APPLICATION_LAUNCH_SOURCE_PROFILE_MENU;
   }
 }
 

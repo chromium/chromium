@@ -65,9 +65,8 @@ group("closure_compile") {
 ts_library("build_ts") {
   root_dir = "."
   out_dir = "$target_gen_dir/tsc"
-  allow_js = true
   composite = true
-  tsconfig_base = "tsconfig_base.json"
+  tsconfig_base = "../tsconfig_base.json"
   in_files = [
     "arc_account_picker/test_util.js",
     "ash_common/i18n_behavior_test.js",
@@ -82,8 +81,9 @@ ts_library("build_ts") {
   ]
 
   deps = [
+    "//ash/webui/common/resources:build_ts",
     "//ui/webui/resources/js:build_ts",
-    "//ui/webui/resources/mojo:library",
+    "//ui/webui/resources/mojo:build_ts",
   ]
   extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
 }

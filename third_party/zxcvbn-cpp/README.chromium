@@ -50,6 +50,9 @@ Applied the following patches:
 - patches/memory_mapping.diff: Adds a wrapper around the binary blob that
   the contents of RankedDicts to allow reading it either directory from memory
   or from a memory mapped file.
+- patches/include_utility.diff: Explicitly include <utility> in optional.hpp to
+  remove an implicit transitive include dependency in libc++ that will no longer
+  exist once Chrome is built with -fmodules.
 
 Ran the following commands to generate adjacency graphs:
 $ python ./data-scripts/build_keyboard_adjacency_graphs.py ./native-src/zxcvbn/adjacency_graphs.hpp

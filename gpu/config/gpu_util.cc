@@ -309,28 +309,26 @@ GpuFeatureStatus GetGLFeatureStatus(const std::set<int>& blocklisted_features,
   return kGpuFeatureStatusEnabled;
 }
 
-void AppendWorkaroundsToCommandLine(const GpuFeatureInfo& gpu_feature_info,
-                                    base::CommandLine* command_line) {
-  if (gpu_feature_info.IsWorkaroundEnabled(DISABLE_D3D11)) {
-    command_line->AppendSwitch(switches::kDisableD3D11);
-  }
-  if (gpu_feature_info.IsWorkaroundEnabled(DISABLE_ES3_GL_CONTEXT)) {
-    command_line->AppendSwitch(switches::kDisableES3GLContext);
-  }
-  if (gpu_feature_info.IsWorkaroundEnabled(
-          DISABLE_ES3_GL_CONTEXT_FOR_TESTING)) {
-    command_line->AppendSwitch(switches::kDisableES3GLContextForTesting);
-  }
+void SetProcessGlWorkaroundsFromGpuFeatures(
+    const GpuFeatureInfo& gpu_feature_info) {
+  const auto is_enabled =
+      [&gpu_feature_info](const gpu::GpuDriverBugWorkaroundType& type) {
+        return gpu_feature_info.IsWorkaroundEnabled(type);
+      };
+
+  gl::GlWorkarounds workarounds = {
+    .disable_d3d11 = is_enabled(DISABLE_D3D11),
+    .disable_es3gl_context = is_enabled(DISABLE_ES3_GL_CONTEXT),
+    .disable_es3gl_context_for_testing =
+        is_enabled(DISABLE_ES3_GL_CONTEXT_FOR_TESTING),
 #if BUILDFLAG(IS_WIN)
-  if (gpu_feature_info.IsWorkaroundEnabled(DISABLE_DIRECT_COMPOSITION)) {
-    command_line->AppendSwitch(switches::kDisableDirectComposition);
-  }
-  if (gpu_feature_info.IsWorkaroundEnabled(
-          DISABLE_DIRECT_COMPOSITION_VIDEO_OVERLAYS)) {
-    command_line->AppendSwitch(
-        switches::kDisableDirectCompositionVideoOverlays);
-  }
+    .disable_direct_composition = is_enabled(DISABLE_DIRECT_COMPOSITION),
+    .disable_direct_composition_video_overlays =
+        is_enabled(DISABLE_DIRECT_COMPOSITION_VIDEO_OVERLAYS),
 #endif
+  };
+
+  gl::SetGlWorkarounds(workarounds);
 }
 
 // Adjust gpu feature status based on enabled gpu driver bug workarounds.
@@ -414,8 +412,10 @@ uint32_t GetSystemCommitLimitMb() {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_ANDROID)
 GPUInfo* g_gpu_info_cache = nullptr;
 GpuFeatureInfo* g_gpu_feature_info_cache = nullptr;
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -684,9 +684,7 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
 
   AdjustGpuFeatureStatusToWorkarounds(&gpu_feature_info);
 
-  // TODO(zmo): Find a better way to communicate these settings to bindings
-  // initialization than commandline switches.
-  AppendWorkaroundsToCommandLine(gpu_feature_info, command_line);
+  SetProcessGlWorkaroundsFromGpuFeatures(gpu_feature_info);
 
   return gpu_feature_info;
 }
@@ -718,6 +716,7 @@ void SetKeysForCrashLogging(const GPUInfo& gpu_info) {
 #endif
 }
 
+#if BUILDFLAG(IS_ANDROID)
 void CacheGPUInfo(const GPUInfo& gpu_info) {
   DCHECK(!g_gpu_info_cache);
   g_gpu_info_cache = new GPUInfo;
@@ -748,7 +747,6 @@ bool PopGpuFeatureInfoCache(GpuFeatureInfo* gpu_feature_info) {
   return true;
 }
 
-#if BUILDFLAG(IS_ANDROID)
 gl::GLDisplay* InitializeGLThreadSafe(base::CommandLine* command_line,
                                       const GpuPreferences& gpu_preferences,
                                       GPUInfo* out_gpu_info,

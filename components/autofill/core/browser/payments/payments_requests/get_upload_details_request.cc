@@ -11,6 +11,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "components/autofill/core/browser/payments/client_behavior_constants.h"
 
 namespace autofill::payments {
 
@@ -22,7 +23,7 @@ const char kGetUploadDetailsRequestPath[] =
 GetUploadDetailsRequest::GetUploadDetailsRequest(
     const std::vector<AutofillProfile>& addresses,
     const int detected_values,
-    const std::vector<const char*>& active_experiments,
+    const std::vector<ClientBehaviorConstants>& client_behavior_signals,
     const bool full_sync_enabled,
     const std::string& app_locale,
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
@@ -34,7 +35,7 @@ GetUploadDetailsRequest::GetUploadDetailsRequest(
     PaymentsClient::UploadCardSource upload_card_source)
     : addresses_(addresses),
       detected_values_(detected_values),
-      active_experiments_(active_experiments),
+      client_behavior_signals_(client_behavior_signals),
       full_sync_enabled_(full_sync_enabled),
       app_locale_(app_locale),
       callback_(std::move(callback)),
@@ -62,10 +63,9 @@ std::string GetUploadDetailsRequest::GetRequestContent() {
                 BuildCustomerContextDictionary(billing_customer_number_));
   }
   request_dict.Set("context", std::move(context));
-
-  base::Value::Dict chrome_user_context;
-  chrome_user_context.Set("full_sync_enabled", full_sync_enabled_);
-  request_dict.Set("chrome_user_context", std::move(chrome_user_context));
+  request_dict.Set(
+      "chrome_user_context",
+      BuildChromeUserContext(client_behavior_signals_, full_sync_enabled_));
 
   base::Value::List addresses;
   for (const AutofillProfile& profile : addresses_) {
@@ -84,8 +84,6 @@ std::string GetUploadDetailsRequest::GetRequestContent() {
   // flow. The detected_values_ bitmask tells Payments what *was* found, and
   // Payments will decide if the provided data is enough to offer upload save.
   request_dict.Set("detected_values", detected_values_);
-
-  SetActiveExperiments(active_experiments_, request_dict);
 
   switch (upload_card_source_) {
     case PaymentsClient::UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE:

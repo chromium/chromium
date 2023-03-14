@@ -11,7 +11,7 @@ package optimization_guide.proto;
 
 // Context in which the items are requested.
 enum RequestContext {
-  reserved 1, 3;
+  reserved 1, 3, 10;
   // Context not specified.
   CONTEXT_UNSPECIFIED = 0;
   // Requesting items on page navigation.

@@ -28,10 +28,11 @@ import java.lang.annotation.RetentionPolicy;
  * Coordinator of the account picker bottom sheet used in web signin flow.
  */
 public class AccountPickerBottomSheetCoordinator {
-    /** The scenarios which can trigger the account picker bottom sheet.*/
+    /** The scenarios which can trigger the account picker bottom sheet. */
     @IntDef({
             EntryPoint.WEB_SIGNIN,
             EntryPoint.SEND_TAB_TO_SELF,
+            EntryPoint.FEED_ACTION,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface EntryPoint {
@@ -39,6 +40,8 @@ public class AccountPickerBottomSheetCoordinator {
         int WEB_SIGNIN = 0;
         // The user attempted to use the send-tab-to-self feature while being signed out.
         int SEND_TAB_TO_SELF = 1;
+        // The user attempted to use the p13n actions on back of a feed card while signed out.
+        int FEED_ACTION = 2;
     }
 
     private final AccountPickerBottomSheetView mView;
@@ -75,11 +78,13 @@ public class AccountPickerBottomSheetCoordinator {
     @MainThread
     public AccountPickerBottomSheetCoordinator(WindowAndroid windowAndroid,
             BottomSheetController bottomSheetController,
-            AccountPickerDelegate accountPickerDelegate) {
+            AccountPickerDelegate accountPickerDelegate,
+            AccountPickerBottomSheetStrings accountPickerBottomSheetStrings) {
         SigninMetricsUtils.logAccountConsistencyPromoAction(AccountConsistencyPromoAction.SHOWN);
 
-        mAccountPickerBottomSheetMediator = new AccountPickerBottomSheetMediator(
-                windowAndroid, accountPickerDelegate, this::onDismissButtonClicked);
+        mAccountPickerBottomSheetMediator =
+                new AccountPickerBottomSheetMediator(windowAndroid, accountPickerDelegate,
+                        this::onDismissButtonClicked, accountPickerBottomSheetStrings);
         mView = new AccountPickerBottomSheetView(
                 windowAndroid.getActivity().get(), mAccountPickerBottomSheetMediator);
         mAccountPickerCoordinator = new AccountPickerCoordinator(
@@ -123,5 +128,9 @@ public class AccountPickerBottomSheetCoordinator {
     @VisibleForTesting
     public View getBottomSheetViewForTesting() {
         return mView.getContentView();
+    }
+
+    public void setTryAgainBottomSheetView() {
+        mAccountPickerBottomSheetMediator.setTryAgainBottomSheetView();
     }
 }

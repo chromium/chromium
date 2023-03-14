@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/view.h"
 
@@ -47,6 +46,7 @@ class ReadAnythingContainerView : public views::View,
       ui::ColorId foreground_color_id,
       ui::ColorId background_color_id,
       ui::ColorId separator_color_id,
+      ui::ColorId dropdown_color_id,
       read_anything::mojom::LineSpacing line_spacing,
       read_anything::mojom::LetterSpacing letter_spacing) override;
 
@@ -54,6 +54,8 @@ class ReadAnythingContainerView : public views::View,
   void OnCoordinatorDestroyed() override;
 
  private:
+  void LogTextStyle();
+
   raw_ptr<ReadAnythingCoordinator> coordinator_;
   raw_ptr<views::Separator> separator_;
 };

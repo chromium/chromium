@@ -9,7 +9,9 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/input_method/input_method_settings.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
@@ -22,6 +24,8 @@
 #include "components/spellcheck/browser/pref_names.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "net/base/url_util.h"
+#include "ui/base/ime/ash/extension_ime_util.h"
+#include "ui/base/ime/ash/input_method_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "url/gurl.h"
@@ -105,6 +109,18 @@ const std::vector<SearchConcept>& GetInputPageSearchConceptsV2() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetAutoCorrectionSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_LANGUAGES_AUTO_CORRECTION,
+       mojom::kInputMethodOptionsSubpagePath,
+       mojom::SearchResultIcon::kGlobe,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kShowPKAutoCorrection}},
+  });
+  return *tags;
+}
+
 const std::vector<SearchConcept>& GetEditDictionarySearchConceptsV2() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_LANGUAGES_EDIT_DICTIONARY,
@@ -129,18 +145,6 @@ const std::vector<SearchConcept>& GetSmartInputsSearchConcepts() {
   return *tags;
 }
 
-const std::vector<SearchConcept>& GetAssistivePersonalInfoSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_LANGUAGES_PERSONAL_INFORMATION_SUGGESTIONS,
-       mojom::kSmartInputsSubpagePath,
-       mojom::SearchResultIcon::kGlobe,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kShowPersonalInformationSuggestions}},
-  });
-  return *tags;
-}
-
 const std::vector<SearchConcept>& GetEmojiSuggestionSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_LANGUAGES_EMOJI_SUGGESTIONS,
@@ -153,11 +157,6 @@ const std::vector<SearchConcept>& GetEmojiSuggestionSearchConcepts() {
   return *tags;
 }
 
-bool IsAssistivePersonalInfoAllowed() {
-  return !IsGuestModeActive() &&
-         base::FeatureList::IsEnabled(features::kAssistPersonalInfo);
-}
-
 bool IsPredictiveWritingAllowed() {
   return features::IsAssistiveMultiWordEnabled();
 }
@@ -168,21 +167,12 @@ void AddSmartInputsStrings(content::WebUIDataSource* html_source,
                            bool is_emoji_suggestion_allowed) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"smartInputsTitle", IDS_SETTINGS_SUGGESTIONS_TITLE},
-      {"personalInfoSuggestionTitle",
-       IDS_SETTINGS_SUGGESTIONS_PERSONAL_INFO_TITLE},
-      {"personalInfoSuggestionHelpTooltip",
-       IDS_SETTINGS_SUGGESTIONS_PERSONAL_INFO_HELP_TOOLTIP},
-      {"personalInfoSuggestionDescription",
-       IDS_SETTINGS_SUGGESTIONS_PERSONAL_INFO_DESCRIPTION},
-      {"managePersonalInfo", IDS_SETTINGS_SUGGESTIONS_MANAGE_PERSONAL_INFO},
       {"emojiSuggestionTitle", IDS_SETTINGS_SUGGESTIONS_EMOJI_SUGGESTION_TITLE},
       {"emojiSuggestionDescription",
        IDS_SETTINGS_SUGGESTIONS_EMOJI_SUGGESTION_DESCRIPTION},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  html_source->AddBoolean("allowAssistivePersonalInfo",
-                          IsAssistivePersonalInfoAllowed());
   html_source->AddBoolean("allowEmojiSuggestion", is_emoji_suggestion_allowed);
 }
 
@@ -514,18 +504,18 @@ LanguagesSection::LanguagesSection(Profile* profile,
       spellcheck::prefs::kSpellCheckEnable,
       base::BindRepeating(&LanguagesSection::UpdateSpellCheckSearchTags,
                           base::Unretained(this)));
+  observation_.Observe(input_method::InputMethodManager::Get());
 
   updater.AddSearchTags(GetLanguagesPageSearchConceptsV2());
   updater.AddSearchTags(GetInputPageSearchConceptsV2());
   UpdateSpellCheckSearchTags();
 
-  if (IsAssistivePersonalInfoAllowed() || IsEmojiSuggestionAllowed()) {
+  if (IsEmojiSuggestionAllowed()) {
     updater.AddSearchTags(GetSmartInputsSearchConcepts());
-    if (IsAssistivePersonalInfoAllowed())
-      updater.AddSearchTags(GetAssistivePersonalInfoSearchConcepts());
     if (IsEmojiSuggestionAllowed())
       updater.AddSearchTags(GetEmojiSuggestionSearchConcepts());
   }
+  updater.AddSearchTags(GetAutoCorrectionSearchConcepts());
 }
 
 LanguagesSection::~LanguagesSection() = default;
@@ -650,13 +640,17 @@ void LanguagesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::SearchResultIcon::kGlobe, mojom::SearchResultDefaultRank::kMedium,
       mojom::kInputMethodOptionsSubpagePath);
 
+  generator->RegisterNestedSetting(mojom::Setting::kShowPKAutoCorrection,
+                                   mojom::Subpage::kInputMethodOptions);
+  generator->RegisterNestedSetting(mojom::Setting::kShowVKAutoCorrection,
+                                   mojom::Subpage::kInputMethodOptions);
+
   // Smart inputs.
   generator->RegisterTopLevelSubpage(
       IDS_SETTINGS_SUGGESTIONS_TITLE, mojom::Subpage::kSmartInputs,
       mojom::SearchResultIcon::kGlobe, mojom::SearchResultDefaultRank::kMedium,
       mojom::kSmartInputsSubpagePath);
   static constexpr mojom::Setting kSmartInputsFeaturesSettings[] = {
-      mojom::Setting::kShowPersonalInformationSuggestions,
       mojom::Setting::kShowEmojiSuggestions,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kSmartInputs,
@@ -676,6 +670,22 @@ void LanguagesSection::UpdateSpellCheckSearchTags() {
   updater.RemoveSearchTags(GetEditDictionarySearchConceptsV2());
   if (IsSpellCheckEnabled()) {
     updater.AddSearchTags(GetEditDictionarySearchConceptsV2());
+  }
+}
+
+void LanguagesSection::InputMethodChanged(
+    input_method::InputMethodManager* manager,
+    Profile* profile,
+    bool show_message) {
+  DCHECK(manager);
+  const std::string engine_id =
+      extension_ime_util::GetComponentIDByInputMethodID(
+          manager->GetActiveIMEState()->GetCurrentInputMethod().id());
+  SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
+
+  updater.RemoveSearchTags(GetAutoCorrectionSearchConcepts());
+  if (input_method::IsAutocorrectSupported(engine_id)) {
+    updater.AddSearchTags(GetAutoCorrectionSearchConcepts());
   }
 }
 

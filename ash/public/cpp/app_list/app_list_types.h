@@ -436,6 +436,29 @@ enum class SearchResultIconShape {
   kCircle,
 };
 
+// The storage types that are available within the System Info Card storage type
+// answer card.
+enum class SearchResultSystemInfoStorageType {
+  kMyFiles,
+  kDriveOfflineFiles,
+  kBrowsingData,
+  kAppsExtensions,
+  kCrostini,
+  kOtherUsers,
+  kSystem,
+  kTotal
+};
+
+// The display type of the answer cards created by the System Info Provider. The
+// Text Card provides a similar UI to the omnibox answer cards while the bar
+// chart and multi element bar chart provide an additional bar chart with system
+// information.
+enum class SystemInfoAnswerCardDisplayType {
+  kBarChart,
+  kTextCard,
+  kMultiElementBarChart,
+};
+
 struct ASH_PUBLIC_EXPORT SearchResultIconInfo {
   SearchResultIconInfo();
   // TODO(crbug.com/1232897): Make the search backend explicitly set the shape
@@ -458,6 +481,32 @@ struct ASH_PUBLIC_EXPORT SearchResultIconInfo {
 
   // The shape to mask the icon with. Only used by the results list view.
   SearchResultIconShape shape = SearchResultIconShape::kDefault;
+};
+
+// Data required for System Info Answer Card result type.
+struct ASH_PUBLIC_EXPORT SystemInfoAnswerCardData {
+ public:
+  SystemInfoAnswerCardData();
+  explicit SystemInfoAnswerCardData(
+      SystemInfoAnswerCardDisplayType display_type);
+  explicit SystemInfoAnswerCardData(double bar_chart_percentage);
+  explicit SystemInfoAnswerCardData(std::map<SearchResultSystemInfoStorageType,
+                                             int64_t> storage_type_to_size);
+
+  SystemInfoAnswerCardData(const SystemInfoAnswerCardData&);
+
+  ~SystemInfoAnswerCardData();
+
+  SystemInfoAnswerCardDisplayType display_type;
+
+  // This stores the percentage of the bar chart to be filled for System Info
+  // Answer card results which are a bar chart type. This will be a value
+  // between 0 and 100.
+  absl::optional<double> bar_chart_percentage;
+
+  // This stores the amount of space occupied by each storage type if this
+  // answer card is showing storage. All sizes are in bytes.
+  std::map<SearchResultSystemInfoStorageType, int64_t> storage_type_to_size;
 };
 
 // A tagged range in search result text.
@@ -666,6 +715,10 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
 
   // The icon of this result.
   SearchResultIconInfo icon;
+
+  // The details for an answer card result with System Information. This field
+  // is only set for this specific result type.
+  absl::optional<SystemInfoAnswerCardData> system_info_answer_card_data;
 
   // The icon of this result in a smaller dimension to be rendered in suggestion
   // chip view.

@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {fakeKeyboards, ModifierKey, Router, routes, SettingsPerDeviceKeyboardRemapKeysElement} from 'chrome://os-settings/chromeos/os_settings.js';
-import {assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {FakeInputDeviceSettingsProvider, fakeKeyboards, getInputDeviceSettingsProvider, KeyboardRemapModifierKeyRowElement, MetaKey, ModifierKey, Router, routes, SettingsPerDeviceKeyboardRemapKeysElement} from 'chrome://os-settings/chromeos/os_settings.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('PerDeviceKeyboardRemapKeys', function() {
   /**
@@ -12,17 +13,23 @@ suite('PerDeviceKeyboardRemapKeys', function() {
    */
   let page = null;
 
+  /**
+   *  @type {?FakeInputDeviceSettingsProvider}
+   */
+  let provider = null;
   setup(() => {
+    provider = getInputDeviceSettingsProvider();
     PolymerTest.clearBody();
   });
 
   teardown(() => {
     page = null;
+    provider = null;
   });
 
-  async function initializeRemapKeyspage() {
+  async function initializeRemapKeysPage() {
     page = document.createElement('settings-per-device-keyboard-remap-keys');
-
+    assertFalse(page.isInitialized);
     // Set the current route with keyboardId as search param and notify
     // the observer to update keyboard settings.
     const url = new URLSearchParams(
@@ -37,38 +44,70 @@ suite('PerDeviceKeyboardRemapKeys', function() {
   }
 
   /**
+   * Check that all the prefs are set to default keyboard value.
+   */
+  function checkPrefsSetToDefault() {
+    const ctrlDefaultMapping = page.keyboard.metaKey === MetaKey.kCommand ?
+        ModifierKey.kMeta :
+        ModifierKey.kControl;
+    const metaDefaultMapping = page.keyboard.metaKey === MetaKey.kCommand ?
+        ModifierKey.kControl :
+        ModifierKey.kMeta;
+    assertEquals(page.fakeAltPref.value, ModifierKey.kAlt);
+    assertEquals(page.fakeAssistantPref.value, ModifierKey.kAssistant);
+    assertEquals(page.fakeBackspacePref.value, ModifierKey.kBackspace);
+    assertEquals(page.fakeCapsLockPref.value, ModifierKey.kCapsLock);
+    assertEquals(page.fakeCtrlPref.value, ctrlDefaultMapping);
+    assertEquals(page.fakeEscPref.value, ModifierKey.kEscape);
+    assertEquals(page.fakeMetaPref.value, metaDefaultMapping);
+  }
+
+  /**
    * Verify that the remap subpage is correctly loaded with keyboard data.
    */
   test('keyboard remap subpage loaded', async () => {
-    await initializeRemapKeyspage();
+    await initializeRemapKeysPage();
     assertTrue(!!page.keyboard);
 
     // Verify that the dropdown menu for unremapped key is displayed as default.
-    const altKeyDrowDown = page.shadowRoot.querySelector('#altKey');
-    const altKeyMappedTo = ModifierKey.ALT.toString();
-    assertTrue(!!altKeyDrowDown);
+    /**  @type {?KeyboardRemapModifierKeyRowElement} */
+    const altKeyRow = page.shadowRoot.querySelector('#altKey');
+    const altKeyDropdown = altKeyRow.shadowRoot.querySelector('#keyDropdown');
+    const altKeyMappedTo = ModifierKey.kAlt.toString();
+    assertTrue(!!altKeyDropdown);
     assertEquals(
-        altKeyDrowDown.shadowRoot.querySelector('select').value,
+        altKeyDropdown.shadowRoot.querySelector('select').value,
         altKeyMappedTo);
+
+    // Verify that the default key icon is not highlighted.
+    assertEquals(altKeyRow.keyState, 'default-remapping');
 
     // Verify that the dropdown menu for remapped key is displayed as the
     // the target key in keyboard remapping settings.
-    const ctrlKeyDropdown = page.shadowRoot.querySelector('#ctrlKey');
+    /**  @type {?KeyboardRemapModifierKeyRowElement} */
+    const ctrlKeyRow = page.shadowRoot.querySelector('#ctrlKey');
     const ctrlKeyMappedTo =
         fakeKeyboards[0]
-            .settings.modifierRemappings.get(ModifierKey.CONTROL)
+            .settings.modifierRemappings[ModifierKey.kControl]
             .toString();
+    const ctrlKeyDropdown = ctrlKeyRow.shadowRoot.querySelector('#keyDropdown');
     assertTrue(!!ctrlKeyDropdown);
     assertEquals(
         ctrlKeyDropdown.shadowRoot.querySelector('select').value,
         ctrlKeyMappedTo);
+    // Verify that the remapped key icon is highlighted.
+    assertEquals(ctrlKeyRow.keyState, 'modifier-remapped');
 
-    // await flushTasks();
     // Verify that the label for meta key is displayed as the
     // the target key in keyboard remapping settings.
-    const metaKeyLabel = page.shadowRoot.querySelector('#metaKeyLabel');
-    assertTrue(!!metaKeyLabel);
-    assertEquals(metaKeyLabel.textContent, 'Command');
+    /**  @type {?KeyboardRemapModifierKeyRowElement} */
+    const metaKeyRow = page.shadowRoot.querySelector('#metaKey');
+    assertTrue(!!metaKeyRow);
+    assertEquals(metaKeyRow.keyLabel, 'Command');
+
+    // Verify that the icon is hidden.
+    const commandKeyIcon = metaKeyRow.shadowRoot.querySelector('iron-icon');
+    assertFalse(!!commandKeyIcon);
   });
 
   /**
@@ -76,7 +115,7 @@ suite('PerDeviceKeyboardRemapKeys', function() {
    * keyboardId is passed through the query url.
    */
   test('keyboard remap subpage updated for different keyboard', async () => {
-    await initializeRemapKeyspage();
+    await initializeRemapKeysPage();
 
     // Update the subpage with a new keyboard.
     const url = new URLSearchParams(
@@ -89,36 +128,48 @@ suite('PerDeviceKeyboardRemapKeys', function() {
 
     // Verify that the dropdown menu for unremapped key in the new
     // keyboard is updated and displayed as default.
-    const ctrlKeyDropdown = page.shadowRoot.querySelector('#ctrlKey');
-    const ctrlKeyMappedTo = ModifierKey.CONTROL.toString();
+    /**  @type {?KeyboardRemapModifierKeyRowElement} */
+    const ctrlKeyRow = page.shadowRoot.querySelector('#ctrlKey');
+    const ctrlKeyDropdown = ctrlKeyRow.shadowRoot.querySelector('#keyDropdown');
+    const ctrlKeyMappedTo = ModifierKey.kControl.toString();
     assertTrue(!!ctrlKeyDropdown);
     assertEquals(
         ctrlKeyDropdown.shadowRoot.querySelector('select').value,
         ctrlKeyMappedTo);
+    // Verify that the default key icon is not highlighted.
+    assertEquals(ctrlKeyRow.keyState, 'default-remapping');
 
     // Verify that the dropdown menu for remapped key is updated and displayed
     // as the target key in the new keyboard remapping settings.
-    const altKeyDrowDown = page.shadowRoot.querySelector('#altKey');
+    const altKeyRow = page.shadowRoot.querySelector('#altKey');
+    const altKeyDropDown = altKeyRow.shadowRoot.querySelector('#keyDropdown');
     const altKeyMappedTo = fakeKeyboards[2]
-                               .settings.modifierRemappings.get(ModifierKey.ALT)
+                               .settings.modifierRemappings[ModifierKey.kAlt]
                                .toString();
-    assertTrue(!!altKeyDrowDown);
+    assertTrue(!!altKeyDropDown);
     assertEquals(
-        altKeyDrowDown.shadowRoot.querySelector('select').value,
+        altKeyDropDown.shadowRoot.querySelector('select').value,
         altKeyMappedTo);
+    // Verify that the remapped key icon is highlighted.
+    assertEquals(altKeyRow.keyState, 'modifier-remapped');
 
     // Verify that the label for meta key is displayed as the
     // the target key in the new keyboard remapping settings.
-    const metaKeyLabel = page.shadowRoot.querySelector('#metaKeyLabel');
-    assertTrue(!!metaKeyLabel);
-    assertEquals(metaKeyLabel.textContent, 'Launcher');
+    /**  @type {?KeyboardRemapModifierKeyRowElement} */
+    const metaKeyRow = page.shadowRoot.querySelector('#metaKey');
+    assertTrue(!!metaKeyRow);
+    assertEquals(metaKeyRow.keyLabel, 'Launcher');
+
+    const launcherKeyIcon = metaKeyRow.shadowRoot.querySelector('iron-icon');
+    assertTrue(!!launcherKeyIcon);
+    assertEquals('os-settings:launcher', launcherKeyIcon.icon);
   });
 
   /**
    * Verify that the restore defaults button will restore the remapping keys.
    */
   test('keyboard remap subpage restore defaults', async () => {
-    await initializeRemapKeyspage();
+    await initializeRemapKeysPage();
 
     // Click the restore defaults button.
     const restoreButton =
@@ -128,17 +179,25 @@ suite('PerDeviceKeyboardRemapKeys', function() {
     await flushTasks();
 
     // The keyboard has "Command" as metaKey, so ctrl key should be restored to
-    // void, meta key should be restored to ctrl.
-    const ctrlKeyDropdown = page.shadowRoot.querySelector('#ctrlKey');
+    // meta, meta key should be restored to ctrl.
+    /**  @type {?KeyboardRemapModifierKeyRowElement} */
+    const ctrlKeyRow = page.shadowRoot.querySelector('#ctrlKey');
+    const ctrlKeyDropdown = ctrlKeyRow.shadowRoot.querySelector('#keyDropdown');
     assertTrue(!!ctrlKeyDropdown);
-    const metaKeyValue = ModifierKey.META.toString();
+    const metaKeyValue = ModifierKey.kMeta.toString();
     assertEquals(
         ctrlKeyDropdown.shadowRoot.querySelector('select').value, metaKeyValue);
+    // Verify that the restored key icon is not highlighted.
+    assertEquals(ctrlKeyRow.keyState, 'default-remapping');
 
-    const ctrlKeyValue = ModifierKey.CONTROL.toString();
-    const metaKeyDropdown = page.shadowRoot.querySelector('#metaKey');
+    const ctrlKeyValue = ModifierKey.kControl.toString();
+    /**  @type {?KeyboardRemapModifierKeyRowElement} */
+    const metaKeyRow = page.shadowRoot.querySelector('#metaKey');
+    const metaKeyDropdown = metaKeyRow.shadowRoot.querySelector('#keyDropdown');
     assertEquals(
         metaKeyDropdown.shadowRoot.querySelector('select').value, ctrlKeyValue);
+    // Verify that the restored key icon is not highlighted.
+    assertEquals(metaKeyRow.keyState, 'default-remapping');
 
     // Update the subpage with a new keyboard.
     const url = new URLSearchParams(
@@ -151,14 +210,64 @@ suite('PerDeviceKeyboardRemapKeys', function() {
 
     restoreButton.click();
     await flushTasks();
-    // The keyboard has "Launcher" as metaKey, ctrl key should be restored to
-    // default key mappings.
-    const altKeyValue = ModifierKey.ALT.toString();
-    const altKeyDrowDown = page.shadowRoot.querySelector('#altKey');
-    assertTrue(!!altKeyDrowDown);
+    // The keyboard has "Launcher" as metaKey, meta key should be restored to
+    // default metaKey mappings.
+    const altKeyValue = ModifierKey.kAlt.toString();
+    /**  @type {?KeyboardRemapModifierKeyRowElement} */
+    const altKeyRow = page.shadowRoot.querySelector('#altKey');
+    const altKeyDropDown = altKeyRow.shadowRoot.querySelector('#keyDropdown');
+    assertTrue(!!altKeyDropDown);
     assertEquals(
-        altKeyDrowDown.shadowRoot.querySelector('select').value, altKeyValue);
+        altKeyDropDown.shadowRoot.querySelector('select').value, altKeyValue);
     assertEquals(
         metaKeyDropdown.shadowRoot.querySelector('select').value, metaKeyValue);
+    // Verify that the restored key icon is not highlighted.
+    assertEquals(metaKeyRow.keyState, 'default-remapping');
+  });
+
+  /**
+   * Verify that if the keyboard is disconnected while the user is in
+   * the remapping page, it will switch back to per device keyboard page.
+   */
+  test('re-route to back page when keyboard disconnected', async () => {
+    await initializeRemapKeysPage();
+    // Check it's currently in the modifier remapping page.
+    assertEquals(
+        routes.PER_DEVICE_KEYBOARD_REMAP_KEYS,
+        Router.getInstance().currentRoute);
+    const updatedKeyboards = [fakeKeyboards[1], fakeKeyboards[2]];
+    page.onKeyboardListUpdated(updatedKeyboards);
+    assertEquals(routes.PER_DEVICE_KEYBOARD, Router.getInstance().currentRoute);
+  });
+
+  /**
+   * Test that update keyboard settings api is called when keyboard remapping
+   * prefs settings change.
+   */
+  test('Update keyboard settings', async () => {
+    await initializeRemapKeysPage();
+    assertTrue(page.isInitialized);
+    // Set the modifier remappings to default stage.
+    const restoreButton =
+        page.shadowRoot.querySelector('#restoreDefaultsButton');
+    assertTrue(!!restoreButton);
+    restoreButton.click();
+    checkPrefsSetToDefault();
+
+    // Change several key remappings in the page.
+    page.set('fakeAltPref.value', ModifierKey.kAssistant);
+    page.set('fakeBackspacePref.value', ModifierKey.kControl);
+    page.set('fakeEscPref.value', ModifierKey.kVoid);
+
+    // Verify that the keyboard settings in the provider are updated.
+    const updatedKeyboards = await provider.getConnectedKeyboardSettings();
+    assertTrue(!!updatedKeyboards);
+    const updatedRemapping = updatedKeyboards[0].settings.modifierRemappings;
+    assertTrue(!!updatedRemapping);
+    assertEquals(Object.keys(updatedRemapping).length, 3);
+    assertEquals(updatedRemapping[ModifierKey.kAlt], ModifierKey.kAssistant);
+    assertEquals(
+        updatedRemapping[ModifierKey.kBackspace], ModifierKey.kControl);
+    assertEquals(updatedRemapping[ModifierKey.kEscape], ModifierKey.kVoid);
   });
 });

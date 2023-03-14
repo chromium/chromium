@@ -16,6 +16,7 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/base/math_util.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/overlay_plane_data.h"
 #include "ui/gfx/overlay_transform_utils.h"
 #include "ui/gl/android/scoped_a_native_window.h"
 #include "ui/gl/android/scoped_java_surface_control.h"
@@ -57,30 +58,24 @@ base::TimeTicks GetSignalTime(const base::ScopedFD& fence) {
 }  // namespace
 
 GLSurfaceEGLSurfaceControl::GLSurfaceEGLSurfaceControl(
-    GLDisplayEGL* display,
     gl::ScopedANativeWindow window,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : GLSurfaceEGLSurfaceControl(
-          display,
           base::MakeRefCounted<gfx::SurfaceControl::Surface>(
               window.a_native_window(),
               BuildSurfaceName(kRootSurfaceName).c_str()),
           std::move(task_runner)) {}
 
 GLSurfaceEGLSurfaceControl::GLSurfaceEGLSurfaceControl(
-    GLDisplayEGL* display,
     gl::ScopedJavaSurfaceControl scoped_java_surface_control,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : GLSurfaceEGLSurfaceControl(display,
-                                 scoped_java_surface_control.MakeSurface(),
+    : GLSurfaceEGLSurfaceControl(scoped_java_surface_control.MakeSurface(),
                                  std::move(task_runner)) {}
 
 GLSurfaceEGLSurfaceControl::GLSurfaceEGLSurfaceControl(
-    GLDisplayEGL* display,
     scoped_refptr<gfx::SurfaceControl::Surface> root_surface,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : Presenter(display, gfx::Size()),
-      child_surface_name_(BuildSurfaceName(kChildSurfaceName)),
+    : child_surface_name_(BuildSurfaceName(kChildSurfaceName)),
       root_surface_(std::move(root_surface)),
       transaction_ack_timeout_manager_(task_runner),
       gpu_task_runner_(std::move(task_runner)),
@@ -92,44 +87,11 @@ GLSurfaceEGLSurfaceControl::~GLSurfaceEGLSurfaceControl() {
   Destroy();
 }
 
-int GLSurfaceEGLSurfaceControl::GetBufferCount() const {
-  // Triple buffering to match framework's BufferQueue.
-  return 3;
-}
-
-bool GLSurfaceEGLSurfaceControl::Initialize(GLSurfaceFormat format) {
+bool GLSurfaceEGLSurfaceControl::Initialize() {
   if (!root_surface_->surface())
     return false;
 
-  format_ = format;
-
-  // Surfaceless is always disabled on Android so we create a 1x1 pbuffer
-  // surface.
-  if (!offscreen_surface_) {
-    if (!display_->GetDisplay()) {
-      LOG(ERROR) << "Trying to create surface with invalid display.";
-      return false;
-    }
-
-    EGLint pbuffer_attribs[] = {
-        EGL_WIDTH, 1, EGL_HEIGHT, 1, EGL_NONE,
-    };
-    offscreen_surface_ = eglCreatePbufferSurface(display_->GetDisplay(),
-                                                 GetConfig(), pbuffer_attribs);
-    if (!offscreen_surface_) {
-      LOG(ERROR) << "eglCreatePbufferSurface failed with error "
-                 << ui::GetLastEGLErrorString();
-      return false;
-    }
-  }
-
   return true;
-}
-
-void GLSurfaceEGLSurfaceControl::PrepareToDestroy(bool have_context) {
-  // Drop all transaction callbacks since its not possible to make the context
-  // current after this point.
-  weak_factory_.InvalidateWeakPtrs();
 }
 
 void GLSurfaceEGLSurfaceControl::PreserveChildSurfaceControls() {
@@ -153,14 +115,6 @@ void GLSurfaceEGLSurfaceControl::Destroy() {
   pending_transaction_.reset();
   surface_list_.clear();
   root_surface_.reset();
-
-  if (offscreen_surface_) {
-    if (!eglDestroySurface(display_->GetDisplay(), offscreen_surface_)) {
-      LOG(ERROR) << "eglDestroySurface failed with error "
-                 << ui::GetLastEGLErrorString();
-    }
-    offscreen_surface_ = nullptr;
-  }
 }
 
 bool GLSurfaceEGLSurfaceControl::Resize(const gfx::Size& size,
@@ -278,15 +232,6 @@ void GLSurfaceEGLSurfaceControl::CommitPendingTransaction(
   pending_transaction_.reset();
 }
 
-gfx::Size GLSurfaceEGLSurfaceControl::GetSize() {
-  return gfx::Size(0, 0);
-}
-
-bool GLSurfaceEGLSurfaceControl::OnMakeCurrent(GLContext* context) {
-  context_ = context;
-  return true;
-}
-
 bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
     OverlayImage image,
     std::unique_ptr<gfx::GpuFence> gpu_fence,
@@ -317,6 +262,10 @@ bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
     surface_state.z_order = overlay_plane_data.z_order;
     pending_transaction_->SetZOrder(*surface_state.surface,
                                     overlay_plane_data.z_order);
+  }
+
+  if (uninitialized && use_target_deadline_) {
+    pending_transaction_->SetEnableBackPressure(*surface_state.surface, true);
   }
 
   AHardwareBuffer* hardware_buffer = nullptr;
@@ -443,15 +392,7 @@ bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
   return true;
 }
 
-void* GLSurfaceEGLSurfaceControl::GetHandle() {
-  return offscreen_surface_;
-}
-
 bool GLSurfaceEGLSurfaceControl::SupportsPlaneGpuFences() const {
-  return true;
-}
-
-bool GLSurfaceEGLSurfaceControl::SupportsCommitOverlayPlanes() {
   return true;
 }
 
@@ -587,11 +528,6 @@ void GLSurfaceEGLSurfaceControl::CheckPendingPresentationCallbacks() {
         FROM_HERE, check_pending_presentation_callback_queue_task_.callback(),
         base::Seconds(1) / 60);
   }
-}
-
-void GLSurfaceEGLSurfaceControl::SetDisplayTransform(
-    gfx::OverlayTransform transform) {
-  display_transform_ = transform;
 }
 
 void GLSurfaceEGLSurfaceControl::SetFrameRate(float frame_rate) {

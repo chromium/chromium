@@ -10,6 +10,12 @@
 
 using namespace clang::ast_matchers;
 
+FilterFile::FilterFile(const std::vector<std::string>& lines) {
+  for (const auto& line : lines) {
+    file_lines_.insert(line);
+  }
+}
+
 bool FilterFile::ContainsLine(llvm::StringRef line) const {
   auto it = file_lines_.find(line);
   return it != file_lines_.end();

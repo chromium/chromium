@@ -4,7 +4,6 @@
 
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 
-#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <utility>
@@ -13,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
@@ -40,9 +40,8 @@ namespace {
 std::vector<const PasswordForm*> MakeWeakCopies(
     const std::vector<std::unique_ptr<PasswordForm>>& owning) {
   std::vector<const PasswordForm*> result(owning.size());
-  std::transform(
-      owning.begin(), owning.end(), result.begin(),
-      [](const std::unique_ptr<PasswordForm>& ptr) { return ptr.get(); });
+  base::ranges::transform(owning, result.begin(),
+                          &std::unique_ptr<PasswordForm>::get);
   return result;
 }
 
@@ -51,10 +50,10 @@ std::vector<const PasswordForm*> MakeWeakCopies(
 std::vector<std::unique_ptr<PasswordForm>> MakeCopies(
     const std::vector<std::unique_ptr<PasswordForm>>& source) {
   std::vector<std::unique_ptr<PasswordForm>> result(source.size());
-  std::transform(source.begin(), source.end(), result.begin(),
-                 [](const std::unique_ptr<PasswordForm>& ptr) {
-                   return std::make_unique<PasswordForm>(*ptr);
-                 });
+  base::ranges::transform(source, result.begin(),
+                          [](const std::unique_ptr<PasswordForm>& ptr) {
+                            return std::make_unique<PasswordForm>(*ptr);
+                          });
   return result;
 }
 

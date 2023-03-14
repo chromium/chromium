@@ -4,7 +4,6 @@
 
 package org.chromium.net.impl;
 
-import android.annotation.TargetApi;
 import android.net.TrafficStats;
 import android.os.Build;
 import android.util.Log;
@@ -51,7 +50,6 @@ import javax.annotation.concurrent.GuardedBy;
 /**
  * Pure java UrlRequest, backed by {@link HttpURLConnection}.
  */
-@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH) // TrafficStats only available on ICS
 final class JavaUrlRequest extends UrlRequestBase {
     private static final String X_ANDROID = "X-Android";
     private static final String X_ANDROID_SELECTED_TRANSPORT = "X-Android-Selected-Transport";

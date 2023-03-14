@@ -22,7 +22,7 @@ suite('SiteFavicon', function() {
   }
 
   function formExpected(url: string): string {
-    return '-webkit-image-set(' +
+    return 'image-set(' +
         'url("chrome://favicon2/?size=16&scaleFactor=1x&pageUrl=' +
         encodeURIComponent(url) + '&allowGoogleServerFallback=0") 1x, ' +
         'url("chrome://favicon2/?size=16&scaleFactor=2x&pageUrl=' +

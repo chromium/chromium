@@ -97,6 +97,18 @@ class AppStreamLauncherDataModelTest : public testing::Test {
     return app_stream_launcher_data_launcher_->GetAppsListSortedByName();
   }
 
+  void SetLauncherSize(int height, int width) {
+    app_stream_launcher_data_launcher_->SetLauncherSize(height, width);
+  }
+
+  int GetLauncherHeight() {
+    return app_stream_launcher_data_launcher_->launcher_height();
+  }
+
+  int GetLauncherWidth() {
+    return app_stream_launcher_data_launcher_->launcher_width();
+  }
+
  private:
   std::unique_ptr<AppStreamLauncherDataModel>
       app_stream_launcher_data_launcher_;
@@ -178,6 +190,12 @@ TEST_F(AppStreamLauncherDataModelTest, RemoveAppFromList) {
   EXPECT_EQ(GetAppsList()->at(0).visible_app_name, u"Gboard");
   EXPECT_EQ(GetAppsListSortedByName()->size(), 1u);
   EXPECT_EQ(GetAppsListSortedByName()->at(0).visible_app_name, u"Gboard");
+}
+
+TEST_F(AppStreamLauncherDataModelTest, SetLauncherSize) {
+  SetLauncherSize(/*height=*/400, /*width=*/300);
+  EXPECT_EQ(GetLauncherHeight(), 400);
+  EXPECT_EQ(GetLauncherWidth(), 300);
 }
 }  // namespace phonehub
 }  // namespace ash

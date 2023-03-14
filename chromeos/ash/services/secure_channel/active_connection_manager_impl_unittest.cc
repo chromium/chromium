@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
@@ -91,9 +92,8 @@ std::vector<base::UnguessableToken> ClientListToIdList(
     const std::vector<std::unique_ptr<ClientConnectionParameters>>&
         client_list) {
   std::vector<base::UnguessableToken> id_list;
-  std::transform(client_list.begin(), client_list.end(),
-                 std::back_inserter(id_list),
-                 [](auto& client) { return client->id(); });
+  base::ranges::transform(client_list, std::back_inserter(id_list),
+                          &ClientConnectionParameters::id);
   return id_list;
 }
 

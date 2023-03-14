@@ -4,27 +4,25 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabProperties.ITEMS;
+
 import android.content.Context;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
-import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabModel.AccessorySheetDataPiece.Type;
+import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type;
 
 /**
  * This component is a tab that can be added to the ManualFillingCoordinator. This tab
  * allows selecting credit card information from a sheet below the keyboard accessory.
  */
 public class CreditCardAccessorySheetCoordinator extends AccessorySheetTabCoordinator {
-    private AccessorySheetTabModel mModel = new AccessorySheetTabModel();
-    private final AccessorySheetTabMediator mMediator =
-            new AccessorySheetTabMediator(mModel, AccessoryTabType.CREDIT_CARDS,
-                    Type.CREDIT_CARD_INFO, AccessoryAction.MANAGE_CREDIT_CARDS, null);
+    private final AccessorySheetTabMediator mMediator;
 
     /**
      * Creates the credit cards tab.
@@ -36,9 +34,10 @@ public class CreditCardAccessorySheetCoordinator extends AccessorySheetTabCoordi
         super(context.getString(R.string.autofill_payment_methods),
                 IconProvider.getIcon(context, R.drawable.infobar_autofill_cc),
                 context.getString(R.string.credit_card_accessory_sheet_toggle),
-                context.getString(R.string.credit_card_accessory_sheet_opened),
                 R.layout.credit_card_accessory_sheet, AccessoryTabType.CREDIT_CARDS,
                 scrollListener);
+        mMediator = new AccessorySheetTabMediator(mModel, AccessoryTabType.CREDIT_CARDS,
+                Type.CREDIT_CARD_INFO, AccessoryAction.MANAGE_CREDIT_CARDS, null);
     }
 
     @Override
@@ -49,11 +48,6 @@ public class CreditCardAccessorySheetCoordinator extends AccessorySheetTabCoordi
     @Override
     public void onTabCreated(ViewGroup view) {
         super.onTabCreated(view);
-        CreditCardAccessorySheetViewBinder.initializeView((RecyclerView) view, mModel);
-    }
-
-    @VisibleForTesting
-    AccessorySheetTabModel getSheetDataPiecesForTesting() {
-        return mModel;
+        CreditCardAccessorySheetViewBinder.initializeView((RecyclerView) view, mModel.get(ITEMS));
     }
 }

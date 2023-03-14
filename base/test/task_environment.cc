@@ -525,15 +525,19 @@ void TaskEnvironment::DestroyTaskEnvironment() {
     observer.WillDestroyCurrentTaskEnvironment();
   }
 
-  DestroyThreadPool();
+  ShutdownAndJoinThreadPool();
   task_queue_ = nullptr;
-  // SequenceManagerImpl must outlive ThreadPoolInstance() (DestroyThreadPool()
-  // above) as TaskEnvironment::MockTimeDomain can invoke its
-  // SequenceManagerImpl* from worker threads.
+  // SequenceManagerImpl must outlive the threads in the ThreadPoolInstance()
+  // (ShutdownAndJoinThreadPool() above) as TaskEnvironment::MockTimeDomain can
+  // invoke its SequenceManagerImpl* from worker threads.
+  // Additionally, Tasks owned by `sequence_manager_` can have referencees to
+  // PooledTaskRunnerDelegates. These are owned by the thread pool, so destroy
+  // `sequence_manager` before the thread pool itself.
   sequence_manager_.reset();
+  DestroyThreadPool();
 }
 
-void TaskEnvironment::DestroyThreadPool() {
+void TaskEnvironment::ShutdownAndJoinThreadPool() {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
   if (threading_mode_ == ThreadingMode::MAIN_THREAD_ONLY) {
@@ -554,6 +558,15 @@ void TaskEnvironment::DestroyThreadPool() {
   ThreadPoolInstance::Get()->JoinForTesting();
   DCHECK_EQ(g_task_tracker, task_tracker_);
   g_task_tracker = nullptr;
+}
+
+void TaskEnvironment::DestroyThreadPool() {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+
+  if (threading_mode_ == ThreadingMode::MAIN_THREAD_ONLY) {
+    return;
+  }
+  DCHECK(ThreadPoolInstance::Get());
 
   // Task runner lists will be destroyed when resetting thread pool instance.
   scoped_lazy_task_runner_list_for_testing_.reset();

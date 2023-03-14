@@ -58,6 +58,7 @@ class DeviceScheduledUpdateChecker;
 class DeviceCloudExternalDataPolicyHandler;
 class SystemProxyHandler;
 class DeviceScheduledRebootHandler;
+class RebootNotificationsScheduler;
 
 // Extends ChromeBrowserPolicyConnector with the setup specific to Chrome OS.
 class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
@@ -303,6 +304,7 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   std::unique_ptr<SystemProxyHandler> system_proxy_handler_;
   std::unique_ptr<AdbSideloadingAllowanceModePolicyHandler>
       adb_sideloading_allowance_mode_policy_handler_;
+  std::unique_ptr<RebootNotificationsScheduler> reboot_notifications_scheduler_;
   std::unique_ptr<DeviceScheduledRebootHandler>
       device_scheduled_reboot_handler_;
 

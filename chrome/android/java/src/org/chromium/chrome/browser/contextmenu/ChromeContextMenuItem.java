@@ -17,6 +17,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.LensUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
@@ -217,7 +218,7 @@ class ChromeContextMenuItem {
                 return DefaultBrowserInfo.getTitleOpenInDefaultBrowser(false);
             case Item.SEARCH_BY_IMAGE:
                 return context.getString(getStringId(context, item),
-                        TemplateUrlServiceFactory.get()
+                        TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
                                 .getDefaultSearchEngineTemplateUrl()
                                 .getShortName());
             case Item.READ_LATER:

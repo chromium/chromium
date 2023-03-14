@@ -27,6 +27,14 @@ using OnStartNativeTimerCallback = base::OnceCallback<void(bool)>;
 // calls to the power daemon.
 class COMPONENT_EXPORT(DBUS_POWER) NativeTimer {
  public:
+  // While exists, `NativeTimer::Start` will fail and call `result_callback`
+  // with failed status.
+  class ScopedFailureSimulatorForTesting {
+   public:
+    ScopedFailureSimulatorForTesting();
+    ~ScopedFailureSimulatorForTesting();
+  };
+
   explicit NativeTimer(const std::string& tag);
 
   NativeTimer(const NativeTimer&) = delete;
@@ -43,9 +51,6 @@ class COMPONENT_EXPORT(DBUS_POWER) NativeTimer {
   void Start(base::TimeTicks absolute_expiration_time,
              base::OnceClosure timer_expiration_callback,
              OnStartNativeTimerCallback result_callback);
-
-  // Simulates timer creation failure in tests
-  static void SimulateTimerCreationFailureForTesting();
 
  private:
   struct StartTimerParams;

@@ -22,9 +22,9 @@
 #import "ios/chrome/browser/follow/web_page_urls.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
-#import "ios/chrome/browser/ui/commands/feed_commands.h"
-#import "ios/chrome/browser/ui/commands/new_tab_page_commands.h"
-#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/commands/feed_commands.h"
+#import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -107,6 +107,10 @@ NSURL* FollowBrowserAgent::GetRecommendedSiteURL(WebPageURLs* web_page_urls) {
 
 NSArray<FollowedWebSite*>* FollowBrowserAgent::GetFollowedWebSites() {
   return GetFollowService()->GetFollowedWebSites();
+}
+
+void FollowBrowserAgent::LoadFollowedWebSites() {
+  return GetFollowService()->LoadFollowedWebSites();
 }
 
 void FollowBrowserAgent::FollowWebSite(WebPageURLs* web_page_urls,

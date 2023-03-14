@@ -26,6 +26,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/webui/file_manager/url_constants.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace policy {
@@ -355,39 +356,24 @@ void DataTransferDlpController::DropIfAllowed(
     base::OnceClosure drop_cb) {
   DCHECK(drag_data);
 
-  std::string src_pattern;
-  std::string dst_pattern;
-  DlpRulesManager::RuleMetadata rule_metadata;
-  auto* data_src = drag_data->GetSource();
-  DlpRulesManager::Level level = IsDataTransferAllowed(
-      dlp_rules_manager_, data_src, data_dst, absl::nullopt, &src_pattern,
-      &dst_pattern, &rule_metadata);
-
-  MaybeReportEvent(data_src, data_dst, src_pattern, dst_pattern, level,
-                   /*is_clipboard_event*/ false, rule_metadata);
-
-  switch (level) {
-    case DlpRulesManager::Level::kBlock:
-      NotifyBlockedDrop(data_src, data_dst);
-      break;
-
-    case DlpRulesManager::Level::kWarn:
-      WarnOnDrop(data_src, data_dst, std::move(drop_cb));
-      break;
-
-    case DlpRulesManager::Level::kAllow:
-      [[fallthrough]];
-    case DlpRulesManager::Level::kReport:
-      std::move(drop_cb).Run();
-      break;
-
-    case DlpRulesManager::Level::kNotSet:
-      NOTREACHED();
+  if (drag_data->HasFile() && !IsFilesApp(data_dst)) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    auto* files_controller = dlp_rules_manager_.GetDlpFilesController();
+    if (files_controller) {
+      std::vector<ui::FileInfo> dropped_files;
+      drag_data->GetFilenames(&dropped_files);
+      files_controller->CheckIfDropAllowed(
+          dropped_files, data_dst,
+          base::BindOnce(&DataTransferDlpController::ContinueDropIfAllowed,
+                         weak_ptr_factory_.GetWeakPtr(), drag_data, data_dst,
+                         std::move(drop_cb)));
+      return;
+    }
+#endif
+    // TODO(b/269610458): Check dropped files in Lacros.
   }
-
-  const bool is_drop_allowed = (level == DlpRulesManager::Level::kAllow) ||
-                               (level == DlpRulesManager::Level::kReport);
-  DlpBooleanHistogram(dlp::kDragDropBlockedUMA, !is_drop_allowed);
+  ContinueDropIfAllowed(drag_data, data_dst, std::move(drop_cb),
+                        /*is_allowed=*/true);
 }
 
 DataTransferDlpController::DataTransferDlpController(
@@ -398,6 +384,47 @@ DataTransferDlpController::~DataTransferDlpController() = default;
 
 base::TimeDelta DataTransferDlpController::GetSkipReportingTimeout() {
   return kSkipReportingTimeout;
+}
+
+void DataTransferDlpController::ReportWarningProceededEvent(
+    const absl::optional<ui::DataTransferEndpoint> maybe_data_src,
+    const absl::optional<ui::DataTransferEndpoint> maybe_data_dst,
+    const std::string& src_pattern,
+    const std::string& dst_pattern,
+    bool is_clipboard_event,
+    const DlpRulesManager::RuleMetadata& rule_metadata) {
+  auto* reporting_manager = dlp_rules_manager_.GetReportingManager();
+
+  if (!reporting_manager) {
+    return;
+  }
+
+  const ui::DataTransferEndpoint* data_dst =
+      maybe_data_dst.has_value() ? &maybe_data_dst.value() : nullptr;
+
+  if (is_clipboard_event) {
+    base::TimeTicks curr_time = base::TimeTicks::Now();
+
+    const ui::DataTransferEndpoint* data_src =
+        maybe_data_src.has_value() ? &maybe_data_src.value() : nullptr;
+
+    if (ShouldSkipReporting(data_src, data_dst, /*is_warning_proceeded=*/true,
+                            curr_time)) {
+      return;
+    }
+    last_reported_.data_src = maybe_data_src;
+    last_reported_.data_dst = maybe_data_dst;
+    last_reported_.time = curr_time;
+    last_reported_.is_warning_proceeded = true;
+  }
+
+  if (data_dst && IsVM(data_dst->type())) {
+    NOTREACHED();
+  } else {
+    reporting_manager->ReportWarningProceededEvent(
+        src_pattern, dst_pattern, DlpRulesManager::Restriction::kClipboard,
+        rule_metadata.name, rule_metadata.obfuscated_id);
+  }
 }
 
 void DataTransferDlpController::NotifyBlockedPaste(
@@ -553,45 +580,53 @@ void DataTransferDlpController::MaybeReportEvent(
   }
 }
 
-void DataTransferDlpController::ReportWarningProceededEvent(
-    const absl::optional<ui::DataTransferEndpoint> maybe_data_src,
-    const absl::optional<ui::DataTransferEndpoint> maybe_data_dst,
-    const std::string& src_pattern,
-    const std::string& dst_pattern,
-    bool is_clipboard_event,
-    const DlpRulesManager::RuleMetadata& rule_metadata) {
-  auto* reporting_manager = dlp_rules_manager_.GetReportingManager();
+void DataTransferDlpController::ContinueDropIfAllowed(
+    const ui::OSExchangeData* drag_data,
+    const ui::DataTransferEndpoint* data_dst,
+    base::OnceClosure drop_cb,
+    bool is_allowed) {
+  DCHECK(drag_data);
+  auto* data_src = drag_data->GetSource();
 
-  if (!reporting_manager) {
-    return;
-  }
-
-  const ui::DataTransferEndpoint* data_dst =
-      maybe_data_dst.has_value() ? &maybe_data_dst.value() : nullptr;
-
-  if (is_clipboard_event) {
-    base::TimeTicks curr_time = base::TimeTicks::Now();
-
-    const ui::DataTransferEndpoint* data_src =
-        maybe_data_src.has_value() ? &maybe_data_src.value() : nullptr;
-
-    if (ShouldSkipReporting(data_src, data_dst, /*is_warning_proceeded=*/true,
-                            curr_time)) {
-      return;
-    }
-    last_reported_.data_src = maybe_data_src;
-    last_reported_.data_dst = maybe_data_dst;
-    last_reported_.time = curr_time;
-    last_reported_.is_warning_proceeded = true;
-  }
-
-  if (data_dst && IsVM(data_dst->type())) {
-    NOTREACHED();
+  DlpRulesManager::Level level;
+  if (!is_allowed) {
+    level = DlpRulesManager::Level::kBlock;
+    // TODO(b/269609831): Return here once the correct UI is implemented in
+    // DlpFilesController.
   } else {
-    reporting_manager->ReportWarningProceededEvent(
-        src_pattern, dst_pattern, DlpRulesManager::Restriction::kClipboard,
-        rule_metadata.name, rule_metadata.obfuscated_id);
+    std::string src_pattern;
+    std::string dst_pattern;
+    DlpRulesManager::RuleMetadata rule_metadata;
+    level = IsDataTransferAllowed(dlp_rules_manager_, data_src, data_dst,
+                                  absl::nullopt, &src_pattern, &dst_pattern,
+                                  &rule_metadata);
+
+    MaybeReportEvent(data_src, data_dst, src_pattern, dst_pattern, level,
+                     /*is_clipboard_event=*/false, rule_metadata);
   }
+
+  switch (level) {
+    case DlpRulesManager::Level::kBlock:
+      NotifyBlockedDrop(data_src, data_dst);
+      break;
+
+    case DlpRulesManager::Level::kWarn:
+      WarnOnDrop(data_src, data_dst, std::move(drop_cb));
+      break;
+
+    case DlpRulesManager::Level::kAllow:
+      [[fallthrough]];
+    case DlpRulesManager::Level::kReport:
+      std::move(drop_cb).Run();
+      break;
+
+    case DlpRulesManager::Level::kNotSet:
+      NOTREACHED();
+  }
+
+  const bool is_drop_allowed = (level == DlpRulesManager::Level::kAllow) ||
+                               (level == DlpRulesManager::Level::kReport);
+  DlpBooleanHistogram(dlp::kDragDropBlockedUMA, !is_drop_allowed);
 }
 
 DataTransferDlpController::LastReportedEndpoints::LastReportedEndpoints() =

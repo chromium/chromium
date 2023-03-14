@@ -44,27 +44,23 @@ class ManifestUpdateFinalizeCommandTest : public WebAppTest {
       const GURL& url,
       const AppId& app_id,
       WebAppInstallInfo install_info,
-      bool app_identity_update_allowed,
       ManifestUpdateFinalizeCommand::ManifestWriteCallback callback) {
     auto keep_alive = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::APP_MANIFEST_UPDATE, KeepAliveRestartOption::DISABLED);
     auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
         profile(), ProfileKeepAliveOrigin::kWebAppUpdate);
     return std::make_unique<ManifestUpdateFinalizeCommand>(
-        url, app_id, std::move(install_info), app_identity_update_allowed,
-        std::move(callback), std::move(keep_alive),
-        std::move(profile_keep_alive));
+        url, app_id, std::move(install_info), std::move(callback),
+        std::move(keep_alive), std::move(profile_keep_alive));
   }
 
-  ManifestUpdateResult RunCommandAndGetResult(
-      const GURL& url,
-      const AppId& app_id,
-      WebAppInstallInfo install_info,
-      bool app_identity_update_allowed) {
+  ManifestUpdateResult RunCommandAndGetResult(const GURL& url,
+                                              const AppId& app_id,
+                                              WebAppInstallInfo install_info) {
     ManifestUpdateResult output_result;
     base::RunLoop loop;
     provider().command_manager().ScheduleCommand(CreateCommand(
-        url, app_id, std::move(install_info), app_identity_update_allowed,
+        url, app_id, std::move(install_info),
         base::BindLambdaForTesting([&](const GURL& url,
                                        const AppId& output_app_id,
                                        ManifestUpdateResult result) {
@@ -102,28 +98,17 @@ class ManifestUpdateFinalizeCommandTest : public WebAppTest {
   const GURL app_url_{"http://www.foo.bar/web_apps/basic.html"};
 };
 
-TEST_F(ManifestUpdateFinalizeCommandTest, NameUpdateAllowed) {
+TEST_F(ManifestUpdateFinalizeCommandTest, NameUpdate) {
   AppId app_id = InstallWebApp();
   ManifestUpdateResult expected_result = RunCommandAndGetResult(
-      app_url(), app_id, GetNewInstallInfoWithTitle(u"New Name"),
-      /*app_identity_update_allowed=*/true);
+      app_url(), app_id, GetNewInstallInfoWithTitle(u"New Name"));
   EXPECT_EQ(expected_result, ManifestUpdateResult::kAppUpdated);
   EXPECT_EQ(registrar().GetAppById(app_id)->untranslated_name(), "New Name");
 }
 
-TEST_F(ManifestUpdateFinalizeCommandTest, UpdateNameNotAllowed) {
-  AppId app_id = InstallWebApp();
-  ManifestUpdateResult expected_result = RunCommandAndGetResult(
-      app_url(), app_id, GetNewInstallInfoWithTitle(u"New Name"),
-      /*app_identity_update_allowed=*/false);
-  EXPECT_EQ(expected_result, ManifestUpdateResult::kAppUpdated);
-  EXPECT_EQ(registrar().GetAppById(app_id)->untranslated_name(), "Foo Bar");
-}
-
 TEST_F(ManifestUpdateFinalizeCommandTest, UpdateFailsOnUnsuccessfulCode) {
   ManifestUpdateResult expected_result =
-      RunCommandAndGetResult(app_url(), "RandomAppId", WebAppInstallInfo(),
-                             /*app_identity_update_allowed=*/false);
+      RunCommandAndGetResult(app_url(), "RandomAppId", WebAppInstallInfo());
   EXPECT_EQ(expected_result, ManifestUpdateResult::kAppUpdateFailed);
 }
 

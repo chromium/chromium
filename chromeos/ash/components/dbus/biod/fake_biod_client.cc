@@ -179,7 +179,8 @@ void FakeBiodClient::GetRecordsForUser(const std::string& user_id,
   }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), records_object_paths));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), records_object_paths, true));
 }
 
 void FakeBiodClient::DestroyAllRecords(

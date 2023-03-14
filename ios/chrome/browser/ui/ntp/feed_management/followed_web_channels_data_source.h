@@ -16,6 +16,9 @@
 @property(nonatomic, readonly)
     NSArray<FollowedWebChannel*>* followedWebChannels;
 
+// Loads followed websites.
+- (void)loadFollowedWebSites;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_FEED_MANAGEMENT_FOLLOWED_WEB_CHANNELS_DATA_SOURCE_H_

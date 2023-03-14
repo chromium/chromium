@@ -50,11 +50,24 @@
     deep-link-focus-id$="[[Setting.kChromeVox]]">
 </settings-toggle-button>
 <iron-collapse opened="[[prefs.settings.accessibility.value]]">
+  <!-- TODO(b/270557583): Update link to point to new ChromeVox Settings Page
+  (when AccessibilityChromeVoxPageMigration flag enabled)-->
   <div class="sub-item">
-    <cr-link-row id="chromeVoxSubpageButton"
-        class="settings-box" on-click="onChromeVoxSettingsTap_"
-        label="$i18n{chromeVoxOptionsLabel}" external>
-    </cr-link-row>
+    <template is="dom-if"
+        if="[[isAccessibilityChromeVoxPageMigrationEnabled_]]">
+      <cr-link-row id="chromevoxSubpageTrigger"
+          class="settings-box" on-click="onChromeVoxNewSettingsTap_"
+          label="$i18n{chromeVoxOptionsLabel}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+    </template>
+    <template is="dom-if"
+        if="[[!isAccessibilityChromeVoxPageMigrationEnabled_]]">
+      <cr-link-row id="chromeVoxSubpageButton"
+          class="settings-box" on-click="onChromeVoxSettingsTap_"
+          label="$i18n{chromeVoxOptionsLabel}" external>
+      </cr-link-row>
+    </template>
   </div>
   <div class="sub-item">
     <cr-link-row id="chromeVoxTutorialButton"
@@ -73,10 +86,21 @@
 </settings-toggle-button>
 <iron-collapse opened="[[prefs.settings.a11y.select_to_speak.value]]">
   <div class="sub-item">
-    <cr-link-row id="selectToSpeakSubpageButton"
-        class="settings-box" on-click="onSelectToSpeakSettingsTap_"
-        label="$i18n{selectToSpeakOptionsLabel}" external>
+    <template is="dom-if"
+        if="[[isAccessibilitySelectToSpeakPageMigrationEnabled_]]">
+      <cr-link-row id="selectToSpeakSubpageTrigger"
+          class="settings-box" on-click="onSelectToSpeakNewSettingsTap_"
+          label="$i18n{selectToSpeakLinkTitle}"
+          role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
+    </template>
+    <template is="dom-if"
+        if="[[!isAccessibilitySelectToSpeakPageMigrationEnabled_]]">
+      <cr-link-row id="selectToSpeakSubpageButton"
+          class="settings-box" on-click="onSelectToSpeakSettingsTap_"
+          label="$i18n{selectToSpeakOptionsLabel}" external>
+      </cr-link-row>
+    </template>
   </div>
 </iron-collapse>
 

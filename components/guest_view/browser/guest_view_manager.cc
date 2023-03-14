@@ -283,16 +283,24 @@ WebContents* GuestViewManager::GetFullPageGuest(
   return result;
 }
 
-void GuestViewManager::AddGuest(int guest_instance_id,
-                                WebContents* guest_web_contents) {
+void GuestViewManager::AddGuest(GuestViewBase* guest) {
+  const int guest_instance_id = guest->guest_instance_id();
+  WebContents* guest_web_contents = guest->web_contents();
+
   CHECK(!base::Contains(guest_web_contents_by_instance_id_, guest_instance_id));
   CHECK(CanUseGuestInstanceID(guest_instance_id));
   guest_web_contents_by_instance_id_[guest_instance_id] = guest_web_contents;
 
+  webcontents_guestview_map_.insert({guest_web_contents, guest});
+
   delegate_->OnGuestAdded(guest_web_contents);
 }
 
-void GuestViewManager::RemoveGuest(int guest_instance_id, bool invalidate_id) {
+void GuestViewManager::RemoveGuest(GuestViewBase* guest, bool invalidate_id) {
+  const int guest_instance_id = guest->guest_instance_id();
+
+  webcontents_guestview_map_.erase(guest->web_contents());
+
   guest_web_contents_by_instance_id_.erase(guest_instance_id);
 
   auto id_iter = reverse_instance_id_map_.find(guest_instance_id);
@@ -328,6 +336,12 @@ void GuestViewManager::RemoveGuest(int guest_instance_id, bool invalidate_id) {
   } else if (guest_instance_id > last_instance_id_removed_) {
     removed_instance_ids_.insert(guest_instance_id);
   }
+}
+
+GuestViewBase* GuestViewManager::GetGuestFromWebContents(
+    content::WebContents* web_contents) {
+  auto it = webcontents_guestview_map_.find(web_contents);
+  return it == webcontents_guestview_map_.end() ? nullptr : it->second;
 }
 
 void GuestViewManager::EmbedderProcessDestroyed(int embedder_process_id) {

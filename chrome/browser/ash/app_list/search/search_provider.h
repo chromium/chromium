@@ -61,8 +61,6 @@ class SearchProvider {
     search_controller_ = controller;
   }
 
-  const Results& results() const { return results_; }
-
  protected:
   // Swaps the internal results with |new_results|.
   // This is useful when multiple results will be added, and the notification is
@@ -71,7 +69,6 @@ class SearchProvider {
 
  private:
   SearchController* search_controller_ = nullptr;
-  Results results_;
 };
 
 }  // namespace app_list

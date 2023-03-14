@@ -169,6 +169,10 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
     gpu_preferences.vulkan_sync_cpu_memory_limit *= 1024 * 1024;
   }
 
+  gpu_preferences.force_separate_egl_display_for_webgl_testing =
+      command_line->HasSwitch(
+          switches::kForceSeparateEGLDisplayForWebGLTesting);
+
   // Some of these preferences are set or adjusted in
   // GpuDataManagerImplPrivate::AppendGpuCommandLine.
   return gpu_preferences;

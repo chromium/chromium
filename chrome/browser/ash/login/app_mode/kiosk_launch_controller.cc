@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_service_launcher.h"
+#include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/app_mode/force_install_observer.h"
@@ -276,7 +277,7 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
   }
 
   splash_screen_view_->SetDelegate(this);
-  splash_screen_view_->Show();
+  splash_screen_view_->Show(GetAppData());
 
   splash_wait_timer_.Start(FROM_HERE, GetSplashScreenMinTime(),
                            base::BindOnce(&KioskLaunchController::OnTimerFire,
@@ -331,11 +332,20 @@ void KioskLaunchController::OnProfileLoaded(Profile* profile) {
   // TODO(b/257210467): Remove the need for CHECK_IS_TEST
   if (!user) {
     CHECK_IS_TEST();
-  } else if (BrowserDataMigratorImpl::MaybeRestartToMigrate(
-                 user->GetAccountId(), user->username_hash(),
-                 crosapi::browser_util::PolicyInitState::kAfterInit)) {
-    LOG(WARNING) << "Restarting chrome to run profile migration.";
-    return;
+  } else {
+    if (BrowserDataMigratorImpl::MaybeRestartToMigrate(
+            user->GetAccountId(), user->username_hash(),
+            crosapi::browser_util::PolicyInitState::kAfterInit)) {
+      LOG(WARNING) << "Restarting chrome to run profile migration.";
+      return;
+    }
+
+    if (BrowserDataBackMigrator::MaybeRestartToMigrateBack(
+            user->GetAccountId(), user->username_hash(),
+            crosapi::browser_util::PolicyInitState::kAfterInit)) {
+      LOG(WARNING) << "Restarting chrome to run backward profile migration.";
+      return;
+    }
   }
 
   // This is needed to trigger input method extensions being loaded.
@@ -404,12 +414,6 @@ void KioskLaunchController::OnCancelAppLaunch() {
   chrome::AttemptUserExit();
 }
 
-void KioskLaunchController::OnDeletingSplashScreenView() {
-  splash_screen_view_ = nullptr;
-  RecordKioskLaunchDuration(kiosk_app_id_.type,
-                            base::Time::Now() - launcher_start_time_);
-}
-
 KioskAppManagerBase::App KioskLaunchController::GetAppData() {
   DCHECK(kiosk_app_id_.account_id.has_value());
   switch (kiosk_app_id_.type) {
@@ -445,10 +449,6 @@ KioskAppManagerBase::App KioskLaunchController::GetAppData() {
   return KioskAppManagerBase::App();
 }
 
-bool KioskLaunchController::IsNetworkRequired() {
-  return network_required_;
-}
-
 void KioskLaunchController::CleanUp() {
   DCHECK(!cleaned_up_);
   cleaned_up_ = true;
@@ -456,6 +456,7 @@ void KioskLaunchController::CleanUp() {
   network_wait_timer_.Stop();
   splash_wait_timer_.Stop();
 
+  splash_screen_view_ = nullptr;
   force_install_observer_.reset();
 
   kiosk_profile_loader_.reset();
@@ -463,6 +464,9 @@ void KioskLaunchController::CleanUp() {
   if (host_) {
     host_->Finalize(base::OnceClosure());
   }
+  RecordKioskLaunchDuration(kiosk_app_id_.type,
+                            base::Time::Now() - launcher_start_time_);
+
   // Make sure that any kiosk launch errors get written to disk before we kill
   // the browser.
   g_browser_process->local_state()->CommitPendingWrite();
@@ -495,7 +499,7 @@ void KioskLaunchController::OnAppInstalling() {
   splash_screen_view_->UpdateAppLaunchState(
       AppLaunchSplashScreenView::AppLaunchState::kInstallingApplication);
 
-  splash_screen_view_->Show();
+  splash_screen_view_->Show(GetAppData());
 }
 
 void KioskLaunchController::OnAppPrepared() {
@@ -520,7 +524,7 @@ void KioskLaunchController::OnAppPrepared() {
 
   splash_screen_view_->UpdateAppLaunchState(
       AppLaunchSplashScreenView::AppLaunchState::kInstallingExtension);
-  splash_screen_view_->Show();
+  splash_screen_view_->Show(GetAppData());
 
   force_install_observer_ = std::make_unique<app_mode::ForceInstallObserver>(
       profile_,
@@ -539,6 +543,7 @@ void KioskLaunchController::InitializeNetwork() {
   // When we are asked to initialize network, we should remember that this app
   // requires network.
   network_required_ = true;
+  splash_screen_view_->SetNetworkRequired();
 
   splash_screen_view_->UpdateAppLaunchState(
       AppLaunchSplashScreenView::AppLaunchState::kPreparingNetwork);
@@ -637,7 +642,7 @@ void KioskLaunchController::HandleWebAppInstallFailed() {
   splash_screen_view_->UpdateAppLaunchState(
       AppLaunchSplashScreenView::AppLaunchState::
           kWaitingAppWindowInstallFailed);
-  splash_screen_view_->Show();
+  splash_screen_view_->Show(GetAppData());
   if (launch_on_install_ || g_skip_splash_wait_for_testing) {
     LaunchApp();
   }
@@ -663,7 +668,7 @@ void KioskLaunchController::FinishForcedExtensionsInstall(
 
   splash_screen_view_->UpdateAppLaunchState(
       AppLaunchSplashScreenView::AppLaunchState::kWaitingAppWindow);
-  splash_screen_view_->Show();
+  splash_screen_view_->Show(GetAppData());
 
   if (launch_on_install_ || g_skip_splash_wait_for_testing) {
     LaunchApp();
@@ -676,7 +681,7 @@ void KioskLaunchController::OnAppLaunched() {
   if (splash_screen_view_) {
     splash_screen_view_->UpdateAppLaunchState(
         AppLaunchSplashScreenView::AppLaunchState::kWaitingAppWindow);
-    splash_screen_view_->Show();
+    splash_screen_view_->Show(GetAppData());
   }
   session_manager::SessionManager::Get()->SessionStarted();
 }
@@ -697,7 +702,7 @@ void KioskLaunchController::OnAppWindowCreated() {
 void KioskLaunchController::OnAppDataUpdated() {
   // Invokes Show() to update the app title and icon.
   if (splash_screen_view_) {
-    splash_screen_view_->Show();
+    splash_screen_view_->Show(GetAppData());
   }
 }
 
@@ -831,6 +836,7 @@ void KioskLaunchController::OnNetworkConfigFinished() {
   if (splash_screen_view_) {
     splash_screen_view_->UpdateAppLaunchState(
         AppLaunchSplashScreenView::AppLaunchState::kPreparingProfile);
+    splash_screen_view_->Show(GetAppData());
   }
 
   app_state_ = AppState::kInitNetwork;

@@ -106,6 +106,8 @@ class ActionLabel : public views::LabelButton {
   void SetBackgroundForEdit();
 
   bool IsInputUnbound();
+  // Customize a11y name.
+  void CustomizeAccessibilityName();
 
   bool allow_reposition_;
 };

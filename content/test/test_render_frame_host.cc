@@ -118,11 +118,6 @@ MockRenderProcessHost* TestRenderFrameHost::GetProcess() const {
   return static_cast<MockRenderProcessHost*>(RenderFrameHostImpl::GetProcess());
 }
 
-MockAgentSchedulingGroupHost& TestRenderFrameHost::GetAgentSchedulingGroup() {
-  return static_cast<MockAgentSchedulingGroupHost&>(
-      RenderFrameHostImpl::GetAgentSchedulingGroup());
-}
-
 TestRenderWidgetHost* TestRenderFrameHost::GetRenderWidgetHost() {
   return static_cast<TestRenderWidgetHost*>(
       RenderFrameHostImpl::GetRenderWidgetHost());
@@ -419,7 +414,8 @@ void TestRenderFrameHost::SendRendererInitiatedNavigationRequest(
           base::TimeTicks() /* renderer_before_unload_end */,
           absl::nullopt /* web_bundle_token */,
           blink::mojom::NavigationInitiatorActivationAndAdStatus::
-              kDidNotStartWithTransientActivation);
+              kDidNotStartWithTransientActivation,
+          false /* is_container_initiated */);
   auto common_params = blink::CreateCommonNavigationParams();
   common_params->url = url;
   common_params->initiator_origin = GetLastCommittedOrigin();
@@ -576,9 +572,9 @@ void TestRenderFrameHost::SimulateCommitProcessed(
 }
 
 WebBluetoothServiceImpl*
-TestRenderFrameHost::CreateWebBluetoothServiceForTesting() {
-  RenderFrameHostImpl::CreateWebBluetoothService(
-      dummy_web_bluetooth_service_remote_.InitWithNewPipeAndPassReceiver());
+TestRenderFrameHost::CreateWebBluetoothServiceForTesting(
+    mojo::PendingReceiver<blink::mojom::WebBluetoothService> receiver) {
+  RenderFrameHostImpl::CreateWebBluetoothService(std::move(receiver));
   return RenderFrameHostImpl::GetWebBluetoothServiceForTesting();
 }
 

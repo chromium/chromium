@@ -3160,14 +3160,10 @@ TEST_F(HistoryBackendTest, DeleteFTSIndexDatabases) {
 
   // Setup dummy index database files.
   const char* data = "Dummy";
-  const size_t data_len = 5;
-  ASSERT_EQ(static_cast<int>(data_len), base::WriteFile(db1, data, data_len));
-  ASSERT_EQ(static_cast<int>(data_len),
-            base::WriteFile(db1_journal, data, data_len));
-  ASSERT_EQ(static_cast<int>(data_len),
-            base::WriteFile(db1_wal, data, data_len));
-  ASSERT_EQ(static_cast<int>(data_len),
-            base::WriteFile(db2_actual, data, data_len));
+  ASSERT_TRUE(base::WriteFile(db1, data));
+  ASSERT_TRUE(base::WriteFile(db1_journal, data));
+  ASSERT_TRUE(base::WriteFile(db1_wal, data));
+  ASSERT_TRUE(base::WriteFile(db2_actual, data));
 #if BUILDFLAG(IS_POSIX)
   EXPECT_TRUE(base::CreateSymbolicLink(db2_actual, db2_symlink));
 #endif

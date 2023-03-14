@@ -151,6 +151,7 @@ FencedFrameProperties::FencedFrameProperties()
     : ad_auction_data_(absl::nullopt),
       nested_urn_config_pairs_(absl::nullopt),
       shared_storage_budget_metadata_(absl::nullopt),
+      embedder_shared_storage_context_(absl::nullopt),
       partition_nonce_(absl::in_place,
                        base::UnguessableToken::Create(),
                        VisibilityToEmbedder::kOpaque,
@@ -166,6 +167,7 @@ FencedFrameProperties::FencedFrameProperties(const FencedFrameConfig& config)
       on_navigate_callback_(config.on_navigate_callback_),
       nested_urn_config_pairs_(absl::nullopt),
       shared_storage_budget_metadata_(absl::nullopt),
+      embedder_shared_storage_context_(absl::nullopt),
       fenced_frame_reporter_(config.fenced_frame_reporter_),
       partition_nonce_(absl::in_place,
                        base::UnguessableToken::Create(),
@@ -250,6 +252,11 @@ FencedFrameProperties::RedactFor(FencedFrameEntity entity) const {
   redacted_properties.mode_ = mode_;
 
   return redacted_properties;
+}
+
+void FencedFrameProperties::UpdateMappedURL(GURL url) {
+  CHECK(mapped_url_.has_value());
+  mapped_url_->value_ = url;
 }
 
 }  // namespace content

@@ -20,6 +20,7 @@ TestHistoryClustersService::~TestHistoryClustersService() = default;
 std::unique_ptr<HistoryClustersServiceTask>
 TestHistoryClustersService::QueryClusters(
     ClusteringRequestSource clustering_request_source,
+    QueryClustersFilterParams filter_params,
     base::Time begin_time,
     QueryClustersContinuationParams continuation_params,
     bool recluster,

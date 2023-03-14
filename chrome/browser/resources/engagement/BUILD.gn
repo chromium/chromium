@@ -24,7 +24,7 @@ ts_library("build_ts") {
 
   deps = [
     "//ui/webui/resources/js:build_ts",
-    "//ui/webui/resources/mojo:library",
+    "//ui/webui/resources/mojo:build_ts",
   ]
   extra_deps = [ ":copy_src_and_mojo" ]
 }

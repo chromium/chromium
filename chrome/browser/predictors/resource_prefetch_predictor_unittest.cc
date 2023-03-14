@@ -845,13 +845,14 @@ TEST_P(ResourcePrefetchPredictorPreconnectToRedirectTargetTest,
 
   const GURL main_frame_url("http://google.com/?query=cats");
   const net::SchemefulSite site = net::SchemefulSite(main_frame_url);
-  const net::NetworkAnonymizationKey network_anonymization_key(site, site);
+  auto network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateSameSite(site);
   const url::Origin www_google_origin =
       url::Origin::Create(GURL("https://www.google.com"));
   const net::SchemefulSite www_google_site =
       net::SchemefulSite(www_google_origin);
-  const net::NetworkAnonymizationKey www_google_network_anonymization_key(
-      www_google_site, www_google_site);
+  auto www_google_network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateSameSite(www_google_site);
   auto prediction = std::make_unique<PreconnectPrediction>();
   // No prefetch data.
   EXPECT_FALSE(predictor_->IsUrlPreconnectable(main_frame_url));
@@ -948,7 +949,8 @@ TEST_F(ResourcePrefetchPredictorTest,
 
   const GURL main_frame_url("http://google.com/?query=cats");
   const net::SchemefulSite site = net::SchemefulSite(main_frame_url);
-  const net::NetworkAnonymizationKey network_anonymization_key(site, site);
+  auto network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateSameSite(site);
   auto prediction = std::make_unique<PreconnectPrediction>();
   // No prefetch data.
   EXPECT_FALSE(predictor_->IsUrlPreconnectable(main_frame_url));
@@ -995,9 +997,8 @@ TEST_F(ResourcePrefetchPredictorTest,
   EXPECT_TRUE(
       predictor_->PredictPreconnectOrigins(main_frame_url, prediction.get()));
 
-  const net::NetworkAnonymizationKey
-      www_google_redirected_to_network_anonymization_key(
-          net::SchemefulSite(GURL("https://www.google-redirected-to.com")),
+  const auto www_google_redirected_to_network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateSameSite(
           net::SchemefulSite(GURL("https://www.google-redirected-to.com")));
 
   const auto expected_prediction = CreatePreconnectPrediction(

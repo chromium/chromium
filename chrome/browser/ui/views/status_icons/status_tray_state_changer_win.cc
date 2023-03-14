@@ -150,7 +150,7 @@ std::unique_ptr<NOTIFYITEM> StatusTrayStateChangerWin::RegisterCallback() {
         VLOG(1) << "Unable to successfully run RegisterCallbackLegacy.";
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_NORETURN();
   }
 
   return std::move(notify_item_);

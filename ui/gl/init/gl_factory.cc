@@ -65,7 +65,7 @@ GLImplementationParts GetRequestedGLImplementation(
   std::vector<GLImplementationParts> allowed_impls =
       GetAllowedGLImplementations();
 
-  if (cmd->HasSwitch(switches::kDisableES3GLContext)) {
+  if (GetGlWorkarounds().disable_es3gl_context) {
     auto iter = base::ranges::find(
         allowed_impls,
         GLImplementationParts(kGLImplementationDesktopGLCoreProfile));
@@ -73,7 +73,7 @@ GLImplementationParts GetRequestedGLImplementation(
       allowed_impls.erase(iter);
   }
 
-  if (cmd->HasSwitch(switches::kDisableES3GLContextForTesting)) {
+  if (GetGlWorkarounds().disable_es3gl_context_for_testing) {
     GLVersionInfo::DisableES3ForTesting();
   }
 

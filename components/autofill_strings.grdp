@@ -49,6 +49,12 @@
       Remove address from Chromium?
     </message>
   </if>
+  <message name="IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_TOOLTIP" desc="Tooltip shown when hovering over a small button with a trash-can logo next to an Autocomplete entry in the Autofill popup.">
+    Delete entry
+  </message>
+  <message name="IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_A11Y_HINT" desc="Voice over text that is read out when the delete button next to an Autocomplete entry is selected.">
+    Delete entry <ph name="ENTRY_VOICEOVER">$1<ex>Jane Doe</ex></ph>
+  </message>
   <message name="IDS_AUTOFILL_CC_AMEX" desc="Full American Express credit card name.">
     American Express
   </message>
@@ -378,6 +384,9 @@
     <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to save a new address.">
       Save address?
     </message>
+    <message name="IDS_AUTOFILL_ACCOUNT_MIGRATE_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to save existing address into account.">
+      Save address in account?
+    </message>
     <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL" desc="Label of the Cancel button in the prompt that offers the user to save a new address.">
       No thanks
     </message>
@@ -395,6 +404,9 @@
     </message>
     <message name="IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE" desc="Label of the OK button in the dialog that edits the address before saving it as a new address.">
       Save
+    </message>
+    <message name="IDS_AUTOFILL_MIGRATE_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE" desc="Label of the OK button in the prompt to migrate existing profile into account.">
+      Save in account
     </message>
     <message name="IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_UPDATE" desc="Label of the OK button in the dialog that edits the address before using it to update an existing address.">
       Update

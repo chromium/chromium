@@ -15,9 +15,9 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/public/platform/web_common.h"
-#include "third_party/blink/public/platform/web_request_peer.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/resource_request_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/resource_request_sender.h"
 
 namespace base {
@@ -41,7 +41,7 @@ struct SyncLoadResponse;
 //   2) kBlob: body is received on a data pipe passed on
 //      OnStartLoadingResponseBody(), and wraps the data pipe with a
 //      SerializedBlobPtr.
-class BLINK_PLATFORM_EXPORT SyncLoadContext : public WebRequestPeer {
+class BLINK_PLATFORM_EXPORT SyncLoadContext : public ResourceRequestClient {
  public:
   // Begins a new asynchronous request on whatever sequence this method is
   // called on. |completed_event| will be signalled when the request is complete
@@ -94,7 +94,7 @@ class BLINK_PLATFORM_EXPORT SyncLoadContext : public WebRequestPeer {
       base::TimeDelta timeout,
       mojo::PendingRemote<mojom::blink::BlobRegistry> download_to_blob_registry,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-  // WebRequestPeer implementation:
+  // ResourceRequestClient implementation:
   void OnUploadProgress(uint64_t position, uint64_t size) override;
   bool OnReceivedRedirect(const net::RedirectInfo& redirect_info,
                           network::mojom::URLResponseHeadPtr head,

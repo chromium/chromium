@@ -176,9 +176,7 @@ int CertificateTagMain(int argc, char** argv) {
       std::cerr << "Error while setting superfluous certificate tag.";
       std::exit(1);
     }
-    if (base::WriteFile(out_filename,
-                        reinterpret_cast<const char*>(new_contents->data()),
-                        new_contents->size()) == -1) {
+    if (!base::WriteFile(out_filename, *new_contents)) {
       std::cerr << "Error while writing updated file "
                 << logging::GetLastSystemErrorCode();
       std::exit(1);

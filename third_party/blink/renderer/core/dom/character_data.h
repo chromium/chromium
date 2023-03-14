@@ -24,7 +24,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_CHARACTER_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_CHARACTER_DATA_H_
 
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
@@ -39,18 +38,17 @@ class CORE_EXPORT CharacterData : public Node {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  CharacterData(const CharacterData&) = delete;
+  CharacterData& operator=(const CharacterData&) = delete;
+
   // Makes the data Parkable. This enables de-duplication and compression.
   void MakeParkable();
   const String& data() const {
-    if (auto* parked = absl::get_if<ParkableString>(&data_))
-      return parked->ToString();
-    return absl::get<String>(data_);
+    return is_parkable_ ? parkable_data_.ToString() : data_;
   }
   void setData(const String&);
   unsigned length() const {
-    if (auto* parked = absl::get_if<ParkableString>(&data_))
-      return parked->length();
-    return absl::get<String>(data_).length();
+    return is_parkable_ ? parkable_data_.length() : data_.length();
   }
   String substringData(unsigned offset, unsigned count, ExceptionState&);
   void appendData(const String&);
@@ -72,34 +70,55 @@ class CORE_EXPORT CharacterData : public Node {
   CharacterData(TreeScope& tree_scope,
                 const String& text,
                 ConstructionType type)
-      : Node(&tree_scope, type), data_(!text.IsNull() ? text : g_empty_string) {
+      : Node(&tree_scope, type),
+        data_(!text.IsNull() ? text : g_empty_string),
+        is_parkable_(false) {
     DCHECK(type == kCreateComment || type == kCreateText ||
            type == kCreateCdataSection ||
            type == kCreateProcessingInstruction || type == kCreateEditingText);
   }
 
   CharacterData(TreeScope& tree_scope, String&& text, ConstructionType type)
-      : Node(&tree_scope, type), data_(std::move(text)) {
+      : Node(&tree_scope, type), data_(std::move(text)), is_parkable_(false) {
     DCHECK(type == kCreateComment || type == kCreateText ||
            type == kCreateCdataSection ||
            type == kCreateProcessingInstruction || type == kCreateEditingText);
-    DCHECK(absl::holds_alternative<String>(data_));
-    if (absl::get<String>(data_).IsNull()) {
+    DCHECK(!is_parkable_);
+    if (data_.IsNull()) {
       data_ = g_empty_string;
+    }
+  }
+
+  ~CharacterData() noexcept override {
+    if (is_parkable_) {
+      parkable_data_.~ParkableString();
+    } else {
+      data_.~String();
     }
   }
 
   void SetDataWithoutUpdate(const String& data) {
     DCHECK(!data.IsNull());
-    data_ = data;
+    if (!is_parkable_) {
+      data_ = data;
+      return;
+    }
+    is_parkable_ = false;
+    parkable_data_.~ParkableString();
+    new (&data_) String(data);
   }
+
   enum UpdateSource {
     kUpdateFromParser,
     kUpdateFromNonParser,
   };
   void DidModifyData(const String& old_value, UpdateSource);
 
-  absl::variant<ParkableString, String> data_;
+  union {
+    ParkableString parkable_data_;
+    String data_;
+  };
+  bool is_parkable_;
 
  private:
   String nodeValue() const final;

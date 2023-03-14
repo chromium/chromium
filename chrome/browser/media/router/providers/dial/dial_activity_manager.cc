@@ -279,7 +279,7 @@ std::vector<MediaRoute> DialActivityManager::GetRoutes() const {
 std::unique_ptr<DialURLFetcher> DialActivityManager::CreateFetcher(
     DialURLFetcher::SuccessCallback success_cb,
     DialURLFetcher::ErrorCallback error_cb) {
-  // TODO(https://crbug.com/816628): Add timeout.
+  // TODO(https://crbug.com/1421142): Add timeout.
   return std::make_unique<DialURLFetcher>(std::move(success_cb),
                                           std::move(error_cb));
 }
@@ -360,15 +360,17 @@ void DialActivityManager::OnInfoFetchedAfterStopError(
 
   auto& record = record_it->second;
   auto cb = std::move(record->pending_stop_request->callback);
+  records_.erase(record_it);
   if (result.app_info && result.app_info->state != DialAppState::kRunning) {
     // The app is no longer running, so we remove the record and the MediaRoute
     // associated with it.
-    records_.erase(record_it);
     std::move(cb).Run(message,
                       mojom::RouteRequestResultCode::ROUTE_ALREADY_TERMINATED);
   } else {
-    // The app might still be running, so we don't remove the record.
-    record->pending_stop_request.reset();
+    // The app might still be running, but manually stopping Cast session
+    // from DIAL device is not reflected on Chrome side. So, we remove the
+    // record and the MediaRoute associated with it here as well.
+    // See (crbug.com/1420829) for more context.
     std::move(cb).Run(message, mojom::RouteRequestResultCode::UNKNOWN_ERROR);
   }
 }

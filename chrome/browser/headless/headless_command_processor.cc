@@ -41,8 +41,12 @@ void ProcessHeadlessCommands(content::BrowserContext* browser_context,
   content::NavigationController::LoadURLParams load_url_params(handler_url);
   web_contents->GetController().LoadURLWithParams(load_url_params);
 
+  // Preserve web contents pointer so that the order of ProcessCommands
+  // arguments evaluation does not wipe out unique pointer before it's
+  // passed to command handler
+  content::WebContents* web_contents_ptr = web_contents.get();
   HeadlessCommandHandler::ProcessCommands(
-      web_contents.get(), std::move(target_url),
+      web_contents_ptr, std::move(target_url),
       base::BindOnce(
           [](std::unique_ptr<content::WebContents> web_contents,
              base::OnceClosure done_callback) {

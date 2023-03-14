@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/api/settings_private/settings_private_api.h"
 
-#include <memory>
 #include <utility>
 
 #include "base/values.h"
@@ -26,9 +25,9 @@ SettingsPrivateSetPrefFunction::~SettingsPrivateSetPrefFunction() {
 }
 
 ExtensionFunction::ResponseAction SettingsPrivateSetPrefFunction::Run() {
-  std::unique_ptr<api::settings_private::SetPref::Params> parameters =
+  absl::optional<api::settings_private::SetPref::Params> parameters =
       api::settings_private::SetPref::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(parameters.get());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
 
   SettingsPrivateDelegate* delegate =
       SettingsPrivateDelegateFactory::GetForBrowserContext(browser_context());
@@ -38,10 +37,10 @@ ExtensionFunction::ResponseAction SettingsPrivateSetPrefFunction::Run() {
       delegate->SetPref(parameters->name, &parameters->value);
   switch (result) {
     case settings_private::SetPrefResult::SUCCESS:
-      return RespondNow(OneArgument(base::Value(true)));
+      return RespondNow(WithArguments(true));
     case settings_private::SetPrefResult::PREF_NOT_MODIFIABLE:
       // Not an error, but return false to indicate setting the pref failed.
-      return RespondNow(OneArgument(base::Value(false)));
+      return RespondNow(WithArguments(false));
     case settings_private::SetPrefResult::PREF_NOT_FOUND:
       return RespondNow(Error("Pref not found: *", parameters->name));
     case settings_private::SetPrefResult::PREF_TYPE_MISMATCH:
@@ -52,7 +51,7 @@ ExtensionFunction::ResponseAction SettingsPrivateSetPrefFunction::Run() {
                               parameters->name));
   }
   NOTREACHED();
-  return RespondNow(OneArgument(base::Value(false)));
+  return RespondNow(WithArguments(false));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -66,7 +65,7 @@ ExtensionFunction::ResponseAction SettingsPrivateGetAllPrefsFunction::Run() {
   SettingsPrivateDelegate* delegate =
       SettingsPrivateDelegateFactory::GetForBrowserContext(browser_context());
   DCHECK(delegate);
-  return RespondNow(OneArgument(base::Value(delegate->GetAllPrefs())));
+  return RespondNow(WithArguments(delegate->GetAllPrefs()));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -77,19 +76,20 @@ SettingsPrivateGetPrefFunction::~SettingsPrivateGetPrefFunction() {
 }
 
 ExtensionFunction::ResponseAction SettingsPrivateGetPrefFunction::Run() {
-  std::unique_ptr<api::settings_private::GetPref::Params> parameters =
+  absl::optional<api::settings_private::GetPref::Params> parameters =
       api::settings_private::GetPref::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(parameters.get());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
 
   SettingsPrivateDelegate* delegate =
       SettingsPrivateDelegateFactory::GetForBrowserContext(browser_context());
   DCHECK(delegate);
 
-  base::Value value = delegate->GetPref(parameters->name);
-  if (value.is_none())
+  absl::optional<base::Value::Dict> value = delegate->GetPref(parameters->name);
+  if (!value) {
     return RespondNow(Error("Pref * does not exist", parameters->name));
-  else
-    return RespondNow(OneArgument(std::move(value)));
+  }
+
+  return RespondNow(WithArguments(std::move(*value)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -105,8 +105,7 @@ ExtensionFunction::ResponseAction
   SettingsPrivateDelegate* delegate =
       SettingsPrivateDelegateFactory::GetForBrowserContext(browser_context());
   DCHECK(delegate);
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(delegate->GetDefaultZoom())));
+  return RespondNow(WithArguments(delegate->GetDefaultZoom()));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -119,15 +118,15 @@ SettingsPrivateSetDefaultZoomFunction::
 
 ExtensionFunction::ResponseAction
     SettingsPrivateSetDefaultZoomFunction::Run() {
-  std::unique_ptr<api::settings_private::SetDefaultZoom::Params> parameters =
+  absl::optional<api::settings_private::SetDefaultZoom::Params> parameters =
       api::settings_private::SetDefaultZoom::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(parameters.get());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
 
   SettingsPrivateDelegate* delegate =
       SettingsPrivateDelegateFactory::GetForBrowserContext(browser_context());
   DCHECK(delegate);
   delegate->SetDefaultZoom(parameters->zoom);
-  return RespondNow(OneArgument(base::Value(true)));
+  return RespondNow(WithArguments(true));
 }
 
 }  // namespace extensions

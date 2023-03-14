@@ -192,6 +192,8 @@ class CONTENT_EXPORT FencedFrameProperty {
 //
 // Config-generating APIs like FLEDGE's runAdAuction and sharedStorage's
 // selectURL return urns as handles to `FencedFrameConfig`s.
+// TODO(crbug.com/1417871): Turn this into a class, make its fields private,
+// and have a single constructor that requires all fields to be specified.
 struct CONTENT_EXPORT FencedFrameConfig {
   FencedFrameConfig();
   explicit FencedFrameConfig(const GURL& mapped_url);
@@ -281,6 +283,7 @@ struct CONTENT_EXPORT FencedFrameConfig {
 // These `FencedFrameProperties` are stored in the fenced frame root
 // `FrameTreeNode`, and live between embedder-initiated fenced frame
 // navigations.
+// TODO(crbug.com/1417871): Turn this into a class and make its fields private.
 struct CONTENT_EXPORT FencedFrameProperties {
   // The empty constructor is used for:
   // * pre-navigation fenced frames
@@ -303,8 +306,17 @@ struct CONTENT_EXPORT FencedFrameProperties {
 
   absl::optional<FencedFrameProperty<GURL>> mapped_url_;
 
+  // Update the stored mapped URL to a new one given by `url`.
+  // `this` must have a value for `mapped_url_` when the function is called.
+  // We use this method when an embedder-initiated fenced frame root navigation
+  // commits, to update the mapped URL to reflect the final destination after
+  // any server-side redirects.
+  void UpdateMappedURL(GURL url);
+
   absl::optional<FencedFrameProperty<gfx::Size>> container_size_;
 
+  // TODO(crbug.com/1420638): The representation of size in fenced frame config
+  // will need to work with the size carried with the winning bid.
   absl::optional<FencedFrameProperty<gfx::Size>> content_size_;
 
   absl::optional<FencedFrameProperty<bool>>
@@ -333,6 +345,12 @@ struct CONTENT_EXPORT FencedFrameProperties {
   absl::optional<
       FencedFrameProperty<raw_ptr<const SharedStorageBudgetMetadata>>>
       shared_storage_budget_metadata_;
+
+  // Any context that is written by the embedder using
+  // `blink::FencedFrameConfig::setSharedStorageContext`. Only readable in
+  // shared storage worklets via `sharedStorage.context()`. Not copied during
+  // redaction.
+  absl::optional<std::u16string> embedder_shared_storage_context_;
 
   scoped_refptr<FencedFrameReporter> fenced_frame_reporter_;
 

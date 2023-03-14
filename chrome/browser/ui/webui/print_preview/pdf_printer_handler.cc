@@ -193,13 +193,18 @@ void OnPdfPrintedCallback(const AccountId& account_id,
     std::move(pdf_file_saved_closure).Run();
 }
 
+base::FilePath CreateDirectoryIfNotExists(const base::FilePath& path) {
+  if (!base::DirectoryExists(path)) {
+    base::CreateDirectory(path);
+  }
+  return path;
+}
+
 base::FilePath SelectSaveDirectory(const base::FilePath& path,
                                    const base::FilePath& default_path) {
   if (base::DirectoryExists(path))
     return path;
-  if (!base::DirectoryExists(default_path))
-    base::CreateDirectory(default_path);
-  return default_path;
+  return CreateDirectoryIfNotExists(default_path);
 }
 
 void ConstructCapabilitiesAndCompleteCallback(
@@ -425,7 +430,19 @@ void PdfPrinterHandler::SelectFile(const base::FilePath& default_filename,
   }
 #endif
 
+#if BUILDFLAG(IS_FUCHSIA)
+  // Fuchsia does not support system dialog yet. So skip the dialog
+  // and store the default download directory. See crbug.com/1226242 for the
+  // details.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&CreateDirectoryIfNotExists, GetSaveLocation()),
+      base::BindOnce(&PdfPrinterHandler::OnSaveLocationReady,
+                     weak_ptr_factory_.GetWeakPtr(), default_filename,
+                     /*prompt_user=*/false));
+#else
   OnSaveLocationReady(default_filename, prompt_user, GetSaveLocation());
+#endif
 }
 
 void PdfPrinterHandler::OnSaveLocationReady(

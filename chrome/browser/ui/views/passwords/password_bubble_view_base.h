@@ -5,21 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_BUBBLE_VIEW_BASE_H_
 #define CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_BUBBLE_VIEW_BASE_H_
 
-#include <memory>
-
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 
 namespace content {
 class WebContents;
-}
-
-namespace password_manager {
-struct PasswordForm;
-}  // namespace password_manager
-
-namespace views {
-class Label;
 }
 
 class PasswordBubbleControllerBase;
@@ -76,11 +66,6 @@ class PasswordBubbleViewBase : public LocationBarBubbleDelegateView {
                          bool easily_dismissable);
 
   ~PasswordBubbleViewBase() override;
-
-  static std::unique_ptr<views::Label> CreateUsernameLabel(
-      const password_manager::PasswordForm& form);
-  static std::unique_ptr<views::Label> CreatePasswordLabel(
-      const password_manager::PasswordForm& form);
 
   // Sets the resource ids of the images used in the header in light and dark
   // mode.

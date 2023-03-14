@@ -4,10 +4,10 @@
 
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 
-#include <algorithm>
 #include <ostream>
 
 #include "base/base64.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -191,8 +191,7 @@ bool ParseAndCanonicalizeFacetURI(const std::string& input_uri,
 std::vector<FacetURI> ExtractAndSortFacetURIs(const AffiliatedFacets& facets) {
   std::vector<FacetURI> uris;
   uris.reserve(facets.size());
-  std::transform(facets.begin(), facets.end(), std::back_inserter(uris),
-                 [](const Facet& facet) { return facet.uri; });
+  base::ranges::transform(facets, std::back_inserter(uris), &Facet::uri);
   std::sort(uris.begin(), uris.end());
   return uris;
 }
@@ -217,26 +216,18 @@ FacetURI FacetURI::FromCanonicalSpec(const std::string& canonical_spec) {
 }
 
 bool FacetURI::operator==(const FacetURI& other) const {
-  DCHECK(is_empty() || is_valid());
-  DCHECK(other.is_empty() || other.is_valid());
   return canonical_spec_ == other.canonical_spec_;
 }
 
 bool FacetURI::operator!=(const FacetURI& other) const {
-  DCHECK(is_empty() || is_valid());
-  DCHECK(other.is_empty() || other.is_valid());
   return canonical_spec_ != other.canonical_spec_;
 }
 
 bool FacetURI::operator<(const FacetURI& other) const {
-  DCHECK(is_empty() || is_valid());
-  DCHECK(other.is_empty() || other.is_valid());
   return canonical_spec_ < other.canonical_spec_;
 }
 
 bool FacetURI::operator>(const FacetURI& other) const {
-  DCHECK(is_empty() || is_valid());
-  DCHECK(other.is_empty() || other.is_valid());
   return canonical_spec_ > other.canonical_spec_;
 }
 

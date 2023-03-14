@@ -184,6 +184,15 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
     return base::FeatureList::IsEnabled(
         features::kSystemJapanesePhysicalTyping);
   }
+  if (strcmp(feature_name, features::kImeUsEnglishModelUpdate.name) == 0) {
+    return base::FeatureList::IsEnabled(features::kImeUsEnglishModelUpdate);
+  }
+  if (strcmp(feature_name, features::kImeFstDecoderParamsUpdate.name) == 0) {
+    return base::FeatureList::IsEnabled(features::kImeFstDecoderParamsUpdate);
+  }
+  if (strcmp(feature_name, features::kAutocorrectByDefault.name) == 0) {
+    return base::FeatureList::IsEnabled(features::kAutocorrectByDefault);
+  }
   return false;
 }
 

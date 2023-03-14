@@ -52,6 +52,12 @@ class AutofillCreditCardTableViewControllerTest
         initWithBrowser:browser_.get()];
   }
 
+  void TearDown() override {
+    [base::mac::ObjCCastStrict<AutofillCreditCardTableViewController>(
+        controller()) settingsWillBeDismissed];
+    ChromeTableViewControllerTest::TearDown();
+  }
+
   void AddCreditCard(const std::string& origin,
                      const std::string& card_holder_name,
                      const std::string& card_number) {

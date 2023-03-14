@@ -18,7 +18,7 @@
 // view password) and its options for next test.
 + (void)setUpMockReauthenticationModule;
 + (void)setUpMockReauthenticationModuleForAddPassword;
-+ (void)setUpMockReauthenticationModuleForExport;
++ (void)setUpMockReauthenticationModuleForPasswordManager;
 + (void)mockReauthenticationModuleExpectedResult:
     (ReauthenticationResult)expectedResult;
 + (void)mockReauthenticationModuleCanAttempt:(BOOL)canAttempt;
@@ -41,6 +41,12 @@
 + (BOOL)saveExamplePassword:(NSString*)password
                    userName:(NSString*)userName
                      origin:(NSString*)origin;
+
+// Creates password form for given fields.
++ (BOOL)saveExampleNote:(NSString*)note
+               password:(NSString*)password
+               userName:(NSString*)userName
+                 origin:(NSString*)origin;
 
 // Creates password form which is leaked.
 + (BOOL)saveInsecurePassword:(NSString*)password

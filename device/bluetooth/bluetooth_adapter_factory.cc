@@ -17,7 +17,7 @@
 #include "build/build_config.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/mac_util.h"
 #endif
 #if BUILDFLAG(IS_WIN)
@@ -43,7 +43,7 @@ bool BluetoothAdapterFactory::IsBluetoothSupported() {
   if (Get()->adapter_)
     return true;
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_APPLE)
   return true;
 #else
   return false;
@@ -56,7 +56,7 @@ bool BluetoothAdapterFactory::IsLowEnergySupported() {
   }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+    BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
   return true;
 #else
   return false;

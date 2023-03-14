@@ -191,7 +191,7 @@ public class ChromeActionModeHandler {
                 LocaleManager.getInstance().showSearchEnginePromoIfNeeded(
                         TabUtils.getActivity(mTab), callback);
                 mHelper.finishActionMode();
-            } else if (mShareDelegateSupplier.get().isSharingHubEnabled()
+            } else if (mShareDelegateSupplier.get() != null
                     && item.getItemId() == R.id.select_action_menu_share) {
                 RecordUserAction.record(SelectionPopupController.UMA_MOBILE_ACTION_MODE_SHARE);
                 RecordHistogram.recordMediumTimesHistogram("ContextMenu.TimeToSelectShare",

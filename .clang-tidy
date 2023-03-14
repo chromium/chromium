@@ -51,11 +51,12 @@
     # https://groups.google.com/a/chromium.org/g/cxx/c/noMMTNYiM0w .
     - key:          modernize-use-emplace.IgnoreImplicitConstructors
       value:        1
-    # crbug.com/1402090: until we support C++20 everywhere, we shouldn't be
-    # suggesting constructs that require C++20. Prefer base::Reversed.
-    # TODO(crbug.com/1404958): remove these once C++20 is everywhere.
-    - key:          modernize-loop-convert.MakeReverseRangeFunction
-      value:        base::Reversed
-    - key:          modernize-loop-convert.MakeReverseRangeHeader
-      value:        base/containers/adapters.h
+    # crbug.com/1420969, crbug.com/1421042: Tricium's `show fix` button isn't
+    # working, which leads to devs thinking that clang-tidy is suggesting C++20
+    # constructs in some cases. Until fixes can be surfaced to show that
+    # `base::Reversed` is encouraged, just turn reverse ranges off entirely.
+    # TODO(crbug.com/1404958): alternatively, remove these once C++20 is
+    # everywhere.
+    - key:          modernize-loop-convert.UseCxx20ReverseRanges
+      value:        false
 ...

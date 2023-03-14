@@ -995,7 +995,7 @@ void PaintLayerScrollableArea::UpdateAfterLayout() {
 
   bool needs_horizontal_scrollbar;
   bool needs_vertical_scrollbar;
-  ComputeScrollbarExistence(needs_horizontal_scrollbar,
+  ComputeScrollbarExistence(kLayout, needs_horizontal_scrollbar,
                             needs_vertical_scrollbar);
 
   // Removing auto scrollbars is a heuristic and can be incorrect if the content
@@ -1178,7 +1178,7 @@ void PaintLayerScrollableArea::DidChangeGlobalRootScroller() {
       GetLayoutBox()->GetFrame()->GetSettings()->GetViewportEnabled()) {
     bool needs_horizontal_scrollbar;
     bool needs_vertical_scrollbar;
-    ComputeScrollbarExistence(needs_horizontal_scrollbar,
+    ComputeScrollbarExistence(kRootScrollerChange, needs_horizontal_scrollbar,
                               needs_vertical_scrollbar);
     SetHasHorizontalScrollbar(needs_horizontal_scrollbar);
     SetHasVerticalScrollbar(needs_vertical_scrollbar);
@@ -1282,7 +1282,7 @@ void PaintLayerScrollableArea::UpdateAfterStyleChange(
 
   bool needs_horizontal_scrollbar;
   bool needs_vertical_scrollbar;
-  ComputeScrollbarExistence(needs_horizontal_scrollbar,
+  ComputeScrollbarExistence(kStyleChange, needs_horizontal_scrollbar,
                             needs_vertical_scrollbar, kOverflowIndependent);
 
   // Avoid some unnecessary computation if there were and will be no scrollbars.
@@ -1324,7 +1324,7 @@ void PaintLayerScrollableArea::UpdateAfterOverflowRecalc() {
 
   bool needs_horizontal_scrollbar;
   bool needs_vertical_scrollbar;
-  ComputeScrollbarExistence(needs_horizontal_scrollbar,
+  ComputeScrollbarExistence(kOverflowRecalc, needs_horizontal_scrollbar,
                             needs_vertical_scrollbar);
 
   bool horizontal_scrollbar_should_change =
@@ -1533,6 +1533,7 @@ bool PaintLayerScrollableArea::NeedsScrollbarReconstruction() const {
 }
 
 void PaintLayerScrollableArea::ComputeScrollbarExistence(
+    ComputeScrollbarExistenceReason reason,
     bool& needs_horizontal_scrollbar,
     bool& needs_vertical_scrollbar,
     ComputeScrollbarExistenceOption option) const {
@@ -1546,6 +1547,10 @@ void PaintLayerScrollableArea::ComputeScrollbarExistence(
       GetLayoutBox()->StyleRef().ScrollbarWidth() == EScrollbarWidth::kNone) {
     needs_horizontal_scrollbar = false;
     needs_vertical_scrollbar = false;
+    TraceComputeScrollbarExistence(
+        reason, needs_horizontal_scrollbar, needs_vertical_scrollbar, option,
+        true /* early_exit */, mojom::blink::ScrollbarMode::kAuto,
+        mojom::blink::ScrollbarMode::kAuto);
     return;
   }
 
@@ -1613,8 +1618,12 @@ void PaintLayerScrollableArea::ComputeScrollbarExistence(
 
   // If this is being performed before layout, we want to only update scrollbar
   // existence if its based on purely style based reasons.
-  if (option == kOverflowIndependent)
+  if (option == kOverflowIndependent) {
+    TraceComputeScrollbarExistence(reason, needs_horizontal_scrollbar,
+                                   needs_vertical_scrollbar, option,
+                                   false /* early_exit */, h_mode, v_mode);
     return;
+  }
 
   // If we have clean layout, we can make a decision on any scrollbars that
   // depend on overflow.
@@ -1631,6 +1640,9 @@ void PaintLayerScrollableArea::ComputeScrollbarExistence(
                                  VisibleContentRect(kIncludeScrollbars).width();
     }
   }
+  TraceComputeScrollbarExistence(reason, needs_horizontal_scrollbar,
+                                 needs_vertical_scrollbar, option,
+                                 false /* early_exit */, h_mode, v_mode);
 }
 
 bool PaintLayerScrollableArea::TryRemovingAutoScrollbars(
@@ -1691,6 +1703,13 @@ void PaintLayerScrollableArea::RemoveScrollbarsForReconstruction() {
   // Force an update since we know the scrollbars have changed things.
   if (GetLayoutBox()->GetDocument().HasAnnotatedRegions())
     GetLayoutBox()->GetDocument().SetAnnotatedRegionsDirty(true);
+}
+
+CompositorElementId PaintLayerScrollableArea::GetScrollCornerElementId() const {
+  CompositorElementId scrollable_element_id = GetScrollElementId();
+  DCHECK(scrollable_element_id);
+  return CompositorElementIdWithNamespace(
+      scrollable_element_id, CompositorElementIdNamespace::kScrollCorner);
 }
 
 bool PaintLayerScrollableArea::SetHasHorizontalScrollbar(bool has_scrollbar) {
@@ -2437,24 +2456,9 @@ bool PaintLayerScrollableArea::ShouldScrollOnMainThread() const {
   return !properties->ScrollTranslation()->HasDirectCompositingReasons();
 }
 
-static bool LayerNodeMayNeedCompositedScrolling(const PaintLayer* layer) {
-  // Don't force composite scroll for select or text input elements.
-  if (Node* node = layer->GetLayoutObject().GetNode()) {
-    if (IsA<HTMLSelectElement>(node))
-      return false;
-    if (TextControlElement* text_control = EnclosingTextControl(node)) {
-      if (IsA<HTMLInputElement>(text_control)) {
-        return false;
-      }
-    }
-  }
-  return true;
-}
-
 bool PaintLayerScrollableArea::ComputeNeedsCompositedScrolling(
     bool force_prefer_compositing_to_lcd_text) {
   const auto* box = GetLayoutBox();
-  non_composited_main_thread_scrolling_reasons_ = 0;
   auto new_background_paint_location =
       box->ComputeBackgroundPaintLocationIfComposited();
   bool needs_composited_scrolling = ComputeNeedsCompositedScrollingInternal(
@@ -2473,28 +2477,23 @@ bool PaintLayerScrollableArea::ComputeNeedsCompositedScrollingInternal(
   DCHECK_EQ(background_paint_location_if_composited,
             GetLayoutBox()->ComputeBackgroundPaintLocationIfComposited());
 
-  if (!Layer()->GetLayoutObject().GetFrameView()->IsVisible())
-    return false;
+  non_composited_main_thread_scrolling_reasons_ = 0;
 
-  if (CompositingReasonFinder::RequiresCompositingForRootScroller(*layer_))
+  if (CompositingReasonFinder::RequiresCompositingForRootScroller(*layer_)) {
     return true;
+  }
 
-  if (!layer_->ScrollsOverflow())
-    return false;
-
-  if (layer_->Size().IsEmpty())
-    return false;
-
-  const auto* box = GetLayoutBox();
-
-  if (!force_prefer_compositing_to_lcd_text &&
-      (RuntimeEnabledFeatures::PreferNonCompositedScrollingEnabled() ||
-       !LayerNodeMayNeedCompositedScrolling(layer_))) {
+  if (!ScrollsOverflow()) {
     return false;
   }
 
-  bool needs_composited_scrolling = true;
+  if (!force_prefer_compositing_to_lcd_text &&
+      RuntimeEnabledFeatures::PreferNonCompositedScrollingEnabled()) {
+    return false;
+  }
 
+  const auto* box = GetLayoutBox();
+  bool needs_composited_scrolling = true;
   if (!force_prefer_compositing_to_lcd_text &&
       !box->GetDocument()
            .GetSettings()
@@ -2515,16 +2514,6 @@ bool PaintLayerScrollableArea::ComputeNeedsCompositedScrollingInternal(
 
   DCHECK(!(non_composited_main_thread_scrolling_reasons_ &
            ~cc::MainThreadScrollingReason::kNonCompositedReasons));
-
-  if (!box->GetFrame()->Client()->GetWebFrame()) {
-    // If there's no WebFrame, then there's no WebFrameWidget, and we can't do
-    // threaded scrolling.  This currently only happens in a WebPagePopup.
-    // (However, we still allow needs_composited_scrolling to be true in this
-    // case, so that the scroller gets layerized.)
-    non_composited_main_thread_scrolling_reasons_ |=
-        cc::MainThreadScrollingReason::kPopupNoThreadedInput;
-  }
-
   return needs_composited_scrolling;
 }
 
@@ -3158,6 +3147,32 @@ DOMNodeId PaintLayerScrollableArea::ScrollCornerDisplayItemClient::OwnerNodeId()
     const {
   return static_cast<const DisplayItemClient*>(scrollable_area_->GetLayoutBox())
       ->OwnerNodeId();
+}
+
+void PaintLayerScrollableArea::TraceComputeScrollbarExistence(
+    ComputeScrollbarExistenceReason reason,
+    bool needs_horizontal_scrollbar,
+    bool needs_vertical_scrollbar,
+    ComputeScrollbarExistenceOption option,
+    bool early_exit,
+    mojom::blink::ScrollbarMode h_mode,
+    mojom::blink::ScrollbarMode v_mode) const {
+  TRACE_EVENT_INSTANT(
+      TRACE_DISABLED_BY_DEFAULT("blink.debug.layout.scrollbars"),
+      "ComputeScrollbarExistence", [&](perfetto::EventContext ctx) {
+        ctx.AddDebugAnnotation("reason", reason);
+        ctx.AddDebugAnnotation("needs_horizontal", needs_horizontal_scrollbar);
+        ctx.AddDebugAnnotation("needs_vertical", needs_vertical_scrollbar);
+        ctx.AddDebugAnnotation("option", option);
+        ctx.AddDebugAnnotation("early_exit", early_exit);
+        ctx.AddDebugAnnotation("h_mode", static_cast<int>(h_mode));
+        ctx.AddDebugAnnotation("v_mode", static_cast<int>(v_mode));
+        ctx.AddDebugAnnotation("layer_size", Layer()->Size().ToString());
+        ctx.AddDebugAnnotation("overflow_rect", overflow_rect_.ToString());
+        ctx.AddDebugAnnotation("is_root", Layer()->IsRootLayer());
+        ctx.AddDebugAnnotation("is_main_frame",
+                               GetLayoutBox()->GetFrame()->IsMainFrame());
+      });
 }
 
 }  // namespace blink

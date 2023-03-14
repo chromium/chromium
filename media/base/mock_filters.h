@@ -350,7 +350,7 @@ class MockVideoEncoder : public VideoEncoder {
   MOCK_METHOD(void,
               Encode,
               (scoped_refptr<VideoFrame> frame,
-               bool key_frame,
+               const EncodeOptions& encode_options,
                EncoderStatusCB done_cb),
               (override));
 

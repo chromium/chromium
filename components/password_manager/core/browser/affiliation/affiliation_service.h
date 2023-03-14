@@ -23,7 +23,15 @@ namespace password_manager {
 class AffiliationService : public KeyedService {
  public:
   // Controls whether to send a network request or fail on a cache miss.
-  enum class StrategyOnCacheMiss { FETCH_OVER_NETWORK, FAIL };
+  enum class StrategyOnCacheMiss {
+    // Affiliation service will keep trying to send request with exponential
+    // backlog.
+    FETCH_OVER_NETWORK,
+    // Request will fail immediately.
+    FAIL,
+    // After first request failure affiliation service will stop trying.
+    TRY_ONCE_OVER_NETWORK
+  };
 
   using ResultCallback =
       base::OnceCallback<void(const AffiliatedFacets& /* results */,
@@ -95,9 +103,11 @@ class AffiliationService : public KeyedService {
   // |facet_uris|.
   virtual void TrimUnusedCache(std::vector<FacetURI> facet_uris) = 0;
 
-  // Retrieves all stored facet groups from the cache. This information can be
-  // used to group passwords together.
-  virtual void GetAllGroups(GroupsCallback callback) const = 0;
+  // Retrieves stored grouping info for |facet_uris|. If there is no cache for
+  // requested facet, the facet will be added to it's own group. This
+  // information can be used to group passwords together.
+  virtual void GetGroupingInfo(std::vector<FacetURI> facet_uris,
+                               GroupsCallback callback) = 0;
 
   // Retrieves psl extension list. This list includes domain which shouldn't be
   // considered as PSL match.

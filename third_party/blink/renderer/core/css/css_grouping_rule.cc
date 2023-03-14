@@ -69,9 +69,14 @@ StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
   auto* context = MakeGarbageCollected<CSSParserContext>(
       parent_rule.ParserContext(execution_context->GetSecureContextMode()),
       style_sheet);
+  StyleRule* parent_rule_for_nesting =
+      FindClosestParentStyleRuleOrNull(&parent_rule);
+  CSSNestingType nesting_type = parent_rule_for_nesting
+                                    ? CSSNestingType::kNesting
+                                    : CSSNestingType::kNone;
   StyleRuleBase* new_rule = CSSParser::ParseRule(
-      context, style_sheet ? style_sheet->Contents() : nullptr,
-      FindClosestParentStyleRuleOrNull(&parent_rule), rule_string);
+      context, style_sheet ? style_sheet->Contents() : nullptr, nesting_type,
+      parent_rule_for_nesting, rule_string);
   if (!new_rule) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,

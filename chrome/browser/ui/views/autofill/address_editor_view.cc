@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/autofill/address_editor_view.h"
 
+#include <memory>
+
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/autofill/address_editor_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -27,8 +29,9 @@ int GetInputFieldViewId(autofill::ServerFieldType type) {
 
 }  // namespace
 
-AddressEditorView::AddressEditorView(AddressEditorController* controller)
-    : controller_(controller) {
+AddressEditorView::AddressEditorView(
+    std::unique_ptr<AddressEditorController> controller)
+    : controller_(std::move(controller)) {
   CreateEditorView();
 }
 

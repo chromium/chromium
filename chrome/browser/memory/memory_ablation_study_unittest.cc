@@ -25,13 +25,7 @@ class MemoryAblationStudyTest : public testing::Test {
 };
 
 // Tests basic functionality of the MemoryAblationStudy class.
-#if BUILDFLAG(IS_WIN)
-// TODO(https://crbug.com/1245173) Flaky on Win7
-#define MAYBE_Basic DISABLED_Basic
-#else
-#define MAYBE_Basic Basic
-#endif
-TEST_F(MemoryAblationStudyTest, MAYBE_Basic) {
+TEST_F(MemoryAblationStudyTest, Basic) {
   // Ablate 137MB.
   base::FieldTrialParams params;
   params["ablation-size-mb"] = "137";

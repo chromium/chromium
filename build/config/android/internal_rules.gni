@@ -4,6 +4,7 @@
 
 # Do not add any imports to non-//build directories here.
 # Some projects (e.g. V8) do not have non-build directories DEPS'ed in.
+import("//build/config/android/channel.gni")
 import("//build/config/android/config.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/compute_inputs_for_analyze.gni")
@@ -202,6 +203,8 @@ template("write_build_config") {
         _public_deps_configs += [ _dep_config ]
       }
     }
+    inputs += _deps_configs
+    inputs += _public_deps_configs
     _rebased_deps_configs = rebase_path(_deps_configs, root_build_dir)
     _rebased_public_deps_configs =
         rebase_path(_public_deps_configs, root_build_dir)
@@ -269,15 +272,16 @@ template("write_build_config") {
     if (defined(invoker.annotation_processor_deps) &&
         invoker.annotation_processor_deps != []) {
       _processor_configs = []
-      foreach(_processor_dep, invoker.annotation_processor_deps) {
-        _dep_label = get_label_info(_processor_dep, "label_no_toolchain")
-        _dep_gen_dir = get_label_info(_processor_dep, "target_gen_dir")
-        _dep_name = get_label_info(_processor_dep, "name")
+      foreach(_dep_label, invoker.annotation_processor_deps) {
         deps += [ "$_dep_label$build_config_target_suffix" ]
-        _processor_configs += [ "$_dep_gen_dir/$_dep_name.build_config.json" ]
+        _dep_gen_dir = get_label_info(_dep_label, "target_gen_dir")
+        _dep_name = get_label_info(_dep_label, "name")
+        _dep_config = "$_dep_gen_dir/$_dep_name.build_config.json"
+        _processor_configs += [ _dep_config ]
       }
       _rebased_processor_configs =
           rebase_path(_processor_configs, root_build_dir)
+      inputs += _processor_configs
       args += [ "--annotation-processor-configs=$_rebased_processor_configs" ]
     }
 
@@ -314,15 +318,15 @@ template("write_build_config") {
     }
 
     if (defined(invoker.apk_under_test)) {
-      deps += [ "${invoker.apk_under_test}$build_config_target_suffix" ]
-      apk_under_test_gen_dir =
-          get_label_info(invoker.apk_under_test, "target_gen_dir")
-      apk_under_test_name = get_label_info(invoker.apk_under_test, "name")
-      apk_under_test_config =
-          "$apk_under_test_gen_dir/$apk_under_test_name.build_config.json"
+      _dep_label = invoker.apk_under_test
+      _dep_gen_dir = get_label_info(_dep_label, "target_gen_dir")
+      _dep_name = get_label_info(_dep_label, "name")
+      _dep_config = "$_dep_gen_dir/$_dep_name.build_config.json"
+      inputs += [ _dep_config ]
+      deps += [ "$_dep_label$build_config_target_suffix" ]
       args += [
         "--tested-apk-config",
-        rebase_path(apk_under_test_config, root_build_dir),
+        rebase_path(_dep_config, root_build_dir),
       ]
     }
 
@@ -538,16 +542,27 @@ template("write_build_config") {
       ]
     }
     if (defined(invoker.base_module_target)) {
-      _base_label =
-          get_label_info(invoker.base_module_target, "label_no_toolchain")
-      _dep_gen_dir = get_label_info(_base_label, "target_gen_dir")
-      _dep_name = get_label_info(_base_label, "name")
-      deps += [ "$_base_label$build_config_target_suffix" ]
-      _base_module_build_config = "$_dep_gen_dir/$_dep_name.build_config.json"
-      inputs += [ _base_module_build_config ]
+      _dep_label = invoker.base_module_target
+      _dep_gen_dir = get_label_info(_dep_label, "target_gen_dir")
+      _dep_name = get_label_info(_dep_label, "name")
+      _dep_config = "$_dep_gen_dir/$_dep_name.build_config.json"
+      deps += [ "$_dep_label$build_config_target_suffix" ]
+      inputs += [ _dep_config ]
       args += [
         "--base-module-build-config",
-        rebase_path(_base_module_build_config, root_build_dir),
+        rebase_path(_dep_config, root_build_dir),
+      ]
+    }
+    if (defined(invoker.parent_module_target)) {
+      _dep_label = invoker.parent_module_target
+      _dep_gen_dir = get_label_info(_dep_label, "target_gen_dir")
+      _dep_name = get_label_info(_dep_label, "name")
+      _dep_config = "$_dep_gen_dir/$_dep_name.build_config.json"
+      deps += [ "$_dep_label$build_config_target_suffix" ]
+      inputs += [ _dep_config ]
+      args += [
+        "--parent-module-build-config",
+        rebase_path(_dep_config, root_build_dir),
       ]
     }
     if (defined(invoker.module_name)) {
@@ -1177,6 +1192,24 @@ if (enable_java_templates) {
     }
 
     _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
+
+    # This is generally the apk name, and serves to identify the mapping
+    # file that would be required to deobfuscate a stacktrace.
+    _mapping_basename = get_path_info(_mapping_path, "name")
+    _version_code = "@FileArg($_rebased_build_config:deps_info:version_code)"
+    _package_name = "@FileArg($_rebased_build_config:deps_info:package_name)"
+    if (defined(invoker.package_name)) {
+      _package_name = invoker.package_name
+    }
+    if (defined(invoker.version_code)) {
+      _version_code = invoker.version_code
+    }
+
+    # The Mapping ID is parsed to when uploading mapping files.
+    # See: https://crbug.com/1417308
+    _source_file_template =
+        "chromium-$_mapping_basename-$android_channel-$_version_code"
+
     _args = [
       "--mapping-output",
       rebase_path(_mapping_path, root_build_dir),
@@ -1186,6 +1219,9 @@ if (enable_java_templates) {
       "@FileArg($_rebased_build_config:android:sdk_jars)",
       "--r8-path",
       rebase_path(_r8_path, root_build_dir),
+      "--package-name=$_package_name",
+      "--source-file",
+      _source_file_template,
     ]
     if (treat_warnings_as_errors) {
       _args += [ "--warnings-as-errors" ]
@@ -1193,21 +1229,7 @@ if (enable_java_templates) {
 
     if ((!defined(invoker.proguard_enable_obfuscation) ||
          invoker.proguard_enable_obfuscation) && enable_proguard_obfuscation) {
-      _proguard_sourcefile_suffix = ""
-      if (defined(invoker.proguard_sourcefile_suffix)) {
-        _proguard_sourcefile_suffix = "-${invoker.proguard_sourcefile_suffix}"
-      }
-
-      # This is generally the apk name, and serves to identify the mapping
-      # file that would be required to deobfuscate a stacktrace.
-      _mapping_id = get_path_info(_mapping_path, "name")
-      _args += [
-        "--enable-obfuscation",
-        "--sourcefile",
-        "chromium-${_mapping_id}${_proguard_sourcefile_suffix}",
-      ]
-    } else if (defined(invoker.proguard_sourcefile_suffix)) {
-      not_needed(invoker, [ "proguard_sourcefile_suffix" ])
+      _args += [ "--enable-obfuscation" ]
     }
 
     if (defined(invoker.modules)) {
@@ -1486,10 +1508,12 @@ if (enable_java_templates) {
                                      "expected_proguard_config_base",
                                      "ignore_desugar_missing_deps",
                                      "modules",
+                                     "package_name",
                                      "proguard_enable_obfuscation",
                                      "proguard_mapping_path",
                                      "proguard_sourcefile_suffix",
                                      "top_target_name",
+                                     "version_code",
                                    ])
         inputs = []
         if (defined(invoker.inputs)) {
@@ -1545,6 +1569,8 @@ if (enable_java_templates) {
       }
     } else {  # !_proguard_enabled
       _is_library = defined(invoker.is_library) && invoker.is_library
+      assert(!(defined(invoker.input_classes_filearg) && _is_library))
+      assert(_is_library == defined(invoker.unprocessed_jar_path))
       _input_class_jars = []
       if (defined(invoker.input_class_jars)) {
         _input_class_jars = invoker.input_class_jars
@@ -1590,7 +1616,7 @@ if (enable_java_templates) {
           rebase_path(outputs[0], root_build_dir),
           "--min-api=$_min_sdk_version",
           "--r8-jar-path",
-          rebase_path(_r8_path, root_build_dir),
+          rebase_path(_d8_path, root_build_dir),
           "--custom-d8-jar-path",
           rebase_path(_custom_d8_path, root_build_dir),
 
@@ -1638,6 +1664,10 @@ if (enable_java_templates) {
         if (defined(invoker.input_classes_filearg)) {
           inputs += [ invoker.build_config ]
           args += [ "--class-inputs-filearg=${invoker.input_classes_filearg}" ]
+
+          # Required for the same reason as unprocessed_jar_path is added to
+          # classpath (see note below).
+          args += [ "--classpath=${invoker.input_classes_filearg}" ]
         }
         if (_input_class_jars != []) {
           inputs += _input_class_jars
@@ -1669,15 +1699,14 @@ if (enable_java_templates) {
           # filtered out via jar_excluded_patterns.
           # Must come first in classpath in order to take precedence over
           # deps that defined the same classes (via jar_excluded_patterns).
-          if (defined(invoker.unprocessed_jar_path_filearg)) {
-            args += [
-              "--classpath",
-              invoker.unprocessed_jar_path_filearg,
-            ]
-          } else if (defined(invoker.unprocessed_jar_path)) {
+          if (defined(invoker.unprocessed_jar_path)) {
             args += [
               "--classpath",
               rebase_path(invoker.unprocessed_jar_path, root_build_dir),
+
+              # Pass the full classpath to find new dependencies that are not in
+              # the .desugardeps file.
+              "--classpath=@FileArg($_rebased_build_config:deps_info:javac_full_interface_classpath)",
             ]
             inputs += [ invoker.unprocessed_jar_path ]
           }
@@ -1688,17 +1717,6 @@ if (enable_java_templates) {
             rebase_path(_desugar_dependencies_path, root_build_dir),
             "--bootclasspath=@FileArg($_rebased_build_config:android:sdk_jars)",
           ]
-
-          # When passing entire classpath as .class files (rather than .dex
-          # files), do not add the corresponding interface .jars to the
-          # classpath. https://crbug.com/1407924
-          if (!defined(invoker.input_classes_filearg)) {
-            args += [
-              # Pass the full classpath to find new dependencies that are not in
-              # the .desugardeps file.
-              "--classpath=@FileArg($_rebased_build_config:deps_info:javac_full_interface_classpath)",
-            ]
-          }
         }
 
         if (defined(invoker.custom_assertion_handler)) {
@@ -2717,7 +2735,14 @@ if (enable_java_templates) {
         _args += [ "--best-compression" ]
       }
     }
-    if (defined(invoker.uncompress_dex) && invoker.uncompress_dex) {
+    if (defined(invoker.uncompress_dex)) {
+      _uncompress_dex = invoker.uncompress_dex
+    } else {
+      # Uncompressed dex support started on Android P.
+      _uncompress_dex = invoker.min_sdk_version >= 28
+    }
+
+    if (_uncompress_dex) {
       _args += [ "--uncompress-dex" ]
     }
     if (defined(invoker.library_always_compress)) {
@@ -3578,6 +3603,7 @@ if (enable_java_templates) {
                                "main_class",
                                "mergeable_android_manifests",
                                "module_name",
+                               "parent_module_target",
                                "proguard_configs",
                                "proguard_enabled",
                                "proguard_mapping_path",

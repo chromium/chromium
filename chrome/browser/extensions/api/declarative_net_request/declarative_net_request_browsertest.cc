@@ -55,6 +55,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -72,6 +73,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
@@ -191,7 +193,9 @@ class DeclarativeNetRequestBrowserTest
          blink::features::kFencedFrames,
          features::kPrivacySandboxAdsAPIsOverride},
         /*disabled_features=*/
-        {});
+        {// TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid
+         // having to disable this feature.
+         features::kHttpsUpgrades});
     net::test_server::RegisterDefaultHandlers(embedded_test_server());
   }
 
@@ -1167,7 +1171,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   } test_cases[] = {
       {"x.com", false /* Rule 1 */, false /* Rule 2 */},
       {base::WideToUTF8(L"tést.com"), false /*Rule 1*/, false /*Rule 2*/},
-      {"b.x.com", false /* Rule 1 */, false /* Rule 2 */},
+      {"b.x.com", false /* Rule 1 - Subdomain matches */, false /* Rule 2 */},
       {"a.x.com", true, false /* Rule 2 */},
       {"b.a.x.com", true, false /* Rule 2 */},
       {"y.com", true, false /* Rule 2*/},
@@ -1228,7 +1232,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 
   GURL url = embedded_test_server()->GetURL(
       "example.com",
-      "/request_domain_test.html?w.com,x.com,y.com,a.x.com,z.com");
+      "/request_domain_test.html?w.com,x.com,subdomain.x.com,y.com,a.x.com,"
+      "subdomain.a.x.com,z.com");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ASSERT_TRUE(WasFrameWithScriptLoaded(GetPrimaryMainFrame()));
   ASSERT_EQ(content::PAGE_TYPE_NORMAL, GetPageType());
@@ -1237,8 +1242,12 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
     std::string domain;
     bool expect_frame_loaded;
   } cases[] = {
-      {"x.com", false /* Rule 1 */}, {"a.x.com", true},
-      {"y.com", false /* Rule 1 */}, {"z.com", true},
+      {"x.com", false /* Rule 1 */},
+      {"subdomain.x.com", false /* Rule 1 - Subdomain matches */},
+      {"a.x.com", true},
+      {"subdomain.a.x.com", true},
+      {"y.com", false /* Rule 1 */},
+      {"z.com", true},
       {"w.com", false /* Rule 2 */},
   };
 
@@ -6361,8 +6370,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
     std::vector<std::string> request_methods;
     std::vector<std::string> excluded_request_methods;
   } rules_data[] = {{1, "default", {}, {}},
-                    {2, "included", {"head", "put"}, {}},
-                    {3, "excluded", {}, {"options", "patch"}},
+                    {2, "included", {"head", "put", "other"}, {}},
+                    {3, "excluded", {}, {"options", "patch", "other"}},
                     {4, "combination", {"get"}, {"put"}}};
 
   std::vector<TestRule> rules;
@@ -6383,15 +6392,16 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   struct {
     std::string path;
     std::string expected_blocked_request_methods;
-  } test_cases[] = {{"default", "delete,get,head,options,patch,post,put"},
-                    {"included", "head,put"},
-                    {"excluded", "delete,get,head,post,put"},
-                    {"combination", "get"}};
+  } test_cases[] = {
+      {"default", "DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT,UNKNOWN"},
+      {"included", "HEAD,PUT,UNKNOWN"},
+      {"excluded", "DELETE,GET,HEAD,POST,PUT"},
+      {"combination", "GET"}};
 
   const char kPerformRequestWithAllMethodsScript[] = R"(
     {
-      const allRequestMethods = ["delete", "get", "head", "options", "patch",
-                                 "post", "put"];
+      const allRequestMethods = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH",
+                                 "POST", "PUT", "UNKNOWN"];
       const url = "/empty.html?%s";
 
       let blockedMethods = [];
@@ -6740,12 +6750,10 @@ class DeclarativeNetRequestBackForwardCacheBrowserTest
  public:
   DeclarativeNetRequestBackForwardCacheBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kBackForwardCache,
-          {{"ignore_outstanding_network_request_for_testing", "true"},
-           {"all_extensions_allowed", "true"}}},
-         {features::kBackForwardCacheTimeToLiveControl,
-          {{"time_to_live_seconds", "3600"}}}},
-        {features::kBackForwardCacheMemoryControls});
+        content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(
+            {{features::kBackForwardCache,
+              {{"all_extensions_allowed", "true"}}}}),
+        content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
   }
 
   // Setups the back forward cache with one entry (a.com) and returns a

@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_icon_view.h"
 
 #import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/ui/icons/colorful_background_symbol_view.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/popup/favicon_retriever.h"
 #import "ios/chrome/browser/ui/omnibox/popup/image_retriever.h"
@@ -15,42 +17,35 @@
 #error "This file requires ARC support."
 #endif
 
-@interface OmniboxIconView ()
-
-@property(nonatomic, strong) UIImageView* backgroundImageView;
-@property(nonatomic, strong) UIImageView* mainImageView;
-@property(nonatomic, strong) UIImageView* overlayImageView;
-
-@property(nonatomic, strong) id<OmniboxIcon> omniboxIcon;
-
-@end
-
-@implementation OmniboxIconView
+@implementation OmniboxIconView {
+  id<OmniboxIcon> _omniboxIcon;
+  // The view containing the symbols or the favicons.
+  ColorfulBackgroundSymbolView* _colorfulView;
+  // The view containing the downloaded images.
+  UIImageView* _imageView;
+}
 
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    _backgroundImageView = [[UIImageView alloc] initWithImage:nil];
-    _backgroundImageView.translatesAutoresizingMaskIntoConstraints = NO;
+    _colorfulView = [[ColorfulBackgroundSymbolView alloc] init];
+    _colorfulView.translatesAutoresizingMaskIntoConstraints = NO;
 
-    _mainImageView = [[UIImageView alloc] initWithImage:nil];
-    _mainImageView.translatesAutoresizingMaskIntoConstraints = NO;
-
-    _overlayImageView = [[UIImageView alloc] initWithImage:nil];
-    _overlayImageView.translatesAutoresizingMaskIntoConstraints = NO;
-
-    UIImageView* mask = [[UIImageView alloc]
-        initWithImage:[UIImage imageNamed:@"background_solid"]];
-    self.maskView = mask;
+    _imageView = [[UIImageView alloc] init];
+    _imageView.translatesAutoresizingMaskIntoConstraints = NO;
+    _imageView.contentMode = UIViewContentModeScaleAspectFit;
+    // Have the same corner radius as the other view.
+    _imageView.layer.cornerRadius = kColorfulBackgroundSymbolCornerRadius;
+    _imageView.layer.masksToBounds = YES;
   }
   return self;
 }
 
 - (void)prepareForReuse {
-  self.backgroundImageView.image = nil;
-  self.mainImageView.image = nil;
-  [self.overlayImageView removeFromSuperview];
-  self.mainImageView.contentMode = UIViewContentModeCenter;
+  _imageView.image = nil;
+  _imageView.hidden = YES;
+  _colorfulView.hidden = NO;
+  [_colorfulView resetView];
 }
 
 // Override layoutSubviews to set the frame of the the mask
@@ -61,39 +56,19 @@
 }
 
 - (void)setupLayout {
-  [self addSubview:self.backgroundImageView];
-  [self addSubview:self.mainImageView];
-
-  self.mainImageView.contentMode = UIViewContentModeCenter;
+  [self addSubview:_colorfulView];
+  [self addSubview:_imageView];
 
   [NSLayoutConstraint activateConstraints:@[
-    [self.mainImageView.leadingAnchor
-        constraintEqualToAnchor:self.leadingAnchor],
-    [self.mainImageView.trailingAnchor
-        constraintEqualToAnchor:self.trailingAnchor],
-    [self.mainImageView.topAnchor constraintEqualToAnchor:self.topAnchor],
-    [self.mainImageView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
+    [_colorfulView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
+    [_colorfulView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
+    [_colorfulView.topAnchor constraintEqualToAnchor:self.topAnchor],
+    [_colorfulView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
 
-    [self.backgroundImageView.leadingAnchor
-        constraintEqualToAnchor:self.leadingAnchor],
-    [self.backgroundImageView.trailingAnchor
-        constraintEqualToAnchor:self.trailingAnchor],
-    [self.backgroundImageView.topAnchor constraintEqualToAnchor:self.topAnchor],
-    [self.backgroundImageView.bottomAnchor
-        constraintEqualToAnchor:self.bottomAnchor],
-  ]];
-}
-
-- (void)addOverlayImageView {
-  [self addSubview:self.overlayImageView];
-  [NSLayoutConstraint activateConstraints:@[
-    [self.overlayImageView.leadingAnchor
-        constraintEqualToAnchor:self.leadingAnchor],
-    [self.overlayImageView.trailingAnchor
-        constraintEqualToAnchor:self.trailingAnchor],
-    [self.overlayImageView.topAnchor constraintEqualToAnchor:self.topAnchor],
-    [self.overlayImageView.bottomAnchor
-        constraintEqualToAnchor:self.bottomAnchor],
+    [_imageView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
+    [_imageView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
+    [_imageView.topAnchor constraintEqualToAnchor:self.topAnchor],
+    [_imageView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
   ]];
 }
 
@@ -107,67 +82,55 @@
 
   switch (omniboxIcon.iconType) {
     case OmniboxIconTypeImage: {
-      self.mainImageView.contentMode = UIViewContentModeScaleAspectFit;
-      __weak OmniboxIconView* weakSelf = self;
+      __weak UIImageView* weakImageView = _imageView;
+      __weak id<OmniboxIcon> weakOmniboxIcon = _omniboxIcon;
+      _colorfulView.hidden = YES;
       GURL imageURL = omniboxIcon.imageURL.gurl;
       [self.imageRetriever fetchImage:imageURL
                            completion:^(UIImage* image) {
                              // Make sure cell is still displaying the same
                              // suggestion.
-                             if (!weakSelf.omniboxIcon.imageURL ||
-                                 weakSelf.omniboxIcon.imageURL.gurl !=
-                                     imageURL) {
+                             if (!weakOmniboxIcon.imageURL ||
+                                 weakOmniboxIcon.imageURL.gurl != imageURL) {
                                return;
                              }
-                             [weakSelf addOverlayImageView];
-                             weakSelf.overlayImageView.image =
-                                 omniboxIcon.overlayImage;
-                             weakSelf.overlayImageView.tintColor =
-                                 omniboxIcon.overlayImageTintColor;
-                             weakSelf.mainImageView.image = image;
+                             weakImageView.hidden = NO;
+                             weakImageView.image = image;
                            }];
       break;
     }
     case OmniboxIconTypeFavicon: {
       // Set fallback icon
-      self.mainImageView.image = omniboxIcon.iconImage;
+      [_colorfulView setSymbol:omniboxIcon.iconImage];
 
       // Load favicon.
       GURL pageURL = omniboxIcon.imageURL.gurl;
-      __weak OmniboxIconView* weakSelf = self;
-      [self.faviconRetriever
-          fetchFavicon:pageURL
-            completion:^(UIImage* image) {
-              if (!weakSelf.omniboxIcon.imageURL ||
-                  pageURL != weakSelf.omniboxIcon.imageURL.gurl) {
-                return;
-              }
-              weakSelf.mainImageView.image = image;
-            }];
+      __weak ColorfulBackgroundSymbolView* weakColorfulView = _colorfulView;
+      __weak id<OmniboxIcon> weakOmniboxIcon = _omniboxIcon;
+      [self.faviconRetriever fetchFavicon:pageURL
+                               completion:^(UIImage* image) {
+                                 if (!weakOmniboxIcon.imageURL ||
+                                     pageURL != weakOmniboxIcon.imageURL.gurl) {
+                                   return;
+                                 }
+                                 [weakColorfulView setSymbol:image];
+                               }];
       break;
     }
     case OmniboxIconTypeSuggestionIcon:
-      self.mainImageView.image = omniboxIcon.iconImage;
+      [_colorfulView setSymbol:omniboxIcon.iconImage];
       break;
   }
-  self.mainImageView.tintColor = omniboxIcon.iconImageTintColor;
-
-  self.backgroundImageView.image = omniboxIcon.backgroundImage;
-  self.backgroundImageView.tintColor = omniboxIcon.backgroundImageTintColor;
-}
-
-- (UIImage*)mainImage {
-  return self.mainImageView.image;
+  _colorfulView.symbolTintColor = omniboxIcon.iconImageTintColor;
+  _colorfulView.backgroundColor = omniboxIcon.backgroundImageTintColor;
+  _colorfulView.borderColor = omniboxIcon.borderColor;
 }
 
 - (void)setHighlighted:(BOOL)highlighted {
   _highlighted = highlighted;
-  self.backgroundImageView.highlighted = highlighted;
-  self.mainImageView.highlighted = highlighted;
-  self.overlayImageView.highlighted = highlighted;
 
-  self.mainImageView.tintColor =
-      highlighted ? UIColor.whiteColor : self.omniboxIcon.iconImageTintColor;
+  _colorfulView.symbolTintColor =
+      highlighted ? UIColor.whiteColor : _omniboxIcon.iconImageTintColor;
 }
 
 @end

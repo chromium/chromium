@@ -293,7 +293,7 @@ public class PaymentRequestTestBridge {
         SecurePaymentConfirmationNoMatchingCredController noMatchingUi =
                 PaymentRequestService.getSecurePaymentConfirmationNoMatchingCredUiForTesting();
         if (noMatchingUi != null) {
-            noMatchingUi.close();
+            noMatchingUi.closeForTest();
             return true;
         }
 

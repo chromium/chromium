@@ -59,6 +59,28 @@ enum class PrivacyGuideInteractions {
   kMaxValue = kPrivacySandboxCompletionLink,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// Must be kept in sync with SettingsPrivacyGuideStepsEligibleAndReached in
+// histograms/enums.xml and SettingsPrivacyGuideStepsEligibleAndReached in
+// resources/settings/metrics_browser_proxy.ts.
+//
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_guide
+enum class PrivacyGuideStepsEligibleAndReached {
+  kMSBBEligible = 0,
+  kMSBBReached = 1,
+  kHistorySyncEligible = 2,
+  kHistorySyncReached = 3,
+  kSafeBrowsingEligible = 4,
+  kSafeBrowsingReached = 5,
+  kCookiesEligible = 6,
+  kCookiesReached = 7,
+  kCompletionEligible = 8,
+  kCompletionReached = 9,
+};
+
 }  // namespace privacy_guide_metrics
 
 #endif  // CHROME_BROWSER_PRIVACY_GUIDE_PRIVACY_GUIDE_H_

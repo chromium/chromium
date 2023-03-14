@@ -1,5 +1,0 @@
-CONSOLE ERROR: Refused to execute inline script because it violates the following Content Security Policy directive: "script-src 'self'". Either the 'unsafe-inline' keyword, a hash ('sha256-tfI8qh894SA5Ci6mTaIpM7Yc7ipVIuo6Z6xxEBkkQBA='), or a nonce ('nonce-...') is required to enable inline execution.
-
-CONSOLE ERROR: Refused to apply inline style because it violates the following Content Security Policy directive: "style-src 'none'". Either the 'unsafe-inline' keyword, a hash ('sha256-c9Qtyo0NpXHW/71k7BpB7fKh5EYPFsJzclYLyCmhF6U='), or a nonce ('nonce-...') is required to enable inline execution.
-
-This test checks that we enforce all the supplied policies. This test passes if it doesn't alert fail and if the style doesn't apply.

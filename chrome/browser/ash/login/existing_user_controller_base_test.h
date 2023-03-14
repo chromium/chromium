@@ -7,17 +7,15 @@
 
 #include <memory>
 
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "components/account_id/account_id.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace user_manager {
-class ScopedUserManager;
-}
-
 namespace ash {
-class MockUserManager;
+
+class FakeChromeUserManager;
 class AuthMetricsRecorder;
 
 namespace {
@@ -35,11 +33,11 @@ const char kSecondGaiaUserEmail[] = "alice@gaia.example.com";
 }  // namespace
 
 class ExistingUserControllerBaseTest : public ::testing::Test {
- public:
+ protected:
   ExistingUserControllerBaseTest();
   ~ExistingUserControllerBaseTest() override;
 
-  MockUserManager* mock_user_manager();
+  FakeChromeUserManager* GetFakeUserManager();
 
   const AccountId saml_login_account1_id_ =
       AccountId::FromUserEmailGaiaId(kFirstSAMLUserEmail, kFirstSAMLUserId);
@@ -57,8 +55,8 @@ class ExistingUserControllerBaseTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
-  std::unique_ptr<MockUserManager> const mock_user_manager_;
-  std::unique_ptr<user_manager::ScopedUserManager> const scoped_user_manager_;
+  ScopedTestingLocalState scoped_local_state_;
+  const user_manager::ScopedUserManager scoped_user_manager_;
   std::unique_ptr<AuthMetricsRecorder> auth_metrics_recorder_;
 };
 

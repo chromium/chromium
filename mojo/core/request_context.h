@@ -6,15 +6,9 @@
 #define MOJO_CORE_REQUEST_CONTEXT_H_
 
 #include "base/containers/stack_container.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "mojo/core/handle_signals_state.h"
 #include "mojo/core/system_impl_export.h"
 #include "mojo/core/watch.h"
-
-namespace base {
-template <typename T>
-class ThreadLocalPointer;
-}
 
 namespace mojo {
 namespace core {
@@ -97,14 +91,6 @@ class MOJO_SYSTEM_IMPL_EXPORT RequestContext {
 
   WatchNotifyFinalizerList watch_notify_finalizers_;
   WatchCancelFinalizerList watch_cancel_finalizers_;
-
-  // Pointer to the TLS context. Although this can easily be accessed via the
-  // global LazyInstance, accessing a LazyInstance has a large cost relative to
-  // the rest of this class and its usages.
-  //
-  // `tls_context` is not a raw_ptr<...> as a performance optimization: The
-  // pointee doesn't need UaF protection (it has a global/static lifetime).
-  RAW_PTR_EXCLUSION base::ThreadLocalPointer<RequestContext>* tls_context_;
 };
 
 }  // namespace core

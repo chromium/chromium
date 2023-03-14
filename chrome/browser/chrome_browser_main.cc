@@ -129,6 +129,7 @@
 #include "components/language/core/browser/language_usage_metrics.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/language_experiments.h"
+#include "components/language/core/common/language_util.h"
 #include "components/metrics/call_stack_profile_metrics_provider.h"
 #include "components/metrics/call_stack_profile_params.h"
 #include "components/metrics/clean_exit_beacon.h"
@@ -479,11 +480,13 @@ void ProcessSingletonNotificationCallbackImpl(
   StartupProfilePathInfo startup_profile_path_info =
       GetStartupProfilePath(current_directory, command_line,
                             /*ignore_profile_picker=*/false);
+  DCHECK_NE(startup_profile_path_info.reason, StartupProfileModeReason::kError);
   base::UmaHistogramEnumeration(
       "ProfilePicker.StartupMode.NotificationCallback",
-      startup_profile_path_info.mode);
-
-  DCHECK_NE(startup_profile_path_info.mode, StartupProfileMode::kError);
+      StartupProfileModeFromReason(startup_profile_path_info.reason));
+  base::UmaHistogramEnumeration(
+      "ProfilePicker.StartupReason.NotificationCallback",
+      startup_profile_path_info.reason);
 
   StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
       command_line, current_directory, startup_profile_path_info);

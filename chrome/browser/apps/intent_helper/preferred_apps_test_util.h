@@ -38,6 +38,7 @@ class PreferredAppUpdateWaiter
  private:
   std::string waiting_app_id_;
   bool waiting_is_preferred_app_;
+  raw_ref<apps::PreferredAppsListHandle> preferred_apps_;
   base::RunLoop run_loop_;
 
   base::ScopedObservation<apps::PreferredAppsListHandle,
@@ -49,6 +50,11 @@ class PreferredAppUpdateWaiter
 // and wait for the change to propagate through to the current process.
 void SetSupportedLinksPreferenceAndWait(Profile* profile,
                                         const std::string& app_id);
+
+// Utility to remove an app as the preferred app for its supported links
+// and wait for the change to propagate through to the current process.
+void RemoveSupportedLinksPreferenceAndWait(Profile* profile,
+                                           const std::string& app_id);
 
 }  // namespace apps_util
 

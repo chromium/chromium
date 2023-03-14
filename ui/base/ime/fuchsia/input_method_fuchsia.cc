@@ -4,7 +4,6 @@
 
 #include "ui/base/ime/fuchsia/input_method_fuchsia.h"
 
-#include <fuchsia/ui/input/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
 #include <memory>
 #include <utility>

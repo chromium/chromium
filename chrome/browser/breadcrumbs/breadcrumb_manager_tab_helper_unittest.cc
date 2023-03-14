@@ -4,15 +4,15 @@
 
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_tab_helper.h"
 
+#include <memory>
+
 #include "base/containers/circular_deque.h"
 #include "base/format_macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
-#include "chrome/browser/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
+#include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_tab_helper.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
@@ -71,8 +71,6 @@ class BreadcrumbManagerTabHelperTest : public ChromeRenderViewHostTestHarness {
     infobars::ContentInfoBarManager::CreateForWebContents(web_contents());
     infobars::ContentInfoBarManager::CreateForWebContents(
         second_web_contents_.get());
-    BreadcrumbManagerKeyedServiceFactory::GetForBrowserContext(
-        browser_context());
     BreadcrumbManagerTabHelper::CreateForWebContents(web_contents());
     BreadcrumbManagerTabHelper::CreateForWebContents(
         second_web_contents_.get());

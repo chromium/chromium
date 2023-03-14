@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -52,29 +53,28 @@ MATCHER(HasValidAccessToken, "") {
   return access_token_header == base::StringPrintf("Bearer %s", kAccessToken);
 }
 
+signin::AccessTokenInfo MakeAccessTokenInfo(const std::string& access_token) {
+  return signin::AccessTokenInfo(
+      access_token,
+      /*expiration_time_param=*/base::Time::Now() + base::Hours(1),
+      /*id_token=*/std::string());
+}
+
 class FakeTrustedVaultAccessTokenFetcher
     : public TrustedVaultAccessTokenFetcher {
  public:
   explicit FakeTrustedVaultAccessTokenFetcher(
-      const absl::optional<std::string>& access_token)
-      : access_token_(access_token) {}
+      const AccessTokenInfoOrError& access_token_info_or_error)
+      : access_token_info_or_error_(access_token_info_or_error) {}
   ~FakeTrustedVaultAccessTokenFetcher() override = default;
 
   void FetchAccessToken(const CoreAccountId& account_id,
                         TokenCallback callback) override {
-    if (access_token_) {
-      std::move(callback).Run(signin::AccessTokenInfo(
-          *access_token_,
-          /*expiration_time_param=*/base::Time::Now() + base::Hours(1),
-          /*id_token=*/std::string()));
-    } else {
-      std::move(callback).Run(base::unexpected(
-          TrustedVaultAccessTokenFetcher::FetchingError::kTransientAuthError));
-    }
+    std::move(callback).Run(access_token_info_or_error_);
   }
 
  private:
-  const absl::optional<std::string> access_token_;
+  const AccessTokenInfoOrError access_token_info_or_error_;
 };
 
 class TrustedVaultRequestTest : public testing::Test {
@@ -85,16 +85,33 @@ class TrustedVaultRequestTest : public testing::Test {
                 &test_url_loader_factory_)) {}
 
   std::unique_ptr<TrustedVaultRequest> StartNewRequestWithAccessToken(
-      const absl::optional<std::string>& access_token,
+      const std::string& access_token,
       TrustedVaultRequest::HttpMethod http_method,
       const absl::optional<std::string>& request_body,
       TrustedVaultRequest::CompletionCallback completion_callback) {
     const CoreAccountId account_id = CoreAccountId::FromGaiaId("user_id");
-    FakeTrustedVaultAccessTokenFetcher access_token_fetcher(access_token);
+    FakeTrustedVaultAccessTokenFetcher access_token_fetcher(
+        MakeAccessTokenInfo(access_token));
 
     auto request = std::make_unique<TrustedVaultRequest>(
         http_method, GURL(kRequestUrl), request_body,
         shared_url_loader_factory_,
+        TrustedVaultURLFetchReasonForUMA::kUnspecified);
+    request->FetchAccessTokenAndSendRequest(account_id, &access_token_fetcher,
+                                            std::move(completion_callback));
+    return request;
+  }
+
+  std::unique_ptr<TrustedVaultRequest> StartNewRequestWithAccessTokenError(
+      TrustedVaultAccessTokenFetcher::FetchingError error,
+      TrustedVaultRequest::CompletionCallback completion_callback) {
+    const CoreAccountId account_id = CoreAccountId::FromGaiaId("user_id");
+    FakeTrustedVaultAccessTokenFetcher access_token_fetcher(
+        base::unexpected{error});
+
+    auto request = std::make_unique<TrustedVaultRequest>(
+        TrustedVaultRequest::HttpMethod::kGet, GURL(kRequestUrl),
+        /*serialized_request_proto=*/absl::nullopt, shared_url_loader_factory_,
         TrustedVaultURLFetchReasonForUMA::kUnspecified);
     request->FetchAccessTokenAndSendRequest(account_id, &access_token_fetcher,
                                             std::move(completion_callback));
@@ -305,21 +322,34 @@ TEST_F(TrustedVaultRequestTest, ShouldRetryUponNetworkChange) {
 }
 
 TEST_F(TrustedVaultRequestTest, ShouldHandleAccessTokenFetchingFailures) {
-  base::MockCallback<TrustedVaultRequest::CompletionCallback>
-      completion_callback;
-  base::HistogramTester histogram_tester;
-  // Access token fetching failure propagated immediately in this test, so
-  // |completion_callback| should be called immediately as well.
-  EXPECT_CALL(
-      completion_callback,
-      Run(TrustedVaultRequest::HttpStatus::kAccessTokenFetchingFailure, _));
-  std::unique_ptr<TrustedVaultRequest> request = StartNewRequestWithAccessToken(
-      /*access_token=*/absl::nullopt, TrustedVaultRequest::HttpMethod::kGet,
-      /*request_body=*/absl::nullopt, completion_callback.Get());
-  histogram_tester.ExpectUniqueSample(
-      /*name=*/"Sync.TrustedVaultAccessTokenFetchSuccess",
-      /*sample=*/false,
-      /*expected_bucket_count=*/1);
+  base::flat_map<TrustedVaultAccessTokenFetcher::FetchingError,
+                 TrustedVaultRequest::HttpStatus>
+      fetching_error_to_http_status = {
+          {TrustedVaultAccessTokenFetcher::FetchingError::kTransientAuthError,
+           TrustedVaultRequest::HttpStatus::kTransientAccessTokenFetchError},
+          {TrustedVaultAccessTokenFetcher::FetchingError::kPersistentAuthError,
+           TrustedVaultRequest::HttpStatus::kPersistentAccessTokenFetchError},
+          {TrustedVaultAccessTokenFetcher::FetchingError::kNotPrimaryAccount,
+           TrustedVaultRequest::HttpStatus::
+               kPrimaryAccountChangeAccessTokenFetchError}};
+
+  for (const auto& [fetching_error, expected_http_status] :
+       fetching_error_to_http_status) {
+    base::HistogramTester histogram_tester;
+
+    base::MockCallback<TrustedVaultRequest::CompletionCallback>
+        completion_callback;
+    // Access token fetching failure propagated immediately in this test, so
+    // |completion_callback| should be called immediately as well.
+    EXPECT_CALL(completion_callback, Run(expected_http_status, _));
+    std::unique_ptr<TrustedVaultRequest> request =
+        StartNewRequestWithAccessTokenError(fetching_error,
+                                            completion_callback.Get());
+    histogram_tester.ExpectUniqueSample(
+        /*name=*/"Sync.TrustedVaultAccessTokenFetchSuccess",
+        /*sample=*/false,
+        /*expected_bucket_count=*/1);
+  }
 }
 
 }  // namespace syncer

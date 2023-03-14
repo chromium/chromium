@@ -64,4 +64,11 @@ bool RemoteAppsManagerFactory::ServiceIsCreatedWithBrowserContext() const {
   return true;
 }
 
+bool RemoteAppsManagerFactory::ServiceIsNULLWhileTesting() const {
+  // `RemoteAppsManager` depends on `AppListSyncableService` to be useful,
+  // meaning that it's availability for testing also depends on
+  // `AppListSyncableService`'s service availability.
+  return !app_list::AppListSyncableServiceFactory::IsUsedInTesting();
+}
+
 }  // namespace ash

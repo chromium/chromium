@@ -10,6 +10,7 @@
 #import <memory>
 
 #import "base/mac/bridging.h"
+#import "base/mac/foundation_util.h"
 #import "base/mac/scoped_cftyperef.h"
 #import "crypto/rsa_private_key.h"
 #import "net/cert/x509_certificate.h"
@@ -131,9 +132,24 @@ TEST_F(WKWebViewSecurityUtilTest, CreationServerTrust) {
   EXPECT_EQ(static_cast<CFIndex>(chain.count),
             SecTrustGetCertificateCount(server_trust));
   [chain enumerateObjectsUsingBlock:^(id expected_cert, NSUInteger i, BOOL*) {
-    id actual_cert = static_cast<id>(SecTrustGetCertificateAtIndex(
-        server_trust.get(), static_cast<CFIndex>(i)));
-    EXPECT_EQ(expected_cert, actual_cert);
+    // TODO(crbug.com/1418068): Remove after minimum version required is >=
+    // iOS 15.
+    SecCertificateRef secCertificate = nil;
+    if (@available(iOS 15.0, *)) {
+      base::ScopedCFTypeRef<CFArrayRef> certificateChain(
+          SecTrustCopyCertificateChain(server_trust.get()));
+      secCertificate = base::mac::CFCastStrict<SecCertificateRef>(
+          CFArrayGetValueAtIndex(certificateChain, static_cast<CFIndex>(i)));
+    }
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+    else {
+      secCertificate = SecTrustGetCertificateAtIndex(server_trust.get(),
+                                                     static_cast<CFIndex>(i));
+    }
+#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+
+    id actual_cert = static_cast<id>((__bridge id)secCertificate);
+    EXPECT_NSEQ(expected_cert, actual_cert);
   }];
 
   // Verify policies.

@@ -358,6 +358,7 @@ void AwContentBrowserClient::AppendExtraCommandLineSwitches(
         ::switches::kEnableCrashReporter,
         ::switches::kEnableCrashReporterForTesting,
         embedder_support::kOriginTrialDisabledFeatures,
+        embedder_support::kOriginTrialPublicKey,
     };
 
     command_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
@@ -601,8 +602,9 @@ AwContentBrowserClient::CreateURLLoaderThrottles(
            features::kWebViewRestrictSensitiveContent))) {
     auto* origin_verification_bridge =
         AwOriginVerificationSchedulerBridge::GetInstance();
-    result.push_back(digital_asset_links::BrowserURLLoaderThrottle::Create(
-        origin_verification_bridge));
+    result.push_back(
+        content_relationship_verification::BrowserURLLoaderThrottle::Create(
+            origin_verification_bridge));
   }
 
   result.push_back(safe_browsing::BrowserURLLoaderThrottle::Create(
@@ -638,7 +640,10 @@ AwContentBrowserClient::CreateURLLoaderThrottles(
 
 scoped_refptr<safe_browsing::UrlCheckerDelegate>
 AwContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(
+      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
+          ? content::BrowserThread::UI
+          : content::BrowserThread::IO);
 
   if (!safe_browsing_url_checker_delegate_) {
     safe_browsing_url_checker_delegate_ = new AwUrlCheckerDelegateImpl(
@@ -1087,6 +1092,16 @@ void AwContentBrowserClient::OnDisplayInsecureContent(
 // static
 void AwContentBrowserClient::DisableCreatingThreadPool() {
   g_should_create_thread_pool = false;
+}
+
+bool AwContentBrowserClient::IsAttributionReportingOperationAllowed(
+    content::BrowserContext* browser_context,
+    AttributionReportingOperation operation,
+    content::RenderFrameHost* rfh,
+    const url::Origin* source_origin,
+    const url::Origin* destination_origin,
+    const url::Origin* reporting_origin) {
+  return false;
 }
 
 }  // namespace android_webview

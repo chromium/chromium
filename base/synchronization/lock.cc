@@ -27,6 +27,10 @@ void Lock::AssertAcquired() const {
   DCHECK_EQ(owning_thread_ref_, PlatformThread::CurrentRef());
 }
 
+void Lock::AssertNotHeld() const {
+  DCHECK(owning_thread_ref_.is_null());
+}
+
 void Lock::CheckHeldAndUnmark() {
   DCHECK_EQ(owning_thread_ref_, PlatformThread::CurrentRef());
   owning_thread_ref_ = PlatformThreadRef();

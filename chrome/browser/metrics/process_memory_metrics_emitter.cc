@@ -37,6 +37,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/buildflags/buildflags.h"
+#include "media/mojo/mojom/cdm_service.mojom.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -48,6 +49,10 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/child_process_binding_types.h"
 #include "base/android/meminfo_dump_provider.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "media/mojo/mojom/media_foundation_service.mojom.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -185,6 +190,10 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
     {"canvas/ResourceProvider/SkSurface", "CanvasResourceProvider.SkSurface",
      MetricSize::kSmall, kSize, EmitTo::kCountsInUkmOnly,
      &Memory_Experimental::SetCanvasResourceProvider_SkSurface},
+    {"canvas/hibernated", "HibernatedCanvas.Size", MetricSize::kSmall, kSize,
+     EmitTo::kSizeInUmaOnly, nullptr},
+    {"canvas/hibernated", "HibernatedCanvas.OriginalSize", MetricSize::kSmall,
+     "original_size", EmitTo::kSizeInUmaOnly, nullptr},
     {"cc/tile_memory", "TileMemory", MetricSize::kSmall, kSize,
      EmitTo::kSizeInUmaOnly, nullptr},
     {"components/download", "DownloadService", MetricSize::kSmall,
@@ -220,6 +229,8 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
     // of it being claimed by renderers.
     {"gpu/shared_images", "SharedImages", MetricSize::kLarge, kSize,
      EmitTo::kSizeInUmaOnly, nullptr},
+    {"gpu/shared_images", "SharedImages.Purgeable", MetricSize::kLarge,
+     "purgeable_size", EmitTo::kSizeInUmaOnly, nullptr},
     {"gpu/transfer_cache", "ServiceTransferCache", MetricSize::kCustom, kSize,
      EmitTo::kSizeInUmaOnly, nullptr, ImageSizeMetricRange},
     {"gpu/transfer_cache", "ServiceTransferCache.AvgImageSize",
@@ -1191,6 +1202,8 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
   uint32_t shared_footprint_total_kb = 0;
   uint32_t resident_set_total_kb = 0;
   uint64_t tiles_total_memory = 0;
+  uint64_t hibernated_canvas_total_memory = 0;
+  uint64_t hibernated_canvas_total_original_memory = 0;
   bool emit_metrics_for_all_processes = pid_scope_ == base::kNullProcessId;
 
   TabFootprintAggregator per_tab_metrics;
@@ -1238,6 +1251,10 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
         renderer_private_footprint_visible_or_higher_total_kb +=
             is_less_than_visible_renderer ? 0 : process_pmf_kb;
 #endif  // BUILDFLAG(IS_ANDROID)
+        hibernated_canvas_total_memory +=
+            pmd.GetMetric("canvas/hibernated", kSize).value_or(0);
+        hibernated_canvas_total_original_memory +=
+            pmd.GetMetric("canvas/hibernated", "original_size").value_or(0);
         const PageInfo* single_page_info = nullptr;
         auto iter = process_infos_.find(pmd.pid());
         if (iter != process_infos_.end()) {
@@ -1285,6 +1302,14 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
         HistogramProcessType ptype;
         if (pmd.pid() == content::GetProcessIdForAudioService()) {
           ptype = HistogramProcessType::kAudioService;
+        } else if (pmd.service_name() ==
+                   media::mojom::CdmServiceBroker::Name_) {
+          ptype = HistogramProcessType::kCdmService;
+#if BUILDFLAG(IS_WIN)
+        } else if (pmd.service_name() ==
+                   media::mojom::MediaFoundationServiceBroker::Name_) {
+          ptype = HistogramProcessType::kMediaFoundationService;
+#endif
         } else if (pmd.service_name() ==
                    network::mojom::NetworkService::Name_) {
           ptype = HistogramProcessType::kNetworkService;
@@ -1382,6 +1407,12 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
         "Memory.Total.RendererPrivateMemoryFootprintVisibleOrHigherPriority",
         renderer_private_footprint_visible_or_higher_total_kb / kKiB);
 #endif
+
+    UMA_HISTOGRAM_MEMORY_MEDIUM_MB("Memory.Total.HibernatedCanvas.Size",
+                                   hibernated_canvas_total_memory / kMiB);
+    UMA_HISTOGRAM_MEMORY_MEDIUM_MB(
+        "Memory.Total.HibernatedCanvas.OriginalSize",
+        hibernated_canvas_total_original_memory / kMiB);
 
     Memory_Experimental(ukm::UkmRecorder::GetNewSourceID())
         .SetTotal2_PrivateMemoryFootprint(private_footprint_total_kb / kKiB)

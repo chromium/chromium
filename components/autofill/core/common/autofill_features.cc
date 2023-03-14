@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/common/autofill_features.h"
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
@@ -22,10 +23,10 @@ BASE_FEATURE(kAutofillAddressProfileSavePromptAddressVerificationSupport,
              "AutofillAddressProfileSavePromptAddressVerificationSupport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Use the heuristic parser to detected unfillable numeric types in field labels
+// Use the heuristic parser to detect unfillable numeric types in field labels
 // and grant the heuristic precedence over non-override server predictions.
-BASE_FEATURE(kAutofillGivePrecedenceToNumericQuantitites,
-             "AutofillGivePrecedenceToNumericQuantitites",
+BASE_FEATURE(kAutofillGivePrecedenceToNumericQuantities,
+             "AutofillGivePrecedenceToNumericQuantities",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls if `kAccount` profiles are loaded from AutofillTable and
@@ -57,13 +58,6 @@ BASE_FEATURE(kAutofillAllowDuplicateFormSubmissions,
              "AutofillAllowDuplicateFormSubmissions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether autofill activates on non-HTTP(S) pages. Useful for
-// automated with data URLS in cases where it's too difficult to use the
-// embedded test server. Generally avoid using.
-BASE_FEATURE(kAutofillAllowNonHttpActivation,
-             "AutofillAllowNonHttpActivation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, the two most recent address forms and the most recent credit card
 // forms, which were submitted on the same origin, are associated with each
 // other. The association only happens if at most `kAutofillAssociateFormsTTL`
@@ -74,53 +68,6 @@ BASE_FEATURE(kAutofillAssociateForms,
 const base::FeatureParam<base::TimeDelta> kAutofillAssociateFormsTTL{
     &kAutofillAssociateForms, "associate_forms_ttl", base::Minutes(5)};
 
-// Testing tool that collects metrics during a run of the captured site tests
-// and dumps the collected metrics into a specified output directory.
-// For each test, a file named {test-name}.txt is created. It contains all the
-// collected metrics in the following format.
-// histogram-name-1
-// bucket value
-// ...
-// histogram-name-2
-// ...
-// The set of metrics can be restricted using
-// `kAutofillCapturedSiteTestsMetricsScraperMetricNames`.
-// It is helpful in conjunction with `tools/captured_sites/metrics-scraper.py`.
-BASE_FEATURE(kAutofillCapturedSiteTestsMetricsScraper,
-             "AutofillCapturedSiteTestsMetricsScraper",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-// Name of the directory to write the results into.
-const base::FeatureParam<std::string>
-    kAutofillCapturedSiteTestsMetricsScraperOutputDir{
-        &kAutofillCapturedSiteTestsMetricsScraper, "output_dir", "/tmp/"};
-// A regex matching the histogram names that should be dumped. If not specified,
-// the metrics of all histograms dumped.
-const base::FeatureParam<std::string>
-    kAutofillCapturedSiteTestsMetricsScraperHistogramRegex{
-        &kAutofillCapturedSiteTestsMetricsScraper, "histogram_regex", ""};
-
-// If enabled, Autofill will not apply updates to address profiles based on data
-// extracted from submitted forms. This feature is mostly for debugging and
-// testing purposes and is not supposed to be launched.
-BASE_FEATURE(kAutofillDisableProfileUpdates,
-             "AutofillDisableProfileUpdates",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, Autofill will not apply silent updates to the structure of
-// addresses and names. This feature is mostly for debugging and testing
-// purposes and is not supposed to be launched.
-BASE_FEATURE(kAutofillDisableSilentProfileUpdates,
-             "AutofillDisableSilentProfileUpdates",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled, Autofill ignores invalid country information on import, which
-// would otherwise prevent an import. Instead, ignoring it will trigger the
-// country complemention logic.
-// TODO(crbug.com/1362472): Cleanup when launched.
-BASE_FEATURE(kAutofillIgnoreInvalidCountryOnImport,
-             "AutofillIgnoreInvalidCountryOnImport",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, the country calling code for nationally formatted phone numbers
 // is inferred from the profile's country, if available.
 // TODO(crbug.com/1311937): Cleanup when launched.
@@ -128,24 +75,11 @@ BASE_FEATURE(kAutofillInferCountryCallingCode,
              "AutofillInferCountryCallingCode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, complementing the country happens before setting the phone number
-// on profile import. This way, the variation country code takes precedence over
-// the app locale.
-// TODO(crbug.com/1295721): Cleanup when launched.
-BASE_FEATURE(kAutofillComplementCountryEarly,
-             "AutofillComplementCountryEarly",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, label inference considers strings entirely made up of  '(', ')'
 // and '-' as valid labels.
 // TODO(crbug.com/1311937): Cleanup when launched.
 BASE_FEATURE(kAutofillConsiderPhoneNumberSeparatorsValidLabels,
              "AutofillConsiderPhoneNumberSeparatorsValidLabels",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, three address profiles are created for testing.
-BASE_FEATURE(kAutofillCreateDataForTest,
-             "AutofillCreateDataForTest",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, the last blur votes per form signature are sent not the first
@@ -188,7 +122,7 @@ BASE_FEATURE(kAutofillFillAndImportFromMoreFields,
 const base::FeatureParam<bool> kAutofillFillAutocompleteUnrecognized{
     &kAutofillFillAndImportFromMoreFields, "fill_unrecognized_autocomplete",
     false};
-const base::FeatureParam<bool> kAutofillImportFromAutoccompleteUnrecognized{
+const base::FeatureParam<bool> kAutofillImportFromAutocompleteUnrecognized{
     &kAutofillFillAndImportFromMoreFields,
     "import_from_unrecognized_autocomplete", false};
 
@@ -286,16 +220,16 @@ BASE_FEATURE(kAutofillEnableImportWhenMultiplePhoneNumbers,
 // importing from multi-step input flows possible.
 BASE_FEATURE(kAutofillEnableMultiStepImports,
              "AutofillEnableMultiStepImports",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // When enabled, imported profiles are stored as multi-step candidates too,
 // which enables complementing a recently imported profile during later steps of
 // a multi-step input flow.
 const base::FeatureParam<bool> kAutofillEnableMultiStepImportComplements{
-    &kAutofillEnableMultiStepImports, "enable_multistep_complement", false};
+    &kAutofillEnableMultiStepImports, "enable_multistep_complement", true};
 // Configures the TTL of multi-step import candidates.
 const base::FeatureParam<base::TimeDelta> kAutofillMultiStepImportCandidateTTL{
     &kAutofillEnableMultiStepImports, "multistep_candidate_ttl",
-    base::Minutes(30)};
+    base::Minutes(5)};
 
 // When enabled, phone number local heuristics match empty labels when looking
 // for composite phone number inputs. E.g. Phone number <input><input>.
@@ -315,7 +249,7 @@ BASE_FEATURE(kAutofillEnableLabelPrecedenceForTurkishAddresses,
 // startup, once per chrome version.
 BASE_FEATURE(kAutofillEnableProfileDeduplication,
              "AutofillEnableProfileDeduplication",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls if Autofill supports merging subset names.
 // TODO(crbug.com/1098943): Remove once launched.
@@ -359,6 +293,31 @@ BASE_FEATURE(kAutofillExtractAllDatalists,
 BASE_FEATURE(kAutofillFeedback,
              "AutofillFeedback",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete,
+             "AutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<PrecedenceOverAutocompleteScope>::Option
+    kPrecedenceOverAutocompleteScope[] = {
+        {PrecedenceOverAutocompleteScope::kNone, "none"},
+        {PrecedenceOverAutocompleteScope::kAddressLine1And2,
+         "address_line_1_and_2"},
+        {PrecedenceOverAutocompleteScope::kRecognized, "recognized"},
+        {PrecedenceOverAutocompleteScope::kSpecified, "specified"}};
+
+const base::FeatureParam<PrecedenceOverAutocompleteScope>
+    kAutofillHeuristicPrecedenceScopeOverAutocomplete{
+        &kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete,
+        "AutofillHeuristicPrecedenceOverAutocompleteScope",
+        PrecedenceOverAutocompleteScope::kAddressLine1And2,
+        &kPrecedenceOverAutocompleteScope};
+
+const base::FeatureParam<PrecedenceOverAutocompleteScope>
+    kAutofillServerPrecedenceScopeOverAutocomplete{
+        &kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete,
+        "AutofillServerPrecedenceOverAutocompleteScope",
+        PrecedenceOverAutocompleteScope::kNone,
+        &kPrecedenceOverAutocompleteScope};
 
 // When enabled, HTML autocomplete values that do not map to any known type, but
 // look reasonable (e.g. contain "address") are simply ignored. Without the
@@ -407,7 +366,7 @@ BASE_FEATURE(kAutofillPreventOverridingPrefilledValues,
 // TODO(crbug/1352826): Remove once experiment is finished.
 BASE_FEATURE(kAutofillMin3FieldTypesForLocalHeuristics,
              "AutofillMin3FieldTypesForLocalHeuristics",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, use the parsing patterns from a JSON file for heuristics, rather
 // than the hardcoded ones from autofill_regex_constants.cc.
@@ -460,6 +419,15 @@ BASE_FEATURE(kAutofillAlwaysParsePlaceholders,
              "AutofillAlwaysParsePlaceholders",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the same 500ms threshold will be applied for accepting keyboard
+// enter strokes that is already applied to mouse and gesture events.
+// It will also be applied to tap events on popup menus on Android (but not the
+// keyboard accessory, at the screen is outside of the render surface).
+// TODO(crbug.com/1418364): Remove once launched.
+BASE_FEATURE(kAutofillPopupUseThresholdForKeyboardAndMobileAccept,
+             "AutofillPopupUseThresholdForKeyboardAndMobileAccept",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If the feature is enabled, FormTracker's probable-form-submission detection
 // is disabled and replaced with browser-side detection.
 // TODO(crbug/1117451): Remove once it works.
@@ -489,7 +457,7 @@ BASE_FEATURE(kAutofillRequireNameForProfileImport,
 // Controls whether or not overall prediction are retrieved from the cache.
 BASE_FEATURE(kAutofillRetrieveOverallPredictionsFromCache,
              "AutofillRetrieveOverallPredictionsFromCache",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether UPI/VPA values will be saved and filled into payment forms.
 BASE_FEATURE(kAutofillSaveAndFillVPA,
@@ -505,16 +473,6 @@ BASE_FEATURE(kAutofillServerBehaviors,
 // belongs to.
 const base::FeatureParam<int> kAutofillServerBehaviorsParam{
     &kAutofillServerBehaviors, "server_prediction_source", 0};
-
-// Enables or Disables (mostly for hermetic testing) autofill server
-// communication. The URL of the autofill server can further be controlled via
-// the autofill-server-url param. The given URL should specify the complete
-// autofill server API url up to the parent "directory" of the "query" and
-// "upload" resources.
-// i.e., https://other.autofill.server:port/tbproxy/af/
-BASE_FEATURE(kAutofillServerCommunication,
-             "AutofillServerCommunication",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether Autofill may fill across origins as part of the
 // AutofillAcrossIframes experiment.
@@ -540,12 +498,6 @@ BASE_FEATURE(kAutofillShowManualFallbackInContextMenu,
              "AutofillShowManualFallbackInContextMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls attaching the autofill type predictions to their respective
-// element in the DOM.
-BASE_FEATURE(kAutofillShowTypePredictions,
-             "AutofillShowTypePredictions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Allows silent profile updates even when the profile import requirements are
 // not met.
 BASE_FEATURE(kAutofillSilentProfileUpdateForInsufficientImport,
@@ -564,18 +516,13 @@ BASE_FEATURE(kAutofillSkipComparingInferredLabels,
 // TODO(crbug.com/1396374): Remove when launched.
 BASE_FEATURE(kAutofillSupportPoorMansPlaceholder,
              "AutofillSupportPoorMansPlaceholder",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether Autofill should search prefixes of all words/tokens when
 // filtering profiles, or only on prefixes of the whole string.
 BASE_FEATURE(kAutofillTokenPrefixMatching,
              "AutofillTokenPrefixMatching",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Autofill upload throttling is used for testing.
-BASE_FEATURE(kAutofillUploadThrottling,
-             "AutofillUploadThrottling",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether to use the AutofillUseAlternativeStateNameMap for filling
 // of state selection fields, comparison of profiles and sending state votes to
@@ -659,6 +606,12 @@ BASE_FEATURE(kAutofillLogUKMEventsWithSampleRate,
              "AutofillLogUKMEventsWithSampleRate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether virtual card suggestions are shown on the touch to fill
+// surface for credit cards on Android.
+BASE_FEATURE(kAutofillVirtualCardsOnTouchToFillAndroid,
+             "AutofillVirtualCardsOnTouchToFillAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // When enabled, Autofill suggestions are displayed in the keyboard accessory
 // instead of the regular popup.
@@ -670,11 +623,6 @@ BASE_FEATURE(kAutofillKeyboardAccessory,
 // present on Android.
 BASE_FEATURE(kAutofillManualFallbackAndroid,
              "AutofillManualFallbackAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Controls whether to use modernized style for the Autofill dropdown.
-BASE_FEATURE(kAutofillRefreshStyleAndroid,
-             "AutofillRefreshStyleAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether the touch to fill surface is shown for credit cards on
@@ -700,5 +648,87 @@ bool IsAutofillManualFallbackEnabled() {
          base::FeatureList::IsEnabled(kAutofillManualFallbackAndroid);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+namespace test {
+
+// Controls whether autofill activates on non-HTTP(S) pages. Useful for
+// automated tests with data URLS in cases where it's too difficult to use the
+// embedded test server. Generally avoid using.
+BASE_FEATURE(kAutofillAllowNonHttpActivation,
+             "AutofillAllowNonHttpActivation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Testing tool that collects metrics during a run of the captured site tests
+// and dumps the collected metrics into a specified output directory.
+// For each test, a file named {test-name}.txt is created. It contains all the
+// collected metrics in the following format.
+// histogram-name-1
+// bucket value
+// ...
+// histogram-name-2
+// ...
+// The set of metrics can be restricted using
+// `kAutofillCapturedSiteTestsMetricsScraperMetricNames`.
+// It is helpful in conjunction with `tools/captured_sites/metrics-scraper.py`.
+BASE_FEATURE(kAutofillCapturedSiteTestsMetricsScraper,
+             "AutofillCapturedSiteTestsMetricsScraper",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// Name of the directory to write the results into.
+const base::FeatureParam<std::string>
+    kAutofillCapturedSiteTestsMetricsScraperOutputDir{
+        &kAutofillCapturedSiteTestsMetricsScraper, "output_dir", "/tmp/"};
+// A regex matching the histogram names that should be dumped. If not specified,
+// the metrics of all histograms dumped.
+const base::FeatureParam<std::string>
+    kAutofillCapturedSiteTestsMetricsScraperHistogramRegex{
+        &kAutofillCapturedSiteTestsMetricsScraper, "histogram_regex", ""};
+
+// If enabled, Autofill will not apply updates to address profiles based on data
+// extracted from submitted forms. This feature is mostly for debugging and
+// testing purposes and is not supposed to be launched.
+BASE_FEATURE(kAutofillDisableProfileUpdates,
+             "AutofillDisableProfileUpdates",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, Autofill will not apply silent updates to the structure of
+// addresses and names. This feature is mostly for debugging and testing
+// purposes and is not supposed to be launched.
+BASE_FEATURE(kAutofillDisableSilentProfileUpdates,
+             "AutofillDisableSilentProfileUpdates",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, any new profiles created from the settings are of type kAccount.
+// TODO(crbug.com/1348294): Remove once the migration UI exists.
+BASE_FEATURE(kAutofillCreateAccountProfilesFromSettings,
+             "AutofillCreateAccountProfilesFromSettings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables logging the content of chrome://autofill-internals to the terminal.
+BASE_FEATURE(kAutofillLogToTerminal,
+             "AutofillLoggingToTerminal",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables or Disables (mostly for hermetic testing) autofill server
+// communication. The URL of the autofill server can further be controlled via
+// the autofill-server-url param. The given URL should specify the complete
+// autofill server API url up to the parent "directory" of the "query" and
+// "upload" resources.
+// i.e., https://other.autofill.server:port/tbproxy/af/
+BASE_FEATURE(kAutofillServerCommunication,
+             "AutofillServerCommunication",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Controls attaching the autofill type predictions to their respective
+// element in the DOM.
+BASE_FEATURE(kAutofillShowTypePredictions,
+             "AutofillShowTypePredictions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Autofill upload throttling is used for testing.
+BASE_FEATURE(kAutofillUploadThrottling,
+             "AutofillUploadThrottling",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+}  // namespace test
 
 }  // namespace autofill::features

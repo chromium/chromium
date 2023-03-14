@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ReceiveManager, ReceiveManagerInterface, ReceiveObserverInterface, ReceiveObserverReceiver, ReceiveObserverRemote} from '/mojo/nearby_share.mojom-webui.js';
+import {ReceiveManager, ReceiveManagerInterface, ReceiveObserverInterface, ReceiveObserverReceiver, ReceiveObserverRemote} from '/shared/mojo/nearby_share.mojom-webui.js';
 
 let receiveManager: ReceiveManagerInterface|null = null;
 let isTesting = false;

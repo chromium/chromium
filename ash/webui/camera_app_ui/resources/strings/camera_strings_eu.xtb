@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">Esteka bat hauteman da. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Ezabatu da <ph name="PAGE_NUMBER" />. orria</translation>
 <translation id="1258009455399840361">Biratu 90 gradu eskuinetara</translation>
-<translation id="1300209025925956156">Eskaneatu dokumentua</translation>
-<translation id="1309250603447638106">Dokumentua eskaneatzeko eguneratzeak deskargatzen</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Atzitzeko, sakatu bilaketa-tekla + ezkerrera egiteko gezi-tekla.</translation>
 <translation id="1417314334557041815">Editatu <ph name="INDEX" />. orria</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> deskonektatuta dago.</translation>
 <translation id="1473110567575736769">Hiru segundoko tenporizadorea</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">Ez da grabatu ezer</translation>
 <translation id="1838104802459806957">Okertu gorantz</translation>
 <translation id="1843105061469674856">Eskaneatu beste orri bat</translation>
-<translation id="1851169887664797861">Kamera kontrolatzeko aukera gehiago daude</translation>
 <translation id="1851616744363735765">PAUSATUTA</translation>
 <translation id="1899697626337024495">Argazkiaren bereizmena</translation>
 <translation id="1925845977604399247">Joan galeriara</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">Bilaketa mota</translation>
 <translation id="28682968802727151">Ispilu moduaren aurrebista</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> konektatuta dago.</translation>
-<translation id="2904654629665923749">Dokumentua eskanea daiteke</translation>
 <translation id="3067436040345934772">Mugitu eskuinera</translation>
 <translation id="3081586908890909590">Aldatu bideoak grabatzeko modura</translation>
 <translation id="313467653172006084">30 fps</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">Kopiatu estekaren helbidea</translation>
 <translation id="4281620174117014503">Tarteko bereizmena</translation>
 <translation id="428234092390943511">Orriaren irudi txikia</translation>
-<translation id="4340659173795395806">Orri bat baino gehiagoko PDFak sor ditzakezu orain</translation>
 <translation id="4383571725254449280">Inprimatu errendimendu-erregistroak</translation>
 <translation id="4445542136948522167">Utzi argazkia ateratzeari</translation>
 <translation id="4570032796877367747">Aurreko kamera</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">Gorde</translation>
 <translation id="5320594929574852403">Ezkerrera mugitzen ari da</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5444515100983837161">Jarri dokumentuaren ertz guztiak markoaren barruan. Hobeto eskaneatzen da dokumentuaren eta hondoaren koloreak ezberdinak badira.</translation>
 <translation id="5662366948659129155"><ph name="COUNT" />. orria eskaneatzen</translation>
 <translation id="5671277269877808209">Karratua</translation>
 <translation id="5746169159649715125">Gorde PDF gisa</translation>
@@ -157,7 +150,6 @@ Irudi edo bideoaren kalitateari buruzko iritzia eman nahi baduzu, erantsi argazk
 <translation id="8428213095426709021">Ezarpenak</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Aktibatu edo desaktibatu mikrofonoa. Mikrofonoa desaktibatuta dago.</translation>
-<translation id="8712637175834984815">Ados</translation>
 <translation id="8730621377337864115">Eginda</translation>
 <translation id="8732462232047530626">Aurreikusi metadatuak</translation>
 <translation id="8815966864175525708">Aldatu erretratu-argazkiak ateratzeko modura</translation>

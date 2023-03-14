@@ -1234,13 +1234,16 @@
                   '|chrome/browser/ui/messages/android/java/src/org/chromium/chrome/browser/ui/messages/infobar/'\
                   '|chrome/browser/ui/android/infobars/',
     },
-    'infra_docs': {
-      'filepath': 'docs/infra',
-    },
     'input': {
       'filepath': 'content/browser/renderer_host/input|'\
                   'content/renderer/input|'\
                   'ui/events/blink/'
+    },
+    'input_device_settings': {
+      'filepath': 'ash/system/input_device_settings/|'\
+                  'chrome/browser/resources/settings/chromeos/device_page/|'\
+                  'chrome/browser/ui/webui/settings/ash/device_section.(cc|h)$|'\
+                  'chrome/browser/ui/webui/settings/ash/input_device_settings/',
     },
     'input_devices': {
       'filepath': 'ui/events/devices/',
@@ -1467,7 +1470,9 @@
                   '|chromeos/ash/services/secure_channel/',
     },
     'multipaste': {
-     'filepath': 'ash/clipboard/',
+     'filepath': 'ash/clipboard/|'\
+                 'ash/public/cpp/.*clipboard.*|'\
+                 'chrome/browser/ui/ash/clipboard.*',
     },
     'nacl': {
       'filepath': 'chrome/nacl/|chrome/test/nacl/|'\
@@ -1710,6 +1715,7 @@
     },
     'prerender': {
       'filepath': 'chrome/browser/chrome_content_browser_client_binder_policies' \
+                  '|chrome/browser/predictors/autocomplete_action_predictor\.(cc|h)$' \
                   '|chrome/browser/preloading/prefetch/search_prefetch/' \
                   '|chrome/browser/preloading/prerender/' \
                   '|content/browser/mojo_binder_policy' \
@@ -2092,6 +2098,10 @@
     'usb': {
       'filepath': '/usb/',
     },
+    'user_education': {
+      'filepath': 'ash/user_education/|'\
+                  'chrome/browser/ui/ash/user_education/',
+    },
     'version_assembly': {
       'filepath': 'chrome/app/version_assembly',
     },
@@ -2378,7 +2388,7 @@
     'blink_animation': ['alexis.menard@intel.com',
                         'gerchiko@microsoft.com',
                         'blink-reviews-animation@chromium.org'],
-    'blink_audio': ['hongchan@chromium.org', 'mjwilson@chromium.org'],
+    'blink_audio': ['hongchan@chromium.org', 'mjwilson@chromium.org', 'alvinji@chromium.org'],
     'blink_battery_status': ['raphael.kubo.da.costa@intel.com'],
     'blink_bindings': ['blink-reviews-bindings@chromium.org', 'haraken@chromium.org'],
     'blink_bindings_serialization': ['jbroman+watch@chromium.org'],
@@ -2746,8 +2756,11 @@
                    'dmurph+watching-idb@chromium.org',
                    'enne+idb@chromium.org'],
     'infobars_for_weblayer': ['blundell+infobars-watch@chromium.org'],
-    'infra_docs': ['martiniss+watch@chromium.org'],
     'input': ['dtapuska+chromiumwatch@chromium.org'],
+    'input_device_settings': ['dpad+watch-input-device-settings@google.com',
+                              'michaelcheco+watch-input-device-settings@google.com',
+                              'wangdanny+watch-input-device-settings@google.com',
+                              'yyhyyh+watch-input-device-settings@google.com'],
     'input_devices': ['spang+watch@chromium.org'],
     'installable': ['dominickn+watch-installable@chromium.org',
                     'dmurph+watching-installable@chromium.org',
@@ -3089,6 +3102,7 @@
     'unified_consent': ['wfh+watch@chromuium.org'],
     'usb': ['mattreynolds+watch@chromium.org',
             'odejesush+watch@chromium.org'],
+    'user_education': ['cros-system-ui-productivity-eng+reviews@google.com'],
     'version_assembly': ['caitkp+watch@chromium.org',
                          'gab+watch@chromium.org'],
     'video': ['posciak+watch@chromium.org'],

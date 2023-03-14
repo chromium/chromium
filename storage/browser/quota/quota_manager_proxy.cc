@@ -112,7 +112,7 @@ void QuotaManagerProxy::UpdateOrCreateBucket(
   auto respond =
       base::BindPostTask(std::move(callback_task_runner), std::move(callback));
   if (!quota_manager_impl_) {
-    std::move(respond).Run(QuotaError::kUnknownError);
+    std::move(respond).Run(base::unexpected(QuotaError::kUnknownError));
     return;
   }
 
@@ -139,7 +139,7 @@ QuotaErrorOr<BucketInfo> QuotaManagerProxy::GetOrCreateBucketSync(
             // than risking deadlock.
             if (!self->quota_manager_impl_ ||
                 self->quota_manager_impl_->is_bootstrapping_database_) {
-              *sync_bucket = QuotaError::kUnknownError;
+              *sync_bucket = base::unexpected(QuotaError::kUnknownError);
               waiter->Signal();
               return;
             }
@@ -181,7 +181,7 @@ void QuotaManagerProxy::GetOrCreateBucketDeprecated(
   auto respond =
       base::BindPostTask(std::move(callback_task_runner), std::move(callback));
   if (!quota_manager_impl_) {
-    std::move(respond).Run(QuotaError::kUnknownError);
+    std::move(respond).Run(base::unexpected(QuotaError::kUnknownError));
     return;
   }
 
@@ -212,7 +212,7 @@ void QuotaManagerProxy::CreateBucketForTesting(
   auto respond =
       base::BindPostTask(std::move(callback_task_runner), std::move(callback));
   if (!quota_manager_impl_) {
-    std::move(respond).Run(QuotaError::kUnknownError);
+    std::move(respond).Run(base::unexpected(QuotaError::kUnknownError));
     return;
   }
 
@@ -243,7 +243,7 @@ void QuotaManagerProxy::GetBucketForTesting(
   auto respond =
       base::BindPostTask(std::move(callback_task_runner), std::move(callback));
   if (!quota_manager_impl_) {
-    std::move(respond).Run(QuotaError::kUnknownError);
+    std::move(respond).Run(base::unexpected(QuotaError::kUnknownError));
     return;
   }
 
@@ -274,7 +274,7 @@ void QuotaManagerProxy::GetBucketsForStorageKey(
   auto respond =
       base::BindPostTask(std::move(callback_task_runner), std::move(callback));
   if (!quota_manager_impl_) {
-    std::move(respond).Run(QuotaError::kUnknownError);
+    std::move(respond).Run(base::unexpected(QuotaError::kUnknownError));
     return;
   }
 
@@ -302,7 +302,7 @@ void QuotaManagerProxy::GetBucketById(
   auto respond =
       base::BindPostTask(std::move(callback_task_runner), std::move(callback));
   if (!quota_manager_impl_) {
-    std::move(respond).Run(QuotaError::kUnknownError);
+    std::move(respond).Run(base::unexpected(QuotaError::kUnknownError));
     return;
   }
 
@@ -361,7 +361,7 @@ void QuotaManagerProxy::UpdateBucketExpiration(
   auto respond =
       base::BindPostTask(std::move(callback_task_runner), std::move(callback));
   if (!quota_manager_impl_) {
-    std::move(respond).Run(QuotaError::kUnknownError);
+    std::move(respond).Run(base::unexpected(QuotaError::kUnknownError));
     return;
   }
 
@@ -391,7 +391,7 @@ void QuotaManagerProxy::UpdateBucketPersistence(
   auto respond =
       base::BindPostTask(std::move(callback_task_runner), std::move(callback));
   if (!quota_manager_impl_) {
-    std::move(respond).Run(QuotaError::kUnknownError);
+    std::move(respond).Run(base::unexpected(QuotaError::kUnknownError));
     return;
   }
 

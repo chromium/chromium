@@ -638,6 +638,7 @@ void WorkerThread::InitializeOnWorkerThread(
       debugger->WorkerThreadCreated(this);
 
     GlobalScope()->ScriptController()->Initialize(url_for_debugger);
+    GlobalScope()->WillBeginLoading();
     v8::HandleScope handle_scope(GetIsolate());
     Platform::Current()->WorkerContextCreated(
         GlobalScope()->ScriptController()->GetContext());
@@ -668,7 +669,9 @@ void WorkerThread::InitializeOnWorkerThread(
   // from another thread and try to resume "pause on start" before
   // we even paused.
   worker_inspector_controller_->WaitForDebuggerIfNeeded();
-  GlobalScope()->WillBeginLoading();
+  // Note the above call runs nested message loop which may result in
+  // worker thread being torn down by request from the parent thread,
+  // while waiting for debugger.
 }
 
 void WorkerThread::EvaluateClassicScriptOnWorkerThread(

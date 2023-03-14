@@ -60,9 +60,6 @@ class BrowserList : public KeyedService {
   // Removes an observer from the service. The service must have no observers
   // when it is destroyed.
   virtual void RemoveObserver(BrowserListObserver* observer) = 0;
-
-  // true if this service has been shut down.
-  virtual bool IsShutdown() = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_MAIN_BROWSER_LIST_H_

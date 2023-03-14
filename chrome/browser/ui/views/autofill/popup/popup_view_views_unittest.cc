@@ -7,7 +7,10 @@
 #include <memory>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/strings/string_util.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/mock_autofill_popup_controller.h"
@@ -16,8 +19,10 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_separator_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_warning_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,8 +42,9 @@ namespace autofill {
 
 namespace {
 
-using testing::Mock;
-using testing::NiceMock;
+using ::testing::Mock;
+using ::testing::NiceMock;
+using ::testing::Return;
 using CellIndex = PopupViewViews::CellIndex;
 using CellType = PopupRowView::CellType;
 
@@ -204,6 +210,7 @@ class PopupViewViewsTestWithClickablePopupItemId
 TEST_F(PopupViewViewsTest, ShowHideTest) {
   CreateAndShowView({0});
   EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
+  EXPECT_CALL(controller(), AcceptSuggestionWithoutThreshold).Times(0);
   view().Hide();
 }
 
@@ -303,8 +310,7 @@ TEST_F(PopupViewViewsTest, Gestures) {
   ui::GestureEvent tap_event(/*x=*/0, /*y=*/0, /*flags=*/0,
                              ui::EventTimeForNow(),
                              ui::GestureEventDetails(ui::ET_GESTURE_TAP));
-  EXPECT_CALL(controller(),
-              AcceptSuggestion(0, /*show_threshold=*/base::Milliseconds(500)));
+  EXPECT_CALL(controller(), AcceptSuggestion(0));
   GetPopupRowViewAt(0).GetContentView().OnGestureEvent(&tap_event);
 
   // Canceling gesture clears any selection.
@@ -323,6 +329,7 @@ TEST_F(PopupViewViewsTest, ClickDisabledEntry) {
   CreateAndShowView();
 
   EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
+  EXPECT_CALL(controller(), AcceptSuggestionWithoutThreshold).Times(0);
 
   gfx::Point inside_point(GetRowViewAt(0).x() + 1, GetRowViewAt(0).y() + 1);
   ui::MouseEvent click_mouse_event(
@@ -352,6 +359,41 @@ TEST_F(PopupViewViewsTest, CursorUpDownForSelectableCells) {
   SimulateKeyPress(ui::VKEY_DOWN);
   EXPECT_EQ(view().GetSelectedCell(),
             absl::make_optional<CellIndex>(1u, CellType::kContent));
+}
+
+TEST_F(PopupViewViewsTest, CursorLeftRightForAutocompleteEntries) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillShowAutocompleteDeleteButton};
+
+  // Set up the popup.
+  CreateAndShowView(
+      {POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY, POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY});
+
+  view().SetSelectedCell(CellIndex{0, CellType::kContent});
+
+  // Pressing left does nothing because the left-most cell is already selected.
+  SimulateKeyPress(ui::VKEY_LEFT);
+  EXPECT_EQ(view().GetSelectedCell(),
+            absl::make_optional<CellIndex>(0u, CellType::kContent));
+
+  // Pressing right selects the control area.
+  SimulateKeyPress(ui::VKEY_RIGHT);
+  EXPECT_EQ(view().GetSelectedCell(),
+            absl::make_optional<CellIndex>(0u, CellType::kControl));
+
+  // Going down respects the currently selected column.
+  SimulateKeyPress(ui::VKEY_DOWN);
+  EXPECT_EQ(view().GetSelectedCell(),
+            absl::make_optional<CellIndex>(1u, CellType::kControl));
+
+  // Wrapping respects the currently selected column.
+  SimulateKeyPress(ui::VKEY_DOWN);
+  EXPECT_EQ(view().GetSelectedCell(),
+            absl::make_optional<CellIndex>(0u, CellType::kControl));
+
+  SimulateKeyPress(ui::VKEY_LEFT);
+  EXPECT_EQ(view().GetSelectedCell(),
+            absl::make_optional<CellIndex>(0u, CellType::kContent));
 }
 
 TEST_F(PopupViewViewsTest, PageUpDownForSelectableCells) {
@@ -412,9 +454,62 @@ TEST_F(PopupViewViewsTest, MovingSelectionSkipsInsecureFormWarning) {
   EXPECT_FALSE(view().GetSelectedCell());
 }
 
+TEST_F(PopupViewViewsTest, FillContentOnEnter) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillPopupUseThresholdForKeyboardAndMobileAccept);
+  CreateAndShowView({1, POPUP_ITEM_ID_AUTOFILL_OPTIONS});
+
+  // Select the first item.
+  view().SetSelectedCell(CellIndex{0u, CellType::kContent});
+  EXPECT_EQ(view().GetSelectedCell(),
+            absl::make_optional<CellIndex>(0u, CellType::kContent));
+
+  // Because the first line is an autofillable entry, we expect that the tab
+  // key triggers autofill.
+  EXPECT_CALL(controller(), AcceptSuggestionWithoutThreshold(0));
+  SimulateKeyPress(ui::VKEY_RETURN);
+}
+
+TEST_F(PopupViewViewsTest, FillContentOnEnterUsesThresholdIfFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillPopupUseThresholdForKeyboardAndMobileAccept};
+  CreateAndShowView({1, POPUP_ITEM_ID_AUTOFILL_OPTIONS});
+
+  // Select the first item.
+  view().SetSelectedCell(CellIndex{0u, CellType::kContent});
+  EXPECT_EQ(view().GetSelectedCell(),
+            absl::make_optional<CellIndex>(0u, CellType::kContent));
+
+  // Because the first line is an autofillable entry, we expect that the tab
+  // key triggers autofill.
+  EXPECT_CALL(controller(), AcceptSuggestion);
+  EXPECT_CALL(controller(), AcceptSuggestionWithoutThreshold).Times(0);
+  SimulateKeyPress(ui::VKEY_RETURN);
+}
+
 // Verify that pressing the tab key while an autofillable entry is selected
 // triggers the filling.
 TEST_F(PopupViewViewsTest, FillOnTabPressed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillPopupUseThresholdForKeyboardAndMobileAccept);
+  CreateAndShowView({1, POPUP_ITEM_ID_AUTOFILL_OPTIONS});
+
+  // Select the first item.
+  view().SetSelectedCell(CellIndex{0u, CellType::kContent});
+  EXPECT_EQ(view().GetSelectedCell(),
+            absl::make_optional<CellIndex>(0u, CellType::kContent));
+
+  // Because the first line is an autofillable entry, we expect that the tab
+  // key triggers autofill.
+  EXPECT_CALL(controller(), AcceptSuggestionWithoutThreshold);
+  SimulateKeyPress(ui::VKEY_TAB);
+}
+
+TEST_F(PopupViewViewsTest, FillOnTabPressedUsesThresholdIfFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillPopupUseThresholdForKeyboardAndMobileAccept};
   CreateAndShowView({1, POPUP_ITEM_ID_AUTOFILL_OPTIONS});
 
   // Select the first item.
@@ -439,6 +534,7 @@ TEST_F(PopupViewViewsTest, NoFillOnTabPressedWithModifiers) {
   // Because the first line is an autofillable entry, we expect that the tab
   // key triggers autofill.
   EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
+  EXPECT_CALL(controller(), AcceptSuggestionWithoutThreshold).Times(0);
   SimulateKeyPress(ui::VKEY_TAB, /*shift_modifier_pressed=*/false,
                    /*non_shift_modifier_pressed=*/true);
 }
@@ -457,6 +553,7 @@ TEST_F(PopupViewViewsTest, NoAutofillOptionsTriggeredOnTabPressed) {
   // Because the selected line is POPUP_ITEM_ID_AUTOFILL_OPTIONS, we expect that
   // the tab key does not trigger anything.
   EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
+  EXPECT_CALL(controller(), AcceptSuggestionWithoutThreshold).Times(0);
   SimulateKeyPress(ui::VKEY_TAB);
 }
 
@@ -493,6 +590,46 @@ TEST_F(PopupViewViewsTest, RemoveLine) {
   SimulateKeyPress(ui::VKEY_DELETE, /*shift_modifier_pressed=*/true);
 }
 
+TEST_F(PopupViewViewsTest, RemoveAutofillRecordsNoAutocompleteDeletionMetrics) {
+  base::HistogramTester histogram_tester;
+  CreateAndShowView({1, 1, POPUP_ITEM_ID_AUTOFILL_OPTIONS});
+
+  view().SetSelectedCell(CellIndex{1u, CellType::kContent});
+
+  // No metrics are recorded if the entry is not an Autocomplete entry.
+  EXPECT_CALL(controller(), RemoveSuggestion(1)).WillOnce(Return(true));
+  SimulateKeyPress(ui::VKEY_DELETE, /*shift_modifier_pressed=*/true);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Autocomplete.SingleEntryRemovalMethod", 0);
+  histogram_tester.ExpectTotalCount("Autocomplete.Events", 0);
+}
+
+TEST_F(PopupViewViewsTest, RemoveAutocompleteSuggestionRecordsMetrics) {
+  base::HistogramTester histogram_tester;
+  CreateAndShowView(
+      {POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY, POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY});
+
+  view().SetSelectedCell(CellIndex{1u, CellType::kContent});
+
+  // If deletion fails, no metric is recorded.
+  EXPECT_CALL(controller(), RemoveSuggestion(1)).WillOnce(Return(false));
+  SimulateKeyPress(ui::VKEY_DELETE, /*shift_modifier_pressed=*/true);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Autocomplete.SingleEntryRemovalMethod", 0);
+  histogram_tester.ExpectTotalCount("Autocomplete.Events", 0);
+
+  EXPECT_CALL(controller(), RemoveSuggestion(1)).WillOnce(Return(true));
+  SimulateKeyPress(ui::VKEY_DELETE, /*shift_modifier_pressed=*/true);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Autocomplete.SingleEntryRemovalMethod",
+      AutofillMetrics::AutocompleteSingleEntryRemovalMethod::
+          kKeyboardShiftDeletePressed,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autocomplete.Events",
+      AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 1);
+}
+
 // Ensure that the voice_over value of suggestions is presented to the
 // accessibility layer.
 TEST_F(PopupViewViewsTest, VoiceOverTest) {
@@ -518,8 +655,7 @@ TEST_F(PopupViewViewsTest, VoiceOverTest) {
 // Tests that (only) clickable items trigger an AcceptSuggestion event.
 TEST_P(PopupViewViewsTestWithAnyPopupItemId, ShowClickTest) {
   CreateAndShowView({popup_item_id()});
-  EXPECT_CALL(controller(),
-              AcceptSuggestion(0, /*show_threshold=*/base::Milliseconds(500)))
+  EXPECT_CALL(controller(), AcceptSuggestion(0))
       .Times(IsClickable(popup_item_id()));
   generator().MoveMouseTo(gfx::Point(1000, 1000));
   ASSERT_FALSE(view().IsMouseHovered());
@@ -534,9 +670,7 @@ TEST_P(PopupViewViewsTestWithAnyPopupItemId, ShowClickTest) {
 TEST_P(PopupViewViewsTestWithClickablePopupItemId,
        AcceptSuggestionIfUnfocusedAtPaint) {
   CreateAndShowView({popup_item_id()});
-  EXPECT_CALL(controller(),
-              AcceptSuggestion(0, /*show_threshold=*/base::Milliseconds(500)))
-      .Times(1);
+  EXPECT_CALL(controller(), AcceptSuggestion(0)).Times(1);
   generator().MoveMouseTo(gfx::Point(1000, 1000));
   ASSERT_FALSE(view().IsMouseHovered());
   Paint();

@@ -65,6 +65,7 @@ namespace ash {
 class AccessibilityEventRewriterDelegateImpl;
 class ArcKioskAppManager;
 class AudioSurveyHandler;
+class AuthParts;
 class BluetoothPrefStateObserver;
 class BulkPrintersCalculatorFactory;
 class CameraGeneralSurveyHandler;
@@ -85,6 +86,7 @@ class NetworkChangeManagerClient;
 class NetworkPrefStateObserver;
 class NetworkThrottlingObserver;
 class MemoryMetrics;
+class MisconfiguredUserCleaner;
 class PowerMetricsReporter;
 class RendererFreezer;
 class SessionTerminationManager;
@@ -304,9 +306,12 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<traffic_counters::TrafficCountersHandler>
       traffic_counters_handler_;
   std::unique_ptr<ash::AuthMetricsRecorder> auth_metrics_recorder_;
+  std::unique_ptr<ash::AuthParts> auth_parts_;
 
   std::unique_ptr<video_conference::VideoConferenceManagerClientImpl>
       video_conference_manager_client_;
+
+  std::unique_ptr<MisconfiguredUserCleaner> misconfigured_user_cleaner_;
 
   base::WeakPtrFactory<ChromeBrowserMainPartsAsh> weak_ptr_factory_{this};
 };

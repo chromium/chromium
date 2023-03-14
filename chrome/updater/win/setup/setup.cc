@@ -148,11 +148,12 @@ int Setup(UpdaterScope scope) {
                              install_list.get());
   }
 
-  if (!install_list->Do() ||
-      !RegisterWakeTask(run_updater_wake_command, scope)) {
+  install_list->AddWorkItem(
+      new RegisterWakeTaskWorkItem(run_updater_wake_command, scope));
+
+  if (!install_list->Do()) {
     LOG(ERROR) << "Install failed, rolling back...";
     install_list->Rollback();
-    UnregisterWakeTask(scope);
     LOG(ERROR) << "Rollback complete.";
     return -1;
   }

@@ -224,7 +224,7 @@ GLuint GLTextureImageBackingHelper::MakeTextureAndSetParameters(
     GLenum target,
     bool framebuffer_attachment_angle,
     scoped_refptr<gles2::TexturePassthrough>* passthrough_texture,
-    raw_ptr<gles2::Texture>* texture) {
+    raw_ptr<gles2::Texture, DanglingUntriaged>* texture) {
   gl::GLApi* api = gl::g_current_gl_context;
   ScopedRestoreTexture scoped_restore(api, target);
 

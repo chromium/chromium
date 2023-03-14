@@ -23,7 +23,6 @@
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/url_handler_manager.h"
-#include "chrome/browser/web_applications/os_integration/url_handler_manager_impl.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_manager.h"
@@ -282,14 +281,11 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
         profile, icon_manager_.get(), file_handler_manager.get(),
         protocol_handler_manager.get());
 
-    std::unique_ptr<UrlHandlerManager> url_handler_manager;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    url_handler_manager = std::make_unique<UrlHandlerManagerImpl>(profile);
-#endif
-
+    // TODO(crbug.com/1072058): Remove UrlHandlerManager from
+    // OsIntegrationManager.
     os_integration_manager_ = std::make_unique<OsIntegrationManager>(
         profile, std::move(shortcut_manager), std::move(file_handler_manager),
-        std::move(protocol_handler_manager), std::move(url_handler_manager));
+        std::move(protocol_handler_manager), /*url_handler_manager=*/nullptr);
   }
 
   command_manager_ = std::make_unique<WebAppCommandManager>(profile, this);
@@ -297,6 +293,11 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
 
   registrar_ = std::move(registrar);
   sync_bridge_ = std::move(sync_bridge);
+
+#if (BUILDFLAG(IS_CHROMEOS))
+  web_app_run_on_os_login_manager_ =
+      std::make_unique<WebAppRunOnOsLoginManager>(command_scheduler_.get());
+#endif
 }
 
 void WebAppProvider::ConnectSubsystems() {
@@ -368,6 +369,12 @@ void WebAppProvider::OnSyncBridgeReady() {
   install_manager_->Start();
   preinstalled_web_app_manager_->Start(external_manager_barrier);
   web_app_policy_manager_->Start(external_manager_barrier);
+#if (BUILDFLAG(IS_CHROMEOS))
+  on_external_managers_synchronized_.Post(
+      FROM_HERE,
+      base::BindOnce(&WebAppRunOnOsLoginManager::Start,
+                     web_app_run_on_os_login_manager_->GetWeakPtr()));
+#endif
   manifest_update_manager_->Start();
   os_integration_manager_->Start();
   ui_manager_->Start();
@@ -389,8 +396,8 @@ void WebAppProvider::DoMigrateProfilePrefs(Profile* profile) {
   ScopedRegistryUpdate update(sync_bridge_.get());
   for (const auto& iter : sources) {
     WebApp* web_app = update->UpdateApp(iter.first);
-    if (web_app && !web_app->install_source_for_metrics()) {
-      web_app->SetInstallSourceForMetrics(
+    if (web_app && !web_app->latest_install_source()) {
+      web_app->SetLatestInstallSource(
           static_cast<webapps::WebappInstallSource>(iter.second));
     }
   }

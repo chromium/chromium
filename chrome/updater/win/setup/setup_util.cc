@@ -20,6 +20,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/win/win_util.h"
@@ -38,13 +39,6 @@
 
 namespace updater {
 namespace {
-
-std::wstring GetTaskName(UpdaterScope scope) {
-  std::unique_ptr<TaskScheduler> task_scheduler =
-      TaskScheduler::CreateInstance(scope);
-  DCHECK(task_scheduler);
-  return task_scheduler->FindFirstTaskName(GetTaskNamePrefix(scope));
-}
 
 std::wstring CreateRandomTaskName(UpdaterScope scope) {
   GUID random_guid = {0};
@@ -157,42 +151,11 @@ void AddInstallServerWorkItems(HKEY root,
 
 }  // namespace
 
-bool RegisterWakeTask(const base::CommandLine& run_command,
-                      UpdaterScope scope) {
-  auto task_scheduler = TaskScheduler::CreateInstance(scope);
+std::wstring GetTaskName(UpdaterScope scope) {
+  scoped_refptr<TaskScheduler> task_scheduler =
+      TaskScheduler::CreateInstance(scope);
   DCHECK(task_scheduler);
-
-  std::wstring task_name = GetTaskName(scope);
-  if (!task_name.empty()) {
-    // Update the currently installed scheduled task.
-    if (task_scheduler->RegisterTask(
-            task_name.c_str(), GetTaskDisplayName(scope).c_str(), run_command,
-            TaskScheduler::TriggerType::TRIGGER_TYPE_HOURLY, true)) {
-      VLOG(1) << "RegisterWakeTask succeeded." << task_name;
-      return true;
-    } else {
-      task_scheduler->DeleteTask(task_name.c_str());
-    }
-  }
-
-  // Create a new task name and fall through to install that.
-  task_name = CreateRandomTaskName(scope);
-  if (task_name.empty()) {
-    LOG(ERROR) << "Unexpected empty task name.";
-    return false;
-  }
-
-  DCHECK(!task_scheduler->IsTaskRegistered(task_name.c_str()));
-
-  if (task_scheduler->RegisterTask(
-          task_name.c_str(), GetTaskDisplayName(scope).c_str(), run_command,
-          TaskScheduler::TriggerType::TRIGGER_TYPE_HOURLY, true)) {
-    VLOG(1) << "RegisterWakeTask succeeded: " << task_name;
-    return true;
-  }
-
-  LOG(ERROR) << "RegisterWakeTask failed: " << task_name;
-  return false;
+  return task_scheduler->FindFirstTaskName(GetTaskNamePrefix(scope));
 }
 
 void UnregisterWakeTask(UpdaterScope scope) {
@@ -465,6 +428,52 @@ bool UnregisterUserRunAtStartup(const std::wstring& run_value_name) {
 
   return installer::DeleteRegistryValue(HKEY_CURRENT_USER, REGSTR_PATH_RUN, 0,
                                         run_value_name);
+}
+
+RegisterWakeTaskWorkItem::RegisterWakeTaskWorkItem(
+    const base::CommandLine& run_command,
+    UpdaterScope scope)
+    : run_command_(run_command), scope_(scope) {}
+
+RegisterWakeTaskWorkItem::~RegisterWakeTaskWorkItem() = default;
+
+bool RegisterWakeTaskWorkItem::DoImpl() {
+  scoped_refptr<TaskScheduler> task_scheduler =
+      TaskScheduler::CreateInstance(scope_);
+  DCHECK(task_scheduler);
+
+  // Task already exists.
+  if (!GetTaskName(scope_).empty()) {
+    return true;
+  }
+
+  // Create a new task name and install.
+  const std::wstring task_name = CreateRandomTaskName(scope_);
+  if (task_name.empty()) {
+    LOG(ERROR) << "Unexpected empty task name.";
+    return false;
+  }
+
+  DCHECK(!task_scheduler->IsTaskRegistered(task_name.c_str()));
+
+  if (!task_scheduler->RegisterTask(
+          task_name.c_str(), GetTaskDisplayName(scope_).c_str(), run_command_,
+          TaskScheduler::TriggerType::TRIGGER_TYPE_HOURLY, true)) {
+    return false;
+  }
+
+  task_name_ = task_name;
+  return true;
+}
+
+void RegisterWakeTaskWorkItem::RollbackImpl() {
+  if (task_name_.empty()) {
+    return;
+  }
+
+  auto task_scheduler = TaskScheduler::CreateInstance(scope_);
+  DCHECK(task_scheduler);
+  task_scheduler->DeleteTask(task_name_.c_str());
 }
 
 }  // namespace updater

@@ -3,14 +3,20 @@
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    padding: 24px;
-    width: 448px;
+    width: 512px;
   }
 
-  /* TODO(petermarshall): Possibly change font based on the specs */
+  .body-wrapper {
+    padding: 32px;
+  }
+
+  #content:focus-visible {
+    outline: none;
+  }
+
   .title {
     color: var(--cros-text-color-primary);
-    font: var(--cros-display-7-font);
+    font: var(--cros-display-6-font);
   }
 
   .normal-text {
@@ -20,10 +26,11 @@
   }
 
   cr-checkbox {
-    --cr-checkbox-label-padding-start: 8px;
+    --cr-checkbox-label-padding-start: 12px;
     --cr-checkbox-size: 20px;
-    margin-block-end: 2px;
-    margin-block-start: 18px;
+    margin-top: 16px;
+    padding-bottom: 8px;
+    padding-top: 8px;
   }
 
   .checkbox-text {
@@ -34,22 +41,37 @@
   #button-container {
     display: flex;
     justify-content: flex-end;
+    margin-top: 32px;
+  }
+
+  cr-lottie {
+    height: 236px;
+  }
+
+  cr-button {
+    border-radius: 16px;
+  }
+
+  cr-button:focus-visible {
+    /* disable cr-button default keyboard focus style */
+    box-shadow: none;
+    outline: 2px solid var(--cros-focus-ring-color);
+    outline-offset: 2px;
   }
 </style>
 
 <!-- TODO(b/258071752): Use localized strings -->
-<div class="title">
-  Move file to <span id="provider-name"></span> to open
-</div>
-<div class="normal-text">
-  The <span id="app-name"></span> app requires files to be in
-  <span id="provider-short-name"></span>. We can move your files
-  whenever you choose to open them.
-</div>
-<cr-checkbox id="always-move-checkbox">
-  <p class="checkbox-text">Do this automatically next time</p>
-</cr-checkbox>
-<div id="button-container">
-  <cr-button class="cancel-button">$i18n{cancel}</cr-button>
-  <cr-button class="action-button">Move & open file</cr-button>
+<cr-lottie id="animation" aria-hidden="true" autoplay>
+</cr-lottie>
+<div class="body-wrapper">
+  <div class="title">
+    Move <span id="number-of-files"></span> <span id="files-text"></span> to
+    <span id="provider-name"></span> to open?
+  </div>
+  <div class="normal-text" id="body-text"> </div>
+  <cr-checkbox id="always-move-checkbox"> </cr-checkbox>
+  <div id="button-container">
+    <cr-button class="cancel-button">$i18n{cancel}</cr-button>
+    <cr-button class="action-button">Move and open</cr-button>
+  </div>
 </div>

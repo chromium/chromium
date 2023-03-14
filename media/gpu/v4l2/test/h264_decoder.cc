@@ -821,13 +821,14 @@ H264Decoder::~H264Decoder() = default;
 
 std::set<uint32_t> H264Decoder::GetReusableReferenceSlots(
     const MmapedBuffer& buffer,
-    std::set<uint32_t> queued_buffer_indexes) {
+    std::set<uint32_t> queued_buffer_ids) {
   std::set<uint32_t> reusable_buffer_slots = {};
   for (size_t i = 0; i < CAPTURE_queue_->num_buffers(); i++) {
     // Check that index is not currently queued in the CAPTURE queue and
     // that it is not the same buffer index previously written to.
-    if (!queued_buffer_indexes.count(i) && i != buffer.buffer_id())
+    if (!queued_buffer_ids.count(i) && i != buffer.buffer_id()) {
       reusable_buffer_slots.insert(i);
+    }
   }
   return reusable_buffer_slots;
 }
@@ -847,20 +848,21 @@ VideoDecoder::Result H264Decoder::DecodeNextFrame(std::vector<char>& y_plane,
   if (!resulting_slice_header)
     return VideoDecoder::kEOStream;
 
-  uint32_t CAPTURE_index;
-  if (!v4l2_ioctl_->DQBuf(CAPTURE_queue_, &CAPTURE_index)) {
+  uint32_t buffer_id;
+  if (!v4l2_ioctl_->DQBuf(CAPTURE_queue_, &buffer_id)) {
     VLOG(4) << "VIDIOC_DQBUF failed for CAPTURE queue";
     return VideoDecoder::kError;
   }
   // Keeps track of which indices are currently dequeued in the
   // CAPTURE queue. This will be used to determine which indices
   // can/cannot be refreshed.
-  CAPTURE_queue_->DequeueBufferIndex(CAPTURE_index);
+  CAPTURE_queue_->DequeueBufferId(buffer_id);
 
-  CHECK_LT(CAPTURE_index, kNumberOfBuffersInCaptureQueue)
-      << "Capture Queue Index greater than number of buffers";
+  CHECK_LT(buffer_id, kNumberOfBuffersInCaptureQueue)
+      << "Buffer ID of the buffer in CAPTURE queue is greater than number of "
+         "buffers";
 
-  scoped_refptr<MmapedBuffer> buffer = CAPTURE_queue_->GetBuffer(CAPTURE_index);
+  scoped_refptr<MmapedBuffer> buffer = CAPTURE_queue_->GetBuffer(buffer_id);
   size = CAPTURE_queue_->display_size();
   if (CAPTURE_queue_->fourcc() == V4L2_PIX_FMT_NV12) {
     CHECK_EQ(buffer->mmaped_planes().size(), 1u)
@@ -882,8 +884,8 @@ VideoDecoder::Result H264Decoder::DecodeNextFrame(std::vector<char>& y_plane,
   }
 
   const std::set<uint32_t> reusable_buffer_slots =
-      GetReusableReferenceSlots(*CAPTURE_queue_->GetBuffer(CAPTURE_index).get(),
-                                CAPTURE_queue_->queued_buffer_indexes());
+      GetReusableReferenceSlots(*CAPTURE_queue_->GetBuffer(buffer_id).get(),
+                                CAPTURE_queue_->queued_buffer_ids());
 
   for (const auto reusable_buffer_slot : reusable_buffer_slots) {
     if (!v4l2_ioctl_->QBuf(CAPTURE_queue_, reusable_buffer_slot)) {
@@ -893,15 +895,14 @@ VideoDecoder::Result H264Decoder::DecodeNextFrame(std::vector<char>& y_plane,
     // Keeps track of which indices are currently queued in the
     // CAPTURE queue. This will be used to determine which indices
     // can/cannot be refreshed.
-    CAPTURE_queue_->QueueBufferIndex(reusable_buffer_slot);
+    CAPTURE_queue_->QueueBufferId(reusable_buffer_slot);
   }
 
-  uint32_t OUTPUT_index;
-  if (!v4l2_ioctl_->DQBuf(OUTPUT_queue_, &OUTPUT_index)) {
+  if (!v4l2_ioctl_->DQBuf(OUTPUT_queue_, &buffer_id)) {
     VLOG(4) << "VIDIOC_DQBUF failed for OUTPUT queue.";
     return VideoDecoder::kError;
   }
-  CHECK_EQ(OUTPUT_index, uint32_t(0)) << "OUTPUT Queue Index not zero";
+  CHECK_EQ(buffer_id, uint32_t(0)) << "OUTPUT Queue Index not zero";
 
   if (!v4l2_ioctl_->MediaRequestIocReinit(OUTPUT_queue_)) {
     VLOG(4) << "MEDIA_REQUEST_IOC_REINIT failed.";

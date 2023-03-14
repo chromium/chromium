@@ -3,8 +3,17 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/ash/login/fake_app_launch_splash_screen_handler.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 
 namespace ash {
+
+void FakeAppLaunchSplashScreenHandler::SetDelegate(Delegate* delegate) {
+  delegate_ = delegate;
+}
+
+void FakeAppLaunchSplashScreenHandler::Show(KioskAppManagerBase::App app_data) {
+  last_app_data_ = app_data;
+}
 
 void FakeAppLaunchSplashScreenHandler::ShowErrorMessage(
     KioskAppLaunchError::Error error) {
@@ -15,6 +24,10 @@ bool FakeAppLaunchSplashScreenHandler::IsNetworkReady() {
   return network_ready_;
 }
 
+bool FakeAppLaunchSplashScreenHandler::IsNetworkRequired() const {
+  return network_required_;
+}
+
 KioskAppLaunchError::Error
 FakeAppLaunchSplashScreenHandler::GetErrorMessageType() const {
   return error_message_type_;
@@ -22,6 +35,19 @@ FakeAppLaunchSplashScreenHandler::GetErrorMessageType() const {
 
 void FakeAppLaunchSplashScreenHandler::SetNetworkReady(bool ready) {
   network_ready_ = ready;
+  if (delegate_) {
+    delegate_->OnNetworkStateChanged(true);
+  }
+}
+
+void FakeAppLaunchSplashScreenHandler::FinishNetworkConfig() {
+  if (delegate_) {
+    delegate_->OnNetworkConfigFinished();
+  }
+}
+
+void FakeAppLaunchSplashScreenHandler::SetNetworkRequired() {
+  network_required_ = true;
 }
 
 void FakeAppLaunchSplashScreenHandler::UpdateAppLaunchState(

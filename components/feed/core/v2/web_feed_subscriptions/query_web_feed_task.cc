@@ -27,6 +27,7 @@ QueryWebFeedTask::QueryWebFeedTask(
       request_(std::move(request)),
       callback_(std::move(callback)) {
   url_ = request_.web_feed_url;
+  web_feed_id_ = request_.web_feed_id;
 }
 
 QueryWebFeedTask::~QueryWebFeedTask() = default;
@@ -36,7 +37,7 @@ void QueryWebFeedTask::Run() {
     Done(WebFeedQueryRequestStatus::kAbortWebFeedQueryPendingClearAll);
     return;
   }
-  if (!url_.is_valid()) {
+  if (web_feed_id_.empty() && !url_.is_valid()) {
     Done(WebFeedQueryRequestStatus::kFailedInvalidUrl);
     return;
   }
@@ -47,8 +48,11 @@ void QueryWebFeedTask::Run() {
 
   feedwire::webfeed::QueryWebFeedRequest request;
   SetConsistencyToken(request, stream_->GetMetadata().consistency_token());
-  request.mutable_web_feed_uris()->set_web_page_uri(url_.spec());
-
+  if (!web_feed_id_.empty()) {
+    request.set_name(web_feed_id_);
+  } else {
+    request.mutable_web_feed_uris()->set_web_page_uri(url_.spec());
+  }
   stream_->GetNetwork().SendApiRequest<QueryWebFeedDiscoverApi>(
       request, stream_->GetAccountInfo(), stream_->GetSignedInRequestMetadata(),
       base::BindOnce(&QueryWebFeedTask::RequestComplete,
@@ -76,6 +80,8 @@ void QueryWebFeedTask::Done(WebFeedQueryRequestStatus status) {
   WebFeedSubscriptions::QueryWebFeedResult result;
   result.request_status = status;
   result.web_feed_id = queried_web_feed_info_.web_feed_id();
+  result.title = queried_web_feed_info_.title();
+  result.url = queried_web_feed_info_.visit_uri();
   std::move(callback_).Run(std::move(result));
   TaskComplete();
 }

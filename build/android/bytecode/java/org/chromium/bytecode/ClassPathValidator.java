@@ -71,6 +71,11 @@ public class ClassPathValidator {
             // API.
             return;
         }
+        if (className.matches("^android\\b.*")) {
+            // OS APIs sometime pop up in prebuilts. Rather than force prebuilt targets to set a
+            // proper alternative_android_sdk_dep, just ignore android.*
+            return;
+        }
         try {
             classLoader.loadClass(className.replace('/', '.'));
         } catch (ClassNotFoundException e) {

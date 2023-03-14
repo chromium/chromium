@@ -1,0 +1,268 @@
+This is a testharness.js-based test.
+Found 264 tests; 216 PASS, 48 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS add float32 1D tensors / cpu / sync
+PASS add float32 2D tensors / cpu / sync
+PASS add float32 3D tensors / cpu / sync
+PASS add float32 4D tensors / cpu / sync
+PASS add float32 5D tensors / cpu / sync
+PASS add float32 broadcast 1D to 4D / cpu / sync
+PASS add float32 broadcast 2D to 4D / cpu / sync
+PASS add float32 broadcast 3D to 4D / cpu / sync
+PASS add float32 broadcast 4D to 4D / cpu / sync
+PASS add float32 1D tensors / gpu / sync
+PASS add float32 2D tensors / gpu / sync
+PASS add float32 3D tensors / gpu / sync
+PASS add float32 4D tensors / gpu / sync
+PASS add float32 5D tensors / gpu / sync
+PASS add float32 broadcast 1D to 4D / gpu / sync
+PASS add float32 broadcast 2D to 4D / gpu / sync
+PASS add float32 broadcast 3D to 4D / gpu / sync
+PASS add float32 broadcast 4D to 4D / gpu / sync
+PASS sub float32 1D tensors / cpu / sync
+PASS sub float32 2D tensors / cpu / sync
+PASS sub float32 3D tensors / cpu / sync
+PASS sub float32 4D tensors / cpu / sync
+PASS sub float32 5D tensors / cpu / sync
+PASS sub float32 broadcast 1D to 4D / cpu / sync
+PASS sub float32 broadcast 2D to 4D / cpu / sync
+PASS sub float32 broadcast 3D to 4D / cpu / sync
+PASS sub float32 broadcast 4D to 4D / cpu / sync
+PASS sub float32 1D tensors / gpu / sync
+PASS sub float32 2D tensors / gpu / sync
+PASS sub float32 3D tensors / gpu / sync
+PASS sub float32 4D tensors / gpu / sync
+PASS sub float32 5D tensors / gpu / sync
+PASS sub float32 broadcast 1D to 4D / gpu / sync
+PASS sub float32 broadcast 2D to 4D / gpu / sync
+PASS sub float32 broadcast 3D to 4D / gpu / sync
+PASS sub float32 broadcast 4D to 4D / gpu / sync
+PASS mul float32 1D tensors / cpu / sync
+PASS mul float32 2D tensors / cpu / sync
+PASS mul float32 3D tensors / cpu / sync
+PASS mul float32 4D tensors / cpu / sync
+PASS mul float32 5D tensors / cpu / sync
+PASS mul float32 broadcast 1D to 4D / cpu / sync
+PASS mul float32 broadcast 2D to 4D / cpu / sync
+PASS mul float32 broadcast 3D to 4D / cpu / sync
+PASS mul float32 broadcast 4D to 4D / cpu / sync
+PASS mul float32 1D tensors / gpu / sync
+PASS mul float32 2D tensors / gpu / sync
+PASS mul float32 3D tensors / gpu / sync
+PASS mul float32 4D tensors / gpu / sync
+PASS mul float32 5D tensors / gpu / sync
+PASS mul float32 broadcast 1D to 4D / gpu / sync
+PASS mul float32 broadcast 2D to 4D / gpu / sync
+PASS mul float32 broadcast 3D to 4D / gpu / sync
+PASS mul float32 broadcast 4D to 4D / gpu / sync
+PASS div float32 1D tensors / cpu / sync
+PASS div float32 2D tensors / cpu / sync
+PASS div float32 3D tensors / cpu / sync
+PASS div float32 4D tensors / cpu / sync
+PASS div float32 5D tensors / cpu / sync
+PASS div float32 broadcast 1D to 4D / cpu / sync
+PASS div float32 broadcast 2D to 4D / cpu / sync
+PASS div float32 broadcast 3D to 4D / cpu / sync
+PASS div float32 broadcast 4D to 4D / cpu / sync
+PASS div float32 1D tensors / gpu / sync
+PASS div float32 2D tensors / gpu / sync
+PASS div float32 3D tensors / gpu / sync
+PASS div float32 4D tensors / gpu / sync
+PASS div float32 5D tensors / gpu / sync
+PASS div float32 broadcast 1D to 4D / gpu / sync
+PASS div float32 broadcast 2D to 4D / gpu / sync
+PASS div float32 broadcast 3D to 4D / gpu / sync
+PASS div float32 broadcast 4D to 4D / gpu / sync
+PASS max float32 1D tensors / cpu / sync
+PASS max float32 2D tensors / cpu / sync
+PASS max float32 3D tensors / cpu / sync
+PASS max float32 4D tensors / cpu / sync
+PASS max float32 5D tensors / cpu / sync
+PASS max float32 broadcast 1D to 4D / cpu / sync
+PASS max float32 broadcast 2D to 4D / cpu / sync
+PASS max float32 broadcast 3D to 4D / cpu / sync
+PASS max float32 broadcast 4D to 4D / cpu / sync
+PASS max float32 1D tensors / gpu / sync
+PASS max float32 2D tensors / gpu / sync
+PASS max float32 3D tensors / gpu / sync
+PASS max float32 4D tensors / gpu / sync
+PASS max float32 5D tensors / gpu / sync
+PASS max float32 broadcast 1D to 4D / gpu / sync
+PASS max float32 broadcast 2D to 4D / gpu / sync
+PASS max float32 broadcast 3D to 4D / gpu / sync
+PASS max float32 broadcast 4D to 4D / gpu / sync
+PASS min float32 1D tensors / cpu / sync
+PASS min float32 2D tensors / cpu / sync
+PASS min float32 3D tensors / cpu / sync
+PASS min float32 4D tensors / cpu / sync
+PASS min float32 5D tensors / cpu / sync
+PASS min float32 broadcast 1D to 4D / cpu / sync
+PASS min float32 broadcast 2D to 4D / cpu / sync
+PASS min float32 broadcast 3D to 4D / cpu / sync
+PASS min float32 broadcast 4D to 4D / cpu / sync
+PASS min float32 1D tensors / gpu / sync
+PASS min float32 2D tensors / gpu / sync
+PASS min float32 3D tensors / gpu / sync
+PASS min float32 4D tensors / gpu / sync
+PASS min float32 5D tensors / gpu / sync
+PASS min float32 broadcast 1D to 4D / gpu / sync
+PASS min float32 broadcast 2D to 4D / gpu / sync
+PASS min float32 broadcast 3D to 4D / gpu / sync
+PASS min float32 broadcast 4D to 4D / gpu / sync
+FAIL pow float32 1D base tensor and 1D integer exponent tensor / cpu / sync builder[operationName] is not a function
+FAIL pow float32 2D base tensor and 2D integer exponent tensor / cpu / sync builder[operationName] is not a function
+FAIL pow float32 3D base tensor and 3D integer exponent tensor / cpu / sync builder[operationName] is not a function
+FAIL pow float32 4D base tensor and 4D integer exponent tensor / cpu / sync builder[operationName] is not a function
+FAIL pow float32 5D base tensor and 5D integer exponent tensor / cpu / sync builder[operationName] is not a function
+FAIL pow float32 1D positive base tensor and 1D exponent tensor / cpu / sync builder[operationName] is not a function
+FAIL pow float32 2D positive base tensor and 2D exponent tensor / cpu / sync builder[operationName] is not a function
+FAIL pow float32 4D positive base tensor and 4D exponent tensor / cpu / sync builder[operationName] is not a function
+FAIL pow float32 4D exponent tensor and broadcastable 1D positive base tensor / cpu / sync builder[operationName] is not a function
+FAIL pow float32 4D base tensor and broadcastable 2D integer exponent tensor / cpu / sync builder[operationName] is not a function
+FAIL pow float32 4D base tensor and broadcastable 3D integer exponent tensor / cpu / sync builder[operationName] is not a function
+FAIL pow float32 4D exponent tensor and broadcastable 4D positive base tensor / cpu / sync builder[operationName] is not a function
+FAIL pow float32 1D base tensor and 1D integer exponent tensor / gpu / sync builder[operationName] is not a function
+FAIL pow float32 2D base tensor and 2D integer exponent tensor / gpu / sync builder[operationName] is not a function
+FAIL pow float32 3D base tensor and 3D integer exponent tensor / gpu / sync builder[operationName] is not a function
+FAIL pow float32 4D base tensor and 4D integer exponent tensor / gpu / sync builder[operationName] is not a function
+FAIL pow float32 5D base tensor and 5D integer exponent tensor / gpu / sync builder[operationName] is not a function
+FAIL pow float32 1D positive base tensor and 1D exponent tensor / gpu / sync builder[operationName] is not a function
+FAIL pow float32 2D positive base tensor and 2D exponent tensor / gpu / sync builder[operationName] is not a function
+FAIL pow float32 4D positive base tensor and 4D exponent tensor / gpu / sync builder[operationName] is not a function
+FAIL pow float32 4D exponent tensor and broadcastable 1D positive base tensor / gpu / sync builder[operationName] is not a function
+FAIL pow float32 4D base tensor and broadcastable 2D integer exponent tensor / gpu / sync builder[operationName] is not a function
+FAIL pow float32 4D base tensor and broadcastable 3D integer exponent tensor / gpu / sync builder[operationName] is not a function
+FAIL pow float32 4D exponent tensor and broadcastable 4D positive base tensor / gpu / sync builder[operationName] is not a function
+PASS add float32 1D tensors / cpu / async
+PASS add float32 2D tensors / cpu / async
+PASS add float32 3D tensors / cpu / async
+PASS add float32 4D tensors / cpu / async
+PASS add float32 5D tensors / cpu / async
+PASS add float32 broadcast 1D to 4D / cpu / async
+PASS add float32 broadcast 2D to 4D / cpu / async
+PASS add float32 broadcast 3D to 4D / cpu / async
+PASS add float32 broadcast 4D to 4D / cpu / async
+PASS add float32 1D tensors / gpu / async
+PASS add float32 2D tensors / gpu / async
+PASS add float32 3D tensors / gpu / async
+PASS add float32 4D tensors / gpu / async
+PASS add float32 5D tensors / gpu / async
+PASS add float32 broadcast 1D to 4D / gpu / async
+PASS add float32 broadcast 2D to 4D / gpu / async
+PASS add float32 broadcast 3D to 4D / gpu / async
+PASS add float32 broadcast 4D to 4D / gpu / async
+PASS sub float32 1D tensors / cpu / async
+PASS sub float32 2D tensors / cpu / async
+PASS sub float32 3D tensors / cpu / async
+PASS sub float32 4D tensors / cpu / async
+PASS sub float32 5D tensors / cpu / async
+PASS sub float32 broadcast 1D to 4D / cpu / async
+PASS sub float32 broadcast 2D to 4D / cpu / async
+PASS sub float32 broadcast 3D to 4D / cpu / async
+PASS sub float32 broadcast 4D to 4D / cpu / async
+PASS sub float32 1D tensors / gpu / async
+PASS sub float32 2D tensors / gpu / async
+PASS sub float32 3D tensors / gpu / async
+PASS sub float32 4D tensors / gpu / async
+PASS sub float32 5D tensors / gpu / async
+PASS sub float32 broadcast 1D to 4D / gpu / async
+PASS sub float32 broadcast 2D to 4D / gpu / async
+PASS sub float32 broadcast 3D to 4D / gpu / async
+PASS sub float32 broadcast 4D to 4D / gpu / async
+PASS mul float32 1D tensors / cpu / async
+PASS mul float32 2D tensors / cpu / async
+PASS mul float32 3D tensors / cpu / async
+PASS mul float32 4D tensors / cpu / async
+PASS mul float32 5D tensors / cpu / async
+PASS mul float32 broadcast 1D to 4D / cpu / async
+PASS mul float32 broadcast 2D to 4D / cpu / async
+PASS mul float32 broadcast 3D to 4D / cpu / async
+PASS mul float32 broadcast 4D to 4D / cpu / async
+PASS mul float32 1D tensors / gpu / async
+PASS mul float32 2D tensors / gpu / async
+PASS mul float32 3D tensors / gpu / async
+PASS mul float32 4D tensors / gpu / async
+PASS mul float32 5D tensors / gpu / async
+PASS mul float32 broadcast 1D to 4D / gpu / async
+PASS mul float32 broadcast 2D to 4D / gpu / async
+PASS mul float32 broadcast 3D to 4D / gpu / async
+PASS mul float32 broadcast 4D to 4D / gpu / async
+PASS div float32 1D tensors / cpu / async
+PASS div float32 2D tensors / cpu / async
+PASS div float32 3D tensors / cpu / async
+PASS div float32 4D tensors / cpu / async
+PASS div float32 5D tensors / cpu / async
+PASS div float32 broadcast 1D to 4D / cpu / async
+PASS div float32 broadcast 2D to 4D / cpu / async
+PASS div float32 broadcast 3D to 4D / cpu / async
+PASS div float32 broadcast 4D to 4D / cpu / async
+PASS div float32 1D tensors / gpu / async
+PASS div float32 2D tensors / gpu / async
+PASS div float32 3D tensors / gpu / async
+PASS div float32 4D tensors / gpu / async
+PASS div float32 5D tensors / gpu / async
+PASS div float32 broadcast 1D to 4D / gpu / async
+PASS div float32 broadcast 2D to 4D / gpu / async
+PASS div float32 broadcast 3D to 4D / gpu / async
+PASS div float32 broadcast 4D to 4D / gpu / async
+PASS max float32 1D tensors / cpu / async
+PASS max float32 2D tensors / cpu / async
+PASS max float32 3D tensors / cpu / async
+PASS max float32 4D tensors / cpu / async
+PASS max float32 5D tensors / cpu / async
+PASS max float32 broadcast 1D to 4D / cpu / async
+PASS max float32 broadcast 2D to 4D / cpu / async
+PASS max float32 broadcast 3D to 4D / cpu / async
+PASS max float32 broadcast 4D to 4D / cpu / async
+PASS max float32 1D tensors / gpu / async
+PASS max float32 2D tensors / gpu / async
+PASS max float32 3D tensors / gpu / async
+PASS max float32 4D tensors / gpu / async
+PASS max float32 5D tensors / gpu / async
+PASS max float32 broadcast 1D to 4D / gpu / async
+PASS max float32 broadcast 2D to 4D / gpu / async
+PASS max float32 broadcast 3D to 4D / gpu / async
+PASS max float32 broadcast 4D to 4D / gpu / async
+PASS min float32 1D tensors / cpu / async
+PASS min float32 2D tensors / cpu / async
+PASS min float32 3D tensors / cpu / async
+PASS min float32 4D tensors / cpu / async
+PASS min float32 5D tensors / cpu / async
+PASS min float32 broadcast 1D to 4D / cpu / async
+PASS min float32 broadcast 2D to 4D / cpu / async
+PASS min float32 broadcast 3D to 4D / cpu / async
+PASS min float32 broadcast 4D to 4D / cpu / async
+PASS min float32 1D tensors / gpu / async
+PASS min float32 2D tensors / gpu / async
+PASS min float32 3D tensors / gpu / async
+PASS min float32 4D tensors / gpu / async
+PASS min float32 5D tensors / gpu / async
+PASS min float32 broadcast 1D to 4D / gpu / async
+PASS min float32 broadcast 2D to 4D / gpu / async
+PASS min float32 broadcast 3D to 4D / gpu / async
+PASS min float32 broadcast 4D to 4D / gpu / async
+FAIL pow float32 1D base tensor and 1D integer exponent tensor / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL pow float32 2D base tensor and 2D integer exponent tensor / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL pow float32 3D base tensor and 3D integer exponent tensor / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL pow float32 4D base tensor and 4D integer exponent tensor / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL pow float32 5D base tensor and 5D integer exponent tensor / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL pow float32 1D positive base tensor and 1D exponent tensor / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL pow float32 2D positive base tensor and 2D exponent tensor / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL pow float32 4D positive base tensor and 4D exponent tensor / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL pow float32 4D exponent tensor and broadcastable 1D positive base tensor / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL pow float32 4D base tensor and broadcastable 2D integer exponent tensor / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL pow float32 4D base tensor and broadcastable 3D integer exponent tensor / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL pow float32 4D exponent tensor and broadcastable 4D positive base tensor / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL pow float32 1D base tensor and 1D integer exponent tensor / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL pow float32 2D base tensor and 2D integer exponent tensor / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL pow float32 3D base tensor and 3D integer exponent tensor / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL pow float32 4D base tensor and 4D integer exponent tensor / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL pow float32 5D base tensor and 5D integer exponent tensor / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL pow float32 1D positive base tensor and 1D exponent tensor / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL pow float32 2D positive base tensor and 2D exponent tensor / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL pow float32 4D positive base tensor and 4D exponent tensor / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL pow float32 4D exponent tensor and broadcastable 1D positive base tensor / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL pow float32 4D base tensor and broadcastable 2D integer exponent tensor / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL pow float32 4D base tensor and broadcastable 3D integer exponent tensor / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL pow float32 4D exponent tensor and broadcastable 4D positive base tensor / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+Harness: the test ran to completion.
+

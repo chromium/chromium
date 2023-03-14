@@ -45,11 +45,8 @@ bool TakePrimaryDisplayScreenshotAndSave(const base::FilePath& file_path) {
       base::BindOnce(&SnapshotCallback, &run_loop, &image));
   run_loop.Run();
   auto data = image.As1xPNGBytes();
-  int data_size = static_cast<int>(data->size());
-  DCHECK_GT(data_size, 0);
-  int written_size = base::WriteFile(
-      file_path, reinterpret_cast<const char*>(data->front()), data_size);
-  return written_size == data_size;
+  DCHECK_GT(data->size(), 0u);
+  return base::WriteFile(file_path, *data);
 }
 
 void GiveItSomeTimeForDebugging(base::TimeDelta time_duration) {

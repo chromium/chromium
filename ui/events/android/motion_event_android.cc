@@ -9,8 +9,10 @@
 #include <cmath>
 
 #include "base/android/jni_android.h"
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/numerics/math_constants.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
@@ -159,8 +161,17 @@ int ToEventFlags(int meta_state, int button_state) {
   return flags;
 }
 
-base::TimeTicks FromAndroidTime(int64_t time_ms) {
-  base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time_ms);
+base::TimeTicks FromAndroidTime(base::TimeTicks time) {
+  base::TimeTicks timestamp;
+  // TODO(b/269238283): remove this Finch experiment as soon as we verify that
+  // this change doesn't break anything. Because checking the Finch flag is
+  // expensive.
+  if (base::FeatureList::IsEnabled(features::kUseNanosecondsForMotionEvent)) {
+    timestamp = time;
+  } else {
+    // Rounding down to milliseconds.
+    timestamp = base::TimeTicks::FromUptimeMillis(time.ToUptimeMillis());
+  }
   ValidateEventTimeClock(&timestamp);
   return timestamp;
 }
@@ -236,7 +247,7 @@ MotionEventAndroid::MotionEventAndroid(JNIEnv* env,
                                        jfloat ticks_x,
                                        jfloat ticks_y,
                                        jfloat tick_multiplier,
-                                       jlong time_ms,
+                                       base::TimeTicks time,
                                        jint android_action,
                                        jint pointer_count,
                                        jint history_size,
@@ -254,9 +265,9 @@ MotionEventAndroid::MotionEventAndroid(JNIEnv* env,
       ticks_x_(ticks_x),
       ticks_y_(ticks_y),
       tick_multiplier_(tick_multiplier),
-      time_sec_(time_ms / 1000),
+      time_sec_(time.ToUptimeMillis() / base::Time::kMillisecondsPerSecond),
       for_touch_handle_(for_touch_handle),
-      cached_time_(FromAndroidTime(time_ms)),
+      cached_time_(FromAndroidTime(time)),
       cached_action_(FromAndroidAction(android_action)),
       cached_pointer_count_(pointer_count),
       cached_history_size_(ToValidHistorySize(history_size, cached_action_)),
@@ -507,9 +518,9 @@ size_t MotionEventAndroid::GetHistorySize() const {
 
 base::TimeTicks MotionEventAndroid::GetHistoricalEventTime(
     size_t historical_index) const {
-  return FromAndroidTime(
-      JNI_MotionEvent::Java_MotionEvent_getHistoricalEventTime(
-          AttachCurrentThread(), event_, historical_index));
+  jlong time_ms = JNI_MotionEvent::Java_MotionEvent_getHistoricalEventTime(
+      AttachCurrentThread(), event_, historical_index);
+  return FromAndroidTime(base::TimeTicks::FromUptimeMillis(time_ms));
 }
 
 float MotionEventAndroid::GetHistoricalTouchMajor(

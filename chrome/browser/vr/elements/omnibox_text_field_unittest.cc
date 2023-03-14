@@ -5,6 +5,7 @@
 #include "chrome/browser/vr/elements/omnibox_text_field.h"
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/vr/model/model.h"
@@ -27,10 +28,7 @@ class OmniboxTest : public testing::Test {
   void SetUp() override {
     omnibox_ = std::make_unique<OmniboxTextField>(
         10, base::RepeatingCallback<void(const EditedText&)>(),
-        base::BindRepeating(&UiBrowserInterface::StartAutocomplete,
-                            base::Unretained(&browser_)),
-        base::BindRepeating(&UiBrowserInterface::StopAutocomplete,
-                            base::Unretained(&browser_)));
+        base::DoNothing(), base::DoNothing());
     omnibox_->OnFocusChanged(true);
     omnibox_->SetTextInputDelegate(&text_input_delegate_);
     omnibox_->set_allow_inline_autocomplete(true);
@@ -69,7 +67,6 @@ class OmniboxTest : public testing::Test {
     request.text = base::UTF8ToUTF16(input);
     request.cursor_position = cursor_position;
     request.prevent_inline_autocomplete = prevent_inline_autocomplete;
-    EXPECT_CALL(browser_, StartAutocomplete(request));
   }
 
   void ExpectKeyboardUpdate(const std::string& text,
@@ -230,7 +227,6 @@ TEST_F(OmniboxTest, StopAutocompleteWhenDisabled) {
   SetInput("w", 1, 1, "", 0, 0);
   VerifyMocks();
 
-  EXPECT_CALL(browser_, StopAutocomplete());
   omnibox_->SetEnabled(false);
 }
 

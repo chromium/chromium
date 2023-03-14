@@ -526,9 +526,9 @@ void WidgetBase::OnDeferMainFrameUpdatesChanged(bool defer) {
   // LayerTreeHost::CreateThreaded() will defer main frame updates immediately
   // until it gets a LocalSurfaceId. That's before the
   // |widget_input_handler_manager_| is created, so it can be null here.
-  // TODO(schenney): To avoid ping-ponging between defer main frame states
-  // during initialization, and requiring null checks here, we should probably
-  // pass the LocalSurfaceId to the compositor while it is
+  // TODO(rendering-core): To avoid ping-ponging between defer main frame
+  // states during initialization, and requiring null checks here, we should
+  // probably pass the LocalSurfaceId to the compositor while it is
   // initialized so that it doesn't have to immediately switch into deferred
   // mode without being requested to.
   if (!widget_input_handler_manager_)
@@ -1461,7 +1461,7 @@ void WidgetBase::OnImeEventGuardFinish(ImeEventGuard* guard) {
   // are ignored. These must explicitly be updated once finished handling the
   // ime event.
   UpdateSelectionBounds();
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   if (guard->show_virtual_keyboard())
     ShowVirtualKeyboard();
   else

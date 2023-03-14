@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/impression_limit.h"
-#import "ios/chrome/browser/ui/commands/promos_manager_commands.h"
+#import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 
 struct PromoConfig;
 

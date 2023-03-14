@@ -200,11 +200,6 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
   void AddResourceTiming(mojom::blink::ResourceTimingInfoPtr,
                          const AtomicString& initiator_type);
 
-  void AddResourceTimingWithUnparsedServerTiming(
-      mojom::blink::ResourceTimingInfoPtr,
-      const String& server_timing_value,
-      const AtomicString& initiator_type);
-
   void NotifyNavigationTimingToObservers();
 
   void AddFirstPaintTiming(base::TimeTicks start_time,
@@ -218,6 +213,8 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
 
   bool IsEventTimingBufferFull() const;
   void AddEventTimingBuffer(PerformanceEventTiming&);
+
+  bool IsLongAnimationFrameBufferFull() const;
 
   void AddLayoutShiftBuffer(LayoutShift&);
 
@@ -406,6 +403,7 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
   PerformanceEntryVector visibility_state_buffer_;
   PerformanceEntryVector back_forward_cache_restoration_buffer_;
   PerformanceEntryVector soft_navigation_buffer_;
+  PerformanceEntryVector long_animation_frame_buffer_;
   Member<PerformanceNavigationTiming> navigation_timing_;
   Member<UserTiming> user_timing_;
   PerformanceEntryVector paint_entries_timing_;

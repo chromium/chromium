@@ -23,7 +23,7 @@ async function setup() {
         ((resolve, details) => {
           prerenderingFrameId = details.frameId;
           prerenderingDocumentId = details.documentId;
-          chrome.test.assertTrue(prerenderingFrameId != 0);
+          chrome.test.assertNe(0, prerenderingFrameId);
           chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequest);
           resolve();
         }).bind(this, resolve);
@@ -33,7 +33,7 @@ async function setup() {
       chrome.tabs.update(tabId, {url: kInitiatorUrl});
     });
   });
-  chrome.test.assertTrue(prerenderingDocumentId != 0);
+  chrome.test.assertNe(0, prerenderingDocumentId);
 }
 
 // Checks if `allFrames: true` doesn't order to include pre-rendered frames.
@@ -156,7 +156,7 @@ async function testDontActivateByUpdate() {
 
 chrome.test.getConfig(async config => {
   testServerPort = config.testServer.port;
-  chrome.test.assertTrue(testServerPort != 0);
+  chrome.test.assertNe(0, testServerPort);
 
   const tabs = await new Promise(
       resolve => chrome.tabs.query({active: true}, tabs => resolve(tabs)));

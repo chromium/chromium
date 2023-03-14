@@ -35,7 +35,7 @@
 
   TestRunner.addSniffer(SourceFrame.SourcesTextEditor.prototype, 'setGutterDecoration', decorationAdded, true);
 
-  const debuggerModel = SDK.targetManager.mainFrameTarget().model(SDK.DebuggerModel);
+  const debuggerModel = SDK.targetManager.primaryPageTarget().model(SDK.DebuggerModel);
   const rawLocation = debuggerModel.createRawLocationByScriptId(scriptId, 0, 0);
   const uiLocation = await Bindings.debuggerWorkspaceBinding.rawLocationToUILocation(rawLocation);
   await SourcesTestRunner.showUISourceCodePromise(uiLocation.uiSourceCode);

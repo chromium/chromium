@@ -128,6 +128,12 @@ class FreeDiskSpaceCalculator : public SizeCalculator {
   // SizeCalculator:
   void PerformCalculation() override;
 
+  void GetUserFreeDiskSpace();
+
+  void OnGetUserFreeDiskSpace(absl::optional<int64_t> reply);
+
+  void GetFreeDiskSpace();
+
   void OnGetFreeDiskSpace(int64_t* available_bytes);
 
   Profile* profile_;

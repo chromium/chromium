@@ -74,7 +74,7 @@ enum class QuickAnswersExitPoint {
   // The exit point is unspecified. Might be used by tests, obsolete code or as
   // placeholders.
   kUnspecified = 0,
-  KContextMenuDismiss = 1,
+  kContextMenuDismiss = 1,
   kContextMenuClick = 2,
   kQuickAnswersClick = 3,
   kSettingsButtonClick = 4,

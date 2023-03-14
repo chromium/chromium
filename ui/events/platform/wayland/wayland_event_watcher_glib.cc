@@ -102,7 +102,7 @@ void WaylandEventWatcherGlib::StopWatchingFD() {
   }
 
   g_source_destroy(wayland_source_);
-  g_source_unref(wayland_source_);
+  g_source_unref(wayland_source_.ExtractAsDangling());
 
   started_ = false;
 }

@@ -28,6 +28,10 @@ class CORE_EXPORT MathMLTokenElement : public MathMLElement {
   void ChildrenChanged(const ChildrenChange&) override;
 
  private:
+  bool IsPresentationAttribute(const QualifiedName&) const final;
+  void CollectStyleForPresentationAttribute(const QualifiedName&,
+                                            const AtomicString&,
+                                            MutableCSSPropertyValueSet*) final;
   TokenContent ParseTokenContent();
   absl::optional<TokenContent> token_content_;
   LayoutObject* CreateLayoutObject(const ComputedStyle&,

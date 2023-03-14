@@ -34,16 +34,6 @@ public class TabUma extends EmptyTabObserver implements UserData {
     static final int TAB_STATUS_LAZY_LOAD_FOR_BG_TAB = 8;
     static final int TAB_STATUS_LIM = 9;
 
-    // The enum values for the Tab.RestoreResult histogram. The unusual order is to
-    // keep compatibility with the previous instance of the histogram that was using
-    // a boolean.
-    //
-    // Defined in tools/metrics/histograms/histograms.xml.
-    private static final int TAB_RESTORE_RESULT_FAILURE_OTHER = 0;
-    private static final int TAB_RESTORE_RESULT_SUCCESS = 1;
-    private static final int TAB_RESTORE_RESULT_FAILURE_NETWORK_CONNECTIVITY = 2;
-    private static final int TAB_RESTORE_RESULT_COUNT = 3;
-
     // TAB_STATE_* are for TabStateTransferTime and TabTransferTarget histograms.
     // TabState defined in tools/metrics/histograms/histograms.xml.
     private static final int TAB_STATE_INITIAL = 0;
@@ -102,29 +92,12 @@ public class TabUma extends EmptyTabObserver implements UserData {
 
     /**
      * Records the tab restore result into several UMA histograms.
-     * @param time The time taken to perform the tab restore.
      * @param perceivedTime The perceived time taken to perform the tab restore.
      * @param errorCode The error code, NetError.OK on success.
      */
-    private void recordTabRestoreResult(long time, long perceivedTime, @NetError int errorCode) {
+    private void recordTabRestoreResult(long perceivedTime, @NetError int errorCode) {
         if (errorCode == NetError.OK) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Tab.RestoreResult", TAB_RESTORE_RESULT_SUCCESS, TAB_RESTORE_RESULT_COUNT);
-            RecordHistogram.recordCount1MHistogram("Tab.RestoreTime", (int) time);
             RecordHistogram.recordCount1MHistogram("Tab.PerceivedRestoreTime", (int) perceivedTime);
-        } else {
-            switch (errorCode) {
-                case NetError.ERR_INTERNET_DISCONNECTED:
-                case NetError.ERR_NAME_RESOLUTION_FAILED:
-                case NetError.ERR_DNS_TIMED_OUT:
-                    RecordHistogram.recordEnumeratedHistogram("Tab.RestoreResult",
-                            TAB_RESTORE_RESULT_FAILURE_NETWORK_CONNECTIVITY,
-                            TAB_RESTORE_RESULT_COUNT);
-                    break;
-                default:
-                    RecordHistogram.recordEnumeratedHistogram("Tab.RestoreResult",
-                            TAB_RESTORE_RESULT_FAILURE_OTHER, TAB_RESTORE_RESULT_COUNT);
-            }
         }
     }
 
@@ -250,9 +223,8 @@ public class TabUma extends EmptyTabObserver implements UserData {
         // reflected in Tab.StatusWhenSwitchedBackToForeground metric.
         if (mRestoreStartedAtMillis != -1 && mLastShownTimestamp >= mRestoreStartedAtMillis) {
             long now = SystemClock.elapsedRealtime();
-            long restoreTime = now - mRestoreStartedAtMillis;
             long perceivedRestoreTime = now - mLastShownTimestamp;
-            recordTabRestoreResult(restoreTime, perceivedRestoreTime, NetError.OK);
+            recordTabRestoreResult(perceivedRestoreTime, NetError.OK);
         }
         mRestoreStartedAtMillis = -1;
     }
@@ -263,7 +235,7 @@ public class TabUma extends EmptyTabObserver implements UserData {
         if (mRestoreStartedAtMillis != -1 && mLastShownTimestamp >= mRestoreStartedAtMillis) {
             // Load time is ignored for failed loads.
             assert errorCode != NetError.OK;
-            recordTabRestoreResult(-1, -1, errorCode);
+            recordTabRestoreResult(-1, errorCode);
         }
         mRestoreStartedAtMillis = -1;
     }
@@ -271,11 +243,7 @@ public class TabUma extends EmptyTabObserver implements UserData {
     /** Called when the renderer of the corresponding tab crashes. */
     @Override
     public void onCrash(Tab tab) {
-        if (mRestoreStartedAtMillis != -1) {
-            // TODO(ppi): Add a bucket in Tab.RestoreResult for restores failed due to
-            //            renderer crashes and start to track that.
-            mRestoreStartedAtMillis = -1;
-        }
+        mRestoreStartedAtMillis = -1;
     }
 
     @Override

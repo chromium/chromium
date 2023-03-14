@@ -527,9 +527,9 @@ bool MixedContentChecker::ShouldBlockFetch(
   // TODO(lyf): check the IP address space for initiator, only skip when the
   // initiator is more public.
   if (RuntimeEnabledFeatures::PrivateNetworkAccessPermissionPromptEnabled()) {
-    if (target_address_space ==
-            network::mojom::blink::IPAddressSpace::kPrivate ||
-        target_address_space == network::mojom::blink::IPAddressSpace::kLocal) {
+    if (target_address_space == network::mojom::blink::IPAddressSpace::kLocal ||
+        target_address_space ==
+            network::mojom::blink::IPAddressSpace::kLoopback) {
       allowed = true;
     }
   }

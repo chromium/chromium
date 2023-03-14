@@ -9,12 +9,29 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "components/attribution_reporting/os_support.mojom-forward.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/storage_partition.h"
+
+#if BUILDFLAG(IS_ANDROID)
+
+class GURL;
+
+namespace content {
+struct AttributionInputEvent;
+}  // namespace content
+
+namespace url {
+class Origin;
+}  // namespace url
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace attribution_reporting {
 class SuitableOrigin;
@@ -39,7 +56,7 @@ struct GlobalRenderFrameHostId;
 
 // Interface that mediates data flow between the network, storage layer, and
 // blink.
-class AttributionManager : public AttributionDataModel {
+class CONTENT_EXPORT AttributionManager : public AttributionDataModel {
  public:
   static AttributionManager* FromWebContents(WebContents* web_contents);
 
@@ -66,6 +83,19 @@ class AttributionManager : public AttributionDataModel {
   virtual void HandleTrigger(AttributionTrigger trigger,
                              GlobalRenderFrameHostId render_frame_id) = 0;
 
+#if BUILDFLAG(IS_ANDROID)
+
+  virtual void HandleOsSource(const GURL& registration_url,
+                              const url::Origin& top_level_origin,
+                              AttributionInputEvent,
+                              GlobalRenderFrameHostId render_frame_id) = 0;
+
+  virtual void HandleOsTrigger(const GURL& registration_url,
+                               const url::Origin& top_level_origin,
+                               GlobalRenderFrameHostId render_frame_id) = 0;
+
+#endif  // BUILDFLAG(IS_ANDROID)
+
   // Get all sources that are currently stored in this partition. Used for
   // populating WebUI.
   virtual void GetActiveSourcesForWebUI(
@@ -74,7 +104,6 @@ class AttributionManager : public AttributionDataModel {
   // Get all pending reports that are currently stored in this partition. Used
   // for populating WebUI and simulator.
   virtual void GetPendingReportsForInternalUse(
-      AttributionReport::Types report_types,
       int limit,
       base::OnceCallback<void(std::vector<AttributionReport>)> callback) = 0;
 

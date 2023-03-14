@@ -12,7 +12,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/cart/cart_db.h"
 #include "chrome/browser/cart/cart_discount_metric_collector.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/proto/cart_db_content.pb.h"

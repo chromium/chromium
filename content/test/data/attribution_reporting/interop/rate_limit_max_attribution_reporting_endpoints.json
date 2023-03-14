@@ -6,6 +6,23 @@
   "input": {
     "sources": [
       {
+        "timestamp": "1643235571000",
+        "registration_request": {
+          "source_origin": "https://example.source.test",
+          "attribution_src_url": "https://example.reporter.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://example.reporter.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://example.destination.test",
+              "source_event_id": "888"
+            }
+          }
+        }]
+      },
+      {
         "timestamp": "1643235573000",
         "registration_request": {
           "source_origin": "https://example.source.test",
@@ -16,7 +33,10 @@
           "url": "https://reporter.test/register-source",
           "response": {
             "Attribution-Reporting-Register-Source": {
-              "destination": "https://example.destination.test",
+              "destination": [
+                "https://example.destination.test",
+                "https://another-destination.test"
+              ],
               "source_event_id": "111"
             }
           }
@@ -85,13 +105,40 @@
           "response": {
             "Attribution-Reporting-Register-Source": {
               "destination": "https://destination.test",
-              "source_event_id": "444"
+              "source_event_id": "444",
+              "aggregation_keys": {
+                "a": "0x1"
+              }
             }
           }
         }]
       }
     ],
     "triggers": [
+      // Should not result in an event-level report as the filter data doesn't
+      // match. This doesn't count for the limit.
+      {
+        "timestamp": "1643235572000",
+        "registration_request": {
+          "attribution_src_url": "https://example.reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://example.reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "4",
+                  "filters": {
+                    "source_type": ["event"]
+                  }
+                }
+              ]
+            }
+          }
+        }]
+      },
       // Should result in an event-level report.
       {
         "timestamp": "1643235574000",
@@ -175,7 +222,7 @@
           }
         }]
       },
-      // Should not result in an event-level report due to reporting origin limit
+      // Should not result in an aggregatable report due to reporting origin limit
       // regardless of source type.
       {
         "timestamp": "1643235582000",
@@ -189,11 +236,15 @@
           "response": {
             "Attribution-Reporting-Register-Trigger": {
               "debug_reporting": true,
-              "event_trigger_data": [
+              "aggregatable_trigger_data": [
                 {
-                  "trigger_data": "4"
+                  "source_keys": ["a"],
+                  "key_piece": "0x10"
                 }
-              ]
+              ],
+              "aggregatable_values": {
+                "a": 321
+              }
             }
           }
         }]
@@ -225,7 +276,7 @@
     "event_level_results": [
       {
         "payload": {
-          "attribution_destination": "https://destination.test",
+          "attribution_destination": [ "https://another-destination.test", "https://destination.test" ],
           "randomized_trigger_rate": 0.0024,
           "scheduled_report_time": "1643411973",
           "source_event_id": "111",

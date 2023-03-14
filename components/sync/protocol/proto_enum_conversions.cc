@@ -892,6 +892,19 @@ const char* ProtoEnumToString(
   return "";
 }
 
+const char* ProtoEnumToString(sync_pb::ModelTypeState::InitialSyncState state) {
+  ASSERT_ENUM_BOUNDS(sync_pb::ModelTypeState, InitialSyncState,
+                     INITIAL_SYNC_STATE_UNSPECIFIED, INITIAL_SYNC_UNNECESSARY);
+  switch (state) {
+    ENUM_CASE(sync_pb::ModelTypeState, INITIAL_SYNC_STATE_UNSPECIFIED);
+    ENUM_CASE(sync_pb::ModelTypeState, INITIAL_SYNC_PARTIALLY_DONE);
+    ENUM_CASE(sync_pb::ModelTypeState, INITIAL_SYNC_DONE);
+    ENUM_CASE(sync_pb::ModelTypeState, INITIAL_SYNC_UNNECESSARY);
+  }
+  NOTREACHED();
+  return "";
+}
+
 #undef ASSERT_ENUM_BOUNDS
 #undef ENUM_CASE
 

@@ -10,7 +10,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
@@ -20,11 +19,11 @@
 
 namespace attribution_reporting {
 
-class Filters;
-
 struct FilterPair;
 
 using FilterValues = base::flat_map<std::string, std::vector<std::string>>;
+
+using FiltersDisjunction = std::vector<FilterValues>;
 
 // Set on sources.
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterData {
@@ -53,53 +52,33 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterData {
 
   bool Matches(mojom::SourceType, const FilterPair&) const;
 
-  bool MatchesForTesting(mojom::SourceType, const Filters&, bool negated) const;
+  bool MatchesForTesting(mojom::SourceType,
+                         const FiltersDisjunction&,
+                         bool negated) const;
 
  private:
   explicit FilterData(FilterValues);
 
-  bool Matches(mojom::SourceType, const Filters&, bool negated) const;
-
-  FilterValues filter_values_;
-};
-
-// Set on triggers.
-class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) Filters {
- public:
-  // Filters are allowed to contain a `source_type` filter.
-  static absl::optional<Filters> Create(FilterValues);
-
-  static base::expected<Filters, mojom::TriggerRegistrationError> FromJSON(
-      base::Value*);
-
-  // Returns filters that match only the given source type.
-  static Filters ForSourceTypeForTesting(mojom::SourceType);
-
-  Filters();
-
-  ~Filters();
-
-  Filters(const Filters&);
-  Filters(Filters&&);
-
-  Filters& operator=(const Filters&);
-  Filters& operator=(Filters&&);
-
-  const FilterValues& filter_values() const { return filter_values_; }
-
-  base::Value::Dict ToJson() const;
-
-  void SerializeIfNotEmpty(base::Value::Dict&, base::StringPiece key) const;
-
- private:
-  explicit Filters(FilterValues);
+  bool Matches(mojom::SourceType,
+               const FiltersDisjunction&,
+               bool negated) const;
 
   FilterValues filter_values_;
 };
 
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterPair {
-  Filters positive;
-  Filters negative;
+  FilterPair();
+  FilterPair(FiltersDisjunction positive, FiltersDisjunction negative);
+  ~FilterPair();
+
+  FilterPair(const FilterPair&);
+  FilterPair(FilterPair&&);
+
+  FilterPair& operator=(const FilterPair&);
+  FilterPair& operator=(FilterPair&&);
+
+  FiltersDisjunction positive;
+  FiltersDisjunction negative;
 
   // Destructively parses the `filters` and `not_filters` fields from the given
   // dict, if present.
@@ -108,6 +87,13 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterPair {
 
   void SerializeIfNotEmpty(base::Value::Dict&) const;
 };
+
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+base::expected<FiltersDisjunction, mojom::TriggerRegistrationError>
+FiltersFromJSONForTesting(base::Value* input_value);
+
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+base::Value::List ToJsonForTesting(const FiltersDisjunction& filters);
 
 }  // namespace attribution_reporting
 

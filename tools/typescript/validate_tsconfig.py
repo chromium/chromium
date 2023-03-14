@@ -19,7 +19,6 @@ _SRC_DIR = os.path.normpath(os.path.join(_HERE_DIR, '..',
 
 # Options configured by the ts_library should not be set separately.
 _tsconfig_compiler_options_mappings = {
-    'allowJs': 'allow_js=true',
     'composite': 'composite=true',
     'declaration': 'composite=true',
     'inlineSourceMap': 'enable_source_maps=true',
@@ -38,14 +37,15 @@ _allowed_config_options = [
 
 # Allowed compilerOptions
 _allowed_compiler_options = [
-    'typeRoots',
-    'types',
+    'allowUmdGlobalAccess',
+    'lib',
+    'noPropertyAccessFromIndexSignature',
     'noUncheckedIndexedAccess',
     'noUnusedLocals',
-    'strictPropertyInitialization',
-    'noPropertyAccessFromIndexSignature',
-    'allowUmdGlobalAccess',
     'skipLibCheck',
+    'strictPropertyInitialization',
+    'typeRoots',
+    'types',
 ]
 
 
@@ -121,24 +121,45 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
   # Specific exceptions for directories that are still migrating to TS.
   migrating_directories = [
       'chrome/browser/resources/bluetooth_internals',
-      'chrome/browser/resources/ntp4',
       'chrome/browser/resources/chromeos/accessibility',
       'chrome/browser/resources/chromeos/emoji_picker',
-      'chrome/browser/resources/settings/chromeos/tsc_input',
+      'chrome/browser/resources/nearby_share/shared',
+      'chrome/browser/resources/ntp4',
       'chrome/test/data/webui',
       'chrome/test/data/webui/chromeos',
+      #TODO(b/270220102): Remove when fully migrated to TS.
+      'chrome/test/data/webui/chromeos/emoji_picker',
       'chrome/test/data/webui/settings/chromeos',
       'components/policy/resources/webui',
       'ui/webui/resources/js',
-      'mojom-webui',
+      'ui/webui/resources/mojo',
   ]
   for directory in migrating_directories:
     if (source_dir.endswith(directory)
         or source_dir.endswith(directory + '/preprocessed')):
       return True, None
 
-  return False, 'Invalid allow_js detected for input directory ' + \
-      f'{source_dir} and output directory {out_dir}'
+  return False, 'Invalid JS file detected for input directory ' + \
+      f'{source_dir} and output directory {out_dir}, all new ' + \
+      'code should be added in TypeScript.'
+
+
+# TODO (https://www.crbug.com/1412158): Remove all exceptions below and this
+# function; these build targets rely on implicitly unmapped dependencies.
+def isUnsupportedJsTarget(gen_dir, root_gen_dir):
+  root_gen_dir_from_build = os.path.normpath(os.path.join(
+      gen_dir, root_gen_dir)).replace('\\', '/')
+  target_path = os.path.relpath(gen_dir,
+                                root_gen_dir_from_build).replace('\\', '/')
+
+  exceptions = [
+      'ash/webui/color_internals/resources',
+      'ash/webui/face_ml_app_ui/resources/trusted',
+      'ash/webui/sample_system_web_app_ui/resources/trusted',
+      'ash/webui/sample_system_web_app_ui/resources/untrusted',
+      'chrome/browser/resources/chromeos/accessibility/select_to_speak',
+  ]
+  return target_path in exceptions
 
 
 # |root_dir| shouldn't refer to any parent directories. Specifically it should
@@ -162,12 +183,7 @@ def validateRootDir(root_dir, gen_dir, root_gen_dir, is_ios):
   # Legacy cases supported for backward-compatibility. Do not add new targets
   # here. The existing exceptions should be removed over time.
   exceptions = [
-      # TODO (https://www.crbug.com/1412158): Update this folder to copy files
-      # instead of setting $root_gen_dir/mojom-webui as the root_dir.
-      'ui/webui/resources/mojo',
-
       # ChromeOS cases
-      'ash/webui/camera_app_ui/resources/js',
       'ash/webui/color_internals/mojom',
       'ash/webui/face_ml_app_ui/mojom',
       'ash/webui/sample_system_web_app_ui/mojom',

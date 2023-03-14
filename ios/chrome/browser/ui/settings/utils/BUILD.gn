@@ -24,9 +24,9 @@ source_set("utils") {
     "//components/content_settings/core/common",
     "//components/prefs",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui:feature_flags",
-    "//ios/chrome/browser/ui/commands",
-    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util",
     "//ui/base",
   ]
 }

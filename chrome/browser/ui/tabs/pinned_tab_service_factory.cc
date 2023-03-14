@@ -19,7 +19,14 @@ PinnedTabServiceFactory* PinnedTabServiceFactory::GetInstance() {
 }
 
 PinnedTabServiceFactory::PinnedTabServiceFactory()
-    : ProfileKeyedServiceFactory("PinnedTabService") {}
+    : ProfileKeyedServiceFactory(
+          "PinnedTabService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {}
 
 PinnedTabServiceFactory::~PinnedTabServiceFactory() {
 }

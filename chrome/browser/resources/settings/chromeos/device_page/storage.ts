@@ -4,12 +4,12 @@
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import './storage_external.js';
 import '../../prefs/prefs.js';
 import '../../settings_shared.css.js';
+import './storage_external.js';
 
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
@@ -68,18 +68,18 @@ class SettingsStorageElement extends SettingsStorageElementBase {
 
       showCrostini: Boolean,
 
-      isGuest_: {
+      isEphemeralUser_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('isGuest');
+          return loadTimeData.getBoolean('isCryptohomeDataEphemeral');
         },
       },
 
       showOtherUsers_: {
         type: Boolean,
-        // Initialize showOtherUsers_ to false if the user is in guest mode.
+        // Initialize showOtherUsers_ to false if the user is ephemeral.
         value() {
-          return !loadTimeData.getBoolean('isGuest');
+          return !loadTimeData.getBoolean('isCryptohomeDataEphemeral');
         },
       },
 
@@ -93,7 +93,7 @@ class SettingsStorageElement extends SettingsStorageElementBase {
 
   showCrostini: boolean;
   private browserProxy_: DevicePageBrowserProxy;
-  private isGuest_: boolean;
+  private isEphemeralUser_: boolean;
   private route_: Route;
   private showCrostiniStorage_: boolean;
   private showDriveOfflineStorage_: boolean;
@@ -287,7 +287,7 @@ class SettingsStorageElement extends SettingsStorageElementBase {
    */
   private handleOtherUsersSizeChanged_(size: string, noOtherUsers: boolean):
       void {
-    if (this.isGuest_ || noOtherUsers) {
+    if (this.isEphemeralUser_ || noOtherUsers) {
       this.showOtherUsers_ = false;
       return;
     }

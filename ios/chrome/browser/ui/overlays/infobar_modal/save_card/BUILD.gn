@@ -20,12 +20,12 @@ source_set("save_card") {
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/common/infobars",
     "//ios/chrome/browser/overlays/public/infobar_modal",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/autofill:autofill_message",
     "//ios/chrome/browser/ui/infobars/modals",
     "//ios/chrome/browser/ui/overlays:coordinators",
     "//ios/chrome/browser/ui/overlays/infobar_modal:coordinators",
     "//ios/chrome/browser/ui/overlays/infobar_modal:mediators",
-    "//ios/chrome/browser/ui/util",
     "//ui/base",
     "//ui/gfx",
   ]

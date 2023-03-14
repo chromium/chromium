@@ -46,9 +46,13 @@ namespace ash::personalization_app {
 
 namespace {
 
-// Width and height of the preview image for personal album.
+// Width and height of the preview images without Jelly.
 constexpr int kBannerWidthPx = 160;
 constexpr int kBannerHeightPx = 160;
+// When Jelly is enabled, the max possible preview image container is 460x290.
+// Double the fetched image W/H to stay sharp when scaled down.
+constexpr int kJellyBannerWidthPx = 920;
+constexpr int kJellyBannerHeightPx = 580;
 
 constexpr int kMaxRetries = 3;
 
@@ -281,13 +285,22 @@ void PersonalizationAppAmbientProviderImpl::OnTopicSourceChanged() {
   if (!ambient_observer_remote_.is_bound())
     return;
 
-  // First, empty the WebUI store so it doesn't show the previously selected
-  // albums' previews. If |settings_->topic_source| is Google photos, refetch
-  // the previews because the selected albums may have changed. Otherwise, we
-  // fallback to the preview urls that comes with the albums.
-  OnGooglePhotosAlbumsPreviewsFetched(std::vector<GURL>());
-  if (settings_->topic_source == ash::AmbientModeTopicSource::kGooglePhotos)
+  // Empty the WebUI store so it doesn't show the previously selected albums'
+  // previews.
+  OnPreviewsFetched(std::vector<GURL>());
+  if (features::IsPersonalizationJellyEnabled()) {
+    if (is_updating_backend_) {
+      // Once settings updated, fetch preview images.
+      needs_update_previews_ = true;
+    } else {
+      // Fetch preview images if settings have been updated.
+      FetchPreviewImages();
+    }
+  } else if (settings_->topic_source ==
+             ash::AmbientModeTopicSource::kGooglePhotos) {
+    // When Jelly is not enabled, only fetch google photos albums previews.
     FetchGooglePhotosAlbumsPreviews(settings_->selected_album_ids);
+  }
 
   ambient_observer_remote_->OnTopicSourceChanged(settings_->topic_source);
 }
@@ -385,6 +398,9 @@ void PersonalizationAppAmbientProviderImpl::OnUpdateSettings(bool success) {
   if (success) {
     update_settings_retry_backoff_.Reset();
     cached_settings_ = settings_sent_for_update_;
+    if (needs_update_previews_) {
+      FetchPreviewImages();
+    }
   } else {
     update_settings_retry_backoff_.InformOfRequest(/*succeeded=*/false);
   }
@@ -518,26 +534,31 @@ void PersonalizationAppAmbientProviderImpl::MaybeUpdateTopicSource(
   OnTopicSourceChanged();
 }
 
+void PersonalizationAppAmbientProviderImpl::FetchPreviewImages() {
+  needs_update_previews_ = false;
+  previews_weak_factory_.InvalidateWeakPtrs();
+  ash::AmbientBackendController::Get()->FetchPreviewImages(
+      gfx::Size(kJellyBannerWidthPx, kJellyBannerHeightPx),
+      base::BindOnce(&PersonalizationAppAmbientProviderImpl::OnPreviewsFetched,
+                     previews_weak_factory_.GetWeakPtr()));
+}
+
+// TODO(b/270434334): Remove when Jelly is enabled by default.
 void PersonalizationAppAmbientProviderImpl::FetchGooglePhotosAlbumsPreviews(
     const std::vector<std::string>& album_ids) {
   const int num_previews = features::IsPersonalizationJellyEnabled() ? 3 : 4;
-  const int preview_width =
-      features::IsPersonalizationJellyEnabled() ? 360 : kBannerWidthPx;
-  const int preview_height =
-      features::IsPersonalizationJellyEnabled() ? 130 : kBannerHeightPx;
   DCHECK(!album_ids.empty());
-  google_photos_albums_previews_weak_factory_.InvalidateWeakPtrs();
+  previews_weak_factory_.InvalidateWeakPtrs();
   ash::AmbientBackendController::Get()->GetGooglePhotosAlbumsPreview(
-      album_ids, preview_width, preview_height, num_previews,
-      base::BindOnce(&PersonalizationAppAmbientProviderImpl::
-                         OnGooglePhotosAlbumsPreviewsFetched,
-                     google_photos_albums_previews_weak_factory_.GetWeakPtr()));
+      album_ids, kBannerWidthPx, kBannerHeightPx, num_previews,
+      base::BindOnce(&PersonalizationAppAmbientProviderImpl::OnPreviewsFetched,
+                     previews_weak_factory_.GetWeakPtr()));
 }
 
-void PersonalizationAppAmbientProviderImpl::OnGooglePhotosAlbumsPreviewsFetched(
+void PersonalizationAppAmbientProviderImpl::OnPreviewsFetched(
     const std::vector<GURL>& preview_urls) {
   DVLOG(4) << __func__ << " preview_urls_size=" << preview_urls.size();
-  ambient_observer_remote_->OnGooglePhotosAlbumsPreviewsFetched(preview_urls);
+  ambient_observer_remote_->OnPreviewsFetched(preview_urls);
 }
 
 ash::PersonalAlbum*
@@ -566,7 +587,7 @@ ash::ArtSetting* PersonalizationAppAmbientProviderImpl::FindArtAlbumById(
 void PersonalizationAppAmbientProviderImpl::ResetLocalSettings() {
   write_weak_factory_.InvalidateWeakPtrs();
   read_weak_factory_.InvalidateWeakPtrs();
-  google_photos_albums_previews_weak_factory_.InvalidateWeakPtrs();
+  previews_weak_factory_.InvalidateWeakPtrs();
 
   settings_.reset();
   cached_settings_.reset();

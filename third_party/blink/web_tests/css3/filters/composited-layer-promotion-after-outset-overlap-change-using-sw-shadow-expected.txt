@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -29,7 +29,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -44,8 +44,7 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='software-layer-to-promote' class='final-drop-shadow'",
       "position": [100, 100],
-      "bounds": [200, 200],
-      "contentsOpaqueForText": true
+      "bounds": [200, 200]
     }
   ],
   "transforms": [

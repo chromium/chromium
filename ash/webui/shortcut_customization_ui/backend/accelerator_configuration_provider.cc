@@ -12,20 +12,22 @@
 #include "ash/accelerators/accelerator_alias_converter.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/public/cpp/accelerators_util.h"
+#include "ash/public/mojom/accelerator_configuration.mojom.h"
 #include "ash/public/mojom/accelerator_info.mojom-forward.h"
 #include "ash/public/mojom/accelerator_info.mojom-shared.h"
+#include "ash/public/mojom/accelerator_keys.mojom.h"
 #include "ash/shell.h"
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
-#include "chromeos/strings/grit/chromeos_strings.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/events/keyboard_capability.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
@@ -33,6 +35,16 @@
 
 namespace ash {
 
+namespace {
+
+using ::ash::shortcut_customization::mojom::AcceleratorResultData;
+using ::ash::shortcut_customization::mojom::AcceleratorResultDataPtr;
+using ::ash::shortcut_customization::mojom::SimpleAccelerator;
+using ::ash::shortcut_customization::mojom::SimpleAcceleratorPtr;
+using mojom::AcceleratorConfigResult;
+
+// Gets the parts of the string that don't contain replacements.
+// Ex: "Press and " -> ["Press ", " and "]
 std::vector<std::u16string> SplitStringOnOffsets(
     const std::u16string& input,
     const std::vector<size_t>& offsets) {
@@ -63,6 +75,10 @@ std::vector<std::u16string> SplitStringOnOffsets(
   return parts;
 }
 
+// Creates text accelerator parts needed to properly display kText accelerators
+// in the UI. Uses the list of offsets which must be sorted and contains the
+// start points of our replacements to place the |plain_text_parts| and
+// |replacement_parts| in the correct order.
 std::vector<mojom::TextAcceleratorPartPtr> GenerateTextAcceleratorParts(
     const std::vector<std::u16string>& plain_text_parts,
     const std::vector<TextAcceleratorPart>& replacement_parts,
@@ -110,48 +126,10 @@ std::vector<mojom::TextAcceleratorPartPtr> GenerateTextAcceleratorParts(
   return result;
 }
 
-namespace {
-
-// This map is for KeyboardCodes that don't return a key_display from
-// `KeycodeToKeyString`. The string values here were arbitrarily chosen
-// based on the VKEY enum name.
-// TODO(cambickel): In the future, consolidate this lookup table to be in the
-// same location as the layout table.
-const base::flat_map<ui::KeyboardCode, std::u16string>& GetKeyDisplayMap() {
-  static auto key_display_map =
-      base::NoDestructor(base::flat_map<ui::KeyboardCode, std::u16string>({
-          {ui::KeyboardCode::VKEY_MICROPHONE_MUTE_TOGGLE,
-           u"MicrophoneMuteToggle"},
-          {ui::KeyboardCode::VKEY_KBD_BACKLIGHT_TOGGLE,
-           u"KeyboardBacklightToggle"},
-          {ui::KeyboardCode::VKEY_KBD_BRIGHTNESS_UP, u"KeyboardBrightnessUp"},
-          {ui::KeyboardCode::VKEY_KBD_BRIGHTNESS_DOWN,
-           u"KeyboardBrightnessDown"},
-          {ui::KeyboardCode::VKEY_SLEEP, u"Sleep"},
-          {ui::KeyboardCode::VKEY_NEW, u"NewTab"},
-          {ui::KeyboardCode::VKEY_PRIVACY_SCREEN_TOGGLE,
-           u"PrivacyScreenToggle"},
-          {ui::KeyboardCode::VKEY_ALL_APPLICATIONS, u"OpenLauncher"},
-          {ui::KeyboardCode::VKEY_DICTATE, u"ToggleDictation"},
-          {ui::KeyboardCode::VKEY_WLAN, u"ToggleWifi"},
-          {ui::KeyboardCode::VKEY_EMOJI_PICKER, u"EmojiPicker"},
-          {ui::KeyboardCode::VKEY_SPACE, u"Space"},
-          {ui::KeyboardCode::VKEY_TAB,
-           l10n_util::GetStringUTF16(IDS_SHORTCUT_CUSTOMIZATION_KEY_TAB)},
-          {ui::KeyboardCode::VKEY_ESCAPE,
-           l10n_util::GetStringUTF16(IDS_SHORTCUT_CUSTOMIZATION_KEY_ESCAPE)},
-          {ui::KeyboardCode::VKEY_RETURN,
-           l10n_util::GetStringUTF16(IDS_SHORTCUT_CUSTOMIZATION_KEY_RETURN)},
-          {ui::KeyboardCode::VKEY_BACK,
-           l10n_util::GetStringUTF16(IDS_SHORTCUT_CUSTOMIZATION_KEY_BACKSPACE)},
-      }));
-  return *key_display_map;
-}
-
 mojom::StandardAcceleratorPropertiesPtr CreateStandardAcceleratorProps(
     const ui::Accelerator& accelerator) {
   return mojom::StandardAcceleratorProperties::New(
-      accelerator, shortcut_ui::GetKeyDisplay(accelerator.key_code()));
+      accelerator, ash::GetKeyDisplay(accelerator.key_code()));
 }
 
 mojom::AcceleratorLayoutInfoPtr LayoutInfoToMojom(
@@ -195,16 +173,6 @@ mojom::AcceleratorInfoPtr CreateStandardAcceleratorInfo(
   return info_mojom;
 }
 
-// Create base accelerator info using accelerator.
-mojom::AcceleratorInfoPtr CreateBaseAcceleratorInfo(
-    const ui::Accelerator& accelerator) {
-  // TODO(longbowei): Some accelerators should not be locked when customization
-  // is allowed.
-  return CreateStandardAcceleratorInfo(accelerator, /*locked=*/true,
-                                       GetAcceleratorType(accelerator),
-                                       mojom::AcceleratorState::kEnabled);
-}
-
 }  // namespace
 
 namespace shortcut_ui {
@@ -242,7 +210,11 @@ AcceleratorConfigurationProvider::~AcceleratorConfigurationProvider() {
 
   ui::DeviceDataManager::GetInstance()->RemoveObserver(this);
   input_method::InputMethodManager::Get()->RemoveObserver(this);
-  Shell::Get()->keyboard_capability()->RemoveObserver(this);
+
+  // In unit tests, the Shell instance may already be deleted at this point.
+  if (Shell::HasInstance()) {
+    Shell::Get()->keyboard_capability()->RemoveObserver(this);
+  }
 }
 
 void AcceleratorConfigurationProvider::IsMutable(
@@ -265,10 +237,20 @@ void AcceleratorConfigurationProvider::GetAccelerators(
 }
 
 void AcceleratorConfigurationProvider::AddObserver(
+    AcceleratorConfigurationProvider::AcceleratorsUpdatedObserver* observer) {
+  accelerators_updated_observers_.AddObserver(observer);
+}
+
+void AcceleratorConfigurationProvider::RemoveObserver(
+    AcceleratorConfigurationProvider::AcceleratorsUpdatedObserver* observer) {
+  accelerators_updated_observers_.RemoveObserver(observer);
+}
+
+void AcceleratorConfigurationProvider::AddObserver(
     mojo::PendingRemote<
         shortcut_customization::mojom::AcceleratorsUpdatedObserver> observer) {
-  accelerators_updated_observers_.reset();
-  accelerators_updated_observers_.Bind(std::move(observer));
+  accelerators_updated_mojo_observer_.reset();
+  accelerators_updated_mojo_observer_.Bind(std::move(observer));
 }
 
 void AcceleratorConfigurationProvider::OnInputDeviceConfigurationChanged(
@@ -291,9 +273,58 @@ void AcceleratorConfigurationProvider::OnTopRowKeysAreFKeysChanged() {
   NotifyAcceleratorsUpdated();
 }
 
+AcceleratorConfigurationProvider::AcceleratorConfigurationMap
+AcceleratorConfigurationProvider::GetAcceleratorConfig() {
+  return CreateConfigurationMap();
+}
+
+std::vector<mojom::AcceleratorLayoutInfoPtr>
+AcceleratorConfigurationProvider::GetAcceleratorLayoutInfos() const {
+  return mojo::Clone(layout_infos_);
+}
+
 void AcceleratorConfigurationProvider::GetAcceleratorLayoutInfos(
     GetAcceleratorLayoutInfosCallback callback) {
   std::move(callback).Run(mojo::Clone(layout_infos_));
+}
+
+void AcceleratorConfigurationProvider::RemoveAccelerator(
+    mojom::AcceleratorSource source,
+    uint32_t action_id,
+    const ui::Accelerator& accelerator,
+    RemoveAcceleratorCallback callback) {
+  DCHECK(::features::IsShortcutCustomizationEnabled());
+  AcceleratorResultDataPtr result_data = AcceleratorResultData::New();
+
+  if (source != mojom::AcceleratorSource::kAsh) {
+    // Only ash accelerators can be modified, return early since all other
+    // sources are locked.
+    result_data->result = AcceleratorConfigResult::kActionLocked;
+    std::move(callback).Run(std::move(result_data));
+    return;
+  }
+
+  // Verify that `action_id` is a valid Ash accelerator ID. If validity checks
+  // fail, return `kNotFound`.
+  if (!ash_accelerator_configuration_->IsValid(action_id)) {
+    result_data->result = AcceleratorConfigResult::kNotFound;
+    std::move(callback).Run(std::move(result_data));
+    return;
+  }
+
+  AcceleratorConfigResult result =
+      ash_accelerator_configuration_->RemoveAccelerator(action_id, accelerator);
+  result_data->result = result;
+  std::move(callback).Run(std::move(result_data));
+}
+
+void AcceleratorConfigurationProvider::RestoreAllDefaults(
+    RestoreAllDefaultsCallback callback) {
+  AcceleratorResultDataPtr result_data = AcceleratorResultData::New();
+  AcceleratorConfigResult result =
+      ash_accelerator_configuration_->RestoreAllDefaults();
+  result_data->result = result;
+  std::move(callback).Run(std::move(result_data));
 }
 
 void AcceleratorConfigurationProvider::BindInterface(
@@ -341,31 +372,37 @@ void AcceleratorConfigurationProvider::OnAcceleratorsUpdated(
 }
 
 void AcceleratorConfigurationProvider::NotifyAcceleratorsUpdated() {
-  if (accelerators_updated_observers_.is_bound()) {
-    accelerators_updated_observers_->OnAcceleratorsUpdated(
-        CreateConfigurationMap());
+  AcceleratorConfigurationMap config_map = CreateConfigurationMap();
+  if (accelerators_updated_mojo_observer_.is_bound()) {
+    accelerators_updated_mojo_observer_->OnAcceleratorsUpdated(
+        mojo::Clone(config_map));
+  }
+  for (auto& observer : accelerators_updated_observers_) {
+    observer.OnAcceleratorsUpdated(mojo::Clone(config_map));
   }
 }
 
-std::vector<mojom::AcceleratorInfoPtr>
-AcceleratorConfigurationProvider::CreateAcceleratorInfos(
-    const std::vector<ui::Accelerator>& accelerators) const {
-  std::vector<mojom::AcceleratorInfoPtr> infos_mojom;
-  for (const auto& accelerator : accelerators) {
-    // Get the alias accelerators by doing F-Keys remapping and
-    // (reversed) six-pack-keys remapping if applicable.
-    std::vector<ui::Accelerator> accelerator_aliases =
-        accelerator_alias_converter_.CreateAcceleratorAlias(accelerator);
-    for (const auto& accelerator_alias : accelerator_aliases) {
-      infos_mojom.push_back(CreateBaseAcceleratorInfo(accelerator_alias));
-    }
+void AcceleratorConfigurationProvider::CreateAndAppendAliasedAccelerators(
+    const ui::Accelerator& accelerator,
+    bool locked,
+    mojom::AcceleratorType type,
+    mojom::AcceleratorState state,
+    std::vector<mojom::AcceleratorInfoPtr>& output) {
+  // Get the alias accelerators by doing F-Keys remapping and
+  // (reversed) six-pack-keys remapping if applicable.
+  std::vector<ui::Accelerator> accelerator_aliases =
+      accelerator_alias_converter_.CreateAcceleratorAlias(accelerator);
+  output.reserve(output.size() + accelerator_aliases.size());
+
+  for (const auto& accelerator_alias : accelerator_aliases) {
+    output.push_back(CreateStandardAcceleratorInfo(
+        accelerator_alias, locked, GetAcceleratorType(accelerator), state));
   }
-  return infos_mojom;
 }
 
 mojom::TextAcceleratorPropertiesPtr
 AcceleratorConfigurationProvider::CreateTextAcceleratorProperties(
-    const NonConfigurableAcceleratorDetails& details) {
+    const NonConfigurableAcceleratorDetails& details) const {
   DCHECK(details.message_id.has_value());
   // Ambient accelerators that only contain plain text e.g., Drag the
   // link to the tab's address bar.
@@ -399,7 +436,7 @@ AcceleratorConfigurationProvider::CreateTextAcceleratorProperties(
 
 mojom::AcceleratorInfoPtr
 AcceleratorConfigurationProvider::CreateTextAcceleratorInfo(
-    const NonConfigurableAcceleratorDetails& details) {
+    const NonConfigurableAcceleratorDetails& details) const {
   mojom::AcceleratorInfoPtr info_mojom = mojom::AcceleratorInfo::New();
   info_mojom->locked = true;
   info_mojom->type = mojom::AcceleratorType::kDefault;
@@ -413,18 +450,69 @@ AcceleratorConfigurationProvider::CreateTextAcceleratorInfo(
 AcceleratorConfigurationProvider::AcceleratorConfigurationMap
 AcceleratorConfigurationProvider::CreateConfigurationMap() {
   AcceleratorConfigurationMap accelerator_config;
-  // For each source, create a mapping between <ActionId, AcceleratorInfoPtr>.
-  for (const auto& [source, id_to_accelerators] : accelerators_mapping_) {
-    base::flat_map<AcceleratorActionId, std::vector<mojom::AcceleratorInfoPtr>>
-        accelerators_mojom;
-    for (const auto& [action_id, accelerators] : id_to_accelerators) {
-      accelerators_mojom.emplace(action_id,
-                                 CreateAcceleratorInfos(accelerators));
-    }
-    accelerator_config.emplace(source, std::move(accelerators_mojom));
-  }
+  PopulateAshAcceleratorConfig(accelerator_config);
+  PopulateAmbientAcceleratorConfig(accelerator_config);
+  return accelerator_config;
+}
 
-  // Add non-configuarable accelerators.
+void AcceleratorConfigurationProvider::PopulateAshAcceleratorConfig(
+    AcceleratorConfigurationMap& accelerator_config_output) {
+  const auto& id_to_accelerators =
+      accelerators_mapping_.at(mojom::AcceleratorSource::kAsh);
+  auto& output_action_id_to_accelerators =
+      accelerator_config_output[mojom::AcceleratorSource::kAsh];
+
+  for (const auto& layout_info : kAcceleratorLayouts) {
+    if (layout_info.source != mojom::AcceleratorSource::kAsh) {
+      // Only ash accelerators can have dynamically modified properties.
+      // Note that ambient accelerators cannot be in kAsh.
+      continue;
+    }
+
+    const auto& id_to_accelerator_iter =
+        id_to_accelerators.find(layout_info.action_id);
+    // For tests, we only want to test a subset of accelerators so it's possible
+    // that we don't have accelerators for the given `layout_info`.
+    if (id_to_accelerator_iter == id_to_accelerators.end() &&
+        ignore_layouts_for_testing_) {
+      continue;
+    } else {
+      DCHECK(id_to_accelerator_iter != id_to_accelerators.end());
+    }
+
+    const auto& accelerators = id_to_accelerator_iter->second;
+
+    // Check if the default accelerators are available, if not re-add them but
+    // mark them as disabled.
+    const std::vector<ui::Accelerator>& default_accelerators =
+        ash_accelerator_configuration_->GetDefaultAcceleratorsForId(
+            layout_info.action_id);
+    for (const auto& default_accelerator : default_accelerators) {
+      if (base::Contains(accelerators, default_accelerator)) {
+        continue;
+      }
+
+      // Append the missing default accelerators but marked as disabled by user.
+      CreateAndAppendAliasedAccelerators(
+          default_accelerator, layout_info.locked,
+          mojom::AcceleratorType::kDefault,
+          mojom::AcceleratorState::kDisabledByUser,
+          output_action_id_to_accelerators[layout_info.action_id]);
+    }
+
+    for (const auto& accelerator : accelerators) {
+      // TODO(jimmyxgong): Check pref storage to determine whether the
+      // AcceleratorType was user-added or default.
+      CreateAndAppendAliasedAccelerators(
+          accelerator, layout_info.locked, mojom::AcceleratorType::kDefault,
+          mojom::AcceleratorState::kEnabled,
+          output_action_id_to_accelerators[layout_info.action_id]);
+    }
+  }
+}
+
+void AcceleratorConfigurationProvider::PopulateAmbientAcceleratorConfig(
+    AcceleratorConfigurationMap& accelerator_config_output) {
   ActionIdToAcceleratorsInfoMap non_configurable_accelerators;
   for (const auto& [ambient_action_id, accelerators_details] :
        non_configurable_actions_mapping_) {
@@ -432,9 +520,14 @@ AcceleratorConfigurationProvider::CreateConfigurationMap() {
       // These properties should only be set for text based layout accelerators
       DCHECK(!accelerators_details.replacements.has_value());
       DCHECK(!accelerators_details.message_id.has_value());
-      non_configurable_accelerators.emplace(
-          ambient_action_id,
-          CreateAcceleratorInfos(accelerators_details.accelerators.value()));
+      for (const auto& non_config_accelerator :
+           accelerators_details.accelerators.value()) {
+        CreateAndAppendAliasedAccelerators(
+            non_config_accelerator,
+            /*locked=*/true, mojom::AcceleratorType::kDefault,
+            mojom::AcceleratorState::kEnabled,
+            non_configurable_accelerators[ambient_action_id]);
+      }
     } else {
       // This property should only be set for standard accelerators
       DCHECK(!accelerators_details.accelerators.has_value());
@@ -447,21 +540,8 @@ AcceleratorConfigurationProvider::CreateConfigurationMap() {
                                             std::move(text_accelerators_info));
     }
   }
-  accelerator_config.emplace(mojom::AcceleratorSource::kAmbient,
-                             std::move(non_configurable_accelerators));
-  return accelerator_config;
-}
-
-std::u16string GetKeyDisplay(ui::KeyboardCode key_code) {
-  // If there's an entry for this key_code in our
-  // map, return that entry's value.
-  auto it = GetKeyDisplayMap().find(key_code);
-  if (it != GetKeyDisplayMap().end()) {
-    return it->second;
-  } else {
-    // Otherwise, get the key_display from a util function.
-    return KeycodeToKeyString(key_code);
-  }
+  accelerator_config_output.emplace(mojom::AcceleratorSource::kAmbient,
+                                    std::move(non_configurable_accelerators));
 }
 
 }  // namespace shortcut_ui

@@ -22,13 +22,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/port_util.h"
 #include "net/base/proxy_delegate.h"
-#include "net/base/trace_constants.h"
 #include "net/cert/cert_verifier.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/bidirectional_stream_impl.h"
@@ -88,13 +86,13 @@ const char* NetLogHttpStreamJobType(HttpStreamFactory::JobType job_type) {
 }
 
 // Returns parameters associated with the start of a HTTP stream job.
-base::Value NetLogHttpStreamJobParams(const NetLogSource& source,
-                                      const GURL& original_url,
-                                      const GURL& url,
-                                      bool expect_spdy,
-                                      bool using_quic,
-                                      HttpStreamFactory::JobType job_type,
-                                      RequestPriority priority) {
+base::Value::Dict NetLogHttpStreamJobParams(const NetLogSource& source,
+                                            const GURL& original_url,
+                                            const GURL& url,
+                                            bool expect_spdy,
+                                            bool using_quic,
+                                            HttpStreamFactory::JobType job_type,
+                                            RequestPriority priority) {
   base::Value::Dict dict;
   if (source.IsValid())
     source.AddToEventParameters(dict);
@@ -104,15 +102,15 @@ base::Value NetLogHttpStreamJobParams(const NetLogSource& source,
   dict.Set("using_quic", using_quic);
   dict.Set("priority", RequestPriorityToString(priority));
   dict.Set("type", NetLogHttpStreamJobType(job_type));
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 // Returns parameters associated with the ALPN protocol of a HTTP stream.
-base::Value NetLogHttpStreamProtoParams(NextProto negotiated_protocol) {
+base::Value::Dict NetLogHttpStreamProtoParams(NextProto negotiated_protocol) {
   base::Value::Dict dict;
 
   dict.Set("proto", NextProtoToString(negotiated_protocol));
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 HttpStreamFactory::Job::Job(Delegate* delegate,
@@ -229,6 +227,17 @@ HttpStreamFactory::Job::Job(Delegate* delegate,
     DCHECK(origin_url_.SchemeIsWSOrWSS());
   } else {
     DCHECK(!origin_url_.SchemeIsWSOrWSS());
+  }
+
+  const NetLogWithSource* delegate_net_log = delegate_->GetNetLog();
+  if (delegate_net_log) {
+    net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_JOB, [&] {
+      return NetLogHttpStreamJobParams(
+          delegate_net_log->source(), request_info_.url, origin_url_,
+          expect_spdy_, using_quic_, job_type_, priority_);
+    });
+    delegate_net_log->AddEventReferencingSource(
+        NetLogEventType::HTTP_STREAM_REQUEST_STARTED_JOB, net_log_.source());
   }
 }
 
@@ -548,12 +557,10 @@ void HttpStreamFactory::Job::OnPreconnectsComplete(int result) {
 }
 
 void HttpStreamFactory::Job::OnIOComplete(int result) {
-  TRACE_EVENT0(NetTracingCategory(), "HttpStreamFactory::Job::OnIOComplete");
   RunLoop(result);
 }
 
 void HttpStreamFactory::Job::RunLoop(int result) {
-  TRACE_EVENT0(NetTracingCategory(), "HttpStreamFactory::Job::RunLoop");
   result = DoLoop(result);
 
   if (result == ERR_IO_PENDING)
@@ -680,18 +687,6 @@ int HttpStreamFactory::Job::StartInternal() {
 }
 
 int HttpStreamFactory::Job::DoStart() {
-  const NetLogWithSource* net_log = delegate_->GetNetLog();
-
-  if (net_log) {
-    net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_JOB, [&] {
-      return NetLogHttpStreamJobParams(net_log->source(), request_info_.url,
-                                       origin_url_, expect_spdy_, using_quic_,
-                                       job_type_, priority_);
-    });
-    net_log->AddEventReferencingSource(
-        NetLogEventType::HTTP_STREAM_REQUEST_STARTED_JOB, net_log_.source());
-  }
-
   // Don't connect to restricted ports.
   if (!IsPortAllowedForScheme(destination_.port(),
                               request_info_.url.scheme_piece())) {

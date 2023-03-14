@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/reboot_notifications_scheduler.h"
@@ -30,7 +31,7 @@ class DeviceScheduledRebootHandler
   DeviceScheduledRebootHandler(
       ash::CrosSettings* cros_settings,
       std::unique_ptr<ScheduledTaskExecutor> scheduled_task_executor,
-      std::unique_ptr<RebootNotificationsScheduler> notifications_scheduler);
+      RebootNotificationsScheduler* notifications_scheduler);
   DeviceScheduledRebootHandler(const DeviceScheduledRebootHandler&) = delete;
   DeviceScheduledRebootHandler& operator=(const DeviceScheduledRebootHandler&) =
       delete;
@@ -60,6 +61,16 @@ class DeviceScheduledRebootHandler
   bool IsRebootSkippedForTest() const;
 
  protected:
+  using GetBootTimeCallback = base::RepeatingCallback<base::Time()>;
+
+  // Extended constructor for testing purposes. `cros_settings` and
+  // `notifications_scheduler` must outlive the handler.
+  DeviceScheduledRebootHandler(
+      ash::CrosSettings* cros_settings,
+      std::unique_ptr<ScheduledTaskExecutor> scheduled_task_executor,
+      RebootNotificationsScheduler* notifications_scheduler,
+      GetBootTimeCallback get_boot_time_callback);
+
   // Called when scheduled timer fires. Triggers a reboot and
   // schedules the next reboot based on |scheduled_reboot_data_|.
   virtual void OnRebootTimerExpired();
@@ -91,7 +102,7 @@ class DeviceScheduledRebootHandler
   void RebootDevice(const std::string& reboot_description) const;
 
   // Used to retrieve Chrome OS settings. Not owned.
-  ash::CrosSettings* const cros_settings_;
+  const base::raw_ptr<ash::CrosSettings> cros_settings_;
 
   // Subscription for callback when settings change.
   base::CallbackListSubscription cros_settings_subscription_;
@@ -106,11 +117,16 @@ class DeviceScheduledRebootHandler
   // Delay added to scheduled reboot time, used for testing.
   absl::optional<base::TimeDelta> reboot_delay_for_testing_;
 
-  // Scheduler for reboot notification and dialog.
-  std::unique_ptr<RebootNotificationsScheduler> notifications_scheduler_;
+  // Scheduler for reboot notification and dialog. Unowned.
+  base::raw_ptr<RebootNotificationsScheduler> notifications_scheduler_;
 
   // Indicating if the reboot should be skipped.
   bool skip_reboot_ = false;
+
+  // Returns device's boot timestamp. The functor is used because the boot time
+  // is not constant and can change at runtime, e.g. because of the time
+  // sync.
+  GetBootTimeCallback get_boot_time_callback_;
 
   // Observation of chromeos::PowerManagerClient.
   base::ScopedObservation<chromeos::PowerManagerClient,

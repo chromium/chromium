@@ -15,6 +15,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.not;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
@@ -23,21 +25,34 @@ import android.view.View;
 
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.signin.SyncConsentActivity;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
@@ -49,6 +64,9 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 
@@ -71,8 +89,23 @@ public class IdentityDiscControllerTest {
     @Rule
     public final RuleChain mRuleChain =
             RuleChain.outerRule(mSigninTestRule).around(mActivityTestRule);
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     private Tab mTab;
+
+    @Mock
+    private IdentityServicesProvider mIdentityServicesProviderMock;
+    @Mock
+    private SigninManager mSigninManagerMock;
+    @Mock
+    private IdentityManager mIdentityManagerMock;
+    @Mock
+    private ActivityLifecycleDispatcher mDispatcher;
+    @Mock
+    private ObservableSupplier<Profile> mProfileObservableSupplier;
+    @Mock
+    private ButtonDataProvider.ButtonDataObserver mButtonDataObserver;
 
     @Before
     public void setUp() {
@@ -134,6 +167,34 @@ public class IdentityDiscControllerTest {
         // Clicking the signed-out avatar should lead to the sync consent screen.
         ActivityTestUtils.waitForActivity(InstrumentationRegistry.getInstrumentation(),
                 SyncConsentActivity.class,
+                () -> onView(withId(R.id.optional_toolbar_button)).perform(click()));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY})
+    public void
+    testIdentityDiscSignedOut_signinDisabledByPolicy_identityStatusConsistencyEnabled() {
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            when(mIdentityServicesProviderMock.getSigninManager(
+                         Profile.getLastUsedRegularProfile()))
+                    .thenReturn(mSigninManagerMock);
+            // This mock is required because the MainSettings class calls the IdentityManager.
+            when(mIdentityServicesProviderMock.getIdentityManager(
+                         Profile.getLastUsedRegularProfile()))
+                    .thenReturn(mIdentityManagerMock);
+        });
+        when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(true);
+
+        // When user is signed out, a signed-out avatar should be visible on the NTP.
+        waitForView(allOf(withId(R.id.optional_toolbar_button), isDisplayed(),
+                withContentDescription(
+                        R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
+
+        // Clicking the signed-out avatar should lead to the settings screen.
+        ActivityTestUtils.waitForActivity(InstrumentationRegistry.getInstrumentation(),
+                SettingsActivity.class,
                 () -> onView(withId(R.id.optional_toolbar_button)).perform(click()));
     }
 
@@ -252,6 +313,33 @@ public class IdentityDiscControllerTest {
                 withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
     }
 
+    @Test
+    @SmallTest
+    public void onPrimaryAccountChanged_accountSet() {
+        IdentityDiscController identityDiscController =
+                buildControllerWithObserver(mButtonDataObserver);
+        PrimaryAccountChangeEvent accountSetEvent =
+                newSigninEvent(PrimaryAccountChangeEvent.Type.SET);
+
+        identityDiscController.onPrimaryAccountChanged(accountSetEvent);
+
+        verify(mButtonDataObserver).buttonDataChanged(true);
+    }
+
+    @Test
+    @SmallTest
+    public void onPrimaryAccountChanged_accountCleared() {
+        IdentityDiscController identityDiscController =
+                buildControllerWithObserver(mButtonDataObserver);
+        PrimaryAccountChangeEvent accountClearedEvent =
+                newSigninEvent(PrimaryAccountChangeEvent.Type.CLEARED);
+
+        identityDiscController.onPrimaryAccountChanged(accountClearedEvent);
+
+        verify(mButtonDataObserver).buttonDataChanged(false);
+        Assert.assertTrue(identityDiscController.isProfileDataCacheEmpty());
+    }
+
     private void leaveNTP() {
         mActivityTestRule.loadUrl(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         ChromeTabUtils.waitForTabPageLoaded(mTab, ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
@@ -262,5 +350,18 @@ public class IdentityDiscControllerTest {
                 EMAIL, name, SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
         mSigninTestRule.waitForSeeding();
         return coreAccountInfo;
+    }
+
+    private IdentityDiscController buildControllerWithObserver(
+            ButtonDataProvider.ButtonDataObserver observer) {
+        IdentityDiscController controller = new IdentityDiscController(
+                mActivityTestRule.getActivity(), mDispatcher, mProfileObservableSupplier);
+        controller.addObserver(observer);
+
+        return controller;
+    }
+
+    private PrimaryAccountChangeEvent newSigninEvent(int eventType) {
+        return new PrimaryAccountChangeEvent(eventType, ConsentLevel.SIGNIN);
     }
 }

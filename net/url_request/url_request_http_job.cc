@@ -101,7 +101,7 @@
 
 namespace {
 
-base::Value CookieInclusionStatusNetLogParams(
+base::Value::Dict CookieInclusionStatusNetLogParams(
     const std::string& operation,
     const std::string& cookie_name,
     const std::string& cookie_domain,
@@ -119,7 +119,7 @@ base::Value CookieInclusionStatusNetLogParams(
     if (!cookie_path.empty())
       dict.Set("path", cookie_path);
   }
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 // Records details about the most-specific trust anchor in |spki_hashes|,
@@ -277,6 +277,15 @@ void URLRequestHttpJob::Start() {
 #if BUILDFLAG(ENABLE_REPORTING)
   request_info_.reporting_upload_depth = request_->reporting_upload_depth();
 #endif
+
+  // Add/remove the Storage Access override enum based on whether the request's
+  // url and initiator are same-site, to prevent cross-site sibling iframes
+  // benefit from each other's storage access API grants.
+  request()->cookie_setting_overrides().PutOrRemove(
+      net::CookieSettingOverride::kStorageAccessGrantEligible,
+      request()->has_storage_access() && request_initiator_site().has_value() &&
+          request_initiator_site().value() ==
+              net::SchemefulSite(request()->url()));
 
   bool should_add_cookie_header = ShouldAddCookieHeader();
   UMA_HISTOGRAM_BOOLEAN("Net.HttpJob.CanIncludeCookies",

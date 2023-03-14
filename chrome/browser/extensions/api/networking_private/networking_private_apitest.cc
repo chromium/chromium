@@ -48,7 +48,7 @@ class TestNetworkingPrivateDelegate : public NetworkingPrivateDelegate {
   TestNetworkingPrivateDelegate& operator=(
       const TestNetworkingPrivateDelegate&) = delete;
 
-  ~TestNetworkingPrivateDelegate() override {}
+  ~TestNetworkingPrivateDelegate() override = default;
 
   // Asynchronous methods
   void GetProperties(const std::string& guid,
@@ -77,7 +77,7 @@ class TestNetworkingPrivateDelegate : public NetworkingPrivateDelegate {
   }
 
   void CreateNetwork(bool shared,
-                     base::Value properties,
+                     base::Value::Dict properties,
                      StringCallback success_callback,
                      FailureCallback failure_callback) override {
     StringResult(std::move(success_callback), std::move(failure_callback),

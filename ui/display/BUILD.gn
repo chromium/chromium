@@ -156,8 +156,6 @@ static_library("test_support") {
     "test/display_matchers.cc",
     "test/display_matchers.h",
     "test/display_test_util.h",
-    "test/scoped_screen_override.cc",
-    "test/scoped_screen_override.h",
     "test/test_screen.cc",
     "test/test_screen.h",
   ]

@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -67,8 +68,9 @@ public class LocaleManagerReferralTest {
     @Test
     public void testYandexReferralId() throws TimeoutException {
         final CallbackHelper templateUrlServiceLoaded = new CallbackHelper();
+        TemplateUrlService templateUrlService = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile()));
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TemplateUrlService templateUrlService = TemplateUrlServiceFactory.get();
             templateUrlService.registerLoadListener(new TemplateUrlService.LoadListener() {
                 @Override
                 public void onTemplateUrlServiceLoaded() {
@@ -82,21 +84,21 @@ public class LocaleManagerReferralTest {
         templateUrlServiceLoaded.waitForCallback("Template URLs never loaded", 0);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TemplateUrlServiceFactory.get().setSearchEngine("yandex.ru");
+            templateUrlService.setSearchEngine("yandex.ru");
 
             // The initial param is empty, so ensure no clid param is passed.
-            String url = TemplateUrlServiceFactory.get().getUrlForSearchQuery("blah");
+            String url = templateUrlService.getUrlForSearchQuery("blah");
             Assert.assertThat(url, not(containsString("&clid=")));
 
             // Initialize the value to something and verify it is included in the generated
             // URL.
             mYandexReferralId = "TESTING_IS_AWESOME";
-            url = TemplateUrlServiceFactory.get().getUrlForSearchQuery("blah");
+            url = templateUrlService.getUrlForSearchQuery("blah");
             Assert.assertThat(url, containsString("&clid=TESTING_IS_AWESOME"));
 
             // Switch to google and ensure the clid param is no longer included.
-            TemplateUrlServiceFactory.get().setSearchEngine("google.com");
-            url = TemplateUrlServiceFactory.get().getUrlForSearchQuery("blah");
+            templateUrlService.setSearchEngine("google.com");
+            url = templateUrlService.getUrlForSearchQuery("blah");
             Assert.assertThat(url, not(containsString("&clid=")));
         });
     }

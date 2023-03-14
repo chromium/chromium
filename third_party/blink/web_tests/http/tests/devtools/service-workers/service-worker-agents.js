@@ -15,7 +15,7 @@
 
   TestRunner.addSniffer(SDK.MainConnection.prototype, 'sendRawMessage', function(messageString) {
     var message = JSON.parse(messageString);
-    if (!message.sessionId || message.sessionId === SDK.targetManager.mainFrameTarget().sessionId)
+    if (!message.sessionId || message.sessionId === SDK.targetManager.primaryPageTarget().sessionId)
       return;
     if (messageString.includes('DOM.'))
       TestRunner.addResult('DOM-related command should NOT be issued: ' + messageString);

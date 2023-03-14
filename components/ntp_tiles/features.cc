@@ -13,9 +13,6 @@ namespace ntp_tiles {
 
 const char kPopularSitesFieldTrialName[] = "NTPPopularSites";
 
-const char kIOSPopularSitesExcludePopularAppsParam[] =
-    "IOSPopularSitesExcludePopularAppsParam";
-
 BASE_FEATURE(kPopularSitesBakedInContentFeature,
              "NTPPopularSitesBakedInContent",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -28,21 +25,23 @@ BASE_FEATURE(kUsePopularSitesSuggestions,
              "UsePopularSitesSuggestions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIOSPopularSitesImprovedSuggestions,
-             "IOSPopularSitesImprovedSuggestions",
+BASE_FEATURE(kNewTabPageRetention,
+             "IOSNewTabPageRetention",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-IOSDefaultPopularSitesExperimentBehavior
-GetDefaultPopularSitesExperimentType() {
-  if (base::FeatureList::IsEnabled(kIOSPopularSitesImprovedSuggestions)) {
-    return base::GetFieldTrialParamByFeatureAsBool(
-               kIOSPopularSitesImprovedSuggestions,
-               kIOSPopularSitesExcludePopularAppsParam, /*default_value=*/false)
-               ? IOSDefaultPopularSitesExperimentBehavior::kExcludePopularApps
-               : IOSDefaultPopularSitesExperimentBehavior::kIncludePopularApps;
+const char kNewTabPageRetentionName[] = "IOSNewTabPageRetention";
+
+const char kNewTabPageRetentionParam[] = "NewTabPageRetentionParam";
+
+NewTabPageRetentionExperimentBehavior GetNewTabPageRetentionExperimentType() {
+  if (base::FeatureList::IsEnabled(kNewTabPageRetention)) {
+    return (NewTabPageRetentionExperimentBehavior)
+        base::GetFieldTrialParamByFeatureAsInt(kNewTabPageRetention,
+                                               kNewTabPageRetentionParam,
+                                               /*default_value=*/0);
   }
 
-  return IOSDefaultPopularSitesExperimentBehavior::kDefault;
+  return NewTabPageRetentionExperimentBehavior::kDefault;
 }
 
 }  // namespace ntp_tiles

@@ -11,9 +11,14 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
+#include "content/public/browser/native_web_keyboard_event.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
+
+namespace content {
+struct NativeWebKeyboardEvent;
+}  // namespace content
 
 namespace autofill {
 
@@ -77,11 +82,9 @@ class PopupRowView : public views::View {
   absl::optional<CellType> GetSelectedCell() const { return selected_cell_; }
   void SetSelectedCell(absl::optional<CellType> cell);
 
-  // Show the in-product-help promo anchored to this bubble if applicable. The
-  // in-product-help promo is a bubble anchored to this item to show educational
-  // messages. The promo bubble should only be shown once in one session and has
-  // a limit for how many times it can be shown at most in a period of time.
-  void MaybeShowIphPromo();
+  // Attempts to process a key press `event`. Returns true if it did (and the
+  // parent no longer needs to handle it).
+  bool HandleKeyPressEvent(const content::NativeWebKeyboardEvent& event);
 
   // Returns the view representing the content area of the row.
   PopupCellView& GetContentView() { return *content_view_; }
@@ -89,6 +92,11 @@ class PopupRowView : public views::View {
   PopupCellView* GetControlView() { return control_view_.get(); }
 
  private:
+  // Selects the next/previous cell, if there is one. Otherwise leaves the
+  // current selection. Does not wrap.
+  void SelectNextCell();
+  void SelectPreviousCell();
+
   AccessibilitySelectionDelegate& GetA11ySelectionDelegate() {
     return a11y_selection_delegate_.get();
   }

@@ -312,8 +312,10 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
       GetWebFrameWithId(webState, SysNSStringToUTF8(frameID));
   autofill::BrowserAutofillManager* autofillManager =
       [self autofillManagerFromWebState:webState webFrame:frame];
-  if (!autofillManager)
+  if (!autofillManager) {
+    completion(NO);
     return;
+  }
 
   // Find the right field.
   autofill::FormFieldData field;
@@ -560,7 +562,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
             (const std::vector<autofill::FormDataPredictions>&)forms
                         inFrame:(web::WebFrame*)frame {
   if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillShowTypePredictions)) {
+          autofill::features::test::kAutofillShowTypePredictions)) {
     return;
   }
 
@@ -750,8 +752,9 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
 }
 
 - (void)processFrame:(web::WebFrame*)frame inWebState:(web::WebState*)webState {
-  if (!frame || !frame->CanCallJavaScriptFunction())
+  if (!frame) {
     return;
+  }
 
   autofill::AutofillDriverIOS* driver =
       autofill::AutofillDriverIOS::FromWebStateAndWebFrame(webState, frame);
@@ -822,8 +825,9 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   if (![self isAutofillEnabled])
     return;
 
-  if (!frame || !frame->CanCallJavaScriptFunction())
+  if (!frame) {
     return;
+  }
 
   // Return early if the page is not processed yet.
   DCHECK(autofill::AutofillDriverIOS::FromWebStateAndWebFrame(webState, frame));
@@ -884,8 +888,9 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
                            inFrame:(web::WebFrame*)frame {
   if (![self isAutofillEnabled])
     return;
-  if (!frame || !frame->CanCallJavaScriptFunction())
+  if (!frame) {
     return;
+  }
   FormDataVector forms;
 
   bool success = autofill::ExtractFormsData(

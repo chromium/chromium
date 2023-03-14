@@ -64,6 +64,8 @@ constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
     {"setupSucceededPageMessage",
      IDS_MULTIDEVICE_SETUP_SETUP_SUCCEEDED_PAGE_MESSAGE},
     {"startSetupPageHeader", IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_HEADER},
+    {"startSetupPageAfterQuickStartHeader",
+     IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_AFTER_QUICK_START_HEADER},
     {"tryAgain", IDS_MULTIDEVICE_SETUP_TRY_AGAIN_LABEL},
     {"dialogAccessibilityTitle",
      IDS_MULTIDEVICE_SETUP_DIALOG_ACCESSIBILITY_TITLE},

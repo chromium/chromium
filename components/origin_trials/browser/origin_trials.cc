@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "components/origin_trials/common/persisted_trial_token.h"
 #include "net/base/schemeful_site.h"
@@ -55,31 +56,78 @@ void OriginTrials::PersistTrialsFromTokens(
     const url::Origin& partition_origin,
     const base::span<const std::string> header_tokens,
     const base::Time current_time) {
+  PersistTokensInternal(origin, partition_origin, /*script_origins=*/{},
+                        header_tokens, current_time,
+                        /*append_only=*/false);
+}
+
+void OriginTrials::PersistAdditionalTrialsFromTokens(
+    const url::Origin& origin,
+    const url::Origin& partition_origin,
+    base::span<const url::Origin> script_origins,
+    const base::span<const std::string> header_tokens,
+    const base::Time current_time) {
+  PersistTokensInternal(origin, partition_origin, script_origins, header_tokens,
+                        current_time,
+                        /*append_only=*/true);
+}
+
+void OriginTrials::PersistTokensInternal(
+    const url::Origin& origin,
+    const url::Origin& partition_origin,
+    base::span<const url::Origin> script_origins,
+    const base::span<const std::string> header_tokens,
+    const base::Time current_time,
+    bool append_only) {
   if (origin.opaque()) {
     return;
   }
 
-  base::flat_set<PersistedTrialToken> existing_tokens =
-      persistence_provider_->GetPersistentTrialTokens(origin);
+  base::flat_map<url::Origin, std::vector<blink::TrialToken>> valid_tokens;
+  if (!append_only) {
+    // Explicitly initialize the entry for the first-party origin since an empty
+    // vector means tokens should be cleared if |append_only| is false.
+    valid_tokens[origin] = {};
+  }
 
-  std::vector<blink::TrialToken> valid_tokens;
-
+  // Parse the provided tokens
   for (const base::StringPiece token : header_tokens) {
     blink::TrialTokenResult validation_result =
-        trial_token_validator_->ValidateTokenAndTrial(token, origin,
-                                                      current_time);
+        trial_token_validator_->ValidateTokenAndTrial(
+            token, origin, script_origins, current_time);
 
     const blink::TrialToken* parsed_token = validation_result.ParsedToken();
     if (validation_result.Status() == blink::OriginTrialTokenStatus::kSuccess &&
         blink::origin_trials::IsTrialPersistentToNextResponse(
             parsed_token->feature_name())) {
-      valid_tokens.push_back(std::move(*parsed_token));
+      if (parsed_token->is_third_party()) {
+        // TODO(crbug.com/1418340): Support for all third-party tokens.
+        // Only accept deprecation trials as third-party for now.
+        bool deprecation_trial = false;
+        for (const blink::OriginTrialFeature feature :
+             blink::origin_trials::FeaturesForTrial(
+                 parsed_token->feature_name())) {
+          deprecation_trial |= blink::origin_trials::GetTrialType(feature) ==
+                               blink::OriginTrialType::kDeprecation;
+        }
+        if (deprecation_trial) {
+          // Valid third-party tokens are saved using the origin stored in the
+          // token.
+          valid_tokens[parsed_token->origin()].push_back(
+              std::move(*parsed_token));
+        }
+      } else {
+        // First party tokens use the passed-in origin, since it could be a
+        // subdomain.
+        valid_tokens[origin].push_back(std::move(*parsed_token));
+      }
     }
   }
-  UpdatePersistedTokenSet(existing_tokens, std::move(valid_tokens),
-                          GetTokenPartitionSite(partition_origin));
-  persistence_provider_->SavePersistentTrialTokens(origin,
-                                                   std::move(existing_tokens));
+  std::string partition_site = GetTokenPartitionSite(partition_origin);
+  for (const auto& origin_token_pair : valid_tokens) {
+    UpdatePersistedTokenSet(origin_token_pair.first, origin_token_pair.second,
+                            partition_site, append_only);
+  }
 }
 
 base::flat_set<std::string> OriginTrials::GetPersistedTrialsForOriginWithMatch(
@@ -125,34 +173,43 @@ std::string OriginTrials::GetTokenPartitionSite(const url::Origin& origin) {
   return net::SchemefulSite(origin).Serialize();
 }
 
-// static
 void OriginTrials::UpdatePersistedTokenSet(
-    base::flat_set<PersistedTrialToken>& token_set,
-    std::vector<blink::TrialToken> new_tokens,
-    std::string partition_site) {
-  // First, clean up token registrations for this origin and partition
-  // by removing any trials in the active partition that aren't being set
-  // by the new parameters.
-  for (PersistedTrialToken& token : token_set) {
-    const auto new_token_iter =
-        std::find_if(new_tokens.begin(), new_tokens.end(),
-                     [&token](const blink::TrialToken& trial_token) {
-                       return token.Matches(trial_token);
-                     });
-
-    // Remove registration of the token for the first party or top-level site
-    // partition.
-    if (new_token_iter == new_tokens.end()) {
-      token.RemoveFromPartition(partition_site);
-    }
+    const url::Origin& origin,
+    base::span<const blink::TrialToken> new_tokens,
+    const std::string& partition_site,
+    bool append_only) {
+  if (append_only && new_tokens.empty()) {
+    return;  // Nothing to do.
   }
-  // Cleanup of tokens no longer in any partitions.
-  base::EraseIf(token_set, [](const PersistedTrialToken& token) {
-    return !token.InAnyPartition();
-  });
+
+  base::flat_set<PersistedTrialToken> token_set =
+      persistence_provider_->GetPersistentTrialTokens(origin);
+
+  if (!append_only) {
+    // First, clean up token registrations for this origin and partition
+    // by removing any trials in the active partition that aren't being set
+    // by the new parameters.
+    for (PersistedTrialToken& token : token_set) {
+      const auto new_token_iter =
+          std::find_if(new_tokens.begin(), new_tokens.end(),
+                       [&token](const blink::TrialToken& trial_token) {
+                         return token.Matches(trial_token);
+                       });
+
+      // Remove registration of the token for the first party or top-level site
+      // partition.
+      if (new_token_iter == new_tokens.end()) {
+        token.RemoveFromPartition(partition_site);
+      }
+    }
+    // Cleanup of tokens no longer in any partitions.
+    base::EraseIf(token_set, [](const PersistedTrialToken& token) {
+      return !token.InAnyPartition();
+    });
+  }
 
   // Update the set with new partition information.
-  for (blink::TrialToken& new_token : new_tokens) {
+  for (const blink::TrialToken& new_token : new_tokens) {
     const auto found_token =
         std::find_if(token_set.begin(), token_set.end(),
                      [&new_token](const PersistedTrialToken& existing_token) {
@@ -167,6 +224,8 @@ void OriginTrials::UpdatePersistedTokenSet(
       token_set.emplace(new_token, partition_site);
     }
   }
+  persistence_provider_->SavePersistentTrialTokens(origin,
+                                                   std::move(token_set));
 }
 
 }  // namespace origin_trials

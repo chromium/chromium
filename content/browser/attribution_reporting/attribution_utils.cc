@@ -10,32 +10,36 @@
 #include "base/json/json_writer.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "content/browser/attribution_reporting/attribution_source_type.h"
+#include "components/attribution_reporting/source_type.mojom.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
 namespace {
 
+using ::attribution_reporting::mojom::SourceType;
+
 constexpr base::TimeDelta kWindowDeadlineOffset = base::Hours(1);
 
-base::span<const base::TimeDelta> EarlyDeadlines(
-    AttributionSourceType source_type) {
+base::span<const base::TimeDelta> EarlyDeadlines(SourceType source_type) {
   static constexpr base::TimeDelta kEarlyDeadlinesNavigation[] = {
       base::Days(2),
       base::Days(7),
   };
 
   switch (source_type) {
-    case AttributionSourceType::kNavigation:
+    case SourceType::kNavigation:
       return kEarlyDeadlinesNavigation;
-    case AttributionSourceType::kEvent:
+    case SourceType::kEvent:
       return base::span<const base::TimeDelta>();
   }
 }
 
-base::TimeDelta ExpiryDeadline(const CommonSourceInfo& source) {
-  return source.event_report_window_time() - source.source_time();
+base::TimeDelta ExpiryDeadline(base::Time source_time,
+                               base::Time event_report_window_time) {
+  DCHECK_GT(event_report_window_time, source_time);
+  return event_report_window_time - source_time;
 }
 
 base::Time ReportTimeFromDeadline(base::Time source_time,
@@ -48,8 +52,10 @@ base::Time ReportTimeFromDeadline(base::Time source_time,
 }  // namespace
 
 base::Time ComputeReportTime(const CommonSourceInfo& source,
+                             base::Time event_report_window_time,
                              base::Time trigger_time) {
-  base::TimeDelta expiry_deadline = ExpiryDeadline(source);
+  base::TimeDelta expiry_deadline =
+      ExpiryDeadline(source.source_time(), event_report_window_time);
 
   // After the initial impression, a schedule of reporting windows and deadlines
   // associated with that impression begins. The time between impression time
@@ -85,12 +91,13 @@ base::Time ComputeReportTime(const CommonSourceInfo& source,
   return ReportTimeFromDeadline(source.source_time(), deadline_to_use);
 }
 
-int NumReportWindows(AttributionSourceType source_type) {
+int NumReportWindows(SourceType source_type) {
   // Add 1 for the expiry deadline.
   return 1 + EarlyDeadlines(source_type).size();
 }
 
 base::Time ReportTimeAtWindow(const CommonSourceInfo& source,
+                              base::Time event_report_window_time,
                               int window_index) {
   DCHECK_GE(window_index, 0);
   DCHECK_LT(window_index, NumReportWindows(source.source_type()));
@@ -101,7 +108,7 @@ base::Time ReportTimeAtWindow(const CommonSourceInfo& source,
   base::TimeDelta deadline =
       static_cast<size_t>(window_index) < early_deadlines.size()
           ? early_deadlines[window_index]
-          : ExpiryDeadline(source);
+          : ExpiryDeadline(source.source_time(), event_report_window_time);
 
   return ReportTimeFromDeadline(source.source_time(), deadline);
 }
@@ -118,6 +125,15 @@ std::string SerializeAttributionJson(base::ValueView body, bool pretty_print) {
       base::JSONWriter::WriteWithOptions(body, options, &output_json);
   DCHECK(success);
   return output_json;
+}
+
+base::Time ComputeReportWindowTime(
+    absl::optional<base::Time> report_window_time,
+    base::Time expiry_time) {
+  return report_window_time.has_value() &&
+                 report_window_time.value() <= expiry_time
+             ? report_window_time.value()
+             : expiry_time;
 }
 
 }  // namespace content

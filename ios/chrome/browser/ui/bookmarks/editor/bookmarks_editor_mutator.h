@@ -21,11 +21,10 @@ class BookmarkModel;
 - (const bookmarks::BookmarkNode*)bookmark;
 - (void)setBookmark:(const bookmarks::BookmarkNode*)bookmark;
 - (bookmarks::BookmarkModel*)bookmarkModel;
-- (void)setBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel;
 - (const bookmarks::BookmarkNode*)folder;
-- (void)setFolder:(const bookmarks::BookmarkNode*)folder;
 - (BOOL)ignoresBookmarkModelChanges;
 - (BOOL*)ignoresBookmarkModelChangesPointer;
+- (BOOL)shouldDisplayCloudSlashSymbolForParentFolder;
 
 @end
 

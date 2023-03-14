@@ -4,6 +4,7 @@
 
 #include "services/tracing/public/cpp/perfetto/perfetto_tracing_backend.h"
 
+#include "base/auto_reset.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
@@ -128,9 +129,9 @@ class ProducerEndpoint : public perfetto::ProducerEndpoint,
     // We need to make sure the CommitData IPC is sent off without triggering
     // any trace events, as that could stall waiting for SMB chunks to be freed
     // up which requires the tracing service to receive the IPC.
-    if (!base::tracing::GetThreadIsInTraceEventTLS()->Get()) {
-      base::tracing::AutoThreadLocalBoolean thread_is_in_trace_event(
-          base::tracing::GetThreadIsInTraceEventTLS());
+    if (!*base::tracing::GetThreadIsInTraceEvent()) {
+      const base::AutoReset<bool> resetter(
+          base::tracing::GetThreadIsInTraceEvent(), true);
       producer_host_->CommitData(commit, std::move(commit_callback));
       return;
     }

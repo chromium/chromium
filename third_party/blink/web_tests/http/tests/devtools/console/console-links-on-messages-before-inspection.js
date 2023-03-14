@@ -25,7 +25,8 @@
       Protocol.Log.LogEntryLevel.Info, 'hello?',
       {url: 'http://127.0.0.1:8000/devtools/resources/source2.js'});
 
-  SDK.consoleModel.addMessage(message);
+  const consoleModel = SDK.targetManager.primaryPageTarget().model(SDK.ConsoleModel);
+  consoleModel.addMessage(message);
   TestRunner.debuggerModel.addEventListener(SDK.DebuggerModel.Events.ParsedScriptSource, onScriptAdded);
   await ConsoleTestRunner.dumpConsoleMessages();
   TestRunner.evaluateInPage('loadScript()');

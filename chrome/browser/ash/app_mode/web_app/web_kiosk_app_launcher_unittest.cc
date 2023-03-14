@@ -25,6 +25,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/wm_helper.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -34,6 +35,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+using ash::standalone_browser::BrowserSupport;
 
 namespace ash {
 
@@ -378,7 +381,7 @@ class WebKioskAppLauncherUsingLacrosTest : public WebKioskAppLauncherTest {
 
  private:
   base::AutoReset<bool> set_lacros_enabled_ =
-      crosapi::browser_util::SetLacrosEnabledForTest(true);
+      BrowserSupport::SetLacrosEnabledForTest(true);
   base::AutoReset<absl::optional<bool>> set_lacros_primary_ =
       crosapi::browser_util::SetLacrosPrimaryBrowserForTest(true);
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -400,7 +403,7 @@ TEST_F(WebKioskAppLauncherUsingLacrosTest, NormalFlow) {
   // `OnAppWindowCreated` method will be called after the lacros-chrome window
   // is created successfully.
   EXPECT_CALL(observer(), OnAppLaunched()).Times(1);
-  browser_manager()->set_is_running(true);
+  browser_manager()->StartRunning();
   launcher()->LaunchApp();
 
   EXEC_AND_WAIT_FOR_CALL(CreateLacrosWindowAndNotify(), observer(),
@@ -413,6 +416,7 @@ TEST_F(WebKioskAppLauncherUsingLacrosTest, WaitBrowserManagerToRun) {
   SetupAppData(/*installed*/ true);
   browser_manager()->set_new_fullscreen_window_creation_result(
       crosapi::mojom::CreationResult::kSuccess);
+  browser_manager()->StopRunning();
 
   EXEC_AND_WAIT_FOR_CALL(launcher()->Initialize(), observer(), OnAppPrepared());
 
@@ -420,9 +424,7 @@ TEST_F(WebKioskAppLauncherUsingLacrosTest, WaitBrowserManagerToRun) {
   // will pend until it is ready. The `OnAppWindowCreated` method will be called
   // after the lacros-chrome window is created successfully.
   EXPECT_CALL(observer(), OnAppLaunched()).Times(1);
-  browser_manager()->set_is_running(false);
   launcher()->LaunchApp();
-  browser_manager()->set_is_running(true);
   browser_manager()->StartRunning();
 
   EXEC_AND_WAIT_FOR_CALL(CreateLacrosWindowAndNotify(), observer(),
@@ -443,7 +445,7 @@ TEST_F(WebKioskAppLauncherUsingLacrosTest, FailToLaunchApp) {
 
   EXPECT_CALL(observer(), OnAppLaunched()).Times(1);
   EXPECT_CALL(observer(), OnAppWindowCreated()).Times(0);
-  browser_manager()->set_is_running(true);
+  browser_manager()->StartRunning();
 
   EXEC_AND_WAIT_FOR_CALL(launcher()->LaunchApp(), observer(),
                          OnLaunchFailed(_));

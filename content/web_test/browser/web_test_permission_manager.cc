@@ -8,17 +8,55 @@
 #include <memory>
 #include <utility>
 
+#include "base/barrier_callback.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "content/browser/permissions/permission_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/web_test/browser/web_test_content_browser_client.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 namespace content {
+
+namespace {
+
+std::vector<ContentSettingPatternSource> GetContentSettings(
+    const GURL& permission_origin,
+    const GURL& embedding_origin,
+    blink::mojom::PermissionStatus status) {
+  absl::optional<ContentSetting> setting;
+  switch (status) {
+    case blink::mojom::PermissionStatus::GRANTED:
+      setting = ContentSetting::CONTENT_SETTING_ALLOW;
+      break;
+    case blink::mojom::PermissionStatus::DENIED:
+      setting = ContentSetting::CONTENT_SETTING_BLOCK;
+      break;
+    case blink::mojom::PermissionStatus::ASK:
+      break;
+  }
+  std::vector<ContentSettingPatternSource> patterns;
+  if (setting) {
+    patterns.emplace_back(ContentSettingsPattern::FromURL(permission_origin),
+                          ContentSettingsPattern::FromURL(embedding_origin),
+                          base::Value(*setting), /*source=*/"",
+                          /*incognito=*/false);
+  }
+  return patterns;
+}
+
+bool ShouldHideDeniedState(blink::PermissionType permission_type) {
+  return permission_type == blink::PermissionType::STORAGE_ACCESS_GRANT ||
+         permission_type == blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS;
+}
+
+}  // namespace
 
 struct WebTestPermissionManager::Subscription {
   PermissionDescription permission;
@@ -51,10 +89,11 @@ size_t WebTestPermissionManager::PermissionDescription::Hash::operator()(
   return hash;
 }
 
-WebTestPermissionManager::WebTestPermissionManager()
-    : PermissionControllerDelegate() {}
+WebTestPermissionManager::WebTestPermissionManager(
+    BrowserContext& browser_context)
+    : PermissionControllerDelegate(), browser_context_(browser_context) {}
 
-WebTestPermissionManager::~WebTestPermissionManager() {}
+WebTestPermissionManager::~WebTestPermissionManager() = default;
 
 void WebTestPermissionManager::RequestPermission(
     blink::PermissionType permission,
@@ -170,6 +209,14 @@ blink::mojom::PermissionStatus WebTestPermissionManager::GetPermissionStatus(
     }
   }
 
+  // Some permissions (currently storage access related) do not expose the
+  // denied state to avoid exposing potentially private user choices to
+  // developers.
+  if (ShouldHideDeniedState(permission) &&
+      it->second == blink::mojom::PermissionStatus::DENIED) {
+    return blink::mojom::PermissionStatus::ASK;
+  }
+
   return it->second;
 }
 
@@ -247,7 +294,8 @@ void WebTestPermissionManager::SetPermission(
     blink::PermissionType permission,
     blink::mojom::PermissionStatus status,
     const GURL& url,
-    const GURL& embedding_url) {
+    const GURL& embedding_url,
+    blink::test::mojom::PermissionAutomation::SetPermissionCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   PermissionDescription description(permission, url.DeprecatedGetOriginAsURL(),
@@ -266,7 +314,7 @@ void WebTestPermissionManager::SetPermission(
     }
   }
 
-  OnPermissionChanged(description, status);
+  OnPermissionChanged(description, status, std::move(callback));
 }
 
 void WebTestPermissionManager::SetPermission(
@@ -287,8 +335,8 @@ void WebTestPermissionManager::SetPermission(
     applicable_permission_url = overridden_origin.GetURL();
   }
 
-  SetPermission(*type, status, applicable_permission_url, embedding_url);
-  std::move(callback).Run(true);
+  SetPermission(*type, status, applicable_permission_url, embedding_url,
+                std::move(callback));
 }
 
 void WebTestPermissionManager::ResetPermissions() {
@@ -305,7 +353,9 @@ void WebTestPermissionManager::Bind(
 
 void WebTestPermissionManager::OnPermissionChanged(
     const PermissionDescription& permission,
-    blink::mojom::PermissionStatus status) {
+    blink::mojom::PermissionStatus status,
+    blink::test::mojom::PermissionAutomation::SetPermissionCallback
+        permission_callback) {
   std::vector<base::OnceClosure> callbacks;
   callbacks.reserve(subscriptions_.size());
 
@@ -327,6 +377,54 @@ void WebTestPermissionManager::OnPermissionChanged(
 
   for (auto& callback : callbacks)
     std::move(callback).Run();
+
+  // The network service expects to hear about any new storage-access permission
+  // grants, so we have to inform it. This is true for "regular" or top-level
+  // storage access permission changes.
+  switch (permission.type) {
+    case blink::PermissionType::STORAGE_ACCESS_GRANT:
+      browser_context_->GetDefaultStoragePartition()
+          ->GetCookieManagerForBrowserProcess()
+          ->SetStorageAccessGrantSettings(
+              GetContentSettings(permission.origin, permission.embedding_origin,
+                                 status),
+              base::BindOnce(std::move(permission_callback), /*success=*/true));
+      break;
+    case blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS: {
+      // We dual-write `TOP_LEVEL_STORAGE_ACCESS` and `STORAGE_ACCESS_GRANT` due
+      // to the former granting a superset of the latter. Accordingly, we wait
+      // until both permissions have been written, including the notification to
+      // the network service, to run the permission callback. This could happen
+      // in either order without issue, so a barrier callback is used to ensure
+      // whichever finishes last then runs the callback. The asynchronicity
+      // comes in the form of the updates to the network service.
+      auto barrier_callback = base::BarrierCallback<bool>(
+          /*num_callbacks=*/2,
+          base::BindOnce(
+              [](blink::test::mojom::PermissionAutomation::SetPermissionCallback
+                     permission_callback,
+                 const std::vector<bool>& successes) {
+                std::move(permission_callback)
+                    .Run(base::ranges::all_of(successes, base::identity()));
+              },
+              std::move(permission_callback)));
+      SetPermission(blink::PermissionType::STORAGE_ACCESS_GRANT,
+                    blink::mojom::PermissionStatus::GRANTED, permission.origin,
+                    permission.embedding_origin, barrier_callback);
+      browser_context_->GetDefaultStoragePartition()
+          ->GetCookieManagerForBrowserProcess()
+          ->SetAllStorageAccessSettings(
+              GetContentSettings(permission.origin, permission.embedding_origin,
+                                 status),
+              GetContentSettings(permission.origin, permission.embedding_origin,
+                                 status),
+              base::BindOnce(barrier_callback, true));
+      break;
+    }
+    default:
+      std::move(permission_callback).Run(true);
+      break;
+  }
 }
 
 }  // namespace content

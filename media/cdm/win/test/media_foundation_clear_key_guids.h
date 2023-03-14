@@ -13,6 +13,7 @@
 
 namespace media {
 
+// Media Foundation Clear Key protection system ID
 // {E4E94971-696A-447E-96E4-93FDF3A57A7A}
 DEFINE_GUID(MEDIA_FOUNDATION_CLEARKEY_GUID_CLEARKEY_PROTECTION_SYSTEM_ID,
             0xe4e94971,
@@ -27,9 +28,25 @@ DEFINE_GUID(MEDIA_FOUNDATION_CLEARKEY_GUID_CLEARKEY_PROTECTION_SYSTEM_ID,
             0x7a,
             0x7a);
 
-#define MEDIA_FOUNDATION_CLEARKEY_GUID_CLEARKEY_PROTECTION_SYSTEM_ID_STRING \
-  L"{E4E94971-696A-447E-96E4-93FDF3A57A7A}"
+// PlayReady media protection system ID to create an in-process PMP server.
+// {F4637010-03C3-42CD-B932-B48ADF3A6A54}
+DEFINE_GUID(PLAYREADY_GUID_MEDIA_PROTECTION_SYSTEM_ID,
+            0xf4637010,
+            0x03c3,
+            0x42cd,
+            0xb9,
+            0x32,
+            0xb4,
+            0x8a,
+            0xdf,
+            0x3a,
+            0x6a,
+            0x54);
 
+#define PLAYREADY_GUID_MEDIA_PROTECTION_SYSTEM_ID_STRING \
+  L"{F4637010-03C3-42CD-B932-B48ADF3A6A54}"
+
+// Media Foundation Clear Key content enabler type
 // {C262FD73-2F13-41C2-94E7-4CAF087AE1D1}
 DEFINE_GUID(MEDIA_FOUNDATION_CLEARKEY_GUID_CONTENT_ENABLER_TYPE,
             0xc262fd73,

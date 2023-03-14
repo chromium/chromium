@@ -26,7 +26,7 @@
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/device_reauth/biometric_authenticator.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
@@ -49,7 +49,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#include "components/device_reauth/mock_biometric_authenticator.h"
+#include "components/device_reauth/mock_device_authenticator.h"
 #endif
 
 using password_manager::MockPasswordFormManagerForUI;
@@ -127,12 +127,12 @@ class TestPasswordManagerClient
               (override));
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  scoped_refptr<device_reauth::BiometricAuthenticator>
-  GetBiometricAuthenticator() override {
+  scoped_refptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator()
+      override {
     return mock_authenticator_.get();
   }
 
-  void SetAuthenticator(scoped_refptr<device_reauth::MockBiometricAuthenticator>
+  void SetAuthenticator(scoped_refptr<device_reauth::MockDeviceAuthenticator>
                             mock_authenticator) {
     mock_authenticator_ = mock_authenticator;
   }
@@ -145,7 +145,7 @@ class TestPasswordManagerClient
  private:
   scoped_refptr<MockPasswordStoreInterface> mock_profile_store_;
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  scoped_refptr<device_reauth::MockBiometricAuthenticator> mock_authenticator_;
+  scoped_refptr<device_reauth::MockDeviceAuthenticator> mock_authenticator_;
 #endif
 };
 
@@ -157,11 +157,7 @@ class TestManagePasswordsUIController : public ManagePasswordsUIController {
       content::WebContents* contents,
       password_manager::PasswordManagerClient* client);
 
-  bool opened_bubble() const { return opened_bubble_; }
   bool opened_automatic_bubble() const { return opened_automatic_bubble_; }
-  bool are_passwords_revealed_in_opened_bubble() const {
-    return are_passwords_revealed_in_opened_bubble_;
-  }
 
   MOCK_METHOD(AccountChooserPrompt*,
               CreateAccountChooser,
@@ -181,11 +177,8 @@ class TestManagePasswordsUIController : public ManagePasswordsUIController {
  private:
   void UpdateBubbleAndIconVisibility() override;
   void HidePasswordBubble() override;
-  bool ShowAuthenticationDialog() override { return true; }
 
-  bool opened_bubble_ = false;
   bool opened_automatic_bubble_ = false;
-  bool are_passwords_revealed_in_opened_bubble_ = false;
 };
 
 TestManagePasswordsUIController::TestManagePasswordsUIController(
@@ -200,23 +193,19 @@ TestManagePasswordsUIController::TestManagePasswordsUIController(
 }
 
 void TestManagePasswordsUIController::UpdateBubbleAndIconVisibility() {
-  opened_bubble_ = ShouldBubblePopUp();
   opened_automatic_bubble_ = IsAutomaticallyOpeningBubble();
   ManagePasswordsUIController::UpdateBubbleAndIconVisibility();
   OnUpdateBubbleAndIconVisibility();
   TestManagePasswordsIconView view;
   UpdateIconAndBubbleState(&view);
-  if (opened_bubble_) {
-    are_passwords_revealed_in_opened_bubble_ =
-        ArePasswordsRevealedWhenBubbleIsOpened();
+  if (opened_automatic_bubble_) {
     OnBubbleShown();
   }
 }
 
 void TestManagePasswordsUIController::HidePasswordBubble() {
   opened_automatic_bubble_ = false;
-  are_passwords_revealed_in_opened_bubble_ = false;
-  if (std::exchange(opened_bubble_, false) &&
+  if (std::exchange(opened_automatic_bubble_, false) &&
       !web_contents()->IsBeingDestroyed()) {
     OnBubbleHidden();
   }
@@ -1381,38 +1370,6 @@ TEST_F(ManagePasswordsUIControllerTest, AutofillDuringSignInPromo) {
   controller()->OnBubbleHidden();
 }
 
-TEST_F(ManagePasswordsUIControllerTest, AuthenticateUserToRevealPasswords) {
-  std::vector<const PasswordForm*> matches;
-  auto test_form_manager = CreateFormManagerWithBestMatches(&matches);
-  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-  controller()->OnPasswordSubmitted(std::move(test_form_manager));
-  EXPECT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
-            controller()->GetState());
-  EXPECT_TRUE(controller()->opened_automatic_bubble());
-  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(controller()));
-
-  // Simulate that re-auth is need to reveal passwords in the bubble.
-  bool success = controller()->AuthenticateUser();
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  EXPECT_FALSE(success);
-  // Let the task posted in AuthenticateUser re-open the bubble.
-  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-  content::RunAllPendingInMessageLoop();
-  EXPECT_TRUE(controller()->opened_bubble());
-  // That check is important because if reauth fails, we should be requiring it
-  // again unlike in the automatically shown bubble.
-  EXPECT_FALSE(controller()->opened_automatic_bubble());
-  EXPECT_TRUE(controller()->are_passwords_revealed_in_opened_bubble());
-  // Since the bubble is opened, this property is already cleared.
-  EXPECT_FALSE(controller()->ArePasswordsRevealedWhenBubbleIsOpened());
-
-  // Close the bubble.
-  controller()->OnBubbleHidden();
-#else
-  EXPECT_TRUE(success);
-#endif
-}
-
 TEST_F(ManagePasswordsUIControllerTest, SaveBubbleAfterLeakCheck) {
   std::vector<const PasswordForm*> matches;
   auto test_form_manager = CreateFormManagerWithBestMatches(&matches);
@@ -1433,7 +1390,7 @@ TEST_F(ManagePasswordsUIControllerTest, SaveBubbleAfterLeakCheck) {
                                        password_manager::IsSyncing(false)),
       GURL(kExampleUrl), kExampleUsername);
   // The bubble is gone.
-  EXPECT_FALSE(controller()->opened_bubble());
+  EXPECT_FALSE(controller()->opened_automatic_bubble());
 
   // After closing the lead check dialog, the blocklisting will be checked again
   // to decide whether to reopen the save prompt.
@@ -1474,7 +1431,7 @@ TEST_F(ManagePasswordsUIControllerTest,
                                        password_manager::IsSyncing(false)),
       GURL(kExampleUrl), kExampleUsername);
   // The bubble is gone.
-  EXPECT_FALSE(controller()->opened_bubble());
+  EXPECT_FALSE(controller()->opened_automatic_bubble());
 
   // After closing the lead check dialog, the blocklisting will be checked again
   // to decide whether to reopen the save prompt.
@@ -1509,7 +1466,7 @@ TEST_F(ManagePasswordsUIControllerTest, UpdateBubbleAfterLeakCheck) {
                                        password_manager::IsSyncing(false)),
       GURL(kExampleUrl), kExampleUsername);
   // The bubble is gone.
-  EXPECT_FALSE(controller()->opened_bubble());
+  EXPECT_FALSE(controller()->opened_automatic_bubble());
 
   // Close the dialog.
   EXPECT_CALL(dialog_prompt, ControllerGone);
@@ -1534,7 +1491,7 @@ TEST_F(ManagePasswordsUIControllerTest,
   controller()->NotifyUnsyncedCredentialsWillBeDeleted(credentials);
 
   EXPECT_EQ(controller()->GetUnsyncedCredentials(), credentials);
-  EXPECT_TRUE(controller()->opened_bubble());
+  EXPECT_TRUE(controller()->opened_automatic_bubble());
   ExpectIconAndControllerStateIs(
       password_manager::ui::WILL_DELETE_UNSYNCED_ACCOUNT_PASSWORDS_STATE);
 }
@@ -1564,7 +1521,7 @@ TEST_F(ManagePasswordsUIControllerTest, SaveUnsyncedCredentialsInProfileStore) {
 
   // Check the credentials are gone and the bubble is closed.
   EXPECT_TRUE(controller()->GetUnsyncedCredentials().empty());
-  EXPECT_FALSE(controller()->opened_bubble());
+  EXPECT_FALSE(controller()->opened_automatic_bubble());
   ExpectIconAndControllerStateIs(password_manager::ui::INACTIVE_STATE);
 }
 
@@ -1586,7 +1543,7 @@ TEST_F(ManagePasswordsUIControllerTest, DiscardUnsyncedCredentials) {
 
   // Check the credentials are gone and the bubble is closed.
   EXPECT_TRUE(controller()->GetUnsyncedCredentials().empty());
-  EXPECT_FALSE(controller()->opened_bubble());
+  EXPECT_FALSE(controller()->opened_automatic_bubble());
   ExpectIconAndControllerStateIs(password_manager::ui::INACTIVE_STATE);
 }
 
@@ -1790,13 +1747,13 @@ TEST_F(ManagePasswordsUIControllerTest, ReauthenticateFailsBeforeMove) {
       password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE);
 }
 
-TEST_F(ManagePasswordsUIControllerTest, IsBiometricAuthenticatorObtained) {
+TEST_F(ManagePasswordsUIControllerTest, IsDeviceAuthenticatorObtained) {
   base::MockCallback<base::OnceCallback<void(bool)>> result_callback;
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
   EXPECT_CALL(result_callback, Run(/*success=*/true));
 #else
-  scoped_refptr<device_reauth::MockBiometricAuthenticator> mock_authenticator =
-      base::MakeRefCounted<device_reauth::MockBiometricAuthenticator>();
+  scoped_refptr<device_reauth::MockDeviceAuthenticator> mock_authenticator =
+      base::MakeRefCounted<device_reauth::MockDeviceAuthenticator>();
   client().SetAuthenticator(mock_authenticator);
   EXPECT_CALL(*mock_authenticator.get(), AuthenticateWithMessage);
 #endif
@@ -1943,8 +1900,8 @@ TEST_F(ManagePasswordsUIControllerTest, BiometricActivationConfirmation) {
 
 TEST_F(ManagePasswordsUIControllerTest,
        AuthenticateWithMessageTwiceCancelsFirstCall) {
-  scoped_refptr<device_reauth::MockBiometricAuthenticator> mock_authenticator =
-      base::MakeRefCounted<device_reauth::MockBiometricAuthenticator>();
+  scoped_refptr<device_reauth::MockDeviceAuthenticator> mock_authenticator =
+      base::MakeRefCounted<device_reauth::MockDeviceAuthenticator>();
   client().SetAuthenticator(mock_authenticator);
   EXPECT_CALL(*mock_authenticator.get(), AuthenticateWithMessage);
   controller()->AuthenticateUserWithMessage(/*message=*/u"", base::DoNothing());
@@ -1956,8 +1913,8 @@ TEST_F(ManagePasswordsUIControllerTest,
 
 TEST_F(ManagePasswordsUIControllerTest, AuthenticationCancledOnPageChange) {
   base::MockCallback<base::OnceCallback<void(bool)>> result_callback;
-  scoped_refptr<device_reauth::MockBiometricAuthenticator> mock_authenticator =
-      base::MakeRefCounted<device_reauth::MockBiometricAuthenticator>();
+  scoped_refptr<device_reauth::MockDeviceAuthenticator> mock_authenticator =
+      base::MakeRefCounted<device_reauth::MockDeviceAuthenticator>();
   client().SetAuthenticator(mock_authenticator);
   EXPECT_CALL(*mock_authenticator.get(), AuthenticateWithMessage);
   controller()->AuthenticateUserWithMessage(/*message=*/u"", base::DoNothing());

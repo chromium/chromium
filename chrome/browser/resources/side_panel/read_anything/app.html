@@ -1,4 +1,4 @@
-<style>
+<style include="cr-hidden-style">
   #container {
     color: var(--foreground-color);
     font-family: var(--font-family);
@@ -13,5 +13,21 @@
   a:visited {
     color: var(--visited-link-color);
   }
+  #empty-state-container {
+    padding: 20px;
+  }
+  sp-empty-state {
+    display: flex;
+    margin: 0 auto 16px auto;
+    width: fit-content;
+  }
 </style>
-<div id="container"></div>
+<div id="container" hidden="[[!hasContent_]]"></div>
+<div id="empty-state-container" hidden="[[hasContent_]]">
+  <sp-empty-state
+      image-path="[[emptyStateImagePath_]]"
+      dark-image-path="[[emptyStateDarkImagePath_]]"
+      heading="[[emptyStateHeading_]]"
+      body="[[emptyStateSubheading_]]">
+  </sp-empty-state>
+</div>

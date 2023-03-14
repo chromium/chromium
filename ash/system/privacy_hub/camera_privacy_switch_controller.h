@@ -17,10 +17,6 @@
 
 namespace ash {
 
-// The ID for a notification shown when the user tries to use a camera while the
-// camera is disabled in Privacy Hub.
-inline constexpr char kPrivacyHubCameraOffNotificationId[] =
-    "ash.media.privacy_hub.activity_with_disabled_camera";
 // The ID for a notification shown when the user enables camera via a HW switch
 // but it is still disabled in PrivacyHub.
 inline constexpr char

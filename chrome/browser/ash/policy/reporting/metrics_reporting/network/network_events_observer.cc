@@ -10,17 +10,16 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/notreached.h"
 #include "base/task/bind_post_task.h"
-#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/net/network_health/network_health_manager.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/wifi_signal_strength_rssi_fetcher.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
+#include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 namespace {
@@ -36,6 +35,13 @@ bool IsConnectedWifiNetwork(const ash::NetworkState* network_state) {
 
 }  // namespace
 
+BASE_FEATURE(kEnableWifiSignalEventsReporting,
+             "EnableWifiSignalEventsReporting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableNetworkConnectionStateEventsReporting,
+             "EnableNetworkConnectionStateEventsReporting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 NetworkEventsObserver::NetworkEventsObserver()
     : MojoServiceEventsObserverBase<
           chromeos::network_health::mojom::NetworkEventsObserver>(this) {}
@@ -49,15 +55,27 @@ void NetworkEventsObserver::OnConnectionStateChanged(
     chromeos::network_health::mojom::NetworkState state) {
   using NetworkStateMojom = chromeos::network_health::mojom::NetworkState;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (last_reported_connection_guid_.has_value() &&
-      last_reported_connection_guid_.value() == guid &&
-      last_reported_connection_state_.has_value() &&
-      last_reported_connection_state_.value() == state) {
+
+  if (!base::FeatureList::IsEnabled(
+          kEnableNetworkConnectionStateEventsReporting)) {
+    return;
+  }
+
+  const auto* network_state = ::ash::NetworkHandler::Get()
+                                  ->network_state_handler()
+                                  ->GetNetworkStateFromGuid(guid);
+  const auto network_type =
+      ::ash::NetworkTypePattern::Primitive(network_state->type());
+  if (!network_type.MatchesPattern(ash::NetworkTypePattern::Physical())) {
+    return;
+  }
+
+  if (base::Contains(connection_state_map_, guid) &&
+      connection_state_map_.at(guid) == state) {
     DVLOG(1) << "Connection state already reported";
     return;
   }
-  last_reported_connection_guid_ = guid;
-  last_reported_connection_state_ = state;
+  connection_state_map_[guid] = state;
 
   MetricData metric_data;
   metric_data.mutable_event_data()->set_type(
@@ -127,11 +145,10 @@ void NetworkEventsObserver::SetReportingEnabled(bool is_enabled) {
       ::chromeos::network_health::mojom::NetworkEventsObserver>::
       SetReportingEnabled(is_enabled);
   if (!is_enabled) {
+    // Reset connection state fields.
+    connection_state_map_.clear();
     return;
   }
-  // Reset connection state fields.
-  last_reported_connection_guid_ = absl::nullopt;
-  last_reported_connection_state_ = absl::nullopt;
 
   // Get signal strength.
   low_signal_reported_ = false;
@@ -148,6 +165,10 @@ void NetworkEventsObserver::SetReportingEnabled(bool is_enabled) {
 
 void NetworkEventsObserver::CheckForSignalStrengthEvent(
     const ash::NetworkState* network_state) {
+  if (!base::FeatureList::IsEnabled(kEnableWifiSignalEventsReporting)) {
+    return;
+  }
+
   auto wifi_signal_rssi_cb = base::BindOnce(
       &NetworkEventsObserver::OnSignalStrengthChangedRssiValueReceived,
       weak_ptr_factory_.GetWeakPtr(), network_state->guid(),
@@ -181,8 +202,13 @@ void NetworkEventsObserver::OnSignalStrengthChangedRssiValueReceived(
   MetricData metric_data;
   metric_data.mutable_event_data()->set_type(
       signal_strength_dbm < kSignalThresholdDbm
-          ? MetricEventType::NETWORK_SIGNAL_STRENGTH_LOW
-          : MetricEventType::NETWORK_SIGNAL_STRENGTH_RECOVERED);
+          ? MetricEventType::WIFI_SIGNAL_STRENGTH_LOW
+          : MetricEventType::WIFI_SIGNAL_STRENGTH_RECOVERED);
+  auto* const networks_telemetry =
+      metric_data.mutable_telemetry_data()->mutable_networks_telemetry();
+  networks_telemetry->mutable_signal_strength_event_data()->set_guid(guid);
+  networks_telemetry->mutable_signal_strength_event_data()
+      ->set_signal_strength_dbm(signal_strength_dbm);
   OnEventObserved(std::move(metric_data));
 }
 

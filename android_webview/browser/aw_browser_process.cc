@@ -20,6 +20,7 @@
 #include "base/task/thread_pool.h"
 #include "components/component_updater/android/component_loader_policy.h"
 #include "components/crash/core/common/crash_key.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/process_visibility_util.h"
@@ -147,7 +148,10 @@ void AwBrowserProcess::CreateSafeBrowsingAllowlistManager() {
 
 safe_browsing::RemoteSafeBrowsingDatabaseManager*
 AwBrowserProcess::GetSafeBrowsingDBManager() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(
+      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
+          ? content::BrowserThread::UI
+          : content::BrowserThread::IO);
 
   if (!safe_browsing_db_manager_) {
     safe_browsing_db_manager_ =
@@ -157,8 +161,8 @@ AwBrowserProcess::GetSafeBrowsingDBManager() {
   if (!safe_browsing_db_manager_started_) {
     // V4ProtocolConfig is not used. Just create one with empty values..
     safe_browsing::V4ProtocolConfig config("", false, "", "");
-    safe_browsing_db_manager_->StartOnIOThread(
-        GetSafeBrowsingUIManager()->GetURLLoaderFactoryOnIOThread(), config);
+    safe_browsing_db_manager_->StartOnSBThread(
+        GetSafeBrowsingUIManager()->GetURLLoaderFactoryOnSBThread(), config);
     safe_browsing_db_manager_started_ = true;
   }
 

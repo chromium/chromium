@@ -29,7 +29,8 @@ constexpr uint32_t kSupportedUsage =
     SHARED_IMAGE_USAGE_CPU_UPLOAD | SHARED_IMAGE_USAGE_MIPMAP;
 
 bool IsUsageSupported(uint32_t usage) {
-  return (usage & kSupportedUsage) && !(usage & ~kSupportedUsage);
+  // Must have at least one of the supported usage flags.
+  return usage & kSupportedUsage;
 }
 
 }  // namespace
@@ -119,10 +120,6 @@ bool WrappedSkImageBackingFactory::IsSupported(
     gfx::GpuMemoryBufferType gmb_type,
     GrContextType gr_context_type,
     base::span<const uint8_t> pixel_data) {
-  if (format.is_multi_plane() && !pixel_data.empty()) {
-    return false;
-  }
-
   if (gmb_type != gfx::EMPTY_BUFFER) {
     return false;
   }
@@ -148,6 +145,14 @@ bool WrappedSkImageBackingFactory::IsSupported(
     // WrappedSkImage does not support LUMINANCE_8. See
     // https://crbug.com/1252502 for details.
     return false;
+  } else if (format == viz::SinglePlaneFormat::kALPHA_8) {
+    // For ALPHA8 skia will pick format depending on context version and
+    // extensions available and we'll have to match that format when we record
+    // DDLs. To avoid matching logic here, fallback to other backings (e.g
+    // GLTextureImageBacking) where we control what format was used.
+    if (gr_context_type == GrContextType::kGL) {
+      return false;
+    }
   } else if (format == viz::SinglePlaneFormat::kBGRX_8888 ||
              format == viz::SinglePlaneFormat::kBGR_565) {
     // For BGRX_8888/BGR_565 there is no equivalent SkColorType. Skia will use

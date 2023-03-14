@@ -76,6 +76,9 @@ class MEDIA_EXPORT AudioDebugRecordingHelper : public AudioDebugRecorder {
       const AudioParameters& params,
       base::File file);
 
+  // Notifier for AudioDebugFileWriter destruction. Overridden by test.
+  virtual void WillDestroyAudioDebugFileWriter();
+
   // Passed to |create_file_callback| in EnableDebugRecording, to be called
   // after debug recording file was created.
   void StartDebugRecordingToFile(base::File file);

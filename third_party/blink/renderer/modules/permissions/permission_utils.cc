@@ -97,7 +97,7 @@ String PermissionNameToString(PermissionName name) {
     case PermissionName::NFC:
       return "nfc";
     case PermissionName::STORAGE_ACCESS:
-      return "storage_access";
+      return "storage-access";
     case PermissionName::WINDOW_MANAGEMENT:
       if (RuntimeEnabledFeatures::WindowManagementPermissionAliasEnabled()) {
         return "window-management";
@@ -344,8 +344,9 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
     return CreatePermissionDescriptor(PermissionName::WINDOW_MANAGEMENT);
   }
   if (name == "window-placement") {
-    UseCounter::Count(CurrentExecutionContext(script_state->GetIsolate()),
-                      WebFeature::kWindowPlacementPermissionDescriptorUsed);
+    Deprecation::CountDeprecation(
+        CurrentExecutionContext(script_state->GetIsolate()),
+        WebFeature::kWindowPlacementPermissionDescriptorUsed);
     return CreatePermissionDescriptor(PermissionName::WINDOW_MANAGEMENT);
   }
   if (name == "local-fonts") {

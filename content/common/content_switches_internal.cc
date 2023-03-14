@@ -147,13 +147,15 @@ std::vector<std::string> FeaturesFromSwitch(
   for (NativeStringPiece arg : command_line.argv()) {
     // Switch names are case insensitive on Windows, but base::CommandLine has
     // already made them lowercase when building argv().
-    if (!StartsWith(arg, prefix, base::CompareCase::SENSITIVE))
+    if (!base::StartsWith(arg, prefix, base::CompareCase::SENSITIVE)) {
       continue;
+    }
     arg.remove_prefix(prefix.size());
-    if (!IsStringASCII(arg))
+    if (!base::IsStringASCII(arg)) {
       continue;
-    auto vals = SplitString(FromNativeString(NativeString(arg)), ",",
-                            base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    }
+    auto vals = base::SplitString(FromNativeString(NativeString(arg)), ",",
+                                  base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     features.insert(features.end(), vals.begin(), vals.end());
   }
   return features;

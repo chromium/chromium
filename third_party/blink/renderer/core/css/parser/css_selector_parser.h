@@ -9,6 +9,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
+#include "third_party/blink/renderer/core/css/parser/css_nesting_type.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 
 namespace blink {
@@ -58,12 +59,14 @@ class CORE_EXPORT CSSSelectorParser {
   static base::span<CSSSelector> ParseSelector(
       CSSParserTokenRange,
       const CSSParserContext*,
+      CSSNestingType,
       const StyleRule* parent_rule_for_nesting,
       StyleSheetContents*,
       HeapVector<CSSSelector>&);
   static base::span<CSSSelector> ConsumeSelector(
       CSSParserTokenStream&,
       const CSSParserContext*,
+      CSSNestingType,
       const StyleRule* parent_rule_for_nesting,
       StyleSheetContents*,
       CSSParserObserver*,
@@ -86,17 +89,18 @@ class CORE_EXPORT CSSSelectorParser {
   // https://drafts.csswg.org/css-cascade-6/#typedef-scope-start
   // https://drafts.csswg.org/css-cascade-6/#typedef-scope-end
   //
-  // Note that <scope-start> / <scope-end> are *forgiving* selector lists.
-  // Therefore empty lists, represented by !CSSSelectorList::IsValid(), are
-  // allowed.
-  //
-  // Parse errors are signalled by returning nullptr.
-  static CSSSelectorList* ParseScopeBoundary(CSSParserTokenRange,
-                                             const CSSParserContext*,
-                                             StyleSheetContents*);
+  // Parse errors are signalled by returning absl::nullopt. Empty spans are
+  // normal and expected, since <scope-start> / <scope-end> are forgiving
+  // selector lists.
+  static absl::optional<base::span<CSSSelector>> ParseScopeBoundary(
+      CSSParserTokenRange,
+      const CSSParserContext*,
+      StyleSheetContents*,
+      HeapVector<CSSSelector>&);
 
  private:
   CSSSelectorParser(const CSSParserContext*,
+                    CSSNestingType,
                     const StyleRule* parent_rule_for_nesting,
                     StyleSheetContents*,
                     HeapVector<CSSSelector>&);
@@ -124,13 +128,13 @@ class CORE_EXPORT CSSSelectorParser {
   CSSSelectorList* ConsumeNestedSelectorList(CSSParserTokenRange&);
   CSSSelectorList* ConsumeForgivingNestedSelectorList(CSSParserTokenRange&);
   // https://drafts.csswg.org/selectors/#typedef-forgiving-selector-list
-  CSSSelectorList* ConsumeForgivingComplexSelectorList(CSSParserTokenRange&);
+  absl::optional<base::span<CSSSelector>> ConsumeForgivingComplexSelectorList(
+      CSSParserTokenRange&);
   CSSSelectorList* ConsumeForgivingCompoundSelectorList(CSSParserTokenRange&);
   // https://drafts.csswg.org/selectors/#typedef-relative-selector-list
   CSSSelectorList* ConsumeForgivingRelativeSelectorList(CSSParserTokenRange&);
   CSSSelectorList* ConsumeRelativeSelectorList(CSSParserTokenRange&);
-  void AddPlaceholderParentSelectorIfNeeded(
-      const CSSParserTokenRange& argument);
+  void AddPlaceholderSelectorIfNeeded(const CSSParserTokenRange& argument);
 
   base::span<CSSSelector> ConsumeNestedRelativeSelector(
       CSSParserTokenRange& range);
@@ -196,6 +200,7 @@ class CORE_EXPORT CSSSelectorParser {
   void SetInSupportsParsing() { in_supports_parsing_ = true; }
 
   const CSSParserContext* context_;
+  CSSNestingType nesting_type_;
   const StyleRule* parent_rule_for_nesting_;
   const StyleSheetContents* style_sheet_;
 

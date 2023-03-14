@@ -8,13 +8,13 @@
 #include "chrome/browser/ui/views/frame/windows_caption_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
-class GlassBrowserFrameView;
+class BrowserFrameViewWin;
 class TabSearchBubbleHost;
 
 class WindowsTabSearchCaptionButton : public WindowsCaptionButton {
  public:
   METADATA_HEADER(WindowsTabSearchCaptionButton);
-  WindowsTabSearchCaptionButton(GlassBrowserFrameView* frame_view,
+  WindowsTabSearchCaptionButton(BrowserFrameViewWin* frame_view,
                                 ViewID button_type,
                                 const std::u16string& accessible_name);
   WindowsTabSearchCaptionButton(const WindowsTabSearchCaptionButton&) = delete;

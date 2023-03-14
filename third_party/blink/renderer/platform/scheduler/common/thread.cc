@@ -9,6 +9,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
@@ -17,7 +18,6 @@
 #include "third_party/blink/renderer/platform/scheduler/worker/compositor_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
-#include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -30,12 +30,7 @@ namespace blink {
 
 namespace {
 
-// Thread-local storage for "blink::Thread"s.
-Thread*& ThreadTLSSlot() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(WTF::ThreadSpecific<Thread*>, thread_tls_slot,
-                                  ());
-  return *thread_tls_slot;
-}
+ABSL_CONST_INIT thread_local Thread* current_thread = nullptr;
 
 std::unique_ptr<MainThread>& GetMainThread() {
   DEFINE_STATIC_LOCAL(std::unique_ptr<MainThread>, main_thread, ());
@@ -51,7 +46,7 @@ std::unique_ptr<NonMainThread>& GetCompositorThread() {
 
 // static
 void Thread::UpdateThreadTLS(Thread* thread) {
-  ThreadTLSSlot() = thread;
+  current_thread = thread;
 }
 
 ThreadCreationParams::ThreadCreationParams(ThreadType thread_type)
@@ -103,7 +98,7 @@ void Thread::CreateAndSetCompositorThread() {
 }
 
 Thread* Thread::Current() {
-  return ThreadTLSSlot();
+  return current_thread;
 }
 
 MainThread* Thread::MainThread() {
@@ -116,7 +111,7 @@ NonMainThread* Thread::CompositorThread() {
 
 std::unique_ptr<MainThread> MainThread::SetMainThread(
     std::unique_ptr<MainThread> main_thread) {
-  ThreadTLSSlot() = main_thread.get();
+  current_thread = main_thread.get();
   std::swap(GetMainThread(), main_thread);
   return main_thread;
 }
@@ -126,7 +121,7 @@ Thread::Thread() = default;
 Thread::~Thread() = default;
 
 bool Thread::IsCurrentThread() const {
-  return ThreadTLSSlot() == this;
+  return current_thread == this;
 }
 
 void Thread::AddTaskObserver(TaskObserver* task_observer) {

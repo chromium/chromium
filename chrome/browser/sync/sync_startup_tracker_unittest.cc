@@ -56,9 +56,7 @@ TEST_F(SyncStartupTrackerTest, SyncAuthError) {
   // Make sure that we get a SyncStartupFailed() callback if sync gets an auth
   // error.
   sync_service_.SetDisableReasons(syncer::SyncService::DisableReasonSet());
-  sync_service_.SetTransportState(
-      syncer::SyncService::TransportState::INITIALIZING);
-  sync_service_.SetPersistentAuthErrorOtherThanWebSignout();
+  sync_service_.SetPersistentAuthError();
   EXPECT_CALL(callback_, Run(SyncStartupTracker::ServiceStartupState::kError));
   SyncStartupTracker tracker(&sync_service_, callback_.Get());
 }
@@ -86,9 +84,7 @@ TEST_F(SyncStartupTrackerTest, SyncDelayedAuthError) {
 
   // Now, mark the Sync Service as having an auth error.
   sync_service_.SetDisableReasons(syncer::SyncService::DisableReasonSet());
-  sync_service_.SetTransportState(
-      syncer::SyncService::TransportState::INITIALIZING);
-  sync_service_.SetPersistentAuthErrorOtherThanWebSignout();
+  sync_service_.SetPersistentAuthError();
   EXPECT_CALL(callback_, Run(SyncStartupTracker::ServiceStartupState::kError));
   tracker.OnStateChanged(&sync_service_);
 }

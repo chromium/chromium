@@ -66,9 +66,7 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser,
   HeadlessBrowserContext::Builder CreateBrowserContextBuilder() override;
   scoped_refptr<base::SingleThreadTaskRunner> BrowserMainThread()
       const override;
-
   void Shutdown() override;
-
   std::vector<HeadlessBrowserContext*> GetAllBrowserContexts() override;
   HeadlessWebContents* GetWebContentsForDevToolsAgentHostId(
       const std::string& devtools_agent_host_id) override;
@@ -113,6 +111,10 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser,
                                     const gfx::Rect& bounds);
   ui::Compositor* PlatformGetCompositor(HeadlessWebContentsImpl* web_contents);
 
+  void ShutdownWithExitCode(int exit_code);
+
+  int exit_code() const { return exit_code_; }
+
 #if defined(HEADLESS_USE_PREFS)
   PrefService* GetPrefs();
 #endif
@@ -130,6 +132,7 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser,
   absl::optional<HeadlessBrowser::Options> options_;
   raw_ptr<HeadlessBrowserMainParts, DanglingUntriaged> browser_main_parts_ =
       nullptr;
+  int exit_code_ = 0;
 
   base::flat_map<std::string, std::unique_ptr<HeadlessBrowserContextImpl>>
       browser_contexts_;

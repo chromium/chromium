@@ -23,7 +23,7 @@ public interface BackPressHandler {
     // When adding a new identifier, make corresponding changes in the
     // - tools/metrics/histograms/enums.xml: <enum name="BackPressConsumer">
     // - chrome/browser/back_press/android/.../BackPressManager.java: sMetricsMap
-    @IntDef({Type.TEXT_BUBBLE, Type.VR_DELEGATE, Type.AR_DELEGATE, Type.SCENE_OVERLAY,
+    @IntDef({Type.TEXT_BUBBLE, Type.VR_DELEGATE, Type.XR_DELEGATE, Type.SCENE_OVERLAY,
             Type.START_SURFACE, Type.SELECTION_POPUP, Type.MANUAL_FILLING, Type.TAB_MODAL_HANDLER,
             Type.FULLSCREEN, Type.TAB_SWITCHER, Type.CLOSE_WATCHER, Type.FIND_TOOLBAR,
             Type.LOCATION_BAR, Type.TAB_HISTORY, Type.TAB_RETURN_TO_CHROME_START_SURFACE,
@@ -32,7 +32,7 @@ public interface BackPressHandler {
     @interface Type {
         int TEXT_BUBBLE = 0;
         int VR_DELEGATE = 1;
-        int AR_DELEGATE = 2;
+        int XR_DELEGATE = 2;
         int SCENE_OVERLAY = 3;
         int START_SURFACE = 4;
         int SELECTION_POPUP = 5;
@@ -51,7 +51,42 @@ public interface BackPressHandler {
         int NUM_TYPES = MINIMIZE_APP_AND_CLOSE_TAB + 1;
     }
 
-    default void handleBackPress() {}
+    /**
+     * Result of back press handling.
+     */
+    @IntDef({BackPressResult.SUCCESS, BackPressResult.FAILURE, BackPressResult.UNKNOWN})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface BackPressResult {
+        // Successfully intercept the back press and does something to handle the back press,
+        // e.g. making a UI change.
+        int SUCCESS = 0;
+        // Failure usually means intercepting a back press when the handler wasn't supposed to, such
+        // as #handleBackPress is called, but nothing is committed by the client. This is an
+        // indication something isn't working properly.
+        int FAILURE = 1;
+        // Do not use unless it is not possible to verify if the back press was correctly handled.
+        int UNKNOWN = 2;
+        int NUM_TYPES = UNKNOWN + 1;
+    }
+
+    /**
+     * The modern way to handle back press. This method is only called when {@link
+     * #getHandleBackPressChangedSupplier()} returns true; i.e. the back press has been intercepted
+     * by chrome and the client must do something to consume the back press. So ideally, this is
+     * **always** expected to return {@link BackPressResult#SUCCESS}.
+     * A {@link BackPressResult#FAILURE} means the back press is intercepted but somehow the client
+     * does not consume; i.e. makes no change. This is usually because the client didn't update
+     * {@link #getHandleBackPressChangedSupplier()} such that this method is called even when the
+     * client does not want. A Failure means Chrome is now incorrectly working and should be
+     * fixed ASAP.
+     * The difference between this and the traditional way {@code boolean #onBackPressed} is that
+     * the traditional one gives the client an opportunity to test if the client wants to intercept.
+     * If it returns false, the tradition way will simply test other clients.
+     * @return Whether the back press has been correctly handled.
+     */
+    default @BackPressResult int handleBackPress() {
+        return BackPressResult.UNKNOWN;
+    }
 
     /**
      * A {@link ObservableSupplier<Boolean>} which notifies of whether the implementer wants to

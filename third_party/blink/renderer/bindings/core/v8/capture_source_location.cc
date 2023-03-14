@@ -55,21 +55,25 @@ std::unique_ptr<SourceLocation> CaptureSourceLocation(
   v8::Local<v8::StackTrace> stack = message->GetStackTrace();
   std::unique_ptr<v8_inspector::V8StackTrace> stack_trace;
   ThreadDebugger* debugger = ThreadDebugger::From(isolate);
-  if (debugger)
+  if (debugger) {
     stack_trace = debugger->GetV8Inspector()->createStackTrace(stack);
+  }
 
   int script_id = message->GetScriptOrigin().ScriptId();
   if (!stack.IsEmpty() && stack->GetFrameCount() > 0) {
     int top_script_id = stack->GetFrame(isolate, 0)->GetScriptId();
-    if (top_script_id == script_id)
+    if (top_script_id == script_id) {
       script_id = 0;
+    }
   }
 
   int line_number = 0;
   int column_number = 0;
   if (message->GetLineNumber(isolate->GetCurrentContext()).To(&line_number) &&
-      message->GetStartColumn(isolate->GetCurrentContext()).To(&column_number))
+      message->GetStartColumn(isolate->GetCurrentContext())
+          .To(&column_number)) {
     ++column_number;
+  }
 
   if ((!script_id || !line_number) && stack_trace && !stack_trace->isEmpty()) {
     return SourceLocation::CreateFromNonEmptyV8StackTraceInternal(
@@ -78,8 +82,9 @@ std::unique_ptr<SourceLocation> CaptureSourceLocation(
 
   String url = ToCoreStringWithUndefinedOrNullCheck(
       message->GetScriptOrigin().ResourceName());
-  if (url.empty())
+  if (url.empty()) {
     url = execution_context->Url();
+  }
   return std::make_unique<SourceLocation>(url, String(), line_number,
                                           column_number, std::move(stack_trace),
                                           script_id);

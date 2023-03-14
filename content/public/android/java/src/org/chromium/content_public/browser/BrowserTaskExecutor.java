@@ -4,6 +4,8 @@
 
 package org.chromium.content_public.browser;
 
+import android.os.Handler;
+
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.SequencedTaskRunner;
@@ -14,11 +16,6 @@ import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.content.browser.UiThreadTaskTraitsImpl;
 
-import java.lang.ref.WeakReference;
-import java.util.WeakHashMap;
-
-import javax.annotation.concurrent.GuardedBy;
-
 /**
  * This {@link TaskExecutor} is for tasks posted with {@link UiThreadTaskTraits}. It maps directly
  * to content::BrowserTaskExecutor except only UI thread posting is supported from java.
@@ -27,6 +24,25 @@ import javax.annotation.concurrent.GuardedBy;
  * UiThreadTaskTraits}.
  */
 public class BrowserTaskExecutor implements TaskExecutor {
+    private static boolean sRegistered;
+
+    private final SingleThreadTaskRunner mDefaultTaskRunner;
+    private final SingleThreadTaskRunner mBestEffortTaskRunner;
+    private final SingleThreadTaskRunner mUserVisibleTaskRunner;
+    private final SingleThreadTaskRunner mUserBlockingTaskRunner;
+
+    public BrowserTaskExecutor() {
+        Handler handler = ThreadUtils.getUiThreadHandler();
+        mDefaultTaskRunner =
+                new SingleThreadTaskRunnerImpl(handler, UiThreadTaskTraitsImpl.DEFAULT);
+        mBestEffortTaskRunner =
+                new SingleThreadTaskRunnerImpl(handler, UiThreadTaskTraitsImpl.BEST_EFFORT);
+        mUserVisibleTaskRunner =
+                new SingleThreadTaskRunnerImpl(handler, UiThreadTaskTraitsImpl.USER_VISIBLE);
+        mUserBlockingTaskRunner =
+                new SingleThreadTaskRunnerImpl(handler, UiThreadTaskTraitsImpl.USER_BLOCKING);
+    }
+
     @Override
     public TaskRunner createTaskRunner(TaskTraits taskTraits) {
         return createSingleThreadTaskRunner(taskTraits);
@@ -37,25 +53,19 @@ public class BrowserTaskExecutor implements TaskExecutor {
         return createSingleThreadTaskRunner(taskTraits);
     }
 
-    /**
-     * This maps to a single thread within the native thread pool. Due to that contract we
-     * can't run tasks posted on it until native has started.
-     */
     @Override
     public SingleThreadTaskRunner createSingleThreadTaskRunner(TaskTraits taskTraits) {
-        synchronized (mTaskRunners) {
-            WeakReference<SingleThreadTaskRunner> weakRef = mTaskRunners.get(taskTraits);
-            if (weakRef != null) {
-                SingleThreadTaskRunner taskRunner = weakRef.get();
-                if (taskRunner != null) return taskRunner;
-            }
-
-            // TODO(alexclarke): ThreadUtils.getUiThreadHandler shouldn't be in base.
-            SingleThreadTaskRunner taskRunner =
-                    new SingleThreadTaskRunnerImpl(ThreadUtils.getUiThreadHandler(), taskTraits);
-            mTaskRunners.put(taskTraits, new WeakReference<>(taskRunner));
-
-            return taskRunner;
+        if (UiThreadTaskTraitsImpl.DEFAULT.equals(taskTraits)) {
+            return mDefaultTaskRunner;
+        } else if (UiThreadTaskTraitsImpl.BEST_EFFORT.equals(taskTraits)) {
+            return mBestEffortTaskRunner;
+        } else if (UiThreadTaskTraitsImpl.USER_VISIBLE.equals(taskTraits)) {
+            return mUserVisibleTaskRunner;
+        } else if (UiThreadTaskTraitsImpl.USER_BLOCKING.equals(taskTraits)) {
+            return mUserBlockingTaskRunner;
+        } else {
+            // Add support for additional TaskTraits here if encountering this exception.
+            throw new RuntimeException();
         }
     }
 
@@ -77,10 +87,4 @@ public class BrowserTaskExecutor implements TaskExecutor {
         PostTask.registerTaskExecutor(
                 UiThreadTaskTraitsImpl.DESCRIPTOR.getId(), new BrowserTaskExecutor());
     }
-
-    @GuardedBy("mTaskRunners")
-    private final WeakHashMap<TaskTraits, WeakReference<SingleThreadTaskRunner>> mTaskRunners =
-            new WeakHashMap<>();
-
-    private static boolean sRegistered;
 }

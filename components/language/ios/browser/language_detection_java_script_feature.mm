@@ -68,15 +68,15 @@ void LanguageDetectionJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  absl::optional<bool> has_notranslate =
-      script_message.body()->FindBoolKey("hasNoTranslate");
+  base::Value::Dict& body_dict = script_message.body()->GetDict();
+
+  absl::optional<bool> has_notranslate = body_dict.FindBool("hasNoTranslate");
   absl::optional<double> capture_text_time =
-      script_message.body()->FindDoubleKey("captureTextTime");
-  const std::string* html_lang =
-      script_message.body()->FindStringKey("htmlLang");
+      body_dict.FindDouble("captureTextTime");
+  const std::string* html_lang = body_dict.FindString("htmlLang");
   const std::string* http_content_language =
-      script_message.body()->FindStringKey("httpContentLanguage");
-  const std::string* frame_id = script_message.body()->FindStringKey("frameId");
+      body_dict.FindString("httpContentLanguage");
+  const std::string* frame_id = body_dict.FindString("frameId");
   if (!has_notranslate.has_value() || !capture_text_time.has_value() ||
       !html_lang || !http_content_language || !frame_id) {
     return;

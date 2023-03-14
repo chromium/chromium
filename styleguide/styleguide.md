@@ -14,7 +14,7 @@
     for build files.
     *   See also: [Writing GN templates](../build/docs/writing_gn_templates.md)
         for Chromium best-practices.
-*   [Markdown guide](https://www.chromium.org/developers/markdown-documentation)
+*   [Markdown style guide](markdown/markdown.md)
 
 Chromium also uses these languages to a lesser degree:
 

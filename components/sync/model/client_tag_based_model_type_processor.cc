@@ -31,6 +31,7 @@
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/model_type_state_helper.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 
 namespace syncer {
@@ -98,22 +99,30 @@ void ClientTagBasedModelTypeProcessor::ModelReadyToSync(
 
   model_ready_to_sync_ = true;
 
-  // The model already experienced an error; abort;
-  if (model_error_)
+  // The model already experienced an error; abort.
+  if (model_error_) {
     return;
+  }
+
+  sync_pb::ModelTypeState model_type_state = batch->GetModelTypeState();
+  if (MigrateLegacyInitialSyncDone(model_type_state, type_)) {
+    batch->SetModelTypeState(model_type_state);
+  }
 
   if (CheckForInvalidPersistedMetadata(*batch)) {
     if (batch->GetModelTypeState().initial_sync_done()) {
       entity_tracker_ = std::make_unique<ProcessorEntityTracker>(
-          batch->GetModelTypeState(), batch->TakeAllMetadata());
+          model_type_state, batch->TakeAllMetadata());
     } else {
       // If initial sync isn't done, there must be no entity metadata (if there
       // was, CheckForInvalidPersistedMetadata() would've detected the
       // inconsistency).
       DCHECK(batch->GetAllMetadata().empty());
     }
+  } else {
+    DLOG(ERROR) << "The persisted metadata was invalid and was cleared for "
+                << ModelTypeToDebugString(type_) << ". Start over fresh.";
   }
-  // Else: The persisted metadata was invalid and was cleared. Start over fresh.
 
   DCHECK(model_ready_to_sync_);
   ConnectIfReady();
@@ -161,9 +170,10 @@ void ClientTagBasedModelTypeProcessor::ConnectIfReady() {
     }
 
     if (CommitOnlyTypes().Has(type_)) {
-      // For commit-only types, no updates are expected and hence we can
-      // consider initial_sync_done(), reflecting that sync is enabled.
+      // For commit-only types, no updates are expected.
       model_type_state.set_initial_sync_done(true);
+      model_type_state.set_initial_sync_state(
+          sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_UNNECESSARY);
       OnFullUpdateReceived(model_type_state, UpdateResponseDataList(),
                            /*gc_directive=*/absl::nullopt);
       DCHECK(entity_tracker_);
@@ -795,7 +805,7 @@ void ClientTagBasedModelTypeProcessor::OnUpdateReceived(
             ModelTypeToHistogramSuffix(type_)),
         configuration_duration,
         /*min=*/base::Milliseconds(1),
-        /*min=*/base::Seconds(60),
+        /*max=*/base::Seconds(60),
         /*buckets=*/50);
   }
 
@@ -1225,6 +1235,10 @@ void ClientTagBasedModelTypeProcessor::MergeDataWithMetadataForDebugging(
 
 bool ClientTagBasedModelTypeProcessor::CheckForInvalidPersistedMetadata(
     const MetadataBatch& metadata) {
+  // The entity tracker must not have been created before the metadata was
+  // validated.
+  CHECK(!entity_tracker_);
+
   const EntityMetadataMap& metadata_map = metadata.GetAllMetadata();
 
   // Check that there's no entity metadata unless the initial sync is done.
@@ -1236,7 +1250,7 @@ bool ClientTagBasedModelTypeProcessor::CheckForInvalidPersistedMetadata(
 
     ClearAllProvidedMetadataAndResetState(metadata_map);
     // Not having `entity_tracker_` results in doing the initial sync again.
-    DCHECK(!entity_tracker_);
+    CHECK(!entity_tracker_);
     return false;
   }
 
@@ -1246,17 +1260,19 @@ bool ClientTagBasedModelTypeProcessor::CheckForInvalidPersistedMetadata(
   if (pending_clear_metadata_) {
     pending_clear_metadata_ = false;
     // Avoid calling bridge if there's nothing to clear.
+    // TODO(crbug.com/1423326): Also check for empty ModelTypeState (maybe via
+    // ByteSizeLong()?)
     if (!metadata_map.empty()) {
       LogClearMetadataWhileStoppedHistogram(type_, /*is_delayed_call=*/true);
-      DCHECK(metadata.GetModelTypeState().initial_sync_done() ||
-             CommitOnlyTypes().Has(type_));
       // This will incur an I/O operation by asking the bridge to clear the
       // metadata in storage.
       ClearAllProvidedMetadataAndResetState(metadata_map);
+      // Not having `entity_tracker_` results in doing the initial sync again.
+      CHECK(!entity_tracker_);
+      return false;
     }
-    // Not having `entity_tracker_` results in doing the initial sync again.
-    DCHECK(!entity_tracker_);
-    return false;
+    // Else: There was nothing to clear.
+    return true;
   }
 
   // Check that there are no duplicate client tags.
@@ -1272,7 +1288,7 @@ bool ClientTagBasedModelTypeProcessor::CheckForInvalidPersistedMetadata(
 
     ClearAllProvidedMetadataAndResetState(metadata_map);
     // Not having `entity_tracker_` results in doing the initial sync again.
-    DCHECK(!entity_tracker_);
+    CHECK(!entity_tracker_);
     return false;
   }
 

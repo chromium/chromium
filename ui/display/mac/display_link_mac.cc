@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 
@@ -28,6 +29,39 @@ struct ScopedTypeRefTraits<CVDisplayLinkRef> {
 }  // namespace base
 
 namespace ui {
+
+namespace {
+
+bool ComputeVSyncParameters(const CVTimeStamp& cv_time,
+                            base::TimeTicks* timebase,
+                            base::TimeDelta* interval) {
+  // Verify that videoRefreshPeriod fits in 32 bits.
+  DCHECK((cv_time.videoRefreshPeriod & ~0xFFFF'FFFFull) == 0ull);
+
+  // Verify that the numerator and denominator make some sense.
+  uint32_t numerator = static_cast<uint32_t>(cv_time.videoRefreshPeriod);
+  uint32_t denominator = cv_time.videoTimeScale;
+  if (numerator == 0 || denominator == 0) {
+    LOG(WARNING) << "Unexpected numerator or denominator, bailing.";
+    return false;
+  }
+
+  base::CheckedNumeric<int64_t> interval_us(base::Time::kMicrosecondsPerSecond);
+  interval_us *= numerator;
+  interval_us /= denominator;
+  if (!interval_us.IsValid()) {
+    LOG(DFATAL) << "Bailing due to overflow: "
+                << base::Time::kMicrosecondsPerSecond << " * " << numerator
+                << " / " << denominator;
+    return false;
+  }
+
+  *timebase = base::TimeTicks::FromMachAbsoluteTime(cv_time.hostTime);
+  *interval = base::Microseconds(int64_t{interval_us.ValueOrDie()});
+  return true;
+}
+
+}  // namespace
 
 using DisplayLinkMap = std::map<CGDirectDisplayID, DisplayLinkMac*>;
 
@@ -116,25 +150,6 @@ scoped_refptr<DisplayLinkMac> DisplayLinkMac::GetForDisplay(
   return display_link_mac;
 }
 
-bool DisplayLinkMac::GetVSyncParameters(base::TimeTicks* timebase,
-                                        base::TimeDelta* interval) {
-  if (!timebase_and_interval_valid_) {
-    StartOrContinueDisplayLink();
-    return false;
-  }
-
-  // The vsync parameters skew over time (astonishingly quickly -- 0.1 msec per
-  // second). If too much time has elapsed since the last time the vsync
-  // parameters were calculated, re-calculate them (but still return the old
-  // parameters -- the update will be asynchronous).
-  if (IsVSyncPotentiallyStale())
-    StartOrContinueDisplayLink();
-
-  *timebase = timebase_;
-  *interval = interval_;
-  return true;
-}
-
 double DisplayLinkMac::GetRefreshRate() {
   double refresh_rate = 0;
   CVTime cv_time =
@@ -146,50 +161,28 @@ double DisplayLinkMac::GetRefreshRate() {
   return refresh_rate;
 }
 
-void DisplayLinkMac::RegisterCallbackForNextVSyncUpdate(
-    VSyncUpdatedCallback callback) {
-  vsync_updated_callbacks_.push_back(std::move(callback));
-}
-
-bool DisplayLinkMac::IsVSyncPotentiallyStale() const {
-  return !timebase_and_interval_valid_ ||
-         base::TimeTicks::Now() >= recalculate_time_;
-}
-
 DisplayLinkMac::DisplayLinkMac(
     CGDirectDisplayID display_id,
     base::ScopedTypeRef<CVDisplayLinkRef> display_link)
     : display_id_(display_id), display_link_(display_link) {
   DisplayLinkMap& all_display_links = GetAllDisplayLinks();
   DCHECK(all_display_links.find(display_id) == all_display_links.end());
-  if (all_display_links.empty()) {
-    CGError register_error = CGDisplayRegisterReconfigurationCallback(
-        DisplayReconfigurationCallBack, nullptr);
-    DPLOG_IF(ERROR, register_error != kCGErrorSuccess)
-        << "CGDisplayRegisterReconfigurationCallback: " << register_error;
-  }
   all_display_links.emplace(display_id_, this);
 }
 
 DisplayLinkMac::~DisplayLinkMac() {
-  StopDisplayLink();
+  DCHECK(callbacks_.empty());
 
   DisplayLinkMap& all_display_links = GetAllDisplayLinks();
   auto found = all_display_links.find(display_id_);
   DCHECK(found != all_display_links.end());
   DCHECK(found->second == this);
   all_display_links.erase(found);
-  if (all_display_links.empty()) {
-    CGError remove_error = CGDisplayRemoveReconfigurationCallback(
-        DisplayReconfigurationCallBack, nullptr);
-    DPLOG_IF(ERROR, remove_error != kCGErrorSuccess)
-        << "CGDisplayRemoveReconfigurationCallback: " << remove_error;
-  }
 }
 
 // static
-void DisplayLinkMac::DoUpdateVSyncParameters(CGDirectDisplayID display,
-                                             const CVTimeStamp& time) {
+void DisplayLinkMac::DisplayLinkCallbackOnMainThread(CGDirectDisplayID display,
+                                                     VSyncParamsMac params) {
   DisplayLinkMap& all_display_links = GetAllDisplayLinks();
   auto found = all_display_links.find(display);
   if (found == all_display_links.end()) {
@@ -202,67 +195,18 @@ void DisplayLinkMac::DoUpdateVSyncParameters(CGDirectDisplayID display,
   }
 
   DisplayLinkMac* display_link_mac = found->second;
-  display_link_mac->UpdateVSyncParameters(time);
+  display_link_mac->OnDisplayLinkCallback(params);
 }
 
-void DisplayLinkMac::UpdateVSyncParameters(const CVTimeStamp& cv_time) {
-  TRACE_EVENT0("ui", "DisplayLinkMac::UpdateVSyncParameters");
+void DisplayLinkMac::OnDisplayLinkCallback(VSyncParamsMac params) {
+  TRACE_EVENT0("ui", "DisplayLinkMac::OnDisplayLinkCallbackOnMainThread");
 
-  // Verify that videoRefreshPeriod fits in 32 bits.
-  DCHECK((cv_time.videoRefreshPeriod & ~0xFFFF'FFFFull) == 0ull);
-
-  // Verify that the numerator and denominator make some sense.
-  uint32_t numerator = static_cast<uint32_t>(cv_time.videoRefreshPeriod);
-  uint32_t denominator = cv_time.videoTimeScale;
-  if (numerator == 0 || denominator == 0) {
-    LOG(WARNING) << "Unexpected numerator or denominator, bailing.";
-    return;
+  auto callbacks_copy = callbacks_;
+  for (auto* callback : callbacks_copy) {
+    if (callbacks_.count(callback)) {
+      callback->callback_.Run(params);
+    }
   }
-
-  base::CheckedNumeric<int64_t> interval_us(base::Time::kMicrosecondsPerSecond);
-  interval_us *= numerator;
-  interval_us /= denominator;
-  if (!interval_us.IsValid()) {
-    LOG(DFATAL) << "Bailing due to overflow: "
-                << base::Time::kMicrosecondsPerSecond << " * " << numerator
-                << " / " << denominator;
-    return;
-  }
-
-  timebase_ = base::TimeTicks::FromMachAbsoluteTime(cv_time.hostTime);
-  interval_ = base::Microseconds(int64_t{interval_us.ValueOrDie()});
-  timebase_and_interval_valid_ = true;
-
-  // Don't restart the display link for 10 seconds.
-  recalculate_time_ = base::TimeTicks::Now() + base::Seconds(10);
-  StopDisplayLink();
-
-  std::vector<VSyncUpdatedCallback> vsync_updated_callbacks;
-  std::swap(vsync_updated_callbacks_, vsync_updated_callbacks);
-  for (auto& callback : vsync_updated_callbacks)
-    std::move(callback).Run(timebase_, interval_);
-}
-
-void DisplayLinkMac::StartOrContinueDisplayLink() {
-  if (CVDisplayLinkIsRunning(display_link_))
-    return;
-
-  // Ensure the main thread is captured.
-  if (!task_runner_)
-    task_runner_ = GetMainThreadTaskRunner();
-
-  CVReturn ret = CVDisplayLinkStart(display_link_);
-  if (ret != kCVReturnSuccess)
-    LOG(ERROR) << "CVDisplayLinkStart failed: " << ret;
-}
-
-void DisplayLinkMac::StopDisplayLink() {
-  if (!CVDisplayLinkIsRunning(display_link_))
-    return;
-
-  CVReturn ret = CVDisplayLinkStop(display_link_);
-  if (ret != kCVReturnSuccess)
-    LOG(ERROR) << "CVDisplayLinkStop failed: " << ret;
 }
 
 // static
@@ -273,26 +217,71 @@ CVReturn DisplayLinkMac::DisplayLinkCallback(CVDisplayLinkRef display_link,
                                              CVOptionFlags* flags_out,
                                              void* context) {
   TRACE_EVENT0("ui", "DisplayLinkMac::DisplayLinkCallback");
-  CGDirectDisplayID display =
+  CGDirectDisplayID display_id =
       static_cast<CGDirectDisplayID>(reinterpret_cast<uintptr_t>(context));
+
+  VSyncParamsMac params;
+  params.callback_times_valid = ComputeVSyncParameters(
+      *now, &params.callback_timebase, &params.callback_interval);
+  params.display_times_valid = ComputeVSyncParameters(
+      *output_time, &params.display_timebase, &params.display_interval);
+
   GetMainThreadTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&DisplayLinkMac::DoUpdateVSyncParameters,
-                                display, *output_time));
+      FROM_HERE,
+      base::BindOnce(&DisplayLinkMac::DisplayLinkCallbackOnMainThread,
+                     display_id, params));
   return kCVReturnSuccess;
 }
 
-// static
-void DisplayLinkMac::DisplayReconfigurationCallBack(
-    CGDirectDisplayID display,
-    CGDisplayChangeSummaryFlags flags,
-    void* user_info) {
-  DisplayLinkMap& all_display_links = GetAllDisplayLinks();
-  auto found = all_display_links.find(display);
-  if (found == all_display_links.end())
-    return;
+std::unique_ptr<VSyncCallbackMac> DisplayLinkMac::RegisterCallback(
+    VSyncCallbackMac::Callback callback) {
+  // Start the display link, if needed. If we fail to start the link, return
+  // nullptr.
+  if (callbacks_.empty()) {
+    DCHECK(!CVDisplayLinkIsRunning(display_link_));
 
-  DisplayLinkMac* display_link_mac = found->second;
-  display_link_mac->timebase_and_interval_valid_ = false;
+    if (!task_runner_) {
+      task_runner_ = GetMainThreadTaskRunner();
+    }
+
+    CVReturn ret = CVDisplayLinkStart(display_link_);
+    if (ret != kCVReturnSuccess) {
+      LOG(ERROR) << "CVDisplayLinkStart failed: " << ret;
+      return nullptr;
+    }
+  }
+
+  std::unique_ptr<VSyncCallbackMac> new_observer(
+      new VSyncCallbackMac(this, std::move(callback)));
+  callbacks_.insert(new_observer.get());
+  return new_observer;
+}
+
+void DisplayLinkMac::UnregisterCallback(VSyncCallbackMac* observer) {
+  auto found = callbacks_.find(observer);
+  CHECK(found != callbacks_.end());
+  callbacks_.erase(found);
+
+  // Stop the CVDisplayLink if all observers are removed.
+  if (callbacks_.empty()) {
+    DCHECK(CVDisplayLinkIsRunning(display_link_));
+    CVReturn ret = CVDisplayLinkStop(display_link_);
+    if (ret != kCVReturnSuccess) {
+      LOG(ERROR) << "CVDisplayLinkStop failed: " << ret;
+    }
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// VSyncCallbackMac
+
+VSyncCallbackMac::VSyncCallbackMac(scoped_refptr<DisplayLinkMac> display_link,
+                                   Callback callback)
+    : display_link_(std::move(display_link)), callback_(std::move(callback)) {}
+
+VSyncCallbackMac::~VSyncCallbackMac() {
+  display_link_->UnregisterCallback(this);
+  display_link_ = nullptr;
 }
 
 }  // namespace ui

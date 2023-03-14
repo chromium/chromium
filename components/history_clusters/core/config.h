@@ -95,13 +95,13 @@ struct Config {
 
   // No effect if `persist_clusters_in_history_db` is disabled. Determines how
   // soon to update clusters after startup in minutes. E.g., by default, will
-  // update clusters 60 minutes minutes after startup.
-  int persist_clusters_in_history_db_after_startup_delay_minutes = 60;
+  // update clusters 5 minutes minutes after startup.
+  int persist_clusters_in_history_db_after_startup_delay_minutes = 5;
 
   // No effect if `persist_clusters_in_history_db` is disabled. Determines how
   // often to update clusters in minutes. E.g., by default, will update clusters
-  // every 12 hours.
-  int persist_clusters_in_history_db_period_minutes = 12 * 60;
+  // every 1 hour.
+  int persist_clusters_in_history_db_period_minutes = 60;
 
   // No effect if `persist_clusters_in_history_db` is disabled. If disabled,
   // persistence occurs on a timer (see the above 2 params). If enabled, will
@@ -111,7 +111,7 @@ struct Config {
   // `persist_clusters_in_history_db_period_minutes`, but
   // `persist_clusters_in_history_db_after_startup_delay_minutes` will be
   // unused.
-  bool persist_on_query = false;
+  bool persist_on_query = true;
 
   // Hard cap on max clusters to fetch after exhausting unclustered visits and
   // fetching persisted clusters for the get most recent flow. Doesn't affect
@@ -207,7 +207,7 @@ struct Config {
   // experiment group with `omnibox_history_cluster_provider_shortcuts` enabled
   // don't have lingering effects when they leave the group. Meaningless if
   // `omnibox_history_cluster_provider` is disabled.
-  bool omnibox_history_cluster_provider_shortcuts = false;
+  bool omnibox_history_cluster_provider_shortcuts = true;
 
   // Whether journey suggestions from the `ShortcutsProvider` can be default.
   // Journey suggestions from the `HistoryClusterProvider` can never be default.
@@ -336,6 +336,11 @@ struct Config {
   // The duration since the most recent visit for which a context cluster is
   // considered to be fully frozen and triggerability can be finalized.
   base::TimeDelta cluster_triggerability_cutoff_duration = base::Minutes(120);
+
+  // Whether to continue fetching persisted clusters when updating cluster
+  // triggerability even if all returned clusters had their triggerability
+  // calculated already.
+  bool fetch_persisted_clusters_after_filtered_clusters_empty = true;
 
   // WebUI features and params.
 

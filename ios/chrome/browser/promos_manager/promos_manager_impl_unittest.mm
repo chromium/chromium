@@ -76,8 +76,8 @@ class PromosManagerImplTest : public PlatformTest {
 
 PromosManagerImplTest::PromosManagerImplTest() {
   test_clock_.SetNow(base::Time::Now());
-  scoped_feature_list_.InitWithFeatures({kFullscreenPromosManager}, {});
 }
+
 PromosManagerImplTest::~PromosManagerImplTest() {}
 
 NSArray<ImpressionLimit*>* PromosManagerImplTest::TestImpressionLimits() {

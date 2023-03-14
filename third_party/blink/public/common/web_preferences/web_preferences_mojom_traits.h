@@ -313,6 +313,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.primary_pointer_type;
   }
 
+  static blink::mojom::OutputDeviceUpdateAbilityType
+  output_device_update_ability_type(const blink::web_pref::WebPreferences& r) {
+    return r.output_device_update_ability_type;
+  }
+
   static uint32_t available_hover_types(
       const blink::web_pref::WebPreferences& r) {
     return r.available_hover_types;

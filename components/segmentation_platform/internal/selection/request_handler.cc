@@ -4,11 +4,13 @@
 
 #include "components/segmentation_platform/internal/selection/request_handler.h"
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/clock.h"
 #include "components/segmentation_platform/internal/post_processor/post_processor.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
+#include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/prediction_options.h"
@@ -58,7 +60,7 @@ class RequestHandlerImpl : public RequestHandler {
       std::unique_ptr<SegmentResultProvider::SegmentResult> result);
 
   // The config for providing client config params.
-  const Config& config_;
+  const raw_ref<const Config> config_;
 
   // The result provider responsible for getting the result, either by running
   // the model or getting results from the cache as necessary.
@@ -96,12 +98,12 @@ void RequestHandlerImpl::GetModelResult(
     const PredictionOptions& options,
     scoped_refptr<InputContext> input_context,
     SegmentResultProvider::SegmentResultCallback callback) {
-  DCHECK_EQ(config_.segments.size(), 1u);
+  DCHECK_EQ(config_->segments.size(), 1u);
   auto result_options =
       std::make_unique<SegmentResultProvider::GetResultOptions>();
 
   // Note that, this assumes that a client has only one model.
-  result_options->segment_id = config_.segments.begin()->first;
+  result_options->segment_id = config_->segments.begin()->first;
   result_options->ignore_db_scores = options.on_demand_execution;
   result_options->input_context = input_context;
   result_options->callback = std::move(callback);
@@ -119,11 +121,13 @@ void RequestHandlerImpl::OnGetModelResultForClassification(
   if (result) {
     status = ResultStateToPredictionStatus(result->state);
     pred_result = result->result;
+    stats::RecordSegmentSelectionUpdated(*config_, absl::nullopt, pred_result);
+
     // Collect training data. The execution service and training data collector
     // might be null in testing.
     if (execution_service_ && execution_service_->training_data_collector()) {
       execution_service_->training_data_collector()->OnDecisionTime(
-          config_.segments.begin()->first, input_context,
+          config_->segments.begin()->first, input_context,
           proto::TrainingOutputs::TriggerConfig::ONDEMAND);
     }
   }

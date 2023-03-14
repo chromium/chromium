@@ -10,7 +10,13 @@
 {%- macro alloc_params(struct, params, message, method_number, is_response) %}
   bool success = true;
 {%-   for param in struct.packed.packed_fields_in_ordinal_order %}
+{%-     if param|is_nullable_value_kind_packed_field %}
+{%-       if param|is_primary_nullable_value_kind_packed_field %}
+  {{param.original_field.kind|cpp_wrapper_call_type}} p_{{param.original_field.name}} = mojo::DefaultConstructTraits::CreateInstance<{{param.original_field.kind|cpp_wrapper_call_type}}>();
+{%-       endif %}
+{%-     else %}
   {{param.field.kind|cpp_wrapper_call_type}} p_{{param.field.name}} = mojo::DefaultConstructTraits::CreateInstance<{{param.field.kind|cpp_wrapper_call_type}}>();
+{%-     endif %}
 {%-   endfor %}
   {{struct.name}}DataView input_data_view({{params}}, {{message}});
   {{struct_macros.deserialize(struct, "input_data_view", "p_%s", "success")}}
@@ -327,6 +333,10 @@ class {{class_name}}_{{method.name}}_ProxyToResponder : public ::mojo::internal:
       // binding endpoint has been closed. This checks for that asynchronously.
       // We pass a bound generated callback to handle the response so that any
       // resulting DCHECK stack will have useful interface type information.
+      // Instantiate a ScopedFizzleBlockShutdownTasks to allow this request to
+      // fizzle if this happens after shutdown and the endpoint is bound to a
+      // BLOCK_SHUTDOWN sequence.
+      base::ThreadPoolInstance::ScopedFizzleBlockShutdownTasks fizzler;
       responder_->IsConnectedAsync(base::BindOnce(&OnIsConnectedComplete));
     }
 #endif

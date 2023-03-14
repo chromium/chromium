@@ -26,6 +26,7 @@ class FakeCSSStyleImageValue : public CSSStyleImageValue {
 
   // CanvasImageSource
   scoped_refptr<Image> GetSourceImageForCanvas(
+      CanvasResourceProvider::FlushReason,
       SourceImageStatus*,
       const gfx::SizeF&,
       const AlphaDisposition alpha_disposition = kPremultiplyAlpha) final {

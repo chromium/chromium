@@ -11,12 +11,14 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/autofill_popup_controller_utils.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
@@ -28,6 +30,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -52,6 +55,7 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 using autofill::PopupItemId;
@@ -173,6 +177,14 @@ void PopupViewViews::SetSelectedCell(absl::optional<CellIndex> cell_index) {
 
 bool PopupViewViews::HandleKeyPressEvent(
     const content::NativeWebKeyboardEvent& event) {
+  // If the row can handle the event itself (e.g. switching between cells in the
+  // same row), we let it.
+  if (absl::optional<CellIndex> selected_cell = GetSelectedCell()) {
+    if (GetPopupRowViewAt(selected_cell->first).HandleKeyPressEvent(event)) {
+      return true;
+    }
+  }
+
   const bool kHasShiftModifier =
       (event.GetModifiers() & blink::WebInputEvent::kShiftKey);
   const bool kHasNonShiftModifier =
@@ -270,11 +282,12 @@ bool PopupViewViews::AcceptSelectedCell(bool tab_key_pressed) {
     }
   }
 
-  // TODO(crbug.com/1411172): Use different actions depending on which cell is
-  // selected.
-  // No show threshold is used for key pressed - they can be accepted
-  // immediately after the popup is shown.
-  controller_->AcceptSuggestion(index->first, base::TimeDelta());
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillPopupUseThresholdForKeyboardAndMobileAccept)) {
+    controller_->AcceptSuggestion(index->first);
+  } else {
+    controller_->AcceptSuggestionWithoutThreshold(index->first);
+  }
   return true;
 }
 
@@ -282,8 +295,25 @@ bool PopupViewViews::RemoveSelectedCell() {
   absl::optional<CellIndex> index = GetSelectedCell();
 
   // Only content cells can be removed.
-  return index && index->second == PopupRowView::CellType::kContent &&
-         controller_ && controller_->RemoveSuggestion(index->first);
+  if (!index || index->second != PopupRowView::CellType::kContent ||
+      !controller_) {
+    return false;
+  }
+
+  bool was_autocomplete =
+      controller_->GetSuggestionAt(index->first).frontend_id ==
+      POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY;
+  if (!controller_->RemoveSuggestion(index->first)) {
+    return false;
+  }
+
+  if (was_autocomplete) {
+    AutofillMetrics::OnAutocompleteSuggestionDeleted(
+        AutofillMetrics::AutocompleteSingleEntryRemovalMethod::
+            kKeyboardShiftDeletePressed);
+  }
+
+  return true;
 }
 
 void PopupViewViews::OnSuggestionsChanged() {
@@ -310,12 +340,29 @@ void PopupViewViews::AxAnnounce(const std::u16string& text) {
 
 void PopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
                                                bool visible) {
-  if (visible) {
-    for (RowPointer& row_view : rows_) {
-      if (PopupRowView** row_view_pointer =
-              absl::get_if<PopupRowView*>(&row_view)) {
-        (*row_view_pointer)->MaybeShowIphPromo();
-      }
+  if (!visible || !controller_) {
+    return;
+  }
+
+  Browser* browser = GetBrowser();
+  if (!browser) {
+    return;
+  }
+
+  for (int row = 0; row < controller_->GetLineCount(); ++row) {
+    // Show the in-product-help promo anchored to this bubble.
+    // The in-product-help promo is a bubble anchored to this row item to show
+    // educational messages. The promo bubble should only be shown once in one
+    // session and has a limit for how many times it can be shown at most in a
+    // period of time.
+    if (controller_->GetSuggestionAt(row).feature_for_iph ==
+        "IPH_AutofillVirtualCardSuggestion") {
+      GetPopupRowViewAt(row).SetProperty(
+          views::kElementIdentifierKey,
+          kAutofillCreditCardSuggestionEntryElementId);
+
+      browser->window()->MaybeShowFeaturePromo(
+          feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
     }
   }
 }
@@ -341,13 +388,12 @@ void PopupViewViews::CreateChildViews() {
   // `content_view` wraps the full content of the popup and provides vertical
   // padding. This is similar to `padding_wrapper` used in the scroll area, but
   // it allows to add a padding below the footer.
-  raw_ptr<views::BoxLayoutView> content_view = AddChildView(
-      views::Builder<views::BoxLayoutView>()
-          .SetOrientation(views::BoxLayout::Orientation::kVertical)
-          .SetInsideBorderInsets(
-              gfx::Insets::VH(GetContentsVerticalPadding(), 0))
-          .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart)
-          .Build());
+  raw_ptr<views::BoxLayoutView> content_view =
+      AddChildView(views::Builder<views::BoxLayoutView>()
+                       .SetOrientation(views::BoxLayout::Orientation::kVertical)
+                       .SetInsideBorderInsets(
+                           gfx::Insets::VH(GetContentsVerticalPadding(), 0))
+                       .Build());
 
   rows_.reserve(kSuggestions.size());
   size_t current_line_number = 0u;
@@ -357,7 +403,6 @@ void PopupViewViews::CreateChildViews() {
     std::unique_ptr<views::BoxLayoutView> body_container =
         views::Builder<views::BoxLayoutView>()
             .SetOrientation(views::BoxLayout::Orientation::kVertical)
-            .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart)
             .Build();
 
     for (; current_line_number < kSuggestions.size() &&
@@ -409,9 +454,8 @@ void PopupViewViews::CreateChildViews() {
   std::unique_ptr<views::BoxLayoutView> footer_container =
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
-          .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart)
-          .SetBackground(views::CreateThemedSolidBackground(
-              ui::kColorBubbleFooterBackground))
+          .SetBackground(
+              views::CreateThemedSolidBackground(ui::kColorDropdownBackground))
           .Build();
 
   for (; current_line_number < kSuggestions.size(); ++current_line_number) {
@@ -547,12 +591,16 @@ bool PopupViewViews::DoUpdateBoundsAndRedrawPopup() {
   return true;
 }
 
+base::WeakPtr<AutofillPopupView> PopupViewViews::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 BEGIN_METADATA(PopupViewViews, PopupBaseView)
 ADD_PROPERTY_METADATA(absl::optional<PopupViewViews::CellIndex>, SelectedCell)
 END_METADATA
 
 // static
-AutofillPopupView* AutofillPopupView::Create(
+base::WeakPtr<AutofillPopupView> AutofillPopupView::Create(
     base::WeakPtr<AutofillPopupController> controller) {
 #if BUILDFLAG(IS_MAC)
   // It's possible for the container_view to not be in a window. In that case,
@@ -575,7 +623,7 @@ AutofillPopupView* AutofillPopupView::Create(
   }
 #endif
 
-  return new PopupViewViews(controller, observing_widget);
+  return (new PopupViewViews(controller, observing_widget))->GetWeakPtr();
 }
 
 }  // namespace autofill

@@ -110,7 +110,7 @@ ninja -C out/Default chrome
 5. Use clangd in your favourite editor, see detailed [instructions](
 https://clangd.llvm.org/installation.html#editor-plugins).
 
-    * Optional: You may want to add `-header-insertion=never` to the clangd
+    * Optional: You may want to add `--header-insertion=never` to the clangd
       flags, so that your editor doesn't automatically add incorrect #include
       lines. The feature doesn't correctly handle some common Chromium headers
       like `base/strings/string_piece_forward.h` and

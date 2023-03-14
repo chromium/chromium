@@ -14,6 +14,7 @@ class Rect;
 
 namespace exo {
 class Surface;
+enum class OverlayPriority;
 
 // Observers can listen to various events on the Surfaces.
 class SurfaceObserver {
@@ -58,6 +59,11 @@ class SurfaceObserver {
 
   // Called when tooltip is hidden.
   virtual void OnTooltipHidden(Surface* surface) {}
+
+  virtual void OnFullscreenStateChanged(bool fullscreen) {}
+
+  virtual void OnOverlayPriorityHintChanged(
+      OverlayPriority overlay_priority_hint) {}
 
  protected:
   virtual ~SurfaceObserver() {}

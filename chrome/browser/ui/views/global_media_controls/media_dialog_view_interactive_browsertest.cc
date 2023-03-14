@@ -42,6 +42,7 @@
 #include "content/public/browser/presentation_request.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/media_start_stop_observer.h"
 #include "media/base/media_switches.h"
@@ -802,7 +803,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, ShowsCastSession) {
 
   const std::string route_description = "Casting: Big Buck Bunny";
   const std::string sink_name = "My Sink";
-  media_router::MediaRoute route("id", media_router::MediaSource("source_id"),
+  media_router::MediaRoute route("id", media_router::MediaSource("cast:123456"),
                                  "sink_id", route_description, true);
   route.set_media_sink_name(sink_name);
   route.set_controller_type(media_router::RouteControllerType::kGeneric);
@@ -1098,22 +1099,22 @@ class MediaDialogViewWithBackForwardCacheBrowserTest
     : public MediaDialogViewBrowserTest {
  protected:
   MediaDialogViewWithBackForwardCacheBrowserTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
-    std::map<std::string, std::string> params;
+    feature_list_.InitWithFeaturesAndParameters(
+        content::GetBasicBackForwardCacheFeatureForTesting({
 #if BUILDFLAG(IS_ANDROID)
-    params["process_binding_strength"] = "NORMAL";
+          {features::kBackForwardCache,
+           {
+             { "process_binding_strength",
+               "NORMAL" }
+           }},
 #endif
-    enabled_features.emplace_back(features::kBackForwardCache, params);
-    enabled_features.emplace_back(
-        features::kBackForwardCacheMediaSessionService,
-        std::map<std::string, std::string>{});
-
-    std::vector<base::test::FeatureRef> disabled_features = {
-        features::kBackForwardCacheMemoryControls,
-    };
-
-    feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                disabled_features);
+          {
+            features::kBackForwardCacheMediaSessionService, {
+              {}
+            }
+          }
+        }),
+        content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
   }
 
   void SetUpOnMainThread() override {

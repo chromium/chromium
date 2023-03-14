@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.suggestions.tile;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyInt;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -37,6 +38,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.ImageFetcher;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
@@ -103,6 +105,9 @@ public class TileRendererTest {
     private TemplateUrlService mMockTemplateUrlService;
 
     @Mock
+    private Profile mProfile;
+
+    @Mock
     private RoundedIconGenerator mIconGenerator;
 
     @Mock
@@ -128,6 +133,7 @@ public class TileRendererTest {
         mPostTaskRunner = new ShadowPostTaskImpl();
         ShadowPostTask.setTestImpl(mPostTaskRunner);
 
+        Profile.setLastUsedProfileForTesting(mProfile);
         TemplateUrlServiceFactory.setInstanceForTesting(mMockTemplateUrlService);
 
         mSharedParent = new LinearLayout(mActivity);
@@ -142,6 +148,12 @@ public class TileRendererTest {
                 .when(mTileSetupDelegate)
                 .createInteractionDelegate(any());
         doReturn(mBitmap).when(mIconGenerator).generateIconForUrl(any(GURL.class));
+    }
+
+    @After
+    public void tearDown() {
+        Profile.setLastUsedProfileForTesting(null);
+        TemplateUrlServiceFactory.setInstanceForTesting(null);
     }
 
     private SuggestionsTileView buildTileView(@TileStyle int style, int titleLines) {

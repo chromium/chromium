@@ -50,6 +50,7 @@ class ChromeWebClient : public web::WebClient {
                         base::OnceCallback<void(NSString*)> callback) override;
   UIView* GetWindowedContainer() override;
   bool EnableLongPressUIContextMenu() const override;
+  bool EnableWebInspector() const override;
   web::UserAgentType GetDefaultUserAgent(web::WebState* web_state,
                                          const GURL& url) const override;
   void LogDefaultUserAgent(web::WebState* web_state,

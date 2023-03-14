@@ -397,7 +397,6 @@ class VIEWS_EXPORT Textfield : public View,
   gfx::NativeView GetNativeView() const override;
   void ConvertPointToScreen(gfx::Point* point) override;
   void ConvertPointFromScreen(gfx::Point* point) override;
-  bool DrawsHandles() override;
   void OpenContextMenu(const gfx::Point& anchor) override;
   void DestroyTouchSelection() override;
 
@@ -792,9 +791,11 @@ class VIEWS_EXPORT Textfield : public View,
   // shrinking.
   gfx::BreakType break_type_ = gfx::CHARACTER_BREAK;
 
-  // Tracks if touch editing handles are hidden because user has started
-  // scrolling. If |true|, handles are shown after scrolling ends.
-  bool touch_handles_hidden_due_to_scroll_ = false;
+  // Whether touch selection handles should be shown once the current scroll
+  // sequence ends. Handles should be shown if touch editing handles were hidden
+  // while scrolling or if part of the scroll sequence was used for cursor
+  // placement or adjusting the text selection.
+  bool show_touch_handles_after_scroll_ = false;
 
   // Whether the user should be notified if the clipboard is restricted.
   bool show_rejection_ui_if_any_ = false;

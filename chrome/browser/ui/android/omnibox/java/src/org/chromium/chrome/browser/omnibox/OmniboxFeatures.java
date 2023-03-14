@@ -8,6 +8,7 @@ import android.content.Context;
 
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /**
@@ -29,6 +30,12 @@ public class OmniboxFeatures {
                     ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE,
                     "modernize_visual_update_small_bottom_margin", false);
 
+    private static final MutableFlagWithSafeDefault sOmniboxConsumesImeInsets =
+            new MutableFlagWithSafeDefault(ChromeFeatureList.OMNIBOX_CONSUMERS_IME_INSETS, false);
+    private static final MutableFlagWithSafeDefault sShouldAdaptToNarrowTabletWindows =
+            new MutableFlagWithSafeDefault(
+                    ChromeFeatureList.OMNIBOX_ADAPT_NARROW_TABLET_WINDOWS, false);
+
     /**
      * @param context The activity context.
      * @return Whether the new modernize visual UI update should be shown.
@@ -36,6 +43,14 @@ public class OmniboxFeatures {
     public static boolean shouldShowModernizeVisualUpdate(Context context) {
         return ChromeFeatureList.sOmniboxModernizeVisualUpdate.isEnabled()
                 && (!isTablet(context) || enabledModernizeVisualUpdateOnTablet());
+    }
+
+    /**
+     * Returns whether the omnibox dropdown should be switched to a phone-like appearance when the
+     * window width is <600dp.
+     */
+    public static boolean shouldAdaptToNarrowTabletWindows() {
+        return sShouldAdaptToNarrowTabletWindows.isEnabled();
     }
 
     /**
@@ -52,6 +67,11 @@ public class OmniboxFeatures {
      */
     public static boolean shouldShowSmallBottomMargin() {
         return MODERNIZE_VISUAL_UPDATE_SMALL_BOTTOM_MARGIN.getValue();
+    }
+
+    /** Returns whether the omnibox should directly consume IME (keyboard) insets. */
+    public static boolean omniboxConsumesImeInsets() {
+        return sOmniboxConsumesImeInsets.isEnabled();
     }
 
     /**

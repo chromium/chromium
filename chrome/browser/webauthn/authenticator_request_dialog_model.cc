@@ -387,16 +387,28 @@ void AuthenticatorRequestDialogModel::StartPlatformAuthenticatorFlow() {
       return;
     }
 
-    // For empty allow list requests, let the user select one of the silently
-    // enumerated credentials before dispatching to the platform authenticator.
-    if (transport_availability_.has_empty_allow_list &&
-        !transport_availability_.recognized_platform_authenticator_credentials
+    // If the platform authenticator reports known credentials, show them in the
+    // UI.
+    if (!transport_availability_.recognized_platform_authenticator_credentials
              .empty()) {
-      ephemeral_state_.creds_ =
-          transport_availability_.recognized_platform_authenticator_credentials;
-      SetCurrentStep(ephemeral_state_.creds_.size() == 1
-                         ? Step::kPreSelectSingleAccount
-                         : Step::kPreSelectAccount);
+      if (transport_availability_.has_empty_allow_list) {
+        // For discoverable credential requests, show an account picker.
+        ephemeral_state_.creds_ =
+            transport_availability_
+                .recognized_platform_authenticator_credentials;
+        SetCurrentStep(ephemeral_state_.creds_.size() == 1
+                           ? Step::kPreSelectSingleAccount
+                           : Step::kPreSelectAccount);
+      } else {
+        // For requests with an allow list, pre-select a random credential and
+        // show that one to the user. For platform authenticators with optional
+        // UV (e.g. Touch ID), this step essentially acts as the user presence
+        // check.
+        ephemeral_state_.creds_ = {
+            transport_availability_
+                .recognized_platform_authenticator_credentials.front()};
+        SetCurrentStep(Step::kPreSelectSingleAccount);
+      }
       return;
     }
   }
@@ -650,8 +662,7 @@ void AuthenticatorRequestDialogModel::AddAuthenticator(
     const device::FidoAuthenticator& authenticator) {
   if (!authenticator.AuthenticatorTransport()) {
 #if BUILDFLAG(IS_WIN)
-    DCHECK_EQ(authenticator.GetType(),
-              device::FidoAuthenticator::Type::kWinNative);
+    DCHECK_EQ(authenticator.GetType(), device::AuthenticatorType::kWinNative);
 #endif  // BUILDFLAG(IS_WIN)
     return;
   }
@@ -857,11 +868,8 @@ void AuthenticatorRequestDialogModel::set_cable_transport_info(
 std::vector<std::string> AuthenticatorRequestDialogModel::paired_phone_names()
     const {
   std::vector<std::string> names;
-  std::transform(paired_phones_.begin(), paired_phones_.end(),
-                 std::back_inserter(names),
-                 [](const PairedPhone& phone) -> const std::string& {
-                   return phone.name;
-                 });
+  base::ranges::transform(paired_phones_, std::back_inserter(names),
+                          &PairedPhone::name);
   names.erase(std::unique(names.begin(), names.end()), names.end());
   return names;
 }
@@ -947,6 +955,13 @@ void AuthenticatorRequestDialogModel::StartWinNativeApi(
     size_t mechanism_index) {
   DCHECK(transport_availability_.has_win_native_api_authenticator);
   current_mechanism_ = mechanism_index;
+
+  if (transport_availability_.request_is_internal_only &&
+      !transport_availability_.win_is_uvpaa) {
+    offer_try_again_in_ui_ = false;
+    SetCurrentStep(Step::kErrorWindowsHelloNotEnabled);
+    return;
+  }
 
   if (resident_key_requirement() !=
           device::ResidentKeyRequirement::kDiscouraged &&
@@ -1188,21 +1203,6 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms(
     }
   }
 
-  for (const auto transport : transports_to_list_if_active) {
-    if (!base::Contains(transport_availability_.available_transports,
-                        transport)) {
-      continue;
-    }
-
-    mechanisms_.emplace_back(
-        Mechanism::Transport(transport), GetTransportDescription(transport),
-        GetTransportShortDescription(transport), GetTransportIcon(transport),
-        base::BindRepeating(
-            &AuthenticatorRequestDialogModel::StartGuidedFlowForTransport,
-            base::Unretained(this), transport, mechanisms_.size()),
-        priority_transport.has_value() && *priority_transport == transport);
-  }
-
   if (include_add_phone_option) {
     // If there's no other priority mechanism, no phones, no platform
     // credentials, and this is a passkey request, jump directly to showing a QR
@@ -1217,7 +1217,8 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms(
           transport_availability_.has_platform_authenticator_credential !=
               device::FidoRequestHandlerBase::RecognizedCredential::
                   kNoRecognizedCredential;
-      is_priority = !base::ranges::any_of(mechanisms_, &Mechanism::priority) &&
+      is_priority = !priority_transport.has_value() &&
+                    !base::ranges::any_of(mechanisms_, &Mechanism::priority) &&
                     paired_phone_names().empty() && is_passkey_request &&
                     !platform_authenticator_could_fulfill_get_assertion;
     }
@@ -1231,6 +1232,21 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms(
             &AuthenticatorRequestDialogModel::StartGuidedFlowForAddPhone,
             base::Unretained(this), mechanisms_.size()),
         is_priority);
+  }
+
+  for (const auto transport : transports_to_list_if_active) {
+    if (!base::Contains(transport_availability_.available_transports,
+                        transport)) {
+      continue;
+    }
+
+    mechanisms_.emplace_back(
+        Mechanism::Transport(transport), GetTransportDescription(transport),
+        GetTransportShortDescription(transport), GetTransportIcon(transport),
+        base::BindRepeating(
+            &AuthenticatorRequestDialogModel::StartGuidedFlowForTransport,
+            base::Unretained(this), transport, mechanisms_.size()),
+        priority_transport.has_value() && *priority_transport == transport);
   }
 
   // At most one mechanism has priority.

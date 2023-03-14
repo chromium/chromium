@@ -619,15 +619,23 @@ void DragDropController::Drop(aura::Window* target,
       aura::client::GetDragDropDelegate(target);
 
   aura::client::DragDropDelegate::DropCallback delegate_drop_cb =
-      base::DoNothing();
+      base::NullCallback();
+  aura::client::DragDropDelegate::DropCallbackWithAnimation
+      delegate_drop_cb_animation = base::NullCallback();
 
   ui::DropTargetEvent e(*drag_data_.get(), event.location_f(),
                         event.root_location_f(), allowed_operations_);
   e.set_flags(event.flags());
   ui::Event::DispatcherApi(&e).set_target(target);
 
-  if (delegate)
+  for (aura::client::DragDropClientObserver& observer : observers_) {
+    observer.OnDragCompleted(e);
+  }
+
+  if (delegate) {
+    delegate_drop_cb_animation = delegate->GetDropCallbackWithAnimation(e);
     delegate_drop_cb = delegate->GetDropCallback(e);
+  }
 
   base::ScopedClosureRunner drag_cancel(base::BindOnce(
       &DragDropController::DragCancel, weak_factory_.GetWeakPtr()));
@@ -638,29 +646,15 @@ void DragDropController::Drop(aura::Window* target,
   const bool is_tab_drag_drop = (tab_drag_drop_delegate_.get() != nullptr);
 
   DCHECK_EQ(drag_window_, target);
-  aura::WindowTracker window_tracker({drag_window_, drag_window_->parent()});
 
   DropIfAllowed(
       drag_data_.get(), current_drag_info_,
-      base::BindOnce(&DragDropController::PerformDrop,
-                     weak_factory_.GetWeakPtr(), drop_location_in_screen, e,
-                     std::move(drag_data_), std::move(delegate_drop_cb),
-                     std::move(tab_drag_drop_delegate_),
-                     std::move(drag_cancel)));
+      base::BindOnce(
+          &DragDropController::PerformDrop, weak_factory_.GetWeakPtr(),
+          drop_location_in_screen, e, std::move(drag_data_),
+          std::move(delegate_drop_cb), std::move(delegate_drop_cb_animation),
+          std::move(tab_drag_drop_delegate_), std::move(drag_cancel)));
 
-  // During the drop, the event target (or its ancestors) might have
-  // been destroyed, eg by the client reaction. Adapt the DropTargetEvent
-  // accordingly.
-  //
-  // TODO(https://crbug.com/1160925): Avoid nested RunLoop in exo
-  // DataDevice::GetDropCallback() - remove the block below when it is fixed.
-  if (!window_tracker.Contains(drag_window_) ||
-      !window_tracker.Contains(drag_window_->parent())) {
-    ui::Event::DispatcherApi(&e).set_target(nullptr);
-  }
-
-  for (aura::client::DragDropClientObserver& observer : observers_)
-    observer.OnDragCompleted(e);
   Cleanup();
 
   // Tab drag-n-drop should never be async.
@@ -702,8 +696,9 @@ void DragDropController::DoDragCancel(
   if (toplevel_window_drag_delegate_)
     toplevel_window_drag_delegate_->OnToplevelWindowDragCancelled();
 
-  for (aura::client::DragDropClientObserver& observer : observers_)
+  for (aura::client::DragDropClientObserver& observer : observers_) {
     observer.OnDragCancelled();
+  }
   Cleanup();
 
   StartCanceledAnimation(drag_cancel_animation_duration);
@@ -820,15 +815,20 @@ void DragDropController::PerformDrop(
     ui::DropTargetEvent event,
     std::unique_ptr<ui::OSExchangeData> drag_data,
     aura::client::DragDropDelegate::DropCallback drop_cb,
+    aura::client::DragDropDelegate::DropCallbackWithAnimation drop_cb_animation,
     std::unique_ptr<TabDragDropDelegate> tab_drag_drop_delegate,
-    base::ScopedClosureRunner drag_cancel) {
+    base::ScopedClosureRunner cancel_drag_callback) {
   // Event copy constructor dooesn't copy the target. That's why we set it here.
   // DragDropController observes the `drag_window_`, so if it's destroyed, the
   // target will be set to nullptr.
   ui::Event::DispatcherApi(&event).set_target(drag_window_);
 
   ui::OSExchangeData copied_data(drag_data->provider().Clone());
-  if (drop_cb) {
+  if (!!drop_cb_animation) {
+    std::move(drop_cb_animation)
+        .Run(std::move(drag_data), operation_,
+             ::wm::RecreateLayers(drag_image_widget_->GetNativeWindow()));
+  } else if (!!drop_cb) {
     std::move(drop_cb).Run(std::move(drag_data), operation_);
   }
 
@@ -851,7 +851,14 @@ void DragDropController::PerformDrop(
   if (toplevel_window_drag_delegate_) {
     operation_ = toplevel_window_drag_delegate_->OnToplevelWindowDragDropped();
   }
-  drag_cancel.ReplaceClosure(base::DoNothing());
+
+  for (aura::client::DragDropClientObserver& observer : observers_) {
+    observer.OnDropCompleted(operation_);
+  }
+
+  // Replace `cancel_drag_callback` with an empty closure. Drop completed, so no
+  // need to cancel the drop.
+  cancel_drag_callback.ReplaceClosure(base::DoNothing());
 }
 
 void DragDropController::CancelIfInProgress() {

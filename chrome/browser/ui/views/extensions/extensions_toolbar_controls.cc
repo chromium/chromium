@@ -7,11 +7,11 @@
 #include <memory>
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/permissions_manager.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/background.h"
 
@@ -54,36 +54,20 @@ void ExtensionsToolbarControls::UpdateRequestAccessButton(
     const std::vector<std::unique_ptr<ToolbarActionViewController>>& actions,
     extensions::PermissionsManager::UserSiteSetting site_setting,
     content::WebContents* web_contents) {
-  // User site settings takes precedence over extension site access. If the user
-  // has allowed or blocked all extensions, individual extensions cannot grant
-  // access to the page and therefore the request access button is not
-  // displayed.
-  if (site_setting == extensions::PermissionsManager::UserSiteSetting::
-                          kGrantAllExtensions ||
-      site_setting == extensions::PermissionsManager::UserSiteSetting::
-                          kBlockAllExtensions) {
-    request_access_button_->SetVisible(false);
-    return;
+  // Extensions are included in the request access button only when the site
+  // allows customizing site access by extension, and when the extension
+  // itself can show access requests in the toolbar.
+  std::vector<extensions::ExtensionId> extensions;
+  if (site_setting ==
+      extensions::PermissionsManager::UserSiteSetting::kCustomizeByExtension) {
+    for (const auto& action : actions) {
+      if (action->ShouldShowSiteAccessRequestInToolbar(web_contents)) {
+        extensions.push_back(action->GetId());
+      }
+    }
   }
 
-  // Request access button is displayed if any extension requests access.
-  std::vector<ToolbarActionViewController*> extensions_requesting_access;
-  for (const auto& action : actions) {
-    if (action->IsRequestingSiteAccess(web_contents))
-      extensions_requesting_access.push_back(action.get());
-  }
-  if (extensions_requesting_access.empty()) {
-    request_access_button_->SetVisible(false);
-  } else {
-    // TODO(crbug.com/1239772): Update icons, based on the number of extensions
-    // requesting access, once multiple icons in button is supported. Since we
-    // will need to access the extension information, this method may receive
-    // actions instead of actions count. For now, just show the number of
-    // actions.
-    request_access_button_->UpdateExtensionsRequestingAccess(
-        extensions_requesting_access);
-    request_access_button_->SetVisible(true);
-  }
+  request_access_button_->Update(extensions);
 }
 
 BEGIN_METADATA(ExtensionsToolbarControls, ToolbarIconContainerView)

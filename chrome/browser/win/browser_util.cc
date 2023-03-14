@@ -9,13 +9,13 @@
 // sddl.h must come after windows.h.
 #include <sddl.h>
 
-#include <algorithm>
 #include <string>
 
 #include "base/base_paths.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/win/scoped_localalloc.h"
 #include "sandbox/win/src/win_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -48,8 +48,7 @@ bool IsBrowserAlreadyRunning() {
     return false;
   }
   std::replace(nt_dir_name->begin(), nt_dir_name->end(), '\\', '!');
-  std::transform(nt_dir_name->begin(), nt_dir_name->end(), nt_dir_name->begin(),
-                 tolower);
+  base::ranges::transform(*nt_dir_name, nt_dir_name->begin(), tolower);
   nt_dir_name = L"Global\\" + nt_dir_name.value();
   if (handle != NULL)
     ::CloseHandle(handle);

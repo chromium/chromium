@@ -6,6 +6,7 @@
 #define THIRD_PARTY_HUNSPELL_GOOGLE_BDICT_WRITER_H_
 
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace hunspell {

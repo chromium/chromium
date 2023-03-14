@@ -125,6 +125,7 @@ class MockObserver : public CrasAudioClient::Observer {
                void(const base::flat_map<std::string, std::string>&
                         survey_specific_data));
   MOCK_METHOD0(SpeakOnMuteDetected, void());
+  MOCK_METHOD0(NumberOfNonChromeOutputStreamsChanged, void());
 };
 
 // Expect the reader to be empty.
@@ -490,6 +491,17 @@ class CrasAudioClientTest : public testing::Test {
     // OnSpeakOnMuteDetected() to run the callback.
     EXPECT_CALL(
         *mock_cras_proxy_.get(),
+        DoConnectToSignal(interface_name_,
+                          cras::kNumberOfNonChromeOutputStreamsChanged, _, _))
+        .WillRepeatedly(Invoke(
+            this,
+            &CrasAudioClientTest::OnNumberOfNonChromeOutputStreamsChanged));
+
+    // Set an expectation so mock_cras_proxy's monitoring
+    // SurveyTrigger ConnectToSignal will use
+    // OnSpeakOnMuteDetected() to run the callback.
+    EXPECT_CALL(
+        *mock_cras_proxy_.get(),
         DoConnectToSignal(interface_name_, cras::kSpeakOnMuteDetected, _, _))
         .WillRepeatedly(
             Invoke(this, &CrasAudioClientTest::OnSpeakOnMuteDetected));
@@ -610,6 +622,12 @@ class CrasAudioClientTest : public testing::Test {
     speak_on_mute_detected_handler_.Run(signal);
   }
 
+  void SendNumberOfNonChromeOutputStreamsChangedSignal(dbus::Signal* signal) {
+    ASSERT_FALSE(
+        number_of_non_chrome_output_streams_changed_handler_.is_null());
+    number_of_non_chrome_output_streams_changed_handler_.Run(signal);
+  }
+
   CrasAudioClient* client() { return CrasAudioClient::Get(); }
 
   // The interface name.
@@ -649,6 +667,10 @@ class CrasAudioClientTest : public testing::Test {
   dbus::ObjectProxy::SignalCallback survey_trigger_handler_;
   // The SpeakOnMuteDetected signal handler given by the tested client.
   dbus::ObjectProxy::SignalCallback speak_on_mute_detected_handler_;
+  // The NumberOfNonChromeOutputStreamsChanged signal handler given by the
+  // tested client.
+  dbus::ObjectProxy::SignalCallback
+      number_of_non_chrome_output_streams_changed_handler_;
   // The name of the method which is expected to be called.
   std::string expected_method_name_;
   // The response which the mock cras proxy returns.
@@ -823,6 +845,17 @@ class CrasAudioClientTest : public testing::Test {
                                   interface_name, signal_name, success));
   }
 
+  void OnNumberOfNonChromeOutputStreamsChanged(
+      const std::string& interface_name,
+      const std::string& signal_name,
+      const dbus::ObjectProxy::SignalCallback& signal_callback,
+      dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
+    number_of_non_chrome_output_streams_changed_handler_ = signal_callback;
+    constexpr bool success = true;
+    task_environment_.GetMainThreadTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(*on_connected_callback),
+                                  interface_name, signal_name, success));
+  }
   // Checks the requested interface name and signal name.
   // Used to implement the mock cras proxy.
   void OnSpeakOnMuteDetected(
@@ -1066,6 +1099,22 @@ TEST_F(CrasAudioClientTest, SurveyTrigger) {
 
   // Run the signal callback again and make sure the observer isn't called.
   SendSurveyTriggerSignal(&signal);
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(CrasAudioClientTest, NumberOfNonChromeOutputStreamsChanged) {
+  dbus::Signal signal(cras::kCrasControlInterface,
+                      cras::kNumberOfNonChromeOutputStreamsChanged);
+  MockObserver observer;
+  EXPECT_CALL(observer, NumberOfNonChromeOutputStreamsChanged()).Times(1);
+  client()->AddObserver(&observer);
+  SendNumberOfNonChromeOutputStreamsChangedSignal(&signal);
+  client()->RemoveObserver(&observer);
+
+  EXPECT_CALL(observer, NumberOfNonChromeOutputStreamsChanged()).Times(0);
+  // Run the signal callback again and make sure the observer isn't called.
+  SendSpeakOnMuteDetectedSignal(&signal);
 
   base::RunLoop().RunUntilIdle();
 }

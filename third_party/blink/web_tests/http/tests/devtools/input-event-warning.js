@@ -62,7 +62,8 @@
       }
   `);
 
-  SDK.consoleModel.addEventListener(
+  const consoleModel = SDK.targetManager.primaryPageTarget().model(SDK.ConsoleModel);
+  consoleModel.addEventListener(
       SDK.ConsoleModel.Events.MessageAdded, TestRunner.safeWrap(onConsoleMessage));
   step1();
 

@@ -244,6 +244,10 @@ source_set("clipboard_test") {
     ]
   }
 
+  if (is_win) {
+    sources += [ "clipboard_util_win_unittest.cc" ]
+  }
+
   if (use_aura && !is_chromeos_lacros && !is_linux && !is_win) {
     sources += [
       "clipboard_data_unittest.cc",

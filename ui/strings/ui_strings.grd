@@ -397,6 +397,9 @@ need to be translated for each locale.-->
       <message name="IDS_NEW_BADGE" desc="Appears as a badge on UI elements like menus, denoting new features">
         New
       </message>
+      <message name="IDS_NEW_BADGE_UPPERCASE" desc="Appears as a badge on UI elements like menus, denoting new features, in uppercase">
+        NEW
+      </message>
       <message name="IDS_NEW_BADGE_SCREEN_READER_MESSAGE"
                desc="Message appended to screen reader description of UI elements which have the 'New' badge">
         This is a new feature
@@ -1031,6 +1034,11 @@ need to be translated for each locale.-->
       <!-- Table View -->
       <message name="IDS_TABLE_VIEW_AX_ANNOUNCE_ROW_SELECTED" desc="Screenreader announcement that a row is selected">
         <ph name="ROW_NAME">$1<ex>A row in the table</ex></ph> is selected.
+      </message>
+
+      <!-- Clipboard -->
+      <message name="IDS_LINK_COPIED" desc="Notification telling the user that the url has been copied to clipboard. [CHAR_LIMIT=32]">
+        Link copied
       </message>
     </messages>
   </release>

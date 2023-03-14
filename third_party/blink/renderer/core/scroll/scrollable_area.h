@@ -326,6 +326,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   virtual Scrollbar* HorizontalScrollbar() const { return nullptr; }
   virtual Scrollbar* VerticalScrollbar() const { return nullptr; }
   virtual Scrollbar* CreateScrollbar(ScrollbarOrientation) { return nullptr; }
+  Scrollbar* GetScrollbar(ScrollbarOrientation) const;
 
   virtual PaintLayer* Layer() const { return nullptr; }
 

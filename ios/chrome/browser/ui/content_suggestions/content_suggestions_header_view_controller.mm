@@ -13,10 +13,15 @@
 #import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
-#import "ios/chrome/browser/ui/commands/application_commands.h"
-#import "ios/chrome/browser/ui/commands/browser_commands.h"
-#import "ios/chrome/browser/ui/commands/lens_commands.h"
-#import "ios/chrome/browser/ui/commands/omnibox_commands.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
+#import "ios/chrome/browser/shared/public/commands/lens_commands.h"
+#import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/named_guide.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
@@ -33,11 +38,6 @@
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar/public/fakebox_focuser.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/browser/ui/util/layout_guide_names.h"
-#import "ios/chrome/browser/ui/util/named_guide.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/util/util_swift.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -70,6 +70,7 @@ NSString* const kSignOutIdentityIconName = @"sign_out_icon";
 @property(nonatomic, strong) ContentSuggestionsHeaderView* headerView;
 @property(nonatomic, strong) UIButton* fakeOmnibox;
 @property(nonatomic, strong) UIButton* accessibilityButton;
+@property(nonatomic, strong) NSString* identityDiscAccessibilityLabel;
 @property(nonatomic, strong, readwrite) UIButton* identityDiscButton;
 @property(nonatomic, strong) UIImage* identityDiscImage;
 @property(nonatomic, strong) UIButton* fakeTapButton;
@@ -290,6 +291,17 @@ NSString* const kSignOutIdentityIconName = @"sign_out_icon";
   }
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  // Check if the identity disc button was properly set before the view appears.
+  DCHECK(self.identityDiscButton);
+  if (base::FeatureList::IsEnabled(switches::kIdentityStatusConsistency)) {
+    DCHECK(self.identityDiscImage);
+    DCHECK(self.identityDiscButton.accessibilityLabel);
+    DCHECK([self.identityDiscButton imageForState:UIControlStateNormal]);
+  }
+}
+
 #pragma mark - Private
 
 // Initialize and add a search field tap target and a voice search button.
@@ -372,12 +384,9 @@ NSString* const kSignOutIdentityIconName = @"sign_out_icon";
   // Set up a button. Details for the button will be set through delegate
   // implementation of UserAccountImageUpdateDelegate.
   self.identityDiscButton = [UIButton buttonWithType:UIButtonTypeCustom];
-  self.identityDiscButton.accessibilityLabel =
-      l10n_util::GetNSString(IDS_ACCNAME_PARTICLE_DISC);
   [self.identityDiscButton addTarget:self.commandHandler
                               action:@selector(identityDiscWasTapped)
                     forControlEvents:UIControlEventTouchUpInside];
-
   self.identityDiscButton.pointerInteractionEnabled = YES;
   self.identityDiscButton.pointerStyleProvider =
       ^UIPointerStyle*(UIButton* button, UIPointerEffect* proposedEffect,
@@ -394,18 +403,29 @@ NSString* const kSignOutIdentityIconName = @"sign_out_icon";
     return [UIPointerStyle styleWithEffect:proposedEffect shape:shape];
   };
 
-  [self updateIdentityDiscState];
-  // TODO(crbug.com/965958): Set action on button to launch into Settings.
+  if (base::FeatureList::IsEnabled(switches::kIdentityStatusConsistency)) {
+    // `self.identityDiscButton` should not be updated if
+    // `self.identityDiscImage` is not available yet.
+    if (self.identityDiscImage) {
+      [self updateIdentityDiscState];
+    }
+  } else {
+    [self updateIdentityDiscState];
+  }
   [self.headerView setIdentityDiscView:self.identityDiscButton];
 }
 
 // Configures `identityDiscButton` with the current state of
 // `identityDiscImage`.
 - (void)updateIdentityDiscState {
-  // TODO(crbug.com/1385758): Update this logic after
-  // kIdentityStatusConsistency is rolled out as image can't be
-  // null when the user is signed-in.
-  self.identityDiscButton.hidden = !self.identityDiscImage;
+  if (base::FeatureList::IsEnabled(switches::kIdentityStatusConsistency)) {
+    DCHECK(self.identityDiscImage);
+    DCHECK(self.identityDiscAccessibilityLabel);
+  } else {
+    self.identityDiscButton.hidden = !self.identityDiscImage;
+  }
+  self.identityDiscButton.accessibilityLabel =
+      self.identityDiscAccessibilityLabel;
   [self.identityDiscButton setImage:self.identityDiscImage
                            forState:UIControlStateNormal];
   self.identityDiscButton.imageView.layer.cornerRadius =
@@ -658,23 +678,45 @@ NSString* const kSignOutIdentityIconName = @"sign_out_icon";
 
 #pragma mark - UserAccountImageUpdateDelegate
 
-- (void)updateAccountImage:(UIImage*)image {
-  // If `image` is null, then that means the user is not signed in.
-  if (!image &&
-      base::FeatureList::IsEnabled(switches::kIdentityStatusConsistency)) {
+- (void)setSignedOutAccountImage {
+  if (base::FeatureList::IsEnabled(switches::kIdentityStatusConsistency)) {
     if (UseSymbols()) {
-      image = DefaultSymbolTemplateWithPointSize(
+      self.identityDiscImage = DefaultSymbolTemplateWithPointSize(
           kPersonCropCircleSymbol, ntp_home::kSignedOutIdentityIconDimension);
     } else {
-      image = [UIImage imageNamed:kSignOutIdentityIconName];
+      self.identityDiscImage = [UIImage imageNamed:kSignOutIdentityIconName];
     }
+    self.identityDiscAccessibilityLabel =
+        l10n_util::GetNSString(IDS_IOS_IDENTITY_DISC_SIGNED_OUT);
   } else {
-    DCHECK(image == nil ||
-           (image.size.width == ntp_home::kIdentityAvatarDimension &&
-            image.size.height == ntp_home::kIdentityAvatarDimension))
-        << base::SysNSStringToUTF8([image description]);
+    self.identityDiscImage = nil;
   }
+  // `self.identityDiscButton` should not be updated if the view has not been
+  // created yet.
+  if (self.identityDiscButton) {
+    [self updateIdentityDiscState];
+  }
+}
+
+- (void)updateAccountImage:(UIImage*)image
+                      name:(NSString*)name
+                     email:(NSString*)email {
+  DCHECK(image && image.size.width == ntp_home::kIdentityAvatarDimension &&
+         image.size.height == ntp_home::kIdentityAvatarDimension)
+      << base::SysNSStringToUTF8([image description]);
+  DCHECK(email);
+
   self.identityDiscImage = image;
+  if (name) {
+    self.identityDiscAccessibilityLabel = l10n_util::GetNSStringF(
+        IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL,
+        base::SysNSStringToUTF16(name), base::SysNSStringToUTF16(email));
+  } else {
+    self.identityDiscAccessibilityLabel = l10n_util::GetNSStringF(
+        IDS_IOS_IDENTITY_DISC_WITH_EMAIL, base::SysNSStringToUTF16(email));
+  }
+  // `self.identityDiscButton` should not be updated if the view has not been
+  // created yet.
   if (self.identityDiscButton) {
     [self updateIdentityDiscState];
   }

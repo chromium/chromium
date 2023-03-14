@@ -288,7 +288,7 @@ void GetStorageKeyAndLastModifiedGotBucket(
         callback,
     storage::QuotaErrorOr<storage::BucketInfo> result) {
   storage::BucketLocator bucket_locator{};
-  if (result.ok()) {
+  if (result.has_value()) {
     bucket_locator = result->ToBucketLocator();
     DCHECK_EQ(info->storage_key, result->storage_key);
   }

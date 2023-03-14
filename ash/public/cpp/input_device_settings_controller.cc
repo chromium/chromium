@@ -10,6 +10,12 @@ namespace {
 InputDeviceSettingsController* g_instance = nullptr;
 }
 
+template <>
+InputDeviceSettingsController*& InputDeviceSettingsController::
+    ScopedResetterForTest::GetGlobalInstanceHolder() {
+  return g_instance;
+}
+
 InputDeviceSettingsController::InputDeviceSettingsController() {
   DCHECK_EQ(nullptr, g_instance);
   g_instance = this;

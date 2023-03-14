@@ -44,6 +44,8 @@ class FastPairBluetoothConfigDelegate
   absl::optional<bluetooth_config::DeviceImageInfo> GetDeviceImageInfo(
       const std::string& device_id) override;
   void ForgetDevice(const std::string& mac_address) override;
+  void UpdateDeviceNickname(const std::string& mac_address,
+                            const std::string& nickname) override;
   void SetAdapterStateController(bluetooth_config::AdapterStateController*
                                      adapter_state_controller) override;
   void SetDeviceNameManager(

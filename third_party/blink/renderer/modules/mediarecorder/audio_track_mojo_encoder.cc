@@ -9,10 +9,10 @@
 
 #include "base/containers/queue.h"
 #include "base/logging.h"
+#include "base/task/bind_post_task.h"
 #include "base/time/time.h"
 #include "media/base/audio_encoder.h"
 #include "media/base/audio_parameters.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/encoder_status.h"
 #include "media/mojo/clients/mojo_audio_encoder.h"
 #include "media/mojo/mojom/audio_encoder.mojom-blink.h"
@@ -90,9 +90,9 @@ void AudioTrackMojoEncoder::OnSetFormat(
   if (bits_per_second_ > 0)
     options.bitrate = bits_per_second_;
 
-  auto output_cb = media::BindToCurrentLoop(WTF::BindRepeating(
+  auto output_cb = base::BindPostTaskToCurrentDefault(WTF::BindRepeating(
       &AudioTrackMojoEncoder::OnEncodeOutput, weak_factory_.GetWeakPtr()));
-  auto done_cb = media::BindToCurrentLoop(WTF::BindOnce(
+  auto done_cb = base::BindPostTaskToCurrentDefault(WTF::BindOnce(
       &AudioTrackMojoEncoder::OnInitializeDone, weak_factory_.GetWeakPtr()));
   mojo_encoder_->Initialize(options, std::move(output_cb), std::move(done_cb));
 }
@@ -118,7 +118,7 @@ void AudioTrackMojoEncoder::EncodeAudio(
     return;
   }
 
-  auto done_cb = media::BindToCurrentLoop(WTF::BindOnce(
+  auto done_cb = base::BindPostTaskToCurrentDefault(WTF::BindOnce(
       &AudioTrackMojoEncoder::OnEncodeDone, weak_factory_.GetWeakPtr()));
   mojo_encoder_->Encode(std::move(input_bus), capture_time, std::move(done_cb));
 }

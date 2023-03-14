@@ -96,11 +96,18 @@ class PermissionsManager : public KeyedService {
 
   class Observer {
    public:
+    // Called when `user_permissions_` have been updated for an extension.
     virtual void OnUserPermissionsSettingsChanged(
         const UserPermissionsSettings& settings) {}
+
+    // Called when permissions have been updated for an extension.
     virtual void OnExtensionPermissionsUpdated(const Extension& extension,
                                                const PermissionSet& permissions,
                                                UpdateReason reason) {}
+
+    // Called when an extension's ability to show site access requests in the
+    // toolbar has been updated.
+    virtual void OnShowAccessRequestsInToolbarChanged() {}
   };
 
   explicit PermissionsManager(content::BrowserContext* browser_context);
@@ -120,7 +127,7 @@ class PermissionsManager : public KeyedService {
   //  Updates the user site settings for the given `origin` to be
   //  `site_settings`.
   void UpdateUserSiteSetting(const url::Origin& origin,
-                             PermissionsManager::UserSiteSetting site_setting);
+                             UserSiteSetting site_setting);
 
   // Adds `origin` to the list of sites the user has blocked all
   // extensions from running on. If `origin` is in permitted_sites, it will
@@ -214,6 +221,9 @@ class PermissionsManager : public KeyedService {
                                          const PermissionSet& permissions,
                                          UpdateReason reason);
 
+  // Notifies `observers_`that show access requests in toolbar pref changed.
+  void NotifyShowAccessRequestsInToolbarChanged();
+
   // Adds or removes observers.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -240,8 +250,8 @@ class PermissionsManager : public KeyedService {
       const Extension& extension,
       const PermissionSet& user_permitted_set);
 
-  // Notifies observers of a permissions change.
-  void NotifyObserversOfChange();
+  // Notifies `observers_` that user permissions have changed.
+  void NotifyUserPermissionSettingsChanged();
 
   base::ObserverList<Observer>::Unchecked observers_;
 

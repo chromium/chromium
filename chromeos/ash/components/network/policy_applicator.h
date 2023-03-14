@@ -69,7 +69,7 @@ class PolicyApplicator {
   // |modified_policy_guids| must not be nullptr and will be empty afterwards.
   PolicyApplicator(const NetworkProfile& profile,
                    base::flat_map<std::string, base::Value::Dict> all_policies,
-                   base::Value global_network_config,
+                   base::Value::Dict global_network_config,
                    ConfigurationHandler* handler,
                    ManagedCellularPrefHandler* managed_cellular_pref_handler,
                    base::flat_set<std::string> modified_policy_guids);
@@ -157,7 +157,7 @@ class PolicyApplicator {
   ManagedCellularPrefHandler* managed_cellular_pref_handler_ = nullptr;
   NetworkProfile profile_;
   base::flat_map<std::string, base::Value::Dict> all_policies_;
-  base::Value global_network_config_;
+  base::Value::Dict global_network_config_;
 
   base::flat_set<std::string> remaining_policy_guids_;
   base::flat_set<std::string> pending_get_entry_calls_;

@@ -30,12 +30,6 @@ class CORE_EXPORT NGFragmentBuilder {
   void SetStyleVariant(NGStyleVariant style_variant) {
     style_variant_ = style_variant;
   }
-  void SetStyle(scoped_refptr<const ComputedStyle> style,
-                NGStyleVariant style_variant) {
-    DCHECK(style);
-    style_ = std::move(style);
-    style_variant_ = style_variant;
-  }
 
   WritingDirectionMode GetWritingDirection() const {
     return writing_direction_;

@@ -25,6 +25,8 @@ class CryptohomeMixin : public InProcessBrowserTestMixin,
   CryptohomeMixin& operator=(const CryptohomeMixin&) = delete;
   ~CryptohomeMixin() override;
 
+  void SetUpOnMainThread() override;
+
   void MarkUserAsExisting(const AccountId& user);
   std::string AddSession(const AccountId& user, bool authenticated);
   void AddGaiaPassword(const AccountId& user, std::string password);

@@ -52,8 +52,8 @@ class FederatedIdentityAutoReauthnPermissionContextTest : public testing::Test {
 TEST_F(FederatedIdentityAutoReauthnPermissionContextTest,
        AutoReauthnEnabledByDefault) {
   GURL rp_url("https://rp.com");
-  EXPECT_EQ(true,
-            context_->HasAutoReauthnPermission(url::Origin::Create(rp_url)));
+  EXPECT_TRUE(context_->HasAutoReauthnContentSetting());
+  EXPECT_FALSE(context_->IsAutoReauthnEmbargoed(url::Origin::Create(rp_url)));
 }
 
 // Test that

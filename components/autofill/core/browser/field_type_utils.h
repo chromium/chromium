@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FIELD_TYPE_UTILS_H_
 
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {
 
@@ -23,6 +24,12 @@ size_t NumberOfPossibleFieldTypesInGroup(const AutofillField& field,
 
 // Returns true if the type of `field` is a possible type.
 bool TypeOfFieldIsPossibleType(const AutofillField& field);
+
+// Returns true whenever type is ADDRESS_HOME_STREET_NAME or
+// ADDRESS_HOME_HOUSE_NUMBER.
+// TODO(crbug/1410438): Remove when cleaning up feature
+// `kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete`.
+bool IsStreetNameOrHouseNumberType(const ServerFieldType type);
 
 }  // namespace autofill
 

@@ -15,9 +15,9 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
+#include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_url_filter.h"
 #include "chrome/common/channel_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
@@ -73,20 +73,20 @@ void AddSectionEntry(base::Value::List* section_list,
 }
 
 std::string FilteringBehaviorToString(
-    SupervisedUserURLFilter::FilteringBehavior behavior) {
+    supervised_user::SupervisedUserURLFilter::FilteringBehavior behavior) {
   switch (behavior) {
-    case SupervisedUserURLFilter::ALLOW:
+    case supervised_user::SupervisedUserURLFilter::ALLOW:
       return "Allow";
-    case SupervisedUserURLFilter::BLOCK:
+    case supervised_user::SupervisedUserURLFilter::BLOCK:
       return "Block";
-    case SupervisedUserURLFilter::INVALID:
+    case supervised_user::SupervisedUserURLFilter::INVALID:
       return "Invalid";
   }
   return "Unknown";
 }
 
 std::string FilteringBehaviorToString(
-    SupervisedUserURLFilter::FilteringBehavior behavior,
+    supervised_user::SupervisedUserURLFilter::FilteringBehavior behavior,
     bool uncertain) {
   std::string result = FilteringBehaviorToString(behavior);
   if (uncertain)
@@ -166,13 +166,15 @@ void FamilyLinkUserInternalsMessageHandler::HandleTryURL(
   if (!url.is_valid())
     return;
 
-  SupervisedUserURLFilter* filter = GetSupervisedUserService()->GetURLFilter();
+  supervised_user::SupervisedUserURLFilter* filter =
+      GetSupervisedUserService()->GetURLFilter();
   content::WebContents* web_contents =
       web_ui() ? web_ui()->GetWebContents() : nullptr;
   bool skip_manual_parent_filter = false;
+
   if (web_contents) {
     skip_manual_parent_filter =
-        filter->ShouldSkipParentManualAllowlistFiltering(
+        supervised_user::ShouldContentSkipParentAllowlistFiltering(
             web_contents->GetOutermostWebContents());
   }
 
@@ -196,7 +198,8 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
   AddSectionEntry(section_profile, "Account", profile->GetProfileUserName());
   AddSectionEntry(section_profile, "Child", profile->IsChild());
 
-  SupervisedUserURLFilter* filter = GetSupervisedUserService()->GetURLFilter();
+  supervised_user::SupervisedUserURLFilter* filter =
+      GetSupervisedUserService()->GetURLFilter();
 
   base::Value::List* section_filter = AddSection(&section_list, "Filter");
   AddSectionEntry(section_filter, "Denylist active", filter->HasDenylist());
@@ -248,14 +251,14 @@ void FamilyLinkUserInternalsMessageHandler::SendFamilyLinkUserSettings(
 
 void FamilyLinkUserInternalsMessageHandler::OnTryURLResult(
     const std::string& callback_id,
-    SupervisedUserURLFilter::FilteringBehavior behavior,
+    supervised_user::SupervisedUserURLFilter::FilteringBehavior behavior,
     supervised_user::FilteringBehaviorReason reason,
     bool uncertain) {
   base::Value::Dict result;
   result.Set("allowResult", FilteringBehaviorToString(behavior, uncertain));
   result.Set("manual",
              reason == supervised_user::FilteringBehaviorReason::MANUAL &&
-                 behavior == SupervisedUserURLFilter::ALLOW);
+                 behavior == supervised_user::SupervisedUserURLFilter::ALLOW);
   ResolveJavascriptCallback(base::Value(callback_id), result);
 }
 
@@ -263,7 +266,7 @@ void FamilyLinkUserInternalsMessageHandler::OnSiteListUpdated() {}
 
 void FamilyLinkUserInternalsMessageHandler::OnURLChecked(
     const GURL& url,
-    SupervisedUserURLFilter::FilteringBehavior behavior,
+    supervised_user::SupervisedUserURLFilter::FilteringBehavior behavior,
     supervised_user::FilteringBehaviorReason reason,
     bool uncertain) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

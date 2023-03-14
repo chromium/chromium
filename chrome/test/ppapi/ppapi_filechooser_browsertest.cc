@@ -14,9 +14,11 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/ppapi/ppapi_test.h"
 #include "chrome/test/ppapi/ppapi_test_select_file_dialog_factory.h"
+#include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/services/quarantine/test_support.h"
 #include "content/public/browser/global_routing_id.h"
@@ -131,6 +133,27 @@ class PPAPIFileChooserTestWithSBService : public PPAPIFileChooserTest {
     SafeBrowsingService::RegisterFactory(nullptr);
   }
 
+  void TestSaveAsRealTimeDownloadProtectionRequestPolicy(bool policy_value) {
+    PrefService* pref_service = browser()->profile()->GetPrefs();
+    pref_service->SetBoolean(
+        prefs::kRealTimeDownloadProtectionRequestAllowedByPolicy, policy_value);
+    safe_browsing_test_configuration_.default_result =
+        safe_browsing::DownloadCheckResult::SAFE;
+    safe_browsing_test_configuration_.result_map.insert(
+        std::make_pair(base::FilePath::StringType(FILE_PATH_LITERAL(".exe")),
+                       safe_browsing::DownloadCheckResult::DANGEROUS));
+    PPAPITestSelectFileDialogFactory::Mode mode;
+    if (policy_value) {
+      mode = PPAPITestSelectFileDialogFactory::NOT_REACHED;
+    } else {
+      mode = PPAPITestSelectFileDialogFactory::RESPOND_WITH_FILE_LIST;
+    }
+
+    PPAPITestSelectFileDialogFactory test_dialog_factory(
+        mode, PPAPITestSelectFileDialogFactory::SelectedFileInfoList());
+    RunTestViaHTTP("FileChooser_SaveAsDangerousExecutableDisallowed");
+  }
+
  protected:
   SafeBrowsingTestConfiguration safe_browsing_test_configuration_;
 
@@ -149,9 +172,7 @@ IN_PROC_BROWSER_TEST_F(PPAPIFileChooserTest, FileChooser_Open_Success) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   base::FilePath existing_filename = temp_dir.GetPath().AppendASCII("foo");
-  ASSERT_EQ(
-      static_cast<int>(sizeof(kContents) - 1),
-      base::WriteFile(existing_filename, kContents, sizeof(kContents) - 1));
+  ASSERT_TRUE(base::WriteFile(existing_filename, kContents));
 
   PPAPITestSelectFileDialogFactory::SelectedFileInfoList file_info_list;
   file_info_list.push_back(
@@ -334,9 +355,7 @@ IN_PROC_BROWSER_TEST_F(PPAPIFileChooserTestWithSBService,
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   base::FilePath existing_filename = temp_dir.GetPath().AppendASCII("foo");
-  ASSERT_EQ(
-      static_cast<int>(sizeof(kContents) - 1),
-      base::WriteFile(existing_filename, kContents, sizeof(kContents) - 1));
+  ASSERT_TRUE(base::WriteFile(existing_filename, kContents));
 
   safe_browsing_test_configuration_.default_result =
       safe_browsing::DownloadCheckResult::DANGEROUS;
@@ -347,6 +366,18 @@ IN_PROC_BROWSER_TEST_F(PPAPIFileChooserTestWithSBService,
   PPAPITestSelectFileDialogFactory test_dialog_factory(
       PPAPITestSelectFileDialogFactory::RESPOND_WITH_FILE_LIST, file_info_list);
   RunTestViaHTTP("FileChooser_OpenSimple");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PPAPIFileChooserTestWithSBService,
+    FileChooser_SaveAs_RealTimeDownloadProtectionRequestPolicyEnabled_Allowed) {
+  TestSaveAsRealTimeDownloadProtectionRequestPolicy(true);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PPAPIFileChooserTestWithSBService,
+    FileChooser_SaveAs_RealTimeDownloadProtectionRequestPolicyDisabled_SkippedCheck) {
+  TestSaveAsRealTimeDownloadProtectionRequestPolicy(false);
 }
 
 #endif  // FULL_SAFE_BROWSING

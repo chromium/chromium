@@ -152,6 +152,7 @@ class TestRasterInterface : public gpu::raster::RasterInterface {
                            GLuint dst_row_bytes,
                            int src_x,
                            int src_y,
+                           int plane_index,
                            void* dst_pixels) override {}
   GLuint CreateAndConsumeForGpuRaster(const gpu::Mailbox& mailbox) override;
   void DeleteGpuRasterTexture(GLuint texture) override;

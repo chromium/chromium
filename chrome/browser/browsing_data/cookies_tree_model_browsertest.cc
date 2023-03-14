@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/browsing_data/access_context_audit_service_factory.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "chrome/browser/chrome_content_browser_client.h"
@@ -231,7 +232,7 @@ class ScopedNonDefaultStoragePartitionContentBrowserClient
  private:
   const char* target_host_;
   content::StoragePartitionConfig storage_partition_config_;
-  content::ContentBrowserClient* original_client_;
+  raw_ptr<content::ContentBrowserClient> original_client_;
 };
 
 IN_PROC_BROWSER_TEST_F(CookiesTreeModelBrowserTest,

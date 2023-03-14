@@ -43,8 +43,8 @@ using blink::InterestGroup;
 using testing::Field;
 using testing::UnorderedElementsAre;
 using testing::UnorderedElementsAreArray;
-using SellerCapabilities = blink::InterestGroup::SellerCapabilities;
-using SellerCapabilitiesType = blink::InterestGroup::SellerCapabilitiesType;
+using SellerCapabilities = blink::SellerCapabilities;
+using SellerCapabilitiesType = blink::SellerCapabilitiesType;
 
 class InterestGroupStorageTest : public testing::Test {
  public:
@@ -106,7 +106,7 @@ class InterestGroupStorageTest : public testing::Test {
         /*execution_mode=*/InterestGroup::ExecutionMode::kCompatibilityMode,
         /*bidding_url=*/GURL("https://full.example.com/bid"),
         /*bidding_wasm_helper_url=*/GURL("https://full.example.com/bid_wasm"),
-        /*daily_update_url=*/GURL("https://full.example.com/update"),
+        /*update_url=*/GURL("https://full.example.com/update"),
         /*trusted_bidding_signals_url=*/
         GURL("https://full.example.com/signals"),
         /*trusted_bidding_signals_keys=*/
@@ -125,17 +125,13 @@ class InterestGroupStorageTest : public testing::Test {
             blink::InterestGroup::Ad(
                 GURL("https://full.example.com/adcomponent2"), "metadata2c")},
         /*ad_sizes=*/
-        {{{"size_1", blink::InterestGroup::Size(
-                         300, blink::InterestGroup::Size::LengthUnit::kPixels,
-                         150, blink::InterestGroup::Size::LengthUnit::kPixels)},
-          {"size_2",
-           blink::InterestGroup::Size(
-               640, blink::InterestGroup::Size::LengthUnit::kPixels, 480,
-               blink::InterestGroup::Size::LengthUnit::kPixels)}}},
+        {{{"size_1", blink::AdSize(300, blink::AdSize::LengthUnit::kPixels, 150,
+                                   blink::AdSize::LengthUnit::kPixels)},
+          {"size_2", blink::AdSize(640, blink::AdSize::LengthUnit::kPixels, 480,
+                                   blink::AdSize::LengthUnit::kPixels)}}},
         /*size_groups=*/
         {{{"group_1", std::vector<std::string>{"size_1"}},
           {"group_2", std::vector<std::string>{"size_1", "size_2"}}}});
-
     std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
 
     storage->JoinInterestGroup(partial, partial_origin.GetURL());
@@ -168,11 +164,10 @@ class InterestGroupStorageTest : public testing::Test {
     update.trusted_bidding_signals_keys =
         std::vector<std::string>{"a", "b2", "c", "d"};
     update.ads = full.ads;
-    update.ads->emplace_back(blink::InterestGroup::Ad(
-        GURL("https://full.example.com/ad3"), "metadata3"));
+    update.ads->emplace_back(GURL("https://full.example.com/ad3"), "metadata3");
     update.ad_components = full.ad_components;
-    update.ad_components->emplace_back(blink::InterestGroup::Ad(
-        GURL("https://full.example.com/adcomponent3"), "metadata3c"));
+    update.ad_components->emplace_back(
+        GURL("https://full.example.com/adcomponent3"), "metadata3c");
     storage->UpdateInterestGroup(blink::InterestGroupKey(full.owner, full.name),
                                  update);
 
@@ -632,8 +627,8 @@ TEST_F(InterestGroupStorageTest, UpdatesAdKAnonymity) {
 }
 
 TEST_F(InterestGroupStorageTest, KAnonDataExpires) {
-  GURL daily_update_url("https://owner.example.com/groupUpdate");
-  url::Origin test_origin = url::Origin::Create(daily_update_url);
+  GURL update_url("https://owner.example.com/groupUpdate");
+  url::Origin test_origin = url::Origin::Create(update_url);
   const std::string name = "name";
   const std::string key = test_origin.GetURL().spec() + '\n' + name;
   // We make the ad urls equal to the name key and update urls to verify the
@@ -647,7 +642,7 @@ TEST_F(InterestGroupStorageTest, KAnonDataExpires) {
   g.ad_components.emplace();
   g.ad_components->push_back(
       blink::InterestGroup::Ad(ad2_url, "component_metadata2"));
-  g.daily_update_url = daily_update_url;
+  g.update_url = update_url;
   g.expiry = base::Time::Now() + base::Days(1);
 
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
@@ -1120,7 +1115,7 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                         GURL("https://owner.example.com/bidder.js")),
                   Field("bidding_wasm_helper_url",
                         &InterestGroup::bidding_wasm_helper_url, absl::nullopt),
-                  Field("daily_update_url", &InterestGroup::daily_update_url,
+                  Field("update_url", &InterestGroup::update_url,
                         GURL("https://owner.example.com/update")),
                   Field("trusted_bidding_signals_url",
                         &InterestGroup::trusted_bidding_signals_url,
@@ -1214,7 +1209,7 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                         GURL("https://owner.example.com/bidder.js")),
                   Field("bidding_wasm_helper_url",
                         &InterestGroup::bidding_wasm_helper_url, absl::nullopt),
-                  Field("daily_update_url", &InterestGroup::daily_update_url,
+                  Field("update_url", &InterestGroup::update_url,
                         GURL("https://owner.example.com/update")),
                   Field("trusted_bidding_signals_url",
                         &InterestGroup::trusted_bidding_signals_url,
@@ -1308,7 +1303,7 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV6) {
                         GURL("https://owner.example.com/bidder.js")),
                   Field("bidding_wasm_helper_url",
                         &InterestGroup::bidding_wasm_helper_url, absl::nullopt),
-                  Field("daily_update_url", &InterestGroup::daily_update_url,
+                  Field("update_url", &InterestGroup::update_url,
                         GURL("https://owner.example.com/update")),
                   Field("trusted_bidding_signals_url",
                         &InterestGroup::trusted_bidding_signals_url,

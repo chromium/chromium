@@ -74,7 +74,8 @@ ScriptPromise DocumentPictureInPicture::requestWindow(
     return ScriptPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   // |dom_window->document()| should always exist after document construction.
   auto* document = dom_window->document();
   DCHECK(document);

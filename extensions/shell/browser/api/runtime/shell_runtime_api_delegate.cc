@@ -11,7 +11,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "third_party/cros_system_api/dbus/service_constants.h"
 #endif
 
 using extensions::api::runtime::PlatformInfo;

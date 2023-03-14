@@ -30,6 +30,17 @@ const GesturePage = {
 };
 
 /**
+ * Available user actions.
+ * @enum {string}
+ */
+const UserAction = {
+  SKIP: 'skip',
+  EXIT: 'exit',
+  PAGE_CHANGE: 'gesture-page-change',
+};
+
+
+/**
  * @constructor
  * @extends {PolymerElement}
  * @implements {LoginScreenBehaviorInterface}
@@ -74,6 +85,14 @@ class GestureNavigation extends GestureScreenElementBase {
   }
 
   /**
+   * This is the 'on-tap' event handler for the skip button.
+   * @private
+   */
+  onSkip_() {
+    this.userActed(UserAction.SKIP);
+  }
+
+  /**
    * This is the 'on-tap' event handler for the 'next' or 'get started' button.
    * @private
    */
@@ -93,7 +112,7 @@ class GestureNavigation extends GestureScreenElementBase {
         // report exit. Keep the currentPage_ value so the UI does not get
         // updated until the next screen is shown.
         this.setPlayCurrentScreenAnimation(false);
-        this.userActed('exit');
+        this.userActed(UserAction.EXIT);
         break;
     }
   }
@@ -125,7 +144,7 @@ class GestureNavigation extends GestureScreenElementBase {
   setCurrentPage_(newPage) {
     this.setPlayCurrentScreenAnimation(false);
     this.setUIStep(newPage);
-    this.userActed(['gesture-page-change', newPage]);
+    this.userActed([UserAction.PAGE_CHANGE, newPage]);
     this.setPlayCurrentScreenAnimation(true);
   }
 

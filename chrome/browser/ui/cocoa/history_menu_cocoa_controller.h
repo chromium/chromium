@@ -5,18 +5,15 @@
 #ifndef CHROME_BROWSER_UI_COCOA_HISTORY_MENU_COCOA_CONTROLLER_H_
 #define CHROME_BROWSER_UI_COCOA_HISTORY_MENU_COCOA_CONTROLLER_H_
 
-#include "base/memory/raw_ptr.h"
-
 #import <Cocoa/Cocoa.h>
+
 #import "chrome/browser/ui/cocoa/history_menu_bridge.h"
 
 // Controller (MVC) for the history menu. All history menu item commands get
 // directed here. This class only responds to menu events, but the actual
 // creation and maintenance of the menu happens in the Bridge.
-@interface HistoryMenuCocoaController : NSObject<NSMenuDelegate> {
- @private
-  raw_ptr<HistoryMenuBridge, DanglingUntriaged> _bridge;  // weak; owns us
-}
+@interface HistoryMenuCocoaController
+    : NSObject <NSMenuDelegate, NSMenuItemValidation>
 
 - (instancetype)initWithBridge:(HistoryMenuBridge*)bridge;
 

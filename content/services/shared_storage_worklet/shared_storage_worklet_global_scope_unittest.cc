@@ -7,10 +7,8 @@
 #include "base/check_op.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "components/services/storage/shared_storage/public/mojom/shared_storage.mojom.h"
-#include "content/common/aggregatable_report.mojom.h"
-#include "content/common/private_aggregation_host.mojom.h"
 #include "content/services/shared_storage_worklet/worklet_v8_helper.h"
 #include "gin/arguments.h"
 #include "gin/converter.h"
@@ -20,6 +18,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
+#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
+#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
+#include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-function.h"
 #include "v8/include/v8-value-serializer.h"
@@ -28,15 +29,15 @@ namespace shared_storage_worklet {
 
 namespace {
 
-std::vector<shared_storage_worklet::mojom::SharedStorageKeyAndOrValuePtr>
-CreateBatchResult(
+constexpr char WorkletContextDefinedHistogram[] =
+    "Storage.SharedStorage.Worklet.Context.IsDefined";
+
+std::vector<blink::mojom::SharedStorageKeyAndOrValuePtr> CreateBatchResult(
     std::vector<std::pair<std::u16string, std::u16string>> input) {
-  std::vector<shared_storage_worklet::mojom::SharedStorageKeyAndOrValuePtr>
-      result;
+  std::vector<blink::mojom::SharedStorageKeyAndOrValuePtr> result;
   for (const auto& p : input) {
-    shared_storage_worklet::mojom::SharedStorageKeyAndOrValuePtr e =
-        shared_storage_worklet::mojom::SharedStorageKeyAndOrValue::New(
-            p.first, p.second);
+    blink::mojom::SharedStorageKeyAndOrValuePtr e =
+        blink::mojom::SharedStorageKeyAndOrValue::New(p.first, p.second);
     result.push_back(std::move(e));
   }
   return result;
@@ -74,8 +75,7 @@ struct AppendParams {
   std::u16string value;
 };
 
-class TestClient
-    : public shared_storage_worklet::mojom::SharedStorageWorkletServiceClient {
+class TestClient : public blink::mojom::SharedStorageWorkletServiceClient {
  public:
   explicit TestClient(scoped_refptr<base::SingleThreadTaskRunner> task_runner)
       : task_runner_(task_runner) {}
@@ -122,22 +122,20 @@ class TestClient
         FROM_HERE,
         base::BindLambdaForTesting([callback = std::move(callback)]() mutable {
           std::move(callback).Run(
-              shared_storage_worklet::mojom::SharedStorageGetStatus::kSuccess,
+              blink::mojom::SharedStorageGetStatus::kSuccess,
               /*error_message=*/{},
               /*value=*/u"test-value");
         }));
   }
 
   void SharedStorageKeys(
-      mojo::PendingRemote<
-          shared_storage_worklet::mojom::SharedStorageEntriesListener>
+      mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
           pending_listener) override {
     pending_keys_listeners_.push_back(std::move(pending_listener));
   }
 
   void SharedStorageEntries(
-      mojo::PendingRemote<
-          shared_storage_worklet::mojom::SharedStorageEntriesListener>
+      mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
           pending_listener) override {
     pending_entries_listeners_.push_back(std::move(pending_listener));
   }
@@ -211,39 +209,35 @@ class TestClient
     return pending_entries_listeners_.size();
   }
 
-  mojo::Remote<shared_storage_worklet::mojom::SharedStorageEntriesListener>
+  mojo::Remote<blink::mojom::SharedStorageEntriesListener>
   OfferKeysListenerAtFront() {
     CHECK(!pending_keys_listeners_.empty());
 
     auto pending_listener = std::move(pending_keys_listeners_.front());
     pending_keys_listeners_.pop_front();
 
-    return mojo::Remote<
-        shared_storage_worklet::mojom::SharedStorageEntriesListener>(
+    return mojo::Remote<blink::mojom::SharedStorageEntriesListener>(
         std::move(pending_listener));
   }
 
-  mojo::Remote<shared_storage_worklet::mojom::SharedStorageEntriesListener>
+  mojo::Remote<blink::mojom::SharedStorageEntriesListener>
   OfferEntriesListenerAtFront() {
     CHECK(!pending_entries_listeners_.empty());
 
     auto pending_listener = std::move(pending_entries_listeners_.front());
     pending_entries_listeners_.pop_front();
 
-    return mojo::Remote<
-        shared_storage_worklet::mojom::SharedStorageEntriesListener>(
+    return mojo::Remote<blink::mojom::SharedStorageEntriesListener>(
         std::move(pending_listener));
   }
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
-  std::deque<mojo::PendingRemote<
-      shared_storage_worklet::mojom::SharedStorageEntriesListener>>
+  std::deque<mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>>
       pending_keys_listeners_;
 
-  std::deque<mojo::PendingRemote<
-      shared_storage_worklet::mojom::SharedStorageEntriesListener>>
+  std::deque<mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>>
       pending_entries_listeners_;
 
   std::vector<SetParams> observed_set_params_;
@@ -255,15 +249,15 @@ class TestClient
 };
 
 class MockMojomPrivateAggregationHost
-    : public content::mojom::PrivateAggregationHost {
+    : public blink::mojom::PrivateAggregationHost {
  public:
-  // mojom::PrivateAggregationHost:
+  // blink::mojom::PrivateAggregationHost:
   MOCK_METHOD(
       void,
       SendHistogramReport,
-      (std::vector<content::mojom::AggregatableReportHistogramContributionPtr>,
-       content::mojom::AggregationServiceMode,
-       content::mojom::DebugModeDetailsPtr),
+      (std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>,
+       blink::mojom::AggregationServiceMode,
+       blink::mojom::DebugModeDetailsPtr),
       (override));
 };
 
@@ -278,7 +272,8 @@ class SharedStorageWorkletGlobalScopeTest : public testing::Test {
     mock_private_aggregation_host_ =
         std::make_unique<MockMojomPrivateAggregationHost>();
     global_scope_ = std::make_unique<SharedStorageWorkletGlobalScope>(
-        /*private_aggregation_permissions_policy_allowed=*/true);
+        /*private_aggregation_permissions_policy_allowed=*/true,
+        /*embedder_context=*/absl::nullopt);
   }
 
   ~SharedStorageWorkletGlobalScopeTest() override = default;
@@ -452,6 +447,7 @@ TEST_F(SharedStorageWorkletGlobalScopeTest, OnModuleScriptDownloadedSuccess) {
   EXPECT_EQ(GetTypeOf("sharedStorage.entries"), "function");
   EXPECT_EQ(GetTypeOf("sharedStorage.length"), "function");
   EXPECT_EQ(GetTypeOf("sharedStorage.remainingBudget"), "function");
+  EXPECT_EQ(GetTypeOf("sharedStorage.context"), "undefined");
   EXPECT_EQ(GetTypeOf("privateAggregation"), "object");
   EXPECT_EQ(GetTypeOf("privateAggregation.sendHistogramReport"), "function");
 }
@@ -1449,17 +1445,17 @@ TEST_F(SharedStorageRunOperationTest,
   EXPECT_CALL(*mock_private_aggregation_host(), SendHistogramReport)
       .WillOnce(testing::Invoke(
           [](std::vector<
-                 content::mojom::AggregatableReportHistogramContributionPtr>
+                 blink::mojom::AggregatableReportHistogramContributionPtr>
                  contributions,
-             content::mojom::AggregationServiceMode aggregation_mode,
-             content::mojom::DebugModeDetailsPtr debug_mode_details) {
+             blink::mojom::AggregationServiceMode aggregation_mode,
+             blink::mojom::DebugModeDetailsPtr debug_mode_details) {
             ASSERT_EQ(contributions.size(), 1u);
             EXPECT_EQ(contributions[0]->bucket, 1);
             EXPECT_EQ(contributions[0]->value, 2);
             EXPECT_EQ(aggregation_mode,
-                      content::mojom::AggregationServiceMode::kDefault);
+                      blink::mojom::AggregationServiceMode::kDefault);
             ASSERT_FALSE(debug_mode_details.is_null());
-            EXPECT_EQ(*debug_mode_details, content::mojom::DebugModeDetails());
+            EXPECT_EQ(*debug_mode_details, blink::mojom::DebugModeDetails());
           }));
 
   SimulateAddModule(R"(
@@ -1482,7 +1478,8 @@ TEST_F(SharedStorageRunOperationTest,
 TEST_F(SharedStorageRunOperationTest,
        UnnamedOperationWithPrivateAggregationCall_PAPermissionsPolicyDisabled) {
   OverrideGlobalScope(std::make_unique<SharedStorageWorkletGlobalScope>(
-      /*private_aggregation_permissions_policy_allowed=*/false));
+      /*private_aggregation_permissions_policy_allowed=*/false,
+      /*embedder_context=*/absl::nullopt));
 
   SimulateAddModule(R"(
       class TestClass {
@@ -2259,6 +2256,70 @@ TEST_F(SharedStorageObjectMethodTest, ConsoleLogOperation_MultipleArguments) {
             "123 456 true undefined null [object Object]");
 }
 
+class SharedStorageObjectPropertyTest : public SharedStorageRunOperationTest {
+ public:
+  SharedStorageObjectPropertyTest() = default;
+
+  void SetEmbedderContext(absl::optional<std::u16string> embedder_context) {
+    OverrideGlobalScope(std::make_unique<SharedStorageWorkletGlobalScope>(
+        /*private_aggregation_permissions_policy_allowed=*/true,
+        embedder_context));
+
+    // Run AddModule so that sharedStorage is exposed.
+    SimulateAddModule(R"()");
+  }
+
+  void ExecuteScript(const std::string& script_body) {
+    WorkletV8Helper::HandleScope scope(Isolate());
+    v8::Local<v8::Context> context = LocalContext();
+    v8::Context::Scope context_scope(context);
+
+    v8::Local<v8::Value> v8_result = EvalJs(script_body);
+
+    ASSERT_TRUE(!v8_result.IsEmpty());
+    ASSERT_FALSE(v8_result->IsPromise());
+
+    v8_result_value_ =
+        v8::Global<v8::Value>(Isolate(), v8_result.As<v8::Value>());
+  }
+
+  v8::Local<v8::Value> v8_result_value() {
+    v8::Local<v8::Value> v8_result_value = v8_result_value_.Get(Isolate());
+    return v8_result_value;
+  }
+
+ protected:
+  base::HistogramTester histogram_tester_;
+
+ private:
+  v8::Global<v8::Value> v8_result_value_;
+};
+
+TEST_F(SharedStorageObjectPropertyTest, ContextOperation_String) {
+  SetEmbedderContext(absl::make_optional(u"some embedder context"));
+  EXPECT_EQ(GetTypeOf("sharedStorage.context"), "string");
+
+  ExecuteScript("sharedStorage.context");
+
+  WorkletV8Helper::HandleScope scope(Isolate());
+  EXPECT_TRUE(v8_result_value()->IsString());
+  EXPECT_EQ(gin::V8ToString(Isolate(), v8_result_value()),
+            "some embedder context");
+  histogram_tester_.ExpectUniqueSample(WorkletContextDefinedHistogram, true, 2);
+}
+
+TEST_F(SharedStorageObjectPropertyTest, ContextOperation_Undefined) {
+  SetEmbedderContext(absl::nullopt);
+  EXPECT_EQ(GetTypeOf("sharedStorage.context"), "undefined");
+
+  ExecuteScript("sharedStorage.context");
+
+  WorkletV8Helper::HandleScope scope(Isolate());
+  EXPECT_TRUE(v8_result_value()->IsUndefined());
+  histogram_tester_.ExpectUniqueSample(WorkletContextDefinedHistogram, false,
+                                       2);
+}
+
 class SharedStoragePrivateAggregationTest
     : public SharedStorageRunOperationTest {
  public:
@@ -2277,20 +2338,20 @@ class SharedStoragePrivateAggregationTest
       const std::string& script_body,
       absl::uint128 expected_bucket,
       int expected_value,
-      content::mojom::DebugModeDetailsPtr expected_debug_mode_details =
-          content::mojom::DebugModeDetails::New()) {
+      blink::mojom::DebugModeDetailsPtr expected_debug_mode_details =
+          blink::mojom::DebugModeDetails::New()) {
     EXPECT_CALL(*mock_private_aggregation_host(), SendHistogramReport)
         .WillOnce(testing::Invoke(
             [&](std::vector<
-                    content::mojom::AggregatableReportHistogramContributionPtr>
+                    blink::mojom::AggregatableReportHistogramContributionPtr>
                     contributions,
-                content::mojom::AggregationServiceMode aggregation_mode,
-                content::mojom::DebugModeDetailsPtr debug_mode_details) {
+                blink::mojom::AggregationServiceMode aggregation_mode,
+                blink::mojom::DebugModeDetailsPtr debug_mode_details) {
               ASSERT_EQ(contributions.size(), 1u);
               EXPECT_EQ(contributions[0]->bucket, expected_bucket);
               EXPECT_EQ(contributions[0]->value, expected_value);
               EXPECT_EQ(aggregation_mode,
-                        content::mojom::AggregationServiceMode::kDefault);
+                        blink::mojom::AggregationServiceMode::kDefault);
               EXPECT_TRUE(debug_mode_details == expected_debug_mode_details);
             }));
 
@@ -2414,31 +2475,31 @@ TEST_F(SharedStoragePrivateAggregationTest, MultipleRequests) {
   EXPECT_CALL(*mock_private_aggregation_host(), SendHistogramReport)
       .WillOnce(testing::Invoke(
           [](std::vector<
-                 content::mojom::AggregatableReportHistogramContributionPtr>
+                 blink::mojom::AggregatableReportHistogramContributionPtr>
                  contributions,
-             content::mojom::AggregationServiceMode aggregation_mode,
-             content::mojom::DebugModeDetailsPtr debug_mode_details) {
+             blink::mojom::AggregationServiceMode aggregation_mode,
+             blink::mojom::DebugModeDetailsPtr debug_mode_details) {
             ASSERT_EQ(contributions.size(), 1u);
             EXPECT_EQ(contributions[0]->bucket, 1);
             EXPECT_EQ(contributions[0]->value, 2);
             EXPECT_EQ(aggregation_mode,
-                      content::mojom::AggregationServiceMode::kDefault);
+                      blink::mojom::AggregationServiceMode::kDefault);
             ASSERT_FALSE(debug_mode_details.is_null());
-            EXPECT_EQ(*debug_mode_details, content::mojom::DebugModeDetails());
+            EXPECT_EQ(*debug_mode_details, blink::mojom::DebugModeDetails());
           }))
       .WillOnce(testing::Invoke(
           [](std::vector<
-                 content::mojom::AggregatableReportHistogramContributionPtr>
+                 blink::mojom::AggregatableReportHistogramContributionPtr>
                  contributions,
-             content::mojom::AggregationServiceMode aggregation_mode,
-             content::mojom::DebugModeDetailsPtr debug_mode_details) {
+             blink::mojom::AggregationServiceMode aggregation_mode,
+             blink::mojom::DebugModeDetailsPtr debug_mode_details) {
             ASSERT_EQ(contributions.size(), 1u);
             EXPECT_EQ(contributions[0]->bucket, 3);
             EXPECT_EQ(contributions[0]->value, 4);
             EXPECT_EQ(aggregation_mode,
-                      content::mojom::AggregationServiceMode::kDefault);
+                      blink::mojom::AggregationServiceMode::kDefault);
             ASSERT_FALSE(debug_mode_details.is_null());
-            EXPECT_EQ(*debug_mode_details, content::mojom::DebugModeDetails());
+            EXPECT_EQ(*debug_mode_details, blink::mojom::DebugModeDetails());
           }));
 
   ExecuteScriptExpectNoError(
@@ -2457,8 +2518,8 @@ TEST_F(SharedStoragePrivateAggregationTest, DebugModeWithNoDebugKey) {
       /*expected_bucket=*/1,
       /*expected_value=*/2,
       /*expected_debug_mode_details=*/
-      content::mojom::DebugModeDetails::New(/*is_enabled=*/true,
-                                            /*debug_key=*/nullptr));
+      blink::mojom::DebugModeDetails::New(/*is_enabled=*/true,
+                                          /*debug_key=*/nullptr));
 }
 
 TEST_F(SharedStoragePrivateAggregationTest, DebugModeWithDebugKey) {
@@ -2470,9 +2531,9 @@ TEST_F(SharedStoragePrivateAggregationTest, DebugModeWithDebugKey) {
       /*expected_bucket=*/1,
       /*expected_value=*/2,
       /*expected_debug_mode_details=*/
-      content::mojom::DebugModeDetails::New(
+      blink::mojom::DebugModeDetails::New(
           /*is_enabled=*/true,
-          /*debug_key=*/content::mojom::DebugKey::New(1234u)));
+          /*debug_key=*/blink::mojom::DebugKey::New(1234u)));
 }
 
 TEST_F(SharedStoragePrivateAggregationTest, NegativeDebugKey_Rejected) {
@@ -2531,9 +2592,9 @@ TEST_F(SharedStoragePrivateAggregationTest,
       /*expected_bucket=*/1,
       /*expected_value=*/2,
       /*expected_debug_mode_details=*/
-      content::mojom::DebugModeDetails::New(
+      blink::mojom::DebugModeDetails::New(
           /*is_enabled=*/true,
-          /*debug_key=*/content::mojom::DebugKey::New(1234u)));
+          /*debug_key=*/blink::mojom::DebugKey::New(1234u)));
 }
 
 // Note that FLEDGE worklets have different behavior in this case.
@@ -2544,7 +2605,7 @@ TEST_F(SharedStoragePrivateAggregationTest,
       /*expected_bucket=*/1,
       /*expected_value=*/2,
       /*expected_debug_mode_details=*/
-      content::mojom::DebugModeDetails::New());
+      blink::mojom::DebugModeDetails::New());
 
   ExecuteScriptExpectNoError(
       "privateAggregation.enableDebugMode({debug_key: 1234n});");
@@ -2554,35 +2615,35 @@ TEST_F(SharedStoragePrivateAggregationTest, MultipleDebugModeRequests) {
   EXPECT_CALL(*mock_private_aggregation_host(), SendHistogramReport)
       .WillOnce(testing::Invoke(
           [](std::vector<
-                 content::mojom::AggregatableReportHistogramContributionPtr>
+                 blink::mojom::AggregatableReportHistogramContributionPtr>
                  contributions,
-             content::mojom::AggregationServiceMode aggregation_mode,
-             content::mojom::DebugModeDetailsPtr debug_mode_details) {
+             blink::mojom::AggregationServiceMode aggregation_mode,
+             blink::mojom::DebugModeDetailsPtr debug_mode_details) {
             ASSERT_EQ(contributions.size(), 1u);
             EXPECT_EQ(contributions[0]->bucket, 1);
             EXPECT_EQ(contributions[0]->value, 2);
             EXPECT_EQ(aggregation_mode,
-                      content::mojom::AggregationServiceMode::kDefault);
+                      blink::mojom::AggregationServiceMode::kDefault);
             EXPECT_EQ(debug_mode_details,
-                      content::mojom::DebugModeDetails::New(
+                      blink::mojom::DebugModeDetails::New(
                           /*is_enabled=*/true,
-                          /*debug_key=*/content::mojom::DebugKey::New(1234u)));
+                          /*debug_key=*/blink::mojom::DebugKey::New(1234u)));
           }))
       .WillOnce(testing::Invoke(
           [](std::vector<
-                 content::mojom::AggregatableReportHistogramContributionPtr>
+                 blink::mojom::AggregatableReportHistogramContributionPtr>
                  contributions,
-             content::mojom::AggregationServiceMode aggregation_mode,
-             content::mojom::DebugModeDetailsPtr debug_mode_details) {
+             blink::mojom::AggregationServiceMode aggregation_mode,
+             blink::mojom::DebugModeDetailsPtr debug_mode_details) {
             ASSERT_EQ(contributions.size(), 1u);
             EXPECT_EQ(contributions[0]->bucket, 3);
             EXPECT_EQ(contributions[0]->value, 4);
             EXPECT_EQ(aggregation_mode,
-                      content::mojom::AggregationServiceMode::kDefault);
+                      blink::mojom::AggregationServiceMode::kDefault);
             EXPECT_EQ(debug_mode_details,
-                      content::mojom::DebugModeDetails::New(
+                      blink::mojom::DebugModeDetails::New(
                           /*is_enabled=*/true,
-                          /*debug_key=*/content::mojom::DebugKey::New(1234u)));
+                          /*debug_key=*/blink::mojom::DebugKey::New(1234u)));
           }));
 
   ExecuteScriptExpectNoError(

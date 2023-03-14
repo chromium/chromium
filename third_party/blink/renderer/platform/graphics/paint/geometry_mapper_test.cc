@@ -1196,6 +1196,25 @@ TEST_P(GeometryMapperTest, MightOverlapWithScrollingClip) {
                scroll_state.GetPropertyTreeState());
 }
 
+TEST_P(GeometryMapperTest, MightOverlapWithScrollingClipAndScale) {
+  auto viewport = CreateTransform(t0(), gfx::Transform());
+  auto scroll_state = CreateScrollTranslationState(
+      PropertyTreeState(*viewport, c0(), e0()), -1234, -567,
+      gfx::Rect(0, 0, 800, 600), gfx::Size(2400, 1800));
+  auto fixed_transform = CreateFixedPositionTranslation(
+      *viewport, 100, 200, scroll_state.Transform());
+  auto scale = CreateTransform(*fixed_transform, MakeScaleMatrix(2, 3));
+  auto scrolling_clip =
+      CreateClip(scroll_state.Clip(), scroll_state.Transform(),
+                 FloatRoundedRect(0, 1000, 100, 100));
+  PropertyTreeState fixed_state(*scale, *scrolling_clip, e0());
+
+  // Same as MightOverlapFixedWithScale. The scrolling clip is ignored.
+  CheckOverlap(gfx::RectF(0, 0, 100, 100), fixed_state,
+               gfx::RectF(100, 200, 1800, 1500),
+               scroll_state.GetPropertyTreeState());
+}
+
 TEST_P(GeometryMapperTest, MightOverlapScroll) {
   auto viewport = CreateTransform(t0(), gfx::Transform());
   auto outer_scroll_state = CreateScrollTranslationState(

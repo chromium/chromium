@@ -75,11 +75,6 @@ base::ScopedCFTypeRef<SecKeyRef> FakeKeychain::KeyCreateRandomKey(
                      private_key_params, kSecAttrIsPermanent),
                  @YES));
   CFDictionarySetValue(private_key_params, kSecAttrIsPermanent, @NO);
-  // Don't put access control on the key (e.g. requiring local user
-  // authentication for key use).
-  DCHECK(CFEqual(base::mac::GetValueFromDictionary<SecAccessControlRef>(
-                     private_key_params, kSecAttrAccessControl),
-                 TouchIdCredentialStore::DefaultAccessControl()));
   CFDictionaryRemoveValue(private_key_params, kSecAttrAccessControl);
   CFDictionaryRemoveValue(private_key_params, kSecUseAuthenticationContext);
   CFDictionarySetValue(params_copy, kSecPrivateKeyAttrs, private_key_params);

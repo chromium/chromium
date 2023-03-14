@@ -11,7 +11,7 @@
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/app_constants/constants.h"
-#include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "extensions/common/constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -149,60 +149,12 @@ void RecordDefaultAppLaunch(apps::DefaultAppName default_app_name,
     case apps::LaunchSource::kFromCommandLine:
     case apps::LaunchSource::kFromBackgroundMode:
     case apps::LaunchSource::kFromAppHomePage:
+    case apps::LaunchSource::kFromReparenting:
+    case apps::LaunchSource::kFromProfileMenu:
       NOTREACHED();
       break;
   }
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void RecordBuiltInAppLaunch(apps::BuiltInAppName built_in_app_name,
-                            apps::LaunchSource launch_source) {
-  switch (launch_source) {
-    case apps::LaunchSource::kUnknown:
-    case apps::LaunchSource::kFromParentalControls:
-      break;
-    case apps::LaunchSource::kFromAppListGrid:
-    case apps::LaunchSource::kFromAppListGridContextMenu:
-      base::UmaHistogramEnumeration("Apps.AppListInternalApp.Activate",
-                                    built_in_app_name);
-      break;
-    case apps::LaunchSource::kFromAppListQuery:
-    case apps::LaunchSource::kFromAppListQueryContextMenu:
-    case apps::LaunchSource::kFromAppListRecommendation:
-      base::UmaHistogramEnumeration("Apps.AppListSearchResultInternalApp.Open",
-                                    built_in_app_name);
-      break;
-    case apps::LaunchSource::kFromShelf:
-    case apps::LaunchSource::kFromFileManager:
-    case apps::LaunchSource::kFromLink:
-    case apps::LaunchSource::kFromOmnibox:
-    case apps::LaunchSource::kFromChromeInternal:
-    case apps::LaunchSource::kFromKeyboard:
-    case apps::LaunchSource::kFromOtherApp:
-    case apps::LaunchSource::kFromMenu:
-    case apps::LaunchSource::kFromInstalledNotification:
-    case apps::LaunchSource::kFromTest:
-    case apps::LaunchSource::kFromArc:
-    case apps::LaunchSource::kFromSharesheet:
-    case apps::LaunchSource::kFromReleaseNotesNotification:
-    case apps::LaunchSource::kFromFullRestore:
-    case apps::LaunchSource::kFromSmartTextContextMenu:
-    case apps::LaunchSource::kFromDiscoverTabNotification:
-    case apps::LaunchSource::kFromManagementApi:
-    case apps::LaunchSource::kFromKiosk:
-    case apps::LaunchSource::kFromCommandLine:
-    case apps::LaunchSource::kFromBackgroundMode:
-    case apps::LaunchSource::kFromNewTabPage:
-    case apps::LaunchSource::kFromIntentUrl:
-    case apps::LaunchSource::kFromOsLogin:
-    case apps::LaunchSource::kFromProtocolHandler:
-    case apps::LaunchSource::kFromUrlHandler:
-    case apps::LaunchSource::kFromLockScreen:
-    case apps::LaunchSource::kFromAppHomePage:
-      break;
-  }
-}
-#endif
 
 }  // namespace
 
@@ -296,22 +248,19 @@ void RecordAppLaunch(const std::string& app_id,
   } else if (app_id == arc::kGoogleTVAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kGoogleTv, launch_source);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  } else if (app_id == web_app::kGoogleCalendarAppId) {
+    RecordDefaultAppLaunch(DefaultAppName::kGoogleCalendar, launch_source);
+  } else if (app_id == web_app::kGoogleChatAppId) {
+    RecordDefaultAppLaunch(DefaultAppName::kGoogleChat, launch_source);
+  } else if (app_id == web_app::kGoogleMeetAppId) {
+    RecordDefaultAppLaunch(DefaultAppName::kGoogleMeet, launch_source);
+  } else if (app_id == web_app::kGoogleMapsAppId) {
+    RecordDefaultAppLaunch(DefaultAppName::kGoogleMaps, launch_source);
+  } else if (app_id == web_app::kMessagesAppId) {
+    RecordDefaultAppLaunch(DefaultAppName::kGoogleMessages, launch_source);
   }
 
   // Above are default apps; below are built-in apps.
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (app_id == ash::kInternalAppIdKeyboardShortcutViewer) {
-    RecordBuiltInAppLaunch(BuiltInAppName::kKeyboardShortcutViewer,
-                           launch_source);
-  } else if (app_id == ash::kInternalAppIdSettings) {
-    RecordBuiltInAppLaunch(BuiltInAppName::kSettings, launch_source);
-  } else if (app_id == ash::kInternalAppIdContinueReading) {
-    RecordBuiltInAppLaunch(BuiltInAppName::kContinueReading, launch_source);
-  } else if (app_id == plugin_vm::kPluginVmShelfAppId) {
-    RecordBuiltInAppLaunch(BuiltInAppName::kPluginVm, launch_source);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   if (app_id == web_app::kMockSystemAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kMockSystemApp, launch_source);
   } else if (app_id == web_app::kOsFeedbackAppId) {
@@ -336,23 +285,6 @@ void RecordBuiltInAppSearchResult(const std::string& app_id) {
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-void RecordAppBounce(const apps::AppUpdate& app) {
-  base::Time install_time = app.InstallTime();
-  base::Time uninstall_time = base::Time::Now();
-
-  DCHECK(uninstall_time >= install_time);
-
-  base::TimeDelta amount_time_installed = uninstall_time - install_time;
-
-  const base::TimeDelta seven_days = base::Days(7);
-
-  if (amount_time_installed < seven_days) {
-    base::UmaHistogramBoolean("Apps.Bounced", true);
-  } else {
-    base::UmaHistogramBoolean("Apps.Bounced", false);
-  }
-}
 
 void RecordAppsPerNotification(int count) {
   if (count <= 0) {

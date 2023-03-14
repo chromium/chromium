@@ -1,13 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es">
+<translation id="1347497506789975534">Mostrar métodos de pago guardados</translation>
 <translation id="1383876407941801731">Buscar</translation>
-<translation id="1566281227936819866">Mostrando métodos de pago guardados</translation>
 <translation id="1717486229951421299">La lista de credenciales que puedes rellenar con un toque está abierta a media altura.</translation>
 <translation id="207576718733492531">La lista de credenciales que puedes rellenar con un toque está cerrada.</translation>
 <translation id="2610239185026711824">Sugerir contraseña</translation>
 <translation id="2652129567809778422">Seleccionar contraseña</translation>
-<translation id="2803478378562657435">Mostrando contraseñas guardadas y opciones de contraseña</translation>
 <translation id="2903493209154104877">Direcciones</translation>
 <translation id="3399357656427473483">Lista de credenciales que puedes rellenar con un toque.</translation>
 <translation id="3688051737190211318">Si confías en <ph name="ORIGIN" />, puedes usar una contraseña guardada para iniciar sesión.</translation>
@@ -15,16 +14,14 @@
 <translation id="4660011489602794167">Mostrar teclado</translation>
 <translation id="4694050069269396220">Si confías en <ph name="ORIGIN" />, puedes usar una contraseña guardada de otro sitio web.</translation>
 <translation id="5016175294846053194">Sugerencias de la función Autocompletar disponibles sobre el teclado</translation>
-<translation id="5088366526685584589">Mostrando direcciones guardadas</translation>
 <translation id="5441504010984421144">La lista de credenciales que puedes rellenar con un toque está abierta a altura completa.</translation>
+<translation id="6296921860874265377">Mostrar contraseñas guardadas y opciones de contraseña</translation>
 <translation id="6393156038355142111">Sugerir contraseña segura</translation>
 <translation id="6558703547256592471">Intenta usar una contraseña exclusiva en cada sitio web.</translation>
 <translation id="7029809446516969842">Contraseñas</translation>
-<translation id="7299100402441711551">Mostrar direcciones</translation>
-<translation id="7494879913343971937">Mostrar contraseñas</translation>
 <translation id="7594473730623999723">Desliza el dedo para ver más sugerencias</translation>
+<translation id="7873973044507799456">Mostrar direcciones guardadas</translation>
 <translation id="7992095260806105436">Utilizar sugerencia de Autocompletar de Chrome</translation>
-<translation id="8037472847879765671">Mostrar métodos de pago</translation>
 <translation id="8507520749471379845">Contraseñas disponibles</translation>
 <translation id="8705308553596171387">Sin contraseña</translation>
 <translation id="879180780857354295">Opciones alternativas para rellenar disponibles sobre el teclado</translation>

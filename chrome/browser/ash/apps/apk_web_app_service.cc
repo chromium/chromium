@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
-#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -33,7 +32,6 @@
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
-#include "components/webapps/browser/uninstall_result_code.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -47,14 +45,12 @@ namespace {
 //    <web_app_id_1> : {
 //      "package_name" : <apk_package_name_1>,
 //      "should_remove": <bool>,
-//      "is_web_only_twa": <bool>,
-//      "sha256_fingerprint": <certificate_sha256_fingerprint_2> (optional)
+//      "is_web_only_twa": <bool>, (deprecated, and automatically removed)
+//      "sha256_fingerprint": <string> (deprecated, and automatically removed)
 //    },
 //    <web_app_id_2> : {
 //      "package_name" : <apk_package_name_2>,
-//      "should_remove": <bool>,
-//      "is_web_only_twa": <bool>,
-//      "sha256_fingerprint": <certificate_sha256_fingerprint_2> (optional)
+//      "should_remove": <bool>
 //    },
 //    ...
 //  },
@@ -64,8 +60,7 @@ const char kWebAppToApkDictPref[] = "web_app_apks";
 const char kPackageNameKey[] = "package_name";
 const char kShouldRemoveKey[] = "should_remove";
 
-// TODO(crbug/1329727): remove these keys when
-// |web_app::IsWebAppsCrosapiEnabled| is removed.
+// TODO(crbug/1421626): Remove these keys after migrations are complete.
 const char kIsWebOnlyTwaKey[] = "is_web_only_twa";
 const char kSha256FingerprintKey[] = "sha256_fingerprint";
 
@@ -197,31 +192,16 @@ ApkWebAppService::ApkWebAppService(Profile* profile, Delegate* test_delegate)
 ApkWebAppService::~ApkWebAppService() = default;
 
 bool ApkWebAppService::IsWebOnlyTwa(const web_app::AppId& app_id) {
-  if (web_app::IsWebAppsCrosapiEnabled()) {
-    absl::optional<std::string> package_name = GetPackageNameForWebApp(app_id);
-    if (!package_name) {
-      return false;
-    }
-    std::unique_ptr<ArcAppListPrefs::PackageInfo> package =
-        arc_app_list_prefs_->GetPackage(*package_name);
-    if (!(package && package->web_app_info)) {
-      return false;
-    }
-    return package->web_app_info->is_web_only_twa;
-  }
-
-  return IsWebOnlyTwaDeprecated(app_id);
-}
-
-bool ApkWebAppService::IsWebOnlyTwaDeprecated(const web_app::AppId& app_id) {
-  if (!IsWebAppInstalledFromArc(app_id)) {
+  absl::optional<std::string> package_name = GetPackageNameForWebApp(app_id);
+  if (!package_name) {
     return false;
   }
-
-  if (const base::Value::Dict* app_dict = WebAppToApks().FindDict(app_id)) {
-    return app_dict->FindBool(kIsWebOnlyTwaKey).value_or(false);
+  std::unique_ptr<ArcAppListPrefs::PackageInfo> package =
+      arc_app_list_prefs_->GetPackage(*package_name);
+  if (!(package && package->web_app_info)) {
+    return false;
   }
-  return false;
+  return package->web_app_info->is_web_only_twa;
 }
 
 bool ApkWebAppService::IsWebAppInstalledFromArc(
@@ -274,34 +254,16 @@ absl::optional<std::string> ApkWebAppService::GetWebAppIdForPackageName(
 
 absl::optional<std::string> ApkWebAppService::GetCertificateSha256Fingerprint(
     const web_app::AppId& app_id) {
-  if (web_app::IsWebAppsCrosapiEnabled()) {
-    absl::optional<std::string> package_name = GetPackageNameForWebApp(app_id);
-    if (!package_name) {
-      return absl::nullopt;
-    }
-    std::unique_ptr<ArcAppListPrefs::PackageInfo> package =
-        arc_app_list_prefs_->GetPackage(*package_name);
-    if (!(package && package->web_app_info)) {
-      return absl::nullopt;
-    }
-    return package->web_app_info->certificate_sha256_fingerprint;
-  }
-  return GetCertificateSha256FingerprintDeprecated(app_id);
-}
-
-absl::optional<std::string>
-ApkWebAppService::GetCertificateSha256FingerprintDeprecated(
-    const web_app::AppId& app_id) {
-  if (!IsWebAppInstalledFromArc(app_id)) {
+  absl::optional<std::string> package_name = GetPackageNameForWebApp(app_id);
+  if (!package_name) {
     return absl::nullopt;
   }
-  if (const base::Value::Dict* app_dict = WebAppToApks().FindDict(app_id)) {
-    if (const std::string* value =
-            app_dict->FindString(kSha256FingerprintKey)) {
-      return *value;
-    }
+  std::unique_ptr<ArcAppListPrefs::PackageInfo> package =
+      arc_app_list_prefs_->GetPackage(*package_name);
+  if (!(package && package->web_app_info)) {
+    return absl::nullopt;
   }
-  return absl::nullopt;
+  return package->web_app_info->certificate_sha256_fingerprint;
 }
 
 void ApkWebAppService::SetArcAppListPrefsForTesting(ArcAppListPrefs* prefs) {
@@ -464,6 +426,7 @@ void ApkWebAppService::OnPackageRemoved(const std::string& package_name,
 }
 
 void ApkWebAppService::OnPackageListInitialRefreshed() {
+  arc_initialized_ = true;
   SyncArcAndWebApps();
 }
 
@@ -566,33 +529,11 @@ void ApkWebAppService::OnDidFinishInstall(
     // while the ARC container isn't running can be marked for uninstallation
     // when the container starts up again.
     web_app_dict->Set(kShouldRemoveKey, false);
-
-    // TODO(crbug/1329727): remove these keys when
-    // |web_app::IsWebAppsCrosapiEnabled| is removed.
-
-    // Set a pref to indicate if the |web_app_id| is a web-only TWA.
-    web_app_dict->Set(kIsWebOnlyTwaKey, is_web_only_twa);
-
-    if (sha256_fingerprint.has_value()) {
-      // Set a pref to hold the APK's certificate SHA256 fingerprint to use for
-      // digital asset link verification.
-      web_app_dict->Set(kSha256FingerprintKey, sha256_fingerprint.value());
-    }
   }
 
   // For testing.
   if (web_app_installed_callback_)
     std::move(web_app_installed_callback_).Run(package_name, web_app_id);
-}
-
-void ApkWebAppService::UpdatePackageInfo(
-    const std::string& app_id,
-    const arc::mojom::WebAppInfoPtr& web_app_info) {
-  ScopedDictPrefUpdate dict_update(profile_->GetPrefs(), kWebAppToApkDictPref);
-  base::Value::Dict* app_id_dict = dict_update->EnsureDict(app_id);
-  app_id_dict->Set(kIsWebOnlyTwaKey, web_app_info->is_web_only_twa);
-  app_id_dict->Set(kSha256FingerprintKey,
-                   web_app_info->certificate_sha256_fingerprint.value());
 }
 
 const base::Value::Dict& ApkWebAppService::WebAppToApks() const {
@@ -609,7 +550,7 @@ void ApkWebAppService::SyncArcAndWebApps() {
   if (!app_registry_cache.IsAppTypeInitialized(apps::AppType::kWeb)) {
     return;
   }
-  if (!arc_app_list_prefs_->package_list_initial_refreshed()) {
+  if (!arc_initialized_) {
     return;
   }
 
@@ -671,17 +612,6 @@ void ApkWebAppService::SyncArcAndWebApps() {
       // The package was a web app, but now isn't. Remove the web app.
       DCHECK(web_app_id);
       MaybeUninstallWebApp(*web_app_id);
-    } else if (was_web_app && is_web_app) {
-      // The previous and current states match AND the package is a web app.
-      // TODO(crbug/1329727): remove this block when
-      // |web_app::IsWebAppsCrosapiEnabled| is removed.
-      DCHECK(web_app_id);
-      if ((package->web_app_info->is_web_only_twa !=
-           IsWebOnlyTwaDeprecated(*web_app_id)) ||
-          (package->web_app_info->certificate_sha256_fingerprint !=
-           GetCertificateSha256FingerprintDeprecated(*web_app_id))) {
-        UpdatePackageInfo(*web_app_id, package->web_app_info);
-      }
     }
   }
 
@@ -698,6 +628,14 @@ void ApkWebAppService::SyncArcAndWebApps() {
       // This shouldn't happen, but ignore bad data anyway.
       continue;
     }
+
+    // If we see any app which has obsolete pref values, remove them
+    // automatically.
+    if (web_app_info_dict.contains(kIsWebOnlyTwaKey) ||
+        web_app_info_dict.contains(kSha256FingerprintKey)) {
+      RemoveObsoletePrefValues(web_app_id);
+    }
+
     if (base::Contains(arc_packages, *package_name)) {
       if (web_app_info_dict.FindBool(kShouldRemoveKey).value_or(false)) {
         // ARC app should be uninstalled.
@@ -714,6 +652,15 @@ void ApkWebAppService::SyncArcAndWebApps() {
   for (const std::string& web_app_id : web_apps_to_uninstall) {
     MaybeUninstallWebApp(web_app_id);
   }
+}
+
+// TODO(crbug/1421626): Remove this code after migrations are complete.
+void ApkWebAppService::RemoveObsoletePrefValues(
+    const web_app::AppId& web_app_id) {
+  ScopedDictPrefUpdate dict_update(profile_->GetPrefs(), kWebAppToApkDictPref);
+  base::Value::Dict* app_id_dict = dict_update->EnsureDict(web_app_id);
+  app_id_dict->Remove(kIsWebOnlyTwaKey);
+  app_id_dict->Remove(kSha256FingerprintKey);
 }
 
 }  // namespace ash

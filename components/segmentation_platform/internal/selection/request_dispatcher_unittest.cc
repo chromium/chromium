@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "components/segmentation_platform/internal/post_processor/post_processing_test_utils.h"
 #include "components/segmentation_platform/internal/selection/request_handler.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 #include "components/segmentation_platform/public/config.h"
@@ -37,14 +38,6 @@ class MockRequestHandler : public RequestHandler {
                     ClassificationResultCallback callback));
 };
 
-std::unique_ptr<Config> CreateTestConfig(const std::string& key) {
-  auto config = std::make_unique<Config>();
-  config->segmentation_key = key;
-  config->segmentation_uma_name = "TestUmaKey";
-  config->AddSegmentId(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
-  return config;
-}
-
 class RequestDispatcherTest : public testing::Test {
  public:
   RequestDispatcherTest() = default;
@@ -54,8 +47,10 @@ class RequestDispatcherTest : public testing::Test {
     base::SetRecordActionTaskRunner(
         task_environment_.GetMainThreadTaskRunner());
 
-    configs_.emplace_back(CreateTestConfig(kTestClient1));
-    configs_.emplace_back(CreateTestConfig(kTestClient2));
+    configs_.emplace_back(test_utils::CreateTestConfig(
+        kTestClient1, SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB));
+    configs_.emplace_back(test_utils::CreateTestConfig(
+        kTestClient2, SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB));
 
     request_dispatcher_ =
         std::make_unique<RequestDispatcher>(configs_, nullptr);

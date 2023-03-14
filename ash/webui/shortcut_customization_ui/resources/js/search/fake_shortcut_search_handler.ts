@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
+import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 
 import {MojoSearchResult} from '../shortcut_types';
 import {ShortcutSearchHandlerInterface} from '../shortcut_types.js';
@@ -22,8 +23,9 @@ export class FakeShortcutSearchHandler implements
     this.methods.register('search');
   }
 
-  // Stub search function.
-  search(): Promise<{results: MojoSearchResult[]}> {
+  // Add '_' to parameters to suppress unused-variable warning.
+  search(_query: String16, _maxNumResult: number):
+      Promise<{results: MojoSearchResult[]}> {
     return this.methods.resolveMethod('search');
   }
 
@@ -31,6 +33,6 @@ export class FakeShortcutSearchHandler implements
    * Sets the value that will be returned when calling search().
    */
   setFakeSearchResult(results: MojoSearchResult[]): void {
-    this.methods.setResult('search', results);
+    this.methods.setResult('search', {results});
   }
 }

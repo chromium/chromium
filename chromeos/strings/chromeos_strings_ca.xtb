@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">Excel·lent (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2364498172489649528">Comprovació superada</translation>
+<translation id="2367335866686097760">Clau del mapatge de teclat</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Envia un informe de suggeriments</translation>
 <translation id="2407209115954268704">Estat de bloqueig de la SIM</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">La imatge d'avatar ha canviat</translation>
 <translation id="3192947282887913208">Fitxers d'àudio</translation>
 <translation id="3199982728237701504">Alimentador de documents (a dues cares)</translation>
+<translation id="3211671540163313381">Creu direccional del mapatge de teclat</translation>
 <translation id="3226405216343213872">S'estan cercant escàners</translation>
+<translation id="3226657629376379887">Menú d'accions de disseny</translation>
 <translation id="3246869037381808805">Se suprimiran les tasques d'impressió amb una antiguitat superior a 1 dia</translation>
 <translation id="3268178239013324452">Error: porta oberta</translation>
 <translation id="3275729367986477355">Imatge d'avatar</translation>
@@ -253,6 +256,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Seguretat</translation>
 <translation id="3435896845095436175">Activa</translation>
+<translation id="345256797477978759">Ancora la finestra a la part <ph name="DIRECTION" /> més gran de la pantalla</translation>
 <translation id="3456078764689556234">S'ha imprès la pàgina <ph name="PRINTED_PAGES" /> de <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">S'està escanejant la pàgina <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% completat.</translation>
 <translation id="3459509316159669723">Imprimeix</translation>
@@ -273,12 +277,14 @@
 <translation id="3595596368722241419">Bateria carregada.</translation>
 <translation id="3600339377155080675">Projecta la pantalla</translation>
 <translation id="3602290021589620013">Previsualitza</translation>
+<translation id="360282891121575443">Els altres usuaris poden actualitzar les fotos dels àlbums compartits. Si fas canvis cada dia, és possible que es mostrin fons de pantalla que no es trobin a l'àlbum.</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Canvia el fons de pantalla</translation>
 <translation id="360565022852130722">La xarxa Wi-Fi està protegida amb el protocol dèbil WEP 802.1x</translation>
 <translation id="3606583719724308068">Latència alta als llocs web HTTPS</translation>
 <translation id="361575905210396100">Gràcies pels teus suggeriments</translation>
 <translation id="3632579075709132555">Commutador de la pantalla de privadesa</translation>
+<translation id="3639846061339007994">part superior</translation>
 <translation id="3651050199673793219">Selecciona una unitat de temperatura</translation>
 <translation id="3689839747745352263">Prova <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">S'està carregant...</translation>
@@ -520,6 +526,7 @@
 <translation id="576835345334454681">Augmenta la brillantor de la pantalla</translation>
 <translation id="57838592816432529">Silencia</translation>
 <translation id="5784136236926853061">La latència d'HTTP és alta</translation>
+<translation id="5826644637650799838">Sobre l'art</translation>
 <translation id="5832805196449965646">Afegeix una persona</translation>
 <translation id="583281660410589416">Desconegut</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
@@ -562,6 +569,7 @@
 <translation id="6117895505466548728"><ph name="TITLE" /> i <ph name="NUMBER" /> àlbums més</translation>
 <translation id="6122191549521593678">En línia</translation>
 <translation id="6122277663991249694">Servei del mètode d'introducció de text a Chrome OS</translation>
+<translation id="6136285399872347291">retrocés</translation>
 <translation id="6137767437444130246">Certificat d'usuari</translation>
 <translation id="6146993107019042706">Per acabar, introdueix la contrasenya nova</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -609,6 +617,7 @@
 <translation id="650266656685499220">Per crear àlbums, ves a Google Fotos</translation>
 <translation id="6516990319416533844">Per provar la velocitat de càrrega de la bateria, deixa que s'exhaureixi una estona</translation>
 <translation id="6517239166834772319">Explora</translation>
+<translation id="6526200165918397681">Fes coincidir el fons de pantalla</translation>
 <translation id="6527081081771465939">Protocol de seguretat Wi-Fi desconegut</translation>
 <translation id="6535178685492749208">No tens connexió. Els suggeriments s'enviaran més tard.</translation>
 <translation id="65587193855025101">Finestra plana</translation>
@@ -628,6 +637,7 @@
 <translation id="6657585470893396449">Contrasenya</translation>
 <translation id="6659594942844771486">Pestanya</translation>
 <translation id="6692996468359469499">Obtén informació relacionada amb la teva selecció</translation>
+<translation id="6698459586333070823">Altres usuaris poden actualitzar els àlbums compartits</translation>
 <translation id="6704062477274546131">Resolució de DNS</translation>
 <translation id="6723839937902243910">Bateria</translation>
 <translation id="6723847290197874913">Retroil·luminació del teclat</translation>
@@ -664,6 +674,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Error: s'ha produït un error en l'autorització</translation>
 <translation id="7103252855940681301">Dispositiu <ph name="INDEX" /> de <ph name="COUNT" />, anomenat <ph name="NAME" />.</translation>
+<translation id="7108668606237948702">retorn</translation>
 <translation id="7130438335435247835">Nom del punt d'accés (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de noms}other{Servidors de noms}}</translation>
 <translation id="7143207342074048698">Connectant</translation>
@@ -673,6 +684,7 @@
 <translation id="7155171745945906037">Foto existent de la càmera o d'un fitxer</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7170236477717446850">Foto del perfil</translation>
+<translation id="7171919371520438592">Ancora la finestra a la part <ph name="DIRECTION" /> més petita de la pantalla</translation>
 <translation id="7172721935181587524">1 imatge</translation>
 <translation id="7177485034254901881">Aquest dispositiu <ph name="DEVICE_TYPE" /> està gestionat per <ph name="MANAGER" />. És possible que els administradors el configurin de manera remota.</translation>
 <translation id="7180611975245234373">Actualitza</translation>
@@ -748,6 +760,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipus de proveïdor</translation>
 <translation id="7882501334836096755">Clau pública</translation>
+<translation id="78957024357676568">esquerra</translation>
 <translation id="7915220255123750251">Gestiona la configuració de l'APN de la xarxa. Els APN defineixen una connexió entre una xarxa mòbil i Internet.</translation>
 <translation id="7936303884198020182">No s'han trobat servidors de noms</translation>
 <translation id="7942349550061667556">Vermell</translation>
@@ -776,9 +789,11 @@
 <translation id="8183974620058026102">Adjunta</translation>
 <translation id="8206859287963243715">Cel·lular</translation>
 <translation id="8208861521865154048">Avantatges</translation>
+<translation id="8210733748736414123">part inferior</translation>
 <translation id="8226628635270268143">Tria les teves fotos i els teus àlbums preferits</translation>
 <translation id="8227119283605456246">Adjunta un fitxer</translation>
 <translation id="8230672074305416752">No s'ha pogut fer ping a la passarel·la de xarxa predeterminada</translation>
+<translation id="8242426110754782860">Continua</translation>
 <translation id="8246209727385807362">Operador de telefonia mòbil desconegut</translation>
 <translation id="827422111966801947">Anyil</translation>
 <translation id="8286154143153872371">Connecta't a una xarxa i torna a carregar la pàgina per veure el fons de pantalla.</translation>
@@ -789,9 +804,11 @@
 <translation id="8318753676953949627">Cap imatge</translation>
 <translation id="8336739000755212683">Canvia la imatge del compte del dispositiu</translation>
 <translation id="8347227221149377169">Tasques d'impressió</translation>
+<translation id="8351855506390808906">Punt tàctil del mapatge de teclat</translation>
 <translation id="8352772353338965963">Afegiu un compte per a l'inici de sessió múltiple. Es pot accedir a tots el comptes registrats sense contrasenya, de manera que només hauríeu d'utilitzar aquesta funció en comptes de confiança.</translation>
 <translation id="8364946094152050673">Servidors de noms buits</translation>
 <translation id="8372477600026034341">Amfitrions addicionals</translation>
+<translation id="8380114448424469341">Ancora la finestra a la meitat <ph name="DIRECTION" /> de la pantalla</translation>
 <translation id="8395584934117017006">Aquest <ph name="DEVICE_TYPE" /> està gestionat per una empresa</translation>
 <translation id="8398927464629426868">El percentatge al qual s'està carregant o descarregant el dispositiu actualment</translation>
 <translation id="8410244574650205435">Detectat automàticament</translation>
@@ -856,6 +873,7 @@
 <translation id="8930622219860340959">Sense fil</translation>
 <translation id="8936793075252196307">Adreça IP del client</translation>
 <translation id="894617464444543719">El dispositiu és un telèfon.</translation>
+<translation id="8957423540740801332">dreta</translation>
 <translation id="8968751544471797276">Percentatge de càrrega</translation>
 <translation id="8970109610781093811">Torna a executar</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -883,6 +901,7 @@
 <translation id="9137526406337347448">Serveis de Google</translation>
 <translation id="9138630967333032450">Maj esquerra</translation>
 <translation id="9149391708638971077">Executa la prova de memòria</translation>
+<translation id="9161276708550942948">espai</translation>
 <translation id="9173638680043580060">Queda menys d'un minut</translation>
 <translation id="917720651393141712">Prova</translation>
 <translation id="9188992814426075118">El teclat pot coincidir automàticament amb el fons de pantalla</translation>

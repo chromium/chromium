@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ServiceInfo;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.os.Build;
@@ -255,7 +256,7 @@ public class MediaNotificationController {
             Service service, NotificationWrapper notification) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false;
         ForegroundServiceUtils.getInstance().startForeground(service, notification.getMetadata().id,
-                notification.getNotification(), 0 /* foregroundServiceType */);
+                notification.getNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
         return true;
     }
 
@@ -603,7 +604,7 @@ public class MediaNotificationController {
             try {
                 ForegroundServiceUtils.getInstance().startForeground(mService,
                         mMediaNotificationInfo.id, notification.getNotification(),
-                        0 /*foregroundServiceType*/);
+                        ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
             } catch (RuntimeException e) {
                 NotificationManagerProxy manager = new NotificationManagerProxyImpl(getContext());
                 manager.notify(notification);

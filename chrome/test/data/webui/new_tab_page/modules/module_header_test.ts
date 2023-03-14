@@ -6,9 +6,10 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {ModuleHeaderElement} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {capture, render} from '../test_support.js';
+import {assertStyle, capture, render} from '../test_support.js';
 
 suite('NewTabPageModulesModuleHeaderTest', () => {
   let moduleHeader: ModuleHeaderElement;
@@ -79,17 +80,6 @@ suite('NewTabPageModulesModuleHeaderTest', () => {
     assertFalse(moduleHeader.$.actionMenu.open);
   });
 
-  test('module icon appears', () => {
-    // Act.
-    moduleHeader.iconSrc = 'icons/module_logo.svg';
-    render(moduleHeader);
-
-    // Assert.
-    assertEquals(
-        'chrome://new-tab-page/icons/module_logo.svg',
-        $$<HTMLImageElement>(moduleHeader, '.module-icon')!.src);
-  });
-
   test('can hide menu button', () => {
     // Act.
     moduleHeader.hideMenuButton = true;
@@ -97,5 +87,23 @@ suite('NewTabPageModulesModuleHeaderTest', () => {
 
     // Assert.
     assertFalse(!!$$(moduleHeader, '#menuButton'));
+  });
+
+  suite('module header icon', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({modulesHeaderIconEnabled: true});
+    });
+
+    test('icon appears', () => {
+      // Act.
+      moduleHeader.iconSrc = 'icons/module_logo.svg';
+      render(moduleHeader);
+
+      // Assert.
+      assertStyle(
+          $$<HTMLImageElement>(moduleHeader, '.module-icon')!,
+          '-webkit-mask-image',
+          'url("chrome://new-tab-page/icons/module_logo.svg")');
+    });
   });
 });

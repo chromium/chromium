@@ -31,6 +31,10 @@ class AppListSyncableServiceFactory : public ProfileKeyedServiceFactory {
   // Marks AppListSyncableService to be used in tests.
   static void SetUseInTesting(bool use);
 
+  // Get if the factory will construct services during testing, useful for
+  // dependant factories to be aware.
+  static bool IsUsedInTesting();
+
   AppListSyncableServiceFactory(const AppListSyncableServiceFactory&) = delete;
   AppListSyncableServiceFactory& operator=(
       const AppListSyncableServiceFactory&) = delete;

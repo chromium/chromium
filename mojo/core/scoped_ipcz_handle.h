@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/memory/raw_ref.h"
 #include "mojo/core/system_impl_export.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
@@ -35,14 +36,14 @@ class MOJO_SYSTEM_IMPL_EXPORT ScopedIpczHandle {
 
     ~Receiver() {
       if (received_handle_ != IPCZ_INVALID_HANDLE) {
-        target_ = ScopedIpczHandle(received_handle_);
+        (*target_) = ScopedIpczHandle(received_handle_);
       }
     }
 
     operator IpczHandle*() { return &received_handle_; }
 
    private:
-    ScopedIpczHandle& target_;
+    const raw_ref<ScopedIpczHandle> target_;
     IpczHandle received_handle_ = IPCZ_INVALID_HANDLE;
   };
 

@@ -25,7 +25,7 @@ import test_apps
 import xcodebuild_runner
 
 def GetDefaultBuildDir():
-  return os.path.join(GetChromiumSrcDir(), 'out', 'Debug-iphonesimulator')
+  return os.path.join(GetChromiumSrcDir(), 'out', 'Release-iphonesimulator')
 
 parser=argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter)

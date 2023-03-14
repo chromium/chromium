@@ -8,6 +8,9 @@
 #include <memory>
 #include <vector>
 
+#include <EGL/egl.h>
+#include <EGL/eglext.h>
+
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -16,6 +19,10 @@
 #include "ui/ozone/platform/wayland/common/wayland_overlay_config.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_surface_gpu.h"
 #include "ui/ozone/public/swap_completion_callback.h"
+
+namespace gl {
+class GLDisplayEGL;
+}
 
 namespace ui {
 
@@ -48,7 +55,6 @@ class GbmSurfacelessWayland : public gl::Presenter, public WaylandSurfaceGpu {
   void Present(SwapCompletionCallback completion_callback,
                PresentationCallback presentation_callback,
                gfx::FrameData data) override;
-  EGLConfig GetConfig() override;
   void SetRelyOnImplicitSync() override;
   bool SupportsPlaneGpuFences() const override;
   bool SupportsOverridePlatformSize() const override;
@@ -115,6 +121,8 @@ class GbmSurfacelessWayland : public gl::Presenter, public WaylandSurfaceGpu {
   void OnPresentation(uint32_t frame_id,
                       const gfx::PresentationFeedback& feedback) override;
 
+  EGLDisplay GetEGLDisplay();
+
   // PendingFrame here is a post-SkiaRenderer struct that contains overlays +
   // primary plane informations. It is a "compositor frame" on AcceleratedWidget
   // level. This information gets into browser process and overlays are
@@ -175,6 +183,8 @@ class GbmSurfacelessWayland : public gl::Presenter, public WaylandSurfaceGpu {
 
   // Holds gpu side reference (buffer_ids) for solid color wl_buffers.
   std::unique_ptr<SolidColorBufferHolder> solid_color_buffers_holder_;
+
+  const raw_ptr<gl::GLDisplayEGL> display_;
 
   base::WeakPtrFactory<GbmSurfacelessWayland> weak_factory_;
 };

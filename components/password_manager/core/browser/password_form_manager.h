@@ -188,7 +188,9 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   base::WeakPtr<PasswordManagerDriver> GetDriver() const;
   const PasswordForm* GetSubmittedForm() const;
 
-  int driver_id() { return driver_id_; }
+  // Returns the frame id of the corresponding PasswordManagerDriver. See
+  // `GetFrameId()` in PasswordManagerDriver for more details.
+  int GetFrameId();
 
 #if BUILDFLAG(IS_IOS)
   // Sets a value of the field with |field_identifier| of |observed_form()|
@@ -357,8 +359,13 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   base::WeakPtr<PasswordManagerDriver> driver_;
 
-  // Id of |driver_|. Cached since |driver_| might become null when frame is
-  // close.
+  // The frame id of |driver_|.  See `GetFrameId()` in PasswordManagerDriver for
+  // more details. This is cached since |driver_| might become null when the
+  // frame is deleted.
+  int cached_driver_frame_id_ = 0;
+
+  // The id of |driver_|. Cached since |driver_| might become null when the
+  // frame frame is deleted.
   int driver_id_ = 0;
 
   // The observed form or digest. These are mutually exclusive, hence the usage

@@ -48,8 +48,8 @@ def parse_emoji_metadata(metadata_file):
         return json.load(file)
 
 
-def transform_emoji_data(metadata, names, keywords, firstOnly):
-    def transform(codepoints, emoticons = None, shortcodes = None):
+def transform_emoji_data(metadata, names, keywords, first_only):
+    def transform(codepoints, is_variant, emoticons = None, shortcodes = None):
         if emoticons is None:
           emoticons = []
         if shortcodes is None:
@@ -68,27 +68,36 @@ def transform_emoji_data(metadata, names, keywords, firstOnly):
           name = ''
           keyword_list = emoticons
 
-        return {'string': string, 'name': name, 'keywords': keyword_list}
-    if firstOnly:
-      metadata_out = [metadata[0]]
+        if is_variant:
+          return {'string': string, 'name': name}
+        else:
+          return {'string': string, 'name': name, 'keywords': keyword_list}
+    if first_only:
+      metadata = [metadata[0]]
     else:
-      metadata_out = metadata[1:]
-    for group in metadata_out:
-        for emoji in group['emoji']:
-            emoji['base'] = transform(emoji['base'],
-                                      emoji['emoticons'],
-                                      emoji.get('shortcodes',[]))
-            del emoji['emoticons']
-            if emoji.get('shortcodes'):
-              del emoji['shortcodes']
-            if emoji['alternates']:
-              emoji['alternates'] = [
-                  transform(e,) for e in emoji['alternates']
-              ]
-            else:
-              del emoji['alternates']
+      metadata = metadata[1:]
 
-    return metadata_out
+    # Create a new object for output since they keep adding extra properties to
+    # the JSON (rather than just editing the input object).
+    out = []
+    for group in metadata:
+        newGroup = []
+        for emoji in group['emoji']:
+            newobj = {
+                'base': transform(
+                    emoji['base'],
+                    False,
+                    emoji['emoticons'],
+                    emoji.get('shortcodes', []),
+                ),
+            }
+            if emoji['alternates']:
+              newobj['alternates'] = [
+                  transform(e, True) for e in emoji['alternates']
+              ]
+            newGroup.append(newobj)
+        out.append({'emoji': newGroup})
+    return out
 
 def main(args):
     parser = argparse.ArgumentParser()

@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/sharing/share_download_overlay_view_controller.h"
 
-#import "ios/chrome/browser/ui/commands/share_download_overlay_commands.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/shared/public/commands/share_download_overlay_commands.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 

@@ -56,7 +56,7 @@ TEST(MathTransform, Italics) {
       {0x03F5, 0x1D716}};
 
   for (auto& test_data : italics_test_data)
-    EXPECT_EQ(MathVariant(test_data.code_point), test_data.expected);
+    EXPECT_EQ(ItalicMathVariant(test_data.code_point), test_data.expected);
 }
 
 }  // anonymous namespace

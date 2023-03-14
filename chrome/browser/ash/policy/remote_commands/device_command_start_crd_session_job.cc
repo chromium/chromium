@@ -270,8 +270,7 @@ bool DeviceCommandStartCrdSessionJob::ParseCommandPayload(
 }
 
 void DeviceCommandStartCrdSessionJob::RunImpl(
-    CallbackWithResult succeeded_callback,
-    CallbackWithResult failed_callback) {
+    CallbackWithResult result_callback) {
   CRD_LOG(INFO) << "Running start CRD session command";
 
   if (delegate_->HasActiveSession()) {
@@ -279,15 +278,14 @@ void DeviceCommandStartCrdSessionJob::RunImpl(
     terminate_session_attempted_ = true;
 
     CRD_DVLOG(1) << "Terminating active session";
-    delegate_->TerminateSession(base::BindOnce(
-        &DeviceCommandStartCrdSessionJob::RunImpl, weak_factory_.GetWeakPtr(),
-        std::move(succeeded_callback), std::move(failed_callback)));
+    delegate_->TerminateSession(
+        base::BindOnce(&DeviceCommandStartCrdSessionJob::RunImpl,
+                       weak_factory_.GetWeakPtr(), std::move(result_callback)));
     return;
   }
   terminate_session_attempted_ = false;
 
-  failed_callback_ = std::move(failed_callback);
-  succeeded_callback_ = std::move(succeeded_callback);
+  result_callback_ = std::move(result_callback);
 
   if (!UserTypeSupportsCrd()) {
     FinishWithError(ResultCode::FAILURE_UNSUPPORTED_USER_TYPE, "");
@@ -365,7 +363,7 @@ void DeviceCommandStartCrdSessionJob::StartCrdHostAndGetCode(
 void DeviceCommandStartCrdSessionJob::FinishWithSuccess(
     const std::string& access_code) {
   CRD_LOG(INFO) << "Successfully received CRD access code";
-  if (!succeeded_callback_) {
+  if (!result_callback_) {
     return;  // Task was terminated.
   }
 
@@ -373,8 +371,9 @@ void DeviceCommandStartCrdSessionJob::FinishWithSuccess(
                       ResultCode::SUCCESS);
   SendSessionTypeToUma(GetUmaSessionType());
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(succeeded_callback_),
-                                CreateSuccessPayload(access_code)));
+      FROM_HERE,
+      base::BindOnce(std::move(result_callback_), ResultType::kSuccess,
+                     CreateSuccessPayload(access_code)));
 }
 
 void DeviceCommandStartCrdSessionJob::FinishWithError(
@@ -384,28 +383,30 @@ void DeviceCommandStartCrdSessionJob::FinishWithError(
   CRD_LOG(INFO) << "Not starting CRD session because of error (code "
                 << static_cast<int>(result_code) << ", message '" << message
                 << "')";
-  if (!failed_callback_) {
+  if (!result_callback_) {
     return;  // Task was terminated.
   }
 
   SendResultCodeToUma(GetCrdSessionType(), GetCurrentUserSessionType(),
                       result_code);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(failed_callback_),
-                                CreateErrorPayload(result_code, message)));
+      FROM_HERE,
+      base::BindOnce(std::move(result_callback_), ResultType::kFailure,
+                     CreateErrorPayload(result_code, message)));
 }
 
 void DeviceCommandStartCrdSessionJob::FinishWithNotIdleError() {
   CRD_LOG(INFO) << "Not starting CRD session because device is not idle";
-  if (!failed_callback_) {
+  if (!result_callback_) {
     return;  // Task was terminated.
   }
 
   SendResultCodeToUma(GetCrdSessionType(), GetCurrentUserSessionType(),
                       ResultCode::FAILURE_NOT_IDLE);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(failed_callback_),
-                                CreateNonIdlePayload(GetDeviceIdleTime())));
+      FROM_HERE,
+      base::BindOnce(std::move(result_callback_), ResultType::kFailure,
+                     CreateNonIdlePayload(GetDeviceIdleTime())));
 }
 
 bool DeviceCommandStartCrdSessionJob::UserTypeSupportsCrd() const {
@@ -518,8 +519,7 @@ DeviceCommandStartCrdSessionJob::GetErrorCallback() {
 }
 
 void DeviceCommandStartCrdSessionJob::TerminateImpl() {
-  succeeded_callback_.Reset();
-  failed_callback_.Reset();
+  result_callback_.Reset();
   weak_factory_.InvalidateWeakPtrs();
   delegate_->TerminateSession(base::OnceClosure());
 }

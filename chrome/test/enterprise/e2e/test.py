@@ -3,7 +3,9 @@
 # found in the LICENSE file.
 """The test runner that runs enterprise end-to-end tests."""
 
+import json
 import logging
+import os
 import sys
 import traceback
 import warnings
@@ -64,6 +66,11 @@ def ConfigureLogging():
 
 def main(argv):
   ConfigureLogging()
+  # Resultdb integration
+  test_env = None
+  if 'LUCI_CONTEXT' in os.environ:
+    with open(os.environ['LUCI_CONTEXT']) as f:
+      test_env = json.load(f)
 
   c = controller.SingleTestController(
       FLAGS.test,
@@ -71,7 +78,8 @@ def main(argv):
       FLAGS.cel_ctl,
       test_filter=FLAGS.test_filter,
       skip_before_all=FLAGS.skip_before_all,
-      no_external_access=FLAGS.no_external_access)
+      no_external_access=FLAGS.no_external_access,
+      environ=test_env)
 
   # Parse test specific flags. Note that we need to use a dummy element
   # as the first element of the list since absl.flags ignores the first element

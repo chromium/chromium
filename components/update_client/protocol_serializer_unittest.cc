@@ -9,8 +9,6 @@
 #include "components/update_client/protocol_serializer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using std::string;
-
 namespace update_client {
 
 TEST(BuildProtocolRequest, BuildUpdateCheckExtraRequestHeaders) {

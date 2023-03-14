@@ -10,7 +10,6 @@
 #include "base/trace_event/traced_value.h"
 #include "cc/base/math_util.h"
 #include "ui/gfx/color_utils.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace viz {
 
@@ -116,9 +115,21 @@ void TextureDrawQuad::ExtendValue(base::trace_event::TracedValue* value) const {
                    color_utils::SkColor4fToRgbaString(background_color));
 
   value->BeginArray("vertex_opacity");
-  for (size_t i = 0; i < 4; ++i)
-    value->AppendDouble(vertex_opacity[i]);
+  for (float i : vertex_opacity) {
+    value->AppendDouble(i);
+  }
   value->EndArray();
+
+  value->SetString(
+      "rounded_display_masks_info",
+      base::StringPrintf(
+          "%d,%d,is_horizontally_positioned=%d",
+          rounded_display_masks_info
+              .radii[RoundedDisplayMasksInfo::kOriginRoundedDisplayMaskIndex],
+          rounded_display_masks_info
+              .radii[RoundedDisplayMasksInfo::kOtherRoundedDisplayMaskIndex],
+          static_cast<int>(
+              rounded_display_masks_info.is_horizontally_positioned)));
 
   value->SetBoolean("y_flipped", y_flipped);
   value->SetBoolean("nearest_neighbor", nearest_neighbor);
@@ -129,5 +140,27 @@ void TextureDrawQuad::ExtendValue(base::trace_event::TracedValue* value) const {
 }
 
 TextureDrawQuad::OverlayResources::OverlayResources() = default;
+
+TextureDrawQuad::RoundedDisplayMasksInfo::RoundedDisplayMasksInfo() = default;
+
+// static
+TextureDrawQuad::RoundedDisplayMasksInfo
+TextureDrawQuad::RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(
+    int origin_rounded_display_mask_radius,
+    int other_rounded_display_mask_radius,
+    bool is_horizontally_positioned) {
+  RoundedDisplayMasksInfo info;
+  info.radii[kOriginRoundedDisplayMaskIndex] =
+      origin_rounded_display_mask_radius;
+  info.radii[kOtherRoundedDisplayMaskIndex] = other_rounded_display_mask_radius;
+  info.is_horizontally_positioned = is_horizontally_positioned;
+
+  return info;
+}
+
+bool TextureDrawQuad::RoundedDisplayMasksInfo::IsEmpty() const {
+  return radii[kOriginRoundedDisplayMaskIndex] == 0 &&
+         radii[kOtherRoundedDisplayMaskIndex] == 0;
+}
 
 }  // namespace viz

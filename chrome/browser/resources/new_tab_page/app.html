@@ -102,6 +102,21 @@
     width: var(--ntp-module-layout-width);
   }
 
+  ntp-modules:not([hidden]) {
+    /* We use animation instead of transition to allow a fade-in out of
+       display: none. */
+    animation: 300ms ease-in-out fade-in-animation;
+  }
+
+  @keyframes fade-in-animation {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
   ntp-middle-slot-promo {
     max-width: var(--ntp-search-box-width);
   }

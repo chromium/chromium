@@ -4,10 +4,10 @@
 
 #include "components/payments/core/error_message_util.h"
 
-#include <algorithm>
 #include <vector>
 
 #include "base/check.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "components/payments/core/error_strings.h"
 #include "components/payments/core/native_error_strings.h"
@@ -19,8 +19,8 @@ namespace {
 template <class Collection>
 std::string concatNamesWithQuotesAndCommma(const Collection& names) {
   std::vector<std::string> with_quotes(names.size());
-  std::transform(
-      names.begin(), names.end(), with_quotes.begin(),
+  base::ranges::transform(
+      names, with_quotes.begin(),
       [](const std::string& method_name) { return "\"" + method_name + "\""; });
   std::string result = base::JoinString(with_quotes, ", ");
   return result;

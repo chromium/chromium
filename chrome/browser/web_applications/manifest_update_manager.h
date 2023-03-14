@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -41,6 +42,8 @@ namespace web_app {
 class WebAppUiManager;
 class WebAppCommandScheduler;
 
+// Documentation: docs/webapps/manifest_update_process.md
+//
 // Checks for updates to a web app's manifest and triggers a reinstall if the
 // current installation is out of date.
 //
@@ -145,31 +148,29 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
     GURL url;
     enum Stage {
       kWaitingForPageLoad = 0,
-      kFetchingManifestData = 1,
+      kCheckingManifestDiff = 1,
       kPendingAppWindowClose = 2,
     } stage = kWaitingForPageLoad;
     std::unique_ptr<PreUpdateWebContentsObserver> observer;
   };
 
-  void StartManifestDataFetchAfterPageLoad(
+  void StartManifestCheckAfterPageLoad(
       const AppId& app_id,
       base::WeakPtr<content::WebContents> web_contents);
 
-  void OnManifestDataFetchAwaitAppWindowClose(
+  void OnManifestCheckAwaitAppWindowClose(
       base::WeakPtr<content::WebContents> contents,
       const GURL& url,
       const AppId& app_id,
-      absl::optional<ManifestUpdateResult> result,
-      absl::optional<WebAppInstallInfo> install_info,
-      bool app_identity_update_allowed);
+      ManifestUpdateCheckResult check_result,
+      absl::optional<WebAppInstallInfo> install_info);
 
   void StartManifestWriteAfterWindowsClosed(
       const GURL& url,
       const AppId& app_id,
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
-      WebAppInstallInfo install_info,
-      bool app_identity_update_allowed);
+      WebAppInstallInfo install_info);
 
   bool MaybeConsumeUpdateCheck(const GURL& origin, const AppId& app_id);
   absl::optional<base::Time> GetLastUpdateCheckTime(const AppId& app_id) const;
@@ -207,6 +208,8 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   bool hang_update_checks_for_testing_ = false;
 
   base::OnceClosure load_finished_callback_;
+
+  base::WeakPtrFactory<ManifestUpdateManager> weak_factory_{this};
 };
 
 }  // namespace web_app

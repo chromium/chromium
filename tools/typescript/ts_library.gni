@@ -121,10 +121,6 @@ template("ts_library") {
       args += [ "--composite" ]
     }
 
-    if (defined(invoker.allow_js) && invoker.allow_js) {
-      args += [ "--allow_js" ]
-    }
-
     if (defined(invoker.enable_source_maps) && invoker.enable_source_maps) {
       args += [ "--enable_source_maps" ]
     }
@@ -166,20 +162,21 @@ template("ts_library") {
       # automatically inferring them from |deps|. Don't add new such mappings here.
     ]
 
-    if (is_chromeos_ash) {
-      path_mappings += [
-        "chrome://resources/ash/common/*|" + rebase_path(
-                "$root_gen_dir/ash/webui/common/resources/preprocessed/*",
-                target_gen_dir),
-        "//resources/ash/common/*|" + rebase_path(
-                "$root_gen_dir/ash/webui/common/resources/preprocessed/*",
-                target_gen_dir),
-      ]
-    }
-
-    # Flag to prevent special iOS exceptions being abused on other platforms.
+    # The |platform| flag is used in path_mappings.py and validate_tsconfig.py,
+    # to limit some logic to certain platforms, like preventing special iOS
+    # exceptions being abused on other platforms.
     if (is_ios) {
-      args += [ "--is_ios" ]
+      platform = "ios"
+      args += [
+        "--platform",
+        platform,
+      ]
+    } else if (is_chromeos_ash) {
+      platform = "chromeos_ash"
+      args += [
+        "--platform",
+        platform,
+      ]
     }
 
     args += [ "--path_mappings" ] + path_mappings

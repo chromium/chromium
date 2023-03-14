@@ -696,6 +696,7 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
         fragment2->ParseHTML(markup, context_element, parser_content_policy);
         DCHECK_EQ(CreateMarkup(fragment), CreateMarkup(fragment2))
             << " supplied value " << markup;
+        DCHECK(fragment->isEqualNode(fragment2));
 #endif
         return fragment;
       } else {
@@ -706,7 +707,8 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
     fragment->ParseHTML(markup, context_element, parser_content_policy);
 #if defined(USE_INNER_HTML_PARSER_FAST_PATH)
     LogFastPathParserTotalTime(parse_timer.Elapsed());
-    if (log_tag_stats) {
+    if (log_tag_stats &&
+        RuntimeEnabledFeatures::InnerHTMLParserFastpathLogFailureEnabled()) {
       LogTagsForUnsupportedTagTypeFailure(*fragment);
     }
 #endif

@@ -23,6 +23,12 @@ CSSParserToken CSSParserTokenStream::ConsumeIncludingWhitespace() {
   return result;
 }
 
+CSSParserToken CSSParserTokenStream::ConsumeIncludingWhitespaceRaw() {
+  CSSParserToken result = ConsumeRaw();
+  ConsumeWhitespace();
+  return result;
+}
+
 bool CSSParserTokenStream::ConsumeCommentOrNothing() {
   DCHECK(!HasLookAhead());
   const auto token = tokenizer_.TokenizeSingleWithComments();
@@ -55,17 +61,28 @@ void CSSParserTokenStream::UncheckedConsumeComponentValue() {
 
 void CSSParserTokenStream::UncheckedSkipToEndOfBlock() {
   DCHECK(HasLookAhead());
-  // Have to use internal consume/peek in here because they can read past
-  // start/end of blocks
+
+  // Process and consume the lookahead token.
+  has_look_ahead_ = false;
   unsigned nesting_level = 1;
-  do {
-    const CSSParserToken& token = UncheckedConsumeInternal();
-    if (token.GetBlockType() == CSSParserToken::kBlockStart) {
+  if (next_.GetBlockType() == CSSParserToken::kBlockStart) {
+    nesting_level++;
+  } else if (next_.GetBlockType() == CSSParserToken::kBlockEnd) {
+    nesting_level--;
+  }
+
+  // Skip tokens until we see EOF or the closing brace.
+  while (nesting_level != 0) {
+    CSSParserToken token = tokenizer_.TokenizeSingle();
+    if (token.IsEOF()) {
+      break;
+    } else if (token.GetBlockType() == CSSParserToken::kBlockStart) {
       nesting_level++;
     } else if (token.GetBlockType() == CSSParserToken::kBlockEnd) {
       nesting_level--;
     }
-  } while (nesting_level && !PeekInternal().IsEOF());
+  }
+  offset_ = tokenizer_.Offset();
 }
 
 }  // namespace blink

@@ -197,7 +197,9 @@
 #include "chrome/common/initialize_extensions_client.h"
 #include "chrome/renderer/extensions/chrome_extensions_renderer_client.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/context_data.h"
 #include "extensions/common/extension_urls.h"
+#include "extensions/common/features/feature.h"
 #include "extensions/common/manifest_handlers/csp_info.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "extensions/common/switches.h"
@@ -351,6 +353,30 @@ bool IsTerminalSystemWebAppNaClPage(GURL url) {
 }
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+bool ControlledFrameRendererAvailabilityCheck(
+    const std::string& api_full_name,
+    const Extension* extension,
+    extensions::Feature::Context context,
+    const GURL& url,
+    extensions::Feature::Platform platform,
+    int context_id,
+    bool check_developer_mode,
+    std::unique_ptr<extensions::ContextData> context_data) {
+  return false;
+}
+
+extensions::Feature::FeatureDelegatedAvailabilityCheckMap
+CreateRendererAvailabilityCheckMap() {
+  extensions::Feature::FeatureDelegatedAvailabilityCheckMap map;
+  for (const auto* item : GetControlledFrameFeatureList()) {
+    map.emplace(item,
+                base::BindRepeating(&ControlledFrameRendererAvailabilityCheck));
+  }
+  return map;
+}
+#endif
+
 }  // namespace
 
 ChromeContentRendererClient::ChromeContentRendererClient()
@@ -369,7 +395,7 @@ ChromeContentRendererClient::ChromeContentRendererClient()
 #endif
       ) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  EnsureExtensionsClientInitialized();
+  EnsureExtensionsClientInitialized(CreateRendererAvailabilityCheckMap());
   extensions::ExtensionsRendererClient::Set(
       ChromeExtensionsRendererClient::GetInstance());
 #endif

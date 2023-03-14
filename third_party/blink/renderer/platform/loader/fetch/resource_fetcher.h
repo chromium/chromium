@@ -30,6 +30,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
@@ -303,10 +304,12 @@ class PLATFORM_EXPORT ResourceFetcher
       FetchParameters::DeferOption defer_option,
       FetchParameters::SpeculativePreloadType speculative_preload_type,
       RenderBlockingBehavior render_blocking_behavior,
+      mojom::blink::ScriptType script_type,
       bool is_link_preload) {
     return ComputeLoadPriority(type, request, visibility_statue, defer_option,
                                speculative_preload_type,
-                               render_blocking_behavior, is_link_preload);
+                               render_blocking_behavior, script_type,
+                               is_link_preload);
   }
 
   bool ShouldLoadIncrementalForTesting(ResourceType type) {
@@ -366,6 +369,7 @@ class PLATFORM_EXPORT ResourceFetcher
       FetchParameters::SpeculativePreloadType =
           FetchParameters::SpeculativePreloadType::kNotSpeculative,
       RenderBlockingBehavior = RenderBlockingBehavior::kNonBlocking,
+      mojom::blink::ScriptType script_type = mojom::blink::ScriptType::kClassic,
       bool is_link_preload = false);
   bool ShouldLoadIncremental(ResourceType type) const;
 
@@ -499,6 +503,10 @@ class PLATFORM_EXPORT ResourceFetcher
                                         const PendingResourceTimingInfo& info,
                                         base::TimeTicks response_end);
   SubresourceWebBundle* GetMatchingBundle(const KURL& url) const;
+
+  void RecordResourceHistogram(base::StringPiece prefix,
+                               ResourceType type,
+                               RevalidationPolicyForMetrics policy) const;
 
   Member<DetachableResourceFetcherProperties> properties_;
   Member<ResourceLoadObserver> resource_load_observer_;

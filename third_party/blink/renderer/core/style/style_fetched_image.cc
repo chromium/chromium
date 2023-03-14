@@ -126,6 +126,10 @@ bool StyleFetchedImage::IsLoaded() const {
   return image_->IsLoaded();
 }
 
+bool StyleFetchedImage::IsLoading() const {
+  return image_->IsLoading();
+}
+
 bool StyleFetchedImage::ErrorOccurred() const {
   return image_->ErrorOccurred();
 }

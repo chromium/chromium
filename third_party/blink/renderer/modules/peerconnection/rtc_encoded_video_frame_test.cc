@@ -56,7 +56,7 @@ TEST_F(RTCEncodedVideoFrameTest, GetMetadataReturnsMetadata) {
   webrtc_vp8_specifics.beginningOfPartition = true;
   webrtc_metadata.SetRTPVideoHeaderCodecSpecifics(webrtc_vp8_specifics);
 
-  EXPECT_CALL(*frame, GetMetadata()).WillOnce(ReturnRef(webrtc_metadata));
+  EXPECT_CALL(*frame, Metadata()).WillOnce(Return(webrtc_metadata));
   EXPECT_CALL(*frame, GetPayloadType()).WillRepeatedly(Return(13));
 
   RTCEncodedVideoFrame encoded_frame(std::move(frame));

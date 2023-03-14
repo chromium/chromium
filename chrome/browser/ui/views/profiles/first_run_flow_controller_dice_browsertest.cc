@@ -26,6 +26,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "net/base/url_util.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -66,6 +67,7 @@ class FirstRunFlowControllerDiceBrowserTest : public ProfilePickerTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(FirstRunFlowControllerDiceBrowserTest, CloseView) {
+  base::HistogramTester histogram_tester;
   base::MockCallback<ProfilePicker::FirstRunExitedCallback>
       first_run_exited_callback;
   ProfilePicker::Show(ProfilePicker::Params::ForFirstRun(
@@ -78,9 +80,15 @@ IN_PROC_BROWSER_TEST_F(FirstRunFlowControllerDiceBrowserTest, CloseView) {
               Run(ProfilePicker::FirstRunExitStatus::kQuitAtEnd));
   ProfilePicker::Hide();
   WaitForPickerClosed();
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Offered",
+      signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Started", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(FirstRunFlowControllerDiceBrowserTest, SignInAndSync) {
+  base::HistogramTester histogram_tester;
   base::MockCallback<ProfilePicker::FirstRunExitedCallback>
       first_run_exited_callback;
   Profile* profile = browser()->profile();
@@ -90,11 +98,18 @@ IN_PROC_BROWSER_TEST_F(FirstRunFlowControllerDiceBrowserTest, SignInAndSync) {
 
   WaitForPickerWidgetCreated();
   WaitForLoadStop(GURL(chrome::kChromeUIIntroURL));
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Offered",
+      signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
 
   web_contents()->GetWebUI()->ProcessWebUIMessage(
       web_contents()->GetURL(), "continueWithAccount", base::Value::List());
 
-  WaitForLoadStop(GaiaUrls::GetInstance()->signin_chrome_sync_dice());
+  WaitForLoadStop(net::AppendQueryParameter(
+      GaiaUrls::GetInstance()->signin_chrome_sync_dice(), "flow", "promo"));
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Started",
+      signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
 
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   AccountInfo account_info = signin::MakeAccountAvailableWithCookies(
@@ -103,6 +118,12 @@ IN_PROC_BROWSER_TEST_F(FirstRunFlowControllerDiceBrowserTest, SignInAndSync) {
   signin::UpdateAccountInfoForAccount(identity_manager, account_info);
   WaitForLoadStop(AppendSyncConfirmationQueryParams(
       GURL("chrome://sync-confirmation/"), SyncConfirmationStyle::kWindow));
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Completed",
+      signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SyncOptIn.Started",
+      signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
 
   base::RunLoop run_loop;
   EXPECT_CALL(first_run_exited_callback,
@@ -113,6 +134,10 @@ IN_PROC_BROWSER_TEST_F(FirstRunFlowControllerDiceBrowserTest, SignInAndSync) {
 
   WaitForPickerClosed();
   run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SyncOptIn.Completed",
+      signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(FirstRunFlowControllerDiceBrowserTest,
@@ -148,7 +173,8 @@ IN_PROC_BROWSER_TEST_F(FirstRunFlowControllerDiceBrowserTest,
   EXPECT_EQ(true, content::EvalJs(view()->GetPickerContents(),
                                   kClickSignInButtonJSString));
 
-  WaitForLoadStop(GaiaUrls::GetInstance()->signin_chrome_sync_dice());
+  WaitForLoadStop(net::AppendQueryParameter(
+      GaiaUrls::GetInstance()->signin_chrome_sync_dice(), "flow", "promo"));
   EXPECT_EQ(true, content::EvalJs(view()->GetPickerContents(),
                                   kAreButtonsDisabledJSString));
 

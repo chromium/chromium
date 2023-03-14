@@ -323,7 +323,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.DIPSErrorCodes" enum="DIPSErrorCode"
-    expires_after="2023-04-13">
+    expires_after="2023-09-13">
   <owner>bcl@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -357,7 +357,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.TimeFromNavigationCommitToClientBounce"
-    units="ms" expires_after="2023-06-18">
+    units="ms" expires_after="2023-08-20">
   <owner>bcl@chromium.org</owner>
   <owner>jdh@chromium.org</owner>
   <owner>rtarpine@chromium.org</owner>
@@ -419,6 +419,17 @@ reviewer.
   <summary>
     Whether the Do Not Track setting is enabled. Recorded at the profile open,
     only for regular profiles (not Incognito, Guest, etc.).
+  </summary>
+</histogram>
+
+<histogram name="Privacy.QuickDelete" enum="PrivacyQuickDelete"
+    expires_after="M116">
+  <owner>roagarwal@chromium.org</owner>
+  <owner>eokoyomon@chromium.org</owner>
+  <owner>fsenra@google.com</owner>
+  <summary>
+    Tracks interactions with the Quick Delete feature, including the entry
+    points and the dialog.
   </summary>
 </histogram>
 
@@ -664,7 +675,7 @@ reviewer.
 
 <histogram name="PrivacySandbox.PrivateAggregation.Budgeter.RequestResult"
     enum="PrivacySandboxPrivateAggregationBudgeterRequestResult"
-    expires_after="2023-07-02">
+    expires_after="2023-09-03">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>

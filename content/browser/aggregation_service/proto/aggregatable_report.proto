@@ -10,13 +10,13 @@ package content.proto;
 
 option optimize_for = LITE_RUNTIME;
 
-// Proto equivalent of `content::mojom::AggregationServiceMode`
+// Proto equivalent of `blink::mojom::AggregationServiceMode`
 enum AggregationServiceMode {
   TEE_BASED = 0;
   EXPERIMENTAL_POPLAR = 1;
 }
 
-// Proto equivalent of `content::mojom::AggregatableReportHistogramContribution`
+// Proto equivalent of `blink::mojom::AggregatableReportHistogramContribution`
 message AggregatableReportHistogramContribution {
   uint64 bucket_high = 1;
   uint64 bucket_low = 2;

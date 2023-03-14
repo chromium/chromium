@@ -76,7 +76,7 @@ interface DetailsProvider {
   // Discards a tab given its |tab_id|. The unload handlers will not be run, and
   // the tab will be unloaded with prejudice.
   // Invokes a callback when the discard is complete.
-  DiscardById(int32 tab_id) => ();
+  DiscardById(int32 tab_id, mojom.LifecycleUnitDiscardReason reason) => ();
 
   // Loads a tab given its |tab_id|.
   LoadById(int32 tab_id);
@@ -87,10 +87,9 @@ interface DetailsProvider {
   // if the decision was made not to discard.
   Discard() => ();
 
-  // Toggle high efficiency or battery saver modes for manual testing.
+  // Toggle battery saver modes for manual testing.
   // If the mode is enabled, this will disable it. Conversely, if it is disabled
   // this will enable it.
-  ToggleHighEfficiencyMode();
   ToggleBatterySaverMode();
 };
 

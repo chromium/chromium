@@ -28,6 +28,7 @@ std::unique_ptr<views::Widget> CreatePopupWidget(
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  params.z_order = ui::ZOrderLevel::kSecuritySurface;
   params.parent = parent_view;
   popup->Init(std::move(params));
   popup->SetContentsView(std::move(view));

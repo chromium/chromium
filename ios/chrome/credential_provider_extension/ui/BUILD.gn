@@ -23,6 +23,7 @@ source_set("ui") {
     "credential_list_ui_handler.h",
     "credential_list_view_controller.h",
     "credential_list_view_controller.mm",
+    "credential_response_handler.h",
     "empty_credentials_view_controller.h",
     "empty_credentials_view_controller.mm",
     "new_password_coordinator.h",

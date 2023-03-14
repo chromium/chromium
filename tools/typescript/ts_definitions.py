@@ -26,7 +26,8 @@ def _write_tsconfig_json(gen_dir, tsconfig):
   if not os.path.exists(gen_dir):
     os.makedirs(gen_dir)
 
-  with open(os.path.join(gen_dir, _TSCONFIG_GEN), 'w') as generated_tsconfig:
+  with open(os.path.join(gen_dir, _TSCONFIG_GEN), 'w',
+            encoding='utf-8') as generated_tsconfig:
     json.dump(tsconfig, generated_tsconfig, indent=2)
   return
 
@@ -41,7 +42,8 @@ def main(argv):
   parser.add_argument('--path_mappings', nargs='*')
   args = parser.parse_args(argv)
 
-  with open(os.path.join(_HERE_DIR, _TSCONFIG_BASE)) as root_tsconfig:
+  with open(os.path.join(_HERE_DIR, _TSCONFIG_BASE),
+            encoding='utf-8') as root_tsconfig:
     tsconfig = json.loads(root_tsconfig.read())
 
   root_dir = os.path.relpath(args.root_dir, args.gen_dir)

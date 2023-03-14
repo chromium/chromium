@@ -29,7 +29,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/location.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
@@ -158,65 +157,6 @@ class TranslationDelegate : public installer::TranslationDelegate {
   std::wstring GetLocalizedString(int installer_string_id) override;
 };
 
-void DetectFaultTolerantHeap() {
-  enum FTHFlags {
-    FTH_HKLM = 1,
-    FTH_HKCU = 2,
-    FTH_ACLAYERS_LOADED = 4,
-    FTH_ACXTRNAL_LOADED = 8,
-    FTH_FLAGS_COUNT = 16
-  };
-
-  // The Fault Tolerant Heap (FTH) is enabled on some customer machines and is
-  // affecting their performance. We need to know how many machines are
-  // affected in order to decide what to do.
-
-  // The main way that the FTH is enabled is by having a value set in
-  // HKLM\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers
-  // whose name is the full path to the executable and whose data is the
-  // string FaultTolerantHeap. Some documents suggest that this data may also
-  // be found in HKCU. There have also been cases observed where this registry
-  // key is set but the FTH is not enabled, so we also look for AcXtrnal.dll
-  // and AcLayers.dll which are used to implement the FTH on Windows 7 and 8
-  // respectively.
-
-  // Get the module path so that we can look for it in the registry.
-  wchar_t module_path[MAX_PATH];
-  GetModuleFileName(NULL, module_path, ARRAYSIZE(module_path));
-  // Force null-termination, necessary on Windows XP.
-  module_path[ARRAYSIZE(module_path)-1] = 0;
-
-  const wchar_t* const kRegPath = L"Software\\Microsoft\\Windows NT\\"
-        L"CurrentVersion\\AppCompatFlags\\Layers";
-  const wchar_t* const kFTHData = L"FaultTolerantHeap";
-  // We always want to read from the 64-bit version of the registry if present,
-  // since that is what the OS looks at, even for 32-bit processes.
-  const DWORD kRegFlags = KEY_READ | KEY_WOW64_64KEY;
-
-  base::win::RegKey FTH_HKLM_reg(HKEY_LOCAL_MACHINE, kRegPath, kRegFlags);
-  FTHFlags detected = FTHFlags();
-  std::wstring chrome_app_compat;
-  if (FTH_HKLM_reg.ReadValue(module_path, &chrome_app_compat) == 0) {
-    // This *usually* indicates that the fault tolerant heap is enabled.
-    if (wcsicmp(chrome_app_compat.c_str(), kFTHData) == 0)
-      detected = static_cast<FTHFlags>(detected | FTH_HKLM);
-  }
-
-  base::win::RegKey FTH_HKCU_reg(HKEY_CURRENT_USER, kRegPath, kRegFlags);
-  if (FTH_HKCU_reg.ReadValue(module_path, &chrome_app_compat) == 0) {
-    if (wcsicmp(chrome_app_compat.c_str(), kFTHData) == 0)
-      detected = static_cast<FTHFlags>(detected | FTH_HKCU);
-  }
-
-  // Look for the DLLs used to implement the FTH and other compat hacks.
-  if (GetModuleHandleW(L"AcLayers.dll") != NULL)
-    detected = static_cast<FTHFlags>(detected | FTH_ACLAYERS_LOADED);
-  if (GetModuleHandleW(L"AcXtrnal.dll") != NULL)
-    detected = static_cast<FTHFlags>(detected | FTH_ACXTRNAL_LOADED);
-
-  UMA_HISTOGRAM_ENUMERATION("FaultTolerantHeap", detected, FTH_FLAGS_COUNT);
-}
-
 void DelayedRecordProcessorMetrics() {
   mojo::Remote<chrome::mojom::ProcessorMetrics> remote_util_win =
       LaunchProcessorMetricsService();
@@ -303,8 +243,6 @@ void HandleModuleLoadEventWithoutTimeDateStamp(
 
   // Simple sanity check.
   got_time_date_stamp = got_time_date_stamp && size_of_image == module_size;
-  UMA_HISTOGRAM_BOOLEAN("ThirdPartyModules.TimeDateStampObtained",
-                        got_time_date_stamp);
 
   // Drop the load event if it's not possible to get the time date stamp.
   if (!got_time_date_stamp)
@@ -643,10 +581,6 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
   } else {
     MaybePostSettingsResetPrompt();
   }
-  // Record UMA data about whether the fault-tolerant heap is enabled.
-  // Use a delayed task to minimize the impact on startup time.
-  content::GetUIThreadTaskRunner({})->PostDelayedTask(
-      FROM_HERE, base::BindOnce(&DetectFaultTolerantHeap), base::Minutes(1));
 
   // Query feature first, to include full population in field trial.
   if (base::FeatureList::IsEnabled(features::kAppBoundEncryptionMetrics) &&

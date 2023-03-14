@@ -9,13 +9,15 @@
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
-#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/commands/credential_provider_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
+#import "ios/chrome/browser/shared/ui/util/top_view_controller.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_constants.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_mediator.h"
+#import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_metrics.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_view_controller.h"
-#import "ios/chrome/browser/ui/util/top_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#import "ios/public/provider/chrome/browser/password_auto_fill/password_auto_fill_api.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -44,6 +46,8 @@
 
 @end
 
+using credential_provider_promo::IOSCredentialProviderPromoAction;
+
 @implementation CredentialProviderPromoCoordinator
 
 - (void)start {
@@ -52,8 +56,7 @@
                    forProtocol:@protocol(CredentialProviderPromoCommands)];
   self.mediator = [[CredentialProviderPromoMediator alloc]
       initWithPromosManager:GetApplicationContext()->GetPromosManager()
-                prefService:self.browser->GetBrowserState()->GetPrefs()
-                 localState:GetApplicationContext()->GetLocalState()];
+                prefService:self.browser->GetBrowserState()->GetPrefs()];
 }
 
 - (void)stop {
@@ -94,6 +97,10 @@
                                   animated:YES
                                 completion:nil];
   self.promoSeenInCurrentSession = YES;
+
+  credential_provider_promo::RecordImpression(
+      [self.mediator promoOriginalSource],
+      self.trigger == CredentialProviderPromoTrigger::RemindMeLater);
 }
 
 #pragma mark - ConfirmationAlertActionHandler
@@ -102,25 +109,27 @@
   [self hidePromo];
   if (self.promoContext == CredentialProviderPromoContext::kFirstStep) {
     [self presentLearnMore];
+    [self recordAction:IOSCredentialProviderPromoAction::kLearnMore];
   } else {
     // Open iOS settings.
-    [[UIApplication sharedApplication]
-                  openURL:[NSURL
-                              URLWithString:UIApplicationOpenSettingsURLString]
-                  options:{}
-        completionHandler:nil];
+    ios::provider::PasswordsInOtherAppsOpensSettings();
+    [self recordAction:IOSCredentialProviderPromoAction::kGoToSettings];
   }
 }
 
 - (void)confirmationAlertSecondaryAction {
   [self hidePromo];
+
   GetApplicationContext()->GetLocalState()->SetBoolean(
       prefs::kIosCredentialProviderPromoStopPromo, true);
+
+  [self recordAction:IOSCredentialProviderPromoAction::kNo];
 }
 
 - (void)confirmationAlertTertiaryAction {
   [self hidePromo];
   [self.mediator registerPromoWithPromosManager];
+  [self recordAction:IOSCredentialProviderPromoAction::kRemindMeLater];
 }
 
 #pragma mark - Private
@@ -146,6 +155,13 @@
   [self.viewController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:nil];
+}
+
+// Help function for metrics.
+- (void)recordAction:(IOSCredentialProviderPromoAction)action {
+  credential_provider_promo::RecordAction(
+      [self.mediator promoOriginalSource],
+      self.trigger == CredentialProviderPromoTrigger::RemindMeLater, action);
 }
 
 @end

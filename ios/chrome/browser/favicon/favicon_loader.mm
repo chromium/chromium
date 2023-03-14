@@ -14,7 +14,7 @@
 #import "components/favicon_base/fallback_icon_style.h"
 #import "components/favicon_base/favicon_callback.h"
 #import "components/favicon_base/favicon_types.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "net/traffic_annotation/network_traffic_annotation.h"
 #import "skia/ext/skia_utils_ios.h"

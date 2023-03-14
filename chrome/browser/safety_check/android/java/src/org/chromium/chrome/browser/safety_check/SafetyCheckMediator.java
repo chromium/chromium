@@ -566,7 +566,7 @@ class SafetyCheckMediator
             listener = (p) -> {
                 PasswordManagerHelper.showPasswordSettings(p.getContext(),
                         ManagePasswordsReferrer.SAFETY_CHECK, mSettingsLauncher, SyncService.get(),
-                        mModalDialogManagerSupplier);
+                        mModalDialogManagerSupplier, /*managePasskeys=*/false);
                 return true;
             };
         }

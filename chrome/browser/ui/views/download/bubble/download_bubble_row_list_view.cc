@@ -24,12 +24,16 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/vector_icons.h"
 
-DownloadBubbleRowListView::DownloadBubbleRowListView(bool is_partial_view,
-                                                     Browser* browser)
+DownloadBubbleRowListView::DownloadBubbleRowListView(
+    bool is_partial_view,
+    Browser* browser,
+    base::OnceClosure on_mouse_entered_closure)
     : is_partial_view_(is_partial_view),
       creation_time_(base::Time::Now()),
-      browser_(browser) {
+      browser_(browser),
+      on_mouse_entered_closure_(std::move(on_mouse_entered_closure)) {
   SetOrientation(views::LayoutOrientation::kVertical);
+  SetNotifyEnterExitOnChild(true);
   if (IsIncognitoInfoRowEnabled()) {
     auto* header_info_row =
         AddChildView(std::make_unique<views::BoxLayoutView>());
@@ -84,6 +88,12 @@ DownloadBubbleRowListView::~DownloadBubbleRowListView() {
       base::StrCat({"Download.Bubble.", is_partial_view_ ? "Partial" : "Full",
                     "View.VisibleTime"}),
       base::Time::Now() - creation_time_);
+}
+
+void DownloadBubbleRowListView::OnMouseEntered(const ui::MouseEvent& event) {
+  if (on_mouse_entered_closure_) {
+    std::move(on_mouse_entered_closure_).Run();
+  }
 }
 
 bool DownloadBubbleRowListView::IsIncognitoInfoRowEnabled() {

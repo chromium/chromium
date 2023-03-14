@@ -4,7 +4,6 @@
 
 #include "chrome/browser/chromeos/extensions/file_system_provider/file_system_provider_api.h"
 
-#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -159,7 +158,7 @@ FileSystemProviderBase::GetRemote() {
 
 ExtensionFunction::ResponseAction FileSystemProviderMountFunction::Run() {
   using api::file_system_provider::Mount::Params;
-  const std::unique_ptr<Params> params(Params::Create(args()));
+  const absl::optional<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // It's an error if the file system Id is empty.
@@ -217,7 +216,7 @@ ExtensionFunction::ResponseAction FileSystemProviderMountFunction::Run() {
 
 ExtensionFunction::ResponseAction FileSystemProviderUnmountFunction::Run() {
   using api::file_system_provider::Unmount::Params;
-  std::unique_ptr<Params> params(Params::Create(args()));
+  absl::optional<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   auto id = crosapi::mojom::FileSystemId::New();
@@ -269,7 +268,7 @@ void FileSystemProviderGetAllFunction::RespondWithInfos(
 
 ExtensionFunction::ResponseAction FileSystemProviderGetFunction::Run() {
   using api::file_system_provider::Get::Params;
-  std::unique_ptr<Params> params(Params::Create(args()));
+  absl::optional<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   auto id = crosapi::mojom::FileSystemId::New();
@@ -305,7 +304,7 @@ void FileSystemProviderGetFunction::RespondWithInfo(
 
 ExtensionFunction::ResponseAction FileSystemProviderNotifyFunction::Run() {
   using api::file_system_provider::Notify::Params;
-  std::unique_ptr<Params> params(Params::Create(args()));
+  absl::optional<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   auto callback =
@@ -384,7 +383,7 @@ bool FileSystemProviderInternal::ForwardMountResult(int64_t request_id,
 ExtensionFunction::ResponseAction
 FileSystemProviderInternalRespondToMountRequestFunction::Run() {
   using api::file_system_provider_internal::RespondToMountRequest::Params;
-  std::unique_ptr<Params> params(Params::Create(args()));
+  absl::optional<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   int64_t request_id = params->request_id;
@@ -432,7 +431,7 @@ bool FileSystemProviderInternal::ForwardOperationResultImpl(
 ExtensionFunction::ResponseAction
 FileSystemProviderInternalUnmountRequestedSuccessFunction::Run() {
   using api::file_system_provider_internal::UnmountRequestedSuccess::Params;
-  std::unique_ptr<Params> params(Params::Create(args()));
+  absl::optional<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   bool result = ForwardOperationResult(
@@ -446,7 +445,7 @@ FileSystemProviderInternalUnmountRequestedSuccessFunction::Run() {
 ExtensionFunction::ResponseAction
 FileSystemProviderInternalGetMetadataRequestedSuccessFunction::Run() {
   using api::file_system_provider_internal::GetMetadataRequestedSuccess::Params;
-  std::unique_ptr<Params> params(Params::Create(args()));
+  absl::optional<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   bool result = ForwardOperationResult(
@@ -460,7 +459,7 @@ FileSystemProviderInternalGetMetadataRequestedSuccessFunction::Run() {
 ExtensionFunction::ResponseAction
 FileSystemProviderInternalGetActionsRequestedSuccessFunction::Run() {
   using api::file_system_provider_internal::GetActionsRequestedSuccess::Params;
-  std::unique_ptr<Params> params(Params::Create(args()));
+  absl::optional<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   bool result = ForwardOperationResult(
       params, mutable_args(),
@@ -474,7 +473,7 @@ ExtensionFunction::ResponseAction
 FileSystemProviderInternalReadDirectoryRequestedSuccessFunction::Run() {
   using api::file_system_provider_internal::ReadDirectoryRequestedSuccess::
       Params;
-  std::unique_ptr<Params> params(Params::Create(args()));
+  absl::optional<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   bool result = ForwardOperationResult(
       params, mutable_args(),
@@ -490,7 +489,7 @@ FileSystemProviderInternalReadFileRequestedSuccessFunction::Run() {
   using api::file_system_provider_internal::ReadFileRequestedSuccess::Params;
 
   // TODO(https://crbug.com/1314397): Improve performance by removing copy.
-  std::unique_ptr<Params> params(Params::Create(args()));
+  absl::optional<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   bool result = ForwardOperationResult(
       params, mutable_args(),
@@ -503,7 +502,7 @@ FileSystemProviderInternalReadFileRequestedSuccessFunction::Run() {
 ExtensionFunction::ResponseAction
 FileSystemProviderInternalOperationRequestedSuccessFunction::Run() {
   using api::file_system_provider_internal::OperationRequestedSuccess::Params;
-  std::unique_ptr<Params> params(Params::Create(args()));
+  absl::optional<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   bool result = ForwardOperationResult(
@@ -517,7 +516,7 @@ FileSystemProviderInternalOperationRequestedSuccessFunction::Run() {
 ExtensionFunction::ResponseAction
 FileSystemProviderInternalOperationRequestedErrorFunction::Run() {
   using api::file_system_provider_internal::OperationRequestedError::Params;
-  std::unique_ptr<Params> params(Params::Create(args()));
+  absl::optional<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (params->error == api::file_system_provider::PROVIDER_ERROR_OK) {

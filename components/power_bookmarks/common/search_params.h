@@ -23,6 +23,9 @@ struct SearchParams {
   // Unless equal to POWER_TYPE_UNSPECIFIED, narrows the search to a single
   // power type.
   sync_pb::PowerBookmarkSpecifics::PowerType power_type;
+
+  // Whether the search is case sensitive.
+  bool case_sensitive = false;
 };
 
 }  // namespace power_bookmarks

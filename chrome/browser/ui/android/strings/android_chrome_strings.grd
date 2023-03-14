@@ -1347,6 +1347,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_CLEAR_BROWSING_DATA_TAB_PERIOD_TITLE" desc="Label of the dropdown that selects the time range for which browsing data will be deleted.">
         Time range
       </message>
+      <message name="IDS_CLEAR_BROWSING_DATA_TAB_PERIOD_15_MINUTES" desc="The option to delete browsing data from the last 15 minutes.">
+        Last 15 minutes
+      </message>
       <message name="IDS_CLEAR_BROWSING_DATA_TAB_PERIOD_HOUR" desc="The option to delete browsing data from the last hour.">
         Last hour
       </message>
@@ -2958,20 +2961,11 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_FRE_ACTIVITY_LABEL" desc="Label for first run dialog in Android Recents.">
         Chrome First Run Experience
       </message>
-      <message name="IDS_FRE_TOS" desc="Message explaining that use of Chrome is governed by terms of service.">
-        By using Chrome, you agree to the <ph name="BEGIN_TOS_LINK">&lt;TOS_LINK&gt;</ph>Google Terms of Service<ph name="END_TOS_LINK">&lt;/TOS_LINK&gt;</ph>, and the <ph name="BEGIN_ATOS_LINK">&lt;ATOS_LINK&gt;</ph>Google Chrome and ChromeOS Additional Terms of Service<ph name="END_ATOS_LINK">&lt;/ATOS_LINK&gt;</ph>.
-      </message>
-      <message name="IDS_FRE_TOS_AND_PRIVACY_CHILD_ACCOUNT" desc="Message explaining that use of Chrome is governed by Chrome's terms of service, and the Google Privacy Policy.">
-        By using Chrome, you agree to the <ph name="BEGIN_TOS_LINK">&lt;TOS_LINK&gt;</ph>Google Terms of Service<ph name="END_TOS_LINK">&lt;/TOS_LINK&gt;</ph>, and the <ph name="BEGIN_ATOS_LINK">&lt;ATOS_LINK&gt;</ph>Google Chrome and ChromeOS Additional Terms of Service<ph name="END_ATOS_LINK">&lt;/ATOS_LINK&gt;</ph>. The <ph name="BEGIN_PRIVACY_LINK">&lt;PRIVACY_LINK&gt;</ph>Privacy Policy<ph name="END_PRIVACY_LINK">&lt;/PRIVACY_LINK&gt;</ph> also applies.
-      </message>
       <message name="IDS_LIGHTWEIGHT_FRE_ASSOCIATED_APP_TOS" desc="Message explaining that use of Chrome is governed by Chrome's terms of service.">
         <ph name="APP_NAME">%1$s<ex>Google Maps</ex></ph> will open in Chrome. By continuing, you agree to the <ph name="BEGIN_LINK1">&lt;LINK1&gt;</ph>Google Terms of Service<ph name="END_LINK1">&lt;/LINK1&gt;</ph>, and the <ph name="BEGIN_LINK2">&lt;LINK2&gt;</ph>Google Chrome and ChromeOS Additional Terms of Service<ph name="END_LINK2">&lt;/LINK2&gt;</ph>.
       </message>
       <message name="IDS_LIGHTWEIGHT_FRE_ASSOCIATED_APP_TOS_AND_PRIVACY_CHILD_ACCOUNT" desc="Message explaining that use of Chrome is governed by Chrome's terms of service, and the Google Privacy Policy.">
         <ph name="APP_NAME">%1$s<ex>Google Maps</ex></ph> will open in Chrome. By continuing, you agree to the <ph name="BEGIN_LINK1">&lt;LINK1&gt;</ph>Google Terms of Service<ph name="END_LINK1">&lt;/LINK1&gt;</ph>, and the <ph name="BEGIN_LINK2">&lt;LINK2&gt;</ph>Google Chrome and ChromeOS Additional Terms of Service<ph name="END_LINK2">&lt;/LINK2&gt;</ph>. The <ph name="BEGIN_LINK3">&lt;LINK3&gt;</ph>Privacy Policy<ph name="END_LINK3">&lt;/LINK3&gt;</ph> also applies.
-      </message>
-      <message name="IDS_FRE_SEND_REPORT_CHECK" desc="Text for asking the user to allow sending stats and crash reports">
-        Help make Chrome better by sending usage statistics and crash reports to Google.
       </message>
       <message name="IDS_FRE_ACCEPT_CONTINUE" desc="Text for first page accept and continue button [CHAR_LIMIT=20]">
         Accept &amp; continue
@@ -2995,9 +2989,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_SIGNIN_FRE_FOOTER_TOS" desc="The text is displayed in a footer on the very first screen of Chrome. The link ‘Terms of Service’ opens the Google Terms of Service.">
         By continuing, you agree to the <ph name="BEGIN_TOS_LINK">&lt;TOS_LINK&gt;</ph>Terms of Service<ph name="END_TOS_LINK">&lt;/TOS_LINK&gt;</ph>.
-      </message>
-      <message name="IDS_SIGNIN_FRE_FOOTER_TOS_WITH_SUPERVISED_USER" desc="The text is displayed in a footer on the very first screen of Chrome. The link 'Terms of Service' opens the Google Terms of Service. The link 'Privacy Policy' opens the Google Privacy Policy.">
-        By continuing, you agree to the <ph name="BEGIN_TOS_LINK">&lt;TOS_LINK&gt;</ph>Terms of Service<ph name="END_TOS_LINK">&lt;/TOS_LINK&gt;</ph> and <ph name="BEGIN_PRIVACY_LINK">&lt;PRIVACY_LINK&gt;</ph>Privacy\u00A0Policy<ph name="END_PRIVACY_LINK">&lt;/PRIVACY_LINK&gt;</ph>.
       </message>
       <message name="IDS_SIGNIN_FRE_FOOTER_METRICS_REPORTING" desc="The text is displayed in a footer on the very first screen of Chrome. Preferably, ensure consistency with the “Usage statistics and crash reports” section of the Chrome Privacy Policy (google.com/chrome/privacy).">
         To help improve the app, Chrome sends usage and crash data to Google. <ph name="BEGIN_UMA_LINK">&lt;UMA_LINK&gt;</ph>Manage<ph name="END_UMA_LINK">&lt;/UMA_LINK&gt;</ph>
@@ -3125,6 +3116,12 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_SIGNIN_ACCOUNT_PICKER_GENERAL_ERROR_BUTTON" desc="Button text of the account picker bottom sheet when something went wrong in the sign-in process. User can try again if they click it.">
         Try again
+      </message>
+      <message name="IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_TITLE_FOR_BACK_OF_CARD_MENU_SIGNIN" desc="The title for the bottom sheet that shows the list of accounts on the device and asks the user to select one of these accounts, when signin from BoC triggered the UI. [CHAR_LIMIT=27]">
+        Sign in to Chrome
+      </message>
+      <message name="IDS_SIGNIN_ACCOUNT_PICKER_BOTTOM_SHEET_SUBTITLE_FOR_BACK_OF_CARD_MENU_SIGNIN" desc="The subtitle for the account picker bottom sheet that tells the user what happens if the Continue button is clicked, when signin from BoC triggered the UI.">
+        Sign in to manage your preferences
       </message>
 
       <!-- Personalized Signin Promos Strings -->
@@ -3514,6 +3511,12 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_CUSTOM_TAB_AMP_PUBLISHER_URL" desc="Text shown in a Custom Tab toolbar for a web page that is hosted by the Google content delivery network but was originally published by someone else.">
         From <ph name="PUBLISHER_ORIGIN">&lt;pub&gt;%1$s&lt;/pub&gt;<ex>example.com</ex></ph> – <ph name="BEGIN_DEEMPHASIZED">&lt;bg&gt;</ph>delivered by Google<ph name="END_DEEMPHASIZED">&lt;/bg&gt;</ph>
       </message>
+      <message name="IDS_CUSTOM_TAB_SIDE_SHEET_MAXIMIZE" desc="The accesibility text for maximize button in side-sheet custom tab.">
+        Expand to full screen
+      </message>
+      <message name="IDS_CUSTOM_TAB_SIDE_SHEET_MINIMIZE" desc="The accesibility text for minimize button in side-sheet custom tab.">
+        Collapse to side view
+      </message>
       <message name="IDS_ADAPTIVE_TOOLBAR_BUTTON_PREFERENCE_NEW_TAB" desc="Title name for the new tab option in the preference.">
         New tab
       </message>
@@ -3733,19 +3736,16 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_BOOKMARK_CHOOSE_FOLDER" desc="Title for the dialog that moves bookmarks to another folder [CHAR_LIMIT=32]">
         Choose folder
       </message>
-      <message name="IDS_BOOKMARK_ACTION_BAR_EDIT_FOLDER" desc="Button text for editing current folder action on the bookmark action bar [CHAR_LIMIT=32]">
-        Edit folder
-      </message>
-      <message name="IDS_BOOKMARK_ACTION_BAR_MOVE" desc="Button text for bookmark move action on the bookmark action bar [CHAR_LIMIT=32]">
+      <message name="IDS_BOOKMARK_TOOLBAR_MOVE" desc="Button text for bookmark move action on the bookmark action bar [CHAR_LIMIT=32]">
         Move bookmarks
       </message>
-      <message name="IDS_BOOKMARK_ACTION_BAR_DELETE" desc="Button text for bookmark delete action on the bookmark action bar [CHAR_LIMIT=32]">
+      <message name="IDS_BOOKMARK_TOOLBAR_DELETE" desc="Button text for bookmark delete action on the bookmark action bar [CHAR_LIMIT=32]">
         Delete bookmarks
       </message>
-      <message name="IDS_BOOKMARK_ACTION_BAR_CLOSE" desc="Button text for closing the current bookmark dialog on the bookmark action bar [CHAR_LIMIT=32]">
+      <message name="IDS_BOOKMARK_TOOLBAR_CLOSE" desc="Button text for closing the current bookmark dialog on the bookmark action bar [CHAR_LIMIT=32]">
         Close dialog
       </message>
-      <message name="IDS_BOOKMARK_ACTION_BAR_SEARCH" desc="Button text for bookmark search action on the bookmark action bar [CHAR_LIMIT=32]">
+      <message name="IDS_BOOKMARK_TOOLBAR_SEARCH" desc="Button text for bookmark search action on the bookmark action bar [CHAR_LIMIT=32]">
         Search your bookmarks
       </message>
       <message name="IDS_BOOKMARK_NO_RESULT" desc="Text explaining that no bookmarks are found to match a search query">
@@ -4060,9 +4060,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_ACCESSIBILITY_FIND_TOOLBAR_BTN_PREV" desc="Content description for the button to go to the previous find in page result.">
         Previous
-      </message>
-      <message name="IDS_ACCESSIBILITY_TABSTRIP_BTN_EMPTY_NEW_TAB" desc="Content description for the new tab button.">
-        New tab
       </message>
       <message name="IDS_ACCESSIBILITY_TABSTRIP_BTN_INCOGNITO_TOGGLE_STANDARD" desc="Content description for the Incognito tabs toggle button when viewing standard tabs.">
         Enter Incognito mode
@@ -4929,15 +4926,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_NEAR_OOM_INTERVENTION_DECLINE" desc="The text of the button letting the user decline the browser's intervention, so that the page can resume what it was doing.">
          Resume
       </message>
-
-      <!-- Autofill Assistant preferences -->
-      <!-- TODO(b/168178344): Move to Assistant settings strings section below. -->
-      <message name="IDS_PREFS_AUTOFILL_ASSISTANT_TITLE" desc="Title for the Autofill Assistant preferences screen. [CHAR_LIMIT=32]">
-        Google Assistant in Chrome
-      </message>
-      <message name="IDS_PREFS_AUTOFILL_ASSISTANT_SUMMARY" desc="Summary for the Autofill Assistant preferences screen.">
-        Helps you complete tasks, such as checkout, throughout the web
-      </message>
       <!-- Usage Stats strings -->
       <message name="IDS_USAGE_STATS_CONSENT_TITLE" desc="Title for activity authorizing Digital Wellbeing to access Chrome usage data">
         Show your Chrome activity in Digital Wellbeing?
@@ -5386,11 +5374,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         chrome_image_<ph name="CURRENT_TIMESTAMP_MS">%1$s<ex>1582667748515</ex></ph>
       </message>
 
-      <!-- Share Crow strings -->
-      <message name="IDS_CROW_IPH" desc="In product help string for Crow feature">
-        Show thanks to this creator
-      </message>
-
       <!-- Chime DFM module strings -->
       <message name="IDS_CHIME_MODULE_TITLE" desc="Text shown when the chime module is referenced in install start, success, failure UI (e.g. in IDS_MODULE_INSTALL_START_TEXT, which will expand to 'Installing Google Notifications Platform for Chrome…').">
         Google Notifications Platform
@@ -5519,55 +5502,12 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Image descriptions will resume when you connect to Wi-Fi
       </message>
 
-      <!-- Assistant voice search consent ui. -->
-      <message name="IDS_AVS_CONSENT_UI_TITLE" desc="Title for a dialog asking the user's permission to use Assistant for voice search.">
-      Get a better voice experience on the web
-      </message>
-      <message name="IDS_AVS_CONSENT_UI_SUBTITLE" desc="Subtitle for a dialog asking the user's permission to use Assistant for voice search.">
-      Google Assistant can complete actions across websites for you
-      </message>
-      <message name="IDS_AVS_CONSENT_UI_BODY" desc="Body for a dialog asking the user's permission to use Assistant for voice search.">
-      To help you complete tasks, Google will receive the URLs and contents of sites on which you use Assistant, as well as information you submit through Assistant. This information may be stored in your Google account. You can turn off Assistant in Chrome settings.
-      </message>
-      <message name="IDS_AVS_CONSENT_UI_CONTENT_DESCRIPTION" desc="Enable button text for a dialog asking the user's permission to use Assistant for voice search.">
-      Assistant voice search consent ui
-      </message>
-      <message name="IDS_AVS_CONSENT_UI_HALF_HEIGHT_DESCRIPTION" desc="Enable button text for a dialog asking the user's permission to use Assistant for voice search.">
-      Assistant voice search consent ui opened at half height
-      </message>
-      <message name="IDS_AVS_CONSENT_UI_FULL_HEIGHT_DESCRIPTION" desc="Enable button text for a dialog asking the user's permission to use Assistant for voice search.">
-      Assistant voice search consent ui opened at full height
-      </message>
-      <message name="IDS_AVS_CONSENT_UI_CLOSED_DESCRIPTION" desc="Enable button text for a dialog asking the user's permission to use Assistant for voice search.">
-      Assistant voice search consent ui closed
-      </message>
-      <message name="IDS_AVS_CONSENT_UI_SIMPLIFIED_TITLE" desc="Simplified title for a dialog asking the user's permission to use Assistant for voice search.">
-      Get a better voice experience
-      </message>
-      <message name="IDS_AVS_CONSENT_UI_SIMPLIFIED_BODY" desc="Simplified body for a dialog asking the user's permission to use Assistant for voice search.">
-      Knowing the URLs of sites allows Google Assistant to help you complete tasks. You can turn off Assistant in Chrome settings.
-      </message>
-      <message name="IDS_AVS_CONSENT_UI_SIMPLIFIED_ACCEPT" desc="Button text for the accept button for a dialog asking the user's permission to use Assistant for voice search.">
-        Yes, I’m in
-      </message>
-      <message name="IDS_AVS_CONSENT_UI_SIMPLIFIED_DENY" desc="Button text for the deny button for a dialog asking the user's permission to use Assistant for voice search.">
-        No thanks
-      </message>
-
-      <!-- Assistant settings strings-->
-      <message name="IDS_AVS_SETTING_CATEGORY_TITLE" desc="Title of the Assistant voice search setting category.">
-      Voice assistance
-      </message>
-      <message name="IDS_AVS_SETTING_ENABLED_TITLE" desc="Title of the Assistant voice search setting.">
-      Enhanced voice search
-      </message>
-      <message name="IDS_AVS_SETTING_ENABLED_DESCRIPTION" desc="Description of the Assistant voice search setting.">
-      Google Assistant provides a better voice experience for searching the web and engaging with sites you have open. Google Assistant will receive the URL and contents of sites you use with it.
-      </message>
-
       <!-- WebID Account Selection strings -->
       <message name="IDS_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT" desc="Header for sign in sheet. Sheet is shown to prompt user for sign in consent.">
         Sign in to <ph name="SITE_ETLD_PLUS_ONE">%1$s<ex>rp.example</ex></ph> with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">%2$s<ex>idp.com</ex></ph>
+      </message>
+      <message name="IDS_ACCOUNT_SELECTION_SHEET_SUBTITLE_EXPLICIT" desc="Message shown when the user is shown the federated identity login prompt. This message is the subtitle for the sign in sheet, which contains the top-level domain of the page the user is visiting when the user is receiving a prompt from an iframe embedded on such page.">
+        on <ph name="MAIN_FRAME_ETLD_PLUS_ONE">%1$s<ex>main-frame.example</ex></ph>
       </message>
       <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT_NO_PP_OR_TOS" desc="The consent text shown to the user before sign up when there is no privacy policy or terms of service.">
       To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">%1$s<ex>idp.com</ex></ph> will share your name, email address, and profile picture with this site.
@@ -5633,6 +5573,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_SUMMARY" desc="Secondary, continued explanation of HTTPS-First Mode in settings.">
         Upgrade navigations to HTTPS and warn you before loading sites that don’t support it
+      </message>
+      <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_WITH_ADVANCED_PROTECTION_SUMMARY" desc="Secondary, continued explanation of HTTPS-Only Mode in Security settings when the user can't change the setting">
+        Upgrade navigations to HTTPS and warn you before loading sites that don’t support it. You can’t change this setting because you have Advanced Protection enabled.
       </message>
 
       <!-- Auto-darken web content -->

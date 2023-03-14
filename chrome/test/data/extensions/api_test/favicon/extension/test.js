@@ -23,6 +23,10 @@ window.onload =
           `_favicon/?pageUrl=${visitedPageUrl}`
         ],
         [
+          'Succeed with chrome.runtime.getURL', true,
+          chrome.runtime.getURL(`_favicon/?pageUrl=${visitedPageUrl}`)
+        ],
+        [
           'Load favicon using multiple arguments', true,
           `_favicon/?pageUrl=${visitedPageUrl}&size=16&scaleFactor=1x`
         ],

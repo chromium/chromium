@@ -13,6 +13,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_logging.h"
 #include "base/mac/scoped_authorizationref.h"
+#include "base/strings/sys_string_conversions.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -60,7 +61,7 @@ bool EnsureAuthorizationRightExists() {
 
 namespace password_manager_util_mac {
 
-bool AuthenticateUser(password_manager::ReauthPurpose purpose) {
+bool AuthenticateUser(std::u16string prompt_string) {
   if (!EnsureAuthorizationRightExists()) {
     return false;
   }
@@ -69,24 +70,7 @@ bool AuthenticateUser(password_manager::ReauthPurpose purpose) {
   AuthorizationItem right_items[] = {{rightName.UTF8String, 0, nullptr, 0}};
   AuthorizationRights rights = {std::size(right_items), right_items};
 
-  NSString* prompt;
-  switch (purpose) {
-    case password_manager::ReauthPurpose::VIEW_PASSWORD:
-      prompt = l10n_util::GetNSString(IDS_PASSWORDS_PAGE_AUTHENTICATION_PROMPT);
-      break;
-    case password_manager::ReauthPurpose::COPY_PASSWORD:
-      prompt =
-          l10n_util::GetNSString(IDS_PASSWORDS_PAGE_COPY_AUTHENTICATION_PROMPT);
-      break;
-    case password_manager::ReauthPurpose::EDIT_PASSWORD:
-      prompt =
-          l10n_util::GetNSString(IDS_PASSWORDS_PAGE_EDIT_AUTHENTICATION_PROMPT);
-      break;
-    case password_manager::ReauthPurpose::EXPORT:
-      prompt = l10n_util::GetNSString(
-          IDS_PASSWORDS_PAGE_EXPORT_AUTHENTICATION_PROMPT);
-      break;
-  }
+  NSString* prompt = base::SysUTF16ToNSString(prompt_string);
 
   // Pass kAuthorizationFlagDestroyRights to prevent the OS from saving the
   // authorization and not prompting the user when future requests are made.
@@ -97,9 +81,8 @@ bool AuthenticateUser(password_manager::ReauthPurpose purpose) {
   return static_cast<bool>(authorization);
 }
 
-std::u16string GetMessageForBiometricLoginPrompt(
+std::u16string GetMessageForLoginPrompt(
     password_manager::ReauthPurpose purpose) {
-  // Depending on the `purpose` different message will be returned.
   switch (purpose) {
     case password_manager::ReauthPurpose::VIEW_PASSWORD:
       return l10n_util::GetStringUTF16(

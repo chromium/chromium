@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/touch_to_fill_delegate_impl.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/autofill_manager.h"
@@ -13,20 +14,151 @@
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 
 namespace autofill {
+
+TouchToFillDelegateImpl::DryRunResult::DryRunResult(
+    TriggerOutcome outcome,
+    std::vector<CreditCard> cards_to_suggest)
+    : outcome(outcome), cards_to_suggest(std::move(cards_to_suggest)) {}
+
+TouchToFillDelegateImpl::DryRunResult::DryRunResult(DryRunResult&&) = default;
+
+TouchToFillDelegateImpl::DryRunResult&
+TouchToFillDelegateImpl::DryRunResult::operator=(DryRunResult&&) = default;
+
+TouchToFillDelegateImpl::DryRunResult::~DryRunResult() = default;
 
 TouchToFillDelegateImpl::TouchToFillDelegateImpl(
     BrowserAutofillManager* manager)
     : manager_(manager) {
   DCHECK(manager);
+  autofill_manager_observation_.Observe(manager);
 }
 
 TouchToFillDelegateImpl::~TouchToFillDelegateImpl() {
   // Invalidate pointers to avoid post hide callbacks.
   weak_ptr_factory_.InvalidateWeakPtrs();
   HideTouchToFill();
+}
+
+TouchToFillDelegateImpl::DryRunResult TouchToFillDelegateImpl::DryRun(
+    FormGlobalId form_id,
+    FieldGlobalId field_id) {
+  // Trigger only on supported platforms.
+  if (!manager_->client()->IsTouchToFillCreditCardSupported()) {
+    return {TriggerOutcome::kUnsupportedFieldType, {}};
+  }
+  const FormStructure* form = manager_->FindCachedFormById(form_id);
+  if (!form) {
+    return {TriggerOutcome::kUnknownForm, {}};
+  }
+  const AutofillField* field = form->GetFieldById(field_id);
+  if (!field) {
+    return {TriggerOutcome::kUnknownField, {}};
+  }
+  // Trigger only for a credit card field/form.
+  if (field->Type().group() != FieldTypeGroup::kCreditCard) {
+    return {TriggerOutcome::kUnsupportedFieldType, {}};
+  }
+
+  // Trigger only for complete forms (contining the fields for the card number
+  // and the card expiration date).
+  if (!FormHasAllCreditCardFields(*form)) {
+    return {TriggerOutcome::kIncompleteForm, {}};
+  }
+  // Trigger only if not shown before.
+  if (ttf_credit_card_state_ != TouchToFillState::kShouldShow) {
+    return {TriggerOutcome::kShownBefore, {}};
+  }
+  // Trigger only if the client and the form are not insecure.
+  if (IsFormOrClientNonSecure(manager_->client(), *form)) {
+    return {TriggerOutcome::kFormOrClientNotSecure, {}};
+  }
+  // Trigger only on focusable empty field.
+  // TODO(crbug.com/1331312): This should be the field's *current* value, not
+  // the original value.
+  if (!field->IsFocusable() || !SanitizedFieldIsEmpty(field->value)) {
+    return {TriggerOutcome::kFieldNotEmptyOrNotFocusable, {}};
+  }
+
+  // Trigger only if there is at least 1 complete valid credit card on file.
+  // Complete = contains number, expiration date and name on card.
+  // Valid = unexpired with valid number format.
+  std::vector<CreditCard> cards_to_suggest =
+      AutofillSuggestionGenerator::GetOrderedCardsToSuggest(
+          manager_->client(), /*suppress_disused_cards=*/true);
+  if (base::ranges::none_of(cards_to_suggest,
+                            &CreditCard::IsCompleteValidCard)) {
+    return {TriggerOutcome::kNoValidCards, {}};
+  }
+  // Trigger only if the UI is available.
+  if (!manager_->CanShowAutofillUi()) {
+    return {TriggerOutcome::kCannotShowAutofillUi, {}};
+  }
+
+  // If the card is enrolled into virtual card number, create a copy of the
+  // card with `CreditCard::VIRTUAL_CARD` as the record type, and insert it
+  // before the actual card.
+  std::vector<autofill::CreditCard> real_and_virtual_cards;
+  for (const CreditCard& card : cards_to_suggest) {
+    if (card.virtual_card_enrollment_state() == CreditCard::ENROLLED &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillVirtualCardsOnTouchToFillAndroid)) {
+      real_and_virtual_cards.push_back(CreditCard::CreateVirtualCard(card));
+    }
+    real_and_virtual_cards.push_back(card);
+  }
+  return {TriggerOutcome::kShown, std::move(real_and_virtual_cards)};
+}
+
+void TouchToFillDelegateImpl::SetShouldSuppressKeyboard(bool suppress) {
+  if (keyboard_is_suppressed_ == suppress) {
+    return;
+  }
+  manager_->SetShouldSuppressKeyboard(suppress);
+  keyboard_is_suppressed_ = suppress;
+  if (suppress) {
+    keyboard_unsuppress_timer_.Start(
+        FROM_HERE, base::Seconds(1),
+        base::BindOnce(
+            [](base::WeakPtr<TouchToFillDelegateImpl> self) {
+              if (self) {
+                self->SetShouldSuppressKeyboard(false);
+              }
+            },
+            GetWeakPtr()));
+  } else {
+    keyboard_unsuppress_timer_.Stop();
+  }
+}
+
+void TouchToFillDelegateImpl::OnAutofillManagerDestroyed(
+    AutofillManager& manager) {
+  autofill_manager_observation_.Reset();
+}
+
+void TouchToFillDelegateImpl::OnBeforeAskForValuesToFill(
+    AutofillManager& manager,
+    FormGlobalId form_id,
+    FieldGlobalId field_id) {
+  if (ttf_credit_card_state_ != TouchToFillState::kIsShowing) {
+    SetShouldSuppressKeyboard(DryRun(form_id, field_id).outcome ==
+                              TriggerOutcome::kShown);
+  }
+}
+
+void TouchToFillDelegateImpl::OnAfterAskForValuesToFill(
+    AutofillManager& manager,
+    FormGlobalId form_id,
+    FieldGlobalId field_id) {
+  if (ttf_credit_card_state_ != TouchToFillState::kIsShowing) {
+    SetShouldSuppressKeyboard(false);
+  } else {
+    keyboard_unsuppress_timer_.Stop();
+  }
 }
 
 bool TouchToFillDelegateImpl::TryToShowTouchToFill(const FormData& form,
@@ -36,61 +168,17 @@ bool TouchToFillDelegateImpl::TryToShowTouchToFill(const FormData& form,
   // bottomsheet being open.
   query_form_ = form;
   query_field_ = field;
-  // Trigger only for a credit card field/form.
-  if (manager_->GetPopupType(form, field) != PopupType::kCreditCards)
-    return false;
-  // Trigger only on supported platforms.
-  if (!manager_->client()->IsTouchToFillCreditCardSupported())
-    return false;
-
-  TriggerOutcome outcome = TriggerOutcome::kShown;
-  // Trigger only for complete forms (contining the fields for the card number
-  // and the card expiration date).
-  FormStructure* form_structure =
-      manager_->FindCachedFormById(form.global_id());
-  if (form_structure && !FormHasAllCreditCardFields(*form_structure)) {
-    outcome = TriggerOutcome::kIncompleteForm;
-  }
-  // Trigger only if not shown before.
-  if (ttf_credit_card_state_ != TouchToFillState::kShouldShow) {
-    outcome = TriggerOutcome::kShownBefore;
-  }
-  // Trigger only if the client and the form are not insecure.
-  if (IsFormOrClientNonSecure(manager_->client(), form)) {
-    outcome = TriggerOutcome::kFormOrClientNotSecure;
-  }
-  // Trigger only on focusable empty field.
-  if (!field.is_focusable || !SanitizedFieldIsEmpty(field.value)) {
-    outcome = TriggerOutcome::kFieldNotEmptyOrNotFocusable;
-  }
-  // Trigger only if there is at least 1 complete valid credit card on file.
-  // Complete = contains number, expiration date and name on card.
-  // Valid = unexpired with valid number format.
-  PersonalDataManager* pdm = manager_->client()->GetPersonalDataManager();
-  DCHECK(pdm);
-  std::vector<CreditCard*> cards_to_suggest =
-      AutofillSuggestionGenerator::GetOrderedCardsToSuggest(
-          manager_->client(), /*suppress_disused_cards=*/true);
-
-  // Not showing the sheet if all the cards are incomplete or invalid.
-  if (base::ranges::none_of(cards_to_suggest,
-                            &CreditCard::IsCompleteValidCard)) {
-    outcome = TriggerOutcome::kNoValidCards;
-  }
-  // Trigger only if the UI is available.
-  if (!manager_->CanShowAutofillUi()) {
-    outcome = TriggerOutcome::kCannotShowAutofillUi;
-  }
-  // Finally try showing the surface
-  if (outcome == TriggerOutcome::kShown &&
+  DryRunResult dry_run = DryRun(form.global_id(), field.global_id());
+  if (dry_run.outcome == TriggerOutcome::kShown && keyboard_is_suppressed_ &&
       !manager_->client()->ShowTouchToFillCreditCard(
-          GetWeakPtr(), std::move(cards_to_suggest))) {
-    outcome = TriggerOutcome::kFailedToDisplayBottomSheet;
+          GetWeakPtr(), std::move(dry_run.cards_to_suggest))) {
+    dry_run.outcome = TriggerOutcome::kFailedToDisplayBottomSheet;
   }
-  base::UmaHistogramEnumeration(kUmaTouchToFillCreditCardTriggerOutcome,
-                                outcome);
-  // Return if didn't show the sheet
-  if (outcome != TriggerOutcome::kShown) {
+  if (dry_run.outcome != TriggerOutcome::kUnsupportedFieldType) {
+    base::UmaHistogramEnumeration(kUmaTouchToFillCreditCardTriggerOutcome,
+                                  dry_run.outcome);
+  }
+  if (dry_run.outcome != TriggerOutcome::kShown) {
     return false;
   }
 
@@ -98,7 +186,6 @@ bool TouchToFillDelegateImpl::TryToShowTouchToFill(const FormData& form,
   manager_->client()->HideAutofillPopup(
       PopupHidingReason::kOverlappingWithTouchToFillSurface);
   manager_->DidShowSuggestions(/*has_autofill_suggestions=*/true, form, field);
-
   return true;
 }
 
@@ -149,20 +236,28 @@ void TouchToFillDelegateImpl::OnCreditCardScanned(const CreditCard& card) {
 }
 
 void TouchToFillDelegateImpl::ShowCreditCardSettings() {
-  HideTouchToFill();
   manager_->client()->ShowAutofillSettings(PopupType::kCreditCards);
 }
 
-void TouchToFillDelegateImpl::SuggestionSelected(std::string unique_id) {
+void TouchToFillDelegateImpl::SuggestionSelected(std::string unique_id,
+                                                 bool is_virtual) {
   HideTouchToFill();
-  PersonalDataManager* pdm = manager_->client()->GetPersonalDataManager();
-  DCHECK(pdm);
-  CreditCard* card = pdm->GetCreditCardByGUID(unique_id);
-  manager_->FillOrPreviewCreditCardForm(mojom::RendererFormDataAction::kFill,
-                                        query_form_, query_field_, card);
+
+  if (is_virtual) {
+    manager_->FillOrPreviewVirtualCardInformation(
+        mojom::RendererFormDataAction::kFill, unique_id, query_form_,
+        query_field_);
+  } else {
+    PersonalDataManager* pdm = manager_->client()->GetPersonalDataManager();
+    DCHECK(pdm);
+    CreditCard* card = pdm->GetCreditCardByGUID(unique_id);
+    manager_->FillOrPreviewCreditCardForm(mojom::RendererFormDataAction::kFill,
+                                          query_form_, query_field_, card);
+  }
 }
 
 void TouchToFillDelegateImpl::OnDismissed(bool dismissed_by_user) {
+  SetShouldSuppressKeyboard(false);
   if (IsShowingTouchToFill()) {
     ttf_credit_card_state_ = TouchToFillState::kWasShown;
     dismissed_by_user_ = dismissed_by_user;

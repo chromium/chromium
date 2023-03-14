@@ -77,6 +77,12 @@ export class AppItemElement extends PolymerElement {
       metaKey: e.metaKey,
       shiftKey: e.shiftKey,
     };
+
+    if (this.appInfo.isDeprecatedApp) {
+      recordUserAction(AppHomeUserAction.LAUNCH_DEPRECATED_APP);
+    } else {
+      recordUserAction(AppHomeUserAction.LAUNCH_WEB_APP);
+    }
     BrowserProxy.getInstance().handler.launchApp(this.appInfo.id, clickEvent);
 
     e.preventDefault();
@@ -91,7 +97,14 @@ export class AppItemElement extends PolymerElement {
   // The CrActionMenuElement is a modal that does not listen to any other
   // events other than mousedown on right click when it is open. This allows
   // us to listen to changes on the dom even when the menu is showing.
-  private onMenuMousedown_(e: Event) {
+  private onMenuMousedown_(e: MouseEvent) {
+    // Actions that are not a right click on a different app are handled
+    // correctly by the cr-action-menu. Listening to them here causes
+    // errors.
+    if (e.button !== 2) {
+      return;
+    }
+
     // Do not listen to the mousedown event if not triggered from a
     // CrActionMenuElement, i.e. one without a dialog element covering the dom.
     if ((e.composedPath()[0] as HTMLElement).tagName !== 'DIALOG') {
@@ -120,6 +133,12 @@ export class AppItemElement extends PolymerElement {
   }
   private isInstallLocallyHidden_() {
     return this.appInfo.isLocallyInstalled || this.appInfo.isDeprecatedApp;
+  }
+  private isUninstallHidden_() {
+    return !this.appInfo.isLocallyInstalled;
+  }
+  private isRemoveFromChromeHidden_() {
+    return this.appInfo.isLocallyInstalled;
   }
   private isAppSettingsHidden_() {
     return !this.appInfo.isLocallyInstalled;

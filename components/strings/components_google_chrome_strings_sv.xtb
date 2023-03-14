@@ -40,4 +40,6 @@
 <translation id="8187289872471304532">Öppna
           Program &gt; Systeminställningar &gt; Nätverk &gt; Avancerat &gt; Proxyservrar
           och avmarkera alla proxyservrar.</translation>
+<translation id="8232971017369963250">Chrome finns tack vare det öppna källkodsprojektet <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="8279509328145658601">Chrome möjliggörs även av andra <ph name="BEGIN_LINK_OSS" />program med öppen källkod<ph name="END_LINK_OSS" />.</translation>
 </translationbundle>

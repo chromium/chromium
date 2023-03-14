@@ -164,25 +164,24 @@ void ArcKioskAppService::OnComplianceReportReceived(
   VLOG(2) << "Compliance report received";
   compliance_report_received_ = true;
   pending_policy_app_installs_.clear();
-  const base::Value* const details = compliance_report->FindKeyOfType(
-      "nonComplianceDetails", base::Value::Type::LIST);
+  const base::Value::List* const details =
+      compliance_report->GetDict().FindList("nonComplianceDetails");
   if (!details) {
     PreconditionsChanged();
     return;
   }
 
-  for (const auto& detail : details->GetList()) {
-    const base::Value* const reason =
-        detail.FindKeyOfType("nonComplianceReason", base::Value::Type::INTEGER);
-    if (!reason || reason->GetInt() != kNonComplianceReasonAppNotInstalled) {
+  for (const auto& detail : *details) {
+    const base::Value::Dict& detail_dict = detail.GetDict();
+    absl::optional<int> reason = detail_dict.FindInt("nonComplianceReason");
+    if (!reason || *reason != kNonComplianceReasonAppNotInstalled) {
       continue;
     }
-    const base::Value* const app_name =
-        detail.FindKeyOfType("packageName", base::Value::Type::STRING);
-    if (!app_name || app_name->GetString().empty()) {
+    const std::string* const app_name = detail_dict.FindString("packageName");
+    if (!app_name || app_name->empty()) {
       continue;
     }
-    pending_policy_app_installs_.insert(app_name->GetString());
+    pending_policy_app_installs_.insert(*app_name);
   }
   PreconditionsChanged();
 }

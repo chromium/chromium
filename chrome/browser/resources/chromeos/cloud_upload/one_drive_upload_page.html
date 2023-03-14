@@ -1,21 +1,28 @@
 <!-- TODO: Use localized strings -->
-<svg slot="header-image">
+<style>
+  cr-button {
+    border-radius: 16px;
+  }
+
+  cr-button:focus-visible {
+    /* disable cr-button default keyboard focus style */
+    box-shadow: none;
+    outline: 2px solid var(--cros-focus-ring-color);
+    outline-offset: 2px;
+  }
+</style>
+<svg slot="header-image" viewBox="0 0 448 200">
   <use href="images/one_drive_success.svg#EXPORT_image"></use>
 </svg>
 <div slot="title">
   Microsoft 365 setup complete
 </div>
 <div slot="body">
-  <div id="file-container" hidden>
-    You can now open your file in the Microsoft 365 app:
-    <div id="file-name" style="margin-top: 1rem"></div>
-  </div>
   <p>
-    Word, Powerpoint, and Excel files will now open in Microsoft 365 by default.
-    You can change this later in Settings.
+    When opening Word, Excel, and Powerpoint files, the files
+    will move to Microsoft OneDrive before opening in Microsoft 365
   </p>
 </div>
 <div slot="button-container">
-  <cr-button class="cancel-button">Close</cr-button>
-  <cr-button class="action-button">Open file</cr-button>
+  <cr-button class="action-button">Done</cr-button>
 </div>

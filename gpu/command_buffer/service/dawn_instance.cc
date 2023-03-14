@@ -39,9 +39,33 @@ std::unique_ptr<DawnInstance> DawnInstance::Create(
   }
   const char* dawn_search_path_c_str = dawn_search_path.c_str();
 
+  std::vector<const char*> require_instance_enabled_toggles;
+  std::vector<const char*> require_instance_disabled_toggles;
+
+  // Create instance with all user-required toggles, those which are not
+  // instance toggles will be ignored by Dawn.
+  for (const std::string& toggles :
+       gpu_preferences.enabled_dawn_features_list) {
+    require_instance_enabled_toggles.push_back(toggles.c_str());
+  }
+  for (const std::string& toggles :
+       gpu_preferences.disabled_dawn_features_list) {
+    require_instance_disabled_toggles.push_back(toggles.c_str());
+  }
+
+  WGPUDawnTogglesDescriptor dawn_toggles_desc = {
+      .chain = {.sType = WGPUSType_DawnTogglesDescriptor},
+      .enabledTogglesCount =
+          static_cast<uint32_t>(require_instance_enabled_toggles.size()),
+      .enabledToggles = require_instance_enabled_toggles.data(),
+      .disabledTogglesCount =
+          static_cast<uint32_t>(require_instance_disabled_toggles.size()),
+      .disabledToggles = require_instance_disabled_toggles.data(),
+  };
   WGPUDawnInstanceDescriptor dawn_instance_desc = {
       .chain =
           {
+              .next = &dawn_toggles_desc.chain,
               .sType = WGPUSType_DawnInstanceDescriptor,
           },
       .additionalRuntimeSearchPathsCount = dawn_search_path.empty() ? 0u : 1u,

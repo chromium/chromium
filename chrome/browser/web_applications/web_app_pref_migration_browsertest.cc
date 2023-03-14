@@ -60,7 +60,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPrefMigrationBrowserTest, PRE_Migration) {
         &WebAppProvider::GetForTest(browser()->profile())
              ->sync_bridge_unsafe());
     WebApp* web_app = update->UpdateApp(app_id);
-    web_app->SetInstallSourceForMetrics(absl::nullopt);
+    web_app->SetLatestInstallSource(absl::nullopt);
   }
 
   absl::optional<int> install_source =
@@ -69,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPrefMigrationBrowserTest, PRE_Migration) {
   EXPECT_EQ(static_cast<int>(kExpectedInstallSource), *install_source);
 
   EXPECT_EQ(kExpectedInstallSource,
-            *registrar().GetAppInstallSourceForMetrics(app_id));
+            *registrar().GetLatestAppInstallSource(app_id));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppPrefMigrationBrowserTest, Migration) {
@@ -79,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPrefMigrationBrowserTest, Migration) {
   ASSERT_FALSE(install_source);
 
   EXPECT_EQ(kExpectedInstallSource,
-            *registrar().GetAppInstallSourceForMetrics(app_id));
+            *registrar().GetLatestAppInstallSource(app_id));
 }
 
 }  // namespace web_app

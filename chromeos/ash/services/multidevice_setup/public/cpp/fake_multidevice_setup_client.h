@@ -59,6 +59,8 @@ class FakeMultiDeviceSetupClient : public MultiDeviceSetupClient {
     return num_remove_host_device_called_;
   }
 
+  const std::string& qs_phone_instance_id() { return qs_phone_instance_id_; }
+
   // MultiDeviceSetupClient:
   const HostStatusWithDevice& GetHostStatus() const override;
   const FeatureStatesMap& GetFeatureStates() const override;
@@ -83,8 +85,11 @@ class FakeMultiDeviceSetupClient : public MultiDeviceSetupClient {
       mojom::EventTypeForDebugging type,
       mojom::MultiDeviceSetup::TriggerEventForDebuggingCallback callback)
       override;
+  void SetQuickStartPhoneInstanceID(
+      const std::string& qs_phone_instance_id) override;
 
   size_t num_remove_host_device_called_ = 0u;
+  std::string qs_phone_instance_id_;
 
   std::queue<GetEligibleHostDevicesCallback>
       get_eligible_host_devices_callback_queue_;

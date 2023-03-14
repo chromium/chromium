@@ -20,6 +20,7 @@
 <translation id="2339201583852607431">La password verrà salvata nel tuo Account Google (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome condivide la tua posizione con i siti autorizzati da te.</translation>
 <translation id="2347208864470321755">Quando questa funzione è attiva, Chrome si offre di tradurre le pagine scritte in altre lingue utilizzando Google Traduttore. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
+<translation id="2414068465746584414">Dalle Impostazioni del dispositivo, apri "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" e seleziona "Chrome"</translation>
 <translation id="2427791862912929107">Chrome offre funzionalità che ti consentono di gestire i tuoi dati Internet e la velocità di caricamento delle pagine web.
 <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Usa la funzionalità Compilazione automatica di Chrome per recuperare facilmente le tue password salvate nelle altre app</translation>
@@ -31,6 +32,7 @@
 <translation id="2689064829982324496">Per uscire dal tuo Account Google su tutti i siti web, <ph name="BEGIN_LINK" />esci da Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome non ha potuto verificare la disponibilità di aggiornamenti. Riprova più tardi.</translation>
 <translation id="2732745070297234559">Chrome non ha potuto controllare tutte le password. Riprova domani.</translation>
+<translation id="2736805085127235148">Le notifiche di Chrome sono attualmente disattivate nelle impostazioni del dispositivo.</translation>
 <translation id="2767464022270041271">Nessuna password salvata. Gestore delle password di Google può controllare le tue password quando le salvi.</translation>
 <translation id="2869959624320573933">Accedi a Chrome</translation>
 <translation id="2957447865124070833">Seleziona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
@@ -112,8 +114,8 @@
 <translation id="7754633291442704733">La tua organizzazione <ph name="DOMAIN" /> avrà accesso ai dati, ai preferiti, alla cronologia, alle password e ad altre impostazioni di Chrome memorizzate in questo account. Quando esci, i dati verranno cancellati da questo dispositivo.  Tuttavia, i tuoi dati rimarranno memorizzati nel tuo Account Google gestito e saranno disponibili per la tua organizzazione. La tua organizzazione può anche impostare criteri relativi agli utenti specifici per l'account, in grado di modificare il comportamento di Chrome.</translation>
 <translation id="7780154209050837198">Accedi con il tuo Account Google a Chrome per usare al meglio questo browser.</translation>
 <translation id="7855730255114109580">Google Chrome è aggiornato</translation>
-<translation id="7939179037291298976">Dalle Impostazioni dell'iPhone, apri "Opzioni password" e seleziona "Chrome"</translation>
 <translation id="8022947259858476807">Usa Chrome per impostazione predefinita per aprire link, eseguire ricerche dai widget e compilare automaticamente le password in altre app</translation>
+<translation id="804638182476029347">Consenti le notifiche di Chrome per ricevere avvisi relativi ai cali di prezzo</translation>
 <translation id="81358522153858150">Ora Chrome supporta i criteri relativi agli utenti per il tuo account gestito</translation>
 <translation id="8160472928944011082">Impossibile aggiornare Chrome</translation>
 <translation id="8357607116237445042">Scegli se cancellare i tuoi dati di Chrome da questo dispositivo o se conservarli</translation>

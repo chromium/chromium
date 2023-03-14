@@ -232,6 +232,39 @@ void NGInlineItem::Split(HeapVector<NGInlineItem>& items,
   items[index + 1].start_offset_ = offset;
 }
 
+#if DCHECK_IS_ON()
+void NGInlineItem::CheckTextType(const String& text_content) const {
+  const UChar character = Length() ? text_content[StartOffset()] : 0;
+  switch (character) {
+    case kNewlineCharacter:
+      DCHECK_EQ(Length(), 1u);
+      DCHECK_EQ(Type(), NGInlineItemType::kControl);
+      DCHECK_EQ(TextType(), NGTextType::kForcedLineBreak);
+      break;
+    case kTabulationCharacter:
+      DCHECK_EQ(Type(), NGInlineItemType::kControl);
+      DCHECK_EQ(TextType(), NGTextType::kFlowControl);
+      break;
+    case kCarriageReturnCharacter:
+    case kFormFeedCharacter:
+    case kZeroWidthSpaceCharacter:
+      if (Type() == NGInlineItemType::kControl) {
+        DCHECK_EQ(Length(), 1u);
+        DCHECK_EQ(TextType(), NGTextType::kFlowControl);
+      } else {
+        DCHECK_EQ(Type(), NGInlineItemType::kText);
+        DCHECK_EQ(TextType(), NGTextType::kNormal);
+      }
+      break;
+    default:
+      DCHECK_NE(Type(), NGInlineItemType::kControl);
+      DCHECK(TextType() == NGTextType::kNormal ||
+             TextType() == NGTextType::kSymbolMarker);
+      break;
+  }
+}
+#endif
+
 void NGInlineItem::Trace(Visitor* visitor) const {
   visitor->Trace(layout_object_);
 }

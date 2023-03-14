@@ -260,9 +260,8 @@ class CleanerTestBase : public ::testing::Test {
         startup_dir.Append(chrome_cleaner::kTestUwsBFilename));
 
     // Always create scan-only UwS. Only some tests will have removable UwS.
-    ASSERT_NE(-1, base::WriteFile(scan_only_test_uws_,
-                                  chrome_cleaner::kTestUwsAFileContents,
-                                  chrome_cleaner::kTestUwsAFileContentsSize));
+    ASSERT_TRUE(base::WriteFile(scan_only_test_uws_,
+                                chrome_cleaner::kTestUwsAFileContents));
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     InitializeRemovableUwSArchivePath();
@@ -291,9 +290,8 @@ class CleanerTestBase : public ::testing::Test {
   }
 
   void CreateRemovableUwS() {
-    ASSERT_NE(-1, base::WriteFile(removable_test_uws_,
-                                  chrome_cleaner::kTestUwsBFileContents,
-                                  chrome_cleaner::kTestUwsBFileContentsSize));
+    ASSERT_TRUE(base::WriteFile(removable_test_uws_,
+                                chrome_cleaner::kTestUwsBFileContents));
   }
 
   void LockRemovableUwS() {

@@ -123,14 +123,14 @@ void GetFrameTypeForOpcode(WebSocketFrameHeader::OpCode opcode,
   return;
 }
 
-base::Value NetLogFailParam(uint16_t code,
-                            base::StringPiece reason,
-                            base::StringPiece message) {
+base::Value::Dict NetLogFailParam(uint16_t code,
+                                  base::StringPiece reason,
+                                  base::StringPiece message) {
   base::Value::Dict dict;
   dict.Set("code", code);
   dict.Set("reason", reason);
   dict.Set("internal_reason", message);
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 class DependentIOBuffer : public WrappedIOBuffer {

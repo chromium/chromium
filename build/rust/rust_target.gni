@@ -50,6 +50,11 @@ template("rust_target") {
     _out_dir = target_out_dir
   }
 
+  _allow_unsafe = false
+  if (defined(invoker.allow_unsafe)) {
+    _allow_unsafe = invoker.allow_unsafe
+  }
+
   if (defined(invoker.generate_crate_root) && invoker.generate_crate_root) {
     generated_file("${_target_name}_crate_root") {
       outputs = [ "${target_gen_dir}/${target_name}.rs" ]
@@ -202,6 +207,7 @@ template("rust_target") {
 
     not_needed(invoker, "*")
     not_needed([
+                 "_allow_unsafe",
                  "_build_unit_tests",
                  "_crate_root",
                  "_crate_name",
@@ -312,6 +318,10 @@ template("rust_target") {
       if (compute_inputs_for_analyze) {
         deps += [ ":${_target_name}_analyze" ]
       }
+
+      if (!_allow_unsafe) {
+        configs += [ "//build/rust:forbid_unsafe" ]
+      }
     }
 
     if (compute_inputs_for_analyze) {
@@ -377,6 +387,10 @@ template("rust_target") {
           configs = invoker.executable_configs
         }
         rustenv = _rustenv
+
+        if (!_allow_unsafe) {
+          configs += [ "//build/rust:forbid_unsafe" ]
+        }
       }
     } else {
       not_needed([

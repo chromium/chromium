@@ -9,9 +9,18 @@ function scoreAd(
   validateBid(bid);
   validateAuctionConfig(auctionConfig);
   validateTrustedScoringSignals(trustedScoringSignals);
-  validateBrowserSignals(browserSignals);
+  validateBrowserSignals(browserSignals, /*isScoreAd=*/true);
   validateDirectFromSellerSignals(directFromSellerSignals);
   return bid;
+}
+
+function reportResult(auctionConfig, browserSignals, directFromSellerSignals) {
+  validateAuctionConfig(auctionConfig);
+  validateBrowserSignals(browserSignals, /*isScoreAd=*/false);
+  validateDirectFromSellerSignals(directFromSellerSignals);
+
+  sendReportTo(auctionConfig.seller + '/echo?report_seller');
+  return ['seller signals for winner'];
 }
 
 function validateAdMetadata(adMetadata) {
@@ -87,9 +96,9 @@ function validateAuctionConfig(auctionConfig) {
         JSON.stringify(auctionConfig.perBuyerTimeouts);
   }
 
-  if (auctionConfig.perBuyerCumulativeTimeouts[buyerAOrigin] !== 130 ||
-      auctionConfig.perBuyerCumulativeTimeouts[buyerBOrigin] !== 140 ||
-      auctionConfig.perBuyerCumulativeTimeouts['*'] !== 160) {
+  if (auctionConfig.perBuyerCumulativeTimeouts[buyerAOrigin] !== 13000 ||
+      auctionConfig.perBuyerCumulativeTimeouts[buyerBOrigin] !== 14000 ||
+      auctionConfig.perBuyerCumulativeTimeouts['*'] !== 16000) {
     throw 'Wrong perBuyerCumulativeTimeouts ' +
         JSON.stringify(auctionConfig.perBuyerCumulativeTimeouts);
   }
@@ -122,7 +131,8 @@ function validateTrustedScoringSignals(signals) {
   }
 }
 
-function validateBrowserSignals(browserSignals) {
+function validateBrowserSignals(browserSignals, isScoreAd) {
+  // Fields common to scoreAd() and reportResult().
   if (browserSignals.topWindowHostname !== 'c.test')
     throw 'Wrong topWindowHostname ' + browserSignals.topWindowHostname;
   if ('topLevelSeller' in browserSignals)
@@ -133,11 +143,33 @@ function validateBrowserSignals(browserSignals) {
     throw 'Wrong interestGroupOwner ' + browserSignals.interestGroupOwner;
   if (browserSignals.renderUrl !== "https://example.com/render")
     throw 'Wrong renderUrl ' + browserSignals.renderUrl;
-  const adComponentsJSON = JSON.stringify(browserSignals.adComponents);
-  if (adComponentsJSON !== '["https://example.com/render-component"]')
-    throw 'Wrong adComponents ' + browserSignals.adComponents;
-  if (browserSignals.biddingDurationMsec < 0)
-    throw 'Wrong biddingDurationMsec ' + browserSignals.biddingDurationMsec;
+  if (browserSignals.dataVersion !== 1234)
+    throw 'Wrong dataVersion ' + browserSignals.dataVersion;
+
+  // Fields that vary by method.
+  if (isScoreAd) {
+    if (Object.keys(browserSignals).length !== 6) {
+      throw 'Wrong number of browser signals fields ' +
+          JSON.stringify(browserSignals);
+    }
+    const adComponentsJSON = JSON.stringify(browserSignals.adComponents);
+    if (adComponentsJSON !== '["https://example.com/render-component"]')
+      throw 'Wrong adComponents ' + browserSignals.adComponents;
+    if (browserSignals.biddingDurationMsec < 0)
+      throw 'Wrong biddingDurationMsec ' + browserSignals.biddingDurationMsec;
+  } else {
+    if (Object.keys(browserSignals).length !== 7) {
+      throw 'Wrong number of browser signals fields ' +
+          JSON.stringify(browserSignals);
+    }
+    validateBid(browserSignals.bid);
+    if (browserSignals.desirability !== 2)
+      throw 'Wrong desireability ' + browserSignals.desirability;
+    if (browserSignals.highestScoringOtherBid !== 0) {
+      throw 'Wrong highestScoringOtherBid ' +
+          browserSignals.highestScoringOtherBid;
+    }
+  }
 }
 
 function validateDirectFromSellerSignals(directFromSellerSignals) {

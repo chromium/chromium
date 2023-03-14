@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 3
+// Next MinVersion: 4
 
 module crosapi.mojom;
 
@@ -29,6 +29,10 @@ struct BrowserWindowInstanceUpdate {
   // browser session.
   [MinVersion=2]
   uint32 restored_browser_session_id@4;
+
+  // Whether the browser window is an incognito window.
+  [MinVersion=3]
+  bool is_incognito@5;
 };
 
 [Stable, Extensible]

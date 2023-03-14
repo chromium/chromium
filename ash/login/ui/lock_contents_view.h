@@ -12,13 +12,16 @@
 
 #include "ash/ash_export.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/login/ui/auth_error_bubble.h"
 #include "ash/login/ui/bottom_status_indicator.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/login/ui/login_data_dispatcher.h"
 #include "ash/login/ui/login_display_style.h"
 #include "ash/login/ui/login_error_bubble.h"
 #include "ash/login/ui/login_tooltip_view.h"
+#include "ash/login/ui/management_bubble.h"
 #include "ash/login/ui/non_accessible_view.h"
+#include "ash/login/ui/user_state.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_types.h"
@@ -66,6 +69,12 @@ namespace mojom {
 enum class TrayActionState;
 }
 
+enum class BottomIndicatorState {
+  kNone,
+  kManagedDevice,
+  kAdbSideLoadingEnabled,
+};
+
 // LockContentsView hosts the root view for the lock screen. All other lock
 // screen views are embedded within this one. LockContentsView is per-display,
 // but it is always shown on the primary display. There is only one instance
@@ -80,54 +89,7 @@ class ASH_EXPORT LockContentsView
       public EnterpriseDomainObserver {
  public:
   METADATA_HEADER(LockContentsView);
-  class AuthErrorBubble;
-  class ManagementBubble;
-  class UserState;
-
-  enum class BottomIndicatorState {
-    kNone,
-    kManagedDevice,
-    kAdbSideLoadingEnabled,
-  };
-
-  // TestApi is used for tests to get internal implementation details.
-  class ASH_EXPORT TestApi {
-   public:
-    explicit TestApi(LockContentsView* view);
-    ~TestApi();
-
-    KioskAppDefaultMessage* kiosk_default_message() const;
-    LoginBigUserView* primary_big_view() const;
-    LoginBigUserView* opt_secondary_big_view() const;
-    AccountId focused_user() const;
-    ScrollableUsersListView* users_list() const;
-    LockScreenMediaControlsView* media_controls_view() const;
-    views::View* note_action() const;
-    views::View* tooltip_bubble() const;
-    views::View* management_bubble() const;
-    LoginErrorBubble* auth_error_bubble() const;
-    LoginErrorBubble* detachable_base_error_bubble() const;
-    LoginErrorBubble* warning_banner_bubble() const;
-    views::View* user_adding_screen_indicator() const;
-    views::View* system_info() const;
-    views::View* bottom_status_indicator() const;
-    BottomIndicatorState bottom_status_indicator_status() const;
-    LoginExpandedPublicAccountView* expanded_view() const;
-    views::View* main_view() const;
-    const std::vector<LockContentsView::UserState>& users() const;
-    LoginCameraTimeoutView* login_camera_timeout_view() const;
-
-    // Finds and focuses (if needed) Big User View view specified by
-    // |account_id|. Returns nullptr if the user not found.
-    LoginBigUserView* FindBigUser(const AccountId& account_id);
-    LoginUserView* FindUserView(const AccountId& account_id);
-    bool RemoveUser(const AccountId& account_id);
-    bool IsOobeDialogVisible() const;
-    FingerprintState GetFingerPrintState(const AccountId& account_id) const;
-
-   private:
-    LockContentsView* const view_;
-  };
+  friend class LockContentsViewTestApi;
 
   enum class DisplayStyle {
     // Display all the user views, top header view in LockContentsView.
@@ -171,9 +133,6 @@ class ASH_EXPORT LockContentsView
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
-
-  // NonAccessibleView:
-  void OnThemeChanged() override;
 
   // LoginDataDispatcher::Observer:
   void OnUsersChanged(const std::vector<LoginUserInfo>& users) override;
@@ -275,32 +234,6 @@ class ASH_EXPORT LockContentsView
   void CreateMediaControlsLayout();
   void HideMediaControlsLayout();
   bool AreMediaControlsEnabled() const;
-
-  class UserState {
-   public:
-    explicit UserState(const LoginUserInfo& user_info);
-    UserState(UserState&&);
-
-    UserState(const UserState&) = delete;
-    UserState& operator=(const UserState&) = delete;
-
-    ~UserState();
-
-    AccountId account_id;
-    bool show_pin = false;
-    bool show_challenge_response_auth = false;
-    bool enable_tap_auth = false;
-    bool force_online_sign_in = false;
-    bool disable_auth = false;
-    bool show_pin_pad_for_password = false;
-    size_t autosubmit_pin_length = 0;
-    absl::optional<EasyUnlockIconInfo> easy_unlock_icon_info = absl::nullopt;
-    FingerprintState fingerprint_state = FingerprintState::UNAVAILABLE;
-    SmartLockState smart_lock_state = SmartLockState::kDisabled;
-    bool auth_factor_is_hiding_password = false;
-    // When present, indicates that the TPM is locked.
-    absl::optional<base::TimeDelta> time_until_tpm_unlock = absl::nullopt;
-  };
 
  private:
   class AutoLoginUserActivityHandler;

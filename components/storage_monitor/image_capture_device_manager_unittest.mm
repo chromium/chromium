@@ -97,9 +97,7 @@ const char kTestFileContents[] = "test";
   // filename. Do that here to require a rename.
   saveAsFilename += ".jpg";
   base::FilePath toBeSaved = saveDir.Append(saveAsFilename);
-  ASSERT_EQ(static_cast<int>(strlen(kTestFileContents)),
-            base::WriteFile(toBeSaved, kTestFileContents,
-                            strlen(kTestFileContents)));
+  ASSERT_TRUE(base::WriteFile(toBeSaved, kTestFileContents));
 
   NSMutableDictionary* returnOptions =
       [NSMutableDictionary dictionaryWithDictionary:options];

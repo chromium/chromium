@@ -78,14 +78,6 @@ BASE_FEATURE(kAvoidUnnecessaryBeforeUnloadCheckSync,
              "AvoidUnnecessaryBeforeUnloadCheckSync",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, stops canceling navigation when another navigation commits or
-// starts. This supports the same goal as kQueueNavigationsWhileWaitingForCommit
-// but for the non-queueing parts, and is disabled by default.
-// See https://crbug.com/838348 and https://crbug.com/1220337.
-BASE_FEATURE(kAvoidUnnecessaryNavigationCancellations,
-             "AvoidUnnecessaryNavigationCancellations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Kill switch for Background Fetch.
 BASE_FEATURE(kBackgroundFetch,
              "BackgroundFetch",
@@ -465,6 +457,11 @@ const char kFedCmIdpSigninStatusFieldTrialParamName[] = "IdpSigninStatus";
 const char kFedCmIdpSigninStatusMetricsOnlyFieldTrialParamName[] =
     "IdpSigninStatusMetricsOnly";
 
+// Enables the MDocs API in the IdentityCredential.
+BASE_FEATURE(kWebIdentityMDocs,
+             "WebIdentityMDocs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables usage of First Party Sets to determine cookie availability.
 BASE_FEATURE(kFirstPartySets,
              "FirstPartySets",
@@ -587,6 +584,10 @@ BASE_FEATURE(kInstalledAppProvider,
 // isolated web apps via the isolated-app:// scheme, and other advanced isolated
 // app functionality. See https://github.com/reillyeon/isolated-web-apps for a
 // general overview.
+// Please don't use this feature flag directly to guard the IWA code. Use
+// IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled() in the browser process
+// or check kEnableIsolatedWebAppsInRenderer command line flag in the renderer
+// process.
 BASE_FEATURE(kIsolatedWebApps,
              "IsolatedWebApps",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1006,10 +1007,21 @@ const base::FeatureParam<ServiceWorkerBypassFetchHandlerStrategy>
         &service_worker_bypass_fetch_handler_strategy_options};
 
 const base::FeatureParam<ServiceWorkerBypassFetchHandlerTarget>::Option
-    service_worker_bypass_fetch_handler_target_options[] = {{
-        ServiceWorkerBypassFetchHandlerTarget::kMainResource,
-        "main_resource",
-    }};
+    service_worker_bypass_fetch_handler_target_options[] = {
+        {
+            ServiceWorkerBypassFetchHandlerTarget::kMainResource,
+            "main_resource",
+        },
+        {
+            ServiceWorkerBypassFetchHandlerTarget::
+                kAllOnlyIfServiceWorkerNotStarted,
+            "all_only_if_service_worker_not_started",
+        },
+        {
+            ServiceWorkerBypassFetchHandlerTarget::kSubResource,
+            "sub_resource",
+        },
+};
 const base::FeatureParam<ServiceWorkerBypassFetchHandlerTarget>
     kServiceWorkerBypassFetchHandlerTarget{
         &kServiceWorkerBypassFetchHandler, "bypass_for",
@@ -1048,6 +1060,16 @@ constexpr base::FeatureParam<bool> kStartServiceWorkerForEmptyFetchHandler{
     false,
 };
 
+// This feature param controls if the service worker is started for an
+// empty service worker fetch handler while `kSkipEmptyFetchHandler` is on.
+// Unlike the feature param `kStartServiceWorkerForEmptyFetchHandler`,
+// this starts service worker in `TaskRunner::PostTask`.
+constexpr base::FeatureParam<bool> kAsyncStartServiceWorkerForEmptyFetchHandler{
+    &kServiceWorkerSkipIgnorableFetchHandler,
+    "AsyncStartServiceWorkerForEmptyFetchHandler",
+    false,
+};
+
 // Run video capture service in the Browser process as opposed to a dedicated
 // utility process
 BASE_FEATURE(kRunVideoCaptureServiceInBrowserProcess,
@@ -1079,7 +1101,7 @@ BASE_FEATURE(kSecurePaymentConfirmationDebug,
 // https://crbug.com/1356224 .
 BASE_FEATURE(kSecurePaymentConfirmationRemoveRpField,
              "SecurePaymentConfirmationRemoveRpField",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Make sendBeacon throw for a Blob with a non simple type.
 BASE_FEATURE(kSendBeaconThrowForBlobWithNonSimpleType,
@@ -1451,12 +1473,6 @@ BASE_FEATURE(kBindingManagerConnectionLimit,
              "BindingManagerConnectionLimit",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When this feature is enabled the BindingManager for non-low-end devices will
-// use a not perceptible binding for background renderers on Android Q+.
-BASE_FEATURE(kBindingManagerUseNotPerceptibleBinding,
-             "BindingManagerUseNotPerceptibleBinding",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Reduce the priority of GPU process when in background so it is more likely
 // to be killed first if the OS needs more memory.
 BASE_FEATURE(kReduceGpuPriorityOnBackground,
@@ -1479,7 +1495,7 @@ BASE_FEATURE(kRequestDesktopSiteAdditions,
 // Refer to the launch bug (https://crbug.com/1244979) for more information.
 BASE_FEATURE(kRequestDesktopSiteExceptions,
              "RequestDesktopSiteExceptions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Request Desktop Site zoom for Android. Apply a pre-defined page zoom level
 // when desktop user agent is used.

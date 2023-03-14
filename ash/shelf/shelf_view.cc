@@ -8,11 +8,13 @@
 #include <utility>
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/app_list_item_util.h"
 #include "ash/app_list/views/app_drag_icon_proxy.h"
 #include "ash/app_list/views/ghost_image_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/keyboard/keyboard_util.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/shelf_model.h"
@@ -65,6 +67,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/window.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/menu_source_utils.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -1183,6 +1186,8 @@ void ShelfView::EndDrag(bool cancel,
     return;
   }
 
+  DCHECK(app_list_features::IsDragAndDropRefactorEnabled() ||
+         !drag_icon_proxy_);
   drag_icon_proxy_ = std::move(icon_proxy);
 
   views::View* drag_and_drop_view =
@@ -1352,6 +1357,8 @@ void ShelfView::PointerReleasedOnButton(const views::View* view,
                          base::Unretained(this),
                          std::make_unique<ViewOpacityResetter>(drag_view_)));
     }
+  } else if (drag_view_) {
+    drag_view_->layer()->SetOpacity(1.0f);
   }
 
   // If the drag pointer is NONE, no drag operation is going on and the
@@ -1515,7 +1522,8 @@ void ShelfView::PrepareForDrag(Pointer pointer, const ui::LocatedEvent& event) {
                              : kDragAndDropProxyScale;
     drag_icon_proxy_ = std::make_unique<AppDragIconProxy>(
         root_window, drag_view_->GetIconImage(), screen_location,
-        gfx::Vector2d(), scale_factor, /*is_folder_icon=*/false);
+        gfx::Vector2d(), scale_factor, /*is_folder_icon=*/false,
+        drag_view_->GetIconImage().size());
 
     if (pointer == MOUSE) {
       haptics_util::PlayHapticTouchpadEffect(
@@ -1674,7 +1682,7 @@ void ShelfView::HandleRipOffDrag(const ui::LocatedEvent& event) {
             root_window, drag_view_->GetIconImage(), screen_location,
             /*cursor_offset_from_center=*/gfx::Vector2d(),
             /*scale_factor=*/1.0f,
-            /*is_folder_icon=*/false);
+            /*is_folder_icon=*/false, drag_view_->GetIconImage().size());
       }
 
       // Re-insert the item and return simply false since the caller will handle
@@ -1687,7 +1695,9 @@ void ShelfView::HandleRipOffDrag(const ui::LocatedEvent& event) {
 
       return;
     }
-    drag_icon_proxy_->UpdatePosition(screen_location);
+    if (drag_icon_proxy_) {
+      drag_icon_proxy_->UpdatePosition(screen_location);
+    }
     return;
   }
 
@@ -1707,7 +1717,7 @@ void ShelfView::HandleRipOffDrag(const ui::LocatedEvent& event) {
       drag_icon_proxy_ = std::make_unique<AppDragIconProxy>(
           root_window, drag_view_->GetIconImage(), screen_location,
           cursor_offset_from_center, /*scale_factor=*/1.0f,
-          /*is_folder_icon=*/false);
+          /*is_folder_icon=*/false, drag_view_->GetIconImage().size());
       delegate_->CancelScrollForItemDrag();
     }
 
@@ -1723,7 +1733,9 @@ void ShelfView::HandleRipOffDrag(const ui::LocatedEvent& event) {
       }
       // Make the item partially disappear to show that it will get removed if
       // dropped.
-      drag_icon_proxy_->SetOpacity(kDraggedImageOpacity);
+      if (drag_icon_proxy_) {
+        drag_icon_proxy_->SetOpacity(kDraggedImageOpacity);
+      }
     }
   }
 }
@@ -1736,7 +1748,6 @@ void ShelfView::FinalizeRipOffDrag(bool cancel) {
 
   // Coming here we should always have a |drag_view_|.
   DCHECK(drag_view_);
-  DCHECK(drag_icon_proxy_);
 
   delegate_->CancelScrollForItemDrag();
 
@@ -1861,9 +1872,6 @@ std::pair<size_t, size_t> ShelfView::GetDragRange(size_t index) {
 }
 
 bool ShelfView::ShouldUpdateDraggedViewPinStatus(size_t dragged_view_index) {
-  if (!features::IsDragUnpinnedAppToPinEnabled())
-    return false;
-
   if (!base::Contains(visible_views_indices_, dragged_view_index)) {
     DCHECK(model_->in_shelf_party());
     return false;
@@ -1894,9 +1902,6 @@ bool ShelfView::ShouldUpdateDraggedViewPinStatus(size_t dragged_view_index) {
 }
 
 bool ShelfView::CanDragAcrossSeparator(views::View* drag_view) const {
-  if (!features::IsDragUnpinnedAppToPinEnabled())
-    return false;
-
   DCHECK(drag_view);
 
   // Only unpinned running apps on shelf can be dragged across the separator to
@@ -1987,7 +1992,7 @@ bool ShelfView::IsAnimating() const {
 
 gfx::Rect ShelfView::GetDragIconBoundsInScreenForTest() const {
   if (!drag_icon_proxy_)
-    return gfx::Rect();
+    return drag_view_ ? drag_view_->GetBoundsInScreen() : gfx::Rect();
   return drag_icon_proxy_->GetBoundsInScreen();
 }
 
@@ -2782,6 +2787,80 @@ bool ShelfView::AreAllPinnedAppsHidden() const {
   return std::none_of(
       head, head + std::min<size_t>(2u, visible_views_indices_.size()),
       [this](size_t idx) { return IsItemPinned(model_->items()[idx]); });
+}
+
+views::View::DropCallback ShelfView::GetDropCallback(
+    const ui::DropTargetEvent& event) {
+  return app_list_features::IsDragAndDropRefactorEnabled()
+             ? base::BindOnce(&ShelfView::EndDragCallback,
+                              base::Unretained(this))
+             : base::DoNothing();
+}
+
+void ShelfView::EndDragCallback(const ui::DropTargetEvent& event,
+                                ui::mojom::DragOperation& output_drag_op) {
+  // TODO(b/271601288): Hook up drop animation with the drag image icon.
+  output_drag_op = ui::mojom::DragOperation::kMove;
+  EndDrag(false, /*icon_proxy = */ nullptr);
+}
+
+bool ShelfView::GetDropFormats(
+    int* formats,
+    std::set<ui::ClipboardFormatType>* format_types) {
+  if (app_list_features::IsDragAndDropRefactorEnabled()) {
+    format_types->insert(GetAppItemFormatType());
+  }
+  return true;
+}
+
+bool ShelfView::CanDrop(const OSExchangeData& data) {
+  if (!app_list_features::IsDragAndDropRefactorEnabled()) {
+    return true;
+  }
+
+  auto app_id = GetAppIdFromDropData(data);
+  if (app_id->empty()) {
+    return false;
+  }
+
+  std::set<ui::ClipboardFormatType> format_types;
+  format_types.insert(GetAppItemFormatType());
+  return data.HasAnyFormat(0, format_types);
+}
+
+void ShelfView::OnDragExited() {
+  if (!app_list_features::IsDragAndDropRefactorEnabled()) {
+    views::View::OnDragExited();
+    return;
+  }
+  EndDrag(/*cancel=*/true, nullptr);
+}
+
+void ShelfView::OnDragEntered(const ui::DropTargetEvent& event) {
+  if (!app_list_features::IsDragAndDropRefactorEnabled()) {
+    views::View::OnDragEntered(event);
+    return;
+  }
+
+  auto app_id = GetAppIdFromDropData(event.data());
+  if (app_id->empty()) {
+    views::View::OnDragEntered(event);
+    return;
+  }
+
+  gfx::Point drag_point_in_screen = event.location();
+  views::View::ConvertPointToScreen(this, &drag_point_in_screen);
+  StartDrag(app_id.value(), drag_point_in_screen, gfx::Rect());
+}
+
+int ShelfView::OnDragUpdated(const ui::DropTargetEvent& event) {
+  if (app_list_features::IsDragAndDropRefactorEnabled()) {
+    gfx::Point drag_point_in_screen = event.location();
+    views::View::ConvertPointToScreen(this, &drag_point_in_screen);
+    Drag(drag_point_in_screen,
+         drag_view_ ? drag_view_->GetBoundsInScreen() : gfx::Rect());
+  }
+  return ui::DragDropTypes::DRAG_MOVE;
 }
 
 BEGIN_METADATA(ShelfView, views::AccessiblePaneView)

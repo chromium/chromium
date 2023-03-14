@@ -104,8 +104,8 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
    * @private
    */
   async init_(node) {
-    this.addListener_(EventType.ALERT, this.onAlert);
-    this.addListener_(EventType.BLUR, this.onBlur);
+    this.addListener_(EventType.ALERT, event => this.onAlert_(event));
+    this.addListener_(EventType.BLUR, event => this.onBlur_(event));
     this.addListener_(
         EventType.DOCUMENT_SELECTION_CHANGED, this.onDocumentSelectionChanged);
     this.addListener_(EventType.FOCUS, this.onFocus);
@@ -212,8 +212,9 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
   /**
    * Makes an announcement without changing focus.
    * @param {!ChromeVoxEvent} evt
+   * @private
    */
-  onAlert(evt) {
+  onAlert_(evt) {
     const node = evt.target;
 
     if (node.role === RoleType.ALERT && node.root.role === RoleType.DESKTOP) {
@@ -247,7 +248,11 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     }
   }
 
-  onBlur(evt) {
+  /**
+   * @param {!ChromeVoxEvent} evt
+   * @private
+   */
+  onBlur_(evt) {
     // Nullify focus if it no longer exists.
     chrome.automation.getFocus(function(focus) {
       if (!focus) {
@@ -808,7 +813,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
   onAutofillAvailabilityChanged(evt) {
     const node = evt.target;
     const state = node.state;
-    const currentRange = ChromeVoxState.instance.currentRange;
+    const currentRange = ChromeVoxRange.current;
 
     // Notify the user about available autofill options on focused element.
     if (currentRange && currentRange.isValid() && state[StateType.FOCUSED] &&

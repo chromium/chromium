@@ -10,7 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "services/device/hid/hid_device_info.h"
@@ -52,11 +52,8 @@ class HidServiceLinux : public HidService {
 #endif
   static void FinishOpen(std::unique_ptr<ConnectParams> params);
 
-  const scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
+  base::SequenceBound<BlockingTaskRunnerHelper> helper_;
 
-  // |helper_| lives on the sequence |blocking_task_runner_| posts to and holds
-  // a weak reference back to the service that owns it.
-  std::unique_ptr<BlockingTaskRunnerHelper, base::OnTaskRunnerDeleter> helper_;
   base::WeakPtrFactory<HidServiceLinux> weak_factory_{this};
 };
 

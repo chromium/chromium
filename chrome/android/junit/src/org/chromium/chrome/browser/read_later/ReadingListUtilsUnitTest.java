@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.read_later;
 
-import static org.mockito.Mockito.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -22,11 +22,8 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -122,11 +119,7 @@ public class ReadingListUtilsUnitTest {
         BookmarkId readingListId = new BookmarkId(1, BookmarkType.READING_LIST);
         BookmarkId regularId = new BookmarkId(1, BookmarkType.NORMAL);
 
-        // wrong type
-        setBookmarkTypeSwappingEnabled(true);
         Assert.assertFalse(ReadingListUtils.isSwappableReadingListItem(regularId));
-
-        setBookmarkTypeSwappingEnabled(true);
         Assert.assertTrue(ReadingListUtils.isSwappableReadingListItem(readingListId));
     }
 
@@ -136,21 +129,15 @@ public class ReadingListUtilsUnitTest {
         BookmarkId bookmarkId = Mockito.mock(BookmarkId.class);
         doReturn(BookmarkType.NORMAL).when(bookmarkId).getType();
 
-        // bookmarkId null
-        setBookmarkTypeSwappingEnabled(true);
         Assert.assertFalse(ReadingListUtils.maybeTypeSwapAndShowSaveFlow(
                 Mockito.mock(Activity.class), Mockito.mock(BottomSheetController.class),
                 Mockito.mock(BookmarkModel.class), /*bookmarkId=*/null, BookmarkType.READING_LIST));
 
-        // bad original type
-        setBookmarkTypeSwappingEnabled(true);
         doReturn(BookmarkType.READING_LIST).when(bookmarkId).getType();
         Assert.assertFalse(ReadingListUtils.maybeTypeSwapAndShowSaveFlow(
                 Mockito.mock(Activity.class), Mockito.mock(BottomSheetController.class),
                 Mockito.mock(BookmarkModel.class), bookmarkId, BookmarkType.READING_LIST));
 
-        // bad desired type
-        setBookmarkTypeSwappingEnabled(true);
         doReturn(BookmarkType.NORMAL).when(bookmarkId).getType();
         Assert.assertFalse(ReadingListUtils.maybeTypeSwapAndShowSaveFlow(
                 Mockito.mock(Activity.class), Mockito.mock(BottomSheetController.class),
@@ -160,8 +147,6 @@ public class ReadingListUtilsUnitTest {
     @Test
     @SmallTest
     public void testTypeSwapBookmarksIfNecessary_ToReadingList() {
-        setBookmarkTypeSwappingEnabled(true);
-
         BookmarkId parentId = new BookmarkId(0, BookmarkType.READING_LIST);
         BookmarkId existingBookmarkId = new BookmarkId(0, BookmarkType.NORMAL);
         BookmarkItem existingBookmark = new BookmarkItem(existingBookmarkId, "Test",
@@ -189,8 +174,6 @@ public class ReadingListUtilsUnitTest {
     @Test
     @SmallTest
     public void testTypeSwapBookmarksIfNecessary_ToBookmark() {
-        setBookmarkTypeSwappingEnabled(true);
-
         BookmarkId parentId = new BookmarkId(0, BookmarkType.NORMAL);
         BookmarkId existingBookmarkId = new BookmarkId(0, BookmarkType.READING_LIST);
         BookmarkItem existingBookmark = new BookmarkItem(existingBookmarkId, "Test",
@@ -218,8 +201,6 @@ public class ReadingListUtilsUnitTest {
     @Test
     @SmallTest
     public void testTypeSwapBookmarksIfNecessary_ToBookmark_Multiple() {
-        setBookmarkTypeSwappingEnabled(true);
-
         BookmarkId parentId = new BookmarkId(0, BookmarkType.NORMAL);
         BookmarkId existingBookmarkId1 = new BookmarkId(1, BookmarkType.READING_LIST);
         BookmarkItem existingBookmark1 = new BookmarkItem(existingBookmarkId1, "Test1",
@@ -262,8 +243,6 @@ public class ReadingListUtilsUnitTest {
     @Test
     @SmallTest
     public void testTypeSwapBookmarksIfNecessary_TypeMatches() {
-        setBookmarkTypeSwappingEnabled(true);
-
         BookmarkId parentId = new BookmarkId(0, BookmarkType.NORMAL);
         BookmarkId existingBookmarkId = new BookmarkId(0, BookmarkType.NORMAL);
         BookmarkItem existingBookmark = new BookmarkItem(existingBookmarkId, "Test",
@@ -279,13 +258,5 @@ public class ReadingListUtilsUnitTest {
         Assert.assertEquals(1, bookmarks.size());
         Assert.assertEquals(0, typeSwappedBookmarks.size());
         Assert.assertEquals(existingBookmarkId, bookmarks.get(0));
-    }
-
-    private void setBookmarkTypeSwappingEnabled(boolean enabled) {
-        TestValues readLaterTypeSwapping = new TestValues();
-        readLaterTypeSwapping.addFeatureFlagOverride(ChromeFeatureList.READ_LATER, true);
-        readLaterTypeSwapping.addFieldTrialParamOverride(ChromeFeatureList.READ_LATER,
-                "allow_bookmark_type_swapping", enabled ? "true" : "false");
-        FeatureList.setTestValues(readLaterTypeSwapping);
     }
 }

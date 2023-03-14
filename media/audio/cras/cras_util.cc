@@ -180,9 +180,7 @@ void mergeDevices(CrasDevice& old_dev, CrasDevice& new_dev) {
   old_dev.active |= new_dev.active;
 }
 
-CrasUtil::CrasUtil() {
-  cras_effects_cached_ = CacheEffects();
-}
+CrasUtil::CrasUtil() = default;
 
 CrasUtil::~CrasUtil() = default;
 

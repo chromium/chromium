@@ -3,6 +3,7 @@ Version: Varies
 License: BSD
 License File: LICENSE
 Security Critical: Yes
+CPEPrefix: cpe:2.3:a:google:updater:
 
 Description:
 The ChromiumUpdater package contains the ChromiumUpdater app bundle, which is

@@ -13,6 +13,8 @@ source_set("app_window") {
     "app_window_api.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//build:chromeos_buildflags",
     "//content/public/browser",

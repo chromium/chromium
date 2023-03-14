@@ -16,6 +16,8 @@ import android.widget.ImageView;
 import androidx.annotation.StringDef;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
+import com.google.android.material.textfield.TextInputLayout;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -136,7 +138,8 @@ public class RenderTestRule extends TestWatcher {
             Component.UI_BROWSER_SHARING, Component.UI_BROWSER_SHOPPING,
             Component.UI_BROWSER_SHOPPING_MERCHANT_TRUST,
             Component.UI_BROWSER_SHOPPING_PRICE_TRACKING, Component.UI_BROWSER_TOOLBAR,
-            Component.UI_BROWSER_WEB_APP_INSTALLS, Component.UI_SETTINGS_PRIVACY})
+            Component.UI_BROWSER_THUMBNAIL, Component.UI_BROWSER_WEB_APP_INSTALLS,
+            Component.UI_SETTINGS_PRIVACY})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Component {
         String BLINK_CONTACTS = "Blink>Contacts";
@@ -177,6 +180,7 @@ public class RenderTestRule extends TestWatcher {
         String UI_BROWSER_SHOPPING = "UI>Browser>Shopping";
         String UI_BROWSER_SHOPPING_MERCHANT_TRUST = "UI>Browser>Shopping>MerchantTrust";
         String UI_BROWSER_SHOPPING_PRICE_TRACKING = "UI>Browser>Shopping>PriceTracking";
+        String UI_BROWSER_THUMBNAIL = "UI>Browser>Thumbnail";
         String UI_BROWSER_TOOLBAR = "UI>Browser>Toolbar";
         String UI_BROWSER_WEB_APP_INSTALLS = "UI>Browser>WebAppInstalls";
         String UI_SETTINGS_PRIVACY = "UI>Settings>Privacy";
@@ -310,6 +314,10 @@ public class RenderTestRule extends TestWatcher {
             if (drawable instanceof AnimatedVectorDrawableCompat) {
                 ((AnimatedVectorDrawableCompat) drawable).stop();
             }
+        }
+        if (view instanceof TextInputLayout) {
+            TextInputLayout textInputLayout = (TextInputLayout) view;
+            textInputLayout.setHintAnimationEnabled(false);
         }
         // Scrollbars fade slowly, making tests flaky due to differences in rendered images.
         view.setVerticalScrollBarEnabled(false);

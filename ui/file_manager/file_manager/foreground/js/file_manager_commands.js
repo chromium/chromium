@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './webui_command_extender.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
@@ -1900,7 +1899,8 @@ CommandHandler.COMMANDS_['invoke-sharesheet'] =
             fileManager.metadataModel.getCache(entries, ['sourceUrl'])
                 .map(m => m.sourceUrl || '');
         chrome.fileManagerPrivate.invokeSharesheet(
-            entries, launchSource, dlpSourceUrls, () => {
+            entries.map(e => util.unwrapEntry(e)), launchSource, dlpSourceUrls,
+            () => {
               if (chrome.runtime.lastError) {
                 console.warn(chrome.runtime.lastError.message);
                 return;
@@ -1929,15 +1929,16 @@ CommandHandler.COMMANDS_['invoke-sharesheet'] =
         event.command.disabled = !fileManager.ui.actionbar.contains(
             /** @type {Node} */ (event.target));
 
-        chrome.fileManagerPrivate.sharesheetHasTargets(entries, hasTargets => {
-          if (chrome.runtime.lastError) {
-            console.warn(chrome.runtime.lastError.message);
-            return;
-          }
-          event.command.setHidden(!hasTargets);
-          event.canExecute = hasTargets;
-          event.command.disabled = !hasTargets;
-        });
+        chrome.fileManagerPrivate.sharesheetHasTargets(
+            entries.map(e => util.unwrapEntry(e)), hasTargets => {
+              if (chrome.runtime.lastError) {
+                console.warn(chrome.runtime.lastError.message);
+                return;
+              }
+              event.command.setHidden(!hasTargets);
+              event.canExecute = hasTargets;
+              event.command.disabled = !hasTargets;
+            });
       }
     })();
 
@@ -2586,15 +2587,14 @@ class GuestOsShareCommand extends FilesCommand {
     if (!entry || !entry.isDirectory) {
       return;
     }
-    const dir = /** @type {!DirectoryEntry} */ (entry);
-    const info = fileManager.volumeManager.getLocationInfo(dir);
+    const info = fileManager.volumeManager.getLocationInfo(entry);
     if (!info) {
       return;
     }
     const share = () => {
       // Always persist shares via right-click > Share with Linux.
       chrome.fileManagerPrivate.sharePathsWithCrostini(
-          this.vmName_, [dir], true /* persist */, () => {
+          this.vmName_, [util.unwrapEntry(entry)], true /* persist */, () => {
             if (chrome.runtime.lastError) {
               console.warn(
                   'Error sharing with guest: ' +
@@ -2614,7 +2614,7 @@ class GuestOsShareCommand extends FilesCommand {
     };
     // Show a confirmation dialog if we are sharing the root of a volume.
     // Non-Drive volume roots are always '/'.
-    if (dir.fullPath == '/') {
+    if (entry.fullPath == '/') {
       fileManager.ui.confirmDialog.showHtml(
           strf(`SHARE_ROOT_FOLDER_WITH_${this.typeForStrings_}_TITLE`),
           strf(

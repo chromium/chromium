@@ -27,14 +27,12 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/plugin.mojom.h"
-#include "chrome/common/pref_names.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "components/nacl/common/buildflags.h"
-#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/plugin_service.h"
@@ -176,16 +174,9 @@ PluginInfoHostImpl::Context::Context(int render_process_id, Profile* profile)
       host_content_settings_map_(
           HostContentSettingsMapFactory::GetForProfile(profile)),
       plugin_prefs_(PluginPrefs::GetForProfile(profile)) {
-  allow_outdated_plugins_.Init(prefs::kPluginsAllowOutdated,
-                               profile->GetPrefs());
 }
 
-PluginInfoHostImpl::Context::~Context() {}
-
-void PluginInfoHostImpl::Context::ShutdownOnUIThread() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  allow_outdated_plugins_.Destroy();
-}
+PluginInfoHostImpl::Context::~Context() = default;
 
 PluginInfoHostImpl::PluginInfoHostImpl(int render_process_id, Profile* profile)
     : context_(render_process_id, profile) {
@@ -198,17 +189,10 @@ PluginInfoHostImpl::PluginInfoHostImpl(int render_process_id, Profile* profile)
 
 void PluginInfoHostImpl::ShutdownOnUIThread() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  context_.ShutdownOnUIThread();
   shutdown_subscription_ = {};
 }
 
-// static
-void PluginInfoHostImpl::RegisterUserPrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterBooleanPref(prefs::kPluginsAllowOutdated, false);
-}
-
-PluginInfoHostImpl::~PluginInfoHostImpl() {}
+PluginInfoHostImpl::~PluginInfoHostImpl() = default;
 
 struct PluginInfoHostImpl::GetPluginInfo_Params {
   GURL url;

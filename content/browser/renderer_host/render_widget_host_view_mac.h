@@ -34,7 +34,6 @@
 #include "ui/base/cocoa/remote_layer_api.h"
 #include "ui/base/mojom/attributed_string.mojom-forward.h"
 #include "ui/display/display_list.h"
-#include "ui/display/mac/display_link_mac.h"
 #include "ui/events/gesture_detection/filtered_gesture_provider.h"
 
 namespace remote_cocoa {
@@ -400,6 +399,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   void Cut() override;
   void Copy() override;
   void CopyToFindPboard() override;
+  void CenterSelection() override;
   void Paste() override;
   void PasteAndMatchStyle() override;
   void SelectAll() override;
@@ -595,9 +595,6 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
 
   // Our child popup host. NULL if we do not have a child popup.
   raw_ptr<RenderWidgetHostViewMac> popup_child_host_view_;
-
-  // Display link for getting vsync info.
-  scoped_refptr<ui::DisplayLinkMac> display_link_;
 
   // Whether or not the background is opaque as determined by calls to
   // SetBackgroundColor. The default value is opaque.

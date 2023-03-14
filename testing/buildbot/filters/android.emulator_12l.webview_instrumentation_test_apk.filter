@@ -1,0 +1,14 @@
+# crbug.com/1420820
+-org.chromium.android_webview.test.AwContentsClientFullScreenTest.testOnShowCustomViewAndPlayWithHtmlControl_video
+-org.chromium.android_webview.test.AwContentsClientFullScreenTest.testPowerSaveBlockerIsEnabledDuringFullscreenPlayback_video
+
+# crbug.com/1420821
+-org.chromium.android_webview.test.AwAutofillTest.testAutofillTriggersAfterReload
+-org.chromium.android_webview.test.AwAutofillTest.testFocusRemovedAndRestored
+-org.chromium.android_webview.test.AwAutofillTest.testTouchingFormWithAdjustPan
+-org.chromium.android_webview.test.AwAutofillTest.testTouchingFormWithAdjustResize
+-org.chromium.android_webview.test.AwAutofillTest.testTouchingPasswordFieldTriggerQuery
+
+# crbug.com/1417038
+-org.chromium.android_webview.test.PopupWindowTest.testPopupWindowTextHandle
+-org.chromium.android_webview.test.PopupWindowTest.testSingleWindowModeJsInjection

@@ -42,8 +42,9 @@ class ASH_EXPORT TabletModeMultitaskCue : aura::WindowObserver,
   void MaybeShowCue(aura::Window* active_window);
 
   // Dismisses the cue from the screen and cleans up the pointers and
-  // observers related to its parent window.
-  void DismissCue();
+  // observers related to its parent window. `menu_opened` is true if we want to
+  // dismiss the cue because the tablet multitask menu has been opened.
+  void DismissCue(bool menu_opened = false);
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;

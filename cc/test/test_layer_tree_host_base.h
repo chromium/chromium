@@ -6,6 +6,7 @@
 #define CC_TEST_TEST_LAYER_TREE_HOST_BASE_H_
 
 #include <memory>
+#include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "cc/test/fake_impl_task_runner_provider.h"

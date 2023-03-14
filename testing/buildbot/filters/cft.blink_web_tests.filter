@@ -1,0 +1,7 @@
+# crbug.com/1421409: Only run a subset of blink web tests for Chrome for
+# Testing CI builders.
+
+# Run all devtools related web tests
+http/tests/inspector-protocol/
+inspector-protocol/
+http/tests/devtools/

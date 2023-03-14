@@ -39,19 +39,19 @@ QuicStreamFactoryPeer::GetCryptoConfig(
 bool QuicStreamFactoryPeer::HasActiveSession(
     QuicStreamFactory* factory,
     const quic::QuicServerId& server_id,
-    const NetworkAnonymizationKey& network_anonymization_key) {
+    const NetworkAnonymizationKey& network_anonymization_key,
+    bool require_dns_https_alpn) {
   return factory->HasActiveSession(
       QuicSessionKey(server_id, SocketTag(), network_anonymization_key,
-                     SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false));
+                     SecureDnsPolicy::kAllow, require_dns_https_alpn));
 }
 
 bool QuicStreamFactoryPeer::HasActiveJob(QuicStreamFactory* factory,
-                                         const quic::QuicServerId& server_id) {
+                                         const quic::QuicServerId& server_id,
+                                         bool require_dns_https_alpn) {
   return factory->HasActiveJob(
       QuicSessionKey(server_id, SocketTag(), NetworkAnonymizationKey(),
-                     SecureDnsPolicy::kAllow,
-                     /*require_dns_https_alpn=*/false));
+                     SecureDnsPolicy::kAllow, require_dns_https_alpn));
 }
 
 // static
@@ -73,21 +73,21 @@ QuicChromiumClientSession* QuicStreamFactoryPeer::GetPendingSession(
 QuicChromiumClientSession* QuicStreamFactoryPeer::GetActiveSession(
     QuicStreamFactory* factory,
     const quic::QuicServerId& server_id,
-    const NetworkAnonymizationKey& network_anonymization_key) {
+    const NetworkAnonymizationKey& network_anonymization_key,
+    bool require_dns_https_alpn) {
   QuicSessionKey session_key(server_id, SocketTag(), network_anonymization_key,
-                             SecureDnsPolicy::kAllow,
-                             /*require_dns_https_alpn=*/false);
+                             SecureDnsPolicy::kAllow, require_dns_https_alpn);
   DCHECK(factory->HasActiveSession(session_key));
   return factory->active_sessions_[session_key];
 }
 
-bool QuicStreamFactoryPeer::HasLiveSession(
-    QuicStreamFactory* factory,
-    url::SchemeHostPort destination,
-    const quic::QuicServerId& server_id) {
+bool QuicStreamFactoryPeer::HasLiveSession(QuicStreamFactory* factory,
+                                           url::SchemeHostPort destination,
+                                           const quic::QuicServerId& server_id,
+                                           bool require_dns_https_alpn) {
   QuicSessionKey session_key =
       QuicSessionKey(server_id, SocketTag(), NetworkAnonymizationKey(),
-                     SecureDnsPolicy::kAllow, /*require_dns_https_alpn=*/false);
+                     SecureDnsPolicy::kAllow, require_dns_https_alpn);
   QuicStreamFactory::QuicSessionAliasKey alias_key(std::move(destination),
                                                    session_key);
   for (const auto& it : factory->all_sessions_) {

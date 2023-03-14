@@ -32,7 +32,14 @@ void OfflineSigninLimiterFactory::SetClockForTesting(base::Clock* clock) {
 }
 
 OfflineSigninLimiterFactory::OfflineSigninLimiterFactory()
-    : ProfileKeyedServiceFactory("OfflineSigninLimiter") {}
+    : ProfileKeyedServiceFactory(
+          "OfflineSigninLimiter",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {}
 
 OfflineSigninLimiterFactory::~OfflineSigninLimiterFactory() {}
 

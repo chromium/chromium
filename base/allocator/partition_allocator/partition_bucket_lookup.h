@@ -25,15 +25,17 @@ namespace partition_alloc::internal {
 // sub_order_index_mask is a mask for the remaining bits == 11 (masking to 01
 // for the sub_order_index).
 constexpr uint8_t OrderIndexShift(uint8_t order) {
-  if (order < kNumBucketsPerOrderBits + 1)
+  if (order < kNumBucketsPerOrderBits + 1) {
     return 0;
+  }
 
   return order - (kNumBucketsPerOrderBits + 1);
 }
 
 constexpr size_t OrderSubIndexMask(uint8_t order) {
-  if (order == kBitsPerSizeT)
+  if (order == kBitsPerSizeT) {
     return static_cast<size_t>(-1) >> (kNumBucketsPerOrderBits + 1);
+  }
 
   return ((static_cast<size_t>(1) << order) - 1) >>
          (kNumBucketsPerOrderBits + 1);
@@ -104,10 +106,10 @@ inline constexpr size_t kOrderSubIndexMask[PA_BITS_PER_SIZE_T + 1] = {
 // The class used to generate the bucket lookup table at compile-time.
 class BucketIndexLookup final {
  public:
-  PA_ALWAYS_INLINE constexpr static uint16_t GetIndexForDenserBuckets(
+  PA_ALWAYS_INLINE static constexpr uint16_t GetIndexForDenserBuckets(
       size_t size);
-  PA_ALWAYS_INLINE constexpr static uint16_t GetIndexFor8Buckets(size_t size);
-  PA_ALWAYS_INLINE constexpr static uint16_t GetIndex(size_t size);
+  PA_ALWAYS_INLINE static constexpr uint16_t GetIndexFor8Buckets(size_t size);
+  PA_ALWAYS_INLINE static constexpr uint16_t GetIndex(size_t size);
 
   constexpr BucketIndexLookup() {
     constexpr uint16_t sentinel_bucket_index = kNumBuckets;
@@ -262,10 +264,11 @@ PA_ALWAYS_INLINE constexpr uint16_t BucketIndexLookup::GetIndexForDenserBuckets(
   //
   // We also do not want to go about the index for the max bucketed size.
   if (size > kAlignment * kNumBucketsPerOrder &&
-      index < GetIndexFor8Buckets(kMaxBucketed))
+      index < GetIndexFor8Buckets(kMaxBucketed)) {
     return RoundUpToOdd(index);
-  else
+  } else {
     return index;
+  }
 }
 
 // static
@@ -288,8 +291,9 @@ PA_ALWAYS_INLINE constexpr uint16_t BucketIndexLookup::GetIndex(size_t size) {
   //
   // So, an allocation of size 1.4*2^10 would go into the 1.5*2^10 bucket under
   // Distribution A, but to the 2^11 bucket under Distribution B.
-  if (1 << 8 < size && size < kHighThresholdForAlternateDistribution)
+  if (1 << 8 < size && size < kHighThresholdForAlternateDistribution) {
     return BucketIndexLookup::GetIndexForDenserBuckets(RoundUpSize(size));
+  }
   return BucketIndexLookup::GetIndexForDenserBuckets(size);
 }
 

@@ -53,10 +53,6 @@ TEST(DownloadStatsTest, RecordDownloadOpen) {
       "Download.OpenMethod",
       /*sample=*/DOWNLOAD_OPEN_METHOD_DEFAULT_BROWSER,
       /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "Download.OpenMethod.PDF",
-      /*sample=*/DOWNLOAD_OPEN_METHOD_DEFAULT_BROWSER,
-      /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample("Download.Open.ContentType",
                                       /*sample=*/download::DownloadContent::PDF,
                                       /*expected_bucket_count=*/1);

@@ -10,10 +10,10 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.TouchDelegate;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -125,7 +125,7 @@ public class SectionHeaderView extends LinearLayout {
     private ListMenuButton mMenuView;
 
     private @Nullable SectionHeaderTabListener mTabListener;
-    private RelativeLayout mContent;
+    private ViewGroup mContent;
     private @Nullable View mOptionsPanel;
 
     private boolean mTextsEnabled;

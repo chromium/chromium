@@ -4169,74 +4169,21 @@ TEST_F(AXPlatformNodeWinTest, UIAControlContentPropertyForTableElements) {
 }
 
 TEST_F(AXPlatformNodeWinTest, IsUIAControlColorWellInsideTable) {
-  // ++1 kRootWebArea
-  // ++++2 kTable
-  // ++++++3 kLayoutTableCell
-  // ++++++++4 kColorWell
-  // ++++++++++5 kStaticText
-  // ++++++6 kColumnHeader
-  // ++++++++7 kColorWell
-  // ++++++++++8 kStaticText
-  // ++++++9 kRowHeader
-  // ++++++++10 kColorWell
-  // ++++++++++11 kStaticText
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kTable
+    ++++++3 kLayoutTableCell
+    ++++++++4 kColorWell
+    ++++++++++5 kStaticText
+    ++++++6 kColumnHeader
+    ++++++++7 kColorWell
+    ++++++++++8 kStaticText
+    ++++++9 kRowHeader
+    ++++++++10 kColorWell
+    ++++++++++11 kStaticText
+  )HTML"));
 
-  AXNodeData root_1;
-  AXNodeData table_2;
-  AXNodeData cell_3;
-  AXNodeData color_4;
-  AXNodeData st_5;
-  AXNodeData column_header_6;
-  AXNodeData color_7;
-  AXNodeData st_8;
-  AXNodeData row_header_9;
-  AXNodeData color_10;
-  AXNodeData st_11;
-
-  root_1.id = 1;
-  table_2.id = 2;
-  cell_3.id = 3;
-  color_4.id = 4;
-  st_5.id = 5;
-  column_header_6.id = 6;
-  color_7.id = 7;
-  st_8.id = 8;
-  row_header_9.id = 9;
-  color_10.id = 10;
-  st_11.id = 11;
-
-  root_1.role = ax::mojom::Role::kRootWebArea;
-  root_1.child_ids = {table_2.id};
-
-  table_2.role = ax::mojom::Role::kTable;
-  table_2.child_ids = {cell_3.id, column_header_6.id, row_header_9.id};
-
-  cell_3.role = ax::mojom::Role::kLayoutTableCell;
-  cell_3.child_ids = {color_4.id};
-
-  color_4.role = ax::mojom::Role::kColorWell;
-  color_4.child_ids = {st_5.id};
-
-  st_5.role = ax::mojom::Role::kStaticText;
-
-  column_header_6.role = ax::mojom::Role::kColumnHeader;
-  column_header_6.child_ids = {color_7.id};
-
-  color_7.role = ax::mojom::Role::kColorWell;
-  color_7.child_ids = {st_8.id};
-
-  st_8.role = ax::mojom::Role::kStaticText;
-
-  row_header_9.role = ax::mojom::Role::kRowHeader;
-  row_header_9.child_ids = {color_10.id};
-
-  color_10.role = ax::mojom::Role::kColorWell;
-  color_10.child_ids = {st_11.id};
-
-  st_11.role = ax::mojom::Role::kStaticText;
-
-  Init(root_1, table_2, cell_3, color_4, st_5, column_header_6, color_7, st_8,
-       row_header_9, color_10, st_11);
+  Init(update);
 
   // Turn on web content mode for the AXTree.
   TestAXNodeWrapper::SetGlobalIsWebContent(true);
@@ -4261,52 +4208,16 @@ TEST_F(AXPlatformNodeWinTest, IsUIAControlColorWellInsideTable) {
 }
 
 TEST_F(AXPlatformNodeWinTest, IsUIAControlForTextNodes) {
-  // ++1 root
-  // ++++2 kGenericContainer
-  // ++++++3 kStaticText "text"
-  // ++++4 kGroup
-  // ++++++5 kStaticText "text"
-  // ++++6 kHeading
-  // ++++++7 kStaticText "text"
-
-  AXNodeData root_1;
-  AXNodeData gc_2;
-  AXNodeData text_3;
-  AXNodeData group_4;
-  AXNodeData text_5;
-  AXNodeData heading_6;
-  AXNodeData text_7;
-
-  root_1.id = 1;
-  gc_2.id = 2;
-  text_3.id = 3;
-  group_4.id = 4;
-  text_5.id = 5;
-  heading_6.id = 6;
-  text_7.id = 7;
-
-  root_1.role = ax::mojom::Role::kRootWebArea;
-  root_1.child_ids = {gc_2.id, group_4.id, heading_6.id};
-
-  gc_2.role = ax::mojom::Role::kGenericContainer;
-  gc_2.child_ids = {text_3.id};
-
-  text_3.role = ax::mojom::Role::kStaticText;
-  text_3.SetName("text");
-
-  group_4.role = ax::mojom::Role::kGroup;
-  group_4.child_ids = {text_5.id};
-
-  text_5.role = ax::mojom::Role::kStaticText;
-  text_5.SetName("text");
-
-  heading_6.role = ax::mojom::Role::kHeading;
-  heading_6.child_ids = {text_7.id};
-
-  text_7.role = ax::mojom::Role::kStaticText;
-  text_7.SetName("text");
-
-  Init(root_1, gc_2, text_3, group_4, text_5, heading_6, text_7);
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kGenericContainer
+    ++++++3 kStaticText name="text"
+    ++++4 kGroup
+    ++++++5 kStaticText name="text"
+    ++++6 kHeading
+    ++++++7 kStaticText name="text"
+  )HTML"));
+  Init(update);
 
   // Turn on web content mode for the AXTree.
   TestAXNodeWrapper::SetGlobalIsWebContent(true);
@@ -4330,21 +4241,11 @@ TEST_F(AXPlatformNodeWinTest, IsUIAControlForTextNodes) {
 }
 
 TEST_F(AXPlatformNodeWinTest, IsUIAControlForNonFocusableNodesInViews) {
-  // ++1 kUnknown
-  // ++++2 kButton
-
-  AXNodeData root_1;
-  AXNodeData button_2;
-
-  root_1.id = 1;
-  button_2.id = 2;
-
-  root_1.role = ax::mojom::Role::kUnknown;
-  root_1.child_ids = {button_2.id};
-
-  button_2.role = ax::mojom::Role::kButton;
-
-  Init(root_1, button_2);
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kUnknown
+    ++++2 kButton
+  )HTML"));
+  Init(update);
 
   // Set web content mode to false for the AXTree since we're testing for Views.
   TestAXNodeWrapper::SetGlobalIsWebContent(false);
@@ -4409,20 +4310,12 @@ TEST_F(AXPlatformNodeWinTest, UIAGetPropertyValue_Histogram) {
 }
 
 TEST_F(AXPlatformNodeWinTest, UIAGetPropertyValueIsDialog) {
-  AXNodeData root;
-  root.id = 1;
-  root.role = ax::mojom::Role::kRootWebArea;
-  root.child_ids = {2, 3};
-
-  AXNodeData alert_dialog;
-  alert_dialog.id = 2;
-  alert_dialog.role = ax::mojom::Role::kAlertDialog;
-
-  AXNodeData dialog;
-  dialog.id = 3;
-  dialog.role = ax::mojom::Role::kDialog;
-
-  Init(root, alert_dialog, dialog);
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kAlertDialog
+    ++++3 kDialog
+  )HTML"));
+  Init(update);
 
   EXPECT_UIA_BOOL_EQ(GetRootIRawElementProviderSimple(), UIA_IsDialogPropertyId,
                      false);
@@ -4434,53 +4327,17 @@ TEST_F(AXPlatformNodeWinTest, UIAGetPropertyValueIsDialog) {
 
 TEST_F(AXPlatformNodeWinTest,
        UIAGetPropertyValueIsControlElementIgnoredInvisible) {
-  AXNodeData root;
-  root.id = 1;
-  root.role = ax::mojom::Role::kRootWebArea;
-  root.child_ids = {2, 3, 4, 5, 6, 7, 8};
-
-  AXNodeData normal_button;
-  normal_button.id = 2;
-  normal_button.role = ax::mojom::Role::kButton;
-
-  AXNodeData ignored_button;
-  ignored_button.id = 3;
-  ignored_button.role = ax::mojom::Role::kButton;
-  ignored_button.AddState(ax::mojom::State::kIgnored);
-
-  AXNodeData invisible_button;
-  invisible_button.id = 4;
-  invisible_button.role = ax::mojom::Role::kButton;
-  invisible_button.AddState(ax::mojom::State::kInvisible);
-
-  AXNodeData invisible_focusable_button;
-  invisible_focusable_button.id = 5;
-  invisible_focusable_button.role = ax::mojom::Role::kButton;
-  invisible_focusable_button.AddState(ax::mojom::State::kInvisible);
-  invisible_focusable_button.AddState(ax::mojom::State::kFocusable);
-
-  AXNodeData focusable_generic_container;
-  focusable_generic_container.id = 6;
-  focusable_generic_container.role = ax::mojom::Role::kGenericContainer;
-  focusable_generic_container.AddState(ax::mojom::State::kFocusable);
-
-  AXNodeData ignored_focusable_generic_container;
-  ignored_focusable_generic_container.id = 7;
-  ignored_focusable_generic_container.role = ax::mojom::Role::kGenericContainer;
-  ignored_focusable_generic_container.AddState(ax::mojom::State::kIgnored);
-  focusable_generic_container.AddState(ax::mojom::State::kFocusable);
-
-  AXNodeData invisible_focusable_generic_container;
-  invisible_focusable_generic_container.id = 8;
-  invisible_focusable_generic_container.role =
-      ax::mojom::Role::kGenericContainer;
-  invisible_focusable_generic_container.AddState(ax::mojom::State::kInvisible);
-  invisible_focusable_generic_container.AddState(ax::mojom::State::kFocusable);
-
-  Init(root, normal_button, ignored_button, invisible_button,
-       invisible_focusable_button, focusable_generic_container,
-       ignored_focusable_generic_container,
-       invisible_focusable_generic_container);
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kButton
+    ++++3 kButton states=kIgnored
+    ++++4 kButton states=kInvisible
+    ++++5 kButton states=kInvisible,kFocusable
+    ++++6 kGenericContainer states=kFocusable
+    ++++7 kGenericContainer states=kIgnored,kFocusable
+    ++++8 kGenericContainer states=kInvisible,kFocusable
+  )HTML"));
+  Init(update);
 
   // Turn on web content mode for the AXTree.
   TestAXNodeWrapper::SetGlobalIsWebContent(true);
@@ -4975,65 +4832,32 @@ TEST_F(AXPlatformNodeWinTest, GetPropertyValue_LabeledByTest) {
 }
 
 TEST_F(AXPlatformNodeWinTest, GetPropertyValue_HelpText) {
-  AXNodeData root;
-  root.id = 1;
-  root.role = ax::mojom::Role::kRootWebArea;
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kTextField name="name-from-title" state=kEditable stringAttribute=kPlaceholder,placeholder
+    ++++3 kTextField state=kEditable name="name-from-title"   
+    ++++4 kTextField name="name-from-placeholder" state=kEditable 
+    ++++5 kTextField state=kEditable name="name-from-attribute" stringAttribute=kToolTip,tooltip
+    ++++6 kTextField state=kEditable name="name-from-attribute"
+  )HTML"));
 
-  // Test Placeholder StringAttribute is exposed
-  AXNodeData input1;
-  input1.id = 2;
-  input1.role = ax::mojom::Role::kTextField;
-  input1.AddState(ax::mojom::State::kEditable);
-  input1.SetName("name-from-title");
-  input1.AddIntAttribute(ax::mojom::IntAttribute::kNameFrom,
-                         static_cast<int>(ax::mojom::NameFrom::kTitle));
-  input1.AddStringAttribute(ax::mojom::StringAttribute::kPlaceholder,
-                            "placeholder");
-  root.child_ids.push_back(input1.id);
+  update.nodes[1].AddIntAttribute(
+      ax::mojom::IntAttribute::kNameFrom,
+      static_cast<int>(ax::mojom::NameFrom::kTitle));
+  update.nodes[2].AddIntAttribute(
+      ax::mojom::IntAttribute::kNameFrom,
+      static_cast<int>(ax::mojom::NameFrom::kTitle));
+  update.nodes[3].AddIntAttribute(
+      ax::mojom::IntAttribute::kNameFrom,
+      static_cast<int>(ax::mojom::NameFrom::kPlaceholder));
+  update.nodes[4].AddIntAttribute(
+      ax::mojom::IntAttribute::kNameFrom,
+      static_cast<int>(ax::mojom::NameFrom::kAttribute));
+  update.nodes[5].AddIntAttribute(
+      ax::mojom::IntAttribute::kNameFrom,
+      static_cast<int>(ax::mojom::NameFrom::kAttribute));
 
-  // Test NameFrom Title is exposed
-  AXNodeData input2;
-  input2.id = 3;
-  input2.role = ax::mojom::Role::kTextField;
-  input2.AddState(ax::mojom::State::kEditable);
-  input2.SetName("name-from-title");
-  input2.AddIntAttribute(ax::mojom::IntAttribute::kNameFrom,
-                         static_cast<int>(ax::mojom::NameFrom::kTitle));
-  root.child_ids.push_back(input2.id);
-
-  // Test NameFrom Placeholder is exposed
-  AXNodeData input3;
-  input3.id = 4;
-  input3.role = ax::mojom::Role::kTextField;
-  input3.AddState(ax::mojom::State::kEditable);
-  input3.SetName("name-from-placeholder");
-  input3.AddIntAttribute(ax::mojom::IntAttribute::kNameFrom,
-                         static_cast<int>(ax::mojom::NameFrom::kPlaceholder));
-  root.child_ids.push_back(input3.id);
-
-  // Test Title StringAttribute is exposed
-  AXNodeData input4;
-  input4.id = 5;
-  input4.role = ax::mojom::Role::kTextField;
-  input4.AddState(ax::mojom::State::kEditable);
-  input4.SetName("name-from-attribute");
-  input4.AddIntAttribute(ax::mojom::IntAttribute::kNameFrom,
-                         static_cast<int>(ax::mojom::NameFrom::kAttribute));
-  input4.AddStringAttribute(ax::mojom::StringAttribute::kTooltip, "tooltip");
-  root.child_ids.push_back(input4.id);
-
-  // Test NameFrom (other), without explicit
-  // Title / Placeholder StringAttribute is not exposed
-  AXNodeData input5;
-  input5.id = 6;
-  input5.role = ax::mojom::Role::kTextField;
-  input5.AddState(ax::mojom::State::kEditable);
-  input5.SetName("name-from-attribute");
-  input5.AddIntAttribute(ax::mojom::IntAttribute::kNameFrom,
-                         static_cast<int>(ax::mojom::NameFrom::kAttribute));
-  root.child_ids.push_back(input5.id);
-
-  Init(root, input1, input2, input3, input4, input5);
+  Init(update);
 
   auto* root_node = GetRoot();
   EXPECT_UIA_BSTR_EQ(QueryInterfaceFromNode<IRawElementProviderSimple>(
@@ -5054,99 +4878,57 @@ TEST_F(AXPlatformNodeWinTest, GetPropertyValue_HelpText) {
 }
 
 TEST_F(AXPlatformNodeWinTest, GetPropertyValue_LocalizedControlType) {
-  AXNodeData root;
-  root.role = ax::mojom::Role::kUnknown;
-  root.id = 1;
-  root.AddStringAttribute(ax::mojom::StringAttribute::kRoleDescription,
-                          "root role description");
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kUnknown stringAttribute=kRoleDescription,rootRoleDescription
+    ++++2 kSearchBox stringAttribute=kRoleDescription,child1RoleDescription
+    ++++3 kButton
+  )HTML"));
 
-  AXNodeData child1;
-  child1.id = 2;
-  child1.role = ax::mojom::Role::kSearchBox;
-  child1.AddStringAttribute(ax::mojom::StringAttribute::kRoleDescription,
-                            "child1 role description");
-  root.child_ids.push_back(2);
-
-  AXNodeData child2;
-  child2.id = 3;
-  child2.role = ax::mojom::Role::kButton;
-  root.child_ids.push_back(3);
-
-  Init(root, child1, child2);
+  Init(update);
 
   ComPtr<IRawElementProviderSimple> root_node =
       GetRootIRawElementProviderSimple();
   EXPECT_UIA_BSTR_EQ(root_node, UIA_LocalizedControlTypePropertyId,
-                     L"root role description");
+                     L"rootRoleDescription");
   EXPECT_UIA_BSTR_EQ(QueryInterfaceFromNode<IRawElementProviderSimple>(
                          GetRoot()->children()[0]),
                      UIA_LocalizedControlTypePropertyId,
-                     L"child1 role description");
+                     L"child1RoleDescription");
   EXPECT_UIA_EMPTY(QueryInterfaceFromNode<IRawElementProviderSimple>(
                        GetRoot()->children()[1]),
                    UIA_LocalizedControlTypePropertyId);
 }
 
 TEST_F(AXPlatformNodeWinTest, GetPropertyValue_IsControlElement) {
-  AXTreeUpdate update;
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kButton
+    ++++++3 kStaticText name="someText"
+    ++++4 kGenericContainer
+    ++++++5 kStaticText name="moreText"
+    ++++6 kTable
+    ++++7 kList
+    ++++8 kForm
+    ++++9 kImage
+    ++++10 kImage
+    ++++11 kArticle
+    ++++12 kGenericContainer boolAttribute=kHasAriaAttribute,true
+    ++++13 kGenericContainer states=kEditable,kRichlyEditable boolAttribute=kNonAtomicTextFieldRoot,true
+    ++++14 kGenericContainer name="name"
+    ++++15 kGenericContainer
+    ++++16 kGenericContainer state=kFocusable
+    ++++17 kForm name="name"
+  )HTML"));
+
   ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
   update.tree_data.tree_id = tree_id;
   update.has_tree_data = true;
   update.root_id = 1;
-  update.nodes.resize(17);
-  update.nodes[0].id = 1;
-  update.nodes[0].role = ax::mojom::Role::kRootWebArea;
-  update.nodes[0].child_ids = {2,  4,  6,  7,  8,  9,  10,
-                               11, 12, 13, 14, 15, 16, 17};
-  update.nodes[1].id = 2;
-  update.nodes[1].role = ax::mojom::Role::kButton;
-  update.nodes[1].child_ids = {3};
-  update.nodes[2].id = 3;
-  update.nodes[2].role = ax::mojom::Role::kStaticText;
-  update.nodes[2].SetName("some text");
-  update.nodes[3].id = 4;
-  update.nodes[3].role = ax::mojom::Role::kGenericContainer;
-  update.nodes[3].child_ids = {5};
-  update.nodes[4].id = 5;
-  update.nodes[4].role = ax::mojom::Role::kStaticText;
-  update.nodes[4].SetName("more text");
-  update.nodes[5].id = 6;
-  update.nodes[5].role = ax::mojom::Role::kTable;
-  update.nodes[6].id = 7;
-  update.nodes[6].role = ax::mojom::Role::kList;
-  update.nodes[7].id = 8;
-  update.nodes[7].role = ax::mojom::Role::kForm;
-  update.nodes[8].id = 9;
-  update.nodes[8].role = ax::mojom::Role::kImage;
-  update.nodes[9].id = 10;
-  update.nodes[9].role = ax::mojom::Role::kImage;
   update.nodes[9].SetNameExplicitlyEmpty();
-  update.nodes[10].id = 11;
-  update.nodes[10].role = ax::mojom::Role::kArticle;
-  update.nodes[11].id = 12;
-  update.nodes[11].role = ax::mojom::Role::kGenericContainer;
-  update.nodes[11].AddBoolAttribute(ax::mojom::BoolAttribute::kHasAriaAttribute,
-                                    true);
-  update.nodes[12].id = 13;
-  update.nodes[12].role = ax::mojom::Role::kGenericContainer;
-  update.nodes[12].AddState(ax::mojom::State::kEditable);
-  update.nodes[12].AddState(ax::mojom::State::kRichlyEditable);
-  update.nodes[12].AddBoolAttribute(
-      ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot, true);
-  update.nodes[13].id = 14;
-  update.nodes[13].role = ax::mojom::Role::kGenericContainer;
-  update.nodes[13].SetName("name");
-  update.nodes[14].id = 15;
-  update.nodes[14].role = ax::mojom::Role::kGenericContainer;
   update.nodes[14].SetDescription("description");
-  update.nodes[15].id = 16;
-  update.nodes[15].role = ax::mojom::Role::kGenericContainer;
-  update.nodes[15].AddState(ax::mojom::State::kFocusable);
-  update.nodes[16].id = 17;
-  update.nodes[16].role = ax::mojom::Role::kForm;
-  update.nodes[16].SetName("name");
 
   Init(update);
+
   TestAXNodeWrapper::SetGlobalIsWebContent(true);
 
   EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 2),
@@ -6517,9 +6299,9 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
                         UIA_TablePatternId, UIA_TextChildPatternId}),
             GetSupportedPatternsFromNodeId(grid_without_header_id));
 
-  EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_ValuePatternId,
-                        UIA_GridItemPatternId, UIA_TableItemPatternId,
-                        UIA_TextChildPatternId, UIA_SelectionItemPatternId}),
+  EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_GridItemPatternId,
+                        UIA_TableItemPatternId, UIA_TextChildPatternId,
+                        UIA_SelectionItemPatternId}),
             GetSupportedPatternsFromNodeId(grid_without_header_cell_id));
 
   EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_ValuePatternId,
@@ -6527,14 +6309,14 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
                         UIA_TablePatternId, UIA_TextChildPatternId}),
             GetSupportedPatternsFromNodeId(grid_with_header_id));
 
-  EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_ValuePatternId,
-                        UIA_GridItemPatternId, UIA_TableItemPatternId,
-                        UIA_TextChildPatternId, UIA_SelectionItemPatternId}),
+  EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_GridItemPatternId,
+                        UIA_TableItemPatternId, UIA_TextChildPatternId,
+                        UIA_SelectionItemPatternId}),
             GetSupportedPatternsFromNodeId(grid_with_header_column_header_id));
 
-  EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_ValuePatternId,
-                        UIA_GridItemPatternId, UIA_TableItemPatternId,
-                        UIA_TextChildPatternId, UIA_SelectionItemPatternId}),
+  EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_GridItemPatternId,
+                        UIA_TableItemPatternId, UIA_TextChildPatternId,
+                        UIA_SelectionItemPatternId}),
             GetSupportedPatternsFromNodeId(grid_with_header_cell_id));
 
   EXPECT_EQ(PatternSet({UIA_ValuePatternId, UIA_ScrollItemPatternId,
@@ -6739,6 +6521,78 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderInvokePattern) {
   EXPECT_HRESULT_SUCCEEDED(raw_element_provider_simple->GetPatternProvider(
       UIA_InvokePatternId, &invoke_provider));
   EXPECT_EQ(nullptr, invoke_provider.Get());
+}
+
+TEST_F(AXPlatformNodeWinTest, GetPatternProviderGridCellValuePattern) {
+  // ++1 kRootWebArea
+  // ++++2 kGrid
+  // ++++++3 kRow
+  // ++++++++4 kCell
+  // +++++++++++5 kStaticText
+  // ++++++++6 kCell
+  // +++++++++++7 kStaticText
+  // ++++++++8 kCell
+  // +++++++++++9 kStaticText
+
+  AXNodeData root_1;
+  AXNodeData table_2;
+  AXNodeData row_3;
+  AXNodeData cell_4;
+  AXNodeData st_5;
+  AXNodeData cell_6;
+  AXNodeData st_7;
+  AXNodeData cell_8;
+  AXNodeData st_9;
+
+  root_1.id = 1;
+  table_2.id = 2;
+  row_3.id = 3;
+  cell_4.id = 4;
+  st_5.id = 5;
+  cell_6.id = 6;
+  st_7.id = 7;
+  cell_8.id = 8;
+  st_9.id = 9;
+
+  root_1.role = ax::mojom::Role::kRootWebArea;
+  root_1.child_ids = {table_2.id};
+
+  table_2.role = ax::mojom::Role::kGrid;
+  table_2.child_ids = {row_3.id};
+
+  row_3.role = ax::mojom::Role::kRow;
+  row_3.child_ids = {cell_4.id, cell_6.id, cell_8.id};
+
+  cell_4.role = ax::mojom::Role::kCell;
+  cell_4.AddState(ax::mojom::State::kEditable);
+  cell_4.child_ids = {st_5.id};
+
+  cell_6.role = ax::mojom::Role::kCell;
+  cell_6.AddState(ax::mojom::State::kEditable);
+  cell_6.AddState(ax::mojom::State::kRichlyEditable);
+  cell_6.AddIntAttribute(ax::mojom::IntAttribute::kRestriction,
+                         static_cast<int>(ax::mojom::Restriction::kReadOnly));
+  cell_6.child_ids = {st_7.id};
+
+  cell_8.role = ax::mojom::Role::kCell;
+  cell_8.child_ids = {st_9.id};
+
+  Init(root_1, table_2, row_3, cell_4, st_5, cell_6, st_7, cell_8, st_9);
+
+  AXPlatformNodeWinTest::PatternSet cell_4_patterns =
+      GetSupportedPatternsFromNodeId(cell_4.id);
+  AXPlatformNodeWinTest::PatternSet cell_6_patterns =
+      GetSupportedPatternsFromNodeId(cell_6.id);
+  AXPlatformNodeWinTest::PatternSet cell_8_patterns =
+      GetSupportedPatternsFromNodeId(cell_8.id);
+
+  // Since the first two gridcell nodes are editable, we should find the
+  // ValuePattern exposed in those cells.
+  EXPECT_NE(cell_4_patterns.find(UIA_ValuePatternId), cell_4_patterns.end());
+  EXPECT_NE(cell_6_patterns.find(UIA_ValuePatternId), cell_6_patterns.end());
+  // Since the last gridcell node is not editable, we should not find
+  // ValuePattern exposed for it.
+  EXPECT_EQ(cell_8_patterns.find(UIA_ValuePatternId), cell_8_patterns.end());
 }
 
 TEST_F(AXPlatformNodeWinTest, IExpandCollapsePatternProviderAction) {

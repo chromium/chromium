@@ -5,11 +5,14 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/authenticated_connection.h"
 
 #include "base/base64.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
-#include "base/notreached.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "crypto/sha2.h"
@@ -67,8 +70,11 @@ const char kNotifySourceOfUpdateMessageKey[] = "isForcedUpdateRequired";
 }  // namespace
 
 AuthenticatedConnection::AuthenticatedConnection(
-    NearbyConnection* nearby_connection)
-    : Connection(nearby_connection) {}
+    NearbyConnection* nearby_connection,
+    mojo::SharedRemote<mojom::QuickStartDecoder> remote)
+    : Connection(nearby_connection) {
+  decoder_ = std::move(remote);
+}
 
 AuthenticatedConnection::~AuthenticatedConnection() = default;
 
@@ -101,6 +107,11 @@ void AuthenticatedConnection::NotifySourceOfUpdate() {
   base::Value::Dict message_payload;
   message_payload.Set(kNotifySourceOfUpdateMessageKey, true);
   SendPayload(message_payload);
+}
+
+void AuthenticatedConnection::RequestWifiCredentials(
+    RequestWifiCredentialsCallback callback) {
+  NOTIMPLEMENTED();
 }
 
 void AuthenticatedConnection::SendBootstrapOptions(
@@ -192,7 +203,37 @@ std::string AuthenticatedConnection::CreateFidoClientDataJson(
 void AuthenticatedConnection::ParseAssertionResponse(
     RequestAccountTransferAssertionCallback callback,
     absl::optional<std::vector<uint8_t>> response_bytes) {
-  NOTIMPLEMENTED();
+  if (!response_bytes.has_value()) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  auto parse_mojo_response_callback =
+      base::BindOnce(&AuthenticatedConnection::GenerateFidoAssertionInfo,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+
+  decoder_->DecodeGetAssertionResponse(response_bytes.value(),
+                                       std::move(parse_mojo_response_callback));
+}
+
+void AuthenticatedConnection::GenerateFidoAssertionInfo(
+    RequestAccountTransferAssertionCallback callback,
+    ::ash::quick_start::mojom::GetAssertionResponsePtr response) {
+  mojom::GetAssertionResponse::GetAssertionStatus success =
+      mojom::GetAssertionResponse::GetAssertionStatus::kSuccess;
+
+  if (response->status != success) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  FidoAssertionInfo assertion_info;
+  assertion_info.email = response->email;
+  assertion_info.credential_id = response->credential_id;
+  assertion_info.authenticator_data = response->auth_data;
+  assertion_info.signature = response->signature;
+
+  std::move(callback).Run(assertion_info);
 }
 
 }  // namespace ash::quick_start

@@ -60,7 +60,7 @@ std::string GetActiveUrl(Browser* browser) {
 void SetUninstallURL(extensions::ExtensionPrefs* prefs,
                      const std::string& extension_id) {
   prefs->UpdateExtensionPref(extension_id, kUninstallUrlPrefKey,
-                             std::make_unique<base::Value>(kUninstallUrl));
+                             base::Value(kUninstallUrl));
 }
 
 void CloseUninstallDialog(views::Widget* const bubble_widget) {

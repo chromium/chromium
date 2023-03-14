@@ -6,26 +6,25 @@
 
 #include "base/lazy_instance.h"
 #include "base/synchronization/lock.h"
-#include "base/threading/thread_local.h"
 #include "ppapi/shared_impl/ppapi_globals.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace ppapi {
 
 base::LazyInstance<base::Lock>::Leaky g_proxy_lock = LAZY_INSTANCE_INITIALIZER;
 
 bool g_disable_locking = false;
-base::LazyInstance<base::ThreadLocalBoolean>::Leaky
-    g_disable_locking_for_thread = LAZY_INSTANCE_INITIALIZER;
+ABSL_CONST_INIT thread_local bool disable_locking_for_thread = false;
 
 // Simple single-thread deadlock detector for the proxy lock.
 // |true| when the current thread has the lock.
-base::LazyInstance<base::ThreadLocalBoolean>::Leaky g_proxy_locked_on_thread =
-    LAZY_INSTANCE_INITIALIZER;
+ABSL_CONST_INIT thread_local bool proxy_locked_on_thread = false;
 
 // static
 base::Lock* ProxyLock::Get() {
-  if (g_disable_locking || g_disable_locking_for_thread.Get().Get())
-    return NULL;
+  if (g_disable_locking || disable_locking_for_thread) {
+    return nullptr;
+  }
   return &g_proxy_lock.Get();
 }
 
@@ -40,11 +39,10 @@ void ProxyLock::Acquire() NO_THREAD_SAFETY_ANALYSIS {
   base::Lock* lock = Get();
   if (lock) {
     // This thread does not already hold the lock.
-    const bool deadlock = g_proxy_locked_on_thread.Get().Get();
-    CHECK(!deadlock);
+    CHECK(!proxy_locked_on_thread);
 
     lock->Acquire();
-    g_proxy_locked_on_thread.Get().Set(true);
+    proxy_locked_on_thread = true;
   }
 }
 
@@ -54,10 +52,9 @@ void ProxyLock::Release() NO_THREAD_SAFETY_ANALYSIS {
   base::Lock* lock = Get();
   if (lock) {
     // This thread currently holds the lock.
-    const bool locked = g_proxy_locked_on_thread.Get().Get();
-    CHECK(locked);
+    CHECK(proxy_locked_on_thread);
 
-    g_proxy_locked_on_thread.Get().Set(false);
+    proxy_locked_on_thread = false;
     lock->Release();
   }
 }
@@ -67,8 +64,7 @@ void ProxyLock::AssertAcquired() {
   base::Lock* lock = Get();
   if (lock) {
     // This thread currently holds the lock.
-    const bool locked = g_proxy_locked_on_thread.Get().Get();
-    CHECK(locked);
+    CHECK(proxy_locked_on_thread);
 
     lock->AssertAcquired();
   }
@@ -81,15 +77,8 @@ void ProxyLock::DisableLocking() {
   g_disable_locking = true;
 }
 
-ProxyLock::LockingDisablerForTest::LockingDisablerForTest() {
-  // Note, we don't DCHECK that this flag isn't already set, because multiple
-  // unit tests may run in succession and all set it.
-  g_disable_locking_for_thread.Get().Set(true);
-}
-
-ProxyLock::LockingDisablerForTest::~LockingDisablerForTest() {
-  g_disable_locking_for_thread.Get().Set(false);
-}
+ProxyLock::LockingDisablerForTest::LockingDisablerForTest()
+    : resetter_(&disable_locking_for_thread, true) {}
 
 void CallWhileUnlocked(base::OnceClosure closure) {
   ProxyAutoUnlock lock;

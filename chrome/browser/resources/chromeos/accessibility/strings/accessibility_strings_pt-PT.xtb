@@ -203,7 +203,7 @@
 <translation id="2390264819538553347">Para avançar, prima Enter. Para retroceder, prima a tecla de retrocesso.</translation>
 <translation id="2398579267367951220">Escreva para pesquisar a página. Prima Enter para avançar para o resultado, as setas para cima ou para baixo para procurar resultados, continue a escrever para alterar a sua pesquisa ou prima Escape para cancelar.</translation>
 <translation id="240709722712693803">Azul-violeta</translation>
-<translation id="2410298923485357543">Utilizar a voz natural quando o dispositivo estiver online</translation>
+<translation id="2410298923485357543">Usar a voz natural quando o dispositivo estiver online</translation>
 <translation id="2416512023405990736">Uma caixa de verificação desmarcada</translation>
 <translation id="2417569100218200841">Informações do conteúdo</translation>
 <translation id="2417948780551741035">Notas finais</translation>
@@ -694,7 +694,7 @@
 <translation id="5632083598315326067">Símbolo de gráficos</translation>
 <translation id="5648939288050772726">Parabéns! Aprendeu as noções básicas para usar o ChromeVox com êxito. Não se esqueça de que pode abrir o menu de comandos do ChromeVox em qualquer altura ao premir Pesquisar + Ponto. Para saber ainda mais acerca do ChromeVox e ChromeOS, visite os artigos seguintes.
     Se concluiu o tutorial, use o ChromeVox para navegar para o botão Fechar e clique no mesmo.</translation>
-<translation id="5653397561111110475">Utilizar as funcionalidades de acessibilidade do ecrã tátil do Chromebook</translation>
+<translation id="5653397561111110475">Usar as funcionalidades de acessibilidade do ecrã tátil do Chromebook</translation>
 <translation id="5655682562155942719">Comandos para avançar</translation>
 <translation id="56637627897541303">Área de texto</translation>
 <translation id="5669637233317991674">Prima a tecla de pesquisa + seta para a direita ou tecla de pesquisa + seta para a esquerda para navegar nesta aula</translation>
@@ -1081,7 +1081,7 @@
 <translation id="8446884382197647889">Saiba Mais</translation>
 <translation id="8448196839635577295">Nenhum foco atual do ChromeVox. Toque em explorar para procurar itens.</translation>
 <translation id="8455868257606149352">Máx.: <ph name="X" /></translation>
-<translation id="84575901236241018">tem chave de acesso, <ph name="KEY" /></translation>
+<translation id="84575901236241018">tem token de acesso, <ph name="KEY" /></translation>
 <translation id="8463645336674919227">A sair do erro gramatical…</translation>
 <translation id="8465573210279050749">eliminar a palavra anterior</translation>
 <translation id="847040613207937740">Não existe nenhuma caixa de verificação seguinte.</translation>

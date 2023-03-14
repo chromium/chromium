@@ -389,7 +389,7 @@ TEST_F(IntentUtilsTest, CreateIntentFiltersForExtension_WebFileHandlers) {
   // Extension feature flag.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      extensions_features::kWebFileHandlers);
+      extensions_features::kExtensionWebFileHandlers);
 
   // Create extension that provides file_handlers.
   extensions::ExtensionBuilder extension_builder("Test");

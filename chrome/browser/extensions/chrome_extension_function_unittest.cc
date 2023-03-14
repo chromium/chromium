@@ -70,14 +70,14 @@ using ChromeExtensionFunctionUnitTest = ExtensionServiceTestBase;
 #endif
 TEST_F(ChromeExtensionFunctionUnitTest, MAYBE_SimpleFunctionTest) {
   scoped_refptr<ValidationFunction> function(new ValidationFunction(true));
-  function->RunWithValidation()->Execute();
+  function->RunWithValidation().Execute();
   EXPECT_TRUE(function->did_respond());
 }
 
 TEST_F(ChromeExtensionFunctionUnitTest, BrowserShutdownValidationFunctionTest) {
   TestingBrowserProcess::GetGlobal()->SetShuttingDown(true);
   scoped_refptr<ValidationFunction> function(new ValidationFunction(false));
-  function->RunWithValidation()->Execute();
+  function->RunWithValidation().Execute();
   TestingBrowserProcess::GetGlobal()->SetShuttingDown(false);
   EXPECT_TRUE(function->did_respond());
 }

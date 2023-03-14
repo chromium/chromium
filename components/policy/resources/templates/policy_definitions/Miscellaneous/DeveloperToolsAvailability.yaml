@@ -5,7 +5,7 @@ arc_support: This policy also controls access to Android Developer Options. If y
   app.
 caption: Control where Developer Tools can be used
 desc: |-
-  Setting the policy to 0 (the default) means you can access the developer tools and the JavaScript console, but not in the context of extensions installed by enterprise policy. Setting the policy to 1 means you can access the developer tools and the JavaScript console in all contexts, including that of extensions installed by enterprise policy. Setting the policy to 2 means you can't acess developer tools, and you can't inspect website elements.
+  Setting the policy to 0 (the default) means you can access the developer tools and the JavaScript console, but not in the context of extensions installed by enterprise policy. Setting the policy to 1 means you can access the developer tools and the JavaScript console in all contexts, including that of extensions installed by enterprise policy. Setting the policy to 2 means you can't access developer tools, and you can't inspect website elements.
 
         This setting also turns off keyboard shortcuts and menu or context menu entries to open developer tools or the JavaScript console.
 
@@ -17,8 +17,9 @@ features:
 future_on:
 - fuchsia
 items:
-- caption: Disallow usage of the Developer Tools on extensions installed by enterprise
-    policy, allow usage of the Developer Tools in other contexts
+- caption: Disallow usage of the Developer Tools on apps and extensions
+    installed by enterprise policy, allow usage of the Developer Tools in other
+    contexts
   name: DeveloperToolsDisallowedForForceInstalledExtensions
   value: 0
 - caption: Allow usage of the Developer Tools

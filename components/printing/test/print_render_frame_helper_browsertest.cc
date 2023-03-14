@@ -335,8 +335,7 @@ class TestPrintManagerHost
     std::move(callback).Run(std::move(settings));
   }
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-  void UpdatePrintSettings(int32_t cookie,
-                           base::Value::Dict job_settings,
+  void UpdatePrintSettings(base::Value::Dict job_settings,
                            UpdatePrintSettingsCallback callback) override {
     auto params = printing::mojom::PrintPagesParams::New();
     params->params = printing::mojom::PrintParams::New();
@@ -408,8 +407,8 @@ class TestPrintManagerHost
         job_settings.FindInt(kSettingScaleFactor);
     int scale_factor = setting_scale_factor.value_or(100);
 
-    printer_->UpdateSettings(cookie, params.get(), new_ranges,
-                             margins_type.value(), page_size, scale_factor);
+    printer_->UpdateSettings(params.get(), new_ranges, margins_type.value(),
+                             page_size, scale_factor);
     absl::optional<bool> selection_only =
         job_settings.FindBool(kSettingShouldPrintSelectionOnly);
     absl::optional<bool> should_print_backgrounds =
@@ -1474,7 +1473,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewShrinkToFitPage) {
   OnPrintPreview();
 
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
-  VerifyDefaultPageLayout(571, 652, 69, 71, 20, 21, true);
+  VerifyDefaultPageLayout(571, 653, 69, 70, 20, 21, true);
   VerifyDidPreviewPage(true, 0);
   VerifyPreviewPageCount(1);
   VerifyPrintPreviewCancelled(false);

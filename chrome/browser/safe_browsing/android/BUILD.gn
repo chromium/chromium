@@ -16,6 +16,8 @@ source_set("android") {
 
   deps = [
     ":jni_headers",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/safe_browsing:advanced_protection",
     "//components/password_manager/core/browser/leak_detection",
     "//components/password_manager/core/common",
     "//components/prefs",

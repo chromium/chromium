@@ -16,8 +16,16 @@ void CSSCustomPropertyDeclaration::TraceAfterDispatch(
 }
 
 String CSSCustomPropertyDeclaration::CustomCSSText() const {
+  // We want to use Serialize() and not TokenRange().Serialize(),
+  // since we want to use the original text if possible:
+  //
+  // https://drafts.csswg.org/css-variables/#serializing-custom-props
+  // “Specified values of custom properties must be serialized _exactly as
+  // specified by the author_. Simplifications that might occur in other
+  // properties, such as dropping comments, normalizing whitespace,
+  // reserializing numeric tokens from their value, etc., must not occur.”
   DCHECK(value_);
-  return value_->TokenRange().Serialize();
+  return value_->Serialize();
 }
 
 }  // namespace blink

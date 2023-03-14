@@ -4,7 +4,6 @@
 
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -12,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -228,8 +228,9 @@ DesktopWindowTreeHostPlatform* DesktopWindowTreeHostPlatform::GetHostForWidget(
 // static
 std::vector<aura::Window*> DesktopWindowTreeHostPlatform::GetAllOpenWindows() {
   std::vector<aura::Window*> windows(open_windows().size());
-  std::transform(open_windows().begin(), open_windows().end(), windows.begin(),
-                 DesktopWindowTreeHostPlatform::GetContentWindowForWidget);
+  base::ranges::transform(
+      open_windows(), windows.begin(),
+      DesktopWindowTreeHostPlatform::GetContentWindowForWidget);
   return windows;
 }
 
@@ -976,7 +977,14 @@ gfx::Rect DesktopWindowTreeHostPlatform::ToDIPRect(
 
 gfx::Rect DesktopWindowTreeHostPlatform::ToPixelRect(
     const gfx::Rect& rect_in_dip) const {
-  return GetRootTransform().MapRect(rect_in_dip);
+  gfx::RectF rect_in_pixels_f =
+      GetRootTransform().MapRect(gfx::RectF(rect_in_dip));
+  // Due to the limitation of IEEE floating point representation and rounding
+  // error, the converted result may become slightly larger than expected value,
+  // such as 3000.0005. Allow 0.001 eplisin to round down in such case. This is
+  // also used in cc/viz. See crbug.com/1418606.
+  constexpr float kEpsilon = 0.001f;
+  return gfx::ToEnclosingRectIgnoringError(rect_in_pixels_f, kEpsilon);
 }
 
 Widget* DesktopWindowTreeHostPlatform::GetWidget() {

@@ -4,6 +4,8 @@
 
 #include "extensions/browser/file_reader.h"
 
+#include <limits>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -33,9 +35,12 @@ class FileReaderTest : public testing::Test {
 
 class Receiver {
  public:
-  explicit Receiver(std::vector<ExtensionResource> resources)
+  explicit Receiver(
+      std::vector<ExtensionResource> resources,
+      size_t max_resources_length = std::numeric_limits<size_t>::max())
       : file_reader_(base::MakeRefCounted<FileReader>(
             std::move(resources),
+            max_resources_length,
             FileReader::OptionalFileSequenceTask(),
             base::BindOnce(&Receiver::DidReadFile, base::Unretained(this)))) {}
 
@@ -122,15 +127,31 @@ TEST_F(FileReaderTest, NonExistentFile) {
   base::FilePath path;
   base::PathService::Get(DIR_TEST_DATA, &path);
   std::string extension_id = crx_file::id_util::GenerateId("test");
-  ExtensionResource resource(extension_id, path, base::FilePath(
-      FILE_PATH_LITERAL("file_that_does_not_exist")));
-  path = path.AppendASCII("file_that_does_not_exist");
+  ExtensionResource resource(
+      extension_id, path,
+      base::FilePath(FILE_PATH_LITERAL("file_that_does_not_exist")));
 
   Receiver receiver({resource});
   receiver.Run();
 
   EXPECT_FALSE(receiver.succeeded());
   EXPECT_EQ("Could not load file: 'file_that_does_not_exist'.",
+            *receiver.error());
+}
+
+TEST_F(FileReaderTest, AboveSizeLimitFile) {
+  base::FilePath path;
+  base::PathService::Get(DIR_TEST_DATA, &path);
+  std::string extension_id = crx_file::id_util::GenerateId("test");
+
+  ExtensionResource resource(extension_id, path,
+                             base::FilePath().AppendASCII("bigfile"));
+
+  Receiver receiver({resource}, /*max_resources_length=*/100u);
+  receiver.Run();
+
+  EXPECT_FALSE(receiver.succeeded());
+  EXPECT_EQ("Could not load file: 'bigfile'. Resource size exceeded.",
             *receiver.error());
 }
 

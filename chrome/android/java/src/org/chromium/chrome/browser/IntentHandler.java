@@ -204,12 +204,6 @@ public class IntentHandler {
     public static final String EXTRA_WINDOW_ID = "org.chromium.chrome.browser.window_id";
 
     /**
-     * A boolean to indicate whether the source of the Intent was a dragged link.
-     */
-    public static final String EXTRA_SOURCE_DRAG_DROP =
-            "org.chromium.chrome.browser.source_drag_drop";
-
-    /**
      * Extra to indicate the launch type of the tab to be created.
      */
     private static final String EXTRA_TAB_LAUNCH_TYPE =
@@ -743,9 +737,9 @@ public class IntentHandler {
         }
         String query = results.get(0);
 
+        Profile profile = Profile.getLastUsedRegularProfile();
         AutocompleteMatch match;
-        try (var controller = AutocompleteControllerProvider.createCloseableController(
-                     Profile.getLastUsedRegularProfile())) {
+        try (var controller = AutocompleteControllerProvider.createCloseableController(profile)) {
             match = controller.get().classify(query, false);
         }
 
@@ -756,7 +750,9 @@ public class IntentHandler {
         if (urls != null && urls.size() > 0) {
             return urls.get(0);
         } else {
-            return TemplateUrlServiceFactory.get().getUrlForVoiceSearchQuery(query).getSpec();
+            return TemplateUrlServiceFactory.getForProfile(profile)
+                    .getUrlForVoiceSearchQuery(query)
+                    .getSpec();
         }
     }
 

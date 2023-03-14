@@ -25,7 +25,12 @@
 //
 //   DECLARE_ELEMENT_IDENTIFIER_VALUE(kMyIdentifierName);
 //
-// In the corresponding .cc file, make sure it is defined:
+// If the identifier should be exported, declare it with the following instead:
+//
+//   DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(MY_EXPORT, kMyIdentifierName);
+//
+// Regardless of whether the declared identifier is exported or not, make sure
+// it is defined in the corresponding .cc file:
 //
 //   DEFINE_ELEMENT_IDENTIFIER_VALUE(kMyIdentifierName);
 //
@@ -255,9 +260,15 @@ class ClassPropertyCaster<ui::ElementIdentifier> {
 // Declaring identifiers outside a scope:
 
 // Use this code in the .h file to declare a new identifier.
-#define DECLARE_ELEMENT_IDENTIFIER_VALUE(IdentifierName)                     \
-  extern const ui::internal::ElementIdentifierImpl IdentifierName##Provider; \
-  constexpr ui::ElementIdentifier IdentifierName(&IdentifierName##Provider)
+#define DECLARE_ELEMENT_IDENTIFIER_VALUE(IdentifierName) \
+  DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(, IdentifierName)
+
+// Use this code in the .h file to declare a new exported identifier.
+#define DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ExportName, IdentifierName) \
+  ExportName extern const ui::internal::ElementIdentifierImpl                 \
+      IdentifierName##Provider;                                               \
+  ExportName constexpr ui::ElementIdentifier IdentifierName(                  \
+      &IdentifierName##Provider)
 
 // Use this code in the .cc file to define a new identifier.
 #define DEFINE_ELEMENT_IDENTIFIER_VALUE(IdentifierName)                    \

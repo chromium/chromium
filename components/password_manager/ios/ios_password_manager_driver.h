@@ -56,6 +56,7 @@ class IOSPasswordManagerDriver
   password_manager::PasswordAutofillManager* GetPasswordAutofillManager()
       override;
   ::ui::AXTreeID GetAxTreeId() const override;
+  int GetFrameId() const override;
   bool IsInPrimaryMainFrame() const override;
   bool CanShowAutofillUi() const override;
   const GURL& GetLastCommittedURL() const override;
@@ -90,6 +91,11 @@ class IOSPasswordManagerDriver
       password_generation_helper_;
   web::WebFrame* web_frame_;
   int id_;
+
+  // The hash of the cached frame ID of `web_frame_`. This is cached because
+  // `web_frame` might be set to null when the frame is deleted.
+  int cached_frame_id_;
+
   bool is_in_main_frame_;
   // The security origin associated with |web_frame_|.
   GURL security_origin_;

@@ -153,4 +153,13 @@ const cryptohome::AuthFactor* SessionAuthFactors::FindRecoveryFactor() const {
   return FindFactorByType(cryptohome::AuthFactorType::kRecovery);
 }
 
+const std::vector<cryptohome::AuthFactorType>
+SessionAuthFactors::GetSessionFactors() const {
+  std::vector<cryptohome::AuthFactorType> result;
+  for (auto factor : session_factors_) {
+    result.push_back(factor.ref().type());
+  }
+  return result;
+}
+
 }  // namespace ash

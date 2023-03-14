@@ -82,8 +82,7 @@ class MockPrinter {
                      uint32_t expected_pages_count,
                      bool has_selection,
                      printing::mojom::PrintPagesParams* settings);
-  void UpdateSettings(int cookie,
-                      printing::mojom::PrintPagesParams* params,
+  void UpdateSettings(printing::mojom::PrintPagesParams* params,
                       const printing::PageRanges& page_range_array,
                       int margins_type,
                       const gfx::Size& page_size,

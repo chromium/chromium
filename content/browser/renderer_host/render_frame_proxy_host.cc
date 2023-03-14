@@ -120,6 +120,7 @@ RenderFrameProxyHost::RenderFrameProxyHost(
     : routing_id_(site_instance->GetProcess()->GetNextRoutingID()),
       site_instance_(site_instance),
       site_instance_group_(site_instance->group()),
+      route_(this, site_instance_group_->agent_scheduling_group(), routing_id_),
       process_(site_instance->GetProcess()),
       frame_tree_node_(frame_tree_node),
       render_frame_proxy_created_(false),
@@ -129,7 +130,6 @@ RenderFrameProxyHost::RenderFrameProxyHost(
   TRACE_EVENT_BEGIN("navigation", "RenderFrameProxyHost",
                     perfetto::Track::FromPointer(this),
                     "render_frame_proxy_host_when_created", *this);
-  GetAgentSchedulingGroup().AddRoute(routing_id_, this);
   CHECK(
       g_routing_id_frame_proxy_map.Get()
           .insert(std::make_pair(
@@ -184,7 +184,6 @@ RenderFrameProxyHost::~RenderFrameProxyHost() {
   // destructor. This line can be removed.
   render_view_host_.reset();
 
-  GetAgentSchedulingGroup().RemoveRoute(routing_id_);
   g_routing_id_frame_proxy_map.Get().erase(
       RenderFrameProxyHostID(GetProcess()->GetID(), routing_id_));
   g_token_frame_proxy_map.Get().erase(frame_token_);
@@ -631,7 +630,7 @@ void RenderFrameProxyHost::RouteCloseEvent() {
   // the window containing the active RenderFrameHost.
   if (site_instance_group()->IsRelatedSiteInstanceGroup(
           rfh->GetSiteInstance()->group())) {
-    rfh->ClosePage();
+    rfh->ClosePage(RenderFrameHostImpl::ClosePageSource::kRenderer);
   }
 }
 
@@ -703,7 +702,10 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
       params->extra_headers, std::move(blob_url_loader_factory),
       std::move(params->source_location), params->user_gesture,
       params->is_form_submission, params->impression,
-      params->initiator_activation_and_ad_status, navigation_start_time);
+      params->initiator_activation_and_ad_status, navigation_start_time,
+      /*is_embedder_initiated_fenced_frame_navigation=*/false,
+      /*is_unfenced_top_navigation=*/false,
+      /*force_new_browsing_instance=*/false, params->is_container_initiated);
 }
 
 void RenderFrameProxyHost::UpdateViewportIntersection(

@@ -19,7 +19,11 @@ js_type_check("closure_compile") {
     "//ash/webui/projector_app/resources/mock:mock_app",
   ]
 
-  closure_flags = default_closure_args + [ "browser_resolver_prefix_replacements=\"chrome-untrusted://projector/common/=" + rebase_path(
-                                               "//ash/webui/projector_app/resources/common/",
-                                               root_build_dir) + "\"" ]
+  closure_flags = default_closure_args + [
+                    "browser_resolver_prefix_replacements=\"chrome-untrusted://projector/common/=" + rebase_path(
+                            "//ash/webui/projector_app/resources/common/",
+                            root_build_dir) + "\"",
+                    "hide_warnings_for=ash/webui/projector_app/public/mojom/",
+                    "hide_warnings_for=ash/webui/projector_app/mojom/",
+                  ]
 }

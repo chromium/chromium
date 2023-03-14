@@ -27,13 +27,20 @@ class CONTENT_EXPORT NavigationState {
 
   ~NavigationState();
 
-  static std::unique_ptr<NavigationState> Create(
+  static std::unique_ptr<NavigationState> CreateForCrossDocumentCommit(
       blink::mojom::CommonNavigationParamsPtr common_params,
       blink::mojom::CommitNavigationParamsPtr commit_params,
       mojom::NavigationClient::CommitNavigationCallback
           per_navigation_mojo_interface_callback,
       std::unique_ptr<NavigationClient> navigation_client,
       bool was_initiated_in_this_frame);
+
+  static std::unique_ptr<NavigationState>
+  CreateForSameDocumentCommitFromBrowser(
+      blink::mojom::CommonNavigationParamsPtr common_params,
+      blink::mojom::CommitNavigationParamsPtr commit_params,
+      mojom::Frame::CommitSameDocumentNavigationCallback
+          commit_same_document_callback);
 
   static std::unique_ptr<NavigationState> CreateForSynchronousCommit();
 
@@ -65,6 +72,9 @@ class CONTENT_EXPORT NavigationState {
       mojom::DidCommitProvisionalLoadParamsPtr params,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params);
 
+  void RunCommitSameDocumentNavigationCallback(
+      blink::mojom::CommitResult commit_result);
+
  private:
   NavigationState(blink::mojom::CommonNavigationParamsPtr common_params,
                   blink::mojom::CommitNavigationParamsPtr commit_params,
@@ -72,6 +82,8 @@ class CONTENT_EXPORT NavigationState {
                   content::mojom::NavigationClient::CommitNavigationCallback
                       commit_callback,
                   std::unique_ptr<NavigationClient> navigation_client,
+                  mojom::Frame::CommitSameDocumentNavigationCallback
+                      commit_same_document_callback,
                   bool was_initiated_in_this_frame);
 
   bool was_within_same_document_;
@@ -111,6 +123,11 @@ class CONTENT_EXPORT NavigationState {
   // Used to notify whether a commit request from the browser process was
   // successful or not.
   mojom::NavigationClient::CommitNavigationCallback commit_callback_;
+
+  // Used to notify whether a same document commit request from the browser
+  // process was successful or not.
+  mojom::Frame::CommitSameDocumentNavigationCallback
+      commit_same_document_callback_;
 };
 
 }  // namespace content

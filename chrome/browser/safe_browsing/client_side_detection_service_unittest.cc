@@ -106,7 +106,7 @@ class ClientSidePhishingModelObserverTracker
 
 class ClientSideDetectionServiceTest
     : public testing::Test,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   ClientSideDetectionServiceTest()
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {
@@ -117,10 +117,15 @@ class ClientSideDetectionServiceTest
     if (ShouldEnableCacao()) {
       enabled_features.push_back(kClientSideDetectionModelOptimizationGuide);
     }
+    if (ShouldEnableESBDailyPhishingLimit()) {
+      enabled_features.push_back(kSafeBrowsingDailyPhishingReportsLimit);
+    }
 
     feature_list_.InitWithFeatures(enabled_features, {});
   }
-  bool ShouldEnableCacao() { return GetParam(); }
+  bool ShouldEnableCacao() { return get<0>(GetParam()); }
+
+  bool ShouldEnableESBDailyPhishingLimit() { return get<1>(GetParam()); }
 
  protected:
   void SetUp() override {
@@ -305,7 +310,9 @@ class ClientSideDetectionServiceTest
   bool is_phishing_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, ClientSideDetectionServiceTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         ClientSideDetectionServiceTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 TEST_P(ClientSideDetectionServiceTest, ServiceObjectDeletedBeforeCallbackDone) {
   csd_service_ = std::make_unique<ClientSideDetectionService>(
@@ -468,6 +475,37 @@ TEST_P(ClientSideDetectionServiceTest, GetNumReportTest) {
 
   EXPECT_EQ(2, csd_service_->GetPhishingNumReports());
   EXPECT_FALSE(OverPhishingReportLimit());
+}
+
+TEST_P(ClientSideDetectionServiceTest, GetNumReportTestESB) {
+  csd_service_ = std::make_unique<ClientSideDetectionService>(
+      std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_),
+      model_observer_tracker_.get(), background_task_runner_);
+  if (base::FeatureList::IsEnabled(
+          kClientSideDetectionModelOptimizationGuide)) {
+    ReadModelAndTfLiteFiles();
+  }
+
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+
+  base::Time now = base::Time::Now();
+  base::TimeDelta twenty_five_hours = base::Hours(25);
+  csd_service_->AddPhishingReport(now - twenty_five_hours);
+  csd_service_->AddPhishingReport(now - twenty_five_hours);
+  csd_service_->AddPhishingReport(now - twenty_five_hours);
+  csd_service_->AddPhishingReport(now - twenty_five_hours);
+  csd_service_->AddPhishingReport(now);
+  csd_service_->AddPhishingReport(now);
+  csd_service_->AddPhishingReport(now);
+  csd_service_->AddPhishingReport(now);
+
+  EXPECT_EQ(4, csd_service_->GetPhishingNumReports());
+
+  if (base::FeatureList::IsEnabled(kSafeBrowsingDailyPhishingReportsLimit)) {
+    EXPECT_FALSE(OverPhishingReportLimit());
+  } else {
+    EXPECT_TRUE(OverPhishingReportLimit());
+  }
 }
 
 TEST_P(ClientSideDetectionServiceTest, CacheTest) {

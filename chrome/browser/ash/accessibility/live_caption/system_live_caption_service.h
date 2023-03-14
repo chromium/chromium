@@ -11,9 +11,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/speech/speech_recognition_recognizer_client_impl.h"
 #include "chrome/browser/speech/speech_recognizer_delegate.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
@@ -49,7 +51,8 @@ namespace ash {
 class SystemLiveCaptionService
     : public KeyedService,
       public SpeechRecognizerDelegate,
-      public media::mojom::SpeechRecognitionBrowserObserver {
+      public media::mojom::SpeechRecognitionBrowserObserver,
+      public CrasAudioHandler::AudioObserver {
  public:
   explicit SystemLiveCaptionService(Profile* profile);
   ~SystemLiveCaptionService() override;
@@ -82,9 +85,23 @@ class SystemLiveCaptionService
         std::move(create_audio_system_for_testing);
   }
 
+  // CrasAudioHandler::AudioObserver overrides
+  void OnNonChromeOutputStarted() override;
+
+  void OnNonChromeOutputStopped() override;
+
  private:
+  SpeechRecognizerStatus current_recognizer_status_ =
+      SpeechRecognizerStatus::SPEECH_RECOGNIZER_OFF;
+  bool output_running_ = false;
+
+  std::unique_ptr<base::OneShotTimer> stop_countdown_timer_;
+
   // Stops and destructs audio stream recognizing client.
   void StopRecognizing();
+
+  void CreateClient();
+  void StopTimeoutFinished();
 
   const base::raw_ptr<Profile> profile_;
   base::raw_ptr<::captions::LiveCaptionController> controller_;

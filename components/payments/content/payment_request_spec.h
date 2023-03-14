@@ -194,6 +194,9 @@ class PaymentRequestSpec : public PaymentOptionsProvider,
   // billing method, such as "https://play.google.com/billing".
   bool IsAppStoreBillingAlsoRequested() const;
 
+  // Returns true if the PaymentHandlerMinimalHeaderUX feature is enabled.
+  bool IsPaymentHandlerMinimalHeaderUXEnabled() const;
+
   base::WeakPtr<PaymentRequestSpec> AsWeakPtr();
 
  private:

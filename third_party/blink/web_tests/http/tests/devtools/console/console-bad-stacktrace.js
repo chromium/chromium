@@ -30,7 +30,8 @@
         type: Protocol.Runtime.ConsoleAPICalledEventType.Error,
         stackTrace: badStackTrace,
       });
-  SDK.consoleModel.addMessage(badStackTraceMessage);
+  const consoleModel = SDK.targetManager.primaryPageTarget().model(SDK.ConsoleModel);
+  consoleModel.addMessage(badStackTraceMessage);
 
   await ConsoleTestRunner.dumpConsoleMessages();
   TestRunner.completeTest();

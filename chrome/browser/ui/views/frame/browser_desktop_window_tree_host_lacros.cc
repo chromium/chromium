@@ -221,6 +221,14 @@ void BrowserDesktopWindowTreeHostLacros::OnWindowStateChanged(
   UpdateFrameHints();
 }
 
+void BrowserDesktopWindowTreeHostLacros::OnImmersiveModeChanged(bool enabled) {
+  DesktopWindowTreeHostLacros::OnImmersiveModeChanged(enabled);
+  // Update the browser UI, because some fullscreen mode UI updates depend on
+  // immersive mode state. Unlike ash-chrome, Lacros's immersive mode is set
+  // to the system asynchronously.
+  browser_view_->browser()->FullscreenTopUIStateChanged();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserDesktopWindowTreeHostLacros,
 //     DesktopWindowTreeHostPlatform implementation:

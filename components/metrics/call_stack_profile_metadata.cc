@@ -235,6 +235,16 @@ void CallStackProfileMetadata::ApplyMetadata(
   }
 }
 
+void CallStackProfileMetadata::SetMetadata(
+    const base::MetadataRecorder::Item& src_item,
+    CallStackProfile::MetadataItem* dest_item,
+    google::protobuf::RepeatedField<uint64_t>* metadata_name_hashes) {
+  const size_t name_hash_index =
+      MaybeAppendNameHash(src_item.name_hash, metadata_name_hashes);
+
+  SetMetadataItem(name_hash_index, src_item.key, src_item.value, dest_item);
+}
+
 bool CallStackProfileMetadata::MetadataKeyCompare::operator()(
     const MetadataKey& a,
     const MetadataKey& b) const {

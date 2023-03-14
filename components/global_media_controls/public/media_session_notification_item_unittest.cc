@@ -10,6 +10,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/unguessable_token.h"
 #include "components/global_media_controls/public/test/mock_media_session_notification_item_delegate.h"
 #include "components/media_message_center/mock_media_notification_view.h"
 #include "media/base/media_switches.h"
@@ -43,7 +44,7 @@ class MediaSessionNotificationItemTest : public testing::Test {
     auto session_info = media_session::mojom::MediaSessionInfo::New();
     session_info->is_controllable = true;
     item_ = std::make_unique<MediaSessionNotificationItem>(
-        &delegate_, kRequestId, std::string(),
+        &delegate_, kRequestId, std::string(), source_id_,
         controller_.CreateMediaControllerRemote(), std::move(session_info));
     item_->SetView(&view_);
   }
@@ -60,6 +61,8 @@ class MediaSessionNotificationItemTest : public testing::Test {
 
   MediaSessionNotificationItem& item() { return *item_; }
 
+  base::UnguessableToken source_id() { return source_id_; }
+
   void AdvanceClockMilliseconds(int milliseconds) {
     task_environment_.FastForwardBy(base::Milliseconds(milliseconds));
   }
@@ -69,6 +72,7 @@ class MediaSessionNotificationItemTest : public testing::Test {
   NiceMock<test::MockMediaSessionNotificationItemDelegate> delegate_;
   media_session::test::TestMediaController controller_;
   std::unique_ptr<MediaSessionNotificationItem> item_;
+  base::UnguessableToken source_id_{base::UnguessableToken::Create()};
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -457,6 +461,7 @@ TEST_F(MediaSessionNotificationItemTest, GetSessionMetadata) {
           false);
   session_info->remote_playback_metadata = std::move(remote_playback_metadata);
   item().MediaSessionInfoChanged(std::move(session_info));
+  item().UpdateDeviceName("device_friendly_name");
 
   EXPECT_EQ(u"source_title \xB7 device_friendly_name",
             item().GetSessionMetadata().source_title);
@@ -500,4 +505,9 @@ TEST_F(MediaSessionNotificationItemTest, GetRemotePlaybackMetadata) {
       /*position=*/base::Seconds(1), /*end_of_media=*/false));
   EXPECT_TRUE(item().GetRemotePlaybackMetadata().is_null());
 }
+
+TEST_F(MediaSessionNotificationItemTest, GetSourceId) {
+  EXPECT_EQ(source_id(), *item().GetSourceId());
+}
+
 }  // namespace global_media_controls

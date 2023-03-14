@@ -8,6 +8,10 @@
     min-height: var(--ntp-logo-height);
   }
 
+  :host([reduced-logo-space-enabled_]) {
+    --ntp-logo-height: 168px;
+  }
+
   :host([doodle-boxed_]) {
     justify-content: flex-end;
   }
@@ -62,6 +66,10 @@
 
   :host([doodle-boxed_]) #image {
     max-height: 160px;
+  }
+
+  :host([doodle-boxed_][reduced-logo-space-enabled_]) #image {
+    max-height: 128px;
   }
 
   #animation {

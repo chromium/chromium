@@ -99,8 +99,7 @@ std::u16string ManagePasswordsIconViews::GetTextForTooltipAndAccessibleName()
     case password_manager::ui::BIOMETRIC_AUTHENTICATION_CONFIRMATION_STATE:
       return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_PROTECT);
   }
-  NOTREACHED();
-  return std::u16string();
+  NOTREACHED_NORETURN();
 }
 
 void ManagePasswordsIconViews::AboutToRequestFocusFromTabTraversal(

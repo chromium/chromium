@@ -33,7 +33,6 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "answer_sunrise.icon",
     "answer_translation.icon",
     "answer_when_is.icon",
-    "blank.icon",
     "bookmark.icon",
     "calculator.icon",
     "chevron.icon",
@@ -715,6 +714,7 @@ source_set("unit_tests") {
   if (build_with_tflite_lib) {
     sources += [
       "autocomplete_scoring_model_executor_unittest.cc",
+      "autocomplete_scoring_model_handler_unittest.cc",
       "on_device_tail_model_executor_unittest.cc",
     ]
   }
@@ -733,6 +733,8 @@ source_set("unit_tests") {
     "//components/ntp_tiles:ntp_tiles",
     "//components/omnibox/common",
     "//components/open_from_clipboard:test_support",
+    "//components/optimization_guide/core:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs:test_support",
     "//components/search",
     "//components/search_engines",

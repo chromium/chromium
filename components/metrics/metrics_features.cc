@@ -7,14 +7,10 @@
 namespace metrics::features {
 BASE_FEATURE(kEmitHistogramsEarlier,
              "EmitHistogramsEarlier",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kEmitHistogramsForIndependentLogs{
-    &kEmitHistogramsEarlier, "emit_for_independent_logs", false};
-
-BASE_FEATURE(kMetricsServiceAsyncCollection,
-             "MetricsServiceAsyncCollection",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+    &kEmitHistogramsEarlier, "emit_for_independent_logs", true};
 
 BASE_FEATURE(kMetricsServiceAllowEarlyLogClose,
              "MetricsServiceAllowEarlyLogClose",

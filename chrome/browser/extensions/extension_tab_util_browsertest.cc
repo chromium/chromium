@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -13,6 +15,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
 
 namespace extensions {
@@ -330,6 +334,53 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   EXPECT_TRUE(content::WaitForLoadStop(
       regular->tab_strip_model()->GetActiveWebContents()));
   EXPECT_EQ(options_url, GetActiveUrl(regular));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, RecordNavigationScheme) {
+  const std::string kHttpUrl("http://example.com");
+  const std::string kHttpsUrl("https://example.com");
+  const std::string kChromeUrl("chrome://settings");
+  const std::string kFileUrl("file:///etc/passwd");
+  const std::string kOtherUrl("data:,test");
+  struct {
+    std::string url;
+    int expected_bucket;
+  } test_cases[] = {
+      {kHttpUrl, 0}, {kHttpsUrl, 0}, {kChromeUrl, 1},
+      {kFileUrl, 3}, {kOtherUrl, 4},
+  };
+  std::string error;
+  GURL url;
+
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("simple_with_file"));
+
+  for (const auto& test_case : test_cases) {
+    base::HistogramTester histogram_tester;
+    auto result_url = ExtensionTabUtil::PrepareURLForNavigation(
+        test_case.url, extension, profile());
+    histogram_tester.ExpectBucketCount("Extensions.Navigation.Scheme",
+                                       test_case.expected_bucket, 1);
+  }
+
+  // Allow file access. This will reload the extension, so we need to reset the
+  // extension pointer.
+  ExtensionId id = extension->id();
+  TestExtensionRegistryObserver observer(ExtensionRegistry::Get(profile()), id);
+  util::SetAllowFileAccess(id, profile(), true);
+  extension = observer.WaitForExtensionLoaded().get();
+
+  // The extension has file access. Change expected result to
+  // NavigationScheme::kFileWithPermission.
+  test_cases[3].expected_bucket = 2;
+
+  for (const auto& test_case : test_cases) {
+    base::HistogramTester histogram_tester;
+    auto result_url = ExtensionTabUtil::PrepareURLForNavigation(
+        test_case.url, extension, profile());
+    histogram_tester.ExpectBucketCount("Extensions.Navigation.Scheme",
+                                       test_case.expected_bucket, 1);
+  }
 }
 
 }  // namespace extensions

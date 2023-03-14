@@ -232,9 +232,9 @@ TEST_F(NavigationPolicyContainerBuilderTest,
        ErrorPageIPAddressSpaceAfterResponse) {
   NavigationPolicyContainerBuilder builder(nullptr, nullptr, nullptr);
 
-  builder.SetIPAddressSpace(network::mojom::IPAddressSpace::kPrivate);
+  builder.SetIPAddressSpace(network::mojom::IPAddressSpace::kLocal);
   PolicyContainerPolicies expected_policies;
-  expected_policies.ip_address_space = network::mojom::IPAddressSpace::kPrivate;
+  expected_policies.ip_address_space = network::mojom::IPAddressSpace::kLocal;
 
   builder.ComputePolicies(GURL("https://foo.test"), false,
                           network::mojom::WebSandboxFlags::kNone,

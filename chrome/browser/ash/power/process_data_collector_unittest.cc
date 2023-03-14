@@ -111,8 +111,7 @@ std::string GenerateProcPidStatString(const std::string& name,
 // Writes |data| to |file_path| and checks that the write succeeded.
 void WriteStringToFile(const base::FilePath& file_path,
                        const std::string& data) {
-  ASSERT_EQ(base::WriteFile(file_path, data.c_str(), data.length()),
-            static_cast<int>(data.length()));
+  ASSERT_TRUE(base::WriteFile(file_path, data));
 }
 
 // Sets up a procfs-like directory with certain processes and stat files

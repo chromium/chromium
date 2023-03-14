@@ -7,6 +7,7 @@ module blink.mojom;
 import "mojo/public/mojom/base/int128.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "third_party/blink/public/mojom/interest_group/ad_display_size.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -17,23 +18,6 @@ struct InterestGroupAd {
   url.mojom.Url render_url;
   // Opaque JSON data, persisted, then passed as object to auction worklet.
   string? metadata;
-};
-
-// The dimensions that an ad for an interest group can be. Note that an interest
-// group can have more than one `InterestGroupSize` associated with it.
-struct InterestGroupSize {
-  //  This is stable because it is persisted to storage.
-  [Stable, Extensible]
-  enum LengthUnit {
-    [Default] kInvalid,
-    kPixels,
-    kScreenWidth,
-  };
-  // Must be valid dimensions (ex. 100px, 50sw)
-  double width;
-  LengthUnit width_units;
-  double height;
-  LengthUnit height_units;
 };
 
 // The maximum size of a valid interest group in bytes.
@@ -114,7 +98,7 @@ struct InterestGroup {
   // `bidding_wasm_helper_url` must match the current frame URL's origin.
   url.mojom.Url? bidding_wasm_helper_url;
   // `update_url` must match the current frame URL's origin.
-  url.mojom.Url? daily_update_url;
+  url.mojom.Url? update_url;
   // `trusted_bidding_signals_url` must match the current frame URL's origin.
   url.mojom.Url? trusted_bidding_signals_url;
   array<string>? trusted_bidding_signals_keys;
@@ -122,7 +106,7 @@ struct InterestGroup {
   string?        user_bidding_signals;
   array<InterestGroupAd>? ads;
   array<InterestGroupAd>? ad_components;
-  map<string, InterestGroupSize>? ad_sizes;
+  map<string, AdSize>? ad_sizes;
   map<string, array<string>>? size_groups;
 };
 
@@ -351,6 +335,11 @@ struct AuctionAdConfigNonSharedParams {
   // For each type of buyer extended private aggregation reporting event,
   // provides the bucket offset and scalar multiplier for that event.
   map<BuyerReportType, AuctionReportBuyersConfig>? auction_report_buyers;
+
+  // The set of capabilities that each interest group must declare to
+  // participate in the auction. Interest groups that don't declare all these
+  // capabilities will not participate in the auction.
+  SellerCapabilities required_seller_capabilities;
 
   // Nested auctions whose results will also be fed to `seller`. Only the top
   // level auction config can have component auctions.

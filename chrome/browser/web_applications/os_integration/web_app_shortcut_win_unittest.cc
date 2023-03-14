@@ -249,7 +249,7 @@ TEST_F(WebAppShortcutWinTest, UpdatePlatformShortcuts) {
   new_shortcut_info.title = u"new title";
   new_shortcut_info.profile_path = profile_path;
   new_shortcut_info.profile_name = base::WideToUTF8(profile_name);
-  new_shortcut_info.extension_id = kWebAppId;
+  new_shortcut_info.app_id = kWebAppId;
 
   // Set the favicon to be the same as the original icon.
   new_shortcut_info.favicon = std::move(image_family);
@@ -308,7 +308,7 @@ TEST_F(WebAppShortcutWinTest, UpdatePlatformShortcutsAppIdentityChange) {
   new_shortcut_info.title = u"new title";
   new_shortcut_info.profile_path = profile_path;
   new_shortcut_info.profile_name = base::WideToUTF8(profile_name);
-  new_shortcut_info.extension_id = kWebAppId;
+  new_shortcut_info.app_id = kWebAppId;
   gfx::ImageFamily new_image_family;
   new_image_family.Add(gfx::Image(CreateDefaultApplicationIcon(32)));
   new_shortcut_info.favicon = std::move(new_image_family);

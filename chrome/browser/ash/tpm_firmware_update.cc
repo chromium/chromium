@@ -41,15 +41,15 @@ std::set<Mode> GetModesFromSetting(const base::Value* settings) {
   if (!settings)
     return modes;
 
-  const base::Value* const allow_powerwash = settings->FindKeyOfType(
-      kSettingsKeyAllowPowerwash, base::Value::Type::BOOLEAN);
-  if (allow_powerwash && allow_powerwash->GetBool()) {
+  const base::Value::Dict& settings_dict = settings->GetDict();
+  absl::optional<bool> allow_powerwash =
+      settings_dict.FindBool(kSettingsKeyAllowPowerwash);
+  if (allow_powerwash && *allow_powerwash) {
     modes.insert(Mode::kPowerwash);
   }
-  const base::Value* const allow_preserve_device_state =
-      settings->FindKeyOfType(kSettingsKeyAllowPreserveDeviceState,
-                              base::Value::Type::BOOLEAN);
-  if (allow_preserve_device_state && allow_preserve_device_state->GetBool()) {
+  absl::optional<bool> allow_preserve_device_state =
+      settings_dict.FindBool(kSettingsKeyAllowPreserveDeviceState);
+  if (allow_preserve_device_state && *allow_preserve_device_state) {
     modes.insert(Mode::kPreserveDeviceState);
   }
 

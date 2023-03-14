@@ -42,6 +42,8 @@ source_set("media_foundation_clear_key") {
     "media_foundation_clear_key_session.h",
     "media_foundation_clear_key_trusted_input.cc",
     "media_foundation_clear_key_trusted_input.h",
+    "mock_media_protection_pmp_server.cc",
+    "mock_media_protection_pmp_server.h",
   ]
 
   configs += [
@@ -50,6 +52,7 @@ source_set("media_foundation_clear_key") {
 
   deps = [
     "//base",
+    "//media",
     "//media/base/win:media_foundation_util",
     "//media/cdm:clear_key_cdm_common",
   ]

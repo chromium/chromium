@@ -226,7 +226,7 @@ TEST_F(SpellcheckCustomDictionaryTest, LegacyEmptyDictionaryShouldBeConverted) {
       profile_.GetPath().Append(chrome::kCustomDictionaryFileName);
 
   std::string content;
-  base::WriteFile(path, content.c_str(), content.length());
+  base::WriteFile(path, content);
   EXPECT_TRUE(LoadDictionaryFile(path)->words.empty());
 }
 
@@ -238,7 +238,7 @@ TEST_F(SpellcheckCustomDictionaryTest,
       profile_.GetPath().Append(chrome::kCustomDictionaryFileName);
 
   std::string content = "foo\nbar\nfoo\n";
-  base::WriteFile(path, content.c_str(), content.length());
+  base::WriteFile(path, content);
   std::set<std::string> expected;
   expected.insert("bar");
   expected.insert("foo");
@@ -255,7 +255,7 @@ TEST_F(SpellcheckCustomDictionaryTest,
   std::string content = "foo\n foo bar \n\n \nbar\n"
       "01234567890123456789012345678901234567890123456789"
       "01234567890123456789012345678901234567890123456789";
-  base::WriteFile(path, content.c_str(), content.length());
+  base::WriteFile(path, content);
   std::set<std::string> expected;
   expected.insert("bar");
   expected.insert("foo");
@@ -271,7 +271,7 @@ TEST_F(SpellcheckCustomDictionaryTest, CorruptedWriteShouldBeRecovered) {
       profile_.GetPath().Append(chrome::kCustomDictionaryFileName);
 
   std::string content = "foo\nbar";
-  base::WriteFile(path, content.c_str(), content.length());
+  base::WriteFile(path, content);
   std::set<std::string> expected;
   expected.insert("bar");
   expected.insert("foo");
@@ -284,7 +284,7 @@ TEST_F(SpellcheckCustomDictionaryTest, CorruptedWriteShouldBeRecovered) {
   content.clear();
   base::ReadFileToString(path, &content);
   content.append("corruption");
-  base::WriteFile(path, content.c_str(), content.length());
+  base::WriteFile(path, content);
   EXPECT_EQ(expected, LoadDictionaryFile(path)->words);
 }
 

@@ -7,10 +7,13 @@ package org.chromium.chrome.browser.notifications.permissions;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.os.UserManager;
 
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.After;
@@ -18,10 +21,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.internal.DoNotInstrument;
 import org.robolectric.shadows.ShadowSystemClock;
+import org.robolectric.shadows.ShadowUserManager;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
@@ -56,6 +59,9 @@ import java.time.Duration;
                 "org.chromium.ui.permissions"})
 @DoNotInstrument
 public class NotificationPermissionControllerTest {
+    private static final int DEMO_USER_ID = 2;
+    private ShadowUserManager mShadowUserManager;
+
     @Before
     public void setUp() {
         ShadowBuildInfo.reset();
@@ -63,6 +69,9 @@ public class NotificationPermissionControllerTest {
         ShadowSystemClock.reset();
         // Set a non-zero currentTimeMillis.
         ShadowSystemClock.advanceBy(Duration.ofDays(10));
+        mShadowUserManager = shadowOf(
+                ApplicationProvider.getApplicationContext().getSystemService(UserManager.class));
+        mShadowUserManager.addUser(DEMO_USER_ID, "demo_user", ShadowUserManager.FLAG_DEMO);
 
         setupFeatureParams(false, null, null);
 
@@ -120,7 +129,7 @@ public class NotificationPermissionControllerTest {
     }
 
     private void grantNotificationPermission(Activity activity) {
-        Shadows.shadowOf(activity).grantPermissions(PermissionConstants.NOTIFICATION_PERMISSION);
+        shadowOf(activity).grantPermissions(PermissionConstants.NOTIFICATION_PERMISSION);
     }
 
     private void invokeOSPermissionCallback(
@@ -135,7 +144,7 @@ public class NotificationPermissionControllerTest {
 
     private void setShouldShowRequestPermissionRationale(
             Activity activity, boolean shouldShowRequestPermissionRationale) {
-        Shadows.shadowOf(activity.getPackageManager())
+        shadowOf(activity.getPackageManager())
                 .setShouldShowRequestPermissionRationale(
                         PermissionConstants.NOTIFICATION_PERMISSION,
                         shouldShowRequestPermissionRationale);
@@ -229,6 +238,28 @@ public class NotificationPermissionControllerTest {
     }
 
     @Test
+    public void testNotificationPrompt_nothingHappensInDemoMode() {
+        mShadowUserManager.switchUser(DEMO_USER_ID);
+
+        mActivityScenarios.getScenario().onActivity(activity -> {
+            TestRationaleDelegate rationaleDelegate = new TestRationaleDelegate();
+            TestAndroidPermissionDelegate permissionDelegate =
+                    new TestAndroidPermissionDelegate(new WeakReference<>(activity));
+            NotificationPermissionController notificationPermissionController =
+                    createNotificationPermissionController(rationaleDelegate, permissionDelegate);
+
+            notificationPermissionController.requestPermissionIfNeeded();
+
+            long permissionRequestTimestamp =
+                    PermissionPrefs.getAndroidNotificationPermissionRequestTimestamp();
+
+            // We shouldn't have requested for permission or shown the rationale.
+            assertEquals(0, rationaleDelegate.getCallCount());
+            assertEquals(0, permissionRequestTimestamp);
+        });
+    }
+
+    @Test
     public void testNotificationPrompt_alreadyHasPermission() {
         mActivityScenarios.getScenario().onActivity(activity -> {
             TestRationaleDelegate rationaleDelegate = new TestRationaleDelegate();
@@ -299,7 +330,7 @@ public class NotificationPermissionControllerTest {
                     createNotificationPermissionController(activity);
 
             // First time ever. We should show OS prompt.
-            Shadows.shadowOf(activity).denyPermissions(PermissionConstants.NOTIFICATION_PERMISSION);
+            shadowOf(activity).denyPermissions(PermissionConstants.NOTIFICATION_PERMISSION);
 
             notificationPermissionController.requestPermissionIfNeeded();
 

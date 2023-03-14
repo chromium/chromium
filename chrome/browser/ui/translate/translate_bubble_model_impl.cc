@@ -10,11 +10,13 @@
 #include "chrome/browser/ui/translate/translate_bubble_ui_action_logger.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_ui_delegate.h"
+#include "components/translate/core/browser/translate_ui_languages_manager.h"
 
 TranslateBubbleModelImpl::TranslateBubbleModelImpl(
     translate::TranslateStep step,
     std::unique_ptr<translate::TranslateUIDelegate> ui_delegate)
     : ui_delegate_(std::move(ui_delegate)),
+      ui_languages_manager_(ui_delegate_->translate_ui_languages_manager()),
       translation_declined_(false),
       translate_executed_(false) {
   ViewState view_state = TranslateStepToViewState(step);
@@ -71,48 +73,48 @@ void TranslateBubbleModelImpl::ShowError(
 }
 
 int TranslateBubbleModelImpl::GetNumberOfSourceLanguages() const {
-  return ui_delegate_->GetNumberOfLanguages();
+  return ui_languages_manager_->GetNumberOfLanguages();
 }
 
 int TranslateBubbleModelImpl::GetNumberOfTargetLanguages() const {
   // Subtract 1 to account for unknown language option being omitted.
-  return ui_delegate_->GetNumberOfLanguages() - 1;
+  return ui_languages_manager_->GetNumberOfLanguages() - 1;
 }
 
 std::u16string TranslateBubbleModelImpl::GetSourceLanguageNameAt(
     int index) const {
-  return ui_delegate_->GetLanguageNameAt(index);
+  return ui_languages_manager_->GetLanguageNameAt(index);
 }
 
 std::u16string TranslateBubbleModelImpl::GetTargetLanguageNameAt(
     int index) const {
   // Add 1 to account for unknown language option at index 0 in
   // TranslateUIDelegate language list.
-  return ui_delegate_->GetLanguageNameAt(index + 1);
+  return ui_languages_manager_->GetLanguageNameAt(index + 1);
 }
 
 std::string TranslateBubbleModelImpl::GetSourceLanguageCode() const {
-  return ui_delegate_->GetSourceLanguageCode();
+  return ui_languages_manager_->GetSourceLanguageCode();
 }
 
 int TranslateBubbleModelImpl::GetSourceLanguageIndex() const {
-  return ui_delegate_->GetSourceLanguageIndex();
+  return ui_languages_manager_->GetSourceLanguageIndex();
 }
 
 void TranslateBubbleModelImpl::UpdateSourceLanguageIndex(int index) {
-  ui_delegate_->UpdateSourceLanguageIndex(index);
+  ui_delegate_->UpdateAndRecordSourceLanguageIndex(index);
 }
 
 int TranslateBubbleModelImpl::GetTargetLanguageIndex() const {
   // Subtract 1 to account for unknown language option being omitted from the
   // bubble target language list.
-  return ui_delegate_->GetTargetLanguageIndex() - 1;
+  return ui_languages_manager_->GetTargetLanguageIndex() - 1;
 }
 
 void TranslateBubbleModelImpl::UpdateTargetLanguageIndex(int index) {
   // Add 1 to account for unknown language option at index 0 in
   // TranslateUIDelegate language list.
-  ui_delegate_->UpdateTargetLanguageIndex(index + 1);
+  ui_delegate_->UpdateAndRecordTargetLanguageIndex(index + 1);
 }
 
 void TranslateBubbleModelImpl::DeclineTranslation() {
@@ -170,9 +172,9 @@ bool TranslateBubbleModelImpl::IsPageTranslatedInCurrentLanguages() const {
   const translate::LanguageState* language_state =
       ui_delegate_->GetLanguageState();
   if (language_state) {
-    return ui_delegate_->GetSourceLanguageCode() ==
+    return ui_languages_manager_->GetSourceLanguageCode() ==
                language_state->source_language() &&
-           ui_delegate_->GetTargetLanguageCode() ==
+           ui_languages_manager_->GetTargetLanguageCode() ==
                language_state->current_language();
   }
   // If LanguageState does not exist, it means that TranslateManager has been

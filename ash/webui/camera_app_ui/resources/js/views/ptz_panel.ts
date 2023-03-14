@@ -239,8 +239,8 @@ export class PTZPanel extends View {
               Math.max(
                   Math.round((max - min) / step * deltaInPercent / 100), 1) *
               step * direction;
-          return () => {
-            queue.push(async () => {
+          return async () => {
+            await queue.push(async () => {
               if (!track.enabled) {
                 return;
               }

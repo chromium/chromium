@@ -69,7 +69,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.CriticalFonts.BlockingResourcesLoadTime" units="ms"
-    expires_after="2023-07-02">
+    expires_after="2023-09-03">
   <owner>yoavweiss@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.CriticalFonts.CriticalFontDelay" units="ms"
-    expires_after="2023-07-02">
+    expires_after="2023-09-03">
   <owner>yoavweiss@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -94,7 +94,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.CriticalFonts.PreloadedFontsLoadTime" units="ms"
-    expires_after="2023-07-02">
+    expires_after="2023-09-03">
   <owner>yoavweiss@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -314,7 +314,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.PrimaryFont.DomContentLoaded.Style" units="ms"
-    expires_after="2023-03-19">
+    expires_after="2023-08-20">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
   <owner>yosin@chromium.org</owner>
@@ -327,7 +327,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.PrimaryFont.FCP" units="ms"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
   <owner>yosin@chromium.org</owner>
@@ -378,6 +378,73 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Renderer.Images.HasOverfetchedCappedPixels" enum="Boolean"
+    expires_after="2023-09-03">
+  <owner>yoavweiss@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    Boolean indicating that OverfetchedCappedPixels was a positive integer.
+    Reported whenever an image is loaded and painted.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.Images.HasOverfetchedPixels" enum="Boolean"
+    expires_after="2023-09-03">
+  <owner>yoavweiss@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    Boolean indicating that OverfetchedPixels was a positive integer. Reported
+    whenever an image is loaded and painted.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.Images.HasSizesAttributeMiss" enum="Boolean"
+    expires_after="2023-09-03">
+  <owner>yoavweiss@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    Boolean indicating that SizesAttributeMiss was a positive integer. Only set
+    when the sizes attribute is present. Reported whenever an image is loaded
+    and painted.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.Images.OverfetchedCappedPixels" units="px^2"
+    expires_after="2023-09-03">
+  <owner>yoavweiss@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    The amount of HTMLImageElement image pixels squared (width * height) that
+    were fetched by the renderer, but eventually weren't needed, as the layout
+    dimensions of the image corrected to the screen's device pixel ratio (up to
+    a predefined cap) were smaller than the image pixels fetched. Reported
+    whenever an image is loaded and painted.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.Images.OverfetchedPixels" units="px^2"
+    expires_after="2023-09-03">
+  <owner>yoavweiss@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    The amount of HTMLImageElement image pixels squared (width * height) that
+    were fetched by the renderer, but eventually weren't needed, as the layout
+    dimensions of the image corrected to the screen's device pixel ratio were
+    smaller than the image pixels fetched. Reported whenever an image is loaded
+    and painted.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.Images.SizesAttributeMiss" units="px"
+    expires_after="2023-09-03">
+  <owner>yoavweiss@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    The amount of HTMLImageElement pixels by which the eventual layout width was
+    smaller than the width provided by the sizes attribute.
+  </summary>
+</histogram>
+
 <histogram name="Renderer.PaintPreview.Capture.MainFrameBlinkCaptureDuration"
     units="ms" expires_after="2023-05-27">
   <owner>ckitagawa@chromium.org</owner>
@@ -385,7 +452,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-fdt@google.com</owner>
   <summary>
     Records the number of milliseconds spent blocking Blink's main thread while
-    capturing the main frame.
+    capturing the main frame. Reported whenever an image is loaded and painted.
   </summary>
 </histogram>
 
@@ -420,6 +487,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Renderer.Preload.UnusedResource" enum="BooleanSuccess"
+    expires_after="2024-02-17">
+  <owner>yoavweiss@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    Counts the number of unused preloads per ResourceType.
+
+    Warning: an unexpected reorder happened in Apr 2021
+    (https://crrev.com/c/2798954). Please do not trust older reports.
+  </summary>
+</histogram>
+
 <histogram name="Renderer.ProcessLifetime3{RendererHostedContentType}"
     units="ms" expires_after="2023-02-28">
   <owner>fdoray@chromium.org</owner>
@@ -433,7 +512,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.RenderThreadImpl.Init" units="ms"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>jam@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <summary>
@@ -469,15 +548,18 @@ chromium-metrics-reviews@google.com.
     <variant name="BestEffort"/>
     <variant name="Control"/>
     <variant name="High"/>
+    <variant name="HighContinuation"/>
     <variant name="Highest"/>
     <variant name="Low"/>
+    <variant name="LowContinaution"/>
     <variant name="Normal"/>
+    <variant name="NormalContinuation"/>
     <variant name="VeryHigh"/>
   </token>
 </histogram>
 
 <histogram name="RendererScheduler.RendererMainThreadLoad5" units="%"
-    expires_after="2023-07-02">
+    expires_after="2023-09-03">
   <owner>altimin@chromium.org</owner>
   <summary>
     Renderer main thread load (percentage of time spent in tasks), reported in
@@ -550,24 +632,6 @@ chromium-metrics-reviews@google.com.
     added. For more details, check base::ScaledLinearHistogram.
 
     Reported each time a task is completed.
-
-    Note that this metric discards tasks longer than 30 seconds because they are
-    considered to be a result of measurement glitch.
-  </summary>
-</histogram>
-
-<histogram name="RendererScheduler.TaskDurationPerThreadType2"
-    enum="RendererSchedulerThreadType" expires_after="M85">
-  <owner>altimin@chromium.org</owner>
-  <owner>lpy@chromium.org</owner>
-  <summary>
-    Total duration (reported in full seconds) of renderer tasks split by per
-    thread type. Note that partial seconds are rounded up/down so that they
-    average to the correct value when many reports are added. For more details,
-    check base::ScaledLinearHistogram.
-
-    Used to compare CPU usage of tasks from different threads. Reported each
-    time a task is completed.
 
     Note that this metric discards tasks longer than 30 seconds because they are
     considered to be a result of measurement glitch.

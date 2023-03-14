@@ -269,9 +269,8 @@ class WebApp {
     return permissions_policy_;
   }
 
-  absl::optional<webapps::WebappInstallSource> install_source_for_metrics()
-      const {
-    return install_source_for_metrics_;
+  absl::optional<webapps::WebappInstallSource> latest_install_source() const {
+    return latest_install_source_;
   }
 
   const absl::optional<int64_t>& app_size_in_bytes() const {
@@ -413,8 +412,8 @@ class WebApp {
   void SetLaunchHandler(absl::optional<LaunchHandler> launch_handler);
   void SetParentAppId(const absl::optional<AppId>& parent_app_id);
   void SetPermissionsPolicy(blink::ParsedPermissionsPolicy permissions_policy);
-  void SetInstallSourceForMetrics(
-      absl::optional<webapps::WebappInstallSource> install_source);
+  void SetLatestInstallSource(
+      absl::optional<webapps::WebappInstallSource> latest_install_source);
   void SetAppSizeInBytes(absl::optional<int64_t> app_size_in_bytes);
   void SetDataSizeInBytes(absl::optional<int64_t> data_size_in_bytes);
   void SetWebAppManagementExternalConfigMap(
@@ -532,11 +531,11 @@ class WebApp {
   absl::optional<LaunchHandler> launch_handler_;
   absl::optional<AppId> parent_app_id_;
   blink::ParsedPermissionsPolicy permissions_policy_;
-  // The source of the latest install, used for logging metrics. WebAppRegistrar
-  // provides range validation. Optional only to support legacy installations,
-  // since this used to be tracked as a pref. It might also be null if the value
-  // read from the database is not recognized by this client.
-  absl::optional<webapps::WebappInstallSource> install_source_for_metrics_;
+  // The source of the latest install. WebAppRegistrar provides range
+  // validation. Optional only to support legacy installations, since this used
+  // to be tracked as a pref. It might also be null if the value read from the
+  // database is not recognized by this client.
+  absl::optional<webapps::WebappInstallSource> latest_install_source_;
 
   absl::optional<int64_t> app_size_in_bytes_;
   absl::optional<int64_t> data_size_in_bytes_;
@@ -565,8 +564,10 @@ class WebApp {
   //  - WebAppTest.SampleAppAsDebugValue
   //  - web_app.proto
   // If parsed from manifest, also add to:
-  //  - IsUpdateNeededForManifest() inside manifest_update_utils.h
+  //  - GetManifestDataChanges() inside manifest_update_utils.h
   //  - SetWebAppManifestFields()
+  // If the field relates to the app icons, add revert logic for it in:
+  // - ManifestUpdateCheckCommand::RevertAppIconChanges()
 };
 
 // For logging and debug purposes.

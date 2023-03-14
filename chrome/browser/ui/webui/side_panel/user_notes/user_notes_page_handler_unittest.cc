@@ -9,10 +9,15 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/ui/webui/side_panel/user_notes/user_notes.mojom-test-utils.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"
+#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/power_bookmarks/core/power_bookmark_features.h"
+#include "components/user_notes/user_notes_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace {
@@ -28,6 +33,7 @@ class TestUserNotesPageHandler : public UserNotesPageHandler {
             std::move(page),
             profile,
             browser,
+            false,
             nullptr) {}
 };
 
@@ -43,7 +49,9 @@ class MockUserNotesPage : public side_panel::mojom::UserNotesPage {
   mojo::Receiver<side_panel::mojom::UserNotesPage> receiver_{this};
 
   MOCK_METHOD0(NotesChanged, void());
-  MOCK_METHOD0(CurrentTabUrlChanged, void());
+  MOCK_METHOD1(CurrentTabUrlChanged, void(bool));
+  MOCK_METHOD1(SortByNewestPrefChanged, void(bool));
+  MOCK_METHOD0(StartNoteCreation, void());
 };
 
 struct Note {
@@ -54,8 +62,14 @@ struct Note {
 class UserNotesPageHandlerTest : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
-    features_.InitAndEnableFeature(power_bookmarks::kPowerBookmarkBackend);
+    features_.InitWithFeatures(
+        {user_notes::kUserNotes, power_bookmarks::kPowerBookmarkBackend}, {});
     BrowserWithTestWindowTest::SetUp();
+    BookmarkModelFactory::GetInstance()->SetTestingFactory(
+        profile(), BookmarkModelFactory::GetDefaultFactory());
+    ASSERT_TRUE(bookmark_model_ =
+                    BookmarkModelFactory::GetForBrowserContext(profile()));
+    bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
     handler_ = std::make_unique<TestUserNotesPageHandler>(
         page_.BindAndGetRemote(), profile(), browser());
   }
@@ -69,6 +83,7 @@ class UserNotesPageHandlerTest : public BrowserWithTestWindowTest {
 
  protected:
   MockUserNotesPage page_;
+  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
 
  private:
   std::unique_ptr<TestUserNotesPageHandler> handler_;
@@ -118,6 +133,69 @@ TEST_F(UserNotesPageHandlerTest, GetNoteOverviewIsCurrentTab) {
   note_overviews = waiter.GetNoteOverviews("");
   ASSERT_EQ(1u, note_overviews.size());
   ASSERT_FALSE(note_overviews[0]->is_current_tab);
+}
+
+TEST_F(UserNotesPageHandlerTest, GetNoteOverviewWithBookmarkTitle) {
+  // Add a new bookmark with url.
+  side_panel::mojom::UserNotesPageHandlerAsyncWaiter waiter(handler());
+  const bookmarks::BookmarkNode* bb_node = bookmark_model_->bookmark_bar_node();
+  GURL url("https://google.com");
+  bookmark_model_->AddNewURL(bb_node, 0, u"title", url);
+
+  // Make sure the note overview title is read from the bookmark.
+  handler()->SetCurrentTabUrlForTesting(url);
+  ASSERT_TRUE(waiter.NewNoteFinished("note1"));
+  auto note_overviews = waiter.GetNoteOverviews("");
+  ASSERT_EQ(1u, note_overviews.size());
+  ASSERT_EQ("title", note_overviews[0]->title);
+}
+
+TEST_F(UserNotesPageHandlerTest, GetNoteOverviewsReturnMatchedText) {
+  // Searching notes should match case insensitive.
+  side_panel::mojom::UserNotesPageHandlerAsyncWaiter waiter(handler());
+  handler()->SetCurrentTabUrlForTesting(GURL(u"https://url1"));
+  ASSERT_TRUE(waiter.NewNoteFinished("Note1"));
+  auto note_overviews = waiter.GetNoteOverviews("");
+  ASSERT_EQ(1u, note_overviews.size());
+  ASSERT_EQ("Note1", note_overviews[0]->text);
+}
+
+TEST_F(UserNotesPageHandlerTest, FindNoteOverviewsSearchOnlyText) {
+  // Searching notes should only match texts, not URL.
+  side_panel::mojom::UserNotesPageHandlerAsyncWaiter waiter(handler());
+  handler()->SetCurrentTabUrlForTesting(GURL(u"https://new_url1"));
+  ASSERT_TRUE(waiter.NewNoteFinished("note1"));
+  handler()->SetCurrentTabUrlForTesting(GURL(u"https://new_url2"));
+  ASSERT_TRUE(waiter.NewNoteFinished("note2"));
+  handler()->SetCurrentTabUrlForTesting(GURL(u"https://new_url3"));
+  ASSERT_TRUE(waiter.NewNoteFinished("3"));
+  auto note_overviews = waiter.GetNoteOverviews("n");
+  ASSERT_EQ(2u, note_overviews.size());
+}
+
+TEST_F(UserNotesPageHandlerTest, FindNoteOverviewsCaseInsensitive) {
+  // Searching notes should match case insensitive.
+  side_panel::mojom::UserNotesPageHandlerAsyncWaiter waiter(handler());
+  handler()->SetCurrentTabUrlForTesting(GURL(u"https://url1"));
+  ASSERT_TRUE(waiter.NewNoteFinished("Note1"));
+  handler()->SetCurrentTabUrlForTesting(GURL(u"https://url2"));
+  ASSERT_TRUE(waiter.NewNoteFinished("Note2"));
+  handler()->SetCurrentTabUrlForTesting(GURL(u"https://url3"));
+  ASSERT_TRUE(waiter.NewNoteFinished("3"));
+  auto note_overviews = waiter.GetNoteOverviews("n");
+  ASSERT_EQ(2u, note_overviews.size());
+}
+
+TEST_F(UserNotesPageHandlerTest, FindNoteOverviewsReturnMatchedText) {
+  // Searching notes should match case insensitive.
+  side_panel::mojom::UserNotesPageHandlerAsyncWaiter waiter(handler());
+  handler()->SetCurrentTabUrlForTesting(GURL(u"https://url1"));
+  ASSERT_TRUE(waiter.NewNoteFinished("Note1"));
+  handler()->SetCurrentTabUrlForTesting(GURL(u"https://url2"));
+  ASSERT_TRUE(waiter.NewNoteFinished("foo"));
+  auto note_overviews = waiter.GetNoteOverviews("Note");
+  ASSERT_EQ(1u, note_overviews.size());
+  ASSERT_EQ("Note1", note_overviews[0]->text);
 }
 
 TEST_F(UserNotesPageHandlerTest, CreateAndDeleteNote) {
@@ -197,6 +275,14 @@ TEST_F(UserNotesPageHandlerTest, CurrentTabUrlChangedWithNavigation) {
   ASSERT_EQ(GURL(u"https://newurl3"), handler()->GetCurrentTabUrlForTesting());
   NavigateAndCommitActiveTab(GURL(u"https://newurl4"));
   ASSERT_EQ(GURL(u"https://newurl4"), handler()->GetCurrentTabUrlForTesting());
+}
+
+TEST_F(UserNotesPageHandlerTest, HasNotesOnAnyPages) {
+  side_panel::mojom::UserNotesPageHandlerAsyncWaiter waiter(handler());
+  ASSERT_EQ(false, waiter.HasNotesInAnyPages());
+  handler()->SetCurrentTabUrlForTesting(GURL(u"https://url1"));
+  ASSERT_TRUE(waiter.NewNoteFinished("note1"));
+  ASSERT_EQ(true, waiter.HasNotesInAnyPages());
 }
 
 }  // namespace

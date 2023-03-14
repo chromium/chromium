@@ -9,6 +9,8 @@
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
@@ -80,7 +82,12 @@ class DanglingMouseMoveHandlerOnViewDestroyingChecker
  private:
   base::ScopedObservation<views::View, views::ViewObserver> scoped_observation{
       this};
-  const raw_ptr<views::View, DanglingUntriaged>& mouse_move_handler_;
+  // Excluded from `raw_ref` rewriter which would otherwise turn this
+  // into a `raw_ref<raw_ptr<>>`. The current `raw_ptr&` setup is
+  // intentional and used to observe the pointer without counting as a
+  // live reference to the underlying memory.
+  RAW_PTR_EXCLUSION const raw_ptr<views::View, DanglingUntriaged>&
+      mouse_move_handler_;
 };
 
 }  // namespace
@@ -389,10 +396,7 @@ void RootView::OnEventProcessingStarted(ui::Event* event) {
   gesture_handler_set_before_processing_ = !!gesture_handler_;
 }
 
-void RootView::OnEventProcessingFinished(
-    ui::Event* event,
-    ui::EventTarget* target,
-    const ui::EventDispatchDetails& details) {
+void RootView::OnEventProcessingFinished(ui::Event* event) {
   VLOG(5) << "RootView::OnEventProcessingFinished(" << event->ToString() << ")";
   // If |event| was not handled and |gesture_handler_| was not set by the
   // dispatch of a previous gesture event, then no default gesture handler

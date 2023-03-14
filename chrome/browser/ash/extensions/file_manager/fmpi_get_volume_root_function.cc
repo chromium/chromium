@@ -20,7 +20,7 @@ namespace extensions {
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetVolumeRootFunction::Run() {
   using extensions::api::file_manager_private_internal::GetVolumeRoot::Params;
-  const std::unique_ptr<Params> params(Params::Create(args()));
+  const absl::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const std::string& volume_id = params->options.volume_id;

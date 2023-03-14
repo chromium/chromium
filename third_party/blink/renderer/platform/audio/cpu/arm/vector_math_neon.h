@@ -18,7 +18,7 @@ namespace neon {
 // TODO: Consider optimizing this.
 using scalar::Conv;
 
-static ALWAYS_INLINE void Vadd(const float* source1p,
+ALWAYS_INLINE static void Vadd(const float* source1p,
                                int source_stride1,
                                const float* source2p,
                                int source_stride2,
@@ -47,7 +47,7 @@ static ALWAYS_INLINE void Vadd(const float* source1p,
                dest_stride, n);
 }
 
-static ALWAYS_INLINE void Vsub(const float* source1p,
+ALWAYS_INLINE static void Vsub(const float* source1p,
                                int source_stride1,
                                const float* source2p,
                                int source_stride2,
@@ -76,7 +76,7 @@ static ALWAYS_INLINE void Vsub(const float* source1p,
                dest_stride, n);
 }
 
-static ALWAYS_INLINE void Vclip(const float* source_p,
+ALWAYS_INLINE static void Vclip(const float* source_p,
                                 int source_stride,
                                 const float* low_threshold_p,
                                 const float* high_threshold_p,
@@ -104,7 +104,7 @@ static ALWAYS_INLINE void Vclip(const float* source_p,
                 dest_p, dest_stride, n);
 }
 
-static ALWAYS_INLINE void Vmaxmgv(const float* source_p,
+ALWAYS_INLINE static void Vmaxmgv(const float* source_p,
                                   int source_stride,
                                   float* max_p,
                                   uint32_t frames_to_process) {
@@ -133,7 +133,7 @@ static ALWAYS_INLINE void Vmaxmgv(const float* source_p,
   scalar::Vmaxmgv(source_p, source_stride, max_p, n);
 }
 
-static ALWAYS_INLINE void Vmul(const float* source1p,
+ALWAYS_INLINE static void Vmul(const float* source1p,
                                int source_stride1,
                                const float* source2p,
                                int source_stride2,
@@ -162,7 +162,7 @@ static ALWAYS_INLINE void Vmul(const float* source1p,
                dest_stride, n);
 }
 
-static ALWAYS_INLINE void Vsma(const float* source_p,
+ALWAYS_INLINE static void Vsma(const float* source_p,
                                int source_stride,
                                const float* scale,
                                float* dest_p,
@@ -191,7 +191,7 @@ static ALWAYS_INLINE void Vsma(const float* source_p,
   scalar::Vsma(source_p, source_stride, scale, dest_p, dest_stride, n);
 }
 
-static ALWAYS_INLINE void Vsmul(const float* source_p,
+ALWAYS_INLINE static void Vsmul(const float* source_p,
                                 int source_stride,
                                 const float* scale,
                                 float* dest_p,
@@ -217,7 +217,7 @@ static ALWAYS_INLINE void Vsmul(const float* source_p,
   scalar::Vsmul(source_p, source_stride, scale, dest_p, dest_stride, n);
 }
 
-static ALWAYS_INLINE void Vsadd(const float* source_p,
+ALWAYS_INLINE static void Vsadd(const float* source_p,
                                 int source_stride,
                                 const float* addend,
                                 float* dest_p,
@@ -243,7 +243,7 @@ static ALWAYS_INLINE void Vsadd(const float* source_p,
   scalar::Vsadd(source_p, source_stride, addend, dest_p, dest_stride, n);
 }
 
-static ALWAYS_INLINE void Vsvesq(const float* source_p,
+ALWAYS_INLINE static void Vsvesq(const float* source_p,
                                  int source_stride,
                                  float* sum_p,
                                  uint32_t frames_to_process) {
@@ -272,7 +272,7 @@ static ALWAYS_INLINE void Vsvesq(const float* source_p,
   scalar::Vsvesq(source_p, source_stride, sum_p, n);
 }
 
-static ALWAYS_INLINE void Zvmul(const float* real1p,
+ALWAYS_INLINE static void Zvmul(const float* real1p,
                                 const float* imag1p,
                                 const float* real2p,
                                 const float* imag2p,

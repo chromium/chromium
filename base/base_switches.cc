@@ -128,7 +128,7 @@ const char kWaitForDebugger[] = "wait-for-debugger";
 // Disable high-resolution timer on Windows.
 const char kDisableHighResTimer[] = "disable-highres-timer";
 
-// Disables the USB keyboard detection for blocking the OSK on Win8+.
+// Disables the USB keyboard detection for blocking the OSK on Windows.
 const char kDisableUsbKeyboardDetect[]      = "disable-usb-keyboard-detect";
 #endif
 

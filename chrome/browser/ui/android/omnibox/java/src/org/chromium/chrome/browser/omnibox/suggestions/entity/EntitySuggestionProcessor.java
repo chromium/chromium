@@ -18,6 +18,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.suggestions.ActionChipsDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
@@ -53,8 +54,8 @@ public class EntitySuggestionProcessor extends BaseSuggestionViewProcessor {
      * @param suggestionHost A handle to the object using the suggestions.
      */
     public EntitySuggestionProcessor(Context context, SuggestionHost suggestionHost,
-            Supplier<ImageFetcher> imageFetcherSupplier) {
-        super(context, suggestionHost, null);
+            ActionChipsDelegate actionChipsDelegate, Supplier<ImageFetcher> imageFetcherSupplier) {
+        super(context, suggestionHost, actionChipsDelegate, null);
         mSuggestionHost = suggestionHost;
         mPendingImageRequests = new HashMap<>();
         mImageFetcherSupplier = imageFetcherSupplier;

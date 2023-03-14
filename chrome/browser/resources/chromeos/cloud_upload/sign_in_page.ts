@@ -38,9 +38,7 @@ export class SignInPageElement extends BaseSetupPageElement {
       this.dispatchEvent(
           new CustomEvent(NEXT_PAGE_EVENT, {bubbles: true, composed: true}));
     } else {
-      const connectButton = this.querySelector<HTMLElement>('.action-button')!;
       const errorMessage = this.querySelector<HTMLElement>('#error-message')!;
-      connectButton.innerText = 'Retry';
       errorMessage.toggleAttribute('hidden', false);
       // Update top/bottom fade style if the dialog's content overflows.
       const contentElement =

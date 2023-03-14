@@ -24,20 +24,26 @@ FederatedIdentityAutoReauthnPermissionContext::
 FederatedIdentityAutoReauthnPermissionContext::
     ~FederatedIdentityAutoReauthnPermissionContext() = default;
 
-bool FederatedIdentityAutoReauthnPermissionContext::HasAutoReauthnPermission(
+bool FederatedIdentityAutoReauthnPermissionContext::
+    HasAutoReauthnContentSetting() {
+  return host_content_settings_map_->GetDefaultContentSetting(
+             ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION,
+             /*provider_id=*/nullptr) != ContentSetting::CONTENT_SETTING_BLOCK;
+}
+
+bool FederatedIdentityAutoReauthnPermissionContext::IsAutoReauthnEmbargoed(
     const url::Origin& relying_party_embedder) {
-  bool is_content_setting_allowed =
-      host_content_settings_map_->GetDefaultContentSetting(
-          ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION,
-          /*provider_id=*/nullptr) != ContentSetting::CONTENT_SETTING_BLOCK;
-  UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.AutoReauthn.BlockedByContentSettings",
-                        !is_content_setting_allowed);
-  bool is_embargoed = permission_autoblocker_->IsEmbargoed(
+  return permission_autoblocker_->IsEmbargoed(
       relying_party_embedder.GetURL(),
       ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION);
-  UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.AutoReauthn.BlockedByEmbargo",
-                        is_embargoed);
-  return is_content_setting_allowed && !is_embargoed;
+}
+
+base::Time
+FederatedIdentityAutoReauthnPermissionContext::GetAutoReauthnEmbargoStartTime(
+    const url::Origin& relying_party_embedder) {
+  return permission_autoblocker_->GetEmbargoStartTime(
+      relying_party_embedder.GetURL(),
+      ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION);
 }
 
 void FederatedIdentityAutoReauthnPermissionContext::RecordDisplayAndEmbargo(

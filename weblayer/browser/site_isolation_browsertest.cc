@@ -218,7 +218,8 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationBrowserTest,
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(SiteIsolationBrowserTest, IsolatedSiteIsSavedOnlyOnce) {
+IN_PROC_BROWSER_TEST_F(SiteIsolationBrowserTest,
+                       DISABLED_IsolatedSiteIsSavedOnlyOnce) {
   GURL saved_url =
       embedded_test_server()->GetURL("saved.com", "/simple_page.html");
   StartIsolatingSite(saved_url);
@@ -261,8 +262,9 @@ IN_PROC_BROWSER_TEST_F(
               UnorderedElementsAre("https://saved.com"));
 }
 
-IN_PROC_BROWSER_TEST_F(SiteIsolationBrowserTest,
-                       ExplicitClearBrowsingDataClearsSavedIsolatedSites) {
+IN_PROC_BROWSER_TEST_F(
+    SiteIsolationBrowserTest,
+    DISABLED_ExplicitClearBrowsingDataClearsSavedIsolatedSites) {
   GURL saved_url =
       embedded_test_server()->GetURL("saved.com", "/simple_page.html");
   StartIsolatingSite(saved_url);

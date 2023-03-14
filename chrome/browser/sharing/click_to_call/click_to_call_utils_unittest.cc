@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_utils.h"
+#include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/mock_sharing_service.h"
 #include "chrome/browser/sharing/sharing_fcm_handler.h"
 #include "chrome/browser/sharing/sharing_fcm_sender.h"
@@ -69,6 +71,8 @@ class ClickToCallUtilsTest : public testing::Test {
   }
 
  protected:
+  base::test::ScopedFeatureList features_{kClickToCall};
+
   std::unique_ptr<KeyedService> CreateService(
       content::BrowserContext* context) {
     return create_service_ ? std::make_unique<MockSharingService>() : nullptr;

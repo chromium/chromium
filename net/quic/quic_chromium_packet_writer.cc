@@ -135,7 +135,6 @@ void QuicChromiumPacketWriter::WritePacketToSocket(
     scoped_refptr<ReusableIOBuffer> packet) {
   DCHECK(!force_write_blocked_);
   packet_ = std::move(packet);
-  socket_->SetDontClose(true);
   quic::WriteResult result = WritePacketToSocketImpl();
   if (result.error_code != ERR_IO_PENDING)
     OnWriteComplete(result.error_code);
@@ -230,8 +229,6 @@ void QuicChromiumPacketWriter::OnWriteComplete(int rv) {
     delegate_->OnWriteError(rv);
   else if (!force_write_blocked_)
     delegate_->OnWriteUnblocked();
-
-  socket_->SetDontClose(false);
 }
 
 bool QuicChromiumPacketWriter::MaybeRetryAfterWriteError(int rv) {

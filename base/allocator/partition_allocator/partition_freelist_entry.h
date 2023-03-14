@@ -41,10 +41,10 @@ class PartitionFreelistEntry;
 
 class EncodedPartitionFreelistEntryPtr {
  private:
-  explicit PA_ALWAYS_INLINE constexpr EncodedPartitionFreelistEntryPtr(
+  PA_ALWAYS_INLINE constexpr explicit EncodedPartitionFreelistEntryPtr(
       std::nullptr_t)
       : encoded_(Transform(0)) {}
-  explicit PA_ALWAYS_INLINE EncodedPartitionFreelistEntryPtr(void* ptr)
+  PA_ALWAYS_INLINE explicit EncodedPartitionFreelistEntryPtr(void* ptr)
       // The encoded pointer stays MTE-tagged.
       : encoded_(Transform(reinterpret_cast<uintptr_t>(ptr))) {}
 
@@ -58,7 +58,7 @@ class EncodedPartitionFreelistEntryPtr {
     encoded_ = encoded;
   }
 
-  explicit PA_ALWAYS_INLINE constexpr operator bool() const { return encoded_; }
+  PA_ALWAYS_INLINE constexpr explicit operator bool() const { return encoded_; }
 
   // Transform() works the same in both directions, so can be used for
   // encoding and decoding.
@@ -90,7 +90,7 @@ class EncodedPartitionFreelistEntryPtr {
 // the rationale and mechanism, respectively.
 class PartitionFreelistEntry {
  private:
-  explicit constexpr PartitionFreelistEntry(std::nullptr_t)
+  constexpr explicit PartitionFreelistEntry(std::nullptr_t)
       : encoded_next_(EncodedPartitionFreelistEntryPtr(nullptr))
 #if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
         ,
@@ -121,13 +121,13 @@ class PartitionFreelistEntry {
 
   // Emplaces the freelist entry at the beginning of the given slot span, and
   // initializes it as null-terminated.
-  static PA_ALWAYS_INLINE PartitionFreelistEntry* EmplaceAndInitNull(
+  PA_ALWAYS_INLINE static PartitionFreelistEntry* EmplaceAndInitNull(
       void* slot_start_tagged) {
     // |slot_start_tagged| is MTE-tagged.
     auto* entry = new (slot_start_tagged) PartitionFreelistEntry(nullptr);
     return entry;
   }
-  static PA_ALWAYS_INLINE PartitionFreelistEntry* EmplaceAndInitNull(
+  PA_ALWAYS_INLINE static PartitionFreelistEntry* EmplaceAndInitNull(
       uintptr_t slot_start) {
     return EmplaceAndInitNull(SlotStartAddr2Ptr(slot_start));
   }
@@ -138,7 +138,7 @@ class PartitionFreelistEntry {
   // This freelist is built for the purpose of thread-cache. This means that we
   // can't perform a check that this and the next pointer belong to the same
   // super page, as thread-cache spans may chain slots across super pages.
-  static PA_ALWAYS_INLINE PartitionFreelistEntry* EmplaceAndInitForThreadCache(
+  PA_ALWAYS_INLINE static PartitionFreelistEntry* EmplaceAndInitForThreadCache(
       uintptr_t slot_start,
       PartitionFreelistEntry* next) {
     auto* entry =
@@ -151,7 +151,7 @@ class PartitionFreelistEntry {
   //
   // This is for testing purposes only! |make_shadow_match| allows you to choose
   // if the shadow matches the next pointer properly or is trash.
-  static PA_ALWAYS_INLINE void EmplaceAndInitForTest(uintptr_t slot_start,
+  PA_ALWAYS_INLINE static void EmplaceAndInitForTest(uintptr_t slot_start,
                                                      void* next,
                                                      bool make_shadow_match) {
     new (SlotStartAddr2Ptr(slot_start))
@@ -225,7 +225,7 @@ class PartitionFreelistEntry {
       size_t extra,
       bool for_thread_cache) const;
 
-  static PA_ALWAYS_INLINE bool IsSane(const PartitionFreelistEntry* here,
+  PA_ALWAYS_INLINE static bool IsSane(const PartitionFreelistEntry* here,
                                       const PartitionFreelistEntry* next,
                                       bool for_thread_cache) {
     // Don't allow the freelist to be blindly followed to any location.
@@ -260,11 +260,12 @@ class PartitionFreelistEntry {
     bool not_in_metadata =
         (next_address & kSuperPageOffsetMask) >= PartitionPageSize();
 
-    if (for_thread_cache)
+    if (for_thread_cache) {
       return shadow_ptr_ok & not_in_metadata;
-    else
+    } else {
       return shadow_ptr_ok & same_superpage & marked_as_free_in_bitmap &
              not_in_metadata;
+    }
   }
 
   EncodedPartitionFreelistEntryPtr encoded_next_;
@@ -297,8 +298,9 @@ PartitionFreelistEntry::GetNextInternal(size_t extra,
                                         bool for_thread_cache) const {
   // GetNext() can be called on discarded memory, in which case |encoded_next_|
   // is 0, and none of the checks apply. Don't prefetch nullptr either.
-  if (IsEncodedNextPtrZero())
+  if (IsEncodedNextPtrZero()) {
     return nullptr;
+  }
 
   auto* ret = encoded_next_.Decode();
   // We rely on constant propagation to remove the branches coming from

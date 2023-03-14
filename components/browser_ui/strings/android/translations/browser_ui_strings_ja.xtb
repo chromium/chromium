@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">縮小</translation>
 <translation id="1510341833810331442">サイトはデバイスにデータを保存できません</translation>
 <translation id="1547123415014299762">サードパーティの Cookie が許可されます</translation>
+<translation id="1593426485665524382">画面上部付近で新しい操作が可能になりました</translation>
 <translation id="1620510694547887537">カメラ</translation>
 <translation id="1633720957382884102">関連サイト</translation>
 <translation id="1644574205037202324">履歴</translation>
@@ -59,6 +60,7 @@
 <translation id="216989819110952009">緑色の眼鏡で眼を守っていても、ドロシーと彼女の仲間たちは目が眩みました</translation>
 <translation id="2176704795966505152">メインメニューにズーム オプションを表示する</translation>
 <translation id="2182457891543959921">サイトに周囲の 3D マップの作成またはカメラ位置の追跡を許可する前に確認します（推奨）</translation>
+<translation id="2194856509914051091">留意事項</translation>
 <translation id="2212565012507486665">Cookie を許可</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> にカメラへのアクセスを許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でもカメラをオンにしてください。</translation>
 <translation id="2235344399760031203">サードパーティの Cookie がブロックされています</translation>
@@ -98,7 +100,6 @@
 <translation id="2713106313042589954">カメラをオフにする</translation>
 <translation id="2717722538473713889">メールアドレス</translation>
 <translation id="2750481671343847896">サイトで ID サービスからのログイン メッセージを表示できるようにします。</translation>
-<translation id="2779966372261694284">このサイトからログアウトします</translation>
 <translation id="2822354292072154809">「<ph name="CHOSEN_OBJECT_NAME" />」に関するすべてのサイト権限をリセットしてもよろしいですか？</translation>
 <translation id="2870560284913253234">サイト</translation>
 <translation id="2874939134665556319">前のトラック</translation>
@@ -144,6 +145,9 @@
 <translation id="3600792891314830896">音声が再生されるサイトをミュートする</translation>
 <translation id="3602290021589620013">プレビュー</translation>
 <translation id="3628308229821498208">提案された検索</translation>
+<translation id="3636279694100170143">アクセス先のサイトは、あなたがボットではなく実際のユーザーであることを確認できます</translation>
+<translation id="3649190289964910441">アクセス先のサイトは、あなたが実際のユーザーであることを確認する情報を Chrome に保存できます。それ以降にアクセスしたサイトは、あなたが信頼できるユーザーであることを Chrome を介して最初のサイトから確認できます。</translation>
+<translation id="3721953990244350188">非表示にして、次に実行可能なアクションを表示</translation>
 <translation id="3744111561329211289">バックグラウンド同期</translation>
 <translation id="3763247130972274048">動画の左または右をダブルタップすると 10 秒スキップします</translation>
 <translation id="3794286421982011626">アクセスしたサイトで、想定どおりに機能するよう（サイトへのログイン状態を保持する、ショッピング カートに商品を保存するなど）、行った操作に関する情報が保存されることがあります。多くの場合、こうした情報はデバイスに一時的に保存されます。</translation>
@@ -191,11 +195,11 @@
 <translation id="4534723447064627427"><ph name="APP_NAME" /> にマイクへのアクセスを許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でもマイクをオンにしてください。</translation>
 <translation id="4566417217121906555">マイクをミュート</translation>
 <translation id="4570913071927164677">詳細</translation>
-<translation id="4575264539271661854">アクセスしたサイトのテキストや画像をズームインしやすくします</translation>
 <translation id="4598549027014564149">シークレット モードのとき、サイトは Cookie を使用して関連サイトを含む他のサイトでの閲覧アクティビティを確認することができません。閲覧アクティビティは、広告のカスタマイズなどには使用されません。一部のサイトで機能を使用できなくなる可能性があります。</translation>
 <translation id="4645575059429386691">保護者により管理されています</translation>
 <translation id="4670064810192446073">バーチャル リアリティ（VR）</translation>
 <translation id="4751476147751820511">モーション センサーまたは光センサー</translation>
+<translation id="477781522763920796">この設定では、ユーザーを特定したり、ユーザーの閲覧履歴の参照をサイトに許可したりすることはありません。</translation>
 <translation id="4779083564647765204">ズーム</translation>
 <translation id="4811450222531576619">ソースとトピックの詳細</translation>
 <translation id="4836046166855586901">サイトからこのデバイスのアクティブ状態の検出を求められたときに確認する</translation>
@@ -257,6 +261,7 @@
 <translation id="5740126560802162366">サイトはデバイスにデータを保存できます</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" />をブロック</translation>
 <translation id="5804241973901381774">権限</translation>
+<translation id="5810805850857689118">この操作を行うと、<ph name="ORIGIN" /> とそのドメインの全サイトのデータと Cookie がすべて消去されます</translation>
 <translation id="5860033963881614850">オフ</translation>
 <translation id="5876056640971328065">動画を一時停止</translation>
 <translation id="5884085660368669834">サイトの設定</translation>
@@ -273,6 +278,7 @@
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="6042308850641462728">もっと見る</translation>
 <translation id="6064125863973209585">完了したダウンロード</translation>
+<translation id="6071501408666570960">このサイトからログアウトする可能性があります</translation>
 <translation id="6165508094623778733">詳細</translation>
 <translation id="6177111841848151710">現在の検索エンジンに対してはブロック</translation>
 <translation id="6177128806592000436">このサイトへの接続は保護されていません</translation>
@@ -323,6 +329,7 @@
 <translation id="7016516562562142042">現在の検索エンジンに対して許可</translation>
 <translation id="702275896380648118">このサイトでは、ユーザーの好みを判断して他のサイトに広告を提案します。また、より関連性の高い広告を表示するために Chrome から広告のトピックを取得します。</translation>
 <translation id="702463548815491781">TalkBack またはスイッチ アクセスを有効にしている場合におすすめです</translation>
+<translation id="7050519587566342213">信頼できるユーザーであることがサイト間で共有され、ブラウジングがスムーズになります。</translation>
 <translation id="7053983685419859001">ブロック</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 件を選択済み}other{# 件を選択済み}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> 件選択されています。オプションは画面上部にあります</translation>
@@ -347,6 +354,7 @@
 <translation id="757524316907819857">サイトでの保護されたコンテンツの再生をブロックする</translation>
 <translation id="7577900504646297215">興味のあるトピックを管理</translation>
 <translation id="7594634374516752650">Bluetooth デバイスに接続されています</translation>
+<translation id="7634280112532283638">スパムと不正行為の削減</translation>
 <translation id="7641339528570811325">閲覧履歴データを削除…</translation>
 <translation id="7649070708921625228">ヘルプ</translation>
 <translation id="7658239707568436148">キャンセル</translation>
@@ -407,6 +415,7 @@
 <translation id="8514955299594277296">サイトによるデバイスへのデータの保存を許可しない（非推奨）</translation>
 <translation id="851751545965956758">サイトからデバイスへの接続をブロックする</translation>
 <translation id="8525306231823319788">全画面表示</translation>
+<translation id="8528440122773422556">この操作を行うと、<ph name="ORIGIN" /> とそのドメインの全サイトまたはホーム画面のアプリにより保存されたデータと Cookie がすべて消去されます</translation>
 <translation id="8541410041357371550">このサイトでは、より関連性の高い広告を表示するために Chrome から広告のトピックを取得します</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_OWNER" /> の <ph name="FPS_MEMBERS_COUNT" /> 件のサイトで Cookie が許可されています}other{<ph name="FPS_OWNER" /> の <ph name="FPS_MEMBERS_COUNT" /> 件のサイトで Cookie が許可されています}}</translation>
 <translation id="857943718398505171">許可（推奨）</translation>
@@ -421,6 +430,7 @@
 <translation id="8737217482364735741"><ph name="ORIGIN" /> により保存されたすべてのデータと Cookie が削除されます。</translation>
 <translation id="8751914237388039244">画像を選択</translation>
 <translation id="8801436777607969138">特定のサイトで JavaScript をブロックします。</translation>
+<translation id="8803526663383843427">オンにした場合</translation>
 <translation id="8816026460808729765">サイトによるセンサーへのアクセスをブロックする</translation>
 <translation id="8823559166155093873">Cookie をブロック</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -434,6 +444,7 @@
 <translation id="8986362086234534611">削除</translation>
 <translation id="8990043154272859344">すべてのサイトからログアウトします</translation>
 <translation id="9019902583201351841">保護者により管理されています</translation>
+<translation id="9039697262778250930">これらのサイトからログアウトする可能性があります</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">このサイトは、アクティビティを確認できるグループに属しています。グループは <ph name="FPS_OWNER" /> によって定義されます</translation>
 <translation id="9106233582039520022">Cookie を削除しますか？</translation>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<style>
+#target {
+  background-color: blue;
+  color: red;
+}
+#destination {
+  background-color: green;
+  /* this is needed to simulate pasting forced colors into a non-forced colors element */
+  forced-color-adjust: none;
+}
+</style>
+<div id="target">Copy this line</div>
+<div id="other">some other text</div>
+
+Paste here:
+<div id="destination" contenteditable></div>
+<script>
+const target = document.getElementById('target');
+var selection = window.getSelection();
+selection.selectAllChildren(target);
+document.execCommand('Copy', false, null);
+document.getElementById('destination').focus();
+document.execCommand('Paste', false, null);
+// Remove focus so caret is not part of the test image.
+document.getElementById('destination').blur();
+</script>
+</html>

@@ -146,11 +146,11 @@ WebsiteMetrics::UrlInfo::UrlInfo(const base::Value& value) {
   promotable = promotable_value.value();
 }
 
-base::Value WebsiteMetrics::UrlInfo::ConvertToValue() const {
-  base::Value usage_time_dict(base::Value::Type::DICT);
-  usage_time_dict.SetPath(kRunningTimeKey,
-                          base::TimeDeltaToValue(running_time_in_two_hours));
-  usage_time_dict.SetBoolKey(kPromotableKey, promotable);
+base::Value::Dict WebsiteMetrics::UrlInfo::ConvertToDict() const {
+  base::Value::Dict usage_time_dict;
+  usage_time_dict.Set(kRunningTimeKey,
+                      base::TimeDeltaToValue(running_time_in_two_hours));
+  usage_time_dict.Set(kPromotableKey, promotable);
   return usage_time_dict;
 }
 
@@ -551,7 +551,7 @@ void WebsiteMetrics::SaveUsageTime() {
     }
     // Save all urls running time in the past two hours to the user pref.
     if (!it.second.running_time_in_two_hours.is_zero()) {
-      dict.Set(it.first.spec(), it.second.ConvertToValue());
+      dict.Set(it.first.spec(), it.second.ConvertToDict());
     }
   }
 

@@ -9,6 +9,7 @@ enum RTCVideoCodecType {
     "vp8",
     "vp9",
     "h264",
+    "av1",
 };
 
 enum RTCDecodeTargetIndication {
@@ -44,4 +45,6 @@ dictionary RTCEncodedVideoFrameMetadata {
     unsigned long synchronizationSource;
     sequence<unsigned long> contributingSources;
     octet payloadType;
+    [RuntimeEnabled=RTCEncodedVideoFrameAdditionalMetadata]
+    long long captureTimestamp;     // microseconds.
 };

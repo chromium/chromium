@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_ui.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,7 +20,7 @@ namespace ash::cloud_upload {
 
 bool CloudUploadUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return ash::features::IsUploadOfficeToCloudEnabled();
+  return cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud();
 }
 
 CloudUploadUI::CloudUploadUI(content::WebUI* web_ui)
@@ -37,6 +36,10 @@ CloudUploadUI::CloudUploadUI(content::WebUI* web_ui)
       source, base::make_span(kCloudUploadResources, kCloudUploadResourcesSize),
       IDR_CLOUD_UPLOAD_MAIN_HTML);
   source->DisableTrustedTypesCSP();
+  // Required for lottie animations.
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::WorkerSrc,
+      "worker-src blob: chrome://resources 'self';");
 }
 
 CloudUploadUI::~CloudUploadUI() = default;

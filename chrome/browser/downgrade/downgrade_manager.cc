@@ -235,8 +235,7 @@ void DowngradeManager::UpdateLastVersion(const base::FilePath& user_data_dir) {
   DCHECK(!user_data_dir.empty());
   DCHECK_NE(type_, Type::kAdministrativeWipe);
   const base::StringPiece version(PRODUCT_VERSION);
-  base::WriteFile(GetLastVersionFile(user_data_dir), version.data(),
-                  version.size());
+  base::WriteFile(GetLastVersionFile(user_data_dir), version);
 }
 
 void DowngradeManager::DeleteMovedUserDataSoon(

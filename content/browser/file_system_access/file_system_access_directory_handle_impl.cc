@@ -174,24 +174,28 @@ void FileSystemAccessDirectoryHandleImpl::GetFile(const std::string& basename,
   }
 
 #if BUILDFLAG(IS_POSIX)
-  // While this directory handle already has obtained the permission and checked
-  // for the blocklist, a child symlink file may be created, pointing to a
-  // blocklisted file or directory. Before returning a child file handle, check
-  // for the validity of the file path pointed by a symlink, if any.
-  // Currently, symlink checks are not available on Windows.
-  auto callback_after_access_check = base::BindOnce(
-      &FileSystemAccessDirectoryHandleImpl::DoGetFile,
-      weak_factory_.GetWeakPtr(), create, child_url, std::move(callback));
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&ReadSymbolicLink, child_url.path()),
-      base::BindOnce(
-          &FileSystemAccessDirectoryHandleImpl::CheckSymbolicLinkAccess,
-          weak_factory_.GetWeakPtr(), child_url,
-          std::move(callback_after_access_check)));
-#else
-  DoGetFile(create, child_url, std::move(callback), /*allowed=*/true);
+  if (base::FeatureList::IsEnabled(
+          features::kFileSystemAccessDirectoryIterationSymbolicLinkCheck)) {
+    // While this directory handle already has obtained the permission and
+    // checked for the blocklist, a child symlink file may be created, pointing
+    // to a blocklisted file or directory. Before returning a child file handle,
+    // check for the validity of the file path pointed by a symlink, if any.
+    // Currently, symlink checks are not available on Windows.
+    auto callback_after_access_check = base::BindOnce(
+        &FileSystemAccessDirectoryHandleImpl::DoGetFile,
+        weak_factory_.GetWeakPtr(), create, child_url, std::move(callback));
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&ReadSymbolicLink, child_url.path()),
+        base::BindOnce(
+            &FileSystemAccessDirectoryHandleImpl::CheckSymbolicLinkAccess,
+            weak_factory_.GetWeakPtr(), child_url,
+            std::move(callback_after_access_check)));
+    return;
+  }
 #endif
+
+  DoGetFile(create, child_url, std::move(callback), /*allowed=*/true);
 }
 
 #if BUILDFLAG(IS_POSIX)
@@ -579,57 +583,63 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
   }
 
 #if BUILDFLAG(IS_POSIX)
-  // While this directory handle already has obtained the permission and checked
-  // for the blocklist, a child symlink file may be created, pointing to a
-  // blocklisted file or directory. Before merging a child into a result vector,
-  // check for the validity of the file path pointed by a symlink, if any.
-  // Currently, symlink checks are not available on Windows.
-  auto final_callback = base::BindOnce(
-      &FileSystemAccessDirectoryHandleImpl::AllEntriesReady,
-      weak_factory_.GetWeakPtr(), has_more_entries, std::move(listener_holder));
+  if (base::FeatureList::IsEnabled(
+          features::kFileSystemAccessDirectoryIterationSymbolicLinkCheck)) {
+    // While this directory handle already has obtained the permission and
+    // checked for the blocklist, a child symlink file may be created, pointing
+    // to a blocklisted file or directory. Before merging a child into a result
+    // vector, check for the validity of the file path pointed by a symlink, if
+    // any. Currently, symlink checks are not available on Windows.
+    auto final_callback =
+        base::BindOnce(&FileSystemAccessDirectoryHandleImpl::AllEntriesReady,
+                       weak_factory_.GetWeakPtr(), has_more_entries,
+                       std::move(listener_holder));
 
-  // Barrier callback is used to wait for checking each path in the `file_list`
-  // and creating a FileSystemAccessEntryPtr if the path is valid; otherwise,
-  // nullopt is returned for the callback. Since the barrier callback expects
-  // a fixed number of callbacks to be invoked before the final callback is
-  // invoked, each item in `file_list` must trigger the barrier callback with
-  // a valid FileSystemAccessEntryPtr or nullopt.
-  auto barrier_callback = base::BarrierCallback<FileSystemAccessEntryPtr>(
-      file_list.size(),
-      base::BindOnce(&FileSystemAccessDirectoryHandleImpl::MergeAllEntries,
-                     weak_factory_.GetWeakPtr(), std::move(final_callback)));
+    // Barrier callback is used to wait for checking each path in the
+    // `file_list` and creating a FileSystemAccessEntryPtr if the path is valid;
+    // otherwise, nullopt is returned for the callback. Since the barrier
+    // callback expects a fixed number of callbacks to be invoked before the
+    // final callback is invoked, each item in `file_list` must trigger the
+    // barrier callback with a valid FileSystemAccessEntryPtr or nullopt.
+    auto barrier_callback = base::BarrierCallback<FileSystemAccessEntryPtr>(
+        file_list.size(),
+        base::BindOnce(&FileSystemAccessDirectoryHandleImpl::MergeAllEntries,
+                       weak_factory_.GetWeakPtr(), std::move(final_callback)));
 
-  for (const auto& entry : file_list) {
-    std::string basename = storage::FilePathToString(entry.name);
+    for (const auto& entry : file_list) {
+      std::string basename = storage::FilePathToString(entry.name);
 
-    storage::FileSystemURL child_url;
-    blink::mojom::FileSystemAccessErrorPtr get_child_url_result =
-        GetChildURL(basename, &child_url);
+      storage::FileSystemURL child_url;
+      blink::mojom::FileSystemAccessErrorPtr get_child_url_result =
+          GetChildURL(basename, &child_url);
 
-    // Skip any entries with names that aren't allowed to be accessed by
-    // this API, such as files with disallowed characters in their names.
-    if (get_child_url_result->status != FileSystemAccessStatus::kOk) {
-      barrier_callback.Run(nullptr);
-      continue;
+      // Skip any entries with names that aren't allowed to be accessed by
+      // this API, such as files with disallowed characters in their names.
+      if (get_child_url_result->status != FileSystemAccessStatus::kOk) {
+        barrier_callback.Run(nullptr);
+        continue;
+      }
+
+      auto callback_after_access_check = base::BindOnce(
+          &FileSystemAccessDirectoryHandleImpl::AfterSymbolicLinkAccessCheck,
+          weak_factory_.GetWeakPtr(), std::move(basename), child_url,
+          entry.type == filesystem::mojom::FsFileType::DIRECTORY
+              ? HandleType::kDirectory
+              : HandleType::kFile,
+          barrier_callback);
+
+      base::ThreadPool::PostTaskAndReplyWithResult(
+          FROM_HERE, {base::MayBlock()},
+          base::BindOnce(&ReadSymbolicLink, child_url.path()),
+          base::BindOnce(
+              &FileSystemAccessDirectoryHandleImpl::CheckSymbolicLinkAccess,
+              weak_factory_.GetWeakPtr(), child_url,
+              std::move(callback_after_access_check)));
     }
-
-    auto callback_after_access_check = base::BindOnce(
-        &FileSystemAccessDirectoryHandleImpl::AfterSymbolicLinkAccessCheck,
-        weak_factory_.GetWeakPtr(), std::move(basename), child_url,
-        entry.type == filesystem::mojom::FsFileType::DIRECTORY
-            ? HandleType::kDirectory
-            : HandleType::kFile,
-        barrier_callback);
-
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock()},
-        base::BindOnce(&ReadSymbolicLink, child_url.path()),
-        base::BindOnce(
-            &FileSystemAccessDirectoryHandleImpl::CheckSymbolicLinkAccess,
-            weak_factory_.GetWeakPtr(), child_url,
-            std::move(callback_after_access_check)));
+    return;
   }
-#else
+#endif
+
   std::vector<FileSystemAccessEntryPtr> entries;
   for (const auto& entry : file_list) {
     std::string basename = storage::FilePathToString(entry.name);
@@ -651,7 +661,6 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
   }
   AllEntriesReady(has_more_entries, std::move(listener_holder),
                   std::move(entries));
-#endif
 }
 
 #if BUILDFLAG(IS_POSIX)

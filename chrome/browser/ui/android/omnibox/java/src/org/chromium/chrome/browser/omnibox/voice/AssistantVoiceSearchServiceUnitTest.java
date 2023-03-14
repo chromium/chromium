@@ -10,8 +10,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_ENABLED;
-
 import android.accounts.Account;
 import android.app.Activity;
 import android.content.Context;
@@ -19,7 +17,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -128,16 +125,10 @@ public class AssistantVoiceSearchServiceUnitTest {
         doReturn(true).when(mIdentityManager).hasPrimaryAccount(anyInt());
 
         mAccountManagerTestRule.addAccount(TEST_ACCOUNT_EMAIL1);
-        mSharedPreferencesManager.writeBoolean(ASSISTANT_VOICE_SEARCH_ENABLED, true);
 
         mAssistantVoiceSearchService = new AssistantVoiceSearchService(mContext, mExternalAuthUtils,
                 mTemplateUrlService, mGsaState, null, mSharedPreferencesManager, mIdentityManager,
                 AccountManagerFacadeProvider.getInstance());
-    }
-
-    @After
-    public void tearDown() {
-        mSharedPreferencesManager.removeKey(ASSISTANT_VOICE_SEARCH_ENABLED);
     }
 
     @Test
@@ -150,34 +141,7 @@ public class AssistantVoiceSearchServiceUnitTest {
     @Test
     @Feature("OmniboxAssistantVoiceSearch")
     public void testStartVoiceRecognition_StartsAssistantVoiceSearch() {
-        Assert.assertTrue(mAssistantVoiceSearchService.shouldRequestAssistantVoiceSearch());
-        List<Integer> reasons = new ArrayList<>();
-        boolean eligible = mAssistantVoiceSearchService.isDeviceEligibleForAssistant(
-                /* returnImmediately= */ false, /* outList= */ reasons);
-        Assert.assertEquals(0, reasons.size());
-        Assert.assertTrue(eligible);
-    }
-
-    @Test
-    @Feature("OmniboxAssistantVoiceSearch")
-    public void testStartVoiceRecognition_StartsAssistantVoiceSearch_DisabledByPref() {
-        mSharedPreferencesManager.writeBoolean(ASSISTANT_VOICE_SEARCH_ENABLED, false);
-        Assert.assertFalse(mAssistantVoiceSearchService.shouldRequestAssistantVoiceSearch());
-
-        List<Integer> reasons = new ArrayList<>();
-        boolean eligible = mAssistantVoiceSearchService.isDeviceEligibleForAssistant(
-                /* returnImmediately= */ false, /* outList= */ reasons);
-        Assert.assertEquals(0, reasons.size());
-        Assert.assertTrue(eligible);
-    }
-
-    @Test
-    @Feature("OmniboxAssistantVoiceSearch")
-    @Features.EnableFeatures(ChromeFeatureList.ASSISTANT_NON_PERSONALIZED_VOICE_SEARCH)
-    public void testStartVoiceRecognition_StartsAssistantVoiceSearch_PrefCanBeIgnored() {
-        mSharedPreferencesManager.writeBoolean(ASSISTANT_VOICE_SEARCH_ENABLED, false);
-        Assert.assertTrue(mAssistantVoiceSearchService.shouldRequestAssistantVoiceSearch());
-
+        Assert.assertTrue(mAssistantVoiceSearchService.canRequestAssistantVoiceSearch());
         List<Integer> reasons = new ArrayList<>();
         boolean eligible = mAssistantVoiceSearchService.isDeviceEligibleForAssistant(
                 /* returnImmediately= */ false, /* outList= */ reasons);

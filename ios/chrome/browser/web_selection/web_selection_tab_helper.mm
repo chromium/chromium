@@ -13,8 +13,22 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+constexpr base::TimeDelta kSelectionRetrievalTimeout = base::Seconds(1);
+
+void CallBothCallbacks(
+    base::OnceCallback<void(WebSelectionResponse*)> callback1,
+    base::OnceCallback<void(WebSelectionResponse*)> callback2,
+    WebSelectionResponse* response) {
+  std::move(callback1).Run(response);
+  std::move(callback2).Run(response);
+}
+
+}  // namespace
+
 WebSelectionTabHelper::WebSelectionTabHelper(web::WebState* web_state)
-    : web_state_(web_state) {
+    : web_state_(web_state), weak_ptr_factory_(this) {
   web_state_->AddObserver(this);
 }
 
@@ -22,12 +36,44 @@ WebSelectionTabHelper::~WebSelectionTabHelper() {}
 
 void WebSelectionTabHelper::GetSelectedText(
     base::OnceCallback<void(WebSelectionResponse*)> callback) {
+  DCHECK(callback);
   if (!web_state_) {
     std::move(callback).Run([WebSelectionResponse invalidResponse]);
     return;
   }
-  WebSelectionJavaScriptFeature::GetInstance()->GetSelectedText(
-      web_state_, std::move(callback));
+  if (!final_callback_) {
+    if (WebSelectionJavaScriptFeature::GetInstance()->GetSelectedText(
+            web_state_)) {
+      WebSelectionJavaScriptFeature::GetInstance()->AddObserver(this);
+      final_callback_ = std::move(callback);
+      time_out_callback_.Start(FROM_HERE, kSelectionRetrievalTimeout,
+                               base::BindOnce(&WebSelectionTabHelper::Timeout,
+                                              weak_ptr_factory_.GetWeakPtr()));
+    } else {
+      std::move(callback).Run([WebSelectionResponse invalidResponse]);
+      return;
+    }
+  } else {
+    // If there is already a callback, then the selection is already being
+    // retrieved. Just add the callback to the queue and continue the current
+    // fetching.
+    final_callback_ = BindOnce(CallBothCallbacks, std::move(final_callback_),
+                               std::move(callback));
+  }
+}
+
+void WebSelectionTabHelper::OnSelectionRetrieved(
+    web::WebState* web_state,
+    WebSelectionResponse* response) {
+  if (web_state != web_state_) {
+    // The selection comes from a different web_state. Ignore.
+    return;
+  }
+  if (final_callback_) {
+    std::move(final_callback_).Run(response);
+    time_out_callback_.Reset();
+    WebSelectionJavaScriptFeature::GetInstance()->RemoveObserver(this);
+  }
 }
 
 bool WebSelectionTabHelper::CanRetrieveSelectedText() {
@@ -36,8 +82,7 @@ bool WebSelectionTabHelper::CanRetrieveSelectedText() {
   }
   web::WebFrame* main_frame =
       web_state_->GetPageWorldWebFramesManager()->GetMainWebFrame();
-  if (!web_state_->ContentIsHTML() || !main_frame ||
-      !main_frame->CanCallJavaScriptFunction()) {
+  if (!web_state_->ContentIsHTML() || !main_frame) {
     return false;
   }
   return true;
@@ -45,9 +90,20 @@ bool WebSelectionTabHelper::CanRetrieveSelectedText() {
 
 void WebSelectionTabHelper::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
-
+  if (final_callback_) {
+    std::move(final_callback_).Run([WebSelectionResponse invalidResponse]);
+    WebSelectionJavaScriptFeature::GetInstance()->RemoveObserver(this);
+    time_out_callback_.Reset();
+  }
   web_state_->RemoveObserver(this);
   web_state_ = nil;
+}
+
+void WebSelectionTabHelper::Timeout() {
+  if (final_callback_) {
+    std::move(final_callback_).Run([WebSelectionResponse invalidResponse]);
+    WebSelectionJavaScriptFeature::GetInstance()->RemoveObserver(this);
+  }
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(WebSelectionTabHelper)

@@ -1,6 +1,12 @@
 Test that prerender navigations receives the status updates
 {
-    method : Page.prerenderStatusUpdated
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+{
+    method : Preload.prerenderStatusUpdated
     params : {
         initiatingFrameId : <string>
         prerenderingUrl : http://127.0.0.1:8000/inspector-protocol/prerender/resources/empty.html
@@ -9,7 +15,7 @@ Test that prerender navigations receives the status updates
     sessionId : <string>
 }
 {
-    method : Page.prerenderStatusUpdated
+    method : Preload.prerenderStatusUpdated
     params : {
         initiatingFrameId : <string>
         prerenderingUrl : http://127.0.0.1:8000/inspector-protocol/prerender/resources/empty.html
@@ -18,7 +24,7 @@ Test that prerender navigations receives the status updates
     sessionId : <string>
 }
 {
-    method : Page.prerenderStatusUpdated
+    method : Preload.prerenderStatusUpdated
     params : {
         initiatingFrameId : <string>
         prerenderingUrl : http://127.0.0.1:8000/inspector-protocol/prerender/resources/empty.html
@@ -27,7 +33,7 @@ Test that prerender navigations receives the status updates
     sessionId : <string>
 }
 {
-    method : Page.prerenderStatusUpdated
+    method : Preload.prerenderStatusUpdated
     params : {
         initiatingFrameId : <string>
         prerenderingUrl : http://127.0.0.1:8000/inspector-protocol/prerender/resources/empty.html

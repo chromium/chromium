@@ -6,7 +6,6 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -17,7 +16,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
+#include "third_party/blink/public/common/interest_group/ad_display_size.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 #include "url/url_constants.h"
 
 namespace content {
@@ -31,15 +32,15 @@ namespace {
 // added to a new FencedFrameURLMapping to mimic MPArch behavior, and
 // `fenced_frame_url_mapping` is ignored.
 //
-// `expected_mapped_urls` contains the URLs the first URNs are expected to map
-// to, and will be padded with "about:blank" URLs until it's
+// `expected_mapped_ad_descriptors` contains the URLs the first URNs are
+// expected to map to, and will be padded with "about:blank" URLs until it's
 // blink::kMaxAdAuctionAdComponents in length.
 void ValidatePendingAdComponentsMap(
     FencedFrameURLMapping* fenced_frame_url_mapping,
     bool add_to_new_map,
     const std::vector<std::pair<GURL, FencedFrameConfig>>&
         nested_urn_config_pairs,
-    std::vector<GURL> expected_mapped_urls) {
+    std::vector<blink::AdDescriptor> expected_mapped_ad_descriptors) {
   // Get URN array from `nested_urn_config_pairs` and validate the returned URN
   // array as much as possible prior to adding the URNs to
   // `fenced_frame_url_mapping`, to the extent that's possible. This needs to be
@@ -82,8 +83,8 @@ void ValidatePendingAdComponentsMap(
                                                          &observer);
     EXPECT_TRUE(observer.mapping_complete_observed());
 
-    if (i < expected_mapped_urls.size()) {
-      EXPECT_EQ(expected_mapped_urls[i], observer.mapped_url());
+    if (i < expected_mapped_ad_descriptors.size()) {
+      EXPECT_EQ(expected_mapped_ad_descriptors[i].url, observer.mapped_url());
     } else {
       EXPECT_EQ(GURL(url::kAboutBlankURL), observer.mapped_url());
     }
@@ -103,10 +104,10 @@ void ValidatePendingAdComponentsMap(
       // that top-level and nested component ads can't tell which one they are,
       // to prevent smuggling data based on whether an ad is loaded in a
       // top-level ad URL or a component ad URL.
-      ValidatePendingAdComponentsMap(
-          fenced_frame_url_mapping, add_to_new_map,
-          *observer.nested_urn_config_pairs(),
-          /*expected_mapped_urls=*/std::vector<GURL>());
+      ValidatePendingAdComponentsMap(fenced_frame_url_mapping, add_to_new_map,
+                                     *observer.nested_urn_config_pairs(),
+                                     /*expected_mapped_ad_descriptors=*/
+                                     {});
     }
   }
 }
@@ -127,7 +128,11 @@ GURL GenerateAndVerifyPendingMappedURN(
 scoped_refptr<FencedFrameReporter> CreateReporter() {
   return FencedFrameReporter::CreateForFledge(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(nullptr),
-      /*attribution_data_host_manager=*/nullptr);
+      /*attribution_manager=*/nullptr,
+      /*direct_seller_is_seller=*/false,
+      /*private_aggregation_manager=*/nullptr,
+      /*main_frame_origin=*/url::Origin(),
+      /*winner_origin=*/url::Origin());
 }
 
 }  // namespace
@@ -261,15 +266,15 @@ TEST(FencedFrameURLMappingTest, RegisterTwoObservers) {
   EXPECT_EQ(absl::nullopt, observer2.nested_urn_config_pairs());
 }
 
-// Test the case `ad_component_urls` is empty. In this case, it should be filled
-// with URNs that are mapped to about:blank.
+// Test the case `ad_component_descriptors` is empty. In this case, it should
+// be filled with URNs that are mapped to about:blank.
 TEST(FencedFrameURLMappingTest,
      AssignFencedFrameURLAndInterestGroupInfoNoAdComponentsUrls) {
   FencedFrameURLMapping fenced_frame_url_mapping;
   GURL top_level_url("https://foo.test");
   url::Origin interest_group_owner = url::Origin::Create(top_level_url);
   std::string interest_group_name = "bars";
-  std::vector<GURL> ad_component_urls;
+  std::vector<blink::AdDescriptor> ad_component_descriptors;
 
   auto urn_uuid = GenerateAndVerifyPendingMappedURN(&fenced_frame_url_mapping);
 
@@ -280,8 +285,9 @@ TEST(FencedFrameURLMappingTest,
         on_navigate_callback_invoked = true;
       });
   fenced_frame_url_mapping.AssignFencedFrameURLAndInterestGroupInfo(
-      urn_uuid, top_level_url, {interest_group_owner, interest_group_name},
-      on_navigate_callback, ad_component_urls);
+      urn_uuid, blink::AdDescriptor(top_level_url),
+      {interest_group_owner, interest_group_name}, on_navigate_callback,
+      ad_component_descriptors);
 
   TestFencedFrameURLMappingResultObserver observer;
   fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &observer);
@@ -302,27 +308,30 @@ TEST(FencedFrameURLMappingTest,
   ValidatePendingAdComponentsMap(&fenced_frame_url_mapping,
                                  /*add_to_new_map=*/true,
                                  *observer.nested_urn_config_pairs(),
-                                 /*expected_mapped_urls=*/{});
+                                 /*expected_mapped_ad_descriptors=*/{});
   ValidatePendingAdComponentsMap(&fenced_frame_url_mapping,
                                  /*add_to_new_map=*/false,
                                  *observer.nested_urn_config_pairs(),
-                                 /*expected_mapped_urls=*/{});
+                                 /*expected_mapped_ad_descriptors=*/{});
 }
 
-// Test the case `ad_component_urls` has a single URL.
+// Test the case `ad_component_descriptors` has a single URL.
 TEST(FencedFrameURLMappingTest,
      AssignFencedFrameURLAndInterestGroupInfoOneAdComponentUrl) {
   FencedFrameURLMapping fenced_frame_url_mapping;
   GURL top_level_url("https://foo.test");
   url::Origin interest_group_owner = url::Origin::Create(top_level_url);
   std::string interest_group_name = "bars";
-  std::vector<GURL> ad_component_urls{GURL("https://bar.test")};
+  std::vector<blink::AdDescriptor> ad_component_descriptors{
+      blink::AdDescriptor(GURL("https://bar.test"))};
 
   auto urn_uuid = GenerateAndVerifyPendingMappedURN(&fenced_frame_url_mapping);
 
   fenced_frame_url_mapping.AssignFencedFrameURLAndInterestGroupInfo(
-      urn_uuid, top_level_url, {interest_group_owner, interest_group_name},
-      /*on_navigate_callback=*/base::RepeatingClosure(), ad_component_urls);
+      urn_uuid, blink::AdDescriptor(top_level_url),
+      {interest_group_owner, interest_group_name},
+      /*on_navigate_callback=*/base::RepeatingClosure(),
+      ad_component_descriptors);
 
   TestFencedFrameURLMappingResultObserver observer;
   fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &observer);
@@ -340,32 +349,34 @@ TEST(FencedFrameURLMappingTest,
   ValidatePendingAdComponentsMap(&fenced_frame_url_mapping,
                                  /*add_to_new_map=*/true,
                                  *observer.nested_urn_config_pairs(),
-                                 ad_component_urls);
+                                 ad_component_descriptors);
   ValidatePendingAdComponentsMap(&fenced_frame_url_mapping,
                                  /*add_to_new_map=*/false,
                                  *observer.nested_urn_config_pairs(),
-                                 ad_component_urls);
+                                 ad_component_descriptors);
 }
 
-// Test the case `ad_component_urls` has the maximum number of allowed ad
-// component URLs.
+// Test the case `ad_component_descriptors` has the maximum number of allowed
+// ad component URLs.
 TEST(FencedFrameURLMappingTest,
      AssignFencedFrameURLAndInterestGroupInfoMaxAdComponentUrl) {
   FencedFrameURLMapping fenced_frame_url_mapping;
   GURL top_level_url("https://foo.test");
   url::Origin interest_group_owner = url::Origin::Create(top_level_url);
   std::string interest_group_name = "bars";
-  std::vector<GURL> ad_component_urls;
+  std::vector<blink::AdDescriptor> ad_component_descriptors;
   for (size_t i = 0; i < blink::kMaxAdAuctionAdComponents; ++i) {
-    ad_component_urls.emplace_back(
+    ad_component_descriptors.emplace_back(
         GURL(base::StringPrintf("https://%zu.test/", i)));
   }
 
   auto urn_uuid = GenerateAndVerifyPendingMappedURN(&fenced_frame_url_mapping);
 
   fenced_frame_url_mapping.AssignFencedFrameURLAndInterestGroupInfo(
-      urn_uuid, top_level_url, {interest_group_owner, interest_group_name},
-      /*on_navigate_callback=*/base::RepeatingClosure(), ad_component_urls);
+      urn_uuid, blink::AdDescriptor(top_level_url),
+      {interest_group_owner, interest_group_name},
+      /*on_navigate_callback=*/base::RepeatingClosure(),
+      ad_component_descriptors);
 
   TestFencedFrameURLMappingResultObserver observer;
   fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &observer);
@@ -383,30 +394,33 @@ TEST(FencedFrameURLMappingTest,
   ValidatePendingAdComponentsMap(&fenced_frame_url_mapping,
                                  /*add_to_new_map=*/true,
                                  *observer.nested_urn_config_pairs(),
-                                 ad_component_urls);
+                                 ad_component_descriptors);
   ValidatePendingAdComponentsMap(&fenced_frame_url_mapping,
                                  /*add_to_new_map=*/false,
                                  *observer.nested_urn_config_pairs(),
-                                 ad_component_urls);
+                                 ad_component_descriptors);
 }
 
-// Test the case `ad_component_urls` has the maximum number of allowed ad
-// component URLs, and they're all identical. The main purpose of this test is
-// to make sure they receive unique URNs, despite being identical URLs.
+// Test the case `ad_component_descriptors` has the maximum number of allowed
+// ad component URLs, and they're all identical. The main purpose of this test
+// is to make sure they receive unique URNs, despite being identical URLs.
 TEST(FencedFrameURLMappingTest,
      AssignFencedFrameURLAndInterestGroupInfoMaxIdenticalAdComponentUrl) {
   FencedFrameURLMapping fenced_frame_url_mapping;
   GURL top_level_url("https://foo.test");
   url::Origin interest_group_owner = url::Origin::Create(top_level_url);
   std::string interest_group_name = "bars";
-  std::vector<GURL> ad_component_urls(blink::kMaxAdAuctionAdComponents,
-                                      GURL("https://bar.test/"));
+  std::vector<blink::AdDescriptor> ad_component_descriptors(
+      blink::kMaxAdAuctionAdComponents,
+      blink::AdDescriptor(GURL("https://bar.test/")));
 
   auto urn_uuid = GenerateAndVerifyPendingMappedURN(&fenced_frame_url_mapping);
 
   fenced_frame_url_mapping.AssignFencedFrameURLAndInterestGroupInfo(
-      urn_uuid, top_level_url, {interest_group_owner, interest_group_name},
-      /*on_navigate_callback=*/base::RepeatingClosure(), ad_component_urls);
+      urn_uuid, blink::AdDescriptor(top_level_url),
+      {interest_group_owner, interest_group_name},
+      /*on_navigate_callback=*/base::RepeatingClosure(),
+      ad_component_descriptors);
 
   TestFencedFrameURLMappingResultObserver observer;
   fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &observer);
@@ -421,31 +435,33 @@ TEST(FencedFrameURLMappingTest,
 
   // Call with `add_to_new_map` set to false and true, to simulate ShadowDOM
   // and MPArch behavior, respectively.
-  ValidatePendingAdComponentsMap(&fenced_frame_url_mapping,
-                                 /*add_to_new_map=*/true,
-                                 *observer.nested_urn_config_pairs(),
-                                 /*expected_mapped_urls=*/ad_component_urls);
-  ValidatePendingAdComponentsMap(&fenced_frame_url_mapping,
-                                 /*add_to_new_map=*/false,
-                                 *observer.nested_urn_config_pairs(),
-                                 /*expected_mapped_urls=*/ad_component_urls);
+  ValidatePendingAdComponentsMap(
+      &fenced_frame_url_mapping,
+      /*add_to_new_map=*/true, *observer.nested_urn_config_pairs(),
+      /*expected_mapped_ad_descriptors=*/ad_component_descriptors);
+  ValidatePendingAdComponentsMap(
+      &fenced_frame_url_mapping,
+      /*add_to_new_map=*/false, *observer.nested_urn_config_pairs(),
+      /*expected_mapped_ad_descriptors=*/ad_component_descriptors);
 }
 
-// Test the case `ad_component_urls` has a single URL.
+// Test the case `ad_component_descriptors` has a single URL.
 TEST(FencedFrameURLMappingTest, SubstituteFencedFrameURLs) {
   FencedFrameURLMapping fenced_frame_url_mapping;
   GURL top_level_url(
       "https://foo.test/page?%%TT%%${oo%%}p%%${p%%${%%l}%%%%%%%%evl%%");
   url::Origin interest_group_owner = url::Origin::Create(top_level_url);
   std::string interest_group_name = "bars";
-  std::vector<GURL> ad_component_urls{
-      GURL("https://bar.test/page?${REPLACED}")};
+  std::vector<blink::AdDescriptor> ad_component_descriptors{
+      blink::AdDescriptor(GURL("https://bar.test/page?${REPLACED}"))};
 
   auto urn_uuid = GenerateAndVerifyPendingMappedURN(&fenced_frame_url_mapping);
 
   fenced_frame_url_mapping.AssignFencedFrameURLAndInterestGroupInfo(
-      urn_uuid, top_level_url, {interest_group_owner, interest_group_name},
-      /*on_navigate_callback=*/base::RepeatingClosure(), ad_component_urls);
+      urn_uuid, blink::AdDescriptor(top_level_url),
+      {interest_group_owner, interest_group_name},
+      /*on_navigate_callback=*/base::RepeatingClosure(),
+      ad_component_descriptors);
 
   fenced_frame_url_mapping.SubstituteMappedURL(
       urn_uuid,
@@ -475,16 +491,16 @@ TEST(FencedFrameURLMappingTest, SubstituteFencedFrameURLs) {
 
   // Call with `add_to_new_map` set to false and true, to simulate
   // ShadowDOM and MPArch behavior, respectively.
-  std::vector<GURL> expected_ad_component_urls{
-      GURL("https://bar.test/page?component")};
+  std::vector<blink::AdDescriptor> expected_ad_component_descriptors{
+      blink::AdDescriptor(GURL("https://bar.test/page?component"))};
   ValidatePendingAdComponentsMap(&fenced_frame_url_mapping,
                                  /*add_to_new_map=*/true,
                                  *observer.nested_urn_config_pairs(),
-                                 expected_ad_component_urls);
+                                 expected_ad_component_descriptors);
   ValidatePendingAdComponentsMap(&fenced_frame_url_mapping,
                                  /*add_to_new_map=*/false,
                                  *observer.nested_urn_config_pairs(),
-                                 expected_ad_component_urls);
+                                 expected_ad_component_descriptors);
 }
 
 // Test the correctness of the URN format. The URN is expected to be in the
@@ -532,14 +548,15 @@ TEST(FencedFrameURLMappingTest, ReporterSuccessWithInterestGroupInfo) {
   GURL top_level_url("https://bar.test");
   url::Origin interest_group_owner = url::Origin::Create(top_level_url);
   std::string interest_group_name = "bars";
-  std::vector<GURL> ad_component_urls;
+  std::vector<blink::AdDescriptor> ad_component_descriptors;
 
   auto urn_uuid = GenerateAndVerifyPendingMappedURN(&fenced_frame_url_mapping);
 
   fenced_frame_url_mapping.AssignFencedFrameURLAndInterestGroupInfo(
-      urn_uuid, top_level_url, {interest_group_owner, interest_group_name},
-      /*on_navigate_callback=*/base::RepeatingClosure(), ad_component_urls,
-      fenced_frame_reporter);
+      urn_uuid, blink::AdDescriptor(top_level_url),
+      {interest_group_owner, interest_group_name},
+      /*on_navigate_callback=*/base::RepeatingClosure(),
+      ad_component_descriptors, fenced_frame_reporter);
 
   TestFencedFrameURLMappingResultObserver observer;
   fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &observer);

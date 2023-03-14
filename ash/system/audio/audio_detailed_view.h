@@ -75,8 +75,6 @@ class ASH_EXPORT AudioDetailedView : public TrayDetailedView,
   // Creates the items other than the devices during initialization.
   void CreateItems();
 
-  void CreateTitleSettingsButton();
-
   // For QsRevamp: Creates the `live_caption_view_`.
   void CreateLiveCaptionView();
 
@@ -115,6 +113,7 @@ class ASH_EXPORT AudioDetailedView : public TrayDetailedView,
 
   // TrayDetailedView:
   void HandleViewClicked(views::View* view) override;
+  void CreateExtraTitleRowButtons() override;
 
   // SodaInstaller::Observer:
   void OnSodaInstalled(speech::LanguageCode language_code) override;

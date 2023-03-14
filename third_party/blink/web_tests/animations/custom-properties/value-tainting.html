@@ -64,7 +64,7 @@ test(() => {
   setTaintedValue(target, '--tainted', 'tainted');
   testTaintedSubstitution(target, 'var(--unknown, var(--tainted))', {
     animationName: 'none',
-    customProperty: ' tainted',
+    customProperty: 'tainted',
   });
 }, 'Animation tainted fallback values are omitted in CSS property animation-name');
 </script>

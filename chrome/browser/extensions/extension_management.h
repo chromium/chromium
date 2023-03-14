@@ -41,6 +41,7 @@ struct GlobalSettings;
 }  // namespace internal
 
 class APIPermissionSet;
+class CWSInfoServiceInterface;
 class Extension;
 class PermissionSet;
 
@@ -162,6 +163,8 @@ class ExtensionManagement : public KeyedService {
                                 const std::string& extension_id,
                                 Manifest::Type manifest_type);
   bool IsAllowedManifestVersion(const Extension* extension);
+
+  bool IsAllowedByUnpublishedAvailabilityPolicy(const Extension* extension);
 
   // Returns the list of blocked API permissions for |extension|.
   APIPermissionSet GetBlockedAPIPermissions(const Extension* extension);
@@ -341,6 +344,11 @@ class ExtensionManagement : public KeyedService {
   base::ObserverList<Observer, true>::Unchecked observer_list_;
   PrefChangeRegistrar pref_change_registrar_;
   std::vector<std::unique_ptr<ManagementPolicy::Provider>> providers_;
+
+  // Unowned pointer to the CWSInfoService keyed-service instance for this
+  // profile. The service provides information about CWS publish status for
+  // extensions.
+  raw_ptr<CWSInfoServiceInterface> cws_info_service_ = nullptr;
 };
 
 class ExtensionManagementFactory : public ProfileKeyedServiceFactory {

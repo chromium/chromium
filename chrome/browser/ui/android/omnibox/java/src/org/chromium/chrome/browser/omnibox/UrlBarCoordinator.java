@@ -264,6 +264,7 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
      * @param delay Delay the change in input mode.
      */
     private void setSoftInputMode(final int softInputMode, boolean delay) {
+        if (OmniboxFeatures.omniboxConsumesImeInsets()) return;
         mUrlBar.removeCallbacks(mKeyboardResizeModeTask);
 
         if (mWindowDelegate == null || mWindowDelegate.getWindowSoftInputMode() == softInputMode) {

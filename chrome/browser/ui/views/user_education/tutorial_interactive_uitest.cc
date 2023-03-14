@@ -97,10 +97,10 @@ IN_PROC_BROWSER_TEST_F(TutorialInteractiveUitest, SampleTutorial) {
   UNCALLED_MOCK_CALLBACK(TutorialService::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(TutorialService::AbortedCallback, aborted);
 
-  const bool started = GetTutorialService()->StartTutorial(
-      kTestTutorialId, browser()->window()->GetElementContext(),
-      completed.Get(), aborted.Get());
-  EXPECT_TRUE(started);
+  GetTutorialService()->StartTutorial(kTestTutorialId,
+                                      browser()->window()->GetElementContext(),
+                                      completed.Get(), aborted.Get());
+  EXPECT_TRUE(GetTutorialService()->IsRunningTutorial());
 
   ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
       GetElement(kTabStripElementId), kCustomEventType1);

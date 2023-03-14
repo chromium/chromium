@@ -6,13 +6,18 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/pref_names.h"
+#include "components/commerce/core/price_tracking_utils.h"
+#include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
 #include "components/prefs/pref_service.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace commerce {
@@ -47,6 +52,12 @@ const bookmarks::BookmarkNode* AddProductBookmark(
   power_bookmarks::SetNodePowerBookmarkMeta(bookmark_model, node,
                                             std::move(meta));
   return node;
+}
+
+CommerceSubscription CreateUserTrackedSubscription(uint64_t cluster_id) {
+  return CommerceSubscription(
+      SubscriptionType::kPriceTrack, IdentifierType::kProductClusterId,
+      base::NumberToString(cluster_id), ManagementType::kUserManaged);
 }
 
 void SetShoppingListEnterprisePolicyPref(PrefService* prefs, bool enabled) {

@@ -54,8 +54,7 @@ std::u16string GetSiteAccessTitle(
       title_id = IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_TITLE_REQUESTS_ACCESS;
       break;
     case HoverCardState::SiteAccess::kExtensionDoesNotWantAccess:
-      NOTREACHED();
-      break;
+      NOTREACHED_NORETURN();
   }
   return l10n_util::GetStringUTF16(title_id);
 }
@@ -81,8 +80,7 @@ std::u16string GetSiteAccessDescription(HoverCardState::SiteAccess state,
           IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_DESCRIPTION_EXTENSION_REQUESTS_ACCESS;
       break;
     case HoverCardState::SiteAccess::kExtensionDoesNotWantAccess:
-      NOTREACHED();
-      break;
+      NOTREACHED_NORETURN();
   }
   return l10n_util::GetStringFUTF16(title_id, host);
 }
@@ -99,8 +97,7 @@ std::u16string GetPolicyText(HoverCardState::AdminPolicy state) {
           IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_POLICY_LABEL_INSTALLED_TEXT;
       break;
     case HoverCardState::AdminPolicy::kNone:
-      NOTREACHED();
-      break;
+      NOTREACHED_NORETURN();
   }
   return l10n_util::GetStringUTF16(text_id);
 }

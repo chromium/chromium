@@ -42,6 +42,9 @@ void PermissionPromptBubble::ShowBubble() {
   prompt_bubble_->GetWidget()->AddObserver(this);
   parent_was_visible_when_activation_changed_ =
       prompt_bubble_->GetWidget()->GetPrimaryWindowWidget()->IsVisible();
+
+  disallowed_custom_cursors_scope_ =
+      delegate()->GetAssociatedWebContents()->CreateDisallowCustomCursorScope();
 }
 
 void PermissionPromptBubble::CleanUpPromptBubble() {
@@ -50,6 +53,7 @@ void PermissionPromptBubble::CleanUpPromptBubble() {
     widget->RemoveObserver(this);
     widget->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
     prompt_bubble_ = nullptr;
+    disallowed_custom_cursors_scope_.RunAndReset();
   }
 }
 

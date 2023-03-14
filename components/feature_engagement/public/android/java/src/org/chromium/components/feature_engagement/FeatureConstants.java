@@ -23,7 +23,7 @@ import java.lang.annotation.RetentionPolicy;
         FeatureConstants.DOWNLOAD_PAGE_FEATURE, FeatureConstants.DOWNLOAD_PAGE_SCREENSHOT_FEATURE,
         FeatureConstants.DOWNLOAD_HOME_FEATURE, FeatureConstants.DOWNLOAD_INDICATOR_FEATURE,
         FeatureConstants.CHROME_HOME_EXPAND_FEATURE,
-        FeatureConstants.CHROME_HOME_PULL_TO_REFRESH_FEATURE, FeatureConstants.CROW_FEATURE,
+        FeatureConstants.CHROME_HOME_PULL_TO_REFRESH_FEATURE,
         FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_QUIET_VARIANT,
         FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_ACTION_CHIP,
         FeatureConstants.DATA_SAVER_PREVIEW_FEATURE, FeatureConstants.DATA_SAVER_DETAIL_FEATURE,
@@ -97,7 +97,6 @@ public @interface FeatureConstants {
             "IPH_AutoDarkUserEducationMessageOptIn";
     String CONTEXTUAL_PAGE_ACTIONS_QUIET_VARIANT = "IPH_ContextualPageActions_QuietVariant";
     String CONTEXTUAL_PAGE_ACTIONS_ACTION_CHIP = "IPH_ContextualPageActions_ActionChip";
-    String CROW_FEATURE = "IPH_Crow";
     String DOWNLOAD_PAGE_FEATURE = "IPH_DownloadPage";
     String DOWNLOAD_PAGE_SCREENSHOT_FEATURE = "IPH_DownloadPageScreenshot";
     String DOWNLOAD_HOME_FEATURE = "IPH_DownloadHome";

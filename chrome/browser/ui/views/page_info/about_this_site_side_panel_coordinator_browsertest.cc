@@ -63,10 +63,8 @@ class AboutThisSiteSidePanelCoordinatorBrowserTest
 
  private:
   virtual void SetUpFeatureList() {
-    feature_list_.InitWithFeatures(
-        {page_info::kPageInfoAboutThisSiteMoreInfo,
-         page_info::kPageInfoAboutThisSiteDescriptionPlaceholder},
-        {});
+    feature_list_.InitAndEnableFeature(
+        page_info::kPageInfoAboutThisSiteMoreInfo);
   }
 
   base::test::ScopedFeatureList feature_list_;

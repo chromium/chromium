@@ -74,8 +74,14 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver {
     SyncingStatusState(const SyncingStatusState& other);
     ~SyncingStatusState();
 
-    std::map<int64_t, int64_t> group_id_to_bytes_to_transfer;
+    std::unordered_map<int64_t, int64_t> group_id_to_bytes_to_transfer;
     int64_t completed_bytes = 0;
+
+    // A given queued item that was received in one batch of events might not
+    // necessarily appear in the next batch. Because of that, we keep track of
+    // queued bytes and the total of queued items in the state.
+    std::unordered_map<int64_t, int64_t> group_id_to_queued_bytes;
+    int64_t queued_bytes = 0;
   };
 
   // DriveFsHostObserver:

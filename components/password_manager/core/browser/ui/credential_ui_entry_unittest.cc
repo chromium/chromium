@@ -186,9 +186,11 @@ TEST(CredentialUIEntryTest, CredentialUIEntryInsecureHelpers) {
 
   auto leaked_entry = CreateInsecureCredential(InsecureType::kLeaked);
   EXPECT_TRUE(leaked_entry.IsLeaked());
+  EXPECT_TRUE(IsCompromised(leaked_entry));
 
   auto phished_entry = CreateInsecureCredential(InsecureType::kPhished);
   EXPECT_TRUE(phished_entry.IsPhished());
+  EXPECT_TRUE(IsCompromised(phished_entry));
 
   auto weak_entry = CreateInsecureCredential(InsecureType::kWeak);
   EXPECT_TRUE(weak_entry.IsWeak());

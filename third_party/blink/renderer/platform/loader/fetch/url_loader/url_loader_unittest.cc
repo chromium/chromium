@@ -39,7 +39,6 @@
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_data.h"
-#include "third_party/blink/public/platform/web_request_peer.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
@@ -49,6 +48,7 @@
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/resource_request_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/resource_request_sender.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader.h"
@@ -85,7 +85,7 @@ class MockResourceRequestSender : public ResourceRequestSender {
       const Vector<String>& cors_exempt_header_list,
       base::WaitableEvent* terminate_sync_load_event,
       mojo::PendingRemote<mojom::blink::BlobRegistry> download_to_blob_registry,
-      scoped_refptr<WebRequestPeer> peer,
+      scoped_refptr<ResourceRequestClient> resource_request_client,
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper) override {
     *response = std::move(sync_load_response_);
@@ -97,17 +97,17 @@ class MockResourceRequestSender : public ResourceRequestSender {
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       uint32_t loader_options,
       const Vector<String>& cors_exempt_header_list,
-      scoped_refptr<WebRequestPeer> peer,
+      scoped_refptr<ResourceRequestClient> resource_request_client,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       WebVector<std::unique_ptr<URLLoaderThrottle>> throttles,
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
       BackForwardCacheLoaderHelper* back_forward_cache_loader_helper) override {
-    EXPECT_FALSE(peer_);
+    EXPECT_FALSE(resource_request_client_);
     if (sync_load_response_.head->encoded_body_length) {
       EXPECT_TRUE(loader_options & network::mojom::kURLLoadOptionSynchronous);
     }
-    peer_ = std::move(peer);
+    resource_request_client_ = std::move(resource_request_client);
     return 1;
   }
 
@@ -116,10 +116,12 @@ class MockResourceRequestSender : public ResourceRequestSender {
     EXPECT_FALSE(canceled_);
     canceled_ = true;
 
-    task_runner->ReleaseSoon(FROM_HERE, std::move(peer_));
+    task_runner->ReleaseSoon(FROM_HERE, std::move(resource_request_client_));
   }
 
-  WebRequestPeer* peer() { return peer_.get(); }
+  ResourceRequestClient* resource_request_client() {
+    return resource_request_client_.get();
+  }
 
   bool canceled() { return canceled_; }
 
@@ -131,7 +133,7 @@ class MockResourceRequestSender : public ResourceRequestSender {
   }
 
  private:
-  scoped_refptr<WebRequestPeer> peer_;
+  scoped_refptr<ResourceRequestClient> resource_request_client_;
   bool canceled_ = false;
   LoaderFreezeMode freeze_mode_ = LoaderFreezeMode::kNone;
   SyncLoadResponse sync_load_response_;
@@ -332,7 +334,7 @@ class URLLoaderTest : public testing::Test {
         std::make_unique<ResourceLoadInfoNotifierWrapper>(
             /*resource_load_info_notifier=*/nullptr),
         client());
-    ASSERT_TRUE(peer());
+    ASSERT_TRUE(resource_request_client());
   }
 
   void DoReceiveRedirect() {
@@ -344,9 +346,9 @@ class URLLoaderTest : public testing::Test {
     redirect_info.new_site_for_cookies =
         net::SiteForCookies::FromUrl(GURL(kTestURL));
     std::vector<std::string> removed_headers;
-    peer()->OnReceivedRedirect(redirect_info,
-                               network::mojom::URLResponseHead::New(),
-                               &removed_headers);
+    resource_request_client()->OnReceivedRedirect(
+        redirect_info, network::mojom::URLResponseHead::New(),
+        &removed_headers);
     EXPECT_TRUE(client()->did_receive_redirect());
   }
 
@@ -358,14 +360,15 @@ class URLLoaderTest : public testing::Test {
     redirect_info.new_url = GURL(kTestHTTPSURL);
     redirect_info.new_site_for_cookies =
         net::SiteForCookies::FromUrl(GURL(kTestHTTPSURL));
-    peer()->OnReceivedRedirect(redirect_info,
-                               network::mojom::URLResponseHead::New(), nullptr);
+    resource_request_client()->OnReceivedRedirect(
+        redirect_info, network::mojom::URLResponseHead::New(), nullptr);
     EXPECT_TRUE(client()->did_receive_redirect());
   }
 
   void DoReceiveResponse() {
     EXPECT_FALSE(client()->did_receive_response());
-    peer()->OnReceivedResponse(network::mojom::URLResponseHead::New());
+    resource_request_client()->OnReceivedResponse(
+        network::mojom::URLResponseHead::New());
     EXPECT_TRUE(client()->did_receive_response());
   }
 
@@ -373,7 +376,8 @@ class URLLoaderTest : public testing::Test {
     mojo::ScopedDataPipeConsumerHandle handle_to_pass;
     MojoResult rv = mojo::CreateDataPipe(nullptr, body_handle_, handle_to_pass);
     ASSERT_EQ(MOJO_RESULT_OK, rv);
-    peer()->OnStartLoadingResponseBody(std::move(handle_to_pass));
+    resource_request_client()->OnStartLoadingResponseBody(
+        std::move(handle_to_pass));
   }
 
   void DoCompleteRequest() {
@@ -385,7 +389,7 @@ class URLLoaderTest : public testing::Test {
     status.encoded_data_length = std::size(kTestData);
     status.encoded_body_length = std::size(kTestData);
     status.decoded_body_length = std::size(kTestData);
-    peer()->OnCompletedRequest(status);
+    resource_request_client()->OnCompletedRequest(status);
     EXPECT_TRUE(client()->did_finish());
     // There should be no error.
     EXPECT_FALSE(client()->error());
@@ -400,7 +404,7 @@ class URLLoaderTest : public testing::Test {
     status.encoded_data_length = std::size(kTestData);
     status.encoded_body_length = std::size(kTestData);
     status.decoded_body_length = std::size(kTestData);
-    peer()->OnCompletedRequest(status);
+    resource_request_client()->OnCompletedRequest(status);
     EXPECT_FALSE(client()->did_finish());
     ASSERT_TRUE(client()->error());
     EXPECT_EQ(net::ERR_FAILED, client()->error()->reason());
@@ -408,7 +412,9 @@ class URLLoaderTest : public testing::Test {
 
   TestURLLoaderClient* client() { return client_.get(); }
   MockResourceRequestSender* sender() { return sender_; }
-  WebRequestPeer* peer() { return sender_->peer(); }
+  ResourceRequestClient* resource_request_client() {
+    return sender_->resource_request_client();
+  }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -515,11 +521,11 @@ TEST_F(URLLoaderTest, ResponseAddressSpace) {
   KURL url("http://foo.example");
 
   network::mojom::URLResponseHead head;
-  head.response_address_space = network::mojom::IPAddressSpace::kPrivate;
+  head.response_address_space = network::mojom::IPAddressSpace::kLocal;
 
   WebURLResponse response = WebURLResponse::Create(url, head, true, -1);
 
-  EXPECT_EQ(network::mojom::IPAddressSpace::kPrivate, response.AddressSpace());
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal, response.AddressSpace());
 }
 
 TEST_F(URLLoaderTest, ClientAddressSpace) {

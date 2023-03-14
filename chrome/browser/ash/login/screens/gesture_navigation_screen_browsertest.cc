@@ -310,5 +310,24 @@ IN_PROC_BROWSER_TEST_P(GestureNavigationScreenTest, PageShownMetricsTest) {
       "OOBE.StepCompletionTime.Gesture-navigation", 1);
 }
 
+// Ensure the flow is skipped when user click on skip button.
+IN_PROC_BROWSER_TEST_P(GestureNavigationScreenTest, UserSkipScreen) {
+  PerformLogin();
+
+  ShowGestureNavigationScreen();
+
+  test::OobeJS().TapOnPath({"gesture-navigation", "gesture-intro-skip-button"});
+
+  WaitForScreenExit();
+  EXPECT_EQ(screen_result_.value(), GestureNavigationScreen::Result::SKIP);
+
+  histogram_tester_.ExpectTotalCount(
+      "OOBE.StepCompletionTimeByExitReason.Gesture-navigation.Next", 0);
+  histogram_tester_.ExpectTotalCount(
+      "OOBE.StepCompletionTimeByExitReason.Gesture-navigation.Skip", 1);
+  histogram_tester_.ExpectTotalCount(
+      "OOBE.StepCompletionTime.Gesture-navigation", 1);
+}
+
 }  // namespace
 }  // namespace ash

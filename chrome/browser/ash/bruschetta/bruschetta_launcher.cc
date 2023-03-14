@@ -23,7 +23,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
+#include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -44,14 +44,18 @@ const char kDiskName[] = "YnJ1.img";
 
 const char kOldBiosPath[] = "Downloads/bios";
 
+// We currently support three different paths here, for backwards compatibility.
+// 1) A firmware image at kOldBiosPath with flash data embedded in the firmware
+// 2) A firmware image at kBiosPath with flash data at kPflashPath
+// 3) A firmware image at kBiosPath, with flash data handled by concierge
+//
+// TODO(b/265096855): Remove support for options 1&2 once they're no longer in
+// use.
 std::unique_ptr<BruschettaLauncher::Files> OpenFdsBlocking(
     base::FilePath profile_path) {
   base::File firmware(profile_path.Append(kBiosPath),
                       base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!firmware.IsValid()) {
-    // TODO(b/265096855): In order to not break existing alpha users, keep on
-    // supporting the old BIOS path with no pflash. Remove this fallback once
-    // users are migrated.
     firmware = base::File(profile_path.Append(kOldBiosPath),
                           base::File::FLAG_OPEN | base::File::FLAG_READ);
     if (!firmware.IsValid()) {
@@ -67,15 +71,14 @@ std::unique_ptr<BruschettaLauncher::Files> OpenFdsBlocking(
 
   base::File pflash(profile_path.Append(kPflashPath),
                     base::File::FLAG_OPEN | base::File::FLAG_READ);
-  if (!pflash.IsValid()) {
-    PLOG(ERROR) << "Failed to open pflash";
-    return nullptr;
-  }
 
   BruschettaLauncher::Files files = {
       .firmware = base::ScopedFD(firmware.TakePlatformFile()),
-      .pflash = base::ScopedFD(pflash.TakePlatformFile()),
+      .pflash = absl::nullopt,
   };
+  if (pflash.IsValid()) {
+    files.pflash = base::ScopedFD(pflash.TakePlatformFile());
+  }
 
   return std::make_unique<BruschettaLauncher::Files>(std::move(files));
 }
@@ -179,9 +182,6 @@ void BruschettaLauncher::StartVm(
   request.add_fds(vm_tools::concierge::StartVmRequest::BIOS);
   fds.push_back(std::move(files->firmware));
   if (files->pflash) {
-    // TODO(b/265096855): In order to not break existing alpha users, keep on
-    // supporting the old BIOS path with no pflash. Remove this fallback once
-    // users are migrated.
     request.add_fds(vm_tools::concierge::StartVmRequest::PFLASH);
     fds.push_back(std::move(*files->pflash));
   }

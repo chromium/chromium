@@ -14,6 +14,7 @@ import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_butto
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './site_permissions_edit_permissions_dialog.html.js';
@@ -109,6 +110,11 @@ export class SitePermissionsEditPermissionsDialogElement extends
         value: () => [],
       },
 
+      showPermittedOption_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableUserPermittedSites'),
+      },
+
       /**
        * Proxying the enum to be used easily by the html template.
        */
@@ -127,6 +133,7 @@ export class SitePermissionsEditPermissionsDialogElement extends
   private extensionsIdToInfo_:
       Map<string, chrome.developerPrivate.ExtensionInfo>;
   private extensionSiteAccessData_: ExtensionSiteAccessInfo[];
+  private showPermittedOption_: boolean;
 
   // Tracks any unsaved changes to HostAccess for each extension made by
   // changing the value in the ".extension-host-access" <select> element. Any

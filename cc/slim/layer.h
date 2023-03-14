@@ -12,6 +12,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/slim/filter.h"
+#include "cc/slim/frame_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -114,6 +116,10 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
 
   // Set or get the transform to be used when compositing this layer into its
   // target. The transform is inherited by this layers children.
+  // Slim compositor implementation only supports transforms where
+  // `Is2dTransform` is true and has CHECK for it. This includes scale,
+  // translate, and shear in the x-y plane, as well as rotation about the z
+  // axis.
   void SetTransform(const gfx::Transform& transform);
   const gfx::Transform& transform() const;
 
@@ -161,7 +167,6 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   // the layer itself has no content to contribute, even though the layer was
   // given SetIsDrawable(true).
   bool draws_content() const;
-  void SetDrawsContent(bool value);
 
   // Set or get if this layer and its subtree should be part of the compositor's
   // output to the screen. When set to true, the layer's subtree does not appear
@@ -190,18 +195,31 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   virtual ~Layer();
 
   // Called by LayerTree.
-  gfx::Transform ComputeTransformToParent();
+  gfx::Transform ComputeTransformToParent() const;
+  absl::optional<gfx::Transform> ComputeTransformFromParent() const;
+  bool HasFilters();
+
+  void UpdateDrawsContent();
   virtual bool HasDrawableContent() const;
+
+  // `transform_to_target` is the transform from this layer's space to the
+  // space of target render pass this is layer is drawn to.
+  // `transform_to_root` is similar and transform to the root render pass.
+  // They are the same if this layer draws to the root render pass.
   virtual void AppendQuads(viz::CompositorRenderPass& render_pass,
-                           const gfx::Transform& transform,
-                           const gfx::Rect* clip);
+                           FrameData& data,
+                           const gfx::Transform& transform_to_root,
+                           const gfx::Transform& transform_to_target,
+                           const gfx::Rect* clip_in_target,
+                           const gfx::Rect& visible_rect);
 
   void NotifyTreeChanged();
   void NotifyPropertyChanged();
   virtual viz::SharedQuadState* CreateAndAppendSharedQuadState(
       viz::CompositorRenderPass& render_pass,
-      const gfx::Transform& transform,
-      const gfx::Rect* clip);
+      const gfx::Transform& transform_to_target,
+      const gfx::Rect* clip_in_target,
+      const gfx::Rect& visible_rect);
 
   const scoped_refptr<cc::Layer> cc_layer_;
 
@@ -218,7 +236,7 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   raw_ptr<Layer> parent_ = nullptr;
   std::vector<scoped_refptr<Layer>> children_;
 
-  raw_ptr<LayerTree> layer_tree_ = nullptr;
+  raw_ptr<LayerTree, DanglingUntriaged> layer_tree_ = nullptr;
 
   gfx::PointF position_;
   gfx::Size bounds_;

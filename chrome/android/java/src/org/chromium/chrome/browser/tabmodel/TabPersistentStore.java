@@ -472,7 +472,6 @@ public class TabPersistentStore {
 
         waitForMigrationToFinish();
 
-        Log.i(TAG, "#loadState, ignoreIncognitoFiles? " + ignoreIncognitoFiles);
         initializeRestoreVars(ignoreIncognitoFiles);
 
         try {
@@ -537,11 +536,10 @@ public class TabPersistentStore {
     public void mergeState() {
         if (mLoadInProgress || mPersistencePolicy.isMergeInProgress()
                 || !mTabsToRestore.isEmpty()) {
-            Log.i(TAG, "Tab load still in progress when merge was attempted.");
+            Log.d(TAG, "Tab load still in progress when merge was attempted.");
             return;
         }
 
-        Log.i(TAG, "Merging state");
         // Initialize variables.
         initializeRestoreVars(false);
 
@@ -1061,10 +1059,6 @@ public class TabPersistentStore {
         // We shouldn't have to worry about Tab duplication because the tab details are processed
         // only on the UI Thread.
         if (tabsBeingRestored != null) {
-            Log.i(TAG,
-                    "Appending tabs being restored to metadata lists, " + tabsBeingRestored.size()
-                            + ", startingNormalCount: " + normalInfo.ids.size()
-                            + ", startingIncognitoCount: " + incognitoInfo.ids.size());
             for (TabRestoreDetails details : tabsBeingRestored) {
                 // isIncognito was added in M61 (see https://crbug.com/485217), so it is extremely
                 // unlikely that isIncognito will be null. But if it is, assume that the tab is
@@ -1109,7 +1103,7 @@ public class TabPersistentStore {
         stream.writeInt(incognitoCount);
         stream.writeInt(incognitoInfo.index);
         stream.writeInt(standardInfo.index + incognitoCount);
-        Log.i(TAG, "Serializing tab lists; counts: " + standardCount + ", " + incognitoCount);
+        Log.d(TAG, "Serializing tab lists; counts: " + standardCount + ", " + incognitoCount);
 
         SharedPreferencesManager.getInstance().writeInt(
                 ChromePreferenceKeys.REGULAR_TAB_COUNT, standardCount);
@@ -1288,9 +1282,6 @@ public class TabPersistentStore {
 
         final int count = stream.readInt();
         final int incognitoCount = skipIncognitoCount ? -1 : stream.readInt();
-        Log.i(TAG,
-                "Tab metadata, skipIncognitoCount? " + skipIncognitoCount
-                        + " incognitoCount: " + incognitoCount + " totalCount: " + count);
         final int incognitoActiveIndex = stream.readInt();
         final int standardActiveIndex = stream.readInt();
         if (count < 0 || incognitoActiveIndex >= count || standardActiveIndex >= count) {
@@ -1514,7 +1505,7 @@ public class TabPersistentStore {
                     "Tabs.Startup.TabCount.Regular", mTabModelSelector.getModel(false).getCount());
             RecordHistogram.recordCount1MHistogram(
                     "Tabs.Startup.TabCount.Incognito", mTabModelSelector.getModel(true).getCount());
-            Log.i(TAG,
+            Log.d(TAG,
                     "Loaded tab lists; counts: " + mTabModelSelector.getModel(false).getCount()
                             + "," + mTabModelSelector.getModel(true).getCount());
         } else {
@@ -1727,11 +1718,6 @@ public class TabPersistentStore {
             SerializedCriticalPersistedTabData serializedCriticalPersistedTabData) {
         boolean isIncognito = isIncognitoTabBeingRestored(
                 tabToRestore, tabState, serializedCriticalPersistedTabData);
-        if (isIncognito) {
-            Log.i(TAG,
-                    "Finishing tab restore, isIncognito: " + isIncognito
-                            + " cancelIncognito: " + mCancelIncognitoTabLoads);
-        }
         boolean isLoadCancelled = (isIncognito && mCancelIncognitoTabLoads)
                 || (!isIncognito && mCancelNormalTabLoads);
         if (!isLoadCancelled) {
@@ -1778,18 +1764,15 @@ public class TabPersistentStore {
     private boolean isIncognitoTabBeingRestored(TabRestoreDetails tabDetails, TabState tabState,
             SerializedCriticalPersistedTabData serializedCriticalPersistedTabData) {
         if (tabState != null) {
-            Log.i(TAG, "#isIncognitoTabBeingRestored from tabState:  " + tabState.isIncognito());
             // The Tab's previous state was completely restored.
             return tabState.isIncognito();
         } else if (tabDetails.isIncognito != null) {
-            Log.i(TAG, "#isIncognitoTabBeingRestored from tabDetails:  " + tabDetails.isIncognito);
             // The TabState couldn't be restored, but we have some information about the tab.
             return tabDetails.isIncognito;
         } else if (!CriticalPersistedTabData.isEmptySerialization(
                            serializedCriticalPersistedTabData)) {
             return FilePersistedTabDataStorage.isIncognito(tabDetails.id);
         } else {
-            Log.i(TAG, "#isIncognitoTabBeingRestored defaulting to false");
             // The tab's type is undecidable.
             return false;
         }
@@ -1800,10 +1783,10 @@ public class TabPersistentStore {
         return new BackgroundOnlyAsyncTask<DataInputStream>() {
             @Override
             protected DataInputStream doInBackground() {
-                Log.i(TAG, "Starting to fetch tab list for " + stateFileName);
+                Log.d(TAG, "Starting to fetch tab list for " + stateFileName);
                 File stateFile = new File(getStateDirectory(), stateFileName);
                 if (!stateFile.exists()) {
-                    Log.i(TAG, "State file does not exist.");
+                    Log.d(TAG, "State file does not exist.");
                     return null;
                 }
                 FileInputStream stream = null;
@@ -1818,7 +1801,7 @@ public class TabPersistentStore {
                 } finally {
                     StreamUtil.closeQuietly(stream);
                 }
-                Log.i(TAG, "Finished fetching tab list.");
+                Log.d(TAG, "Finished fetching tab list.");
                 return new DataInputStream(new ByteArrayInputStream(data));
             }
         }.executeOnTaskRunner(taskRunner);

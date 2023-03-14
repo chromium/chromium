@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_transition_animation.h"
 
+#import "ios/chrome/browser/shared/ui/util/property_animator_group.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_to_tab_transition_view.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_transition_layout.h"
-#import "ios/chrome/browser/ui/util/property_animator_group.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

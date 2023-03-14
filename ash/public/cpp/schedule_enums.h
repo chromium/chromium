@@ -25,11 +25,17 @@ enum class ScheduleType {
   kMaxValue = kCustom,
 };
 
-// Includes other notable times of day for `ScheduleType::kSunsetToSunrise`
-// besides just sunset and sunrise that callers can optionally use. All
-// checkpoints correspond to a single time of day. These values are not written
-// to logs or persisted anywhere.
+// Captures all possible states that a `ScheduledFeature` can be in throughout
+// the course of one day. These values are not written to logs or persisted
+// anywhere.
 //
+// `kNone`: `kEnabled` or `kDisabled` indefinitely until the feature's "enabled"
+//          pref is toggled.
+//
+// `kCustom`: `kEnabled` at the schedule's start time and automatically toggled
+//            to `kDisabled` at the schedule's end time.
+//
+// `kSunsetToSunrise`:
 // These checkpoints vary based on geolocation and how much daylight there is,
 // but it was roughly meant to mirror the progression of a traditional day:
 // Sunrise - 6 AM
@@ -44,7 +50,11 @@ enum class ScheduleType {
 // * LateAfternoon: Sunset - (D / 6)
 //   * In the traditional day above, D == 12 hours and 4 PM to 6 PM == 2 hours
 //     == D / 6.
-enum class SunsetToSunriseCheckpoint {
+enum class ScheduleCheckpoint {
+  // Applies to `kNone` and `kCustom`:
+  kEnabled,
+  kDisabled,
+  // Applies to `kSunsetToSunrise`:
   kSunset,
   kSunrise,
   kMorning,

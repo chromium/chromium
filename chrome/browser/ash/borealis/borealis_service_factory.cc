@@ -22,7 +22,14 @@ BorealisServiceFactory* BorealisServiceFactory::GetInstance() {
 
 // This service does not depend on any other services.
 BorealisServiceFactory::BorealisServiceFactory()
-    : ProfileKeyedServiceFactory("BorealisService") {}
+    : ProfileKeyedServiceFactory(
+          "BorealisService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {}
 
 BorealisServiceFactory::~BorealisServiceFactory() = default;
 

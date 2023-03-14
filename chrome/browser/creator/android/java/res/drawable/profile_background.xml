@@ -13,6 +13,6 @@
   <padding
       android:top="10dp"
       android:bottom="10dp"
-      android:left="20dp"
-      android:right="20dp"/>
+      android:left="16dp"
+      android:right="16dp"/>
 </org.chromium.components.browser_ui.widget.SurfaceColorDrawable>

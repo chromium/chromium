@@ -21,6 +21,10 @@ constexpr const char* kMicrosoftOfficeWebAppExperimentScopeExtensions[] = {
 
     // Links to opening Office editors go via this URL shortener origin.
     "https://1drv.ms/",
+
+    // The old branding of the Microsoft 365 web app. Many links within
+    // Microsoft 365 still link to the old www.office.com origin.
+    "https://www.office.com/",
 };
 
 struct FallbackPageThemeColor {
@@ -46,7 +50,7 @@ constexpr FallbackPageThemeColor
 bool g_always_enabled_for_testing = false;
 
 bool IsExperimentEnabled(const AppId& app_id) {
-  return g_always_enabled_for_testing || app_id == kMicrosoftOfficeAppId;
+  return g_always_enabled_for_testing || app_id == kMicrosoft365AppId;
 }
 
 absl::optional<std::vector<const char* const>>&

@@ -77,6 +77,10 @@ class MockPersonalizationAppKeyboardBacklightProvider
               (mojom::BacklightColor backlight_color),
               (override));
   MOCK_METHOD(void,
+              SetBacklightZoneColor,
+              (int zone, mojom::BacklightColor backlight_color),
+              (override));
+  MOCK_METHOD(void,
               ShouldShowNudge,
               (ShouldShowNudgeCallback callback),
               (override));

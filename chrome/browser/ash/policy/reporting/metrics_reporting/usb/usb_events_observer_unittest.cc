@@ -46,12 +46,6 @@ class UsbEventsObserverTest : public ::testing::Test {
 
   void TearDown() override { ::ash::cros_healthd::FakeCrosHealthd::Shutdown(); }
 
-  UsbEventInfoPtr test_usb_event_info = UsbEventInfo::New(kTestVendor,
-                                                          kTestName,
-                                                          kTestVid,
-                                                          kTestPid,
-                                                          kTestCategories);
-
  private:
   base::test::TaskEnvironment task_environment_;
   ::ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
@@ -68,7 +62,10 @@ TEST_F(UsbEventsObserverTest, UsbOnRemove) {
 
   usb_observer.SetOnEventObservedCallback(std::move(cb));
   usb_observer.SetReportingEnabled(true);
-  usb_observer.OnRemove(std::move(test_usb_event_info));
+  usb_observer.OnEvent(
+      ::ash::cros_healthd::mojom::EventInfo::NewUsbEventInfo(UsbEventInfo::New(
+          kTestVendor, kTestName, kTestVid, kTestPid, kTestCategories,
+          ::ash::cros_healthd::mojom::UsbEventInfo::State::kRemove)));
 
   UsbTelemetry usb_telemetry =
       metric_data.telemetry_data().peripherals_telemetry().usb_telemetry(
@@ -107,7 +104,10 @@ TEST_F(UsbEventsObserverTest, UsbOnAdd) {
 
   usb_observer.SetOnEventObservedCallback(std::move(cb));
   usb_observer.SetReportingEnabled(true);
-  usb_observer.OnAdd(std::move(test_usb_event_info));
+  usb_observer.OnEvent(
+      ::ash::cros_healthd::mojom::EventInfo::NewUsbEventInfo(UsbEventInfo::New(
+          kTestVendor, kTestName, kTestVid, kTestPid, kTestCategories,
+          ::ash::cros_healthd::mojom::UsbEventInfo::State::kAdd)));
 
   UsbTelemetry usb_telemetry =
       metric_data.telemetry_data().peripherals_telemetry().usb_telemetry().at(
@@ -144,7 +144,11 @@ TEST_F(UsbEventsObserverTest, UsbOnAddUsingFakeCrosHealthd) {
   usb_observer.SetOnEventObservedCallback(result_metric_data.repeating_cb());
   usb_observer.SetReportingEnabled(true);
 
-  ::ash::cros_healthd::FakeCrosHealthd::Get()->EmitUsbAddEventForTesting();
+  ::ash::cros_healthd::mojom::UsbEventInfo info;
+  info.state = ::ash::cros_healthd::mojom::UsbEventInfo::State::kAdd;
+  ::ash::cros_healthd::FakeCrosHealthd::Get()->EmitEventForCategory(
+      ::ash::cros_healthd::mojom::EventCategoryEnum::kUsb,
+      ::ash::cros_healthd::mojom::EventInfo::NewUsbEventInfo(info.Clone()));
 
   const auto metric_data = result_metric_data.result();
 

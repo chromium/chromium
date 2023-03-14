@@ -224,9 +224,9 @@ bool NetworkConfigurationPolicyHandler::CheckPolicySettings(
   if (!value)
     return true;
 
-  base::Value root_dict =
+  absl::optional<base::Value::Dict> root_dict =
       chromeos::onc::ReadDictionaryFromJson(value->GetString());
-  if (!root_dict.is_dict()) {
+  if (!root_dict.has_value()) {
     errors->AddError(policy_name(), IDS_POLICY_NETWORK_CONFIG_PARSE_FAILED);
     return false;
   }
@@ -234,17 +234,17 @@ bool NetworkConfigurationPolicyHandler::CheckPolicySettings(
   // Validate the ONC dictionary. We are liberal and ignore unknown field
   // names and ignore invalid field names in kRecommended arrays.
   chromeos::onc::Validator validator(
-      false,  // Ignore unknown fields.
-      false,  // Ignore invalid recommended field names.
-      true,   // Fail on missing fields.
-      true,   // Validate for managed ONC.
-      true);  // Log warnings.
+      /*error_on_unknown_field=*/false,
+      /*error_on_wrong_recommended=*/false,
+      /*error_on_missing_field=*/true,
+      /*managed_onc=*/true,
+      /*log_warnings=*/true);
   validator.SetOncSource(onc_source_);
 
   // ONC policies are always unencrypted.
   chromeos::onc::Validator::Result validation_result;
   validator.ValidateAndRepairObject(
-      &chromeos::onc::kToplevelConfigurationSignature, root_dict,
+      &chromeos::onc::kToplevelConfigurationSignature, root_dict.value(),
       &validation_result);
 
   // Pass error/warning message and non-localized debug_info to PolicyErrorMap.
@@ -319,16 +319,17 @@ NetworkConfigurationPolicyHandler::SanitizeNetworkConfig(
   if (!config)
     return absl::nullopt;
 
-  base::Value toplevel_dict =
+  absl::optional<base::Value::Dict> config_dict =
       chromeos::onc::ReadDictionaryFromJson(config->GetString());
-  if (!toplevel_dict.is_dict())
+  if (!config_dict.has_value()) {
     return absl::nullopt;
+  }
 
   // Placeholder to insert in place of the filtered setting.
   const char kPlaceholder[] = "********";
 
-  toplevel_dict = chromeos::onc::MaskCredentialsInOncObject(
-      chromeos::onc::kToplevelConfigurationSignature, toplevel_dict,
+  base::Value::Dict toplevel_dict = chromeos::onc::MaskCredentialsInOncObject(
+      chromeos::onc::kToplevelConfigurationSignature, config_dict.value(),
       kPlaceholder);
 
   std::string json_string;

@@ -235,7 +235,7 @@ DesktopDisplayInfo WaylandDisplay::GetCurrentDisplayInfo() const {
     DCHECK(display_info.width >= 0);
     DCHECK(display_info.height >= 0);
     result.AddDisplay({
-        .id = base::Hash(display_info.name),
+        .id = static_cast<webrtc::ScreenId>(base::Hash(display_info.name)),
         .x = display_info.x,
         .y = display_info.y,
         .width = static_cast<uint32_t>(display_info.width),

@@ -5,11 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_AUTOFILL_AUTOFILL_PROFILE_EDIT_TABLE_VIEW_CONTROLLER_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_AUTOFILL_AUTOFILL_PROFILE_EDIT_TABLE_VIEW_CONTROLLER_DELEGATE_H_
 
-@class AutofillProfileEditTableViewController;
+#import "components/autofill/core/browser/field_types.h"
+#import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
 
-namespace autofill {
-class AutofillProfile;
-}
+@class AutofillProfileEditTableViewController;
 
 // Delegate manages viewing/editing the profile data.
 @protocol AutofillProfileEditTableViewControllerDelegate
@@ -18,8 +17,17 @@ class AutofillProfile;
 // view.
 - (void)willSelectCountryWithCurrentlySelectedCountry:(NSString*)country;
 
-// Notifies the class that conforms this delegate to save the `profile`.
-- (void)didEditAutofillProfile:(autofill::AutofillProfile*)profile;
+// Notifies the class that conforms this delegate to update the profile.
+- (void)didEditAutofillProfile;
+
+// Returns true if the field value is empty.
+- (BOOL)fieldValueEmptyOnProfileLoadForType:
+    (autofill::ServerFieldType)serverFieldType;
+
+// Notifies the class that conforms this delegate to update the profile
+// `serverFieldType` with `value`.
+- (void)updateProfileMetadataWithValue:(NSString*)value
+                     forAutofillUIType:(AutofillUIType)autofillUIType;
 
 // Notifies the class that conforms this delegate that the view has moved out of
 // the view hierarchy.

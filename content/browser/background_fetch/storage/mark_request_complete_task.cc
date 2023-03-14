@@ -316,14 +316,9 @@ void MarkRequestCompleteTask::FinishWithError(
     blink::mojom::BackgroundFetchError error) {
   if (HasStorageError())
     error = blink::mojom::BackgroundFetchError::STORAGE_ERROR;
-  ReportStorageError();
 
   std::move(callback_).Run(error);
   Finished();
-}
-
-std::string MarkRequestCompleteTask::HistogramName() const {
-  return "MarkRequestCompleteTask";
 }
 
 }  // namespace background_fetch

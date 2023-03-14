@@ -4,6 +4,7 @@
 /build.gradle
 /local.properties
 /VERSION.txt
+/cipd.yaml
 
 # JAR and AAR files will be fetched via CIPD.
 *.jar

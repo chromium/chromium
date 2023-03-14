@@ -7,10 +7,8 @@ module attribution_internals.mojom;
 import "components/attribution_reporting/registration.mojom";
 import "components/attribution_reporting/source_registration_error.mojom";
 import "components/attribution_reporting/source_type.mojom";
-import "content/browser/attribution_reporting/attribution_reporting.mojom";
 import "content/browser/attribution_reporting/store_source_result.mojom";
 import "services/network/public/mojom/attribution.mojom";
-import "services/network/public/mojom/schemeful_site.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -44,14 +42,10 @@ struct AggregatableHistogramContribution {
   uint32 value;
 };
 
-struct AttestationToken {
-  string value;
-};
-
 // Contains aggregatable attribution data to be displayed.
 struct WebUIReportAggregatableAttributionData {
   array<AggregatableHistogramContribution> contributions;
-  AttestationToken? attestation_token;
+  string? attestation_token;
   string aggregation_coordinator;
 };
 
@@ -104,7 +98,7 @@ struct WebUIDebugReport {
 struct WebUISource {
   uint64 source_event_id;
   url.mojom.Origin source_origin;
-  array<network.mojom.SchemefulSite> destinations;
+  attribution_reporting.mojom.DestinationSet destinations;
   url.mojom.Origin reporting_origin;
   double source_time;
   double expiry_time;
@@ -193,7 +187,7 @@ interface Observer {
 
   // Called when the reports in storage changed, indicating that the observer
   // should call `Handler::GetReports()`.
-  OnReportsChanged(attribution_reporting.mojom.ReportType report_type);
+  OnReportsChanged();
 
   // Called when a source is registered, regardless of success or failure.
   OnSourceHandled(WebUISourceRegistration source);
@@ -224,9 +218,9 @@ interface Handler {
   // due to reaching policy limits.
   GetActiveSources() => (array<WebUISource> sources);
 
-  // Returns all reports of the specified type contained in storage, including
-  // those that are actively being sent.
-  GetReports(attribution_reporting.mojom.ReportType report_type) => (array<WebUIReport> reports);
+  // Returns all reports contained in storage, including those that are actively
+  // being sent.
+  GetReports() => (array<WebUIReport> reports);
 
   // Sends the given reports, ignoring delay, returning when the operation has
   // been completed and the reports have been cleared from storage.

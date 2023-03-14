@@ -24,39 +24,40 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-namespace onc {
+namespace chromeos::onc {
 
 TEST(ONCDecrypterTest, BrokenEncryptionIterations) {
-  base::Value encrypted_onc =
-      test_utils::ReadTestDictionaryValue("broken-encrypted-iterations.onc");
+  base::Value::Dict encrypted_onc =
+      test_utils::ReadTestDictionary("broken-encrypted-iterations.onc");
 
-  base::Value decrypted_onc = Decrypt("test0000", encrypted_onc);
+  absl::optional<base::Value::Dict> decrypted_onc =
+      Decrypt("test0000", encrypted_onc);
 
-  EXPECT_TRUE(decrypted_onc.is_none());
+  EXPECT_FALSE(decrypted_onc.has_value());
 }
 
 TEST(ONCDecrypterTest, BrokenEncryptionZeroIterations) {
-  base::Value encrypted_onc = test_utils::ReadTestDictionaryValue(
-      "broken-encrypted-zero-iterations.onc");
+  base::Value::Dict encrypted_onc =
+      test_utils::ReadTestDictionary("broken-encrypted-zero-iterations.onc");
 
-  base::Value decrypted_onc = Decrypt("test0000", encrypted_onc);
+  absl::optional<base::Value::Dict> decrypted_onc =
+      Decrypt("test0000", encrypted_onc);
 
-  EXPECT_TRUE(decrypted_onc.is_none());
+  EXPECT_FALSE(decrypted_onc.has_value());
 }
 
 TEST(ONCDecrypterTest, LoadEncryptedOnc) {
-  base::Value encrypted_onc =
-      test_utils::ReadTestDictionaryValue("encrypted.onc");
-  base::Value expected_decrypted_onc =
-      test_utils::ReadTestDictionaryValue("decrypted.onc");
+  base::Value::Dict encrypted_onc =
+      test_utils::ReadTestDictionary("encrypted.onc");
+  base::Value::Dict expected_decrypted_onc =
+      test_utils::ReadTestDictionary("decrypted.onc");
 
   std::string error;
-  base::Value actual_decrypted_onc = Decrypt("test0000", encrypted_onc);
+  absl::optional<base::Value::Dict> actual_decrypted_onc =
+      Decrypt("test0000", encrypted_onc);
 
-  base::Value emptyDict;
-  EXPECT_TRUE(
-      test_utils::Equals(&expected_decrypted_onc, &actual_decrypted_onc));
+  EXPECT_TRUE(test_utils::Equals(&expected_decrypted_onc,
+                                 &actual_decrypted_onc.value()));
 }
 
 namespace {
@@ -64,7 +65,7 @@ namespace {
 const char* kLoginId = "hans";
 const char* kLoginEmail = "hans@my.domain.com";
 
-base::flat_map<std::string, std::string> GetTestStringSubstutions() {
+base::flat_map<std::string, std::string> GetTestStringSubstitutions() {
   base::flat_map<std::string, std::string> substitutions;
   substitutions[::onc::substitutes::kLoginID] = kLoginId;
   substitutions[::onc::substitutes::kLoginEmail] = kLoginEmail;
@@ -74,36 +75,37 @@ base::flat_map<std::string, std::string> GetTestStringSubstutions() {
 }  // namespace
 
 TEST(ONCStringExpansion, OpenVPN) {
-  base::Value vpn_onc =
-      test_utils::ReadTestDictionaryValue("valid_openvpn.onc");
+  base::Value::Dict vpn_onc =
+      test_utils::ReadTestDictionary("valid_openvpn.onc");
 
-  VariableExpander variable_expander(GetTestStringSubstutions());
+  VariableExpander variable_expander(GetTestStringSubstitutions());
   ExpandStringsInOncObject(kNetworkConfigurationSignature, variable_expander,
                            &vpn_onc);
 
-  std::string* actual_expanded = vpn_onc.FindStringPath("VPN.OpenVPN.Username");
+  std::string* actual_expanded =
+      vpn_onc.FindStringByDottedPath("VPN.OpenVPN.Username");
   ASSERT_TRUE(actual_expanded);
   EXPECT_EQ(*actual_expanded, std::string("abc ") + kLoginEmail + " def");
 }
 
 TEST(ONCStringExpansion, WiFi_EAP) {
-  base::Value wifi_onc =
-      test_utils::ReadTestDictionaryValue("wifi_clientcert_with_cert_pems.onc");
+  base::Value::Dict wifi_onc =
+      test_utils::ReadTestDictionary("wifi_clientcert_with_cert_pems.onc");
 
-  VariableExpander variable_expander(GetTestStringSubstutions());
+  VariableExpander variable_expander(GetTestStringSubstitutions());
   ExpandStringsInOncObject(kNetworkConfigurationSignature, variable_expander,
                            &wifi_onc);
 
-  std::string* actual_expanded = wifi_onc.FindStringPath("WiFi.EAP.Identity");
+  std::string* actual_expanded =
+      wifi_onc.FindStringByDottedPath("WiFi.EAP.Identity");
   ASSERT_TRUE(actual_expanded);
   EXPECT_EQ(*actual_expanded,
             std::string("abc ") + kLoginId + "@my.domain.com");
 }
 
 TEST(ONCResolveServerCertRefs, ResolveServerCertRefs) {
-  base::Value::Dict test_cases = test_utils::ReadTestDictionaryValue(
-                                     "network_configs_with_resolved_certs.json")
-                                     .TakeDict();
+  base::Value::Dict test_cases = test_utils::ReadTestDictionary(
+      "network_configs_with_resolved_certs.json");
 
   CertPEMsByGUIDMap certs;
   certs["cert_google"] = "pem_google";
@@ -135,8 +137,7 @@ TEST(ONCResolveServerCertRefs, ResolveServerCertRefs) {
 TEST(ONCUtils, SetHiddenSSIDField_WithNoValueSet) {
   // WiFi configuration that doesn't have HiddenSSID field set.
   base::Value::Dict wifi_onc =
-      test_utils::ReadTestDictionaryValue("wifi_clientcert_with_cert_pems.onc")
-          .TakeDict();
+      test_utils::ReadTestDictionary("wifi_clientcert_with_cert_pems.onc");
   base::Value::Dict* wifi_fields = wifi_onc.FindDict("WiFi");
   ASSERT_TRUE(wifi_fields);
 
@@ -149,9 +150,8 @@ TEST(ONCUtils, SetHiddenSSIDField_WithNoValueSet) {
 
 TEST(ONCUtils, SetHiddenSSIDField_WithValueSetFalse) {
   // WiFi configuration that have HiddenSSID field set to false.
-  base::Value::Dict wifi_onc = test_utils::ReadTestDictionaryValue(
-                                   "translation_of_shill_wifi_with_state.onc")
-                                   .TakeDict();
+  base::Value::Dict wifi_onc = test_utils::ReadTestDictionary(
+      "translation_of_shill_wifi_with_state.onc");
   base::Value::Dict* wifi_fields = wifi_onc.FindDict("WiFi");
   ASSERT_TRUE(wifi_fields);
 
@@ -163,8 +163,7 @@ TEST(ONCUtils, SetHiddenSSIDField_WithValueSetFalse) {
 TEST(ONCUtils, SetHiddenSSIDField_WithValueSetTrue) {
   // WiFi configuration that have HiddenSSID field set to true.
   base::Value::Dict wifi_onc =
-      std::move(test_utils::ReadTestDictionaryValue("wifi_with_hidden_ssid.onc")
-                    .GetDict());
+      test_utils::ReadTestDictionary("wifi_with_hidden_ssid.onc");
   base::Value::Dict* wifi_fields = wifi_onc.FindDict("WiFi");
   ASSERT_TRUE(wifi_fields);
 
@@ -234,10 +233,10 @@ TEST_P(ONCUtilsMaskCredentialsTest, Test) {
   ASSERT_TRUE(expected_after_masking_value)
       << "Could not parse " << GetParam().expected_after_masking;
 
-  base::Value masked = MaskCredentialsInOncObject(*(GetParam().onc_signature),
-                                                  *onc_value, "******");
+  base::Value::Dict masked = MaskCredentialsInOncObject(
+      *(GetParam().onc_signature), onc_value->GetDict(), "******");
 
-  EXPECT_EQ(masked, *expected_after_masking_value);
+  EXPECT_EQ(masked, expected_after_masking_value->GetDict());
 }
 
 constexpr MaskCredentialsTestCase kMaskCredentialsTestCases[] = {
@@ -345,5 +344,4 @@ INSTANTIATE_TEST_SUITE_P(ONCUtilsMaskCredentialsTest,
                          ONCUtilsMaskCredentialsTest,
                          ::testing::ValuesIn(kMaskCredentialsTestCases));
 
-}  // namespace onc
-}  // namespace chromeos
+}  // namespace chromeos::onc

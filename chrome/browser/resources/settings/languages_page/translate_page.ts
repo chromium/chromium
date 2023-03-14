@@ -153,6 +153,8 @@ export class SettingsTranslatePageElement extends
     const languagesToAdd = e.detail;
     languagesToAdd.forEach(languageCode => {
       this.languageHelper.setLanguageAlwaysTranslateState(languageCode, true);
+      this.languageSettingsMetricsProxy_.recordSettingsMetric(
+          LanguageSettingsActionType.ADD_TO_ALWAYS_TRANSLATE);
     });
   }
 
@@ -163,6 +165,8 @@ export class SettingsTranslatePageElement extends
       e: DomRepeatEvent<chrome.languageSettingsPrivate.Language>) {
     const languageCode = e.model.item.code;
     this.languageHelper.setLanguageAlwaysTranslateState(languageCode, false);
+    this.languageSettingsMetricsProxy_.recordSettingsMetric(
+        LanguageSettingsActionType.REMOVE_FROM_ALWAYS_TRANSLATE);
   }
 
   /**
@@ -190,6 +194,8 @@ export class SettingsTranslatePageElement extends
     const languagesToAdd = e.detail;
     languagesToAdd.forEach(languageCode => {
       this.languageHelper.disableTranslateLanguage(languageCode);
+      this.languageSettingsMetricsProxy_.recordSettingsMetric(
+          LanguageSettingsActionType.ADD_TO_NEVER_TRANSLATE);
     });
   }
 
@@ -200,6 +206,8 @@ export class SettingsTranslatePageElement extends
       e: DomRepeatEvent<chrome.languageSettingsPrivate.Language>) {
     const languageCode = e.model.item.code;
     this.languageHelper.enableTranslateLanguage(languageCode);
+    this.languageSettingsMetricsProxy_.recordSettingsMetric(
+        LanguageSettingsActionType.REMOVE_FROM_NEVER_TRANSLATE);
   }
 
   private onTranslateToggleChange_(e: Event) {

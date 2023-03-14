@@ -5,7 +5,7 @@
 #ifndef ASH_LOGIN_UI_BOTTOM_STATUS_INDICATOR_H_
 #define ASH_LOGIN_UI_BOTTOM_STATUS_INDICATOR_H_
 
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/views/controls/button/label_button.h"
@@ -28,8 +28,7 @@ class BottomStatusIndicator
   BottomStatusIndicator& operator=(const BottomStatusIndicator&) = delete;
   ~BottomStatusIndicator() override;
 
-  void SetIcon(const gfx::VectorIcon& vector_icon,
-               AshColorProvider::ContentLayerType type);
+  void SetIcon(const gfx::VectorIcon& vector_icon, ui::ColorId color_id);
 
   void set_role_for_accessibility(ax::mojom::Role role) { role_ = role; }
 

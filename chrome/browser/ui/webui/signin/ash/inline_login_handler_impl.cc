@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/system/session/guest_session_confirmation_dialog.h"
 #include "base/base64.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -473,7 +475,13 @@ void InlineLoginHandlerImpl::HandleSkipWelcomePage(
 
 void InlineLoginHandlerImpl::OpenGuestWindowAndCloseDialog(
     const base::Value::List& args) {
-  crosapi::BrowserManager::Get()->NewGuestWindow();
+  // Open the browser guest mode if available, else the device guest mode.
+  if (profiles::IsGuestModeEnabled()) {
+    crosapi::BrowserManager::Get()->NewGuestWindow();
+  } else {
+    GuestSessionConfirmationDialog::Show();
+  }
+
   close_dialog_closure_.Run();
 }
 

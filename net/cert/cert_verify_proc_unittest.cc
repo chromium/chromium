@@ -76,7 +76,6 @@
 #include "net/cert/cert_verify_proc_ios.h"
 #elif BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
-#include "net/cert/cert_verify_proc_mac.h"
 #include "net/cert/internal/trust_store_mac.h"
 #elif BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
@@ -182,7 +181,6 @@ int MockCertVerifyProc::VerifyInternal(
 enum CertVerifyProcType {
   CERT_VERIFY_PROC_ANDROID,
   CERT_VERIFY_PROC_IOS,
-  CERT_VERIFY_PROC_MAC,
   CERT_VERIFY_PROC_WIN,
   CERT_VERIFY_PROC_BUILTIN,
   CERT_VERIFY_PROC_BUILTIN_CHROME_ROOTS,
@@ -198,8 +196,6 @@ std::string VerifyProcTypeToName(
       return "CertVerifyProcAndroid";
     case CERT_VERIFY_PROC_IOS:
       return "CertVerifyProcIOS";
-    case CERT_VERIFY_PROC_MAC:
-      return "CertVerifyProcMac";
     case CERT_VERIFY_PROC_WIN:
       return "CertVerifyProcWin";
     case CERT_VERIFY_PROC_BUILTIN:
@@ -222,9 +218,6 @@ scoped_refptr<CertVerifyProc> CreateCertVerifyProc(
 #elif BUILDFLAG(IS_IOS)
     case CERT_VERIFY_PROC_IOS:
       return base::MakeRefCounted<CertVerifyProcIOS>();
-#elif BUILDFLAG(IS_MAC)
-    case CERT_VERIFY_PROC_MAC:
-      return base::MakeRefCounted<CertVerifyProcMac>();
 #elif BUILDFLAG(IS_WIN)
     case CERT_VERIFY_PROC_WIN:
       return base::MakeRefCounted<CertVerifyProcWin>();
@@ -252,37 +245,27 @@ scoped_refptr<CertVerifyProc> CreateCertVerifyProc(
 // TODO(crbug.com/649017): Enable CERT_VERIFY_PROC_BUILTIN everywhere. Right
 // now this is gated on having CertVerifyProcBuiltin understand the roots added
 // via TestRootCerts.
-const std::vector<CertVerifyProcType> kAllCertVerifiers = {
+constexpr CertVerifyProcType kAllCertVerifiers[] = {
 #if BUILDFLAG(IS_ANDROID)
     CERT_VERIFY_PROC_ANDROID,
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-    CERT_VERIFY_PROC_BUILTIN_CHROME_ROOTS
-#endif
 #elif BUILDFLAG(IS_IOS)
-    CERT_VERIFY_PROC_IOS
-#elif BUILDFLAG(IS_MAC)
-    CERT_VERIFY_PROC_MAC,
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-    CERT_VERIFY_PROC_BUILTIN_CHROME_ROOTS
-#endif
+    CERT_VERIFY_PROC_IOS,
 #elif BUILDFLAG(IS_WIN)
     CERT_VERIFY_PROC_WIN,
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-    CERT_VERIFY_PROC_BUILTIN_CHROME_ROOTS
-#endif
 #elif BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-    CERT_VERIFY_PROC_BUILTIN
-#else
-#error Unsupported platform
+    CERT_VERIFY_PROC_BUILTIN,
 #endif
-};  // namespace
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+    CERT_VERIFY_PROC_BUILTIN_CHROME_ROOTS,
+#endif
+};
+static_assert(std::size(kAllCertVerifiers) != 0, "Unsupported platform");
 
 // Returns true if a test root added through ScopedTestRoot can verify
 // successfully as a target certificate with chain of length 1 on the given
 // CertVerifyProcType.
 bool ScopedTestRootCanTrustTargetCert(CertVerifyProcType verify_proc_type) {
-  return verify_proc_type == CERT_VERIFY_PROC_MAC ||
-         verify_proc_type == CERT_VERIFY_PROC_IOS ||
+  return verify_proc_type == CERT_VERIFY_PROC_IOS ||
          verify_proc_type == CERT_VERIFY_PROC_ANDROID;
 }
 
@@ -291,8 +274,7 @@ bool ScopedTestRootCanTrustTargetCert(CertVerifyProcType verify_proc_type) {
 // CertVerifyProcType.
 bool ScopedTestRootCanTrustIntermediateCert(
     CertVerifyProcType verify_proc_type) {
-  return verify_proc_type == CERT_VERIFY_PROC_MAC ||
-         verify_proc_type == CERT_VERIFY_PROC_IOS ||
+  return verify_proc_type == CERT_VERIFY_PROC_IOS ||
          verify_proc_type == CERT_VERIFY_PROC_BUILTIN ||
          verify_proc_type == CERT_VERIFY_PROC_BUILTIN_CHROME_ROOTS ||
          verify_proc_type == CERT_VERIFY_PROC_ANDROID;
@@ -373,13 +355,6 @@ class CertVerifyProcInternalTest
         base::ios::IsRunningOnIOS13OrLater()) {
       return size < 2048;
     }
-#elif BUILDFLAG(IS_MAC)
-    // Beginning with macOS 10.15, the minimum key size for RSA/DSA algorithms
-    // is 2048 bits. See https://support.apple.com/en-us/HT210176
-    if (verify_proc_type() == CERT_VERIFY_PROC_MAC &&
-        base::mac::IsAtLeastOS10_15()) {
-      return size < 2048;
-    }
 #endif
 
     return size < 1024;
@@ -393,11 +368,6 @@ class CertVerifyProcInternalTest
       // On iOS using SecTrustEvaluateWithError it is not possible to
       // distinguish between weak and invalid key sizes.
       return IsWeakRsaDsaKeySize(size);
-    }
-#elif BUILDFLAG(IS_MAC)
-    // Starting with Mac OS 10.12, certs with keys < 1024 are invalid.
-    if (verify_proc_type() == CERT_VERIFY_PROC_MAC) {
-      return size < 1024;
     }
 #endif
 
@@ -449,7 +419,6 @@ class CertVerifyProcInternalTest
 
   bool SupportsCRLSet() const {
     return verify_proc_type() == CERT_VERIFY_PROC_WIN ||
-           verify_proc_type() == CERT_VERIFY_PROC_MAC ||
            VerifyProcTypeIsBuiltin();
   }
 
@@ -469,7 +438,6 @@ class CertVerifyProcInternalTest
 
   bool SupportsSoftFailRevChecking() const {
     return verify_proc_type() == CERT_VERIFY_PROC_WIN ||
-           verify_proc_type() == CERT_VERIFY_PROC_MAC ||
            VerifyProcTypeIsBuiltin();
   }
 
@@ -481,36 +449,6 @@ class CertVerifyProcInternalTest
   bool VerifyProcTypeIsBuiltin() const {
     return verify_proc_type() == CERT_VERIFY_PROC_BUILTIN ||
            verify_proc_type() == CERT_VERIFY_PROC_BUILTIN_CHROME_ROOTS;
-  }
-
-  bool VerifyProcTypeIsMacAtMostOS10_14() const {
-#if BUILDFLAG(IS_MAC)
-    if (verify_proc_type() == CERT_VERIFY_PROC_MAC &&
-        base::mac::IsAtMostOS10_14()) {
-      return true;
-    }
-#endif
-    return false;
-  }
-
-  bool VerifyProcTypeIsMacAtMostOS11() const {
-#if BUILDFLAG(IS_MAC)
-    if (verify_proc_type() == CERT_VERIFY_PROC_MAC &&
-        base::mac::IsAtMostOS11()) {
-      return true;
-    }
-#endif
-    return false;
-  }
-
-  bool VerifyProcTypeIsMacAtMostOS12() const {
-#if BUILDFLAG(IS_MAC)
-    if (verify_proc_type() == CERT_VERIFY_PROC_MAC &&
-        base::mac::IsAtMostOS12()) {
-      return true;
-    }
-#endif
-    return false;
   }
 
   bool VerifyProcTypeIsIOSAtMostOS14() const {
@@ -917,8 +855,7 @@ TEST_P(CertVerifyProcInternalTest, UnnecessaryInvalidIntermediate) {
                                   &NetLogEntry::type);
   ASSERT_NE(event, events.end());
   EXPECT_EQ(net::NetLogEventPhase::BEGIN, event->phase);
-  ASSERT_TRUE(event->params.is_dict());
-  const std::string* host = event->params.FindStringKey("host");
+  const std::string* host = event->params.FindString("host");
   ASSERT_TRUE(host);
   EXPECT_EQ("127.0.0.1", *host);
 
@@ -928,8 +865,7 @@ TEST_P(CertVerifyProcInternalTest, UnnecessaryInvalidIntermediate) {
                            &NetLogEntry::type);
     ASSERT_NE(event, events.end());
     EXPECT_EQ(net::NetLogEventPhase::NONE, event->phase);
-    ASSERT_TRUE(event->params.is_dict());
-    const std::string* errors = event->params.FindStringKey("errors");
+    const std::string* errors = event->params.FindString("errors");
     ASSERT_TRUE(errors);
     EXPECT_EQ(
         "ERROR: Failed parsing Certificate SEQUENCE\nERROR: Failed parsing "
@@ -1027,15 +963,6 @@ TEST_P(CertVerifyProcInternalTest, RejectWeakKeys) {
 
 // Regression test for http://crbug.com/108514.
 TEST_P(CertVerifyProcInternalTest, ExtraneousMD5RootCert) {
-  if (verify_proc_type() == CERT_VERIFY_PROC_MAC) {
-    // Disabled on OS X - Security.framework doesn't ignore superflous
-    // certificates provided by servers.
-    // TODO(eroman): Is this still needed?
-    LOG(INFO) << "Skipping this test as Security.framework doesn't ignore "
-                 "superflous certificates provided by servers.";
-    return;
-  }
-
   base::FilePath certs_dir = GetTestCertsDirectory();
 
   scoped_refptr<X509Certificate> server_cert =
@@ -1180,22 +1107,6 @@ class CertVerifyProcInspectSignatureAlgorithmsTest : public ::testing::Test {
     // TBSCertificate.algorithm
     DigestAlgorithm tbs_algorithm;
   };
-
-  // On some platforms trying to import a certificate with mismatched signature
-  // will fail. Consequently the rest of the tests can't be performed.
-  [[nodiscard]] bool SupportsImportingMismatchedAlgorithms() const {
-#if BUILDFLAG(IS_IOS)
-    LOG(INFO) << "Skipping test on iOS because certs with mismatched "
-                 "algorithms cannot be imported";
-    return false;
-#elif BUILDFLAG(IS_MAC)
-    LOG(INFO) << "Skipping test on macOS >= 10.12 because certs with "
-                 "mismatched algorithms cannot be imported";
-    return false;
-#else
-    return true;
-#endif
-  }
 
   // Shorthand for VerifyChain() where only the leaf's parameters need
   // to be specified.
@@ -1430,9 +1341,6 @@ TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafSha256Sha256) {
 //  Certificate.signatureAlgorithm:  sha1WithRSASignature
 //  TBSCertificate.algorithm:        sha256WithRSAEncryption
 TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafSha1Sha256) {
-  if (!SupportsImportingMismatchedAlgorithms())
-    return;
-
   int rv = VerifyLeaf({DigestAlgorithm::Sha1, DigestAlgorithm::Sha256});
   ASSERT_THAT(rv, IsError(ERR_CERT_INVALID));
 }
@@ -1442,9 +1350,6 @@ TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafSha1Sha256) {
 //  Certificate.signatureAlgorithm:  sha256WithRSAEncryption
 //  TBSCertificate.algorithm:        sha1WithRSASignature
 TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafSha256Sha1) {
-  if (!SupportsImportingMismatchedAlgorithms())
-    return;
-
   int rv = VerifyLeaf({DigestAlgorithm::Sha256, DigestAlgorithm::Sha1});
   ASSERT_THAT(rv, IsError(ERR_CERT_INVALID));
 }
@@ -1454,9 +1359,6 @@ TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafSha256Sha1) {
 //  Certificate.signatureAlgorithm:  sha256WithRSAEncryption
 //  TBSCertificate.algorithm:        ?
 TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafSha256Unknown) {
-  if (!SupportsImportingMismatchedAlgorithms())
-    return;
-
   int rv = VerifyLeaf({DigestAlgorithm::Sha256, kUnknownDigestAlgorithm});
   ASSERT_THAT(rv, IsError(ERR_CERT_INVALID));
 }
@@ -1466,9 +1368,6 @@ TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafSha256Unknown) {
 //  Certificate.signatureAlgorithm:  ?
 //  TBSCertificate.algorithm:        sha256WithRSAEncryption
 TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafUnknownSha256) {
-  if (!SupportsImportingMismatchedAlgorithms())
-    return;
-
   int rv = VerifyLeaf({kUnknownDigestAlgorithm, DigestAlgorithm::Sha256});
   ASSERT_THAT(rv, IsError(ERR_CERT_INVALID));
 }
@@ -1478,9 +1377,6 @@ TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafUnknownSha256) {
 //  Certificate.signatureAlgorithm:  sha1WithRSASignature
 //  TBSCertificate.algorithm:        sha256WithRSAEncryption
 TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, IntermediateSha1Sha256) {
-  if (!SupportsImportingMismatchedAlgorithms())
-    return;
-
   int rv = VerifyIntermediate({DigestAlgorithm::Sha1, DigestAlgorithm::Sha256});
   ASSERT_THAT(rv, IsError(ERR_CERT_INVALID));
 }
@@ -1490,9 +1386,6 @@ TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, IntermediateSha1Sha256) {
 //  Certificate.signatureAlgorithm:  sha256WithRSAEncryption
 //  TBSCertificate.algorithm:        sha1WithRSASignature
 TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, IntermediateSha256Sha1) {
-  if (!SupportsImportingMismatchedAlgorithms())
-    return;
-
   int rv = VerifyIntermediate({DigestAlgorithm::Sha256, DigestAlgorithm::Sha1});
   ASSERT_THAT(rv, IsError(ERR_CERT_INVALID));
 }
@@ -1502,9 +1395,6 @@ TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, IntermediateSha256Sha1) {
 //  Certificate.signatureAlgorithm:  sha256WithRSAEncryption
 //  TBSCertificate.algorithm:        sha1WithRSASignature
 TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, RootSha256Sha1) {
-  if (!SupportsImportingMismatchedAlgorithms())
-    return;
-
   int rv = VerifyRoot({DigestAlgorithm::Sha256, DigestAlgorithm::Sha1});
   ASSERT_THAT(rv, IsOk());
 }
@@ -1514,9 +1404,6 @@ TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, RootSha256Sha1) {
 //  Certificate.signatureAlgorithm:  ?
 //  TBSCertificate.algorithm:        sha256WithRSAEncryption
 TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, RootUnknownSha256) {
-  if (!SupportsImportingMismatchedAlgorithms())
-    return;
-
   int rv = VerifyRoot({kUnknownDigestAlgorithm, DigestAlgorithm::Sha256});
   ASSERT_THAT(rv, IsOk());
 }
@@ -2800,8 +2687,6 @@ class CertVerifyProcNameNormalizationTest : public CertVerifyProcInternalTest {
         return prefix + "Android";
       case CERT_VERIFY_PROC_IOS:
         return prefix + "IOS";
-      case CERT_VERIFY_PROC_MAC:
-        return prefix + "Mac";
       case CERT_VERIFY_PROC_WIN:
         return prefix + "Win";
       case CERT_VERIFY_PROC_BUILTIN:
@@ -2857,7 +2742,6 @@ TEST_P(CertVerifyProcNameNormalizationTest, StringType) {
 
   switch (verify_proc_type()) {
     case CERT_VERIFY_PROC_IOS:
-    case CERT_VERIFY_PROC_MAC:
       EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
       break;
     case CERT_VERIFY_PROC_ANDROID:
@@ -3406,7 +3290,7 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
       Verify(chain_sha1.get(), kHostname, flags, CRLSet::BuiltinCRLSet().get(),
              CertificateList(), &verify_result);
 
-  if (VerifyProcTypeIsBuiltin() || verify_proc_type() == CERT_VERIFY_PROC_MAC) {
+  if (VerifyProcTypeIsBuiltin()) {
     // Should have built a chain through the SHA256 intermediate. This was only
     // available via AIA, and not the (SHA1) one provided directly to path
     // building.
@@ -3837,14 +3721,8 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
       Verify(chain.get(), kHostname, flags, CRLSet::BuiltinCRLSet().get(),
              CertificateList(), &verify_result);
 
-  if (verify_proc_type() == CERT_VERIFY_PROC_MAC) {
-    // CRL handling seems broken on macOS >= 10.12.
-    // TODO(mattm): followup on this.
-    EXPECT_THAT(error, IsOk());
-  } else {
-    // Should fail, leaf is revoked.
-    EXPECT_THAT(error, IsError(ERR_CERT_REVOKED));
-  }
+  // Should fail, leaf is revoked.
+  EXPECT_THAT(error, IsError(ERR_CERT_REVOKED));
   EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
 }
 
@@ -3878,14 +3756,8 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
       Verify(chain.get(), kHostname, flags, CRLSet::BuiltinCRLSet().get(),
              CertificateList(), &verify_result);
 
-  if (verify_proc_type() == CERT_VERIFY_PROC_MAC) {
-    // CRL handling seems broken on macOS >= 10.12.
-    // TODO(mattm): followup on this.
-    EXPECT_THAT(error, IsOk());
-  } else {
-    // Should fail, intermediate is revoked.
-    EXPECT_THAT(error, IsError(ERR_CERT_REVOKED));
-  }
+  // Should fail, intermediate is revoked.
+  EXPECT_THAT(error, IsError(ERR_CERT_REVOKED));
   EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
 }
 
@@ -3921,14 +3793,8 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
       Verify(chain.get(), kHostname, flags, CRLSet::BuiltinCRLSet().get(),
              CertificateList(), &verify_result);
 
-  if (verify_proc_type() == CERT_VERIFY_PROC_MAC) {
-    // CRL handling seems broken on macOS >= 10.12.
-    // TODO(mattm): followup on this.
-    EXPECT_THAT(error, IsOk());
-  } else {
-    // Should fail, leaf is revoked.
-    EXPECT_THAT(error, IsError(ERR_CERT_REVOKED));
-  }
+  // Should fail, leaf is revoked.
+  EXPECT_THAT(error, IsError(ERR_CERT_REVOKED));
   EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
 }
 
@@ -4260,8 +4126,7 @@ TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsNotCaRoot) {
     EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsError(ERR_CERT_INVALID));
     EXPECT_THAT(VerifyWithExpiryAndFullConstraints(),
                 IsError(ERR_CERT_INVALID));
-  } else if (VerifyProcTypeIsMacAtMostOS10_14() ||
-             verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
+  } else if (verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
     EXPECT_THAT(Verify(), IsOk());
   } else {
     EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
@@ -4294,8 +4159,7 @@ TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsPathlen0Root) {
   if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(Verify(), IsOk());
     EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsError(ERR_CERT_INVALID));
-  } else if (VerifyProcTypeIsMacAtMostOS11() ||
-             VerifyProcTypeIsIOSAtMostOS14() ||
+  } else if (VerifyProcTypeIsIOSAtMostOS14() ||
              verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
     EXPECT_THAT(Verify(), IsOk());
   } else {
@@ -4309,8 +4173,7 @@ TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsPathlen1Root) {
   if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(Verify(), IsOk());
     EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsError(ERR_CERT_INVALID));
-  } else if (VerifyProcTypeIsMacAtMostOS11() ||
-             VerifyProcTypeIsIOSAtMostOS14() ||
+  } else if (VerifyProcTypeIsIOSAtMostOS14() ||
              verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
     EXPECT_THAT(Verify(), IsOk());
   } else {
@@ -4356,12 +4219,22 @@ TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsNotPresentRoot) {
     EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsOk());
     EXPECT_THAT(VerifyWithExpiryAndFullConstraints(),
                 IsError(ERR_CERT_INVALID));
-  } else if (VerifyProcTypeIsMacAtMostOS10_14() ||
-             verify_proc_type() == CERT_VERIFY_PROC_ANDROID ||
+  } else if (verify_proc_type() == CERT_VERIFY_PROC_ANDROID ||
              verify_proc_type() == CERT_VERIFY_PROC_WIN) {
     EXPECT_THAT(Verify(), IsOk());
   } else {
     EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
+  }
+}
+
+TEST_P(CertVerifyProcConstraintsTest, BasicConstraintsNotPresentRootX509V1) {
+  chain_[3]->SetCertificateVersion(CertificateVersion::V1);
+  chain_[3]->ClearExtensions();
+
+  EXPECT_THAT(Verify(), IsOk());
+  if (VerifyProcTypeIsBuiltin()) {
+    EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsOk());
+    EXPECT_THAT(VerifyWithExpiryAndFullConstraints(), IsOk());
   }
 }
 
@@ -4384,8 +4257,7 @@ TEST_P(CertVerifyProcConstraintsTest, NameConstraintsNotMatchingRoot) {
   if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(Verify(), IsOk());
     EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsError(ERR_CERT_INVALID));
-  } else if (VerifyProcTypeIsMacAtMostOS10_14() ||
-             verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
+  } else if (verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
     EXPECT_THAT(Verify(), IsOk());
   } else {
     EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
@@ -4415,13 +4287,7 @@ TEST_P(CertVerifyProcConstraintsTest, NameConstraintsMatchingIntermediate) {
       /*permitted_dns_names=*/{"example.com"},
       /*excluded_dns_names=*/{});
 
-  if (VerifyProcTypeIsMacAtMostOS10_14()) {
-    // It appears that Mac OS <= 10.14 does not implement Name Constraints, and
-    // this probably is failing due to unhandled critical extension.
-    EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
-  } else {
-    EXPECT_THAT(Verify(), IsOk());
-  }
+  EXPECT_THAT(Verify(), IsOk());
 }
 
 TEST_P(CertVerifyProcConstraintsTest, NameConstraintsOnLeaf) {
@@ -4517,8 +4383,7 @@ TEST_P(CertVerifyProcConstraintsTest, PolicyConstraints0Root) {
         EXPECT_THAT(Verify(), IsOk());
         EXPECT_THAT(VerifyWithExpiryAndConstraints(),
                     IsError(ERR_CERT_INVALID));
-      } else if (verify_proc_type() == CERT_VERIFY_PROC_MAC ||
-                 verify_proc_type() == CERT_VERIFY_PROC_IOS ||
+      } else if (verify_proc_type() == CERT_VERIFY_PROC_IOS ||
                  verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
         EXPECT_THAT(Verify(), IsOk());
       } else {
@@ -4572,8 +4437,7 @@ TEST_P(CertVerifyProcConstraintsTest, PolicyConstraints2Root) {
   if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(Verify(), IsOk());
     EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsError(ERR_CERT_INVALID));
-  } else if (verify_proc_type() == CERT_VERIFY_PROC_MAC ||
-             verify_proc_type() == CERT_VERIFY_PROC_IOS ||
+  } else if (verify_proc_type() == CERT_VERIFY_PROC_IOS ||
              verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
     EXPECT_THAT(Verify(), IsOk());
   } else {
@@ -4708,8 +4572,7 @@ TEST_P(CertVerifyProcConstraintsTest, InhibitPolicyMapping0Root) {
   if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(Verify(), IsOk());
     EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsError(ERR_CERT_INVALID));
-  } else if (verify_proc_type() == CERT_VERIFY_PROC_MAC ||
-             verify_proc_type() == CERT_VERIFY_PROC_IOS ||
+  } else if (verify_proc_type() == CERT_VERIFY_PROC_IOS ||
              verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
     EXPECT_THAT(Verify(), IsOk());
   } else {
@@ -4774,8 +4637,7 @@ TEST_P(CertVerifyProcConstraintsTest, InhibitAnyPolicy0Root) {
   if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(Verify(), IsOk());
     EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsError(ERR_CERT_INVALID));
-  } else if (verify_proc_type() == CERT_VERIFY_PROC_MAC ||
-             verify_proc_type() == CERT_VERIFY_PROC_IOS ||
+  } else if (verify_proc_type() == CERT_VERIFY_PROC_IOS ||
              verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
     EXPECT_THAT(Verify(), IsOk());
   } else {
@@ -4815,8 +4677,7 @@ TEST_P(CertVerifyProcConstraintsTest, InhibitAnyPolicy1Root) {
         EXPECT_THAT(Verify(), IsOk());
         EXPECT_THAT(VerifyWithExpiryAndConstraints(),
                     IsError(ERR_CERT_INVALID));
-      } else if (verify_proc_type() == CERT_VERIFY_PROC_MAC ||
-                 verify_proc_type() == CERT_VERIFY_PROC_IOS ||
+      } else if (verify_proc_type() == CERT_VERIFY_PROC_IOS ||
                  verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
         EXPECT_THAT(Verify(), IsOk());
       } else {
@@ -4904,8 +4765,7 @@ TEST_P(CertVerifyProcConstraintsTest, PoliciesRoot) {
         EXPECT_THAT(Verify(), IsOk());
         EXPECT_THAT(VerifyWithExpiryAndConstraints(),
                     IsError(ERR_CERT_INVALID));
-      } else if (verify_proc_type() == CERT_VERIFY_PROC_MAC ||
-                 verify_proc_type() == CERT_VERIFY_PROC_IOS ||
+      } else if (verify_proc_type() == CERT_VERIFY_PROC_IOS ||
                  verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
         EXPECT_THAT(Verify(), IsOk());
       } else {
@@ -4957,8 +4817,7 @@ TEST_P(CertVerifyProcConstraintsTest, PolicyMappingsRoot) {
         EXPECT_THAT(Verify(), IsOk());
         EXPECT_THAT(VerifyWithExpiryAndConstraints(),
                     IsError(ERR_CERT_INVALID));
-      } else if (verify_proc_type() == CERT_VERIFY_PROC_MAC ||
-                 verify_proc_type() == CERT_VERIFY_PROC_IOS ||
+      } else if (verify_proc_type() == CERT_VERIFY_PROC_IOS ||
                  verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
         EXPECT_THAT(Verify(), IsOk());
       } else {
@@ -4976,8 +4835,7 @@ TEST_P(CertVerifyProcConstraintsTest, KeyUsageNoCertSignRoot) {
     EXPECT_THAT(VerifyWithExpiryAndConstraints(), IsError(ERR_CERT_INVALID));
     EXPECT_THAT(VerifyWithExpiryAndFullConstraints(),
                 IsError(ERR_CERT_INVALID));
-  } else if (VerifyProcTypeIsMacAtMostOS10_14() ||
-             verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
+  } else if (verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
     EXPECT_THAT(Verify(), IsOk());
   } else {
     EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
@@ -5047,7 +4905,6 @@ TEST_P(CertVerifyProcConstraintsTest, ExtendedKeyUsageNoServerAuthRoot) {
     EXPECT_THAT(VerifyWithExpiryAndFullConstraints(),
                 IsError(ERR_CERT_INVALID));
   } else if (verify_proc_type() == CERT_VERIFY_PROC_ANDROID ||
-             verify_proc_type() == CERT_VERIFY_PROC_MAC ||
              verify_proc_type() == CERT_VERIFY_PROC_IOS) {
     EXPECT_THAT(Verify(), IsOk());
   } else {
@@ -5069,7 +4926,7 @@ TEST_P(CertVerifyProcConstraintsTest,
   chain_[2]->SetExtendedKeyUsages({der::Input(kCodeSigning)});
 
   if (verify_proc_type() == CERT_VERIFY_PROC_ANDROID ||
-      VerifyProcTypeIsMacAtMostOS12() || VerifyProcTypeIsIOSAtMostOS15()) {
+      VerifyProcTypeIsIOSAtMostOS15()) {
     EXPECT_THAT(Verify(), IsOk());
   } else {
     EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
@@ -5104,8 +4961,7 @@ TEST_P(CertVerifyProcConstraintsTest, UnknownSignatureAlgorithmRoot) {
 TEST_P(CertVerifyProcConstraintsTest, UnknownSignatureAlgorithmIntermediate) {
   chain_[2]->SetSignatureAlgorithmTLV(TestOid0SignatureAlgorithmTLV());
 
-  if (verify_proc_type() == CERT_VERIFY_PROC_MAC ||
-      verify_proc_type() == CERT_VERIFY_PROC_IOS) {
+  if (verify_proc_type() == CERT_VERIFY_PROC_IOS) {
     EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
   } else {
     EXPECT_THAT(Verify(), IsError(ExpectedIntermediateConstraintError()));
@@ -5115,8 +4971,7 @@ TEST_P(CertVerifyProcConstraintsTest, UnknownSignatureAlgorithmIntermediate) {
 TEST_P(CertVerifyProcConstraintsTest, UnknownSignatureAlgorithmLeaf) {
   chain_[0]->SetSignatureAlgorithmTLV(TestOid0SignatureAlgorithmTLV());
 
-  if (verify_proc_type() == CERT_VERIFY_PROC_MAC ||
-      verify_proc_type() == CERT_VERIFY_PROC_IOS) {
+  if (verify_proc_type() == CERT_VERIFY_PROC_IOS) {
     EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
   } else {
     EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
@@ -5135,8 +4990,7 @@ TEST_P(CertVerifyProcConstraintsTest, UnknownExtensionRoot) {
                     IsError(ERR_CERT_INVALID));
         EXPECT_THAT(VerifyWithExpiryAndFullConstraints(),
                     IsError(ERR_CERT_INVALID));
-      } else if (verify_proc_type() == CERT_VERIFY_PROC_MAC ||
-                 verify_proc_type() == CERT_VERIFY_PROC_IOS ||
+      } else if (verify_proc_type() == CERT_VERIFY_PROC_IOS ||
                  verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
         EXPECT_THAT(Verify(), IsOk());
       } else {
@@ -5479,13 +5333,8 @@ TEST_P(CertVerifyProcConstraintsTrustedLeafTest, WeakSignatureAlgorithm) {
         IsError(ERR_CERT_AUTHORITY_INVALID));
   } else if (verify_proc_type() == CERT_VERIFY_PROC_WIN) {
     EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
-  } else if (verify_proc_type() == CERT_VERIFY_PROC_MAC ||
-             verify_proc_type() == CERT_VERIFY_PROC_IOS) {
-    if (VerifyProcTypeIsMacAtMostOS10_14()) {
-      EXPECT_THAT(Verify(), IsOk());
-    } else {
-      EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
-    }
+  } else if (verify_proc_type() == CERT_VERIFY_PROC_IOS) {
+    EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
   } else {
     EXPECT_THAT(Verify(), IsOk());
   }

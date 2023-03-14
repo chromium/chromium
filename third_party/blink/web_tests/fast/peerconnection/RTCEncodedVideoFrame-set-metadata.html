@@ -47,8 +47,16 @@ async function setupLoopbackWithCodecAndGetReader(t, codec) {
 promise_test(async t => {
   const senderReader = await setupLoopbackWithCodecAndGetReader(t, 'VP8');
   const result = await senderReader.read();
+  const metadata = result.value.getMetadata();
+  const clone = result.value.clone();
+  metadata['contributingSources'] = [13];
+  assert_throws_dom('InvalidModificationError', () => clone.setMetadata(metadata), "For field \"contributingSources\",");
+}, "setMetadata() does not allow changes to contributingSources without a flag");
+
+promise_test(async t => {
+  const senderReader = await setupLoopbackWithCodecAndGetReader(t, 'VP8');
+  const result = await senderReader.read();
   const field_values = {
-    'contributingSources':[13],
     'decodeTargetIndications':['required'],
     'dependencies':[1],
     'frameId':2,
@@ -84,7 +92,7 @@ promise_test(async t => {
     metadata.codecSpecifics[field] = codec_specific_field_values_vp8[field];
     assert_throws_dom('InvalidModificationError', () => clone.setMetadata(metadata), "For field \"codecSpecifics." + field + "\",");
   }
-}, "setMetadata() does not allow changed properties without special flags");
+}, "setMetadata() does not allow changes to fields other than contributingSources without a flag");
 
 promise_test(async t => {
   const senderReader = await setupLoopbackWithCodecAndGetReader(t, 'VP8');

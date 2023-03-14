@@ -8,12 +8,13 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/promo_config.h"
+#import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/signin_util.h"
-#import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/post_restore_signin/features.h"
 #import "ios/chrome/browser/ui/post_restore_signin/metrics.h"
 #import "ios/chrome/browser/ui/post_restore_signin/post_restore_signin_view_controller.h"
@@ -57,7 +58,8 @@
 #pragma mark - PromoProtocol
 
 - (PromoConfig)config {
-  return PromoConfig([self identifier]);
+  return PromoConfig([self identifier],
+                     &feature_engagement::kIPHiOSPromoPostRestoreFeature);
 }
 
 - (void)promoWasDisplayed {

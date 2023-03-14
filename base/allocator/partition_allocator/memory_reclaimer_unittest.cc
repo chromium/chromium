@@ -18,6 +18,7 @@
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     PA_CONFIG(THREAD_CACHE_SUPPORTED)
+#include "base/allocator/partition_allocator/extended_api.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #endif
 
@@ -120,11 +121,8 @@ PA_NOINLINE void FreeForTest(void* data) {
 
 TEST_F(MemoryReclaimerTest, DoNotAlwaysPurgeThreadCache) {
   // Make sure the thread cache is enabled in the main partition.
-  if (!allocator_shim::internal::PartitionAllocMalloc::Allocator()
-           ->thread_cache_for_testing()) {
-    allocator_shim::internal::PartitionAllocMalloc::Allocator()
-        ->EnableThreadCacheIfSupported();
-  }
+  internal::ThreadCacheProcessScopeForTesting scope(
+      allocator_shim::internal::PartitionAllocMalloc::Allocator());
 
   for (size_t i = 0; i < ThreadCache::kDefaultSizeThreshold; i++) {
     void* data = malloc(i);

@@ -13,7 +13,7 @@ import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 /**
  * Listens to events from WebLayer-spawned notifications.
  */
-class BroadcastReceiver extends android.content.BroadcastReceiver {
+public class BroadcastReceiver extends android.content.BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         try {

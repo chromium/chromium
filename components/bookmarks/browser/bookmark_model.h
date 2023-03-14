@@ -22,6 +22,7 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
+#include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_undo_provider.h"
@@ -49,7 +50,6 @@ enum class MatchingAlgorithm;
 namespace bookmarks {
 
 class BookmarkCodecTest;
-class BookmarkExpandedStateTracker;
 class BookmarkLoadDetails;
 class BookmarkModelObserver;
 class BookmarkStorage;
@@ -304,12 +304,6 @@ class BookmarkModel : public BookmarkUndoProvider,
   // Returns the next node ID.
   int64_t next_node_id() const { return next_node_id_; }
 
-  // Returns the object responsible for tracking the set of expanded nodes in
-  // the bookmark editor.
-  BookmarkExpandedStateTracker* expanded_state_tracker() {
-    return expanded_state_tracker_.get();
-  }
-
   // Sets/deletes meta info of |node|.
   void SetNodeMetaInfo(const BookmarkNode* node,
                        const std::string& key,
@@ -477,8 +471,6 @@ class BookmarkModel : public BookmarkUndoProvider,
 
   // See description of IsDoingExtensiveChanges above.
   int extensive_changes_ = 0;
-
-  std::unique_ptr<BookmarkExpandedStateTracker> expanded_state_tracker_;
 
   std::set<std::string> non_cloned_keys_;
 

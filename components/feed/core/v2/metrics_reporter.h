@@ -9,6 +9,7 @@
 #include <map>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/store.pb.h"
@@ -271,7 +272,7 @@ class MetricsReporter {
 
     // Owned by MetricsReporter. Will live through the lifetime of
     // GoodVisitState.
-    PersistentMetricsData& data_;
+    const raw_ref<PersistentMetricsData> data_;
   };
   GoodVisitState good_visit_state_;
 

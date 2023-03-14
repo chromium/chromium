@@ -42,7 +42,7 @@ class JavaScriptDialogManager : public DevToolsEventListener {
                  const base::Value::Dict& params) override;
 
  private:
-  raw_ptr<DevToolsClient> client_;
+  const raw_ptr<DevToolsClient> client_;
   // The queue of unhandled dialogs. This may be greater than 1 in rare
   // cases. E.g., if the page shows an alert but before the manager received
   // the event, a script was injected via Inspector that triggered an alert.

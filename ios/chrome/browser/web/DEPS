@@ -22,6 +22,9 @@ specific_include_rules = {
   "child_window_open_by_dom_egtest\.mm": [
     "+ios/web/public/test/http_server",
   ],
+  "chrome_main_parts\.(h|mm)": [
+    "+components/memory_system",
+  ],
   # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
   # TODO:(crbug.com/891834) Remove this exception.
   "forms_egtest\.mm": [

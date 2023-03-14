@@ -4,4 +4,5 @@ per-file OWNERS=file://tools/metrics/histograms/metadata/METRIC_REVIEWER_OWNERS
 # chromium-metrics-reviews@google.com as a fallback).
 csharrison@chromium.org
 dschinazi@chromium.org
+nidhijaju@chromium.org
 toyoshim@chromium.org

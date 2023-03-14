@@ -80,6 +80,7 @@ class CallStackProfileBuilder : public base::ProfileBuilder {
       base::TimeTicks period_start,
       base::TimeTicks period_end,
       const base::MetadataRecorder::Item& item) override;
+  void AddProfileMetadata(const base::MetadataRecorder::Item& item) override;
   void OnSampleCompleted(std::vector<base::Frame> frames,
                          base::TimeTicks sample_timestamp) override;
   void OnProfileCompleted(base::TimeDelta profile_duration,

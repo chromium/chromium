@@ -1001,7 +1001,7 @@ ui::ImageModel DownloadItemView::GetIcon() const {
 
   const int non_error_icon_size = 27;
   const auto kWarning = ui::ImageModel::FromVectorIcon(
-      vector_icons::kWarningIcon, ui::kColorAlertMediumSeverity,
+      vector_icons::kWarningIcon, ui::kColorAlertMediumSeverityIcon,
       non_error_icon_size);
   const auto kError = ui::ImageModel::FromVectorIcon(
       vector_icons::kErrorIcon, ui::kColorAlertHighSeverity, 24);

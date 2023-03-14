@@ -26,6 +26,7 @@ async_test(t => {
 
   video.addEventListener('pause', t.done.bind(t));
 
+  video.addEventListener('fullscreenchange', t.unreached_func());
   video.addEventListener('webkitfullscreenchange', t.unreached_func());
 
   video.play();

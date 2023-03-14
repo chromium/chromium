@@ -9,7 +9,7 @@
 
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
-GEN('#include "ash/constants/ash_features.h"');
+GEN('#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog_browsertest.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 var CloudUploadDialogTest = class extends PolymerTest {
@@ -18,8 +18,8 @@ var CloudUploadDialogTest = class extends PolymerTest {
         'cloud_upload/cloud_upload_dialog_test.js';
   }
 
-  get featureList() {
-    return {enabled: ['ash::features::kUploadOfficeToCloud']};
+  get typedefCppFixture() {
+    return 'NonManagedUserWebUIBrowserTest';
   }
 };
 

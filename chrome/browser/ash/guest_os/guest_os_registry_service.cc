@@ -182,8 +182,7 @@ void InstallIconFromFileThread(const base::FilePath& icon_path,
 
   base::CreateDirectory(icon_path.DirName());
 
-  int wrote = base::WriteFile(icon_path, content.c_str(), content.size());
-  if (wrote != static_cast<int>(content.size())) {
+  if (!base::WriteFile(icon_path, content)) {
     VLOG(2) << "Failed to write Crostini icon file: "
             << icon_path.MaybeAsASCII();
     if (!base::DeleteFile(icon_path)) {

@@ -42,9 +42,27 @@ class Time;
 // Functions that involve filesystem access or modification:
 
 // Returns an absolute version of a relative path. Returns an empty path on
-// error. On POSIX, this function fails if the path does not exist. This
-// function can result in I/O so it can be slow.
+// error. This function can result in I/O so it can be slow.
+//
+// On POSIX, this function calls realpath(), so:
+// 1) it fails if the path does not exist.
+// 2) it expands all symlink components of the path.
+// 3) it removes "." and ".." directory components.
 BASE_EXPORT FilePath MakeAbsoluteFilePath(const FilePath& input);
+
+#if BUILDFLAG(IS_POSIX)
+// Prepends the current working directory if `input` is not already absolute,
+// and removes "/./" and "/../" This is similar to MakeAbsoluteFilePath(), but
+// MakeAbsoluteFilePath() expands all symlinks in the path and this does not.
+//
+// This may block if `input` is a relative path, when calling
+// GetCurrentDirectory().
+//
+// This doesn't return absl::nullopt unless (1) `input` is empty, or (2)
+// `input` is a relative path and GetCurrentDirectory() fails.
+[[nodiscard]] BASE_EXPORT absl::optional<FilePath>
+MakeAbsoluteFilePathNoResolveSymbolicLinks(const FilePath& input);
+#endif
 
 // Returns the total number of bytes used by all the files under |root_path|.
 // If the path does not exist the function returns 0.
@@ -275,9 +293,20 @@ BASE_EXPORT bool ReadFileToStringNonBlocking(const base::FilePath& file,
 BASE_EXPORT bool CreateSymbolicLink(const FilePath& target,
                                     const FilePath& symlink);
 
-// Reads the given |symlink| and returns where it points to in |target|.
+// Reads the given |symlink| and returns the raw string in |target|.
 // Returns false upon failure.
+// IMPORTANT NOTE: if the string stored in the symlink is a relative file path,
+// it should be interpreted relative to the symlink's directory, NOT the current
+// working directory. ReadSymbolicLinkAbsolute() may be the better choice.
 BASE_EXPORT bool ReadSymbolicLink(const FilePath& symlink, FilePath* target);
+
+// Same as ReadSymbolicLink(), but properly converts it into an absolute path if
+// the link is relative.
+// Can fail if readlink() fails, or if
+// MakeAbsoluteFilePathNoResolveSymbolicLinks() fails on the resulting absolute
+// path.
+BASE_EXPORT absl::optional<FilePath> ReadSymbolicLinkAbsolute(
+    const FilePath& symlink);
 
 // Bits and masks of the file permission.
 enum FilePermissionBits {

@@ -42,6 +42,12 @@ void AppendBreakTokenToString(const NGBreakToken* token,
     const auto children = block_break_token->ChildBreakTokens();
     for (const auto& child : children)
       AppendBreakTokenToString(child, string_builder, indent + 2);
+  } else if (auto* inline_break_token = DynamicTo<NGInlineBreakToken>(token)) {
+    if (auto* block_in_inline_break_token =
+            inline_break_token->BlockInInlineBreakToken()) {
+      AppendBreakTokenToString(block_in_inline_break_token, string_builder,
+                               indent + 2);
+    }
   }
 }
 }  // namespace

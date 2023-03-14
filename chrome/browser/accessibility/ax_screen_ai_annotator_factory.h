@@ -25,6 +25,8 @@ class AXScreenAIAnnotatorFactory : public ProfileKeyedServiceFactory {
 
   static void EnsureExistsForBrowserContext(content::BrowserContext* context);
 
+  static void EnsureFactoryBuilt();
+
  private:
   friend class base::NoDestructor<AXScreenAIAnnotatorFactory>;
   static AXScreenAIAnnotatorFactory* GetInstance();

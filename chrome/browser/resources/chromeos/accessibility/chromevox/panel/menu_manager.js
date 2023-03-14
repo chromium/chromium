@@ -6,6 +6,7 @@
  * @fileoverview Class to manage the ChromeVox menus.
  */
 import {Command, CommandStore} from '../common/command_store.js';
+import {Msgs} from '../common/msgs.js';
 import {PanelNodeMenuData, PanelNodeMenuId, PanelNodeMenuItemData} from '../common/panel_menu_data.js';
 
 import {PanelInterface} from './panel_interface.js';
@@ -102,6 +103,38 @@ export class MenuManager {
   }
 
   /**
+   * Create a new search menu with the given name and add it to the menu bar.
+   * @param {string} menuMsg The msg id of the new menu to add.
+   * @return {!PanelMenu} The menu just created.
+   */
+  addSearchMenu(menuMsg) {
+    this.searchMenu_ = new PanelSearchMenu(menuMsg);
+    // Add event listeners to search bar.
+    this.searchMenu_.searchBar.addEventListener(
+        'input', event => this.onSearchBarQuery(event), false);
+    this.searchMenu_.searchBar.addEventListener('mouseup', event => {
+      // Clicking in the panel causes us to either activate an item or close the
+      // menus altogether. Prevent that from happening if we click the search
+      // bar.
+      event.preventDefault();
+      event.stopPropagation();
+    }, false);
+
+    $('menu-bar').appendChild(this.searchMenu_.menuBarItemElement);
+    this.searchMenu_.menuBarItemElement.addEventListener(
+        'mouseover',
+        () =>
+            this.activateMenu(this.searchMenu_, false /* activateFirstItem */),
+        false);
+    this.searchMenu_.menuBarItemElement.addEventListener(
+        'mouseup', event => this.onMouseUpOnMenuTitle(this.searchMenu_, event),
+        false);
+    $('menus_background').appendChild(this.searchMenu_.menuContainerElement);
+    this.menus_.push(this.searchMenu_);
+    return this.searchMenu_;
+  }
+
+  /**
    * Clear any previous menus. The menus are all regenerated each time the
    * menus are opened.
    */
@@ -130,6 +163,23 @@ export class MenuManager {
   }
 
   /**
+   * Starting at |startIndex|, looks for an enabled menu.
+   * @param {number} startIndex
+   * @param {number} delta
+   * @return {number} The index of the enabled menu. -1 if not found.
+   */
+  findEnabledMenuIndex(startIndex, delta) {
+    const endIndex = (delta > 0) ? this.menus_.length : -1;
+    while (startIndex !== endIndex) {
+      if (this.menus_[startIndex].enabled) {
+        return startIndex;
+      }
+      startIndex += delta;
+    }
+    return -1;
+  }
+
+  /**
    * @param {string|undefined} opt_menuTitle
    * @return {!PanelMenu}
    */
@@ -149,6 +199,50 @@ export class MenuManager {
     this.activateMenu(menu, true /* activateFirstItem */);
     mouseUpEvent.preventDefault();
     mouseUpEvent.stopPropagation();
+  }
+
+  /**
+   * Listens to changes in the menu search bar. Populates the search menu
+   * with items that match the search bar's contents.
+   * Note: we ignore PanelNodeMenu items and items without shortcuts.
+   * @param {Event} event The input event.
+   */
+  onSearchBarQuery(event) {
+    if (!this.searchMenu_) {
+      throw Error('MenuManager.searchMenu_ must be defined');
+    }
+    const query = event.target.value.toLowerCase();
+    this.searchMenu_.clear();
+    // Show the search results menu.
+    this.activateMenu(this.searchMenu_, false /* activateFirstItem */);
+    // Populate.
+    if (query) {
+      for (const menu of this.menus_) {
+        if (menu === this.searchMenu_ || menu instanceof PanelNodeMenu) {
+          continue;
+        }
+        for (const item of menu.items) {
+          if (!item.menuItemShortcut) {
+            // Only add menu items that have shortcuts.
+            continue;
+          }
+          const itemText = item.text.toLowerCase();
+          const match = itemText.includes(query) &&
+              (itemText !==
+               Msgs.getMsg('panel_menu_item_none').toLowerCase()) &&
+              item.enabled;
+          if (match) {
+            this.searchMenu_.copyAndAddMenuItem(item);
+          }
+        }
+      }
+    }
+
+    if (this.searchMenu_.items.length === 0) {
+      this.searchMenu_.addMenuItem(
+          Msgs.getMsg('panel_menu_item_none'), '', '', '', function() {});
+    }
+    this.searchMenu_.activateItem(0);
   }
 
   // The following getters and setters are temporary during the migration from

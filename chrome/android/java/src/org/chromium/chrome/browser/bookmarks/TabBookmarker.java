@@ -85,7 +85,8 @@ public class TabBookmarker {
             // In the case where the bookmark exists, re-show the save flow with price-tracking
             // enabled.
             BookmarkUtils.showSaveFlow(mActivity, mBottomSheetControllerSupplier.get(),
-                    /*fromExplicitTrackUi=*/true, bookmarkId, /*wasBookmarkMoved=*/false);
+                    /*fromExplicitTrackUi=*/true, bookmarkId, /*wasBookmarkMoved=*/false,
+                    /*isNewBookmark=*/false);
         }
     }
 
@@ -111,6 +112,7 @@ public class TabBookmarker {
             }
 
             BookmarkId bookmarkId = bookmarkModel.getUserBookmarkIdForTab(tabToBookmark);
+            boolean isNewBookmark = bookmarkId == null;
             if (ReadingListUtils.maybeTypeSwapAndShowSaveFlow(mActivity,
                         mBottomSheetControllerSupplier.get(), bookmarkModel, bookmarkId,
                         bookmarkType)) {
@@ -120,13 +122,13 @@ public class TabBookmarker {
             BookmarkItem currentBookmarkItem =
                     bookmarkId == null ? null : bookmarkModel.getBookmarkById(bookmarkId);
             onBookmarkModelLoaded(tabToBookmark, currentBookmarkItem, bookmarkModel, bookmarkType,
-                    fromExplicitTrackUi);
+                    fromExplicitTrackUi, isNewBookmark);
         });
     }
 
     private void onBookmarkModelLoaded(final Tab tabToBookmark,
             @Nullable final BookmarkItem currentBookmarkItem, final BookmarkModel bookmarkModel,
-            @BookmarkType int bookmarkType, boolean fromExplicitTrackUi) {
+            @BookmarkType int bookmarkType, boolean fromExplicitTrackUi, boolean isNewBookmark) {
         BookmarkUtils.addOrEditBookmark(currentBookmarkItem, bookmarkModel, tabToBookmark,
                 mSnackbarManagerSupplier.get(), mBottomSheetControllerSupplier.get(), mActivity,
                 mIsCustomTab, bookmarkType, (newBookmarkId) -> {

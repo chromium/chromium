@@ -112,6 +112,8 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
       {"includeAssistantLogsCheckboxLabel",
        IDS_FEEDBACK_TOOL_ASSISTANT_LOGS_CHECKBOX},
       {"assistantLogsMessage", IDS_FEEDBACK_TOOL_ASSISTANT_LOGS_MESSAGE},
+      {"includeAutofillCheckboxLabel",
+       IDS_FEEDBACK_TOOL_AUTOFILL_LOGS_CHECKBOX},
   };
 
   source->AddLocalizedStrings(kLocalizedStrings);

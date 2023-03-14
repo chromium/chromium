@@ -284,6 +284,26 @@ keeps the Omaha registry entry
 `pv` value. Additionally, the updater replaces the Omaha uninstall command line
 with its own.
 
+The updater takes over the COM registration for the following classes:
+* GoogleUpdate3WebUserClass
+* GoogleUpdate3WebSystemClass
+* GoogleUpdate3WebServiceClass
+* PolicyStatusUserClass
+* PolicyStatusSystemClass
+* ProcessLauncherClass
+
+The updater replaces `GoogleUpdate.exe` in the `Google\Update` directory with a
+copy of `updater.exe`. This is to allow the updater to handle handoffs from
+legacy Omaha installers that invoke `Google\Update\GoogleUpdate.exe`. All other
+legacy directories under `Google\Update` are removed.
+
+The updater removes the following Omaha registrations:
+* For system installations only: Removes the GoogleUpdate services "gupdate" and
+  "gupdatem".
+* For user installations only: Removes the GoogleUpdate run value in the
+  registry at `HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run`.
+* Removes the Omaha Core and UA tasks.
+
 ### Installer User Interface
 During installation, the user is presented with a UI that displays the progress
 of the download and installation. The user may close the dialog, which cancels
@@ -354,6 +374,10 @@ The client records the `cohort`, `cohortname`, and `cohorthint` values from the
 server in each update response (even if there is no-update) and reports them on
 subsequent update checks.
 
+#### Install Source and update disposition.
+All application installs and user-initiated application updates are processed
+as foreground operations and with an `installsource` set to "ondemand".
+
 ### Installer APIs
 As part of installing or updating an application, the updater executes the
 application's installer. The API for the application installer is platform-
@@ -363,7 +387,38 @@ Application installers are run with a 15-minute timeout. If the installer runs
 for longer than this, the updater assumes failure and continues operation.
 However, the updater does not kill the installer process.
 
-The application installer API varies by platform. [macOS](installer_api_mac.md), [Windows](https://chromium.googlesource.com/chromium/src/+/main/chrome/updater/win/installer_api.h).
+The application installer API varies by platform.
+[macOS](installer_api_mac.md),
+[Windows](https://chromium.googlesource.com/chromium/src/+/main/chrome/updater/win/installer_api.h).
+
+For Windows, for backward compatibility, the following installer results are
+read and written from the registry:
+
+* `InstallerProgress` : The installer writes a percentage value (0-100) while
+installing so that the updater can provide feedback to the user on the progress.
+* `InstallerError` : Installer error, or 0 for success.
+* `InstallerExtraCode1` : Optional extra code.
+* `InstallerResult` : Specifies the result type and how to determine success or
+failure:
+  *   0 - SUCCESS
+  *   1 - FAILED\_CUSTOM\_ERROR
+  *   2 - FAILED\_MSI\_ERROR
+  *   3 - FAILED\_SYSTEM\_ERROR
+  *   4 - FAILED\_EXIT\_CODE (default)
+* `InstallerResultUIString` : A string to be displayed to the user, if
+`InstallerResult` is FAILED*.
+* `InstallerSuccessLaunchCmdLine` : On success, the installer writes a command
+line to be launched by the updater. The command line will be launched at medium
+integrity on Vista with UAC on, even if the application being installed is a
+machine application. Since this is a command line, the application path should
+be properly enclosed. For example:
+`"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" /foo`
+
+On an update or install, the InstallerXXX values are renamed to LastInstallerXXX
+values. The LastInstallerXXX values remain around until the next update or
+install. Legacy MSI installers read values such as the
+`LastInstallerResultUIString` from the `ClientState` key in the registry and
+display the string.
 
 TODO(crbug.com/1339454): Implement running installers at
 BELOW_NORMAL_PRIORITY_CLASS if the update flow is a background flow.
@@ -375,6 +430,63 @@ To maintain backwards compatibility with
 event that Omaha listens to, so that Omaha processes can shut down gracefully.
 The updater then proceeds to overinstall the Omaha binaries with the updater
 binaries.
+
+#### Serializing Setup in the updater
+
+The updater needs to serialize the following command lines:
+
+* `--install`
+* `--uninstall-self`, `--uninstall`, `--uninstall-if-unused`
+* `--update`
+
+for each specific version, so that they do not trigger concurrency issues that
+lead to an undefined state of the installation such as missing/incorrect/corrupt
+files/tasks/services/registration.
+
+Errors may happen, such as a timeout due to not being able to acquire a lock,
+but the goals are to prevent corrupt states or a permanent deadlock.
+
+Since the versions are installed SxS, the classes corresponding to the above
+command lines, i.e., AppInstall, AppUninstall, and AppUpdate will take a
+version-specific setup lock at construction time, and then proceed to
+install/uninstall/update that specific version.
+
+All three of --uninstall-self, --uninstall, --uninstall-if-unused take the
+version-specific setup lock for that particular version first. --uninstall and
+--uninstall-if-unused call --uninstall-self on other versions that take their
+own version specific setup locks.
+
+The version-specific setup lock is always acquired first. The setup lock
+serializes the installation/uninstallation of files, services, tasks, for that
+specific version, and nothing else.
+
+The prefs global lock is a related lock used by the updater to serialize common
+access points. For instance, AppInstall calls `GetVersion`, which takes the
+prefs lock. The prefs lock is also used when swapping a new version to become
+the active updater.
+
+Here is an example flow that may result in an error, but will keep the state
+deterministic with the design above:
+
+* --uninstall-if-unused for active version A calls --uninstall-self for inactive
+version B.
+* At the same time, version B is trying to install itself via –install, and
+–install is waiting for `GetVersion`.
+* `GetVersion` is waiting on the global prefs lock, because
+--uninstall-if-unused is holding the global prefs lock.
+
+In this example flow, the following scenarios may occur:
+
+* `GetVersion` may timeout and fail –install on version B, in which case the
+–uninstall-self for version B gets the version-specific setup lock and proceeds
+to uninstall. Result: The user gets an error, and retries –install.
+* Version B’s uninstall may timeout getting the version-specific setup lock,
+returning back to version A, and version A proceeds to uninstall itself and
+releasing the global prefs lock, which allows version B’s –install to proceed.
+Result: the user gets a successful –install.
+* Version B’s uninstall may timeout getting the version-specific setup lock, and
+`GetVersion` may also timeout and fail the install on version B. Result: The
+user gets an error, and retries the install.
 
 ### Offline installs
 
@@ -744,15 +856,13 @@ The interface provides the version of the update, if an update is available.
 Regardless of the normal update check timing, the update check is attempted
 immediately.
 
+The RPC function UpdateService::CheckForUpdate discovers if updates are
+available. By calling this function, a client can check for updates, retrieve
+an update response, inspect the availability of an update but not apply the
+update.
 See
 [chrome/updater/update_service.h](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/update_service.h)
 for the `UpdateService` RPC interface definition.
-
-There are two broad modes in which `UpdateService::Update` operates:
-* `do_update_check_only` is `true`: `UpdateService::Update` only checks if there
-  is an update.
-* `do_update_check_only` is `false`: `UpdateService::Update` checks if there is
-  an update and also applies the update if there is one available.
 
 ### App Registration
 The updater exposes an RPC interface for users to register an application with

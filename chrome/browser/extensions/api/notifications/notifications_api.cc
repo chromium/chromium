@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <memory>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -347,6 +346,13 @@ bool NotificationsApiFunction::CreateNotification(
   notification.set_never_timeout(options->require_interaction &&
                                  *options->require_interaction);
 
+  // For a progress notification the message parameter won't be displayed in the
+  // notification. Therefore, its value is passed to progress_status which will
+  // be displayed.
+  if (type == message_center::NOTIFICATION_TYPE_PROGRESS) {
+    notification.set_progress_status(message);
+  }
+
   if (ShouldShowOverCurrentFullscreenWindow(GetProfile(),
                                             notification.origin_url())) {
     notification.set_fullscreen_visibility(
@@ -468,6 +474,14 @@ bool NotificationsApiFunction::UpdateNotification(
     notification->set_progress(progress);
   }
 
+  // For a progress notification the message parameter won't be displayed in the
+  // notification. Therefore, its value is passed to progress_status which will
+  // be displayed.
+  if (options->message &&
+      notification->type() == message_center::NOTIFICATION_TYPE_PROGRESS) {
+    notification->set_progress_status(base::UTF8ToUTF16(*options->message));
+  }
+
   if (options->items && !options->items->empty()) {
     // We should have list items if and only if the type is a multiple type.
     if (notification->type() != message_center::NOTIFICATION_TYPE_MULTIPLE) {
@@ -553,7 +567,7 @@ NotificationsCreateFunction::~NotificationsCreateFunction() {
 ExtensionFunction::ResponseAction
 NotificationsCreateFunction::RunNotificationsApi() {
   params_ = api::notifications::Create::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params_.get());
+  EXTENSION_FUNCTION_VALIDATE(params_);
 
   const std::string extension_id(extension_->id());
   std::string notification_id;
@@ -575,7 +589,7 @@ NotificationsCreateFunction::RunNotificationsApi() {
         api::notifications::Create::Results::Create(notification_id), error));
   }
 
-  return RespondNow(OneArgument(base::Value(notification_id)));
+  return RespondNow(WithArguments(notification_id));
 }
 
 NotificationsUpdateFunction::NotificationsUpdateFunction() {
@@ -587,7 +601,7 @@ NotificationsUpdateFunction::~NotificationsUpdateFunction() {
 ExtensionFunction::ResponseAction
 NotificationsUpdateFunction::RunNotificationsApi() {
   params_ = api::notifications::Update::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params_.get());
+  EXTENSION_FUNCTION_VALIDATE(params_);
 
   // We are in update.  If the ID doesn't exist, succeed but call the callback
   // with "false".
@@ -596,7 +610,7 @@ NotificationsUpdateFunction::RunNotificationsApi() {
           CreateScopedIdentifier(extension_->id(), params_->notification_id));
 
   if (!matched_notification) {
-    return RespondNow(OneArgument(base::Value(false)));
+    return RespondNow(WithArguments(false));
   }
 
   // Copy the existing notification to get a writable version of it.
@@ -616,7 +630,7 @@ NotificationsUpdateFunction::RunNotificationsApi() {
 
   // No trouble, created the notification, send true to the callback and
   // succeed.
-  return RespondNow(OneArgument(base::Value(true)));
+  return RespondNow(WithArguments(true));
 }
 
 NotificationsClearFunction::NotificationsClearFunction() {
@@ -628,12 +642,12 @@ NotificationsClearFunction::~NotificationsClearFunction() {
 ExtensionFunction::ResponseAction
 NotificationsClearFunction::RunNotificationsApi() {
   params_ = api::notifications::Clear::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params_.get());
+  EXTENSION_FUNCTION_VALIDATE(params_);
 
   bool cancel_result = GetDisplayHelper()->Close(
       CreateScopedIdentifier(extension_->id(), params_->notification_id));
 
-  return RespondNow(OneArgument(base::Value(cancel_result)));
+  return RespondNow(WithArguments(cancel_result));
 }
 
 NotificationsGetAllFunction::NotificationsGetAllFunction() {}
@@ -651,7 +665,7 @@ NotificationsGetAllFunction::RunNotificationsApi() {
     result.Set(StripScopeFromIdentifier(extension_->id(), entry), true);
   }
 
-  return RespondNow(OneArgument(base::Value(std::move(result))));
+  return RespondNow(WithArguments(std::move(result)));
 }
 
 NotificationsGetPermissionLevelFunction::
@@ -671,8 +685,7 @@ NotificationsGetPermissionLevelFunction::RunNotificationsApi() {
           ? api::notifications::PERMISSION_LEVEL_GRANTED
           : api::notifications::PERMISSION_LEVEL_DENIED;
 
-  return RespondNow(
-      OneArgument(base::Value(api::notifications::ToString(result))));
+  return RespondNow(WithArguments(api::notifications::ToString(result)));
 }
 
 }  // namespace extensions

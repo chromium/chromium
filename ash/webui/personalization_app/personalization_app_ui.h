@@ -72,6 +72,8 @@ class PersonalizationAppUI : public ui::MojoWebUIController {
  private:
   void AddBooleans(content::WebUIDataSource* source);
 
+  void AddIntegers(content::WebUIDataSource* source);
+
   void HandleWebUIRequest(const std::string& path,
                           content::WebUIDataSource::GotDataCallback callback);
 

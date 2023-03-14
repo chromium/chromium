@@ -301,6 +301,10 @@ bool ContentBrowserClient::OverridesAudioManager() {
   return false;
 }
 
+bool ContentBrowserClient::EnforceSystemAudioEchoCancellation() {
+  return false;
+}
+
 bool ContentBrowserClient::ShouldAssignSiteForURL(const GURL& url) {
   return true;
 }
@@ -807,7 +811,8 @@ std::unique_ptr<NavigationUIData> ContentBrowserClient::GetNavigationUIData(
 }
 
 #if BUILDFLAG(IS_WIN)
-bool ContentBrowserClient::PreSpawnChild(sandbox::TargetPolicy* policy,
+
+bool ContentBrowserClient::PreSpawnChild(sandbox::TargetConfig* config,
                                          sandbox::mojom::Sandbox sandbox_type,
                                          ChildSpawnFlags flags) {
   return true;
@@ -1042,7 +1047,7 @@ FontAccessDelegate* ContentBrowserClient::GetFontAccessDelegate() {
   return nullptr;
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_CHROMEOS)
 SmartCardDelegate* ContentBrowserClient::GetSmartCardDelegate(
     BrowserContext* browser_context) {
   return nullptr;
@@ -1434,6 +1439,11 @@ bool ContentBrowserClient::AreIsolatedWebAppsEnabled(
   // The whole logic of the IWAs lives in //chrome. So IWAs should be
   // enabled at that layer.
   return false;
+}
+
+bool ContentBrowserClient::IsThirdPartyStoragePartitioningAllowed(
+    content::BrowserContext* browser_context) {
+  return true;
 }
 
 }  // namespace content

@@ -7,9 +7,11 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/test/test_help_bubble.h"
@@ -65,8 +67,10 @@ class MockHelpBubbleClient : public help_bubble::mojom::HelpBubbleClient {
 class TestHelpBubbleHandler : public HelpBubbleHandlerBase {
  public:
   explicit TestHelpBubbleHandler(
-      const std::vector<ui::ElementIdentifier>& identifiers)
+      const std::vector<ui::ElementIdentifier>& identifiers,
+      std::unique_ptr<VisibilityProvider> visibility_provider)
       : HelpBubbleHandlerBase(std::make_unique<ClientProvider>(),
+                              std::move(visibility_provider),
                               identifiers,
                               ui::ElementContext(this)) {}
 
@@ -82,6 +86,17 @@ class TestHelpBubbleHandler : public HelpBubbleHandlerBase {
     NOTREACHED() << "Should not call this in tests.";
     return nullptr;
   }
+
+  class MockVisibilityProvider
+      : public HelpBubbleHandlerBase::VisibilityProvider {
+   public:
+    MockVisibilityProvider() = default;
+    ~MockVisibilityProvider() override = default;
+
+    using HelpBubbleHandlerBase::VisibilityProvider::SetLastKnownVisibility;
+
+    MOCK_METHOD(absl::optional<bool>, CheckIsVisible, (), (const override));
+  };
 
  private:
   // Provides a mock client.
@@ -140,16 +155,26 @@ class HelpBubbleHandlerTest : public testing::Test {
   ~HelpBubbleHandlerTest() override = default;
 
   void SetUp() override {
+    auto visibility_provider =
+        std::make_unique<TestHelpBubbleHandler::MockVisibilityProvider>();
+    EXPECT_CALL(*visibility_provider.get(), CheckIsVisible)
+        .WillRepeatedly(testing::Return(true));
+    visibility_provider_ = visibility_provider.get();
     test_handler_ = std::make_unique<TestHelpBubbleHandler>(
         std::vector{kHelpBubbleHandlerTestElementIdentifier,
-                    kHelpBubbleHandlerTestElementIdentifier2});
+                    kHelpBubbleHandlerTestElementIdentifier2},
+        std::move(visibility_provider));
   }
+
+  void TearDown() override { visibility_provider_ = nullptr; }
 
  protected:
   help_bubble::mojom::HelpBubbleHandler* handler() {
     return test_handler_.get();
   }
 
+  base::raw_ptr<TestHelpBubbleHandler::MockVisibilityProvider>
+      visibility_provider_ = nullptr;
   std::unique_ptr<TestHelpBubbleHandler> test_handler_;
   HelpBubbleFactoryRegistry help_bubble_factory_registry_;
 };
@@ -406,8 +431,7 @@ TEST_F(HelpBubbleHandlerTest, ExternalHelpBubbleUpdated) {
   params.buttons.emplace_back(std::move(button_params));
 
   std::unique_ptr<HelpBubble> help_bubble =
-      std::make_unique<test::TestHelpBubble>(element->context(),
-                                             std::move(params));
+      std::make_unique<test::TestHelpBubble>(element, std::move(params));
 
   // Call the floating help bubble created method and ensure that the correct
   // message is sent over to the client.
@@ -666,6 +690,176 @@ TEST_F(HelpBubbleHandlerTest, ShowMultipleBubblesAndCloseOneViaCallback) {
   EXPECT_CALL(
       test_handler_->mock(),
       HideHelpBubble(kHelpBubbleHandlerTestElementIdentifier2.GetName()));
+}
+
+// The following tests check that the WebContents visibility logic.
+
+TEST_F(HelpBubbleHandlerTest, WebContentsNotVisibleResultsInNoElement) {
+  UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, element_shown);
+  const auto subscription =
+      ui::ElementTracker::GetElementTracker()
+          ->AddElementShownInAnyContextCallback(
+              kHelpBubbleHandlerTestElementIdentifier, element_shown.Get());
+
+  EXPECT_CALL(*visibility_provider_, CheckIsVisible)
+      .WillOnce(testing::Return(false));
+  handler()->HelpBubbleAnchorVisibilityChanged(
+      kHelpBubbleHandlerTestElementIdentifier.GetName(), true, kElementBounds);
+}
+
+TEST_F(HelpBubbleHandlerTest, WebContentsVisibilityNotAvailable) {
+  UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, element_shown);
+  const auto subscription =
+      ui::ElementTracker::GetElementTracker()
+          ->AddElementShownInAnyContextCallback(
+              kHelpBubbleHandlerTestElementIdentifier, element_shown.Get());
+
+  EXPECT_CALL(*visibility_provider_, CheckIsVisible)
+      .WillOnce(testing::Return(absl::nullopt));
+  handler()->HelpBubbleAnchorVisibilityChanged(
+      kHelpBubbleHandlerTestElementIdentifier.GetName(), true, kElementBounds);
+}
+
+TEST_F(HelpBubbleHandlerTest, ElementShownOnmWebContentsBecomingVisible) {
+  UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, element_shown);
+  const auto subscription =
+      ui::ElementTracker::GetElementTracker()
+          ->AddElementShownInAnyContextCallback(
+              kHelpBubbleHandlerTestElementIdentifier, element_shown.Get());
+
+  EXPECT_CALL(*visibility_provider_, CheckIsVisible)
+      .WillOnce(testing::Return(absl::nullopt));
+  handler()->HelpBubbleAnchorVisibilityChanged(
+      kHelpBubbleHandlerTestElementIdentifier.GetName(), true, kElementBounds);
+
+  EXPECT_CALL_IN_SCOPE(element_shown, Run,
+                       visibility_provider_->SetLastKnownVisibility(true));
+}
+
+TEST_F(HelpBubbleHandlerTest, ElementHiddenWebContentsBecomingInvisible) {
+  UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, element_hidden);
+
+  ui::TrackedElement* el = nullptr;
+  const auto sub1 = ui::ElementTracker::GetElementTracker()
+                        ->AddElementShownInAnyContextCallback(
+                            kHelpBubbleHandlerTestElementIdentifier,
+                            base::BindLambdaForTesting(
+                                [&el](ui::TrackedElement* el_) { el = el_; }));
+  handler()->HelpBubbleAnchorVisibilityChanged(
+      kHelpBubbleHandlerTestElementIdentifier.GetName(), true, kElementBounds);
+
+  const auto sub2 =
+      ui::ElementTracker::GetElementTracker()->AddElementHiddenCallback(
+          el->identifier(), el->context(), element_hidden.Get());
+
+  EXPECT_CALL_IN_SCOPE(element_hidden, Run,
+                       visibility_provider_->SetLastKnownVisibility(false));
+}
+
+TEST_F(HelpBubbleHandlerTest, ElementHiddenWebContentsBecomingUnknown) {
+  UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, element_shown);
+  UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, element_hidden);
+
+  const base::CallbackListSubscription sub1 =
+      ui::ElementTracker::GetElementTracker()
+          ->AddElementShownInAnyContextCallback(
+              kHelpBubbleHandlerTestElementIdentifier, element_shown.Get());
+  base::CallbackListSubscription sub2;
+
+  EXPECT_CALL(element_shown, Run).WillOnce([&](ui::TrackedElement* el) {
+    sub2 = ui::ElementTracker::GetElementTracker()->AddElementHiddenCallback(
+        el->identifier(), el->context(), element_hidden.Get());
+  });
+  handler()->HelpBubbleAnchorVisibilityChanged(
+      kHelpBubbleHandlerTestElementIdentifier.GetName(), true, kElementBounds);
+
+  EXPECT_CALL_IN_SCOPE(
+      element_hidden, Run,
+      visibility_provider_->SetLastKnownVisibility(absl::nullopt));
+}
+
+TEST_F(HelpBubbleHandlerTest, RepeatedlyQueriesVisibility) {
+  UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, element_shown);
+  const auto subscription =
+      ui::ElementTracker::GetElementTracker()
+          ->AddElementShownInAnyContextCallback(
+              kHelpBubbleHandlerTestElementIdentifier, element_shown.Get());
+
+  EXPECT_CALL(*visibility_provider_, CheckIsVisible)
+      .Times(2)
+      .WillRepeatedly(testing::Return(absl::nullopt));
+  handler()->HelpBubbleAnchorVisibilityChanged(
+      kHelpBubbleHandlerTestElementIdentifier.GetName(), true, kElementBounds);
+  handler()->HelpBubbleAnchorVisibilityChanged(
+      kHelpBubbleHandlerTestElementIdentifier2.GetName(), true, kElementBounds);
+}
+
+TEST_F(HelpBubbleHandlerTest, WebContentsVisibilityCanChangeMultipleTimes) {
+  UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, element_shown);
+  const auto subscription =
+      ui::ElementTracker::GetElementTracker()
+          ->AddElementShownInAnyContextCallback(
+              kHelpBubbleHandlerTestElementIdentifier, element_shown.Get());
+
+  EXPECT_CALL_IN_SCOPE(element_shown, Run,
+                       handler()->HelpBubbleAnchorVisibilityChanged(
+                           kHelpBubbleHandlerTestElementIdentifier.GetName(),
+                           true, kElementBounds));
+
+  visibility_provider_->SetLastKnownVisibility(false);
+  EXPECT_CALL_IN_SCOPE(element_shown, Run,
+                       visibility_provider_->SetLastKnownVisibility(true));
+  visibility_provider_->SetLastKnownVisibility(absl::nullopt);
+  EXPECT_CALL_IN_SCOPE(element_shown, Run,
+                       visibility_provider_->SetLastKnownVisibility(true));
+}
+
+TEST_F(HelpBubbleHandlerTest, DestroyHandlerDuringCallback) {
+  UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, element_shown);
+  const auto subscription =
+      ui::ElementTracker::GetElementTracker()
+          ->AddElementShownInAnyContextCallback(
+              kHelpBubbleHandlerTestElementIdentifier, element_shown.Get());
+
+  EXPECT_CALL_IN_SCOPE(element_shown, Run,
+                       handler()->HelpBubbleAnchorVisibilityChanged(
+                           kHelpBubbleHandlerTestElementIdentifier.GetName(),
+                           true, kElementBounds));
+  handler()->HelpBubbleAnchorVisibilityChanged(
+      kHelpBubbleHandlerTestElementIdentifier2.GetName(), true, kElementBounds);
+
+  visibility_provider_->SetLastKnownVisibility(false);
+  EXPECT_CALL(element_shown, Run).WillOnce([&]() { test_handler_.reset(); });
+  visibility_provider_->SetLastKnownVisibility(true);
+}
+
+TEST_F(HelpBubbleHandlerTest,
+       WebUIHelpBubblePreventsHideWhenVisibilityChanges) {
+  UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, element_hidden);
+
+  handler()->HelpBubbleAnchorVisibilityChanged(
+      kHelpBubbleHandlerTestElementIdentifier.GetName(), true, kElementBounds);
+  auto* const element =
+      ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+          kHelpBubbleHandlerTestElementIdentifier, test_handler_->context());
+  ASSERT_NE(nullptr, element);
+  const auto subscription =
+      ui::ElementTracker::GetElementTracker()->AddElementHiddenCallback(
+          element->identifier(), element->context(), element_hidden.Get());
+
+  HelpBubbleParams params;
+  params.body_text = u"Help bubble body.";
+  params.arrow = HelpBubbleArrow::kTopCenter;
+
+  EXPECT_CALL(test_handler_->mock(), ShowHelpBubble(testing::_));
+  auto help_bubble = help_bubble_factory_registry_.CreateHelpBubble(
+      element, std::move(params));
+
+  visibility_provider_->SetLastKnownVisibility(false);
+  EXPECT_TRUE(help_bubble->is_open());
+
+  EXPECT_CALL(test_handler_->mock(), HideHelpBubble(testing::_));
+  EXPECT_CALL_IN_SCOPE(element_hidden, Run, help_bubble->Close());
 }
 
 }  // namespace user_education

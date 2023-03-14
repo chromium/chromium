@@ -48,6 +48,10 @@ BASE_FEATURE(kEnableFeedAblation,
              "EnableFeedAblation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableFeedExperimentTagging,
+             "EnableFeedExperimentTagging",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Key for NSUserDefaults containing a bool indicating whether the next run
 // should enable feed background refresh. This is used because registering for
 // background refreshes must happen early in app initialization and FeatureList
@@ -74,6 +78,12 @@ const char kEnableFeedRefreshPostFeedSession[] =
     "EnableFeedRefreshPostFeedSession";
 const char kEnableFeedRefreshOnAppBackgrounding[] =
     "EnableFeedRefreshOnAppBackgrounding";
+const char kFeedSessionEndTimerTimeoutInSeconds[] =
+    "FeedSessionEndTimerTimeoutInSeconds";
+const char kFeedSeenRefreshThresholdInSeconds[] =
+    "FeedSeenRefreshThresholdInSeconds";
+const char kFeedUnseenRefreshThresholdInSeconds[] =
+    "FeedUnseenRefreshThresholdInSeconds";
 
 bool IsWebChannelsEnabled() {
   return base::FeatureList::IsEnabled(kEnableWebChannels);
@@ -200,6 +210,39 @@ bool IsFeedRefreshOnAppBackgroundingEnabled() {
       /*default=*/false);
 }
 
+double GetFeedSessionEndTimerTimeoutInSeconds() {
+  double override_value = [[NSUserDefaults standardUserDefaults]
+      doubleForKey:@"FeedSessionEndTimerTimeoutInSeconds"];
+  if (override_value > 0.0) {
+    return override_value;
+  }
+  return base::GetFieldTrialParamByFeatureAsDouble(
+      kEnableFeedForegroundRefresh, kFeedSessionEndTimerTimeoutInSeconds,
+      /*default=*/base::Minutes(5).InSecondsF());
+}
+
+double GetFeedSeenRefreshThresholdInSeconds() {
+  double override_value = [[NSUserDefaults standardUserDefaults]
+      doubleForKey:@"FeedSeenRefreshThresholdInSeconds"];
+  if (override_value > 0.0) {
+    return override_value;
+  }
+  return base::GetFieldTrialParamByFeatureAsDouble(
+      kEnableFeedForegroundRefresh, kFeedSeenRefreshThresholdInSeconds,
+      /*default=*/base::Hours(1).InSecondsF());
+}
+
+double GetFeedUnseenRefreshThresholdInSeconds() {
+  double override_value = [[NSUserDefaults standardUserDefaults]
+      doubleForKey:@"FeedUnseenRefreshThresholdInSeconds"];
+  if (override_value > 0.0) {
+    return override_value;
+  }
+  return base::GetFieldTrialParamByFeatureAsDouble(
+      kEnableFeedForegroundRefresh, kFeedUnseenRefreshThresholdInSeconds,
+      /*default=*/base::Hours(6).InSecondsF());
+}
+
 bool IsFeedBottomSignInPromoEnabled() {
   return base::FeatureList::IsEnabled(kEnableFeedBottomSignInPromo);
 }
@@ -210,4 +253,8 @@ bool IsFeedCardMenuSignInPromoEnabled() {
 
 bool IsFeedAblationEnabled() {
   return base::FeatureList::IsEnabled(kEnableFeedAblation);
+}
+
+bool IsFeedExperimentTaggingEnabled() {
+  return base::FeatureList::IsEnabled(kEnableFeedExperimentTagging);
 }

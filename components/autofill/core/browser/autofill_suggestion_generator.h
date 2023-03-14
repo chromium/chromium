@@ -34,8 +34,6 @@ class FormStructure;
 class IBAN;
 class PersonalDataManager;
 
-using InternalId = base::IdType32<class InternalIdTag>;
-
 // Helper class to generate Autofill suggestions, such as for credit card and
 // address profile Autofill.
 class AutofillSuggestionGenerator {
@@ -74,8 +72,7 @@ class AutofillSuggestionGenerator {
   // Returns the local and server cards ordered by the Autofill ranking. The
   // cards which are expired and disused aren't included if
   // |suppress_disused_cards| is true.
-  static std::vector<CreditCard*> GetOrderedCardsToSuggest(
-      // PersonalDataManager* personal_data,
+  static std::vector<CreditCard> GetOrderedCardsToSuggest(
       AutofillClient* autofill_client,
       bool suppress_disused_cards);
 
@@ -104,11 +101,9 @@ class AutofillSuggestionGenerator {
 
   // Methods for packing and unpacking credit card and profile IDs for sending
   // and receiving to and from the renderer process.
-  int MakeFrontendId(const Suggestion::BackendId& cc_backend_id,
-                     const Suggestion::BackendId& profile_backend_id);
-  void SplitFrontendId(int frontend_id,
-                       Suggestion::BackendId* cc_backend_id,
-                       Suggestion::BackendId* profile_backend_id);
+  int MakeFrontendIdFromBackendId(
+      const Suggestion::BackendId& cc_or_address_backend_id);
+  Suggestion::BackendId GetBackendIdFromFrontendId(int frontend_id);
 
   // Helper function to decide whether to show the virtual card option for
   // `candidate_card`.
@@ -120,10 +115,13 @@ class AutofillSuggestionGenerator {
   const CreditCard* GetServerCardForLocalCard(
       const CreditCard* local_card) const;
 
-  // Helper functions to expose functions to tests.
-  InternalId BackendIdToInternalIdForTesting(
-      const Suggestion::BackendId& backend_id);
-  Suggestion::BackendId InternalIdToBackendIdForTesting(InternalId internal_id);
+  // Used for the testing purposes.
+  std::map<Suggestion::BackendId, int>& backend_to_frontend_map_for_testing() {
+    return backend_to_frontend_map_;
+  }
+  std::map<int, Suggestion::BackendId>& frontend_to_backend_map_for_testing() {
+    return frontend_to_backend_map_;
+  }
 
  protected:
   // Creates a suggestion for the given `credit_card`. `type` denotes the
@@ -139,13 +137,6 @@ class AutofillSuggestionGenerator {
                                         bool virtual_card_option,
                                         const std::string& app_locale,
                                         bool card_linked_offer_available) const;
-
-  // Suggestion backend ID to internal ID mapping. We keep two maps to convert
-  // back and forth. These should be used only by BackendIdToInternalId and
-  // InternalIdToBackendId.
-  // Note that the internal IDs are not frontend IDs.
-  std::map<Suggestion::BackendId, InternalId> backend_to_internal_map_;
-  std::map<InternalId, Suggestion::BackendId> internal_to_backend_map_;
 
  private:
   // Return the texts shown as the first line of the suggestion, based on the
@@ -177,11 +168,14 @@ class AutofillSuggestionGenerator {
                      const CreditCard& credit_card,
                      bool virtual_card_option) const;
 
-  // Maps suggestion backend ID to and from an internal ID identifying it. Two
-  // of these intermediate internal IDs are packed by MakeFrontendID to make the
-  // IDs that this class generates for the UI and for IPC.
-  InternalId BackendIdToInternalId(const Suggestion::BackendId& backend_id);
-  Suggestion::BackendId InternalIdToBackendId(InternalId internal_id);
+  // Returns true if we should show a virtual card option for the server card
+  // `card`, false otherwise.
+  bool ShouldShowVirtualCardOptionForServerCard(const CreditCard* card) const;
+
+  // Suggestion backend ID to frontend ID mapping. We keep two maps to convert
+  // back and forth.
+  std::map<Suggestion::BackendId, int> backend_to_frontend_map_;
+  std::map<int, Suggestion::BackendId> frontend_to_backend_map_;
 
   // autofill_client_ and the generator are both one per tab, and have the same
   // lifecycle.

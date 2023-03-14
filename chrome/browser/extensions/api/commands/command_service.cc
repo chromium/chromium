@@ -87,8 +87,7 @@ void MergeSuggestedKeyPrefs(const std::string& extension_id,
   }
 
   extension_prefs->UpdateExtensionPref(
-      extension_id, kCommands,
-      std::make_unique<base::Value>(std::move(suggested_key_prefs)));
+      extension_id, kCommands, base::Value(std::move(suggested_key_prefs)));
 }
 
 }  // namespace
@@ -212,10 +211,10 @@ bool CommandService::AddKeybindingPref(
     RemoveKeybindingPrefs(extension_id, command_name);
 
   // Set the keybinding pref.
-  base::Value keybinding(base::Value::Type::DICT);
-  keybinding.SetStringKey(kExtension, extension_id);
-  keybinding.SetStringKey(kCommandName, command_name);
-  keybinding.SetBoolKey(kGlobal, global);
+  base::Value::Dict keybinding;
+  keybinding.Set(kExtension, extension_id);
+  keybinding.Set(kCommandName, command_name);
+  keybinding.Set(kGlobal, global);
 
   bindings.Set(key, std::move(keybinding));
 
@@ -608,7 +607,7 @@ void CommandService::RemoveDefunctExtensionSuggestedCommandPrefs(
 
     extension_prefs->UpdateExtensionPref(
         extension->id(), kCommands,
-        std::make_unique<base::Value>(std::move(suggested_key_prefs)));
+        base::Value(std::move(suggested_key_prefs)));
   }
 }
 

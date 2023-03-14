@@ -335,6 +335,7 @@ ci.builder(
     name = "Android x64 Builder All Targets (dbg)",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     builder_spec = builder_config.copy_from("ci/Android x64 Builder (dbg)"),
+    free_space = builders.free_space.high,
     console_view_entry = consoles.console_view_entry(
         category = "builder|x86",
         short_name = "64-all",

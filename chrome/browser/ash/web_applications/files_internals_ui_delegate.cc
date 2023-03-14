@@ -54,6 +54,10 @@ void ChromeFilesInternalsUIDelegate::SetOfficeSetupComplete(bool complete) {
   Profile* profile = Profile::FromWebUI(web_ui_);
   if (profile) {
     file_manager::file_tasks::SetOfficeSetupComplete(profile, complete);
+    if (!complete) {
+      file_manager::file_tasks::SetOfficeMoveConfirmationShown(profile,
+                                                               complete);
+    }
   }
 }
 

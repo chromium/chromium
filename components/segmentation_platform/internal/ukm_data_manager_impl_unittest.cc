@@ -117,9 +117,7 @@ class TestServicesForPlatform : public SegmentationPlatformServiceTestBase {
                          [SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE];
     callback.Run(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE, metadata,
                  0);
-    segment_db_->GetCallback(true);
     segment_db_->UpdateCallback(true);
-    segment_db_->LoadCallback(true);
     base::RunLoop().RunUntilIdle();
   }
 

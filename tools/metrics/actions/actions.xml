@@ -2904,13 +2904,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="Android.Download.InfoBar.CloseButtonClicked">
-  <owner>shaktisahu@chromium.org</owner>
-  <description>
-    User tapped on the close button to close the infobar.
-  </description>
-</action>
-
 <action name="Android.Download.InfoBar.LinkClicked.OpenDownload">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -2937,11 +2930,6 @@ should be able to be added at any place in this file.
     user had switched tabs. The infobar which was previously being shown on the
     old tab was closed and was shown on the new active tab.
   </description>
-</action>
-
-<action name="Android.Download.InfoBar.Shown">
-  <owner>shaktisahu@chromium.org</owner>
-  <description>The infobar was created and shown.</description>
 </action>
 
 <action name="Android.DownloadManager.CheckForExternallyRemovedItems"
@@ -3531,6 +3519,30 @@ should be able to be added at any place in this file.
   <description>
     User unchecks the launch at startup option from the right click context menu
     of an app from new chrome://apps page.
+  </description>
+</action>
+
+<action name="AppHome_LaunchDeprecatedApp">
+  <owner>dmurph@chromium.org</owner>
+  <owner>desktop-pwas-team@chromium.org</owner>
+  <description>
+    User launches a deprecated app (chrome app, built on extensions system) by
+    clicking on the app icon from the new chrome://apps page. This will result
+    in the launch being interrupted with a dialog that post-m112 will block the
+    actual launch of the app. After m114, the admin policy allowing the bypass
+    of this dialog will expire as well. If the user ends up launching the app
+    itself, the web app's start_url opening up in a dedicated window or in a
+    browser tab, depending on the user's preference.
+  </description>
+</action>
+
+<action name="AppHome_LaunchWebApp">
+  <owner>dmurph@chromium.org</owner>
+  <owner>desktop-pwas-team@chromium.org</owner>
+  <description>
+    User launches a web app by clicking on the app icon from the new
+    chrome://apps page. This results in the web app's start_url opening up in a
+    dedicated window or in a browser tab, depending on the user's preference.
   </description>
 </action>
 
@@ -5841,6 +5853,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ChromeOS.Settings.InputMethod.Autocorrect.Open">
+  <owner>zacpartridge@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <description>
+    Recorded when a user clicks the link to open the Auto-correction section in
+    Chrome OS Inputs methods setting page. This can happen when a user clicks on
+    the Learn More button from the Autocorrection undo window.
+  </description>
+</action>
+
 <action name="ChromeOS.Settings.Languages">
   <owner>myy@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -5958,8 +5980,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ClearBrowsingData_Everything" not_user_triggered="true">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>dullweber@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <description>Browsing data has been cleared for all time.</description>
 </action>
 
 <action name="ClearBrowsingData_History" not_user_triggered="true">
@@ -5967,27 +5990,42 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="ClearBrowsingData_Last15Minutes" not_user_triggered="true">
+  <owner>dullweber@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <description>
+    Browsing data has been cleared for the last 15 minutes.
+  </description>
+</action>
+
 <action name="ClearBrowsingData_LastDay" not_user_triggered="true">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>dullweber@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <description>Browsing data has been cleared for the last day.</description>
 </action>
 
 <action name="ClearBrowsingData_LastHour" not_user_triggered="true">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>dullweber@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <description>Browsing data has been cleared for the last hour.</description>
 </action>
 
 <action name="ClearBrowsingData_LastMonth" not_user_triggered="true">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>dullweber@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <description>Browsing data has been cleared for the last month.</description>
 </action>
 
 <action name="ClearBrowsingData_LastWeek" not_user_triggered="true">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>dullweber@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <description>Browsing data has been cleared for the last week.</description>
 </action>
 
 <action name="ClearBrowsingData_LSOData">
+  <obsolete>
+    LSO data relates to Flash, and Flash is no longer supported.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
@@ -6096,6 +6134,12 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ClearBrowsingData_TimePeriodChanged_Everything">
+  <owner>dullweber@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <description>Time period in CBD was changed.</description>
+</action>
+
+<action name="ClearBrowsingData_TimePeriodChanged_Last15Minutes">
   <owner>dullweber@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <description>Time period in CBD was changed.</description>
@@ -8973,6 +9017,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Extensions.Toolbar.SiteAccessCombobox.OnAllSitesSelected">
+  <obsolete>
+    Deprecated 03/2023. Extensions tabbed menu view, which was under a flag that
+    never landed, was removed in crbug/1390958.
+  </obsolete>
   <owner>emiliapaz@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <description>
@@ -8983,6 +9031,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Extensions.Toolbar.SiteAccessCombobox.OnClickSelected">
+  <obsolete>
+    Deprecated 03/2023. Extensions tabbed menu view, which was under a flag that
+    never landed, was removed in crbug/1390958.
+  </obsolete>
   <owner>emiliapaz@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <description>
@@ -8993,6 +9045,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Extensions.Toolbar.SiteAccessCombobox.OnSiteSelected">
+  <obsolete>
+    Deprecated 03/2023. Extensions tabbed menu view, which was under a flag that
+    never landed, was removed in crbug/1390958.
+  </obsolete>
   <owner>emiliapaz@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <description>
@@ -11647,7 +11703,8 @@ should be able to be added at any place in this file.
   <description>
     The number of times the user navigated to the next match in Find in Page on
     iOS. For instance, the user pressed the Next button in the system Find panel
-    or Chrome Find bar, or used the associated keybinding.
+    or Chrome Find bar, or used the associated keybinding. From M112 onwards,
+    this is not recorded if the total number of matches is 2 or less.
   </description>
 </action>
 
@@ -11657,7 +11714,8 @@ should be able to be added at any place in this file.
   <description>
     The number of times the user navigated to the previous match in Find in Page
     on iOS. For instance, the user pressed the Previous button in the system
-    Find panel or Chrome Find bar, or used the associated keybinding.
+    Find panel or Chrome Find bar, or used the associated keybinding. From M112
+    onwards, this is not recorded if the total number of matches is 2 or less.
   </description>
 </action>
 
@@ -11804,6 +11862,32 @@ should be able to be added at any place in this file.
   <owner>sczs@chromium.org</owner>
   <description>
     Recorded when a user closes bookmark manager by swiping down. iOS-only.
+  </description>
+</action>
+
+<action name="IOSBookmarksEditorClosedWithSwipeDown">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user closes bookmark editor by swiping down. iOS-only.
+  </description>
+</action>
+
+<action name="IOSBookmarksFolderChooserClosedWithSwipeDown">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user closes bookmark folder chooser by swiping down.
+    iOS-only.
+  </description>
+</action>
+
+<action name="IOSBookmarksFolderEditorClosedWithSwipeDown">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user closes bookmark folder editor by swiping down.
+    iOS-only.
   </description>
 </action>
 
@@ -17944,6 +18028,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileBookmarkManagerAddedBookmarkUndone">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>The user undid added bookmark on iOS only.</description>
+</action>
+
 <action name="MobileBookmarkManagerClose">
   <owner>twellington@google.com</owner>
   <owner>sczs@chromium.org</owner>
@@ -17962,6 +18052,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileBookmarkManagerDeletedEntryUndone">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>The user undid bookmark deletion on iOS only.</description>
+</action>
+
 <action name="MobileBookmarkManagerDragReorder">
   <owner>jhimawan@google.com</owner>
   <owner>twellington@google.com</owner>
@@ -17975,7 +18071,8 @@ should be able to be added at any place in this file.
   <owner>twellington@google.com</owner>
   <owner>clank-app-team@google.com</owner>
   <description>
-    Recorded when a user edits a bookmark in the Android bookmark manager.
+    Recorded when a user edits a bookmark in bookmark manager, on iOS or
+    Android.
   </description>
 </action>
 
@@ -17983,7 +18080,7 @@ should be able to be added at any place in this file.
   <owner>twellington@google.com</owner>
   <owner>clank-app-team@google.com</owner>
   <description>
-    Recorded when a user edits a folder in the Android bookmark manager.
+    Recorded when a user edits a folder in bookmark manager, on iOS or Android.
   </description>
 </action>
 
@@ -18057,8 +18154,14 @@ should be able to be added at any place in this file.
   <owner>clank-app-team@google.com</owner>
   <description>
     Recorded when a user moves all selected bookmark items to a new folder in
-    the Android bookmark manager.
+    bookmark manager, on iOS or Android.
   </description>
+</action>
+
+<action name="MobileBookmarkManagerMoveToFolderUndone">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>The user undid bookmark move on iOS only.</description>
 </action>
 
 <action name="MobileBookmarkManagerMoveUp">
@@ -18087,11 +18190,19 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileBookmarkManagerOpenedBookmarkEditorFromSnackbar">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    The user opened the bookmark editor using the snackbar.
+  </description>
+</action>
+
 <action name="MobileBookmarkManagerOpenFolder">
   <owner>twellington@google.com</owner>
   <owner>clank-app-team@google.com</owner>
   <description>
-    Recorded when a user opens a folder in the Android bookmark manager.
+    Recorded when a user opens a folder on iOS and Android.
   </description>
 </action>
 
@@ -18136,6 +18247,92 @@ should be able to be added at any place in this file.
   <description>
     Recorded when a user taps on an item in order to select it from the Android
     bookmark manager (this can only occur while in selection mode).
+  </description>
+</action>
+
+<action name="MobileBookmarkManagerUpdatedBookmarkUndone">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>The user undid bookmark update on iOS only.</description>
+</action>
+
+<action name="MobileBookmarksEditorCanceled">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    The user canceled the bookmark editor view. iOS-only.
+  </description>
+</action>
+
+<action name="MobileBookmarksEditorDeletedBookmark">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    The user deleted the bookmark in the bookmark editor view. iOS-only.
+  </description>
+</action>
+
+<action name="MobileBookmarksEditorOpenedFolderChooser">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    The user opened the folder chooser in the bookmark editor view. iOS-only.
+  </description>
+</action>
+
+<action name="MobileBookmarksEditorSaved">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>The user saved the bookmark editor view. iOS-only.</description>
+</action>
+
+<action name="MobileBookmarksFolderChooserCanceled">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    The user canceled the bookmark folder chooser view. iOS-only.
+  </description>
+</action>
+
+<action name="MobileBookmarksFolderChooserDone">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    The user confirmed the bookmark folder chooser view. iOS-only.
+  </description>
+</action>
+
+<action name="MobileBookmarksFolderEditorCanceled">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    The user canceled the bookmark folder editor view. iOS-only.
+  </description>
+</action>
+
+<action name="MobileBookmarksFolderEditorDeletedFolder">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    The user deleted the folder while in the bookmark folder editor view.
+    iOS-only.
+  </description>
+</action>
+
+<action name="MobileBookmarksFolderEditorOpenedFolderChooser">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    The user opened the folder chooser in the bookmark folder editor view.
+    iOS-only.
+  </description>
+</action>
+
+<action name="MobileBookmarksFolderEditorSaved">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    The user confirmed the bookmark folder editor view. iOS-only.
   </description>
 </action>
 
@@ -18709,7 +18906,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileFreUMALinkTapped">
   <owner>arthurmilchior@chromium.org</owner>
-  <owner>jlebel@google.com</owner>
+  <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <description>
     User tapped on the UMA link on the first run welcome view. This metric is
@@ -19438,6 +19635,14 @@ should be able to be added at any place in this file.
   <description>User pressed 'Paste and Go' in the app menu.</description>
 </action>
 
+<action name="MobileMenuPinTab">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>pakzhygitov@google.com</owner>
+  <description>
+    User tapped on the 'Pin Tab' action in the iOS overflow menu.
+  </description>
+</action>
+
 <action name="MobileMenuPriceNotifications">
   <owner>danieltwhite@google.com</owner>
   <owner>ajuma@chromium.org</owner>
@@ -19576,6 +19781,14 @@ should be able to be added at any place in this file.
   <owner>sczs@chromium.org</owner>
   <owner>tinazwang@chromium.org</owner>
   <description>User pressed the unfollow option in the app menu.</description>
+</action>
+
+<action name="MobileMenuUnpinTab">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>pakzhygitov@google.com</owner>
+  <description>
+    User tapped on the 'Unpin Tab' action in the iOS overflow menu.
+  </description>
 </action>
 
 <action name="MobileMenuVoiceSearch">
@@ -20629,6 +20842,11 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileShareMenuAddToHome">
+  <owner>gambard@chromium.org</owner>
+  <description>User added current page to device home screen.</description>
+</action>
+
 <action name="MobileShareMenuBookmark">
   <owner>gambard@chromium.org</owner>
   <description>User shared to the device's bookmarks.</description>
@@ -20752,6 +20970,24 @@ should be able to be added at any place in this file.
   <owner>seblalancette@chromium.org</owner>
   <description>
     The user took a screenshot of a single chrome window. iOS only.
+  </description>
+</action>
+
+<action name="MobileSnackbarUndoPinAction">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>pakzhygitov@google.com</owner>
+  <description>
+    User tapped on the UNDO button of the snackbar displayed after pinning a tab
+    from the iOS overflow menu.
+  </description>
+</action>
+
+<action name="MobileSnackbarUndoUnpinAction">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>pakzhygitov@google.com</owner>
+  <description>
+    User tapped on the UNDO button of the snackbar displayed after unpinning a
+    tab from the iOS overflow menu.
   </description>
 </action>
 
@@ -20887,6 +21123,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileTabGridAddedMultipleNewBookmarks">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    User added multiple new bookmarks base on the selected tabs, in the iOS tab
+    grid. It is possible to have one tab selected.
+  </description>
+</action>
+
 <action name="MobileTabGridBeganReordering">
   <owner>edchin@chromium.org</owner>
   <owner>marq@chromium.org</owner>
@@ -20918,6 +21163,15 @@ should be able to be added at any place in this file.
   <description>
     User in the iOS incognito tab grid used the Close All control and the action
     sheet that asks for confirmation has been displayed.
+  </description>
+</action>
+
+<action name="MobileTabGridCloseAllNonPinnedTabs">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>pakzhygitov@google.com</owner>
+  <description>
+    User in the iOS tab grid used the Close All control and chose to close all
+    non-pinned tabs.
   </description>
 </action>
 
@@ -21056,6 +21310,20 @@ should be able to be added at any place in this file.
   <description>User moves from a Tab to an existing other Tab.</description>
 </action>
 
+<action name="MobileTabGridOpenedBookmarkEditorForExistingBookmark">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    User edited an existing bookmark, in the iOS tab grid.
+  </description>
+</action>
+
+<action name="MobileTabGridOpenedBookmarkEditorForNewBookmark">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>User adds one new bookmark, in the iOS tab grid.</description>
+</action>
+
 <action name="MobileTabGridOpenIncognitoTab">
   <owner>edchin@chromium.org</owner>
   <owner>marq@chromium.org</owner>
@@ -21096,6 +21364,14 @@ should be able to be added at any place in this file.
   <description>
     User in the iOS tab grid opened a regular tab from another window by tapping
     on it from search results.
+  </description>
+</action>
+
+<action name="MobileTabGridPinnedTabSelected">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>pakzhygitov@google.com</owner>
+  <description>
+    User selected a tab in the iOS tab grid pinned tabs section.
   </description>
 </action>
 
@@ -21283,6 +21559,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileTabPinned">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>pakzhygitov@google.com</owner>
+  <description>
+    User pins a Tab. This includes pinning a tab from the tab strip, tab grid
+    and overflow menu.
+  </description>
+</action>
+
 <action name="MobileTabReturnedToCurrentTab">
   <owner>yusufo@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
@@ -21353,6 +21638,15 @@ should be able to be added at any place in this file.
   <owner>clank-large-form-factors@google.com</owner>
   <description>
     User switched tabs via the tab strip on tablets. Recorded for Android only.
+  </description>
+</action>
+
+<action name="MobileTabUnpinned">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>pakzhygitov@google.com</owner>
+  <description>
+    User unpins a Tab. This includes unpinning a tab from the tab strip, tab
+    grid and overflow menu.
   </description>
 </action>
 
@@ -23186,6 +23480,15 @@ should be able to be added at any place in this file.
   <description>
     The 'Hide shortcuts' toggle was clicked in the richer picker shortcuts
     submenu.
+  </description>
+</action>
+
+<action name="Nudge_Active_When_MultitaskMenu_Opened">
+  <owner>hewer@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <description>
+    The multitask menu (window layout menu) was opened while the education nudge
+    was showing.
   </description>
 </action>
 
@@ -29784,6 +30087,11 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="ShowAudioSettingsPage">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <description>Please enter the description of this user action.</description>
+</action>
+
 <action name="ShowBluetoothSettingsPage">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -30066,6 +30374,15 @@ should be able to be added at any place in this file.
   <description>The user opened the side panel.</description>
 </action>
 
+<action name="SidePanel.SideSearch.NewTabButtonClicked">
+  <owner>pengchaocai@chromium.org</owner>
+  <owner>chrome-cros@google.com</owner>
+  <description>
+    Recorded when the new tab button is clicked with the side search side panel
+    entry showing.
+  </description>
+</action>
+
 <action name="SidePanel.SideSearch.Shown">
   <owner>tluk@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
@@ -30090,6 +30407,22 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_AccountPicker_Close">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user closes the account picker. Only on iOS.
+  </description>
+</action>
+
+<action name="Signin_AccountPicker_Open">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user opens the account picker. Only on iOS.
+  </description>
+</action>
+
 <action name="Signin_AccountSettings_GoogleActivityControlsClicked">
   <owner>mahmadi@chromium.org</owner>
   <description>
@@ -30100,8 +30433,34 @@ should be able to be added at any place in this file.
 
 <action name="Signin_AddAccountToDevice">
   <owner>gogerald@chromium.org</owner>
+  <description>Recorded when the add account dialog is opened.</description>
+</action>
+
+<action name="Signin_AddAccountToDevice_DismissedWithError"
+    not_user_triggered="true">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <description>
-    Recorded when the user chooses to add an account to device.
+    Recorded when the add account view is dismissed with an error. Recorded for
+    iOS only.
+  </description>
+</action>
+
+<action name="Signin_AddAccountToDevice_DismissedWithNewAccount">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the add account view is dismissed with adding a new account.
+    Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_AddAccountToDevice_DismissedWithoutNewAccount">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the add account view is dismissed without adding a new
+    account. Recorded for iOS only.
   </description>
 </action>
 
@@ -30119,6 +30478,58 @@ should be able to be added at any place in this file.
   <description>
     Recorded when dialog is shown to resolve Google Play services error (e.g.,
     update request).
+  </description>
+</action>
+
+<action name="Signin_BottomSheet_ClosedByCancel" not_user_triggered="true">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the sign-in bottom sheet is canceled. Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_BottomSheet_ClosedByInterrupt" not_user_triggered="true">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the sign-in bottom sheet is interrupted by a Chrome action.
+    Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_BottomSheet_ClosedBySignIn" not_user_triggered="true">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the sign-in bottom sheet closes after the user is signed in.
+    Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_BottomSheet_IdentityChooser_Closed">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the identity chooser dialog from the bottom sheet is closed by
+    the user. Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_BottomSheet_IdentityChooser_Opened">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the identity chooser dialog from the bottom sheet is opened by
+    the user. Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_BottomSheet_Opened" not_user_triggered="true">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the bottom sheet is opened. Recorded for iOS only.
   </description>
 </action>
 
@@ -36347,6 +36758,7 @@ should be able to be added at any place in this file.
       label="For DataSaverMilestonePromo feature."/>
   <suffix name="DataSaverPreview" label="For DataSaverPreview feature."/>
   <suffix name="DefaultSiteView" label="For DefaultSiteView feature."/>
+  <suffix name="DesktopCustomizeChrome" label="For Customize Chrome feature."/>
   <suffix name="DesktopPwaInstall" label="For desktop PWA install icon."/>
   <suffix name="DesktopSharedHighlighting"
       label="For DesktopSharedHighlighting feature."/>
@@ -36429,6 +36841,11 @@ should be able to be added at any place in this file.
       label="For iOSDefaultBrowserOverflowMenuBadge feature"/>
   <suffix name="iOSDefaultBrowserSettingsBadge"
       label="For iOSDefaultBrowserSettingsBadge feature"/>
+  <suffix name="iOSPromoAppStore" label="For iOSPromoAppStore feature"/>
+  <suffix name="iOSPromoCredentialProviderExtension"
+      label="For iOSPromoCredentialProviderExtension feature"/>
+  <suffix name="iOSPromoPostRestore" label="For iOSPromoPostRestore feature"/>
+  <suffix name="iOSPromoWhatsNew" label="For iOSPromoWhatsNew feature"/>
   <suffix name="KeyboardAccessoryAddressFilling"
       label="For KeyboardAccessoryAddressFilling feature."/>
   <suffix name="KeyboardAccessoryBarSwiping"
@@ -36461,6 +36878,8 @@ should be able to be added at any place in this file.
   <suffix name="PasswordSuggestions" label="For PasswordSuggestions feature."/>
   <suffix name="PerformanceNewBadge"
       label="For new badge next to Performance feature."/>
+  <suffix name="PowerBookmarksSidePanel"
+      label="For power bookmarks side panel feature."/>
   <suffix name="PreviewsOmniboxUI"
       label="For the Previews UI in the Android Omnibox feature."/>
   <suffix name="PriceDropNTP" label="For PriceDropNTP feature."/>
@@ -36525,6 +36944,7 @@ should be able to be added at any place in this file.
   <suffix name="TabGroupsTapToSeeAnotherTab" label="For tab strip."/>
   <suffix name="TabGroupsYourTabsTogether"
       label="For tab switcher with tab groups."/>
+  <suffix name="TabPinnedFeature" label="For tab pinned overflow hint."/>
   <suffix name="TabSearch" label="For the tab search feature."/>
   <suffix name="TabSwitcherButton" label="For tab switcher button."/>
   <suffix name="TranslateMenuButton" label="For translate menu button."/>

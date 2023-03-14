@@ -168,23 +168,10 @@ TEST_F(PasswordSyncUtilTest, SyncEnabled) {
   EXPECT_EQ(active_info.email, GetSyncingAccount(&sync_service).value());
 }
 
-TEST_F(PasswordSyncUtilTest, SyncPausedDueToWebSignout) {
+TEST_F(PasswordSyncUtilTest, SyncPaused) {
   syncer::TestSyncService sync_service;
   sync_service.SetHasSyncConsent(true);
-  sync_service.SetPersistentAuthErrorWithWebSignout();
-  ASSERT_EQ(sync_service.GetTransportState(),
-            syncer::SyncService::TransportState::PAUSED);
-  EXPECT_TRUE(IsPasswordSyncEnabled(&sync_service));
-  EXPECT_FALSE(IsPasswordSyncActive(&sync_service));
-  EXPECT_NE(absl::nullopt, GetSyncingAccount(&sync_service));
-}
-
-TEST_F(PasswordSyncUtilTest, SyncWithPersistentAuthErrorOtherThanWebSignout) {
-  syncer::TestSyncService sync_service;
-  sync_service.SetHasSyncConsent(true);
-  sync_service.SetPersistentAuthErrorOtherThanWebSignout();
-  // Just like web signout, other persistent auth errors cause Sync to become
-  // inactive. So the behavior is identical to the web signout case.
+  sync_service.SetPersistentAuthError();
   ASSERT_EQ(sync_service.GetTransportState(),
             syncer::SyncService::TransportState::PAUSED);
   EXPECT_TRUE(IsPasswordSyncEnabled(&sync_service));

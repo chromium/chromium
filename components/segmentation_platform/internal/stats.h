@@ -8,6 +8,7 @@
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/public/config.h"
+#include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
@@ -57,6 +58,13 @@ void RecordSegmentSelectionComputed(
     const Config& config,
     SegmentId new_selection,
     absl::optional<SegmentId> previous_selection);
+
+// Records the post processed result whenever written to prefs. Also records
+// from which old value to which new value the topmost label is changing to.
+void RecordSegmentSelectionUpdated(
+    const Config& config,
+    const absl::optional<proto::PredictionResult>& old_result,
+    const proto::PredictionResult& new_result);
 
 // Database Maintenance metrics.
 // Records the number of unique signal identifiers that were successfully
@@ -122,6 +130,14 @@ void RecordModelExecutionResult(
     SegmentId segment_id,
     float result,
     proto::SegmentationModelMetadata::OutputDescription return_type);
+// Records the raw model score. Records each element of the result tensor as a
+// separate histogram identified by its index. For binary and multi-class
+// models, the raw score is multiplied by 100 to transform as percent score,
+// whereas for binned classifier the result is recorded as is in a percent
+// range.
+void RecordModelExecutionResult(SegmentId segment_id,
+                                const ModelProvider::Response& result,
+                                proto::OutputConfig output_config);
 // Records whether the result value of of executing an ML model was successfully
 // saved.
 void RecordModelExecutionSaveResult(SegmentId segment_id, bool success);

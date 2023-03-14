@@ -5,6 +5,7 @@
 #include "ash/system/video_conference/bubble/bubble_view.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -19,8 +20,10 @@
 #include "ash/system/video_conference/effects/video_conference_tray_effects_delegate.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
+#include "ash/system/video_conference/video_conference_common.h"
 #include "ash/system/video_conference/video_conference_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 
 namespace ash::video_conference {
@@ -107,12 +110,8 @@ class BubbleViewTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kVideoConference);
-
-    // Here we have to create the global instance of `CrasAudioHandler` before
-    // `FakeVideoConferenceTrayController`, so we do it here and not do it in
-    // `AshTestBase`.
-    CrasAudioClient::InitializeFake();
-    CrasAudioHandler::InitializeForTesting();
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kCameraEffectsSupportedByHardware);
 
     // Instantiates a fake controller (the real one is created in
     // `ChromeBrowserMainExtraPartsAsh::PreProfileInit()` which is not called in
@@ -126,7 +125,6 @@ class BubbleViewTest : public AshTestBase {
     super_cuteness_ =
         std::make_unique<fake_video_conference::SuperCutnessEffect>();
 
-    set_create_global_cras_audio_handler(false);
     AshTestBase::SetUp();
 
     // Make the video conference tray visible for testing.
@@ -147,8 +145,6 @@ class BubbleViewTest : public AshTestBase {
     shaggy_fur_.reset();
     super_cuteness_.reset();
     controller_.reset();
-    CrasAudioHandler::Shutdown();
-    CrasAudioClient::Shutdown();
   }
 
   views::View* GetSetValueEffectButton(int index) {
@@ -415,9 +411,12 @@ TEST_F(BubbleViewTest, InvalidEffectState) {
 //    1 - The test effects depend on the microphone being enabled.
 //    2 - The camera is enabled.
 //    3 - The microphone is enabled.
+//    4 - The camera has granted permission to running media app(s).
+//    5 - The microphone has granted permission to running media app(s).
 class ResourceDependencyTest
     : public AshTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool, bool>> {
+      public testing::WithParamInterface<
+          std::tuple<bool, bool, bool, bool, bool, bool>> {
  public:
   ResourceDependencyTest() = default;
   ResourceDependencyTest(const ResourceDependencyTest&) = delete;
@@ -427,6 +426,8 @@ class ResourceDependencyTest
   // AshTestBase:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kVideoConference);
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kCameraEffectsSupportedByHardware);
 
     // Here we have to create the global instance of `CrasAudioHandler` before
     // `FakeVideoConferenceTrayController`, so we do it here and not do it in
@@ -450,6 +451,8 @@ class ResourceDependencyTest
     has_microphone_dependency_ = std::get<1>(GetParam());
     camera_enabled_ = std::get<2>(GetParam());
     microphone_enabled_ = std::get<3>(GetParam());
+    has_camera_permission_ = std::get<4>(GetParam());
+    has_microphone_permission_ = std::get<5>(GetParam());
   }
 
   void TearDown() override {
@@ -505,6 +508,8 @@ class ResourceDependencyTest
   bool has_microphone_dependency() const { return has_microphone_dependency_; }
   bool camera_enabled() const { return camera_enabled_; }
   bool microphone_enabled() const { return microphone_enabled_; }
+  bool has_camera_permission() const { return has_camera_permission_; }
+  bool has_microphone_permission() const { return has_microphone_permission_; }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -516,11 +521,15 @@ class ResourceDependencyTest
   bool has_microphone_dependency_ = false;
   bool camera_enabled_ = false;
   bool microphone_enabled_ = false;
+  bool has_camera_permission_ = false;
+  bool has_microphone_permission_ = false;
 };
 
 INSTANTIATE_TEST_SUITE_P(BubbleViewResourceDependency,
                          ResourceDependencyTest,
                          testing::Combine(testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool()));
@@ -549,6 +558,11 @@ TEST_P(ResourceDependencyTest, ResourceDependency) {
   // Microphone is enabled.
   controller()->SetMicrophoneMuted(!microphone_enabled());
 
+  VideoConferenceMediaState state;
+  state.has_camera_permission = has_camera_permission();
+  state.has_microphone_permission = has_microphone_permission();
+  controller()->UpdateWithMediaState(state);
+
   // Click to open the bubble, bubble is present/visible.
   LeftClickOn(toggle_bubble_button());
   EXPECT_TRUE(bubble_view());
@@ -557,12 +571,16 @@ TEST_P(ResourceDependencyTest, ResourceDependency) {
   // Effect container view is present/visible if its dependencies are
   // satisfied. A dependency on a resource is considered "satfisfied" if (1)
   // there is no dependency on the resource or (2) there is a dependency on the
-  // resource and the resource is enabled.
+  // resource, the resource is enabled, and there's at least one running media
+  // app(s) has been granted permission to use the resource.
   const bool camera_satisfied =
-      !has_camera_dependency() || (has_camera_dependency() && camera_enabled());
+      !has_camera_dependency() ||
+      (has_camera_dependency() && camera_enabled() && has_camera_permission());
   const bool microphone_satisfied =
       !has_microphone_dependency() ||
-      (has_microphone_dependency() && microphone_enabled());
+      (has_microphone_dependency() && microphone_enabled() &&
+       has_microphone_permission());
+
   if (camera_satisfied && microphone_satisfied) {
     EXPECT_TRUE(toggle_effect_container_view());
     EXPECT_TRUE(toggle_effect_container_view()->GetVisible());

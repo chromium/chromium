@@ -11,6 +11,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/angle_vulkan_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "ui/gl/gl_surface_egl.h"
 
@@ -42,6 +43,20 @@ AngleVulkanImageBackingFactory::AngleVulkanImageBackingFactory(
       context_state_(context_state) {
   DCHECK(context_state_->GrContextIsVulkan());
   DCHECK(gl::GLSurfaceEGL::GetGLDisplayEGL()->ext->b_EGL_ANGLE_vulkan_image);
+
+  // If R_8 and RG_88 are supported by GL then 8 bit YUV formats should also
+  // work.
+  auto r_iter = supported_formats_.find(viz::SinglePlaneFormat::kR_8);
+  auto rg_iter = supported_formats_.find(viz::SinglePlaneFormat::kRG_88);
+  if (r_iter != supported_formats_.end() &&
+      rg_iter != supported_formats_.end()) {
+    auto& r_info = r_iter->second[0];
+    auto& rg_info = rg_iter->second[0];
+    supported_formats_[viz::MultiPlaneFormat::kYUV_420_BIPLANAR] = {r_info,
+                                                                    rg_info};
+    supported_formats_[viz::MultiPlaneFormat::kYVU_420] = {r_info, r_info,
+                                                           r_info};
+  }
 }
 
 AngleVulkanImageBackingFactory::~AngleVulkanImageBackingFactory() = default;
@@ -131,10 +146,6 @@ bool AngleVulkanImageBackingFactory::IsGMBSupported(
 bool AngleVulkanImageBackingFactory::CanUseAngleVulkanImageBacking(
     uint32_t usage,
     gfx::GpuMemoryBufferType gmb_type) const {
-  if (usage & ~kSupportedUsage) {
-    return false;
-  }
-
   if (!IsGMBSupported(gmb_type))
     return false;
 
@@ -157,7 +168,7 @@ bool AngleVulkanImageBackingFactory::IsSupported(
     base::span<const uint8_t> pixel_data) {
   DCHECK_EQ(gr_context_type, GrContextType::kVulkan);
 
-  if (format.is_multi_plane()) {
+  if (!HasVkFormat(format)) {
     return false;
   }
 

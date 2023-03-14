@@ -9,6 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/i18n/rtl.h"
 #include "chrome/android/chrome_jni_headers/PasswordGenerationPopupBridge_jni.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_controller.h"
 #include "ui/android/view_android.h"
@@ -90,7 +91,7 @@ bool PasswordGenerationEditingPopupViewAndroid::UpdateBoundsAndRedrawPopup() {
       base::android::ConvertUTF16ToJavaString(env, controller_->HelpText());
 
   Java_PasswordGenerationPopupBridge_show(env, java_object_,
-                                          controller_->IsRTL(), help);
+                                          base::i18n::IsRTL(), help);
   return true;
 }
 

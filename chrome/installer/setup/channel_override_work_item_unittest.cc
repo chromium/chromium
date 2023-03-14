@@ -64,6 +64,8 @@ class ChannelOverrideWorkItemTest : public ::testing::Test {
   registry_util::RegistryOverrideManager registry_override_;
 };
 
+#ifndef ARCH_CPU_ARM64
+// TODO(https://crbug.com/1422068) - reenable when this is fixed for ARM64
 TEST_F(ChannelOverrideWorkItemTest, DoAndRollback) {
   static constexpr TestParam kIterations[] = {
     {L"", L""},
@@ -97,3 +99,4 @@ TEST_F(ChannelOverrideWorkItemTest, DoAndRollback) {
     EXPECT_EQ(GetAp(), optional_input(iteration));
   }
 }
+#endif

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/webrtc/api/frame_transformer_factory.h"
 
 namespace blink {
 
@@ -77,6 +78,21 @@ std::unique_ptr<webrtc::TransformableFrameInterface>
 RTCEncodedAudioFrameDelegate::PassWebRtcFrame() {
   base::AutoLock lock(lock_);
   return std::move(webrtc_frame_);
+}
+
+std::unique_ptr<webrtc::TransformableFrameInterface>
+RTCEncodedAudioFrameDelegate::CloneWebRtcFrame(String& exception_message) {
+  base::AutoLock lock(lock_);
+  if (webrtc_frame_->GetDirection() ==
+      webrtc::TransformableFrameInterface::Direction::kReceiver) {
+    return webrtc::CloneAudioFrame(
+        static_cast<webrtc::TransformableAudioFrameInterface*>(
+            webrtc_frame_.get()));
+  } else {
+    exception_message =
+        "Cloning of outgoing RTCEncodedAudioFrames is not supported.";
+    return nullptr;
+  }
 }
 
 }  // namespace blink

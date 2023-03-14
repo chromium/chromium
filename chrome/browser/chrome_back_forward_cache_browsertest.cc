@@ -33,6 +33,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -83,19 +84,6 @@ class ChromeBackForwardCacheBrowserTest : public InProcessBrowserTest {
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
 
-    EnableFeatureAndSetParams(features::kBackForwardCacheTimeToLiveControl,
-                              "time_to_live_seconds", "3600");
-    // Navigating quickly between cached pages can fail flakily with:
-    // CanStorePageNow: <URL> : No: blocklisted features: outstanding network
-    // request (others)
-    EnableFeatureAndSetParams(features::kBackForwardCache,
-                              "ignore_outstanding_network_request_for_testing",
-                              "true");
-    // Entry to the cache can be slow during testing and cause flakiness.
-    DisableFeature(features::kBackForwardCacheEntryTimeout);
-    // Allow BackForwardCache for all devices regardless of their memory.
-    DisableFeature(features::kBackForwardCacheMemoryControls);
-
     SetupFeaturesAndParameters();
   }
 
@@ -108,25 +96,13 @@ class ChromeBackForwardCacheBrowserTest : public InProcessBrowserTest {
   }
 
   void SetupFeaturesAndParameters() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
-
-    for (const auto& [feature, params] : features_with_params_) {
-      enabled_features.emplace_back(*feature, params);
-    }
-
-    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                       disabled_features_);
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(),
+        content::GetDefaultDisabledBackForwardCacheFeaturesForTesting(
+            {// Entry to the cache can be slow during testing and cause
+             // flakiness.
+             features::kBackForwardCacheEntryTimeout}));
     vmodule_switches_.InitWithSwitches("back_forward_cache_impl=1");
-  }
-
-  void EnableFeatureAndSetParams(const base::Feature& feature,
-                                 const std::string& param_name,
-                                 const std::string& param_value) {
-    features_with_params_[feature][param_name] = param_value;
-  }
-
-  void DisableFeature(const base::Feature& feature) {
-    disabled_features_.push_back(feature);
   }
 
   std::unique_ptr<base::HistogramTester> histogram_tester_;
@@ -134,9 +110,6 @@ class ChromeBackForwardCacheBrowserTest : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   logging::ScopedVmoduleSwitches vmodule_switches_;
-  std::map<base::test::FeatureRef, std::map<std::string, std::string>>
-      features_with_params_;
-  std::vector<base::test::FeatureRef> disabled_features_;
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest, Basic) {

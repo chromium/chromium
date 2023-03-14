@@ -91,7 +91,7 @@ class SingleFieldFormFillRouterTest : public testing::Test {
 
   base::test::ScopedFeatureList scoped_feature_list_async_parse_form_;
   base::test::SingleThreadTaskEnvironment task_environment_;
-  test::AutofillEnvironment autofill_environment_;
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
   TestAutofillClient autofill_client_;
   std::unique_ptr<SingleFieldFormFillRouter> single_field_form_fill_router_;
   std::unique_ptr<TestPersonalDataManager> personal_data_manager_;

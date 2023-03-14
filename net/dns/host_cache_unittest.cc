@@ -4,7 +4,6 @@
 
 #include "net/dns/host_cache.h"
 
-#include <algorithm>
 #include <map>
 #include <memory>
 #include <string>
@@ -17,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -92,8 +92,8 @@ IPAddress MakeIP(base::StringPiece literal) {
 
 std::vector<IPEndPoint> MakeEndpoints(std::vector<std::string> my_addresses) {
   std::vector<IPEndPoint> out(my_addresses.size());
-  std::transform(my_addresses.begin(), my_addresses.end(), out.begin(),
-                 [](auto& s) { return IPEndPoint(MakeIP(s), 0); });
+  base::ranges::transform(my_addresses, out.begin(),
+                          [](auto& s) { return IPEndPoint(MakeIP(s), 0); });
   return out;
 }
 
@@ -282,9 +282,11 @@ TEST(HostCacheTest, NetworkAnonymizationKey) {
   const base::TimeDelta kTTL = base::Seconds(10);
 
   const SchemefulSite kSite1(GURL("https://site1.test/"));
-  const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
+  const auto kNetworkAnonymizationKey1 =
+      NetworkAnonymizationKey::CreateSameSite(kSite1);
   const SchemefulSite kSite2(GURL("https://site2.test/"));
-  const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
+  const auto kNetworkAnonymizationKey2 =
+      NetworkAnonymizationKey::CreateSameSite(kSite2);
 
   HostCache::Key key1(kHost, DnsQueryType::UNSPECIFIED, 0,
                       HostResolverSource::ANY, kNetworkAnonymizationKey1);
@@ -1586,10 +1588,11 @@ TEST(HostCacheTest, SerializeAndDeserializeWithNetworkAnonymizationKey) {
       url::SchemeHostPort(url::kHttpsScheme, "hostname.test", 443);
   const base::TimeDelta kTTL = base::Seconds(10);
   const SchemefulSite kSite(GURL("https://site.test/"));
-  const NetworkAnonymizationKey kNetworkAnonymizationKey(kSite, kSite);
+  const auto kNetworkAnonymizationKey =
+      NetworkAnonymizationKey::CreateSameSite(kSite);
   const SchemefulSite kOpaqueSite;
-  const NetworkAnonymizationKey kOpaqueNetworkAnonymizationKey(kOpaqueSite,
-                                                               kOpaqueSite);
+  const auto kOpaqueNetworkAnonymizationKey =
+      NetworkAnonymizationKey::CreateSameSite(kOpaqueSite);
 
   HostCache::Key key1(kHost, DnsQueryType::UNSPECIFIED, 0,
                       HostResolverSource::ANY, kNetworkAnonymizationKey);

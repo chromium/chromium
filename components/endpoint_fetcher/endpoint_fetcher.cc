@@ -271,9 +271,12 @@ void EndpointFetcher::OnResponseFetched(
     response->error_type =
         absl::make_optional<FetchErrorType>(FetchErrorType::kAuthError);
     // We cannot assume that the response was in JSON, and hence cannot sanitize
-    // the response. Send the respond as-is.
+    // the response. Send the respond as-is. For error cases, we may not have a
+    // valid string pointer -- if we don't, send a simple message indicating
+    // there was a response error (similar to below).
     // TODO: Think about how to better handle different MIME-types here.
-    response->response = *response_body;
+    response->response =
+        response_body.get() ? *response_body : "There was a response error";
     std::move(endpoint_fetcher_callback).Run(std::move(response));
     return;
   }

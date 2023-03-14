@@ -13,11 +13,11 @@
 #import "components/omnibox/browser/autocomplete_provider.h"
 #import "components/omnibox/browser/suggestion_answer.h"
 #import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_icon_formatter.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_swift.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

@@ -9,6 +9,7 @@
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "components/device_event_log/device_event_log.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash::network_config {
@@ -34,6 +35,8 @@ bool IsAutoconnectEnabled(
 
 }  // namespace
 
+// Returns an empty string when |base_16| is unable to be decoded from a
+// hex string to bytes. This may signify an improperly encoded SSID.
 std::string DecodeHexString(const std::string& base_16) {
   std::string decoded;
   DCHECK_EQ(base_16.size() % 2, 0u) << "Must be a multiple of 2";
@@ -41,8 +44,10 @@ std::string DecodeHexString(const std::string& base_16) {
 
   std::vector<uint8_t> v;
   if (!base::HexStringToBytes(base_16, &v)) {
-    NOTREACHED();
+    NET_LOG(EVENT) << "Failed to decode hex encoded SSID.";
+    return std::string();
   }
+
   decoded.assign(reinterpret_cast<const char*>(&v[0]), v.size());
   return decoded;
 }
@@ -278,6 +283,13 @@ network_config::mojom::ConfigPropertiesPtr MojoNetworkConfigFromProto(
   auto wifi = network_config::mojom::WiFiConfigProperties::New();
 
   wifi->ssid = DecodeHexString(specifics.hex_ssid());
+  if (wifi->ssid->empty()) {
+    // Return early instead of populating the other fields for a WifiConfig
+    // because the SSID is the primary key for the network, so without this,
+    // the rest of the properties are irrelevant.
+    return nullptr;
+  }
+
   wifi->security = MojoSecurityTypeFromProto(specifics.security_type());
   wifi->passphrase = specifics.passphrase();
   wifi->hidden_ssid = network_config::mojom::HiddenSsidMode::kDisabled;

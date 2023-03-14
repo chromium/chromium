@@ -18,6 +18,14 @@ class ScopedMockUnexportableKeyProvider {
   ~ScopedMockUnexportableKeyProvider();
 };
 
+// `ScopedNullUnexportableKeyProvider` causes `GetUnexportableKeyProvider` to
+// return a nullptr, emulating the key provider not being supported.
+class ScopedNullUnexportableKeyProvider {
+ public:
+  ScopedNullUnexportableKeyProvider();
+  ~ScopedNullUnexportableKeyProvider();
+};
+
 }  // namespace crypto
 
 #endif  // CRYPTO_SCOPED_MOCK_UNEXPORTABLE_KEY_PROVIDER_H_

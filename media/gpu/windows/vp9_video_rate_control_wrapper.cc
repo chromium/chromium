@@ -42,6 +42,14 @@ int VP9RateControl::GetLoopfilterLevel() const {
 }
 
 template <>
+void VP9RateControl::PostEncodeUpdate(uint64_t encoded_frame_size,
+                                      const FrameParams& frame_params) {
+  DCHECK(impl_);
+  return impl_->PostEncodeUpdate(encoded_frame_size,
+                                 ConvertFrameParams(frame_params));
+}
+
+template <>
 libvpx::VP9RateControlRtcConfig VP9RateControl::ConvertControlConfig(
     const RateControlConfig& config) {
   libvpx::VP9RateControlRtcConfig rc_config;
@@ -87,8 +95,8 @@ libvpx::VP9FrameParamsQpRTC VP9RateControl::ConvertFrameParams(
   rc_params.temporal_layer_id = frame_params.temporal_layer_id;
   rc_params.frame_type =
       frame_params.frame_type == FrameParams::FrameType::kKeyFrame
-          ? FRAME_TYPE::KEY_FRAME
-          : FRAME_TYPE::INTER_FRAME;
+          ? libvpx::RcFrameType::kKeyFrame
+          : libvpx::RcFrameType::kInterFrame;
   return rc_params;
 }
 

@@ -279,29 +279,6 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, DISABLED_AddBookmark) {
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, NavigateNotificationCenter) {
-  EnableChromeVox();
-
-  sm_.Call([this]() {
-    EXPECT_TRUE(PerformAcceleratorAction(
-        AcceleratorAction::TOGGLE_MESSAGE_CENTER_BUBBLE));
-  });
-  sm_.ExpectSpeech(
-      "Quick Settings, Press search plus left to access the notification "
-      "center.");
-
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_LEFT); });
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_LEFT); });
-
-  // If you are hitting this in the course of changing the UI, please fix. This
-  // item needs a label.
-  sm_.ExpectSpeech("List item");
-
-  // Furthermore, navigation is generally broken using Search+Left.
-
-  sm_.Replay();
-}
-
 IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, ChromeVoxSpeaksIntro) {
   EnableChromeVox();
   sm_.ExpectSpeech("ChromeVox spoken feedback is ready");
@@ -361,12 +338,17 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, LearnModeEscapeWithGesture) {
   sm_.Replay();
 }
 
-class NotificationCenterSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
+class NotificationCenterSpokenFeedbackTest
+    : public LoggedInSpokenFeedbackTest,
+      public ::testing::WithParamInterface<bool> {
  protected:
   NotificationCenterSpokenFeedbackTest() {
-    feature_list_.InitAndEnableFeature(features::kQsRevamp);
+    feature_list_.InitWithFeatureState(features::kQsRevamp,
+                                       IsQsRevampEnabled());
   }
   ~NotificationCenterSpokenFeedbackTest() override = default;
+
+  bool IsQsRevampEnabled() const { return GetParam(); }
 
   NotificationCenterTestApi* test_api() {
     if (!test_api_) {
@@ -382,9 +364,61 @@ class NotificationCenterSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
   std::unique_ptr<NotificationCenterTestApi> test_api_;
 };
 
+INSTANTIATE_TEST_SUITE_P(QsRevampEnabled,
+                         NotificationCenterSpokenFeedbackTest,
+                         ::testing::Bool());
+
+// Tests the spoken feedback text when using the notification center accelerator
+// to navigate to the notification center.
+IN_PROC_BROWSER_TEST_P(NotificationCenterSpokenFeedbackTest,
+                       NavigateNotificationCenter) {
+  EnableChromeVox();
+
+  if (IsQsRevampEnabled()) {
+    // Add a notification so that the notification center tray is visible.
+    test_api()->AddNotification();
+    ASSERT_TRUE(test_api()->IsTrayShown());
+
+    // Press the accelerator that toggles the notification center.
+    sm_.Call([this]() {
+      EXPECT_TRUE(PerformAcceleratorAction(
+          AcceleratorAction::TOGGLE_MESSAGE_CENTER_BUBBLE));
+    });
+
+    // Verify the spoken feedback text.
+    sm_.ExpectSpeech("Notification Center");
+    sm_.Replay();
+    return;
+  }
+
+  sm_.Call([this]() {
+    EXPECT_TRUE(PerformAcceleratorAction(
+        AcceleratorAction::TOGGLE_MESSAGE_CENTER_BUBBLE));
+  });
+  sm_.ExpectSpeech(
+      "Quick Settings, Press search plus left to access the notification "
+      "center.");
+
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_LEFT); });
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_LEFT); });
+
+  // If you are hitting this in the course of changing the UI, please fix. This
+  // item needs a label.
+  sm_.ExpectSpeech("List item");
+
+  // Furthermore, navigation is generally broken using Search+Left.
+
+  sm_.Replay();
+}
+
 // Tests that clicking the notification center tray does not crash when spoken
 // feedback is enabled.
-IN_PROC_BROWSER_TEST_F(NotificationCenterSpokenFeedbackTest, OpenBubble) {
+IN_PROC_BROWSER_TEST_P(NotificationCenterSpokenFeedbackTest, OpenBubble) {
+  // This test only makes sense in the context of the QS revamp.
+  if (!IsQsRevampEnabled()) {
+    return;
+  }
+
   // Enable spoken feedback and add a notification to ensure the tray is
   // visible.
   EnableChromeVox();
@@ -920,6 +954,31 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigateSystemTray) {
   sm_.ExpectSpeech(
       "Quick Settings, Press search plus left to access the notification "
       "center.");
+
+  if (base::FeatureList::IsEnabled(features::kQsRevamp)) {
+    // Settings button.
+    sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_TAB); });
+    sm_.ExpectSpeech("Settings");
+    sm_.ExpectSpeech("Button");
+
+    // Battery indicator.
+    sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_TAB); });
+    sm_.ExpectSpeech("Battery");
+
+    // Avatar button. Disabled for guest account.
+    if (GetParam() != kTestAsGuestUser) {
+      sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_TAB); });
+      sm_.ExpectSpeech("Button");
+    }
+
+    // Shutdown button.
+    sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_TAB); });
+    sm_.ExpectSpeech("Shut down");
+    sm_.ExpectSpeech("Button");
+
+    sm_.Replay();
+    return;
+  }
 
   // Avatar button. Disabled for guest account.
   if (GetParam() != kTestAsGuestUser) {

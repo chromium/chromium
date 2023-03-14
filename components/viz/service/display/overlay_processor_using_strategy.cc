@@ -24,6 +24,7 @@
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/quads/quad_list.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
+#include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/service/debugger/viz_debugger.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/output_surface.h"
@@ -35,8 +36,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/transform.h"
-
-#include "components/viz/common/quads/texture_draw_quad.h"
 
 namespace viz {
 namespace {
@@ -62,6 +61,15 @@ constexpr char kNumOverlaysAttemptedHistogramName[] =
     "Compositing.Display.OverlayProcessorUsingStrategy.NumOverlaysAttempted";
 constexpr char kNumOverlaysFailedHistogramName[] =
     "Compositing.Display.OverlayProcessorUsingStrategy.NumOverlaysFailed";
+constexpr char kWorkingScaleFactorHistogramName[] =
+    "Compositing.Display.OverlayProcessorUsingStrategy."
+    "WorkingScaleFactorForRequiredOverlays";
+constexpr char kFramesAttemptingRequiredOverlaysHistogramName[] =
+    "Compositing.Display.OverlayProcessorUsingStrategy."
+    "FramesAttemptingRequiredOverlays";
+constexpr char kFramesScalingRequiredOverlaysHistogramName[] =
+    "Compositing.Display.OverlayProcessorUsingStrategy."
+    "FramesScalingRequiredOverlays";
 
 // Gets the minimum scaling amount used by either dimension for the src relative
 // to the dst.
@@ -111,6 +119,29 @@ static void LogStrategyEnumUMA(OverlayStrategy strategy) {
   UMA_HISTOGRAM_ENUMERATION("Viz.DisplayCompositor.OverlayStrategy", strategy);
 }
 
+static void LogFramesAttemptingRequiredCandidateBoolUMA(
+    const std::vector<OverlayProposedCandidate>& proposed_candidates) {
+  for (const auto& proposed_candidate : proposed_candidates) {
+    if (proposed_candidate.candidate.requires_overlay) {
+      UMA_HISTOGRAM_BOOLEAN(kFramesAttemptingRequiredOverlaysHistogramName,
+                            true);
+      return;
+    }
+  }
+  UMA_HISTOGRAM_BOOLEAN(kFramesAttemptingRequiredOverlaysHistogramName, false);
+}
+
+static void LogWorkingScaleFactorCountUMA(float scale_factor) {
+  UMA_HISTOGRAM_CUSTOM_COUNTS(kWorkingScaleFactorHistogramName,
+                              scale_factor * 100, /*minimum=*/1,
+                              /*maximum=*/201, /*bucket_count=*/50);
+}
+
+static void LogFramesScalingRequiredCandidateBoolUMA(bool attempted_scaling) {
+  UMA_HISTOGRAM_BOOLEAN(kFramesScalingRequiredOverlaysHistogramName,
+                        attempted_scaling);
+}
+
 OverlayProcessorUsingStrategy::OverlayProcessorUsingStrategy()
     : max_overlays_config_(features::MaxOverlaysConsidered()) {}
 
@@ -138,6 +169,8 @@ void OverlayProcessorUsingStrategy::SetFrameSequenceNumber(
     uint64_t frame_sequence_number) {
   frame_sequence_number_ = frame_sequence_number;
 }
+
+DBG_FLAG_FBOOL("processor.overlay.disable", disable_overlay)
 
 void OverlayProcessorUsingStrategy::ProcessForOverlays(
     DisplayResourceProvider* resource_provider,
@@ -173,7 +206,7 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
   // If we have any copy requests, we can't remove any quads for overlays or
   // CALayers because the framebuffer would be missing the removed quads'
   // contents.
-  if (render_pass->copy_requests.empty()) {
+  if (render_pass->copy_requests.empty() && !disable_overlay()) {
     success = AttemptWithStrategies(
         output_color_matrix, render_pass_backdrop_filters, resource_provider,
         render_passes, &surface_damage_rect_list, output_surface_plane,
@@ -562,6 +595,8 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategies(
                            : OverlayStrategy::kNoStrategyUsed);
   }
 
+  LogFramesAttemptingRequiredCandidateBoolUMA(proposed_candidates);
+
   if (ShouldAttemptMultipleOverlays(proposed_candidates)) {
     auto* render_pass = render_pass_list->back().get();
     return AttemptMultipleOverlays(proposed_candidates, primary_plane,
@@ -569,14 +604,16 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategies(
   }
 
   bool has_required_overlay = false;
+  bool attempted_scaling_required_overlays = false;
   for (auto&& candidate : proposed_candidates) {
     // Underlays change the material so we save it here to record proper UMA.
     DrawQuad::Material quad_material =
         candidate.strategy->GetUMAEnum() != OverlayStrategy::kUnknown
             ? candidate.quad_iter->material
             : DrawQuad::Material::kInvalid;
-    if (candidate.candidate.requires_overlay)
+    if (candidate.candidate.requires_overlay) {
       has_required_overlay = true;
+    }
 
     bool used_overlay = candidate.strategy->Attempt(
         output_color_matrix, render_pass_backdrop_filters, resource_provider,
@@ -607,6 +644,7 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategies(
              new_scale_factor < 1.0f; new_scale_factor += kScaleAdjust) {
           float zoom_scale = new_scale_factor / scale_factor;
           ScaleCandidateSrcRect(org_src_rect, zoom_scale, &candidate.candidate);
+          attempted_scaling_required_overlays = true;
           if (candidate.strategy->Attempt(
                   output_color_matrix, render_pass_backdrop_filters,
                   resource_provider, render_pass_list, surface_damage_rect_list,
@@ -619,6 +657,7 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategies(
         }
       }
     }
+
     if (used_overlay) {
       // This function is used by underlay strategy to mark the primary plane as
       // enable_blending.
@@ -634,11 +673,21 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategies(
         if (scale_factor < 1.0f) {
           UpdateDownscalingCapabilities(scale_factor, /*success=*/true);
         }
+        LogWorkingScaleFactorCountUMA(scale_factor * 100);
+        LogFramesScalingRequiredCandidateBoolUMA(
+            attempted_scaling_required_overlays);
       }
+
       RegisterOverlayRequirement(has_required_overlay);
       return true;
     }
   }
+
+  if (has_required_overlay) {
+    LogFramesScalingRequiredCandidateBoolUMA(
+        attempted_scaling_required_overlays);
+  }
+
   RegisterOverlayRequirement(has_required_overlay);
 
   if (proposed_candidates.size() != 0) {

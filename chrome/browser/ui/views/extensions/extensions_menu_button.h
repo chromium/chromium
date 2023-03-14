@@ -35,7 +35,6 @@ class ExtensionsMenuButton : public HoverButton,
 
   // HoverButton:
   void AddedToWidget() override;
-  void OnThemeChanged() override;
 
   const std::u16string& label_text_for_testing() const {
     return label()->GetText();

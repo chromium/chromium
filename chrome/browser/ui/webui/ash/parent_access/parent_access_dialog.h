@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui_handler_delegate.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -128,14 +127,7 @@ class ParentAccessDialogProvider {
     kNotAChildUser = 2,
     kMaxValue = kNotAChildUser
   };
-
-  // Returns the name of parent access widget error histogram for a flow type.
-  static const std::string
-  GetParentAccessWidgetShowDialogErrorHistogramForFlowType(
-      absl::optional<parent_access_ui::mojom::ParentAccessParams::FlowType>
-          flow_type);
 };
-
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_PARENT_ACCESS_PARENT_ACCESS_DIALOG_H_

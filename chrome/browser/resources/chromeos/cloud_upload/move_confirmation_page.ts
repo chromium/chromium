@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
 
 import {UserAction} from './cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
@@ -37,35 +38,81 @@ export class MoveConfirmationPageElement extends HTMLElement {
 
     moveButton.addEventListener('click', () => this.onMoveButtonClick());
     cancelButton.addEventListener('click', () => this.onCancelButtonClick());
+    this.init();
+  }
+
+  $<T extends HTMLElement>(query: string): T {
+    return this.shadowRoot!.querySelector(query)!;
+  }
+
+  async init() {
+    const {moveConfirmationShown: officeMoveConfirmationShown} =
+        await this.proxy.handler.officeMoveConfirmationShown();
+
+    // Only show checkbox if the confirmation has been shown before.
+    if (!officeMoveConfirmationShown) {
+      this.$<CrCheckboxElement>('#always-move-checkbox')!.remove();
+      this.proxy.handler.setOfficeMoveConfirmationShownTrue();
+    }
   }
 
   private getProviderText(cloudProvider: CloudProvider) {
     if (cloudProvider === CloudProvider.ONE_DRIVE) {
       return {
         name: 'Microsoft OneDrive',
-        appName: 'Microsoft 365',
         shortName: 'OneDrive',
       };
     }
-    // TODO(b/260141250): Display Slides or Sheets when appropriate instead?
-    return {name: 'Google Drive', appName: 'Google Docs', shortName: 'Drive'};
+    // TODO(b/260141250): Display Slides or Sheets when appropriate instead or
+    // remove shortName?
+    return {name: 'Google Drive', shortName: 'Drive'};
+  }
+
+  setNumFiles(numFiles: number) {
+    this.shadowRoot!.getElementById('number-of-files')!.innerText =
+        numFiles.toString();
+    this.shadowRoot!.getElementById('files-text')!.innerText = 'files';
+    if (numFiles == 1) {
+      this.shadowRoot!.getElementById('files-text')!.innerText = 'file';
+    }
   }
 
   setCloudProvider(cloudProvider: CloudProvider) {
     this.cloudProvider = cloudProvider;
 
-    const {name, appName, shortName} = this.getProviderText(this.cloudProvider);
+    const {name} = this.getProviderText(this.cloudProvider);
     this.shadowRoot!.getElementById('provider-name')!.innerText = name;
-    this.shadowRoot!.getElementById('app-name')!.innerText = appName;
-    this.shadowRoot!.getElementById('provider-short-name')!.innerText =
-        shortName;
+
+    const bodyText = this.$('#body-text');
+    const checkbox = this.$<CrCheckboxElement>('#always-move-checkbox');
+    if (cloudProvider === CloudProvider.ONE_DRIVE) {
+      bodyText.innerText =
+          'Microsoft 365 requires files to be stored in OneDrive. ' +
+          'You can move files to OneDrive at any time.';
+      if (checkbox) {
+        checkbox.innerText = 'Move to OneDrive without asking each time';
+      }
+    } else {
+      bodyText.innerText =
+          'Google Docs, Sheets, and Slides require files to be stored in ' +
+          'Google Drive. You can move files to Google Drive at any time.';
+      if (checkbox) {
+        checkbox.innerText = 'Move to Google Drive without asking each time';
+      }
+    }
+
+    const animationUrl = this.cloudProvider === CloudProvider.ONE_DRIVE ?
+        'move_confirmation_animation_onedrive.json' :
+        'move_confirmation_animation_drive.json';
+    this.shadowRoot!.querySelector('cr-lottie')!.setAttribute(
+        'animation-url', animationUrl);
   }
 
   private onMoveButtonClick(): void {
-    const checkbox = this.shadowRoot!.querySelector<CrCheckboxElement>(
-        '#always-move-checkbox')!;
-    this.proxy.handler.setAlwaysMoveOfficeFiles(checkbox.checked);
-
+    const checkbox = this.$<CrCheckboxElement>('#always-move-checkbox');
+    if (checkbox) {
+      this.proxy.handler.setAlwaysMoveOfficeFiles(checkbox.checked);
+    }
     if (this.cloudProvider === CloudProvider.ONE_DRIVE) {
       this.proxy.handler.respondWithUserActionAndClose(
           UserAction.kUploadToOneDrive);

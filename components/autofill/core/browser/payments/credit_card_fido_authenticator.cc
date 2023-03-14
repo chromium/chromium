@@ -611,15 +611,15 @@ device::PublicKeyCredentialDescriptor
 CreditCardFidoAuthenticator::ParseCredentialDescriptor(
     const base::Value& key_info) {
   std::vector<uint8_t> credential_id;
-  const auto* id = key_info.FindStringKey("credential_id");
+  const auto* id = key_info.GetDict().FindString("credential_id");
   DCHECK(id);
   credential_id = Base64ToBytes(*id);
 
   base::flat_set<device::FidoTransportProtocol> authenticator_transports;
-  const auto* transports = key_info.FindKeyOfType(
-      "authenticator_transport_support", base::Value::Type::LIST);
-  if (transports && !transports->GetList().empty()) {
-    for (const base::Value& transport_type : transports->GetList()) {
+  const auto* transports =
+      key_info.GetDict().FindList("authenticator_transport_support");
+  if (transports && !transports->empty()) {
+    for (const base::Value& transport_type : *transports) {
       absl::optional<device::FidoTransportProtocol> protocol =
           device::ConvertToFidoTransportProtocol(
               base::ToLowerASCII(transport_type.GetString()));

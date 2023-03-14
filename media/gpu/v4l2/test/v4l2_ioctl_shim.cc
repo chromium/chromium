@@ -101,9 +101,21 @@ void LogIoctlResult(int ret, int request_code) {
       << V4L2RequestCodeToString(request_code) << " succeeded.";
 }
 
+// Enumeration Ioctls are expected to return an error at the end of the list.
+// Don't error on this message because this is the way that the client knows
+// there are no more values to enumerate.
+void LogIoctlResultForEnum(int ret, int request_code) {
+  if (ret != kIoctlOk) {
+    VLOG(1) << V4L2RequestCodeToString(request_code) << " failed(" << ret
+            << ").";
+  } else {
+    VLOG(4) << V4L2RequestCodeToString(request_code) << " succeeded.";
+  }
+}
+
 MmapedBuffer::MmapedBuffer(const base::PlatformFile ioctl_fd,
                            const struct v4l2_buffer& v4l2_buffer)
-    : num_planes_(v4l2_buffer.length) {
+    : num_planes_(v4l2_buffer.length), buffer_id_(0) {
   for (uint32_t i = 0; i < num_planes_; ++i) {
     void* start_addr =
         mmap(NULL, v4l2_buffer.m.planes[i].length, PROT_READ | PROT_WRITE,
@@ -198,7 +210,7 @@ bool V4L2IoctlShim::Ioctl(int request_code,
   LOG_ASSERT(query_ctrl != nullptr) << "|query_ctrl| check failed.";
 
   const int ret = ioctl(decode_fd_.GetPlatformFile(), request_code, query_ctrl);
-  LogIoctlResult(ret, request_code);
+  LogIoctlResultForEnum(ret, request_code);
 
   return ret == kIoctlOk;
 }
@@ -210,7 +222,7 @@ bool V4L2IoctlShim::Ioctl(int request_code,
   LOG_ASSERT(fmtdesc != nullptr) << "|fmtdesc| check failed.";
 
   const int ret = ioctl(decode_fd_.GetPlatformFile(), request_code, fmtdesc);
-  LogIoctlResult(ret, request_code);
+  LogIoctlResultForEnum(ret, request_code);
 
   return ret == kIoctlOk;
 }
@@ -222,7 +234,7 @@ bool V4L2IoctlShim::Ioctl(int request_code,
   LOG_ASSERT(frame_size != nullptr) << "|frame_size| check failed.";
 
   const int ret = ioctl(decode_fd_.GetPlatformFile(), request_code, frame_size);
-  LogIoctlResult(ret, request_code);
+  LogIoctlResultForEnum(ret, request_code);
 
   return ret == kIoctlOk;
 }
@@ -441,7 +453,7 @@ bool V4L2IoctlShim::ReqBufsWithCount(std::unique_ptr<V4L2Queue>& queue,
 }
 
 bool V4L2IoctlShim::QBuf(const std::unique_ptr<V4L2Queue>& queue,
-                         const uint32_t index) const {
+                         const uint32_t buffer_id) const {
   LOG_ASSERT(queue->memory() == V4L2_MEMORY_MMAP)
       << "Only V4L2_MEMORY_MMAP is currently supported.";
 
@@ -451,11 +463,11 @@ bool V4L2IoctlShim::QBuf(const std::unique_ptr<V4L2Queue>& queue,
   memset(&v4l2_buffer, 0, sizeof v4l2_buffer);
   v4l2_buffer.type = queue->type();
   v4l2_buffer.memory = queue->memory();
-  v4l2_buffer.index = index;
+  v4l2_buffer.index = buffer_id;
   v4l2_buffer.m.planes = planes.data();
   v4l2_buffer.length = queue->num_planes();
 
-  scoped_refptr<MmapedBuffer> buffer = queue->GetBuffer(index);
+  scoped_refptr<MmapedBuffer> buffer = queue->GetBuffer(buffer_id);
 
   for (uint32_t i = 0; i < queue->num_planes(); ++i) {
     v4l2_buffer.m.planes[i].length = buffer->mmaped_planes()[i].length;
@@ -475,11 +487,11 @@ bool V4L2IoctlShim::QBuf(const std::unique_ptr<V4L2Queue>& queue,
 }
 
 bool V4L2IoctlShim::DQBuf(const std::unique_ptr<V4L2Queue>& queue,
-                          uint32_t* index) const {
+                          uint32_t* buffer_id) const {
   LOG_ASSERT(queue->memory() == V4L2_MEMORY_MMAP)
       << "Only V4L2_MEMORY_MMAP is currently supported.";
 
-  LOG_ASSERT(index != nullptr) << "|index| check failed.";
+  LOG_ASSERT(buffer_id != nullptr) << "|buffer_id| check failed.";
 
   struct v4l2_buffer v4l2_buffer;
   std::vector<v4l2_plane> planes(VIDEO_MAX_PLANES);
@@ -512,16 +524,20 @@ bool V4L2IoctlShim::DQBuf(const std::unique_ptr<V4L2Queue>& queue,
       num_tries = kMaxRetryCount;
     }
 
+    // V4L2 explains |index| to be id number of the buffer. We are using
+    // |buffer_id| (or |id|) instead of |index| consistently in the platform
+    // decoding code to avoid confusion.
+    const uint32_t id = v4l2_buffer.index;
+
     // We set |v4l2_buffer.timestamp.tv_usec| in the encoded chunk enqueued in
     // the OUTPUT queue, and the driver propagates it to the corresponding
     // decoded video frame (or at least is expected to). This gives us
     // information about which encoded frame corresponds to the current decoded
     // video frame.
-    queue->GetBuffer(v4l2_buffer.index)->set_buffer_id(v4l2_buffer.index);
-    queue->GetBuffer(v4l2_buffer.index)
-        ->set_frame_number(v4l2_buffer.timestamp.tv_usec);
+    queue->GetBuffer(id)->set_buffer_id(id);
+    queue->GetBuffer(id)->set_frame_number(v4l2_buffer.timestamp.tv_usec);
 
-    *index = v4l2_buffer.index;
+    *buffer_id = id;
 
     return true;
   }
@@ -529,7 +545,7 @@ bool V4L2IoctlShim::DQBuf(const std::unique_ptr<V4L2Queue>& queue,
   DCHECK_EQ(queue->type(), V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
 
   // Currently, only 1 OUTPUT buffer is used.
-  *index = 0;
+  *buffer_id = 0;
 
   return Ioctl(VIDIOC_DQBUF, &v4l2_buffer);
 }

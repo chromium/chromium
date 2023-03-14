@@ -492,13 +492,14 @@ void BackgroundContentsService::LoadBackgroundContentsFromPrefs() {
     const Extension* extension = extension_registry->GetExtensionById(
         extension_id, extensions::ExtensionRegistry::ENABLED);
     if (!extension) {
-      // We should never reach here - it should not be possible for an app
+      // Normally, we shouldn't reach here - it shouldn't be possible for an app
       // to become uninstalled without the associated BackgroundContents being
-      // unregistered via the EXTENSIONS_UNLOADED notification, unless there's a
-      // crash before we could save our prefs, or if the user deletes the
-      // extension files manually rather than uninstalling it.
-      NOTREACHED() << "No extension found for BackgroundContents - id = "
-                   << extension_id;
+      // unregistered via the EXTENSIONS_UNLOADED notification. However, this
+      // is possible if there's e.g. a crash before we could save our prefs or
+      // the user deletes the extension files manually rather than uninstalling
+      // it.
+      LOG(ERROR) << "No extension found for BackgroundContents - id = "
+                 << extension_id;
       // Don't cancel out of our loop, just ignore this BackgroundContents and
       // load the next one.
       continue;

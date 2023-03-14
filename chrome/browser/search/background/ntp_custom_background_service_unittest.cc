@@ -160,7 +160,7 @@ TEST_F(NtpCustomBackgroundServiceTest, LocalBackgroundImageCopyCreated) {
   base::FilePath copy_path(profile_path.AppendASCII(
       chrome::kChromeUIUntrustedNewTabPageBackgroundFilename));
 
-  base::WriteFile(path, "background_image", 16);
+  base::WriteFile(path, "background_image");
 
   custom_background_service_->SelectLocalBackgroundImage(path);
 
@@ -186,7 +186,7 @@ TEST_F(NtpCustomBackgroundServiceTest,
   base::FilePath path(profile_path.AppendASCII(
       chrome::kChromeUIUntrustedNewTabPageBackgroundFilename));
 
-  base::WriteFile(path, "background_image", 16);
+  base::WriteFile(path, "background_image");
 
   custom_background_service_->AddValidBackdropUrlForTesting(kUrl);
   custom_background_service_->SetCustomBackgroundInfo(kUrl, GURL(), "", "",
@@ -240,7 +240,7 @@ TEST_F(NtpCustomBackgroundServiceTest, SetLocalImage) {
   base::FilePath profile_path = profile_.GetPath();
   base::FilePath path(profile_path.AppendASCII(
       chrome::kChromeUIUntrustedNewTabPageBackgroundFilename));
-  base::WriteFile(path, "background_image", 16);
+  base::WriteFile(path, "background_image");
   base::ThreadPoolInstance::Get()->FlushForTesting();
 
   custom_background_service_->SelectLocalBackgroundImage(path);
@@ -268,7 +268,7 @@ TEST_F(NtpCustomBackgroundServiceTest, SyncPrefOverridesAndRemovesLocalImage) {
   base::FilePath profile_path = profile_.GetPath();
   base::FilePath path(profile_path.AppendASCII(
       chrome::kChromeUIUntrustedNewTabPageBackgroundFilename));
-  base::WriteFile(path, "background_image", 16);
+  base::WriteFile(path, "background_image");
   base::ThreadPoolInstance::Get()->FlushForTesting();
 
   custom_background_service_->SelectLocalBackgroundImage(path);
@@ -354,7 +354,7 @@ TEST_F(NtpCustomBackgroundServiceTest, LocalImageDoesNotHaveAttribution) {
   base::FilePath profile_path = profile_.GetPath();
   base::FilePath path(profile_path.AppendASCII(
       chrome::kChromeUIUntrustedNewTabPageBackgroundFilename));
-  base::WriteFile(path, "background_image", 16);
+  base::WriteFile(path, "background_image");
   base::ThreadPoolInstance::Get()->FlushForTesting();
 
   custom_background_service_->SelectLocalBackgroundImage(path);

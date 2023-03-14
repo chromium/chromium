@@ -20,9 +20,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_abort_signal.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_blob.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_form_data.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_private_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_request_init.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_trust_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_request_usvstring.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_url_search_params.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
@@ -125,7 +125,7 @@ static bool AreAnyMembersPresent(const RequestInit* init) {
          init->hasCache() || init->hasRedirect() || init->hasIntegrity() ||
          init->hasKeepalive() || init->hasBrowsingTopics() ||
          init->hasPriority() || init->hasSignal() || init->hasDuplex() ||
-         init->hasTrustToken();
+         init->hasPrivateToken();
 }
 
 static BodyStreamBuffer* ExtractBody(ScriptState* script_state,
@@ -474,9 +474,9 @@ Request* Request::CreateRequestWithRequestOrString(
   // present, and |unknown| otherwise."
   if (init->hasTargetAddressSpace()) {
     if (init->targetAddressSpace() == "local") {
-      request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kLocal);
+      request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kLoopback);
     } else if (init->targetAddressSpace() == "private") {
-      request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kPrivate);
+      request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kLocal);
     } else if (init->targetAddressSpace() == "public") {
       request->SetTargetAddressSpace(network::mojom::IPAddressSpace::kPublic);
     } else if (init->targetAddressSpace() == "unknown") {
@@ -575,12 +575,12 @@ Request* Request::CreateRequestWithRequestOrString(
     signal = init->signal();
   }
 
-  if (init->hasTrustToken()) {
+  if (init->hasPrivateToken()) {
     UseCounter::Count(ExecutionContext::From(script_state),
                       mojom::blink::WebFeature::kTrustTokenFetch);
 
     network::mojom::blink::TrustTokenParams params;
-    if (!ConvertTrustTokenToMojom(*init->trustToken(), &exception_state,
+    if (!ConvertTrustTokenToMojom(*init->privateToken(), &exception_state,
                                   &params)) {
       // Whenever parsing the trustToken argument fails, we expect a suitable
       // exception to be thrown.
@@ -980,10 +980,10 @@ bool Request::keepalive() const {
 }
 String Request::targetAddressSpace() const {
   switch (request_->TargetAddressSpace()) {
+    case network::mojom::IPAddressSpace::kLoopback:
+      return "loopback";
     case network::mojom::IPAddressSpace::kLocal:
       return "local";
-    case network::mojom::IPAddressSpace::kPrivate:
-      return "private";
     case network::mojom::IPAddressSpace::kPublic:
       return "public";
     case network::mojom::IPAddressSpace::kUnknown:

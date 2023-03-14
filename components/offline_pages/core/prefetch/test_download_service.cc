@@ -69,8 +69,7 @@ void TestDownloadService::StartDownload(
 void TestDownloadService::FinishDownload(const std::string& guid) {
   base::FilePath path = download_dir_.GetPath().AppendASCII(
       base::StrCat({"dl_", base::NumberToString(next_file_id_++)}));
-  const int file_size = static_cast<int>(test_file_data_.size());
-  CHECK_EQ(file_size, base::WriteFile(path, test_file_data_.data(), file_size));
+  CHECK(base::WriteFile(path, test_file_data_));
   client_->OnDownloadSucceeded(
       guid, download::CompletionInfo(path, test_file_data_.size(),
                                      std::vector<GURL>(), nullptr));

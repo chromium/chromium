@@ -15,12 +15,12 @@ class GURL;
 namespace content {
 
 class RenderFrameHost;
+class FencedFrameURLMapping;
+class FencedFrameReporter;
 
 namespace test {
 
 // Browser tests can use this class to more conveniently leverage fenced frames.
-// Note that this applies to both the MPArch and ShadowDOM version of fenced
-// frames.
 class FencedFrameTestHelper {
  public:
   explicit FencedFrameTestHelper();
@@ -69,10 +69,18 @@ class FencedFrameTestHelper {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// This helper method creates a fenced frame urn to url mapping and returns the
-// urn in GURL format. It applies to both MPArch and ShadowDOM
-// architeectures of fenced frames
+// Maps a URL to a URN that can be loaded into an opaque-ads fenced frame. This
+// can be called from outside of `content/` as it does not require access to
+// `RenderFrameHostImpl`.
 GURL CreateFencedFrameURLMapping(RenderFrameHost* rfh, const GURL& url);
+
+// Helper function that converts a URL to a URN and adds the mapping to a given
+// fenced frame URL mapping object. This can only be called from inside of
+// `content/`.
+GURL AddAndVerifyFencedFrameURL(
+    FencedFrameURLMapping* fenced_frame_url_mapping,
+    const GURL& https_url,
+    scoped_refptr<FencedFrameReporter> fenced_frame_reporter = nullptr);
 
 }  // namespace test
 

@@ -561,8 +561,14 @@ class CC_PAINT_EXPORT DrawLineOp final : public PaintOpWithFlags {
              SkScalar y0,
              SkScalar x1,
              SkScalar y1,
-             const PaintFlags& flags)
-      : PaintOpWithFlags(kType, flags), x0(x0), y0(y0), x1(x1), y1(y1) {}
+             const PaintFlags& flags,
+             bool draw_as_path = false)
+      : PaintOpWithFlags(kType, flags),
+        x0(x0),
+        y0(y0),
+        x1(x1),
+        y1(y1),
+        draw_as_path(draw_as_path) {}
   static void RasterWithFlags(const DrawLineOp* op,
                               const PaintFlags* flags,
                               SkCanvas* canvas,
@@ -577,6 +583,10 @@ class CC_PAINT_EXPORT DrawLineOp final : public PaintOpWithFlags {
   SkScalar y0;
   SkScalar x1;
   SkScalar y1;
+  // Used to indicate if rasterization should treat the line as a path.
+  // Typically this should be false, but in some situations it can be quicker
+  // to raster lines as paths.
+  bool draw_as_path;
 
  private:
   DrawLineOp() : PaintOpWithFlags(kType) {}

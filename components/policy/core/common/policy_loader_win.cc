@@ -251,13 +251,6 @@ PolicyLoaderWin::PolicyLoaderWin(
 }
 
 PolicyLoaderWin::~PolicyLoaderWin() {
-  // Mitigate the issues caused by loading DLLs or lazily resolving symbols on a
-  // background thread (http://crbug/973868) which can hold the process wide
-  // LoaderLock and cause contention on Foreground threads. This issue is solved
-  // on Windows version after Win7. This code can be removed when Win7 is no
-  // longer supported.
-  SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
-
   if (!user_policy_watcher_failed_) {
     ::UnregisterGPNotification(user_policy_changed_event_.handle());
     user_policy_watcher_.StopWatching();

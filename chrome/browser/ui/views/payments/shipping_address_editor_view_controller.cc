@@ -168,10 +168,8 @@ ShippingAddressEditorViewController::GetComboboxModelForType(
       return model;
     }
     default:
-      NOTREACHED();
-      break;
+      NOTREACHED_NORETURN();
   }
-  return nullptr;
 }
 
 void ShippingAddressEditorViewController::OnPerformAction(

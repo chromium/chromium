@@ -2106,8 +2106,7 @@ TEST_F(OptimizationGuideStoreTest,
   ASSERT_TRUE(update_data);
 
   base::FilePath model_file_path = temp_dir().AppendASCII("model.tflite");
-  ASSERT_EQ(static_cast<int32_t>(3),
-            base::WriteFile(model_file_path, "boo", 3));
+  ASSERT_TRUE(base::WriteFile(model_file_path, "boo"));
 
   base::FilePath additional_file_path = temp_dir().AppendASCII("doesntexist");
 
@@ -2166,13 +2165,11 @@ TEST_F(OptimizationGuideStoreTest,
   ASSERT_TRUE(update_data);
 
   base::FilePath model_file_path = temp_dir().AppendASCII("model.tflite");
-  ASSERT_EQ(static_cast<int32_t>(3),
-            base::WriteFile(model_file_path, "boo", 3));
+  ASSERT_TRUE(base::WriteFile(model_file_path, "boo"));
 
   base::FilePath additional_file_path =
       temp_dir().AppendASCII("additional_file.txt");
-  ASSERT_EQ(static_cast<int32_t>(3),
-            base::WriteFile(additional_file_path, "ah!", 3));
+  ASSERT_TRUE(base::WriteFile(additional_file_path, "ah!"));
   proto::ModelInfo info;
   info.add_additional_files()->set_file_path(
       FilePathToString(additional_file_path));
@@ -2223,7 +2220,7 @@ TEST_F(OptimizationGuideStoreTest,
           optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data);
   base::FilePath file_path = temp_dir().AppendASCII("file");
-  ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(file_path, "boo", 3));
+  ASSERT_TRUE(base::WriteFile(file_path, "boo"));
   SeedPredictionModelUpdateData(update_data.get(),
                                 proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
                                 file_path);
@@ -2270,7 +2267,7 @@ TEST_F(OptimizationGuideStoreTest, UpdatePredictionModelsDeletesOldFile) {
           optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data);
   base::FilePath old_file_path = old_dir.AppendASCII("model.tflite");
-  ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(old_file_path, "boo", 3));
+  ASSERT_TRUE(base::WriteFile(old_file_path, "boo"));
   SeedPredictionModelUpdateData(update_data.get(),
                                 proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
                                 old_file_path);
@@ -2287,7 +2284,7 @@ TEST_F(OptimizationGuideStoreTest, UpdatePredictionModelsDeletesOldFile) {
           optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data2);
   base::FilePath new_file_path = new_dir.AppendASCII("model.tflite");
-  ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(new_file_path, "boo", 3));
+  ASSERT_TRUE(base::WriteFile(new_file_path, "boo"));
   SeedPredictionModelUpdateData(update_data2.get(),
                                 proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
                                 new_file_path);
@@ -2327,8 +2324,7 @@ TEST_F(OptimizationGuideStoreTest,
 
   base::FilePath old_unassociated_model_path =
       old_dir.AppendASCII("other_model.tflite");
-  ASSERT_EQ(static_cast<int32_t>(3),
-            base::WriteFile(old_unassociated_model_path, "boo", 3));
+  ASSERT_TRUE(base::WriteFile(old_unassociated_model_path, "boo"));
 
   base::Time update_time = base::Time().Now();
   std::unique_ptr<StoreUpdateData> update_data =
@@ -2337,7 +2333,7 @@ TEST_F(OptimizationGuideStoreTest,
           optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data);
   base::FilePath old_file_path = old_dir.AppendASCII("model_v1.tflite");
-  ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(old_file_path, "boo", 3));
+  ASSERT_TRUE(base::WriteFile(old_file_path, "boo"));
   SeedPredictionModelUpdateData(update_data.get(),
                                 proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
                                 old_file_path);
@@ -2354,7 +2350,7 @@ TEST_F(OptimizationGuideStoreTest,
           optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data2);
   base::FilePath new_file_path = new_dir.Append(GetBaseFileNameForModels());
-  ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(new_file_path, "boo", 3));
+  ASSERT_TRUE(base::WriteFile(new_file_path, "boo"));
   SeedPredictionModelUpdateData(update_data2.get(),
                                 proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
                                 new_file_path);
@@ -2394,7 +2390,7 @@ TEST_F(OptimizationGuideStoreTest, RemovePredictionModelEntryKeyDeletesFile) {
           optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data);
   base::FilePath file_path = temp_dir().AppendASCII("file");
-  ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(file_path, "boo", 3));
+  ASSERT_TRUE(base::WriteFile(file_path, "boo"));
   SeedPredictionModelUpdateData(update_data.get(),
                                 proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
                                 file_path);
@@ -2447,7 +2443,7 @@ TEST_F(OptimizationGuideStoreTest, PurgeInactiveModels) {
           optimization_guide::features::StoredModelsValidDuration());
   ASSERT_TRUE(update_data);
   base::FilePath old_file_path = temp_dir().AppendASCII("model_v1.tflite");
-  ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(old_file_path, "boo", 3));
+  ASSERT_TRUE(base::WriteFile(old_file_path, "boo"));
   proto::ModelInfo model_info;
   model_info.set_version(123);
   SeedPredictionModelUpdateData(
@@ -2542,7 +2538,7 @@ TEST_P(OptimizationGuideStoreValidityTest, PurgeInactiveModels) {
   info.set_version(123);
   info.set_keep_beyond_valid_duration(test_case.keep_beyond_valid_duration);
   base::FilePath old_file_path = temp_dir().AppendASCII("model_v1.tflite");
-  ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(old_file_path, "boo", 3));
+  ASSERT_TRUE(base::WriteFile(old_file_path, "boo"));
   SeedPredictionModelUpdateData(update_data.get(),
                                 proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
                                 old_file_path, info, update_time);

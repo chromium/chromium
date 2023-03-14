@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.firstrun;
 
 import static org.mockito.ArgumentMatchers.any;
 
+import static org.chromium.ui.test.util.MockitoHelper.doCallback;
+
 import android.os.Looper;
 
 import androidx.test.filters.SmallTest;
@@ -45,10 +47,7 @@ public class TosDialogBehaviorSharedPrefInvalidatorUnitTest {
 
     @Before
     public void setUp() {
-        Mockito.doAnswer(invocation -> {
-                   mOnPolicyAvailableCallback = invocation.getArgument(0);
-                   return null;
-               })
+        doCallback((Callback<Boolean> callback) -> mOnPolicyAvailableCallback = callback)
                 .when(mMockPolicyListener)
                 .onAvailable(any());
         Mockito.doReturn(null).when(mMockPolicyListener).get();

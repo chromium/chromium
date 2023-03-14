@@ -19,8 +19,7 @@ class JSONArray;
 class JSONObject;
 class PendingLayer;
 
-class PLATFORM_EXPORT ContentLayerClientImpl : public cc::ContentLayerClient,
-                                               public LayerAsJSONClient {
+class PLATFORM_EXPORT ContentLayerClientImpl : public cc::ContentLayerClient {
   USING_FAST_MALLOC(ContentLayerClientImpl);
 
  public:
@@ -38,10 +37,10 @@ class PLATFORM_EXPORT ContentLayerClientImpl : public cc::ContentLayerClient,
   }
   bool FillsBoundsCompletely() const final { return false; }
 
-  // LayerAsJSONClient implementation
+  // For LayersAsJSON.
   void AppendAdditionalInfoAsJSON(LayerTreeFlags,
                                   const cc::Layer&,
-                                  JSONObject&) const override;
+                                  JSONObject&) const;
 
   cc::Layer& Layer() const { return *cc_picture_layer_.get(); }
 

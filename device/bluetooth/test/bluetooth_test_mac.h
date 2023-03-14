@@ -23,7 +23,7 @@ class MockCBPeripheral;
 
 namespace device {
 
-class BluetoothAdapterMac;
+class BluetoothLowEnergyAdapterApple;
 
 // Mac implementation of BluetoothTestBase.
 class BluetoothTestMac : public BluetoothTestBase {
@@ -107,8 +107,8 @@ class BluetoothTestMac : public BluetoothTestBase {
   void ExpectedChangeNotifyValueAttempts(int attempts) override;
   void ExpectedNotifyValue(NotifyValueState expected_value_state) override;
 
-  // macOS is the only platform for which we need to discover each set of
-  // attributes individually so we need a method to simulate discovering each
+  // Apple devices have the only platform for which we need to discover each set
+  // of attributes individually so we need a method to simulate discovering each
   // set of attributes.
   // Simulates service discovery for a device.
   void SimulateDidDiscoverServicesMac(BluetoothDevice* device);
@@ -142,9 +142,11 @@ class BluetoothTestMac : public BluetoothTestBase {
       BluetoothRemoteGattDescriptor* descriptor,
       short value);
 
+#if !BUILDFLAG(IS_IOS)
   // Sets the power state of the mock controller to |powered|. Used to override
   // BluetoothAdapterMac's SetControllerPowerStateFunction.
   void SetMockControllerPowerState(int powered);
+#endif
 
   // Adds services in MockCBPeripheral.
   void AddServicesToDeviceMac(BluetoothDevice* device,
@@ -200,7 +202,7 @@ class BluetoothTestMac : public BluetoothTestBase {
   // Utility function for finding CBUUIDs with relatively nice SHA256 hashes.
   std::string FindCBUUIDForHashTarget();
 
-  raw_ptr<BluetoothAdapterMac> adapter_mac_ = nullptr;
+  raw_ptr<BluetoothLowEnergyAdapterApple> adapter_low_energy_ = nullptr;
   std::unique_ptr<ScopedMockCentralManager> mock_central_manager_;
 
   // Value set by -[CBPeripheral setNotifyValue:forCharacteristic:] call.

@@ -473,6 +473,19 @@ error::Error DoPauseTransformFeedback();
 error::Error DoPixelStorei(GLenum pname, GLint param);
 error::Error DoPolygonOffset(GLfloat factor, GLfloat units);
 error::Error DoReadBuffer(GLenum src);
+error::Error DoReadbackARGBImagePixelsINTERNAL(GLint src_x,
+                                               GLint src_y,
+                                               GLint plane_index,
+                                               GLuint dst_width,
+                                               GLuint dst_height,
+                                               GLuint row_bytes,
+                                               GLuint dst_sk_color_type,
+                                               GLuint dst_sk_alpha_type,
+                                               GLint shm_id,
+                                               GLuint shm_offset,
+                                               GLuint color_space_offset,
+                                               GLuint pixels_offset,
+                                               GLuint mailbox_offset);
 error::Error DoReadPixels(GLint x,
                           GLint y,
                           GLsizei width,

@@ -68,6 +68,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".DeviceWipeUsers" summary="Wipe users"/>
   <variant name=".FetchCrdAvailabilityInfo"
       summary="Fetch CRD availability info"/>
+  <variant name=".FetchSupportPacket" summary="Fetch support packet"/>
   <variant name=".UserArcCommand" summary="ARC command"/>
 </variants>
 
@@ -2460,7 +2461,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.ProfileSeparation.DasherPolicyFetch.HttpResponse"
-    enum="HttpResponseCode" expires_after="2023-07-02">
+    enum="HttpResponseCode" expires_after="2023-09-03">
   <owner>ydago@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
@@ -2496,7 +2497,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PublicSession.SessionLength" units="minutes"
-    expires_after="2023-07-01">
+    expires_after="2023-09-03">
   <owner>bfranz@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -2521,7 +2522,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.RegularUserSession.SessionLength" units="minutes"
-    expires_after="2023-07-01">
+    expires_after="2023-09-03">
   <owner>bfranz@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -2643,7 +2644,6 @@ chromium-metrics-reviews@google.com.
     Captures the response parsing error rate whenever collecting {Signal}.
   </summary>
   <token key="Signal">
-    <variant name="WMI.AntiVirus" summary="AntiVirus info from WMI"/>
     <variant name="WMI.Hotfixes" summary="Hotfixes info from WMI"/>
     <variant name="WSC.AntiVirus" summary="AntiVirus info from WSC"/>
   </token>
@@ -2675,7 +2675,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.TimeToUnthrottlePolicyInit" units="ms"
-    expires_after="2023-07-01">
+    expires_after="2023-09-03">
   <owner>emaxx@chromium.org</owner>
   <owner>pmarko@chromium.org</owner>
   <summary>
@@ -2805,7 +2805,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.UserSession.Logins"
-    enum="EnterpriseUserSessionLogins" expires_after="2023-06-25">
+    enum="EnterpriseUserSessionLogins" expires_after="2023-08-27">
   <owner>xiyuan@chromium.org</owner>
   <owner>sduraisamy@chromium.org</owner>
   <summary>Tracks the sign-in events on an enrolled device.</summary>
@@ -2856,7 +2856,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.AzureADJoinStatusCheckTime" units="ms"
-    expires_after="2023-04-16">
+    expires_after="2024-03-01">
   <owner>igorruvinov@chromium.org</owner>
   <owner>ydago@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
@@ -2893,8 +2893,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.InvalidPolicies" enum="EnterprisePolicies"
-    expires_after="2023-02-19">
+    expires_after="2023-08-19">
   <owner>pastarmovj@chromium.org</owner>
+  <owner>ydago@chromium.org</owner>
   <summary>
     A set of policy rules that were ignored due to integrity violations while
     parsing the policy data which happens on start-up and when the policy has
@@ -2937,7 +2938,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.IsFullyManaged2" enum="IsFullyManagedBoolean"
-    expires_after="2023-07-02">
+    expires_after="2023-09-03">
   <owner>twellington@google.com</owner>
   <owner>tedchcoc@chromium.org</owner>
   <summary>

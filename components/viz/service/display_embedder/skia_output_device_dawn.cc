@@ -87,8 +87,10 @@ bool SkiaOutputDeviceDawn::Reshape(
   return true;
 }
 
-void SkiaOutputDeviceDawn::SwapBuffers(BufferPresentedCallback feedback,
-                                       OutputSurfaceFrame frame) {
+void SkiaOutputDeviceDawn::Present(const absl::optional<gfx::Rect>& update_rect,
+                                   BufferPresentedCallback feedback,
+                                   OutputSurfaceFrame frame) {
+  DCHECK(!update_rect);
   StartSwapBuffers({});
   swap_chain_.Present();
   FinishSwapBuffers(gfx::SwapCompletionResult(gfx::SwapResult::SWAP_ACK),

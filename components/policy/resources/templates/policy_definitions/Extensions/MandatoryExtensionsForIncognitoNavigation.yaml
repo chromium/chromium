@@ -1,0 +1,24 @@
+caption: Extensions that have to be allowed to run in Incognito by the user in order to navigate in Incognito mode
+desc: |-
+  This policy allows administrators to configure a list of extension ids required for Incognito mode navigation.
+
+  The user must explicitly allow all extensions in this list to run in Incognito mode, otherwise navigation in Incognito is not allowed.
+
+  If an extension specified in this policy is not installed, Incognito navigation is blocked.
+example_value:
+- abcdefghijklmnopabcdefghijklmnop
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+- chrome_os
+owners:
+- acostinas@google.com
+- suprnet@google.com
+schema:
+  items:
+    type: string
+  type: array
+tags: []
+type: list

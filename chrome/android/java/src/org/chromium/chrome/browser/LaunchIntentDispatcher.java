@@ -28,7 +28,6 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.app.video_tutorials.VideoTutorialShareHelper;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebactivity.TwaSplashController;
@@ -448,15 +447,6 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
                 mActivity.getApplicationContext().getPackageName(), targetActivityClassName);
         newIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK
                 | Intent.FLAG_ACTIVITY_RETAIN_IN_RECENTS);
-
-        if ((mIntent.getFlags() & Intent.FLAG_ACTIVITY_MULTIPLE_TASK) != 0) {
-            newIntent.setFlags(newIntent.getFlags() | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-            if (Intent.ACTION_VIEW.equals(mIntent.getAction())) {
-                RecordHistogram.recordBooleanHistogram(
-                        "Startup.Android.NewInstance.LaunchedFromDraggedLinkViewIntent",
-                        mIntent.getBooleanExtra(IntentHandler.EXTRA_SOURCE_DRAG_DROP, false));
-            }
-        }
 
         Uri uri = newIntent.getData();
         boolean isContentScheme = false;

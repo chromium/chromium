@@ -102,7 +102,7 @@ source_set("ini_parser") {
 group("common") {
   public_deps = [ ":common_lib" ]
   if (is_win) {
-    public_deps += [ ":delay_load_support" ]
+    public_deps += [ "//chrome/common/win:delay_load_failure_hook" ]
   }
 }
 
@@ -217,6 +217,7 @@ static_library("common_lib") {
     "//components/prefs",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/common",
+    "//components/safe_search_api",
     "//components/services/app_service/public/cpp:app_share_target",
     "//components/services/app_service/public/cpp:app_types",
     "//components/services/heap_profiling/public/cpp",
@@ -407,6 +408,10 @@ static_library("common_lib") {
   } else {
     # Non-Android.
     public_deps += [ "//chrome/common/importer" ]
+    sources += [
+      "accessibility/read_anything_constants.cc",
+      "accessibility/read_anything_constants.h",
+    ]
   }
 
   if (is_win) {
@@ -698,20 +703,6 @@ if (is_mac) {
     ]
 
     public_deps = [ "//base" ]
-  }
-}
-
-if (is_win) {
-  # delay load support must be a source_set to ensure that it has external
-  # linkage and will correctly emplace over the correct symbols in
-  # delayimp.lib at link time.
-  source_set("delay_load_support") {
-    sources = [
-      "win/delay_load_failure_hook.cc",
-      "win/delay_load_failure_hook.h",
-    ]
-
-    deps = [ "//base" ]
   }
 }
 

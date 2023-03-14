@@ -144,9 +144,8 @@ PasswordGenerationPopupControllerImpl::PasswordGenerationPopupControllerImpl(
           "password")),
       generation_element_id_(ui_data.generation_element_id),
       max_length_(ui_data.max_length),
-      // TODO(estade): use correct text direction.
       controller_common_(bounds,
-                         base::i18n::LEFT_TO_RIGHT,
+                         ui_data.text_direction,
                          web_contents->GetNativeView()),
       password_selected_(false),
       state_(kOfferGeneration),
@@ -424,8 +423,9 @@ const gfx::RectF& PasswordGenerationPopupControllerImpl::element_bounds()
   return controller_common_.element_bounds;
 }
 
-bool PasswordGenerationPopupControllerImpl::IsRTL() const {
-  return base::i18n::IsRTL();
+base::i18n::TextDirection
+PasswordGenerationPopupControllerImpl::GetElementTextDirection() const {
+  return controller_common_.text_direction;
 }
 
 void PasswordGenerationPopupControllerImpl::HideImpl() {
@@ -455,14 +455,14 @@ const std::u16string& PasswordGenerationPopupControllerImpl::password() const {
   return current_generated_password_;
 }
 
-std::u16string PasswordGenerationPopupControllerImpl::SuggestedText() {
+std::u16string PasswordGenerationPopupControllerImpl::SuggestedText() const {
   if (state_ == kOfferGeneration)
     return l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_SUGGESTION_GPM);
 
   return l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_EDITING_SUGGESTION);
 }
 
-const std::u16string& PasswordGenerationPopupControllerImpl::HelpText() {
+const std::u16string& PasswordGenerationPopupControllerImpl::HelpText() const {
   return help_text_;
 }
 

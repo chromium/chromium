@@ -31,6 +31,12 @@ class FakeDataCollectorDelegate : public DataCollector::Delegate {
 
   bool IsPrivacyScreenManaged() override { return privacy_screen_managed_; }
 
+  void SetPrivacyScreenState(bool state) override {}  // Do nothing.
+
+  bool IsOutputForceMuted() override { return audio_force_muted_; }
+
+  void SetOutputMute(bool mute_on) override {}  // Do nothing.
+
   void SetPrivacyScreenAttributes(bool supported,
                                   bool managed,
                                   [[maybe_unused]] bool enabled) {
@@ -41,9 +47,12 @@ class FakeDataCollectorDelegate : public DataCollector::Delegate {
     // unittests.
   }
 
+  void SetAudioForceMute(bool force_mute) { audio_force_muted_ = force_mute; }
+
  private:
   bool privacy_screen_supported_ = false;
   bool privacy_screen_managed_ = false;
+  bool audio_force_muted_ = false;
 };
 
 class DataCollectorTest : public testing::Test {
@@ -105,55 +114,123 @@ TEST_F(DataCollectorTest, GetTouchpadLibraryName) {
 // Test that privacy screen set request will be rejected when privacy screen is
 // unsupported.
 TEST_F(DataCollectorTest, RejectPrivacyScreenSetRequestOnUnsupported) {
+  base::RunLoop run_loop;
   delegate_.SetPrivacyScreenAttributes(/*supported=*/false, /*managed=*/false,
                                        /*enabled=*/false);
   remote_->SetPrivacyScreenState(
-      true, base::BindOnce([](bool success) { EXPECT_FALSE(success); }));
+      true, base::BindLambdaForTesting([&run_loop](bool success) {
+        EXPECT_FALSE(success);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 }
 
 // Test that privacy screen set request will be rejected when privacy screen is
 // in managed mode.
 TEST_F(DataCollectorTest, RejectPrivacyScreenSetRequestOnManagedMode) {
+  base::RunLoop run_loop;
   delegate_.SetPrivacyScreenAttributes(/*supported=*/true, /*managed=*/true,
                                        /*enabled=*/false);
   remote_->SetPrivacyScreenState(
-      true, base::BindOnce([](bool success) { EXPECT_FALSE(success); }));
+      true, base::BindLambdaForTesting([&run_loop](bool success) {
+        EXPECT_FALSE(success);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 }
 
 // Test that privacy screen set request will be accepted when privacy screen is
 // on and is to be turned on.
 TEST_F(DataCollectorTest, AcceptPrivacyScreenSetRequestFromOnToOn) {
+  base::RunLoop run_loop;
   delegate_.SetPrivacyScreenAttributes(/*supported=*/true, /*managed=*/false,
                                        /*enabled=*/true);
   remote_->SetPrivacyScreenState(
-      true, base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
+      true, base::BindLambdaForTesting([&run_loop](bool success) {
+        EXPECT_TRUE(success);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 }
 
 // Test that privacy screen set request will be accepted when privacy screen is
 // on and is to be turned off.
 TEST_F(DataCollectorTest, AcceptPrivacyScreenSetRequestFromOnToOff) {
+  base::RunLoop run_loop;
   delegate_.SetPrivacyScreenAttributes(/*supported=*/true,
                                        /*managed=*/false, /*enabled=*/true);
   remote_->SetPrivacyScreenState(
-      false, base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
+      false, base::BindLambdaForTesting([&run_loop](bool success) {
+        EXPECT_TRUE(success);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 }
 
 // Test that privacy screen set request will be accepted when privacy screen is
 // off and is to be turned on.
 TEST_F(DataCollectorTest, AcceptPrivacyScreenSetRequestFromOffToOn) {
+  base::RunLoop run_loop;
   delegate_.SetPrivacyScreenAttributes(/*supported=*/true,
                                        /*managed=*/false, /*enabled=*/false);
   remote_->SetPrivacyScreenState(
-      true, base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
+      true, base::BindLambdaForTesting([&run_loop](bool success) {
+        EXPECT_TRUE(success);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 }
 
 // Test that privacy screen set request will be accepted when privacy screen is
 // off and is to be turned off.
 TEST_F(DataCollectorTest, AcceptPrivacyScreenSetRequestFromOffToff) {
+  base::RunLoop run_loop;
   delegate_.SetPrivacyScreenAttributes(/*supported=*/true,
                                        /*managed=*/false, /*enabled=*/false);
   remote_->SetPrivacyScreenState(
-      false, base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
+      false, base::BindLambdaForTesting([&run_loop](bool success) {
+        EXPECT_TRUE(success);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// Test that SetAudioOutputMute will return false when the audio output device
+// is force muted but the users want to unmute it.
+TEST_F(DataCollectorTest, AudioUnmuteForceMuted) {
+  base::RunLoop run_loop;
+  delegate_.SetAudioForceMute(/*force_mute=*/true);
+  remote_->SetAudioOutputMute(
+      /*mute_on=*/false, base::BindLambdaForTesting([&](bool success) {
+        EXPECT_FALSE(success);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// Test that SetAudioOutputMute will return true when the users want to mute it.
+TEST_F(DataCollectorTest, AudioMute) {
+  base::RunLoop run_loop;
+  delegate_.SetAudioForceMute(/*force_mute=*/true);
+  remote_->SetAudioOutputMute(
+      /*mute_on=*/true, base::BindLambdaForTesting([&](bool success) {
+        EXPECT_TRUE(success);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// Test that SetAudioOutputMute will return true when the audio output device
+// is not force muted.
+TEST_F(DataCollectorTest, AudioUnmuteNotForceMuted) {
+  base::RunLoop run_loop;
+  delegate_.SetAudioForceMute(/*force_mute=*/false);
+  remote_->SetAudioOutputMute(
+      /*mute_on=*/false, base::BindLambdaForTesting([&](bool success) {
+        EXPECT_TRUE(success);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 }
 
 }  // namespace

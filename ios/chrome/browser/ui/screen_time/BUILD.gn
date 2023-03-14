@@ -28,7 +28,7 @@ source_set("screen_time") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/screen_time",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/common/ui/util",
     "//ios/web/public",

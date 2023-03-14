@@ -1,0 +1,8 @@
+include_rules = [
+  "+components/crash/core/app/crashpad.h",
+  "+components/gwp_asan",
+  "+components/heap_profiling",
+  "+components/metrics/call_stack_profile_params.h",
+  "+components/services/heap_profiling/public/cpp/profiling_client.h",
+  "+components/version_info/channel.h",
+]

@@ -25,6 +25,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -76,8 +77,13 @@ class PriceTrackingIconViewInteractiveTest : public InProcessBrowserTest {
         BookmarkModelFactory::GetForBrowserContext(browser()->profile());
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
 
-    bookmarks::AddIfNotBookmarked(bookmark_model, GURL(kTrackableUrl),
-                                  std::u16string());
+    // Remove the original tab helper so we don't get into a bad situation when
+    // we go to replace the shopping service with the mock one. The old tab
+    // helper is still holding a reference to the original shopping service and
+    // other dependencies which we switch out below (leaving some dangling
+    // pointers on destruction).
+    browser()->tab_strip_model()->GetActiveWebContents()->RemoveUserData(
+        commerce::ShoppingListUiTabHelper::UserDataKey());
 
     mock_shopping_service_ = static_cast<commerce::MockShoppingService*>(
         commerce::ShoppingServiceFactory::GetInstance()
@@ -144,6 +150,13 @@ class PriceTrackingIconViewInteractiveTest : public InProcessBrowserTest {
             kBookmarkStarViewElementId, context);
 
     return matched_view ? views::AsViewClass<StarView>(matched_view) : nullptr;
+  }
+
+  const std::u16string& GetDefaultFolderName() {
+    bookmarks::BookmarkModel* const model =
+        BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+    const bookmarks::BookmarkNode* node = model->other_node();
+    return node->GetTitle();
   }
 
  protected:
@@ -249,6 +262,26 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
                omnibox::kPriceTrackingEnabledFilledIcon.name);
   EXPECT_EQ(icon_view->GetTextForTooltipAndAccessibleName(),
             l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACKING_PRICE));
+}
+
+IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
+                       CreateBookmarkOnPressIfNotExist) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kShouldShowPriceTrackFUEBubble, false);
+  auto* icon_view = GetChip();
+  icon_view->ForceVisibleForTesting(/*is_tracking_price=*/false);
+
+  GURL url = GURL(kTrackableUrl);
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  EXPECT_FALSE(bookmarks::IsBookmarkedByUser(bookmark_model, url));
+
+  ClickPriceTrackingIconView();
+  EXPECT_TRUE(bookmarks::IsBookmarkedByUser(bookmark_model, url));
+
+  const bookmarks::BookmarkNode* node =
+      bookmark_model->GetMostRecentlyAddedUserNodeForURL(url);
+  EXPECT_EQ(node->parent()->GetTitle(), GetDefaultFolderName());
 }
 
 IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,

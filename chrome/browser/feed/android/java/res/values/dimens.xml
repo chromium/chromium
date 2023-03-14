@@ -66,7 +66,6 @@ found in the LICENSE file.
 
     <!-- Menu footer chip dimensions. -->
     <item name="menu_footer_chip_background_alpha" format="float" type="dimen">0.1</item>
-    <dimen name="menu_footer_second_row_margin_start">16dp</dimen>
 
     <!-- Creator dimensions. -->
     <dimen name="creator_error_margin_bottom">16dp</dimen>

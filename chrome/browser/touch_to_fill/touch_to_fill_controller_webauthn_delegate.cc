@@ -44,10 +44,12 @@ void TouchToFillControllerWebAuthnDelegate::OnPasskeyCredentialSelected(
 }
 
 void TouchToFillControllerWebAuthnDelegate::OnManagePasswordsSelected(
+    bool passkeys_shown,
     base::OnceClosure action_complete) {
   password_manager_launcher::ShowPasswordSettings(
       request_delegate_->web_contents(),
-      password_manager::ManagePasswordsReferrer::kTouchToFill);
+      password_manager::ManagePasswordsReferrer::kTouchToFill,
+      /*manage_passkeys=*/true);
   OnDismiss(std::move(action_complete));
 }
 

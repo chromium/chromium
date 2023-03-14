@@ -7,13 +7,13 @@
 #include <memory>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -147,7 +147,7 @@ TEST_F(WallPaperColorCalculatorAsyncTest,
 
 TEST_F(WallPaperColorCalculatorAsyncTest, ColorUpdatedOnSuccessfulCalculation) {
   base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(features::kJelly);
+  features.InitAndDisableFeature(chromeos::features::kJelly);
 
   std::vector<SkColor> colors = {kDefaultColor};
   SkColor k_mean_color = kDefaultColor;
@@ -165,7 +165,7 @@ TEST_F(WallPaperColorCalculatorAsyncTest, ColorUpdatedOnSuccessfulCalculation) {
 }
 
 TEST_F(WallPaperColorCalculatorAsyncTest, CelebiCalculatedWhenJellyEnabled) {
-  base::test::ScopedFeatureList features(features::kJelly);
+  base::test::ScopedFeatureList features(chromeos::features::kJelly);
 
   base::RunLoop run_loop;
   EXPECT_TRUE(calculator_->StartCalculation(Wrap(run_loop.QuitClosure())));

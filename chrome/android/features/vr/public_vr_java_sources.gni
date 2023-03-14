@@ -10,5 +10,9 @@ public_vr_java_sources = [
   "//chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrDelegateProvider.java",
   "//chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrDelegateProviderFallback.java",
   "//chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrFallbackUtils.java",
-  "//chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrModuleProvider.java",
 ]
+if (enable_vr) {
+  public_vr_java_sources += [ "//chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrModuleProvider.java" ]
+} else {
+  public_vr_java_sources += [ "//chrome/android/features/vr/dummy/java/src/org/chromium/chrome/browser/vr/VrModuleProvider.java" ]
+}

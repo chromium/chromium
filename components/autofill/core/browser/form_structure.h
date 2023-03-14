@@ -244,32 +244,6 @@ class FormStructure {
   void RetrieveFromCache(const FormStructure& cached_form,
                          RetrieveFromCacheReason reason);
 
-  // Logs quality metrics for |this|, which should be a user-submitted form.
-  // This method should only be called after the possible field types have been
-  // set for each field.  |interaction_time| should be a timestamp corresponding
-  // to the user's first interaction with the form.  |submission_time| should be
-  // a timestamp corresponding to the form's submission. |observed_submission|
-  // indicates whether this method is called as a result of observing a
-  // submission event (otherwise, it may be that an upload was triggered after
-  // a form was unfocused or a navigation occurred).
-  // TODO(sebsg): We log more than quality metrics. Maybe rename or split
-  // function?
-  void LogQualityMetrics(
-      const base::TimeTicks& load_time,
-      const base::TimeTicks& interaction_time,
-      const base::TimeTicks& submission_time,
-      AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-      bool did_show_suggestions,
-      bool observed_submission,
-      const FormInteractionCounts& form_interaction_counts) const;
-
-  // Log the quality of the heuristics and server predictions for this form
-  // structure, if autocomplete attributes are present on the fields (they are
-  // used as golden truths).
-  void LogQualityMetricsBasedOnAutocomplete(
-      AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger)
-      const;
-
   void LogDetermineHeuristicTypesMetrics();
 
   // Sets each field's `html_type` and `html_mode` based on the field's
@@ -316,6 +290,9 @@ class FormStructure {
   const AutofillField* field(size_t index) const;
   AutofillField* field(size_t index);
   size_t field_count() const;
+
+  const AutofillField* GetFieldById(FieldGlobalId field_id) const;
+  AutofillField* GetFieldById(FieldGlobalId field_id);
 
   // Returns the number of fields that are part of the form signature and that
   // are included in queries to the Autofill server.
@@ -487,6 +464,9 @@ class FormStructure {
 
  private:
   friend class FormStructureTestApi;
+
+  // Sets the rank of each field in the form.
+  void DetermineFieldRanks();
 
   // Production code only uses the default parameters.
   // Unit tests also test other parameters.

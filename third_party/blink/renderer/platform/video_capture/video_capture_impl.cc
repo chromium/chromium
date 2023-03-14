@@ -31,7 +31,6 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
@@ -593,7 +592,7 @@ void VideoCaptureImpl::VideoFrameBufferPreparer::Finalize() {
   DCHECK(frame_);
   frame_->AddDestructionObserver(
       base::BindOnce(&VideoCaptureImpl::DidFinishConsumingFrame,
-                     media::BindToCurrentLoop(base::BindOnce(
+                     base::BindPostTaskToCurrentDefault(base::BindOnce(
                          &VideoCaptureImpl::OnAllClientsFinishedConsumingFrame,
                          video_capture_impl_.weak_factory_.GetWeakPtr(),
                          buffer_id_, buffer_context_))));
@@ -969,7 +968,7 @@ void VideoCaptureImpl::OnBufferReady(
         base::BindOnce(&VideoCaptureImpl::BindVideoFramesOnMediaThread,
                        gpu_factories_, std::move(frame_preparer),
                        std::move(scaled_frame_preparers),
-                       media::BindToCurrentLoop(base::BindOnce(
+                       base::BindPostTaskToCurrentDefault(base::BindOnce(
                            &VideoCaptureImpl::OnVideoFrameReady,
                            weak_factory_.GetWeakPtr(), reference_time)),
                        base::BindPostTask(

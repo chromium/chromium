@@ -45,13 +45,12 @@ bool EchoRemoteCommandJob::IsExpired(base::TimeTicks now) {
          now > issued_time() + base::Hours(kCommandExpirationTimeInHours);
 }
 
-void EchoRemoteCommandJob::RunImpl(CallbackWithResult succeed_callback,
-                                   CallbackWithResult failed_callback) {
+void EchoRemoteCommandJob::RunImpl(CallbackWithResult result_callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(
-          succeed_ ? std::move(succeed_callback) : std::move(failed_callback),
-          command_payload_),
+      base::BindOnce(std::move(result_callback),
+                     succeed_ ? ResultType::kSuccess : ResultType::kFailure,
+                     command_payload_),
       execution_duration_);
 }
 

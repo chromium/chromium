@@ -176,8 +176,6 @@ struct GPU_EXPORT
     out->enable_low_latency_dxva = prefs.enable_low_latency_dxva();
     out->enable_zero_copy_dxgi_video = prefs.enable_zero_copy_dxgi_video();
     out->enable_nv12_dxgi_video = prefs.enable_nv12_dxgi_video();
-    out->enable_media_foundation_vea_on_windows7 =
-        prefs.enable_media_foundation_vea_on_windows7();
     out->disable_software_rasterizer = prefs.disable_software_rasterizer();
     out->log_gpu_control_list_decisions =
         prefs.log_gpu_control_list_decisions();
@@ -266,6 +264,9 @@ struct GPU_EXPORT
         prefs.enable_chromeos_direct_video_decoder();
 #endif
 
+    out->force_separate_egl_display_for_webgl_testing =
+        prefs.force_separate_egl_display_for_webgl_testing();
+
     return true;
   }
 
@@ -294,10 +295,6 @@ struct GPU_EXPORT
   }
   static bool enable_nv12_dxgi_video(const gpu::GpuPreferences& prefs) {
     return prefs.enable_nv12_dxgi_video;
-  }
-  static bool enable_media_foundation_vea_on_windows7(
-      const gpu::GpuPreferences& prefs) {
-    return prefs.enable_media_foundation_vea_on_windows7;
   }
   static bool disable_software_rasterizer(const gpu::GpuPreferences& prefs) {
     return prefs.disable_software_rasterizer;
@@ -461,6 +458,10 @@ struct GPU_EXPORT
     return prefs.enable_chromeos_direct_video_decoder;
   }
 #endif
+  static bool force_separate_egl_display_for_webgl_testing(
+      const gpu::GpuPreferences& prefs) {
+    return prefs.force_separate_egl_display_for_webgl_testing;
+  }
 };
 
 }  // namespace mojo

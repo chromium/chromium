@@ -100,8 +100,8 @@ void ActivityLogAPI::OnExtensionActivity(scoped_refptr<Action> activity) {
 
 ExtensionFunction::ResponseAction
 ActivityLogPrivateGetExtensionActivitiesFunction::Run() {
-  std::unique_ptr<activity_log_private::GetExtensionActivities::Params> params(
-      activity_log_private::GetExtensionActivities::Params::Create(args()));
+  absl::optional<activity_log_private::GetExtensionActivities::Params> params =
+      activity_log_private::GetExtensionActivities::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // Get the arguments in the right format.
@@ -168,8 +168,8 @@ void ActivityLogPrivateGetExtensionActivitiesFunction::OnLookupCompleted(
 
 ExtensionFunction::ResponseAction
 ActivityLogPrivateDeleteActivitiesFunction::Run() {
-  std::unique_ptr<activity_log_private::DeleteActivities::Params> params(
-      activity_log_private::DeleteActivities::Params::Create(args()));
+  absl::optional<activity_log_private::DeleteActivities::Params> params =
+      activity_log_private::DeleteActivities::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // Put the arguments in the right format.
@@ -188,9 +188,10 @@ ActivityLogPrivateDeleteActivitiesFunction::Run() {
 
 ExtensionFunction::ResponseAction
 ActivityLogPrivateDeleteActivitiesByExtensionFunction::Run() {
-  std::unique_ptr<activity_log_private::DeleteActivitiesByExtension::Params>
-      params(activity_log_private::DeleteActivitiesByExtension::Params::Create(
-          args()));
+  absl::optional<activity_log_private::DeleteActivitiesByExtension::Params>
+      params =
+          activity_log_private::DeleteActivitiesByExtension::Params::Create(
+              args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   ActivityLog* activity_log = ActivityLog::GetInstance(browser_context());
@@ -208,8 +209,8 @@ ActivityLogPrivateDeleteDatabaseFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction ActivityLogPrivateDeleteUrlsFunction::Run() {
-  std::unique_ptr<activity_log_private::DeleteUrls::Params> params(
-      activity_log_private::DeleteUrls::Params::Create(args()));
+  absl::optional<activity_log_private::DeleteUrls::Params> params =
+      activity_log_private::DeleteUrls::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // Put the arguments in the right format.

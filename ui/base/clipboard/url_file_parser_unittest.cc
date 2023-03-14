@@ -9,7 +9,7 @@
 #include "base/strings/string_piece.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ui::ClipboardUtil::internal {
+namespace ui::clipboard_util::internal {
 namespace {
 
 using UrlFileParserTest = testing::Test;
@@ -121,4 +121,4 @@ URL=http://www.youtube.com/
 }
 
 }  // namespace
-}  // namespace ui::ClipboardUtil::internal
+}  // namespace ui::clipboard_util::internal

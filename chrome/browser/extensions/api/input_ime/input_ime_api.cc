@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/api/input_ime/input_ime_api.h"
 
-#include <memory>
 #include <utility>
 #include "base/lazy_instance.h"
 #include "base/strings/stringprintf.h"
@@ -116,8 +115,8 @@ void InputImeEventRouterFactory::RemoveProfile(Profile* profile) {
 }
 
 ExtensionFunction::ResponseAction InputImeKeyEventHandledFunction::Run() {
-  std::unique_ptr<KeyEventHandled::Params> params(
-      KeyEventHandled::Params::Create(args()));
+  absl::optional<KeyEventHandled::Params> params =
+      KeyEventHandled::Params::Create(args());
   std::string error;
   InputMethodEngine* engine = GetEngineIfActive(
       Profile::FromBrowserContext(browser_context()), extension_id(), &error);
@@ -135,8 +134,8 @@ ExtensionFunction::ResponseAction InputImeSetCompositionFunction::Run() {
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
-  std::unique_ptr<SetComposition::Params> parent_params(
-      SetComposition::Params::Create(args()));
+  absl::optional<SetComposition::Params> parent_params =
+      SetComposition::Params::Create(args());
   const SetComposition::Params::Parameters& params = parent_params->parameters;
   std::vector<InputMethodEngine::SegmentInfo> segments;
   if (params.segments) {
@@ -179,8 +178,8 @@ ExtensionFunction::ResponseAction InputImeCommitTextFunction::Run() {
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
-  std::unique_ptr<CommitText::Params> parent_params(
-      CommitText::Params::Create(args()));
+  absl::optional<CommitText::Params> parent_params =
+      CommitText::Params::Create(args());
   const CommitText::Params::Parameters& params = parent_params->parameters;
   if (!engine->CommitText(params.context_id, base::UTF8ToUTF16(params.text),
                           &error)) {
@@ -199,8 +198,8 @@ ExtensionFunction::ResponseAction InputImeSendKeyEventsFunction::Run() {
   if (!engine)
     return RespondNow(Error(InformativeError(error, static_function_name())));
 
-  std::unique_ptr<SendKeyEvents::Params> parent_params(
-      SendKeyEvents::Params::Create(args()));
+  absl::optional<SendKeyEvents::Params> parent_params =
+      SendKeyEvents::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parent_params);
   const SendKeyEvents::Params::Parameters& params = parent_params->parameters;
 

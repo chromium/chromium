@@ -163,8 +163,10 @@ class TestServer {
   void Start(uint32_t backlog) {
     int net_error = net::ERR_FAILED;
     base::RunLoop run_loop;
+    auto options = mojom::TCPServerSocketOptions::New();
+    options->backlog = backlog;
     factory_.CreateTCPServerSocket(
-        server_addr_, backlog, TRAFFIC_ANNOTATION_FOR_TESTS,
+        server_addr_, std::move(options), TRAFFIC_ANNOTATION_FOR_TESTS,
         server_socket_.BindNewPipeAndPassReceiver(),
         base::BindLambdaForTesting(
             [&](int result, const absl::optional<net::IPEndPoint>& local_addr) {

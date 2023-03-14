@@ -677,7 +677,7 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
   const std::string* guid = properties->FindString(shill::kGuidProperty);
   const std::string* profile = properties->FindString(shill::kProfileProperty);
   ::onc::ONCSource onc_source = ::onc::ONC_SOURCE_NONE;
-  const base::Value* policy = nullptr;
+  const base::Value::Dict* policy = nullptr;
   if (guid && profile) {
     policy = managed_configuration_handler_->FindPolicyByGuidAndProfile(
         *guid, *profile,
@@ -703,7 +703,7 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
 
   client_cert::ClientCertConfig cert_config_from_policy;
   if (policy) {
-    client_cert::OncToClientCertConfig(onc_source, policy->GetDict(),
+    client_cert::OncToClientCertConfig(onc_source, *policy,
                                        &cert_config_from_policy);
   }
 

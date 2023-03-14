@@ -8,5 +8,5 @@ declare_args() {
       # Platforms which fully support supervision features:
       is_android || is_chromeos ||
       # Platforms for which support is currently in development:
-      is_ios || is_linux
+      is_ios || is_linux || is_mac || is_win
 }

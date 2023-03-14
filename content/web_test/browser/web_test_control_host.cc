@@ -27,7 +27,6 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
-#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -86,6 +85,7 @@
 #include "ipc/ipc_channel_proxy.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "storage/browser/database/database_tracker.h"
@@ -1469,7 +1469,8 @@ void WebTestControlHost::SetPermission(const std::string& name,
   WebTestContentBrowserClient::Get()
       ->GetWebTestBrowserContext()
       ->GetWebTestPermissionManager()
-      ->SetPermission(type, status, origin, embedding_origin);
+      ->SetPermission(type, status, origin, embedding_origin,
+                      base::DoNothing());
 }
 
 void WebTestControlHost::GetWritableDirectory(

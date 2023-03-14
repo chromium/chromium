@@ -208,8 +208,7 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
 
   // Receives the `orientation` change when the stream switches between
   // landscape and portrait.
-  void OnStreamOrientationChanged(
-      eche_app::mojom::StreamOrientation orientation);
+  void OnStreamOrientationChanged(bool is_landscape);
 
   // Set up the params and init the bubble.
   // Note: This function makes the bubble active and makes the
@@ -221,9 +220,7 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   void StartGracefulClose();
 
   // Test helpers
-  eche_app::mojom::StreamOrientation get_stream_orientation_for_test() {
-    return stream_orientation_;
-  }
+  bool get_is_landscape_for_test() { return is_landscape_; }
   TrayBubbleWrapper* get_bubble_wrapper_for_test() { return bubble_.get(); }
   AshWebView* get_web_view_for_test() { return web_view_; }
   views::ImageButton* GetIcon();
@@ -336,8 +333,7 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
 
   // The orientation of the stream (portrait vs landscape). The default
   // orientation is portrait.
-  eche_app::mojom::StreamOrientation stream_orientation_ =
-      eche_app::mojom::StreamOrientation::kPortrait;
+  bool is_landscape_ = false;
 
   bool is_stream_started_ = false;
   std::u16string phone_name_;

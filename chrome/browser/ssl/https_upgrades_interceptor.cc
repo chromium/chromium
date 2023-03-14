@@ -10,11 +10,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ssl/https_only_mode_tab_helper.h"
+#include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/url_loader_request_interceptor.h"
 #include "content/public/browser/web_contents.h"
@@ -34,12 +36,17 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "components/guest_view/browser/guest_view_base.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+using security_interstitials::https_only_mode::RecordHttpsFirstModeNavigation;
+using security_interstitials::https_only_mode::
+    RecordNavigationRequestSecurityLevel;
 
 namespace {
 
@@ -75,32 +82,6 @@ GURL UpgradeUrlToHttps(const GURL& url) {
   return url.ReplaceComponents(upgrade_url);
 }
 
-// Only serve upgrade redirects for main frame, GET requests to HTTP URLs. This
-// excludes "localhost" (and loopback addresses) as they do not expose traffic
-// over the network.
-// TODO(crbug.com/1394910): Extend the exemption list for HTTPS-Upgrades
-// beyond just localhost.
-bool ShouldCreateLoader(const network::ResourceRequest& resource_request,
-                        HttpsOnlyModeTabHelper* tab_helper) {
-  if (resource_request.is_outermost_main_frame &&
-      resource_request.method == "GET" &&
-      !net::IsLocalhost(resource_request.url) &&
-      resource_request.url.SchemeIs(url::kHttpScheme) &&
-      !tab_helper->is_navigation_fallback()) {
-    return true;
-  }
-  return false;
-}
-
-// Helper to record an HTTPS-First Mode navigation event.
-// TODO(crbug.com/1394910): Rename these metrics now that they apply to both
-// HTTPS-First Mode and HTTPS Upgrades.
-void RecordHttpsFirstModeNavigation(
-    security_interstitials::https_only_mode::Event event) {
-  base::UmaHistogramEnumeration(
-      security_interstitials::https_only_mode::kEventHistogram, event);
-}
-
 // Helper to configure an artificial redirect to `new_url`. This configures
 // `response_head` and returns a computed RedirectInfo so both can be passed to
 // URLLoaderClient::OnReceiveRedirect() to trigger the redirect.
@@ -133,6 +114,7 @@ net::RedirectInfo SetupRedirect(
 
 using RequestHandler = HttpsUpgradesInterceptor::RequestHandler;
 using security_interstitials::https_only_mode::Event;
+using security_interstitials::https_only_mode::NavigationRequestSecurityLevel;
 
 // static
 std::unique_ptr<HttpsUpgradesInterceptor>
@@ -151,18 +133,9 @@ HttpsUpgradesInterceptor::MaybeCreateInterceptor(int frame_tree_node_id) {
     return nullptr;
   }
   PrefService* prefs = profile->GetPrefs();
-  // Both HTTPS-First Mode and HTTPS-Upgrades are forms of upgrading all HTTP
-  // navigations to HTTPS, with HTTPS-First Mode additionally enabling the
-  // HTTP interstitial on fallback.
   bool https_first_mode_enabled =
       base::FeatureList::IsEnabled(features::kHttpsFirstModeV2) && prefs &&
       prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled);
-  bool https_upgrades_enabled =
-      https_first_mode_enabled ||
-      base::FeatureList::IsEnabled(features::kHttpsUpgrades);
-  if (!https_upgrades_enabled) {
-    return nullptr;
-  }
   return std::make_unique<HttpsUpgradesInterceptor>(frame_tree_node_id,
                                                     https_first_mode_enabled);
 }
@@ -192,22 +165,6 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
     return;
   }
 
-  // TODO(crbug.com/1394910): Check for HttpsUpgrades and HttpsAllowlist
-  // enterprise policies as well. It might be best to consolidate these checks
-  // into the HttpsUpgradesNavigationThrottle which sees the navigation first.
-  auto* prefs = profile->GetPrefs();
-  bool https_first_mode_enabled =
-      base::FeatureList::IsEnabled(features::kHttpsFirstModeV2) && prefs &&
-      prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled);
-  bool https_upgrades_enabled =
-      base::FeatureList::IsEnabled(features::kHttpsUpgrades) ||
-      https_first_mode_enabled;
-  if (!https_upgrades_enabled) {
-    // Don't upgrade the request and let the default loader continue.
-    std::move(callback).Run({});
-    return;
-  }
-
   auto* web_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id_);
   // Could be null if the FrameTreeNode's RenderFrameHost is shutting down.
@@ -231,7 +188,94 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
     tab_helper = HttpsOnlyModeTabHelper::FromWebContents(web_contents);
   }
 
+  // Exclude HTTPS URLs.
+  if (tentative_resource_request.url.SchemeIs(url::kHttpsScheme)) {
+    RecordNavigationRequestSecurityLevel(
+        NavigationRequestSecurityLevel::kSecure);
+    std::move(callback).Run({});
+    return;
+  }
+
+  // Exclude all other schemes other than HTTP.
+  if (!tentative_resource_request.url.SchemeIs(url::kHttpScheme)) {
+    RecordNavigationRequestSecurityLevel(
+        NavigationRequestSecurityLevel::kOtherScheme);
+    std::move(callback).Run({});
+    return;
+  }
+
+  // Exclude "localhost" (and loopback addresses) as they do not expose traffic
+  // over the network.
+  // TODO(crbug.com/1394910): Extend the exemption list for HTTPS-Upgrades
+  // beyond just localhost.
+  if (net::IsLocalhost(tentative_resource_request.url)) {
+    RecordNavigationRequestSecurityLevel(
+        NavigationRequestSecurityLevel::kLocalhost);
+    std::move(callback).Run({});
+    return;
+  }
+
+  // Check whether this host would be upgraded to HTTPS by HSTS. This requires a
+  // Mojo call to the network service, so set up a callback to continue the rest
+  // of the MaybeCreateLoader() logic (passing along the necessary state). The
+  // HSTS status will be passed as a boolean to
+  // MaybeCreateLoaderOnHstsQueryCompleted(). If the Mojo call fails, this will
+  // default to passing `false` and continuing as though the host does not have
+  // HSTS (i.e., it will proceed with the HTTPS-First Mode logic).
+  // TODO(crbug.com/1394910): Consider caching this result, at least within the
+  // same navigation.
+  auto query_complete_callback = base::BindOnce(
+      &HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted,
+      weak_factory_.GetWeakPtr(), tentative_resource_request,
+      std::move(callback), profile, web_contents, tab_helper);
+  network::mojom::NetworkContext* network_context =
+      profile->GetDefaultStoragePartition()->GetNetworkContext();
+  network_context->IsHSTSActiveForHost(
+      tentative_resource_request.url.host(),
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          std::move(query_complete_callback),
+          /*is_hsts_active_for_host=*/false));
+}
+
+void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
+    const network::ResourceRequest& tentative_resource_request,
+    content::URLLoaderRequestInterceptor::LoaderCallback callback,
+    Profile* profile,
+    content::WebContents* web_contents,
+    HttpsOnlyModeTabHelper* tab_helper,
+    bool is_hsts_active_for_host) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Don't upgrade this request if HSTS is active for this host.
+  if (is_hsts_active_for_host) {
+    RecordNavigationRequestSecurityLevel(
+        NavigationRequestSecurityLevel::kHstsUpgraded);
+    std::move(callback).Run({});
+    return;
+  }
+
+  // Only serve upgrade redirects for main frame, GET requests.
+  if (!tentative_resource_request.is_outermost_main_frame ||
+      tentative_resource_request.method != "GET") {
+    RecordNavigationRequestSecurityLevel(
+        NavigationRequestSecurityLevel::kInsecure);
+    std::move(callback).Run({});
+    return;
+  }
+
   // Don't upgrade navigation if it is allowlisted.
+  // First, check the enterprise policy HTTP allowlist.
+  PrefService* prefs = profile->GetPrefs();
+  if (IsHostnameInAllowlist(tentative_resource_request.url,
+                            prefs->GetList(prefs::kHttpAllowlist))) {
+    RecordNavigationRequestSecurityLevel(
+        NavigationRequestSecurityLevel::kInsecure);
+    std::move(callback).Run({});
+    return;
+  }
+
+  // Then check whether the host has been allowlisted by the user (or by a
+  // previous upgrade attempt failing).
   // TODO(crbug.com/1394910): Distinguish HTTPS-First Mode and HTTPS-Upgrades
   // allowlist entries, and ensure that HTTPS-Upgrades allowlist entries don't
   // downgrade Page Info.
@@ -252,49 +296,56 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
     state->AllowHttpForHost(tentative_resource_request.url.host(),
                             storage_partition);
 
+    RecordNavigationRequestSecurityLevel(
+        NavigationRequestSecurityLevel::kInsecure);
     std::move(callback).Run({});
     return;
   }
 
-  if (!ShouldCreateLoader(tentative_resource_request, tab_helper)) {
+  // If this is a back/forward navigation to a failed upgrade, then don't
+  // intercept to upgrade the navigation. Other forms of re-visiting a URL
+  // that previously failed to be upgraded to HTTPS *should* be intercepted so
+  // the upgrade can be attempted again (e.g., the user reloading the tab, the
+  // user navigating around and ending back on this URL in the same tab, etc.).
+  //
+  // This effectively "caches" the HTTPS-First Mode interstitial for the
+  // history entry of a failed upgrade for the lifetime of the tab. This means
+  // that it is possible for a user to come back much later (say, a week later),
+  // after a site has fixed its HTTPS configuration, and still see the
+  // interstitial for that URL.
+  //
+  // Without this check, resetting the HTTPS-Upgrades flags in
+  // HttpsOnlyModeTabHelper::DidStartNavigation() means the Interceptor would
+  // fire on back/forward navigation to the interstitial, which causes an
+  // "extra" interstitial entry to be added to the history list and lose other
+  // entries.
+  auto* entry = web_contents->GetController().GetPendingEntry();
+  if (entry && entry->GetTransitionType() & ui::PAGE_TRANSITION_FORWARD_BACK &&
+      tab_helper->has_failed_upgrade(tentative_resource_request.url)) {
+    RecordNavigationRequestSecurityLevel(
+        NavigationRequestSecurityLevel::kInsecure);
     std::move(callback).Run({});
     return;
   }
 
-  // Check whether this host would be upgraded to HTTPS by HSTS. This requires a
-  // Mojo call to the network service, so set up a callback to continue the rest
-  // of the MaybeCreateLoader() logic (passing along the necessary state). The
-  // HSTS status will be passed as a boolean to
-  // MaybeCreateLoaderOnHstsQueryCompleted(). If the Mojo call fails, this will
-  // default to passing `false` and continuing as though the host does not have
-  // HSTS (i.e., it will proceed with the HTTPS-First Mode logic).
-  // TODO(crbug.com/1394910): Consider caching this result, at least within the
-  // same navigation.
-  auto query_complete_callback = base::BindOnce(
-      &HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted,
-      weak_factory_.GetWeakPtr(), tentative_resource_request,
-      std::move(callback), tab_helper);
-  network::mojom::NetworkContext* network_context =
-      profile->GetDefaultStoragePartition()->GetNetworkContext();
-  network_context->IsHSTSActiveForHost(
-      tentative_resource_request.url.host(),
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          std::move(query_complete_callback),
-          /*is_hsts_active_for_host=*/false));
-}
-
-void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
-    const network::ResourceRequest& tentative_resource_request,
-    content::URLLoaderRequestInterceptor::LoaderCallback callback,
-    HttpsOnlyModeTabHelper* tab_helper,
-    bool is_hsts_active_for_host) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Don't upgrade this request if HSTS is active for this host.
-  if (is_hsts_active_for_host) {
+  // Both HTTPS-First Mode and HTTPS-Upgrades are forms of upgrading all HTTP
+  // navigations to HTTPS, with HTTPS-First Mode additionally enabling the
+  // HTTP interstitial on fallback. The `HttpsUpgradesEnabled` enterprise policy
+  // can also be set to `false` to disable HTTPS-Upgrades.
+  if ((!base::FeatureList::IsEnabled(features::kHttpsUpgrades) ||
+       !prefs->GetBoolean(prefs::kHttpsUpgradesEnabled)) &&
+      !http_interstitial_enabled_) {
+    // Don't upgrade the request and let the default loader continue, but record
+    // that the request *would have* upgraded, had upgrading been enabled.
+    RecordHttpsFirstModeNavigation(Event::kUpgradeNotAttempted);
+    RecordNavigationRequestSecurityLevel(
+        NavigationRequestSecurityLevel::kInsecure);
     std::move(callback).Run({});
     return;
   }
+
+  RecordNavigationRequestSecurityLevel(
+      NavigationRequestSecurityLevel::kUpgraded);
 
   // Mark navigation as upgraded.
   tab_helper->set_is_navigation_upgraded(true);
@@ -337,7 +388,7 @@ bool HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse(
   }
 
   auto* tab_helper = HttpsOnlyModeTabHelper::FromWebContents(web_contents);
-  if (!tab_helper->is_navigation_upgraded()) {
+  if (!tab_helper || !tab_helper->is_navigation_upgraded()) {
     return false;
   }
 
@@ -377,8 +428,9 @@ bool HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse(
 
   tab_helper->set_is_navigation_upgraded(false);
   tab_helper->set_is_navigation_fallback(true);
+  tab_helper->add_failed_upgrade(tab_helper->fallback_url());
 
-  // `client_` may have been previously boudn from handling the initial upgrade
+  // `client_` may have been previously bound from handling the initial upgrade
   // in MaybeCreateLoader(), so reset it before re-binding it to handle this
   // response.
   client_.reset();

@@ -78,7 +78,20 @@ struct IdentityProviderLoginHint {
   bool is_required;
 };
 
-// The details of an identity provider.
+// The details of different mechanisms that allows the browser
+// to intermediate the exchange of the user's entities.
+// Currently, federated identities are supported, and mobile driver's license
+// are being prototyped.
+union IdentityProvider {
+  IdentityProviderConfig federated;
+  MDocProvider mdoc;
+};
+
+// The details of an mdoc provider.
+struct MDocProvider {
+};
+
+// The details of a federated identity provider.
 struct IdentityProviderConfig {
   url.mojom.Url config_url;
 
@@ -103,7 +116,7 @@ struct IdentityUserInfo {
 // The parameters for a get call for identity provider(s).
 struct IdentityProviderGetParameters {
   // Details of identity provider(s).
-  array<IdentityProviderConfig> providers;
+  array<IdentityProvider> providers;
 
   // Whether auto re-authn is enabled by the caller.
   bool auto_reauthn;

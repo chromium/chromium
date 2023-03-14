@@ -30,6 +30,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/browser_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ime/input_methods.h"
 #include "extensions/browser/extension_pref_value_map.h"
 #include "extensions/browser/extension_pref_value_map_factory.h"
@@ -307,7 +308,7 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
   // Information is managed on VK extension side so just use a default value
   // here.
   std::string query_part = base::StrCat(
-      {"?", "jelly=", ash::features::IsJellyEnabled() ? "true" : "false"});
+      {"?", "jelly=", chromeos::features::IsJellyEnabled() ? "true" : "false"});
   GURL url = extensions::Extension::GetResourceURL(
       extensions::Extension::GetBaseURLFromExtensionId(component_extension.id),
       "inputview.html" + query_part + "#id=default");

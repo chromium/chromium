@@ -241,20 +241,11 @@ class SelectToSpeakTest : public InProcessBrowserTest {
 
 class SelectToSpeakTestWithVoiceSwitching : public SelectToSpeakTest {
  protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    SelectToSpeakTest::SetUpCommandLine(command_line);
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kExperimentalAccessibilitySelectToSpeakVoiceSwitching);
-  }
-
   void SetUpOnMainThread() override {
     PrefService* prefs = browser()->profile()->GetPrefs();
     prefs->SetBoolean(prefs::kAccessibilitySelectToSpeakVoiceSwitching, true);
     SelectToSpeakTest::SetUpOnMainThread();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, SpeakStatusTray) {

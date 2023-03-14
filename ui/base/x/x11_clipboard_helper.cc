@@ -295,11 +295,8 @@ void XClipboardHelper::StoreCopyPasteDataAndWait() {
     return;
   std::vector<x11::Atom> targets = format_map.GetTypes();
 
-  base::TimeTicks start = base::TimeTicks::Now();
   selection_requestor_->PerformBlockingConvertSelectionWithParameter(
       x11::GetAtom(kClipboardManager), x11::GetAtom(kSaveTargets), targets);
-  UMA_HISTOGRAM_TIMES("Clipboard.X11StoreCopyPasteDuration",
-                      base::TimeTicks::Now() - start);
 }
 
 XClipboardHelper::TargetList XClipboardHelper::GetTargetList(

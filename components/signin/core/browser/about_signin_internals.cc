@@ -694,6 +694,12 @@ base::Value::Dict AboutSigninInternals::SigninStatus::ToValue(
     AddSectionEntry(basic_info, "Account Reconcilor State",
                     ToString(account_reconcilor->GetState()));
 
+    // At this moment, it is mainly used to debug the state of
+    // `AccountReconcilor`. It will be refreshed automatically when
+    // `AccountReconcilor`'s state changes.
+    AddSectionEntry(basic_info, "Network calls delayed",
+                    signin_client->AreNetworkCallsDelayed() ? "True" : "False");
+
     AddSection(signin_info, std::move(basic_info), "Basic Information");
   }
 

@@ -70,7 +70,10 @@ PrintBackendServiceTestImpl::PrintBackendServiceTestImpl(
     : PrintBackendServiceImpl(std::move(receiver)),
       test_print_backend_(std::move(backend)) {}
 
-PrintBackendServiceTestImpl::~PrintBackendServiceTestImpl() = default;
+PrintBackendServiceTestImpl::~PrintBackendServiceTestImpl() {
+  // Make sure that all persistent contexts have been properly cleaned up.
+  DCHECK(persistent_printing_contexts_.empty());
+}
 
 void PrintBackendServiceTestImpl::Init(
 #if BUILDFLAG(IS_WIN)

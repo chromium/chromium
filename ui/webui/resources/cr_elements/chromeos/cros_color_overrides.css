@@ -24,7 +24,7 @@ To get Chrome OS System Colors, an element must:
 }
 
 :host-context([cros]) cr-dialog::part(dialog) {
-  background-color: var(--cros-bg-color-elevation-3);
+  --cr-dialog-background-color: var(--cros-bg-color-elevation-3);
   background-image: none;
   box-shadow: var(--cros-elevation-3-shadow);
 }
@@ -83,9 +83,71 @@ To get Chrome OS System Colors, an element must:
   --cr-link-color: var(--cros-tooltip-link-color);
 }
 
-/** Jelly specific styles */
+/** Jelly-specific styles below */
+
+/** General color overrides */
+:host-context(body.jelly-enabled) {
+  /* TODO(b/266837484) --cros-* values will be updated globally. Remove these
+    definitions after the swap. */
+  --cros-button-label-color-primary: var(--cros-sys-on_primary);
+  --cros-link-color: var(--cros-sys-primary);
+  --cros-separator-color: var(--cros-sys-separator);
+  --cros-tab-slider-track-color: var(--cros-sys-surface_variant, 80%);
+
+  --cr-form-field-label-color: var(--cros-sys-on_surface);
+  --cr-link-color: var(--cros-sys-primary);
+  --cr-primary-text-color: var(--cros-sys-on_surface);
+  --cr-secondary-text-color: var(--cros-sys-secondary);
+}
+
+/* Dialog */
+:host-context(body.jelly-enabled) cr-dialog::part(dialog) {
+  --cr-dialog-background-color: var(--cros-sys-app_base_elevated);
+  background-image: none;
+
+  /* TODO(b/266837484) Replace with cros.sys.app-elevation3 when available */
+  box-shadow: 0 0 12px 0 var(--cros-sys-shadow);
+}
+
+/* Icon button */
 :host-context(body.jelly-enabled) cr-icon-button,
 :host-context(body.jelly-enabled) cr-link-row::part(icon),
 :host-context(body.jelly-enabled) cr-expand-button::part(icon) {
   --cr-icon-button-fill-color: var(--cros-sys-secondary);
+}
+
+/* Input */
+:host-context(body.jelly-enabled) cr-input {
+  --cr-input-background-color: var(--cros-sys-input_field_dark);
+  --cr-input-error-color: var(--cros-sys-error);
+  --cr-input-focus-color: var(--cros-sys-primary);
+  --cr-input-placeholder-color: var(--cros-sys-secondary);
+}
+
+/* Radio button */
+:host-context(body.jelly-enabled),
+:host-context(body.jelly-enabled) cr-radio-button {
+  --cr-radio-button-checked-color: var(--cros-sys-primary);
+  --cr-radio-button-checked-ripple-color: var(--cros-sys-ripple_primary);
+  --cr-radio-button-unchecked-color: var(--cros-sys-on_surface);
+  --cr-radio-button-unchecked-ripple-color:
+      var(--cros-sys-ripple_neutral_on_subtle);
+}
+
+/* Toggle */
+:host-context(body.jelly-enabled) cr-toggle {
+  --cr-toggle-checked-bar-color: var(--cros-sys-primary_container);
+  --cr-toggle-checked-bar-opacity: 100%;
+  --cr-toggle-checked-button-color: var(--cros-sys-primary);
+  --cr-toggle-checked-ripple-color: var(--cros-sys-hover_on_prominent);
+  --cr-toggle-unchecked-bar-color: var(--cros-sys-secondary);
+  --cr-toggle-unchecked-button-color: var(--cros-sys-on_secondary);
+  --cr-toggle-unchecked-ripple-color: var(--cros-sys-hover_on_prominent);
+  /* TODO(b/266837484) Replace with cros.sys.app-elevation1 when available */
+  --cr-toggle-box-shadow: var(--cros-elevation-1-shadow);
+  --cr-toggle-ripple-diameter: 32px;
+}
+
+:host-context(body.jelly-enabled) cr-toggle:focus {
+  --cr-toggle-ripple-ring: 2px solid var(--cros-sys-focus_ring);
 }

@@ -102,17 +102,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BackgroundFetch.IncompleteFetchesOnStartup" units="units"
-    expires_after="M99">
-  <owner>rayankans@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records the number of Background Fetch registrations found on browser
-    start-up. This is called after the initialization database task runs
-    successfully.
-  </summary>
-</histogram>
-
 <histogram name="BackgroundFetch.Manager{BackgroundFetchManagerAPIsDuration}"
     units="ms" expires_after="M99">
   <owner>rayankans@chromium.org</owner>
@@ -125,75 +114,6 @@ chromium-metrics-reviews@google.com.
     <variant name=".FetchDuration" summary="Duration of fetch"/>
     <variant name=".GetDuration" summary="Duration of get"/>
     <variant name=".GetIdsDuration" summary="Duration of getIds"/>
-  </token>
-</histogram>
-
-<histogram name="BackgroundFetch.MatchCalledFromDocumentScope"
-    enum="ScopeMatchCalledFrom" expires_after="2021-11-30">
-  <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records whether match() or matchAll() was called from Document Scope. Called
-    when match() or matchAll() is invoked in the renderer process.
-  </summary>
-</histogram>
-
-<histogram name="BackgroundFetch.MatchCalledWhenFetchIsIncomplete"
-    enum="FetchStatusWhenMatchCalled" expires_after="2021-11-30">
-  <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records whether match() or matchAll() was called when the background fetch
-    was incomplete. Called when match() or matchAll() is invoked in the renderer
-    process.
-  </summary>
-</histogram>
-
-<histogram name="BackgroundFetch.PercentOfRequestsForWhichUpdatesAreSent"
-    units="%" expires_after="2021-11-30">
-  <owner>nator@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records the percent of requests for which updates are received in the
-    renderer process from the browser process. Called when the completion event
-    for a background fetch has finished processing.
-  </summary>
-</histogram>
-
-<histogram name="BackgroundFetch.Storage{BackgroundFetchDatabaseStorageErrors}"
-    enum="BackgroundFetchStorageError" expires_after="M99">
-  <owner>rayankans@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records the storage error when running a database task.
-    {BackgroundFetchDatabaseStorageErrors}
-  </summary>
-  <token key="BackgroundFetchDatabaseStorageErrors">
-    <variant name=".CleanupTask" summary="CleanupTask"/>
-    <variant name=".CreateMetadataTask" summary="CreateMetadata DatabaseTask"/>
-    <variant name=".DeleteRegistrationTask"
-        summary="DeleteRegistration DatabaseTask"/>
-    <variant name=".GetDeveloperIdsTask"
-        summary="GetDeveloperIds DatabaseTask"/>
-    <variant name=".GetInitializationDataTask"
-        summary="GetInitializationData DatabaseTask"/>
-    <variant name=".GetRegistrationTask"
-        summary="GetRegistration DatabaseTask"/>
-    <variant name=".GetRequestBlobTask" summary="GetRequestBlob DatabaseTask"/>
-    <variant name=".GetSettledFetchesTask"
-        summary="GetSettledFetches DatabaseTask"/>
-    <variant name=".MarkRegistrationForDeletionTask"
-        summary="MarkRegistrationForDeletion DatabaseTask"/>
-    <variant name=".MarkRequestCompleteTask"
-        summary="MarkRequestComplete DatabaseTask"/>
-    <variant name=".MatchRequestsTask" summary="MatchRequests DatabaseTask"/>
-    <variant name=".StartNextPendingRequestTask"
-        summary="StartNextPendingRequest DatabaseTask"/>
-    <variant name=".UpdateRegistrationUITask"
-        summary="UpdateRegistrationUI DatabaseTask"/>
   </token>
 </histogram>
 
@@ -246,16 +166,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logged during BackgroundModeManager's initialization. Indicates the state of
     the kBackgroundModeEnabled pref on startup.
-  </summary>
-</histogram>
-
-<histogram name="BackgroundMode.TimeBeforeOptimizedRestart" units="ms"
-    expires_after="2020-09-01">
-  <owner>peter@chromium.org</owner>
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <summary>
-    The duration of a session before the browser got restarted in the background
-    by the BackgroundOptimizer to purge the memory.
   </summary>
 </histogram>
 

@@ -9,57 +9,55 @@ found in the LICENSE file.
     margin: 8px 0 8px 0;
   }
   div.warning {
-    border-bottom: var(--cr-separator-line);
-    padding-bottom: 19px;
-    padding-top: 21px;
-  }
-  div.warning-last-child {
     padding-bottom: 19px;
     padding-top: 21px;
   }
   .warning-message {
     margin-inline-start: 20px;
   }
+  paper-progress {
+    --paper-progress-active-color: var(--cros-color-prominent);
+    --paper-progress-secondary-color: var(--cros-color-prominent-dark);
+    margin-bottom: 20px;
+    margin-top: 20px;
+  }
 </style>
 
 <oobe-loading-dialog id="loading-dialog" for-step="loading" role="dialog"
     title-key="loadingDialogTitle">
-  <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+  <iron-icon slot="icon" src="/images/arc_vm_data_migration_icon.svg">
 </oobe-loading-dialog>
 
 <oobe-adaptive-dialog id="welcome-dialog" for-step="welcome" role="dialog">
-  <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+  <iron-icon slot="icon" src="/images/arc_vm_data_migration_icon.svg">
+  </iron-icon>
   <h1 slot="title">[[i18nDynamic(locale, 'welcomeScreenTitle')]]</h1>
   <div slot="content" class="landscape-header-aligned">
     <div id="description-header">
       <b>[[i18nDynamic(locale, 'welcomeScreenDescriptionHeader')]]</b>
     </div>
     <div id="description-body">
-      [[i18nDynamic(locale, 'welcomeScreenDescriptionBody')]]
+      <p>[[i18nDynamic(locale, 'welcomeScreenUpdateDescription')]]</p>
+      <p>
+        [[i18nDynamic(locale, 'welcomeScreenBlockingBehaviorDescription')]]
+        [[i18nDynamic(locale, 'connectToChargerMessage')]]
+      </p>
     </div>
     <div class="message-container">
-      <div class="warning-last-child" hidden="[[hasEnoughFreeDiskSpace]]">
+      <div class="warning" hidden="[[hasEnoughFreeDiskSpace]]">
         <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
         <span class="warning-message">
           [[i18nDynamic(locale, 'notEnoughFreeDiskSpaceMessage',
                         requiredFreeDiskSpaceInString)]]
         </span>
       </div>
-      <template is="dom-if" if="[[!hasEnoughBattery]]">
-        <div class="warning" hidden="[[isConnectedToCharger]]">
-          <iron-icon icon="oobe-32:warning"></iron-icon>
-          <span class="warning-message">
-            [[i18nDynamic(locale, 'connectToChargerMessage')]]
-          </span>
-        </div>
-        <div class="warning-last-child">
-          <iron-icon icon="oobe-32:warning"></iron-icon>
-          <span class="warning-message">
-            [[i18nDynamic(locale, 'notEnoughBatteryMessage',
-                          minimumBatteryPercent)]]
-          </span>
-        </div>
-      </template>
+      <div class="warning" hidden="[[hasEnoughBattery]]">
+        <iron-icon icon="oobe-32:warning"></iron-icon>
+        <span class="warning-message">
+          [[i18nDynamic(locale, 'notEnoughBatteryMessage',
+                        minimumBatteryPercent)]]
+        </span>
+      </div>
     </div>
   </div>
   <div slot="bottom-buttons">
@@ -67,11 +65,106 @@ found in the LICENSE file.
         on-click="onSkipButtonClicked_"
         text-key="skipButtonLabel">
     </oobe-text-button>
-    <oobe-text-button inverse id="update-button"
+    <oobe-next-button inverse id="update-button"
         disabled="[[shouldDisableUpdateButton_(hasEnoughFreeDiskSpace,
                                                hasEnoughBattery)]]"
         on-click="onUpdateButtonClicked_"
         text-key="updateButtonLabel">
+    </oobe-next-button>
+  </div>
+</oobe-adaptive-dialog>
+
+<oobe-adaptive-dialog id="resume-dialog" for-step="resume" role="dialog">
+  <iron-icon slot="icon" src="/images/arc_vm_data_migration_icon.svg">
+  </iron-icon>
+  <h1 slot="title">[[i18nDynamic(locale, 'resumeScreenTitle')]]</h1>
+  <div slot="content" class="landscape-header-aligned">
+    <div id="description-header">
+      <b>[[i18nDynamic(locale, 'resumeScreenDescriptionHeader')]]</b>
+    </div>
+    <div id="description-body">
+      [[i18nDynamic(locale, 'resumeScreenDescriptionBody')]]
+      [[i18nDynamic(locale, 'connectToChargerMessage')]]
+    </div>
+    <div class="message-container">
+      <div class="warning" hidden="[[hasEnoughBattery]]">
+        <iron-icon icon="oobe-32:warning"></iron-icon>
+        <span class="warning-message">
+          [[i18nDynamic(locale, 'notEnoughBatteryMessage',
+                        minimumBatteryPercent)]]
+        </span>
+      </div>
+    </div>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-next-button inverse id="resume-button"
+        disabled="[[!hasEnoughBattery]]"
+        on-click="onResumeButtonClicked_"
+        text-key="resumeButtonLabel">
+    </oobe-next-button>
+  </div>
+</oobe-adaptive-dialog>
+
+<oobe-adaptive-dialog id="progress-dialog" for-step="progress" role="dialog">
+  <iron-icon slot="icon" src="/images/arc_vm_data_migration_icon.svg">
+  </iron-icon>
+  <h1 slot="title">[[i18nDynamic(locale, 'progressScreenTitle')]]</h1>
+  <div slot="subtitle" class="progress">
+    <div id="progress-message"
+         hidden="[[isProgressIndeterminate_(migrationProgress)]]">
+      [[i18nDynamic(locale, 'progressScreenSubtitle',
+          migrationProgress, estimatedRemainingTimeInString)]]
+    </div>
+    <paper-progress slot="progress" id="migration-progress"
+        value="[[migrationProgress]]"
+        max="100"
+        step="0.1"
+        indeterminate="[[isProgressIndeterminate_(migrationProgress)]]">
+    </paper-progress>
+    <div id="progress-screen-connect-to-charger-message">
+      [[i18nDynamic(locale, 'connectToChargerMessage')]]
+    </div>
+  </div>
+  <div slot="content" class="flex layout vertical center center-justified">
+    <img src="/images/update-no-waiting.svg"
+         class="oobe-illustration" aria-hidden="true">
+  </div>
+</oobe-adaptive-dialog>
+
+<oobe-adaptive-dialog id="success-dialog" for-step="success" role="dialog">
+  <iron-icon slot="icon" icon="oobe-32:checkmark"></iron-icon>
+  <h1 slot="title">[[i18nDynamic(locale, 'successScreenTitle')]]</h1>
+  <div slot="content" class="flex layout vertical center center-justified">
+    <img src="/images/arc_vm_data_migration_success.svg"
+         class="oobe-illustration" aria-hidden="true">
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button inverse id="finish-button"
+        on-click="onFinishButtonClicked_"
+        text-key="finishButtonLabel">
+    </oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>
+
+<oobe-adaptive-dialog id="failure-dialog" for-step="failure" role="dialog">
+  <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
+  <h1 slot="title">[[i18nDynamic(locale, 'failureScreenTitle')]]</h1>
+  <div slot="subtitle" class="failure">
+    <p>[[i18nDynamic(locale, 'failureScreenDescription')]]</p>
+    <p>[[i18nDynamic(locale, 'failureScreenAskFeedbackReport')]]</p>
+  </div>
+  <div slot="content" class="flex layout vertical center center-justified">
+    <img src="/images/error.svg"
+         class="oobe-illustration" aria-hidden="true">
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="report-button"
+        on-click="onReportButtonClicked_"
+        text-key="reportButtonLabel">
+    </oobe-text-button>
+    <oobe-text-button inverse id="finish-button"
+        on-click="onFinishButtonClicked_"
+        text-key="finishButtonLabel">
     </oobe-text-button>
   </div>
 </oobe-adaptive-dialog>

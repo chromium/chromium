@@ -55,13 +55,16 @@ class GPUCommandEncoder : public DawnObject<WGPUCommandEncoder> {
   }
   void copyBufferToTexture(GPUImageCopyBuffer* source,
                            GPUImageCopyTexture* destination,
-                           const V8GPUExtent3D* copy_size);
+                           const V8GPUExtent3D* copy_size,
+                           ExceptionState& exception_state);
   void copyTextureToBuffer(GPUImageCopyTexture* source,
                            GPUImageCopyBuffer* destination,
-                           const V8GPUExtent3D* copy_size);
+                           const V8GPUExtent3D* copy_size,
+                           ExceptionState& exception_state);
   void copyTextureToTexture(GPUImageCopyTexture* source,
                             GPUImageCopyTexture* destination,
-                            const V8GPUExtent3D* copy_size);
+                            const V8GPUExtent3D* copy_size,
+                            ExceptionState& exception_state);
   void pushDebugGroup(String groupLabel) {
     std::string label = groupLabel.Utf8();
     GetProcs().commandEncoderPushDebugGroup(GetHandle(), label.c_str());

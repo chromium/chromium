@@ -43,7 +43,10 @@ extern const char kOnFileTransferScopePref[];
 #endif
 extern const char kOnSecurityEventScopePref[];
 
+extern const char kLatestCrashReportCreationTime[];
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
+void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
 }  // namespace enterprise_connectors
 

@@ -4,6 +4,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/test/values_test_util.h"
 #include "headless/public/devtools/domains/accessibility.h"
 #include "headless/public/devtools/domains/dom.h"
 #include "headless/public/devtools/domains/memory.h"
@@ -26,12 +27,11 @@ TEST(TypesTest, IntegerProperty) {
 
 TEST(TypesTest, IntegerPropertyParseError) {
   const char json[] = "{\"entryId\": \"foo\"}";
-  std::unique_ptr<base::Value> object = base::JSONReader::ReadDeprecated(json);
-  ASSERT_TRUE(object);
+  base::Value object = base::test::ParseJson(json);
 
 #if DCHECK_IS_ON()
   ErrorReporter errors;
-  EXPECT_FALSE(page::NavigateToHistoryEntryParams::Parse(*object, &errors));
+  EXPECT_FALSE(page::NavigateToHistoryEntryParams::Parse(object, &errors));
   EXPECT_TRUE(errors.HasErrors());
 #endif  // DCHECK_IS_ON()
 }
@@ -41,7 +41,6 @@ TEST(TypesTest, BooleanProperty) {
       memory::SetPressureNotificationsSuppressedParams::Builder()
           .SetSuppressed(true)
           .Build());
-  ASSERT_TRUE(object);
   EXPECT_TRUE(object->GetSuppressed());
 
   std::unique_ptr<memory::SetPressureNotificationsSuppressedParams> clone(
@@ -52,13 +51,12 @@ TEST(TypesTest, BooleanProperty) {
 
 TEST(TypesTest, BooleanPropertyParseError) {
   const char json[] = "{\"suppressed\": \"foo\"}";
-  std::unique_ptr<base::Value> object = base::JSONReader::ReadDeprecated(json);
-  ASSERT_TRUE(object);
+  base::Value object = base::test::ParseJson(json);
 
 #if DCHECK_IS_ON()
   ErrorReporter errors;
-  EXPECT_FALSE(memory::SetPressureNotificationsSuppressedParams::Parse(
-      *object, &errors));
+  EXPECT_FALSE(
+      memory::SetPressureNotificationsSuppressedParams::Parse(object, &errors));
   EXPECT_TRUE(errors.HasErrors());
 #endif  // DCHECK_IS_ON()
 }
@@ -66,7 +64,6 @@ TEST(TypesTest, BooleanPropertyParseError) {
 TEST(TypesTest, DoubleProperty) {
   std::unique_ptr<page::SetGeolocationOverrideParams> object(
       page::SetGeolocationOverrideParams::Builder().SetLatitude(3.14).Build());
-  ASSERT_TRUE(object);
   EXPECT_EQ(3.14, object->GetLatitude());
 
   std::unique_ptr<page::SetGeolocationOverrideParams> clone(object->Clone());
@@ -76,12 +73,11 @@ TEST(TypesTest, DoubleProperty) {
 
 TEST(TypesTest, DoublePropertyParseError) {
   const char json[] = "{\"latitude\": \"foo\"}";
-  std::unique_ptr<base::Value> object = base::JSONReader::ReadDeprecated(json);
-  ASSERT_TRUE(object);
+  base::Value object = base::test::ParseJson(json);
 
 #if DCHECK_IS_ON()
   ErrorReporter errors;
-  EXPECT_FALSE(page::SetGeolocationOverrideParams::Parse(*object, &errors));
+  EXPECT_FALSE(page::SetGeolocationOverrideParams::Parse(object, &errors));
   EXPECT_TRUE(errors.HasErrors());
 #endif  // DCHECK_IS_ON()
 }
@@ -89,7 +85,6 @@ TEST(TypesTest, DoublePropertyParseError) {
 TEST(TypesTest, StringProperty) {
   std::unique_ptr<page::NavigateParams> object(
       page::NavigateParams::Builder().SetUrl("url").Build());
-  ASSERT_TRUE(object);
   EXPECT_EQ("url", object->GetUrl());
 
   std::unique_ptr<page::NavigateParams> clone(object->Clone());
@@ -99,12 +94,11 @@ TEST(TypesTest, StringProperty) {
 
 TEST(TypesTest, StringPropertyParseError) {
   const char json[] = "{\"url\": false}";
-  std::unique_ptr<base::Value> object = base::JSONReader::ReadDeprecated(json);
-  ASSERT_TRUE(object);
+  base::Value object = base::test::ParseJson(json);
 
 #if DCHECK_IS_ON()
   ErrorReporter errors;
-  EXPECT_FALSE(page::NavigateParams::Parse(*object, &errors));
+  EXPECT_FALSE(page::NavigateParams::Parse(object, &errors));
   EXPECT_TRUE(errors.HasErrors());
 #endif  // DCHECK_IS_ON()
 }
@@ -124,12 +118,11 @@ TEST(TypesTest, EnumProperty) {
 
 TEST(TypesTest, EnumPropertyParseError) {
   const char json[] = "{\"type\": false}";
-  std::unique_ptr<base::Value> object = base::JSONReader::ReadDeprecated(json);
-  ASSERT_TRUE(object);
+  base::Value object = base::test::ParseJson(json);
 
 #if DCHECK_IS_ON()
   ErrorReporter errors;
-  EXPECT_FALSE(runtime::RemoteObject::Parse(*object, &errors));
+  EXPECT_FALSE(runtime::RemoteObject::Parse(object, &errors));
   EXPECT_TRUE(errors.HasErrors());
 #endif  // DCHECK_IS_ON()
 }
@@ -162,12 +155,11 @@ TEST(TypesTest, ArrayProperty) {
 
 TEST(TypesTest, ArrayPropertyParseError) {
   const char json[] = "{\"nodeIds\": true}";
-  std::unique_ptr<base::Value> object = base::JSONReader::ReadDeprecated(json);
-  ASSERT_TRUE(object);
+  base::Value object = base::test::ParseJson(json);
 
 #if DCHECK_IS_ON()
   ErrorReporter errors;
-  EXPECT_FALSE(dom::QuerySelectorAllResult::Parse(*object, &errors));
+  EXPECT_FALSE(dom::QuerySelectorAllResult::Parse(object, &errors));
   EXPECT_TRUE(errors.HasErrors());
 #endif  // DCHECK_IS_ON()
 }
@@ -191,12 +183,11 @@ TEST(TypesTest, ObjectProperty) {
 
 TEST(TypesTest, ObjectPropertyParseError) {
   const char json[] = "{\"result\": 42}";
-  std::unique_ptr<base::Value> object = base::JSONReader::ReadDeprecated(json);
-  ASSERT_TRUE(object);
+  base::Value object = base::test::ParseJson(json);
 
 #if DCHECK_IS_ON()
   ErrorReporter errors;
-  EXPECT_FALSE(runtime::EvaluateResult::Parse(*object, &errors));
+  EXPECT_FALSE(runtime::EvaluateResult::Parse(object, &errors));
   EXPECT_TRUE(errors.HasErrors());
 #endif  // DCHECK_IS_ON()
 }

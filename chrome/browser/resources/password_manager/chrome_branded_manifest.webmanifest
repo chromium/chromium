@@ -9,6 +9,7 @@
     }
   ],
   "start_url": "/?source=pwa",
+  "id": "chrome://password-manager/",
   "display": "standalone",
   "scope": "chrome://password-manager/"
 }

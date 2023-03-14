@@ -43,6 +43,7 @@ class MediaResourceGetterImpl : public media::MediaResourceGetter {
   void GetCookies(const GURL& url,
                   const net::SiteForCookies& site_for_cookies,
                   const url::Origin& top_frame_origin,
+                  bool has_storage_access,
                   GetCookieCB callback) override;
 
  private:

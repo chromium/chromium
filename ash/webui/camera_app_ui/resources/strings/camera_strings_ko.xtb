@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">링크가 감지되었습니다. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" />페이지 삭제됨</translation>
 <translation id="1258009455399840361">시계 방향으로 90도 회전</translation>
-<translation id="1300209025925956156">문서 스캔</translation>
-<translation id="1309250603447638106">문서 스캔을 위한 업데이트 다운로드 중</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. 검색 + 왼쪽 화살표 키를 사용하여 액세스하세요.</translation>
 <translation id="1417314334557041815">페이지 <ph name="INDEX" /> 수정</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> 카메라의 연결이 해제되었습니다.</translation>
 <translation id="1473110567575736769">3초 타이머</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">녹화된 동영상이 없습니다.</translation>
 <translation id="1838104802459806957">위로 기울이기</translation>
 <translation id="1843105061469674856">추가 페이지 스캔</translation>
-<translation id="1851169887664797861">추가 카메라 제어 기능 사용 가능</translation>
 <translation id="1851616744363735765">일시중지됨</translation>
 <translation id="1899697626337024495">사진 해상도</translation>
 <translation id="1925845977604399247">갤러리로 이동</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">스캔 유형</translation>
 <translation id="28682968802727151">미러링 미리보기</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> 카메라가 연결되었습니다.</translation>
-<translation id="2904654629665923749">문서 스캔 기능 사용 가능</translation>
 <translation id="3067436040345934772">오른쪽으로 화면 이동</translation>
 <translation id="3081586908890909590">동영상 녹화 모드로 전환</translation>
 <translation id="313467653172006084">30FPS</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">링크 주소 복사</translation>
 <translation id="4281620174117014503">중간 해상도</translation>
 <translation id="428234092390943511">페이지 썸네일</translation>
-<translation id="4340659173795395806">이제 여러 페이지로 PDF 파일을 생성할 수 있습니다.</translation>
 <translation id="4383571725254449280">성능 로그 인쇄</translation>
 <translation id="4445542136948522167">사진 촬영 중지</translation>
 <translation id="4570032796877367747">전면 카메라</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">저장</translation>
 <translation id="5320594929574852403">왼쪽으로 이동</translation>
 <translation id="5374917190292010970">4K(2160p)</translation>
-<translation id="5444515100983837161">프레임 안에 문서의 네 모서리를 위치시키세요. 문서와 배경이 서로 다른 색상일 때 스캔이 가장 잘 작동합니다.</translation>
 <translation id="5662366948659129155"><ph name="COUNT" />페이지 스캔 중</translation>
 <translation id="5671277269877808209">정사각형</translation>
 <translation id="5746169159649715125">PDF로 저장</translation>
@@ -157,7 +150,6 @@
 <translation id="8428213095426709021">설정</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">마이크 음소거 모드를 변경합니다. 음소거가 설정되었습니다.</translation>
-<translation id="8712637175834984815">확인</translation>
 <translation id="8730621377337864115">완료</translation>
 <translation id="8732462232047530626">메타데이터 미리보기</translation>
 <translation id="8815966864175525708">인물 사진 촬영 모드로 전환</translation>

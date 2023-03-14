@@ -1021,6 +1021,13 @@ void AppIconLoader::OnReadWebAppForCompressedIconData(
 
 void AppIconLoader::OnGetCompressedIconDataWithSkBitmap(bool is_maskable_icon,
                                                         SkBitmap bitmap) {
+  if (bitmap.drawsNothing()) {
+    // The bitmap will be empty if decoding fails, in which case we propagate
+    // the empty result to the caller.
+    CompleteWithCompressed(is_maskable_icon, /*data=*/std::vector<uint8_t>());
+    return;
+  }
+
   // Resize `bitmap` to match `icon_scale_`.
   if (bitmap.width() != icon_size_in_px_) {
     bitmap = skia::ImageOperations::Resize(
@@ -1028,8 +1035,8 @@ void AppIconLoader::OnGetCompressedIconDataWithSkBitmap(bool is_maskable_icon,
         icon_size_in_px_);
   }
 
-  gfx::ImageSkia image_skia;
-  image_skia.AddRepresentation(gfx::ImageSkiaRep(bitmap, icon_scale_));
+  gfx::ImageSkia image_skia =
+      gfx::ImageSkia::CreateFromBitmap(bitmap, icon_scale_);
   image_skia.MakeThreadSafe();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},

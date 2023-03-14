@@ -21,6 +21,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/image_downloader_impl.h"
 #include "components/user_manager/user_image/user_image.h"
+#include "google_apis/credentials_mode.h"
 #include "ipc/ipc_channel.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -438,7 +439,8 @@ void StartWithGURLAnimated(const GURL& default_image_url,
 
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = default_image_url;
-  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  request->credentials_mode =
+      google_apis::GetOmitCredentialsModeForGaiaRequests();
 
   auto loader = network::SimpleURLLoader::Create(std::move(request),
                                                  kNetworkTrafficAnnotationTag);

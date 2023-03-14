@@ -46,7 +46,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
               error_on_missing_field, managed_onc, /*log_warnings=*/false);
           Validator::Result validation_result;
           validator.ValidateAndRepairObject(&kNetworkConfigurationSignature,
-                                            *parsed_json, &validation_result);
+                                            parsed_json->GetDict(),
+                                            &validation_result);
         }
       }
     }

@@ -2,7 +2,7 @@ Name: Crashpad
 Short Name: crashpad
 URL: https://crashpad.chromium.org/
 Version: unknown
-Revision: 70e0f9215346ea62e89dd4ff7ffdfdd948858403
+Revision: 322eaa585019f3a16b9951667a6e38ff7f8cd05d
 License: Apache 2.0
 License File: crashpad/LICENSE
 Security Critical: yes
@@ -54,3 +54,4 @@ Local Modifications:
  - #include path was modified "base/allocator/buildflags.h" ->
    "base/allocator/partition_allocator/partition_alloc_buildflags.h", because
    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) was moved. crrev.com/c/3963596
+ - Fix some accidental argument-dependent lookup: https://crrev.com/c/4298113

@@ -180,6 +180,8 @@ class WebSettings {
   virtual void SetPrimaryPointerType(blink::mojom::PointerType) = 0;
   virtual void SetAvailableHoverTypes(int) = 0;
   virtual void SetPrimaryHoverType(blink::mojom::HoverType) = 0;
+  virtual void SetOutputDeviceUpdateAbilityType(
+      blink::mojom::OutputDeviceUpdateAbilityType) = 0;
   virtual void SetPreferHiddenVolumeControls(bool) = 0;
   virtual void SetShouldProtectAgainstIpcFlooding(bool) = 0;
   virtual void SetRenderVSyncNotificationEnabled(bool) = 0;

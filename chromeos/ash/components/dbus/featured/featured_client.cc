@@ -9,7 +9,7 @@
 #include <base/logging.h>
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/dbus/featured/fake_featured_client.h"
-#include "chromeos/ash/components/dbus/featured/featured.pb.h"
+#include "components/variations/proto/cros_safe_seed.pb.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
@@ -50,7 +50,7 @@ class FeaturedClientImpl : public FeaturedClient {
   }
 
   void HandleSeedFetched(
-      const ::featured::SeedDetails& safe_seed,
+      const variations::SeedDetails& safe_seed,
       base::OnceCallback<void(bool success)> callback) override {
     dbus::MethodCall method_call(::featured::kFeaturedInterface,
                                  "HandleSeedFetched");

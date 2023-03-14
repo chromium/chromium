@@ -11,6 +11,7 @@
 #include "base/power_monitor/power_observer.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/performance_manager/user_tuning/user_performance_tuning_notifier.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -59,6 +60,10 @@ class UserPerformanceTuningManager
     // deactivated
     virtual void OnBatterySaverModeChanged(bool is_active) {}
 
+    // Raised when the high efficiency mode setting is changed. Get the new
+    // state using `UserPerformanceTuningManager::IsHighEfficiencyModeActive()`
+    virtual void OnHighEfficiencyModeChanged() {}
+
     // Raised when the device is plugged in or unplugged
     // Can be used by the UI to show a promo if BSM isn't configured to be
     // enabled when on battery power.
@@ -101,7 +106,8 @@ class UserPerformanceTuningManager
       : public content::WebContentsUserData<PreDiscardResourceUsage> {
    public:
     PreDiscardResourceUsage(content::WebContents* contents,
-                            uint64_t memory_footprint_estimate);
+                            uint64_t memory_footprint_estimate,
+                            ::mojom::LifecycleUnitDiscardReason discard_reason);
     ~PreDiscardResourceUsage() override;
 
     // Returns the resource usage estimate in kilobytes.
@@ -109,13 +115,21 @@ class UserPerformanceTuningManager
       return memory_footprint_estimate_;
     }
 
+    ::mojom::LifecycleUnitDiscardReason discard_reason() const {
+      return discard_reason_;
+    }
+
    private:
     friend WebContentsUserData;
     WEB_CONTENTS_USER_DATA_KEY_DECL();
 
     uint64_t memory_footprint_estimate_ = 0;
+    ::mojom::LifecycleUnitDiscardReason discard_reason_;
   };
 
+  // Returns whether a UserPerformanceTuningManager was created and installed.
+  // Should only return false in unit tests.
+  static bool HasInstance();
   static UserPerformanceTuningManager* GetInstance();
 
   ~UserPerformanceTuningManager() override;
@@ -138,6 +152,17 @@ class UserPerformanceTuningManager
 
   // Returns true if High Efficiency mode is currently enabled.
   bool IsHighEfficiencyModeActive() const;
+
+  // Returns true if the prefs underlying High Efficiency Mode are managed by an
+  // enterprise policy.
+  bool IsHighEfficiencyModeManaged() const;
+
+  // Returns true if the prefs underlying High Efficiency Mode are still in the
+  // default state.
+  bool IsHighEfficiencyModeDefault() const;
+
+  // Enables high efficiency mode and sets the relevant prefs accordingly.
+  void SetHighEfficiencyModeEnabled(bool enabled);
 
   // Returns true if Battery Saver Mode interventions are active. If any state
   // transitions cause an observer notification, this is guaranteed to reflect

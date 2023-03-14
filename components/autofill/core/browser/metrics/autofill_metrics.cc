@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
@@ -49,6 +50,8 @@ constexpr double kAutofillEventDataBucketSpacing = 2.0;
 
 // Overflow bucket for form user interactions
 constexpr int64_t kFormUserInteractionsOverflowBucket = 20;
+
+using autofill_metrics::FormGroupFillingStats;
 
 // Translates structured name types into simple names that are used for
 // naming histograms.
@@ -1853,46 +1856,58 @@ AutofillMetrics::CreditCardSeamlessness::QualitativeMetric() const {
   }
 }
 
-FormEvent
+autofill_metrics::FormEvent
 AutofillMetrics::CreditCardSeamlessness::QualitativeFillableFormEvent() const {
   DCHECK(is_valid());
   switch (QualitativeMetric()) {
     case Metric::kFullFill:
-      return FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_FULL_FILL;
+      return autofill_metrics::
+          FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_FULL_FILL;
     case Metric::kOptionalNameMissing:
-      return FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_OPTIONAL_NAME_MISSING;
+      return autofill_metrics::
+          FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_OPTIONAL_NAME_MISSING;
     case Metric::kFullFillButExpDateMissing:
-      return FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_FULL_FILL_BUT_EXPDATE_MISSING;
+      return autofill_metrics::
+          FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_FULL_FILL_BUT_EXPDATE_MISSING;
     case Metric::kOptionalNameAndCvcMissing:
-      return FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_OPTIONAL_NAME_AND_CVC_MISSING;
+      return autofill_metrics::
+          FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_OPTIONAL_NAME_AND_CVC_MISSING;
     case Metric::kOptionalCvcMissing:
-      return FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_OPTIONAL_CVC_MISSING;
+      return autofill_metrics::
+          FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_OPTIONAL_CVC_MISSING;
     case Metric::kPartialFill:
-      return FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_PARTIAL_FILL;
+      return autofill_metrics::
+          FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_PARTIAL_FILL;
   }
   NOTREACHED();
-  return FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_PARTIAL_FILL;
+  return autofill_metrics::
+      FORM_EVENT_CREDIT_CARD_SEAMLESS_FILLABLE_PARTIAL_FILL;
 }
 
-FormEvent AutofillMetrics::CreditCardSeamlessness::QualitativeFillFormEvent()
-    const {
+autofill_metrics::FormEvent
+AutofillMetrics::CreditCardSeamlessness::QualitativeFillFormEvent() const {
   DCHECK(is_valid());
   switch (QualitativeMetric()) {
     case Metric::kFullFill:
-      return FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_FULL_FILL;
+      return autofill_metrics::FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_FULL_FILL;
     case Metric::kOptionalNameMissing:
-      return FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_OPTIONAL_NAME_MISSING;
+      return autofill_metrics::
+          FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_OPTIONAL_NAME_MISSING;
     case Metric::kFullFillButExpDateMissing:
-      return FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_FULL_FILL_BUT_EXPDATE_MISSING;
+      return autofill_metrics::
+          FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_FULL_FILL_BUT_EXPDATE_MISSING;
     case Metric::kOptionalNameAndCvcMissing:
-      return FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_OPTIONAL_NAME_AND_CVC_MISSING;
+      return autofill_metrics::
+          FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_OPTIONAL_NAME_AND_CVC_MISSING;
     case Metric::kOptionalCvcMissing:
-      return FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_OPTIONAL_CVC_MISSING;
+      return autofill_metrics::
+          FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_OPTIONAL_CVC_MISSING;
     case Metric::kPartialFill:
-      return FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_PARTIAL_FILL;
+      return autofill_metrics::
+          FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_PARTIAL_FILL;
   }
   NOTREACHED();
-  return FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_PARTIAL_FILL;
+  return autofill_metrics::FORM_EVENT_CREDIT_CARD_SEAMLESS_FILL_PARTIAL_FILL;
 }
 
 uint8_t AutofillMetrics::CreditCardSeamlessness::BitmaskMetric() const {
@@ -2035,8 +2050,9 @@ void AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
   };
   if (some_field_needs_shared_autofill) {
     p.builder->SetSharedAutofill(kSharedAutofillWouldHelp);
-    p.event_logger->Log(FORM_EVENT_CREDIT_CARD_MISSING_SHARED_AUTOFILL,
-                        *p.form);
+    p.event_logger->Log(
+        autofill_metrics::FORM_EVENT_CREDIT_CARD_MISSING_SHARED_AUTOFILL,
+        *p.form);
   } else if (some_field_has_shared_autofill) {
     p.builder->SetSharedAutofill(kSharedAutofillDidHelp);
   } else {
@@ -2118,11 +2134,18 @@ void AutofillMetrics::OnAutocompleteSuggestionsShown() {
 }
 
 // static
+void AutofillMetrics::OnAutocompleteSuggestionDeleted(
+    AutocompleteSingleEntryRemovalMethod removal_method) {
+  AutofillMetrics::Log(AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED);
+  base::UmaHistogramEnumeration(
+      "Autofill.Autocomplete.SingleEntryRemovalMethod", removal_method);
+}
+
+// static
 void AutofillMetrics::Log(AutocompleteEvent event) {
   DCHECK_LT(event, AutocompleteEvent::NUM_AUTOCOMPLETE_EVENTS);
-  std::string name("Autocomplete.Events");
-
-  base::UmaHistogramEnumeration(name, event, NUM_AUTOCOMPLETE_EVENTS);
+  base::UmaHistogramEnumeration("Autocomplete.Events", event,
+                                NUM_AUTOCOMPLETE_EVENTS);
 }
 
 // static
@@ -2144,7 +2167,7 @@ const char* AutofillMetrics::SubmissionSourceToUploadEventMetric(
     case SubmissionSource::FORM_SUBMISSION:
       return "Autofill.UploadEvent.FormSubmission";
   }
-  // Unittests exercise this path, so do not put NOTREACHED() here.
+  // Unit tests exercise this path, so do not put NOTREACHED() here.
   return "Autofill.UploadEvent.Unknown";
 }
 
@@ -2808,7 +2831,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::LogKeyMetrics(
 }
 
 void AutofillMetrics::FormInteractionsUkmLogger::LogFormEvent(
-    FormEvent form_event,
+    autofill_metrics::FormEvent form_event,
     const DenseSet<FormType>& form_types,
     const base::TimeTicks& form_parsed_timestamp) {
   if (!CanLog())
@@ -3057,7 +3080,7 @@ void AutofillMetrics::LogAutocompletePredictionCollisionTypes(
 }
 
 // static
-void AutofillMetrics::LogContextMenuImpressions(
+void AutofillMetrics::LogContextMenuImpressionsForField(
     ServerFieldType field_type,
     AutocompleteState autocomplete_state) {
   base::UmaHistogramEnumeration(
@@ -3065,6 +3088,15 @@ void AutofillMetrics::LogContextMenuImpressions(
       autocomplete_state);
   base::UmaHistogramSparse(
       "Autofill.FieldContextMenuImpressions.ByAutofillType", field_type);
+}
+
+// static
+void AutofillMetrics::LogContextMenuImpressionsForForm(
+    int num_of_fields_with_context_menu_shown) {
+  base::UmaHistogramSparse(
+      "Autofill.FormContextMenuImpressions.ByNumberOfFields",
+      base::ranges::clamp(num_of_fields_with_context_menu_shown, 0,
+                          kMaxBucketsCount));
 }
 
 const std::string PaymentsRpcResultToMetricsSuffix(

@@ -37,16 +37,16 @@ using DelegationType = HttpAuth::DelegationType;
 
 namespace {
 
-base::Value NetLogParameterChannelBindings(
+base::Value::Dict NetLogParameterChannelBindings(
     const std::string& channel_binding_token,
     NetLogCaptureMode capture_mode) {
   base::Value::Dict dict;
   if (!NetLogCaptureIncludesSocketBytes(capture_mode))
-    return base::Value(std::move(dict));
+    return dict;
 
   dict.Set("token", base::HexEncode(channel_binding_token.data(),
                                     channel_binding_token.size()));
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 // Uses |negotiate_auth_system_factory| to create the auth system, otherwise
@@ -187,12 +187,14 @@ bool HttpAuthHandlerNegotiate::Init(
     VLOG(1) << "can't initialize GSSAPI library";
     return false;
   }
-  // GSSAPI does not provide a way to enter username/password to
-  // obtain a TGT. If the default credentials are not allowed for
-  // a particular site (based on allowlist), fall back to a
-  // different scheme.
-  if (!AllowsDefaultCredentials())
+  // GSSAPI does not provide a way to enter username/password to obtain a TGT,
+  // however ChromesOS provides the user an opportunity to enter their
+  // credentials and generate a new TGT on OS level (see b/265922026). If the
+  // default credentials are not allowed for a particular site
+  // (based on allowlist), fall back to a different scheme.
+  if (!AllowsExplicitCredentials() && !AllowsDefaultCredentials()) {
     return false;
+  }
 #endif
   auth_system_->SetDelegation(GetDelegationType());
   auth_scheme_ = HttpAuth::AUTH_SCHEME_NEGOTIATE;

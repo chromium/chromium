@@ -62,7 +62,9 @@ class FileInfo:
   def __init__(self, dirname, basename):
     self.dirname = dirname
     self.basename = basename
+    self.rootname = os.path.splitext(self.basename)[0]
     self.filepath = os.path.join(dirname, basename)
+
 
     # This takes the last three components of the filepath for use in the
     # header guard, ie. METRICS_STRUCTURED_STRUCTURED_EVENTS_H_
@@ -256,8 +258,7 @@ class Template:
 class ValidatorHeaderTemplate:
   """Template for generating header validator code from structured.xml."""
 
-  def __init__(self, model, dirname, basename):
-    self.model = model
+  def __init__(self, dirname, basename):
     self.dirname = dirname
     self.basename = basename
 
@@ -288,10 +289,11 @@ class ValidatorImplTemplate:
     6) Map initialization mapping project name to ProjectValidator.
   """
 
-  def __init__(self, model, dirname, basename):
-    self.model = model
+  def __init__(self, structured_model, dirname, basename):
+    self.structured_model = structured_model
     self.dirname = dirname
     self.basename = basename
+    self.projects = self.structured_model.projects
 
   def write_file(self) -> None:
     file_info = FileInfo(self.dirname, self.basename)
@@ -305,7 +307,7 @@ class ValidatorImplTemplate:
     project_code = []
     project_validators = []
 
-    for project in self.model.projects:
+    for project in self.projects:
       project_info = ProjectInfo(project)
       event_infos = (EventInfo(event, project_info) for event in project.events)
       project_event_code = '\n'.join(event_info.build_validator_code()
@@ -334,7 +336,7 @@ class ValidatorImplTemplate:
         project_map=self._build_project_map())
 
   def _build_project_map(self) -> str:
-    project_infos = (ProjectInfo(project) for project in self.model.projects)
+    project_infos = (ProjectInfo(project) for project in self.projects)
     project_map = ',\n  '.join(
         '{{"{}", &{}}}'.format(project.name, project.validator_snake_name)
         for project in project_infos)

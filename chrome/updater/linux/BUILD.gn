@@ -43,6 +43,14 @@ executable("updater_test") {
 
 artifact_zip("updater_zip") {
   output = "$root_build_dir/updater.zip"
-  inputs = [ "$root_build_dir/qualification_app" ]
-  deps = [ "//chrome/updater/test/qualification_app" ]
+  inputs = [
+    "$root_build_dir/updater",
+    "$root_build_dir/updater_test",
+    "$root_build_dir/qualification_app",
+  ]
+  deps = [
+    ":updater",
+    ":updater_test",
+    "//chrome/updater/test/qualification_app",
+  ]
 }

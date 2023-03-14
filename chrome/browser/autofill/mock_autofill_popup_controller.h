@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -40,11 +41,15 @@ class MockAutofillPopupController
     static const gfx::RectF bounds(100, 100, 250, 50);
     return bounds;
   }
-  MOCK_METHOD(bool, IsRTL, (), (const override));
+  MOCK_METHOD(base::i18n::TextDirection,
+              GetElementTextDirection,
+              (),
+              (const override));
 
   // AutofillPopupController:
   MOCK_METHOD(void, OnSuggestionsChanged, (), (override));
-  MOCK_METHOD(void, AcceptSuggestion, (int, base::TimeDelta), (override));
+  MOCK_METHOD(void, AcceptSuggestion, (int), (override));
+  MOCK_METHOD(void, AcceptSuggestionWithoutThreshold, (int), (override));
   std::vector<Suggestion> GetSuggestions() const override {
     return suggestions_;
   }

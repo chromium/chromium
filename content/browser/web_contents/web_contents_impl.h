@@ -48,6 +48,7 @@
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/browser/web_contents/file_chooser_impl.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/fullscreen_types.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/mhtml_generation_result.h"
@@ -70,6 +71,7 @@
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom-shared.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-forward.h"
 #include "third_party/blink/public/mojom/media/capture_handle_config.mojom.h"
 #include "third_party/blink/public/mojom/page/display_cutout.mojom-shared.h"
@@ -328,10 +330,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // human-readable name.
   std::string GetTitleForMediaControls();
 
-  // Returns true if this WebContents is in fullscreen (or pending fullscreen)
-  // on the specified display ID.
-  bool IsFullscreenOnDisplay(int64_t display_id) const;
-
   // WebContents ------------------------------------------------------
   WebContentsDelegate* GetDelegate() override;
   void SetDelegate(WebContentsDelegate* delegate) override;
@@ -449,6 +447,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void Cut() override;
   void Copy() override;
   void CopyToFindPboard() override;
+  void CenterSelection() override;
   void Paste() override;
   void PasteAndMatchStyle() override;
   void Delete() override;
@@ -584,6 +583,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void OnWebPreferencesChanged() override;
 
   void AboutToBeDiscarded(WebContents* new_contents) override;
+
+  [[nodiscard]] base::ScopedClosureRunner CreateDisallowCustomCursorScope()
+      override;
 
   // RenderFrameHostDelegate ---------------------------------------------------
   bool OnMessageReceived(RenderFrameHostImpl* render_frame_host,
@@ -929,6 +931,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                           const absl::optional<std::u16string>& value) override;
   void MoveRangeSelectionExtent(const gfx::Point& extent) override;
   void SelectRange(const gfx::Point& base, const gfx::Point& extent) override;
+  void SelectAroundCaret(blink::mojom::SelectionGranularity granularity,
+                         bool should_show_handle,
+                         bool should_show_context_menu) override;
   void MoveCaret(const gfx::Point& extent) override;
   void AdjustSelectionByCharacterOffset(int start_adjust,
                                         int end_adjust,
@@ -1892,6 +1897,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // SetHasPictureInPictureDocument().
   void SetHasPictureInPictureCommon(bool has_picture_in_picture);
 
+  // A scope that disallows custom cursors has expired.
+  void DisallowCustomCursorScopeExpired();
+
   // Data for core operation ---------------------------------------------------
 
   // Delegate for notifying our owner about stuff. Not owned by us.
@@ -2363,6 +2371,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // either DevTools is opened and consults this value or when a non-prerendered
   // navigation commits in the primary main frame.
   bool last_navigation_was_prerender_activation_for_devtools_ = false;
+
+  // Counts the number of open scopes that disallow custom cursors in this web
+  // contents. Custom cursors are allowed if this is 0.
+  int disallow_custom_cursor_scope_count_ = 0;
 
   base::WeakPtrFactory<WebContentsImpl> loading_weak_factory_{this};
   base::WeakPtrFactory<WebContentsImpl> weak_factory_{this};

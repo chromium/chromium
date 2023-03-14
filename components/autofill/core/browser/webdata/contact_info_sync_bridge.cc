@@ -9,7 +9,9 @@
 #include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/contact_info_sync_util.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/sync/base/features.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
 
 namespace autofill {
@@ -188,7 +190,10 @@ void ContactInfoSyncBridge::AutofillProfileChanged(
     case AutofillProfileChange::UPDATE:
       change_processor()->Put(
           change.key(),
-          CreateContactInfoEntityDataFromAutofillProfile(*change.data_model()),
+          CreateContactInfoEntityDataFromAutofillProfile(
+              *change.data_model(),
+              GetPossiblyTrimmedContactInfoSpecificsDataFromProcessor(
+                  change.key())),
           metadata_change_list.get());
       break;
     case AutofillProfileChange::REMOVE:
@@ -224,6 +229,58 @@ void ContactInfoSyncBridge::ApplyStopSyncChanges(
   web_data_backend_->NotifyOfMultipleAutofillChanges();
 }
 
+sync_pb::EntitySpecifics
+ContactInfoSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
+    const sync_pb::EntitySpecifics& entity_specifics) const {
+  sync_pb::ContactInfoSpecifics trimmed_contact_info_specifics =
+      TrimContactInfoSpecificsDataForCaching(entity_specifics.contact_info());
+
+  // If all fields are cleared from the contact info specifics, return a fresh
+  // EntitySpecifics to avoid caching a few residual bytes.
+  if (trimmed_contact_info_specifics.ByteSizeLong() == 0u) {
+    return sync_pb::EntitySpecifics();
+  }
+
+  sync_pb::EntitySpecifics trimmed_entity_specifics;
+  *trimmed_entity_specifics.mutable_contact_info() =
+      std::move(trimmed_contact_info_specifics);
+
+  return trimmed_entity_specifics;
+}
+
+const sync_pb::ContactInfoSpecifics&
+ContactInfoSyncBridge::GetPossiblyTrimmedContactInfoSpecificsDataFromProcessor(
+    const std::string& storage_key) {
+  return change_processor()
+      ->GetPossiblyTrimmedRemoteSpecifics(storage_key)
+      .contact_info();
+}
+
+// TODO(crbug.com/1407925): Consider moving this logic to processor.
+bool ContactInfoSyncBridge::SyncMetadataCacheContainsSupportedFields(
+    const syncer::EntityMetadataMap& metadata_map) const {
+  for (const auto& metadata_entry : metadata_map) {
+    // Serialize the cached specifics and parse them back to a proto. Any fields
+    // that were cached as unknown and are known in the current browser version
+    // should be parsed correctly.
+    std::string serialized_specifics;
+    metadata_entry.second->possibly_trimmed_base_specifics().SerializeToString(
+        &serialized_specifics);
+    sync_pb::EntitySpecifics parsed_specifics;
+    parsed_specifics.ParseFromString(serialized_specifics);
+
+    // If `parsed_specifics` contain any supported fields, they would be cleared
+    // by the trimming function.
+    if (parsed_specifics.ByteSizeLong() !=
+        TrimAllSupportedFieldsFromRemoteSpecifics(parsed_specifics)
+            .ByteSizeLong()) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 AutofillTable* ContactInfoSyncBridge::GetAutofillTable() {
   return AutofillTable::FromWebDatabase(web_data_backend_->GetDatabase());
 }
@@ -242,8 +299,11 @@ ContactInfoSyncBridge::GetDataAndFilter(
   for (const std::unique_ptr<AutofillProfile>& profile : profiles) {
     const std::string& guid = profile->guid();
     if (filter.Run(guid)) {
-      batch->Put(guid,
-                 CreateContactInfoEntityDataFromAutofillProfile(*profile));
+      batch->Put(
+          guid,
+          CreateContactInfoEntityDataFromAutofillProfile(
+              *profile,
+              GetPossiblyTrimmedContactInfoSpecificsDataFromProcessor(guid)));
     }
   }
   return batch;
@@ -256,6 +316,18 @@ void ContactInfoSyncBridge::LoadMetadata() {
     change_processor()->ReportError(
         {FROM_HERE, "Failed reading CONTACT_INFO metadata from WebDatabase."});
     return;
+  } else if (base::FeatureList::IsEnabled(
+                 syncer::kCacheBaseEntitySpecificsInMetadata) &&
+             SyncMetadataCacheContainsSupportedFields(
+                 batch->GetAllMetadata())) {
+    // Caching entity specifics is meant to preserve fields not supported in a
+    // given browser version during commits to the server. If the cache
+    // contains supported fields, this means that the browser was updated and
+    // we should force the initial sync flow to propagate the cached data into
+    // the local model.
+    GetAutofillTable()->DeleteAllSyncMetadata(syncer::ModelType::CONTACT_INFO);
+
+    batch = std::make_unique<syncer::MetadataBatch>();
   }
   change_processor()->ModelReadyToSync(std::move(batch));
 }

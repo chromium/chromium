@@ -130,14 +130,25 @@ bool UseMapJit() {
   base::ScopedCFTypeRef<CFTypeRef> jit_entitlement(
       SecTaskCopyValueForEntitlement(
           task.get(), CFSTR("com.apple.security.cs.allow-jit"), nullptr));
-  if (!jit_entitlement)
+  if (!jit_entitlement) {
     return false;
+  }
 
   return base::mac::CFCast<CFBooleanRef>(jit_entitlement.get()) ==
          kCFBooleanTrue;
 }
-#endif  // BUILDFLAG(IS_MAC)
-
+#elif BUILDFLAG(IS_IOS)
+bool UseMapJit() {
+// Always enable MAP_JIT in simulator as it is supported unconditionally.
+#if TARGET_IPHONE_SIMULATOR
+  return true;
+#else
+  // TODO(https://crbug.com/1413818): Fill this out when the API it is
+  // available.
+  return false;
+#endif  // TARGET_IPHONE_SIMULATOR
+}
+#endif  // BUILDFLAG(IS_IOS)
 }  // namespace
 
 // |mmap| uses a nearby address if the hint address is blocked.
@@ -166,7 +177,7 @@ uintptr_t SystemAllocPagesInternal(uintptr_t hint,
   int access_flag = GetAccessFlags(accessibility);
   int map_flags = MAP_ANONYMOUS | MAP_PRIVATE;
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   // On macOS 10.14 and higher, executables that are code signed with the
   // "runtime" option cannot execute writable memory by default. They can opt
   // into this capability by specifying the "com.apple.security.cs.allow-jit"
@@ -238,8 +249,9 @@ void SetSystemPagesAccessInternal(
   //
   // In this case, we are almost certainly bumping into the sandbox limit, mark
   // the crash as OOM. See SandboxLinux::LimitAddressSpace() for details.
-  if (ret == -1 && errno == ENOMEM && (access_flags & PROT_WRITE))
+  if (ret == -1 && errno == ENOMEM && (access_flags & PROT_WRITE)) {
     OOM_CRASH(length);
+  }
 
   PA_PCHECK(0 == ret);
 }
@@ -355,8 +367,9 @@ bool TryRecommitSystemPagesInternal(
   if (accessibility_disposition ==
       PageAccessibilityDisposition::kRequireUpdate) {
     bool ok = TrySetSystemPagesAccess(address, length, accessibility);
-    if (!ok)
+    if (!ok) {
       return false;
+    }
   }
 
 #if BUILDFLAG(IS_APPLE)

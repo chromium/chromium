@@ -582,7 +582,7 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
   bool permissions_increase =
       (disable_reasons & disable_reason::DISABLE_PERMISSIONS_INCREASE) != 0;
   info->disable_reasons.parent_disabled_permissions =
-      supervised_user_service_->IsChild() &&
+      supervised_user_service_->AreExtensionsPermissionsEnabled() &&
       !supervised_user_service_
            ->GetSupervisedUserExtensionsMayRequestPermissionsPref() &&
       (custodian_approval_required || permissions_increase);

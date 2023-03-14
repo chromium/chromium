@@ -7,8 +7,11 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/test/back_forward_cache_util.h"
+#include "content/public/test/test_utils.h"
 #include "content/test/navigation_simulator_impl.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
@@ -20,6 +23,10 @@
 namespace content {
 
 namespace {
+const char kBackForwardCachePageWithFormStorableHistogramName[] =
+    "BackForwardCache.PageWithForm.Storable";
+const char kBackForwardCachePageWithFormRestoreResultHistogramName[] =
+    "BackForwardCache.PageWithForm.RestoreResult";
 
 class BackForwardCacheWebContentsDelegate : public WebContentsDelegate {
  public:
@@ -59,6 +66,7 @@ class BackForwardCacheMetricsTest : public RenderViewHostImplTestHarness,
 
  protected:
   ukm::TestAutoSetUkmRecorder recorder_;
+  base::HistogramTester histogram_tester_;
 
   BackForwardCacheWebContentsDelegate web_contents_delegate_;
 
@@ -187,9 +195,8 @@ TEST_F(BackForwardCacheMetricsTest, DISABLED_TimeRecordedWhenRendererIsKilled) {
   // cache.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeaturesAndParameters(
-      {{features::kBackForwardCache, {}}},
-      // Allow BackForwardCache for all devices regardless of their memory.
-      {features::kBackForwardCacheMemoryControls});
+      GetBasicBackForwardCacheFeatureForTesting(),
+      GetDefaultDisabledBackForwardCacheFeaturesForTesting());
   base::HistogramTester histogram_tester;
 
   const GURL url1("http://foo1");
@@ -268,4 +275,122 @@ TEST_F(BackForwardCacheMetricsTest, AllFeaturesCovered) {
                                      all_features.begin(), all_features.end()));
 }
 
+TEST_F(BackForwardCacheMetricsTest, PageWithFormsMetricsStoredRecorded) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      GetBasicBackForwardCacheFeatureForTesting(),
+      GetDefaultDisabledBackForwardCacheFeaturesForTesting());
+
+  const GURL url_with_form("http://foo1");
+  const GURL url_without_form("http://foo2");
+
+  // Set has form associated for the first URL.
+  NavigationSimulator::NavigateAndCommitFromDocument(url_with_form,
+                                                     main_test_rfh());
+  BackForwardCache::SetHadFormDataAssociated(main_test_rfh()->GetPage());
+
+  // Navigating away from |url_with_form| will put the page into BFCache.
+  RenderFrameHostWrapper old_rfh(main_test_rfh());
+  NavigationSimulator::NavigateAndCommitFromDocument(url_without_form,
+                                                     main_test_rfh());
+  EXPECT_EQ(old_rfh->GetLifecycleState(),
+            RenderFrameHost::LifecycleState::kInBackForwardCache);
+  histogram_tester_.ExpectBucketCount(
+      kBackForwardCachePageWithFormStorableHistogramName,
+      BackForwardCacheMetrics::PageWithFormStorable::kPageSeen, 1);
+  histogram_tester_.ExpectBucketCount(
+      kBackForwardCachePageWithFormStorableHistogramName,
+      BackForwardCacheMetrics::PageWithFormStorable::kPageStored, 1);
+
+  // Navigate back will restore the page from the BFCache.
+  NavigationSimulator::GoBack(contents());
+  EXPECT_EQ(old_rfh->GetLifecycleState(),
+            RenderFrameHost::LifecycleState::kActive);
+  histogram_tester_.ExpectBucketCount(
+      kBackForwardCachePageWithFormRestoreResultHistogramName,
+      BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored, 1);
+}
+
+TEST_F(BackForwardCacheMetricsTest,
+       PageWithFormsMetricsRecordedForSameDocumentNavigation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      GetBasicBackForwardCacheFeatureForTesting(),
+      GetDefaultDisabledBackForwardCacheFeaturesForTesting());
+
+  const GURL url_with_form("http://foo1");
+  const GURL url_with_form_with_handle("http://foo1#title");
+
+  // Set has form associated for the first URL.
+  NavigationSimulator::NavigateAndCommitFromDocument(url_with_form,
+                                                     main_test_rfh());
+  BackForwardCache::SetHadFormDataAssociated(main_test_rfh()->GetPage());
+
+  // Navigating to the same document does not create a new RFH.
+  RenderFrameHostWrapper old_rfh(main_test_rfh());
+  NavigationSimulator::NavigateAndCommitFromDocument(url_with_form_with_handle,
+                                                     main_test_rfh());
+  EXPECT_EQ(old_rfh->GetLifecycleState(),
+            RenderFrameHost::LifecycleState::kActive);
+
+  // Record PageSeen without stored in cache.
+  histogram_tester_.ExpectBucketCount(
+      kBackForwardCachePageWithFormStorableHistogramName,
+      BackForwardCacheMetrics::PageWithFormStorable::kPageSeen, 1);
+  histogram_tester_.ExpectBucketCount(
+      kBackForwardCachePageWithFormStorableHistogramName,
+      BackForwardCacheMetrics::PageWithFormStorable::kPageStored, 0);
+}
+
+TEST_F(BackForwardCacheMetricsTest, PageWithFormsMetricsNotRestoreRecorded) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      GetBasicBackForwardCacheFeatureForTesting(),
+      GetDefaultDisabledBackForwardCacheFeaturesForTesting());
+
+  const GURL url_with_form("http://foo1");
+  const GURL url_without_form("http://foo2");
+
+  // Set has form associated for the first URL.
+  NavigationSimulator::NavigateAndCommitFromDocument(url_with_form,
+                                                     main_test_rfh());
+  BackForwardCache::SetHadFormDataAssociated(main_test_rfh()->GetPage());
+
+  // Navigating into another URL and go back and page can't be restored because
+  // we flush the cache.
+  RenderFrameHostWrapper old_rfh(main_test_rfh());
+  NavigationSimulator::NavigateAndCommitFromDocument(url_without_form,
+                                                     main_test_rfh());
+  contents()->GetController().GetBackForwardCache().Flush();
+  NavigationSimulator::GoBack(contents());
+  EXPECT_TRUE(old_rfh.WaitUntilRenderFrameDeleted());
+  histogram_tester_.ExpectBucketCount(
+      kBackForwardCachePageWithFormRestoreResultHistogramName,
+      BackForwardCacheMetrics::HistoryNavigationOutcome::kNotRestored, 1);
+}
+
+TEST_F(BackForwardCacheMetricsTest, PageWithFormsMetricsNotStore) {
+  DisableBackForwardCacheForTesting(contents(),
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
+  const GURL url_with_form("http://foo1");
+  const GURL url_without_form("http://foo2");
+
+  // Set has form associated for the first URL.
+  NavigationSimulator::NavigateAndCommitFromDocument(url_with_form,
+                                                     main_test_rfh());
+  BackForwardCache::SetHadFormDataAssociated(main_test_rfh()->GetPage());
+
+  // Navigating away from |url_with_form| won't put the page into BFCache since
+  // cache is disabled.
+  NavigationSimulator::NavigateAndCommitFromDocument(url_without_form,
+                                                     main_test_rfh());
+
+  histogram_tester_.ExpectBucketCount(
+      kBackForwardCachePageWithFormStorableHistogramName,
+      BackForwardCacheMetrics::PageWithFormStorable::kPageSeen, 1);
+  histogram_tester_.ExpectBucketCount(
+      kBackForwardCachePageWithFormStorableHistogramName,
+      BackForwardCacheMetrics::PageWithFormStorable::kPageStored, 0);
+}
 }  // namespace content

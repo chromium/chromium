@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include <utility>
 #include "base/no_destructor.h"
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -38,11 +39,20 @@ class UserLevelMemoryPressureSignalGenerator {
              base::TimeDelta measure_interval,
              base::TimeDelta minimum_interval);
   void OnTimerFired();
+  void OnReportingTimerFired();
 
   void StartPeriodicTimer(base::TimeDelta interval);
+  void StartReportingTimer();
+
+  static std::pair<uint64_t, uint64_t>
+  GetTotalPrivateFootprintVisibleOrHigherPriorityRenderers();
 
   static void NotifyMemoryPressure();
-  static uint64_t GetTotalPrivateFootprintVisibleOrHigherPriorityRenderers();
+
+  static void ReportBeforeAfterMetrics(
+      uint64_t total_pmf_visible_or_higher_priority_renderers,
+      uint64_t total_pmf,
+      const char* suffix_name);
 
   static absl::optional<uint64_t> GetPrivateFootprint(
       const base::Process& process);
@@ -51,6 +61,7 @@ class UserLevelMemoryPressureSignalGenerator {
   base::TimeDelta measure_interval_;
   base::TimeDelta minimum_interval_;
   base::OneShotTimer periodic_measuring_timer_;
+  base::OneShotTimer delayed_report_timer_;
 };
 
 }  // namespace memory_pressure

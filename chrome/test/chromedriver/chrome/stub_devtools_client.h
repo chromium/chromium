@@ -50,6 +50,7 @@ class StubDevToolsClient : public DevToolsClient {
   Status SendCommandAndIgnoreResponse(const std::string& method,
                                       const base::Value::Dict& params) override;
   void AddListener(DevToolsEventListener* listener) override;
+  void RemoveListener(DevToolsEventListener* listener) override;
   Status HandleEventsUntil(const ConditionalFunc& conditional_func,
                            const Timeout& timeout) override;
   Status HandleReceivedEvents() override;
@@ -65,6 +66,7 @@ class StubDevToolsClient : public DevToolsClient {
   std::string session_id_;
   std::string tunnel_session_id_;
   std::list<DevToolsEventListener*> listeners_;
+  base::raw_ptr<WebViewImpl> owner_ = nullptr;
   bool is_connected_ = false;
 };
 

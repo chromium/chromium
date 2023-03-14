@@ -380,8 +380,7 @@ gfx::Image GetTabAlertIndicatorAffordanceImage(TabAlertState alert_state,
     case TabAlertState::VR_PRESENTING_IN_HEADSET:
       return GetTabAlertIndicatorImage(alert_state, button_color);
   }
-  NOTREACHED();
-  return GetTabAlertIndicatorImage(alert_state, button_color);
+  NOTREACHED_NORETURN();
 }
 
 void AlertIndicatorButton::ResetImages(TabAlertState state) {

@@ -41,6 +41,11 @@ void MetricsScheduler::Stop() {
     timer_.Stop();
 }
 
+// static
+int MetricsScheduler::GetInitialIntervalSeconds() {
+  return kInitialIntervalSeconds;
+}
+
 void MetricsScheduler::TaskDone(base::TimeDelta next_interval) {
   DCHECK(callback_pending_);
   callback_pending_ = false;

@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/values.h"
 #include "net/base/net_export.h"
 #include "net/base/network_handle.h"
 #include "net/base/network_isolation_key.h"
@@ -69,7 +70,7 @@ class NET_EXPORT ContextHostResolver : public HostResolver {
       const HostPortPair& host,
       DnsQueryType query_type) override;
   HostCache* GetHostCache() override;
-  base::Value GetDnsConfigAsValue() const override;
+  base::Value::Dict GetDnsConfigAsValue() const override;
   void SetRequestContext(URLRequestContext* request_context) override;
   HostResolverManager* GetManagerForTesting() override;
   const URLRequestContext* GetContextForTesting() const override;

@@ -16,12 +16,16 @@
 #include "build/buildflag.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_compute_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
@@ -553,16 +557,17 @@ xnn_status DefineXnnNodeForConv2d(xnn_subgraph_t subgraph,
   XnnOutputRange output_range{.min = -std::numeric_limits<float>::infinity(),
                               .max = +std::numeric_limits<float>::infinity()};
   if (options->hasActivation()) {
-    switch (options->activation()->Kind()) {
+    switch (options->activation()->Operator()->Kind()) {
       case MLOperator::OperatorKind::kClamp:
       case MLOperator::OperatorKind::kRelu:
-        output_range = GetXnnOutputRangeForActivation(options->activation());
+        output_range =
+            GetXnnOutputRangeForActivation(options->activation()->Operator());
         break;
       default:
-        error_message =
-            "The fused operator (" +
-            MLOperator::OperatorKindToString(options->activation()->Kind()) +
-            ") is not supported by conv2d.";
+        error_message = "The fused operator (" +
+                        MLOperator::OperatorKindToString(
+                            options->activation()->Operator()->Kind()) +
+                        ") is not supported by conv2d.";
         return xnn_status_unsupported_parameter;
     }
   }
@@ -864,6 +869,21 @@ xnn_status DefineXnnNodeForReshape(
   return xnn_status_success;
 }
 
+xnn_status DefineXnnNodeForSigmoid(
+    xnn_subgraph_t subgraph,
+    const MLOperator* sigmoid,
+    const OperandValueIdMap& operand_value_id_map,
+    String& error_message) {
+  const uint32_t input_id =
+      GetOperatorInputValueId(sigmoid, operand_value_id_map);
+  const uint32_t output_id =
+      GetOperatorOutputValueId(sigmoid, operand_value_id_map);
+  const uint32_t flags = 0;
+  XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
+      xnn_define_sigmoid(subgraph, input_id, output_id, flags));
+  return xnn_status_success;
+}
+
 xnn_status DefineXnnNodeForSoftmax(
     xnn_subgraph_t subgraph,
     const MLOperator* softmax,
@@ -876,6 +896,157 @@ xnn_status DefineXnnNodeForSoftmax(
   const uint32_t flags = 0;
   XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
       xnn_define_softmax(subgraph, input_id, output_id, flags));
+  return xnn_status_success;
+}
+
+xnn_status DefineXnnNodeForResample2d(
+    xnn_subgraph_t subgraph,
+    const MLOperator* resample2d,
+    const OperandValueIdMap& operand_value_id_map,
+    String& error_message) {
+  const uint32_t input_id =
+      GetOperatorInputValueId(resample2d, operand_value_id_map);
+  const uint32_t output_id =
+      GetOperatorOutputValueId(resample2d, operand_value_id_map);
+  const MLResample2dOptions* options =
+      static_cast<const MLResample2dOptions*>(resample2d->Options());
+
+  if (options->mode() != V8MLInterpolationMode::Enum::kLinear) {
+    error_message = "Resample2d only supports Linear mode.";
+    return xnn_status_unsupported_parameter;
+  }
+
+  const Vector<int32_t> default_axes({2, 3});
+  // XNNPACK resize bilinear node only supports axes = {1, 2}.
+  // TODO(crbug.com/1273291): Support axes = {2, 3} by transposing the
+  // input tensor.
+  if (!(options->getAxesOr(default_axes)[0] == 1 &&
+        options->getAxesOr(default_axes)[1] == 2)) {
+    error_message = "Resample2d only supports axes = {1, 2}.";
+    return xnn_status_unsupported_parameter;
+  }
+
+  DCHECK_EQ(resample2d->Outputs()[0]->Dimensions().size(), 4U);
+  size_t output_height = resample2d->Outputs()[0]->Dimensions()[1];
+  size_t output_width = resample2d->Outputs()[0]->Dimensions()[2];
+  // Set flags = 0 and it means align_corner = false and half_pixel_center =
+  // true. For WebNN, we plan to support coordinate transformation modes for
+  // Resample2d and it's tracked by an issue -
+  // https://github.com/webmachinelearning/webnn/issues/270.
+  const uint32_t flags = 0;
+  XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_static_resize_bilinear_2d(
+      subgraph, output_height, output_width, input_id, output_id, flags));
+  return xnn_status_success;
+}
+
+xnn_status DefineXnnNodeForTranspose(
+    xnn_subgraph_t subgraph,
+    const MLOperator* transpose,
+    const OperandValueIdMap& operand_value_id_map,
+    String& error_message) {
+  const uint32_t input_id =
+      GetOperatorInputValueId(transpose, operand_value_id_map);
+  const uint32_t output_id =
+      GetOperatorOutputValueId(transpose, operand_value_id_map);
+  const MLTransposeOptions* options =
+      static_cast<const MLTransposeOptions*>(transpose->Options());
+
+  const auto* input = transpose->Inputs()[0].Get();
+  CHECK(input);
+  const auto input_rank = input->Dimensions().size();
+  // According to WebNN spec:
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-transpose,
+  // When permutation is not specified, it’s set to [N-1, ..., 0], where N is
+  // the rank of the input tensor.
+  Vector<int32_t> default_permutation(input_rank);
+  for (wtf_size_t i = 0; i < input_rank - 1; i++) {
+    default_permutation[i] = input_rank - 1 - i;
+  }
+  const Vector<int32_t> permutation =
+      options->getPermutationOr(std::move(default_permutation));
+
+  // The current WebNN spec defines the value of permutation as signed
+  // integer: https://www.w3.org/TR/webnn/#dom-mltransposeoptions-permutation
+  // And an issue has been filed to track it:
+  // https://github.com/webmachinelearning/webnn/issues/317
+  Vector<size_t> xnn_permutation(input_rank);
+  base::ranges::transform(permutation, xnn_permutation.begin(), [](int32_t p) {
+    return base::checked_cast<size_t>(p);
+  });
+  const uint32_t flags = 0;
+  // XNNPACK will memcpy the content of `xnn_permutation` vector to its internal
+  // structure, so it is safe to release `xnn_permutation` vector after this
+  // call. Please refer to the implementation at:
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/xnnpack/src/src/subgraph/static-transpose.c;l=267
+  XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_static_transpose(
+      subgraph, xnn_permutation.size(), xnn_permutation.data(), input_id,
+      output_id, flags));
+  return xnn_status_success;
+}
+
+// Helper to find the concat axis by comparing the first input shape and output
+// shape which is already calculated by `MLGraphBuilder::concat()`.
+absl::optional<uint32_t> GetConcatAxis(const MLOperator* concat) {
+  // The output tensor should has the same shape size with all the input tensors
+  const auto& output_dims = concat->Outputs()[0]->Dimensions();
+  for (const auto& input : concat->Inputs()) {
+    CHECK_EQ(input->Dimensions().size(), output_dims.size());
+  }
+  const auto& input_dims = concat->Inputs()[0]->Dimensions();
+  for (wtf_size_t i = 0; i < input_dims.size(); ++i) {
+    if (input_dims[i] != output_dims[i]) {
+      return i;
+    }
+  }
+  return absl::nullopt;
+}
+
+xnn_status DefineXnnNodeForConcat(xnn_subgraph_t subgraph,
+                                  const MLOperator* concat,
+                                  const OperandValueIdMap& operand_value_id_map,
+                                  String& error_message) {
+  const auto inputs_size = concat->Inputs().size();
+  Vector<uint32_t> input_ids(inputs_size);
+  for (uint32_t i = 0; i < inputs_size; ++i) {
+    input_ids[i] = GetOperatorInputValueId(concat, operand_value_id_map, i);
+  }
+  const uint32_t output_id =
+      GetOperatorOutputValueId(concat, operand_value_id_map);
+  const uint32_t flags = 0;
+  if (inputs_size == 1u) {
+    // Use XNNPACK copy operator to supoprt single input.
+    XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
+        xnn_define_copy(subgraph, input_ids[0], output_id, flags));
+    return xnn_status_success;
+  }
+  absl::optional<uint32_t> axis = GetConcatAxis(concat);
+  if (!axis) {
+    error_message = "Can not find the concat axis.";
+    return xnn_status_unsupported_parameter;
+  }
+  switch (inputs_size) {
+    case 2u:
+      XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
+          xnn_define_concatenate2(subgraph, axis.value(), input_ids[0],
+                                  input_ids[1], output_id, flags));
+      break;
+    case 3u:
+      XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_concatenate3(
+          subgraph, axis.value(), input_ids[0], input_ids[1], input_ids[2],
+          output_id, flags));
+      break;
+    case 4u:
+      XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(xnn_define_concatenate4(
+          subgraph, axis.value(), input_ids[0], input_ids[1], input_ids[2],
+          input_ids[3], output_id, flags));
+      break;
+    default:
+      // TODO(crbug.com/1273291): Consider decomposing the concat with inputs
+      // size > 4 into multiple XNNPACK Concat Nodes.
+      error_message = "XNNPACK backend doesn't support concat inputs size " +
+                      String::Number(inputs_size);
+      return xnn_status_unsupported_parameter;
+  }
   return xnn_status_success;
 }
 
@@ -931,10 +1102,29 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
       XNN_CHECK_STATUS(DefineXnnNodeForReshape(
           subgraph, ml_operator, operand_value_id_map, error_message));
       break;
+    case MLOperator::OperatorKind::kSigmoid:
+      XNN_CHECK_STATUS(DefineXnnNodeForSigmoid(
+          subgraph, ml_operator, operand_value_id_map, error_message));
+      break;
     case MLOperator::OperatorKind::kSoftmax:
       XNN_CHECK_STATUS(DefineXnnNodeForSoftmax(
           subgraph, ml_operator, operand_value_id_map, error_message));
       break;
+    case MLOperator::OperatorKind::kResample2d: {
+      XNN_CHECK_STATUS(DefineXnnNodeForResample2d(
+          subgraph, ml_operator, operand_value_id_map, error_message));
+      break;
+    }
+    case MLOperator::OperatorKind::kTranspose: {
+      XNN_CHECK_STATUS(DefineXnnNodeForTranspose(
+          subgraph, ml_operator, operand_value_id_map, error_message));
+      break;
+    }
+    case MLOperator::OperatorKind::kConcat: {
+      XNN_CHECK_STATUS(DefineXnnNodeForConcat(
+          subgraph, ml_operator, operand_value_id_map, error_message));
+      break;
+    }
     default: {
       error_message = "The operator (" +
                       MLOperator::OperatorKindToString(ml_operator->Kind()) +
@@ -964,7 +1154,14 @@ MLGraph* MLGraphXnnpack::ValidateAndBuildSync(
       named_outputs, exception_state);
 }
 
-MLGraphXnnpack::MLGraphXnnpack(MLContext* context) : MLGraph(context) {}
+MLGraphXnnpack::MLGraphXnnpack(MLContext* context) : MLGraph(context) {
+  auto* execution_context = context->GetML()->GetExecutionContext();
+  DCHECK(execution_context);
+  // TODO(crbug.com/1273291): Get a dedicated queue when the specification
+  // matures.
+  resolver_task_runner_ =
+      execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI);
+}
 
 MLGraphXnnpack::~MLGraphXnnpack() {
   // Explicitly destroy XNNPACK Runtime before releasing static data buffers. It
@@ -1058,11 +1255,6 @@ void MLGraphXnnpack::BuildAsyncImpl(const MLNamedOperands& named_outputs,
   // TODO(crbug.com/1273291): Revisit whether the topological sorting should run
   // in the worker thread.
   auto* toposorted_operators = GetOperatorsInTopologicalOrder(named_outputs);
-  // TODO(crbug.com/1273291): Get a dedicated queue when the specification
-  // matures.
-  scoped_refptr<base::SequencedTaskRunner> task_runner =
-      ExecutionContext::From(resolver->GetScriptState())
-          ->GetTaskRunner(TaskType::kMiscPlatformAPI);
   worker_pool::PostTask(
       FROM_HERE,
       CrossThreadBindOnce(
@@ -1070,7 +1262,7 @@ void MLGraphXnnpack::BuildAsyncImpl(const MLNamedOperands& named_outputs,
           WrapCrossThreadPersistent(
               MakeGarbageCollected<MLNamedOperands>(named_outputs)),
           WrapCrossThreadPersistent(toposorted_operators),
-          WrapCrossThreadPersistent(resolver), std::move(task_runner)));
+          WrapCrossThreadPersistent(resolver), resolver_task_runner_));
 }
 
 // static
@@ -1090,10 +1282,10 @@ void MLGraphXnnpack::BuildOnBackgroundThread(
   graph->xnn_context_ = SharedXnnpackContext::GetInstance(error_message);
   if (!graph->xnn_context_) {
     status = xnn_status_uninitialized;
+  } else {
+    status = graph->CreateXnnSubgraphAndRuntime(
+        *named_outputs, *toposorted_operators, error_message);
   }
-
-  status = graph->CreateXnnSubgraphAndRuntime(
-      *named_outputs, *toposorted_operators, error_message);
 
   PostCrossThreadTask(*resolver_task_runner, FROM_HERE,
                       CrossThreadBindOnce(&MLGraphXnnpack::OnBuildFinished,
@@ -1139,14 +1331,53 @@ MLGraph* MLGraphXnnpack::BuildSyncImpl(const MLNamedOperands& named_outputs,
 void MLGraphXnnpack::ComputeAsyncImpl(const MLNamedArrayBufferViews& inputs,
                                       const MLNamedArrayBufferViews& outputs,
                                       ScriptPromiseResolver* resolver) {
-  // TODO(crbug.com/1273291): There is an issue of current WebNN asynchronous
-  // execution design: https://github.com/webmachinelearning/webnn/issues/318.
-  // After the spec issue is fixed, implement this method by posting the inputs
-  // and outputs to a background thread and invoking XNNPACK Runtime object in
-  // the background thread.
+  worker_pool::PostTask(
+      FROM_HERE,
+      CrossThreadBindOnce(
+          &ComputeOnBackgroundThread, WrapCrossThreadPersistent(this),
+          WrapCrossThreadPersistent(
+              MakeGarbageCollected<MLNamedArrayBufferViews>(inputs)),
+          WrapCrossThreadPersistent(
+              MakeGarbageCollected<MLNamedArrayBufferViews>(outputs)),
+          WrapCrossThreadPersistent(resolver), resolver_task_runner_));
+}
 
-  resolver->Reject(MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kNotSupportedError, "Not implemented."));
+// static
+void MLGraphXnnpack::ComputeOnBackgroundThread(
+    CrossThreadPersistent<MLGraphXnnpack> graph,
+    CrossThreadPersistent<MLNamedArrayBufferViews> inputs,
+    CrossThreadPersistent<MLNamedArrayBufferViews> outputs,
+    CrossThreadPersistent<ScriptPromiseResolver> resolver,
+    scoped_refptr<base::SequencedTaskRunner> resolver_task_runner) {
+  DCHECK(!IsMainThread());
+  DCHECK(graph->xnn_context_);
+
+  String error_message;
+  xnn_status status = graph->InvokeXnnRuntime(*inputs, *outputs, error_message);
+
+  PostCrossThreadTask(
+      *resolver_task_runner, FROM_HERE,
+      CrossThreadBindOnce(&MLGraphXnnpack::OnComputeFinished, std::move(graph),
+                          std::move(inputs), std::move(outputs),
+                          std::move(resolver), status,
+                          std::move(error_message)));
+}
+
+void MLGraphXnnpack::OnComputeFinished(
+    CrossThreadPersistent<MLNamedArrayBufferViews> inputs,
+    CrossThreadPersistent<MLNamedArrayBufferViews> outputs,
+    CrossThreadPersistent<ScriptPromiseResolver> resolver,
+    xnn_status status,
+    String error_message) {
+  if (status != xnn_status_success) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        XnnStatusToDOMExceptionCode(status), error_message));
+    return;
+  }
+  auto* result = MLComputeResult::Create();
+  result->setInputs(*inputs);
+  result->setOutputs(*outputs);
+  resolver->Resolve(result);
 }
 
 void MLGraphXnnpack::ComputeSyncImpl(const MLNamedArrayBufferViews& inputs,

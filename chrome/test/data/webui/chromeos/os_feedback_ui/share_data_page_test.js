@@ -525,6 +525,43 @@ export function shareDataPageTestSuite() {
     assertFalse(report.feedbackContext.fromAssistant);
   });
 
+  /**
+   * Test that when when the send button is clicked, an on-continue is fired.
+   * Case 11: Share autofill metadata.
+   */
+  test('SendAutofillMetadataChecked', async () => {
+    await initializePage();
+    page.feedbackContext = fakeInternalUserFeedbackContext;
+    page.feedbackContext.fromAutofill = true;
+    page.feedbackContext.autofillMetadata = 'Autofill Metadata';
+
+    assertTrue(isVisible(getElement('#autofillCheckboxContainer')));
+    getElement('#autofillCheckbox').checked = true;
+
+    const request = (await clickSendAndWait(page)).report;
+
+    assertTrue(!!request.feedbackContext.autofillMetadata);
+    assertTrue(request.includeAutofillMetadata);
+  });
+
+  /**
+   * Test that when when the send button is clicked, an on-continue is fired.
+   * Case 12: Do not share autofill metadata.
+   */
+  test('NotSendAutofillMetadataChecked', async () => {
+    await initializePage();
+    page.feedbackContext = fakeInternalUserFeedbackContext;
+    page.feedbackContext.fromAutofill = true;
+
+    assertTrue(isVisible(getElement('#autofillCheckboxContainer')));
+    getElement('#autofillCheckbox').checked = false;
+
+    const request = (await clickSendAndWait(page)).report;
+
+    assertFalse(!!request.feedbackContext.autofillMetadata);
+    assertFalse(request.includeAutofillMetadata);
+  });
+
   // Test that the send button will be disabled once clicked.
   test('DisableSendButtonAfterClick', async () => {
     await initializePage();

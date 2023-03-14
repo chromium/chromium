@@ -130,6 +130,20 @@ const char kDeviceWiFiFastTransitionEnabled[] =
 const char kInputNoiseCancellationEnabled[] =
     "ash.input_noise_cancellation_enabled";
 
+// The name of an integer pref that counts the number of times we have shown
+// the multitask menu education nudge.
+const char kMultitaskMenuNudgeClamshellShownCount[] =
+    "ash.wm_nudge.multitask_nudge_count";
+const char kMultitaskMenuNudgeTabletShownCount[] =
+    "cros.wm_nudge.tablet_multitask_nudge_count";
+
+// The name of a time pref that stores the time we last showed the multitask
+// menu education nudge.
+const char kMultitaskMenuNudgeClamshellLastShown[] =
+    "ash.wm_nudge.multitask_menu_nudge_last_shown";
+const char kMultitaskMenuNudgeTabletLastShown[] =
+    "cros.wm_nudge.tablet_multitask_nudge_last_shown";
+
 // The following SAML-related prefs are not settings that the domain admin can
 // set, but information that the SAML Identity Provider can send us:
 
@@ -401,15 +415,27 @@ const char kAccessibilityAutoclickMovementThreshold[] =
 // The Autoclick menu position on the screen, an AutoclickMenuPosition.
 const char kAccessibilityAutoclickMenuPosition[] =
     "settings.a11y.autoclick_menu_position";
+// Whether to enable color filtering settings.
+const char kAccessibilityColorFiltering[] =
+    "settings.a11y.color_filtering.enabled";
 // How much to greyscale the display.
-const char kAccessibilityGreyscaleAmount[] = "settings.a11y.greyscale_amount";
+const char kAccessibilityGreyscaleAmount[] =
+    "settings.a11y.color_filtering.greyscale_amount";
 // How much to saturate the display.
-const char kAccessibilitySaturationAmount[] = "settings.a11y.saturation_amount";
+const char kAccessibilitySaturationAmount[] =
+    "settings.a11y.color_filtering.saturation_amount";
 // How much sepia the display.
-const char kAccessibilitySepiaAmount[] = "settings.a11y.sepia_amount";
+const char kAccessibilitySepiaAmount[] =
+    "settings.a11y.color_filtering.sepia_amount";
 // How much to rotate the hue on the display.
 const char kAccessibilityHueRotationAmount[] =
-    "settings.a11y.hue_rotation_amount";
+    "settings.a11y.color_filtering.hue_rotation_amount";
+// The amount of a color vision correction filter to apply.
+const char kAccessibilityColorVisionCorrectionAmount[] =
+    "settings.a11y.color_filtering.color_vision_correction_amount";
+// The type of color vision correction to apply.
+const char kAccessibilityColorVisionDeficiencyType[] =
+    "settings.a11y.color_filtering.color_vision_deficiency_type";
 // A boolean pref which determines whether caret highlighting is enabled.
 const char kAccessibilityCaretHighlightEnabled[] =
     "settings.a11y.caret_highlight";
@@ -996,6 +1022,11 @@ const char kTapDraggingEnabled[] = "settings.touchpad.enable_tap_dragging";
 const char kTouchpadEnabled[] = "events.touch_pad.enabled";
 const char kTouchscreenEnabled[] = "events.touch_screen.enabled";
 
+// Boolean value indicating that the touchpad scroll direction screen should be
+// shown to the user during oobe.
+const char kShowTouchpadScrollScreenEnabled[] =
+    "ash.touchpad_scroll_screen_oobe_enabled";
+
 // Integer prefs indicating the minimum and maximum lengths of the lock screen
 // pin.
 const char kPinUnlockMaximumLength[] = "pin_unlock_maximum_length";
@@ -1296,6 +1327,11 @@ const char kPersonalizationKeyboardBacklightColor[] =
 const char kPersonalizationKeyboardBacklightZoneColors[] =
     "ash.personalization.keyboard_backlight_zone_colors";
 
+// This integer pref indicates the display type of the keyboard backlight color.
+// The value is one of `KeyboardBacklightColorController::DisplayType`.
+const char kPersonalizationKeyboardBacklightColorDisplayType[] =
+    "ash.personalization.keyboard_backlight_color_display_type";
+
 // Integer pref corresponding to the autozoom state, the value should be one of
 // cros::mojom::CameraAutoFramingState.
 const char kAutozoomState[] = "ash.camera.autozoom_state";
@@ -1328,6 +1364,73 @@ const char kPortraitRelighting[] = "ash.camera.portrait_relighting";
 // initial session after sync consent screen.
 const char kRecordArcAppSyncMetrics[] =
     "ash.should_record_arc_app_sync_metrics";
+
+// A boolean pref set to true if primary mouse button is the left button.
+const char kPrimaryMouseButtonRight[] = "settings.mouse.primary_right";
+
+// A integer pref for the touchpad sensitivity.
+const char kMouseSensitivity[] = "settings.mouse.sensitivity2";
+
+// A boolean pref set to true if mouse acceleration is enabled. When disabled
+// only simple linear scaling is applied based on sensitivity.
+const char kMouseAcceleration[] = "settings.mouse.acceleration";
+
+// A integer pref for the touchpad scroll sensitivity, in the range
+// [PointerSensitivity::kLowest, PointerSensitivity::kHighest].
+const char kMouseScrollSensitivity[] = "settings.mouse.scroll_sensitivity";
+
+// A boolean pref set to true if mouse scroll acceleration is enabled. When
+// disabled, only simple linear scaling is applied based on sensitivity.
+const char kMouseScrollAcceleration[] = "settings.mouse.scroll_acceleration";
+
+// A integer pref for the touchpad sensitivity.
+const char kTouchpadSensitivity[] = "settings.touchpad.sensitivity2";
+
+// A boolean pref set to true if touchpad acceleration is enabled. When
+// disabled only simple linear scaling is applied based on sensitivity.
+const char kTouchpadAcceleration[] = "settings.touchpad.acceleration";
+
+// A boolean pref set to true if touchpad three-finger-click is enabled.
+const char kEnableTouchpadThreeFingerClick[] =
+    "settings.touchpad.enable_three_finger_click";
+
+// A boolean pref set to true if touchpad tap-to-click is enabled.
+const char kTapToClickEnabled[] = "settings.touchpad.enable_tap_to_click";
+
+// A integer pref for the touchpad scroll sensitivity, in the range
+// [PointerSensitivity::kLowest, PointerSensitivity::kHighest].
+const char kTouchpadScrollSensitivity[] =
+    "settings.touchpad.scroll_sensitivity";
+
+// A boolean pref set to true if touchpad scroll acceleration is enabled. When
+// disabled only simple linear scaling is applied based on sensitivity.
+const char kTouchpadScrollAcceleration[] =
+    "settings.touchpad.scroll_acceleration";
+
+// A boolean pref set to true if touchpad haptic feedback is enabled.
+const char kTouchpadHapticFeedback[] = "settings.touchpad.haptic_feedback";
+
+// A integer pref for the touchpad haptic click sensitivity ranging from Soft
+// feedback to Firm feedback [1, 3, 5].
+const char kTouchpadHapticClickSensitivity[] =
+    "settings.touchpad.haptic_click_sensitivity";
+
+// A integer pref for pointing stick sensitivity.
+const char kPointingStickSensitivity[] = "settings.pointing_stick.sensitivity";
+
+// A boolean pref set to true if primary pointing stick button is the left
+// button.
+const char kPrimaryPointingStickButtonRight[] =
+    "settings.pointing_stick.primary_right";
+
+// A boolean pref set to true if pointing stick acceleration is enabled. When
+// disabled only simple linear scaling is applied based on sensitivity.
+const char kPointingStickAcceleration[] =
+    "settings.pointing_stick.acceleration";
+
+// A syncable time pref that stores the time of last session activation.
+const char kTimeOfLastSessionActivation[] =
+    "ash.session.time_of_last_activation";
 
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.

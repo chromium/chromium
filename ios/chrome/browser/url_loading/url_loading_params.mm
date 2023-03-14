@@ -56,7 +56,7 @@ UrlLoadParams UrlLoadParams::InNewTab(const GURL& url) {
 UrlLoadParams UrlLoadParams::InNewTab(const GURL& url, int insertion_index) {
   UrlLoadParams params = UrlLoadParams();
   params.web_params = web::NavigationManager::WebLoadParams(url);
-  params.append_to = kSpecifiedIndex;
+  params.append_to = OpenPosition::kSpecifiedIndex;
   params.insertion_index = insertion_index;
   return params;
 }
@@ -73,7 +73,7 @@ UrlLoadParams::UrlLoadParams()
     : web_params(GURL()),
       disposition(WindowOpenDisposition::NEW_FOREGROUND_TAB),
       in_incognito(false),
-      append_to(kLastTab),
+      append_to(OpenPosition::kLastTab),
       origin_point(CGPointZero),
       from_chrome(false),
       from_external(false),

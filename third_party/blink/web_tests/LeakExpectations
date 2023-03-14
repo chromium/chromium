@@ -13,8 +13,6 @@
 # ask yuzus@.                                                             #
 ###########################################################################
 
-crbug.com/786995 virtual/threaded/http/tests/devtools/tracing/timeline-style/timeline-style-recalc-all-invalidator-types.js [ Skip ]
-
 # -----------------------------------------------------------------
 # Flakily leaks
 # -----------------------------------------------------------------

@@ -13,6 +13,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/test_utils.h"
@@ -27,15 +28,16 @@ namespace {
 using ::attribution_reporting::mojom::SourceRegistrationError;
 
 SourceRegistration SourceRegistrationWith(
-    net::SchemefulSite destination,
+    DestinationSet destination_set,
     base::FunctionRef<void(SourceRegistration&)> f) {
-  SourceRegistration r(std::move(destination));
+  SourceRegistration r(std::move(destination_set));
   f(r);
   return r;
 }
 
 TEST(SourceRegistrationTest, Parse) {
-  const auto destination = net::SchemefulSite::Deserialize("https://d.example");
+  const DestinationSet destination = *DestinationSet::Create(
+      {net::SchemefulSite::Deserialize("https://d.example")});
 
   const struct {
     const char* desc;
@@ -78,16 +80,6 @@ TEST(SourceRegistrationTest, Parse) {
           "destination_missing",
           R"json({})json",
           base::unexpected(SourceRegistrationError::kDestinationMissing),
-      },
-      {
-          "destination_wrong_type",
-          R"json({"destination":0})json",
-          base::unexpected(SourceRegistrationError::kDestinationWrongType),
-      },
-      {
-          "destination_untrustworthy",
-          R"json({"destination":"http://d.example"})json",
-          base::unexpected(SourceRegistrationError::kDestinationUntrustworthy),
       },
       {
           "priority_valid",
@@ -235,7 +227,7 @@ TEST(SourceRegistrationTest, Parse) {
   };
 
   static constexpr char kSourceRegistrationErrorMetric[] =
-      "Conversions.SourceRegistrationError";
+      "Conversions.SourceRegistrationError2";
 
   for (const auto& test_case : kTestCases) {
     base::HistogramTester histograms;
@@ -253,7 +245,8 @@ TEST(SourceRegistrationTest, Parse) {
 }
 
 TEST(SourceRegistrationTest, ToJson) {
-  const auto destination = net::SchemefulSite::Deserialize("https://d.example");
+  const DestinationSet destination = *DestinationSet::Create(
+      {net::SchemefulSite::Deserialize("https://d.example")});
 
   const struct {
     SourceRegistration input;

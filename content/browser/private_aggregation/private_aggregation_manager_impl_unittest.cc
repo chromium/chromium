@@ -26,13 +26,13 @@
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
 #include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "content/browser/private_aggregation/private_aggregation_test_utils.h"
-#include "content/common/aggregatable_report.mojom.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -174,12 +174,12 @@ TEST_F(PrivateAggregationManagerImplTest,
   AggregationServicePayloadContents payload_contents =
       example_request.payload_contents();
   payload_contents.contributions = {
-      mojom::AggregatableReportHistogramContribution(/*bucket=*/123,
-                                                     /*value=*/100),
-      mojom::AggregatableReportHistogramContribution(/*bucket=*/123,
-                                                     /*value=*/5),
-      mojom::AggregatableReportHistogramContribution(/*bucket=*/456,
-                                                     /*value=*/20)};
+      blink::mojom::AggregatableReportHistogramContribution(/*bucket=*/123,
+                                                            /*value=*/100),
+      blink::mojom::AggregatableReportHistogramContribution(/*bucket=*/123,
+                                                            /*value=*/5),
+      blink::mojom::AggregatableReportHistogramContribution(/*bucket=*/456,
+                                                            /*value=*/20)};
 
   AggregatableReportRequest expected_request =
       AggregatableReportRequest::Create(payload_contents,
@@ -287,11 +287,11 @@ TEST_F(PrivateAggregationManagerImplTest,
   AggregationServicePayloadContents payload_contents =
       example_request.payload_contents();
   payload_contents.contributions = {
-      mojom::AggregatableReportHistogramContribution(
+      blink::mojom::AggregatableReportHistogramContribution(
           /*bucket=*/123,
           /*value=*/std::numeric_limits<int>::max()),
-      mojom::AggregatableReportHistogramContribution(/*bucket=*/456,
-                                                     /*value=*/1)};
+      blink::mojom::AggregatableReportHistogramContribution(/*bucket=*/456,
+                                                            /*value=*/1)};
 
   AggregatableReportRequest expected_request =
       AggregatableReportRequest::Create(payload_contents,
@@ -513,7 +513,7 @@ TEST_F(PrivateAggregationManagerImplTest,
   EXPECT_TRUE(manager_.BindNewReceiver(
       example_origin, example_main_frame_origin,
       PrivateAggregationBudgetKey::Api::kFledge,
-      mojo::PendingReceiver<mojom::PrivateAggregationHost>()));
+      mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
 
   EXPECT_CALL(*host_, BindNewReceiver(
                           example_origin, example_main_frame_origin,
@@ -522,7 +522,7 @@ TEST_F(PrivateAggregationManagerImplTest,
   EXPECT_FALSE(manager_.BindNewReceiver(
       example_origin, example_main_frame_origin,
       PrivateAggregationBudgetKey::Api::kSharedStorage,
-      mojo::PendingReceiver<mojom::PrivateAggregationHost>()));
+      mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
 }
 
 TEST_F(PrivateAggregationManagerImplTest,

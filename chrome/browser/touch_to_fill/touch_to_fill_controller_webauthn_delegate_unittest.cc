@@ -8,6 +8,7 @@
 
 #include "base/base64.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/password_manager/android/password_manager_launcher_android.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller.h"
 #include "chrome/browser/webauthn/android/webauthn_request_delegate_android.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -25,6 +26,7 @@ namespace {
 using password_manager::PasskeyCredential;
 using password_manager::UiCredential;
 using IsOriginSecure = TouchToFillView::IsOriginSecure;
+using ::testing::_;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
 
@@ -74,6 +76,7 @@ struct MockTouchToFillView : public TouchToFillView {
                IsOriginSecure,
                base::span<const UiCredential>,
                base::span<const PasskeyCredential>,
+               bool,
                bool),
               (override));
   MOCK_METHOD(void, OnCredentialSelected, (const UiCredential&));
@@ -88,6 +91,9 @@ class TouchToFillControllerWebAuthnTest
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+
+    password_manager_launcher::
+        OverrideManagePasswordWhenPasskeysPresentForTesting(false);
 
     auto mock_view = std::make_unique<MockTouchToFillView>();
     mock_view_ = mock_view.get();
@@ -139,10 +145,12 @@ TEST_F(TouchToFillControllerWebAuthnTest, ShowAndSelectCredential) {
                                PasskeyCredential::BackendId(UserId1AsString()));
   std::vector<PasskeyCredential> credentials({credential});
 
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
-                           ElementsAreArray(std::vector<UiCredential>()),
-                           ElementsAreArray(credentials),
-                           /*trigger_submission=*/false));
+  EXPECT_CALL(view(),
+              Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+                   ElementsAreArray(std::vector<UiCredential>()),
+                   ElementsAreArray(credentials),
+                   /*trigger_submission=*/false,
+                   /*can_manage_passwords_when_passkeys_present*/ false));
   touch_to_fill_controller().Show({}, credentials,
                                   MakeTouchToFillControllerDelegate());
 
@@ -159,10 +167,12 @@ TEST_F(TouchToFillControllerWebAuthnTest, ShowAndSelectWithMultipleCredential) {
       PasskeyCredential::BackendId(UserId2AsString()));
   std::vector<PasskeyCredential> credentials({credential1, credential2});
 
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
-                           ElementsAreArray(std::vector<UiCredential>()),
-                           ElementsAreArray(credentials),
-                           /*trigger_submission=*/false));
+  EXPECT_CALL(view(),
+              Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+                   ElementsAreArray(std::vector<UiCredential>()),
+                   ElementsAreArray(credentials),
+                   /*trigger_submission=*/false,
+                   /*can_manage_passwords_when_passkeys_present*/ false));
   touch_to_fill_controller().Show({}, credentials,
                                   MakeTouchToFillControllerDelegate());
 
@@ -176,10 +186,12 @@ TEST_F(TouchToFillControllerWebAuthnTest, ShowAndCancel) {
                                PasskeyCredential::BackendId(UserId1AsString()));
   std::vector<PasskeyCredential> credentials({credential});
 
-  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
-                           ElementsAreArray(std::vector<UiCredential>()),
-                           ElementsAreArray(credentials),
-                           /*trigger_submission=*/false));
+  EXPECT_CALL(view(),
+              Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+                   ElementsAreArray(std::vector<UiCredential>()),
+                   ElementsAreArray(credentials),
+                   /*trigger_submission=*/false,
+                   /*can_manage_passwords_when_passkeys_present*/ false));
   touch_to_fill_controller().Show({}, credentials,
                                   MakeTouchToFillControllerDelegate());
 

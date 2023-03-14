@@ -1,16 +1,18 @@
+# Please see owners expectations for this set of owners at
+# /docs/webapps/owners_expectations.md, and general owners expectations at
+# /docs/code_reviews.md#expectations-of-owners
+
 # Primary
 dmurph@chromium.org
 phillis@chromium.org
+dibyapal@chromium.org
 
 # Secondary
 alancutter@chromium.org
-benwells@chromium.org
 cmp@chromium.org
 dominickn@chromium.org
-ericwilligers@chromium.org
 estade@chromium.org
 glenrob@chromium.org
-mgiuca@chromium.org
 ortuno@chromium.org
 
 # OS shortcuts
@@ -20,7 +22,6 @@ per-file web_app_default_offline*=finnur@chromium.org
 per-file web_app_file_handler*=davidbienvenu@chromium.org
 per-file web_app_file_handler*=jessemckenna@google.com
 per-file web_app_id_constants.*=dominickn@chromium.org
-per-file web_app_id_constants.*=jshikaram@chromium.org
 per-file web_app_id_constants.*=tsergeant@chromium.org
 per-file web_app_shortcut_win*=davidbienvenu@chromium.org
 per-file web_app_shortcut_win*=jessemckenna@google.com

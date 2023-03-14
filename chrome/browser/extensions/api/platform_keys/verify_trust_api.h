@@ -11,24 +11,18 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/common/extensions/api/platform_keys.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
 }  // namespace content
 
 namespace extensions {
-
-namespace api {
-namespace platform_keys {
-namespace VerifyTLSServerCertificate {
-struct Params;
-}  // namespace VerifyTLSServerCertificate
-}  // namespace platform_keys
-}  // namespace api
 
 // This keyed service is used by the platformKeys.verifyTLSServerCertificate for
 // caching and to reuse objects between multiple API calls (e.g. the
@@ -60,7 +54,7 @@ class VerifyTrustAPI : public BrowserContextKeyedAPI,
   // Note: It is safe to delete this object while there are still
   // outstanding operations. However, if this happens, |callback|
   // will NOT be called.
-  void Verify(std::unique_ptr<Params> params,
+  void Verify(absl::optional<Params> params,
               const std::string& extension_id,
               VerifyCallback callback);
 

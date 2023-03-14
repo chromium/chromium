@@ -117,5 +117,9 @@ TEST(ProtoEnumConversionsTest, GetNoteTargetTypeString) {
   TestEnumStringsNonEmpty(sync_pb::NoteEntity::TargetType);
 }
 
+TEST(ProtoEnumConversionsTest, GetInitialSyncStateString) {
+  TestEnumStringsNonEmpty(sync_pb::ModelTypeState::InitialSyncState);
+}
+
 }  // namespace
 }  // namespace syncer

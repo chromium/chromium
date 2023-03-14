@@ -9,8 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/content/browser/form_forest.h"
 
-namespace autofill {
-namespace internal {
+namespace autofill::internal {
 
 // Exposes some testing (and debugging) operations for FormForest.
 class FormForestTestApi {
@@ -25,6 +24,8 @@ class FormForestTestApi {
 
   explicit FormForestTestApi(FormForest* ff) : ff_(ff) { DCHECK(ff_); }
 
+  void Reset() { ff_->frame_datas_.clear(); }
+
   FrameData* GetFrameData(LocalFrameToken frame) {
     return ff_->GetFrameData(frame);
   }
@@ -33,8 +34,6 @@ class FormForestTestApi {
                         FrameData* frame_data = nullptr) {
     return ff_->GetFormData(form, frame_data);
   }
-
-  FrameForm GetRoot(FormGlobalId form) { return ff_->GetRoot(form); }
 
   FormForest& form_forest() { return *ff_; }
 
@@ -85,7 +84,6 @@ void FormForestTestApi::TraverseTrees(base::stack<FrameForm>& frontier,
   }
 }
 
-}  // namespace internal
-}  // namespace autofill
+}  // namespace autofill::internal
 
 #endif  // COMPONENTS_AUTOFILL_CONTENT_BROWSER_FORM_FOREST_TEST_API_H_

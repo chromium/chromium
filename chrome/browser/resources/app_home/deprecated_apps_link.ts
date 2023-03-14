@@ -19,6 +19,7 @@ export class DeprecatedAppsLinkElement extends PolymerElement {
   }
 
   deprecationLinkString: string = '';
+  display: string = 'none';
 
   static get template() {
     return getTemplate();
@@ -29,12 +30,9 @@ export class DeprecatedAppsLinkElement extends PolymerElement {
 
     BrowserProxy.getInstance().handler.getDeprecationLinkString().then(
         result => {
+          this.display = result.linkString === '' ? 'none' : 'inline-flex';
           this.deprecationLinkString = result.linkString;
         });
-  }
-
-  private isHidden_() {
-    return this.deprecationLinkString === '';
   }
 
   private linkClicked_() {

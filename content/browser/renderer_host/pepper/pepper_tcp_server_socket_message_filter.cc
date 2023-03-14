@@ -173,8 +173,10 @@ int32_t PepperTCPServerSocketMessageFilter::OnMsgListen(
   ppapi::host::ReplyMessageContext reply_context =
       context->MakeReplyMessageContext();
 
+  auto options = network::mojom::TCPServerSocketOptions::New();
+  options->backlog = backlog;
   network_context->CreateTCPServerSocket(
-      net::IPEndPoint(net::IPAddress(address), port), backlog,
+      net::IPEndPoint(net::IPAddress(address), port), std::move(options),
       pepper_socket_utils::PepperTCPNetworkAnnotationTag(),
       socket_.BindNewPipeAndPassReceiver(),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(

@@ -13,8 +13,10 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
+#include "components/file_access/scoped_file_access_delegate.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "storage/browser/blob/blob_data_item.h"
 #include "storage/browser/blob/blob_data_snapshot.h"
@@ -132,11 +134,17 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataBuilder {
 
   // You must know the length of the file, you cannot use kuint64max to specify
   // the whole file.  This method creates a ShareableFileReference to the given
-  // file, which is stored in this builder.
-  void AppendFile(const base::FilePath& file_path,
-                  uint64_t offset,
-                  uint64_t length,
-                  const base::Time& expected_modification_time);
+  // file, which is stored in this builder. The callback `file_access` is used
+  // to grant or deny access to files under dlp restrictions. Leaving it at
+  // NullCallback will lead to default behaviour, which currently is granting it
+  // (until b/265908846 is done).
+  void AppendFile(
+      const base::FilePath& file_path,
+      uint64_t offset,
+      uint64_t length,
+      const base::Time& expected_modification_time,
+      file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
+          file_access = base::NullCallback());
 
   void AppendBlob(const std::string& uuid,
                   uint64_t offset,
@@ -150,7 +158,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataBuilder {
       uint64_t offset,
       uint64_t length,
       const base::Time& expected_modification_time,
-      scoped_refptr<FileSystemContext> file_system_context);
+      scoped_refptr<FileSystemContext> file_system_context,
+      file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
+          file_access = base::NullCallback());
 
   void AppendReadableDataHandle(scoped_refptr<DataHandle> data_handle) {
     auto length = data_handle->GetSize();

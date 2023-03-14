@@ -91,6 +91,7 @@ class DemoMetricsService {
   recordNavbarButtonClick(page) {
     chrome.metricsPrivateIndividualApis.recordUserAction(
         'DemoMode_Highlights_Navbar_Click_' + page + 'Button');
+    this.recordFirstInteraction(page);
   }
 
   /**

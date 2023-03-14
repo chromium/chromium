@@ -1,5 +1,6 @@
 This is a testharness.js-based test.
-FAIL setMetadata() does not allow changed properties without special flags assert_throws_dom: For field "contributingSources", function "() => clone.setMetadata(metadata)" did not throw
+FAIL setMetadata() does not allow changes to contributingSources without a flag assert_throws_dom: For field "contributingSources", function "() => clone.setMetadata(metadata)" did not throw
+FAIL setMetadata() does not allow changes to fields other than contributingSources without a flag assert_throws_dom: For field "decodeTargetIndications", function "() => clone.setMetadata(metadata)" did not throw
 PASS setMetadata() allows changes when AllowRTCEncodedVideoFrameSetMetadataAllFields is enabled
 PASS setMetadata() allows metadata with no generic dependency descriptor - ie no frameId
 PASS modified csrcs are propagated over a PeerConnection

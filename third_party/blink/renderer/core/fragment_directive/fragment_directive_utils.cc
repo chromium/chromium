@@ -14,8 +14,19 @@ namespace blink {
 
 // static
 void FragmentDirectiveUtils::RemoveSelectorsFromUrl(LocalFrame* frame) {
+  auto* document_loader = frame->Loader().GetDocumentLoader();
+
+  // This method can be called while the receiving frame is partway through a
+  // load which hasn't committed yet. If that happens, the frame might not have
+  // a DocumentLoader yet, or might not have created a HistoryItem. Either way,
+  // it's not safe to continue and in any case there's no URL to remove
+  // selectors from (yet), so do nothing.
+  if (!document_loader || !document_loader->GetHistoryItem()) {
+    return;
+  }
+
   KURL url(shared_highlighting::RemoveFragmentSelectorDirectives(
-      GURL(frame->Loader().GetDocumentLoader()->GetHistoryItem()->Url())));
+      GURL(document_loader->GetHistoryItem()->Url())));
 
   // Replace the current history entry with the new url, so that the text
   // fragment shown in the URL matches the state of the highlight on the page.

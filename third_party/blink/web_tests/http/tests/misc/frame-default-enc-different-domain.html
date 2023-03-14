@@ -1,14 +1,15 @@
 <html>
-<head>
 <meta http-equiv="content-type" content="text/html; charset=x-mac-cyrillic">
 <title>Frames and encodings</title>
 <script>
-if (window.testRunner)
-    testRunner.dumpAsText();
+if (window.testRunner) {
+  testRunner.dumpAsText();
+  testRunner.waitUntilDone();
+  window.onload = () => requestAnimationFrame(() => testRunner.notifyDone());
+}
 </script>
-</head>
+
 <frameset rows="0,*">
     <frame src="about:" scrolling=no marginwidth=0 marginheight=0>
     <frame src="http://localhost:8000/misc/resources/frame-default-enc-frame.html">
 </frameset>
-</html>

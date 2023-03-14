@@ -112,4 +112,8 @@ interface Page {
 
   // Send an updated theme to the WebUI.
   OnThemeChanged(ReadAnythingTheme new_theme);
+
+  // Notifies the WebUI that the ScreenAI service is ready on this device.
+  [EnableIf=enable_screen_ai_service]
+  ScreenAIServiceReady();
 };

@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_FOLLOW_FOLLOW_IPH_COORDINATOR_H_
 
 #import "ios/chrome/browser/follow/follow_iph_presenter.h"
-#import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 #import "ios/chrome/browser/follow/follow_iph_presenter.h"
 

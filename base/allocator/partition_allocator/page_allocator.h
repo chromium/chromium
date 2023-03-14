@@ -34,12 +34,12 @@ struct PageAccessibilityConfiguration {
   };
 
 #if BUILDFLAG(ENABLE_PKEYS)
-  explicit constexpr PageAccessibilityConfiguration(Permissions permissions)
+  constexpr explicit PageAccessibilityConfiguration(Permissions permissions)
       : permissions(permissions), pkey(0) {}
   constexpr PageAccessibilityConfiguration(Permissions permissions, int pkey)
       : permissions(permissions), pkey(pkey) {}
 #else
-  explicit constexpr PageAccessibilityConfiguration(Permissions permissions)
+  constexpr explicit PageAccessibilityConfiguration(Permissions permissions)
       : permissions(permissions) {}
 #endif  // BUILDFLAG(ENABLE_PKEYS)
 
@@ -300,7 +300,7 @@ void DiscardSystemPages(void* address, size_t length);
 
 // Rounds up |address| to the next multiple of |SystemPageSize()|. Returns
 // 0 for an |address| of 0.
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE uintptr_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR uintptr_t
 RoundUpToSystemPage(uintptr_t address) {
   return (address + internal::SystemPageOffsetMask()) &
          internal::SystemPageBaseMask();
@@ -308,14 +308,14 @@ RoundUpToSystemPage(uintptr_t address) {
 
 // Rounds down |address| to the previous multiple of |SystemPageSize()|. Returns
 // 0 for an |address| of 0.
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE uintptr_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR uintptr_t
 RoundDownToSystemPage(uintptr_t address) {
   return address & internal::SystemPageBaseMask();
 }
 
 // Rounds up |address| to the next multiple of |PageAllocationGranularity()|.
 // Returns 0 for an |address| of 0.
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE uintptr_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR uintptr_t
 RoundUpToPageAllocationGranularity(uintptr_t address) {
   return (address + internal::PageAllocationGranularityOffsetMask()) &
          internal::PageAllocationGranularityBaseMask();
@@ -323,7 +323,7 @@ RoundUpToPageAllocationGranularity(uintptr_t address) {
 
 // Rounds down |address| to the previous multiple of
 // |PageAllocationGranularity()|. Returns 0 for an |address| of 0.
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE uintptr_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR uintptr_t
 RoundDownToPageAllocationGranularity(uintptr_t address) {
   return address & internal::PageAllocationGranularityBaseMask();
 }

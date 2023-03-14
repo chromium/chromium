@@ -55,30 +55,40 @@ std::unique_ptr<views::Label> CreateLabel() {
 base::WeakPtr<views::Widget> IdleDialog::Show(
     base::TimeDelta dialog_duration,
     base::TimeDelta idle_threshold,
-    base::RepeatingClosure on_close_by_user) {
-  views::Widget* widget = policy::IdleDialogView::Show(
-      dialog_duration, idle_threshold, on_close_by_user);
-  return widget->GetWeakPtr();
+    IdleDialog::ActionSet actions,
+    base::OnceClosure on_close_by_user) {
+  return policy::IdleDialogView::Show(dialog_duration, idle_threshold, actions,
+                                      std::move(on_close_by_user));
 }
 
 namespace policy {
 
 // static
-views::Widget* IdleDialogView::Show(base::TimeDelta dialog_duration,
-                                    base::TimeDelta idle_threshold,
-                                    base::RepeatingClosure on_close_by_user) {
-  auto* view =
-      new IdleDialogView(dialog_duration, idle_threshold, on_close_by_user);
-  auto* widget = CreateDialogWidget(view, nullptr, nullptr);
+base::WeakPtr<views::Widget> IdleDialogView::Show(
+    base::TimeDelta dialog_duration,
+    base::TimeDelta idle_threshold,
+    IdleDialog::ActionSet actions,
+    base::OnceClosure on_close_by_user) {
+  auto view = std::make_unique<IdleDialogView>(
+      dialog_duration, idle_threshold, actions, std::move(on_close_by_user));
+  auto* widget = CreateDialogWidget(std::move(view), nullptr, nullptr);
   widget->Show();
-  view->InvalidateLayout();
-  return widget;
+  return widget->GetWeakPtr();
 }
 
 IdleDialogView::~IdleDialogView() = default;
 
 std::u16string IdleDialogView::GetWindowTitle() const {
-  return l10n_util::GetStringUTF16(IDS_IDLE_TIMEOUT_TITLE);
+  int message_id;
+  if (actions_.close && actions_.clear) {
+    message_id = IDS_IDLE_TIMEOUT_CLOSE_AND_CLEAR_TITLE;
+  } else if (actions_.close) {
+    message_id = IDS_IDLE_TIMEOUT_CLOSE_TITLE;
+  } else {
+    CHECK(actions_.clear);
+    message_id = IDS_IDLE_TIMEOUT_CLEAR_TITLE;
+  }
+  return l10n_util::GetStringUTF16(message_id);
 }
 
 ui::ImageModel IdleDialogView::GetWindowIcon() {
@@ -90,16 +100,21 @@ ui::ImageModel IdleDialogView::GetWindowIcon() {
 
 IdleDialogView::IdleDialogView(base::TimeDelta dialog_duration,
                                base::TimeDelta idle_threshold,
-                               base::RepeatingClosure on_close_by_user)
-    : deadline_(base::Time::Now() + dialog_duration),
-      minutes_(idle_threshold.InMinutes()) {
+                               IdleDialog::ActionSet actions,
+                               base::OnceClosure on_close_by_user)
+    : idle_threshold_(idle_threshold),
+      actions_(actions),
+      deadline_(base::TimeTicks::Now() + dialog_duration) {
+  CHECK(actions.close || actions.clear);
   SetDefaultButton(ui::DIALOG_BUTTON_OK);
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_IDLE_DISMISS_BUTTON));
   SetShowIcon(true);
   SetButtons(ui::DIALOG_BUTTON_OK);
-  SetAcceptCallback(base::BindOnce(on_close_by_user));
-  SetCancelCallback(base::BindOnce(on_close_by_user));
+  auto [callback1, callback2] =
+      base::SplitOnceCallback(std::move(on_close_by_user));
+  SetAcceptCallback(std::move(callback1));
+  SetCancelCallback(std::move(callback2));
 
   set_draggable(true);
   SetModalType(ui::MODAL_TYPE_NONE);
@@ -115,24 +130,28 @@ IdleDialogView::IdleDialogView(base::TimeDelta dialog_duration,
   incognito_label_ = AddChildView(CreateLabel());
   countdown_label_ = AddChildView(CreateLabel());
 
-  update_timer_.Start(
-      FROM_HERE, base::Seconds(1),
-      base::BindRepeating(&IdleDialogView::UpdateBody, base::Unretained(this)));
+  update_timer_.Start(FROM_HERE, base::Seconds(1),
+                      base::BindRepeating(&IdleDialogView::UpdateCountdown,
+                                          base::Unretained(this)));
 
   // TODO(nicolaso): In 90%+ of cases, GetIncognitoBrowserCount() is correct.
   // But sometimes, it reports the wrong number. There can be profiles that
   // _aren't_ closing, but have Incognito browsers.
   incognito_count_ = BrowserList::GetIncognitoBrowserCount();
 
-  UpdateBody();
-}
+  int main_message_id;
+  if (actions_.close && actions_.clear) {
+    main_message_id = IDS_IDLE_TIMEOUT_CLOSE_AND_CLEAR_BODY;
+  } else if (actions_.close) {
+    main_message_id = IDS_IDLE_TIMEOUT_CLOSE_BODY;
+  } else {
+    CHECK(actions_.clear);
+    main_message_id = IDS_IDLE_TIMEOUT_CLEAR_BODY;
+  }
+  main_label_->SetText(l10n_util::GetPluralStringFUTF16(
+      main_message_id, idle_threshold_.InMinutes()));
 
-void IdleDialogView::UpdateBody() {
-  base::TimeDelta delay = deadline_ - base::Time::Now();
-  main_label_->SetText(
-      l10n_util::GetPluralStringFUTF16(IDS_IDLE_TIMEOUT_BODY, minutes_));
-
-  if (incognito_count_ > 0) {
+  if (actions_.close && incognito_count_ > 0) {
     incognito_label_->SetText(l10n_util::GetPluralStringFUTF16(
         IDS_IDLE_TIMEOUT_INCOGNITO, incognito_count_));
     incognito_label_->SetVisible(true);
@@ -141,8 +160,17 @@ void IdleDialogView::UpdateBody() {
     incognito_label_->SetVisible(false);
   }
 
+  UpdateCountdown();
+}
+
+void IdleDialogView::UpdateCountdown() {
+  base::TimeDelta delay =
+      std::max(base::TimeDelta(), deadline_ - base::TimeTicks::Now());
+
+  int countdown_message_id = actions_.close ? IDS_IDLE_TIMEOUT_CLOSE_COUNTDOWN
+                                            : IDS_IDLE_TIMEOUT_CLEAR_COUNTDOWN;
   countdown_label_->SetText(l10n_util::GetPluralStringFUTF16(
-      IDS_IDLE_TIMEOUT_COUNTDOWN,
+      countdown_message_id,
       std::max(static_cast<int64_t>(0), delay.InSeconds())));
 }
 

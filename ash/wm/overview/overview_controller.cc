@@ -55,7 +55,7 @@ constexpr base::TimeDelta kOcclusionPauseDurationForEnd =
 bool IsSplitViewDividerDraggedOrAnimated() {
   SplitViewController* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  return split_view_controller->is_resizing() ||
+  return split_view_controller->is_resizing_with_divider() ||
          split_view_controller->IsDividerAnimating();
 }
 

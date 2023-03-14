@@ -89,14 +89,14 @@ FidoAuthenticator::PINUVDisposition
 FidoAuthenticator::PINUVDispositionForMakeCredential(
     const CtapMakeCredentialRequest& request,
     const FidoRequestHandlerBase::Observer* observer) {
-  return PINUVDisposition::kNoUV;
+  return PINUVDisposition::kUVNotSupportedNorRequired;
 }
 
 FidoAuthenticator::PINUVDisposition
 FidoAuthenticator::PINUVDispositionForGetAssertion(
     const CtapGetAssertionRequest& request,
     const FidoRequestHandlerBase::Observer* observer) {
-  return PINUVDisposition::kNoUV;
+  return PINUVDisposition::kUVNotSupportedNorRequired;
 }
 
 void FidoAuthenticator::GetCredentialsMetadata(
@@ -186,8 +186,8 @@ void FidoAuthenticator::Reset(ResetCallback callback) {
                           absl::nullopt);
 }
 
-FidoAuthenticator::Type FidoAuthenticator::GetType() const {
-  return Type::kOther;
+AuthenticatorType FidoAuthenticator::GetType() const {
+  return AuthenticatorType::kOther;
 }
 
 std::string FidoAuthenticator::GetDisplayName() const {

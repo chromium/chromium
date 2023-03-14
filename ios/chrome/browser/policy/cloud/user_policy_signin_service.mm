@@ -8,6 +8,7 @@
 #import "base/time/time.h"
 #import "components/policy/core/browser/cloud/user_policy_signin_service_util.h"
 #import "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
+#import "components/policy/core/common/policy_logger.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
@@ -81,7 +82,8 @@ void UserPolicySigninService::TryInitialize() {
   // If using a TestingProfile with no IdentityManager or
   // UserCloudPolicyManager, skip initialization.
   if (!policy_manager() || !identity_manager()) {
-    DVLOG(1) << "Skipping initialization for tests due to missing components.";
+    DVLOG_POLICY(1, POLICY_AUTH)
+        << "Skipping initialization for tests due to missing components.";
     return;
   }
 
@@ -89,6 +91,8 @@ void UserPolicySigninService::TryInitialize() {
       !CanApplyPolicies(/*check_for_refresh_token=*/false)) {
     // Clear existing user policies if the feature is disabled or if policies
     // can no longer be applied.
+    DVLOG_POLICY(3, POLICY_PROCESSING)
+        << "Clearing existing user policies as the feature is disabled";
     ShutdownUserCloudPolicyManager();
     return;
   }

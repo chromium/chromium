@@ -222,8 +222,8 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_INITIAL_SUBTITLE" desc="Subtitle text of the inital step view of Credential Provider Exention promo. [iOS only]">
         To easily get your saved passwords in your other apps, use Chrome for AutoFill
       </message>
-      <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_SUBTITLE" desc="Title text of the 'Learn More' step Credential Provider Exention promo. [iOS only]">
-        From your iPhone's Settings, open "Password Options" and select "Chrome"
+      <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_SUBTITLE_WITH_PH" desc="Title text of the 'Learn More' step Credential Provider Exention promo. [iOS only]">
+        From your device's Settings, open "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM">$1<ex>Password Options</ex></ph>" and select "Chrome"
       </message>
       <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_TITLE" desc="Title text of the 'Learn More' step Credential Provider Exention promo. [iOS only]">
         Choose Chrome for AutoFill
@@ -390,10 +390,10 @@ Things to consider:
         Chrome verified that <ph name="ISSUER">$1<ex>VeriSign</ex></ph> issued this website's certificate.
       </message>
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_MESSAGE" desc="The description that argues why push notification permission is necessary for price tracking.">
-          Chrome notifications are turned off in your device settings. You'll need to allow notifications first.
+          Chrome notifications are currently turned off in your device settings.
       </message>
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_TITLE" desc="The title for the UIAlert that redirects the user to iOS' application settings for Chrome.">
-          To Turn on `Track Price` Allow Chrome Notifications in Device Settings
+          Allow Chrome notifications to get price drop alerts
       </message>
       <message name="IDS_IOS_PRODUCT_NAME" desc="The Chrome application name">
         Google Chrome

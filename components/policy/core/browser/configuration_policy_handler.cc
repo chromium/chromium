@@ -285,7 +285,7 @@ bool StringMappingListPolicyHandler::Convert(const base::Value* input,
       }
     } else if (errors) {
       errors->AddError(policy_name(), IDS_POLICY_OUT_OF_RANGE_ERROR,
-                       PolicyErrorPath{index});
+                       entry.GetString(), PolicyErrorPath{index});
     }
   }
 

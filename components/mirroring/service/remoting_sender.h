@@ -22,13 +22,13 @@ namespace base {
 class TickClock;
 }  // namespace base
 
-namespace cast_streaming {
-class DecoderBufferReader;
-}  // namespace cast_streaming
-
 namespace media {
 class DecoderBuffer;
 }  // namespace media
+
+namespace media::cast {
+class DecoderBufferReader;
+}  // namespace media::cast
 
 namespace openscreen::cast {
 class Sender;
@@ -126,7 +126,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) RemotingSender final
   base::OnceClosure error_callback_;
 
   // Reads media::DecoderBuffer instances and passes them to OnFrameRead().
-  std::unique_ptr<cast_streaming::DecoderBufferReader> decoder_buffer_reader_;
+  std::unique_ptr<media::cast::DecoderBufferReader> decoder_buffer_reader_;
 
   // Mojo receiver for this instance. Implementation at the other end of the
   // message pipe uses the RemotingDataStreamSender remote to control when

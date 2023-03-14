@@ -21,9 +21,9 @@ ExtensionFunction::ResponseAction IdentityRemoveCachedAuthTokenFunction::Run() {
   if (Profile::FromBrowserContext(browser_context())->IsOffTheRecord())
     return RespondNow(Error(identity_constants::kOffTheRecord));
 
-  std::unique_ptr<api::identity::RemoveCachedAuthToken::Params> params(
-      api::identity::RemoveCachedAuthToken::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<api::identity::RemoveCachedAuthToken::Params> params =
+      api::identity::RemoveCachedAuthToken::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   IdentityAPI::GetFactoryInstance()
       ->Get(browser_context())
       ->token_cache()

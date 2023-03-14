@@ -17,10 +17,29 @@
 #include "components/services/screen_ai/public/cpp/utilities.h"
 #include "ui/accessibility/accessibility_features.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "base/cpu.h"
+#endif
+
 namespace {
 const int kScreenAICleanUpDelayInDays = 30;
-const char kMinExpectedVersion[] = "112.1";
+const char kMinExpectedVersion[] = "112.3";
 }
+
+namespace {
+
+bool IsDeviceCompatible() {
+  // Check if the CPU has the required instruction set to run the Screen AI
+  // library.
+#if BUILDFLAG(IS_LINUX)
+  if (!base::CPU().has_sse41()) {
+    return false;
+  }
+#endif
+  return true;
+}
+
+}  // namespace
 
 namespace screen_ai {
 
@@ -45,8 +64,9 @@ ScreenAIInstallState::~ScreenAIInstallState() = default;
 
 // static
 bool ScreenAIInstallState::ShouldInstall(PrefService* local_state) {
-  if (!features::IsScreenAIServiceNeeded())
+  if (!features::IsScreenAIServiceNeeded() || !IsDeviceCompatible()) {
     return false;
+  }
 
   // Remove scheduled time for deletion as feature is needed.
   local_state->SetTime(prefs::kScreenAIScheduledDeletionTimePrefName,
@@ -77,6 +97,11 @@ void ScreenAIInstallState::AddObserver(
     ScreenAIInstallState::Observer* observer) {
   observers_.push_back(observer);
   observer->StateChanged(state_);
+
+  // Adding an observer indicates that we need the component.
+  if (state_ == State::kNotDownloaded) {
+    DownloadComponent();
+  }
 }
 
 void ScreenAIInstallState::RemoveObserver(
@@ -97,16 +122,29 @@ void ScreenAIInstallState::SetComponentFolder(
   // session will continue using that and the new one will be used after next
   // Chrome restart. Otherwise the new component will be used when a service
   // request arrives as its path is stored in |component_binary_path_|.
-  if (state_ != State::kReady) {
-    SetState(State::kReady);
+  if (state_ != State::kReady && state_ != State::kDownloaded) {
+    SetState(State::kDownloaded);
   }
 }
 
 void ScreenAIInstallState::SetState(State state) {
-  DCHECK_NE(state_, state);
+  if (state == state_) {
+    // Failed and ready state can be repeated as they come from different
+    // profiles. The other state changes are controlled by singluar objects.
+    // TODO(crbug.com/1278249): While the case is highly unexpected, add more
+    // control logic if state is changed from failed to ready or vice versa.
+    DCHECK(state == State::kReady || state == State::kFailed);
+    return;
+  }
+
   state_ = state;
   for (ScreenAIInstallState::Observer* observer : observers_)
     observer->StateChanged(state_);
+}
+
+void ScreenAIInstallState::DownloadComponent() {
+  // TODO(crbug.com/1278249): Actually trigger download. Download is now
+  // triggered on browser start based on enabled flags.
 }
 
 void ScreenAIInstallState::SetDownloadProgress(double progress) {
@@ -115,8 +153,8 @@ void ScreenAIInstallState::SetDownloadProgress(double progress) {
     observer->DownloadProgressChanged(progress);
 }
 
-bool ScreenAIInstallState::IsComponentReady() {
-  return state_ == State::kReady;
+bool ScreenAIInstallState::IsComponentAvailable() {
+  return !get_component_binary_path().empty();
 }
 
 void ScreenAIInstallState::SetComponentReadyForTesting() {

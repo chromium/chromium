@@ -32,9 +32,12 @@ struct ModuleAddressCompare {
 
 }  // namespace
 
-std::string TransformModuleIDToBreakpadFormat(StringPiece module_id) {
+std::string TransformModuleIDToSymbolServerFormat(StringPiece module_id) {
   std::string mangled_id(module_id);
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // Android and Linux Chrome builds use the "breakpad" format to index their
+  // build id, so we transform the build id for these platforms. All other
+  // platforms keep their symbols indexed by the original build ID.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
   // Linux ELF module IDs are 160bit integers, which we need to mangle
   // down to 128bit integers to match the id that Breakpad outputs.
   // Example on version '66.0.3359.170' x64:

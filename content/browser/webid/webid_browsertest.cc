@@ -307,6 +307,24 @@ class WebIdIdPRegistryBrowserTest : public WebIdBrowserTest {
   }
 };
 
+class WebIdMDocsBrowserTest : public WebIdBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    std::vector<base::test::FeatureRef> features;
+    features.push_back(net::features::kSplitCacheByNetworkIsolationKey);
+    features.push_back(features::kWebIdentityMDocs);
+    scoped_feature_list_.InitWithFeatures(features, {});
+
+    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+  }
+
+  ShellFederatedPermissionContext* sharing_context() {
+    BrowserContext* context = shell()->web_contents()->GetBrowserContext();
+    return static_cast<ShellFederatedPermissionContext*>(
+        context->GetFederatedIdentityPermissionContext());
+  }
+};
+
 // Verify a standard login flow with IdP sign-in page.
 IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, FullLoginFlow) {
   idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
@@ -481,6 +499,33 @@ IN_PROC_BROWSER_TEST_F(WebIdIdpSigninStatusBrowserTest,
   value = sharing_context()->GetIdpSigninStatus(origin);
   ASSERT_TRUE(value.has_value());
   EXPECT_FALSE(*value);
+}
+
+// Test that an mdoc can be requested via a JS API.
+IN_PROC_BROWSER_TEST_F(WebIdMDocsBrowserTest, MDocs) {
+  GURL configURL = GURL(BaseIdpUrl());
+  idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
+
+  std::string script = R"(
+        (async () => {
+          const {token} = await navigator.credentials.get({
+            identity: {
+              providers: [{
+                configURL: "",
+                clientId: "",
+                mdoc: {
+                  documentType: "",
+                  readerPublicKey: "",
+                  requestedElements: []
+                }
+              }]
+            }
+          });
+          return token;
+        }) ()
+    )";
+
+  EXPECT_EQ("test-mdoc", EvalJs(shell(), script));
 }
 
 }  // namespace content

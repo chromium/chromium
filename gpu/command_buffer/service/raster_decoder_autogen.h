@@ -342,6 +342,7 @@ error::Error RasterDecoderImpl::HandleReadbackARGBImagePixelsINTERNALImmediate(
                        ReadbackARGBImagePixelsINTERNALImmediate*>(cmd_data);
   GLint src_x = static_cast<GLint>(c.src_x);
   GLint src_y = static_cast<GLint>(c.src_y);
+  GLint plane_index = static_cast<GLint>(c.plane_index);
   GLuint dst_width = static_cast<GLuint>(c.dst_width);
   GLuint dst_height = static_cast<GLuint>(c.dst_height);
   GLuint row_bytes = static_cast<GLuint>(c.row_bytes);
@@ -364,8 +365,8 @@ error::Error RasterDecoderImpl::HandleReadbackARGBImagePixelsINTERNALImmediate(
   if (mailbox == nullptr) {
     return error::kOutOfBounds;
   }
-  DoReadbackARGBImagePixelsINTERNAL(src_x, src_y, dst_width, dst_height,
-                                    row_bytes, dst_sk_color_type,
+  DoReadbackARGBImagePixelsINTERNAL(src_x, src_y, plane_index, dst_width,
+                                    dst_height, row_bytes, dst_sk_color_type,
                                     dst_sk_alpha_type, shm_id, shm_offset,
                                     color_space_offset, pixels_offset, mailbox);
   return error::kNoError;

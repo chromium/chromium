@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/inspector/thread_debugger_common_impl.h"
+#include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 
 #include <memory>
 
@@ -311,6 +312,12 @@ ThreadDebuggerCommonImpl::serializeToWebDriverValue(
     return std::make_unique<v8_inspector::WebDriverValue>(
         ToV8InspectorStringBuffer("window"));
   }
+
+  if (V8DOMWrapper::IsWrapper(isolate_, v8_value)) {
+    return std::make_unique<v8_inspector::WebDriverValue>(
+        ToV8InspectorStringBuffer("platformobject"));
+  }
+
   return nullptr;
 }
 

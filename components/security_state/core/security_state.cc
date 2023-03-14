@@ -66,18 +66,18 @@ SecurityLevel GetSecurityLevel(
     return DANGEROUS;
   }
 
-  // If the navigation was upgraded to HTTPS because of HTTPS-Only Mode, but did
-  // not succeed (either currently showing the HTTPS-Only Mode interstitial, or
-  // the navigation fell back to HTTP), set the security level to WARNING. The
-  // HTTPS-Only Mode interstitial warning is considered "less serious" than the
-  // general certificate error interstitials.
+  // If the navigation was upgraded to HTTPS because of HTTPS-First Mode, but
+  // did not succeed and is showing the HTTPS-First Mode interstitial, set the
+  // security level to WARNING. The HTTPS-First Mode interstitial warning is
+  // considered "less serious" than the general certificate error interstitials.
   //
   // This check must come before the checks for `connection_info_initialized`
-  // (because the HTTPS-Only Mode intersitital can trigger if the HTTPS version
-  // of the page does not commit) and certificate errors (because the HTTPS-Only
-  // Mode interstitial takes precedent if the certificate error occurred due to
-  // an upgraded main-frame navigation).
-  if (visible_security_state.is_https_only_mode_upgraded) {
+  // (because the HTTPS-First Mode intersitital can trigger if the HTTPS version
+  // of the page does not commit) and certificate errors (because the
+  // HTTPS-First Mode interstitial takes precedent if the certificate error
+  // occurred due to an upgraded main-frame navigation).
+  if (visible_security_state.is_https_only_mode_upgraded &&
+      visible_security_state.is_error_page) {
     return WARNING;
   }
 

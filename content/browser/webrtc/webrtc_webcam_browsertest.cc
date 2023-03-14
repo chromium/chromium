@@ -81,8 +81,7 @@ IN_PROC_BROWSER_TEST_F(UsingRealWebcam_WebRtcWebcamBrowserTest,
   }
 
   std::string result =
-      EvalJs(shell(), "getUserMediaAndReturnVideoDimensions({video: true})",
-             EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+      EvalJs(shell(), "getUserMediaAndReturnVideoDimensions({video: true})")
           .ExtractString();
 
   if (result == "640x480" || result == "480x640") {

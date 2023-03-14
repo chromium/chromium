@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">গড় (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">চালিয়ে যান</translation>
 <translation id="2364498172489649528">পাস করেছে</translation>
+<translation id="2367335866686097760">কীম্যাপ করার 'কী'</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">ফিডব্যাক রিপোর্ট পাঠান</translation>
 <translation id="2407209115954268704">সিম লক স্ট্যাটাস</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">অবতারের ছবি পরিবর্তন করা হয়েছে</translation>
 <translation id="3192947282887913208">অডিও ফাইল</translation>
 <translation id="3199982728237701504">ডকুমেন্ট ফিডার (দুই পিঠের)</translation>
+<translation id="3211671540163313381">কীম্যাপ করার ডি-প্যাড</translation>
 <translation id="3226405216343213872">স্ক্যানার খোঁজা হচ্ছে</translation>
+<translation id="3226657629376379887">লেআউট অ্যাকশন মেনু</translation>
 <translation id="3246869037381808805">১ দিনের বেশি পুরনো প্রিন্ট জব সরিয়ে দেওয়া হবে</translation>
 <translation id="3268178239013324452">প্রিন্ট করা যায়নি - প্রিন্টারের ঢাকনা ভাল করে বন্ধ করা হয়নি</translation>
 <translation id="3275729367986477355">অবতারের ছবি</translation>
@@ -253,6 +256,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">নিরাপত্তা</translation>
 <translation id="3435896845095436175">সক্ষম করুন</translation>
+<translation id="345256797477978759">স্ক্রিনের <ph name="DIRECTION" /> দিকের বড় জায়গায় উইন্ডো ডক করুন</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" />টি পৃষ্ঠার মধ্যে <ph name="PRINTED_PAGES" /> নম্বর পৃষ্ঠা প্রিন্ট করা হয়েছে।</translation>
 <translation id="345898999683440380">স্ক্যান করা পৃষ্ঠা <ph name="PAGE_NUM" />। <ph name="PERCENTAGE_VALUE" />% হয়ে গেছে।</translation>
 <translation id="3459509316159669723">প্রিন্ট হচ্ছে</translation>
@@ -273,12 +277,14 @@
 <translation id="3595596368722241419">ব্যাটারি পুরো চার্জ</translation>
 <translation id="3600339377155080675">স্ক্রিন শেয়ার করার বোতাম</translation>
 <translation id="3602290021589620013">প্রিভিউ</translation>
+<translation id="360282891121575443">শেয়ার করা অ্যালবামে থাকা ফটো অন্য ব্যবহারকারীরা আপডেট করতে পারবেন। দৈনিক পরিবর্তন করলে বর্তমানে অ্যালবামে না থাকা ওয়ালপেপার দেখা যেতে পারে।</translation>
 <translation id="3603829704940252505">অবতার</translation>
 <translation id="3604713164406837697">ওয়ালপেপার পরিবর্তন করুন</translation>
 <translation id="360565022852130722">দুর্বল WEP 802.1x প্রোটোকল ব্যবহার করে ওয়াই-ফাই নেটওয়ার্ক সুরক্ষিত করা হয়েছে</translation>
 <translation id="3606583719724308068">HTTPS ওয়েবসাইটে হাই লেটেন্সি</translation>
 <translation id="361575905210396100">মতামত জানানোর জন্য ধন্যবাদ</translation>
 <translation id="3632579075709132555">প্রাইভেসি স্ক্রিন টগল করার বোতাম</translation>
+<translation id="3639846061339007994">উপরে</translation>
 <translation id="3651050199673793219">তাপমাত্রার ইউনিট বেছে নিন</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> টেস্ট</translation>
 <translation id="370665806235115550">লোড হচ্ছে...</translation>
@@ -520,6 +526,7 @@
 <translation id="576835345334454681">ডিসপ্লের উজ্জ্বলতা বাড়ানোর বোতাম</translation>
 <translation id="57838592816432529">মিউট করুন</translation>
 <translation id="5784136236926853061">HTTP লেটেন্সি বেশি</translation>
+<translation id="5826644637650799838">আর্ট সম্পর্কে</translation>
 <translation id="5832805196449965646">একজন ব্যক্তিকে যোগ করুন</translation>
 <translation id="583281660410589416">অজানা</translation>
 <translation id="5843706793424741864">ফারেনহাইট</translation>
@@ -562,6 +569,7 @@
 <translation id="6117895505466548728"><ph name="TITLE" />, + আরও <ph name="NUMBER" />টি অ্যালবাম</translation>
 <translation id="6122191549521593678">অনলাইন</translation>
 <translation id="6122277663991249694">ChromeOS ইনপুট পদ্ধতি পরিষেবা</translation>
+<translation id="6136285399872347291">backspace</translation>
 <translation id="6137767437444130246">ব্যবহারকারীর সার্টিফিকেট</translation>
 <translation id="6146993107019042706">সম্পূর্ণ করতে, আপনার নতুন পাসওয়ার্ড লিখুন</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -609,6 +617,7 @@
 <translation id="650266656685499220">অ্যালবাম তৈরি করতে, Google Photos-এ যান</translation>
 <translation id="6516990319416533844">ব্যাটারি চার্জিং রেট পরীক্ষা করার জন্য, কিছুক্ষণের জন্য আপনার ডিভাইসের ব্যাটারি সম্পূর্ণ শেষ হতে দিন</translation>
 <translation id="6517239166834772319">ঘুরে দেখুন</translation>
+<translation id="6526200165918397681">ওয়ালপেপারের সাথে মেলান</translation>
 <translation id="6527081081771465939">অজানা ওয়াই-ফাই সিকিউরিটি প্রোটোকল</translation>
 <translation id="6535178685492749208">আপনি অফলাইন আছেন। মতামত পরে পাঠানো হবে।</translation>
 <translation id="65587193855025101">ফ্ল্যাটবেড</translation>
@@ -628,6 +637,7 @@
 <translation id="6657585470893396449">পাসওয়ার্ড</translation>
 <translation id="6659594942844771486">ট্যাব</translation>
 <translation id="6692996468359469499">আপনার বেছে নেওয়া প্রশ্ন সম্পর্কিত উত্তর পান</translation>
+<translation id="6698459586333070823">অন্য ব্যবহারকারীরা শেয়ার করা অ্যালবাম আপডেট করতে পারবেন</translation>
 <translation id="6704062477274546131">DNS রেজোলিউশন</translation>
 <translation id="6723839937902243910">পাওয়ার</translation>
 <translation id="6723847290197874913">কীবোর্ড ব্যাকলাইট</translation>
@@ -664,6 +674,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">পাওয়া যায়নি - অনুমোদন পাওয়া যায়নি</translation>
 <translation id="7103252855940681301"><ph name="COUNT" />টি নামযুক্ত<ph name="NAME" />-এর মধ্যে <ph name="INDEX" /> নম্বর ডিভাইস।</translation>
+<translation id="7108668606237948702">লিখুন</translation>
 <translation id="7130438335435247835">অ্যাক্সেস পয়েন্ট নাম (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{নেম-সার্ভার}one{নেম সার্ভার}other{নেম সার্ভার}}</translation>
 <translation id="7143207342074048698">সংযুক্ত হচ্ছে</translation>
@@ -673,6 +684,7 @@
 <translation id="7155171745945906037">ক্যামেরা বা ফাইল থেকে বিদ্যমান ফটো</translation>
 <translation id="7162487448488904999">গ্যালারি</translation>
 <translation id="7170236477717446850">প্রোফাইল ছবি</translation>
+<translation id="7171919371520438592">স্ক্রিনের <ph name="DIRECTION" /> দিকের ছোট জায়গায় উইন্ডো ডক করুন</translation>
 <translation id="7172721935181587524">১টি ছবি</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" />-এর মাধ্যমে এই <ph name="DEVICE_TYPE" /> ম্যানেজ করা হয়। অ্যাডমিনিস্ট্রেটর অন্য জায়গা থেকে ডিভাইসটি কনফিগার করতে পারেন।</translation>
 <translation id="7180611975245234373">রিফ্রেশ করুন</translation>
@@ -748,6 +760,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">পরিষেবা প্রদানকারীর ধরন</translation>
 <translation id="7882501334836096755">সর্বজনীন 'কী'</translation>
+<translation id="78957024357676568">বাঁ</translation>
 <translation id="7915220255123750251">নেটওয়ার্ক APN সেটিংস ম্যানেজ করুন। APN একটি সেলুলার নেটওয়ার্ক এবং ইন্টারনেটের মধ্যে কানেকশন তৈরি করে।</translation>
 <translation id="7936303884198020182">ডোমেন নেম সার্ভার খুঁজে পাওয়া যায়নি</translation>
 <translation id="7942349550061667556">লাল</translation>
@@ -776,9 +789,11 @@
 <translation id="8183974620058026102">অ্যাটাচ করুন</translation>
 <translation id="8206859287963243715">সেলুলার</translation>
 <translation id="8208861521865154048">বিশেষ সুবিধা</translation>
+<translation id="8210733748736414123">নিচে</translation>
 <translation id="8226628635270268143">আপনার পছন্দের ফটো ও অ্যালবাম বাছুন</translation>
 <translation id="8227119283605456246">ফাইল সংযুক্ত করুন</translation>
 <translation id="8230672074305416752">ডিফল্ট নেটওয়ার্ক গেটওয়েতে পিং করা যায়নি</translation>
+<translation id="8242426110754782860">এগিয়ে যান</translation>
 <translation id="8246209727385807362">অজানা পরিষেবা প্রদানকারী</translation>
 <translation id="827422111966801947">নীল</translation>
 <translation id="8286154143153872371">ওয়ালপেপার দেখার জন্য কোনও নেটওয়ার্কে কানেক্ট করে পৃষ্ঠা আবার লোড করুন।</translation>
@@ -789,9 +804,11 @@
 <translation id="8318753676953949627">কোন ছবি নেই</translation>
 <translation id="8336739000755212683">ডিভাইস অ্যাকাউন্টের ছবিটি পরিবর্তন করুন</translation>
 <translation id="8347227221149377169">প্রিন্ট করার কাজগুলি</translation>
+<translation id="8351855506390808906">কীম্যাপ করার টাচ পয়েন্ট</translation>
 <translation id="8352772353338965963">একাধিক সাইন-ইন-এ একটি অ্যাকাউন্ট যোগ করুন৷ সমস্ত সাইন-ইন থাকা অ্যাকাউন্টগুলি কোনো পাসওয়ার্ড ছাড়াই অ্যাক্সেস করা যাবে, তাই এই বৈশিষ্ট্যটি শুধুমাত্র বিশ্বস্ত অ্যাকাউন্টগুলির সাথে ব্যবহার করা উচিৎ৷</translation>
 <translation id="8364946094152050673">ডোমেন নেম সার্ভার খালি রয়েছে</translation>
 <translation id="8372477600026034341">এক্সট্রা হোস্ট</translation>
+<translation id="8380114448424469341">স্ক্রিনের <ph name="DIRECTION" /> দিকের অর্ধেক জায়গায় উইন্ডো ডক করুন</translation>
 <translation id="8395584934117017006">এই <ph name="DEVICE_TYPE" /> এন্টারপ্রাইজ ম্যানেজ করে</translation>
 <translation id="8398927464629426868">বর্তমানে যে হারে ডিভাইসটি চার্জ হচ্ছে বা এটির চার্জ শেষ হচ্ছে</translation>
 <translation id="8410244574650205435">অটোমেটিক শনাক্ত করা হয়েছে</translation>
@@ -856,6 +873,7 @@
 <translation id="8930622219860340959">ওয়্যারলেস</translation>
 <translation id="8936793075252196307">ক্লায়েন্ট IP অ্যাড্রেস</translation>
 <translation id="894617464444543719">ডিভাইস একটি ফোন।</translation>
+<translation id="8957423540740801332">ডান</translation>
 <translation id="8968751544471797276">চর্জিং রেট</translation>
 <translation id="8970109610781093811">আবার চালান</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -883,6 +901,7 @@
 <translation id="9137526406337347448">Google পরিসেবাসমূহ</translation>
 <translation id="9138630967333032450">বাঁদিকের shift কী</translation>
 <translation id="9149391708638971077">মেমরি টেস্ট করুন</translation>
+<translation id="9161276708550942948">space</translation>
 <translation id="9173638680043580060">এক মিনিটেরও কম সময় বাকি আছে</translation>
 <translation id="917720651393141712">পরীক্ষা করুন</translation>
 <translation id="9188992814426075118">আপনার কীবোর্ডের রঙ নিজে থেকে আপনার ওয়ালপেপারের রঙয়ের সাথে মিলতে পারে</translation>

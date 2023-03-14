@@ -13,9 +13,9 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
-#include "base/threading/thread_local.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_gl_api_implementation.h"
@@ -32,11 +32,10 @@
 namespace gl {
 
 namespace {
-base::LazyInstance<base::ThreadLocalPointer<GLContext>>::Leaky
-    current_context_ = LAZY_INSTANCE_INITIALIZER;
 
-base::LazyInstance<base::ThreadLocalPointer<GLContext>>::Leaky
-    current_real_context_ = LAZY_INSTANCE_INITIALIZER;
+ABSL_CONST_INIT thread_local GLContext* current_context = nullptr;
+ABSL_CONST_INIT thread_local GLContext* current_real_context = nullptr;
+
 }  // namespace
 
 // static
@@ -191,6 +190,17 @@ GLDisplayEGL* GLContext::GetGLDisplayEGL() {
 #if BUILDFLAG(IS_APPLE)
 constexpr uint64_t kInvalidFenceId = 0;
 
+void GLContext::AddMetalSharedEventsForBackpressure(
+    std::vector<std::unique_ptr<gpu::BackpressureMetalSharedEvent>> events) {
+  // Only enqueue events if fences are supported since they are only consumed
+  // along with fences.
+  if (gl::GLFence::IsSupported()) {
+    for (auto& e : events) {
+      next_backpressure_events_.push_back(std::move(e));
+    }
+  }
+}
+
 uint64_t GLContext::BackpressureFenceCreate() {
   TRACE_EVENT0("gpu", "GLContext::BackpressureFenceCreate");
 
@@ -200,7 +210,8 @@ uint64_t GLContext::BackpressureFenceCreate() {
 
   if (gl::GLFence::IsSupported()) {
     next_backpressure_fence_ += 1;
-    backpressure_fences_[next_backpressure_fence_] = GLFence::Create();
+    backpressure_fences_[next_backpressure_fence_] = {
+        GLFence::Create(), std::move(next_backpressure_events_)};
     return next_backpressure_fence_;
   }
   glFinish();
@@ -217,8 +228,26 @@ void GLContext::BackpressureFenceWait(uint64_t fence_id) {
   auto found = backpressure_fences_.find(fence_id);
   if (found == backpressure_fences_.end())
     return;
-  std::unique_ptr<GLFence> fence = std::move(found->second);
+  auto [fence, events] = std::move(found->second);
   backpressure_fences_.erase(found);
+
+  // Poll for all Metal shared events to be signaled with a 1ms delay.
+  bool events_complete = false;
+  while (!events_complete) {
+    events_complete = true;
+    {
+      TRACE_EVENT0("gpu", "BackpressureMetalSharedEvent::HasCompleted");
+      for (const auto& e : events) {
+        if (!e->HasCompleted()) {
+          events_complete = false;
+          break;
+        }
+      }
+    }
+    if (!events_complete) {
+      base::PlatformThread::Sleep(base::Milliseconds(1));
+    }
+  }
 
   // While we could call GLFence::ClientWait, this performs a busy wait on
   // Mac, leading to high CPU usage. Instead we poll with a 1ms delay. This
@@ -311,11 +340,11 @@ bool GLContext::LosesAllContextsOnContextLost() {
 }
 
 GLContext* GLContext::GetCurrent() {
-  return current_context_.Pointer()->Get();
+  return current_context;
 }
 
 GLContext* GLContext::GetRealCurrent() {
-  return current_real_context_.Pointer()->Get();
+  return current_real_context;
 }
 
 std::unique_ptr<gl::GLVersionInfo> GLContext::GenerateGLVersionInfo() {
@@ -324,7 +353,7 @@ std::unique_ptr<gl::GLVersionInfo> GLContext::GenerateGLVersionInfo() {
 }
 
 void GLContext::SetCurrent(GLSurface* surface) {
-  current_context_.Pointer()->Set(surface ? this : nullptr);
+  current_context = surface ? this : nullptr;
   if (surface) {
     surface->SetCurrent();
   } else {
@@ -480,13 +509,14 @@ const gfx::ExtensionSet& GLContextReal::GetExtensions() {
 }
 
 GLContextReal::~GLContextReal() {
-  if (GetRealCurrent() == this)
-    current_real_context_.Pointer()->Set(nullptr);
+  if (GetRealCurrent() == this) {
+    current_real_context = nullptr;
+  }
 }
 
 void GLContextReal::SetCurrent(GLSurface* surface) {
   GLContext::SetCurrent(surface);
-  current_real_context_.Pointer()->Set(surface ? this : nullptr);
+  current_real_context = surface ? this : nullptr;
 }
 
 scoped_refptr<GLContext> InitializeGLContext(scoped_refptr<GLContext> context,

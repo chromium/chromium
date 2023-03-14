@@ -94,18 +94,18 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   void BindFramebufferToTexture(
       const AggregatedRenderPassId render_pass_id) override;
   void SetScissorTestRect(const gfx::Rect& scissor_rect) override;
-  void PrepareSurfaceForPass(SurfaceInitializationMode initialization_mode,
-                             const gfx::Rect& render_pass_scissor) override;
+  void BeginDrawingRenderPass(
+      bool needs_clear,
+      const gfx::Rect& render_pass_update_rect) override;
   void DoDrawQuad(const DrawQuad* quad, const gfx::QuadF* draw_region) override;
+  void FinishDrawingRenderPass() override;
   void BeginDrawingFrame() override;
   void FinishDrawingFrame() override;
   bool FlippedFramebuffer() const override;
-  void EnsureScissorTestEnabled() override;
   void EnsureScissorTestDisabled() override;
   void CopyDrawnRenderPass(const copy_output::RenderPassGeometry& geometry,
                            std::unique_ptr<CopyOutputRequest> request) override;
   void DidChangeVisibility() override;
-  void FinishDrawingQuadList() override;
   void GenerateMipmap() override;
   void SetDelegatedInkPointRendererSkiaForTest(
       std::unique_ptr<DelegatedInkPointRendererSkia> renderer) override;
@@ -155,7 +155,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   // Skia in a consistent manner.
   DrawQuadParams CalculateDrawQuadParams(
       const gfx::AxisTransform2d& target_to_device,
-      const gfx::Rect* scissor_rect,
+      const absl::optional<gfx::Rect>& scissor_rect,
       const DrawQuad* quad,
       const gfx::QuadF* draw_region) const;
 
@@ -303,7 +303,9 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   // Sets up callbacks for frame resource fences and passes them to
   // SkiaOutputSurface by calling EndPaint on that. If |failed|,
   // SkiaOutputSurface::EndPaint will be called with null callbacks.
-  void EndPaint(bool failed);
+  // |is_overlay| should be true for render passes that are scheduled as
+  // overlays.
+  void EndPaint(const gfx::Rect& update_rect, bool failed, bool is_overlay);
 
   DisplayResourceProviderSkia* resource_provider() {
     return static_cast<DisplayResourceProviderSkia*>(resource_provider_);
@@ -346,8 +348,16 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   scoped_refptr<FrameResourceReleaseFence> current_release_fence_;
 
   bool disable_picture_quad_image_filtering_ = false;
-  bool is_scissor_enabled_ = false;
-  gfx::Rect scissor_rect_;
+
+  // The rect for the current render pass containing pixels that we intend to
+  // update this frame.
+  // In the current render pass' backing's buffer space, contained by
+  // |current_viewport_rect_|.
+  gfx::Rect current_render_pass_update_rect_;
+
+  // The scissor rect for the current draw. In the same coordinate space as and
+  // contained by |current_render_pass_update_rect_|.
+  absl::optional<gfx::Rect> scissor_rect_;
 
   gfx::Rect swap_buffer_rect_;
 

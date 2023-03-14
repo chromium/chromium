@@ -32,6 +32,6 @@ build_webui_tests("build") {
   ts_deps = [
     "//chrome/browser/resources/tab_search:build_ts",
     "//ui/webui/resources/js:build_ts",
-    "//ui/webui/resources/mojo:library",
+    "//ui/webui/resources/mojo:build_ts",
   ]
 }

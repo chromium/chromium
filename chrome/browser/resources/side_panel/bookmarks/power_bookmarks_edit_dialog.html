@@ -1,4 +1,4 @@
-<style include="cr-icons cr-shared-style">
+<style include="cr-icons cr-shared-style sp-shared-style">
   :host {
     --cr-dialog-body-padding-horizontal: 16px;
     --cr-dialog-title-slot-padding-start: 16px;
@@ -37,24 +37,66 @@
     border: 1px solid var(--scrollable-border-color);
     border-radius: 2px;
     height: 160px;
+    overflow: auto;
   }
 
   .folder-title {
     width: 100%;
   }
+
+  .input-label {
+    align-items: center;
+    display: flex;
+    height: 27px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .input-row {
+    align-items: center;
+    display: grid;
+    grid-template-columns: 52px auto;
+  }
+
+  .input-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .name-input {
+    --cr-input-error-display: none;
+  }
 </style>
 
 <cr-dialog id="dialog">
-  <div slot="title">$i18n{editMoveFolderTo}</div>
+  <div slot="title">[[getDialogTitle_(moveOnly_)]]</div>
   <div slot="body" class="body">
+    <div class="input-section" hidden="[[moveOnly_]]">
+      <div class="input-row name-input">
+        <span class="input-label" aria-hidden="true">$i18n{editName}</span>
+        <cr-input class="sp-labelless-input" id="nameInput"
+            value="[[getBookmarkName_(selectedBookmarks_.*)]]"
+            aria-label="$i18n{editName}"></cr-input>
+      </div>
+      <div class="input-row">
+        <span class="input-label" aria-hidden="true">$i18n{editUrl}</span>
+        <cr-input class="sp-labelless-input" id="urlInput" type="url"
+            value="[[getBookmarkUrl_(selectedBookmarks_.*)]]"
+            error-message="$i18n{editInvalidUrl}"
+            aria-label="$i18n{editUrl}"></cr-input>
+      </div>
+    </div>
     <sp-heading hide-back-button="[[!activeFolderPath_.length]]"
-        back-button-label="TODO"
+        back-button-label="[[getBackButtonLabel_(activeFolderPath_.*)]]"
         on-back-button-click="onBack_">
       <h2 slot="heading">[[getActiveFolderTitle_(activeFolderPath_.*)]]</h2>
     </sp-heading>
     <div id="folder-selector" class="folder-selector">
       <iron-list scroll-target="folder-selector"
-          items="[[getShownFolders_(activeFolderPath_.*, topLevelBookmarks_)]]">
+          items="[[getShownFolders_(activeFolderPath_.*, topLevelBookmarks_,
+                   newFolders_.*)]]">
         <template>
           <div class="folder-row"
               selected$="[[isSelected_(item, selectedFolder_)]]"
@@ -64,9 +106,10 @@
             <div class="folder-title">
               [[item.title]]
             </div>
-            <template is="dom-if" if="[[hasChildFolders_(item)]]" restamp>
+            <template is="dom-if"
+                if="[[hasChildFolders_(item, newFolders_.*)]]" restamp>
               <cr-icon-button class="subpage-arrow"
-                  aria-label="TODO"
+                  aria-label="[[getForwardButtonLabel_(item)]]"
                   on-click="onForward_">
               </cr-icon-button>
             </template>
@@ -76,7 +119,9 @@
     </div>
   </div>
   <div class="button-row" slot="button-container">
-    <cr-button on-click="onNewFolder_">$i18n{editNewFolder}</cr-button>
+    <cr-button id="newFolderButton" on-click="onNewFolder_">
+      $i18n{editNewFolder}
+    </cr-button>
     <div>
       <cr-button on-click="onCancel_">$i18n{editCancel}</cr-button>
       <cr-button class="action-button cr-button-gap" on-click="onSave_">

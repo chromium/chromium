@@ -5,6 +5,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/notreached.h"
+#import "ios/chrome/browser/find_in_page/features.h"
 #import "ios/public/provider/chrome/browser/find_in_page/find_in_page_api.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -15,7 +16,8 @@ namespace ios {
 namespace provider {
 
 bool IsNativeFindInPageWithSystemFindPanel() {
-  return false;
+  // Chromium only supports this variant of Native Find in Page.
+  return IsNativeFindInPageEnabled();
 }
 
 bool IsNativeFindInPageWithChromeFindBar() {
@@ -23,6 +25,11 @@ bool IsNativeFindInPageWithChromeFindBar() {
 }
 
 bool IsNativeFindInPageEnabled() {
+  // If for iOS <16.1.1, Native Find in Page is unavailable.
+  if (@available(iOS 16.1.1, *)) {
+    return base::FeatureList::IsEnabled(kNativeFindInPage);
+  }
+
   return false;
 }
 

@@ -76,8 +76,8 @@ TEST(ExtensionOmniboxTest, DescriptionStylesSimple) {
   styles_expected.push_back(ACMatchClassification(6, kDim));
   styles_expected.push_back(ACMatchClassification(9, kNone));
 
-  std::unique_ptr<SendSuggestions::Params> params(
-      SendSuggestions::Params::Create(list));
+  absl::optional<SendSuggestions::Params> params =
+      SendSuggestions::Params::Create(list);
   EXPECT_TRUE(params);
   ASSERT_FALSE(params->suggest_results.empty());
   CompareClassification(styles_expected, StyleTypesToACMatchClassifications(
@@ -108,8 +108,8 @@ TEST(ExtensionOmniboxTest, DescriptionStylesSimple) {
                       .Build())
           .Build();
 
-  std::unique_ptr<SendSuggestions::Params> swapped_params(
-      SendSuggestions::Params::Create(swap_list));
+  absl::optional<SendSuggestions::Params> swapped_params =
+      SendSuggestions::Params::Create(swap_list);
   EXPECT_TRUE(swapped_params);
   ASSERT_FALSE(swapped_params->suggest_results.empty());
   CompareClassification(
@@ -172,8 +172,8 @@ TEST(ExtensionOmniboxTest, DescriptionStylesCombine) {
   styles_expected.push_back(ACMatchClassification(5, kNone));
   styles_expected.push_back(ACMatchClassification(9, kMatch | kDim));
 
-  std::unique_ptr<SendSuggestions::Params> params(
-      SendSuggestions::Params::Create(list));
+  absl::optional<SendSuggestions::Params> params =
+      SendSuggestions::Params::Create(list);
   EXPECT_TRUE(params);
   ASSERT_FALSE(params->suggest_results.empty());
   CompareClassification(styles_expected, StyleTypesToACMatchClassifications(
@@ -220,8 +220,8 @@ TEST(ExtensionOmniboxTest, DescriptionStylesCombine) {
                       .Build())
           .Build();
 
-  std::unique_ptr<SendSuggestions::Params> moved_params(
-      SendSuggestions::Params::Create(moved_list));
+  absl::optional<SendSuggestions::Params> moved_params =
+      SendSuggestions::Params::Create(moved_list);
   EXPECT_TRUE(moved_params);
   ASSERT_FALSE(moved_params->suggest_results.empty());
   CompareClassification(styles_expected, StyleTypesToACMatchClassifications(
@@ -279,8 +279,8 @@ TEST(ExtensionOmniboxTest, DescriptionStylesCombine2) {
   styles_expected.push_back(ACMatchClassification(0, kUrl | kMatch | kDim));
   styles_expected.push_back(ACMatchClassification(5, kNone));
 
-  std::unique_ptr<SendSuggestions::Params> params(
-      SendSuggestions::Params::Create(list));
+  absl::optional<SendSuggestions::Params> params =
+      SendSuggestions::Params::Create(list);
   EXPECT_TRUE(params);
   ASSERT_FALSE(params->suggest_results.empty());
   CompareClassification(styles_expected, StyleTypesToACMatchClassifications(
@@ -331,8 +331,8 @@ TEST(ExtensionOmniboxTest, DefaultSuggestResult) {
                       .Build())
           .Build();
 
-  std::unique_ptr<SetDefaultSuggestion::Params> params(
-      SetDefaultSuggestion::Params::Create(list));
+  absl::optional<SetDefaultSuggestion::Params> params =
+      SetDefaultSuggestion::Params::Create(list);
   EXPECT_TRUE(params);
 }
 

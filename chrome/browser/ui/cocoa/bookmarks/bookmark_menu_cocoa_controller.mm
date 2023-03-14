@@ -149,7 +149,6 @@ void OpenBookmarkByGUID(WindowOpenDisposition disposition,
 }  // namespace
 
 @implementation BookmarkMenuCocoaController {
- @private
   raw_ptr<BookmarkMenuBridge> _bridge;  // Weak. Owns |self|.
 }
 

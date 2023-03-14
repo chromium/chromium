@@ -1849,14 +1849,16 @@ class BindUnretainedDanglingInternalFixture : public BindTest {
   // root so the test code doesn't interfere with various counters. Following
   // methods are helpers for managing allocations inside the separate allocator
   // root.
-  template <typename T, typename... Args>
-  raw_ptr<T> Alloc(Args&&... args) {
+  template <typename T,
+            RawPtrTraits Traits = RawPtrTraits::kEmpty,
+            typename... Args>
+  raw_ptr<T, Traits> Alloc(Args&&... args) {
     void* ptr = allocator_.root()->Alloc(sizeof(T), "");
     T* p = new (reinterpret_cast<T*>(ptr)) T(std::forward<Args>(args)...);
-    return raw_ptr<T>(p);
+    return raw_ptr<T, Traits>(p);
   }
-  template <typename T>
-  void Free(raw_ptr<T>& ptr) {
+  template <typename T, RawPtrTraits Traits>
+  void Free(raw_ptr<T, Traits>& ptr) {
     allocator_.root()->Free(ptr);
   }
 
@@ -1883,6 +1885,11 @@ bool MayBeDanglingCheckFn(MayBeDangling<int> p) {
   return p != nullptr;
 }
 
+bool MayBeDanglingAndDummyTraitCheckFn(
+    MayBeDangling<int, RawPtrTraits::kDummyForTest> p) {
+  return p != nullptr;
+}
+
 class ClassWithWeakPtr {
  public:
   ClassWithWeakPtr() = default;
@@ -1904,6 +1911,25 @@ TEST_F(BindUnretainedDanglingTest, UnretainedNoDanglingPtr) {
 TEST_F(BindUnretainedDanglingTest, UnsafeDanglingPtr) {
   raw_ptr<int> p = Alloc<int>(3);
   auto callback = base::BindOnce(MayBeDanglingCheckFn, base::UnsafeDangling(p));
+  Free(p);
+  EXPECT_EQ(std::move(callback).Run(), true);
+}
+
+TEST_F(BindUnretainedDanglingTest, UnsafeDanglingPtrWithDummyTrait) {
+  raw_ptr<int, RawPtrTraits::kDummyForTest> p =
+      Alloc<int, RawPtrTraits::kDummyForTest>(3);
+  auto callback = base::BindOnce(MayBeDanglingAndDummyTraitCheckFn,
+                                 base::UnsafeDangling(p));
+  Free(p);
+  EXPECT_EQ(std::move(callback).Run(), true);
+}
+
+TEST_F(BindUnretainedDanglingTest,
+       UnsafeDanglingPtrWithDummyAndDanglingTraits) {
+  raw_ptr<int, RawPtrTraits::kDummyForTest | RawPtrTraits::kMayDangle> p =
+      Alloc<int, RawPtrTraits::kDummyForTest | RawPtrTraits::kMayDangle>(3);
+  auto callback = base::BindOnce(MayBeDanglingAndDummyTraitCheckFn,
+                                 base::UnsafeDangling(p));
   Free(p);
   EXPECT_EQ(std::move(callback).Run(), true);
 }

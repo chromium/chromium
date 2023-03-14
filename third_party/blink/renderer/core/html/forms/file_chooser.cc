@@ -110,34 +110,11 @@ void FileChooser::EnumerateChosenDirectory() {
 }
 
 void FileChooser::DidChooseFiles(mojom::blink::FileChooserResultPtr result) {
-  // TODO(tkent): If |result| is nullptr, we should not clear the
+  // TODO(crbug.com/1418799): If |result| is nullptr, we should not clear the
   // already-selected files in <input type=file> like other browsers.
   FileChooserFileInfoList files;
   if (result)
     files = std::move(result->files);
-  // FIXME: This is inelegant. We should not be looking at params_ here.
-  if (params_->selected_files.size() == files.size()) {
-    bool was_changed = false;
-    for (unsigned i = 0; i < files.size(); ++i) {
-      // TODO(tkent): If a file system URL was already selected, and new
-      // chooser session selects the same one, a |change| event is
-      // dispatched unexpectedly.
-      // |selected_files| is created by FileList::
-      // PathsForUserVisibleFiles(), and it returns File::name() for
-      // file system URLs. Comparing File::name() doesn't make
-      // sense. We should compare file system URLs.
-      if (!files[i]->is_native_file() ||
-          params_->selected_files[i] !=
-              files[i]->get_native_file()->file_path) {
-        was_changed = true;
-        break;
-      }
-    }
-    if (!was_changed) {
-      DidCloseChooser();
-      return;
-    }
-  }
 
   if (client_) {
     client_->FilesChosen(std::move(files),

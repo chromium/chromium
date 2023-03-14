@@ -227,20 +227,18 @@ void PasswordManagerPorter::ExportDone() {
   exporter_.reset();
 }
 
-void PasswordManagerPorter::ImportDone(
-    const password_manager::ImportResults& results) {
-  DCHECK(!import_results_callback_.is_null());
-  std::move(import_results_callback_).Run(std::move(results));
+void PasswordManagerPorter::ImportDone() {
   importer_.reset();
 }
 
 void PasswordManagerPorter::ImportPasswordsFromPath(
     const base::FilePath& path) {
+  DCHECK(!import_results_callback_.is_null());
   if (!importer_) {
     importer_ =
         std::make_unique<password_manager::PasswordImporter>(presenter_);
   }
-  importer_->Import(path, to_store_,
+  importer_->Import(path, to_store_, std::move(import_results_callback_),
                     base::BindOnce(&PasswordManagerPorter::ImportDone,
                                    weak_ptr_factory_.GetWeakPtr()));
 }

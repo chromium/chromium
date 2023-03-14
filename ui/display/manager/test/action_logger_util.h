@@ -40,6 +40,10 @@ std::string GetSetHDCPStateAction(int64_t display_id,
                                   HDCPState state,
                                   ContentProtectionMethod protection_method);
 
+// Returns a string describing a TestNativeDisplayDelegate::SetHdcpKeyProp()
+// call.
+std::string GetSetHdcpKeyPropAction(int64_t display_id, bool success);
+
 // Returns a string describing a TestNativeDisplayDelegate::SetColorMatrix()
 // call.
 std::string SetColorMatrixAction(int64_t display_id,

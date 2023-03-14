@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -128,6 +129,15 @@ void FakeAmbientBackendControllerImpl::FetchScreenUpdateInfo(
       FROM_HERE, base::BindOnce(std::move(callback), update));
 }
 
+void FakeAmbientBackendControllerImpl::FetchPreviewImages(
+    const gfx::Size& preview_size,
+    OnPreviewImagesFetchedCallback callback) {
+  std::vector<GURL> urls = {GURL(kFakeUrl)};
+  // Pretend to respond asynchronously.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), urls));
+}
+
 void FakeAmbientBackendControllerImpl::GetSettings(
     GetSettingsCallback callback) {
   // Pretend to respond asynchronously.
@@ -172,7 +182,7 @@ void FakeAmbientBackendControllerImpl::GetGooglePhotosAlbumsPreview(
     int preview_width,
     int preview_height,
     int num_previews,
-    GetGooglePhotosAlbumsPreviewCallback callback) {
+    OnPreviewImagesFetchedCallback callback) {
   std::move(callback).Run({GURL("http://example.com/0")});
 }
 

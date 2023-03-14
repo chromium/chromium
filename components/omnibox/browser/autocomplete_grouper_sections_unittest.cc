@@ -52,6 +52,39 @@ TEST(AutocompleteGrouperSectionsTest, Section) {
   test({CreateMatch(1, omnibox::GROUP_SEARCH)}, {});
 }
 
+TEST(AutocompleteGrouperGroupsTest, SortingUsesProperComparator) {
+  class TestZpsSection : public ZpsSection {
+   public:
+    // Up to 2 items of the following types.
+    explicit TestZpsSection(omnibox::GroupConfigMap& group_configs)
+        : ZpsSection(2,
+                     {{1, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX},
+                      {1, omnibox::GROUP_MOBILE_CLIPBOARD},
+                      {1, omnibox::GROUP_MOBILE_MOST_VISITED},
+                      {1, omnibox::GROUP_VISITED_DOC_RELATED},
+                      {1, omnibox::GROUP_RELATED_QUERIES}},
+                     group_configs) {}
+  };
+
+  auto test = [](ACMatches matches, std::vector<int> expected_relevances) {
+    PSections sections;
+    omnibox::GroupConfigMap group_configs;
+    sections.push_back(std::make_unique<TestZpsSection>(group_configs));
+    auto out_matches = Section::GroupMatches(std::move(sections), matches);
+    VerifyMatches(out_matches, expected_relevances);
+  };
+
+  {
+    SCOPED_TRACE("Confirm appropriate comparator is used to sort suggestions");
+    test({CreateMatch(1, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX),
+          CreateMatch(2, omnibox::GROUP_MOBILE_CLIPBOARD),
+          CreateMatch(3, omnibox::GROUP_MOBILE_MOST_VISITED),
+          CreateMatch(4, omnibox::GROUP_VISITED_DOC_RELATED),
+          CreateMatch(5, omnibox::GROUP_RELATED_QUERIES)},
+         {1, 2});
+  }
+}
+
 // Tests the groups, limits, and rules for the ZPS section.
 TEST(AutocompleteGrouperSectionsTest, ZpsSection) {
   auto test = [](ACMatches matches, std::vector<int> expected_relevances) {
@@ -441,5 +474,202 @@ TEST(AutocompleteGrouperSectionsTest, DesktopNonZpsSection) {
             CreateMatch(83, omnibox::GROUP_SEARCH),
         },
         {100, 99, 98, 97, 96, 95, 94, 93, 92, 91});
+  }
+}
+
+// Tests the groups, limits, and rules for the Android ZPS section.
+TEST(AutocompleteGrouperSectionsTest, AndroidZpsSection) {
+  auto test = [](ACMatches matches, std::vector<int> expected_relevances) {
+    PSections sections;
+    omnibox::GroupConfigMap group_configs;
+    sections.push_back(std::make_unique<AndroidZpsSection>(group_configs));
+    auto out_matches = Section::GroupMatches(std::move(sections), matches);
+    VerifyMatches(out_matches, expected_relevances);
+  };
+
+  {
+    SCOPED_TRACE("Given no matches, should return no matches.");
+    test({}, {});
+  }
+  {
+    SCOPED_TRACE("Android/ZPS with extra searches.");
+    // Verify that the Clipboard suggestion is retained on top.
+    test(
+        {
+            CreateMatch(100, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST, true),
+            CreateMatch(99, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(98, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(97, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(96, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(95, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(94, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(93, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(92, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(91, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(89, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(88, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(87, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(86, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(85, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(84, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+        },
+        {100, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 89, 88, 87, 86});
+  }
+  {
+    SCOPED_TRACE("Android/ZPS with Clipboard entries.");
+    // Verify that the Clipboard suggestion is retained on top.
+    test(
+        {
+            CreateMatch(100, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST, true),
+            CreateMatch(99, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(98, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(97, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(96, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(95, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(94, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(93, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(92, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(91, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(89, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(88, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(87, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(86, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(85, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(84, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(3, omnibox::GROUP_MOBILE_CLIPBOARD),
+            // Bogus, repetitive, only one allowed.
+            CreateMatch(2, omnibox::GROUP_MOBILE_CLIPBOARD),
+            CreateMatch(1, omnibox::GROUP_MOBILE_CLIPBOARD),
+        },
+        {3, 100, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 89, 88, 87});
+  }
+  {
+    SCOPED_TRACE("Android/ZPS with Search Ready Omnibox.");
+    // Verify that the Clipboard suggestion is retained on top.
+    test(
+        {
+            CreateMatch(100, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST, true),
+            CreateMatch(99, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(98, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(97, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(96, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(95, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(94, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(93, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(92, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(91, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(89, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(88, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(87, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(86, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(85, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(84, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(2, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX),
+            // Bogus, repetitive, only one allowed.
+            CreateMatch(1, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX),
+            CreateMatch(0, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX),
+        },
+        {2, 100, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 89, 88, 87});
+  }
+  {
+    SCOPED_TRACE("Android/ZPS on Web with recent searches only.");
+    // Verify that the Clipboard suggestion is retained on top.
+    test(
+        {
+            CreateMatch(100, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST, true),
+            CreateMatch(99, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(98, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(97, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(96, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(95, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(94, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(93, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(92, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(91, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(89, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(88, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(87, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(86, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(85, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(84, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(2, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX),
+        },
+        {2, 100, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 89, 88, 87});
+  }
+  {
+    SCOPED_TRACE("Android/ZPS with MV Tiles.");
+    // Verify that the Clipboard suggestion is retained on top.
+    test(
+        {
+            CreateMatch(100, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST, true),
+            CreateMatch(99, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(98, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(97, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(96, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(95, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(94, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(93, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(92, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(91, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(89, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(88, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(87, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(86, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(85, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(84, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(4, omnibox::GROUP_MOBILE_MOST_VISITED),
+            // Bogus, repetitive, currently only one allowed.
+            // This will be permitted when group rendering shifts to horizontal.
+            CreateMatch(3, omnibox::GROUP_MOBILE_MOST_VISITED),
+            CreateMatch(2, omnibox::GROUP_MOBILE_MOST_VISITED),
+        },
+        {4, 100, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 89, 88, 87});
+  }
+  {
+    SCOPED_TRACE("Android/ZPS with multiple auxiliary suggestions.");
+    // Verify that the Clipboard suggestion is retained on top.
+    test(
+        {
+            CreateMatch(100, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST, true),
+            CreateMatch(99, omnibox::GROUP_VISITED_DOC_RELATED),
+            CreateMatch(98, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(97, omnibox::GROUP_VISITED_DOC_RELATED),
+            CreateMatch(96, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(95, omnibox::GROUP_VISITED_DOC_RELATED),
+            CreateMatch(94, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(93, omnibox::GROUP_VISITED_DOC_RELATED),
+            CreateMatch(92, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(91, omnibox::GROUP_VISITED_DOC_RELATED),
+            CreateMatch(90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(89, omnibox::GROUP_VISITED_DOC_RELATED),
+            CreateMatch(88, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(87, omnibox::GROUP_VISITED_DOC_RELATED),
+            CreateMatch(86, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(85, omnibox::GROUP_VISITED_DOC_RELATED),
+            CreateMatch(84, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            // SRO should always be shown first, despite low relevance.
+            // Only one item permitted.
+            CreateMatch(2, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX),
+            CreateMatch(1, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX),
+            // Clipboard should always be shown after SRO, if both are present.
+            // Only one item permitted.
+            CreateMatch(20, omnibox::GROUP_MOBILE_CLIPBOARD),
+            CreateMatch(19, omnibox::GROUP_MOBILE_CLIPBOARD),
+            // MV Tiles should always be on the third position if both SRO and
+            // Clipboard are present.
+            // Currently only one item is permitted.
+            CreateMatch(40, omnibox::GROUP_MOBILE_MOST_VISITED),
+            CreateMatch(39, omnibox::GROUP_MOBILE_MOST_VISITED),
+        },
+        // Observe that PERSONALIZED_ZERO_SUGGEST and VISITED_DOC suggestions are
+        // grouped together.
+        // VISITED_DOC_RELATED are prioritized over the PERSONALIZED_ZERO_SUGGEST
+        // because these are more context relevant.
+        {2, 20, 40, 99, 97, 95, 93, 91, 89, 87, 85, 100, 98, 96, 94});
   }
 }

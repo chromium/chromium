@@ -2,6 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import(
+    "//tools/code_coverage/js_source_maps/create_js_source_maps/create_js_source_maps.gni")
+import(
+    "//tools/code_coverage/js_source_maps/merge_js_source_maps/merge_js_source_maps.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/css_to_wrapper.gni")
 import("//tools/polymer/html_to_wrapper.gni")
@@ -33,6 +37,12 @@ template("build_cr_component") {
     if (defined(invoker.optimize)) {
       optimize = invoker.optimize
     }
+  }
+
+  enable_source_maps = false
+  if (defined(invoker.enable_source_maps)) {
+    assert(!invoker.enable_source_maps || !optimize)
+    enable_source_maps = invoker.enable_source_maps
   }
 
   ### Compute the lists of files that are used across multiple targets.
@@ -119,30 +129,69 @@ template("build_cr_component") {
     }
   }
 
-  preprocess_if_expr("preprocess") {
+  preprocess_if_expr("preprocess_ts_files") {
     visibility = [
       ":build_ts",
-      ":css_wrapper_files",
       ":html_wrapper_files",
     ]
+    if (enable_source_maps) {
+      visibility += [ ":create_source_maps" ]
+    }
 
     in_folder = "."
     out_folder = preprocess_dir
-    in_files = ts_files
-
-    if (defined(html_files)) {
-      in_files += html_files
+    if (enable_source_maps) {
+      out_folder = "${preprocess_dir}/_tmp"
+      enable_removal_comments = enable_source_maps
     }
+    in_files = ts_files
+  }
 
-    if (defined(invoker.css_files)) {
-      in_files += invoker.css_files
+  if (enable_source_maps) {
+    create_js_source_maps("create_source_maps") {
+      # TODO(dpapad): Make this only visible to ":build_ts" and
+      # ":html_wrapper_files".
+      inline_sourcemaps = true
+
+      sources =
+          filter_include(get_target_outputs(":preprocess_ts_files"), [ "*.ts" ])
+      originals = []
+      outputs = []
+
+      foreach(in_file, sources) {
+        rebased_path = rebase_path(in_file, "${preprocess_dir}/_tmp")
+        originals += [ rebased_path ]
+        outputs += [ "${preprocess_dir}/" + rebased_path ]
+      }
+      deps = [ ":preprocess_ts_files" ]
+    }
+  }
+
+  if (defined(html_files) || defined(invoker.css_files)) {
+    preprocess_if_expr("preprocess_html_css_files") {
+      visibility = [
+        ":css_wrapper_files",
+        ":html_wrapper_files",
+      ]
+
+      in_folder = "."
+      out_folder = preprocess_dir
+
+      in_files = []
+      if (defined(html_files)) {
+        in_files += html_files
+      }
+
+      if (defined(invoker.css_files)) {
+        in_files += invoker.css_files
+      }
     }
   }
 
   if (defined(html_files)) {
     html_to_wrapper("html_wrapper_files") {
       visibility = [ ":build_ts" ]
-      deps = [ ":preprocess" ]
+      deps = [ ":preprocess_html_css_files" ]
       in_folder = preprocess_dir
       out_folder = preprocess_dir
       in_files = html_files
@@ -151,6 +200,13 @@ template("build_cr_component") {
 
       if (defined(invoker.html_to_wrapper_template)) {
         template = invoker.html_to_wrapper_template
+        if (invoker.html_to_wrapper_template == "detect") {
+          if (enable_source_maps) {
+            deps += [ ":create_source_maps" ]
+          } else {
+            deps += [ ":preprocess_ts_files" ]
+          }
+        }
       }
     }
   }
@@ -158,7 +214,7 @@ template("build_cr_component") {
   if (defined(invoker.css_files)) {
     css_to_wrapper("css_wrapper_files") {
       visibility = [ ":build_ts" ]
-      deps = [ ":preprocess" ]
+      deps = [ ":preprocess_html_css_files" ]
       in_folder = preprocess_dir
       out_folder = preprocess_dir
       in_files = invoker.css_files
@@ -180,17 +236,31 @@ template("build_cr_component") {
     out_dir = tsc_dir
 
     composite = true
-    if (defined(invoker.tsc_allow_js)) {
-      allow_js = invoker.tsc_allow_js
-    }
 
-    if (!defined(invoker.ts_use_local_config) || invoker.ts_use_local_config) {
-      tsconfig_base = "tsconfig_base.json"
+    if (defined(invoker.ts_tsconfig_base)) {
+      tsconfig_base = invoker.ts_tsconfig_base
+    } else {
+      if ((defined(invoker.web_component_files) ||
+           defined(invoker.icons_html_files)) &&
+          (!defined(invoker.html_to_wrapper_template) ||
+           invoker.html_to_wrapper_template != "native")) {
+        # Default tsconfig is tsconfig_base_polymer.json for Polymer UIs.
+        # tsconfig_base is left unset (defaults to
+        # //tools/typescript/tsconfig_base.json) for non-Polymer UIs.
+        tsconfig_base = "//tools/typescript/tsconfig_base_polymer.json"
+      }
     }
 
     in_files = ts_files
 
-    extra_deps = [ ":preprocess" ]
+    extra_deps = []
+    if (enable_source_maps) {
+      # ts_library()'s |enable_source_maps| param inherited from the outer
+      # scope's enable_source_maps
+      extra_deps += [ ":create_source_maps" ]
+    } else {
+      extra_deps += [ ":preprocess_ts_files" ]
+    }
 
     if (defined(html_files)) {
       in_files += html_wrapper_files
@@ -231,6 +301,24 @@ template("build_cr_component") {
     }
   }
 
+  if (enable_source_maps) {
+    merge_js_source_maps("merge_source_maps") {
+      deps = [ ":build_ts" ]
+      manifest_files =
+          filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+      js_files = filter_include(get_target_outputs(":build_ts"), [ "*.js" ])
+
+      sources = []
+      outputs = []
+
+      out_dir = "$target_gen_dir/merge_source_maps"
+      foreach(_js_file, js_files) {
+        sources += [ _js_file ]
+        outputs += [ string_replace(_js_file, tsc_dir, out_dir) ]
+      }
+    }
+  }
+
   generate_grd("build_grdp") {
     grd_prefix = grd_prefix
     out_grd = "${target_gen_dir}/resources.grdp"
@@ -247,9 +335,16 @@ template("build_cr_component") {
           [ "${target_gen_dir}/preprocess_static_files_manifest.json" ]
     }
 
-    deps += [ ":build_ts" ]
-    manifest_files +=
-        filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+    if (enable_source_maps) {
+      deps += [ ":merge_source_maps" ]
+      manifest_files += filter_include(get_target_outputs(":merge_source_maps"),
+                                       [ "*.manifest" ])
+    } else {
+      deps += [ ":build_ts" ]
+      manifest_files +=
+          filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+    }
+
     resource_path_prefix = rebase_path(".", "//ui/webui/resources")
   }
 }

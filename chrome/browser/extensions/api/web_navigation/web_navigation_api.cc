@@ -446,8 +446,8 @@ void WebNavigationTabObserver::RenderFrameHostPendingDeletion(
 }
 
 ExtensionFunction::ResponseAction WebNavigationGetFrameFunction::Run() {
-  std::unique_ptr<GetFrame::Params> params(GetFrame::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<GetFrame::Params> params = GetFrame::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   int tab_id = api::tabs::TAB_ID_NONE;
   int frame_id = -1;
@@ -468,7 +468,7 @@ ExtensionFunction::ResponseAction WebNavigationGetFrameFunction::Run() {
             document_id);
 
     if (!render_frame_host)
-      return RespondNow(OneArgument(base::Value()));
+      return RespondNow(WithArguments(base::Value()));
 
     content::WebContents* web_contents =
         content::WebContents::FromRenderFrameHost(render_frame_host);
@@ -476,7 +476,7 @@ ExtensionFunction::ResponseAction WebNavigationGetFrameFunction::Run() {
     // see if the WebContents is actually in our BrowserContext.
     if (!ExtensionTabUtil::IsWebContentsInContext(
             web_contents, browser_context(), include_incognito_information())) {
-      return RespondNow(OneArgument(base::Value()));
+      return RespondNow(WithArguments(base::Value()));
     }
 
     tab_id = ExtensionTabUtil::GetTabId(web_contents);
@@ -486,7 +486,7 @@ ExtensionFunction::ResponseAction WebNavigationGetFrameFunction::Run() {
     // return.
     if ((params->details.tab_id && *params->details.tab_id != tab_id) ||
         (params->details.frame_id && *params->details.frame_id != frame_id)) {
-      return RespondNow(OneArgument(base::Value()));
+      return RespondNow(WithArguments(base::Value()));
     }
   } else {
     // If documentId is not provided, tab_id and frame_id must be. Return early
@@ -504,7 +504,7 @@ ExtensionFunction::ResponseAction WebNavigationGetFrameFunction::Run() {
                                       include_incognito_information(),
                                       &web_contents) ||
         !web_contents) {
-      return RespondNow(OneArgument(base::Value()));
+      return RespondNow(WithArguments(base::Value()));
     }
 
     render_frame_host = ExtensionApiFrameIdMap::Get()->GetRenderFrameHostById(
@@ -516,11 +516,11 @@ ExtensionFunction::ResponseAction WebNavigationGetFrameFunction::Run() {
           ? FrameNavigationState::GetForCurrentDocument(render_frame_host)
           : nullptr;
   if (!frame_navigation_state)
-    return RespondNow(OneArgument(base::Value()));
+    return RespondNow(WithArguments(base::Value()));
 
   GURL frame_url = frame_navigation_state->GetUrl();
   if (!FrameNavigationState::IsValidUrl(frame_url))
-    return RespondNow(OneArgument(base::Value()));
+    return RespondNow(WithArguments(base::Value()));
 
   GetFrame::Results::Details frame_details;
   frame_details.url = frame_url.spec();
@@ -545,9 +545,9 @@ ExtensionFunction::ResponseAction WebNavigationGetFrameFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction WebNavigationGetAllFramesFunction::Run() {
-  std::unique_ptr<GetAllFrames::Params> params(
-      GetAllFrames::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<GetAllFrames::Params> params =
+      GetAllFrames::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   int tab_id = params->details.tab_id;
 
   content::WebContents* web_contents = nullptr;
@@ -555,7 +555,7 @@ ExtensionFunction::ResponseAction WebNavigationGetAllFramesFunction::Run() {
                                     include_incognito_information(),
                                     &web_contents) ||
       !web_contents) {
-    return RespondNow(OneArgument(base::Value()));
+    return RespondNow(WithArguments(base::Value()));
   }
 
   std::vector<GetAllFrames::Results::DetailsType> result_list;

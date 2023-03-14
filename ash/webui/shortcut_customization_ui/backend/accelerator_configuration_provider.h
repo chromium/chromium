@@ -8,38 +8,25 @@
 #include <map>
 
 #include "ash/accelerators/accelerator_alias_converter.h"
+#include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/public/cpp/accelerator_configuration.h"
+#include "ash/public/mojom/accelerator_info.mojom-forward.h"
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator_map.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/chromeos/events/keyboard_capability.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/input_device_event_observer.h"
 
-namespace ash {
-// Gets the parts of the string that don't contain replacements.
-// Ex: "Press and " -> ["Press ", " and "]
-std::vector<std::u16string> SplitStringOnOffsets(
-    const std::u16string& input,
-    const std::vector<size_t>& offsets);
-
-// Creates text accelerator parts needed to properly display kText accelerators
-// in the UI. Uses the list of offsets which must be sorted and contains the
-// start points of our replacements to place the |plain_text_parts| and
-// |replacement_parts| in the correct order.
-std::vector<mojom::TextAcceleratorPartPtr> GenerateTextAcceleratorParts(
-    const std::vector<std::u16string>& plain_text_parts,
-    const std::vector<TextAcceleratorPart>& replacement_parts,
-    const std::vector<size_t>& offsets,
-    size_t str_size);
-
-namespace shortcut_ui {
+namespace ash::shortcut_ui {
 
 class AcceleratorConfigurationProvider
     : public shortcut_customization::mojom::AcceleratorConfigurationProvider,
@@ -56,12 +43,23 @@ class AcceleratorConfigurationProvider
       mojom::AcceleratorSource,
       std::map<AcceleratorActionId, std::vector<ui::Accelerator>>>;
 
+  // This Observer class is used to observe changes to the accelerator config.
+  class AcceleratorsUpdatedObserver : public base::CheckedObserver {
+   public:
+    ~AcceleratorsUpdatedObserver() override = default;
+    virtual void OnAcceleratorsUpdated(AcceleratorConfigurationMap config) = 0;
+  };
+
   AcceleratorConfigurationProvider();
   AcceleratorConfigurationProvider(const AcceleratorConfigurationProvider&) =
       delete;
   AcceleratorConfigurationProvider& operator=(
       const AcceleratorConfigurationProvider&) = delete;
   ~AcceleratorConfigurationProvider() override;
+
+  // Observer for non-mojo classes
+  void AddObserver(AcceleratorsUpdatedObserver* observer);
+  void RemoveObserver(AcceleratorsUpdatedObserver* observer);
 
   // shortcut_customization::mojom::AcceleratorConfigurationProvider:
   void IsMutable(ash::mojom::AcceleratorSource source,
@@ -72,6 +70,11 @@ class AcceleratorConfigurationProvider
                        observer) override;
   void GetAcceleratorLayoutInfos(
       GetAcceleratorLayoutInfosCallback callback) override;
+  void RemoveAccelerator(mojom::AcceleratorSource source,
+                         uint32_t action_id,
+                         const ui::Accelerator& accelerator,
+                         RemoveAcceleratorCallback callback) override;
+  void RestoreAllDefaults(RestoreAllDefaultsCallback callback) override;
 
   // ui::InputDeviceEventObserver:
   void OnInputDeviceConfigurationChanged(uint8_t input_device_types) override;
@@ -83,6 +86,10 @@ class AcceleratorConfigurationProvider
 
   // ui::KeyboardCapability::Observer:
   void OnTopRowKeysAreFKeysChanged() override;
+
+  AcceleratorConfigurationMap GetAcceleratorConfig();
+  std::vector<mojom::AcceleratorLayoutInfoPtr> GetAcceleratorLayoutInfos()
+      const;
 
   void BindInterface(
       mojo::PendingReceiver<
@@ -96,10 +103,10 @@ class AcceleratorConfigurationProvider
   }
 
   mojom::AcceleratorInfoPtr CreateTextAcceleratorInfo(
-      const NonConfigurableAcceleratorDetails& details);
+      const NonConfigurableAcceleratorDetails& details) const;
 
   mojom::TextAcceleratorPropertiesPtr CreateTextAcceleratorProperties(
-      const NonConfigurableAcceleratorDetails& details);
+      const NonConfigurableAcceleratorDetails& details) const;
 
  private:
   friend class AcceleratorConfigurationProviderTest;
@@ -112,10 +119,23 @@ class AcceleratorConfigurationProvider
 
   AcceleratorConfigurationMap CreateConfigurationMap();
 
+  void PopulateAshAcceleratorConfig(
+      AcceleratorConfigurationMap& accelerator_config_output);
+
+  void PopulateAmbientAcceleratorConfig(
+      AcceleratorConfigurationMap& accelerator_config_output);
+
   void NotifyAcceleratorsUpdated();
 
-  std::vector<mojom::AcceleratorInfoPtr> CreateAcceleratorInfos(
-      const std::vector<ui::Accelerator>& accelerators) const;
+  void CreateAndAppendAliasedAccelerators(
+      const ui::Accelerator& accelerator,
+      bool locked,
+      mojom::AcceleratorType type,
+      mojom::AcceleratorState state,
+      std::vector<mojom::AcceleratorInfoPtr>& output);
+
+  // Set only for testing purposes, this will ignore the default layouts.
+  bool ignore_layouts_for_testing_ = false;
 
   std::vector<mojom::AcceleratorLayoutInfoPtr> layout_infos_;
 
@@ -135,7 +155,7 @@ class AcceleratorConfigurationProvider
       shortcut_customization::mojom::AcceleratorConfigurationProvider>
       receiver_{this};
 
-  AcceleratorConfiguration* ash_accelerator_configuration_;
+  AshAcceleratorConfiguration* ash_accelerator_configuration_;
 
   // One accelerator action ID can potentially have multiple accelerators
   // associated with it.
@@ -146,6 +166,8 @@ class AcceleratorConfigurationProvider
   NonConfigAcceleratorActionMap non_configurable_accelerator_to_id_;
 
   mojo::Remote<shortcut_customization::mojom::AcceleratorsUpdatedObserver>
+      accelerators_updated_mojo_observer_;
+  base::ObserverList<AcceleratorsUpdatedObserver>
       accelerators_updated_observers_;
 
   base::WeakPtrFactory<AcceleratorConfigurationProvider> weak_ptr_factory_{
@@ -154,7 +176,6 @@ class AcceleratorConfigurationProvider
 
 std::u16string GetKeyDisplay(ui::KeyboardCode key_code);
 
-}  // namespace shortcut_ui
-}  // namespace ash
+}  // namespace ash::shortcut_ui
 
 #endif  // ASH_WEBUI_SHORTCUT_CUSTOMIZATION_UI_BACKEND_ACCELERATOR_CONFIGURATION_PROVIDER_H_

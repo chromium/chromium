@@ -695,14 +695,15 @@ const CGFloat kFaviconBadgeSideLength = 24;
                   forControlEvents:UIControlEventTouchUpInside];
   [secondaryActionButton setTitle:self.secondaryActionString
                          forState:UIControlStateNormal];
-  secondaryActionButton.contentEdgeInsets =
-      UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
   [secondaryActionButton setBackgroundColor:[UIColor clearColor]];
   UIColor* titleColor = [UIColor colorNamed:self.secondaryActionTextColor
                                                 ? self.secondaryActionTextColor
                                                 : kBlueColor];
   [secondaryActionButton setTitleColor:titleColor
                               forState:UIControlStateNormal];
+
+  secondaryActionButton.contentEdgeInsets =
+      UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
   secondaryActionButton.titleLabel.font =
       [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   secondaryActionButton.titleLabel.adjustsFontForContentSizeCategory = NO;
@@ -728,6 +729,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
                         forState:UIControlStateNormal];
   tertiaryActionButton.contentEdgeInsets =
       UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
+
   [tertiaryActionButton setBackgroundColor:[UIColor clearColor]];
   UIColor* titleColor = [UIColor colorNamed:kBlueColor];
   [tertiaryActionButton setTitleColor:titleColor forState:UIControlStateNormal];

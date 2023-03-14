@@ -350,6 +350,17 @@ class SkiaGoldSessionAuthenticateTest(fake_filesystem_unittest.TestCase):
     with self.assertRaises(RuntimeError):
       session.Authenticate(use_luci=False)
 
+  def test_commandWithAuthDisabled(self) -> None:
+    self.cmd_mock.return_value = (None, None)
+    args = createSkiaGoldArgs(git_revision='a')
+    sgp = skia_gold_properties.SkiaGoldProperties(args)
+    session = skia_gold_session.SkiaGoldSession(self._working_dir, sgp,
+                                                self._json_keys, '', '')
+    session.Authenticate(disable_auth=True)
+    call_args = self.cmd_mock.call_args[0][0]
+    self.assertIn('--no-auth', call_args)
+    self.assertNotIn('--luci', call_args)
+
   def test_commandWithUseLuciAndServiceAccount(self) -> None:
     args = createSkiaGoldArgs(git_revision='a', local_pixel_tests=False)
     sgp = skia_gold_properties.SkiaGoldProperties(args)

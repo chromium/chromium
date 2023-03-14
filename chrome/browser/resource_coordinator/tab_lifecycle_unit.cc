@@ -313,6 +313,7 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::Load() {
   // session restore is handled by LifecycleManager.
   web_contents()->GetController().SetNeedsReload();
   web_contents()->GetController().LoadIfNecessary();
+  web_contents()->Focus();
   return true;
 }
 
@@ -486,7 +487,7 @@ void TabLifecycleUnitSource::TabLifecycleUnit::FinishDiscard(
 
   performance_manager::user_tuning::UserPerformanceTuningManager::
       PreDiscardResourceUsage::CreateForWebContents(
-          null_contents.get(), tab_memory_footprint_estimate);
+          null_contents.get(), tab_memory_footprint_estimate, discard_reason);
 
   // Attach the ResourceCoordinatorTabHelper. In production code this has
   // already been attached by now due to AttachTabHelpers, but there's a long

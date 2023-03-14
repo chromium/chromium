@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/chip_button.h"
 
+#import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -71,14 +73,39 @@ static const CGFloat kChipVerticalMargin = 4;
 - (void)setEnabled:(BOOL)enabled {
   [super setEnabled:enabled];
   self.backgroundView.hidden = !enabled;
-  self.contentEdgeInsets = enabled ? [self chipEdgeInsets] : UIEdgeInsetsZero;
+  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
+  // iOS 15.
+  if (base::ios::IsRunningOnIOS15OrLater() &&
+      IsUIButtonConfigurationEnabled()) {
+    if (@available(iOS 15, *)) {
+      UIButtonConfiguration* buttonConfiguration =
+          [UIButtonConfiguration plainButtonConfiguration];
+      buttonConfiguration.contentInsets =
+          enabled ? [self chipNSDirectionalEdgeInsets]
+                  : NSDirectionalEdgeInsetsZero;
+      self.configuration = buttonConfiguration;
+    }
+  }
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+  else {
+    self.contentEdgeInsets = enabled ? [self chipEdgeInsets] : UIEdgeInsetsZero;
+  }
+#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 }
 
 #pragma mark - Private
 
+// TODO(crbug.com/1418068): Simplify after minimum version required is >=
+// iOS 15.
 - (UIEdgeInsets)chipEdgeInsets {
   return UIEdgeInsetsMake(kChipVerticalPadding, kChipHorizontalPadding,
                           kChipVerticalPadding, kChipHorizontalPadding);
+}
+
+- (NSDirectionalEdgeInsets)chipNSDirectionalEdgeInsets {
+  return NSDirectionalEdgeInsetsMake(
+      kChipVerticalPadding, kChipHorizontalPadding, kChipVerticalPadding,
+      kChipHorizontalPadding);
 }
 
 - (void)initializeStyling {
@@ -106,7 +133,22 @@ static const CGFloat kChipVerticalMargin = 4;
   self.titleLabel.adjustsFontForContentSizeCategory = YES;
 
   [self updateTitleLabelFont];
-  self.contentEdgeInsets = [self chipEdgeInsets];
+  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
+  // iOS 15.
+  if (base::ios::IsRunningOnIOS15OrLater() &&
+      IsUIButtonConfigurationEnabled()) {
+    if (@available(iOS 15, *)) {
+      UIButtonConfiguration* buttonConfiguration =
+          [UIButtonConfiguration plainButtonConfiguration];
+      buttonConfiguration.contentInsets = [self chipNSDirectionalEdgeInsets];
+      self.configuration = buttonConfiguration;
+    }
+  }
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+  else {
+    self.contentEdgeInsets = [self chipEdgeInsets];
+  }
+#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 }
 
 - (void)updateTitleLabelFont {

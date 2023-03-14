@@ -34,13 +34,15 @@ void SetPasswordFormFillData(const std::string& url,
   form_data->url = GURL(url);
   form_data->form_renderer_id = FormRendererId(unique_renderer_id);
   form_data->username_element_renderer_id = FieldRendererId(username_unique_id);
-  form_data->preferred_login.username = base::UTF8ToUTF16(username_value);
+  form_data->preferred_login.username_value = base::UTF8ToUTF16(username_value);
   form_data->password_element_renderer_id = FieldRendererId(password_unique_id);
-  form_data->preferred_login.password = base::UTF8ToUTF16(password_value);
+  form_data->preferred_login.password_value = base::UTF8ToUTF16(password_value);
   if (additional_username) {
     autofill::PasswordAndMetadata additional_password_data;
-    additional_password_data.username = base::UTF8ToUTF16(additional_username);
-    additional_password_data.password = base::UTF8ToUTF16(additional_password);
+    additional_password_data.username_value =
+        base::UTF8ToUTF16(additional_username);
+    additional_password_data.password_value =
+        base::UTF8ToUTF16(additional_password);
     additional_password_data.realm.clear();
     form_data->additional_logins.push_back(additional_password_data);
   }

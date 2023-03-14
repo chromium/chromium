@@ -104,7 +104,7 @@ class ExternalCacheImplTest : public testing::Test,
   }
 
   void CreateFile(const base::FilePath& file) {
-    EXPECT_EQ(base::WriteFile(file, nullptr, 0), 0);
+    EXPECT_TRUE(base::WriteFile(file, base::StringPiece()));
   }
 
   base::FilePath GetExtensionFile(const base::FilePath& dir,

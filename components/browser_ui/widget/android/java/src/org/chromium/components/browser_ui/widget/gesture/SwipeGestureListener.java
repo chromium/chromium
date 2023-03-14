@@ -46,7 +46,8 @@ import java.lang.annotation.RetentionPolicy;
  * used to detect simple gestures defined in {@link GestureDetector}.
  */
 public class SwipeGestureListener extends SimpleOnGestureListener {
-    @IntDef({ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN})
+    @IntDef({ScrollDirection.UNKNOWN, ScrollDirection.LEFT, ScrollDirection.RIGHT,
+            ScrollDirection.UP, ScrollDirection.DOWN})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ScrollDirection {
         int UNKNOWN = 0;

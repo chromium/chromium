@@ -4,10 +4,10 @@
 
 #include "chrome/browser/autofill/address_accessory_controller_impl.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/android/preferences/autofill/autofill_profile_bridge.h"
@@ -66,8 +66,7 @@ UserInfo TranslateProfile(const AutofillProfile* profile) {
 std::vector<UserInfo> UserInfosForProfiles(
     const std::vector<AutofillProfile*>& profiles) {
   std::vector<UserInfo> infos(profiles.size());
-  std::transform(profiles.begin(), profiles.end(), infos.begin(),
-                 TranslateProfile);
+  base::ranges::transform(profiles, infos.begin(), TranslateProfile);
   return infos;
 }
 

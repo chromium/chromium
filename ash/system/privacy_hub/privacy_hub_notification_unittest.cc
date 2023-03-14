@@ -4,7 +4,7 @@
 
 #include "ash/system/privacy_hub/privacy_hub_notification.h"
 
-#include "ash/public/cpp/test/test_system_tray_client.h"
+#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/scoped_refptr.h"
@@ -39,29 +39,6 @@ class FakeSensorDisabledNotificationDelegate
 
  private:
   std::vector<std::u16string> apps_;
-};
-
-class RemoveNotificationWaiter : public message_center::MessageCenterObserver {
- public:
-  RemoveNotificationWaiter() {
-    message_center::MessageCenter::Get()->AddObserver(this);
-  }
-  ~RemoveNotificationWaiter() override {
-    message_center::MessageCenter::Get()->RemoveObserver(this);
-  }
-
-  void Wait() { run_loop_.Run(); }
-
-  // message_center::MessageCenterObserver:
-  void OnNotificationRemoved(const std::string& notification_id,
-                             const bool by_user) override {
-    if (notification_id == kNotificationId) {
-      run_loop_.Quit();
-    }
-  }
-
- private:
-  base::RunLoop run_loop_;
 };
 
 // A waiter class, once `Wait()` is invoked, waits until a pop up of the
@@ -109,21 +86,30 @@ class PrivacyHubNotificationTest : public AshTestBase {
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         notification_(
             kNotificationId,
-            IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_TITLE,
-            {IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE,
-             IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
-             IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES},
-            {SensorDisabledNotificationDelegate::Sensor::kMicrophone},
-            base::MakeRefCounted<PrivacyHubNotificationClickDelegate>(
-                base::DoNothing()),
             ash::NotificationCatalogName::kTestCatalogName,
-            IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_BUTTON) {}
+            PrivacyHubNotificationDescriptor{
+                SensorDisabledNotificationDelegate::SensorSet{
+                    SensorDisabledNotificationDelegate::Sensor::kMicrophone},
+                IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_TITLE,
+                std::vector<int>{
+                    IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_BUTTON},
+                std::vector<int>{
+                    IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE,
+                    IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
+                    IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES},
+                base::MakeRefCounted<PrivacyHubNotificationClickDelegate>(
+                    base::DoNothing())}) {}
   ~PrivacyHubNotificationTest() override = default;
 
   PrivacyHubNotification& notification() { return notification_; }
 
   FakeSensorDisabledNotificationDelegate& sensor_delegate() {
     return sensor_delegate_;
+  }
+
+  void WaitUntilPopupCloses() {
+    NotificationPopupWaiter waiter;
+    waiter.Wait();
   }
 
  private:
@@ -141,20 +127,16 @@ TEST_F(PrivacyHubNotificationClickDelegateTest, Click) {
           base::BindLambdaForTesting(
               [&button_clicked]() { button_clicked++; }));
 
-  ASSERT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 0);
-
-  // Without callback only Privacy Hub should be opened when clicking on the
-  // message.
+  // Clicking the message while no callback for it is added shouldn't result in
+  // a callback being executed.
   delegate->Click(absl::nullopt, absl::nullopt);
 
-  EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 1);
   EXPECT_EQ(button_clicked, 0u);
   EXPECT_EQ(message_clicked, 0u);
 
   // Click the button.
   delegate->Click(0, absl::nullopt);
 
-  EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 1);
   EXPECT_EQ(button_clicked, 1u);
   EXPECT_EQ(message_clicked, 0u);
 
@@ -165,17 +147,37 @@ TEST_F(PrivacyHubNotificationClickDelegateTest, Click) {
   // When clicking the button, only the button callback should be executed.
   delegate->Click(0, absl::nullopt);
 
-  EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 1);
   EXPECT_EQ(button_clicked, 2u);
   EXPECT_EQ(message_clicked, 0u);
 
-  // Clicking the message should open Privacy Hub and execute the message
-  // callback.
+  // Clicking the message should execute the message callback.
   delegate->Click(absl::nullopt, absl::nullopt);
 
-  EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 2);
   EXPECT_EQ(button_clicked, 2u);
   EXPECT_EQ(message_clicked, 1u);
+}
+
+TEST(PrivacyHubNotificationClickDelegateDeathTest, AddButton) {
+  scoped_refptr<PrivacyHubNotificationClickDelegate> delegate =
+      base::MakeRefCounted<PrivacyHubNotificationClickDelegate>(
+          base::DoNothing());
+
+  if (DCHECK_IS_ON()) {
+    EXPECT_DEATH(
+        delegate->Click(1, absl::nullopt),
+        "Check failed: !button_callbacks_\\[button_index\\]\\.is_null\\(\\). "
+        "button_index=1");
+  }
+}
+
+// TODO(b/271280503): Reenable when the failing builder is fixed.
+TEST(PrivacyHubNotificationClickDelegateDeathTest, DISABLED_AddButton2) {
+  scoped_refptr<PrivacyHubNotificationClickDelegate> delegate =
+      base::MakeRefCounted<PrivacyHubNotificationClickDelegate>(
+          base::DoNothing());
+  EXPECT_DEATH(delegate->Click(2, absl::nullopt),
+               "Check failed: button_callbacks_.size\\(\\) > button_index \\(2 "
+               "vs. 2\\)");
 }
 
 TEST_F(PrivacyHubNotificationTest, ShowAndHide) {
@@ -187,13 +189,36 @@ TEST_F(PrivacyHubNotificationTest, ShowAndHide) {
 
   notification().Hide();
 
-  EXPECT_TRUE(GetNotification());
-
-  RemoveNotificationWaiter waiter;
-
-  waiter.Wait();
-
   EXPECT_FALSE(GetNotification());
+}
+
+TEST_F(PrivacyHubNotificationTest, ShowMultipleTimes) {
+  EXPECT_FALSE(GetNotification());
+
+  notification().Show();
+
+  EXPECT_TRUE(GetNotification());
+  EXPECT_TRUE(GetPopupNotification());
+
+  WaitUntilPopupCloses();
+
+  // The notification pop up should close by now. But the notification should
+  // stay in the message center.
+  EXPECT_TRUE(GetNotification());
+  EXPECT_FALSE(GetPopupNotification());
+
+  notification().Show();
+
+  // The notification should pop up again after `Show()` is called.
+  EXPECT_TRUE(GetNotification());
+  EXPECT_TRUE(GetPopupNotification());
+
+  WaitUntilPopupCloses();
+
+  // The notification pop up should close by now. But the notification should
+  // stay in the message center.
+  EXPECT_TRUE(GetNotification());
+  EXPECT_FALSE(GetPopupNotification());
 }
 
 TEST_F(PrivacyHubNotificationTest, UpdateNotification) {
@@ -206,8 +231,7 @@ TEST_F(PrivacyHubNotificationTest, UpdateNotification) {
   EXPECT_TRUE(GetPopupNotification());
 
   // Wait until pop up of the notification is closed.
-  NotificationPopupWaiter waiter;
-  waiter.Wait();
+  WaitUntilPopupCloses();
   // The notification pop up should close by now. But the notification should
   // stay in the message center.
   EXPECT_TRUE(GetNotification());

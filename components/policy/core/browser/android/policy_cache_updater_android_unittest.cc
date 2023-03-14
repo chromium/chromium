@@ -85,7 +85,7 @@ class PolicyCacheUpdaterAndroidTest : public ::testing::Test {
         ConfigurationPolicyHandlerList::
             PopulatePolicyHandlerParametersCallback(),
         GetChromePolicyDetailsCallback(),
-        /*allow_future_policies=*/false);
+        /*are_future_policies_allowed_by_default=*/false);
   }
   ~PolicyCacheUpdaterAndroidTest() override = default;
 

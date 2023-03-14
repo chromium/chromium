@@ -39,9 +39,9 @@ constexpr float kMaxScaleFactor = 1000.0f;
 
 std::string GetWebUiCssTextDefaults(const std::string& css_template) {
   ui::TemplateReplacements placeholders;
-  placeholders["textDirection"] = GetTextDirection();
-  placeholders["fontFamily"] = GetFontFamily();
-  placeholders["fontSize"] = GetFontSize();
+  placeholders["textdirection"] = GetTextDirection();
+  placeholders["fontfamily"] = GetFontFamily();
+  placeholders["fontsize"] = GetFontSize();
   return ui::ReplaceTemplateExpressions(css_template, placeholders);
 }
 
@@ -192,13 +192,6 @@ std::string GetWebUiCssTextDefaults() {
       ui::ResourceBundle::GetSharedInstance();
   return GetWebUiCssTextDefaults(
       resource_bundle.LoadDataResourceString(IDR_WEBUI_CSS_TEXT_DEFAULTS_CSS));
-}
-
-std::string GetWebUiCssTextDefaultsMd() {
-  const ui::ResourceBundle& resource_bundle =
-      ui::ResourceBundle::GetSharedInstance();
-  return GetWebUiCssTextDefaults(resource_bundle.LoadDataResourceString(
-      IDR_WEBUI_CSS_TEXT_DEFAULTS_MD_CSS));
 }
 
 void AppendWebUiCssTextDefaults(std::string* html) {

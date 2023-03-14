@@ -1537,8 +1537,7 @@ class ExtensionUpdaterTest : public testing::Test {
                   size_t size,
                   const base::Time& timestamp) {
     const std::string data(size, 0);
-    EXPECT_EQ(static_cast<int>(size),
-              base::WriteFile(file, data.data(), data.size()));
+    EXPECT_TRUE(base::WriteFile(file, data));
     EXPECT_TRUE(base::TouchFile(file, timestamp, timestamp));
   }
 

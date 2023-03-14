@@ -13,20 +13,13 @@ desc: |-
   always load <ph name="LACROS_ROOTFS_NAME">rootfs</ph> binary of
   <ph name="LACROS_NAME">Lacros</ph> browser.
 
-  If the policy is set to <ph name="LACROS_SELECTION_STATEFUL_VALUE">stateful</ph>,
-  always load <ph name="LACROS_STATEFUL_NAME">stateful</ph> binary of
-  <ph name="LACROS_NAME">Lacros</ph> browser.
-  Using this value may cause unexpected behavior if the <ph name="LACROS_STATEFUL_NAME">stateful</ph>
-  browser version becomes older than the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version.
-  This case is not supported and is not guaranteed to work correctly.
-
   If the policy is unset, the default is <ph name="LACROS_SELECTION_ROOTFS_VALUE">rootfs</ph> for enterprise-managed users and
   <ph name="LACROS_SELECTION_USER_CHOICE_VALUE">user_choice</ph> for non-managed users.
 
   Note that changing the policy's value may cause
   <ph name="LACROS_NAME">Lacros</ph> browser's data loss if the browser's
   version it changes to is older than the current one. For example, if the
-  policy changes from <ph name="LACROS_SELECTION_STATEFUL_VALUE">stateful</ph>
+  policy changes from <ph name="LACROS_SELECTION_USER_CHOICE_VALUE">user_choice</ph>
   to <ph name="LACROS_SELECTION_ROOTFS_VALUE">rootfs</ph>, and the first one was
   updated. Or if <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> was
   updated together with <ph name="LACROS_ROOTFS_NAME">rootfs</ph>
@@ -38,7 +31,7 @@ desc: |-
   is a safe option. Switching from <ph name="LACROS_SELECTION_ROOTFS_VALUE">rootfs</ph> to <ph name="LACROS_SELECTION_USER_CHOICE_VALUE">user_choice</ph>
   is safe as well.
 
-example_value: stateful
+example_value: user_choice
 features:
   dynamic_refresh: false
   per_profile: false
@@ -49,16 +42,12 @@ items:
 - caption: Always load <ph name="LACROS_ROOTFS_NAME">rootfs</ph> <ph name="LACROS_NAME">Lacros</ph> browser
   name: rootfs
   value: rootfs
-- caption: Always load <ph name="LACROS_STATEFUL_NAME">stateful</ph> <ph name="LACROS_NAME">Lacros</ph> browser
-  name: stateful
-  value: stateful
 owners:
 - asumaneev@google.com
 schema:
   enum:
   - user_choice
   - rootfs
-  - stateful
   type: string
 supported_on:
 - chrome_os:112-

@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
@@ -733,7 +734,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
 
   // Since the cookies associated with |kTestUrl| have changed, the prefetch can
   // no longer be served.
-  prefetch_container->RegisterCookieListener(cookie_manager());
+  prefetch_container->RegisterCookieListener(kTestUrl, cookie_manager());
   ASSERT_TRUE(SetCookie(kTestUrl, "test-cookie"));
 
   interceptor()->AddPrefetch(prefetch_container->GetWeakPtr());

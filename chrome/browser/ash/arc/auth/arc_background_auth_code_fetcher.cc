@@ -44,7 +44,6 @@ constexpr char kErrorDescription[] = "error_description";
 constexpr char kDeviceId[] = "device_id";
 constexpr char kDeviceType[] = "device_type";
 constexpr char kDeviceTypeArc[] = "arc_plus_plus";
-constexpr char kLoginScopedToken[] = "login_scoped_token";
 constexpr char kClientId[] = "client_id";
 constexpr char kClientIdArc[] =
     "1070009224336-sdh77n7uot3oc99ais00jmuft6sk2fg9.apps.googleusercontent.com";
@@ -62,9 +61,6 @@ signin::ScopeSet GetAccessTokenScopes() {
 }
 
 }  // namespace
-
-const char kAuthTokenExchangeEndPoint[] =
-    "https://www.googleapis.com/oauth2/v4/ExchangeToken";
 
 const char kTokenBootstrapEndPoint[] =
     "https://oauthtokenbootstrap.googleapis.com/v1/tokenbootstrap";
@@ -128,22 +124,14 @@ void ArcBackgroundAuthCodeFetcher::OnAccessTokenFetchComplete(
     return;
   }
 
-  bool use_new_endpoint =
-      base::FeatureList::IsEnabled(arc::kEnableTokenBootstrapEndpoint);
-
   user_manager::KnownUser known_user(g_browser_process->local_state());
   const std::string device_id = known_user.GetDeviceId(
       multi_user_util::GetAccountIdFromProfile(profile_));
   DCHECK(!device_id.empty());
 
   base::Value::Dict request_data;
-  if (use_new_endpoint) {
-    request_data.Set(kRefreshToken, token_info.token);
-    request_data.Set(kClientId, kClientIdArc);
-  } else {
-    // TODO(b/264416977): Remove this code path after M112
-    request_data.Set(kLoginScopedToken, token_info.token);
-  }
+  request_data.Set(kRefreshToken, token_info.token);
+  request_data.Set(kClientId, kClientIdArc);
   request_data.Set(kDeviceType, kDeviceTypeArc);
   request_data.Set(kDeviceId, device_id);
   std::string request_string;
@@ -181,12 +169,7 @@ void ArcBackgroundAuthCodeFetcher::OnAccessTokenFetchComplete(
         policy_exception_justification: "Not implemented."
   })");
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  if (use_new_endpoint) {
-    resource_request->url = GURL(kTokenBootstrapEndPoint);
-  } else {
-    // TODO(b/264416977): Remove this code path after M112
-    resource_request->url = GURL(kAuthTokenExchangeEndPoint);
-  }
+  resource_request->url = GURL(kTokenBootstrapEndPoint);
   resource_request->load_flags = net::LOAD_DISABLE_CACHE |
                                  net::LOAD_BYPASS_CACHE |
                                  (bypass_proxy_ ? net::LOAD_BYPASS_PROXY : 0);
@@ -246,15 +229,13 @@ void ArcBackgroundAuthCodeFetcher::OnSimpleLoaderComplete(
       deserializer.Deserialize(nullptr, &error_msg);
 
   if (!response_body || (response_code != net::HTTP_OK)) {
-    const auto* error_value =
+    const std::string* error =
         json_value && json_value->is_dict()
-            ? json_value->FindKeyOfType(kErrorDescription,
-                                        base::Value::Type::STRING)
+            ? json_value->GetDict().FindString(kErrorDescription)
             : nullptr;
 
     LOG(WARNING) << "Server returned wrong response code: " << response_code
-                 << ": " << (error_value ? error_value->GetString() : "Unknown")
-                 << ".";
+                 << ": " << (error ? *error : "Unknown") << ".";
 
     OptInSilentAuthCode uma_status;
     if (response_code >= 400 && response_code < 500) {
@@ -287,18 +268,14 @@ void ArcBackgroundAuthCodeFetcher::OnSimpleLoaderComplete(
     return;
   }
 
-  const auto* auth_code_value =
-      json_value->FindKeyOfType(kToken, base::Value::Type::STRING);
-  std::string auth_code =
-      auth_code_value ? auth_code_value->GetString() : std::string();
-  if (auth_code.empty()) {
+  const std::string* auth_code = json_value->GetDict().FindString(kToken);
+  if (!auth_code || auth_code->empty()) {
     LOG(WARNING) << "Response does not contain auth code.";
     ReportResult(std::string(), OptInSilentAuthCode::NO_AUTH_CODE_IN_RESPONSE);
     return;
   }
 
-  UpdateAuthCodeFetcherProxyBypassUMA(bypass_proxy_, profile_);
-  ReportResult(auth_code, OptInSilentAuthCode::SUCCESS);
+  ReportResult(*auth_code, OptInSilentAuthCode::SUCCESS);
 }
 
 void ArcBackgroundAuthCodeFetcher::ReportResult(

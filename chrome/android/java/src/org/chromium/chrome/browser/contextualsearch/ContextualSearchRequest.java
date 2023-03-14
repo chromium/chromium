@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 
@@ -239,10 +240,11 @@ class ContextualSearchRequest {
             boolean shouldPrefetch) {
         // TODO(https://crbug.com/783819): Avoid parsing the GURL as a Uri, and update
         // makeKPTriggeringUri to operate on GURLs.
-        Uri uri = Uri.parse(TemplateUrlServiceFactory.get()
-                                    .getUrlForContextualSearchQuery(query, alternateTerm,
-                                            shouldPrefetch, CTXS_TWO_REQUEST_PROTOCOL)
-                                    .getSpec());
+        Uri uri = Uri.parse(
+                TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
+                        .getUrlForContextualSearchQuery(
+                                query, alternateTerm, shouldPrefetch, CTXS_TWO_REQUEST_PROTOCOL)
+                        .getSpec());
         if (!TextUtils.isEmpty(mid)) uri = makeKPTriggeringUri(uri, mid);
         return uri;
     }

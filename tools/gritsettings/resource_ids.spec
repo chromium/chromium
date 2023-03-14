@@ -129,7 +129,7 @@
     "includes": [1340],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/cloud_upload/resources.grd": {
-    "META": {"sizes": {"includes": [40]}},
+    "META": {"sizes": {"includes": [50]}},
     "includes": [1345],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/desk_api/resources.grd": {
@@ -143,6 +143,10 @@
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/emoji_picker/resources.grd": {
     "META": {"sizes": {"includes": [50]}},
     "includes": [1360],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/kerberos/resources.grd": {
+    "META": {"sizes": {"includes": [5],}},
+    "includes": [1370],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/launcher_internals/resources.grd": {
     "META": {"sizes": {"includes": [50]}},
@@ -294,6 +298,10 @@
     "META": {"sizes": {"includes": [45],}},
     "includes": [1926],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/side_panel/companion/resources.grd": {
+    "META": {"sizes": {"includes": [10],}},
+    "includes": [1927],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/side_panel/customize_chrome/resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [1930],
@@ -370,7 +378,7 @@
     "includes": [2140],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/password_manager/resources.grd": {
-    "META": {"sizes": {"includes": [60]}},
+    "META": {"sizes": {"includes": [70]}},
     "includes": [2150],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/omnibox_popup/resources.grd": {
@@ -573,9 +581,6 @@
   "chrome/test/data/webui_test_resources.grd": {
     "includes": [2820],
   },
-  "chrome/test/data/chrome_test_resources.grd": {
-    "messages": [2840],
-  },
   # END chrome/ miscellaneous section.
 
   # START chromeos/ section.
@@ -629,6 +634,10 @@
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/guest_os_installer/resources/resources.grd": {
     "META": {"sizes": {"includes": [10]}},
     "includes": [3030],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/common/resources/resources.grd": {
+    "META": {"sizes": {"includes": [400]}},
+    "includes": [3035],
   },
   "ash/webui/help_app_ui/resources/help_app_resources.grd": {
     "includes": [3040],
@@ -1096,7 +1105,7 @@
     "messages": [4850],
   },
   "<(SHARED_INTERMEDIATE_DIR)/ui/webui/resources/webui_resources.grd": {
-    "META": {"sizes": {"includes": [900]}},
+    "META": {"sizes": {"includes": [1100]}},
     "includes": [4900],
   },
   "weblayer/weblayer_resources.grd": {

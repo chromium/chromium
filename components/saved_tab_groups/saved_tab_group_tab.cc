@@ -40,7 +40,7 @@ SavedTabGroupTab::SavedTabGroupTab(const SavedTabGroupTab& other) = default;
 SavedTabGroupTab::~SavedTabGroupTab() = default;
 
 bool SavedTabGroupTab::ShouldMergeTab(
-    const sync_pb::SavedTabGroupSpecifics& sync_specific) {
+    const sync_pb::SavedTabGroupSpecifics& sync_specific) const {
   bool sync_update_is_latest =
       sync_specific.update_time_windows_epoch_micros() >=
       update_time_windows_epoch_micros()

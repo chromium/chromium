@@ -9,7 +9,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -1251,19 +1250,17 @@ TEST_F(HttpServerPropertiesManagerTest, UpdatePrefsWithCache) {
 TEST_F(HttpServerPropertiesManagerTest, ParseAlternativeServiceInfo) {
   InitializePrefs();
 
-  std::unique_ptr<base::Value> server_dict = base::JSONReader::ReadDeprecated(
+  base::Value::Dict server_dict = base::test::ParseJsonDict(
       "{\"alternative_service\":[{\"port\":443,\"protocol_str\":\"h2\"},"
       "{\"port\":123,\"protocol_str\":\"quic\","
       "\"expiration\":\"9223372036854775807\"},{\"host\":\"example.org\","
       "\"port\":1234,\"protocol_str\":\"h2\","
       "\"expiration\":\"13758804000000000\"}]}");
-  ASSERT_TRUE(server_dict);
-  ASSERT_TRUE(server_dict->is_dict());
 
   const url::SchemeHostPort server("https", "example.com", 443);
   HttpServerProperties::ServerInfo server_info;
   EXPECT_TRUE(HttpServerPropertiesManager::ParseAlternativeServiceInfo(
-      server, server_dict->GetDict(), &server_info));
+      server, server_dict, &server_info));
 
   ASSERT_TRUE(server_info.alternative_services.has_value());
   AlternativeServiceInfoVector alternative_service_info_vector =
@@ -1308,16 +1305,14 @@ TEST_F(HttpServerPropertiesManagerTest, ParseAlternativeServiceInfo) {
 TEST_F(HttpServerPropertiesManagerTest, DoNotLoadAltSvcForInsecureOrigins) {
   InitializePrefs();
 
-  std::unique_ptr<base::Value> server_dict = base::JSONReader::ReadDeprecated(
+  base::Value::Dict server_dict = base::test::ParseJsonDict(
       "{\"alternative_service\":[{\"port\":443,\"protocol_str\":\"h2\","
       "\"expiration\":\"9223372036854775807\"}]}");
-  ASSERT_TRUE(server_dict);
-  ASSERT_TRUE(server_dict->is_dict());
 
   const url::SchemeHostPort server("http", "example.com", 80);
   HttpServerProperties::ServerInfo server_info;
   EXPECT_FALSE(HttpServerPropertiesManager::ParseAlternativeServiceInfo(
-      server, server_dict->GetDict(), &server_info));
+      server, server_dict, &server_info));
   EXPECT_TRUE(server_info.empty());
 }
 
@@ -1556,7 +1551,7 @@ TEST_F(HttpServerPropertiesManagerTest, PersistAdvertisedVersionsToPref) {
 TEST_F(HttpServerPropertiesManagerTest, ReadAdvertisedVersionsFromPref) {
   InitializePrefs();
 
-  std::unique_ptr<base::Value> server_dict = base::JSONReader::ReadDeprecated(
+  base::Value::Dict server_dict = base::test::ParseJsonDict(
       "{\"alternative_service\":["
       "{\"port\":443,\"protocol_str\":\"quic\"},"
       "{\"port\":123,\"protocol_str\":\"quic\","
@@ -1564,13 +1559,11 @@ TEST_F(HttpServerPropertiesManagerTest, ReadAdvertisedVersionsFromPref) {
       // Add 33 which we know is not supported, as regression test for
       // https://crbug.com/1061509
       "\"advertised_alpns\":[\"h3-Q033\",\"h3-Q046\",\"h3-Q043\"]}]}");
-  ASSERT_TRUE(server_dict);
-  ASSERT_TRUE(server_dict->is_dict());
 
   const url::SchemeHostPort server("https", "example.com", 443);
   HttpServerProperties::ServerInfo server_info;
   EXPECT_TRUE(HttpServerPropertiesManager::ParseAlternativeServiceInfo(
-      server, server_dict->GetDict(), &server_info));
+      server, server_dict, &server_info));
 
   ASSERT_TRUE(server_info.alternative_services.has_value());
   AlternativeServiceInfoVector alternative_service_info_vector =
@@ -2132,7 +2125,7 @@ TEST_F(HttpServerPropertiesManagerTest, NetworkAnonymizationKeyServerInfo) {
       // need to make sure to call the constructor after setting up the feature
       // above.
       HttpServerProperties::ServerInfoMapKey server_info_key(
-          kServer, NetworkAnonymizationKey(kSite1, kSite2),
+          kServer, NetworkAnonymizationKey::CreateCrossSite(kSite1),
           use_network_anonymization_key);
       server_info_map.Put(server_info_key, server_info);
 
@@ -2142,7 +2135,7 @@ TEST_F(HttpServerPropertiesManagerTest, NetworkAnonymizationKeyServerInfo) {
       // session.
       if (use_network_anonymization_key) {
         HttpServerProperties::ServerInfoMapKey server_info_key2(
-            kServer2, NetworkAnonymizationKey(kOpaqueSite, kOpaqueSite),
+            kServer2, NetworkAnonymizationKey::CreateSameSite(kOpaqueSite),
             use_network_anonymization_key);
         server_info_map.Put(server_info_key2, server_info);
       }
@@ -2184,7 +2177,7 @@ TEST_F(HttpServerPropertiesManagerTest, NetworkAnonymizationKeyServerInfo) {
         const HttpServerProperties::ServerInfo& server_info2 =
             server_info_map2->begin()->second;
         EXPECT_EQ(kServer, server_info_key2.server);
-        EXPECT_EQ(NetworkAnonymizationKey(kSite1, kSite2),
+        EXPECT_EQ(NetworkAnonymizationKey::CreateCrossSite(kSite1),
                   server_info_key2.network_anonymization_key);
         EXPECT_EQ(server_info, server_info2);
       } else {
@@ -2200,12 +2193,13 @@ TEST_F(HttpServerPropertiesManagerTest, NetworkAnonymizationKeyServerInfo) {
 // HttpServerProperties interface.
 TEST_F(HttpServerPropertiesManagerTest, NetworkAnonymizationKeyIntegration) {
   const SchemefulSite kSite(GURL("https://foo.test/"));
-  const NetworkAnonymizationKey kNetworkAnonymizationKey(kSite, kSite);
+  const auto kNetworkAnonymizationKey =
+      NetworkAnonymizationKey::CreateSameSite(kSite);
   const url::SchemeHostPort kServer("https", "baz.test", 443);
 
   const SchemefulSite kOpaqueSite(GURL("data:text/plain,Hello World"));
-  const NetworkAnonymizationKey kOpaqueSiteNetworkAnonymizationKey(kOpaqueSite,
-                                                                   kOpaqueSite);
+  const auto kOpaqueSiteNetworkAnonymizationKey =
+      NetworkAnonymizationKey::CreateSameSite(kOpaqueSite);
   const url::SchemeHostPort kServer2("https", "zab.test", 443);
 
   base::test::ScopedFeatureList feature_list;
@@ -2277,8 +2271,10 @@ TEST_F(HttpServerPropertiesManagerTest,
        CanonicalSuffixRoundTripWithNetworkAnonymizationKey) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const SchemefulSite kSite2(GURL("https://bar.test/"));
-  const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
-  const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
+  const auto kNetworkAnonymizationKey1 =
+      NetworkAnonymizationKey::CreateSameSite(kSite1);
+  const auto kNetworkAnonymizationKey2 =
+      NetworkAnonymizationKey::CreateSameSite(kSite2);
   // Three servers with the same canonical suffix (".c.youtube.com").
   const url::SchemeHostPort kServer1("https", "foo.c.youtube.com", 443);
   const url::SchemeHostPort kServer2("https", "bar.c.youtube.com", 443);
@@ -2440,6 +2436,10 @@ TEST_F(HttpServerPropertiesManagerTest,
        NetworkAnonymizationKeyBrokenAltServiceRoundTrip) {
   const SchemefulSite kSite1(GURL("https://foo1.test/"));
   const SchemefulSite kSite2(GURL("https://foo2.test/"));
+  const auto kNetworkAnonymizationKey1 =
+      NetworkAnonymizationKey::CreateSameSite(kSite1);
+  const auto kNetworkAnonymizationKey2 =
+      NetworkAnonymizationKey::CreateSameSite(kSite2);
 
   const AlternativeService kAlternativeService1(kProtoHTTP2,
                                                 "alt.service1.test", 443);
@@ -2456,11 +2456,6 @@ TEST_F(HttpServerPropertiesManagerTest,
       // Configure the the feature.
       std::unique_ptr<base::test::ScopedFeatureList> feature_list =
           SetNetworkAnonymizationKeyMode(save_network_anonymization_key_mode);
-
-      // The NetworkAnonymizationKey constructor checks the field trial state,
-      // so need to create the keys only after setting up the field trials.
-      const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
-      const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
 
       // Create and initialize an HttpServerProperties, must be done after
       // setting the feature.
@@ -2534,11 +2529,6 @@ TEST_F(HttpServerPropertiesManagerTest,
 
       std::unique_ptr<base::test::ScopedFeatureList> feature_list =
           SetNetworkAnonymizationKeyMode(load_network_anonymization_key_mode);
-
-      // The NetworkAnonymizationKey constructor checks the field trial state,
-      // so need to create the keys only after setting up the field trials.
-      const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
-      const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
 
       // Create a new HttpServerProperties, loading the data from before.
       std::unique_ptr<MockPrefDelegate> pref_delegate =
@@ -2649,8 +2639,8 @@ TEST_F(HttpServerPropertiesManagerTest,
 TEST_F(HttpServerPropertiesManagerTest,
        NetworkAnonymizationKeyBrokenAltServiceOpaqueOrigin) {
   const SchemefulSite kOpaqueSite(GURL("data:text/plain,Hello World"));
-  const NetworkAnonymizationKey kNetworkAnonymizationKey(kOpaqueSite,
-                                                         kOpaqueSite);
+  const auto kNetworkAnonymizationKey =
+      NetworkAnonymizationKey::CreateSameSite(kOpaqueSite);
   const AlternativeService kAlternativeService(kProtoHTTP2, "alt.service1.test",
                                                443);
 
@@ -2695,6 +2685,10 @@ TEST_F(HttpServerPropertiesManagerTest,
        NetworkAnonymizationKeyQuicServerInfoRoundTrip) {
   const SchemefulSite kSite1(GURL("https://foo1.test/"));
   const SchemefulSite kSite2(GURL("https://foo2.test/"));
+  const auto kNetworkAnonymizationKey1 =
+      NetworkAnonymizationKey::CreateSameSite(kSite1);
+  const auto kNetworkAnonymizationKey2 =
+      NetworkAnonymizationKey::CreateSameSite(kSite2);
 
   const quic::QuicServerId kServer1("foo", 443,
                                     false /* privacy_mode_enabled */);
@@ -2715,11 +2709,6 @@ TEST_F(HttpServerPropertiesManagerTest,
       // Configure the the feature.
       std::unique_ptr<base::test::ScopedFeatureList> feature_list =
           SetNetworkAnonymizationKeyMode(save_network_anonymization_key_mode);
-
-      // The NetworkAnonymizationKey constructor checks the field trial state,
-      // so need to create the keys only after setting up the field trials.
-      const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
-      const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
 
       // Create and initialize an HttpServerProperties, must be done after
       // setting the feature.
@@ -2779,11 +2768,6 @@ TEST_F(HttpServerPropertiesManagerTest,
 
       std::unique_ptr<base::test::ScopedFeatureList> feature_list =
           SetNetworkAnonymizationKeyMode(load_network_anonymization_key_mode);
-
-      // The NetworkAnonymizationKey constructor checks the field trial state,
-      // so need to create the keys only after setting up the field trials.
-      const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
-      const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
 
       // Create a new HttpServerProperties, loading the data from before.
       std::unique_ptr<MockPrefDelegate> pref_delegate =
@@ -2868,8 +2852,10 @@ TEST_F(HttpServerPropertiesManagerTest,
        NetworkAnonymizationKeyQuicServerInfoCanonicalSuffixRoundTrip) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const SchemefulSite kSite2(GURL("https://bar.test/"));
-  const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
-  const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
+  const auto kNetworkAnonymizationKey1 =
+      NetworkAnonymizationKey::CreateSameSite(kSite1);
+  const auto kNetworkAnonymizationKey2 =
+      NetworkAnonymizationKey::CreateSameSite(kSite2);
 
   // Three servers with the same canonical suffix (".c.youtube.com").
   const quic::QuicServerId kServer1("foo.c.youtube.com", 443,
@@ -2981,8 +2967,8 @@ TEST_F(HttpServerPropertiesManagerTest,
 TEST_F(HttpServerPropertiesManagerTest,
        NetworkAnonymizationKeyQuicServerInfoOpaqueOrigin) {
   const SchemefulSite kOpaqueSite(GURL("data:text/plain,Hello World"));
-  const NetworkAnonymizationKey kNetworkAnonymizationKey(kOpaqueSite,
-                                                         kOpaqueSite);
+  const auto kNetworkAnonymizationKey =
+      NetworkAnonymizationKey::CreateSameSite(kOpaqueSite);
   const quic::QuicServerId kServer("foo", 443,
                                    false /* privacy_mode_enabled */);
 
@@ -3054,12 +3040,11 @@ TEST_F(HttpServerPropertiesManagerTest, AdvertisedVersionsRoundTrip) {
     SetUp();
     InitializePrefs();
     // Read from JSON.
-    std::unique_ptr<base::Value> preferences_dict =
-        base::JSONReader::ReadDeprecated(preferences_json);
-    ASSERT_TRUE(preferences_dict);
-    ASSERT_TRUE(preferences_dict->is_dict());
+    base::Value::Dict preferences_dict =
+        base::test::ParseJsonDict(preferences_json);
+    ASSERT_FALSE(preferences_dict.empty());
     const base::Value::List* servers_list =
-        preferences_dict->GetDict().FindList("servers");
+        preferences_dict.FindList("servers");
     ASSERT_TRUE(servers_list);
     ASSERT_EQ(servers_list->size(), 1u);
     const base::Value& server_dict = (*servers_list)[0];
@@ -3082,8 +3067,10 @@ TEST_F(HttpServerPropertiesManagerTest, AdvertisedVersionsRoundTrip) {
 TEST_F(HttpServerPropertiesManagerTest, SameOrderAfterReload) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const SchemefulSite kSite2(GURL("https://bar.test/"));
-  const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
-  const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
+  const auto kNetworkAnonymizationKey1 =
+      NetworkAnonymizationKey::CreateSameSite(kSite1);
+  const auto kNetworkAnonymizationKey2 =
+      NetworkAnonymizationKey::CreateSameSite(kSite2);
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(

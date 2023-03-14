@@ -25,7 +25,7 @@ selectmenu::-internal-selectmenu-button {
 }
 
 selectmenu::-internal-selectmenu-button-icon {
-  background-image: -internal-light-dark(-webkit-image-set(url(images/selectmenu_button_icon.svg) 1x), -webkit-image-set(url(images/selectmenu_button_icon_white.svg) 1x));
+  background-image: -internal-light-dark(url(images/selectmenu_button_icon.svg), url(images/selectmenu_button_icon_white.svg));
   background-origin: content-box;
   background-repeat: no-repeat;
   background-size: contain;

@@ -2,7 +2,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -11,7 +11,6 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
       "position": [18, 8],
       "bounds": [100, 50],
-      "contentsOpaqueForText": true,
       "drawsContent": false
     }
   ]
@@ -20,7 +19,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -29,7 +28,6 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
       "position": [18, 8],
       "bounds": [100, 50],
-      "contentsOpaqueForText": true,
       "drawsContent": false
     }
   ]
@@ -38,7 +36,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -47,7 +45,6 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
       "position": [18, 8],
       "bounds": [100, 50],
-      "contentsOpaqueForText": true,
       "drawsContent": false
     }
   ]
@@ -56,7 +53,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -65,7 +62,6 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
       "position": [18, 8],
       "bounds": [100, 50],
-      "contentsOpaqueForText": true,
       "drawsContent": false
     }
   ]
@@ -74,7 +70,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -83,7 +79,6 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
       "position": [19, 8],
       "bounds": [100, 50],
-      "contentsOpaqueForText": true,
       "drawsContent": false
     }
   ]
@@ -92,7 +87,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -101,7 +96,6 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
       "position": [19, 8],
       "bounds": [100, 50],
-      "contentsOpaqueForText": true,
       "drawsContent": false
     }
   ]
@@ -110,7 +104,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -119,7 +113,6 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
       "position": [19, 8],
       "bounds": [100, 50],
-      "contentsOpaqueForText": true,
       "drawsContent": false
     }
   ]
@@ -128,7 +121,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -137,7 +130,6 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
       "position": [19, 8],
       "bounds": [100, 50],
-      "contentsOpaqueForText": true,
       "drawsContent": false
     }
   ]
@@ -146,7 +138,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -155,7 +147,6 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
       "position": [19, 8],
       "bounds": [100, 50],
-      "contentsOpaqueForText": true,
       "drawsContent": false
     }
   ]
@@ -164,7 +155,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -173,7 +164,6 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
       "position": [19, 8],
       "bounds": [100, 50],
-      "contentsOpaqueForText": true,
       "drawsContent": false
     }
   ]
@@ -182,7 +172,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -191,7 +181,6 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
       "position": [19, 8],
       "bounds": [100, 50],
-      "contentsOpaqueForText": true,
       "drawsContent": false
     }
   ]
@@ -200,7 +189,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -209,7 +198,6 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
       "position": [19, 8],
       "bounds": [100, 50],
-      "contentsOpaqueForText": true,
       "drawsContent": false
     }
   ]
@@ -218,7 +206,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -227,7 +215,6 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
       "position": [19, 8],
       "bounds": [100, 50],
-      "contentsOpaqueForText": true,
       "drawsContent": false
     }
   ]
@@ -236,7 +223,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -245,7 +232,6 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
       "position": [19, 8],
       "bounds": [100, 50],
-      "contentsOpaqueForText": true,
       "drawsContent": false
     }
   ]
@@ -254,7 +240,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -263,7 +249,6 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
       "position": [20, 8],
       "bounds": [100, 50],
-      "contentsOpaqueForText": true,
       "drawsContent": false
     }
   ]
@@ -272,7 +257,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -281,7 +266,6 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
       "position": [20, 8],
       "bounds": [100, 50],
-      "contentsOpaqueForText": true,
       "drawsContent": false
     }
   ]
@@ -290,7 +274,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -299,7 +283,6 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
       "position": [20, 8],
       "bounds": [100, 50],
-      "contentsOpaqueForText": true,
       "drawsContent": false
     }
   ]
@@ -308,7 +291,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -317,7 +300,6 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
       "position": [20, 8],
       "bounds": [100, 50],
-      "contentsOpaqueForText": true,
       "drawsContent": false
     }
   ]
@@ -326,7 +308,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -335,7 +317,6 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
       "position": [20, 8],
       "bounds": [100, 50],
-      "contentsOpaqueForText": true,
       "drawsContent": false
     }
   ]
@@ -344,7 +325,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -353,7 +334,6 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
       "position": [20, 8],
       "bounds": [100, 50],
-      "contentsOpaqueForText": true,
       "drawsContent": false
     }
   ]
@@ -362,7 +342,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -371,7 +351,6 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='layer'",
       "position": [20, 8],
       "bounds": [100, 50],
-      "contentsOpaqueForText": true,
       "drawsContent": false
     }
   ]

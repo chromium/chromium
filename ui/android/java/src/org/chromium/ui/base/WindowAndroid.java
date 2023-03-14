@@ -124,7 +124,7 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
     private final AccessibilityManager mAccessibilityManager;
 
     /** A mechanism for observing and updating the application window's bottom inset. */
-    private ApplicationViewportInsetSupplier mApplicationBottomInsetProvider =
+    private ApplicationViewportInsetSupplier mApplicationBottomInsetSupplier =
             new ApplicationViewportInsetSupplier();
 
     // Whether touch exploration is enabled.
@@ -680,7 +680,7 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
 
         if (mTouchExplorationMonitor != null) mTouchExplorationMonitor.destroy();
 
-        mApplicationBottomInsetProvider.destroy();
+        mApplicationBottomInsetSupplier.destroy();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2) {
             if (mOverlayTransformApiHelper != null) {
@@ -766,8 +766,8 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
     }
 
     /** @return A mechanism for updating and observing the bottom inset of the browser window. */
-    public ApplicationViewportInsetSupplier getApplicationBottomInsetProvider() {
-        return mApplicationBottomInsetProvider;
+    public ApplicationViewportInsetSupplier getApplicationBottomInsetSupplier() {
+        return mApplicationBottomInsetSupplier;
     }
 
     public void setKeyboardDelegate(KeyboardVisibilityDelegate keyboardDelegate) {

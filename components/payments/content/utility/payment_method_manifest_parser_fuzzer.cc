@@ -30,15 +30,17 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::vector<url::Origin> supported_origins;
 
   base::StringPiece json_data(reinterpret_cast<const char*>(data), size);
-  std::unique_ptr<base::Value> value =
-      base::JSONReader::ReadDeprecated(json_data);
+  absl::optional<base::Value> value = base::JSONReader::Read(json_data);
+  if (!value) {
+    return 0;
+  }
 
   base::CommandLine::Init(0, nullptr);
 
   payments::ErrorLogger log;
   log.DisableInTest();
   payments::PaymentManifestParser::ParsePaymentMethodManifestIntoVectors(
-      GURL("https://chromium.org/pmm.json"), std::move(value), log,
+      GURL("https://chromium.org/pmm.json"), std::move(*value), log,
       &web_app_manifest_urls, &supported_origins);
   return 0;
 }

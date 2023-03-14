@@ -9,7 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/device_reauth/android/jni_headers/ReauthenticatorBridge_jni.h"
-#include "chrome/browser/device_reauth/chrome_biometric_authenticator_factory.h"
+#include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 
 static jlong JNI_ReauthenticatorBridge_Create(
@@ -24,10 +24,8 @@ ReauthenticatorBridge::ReauthenticatorBridge(
     const base::android::JavaParamRef<jobject>& java_bridge,
     jint requester)
     : java_bridge_(java_bridge),
-      requester_(
-          static_cast<device_reauth::BiometricAuthRequester>(requester)) {
-  authenticator_ =
-      ChromeBiometricAuthenticatorFactory::GetBiometricAuthenticator();
+      requester_(static_cast<device_reauth::DeviceAuthRequester>(requester)) {
+  authenticator_ = ChromeDeviceAuthenticatorFactory::GetDeviceAuthenticator();
 }
 
 ReauthenticatorBridge::~ReauthenticatorBridge() {
@@ -37,7 +35,12 @@ ReauthenticatorBridge::~ReauthenticatorBridge() {
 }
 
 bool ReauthenticatorBridge::CanUseAuthentication(JNIEnv* env) {
-  return authenticator_ && authenticator_->CanAuthenticate(requester_);
+  if (!authenticator_) {
+    return false;
+  }
+  return requester_ == device_reauth::DeviceAuthRequester::kIncognitoReauthPage
+             ? authenticator_->CanAuthenticateWithBiometricOrScreenLock()
+             : authenticator_->CanAuthenticateWithBiometrics();
 }
 
 void ReauthenticatorBridge::Reauthenticate(JNIEnv* env,

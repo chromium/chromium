@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_CELL_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_CELL_VIEW_H_
 
+#include <memory>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -28,6 +29,19 @@ namespace autofill {
 // information.
 class PopupCellView : public views::View {
  public:
+  // Interface for injecting accessibility data into `PopupCellView`. This
+  // allows to have `PopupCellViews` with different a11y roles without needing
+  // to subclass them.
+  class AccessibilityDelegate {
+   public:
+    virtual ~AccessibilityDelegate() = default;
+
+    // Sets the a11y information in `node_data` based on whether the cell in
+    // question `is_selected` or not.
+    virtual void GetAccessibleNodeData(bool is_selected,
+                                       ui::AXNodeData* node_data) const = 0;
+  };
+
   METADATA_HEADER(PopupCellView);
 
   PopupCellView();
@@ -39,16 +53,14 @@ class PopupCellView : public views::View {
   bool GetSelected() const { return selected_; }
   void SetSelected(bool selected);
 
-  // Gets and sets the string announced by VoiceOver.
-  const std::u16string& GetVoiceOverString() const { return voice_over_; }
-  void SetVoiceOverString(std::u16string voice_over);
+  // Gets and sets the tooltip of the cell.
+  const std::u16string& GetTooltipText() const { return tooltip_text_; }
+  void SetTooltipText(std::u16string tooltip_text);
 
-  // Gets and sets additional (optional) accessibility information. See the
-  // member definition for more information.
-  absl::optional<int> GetSetSizeForAccessibility() const { return set_size_; }
-  void SetSetSizeForAccessibility(absl::optional<int> set_size);
-  absl::optional<int> GetSetIndexForAccessibility() const { return set_index_; }
-  void SetSetIndexForAccessibility(absl::optional<int> set_index);
+  // Sets the accessibility delegate that is consulted when providing accessible
+  // node data.
+  void SetAccessibilityDelegate(
+      std::unique_ptr<AccessibilityDelegate> a11y_delegate);
 
   // Gets and sets the callback that is run when the cell is entered (via mouse
   // or gesture event).
@@ -104,19 +116,15 @@ class PopupCellView : public views::View {
   // affected by whether or not the item is overlaid by another popup.
   bool IsMouseInsideItemBounds() const { return IsMouseHovered(); }
 
+  // views::View:
+  std::u16string GetTooltipText(const gfx::Point& p) const override;
+
   // The selection state.
   bool selected_ = false;
-  // The string announced by VoiceOver.
-  std::u16string voice_over_;
-
-  // Additional information set for a11y purposes. The `set_size_` is the number
-  // of non-separator suggestions and `set_index_` is this element's (1-indexed)
-  // position in it.
-  // TODO(crbug.com/1411172): Move to subclasses once `PopupStrategy` exists
-  // and uses them since in the future not every `PopupCellView` may be a
-  // `ListBoxOption`.
-  absl::optional<int> set_index_;
-  absl::optional<int> set_size_;
+  // The tooltip text for this cell.
+  std::u16string tooltip_text_;
+  // The accessibility delegate.
+  std::unique_ptr<AccessibilityDelegate> a11y_delegate_;
 
   base::RepeatingClosure on_entered_callback_;
   base::RepeatingClosure on_exited_callback_;
@@ -133,13 +141,17 @@ class PopupCellView : public views::View {
   // hovered by the mouse at the time it's first shown, we want to ignore clicks
   // until the mouse has left and re-entered the bounds of the item
   // (crbug.com/1240472, crbug.com/1241585, crbug.com/1287364).
+  // This is particularly relevant because mouse click interactions may be
+  // processed with a delay, making it seem as if the two click interactions of
+  // a double click were executed at intervals larger than the threshold (500ms)
+  // checked in the controller (crbug.com/1418837).
   bool mouse_observed_outside_item_bounds_ = false;
 };
 
 BEGIN_VIEW_BUILDER(/* no export*/, PopupCellView, views::View)
-VIEW_BUILDER_PROPERTY(std::u16string, VoiceOverString)
-VIEW_BUILDER_PROPERTY(absl::optional<int>, SetSizeForAccessibility)
-VIEW_BUILDER_PROPERTY(absl::optional<int>, SetIndexForAccessibility)
+VIEW_BUILDER_PROPERTY(std::u16string, TooltipText)
+VIEW_BUILDER_PROPERTY(std::unique_ptr<PopupCellView::AccessibilityDelegate>,
+                      AccessibilityDelegate)
 VIEW_BUILDER_PROPERTY(base::RepeatingClosure, OnEnteredCallback)
 VIEW_BUILDER_PROPERTY(base::RepeatingClosure, OnExitedCallback)
 VIEW_BUILDER_PROPERTY(base::RepeatingClosure, OnAcceptedCallback)

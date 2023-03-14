@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_FLOW_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_FLOW_CONTROLLER_H_
 
+#include <string>
+
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller_impl.h"
 #include "chrome/browser/ui/views/profiles/profile_management_utils.h"
@@ -32,6 +34,8 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
 #endif
 
   void CancelPostSignInFlow() override;
+
+  std::u16string GetFallbackAccessibleWindowTitle() const override;
 
   base::FilePath GetSwitchProfilePathOrEmpty() const;
 

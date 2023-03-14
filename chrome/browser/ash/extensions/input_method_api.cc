@@ -23,13 +23,13 @@
 #include "chrome/browser/ash/extensions/input_method_event_router.h"
 #include "chrome/browser/ash/input_method/autocorrect_manager.h"
 #include "chrome/browser/ash/input_method/native_input_method_engine.h"
+#include "chrome/browser/ash/os_url_handler.h"
 #include "chrome/browser/extensions/api/input_ime/input_ime_api.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
-#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/common/extensions/api/input_method_private.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -42,7 +42,6 @@
 #include "ui/base/ime/ash/input_method_descriptor.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/input_method_util.h"
-#include "ui/display/screen.h"
 
 namespace {
 
@@ -135,9 +134,9 @@ InputMethodPrivateGetCurrentInputMethodFunction::Run() {
 
 ExtensionFunction::ResponseAction
 InputMethodPrivateSetCurrentInputMethodFunction::Run() {
-  std::unique_ptr<SetCurrentInputMethod::Params> params(
-      SetCurrentInputMethod::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<SetCurrentInputMethod::Params> params =
+      SetCurrentInputMethod::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   scoped_refptr<ash::input_method::InputMethodManager::State> ime_state =
       ash::input_method::InputMethodManager::Get()->GetActiveIMEState();
   const std::vector<std::string>& input_methods =
@@ -208,9 +207,9 @@ InputMethodPrivateFetchAllDictionaryWordsFunction::Run() {
 
 ExtensionFunction::ResponseAction
 InputMethodPrivateAddWordToDictionaryFunction::Run() {
-  std::unique_ptr<AddWordToDictionary::Params> params(
-      AddWordToDictionary::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<AddWordToDictionary::Params> params =
+      AddWordToDictionary::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   SpellcheckService* spellcheck =
       SpellcheckServiceFactory::GetForContext(browser_context());
   if (!spellcheck) {
@@ -239,9 +238,9 @@ InputMethodPrivateAddWordToDictionaryFunction::Run() {
 
 ExtensionFunction::ResponseAction
 InputMethodPrivateSetXkbLayoutFunction::Run() {
-  std::unique_ptr<SetXkbLayout::Params> params(
-      SetXkbLayout::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<SetXkbLayout::Params> params =
+      SetXkbLayout::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   auto* manager = ash::input_method::InputMethodManager::Get();
   ash::input_method::ImeKeyboard* keyboard = manager->GetImeKeyboard();
   keyboard->SetCurrentKeyboardLayoutByName(params->xkb_name);
@@ -272,9 +271,9 @@ InputMethodPrivateHideInputViewFunction::Run() {
 
 ExtensionFunction::ResponseAction
 InputMethodPrivateOpenOptionsPageFunction::Run() {
-  std::unique_ptr<OpenOptionsPage::Params> params(
-      OpenOptionsPage::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<OpenOptionsPage::Params> params =
+      OpenOptionsPage::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   scoped_refptr<ash::input_method::InputMethodManager::State> ime_state =
       ash::input_method::InputMethodManager::Get()->GetActiveIMEState();
   const ash::input_method::InputMethodDescriptor* ime =
@@ -290,15 +289,10 @@ InputMethodPrivateOpenOptionsPageFunction::Run() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // If Lacros is the only browser, open the options page in an Ash app window
     // instead of a regular Ash browser window.
-    if (!crosapi::browser_util::IsAshWebBrowserEnabled()) {
-      auto* profile = ProfileManager::GetPrimaryUserProfile();
-      ash::SystemAppLaunchParams launch_params;
-      launch_params.url = options_page_url;
-      int64_t display_id =
-          display::Screen::GetScreen()->GetDisplayForNewWindows().id();
-      ash::LaunchSystemWebAppAsync(
-          profile, ash::SystemWebAppType::OS_URL_HANDLER, launch_params,
-          std::make_unique<apps::WindowInfo>(display_id));
+    if (!crosapi::browser_util::IsAshWebBrowserEnabled() &&
+        !profiles::IsKioskSession()) {
+      bool launched = ash::TryLaunchOsUrlHandler(options_page_url);
+      DCHECK(launched);
       return RespondNow(NoArguments());
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -322,8 +316,8 @@ InputMethodPrivateGetSurroundingTextFunction::Run() {
     return RespondNow(Error(InformativeError(
         kErrorInputContextHandlerNotAvailable, static_function_name())));
 
-  std::unique_ptr<GetSurroundingText::Params> params(
-      GetSurroundingText::Params::Create(args()));
+  absl::optional<GetSurroundingText::Params> params =
+      GetSurroundingText::Params::Create(args());
   if (params->before_length < 0 || params->after_length < 0)
     return RespondNow(Error(InformativeError(
         base::StringPrintf("%s before_length = %d, after_length = %d.",
@@ -368,7 +362,7 @@ InputMethodPrivateGetSurroundingTextFunction::Run() {
 
 ExtensionFunction::ResponseAction InputMethodPrivateGetSettingsFunction::Run() {
   const auto params = GetSettings::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   const base::Value::Dict& input_methods =
       Profile::FromBrowserContext(browser_context())
@@ -384,7 +378,7 @@ ExtensionFunction::ResponseAction InputMethodPrivateGetSettingsFunction::Run() {
 
 ExtensionFunction::ResponseAction InputMethodPrivateSetSettingsFunction::Run() {
   const auto params = SetSettings::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   ScopedDictPrefUpdate update(
       Profile::FromBrowserContext(browser_context())->GetPrefs(),
@@ -485,8 +479,8 @@ ExtensionFunction::ResponseAction InputMethodPrivateResetFunction::Run() {
 
 ExtensionFunction::ResponseAction
 InputMethodPrivateOnAutocorrectFunction::Run() {
-  std::unique_ptr<OnAutocorrect::Params> parent_params(
-      OnAutocorrect::Params::Create(args()));
+  absl::optional<OnAutocorrect::Params> parent_params =
+      OnAutocorrect::Params::Create(args());
   const OnAutocorrect::Params::Parameters& params = parent_params->parameters;
   std::string error;
   ash::input_method::NativeInputMethodEngine* engine =

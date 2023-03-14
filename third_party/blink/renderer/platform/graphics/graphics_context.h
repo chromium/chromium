@@ -267,10 +267,6 @@ class PLATFORM_EXPORT GraphicsContext {
 
   // ---------- End state management methods -----------------
 
-  // DrawRect() fills and always strokes using a 1-pixel stroke inset from
-  // the rect borders (of the pre-set stroke color).
-  void DrawRect(const gfx::Rect&, const AutoDarkMode& auto_dark_mode);
-
   // DrawLine() only operates on horizontal or vertical lines and uses the
   // current stroke settings. For dotted or dashed stroke, the line need to be
   // top-to-down or left-to-right to get correct interval of dots/dashes.

@@ -14,7 +14,6 @@
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "url/gurl.h"
 
 class GoogleServiceAuthError;
@@ -48,18 +47,24 @@ class BackdropCollectionInfoFetcher {
   using OnCollectionsInfoFetched = base::OnceCallback<
       void(bool success, const std::vector<backdrop::Collection>& collections)>;
 
-  BackdropCollectionInfoFetcher();
-
   BackdropCollectionInfoFetcher(const BackdropCollectionInfoFetcher&) = delete;
   BackdropCollectionInfoFetcher& operator=(
       const BackdropCollectionInfoFetcher&) = delete;
 
-  ~BackdropCollectionInfoFetcher();
+  virtual ~BackdropCollectionInfoFetcher();
 
   // Starts the fetcher.
-  void Start(OnCollectionsInfoFetched callback);
+  virtual void Start(OnCollectionsInfoFetched callback);
+
+ protected:
+  // Protected constructor forces creation via `BackdropFetcherDelegate` to
+  // allow mocking in test code.
+  BackdropCollectionInfoFetcher();
 
  private:
+  // Allow delegate to view the constructor.
+  friend class BackdropFetcherDelegateImpl;
+
   // Called when the collections info download completes.
   void OnResponseFetched(const std::string& response);
 
@@ -79,17 +84,23 @@ class BackdropImageInfoFetcher {
                               const std::string& collection_id,
                               const std::vector<backdrop::Image>& images)>;
 
-  explicit BackdropImageInfoFetcher(const std::string& collection_id);
-
   BackdropImageInfoFetcher(const BackdropImageInfoFetcher&) = delete;
   BackdropImageInfoFetcher& operator=(const BackdropImageInfoFetcher&) = delete;
 
-  ~BackdropImageInfoFetcher();
+  virtual ~BackdropImageInfoFetcher();
 
   // Starts the fetcher.
-  void Start(OnImagesInfoFetched callback);
+  virtual void Start(OnImagesInfoFetched callback);
+
+ protected:
+  // Protected constructor forces creation via `BackdropFetcherDelegate` to
+  // allow mocking in test code.
+  explicit BackdropImageInfoFetcher(const std::string& collection_id);
 
  private:
+  // Allow delegate to view the constructor.
+  friend class BackdropFetcherDelegateImpl;
+
   // Called when the images info download completes.
   void OnResponseFetched(const std::string& response);
 
@@ -179,6 +190,11 @@ class GooglePhotosFetcher : public signin::IdentityManager::Observer {
   // Contains logic for different HTTP error codes that we receive, as they can
   // carry information on the state of the user's Google Photos library.
   virtual absl::optional<base::Value> CreateErrorResponse(int error_code);
+
+  // Returns the result of the managed policy
+  // WallpaperGooglePhotosIntegrationEnabled, or true if this pref is
+  // not managed.
+  virtual bool IsGooglePhotosIntegrationPolicyEnabled() const;
 
  private:
   void OnTokenReceived(

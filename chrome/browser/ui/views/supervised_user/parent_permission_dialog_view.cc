@@ -29,7 +29,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "extensions/browser/image_loader.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_icon_set.h"
@@ -91,13 +91,6 @@ class MaybeEmptyLabel : public views::Label {
 
 BEGIN_METADATA(MaybeEmptyLabel, views::Label)
 END_METADATA
-
-// Returns bitmap for the default icon with size equal to the default icon's
-// pixel size under maximal supported scale factor.
-const gfx::ImageSkia& GetDefaultIconBitmapForMaxScaleFactor(bool is_app) {
-  return is_app ? extensions::util::GetDefaultAppIcon()
-                : extensions::util::GetDefaultExtensionIcon();
-}
 
 TestParentPermissionDialogViewObserver* test_view_observer = nullptr;
 
@@ -624,39 +617,6 @@ void ParentPermissionDialogView::LoadParentEmailAddresses() {
   }
 }
 
-void ParentPermissionDialogView::OnExtensionIconLoaded(
-    const gfx::Image& image) {
-  // The order of preference for the icon to use is:
-  //  1. Icon loaded from extension, if not empty.
-  //  2. Icon passed in params, if not empty.
-  //  3. Default Icon.
-  if (!image.IsEmpty()) {
-    // Use the image that was loaded from the extension if it's not empty
-    params_->icon = *image.ToImageSkia();
-  } else if (params_->icon.isNull()) {
-    // If icon is empty, use a default icon.:
-    params_->icon =
-        GetDefaultIconBitmapForMaxScaleFactor(params_->extension->is_app());
-  }
-
-  ShowDialogInternal();
-}
-
-void ParentPermissionDialogView::LoadExtensionIcon() {
-  DCHECK(params_->extension);
-
-  // Load the image asynchronously. The response will be sent to
-  // OnExtensionIconLoaded.
-  extensions::ImageLoader* loader =
-      extensions::ImageLoader::Get(params_->profile);
-  loader->LoadImageAtEveryScaleFactorAsync(
-      params_->extension,
-      gfx::Size(extension_misc::EXTENSION_ICON_LARGE,
-                extension_misc::EXTENSION_ICON_LARGE),
-      base::BindOnce(&ParentPermissionDialogView::OnExtensionIconLoaded,
-                     weak_factory_.GetWeakPtr()));
-}
-
 void ParentPermissionDialogView::CloseWithReason(
     views::Widget::ClosedReason reason) {
   views::Widget* widget = GetWidget();
@@ -676,14 +636,10 @@ std::string ParentPermissionDialogView::GetParentObfuscatedGaiaID(
   if (service->GetCustodianEmailAddress() == base::UTF16ToUTF8(parent_email))
     return service->GetCustodianObfuscatedGaiaId();
 
-  if (service->GetSecondCustodianEmailAddress() ==
-      base::UTF16ToUTF8(parent_email)) {
-    return service->GetSecondCustodianObfuscatedGaiaId();
-  }
-
-  NOTREACHED()
+  CHECK_EQ(service->GetSecondCustodianEmailAddress(),
+           base::UTF16ToUTF8(parent_email))
       << "Tried to get obfuscated gaia id for a non-custodian email address";
-  return std::string();
+  return service->GetSecondCustodianObfuscatedGaiaId();
 }
 
 void ParentPermissionDialogView::StartReauthAccessTokenFetch(
@@ -808,7 +764,7 @@ void ParentPermissionDialogView::InitializeExtensionData(
       IDS_PARENT_PERMISSION_PROMPT_GO_GET_A_PARENT_FOR_EXTENSION_LABEL,
       base::UTF8ToUTF16(extension->name()));
 
-  LoadExtensionIcon();
+  ShowDialogInternal();
 }
 
 BEGIN_METADATA(ParentPermissionDialogView, views::DialogDelegateView)

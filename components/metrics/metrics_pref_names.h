@@ -18,6 +18,7 @@ extern const char kMetricsFileMetricsMetadata[];
 extern const char kMetricsDefaultOptIn[];
 extern const char kMetricsInitialLogs[];
 extern const char kMetricsInitialLogsMetadata[];
+extern const char kMetricsLogRecordId[];
 extern const char kMetricsLowEntropySource[];
 extern const char kMetricsOldLowEntropySource[];
 extern const char kMetricsProvisionalClientID[];

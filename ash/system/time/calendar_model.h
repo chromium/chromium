@@ -133,9 +133,6 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   // time difference. This method is only called when there's a timezone change.
   void RedistributeEvents();
 
-  // Dumps our internal state to logs.
-  void DebugDump();
-
  private:
   // For unit tests.
   friend class CalendarModelTest;
@@ -186,20 +183,6 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   void OnEventFetchFailedInternalError(
       base::Time start_of_month,
       CalendarEventFetchInternalErrorCode error);
-
-  // Methods for dumping various event containers/representations to logs.
-  void DebugDumpOnEventFetched(const google_apis::calendar::EventList* events,
-                               base::Time start_of_month);
-  void DebugDumpEventSmall(std::ostringstream* out,
-                           const char* prefix,
-                           const google_apis::calendar::CalendarEvent* event);
-  void DebugDumpEventLarge(const char* prefix,
-                           const google_apis::calendar::CalendarEvent* event);
-
-  void DebugDumpEvents(std::ostringstream* out, const char* prefix);
-  void DebugDumpMruMonths(std::ostringstream* out, const char* prefix);
-  void DebugDumpNonPrunableMonths(std::ostringstream* out, const char* prefix);
-  void DebugDumpMonthsFetched(std::ostringstream* out, const char* prefix);
 
   // Internal storage for fetched events, with each fetched month having a
   // map of days to events.

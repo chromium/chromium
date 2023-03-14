@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Далей</translation>
 <translation id="1209796539517632982">Аўтаматычныя серверы даменных імён</translation>
 <translation id="1210831758834677569">Лаоская</translation>
+<translation id="1221555006497674479">У вашым сховішчы абагуленага дыска мала месца. Застаецца <ph name="REMAINING_PERCENTAGE" />% з <ph name="TOTAL_SPACE" />.</translation>
 <translation id="1243314992276662751">Запампаваць</translation>
 <translation id="1249250836236328755">Жанр</translation>
 <translation id="1254593899333212300">Прамое падключэнне да інтэрнэту</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">Кітайская (піньінь)</translation>
 <translation id="1646019627374511909">Ідзе адкрыццё пазасеткавага доступу да файлаў (<ph name="NUMBER_OF_ITEMS" />)</translation>
 <translation id="164969095109328410">Прылада Chrome</translation>
+<translation id="1661207570040737402">Вы выкарысталі ўвесь даступны вам аб'ём сховішча абагуленага дыска Google Workspace.</translation>
 <translation id="1661867754829461514">Не ўказаны PIN-код</translation>
 <translation id="166439687370499867">Забаронена змяняць налады агульнай сеткі</translation>
 <translation id="1665611772925418501">Не ўдалося мадыфікаваць файл.</translation>
@@ -82,6 +84,7 @@
 <translation id="1722487484194605434">Элементы (<ph name="NUMBER_OF_ITEMS" />) архівуюцца...</translation>
 <translation id="1722687688096767818">Ідзе дадаванне профілю...</translation>
 <translation id="1726100011689679555">Серверы даменных імён</translation>
+<translation id="1727562178154619254">Можна сінхранізаваць</translation>
 <translation id="1729953886957086472">Нямецкая (Германія)</translation>
 <translation id="1730235522912993863">Кітайская (цанцзе)</translation>
 <translation id="1731889557567069540">Скапіраваны элементы (<ph name="NUMBER_OF_ITEMS" />).</translation>
@@ -349,11 +352,11 @@
 <translation id="3924145049010392604">Клавіша Meta</translation>
 <translation id="3943857333388298514">Уставіць</translation>
 <translation id="3952872973865944257">Тэлугу (фанетычная раскладка)</translation>
-<translation id="3954354850384043518">Выконваецца</translation>
 <translation id="3958548648197196644">Ківі</translation>
 <translation id="3971140002794351170">Спампаваць мабільны профіль, сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, "<ph name="NETWORK_NAME" />", <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Англійская (Вялікабрытанія)</translation>
 <translation id="3975895378829046965">Бенгальская (фанетычная раскладка)</translation>
+<translation id="3999574733850440202">Файлы Microsoft, якія нядаўна адкрываліся, былі перамешчаны на OneDrive</translation>
 <translation id="4002066346123236978">Назва</translation>
 <translation id="4017788180641807848">Англійская (ЗША) з раскладкай Workman</translation>
 <translation id="4019998208269143058">Замацаваць у раздзеле "Хуткія файлы"</translation>
@@ -362,6 +365,7 @@
 <translation id="4092890906744441904">Ірландская</translation>
 <translation id="4124935795427217608">Аднарог</translation>
 <translation id="4131235941541910880">Перамяшчайце непатрэбныя элементы ў сметніцу</translation>
+<translation id="4134804435730168042">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, актываваць пасля наладжвання прылады</translation>
 <translation id="4153015322587141338">Каб дадаць файл на паліцу для хуткага доступу, націсніце на яго правай кнопкай мышы і выберыце пункт "<ph name="PIN_COMMAND" />".</translation>
 <translation id="4157569377477607576">Палітыка адміністратара не рэкамендуе наступнае:</translation>
 <translation id="4159731583141908892">Элемент "<ph name="FILE_NAME" />" перамешчаны.</translation>
@@ -404,6 +408,7 @@
 <translation id="4414834425328380570">Файл "<ph name="FILE_NAME" />" будзе выдалены, і вы не зможаце яго аднавіць.</translation>
 <translation id="4418686080762064601">Стварайце ярлыкі для файлаў</translation>
 <translation id="4425149324548788773">Мой Дыск</translation>
+<translation id="4432921877815220091">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, актываваць пасля наладжвання прылады, знаходзіцца пад кіраваннем адміністратара</translation>
 <translation id="4439427728133035643">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падключыцца</translation>
 <translation id="4442424173763614572">Не ўдалося выканаць пошук DNS</translation>
 <translation id="4462159676511157176">Карыстальніцкія серверы даменных імён</translation>
@@ -610,8 +615,10 @@
 <translation id="5911887972742538906">Узнікла памылка падчас усталявання Linux-праграмы.</translation>
 <translation id="5912396950572065471">Фармат</translation>
 <translation id="5913638992615760742">Не ўдалося выканаць аперацыю капіравання. Нечаканая памылка: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">З'явіліся новыя функцыі пошуку</translation>
 <translation id="5926082595146149752">Нідэрландская (Нідэрланды) з міжнароднай клавіятурай ЗША для ПК</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, актываваць пасля наладжвання прылады</translation>
 <translation id="5955954492236143329">Элементаў: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Параметры сартавання</translation>
@@ -698,6 +705,7 @@
 <translation id="6732801395666424405">Сертыфікаты не загружаны</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Абагульванне папкі з Bruschetta</translation>
+<translation id="6750737795876287924">Бягучы каталог</translation>
 <translation id="6751256176799620176">Выбрана 1 папка</translation>
 <translation id="6755827872271341378">Прылада з Chrome OS Flex</translation>
 <translation id="6790428901817661496">Прайграць</translation>
@@ -735,7 +743,6 @@
 <translation id="6973630695168034713">Папкі</translation>
 <translation id="6976795442547527108">Леў</translation>
 <translation id="6979158407327259162">Google Дыск</translation>
-<translation id="6979737339423435258">За ўвесь час</translation>
 <translation id="6989942356279143254">Шведская</translation>
 <translation id="6990081529015358884">У вас скончылася месца</translation>
 <translation id="6993826899923627728">Гэтыя элементы знаходзяцца ў сметніцы</translation>
@@ -758,6 +765,7 @@
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" – &lt;em&gt;пошук на Дыску&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Канада (фанетычная раскладка)</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Каб пацвердзіць сапраўднасць сервера аўтэнтыфікацыі, неабходна запоўніць поле "Супадзенне з альтэрнатыўнай назвай суб'екта" або "Супадзенне з суфіксам дамена"</translation>
 <translation id="7165320105431587207">Не ўдалося наладзіць сетку</translation>
 <translation id="7170041865419449892">Па-за зонай доступу</translation>
 <translation id="7180611975245234373">Абнавіць</translation>
@@ -790,7 +798,6 @@
 <translation id="7458955835361612701">Няма нядаўніх відарысаў</translation>
 <translation id="7460898608667578234">Украінская</translation>
 <translation id="7469894403370665791">Падключацца да гэтай сеткі аўтаматычна</translation>
-<translation id="7481358317100446445">Гатова</translation>
 <translation id="7486315294984620427">Каб перацягнуць файл у Parallels Desktop, яго неабходна скапіраваць у папку "Файлы Windows".</translation>
 <translation id="749452993132003881">Хірагана</translation>
 <translation id="7495372004724182530">Малаялам (фанетычная раскладка)</translation>
@@ -828,6 +835,7 @@
 <translation id="7724603315864178912">Выразаць</translation>
 <translation id="7732111077498238432">Сетка кантралюецца палітыкай</translation>
 <translation id="7736003208887389532">Выдаліць гэтыя файлы назаўсёды?</translation>
+<translation id="7740287852186792672">Вынікі пошуку</translation>
 <translation id="7748626145866214022">Дадатковыя варыянты даступныя ў радку дзеянняў. Каб перайсці да радка дзеянняў, націсніце спалучэнне клавіш "Alt + A".</translation>
 <translation id="7760449188139285140">Кітайская (раскладка Wubi)</translation>
 <translation id="7765158879357617694">Перамясціць</translation>
@@ -879,6 +887,7 @@
 <translation id="8116072619078571545">Ледзяная вада</translation>
 <translation id="8128733386027980860">Англійская (Вялікабрытанія) з раскладкай Дворака</translation>
 <translation id="8137331602592933310">Файл "<ph name="FILENAME" />" абагулены з вамі. Вы не можаце выдаліць гэты файл, бо не з'яўляецеся яго ўладальнікам.</translation>
+<translation id="8138705869659070104">Спачатку наладзьце прыладу</translation>
 <translation id="813913629614996137">Ідзе ініцыялізацыя...</translation>
 <translation id="8147028810663464959">Шырыня сімвалаў – поўная</translation>
 <translation id="8151638057146502721">Наладзіць</translation>
@@ -904,6 +913,7 @@
 <translation id="8300849813060516376">Памылка OTASP</translation>
 <translation id="8312871300878166382">Уставіць у папку</translation>
 <translation id="8329978297633540474">Звычайны тэкст</translation>
+<translation id="8332007959299458842">Файлы Microsoft, якія нядаўна адкрываліся, былі перамешчаны на Google Дыск</translation>
 <translation id="8335587457941836791">Адмацаваць з паліцы</translation>
 <translation id="8335837413233998004">Беларуская</translation>
 <translation id="8336153091935557858">Учора, <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -930,6 +940,7 @@
 <translation id="8487700953926739672">Даступна па-за сеткай</translation>
 <translation id="8492972329130824181">Хатняя сетка недаступная. Каб устанавіць падключэнне, трэба ўключыць роўмінг перадачы даных.</translation>
 <translation id="8499098729323186194">Вымаюцца элементы (<ph name="NUMBER_OF_ITEMS" />)...</translation>
+<translation id="8502913769543567768">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, актываваць пасля наладжвання прылады, знаходзіцца пад кіраваннем адміністратара</translation>
 <translation id="8521441079177373948">Вялікабрытанія</translation>
 <translation id="853494022971700746">Французская (Францыя)</translation>
 <translation id="8540608333167683902">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падрабязныя звесткі</translation>
@@ -991,6 +1002,7 @@
 <translation id="9046895021617826162">Збой падключэння</translation>
 <translation id="9065512565307033593">Калі вы ўведзяце няправільны PUK-код, доступ да сеткі будзе адключаны.</translation>
 <translation id="908378762078012445">Руская (фанетычная раскладка AATSEEL)</translation>
+<translation id="9086302186042011942">Сінхранізацыя</translation>
 <translation id="9099674669267916096">Колькасць старонак</translation>
 <translation id="9100610230175265781">Патрабуецца фраза-пароль</translation>
 <translation id="9110990317705400362">Мы пастаянна працуем над новымі спосабамі зрабіць працу ў інтэрнэце больш бяспечнай. Раней любы сайт мог прапанаваць вам дадаць пашырэнні ў браўзер. У апошніх версіях Google Chrome пашырэнні трэба дадаваць праз старонку "Пашырэнні", даючы браўзеру яўнае ўказанне, што вы хочаце іх усталяваць. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>

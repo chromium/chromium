@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/components/arc/arc_features.h"
+
 #include "base/feature_list.h"
 
 namespace arc {
@@ -41,12 +42,10 @@ BASE_FEATURE(kEnableArcIdleManager,
              "ArcIdleManager",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-
 // For test purposes, ignore battery status changes, allowing Doze mode to
 // kick in even if we do not receive powerd changes related to battery.
 const base::FeatureParam<bool> kEnableArcIdleManagerIgnoreBatteryForPLT{
     &kEnableArcIdleManager, "ignore_battery_for_test", false};
-
 
 // Controls whether files shared to ARC Nearby Share are shared through the
 // FuseBox filesystem, instead of the default method (through a temporary path
@@ -81,22 +80,6 @@ BASE_FEATURE(kEnableLazyWebViewInit,
 //    so the Tast test uses the updated ArcEnablePerVmCoreScheduling setting.
 BASE_FEATURE(kEnablePerVmCoreScheduling,
              "ArcEnablePerVmCoreScheduling",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables use of new endpoint for fetching ARC sign-in token.
-BASE_FEATURE(kEnableTokenBootstrapEndpoint,
-             "ArcEnableTokenBootstrapEndpoint",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Controls whether to use ARC TTS caching to optimize ARC boot.
-BASE_FEATURE(kEnableTTSCaching,
-             "ArcEnableTTSCaching",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Controls whether to use pregenerated ARC TTS cache to optimize ARC boot and
-// also whether or not TTS cache is used.
-BASE_FEATURE(kEnableTTSCacheSetup,
-             "ArcEnableTTSCacheSetup",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether we should delegate audio focus requests from ARC to Chrome.
@@ -253,6 +236,12 @@ BASE_FEATURE(kSwitchToKeyMintOnT,
              "ArcSwitchToKeyMintOnT",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, ARC will pass install priority to Play in sync install
+// requests.
+BASE_FEATURE(kSyncInstallPriority,
+             "ArcSyncInstallPriority",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to update the O4C list via A2C2.
 BASE_FEATURE(kArcUpdateO4CListViaA2C2,
              "ArcUpdateO4CListViaA2C2",
@@ -314,12 +303,6 @@ const base::FeatureParam<int> kVmMemorySizeShiftMiB{&kVmMemorySize, "shift_mib",
 const base::FeatureParam<int> kVmMemorySizeMaxMiB{&kVmMemorySize, "max_mib",
                                                   INT32_MAX};
 
-// Controls experimental key GMS Core and related services protection against to
-// be killed by low memory killer in ARCVM.
-BASE_FEATURE(kVmGmsCoreLowMemoryKillerProtection,
-             "ArcVmGmsCoreLowMemoryKillerProtection",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls experimental key to enable pre-ANR handling for BroadcastQueue in
 // ARCVM.
 BASE_FEATURE(kVmBroadcastPreNotifyANR,
@@ -330,4 +313,23 @@ BASE_FEATURE(kVmBroadcastPreNotifyANR,
 BASE_FEATURE(kVmmSwapKeyboardShortcut,
              "ArcvmSwapoutKeyboardShortcut",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls experimental key to enable and swap out ARCVM by policy.
+BASE_FEATURE(kVmmSwapPolicy,
+             "ArcVmmSwapPolicy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls the time interval between create staging memory and swap out. The
+// default value is 10 seconds.
+const base::FeatureParam<int> kVmmSwapOutDelaySecond{&kVmmSwapPolicy,
+                                                     "delay_sec", 10};
+
+// Controls the time interval between two swap out. The default value is 12
+// hours.
+const base::FeatureParam<int> kVmmSwapOutTimeIntervalSecond{
+    &kVmmSwapPolicy, "swapout_interval_sec", 60 * 60 * 12};
+
+// Controls the time interval of ARC silence. The default value is 15 minutes.
+const base::FeatureParam<int> kVmmSwapArcSilenceIntervalSecond{
+    &kVmmSwapPolicy, "arc_silence_interval_sec", 60 * 15};
 }  // namespace arc

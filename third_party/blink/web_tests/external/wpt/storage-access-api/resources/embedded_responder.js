@@ -20,6 +20,10 @@ window.addEventListener("message", async (event) => {
       reply(obtainedAccess);
     }
       break;
+    case "write document.cookie":
+      document.cookie = event.data.cookie;
+      reply(undefined);
+      break;
     case "document.cookie":
       reply(document.cookie);
       break;
@@ -35,6 +39,18 @@ window.addEventListener("message", async (event) => {
       break;
     case "reload":
       window.location.reload();
+      break;
+    case "navigate":
+      window.location.href = event.data.url;
+      break;
+    case "httpCookies":
+      // The `httpCookies` variable is defined/set by
+      // script-with-cookie-header.py.
+      reply(httpCookies);
+      break;
+    case "subresource cookies":
+      const cookie = await fetch(`${event.data.host}/storage-access-api/resources/echo-cookie-header.py`, {mode: 'cors', credentials: 'include'}).then((resp) => resp.text());
+      reply(cookie);
       break;
     default:
   }

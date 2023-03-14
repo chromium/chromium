@@ -70,6 +70,14 @@ class ProfilePickerTurnSyncOnDelegate : public TurnSyncOnHelper::Delegate,
   void OnEnterpriseWelcomeClosed(EnterpriseProfileWelcomeUI::ScreenType type,
                                  signin::SigninChoice choice);
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Lacros first run intro
+  void OnLacrosIntroClosed(signin::SigninChoice choice);
+#endif
+
+  // Handles the logic behind when the cancel button is clicked
+  void HandleCancelSigninChoice();
+
   // Reports metric with the outcome of the turn-sync-on flow.
   void LogOutcome(ProfileMetrics::ProfileSignedInFlowOutcome outcome);
 

@@ -52,16 +52,16 @@ PdfViewerPrivateIsAllowedLocalFileAccessFunction::
 
 ExtensionFunction::ResponseAction
 PdfViewerPrivateIsAllowedLocalFileAccessFunction::Run() {
-  std::unique_ptr<IsAllowedLocalFileAccess::Params> params(
-      IsAllowedLocalFileAccess::Params::Create(args()));
+  absl::optional<IsAllowedLocalFileAccess::Params> params =
+      IsAllowedLocalFileAccess::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   PrefService* prefs =
       Profile::FromBrowserContext(browser_context())->GetPrefs();
 
-  return RespondNow(OneArgument(base::Value(IsUrlAllowedToEmbedLocalFiles(
+  return RespondNow(WithArguments(IsUrlAllowedToEmbedLocalFiles(
       GURL(params->url),
-      prefs->GetList(prefs::kPdfLocalFileAccessAllowedForDomains)))));
+      prefs->GetList(prefs::kPdfLocalFileAccessAllowedForDomains))));
 }
 
 PdfViewerPrivateIsPdfOcrAlwaysActiveFunction::
@@ -85,7 +85,7 @@ PdfViewerPrivateIsPdfOcrAlwaysActiveFunction::Run() {
 
   DCHECK(pref->GetValue()->is_bool());
   bool value = pref->GetValue()->GetBool();
-  return RespondNow(OneArgument(base::Value(value)));
+  return RespondNow(WithArguments(value));
 }
 
 PdfViewerPrivateSetPdfOcrPrefFunction::PdfViewerPrivateSetPdfOcrPrefFunction() =
@@ -95,9 +95,9 @@ PdfViewerPrivateSetPdfOcrPrefFunction::
     ~PdfViewerPrivateSetPdfOcrPrefFunction() = default;
 
 ExtensionFunction::ResponseAction PdfViewerPrivateSetPdfOcrPrefFunction::Run() {
-  std::unique_ptr<SetPdfOcrPref::Params> params(
-      SetPdfOcrPref::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<SetPdfOcrPref::Params> params =
+      SetPdfOcrPref::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   PrefService* prefs =
       Profile::FromBrowserContext(browser_context())->GetPrefs();
@@ -112,7 +112,7 @@ ExtensionFunction::ResponseAction PdfViewerPrivateSetPdfOcrPrefFunction::Run() {
 
   DCHECK(pref->GetValue()->is_bool());
   prefs->SetBoolean(prefs::kAccessibilityPdfOcrAlwaysActive, params->value);
-  return RespondNow(OneArgument(base::Value(true)));
+  return RespondNow(WithArguments(true));
 }
 
 }  // namespace extensions

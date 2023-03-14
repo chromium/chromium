@@ -13,6 +13,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
@@ -111,5 +112,6 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
 }
 
 // TODO(crbug.com/1390952): Update content once content is added to this page.
-void ExtensionsMenuSitePermissionsPageView::Update(
-    content::WebContents* web_contents) {}
+
+BEGIN_METADATA(ExtensionsMenuSitePermissionsPageView, views::View)
+END_METADATA

@@ -230,13 +230,13 @@ TEST_F(PreflightCacheTest, PrivateNetworkAccess) {
   EXPECT_TRUE(CheckEntryAndRefreshCache(origin, url, nik,
                                         mojom::IPAddressSpace::kUnknown));
 
-  AppendEntry(origin, url, nik, mojom::IPAddressSpace::kPrivate);
   AppendEntry(origin, url, nik, mojom::IPAddressSpace::kLocal);
+  AppendEntry(origin, url, nik, mojom::IPAddressSpace::kLoopback);
   EXPECT_EQ(3u, CountEntries());
   EXPECT_TRUE(CheckEntryAndRefreshCache(origin, url, nik,
-                                        mojom::IPAddressSpace::kPrivate));
-  EXPECT_TRUE(CheckEntryAndRefreshCache(origin, url, nik,
                                         mojom::IPAddressSpace::kLocal));
+  EXPECT_TRUE(CheckEntryAndRefreshCache(origin, url, nik,
+                                        mojom::IPAddressSpace::kLoopback));
 
   // Check that an entry we never inserted is not found in the cache.
   EXPECT_FALSE(CheckEntryAndRefreshCache(origin, url, nik,

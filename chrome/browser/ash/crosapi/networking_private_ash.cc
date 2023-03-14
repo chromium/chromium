@@ -277,7 +277,7 @@ void NetworkingPrivateAsh::CreateNetwork(bool shared,
                                          base::Value properties,
                                          CreateNetworkCallback callback) {
   auto [success, failure] = SplitStringAdapterCallback(std::move(callback));
-  GetDelegate()->CreateNetwork(shared, std::move(properties),
+  GetDelegate()->CreateNetwork(shared, std::move(properties).TakeDict(),
                                std::move(success), std::move(failure));
 }
 

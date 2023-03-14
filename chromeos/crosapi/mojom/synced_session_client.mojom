@@ -37,4 +37,11 @@ struct SyncedSession {
 interface SyncedSessionClient {
   // Notifies ash-chrome when any foreign phone session is updated.
   OnForeignSyncedPhoneSessionsUpdated@0(array<SyncedSession> sessions);
+
+  // Called by Lacros when the user enables or disables tab sync.
+  // Lacros will call this with an initial value when the connection
+  // is established. Receivers should initialize this to "false" until
+  // the first update is received.
+  [MinVersion=1]
+  OnSessionSyncEnabledChanged@1(bool enabled);
 };

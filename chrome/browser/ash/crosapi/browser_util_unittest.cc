@@ -23,6 +23,7 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
@@ -33,6 +34,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ash::standalone_browser::BrowserSupport;
 using ash::standalone_browser::LacrosAvailability;
 using crosapi::browser_util::LacrosLaunchSwitchSource;
 using crosapi::browser_util::LacrosSelection;
@@ -884,7 +886,7 @@ TEST_F(BrowserUtilTest, IsAshBrowserSyncEnabled) {
   }
 
   {
-    auto scoped_enabled = browser_util::SetLacrosEnabledForTest(true);
+    auto scoped_enabled = BrowserSupport::SetLacrosEnabledForTest(true);
     EXPECT_TRUE(browser_util::IsLacrosEnabled());
     EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled());
     EXPECT_TRUE(browser_util::IsAshBrowserSyncEnabled());
@@ -907,7 +909,7 @@ TEST_F(BrowserUtilTest, IsAshBrowserSyncEnabled) {
         {ash::features::kLacrosOnly, ash::features::kLacrosPrimary,
          ash::features::kLacrosSupport},
         {});
-    auto scoped_enabled = browser_util::SetLacrosEnabledForTest(true);
+    auto scoped_enabled = BrowserSupport::SetLacrosEnabledForTest(true);
     EXPECT_TRUE(browser_util::IsLacrosEnabled());
     EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled());
     EXPECT_FALSE(browser_util::IsAshBrowserSyncEnabled());
@@ -1163,18 +1165,6 @@ TEST_F(BrowserUtilTest, LacrosSelection) {
   }
 
   {
-    // LacrosSelection policy has precedence over command line.
-    ScopedLacrosSelectionCache cache(
-        browser_util::LacrosSelectionPolicy::kStateful);
-    base::test::ScopedCommandLine cmd_line;
-    cmd_line.GetProcessCommandLine()->AppendSwitchASCII(
-        browser_util::kLacrosSelectionSwitch,
-        browser_util::kLacrosSelectionRootfs);
-    EXPECT_EQ(browser_util::DetermineLacrosSelection(),
-              LacrosSelection::kStateful);
-  }
-
-  {
     // LacrosSelection allows command line check, but command line is not set.
     ScopedLacrosSelectionCache cache(
         browser_util::LacrosSelectionPolicy::kUserChoice);
@@ -1222,15 +1212,6 @@ TEST_F(BrowserUtilTest, LacrosSelectionPolicyIgnoreNonGoogle) {
     EXPECT_EQ(browser_util::DetermineLacrosSelection(),
               LacrosSelection::kRootfs);
   }
-
-  {
-    ScopedLacrosSelectionCache cache(
-        browser_util::LacrosSelectionPolicy::kStateful);
-    EXPECT_EQ(browser_util::GetCachedLacrosSelectionPolicy(),
-              browser_util::LacrosSelectionPolicy::kStateful);
-    EXPECT_EQ(browser_util::DetermineLacrosSelection(),
-              LacrosSelection::kStateful);
-  }
 }
 
 // LacrosSelection has an effect on googlers.
@@ -1244,14 +1225,6 @@ TEST_F(BrowserUtilTest, LacrosSelectionPolicyIgnoreGoogleDisableToUserChoice) {
   {
     ScopedLacrosSelectionCache cache(
         browser_util::LacrosSelectionPolicy::kRootfs);
-    EXPECT_EQ(browser_util::GetCachedLacrosSelectionPolicy(),
-              browser_util::LacrosSelectionPolicy::kUserChoice);
-    EXPECT_FALSE(browser_util::DetermineLacrosSelection());
-  }
-
-  {
-    ScopedLacrosSelectionCache cache(
-        browser_util::LacrosSelectionPolicy::kStateful);
     EXPECT_EQ(browser_util::GetCachedLacrosSelectionPolicy(),
               browser_util::LacrosSelectionPolicy::kUserChoice);
     EXPECT_FALSE(browser_util::DetermineLacrosSelection());

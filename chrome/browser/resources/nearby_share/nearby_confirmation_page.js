@@ -17,12 +17,12 @@ import './shared/nearby_preview.js';
 import './shared/nearby_progress.js';
 import './strings.m.js';
 
-import {ConfirmationManagerInterface, PayloadPreview, ShareTarget, TransferStatus, TransferUpdateListenerInterface, TransferUpdateListenerPendingReceiver, TransferUpdateListenerReceiver} from '/mojo/nearby_share.mojom-webui.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getDiscoveryManager} from './discovery_manager.js';
 import {getTemplate} from './nearby_confirmation_page.html.js';
+import {ConfirmationManagerInterface, PayloadPreview, ShareTarget, TransferStatus, TransferUpdateListenerInterface, TransferUpdateListenerPendingReceiver, TransferUpdateListenerReceiver} from './shared/mojo/nearby_share.mojom-webui.js';
 import {CloseReason} from './shared/types.js';
 
 /** @implements {TransferUpdateListenerInterface} */

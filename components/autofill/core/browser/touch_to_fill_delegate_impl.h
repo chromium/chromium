@@ -6,6 +6,9 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_TOUCH_TO_FILL_DELEGATE_IMPL_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "base/timer/timer.h"
+#include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/ui/touch_to_fill_delegate.h"
@@ -42,7 +45,20 @@ enum class TouchToFillCreditCardTriggerOutcome {
   kFailedToDisplayBottomSheet = 6,
   // The sheet was not shown because the payment form was incomplete.
   kIncompleteForm = 7,
-  kMaxValue = kIncompleteForm
+  // The form or field is not known to the form cache.
+  kUnknownForm = 8,
+  // The form is known to the form cache, but it doesn't contain the field.
+  kUnknownField = 9,
+  // TouchToFill is not supported for this field type. This value is not logged
+  // to UMA.
+  kUnsupportedFieldType = 9,
+  // Keyboard is not suppressed (anymore). This can happen due to race
+  // conditions involving the form parse that may happen between
+  // OnBeforeAskForValuesToFill() and TryToShowTouchToFill(). In particular, the
+  // focused field's type may change (changing DryRun()'s value from a
+  // non-`kShown` value to `kShown`).
+  kKeyboardNotSuppressed = 10,
+  kMaxValue = kKeyboardNotSuppressed
 };
 
 constexpr const char kUmaTouchToFillCreditCardTriggerOutcome[] =
@@ -63,7 +79,8 @@ class BrowserAutofillManager;
 //
 // Public methods are marked virtual for testing.
 // TODO(crbug.com/1324900): Consider using more descriptive name.
-class TouchToFillDelegateImpl : public TouchToFillDelegate {
+class TouchToFillDelegateImpl : public TouchToFillDelegate,
+                                public AutofillManager::Observer {
  public:
   explicit TouchToFillDelegateImpl(BrowserAutofillManager* manager);
   TouchToFillDelegateImpl(const TouchToFillDelegateImpl&) = delete;
@@ -90,8 +107,17 @@ class TouchToFillDelegateImpl : public TouchToFillDelegate {
   void ScanCreditCard() override;
   void OnCreditCardScanned(const CreditCard& card) override;
   void ShowCreditCardSettings() override;
-  void SuggestionSelected(std::string unique_id) override;
+  void SuggestionSelected(std::string unique_id, bool is_virtual) override;
   void OnDismissed(bool dismissed_by_user) override;
+
+  // AutofillManager::Observer:
+  void OnAutofillManagerDestroyed(AutofillManager& manager) override;
+  void OnBeforeAskForValuesToFill(AutofillManager& manager,
+                                  FormGlobalId form_id,
+                                  FieldGlobalId field_id) override;
+  void OnAfterAskForValuesToFill(AutofillManager& manager,
+                                 FormGlobalId form_id,
+                                 FieldGlobalId field_id) override;
 
   void LogMetricsAfterSubmission(const FormStructure& submitted_form) const;
 
@@ -106,6 +132,34 @@ class TouchToFillDelegateImpl : public TouchToFillDelegate {
 
   using TriggerOutcome = TouchToFillCreditCardTriggerOutcome;
 
+  struct DryRunResult {
+    DryRunResult(TriggerOutcome outcome,
+                 std::vector<CreditCard> cards_to_suggest);
+    DryRunResult(DryRunResult&&);
+    DryRunResult& operator=(DryRunResult&&);
+    ~DryRunResult();
+
+    TriggerOutcome outcome;
+    std::vector<CreditCard> cards_to_suggest;
+  };
+
+  // Checks all preconditions for showing the TTF, that is, for calling
+  // AutofillClient::ShowTouchToFillCreditCard().
+  //
+  // If the DryRunResult::outcome is TriggerOutcome::kShow, the
+  // DryRun::cards_to_suggest contains the cards; otherwise it is empty.
+  DryRunResult DryRun(FormGlobalId form_id, FieldGlobalId field_id);
+
+  // Sets whether or not to suppress the on-screen keyboard in following
+  // requests that would usually display the keyboard.
+  //
+  // If `suppress == true` and had been false before, starts a timer to reset it
+  // again. This timer is stopped by subsequent calls where `suppress == false`
+  // or when TTF is indeed shown.
+  //
+  // No-op if `suppress` if the previous call had the same value as `suppress`.
+  void SetShouldSuppressKeyboard(bool suppress);
+
   bool HasAnyAutofilledFields(const FormStructure& submitted_form) const;
 
   // The form is considered perfectly filled if all non-empty fields are
@@ -119,10 +173,14 @@ class TouchToFillDelegateImpl : public TouchToFillDelegate {
   TouchToFillState ttf_credit_card_state_ = TouchToFillState::kShouldShow;
 
   const raw_ptr<BrowserAutofillManager> manager_;
+  bool keyboard_is_suppressed_ = false;
+  base::OneShotTimer keyboard_unsuppress_timer_;
   FormData query_form_;
   FormFieldData query_field_;
   bool dismissed_by_user_;
 
+  base::ScopedObservation<AutofillManager, AutofillManager::Observer>
+      autofill_manager_observation_{this};
   base::WeakPtrFactory<TouchToFillDelegateImpl> weak_ptr_factory_{this};
 };
 

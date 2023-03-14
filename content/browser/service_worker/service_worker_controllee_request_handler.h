@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "content/browser/service_worker/service_worker_accessed_callback.h"
 #include "content/browser/service_worker/service_worker_main_resource_loader.h"
+#include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
@@ -46,12 +47,17 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   //
+  // These have to be consistent with ServiceWorkerFetchHandlerSkipReason in
+  // tools/metrics/histograms/enums.xml
+  //
   // Only one reason is recorded even if multiple reasons are matched.
   // The order is following:
   // 1. kSkippedForEmptyFetchHandler
   // 2. kMainResourceSkippedDueToOriginTrial
   // 3. kMainResourceSkippedDueToFeatureFlag
   // 4. kMainResourceSkippedBecauseMatchedWithAllowedScriptList
+  // 5.
+  // kBypassFetchHandlerForAllOnlyIfServiceWorkerNotStarted_Status_[Stop|Starting]
   enum class FetchHandlerSkipReason {
     kNoFetchHandler = 0,
     kNotSkipped = 1,
@@ -60,8 +66,11 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
     kMainResourceSkippedDueToFeatureFlag = 4,
     // kMainResourceSkippedBecauseMatchedWithAllowedOriginList = 5,
     kMainResourceSkippedBecauseMatchedWithAllowedScriptList = 6,
+    kBypassFetchHandlerForAllOnlyIfServiceWorkerNotStarted_Status_Stop = 7,
+    kBypassFetchHandlerForAllOnlyIfServiceWorkerNotStarted_Status_Starting = 8,
 
-    kMaxValue = kMainResourceSkippedBecauseMatchedWithAllowedScriptList,
+    kMaxValue =
+        kBypassFetchHandlerForAllOnlyIfServiceWorkerNotStarted_Status_Starting,
   };
 
   // If |skip_service_worker| is true, service workers are bypassed for
@@ -129,6 +138,11 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   // Schedules a service worker update to occur shortly after the page and its
   // initial subresources load, if this handler was for a navigation.
   void MaybeScheduleUpdate();
+
+  // Runs service worker if not running.
+  void MaybeStartServiceWorker(
+      scoped_refptr<ServiceWorkerVersion> active_version,
+      ServiceWorkerMetrics::EventType event_type);
 
   // Runs after ServiceWorker has started.
   // Normally ServiceWorker starts before dispatching the main resource request,

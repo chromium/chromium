@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/test/task_environment.h"
 #include "device/fido/credential_management.h"
@@ -419,8 +420,8 @@ TEST_F(CredentialManagementHandlerTest, EnumerateCredentialsMultipleRPs) {
   ASSERT_EQ(responses.size(), 3u);
 
   PublicKeyCredentialRpEntity got_rps[3];
-  std::transform(responses.begin(), responses.end(), std::begin(got_rps),
-                 [](const auto& response) { return response.rp; });
+  base::ranges::transform(responses, std::begin(got_rps),
+                          &AggregatedEnumerateCredentialsResponse::rp);
   EXPECT_THAT(got_rps, UnorderedElementsAreArray(rps));
 
   for (const AggregatedEnumerateCredentialsResponse& response : responses) {

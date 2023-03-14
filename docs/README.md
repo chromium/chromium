@@ -20,7 +20,8 @@ below.**
     and the
     [Chromium Documentation Best Practices](documentation_best_practices.md).
 *   Markdown documents must follow the
-    [style guide](https://github.com/google/styleguide/tree/gh-pages/docguide).
+    [Markdown Style
+    Guide](https://chromium.googlesource.com/chromium/src/+/HEAD/styleguide/markdown/markdown.md).
 
 ### Previewing changes
 

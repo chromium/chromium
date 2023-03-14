@@ -231,7 +231,7 @@ class AuthenticationServiceTest : public PlatformTest {
   }
 
   // Sets a restricted pattern.
-  void SetPattern(const std::string pattern) {
+  void SetPattern(const std::string& pattern) {
     base::Value::List allowed_patterns;
     allowed_patterns.Append(pattern);
     GetApplicationContext()->GetLocalState()->SetList(

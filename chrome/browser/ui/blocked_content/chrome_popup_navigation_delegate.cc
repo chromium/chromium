@@ -37,7 +37,7 @@ bool ChromePopupNavigationDelegate::GetOriginalUserGesture() {
   return original_user_gesture_;
 }
 
-const GURL& ChromePopupNavigationDelegate::GetURL() {
+GURL ChromePopupNavigationDelegate::GetURL() {
   return params_.url;
 }
 

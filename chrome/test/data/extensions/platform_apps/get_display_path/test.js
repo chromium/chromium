@@ -17,7 +17,7 @@ chrome.app.runtime.onLaunched.addListener(function (launchData) {
       var entry = launchData.items[0].entry;
       chrome.fileSystem.getDisplayPath(entry,
           chrome.test.callbackPass(function(path) {
-        chrome.test.assertFalse(path.indexOf('test.txt') == -1);
+        chrome.test.assertNe(-1, path.indexOf('test.txt'));
       }));
     }
   ]);

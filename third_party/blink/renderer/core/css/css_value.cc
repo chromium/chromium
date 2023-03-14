@@ -51,6 +51,8 @@
 #include "third_party/blink/renderer/core/css/css_grid_integer_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_grid_template_areas_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
+#include "third_party/blink/renderer/core/css/css_image_set_option_value.h"
+#include "third_party/blink/renderer/core/css/css_image_set_type_value.h"
 #include "third_party/blink/renderer/core/css/css_image_set_value.h"
 #include "third_party/blink/renderer/core/css/css_image_value.h"
 #include "third_party/blink/renderer/core/css/css_inherited_value.h"
@@ -290,6 +292,10 @@ bool CSSValue::operator==(const CSSValue& other) const {
         return CompareCSSValues<CSSValueList>(*this, other);
       case kValuePairClass:
         return CompareCSSValues<CSSValuePair>(*this, other);
+      case kImageSetTypeClass:
+        return CompareCSSValues<CSSImageSetTypeValue>(*this, other);
+      case kImageSetOptionClass:
+        return CompareCSSValues<CSSImageSetOptionValue>(*this, other);
       case kImageSetClass:
         return CompareCSSValues<CSSImageSetValue>(*this, other);
       case kCSSContentDistributionClass:
@@ -435,6 +441,10 @@ String CSSValue::CssText() const {
       return To<CSSValuePair>(this)->CustomCSSText();
     case kValueListClass:
       return To<CSSValueList>(this)->CustomCSSText();
+    case kImageSetTypeClass:
+      return To<CSSImageSetTypeValue>(this)->CustomCSSText();
+    case kImageSetOptionClass:
+      return To<CSSImageSetOptionValue>(this)->CustomCSSText();
     case kImageSetClass:
       return To<CSSImageSetValue>(this)->CustomCSSText();
     case kCSSContentDistributionClass:
@@ -652,6 +662,12 @@ void CSSValue::Trace(Visitor* visitor) const {
       return;
     case kValuePairClass:
       To<CSSValuePair>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kImageSetTypeClass:
+      To<CSSImageSetTypeValue>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kImageSetOptionClass:
+      To<CSSImageSetOptionValue>(this)->TraceAfterDispatch(visitor);
       return;
     case kImageSetClass:
       To<CSSImageSetValue>(this)->TraceAfterDispatch(visitor);

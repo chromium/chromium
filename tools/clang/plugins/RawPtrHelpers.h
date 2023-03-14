@@ -29,6 +29,7 @@ class FilterFile {
                       const std::string& arg_name) {
     ParseInputFile(filepath, arg_name);
   }
+  explicit FilterFile(const std::vector<std::string>& lines);
 
   FilterFile(const FilterFile&) = delete;
   FilterFile& operator=(const FilterFile&) = delete;

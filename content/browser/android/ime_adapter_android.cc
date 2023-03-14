@@ -383,6 +383,7 @@ void ImeAdapterAndroid::OnEditElementFocusedForStylusWriting(
 void ImeAdapterAndroid::HandleStylusWritingGestureAction(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>&,
+    const jint id,
     const base::android::JavaParamRef<jobject>& jgesture_data_byte_buffer) {
   auto* input_handler = GetFocusedFrameWidgetInputHandler();
   if (!input_handler)
@@ -397,7 +398,21 @@ void ImeAdapterAndroid::HandleStylusWritingGestureAction(
     return;
   }
 
-  input_handler->HandleStylusWritingGestureAction(std::move(gesture_data));
+  input_handler->HandleStylusWritingGestureAction(
+      std::move(gesture_data),
+      base::BindOnce(&ImeAdapterAndroid::OnStylusWritingGestureActionCompleted,
+                     weak_factory_.GetWeakPtr(), id));
+}
+
+void ImeAdapterAndroid::OnStylusWritingGestureActionCompleted(
+    int id,
+    blink::mojom::HandwritingGestureResult result) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ime_adapter_.get(env);
+  if (!obj.is_null()) {
+    Java_ImeAdapterImpl_onStylusWritingGestureActionCompleted(env, obj, id,
+                                                              (int)result);
+  }
 }
 
 void ImeAdapterAndroid::AdvanceFocusForIME(JNIEnv* env,

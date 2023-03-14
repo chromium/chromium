@@ -118,21 +118,22 @@ bool FilterSensitiveExtensionSettings(PolicyMap::Entry* map_entry) {
     return false;
   }
 
+  base::Value::Dict& policy_dict = policy_dict_value->GetDict();
   // Note that we only search for sensitive entries, all other validations will
   // be handled by ExtensionSettingsPolicyHandler.
   std::vector<std::string> filtered_extensions;
-  for (auto entry : policy_dict_value->DictItems()) {
+  for (auto entry : policy_dict) {
     if (entry.first == kWildcard)
       continue;
     if (!entry.second.is_dict())
       continue;
-    std::string* installation_mode =
-        entry.second.FindStringKey(kInstallationMode);
+    base::Value::Dict& entry_dict = entry.second.GetDict();
+    std::string* installation_mode = entry_dict.FindString(kInstallationMode);
     if (!installation_mode || (*installation_mode != kForceInstalled &&
                                *installation_mode != kNormalInstalled)) {
       continue;
     }
-    std::string* update_url = entry.second.FindStringKey(kUpdateUrl);
+    std::string* update_url = entry_dict.FindString(kUpdateUrl);
     if (!update_url || base::EqualsCaseInsensitiveASCII(
                            *update_url, kChromeWebstoreUpdateURL)) {
       continue;
@@ -145,11 +146,11 @@ bool FilterSensitiveExtensionSettings(PolicyMap::Entry* map_entry) {
   // invalid extension id and will be removed by PolicyHandler later.
   if (!filtered_extensions.empty()) {
     for (const auto& extension : filtered_extensions) {
-      auto setting = policy_dict_value->ExtractKey(extension);
+      auto setting = policy_dict.Extract(extension);
       if (!setting)
         continue;
-      policy_dict_value->SetKey(kBlockedExtensionPrefix + extension,
-                                std::move(setting.value()));
+      policy_dict.Set(kBlockedExtensionPrefix + extension,
+                      std::move(setting.value()));
     }
     map_entry->AddMessage(PolicyMap::MessageType::kWarning,
                           IDS_POLICY_OFF_CWS_URL_ERROR,

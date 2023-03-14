@@ -66,9 +66,7 @@ void SetUserKeys(const UserPolicyBuilder& user_policy) {
   std::string user_key_bits = user_policy.GetPublicSigningKeyAsString();
   ASSERT_FALSE(user_key_bits.empty());
   ASSERT_TRUE(base::CreateDirectory(user_key_file.DirName()));
-  ASSERT_EQ(base::WriteFile(user_key_file, user_key_bits.data(),
-                            user_key_bits.length()),
-            base::checked_cast<int>(user_key_bits.length()));
+  ASSERT_TRUE(base::WriteFile(user_key_file, user_key_bits));
 }
 
 }  // namespace

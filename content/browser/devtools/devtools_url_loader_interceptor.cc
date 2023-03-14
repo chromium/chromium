@@ -1702,7 +1702,8 @@ void InterceptionJob::OnComplete(
   }
   // Since we're not forwarding OnComplete right now, make sure
   // we're in the proper state. The completion is due upon client response.
-  DCHECK(state_ == State::kResponseReceived || state_ == State::kResponseTaken);
+  DCHECK(state_ == State::kResponseReceived || state_ == State::kResponseTaken)
+      << "Unexpected state " << static_cast<int>(state_);
   DCHECK(waiting_for_resolution_);
 
   response_metadata_->status = status;

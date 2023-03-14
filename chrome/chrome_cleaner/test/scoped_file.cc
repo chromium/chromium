@@ -19,8 +19,7 @@ std::unique_ptr<ScopedFile> ScopedFile::Create(const base::FilePath& dir,
   CHECK(base::PathExists(file_path.DirName()));
   CHECK_LE(contents.length(),
            static_cast<size_t>(std::numeric_limits<int>::max()));
-  base::WriteFile(file_path, contents.c_str(),
-                  static_cast<int>(contents.length()));
+  base::WriteFile(file_path, contents);
   return std::make_unique<ScopedFile>(file_path);
 }
 

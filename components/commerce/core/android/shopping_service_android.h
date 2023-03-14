@@ -73,6 +73,21 @@ class ShoppingServiceAndroid : public base::SupportsUserData::Data,
                    const JavaParamRef<jstring>& j_id,
                    const JavaParamRef<jobject>& j_callback);
 
+  void IsSubscribed(JNIEnv* env,
+                    const JavaParamRef<jobject>& obj,
+                    jint j_type,
+                    jint j_id_type,
+                    jint j_management_type,
+                    const JavaParamRef<jstring>& j_id,
+                    const JavaParamRef<jobject>& j_callback);
+
+  bool IsSubscribedFromCache(JNIEnv* env,
+                             const JavaParamRef<jobject>& obj,
+                             jint j_type,
+                             jint j_id_type,
+                             jint j_management_type,
+                             const JavaParamRef<jstring>& j_id);
+
   bool IsShoppingListEligible(JNIEnv* env, const JavaParamRef<jobject>& obj);
 
   bool IsMerchantViewerEnabled(JNIEnv* env, const JavaParamRef<jobject>& obj);

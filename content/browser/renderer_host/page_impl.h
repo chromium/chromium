@@ -141,7 +141,8 @@ class CONTENT_EXPORT PageImpl : public Page {
   // documents from prerendered to activated. Tells the corresponding
   // RenderFrameHostImpls that the renderer will be activating their documents.
   void ActivateForPrerendering(
-      StoredPage::RenderViewHostImplSafeRefSet& render_view_hosts_to_activate);
+      StoredPage::RenderViewHostImplSafeRefSet& render_view_hosts_to_activate,
+      absl::optional<blink::ViewTransitionState> view_transition_state);
 
   // Prerender2:
   // Dispatches load events that were deferred to be dispatched after
@@ -176,13 +177,14 @@ class CONTENT_EXPORT PageImpl : public Page {
   // Returns the keyboard layout mapping.
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap();
 
-  // Returns whether a pending call to `sharedStorage.selectURL()` should be
-  // allowed for `origin`, incrementing the corresponding count in
-  // `select_url_count_` if so and if
+  // Returns whether a pending call to `sharedStorage.selectURL()` has
+  // sufficient budget for `origin`, debiting `select_url_overall_budget_` and
+  // `select_url_per_origin_budget_[origin]` if so and if
   // `blink::features::kSharedStorageSelectURLLimit` is enabled. If
   // `blink::features::kSharedStorageSelectURLLimit` is disabled, always returns
   // true.
-  bool IsSelectURLAllowed(const url::Origin& origin);
+  bool CheckAndMaybeDebitSelectURLBudgets(const url::Origin& origin,
+                                          double bits_to_charge);
 
   // Returns whether a pending call to `fence.reportEvent()` with
   // `FencedFrame::ReportingDestination::kSharedStorageSelectUrl` should be
@@ -258,13 +260,25 @@ class CONTENT_EXPORT PageImpl : public Page {
   // Any fenced frames created within this page will access this map.
   FencedFrameURLMapping fenced_frame_urls_map_;
 
-  // A map of origins to the number of unblocked calls made to
-  // `sharedStorage.selectURL()` from the given origin during this page load.
-  // `select_url_count_` is not cleared until `this` is destroyed, and it does
-  // not rely on any assumptions about when specifically `this` is destroyed
-  // (e.g. during navigation or not). Used only if
+  // If `blink::features::kSharedStorageSelectURLLimit` is enabled, the number
+  // of bits of entropy remaining in this pageload's overall budget for calls to
+  // `sharedStorage.selectURL()`. Calls from all origins on this page are
+  // charged to this budget. `select_url_overall_budget_` is not renewed until
+  // `this` is destroyed, and it does not rely on any assumptions about when
+  // specifically `this` is destroyed (e.g. during navigation or not).
+  absl::optional<double> select_url_overall_budget_;
+
+  // If `blink::features::kSharedStorageSelectURLLimit` is enabled, the maximum
+  // number of bits of entropy in a single origin's budget.
+  absl::optional<double> select_url_max_bits_per_origin_;
+
+  // A map of origins to the number  bits of entropy remaining in this origin's
+  // budget for calls to `sharedStorage.selectURL()` during this pageload.
+  // `select_url_per_origin_budget_` is not cleared until `this` is destroyed,
+  // and it does not rely on any assumptions about when specifically `this` is
+  // destroyed (e.g. during navigation or not). Used only if
   // `blink::features::kSharedStorageSelectURLLimit` is enabled.
-  base::flat_map<url::Origin, int> select_url_count_;
+  base::flat_map<url::Origin, double> select_url_per_origin_budget_;
 
   // If `blink::features::kSharedStorageReportEventLimit` is enabled, the
   // maximum number of bits of entropy per pageload that are allowed to leak via

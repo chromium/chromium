@@ -38,8 +38,7 @@ static void CreateFile(const base::FilePath& file,
                        size_t size,
                        const base::Time& timestamp) {
   const std::string data(size, 0);
-  EXPECT_EQ(base::WriteFile(file, data.data(), data.size()),
-            static_cast<int>(size));
+  EXPECT_TRUE(base::WriteFile(file, data));
   EXPECT_TRUE(base::TouchFile(file, timestamp, timestamp));
 }
 

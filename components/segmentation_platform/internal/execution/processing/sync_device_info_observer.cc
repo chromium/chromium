@@ -22,14 +22,15 @@ using FormFactor = syncer ::DeviceInfo::FormFactor;
 
 namespace {
 
-constexpr int kDefaultActiveDaysThreshold = 14;
+constexpr int kActiveDaysThresholdForMetrics = 14;
+constexpr int kActiveDayThresholdForInputDelegate = 60;
 
 #define AS_FLOAT_VAL(x) ProcessedValue(static_cast<float>(x))
 
 base::TimeDelta GetActivePeriodForMetrics() {
   return base::Days(base::GetFieldTrialParamByFeatureAsInt(
       kSegmentationDeviceCountByOsType, "active_days_threshold",
-      kDefaultActiveDaysThreshold));
+      kActiveDaysThresholdForMetrics));
 }
 
 base::TimeDelta Age(base::Time last_update, base::Time now) {
@@ -156,7 +157,8 @@ void SyncDeviceInfoObserver::Process(
        device_info_status_ == DeviceInfoStatus::TIMEOUT_POSTED_BUT_NOT_HIT)) {
     pending_actions_.push_back(base::BindOnce(
         &SyncDeviceInfoObserver::ReadyToFinishProcessing,
-        weak_ptr_factory_.GetWeakPtr(), input, std::move(callback)));
+        weak_ptr_factory_.GetWeakPtr(), input,
+        feature_processor_state.input_context(), std::move(callback)));
 
     if (device_info_status_ == DeviceInfoStatus::TIMEOUT_NOT_POSTED) {
       device_info_status_ = DeviceInfoStatus::TIMEOUT_POSTED_BUT_NOT_HIT;
@@ -168,13 +170,14 @@ void SyncDeviceInfoObserver::Process(
     }
   } else {
     ReadyToFinishProcessing(
-        input, std::move(callback),
+        input, feature_processor_state.input_context(), std::move(callback),
         device_info_status_ == DeviceInfoStatus::INFO_AVAILABLE);
   }
 }
 
 void SyncDeviceInfoObserver::ReadyToFinishProcessing(
     const proto::CustomInput& input,
+    scoped_refptr<InputContext> input_context,
     ProcessedCallback callback,
     bool success) {
   if (!success) {
@@ -184,11 +187,15 @@ void SyncDeviceInfoObserver::ReadyToFinishProcessing(
     return;
   }
 
-  int active_threshold = kDefaultActiveDaysThreshold;
-  auto it2 = input.additional_args().find("active_days_limit");
-  if (it2 != input.additional_args().end()) {
-    if (!base::StringToInt(it2->second, &active_threshold)) {
-      active_threshold = kDefaultActiveDaysThreshold;
+  int active_threshold = kActiveDayThresholdForInputDelegate;
+  if (input_context) {
+    auto input_context_iter =
+        input_context->metadata_args.find("active_days_limit");
+    if (input_context_iter != input_context->metadata_args.end()) {
+      const auto& processed_value = input_context_iter->second;
+      if (processed_value.type == ProcessedValue::INT) {
+        active_threshold = processed_value.int_val;
+      }
     }
   }
   std::map<
@@ -198,6 +205,10 @@ void SyncDeviceInfoObserver::ReadyToFinishProcessing(
   int total_count = 0;
   const base::Time now = base::Time::Now();
   for (const auto& device_info : device_info_tracker_->GetAllDeviceInfo()) {
+    if (device_info_tracker_->IsRecentLocalCacheGuid(device_info->guid())) {
+      continue;
+    }
+
     if (!IsDeviceActive(device_info->last_updated_timestamp(), now,
                         base::Days(active_threshold))) {
       continue;

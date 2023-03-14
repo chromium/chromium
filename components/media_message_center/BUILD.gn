@@ -32,7 +32,10 @@ component("media_message_center") {
 
   defines = [ "IS_MEDIA_MESSAGE_CENTER_IMPL" ]
 
-  public_deps = [ "//services/media_session/public/mojom" ]
+  public_deps = [
+    "//services/media_session/public/mojom",
+    "//third_party/abseil-cpp:absl",
+  ]
 
   deps = [
     "//base",

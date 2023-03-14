@@ -1,13 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
+<translation id="1347497506789975534">Sýna vistaða greiðslumáta</translation>
 <translation id="1383876407941801731">Leita</translation>
-<translation id="1566281227936819866">Sýnir vistaða greiðslumáta</translation>
 <translation id="1717486229951421299">Listi yfir innskráningarupplýsingar sem eru færðar inn við snertingu opinn í hálfri hæð.</translation>
 <translation id="207576718733492531">Listi yfir innskráningarupplýsingar sem eru færðar inn við snertingu er lokaður.</translation>
 <translation id="2610239185026711824">Leggja til aðgangsorð</translation>
 <translation id="2652129567809778422">Velja aðgangsorð</translation>
-<translation id="2803478378562657435">Sýnir vistuð aðgangsorð og valkosti fyrir aðgangsorð</translation>
 <translation id="2903493209154104877">Heimilisföng</translation>
 <translation id="3399357656427473483">Listi yfir innskráningarupplýsingar sem eru færðar inn við snertingu.</translation>
 <translation id="3688051737190211318">Ef þú treystir <ph name="ORIGIN" /> geturðu notað vistað aðgangsorð til að skrá þig inn</translation>
@@ -15,16 +14,14 @@
 <translation id="4660011489602794167">Sýna lyklaborð</translation>
 <translation id="4694050069269396220">Ef þú treystir <ph name="ORIGIN" /> geturðu notað vistað aðgangsorð fyrir annað vefsvæði.</translation>
 <translation id="5016175294846053194">Tillögur um sjálfvirka útfyllingu eru fyrir ofan lyklaborðið</translation>
-<translation id="5088366526685584589">Sýnir vistuð heimilisföng</translation>
 <translation id="5441504010984421144">Listi yfir innskráningarupplýsingar sem eru færðar inn við snertingu opinn í fullri hæð.</translation>
+<translation id="6296921860874265377">Sýna vistuð aðgangsorð og valkosti fyrir aðgangsorð</translation>
 <translation id="6393156038355142111">Leggja til traust aðgangsorð</translation>
 <translation id="6558703547256592471">Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="7029809446516969842">Aðgangsorð</translation>
-<translation id="7299100402441711551">Sýna heimilisföng</translation>
-<translation id="7494879913343971937">Sýna aðgangsorð</translation>
 <translation id="7594473730623999723">Strjúktu til að sjá fleiri tillögur</translation>
+<translation id="7873973044507799456">Sýna vistuð heimilisföng</translation>
 <translation id="7992095260806105436">Nota tillögu fyrir sjálfvirka útfyllingu í Chrome</translation>
-<translation id="8037472847879765671">Sýna greiðslumáta</translation>
 <translation id="8507520749471379845">Tiltæk aðgangsorð</translation>
 <translation id="8705308553596171387">Ekkert aðgangsorð</translation>
 <translation id="879180780857354295">Aðrir útfyllingarkostir í boði fyrir ofan lyklaborðið</translation>

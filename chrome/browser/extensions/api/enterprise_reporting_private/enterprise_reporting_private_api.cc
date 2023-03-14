@@ -220,11 +220,10 @@ EnterpriseReportingPrivateGetPersistentSecretFunction::
 
 ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateGetPersistentSecretFunction::Run() {
-  std::unique_ptr<
-      api::enterprise_reporting_private::GetPersistentSecret::Params>
-      params(api::enterprise_reporting_private::GetPersistentSecret::Params::
-                 Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<api::enterprise_reporting_private::GetPersistentSecret::Params>
+      params = api::enterprise_reporting_private::GetPersistentSecret::Params::
+          Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   bool force_create = params->reset_secret ? *params->reset_secret : false;
   base::ThreadPool::PostTask(
       FROM_HERE,
@@ -274,10 +273,10 @@ EnterpriseReportingPrivateGetDeviceDataFunction::
 
 ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateGetDeviceDataFunction::Run() {
-  std::unique_ptr<api::enterprise_reporting_private::GetDeviceData::Params>
-      params(api::enterprise_reporting_private::GetDeviceData::Params::Create(
-          args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<api::enterprise_reporting_private::GetDeviceData::Params>
+      params = api::enterprise_reporting_private::GetDeviceData::Params::Create(
+          args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   base::ThreadPool::PostTask(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
@@ -330,10 +329,10 @@ EnterpriseReportingPrivateSetDeviceDataFunction::
 
 ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateSetDeviceDataFunction::Run() {
-  std::unique_ptr<api::enterprise_reporting_private::SetDeviceData::Params>
-      params(api::enterprise_reporting_private::SetDeviceData::Params::Create(
-          args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<api::enterprise_reporting_private::SetDeviceData::Params>
+      params = api::enterprise_reporting_private::SetDeviceData::Params::Create(
+          args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   base::ThreadPool::PostTask(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
@@ -470,10 +469,11 @@ EnterpriseReportingPrivateGetCertificateFunction::
 
 ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateGetCertificateFunction::Run() {
-  std::unique_ptr<api::enterprise_reporting_private::GetCertificate::Params>
-      params(api::enterprise_reporting_private::GetCertificate::Params::Create(
-          args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<api::enterprise_reporting_private::GetCertificate::Params>
+      params =
+          api::enterprise_reporting_private::GetCertificate::Params::Create(
+              args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   // If AutoSelectCertificateForUrl is not set at the machine level, this
   // operation is not supported and should return immediately with the
@@ -533,10 +533,10 @@ EnterpriseReportingPrivateEnqueueRecordFunction::Run() {
     return RespondNow(Error(kErrorProfileNotAffiliated));
   }
 
-  std::unique_ptr<api::enterprise_reporting_private::EnqueueRecord::Params>
-      params(api::enterprise_reporting_private::EnqueueRecord::Params::Create(
-          args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<api::enterprise_reporting_private::EnqueueRecord::Params>
+      params = api::enterprise_reporting_private::EnqueueRecord::Params::Create(
+          args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   // Parse params
   const auto event_type = params->request.event_type;
@@ -562,7 +562,7 @@ EnterpriseReportingPrivateEnqueueRecordFunction::Run() {
 }
 
 bool EnterpriseReportingPrivateEnqueueRecordFunction::TryParseParams(
-    std::unique_ptr<api::enterprise_reporting_private::EnqueueRecord::Params>
+    absl::optional<api::enterprise_reporting_private::EnqueueRecord::Params>
         params,
     ::reporting::Record& record,
     ::reporting::Priority& priority) {
@@ -655,11 +655,11 @@ EnterpriseReportingPrivateGetFileSystemInfoFunction::Run() {
         device_signals::SignalCollectionError::kUnsupported)));
   }
 
-  std::unique_ptr<api::enterprise_reporting_private::GetFileSystemInfo::Params>
-      params(
+  absl::optional<api::enterprise_reporting_private::GetFileSystemInfo::Params>
+      params =
           api::enterprise_reporting_private::GetFileSystemInfo::Params::Create(
-              args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+              args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   // Verify that all file paths are UTF8.
   bool paths_are_all_utf8 = true;
@@ -735,10 +735,10 @@ EnterpriseReportingPrivateGetSettingsFunction::Run() {
         device_signals::SignalCollectionError::kUnsupported)));
   }
 
-  std::unique_ptr<api::enterprise_reporting_private::GetSettings::Params>
-      params(api::enterprise_reporting_private::GetSettings::Params::Create(
-          args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<api::enterprise_reporting_private::GetSettings::Params>
+      params = api::enterprise_reporting_private::GetSettings::Params::Create(
+          args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   // Verify that all paths strings are UTF8.
   bool paths_are_all_utf8 = true;
@@ -813,9 +813,9 @@ EnterpriseReportingPrivateGetAvInfoFunction::Run() {
         device_signals::SignalCollectionError::kUnsupported)));
   }
 
-  std::unique_ptr<api::enterprise_reporting_private::GetAvInfo::Params> params(
-      api::enterprise_reporting_private::GetAvInfo::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<api::enterprise_reporting_private::GetAvInfo::Params> params =
+      api::enterprise_reporting_private::GetAvInfo::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   StartSignalCollection(
       params->user_context.user_id, CreateAggregationRequest(signal_name()),
@@ -865,10 +865,10 @@ EnterpriseReportingPrivateGetHotfixesFunction::Run() {
         device_signals::SignalCollectionError::kUnsupported)));
   }
 
-  std::unique_ptr<api::enterprise_reporting_private::GetHotfixes::Params>
-      params(api::enterprise_reporting_private::GetHotfixes::Params::Create(
-          args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<api::enterprise_reporting_private::GetHotfixes::Params>
+      params = api::enterprise_reporting_private::GetHotfixes::Params::Create(
+          args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   StartSignalCollection(
       params->user_context.user_id, CreateAggregationRequest(signal_name()),

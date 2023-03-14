@@ -7,6 +7,7 @@
  */
 import {BrailleTable} from '../../common/braille/braille_table.js';
 import {SettingsManager} from '../../common/settings_manager.js';
+import {Output} from '../output/output.js';
 
 import {ExpandingBrailleTranslator} from './expanding_braille_translator.js';
 import {LibLouis} from './liblouis.js';
@@ -40,6 +41,18 @@ export class BrailleTranslatorManager {
     this.uncontractedTranslator_ = null;
     /** @private {?string} */
     this.uncontractedTableId_ = null;
+  }
+
+  static init() {
+    if (BrailleTranslatorManager.instance) {
+      throw new Error('\nCannot create two BrailleTranslatorManagers');
+    }
+    BrailleTranslatorManager.instance = new BrailleTranslatorManager();
+
+    SettingsManager.addListenerForKey(
+        'brailleTable',
+        brailleTable =>
+            BrailleTranslatorManager.instance.refresh(brailleTable));
   }
 
   /**
@@ -162,6 +175,29 @@ export class BrailleTranslatorManager {
     return this.uncontractedTranslator_;
   }
 
+  /** Toggles the braille table type. */
+  toggleBrailleTable() {
+    let brailleTableType = SettingsManager.getString('brailleTableType');
+    let output = '';
+    if (brailleTableType === 'brailleTable6') {
+      brailleTableType = 'brailleTable8';
+
+      // This label reads "switch to 8 dot braille".
+      output = '@OPTIONS_BRAILLE_TABLE_TYPE_6';
+    } else {
+      brailleTableType = 'brailleTable6';
+
+      // This label reads "switch to 6 dot braille".
+      output = '@OPTIONS_BRAILLE_TABLE_TYPE_8';
+    }
+
+    const brailleTable = SettingsManager.getString(brailleTableType);
+    SettingsManager.set('brailleTable', brailleTable);
+    SettingsManager.set('brailleTableType', brailleTableType);
+    this.refresh(brailleTable);
+    new Output().format(output).go();
+  }
+
   /**
    * Asynchronously fetches the list of braille tables and refreshes the
    * translators when done.
@@ -210,3 +246,6 @@ export class BrailleTranslatorManager {
     await this.fetchTables_();
   }
 }
+
+/** @type {BrailleTranslatorManager} */
+BrailleTranslatorManager.instance;

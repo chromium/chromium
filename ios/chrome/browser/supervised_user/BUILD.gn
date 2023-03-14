@@ -5,6 +5,8 @@
 source_set("supervised_user") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "kids_chrome_management_client_factory.h",
+    "kids_chrome_management_client_factory.mm",
     "supervised_user_settings_service_factory.h",
     "supervised_user_settings_service_factory.mm",
   ]
@@ -15,12 +17,17 @@ source_set("supervised_user") {
     "//components/supervised_user/core/common",
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/signin",
+    "//services/network/public/cpp",
   ]
 }
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [ "supervised_user_settings_service_factory_unittest.mm" ]
+  sources = [
+    "kids_chrome_management_client_factory_unittest.mm",
+    "supervised_user_settings_service_factory_unittest.mm",
+  ]
   deps = [
     ":supervised_user",
     "//base/test:test_support",

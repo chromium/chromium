@@ -5,7 +5,7 @@
 #         chromeos
 #         fuchsia
 #         linux ubuntu
-#         mac highsierra mojave catalina bigsur monterey
+#         mac highsierra mojave catalina bigsur monterey ventura
 #         win win8 win10 ]
 # Devices
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
@@ -22,7 +22,7 @@
 #         release release-x64
 #         fuchsia-chrome web-engine-shell ]
 # GPU
-# tags: [ amd amd-0x6613 amd-0x679e amd-0x6821 amd-0x7340
+# tags: [ amd amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340
 #         apple apple-apple-m1 apple-angle-metal-renderer:-apple-m1
 #         arm
 #         google google-0xffff google-0xc0de
@@ -59,6 +59,8 @@
 # tags: [ oop-c no-oop-c ]
 # WebGPU Backend Validation
 # tags: [ dawn-backend-validation dawn-no-backend-validation ]
+# WebGPU Adapter
+# tags: [ webgpu-adapter-default webgpu-adapter-swiftshader ]
 # Clang coverage
 # tags: [ clang-coverage no-clang-coverage ]
 # results: [ Failure RetryOnFailure Skip Slow ]
@@ -194,6 +196,7 @@ crbug.com/1201009 [ fuchsia ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCa
 # finder:group-start crbug.com/1382796 failures happen in many tests, so can be classified as stale for one specific test
 crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] TraceTest_2DCanvasWebGL [ RetryOnFailure ]
 crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] TraceTest_Canvas2DRedBox [ RetryOnFailure ]
+crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] TraceTest_Canvas2DTabSwitch [ RetryOnFailure ]
 crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] TraceTest_ScissorTestWithPreserveDrawingBuffer [ RetryOnFailure ]
 crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] TraceTest_Video_VP9_DXVA [ RetryOnFailure ]
 crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] TraceTest_Video_MP4_FourColors_Aspect_4x3 [ RetryOnFailure ]
@@ -204,10 +207,10 @@ crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] TraceTe
 crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLAlphaCanvas [ RetryOnFailure ]
 # finder:group-end
 
-# WebGL drawingBufferStorage does not work on Pixel 4, Samsung A23 or Lacros FYI
-# x64 Release (Intel) yet.
-crbug.com/1230619 [ android android-pixel-4 ] TraceTest_WebGLFloat [ Failure ]
-crbug.com/1230619 [ android android-SM-A235M ] TraceTest_WebGLFloat [ Failure ]
+# WebGL drawingBufferStorage does not work on Pixel 4, Samsung A23, nexus-5x or
+# Lacros FYI x64 Release (Intel) yet.
+crbug.com/1230619 [ android android-sm-a235m ] TraceTest_WebGLFloat [ Failure ]
+crbug.com/1230619 [ android android-nexus-5x passthrough ] TraceTest_WebGLFloat [ Failure ]
 
 crbug.com/1409457 [ win amd ] OverlayModeTraceTest_DirectComposition_Video_MP4_BGRA [ Failure ]
 crbug.com/1409457 [ win amd ] OverlayModeTraceTest_DirectComposition_Video_MP4_YUY2 [ Failure ]
@@ -216,6 +219,8 @@ crbug.com/1409457 [ win amd ] OverlayModeTraceTest_DirectComposition_Video_VP9_Y
 
 crbug.com/1402261 [ win intel ] OverlayModeTraceTest_DirectComposition_Video_* [ RetryOnFailure ]
 crbug.com/1402261 [ win amd ] OverlayModeTraceTest_DirectComposition_Video_* [ Failure ]
+
+crbug.com/1417340 [ android android-sm-a235m ] TraceTest_WebGLGreenTriangle_AA_Alpha [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

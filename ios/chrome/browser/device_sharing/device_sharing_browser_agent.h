@@ -19,8 +19,8 @@ class Browser;
 // browser states, all updates clear the shared URL.
 class DeviceSharingBrowserAgent
     : public BrowserUserData<DeviceSharingBrowserAgent>,
-      WebStateListObserver,
-      BrowserObserver,
+      public WebStateListObserver,
+      public BrowserObserver,
       public web::WebStateObserver {
  public:
   // Not copyable or moveable

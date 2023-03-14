@@ -14,16 +14,16 @@ import 'chrome://resources/js/action_link.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
 import '../os_people_page/user_list.js';
-import '../os_people_page/users_add_user_dialog.js';
+import '../os_people_page/add_user_dialog.js';
 
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
-import {SettingsUsersAddUserDialogElement} from '../os_people_page/users_add_user_dialog.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import {SettingsUsersAddUserDialogElement} from '../os_people_page/add_user_dialog.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';

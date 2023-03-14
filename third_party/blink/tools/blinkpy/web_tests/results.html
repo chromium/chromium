@@ -668,9 +668,12 @@ class PathParser {
             let responseJson = JSON.parse(response);
             if (responseJson.artifacts) {
               for (let artifact of responseJson.artifacts) {
-                let [_, testPath] = artifact.name.match(
+                let match = artifact.name.match(
                     /\/tests\/ninja:%2F%2F:[^%]*(%2F.*)\/results\//);
-                testPath = decodeURIComponent(testPath);
+                if (!match) {
+                  continue;
+                }
+                let testPath = decodeURIComponent(match[1]);
                 let cache = PathParser.resultDBArtifacts[testPath];
                 if (!cache) {
                   cache = PathParser.resultDBArtifacts[testPath] =

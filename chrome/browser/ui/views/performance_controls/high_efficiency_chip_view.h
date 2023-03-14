@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PERFORMANCE_CONTROLS_HIGH_EFFICIENCY_CHIP_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PERFORMANCE_CONTROLS_HIGH_EFFICIENCY_CHIP_VIEW_H_
 
+#include "base/scoped_observation.h"
+#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/performance_controls/high_efficiency_bubble_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -17,7 +19,9 @@
 // discarded tabs.
 class HighEfficiencyChipView : public PageActionIconView,
                                public HighEfficiencyBubbleObserver,
-                               public TabStripModelObserver {
+                               public TabStripModelObserver,
+                               public performance_manager::user_tuning::
+                                   UserPerformanceTuningManager::Observer {
  public:
   METADATA_HEADER(HighEfficiencyChipView);
   // The number of times a user should see the expanded chip.
@@ -54,14 +58,17 @@ class HighEfficiencyChipView : public PageActionIconView,
   void MaybeShowIPH();
   void OnIPHClosed();
 
-  // Callback for the registrar. Checks whether high efficiency mode is
-  // currently enabled.
-  void OnPrefChanged();
+  // performance_manager::user_tuning::UserPerformanceTuningManager::Observer:
+  // Checks whether high efficiency mode is currently enabled.
+  void OnHighEfficiencyModeChanged() override;
 
   const raw_ptr<Browser> browser_;
   base::OneShotTimer timer_;
   raw_ptr<views::BubbleDialogModelHost> bubble_ = nullptr;
-  PrefChangeRegistrar registrar_;
+  base::ScopedObservation<
+      performance_manager::user_tuning::UserPerformanceTuningManager,
+      performance_manager::user_tuning::UserPerformanceTuningManager::Observer>
+      user_performance_tuning_manager_observation_{this};
   bool is_high_efficiency_mode_enabled_ = false;
   base::WeakPtrFactory<HighEfficiencyChipView> weak_ptr_factory_{this};
 };

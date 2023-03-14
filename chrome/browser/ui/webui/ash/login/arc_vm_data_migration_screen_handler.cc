@@ -6,6 +6,8 @@
 
 #include "chrome/browser/ash/login/screens/arc_vm_data_migration_screen.h"
 #include "components/login/localized_values_builder.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/time_format.h"
 #include "ui/base/text/bytes_formatting.h"
 
 namespace ash {
@@ -17,21 +19,50 @@ ArcVmDataMigrationScreenHandler::~ArcVmDataMigrationScreenHandler() = default;
 
 void ArcVmDataMigrationScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
-  // TODO(b/258278176): Replace strings with l10n ones.
-  builder->Add("loadingDialogTitle", u"Loading...");
-  builder->Add("welcomeScreenTitle", u"Update your Chromebook");
-  builder->Add("welcomeScreenDescriptionHeader", u"What to expect");
-  builder->Add("welcomeScreenDescriptionBody",
-               u"This is a critical update. During the update you will not be "
-               u"able to use your device for up to 10 minutes. Please keep "
-               u"your device connected to a charger during the update.");
+  builder->Add("loadingDialogTitle",
+               IDS_ARC_VM_DATA_MIGRATION_LOADING_SCREEN_MESSAGE);
+  builder->Add("welcomeScreenTitle",
+               IDS_ARC_VM_DATA_MIGRATION_WELCOME_SCREEN_TITLE);
+  builder->Add("welcomeScreenDescriptionHeader",
+               IDS_ARC_VM_DATA_MIGRATION_WHAT_TO_EXPECT_TITLE);
+  builder->Add("welcomeScreenUpdateDescription",
+               IDS_ARC_VM_DATA_MIGRATION_UPDATE_DESCRIPTION);
+  builder->Add("welcomeScreenBlockingBehaviorDescription",
+               IDS_ARC_VM_DATA_MIGRATION_BLOCKING_BEHAVIOR_DESCRIPTION);
+  builder->Add("connectToChargerMessage",
+               IDS_ARC_VM_DATA_MIGRATION_CONNECT_TO_CHARGER_MESSAGE);
   builder->Add("notEnoughFreeDiskSpaceMessage",
-               u"Free up more than $1 of space");
+               IDS_ARC_VM_DATA_MIGRATION_NOT_ENOUGH_FREE_DISK_SPACE_MESSAGE);
   builder->Add("notEnoughBatteryMessage",
-               u"Your battery must be charged above $1%");
-  builder->Add("connectToChargerMessage", u"Connect your device to a charger");
-  builder->Add("skipButtonLabel", u"Remind me later");
-  builder->Add("updateButtonLabel", u"Next");
+               IDS_ARC_VM_DATA_MIGRATION_NOT_ENOUGH_BATTERY_MESSAGE);
+  builder->Add("skipButtonLabel",
+               IDS_ARC_VM_DATA_MIGRATION_SCREEN_SKIP_BUTTON_LABEL);
+  builder->Add("updateButtonLabel",
+               IDS_ARC_VM_DATA_MIGRATION_SCREEN_UPDATE_BUTTON_LABEL);
+  builder->Add("resumeScreenTitle",
+               IDS_ARC_VM_DATA_MIGRATION_RESUME_SCREEN_TITLE);
+  builder->Add("resumeScreenDescriptionHeader",
+               IDS_ARC_VM_DATA_MIGRATION_WHAT_TO_EXPECT_TITLE);
+  builder->Add("resumeScreenDescriptionBody",
+               IDS_ARC_VM_DATA_MIGRATION_RESUME_DESCRIPTION);
+  builder->Add("resumeButtonLabel",
+               IDS_ARC_VM_DATA_MIGRATION_SCREEN_RESUME_BUTTON_LABEL);
+  builder->Add("progressScreenTitle",
+               IDS_ARC_VM_DATA_MIGRATION_PROGRESS_SCREEN_TITLE);
+  builder->Add("progressScreenSubtitle",
+               IDS_ARC_VM_DATA_MIGRATION_PROGRESS_DESCRIPTION);
+  builder->Add("successScreenTitle",
+               IDS_ARC_VM_DATA_MIGRATION_SUCCESS_SCREEN_TITLE);
+  builder->Add("finishButtonLabel",
+               IDS_ARC_VM_DATA_MIGRATION_SCREEN_FINISH_BUTTON_LABEL);
+  builder->Add("failureScreenTitle",
+               IDS_ARC_VM_DATA_MIGRATION_FAILURE_SCREEN_TITLE);
+  builder->Add("failureScreenDescription",
+               IDS_ARC_VM_DATA_MIGRATION_FAILURE_DESCRIPTION);
+  builder->Add("failureScreenAskFeedbackReport",
+               IDS_ARC_VM_DATA_MIGRATION_SEND_FEEDBACK_MESSAGE);
+  builder->Add("reportButtonLabel",
+               IDS_ARC_VM_DATA_MIGRATION_SCREEN_REPORT_BUTTON_LABEL);
 }
 
 void ArcVmDataMigrationScreenHandler::Show() {
@@ -55,6 +86,17 @@ void ArcVmDataMigrationScreenHandler::SetMinimumBatteryPercent(double percent) {
 void ArcVmDataMigrationScreenHandler::SetBatteryState(bool enough,
                                                       bool connected) {
   CallExternalAPI("setBatteryState", enough, connected);
+}
+
+void ArcVmDataMigrationScreenHandler::SetMigrationProgress(double progress) {
+  CallExternalAPI("setMigrationProgress", progress);
+}
+
+void ArcVmDataMigrationScreenHandler::SetEstimatedRemainingTime(
+    const base::TimeDelta& delta) {
+  CallExternalAPI("setEstimatedRemainingTime",
+                  ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_REMAINING,
+                                         ui::TimeFormat::LENGTH_SHORT, delta));
 }
 
 }  // namespace ash

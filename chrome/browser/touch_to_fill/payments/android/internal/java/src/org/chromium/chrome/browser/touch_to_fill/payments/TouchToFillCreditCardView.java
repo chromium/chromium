@@ -42,6 +42,7 @@ class TouchToFillCreditCardView extends TouchToFillViewBase {
         protected boolean shouldSkipItemType(@ItemType int type) {
             switch (type) {
                 case ItemType.HEADER: // Fallthrough.
+                case ItemType.FOOTER: // Fallthrough.
                 case ItemType.FILL_BUTTON:
                     return true;
                 case ItemType.CREDIT_CARD:
@@ -53,8 +54,10 @@ class TouchToFillCreditCardView extends TouchToFillViewBase {
 
         @Override
         protected boolean containsFillButton(RecyclerView parent) {
-            return parent.getAdapter().getItemViewType(parent.getAdapter().getItemCount() - 1)
-                    == ItemType.FILL_BUTTON;
+            int itemCount = parent.getAdapter().getItemCount();
+            // The button will be above the footer if it's present.
+            return itemCount > 1
+                    && parent.getAdapter().getItemViewType(itemCount - 2) == ItemType.FILL_BUTTON;
         }
     }
 
@@ -67,32 +70,11 @@ class TouchToFillCreditCardView extends TouchToFillViewBase {
     TouchToFillCreditCardView(Context context, BottomSheetController bottomSheetController) {
         super(bottomSheetController,
                 (RelativeLayout) LayoutInflater.from(context).inflate(
-                        R.layout.touch_to_fill_credit_card_sheet, null));
+                        R.layout.touch_to_fill_sheet, null));
         mBottomSheetController = bottomSheetController;
         mSheetItemListView = getItemList();
 
         mSheetItemListView.addItemDecoration(new HorizontalDividerItemDecoration(context));
-    }
-
-    void setScanCreditCardButton(boolean shouldShowScanCreditCard) {
-        View scanCreditCard = getContentView().findViewById(R.id.scan_new_card);
-        if (shouldShowScanCreditCard) {
-            scanCreditCard.setVisibility(View.VISIBLE);
-            scanCreditCard.setOnClickListener(unused -> mScanCreditCardHandler.run());
-        } else {
-            scanCreditCard.setVisibility(View.GONE);
-            scanCreditCard.setOnClickListener(null);
-        }
-    }
-
-    void setScanCreditCardCallback(Runnable callback) {
-        mScanCreditCardHandler = callback;
-    }
-
-    void setShowCreditCardSettingsCallback(Runnable callback) {
-        View managePaymentMethodsButton =
-                getContentView().findViewById(R.id.manage_payment_methods);
-        managePaymentMethodsButton.setOnClickListener(unused -> callback.run());
     }
 
     @Override
@@ -126,11 +108,6 @@ class TouchToFillCreditCardView extends TouchToFillViewBase {
     }
 
     @Override
-    protected View getFooter() {
-        return getContentView().findViewById(R.id.touch_to_fill_footer);
-    }
-
-    @Override
     protected RecyclerView getItemList() {
         return getContentView().findViewById(R.id.sheet_item_list);
     }
@@ -148,5 +125,10 @@ class TouchToFillCreditCardView extends TouchToFillViewBase {
     @Override
     protected int listedItemType() {
         return TouchToFillCreditCardProperties.ItemType.CREDIT_CARD;
+    }
+
+    @Override
+    protected int footerItemType() {
+        return TouchToFillCreditCardProperties.ItemType.FOOTER;
     }
 }

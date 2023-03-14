@@ -288,7 +288,8 @@ void MediaSessionItemProducer::OnFocusGained(
             this, id,
             std::make_unique<MediaSessionNotificationItem>(
                 this, id, session->source_name.value_or(std::string()),
-                std::move(item_controller), std::move(session->session_info)),
+                session->source_id, std::move(item_controller),
+                std::move(session->session_info)),
             std::move(session_controller)));
   }
 }

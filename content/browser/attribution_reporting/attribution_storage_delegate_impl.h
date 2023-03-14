@@ -12,6 +12,10 @@
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/common/content_export.h"
 
+namespace base {
+class Time;
+}  // namespace base
+
 namespace content {
 
 struct AttributionConfig;
@@ -61,7 +65,7 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   ~AttributionStorageDelegateImpl() override;
 
   // AttributionStorageDelegate:
-  base::Time GetEventLevelReportTime(const CommonSourceInfo& source,
+  base::Time GetEventLevelReportTime(const StoredSource& source,
                                      base::Time trigger_time) const override;
   base::Time GetAggregatableReportTime(base::Time trigger_time) const override;
   base::TimeDelta GetDeleteExpiredSourcesFrequency() const override;
@@ -71,13 +75,22 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
       const override;
   void ShuffleReports(std::vector<AttributionReport>& reports) override;
   RandomizedResponse GetRandomizedResponse(
-      const CommonSourceInfo& source) override;
+      const CommonSourceInfo& source,
+      base::Time event_report_window_time) override;
+  base::Time GetExpiryTime(absl::optional<base::TimeDelta> declared_expiry,
+                           base::Time source_time,
+                           attribution_reporting::mojom::SourceType) override;
+  absl::optional<base::Time> GetReportWindowTime(
+      absl::optional<base::TimeDelta> declared_window,
+      base::Time source_time) override;
 
   // Generates fake reports using a random "stars and bars" sequence index of a
   // possible output of the API.
   //
   // Exposed for testing.
-  std::vector<FakeReport> GetRandomFakeReports(const CommonSourceInfo& source);
+  std::vector<FakeReport> GetRandomFakeReports(
+      const CommonSourceInfo& source,
+      base::Time event_report_window_time);
 
   // Generates fake reports from the "stars and bars" sequence index of a
   // possible output of the API. This output is determined by the following
@@ -91,6 +104,7 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   // Exposed for testing.
   std::vector<FakeReport> GetFakeReportsForSequenceIndex(
       const CommonSourceInfo& source,
+      base::Time event_report_window_time,
       int random_stars_and_bars_sequence_index) const;
 
  protected:

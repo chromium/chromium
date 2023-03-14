@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
-#include "base/debug/activity_tracker.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/profiler.h"
@@ -348,9 +347,6 @@ void PlatformThread::Join(PlatformThreadHandle thread_handle) {
   // Record information about the exiting thread in case joining hangs.
   base::debug::Alias(&thread_id);
   base::debug::Alias(&last_error);
-
-  // Record the event that this thread is blocking upon (for hang diagnosis).
-  base::debug::ScopedThreadJoinActivity thread_activity(&thread_handle);
 
   base::internal::ScopedBlockingCallWithBaseSyncPrimitives scoped_blocking_call(
       FROM_HERE, base::BlockingType::MAY_BLOCK);

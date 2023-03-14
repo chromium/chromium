@@ -13,6 +13,8 @@ namespace viz {
 
 class VIZ_COMMON_EXPORT SharedElementDrawQuad : public DrawQuad {
  public:
+  static constexpr Material kMaterial = Material::kSharedElement;
+
   SharedElementDrawQuad();
   SharedElementDrawQuad(const SharedElementDrawQuad& other);
   ~SharedElementDrawQuad() override;

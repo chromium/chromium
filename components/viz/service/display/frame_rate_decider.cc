@@ -172,7 +172,7 @@ void FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded() {
   // a video while the rest of the page is static, we choose the frame interval
   // optimal for the video.
   absl::optional<base::TimeDelta> min_frame_sink_interval;
-  bool all_frame_sinks_have_same_interval = true;
+  [[maybe_unused]] bool all_frame_sinks_have_same_interval = true;
   for (const auto& frame_sink_id : frame_sinks_updated_in_previous_frame_) {
     auto interval =
         client_->GetPreferredFrameIntervalForFrameSinkId(frame_sink_id);
@@ -200,10 +200,20 @@ void FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded() {
                        TRACE_EVENT_SCOPE_THREAD, "min_frame_sink_interval",
                        min_frame_sink_interval->InMillisecondsF());
 
+  bool can_set_preferred_frame_rate = false;
+#if BUILDFLAG(IS_IOS)
+  // iOS will pick ideal refresh rate based on the preferred rate set, which
+  // will be rounded to the nearest refresh rate that is a factor of the maximum
+  // rate of the device.
+  can_set_preferred_frame_rate = true;
+#else
   // If only one frame sink is being updated and its frame rate can be directly
   // forwarded to the system, then prefer that over choosing one of the refresh
   // rates advertised by the system.
-  if (all_frame_sinks_have_same_interval && supports_set_frame_rate_) {
+  can_set_preferred_frame_rate =
+      all_frame_sinks_have_same_interval && supports_set_frame_rate_;
+#endif
+  if (can_set_preferred_frame_rate) {
     SetPreferredInterval(*min_frame_sink_interval);
     return;
   }
@@ -284,7 +294,18 @@ void FrameRateDecider::SetPreferredInterval(
 }
 
 bool FrameRateDecider::multiple_refresh_rates_supported() const {
+#if BUILDFLAG(IS_IOS)
+  // iOS doesn't announce supported intervals, but rather supports settings
+  // preferred frame rate via the BeginFrameSource that listens to vsync updates
+  // sent by CADisplayLink. Preferred frame rate will be then rounded to the
+  // factor of a maximum refresh rate of the device. It's chosen to always
+  // return true here as |supports_set_frame_rate| means whether setting a frame
+  // rate is supported via OutputSurface::SetFrameRate, which is not applicable
+  // to iOS.
+  return true;
+#else
   return supports_set_frame_rate_ || supported_intervals_.size() > 1u;
+#endif
 }
 
 }  // namespace viz

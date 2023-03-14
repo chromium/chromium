@@ -108,14 +108,15 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
-        IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
-                Profile.getLastUsedRegularProfile());
+        Profile profile = Profile.getLastUsedRegularProfile();
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(profile);
         ClickableSpansTextMessagePreference googleDataTextPref =
                 (ClickableSpansTextMessagePreference) findPreference(
                         ClearBrowsingDataFragment.PREF_GOOGLE_DATA_TEXT);
         Preference nonGoogleSearchHistoryTextPref =
                 findPreference(ClearBrowsingDataFragment.PREF_SEARCH_HISTORY_NON_GOOGLE_TEXT);
-        TemplateUrlService templateUrlService = TemplateUrlServiceFactory.get();
+        TemplateUrlService templateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
         TemplateUrl defaultSearchEngine = templateUrlService.getDefaultSearchEngineTemplateUrl();
         boolean isDefaultSearchEngineGoogle = templateUrlService.isDefaultSearchEngineGoogle();
 

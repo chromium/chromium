@@ -6,14 +6,16 @@
 
 #import "base/check.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/commerce/shopping_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
-#import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
-#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_price_tracking_mediator.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_table_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
@@ -53,6 +55,12 @@
 - (void)start {
   self.tableViewController = [[PriceNotificationsTableViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
+  PrefService* prefService = self.browser->GetBrowserState()->GetPrefs();
+  self.tableViewController.hasPreviouslyViewed =
+      prefService->GetBoolean(prefs::kPriceNotificationsHasBeenShown);
+  if (!self.tableViewController.hasPreviouslyViewed) {
+    prefService->SetBoolean(prefs::kPriceNotificationsHasBeenShown, true);
+  }
 
   commerce::ShoppingService* shoppingService =
       commerce::ShoppingServiceFactory::GetForBrowserState(
@@ -170,6 +178,8 @@
 - (void)presentStartPriceTrackingErrorAlertForItem:
     (PriceNotificationsTableViewItem*)item {
   __weak PriceNotificationsPriceTrackingMediator* weakMediator = self.mediator;
+  __weak PriceNotificationsTableViewController* weakController =
+      self.tableViewController;
   NSString* alertTitle = l10n_util::GetNSString(
       IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_ERROR_ALERT_TITLE);
   NSString* alertMessage = l10n_util::GetNSString(
@@ -186,7 +196,9 @@
                            title:alertTitle
                          message:alertMessage];
   [_alertCoordinator addItemWithTitle:cancelTitle
-                               action:nil
+                               action:^{
+                                 [weakController resetPriceTrackingItem:item];
+                               }
                                 style:UIAlertActionStyleCancel];
   [_alertCoordinator addItemWithTitle:tryAgainTitle
                                action:^{

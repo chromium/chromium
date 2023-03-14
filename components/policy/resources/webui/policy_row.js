@@ -96,8 +96,13 @@ export class PolicyRowElement extends CustomElement {
     // value has been set. Otherwise, leave them blank.
     if (!this.unset_) {
       const scopeDisplay = this.shadowRoot.querySelector('.scope');
-      scopeDisplay.textContent = loadTimeData.getString(
-          policy.scope === 'user' ? 'scopeUser' : 'scopeDevice');
+      let scope = 'scopeDevice';
+      if (policy.scope === 'user') {
+        scope = 'scopeUser';
+      } else if (policy.scope === 'allUsers') {
+        scope = 'scopeAllUsers';
+      }
+      scopeDisplay.textContent = loadTimeData.getString(scope);
 
       const levelDisplay = this.shadowRoot.querySelector('.level');
       levelDisplay.textContent = loadTimeData.getString(

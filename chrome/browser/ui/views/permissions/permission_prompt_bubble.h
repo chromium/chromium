@@ -49,6 +49,8 @@ class PermissionPromptBubble : public PermissionPromptDesktop,
 
   bool parent_was_visible_when_activation_changed_;
 
+  base::ScopedClosureRunner disallowed_custom_cursors_scope_;
+
   base::WeakPtrFactory<PermissionPromptBubble> weak_factory_{this};
 };
 

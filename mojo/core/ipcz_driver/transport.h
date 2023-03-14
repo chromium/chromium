@@ -50,7 +50,8 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
   static scoped_refptr<Transport> Create(
       EndpointTypes endpoint_types,
       Channel::Endpoint endpoint,
-      base::Process remote_process = base::Process());
+      base::Process remote_process = base::Process(),
+      bool is_remote_process_untrusted = false);
 
   static std::pair<scoped_refptr<Transport>, scoped_refptr<Transport>>
   CreatePair(EndpointType first_type, EndpointType second_type);

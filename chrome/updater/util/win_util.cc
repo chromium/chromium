@@ -6,6 +6,7 @@
 
 #include <aclapi.h>
 #include <objidl.h>
+#include <regstr.h>
 #include <shellapi.h>
 #include <shlobj.h>
 #include <windows.h>
@@ -997,6 +998,104 @@ bool IsGuid(const std::wstring& s) {
 
   GUID guid = {0};
   return SUCCEEDED(::IIDFromString(&s[0], &guid));
+}
+
+void ForEachRegistryRunValueWithPrefix(
+    const std::wstring& prefix,
+    base::RepeatingCallback<void(const std::wstring&)> callback) {
+  for (base::win::RegistryValueIterator it(HKEY_CURRENT_USER, REGSTR_PATH_RUN,
+                                           KEY_WOW64_32KEY);
+       it.Valid(); ++it) {
+    const std::wstring run_name = it.Name();
+    if (base::StartsWith(run_name, prefix)) {
+      callback.Run(run_name);
+    }
+  }
+}
+
+[[nodiscard]] bool DeleteRegValue(HKEY root,
+                                  const std::wstring& path,
+                                  const std::wstring& value) {
+  if (!base::win::RegKey(root, path.c_str(), Wow6432(KEY_QUERY_VALUE))
+           .Valid()) {
+    return true;
+  }
+
+  LONG result = base::win::RegKey(root, path.c_str(), Wow6432(KEY_WRITE))
+                    .DeleteValue(value.c_str());
+  return result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND;
+}
+
+void ForEachServiceWithPrefix(
+    const std::wstring& service_name_prefix,
+    const std::wstring& display_name_prefix,
+    base::RepeatingCallback<void(const std::wstring&)> callback) {
+  for (base::win::RegistryKeyIterator it(HKEY_LOCAL_MACHINE,
+                                         L"SYSTEM\\CurrentControlSet\\Services",
+                                         KEY_WOW64_32KEY);
+       it.Valid(); ++it) {
+    const std::wstring service_name = it.Name();
+    if (base::StartsWith(service_name, service_name_prefix)) {
+      if (display_name_prefix.empty()) {
+        callback.Run(service_name);
+        continue;
+      }
+
+      base::win::RegKey key;
+      if (key.Open(HKEY_LOCAL_MACHINE,
+                   base::StrCat(
+                       {L"SYSTEM\\CurrentControlSet\\Services\\", service_name})
+                       .c_str(),
+                   Wow6432(KEY_READ)) != ERROR_SUCCESS) {
+        continue;
+      }
+
+      std::wstring display_name;
+      if (key.ReadValue(L"DisplayName", &display_name) != ERROR_SUCCESS) {
+        continue;
+      }
+
+      const bool display_name_starts_with_prefix =
+          base::StartsWith(display_name, display_name_prefix);
+      VLOG(1) << __func__ << ": " << service_name
+              << " matches: " << service_name_prefix << ": " << display_name
+              << ": " << display_name_starts_with_prefix << ": "
+              << display_name_prefix;
+      if (display_name_starts_with_prefix) {
+        callback.Run(service_name);
+      }
+    }
+  }
+}
+
+[[nodiscard]] bool DeleteService(const std::wstring& service_name) {
+  ScopedScHandle scm(::OpenSCManager(
+      nullptr, nullptr, SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE));
+  if (!scm.IsValid()) {
+    return false;
+  }
+
+  ScopedScHandle service(
+      ::OpenService(scm.Get(), service_name.c_str(), DELETE));
+  bool is_service_deleted = !service.IsValid();
+  if (!is_service_deleted) {
+    is_service_deleted =
+        ::DeleteService(service.Get())
+            ? true
+            : ::GetLastError() == ERROR_SERVICE_MARKED_FOR_DELETE;
+  }
+
+  if (!DeleteRegValue(HKEY_LOCAL_MACHINE, UPDATER_KEY, service_name)) {
+    return false;
+  }
+
+  VLOG(1) << __func__ << ": " << service_name << ": " << is_service_deleted;
+  return is_service_deleted;
+}
+
+bool WrongUser(UpdaterScope scope) {
+  return IsSystemInstall(scope) ? !::IsUserAnAdmin()
+                                : ::IsUserAnAdmin() && IsUACOn();
 }
 
 }  // namespace updater

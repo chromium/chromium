@@ -37,7 +37,6 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
-#include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -69,9 +68,8 @@ class HeapSizeCache {
   }
 
   static HeapSizeCache& ForCurrentThread() {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<HeapSizeCache>,
-                                    heap_size_cache, ());
-    return *heap_size_cache;
+    thread_local HeapSizeCache heap_size_cache;
+    return heap_size_cache;
   }
 
   void SetTickClockForTesting(const base::TickClock* clock) { clock_ = clock; }

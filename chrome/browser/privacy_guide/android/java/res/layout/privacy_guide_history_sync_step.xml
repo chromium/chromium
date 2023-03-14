@@ -16,21 +16,21 @@ found in the LICENSE file.
         android:id="@+id/welcome_main_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/all_content_marginHorizontal"
         android:animateLayoutChanges="true"
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
         <ImageView
             android:id="@+id/image"
-            android:layout_marginVertical="16dp"
-            android:layout_height="@dimen/privacy_guide_illustration_height"
-            android:layout_width="@dimen/privacy_guide_illustration_width"
+            android:layout_marginVertical="@dimen/setting_step_illustration_marginVertical"
+            android:layout_height="@dimen/setting_step_illustration_height"
+            android:layout_width="@dimen/setting_step_illustration_width"
             android:src="@drawable/privacy_guide_history_sync_image"
             android:importantForAccessibility="no" />
 
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/history_sync_switch"
-            android:layout_marginHorizontal="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:showText="false"

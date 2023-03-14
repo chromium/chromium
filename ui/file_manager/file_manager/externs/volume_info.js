@@ -70,6 +70,13 @@ export class VolumeInfo {
      */
     this.devicePath;
 
+    /**
+     * @type {(string|undefined)} Drive label of the volume. Removable
+     * partitions belonging to the same device will share the same drive label.
+     */
+    this.driveLabel;
+
+
     /** @type {boolean} */
     this.isReadOnly;
 

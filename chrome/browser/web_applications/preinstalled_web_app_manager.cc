@@ -26,6 +26,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -68,6 +69,10 @@
 #include "ui/events/devices/input_device_event_observer.h"
 #include "ui/events/devices/touchscreen_device.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/web_applications/preinstalled_web_app_window_experiment_utils.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/arc_util.h"
@@ -545,6 +550,10 @@ void PreinstalledWebAppManager::RegisterProfilePrefs(
   registry->RegisterListPref(webapps::kWebAppsMigratedPreinstalledApps);
   registry->RegisterListPref(prefs::kWebAppsDidMigrateDefaultChromeApps);
   registry->RegisterListPref(prefs::kWebAppsUninstalledDefaultChromeApps);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  preinstalled_web_app_window_experiment_utils::RegisterProfilePrefs(registry);
+#endif
 }
 
 // static
@@ -573,6 +582,9 @@ void PreinstalledWebAppManager::SetFileUtilsForTesting(
 
 PreinstalledWebAppManager::PreinstalledWebAppManager(Profile* profile)
     : profile_(profile),
+#if BUILDFLAG(IS_CHROMEOS)
+      preinstalled_web_app_window_experiment_(profile),
+#endif
       device_data_initialized_event_(
           std::make_unique<DeviceDataInitializedEvent>()) {
   if (base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo)) {
@@ -600,6 +612,11 @@ void PreinstalledWebAppManager::Start(base::OnceClosure on_done) {
     std::move(on_done).Run();                                      // IN-TEST
     return;                                                        // IN-TEST
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  preinstalled_web_app_window_experiment_.Start();
+#endif
+
   LoadAndSynchronize(
       base::BindOnce(&PreinstalledWebAppManager::OnStartUpTaskCompleted,
                      weak_ptr_factory_.GetWeakPtr())
@@ -624,6 +641,13 @@ void PreinstalledWebAppManager::SetSkipStartupSynchronizeForTesting(  // IN-TEST
     bool skip_startup) {
   skip_startup_for_testing_ = skip_startup;  // IN-TEST
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+PreinstalledWebAppWindowExperiment&
+PreinstalledWebAppManager::GetWindowExperimentForTesting() {
+  return preinstalled_web_app_window_experiment_;
+}
+#endif
 
 void PreinstalledWebAppManager::LoadAndSynchronizeForTesting(
     SynchronizeCallback callback) {
@@ -933,6 +957,9 @@ void PreinstalledWebAppManager::OnStartUpTaskCompleted(
     debug_info_->install_results = std::move(install_results);
     debug_info_->uninstall_results = std::move(uninstall_results);
   }
+#if BUILDFLAG(IS_CHROMEOS)
+  preinstalled_web_app_window_experiment_.NotifyPreinstalledAppsInstalled();
+#endif
 }
 
 bool PreinstalledWebAppManager::IsNewUser() {

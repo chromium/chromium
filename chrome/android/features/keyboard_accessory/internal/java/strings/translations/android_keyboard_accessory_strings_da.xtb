@@ -1,13 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
+<translation id="1347497506789975534">Vis gemte betalingsmetoder</translation>
 <translation id="1383876407941801731">Søg</translation>
-<translation id="1566281227936819866">Viser gemte betalingsmetoder</translation>
 <translation id="1717486229951421299">Listen over loginoplysninger, der udfyldes ved berøring, er åbnet i halv højde.</translation>
 <translation id="207576718733492531">Listen over loginoplysninger, der udfyldes ved berøring, er lukket.</translation>
 <translation id="2610239185026711824">Foreslå en adgangskode</translation>
 <translation id="2652129567809778422">Vælg adgangskode</translation>
-<translation id="2803478378562657435">Viser gemte adgangskoder og valgmuligheder for adgangskoder</translation>
 <translation id="2903493209154104877">Adresser</translation>
 <translation id="3399357656427473483">Liste over loginoplysninger, der udfyldes ved berøring.</translation>
 <translation id="3688051737190211318">Hvis du har tillid til <ph name="ORIGIN" />, kan du bruge en gemt adgangskode til at logge ind</translation>
@@ -15,16 +14,14 @@
 <translation id="4660011489602794167">Vis tastatur</translation>
 <translation id="4694050069269396220">Hvis du har tillid til <ph name="ORIGIN" />, kan du bruge en gemt adgangskode til et andet website.</translation>
 <translation id="5016175294846053194">Der er tilgængelige forslag fra Autofyld over tastaturet</translation>
-<translation id="5088366526685584589">Viser gemte adresser</translation>
 <translation id="5441504010984421144">Listen over loginoplysninger, der udfyldes ved berøring, er åbnet i fuld højde.</translation>
+<translation id="6296921860874265377">Vis gemte adgangskoder og valgmuligheder for adgangskoder</translation>
 <translation id="6393156038355142111">Foreslå en stærk adgangskode</translation>
 <translation id="6558703547256592471">Prøv at bruge en unik adgangskode til hvert website.</translation>
 <translation id="7029809446516969842">Adgangskoder</translation>
-<translation id="7299100402441711551">Vis adresser</translation>
-<translation id="7494879913343971937">Vis adgangskoder</translation>
 <translation id="7594473730623999723">Stryg for at se flere forslag</translation>
+<translation id="7873973044507799456">Vis gemte adresser</translation>
 <translation id="7992095260806105436">Brug forslag fra Autofyld i Chrome</translation>
-<translation id="8037472847879765671">Vis betalingsmetoder</translation>
 <translation id="8507520749471379845">Tilgængelige adgangskoder</translation>
 <translation id="8705308553596171387">Ingen adgangskode</translation>
 <translation id="879180780857354295">Alternative udfyldningsmuligheder er tilgængelige over tastaturet</translation>

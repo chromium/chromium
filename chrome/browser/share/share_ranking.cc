@@ -104,10 +104,10 @@ std::vector<std::string> ReplaceUnavailableEntries(
     const std::vector<std::string>& ranking,
     const std::vector<std::string>& available) {
   std::vector<std::string> result;
-  std::transform(ranking.begin(), ranking.end(), std::back_inserter(result),
-                 [&](const std::string& e) {
-                   return RankingContains(available, e) ? e : "";
-                 });
+  base::ranges::transform(
+      ranking, std::back_inserter(result), [&](const std::string& e) {
+        return RankingContains(available, e) ? e : std::string();
+      });
   return result;
 }
 

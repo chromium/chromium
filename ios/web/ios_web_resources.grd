@@ -12,10 +12,10 @@
   <release seq="1">
     <includes>
       <include name="IDR_IOS_MOJO_BINDINGS_JS" file="${root_gen_dir}/mojo/public/js/mojo_bindings.js" type="BINDATA" use_base_dir="false" skip_in_resource_map="true" />
-      <include name="IDR_IOS_URL_MOJOM_WEBUI_JS" file="${root_gen_dir}/mojom-webui/url/mojom/url.mojom-webui.js" resource_path="mojo/url/mojom/url.mojom-webui.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_IOS_ORIGIN_MOJO_WEBUI_JS" file="${root_gen_dir}/mojom-webui/url/mojom/origin.mojom-webui.js" resource_path="mojo/url/mojom/origin.mojom-webui.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_IOS_UI_WINDOW_OPEN_DISPOSITION_MOJO_WEBUI_JS" file="${root_gen_dir}/mojom-webui/ui/base/mojom/window_open_disposition.mojom-webui.js" resource_path="mojo/ui/base/mojom/window_open_disposition.mojom-webui.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_IOS_UI_BASE_TYPES_MOJO_WEBUI_JS" file="${root_gen_dir}/mojom-webui/ui/base/mojom/ui_base_types.mojom-webui.js" resource_path="mojo/ui/base/mojom/ui_base_types.mojom-webui.js" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_IOS_URL_MOJOM_WEBUI_JS" file="${root_gen_dir}/ui/webui/resources/tsc/mojo/url/mojom/url.mojom-webui.js" resource_path="mojo/url/mojom/url.mojom-webui.js" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_IOS_ORIGIN_MOJO_WEBUI_JS" file="${root_gen_dir}/ui/webui/resources/tsc/mojo/url/mojom/origin.mojom-webui.js" resource_path="mojo/url/mojom/origin.mojom-webui.js" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_IOS_UI_WINDOW_OPEN_DISPOSITION_MOJO_WEBUI_JS" file="${root_gen_dir}/ui/webui/resources/tsc/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js" resource_path="mojo/ui/base/mojom/window_open_disposition.mojom-webui.js" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_IOS_UI_BASE_TYPES_MOJO_WEBUI_JS" file="${root_gen_dir}/ui/webui/resources/tsc/mojo/ui/base/mojom/ui_base_types.mojom-webui.js" resource_path="mojo/ui/base/mojom/ui_base_types.mojom-webui.js" use_base_dir="false" type="BINDATA" />
     </includes>
   </release>
 </grit>

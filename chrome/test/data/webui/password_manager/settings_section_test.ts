@@ -4,11 +4,13 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {PasswordManagerImpl, PrefsBrowserProxyImpl} from 'chrome://password-manager/password_manager.js';
+import {OpenWindowProxyImpl, PasswordManagerImpl, PrefsBrowserProxyImpl, TrustedVaultBannerState} from 'chrome://password-manager/password_manager.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -42,6 +44,7 @@ function assertBlockedSiteList(
 suite('SettingsSectionTest', function() {
   let prefsProxy: TestPrefsBrowserProxy;
   let passwordManager: TestPasswordManagerProxy;
+  let openWindowProxy: TestOpenWindowProxy;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -50,6 +53,8 @@ suite('SettingsSectionTest', function() {
     prefsProxy.prefs = makePasswordManagerPrefs();
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManager);
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
   });
 
   test('pref value displayed in the UI', async function() {
@@ -237,5 +242,59 @@ suite('SettingsSectionTest', function() {
         (passwordManager.data.passwords);
     flush();
     assertTrue(!!settings.shadowRoot!.querySelector('passwords-exporter'));
+  });
+
+  test('trustedVaultBannerVisibilityChangesWithState', async function() {
+    const settings = document.createElement('settings-section');
+    document.body.appendChild(settings);
+    webUIListenerCallback(
+        'trusted-vault-banner-state-changed',
+        TrustedVaultBannerState.NOT_SHOWN);
+    flush();
+    assertTrue(settings.$.trustedVaultBanner.hidden);
+
+    webUIListenerCallback(
+        'trusted-vault-banner-state-changed',
+        TrustedVaultBannerState.OFFER_OPT_IN);
+    flush();
+    assertFalse(settings.$.trustedVaultBanner.hidden);
+    assertEquals(
+        settings.i18n('trustedVaultBannerSubLabelOfferOptIn'),
+        settings.$.trustedVaultBanner.subLabel);
+
+    webUIListenerCallback(
+        'trusted-vault-banner-state-changed', TrustedVaultBannerState.OPTED_IN);
+    flush();
+    assertFalse(settings.$.trustedVaultBanner.hidden);
+    assertEquals(
+        settings.i18n('trustedVaultBannerSubLabelOptedIn'),
+        settings.$.trustedVaultBanner.subLabel);
+  });
+
+  test('trustedVaultBannerOpensOptInPage', async function() {
+    const settings = document.createElement('settings-section');
+    document.body.appendChild(settings);
+    webUIListenerCallback(
+        'trusted-vault-banner-state-changed',
+        TrustedVaultBannerState.OFFER_OPT_IN);
+    flush();
+    assertFalse(settings.$.trustedVaultBanner.hidden);
+
+    settings.$.trustedVaultBanner.click();
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(url, loadTimeData.getString('trustedVaultOptInUrl'));
+  });
+
+  test('trustedVaultBannerOpensLearnMorePage', async function() {
+    const settings = document.createElement('settings-section');
+    document.body.appendChild(settings);
+    webUIListenerCallback(
+        'trusted-vault-banner-state-changed', TrustedVaultBannerState.OPTED_IN);
+    flush();
+    assertFalse(settings.$.trustedVaultBanner.hidden);
+
+    settings.$.trustedVaultBanner.click();
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(url, loadTimeData.getString('trustedVaultLearnMoreUrl'));
   });
 });

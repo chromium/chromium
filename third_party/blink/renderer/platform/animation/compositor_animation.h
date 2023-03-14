@@ -49,14 +49,7 @@ class PLATFORM_EXPORT CompositorAnimation : public cc::AnimationDelegate {
   void SetAnimationDelegate(CompositorAnimationDelegate*);
 
   void AttachElement(const CompositorElementId&);
-  // Specially designed for a custom property animation on a paint worklet
-  // element. It doesn't require an element id to run on the compositor thread.
-  // However, our compositor animation system requires the element to be on the
-  // property tree in order to keep ticking the animation. Therefore, we give a
-  // very special element id for this animation so that the compositor animation
-  // system recognize it. We do not use 0 as the element id because 0 is
-  // kInvalidElementId.
-  void AttachNoElement();
+  void AttachPaintWorkletElement();
   void DetachElement();
   bool IsElementAttached() const;
 

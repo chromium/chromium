@@ -4,10 +4,9 @@
 
 #include "chrome/browser/ash/crosapi/audio_service_ash.h"
 
-#include <algorithm>
-
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/api/audio/audio_device_id_calculator.h"
 #include "extensions/browser/api/audio/audio_service_utils.h"
@@ -41,8 +40,8 @@ void AudioServiceAsh::Observer::OnDevicesChanged(
     const extensions::DeviceInfoList& devices) {
   for (auto& observer : observers_) {
     std::vector<mojom::AudioDeviceInfoPtr> result;
-    std::transform(devices.begin(), devices.end(), std::back_inserter(result),
-                   extensions::ConvertAudioDeviceInfoToMojom);
+    base::ranges::transform(devices, std::back_inserter(result),
+                            extensions::ConvertAudioDeviceInfoToMojom);
     observer->OnDeviceListChanged(std::move(result));
   }
 }
@@ -93,9 +92,9 @@ void AudioServiceAsh::GetDevices(mojom::DeviceFilterPtr filter,
         if (success) {
           result.emplace();  // construct empty vector in-place
           result->reserve(devices_src.size());
-          std::transform(devices_src.begin(), devices_src.end(),
-                         std::back_inserter(result.value()),
-                         extensions::ConvertAudioDeviceInfoToMojom);
+          base::ranges::transform(devices_src,
+                                  std::back_inserter(result.value()),
+                                  extensions::ConvertAudioDeviceInfoToMojom);
         }
 
         std::move(crosapi_callback).Run(std::move(result));

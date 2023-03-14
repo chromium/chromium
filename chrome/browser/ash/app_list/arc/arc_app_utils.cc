@@ -94,8 +94,8 @@ constexpr char kAndroidClockAppId[] = "ddmmnabaeomoacfpfjgghfpocfolhjlg";
 constexpr char kAndroidFilesAppId[] = "gmiohhmfhgfclpeacmdfancbipocempm";
 
 constexpr char const* kAppIdsHiddenInLauncher[] = {
-    kAndroidClockAppId, kSettingsAppId, kAndroidFilesAppId,
-    kAndroidContactsAppId, kPlayGamesAppId};
+    kAndroidClockAppId,    kSettingsAppId,  kAndroidFilesAppId,
+    kAndroidContactsAppId, kPlayGamesAppId, kPackageInstallerAppId};
 
 // Returns true if |event_flags| came from a mouse or touch event.
 bool IsMouseOrTouchEventFromFlags(int event_flags) {
@@ -253,6 +253,7 @@ const char kGooglePhotosAppId[] = "fdbkkojdbojonckghlanfaopfakedeca";
 const char kGoogleTVAppId[] = "kadljooblnjdohjelobhphgeimdbcpbo";
 const char kInfinitePainterAppId[] = "afihfgfghkmdmggakhkgnfhlikhdpima";
 const char kLightRoomAppId[] = "fpegfnbgomakooccabncdaelhfppceni";
+const char kPackageInstallerAppId[] = "jegcgkleafemmaabigncnldhlhnddfkf";
 const char kPlayBooksAppId[] = "cafegjnmmjpfibnlddppihpnkbkgicbg";
 const char kPlayGamesAppId[] = "nplnnjkbeijcggmpdcecpabgbjgeiedc";
 const char kPlayMoviesAppId[] = "dbbihmicnlldbflflckpafphlekmjfnm";

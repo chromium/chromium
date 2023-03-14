@@ -150,7 +150,7 @@ TEST_F(BucketManagerHostTest, OpenBucket) {
       blink::StorageKey::CreateFromStringForTesting(kTestUrl), "inbox_bucket",
       blink::mojom::StorageType::kTemporary, bucket_future.GetCallback());
   auto result = bucket_future.Take();
-  EXPECT_TRUE(result.ok());
+  EXPECT_TRUE(result.has_value());
   EXPECT_GT(result->id.value(), 0u);
 }
 
@@ -225,7 +225,7 @@ TEST_F(BucketManagerHostTest, DeleteBucket) {
       blink::StorageKey::CreateFromStringForTesting(kTestUrl), "inbox_bucket",
       blink::mojom::StorageType::kTemporary, bucket_future.GetCallback());
   auto result = bucket_future.Take();
-  EXPECT_FALSE(result.ok());
+  EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), storage::QuotaError::kNotFound);
 }
 
@@ -237,14 +237,14 @@ TEST_F(BucketManagerHostTest, DeleteInvalidBucketName) {
 }
 
 TEST_F(BucketManagerHostTest, PermissionCheck) {
-  const std::vector<
-      std::pair<blink::mojom::PermissionStatus, /*persisted_respected=*/bool>>
+  const std::vector<std::pair<blink::mojom::PermissionStatus,
+                              /*persist_request_granted=*/bool>>
       test_cases = {{blink::mojom::PermissionStatus::GRANTED, true},
                     {blink::mojom::PermissionStatus::DENIED, false}};
 
   for (auto test_case : test_cases) {
     test_bucket_context_.set_permission_status(test_case.first);
-    bool persisted_respected = test_case.second;
+    bool persist_request_granted = test_case.second;
     {
       // Not initially persisted.
       mojo::Remote<blink::mojom::BucketHost> bucket_remote;
@@ -278,8 +278,8 @@ TEST_F(BucketManagerHostTest, PermissionCheck) {
         base::RunLoop run_loop;
         bucket_remote->Persist(
             base::BindLambdaForTesting([&](bool persisted, bool success) {
-              EXPECT_EQ(persisted, persisted_respected);
-              EXPECT_EQ(success, persisted_respected);
+              EXPECT_EQ(persisted, persist_request_granted);
+              EXPECT_TRUE(success);
               run_loop.Quit();
             }));
         run_loop.Run();
@@ -314,7 +314,7 @@ TEST_F(BucketManagerHostTest, PermissionCheck) {
         base::RunLoop run_loop;
         bucket_remote2->Persisted(
             base::BindLambdaForTesting([&](bool persisted, bool success) {
-              EXPECT_EQ(persisted, persisted_respected);
+              EXPECT_EQ(persisted, persist_request_granted);
               EXPECT_TRUE(success);
               run_loop.Quit();
             }));

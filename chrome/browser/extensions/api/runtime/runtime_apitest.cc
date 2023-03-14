@@ -100,7 +100,7 @@ std::string GetActiveUrl(Browser* browser) {
 
 class RuntimeAPIUpdateTest : public ExtensionApiTest {
  public:
-  RuntimeAPIUpdateTest() {}
+  RuntimeAPIUpdateTest() = default;
 
   RuntimeAPIUpdateTest(const RuntimeAPIUpdateTest&) = delete;
   RuntimeAPIUpdateTest& operator=(const RuntimeAPIUpdateTest&) = delete;
@@ -136,8 +136,9 @@ class RuntimeAPIUpdateTest : public ExtensionApiTest {
     ExtensionHost* background_host =
         ProcessManager::Get(browser()->profile())
             ->GetBackgroundHostForExtension(extension_id);
-    if (!background_host)
+    if (!background_host) {
       return false;
+    }
     content::CrashTab(background_host->host_contents());
     return true;
   }
@@ -567,9 +568,8 @@ IN_PROC_BROWSER_TEST_P(BackgroundPageOnlyRuntimeApiTest,
   {
     content::TestNavigationObserver nav_observer(new_tab_url);
     nav_observer.StartWatchingNewWebContents();
-    ASSERT_TRUE(browsertest_util::ExecuteScriptInBackgroundPageNoWait(
-        browser()->profile(), extension->id(),
-        R"(  window.open('/index.htm', '');  )"));
+    ASSERT_TRUE(ExecuteScriptInBackgroundPageNoWait(
+        extension->id(), R"(window.open('/index.htm', '');)"));
     nav_observer.Wait();
   }
 
@@ -584,8 +584,7 @@ IN_PROC_BROWSER_TEST_P(BackgroundPageOnlyRuntimeApiTest,
         domAutomationController.send(foundWindows.length);
         domAutomationController.send(foundWindows[0].location.href);
     )";
-    ASSERT_TRUE(browsertest_util::ExecuteScriptInBackgroundPageNoWait(
-        browser()->profile(), extension->id(), kScript));
+    ASSERT_TRUE(ExecuteScriptInBackgroundPageNoWait(extension->id(), kScript));
 
     std::string json;
     ASSERT_TRUE(message_queue.WaitForMessage(&json));

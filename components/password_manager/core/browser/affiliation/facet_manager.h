@@ -55,6 +55,9 @@ class FacetManager {
   // fetched from the Affiliation API.
   void OnFetchSucceeded(const AffiliatedFacetsWithUpdateTime& affiliation);
 
+  // Called when the network request failed.
+  void OnFetchFailed();
+
   // Called by the backend when the time specified in RequestNotificationAtTime
   // has come to pass, so that |this| can perform delayed administrative tasks.
   void NotifyAtRequestedTime();
@@ -124,6 +127,10 @@ class FacetManager {
   // Contains information about the GetAffiliationsAndBranding() requests that
   // are waiting for the result of looking up this facet.
   std::vector<RequestInfo> pending_requests_;
+
+  // Same as |pending_requests_| but after first failure FacetManager will
+  // mark those request as failed.
+  std::vector<RequestInfo> pending_one_time_requests_;
 
   // Keeps track of |keep_fresh_until| thresholds corresponding to Prefetch()
   // requests for this facet. Affiliation information for this facet must be

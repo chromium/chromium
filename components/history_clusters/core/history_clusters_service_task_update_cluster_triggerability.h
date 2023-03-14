@@ -103,6 +103,10 @@ class HistoryClustersServiceTaskUpdateClusterTriggerability
   // clusters. Will syncly invoke `Start()` to initiate the next iteration.
   void OnPersistedClusterTriggerability(base::TimeTicks start_time);
 
+  // Marks the task as done, runs `callback_`, and logs metrics about the task
+  // run.
+  void MarkDoneAndRunCallback();
+
   // Never nullptr.
   base::WeakPtr<HistoryClustersService> weak_history_clusters_service_;
   // Non-owning pointer, but never nullptr.
@@ -121,6 +125,18 @@ class HistoryClustersServiceTaskUpdateClusterTriggerability
   // Tracks the time `this` was created to use for the max time we should update
   // clusters for.
   base::Time task_created_time_;
+
+  // Tracks whether at least one cluster's triggerability was updated (for
+  // metrics only).
+  bool updated_cluster_triggerability_ = false;
+
+  // Tracks whether at least one cluster's triggerability was updated after the
+  // first call with all filtered clusters returned (for metrics only).
+  // Initially nullopt but false after receiving a response with no clusters and
+  // true after receiving a response with clusters after having received a
+  // response with no clusters.
+  absl::optional<bool>
+      updated_cluster_triggerability_after_filtered_clusters_empty_;
 
   // Used for async callbacks.
   base::WeakPtrFactory<HistoryClustersServiceTaskUpdateClusterTriggerability>

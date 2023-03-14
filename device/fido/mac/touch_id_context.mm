@@ -80,6 +80,14 @@ bool CanCreateSecureEnclaveKeyPairBlocking() {
   return !!private_key;
 }
 
+base::ScopedCFTypeRef<SecAccessControlRef> CreateDefaultAccessControl() {
+  return base::ScopedCFTypeRef<SecAccessControlRef>(
+      SecAccessControlCreateWithFlags(
+          kCFAllocatorDefault, kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
+          kSecAccessControlPrivateKeyUsage | kSecAccessControlUserPresence,
+          nullptr));
+}
+
 }  // namespace
 
 // static
@@ -158,11 +166,14 @@ void TouchIdContext::PromptTouchId(const std::u16string& reason,
   scoped_refptr<base::SequencedTaskRunner> runner =
       base::SequencedTaskRunner::GetCurrentDefault();
   auto weak_self = weak_ptr_factory_.GetWeakPtr();
-  // If evaluation succeeds (i.e. user provides a fingerprint), |context_| can
-  // be used for one signing operation. N.B. even in |MakeCredentialOperation|,
-  // we need to perform a signature for the attestation statement, so we need
-  // the sign bit there.
-  [context_ evaluateAccessControl:access_control_
+  // Generate a SecAccessControl that can be used for obtaining signatures.
+  // For current credentials we can actually obtain signatures without the
+  // SecAccessControl, but for older credentials we used kSecAttrAccessControl
+  // attribute to ensure the keychain would only produce signatures in exchange
+  // for biometrics or device password.
+  base::ScopedCFTypeRef<SecAccessControlRef> access_control =
+      CreateDefaultAccessControl();
+  [context_ evaluateAccessControl:access_control
                         operation:LAAccessControlOperationUseKeySign
                   localizedReason:base::SysUTF16ToNSString(reason)
                             reply:^(BOOL success, NSError* error) {

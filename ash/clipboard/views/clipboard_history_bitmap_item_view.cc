@@ -6,7 +6,6 @@
 
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/clipboard_history_resource_manager.h"
-#include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/views/clipboard_history_delete_button.h"
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
 #include "base/containers/contains.h"
@@ -16,7 +15,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -45,18 +43,19 @@ constexpr base::TimeDelta kFadeInDurationMs = base::Milliseconds(200);
 // FadeImageView
 // An ImageView which reacts to updates from ClipboardHistoryResourceManager by
 // fading out the old image, and fading in the new image. Used when HTML is done
-// rendering. Only expected to transition once in its lifetime.
+// rendering. Expected to transition at most once in its lifetime.
 class FadeImageView : public views::ImageView,
                       public ui::ImplicitAnimationObserver,
                       public ClipboardHistoryResourceManager::Observer {
  public:
-  FadeImageView(const ClipboardHistoryItem* clipboard_history_item,
-                const ClipboardHistoryResourceManager* resource_manager,
-                base::RepeatingClosure update_callback)
-      : views::ImageView(),
+  FadeImageView(
+      base::RepeatingCallback<const ClipboardHistoryItem*()> item_resolver,
+      const ClipboardHistoryResourceManager* resource_manager,
+      base::RepeatingClosure update_callback)
+      : item_resolver_(item_resolver),
         resource_manager_(resource_manager),
-        clipboard_history_item_(*clipboard_history_item),
         update_callback_(update_callback) {
+    DCHECK(item_resolver_);
     resource_manager_->AddObserver(this);
     SetImageFromModel();
     DCHECK(update_callback_);
@@ -74,8 +73,10 @@ class FadeImageView : public views::ImageView,
   // ClipboardHistoryResourceManager::Observer:
   void OnCachedImageModelUpdated(
       const std::vector<base::UnguessableToken>& item_ids) override {
-    if (!base::Contains(item_ids, clipboard_history_item_.id()))
+    const auto* item = item_resolver_.Run();
+    if (!item || !base::Contains(item_ids, item->id())) {
       return;
+    }
 
     // Fade the old image out, then swap in the new image.
     DCHECK_EQ(FadeAnimationState::kNoFadeAnimation, animation_state_);
@@ -113,13 +114,10 @@ class FadeImageView : public views::ImageView,
   }
 
   void SetImageFromModel() {
-    // TODO(b/267677307): Make cached image an item field, set and updated
-    // directly by the resource manager.
-    const gfx::ImageSkia& image =
-        *(resource_manager_->GetImageModel(clipboard_history_item_)
-              .GetImage()
-              .ToImageSkia());
-    SetImage(image);
+    if (const auto* item = item_resolver_.Run()) {
+      DCHECK(item->display_image().has_value());
+      SetImage(item->display_image().value());
+    }
 
     // When fading in a new image, the ImageView's image has likely changed
     // sizes.
@@ -138,11 +136,12 @@ class FadeImageView : public views::ImageView,
   // The current animation state.
   FadeAnimationState animation_state_ = FadeAnimationState::kNoFadeAnimation;
 
-  // The resource manager, owned by ClipboardHistoryController.
-  const ClipboardHistoryResourceManager* const resource_manager_;
+  // Generates a *possibly null* pointer to the clipboard history item
+  // represented by this image.
+  base::RepeatingCallback<const ClipboardHistoryItem*()> item_resolver_;
 
-  // The ClipboardHistoryItem represented by this class.
-  const ClipboardHistoryItem clipboard_history_item_;
+  // Owned by `ClipboardHistoryController`.
+  const ClipboardHistoryResourceManager* const resource_manager_;
 
   // Used to notify of image changes.
   base::RepeatingClosure update_callback_;
@@ -220,36 +219,17 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
   }
 
   std::unique_ptr<views::ImageView> BuildImageView() {
-    const auto* clipboard_history_item = container_->clipboard_history_item();
-    switch (container_->data_format_) {
-      case ui::ClipboardInternalFormat::kHtml:
-        return std::make_unique<FadeImageView>(
-            clipboard_history_item, container_->resource_manager_,
-            base::BindRepeating(&BitmapContentsView::UpdateImageViewSize,
-                                weak_ptr_factory_.GetWeakPtr()));
-      case ui::ClipboardInternalFormat::kPng: {
-        auto image_view = std::make_unique<views::ImageView>();
-        gfx::Image image;
-        const auto& maybe_png = clipboard_history_item->data().maybe_png();
-        if (maybe_png.has_value()) {
-          image = gfx::Image::CreateFrom1xPNGBytes(maybe_png.value().data(),
-                                                   maybe_png.value().size());
-        } else {
-          // If we have not yet encoded the bitmap to a PNG, just create the
-          // gfx::Image using the available bitmap. No information is lost here.
-          auto maybe_bitmap =
-              clipboard_history_item->data().GetBitmapIfPngNotEncoded();
-          DCHECK(maybe_bitmap.has_value());
-          image = gfx::Image::CreateFrom1xBitmap(maybe_bitmap.value());
-        }
-        ui::ImageModel image_model = ui::ImageModel::FromImage(image);
-        image_view->SetImage(image_model);
-        return image_view;
-      }
-      default:
-        NOTREACHED();
-        return nullptr;
-    }
+    const auto* clipboard_history_item = container_->GetClipboardHistoryItem();
+    DCHECK(clipboard_history_item);
+    return std::make_unique<FadeImageView>(
+        // `Unretained()` is safe because `this` owns the `FadeImageView` being
+        // created, and `container_` owns `this`.
+        base::BindRepeating(
+            &ClipboardHistoryBitmapItemView::GetClipboardHistoryItem,
+            base::Unretained(container_)),
+        container_->resource_manager_,
+        base::BindRepeating(&BitmapContentsView::UpdateImageViewSize,
+                            base::Unretained(this)));
   }
 
   void UpdateImageViewSize() {
@@ -291,8 +271,6 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
 
   // Helps to place a border above `image_view_`.
   views::View* border_container_view_ = nullptr;
-
-  base::WeakPtrFactory<BitmapContentsView> weak_ptr_factory_{this};
 };
 
 BEGIN_METADATA(ClipboardHistoryBitmapItemView, BitmapContentsView, ContentsView)
@@ -302,13 +280,13 @@ END_METADATA
 // ClipboardHistoryBitmapItemView
 
 ClipboardHistoryBitmapItemView::ClipboardHistoryBitmapItemView(
-    const ClipboardHistoryItem* clipboard_history_item,
+    const base::UnguessableToken& item_id,
+    const ClipboardHistory* clipboard_history,
     const ClipboardHistoryResourceManager* resource_manager,
     views::MenuItemView* container)
-    : ClipboardHistoryItemView(clipboard_history_item, container),
+    : ClipboardHistoryItemView(item_id, clipboard_history, container),
       resource_manager_(resource_manager),
-      data_format_(*clipboard_history_util::CalculateMainFormat(
-          clipboard_history_item->data())) {
+      data_format_(GetClipboardHistoryItem()->main_format()) {
   switch (data_format_) {
     case ui::ClipboardInternalFormat::kHtml:
       SetAccessibleName(

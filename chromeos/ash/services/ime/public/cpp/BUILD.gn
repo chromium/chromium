@@ -13,6 +13,7 @@ source_set("structs") {
   sources = [
     "assistive_suggestions.cc",
     "assistive_suggestions.h",
+    "autocorrect.h",
   ]
 }
 
@@ -111,7 +112,7 @@ source_set("rulebased_unit_tests") {
   sources = [ "rulebased/rulebased_unittest.cc" ]
 }
 
-if (use_libfuzzer) {
+if (use_fuzzing_engine_with_lpm) {
   fuzzable_proto_library("rulebased_fuzzer_proto") {
     sources = [ "rulebased/rulebased_fuzzer.proto" ]
   }

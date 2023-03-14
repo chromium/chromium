@@ -18,11 +18,9 @@ namespace viz {
 
 const absl::optional<gfx::Rect>& GetOptionalDamageRectFromQuad(
     const DrawQuad* quad) {
-  if (quad->material == DrawQuad::Material::kTextureContent) {
-    auto* texture_quad = TextureDrawQuad::MaterialCast(quad);
+  if (auto* texture_quad = quad->DynamicCast<TextureDrawQuad>()) {
     return texture_quad->damage_rect;
-  } else if (quad->material == DrawQuad::Material::kYuvVideoContent) {
-    auto* yuv_video_quad = YUVVideoDrawQuad::MaterialCast(quad);
+  } else if (auto* yuv_video_quad = quad->DynamicCast<YUVVideoDrawQuad>()) {
     return yuv_video_quad->damage_rect;
   } else {
     static absl::optional<gfx::Rect> no_damage;

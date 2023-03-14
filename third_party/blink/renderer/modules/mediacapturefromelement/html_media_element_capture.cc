@@ -251,6 +251,7 @@ void DidStopMediaStreamSource(MediaStreamSource* source) {
   WebPlatformMediaStreamSource* const platform_source =
       source->GetPlatformSource();
   DCHECK(platform_source);
+  platform_source->SetSourceMuted(true);
   platform_source->StopSource();
 }
 

@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">Lien détecté. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Page <ph name="PAGE_NUMBER" /> supprimée</translation>
 <translation id="1258009455399840361">Faire pivoter de 90 degrés vers la droite</translation>
-<translation id="1300209025925956156">Scanner votre document</translation>
-<translation id="1309250603447638106">Téléchargement des mises à jour pour la numérisation de documents</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Recherche+Flèche vers la gauche pour y accéder.</translation>
 <translation id="1417314334557041815">Modifier la page <ph name="INDEX" /></translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> est débranchée.</translation>
 <translation id="1473110567575736769">Minuteur de 3 secondes</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">Aucune donnée enregistrée</translation>
 <translation id="1838104802459806957">Redresser</translation>
 <translation id="1843105061469674856">Scanner une page supplémentaire</translation>
-<translation id="1851169887664797861">D'autres commandes sont disponibles pour la caméra</translation>
 <translation id="1851616744363735765">SUSPENDU</translation>
 <translation id="1899697626337024495">Résolution photo</translation>
 <translation id="1925845977604399247">Accéder à la galerie</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">Type de recherche</translation>
 <translation id="28682968802727151">Aperçu en mode miroir</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> est branchée.</translation>
-<translation id="2904654629665923749">Numérisation de documents disponible</translation>
 <translation id="3067436040345934772">Pano à droite</translation>
 <translation id="3081586908890909590">Passer à l'enregistrement de vidéo</translation>
 <translation id="313467653172006084">30 FPS</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">Copier l'adresse du lien</translation>
 <translation id="4281620174117014503">Résolution moyenne</translation>
 <translation id="428234092390943511">Vignette de la page</translation>
-<translation id="4340659173795395806">Vous pouvez désormais créer des PDF de plusieurs pages</translation>
 <translation id="4383571725254449280">Imprimer les journaux concernant les performances</translation>
 <translation id="4445542136948522167">Arrêter de prendre la photo</translation>
 <translation id="4570032796877367747">Caméra avant</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5320594929574852403">Déplacement vers la gauche</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5444515100983837161">Placez le document dans le cadre. L'image scannée sera de meilleure qualité si les couleurs du document et de l'arrière-plan sont différentes.</translation>
 <translation id="5662366948659129155">Numérisation de la page <ph name="COUNT" />…</translation>
 <translation id="5671277269877808209">Carré</translation>
 <translation id="5746169159649715125">Enregistrer au format PDF</translation>
@@ -157,7 +150,6 @@ S'ils concernent la qualité de l'image ou de la vidéo, veuillez joindre un exe
 <translation id="8428213095426709021">Paramètres</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Couper le son du micro. Le son est désormais coupé.</translation>
-<translation id="8712637175834984815">OK</translation>
 <translation id="8730621377337864115">OK</translation>
 <translation id="8732462232047530626">Prévisualiser les métadonnées</translation>
 <translation id="8815966864175525708">Bouton permettant de prendre une photo en mode portrait</translation>

@@ -20,7 +20,6 @@
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/metrics/metrics_collector.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker.h"
-#include "components/performance_manager/v8_memory/web_memory_stress_tester.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "components/performance_manager/public/decorators/site_data_recorder.h"
@@ -72,8 +71,6 @@ void GraphFeatures::ConfigureGraph(Graph* graph) const {
   }
   if (flags_.v8_context_tracker) {
     Install<v8_memory::V8ContextTracker>(graph);
-    if (v8_memory::WebMeasureMemoryStressTester::FeatureIsEnabled())
-      Install<v8_memory::WebMeasureMemoryStressTester>(graph);
   }
 }
 

@@ -44,6 +44,8 @@ class DlpScopedFileAccessDelegate
       const std::vector<base::FilePath>& files,
       base::OnceCallback<void(file_access::ScopedFileAccess)> callback)
       override;
+  RequestFilesAccessIOCallback CreateFileAccessCallback(
+      const GURL& destination) const override;
 
  protected:
   explicit DlpScopedFileAccessDelegate(chromeos::DlpClient* client);

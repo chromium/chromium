@@ -33,13 +33,13 @@ import {FocusConfig} from '../focus_config.js';
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideInteractions} from '../metrics_browser_proxy.js';
-import {SyncStatus} from '../people_page/sync_browser_proxy.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {RouteObserverMixin, Router} from '../router.js';
 import {ChooserType, ContentSettingsTypes, CookieControlsMode, NotificationSetting} from '../site_settings/constants.js';
 import {NotificationPermission, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
+import {PrivacyGuideAvailabilityMixin} from './privacy_guide_availability_mixin.js';
 import {getTemplate} from './privacy_page.html.js';
 import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.js';
 
@@ -57,8 +57,9 @@ export interface SettingsPrivacyPageElement {
   };
 }
 
-const SettingsPrivacyPageElementBase = RouteObserverMixin(
-    WebUiListenerMixin(I18nMixin(PrefsMixin(BaseMixin(PolymerElement)))));
+const SettingsPrivacyPageElementBase =
+    PrivacyGuideAvailabilityMixin(RouteObserverMixin(
+        WebUiListenerMixin(I18nMixin(PrefsMixin(BaseMixin(PolymerElement))))));
 
 export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   static get is() {
@@ -155,11 +156,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
             loadTimeData.getBoolean('enableWebBluetoothNewPermissionsBackend'),
       },
 
-      showPrivacyGuideEntryPoint_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('showPrivacyGuide'),
-      },
-
       showNotificationPermissionsReview_: {
         type: Boolean,
         value: false,
@@ -173,6 +169,11 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       isPrivacySandboxSettings4_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('isPrivacySandboxSettings4'),
+      },
+
+      privateStateTokensEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('privateStateTokensEnabled'),
       },
 
       /**
@@ -277,10 +278,10 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private enableSecurityKeysSubpage_: boolean;
   private enableQuietNotificationPromptsSetting_: boolean;
   private enableWebBluetoothNewPermissionsBackend_: boolean;
-  private showPrivacyGuideEntryPoint_: boolean;
   private showNotificationPermissionsReview_: boolean;
   private isPrivacySandboxRestricted_: boolean;
   private isPrivacySandboxSettings4_: boolean;
+  private privateStateTokensEnabled_: boolean;
   private safetyCheckNotificationPermissionsEnabled_: boolean;
   private focusConfig_: FocusConfig;
   private searchFilter_: string;
@@ -323,11 +324,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     this.siteSettingsBrowserProxy_.getNotificationPermissionReview().then(
         (sites: NotificationPermission[]) =>
             this.onReviewNotificationPermissionListChanged_(sites));
-
-    this.addWebUiListener(
-        'is-managed-changed', this.onIsManagedChanged_.bind(this));
-    this.addWebUiListener(
-        'sync-status-changed', this.onSyncStatusChanged_.bind(this));
   }
 
   override currentRouteChanged() {
@@ -335,7 +331,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         Router.getInstance().getCurrentRoute() === routes.CLEAR_BROWSER_DATA;
     this.showPrivacyGuideDialog_ =
         Router.getInstance().getCurrentRoute() === routes.PRIVACY_GUIDE &&
-        this.showPrivacyGuideEntryPoint_;
+        this.isPrivacyGuideAvailable;
   }
 
   /**
@@ -424,25 +420,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     Router.getInstance().navigateTo(
         routes.PRIVACY_GUIDE, /* dynamicParams */ undefined,
         /* removeSearch */ true);
-  }
-
-  private onIsManagedChanged_(isManaged: boolean) {
-    // If the user became managed, then hide the privacy guide entry point.
-    // However, if the user was managed before and is no longer now, then do not
-    // make the privacy guide entry point visible, as the Settings route for
-    // privacy guide would still be unavailable until the page is reloaded.
-    this.showPrivacyGuideEntryPoint_ =
-        this.showPrivacyGuideEntryPoint_ && !isManaged;
-  }
-
-  private onSyncStatusChanged_(syncStatus: SyncStatus) {
-    // If the user signed in to a child user account, then hide the privacy
-    // guide entry point. However, if the user was a child user before and is
-    // no longer now then do not make the privacy guide entry point visible, as
-    // the Settings route for privacy guide would still be unavailable until
-    // the page is reloaded.
-    this.showPrivacyGuideEntryPoint_ =
-        this.showPrivacyGuideEntryPoint_ && !syncStatus.childUser;
   }
 
   private onReviewNotificationPermissionListChanged_(

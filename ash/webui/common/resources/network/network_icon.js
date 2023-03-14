@@ -12,8 +12,9 @@ import '//resources/cr_elements/cr_hidden_style.css.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
+import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {SecurityType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ActivationStateType, SecurityType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {getTemplate} from './network_icon.html.js';
@@ -74,6 +75,15 @@ Polymer({
       reflectToAttribute: true,
       computed: 'computeAriaLabel_(locale, networkState)',
     },
+
+    /** @private {boolean} */
+    isUserLoggedIn_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('isUserLoggedIn') &&
+            loadTimeData.getBoolean('isUserLoggedIn');
+      },
+    },
   },
 
   /**
@@ -103,6 +113,10 @@ Polymer({
     }
 
     const prefix = OncMojo.networkTypeIsMobile(type) ? 'cellular-' : 'wifi-';
+
+    if (this.isPSimPendingActivationWhileLoggedOut_()) {
+      return prefix + 'not-activated';
+    }
 
     if (this.networkState.type === NetworkType.kCellular &&
         this.networkState.typeState.cellular.simLocked) {
@@ -326,6 +340,23 @@ Polymer({
    */
   showIcon_() {
     return !!this.networkState;
+  },
+
+  /**
+   * Return true if current network is pSIM, requires activation and user is
+   * not logged in or gone through device setup (OOBE).
+   * @return {boolean}
+   * @private
+   */
+  isPSimPendingActivationWhileLoggedOut_() {
+    const cellularProperties = this.networkState.typeState.cellular;
+
+    if (!cellularProperties || cellularProperties.eid || this.isUserLoggedIn_) {
+      return false;
+    }
+
+    return cellularProperties.activationState ==
+        ActivationStateType.kNotActivated;
   },
 
 });

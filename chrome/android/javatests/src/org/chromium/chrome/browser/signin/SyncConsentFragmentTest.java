@@ -504,32 +504,6 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @CommandLineFlags.Remove({ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE})
-    @DisableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
-    public void testFRESyncConsentFragmentWithChildAccountLegacy() throws IOException {
-        var startPageHistogram = HistogramWatcher.newSingleRecordWatcher(
-                "Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
-        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-        CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
-        Bundle bundle = new Bundle();
-        bundle.putBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT, true);
-        when(mFirstRunPageDelegateMock.getProperties()).thenReturn(bundle);
-        fragment.setPageDelegate(mFirstRunPageDelegateMock);
-
-        launchActivityWithFragment(fragment);
-        startPageHistogram.assertExpected();
-        // TODO(https://crbug.com/1291903): Rewrite this test when RenderTestRule is integrated with
-        // Espresso.
-        // We check the button is enabled rather than visible, as it may be off-screen on small
-        // devices.
-        onView(withId(R.id.positive_button)).check(matches(isEnabled()));
-        mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(android.R.id.content),
-                "fre_sync_consent_fragment_with_regular_child_legacy");
-    }
-
-    @Test
-    @LargeTest
-    @Feature("RenderTest")
     @DisableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
     public void testFRESyncConsentFragmentWhenSignedInWithoutSync() throws IOException {
         mSigninTestRule.addTestAccountThenSignin();

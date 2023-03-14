@@ -12,10 +12,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/strings/utf_string_conversion_utils.h"
-#include "chrome/browser/ash/input_method/assistive_suggester_prefs.h"
+#include "chrome/browser/ash/input_method/assistive_prefs.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
 #include "chrome/browser/ash/input_method/autocorrect_manager.h"
 #include "chrome/browser/ash/input_method/autocorrect_prefs.h"
@@ -26,8 +27,10 @@
 #include "chrome/browser/ash/input_method/ui/input_method_menu_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/services/ime/public/cpp/autocorrect.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method.mojom.h"
 #include "chromeos/ash/services/ime/public/mojom/japanese_settings.mojom.h"
 #include "components/prefs/pref_service.h"
@@ -135,6 +138,13 @@ std::string NormalizeRuleBasedEngineId(const std::string engine_id) {
     return "m17n:" + engine_id.substr(4);
   }
   return engine_id;
+}
+
+std::string SettingToQueryString(std::string subpagePath,
+                                 chromeos::settings::mojom::Setting setting) {
+  const std::string settingString =
+      base::NumberToString(static_cast<int>(setting));
+  return base::StrCat({subpagePath, "?settingId=", settingString});
 }
 
 mojom::ModifierStatePtr ModifierStateFromEvent(const ui::KeyEvent& event) {
@@ -374,6 +384,30 @@ absl::optional<mojom::NamedDomKey> NamedDomKeyToMojom(
       return mojom::NamedDomKey::kPageUp;
     case ui::DomKey::TAB:
       return mojom::NamedDomKey::kTab;
+    case ui::DomKey::F1:
+      return mojom::NamedDomKey::kF1;
+    case ui::DomKey::F2:
+      return mojom::NamedDomKey::kF2;
+    case ui::DomKey::F3:
+      return mojom::NamedDomKey::kF3;
+    case ui::DomKey::F4:
+      return mojom::NamedDomKey::kF4;
+    case ui::DomKey::F5:
+      return mojom::NamedDomKey::kF5;
+    case ui::DomKey::F6:
+      return mojom::NamedDomKey::kF6;
+    case ui::DomKey::F7:
+      return mojom::NamedDomKey::kF7;
+    case ui::DomKey::F8:
+      return mojom::NamedDomKey::kF8;
+    case ui::DomKey::F9:
+      return mojom::NamedDomKey::kF9;
+    case ui::DomKey::F10:
+      return mojom::NamedDomKey::kF10;
+    case ui::DomKey::F11:
+      return mojom::NamedDomKey::kF11;
+    case ui::DomKey::F12:
+      return mojom::NamedDomKey::kF12;
     default:
       return absl::nullopt;
   }
@@ -575,6 +609,21 @@ void UpdateCandidatesWindowSync(ime::mojom::CandidatesWindowPtr window) {
   candidate_window_handler->UpdateLookupTable(candidate_window);
 }
 
+ime::mojom::InputMethodSettingsPtr WithAutocorrectOverride(
+    ime::mojom::InputMethodSettingsPtr base_settings,
+    bool autocorrect_enabled) {
+  if (!(base::FeatureList::IsEnabled(features::kAutocorrectByDefault) &&
+        base_settings->is_latin_settings())) {
+    return base_settings;
+  }
+
+  return ime::mojom::InputMethodSettings::NewLatinSettings(
+      ime::mojom::LatinSettings::New(
+          /*autocorrect=*/autocorrect_enabled,
+          /*predictive_writing=*/base_settings->get_latin_settings()
+              ->predictive_writing));
+}
+
 }  // namespace
 
 bool CanRouteToNativeMojoEngine(const std::string& engine_id) {
@@ -697,6 +746,9 @@ void NativeInputMethodEngineObserver::ConnectToImeService(
   mojo::PendingAssociatedRemote<ime::mojom::InputMethodHost> input_method_host;
   host_receiver_.Bind(input_method_host.InitWithNewEndpointAndPassReceiver());
 
+  // Note: Hotswitching autocorrect on/off is not required here because we are
+  // initializing a new IME service connection. This means that we will not have
+  // the correct model/version information yet.
   ime::mojom::InputMethodSettingsPtr settings =
       CreateSettingsFromPrefs(*prefs_, engine_id);
 
@@ -706,11 +758,18 @@ void NativeInputMethodEngineObserver::ConnectToImeService(
       base::BindOnce(&OnConnected));
 }
 
-void NativeInputMethodEngineObserver::ActivateTextClient(
+void NativeInputMethodEngineObserver::OnFocusAck(
     int context_id,
-    bool on_focus_success) {
+    bool on_focus_success,
+    mojom::InputMethodMetadataPtr metadata) {
   if (text_client_ && text_client_->context_id == context_id)
     text_client_->state = TextClientState::kActive;
+  if ((base::FeatureList::IsEnabled(features::kAutocorrectByDefault) ||
+       base::FeatureList::IsEnabled(features::kImeUsEnglishModelUpdate)) &&
+      !metadata.is_null()) {
+    autocorrect_manager_->OnConnectedToSuggestionProvider(
+        metadata->autocorrect_suggestion_provider);
+  }
 }
 
 void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
@@ -812,7 +871,7 @@ void NativeInputMethodEngineObserver::OnFocus(
   } else {
     // TODO(b/218608883): Support OnFocusCallback through extension based PK.
     ime_base_observer_->OnFocus(engine_id, context_id, context);
-    ActivateTextClient(context_id, true);
+    OnFocusAck(context_id, true, mojom::InputMethodMetadataPtr(nullptr));
   }
 }
 
@@ -831,8 +890,10 @@ void NativeInputMethodEngineObserver::HandleOnFocusAsyncForNativeMojoEngine(
 
   // TODO(b/200611333): Make input_method_->OnFocus return the overriding
   // XKB layout instead of having the logic here in Chromium.
-  ime::mojom::InputMethodSettingsPtr settings =
-      CreateSettingsFromPrefs(*prefs_, engine_id);
+  ime::mojom::InputMethodSettingsPtr settings = WithAutocorrectOverride(
+      /*base_settings=*/CreateSettingsFromPrefs(*prefs_, engine_id),
+      /*autocorrect_enabled=*/!autocorrect_manager_
+          ->DisabledByInvalidExperimentContext());
   OverrideXkbLayoutIfNeeded(InputMethodManager::Get()->GetImeKeyboard(),
                             settings);
 
@@ -846,9 +907,10 @@ void NativeInputMethodEngineObserver::HandleOnFocusAsyncForNativeMojoEngine(
   mojom::InputFieldInfoPtr input_field_info = CreateInputFieldInfo(
       engine_id, context, input_field_context, prefs_, is_normal_screen);
 
-  base::OnceCallback<void(bool)> on_focus_callback =
-      base::BindOnce(&NativeInputMethodEngineObserver::ActivateTextClient,
-                     weak_ptr_factory_.GetWeakPtr(), text_client_->context_id);
+  base::OnceCallback<void(bool, mojom::InputMethodMetadataPtr)>
+      on_focus_callback = base::BindOnce(
+          &NativeInputMethodEngineObserver::OnFocusAck,
+          weak_ptr_factory_.GetWeakPtr(), text_client_->context_id);
 
   input_method_->OnFocus(std::move(input_field_info),
                          prefs_ ? std::move(settings) : nullptr,
@@ -1023,8 +1085,6 @@ void NativeInputMethodEngineObserver::OnAssistiveWindowButtonClicked(
     case ui::ime::ButtonId::kSmartInputsSettingLink:
       base::RecordAction(base::UserMetricsAction(
           "ChromeOS.Settings.SmartInputs.PersonalInfoSuggestions.Open"));
-      // TODO(crbug/1101689): Add subpath for personal info suggestions
-      // settings.
       chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
           ProfileManager::GetActiveUserProfile(),
           chromeos::settings::mojom::kSmartInputsSubpagePath);
@@ -1037,7 +1097,22 @@ void NativeInputMethodEngineObserver::OnAssistiveWindowButtonClicked(
         // TODO(crbug/1101689): Add subpath for emoji suggestions settings.
         chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
             ProfileManager::GetActiveUserProfile(),
-            chromeos::settings::mojom::kSmartInputsSubpagePath);
+            SettingToQueryString(
+                chromeos::settings::mojom::kSmartInputsSubpagePath,
+                chromeos::settings::mojom::Setting::kShowEmojiSuggestions));
+      }
+      if (button.window_type == ash::ime::AssistiveWindowType::kLearnMore) {
+        autocorrect_manager_->HideUndoWindow();
+        base::RecordAction(base::UserMetricsAction(
+            "ChromeOS.Settings.InputMethod.Autocorrect.Open"));
+        chromeos::settings::mojom::Setting setting =
+            ChromeKeyboardControllerClient::Get()->is_keyboard_visible()
+                ? chromeos::settings::mojom::Setting::kShowVKAutoCorrection
+                : chromeos::settings::mojom::Setting::kShowPKAutoCorrection;
+        std::string path = SettingToQueryString(
+            chromeos::settings::mojom::kInputMethodOptionsSubpagePath, setting);
+        chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+            ProfileManager::GetActiveUserProfile(), path);
       }
       break;
     case ui::ime::ButtonId::kSuggestion:

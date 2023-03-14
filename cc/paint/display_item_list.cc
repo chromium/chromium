@@ -84,9 +84,23 @@ void DisplayItemList::Raster(SkCanvas* canvas,
   if (!GetCanvasClipBounds(canvas, &canvas_playback_rect))
     return;
 
+  TRACE_EVENT_BEGIN1("cc", "DisplayItemList::Raster", "total_op_count",
+                     TotalOpCount());
   std::vector<size_t> offsets;
   rtree_.Search(canvas_playback_rect, &offsets);
   paint_op_buffer_.Playback(canvas, PlaybackParams(image_provider), &offsets);
+
+  bool trace_enabled = false;
+  TRACE_EVENT_CATEGORY_GROUP_ENABLED("cc", &trace_enabled);
+  if (trace_enabled) {
+    size_t rastered_op_count = 0;
+    for (PaintOpBuffer::PlaybackFoldingIterator it(paint_op_buffer_, &offsets);
+         it; ++it) {
+      rastered_op_count += 1 + it->AdditionalOpCount();
+    }
+    TRACE_EVENT_END1("cc", "DisplayItemList::Raster", "rastered_op_count",
+                     rastered_op_count);
+  }
 }
 
 void DisplayItemList::CaptureContent(const gfx::Rect& rect,

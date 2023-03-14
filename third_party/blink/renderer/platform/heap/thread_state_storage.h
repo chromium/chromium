@@ -50,7 +50,7 @@ extern thread_local ThreadStateStorage* g_thread_specific_ CONSTINIT
 // for ThreadState.
 class PLATFORM_EXPORT ThreadStateStorage final {
  public:
-  static ALWAYS_INLINE ThreadStateStorage* MainThreadStateStorage() {
+  ALWAYS_INLINE static ThreadStateStorage* MainThreadStateStorage() {
     return &main_thread_state_storage_;
   }
 
@@ -101,7 +101,7 @@ class ThreadStateStorageFor<kMainThreadOnly> {
   STATIC_ONLY(ThreadStateStorageFor);
 
  public:
-  static ALWAYS_INLINE ThreadStateStorage* GetState() {
+  ALWAYS_INLINE static ThreadStateStorage* GetState() {
     return ThreadStateStorage::MainThreadStateStorage();
   }
 };
@@ -111,7 +111,7 @@ class ThreadStateStorageFor<kAnyThread> {
   STATIC_ONLY(ThreadStateStorageFor);
 
  public:
-  static ALWAYS_INLINE ThreadStateStorage* GetState() {
+  ALWAYS_INLINE static ThreadStateStorage* GetState() {
     return ThreadStateStorage::Current();
   }
 };

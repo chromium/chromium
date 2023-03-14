@@ -54,6 +54,26 @@ found in the LICENSE file.
           android:scaleType="center"
           android:src="@drawable/btn_close" />
   </LinearLayout>
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="top"
+      android:layout_marginEnd="@dimen/account_selection_sheet_close_button_horizontal_margin"
+      android:layout_marginStart="@dimen/account_selection_sheet_horizontal_margin"
+      android:orientation="horizontal">
+      <TextView
+          android:id="@+id/header_subtitle"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:layout_gravity="center_vertical"
+          android:layout_marginStart="36dp"
+          android:paddingBottom="12dp"
+          android:focusable="true"
+          android:focusableInTouchMode="true"
+          android:screenReaderFocusable="true"
+          android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+  </LinearLayout>
   <View
     android:id="@+id/header_divider"
     android:background="@macro/divider_line_bg_color"

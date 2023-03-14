@@ -109,6 +109,37 @@ const todoFormatRule = {
   },
 };
 
+const stringEnumOrder = {
+  create: (context) => {
+    return {
+      /* eslint-disable-next-line @typescript-eslint/naming-convention */
+      TSEnumDeclaration(node) {
+        if (!node.members.every(
+                (member) => typeof member.initializer?.value === 'string')) {
+          // Skip if it isn't a string enum.
+          return;
+        }
+        const sortedNames =
+            node.members.map((member) => member.id.name)
+                .sort(
+                    (a, b) => a.toLowerCase().localeCompare(b.toLowerCase()),
+                );
+        for (let i = 0; i < node.members.length; i++) {
+          const correctName = sortedNames[i];
+          const member = node.members[i];
+          if (member.id.name !== correctName) {
+            context.report({
+              node: member,
+              message: `"${member.id.name}" should be after "${correctName}".`,
+            });
+            break;
+          }
+        }
+      },
+    };
+  },
+};
+
 /* global module */
 module.exports = {
   /* eslint-disable @typescript-eslint/naming-convention */
@@ -116,6 +147,7 @@ module.exports = {
     'parameter-comment-format': parameterCommentFormatRule,
     'generic-parameter-on-declaration-type': genericParameterOnDeclarationType,
     'todo-format': todoFormatRule,
+    'string-enum-order': stringEnumOrder,
   },
   /* eslint-enable @typescript-eslint/naming-convention */
 };

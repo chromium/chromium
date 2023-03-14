@@ -99,37 +99,43 @@ TEST_F(MacPlatformDelegateTest, GetProductMetadata_NoFile) {
   EXPECT_FALSE(product_metadata->version);
 }
 
-TEST_F(MacPlatformDelegateTest, GetSigningCertificatesPublicKeyHashes_Success) {
-  auto spki_hashes = platform_delegate_.GetSigningCertificatesPublicKeyHashes(
+TEST_F(MacPlatformDelegateTest, GetSigningCertificatesPublicKeys_Success) {
+  auto public_keys = platform_delegate_.GetSigningCertificatesPublicKeys(
       test::GetTestBundlePath());
 
-  ASSERT_TRUE(spki_hashes);
-  ASSERT_EQ(spki_hashes->size(), 1U);
+  ASSERT_TRUE(public_keys);
+  ASSERT_EQ(public_keys->hashes.size(), 1U);
+  EXPECT_FALSE(public_keys->is_os_verified);
+  EXPECT_FALSE(public_keys->subject_name);
 
   std::string base64_hash;
-  base::Base64Encode(spki_hashes.value()[0], &base64_hash);
+  base::Base64Encode(public_keys.value().hashes[0], &base64_hash);
   EXPECT_EQ(base64_hash, "E7ahL43DGT2VrGvGpnlI9ONkEqdni9ddf4fCTN26uFc=");
 
   // Should work for the binary path too.
-  auto binary_spki_hashes =
-      platform_delegate_.GetSigningCertificatesPublicKeyHashes(
-          test::GetTestBundleBinaryPath());
-  EXPECT_EQ(binary_spki_hashes, spki_hashes);
+  auto binary_public_keys = platform_delegate_.GetSigningCertificatesPublicKeys(
+      test::GetTestBundleBinaryPath());
+  EXPECT_EQ(binary_public_keys->hashes, public_keys->hashes);
+  EXPECT_FALSE(binary_public_keys->is_os_verified);
+  EXPECT_FALSE(binary_public_keys->subject_name);
 }
 
-TEST_F(MacPlatformDelegateTest,
-       GetSigningCertificatesPublicKeyHashes_NoSignature) {
-  auto spki_hashes = platform_delegate_.GetSigningCertificatesPublicKeyHashes(
+TEST_F(MacPlatformDelegateTest, GetSigningCertificatesPublicKeys_NoSignature) {
+  auto public_keys = platform_delegate_.GetSigningCertificatesPublicKeys(
       test::GetUnsignedBundlePath());
-  ASSERT_TRUE(spki_hashes);
-  EXPECT_TRUE(spki_hashes->empty());
+  ASSERT_TRUE(public_keys);
+  EXPECT_TRUE(public_keys->hashes.empty());
+  EXPECT_FALSE(public_keys->is_os_verified);
+  EXPECT_FALSE(public_keys->subject_name);
 }
 
-TEST_F(MacPlatformDelegateTest, GetSigningCertificatesPublicKeyHashes_NoFile) {
-  auto spki_hashes = platform_delegate_.GetSigningCertificatesPublicKeyHashes(
+TEST_F(MacPlatformDelegateTest, GetSigningCertificatesPublicKeys_NoFile) {
+  auto public_keys = platform_delegate_.GetSigningCertificatesPublicKeys(
       test::GetUnusedPath());
-  ASSERT_TRUE(spki_hashes);
-  EXPECT_TRUE(spki_hashes->empty());
+  ASSERT_TRUE(public_keys);
+  EXPECT_TRUE(public_keys->hashes.empty());
+  EXPECT_FALSE(public_keys->is_os_verified);
+  EXPECT_FALSE(public_keys->subject_name);
 }
 
 }  // namespace device_signals

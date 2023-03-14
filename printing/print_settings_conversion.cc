@@ -25,10 +25,12 @@
 #include "printing/print_job_constants.h"
 #include "printing/print_settings.h"
 #include "printing/units.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "print_settings_conversion_chromeos.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -322,6 +324,13 @@ std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
 
   settings->set_printer_manually_selected(
       job_settings.FindBool(kSettingPrinterManuallySelected).value_or(false));
+
+  absl::optional<int> reason =
+      job_settings.FindInt(kSettingPrinterStatusReason);
+  if (reason.has_value()) {
+    settings->set_printer_status_reason(
+        static_cast<crosapi::mojom::StatusReason::Reason>(reason.value()));
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   return settings;

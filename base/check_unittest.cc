@@ -58,6 +58,8 @@ MATCHER_P2(LogErrorMatches, line, expected_msg, "") {
 // Macro which expects a DCHECK to fire if DCHECKs are enabled.
 //
 // Note: Please use the `CheckDeathTest` fixture when using this check.
+// TODO(pbos): Try to update this macro to detect that non-fatal DCHECKs do
+// upload crash dumps without crashing.
 #define EXPECT_DCHECK(msg, check_expr)                                         \
   do {                                                                         \
     if (DCHECK_IS_ON() && logging::LOGGING_DCHECK == logging::LOGGING_FATAL) { \

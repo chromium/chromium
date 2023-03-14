@@ -15,7 +15,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
-#include "ui/display/test/scoped_screen_override.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -65,9 +64,7 @@ class OmniboxResultViewTest : public ChromeViewsTestBase {
   void SetUp() override {
 #if !defined(USE_AURA)
     test_screen_ = std::make_unique<display::test::TestScreen>();
-    scoped_screen_override_ =
-        std::make_unique<display::test::ScopedScreenOverride>(
-            test_screen_.get());
+    display::Screen::SetScreenInstance(test_screen_.get());
 #endif
     ChromeViewsTestBase::SetUp();
 
@@ -93,7 +90,7 @@ class OmniboxResultViewTest : public ChromeViewsTestBase {
   void TearDown() override {
     widget_.reset();
     ChromeViewsTestBase::TearDown();
-    scoped_screen_override_.reset();
+    display::Screen::SetScreenInstance(nullptr);
     test_screen_.reset();
   }
 
@@ -126,7 +123,6 @@ class OmniboxResultViewTest : public ChromeViewsTestBase {
   std::unique_ptr<views::Widget> widget_;
 
   std::unique_ptr<display::test::TestScreen> test_screen_;
-  std::unique_ptr<display::test::ScopedScreenOverride> scoped_screen_override_;
 };
 
 TEST_F(OmniboxResultViewTest, MousePressedWithLeftButtonSelectsThisResult) {

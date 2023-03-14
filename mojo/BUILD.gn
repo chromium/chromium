@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/ui.gni")
+import("//mojo/features.gni")
 import("//testing/test.gni")
 
 group("mojo") {
@@ -21,16 +23,26 @@ group("mojo") {
   deps += [ "//services/service_manager:all" ]
 }
 
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "MOJO_USE_APPLE_CHANNEL=$mojo_use_apple_channel" ]
+}
+
 group("tests") {
   testonly = true
   deps = [
     ":mojo_perftests",
     ":mojo_unittests",
-    "//ipc:ipc_tests",
     "//mojo/public/tools:mojo_python_unittests",
-    "//services/service_manager/tests",
     "//third_party/ipcz/src:ipcz_tests",
   ]
+
+  if (!is_ios) {
+    deps += [
+      "//ipc:ipc_tests",
+      "//services/service_manager/tests",
+    ]
+  }
 }
 
 test("mojo_unittests") {

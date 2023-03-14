@@ -12,20 +12,14 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/types/pass_key.h"
-#include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/prerender/prerender_attributes.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
-#include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/navigation_controller_delegate.h"
-#include "content/browser/renderer_host/stored_page.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/global_routing_id.h"
-#include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/preloading_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -35,10 +29,6 @@ class EnabledClientHints;
 namespace network::mojom {
 enum class WebClientHintsType;
 }  // namespace network::mojom
-
-namespace url {
-class Origin;
-}  // namespace url
 
 namespace content {
 

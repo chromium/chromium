@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Zoomniveau verkleinen</translation>
 <translation id="1510341833810331442">Sites mogen geen gegevens opslaan op je apparaat</translation>
 <translation id="1547123415014299762">Cookies van derden zijn toegestaan</translation>
+<translation id="1593426485665524382">Er zijn nieuwe acties beschikbaar bovenaan het scherm</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1633720957382884102">Gerelateerde sites</translation>
 <translation id="1644574205037202324">Geschiedenis</translation>
@@ -59,6 +60,7 @@
 <translation id="216989819110952009">Hoewel hun ogen werden beschermd door de groene bril, werden Dorothy en haar vrienden eerst verblind door de</translation>
 <translation id="2176704795966505152">Zoomoptie in hoofdmenu tonen</translation>
 <translation id="2182457891543959921">Vragen voordat sites een 3D-kaart van je omgeving mogen maken of de camerapositie mogen volgen (aanbevolen)</translation>
+<translation id="2194856509914051091">Overwegingen</translation>
 <translation id="2212565012507486665">Cookies toestaan</translation>
 <translation id="2228071138934252756">Als je <ph name="APP_NAME" /> toegang wilt geven tot je camera, moet je de camera ook aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Cookies van derden worden geblokkeerd</translation>
@@ -98,7 +100,6 @@
 <translation id="2713106313042589954">Camera uitzetten</translation>
 <translation id="2717722538473713889">E-mailadressen</translation>
 <translation id="2750481671343847896">Sites kunnen inlogprompts van identiteitsservices tonen.</translation>
-<translation id="2779966372261694284">Je wordt uitgelogd van deze site</translation>
 <translation id="2822354292072154809">Weet je zeker dat je alle siterechten voor <ph name="CHOSEN_OBJECT_NAME" /> wilt resetten?</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2874939134665556319">Vorig nummer</translation>
@@ -144,6 +145,9 @@
 <translation id="3600792891314830896">Geluid uitzetten voor sites met geluid</translation>
 <translation id="3602290021589620013">Voorbeeld</translation>
 <translation id="3628308229821498208">Voorgestelde zoekopdrachten</translation>
+<translation id="3636279694100170143">Sites die je bezoekt, kunnen bevestigen dat je een echte gebruiker bent en geen bot</translation>
+<translation id="3649190289964910441">Een site die je bezoekt, kan informatie opslaan in Chrome waarmee wordt bevestigd dat je een echte gebruiker bent. Terwijl je browst, kunnen sites via Chrome checken dat je waarschijnlijk een betrouwbare gebruiker bent en dit verifiëren vanaf de eerste site die je bezoekt.</translation>
+<translation id="3721953990244350188">Sluiten en volgende beschikbare actie tonen</translation>
 <translation id="3744111561329211289">Synchronisatie op de achtergrond</translation>
 <translation id="3763247130972274048">Dubbeltik links of rechts in de video om tien seconden te verspringen</translation>
 <translation id="3794286421982011626">Een site die je bezoekt, kan informatie over je activiteiten opslaan zodat deze werkt zoals verwacht, bijvoorbeeld om je ingelogd te houden op een site of artikelen in je winkelwagentje op te slaan. Sites slaan deze informatie vaak tijdelijk op je apparaat op.</translation>
@@ -191,11 +195,11 @@
 <translation id="4534723447064627427">Als je <ph name="APP_NAME" /> toegang wilt geven tot je microfoon, moet je de microfoon ook aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Microfoon uitzetten</translation>
 <translation id="4570913071927164677">Details</translation>
-<translation id="4575264539271661854">Makkelijker inzoomen op tekst en afbeeldingen van een site die je bezoekt</translation>
 <translation id="4598549027014564149">Als je de incognitomodus gebruikt, kunnen sites je cookies niet gebruiken om je browse-activiteit op sites te bekijken (ook niet op gerelateerde sites). Je browse-activiteit wordt bijvoorbeeld niet gebruikt om advertenties te personaliseren. Functies op bepaalde sites werken misschien niet.</translation>
 <translation id="4645575059429386691">Beheerd door je ouder</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
 <translation id="4751476147751820511">Bewegings- of lichtsensoren</translation>
+<translation id="477781522763920796">Deze instelling werkt zonder je te identificeren of sites toe te staan je browsegeschiedenis te bekijken.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4811450222531576619">Meer informatie over de bron en het onderwerp</translation>
 <translation id="4836046166855586901">Vragen als een site wil weten wanneer je dit apparaat actief gebruikt</translation>
@@ -257,6 +261,7 @@
 <translation id="5740126560802162366">Sites kunnen gegevens opslaan op je apparaat</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> geblokkeerd</translation>
 <translation id="5804241973901381774">Rechten</translation>
+<translation id="5810805850857689118">Met deze actie wis je alle gegevens en cookies voor <ph name="ORIGIN" /> en alle onderliggende sites</translation>
 <translation id="5860033963881614850">Uit</translation>
 <translation id="5876056640971328065">Video pauzeren</translation>
 <translation id="5884085660368669834">Sitevoorkeur</translation>
@@ -273,6 +278,7 @@
 <translation id="6040143037577758943">Sluiten</translation>
 <translation id="6042308850641462728">Meer</translation>
 <translation id="6064125863973209585">Voltooide downloads</translation>
+<translation id="6071501408666570960">Je wordt misschien uitgelogd bij deze site</translation>
 <translation id="6165508094623778733">Meer informatie</translation>
 <translation id="6177111841848151710">Geblokkeerd voor de huidige zoekmachine</translation>
 <translation id="6177128806592000436">Je verbinding met deze site is niet beveiligd</translation>
@@ -323,6 +329,7 @@
 <translation id="7016516562562142042">Toegestaan voor huidige zoekmachine</translation>
 <translation id="702275896380648118">Deze site stelt vast wat je leuk vindt en stelt daarna advertenties voor op andere sites. Deze site krijgt ook je advertentieonderwerpen van Chrome zodat de site je relevantere advertenties kan laten zien.</translation>
 <translation id="702463548815491781">Aanbevolen als TalkBack of Toegang via schakelaar aanstaan</translation>
+<translation id="7050519587566342213">Browsen verloopt soepeler, omdat je waarschijnlijk eerder vertrouwd wordt als je van de ene site naar de andere gaat.</translation>
 <translation id="7053983685419859001">Blokkeren</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 geselecteerd}other{# geselecteerd}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> geselecteerd. Opties beschikbaar bovenaan het scherm.</translation>
@@ -347,6 +354,7 @@
 <translation id="757524316907819857">Blokkeren dat sites beschermde content kunnen afspelen</translation>
 <translation id="7577900504646297215">Interesses beheren</translation>
 <translation id="7594634374516752650">Verbonden met een bluetooth-apparaat</translation>
+<translation id="7634280112532283638">Spam- en fraudebeperking</translation>
 <translation id="7641339528570811325">Browsegegevens wissen</translation>
 <translation id="7649070708921625228">Hulp</translation>
 <translation id="7658239707568436148">Annuleren</translation>
@@ -407,6 +415,7 @@
 <translation id="8514955299594277296">Niet toestaan dat sites gegevens opslaan op je apparaat (niet aanbevolen)</translation>
 <translation id="851751545965956758">Voorkomen dat sites verbinding maken met apparaten</translation>
 <translation id="8525306231823319788">Volledig scherm</translation>
+<translation id="8528440122773422556">Met deze actie wis je alle gegevens en cookies die zijn opgeslagen door alle sites onder <ph name="ORIGIN" /> of door de bijbehorende app op je startscherm</translation>
 <translation id="8541410041357371550">Deze site krijgt je advertentieonderwerpen van Chrome zodat de site je relevantere advertenties kan laten zien</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Cookies toegestaan voor <ph name="FPS_MEMBERS_COUNT" /> site van <ph name="FPS_OWNER" />}other{Cookies toegestaan voor <ph name="FPS_MEMBERS_COUNT" /> sites van <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Toegestaan (aanbevolen)</translation>
@@ -421,6 +430,7 @@
 <translation id="8737217482364735741">Hiermee wis je alle gegevens en cookies die zijn opgeslagen door <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Een afbeelding selecteren</translation>
 <translation id="8801436777607969138">Blokkeer JavaScript voor een specifieke site.</translation>
+<translation id="8803526663383843427">Als dit aanstaat</translation>
 <translation id="8816026460808729765">Sites geen toegang tot sensoren geven</translation>
 <translation id="8823559166155093873">Cookies blokkeren</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -434,6 +444,7 @@
 <translation id="8986362086234534611">Vergeten</translation>
 <translation id="8990043154272859344">Je wordt uitgelogd van alle sites</translation>
 <translation id="9019902583201351841">Beheerd door je ouders</translation>
+<translation id="9039697262778250930">Je wordt misschien uitgelogd van deze sites</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Deze site zit in een groep die je activiteit kan bekijken. De groep wordt gedefinieerd door <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Cookies verwijderen?</translation>

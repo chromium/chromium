@@ -50,6 +50,8 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   // Setter for `progress_bar_` accessibility label.
   void OverrideProgressBarAccessibleName(const std::u16string& name);
 
+  views::ScrollView* scroll_view_for_testing() { return scroller_; }
+
  protected:
   // views::View:
   void Layout() override;

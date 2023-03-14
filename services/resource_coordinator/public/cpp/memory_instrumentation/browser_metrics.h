@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
+#include "build/build_config.h"
 
 // Macro used for logging memory related metrics in mb.
 #define MEMORY_METRICS_HISTOGRAM_MB(name, value) \
@@ -26,8 +27,12 @@ extern const char kMemoryHistogramPrefix[];
 enum class HistogramProcessType {
   kAudioService,
   kBrowser,
+  kCdmService,
   kExtension,
   kGpu,
+#if BUILDFLAG(IS_WIN)
+  kMediaFoundationService,
+#endif
   kNetworkService,
   kPaintPreviewCompositor,
   kRenderer,

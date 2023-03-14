@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 #include <sys/types.h>
+#include <map>
 #include <memory>
-#include <set>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -31,6 +31,12 @@ class WaylandDmabufSurfaceFeedback;
 
 using IndexedDrmFormatsAndModifiers =
     base::flat_map<uint32_t, base::flat_map<size_t, uint64_t>>;
+
+enum class ScanoutReasonFlags : uint32_t {
+  kNone = 0,
+  kFullscreen = 1,
+  kOverlayPriorityHint = 2
+};
 
 class WaylandDmabufFeedbackManager {
  public:
@@ -56,8 +62,10 @@ class WaylandDmabufFeedbackManager {
                           wl_resource* surface_resource);
   void RemoveSurfaceFeedback(Surface* surface);
 
-  void AddSurfaceToScanoutCandidates(Surface* surface);
-  void RemoveSurfaceFromScanoutCandidates(Surface* surface);
+  void AddSurfaceToScanoutCandidates(Surface* surface,
+                                     ScanoutReasonFlags reason);
+  void RemoveSurfaceFromScanoutCandidates(Surface* surface,
+                                          ScanoutReasonFlags reason);
   void MaybeResendFeedback(Surface* surface);
 
  private:
@@ -72,7 +80,7 @@ class WaylandDmabufFeedbackManager {
   std::unique_ptr<WaylandDmabufFeedback> default_feedback_;
   base::flat_map<Surface*, std::unique_ptr<WaylandDmabufSurfaceFeedback>>
       surface_feedbacks_;
-  std::set<Surface*> scanout_candidates_;
+  std::map<Surface*, ScanoutReasonFlags> scanout_candidates_;
 };
 
 }  // namespace wayland

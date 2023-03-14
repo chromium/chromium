@@ -27,16 +27,20 @@ component("concierge") {
   ]
 }
 
-config("concierge_config") {
+static_library("concierge_proto") {
+  public_deps = [ ":concierge_proto_lib" ]
+  all_dependent_configs = [ ":concierge_proto_config" ]
+}
+
+config("concierge_proto_config") {
   include_dirs = [ "${root_gen_dir}/chromeos/ash/components/dbus" ]
 }
 
-proto_library("concierge_proto") {
+proto_library("concierge_proto_lib") {
   sources = [
     "//third_party/cros_system_api/dbus/vm_concierge/concierge_service.proto",
   ]
-  extra_configs = [ ":concierge_config" ]
   proto_deps = [ "//chromeos/ash/components/dbus/arc:arc_proto" ]
   import_dirs = [ "//third_party/cros_system_api/dbus" ]
-  proto_out_dir = "chromeos/ash/components/dbus/concierge"
+  proto_out_dir = "chromeos/ash/components/dbus/vm_concierge"
 }

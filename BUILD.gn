@@ -66,25 +66,20 @@ if (is_official_build) {
   assert(!is_component_build)
 }
 
-# This file defines the following two main targets:
+# The `gn_all` target is used to list all of the main targets in the build, so
+# that we can figure out which BUILD.gn files to process, following the process
+# described at the top of this file.
 #
-# "gn_all" is used to create explicit dependencies from the root BUILD.gn to
-# each top-level component that we wish to include when building everything via
-# "all". This is required since the set of targets built by "all" is determined
-# automatically based on reachability from the root BUILD.gn (for details, see
-# crbug.com/503241). Builders should typically use "all", or list targets
-# explicitly, rather than relying on "gn_all".
-#
-# "gn_visibility": targets that are normally not visible to top-level targets,
-# but are built anyway by "all". Since we don't want any such targets, we have
-# this placeholder to make sure hidden targets that aren't otherwise depended
-# on yet are accounted for.
+# Because of the way GN works (again, as described above), there may be targets
+# built by `all` that aren't built by `gn_all`. We always want `all` to build,
+# so there's really never a reason you'd want to build `gn_all` instead of
+# `all`, and no tooling should depend directly on this target. Tools should
+# should depend on either an explicit list of targets, or `all`.
 
 group("gn_all") {
   testonly = true
 
   deps = [
-    ":gn_visibility",
     "//base:base_perftests",
     "//base:base_unittests",
     "//codelabs",
@@ -178,31 +173,24 @@ group("gn_all") {
   }
 
   if (use_blink) {
-    deps += [ "//content/shell:content_shell" ]
-  }
-
-  if (!is_ios) {
     deps += [
-      ":chromedriver_group",
       "//cc:cc_unittests",
-      "//components:components_browsertests",
       "//components/policy:policy_templates",
       "//components/url_formatter/tools:format_url",
       "//components/viz:viz_perftests",
       "//components/viz:viz_unittests",
+      "//content/shell:content_shell",
       "//content/test:content_browsertests",
       "//content/test:content_unittests",
       "//device:device_unittests",
       "//gpu:gpu_benchmark",
       "//gpu:gpu_unittests",
-      "//ipc:ipc_tests",
       "//media:media_unittests",
       "//media/capture:capture_unittests",
       "//media/midi:midi_unittests",
       "//media/mojo:media_mojo_unittests",
       "//mojo",
       "//mojo:mojo_unittests",
-      "//net:net_perftests",
       "//storage:storage_unittests",
       "//third_party/blink/common:blink_common_unittests",
       "//third_party/blink/renderer/controller:blink_unittests",
@@ -212,13 +200,26 @@ group("gn_all") {
       "//third_party/libjingle_xmpp:libjingle_xmpp_unittests",
       "//tools/imagediff",
       "//ui/display:display_unittests",
-      "//ui/events:events_unittests",
       "//ui/gl:gl_unittests",
       "//ui/latency:latency_unittests",
       "//ui/native_theme:native_theme_unittests",
       "//ui/touch_selection:ui_touch_selection_unittests",
-      "//url/ipc:url_ipc_unittests",
       "//v8:gn_all",
+    ]
+
+    if (!v8_use_external_startup_data) {
+      deps += [ "//v8:v8_snapshot" ]
+    }
+  }
+
+  if (!is_ios) {
+    deps += [
+      ":chromedriver_group",
+      "//components:components_browsertests",
+      "//ipc:ipc_tests",
+      "//net:net_perftests",
+      "//ui/events:events_unittests",
+      "//url/ipc:url_ipc_unittests",
     ]
   }
 
@@ -226,6 +227,7 @@ group("gn_all") {
     deps += [
       "//weblayer/browser/android/javatests:webengine_support_instrumentation_test_apk",
       "//weblayer/browser/java:weblayer_junit_tests",
+      "//weblayer/test:weblayer_browsertests",
     ]
   }
 
@@ -413,6 +415,10 @@ group("gn_all") {
         "//chrome/browser/android/examples/partner_browser_customizations_provider:partner_browser_customizations_example_apk",
         "//content/shell/android:content_shell_test_apk",
       ]
+
+      if (android_sdk_release == "tprivacysandbox") {
+        deps += [ "//android_webview/tools/sdk_sandbox" ]
+      }
     }
 
     if (enable_chrome_android_internal) {
@@ -510,34 +516,39 @@ group("gn_all") {
   }
 
   # TODO(GYP): Figure out which of these should (and can) build
-  # for Chrome OS and iOS.
-  if (!is_chromeos_ash && !is_ios) {
+  # for Chrome OS and iOS (without blink).
+  if (!is_chromeos_ash && use_blink) {
     deps += [
-      "//base:build_utf8_validator_tables",
-      "//base:check_example",
       "//cc:cc_perftests",
-      "//components:components_perftests",
       "//device:device_unittests",
       "//gin:gin_shell",
       "//gin:gin_unittests",
       "//gpu:command_buffer_perftests",
       "//gpu:gl_tests",
       "//gpu:gpu_perftests",
-      "//ipc:ipc_perftests",
       "//media:media_perftests",
-      "//net:dump_cache",
       "//third_party/libphonenumber:libphonenumber_unittests",
       "//ui/compositor:compositor_unittests",
     ]
 
-    if (!is_android && !is_castos) {
+    if (!is_ios) {
+      deps += [
+        "//base:build_utf8_validator_tables",
+        "//base:check_example",
+        "//components:components_perftests",
+        "//ipc:ipc_perftests",
+        "//net:dump_cache",
+      ]
+    }
+
+    if (!is_android && !is_castos && !is_ios) {
       deps += [
         "//chrome/test:load_library_perf_tests",
         "//chrome/test:sync_performance_tests",
       ]
     }
 
-    if (!is_android) {
+    if (!is_android && !is_ios) {
       deps += [
         "//courgette:courgette",
         "//courgette:courgette_fuzz",
@@ -621,7 +632,6 @@ group("gn_all") {
 
   if (is_mac) {
     deps += [
-      "//third_party/breakpad:crash_inspector",
       "//third_party/breakpad:dump_syms",
 
       # The following are accessibility API tools.
@@ -754,7 +764,7 @@ group("gn_all") {
   }
 
   if ((is_linux && !is_castos) || is_chromeos ||
-      ((is_win || is_mac) && use_libfuzzer)) {
+      ((is_win || is_mac) && use_fuzzing_engine)) {
     deps += [
       "//testing/libfuzzer/fuzzers",
       "//third_party/freetype-testing:fuzzers",
@@ -831,10 +841,19 @@ group("gn_all") {
     "//third_party/pffft:pffft_unittest",
   ]
 
-  # Minimal binaries to exercise Rust toolchain.
-  deps += [ ":rust_build_tests" ]
+  # Rust build targets.
+  deps += [ ":all_rust" ]
+}
 
-  # More Rust targets.
+# All Rust targets. This is provided for convenience while developing Rust to
+# e.g. test build config or toolchain changes.
+group("all_rust") {
+  testonly = true
+
+  # Unconditional because this includes things that should work whether or not
+  # Rust is enabled.
+  deps = [ ":rust_build_tests" ]
+
   if (toolchain_has_rust) {
     deps += [
       "//mojo/public/rust",
@@ -1023,20 +1042,6 @@ if (is_chromeos_ash) {
       if (use_v4l2_codec) {
         data_deps += [ "//media/gpu/v4l2:v4l2_stateless_decoder" ]
       }
-    }
-  }
-}
-
-group("gn_visibility") {
-  deps = [
-    "//build/config/sanitizers:options_sources",
-    # "//third_party/pdfium:pdfium_embeddertests",  # TODO(GYP): visibility?
-    # "//third_party/pdfium:pdfium_unittests",  # TODO(GYP): visibility?
-  ]
-
-  if (!is_ios) {
-    if (!v8_use_external_startup_data) {
-      deps += [ "//v8:v8_snapshot" ]
     }
   }
 }

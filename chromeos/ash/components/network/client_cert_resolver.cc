@@ -641,7 +641,7 @@ void ClientCertResolver::ResolveNetworks(
 
     ::onc::ONCSource onc_source = ::onc::ONC_SOURCE_NONE;
     std::string userhash;
-    const base::Value* policy =
+    const base::Value::Dict* policy =
         managed_network_config_handler_->FindPolicyByGuidAndProfile(
             network->guid(), network->profile_path(),
             ManagedNetworkConfigurationHandler::PolicyType::kOriginal,
@@ -657,7 +657,7 @@ void ClientCertResolver::ResolveNetworks(
 
     VLOG(2) << "Inspecting network " << network->path();
     client_cert::ClientCertConfig cert_config;
-    OncToClientCertConfig(onc_source, policy->GetDict(), &cert_config);
+    OncToClientCertConfig(onc_source, *policy, &cert_config);
 
     // Skip networks that don't have a ClientCertPattern or ClientCertRef.
     if (!ShouldResolveCert(cert_config))

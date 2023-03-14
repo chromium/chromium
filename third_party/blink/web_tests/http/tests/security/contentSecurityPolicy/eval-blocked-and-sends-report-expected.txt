@@ -1,9 +1,0 @@
-CONSOLE MESSAGE: EvalError: Refused to evaluate a string as JavaScript because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: "script-src 'self' 'unsafe-inline'".
-
-CONSOLE MESSAGE: PASS: eval() blocked.
-CSP report received:
-CONTENT_TYPE: application/csp-report
-HTTP_REFERER: http://127.0.0.1:8000/security/contentSecurityPolicy/eval-blocked-and-sends-report.php
-REQUEST_METHOD: POST
-=== POST DATA ===
-{"csp-report":{"document-uri":"http://127.0.0.1:8000/security/contentSecurityPolicy/eval-blocked-and-sends-report.php","referrer":"","violated-directive":"script-src","effective-directive":"script-src","original-policy":"script-src 'self' 'unsafe-inline'; report-uri resources/save-report.php?test=eval-blocked-and-sends-report.php","disposition":"enforce","blocked-uri":"eval","line-number":8,"column-number":13,"source-file":"http://127.0.0.1:8000/security/contentSecurityPolicy/eval-blocked-and-sends-report.php","status-code":200,"script-sample":""}}

@@ -35,7 +35,6 @@ static_library("camera_app_ui") {
   deps = [
     ":document_scanning",
     ":mojo_bindings",
-    ":mojo_bindings_js",
     ":window_managemet",
     "//ash/public/cpp",
     "//ash/webui/system_apps/public:system_web_app_config",
@@ -121,29 +120,25 @@ mojom("mojo_bindings") {
     "//url/mojom:url_mojom_gurl",
   ]
   webui_module_path = "/ash/webui/camera_app_ui"
+  use_typescript_sources = true
 }
 
 cca_grd_prefix = "ash_camera_app"
 resources_grd_file = "$target_gen_dir/${cca_grd_prefix}_resources.grd"
 
-mojo_grdp_file = "$target_gen_dir/mojo.grdp"
 generated_grdp_file = "$target_gen_dir/generated.grdp"
 
 generate_grd("build_grd") {
   deps = [
     ":build_generated_grdp",
-    ":build_mojo_grdp",
-    "resources/js:build_ts",
+    "resources:build_ts",
   ]
 
   grd_prefix = cca_grd_prefix
   out_grd = resources_grd_file
-  grdp_files = [
-    mojo_grdp_file,
-    generated_grdp_file,
-  ]
+  grdp_files = [ generated_grdp_file ]
 
-  manifest_files = [ "$target_gen_dir/resources/js/build_ts.manifest" ]
+  manifest_files = [ "$target_gen_dir/resources/build_ts.manifest" ]
   input_files_base_dir = rebase_path("resources", "//")
   input_files = []
 
@@ -186,35 +181,8 @@ generate_grd("build_grd") {
   ]
 }
 
-generate_grd("build_mojo_grdp") {
-  deps = [
-    "//ash/components/arc/mojom:camera_intent_js",
-    "//ash/webui/camera_app_ui:mojo_bindings_js",
-    "//chromeos/services/machine_learning/public/mojom:document_scanner_param_types_js",
-    "//media/capture/mojom:image_capture_js",
-    "//media/capture/video/chromeos/mojom:cros_camera_js",
-  ]
-
-  grd_prefix = "ash_camera_app_js_mojo"
-  input_files_base_dir = rebase_path("$root_gen_dir/", root_build_dir)
-
-  input_files = [
-    "mojom-webui/ash/components/arc/mojom/camera_intent.mojom-webui.js",
-    "mojom-webui/ash/webui/camera_app_ui/camera_app_helper.mojom-webui.js",
-    "mojom-webui/chromeos/services/machine_learning/public/mojom/document_scanner_param_types.mojom-webui.js",
-    "mojom-webui/media/capture/mojom/image_capture.mojom-webui.js",
-    "mojom-webui/media/capture/video/chromeos/mojom/camera3.mojom-webui.js",
-    "mojom-webui/media/capture/video/chromeos/mojom/camera_app.mojom-webui.js",
-    "mojom-webui/media/capture/video/chromeos/mojom/camera_common.mojom-webui.js",
-    "mojom-webui/media/capture/video/chromeos/mojom/camera_metadata.mojom-webui.js",
-    "mojom-webui/media/capture/video/chromeos/mojom/camera_metadata_tags.mojom-webui.js",
-  ]
-
-  out_grd = mojo_grdp_file
-}
-
 generate_grd("build_generated_grdp") {
-  deps = [ "//ash/webui/camera_app_ui/resources/js:gen_preload_images_js" ]
+  deps = [ "//ash/webui/camera_app_ui/resources:gen_preload_images_js" ]
   grd_prefix = "ash_camera_app_js"
   input_files_base_dir =
       rebase_path("$root_gen_dir/ash/webui/camera_app_ui/resources",

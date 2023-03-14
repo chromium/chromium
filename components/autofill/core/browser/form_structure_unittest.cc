@@ -11,10 +11,12 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/functional/invoke.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/unguessable_token.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -163,7 +165,7 @@ class FormStructureTestImpl : public test::FormStructureTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  test::AutofillEnvironment autofill_environment_;
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
 class ParameterizedFormStructureTest
@@ -998,7 +1000,7 @@ TEST_F(FormStructureTestImpl,
 
   FormFieldData field;
 
-  // Set a valid autocompelete attribute to the first field.
+  // Set a valid autocomplete attribute to the first field.
   test::CreateTestFormField("First Name", "firstname", "", "text", "given-name",
                             &field);
   form.fields.push_back(field);
@@ -1011,7 +1013,7 @@ TEST_F(FormStructureTestImpl,
   EXPECT_TRUE(FormShouldBeQueried(form));
 
   // As a side effect of parsing small forms (if any of the heuristics, query,
-  // or upload minimmums are disabled, we'll autofill fields with an
+  // or upload minimums are disabled, we'll autofill fields with an
   // autocomplete attribute, even if its the only field in the form.
   {
     FormData form_copy = form;
@@ -6383,7 +6385,7 @@ TEST_F(
 }
 
 // Tests if all the fields in the form belong to the same section when the
-// second field has the autcomplete-section attribute set.
+// second field has the autocomplete-section attribute set.
 TEST_F(FormStructureTestImpl, FromEmptyAutocompleteSectionToDefinedOne) {
   base::test::ScopedFeatureList enabled;
   enabled.InitAndEnableFeature(features::kAutofillUseNewSectioningMethod);
@@ -6495,7 +6497,8 @@ TEST_F(FormStructureTestImpl, FindFieldsEligibleForManualFilling) {
 
   test_api(&form_structure).IdentifySections(/*ignore_autocomplete=*/false);
   std::vector<FieldGlobalId> expected_result;
-  // Only credit card related and unknown fields are elible for manual filling.
+  // Only credit card related and unknown fields are eligible for manual
+  // filling.
   expected_result.push_back(full_name_id);
   expected_result.push_back(unknown_id);
 
@@ -6634,6 +6637,50 @@ TEST_P(FormStructureTest_ForPatternSource, ParseFieldTypesWithPatterns) {
                                       NO_SERVER_DATA))))
         << "PatternSource = " << static_cast<int>(other_pattern_source);
   }
+}
+
+TEST_F(FormStructureTestImpl, DetermineRanks) {
+  FormData form;
+  form.url = GURL("http://foo.com");
+
+  auto add_field = [&form](const std::u16string& name,
+                           LocalFrameToken frame_token,
+                           FormRendererId host_form_id) {
+    FormFieldData field;
+    field.form_control_type = "text";
+    field.name = name;
+    field.unique_renderer_id = test::MakeFieldRendererId();
+    field.host_frame = frame_token;
+    field.host_form_id = host_form_id;
+    form.fields.push_back(field);
+  };
+
+  LocalFrameToken frame_1(base::UnguessableToken::Create());
+  LocalFrameToken frame_2(base::UnguessableToken::Create());
+  add_field(u"A", frame_1, FormRendererId(1));  // First form
+  add_field(u"B", frame_1, FormRendererId(1));
+  add_field(u"A", frame_1, FormRendererId(1));
+  add_field(u"A", frame_2, FormRendererId(2));  // Second form
+  add_field(u"B", frame_2, FormRendererId(2));
+  add_field(u"A", frame_2, FormRendererId(3));  // Third form
+
+  FormStructure form_structure(form);
+
+  auto extract = [&form_structure](size_t (AutofillField::*fun)() const) {
+    std::vector<size_t> result;
+    for (const auto& field : form_structure.fields()) {
+      result.push_back(base::invoke(fun, *field));
+    }
+    return result;
+  };
+
+  EXPECT_THAT(extract(&AutofillField::rank), ElementsAre(0, 1, 2, 3, 4, 5));
+  EXPECT_THAT(extract(&AutofillField::rank_in_signature_group),
+              ElementsAre(0, 0, 1, 2, 1, 3));
+  EXPECT_THAT(extract(&AutofillField::rank_in_host_form),
+              ElementsAre(0, 1, 2, 0, 1, 0));
+  EXPECT_THAT(extract(&AutofillField::rank_in_host_form_signature_group),
+              ElementsAre(0, 0, 1, 0, 0, 0));
 }
 
 }  // namespace autofill

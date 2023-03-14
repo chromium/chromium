@@ -56,6 +56,10 @@ class AnalysisServiceSettings {
 
   std::string service_provider_name() const { return service_provider_name_; }
 
+  // Helpers for convenient check of the underlying variant.
+  bool is_cloud_analysis() const;
+  bool is_local_analysis() const;
+
   const AnalysisConfig* GetAnalysisConfig() const { return analysis_config_; }
 
  private:

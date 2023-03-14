@@ -24,7 +24,14 @@ SigninManager* SigninManagerFactory::GetForProfile(Profile* profile) {
 }
 
 SigninManagerFactory::SigninManagerFactory()
-    : ProfileKeyedServiceFactory("SigninManager") {
+    : ProfileKeyedServiceFactory(
+          "SigninManager",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ChromeSigninClientFactory::GetInstance());
 }

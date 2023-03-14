@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ui/ntp/feed_management/followed_web_channel_item.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/followed_web_channels_data_source.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
@@ -79,17 +80,18 @@ typedef NS_ENUM(NSInteger, ItemType) {
   FollowedWebChannelCell* followedWebChannelCell =
       base::mac::ObjCCastStrict<FollowedWebChannelCell>(cellToReturn);
 
-  [self.faviconDataSource faviconForURL:followedWebChannelItem.URL
-                             completion:^(FaviconAttributes* attributes) {
-                               // Only set favicon if the cell hasn't been
-                               // reused.
-                               if (followedWebChannelCell.followedWebChannel ==
-                                   followedWebChannelItem.followedWebChannel) {
-                                 DCHECK(attributes);
-                                 [followedWebChannelCell.faviconView
-                                     configureWithAttributes:attributes];
-                               }
-                             }];
+  [self.faviconDataSource
+      faviconForPageURL:followedWebChannelItem.URL
+             completion:^(FaviconAttributes* attributes) {
+               // Only set favicon if the cell hasn't been
+               // reused.
+               if (followedWebChannelCell.followedWebChannel ==
+                   followedWebChannelItem.followedWebChannel) {
+                 DCHECK(attributes);
+                 [followedWebChannelCell.faviconView
+                     configureWithAttributes:attributes];
+               }
+             }];
   return cellToReturn;
 }
 
@@ -97,18 +99,24 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)loadModel {
   [super loadModel];
-  NSArray<FollowedWebChannel*>* followedWebChannels =
-      self.followedWebChannelsDataSource.followedWebChannels;
 
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:DefaultSectionIdentifier];
-  for (FollowedWebChannel* followedWebChannel in followedWebChannels) {
-    FollowedWebChannelItem* item = [[FollowedWebChannelItem alloc]
-        initWithType:FollowedWebChannelItemType];
-    item.followedWebChannel = followedWebChannel;
-    [model addItem:item toSectionWithIdentifier:DefaultSectionIdentifier];
+
+  if (IsFollowManagementInstantReloadEnabled()) {
+    // TODO(crbug.com/1417284): show a spinner.
+    [self.followedWebChannelsDataSource loadFollowedWebSites];
+  } else {
+    NSArray<FollowedWebChannel*>* followedWebChannels =
+        self.followedWebChannelsDataSource.followedWebChannels;
+    for (FollowedWebChannel* followedWebChannel in followedWebChannels) {
+      FollowedWebChannelItem* item = [[FollowedWebChannelItem alloc]
+          initWithType:FollowedWebChannelItemType];
+      item.followedWebChannel = followedWebChannel;
+      [model addItem:item toSectionWithIdentifier:DefaultSectionIdentifier];
+    }
+    [self showOrHideEmptyTableViewBackground];
   }
-  [self showOrHideEmptyTableViewBackground];
 }
 
 #pragma mark - UITableViewDelegate
@@ -277,6 +285,28 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
     [self addItem:item atIndex:index];
   }
+}
+
+- (void)updateFollowedWebSites {
+  NSArray<FollowedWebChannel*>* followedWebChannels =
+      self.followedWebChannelsDataSource.followedWebChannels;
+  for (FollowedWebChannel* channel in followedWebChannels) {
+    FollowedWebChannelItem* item = [[FollowedWebChannelItem alloc]
+        initWithType:FollowedWebChannelItemType];
+    item.followedWebChannel = channel;
+
+    const NSUInteger sectionIndex = [self.tableViewModel
+        sectionForSectionIdentifier:DefaultSectionIdentifier];
+
+    const NSUInteger countOfItemsInSection =
+        [self.tableViewModel numberOfItemsInSection:sectionIndex];
+
+    NSIndexPath* index = [NSIndexPath indexPathForRow:countOfItemsInSection
+                                            inSection:sectionIndex];
+
+    [self addItem:item atIndex:index];
+  }
+  [self showOrHideEmptyTableViewBackground];
 }
 
 #pragma mark - Helpers

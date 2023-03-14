@@ -8,7 +8,7 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 ts_library("build_ts") {
   root_dir = "."
   out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
+  tsconfig_base = "../../tsconfig_base.json"
   in_files = [ "office_fallback_app_test.ts" ]
   path_mappings = [
     "chrome://office-fallback/*|" +

@@ -142,7 +142,7 @@ CSSPrimitiveValue* ConsumeHue(CSSParserTokenRange&,
 CSSPrimitiveValue* ConsumeTime(CSSParserTokenRange&,
                                const CSSParserContext&,
                                CSSPrimitiveValue::ValueRange);
-CSSPrimitiveValue* ConsumeResolution(CSSParserTokenRange&);
+CSSNumericLiteralValue* ConsumeResolution(CSSParserTokenRange&);
 CSSValue* ConsumeRatio(CSSParserTokenRange&, const CSSParserContext&);
 CSSIdentifierValue* ConsumeIdent(CSSParserTokenRange&);
 CSSIdentifierValue* ConsumeIdentRange(CSSParserTokenRange&,
@@ -198,11 +198,15 @@ bool ConsumeBorderShorthand(CSSParserTokenRange&,
                             const CSSValue*& result_color);
 
 enum class ConsumeGeneratedImagePolicy { kAllow, kForbid };
+enum class ConsumeStringUrlImagePolicy { kAllow, kForbid };
+enum class ConsumeImageSetImagePolicy { kAllow, kForbid };
 
 CSSValue* ConsumeImage(
     CSSParserTokenRange&,
     const CSSParserContext&,
-    ConsumeGeneratedImagePolicy = ConsumeGeneratedImagePolicy::kAllow);
+    const ConsumeGeneratedImagePolicy = ConsumeGeneratedImagePolicy::kAllow,
+    const ConsumeStringUrlImagePolicy = ConsumeStringUrlImagePolicy::kForbid,
+    const ConsumeImageSetImagePolicy = ConsumeImageSetImagePolicy::kAllow);
 CSSValue* ConsumeImageOrNone(CSSParserTokenRange&, const CSSParserContext&);
 
 CSSValue* ConsumeAxis(CSSParserTokenRange&, const CSSParserContext& context);

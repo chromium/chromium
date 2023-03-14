@@ -124,4 +124,17 @@ export class FakeMojoService {
       reject('Unimplemented; never called from setup flow.');
     });
   }
+
+  /** @override */
+  setQuickStartPhoneInstanceID(qsPhoneInstanceId) {
+    // Unimplemented; never called from setup flow.
+    assertNotReached();
+  }
+
+  /** @override */
+  getQuickStartPhoneInstanceID() {
+    return new Promise(function(resolve, reject) {
+      resolve({qsPhoneInstanceId: undefined});
+    });
+  }
 }

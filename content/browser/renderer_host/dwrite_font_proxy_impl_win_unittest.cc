@@ -91,27 +91,26 @@ TEST_F(DWriteFontProxyImplUnitTest, GetFamilyNamesIndexOutOfBounds) {
   EXPECT_TRUE(names.empty());
 }
 
-TEST_F(DWriteFontProxyImplUnitTest, GetFontFiles) {
+TEST_F(DWriteFontProxyImplUnitTest, GetFontFileHandles) {
   UINT32 arial_index = 0;
   dwrite_font_proxy().FindFamily(u"Arial", &arial_index);
 
-  std::vector<base::FilePath> files;
   std::vector<base::File> handles;
-  dwrite_font_proxy().GetFontFiles(arial_index, &files, &handles);
+  dwrite_font_proxy().GetFontFileHandles(arial_index, &handles);
 
-  EXPECT_LT(0u, files.size());
-  for (const auto& file : files) {
-    EXPECT_FALSE(file.value().empty());
+  EXPECT_LT(0u, handles.size());
+  for (auto& file : handles) {
+    EXPECT_TRUE(file.IsValid());
+    EXPECT_LT(0, file.GetLength());  // Check the file exists
   }
 }
 
-TEST_F(DWriteFontProxyImplUnitTest, GetFontFilesIndexOutOfBounds) {
-  std::vector<base::FilePath> files;
+TEST_F(DWriteFontProxyImplUnitTest, GetFontFileHandlesIndexOutOfBounds) {
   std::vector<base::File> handles;
   UINT32 invalid_index = 1000000;
-  dwrite_font_proxy().GetFontFiles(invalid_index, &files, &handles);
+  dwrite_font_proxy().GetFontFileHandles(invalid_index, &handles);
 
-  EXPECT_EQ(0u, files.size());
+  EXPECT_EQ(0u, handles.size());
 }
 
 TEST_F(DWriteFontProxyImplUnitTest, MapCharacter) {
@@ -174,11 +173,9 @@ TEST_F(DWriteFontProxyImplUnitTest, TestCustomFontFiles) {
   UINT32 arial_index = 0;
   dwrite_font_proxy().FindFamily(u"Arial", &arial_index);
 
-  std::vector<base::FilePath> files;
   std::vector<base::File> handles;
-  dwrite_font_proxy().GetFontFiles(arial_index, &files, &handles);
+  dwrite_font_proxy().GetFontFileHandles(arial_index, &handles);
 
-  EXPECT_TRUE(files.empty());
   EXPECT_FALSE(handles.empty());
   for (auto& file : handles) {
     EXPECT_TRUE(file.IsValid());

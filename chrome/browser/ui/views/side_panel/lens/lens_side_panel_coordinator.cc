@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/omnibox/browser/favicon_cache.h"
 #include "components/omnibox/browser/vector_icons.h"
@@ -28,6 +29,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/util.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image.h"
 #include "ui/views/vector_icons.h"
 
@@ -127,6 +129,9 @@ bool LensSidePanelCoordinator::IsDefaultSearchProviderGoogle() {
 }
 
 std::u16string LensSidePanelCoordinator::GetComboboxLabel() {
+  if (IsDefaultSearchProviderGoogle()) {
+    return l10n_util::GetStringUTF16(IDS_GOOGLE_LENS_TITLE);
+  }
   // Assuming not nullptr because side panel can't be opened if default search
   // provider is not initialized
   DCHECK(current_default_search_provider_);

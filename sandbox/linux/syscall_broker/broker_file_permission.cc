@@ -30,6 +30,24 @@ BrokerFilePermission& BrokerFilePermission::operator=(
 
 BrokerFilePermission::~BrokerFilePermission() = default;
 
+namespace {
+bool ContainsParentReference(const char* path, size_t len) {
+  // No trailing /..
+  if (len >= 3 && path[len - 3] == '/' && path[len - 2] == '.' &&
+      path[len - 1] == '.') {
+    return true;
+  }
+  for (size_t i = 0; i < len; i++) {
+    if (path[i] == '/' && (len - i) > 3) {
+      if (path[i + 1] == '.' && path[i + 2] == '.' && path[i + 3] == '/') {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+}  // namespace
+
 bool BrokerFilePermission::ValidatePath(const char* path) {
   if (!path) {
     return false;
@@ -37,25 +55,19 @@ bool BrokerFilePermission::ValidatePath(const char* path) {
 
   const size_t len = strlen(path);
   // No empty paths
-  if (len == 0)
+  if (len == 0) {
     return false;
+  }
   // Paths must be absolute and not relative
-  if (path[0] != '/')
+  if (path[0] != '/') {
     return false;
+  }
   // No trailing / (but "/" is valid)
-  if (len > 1 && path[len - 1] == '/')
+  if (len > 1 && path[len - 1] == '/') {
     return false;
-  // No trailing /..
-  if (len >= 3 && path[len - 3] == '/' && path[len - 2] == '.' &&
-      path[len - 1] == '.')
+  }
+  if (ContainsParentReference(path, len)) {
     return false;
-  // No /../ anywhere
-  for (size_t i = 0; i < len; i++) {
-    if (path[i] == '/' && (len - i) > 3) {
-      if (path[i + 1] == '.' && path[i + 2] == '.' && path[i + 3] == '/') {
-        return false;
-      }
-    }
   }
   return true;
 }
@@ -285,6 +297,8 @@ void BrokerFilePermission::DieOnInvalidPermission() {
     CHECK(last_char == '/') << GetErrorMessageForTests();
   else
     CHECK(last_char != '/') << GetErrorMessageForTests();
+
+  CHECK(!ContainsParentReference(path_.c_str(), path_.length()));
 }
 
 BrokerFilePermission::BrokerFilePermission(std::string path, uint64_t flags)

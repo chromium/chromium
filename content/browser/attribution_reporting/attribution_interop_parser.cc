@@ -24,12 +24,12 @@
 #include "base/values.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
+#include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
-#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -40,6 +40,7 @@ namespace content {
 namespace {
 
 using ::attribution_reporting::SuitableOrigin;
+using ::attribution_reporting::mojom::SourceType;
 
 constexpr char kAttributionSrcUrlKey[] = "attribution_src_url";
 constexpr char kRegistrationRequestKey[] = "registration_request";
@@ -138,17 +139,6 @@ class AttributionInteropParser {
     ParseInt(dict, "max_destinations_per_source_site_reporting_origin",
              config.max_destinations_per_source_site_reporting_origin,
              required);
-
-    uint64_t source_event_id_cardinality;
-    if (ParseUint64(dict, "source_event_id_cardinality",
-                    source_event_id_cardinality, required,
-                    /*allow_zero=*/true)) {
-      if (source_event_id_cardinality == 0u) {
-        config.source_event_id_cardinality = absl::nullopt;
-      } else {
-        config.source_event_id_cardinality = source_event_id_cardinality;
-      }
-    }
 
     int rate_limit_time_window;
     if (ParseInt(dict, "rate_limit_time_window", rate_limit_time_window,
@@ -291,7 +281,7 @@ class AttributionInteropParser {
 
     absl::optional<SuitableOrigin> source_origin;
     absl::optional<SuitableOrigin> reporting_origin;
-    absl::optional<AttributionSourceType> source_type;
+    absl::optional<SourceType> source_type;
 
     ParseDict(source_dict, kRegistrationRequestKey,
               [&](base::Value::Dict dict) {
@@ -456,21 +446,20 @@ class AttributionInteropParser {
     return ParseBool(dict, "debug_permission").value_or(false);
   }
 
-  absl::optional<AttributionSourceType> ParseSourceType(
-      const base::Value::Dict& dict) {
+  absl::optional<SourceType> ParseSourceType(const base::Value::Dict& dict) {
     static constexpr char kKey[] = "source_type";
     static constexpr char kNavigation[] = "navigation";
     static constexpr char kEvent[] = "event";
 
     auto context = PushContext(kKey);
 
-    absl::optional<AttributionSourceType> source_type;
+    absl::optional<SourceType> source_type;
 
     if (const std::string* v = dict.FindString(kKey)) {
       if (*v == kNavigation) {
-        source_type = AttributionSourceType::kNavigation;
+        source_type = SourceType::kNavigation;
       } else if (*v == kEvent) {
-        source_type = AttributionSourceType::kEvent;
+        source_type = SourceType::kEvent;
       }
     }
 

@@ -100,7 +100,7 @@ class DNRManifestTest : public testing::Test {
       EXPECT_TRUE(base::CreateDirectory(rules_path.DirName()));
 
       // Persist an empty ruleset file.
-      EXPECT_EQ(0, base::WriteFile(rules_path, nullptr /*data*/, 0 /*size*/));
+      EXPECT_TRUE(base::WriteFile(rules_path, base::StringPiece()));
     }
 
     // Persist manifest file.

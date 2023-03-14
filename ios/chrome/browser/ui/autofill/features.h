@@ -9,9 +9,6 @@
 
 namespace autofill::features {
 
-// Feature flag to enable using the new Card Unmask Prompt View in Autofill.
-BASE_DECLARE_FEATURE(kAutofillEnableNewCardUnmaskPromptView);
-
 // Feature flag and variatns to add the Chrome logo inide form input accessory
 // bar.
 BASE_DECLARE_FEATURE(kAutofillBrandingIOS);

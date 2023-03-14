@@ -1,13 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
+<translation id="1347497506789975534">顯示已儲存的付款方式</translation>
 <translation id="1383876407941801731">搜尋</translation>
-<translation id="1566281227936819866">正在顯示已儲存的付款方式</translation>
 <translation id="1717486229951421299">輕觸即可填入的憑證清單已開啟，顯示在畫面下半部。</translation>
 <translation id="207576718733492531">輕觸即可填入的憑證清單已關閉。</translation>
 <translation id="2610239185026711824">建議密碼</translation>
 <translation id="2652129567809778422">選取密碼</translation>
-<translation id="2803478378562657435">正在顯示已儲存的密碼和密碼選項</translation>
 <translation id="2903493209154104877">地址</translation>
 <translation id="3399357656427473483">輕觸即可填入的憑證清單。</translation>
 <translation id="3688051737190211318">如果你信任 <ph name="ORIGIN" />，可以使用已儲存的密碼登入</translation>
@@ -15,16 +14,14 @@
 <translation id="4660011489602794167">顯示鍵盤</translation>
 <translation id="4694050069269396220">如果你信任 <ph name="ORIGIN" />，可以使用已在其他網站儲存的密碼。</translation>
 <translation id="5016175294846053194">鍵盤上方是系統提供的自動填入建議</translation>
-<translation id="5088366526685584589">顯示已儲存的地址</translation>
 <translation id="5441504010984421144">輕觸即可填入的憑證清單已開啟，顯示於整個畫面。</translation>
+<translation id="6296921860874265377">顯示已儲存的密碼和密碼選項</translation>
 <translation id="6393156038355142111">建議高強度密碼</translation>
 <translation id="6558703547256592471">請試著為每個網站使用專屬的密碼。</translation>
 <translation id="7029809446516969842">密碼</translation>
-<translation id="7299100402441711551">顯示地址</translation>
-<translation id="7494879913343971937">顯示密碼</translation>
 <translation id="7594473730623999723">滑動即可查看更多建議項目</translation>
+<translation id="7873973044507799456">顯示已儲存的地址</translation>
 <translation id="7992095260806105436">使用 Chrome 自動填入建議項目</translation>
-<translation id="8037472847879765671">顯示付款方式</translation>
 <translation id="8507520749471379845">有可用的密碼</translation>
 <translation id="8705308553596171387">沒有密碼</translation>
 <translation id="879180780857354295">鍵盤上方是系統提供的其他填入選項</translation>

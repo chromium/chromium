@@ -12,7 +12,6 @@ found in the LICENSE file.
     <dimen name="toolbar_progress_bar_height">2dp</dimen>
     <dimen name="toolbar_button_width">48dp</dimen>
     <dimen name="toolbar_identity_disc_size">24dp</dimen>
-    <dimen name="toolbar_identity_disc_size_duet">32dp</dimen>
     <dimen name="toolbar_url_focus_translation_x">10dp</dimen>
     <dimen name="toolbar_url_focus_height_increase_active_color">8dp</dimen>
     <dimen name="toolbar_url_focus_height_increase_no_active_color">10dp</dimen>
@@ -59,21 +58,20 @@ found in the LICENSE file.
     <dimen name="omnibox_suggestion_header_padding_bottom">12dp</dimen>
     <dimen name="omnibox_suggestion_header_height">44dp</dimen>
     <dimen name="omnibox_suggestion_header_height_modern_phase2">32dp</dimen>
-    <dimen name="omnibox_suggestion_semicompact_height">56dp</dimen>
-    <dimen name="omnibox_suggestion_compact_height">48dp</dimen>
-    <dimen name="omnibox_suggestion_semicompact_padding">8dp</dimen>
-    <dimen name="omnibox_suggestion_compact_padding">6dp</dimen>
+    <dimen name="omnibox_suggestion_content_height">56dp</dimen>
+    <dimen name="omnibox_suggestion_content_padding">8dp</dimen>
+    <dimen name="omnibox_suggestion_compact_content_height">48dp</dimen>
     <dimen name="omnibox_suggestion_list_divider_line_padding">12dp</dimen>
     <dimen name="omnibox_suggestion_list_padding_bottom">8dp</dimen>
     <dimen name="omnibox_suggestion_list_active_top_small_margin">8dp</dimen>
     <dimen name="omnibox_suggestion_list_active_top_big_margin">16dp</dimen>
     <dimen name="omnibox_suggestion_list_non_active_top_small_margin">4dp</dimen>
     <dimen name="omnibox_suggestion_list_non_active_top_big_margin">12dp</dimen>
-    <dimen name="omnibox_suggestion_start_offset_without_icon">18dp</dimen>
     <dimen name="omnibox_carousel_suggestion_padding">12dp</dimen>
     <dimen name="omnibox_carousel_suggestion_small_bottom_padding">4dp</dimen>
     <dimen name="omnibox_carousel_icon_rounding_radius">4dp</dimen>
-    <dimen name="omnibox_pedal_suggestion_pedal_height">48dp</dimen>
+    <dimen name="omnibox_action_chips_container_height">48dp</dimen>
+    <dimen name="omnibox_action_chip_spacing">8dp</dimen>
     <dimen name="omnibox_pedal_suggestion_icon_size">18dp</dimen>
     <dimen name="omnibox_pedal_suggestion_text_vertical_padding">6dp</dimen>
 
@@ -89,12 +87,12 @@ found in the LICENSE file.
     <dimen name="omnibox_suggestion_icon_area_size">56dp</dimen>
     <dimen name="omnibox_suggestion_icon_area_size_modern">52dp</dimen>
 
-    <dimen name="omnibox_suggestion_action_icon_width">48dp</dimen>
-    <dimen name="omnibox_suggestion_refine_view_modern_end_padding">4dp</dimen>
+    <dimen name="omnibox_suggestion_action_button_width">48dp</dimen>
+    <dimen name="omnibox_suggestion_start_padding">0dp</dimen>
+    <dimen name="omnibox_suggestion_end_padding">8dp</dimen>
 
     <dimen name="omnibox_suggestion_bg_elevation">@dimen/default_elevation_0</dimen>
     <dimen name="omnibox_suggestion_bg_round_corner_radius">16dp</dimen>
-    <dimen name="omnibox_suggestion_bg_rectangle_corner_radius">2dp</dimen>
     <dimen name="omnibox_suggestion_vertical_margin">1dp</dimen>
     <dimen name="omnibox_suggestion_side_spacing">16dp</dimen>
     <dimen name="omnibox_suggestion_group_vertical_margin">12dp</dimen>

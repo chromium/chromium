@@ -47,7 +47,7 @@ static bool IsValidPropertyValueForStyleRule(CSSPropertyID property_id,
   const CSSParserTokenRange range(tokens);
   HeapVector<CSSPropertyValue, 64> parsed_properties;
   return CSSPropertyParser::ParseValue(
-      property_id, false, range,
+      property_id, false, {range, value},
       StrictCSSParserContext(SecureContextMode::kSecureContext),
       parsed_properties, StyleRule::RuleType::kStyle);
 }
@@ -686,7 +686,7 @@ void TestImageSetParsing(const String& testValue,
 
   const CSSImageSetValue& image_set_value =
       To<CSSImageSetValue>(val_list->First());
-  EXPECT_EQ(expectedCssText, image_set_value.CustomCSSText());
+  EXPECT_EQ(expectedCssText, image_set_value.CssText());
 }
 
 TEST(CSSPropertyParserTest, ImageSetDefaultResolution) {
@@ -712,6 +712,14 @@ TEST(CSSPropertyParserTest, ImageSetResolutionUnitDpcm) {
                       "image-set(url(\"foo\") 37dpcm)");
 }
 
+TEST(CSSPropertyParserTest, ImageSetZeroResolution) {
+  TestImageSetParsing("image-set(url(foo) 0x)", "image-set(url(\"foo\") 0x)");
+}
+
+TEST(CSSPropertyParserTest, ImageSetNegativeResolution) {
+  TestImageSetParsing("image-set(url(foo) -1x)", "image-set(url(\"foo\") -1x)");
+}
+
 TEST(CSSPropertyParserTest, ImageSetUrlFunction) {
   TestImageSetParsing("image-set(url('foo') 1x)", "image-set(url(\"foo\") 1x)");
 }
@@ -732,6 +740,41 @@ TEST(CSSPropertyParserTest, ImageSetEmptyStrUrl) {
   TestImageSetParsing("image-set('' 1x)", "image-set(url(\"\") 1x)");
 }
 
+TEST(CSSPropertyParserTest, ImageSetLinearGradient) {
+  TestImageSetParsing("image-set(linear-gradient(red, blue) 1x)",
+                      "image-set(linear-gradient(red, blue) 1x)");
+}
+
+TEST(CSSPropertyParserTest, ImageSetRepeatingLinearGradient) {
+  TestImageSetParsing("image-set(repeating-linear-gradient(red, blue 25%) 1x)",
+                      "image-set(repeating-linear-gradient(red, blue 25%) 1x)");
+}
+
+TEST(CSSPropertyParserTest, ImageSetRadialGradient) {
+  TestImageSetParsing("image-set(radial-gradient(red, blue) 1x)",
+                      "image-set(radial-gradient(red, blue) 1x)");
+}
+
+TEST(CSSPropertyParserTest, ImageSetRepeatingRadialGradient) {
+  TestImageSetParsing("image-set(repeating-radial-gradient(red, blue 25%) 1x)",
+                      "image-set(repeating-radial-gradient(red, blue 25%) 1x)");
+}
+
+TEST(CSSPropertyParserTest, ImageSetConicGradient) {
+  TestImageSetParsing("image-set(conic-gradient(red, blue) 1x)",
+                      "image-set(conic-gradient(red, blue) 1x)");
+}
+
+TEST(CSSPropertyParserTest, ImageSetRepeatingConicGradient) {
+  TestImageSetParsing("image-set(repeating-conic-gradient(red, blue 25%) 1x)",
+                      "image-set(repeating-conic-gradient(red, blue 25%) 1x)");
+}
+
+TEST(CSSPropertyParserTest, ImageSetType) {
+  TestImageSetParsing("image-set(url('foo') 1x type('image/png'))",
+                      "image-set(url(\"foo\") 1x type(\"image/png\"))");
+}
+
 void TestImageSetParsingFailure(const String& testValue) {
   const CSSValue* value = CSSParser::ParseSingleValue(
       CSSPropertyID::kBackgroundImage, testValue,
@@ -745,6 +788,10 @@ TEST(CSSPropertyParserTest, ImageSetEmpty) {
 
 TEST(CSSPropertyParserTest, ImageSetMissingUrl) {
   TestImageSetParsingFailure("image-set(1x)");
+}
+
+TEST(CSSPropertyParserTest, ImageSetOnlyOneGradientColor) {
+  TestImageSetParsingFailure("image-set(linear-gradient(red) 1x)");
 }
 
 TEST(CSSPropertyParserTest, InternalLightDarkAuthor) {
@@ -834,8 +881,8 @@ bool ParseCSSValue(CSSPropertyID property_id,
   const auto tokens = tokenizer.TokenizeToEOF();
   const CSSParserTokenRange range(tokens);
   HeapVector<CSSPropertyValue, 64> parsed_properties;
-  return CSSPropertyParser::ParseValue(property_id, false, range, context,
-                                       parsed_properties,
+  return CSSPropertyParser::ParseValue(property_id, false, {range, value},
+                                       context, parsed_properties,
                                        StyleRule::RuleType::kStyle);
 }
 

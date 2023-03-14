@@ -184,6 +184,26 @@ absl::optional<std::vector<std::string>> PolicyManager::GetForceInstallApps()
              : force_install_apps_;
 }
 
+absl::optional<std::vector<std::string>> PolicyManager::GetAppsWithPolicy()
+    const {
+  const char* kAppPolicyPrefixes[] = {
+      kInstallAppsDefault,     kInstallAppPrefix,    kUpdateAppsDefault,
+      kUpdateAppPrefix,        kTargetVersionPrefix, kTargetChannel,
+      kRollbackToTargetVersion};
+  std::vector<std::string> apps_with_policy;
+  base::ranges::for_each(policies_, [&](const auto& policy) {
+    const std::string policy_name = policy.first;
+    base::ranges::for_each(kAppPolicyPrefixes, [&](const auto& prefix) {
+      if (base::StartsWith(policy_name, prefix)) {
+        apps_with_policy.push_back(
+            policy_name.substr(base::StringPiece(prefix).length()));
+      }
+    });
+  });
+
+  return apps_with_policy;
+}
+
 absl::optional<std::string> PolicyManager::GetStringPolicy(
     const std::string& key) const {
   const std::string* policy = policies_.FindString(key);

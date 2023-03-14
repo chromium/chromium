@@ -61,12 +61,12 @@ void AppPublisher::GetCompressedIconData(const std::string& app_id,
   std::move(callback).Run(std::make_unique<IconValue>());
 }
 
-void AppPublisher::PublishPromiseApp(PromiseAppPtr app) {
+void AppPublisher::PublishPromiseApp(PromiseAppPtr delta) {
   if (!proxy_) {
     NOTREACHED();
     return;
   }
-  proxy_->AddPromiseApp(std::move(app));
+  proxy_->OnPromiseApp(std::move(delta));
 }
 
 #endif

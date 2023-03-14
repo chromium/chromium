@@ -18,22 +18,49 @@
                     input_may_be_temp=False) -%}
   {{fragment}}.Allocate();
 {%- for pf in struct.packed.packed_fields_in_ordinal_order %}
-{%-   set input_field = input_field_pattern|format(pf.field.name) %}
-{%-   set name = pf.field.name %}
-{%-   set kind = pf.field.kind %}
-{%-   set serializer_type = kind|unmapped_type_for_serializer %}
 
-{%-   if kind|is_object_kind or kind|is_any_handle_or_interface_kind %}
-{%-     set original_input_field = input_field_pattern|format(name) %}
-{%-     set input_field = "in_%s"|format(name) if input_may_be_temp
-                                               else original_input_field %}
-{%-     if input_may_be_temp %}
-  decltype({{original_input_field}}) in_{{name}} = {{original_input_field}};
+{%-   if pf|is_nullable_value_kind_packed_field %}
+{%-     if pf|is_primary_nullable_value_kind_packed_field %}
+{%-       set original_field = pf.original_field %}
+{%-       set has_value_pf = pf %}
+{%-       set value_pf = pf.linked_value_packed_field %}
+{%-       set input_field = input_field_pattern|format(original_field.name) %}
+{%-       set name = original_field.name %}
+{%-       set kind = original_field.kind %}
+{%-       set serializer_type = value_pf.field.kind|unmapped_type_for_serializer %}
+  {{fragment}}->{{has_value_pf.field.name}} = {{input_field}}.has_value();
+{%-       if kind|is_enum_kind %}
+  if ({{input_field}}.has_value()) {
+    mojo::internal::Serialize<{{serializer_type}}>(
+        {{input_field}}.value(), &{{fragment}}->{{value_pf.field.name}});
+  } else {
+    {{fragment}}->{{value_pf.field.name}} =
+        static_cast<int32_t>({{serializer_type}}::kMinValue);
+  }
+{%-       else %}
+  if ({{input_field}}.has_value()) {
+    {{fragment}}->{{value_pf.field.name}} = {{input_field}}.value();
+  }
+{%-       endif %}
 {%-     endif %}
-{%-   endif %}
+{%-   else %}
 
-{%-   if kind|is_object_kind %}
-{%-     if kind|is_array_kind or kind|is_map_kind %}
+{%-     set input_field = input_field_pattern|format(pf.field.name) %}
+{%-     set name = pf.field.name %}
+{%-     set kind = pf.field.kind %}
+{%-     set serializer_type = kind|unmapped_type_for_serializer %}
+
+{%-     if kind|is_object_kind or kind|is_any_handle_or_interface_kind %}
+{%-       set original_input_field = input_field_pattern|format(name) %}
+{%-       set input_field = "in_%s"|format(name) if input_may_be_temp
+                                                 else original_input_field %}
+{%-       if input_may_be_temp %}
+  decltype({{original_input_field}}) in_{{name}} = {{original_input_field}};
+{%-       endif %}
+{%-     endif %}
+
+{%-     if kind|is_object_kind %}
+{%-       if kind|is_array_kind or kind|is_map_kind %}
   mojo::internal::MessageFragment<
       typename decltype({{fragment}}->{{name}})::BaseType>
       {{name}}_fragment({{fragment}}.message());
@@ -43,13 +70,13 @@
       {{input_field}}, {{name}}_fragment, &{{name}}_validate_params);
   {{fragment}}->{{name}}.Set(
       {{name}}_fragment.is_null() ? nullptr : {{name}}_fragment.data());
-{%-     elif kind|is_union_kind %}
+{%-       elif kind|is_union_kind %}
   mojo::internal::MessageFragment<decltype({{fragment}}->{{name}})>
       {{name}}_fragment({{fragment}}.message());
   {{name}}_fragment.Claim(&{{fragment}}->{{name}});
   mojo::internal::Serialize<{{serializer_type}}>(
       {{input_field}}, {{name}}_fragment, true);
-{%-     else %}
+{%-       else %}
   mojo::internal::MessageFragment<
       typename decltype({{fragment}}->{{name}})::BaseType> {{name}}_fragment(
           {{fragment}}.message());
@@ -57,34 +84,35 @@
       {{input_field}}, {{name}}_fragment);
   {{fragment}}->{{name}}.Set(
       {{name}}_fragment.is_null() ? nullptr : {{name}}_fragment.data());
-{%-     endif %}
-{%-     if not kind|is_nullable_kind %}
+{%-       endif %}
+{%-       if not kind|is_nullable_kind %}
   MOJO_INTERNAL_DLOG_SERIALIZATION_WARNING(
       {{fragment}}->{{name}}.is_null(),
       mojo::internal::VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
       "null {{name}} in {{struct_display_name}}");
-{%-     endif %}
+{%-       endif %}
 
-{%-   elif kind|is_any_handle_or_interface_kind %}
+{%-     elif kind|is_any_handle_or_interface_kind %}
   mojo::internal::Serialize<{{serializer_type}}>(
       {{input_field}}, &{{fragment}}->{{name}}, &{{fragment}}.message());
-{%-     if not kind|is_nullable_kind %}
+{%-       if not kind|is_nullable_kind %}
   MOJO_INTERNAL_DLOG_SERIALIZATION_WARNING(
       !mojo::internal::IsHandleOrInterfaceValid({{fragment}}->{{name}}),
-{%-       if kind|is_associated_kind %}
+{%-         if kind|is_associated_kind %}
       mojo::internal::VALIDATION_ERROR_UNEXPECTED_INVALID_INTERFACE_ID,
-{%-       else %}
+{%-         else %}
       mojo::internal::VALIDATION_ERROR_UNEXPECTED_INVALID_HANDLE,
-{%-       endif %}
+{%-         endif %}
       "invalid {{name}} in {{struct_display_name}}");
-{%-     endif %}
+{%-       endif %}
 
-{%-   elif kind|is_enum_kind %}
+{%-     elif kind|is_enum_kind %}
   mojo::internal::Serialize<{{serializer_type}}>(
       {{input_field}}, &{{fragment}}->{{name}});
 
-{%-   else %}
+{%-     else %}
   {{fragment}}->{{name}} = {{input_field}};
+{%-     endif %}
 {%-   endif %}
 {%- endfor %}
 {%- endmacro -%}
@@ -105,23 +133,40 @@
       arguments. #}
 {%- macro deserialize(struct, input, output_field_pattern, success) -%}
 {%-   for pf in struct.packed.packed_fields_in_ordinal_order %}
-{%-     set output_field = output_field_pattern|format(pf.field.name) %}
-{%-     set name = pf.field.name %}
-{%-     set kind = pf.field.kind %}
-{%-     if kind|is_object_kind or kind|is_enum_kind %}
+{%-     if pf|is_nullable_value_kind_packed_field %}
+{%-       if pf|is_primary_nullable_value_kind_packed_field %}
+{%-         set original_field = pf.original_field %}
+{%-         set output_field = output_field_pattern|format(original_field.name) %}
+{%-         set name = original_field.name %}
+{%-         set kind = original_field.kind %}
+{%-         if kind|is_enum_kind %}
+  if ({{success}} && !{{input}}.Read{{name|under_to_camel}}(&{{output_field}})) {
+    {{success}} = false;
+{%-         else %}
+  if ({{success}}) {
+    {{output_field}} = {{input}}.{{name}}();
+{%-         endif %}
+  }
+{%-       endif %}
+{%-     else %}
+{%-       set output_field = output_field_pattern|format(pf.field.name) %}
+{%-       set name = pf.field.name %}
+{%-       set kind = pf.field.kind %}
+{%-       if kind|is_object_kind or kind|is_enum_kind %}
   if ({{success}} && !{{input}}.Read{{name|under_to_camel}}(&{{output_field}}))
     {{success}} = false;
-{%-     elif kind|is_any_handle_kind %}
+{%-       elif kind|is_any_handle_kind %}
   if ({{success}})
     {{output_field}} = {{input}}.Take{{name|under_to_camel}}();
-{%-     elif kind|is_any_interface_kind %}
+{%-       elif kind|is_any_interface_kind %}
   if ({{success}}) {
     {{output_field}} =
         {{input}}.Take{{name|under_to_camel}}<decltype({{output_field}})>();
   }
-{%-     else %}
+{%-       else %}
   if ({{success}})
     {{output_field}} = {{input}}.{{name}}();
+{%-       endif %}
 {%-     endif %}
 {%-   endfor %}
 {%- endmacro %}

@@ -753,6 +753,18 @@ TEST_F(ArcVmClientAdapterTest,
   StopArcInstance();
 }
 
+// Tests that StartMiniArc() still succeeds even when Upstart fails to stop
+// arcvm-data-migrator.
+TEST_F(ArcVmClientAdapterTest, StartMiniArc_StopArcVmDataMigratorJobFail) {
+  // Inject failure to FakeUpstartClient.
+  InjectUpstartStopJobFailure(kArcVmDataMigratorJobName);
+
+  StartMiniArc();
+  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
+
+  StopArcInstance();
+}
+
 // Tests that StartMiniArc() fails when Upstart fails to start the job.
 TEST_F(ArcVmClientAdapterTest, StartMiniArc_StartArcVmPerBoardFeaturesJobFail) {
   // Inject failure to FakeUpstartClient.
@@ -1833,30 +1845,6 @@ TEST_F(ArcVmClientAdapterTest, DisableDownloadProviderEnforced) {
   StartMiniArcWithParams(true, std::move(start_params));
   const auto& request = GetTestConciergeClient()->start_arc_vm_request();
   EXPECT_TRUE(request.mini_instance_request().disable_download_provider());
-}
-
-TEST_F(ArcVmClientAdapterTest, GmsCoreLowMemoryKillerProtection_FlagDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(arc::kVmGmsCoreLowMemoryKillerProtection,
-                                    false);
-  StartMiniArc();
-  const auto& req = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_FALSE(req.enable_gmscore_lmk_protection());
-}
-
-TEST_F(ArcVmClientAdapterTest, GmsCoreLowMemoryKillerProtection_FlagEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(arc::kVmGmsCoreLowMemoryKillerProtection,
-                                    true);
-  StartMiniArc();
-  const auto& req = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_TRUE(req.enable_gmscore_lmk_protection());
-}
-
-TEST_F(ArcVmClientAdapterTest, GmsCoreLowMemoryKillerProtection_Default) {
-  StartMiniArc();
-  const auto& req = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_TRUE(req.enable_gmscore_lmk_protection());
 }
 
 TEST_F(ArcVmClientAdapterTest, BroadcastPreANRDefault) {

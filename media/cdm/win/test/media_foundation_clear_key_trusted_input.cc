@@ -7,6 +7,7 @@
 #include <mfapi.h>
 #include <wrl/client.h>
 #include <wrl/implements.h>
+#include <wrl/module.h>
 #include <utility>
 
 #include "media/base/win/mf_helpers.h"
@@ -25,8 +26,10 @@ MediaFoundationClearKeyTrustedInput::~MediaFoundationClearKeyTrustedInput() {
   DVLOG_FUNC(1);
 }
 
-HRESULT MediaFoundationClearKeyTrustedInput::RuntimeClassInitialize() {
+HRESULT MediaFoundationClearKeyTrustedInput::RuntimeClassInitialize(
+    _In_ scoped_refptr<AesDecryptor> aes_decryptor) {
   DVLOG_FUNC(1);
+  aes_decryptor_ = std::move(aes_decryptor);
   return S_OK;
 }
 
@@ -39,9 +42,11 @@ STDMETHODIMP MediaFoundationClearKeyTrustedInput::GetInputTrustAuthority(
   ComPtr<IMFInputTrustAuthority> ita;
   RETURN_IF_FAILED(
       (MakeAndInitialize<MediaFoundationClearKeyInputTrustAuthority,
-                         IMFInputTrustAuthority>(&ita, stream_id)));
+                         IMFInputTrustAuthority>(&ita, stream_id,
+                                                 aes_decryptor_)));
 
   *authority = ita.Detach();
+
   return S_OK;
 }
 

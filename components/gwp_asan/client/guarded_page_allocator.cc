@@ -23,6 +23,7 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/gwp_asan/common/allocator_state.h"
 #include "components/gwp_asan/common/crash_key_name.h"
+#include "components/gwp_asan/common/lightweight_detector.h"
 #include "components/gwp_asan/common/pack_stack_trace.h"
 #include "third_party/boringssl/src/include/openssl/rand.h"
 
@@ -171,16 +172,20 @@ void GuardedPageAllocator::PartitionAllocSlotFreeList::Free(
 
 GuardedPageAllocator::GuardedPageAllocator() {}
 
-void GuardedPageAllocator::Init(size_t max_alloced_pages,
-                                size_t num_metadata,
-                                size_t total_pages,
-                                OutOfMemoryCallback oom_callback,
-                                bool is_partition_alloc) {
+void GuardedPageAllocator::Init(
+    size_t max_alloced_pages,
+    size_t num_metadata,
+    size_t total_pages,
+    OutOfMemoryCallback oom_callback,
+    bool is_partition_alloc,
+    LightweightDetectorState lightweight_detector_state,
+    size_t num_lightweight_detector_metadata) {
   CHECK_GT(max_alloced_pages, 0U);
   CHECK_LE(max_alloced_pages, num_metadata);
   CHECK_LE(num_metadata, AllocatorState::kMaxMetadata);
   CHECK_LE(num_metadata, total_pages);
   CHECK_LE(total_pages, AllocatorState::kMaxRequestedSlots);
+  CHECK_LE(num_lightweight_detector_metadata, AllocatorState::kMaxMetadata);
   max_alloced_pages_ = max_alloced_pages;
   state_.num_metadata = num_metadata;
   state_.total_requested_pages = total_pages;
@@ -238,6 +243,16 @@ void GuardedPageAllocator::Init(size_t max_alloced_pages,
       std::make_unique<AllocatorState::SlotMetadata[]>(state_.num_metadata);
   state_.metadata_addr = reinterpret_cast<uintptr_t>(metadata_.get());
 
+  if (lightweight_detector_state == LightweightDetectorState::kEnabled) {
+    state_.num_lightweight_detector_metadata =
+        num_lightweight_detector_metadata;
+    lightweight_detector_metadata_ =
+        std::make_unique<AllocatorState::SlotMetadata[]>(
+            state_.num_lightweight_detector_metadata);
+    state_.lightweight_detector_metadata_addr =
+        reinterpret_cast<uintptr_t>(lightweight_detector_metadata_.get());
+  }
+
 #if BUILDFLAG(IS_ANDROID)
   // Explicitly allow memory ranges the crash_handler needs to read. This is
   // required for WebView because it has a stricter set of privacy constraints
@@ -256,6 +271,11 @@ GuardedPageAllocator::GetInternalMemoryRegions() {
   regions.emplace_back(
       slot_to_metadata_idx_.data(),
       sizeof(AllocatorState::MetadataIdx) * state_.total_reserved_pages);
+  if (lightweight_detector_metadata_) {
+    regions.emplace_back(lightweight_detector_metadata_.get(),
+                         sizeof(AllocatorState::SlotMetadata) *
+                             state_.num_lightweight_detector_metadata);
+  }
   return regions;
 }
 
@@ -487,6 +507,59 @@ void GuardedPageAllocator::RecordDeallocationMetadata(
                metadata_[metadata_idx].alloc.trace_len);
   metadata_[metadata_idx].dealloc.tid = ReportTid();
   metadata_[metadata_idx].dealloc.trace_collected = true;
+}
+
+void GuardedPageAllocator::RecordLightweightDeallocation(void* ptr,
+                                                         size_t size) {
+  DCHECK(lightweight_detector_metadata_);
+  DCHECK_GT(state_.num_lightweight_detector_metadata, 0u);
+
+  LightweightDetector::MetadataId metadata_offset;
+  if (next_lightweight_metadata_id_.load(std::memory_order_relaxed) <
+      state_.num_lightweight_detector_metadata) {
+    // First, fill up the metadata store. There might be a harmless race between
+    // the `load` above and `fetch_add` below.
+    metadata_offset = 1;
+  } else {
+    // Perform random eviction while ensuring `metadata_id` keeps increasing.
+    std::uniform_int_distribution<LightweightDetector::MetadataId> distribution(
+        1, state_.num_lightweight_detector_metadata);
+    base::NonAllocatingRandomBitGenerator generator;
+    metadata_offset = distribution(generator);
+  }
+
+  auto metadata_id = next_lightweight_metadata_id_.fetch_add(
+      metadata_offset, std::memory_order_relaxed);
+  auto& slot_metadata = state_.GetLightweightSlotMetadataById(
+      metadata_id, lightweight_detector_metadata_.get());
+
+  slot_metadata.lightweight_id = metadata_id;
+  slot_metadata.alloc_size = size;
+  slot_metadata.alloc_ptr = reinterpret_cast<uintptr_t>(ptr);
+
+  // The lightweight detector doesn't collect allocation stack traces.
+  slot_metadata.alloc.tid = base::kInvalidThreadId;
+  slot_metadata.alloc.trace_len = 0;
+  slot_metadata.alloc.trace_collected = false;
+
+  void* trace[AllocatorState::kMaxStackFrames];
+  size_t len = GetStackTrace(trace, AllocatorState::kMaxStackFrames);
+  slot_metadata.dealloc.trace_len = Pack(
+      reinterpret_cast<uintptr_t*>(trace), len, slot_metadata.stack_trace_pool,
+      sizeof(slot_metadata.stack_trace_pool));
+  slot_metadata.dealloc.tid = ReportTid();
+  slot_metadata.dealloc.trace_collected = true;
+
+  LightweightDetector::PseudoAddresss encoded_metadata_id =
+      LightweightDetector::EncodeMetadataId(metadata_id);
+  size_t count = size / sizeof(encoded_metadata_id);
+  std::fill_n(static_cast<LightweightDetector::PseudoAddresss*>(ptr), count,
+              encoded_metadata_id);
+
+  size_t remainder_offset = count * sizeof(encoded_metadata_id);
+  size_t remainder_size = size - remainder_offset;
+  std::fill_n(static_cast<uint8_t*>(ptr) + remainder_offset, remainder_size,
+              LightweightDetector::kMetadataRemainder);
 }
 
 std::string GuardedPageAllocator::GetCrashKey() const {

@@ -20,8 +20,8 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from '../os_languages_page/languages_browser_proxy.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
@@ -63,7 +63,7 @@ interface TtsLanguage {
   voices: TtsHandlerVoice[];
 }
 
-interface SettingsTtsSubpageElement {
+export interface SettingsTtsSubpageElement {
   $: {
     previewVoiceOptions: DomRepeat,
     previewVoice: HTMLSelectElement,
@@ -73,7 +73,7 @@ interface SettingsTtsSubpageElement {
 const SettingsTtsSubpageElementBase = DeepLinkingMixin(
     RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
 
-class SettingsTtsSubpageElement extends SettingsTtsSubpageElementBase {
+export class SettingsTtsSubpageElement extends SettingsTtsSubpageElementBase {
   static get is() {
     return 'settings-tts-subpage';
   }

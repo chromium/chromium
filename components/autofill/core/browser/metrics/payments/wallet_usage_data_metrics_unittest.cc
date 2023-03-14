@@ -12,7 +12,7 @@
 
 namespace autofill::autofill_metrics {
 
-class WalletUsageDataMetricsTest : public metrics::AutofillMetricsBaseTest,
+class WalletUsageDataMetricsTest : public AutofillMetricsBaseTest,
                                    public testing::Test {
  public:
   void SetUp() override { SetUpHelper(); }

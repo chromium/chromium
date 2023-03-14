@@ -71,9 +71,8 @@ bool SaveAndDeleteImage(scoped_refptr<base::RefCountedBytes> image_bytes,
                         const base::FilePath& image_path,
                         const base::FilePath& old_image_path) {
   if (image_bytes->size() == 0 ||
-      base::WriteFile(image_path,
-                      reinterpret_cast<const char*>(image_bytes->front()),
-                      image_bytes->size()) == -1) {
+      !base::WriteFile(image_path, base::make_span(image_bytes->front(),
+                                                   image_bytes->size()))) {
     LOG(ERROR) << "Failed to save image to file: " << image_path.AsUTF8Unsafe();
     return false;
   }

@@ -8,7 +8,6 @@
 
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/global_error/global_error_bubble_view_base.h"
 

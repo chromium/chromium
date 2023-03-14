@@ -153,6 +153,9 @@ struct GpuInfo {
   string max_msaa_samples;
   string machine_model_name;
   string machine_model_version;
+  string gl_implementation;
+  string angle_implementation;
+  string display_type;
   string gl_version;
   string gl_vendor;
   string gl_renderer;

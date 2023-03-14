@@ -107,7 +107,6 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   // We need to register the type of these preferences in order to query
   // them even though they're only typically controlled via policy.
-  registry->RegisterBooleanPref(prefs::kClearPluginLSODataEnabled, true);
   registry->RegisterBooleanPref(prefs::kHideWebStoreIcon, false);
   registry->RegisterBooleanPref(prefs::kSharedClipboardEnabled, true);
 
@@ -163,4 +162,6 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kHttpsOnlyModeEnabled, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterListPref(prefs::kHttpAllowlist);
+  registry->RegisterBooleanPref(prefs::kHttpsUpgradesEnabled, true);
 }

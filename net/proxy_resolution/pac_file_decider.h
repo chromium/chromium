@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 #include "net/dns/host_resolver.h"
@@ -22,10 +23,6 @@
 #include "net/proxy_resolution/proxy_config_with_annotation.h"
 #include "net/proxy_resolution/proxy_resolver.h"
 #include "url/gurl.h"
-
-namespace base {
-class Value;
-}
 
 namespace net {
 
@@ -124,7 +121,7 @@ class NET_EXPORT_PRIVATE PacFileDecider {
     // Returns a Value representing the PacSource.  |effective_pac_url| is the
     // URL derived from information contained in
     // |this|, if Type is not WPAD_DHCP.
-    base::Value NetLogParams(const GURL& effective_pac_url) const;
+    base::Value::Dict NetLogParams(const GURL& effective_pac_url) const;
 
     Type type;
     GURL url;  // Empty unless |type == PAC_SOURCE_CUSTOM|.

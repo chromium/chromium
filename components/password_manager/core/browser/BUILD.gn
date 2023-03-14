@@ -11,10 +11,6 @@ if (is_android) {
   import("//build/config/android/config.gni")
 }
 
-if (is_ios) {
-  import("//build/config/ios/bundle_data_from_filelist.gni")
-}
-
 config("password_reuse_detection_config") {
   defines = []
   if (!is_ios) {
@@ -179,8 +175,8 @@ static_library("browser") {
     "password_manager_constants.cc",
     "password_manager_constants.h",
     "password_manager_driver.h",
-    "password_manager_features_util.cc",
     "password_manager_features_util.h",
+    "password_manager_features_util_common.cc",
     "password_manager_interface.h",
     "password_manager_metrics_recorder.cc",
     "password_manager_metrics_recorder.h",
@@ -306,6 +302,7 @@ static_library("browser") {
     "//components/autofill/core/common",
     "//components/autofill/core/common:features",
     "//components/autofill/core/common/mojom:mojo_types",
+    "//components/crash/core/common:crash_key",
     "//components/device_reauth",
     "//components/favicon/core",
     "//components/keyed_service/core",
@@ -347,6 +344,12 @@ static_library("browser") {
     "//ui/gfx/range",
     "//url",
   ]
+
+  if (!is_android && !is_ios) {
+    sources += [ "password_manager_features_util_desktop.cc" ]
+  } else {
+    sources += [ "password_manager_features_util_mobile.cc" ]
+  }
 
   if (is_android) {
     sources += [
@@ -589,14 +592,6 @@ static_library("test_support") {
   ]
 }
 
-if (is_ios) {
-  bundle_data_from_filelist("unit_tests_bundle_data") {
-    visibility = [ ":unit_tests" ]
-    testonly = true
-    filelist_name = "unit_tests_bundle_data.filelist"
-  }
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -792,8 +787,10 @@ source_set("unit_tests") {
       "//components/password_manager/core/browser/import:importer",
       "//components/password_manager/core/browser/import:importer_unit_tests",
     ]
-  } else {
-    deps += [ ":unit_tests_bundle_data" ]
+  }
+
+  if (is_ios) {
+    deps += [ "//components/test:password_manager_test_bundle_data" ]
   }
 
   if (is_android) {
@@ -801,7 +798,7 @@ source_set("unit_tests") {
   }
 }
 
-if (use_libfuzzer) {
+if (use_fuzzing_engine_with_lpm) {
   fuzzer_test("lookup_affiliation_response_parser_fuzzer") {
     sources = [ "affiliation/lookup_affiliation_response_parser_fuzzer.cc" ]
     deps = [

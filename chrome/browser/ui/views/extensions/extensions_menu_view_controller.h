@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_navigation_handler.h"
 #include "content/public/browser/web_contents.h"
 
@@ -17,13 +18,13 @@ class View;
 
 class Browser;
 class ExtensionsContainer;
-class ExtensionsMenuPageView;
 class ExtensionsMenuMainPageView;
 class ExtensionsMenuSitePermissionsPageView;
 class ToolbarActionsModel;
 
 class ExtensionsMenuViewController : public ExtensionsMenuNavigationHandler,
-                                     public TabStripModelObserver {
+                                     public TabStripModelObserver,
+                                     public ToolbarActionsModel::Observer {
  public:
   ExtensionsMenuViewController(Browser* browser,
                                ExtensionsContainer* extensions_container,
@@ -32,7 +33,7 @@ class ExtensionsMenuViewController : public ExtensionsMenuNavigationHandler,
   ExtensionsMenuViewController(const ExtensionsMenuViewController&) = delete;
   const ExtensionsMenuViewController& operator=(
       const ExtensionsMenuViewController&) = delete;
-  ~ExtensionsMenuViewController() override = default;
+  ~ExtensionsMenuViewController() override;
 
   // ExtensionsMenuNavigationHandler:
   void OpenMainPage() override;
@@ -51,6 +52,16 @@ class ExtensionsMenuViewController : public ExtensionsMenuNavigationHandler,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
 
+  // ToolbarActionsModel::Observer:
+  void OnToolbarActionAdded(
+      const ToolbarActionsModel::ActionId& action_id) override;
+  void OnToolbarActionRemoved(
+      const ToolbarActionsModel::ActionId& action_id) override;
+  void OnToolbarActionUpdated(
+      const ToolbarActionsModel::ActionId& action_id) override;
+  void OnToolbarModelInitialized() override;
+  void OnToolbarPinnedActionsChanged() override;
+
   // Accessors used by tests:
   // Returns the main page iff it's the `current_page_` one.
   ExtensionsMenuMainPageView* GetMainPageViewForTesting();
@@ -59,7 +70,13 @@ class ExtensionsMenuViewController : public ExtensionsMenuNavigationHandler,
 
  private:
   // Switches the current page to `page`.
-  void SwitchToPage(std::unique_ptr<ExtensionsMenuPageView> page);
+  void SwitchToPage(std::unique_ptr<views::View> page);
+
+  // Updates current_page for the given `web_contents`.
+  void UpdatePage(content::WebContents* web_contents);
+
+  // Populates menu items in `main_page`.
+  void PopulateMainPage(ExtensionsMenuMainPageView* main_page);
 
   // Returns the currently active web contents.
   content::WebContents* GetActiveWebContents() const;
@@ -70,9 +87,11 @@ class ExtensionsMenuViewController : public ExtensionsMenuNavigationHandler,
   const raw_ptr<views::BubbleDialogDelegate> bubble_delegate_;
 
   const raw_ptr<ToolbarActionsModel> toolbar_model_;
+  base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
+      toolbar_model_observation_{this};
 
   // The current page visible in `bubble_contents_`.
-  raw_ptr<ExtensionsMenuPageView> current_page_ = nullptr;
+  raw_ptr<views::View> current_page_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_VIEW_CONTROLLER_H_

@@ -29,6 +29,7 @@
  */
 
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/page/page_animator.h"
 
 #include <memory>
 
@@ -56,6 +57,7 @@
 #include "third_party/blink/renderer/core/dom/dom_implementation.h"
 #include "third_party/blink/renderer/core/dom/node_with_index.h"
 #include "third_party/blink/renderer/core/dom/range.h"
+#include "third_party/blink/renderer/core/dom/scripted_animation_controller.h"
 #include "third_party/blink/renderer/core/dom/synchronous_mutation_observer.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -926,9 +928,9 @@ TEST_F(DocumentTest, CanExecuteScriptsWithSandboxAndIsolatedWorld) {
   }
 }
 
-// Android does not support non-overlay top-level scrollbars.
-#if !BUILDFLAG(IS_ANDROID)
 TEST_F(DocumentTest, ElementFromPointOnScrollbar) {
+  USE_NON_OVERLAY_SCROLLBARS();
+
   GetDocument().SetCompatibilityMode(Document::kQuirksMode);
   // This test requires that scrollbars take up space.
   ScopedMockOverlayScrollbars no_overlay_scrollbars(false);
@@ -954,7 +956,6 @@ TEST_F(DocumentTest, ElementFromPointOnScrollbar) {
   // A hit test above the horizontal scrollbar should hit the body element.
   EXPECT_EQ(GetDocument().ElementFromPoint(1, 580), GetDocument().body());
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(DocumentTest, ElementFromPointWithPageZoom) {
   GetDocument().SetCompatibilityMode(Document::kQuirksMode);
@@ -1000,7 +1001,9 @@ TEST_F(DocumentTest, PrefersColorSchemeChanged) {
       mojom::blink::PreferredColorScheme::kDark);
 
   UpdateAllLifecyclePhasesForTest();
-  GetDocument().ServiceScriptedAnimations(base::TimeTicks());
+  PageAnimator::ServiceScriptedAnimations(
+      base::TimeTicks(),
+      {{GetDocument().GetScriptedAnimationController(), false}});
 
   EXPECT_TRUE(listener->IsNotified());
 }

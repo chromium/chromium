@@ -6,14 +6,14 @@
 
 #import "base/i18n/rtl.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
@@ -198,7 +198,11 @@ void ConfigureVoiceSearchButton(UIButton* voice_search_button,
   [voice_search_button setTranslatesAutoresizingMaskIntoConstraints:NO];
   [search_tab_target addSubview:voice_search_button];
 
+  // TODO(crbug.com/1418068): Remove after minimum version required is >=
+  // iOS 15.
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
   [voice_search_button setAdjustsImageWhenHighlighted:NO];
+#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
   UIImage* mic_image;
   if (UseSymbols()) {
@@ -208,7 +212,7 @@ void ConfigureVoiceSearchButton(UIButton* voice_search_button,
   } else {
     mic_image = [[UIImage imageNamed:@"location_bar_voice"]
         imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    voice_search_button.tintColor = [UIColor colorNamed:kGrey500Color];
+    voice_search_button.tintColor = [UIColor colorNamed:kGrey600Color];
   }
 
   [voice_search_button setImage:mic_image forState:UIControlStateNormal];
@@ -226,11 +230,12 @@ void ConfigureLensButton(UIButton* lens_button, UIView* search_tap_target) {
   lens_button.translatesAutoresizingMaskIntoConstraints = NO;
   [search_tap_target addSubview:lens_button];
 
-  if (@available(iOS 16, *)) {
-  } else {
-    // Set adjustsImageWhenHighlighted on ios 15 and lower.
-    lens_button.adjustsImageWhenHighlighted = NO;
-  }
+  // TODO(crbug.com/1418068): Remove after minimum version required is >=
+  // iOS 15.
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+  // Set adjustsImageWhenHighlighted on ios 14 and lower.
+  lens_button.adjustsImageWhenHighlighted = NO;
+#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
   UIImage* camera_image =
       UseSymbols() ? CustomSymbolWithPointSize(

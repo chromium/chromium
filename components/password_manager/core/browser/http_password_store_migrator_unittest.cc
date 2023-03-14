@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
@@ -84,9 +85,8 @@ class MockConsumer : public HttpPasswordStoreMigrator::Consumer {
   void ProcessMigratedForms(
       std::vector<std::unique_ptr<PasswordForm>> forms) override {
     std::vector<PasswordForm*> raw_forms(forms.size());
-    std::transform(
-        forms.begin(), forms.end(), raw_forms.begin(),
-        [](const std::unique_ptr<PasswordForm>& form) { return form.get(); });
+    base::ranges::transform(forms, raw_forms.begin(),
+                            &std::unique_ptr<PasswordForm>::get);
     ProcessForms(raw_forms);
   }
 };

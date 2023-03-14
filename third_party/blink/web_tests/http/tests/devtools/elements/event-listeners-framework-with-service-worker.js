@@ -52,7 +52,7 @@
 
   function step3() {
     TestRunner.addResult('Selecting main thread');
-    SourcesTestRunner.selectThread(SDK.targetManager.mainFrameTarget());
+    SourcesTestRunner.selectThread(SDK.targetManager.primaryPageTarget());
     TestRunner.addResult('Context is service worker: ' + isServiceWorker());
     TestRunner.addResult('Dumping listeners');
     ElementsTestRunner.expandAndDumpEventListeners(objectEventListenersPane.eventListenersView, step4);

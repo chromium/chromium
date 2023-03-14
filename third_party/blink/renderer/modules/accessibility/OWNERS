@@ -1,6 +1,13 @@
+# General reviewers:
 aleventhal@chromium.org
 benjamin.beaudry@microsoft.com
 dlibby@microsoft.com
 dtseng@chromium.org
 kschmi@microsoft.com
 nektar@chromium.org
+# For changes that are pure code refactoring or DOM/layout integration:
+# (if downstream platform a11y API support is affected, please add another
+# owner from the main list above, so that a11y specialist knowledge is
+# represented):
+chrishtr@chromium.org
+szager@chromium.org

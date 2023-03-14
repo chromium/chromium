@@ -39,7 +39,7 @@ template("fuzzer_test") {
   if (!disable_libfuzzer && use_fuzzing_engine) {
     assert(defined(invoker.sources), "Need sources in $target_name.")
 
-    test_deps = [ "//testing/libfuzzer:libfuzzer_main" ]
+    test_deps = [ "//testing/libfuzzer:fuzzing_engine_main" ]
     test_data_deps = []
 
     if (defined(invoker.deps)) {
@@ -282,7 +282,7 @@ template("fuzzer_test") {
 
       if (is_ios) {
         info_plist =
-            "//testing/libfuzzer/fuzzer_support_ios/libfuzzer-Info.plist"
+            "//testing/libfuzzer/fuzzer_support_ios/fuzzer-engine-Info.plist"
       }
 
       if (is_mac) {

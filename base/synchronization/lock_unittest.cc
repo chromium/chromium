@@ -7,7 +7,6 @@
 #include <stdlib.h>
 
 #include "base/compiler_specific.h"
-#include "base/debug/activity_tracker.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
 #include "base/threading/platform_thread.h"
@@ -152,48 +151,6 @@ TEST(LockTest, TryLock) {
   }
 
   lock.Release();
-}
-
-TEST(LockTest, TryTrackedLock) {
-  // Enable the activity tracker.
-  debug::GlobalActivityTracker::CreateWithLocalMemory(64 << 10, 0, "", 3, 0);
-
-  Lock lock;
-
-  ASSERT_TRUE(lock.Try());
-  lock.AssertAcquired();
-
-  // This thread will not be able to get the lock.
-  {
-    TryLockTestThread thread(&lock);
-    PlatformThreadHandle handle;
-
-    ASSERT_TRUE(PlatformThread::Create(0, &thread, &handle));
-
-    PlatformThread::Join(handle);
-
-    ASSERT_FALSE(thread.got_lock());
-  }
-
-  lock.Release();
-
-  // This thread will....
-  {
-    TryLockTestThread thread(&lock);
-    PlatformThreadHandle handle;
-
-    ASSERT_TRUE(PlatformThread::Create(0, &thread, &handle));
-
-    PlatformThread::Join(handle);
-
-    ASSERT_TRUE(thread.got_lock());
-    // But it released it....
-    ASSERT_TRUE(lock.Try());
-    lock.AssertAcquired();
-  }
-
-  lock.Release();
-  debug::GlobalActivityTracker::ReleaseForTesting();
 }
 
 // Tests that locks actually exclude -------------------------------------------

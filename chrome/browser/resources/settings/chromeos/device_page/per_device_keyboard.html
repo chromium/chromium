@@ -1,11 +1,14 @@
 <style include="settings-shared"></style>
-<template is="dom-repeat" items="[[keyboards]]" as="keyboard">
-  <settings-per-device-keyboard-subsection keyboard="[[keyboard]]">
+<template is="dom-repeat" items="[[keyboards]]"
+    as="keyboard" index-as="index">
+  <settings-per-device-keyboard-subsection
+      keyboard="[[keyboard]]" keyboard-index="[[index]]">
   </settings-per-device-keyboard-subsection>
 </template>
 <cr-link-row id="keyboardShortcutViewer" class="hr"
     on-click="onShowKeyboardShortcutViewerTap"
-    label="$i18n{showKeyboardShortcutViewer}" external></cr-link-row>
+    label="$i18n{showKeyboardShortcutViewer}" external
+    deep-link-focus-id$="[[Setting.kKeyboardShortcuts]]"></cr-link-row>
 <cr-link-row id="showLanguagesInput"
     class="hr" on-click="onShowInputSettingsTap"
     label="$i18n{keyboardShowInputSettings}"

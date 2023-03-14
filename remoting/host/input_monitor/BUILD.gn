@@ -48,7 +48,6 @@ source_set("input_monitor") {
       "local_keyboard_input_monitor_mac.mm",
       "local_mouse_input_monitor_mac.mm",
     ]
-    deps += [ "//third_party/google_toolbox_for_mac" ]
   }
 
   if (remoting_use_x11) {

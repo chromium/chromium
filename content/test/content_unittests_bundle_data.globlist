@@ -5,19 +5,16 @@
 # See build/ios/update_bundle_filelist.py for details on how .globlist
 # files are used to update their .filelist counterparts.
 
-//content/test/data/**
--//content/test/data/accessibility/**
--//content/test/data/**/OWNERS
--//content/test/data/**/DIR_METADATA
--//content/test/data/**/README.md
--//content/test/data/android/**
--//content/test/data/file_chooser/dir_with*symlink/**
--//content/test/data/gpu/gpu_reference/**
--//content/test/data/gpu/mediapipe/**
--//content/test/data/gpu/mediapipe_zip/**
--//content/test/data/layout_tests/**
--//content/test/data/plugin/**
--//content/test/data/fuzzer_*/**
-//media/test/data/**
--//media/test/data/**/OWNERS
--//media/test/data/**/README.md
+data/**
+-data/accessibility/**
+-data/**/OWNERS
+-data/**/DIR_METADATA
+-data/**/README.md
+-data/android/**
+-data/file_chooser/dir_with*symlink/**
+-data/gpu/gpu_reference/**
+-data/gpu/mediapipe/**
+-data/gpu/mediapipe_zip/**
+-data/layout_tests/**
+-data/plugin/**
+-data/fuzzer_*/**

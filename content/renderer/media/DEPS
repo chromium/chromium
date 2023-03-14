@@ -1,6 +1,6 @@
 include_rules = [
-  "+components/cast_streaming/public",
-  "+components/cast_streaming/renderer",
+  "+components/cast_streaming/common/public",
+  "+components/cast_streaming/renderer/public",
   "+third_party/libyuv",
   '+third_party/webrtc_overrides',
 ]

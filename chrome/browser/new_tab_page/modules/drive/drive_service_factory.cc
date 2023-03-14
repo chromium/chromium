@@ -22,7 +22,14 @@ DriveServiceFactory* DriveServiceFactory::GetInstance() {
 }
 
 DriveServiceFactory::DriveServiceFactory()
-    : ProfileKeyedServiceFactory("DriveService") {
+    : ProfileKeyedServiceFactory(
+          "DriveService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(CookieSettingsFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }

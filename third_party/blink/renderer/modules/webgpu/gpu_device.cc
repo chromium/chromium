@@ -10,13 +10,11 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_compute_pipeline_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_device_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_error_filter.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_external_texture_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_feature_name.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_query_set_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_queue_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pipeline_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_uncaptured_error_event_init.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_htmlvideoelement_videoframe.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
@@ -169,6 +167,8 @@ GPUDevice::GPUDevice(ExecutionContext* execution_context,
 
   if (descriptor->defaultQueue()->hasLabel())
     queue_->setLabel(descriptor->defaultQueue()->label());
+
+  external_texture_cache_ = MakeGarbageCollected<ExternalTextureCache>(this);
 }
 
 GPUDevice::~GPUDevice() {
@@ -324,13 +324,18 @@ void GPUDevice::OnDeviceLostError(WGPUDeviceLostReason reason,
 
 void GPUDevice::OnCreateRenderPipelineAsyncCallback(
     ScriptPromiseResolver* resolver,
+    absl::optional<String> label,
     WGPUCreatePipelineAsyncStatus status,
     WGPURenderPipeline render_pipeline,
     const char* message) {
   switch (status) {
     case WGPUCreatePipelineAsyncStatus_Success: {
-      resolver->Resolve(
-          MakeGarbageCollected<GPURenderPipeline>(this, render_pipeline));
+      GPURenderPipeline* pipeline =
+          MakeGarbageCollected<GPURenderPipeline>(this, render_pipeline);
+      if (label) {
+        pipeline->setLabel(label.value());
+      }
+      resolver->Resolve(pipeline);
       break;
     }
 
@@ -359,23 +364,35 @@ void GPUDevice::OnCreateRenderPipelineAsyncCallback(
 
 void GPUDevice::OnCreateComputePipelineAsyncCallback(
     ScriptPromiseResolver* resolver,
+    absl::optional<String> label,
     WGPUCreatePipelineAsyncStatus status,
     WGPUComputePipeline compute_pipeline,
     const char* message) {
   switch (status) {
     case WGPUCreatePipelineAsyncStatus_Success: {
-      resolver->Resolve(
-          MakeGarbageCollected<GPUComputePipeline>(this, compute_pipeline));
+      GPUComputePipeline* pipeline =
+          MakeGarbageCollected<GPUComputePipeline>(this, compute_pipeline);
+      if (label) {
+        pipeline->setLabel(label.value());
+      }
+      resolver->Resolve(pipeline);
       break;
     }
 
-    case WGPUCreatePipelineAsyncStatus_ValidationError:
+    case WGPUCreatePipelineAsyncStatus_ValidationError: {
+      resolver->Reject(MakeGarbageCollected<GPUPipelineError>(
+          StringFromASCIIAndUTF8(message),
+          V8GPUPipelineErrorReason::Enum::kValidation));
+      break;
+    }
+
     case WGPUCreatePipelineAsyncStatus_InternalError:
     case WGPUCreatePipelineAsyncStatus_DeviceLost:
     case WGPUCreatePipelineAsyncStatus_DeviceDestroyed:
     case WGPUCreatePipelineAsyncStatus_Unknown: {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kOperationError, StringFromASCIIAndUTF8(message)));
+      resolver->Reject(MakeGarbageCollected<GPUPipelineError>(
+          StringFromASCIIAndUTF8(message),
+          V8GPUPipelineErrorReason::Enum::kInternal));
       break;
     }
 
@@ -401,9 +418,13 @@ GPUQueue* GPUDevice::queue() {
   return queue_;
 }
 
+bool GPUDevice::destroyed() const {
+  return destroyed_;
+}
+
 void GPUDevice::destroy(v8::Isolate* isolate) {
   destroyed_ = true;
-  DestroyAllExternalTextures();
+  external_texture_cache_->Destroy();
   // Dissociate mailboxes before destroying the device. This ensures that
   // mailbox operations which run during dissociation can succeed.
   DissociateMailboxes();
@@ -436,14 +457,11 @@ GPUSampler* GPUDevice::createSampler(const GPUSamplerDescriptor* descriptor) {
 }
 
 GPUExternalTexture* GPUDevice::importExternalTexture(
+    ScriptState* script_state,
     const GPUExternalTextureDescriptor* descriptor,
     ExceptionState& exception_state) {
-  // Ensure the GPUExternalTexture created from a destroyed GPUDevice will be
-  // expired immediately.
-  if (destroyed_)
-    return GPUExternalTexture::CreateExpired(this, descriptor, exception_state);
-
-  return GPUExternalTexture::Create(this, descriptor, exception_state);
+  return external_texture_cache_->Import(ExecutionContext::From(script_state),
+                                         descriptor, exception_state);
 }
 
 GPUBindGroup* GPUDevice::createBindGroup(
@@ -496,9 +514,14 @@ ScriptPromise GPUDevice::createRenderPipelineAsync(
   if (exception_state.HadException()) {
     resolver->Reject(exception_state);
   } else {
-    auto* callback =
-        BindWGPUOnceCallback(&GPUDevice::OnCreateRenderPipelineAsyncCallback,
-                             WrapPersistent(this), WrapPersistent(resolver));
+    absl::optional<String> label = {};
+    if (descriptor->hasLabel()) {
+      label = descriptor->label();
+    }
+    auto* callback = BindWGPUOnceCallback(
+        &GPUDevice::OnCreateRenderPipelineAsyncCallback, WrapPersistent(this),
+        WrapPersistent(resolver), std::move(label));
+
     GetProcs().deviceCreateRenderPipelineAsync(
         GetHandle(), &dawn_desc_info.dawn_desc, callback->UnboundCallback(),
         callback->AsUserdata());
@@ -516,14 +539,19 @@ ScriptPromise GPUDevice::createComputePipelineAsync(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  std::string label;
+  std::string desc_label;
   OwnedProgrammableStage computeStage;
   WGPUComputePipelineDescriptor dawn_desc =
-      AsDawnType(this, descriptor, &label, &computeStage);
+      AsDawnType(this, descriptor, &desc_label, &computeStage);
 
-  auto* callback =
-      BindWGPUOnceCallback(&GPUDevice::OnCreateComputePipelineAsyncCallback,
-                           WrapPersistent(this), WrapPersistent(resolver));
+  absl::optional<String> label = {};
+  if (descriptor->hasLabel()) {
+    label = descriptor->label();
+  }
+  auto* callback = BindWGPUOnceCallback(
+      &GPUDevice::OnCreateComputePipelineAsyncCallback, WrapPersistent(this),
+      WrapPersistent(resolver), std::move(label));
+
   GetProcs().deviceCreateComputePipelineAsync(GetHandle(), &dawn_desc,
                                               callback->UnboundCallback(),
                                               callback->AsUserdata());
@@ -625,7 +653,7 @@ void GPUDevice::Trace(Visitor* visitor) const {
   visitor->Trace(limits_);
   visitor->Trace(queue_);
   visitor->Trace(lost_property_);
-  visitor->Trace(active_external_textures_);
+  visitor->Trace(external_texture_cache_);
   visitor->Trace(textures_with_mailbox_);
   visitor->Trace(mappable_buffers_);
   ExecutionContextClient::Trace(visitor);
@@ -635,14 +663,7 @@ void GPUDevice::Trace(Visitor* visitor) const {
 void GPUDevice::Dispose() {
   // This call accesses other GC objects, so it cannot be called inside GC
   // objects destructors. Instead call it in the pre-finalizer.
-  DestroyAllExternalTextures();
-}
-
-void GPUDevice::DestroyAllExternalTextures() {
-  for (auto& external_texture : active_external_textures_) {
-    external_texture->Destroy();
-  }
-  active_external_textures_.clear();
+  external_texture_cache_->Destroy();
 }
 
 void GPUDevice::DissociateMailboxes() {
@@ -664,17 +685,6 @@ void GPUDevice::TrackMappableBuffer(GPUBuffer* buffer) {
 
 void GPUDevice::UntrackMappableBuffer(GPUBuffer* buffer) {
   mappable_buffers_.erase(buffer);
-}
-
-void GPUDevice::AddActiveExternalTexture(GPUExternalTexture* external_texture) {
-  DCHECK(external_texture);
-  active_external_textures_.insert(external_texture);
-}
-
-void GPUDevice::RemoveActiveExternalTexture(
-    GPUExternalTexture* external_texture) {
-  DCHECK(external_texture);
-  active_external_textures_.erase(external_texture);
 }
 
 void GPUDevice::TrackTextureWithMailbox(GPUTexture* texture) {

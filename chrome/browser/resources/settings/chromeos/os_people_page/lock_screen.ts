@@ -38,10 +38,10 @@ import {AuthFactor, ConfigureResult, FactorObserverReceiver, ManagementType} fro
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
-import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {LockScreenUnlockType, LockStateMixin} from '../lock_state_mixin.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
@@ -52,7 +52,7 @@ import {getTemplate} from './lock_screen.html.js';
 const SettingsLockScreenElementBase =
     RouteObserverMixin(LockStateMixin(DeepLinkingMixin(PolymerElement)));
 
-class SettingsLockScreenElement extends SettingsLockScreenElementBase {
+export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   static get is() {
     return 'settings-lock-screen' as const;
   }

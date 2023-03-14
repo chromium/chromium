@@ -297,7 +297,7 @@ void SkiaIOSurfaceRepresentation::EndWriteAccess() {
   write_surfaces_.clear();
 
   if (egl_state_)
-    egl_state_->EndAccess(false /* readonly */);
+    egl_state_->EndAccess(/*readonly=*/false);
 }
 
 std::vector<sk_sp<SkPromiseImageTexture>>
@@ -320,7 +320,7 @@ SkiaIOSurfaceRepresentation::BeginReadAccess(
 
 void SkiaIOSurfaceRepresentation::EndReadAccess() {
   if (egl_state_)
-    egl_state_->EndAccess(true /* readonly */);
+    egl_state_->EndAccess(/*readonly=*/true);
 }
 
 bool SkiaIOSurfaceRepresentation::SupportsMultipleConcurrentReadAccess() {
@@ -352,6 +352,18 @@ bool OverlayIOSurfaceRepresentation::BeginReadAccess(
   gl::GLDisplayEGL* display = gl::GLDisplayEGL::GetDisplayForCurrentContext();
   if (display) {
     eglWaitUntilWorkScheduledANGLE(display->GetDisplay());
+  }
+
+  gl::GLContext* context = gl::GLContext::GetCurrent();
+  if (context) {
+    std::vector<std::unique_ptr<SharedEventAndSignalValue>> signals =
+        static_cast<IOSurfaceImageBacking*>(backing())->TakeSharedEvents();
+
+    std::vector<std::unique_ptr<BackpressureMetalSharedEvent>>
+        backpressure_events(std::make_move_iterator(signals.begin()),
+                            std::make_move_iterator(signals.end()));
+    context->AddMetalSharedEventsForBackpressure(
+        std::move(backpressure_events));
   }
 
   auto* gl_backing = static_cast<IOSurfaceImageBacking*>(backing());
@@ -485,20 +497,18 @@ void DawnIOSurfaceRepresentation::EndAccess() {
     SetCleared();
   }
 
-  if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
-    if (@available(macOS 10.14, *)) {
-      SharedImageBacking* backing = this->backing();
-      // Not possible to reach this with any other type of backing.
-      DCHECK_EQ(backing->GetType(), SharedImageBackingType::kIOSurface);
-      IOSurfaceImageBacking* iosurface_backing =
-          static_cast<IOSurfaceImageBacking*>(backing);
-      // Dawn's Metal backend has enqueued a MTLSharedEvent which
-      // consumers of the IOSurface must wait upon before attempting to
-      // use that IOSurface on another MTLDevice. Store this event in
-      // the underlying SharedImageBacking.
-      iosurface_backing->AddSharedEventAndSignalValue(descriptor.sharedEvent,
-                                                      descriptor.signaledValue);
-    }
+  if (@available(macOS 10.14, *)) {
+    SharedImageBacking* backing = this->backing();
+    // Not possible to reach this with any other type of backing.
+    DCHECK_EQ(backing->GetType(), SharedImageBackingType::kIOSurface);
+    IOSurfaceImageBacking* iosurface_backing =
+        static_cast<IOSurfaceImageBacking*>(backing);
+    // Dawn's Metal backend has enqueued a MTLSharedEvent which
+    // consumers of the IOSurface must wait upon before attempting to
+    // use that IOSurface on another MTLDevice. Store this event in
+    // the underlying SharedImageBacking.
+    iosurface_backing->AddSharedEventAndSignalValue(descriptor.sharedEvent,
+                                                    descriptor.signaledValue);
   }
 
   // All further operations on the textures are errors (they would be racy
@@ -548,6 +558,16 @@ SharedEventAndSignalValue::~SharedEventAndSignalValue() {
   shared_event_ = nil;
 }
 
+bool SharedEventAndSignalValue::HasCompleted() const {
+  if (@available(macOS 10.14, *)) {
+    if (shared_event_) {
+      return [static_cast<id<MTLSharedEvent>>(shared_event_) signaledValue] >=
+             signaled_value_;
+    }
+  }
+  return true;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // IOSurfaceImageBacking
 
@@ -573,7 +593,7 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
                          alpha_type,
                          usage,
                          format.EstimatedSizeInBytes(size),
-                         false /* is_thread_safe */),
+                         /*is_thread_safe=*/false),
       io_surface_(std::move(io_surface)),
       io_surface_plane_(io_surface_plane),
       io_surface_id_(io_surface_id),
@@ -684,13 +704,13 @@ IOSurfaceImageBacking::TakeSharedEvents() {
   return std::move(shared_events_and_signal_values_);
 }
 
-void IOSurfaceImageBacking::OnMemoryDump(
+base::trace_event::MemoryAllocatorDump* IOSurfaceImageBacking::OnMemoryDump(
     const std::string& dump_name,
     base::trace_event::MemoryAllocatorDumpGuid client_guid,
     base::trace_event::ProcessMemoryDump* pmd,
     uint64_t client_tracing_id) {
-  SharedImageBacking::OnMemoryDump(dump_name, client_guid, pmd,
-                                   client_tracing_id);
+  auto* dump = SharedImageBacking::OnMemoryDump(dump_name, client_guid, pmd,
+                                                client_tracing_id);
 
   size_t size_bytes = 0u;
   if (format().is_single_plane()) {
@@ -704,8 +724,6 @@ void IOSurfaceImageBacking::OnMemoryDump(
     }
   }
 
-  base::trace_event::MemoryAllocatorDump* dump =
-      pmd->CreateAllocatorDump(dump_name);
   dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
                   base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                   static_cast<uint64_t>(size_bytes));
@@ -737,6 +755,8 @@ void IOSurfaceImageBacking::OnMemoryDump(
     anonymous_dump->AddScalar("width", "pixels", size().width());
     anonymous_dump->AddScalar("height", "pixels", size().height());
   }
+
+  return dump;
 }
 
 SharedImageBackingType IOSurfaceImageBacking::GetType() const {
@@ -894,6 +914,10 @@ void IOSurfaceImageBacking::SetPurgeable(bool purgeable) {
 
   uint32_t old_state;
   IOSurfaceSetPurgeable(io_surface_, purgeable, &old_state);
+}
+
+bool IOSurfaceImageBacking::IsPurgeable() const {
+  return purgeable_;
 }
 
 void IOSurfaceImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {

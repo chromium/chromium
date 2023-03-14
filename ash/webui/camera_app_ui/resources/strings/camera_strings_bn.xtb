@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">লিঙ্ক শনাক্ত হয়েছে। <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" />টি পৃষ্ঠা মুছে ফেলা হয়েছে</translation>
 <translation id="1258009455399840361">ঘড়ির কাঁটার দিকে ৯০ ডিগ্রি ঘোরান</translation>
-<translation id="1300209025925956156">আপনার ডকুমেন্ট স্ক্যান করুন</translation>
-<translation id="1309250603447638106">ডকুমেন্ট স্ক্যান করার জন্য আপডেট ডাউনলোড করা হচ্ছে</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />। অ্যাক্সেস করতে Search কীয়ের সাথে 'বাঁদিকের তীরচিহ্ন' একসাথে প্রেস করুন।</translation>
 <translation id="1417314334557041815">পৃষ্ঠা <ph name="INDEX" /> এডিট করুন</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> আনপ্লাগ করা হয়েছে।</translation>
 <translation id="1473110567575736769">৩ সেকেন্ডের টাইমার</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">কিছুই রেকর্ড করা হয়নি</translation>
 <translation id="1838104802459806957">উপরের দিকে টিল্ট করুন</translation>
 <translation id="1843105061469674856">অতিরিক্ত পৃষ্ঠা স্ক্যান করুন</translation>
-<translation id="1851169887664797861">ক্যামেরার জন্য অতিরিক্ত কন্ট্রোল উপলভ্য</translation>
 <translation id="1851616744363735765">পজ করা হয়েছে</translation>
 <translation id="1899697626337024495">ফটো রেজোলিউশন</translation>
 <translation id="1925845977604399247">'গ্যালারি'তে যান</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">স্ক্যানের ধরন</translation>
 <translation id="28682968802727151">মিরর করার প্রিভিউ</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> প্লাগ-ইন করা হয়েছে।</translation>
-<translation id="2904654629665923749">ডকুমেন্ট স্ক্যান করার সুবিধা উপলভ্য</translation>
 <translation id="3067436040345934772">ডানদিকে প্যান করুন</translation>
 <translation id="3081586908890909590">ভিডিও রেকর্ড মোডে পাল্টান</translation>
 <translation id="313467653172006084">৩০ FPS</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">লিঙ্ক অ্যাড্রেস কপি করুন</translation>
 <translation id="4281620174117014503">মাঝারি রেজোলিউশন</translation>
 <translation id="428234092390943511">পৃষ্ঠা থাম্বনেল</translation>
-<translation id="4340659173795395806">আপনি এখন মাল্টি-পেজ পিডিএফ তৈরি করতে পারবেন</translation>
 <translation id="4383571725254449280">প্রিন্ট পারফর্ম্যান্স লগ</translation>
 <translation id="4445542136948522167">ফটো তোলা বন্ধ করুন</translation>
 <translation id="4570032796877367747">সামনের ক্যামেরা</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">সেভ করুন</translation>
 <translation id="5320594929574852403">বাঁদিকে সরানো হচ্ছে</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5444515100983837161">ডকুমেন্টের সমস্ত প্রান্ত ফ্রেমের মধ্যে রাখুন। ডকুমেন্ট ও ব্যাকগ্রাউন্ডের রং আলাদা হলে, স্ক্যানিং সবচেয়ে ভাল কাজ করে।</translation>
 <translation id="5662366948659129155"><ph name="COUNT" /> নম্বর পৃষ্ঠা স্ক্যান করা হচ্ছে</translation>
 <translation id="5671277269877808209">চৌকো</translation>
 <translation id="5746169159649715125">পিডিএফ হিসেবে সেভ করুন</translation>
@@ -157,7 +150,6 @@
 <translation id="8428213095426709021">সেটিংস</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">মাইক্রোফোন মিউট করার স্ট্যাটাস টগল করুন। মিউট মোড এখন চালু আছে</translation>
-<translation id="8712637175834984815">বুঝেছি</translation>
 <translation id="8730621377337864115">হয়ে গেছে</translation>
 <translation id="8732462232047530626">মেটাডেটা প্রিভিউ করুন</translation>
 <translation id="8815966864175525708">পোর্ট্রেট ফটো তুলতে মোড পাল্টান</translation>

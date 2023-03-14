@@ -1,13 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
+<translation id="1347497506789975534">Rodyti išsaugotus mokėjimo metodus</translation>
 <translation id="1383876407941801731">Ieškoti</translation>
-<translation id="1566281227936819866">Rodomi išsaugoti mokėjimo metodai</translation>
 <translation id="1717486229951421299">Prisijungimo duomenų, kuriuos galima užpildyti palietus, sąrašas atidarytas per pusę ekrano aukščio.</translation>
 <translation id="207576718733492531">Prisijungimo duomenų, kuriuos galima užpildyti palietus, sąrašas uždarytas.</translation>
 <translation id="2610239185026711824">Siūlyti slaptažodį</translation>
 <translation id="2652129567809778422">Pasirinkite slaptažodį</translation>
-<translation id="2803478378562657435">Rodomi išsaugoti slaptažodžiai ir slaptažodžių parinktys</translation>
 <translation id="2903493209154104877">Adresai</translation>
 <translation id="3399357656427473483">Prisijungimo duomenų, kuriuos galima užpildyti palietus, sąrašas.</translation>
 <translation id="3688051737190211318">Jei pasitikite <ph name="ORIGIN" />, prisijungdami galite naudoti išsaugotą slaptažodį</translation>
@@ -15,16 +14,14 @@
 <translation id="4660011489602794167">Rodyti klaviatūrą</translation>
 <translation id="4694050069269396220">Jei pasitikite <ph name="ORIGIN" />, išsaugotą slaptažodį galite naudoti kitoje svetainėje.</translation>
 <translation id="5016175294846053194">Automatinio pildymo pasiūlymai pateikiami virš klaviatūros</translation>
-<translation id="5088366526685584589">Rodomi išsaugoti adresai</translation>
 <translation id="5441504010984421144">Prisijungimo duomenų, kuriuos galima užpildyti palietus, sąrašas atidarytas per visą ekrano aukštį.</translation>
+<translation id="6296921860874265377">Rodyti išsaugotus slaptažodžius ir slaptažodžių parinktis</translation>
 <translation id="6393156038355142111">Siūlyti sudėtingą slaptažodį</translation>
 <translation id="6558703547256592471">Kiekvienoje svetainėje stenkitės naudoti unikalius slaptažodžius.</translation>
 <translation id="7029809446516969842">Slaptažodžiai</translation>
-<translation id="7299100402441711551">Rodyti adresus</translation>
-<translation id="7494879913343971937">Rodyti slaptažodžius</translation>
 <translation id="7594473730623999723">Perbraukite, kad peržiūrėtumėte daugiau pasiūlymų</translation>
+<translation id="7873973044507799456">Rodyti išsaugotus adresus</translation>
 <translation id="7992095260806105436">Naudoti „Chrome“ automatinio pildymo pasiūlymą</translation>
-<translation id="8037472847879765671">Rodyti mokėjimo metodus</translation>
 <translation id="8507520749471379845">Pasiekiami slaptažodžiai</translation>
 <translation id="8705308553596171387">Nepateiktas slaptažodis</translation>
 <translation id="879180780857354295">Alternatyvios užpildymo parinktys pateikiamos virš klaviatūros</translation>

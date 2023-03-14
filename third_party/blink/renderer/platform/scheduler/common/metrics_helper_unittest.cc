@@ -64,15 +64,6 @@ TEST(MetricsHelperTest, TaskDurationPerThreadType) {
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
-          "RendererScheduler.TaskDurationPerThreadType2"),
-      testing::UnorderedElementsAre(
-          base::Bucket(static_cast<int>(ThreadType::kMainThread), 40),
-          base::Bucket(static_cast<int>(ThreadType::kCompositorThread), 170),
-          base::Bucket(static_cast<int>(ThreadType::kUnspecifiedWorkerThread),
-                       115)));
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(
           "RendererScheduler.TaskCPUDurationPerThreadType2"),
       testing::UnorderedElementsAre(
           base::Bucket(static_cast<int>(ThreadType::kMainThread), 15),

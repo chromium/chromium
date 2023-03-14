@@ -61,7 +61,7 @@ class NetworkingPrivateServiceClient
                      VoidCallback success_callback,
                      FailureCallback failure_callback) override;
   void CreateNetwork(bool shared,
-                     base::Value properties_dict,
+                     base::Value::Dict properties_dict,
                      StringCallback success_callback,
                      FailureCallback failure_callback) override;
   void ForgetNetwork(const std::string& guid,

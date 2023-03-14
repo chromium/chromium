@@ -87,7 +87,7 @@ class CredentialProviderSigninDialogWinDialogTest
  protected:
   CredentialProviderSigninDialogWinDialogTest();
 
-  void SendSigninCompleteMessage(const base::Value& value);
+  void SendSigninCompleteMessage(const base::Value::Dict& value);
   void SendValidSigninCompleteMessage();
   void WaitForSigninCompleteMessage();
 
@@ -117,7 +117,7 @@ CredentialProviderSigninDialogWinDialogTest::
     : CredentialProviderSigninDialogWinBaseTest() {}
 
 void CredentialProviderSigninDialogWinDialogTest::SendSigninCompleteMessage(
-    const base::Value& value) {
+    const base::Value::Dict& value) {
   std::string json_string;
   EXPECT_TRUE(base::JSONWriter::Write(value, &json_string));
 
@@ -363,13 +363,13 @@ IN_PROC_BROWSER_TEST_P(CredentialProviderSigninDialogWinDialogExitCodeTest,
                        SigninResultWithExitCode) {
   ShowSigninDialog(base::CommandLine(base::CommandLine::NoProgram::NO_PROGRAM));
   WaitForDialogToLoad();
-  base::Value signin_result = test_data_storage_.MakeValidSignInResponseValue();
+  base::Value::Dict signin_result =
+      test_data_storage_.MakeValidSignInResponseValue();
 
   int expected_error_code = GetParam();
   bool should_succeed = expected_error_code ==
                         static_cast<int>(credential_provider::kUiecSuccess);
-  signin_result.SetKey(credential_provider::kKeyExitCode,
-                       base::Value(expected_error_code));
+  signin_result.Set(credential_provider::kKeyExitCode, expected_error_code);
 
   SendSigninCompleteMessage(signin_result);
   EXPECT_TRUE(signin_complete_called_);

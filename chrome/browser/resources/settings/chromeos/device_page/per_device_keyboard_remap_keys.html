@@ -11,70 +11,48 @@
 <div id="header">
   <div id="description">$i18n{remapKeyboardKeysDescription}</div>
   <cr-button id="restoreDefaultsButton"
-      on-click="restoreDefaults">
+      on-click="defaultInitializePrefs">
     $i18n{keyboardRemapRestoreDefaultsLabel}
   </cr-button>
 </div>
 <div id="container">
-  <div class="settings-box">
-    <div id="metaKeyLabel" class="start"
-        aria-hidden="true">[[metaKeyLabel]]</div>
-    <settings-dropdown-menu id="metaKey"
-        label="$i18n{keyboardKeySearch}"
-        pref="{{fakeMetaPref}}"
-        menu-options="[[keyMapTargets]]">
-    </settings-dropdown-menu>
-  </div>
-  <div class="settings-box">
-    <div class="start" aria-hidden="true">$i18n{keyboardKeyCtrl}</div>
-    <settings-dropdown-menu id="ctrlKey"
-        label="$i18n{keyboardKeyCtrl}"
-        pref="{{fakeCtrlPref}}"
-        menu-options="[[keyMapTargets]]">
-    </settings-dropdown-menu>
-  </div>
-  <div class="settings-box">
-    <div class="start" aria-hidden="true">$i18n{keyboardKeyAlt}</div>
-    <settings-dropdown-menu id="altKey"
-        label="$i18n{keyboardKeyAlt}"
-        pref="{{fakeAltPref}}"
-        menu-options="[[keyMapTargets]]">
-    </settings-dropdown-menu>
-  </div>
-  <div class="settings-box">
-    <div class="start" aria-hidden="true">$i18n{keyboardKeyEscape}</div>
-    <settings-dropdown-menu id="escKey"
-        label="$i18n{keyboardKeyEscape}"
-        pref="{{fakeEscPref}}"
-        menu-options="[[keyMapTargets]]">
-    </settings-dropdown-menu>
-  </div>
-  <div class="settings-box">
-    <div class="start" aria-hidden="true">$i18n{keyboardKeyBackspace}</div>
-    <settings-dropdown-menu id="backspaceKey"
-        label="$i18n{keyboardKeyBackspace}"
-        pref="{{fakeBackspacePref}}"
-        menu-options="[[keyMapTargets]]">
-    </settings-dropdown-menu>
-  </div>
+  <keyboard-remap-modifier-key-row
+      default-remappings="[[defaultRemappings]]"
+      key="[[modifierKey.kMeta]]" id="metaKey"
+      meta-key="[[keyboard.metaKey]]"
+      pref="{{fakeMetaPref}}"></keyboard-remap-modifier-key-row>
+  <keyboard-remap-modifier-key-row
+      default-remappings="[[defaultRemappings]]"
+      key="[[modifierKey.kControl]]" id="ctrlKey"
+      meta-key="[[keyboard.metaKey]]"
+      pref="{{fakeCtrlPref}}"></keyboard-remap-modifier-key-row>
+  <keyboard-remap-modifier-key-row
+      default-remappings="[[defaultRemappings]]"
+      key="[[modifierKey.kAlt]]" id="altKey"
+      meta-key="[[keyboard.metaKey]]"
+      pref="{{fakeAltPref}}"></keyboard-remap-modifier-key-row>
+  <keyboard-remap-modifier-key-row
+      default-remappings="[[defaultRemappings]]"
+      key="[[modifierKey.kEscape]]" id="escapeKey"
+      meta-key="[[keyboard.metaKey]]"
+      pref="{{fakeEscPref}}"></keyboard-remap-modifier-key-row>
+  <keyboard-remap-modifier-key-row
+      default-remappings="[[defaultRemappings]]"
+      key="[[modifierKey.kBackspace]]" id="backspaceKey"
+      meta-key="[[keyboard.metaKey]]"
+      pref="{{fakeBackspacePref}}"></keyboard-remap-modifier-key-row>
   <template is="dom-if" if="[[hasAssistantKey_]]">
-    <div class="settings-box">
-      <div class="start" aria-hidden="true">$i18n{keyboardKeyAssistant}</div>
-      <settings-dropdown-menu id="assistantKey"
-          label="$i18n{keyboardKeyAssistant}"
-          pref="{{fakeAssistantPref}}"
-          menu-options="[[keyMapTargets]]">
-      </settings-dropdown-menu>
-    </div>
+    <keyboard-remap-modifier-key-row
+      default-remappings="[[defaultRemappings]]"
+      key="[[modifierKey.kAssistant]]" id="assistantKey"
+      meta-key="[[keyboard.metaKey]]"
+      pref="{{fakeAssistantPref}}"></keyboard-remap-modifier-key-row>
   </template>
   <template is="dom-if" if="[[hasCapsLockKey]]">
-    <div class="settings-box">
-      <div class="start" aria-hidden="true">$i18n{keyboardKeyCapsLock}</div>
-      <settings-dropdown-menu id="capsLockKey"
-          label="$i18n{keyboardKeyCapsLock}"
-          pref="{{fakeCapsLockPref}}"
-          menu-options="[[keyMapTargets]]">
-      </settings-dropdown-menu>
-    </div>
+    <keyboard-remap-modifier-key-row
+      default-remappings="[[defaultRemappings]]"
+      key="[[modifierKey.kCapsLock]]" id="capsLockKey"
+      meta-key="[[keyboard.metaKey]]"
+      pref="{{fakeCapsLockPref}}"></keyboard-remap-modifier-key-row>
   </template>
 </div>

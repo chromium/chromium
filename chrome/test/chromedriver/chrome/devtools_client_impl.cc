@@ -11,14 +11,12 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/i18n/message_formatter.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/types/optional_util.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
@@ -27,10 +25,8 @@
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/chrome/util.h"
 #include "chrome/test/chromedriver/chrome/web_view_impl.h"
-#include "chrome/test/chromedriver/net/command_id.h"
 #include "chrome/test/chromedriver/net/sync_websocket.h"
 #include "chrome/test/chromedriver/net/timeout.h"
-#include "chrome/test/chromedriver/net/url_request_context_getter.h"
 
 namespace {
 
@@ -47,6 +43,8 @@ const char kInspectorPushPermissionError[] =
 const char kInspectorNoSuchFrameError[] =
     "Frame with the given id was not found.";
 const char kNoTargetWithGivenIdError[] = "No target with given id found";
+const char kUniqueContextIdNotFoundError[] = "uniqueContextId not found";
+const char kNoNodeForBackendNodeId[] = "No node found for given backend id";
 
 static constexpr int kSessionNotFoundInspectorCode = -32001;
 static constexpr int kCdpMethodNotFoundCode = -32601;
@@ -527,7 +525,9 @@ Status DevToolsClientImpl::SetUpDevTools() {
     std::string script =
         "(function () {"
         "window.cdc_adoQpoasnfa76pfcZLmcfl_Array = window.Array;"
+        "window.cdc_adoQpoasnfa76pfcZLmcfl_Object = window.Object;"
         "window.cdc_adoQpoasnfa76pfcZLmcfl_Promise = window.Promise;"
+        "window.cdc_adoQpoasnfa76pfcZLmcfl_Proxy = window.Proxy;"
         "window.cdc_adoQpoasnfa76pfcZLmcfl_Symbol = window.Symbol;"
         "}) ();";
     params.Set("source", script);
@@ -642,6 +642,23 @@ void DevToolsClientImpl::AddListener(DevToolsEventListener* listener) {
         << " Connection notification will not arrive.";
   }
   listeners_.push_back(listener);
+}
+
+void DevToolsClientImpl::RemoveListener(DevToolsEventListener* listener) {
+  auto it = std::find(listeners_.begin(), listeners_.end(), listener);
+  if (it != listeners_.end()) {
+    listeners_.erase(it);
+  }
+  it = std::find(unnotified_connect_listeners_.begin(),
+                 unnotified_connect_listeners_.end(), listener);
+  if (it != unnotified_connect_listeners_.end()) {
+    unnotified_connect_listeners_.erase(it);
+  }
+  it = std::find(unnotified_event_listeners_.begin(),
+                 unnotified_event_listeners_.end(), listener);
+  if (it != unnotified_event_listeners_.end()) {
+    unnotified_event_listeners_.erase(it);
+  }
 }
 
 Status DevToolsClientImpl::HandleReceivedEvents() {
@@ -1194,8 +1211,8 @@ bool ParseInspectorMessage(const std::string& message,
                            InspectorCommandResponse* command_response) {
   // We want to allow invalid characters in case they are valid ECMAScript
   // strings. For example, webplatform tests use this to check string handling
-  std::unique_ptr<base::Value> message_value = base::JSONReader::ReadDeprecated(
-      message, base::JSON_REPLACE_INVALID_CHARACTERS);
+  absl::optional<base::Value> message_value =
+      base::JSONReader::Read(message, base::JSON_REPLACE_INVALID_CHARACTERS);
   base::Value::Dict* message_dict =
       message_value ? message_value->GetIfDict() : nullptr;
   if (!message_dict)
@@ -1335,8 +1352,7 @@ bool ParseInspectorMessage(const std::string& message,
 }
 
 Status ParseInspectorError(const std::string& error_json) {
-  std::unique_ptr<base::Value> error =
-      base::JSONReader::ReadDeprecated(error_json);
+  absl::optional<base::Value> error = base::JSONReader::Read(error_json);
   base::Value::Dict* error_dict = error ? error->GetIfDict() : nullptr;
   if (!error_dict)
     return Status(kUnknownError, "inspector error with no error message");
@@ -1371,6 +1387,15 @@ Status ParseInspectorError(const std::string& error_json) {
       // As the server returns the generic error code: SERVER_ERROR = -32000
       // we have to rely on the error message content.
       return Status(kNoSuchFrame, error_message);
+    } else if (error_message == kUniqueContextIdNotFoundError) {
+      // The error message that can arise during a call to
+      // Runtime.evaluate and Runtime.callFunctionOn if the provided
+      // context does no longer exist.
+      return Status(kNoSuchExecutionContext, error_message);
+    } else if (error_message == kNoNodeForBackendNodeId) {
+      // The error message that arises during DOM.resolveNode code.
+      // This means that the node with given BackendNodeId is not found.
+      return Status{kNoSuchElement, error_message};
     }
     absl::optional<int> error_code = error_dict->FindInt("code");
     if (error_code == kInvalidParamsInspectorCode) {

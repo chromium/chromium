@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 
@@ -43,12 +44,12 @@ class BrowserList {
     void* operator new(size_t) = delete;
     void* operator new(size_t, void*) = delete;
 
-    const BrowserList& browser_list;
+    const raw_ref<const BrowserList> browser_list;
     const_reverse_iterator begin() const {
-      return browser_list.begin_browsers_ordered_by_activation();
+      return browser_list->begin_browsers_ordered_by_activation();
     }
     const_reverse_iterator end() const {
-      return browser_list.end_browsers_ordered_by_activation();
+      return browser_list->end_browsers_ordered_by_activation();
     }
   };
 
@@ -80,7 +81,7 @@ class BrowserList {
   // Example:
   // for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation())
   BrowsersOrderedByActivationRange OrderedByActivation() const {
-    return {*this};
+    return {raw_ref(*this)};
   }
 
   // Returns the set of browsers that are currently in the closing state.

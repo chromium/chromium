@@ -203,8 +203,7 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTest
         break;
       case VirtualCardEnrollmentBubbleResult::
           VIRTUAL_CARD_ENROLLMENT_BUBBLE_RESULT_UNKNOWN:
-        NOTREACHED();
-        break;
+        NOTREACHED_NORETURN();
     }
 
     views::test::WidgetDestroyedWaiter destroyed_waiter(
@@ -234,6 +233,7 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTest
   }
 
  private:
+  test::AutofillBrowserTestEnvironment autofill_test_environment_;
   VirtualCardEnrollmentFields downstream_virtual_card_enrollment_fields_;
   VirtualCardEnrollmentFields upstream_virtual_card_enrollment_fields_;
   VirtualCardEnrollmentFields settings_page_virtual_card_enrollment_fields_;

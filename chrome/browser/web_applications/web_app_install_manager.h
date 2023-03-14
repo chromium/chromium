@@ -22,7 +22,7 @@
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
-#include "chrome/browser/web_applications/web_app_url_loader.h"
+#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 
 class Profile;
 
@@ -46,7 +46,6 @@ class WebAppSyncBridge;
 class WebAppTranslationManager;
 class WebAppIconManager;
 
-// TODO(loyso): Unify the API and merge similar InstallWebAppZZZZ functions.
 class WebAppInstallManager {
  public:
   explicit WebAppInstallManager(Profile* profile);

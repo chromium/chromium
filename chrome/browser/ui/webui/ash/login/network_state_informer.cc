@@ -178,7 +178,7 @@ bool NetworkStateInformer::UpdateState(const NetworkState* network) {
 
   state_ = new_state;
   network_path_ = new_network_path;
-  proxy_config_ = base::Value();
+  proxy_config_.reset();
 
   if (state_ == ONLINE) {
     for (NetworkStateInformerObserver& observer : observers_)
@@ -189,13 +189,19 @@ bool NetworkStateInformer::UpdateState(const NetworkState* network) {
 }
 
 bool NetworkStateInformer::UpdateProxyConfig(const NetworkState* network) {
-  if (!network)
+  if (!network) {
     return false;
+  }
 
-  if (proxy_config_ == network->proxy_config())
+  if (proxy_config_ == network->proxy_config()) {
     return false;
+  }
 
-  proxy_config_ = network->proxy_config().Clone();
+  if (network->proxy_config()) {
+    proxy_config_ = network->proxy_config()->Clone();
+  } else {
+    proxy_config_.reset();
+  }
   return true;
 }
 

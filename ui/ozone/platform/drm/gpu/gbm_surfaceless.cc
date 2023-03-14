@@ -41,12 +41,12 @@ GbmSurfaceless::GbmSurfaceless(GbmSurfaceFactory* surface_factory,
                                gl::GLDisplayEGL* display,
                                std::unique_ptr<DrmWindowProxy> window,
                                gfx::AcceleratedWidget widget)
-    : Presenter(display, gfx::Size()),
-      surface_factory_(surface_factory),
+    : surface_factory_(surface_factory),
       window_(std::move(window)),
       widget_(widget),
       has_implicit_external_sync_(
-          display->ext->b_EGL_ARM_implicit_external_sync) {
+          display->ext->b_EGL_ARM_implicit_external_sync),
+      display_(display) {
   surface_factory_->RegisterSurface(window_->widget(), this);
   supports_plane_gpu_fences_ = window_->SupportsGpuFences();
   unsubmitted_frames_.push_back(std::make_unique<PendingFrame>());
@@ -55,12 +55,6 @@ GbmSurfaceless::GbmSurfaceless(GbmSurfaceFactory* surface_factory,
 void GbmSurfaceless::QueueOverlayPlane(DrmOverlayPlane plane) {
   is_on_external_drm_device_ = !plane.buffer->drm_device()->is_primary_device();
   planes_.push_back(std::move(plane));
-}
-
-bool GbmSurfaceless::Initialize(gl::GLSurfaceFormat format) {
-  if (!SurfacelessEGL::Initialize(format))
-    return false;
-  return true;
 }
 
 bool GbmSurfaceless::ScheduleOverlayPlane(
@@ -79,7 +73,7 @@ bool GbmSurfaceless::Resize(const gfx::Size& size,
   if (window_)
     window_->SetColorSpace(color_space);
 
-  return SurfacelessEGL::Resize(size, scale_factor, color_space, has_alpha);
+  return true;
 }
 
 bool GbmSurfaceless::SupportsPlaneGpuFences() const {
@@ -145,34 +139,11 @@ void GbmSurfaceless::Present(SwapCompletionCallback completion_callback,
       std::move(fence_wait_task), std::move(fence_retired_callback));
 }
 
-EGLConfig GbmSurfaceless::GetConfig() {
-  if (!config_) {
-    EGLint config_attribs[] = {EGL_BUFFER_SIZE,
-                               32,
-                               EGL_ALPHA_SIZE,
-                               8,
-                               EGL_BLUE_SIZE,
-                               8,
-                               EGL_GREEN_SIZE,
-                               8,
-                               EGL_RED_SIZE,
-                               8,
-                               EGL_RENDERABLE_TYPE,
-                               EGL_OPENGL_ES2_BIT,
-                               EGL_SURFACE_TYPE,
-                               EGL_DONT_CARE,
-                               EGL_NONE};
-    config_ = ChooseEGLConfig(GetEGLDisplay(), config_attribs);
-  }
-  return config_;
-}
-
 void GbmSurfaceless::SetRelyOnImplicitSync() {
   use_egl_fence_sync_ = false;
 }
 
 GbmSurfaceless::~GbmSurfaceless() {
-  Destroy();  // The EGL surface must be destroyed before SurfaceOzone.
   surface_factory_->UnregisterSurface(window_->widget());
 }
 
@@ -266,6 +237,10 @@ void GbmSurfaceless::OnPresentation(const gfx::PresentationFeedback& feedback) {
   }
 
   SubmitFrame();
+}
+
+EGLDisplay GbmSurfaceless::GetEGLDisplay() {
+  return display_->GetDisplay();
 }
 
 }  // namespace ui

@@ -57,8 +57,6 @@ class AuthStatusConsumer;
 class OnboardingUserActivityCounter;
 class StubAuthenticatorBuilder;
 class TokenHandleFetcher;
-class EasyUnlockKeyManager;
-class EasyUnlockNotificationController;
 class EolNotification;
 class InputEventsBlocker;
 class U2FNotification;
@@ -279,10 +277,6 @@ class UserSessionManager
   // Check to see if given profile should show EndOfLife Notification
   // and show the message accordingly.
   void CheckEolInfo(Profile* profile);
-
-  // TODO(b/227674947) : check if it can be removed.
-  //  Note this could return NULL if not enabled.
-  EasyUnlockKeyManager* GetEasyUnlockKeyManager();
 
   // Removes a profile from the per-user input methods states map.
   void RemoveProfileForTesting(Profile* profile);
@@ -596,10 +590,6 @@ class UserSessionManager
   base::flat_map<CommandLineSwitchesType, std::vector<std::string>>
       command_line_switches_;
 
-  // TODO(b/227674947) : check if it can be removed.
-  //  Manages Easy unlock cryptohome keys.
-  std::unique_ptr<EasyUnlockKeyManager> easy_unlock_key_manager_;
-
   // Whether should fetch token handles, tests may override this value.
   bool should_obtain_handles_;
 
@@ -634,11 +624,6 @@ class UserSessionManager
 
   std::unique_ptr<HelpAppNotificationController>
       help_app_notification_controller_;
-
-  // TODO(b/227674947): Eventually delete this after Sign in with Smart Lock has
-  // been removed and enough time has elapsed for users to be notified.
-  std::unique_ptr<EasyUnlockNotificationController>
-      easy_unlock_notification_controller_;
 
   bool token_handle_backfill_tried_for_testing_ = false;
 

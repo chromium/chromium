@@ -15,6 +15,7 @@
 
 namespace enterprise_connectors {
 
+// Profile Prefs
 const char kOnFileAttachedPref[] = "enterprise_connectors.on_file_attached";
 
 const char kOnFileDownloadedPref[] = "enterprise_connectors.on_file_downloaded";
@@ -43,6 +44,10 @@ const char kOnFileTransferScopePref[] =
 const char kOnSecurityEventScopePref[] =
     "enterprise_connectors.scope.on_security_event";
 
+// Local State Prefs
+const char kLatestCrashReportCreationTime[] =
+    "enterprise_connectors.latest_crash_report_creation_time";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(kOnFileAttachedPref);
   registry->RegisterListPref(kOnFileDownloadedPref);
@@ -61,6 +66,12 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 #endif
   registry->RegisterIntegerPref(kOnSecurityEventScopePref, 0);
   RegisterDeviceTrustConnectorProfilePrefs(registry);
+}
+
+void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+#if !BUILDFLAG(IS_FUCHSIA)
+  registry->RegisterInt64Pref(kLatestCrashReportCreationTime, 0);
+#endif
 }
 
 }  // namespace enterprise_connectors

@@ -50,16 +50,10 @@ net::IsolationInfo CreateIsolationInfoForCertFetch(
   if (!outer_request.trusted_params ||
       outer_request.trusted_params->isolation_info.IsEmpty())
     return net::IsolationInfo();
-  if (net::IsolationInfo::IsFrameSiteEnabled()) {
-    return net::IsolationInfo::Create(
-        net::IsolationInfo::RequestType::kOther,
-        *outer_request.trusted_params->isolation_info.top_frame_origin(),
-        *outer_request.trusted_params->isolation_info.frame_origin(),
-        net::SiteForCookies());
-  }
-  return net::IsolationInfo::CreateDoubleKey(
+  return net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kOther,
       *outer_request.trusted_params->isolation_info.top_frame_origin(),
+      *outer_request.trusted_params->isolation_info.frame_origin(),
       net::SiteForCookies());
 }
 

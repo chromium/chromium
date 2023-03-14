@@ -25,7 +25,7 @@ struct ShelfItem;
 class DotIndicator;
 class ShelfView;
 
-// Button used for app shortcuts on the shelf..
+// Button used for app shortcuts on the shelf.
 class ASH_EXPORT ShelfAppButton : public ShelfButton,
                                   public views::InkDropObserver,
                                   public ui::ImplicitAnimationObserver {

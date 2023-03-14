@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Zoom ud</translation>
 <translation id="1510341833810331442">Websites har ikke tilladelse til at gemme data på din enhed</translation>
 <translation id="1547123415014299762">Tredjepartscookies er tilladt</translation>
+<translation id="1593426485665524382">Nye handlinger er tilgængelige øverst på skærmen</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Relaterede websites</translation>
 <translation id="1644574205037202324">Historik</translation>
@@ -59,6 +60,7 @@
 <translation id="216989819110952009">Selv med øjnene beskyttet bag de grønne briller blev Dorothy og hendes venner først forblændet af den</translation>
 <translation id="2176704795966505152">Vis zoomindstilling i hovedmenuen</translation>
 <translation id="2182457891543959921">Spørg, inden websites kan oprette et 3D-kort over dine omgivelser eller registrere kamerapositionen (anbefales)</translation>
+<translation id="2194856509914051091">Vigtige oplysninger</translation>
 <translation id="2212565012507486665">Tillad cookies</translation>
 <translation id="2228071138934252756">Aktivér også dit kamera i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> adgang til kameraet.</translation>
 <translation id="2235344399760031203">Tredjepartscookies er blokeret</translation>
@@ -98,7 +100,6 @@
 <translation id="2713106313042589954">Slå kamera fra</translation>
 <translation id="2717722538473713889">Mailadresser</translation>
 <translation id="2750481671343847896">Websites kan vise loginmeddelelser fra identitetstjenester.</translation>
-<translation id="2779966372261694284">Du bliver logget ud af dette website</translation>
 <translation id="2822354292072154809">Er du sikker på, at du vil nulstille alle websitetilladelser for <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Website</translation>
 <translation id="2874939134665556319">Forrige nummer</translation>
@@ -144,6 +145,9 @@
 <translation id="3600792891314830896">Lyden slås fra for websites, der afspiller lyd</translation>
 <translation id="3602290021589620013">Forhåndsvisning</translation>
 <translation id="3628308229821498208">Foreslåede søgninger</translation>
+<translation id="3636279694100170143">De websites, du besøger, kan tjekke, at du er en reel bruger og ikke en bot</translation>
+<translation id="3649190289964910441">Når du besøger et website, kan det gemme oplysninger i Chrome, som tjekker, at du er en reel bruger. Når du fortsætter med din browseraktivitet, kan websites tjekke oplysningerne via Chrome og verificere (baseret på det første website), at du sandsynligvis er reel bruger.</translation>
+<translation id="3721953990244350188">Afvis, og vis næste tilgængelige handling</translation>
 <translation id="3744111561329211289">Synkronisering i baggrunden</translation>
 <translation id="3763247130972274048">Tryk to gange i videoens venstre eller højre side for at springe ti sekunder frem eller tilbage</translation>
 <translation id="3794286421982011626">Et website, du besøger, kan gemme oplysninger om, hvad du foretager dig, så det kan fungere optimalt – f.eks. så du kan forblive logget ind på et website eller gemme varer i din indkøbskurv. Websites gemmer ofte disse oplysninger midlertidigt på din enhed.</translation>
@@ -191,11 +195,11 @@
 <translation id="4534723447064627427">Aktivér også din mikrofon i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> adgang til mikrofonen.</translation>
 <translation id="4566417217121906555">Slå mikrofon fra</translation>
 <translation id="4570913071927164677">Info</translation>
-<translation id="4575264539271661854">Gør det nemmere at zoome ind på tekst og billeder på et website, du besøger</translation>
 <translation id="4598549027014564149">Når du er i inkognitotilstand, kan websites ikke bruge dine cookies til at se din browseraktivitet på websites, heller ikke på relaterede websites. Din browseraktivitet bruges f.eks. ikke til at tilpasse annoncer. Funktionerne på visse websites virker muligvis ikke.</translation>
 <translation id="4645575059429386691">Administreret af en af dine forældre</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
 <translation id="4751476147751820511">Bevægelses- eller lyssensorer</translation>
+<translation id="477781522763920796">Denne indstilling fungerer uden at identificere dig eller give websites tilladelse til at se din browserhistorik.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4811450222531576619">Få flere oplysninger om sidens kilde og emne</translation>
 <translation id="4836046166855586901">Spørg, når et website vil vide, hvornår du aktivt bruger denne enhed</translation>
@@ -257,6 +261,7 @@
 <translation id="5740126560802162366">Websites kan gemme data på din enhed</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> blev blokeret</translation>
 <translation id="5804241973901381774">Tilladelser</translation>
+<translation id="5810805850857689118">Denne handling rydder alle data og cookies for <ph name="ORIGIN" /> og alle websites i denne gruppe</translation>
 <translation id="5860033963881614850">Fra</translation>
 <translation id="5876056640971328065">Sæt video på pause</translation>
 <translation id="5884085660368669834">Websitepræference</translation>
@@ -273,6 +278,7 @@
 <translation id="6040143037577758943">Luk</translation>
 <translation id="6042308850641462728">Mere</translation>
 <translation id="6064125863973209585">Gennemførte downloads</translation>
+<translation id="6071501408666570960">Du bliver muligvis logget ud af dette website</translation>
 <translation id="6165508094623778733">Flere oplysninger</translation>
 <translation id="6177111841848151710">Blokeret for den nuværende søgemaskine</translation>
 <translation id="6177128806592000436">Din forbindelse til dette website er ikke sikker.</translation>
@@ -323,6 +329,7 @@
 <translation id="7016516562562142042">Tilladt for den nuværende søgemaskine</translation>
 <translation id="702275896380648118">Dette website foretager en vurdering af, hvad du kan lide, og foreslår derefter annoncer til andre websites. Dette website indhenter også dine annonceemner fra Chrome med henblik på at vise dig mere relevante annoncer.</translation>
 <translation id="702463548815491781">Anbefales, når TalkBack eller Kontaktadgang er aktiveret</translation>
+<translation id="7050519587566342213">Din browseroplevelse bliver mere stabil, da der er større sandsynlighed for, at websites stoler på dig.</translation>
 <translation id="7053983685419859001">Bloker</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 er valgt}one{# er valgt}other{# er valgt}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> er markeret. De tilgængelige valgmuligheder er øverst på skærmen</translation>
@@ -347,6 +354,7 @@
 <translation id="757524316907819857">Bloker afspilning af beskyttet indhold på websites</translation>
 <translation id="7577900504646297215">Administrer interesser</translation>
 <translation id="7594634374516752650">Forbundet til en Bluetooth-enhed</translation>
+<translation id="7634280112532283638">Reducering af spam og svindel</translation>
 <translation id="7641339528570811325">Ryd browserdata…</translation>
 <translation id="7649070708921625228">Hjælp</translation>
 <translation id="7658239707568436148">Annuller</translation>
@@ -407,6 +415,7 @@
 <translation id="8514955299594277296">Tillad ikke, at websites gemmer data på din enhed (anbefales ikke)</translation>
 <translation id="851751545965956758">Bloker websites fra at oprette forbindelse til enheder</translation>
 <translation id="8525306231823319788">Fuld skærm</translation>
+<translation id="8528440122773422556">Denne handling rydder alle data og cookies, som er gemt af alle websites i gruppen <ph name="ORIGIN" /> eller den tilhørende app på din startskærm</translation>
 <translation id="8541410041357371550">Dette website henter dine annonceemner fra Chrome for at vise dig mere relevante annoncer</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Cookies er tilladt for <ph name="FPS_MEMBERS_COUNT" /> website tilhørende <ph name="FPS_OWNER" />}one{Cookies er tilladt for <ph name="FPS_MEMBERS_COUNT" /> website tilhørende <ph name="FPS_OWNER" />}other{Cookies er tilladt for <ph name="FPS_MEMBERS_COUNT" /> websites tilhørende <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Tilladt (anbefales)</translation>
@@ -421,6 +430,7 @@
 <translation id="8737217482364735741">Dette rydder alle data og cookies, der er gemt af <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Vælg et billede</translation>
 <translation id="8801436777607969138">Bloker JavaScript for et bestemt website.</translation>
+<translation id="8803526663383843427">Når funktionen er aktiveret</translation>
 <translation id="8816026460808729765">Bloker adgang til sensorer på websites</translation>
 <translation id="8823559166155093873">Bloker cookies</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -434,6 +444,7 @@
 <translation id="8986362086234534611">Glem</translation>
 <translation id="8990043154272859344">Du bliver logget ud af alle websites</translation>
 <translation id="9019902583201351841">Administreret af dine forældre</translation>
+<translation id="9039697262778250930">Du bliver muligvis logget ud af disse websites</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Dette website er i en gruppe, der kan se din aktivitet. Gruppen er defineret af <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Vil du slette cookies?</translation>

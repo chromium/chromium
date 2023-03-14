@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/passwords/bubble_controllers/save_update_bubble_controller.h"
 
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
@@ -15,6 +17,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
+#include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
@@ -24,6 +27,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/reauth_purpose.h"
 #include "components/password_manager/core/browser/smart_bubble_stats_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -33,6 +37,12 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/password_manager/password_manager_util_win.h"
+#elif BUILDFLAG(IS_MAC)
+#include "chrome/browser/password_manager/password_manager_util_mac.h"
+#endif
 
 namespace {
 
@@ -82,11 +92,9 @@ std::vector<password_manager::PasswordForm> DeepCopyForms(
     const std::vector<std::unique_ptr<password_manager::PasswordForm>>& forms) {
   std::vector<password_manager::PasswordForm> result;
   result.reserve(forms.size());
-  std::transform(
-      forms.begin(), forms.end(), std::back_inserter(result),
-      [](const std::unique_ptr<password_manager::PasswordForm>& form) {
-        return *form;
-      });
+  base::ranges::transform(
+      forms, std::back_inserter(result),
+      &std::unique_ptr<password_manager::PasswordForm>::operator*);
   return result;
 }
 
@@ -131,11 +139,7 @@ SaveUpdateBubbleController::SaveUpdateBubbleController(
       interaction_stats_.dismissal_count = stats->dismissal_count;
     }
   }
-  if (are_passwords_revealed_when_bubble_is_opened_) {
-    delegate_->OnPasswordsRevealed();
-  }
   // The condition for the password reauth:
-  // If the bubble opened after reauth -> no more reauth necessary.
   // If the bubble opened after successful submission -> no reauth because it's
   // a temporary state and we should not complicate that UX flow.
   // If a password was autofilled -> require reauth to view it.
@@ -143,7 +147,6 @@ SaveUpdateBubbleController::SaveUpdateBubbleController(
   // The manual fallback is a temporary state and it's better for the sake of
   // convenience for the user not to break the UX with the reauth prompt.
   password_revealing_requires_reauth_ =
-      !are_passwords_revealed_when_bubble_is_opened_ &&
       display_reason ==
           PasswordBubbleControllerBase::DisplayReason::kUserAction &&
       (pending_password_.form_has_autofilled_value ||
@@ -248,12 +251,31 @@ bool SaveUpdateBubbleController::
   return is_update_in_account_store;
 }
 
-bool SaveUpdateBubbleController::RevealPasswords() {
-  bool reveal_immediately = !password_revealing_requires_reauth_ ||
-                            (delegate_ && delegate_->AuthenticateUser());
-  if (reveal_immediately)
+void SaveUpdateBubbleController::ShouldRevealPasswords(
+    PasswordsModelDelegate::AvailabilityCallback callback) {
+  // Password can be revealed immediately.
+  if (!delegate_ || !password_revealing_requires_reauth_) {
     delegate_->OnPasswordsRevealed();
-  return reveal_immediately;
+    std::move(callback).Run(true);
+    return;
+  }
+
+  std::u16string message;
+#if BUILDFLAG(IS_MAC)
+  message = password_manager_util_mac::GetMessageForLoginPrompt(
+      password_manager::ReauthPurpose::VIEW_PASSWORD);
+#elif BUILDFLAG(IS_WIN)
+  message = password_manager_util_win::GetMessageForLoginPrompt(
+      password_manager::ReauthPurpose::VIEW_PASSWORD);
+#endif
+  // Bind OnUserAuthenticationCompleted() using a weak_ptr such that if the
+  // bubble is closed (and controller is destructed) while the reauth flow is
+  // running, no callback will be invoked upon the conclusion of the
+  // authentication flow.
+  delegate_->AuthenticateUserWithMessage(
+      message,
+      base::BindOnce(&SaveUpdateBubbleController::OnUserAuthenticationCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 bool SaveUpdateBubbleController::ShouldShowPasswordStorePicker() const {
@@ -403,4 +425,13 @@ void SaveUpdateBubbleController::ReportInteractions() {
   // Record UKM statistics on dismissal reason.
   if (metrics_recorder_)
     metrics_recorder_->RecordUIDismissalReason(dismissal_reason_);
+}
+
+void SaveUpdateBubbleController::OnUserAuthenticationCompleted(
+    base::OnceCallback<void(bool)> completion,
+    bool authentication_result) {
+  if (authentication_result) {
+    delegate_->OnPasswordsRevealed();
+  }
+  std::move(completion).Run(authentication_result);
 }

@@ -43,8 +43,7 @@ export class ChromeVoxRangeObserver {
 export class ChromeVoxRange {
   /** @private */
   constructor() {
-    // Temporarily public, as part of the gradual migration.
-    /** @public {?CursorRange} */
+    /** @private {?CursorRange} */
     this.current_ = null;
     /** @private {?CursorRange} */
     this.previous_ = null;
@@ -80,8 +79,10 @@ export class ChromeVoxRange {
 
   /** @return {?CursorRange} */
   static get current() {
-    // TODO(anastasi): Move ownership of currentRange to ChromeVoxRange.
-    return ChromeVoxState.instance.currentRange;
+    if (ChromeVoxRange.instance.current_?.isValid()) {
+      return ChromeVoxRange.instance.current_;
+    }
+    return null;
   }
 
   /** @return {?CursorRange} */
@@ -89,41 +90,42 @@ export class ChromeVoxRange {
     return ChromeVoxRange.instance.previous_;
   }
 
-  /** @param {?CursorRange} oldRange */
-  static set previous(oldRange) {
-    ChromeVoxRange.instance.previous_ = oldRange;
-  }
-
   /**
    * @param {?CursorRange} newRange The new range.
    * @param {boolean=} opt_fromEditing
    */
   static set(newRange, opt_fromEditing) {
+    ChromeVoxRange.instance.set_(...arguments);
+  }
+
+  /**
+   * @param {?CursorRange} newRange
+   * @param {boolean=} opt_fromEditing
+   * @private
+   */
+  set_(newRange, opt_fromEditing) {
     // Clear anything that was frozen on the braille display whenever
     // the user navigates.
     ChromeVox.braille.thaw();
 
     // There's nothing to be updated in this case.
-    if ((!newRange &&
-         !ChromeVoxState.instance.getCurrentRangeWithoutRecovery()) ||
-        (newRange && !newRange.isValid())) {
+    if ((!newRange && !this.current_) || (newRange && !newRange.isValid())) {
       FocusBounds.set([]);
       return;
     }
 
-    ChromeVoxState.instance.setCurrentRange(newRange);
+    this.previous_ = this.current_;
+    this.current_ = newRange;
 
     ChromeVoxState.ready().then(
         ChromeVoxRange.onCurrentRangeChanged(newRange, opt_fromEditing));
 
-    const currentRange =
-        ChromeVoxState.instance.getCurrentRangeWithoutRecovery();
-    if (!currentRange) {
+    if (!this.current_) {
       FocusBounds.set([]);
       return;
     }
 
-    const start = currentRange.start.node;
+    const start = this.current_.start.node;
     start.makeVisible();
     start.setAccessibilityFocus();
 

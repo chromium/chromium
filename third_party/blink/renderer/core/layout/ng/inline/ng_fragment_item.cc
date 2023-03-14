@@ -752,13 +752,13 @@ String NGFragmentItem::ToString() const {
   // For ease of rebasing, we use same |DebugName()| as |NGPaintFrgment|.
   if (Type() == NGFragmentItem::kBox) {
     StringBuilder name;
-    name.Append("NGPhysicalBoxFragment ");
+    name.Append("NGFragmentItem Box ");
     name.Append(layout_object_->DebugName());
     return name.ToString();
   }
   if (Type() == NGFragmentItem::kText) {
     StringBuilder name;
-    name.Append("NGPhysicalTextFragment '");
+    name.Append("NGFragmentItem Text ");
     const NGFragmentItems* fragment_items = nullptr;
     if (const LayoutBlockFlow* block_flow =
             layout_object_->FragmentItemsContainer()) {
@@ -771,14 +771,13 @@ String NGFragmentItem::ToString() const {
       }
     }
     if (fragment_items)
-      name.Append(Text(*fragment_items));
+      name.Append(Text(*fragment_items).ToString().EncodeForDebugging());
     else
-      name.Append("(container not found)");
-    name.Append('\'');
+      name.Append("\"(container not found)\"");
     return name.ToString();
   }
   if (Type() == NGFragmentItem::kLine)
-    return "NGPhysicalLineBoxFragment";
+    return "NGFragmentItem Line";
   return "NGFragmentItem";
 }
 

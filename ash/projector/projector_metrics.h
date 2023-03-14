@@ -133,6 +133,21 @@ enum class OnDeviceToServerSpeechRecognitionFallbackReason : int {
   kMaxValue = kEnforcedByFlag,
 };
 
+// Enum class to record metric for speech recognition status.
+// This enum should never be reused as it is being logged into UMA.
+enum class SpeechRecognitionEndState {
+  // Speech recognition successfully stopped.
+  kSpeechRecognitionSuccessfullyStopped = 0,
+  // Speech recognition encountered error while recording was taking place.
+  kSpeechRecognitionEnounteredError = 1,
+  // Speech recognition encountered error while attempting to stop.
+  kSpeechRecognitionEncounteredErrorWhileStopping = 2,
+  // Speech recognition has been forced stopped.
+  kSpeechRecognitionForcedStopped = 3,
+
+  kMaxValue = kSpeechRecognitionForcedStopped,
+};
+
 // Records the buttons the user presses on the Projector toolbar.
 void RecordToolbarMetrics(ProjectorToolbar button);
 
@@ -162,6 +177,9 @@ void RecordPolicyChangeHandlingError(ProjectorPolicyChangeHandlingError error);
 
 void RecordOnDeviceToServerSpeechRecognitionFallbackReason(
     OnDeviceToServerSpeechRecognitionFallbackReason reason);
+
+void RecordSpeechRecognitionEndState(SpeechRecognitionEndState state,
+                                     bool is_on_device);
 
 }  // namespace ash
 

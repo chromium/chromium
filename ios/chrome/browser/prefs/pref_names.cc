@@ -62,6 +62,12 @@ const char kFeaturePushNotificationPermissions[] =
 // Prefs for persisting HttpServerProperties.
 const char kHttpServerProperties[] = "net.http_server_properties";
 
+// User preferred time for inactivity delay:
+// * if == -1: Disabled by user.
+// * if >= 1: Inactivity days threshold.
+// * Otherwise: Default value driven by Finch config.
+const char kInactiveTabsTimeThreshold[] = "ios.inactive_tabs.time_threshold";
+
 // Integer that specifies whether Incognito mode is:
 // 0 - Enabled. Default behaviour. Default mode is available on demand.
 // 1 - Disabled. User cannot browse pages in Incognito mode.
@@ -72,6 +78,11 @@ const char kIncognitoModeAvailability[] = "incognito.mode_availability";
 // is enabled.
 const char kIncognitoInterstitialEnabled[] =
     "ios.settings.incognito_interstitial_enabled";
+
+// Integer that maps to IOSCredentialProviderPromoSource, the enum type of the
+// event that leads to the credential provider promo's display.
+const char kIosCredentialProviderPromoSource[] =
+    "ios.credential_provider_promo.source";
 
 // Caches the folder id of user's position in the bookmark hierarchy navigator.
 const char kIosBookmarkCachedFolderId[] = "ios.bookmark.cached_folder_id";
@@ -91,10 +102,20 @@ const char kIosBookmarkPromoAlreadySeen[] = "ios.bookmark.promo_already_seen";
 const char kIosBookmarkSigninPromoDisplayedCount[] =
     "ios.bookmark.signin_promo_displayed_count";
 
+// Boolean that is true when the CredentialProviderPromoEnabled policy is
+// enabled.
+const char kIosCredentialProviderPromoPolicyEnabled[] =
+    "ios.credential_provider_promo_policy";
+
 // Boolean to represent if the Credential Provider Promo should stop displaying
 // the promo for the user.
 const char kIosCredentialProviderPromoStopPromo[] =
     "ios.credential_provider_promo.stop_promo";
+
+// Boolean to represent if the Credential Provider Promo has registered with
+// Promo Manager.
+const char kIosCredentialProviderPromoHasRegisteredWithPromoManager[] =
+    "ios.credential_provider_promo.has_registered_with_promo_manager";
 
 // The time when the DiscoverFeed was last refreshed while the feed was visible
 // to the user.
@@ -252,5 +273,9 @@ const char kMixedContentAutoupgradeEnabled[] =
 // should show inside form input accessories.
 const char kAutofillBrandingIconAnimationRemainingCountPrefName[] =
     "ios.autofill.branding.animation.remaining_count";
+
+// A boolean used to determine if the Price Tracking UI has been shown.
+const char kPriceNotificationsHasBeenShown[] =
+    "ios.price_notifications.has_been_shown";
 
 }  // namespace prefs

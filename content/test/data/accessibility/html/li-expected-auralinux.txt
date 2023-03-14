@@ -2,10 +2,10 @@
 ++[list] display:block setsize:3
 ++++[list item] name='Custom name' display:list-item posinset:1 setsize:3
 ++++++[static] name='%E2%80%A2 ' display:inline-block
-++++++[static] name='Item 1' display:list-item
+++++++[static] name='Item 1'
 ++++[list item] display:list-item posinset:2 setsize:3
 ++++++[static] name='%E2%80%A2 ' display:inline-block
-++++++[static] name='Item 2' display:list-item
+++++++[static] name='Item 2'
 ++++[list item] display:list-item posinset:3 setsize:3
 ++++++[static] name='%E2%80%A2 ' display:inline-block
-++++++[static] name='Item 3' display:list-item
+++++++[static] name='Item 3'

@@ -82,7 +82,7 @@ void MediaDevicesDispatcherHost::Create(
     MediaStreamManager* media_stream_manager,
     mojo::PendingReceiver<blink::mojom::MediaDevicesDispatcherHost> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  mojo::MakeSelfOwnedReceiver(
+  media_stream_manager->media_devices_manager()->RegisterDispatcherHost(
       std::make_unique<MediaDevicesDispatcherHost>(
           render_process_id, render_frame_id, media_stream_manager),
       std::move(receiver));
@@ -120,8 +120,6 @@ MediaDevicesDispatcherHost::MediaDevicesDispatcherHost(
 
 MediaDevicesDispatcherHost::~MediaDevicesDispatcherHost() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  // It may happen that media_devices_manager() is destroyed before MDDH on some
-  // shutdown scenarios.
   if (!media_stream_manager_->media_devices_manager())
     return;
 

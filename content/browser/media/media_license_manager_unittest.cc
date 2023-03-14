@@ -76,7 +76,7 @@ class MediaLicenseManagerTest : public testing::Test {
         storage::BucketInitParams::ForDefaultBucket(storage_key),
         future.GetCallback());
     auto bucket = future.Take();
-    EXPECT_TRUE(bucket.ok());
+    EXPECT_TRUE(bucket.has_value());
     return bucket->ToBucketLocator();
   }
 
@@ -123,6 +123,20 @@ class MediaLicenseManagerTest : public testing::Test {
               expected_data);
   }
 
+  base::FilePath FindMediaLicenseDatabase() {
+    base::FileEnumerator file_enumerator(profile_path_.GetPath(),
+                                         /*recursive=*/true,
+                                         base::FileEnumerator::FILES);
+
+    base::FilePath file;
+    while (!(file = file_enumerator.Next()).empty()) {
+      if (file.BaseName().value() == storage::kMediaLicenseDatabaseFileName) {
+        return file;
+      }
+    }
+    return base::FilePath();
+  }
+
  protected:
   const bool in_memory_;
 
@@ -153,19 +167,8 @@ TEST_F(MediaLicenseManagerTest, DeleteBucketData) {
   // Write some data.
   Write(cdm_file, kTestData);
 
-  // Confirm that the database file exists.
-  base::FileEnumerator file_enumerator(profile_path_.GetPath(),
-                                       /*recursive=*/true,
-                                       base::FileEnumerator::FILES);
-  // Find the media license database.
-  base::FilePath file;
-  base::FilePath database_file;
-  while (!(file = file_enumerator.Next()).empty()) {
-    if (file.BaseName().value() == storage::kMediaLicenseDatabaseFileName) {
-      database_file = file;
-      break;
-    }
-  }
+  auto database_file = FindMediaLicenseDatabase();
+
   EXPECT_FALSE(database_file.empty());
 
   // Delete data for this storage key.
@@ -197,19 +200,7 @@ TEST_F(MediaLicenseManagerTest, DeleteBucketDataClosedStorage) {
 
   Write(cdm_file, kTestData);
 
-  // Confirm that the database file exists.
-  base::FileEnumerator file_enumerator(profile_path_.GetPath(),
-                                       /*recursive=*/true,
-                                       base::FileEnumerator::FILES);
-  // Find the media license database.
-  base::FilePath file;
-  base::FilePath database_file;
-  while (!(file = file_enumerator.Next()).empty()) {
-    if (file.BaseName().value() == storage::kMediaLicenseDatabaseFileName) {
-      database_file = file;
-      break;
-    }
-  }
+  auto database_file = FindMediaLicenseDatabase();
   EXPECT_FALSE(database_file.empty());
 
   // We should still be able to wipe data to a closed storage.
@@ -244,19 +235,7 @@ TEST_F(MediaLicenseManagerTest, DeleteBucketDataOpenConnection) {
 
   Write(cdm_file, kTestData);
 
-  // Confirm that the database file exists.
-  base::FileEnumerator file_enumerator(profile_path_.GetPath(),
-                                       /*recursive=*/true,
-                                       base::FileEnumerator::FILES);
-  // Find the media license database.
-  base::FilePath file;
-  base::FilePath database_file;
-  while (!(file = file_enumerator.Next()).empty()) {
-    if (file.BaseName().value() == storage::kMediaLicenseDatabaseFileName) {
-      database_file = file;
-      break;
-    }
-  }
+  auto database_file = FindMediaLicenseDatabase();
   EXPECT_FALSE(database_file.empty());
 
   // Delete data for this storage key.
@@ -336,6 +315,94 @@ TEST_F(MediaLicenseManagerIncognitoTest, DeleteBucketData) {
 
   // Confirm that the file is now empty.
   ExpectFileContents(cdm_file, "");
+}
+
+TEST_F(MediaLicenseManagerIncognitoTest, DeleteBucketDataClosedStorage) {
+  const std::string kTestData("Test Data");
+  mojo::Remote<media::mojom::CdmStorage> remote;
+  blink::StorageKey storage_key =
+      blink::StorageKey::CreateFromStringForTesting(kExampleOrigin);
+  storage::BucketLocator bucket = GetOrCreateBucket(storage_key);
+  MediaLicenseManager::BindingContext binding_context(storage_key, kCdmType);
+
+  // Open CDM storage for a storage key.
+  manager_->OpenCdmStorage(binding_context,
+                           remote.BindNewPipeAndPassReceiver());
+  auto cdm_file = OpenCdmFile(remote, "test_file");
+
+  Write(cdm_file, kTestData);
+
+  // There should be no db_file since its in memory.
+  EXPECT_TRUE(FindMediaLicenseDatabase().empty());
+
+  // We should still be able to wipe data to a closed storage.
+  cdm_file.reset();
+  remote.reset();
+
+  // Delete data for this storage key.
+  base::test::TestFuture<blink::mojom::QuotaStatusCode> delete_future;
+  manager_->DeleteBucketData(bucket, delete_future.GetCallback());
+  EXPECT_EQ(delete_future.Get(), blink::mojom::QuotaStatusCode::kOk);
+}
+
+TEST_F(MediaLicenseManagerIncognitoTest, DeleteBucketDataOpenConnection) {
+  const std::string kTestData("Test Data");
+  mojo::Remote<media::mojom::CdmStorage> remote;
+  blink::StorageKey storage_key =
+      blink::StorageKey::CreateFromStringForTesting(kExampleOrigin);
+  storage::BucketLocator bucket = GetOrCreateBucket(storage_key);
+  MediaLicenseManager::BindingContext binding_context(storage_key, kCdmType);
+
+  // Open CDM storage for a storage key.
+  manager_->OpenCdmStorage(binding_context,
+                           remote.BindNewPipeAndPassReceiver());
+  auto cdm_file = OpenCdmFile(remote, "test_file");
+
+  Write(cdm_file, kTestData);
+
+  ExpectFileContents(cdm_file, kTestData);
+
+  // There should be no db file since its in memory.
+  EXPECT_TRUE(FindMediaLicenseDatabase().empty());
+
+  // Delete data for this storage key.
+  base::test::TestFuture<blink::mojom::QuotaStatusCode> delete_future;
+  manager_->DeleteBucketData(bucket, delete_future.GetCallback());
+  EXPECT_EQ(delete_future.Get(), blink::mojom::QuotaStatusCode::kOk);
+
+  // Confirm that the file is now empty.
+  ExpectFileContents(cdm_file, "");
+
+  // Write some more data. This should succeed.
+  Write(cdm_file, kTestData);
+
+  // Check that no file was created.
+  EXPECT_TRUE(FindMediaLicenseDatabase().empty());
+}
+
+TEST_F(MediaLicenseManagerIncognitoTest, BucketCreationFailed) {
+  const std::string kTestData("Test Data");
+  mojo::Remote<media::mojom::CdmStorage> remote;
+  blink::StorageKey storage_key =
+      blink::StorageKey::CreateFromStringForTesting(kExampleOrigin);
+  storage::BucketLocator bucket = GetOrCreateBucket(storage_key);
+  MediaLicenseManager::BindingContext binding_context(storage_key, kCdmType);
+
+  // Disable the quota database, causing GetOrCreateBucket() to fail.
+  quota_manager_->SetDisableDatabase(/*disable=*/true);
+
+  // Open CDM storage for a storage key.
+  manager_->OpenCdmStorage(binding_context,
+                           remote.BindNewPipeAndPassReceiver());
+  // Opening a CDM file should fail.
+  base::test::TestFuture<media::mojom::CdmStorage::Status,
+                         mojo::PendingAssociatedRemote<media::mojom::CdmFile>>
+      open_future;
+  remote->Open("test_file", open_future.GetCallback());
+
+  auto result = open_future.Take();
+  EXPECT_EQ(std::get<0>(result), media::mojom::CdmStorage::Status::kFailure);
+  EXPECT_FALSE(std::get<1>(result).is_valid());
 }
 
 }  // namespace content

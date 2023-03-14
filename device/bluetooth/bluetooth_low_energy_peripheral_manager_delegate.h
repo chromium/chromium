@@ -14,7 +14,7 @@
 #endif
 
 namespace device {
-class BluetoothAdapterMac;
+class BluetoothLowEnergyAdapterApple;
 class BluetoothLowEnergyAdvertisementManagerMac;
 }  // namespace device
 
@@ -22,9 +22,10 @@ class BluetoothLowEnergyAdvertisementManagerMac;
     : NSObject<CBPeripheralManagerDelegate>
 
 - (instancetype)
-initWithAdvertisementManager:
-    (device::BluetoothLowEnergyAdvertisementManagerMac*)advertisementManager
-                  andAdapter:(device::BluetoothAdapterMac*)adapter;
+    initWithAdvertisementManager:
+        (device::BluetoothLowEnergyAdvertisementManagerMac*)advertisementManager
+                      andAdapter:
+                          (device::BluetoothLowEnergyAdapterApple*)adapter;
 
 @end
 

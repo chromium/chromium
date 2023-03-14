@@ -74,8 +74,8 @@ export class VideoSaver {
   /**
    * Writes video data to result video.
    */
-  write(blob: Blob): void {
-    this.processor.write(blob);
+  async write(blob: Blob): Promise<void> {
+    await this.processor.write(blob);
   }
 
   /**
@@ -97,10 +97,13 @@ export class VideoSaver {
   }
 
   /**
-   * Creates video saver for the given file.
+   * Creates video saver which saves video into a temporary file.
+   * TODO(b/184583382): Saves to the target file directly once the File System
+   * Access API supports cleaning temporary file when leaving the page without
+   * closing the file stream.
    */
-  static async createForFile(file: FileAccessEntry, videoRotation: number):
-      Promise<VideoSaver> {
+  static async create(videoRotation: number): Promise<VideoSaver> {
+    const file = await createPrivateTempVideoFile();
     const writer = await file.getWriter();
     const processor = await createVideoProcessor(writer, videoRotation);
     return new VideoSaver(file, processor);
@@ -128,8 +131,8 @@ export class GifSaver {
       private readonly blobs: Blob[],
       private readonly processor: Comlink.Remote<VideoProcessor>) {}
 
-  write(frame: Uint8ClampedArray): void {
-    this.processor.write(new Blob([frame]));
+  async write(frame: Uint8ClampedArray): Promise<void> {
+    await this.processor.write(new Blob([frame]));
   }
 
   /**
@@ -146,7 +149,7 @@ export class GifSaver {
   static async create(resolution: Resolution): Promise<GifSaver> {
     const blobs: Blob[] = [];
     const writer = new AsyncWriter({
-      async write(blob) {
+      write(blob) {
         blobs.push(blob);
       },
       seek: null,

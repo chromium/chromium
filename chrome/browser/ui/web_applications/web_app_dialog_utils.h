@@ -26,9 +26,6 @@ namespace web_app {
 
 enum class WebAppInstallFlow;
 
-// TODO(loyso): Rework these functions (API). Move all of them into
-// WebAppDialogManager.
-
 // Returns whether a WebApp installation is allowed for the current page.
 bool CanCreateWebApp(const Browser* browser);
 

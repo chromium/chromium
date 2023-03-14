@@ -76,28 +76,17 @@ message FileHandling {
   repeated FileHandler file_handlers = 1;
 }
 
-message UrlHandling {
-  message UrlHandler {
-    optional string origin = 1;
-    optional bool has_origin_wildcard = 2;
-    repeated string paths = 3;
-    repeated string exclude_paths = 4;
-  }
-  repeated UrlHandler url_handlers = 1;
-}
-
 // Represents all the common OS Integration states to be stored in the web_app
 // DB that matches the values in the OS.
 message WebAppOsIntegrationState {
-  reserved 2;
+  reserved 2, 8;
   optional ShortcutDescription shortcut = 1;
   optional ProtocolsHandled protocols_handled = 3;
   optional RunOnOsLogin run_on_os_login = 4;
   optional OsUninstallRegistration uninstall_registration = 5;
   optional ShortcutMenus shortcut_menus = 6;
   optional FileHandling file_handling = 7;
-  optional UrlHandling url_handling = 8;
   // Add data states for other OS integration hooks here.
   // New fields added to this message must also be added to:
-  // OsStatesDebugValue()
+  // OsStatesDebugValue() and GenerateRandomWebAppOsIntegrationState().
 }

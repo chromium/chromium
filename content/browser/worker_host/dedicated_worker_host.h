@@ -206,8 +206,10 @@ class DedicatedWorkerHost final
   // blink::mojom::BackForwardCacheControllerHost:
   void EvictFromBackForwardCache(
       blink::mojom::RendererEvictionReason reason) override;
+  using BackForwardCacheBlockingDetails =
+      std::vector<blink::mojom::BlockingDetailsPtr>;
   void DidChangeBackForwardCacheDisablingFeatures(
-      uint64_t features_mask) override;
+      BackForwardCacheBlockingDetails details) override;
 
   // BucketContext:
   blink::StorageKey GetBucketStorageKey() override;

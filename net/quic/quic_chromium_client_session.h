@@ -26,6 +26,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_error_details.h"
@@ -64,6 +65,7 @@ namespace net {
 
 class CertVerifyResult;
 class DatagramClientSocket;
+struct HostResolverEndpointResult;
 class NetLog;
 class QuicCryptoClientStreamFactory;
 class QuicServerInfo;
@@ -622,6 +624,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       const base::TickClock* tick_clock,
       base::SequencedTaskRunner* task_runner,
       std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
+      const HostResolverEndpointResult& endpoint_result,
       NetLog* net_log);
 
   QuicChromiumClientSession(const QuicChromiumClientSession&) = delete;
@@ -726,6 +729,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       const quic::CryptoHandshakeMessage& message) override;
   void OnGoAway(const quic::QuicGoAwayFrame& frame) override;
   void OnCanCreateNewOutgoingStream(bool unidirectional) override;
+  quic::QuicSSLConfig GetSSLConfig() const override;
 
   // QuicSpdyClientSessionBase methods:
   void OnConfigNegotiated() override;
@@ -781,7 +785,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
                                 quic::QuicErrorCode quic_error,
                                 quic::ConnectionCloseBehavior behavior);
 
-  base::Value GetInfoAsValue(const std::set<HostPortPair>& aliases);
+  base::Value::Dict GetInfoAsValue(const std::set<HostPortPair>& aliases);
 
   const NetLogWithSource& net_log() const { return net_log_; }
 
@@ -1171,6 +1175,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // Map of origin to Accept-CH header field values received via ALPS.
   base::flat_map<url::SchemeHostPort, std::string>
       accept_ch_entries_received_via_alps_;
+
+  std::vector<uint8_t> ech_config_list_;
 
   base::WeakPtrFactory<QuicChromiumClientSession> weak_factory_{this};
 };

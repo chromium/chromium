@@ -18,6 +18,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
+#include "chrome/browser/ui/webui/ash/parent_access/parent_access_metrics_utils.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui_handler_delegate.h"
 #include "chrome/common/webui_url_constants.h"
@@ -27,6 +28,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::_;
 
@@ -144,11 +146,12 @@ TEST_F(ParentAccessUIHandlerImplTest, GetOAuthTokenError) {
 
   // Expect metric to be recorded.
   histogram_tester.ExpectUniqueSample(
-      ParentAccessUIHandlerImpl::GetParentAccessWidgetErrorHistogramForFlowType(
-          absl::nullopt),
+      parent_access::GetHistogramTitleForFlowType(
+          parent_access::kParentAccessWidgetErrorHistogramBase, absl::nullopt),
       ParentAccessUIHandlerImpl::ParentAccessWidgetError::kOAuthError, 1);
   histogram_tester.ExpectUniqueSample(
-      ParentAccessUIHandlerImpl::GetParentAccessWidgetErrorHistogramForFlowType(
+      parent_access::GetHistogramTitleForFlowType(
+          parent_access::kParentAccessWidgetErrorHistogramBase,
           parent_access_ui::mojom::ParentAccessParams::FlowType::
               kWebsiteAccess),
       ParentAccessUIHandlerImpl::ParentAccessWidgetError::kOAuthError, 1);
@@ -237,11 +240,12 @@ TEST_F(ParentAccessUIHandlerImplTest, OnParentVerifiedAndApproved) {
   // Reset handler to simulate dialog closing.
   parent_access_ui_handler_.reset();
   histogram_tester.ExpectUniqueSample(
-      ParentAccessStateTracker::GetParentAccessResultHistogramForFlowType(
-          absl::nullopt),
+      parent_access::GetHistogramTitleForFlowType(
+          parent_access::kParentAccessFlowResultHistogramBase, absl::nullopt),
       ParentAccessStateTracker::FlowResult::kAccessApproved, 1);
   histogram_tester.ExpectUniqueSample(
-      ParentAccessStateTracker::GetParentAccessResultHistogramForFlowType(
+      parent_access::GetHistogramTitleForFlowType(
+          parent_access::kParentAccessFlowResultHistogramBase,
           parent_access_ui::mojom::ParentAccessParams::FlowType::
               kWebsiteAccess),
       ParentAccessStateTracker::FlowResult::kAccessApproved, 1);
@@ -310,11 +314,12 @@ TEST_F(ParentAccessUIHandlerImplTest, OnParentDeclined) {
   // Reset handler to simulate dialog closing.
   parent_access_ui_handler_.reset();
   histogram_tester.ExpectUniqueSample(
-      ParentAccessStateTracker::GetParentAccessResultHistogramForFlowType(
-          absl::nullopt),
+      parent_access::GetHistogramTitleForFlowType(
+          parent_access::kParentAccessFlowResultHistogramBase, absl::nullopt),
       ParentAccessStateTracker::FlowResult::kAccessDeclined, 1);
   histogram_tester.ExpectUniqueSample(
-      ParentAccessStateTracker::GetParentAccessResultHistogramForFlowType(
+      parent_access::GetHistogramTitleForFlowType(
+          parent_access::kParentAccessFlowResultHistogramBase,
           parent_access_ui::mojom::ParentAccessParams::FlowType::
               kWebsiteAccess),
       ParentAccessStateTracker::FlowResult::kAccessDeclined, 1);
@@ -336,11 +341,12 @@ TEST_F(ParentAccessUIHandlerImplTest, OnCanceled) {
   // Reset handler to simulate dialog closing.
   parent_access_ui_handler_.reset();
   histogram_tester.ExpectUniqueSample(
-      ParentAccessStateTracker::GetParentAccessResultHistogramForFlowType(
-          absl::nullopt),
+      parent_access::GetHistogramTitleForFlowType(
+          parent_access::kParentAccessFlowResultHistogramBase, absl::nullopt),
       ParentAccessStateTracker::FlowResult::kParentAuthentication, 1);
   histogram_tester.ExpectUniqueSample(
-      ParentAccessStateTracker::GetParentAccessResultHistogramForFlowType(
+      parent_access::GetHistogramTitleForFlowType(
+          parent_access::kParentAccessFlowResultHistogramBase,
           parent_access_ui::mojom::ParentAccessParams::FlowType::
               kWebsiteAccess),
       ParentAccessStateTracker::FlowResult::kParentAuthentication, 1);
@@ -362,11 +368,12 @@ TEST_F(ParentAccessUIHandlerImplTest, OnError) {
   // Reset handler to simulate dialog closing.
   parent_access_ui_handler_.reset();
   histogram_tester.ExpectUniqueSample(
-      ParentAccessStateTracker::GetParentAccessResultHistogramForFlowType(
-          absl::nullopt),
+      parent_access::GetHistogramTitleForFlowType(
+          parent_access::kParentAccessFlowResultHistogramBase, absl::nullopt),
       ParentAccessStateTracker::FlowResult::kError, 1);
   histogram_tester.ExpectUniqueSample(
-      ParentAccessStateTracker::GetParentAccessResultHistogramForFlowType(
+      parent_access::GetHistogramTitleForFlowType(
+          parent_access::kParentAccessFlowResultHistogramBase,
           parent_access_ui::mojom::ParentAccessParams::FlowType::
               kWebsiteAccess),
       ParentAccessStateTracker::FlowResult::kError, 1);
@@ -401,11 +408,12 @@ TEST_F(ParentAccessUIHandlerImplTest, ConsentDeclinedParsed) {
 
   // Expect metric to be recorded.
   histogram_tester.ExpectUniqueSample(
-      ParentAccessUIHandlerImpl::GetParentAccessWidgetErrorHistogramForFlowType(
-          absl::nullopt),
+      parent_access::GetHistogramTitleForFlowType(
+          parent_access::kParentAccessWidgetErrorHistogramBase, absl::nullopt),
       ParentAccessUIHandlerImpl::ParentAccessWidgetError::kUnknownCallback, 1);
   histogram_tester.ExpectUniqueSample(
-      ParentAccessUIHandlerImpl::GetParentAccessWidgetErrorHistogramForFlowType(
+      parent_access::GetHistogramTitleForFlowType(
+          parent_access::kParentAccessWidgetErrorHistogramBase,
           parent_access_ui::mojom::ParentAccessParams::FlowType::
               kWebsiteAccess),
       ParentAccessUIHandlerImpl::ParentAccessWidgetError::kUnknownCallback, 1);
@@ -440,11 +448,12 @@ TEST_F(ParentAccessUIHandlerImplTest, OnPageSizeChangedIgnored) {
 
   // Expect metric to be recorded.
   histogram_tester.ExpectUniqueSample(
-      ParentAccessUIHandlerImpl::GetParentAccessWidgetErrorHistogramForFlowType(
-          absl::nullopt),
+      parent_access::GetHistogramTitleForFlowType(
+          parent_access::kParentAccessWidgetErrorHistogramBase, absl::nullopt),
       ParentAccessUIHandlerImpl::ParentAccessWidgetError::kUnknownCallback, 1);
   histogram_tester.ExpectUniqueSample(
-      ParentAccessUIHandlerImpl::GetParentAccessWidgetErrorHistogramForFlowType(
+      parent_access::GetHistogramTitleForFlowType(
+          parent_access::kParentAccessWidgetErrorHistogramBase,
           parent_access_ui::mojom::ParentAccessParams::FlowType::
               kWebsiteAccess),
       ParentAccessUIHandlerImpl::ParentAccessWidgetError::kUnknownCallback, 1);
@@ -480,8 +489,8 @@ TEST_F(ParentAccessUIHandlerImplTest, OnCommunicationEstablishedIgnored) {
 
   // Expect metric to be recorded.
   histogram_tester.ExpectUniqueSample(
-      ParentAccessUIHandlerImpl::GetParentAccessWidgetErrorHistogramForFlowType(
-          absl::nullopt),
+      parent_access::GetHistogramTitleForFlowType(
+          parent_access::kParentAccessWidgetErrorHistogramBase, absl::nullopt),
       ParentAccessUIHandlerImpl::ParentAccessWidgetError::kUnknownCallback, 1);
 }
 
@@ -506,8 +515,8 @@ TEST_F(ParentAccessUIHandlerImplTest, NoDelegateErrorMetricRecorded) {
 
   // Expect metric to be recorded.
   histogram_tester.ExpectUniqueSample(
-      ParentAccessUIHandlerImpl::GetParentAccessWidgetErrorHistogramForFlowType(
-          absl::nullopt),
+      parent_access::GetHistogramTitleForFlowType(
+          parent_access::kParentAccessWidgetErrorHistogramBase, absl::nullopt),
       ParentAccessUIHandlerImpl::ParentAccessWidgetError::kDelegateNotAvailable,
       1);
 }
@@ -527,11 +536,12 @@ TEST_F(ParentAccessUIHandlerImplTest, DecodingErrorMetricRecorded) {
 
   // Expect metric to be recorded.
   histogram_tester.ExpectUniqueSample(
-      ParentAccessUIHandlerImpl::GetParentAccessWidgetErrorHistogramForFlowType(
-          absl::nullopt),
+      parent_access::GetHistogramTitleForFlowType(
+          parent_access::kParentAccessWidgetErrorHistogramBase, absl::nullopt),
       ParentAccessUIHandlerImpl::ParentAccessWidgetError::kDecodingError, 1);
   histogram_tester.ExpectUniqueSample(
-      ParentAccessUIHandlerImpl::GetParentAccessWidgetErrorHistogramForFlowType(
+      parent_access::GetHistogramTitleForFlowType(
+          parent_access::kParentAccessWidgetErrorHistogramBase,
           parent_access_ui::mojom::ParentAccessParams::FlowType::
               kWebsiteAccess),
       ParentAccessUIHandlerImpl::ParentAccessWidgetError::kDecodingError, 1);
@@ -554,11 +564,12 @@ TEST_F(ParentAccessUIHandlerImplTest, ParsingErrorMetricRecorded) {
 
   // Expect metric to be recorded.
   histogram_tester.ExpectUniqueSample(
-      ParentAccessUIHandlerImpl::GetParentAccessWidgetErrorHistogramForFlowType(
-          absl::nullopt),
+      parent_access::GetHistogramTitleForFlowType(
+          parent_access::kParentAccessWidgetErrorHistogramBase, absl::nullopt),
       ParentAccessUIHandlerImpl::ParentAccessWidgetError::kParsingError, 1);
   histogram_tester.ExpectUniqueSample(
-      ParentAccessUIHandlerImpl::GetParentAccessWidgetErrorHistogramForFlowType(
+      parent_access::GetHistogramTitleForFlowType(
+          parent_access::kParentAccessWidgetErrorHistogramBase,
           parent_access_ui::mojom::ParentAccessParams::FlowType::
               kWebsiteAccess),
       ParentAccessUIHandlerImpl::ParentAccessWidgetError::kParsingError, 1);

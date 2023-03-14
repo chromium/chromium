@@ -340,8 +340,7 @@ bool TranslateBubbleView::IsCommandIdChecked(int command_id) const {
     case OptionsMenuItem::ALWAYS_TRANSLATE_LANGUAGE:
       return should_always_translate_;
     default:
-      NOTREACHED();
-      return false;
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -415,7 +414,7 @@ void TranslateBubbleView::ExecuteCommand(int command_id, int event_flags) {
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -481,8 +480,7 @@ views::View* TranslateBubbleView::GetCurrentView() const {
     case TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE:
       return advanced_view_target_;
   }
-  NOTREACHED();
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 
 void TranslateBubbleView::Translate() {
@@ -991,19 +989,15 @@ std::unique_ptr<views::Button> TranslateBubbleView::CreateCloseButton() {
 }
 
 views::Checkbox* TranslateBubbleView::GetAlwaysTranslateCheckbox() {
-  if (GetViewState() == TranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE ||
-      GetViewState() == TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE) {
+  const TranslateBubbleModel::ViewState state = GetViewState();
+  if (state == TranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE ||
+      state == TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE) {
     return advanced_always_translate_checkbox_;
-  } else if (GetViewState() ==
-                 TranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE ||
-             GetViewState() == TranslateBubbleModel::VIEW_STATE_TRANSLATING ||
-             GetViewState() ==
-                 TranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE) {
-    return always_translate_checkbox_;
-  } else {
-    NOTREACHED();
-    return nullptr;
   }
+  CHECK(state == TranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE ||
+        state == TranslateBubbleModel::VIEW_STATE_TRANSLATING ||
+        state == TranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE);
+  return always_translate_checkbox_;
 }
 
 void TranslateBubbleView::SetWindowTitle(

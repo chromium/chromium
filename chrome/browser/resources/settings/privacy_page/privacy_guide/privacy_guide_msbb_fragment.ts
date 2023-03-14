@@ -14,7 +14,7 @@ import './privacy_guide_fragment_shared.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideSettingsStates} from '../../metrics_browser_proxy.js';
+import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached} from '../../metrics_browser_proxy.js';
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 
 import {getTemplate} from './privacy_guide_msbb_fragment.html.js';
@@ -61,6 +61,9 @@ export class PrivacyGuideMsbbFragmentElement extends
     this.startStateMsbbOn_ =
         this.getPref<boolean>('url_keyed_anonymized_data_collection.enabled')
             .value;
+    this.metricsBrowserProxy_
+        .recordPrivacyGuideStepsEligibleAndReachedHistogram(
+            PrivacyGuideStepsEligibleAndReached.MSBB_REACHED);
   }
 
   private onViewExitFinish_() {

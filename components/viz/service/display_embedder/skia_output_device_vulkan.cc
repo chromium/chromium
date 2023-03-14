@@ -111,15 +111,12 @@ void SkiaOutputDeviceVulkan::Submit(bool sync_cpu, base::OnceClosure callback) {
   SkiaOutputDevice::Submit(sync_cpu, std::move(callback));
 }
 
-void SkiaOutputDeviceVulkan::SwapBuffers(BufferPresentedCallback feedback,
-                                         OutputSurfaceFrame frame) {
-  PostSubBuffer(gfx::Rect(vulkan_surface_->image_size()), std::move(feedback),
-                std::move(frame));
-}
-
-void SkiaOutputDeviceVulkan::PostSubBuffer(const gfx::Rect& rect,
-                                           BufferPresentedCallback feedback,
-                                           OutputSurfaceFrame frame) {
+void SkiaOutputDeviceVulkan::Present(
+    const absl::optional<gfx::Rect>& update_rect,
+    BufferPresentedCallback feedback,
+    OutputSurfaceFrame frame) {
+  gfx::Rect rect =
+      update_rect.value_or(gfx::Rect(vulkan_surface_->image_size()));
   // Reshape should have been called first.
   DCHECK(vulkan_surface_);
   DCHECK(!scoped_write_);

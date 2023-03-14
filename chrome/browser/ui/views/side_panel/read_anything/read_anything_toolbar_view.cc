@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_menu_button.h"
+#include "chrome/common/accessibility/read_anything_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -59,21 +59,21 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
                           weak_pointer_factory_.GetWeakPtr()),
       kTextDecreaseIcon, kIconSize, gfx::kPlaceholderColor,
       l10n_util::GetStringUTF16(
-          IDS_READ_ANYTHING_DECREASE_FONT_SIZE_BUTTON_LABEL));
+          IDS_READING_MODE_DECREASE_FONT_SIZE_BUTTON_LABEL));
 
   auto increase_size_button = std::make_unique<ReadAnythingButtonView>(
       base::BindRepeating(&ReadAnythingToolbarView::IncreaseFontSizeCallback,
                           weak_pointer_factory_.GetWeakPtr()),
       kTextIncreaseIcon, kIconSize, gfx::kPlaceholderColor,
       l10n_util::GetStringUTF16(
-          IDS_READ_ANYTHING_INCREASE_FONT_SIZE_BUTTON_LABEL));
+          IDS_READING_MODE_INCREASE_FONT_SIZE_BUTTON_LABEL));
 
   // Create theme selection menubutton.
   auto colors_button = std::make_unique<ReadAnythingMenuButton>(
       base::BindRepeating(&ReadAnythingToolbarView::ChangeColorsCallback,
                           weak_pointer_factory_.GetWeakPtr()),
       kPaletteIcon,
-      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_COLORS_COMBOBOX_LABEL),
+      l10n_util::GetStringUTF16(IDS_READING_MODE_COLORS_COMBOBOX_LABEL),
       delegate_->GetColorsModel());
 
   // Create line spacing menubutton.
@@ -81,7 +81,7 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
       base::BindRepeating(&ReadAnythingToolbarView::ChangeLineSpacingCallback,
                           weak_pointer_factory_.GetWeakPtr()),
       kLineSpacingIcon,
-      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_LINE_SPACING_COMBOBOX_LABEL),
+      l10n_util::GetStringUTF16(IDS_READING_MODE_LINE_SPACING_COMBOBOX_LABEL),
       delegate_->GetLineSpacingModel());
 
   // Create letter spacing menubutton.
@@ -89,8 +89,7 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
       base::BindRepeating(&ReadAnythingToolbarView::ChangeLetterSpacingCallback,
                           weak_pointer_factory_.GetWeakPtr()),
       kLetterSpacingIcon,
-      l10n_util::GetStringUTF16(
-          IDS_READ_ANYTHING_LETTER_SPACING_COMBOBOX_LABEL),
+      l10n_util::GetStringUTF16(IDS_READING_MODE_LETTER_SPACING_COMBOBOX_LABEL),
       delegate_->GetLetterSpacingModel());
 
   // Add all views as children.
@@ -156,8 +155,20 @@ void ReadAnythingToolbarView::OnReadAnythingThemeChanged(
     ui::ColorId foreground_color_id,
     ui::ColorId background_color_id,
     ui::ColorId separator_color_id,
+    ui::ColorId dropdown_color_id,
     read_anything::mojom::LineSpacing line_spacing,
     read_anything::mojom::LetterSpacing letter_spacing) {
+  if (font_scale > kReadAnythingMinimumFontScale) {
+    decrease_text_size_button_->Enable();
+  } else {
+    decrease_text_size_button_->Disable();
+  }
+  if (font_scale < kReadAnythingMaximumFontScale) {
+    increase_text_size_button_->Enable();
+  } else {
+    increase_text_size_button_->Disable();
+  }
+
   if (!GetColorProvider())
     return;
 
@@ -189,6 +200,8 @@ void ReadAnythingToolbarView::OnReadAnythingThemeChanged(
   letter_spacing_button_->SetIcon(kLetterSpacingIcon, kIconSize,
                                   foreground_skcolor);
 
+  // TODO(1266555): Pass the dropdown color to the combobox and menu models.
+
   for (views::Separator* separator : separators_) {
     separator->SetColorId(separator_color_id);
   }
@@ -218,8 +231,8 @@ std::unique_ptr<views::View> ReadAnythingToolbarView::Separator() {
 
 void ReadAnythingToolbarView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kToolbar;
-  node_data->SetDescription(
-      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_TOOLBAR_LABEL));
+  node_data->SetNameChecked(
+      l10n_util::GetStringUTF16(IDS_READING_MODE_TOOLBAR_LABEL));
 }
 
 BEGIN_METADATA(ReadAnythingToolbarView, views::View)

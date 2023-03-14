@@ -4,11 +4,11 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyInt;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -63,7 +63,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     private @Mock SuggestionProcessor mMockSuggestionProcessor;
     private @Mock HeaderProcessor mMockHeaderProcessor;
     private @Mock DividerLineProcessor mMockDividerLineProcessor;
-    private @Mock OmniboxPedalDelegate mMockOmniboxPedalDelegate;
+    private @Mock ActionChipsDelegate mMockActionChipsDelegate;
     DropdownItemViewInfoListBuilder mBuilder;
 
     @Before
@@ -77,7 +77,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         when(mMockHeaderProcessor.getViewTypeId()).thenReturn(OmniboxSuggestionUiType.HEADER);
 
         mBuilder = new DropdownItemViewInfoListBuilder(
-                () -> null, (url) -> false, mMockOmniboxPedalDelegate);
+                () -> null, (url) -> false, mMockActionChipsDelegate);
         mBuilder.registerSuggestionProcessor(mMockSuggestionProcessor);
         mBuilder.setHeaderProcessorForTest(mMockHeaderProcessor);
     }

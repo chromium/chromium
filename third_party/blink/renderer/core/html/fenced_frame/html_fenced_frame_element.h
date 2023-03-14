@@ -50,7 +50,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
     virtual ~FencedFrameDelegate();
     void Trace(Visitor* visitor) const;
 
-    virtual void Navigate(const KURL&) = 0;
+    virtual void Navigate(const KURL&, const String&) = 0;
     // This method is used to clean up all state in preparation for destruction,
     // even though the destruction may happen arbitrarily later during garbage
     // collection.
@@ -109,12 +109,8 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   void setConfig(FencedFrameConfig* config);
   // Web-exposed API that returns whether an opaque-ads fenced frame would be
   // allowed to be created in the current active document of this node.
-  // Checks the following criteria:
-  // - Not trying to load in a default mode fenced frame tree
-  // - All of the sandbox/allow flags required to load a fenced frame are set
-  //   in the embedder. See: blink::kFencedFrameMandatoryUnsandboxedFlags
-  // - No CSP headers are in place that will stop the fenced frame from loading
-  // - No CSPEE is applied to this or an ancestor frame
+  // Note: This function is deprecated. Please use
+  // `NavigatorAuction::canLoadAdAuctionFencedFrame` instead.
   static bool canLoadOpaqueURL(ScriptState*);
 
  private:
@@ -123,7 +119,8 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   void Navigate(const KURL& url,
                 absl::optional<bool> deprecated_should_freeze_initial_size =
                     absl::nullopt,
-                absl::optional<gfx::Size> content_size = absl::nullopt);
+                absl::optional<gfx::Size> content_size = absl::nullopt,
+                String embedder_shared_storage_context = String());
 
   // This method delegates to `Navigate()` above only if `this` has a non-null
   // `config_`. If that's the case, this method pulls the appropriate URL off of

@@ -51,8 +51,8 @@ class DlpFilesPolicyServiceProvider
   void RespondWithRestrictedFilesTransfer(
       dbus::MethodCall* method_call,
       dbus::ExportedObject::ResponseSender response_sender,
-      const std::vector<policy::DlpFilesController::FileDaemonInfo>&
-          restricted_files);
+      const std::vector<std::pair<policy::DlpFilesController::FileDaemonInfo,
+                                  dlp::RestrictionLevel>>& requested_files);
 
   base::WeakPtrFactory<DlpFilesPolicyServiceProvider> weak_ptr_factory_{this};
 };

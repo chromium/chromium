@@ -345,8 +345,7 @@ bool GetStandardAcceleratorForCommandId(int command_id,
   // On macOS, the cut/copy/paste accelerators are defined in the main menu
   // built in main_menu_builder.mm and the accelerator is user configurable. All
   // of this is handled by CommandDispatcher.
-  NOTREACHED();
-  return false;
+  NOTREACHED_NORETURN();
 #else
   // The standard Ctrl-X, Ctrl-V and Ctrl-C are not defined as accelerators
   // anywhere else.

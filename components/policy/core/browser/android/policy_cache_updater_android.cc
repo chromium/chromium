@@ -18,11 +18,11 @@ namespace {
 
 bool CanCache(PolicyErrorMap* policy_error_map,
               const std::set<std::string>& future_policies,
-              const PolicyMap::const_iterator iter) {
-  return !policy_error_map->HasFatalError(iter->first) &&
-         future_policies.find(iter->first) == future_policies.end() &&
-         !iter->second.ignored() &&
-         !iter->second.HasMessage(PolicyMap::MessageType::kError);
+              PolicyMap::const_reference entry) {
+  return !policy_error_map->HasFatalError(entry.first) &&
+         future_policies.find(entry.first) == future_policies.end() &&
+         !entry.second.ignored() &&
+         !entry.second.HasMessage(PolicyMap::MessageType::kError);
 }
 
 }  // namespace
@@ -47,13 +47,12 @@ void PolicyCacheUpdater::OnPolicyUpdated(const PolicyNamespace& ns,
 }
 
 void PolicyCacheUpdater::UpdateCache(const PolicyMap& current_policy_map) {
-  PolicyMap policy_map = current_policy_map.Clone();
   PolicyErrorMap errors;
   std::set<std::string> future_policies;
-  handler_list_->ApplyPolicySettings(policy_map, /*prefs=*/nullptr, &errors,
-                                     /*deprecated_policies*/ nullptr,
-                                     &future_policies);
-  policy_map.EraseNonmatching(
+  handler_list_->ApplyPolicySettings(
+      current_policy_map, /*prefs=*/nullptr, &errors,
+      /*deprecated_policies*/ nullptr, &future_policies);
+  PolicyMap policy_map = current_policy_map.CloneIf(
       base::BindRepeating(&CanCache, &errors, future_policies));
   PolicyMapAndroid policy_map_android(policy_map);
   Java_PolicyCacheUpdater_cachePolicies(base::android::AttachCurrentThread(),

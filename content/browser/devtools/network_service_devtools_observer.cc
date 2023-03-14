@@ -94,7 +94,7 @@ void NetworkServiceDevToolsObserver::OnTrustTokenOperationDone(
                    devtools_request_id, *result);
 }
 
-void NetworkServiceDevToolsObserver::OnPrivateNetworkRequest(
+void NetworkServiceDevToolsObserver::OnLocalNetworkRequest(
     const absl::optional<std::string>& devtools_request_id,
     const GURL& url,
     bool is_warning,
@@ -211,14 +211,14 @@ void NetworkServiceDevToolsObserver::OnCorsError(
         rfhi,
         blink::mojom::WebFeature::kPrivateNetworkAccessIgnoredPreflightError);
 
-    if (!initiator_origin.has_value() ||
+    if (initiator_origin.has_value() &&
         !initiator_origin->IsSameOriginWith(url)) {
       GetContentClient()->browser()->LogWebFeatureForCurrentPage(
           rfhi, blink::mojom::WebFeature::
                     kPrivateNetworkAccessIgnoredCrossOriginPreflightError);
     }
 
-    if (!initiator_origin.has_value() ||
+    if (initiator_origin.has_value() &&
         net::SchemefulSite(initiator_origin.value()) !=
             net::SchemefulSite(url)) {
       GetContentClient()->browser()->LogWebFeatureForCurrentPage(

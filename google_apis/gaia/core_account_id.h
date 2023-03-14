@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
@@ -24,7 +25,7 @@
 // change on start-up.
 // --------------------------------------------------------------------------
 
-struct CoreAccountId {
+struct COMPONENT_EXPORT(GOOGLE_APIS) CoreAccountId {
   CoreAccountId();
   CoreAccountId(const CoreAccountId&);
   CoreAccountId(CoreAccountId&&) noexcept;
@@ -77,32 +78,40 @@ struct CoreAccountId {
 
   // --------------------------------------------------------------------------
   // -------------------- ONLY FOR TESTING ------------------------------------
-  // The following constructors are only used for testing. Their implementation
-  // is defined in core_account_id_for_testing.cc and is not linked in the
-  // production code. The reason for this is that they are currently being
-  // removed, but they are extensively used by the testing code.
+#if defined(UNIT_TEST)
+  // The following constructors are only used for testing. The reason for this
+  // is that they are currently being removed, but they are extensively used by
+  // the testing code.
   //
   // TODO(crbug.com/1028578): Update the tests to use one of FromEmail(),
   // FromGaia() or FromString() methods above.
-  explicit CoreAccountId(const char* id);
-  explicit CoreAccountId(std::string&& id);
-  explicit CoreAccountId(const std::string& id);
+  explicit CoreAccountId(const char* id) : id_(id) {}
+
+  explicit CoreAccountId(std::string&& id) : id_(std::move(id)) {}
+
+  explicit CoreAccountId(const std::string& id) : id_(id) {}
+#endif  // defined(UNIT_TEST)
   // --------------------------------------------------------------------------
 
  private:
   std::string id_;
 };
 
+COMPONENT_EXPORT(GOOGLE_APIS)
 bool operator<(const CoreAccountId& lhs, const CoreAccountId& rhs);
 
+COMPONENT_EXPORT(GOOGLE_APIS)
 bool operator==(const CoreAccountId& lhs, const CoreAccountId& rhs);
 
+COMPONENT_EXPORT(GOOGLE_APIS)
 bool operator!=(const CoreAccountId& lhs, const CoreAccountId& rhs);
 
+COMPONENT_EXPORT(GOOGLE_APIS)
 std::ostream& operator<<(std::ostream& out, const CoreAccountId& a);
 
 // Returns the values of the account ids in a vector. Useful especially for
 // logs.
+COMPONENT_EXPORT(GOOGLE_APIS)
 std::vector<std::string> ToStringList(
     const std::vector<CoreAccountId>& account_ids);
 

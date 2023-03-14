@@ -194,8 +194,6 @@ class CardUnmaskPromptControllerImplTest
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(CardUnmaskPromptControllerImplTest,
        FidoAuthOfferCheckboxStatePersistent) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillCreditCardAuthentication);
   ShowPromptAndSimulateResponse(/*enable_fido_auth=*/true);
   EXPECT_TRUE(pref_service_->GetBoolean(
       prefs::kAutofillCreditCardFidoAuthOfferCheckboxState));
@@ -207,8 +205,6 @@ TEST_F(CardUnmaskPromptControllerImplTest,
 
 TEST_F(CardUnmaskPromptControllerImplTest,
        PopulateCheckboxToUserProvidedUnmaskDetails) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillCreditCardAuthentication);
   ShowPromptAndSimulateResponse(/*enable_fido_auth=*/true);
 
   EXPECT_TRUE(delegate_->details().enable_fido_auth);
@@ -483,6 +479,28 @@ TEST_P(CardUnmaskPromptContentTest,
   }
   EXPECT_EQ(controller_->GetExpectedCvcLength(), 3);
   controller_->OnUnmaskDialogClosed();
+}
+#endif
+
+// Ensures that the CVC hint image has the correct announcement for finding the
+// location of the CVC on the card.
+#if BUILDFLAG(IS_ANDROID)
+TEST_P(CardUnmaskPromptContentTest, CvcHintImageAnnouncement) {
+  // Test that if the network is not American Express, the CVC hint image
+  // announces that the CVC can be found on the back of the card.
+  card_ = test::GetMaskedServerCardVisa();
+  ShowPrompt();
+  EXPECT_EQ(controller_->GetCvcImageAnnouncement(),
+            u"Your CVC is on the back of your card. It’s the last 3 digits at "
+            u"the top right of the signature box.");
+
+  // Test that for American Express cards, the CVC hint image announces that the
+  // CVC can be found on the front of the card.
+  card_ = test::GetMaskedServerCardAmex();
+  ShowPrompt();
+  EXPECT_EQ(controller_->GetCvcImageAnnouncement(),
+            u"Your CVC is on the front of your card. It’s the 4-digit code at "
+            u"the top right above your card number.");
 }
 #endif
 

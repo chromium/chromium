@@ -349,12 +349,12 @@ void ChromeNativeAppWindowViewsAuraAsh::EnterFullscreen(
     ExclusiveAccessBubbleType bubble_type,
     const int64_t display_id) {
   // This codepath is never hit for Chrome Apps.
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 void ChromeNativeAppWindowViewsAuraAsh::ExitFullscreen() {
   // This codepath is never hit for Chrome Apps.
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 void ChromeNativeAppWindowViewsAuraAsh::UpdateExclusiveAccessExitBubbleContent(

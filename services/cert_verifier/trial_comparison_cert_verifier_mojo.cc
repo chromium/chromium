@@ -14,14 +14,19 @@
 #include "net/der/encode_values.h"
 #include "net/der/parse_values.h"
 #include "net/net_buildflags.h"
+#include "services/cert_verifier/public/mojom/trial_comparison_cert_verifier.mojom.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "net/cert/cert_verify_proc_mac.h"
 #include "net/cert/internal/trust_store_mac.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
 #include "net/cert/cert_verify_proc_win.h"
+#endif
+
+#if BUILDFLAG(USE_NSS_CERTS)
+#include "crypto/nss_util.h"
+#include "net/cert/internal/trust_store_nss.h"
 #endif
 
 namespace {
@@ -42,6 +47,26 @@ TrustImplTypeToMojom(net::TrustStoreMac::TrustImplType input) {
     case net::TrustStoreMac::TrustImplType::kKeychainCacheFullCerts:
       return cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::
           kKeychainCacheFullCerts;
+  }
+}
+#endif
+
+#if BUILDFLAG(USE_NSS_CERTS)
+cert_verifier::mojom::TrustStoreNSSDebugInfo::SlotFilterType
+SlotFilterTypeToMojom(
+    net::TrustStoreNSS::ResultDebugData::SlotFilterType input) {
+  switch (input) {
+    case net::TrustStoreNSS::ResultDebugData::SlotFilterType::kDontFilter:
+      return cert_verifier::mojom::TrustStoreNSSDebugInfo::SlotFilterType::
+          kDontFilter;
+    case net::TrustStoreNSS::ResultDebugData::SlotFilterType::
+        kDoNotAllowUserSlots:
+      return cert_verifier::mojom::TrustStoreNSSDebugInfo::SlotFilterType::
+          kDoNotAllowUserSlots;
+    case net::TrustStoreNSS::ResultDebugData::SlotFilterType::
+        kAllowSpecifiedUserSlot:
+      return cert_verifier::mojom::TrustStoreNSSDebugInfo::SlotFilterType::
+          kAllowSpecifiedUserSlot;
   }
 }
 #endif
@@ -116,24 +141,6 @@ void TrialComparisonCertVerifierMojo::OnSendTrialReport(
       mojom::CertVerifierDebugInfo::New();
 
 #if BUILDFLAG(IS_MAC)
-  auto* mac_platform_debug_info =
-      net::CertVerifyProcMac::ResultDebugData::Get(&primary_result);
-  if (mac_platform_debug_info) {
-    debug_info->mac_platform_debug_info =
-        mojom::MacPlatformVerifierDebugInfo::New();
-    debug_info->mac_platform_debug_info->trust_result =
-        mac_platform_debug_info->trust_result();
-    debug_info->mac_platform_debug_info->result_code =
-        mac_platform_debug_info->result_code();
-    for (const auto& cert_info : mac_platform_debug_info->status_chain()) {
-      mojom::MacCertEvidenceInfoPtr info = mojom::MacCertEvidenceInfo::New();
-      info->status_bits = cert_info.status_bits;
-      info->status_codes = cert_info.status_codes;
-      debug_info->mac_platform_debug_info->status_chain.push_back(
-          std::move(info));
-    }
-  }
-
   auto* mac_trust_debug_info =
       net::TrustStoreMac::ResultDebugData::Get(&trial_result);
   if (mac_trust_debug_info) {
@@ -156,6 +163,29 @@ void TrialComparisonCertVerifierMojo::OnSendTrialReport(
         win_platform_debug_info->authroot_sequence_number();
   }
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(USE_NSS_CERTS)
+  crypto::EnsureNSSInit();
+  debug_info->nss_version = NSS_GetVersion();
+  if (auto* primary_nss_trust_debug_info =
+          net::TrustStoreNSS::ResultDebugData::Get(&primary_result);
+      primary_nss_trust_debug_info) {
+    debug_info->primary_nss_debug_info = mojom::TrustStoreNSSDebugInfo::New();
+    debug_info->primary_nss_debug_info->ignore_system_trust_settings =
+        primary_nss_trust_debug_info->ignore_system_trust_settings();
+    debug_info->primary_nss_debug_info->slot_filter_type =
+        SlotFilterTypeToMojom(primary_nss_trust_debug_info->slot_filter_type());
+  }
+  if (auto* trial_nss_trust_debug_info =
+          net::TrustStoreNSS::ResultDebugData::Get(&trial_result);
+      trial_nss_trust_debug_info) {
+    debug_info->trial_nss_debug_info = mojom::TrustStoreNSSDebugInfo::New();
+    debug_info->trial_nss_debug_info->ignore_system_trust_settings =
+        trial_nss_trust_debug_info->ignore_system_trust_settings();
+    debug_info->trial_nss_debug_info->slot_filter_type =
+        SlotFilterTypeToMojom(trial_nss_trust_debug_info->slot_filter_type());
+  }
+#endif  // BUILDFLAG(USE_NSS_CERTS)
 
   auto* cert_verify_proc_builtin_debug_data =
       net::CertVerifyProcBuiltinResultDebugData::Get(&trial_result);

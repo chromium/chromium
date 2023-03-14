@@ -1857,8 +1857,7 @@ void CalendarView::OnOpenEventListAnimationComplete() {
 
   if (up_next_view_ && up_next_view_mask_) {
     // Once the animation is complete, the `up_next_view_` needs to be invisible
-    // otherwise ChromeVox will pick it
-    // up.
+    // otherwise ChromeVox will pick it up.
     up_next_view_->SetVisible(false);
 
     // Remove the layer mask, otherwise it repositions to the top of the
@@ -1877,8 +1876,8 @@ void CalendarView::OnOpenEventListAnimationComplete() {
   calendar_view_controller_->OnEventListOpened();
 
   // Moves focusing ring to the close button of the event list if it's opened
-  // from the date cell view focus.
-  if (IsDateCellViewFocused()) {
+  // from the date cell view focus or from the `up_next_view_`.
+  if (IsDateCellViewFocused() || up_next_view_) {
     RequestFocusForEventListCloseButton();
   }
 
@@ -2074,6 +2073,7 @@ void CalendarView::MaybeShowUpNextView() {
   }
 
   if (up_next_view_) {
+    up_next_view_->RefreshEvents();
     return;
   }
 

@@ -7,7 +7,7 @@
 dictionary GPURenderPassDepthStencilAttachment {
     required GPUTextureView view;
 
-    float depthClearValue = 0;
+    float depthClearValue;
     GPULoadOp depthLoadOp;
     GPUStoreOp depthStoreOp;
     boolean depthReadOnly = false;

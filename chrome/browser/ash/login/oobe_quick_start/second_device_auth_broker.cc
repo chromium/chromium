@@ -13,7 +13,6 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
-#include "base/guid.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/strings/string_piece_forward.h"
@@ -572,6 +571,14 @@ SecondDeviceAuthBroker::SecondDeviceAuthBroker(
   DCHECK(url_loader_factory_);
   DCHECK(attestation_);
 
+  // `device_id_` is used as the Common Name (CN) of Remote Attestation
+  // certificates and hence, must be between 0 (exclusive) and 64 (inclusive)
+  // characters. The current device ids satisfy this requirement. If this
+  // changes in the future, use a hashing algorithm that can fit the longer
+  // device id into 64 characters.
+  DCHECK(!device_id_.empty());
+  DCHECK_LE(device_id_.size(), 64UL);
+
   gaia_auth_fetcher_ = std::make_unique<GaiaAuthFetcher>(
       this, gaia::GaiaSource::kChromeOS, url_loader_factory_);
 }
@@ -629,7 +636,7 @@ void SecondDeviceAuthBroker::FetchAttestationCertificate(
   // TODO(b/259021973): Figure out if we can use ECC keys where they are
   // available.
   ::attestation::DeviceSetupCertificateRequestMetadata profile_specific_data;
-  profile_specific_data.set_id(base::GenerateGUID());
+  profile_specific_data.set_id(device_id_);
   profile_specific_data.set_content_binding(fido_credential_id);
   attestation_->GetCertificate(
       /*certificate_profile=*/attestation::AttestationCertificateProfile::

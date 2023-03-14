@@ -22,10 +22,8 @@ build_webui("build") {
   ts_deps = [
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
-    "//ui/webui/resources/mojo:library",
+    "//ui/webui/resources/mojo:build_ts",
   ]
-
-  ts_use_local_config = false
 
   attribution_reporting_component_folder = "components/attribution_reporting"
   attribution_reporting_content_folder = "content/browser/attribution_reporting"
@@ -38,7 +36,6 @@ build_webui("build") {
     "$root_gen_dir/$attribution_reporting_component_folder/source_registration_error.mojom-webui.ts",
     "$root_gen_dir/$attribution_reporting_component_folder/source_type.mojom-webui.ts",
     "$root_gen_dir/$attribution_reporting_content_folder/attribution_internals.mojom-webui.ts",
-    "$root_gen_dir/$attribution_reporting_content_folder/attribution_reporting.mojom-webui.ts",
     "$root_gen_dir/$attribution_reporting_content_folder/store_source_result.mojom-webui.ts",
     "$root_gen_dir/$network_folder/schemeful_site.mojom-webui.ts",
     "$root_gen_dir/$network_folder/attribution.mojom-webui.ts",
@@ -50,7 +47,6 @@ build_webui("build") {
     "//$attribution_reporting_component_folder:registration_mojom_ts__generator",
     "//$attribution_reporting_component_folder:source_type_mojom_ts__generator",
     "//$attribution_reporting_content_folder:internals_mojo_bindings_ts__generator",
-    "//$attribution_reporting_content_folder:mojo_bindings_ts__generator",
     "//$attribution_reporting_content_folder:store_source_result_mojom_ts__generator",
     "//$network_folder:mojom_attribution_ts__generator",
     "//$network_folder:mojom_schemeful_site_ts__generator",

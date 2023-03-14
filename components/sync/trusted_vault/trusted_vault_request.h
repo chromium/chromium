@@ -37,9 +37,15 @@ class TrustedVaultRequest : public TrustedVaultConnection::Request {
     kNotFound,
     // Reported when server returns http status code 409 (conflict).
     kConflict,
-    // Reported when access token fetch attempt was failed and request wasn't
-    // sent.
-    kAccessTokenFetchingFailure,
+    // Reported when access token fetch attempt was failed due to transient auth
+    // error.
+    kTransientAccessTokenFetchError,
+    // Reported when access token fetch attempt failed due to permanent auth
+    // error.
+    kPersistentAccessTokenFetchError,
+    // Reported when access token fetch attempt was cancelled due to primary
+    // account change.
+    kPrimaryAccountChangeAccessTokenFetchError,
     // Reported when network error occurs.
     kNetworkError,
     // Reported when other http errors occur.

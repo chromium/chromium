@@ -18,15 +18,15 @@
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
-#include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_task.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
+#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -501,7 +501,7 @@ void WebAppInstallTask::OnDidPerformInstallableCheck(
   // case we proceed with the installation which adds the SUB_APP install source
   // as well.
   if (install_surface_ == webapps::WebappInstallSource::SUB_APP) {
-    DCHECK(install_params_ && install_params_->parent_app_id.has_value());
+    DCHECK(web_app_info->parent_app_id.has_value());
     if (registrar_->WasInstalledBySubApp(app_id)) {
       CallInstallCallback(std::move(app_id),
                           webapps::InstallResultCode::kSuccessAlreadyInstalled);
@@ -704,7 +704,6 @@ void WebAppInstallTask::OnDialogCompleted(
     finalize_options.locally_installed = install_params_->locally_installed;
     finalize_options.overwrite_existing_manifest_fields =
         install_params_->force_reinstall;
-    finalize_options.parent_app_id = install_params_->parent_app_id;
 
     ApplyParamsToFinalizeOptions(*install_params_, finalize_options);
 

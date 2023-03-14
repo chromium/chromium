@@ -71,7 +71,7 @@ public class TabViewAndroidDelegateTest {
         mApplicationInsetSupplier = ApplicationViewportInsetSupplier.createForTests();
         mApplicationInsetSupplier.addOverlappingSupplier(mFeatureInsetSupplier);
 
-        when(mWindowAndroid.getApplicationBottomInsetProvider())
+        when(mWindowAndroid.getApplicationBottomInsetSupplier())
                 .thenReturn(mApplicationInsetSupplier);
         when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
         when(mTab.getWebContents()).thenReturn(mWebContents);

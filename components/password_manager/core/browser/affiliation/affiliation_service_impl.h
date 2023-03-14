@@ -33,6 +33,8 @@ namespace url {
 class SchemeHostPort;
 }
 
+class PrefService;
+
 namespace password_manager {
 
 class AffiliationBackend;
@@ -49,7 +51,8 @@ class AffiliationServiceImpl : public AffiliationService,
 
   explicit AffiliationServiceImpl(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      scoped_refptr<base::SequencedTaskRunner> backend_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> backend_task_runner,
+      PrefService* pref_service);
   ~AffiliationServiceImpl() override;
 
   AffiliationServiceImpl(const AffiliationServiceImpl& other) = delete;
@@ -100,7 +103,8 @@ class AffiliationServiceImpl : public AffiliationService,
   void TrimCacheForFacetURI(const FacetURI& facet_uri) override;
   void KeepPrefetchForFacets(std::vector<FacetURI> facet_uris) override;
   void TrimUnusedCache(std::vector<FacetURI> facet_uris) override;
-  void GetAllGroups(GroupsCallback callback) const override;
+  void GetGroupingInfo(std::vector<FacetURI> facet_uris,
+                       GroupsCallback callback) override;
   void GetPSLExtensions(base::OnceCallback<void(std::vector<std::string>)>
                             callback) const override;
 
@@ -126,6 +130,8 @@ class AffiliationServiceImpl : public AffiliationService,
   // shutdown on the backend thread, so it will outlive |this| along with all
   // its in-flight tasks.
   raw_ptr<AffiliationBackend, DanglingUntriaged> backend_;
+
+  raw_ptr<PrefService> pref_service_;
 
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
 

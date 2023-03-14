@@ -83,6 +83,10 @@
 // closed at once).
 - (void)webStateListBatchOperationEnded:(WebStateList*)webStateList;
 
+// Invoked when the WebStateList is being destroyed. Gives subclasses a chance
+// to cleanup.
+- (void)webStateListDestroyed:(WebStateList*)webStateList;
+
 @end
 
 // Observer that bridges WebStateList events to an Objective-C observer that
@@ -131,7 +135,7 @@ class WebStateListObserverBridge final : public WebStateListObserver {
                                   int index) final;
   void WillBeginBatchOperation(WebStateList* web_state_list) final;
   void BatchOperationEnded(WebStateList* web_state_list) final;
-
+  void WebStateListDestroyed(WebStateList* web_state_list) final;
   __weak id<WebStateListObserving> observer_ = nil;
 };
 

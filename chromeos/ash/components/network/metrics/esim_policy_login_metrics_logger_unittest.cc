@@ -103,15 +103,14 @@ class ESimPolicyLoginMetricsLoggerTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void SetGlobalPolicy(bool allow_only_oplicy_cellular) {
-    base::Value global_config(base::Value::Type::DICT);
-    global_config.SetBoolKey(
+  void SetGlobalPolicy(bool allow_only_policy_cellular) {
+    base::Value::Dict global_config;
+    global_config.Set(
         ::onc::global_network_config::kAllowOnlyPolicyCellularNetworks,
-        allow_only_oplicy_cellular);
+        allow_only_policy_cellular);
     managed_config_handler_->SetPolicy(
         ::onc::ONC_SOURCE_DEVICE_POLICY, /*userhash=*/std::string(),
-        /*network_configs=*/base::Value(base::Value::Type::LIST),
-        global_config);
+        /*network_configs_onc=*/base::Value::List(), global_config);
   }
 
   base::test::TaskEnvironment task_environment_;

@@ -41,27 +41,9 @@ public class NoteServiceBridge implements NoteService {
         NoteServiceBridgeJni.get().getTemplates(mNativeNoteServiceBridge, this, callback);
     }
 
-    @Override
-    public boolean isPublishAvailable() {
-        if (mNativeNoteServiceBridge == 0) return false;
-        return NoteServiceBridgeJni.get().isPublishAvailable(mNativeNoteServiceBridge, this);
-    }
-
-    @Override
-    public void publishNote(String selectedText, String shareUrl, Callback<String> callback) {
-        if (mNativeNoteServiceBridge == 0) return;
-        NoteServiceBridgeJni.get().publishNote(
-                mNativeNoteServiceBridge, this, selectedText, shareUrl, callback);
-    }
-
     @NativeMethods
     interface Natives {
         void getTemplates(long nativeNoteServiceBridge, NoteServiceBridge caller,
                 Callback<List<NoteTemplate>> callback);
-
-        boolean isPublishAvailable(long nativeNoteServiceBridge, NoteServiceBridge caller);
-
-        void publishNote(long nativeNoteServiceBridge, NoteServiceBridge caller,
-                String selectedText, String shareUrl, Callback<String> callback);
     }
 }

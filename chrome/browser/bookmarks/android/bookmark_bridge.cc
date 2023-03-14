@@ -846,6 +846,15 @@ void BookmarkBridge::DeleteBookmark(
   if (partner_bookmarks_shim_->IsPartnerBookmark(node)) {
     partner_bookmarks_shim_->RemoveBookmark(node);
   } else if (type == BookmarkType::BOOKMARK_TYPE_READING_LIST) {
+    const BookmarkNode* reading_list_parent = reading_list_manager_->GetRoot();
+    size_t index = reading_list_parent->GetIndexOf(node).value();
+    // Intentionally left empty.
+    std::set<GURL> removed_urls;
+    // Observer must be trigger prior, the underlying BookmarkNode* will be
+    // deleted immediately after the delete call.
+    BookmarkNodeRemoved(bookmark_model_, reading_list_parent, index, node,
+                        removed_urls);
+
     // Inside the Delete method, node will be destroyed and node->url will be
     // also destroyed. This causes heap-use-after-free at
     // ReadingListModelImpl::RemoveEntryByURLImpl. To avoid the

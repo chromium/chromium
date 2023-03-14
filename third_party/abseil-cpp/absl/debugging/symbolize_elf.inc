@@ -532,6 +532,11 @@ bool ForEachSection(int fd,
     return false;
   }
 
+  // Technically it can be larger, but in practice this never happens.
+  if (elf_header.e_shentsize != sizeof(ElfW(Shdr))) {
+    return false;
+  }
+
   ElfW(Shdr) shstrtab;
   off_t shstrtab_offset = static_cast<off_t>(elf_header.e_shoff) +
                           elf_header.e_shentsize * elf_header.e_shstrndx;
@@ -581,6 +586,11 @@ bool GetSectionHeaderByName(int fd, const char *name, size_t name_len,
 
   ElfW(Ehdr) elf_header;
   if (!ReadFromOffsetExact(fd, &elf_header, sizeof(elf_header), 0)) {
+    return false;
+  }
+
+  // Technically it can be larger, but in practice this never happens.
+  if (elf_header.e_shentsize != sizeof(ElfW(Shdr))) {
     return false;
   }
 

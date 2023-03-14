@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/test_password_store.h"
@@ -471,7 +472,7 @@ void PasswordManagerBrowserTestBase::GetNewTab(
   autofill::ChromeAutofillClient::CreateForWebContents(*web_contents);
   ChromePasswordManagerClient::CreateForWebContentsWithAutofillClient(
       *web_contents,
-      autofill::ChromeAutofillClient::FromWebContents(*web_contents));
+      autofill::ContentAutofillClient::FromWebContents(*web_contents));
   ASSERT_TRUE(ChromePasswordManagerClient::FromWebContents(*web_contents));
   CustomManagePasswordsUIController* controller =
       new CustomManagePasswordsUIController(*web_contents);

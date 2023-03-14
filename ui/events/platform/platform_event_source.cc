@@ -7,9 +7,8 @@
 #include <algorithm>
 #include <ostream>
 
-#include "base/lazy_instance.h"
 #include "base/observer_list.h"
-#include "base/threading/thread_local.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
 #include "ui/events/platform/platform_event_observer.h"
 #include "ui/events/platform/scoped_event_dispatcher.h"
@@ -21,27 +20,23 @@ namespace {
 // PlatformEventSource singleton is thread local so that different instances
 // can be used on different threads (e.g. browser thread should be able to
 // access PlatformEventSource owned by the UI Service's thread).
-base::LazyInstance<base::ThreadLocalPointer<PlatformEventSource>>::Leaky
-    lazy_tls_ptr = LAZY_INSTANCE_INITIALIZER;
+ABSL_CONST_INIT thread_local PlatformEventSource* event_source = nullptr;
 
 }  // namespace
 
 bool PlatformEventSource::ignore_native_platform_events_ = false;
 
 PlatformEventSource::PlatformEventSource()
-    : overridden_dispatcher_(nullptr), overridden_dispatcher_restored_(false) {
-  CHECK(!lazy_tls_ptr.Pointer()->Get())
-      << "Only one platform event source can be created.";
-  lazy_tls_ptr.Pointer()->Set(this);
-}
+    : resetter_(&event_source, this, nullptr),
+      overridden_dispatcher_(nullptr),
+      overridden_dispatcher_restored_(false) {}
 
 PlatformEventSource::~PlatformEventSource() {
-  CHECK_EQ(this, lazy_tls_ptr.Pointer()->Get());
-  lazy_tls_ptr.Pointer()->Set(nullptr);
+  CHECK_EQ(this, event_source);
 }
 
 PlatformEventSource* PlatformEventSource::GetInstance() {
-  return lazy_tls_ptr.Pointer()->Get();
+  return event_source;
 }
 
 bool PlatformEventSource::ShouldIgnoreNativePlatformEvents() {

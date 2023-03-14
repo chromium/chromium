@@ -372,9 +372,17 @@ public class SelectableListToolbar<E>
     }
 
     /**
-     * Hides the search edit text box and related views.
+     * Hides the search edit text box and related views. Notifies delegate of the change.
      */
     public void hideSearchView() {
+        hideSearchView(/*notifyDelegate=*/true);
+    }
+
+    /**
+     * Hides the search edit text box and related views.
+     * @param notifyDelegate Whether to notify the delegate of this change.
+     */
+    public void hideSearchView(boolean notifyDelegate) {
         assert mHasSearchView;
 
         if (!isSearching()) return;
@@ -384,7 +392,7 @@ public class SelectableListToolbar<E>
         hideKeyboard();
         showNormalView();
 
-        mSearchDelegate.onEndSearch();
+        if (notifyDelegate) mSearchDelegate.onEndSearch();
     }
 
     /**

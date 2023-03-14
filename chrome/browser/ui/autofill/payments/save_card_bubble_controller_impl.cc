@@ -166,6 +166,11 @@ std::u16string SaveCardBubbleControllerImpl::GetWindowTitle() const {
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL);
     case BubbleType::UPLOAD_SAVE:
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillEnableNewSaveCardBubbleUi)) {
+        return l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V5);
+      }
       return features::ShouldShowImprovedUserConsentForCreditCardSave()
                  ? l10n_util::GetStringUTF16(
                        IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V4)
@@ -188,6 +193,12 @@ std::u16string SaveCardBubbleControllerImpl::GetExplanatoryMessage() const {
 
   if (current_bubble_type_ != BubbleType::UPLOAD_SAVE)
     return std::u16string();
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableNewSaveCardBubbleUi)) {
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V4);
+  }
 
   if (options_.should_request_name_from_user) {
     return l10n_util::GetStringUTF16(
@@ -246,11 +257,6 @@ Profile* SaveCardBubbleControllerImpl::GetProfile() const {
 
 const CreditCard& SaveCardBubbleControllerImpl::GetCard() const {
   return card_;
-}
-
-AutofillBubbleBase* SaveCardBubbleControllerImpl::GetSaveCardBubbleView()
-    const {
-  return bubble_view();
 }
 
 bool SaveCardBubbleControllerImpl::ShouldRequestNameFromUser() const {
@@ -454,8 +460,13 @@ bool SaveCardBubbleControllerImpl::IsIconVisible() const {
   return current_bubble_type_ != BubbleType::INACTIVE;
 }
 
-AutofillBubbleBase* SaveCardBubbleControllerImpl::GetSaveBubbleView() const {
-  return GetSaveCardBubbleView();
+AutofillBubbleBase* SaveCardBubbleControllerImpl::GetPaymentBubbleView() const {
+  return bubble_view();
+}
+
+SavePaymentIconController::PaymentBubbleType
+SaveCardBubbleControllerImpl::GetPaymentBubbleType() const {
+  return PaymentBubbleType::kCreditCard;
 }
 
 PageActionIconType SaveCardBubbleControllerImpl::GetPageActionIconType() {

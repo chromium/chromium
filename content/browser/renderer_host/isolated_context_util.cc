@@ -13,8 +13,7 @@ namespace content {
 
 bool IsFrameSufficientlyIsolated(RenderFrameHost* frame) {
   if (frame->GetWebExposedIsolationLevel() >=
-      content::RenderFrameHost::WebExposedIsolationLevel::
-          kMaybeIsolatedApplication) {
+      content::WebExposedIsolationLevel::kMaybeIsolatedApplication) {
     return true;
   }
 

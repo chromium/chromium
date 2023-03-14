@@ -454,14 +454,8 @@ void CreateMetadataTask::FinishWithError(
     }
   }
 
-  ReportStorageError();
-
   std::move(callback_).Run(error, std::move(registration_data));
   Finished();  // Destroys |this|.
-}
-
-std::string CreateMetadataTask::HistogramName() const {
-  return "CreateMetadataTask";
 }
 
 }  // namespace background_fetch

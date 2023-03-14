@@ -18,7 +18,7 @@ namespace arc::input_overlay {
 
 // Returns true if there is no value of |key| or there is positive value of the
 // |key|.
-bool ParsePositiveFraction(const base::Value& value,
+bool ParsePositiveFraction(const base::Value::Dict& value,
                            const char* key,
                            absl::optional<float>* output);
 
@@ -32,7 +32,7 @@ class Position {
 
   static std::unique_ptr<Position> ConvertFromProto(const PositionProto& proto);
 
-  bool ParseFromJson(const base::Value& value);
+  bool ParseFromJson(const base::Value::Dict& value);
   // Return the position coords in |content_bounds|. |content_bounds| is bounds
   // excluding caption if the caption shows.
   gfx::PointF CalculatePosition(const gfx::RectF& content_bounds) const;
@@ -72,7 +72,7 @@ class Position {
   // "max_x": 50, // Optional.
   // "max_y": 50 // Optional.
   // }
-  bool ParseDefaultFromJson(const base::Value& value);
+  bool ParseDefaultFromJson(const base::Value::Dict& value);
   // Parse position from Json.
   // Json value format:
   // {
@@ -84,7 +84,7 @@ class Position {
   //   "aspect_ratio": 1.5 // Can be null for height- or width-dependent
   //                       // position.
   // }
-  bool ParseDependentFromJson(const base::Value& value);
+  bool ParseDependentFromJson(const base::Value::Dict& value);
 
   gfx::PointF CalculateDefaultPosition(const gfx::RectF& content_bounds) const;
   gfx::PointF CalculateDependentPosition(

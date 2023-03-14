@@ -6,6 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/nacl/config.gni")
 import("//chrome/process_version_rc_template.gni")
+import("//mojo/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
@@ -140,6 +141,7 @@ template("core_impl_source_set") {
 
     public_deps = [
       "//base",
+      "//mojo:buildflags",
       "//mojo/core/embedder:features",
       "//mojo/core/ports",
       "//mojo/public/c/system:headers",
@@ -155,7 +157,7 @@ template("core_impl_source_set") {
       public_deps += [ "//third_party/fuchsia-sdk/sdk/pkg/fdio" ]
     }
 
-    if (is_posix && !is_mac) {
+    if (is_posix && !mojo_use_apple_channel) {
       if (!is_nacl) {
         sources += [
           "broker_posix.cc",
@@ -174,7 +176,7 @@ template("core_impl_source_set") {
       }
     }
 
-    if (is_mac) {
+    if (mojo_use_apple_channel) {
       sources += [ "channel_mac.cc" ]
     }
 
@@ -204,8 +206,6 @@ template("core_impl_source_set") {
       sources += [
         "broker_win.cc",
         "channel_win.cc",
-        "platform_handle_security_util_win.cc",
-        "platform_handle_security_util_win.h",
       ]
     }
 
@@ -366,6 +366,8 @@ source_set("test_sources") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//build:blink_buildflags",
+    "//mojo:buildflags",
     "//mojo/core:embedder_internal",
     "//mojo/core/embedder",
     "//mojo/core/ports:tests",

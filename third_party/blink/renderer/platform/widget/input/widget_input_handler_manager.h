@@ -180,7 +180,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   // Called on the main thread. Finds the matching element under the given
   // point in visual viewport coordinates and runs the callback with the
   // found element id on input thread task runner.
-  using ElementAtPointCallback = base::OnceCallback<void(uint64_t)>;
+  using ElementAtPointCallback = base::OnceCallback<void(cc::ElementId)>;
   void FindScrollTargetOnMainThread(const gfx::PointF& point,
                                     ElementAtPointCallback callback);
   void SendDroppedPointerDownCounts();
@@ -234,7 +234,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
       std::unique_ptr<WebCoalescedInputEvent> event,
       std::unique_ptr<cc::EventMetrics> metrics,
       mojom::blink::WidgetInputHandler::DispatchEventCallback browser_callback,
-      uint64_t hit_test_result);
+      cc::ElementId hit_test_result);
 
   // This method is the callback used by the compositor input handler to
   // communicate back whether the event was successfully handled on the

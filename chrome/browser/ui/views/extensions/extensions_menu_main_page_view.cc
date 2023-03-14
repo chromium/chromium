@@ -22,6 +22,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
@@ -72,12 +73,27 @@ bool IsSiteSettingsToggleVisible(
 }
 
 // Converts a view to a InstalledExtensionsMenuItemView. This cannot
-// be used to *determine* if a view is an InstalledExtensionMenuItemView (it
+// be used to *determine* if a view is an ExtensionMenuItemView (it
 // should only be used when the view is known to be one). It is only used as an
 // extra measure to prevent bad static casts.
-InstalledExtensionMenuItemView* GetAsMenuItem(views::View* view) {
-  DCHECK(views::IsViewClass<InstalledExtensionMenuItemView>(view));
-  return views::AsViewClass<InstalledExtensionMenuItemView>(view);
+ExtensionMenuItemView* GetAsMenuItem(views::View* view) {
+  DCHECK(views::IsViewClass<ExtensionMenuItemView>(view));
+  return views::AsViewClass<ExtensionMenuItemView>(view);
+}
+
+// Returns the InstalledExtensionsMenuItemView corresponding to `action_id` if
+// it is a children of `parent_view`. The children of the parent view must be
+// InstalledExtensionsMenuItemView, otherwise it will DCHECK.
+ExtensionMenuItemView* GetMenuItem(
+    views::View* parent_view,
+    const ToolbarActionsModel::ActionId& action_id) {
+  for (auto* view : parent_view->children()) {
+    auto* item_view = GetAsMenuItem(view);
+    if (item_view->view_controller()->GetId() == action_id) {
+      return item_view;
+    }
+  }
+  return nullptr;
 }
 
 }  // namespace
@@ -241,12 +257,18 @@ void ExtensionsMenuMainPageView::CreateAndInsertMenuItem(
     extensions::ExtensionId extension_id,
     bool allow_pinning,
     int index) {
-  auto item = std::make_unique<InstalledExtensionMenuItemView>(
+  auto item = std::make_unique<ExtensionMenuItemView>(
       browser_, std::move(action_controller), allow_pinning,
       base::BindRepeating(
           &ExtensionsMenuNavigationHandler::OpenSitePermissionsPage,
           base::Unretained(navigation_handler_), extension_id));
   menu_items_->AddChildViewAt(std::move(item), index);
+}
+
+void ExtensionsMenuMainPageView::RemoveMenuItem(
+    const ToolbarActionsModel::ActionId& action_id) {
+  views::View* item = GetMenuItem(menu_items_, action_id);
+  menu_items_->RemoveChildViewT(item);
 }
 
 void ExtensionsMenuMainPageView::OnToggleButtonPressed() {
@@ -271,9 +293,15 @@ void ExtensionsMenuMainPageView::Update(content::WebContents* web_contents) {
   }
 }
 
-std::vector<InstalledExtensionMenuItemView*>
+void ExtensionsMenuMainPageView::UpdatePinButtons() {
+  for (views::View* view : menu_items_->children()) {
+    GetAsMenuItem(view)->UpdatePinButton();
+  }
+}
+
+std::vector<ExtensionMenuItemView*>
 ExtensionsMenuMainPageView::GetMenuItemsForTesting() const {
-  std::vector<InstalledExtensionMenuItemView*> menu_item_views;
+  std::vector<ExtensionMenuItemView*> menu_item_views;
   for (views::View* view : menu_items_->children()) {
     menu_item_views.push_back(GetAsMenuItem(view));
   }
@@ -283,3 +311,6 @@ ExtensionsMenuMainPageView::GetMenuItemsForTesting() const {
 content::WebContents* ExtensionsMenuMainPageView::GetActiveWebContents() const {
   return browser_->tab_strip_model()->GetActiveWebContents();
 }
+
+BEGIN_METADATA(ExtensionsMenuMainPageView, views::View)
+END_METADATA

@@ -14,11 +14,14 @@
 
 #include "snapshot/win/exception_snapshot_win.h"
 
+#include <windows.h>
+
 #include <string>
 
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
 #include "gtest/gtest.h"
+#include "snapshot/win/exception_snapshot_win.h"
 #include "snapshot/win/process_snapshot_win.h"
 #include "test/errors.h"
 #include "test/test_paths.h"
@@ -314,6 +317,48 @@ TEST(SimulateCrash, ChildDumpWithoutCrashingWOW64) {
   TestDumpWithoutCrashingChild(TestPaths::Architecture::k32Bit);
 }
 #endif  // ARCH_CPU_64_BITS
+
+TEST(ExceptionSnapshot, TooManyExceptionParameters) {
+  ProcessReaderWin process_reader;
+  ASSERT_TRUE(process_reader.Initialize(GetCurrentProcess(),
+                                        ProcessSuspensionState::kRunning));
+
+  // Construct a fake exception record and CPU context.
+  auto exception_record = std::make_unique<EXCEPTION_RECORD>();
+  exception_record->ExceptionCode = STATUS_FATAL_APP_EXIT;
+  exception_record->ExceptionFlags = EXCEPTION_NONCONTINUABLE;
+  exception_record->ExceptionAddress = reinterpret_cast<PVOID>(0xFA15E);
+  // One more than is permitted in the struct.
+  exception_record->NumberParameters = EXCEPTION_MAXIMUM_PARAMETERS + 1;
+  for (int i = 0; i < EXCEPTION_MAXIMUM_PARAMETERS; ++i) {
+    exception_record->ExceptionInformation[i] = 1000 + i;
+  }
+
+  auto cpu_context = std::make_unique<internal::CPUContextUnion>();
+
+  auto exception_pointers = std::make_unique<EXCEPTION_POINTERS>();
+  exception_pointers->ExceptionRecord =
+      reinterpret_cast<PEXCEPTION_RECORD>(exception_record.get());
+  exception_pointers->ContextRecord =
+      reinterpret_cast<PCONTEXT>(cpu_context.get());
+
+  internal::ExceptionSnapshotWin snapshot;
+  ASSERT_TRUE(snapshot.Initialize(
+      &process_reader,
+      GetCurrentThreadId(),
+      reinterpret_cast<WinVMAddress>(exception_pointers.get()),
+      nullptr));
+
+  EXPECT_EQ(STATUS_FATAL_APP_EXIT, snapshot.Exception());
+  EXPECT_EQ(static_cast<uint32_t>(EXCEPTION_NONCONTINUABLE),
+            snapshot.ExceptionInfo());
+  EXPECT_EQ(0xFA15Eu, snapshot.ExceptionAddress());
+  EXPECT_EQ(static_cast<size_t>(EXCEPTION_MAXIMUM_PARAMETERS),
+            snapshot.Codes().size());
+  for (size_t i = 0; i < EXCEPTION_MAXIMUM_PARAMETERS; ++i) {
+    EXPECT_EQ(1000 + i, snapshot.Codes()[i]);
+  }
+}
 
 }  // namespace
 }  // namespace test

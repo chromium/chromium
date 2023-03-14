@@ -82,20 +82,7 @@ void QuickStartScreen::OnStatusChanged(
       return;
     }
     case Step::GAIA_CREDENTIALS: {
-      std::string phone_instance_id =
-          bootstrap_controller_->GetPhoneInstanceId();
-
-      if (phone_instance_id.empty()) {
-        return;
-      }
-
-      quick_start::QS_LOG(INFO)
-          << "Adding Phone Instance ID to Wizard Object for Unified "
-             "Setup UI enhancements. quick_start_phone_instance_id: "
-          << phone_instance_id;
-      LoginDisplayHost::default_host()
-          ->GetWizardContext()
-          ->quick_start_phone_instance_id = phone_instance_id;
+      SavePhoneInstanceID();
       return;
     }
     case Step::NONE:
@@ -121,6 +108,25 @@ void QuickStartScreen::SendRandomFiguresForTesting() const {
       base::TimeFormatWithPattern(base::Time::Now(), "MMMMdjmmss"));
   const auto& shapes = quick_start::GenerateShapes(token);
   view_->SetShapes(shapes);
+}
+
+void QuickStartScreen::SavePhoneInstanceID() {
+  if (!bootstrap_controller_) {
+    return;
+  }
+
+  std::string phone_instance_id = bootstrap_controller_->GetPhoneInstanceId();
+  if (phone_instance_id.empty()) {
+    return;
+  }
+
+  quick_start::QS_LOG(INFO)
+      << "Adding Phone Instance ID to Wizard Object for Unified "
+         "Setup UI enhancements. quick_start_phone_instance_id: "
+      << phone_instance_id;
+  LoginDisplayHost::default_host()
+      ->GetWizardContext()
+      ->quick_start_phone_instance_id = phone_instance_id;
 }
 
 }  // namespace ash

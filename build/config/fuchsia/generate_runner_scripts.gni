@@ -2,14 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_fuchsia)
-
 import("//build/config/chromecast_build.gni")
 import("//build/config/fuchsia/config.gni")
 import("//build/config/fuchsia/fuchsia_package_metadata.gni")
 import("//build/config/gclient_args.gni")
 import("//build/config/sysroot.gni")
 import("//build/util/generate_wrapper.gni")
+
+assert(is_fuchsia)
 
 declare_args() {
   # Sets the Fuchsia Amber repository which will be used by default by the
@@ -34,12 +34,6 @@ declare_args() {
   # This variable controls the browser included in the Telemetry based test
   # targets.
   fuchsia_browser_type = "web_engine_shell"
-
-  # This variable controls which default version of the testing scripts to use.
-  # Individual tests can override this via setting |legacy_script_required| to
-  # true.
-  # TODO(crbug/1280705): remove when all tests are migrated to CFv2.
-  use_v2_script_default = true
 }
 
 # Generates a wrapper script under root_build_dir/bin that performs an
@@ -71,7 +65,6 @@ declare_args() {
 #   include_fuchsia_build_dir: If true, adds
 #                              |default_fuchsia_build_dir_for_installation|
 #                              to executable_args (when set in GN args).
-#   use_v2_script: Whether to use the the ssh based v1 or ffx based v2 scripts.
 template("fuchsia_run_script_with_packages") {
   if (defined(invoker.package_name)) {
     _pkg_shortname = invoker.package_name
@@ -121,42 +114,17 @@ template("fuchsia_run_script_with_packages") {
     }
 
     # Compute the list of full paths to package files, including dependencies.
-    if (!invoker.use_v2_script) {
-      _pkg_dir = "$root_out_dir/gen/" + get_label_info(invoker.package, "dir") +
-                 "/" + _pkg_shortname
-      package_paths =
-          [ rebase_path("$_pkg_dir/${_pkg_shortname}.far", root_build_dir) ]
-    }
     if (defined(invoker.package_deps)) {
       foreach(package_dep, invoker.package_deps) {
         package_dep_target = package_dep[0]
         deps += [ package_dep_target ]
         data_deps += [ package_dep_target ]
-        if (!invoker.use_v2_script) {
-          package_dep_name = package_dep[1]
-          package_dep_path = rebase_path(
-                  get_label_info(package_dep_target, "target_gen_dir") + "/" +
-                      package_dep_name + "/" + package_dep_name + ".far",
-                  root_build_dir)
-          package_paths += [ package_dep_path ]
-        }
       }
     }
 
     # Include package information inside the wrapper script.
     if (!defined(executable_args)) {
       executable_args = []
-    }
-
-    if (!invoker.use_v2_script) {
-      foreach(package_path, package_paths) {
-        executable_args += [
-          "--package",
-          "@WrappedPath(${package_path})",
-          "--package-name",
-          _pkg_shortname,
-        ]
-      }
     }
 
     if (defined(include_fuchsia_build_dir) && include_fuchsia_build_dir &&
@@ -188,11 +156,6 @@ template("fuchsia_package_installer") {
   } else {
     pkg_shortname = get_label_info(invoker.package, "name")
   }
-  if (!defined(invoker.use_v2_script)) {
-    use_v2_script = use_v2_script_default
-  } else {
-    use_v2_script = invoker.use_v2_script
-  }
   fuchsia_package_metadata(pkg_shortname) {
     forward_variables_from(invoker,
                            TESTONLY_AND_VISIBILITY + [
@@ -205,16 +168,12 @@ template("fuchsia_package_installer") {
                            "*",
                            TESTONLY_AND_VISIBILITY + [ "executable_args" ])
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-    if (use_v2_script) {
-      executable = rebase_path("//build/fuchsia/test/deploy_to_fuchsia.py")
-      executable_args = [
-        "--out-dir",
-        "@WrappedPath(.)",
-        pkg_shortname,
-      ]
-    } else {
-      executable = rebase_path("//build/fuchsia/deploy_to_pkg_repo.py")
-    }
+    executable = rebase_path("//build/fuchsia/test/deploy_to_fuchsia.py")
+    executable_args = [
+      "--out-dir",
+      "@WrappedPath(.)",
+      pkg_shortname,
+    ]
     output_name_format = "deploy_%package%"
     include_fuchsia_build_dir = true
   }
@@ -226,12 +185,6 @@ template("fuchsia_test_runner") {
   _run_target = "${target_name}__runner"
   _install_target = "${target_name}__installer"
 
-  if (!defined(invoker.use_v2_script)) {
-    use_v2_script = use_v2_script_default
-  } else {
-    use_v2_script = invoker.use_v2_script
-  }
-
   fuchsia_run_script_with_packages(_run_target) {
     forward_variables_from(invoker,
                            TESTONLY_AND_VISIBILITY + [
@@ -242,11 +195,7 @@ template("fuchsia_test_runner") {
                                  "package_deps",
                                ])
 
-    if (use_v2_script) {
-      _test_runner_py = "//build/fuchsia/test/run_test.py"
-    } else {
-      _test_runner_py = "//build/fuchsia/test_runner.py"
-    }
+    _test_runner_py = "//build/fuchsia/test/run_test.py"
 
     executable = rebase_path(_test_runner_py)
 
@@ -262,31 +211,17 @@ template("fuchsia_test_runner") {
       "@WrappedPath(.)",
     ]
 
-    if (use_v2_script) {
-      executable_args += [ package_name ]
-    } else {
-      executable_args += [
-        "--target-cpu",
-        target_cpu,
-      ]
-    }
+    executable_args += [ package_name ]
 
     if (defined(invoker.use_test_server) && invoker.use_test_server) {
       executable_args += [ "--enable-test-server" ]
     }
 
     if (default_fuchsia_device_node_name != "") {
-      if (use_v2_script) {
-        executable_args += [
-          "--target-id",
-          default_fuchsia_device_node_name,
-        ]
-      } else {
-        executable_args += [
-          "--node-name",
-          default_fuchsia_device_node_name,
-        ]
-      }
+      executable_args += [
+        "--target-id",
+        default_fuchsia_device_node_name,
+      ]
     }
 
     # Declare the files that are needed for test execution on LUCI swarming
@@ -294,11 +229,10 @@ template("fuchsia_test_runner") {
     if (!defined(data)) {
       data = []
     }
-    data += [ _test_runner_py ]
-
-    if (use_v2_script) {
-      data += [ "$root_gen_dir/package_metadata/${invoker.package_name}.meta" ]
-    }
+    data += [
+      _test_runner_py,
+      "$root_gen_dir/package_metadata/${invoker.package_name}.meta",
+    ]
 
     # TODO(crbug.com/1256870): Remove this once all out-of-tree references
     # to "package_name_override" are migrated to "package_name".

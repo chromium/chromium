@@ -50,7 +50,7 @@
 #include "updater_idl.h"
 
 #define TYPE_FORMAT_STRING_SIZE   271                               
-#define PROC_FORMAT_STRING_SIZE   1963                              
+#define PROC_FORMAT_STRING_SIZE   2071                              
 #define EXPR_FORMAT_STRING_SIZE   1                                 
 #define TRANSMIT_AS_TABLE_SIZE    0            
 #define WIRE_MARSHAL_TABLE_SIZE   1            
@@ -995,23 +995,17 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 /* 718 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
-	/* Procedure CheckForUpdate */
-
-
-	/* Procedure CheckForUpdate */
-
-
-	/* Procedure CheckForUpdate */
+	/* Procedure RegisterApp */
 
 /* 720 */	0x33,		/* FC_AUTO_HANDLE */
 			0x6c,		/* Old Flags:  object, Oi2 */
 /* 722 */	NdrFcLong( 0x0 ),	/* 0 */
 /* 726 */	NdrFcShort( 0x5 ),	/* 5 */
-/* 728 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
+/* 728 */	NdrFcShort( 0x24 ),	/* x86 Stack size/offset = 36 */
 /* 730 */	NdrFcShort( 0x0 ),	/* 0 */
 /* 732 */	NdrFcShort( 0x8 ),	/* 8 */
 /* 734 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
-			0x2,		/* 2 */
+			0x8,		/* 8 */
 /* 736 */	0x8,		/* 8 */
 			0x1,		/* Ext Flags:  new corr desc, */
 /* 738 */	NdrFcShort( 0x0 ),	/* 0 */
@@ -1020,301 +1014,302 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 
 	/* Parameter app_id */
 
-
-	/* Parameter app_id */
-
-
-	/* Parameter app_id */
-
 /* 744 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
 /* 746 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
 /* 748 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
-	/* Return value */
-
-
-	/* Return value */
-
-
-	/* Return value */
-
-/* 750 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
-/* 752 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
-/* 754 */	0x8,		/* FC_LONG */
-			0x0,		/* 0 */
-
-	/* Procedure RegisterApp */
-
-/* 756 */	0x33,		/* FC_AUTO_HANDLE */
-			0x6c,		/* Old Flags:  object, Oi2 */
-/* 758 */	NdrFcLong( 0x0 ),	/* 0 */
-/* 762 */	NdrFcShort( 0x6 ),	/* 6 */
-/* 764 */	NdrFcShort( 0x24 ),	/* x86 Stack size/offset = 36 */
-/* 766 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 768 */	NdrFcShort( 0x8 ),	/* 8 */
-/* 770 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
-			0x8,		/* 8 */
-/* 772 */	0x8,		/* 8 */
-			0x1,		/* Ext Flags:  new corr desc, */
-/* 774 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 776 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 778 */	NdrFcShort( 0x0 ),	/* 0 */
-
-	/* Parameter app_id */
-
-/* 780 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 782 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
-/* 784 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
-
 	/* Parameter brand_code */
 
-/* 786 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 788 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
-/* 790 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 750 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 752 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 754 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter brand_path */
 
-/* 792 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 794 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
-/* 796 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 756 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 758 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
+/* 760 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter tag */
 
-/* 798 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 800 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
-/* 802 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 762 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 764 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
+/* 766 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter version */
 
-/* 804 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 806 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
-/* 808 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 768 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 770 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
+/* 772 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter existence_checker_path */
 
-/* 810 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 812 */	NdrFcShort( 0x18 ),	/* x86 Stack size/offset = 24 */
-/* 814 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 774 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 776 */	NdrFcShort( 0x18 ),	/* x86 Stack size/offset = 24 */
+/* 778 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+
+	/* Parameter callback */
+
+/* 780 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
+/* 782 */	NdrFcShort( 0x1c ),	/* x86 Stack size/offset = 28 */
+/* 784 */	NdrFcShort( 0x9e ),	/* Type Offset=158 */
+
+	/* Return value */
+
+/* 786 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 788 */	NdrFcShort( 0x20 ),	/* x86 Stack size/offset = 32 */
+/* 790 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Procedure RunPeriodicTasks */
+
+/* 792 */	0x33,		/* FC_AUTO_HANDLE */
+			0x6c,		/* Old Flags:  object, Oi2 */
+/* 794 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 798 */	NdrFcShort( 0x6 ),	/* 6 */
+/* 800 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
+/* 802 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 804 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 806 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
+			0x2,		/* 2 */
+/* 808 */	0x8,		/* 8 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 810 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 812 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 814 */	NdrFcShort( 0x0 ),	/* 0 */
 
 	/* Parameter callback */
 
 /* 816 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
-/* 818 */	NdrFcShort( 0x1c ),	/* x86 Stack size/offset = 28 */
+/* 818 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
 /* 820 */	NdrFcShort( 0x9e ),	/* Type Offset=158 */
 
 	/* Return value */
 
 /* 822 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
-/* 824 */	NdrFcShort( 0x20 ),	/* x86 Stack size/offset = 32 */
+/* 824 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
 /* 826 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
-	/* Procedure RunPeriodicTasks */
+	/* Procedure CheckForUpdate */
 
 /* 828 */	0x33,		/* FC_AUTO_HANDLE */
 			0x6c,		/* Old Flags:  object, Oi2 */
 /* 830 */	NdrFcLong( 0x0 ),	/* 0 */
 /* 834 */	NdrFcShort( 0x7 ),	/* 7 */
-/* 836 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
-/* 838 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 836 */	NdrFcShort( 0x18 ),	/* x86 Stack size/offset = 24 */
+/* 838 */	NdrFcShort( 0x10 ),	/* 16 */
 /* 840 */	NdrFcShort( 0x8 ),	/* 8 */
 /* 842 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
-			0x2,		/* 2 */
+			0x5,		/* 5 */
 /* 844 */	0x8,		/* 8 */
 			0x1,		/* Ext Flags:  new corr desc, */
 /* 846 */	NdrFcShort( 0x0 ),	/* 0 */
 /* 848 */	NdrFcShort( 0x0 ),	/* 0 */
 /* 850 */	NdrFcShort( 0x0 ),	/* 0 */
 
-	/* Parameter callback */
+	/* Parameter app_id */
 
-/* 852 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
+/* 852 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
 /* 854 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
-/* 856 */	NdrFcShort( 0x9e ),	/* Type Offset=158 */
+/* 856 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
-	/* Return value */
+	/* Parameter priority */
 
-/* 858 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 858 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
 /* 860 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
 /* 862 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
-	/* Procedure Update */
-
-/* 864 */	0x33,		/* FC_AUTO_HANDLE */
-			0x6c,		/* Old Flags:  object, Oi2 */
-/* 866 */	NdrFcLong( 0x0 ),	/* 0 */
-/* 870 */	NdrFcShort( 0x8 ),	/* 8 */
-/* 872 */	NdrFcShort( 0x20 ),	/* x86 Stack size/offset = 32 */
-/* 874 */	NdrFcShort( 0x18 ),	/* 24 */
-/* 876 */	NdrFcShort( 0x8 ),	/* 8 */
-/* 878 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
-			0x7,		/* 7 */
-/* 880 */	0x8,		/* 8 */
-			0x1,		/* Ext Flags:  new corr desc, */
-/* 882 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 884 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 886 */	NdrFcShort( 0x0 ),	/* 0 */
-
-	/* Parameter app_id */
-
-/* 888 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 890 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
-/* 892 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
-
-	/* Parameter install_data_index */
-
-/* 894 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 896 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
-/* 898 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
-
-	/* Parameter priority */
-
-/* 900 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
-/* 902 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
-/* 904 */	0x8,		/* FC_LONG */
-			0x0,		/* 0 */
-
 	/* Parameter same_version_update_allowed */
 
-/* 906 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
-/* 908 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
-/* 910 */	0x8,		/* FC_LONG */
-			0x0,		/* 0 */
-
-	/* Parameter do_update_check_only */
-
-/* 912 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
-/* 914 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
-/* 916 */	0x8,		/* FC_LONG */
+/* 864 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
+/* 866 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
+/* 868 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
 	/* Parameter observer */
 
-/* 918 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
-/* 920 */	NdrFcShort( 0x18 ),	/* x86 Stack size/offset = 24 */
-/* 922 */	NdrFcShort( 0xb4 ),	/* Type Offset=180 */
+/* 870 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
+/* 872 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
+/* 874 */	NdrFcShort( 0xb4 ),	/* Type Offset=180 */
 
 	/* Return value */
 
-/* 924 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
-/* 926 */	NdrFcShort( 0x1c ),	/* x86 Stack size/offset = 28 */
+/* 876 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 878 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
+/* 880 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Procedure Update */
+
+/* 882 */	0x33,		/* FC_AUTO_HANDLE */
+			0x6c,		/* Old Flags:  object, Oi2 */
+/* 884 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 888 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 890 */	NdrFcShort( 0x1c ),	/* x86 Stack size/offset = 28 */
+/* 892 */	NdrFcShort( 0x10 ),	/* 16 */
+/* 894 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 896 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
+			0x6,		/* 6 */
+/* 898 */	0x8,		/* 8 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 900 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 902 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 904 */	NdrFcShort( 0x0 ),	/* 0 */
+
+	/* Parameter app_id */
+
+/* 906 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 908 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
+/* 910 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+
+	/* Parameter install_data_index */
+
+/* 912 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 914 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 916 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+
+	/* Parameter priority */
+
+/* 918 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
+/* 920 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
+/* 922 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Parameter same_version_update_allowed */
+
+/* 924 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
+/* 926 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
 /* 928 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Parameter observer */
+
+/* 930 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
+/* 932 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
+/* 934 */	NdrFcShort( 0xb4 ),	/* Type Offset=180 */
+
+	/* Return value */
+
+/* 936 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 938 */	NdrFcShort( 0x18 ),	/* x86 Stack size/offset = 24 */
+/* 940 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
 	/* Procedure UpdateAll */
 
-/* 930 */	0x33,		/* FC_AUTO_HANDLE */
+/* 942 */	0x33,		/* FC_AUTO_HANDLE */
 			0x6c,		/* Old Flags:  object, Oi2 */
-/* 932 */	NdrFcLong( 0x0 ),	/* 0 */
-/* 936 */	NdrFcShort( 0x9 ),	/* 9 */
-/* 938 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
-/* 940 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 942 */	NdrFcShort( 0x8 ),	/* 8 */
-/* 944 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
-			0x2,		/* 2 */
-/* 946 */	0x8,		/* 8 */
-			0x1,		/* Ext Flags:  new corr desc, */
-/* 948 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 950 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 944 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 948 */	NdrFcShort( 0x9 ),	/* 9 */
+/* 950 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
 /* 952 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 954 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 956 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
+			0x2,		/* 2 */
+/* 958 */	0x8,		/* 8 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 960 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 962 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 964 */	NdrFcShort( 0x0 ),	/* 0 */
 
 	/* Parameter observer */
 
-/* 954 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
-/* 956 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
-/* 958 */	NdrFcShort( 0xb4 ),	/* Type Offset=180 */
+/* 966 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
+/* 968 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
+/* 970 */	NdrFcShort( 0xb4 ),	/* Type Offset=180 */
 
 	/* Return value */
 
-/* 960 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
-/* 962 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
-/* 964 */	0x8,		/* FC_LONG */
+/* 972 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 974 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 976 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
 	/* Procedure Install */
 
-/* 966 */	0x33,		/* FC_AUTO_HANDLE */
+/* 978 */	0x33,		/* FC_AUTO_HANDLE */
 			0x6c,		/* Old Flags:  object, Oi2 */
-/* 968 */	NdrFcLong( 0x0 ),	/* 0 */
-/* 972 */	NdrFcShort( 0xa ),	/* 10 */
-/* 974 */	NdrFcShort( 0x30 ),	/* x86 Stack size/offset = 48 */
-/* 976 */	NdrFcShort( 0x8 ),	/* 8 */
-/* 978 */	NdrFcShort( 0x8 ),	/* 8 */
-/* 980 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
+/* 980 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 984 */	NdrFcShort( 0xa ),	/* 10 */
+/* 986 */	NdrFcShort( 0x30 ),	/* x86 Stack size/offset = 48 */
+/* 988 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 990 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 992 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
 			0xb,		/* 11 */
-/* 982 */	0x8,		/* 8 */
+/* 994 */	0x8,		/* 8 */
 			0x1,		/* Ext Flags:  new corr desc, */
-/* 984 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 986 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 988 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 996 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 998 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1000 */	NdrFcShort( 0x0 ),	/* 0 */
 
 	/* Parameter app_id */
 
-/* 990 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 992 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
-/* 994 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1002 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1004 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
+/* 1006 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter brand_code */
 
-/* 996 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 998 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
-/* 1000 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1008 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1010 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 1012 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter brand_path */
 
-/* 1002 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1004 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
-/* 1006 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1014 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1016 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
+/* 1018 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter tag */
 
-/* 1008 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1010 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
-/* 1012 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1020 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1022 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
+/* 1024 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter version */
 
-/* 1014 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1016 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
-/* 1018 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1026 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1028 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
+/* 1030 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter existence_checker_path */
 
-/* 1020 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1022 */	NdrFcShort( 0x18 ),	/* x86 Stack size/offset = 24 */
-/* 1024 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1032 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1034 */	NdrFcShort( 0x18 ),	/* x86 Stack size/offset = 24 */
+/* 1036 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter client_install_data */
 
-/* 1026 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1028 */	NdrFcShort( 0x1c ),	/* x86 Stack size/offset = 28 */
-/* 1030 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1038 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1040 */	NdrFcShort( 0x1c ),	/* x86 Stack size/offset = 28 */
+/* 1042 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter install_data_index */
 
-/* 1032 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1034 */	NdrFcShort( 0x20 ),	/* x86 Stack size/offset = 32 */
-/* 1036 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1044 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1046 */	NdrFcShort( 0x20 ),	/* x86 Stack size/offset = 32 */
+/* 1048 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter priority */
 
-/* 1038 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
-/* 1040 */	NdrFcShort( 0x24 ),	/* x86 Stack size/offset = 36 */
-/* 1042 */	0x8,		/* FC_LONG */
+/* 1050 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
+/* 1052 */	NdrFcShort( 0x24 ),	/* x86 Stack size/offset = 36 */
+/* 1054 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
 	/* Parameter observer */
 
-/* 1044 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
-/* 1046 */	NdrFcShort( 0x28 ),	/* x86 Stack size/offset = 40 */
-/* 1048 */	NdrFcShort( 0xb4 ),	/* Type Offset=180 */
+/* 1056 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
+/* 1058 */	NdrFcShort( 0x28 ),	/* x86 Stack size/offset = 40 */
+/* 1060 */	NdrFcShort( 0xb4 ),	/* Type Offset=180 */
 
 	/* Return value */
 
-/* 1050 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
-/* 1052 */	NdrFcShort( 0x2c ),	/* x86 Stack size/offset = 44 */
-/* 1054 */	0x8,		/* FC_LONG */
+/* 1062 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 1064 */	NdrFcShort( 0x2c ),	/* x86 Stack size/offset = 44 */
+/* 1066 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
 	/* Procedure CancelInstalls */
@@ -1325,20 +1320,20 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 
 	/* Procedure CancelInstalls */
 
-/* 1056 */	0x33,		/* FC_AUTO_HANDLE */
+/* 1068 */	0x33,		/* FC_AUTO_HANDLE */
 			0x6c,		/* Old Flags:  object, Oi2 */
-/* 1058 */	NdrFcLong( 0x0 ),	/* 0 */
-/* 1062 */	NdrFcShort( 0xb ),	/* 11 */
-/* 1064 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
-/* 1066 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1068 */	NdrFcShort( 0x8 ),	/* 8 */
-/* 1070 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
-			0x2,		/* 2 */
-/* 1072 */	0x8,		/* 8 */
-			0x1,		/* Ext Flags:  new corr desc, */
-/* 1074 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1076 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1070 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 1074 */	NdrFcShort( 0xb ),	/* 11 */
+/* 1076 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
 /* 1078 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1080 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 1082 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
+			0x2,		/* 2 */
+/* 1084 */	0x8,		/* 8 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 1086 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1088 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1090 */	NdrFcShort( 0x0 ),	/* 0 */
 
 	/* Parameter app_id */
 
@@ -1348,9 +1343,9 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 
 	/* Parameter app_id */
 
-/* 1080 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1082 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
-/* 1084 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1092 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1094 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
+/* 1096 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Return value */
 
@@ -1360,797 +1355,883 @@ static const updater_idl_MIDL_PROC_FORMAT_STRING updater_idl__MIDL_ProcFormatStr
 
 	/* Return value */
 
-/* 1086 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
-/* 1088 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
-/* 1090 */	0x8,		/* FC_LONG */
+/* 1098 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 1100 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 1102 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
 	/* Procedure RunInstaller */
 
-/* 1092 */	0x33,		/* FC_AUTO_HANDLE */
+/* 1104 */	0x33,		/* FC_AUTO_HANDLE */
 			0x6c,		/* Old Flags:  object, Oi2 */
-/* 1094 */	NdrFcLong( 0x0 ),	/* 0 */
-/* 1098 */	NdrFcShort( 0xc ),	/* 12 */
-/* 1100 */	NdrFcShort( 0x20 ),	/* x86 Stack size/offset = 32 */
-/* 1102 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1104 */	NdrFcShort( 0x8 ),	/* 8 */
-/* 1106 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
-			0x7,		/* 7 */
-/* 1108 */	0x8,		/* 8 */
-			0x1,		/* Ext Flags:  new corr desc, */
-/* 1110 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1112 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1106 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 1110 */	NdrFcShort( 0xc ),	/* 12 */
+/* 1112 */	NdrFcShort( 0x20 ),	/* x86 Stack size/offset = 32 */
 /* 1114 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1116 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 1118 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
+			0x7,		/* 7 */
+/* 1120 */	0x8,		/* 8 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 1122 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1124 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1126 */	NdrFcShort( 0x0 ),	/* 0 */
 
 	/* Parameter app_id */
 
-/* 1116 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1118 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
-/* 1120 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1128 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1130 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
+/* 1132 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter installer_path */
 
-/* 1122 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1124 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
-/* 1126 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1134 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1136 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 1138 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter install_args */
 
-/* 1128 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1130 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
-/* 1132 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1140 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1142 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
+/* 1144 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter install_data */
 
-/* 1134 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1136 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
-/* 1138 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1146 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1148 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
+/* 1150 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter install_settings */
 
-/* 1140 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1142 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
-/* 1144 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1152 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1154 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
+/* 1156 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter observer */
 
-/* 1146 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
-/* 1148 */	NdrFcShort( 0x18 ),	/* x86 Stack size/offset = 24 */
-/* 1150 */	NdrFcShort( 0xb4 ),	/* Type Offset=180 */
+/* 1158 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
+/* 1160 */	NdrFcShort( 0x18 ),	/* x86 Stack size/offset = 24 */
+/* 1162 */	NdrFcShort( 0xb4 ),	/* Type Offset=180 */
 
 	/* Return value */
 
-/* 1152 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
-/* 1154 */	NdrFcShort( 0x1c ),	/* x86 Stack size/offset = 28 */
-/* 1156 */	0x8,		/* FC_LONG */
+/* 1164 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 1166 */	NdrFcShort( 0x1c ),	/* x86 Stack size/offset = 28 */
+/* 1168 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
 	/* Procedure FetchPolicies */
 
-/* 1158 */	0x33,		/* FC_AUTO_HANDLE */
+/* 1170 */	0x33,		/* FC_AUTO_HANDLE */
 			0x6c,		/* Old Flags:  object, Oi2 */
-/* 1160 */	NdrFcLong( 0x0 ),	/* 0 */
-/* 1164 */	NdrFcShort( 0x4 ),	/* 4 */
-/* 1166 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
-/* 1168 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1170 */	NdrFcShort( 0x8 ),	/* 8 */
-/* 1172 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
-			0x2,		/* 2 */
-/* 1174 */	0x8,		/* 8 */
-			0x1,		/* Ext Flags:  new corr desc, */
-/* 1176 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1178 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1172 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 1176 */	NdrFcShort( 0x4 ),	/* 4 */
+/* 1178 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
 /* 1180 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1182 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 1184 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
+			0x2,		/* 2 */
+/* 1186 */	0x8,		/* 8 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 1188 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1190 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1192 */	NdrFcShort( 0x0 ),	/* 0 */
 
 	/* Parameter callback */
 
-/* 1182 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
-/* 1184 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
-/* 1186 */	NdrFcShort( 0xc6 ),	/* Type Offset=198 */
+/* 1194 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
+/* 1196 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
+/* 1198 */	NdrFcShort( 0xc6 ),	/* Type Offset=198 */
 
 	/* Return value */
 
-/* 1188 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
-/* 1190 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
-/* 1192 */	0x8,		/* FC_LONG */
+/* 1200 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 1202 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 1204 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
 	/* Procedure RegisterApp */
 
-/* 1194 */	0x33,		/* FC_AUTO_HANDLE */
+/* 1206 */	0x33,		/* FC_AUTO_HANDLE */
 			0x6c,		/* Old Flags:  object, Oi2 */
-/* 1196 */	NdrFcLong( 0x0 ),	/* 0 */
-/* 1200 */	NdrFcShort( 0x6 ),	/* 6 */
-/* 1202 */	NdrFcShort( 0x24 ),	/* x86 Stack size/offset = 36 */
-/* 1204 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1206 */	NdrFcShort( 0x8 ),	/* 8 */
-/* 1208 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
-			0x8,		/* 8 */
-/* 1210 */	0x8,		/* 8 */
-			0x1,		/* Ext Flags:  new corr desc, */
-/* 1212 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1214 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1208 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 1212 */	NdrFcShort( 0x5 ),	/* 5 */
+/* 1214 */	NdrFcShort( 0x24 ),	/* x86 Stack size/offset = 36 */
 /* 1216 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1218 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 1220 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
+			0x8,		/* 8 */
+/* 1222 */	0x8,		/* 8 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 1224 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1226 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1228 */	NdrFcShort( 0x0 ),	/* 0 */
 
 	/* Parameter app_id */
 
-/* 1218 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1220 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
-/* 1222 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1230 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1232 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
+/* 1234 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter brand_code */
 
-/* 1224 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1226 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
-/* 1228 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1236 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1238 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 1240 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter brand_path */
 
-/* 1230 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1232 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
-/* 1234 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1242 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1244 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
+/* 1246 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter tag */
 
-/* 1236 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1238 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
-/* 1240 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1248 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1250 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
+/* 1252 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter version */
 
-/* 1242 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1244 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
-/* 1246 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1254 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1256 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
+/* 1258 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter existence_checker_path */
 
-/* 1248 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1250 */	NdrFcShort( 0x18 ),	/* x86 Stack size/offset = 24 */
-/* 1252 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1260 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1262 */	NdrFcShort( 0x18 ),	/* x86 Stack size/offset = 24 */
+/* 1264 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter callback */
 
-/* 1254 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
-/* 1256 */	NdrFcShort( 0x1c ),	/* x86 Stack size/offset = 28 */
-/* 1258 */	NdrFcShort( 0xc6 ),	/* Type Offset=198 */
+/* 1266 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
+/* 1268 */	NdrFcShort( 0x1c ),	/* x86 Stack size/offset = 28 */
+/* 1270 */	NdrFcShort( 0xc6 ),	/* Type Offset=198 */
 
 	/* Return value */
 
-/* 1260 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
-/* 1262 */	NdrFcShort( 0x20 ),	/* x86 Stack size/offset = 32 */
-/* 1264 */	0x8,		/* FC_LONG */
+/* 1272 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 1274 */	NdrFcShort( 0x20 ),	/* x86 Stack size/offset = 32 */
+/* 1276 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
 	/* Procedure RunPeriodicTasks */
 
-/* 1266 */	0x33,		/* FC_AUTO_HANDLE */
+/* 1278 */	0x33,		/* FC_AUTO_HANDLE */
 			0x6c,		/* Old Flags:  object, Oi2 */
-/* 1268 */	NdrFcLong( 0x0 ),	/* 0 */
-/* 1272 */	NdrFcShort( 0x7 ),	/* 7 */
-/* 1274 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
-/* 1276 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1278 */	NdrFcShort( 0x8 ),	/* 8 */
-/* 1280 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
-			0x2,		/* 2 */
-/* 1282 */	0x8,		/* 8 */
-			0x1,		/* Ext Flags:  new corr desc, */
-/* 1284 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1286 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1280 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 1284 */	NdrFcShort( 0x6 ),	/* 6 */
+/* 1286 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
 /* 1288 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1290 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 1292 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
+			0x2,		/* 2 */
+/* 1294 */	0x8,		/* 8 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 1296 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1298 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1300 */	NdrFcShort( 0x0 ),	/* 0 */
 
 	/* Parameter callback */
 
-/* 1290 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
-/* 1292 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
-/* 1294 */	NdrFcShort( 0xc6 ),	/* Type Offset=198 */
+/* 1302 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
+/* 1304 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
+/* 1306 */	NdrFcShort( 0xc6 ),	/* Type Offset=198 */
 
 	/* Return value */
 
-/* 1296 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
-/* 1298 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
-/* 1300 */	0x8,		/* FC_LONG */
+/* 1308 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 1310 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 1312 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
-	/* Procedure Update */
+	/* Procedure CheckForUpdate */
 
-/* 1302 */	0x33,		/* FC_AUTO_HANDLE */
+/* 1314 */	0x33,		/* FC_AUTO_HANDLE */
 			0x6c,		/* Old Flags:  object, Oi2 */
-/* 1304 */	NdrFcLong( 0x0 ),	/* 0 */
-/* 1308 */	NdrFcShort( 0x8 ),	/* 8 */
-/* 1310 */	NdrFcShort( 0x20 ),	/* x86 Stack size/offset = 32 */
-/* 1312 */	NdrFcShort( 0x18 ),	/* 24 */
-/* 1314 */	NdrFcShort( 0x8 ),	/* 8 */
-/* 1316 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
-			0x7,		/* 7 */
-/* 1318 */	0x8,		/* 8 */
+/* 1316 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 1320 */	NdrFcShort( 0x7 ),	/* 7 */
+/* 1322 */	NdrFcShort( 0x18 ),	/* x86 Stack size/offset = 24 */
+/* 1324 */	NdrFcShort( 0x10 ),	/* 16 */
+/* 1326 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 1328 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
+			0x5,		/* 5 */
+/* 1330 */	0x8,		/* 8 */
 			0x1,		/* Ext Flags:  new corr desc, */
-/* 1320 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1322 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1324 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1332 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1334 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1336 */	NdrFcShort( 0x0 ),	/* 0 */
 
 	/* Parameter app_id */
 
-/* 1326 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1328 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
-/* 1330 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
-
-	/* Parameter install_data_index */
-
-/* 1332 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1334 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
-/* 1336 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1338 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1340 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
+/* 1342 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter priority */
 
-/* 1338 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
-/* 1340 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
-/* 1342 */	0x8,		/* FC_LONG */
+/* 1344 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
+/* 1346 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 1348 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
 	/* Parameter same_version_update_allowed */
 
-/* 1344 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
-/* 1346 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
-/* 1348 */	0x8,		/* FC_LONG */
-			0x0,		/* 0 */
-
-	/* Parameter do_update_check_only */
-
 /* 1350 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
-/* 1352 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
+/* 1352 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
 /* 1354 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
 	/* Parameter observer */
 
 /* 1356 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
-/* 1358 */	NdrFcShort( 0x18 ),	/* x86 Stack size/offset = 24 */
+/* 1358 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
 /* 1360 */	NdrFcShort( 0xd8 ),	/* Type Offset=216 */
 
 	/* Return value */
 
 /* 1362 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
-/* 1364 */	NdrFcShort( 0x1c ),	/* x86 Stack size/offset = 28 */
+/* 1364 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
 /* 1366 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
-	/* Procedure UpdateAll */
+	/* Procedure Update */
 
 /* 1368 */	0x33,		/* FC_AUTO_HANDLE */
 			0x6c,		/* Old Flags:  object, Oi2 */
 /* 1370 */	NdrFcLong( 0x0 ),	/* 0 */
-/* 1374 */	NdrFcShort( 0x9 ),	/* 9 */
-/* 1376 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
-/* 1378 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1374 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 1376 */	NdrFcShort( 0x1c ),	/* x86 Stack size/offset = 28 */
+/* 1378 */	NdrFcShort( 0x10 ),	/* 16 */
 /* 1380 */	NdrFcShort( 0x8 ),	/* 8 */
 /* 1382 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
-			0x2,		/* 2 */
+			0x6,		/* 6 */
 /* 1384 */	0x8,		/* 8 */
 			0x1,		/* Ext Flags:  new corr desc, */
 /* 1386 */	NdrFcShort( 0x0 ),	/* 0 */
 /* 1388 */	NdrFcShort( 0x0 ),	/* 0 */
 /* 1390 */	NdrFcShort( 0x0 ),	/* 0 */
 
-	/* Parameter observer */
+	/* Parameter app_id */
 
-/* 1392 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
+/* 1392 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
 /* 1394 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
-/* 1396 */	NdrFcShort( 0xd8 ),	/* Type Offset=216 */
+/* 1396 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
-	/* Return value */
+	/* Parameter install_data_index */
 
-/* 1398 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 1398 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
 /* 1400 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
-/* 1402 */	0x8,		/* FC_LONG */
-			0x0,		/* 0 */
-
-	/* Procedure Install */
-
-/* 1404 */	0x33,		/* FC_AUTO_HANDLE */
-			0x6c,		/* Old Flags:  object, Oi2 */
-/* 1406 */	NdrFcLong( 0x0 ),	/* 0 */
-/* 1410 */	NdrFcShort( 0xa ),	/* 10 */
-/* 1412 */	NdrFcShort( 0x30 ),	/* x86 Stack size/offset = 48 */
-/* 1414 */	NdrFcShort( 0x8 ),	/* 8 */
-/* 1416 */	NdrFcShort( 0x8 ),	/* 8 */
-/* 1418 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
-			0xb,		/* 11 */
-/* 1420 */	0x8,		/* 8 */
-			0x1,		/* Ext Flags:  new corr desc, */
-/* 1422 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1424 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1426 */	NdrFcShort( 0x0 ),	/* 0 */
-
-	/* Parameter app_id */
-
-/* 1428 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1430 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
-/* 1432 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
-
-	/* Parameter brand_code */
-
-/* 1434 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1436 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
-/* 1438 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
-
-	/* Parameter brand_path */
-
-/* 1440 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1442 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
-/* 1444 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
-
-	/* Parameter tag */
-
-/* 1446 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1448 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
-/* 1450 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
-
-	/* Parameter version */
-
-/* 1452 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1454 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
-/* 1456 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
-
-	/* Parameter existence_checker_path */
-
-/* 1458 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1460 */	NdrFcShort( 0x18 ),	/* x86 Stack size/offset = 24 */
-/* 1462 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
-
-	/* Parameter client_install_data */
-
-/* 1464 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1466 */	NdrFcShort( 0x1c ),	/* x86 Stack size/offset = 28 */
-/* 1468 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
-
-	/* Parameter install_data_index */
-
-/* 1470 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1472 */	NdrFcShort( 0x20 ),	/* x86 Stack size/offset = 32 */
-/* 1474 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1402 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter priority */
 
-/* 1476 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
-/* 1478 */	NdrFcShort( 0x24 ),	/* x86 Stack size/offset = 36 */
-/* 1480 */	0x8,		/* FC_LONG */
-			0x0,		/* 0 */
-
-	/* Parameter observer */
-
-/* 1482 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
-/* 1484 */	NdrFcShort( 0x28 ),	/* x86 Stack size/offset = 40 */
-/* 1486 */	NdrFcShort( 0xd8 ),	/* Type Offset=216 */
-
-	/* Return value */
-
-/* 1488 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
-/* 1490 */	NdrFcShort( 0x2c ),	/* x86 Stack size/offset = 44 */
-/* 1492 */	0x8,		/* FC_LONG */
-			0x0,		/* 0 */
-
-	/* Procedure RunInstaller */
-
-/* 1494 */	0x33,		/* FC_AUTO_HANDLE */
-			0x6c,		/* Old Flags:  object, Oi2 */
-/* 1496 */	NdrFcLong( 0x0 ),	/* 0 */
-/* 1500 */	NdrFcShort( 0xc ),	/* 12 */
-/* 1502 */	NdrFcShort( 0x20 ),	/* x86 Stack size/offset = 32 */
-/* 1504 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1506 */	NdrFcShort( 0x8 ),	/* 8 */
-/* 1508 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
-			0x7,		/* 7 */
-/* 1510 */	0x8,		/* 8 */
-			0x1,		/* Ext Flags:  new corr desc, */
-/* 1512 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1514 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1516 */	NdrFcShort( 0x0 ),	/* 0 */
-
-	/* Parameter app_id */
-
-/* 1518 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1520 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
-/* 1522 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
-
-	/* Parameter installer_path */
-
-/* 1524 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1526 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
-/* 1528 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
-
-	/* Parameter install_args */
-
-/* 1530 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1532 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
-/* 1534 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
-
-	/* Parameter install_data */
-
-/* 1536 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1538 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
-/* 1540 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
-
-	/* Parameter install_settings */
-
-/* 1542 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1544 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
-/* 1546 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
-
-	/* Parameter observer */
-
-/* 1548 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
-/* 1550 */	NdrFcShort( 0x18 ),	/* x86 Stack size/offset = 24 */
-/* 1552 */	NdrFcShort( 0xd8 ),	/* Type Offset=216 */
-
-	/* Return value */
-
-/* 1554 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
-/* 1556 */	NdrFcShort( 0x1c ),	/* x86 Stack size/offset = 28 */
-/* 1558 */	0x8,		/* FC_LONG */
-			0x0,		/* 0 */
-
-	/* Procedure FetchPolicies */
-
-/* 1560 */	0x33,		/* FC_AUTO_HANDLE */
-			0x6c,		/* Old Flags:  object, Oi2 */
-/* 1562 */	NdrFcLong( 0x0 ),	/* 0 */
-/* 1566 */	NdrFcShort( 0x4 ),	/* 4 */
-/* 1568 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
-/* 1570 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1572 */	NdrFcShort( 0x8 ),	/* 8 */
-/* 1574 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
-			0x2,		/* 2 */
-/* 1576 */	0x8,		/* 8 */
-			0x1,		/* Ext Flags:  new corr desc, */
-/* 1578 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1580 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1582 */	NdrFcShort( 0x0 ),	/* 0 */
-
-	/* Parameter callback */
-
-/* 1584 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
-/* 1586 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
-/* 1588 */	NdrFcShort( 0xea ),	/* Type Offset=234 */
-
-	/* Return value */
-
-/* 1590 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
-/* 1592 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
-/* 1594 */	0x8,		/* FC_LONG */
-			0x0,		/* 0 */
-
-	/* Procedure RegisterApp */
-
-/* 1596 */	0x33,		/* FC_AUTO_HANDLE */
-			0x6c,		/* Old Flags:  object, Oi2 */
-/* 1598 */	NdrFcLong( 0x0 ),	/* 0 */
-/* 1602 */	NdrFcShort( 0x6 ),	/* 6 */
-/* 1604 */	NdrFcShort( 0x24 ),	/* x86 Stack size/offset = 36 */
-/* 1606 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1608 */	NdrFcShort( 0x8 ),	/* 8 */
-/* 1610 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
-			0x8,		/* 8 */
-/* 1612 */	0x8,		/* 8 */
-			0x1,		/* Ext Flags:  new corr desc, */
-/* 1614 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1616 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1618 */	NdrFcShort( 0x0 ),	/* 0 */
-
-	/* Parameter app_id */
-
-/* 1620 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1622 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
-/* 1624 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
-
-	/* Parameter brand_code */
-
-/* 1626 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1628 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
-/* 1630 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
-
-	/* Parameter brand_path */
-
-/* 1632 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1634 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
-/* 1636 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
-
-	/* Parameter tag */
-
-/* 1638 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1640 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
-/* 1642 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
-
-	/* Parameter version */
-
-/* 1644 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1646 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
-/* 1648 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
-
-	/* Parameter existence_checker_path */
-
-/* 1650 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1652 */	NdrFcShort( 0x18 ),	/* x86 Stack size/offset = 24 */
-/* 1654 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
-
-	/* Parameter callback */
-
-/* 1656 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
-/* 1658 */	NdrFcShort( 0x1c ),	/* x86 Stack size/offset = 28 */
-/* 1660 */	NdrFcShort( 0xea ),	/* Type Offset=234 */
-
-	/* Return value */
-
-/* 1662 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
-/* 1664 */	NdrFcShort( 0x20 ),	/* x86 Stack size/offset = 32 */
-/* 1666 */	0x8,		/* FC_LONG */
-			0x0,		/* 0 */
-
-	/* Procedure RunPeriodicTasks */
-
-/* 1668 */	0x33,		/* FC_AUTO_HANDLE */
-			0x6c,		/* Old Flags:  object, Oi2 */
-/* 1670 */	NdrFcLong( 0x0 ),	/* 0 */
-/* 1674 */	NdrFcShort( 0x7 ),	/* 7 */
-/* 1676 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
-/* 1678 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1680 */	NdrFcShort( 0x8 ),	/* 8 */
-/* 1682 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
-			0x2,		/* 2 */
-/* 1684 */	0x8,		/* 8 */
-			0x1,		/* Ext Flags:  new corr desc, */
-/* 1686 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1688 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1690 */	NdrFcShort( 0x0 ),	/* 0 */
-
-	/* Parameter callback */
-
-/* 1692 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
-/* 1694 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
-/* 1696 */	NdrFcShort( 0xea ),	/* Type Offset=234 */
-
-	/* Return value */
-
-/* 1698 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
-/* 1700 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
-/* 1702 */	0x8,		/* FC_LONG */
-			0x0,		/* 0 */
-
-	/* Procedure Update */
-
-/* 1704 */	0x33,		/* FC_AUTO_HANDLE */
-			0x6c,		/* Old Flags:  object, Oi2 */
-/* 1706 */	NdrFcLong( 0x0 ),	/* 0 */
-/* 1710 */	NdrFcShort( 0x8 ),	/* 8 */
-/* 1712 */	NdrFcShort( 0x20 ),	/* x86 Stack size/offset = 32 */
-/* 1714 */	NdrFcShort( 0x18 ),	/* 24 */
-/* 1716 */	NdrFcShort( 0x8 ),	/* 8 */
-/* 1718 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
-			0x7,		/* 7 */
-/* 1720 */	0x8,		/* 8 */
-			0x1,		/* Ext Flags:  new corr desc, */
-/* 1722 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1724 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1726 */	NdrFcShort( 0x0 ),	/* 0 */
-
-	/* Parameter app_id */
-
-/* 1728 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1730 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
-/* 1732 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
-
-	/* Parameter install_data_index */
-
-/* 1734 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1736 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
-/* 1738 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
-
-	/* Parameter priority */
-
-/* 1740 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
-/* 1742 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
-/* 1744 */	0x8,		/* FC_LONG */
+/* 1404 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
+/* 1406 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
+/* 1408 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
 	/* Parameter same_version_update_allowed */
 
-/* 1746 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
-/* 1748 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
-/* 1750 */	0x8,		/* FC_LONG */
-			0x0,		/* 0 */
-
-	/* Parameter do_update_check_only */
-
-/* 1752 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
-/* 1754 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
-/* 1756 */	0x8,		/* FC_LONG */
+/* 1410 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
+/* 1412 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
+/* 1414 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
 	/* Parameter observer */
 
-/* 1758 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
-/* 1760 */	NdrFcShort( 0x18 ),	/* x86 Stack size/offset = 24 */
-/* 1762 */	NdrFcShort( 0xfc ),	/* Type Offset=252 */
+/* 1416 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
+/* 1418 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
+/* 1420 */	NdrFcShort( 0xd8 ),	/* Type Offset=216 */
 
 	/* Return value */
 
-/* 1764 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
-/* 1766 */	NdrFcShort( 0x1c ),	/* x86 Stack size/offset = 28 */
-/* 1768 */	0x8,		/* FC_LONG */
+/* 1422 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 1424 */	NdrFcShort( 0x18 ),	/* x86 Stack size/offset = 24 */
+/* 1426 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
 	/* Procedure UpdateAll */
 
-/* 1770 */	0x33,		/* FC_AUTO_HANDLE */
+/* 1428 */	0x33,		/* FC_AUTO_HANDLE */
 			0x6c,		/* Old Flags:  object, Oi2 */
-/* 1772 */	NdrFcLong( 0x0 ),	/* 0 */
-/* 1776 */	NdrFcShort( 0x9 ),	/* 9 */
-/* 1778 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
-/* 1780 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1782 */	NdrFcShort( 0x8 ),	/* 8 */
-/* 1784 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
+/* 1430 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 1434 */	NdrFcShort( 0x9 ),	/* 9 */
+/* 1436 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
+/* 1438 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1440 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 1442 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
 			0x2,		/* 2 */
-/* 1786 */	0x8,		/* 8 */
+/* 1444 */	0x8,		/* 8 */
 			0x1,		/* Ext Flags:  new corr desc, */
-/* 1788 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1790 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1792 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1446 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1448 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1450 */	NdrFcShort( 0x0 ),	/* 0 */
 
 	/* Parameter observer */
 
-/* 1794 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
-/* 1796 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
-/* 1798 */	NdrFcShort( 0xfc ),	/* Type Offset=252 */
+/* 1452 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
+/* 1454 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
+/* 1456 */	NdrFcShort( 0xd8 ),	/* Type Offset=216 */
 
 	/* Return value */
 
-/* 1800 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
-/* 1802 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
-/* 1804 */	0x8,		/* FC_LONG */
+/* 1458 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 1460 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 1462 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
 	/* Procedure Install */
 
-/* 1806 */	0x33,		/* FC_AUTO_HANDLE */
+/* 1464 */	0x33,		/* FC_AUTO_HANDLE */
 			0x6c,		/* Old Flags:  object, Oi2 */
-/* 1808 */	NdrFcLong( 0x0 ),	/* 0 */
-/* 1812 */	NdrFcShort( 0xa ),	/* 10 */
-/* 1814 */	NdrFcShort( 0x30 ),	/* x86 Stack size/offset = 48 */
-/* 1816 */	NdrFcShort( 0x8 ),	/* 8 */
-/* 1818 */	NdrFcShort( 0x8 ),	/* 8 */
-/* 1820 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
+/* 1466 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 1470 */	NdrFcShort( 0xa ),	/* 10 */
+/* 1472 */	NdrFcShort( 0x30 ),	/* x86 Stack size/offset = 48 */
+/* 1474 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 1476 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 1478 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
 			0xb,		/* 11 */
-/* 1822 */	0x8,		/* 8 */
+/* 1480 */	0x8,		/* 8 */
 			0x1,		/* Ext Flags:  new corr desc, */
-/* 1824 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1826 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1828 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1482 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1484 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1486 */	NdrFcShort( 0x0 ),	/* 0 */
 
 	/* Parameter app_id */
 
-/* 1830 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1832 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
-/* 1834 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1488 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1490 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
+/* 1492 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter brand_code */
 
-/* 1836 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1838 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
-/* 1840 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1494 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1496 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 1498 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter brand_path */
 
-/* 1842 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1844 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
-/* 1846 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1500 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1502 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
+/* 1504 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter tag */
 
-/* 1848 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1850 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
-/* 1852 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1506 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1508 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
+/* 1510 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter version */
 
-/* 1854 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1856 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
-/* 1858 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1512 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1514 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
+/* 1516 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter existence_checker_path */
 
-/* 1860 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1862 */	NdrFcShort( 0x18 ),	/* x86 Stack size/offset = 24 */
-/* 1864 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1518 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1520 */	NdrFcShort( 0x18 ),	/* x86 Stack size/offset = 24 */
+/* 1522 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter client_install_data */
 
-/* 1866 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1868 */	NdrFcShort( 0x1c ),	/* x86 Stack size/offset = 28 */
-/* 1870 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1524 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1526 */	NdrFcShort( 0x1c ),	/* x86 Stack size/offset = 28 */
+/* 1528 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter install_data_index */
 
-/* 1872 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1874 */	NdrFcShort( 0x20 ),	/* x86 Stack size/offset = 32 */
-/* 1876 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1530 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1532 */	NdrFcShort( 0x20 ),	/* x86 Stack size/offset = 32 */
+/* 1534 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter priority */
 
-/* 1878 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
-/* 1880 */	NdrFcShort( 0x24 ),	/* x86 Stack size/offset = 36 */
-/* 1882 */	0x8,		/* FC_LONG */
+/* 1536 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
+/* 1538 */	NdrFcShort( 0x24 ),	/* x86 Stack size/offset = 36 */
+/* 1540 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
 	/* Parameter observer */
 
-/* 1884 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
-/* 1886 */	NdrFcShort( 0x28 ),	/* x86 Stack size/offset = 40 */
-/* 1888 */	NdrFcShort( 0xfc ),	/* Type Offset=252 */
+/* 1542 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
+/* 1544 */	NdrFcShort( 0x28 ),	/* x86 Stack size/offset = 40 */
+/* 1546 */	NdrFcShort( 0xd8 ),	/* Type Offset=216 */
 
 	/* Return value */
 
-/* 1890 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
-/* 1892 */	NdrFcShort( 0x2c ),	/* x86 Stack size/offset = 44 */
-/* 1894 */	0x8,		/* FC_LONG */
+/* 1548 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 1550 */	NdrFcShort( 0x2c ),	/* x86 Stack size/offset = 44 */
+/* 1552 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
 	/* Procedure RunInstaller */
 
-/* 1896 */	0x33,		/* FC_AUTO_HANDLE */
+/* 1554 */	0x33,		/* FC_AUTO_HANDLE */
 			0x6c,		/* Old Flags:  object, Oi2 */
-/* 1898 */	NdrFcLong( 0x0 ),	/* 0 */
-/* 1902 */	NdrFcShort( 0xc ),	/* 12 */
-/* 1904 */	NdrFcShort( 0x20 ),	/* x86 Stack size/offset = 32 */
-/* 1906 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1908 */	NdrFcShort( 0x8 ),	/* 8 */
-/* 1910 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
+/* 1556 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 1560 */	NdrFcShort( 0xc ),	/* 12 */
+/* 1562 */	NdrFcShort( 0x20 ),	/* x86 Stack size/offset = 32 */
+/* 1564 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1566 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 1568 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
 			0x7,		/* 7 */
-/* 1912 */	0x8,		/* 8 */
+/* 1570 */	0x8,		/* 8 */
 			0x1,		/* Ext Flags:  new corr desc, */
-/* 1914 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1916 */	NdrFcShort( 0x0 ),	/* 0 */
-/* 1918 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1572 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1574 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1576 */	NdrFcShort( 0x0 ),	/* 0 */
 
 	/* Parameter app_id */
 
-/* 1920 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1922 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
-/* 1924 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1578 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1580 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
+/* 1582 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter installer_path */
 
-/* 1926 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1928 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
-/* 1930 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1584 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1586 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 1588 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter install_args */
 
-/* 1932 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1934 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
-/* 1936 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1590 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1592 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
+/* 1594 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter install_data */
 
-/* 1938 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1940 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
-/* 1942 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1596 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1598 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
+/* 1600 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter install_settings */
 
-/* 1944 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
-/* 1946 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
-/* 1948 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+/* 1602 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1604 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
+/* 1606 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
 
 	/* Parameter observer */
 
-/* 1950 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
-/* 1952 */	NdrFcShort( 0x18 ),	/* x86 Stack size/offset = 24 */
-/* 1954 */	NdrFcShort( 0xfc ),	/* Type Offset=252 */
+/* 1608 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
+/* 1610 */	NdrFcShort( 0x18 ),	/* x86 Stack size/offset = 24 */
+/* 1612 */	NdrFcShort( 0xd8 ),	/* Type Offset=216 */
 
 	/* Return value */
 
-/* 1956 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
-/* 1958 */	NdrFcShort( 0x1c ),	/* x86 Stack size/offset = 28 */
-/* 1960 */	0x8,		/* FC_LONG */
+/* 1614 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 1616 */	NdrFcShort( 0x1c ),	/* x86 Stack size/offset = 28 */
+/* 1618 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Procedure FetchPolicies */
+
+/* 1620 */	0x33,		/* FC_AUTO_HANDLE */
+			0x6c,		/* Old Flags:  object, Oi2 */
+/* 1622 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 1626 */	NdrFcShort( 0x4 ),	/* 4 */
+/* 1628 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
+/* 1630 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1632 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 1634 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
+			0x2,		/* 2 */
+/* 1636 */	0x8,		/* 8 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 1638 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1640 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1642 */	NdrFcShort( 0x0 ),	/* 0 */
+
+	/* Parameter callback */
+
+/* 1644 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
+/* 1646 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
+/* 1648 */	NdrFcShort( 0xea ),	/* Type Offset=234 */
+
+	/* Return value */
+
+/* 1650 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 1652 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 1654 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Procedure RegisterApp */
+
+/* 1656 */	0x33,		/* FC_AUTO_HANDLE */
+			0x6c,		/* Old Flags:  object, Oi2 */
+/* 1658 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 1662 */	NdrFcShort( 0x5 ),	/* 5 */
+/* 1664 */	NdrFcShort( 0x24 ),	/* x86 Stack size/offset = 36 */
+/* 1666 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1668 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 1670 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
+			0x8,		/* 8 */
+/* 1672 */	0x8,		/* 8 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 1674 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1676 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1678 */	NdrFcShort( 0x0 ),	/* 0 */
+
+	/* Parameter app_id */
+
+/* 1680 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1682 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
+/* 1684 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+
+	/* Parameter brand_code */
+
+/* 1686 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1688 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 1690 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+
+	/* Parameter brand_path */
+
+/* 1692 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1694 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
+/* 1696 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+
+	/* Parameter tag */
+
+/* 1698 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1700 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
+/* 1702 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+
+	/* Parameter version */
+
+/* 1704 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1706 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
+/* 1708 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+
+	/* Parameter existence_checker_path */
+
+/* 1710 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1712 */	NdrFcShort( 0x18 ),	/* x86 Stack size/offset = 24 */
+/* 1714 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+
+	/* Parameter callback */
+
+/* 1716 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
+/* 1718 */	NdrFcShort( 0x1c ),	/* x86 Stack size/offset = 28 */
+/* 1720 */	NdrFcShort( 0xea ),	/* Type Offset=234 */
+
+	/* Return value */
+
+/* 1722 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 1724 */	NdrFcShort( 0x20 ),	/* x86 Stack size/offset = 32 */
+/* 1726 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Procedure RunPeriodicTasks */
+
+/* 1728 */	0x33,		/* FC_AUTO_HANDLE */
+			0x6c,		/* Old Flags:  object, Oi2 */
+/* 1730 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 1734 */	NdrFcShort( 0x6 ),	/* 6 */
+/* 1736 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
+/* 1738 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1740 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 1742 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
+			0x2,		/* 2 */
+/* 1744 */	0x8,		/* 8 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 1746 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1748 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1750 */	NdrFcShort( 0x0 ),	/* 0 */
+
+	/* Parameter callback */
+
+/* 1752 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
+/* 1754 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
+/* 1756 */	NdrFcShort( 0xea ),	/* Type Offset=234 */
+
+	/* Return value */
+
+/* 1758 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 1760 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 1762 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Procedure CheckForUpdate */
+
+/* 1764 */	0x33,		/* FC_AUTO_HANDLE */
+			0x6c,		/* Old Flags:  object, Oi2 */
+/* 1766 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 1770 */	NdrFcShort( 0x7 ),	/* 7 */
+/* 1772 */	NdrFcShort( 0x18 ),	/* x86 Stack size/offset = 24 */
+/* 1774 */	NdrFcShort( 0x10 ),	/* 16 */
+/* 1776 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 1778 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
+			0x5,		/* 5 */
+/* 1780 */	0x8,		/* 8 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 1782 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1784 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1786 */	NdrFcShort( 0x0 ),	/* 0 */
+
+	/* Parameter app_id */
+
+/* 1788 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1790 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
+/* 1792 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+
+	/* Parameter priority */
+
+/* 1794 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
+/* 1796 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 1798 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Parameter same_version_update_allowed */
+
+/* 1800 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
+/* 1802 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
+/* 1804 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Parameter observer */
+
+/* 1806 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
+/* 1808 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
+/* 1810 */	NdrFcShort( 0xfc ),	/* Type Offset=252 */
+
+	/* Return value */
+
+/* 1812 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 1814 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
+/* 1816 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Procedure Update */
+
+/* 1818 */	0x33,		/* FC_AUTO_HANDLE */
+			0x6c,		/* Old Flags:  object, Oi2 */
+/* 1820 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 1824 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 1826 */	NdrFcShort( 0x1c ),	/* x86 Stack size/offset = 28 */
+/* 1828 */	NdrFcShort( 0x10 ),	/* 16 */
+/* 1830 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 1832 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
+			0x6,		/* 6 */
+/* 1834 */	0x8,		/* 8 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 1836 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1838 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1840 */	NdrFcShort( 0x0 ),	/* 0 */
+
+	/* Parameter app_id */
+
+/* 1842 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1844 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
+/* 1846 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+
+	/* Parameter install_data_index */
+
+/* 1848 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1850 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 1852 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+
+	/* Parameter priority */
+
+/* 1854 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
+/* 1856 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
+/* 1858 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Parameter same_version_update_allowed */
+
+/* 1860 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
+/* 1862 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
+/* 1864 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Parameter observer */
+
+/* 1866 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
+/* 1868 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
+/* 1870 */	NdrFcShort( 0xfc ),	/* Type Offset=252 */
+
+	/* Return value */
+
+/* 1872 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 1874 */	NdrFcShort( 0x18 ),	/* x86 Stack size/offset = 24 */
+/* 1876 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Procedure UpdateAll */
+
+/* 1878 */	0x33,		/* FC_AUTO_HANDLE */
+			0x6c,		/* Old Flags:  object, Oi2 */
+/* 1880 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 1884 */	NdrFcShort( 0x9 ),	/* 9 */
+/* 1886 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
+/* 1888 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1890 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 1892 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
+			0x2,		/* 2 */
+/* 1894 */	0x8,		/* 8 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 1896 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1898 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1900 */	NdrFcShort( 0x0 ),	/* 0 */
+
+	/* Parameter observer */
+
+/* 1902 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
+/* 1904 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
+/* 1906 */	NdrFcShort( 0xfc ),	/* Type Offset=252 */
+
+	/* Return value */
+
+/* 1908 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 1910 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 1912 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Procedure Install */
+
+/* 1914 */	0x33,		/* FC_AUTO_HANDLE */
+			0x6c,		/* Old Flags:  object, Oi2 */
+/* 1916 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 1920 */	NdrFcShort( 0xa ),	/* 10 */
+/* 1922 */	NdrFcShort( 0x30 ),	/* x86 Stack size/offset = 48 */
+/* 1924 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 1926 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 1928 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
+			0xb,		/* 11 */
+/* 1930 */	0x8,		/* 8 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 1932 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1934 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 1936 */	NdrFcShort( 0x0 ),	/* 0 */
+
+	/* Parameter app_id */
+
+/* 1938 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1940 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
+/* 1942 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+
+	/* Parameter brand_code */
+
+/* 1944 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1946 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 1948 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+
+	/* Parameter brand_path */
+
+/* 1950 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1952 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
+/* 1954 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+
+	/* Parameter tag */
+
+/* 1956 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1958 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
+/* 1960 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+
+	/* Parameter version */
+
+/* 1962 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1964 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
+/* 1966 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+
+	/* Parameter existence_checker_path */
+
+/* 1968 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1970 */	NdrFcShort( 0x18 ),	/* x86 Stack size/offset = 24 */
+/* 1972 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+
+	/* Parameter client_install_data */
+
+/* 1974 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1976 */	NdrFcShort( 0x1c ),	/* x86 Stack size/offset = 28 */
+/* 1978 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+
+	/* Parameter install_data_index */
+
+/* 1980 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 1982 */	NdrFcShort( 0x20 ),	/* x86 Stack size/offset = 32 */
+/* 1984 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+
+	/* Parameter priority */
+
+/* 1986 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
+/* 1988 */	NdrFcShort( 0x24 ),	/* x86 Stack size/offset = 36 */
+/* 1990 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Parameter observer */
+
+/* 1992 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
+/* 1994 */	NdrFcShort( 0x28 ),	/* x86 Stack size/offset = 40 */
+/* 1996 */	NdrFcShort( 0xfc ),	/* Type Offset=252 */
+
+	/* Return value */
+
+/* 1998 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 2000 */	NdrFcShort( 0x2c ),	/* x86 Stack size/offset = 44 */
+/* 2002 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
+
+	/* Procedure RunInstaller */
+
+/* 2004 */	0x33,		/* FC_AUTO_HANDLE */
+			0x6c,		/* Old Flags:  object, Oi2 */
+/* 2006 */	NdrFcLong( 0x0 ),	/* 0 */
+/* 2010 */	NdrFcShort( 0xc ),	/* 12 */
+/* 2012 */	NdrFcShort( 0x20 ),	/* x86 Stack size/offset = 32 */
+/* 2014 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 2016 */	NdrFcShort( 0x8 ),	/* 8 */
+/* 2018 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
+			0x7,		/* 7 */
+/* 2020 */	0x8,		/* 8 */
+			0x1,		/* Ext Flags:  new corr desc, */
+/* 2022 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 2024 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 2026 */	NdrFcShort( 0x0 ),	/* 0 */
+
+	/* Parameter app_id */
+
+/* 2028 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 2030 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
+/* 2032 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+
+	/* Parameter installer_path */
+
+/* 2034 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 2036 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
+/* 2038 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+
+	/* Parameter install_args */
+
+/* 2040 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 2042 */	NdrFcShort( 0xc ),	/* x86 Stack size/offset = 12 */
+/* 2044 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+
+	/* Parameter install_data */
+
+/* 2046 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 2048 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
+/* 2050 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+
+	/* Parameter install_settings */
+
+/* 2052 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 2054 */	NdrFcShort( 0x14 ),	/* x86 Stack size/offset = 20 */
+/* 2056 */	NdrFcShort( 0xb2 ),	/* Type Offset=178 */
+
+	/* Parameter observer */
+
+/* 2058 */	NdrFcShort( 0xb ),	/* Flags:  must size, must free, in, */
+/* 2060 */	NdrFcShort( 0x18 ),	/* x86 Stack size/offset = 24 */
+/* 2062 */	NdrFcShort( 0xfc ),	/* Type Offset=252 */
+
+	/* Return value */
+
+/* 2064 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
+/* 2066 */	NdrFcShort( 0x1c ),	/* x86 Stack size/offset = 28 */
+/* 2068 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
 			0x0
@@ -3146,13 +3227,13 @@ static const unsigned short IUpdater_FormatStringOffsetTable[] =
     648,
     684,
     720,
-    756,
+    792,
     828,
-    864,
-    930,
-    966,
-    1056,
-    1092
+    882,
+    942,
+    978,
+    1068,
+    1104
     };
 
 static const MIDL_STUBLESS_PROXY_INFO IUpdater_ProxyInfo =
@@ -3185,9 +3266,9 @@ CINTERFACE_PROXY_VTABLE(13) _IUpdaterProxyVtbl =
     IUnknown_Release_Proxy ,
     (void *) (INT_PTR) -1 /* IUpdater::GetVersion */ ,
     (void *) (INT_PTR) -1 /* IUpdater::FetchPolicies */ ,
-    (void *) (INT_PTR) -1 /* IUpdater::CheckForUpdate */ ,
     (void *) (INT_PTR) -1 /* IUpdater::RegisterApp */ ,
     (void *) (INT_PTR) -1 /* IUpdater::RunPeriodicTasks */ ,
+    (void *) (INT_PTR) -1 /* IUpdater::CheckForUpdate */ ,
     (void *) (INT_PTR) -1 /* IUpdater::Update */ ,
     (void *) (INT_PTR) -1 /* IUpdater::UpdateAll */ ,
     (void *) (INT_PTR) -1 /* IUpdater::Install */ ,
@@ -3212,15 +3293,15 @@ const CInterfaceStubVtbl _IUpdaterStubVtbl =
 static const unsigned short IUpdaterUser_FormatStringOffsetTable[] =
     {
     648,
-    1158,
-    720,
-    1194,
-    1266,
-    1302,
+    1170,
+    1206,
+    1278,
+    1314,
     1368,
-    1404,
-    1056,
-    1494
+    1428,
+    1464,
+    1068,
+    1554
     };
 
 static const MIDL_STUBLESS_PROXY_INFO IUpdaterUser_ProxyInfo =
@@ -3253,9 +3334,9 @@ CINTERFACE_PROXY_VTABLE(13) _IUpdaterUserProxyVtbl =
     IUnknown_Release_Proxy ,
     (void *) (INT_PTR) -1 /* IUpdaterUser::GetVersion */ ,
     (void *) (INT_PTR) -1 /* IUpdaterUser::FetchPolicies */ ,
-    (void *) (INT_PTR) -1 /* IUpdaterUser::CheckForUpdate */ ,
     (void *) (INT_PTR) -1 /* IUpdaterUser::RegisterApp */ ,
     (void *) (INT_PTR) -1 /* IUpdaterUser::RunPeriodicTasks */ ,
+    (void *) (INT_PTR) -1 /* IUpdaterUser::CheckForUpdate */ ,
     (void *) (INT_PTR) -1 /* IUpdaterUser::Update */ ,
     (void *) (INT_PTR) -1 /* IUpdaterUser::UpdateAll */ ,
     (void *) (INT_PTR) -1 /* IUpdaterUser::Install */ ,
@@ -3280,15 +3361,15 @@ const CInterfaceStubVtbl _IUpdaterUserStubVtbl =
 static const unsigned short IUpdaterSystem_FormatStringOffsetTable[] =
     {
     648,
-    1560,
-    720,
-    1596,
-    1668,
-    1704,
-    1770,
-    1806,
-    1056,
-    1896
+    1620,
+    1656,
+    1728,
+    1764,
+    1818,
+    1878,
+    1914,
+    1068,
+    2004
     };
 
 static const MIDL_STUBLESS_PROXY_INFO IUpdaterSystem_ProxyInfo =
@@ -3321,9 +3402,9 @@ CINTERFACE_PROXY_VTABLE(13) _IUpdaterSystemProxyVtbl =
     IUnknown_Release_Proxy ,
     (void *) (INT_PTR) -1 /* IUpdaterSystem::GetVersion */ ,
     (void *) (INT_PTR) -1 /* IUpdaterSystem::FetchPolicies */ ,
-    (void *) (INT_PTR) -1 /* IUpdaterSystem::CheckForUpdate */ ,
     (void *) (INT_PTR) -1 /* IUpdaterSystem::RegisterApp */ ,
     (void *) (INT_PTR) -1 /* IUpdaterSystem::RunPeriodicTasks */ ,
+    (void *) (INT_PTR) -1 /* IUpdaterSystem::CheckForUpdate */ ,
     (void *) (INT_PTR) -1 /* IUpdaterSystem::Update */ ,
     (void *) (INT_PTR) -1 /* IUpdaterSystem::UpdateAll */ ,
     (void *) (INT_PTR) -1 /* IUpdaterSystem::Install */ ,

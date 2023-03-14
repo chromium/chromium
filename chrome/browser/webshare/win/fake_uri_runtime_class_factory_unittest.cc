@@ -18,9 +18,6 @@ using Microsoft::WRL::Make;
 namespace webshare {
 
 TEST(FakeUriRuntimeClassFactoryTest, CreateUri) {
-  if (!base::win::ScopedHString::ResolveCoreWinRTStringDelayload())
-    GTEST_SKIP();
-
   auto factory = Make<FakeUriRuntimeClassFactory>();
 
   auto uri = base::win::ScopedHString::Create("https://www.site.come");
@@ -34,9 +31,6 @@ TEST(FakeUriRuntimeClassFactoryTest, CreateUri) {
 }
 
 TEST(FakeUriRuntimeClassFactoryTest, CreateUri_Invalid) {
-  if (!base::win::ScopedHString::ResolveCoreWinRTStringDelayload())
-    GTEST_SKIP();
-
   auto factory = Make<FakeUriRuntimeClassFactory>();
 
   auto uri = base::win::ScopedHString::Create("");

@@ -917,14 +917,27 @@ void FrameTreeNode::SetFencedFrameAutomaticBeaconReportEventData(
   if (!properties || !properties->fenced_frame_reporter_) {
     mojo::ReportBadMessage(
         "Automatic beacon data can only be set in fenced frames or iframes "
-        "loaded with a URN.");
+        "loaded from a config with a fenced frame reporter.");
+    return;
+  }
+  // This metadata should only be present in the renderer in frames that are
+  // same-origin to the mapped url.
+  if (!properties->mapped_url_.has_value() ||
+      !current_origin().IsSameOriginWith(url::Origin::Create(
+          properties->mapped_url_->GetValueIgnoringVisibility()))) {
+    mojo::ReportBadMessage(
+        "Automatic beacon data can only be set from documents that are same-"
+        "origin to the mapped url from the fenced frame config.");
     return;
   }
   properties->fenced_frame_reporter_->UpdateAutomaticBeaconData(event_data,
                                                                 destination);
 }
 
-size_t FrameTreeNode::GetFencedFrameDepth() {
+size_t FrameTreeNode::GetFencedFrameDepth(
+    size_t& shared_storage_fenced_frame_root_count) {
+  DCHECK_EQ(shared_storage_fenced_frame_root_count, 0u);
+
   size_t depth = 0;
   FrameTreeNode* node = this;
 
@@ -932,6 +945,12 @@ size_t FrameTreeNode::GetFencedFrameDepth() {
          FencedFrameStatus::kNotNestedInFencedFrame) {
     if (node->fenced_frame_status() == FencedFrameStatus::kFencedFrameRoot) {
       depth += 1;
+
+      // This implies the fenced frame is from shared storage.
+      if (node->fenced_frame_properties_ &&
+          node->fenced_frame_properties_->shared_storage_budget_metadata_) {
+        shared_storage_fenced_frame_root_count += 1;
+      }
     } else {
       DCHECK_EQ(node->fenced_frame_status(),
                 FencedFrameStatus::kIframeNestedWithinFencedFrame);
@@ -1019,6 +1038,20 @@ FrameTreeNode::FindSharedStorageBudgetMetadata() {
   }
 
   return result;
+}
+
+absl::optional<std::u16string>
+FrameTreeNode::GetEmbedderSharedStorageContextIfAllowed() {
+  absl::optional<FencedFrameProperties>& properties =
+      GetFencedFramePropertiesForEditing();
+  // We only return embedder context for frames that are same origin with the
+  // fenced frame root or ancestor URN iframe.
+  if (!properties || !properties->mapped_url_.has_value() ||
+      !current_origin().IsSameOriginWith(url::Origin::Create(
+          properties->mapped_url_->GetValueIgnoringVisibility()))) {
+    return absl::nullopt;
+  }
+  return properties->embedder_shared_storage_context_;
 }
 
 const scoped_refptr<BrowsingContextState>&

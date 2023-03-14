@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
@@ -57,8 +58,11 @@ namespace {
 base::FilePath GetTestCasePath() {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath path;
-  base::PathService::Get(chrome::DIR_TEST_DATA, &path);
-  return path.Append(FILE_PATH_LITERAL("policy"))
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
+  return path.Append(FILE_PATH_LITERAL("components"))
+      .Append(FILE_PATH_LITERAL("policy"))
+      .Append(FILE_PATH_LITERAL("test"))
+      .Append(FILE_PATH_LITERAL("data"))
       .Append(FILE_PATH_LITERAL("policy_test_cases.json"));
 }
 

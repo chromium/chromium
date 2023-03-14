@@ -35,11 +35,10 @@ class PriceTrackingIconViewBrowserTest : public UiBrowserTest {
     if (name == "forced_show_tracking_price") {
       SimulateServerPriceTrackState(true);
       icon_view->ForceVisibleForTesting(/*is_tracking_price=*/true);
-    } else if (name == "forced_show_track_price") {
+    } else {
+      CHECK_EQ(name, "forced_show_track_price");
       SimulateServerPriceTrackState(false);
       icon_view->ForceVisibleForTesting(/*is_tracking_price=*/false);
-    } else {
-      NOTREACHED();
     }
   }
 

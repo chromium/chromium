@@ -287,6 +287,46 @@ unsigned int GLInternalFormat(ResourceFormat format) {
   }
 }
 
+bool HasEquivalentBufferFormat(SharedImageFormat format) {
+  if (format.is_single_plane()) {
+    return HasEquivalentBufferFormat(format.resource_format());
+  }
+
+  return format == MultiPlaneFormat::kYVU_420 ||
+         format == MultiPlaneFormat::kYUV_420_BIPLANAR ||
+         format == MultiPlaneFormat::kYUVA_420_TRIPLANAR ||
+         format == MultiPlaneFormat::kP010;
+}
+
+bool HasEquivalentBufferFormat(ResourceFormat format) {
+  switch (format) {
+    case BGRA_8888:
+    case RED_8:
+    case R16_EXT:
+    case RG16_EXT:
+    case RGBA_4444:
+    case RGBA_8888:
+    case RGBA_F16:
+    case BGR_565:
+    case RG_88:
+    case RGBX_8888:
+    case BGRX_8888:
+    case RGBA_1010102:
+    case BGRA_1010102:
+    case YVU_420:
+    case YUV_420_BIPLANAR:
+    case YUVA_420_TRIPLANAR:
+    case P010:
+      return true;
+    case ETC1:
+    case ALPHA_8:
+    case LUMINANCE_8:
+    case RGB_565:
+    case LUMINANCE_F16:
+      return false;
+  }
+}
+
 gfx::BufferFormat BufferFormat(ResourceFormat format) {
   switch (format) {
     case BGRA_8888:

@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">Bağlantı algılandı. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213"><ph name="PAGE_NUMBER" />. sayfa silindi</translation>
 <translation id="1258009455399840361">Saat yönünde 90 derece döndür</translation>
-<translation id="1300209025925956156">Dokümanınızı tarayın</translation>
-<translation id="1309250603447638106">Doküman taramayla ilgili güncellemeler indiriliyor</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Erişmek için Arama + Sol ok tuşlarına basın.</translation>
 <translation id="1417314334557041815">Sayfayı düzenle <ph name="INDEX" /></translation>
 <translation id="1467231725790366244"><ph name="CAMERA" />, cihaza takılı değil.</translation>
 <translation id="1473110567575736769">3 saniye zamanlayıcı</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">Hiçbir şey kaydedilmedi</translation>
 <translation id="1838104802459806957">Kaldır</translation>
 <translation id="1843105061469674856">Başka sayfa tara</translation>
-<translation id="1851169887664797861">Ek kamera kontrolleri bulunuyor</translation>
 <translation id="1851616744363735765">DURAKLATILDI</translation>
 <translation id="1899697626337024495">Fotoğraf Çözünürlüğü</translation>
 <translation id="1925845977604399247">Galeri'ye git</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">Tarama türü</translation>
 <translation id="28682968802727151">Yansıtma önizlemesi</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" />, cihaza takılı.</translation>
-<translation id="2904654629665923749">Doküman tarama kullanılabilir</translation>
 <translation id="3067436040345934772">Sağa kaydır</translation>
 <translation id="3081586908890909590">Video kaydetmeye geç</translation>
 <translation id="313467653172006084">30 FPS</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">Bağlantı adresini kopyala</translation>
 <translation id="4281620174117014503">Orta düzey çözünürlük</translation>
 <translation id="428234092390943511">Sayfa küçük resmi</translation>
-<translation id="4340659173795395806">Artık çok sayfalı PDF oluşturabilirsiniz</translation>
 <translation id="4383571725254449280">Performans günlüklerini yazdır</translation>
 <translation id="4445542136948522167">Fotoğraf çekmeyi durdur</translation>
 <translation id="4570032796877367747">Ön kamera</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">Kaydet</translation>
 <translation id="5320594929574852403">Sola doğru hareket ediyor</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5444515100983837161">Dokümanın tüm kenarlarını çerçevenin içine yerleştirin. Dokümanla arka plan farklı renklere sahip olduğunda tarama daha iyi sonuç verir.</translation>
 <translation id="5662366948659129155"><ph name="COUNT" />. sayfa taranıyor</translation>
 <translation id="5671277269877808209">Kare</translation>
 <translation id="5746169159649715125">PDF olarak kaydet</translation>
@@ -157,7 +150,6 @@ Geri bildiriminiz resim ya da video kalitesi ile ilgiliyse lütfen örnek bir fo
 <translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Mikrofonun sesini aç/kapat Ses kapalı</translation>
-<translation id="8712637175834984815">Anlaşıldı</translation>
 <translation id="8730621377337864115">Bitti</translation>
 <translation id="8732462232047530626">Meta veriyi önizle</translation>
 <translation id="8815966864175525708">Portre fotoğrafı çekme moduna geç</translation>

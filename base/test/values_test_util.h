@@ -9,7 +9,9 @@
 #include <memory>
 #include <string>
 
+#include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 
@@ -105,6 +107,26 @@ Value ParseJson(StringPiece json);
 // container.
 Value::Dict ParseJsonDict(StringPiece json);
 Value::List ParseJsonList(StringPiece json);
+
+// Similar to `ParseJsonDict`, however it loads its contents from a file.
+// Returns the parsed `Value::Dict` when successful. Otherwise, it causes an
+// EXPECT failure, and returns an empty dict.
+Value::Dict ParseJsonDictFromFile(const FilePath& json_file_path);
+
+// An enumaration with the possible types of errors when calling
+// `WriteJsonFile`.
+enum class WriteJsonError {
+  // Failed to generate a json string with the value provided.
+  kGenerateJsonFailure,
+
+  // Failed to write the json string into a file.
+  kWriteFileFailure,
+};
+
+// Serialises `root` as a json string to a file. Returns a empty expected when
+// successful. Otherwise returns an error.
+expected<void, WriteJsonError> WriteJsonFile(const FilePath& json_file_path,
+                                             ValueView root);
 
 }  // namespace test
 }  // namespace base

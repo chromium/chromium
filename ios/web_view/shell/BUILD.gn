@@ -131,6 +131,7 @@ source_set("shell") {
     ":shell_auth_service_interface",
     ":shell_risk_data_loader_interface",
     ":shell_trusted_vault_provider_interface",
+    "//base",
     "//ios/third_party/webkit",
     "//ios/web_view:web_view+link",
     ios_web_view_shell_auth_service,

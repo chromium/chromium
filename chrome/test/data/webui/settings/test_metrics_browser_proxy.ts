@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {MetricsBrowserProxy, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, SafeBrowsingInteractions, SafetyCheckInteractions, SafetyCheckNotificationsModuleInteractions, SafetyCheckUnusedSitePermissionsModuleInteractions} from 'chrome://settings/settings.js';
+import {MetricsBrowserProxy, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached, SafeBrowsingInteractions, SafetyCheckInteractions, SafetyCheckNotificationsModuleInteractions, SafetyCheckUnusedSitePermissionsModuleInteractions} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestMetricsBrowserProxy extends TestBrowserProxy implements
@@ -23,6 +23,7 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'recordPrivacyGuideNextNavigationHistogram',
       'recordPrivacyGuideEntryExitHistogram',
       'recordPrivacyGuideSettingsStatesHistogram',
+      'recordPrivacyGuideStepsEligibleAndReachedHistogram',
     ]);
   }
 
@@ -95,5 +96,11 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   recordPrivacyGuideFlowLengthHistogram(steps: number) {
     this.methodCalled('recordPrivacyGuideFlowLengthHistogram', steps);
+  }
+
+  recordPrivacyGuideStepsEligibleAndReachedHistogram(
+      status: PrivacyGuideStepsEligibleAndReached) {
+    this.methodCalled(
+        'recordPrivacyGuideStepsEligibleAndReachedHistogram', status);
   }
 }

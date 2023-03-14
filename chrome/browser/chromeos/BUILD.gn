@@ -149,6 +149,8 @@ source_set("chromeos") {
     "reporting/metric_reporting_manager_delegate_base.h",
     "reporting/network/network_bandwidth_sampler.cc",
     "reporting/network/network_bandwidth_sampler.h",
+    "smart_reader/smart_reader_client_impl.cc",
+    "smart_reader/smart_reader_client_impl.h",
     "tablet_mode/chrome_content_browser_client_tablet_mode_part.cc",
     "tablet_mode/chrome_content_browser_client_tablet_mode_part.h",
     "tablet_mode/tablet_mode_page_behavior.cc",
@@ -293,6 +295,8 @@ source_set("chromeos") {
 
   if (is_chromeos_ash) {
     sources += [
+      "app_mode/kiosk_troubleshooting_controller_ash.cc",
+      "app_mode/kiosk_troubleshooting_controller_ash.h",
       "extensions/login_screen/login/cleanup/cleanup_manager_ash.cc",
       "extensions/login_screen/login/cleanup/cleanup_manager_ash.h",
       "extensions/login_screen/login/cleanup/clipboard_cleanup_handler.cc",

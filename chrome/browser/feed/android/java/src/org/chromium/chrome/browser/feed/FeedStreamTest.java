@@ -63,7 +63,6 @@ import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.UnfollowResults;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedRecommendationFollowAcceleratorController;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionRequestStatus;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -103,14 +102,13 @@ public class FeedStreamTest {
     private static final String TEST_DATA = "test";
     private static final String TEST_URL = JUnitTestGURLs.EXAMPLE_URL;
     private static final String HEADER_PREFIX = "header";
-    private static final String TAG = "FeedStreamTest";
+    private static final OpenUrlOptions DEFAULT_OPEN_URL_OPTIONS = new OpenUrlOptions() {};
 
     private Activity mActivity;
     private RecyclerView mRecyclerView;
     private FakeLinearLayoutManager mLayoutManager;
     private FeedStream mFeedStream;
     private NtpListContentManager mContentManager;
-    private boolean mFirstLoadWatcherCalled;
 
     @Mock
     private FeedStream.Natives mFeedStreamJniMock;
@@ -126,13 +124,9 @@ public class FeedStreamTest {
     @Mock
     private BottomSheetController mBottomSheetController;
     @Mock
-    private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
-    @Mock
     private WindowAndroid mWindowAndroid;
     @Mock
     private Supplier<ShareDelegate> mShareDelegateSupplier;
-    @Mock
-    private FeedActionsHandler.SnackbarController mMockSnackbarController;
     private StubSnackbarController mSnackbarController = new StubSnackbarController();
     @Mock
     private Runnable mMockRunnable;
@@ -156,8 +150,6 @@ public class FeedStreamTest {
     WebFeedBridge.Natives mWebFeedBridgeJni;
 
     @Captor
-    private ArgumentCaptor<Map<String, String>> mMapCaptor;
-    @Captor
     private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
     @Captor
     private ArgumentCaptor<Callback<FollowResults>> mFollowResultsCallbackCaptor;
@@ -177,10 +169,9 @@ public class FeedStreamTest {
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
-    private void setFeatureOverrides(boolean feedLoadingPlaceholderOn, boolean onboardingOn) {
+    private void setFeatureOverrides(boolean feedLoadingPlaceholderOn) {
         Map<String, Boolean> overrides = new ArrayMap<>();
         overrides.put(ChromeFeatureList.FEED_LOADING_PLACEHOLDER, feedLoadingPlaceholderOn);
-        overrides.put(ChromeFeatureList.WEB_FEED_ONBOARDING, onboardingOn);
         FeatureList.setTestFeatures(overrides);
     }
 
@@ -214,7 +205,7 @@ public class FeedStreamTest {
         mRecyclerView.setLayoutManager(mLayoutManager);
         when(mRenderer.getListLayoutHelper()).thenReturn(mLayoutManager);
 
-        setFeatureOverrides(/*feedLoadingPlaceholderOn=*/true, /*onboardingOn=*/false);
+        setFeatureOverrides(/*feedLoadingPlaceholderOn=*/true);
 
         // Print logs to stdout.
         ShadowLog.stream = System.out;
@@ -308,7 +299,7 @@ public class FeedStreamTest {
 
         // Bind again with correct headercount.
         mFeedStream.bind(mRecyclerView, mContentManager, null, mSurfaceScope, mRenderer,
-                mLaunchReliabilityLogger, 2, /*shouldScrollToTop=*/false);
+                mLaunchReliabilityLogger, 2);
 
         // Add different feed content.
         update = FeedUiProto.StreamUpdate.newBuilder()
@@ -477,25 +468,12 @@ public class FeedStreamTest {
 
     @Test
     @SmallTest
-    public void testNavigateTab() {
-        bindToView();
-        FeedStream.FeedSurfaceActionsHandler handler =
-                (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
-                        SurfaceActionsHandler.KEY);
-        handler.navigateTab(TEST_URL, null);
-        verify(mActionDelegate)
-                .openSuggestionUrl(eq(org.chromium.ui.mojom.WindowOpenDisposition.CURRENT_TAB),
-                        any(), eq(false), any(), any());
-    }
-
-    @Test
-    @SmallTest
     public void testOpenUrlSameTab() {
         bindToView();
         FeedStream.FeedSurfaceActionsHandler handler =
                 (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
                         SurfaceActionsHandler.KEY);
-        handler.openUrl(OpenMode.SAME_TAB, TEST_URL, new OpenUrlOptions() {});
+        handler.openUrl(OpenMode.SAME_TAB, TEST_URL, DEFAULT_OPEN_URL_OPTIONS);
         verify(mActionDelegate)
                 .openSuggestionUrl(eq(org.chromium.ui.mojom.WindowOpenDisposition.CURRENT_TAB),
                         any(), eq(false), any(), any());
@@ -563,7 +541,7 @@ public class FeedStreamTest {
         FeedStream.FeedSurfaceActionsHandler handler =
                 (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
                         SurfaceActionsHandler.KEY);
-        handler.openUrl(OpenMode.SAME_TAB, TEST_URL, new OpenUrlOptions() {});
+        handler.openUrl(OpenMode.SAME_TAB, TEST_URL, DEFAULT_OPEN_URL_OPTIONS);
         verify(mLaunchReliabilityLogger)
                 .logLaunchFinished(anyLong(), eq(DiscoverLaunchResult.CARD_TAPPED.getNumber()));
     }
@@ -576,7 +554,7 @@ public class FeedStreamTest {
         FeedStream.FeedSurfaceActionsHandler handler =
                 (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
                         SurfaceActionsHandler.KEY);
-        handler.openUrl(OpenMode.NEW_TAB, TEST_URL, new OpenUrlOptions() {});
+        handler.openUrl(OpenMode.NEW_TAB, TEST_URL, DEFAULT_OPEN_URL_OPTIONS);
 
         // Don't log "launch finished" if the card was opened in a new tab in the background.
         verify(mLaunchReliabilityLogger, never())
@@ -591,7 +569,7 @@ public class FeedStreamTest {
         FeedStream.FeedSurfaceActionsHandler handler =
                 (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
                         SurfaceActionsHandler.KEY);
-        handler.openUrl(OpenMode.NEW_TAB, TEST_URL, new OpenUrlOptions() {});
+        handler.openUrl(OpenMode.NEW_TAB, TEST_URL, DEFAULT_OPEN_URL_OPTIONS);
         // Don't log "launch finished" if the card was opened in a new tab in the background.
         verify(mLaunchReliabilityLogger, never())
                 .logLaunchFinished(anyLong(), eq(DiscoverLaunchResult.CARD_TAPPED.getNumber()));
@@ -605,24 +583,9 @@ public class FeedStreamTest {
         FeedStream.FeedSurfaceActionsHandler handler =
                 (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
                         SurfaceActionsHandler.KEY);
-        handler.navigateIncognitoTab(TEST_URL);
+        handler.openUrl(OpenMode.INCOGNITO_TAB, TEST_URL, DEFAULT_OPEN_URL_OPTIONS);
         verify(mLaunchReliabilityLogger)
                 .logLaunchFinished(anyLong(), eq(DiscoverLaunchResult.CARD_TAPPED.getNumber()));
-    }
-
-    @Test
-    @SmallTest
-    public void testNavigateNewTab() {
-        bindToView();
-        FeedStream.FeedSurfaceActionsHandler handler =
-                (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
-                        SurfaceActionsHandler.KEY);
-
-        handler.navigateNewTab(TEST_URL, null);
-        verify(mActionDelegate)
-                .openSuggestionUrl(
-                        eq(org.chromium.ui.mojom.WindowOpenDisposition.NEW_BACKGROUND_TAB), any(),
-                        eq(false), any(), any());
     }
 
     @Test
@@ -633,26 +596,11 @@ public class FeedStreamTest {
                 (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
                         SurfaceActionsHandler.KEY);
 
-        handler.openUrl(OpenMode.NEW_TAB, TEST_URL, new OpenUrlOptions() {});
+        handler.openUrl(OpenMode.NEW_TAB, TEST_URL, DEFAULT_OPEN_URL_OPTIONS);
         verify(mActionDelegate)
                 .openSuggestionUrl(
                         eq(org.chromium.ui.mojom.WindowOpenDisposition.NEW_BACKGROUND_TAB), any(),
                         eq(false), any(), any());
-    }
-
-    @Test
-    @SmallTest
-    public void testNavigateNewTabInGroup() {
-        bindToView();
-        FeedStream.FeedSurfaceActionsHandler handler =
-                (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
-                        SurfaceActionsHandler.KEY);
-
-        handler.navigateNewTabInGroup(TEST_URL, null);
-        verify(mActionDelegate)
-                .openSuggestionUrl(
-                        eq(org.chromium.ui.mojom.WindowOpenDisposition.NEW_BACKGROUND_TAB), any(),
-                        eq(true), any(), any());
     }
 
     @Test
@@ -663,24 +611,11 @@ public class FeedStreamTest {
                 (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
                         SurfaceActionsHandler.KEY);
 
-        handler.openUrl(OpenMode.NEW_TAB_IN_GROUP, TEST_URL, new OpenUrlOptions() {});
+        handler.openUrl(OpenMode.NEW_TAB_IN_GROUP, TEST_URL, DEFAULT_OPEN_URL_OPTIONS);
         verify(mActionDelegate)
                 .openSuggestionUrl(
                         eq(org.chromium.ui.mojom.WindowOpenDisposition.NEW_BACKGROUND_TAB), any(),
                         eq(true), any(), any());
-    }
-
-    @Test
-    @SmallTest
-    public void testNavigateIncognitoTab() {
-        bindToView();
-        FeedStream.FeedSurfaceActionsHandler handler =
-                (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
-                        SurfaceActionsHandler.KEY);
-        handler.navigateIncognitoTab(TEST_URL);
-        verify(mActionDelegate)
-                .openSuggestionUrl(eq(org.chromium.ui.mojom.WindowOpenDisposition.OFF_THE_RECORD),
-                        any(), eq(false), any(), any());
     }
 
     @Test
@@ -690,7 +625,7 @@ public class FeedStreamTest {
         FeedStream.FeedSurfaceActionsHandler handler =
                 (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
                         SurfaceActionsHandler.KEY);
-        handler.openUrl(OpenMode.INCOGNITO_TAB, TEST_URL, new OpenUrlOptions() {});
+        handler.openUrl(OpenMode.INCOGNITO_TAB, TEST_URL, DEFAULT_OPEN_URL_OPTIONS);
         verify(mActionDelegate)
                 .openSuggestionUrl(eq(org.chromium.ui.mojom.WindowOpenDisposition.OFF_THE_RECORD),
                         any(), eq(false), any(), any());
@@ -930,28 +865,21 @@ public class FeedStreamTest {
     @SmallTest
     public void testAddToReadingList() {
         bindToView();
+        String title = "title";
         FeedStream.FeedSurfaceActionsHandler handler =
                 (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
                         SurfaceActionsHandler.KEY);
-        handler.addToReadingList("title", TEST_URL);
+        handler.openUrl(OpenMode.READ_LATER, TEST_URL, new OpenUrlOptions() {
+            @Override
+            public String getTitle() {
+                return title;
+            }
+        });
 
         verify(mFeedStreamJniMock)
                 .reportOtherUserAction(anyLong(), any(FeedStream.class),
                         eq(FeedUserActionType.TAPPED_ADD_TO_READING_LIST));
-        verify(mActionDelegate).addToReadingList(eq("title"), eq(TEST_URL));
-    }
-
-    @Test
-    @SmallTest
-    public void testNavigateCrow() {
-        bindToView();
-
-        FeedStream.FeedSurfaceActionsHandler handler =
-                (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
-                        SurfaceActionsHandler.KEY);
-        handler.navigateCrow(TEST_URL);
-
-        verify(mActionDelegate).openCrow(TEST_URL);
+        verify(mActionDelegate).addToReadingList(eq(title), eq(TEST_URL));
     }
 
     @Test
@@ -1112,7 +1040,7 @@ public class FeedStreamTest {
     @Test
     @SmallTest
     public void testShowSpinner_PlaceholderDisabled() {
-        setFeatureOverrides(/*feedLoadingPlaceholderOn=*/false, /*onboardingOn=*/false);
+        setFeatureOverrides(/*feedLoadingPlaceholderOn=*/false);
         createHeaderContent(1);
         bindToView();
         FeedUiProto.StreamUpdate update =
@@ -1132,29 +1060,6 @@ public class FeedStreamTest {
 
         assertThat(nativeViewContent.getNativeView(layout),
                 not(hasDescendant(instanceOf(FeedPlaceholderLayout.class))));
-    }
-
-    @Test
-    public void testStreamUpdatedCreatesSpacer() {
-        // Redo the feature overrides with onboarding turned on this time.
-        setFeatureOverrides(/*loading placeholder=*/true, /*onboardingOn=*/true);
-        FeedStream stream = new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
-                /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
-                /* isInterestFeed= */ StreamKind.FOLLOWING,
-                /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
-                /*helpAndFeedbackLauncher=*/null,
-                /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null,
-                /*SingleWebFeedHelper=*/null);
-        mFeedStream = stream;
-        createHeaderContent(1);
-        bindToView();
-        FeedUiProto.StreamUpdate update =
-                FeedUiProto.StreamUpdate.newBuilder()
-                        .addUpdatedSlices(createSliceUpdateForLoadingSpinnerSlice("a", true))
-                        .build();
-        stream.onStreamUpdated(update.toByteArray());
-        assertEquals(3, mContentManager.getItemCount());
-        assertEquals("Spacer", mContentManager.getContent(2).getKey());
     }
 
     @Test
@@ -1320,8 +1225,7 @@ public class FeedStreamTest {
 
     void bindToView() {
         mFeedStream.bind(mRecyclerView, mContentManager, null, mSurfaceScope, mRenderer,
-                mLaunchReliabilityLogger, mContentManager.getItemCount(),
-                /*shouldScrollToTop=*/false);
+                mLaunchReliabilityLogger, mContentManager.getItemCount());
     }
 
     class StubSnackbarController implements FeedActionsHandler.SnackbarController {

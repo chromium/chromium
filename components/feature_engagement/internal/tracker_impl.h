@@ -37,7 +37,8 @@ class TrackerImpl : public Tracker {
               std::unique_ptr<Configuration> configuration,
               std::unique_ptr<DisplayLockController> display_lock_controller,
               std::unique_ptr<ConditionValidator> condition_validator,
-              std::unique_ptr<TimeProvider> time_provider);
+              std::unique_ptr<TimeProvider> time_provider,
+              base::WeakPtr<TrackerEventExporter> event_exporter);
 
   TrackerImpl(const TrackerImpl&) = delete;
   TrackerImpl& operator=(const TrackerImpl&) = delete;
@@ -75,6 +76,11 @@ class TrackerImpl : public Tracker {
 
   // Invoked by the AvailabilityModel when it has been initialized.
   void OnAvailabilityModelInitializationFinished(bool success);
+
+  // Invoked by the TrackerEventExporter if it has any events to
+  // migrate.
+  void OnReceiveExportedEvents(
+      std::vector<TrackerEventExporter::EventData> events);
 
   // Returns whether both underlying models have finished initializing.
   // This returning true does not mean the initialization was a success, just
@@ -121,12 +127,18 @@ class TrackerImpl : public Tracker {
   // A utility for retriving time-related information.
   std::unique_ptr<TimeProvider> time_provider_;
 
+  // The exporter for any new events to migrate into the tracker.
+  base::WeakPtr<TrackerEventExporter> event_exporter_;
+
   // Whether the initialization of the underlying EventModel has finished.
   bool event_model_initialization_finished_;
 
   // Whether the initialization of the underlying AvailabilityModel has
   // finished.
   bool availability_model_initialization_finished_;
+
+  // Whether event migration has been finished.
+  bool event_migration_finished_ = false;
 
   // The list of callbacks to invoke when initialization has finished. This
   // is cleared after the initialization has happened.

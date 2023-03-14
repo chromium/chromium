@@ -83,9 +83,8 @@ BASE_EXPORT bool SetClsidForPropertyStore(IPropertyStore* property_store,
                                           const PROPERTYKEY& property_key,
                                           const CLSID& property_clsid_value);
 
-// Sets the application id in given IPropertyStore. The function is intended
-// for tagging application/chromium shortcut, browser window and jump list for
-// Win7.
+// Sets the application id in given IPropertyStore. The function is used to tag
+// application/Chrome shortcuts, and set app details for Chrome windows.
 BASE_EXPORT bool SetAppIdForPropertyStore(IPropertyStore* property_store,
                                           const wchar_t* app_id);
 

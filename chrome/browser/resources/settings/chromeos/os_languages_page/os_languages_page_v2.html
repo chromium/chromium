@@ -90,12 +90,13 @@
     <h2 aria-hidden="true">
       [[getLanguagePreferenceTitle_(languageSettingsV2Update2Enabled_)]]
     </h2>
-    <localized-link id="webLanguagesDescription"
-        class="cr-row first bottom-margin"
-        localized-string="[[getLanguagePreferenceDescription_(
-            languageSettingsV2Update2Enabled_)]]"
-        on-link-clicked="onLanguagePreferenceDescriptionLinkClick_">
-    </localized-link>
+    <div class="cr-row first bottom-margin">
+      <localized-link id="webLanguagesDescription"
+          localized-string="[[getLanguagePreferenceDescription_(
+              languageSettingsV2Update2Enabled_)]]"
+          on-link-clicked="onLanguagePreferenceDescriptionLinkClick_">
+      </localized-link>
+    </div>
     <div class="list-frame vertical-list" id="languagesList">
       <template is="dom-repeat" items="[[languages.enabled]]">
         <div class$="list-item [[getTranslationTargetClass_(

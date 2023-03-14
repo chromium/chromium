@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.toolbar;
 
-import org.chromium.base.FeatureList;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 
@@ -14,7 +13,11 @@ public final class ToolbarFeatures {
     // turned off captures, which are unnecessary when the toolbar cannot scroll off. But this param
     // allows half of this work to still be done, allowing measurement of both halves when compared
     // to the original ablation and controls.
+    private static final MutableFlagWithSafeDefault sToolbarScrollAblation =
+            new MutableFlagWithSafeDefault(
+                    ChromeFeatureList.TOOLBAR_SCROLL_ABLATION_ANDROID, false);
     private static final String ALLOW_CAPTURES = "allow_captures";
+
     private static final MutableFlagWithSafeDefault sSuppressionFlag =
             new MutableFlagWithSafeDefault(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES, false);
     private static final MutableFlagWithSafeDefault sRecordSuppressionMetrics =
@@ -25,13 +28,8 @@ public final class ToolbarFeatures {
 
     /** Returns whether captures should be blocked as part of the ablation experiment. */
     public static boolean shouldBlockCapturesForAblation() {
-        // Fall back to allowing captures when pre-native.
-        if (!FeatureList.isNativeInitialized()) {
-            return false;
-        }
-
-        // Not in ablation, captures are allowed like normal.
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_SCROLL_ABLATION_ANDROID)) {
+        // Not in ablation or pre-native, allow captures like normal.
+        if (!sToolbarScrollAblation.isEnabled()) {
             return false;
         }
 

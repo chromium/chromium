@@ -36,10 +36,10 @@ class TabGroupViews {
   ~TabGroupViews();
 
   tab_groups::TabGroupId group() const { return group_; }
-  TabGroupHeader* header() { return header_; }
-  TabGroupHighlight* highlight() { return highlight_; }
-  TabGroupUnderline* underline() { return underline_; }
-  TabGroupUnderline* drag_underline() { return drag_underline_; }
+  TabGroupHeader* header() const { return header_; }
+  TabGroupHighlight* highlight() const { return highlight_; }
+  TabGroupUnderline* underline() const { return underline_; }
+  TabGroupUnderline* drag_underline() const { return drag_underline_; }
 
   // Updates bounds of all elements not explicitly positioned by the tab strip.
   // This currently includes both the underline and highlight.

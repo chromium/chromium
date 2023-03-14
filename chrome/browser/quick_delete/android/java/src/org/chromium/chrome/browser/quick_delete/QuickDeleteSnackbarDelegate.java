@@ -15,18 +15,13 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
  */
 class QuickDeleteSnackbarDelegate {
     private final @NonNull SnackbarManager mSnackbarManager;
-    private final @NonNull SnackbarManager.SnackbarController mSnackbarController;
 
     /**
      * @param snackbarManager A {@link SnackbarManager} responsible for showing the quick delete
      *         {@link Snackbar}.
-     * @param snackbarController A {@link SnackbarController} responsible for providing controls for
-     *         the custom actions inside the {@link Snackbar}.
      */
-    QuickDeleteSnackbarDelegate(@NonNull SnackbarManager snackbarManager,
-            @NonNull SnackbarManager.SnackbarController snackbarController) {
+    QuickDeleteSnackbarDelegate(@NonNull SnackbarManager snackbarManager) {
         mSnackbarManager = snackbarManager;
-        mSnackbarController = snackbarController;
     }
 
     /**

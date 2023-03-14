@@ -244,9 +244,6 @@ BrowserTaskExecutor* BrowserTaskExecutor::Get() {
 
 // static
 void BrowserTaskExecutor::ResetForTesting() {
-#if BUILDFLAG(IS_ANDROID)
-  base::PostTaskAndroid::SignalNativeSchedulerShutdownForTesting();
-#endif
   if (g_browser_task_executor) {
     RunAllPendingTasksOnThreadForTesting(BrowserThread::UI);
     RunAllPendingTasksOnThreadForTesting(BrowserThread::IO);

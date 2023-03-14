@@ -64,7 +64,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SocketFactory
       mojom::NetworkContext::CreateRestrictedUDPSocketCallback callback);
   void CreateTCPServerSocket(
       const net::IPEndPoint& local_addr,
-      int backlog,
+      mojom::TCPServerSocketOptionsPtr options,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       mojo::PendingReceiver<mojom::TCPServerSocket> receiver,
       mojom::NetworkContext::CreateTCPServerSocketCallback callback);

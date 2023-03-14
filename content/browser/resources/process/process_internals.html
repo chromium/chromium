@@ -19,26 +19,97 @@ found in the LICENSE file.
     <div id="caption">Process Internals</div>
   </div>
   <div id="content">
+
     <div id="general">
-      <div class="content-header">General info</div>
+      <div class="content-header">General Info</div>
       <div id="general-info">
-        <div id="site-isolation-mode">Site Isolation mode: <span id='isolation-mode'>unknown</span></div>
-        <div id="isolated-origins-container">
-          <div id="user-triggered-isolated-origins"></div>
-          <div id="web-triggered-isolated-origins"></div>
-          <div id="global-isolated-origins"></div>
-        </div>
+        <button id="refresh-process-info">Refresh</button>
+        <div class="description">The information below reflects all profiles in
+         this browser process.</div>
+        <table>
+          <tbody>
+            <tr>
+              <td>Renderer Process Count:</td>
+              <td id="process-count-total"></td>
+              <td class="description">This includes the total count of renderer
+                processes, but not utility or plugin processes.</td>
+            </tr>
+            <tr>
+              <td>Renderer Process Count for Limit:</td>
+              <td id="process-count-for-limit"></td>
+              <td class="description">The number of renderer processes
+                considered against the limit below, possibly ignoring some of
+                the total (e.g., to prevent extensions from using up the limit).
+              </td>
+           </tr>
+            <tr>
+              <td>Renderer Process Limit:</td>
+              <td id="process-limit"></td>
+              <td class="description">A soft limit to the number of renderer
+                processes, after which same-site processes will be reused when
+                possible.</td>
+           </tr>
+            <tr>
+              <td>Over Process Limit?</td>
+              <td id="over-process-limit"></td>
+              <td class="description">Whether processes will be reused for new
+                main-frame documents when possible.</td>
+           </tr>
+          </tbody>
+        </table>
       </div>
     </div>
+
+    <div id="site-isolation">
+      <div class="content-header">Site Isolation</div>
+      <div id="site-isolation-mode">Site Isolation mode:
+        <span id='isolation-mode'>unknown</span></div>
+      <div id="isolated-origins-container">
+        <div id="user-triggered-isolated-origins"></div>
+        <div id="web-triggered-isolated-origins"></div>
+        <div id="global-isolated-origins"></div>
+      </div>
+    </div>
+
     <div id="web-contents">
       <div class="content-header">Frame Trees</div>
       <div id="wc-list" class="list pages"></div>
       <div id="tree-view-container">
-        <button id="refresh-button">Refresh</button>
-        <div>Legend:</div>
-        <div>Frame[<i>process_id</i>:<i>routing_id</i>:<i>agent_scheduling_group_id</i>]:
-          SI:<i>site_instance_id</i>, <i>whether process is locked to a
-            site</i>, site: <i>site_url</i> | url:
+        <button id="refresh-frame-trees">Refresh</button>
+        <div class="description">This page only contains information about the
+          current profile.</div>
+        <table>
+          <tbody>
+            <tr>
+              <td>Tab Count:</td>
+              <td id="tab-count"></td>
+              <td class="description">The number of WebContents objects in this
+                profile.</td>
+            </tr>
+            <tr>
+              <td>Frame Count:</td>
+              <td id="frame-count"></td>
+              <td class="description">The number of RenderFrameHosts in this
+                profile. Note that this does not include RenderFrameHosts that
+                are speculative or pending deletion.</td>
+            </tr>
+            <tr>
+              <td>OOPIF Count:</td>
+              <td id="oopif-count"></td>
+              <td class="description">The number of out-of-process iframes in
+                this profile (as a subset of the Frame Count).</td>
+            </tr>
+            <tr>
+              <td>Process Count:</td>
+              <td id="profile-process-count"></td>
+              <td class="description">The number of renderer processes in this
+                profile.</td>
+            </tr>
+          </tbody>
+        </table>
+        <div>Legend: Frame[<i>process_id</i>:<i>routing_id</i>]:
+          SI:<i>site_instance_id</i>, <i>is process locked to a
+            site?</i>, site: <i>site_url</i> | url:
           <i>last_committed_url</i>
         </div>
         <cr-tree id="tree-view"></cr-tree>

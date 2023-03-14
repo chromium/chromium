@@ -369,7 +369,7 @@ public class CustomTabToolbarUnitTest {
     @Test
     @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
     public void testMaximizeButton() {
-        mToolbar.createSideSheetMaximizeButton(() -> true);
+        mToolbar.initSideSheetMaximizeButton(/*maximizedOnInit=*/false, () -> true);
         var maximizeButton =
                 (ImageButton) mToolbar.findViewById(R.id.custom_tabs_sidepanel_maximize);
         assertEquals(

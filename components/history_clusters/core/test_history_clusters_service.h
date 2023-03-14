@@ -22,6 +22,7 @@ class TestHistoryClustersService : public HistoryClustersService {
   // HistoryClustersService:
   std::unique_ptr<HistoryClustersServiceTask> QueryClusters(
       ClusteringRequestSource clustering_request_source,
+      QueryClustersFilterParams filter_params,
       base::Time begin_time,
       QueryClustersContinuationParams continuation_params,
       bool recluster,

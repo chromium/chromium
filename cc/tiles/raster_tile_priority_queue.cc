@@ -4,6 +4,8 @@
 
 #include "cc/tiles/raster_tile_priority_queue.h"
 
+#include <utility>
+
 #include "base/notreached.h"
 #include "cc/tiles/raster_tile_priority_queue_all.h"
 #include "cc/tiles/raster_tile_priority_queue_required.h"

@@ -144,17 +144,6 @@ void SkiaOutputDevice::Submit(bool sync_cpu, base::OnceClosure callback) {
   std::move(callback).Run();
 }
 
-void SkiaOutputDevice::CommitOverlayPlanes(BufferPresentedCallback feedback,
-                                           OutputSurfaceFrame frame) {
-  NOTREACHED();
-}
-
-void SkiaOutputDevice::PostSubBuffer(const gfx::Rect& rect,
-                                     BufferPresentedCallback feedback,
-                                     OutputSurfaceFrame frame) {
-  NOTREACHED();
-}
-
 bool SkiaOutputDevice::EnsureMinNumberOfBuffers(size_t n) {
   NOTREACHED();
   return false;

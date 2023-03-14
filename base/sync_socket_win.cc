@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/scoped_handle.h"

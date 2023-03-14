@@ -4,6 +4,8 @@
 
 #include "cc/raster/tile_task.h"
 
+#include <utility>
+
 #include "base/check.h"
 
 namespace cc {

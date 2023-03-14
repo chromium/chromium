@@ -21,6 +21,7 @@
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
+#include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -111,11 +112,19 @@ class GlobalMediaControlsTitleView : public views::View {
     title_label_ = AddChildView(std::make_unique<views::Label>());
     title_label_->SetText(
         l10n_util::GetStringUTF16(IDS_ASH_GLOBAL_MEDIA_CONTROLS_TITLE));
-    title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-
     title_label_->SetAutoColorReadabilityEnabled(false);
-    title_label_->SetFontList(views::Label::GetDefaultFontList().Derive(
-        kTitleFontSizeIncrease, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
+
+    if (base::FeatureList::IsEnabled(
+            media::kGlobalMediaControlsCrOSUpdatedUI)) {
+      title_label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+      TrayPopupUtils::SetLabelFontList(title_label_,
+                                       TrayPopupUtils::FontStyle::kTitle);
+    } else {
+      title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+      title_label_->SetFontList(views::Label::GetDefaultFontList().Derive(
+          kTitleFontSizeIncrease, gfx::Font::NORMAL,
+          gfx::Font::Weight::MEDIUM));
+    }
 
     // Media tray should always be pinned to shelf when we are opening the
     // dialog.
@@ -127,14 +136,17 @@ class GlobalMediaControlsTitleView : public views::View {
 
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
-    SetBorder(views::CreatePaddedBorder(
-        views::CreateSolidSidedBorder(
-            gfx::Insets::TLBR(0, 0, kMenuSeparatorWidth, 0),
-            AshColorProvider::Get()->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kSeparatorColor)),
-        gfx::Insets::TLBR(kMenuSeparatorVerticalPadding, 0,
-                          kMenuSeparatorVerticalPadding - kMenuSeparatorWidth,
-                          0)));
+    if (!base::FeatureList::IsEnabled(
+            media::kGlobalMediaControlsCrOSUpdatedUI)) {
+      SetBorder(views::CreatePaddedBorder(
+          views::CreateSolidSidedBorder(
+              gfx::Insets::TLBR(0, 0, kMenuSeparatorWidth, 0),
+              AshColorProvider::Get()->GetContentLayerColor(
+                  AshColorProvider::ContentLayerType::kSeparatorColor)),
+          gfx::Insets::TLBR(kMenuSeparatorVerticalPadding, 0,
+                            kMenuSeparatorVerticalPadding - kMenuSeparatorWidth,
+                            0)));
+    }
     title_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorPrimary));
   }
@@ -297,6 +309,10 @@ void MediaTray::ShowBubble() {
   content_view_ = bubble_view->AddChildView(
       MediaNotificationProvider::Get()->GetMediaNotificationListView(
           kMenuSeparatorWidth, /*should_clip_height=*/true));
+  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI)) {
+    content_view_->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(0, 0, kMediaNotificationListViewBottomPadding, 0)));
+  }
 
   bubble_ = std::make_unique<TrayBubbleWrapper>(this);
   bubble_->ShowBubble(std::move(bubble_view));
@@ -382,6 +398,8 @@ void MediaTray::SetNotificationColorTheme() {
       AshColorProvider::ContentLayerType::kIconColorSecondary);
   theme.separator_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kSeparatorColor);
+  theme.background_color = AshColorProvider::Get()->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
   MediaNotificationProvider::Get()->SetColorTheme(theme);
 }
 

@@ -112,28 +112,27 @@ export enum MimeType {
  */
 export enum Mode {
   PHOTO = 'photo',
-  VIDEO = 'video',
   PORTRAIT = 'portrait',
   SCAN = 'scan',
+  VIDEO = 'video',
 }
 
 /**
  * Camera facings.
  */
 export enum Facing {
-  USER = 'user',
   ENVIRONMENT = 'environment',
   EXTERNAL = 'external',
+  USER = 'user',
   // VIRTUAL_{facing} is for labeling video device for configuring extra stream
   // from corresponding {facing} video device.
-  VIRTUAL_USER = 'virtual_user',
   VIRTUAL_ENV = 'virtual_environment',
   VIRTUAL_EXT = 'virtual_external',
+  VIRTUAL_USER = 'virtual_user',
 }
 
 export enum ViewName {
   CAMERA = 'view-camera',
-  DOCUMENT_MODE_DIALOG = 'view-document-mode-dialog',
   DOCUMENT_REVIEW = 'view-document-review',
   EXPERT_SETTINGS = 'view-expert-settings',
   FLASH = 'view-flash',
@@ -151,8 +150,8 @@ export enum ViewName {
 }
 
 export enum VideoType {
-  MP4 = 'mp4',
   GIF = 'gif',
+  MP4 = 'mp4',
 }
 
 export enum PhotoResolutionLevel {
@@ -161,16 +160,20 @@ export enum PhotoResolutionLevel {
   UNKNOWN = 'unknown',
 }
 
+/* eslint-disable cca/string-enum-order */
 export enum VideoResolutionLevel {
-  FULL = 'full',
-  MEDIUM = 'medium',
   FOUR_K = '4K',
   QUAD_HD = 'Quad HD',
   FULL_HD = 'Full HD',
   HD = 'HD',
-  UNKNOWN = 'unknown',
   THREE_SIXTY_P = '360p',
+
+  FULL = 'full',
+  MEDIUM = 'medium',
+
+  UNKNOWN = 'unknown',
 }
+/* eslint-enable cca/string-enum-order */
 
 export enum AspectRatioSet {
   RATIO_4_3 = 1.3333,
@@ -353,8 +356,8 @@ export enum ErrorType {
  * Error level used in ERROR metrics.
  */
 export enum ErrorLevel {
-  WARNING = 'WARNING',
   ERROR = 'ERROR',
+  WARNING = 'WARNING',
 }
 
 /**
@@ -470,9 +473,6 @@ export class CameraSuspendError extends Error {
  */
 export enum LocalStorageKey {
   CUSTOM_VIDEO_PARAMETERS = 'customVideoParameters',
-  DOC_MODE_DIALOG_SHOWN = 'isDocModeDialogShown',
-  DOC_MODE_MULTI_PAGE_TOAST_SHOWN = 'isDocModeMultiPageToastShown',
-  DOC_MODE_TOAST_SHOWN = 'isDocModeToastShown',
   ENABLE_FPS_PICKER = 'enableFPSPicker',
   ENABLE_FULL_SIZED_VIDEO_SNAPSHOT = 'enableFullSizedVideoSnapshot',
   ENABLE_MULTISTREAM_RECORDING = 'enableMultistreamRecording',
@@ -487,7 +487,6 @@ export enum LocalStorageKey {
   PREF_DEVICE_VIDEO_RESOLUTION_FPS = 'deviceVideoResolutionFps',
   PREF_DEVICE_VIDEO_RESOLUTION_LEVEL = 'deviceVideoResolutionLevel',
   PRINT_PERFORMANCE_LOGS = 'printPerformanceLogs',
-  PTZ_TOAST_SHOWN = 'isPTZToastShown',
   SAVE_METADATA = 'saveMetadata',
   SHOW_ALL_RESOLUTIONS = 'showAllResolutions',
   SHOW_METADATA = 'showMetadata',
@@ -501,3 +500,5 @@ export enum LowStorageDialogType {
   AUTO_STOP = 'auto-stop',
   CANNOT_START = 'cannot-start',
 }
+
+export type Awaitable<T> = PromiseLike<T>|T;

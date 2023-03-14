@@ -13,11 +13,11 @@
 // fullscreen_controller_state_interactive_browsertest.cc and
 // fullscreen_controller_state_unittest.cc.
 
-#define TEST_ALL_EVENTS(state)                \
-  TEST_EVENT(state, TOGGLE_FULLSCREEN)        \
-  TEST_EVENT(state, TAB_FULLSCREEN_TRUE)      \
-  TEST_EVENT(state, TAB_FULLSCREEN_FALSE)     \
-  TEST_EVENT(state, BUBBLE_EXIT_LINK)         \
+#define TEST_ALL_EVENTS(state)            \
+  TEST_EVENT(state, TOGGLE_FULLSCREEN)    \
+  TEST_EVENT(state, ENTER_TAB_FULLSCREEN) \
+  TEST_EVENT(state, EXIT_TAB_FULLSCREEN)  \
+  TEST_EVENT(state, BUBBLE_EXIT_LINK)     \
   TEST_EVENT(state, WINDOW_CHANGE)
 
 TEST_ALL_EVENTS(STATE_NORMAL)

@@ -47,7 +47,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler
    public:
     // Called when the entries in a managed list have changed.
     virtual void UpdateManagedList(ManagedState::ManagedType type,
-                                   const base::Value& entries) = 0;
+                                   const base::Value::List& entries) = 0;
 
     // Called when the properties for a managed state have changed.
     virtual void UpdateManagedStateProperties(
@@ -56,7 +56,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler
         const base::Value::Dict& properties) = 0;
 
     // Called when the list of profiles changes.
-    virtual void ProfileListChanged(const base::Value& profile_list) = 0;
+    virtual void ProfileListChanged(const base::Value::List& profile_list) = 0;
 
     // Called when a property for a watched network service has changed.
     virtual void UpdateNetworkServiceProperty(const std::string& service_path,
@@ -131,9 +131,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler
   // Asynchronously sets the prohibited state for every network technology
   // listed in |technologies|. Note: Modifies Manager state.
   void SetProhibitedTechnologies(const std::vector<std::string>& technologies);
-
-  // Sets the list of devices on which portal check is enabled.
-  void SetCheckPortalList(const std::string& check_portal_list);
 
   // Sets the Manager.WakeOnLan property. Note: we do not track this state, we
   // only set it.

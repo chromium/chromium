@@ -74,8 +74,22 @@
 //     |    error      V                                     |
 //     +-<-------- kUpdating --------------------------------+
 
-namespace update_client {
+// The state machine for a check for update only.
+//
+//                                kNew
+//                                  |
+//                                  V
+//                             kChecking
+//                                  |
+//                         yes      V     no
+//                         +----[update?] ------> kUpToDate
+//                         |
+//             yes         v           no
+//          +---<-- update disabled? -->---+
+//          |                              |
+//     kUpdateError                    kCanUpdate
 
+namespace update_client {
 namespace {
 
 using InstallOnBlockingTaskRunnerCompleteCallback = base::OnceCallback<
@@ -118,10 +132,9 @@ void InstallOnBlockingTaskRunner(
   base::ScopedTempDir unpack_path_owner;
   std::ignore = unpack_path_owner.Set(unpack_path);
 
-  if (static_cast<int>(fingerprint.size()) !=
-      base::WriteFile(
+  if (!base::WriteFile(
           unpack_path.Append(FILE_PATH_LITERAL("manifest.fingerprint")),
-          fingerprint.c_str(), base::checked_cast<int>(fingerprint.size()))) {
+          fingerprint)) {
     const CrxInstaller::Result result(InstallError::FINGERPRINT_WRITE_FAILED);
     main_task_runner->PostTask(
         FROM_HERE,
@@ -879,7 +892,8 @@ void Component::StateChecking::DoHandle() {
   }
 
   if (component.status_ == "noupdate") {
-    if (component.action_run_.empty()) {
+    if (component.action_run_.empty() ||
+        component.update_context_->is_update_check_only) {
       TransitionState(std::make_unique<StateUpToDate>(&component));
     } else {
       TransitionState(std::make_unique<StateRun>(&component));
@@ -941,6 +955,16 @@ void Component::StateCanUpdate::DoHandle() {
     TransitionState(std::make_unique<StateUpdateError>(&component));
     component.error_category_ = ErrorCategory::kService;
     component.error_code_ = static_cast<int>(ServiceError::CANCELLED);
+    return;
+  }
+
+  if (component.update_context_->is_update_check_only) {
+    component.error_category_ = ErrorCategory::kService;
+    component.error_code_ =
+        static_cast<int>(ServiceError::CHECK_FOR_UPDATE_ONLY);
+    component.extra_code1_ = 0;
+    component.AppendEvent(component.MakeEventUpdateComplete());
+    EndState();
     return;
   }
 

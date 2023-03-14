@@ -8,8 +8,6 @@ namespace extensions {
 
 namespace behavior_feature {
 
-const char kDoNotSync[] = "do_not_sync";
-
 const char kZoomWithoutBubble[] = "zoom_without_bubble";
 
 const char kAllowUsbDevicesPermissionInterfaceClass[] =

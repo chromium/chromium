@@ -228,10 +228,11 @@ void TranslateAgent::PageCaptured(const std::u16string& contents) {
 
   LanguageDetectionDetails details;
   std::string language;
-  if (base::FeatureList::IsEnabled(translate::kRetryLanguageDetection) &&
+  // Under kSkipLanguageDetectionOnEmptyContent, if captured content is empty,
+  // default to using "und" instead of attempting language detection.
+  if (base::FeatureList::IsEnabled(
+          translate::kSkipLanguageDetectionOnEmptyContent) &&
       page_contents_length_ == 0) {
-    // Under kRetryLanguageDetection, if captured content is empty,
-    // default to using "und" instead of attempting language detection.
     language = translate::kUnknownLanguageCode;
   } else if (translate::IsTFLiteLanguageDetectionEnabled()) {
     translate::LanguageDetectionModel& language_detection_model =

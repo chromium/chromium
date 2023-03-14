@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-class ChromeBrowserState;
+class Browser;
 @protocol BookmarksHomeConsumer;
 @class BookmarksHomeSharedState;
 
@@ -18,8 +18,7 @@ class ChromeBrowserState;
 @property(nonatomic, weak) id<BookmarksHomeConsumer> consumer;
 
 - (instancetype)initWithSharedState:(BookmarksHomeSharedState*)sharedState
-                       browserState:(ChromeBrowserState*)browserState
-    NS_DESIGNATED_INITIALIZER;
+                            browser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Starts this mediator. Populates the table view model with current data and

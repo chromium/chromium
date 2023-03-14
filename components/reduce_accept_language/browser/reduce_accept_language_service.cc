@@ -21,6 +21,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "net/http/http_util.h"
+#include "services/network/public/cpp/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -65,38 +66,27 @@ absl::optional<std::string> ReduceAcceptLanguageService::GetReducedLanguage(
 
   // Record the time spent getting the reduced accept language to better
   // understand whether this prefs read can introduce any large latency.
-  SCOPED_UMA_HISTOGRAM_TIMER("ReduceAcceptLanguage.FetchLatency");
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS("ReduceAcceptLanguage.FetchLatencyUs");
 
-  ContentSettingsForOneType accept_language_rules;
-  settings_map_->GetSettingsForOneType(
-      ContentSettingsType::REDUCED_ACCEPT_LANGUAGE, &accept_language_rules);
+  const base::Value& accept_language_rule = settings_map_->GetWebsiteSetting(
+      url, GURL(), ContentSettingsType::REDUCED_ACCEPT_LANGUAGE, nullptr);
 
-  if (accept_language_rules.empty())
+  if (accept_language_rule.is_none()) {
     return absl::nullopt;
-
-  for (const auto& rule : accept_language_rules) {
-    // Look for an exact match since persisted reduce accept language are
-    // disabled by default, and enabled only on per-origin basis.
-    if (rule.primary_pattern == ContentSettingsPattern::Wildcard() ||
-        !rule.primary_pattern.Matches(url)) {
-      continue;
-    }
-
-    // Found an exact match.
-    DCHECK(ContentSettingsPattern::Wildcard() == rule.secondary_pattern);
-    DCHECK(rule.setting_value.is_dict());
-
-    const base::Value* language_value =
-        rule.setting_value.GetDict().Find(kReduceAcceptLanguageSettingKey);
-    if (language_value == nullptr)
-      continue;
-
-    // We should guarantee reduce accept language always be Type::String since
-    // we save it as string in the Prefs.
-    DCHECK(language_value->is_string());
-    return absl::make_optional(language_value->GetString());
   }
-  return absl::nullopt;
+
+  DCHECK(accept_language_rule.is_dict());
+
+  const base::Value* language_value =
+      accept_language_rule.GetDict().Find(kReduceAcceptLanguageSettingKey);
+  if (language_value == nullptr) {
+    return absl::nullopt;
+  }
+
+  // We should guarantee reduce accept language always be Type::String since
+  // we save it as string in the Prefs.
+  DCHECK(language_value->is_string());
+  return absl::make_optional(language_value->GetString());
 }
 
 std::vector<std::string> ReduceAcceptLanguageService::GetUserAcceptLanguages()
@@ -116,11 +106,17 @@ void ReduceAcceptLanguageService::PersistReducedLanguage(
   const base::TimeTicks start_time = base::TimeTicks::Now();
 
   base::Value::Dict accept_language_dictionary;
+  base::TimeDelta cache_duration =
+      network::features::kReduceAcceptLanguageCacheDuration.Get();
+
   accept_language_dictionary.Set(kReduceAcceptLanguageSettingKey, language);
   settings_map_->SetWebsiteSettingDefaultScope(
       url, GURL(), ContentSettingsType::REDUCED_ACCEPT_LANGUAGE,
       base::Value(std::move(accept_language_dictionary)),
-      {base::Time(), content_settings::SessionModel::Durable});
+      {cache_duration.is_zero()
+           ? base::Time()
+           : content_settings::GetConstraintExpiration(cache_duration),
+       content_settings::SessionModel::Durable});
 
   // Record the time spent getting the reduce accept language.
   base::TimeDelta duration = base::TimeTicks::Now() - start_time;

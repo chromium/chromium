@@ -15,6 +15,8 @@ namespace ash {
 // Handles reading and updating prefs that store touchpad settings.
 class ASH_EXPORT TouchpadPrefHandler {
  public:
+  virtual ~TouchpadPrefHandler() = default;
+
   // Initializes device settings in prefs and update the `settings` member of
   // the `mojom::Touchpad` object.
   virtual void InitializeTouchpadSettings(PrefService* pref_service,
@@ -24,9 +26,6 @@ class ASH_EXPORT TouchpadPrefHandler {
   // `touchpad.settings`.
   virtual void UpdateTouchpadSettings(PrefService* pref_service,
                                       const mojom::Touchpad& touchpad) = 0;
-
- protected:
-  virtual ~TouchpadPrefHandler() = default;
 };
 
 }  // namespace ash

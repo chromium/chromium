@@ -690,8 +690,10 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
   MinMaxSizes min_max = ComputeMinMaxBlockSizes(space, style, border_padding,
                                                 override_available_size);
 
-  if (space.MinBlockSizeShouldEncompassIntrinsicSize())
-    min_max.Encompass(intrinsic_size);
+  if (space.MinBlockSizeShouldEncompassIntrinsicSize()) {
+    // Encompass intrinsic block-size, but not beyond computed max-block-size.
+    min_max.Encompass(std::min(intrinsic_size, min_max.max_size));
+  }
 
   // Scrollable percentage-sized children of table cells (sometimes) are sized
   // to their min-size.

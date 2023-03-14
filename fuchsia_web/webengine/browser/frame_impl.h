@@ -10,7 +10,6 @@
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/binding_set.h>
 #include <lib/inspect/cpp/vmo/types.h>
-#include <lib/syslog/structured_backend/cpp/fuchsia_syslog.h>
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
 #include <lib/zx/channel.h>
 
@@ -23,6 +22,7 @@
 
 #include "base/fuchsia/scoped_fx_logger.h"
 #include "base/gtest_prod_util.h"
+#include "base/logging.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/timer/timer.h"
 #include "build/chromecast_buildflags.h"
@@ -369,7 +369,7 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
 
   // Logger used for console messages from content, depending on |log_level_|.
   base::ScopedFxLogger console_logger_;
-  FuchsiaLogSeverity log_level_ = FUCHSIA_LOG_NONE;
+  logging::LogSeverity log_level_ = logging::LOGGING_NUM_SEVERITIES;
 
   // Parameters applied to popups created by content running in this Frame.
   const fuchsia::web::CreateFrameParams params_for_popups_;

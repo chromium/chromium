@@ -166,7 +166,7 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
   NSPasteboard* pboard = [nsInfo draggingPasteboard];
   NSArray<NSString*>* urls;
   NSArray<NSString*>* titles;
-  if (ui::ClipboardUtil::URLsAndTitlesFromPasteboard(
+  if (ui::clipboard_util::URLsAndTitlesFromPasteboard(
           pboard, /*include_files=*/true, &urls, &titles)) {
     info->url = GURL(base::SysNSStringToUTF8(urls.firstObject));
   }
@@ -272,6 +272,10 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
 - (void)draggingSession:(NSDraggingSession*)session
            endedAtPoint:(NSPoint)screenPoint
               operation:(NSDragOperation)operation {
+  if (!_host) {
+    return;
+  }
+
   // Reconstruct the screen point by removing the offset. It seems like the
   // underlying drag machinery is measuring from the corner of the dragged
   // image.

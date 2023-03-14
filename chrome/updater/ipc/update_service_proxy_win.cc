@@ -300,22 +300,32 @@ class UpdateServiceProxyImpl
                                this, std::move(callback)));
   }
 
-  void UpdateAll(UpdateService::StateChangeCallback state_update,
-                 UpdateService::Callback callback) {
-    PostRPCTask(base::BindOnce(&UpdateServiceProxyImpl::UpdateAllOnSTA, this,
-                               state_update, std::move(callback)));
+  void CheckForUpdate(
+      const std::string& app_id,
+      UpdateService::Priority priority,
+      UpdateService::PolicySameVersionUpdate policy_same_version_update,
+      UpdateService::StateChangeCallback state_update,
+      UpdateService::Callback callback) {
+    PostRPCTask(base::BindOnce(
+        &UpdateServiceProxyImpl::CheckForUpdateOnSTA, this, app_id, priority,
+        policy_same_version_update, state_update, std::move(callback)));
   }
 
   void Update(const std::string& app_id,
               const std::string& install_data_index,
               UpdateService::Priority priority,
               UpdateService::PolicySameVersionUpdate policy_same_version_update,
-              bool do_update_check_only,
               UpdateService::StateChangeCallback state_update,
               UpdateService::Callback callback) {
     PostRPCTask(base::BindOnce(&UpdateServiceProxyImpl::UpdateOnSTA, this,
                                app_id, install_data_index, priority,
-                               policy_same_version_update, do_update_check_only,
+                               policy_same_version_update, state_update,
+                               std::move(callback)));
+  }
+
+  void UpdateAll(UpdateService::StateChangeCallback state_update,
+                 UpdateService::Callback callback) {
+    PostRPCTask(base::BindOnce(&UpdateServiceProxyImpl::UpdateAllOnSTA, this,
                                state_update, std::move(callback)));
   }
 
@@ -473,17 +483,32 @@ class UpdateServiceProxyImpl
     }
   }
 
-  void UpdateAllOnSTA(UpdateService::StateChangeCallback state_update,
-                      UpdateService::Callback callback) {
+  void CheckForUpdateOnSTA(
+      const std::string& app_id,
+      UpdateService::Priority priority,
+      UpdateService::PolicySameVersionUpdate policy_same_version_update,
+      UpdateService::StateChangeCallback state_update,
+      UpdateService::Callback callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (!ConnectToServer()) {
       std::move(callback).Run(UpdateService::Result::kServiceFailed);
       return;
     }
+    std::wstring app_id_w;
+    if (!base::UTF8ToWide(app_id.c_str(), app_id.size(), &app_id_w)) {
+      std::move(callback).Run(UpdateService::Result::kServiceFailed);
+      return;
+    }
+
     auto observer = Microsoft::WRL::Make<UpdaterObserver>(state_update,
                                                           std::move(callback));
-    if (HRESULT hr = get_interface()->UpdateAll(observer.Get()); FAILED(hr)) {
-      VLOG(2) << "Failed to call IUpdater::UpdateAll" << std::hex << hr;
+    HRESULT hr = get_interface()->CheckForUpdate(
+        app_id_w.c_str(), static_cast<int>(priority),
+        policy_same_version_update ==
+            UpdateService::PolicySameVersionUpdate::kAllowed,
+        observer.Get());
+    if (FAILED(hr)) {
+      VLOG(2) << "Failed to call IUpdater::CheckForUpdate: " << std::hex << hr;
       observer->Disconnect().Run(UpdateService::Result::kServiceFailed);
       return;
     }
@@ -494,7 +519,6 @@ class UpdateServiceProxyImpl
       const std::string& install_data_index,
       UpdateService::Priority priority,
       UpdateService::PolicySameVersionUpdate policy_same_version_update,
-      bool do_update_check_only,
       UpdateService::StateChangeCallback state_update,
       UpdateService::Callback callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -526,9 +550,25 @@ class UpdateServiceProxyImpl
         static_cast<int>(priority),
         policy_same_version_update ==
             UpdateService::PolicySameVersionUpdate::kAllowed,
-        do_update_check_only, observer.Get());
+        observer.Get());
     if (FAILED(hr)) {
       VLOG(2) << "Failed to call IUpdater::Update: " << std::hex << hr;
+      observer->Disconnect().Run(UpdateService::Result::kServiceFailed);
+      return;
+    }
+  }
+
+  void UpdateAllOnSTA(UpdateService::StateChangeCallback state_update,
+                      UpdateService::Callback callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!ConnectToServer()) {
+      std::move(callback).Run(UpdateService::Result::kServiceFailed);
+      return;
+    }
+    auto observer = Microsoft::WRL::Make<UpdaterObserver>(state_update,
+                                                          std::move(callback));
+    if (HRESULT hr = get_interface()->UpdateAll(observer.Get()); FAILED(hr)) {
+      VLOG(2) << "Failed to call IUpdater::UpdateAll" << std::hex << hr;
       observer->Disconnect().Run(UpdateService::Result::kServiceFailed);
       return;
     }
@@ -710,12 +750,17 @@ void UpdateServiceProxy::RunPeriodicTasks(base::OnceClosure callback) {
   impl_->RunPeriodicTasks(OnCurrentSequence(std::move(callback)));
 }
 
-void UpdateServiceProxy::UpdateAll(StateChangeCallback state_update,
-                                   Callback callback) {
+void UpdateServiceProxy::CheckForUpdate(
+    const std::string& app_id,
+    UpdateService::Priority priority,
+    PolicySameVersionUpdate policy_same_version_update,
+    StateChangeCallback state_update,
+    Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
-  impl_->UpdateAll(OnCurrentSequence(state_update),
-                   OnCurrentSequence(std::move(callback)));
+  impl_->CheckForUpdate(app_id, priority, policy_same_version_update,
+                        OnCurrentSequence(state_update),
+                        OnCurrentSequence(std::move(callback)));
 }
 
 void UpdateServiceProxy::Update(
@@ -723,15 +768,21 @@ void UpdateServiceProxy::Update(
     const std::string& install_data_index,
     UpdateService::Priority priority,
     PolicySameVersionUpdate policy_same_version_update,
-    bool do_update_check_only,
     StateChangeCallback state_update,
     Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
   impl_->Update(app_id, install_data_index, priority,
-                policy_same_version_update, do_update_check_only,
-                OnCurrentSequence(state_update),
+                policy_same_version_update, OnCurrentSequence(state_update),
                 OnCurrentSequence(std::move(callback)));
+}
+
+void UpdateServiceProxy::UpdateAll(StateChangeCallback state_update,
+                                   Callback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
+  impl_->UpdateAll(OnCurrentSequence(state_update),
+                   OnCurrentSequence(std::move(callback)));
 }
 
 void UpdateServiceProxy::Install(const RegistrationRequest& registration,

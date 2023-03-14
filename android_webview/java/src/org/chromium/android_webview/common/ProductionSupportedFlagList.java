@@ -180,9 +180,6 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(AutofillFeatures.AUTOFILL_SERVER_BEHAVIORS,
                     "When enabled, Autofill will request experimental "
                             + "predictions from the Autofill API."),
-            Flag.baseFeature(AutofillFeatures.AUTOFILL_SUPPORT_POOR_MANS_PLACEHOLDER,
-                    "When enabled, Autofill will infer labels from artificial placeholders, "
-                            + "placed on top of input fields using CSS."),
             Flag.baseFeature(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE,
                     "When enabled, merchant bound virtual cards will be offered in the keyboard "
                             + "accessory."),
@@ -285,8 +282,6 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BaseFeatures.ALWAYS_ABANDON_SCHEDULED_TASK,
                     "Controls whether or not the scheduled task is always abandoned when a timer "
                             + "is stopped or resets."),
-            Flag.baseFeature(BlinkFeatures.PRETOKENIZE_CSS,
-                    "If enabled, CSS will be tokenized in a background thread when possible."),
             Flag.baseFeature(BlinkFeatures.VIEW_TRANSITION,
                     "Enables the experimental View Transitions API."
                             + " See https://github.com/WICG/view-transitions/blob/main/explainer.md."),
@@ -309,6 +304,8 @@ public final class ProductionSupportedFlagList {
                             + "for commit to finish on the compositor thread."),
             Flag.baseFeature(CcFeatures.USE_DMSAA_FOR_TILES,
                     "Switches skia to use DMSAA instead of MSAA for tile raster"),
+            Flag.baseFeature(BlinkFeatures.CSS_PAINTING_FOR_SPELLING_GRAMMAR_ERRORS,
+                    "Use the new CSS-based painting for spelling and grammar errors"),
             Flag.baseFeature(
                     CcFeatures.AVOID_RASTER_DURING_ELASTIC_OVERSCROLL, "No effect on webview"),
             Flag.baseFeature(BlinkFeatures.WEB_RTC_ENCODER_ASYNC_ENCODE,
@@ -328,6 +325,7 @@ public final class ProductionSupportedFlagList {
                             + "viewport."),
             Flag.baseFeature(BlinkFeatures.SCROLL_OVERLAP_OPTIMIZATION,
                     "Enables scroll overlap optimization. See https://crbug.com/1401086#c29."),
+            Flag.baseFeature(BlinkFeatures.SVG_RASTER_OPTIMIZATIONS),
             Flag.baseFeature("PreconnectOnRedirect"),
             Flag.baseFeature("PreconnectInNetworkService"), Flag.baseFeature("PrefetchDNSWithURL"),
             Flag.baseFeature(BlinkFeatures.SEND_MOUSE_EVENTS_DISABLED_FORM_CONTROLS,
@@ -349,9 +347,6 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(MetricsFeatures.METRICS_SERVICE_ALLOW_EARLY_LOG_CLOSE,
                     "Controls whether a log is allowed to be closed when Chrome"
                             + " is backgrounded/foregrounded early."),
-            Flag.baseFeature(MetricsFeatures.METRICS_SERVICE_ASYNC_COLLECTION,
-                    "Controls whether the metrics service creates periodic logs"
-                            + " in a background thread or on the main thread."),
             Flag.baseFeature(MetricsFeatures.METRICS_CLEAR_LOGS_ON_CLONED_INSTALL,
                     "Controls whether UMA logs are cleared when a cloned "
                             + "install is detected."),
@@ -362,8 +357,6 @@ public final class ProductionSupportedFlagList {
                     "When enabled runs the main thread at compositing priority."),
             Flag.baseFeature(AwFeatures.WEBVIEW_UMA_UPLOAD_QUALITY_OF_SERVICE_SET_TO_DEFAULT,
                     "If enabled, the frequency to upload UMA is increased."),
-            Flag.baseFeature(ContentFeatures.AVOID_UNNECESSARY_NAVIGATION_CANCELLATIONS,
-                    "If enabled, avoids unnecessary navigation cancellations."),
             Flag.baseFeature("CanvasColorCache"),
             Flag.baseFeature(AwFeatures.WEBVIEW_RESTRICT_SENSITIVE_CONTENT,
                     "Controls whether access to sensitive web content should be restricted."),
@@ -383,6 +376,15 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE,
                     "When enabled, the following ads APIs will be available: Attribution Reporting,"
                             + "FLEDGE, Topics."),
+            Flag.baseFeature(BlinkFeatures.WEB_RTC_STATS_REPORT_IDL,
+                    "Backs the WebRTC stats report object with generated objects defined in IDL"),
+            Flag.baseFeature(BlinkFeatures.RENDER_BLOCKING_FONTS,
+                    "When enabled, blocks rendering on font preloads to reduce CLS. "
+                            + "See go/critical-font-analysis"),
+            Flag.baseFeature(AwFeatures.WEBVIEW_SERVER_SIDE_SAMPLING,
+                    "If enabled, the client side sampling for user metrics will be turned off."
+                            + " This has no effect if metrics reporting is disabled"),
+            Flag.baseFeature("SafeBrowsingOnUIThread"),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

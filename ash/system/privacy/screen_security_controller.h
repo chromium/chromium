@@ -9,20 +9,18 @@
 #include <vector>
 
 #include "ash/shell_observer.h"
-#include "ash/system/privacy/screen_capture_observer.h"
-#include "ash/system/privacy/screen_share_observer.h"
+#include "ash/system/privacy/screen_security_observer.h"
 #include "base/memory/weak_ptr.h"
 
 namespace ash {
 
-extern ASH_EXPORT const char kScreenCaptureNotificationId[];
-extern ASH_EXPORT const char kScreenShareNotificationId[];
-extern ASH_EXPORT const char kNotifierScreenCapture[];
-extern ASH_EXPORT const char kNotifierScreenShare[];
+extern ASH_EXPORT const char kScreenAccessNotificationId[];
+extern ASH_EXPORT const char kRemotingScreenShareNotificationId[];
+extern ASH_EXPORT const char kNotifierScreenAccess[];
+extern ASH_EXPORT const char kNotifierRemotingScreenShare[];
 
 // Controller class to manage screen security notifications.
-class ASH_EXPORT ScreenSecurityController : public ScreenCaptureObserver,
-                                            public ScreenShareObserver,
+class ASH_EXPORT ScreenSecurityController : public ScreenSecurityObserver,
                                             public ShellObserver {
  public:
   ScreenSecurityController();
@@ -32,27 +30,30 @@ class ASH_EXPORT ScreenSecurityController : public ScreenCaptureObserver,
 
   ~ScreenSecurityController() override;
 
+  // Stop all sharing/accessing sessions by calling all the callbacks in
+  // `screen_access_stop_callbacks_` or `remoting_share_stop_callbacks_`,
+  // depending on `is_screen_access` argument. Also removes any privacy
+  // notifications if exist.
+  void StopAllSessions(bool is_screen_access);
+
  private:
-  void CreateNotification(const std::u16string& message, bool is_capture);
-  // Remove the notification and call all the callbacks in
-  // |capture_stop_callbacks_| or |share_stop_callbacks_|, depending on
-  // |is_capture| argument.
-  void StopAllSessions(bool is_capture);
-  // Change the source of current capture session by bringing up the picker
+  // Creates the screen security notification. If
+  // `is_screen_access_notification`, the notification is created for screen
+  // access. Otherwise it is for remoting screen share.
+  void CreateNotification(const std::u16string& message,
+                          bool is_screen_access_notification);
+
+  // Changes the source of current capture session by bringing up the picker
   // again, only if there is only one screen capture session.
   void ChangeSource();
 
-  // ScreenCaptureObserver:
-  void OnScreenCaptureStart(
-      base::OnceClosure stop_callback,
-      const base::RepeatingClosure& source_callback,
-      const std::u16string& screen_capture_status) override;
-  void OnScreenCaptureStop() override;
-
-  // ScreenShareObserver:
-  void OnScreenShareStart(base::OnceClosure stop_callback,
-                          const std::u16string& helper_name) override;
-  void OnScreenShareStop() override;
+  // ScreenSecurityObserver:
+  void OnScreenAccessStart(base::OnceClosure stop_callback,
+                           const base::RepeatingClosure& source_callback,
+                           const std::u16string& access_app_name) override;
+  void OnScreenAccessStop() override;
+  void OnRemotingScreenShareStart(base::OnceClosure stop_callback) override;
+  void OnRemotingScreenShareStop() override;
 
   // ShellObserver:
   void OnCastingSessionStartedOrStopped(bool started) override;
@@ -60,10 +61,10 @@ class ASH_EXPORT ScreenSecurityController : public ScreenCaptureObserver,
   bool is_casting_ = false;
 
   // There can be multiple cast sessions at the same time. If the user hits the
-  // stop button, stop all sessions since there is not a good UI to distinguish
+  // stop button, stops all sessions since there is not a good UI to distinguish
   // between the different sessions.
-  std::vector<base::OnceClosure> capture_stop_callbacks_;
-  std::vector<base::OnceClosure> share_stop_callbacks_;
+  std::vector<base::OnceClosure> screen_access_stop_callbacks_;
+  std::vector<base::OnceClosure> remoting_share_stop_callbacks_;
   base::RepeatingClosure change_source_callback_;
 
   base::WeakPtrFactory<ScreenSecurityController> weak_ptr_factory_{this};

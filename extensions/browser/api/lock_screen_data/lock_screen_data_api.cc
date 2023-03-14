@@ -120,9 +120,9 @@ ExtensionFunction::ResponseAction LockScreenDataGetContentFunction::Run() {
   if (!storage)
     return RespondNow(Error("Not available"));
 
-  std::unique_ptr<api::lock_screen_data::GetContent::Params> params(
-      api::lock_screen_data::GetContent::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<api::lock_screen_data::GetContent::Params> params =
+      api::lock_screen_data::GetContent::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   storage->GetItemContent(
       extension_id(), params->id,
@@ -150,9 +150,9 @@ LockScreenDataSetContentFunction::LockScreenDataSetContentFunction() = default;
 LockScreenDataSetContentFunction::~LockScreenDataSetContentFunction() = default;
 
 ExtensionFunction::ResponseAction LockScreenDataSetContentFunction::Run() {
-  std::unique_ptr<api::lock_screen_data::SetContent::Params> params(
-      api::lock_screen_data::SetContent::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<api::lock_screen_data::SetContent::Params> params =
+      api::lock_screen_data::SetContent::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   lock_screen_data::LockScreenItemStorage* storage =
       lock_screen_data::LockScreenItemStorage::GetIfAllowed(browser_context());
@@ -184,9 +184,9 @@ LockScreenDataDeleteFunction::LockScreenDataDeleteFunction() = default;
 LockScreenDataDeleteFunction::~LockScreenDataDeleteFunction() = default;
 
 ExtensionFunction::ResponseAction LockScreenDataDeleteFunction::Run() {
-  std::unique_ptr<api::lock_screen_data::Delete::Params> params(
-      api::lock_screen_data::Delete::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<api::lock_screen_data::Delete::Params> params =
+      api::lock_screen_data::Delete::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   lock_screen_data::LockScreenItemStorage* storage =
       lock_screen_data::LockScreenItemStorage::GetIfAllowed(browser_context());

@@ -18,6 +18,7 @@
 
 class Browser;
 class GURL;
+class Profile;
 
 namespace content {
 class RenderFrameHost;
@@ -65,8 +66,6 @@ class IsolatedWebAppBrowserTestHarness : public WebAppControllerBrowserTest {
  protected:
   std::unique_ptr<net::EmbeddedTestServer> CreateAndStartServer(
       const base::FilePath::StringPieceType& chrome_test_data_relative_root);
-  AppId InstallIsolatedWebApp(const std::string& host);
-  AppId InstallIsolatedWebApp(const GURL& app_url);
   IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
       const url::Origin& origin);
   content::RenderFrameHost* OpenApp(const AppId& app_id);
@@ -81,6 +80,16 @@ class IsolatedWebAppBrowserTestHarness : public WebAppControllerBrowserTest {
                     const GURL& url,
                     const std::string& permissions_policy);
 };
+
+std::unique_ptr<net::EmbeddedTestServer> CreateAndStartDevServer(
+    const base::FilePath::StringPieceType& chrome_test_data_relative_root);
+
+IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
+    Profile* profile,
+    const url::Origin& proxy_origin);
+
+content::RenderFrameHost* OpenIsolatedWebApp(Profile* profile,
+                                             const AppId& app_id);
 
 struct TestSignedWebBundle {
   TestSignedWebBundle(std::vector<uint8_t> data,
@@ -115,6 +124,12 @@ class TestSignedWebBundleBuilder {
 };
 
 TestSignedWebBundle BuildDefaultTestSignedWebBundle();
+
+// Adds an Isolated Web App to the WebAppRegistrar. The IWA will have an empty
+// filepath for |IsolatedWebAppLocation|.
+AppId AddDummyIsolatedAppToRegistry(Profile* profile,
+                                    const GURL& start_url,
+                                    const std::string& name);
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_ISOLATED_WEB_APP_TEST_UTILS_H_

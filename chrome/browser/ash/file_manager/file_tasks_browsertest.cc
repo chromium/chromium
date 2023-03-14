@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
@@ -23,10 +24,12 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
+#include "chrome/browser/ash/file_manager/file_manager_browsertest_base.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -38,6 +41,7 @@
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provider_interface.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
+#include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -45,6 +49,7 @@
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
@@ -58,6 +63,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/drivefs/fake_drivefs.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/drive/file_errors.h"
@@ -69,7 +75,6 @@
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "extensions/browser/entry_info.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/common/constants.h"
 #include "net/base/mime_util.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -740,6 +745,175 @@ IN_PROC_BROWSER_TEST_P(FileTasksPolicyBrowserTest, TasksMarkedAsBlocked) {
   TestExpectationsAgainstDlp(expectations);
 }
 
+// |InProcessBrowserTest| which allows a fake user to login. Login a non-managed
+// or Google user to ensure |IsEligibleAndEnabledUploadOfficeToCloud| returns
+// the result of |IsUploadOfficeToCloudEnabled|.
+class TestAccountBrowserTest : public MixinBasedInProcessBrowserTest {
+ public:
+  TestAccountBrowserTest(TestAccountType test_account_type,
+                         bool is_google_account) {
+    ash::LoggedInUserMixin::LogInType log_in_type;
+    absl::optional<AccountId> account_id;
+    if (is_google_account) {
+      log_in_type = ash::LoggedInUserMixin::LogInType::kRegular;
+      account_id = AccountId::FromUserEmailGaiaId("user@google.com", "12345");
+    } else {
+      log_in_type = LogInTypeFor(test_account_type);
+      account_id = AccountIdFor(test_account_type);
+    }
+
+    logged_in_user_mixin_ = std::make_unique<ash::LoggedInUserMixin>(
+        &mixin_host_, log_in_type, embedded_test_server(), this,
+        /*should_launch_browser=*/true, account_id);
+  }
+
+ protected:
+  void SetUpOnMainThread() override {
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+    logged_in_user_mixin_->LogInUser();
+  }
+
+ private:
+  std::unique_ptr<ash::LoggedInUserMixin> logged_in_user_mixin_;
+};
+
+class NonManagedAccount : public TestAccountBrowserTest {
+ public:
+  NonManagedAccount()
+      : TestAccountBrowserTest(kNonManaged, /*is_google_account=*/false) {
+    feature_list_.InitAndEnableFeature(ash::features::kUploadOfficeToCloud);
+  }
+
+  void SetUpOnMainThread() override {
+    TestAccountBrowserTest::SetUpOnMainThread();
+    app_service_test_.SetUp(browser()->profile());
+  }
+  apps::AppServiceProxy* app_service_proxy() {
+    apps::AppServiceProxy* app_service_proxy =
+        apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+    CHECK(app_service_proxy);
+    return app_service_proxy;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  apps::AppServiceTest app_service_test_;
+};
+
+// Tests that a |IsEligibleAndEnabledUploadOfficeToCloud| returns true when a
+// non-managed user is logged in and |kUploadOfficeToCloud| is enabled.
+IN_PROC_BROWSER_TEST_F(NonManagedAccount,
+                       IsEligibleAndEnabledUploadOfficeToCloud) {
+  ASSERT_TRUE(ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud());
+}
+
+// Test that the office PWA file handler is hidden from the available file
+// handlers when opening an office file and the |kUploadOfficeToCloud| flag is
+// enabled.
+IN_PROC_BROWSER_TEST_F(NonManagedAccount, OfficePwaHandlerHidden) {
+  struct FakeOfficeFileType {
+    std::string file_extension;
+    std::string mime_type;
+  };
+
+  std::vector<FakeOfficeFileType> fake_office_file_types = {
+      {"ppt", "application/vnd.ms-powerpoint"},
+      {"pptx",
+       "application/"
+       "vnd.openxmlformats-officedocument.presentationml.presentation"},
+      {"xls", "application/vnd.ms-excel"},
+      {"xlsx",
+       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"},
+      {"doc", "application/msword"},
+      {"docx",
+       "application/"
+       "vnd.openxmlformats-officedocument.wordprocessingml.document"}};
+
+  for (FakeOfficeFileType& fake_office_file_type : fake_office_file_types) {
+    file_manager::test::AddFakeWebApp(web_app::kMicrosoft365AppId,
+                                      fake_office_file_type.mime_type,
+                                      fake_office_file_type.file_extension,
+                                      "something", true, app_service_proxy());
+
+    base::FilePath test_file_path = web_app::CreateTestFileWithExtension(
+        fake_office_file_type.file_extension);
+
+    std::vector<file_manager::file_tasks::FullTaskDescriptor> tasks =
+        file_manager::test::GetTasksForFile(browser()->profile(),
+                                            test_file_path);
+
+    for (FullTaskDescriptor& task : tasks) {
+      EXPECT_NE(web_app::kMicrosoft365AppId, task.task_descriptor.app_id)
+          << " for extension: " << fake_office_file_type.file_extension;
+    }
+  }
+}
+
+class EnterpriseAccount : public TestAccountBrowserTest {
+ public:
+  EnterpriseAccount()
+      : TestAccountBrowserTest(kEnterprise, /*is_google_account=*/false) {
+    feature_list_.InitAndEnableFeature(ash::features::kUploadOfficeToCloud);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that a |IsEligibleAndEnabledUploadOfficeToCloud| returns false when an
+// enterprise user is logged in and |kUploadOfficeToCloud| is enabled.
+IN_PROC_BROWSER_TEST_F(EnterpriseAccount,
+                       IsEligibleAndEnabledUploadOfficeToCloud) {
+  ASSERT_FALSE(ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud());
+}
+
+class ChildAccount : public TestAccountBrowserTest {
+ public:
+  ChildAccount() : TestAccountBrowserTest(kChild, /*is_google_account=*/false) {
+    feature_list_.InitAndEnableFeature(ash::features::kUploadOfficeToCloud);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that a |IsEligibleAndEnabledUploadOfficeToCloud| returns false when a
+// child user is logged in and |kUploadOfficeToCloud| is enabled.
+IN_PROC_BROWSER_TEST_F(ChildAccount, IsEligibleAndEnabledUploadOfficeToCloud) {
+  ASSERT_FALSE(ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud());
+}
+
+class GoogleAccount : public TestAccountBrowserTest {
+ public:
+  GoogleAccount()
+      : TestAccountBrowserTest(kTestAccountTypeNotSet,
+                               /*is_google_account=*/true) {
+    feature_list_.InitAndEnableFeature(ash::features::kUploadOfficeToCloud);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that a |IsEligibleAndEnabledUploadOfficeToCloud| returns true when a
+// google user is logged in and |kUploadOfficeToCloud| is enabled.
+IN_PROC_BROWSER_TEST_F(GoogleAccount, IsEligibleAndEnabledUploadOfficeToCloud) {
+  ASSERT_TRUE(ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud());
+}
+
+class NonManagedAccountNoFlag : public TestAccountBrowserTest {
+ public:
+  NonManagedAccountNoFlag()
+      : TestAccountBrowserTest(kNonManaged, /*is_google_account=*/false) {}
+};
+
+// Tests that a |IsEligibleAndEnabledUploadOfficeToCloud| returns false when a
+// non-managed user is logged in but |kUploadOfficeToCloud| is disabled.
+IN_PROC_BROWSER_TEST_F(NonManagedAccountNoFlag,
+                       IsEligibleAndEnabledUploadOfficeToCloud) {
+  ASSERT_FALSE(ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud());
+}
+
 // TODO(cassycc): move this class to a more appropriate spot.
 // Fake DriveFs specific to the `DriveTest`. Allows a test file to
 // be "added" to the DriveFs via `SetMetadata()`. The `alternate_url` of the
@@ -807,9 +981,10 @@ class FakeSimpleDriveFsHelper : public drive::FakeDriveFsHelper {
 // testing with a fake DriveFs.
 // Tests the office fallback flow that occurs when
 // a user fails to open an office file from Drive.
-class DriveTest : public InProcessBrowserTest {
+class DriveTest : public TestAccountBrowserTest {
  public:
-  DriveTest() {
+  DriveTest()
+      : TestAccountBrowserTest(kNonManaged, /*is_google_account=*/false) {
     feature_list_.InitAndEnableFeature(ash::features::kUploadOfficeToCloud);
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     drive_mount_point_ = temp_dir_.GetPath();
@@ -831,7 +1006,7 @@ class DriveTest : public InProcessBrowserTest {
   }
 
   void TearDown() override {
-    InProcessBrowserTest::TearDown();
+    TestAccountBrowserTest::TearDown();
     storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
   }
 
@@ -964,8 +1139,8 @@ IN_PROC_BROWSER_TEST_F(DriveTest, OfficeFallbackTryAgain) {
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-// Test that OpenOrMoveFiles() will open a DriveFs office file when the cloud
-// provider specified is Google Drive.
+// Test that CloudOpenTask::Execute() will open a DriveFs office file when the
+// cloud provider specified is Google Drive.
 IN_PROC_BROWSER_TEST_F(DriveTest, OpenFileInDrive) {
   // Add test file to fake DriveFs.
   SetUpTest();
@@ -980,8 +1155,9 @@ IN_PROC_BROWSER_TEST_F(DriveTest, OpenFileInDrive) {
       expected_web_drive_office_url);
   navigation_observer_office.StartWatchingNewWebContents();
 
-  ash::cloud_upload::OpenOrMoveFiles(
-      profile(), file_urls, ash::cloud_upload::CloudProvider::kGoogleDrive);
+  auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
+      profile(), file_urls, ash::cloud_upload::CloudProvider::kGoogleDrive));
+  task->OpenOrMoveFiles();
 
   // Wait for file to open in web drive office.
   navigation_observer_office.Wait();
@@ -1146,8 +1322,10 @@ class FakeWebAppPublisher : public apps::AppPublisher {
     RegisterPublisher(apps::AppType::kWeb);
 
     std::vector<apps::AppPtr> apps;
-    apps.push_back(std::make_unique<apps::App>(apps::AppType::kWeb,
-                                               web_app::kMicrosoftOfficeAppId));
+    auto ms_web_app = std::make_unique<apps::App>(apps::AppType::kWeb,
+                                                  web_app::kMicrosoft365AppId);
+    ms_web_app->readiness = apps::Readiness::kReady;
+    apps.push_back(std::move(ms_web_app));
     Publish(std::move(apps), apps::AppType::kWeb,
             /*should_notify_initialized=*/true);
   }
@@ -1200,14 +1378,14 @@ class FakeWebAppPublisher : public apps::AppPublisher {
 // testing with a fake ODFS.
 // Tests the office fallback flow that occurs when a
 // user fails to open an office file from ODFS.
-class OneDriveTest : public InProcessBrowserTest {
+class OneDriveTest : public TestAccountBrowserTest {
  public:
-  OneDriveTest() {
+  OneDriveTest()
+      : TestAccountBrowserTest(kNonManaged, /*is_google_account=*/false) {
     feature_list_.InitAndEnableFeature(ash::features::kUploadOfficeToCloud);
     test_file_name_ = "text.docx";
     // Relative path for a file on ODFS and Android OneDrive.
-    relative_test_path_ = base::FilePath(ash::cloud_upload::kDestinationFolder)
-                              .Append(test_file_name_);
+    relative_test_path_ = base::FilePath(test_file_name_);
     // The path in ODFS is the relative path with "/" prefixed.
     test_path_within_odfs_ = base::FilePath("/").Append(relative_test_path_);
     file_system_id_ = "odfs";
@@ -1217,7 +1395,7 @@ class OneDriveTest : public InProcessBrowserTest {
   OneDriveTest& operator=(const OneDriveTest&) = delete;
 
   void TearDown() override {
-    InProcessBrowserTest::TearDown();
+    TestAccountBrowserTest::TearDown();
     storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
   }
 
@@ -1352,13 +1530,13 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackTryAgain) {
   SetConnectionOnline();
 
   // Run dialog callback, simulate user choosing to "try-again". Will succeed
-  // because system is online.
+  // because system is online, and the file doesn't need to be moved.
   OnDialogChoiceReceived(profile(), open_in_office_task, file_urls,
                          ash::office_fallback::kDialogChoiceTryAgain);
 
   auto launches = web_app_publisher_->GetLaunches();
   ASSERT_EQ(1u, launches.size());
-  CHECK_EQ(launches[0].app_id, web_app::kMicrosoftOfficeAppId);
+  CHECK_EQ(launches[0].app_id, web_app::kMicrosoft365AppId);
   CHECK_EQ(launches[0].intent_url, kODFSSampleUrl);
 }
 
@@ -1419,12 +1597,13 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileFromODFS) {
   web_app_publisher_->ClearPastLaunches();
 
   // Open file directly from ODFS.
-  ash::cloud_upload::OpenOrMoveFiles(
-      profile(), file_urls, ash::cloud_upload::CloudProvider::kOneDrive);
+  auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
+      profile(), file_urls, ash::cloud_upload::CloudProvider::kOneDrive));
+  task->OpenOrMoveFiles();
 
   auto launches = web_app_publisher_->GetLaunches();
   ASSERT_EQ(1u, launches.size());
-  CHECK_EQ(launches[0].app_id, web_app::kMicrosoftOfficeAppId);
+  CHECK_EQ(launches[0].app_id, web_app::kMicrosoft365AppId);
   CHECK_EQ(launches[0].intent_url, kODFSSampleUrl);
 }
 
@@ -1442,8 +1621,9 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileNotFromODFS) {
   navigation_observer_dialog.StartWatchingNewWebContents();
 
   // Triggers Move Confirmation dialog.
-  ash::cloud_upload::OpenOrMoveFiles(
-      profile(), file_urls, ash::cloud_upload::CloudProvider::kOneDrive);
+  auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
+      profile(), file_urls, ash::cloud_upload::CloudProvider::kOneDrive));
+  task->OpenOrMoveFiles();
 
   // Wait for setup flow dialog to open.
   navigation_observer_dialog.Wait();
@@ -1471,13 +1651,14 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileFromAndroidOneDriveViaODFS) {
   web_app_publisher_->ClearPastLaunches();
 
   // Open the file indirectly from Android OneDrive (via ODFS).
-  ash::cloud_upload::OpenOrMoveFiles(
+  auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
       profile(), {android_onedrive_url},
-      ash::cloud_upload::CloudProvider::kOneDrive);
+      ash::cloud_upload::CloudProvider::kOneDrive));
+  task->OpenOrMoveFiles();
 
   auto launches = web_app_publisher_->GetLaunches();
   ASSERT_EQ(1u, launches.size());
-  CHECK_EQ(launches[0].app_id, web_app::kMicrosoftOfficeAppId);
+  CHECK_EQ(launches[0].app_id, web_app::kMicrosoft365AppId);
   // Check that the ODFS URL was opened.
   CHECK_EQ(launches[0].intent_url, kODFSSampleUrl);
 }
@@ -1507,9 +1688,10 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
 
   // Attempt to open the file indirectly from Android OneDrive (via ODFS). It
   // will fail as the email accounts don't match.
-  ash::cloud_upload::OpenOrMoveFiles(
+  auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
       profile(), {android_onedrive_url},
-      ash::cloud_upload::CloudProvider::kOneDrive);
+      ash::cloud_upload::CloudProvider::kOneDrive));
+  task->OpenOrMoveFiles();
 
   auto launches = web_app_publisher_->GetLaunches();
   ASSERT_EQ(0u, launches.size());
@@ -1538,9 +1720,10 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
 
   // Attempt to open the file indirectly from Android OneDrive (via ODFS). It
   // will fail as there is not an equivalent ODFS file path.
-  ash::cloud_upload::OpenOrMoveFiles(
+  auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
       profile(), {android_onedrive_url},
-      ash::cloud_upload::CloudProvider::kOneDrive);
+      ash::cloud_upload::CloudProvider::kOneDrive));
+  task->OpenOrMoveFiles();
 
   auto launches = web_app_publisher_->GetLaunches();
   ASSERT_EQ(0u, launches.size());
@@ -1573,9 +1756,10 @@ IN_PROC_BROWSER_TEST_F(
 
   // Attempt to open the file indirectly from Android OneDrive (via ODFS). It
   // will fail as there is not an equivalent ODFS file path.
-  ash::cloud_upload::OpenOrMoveFiles(
+  auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
       profile(), {android_onedrive_url},
-      ash::cloud_upload::CloudProvider::kOneDrive);
+      ash::cloud_upload::CloudProvider::kOneDrive));
+  task->OpenOrMoveFiles();
 
   auto launches = web_app_publisher_->GetLaunches();
   ASSERT_EQ(0u, launches.size());

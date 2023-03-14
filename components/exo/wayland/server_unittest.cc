@@ -45,16 +45,16 @@ TestListener::TestListener() {
   };
 }
 
-TEST_F(ServerTest, AddSocket) {
-  auto server = CreateServer(SecurityDelegate::GetDefaultSecurityDelegate());
-  // Check that calling AddSocket() with a unique socket name succeeds.
-  bool rv = server->AddSocket(GetUniqueSocketName());
+TEST_F(ServerTest, Open) {
+  auto server = CreateServer();
+  // Check that calling Open() succeeds.
+  bool rv = server->Open(/*default_path=*/false);
   EXPECT_TRUE(rv);
 }
 
 TEST_F(ServerTest, GetFileDescriptor) {
-  auto server = CreateServer(SecurityDelegate::GetDefaultSecurityDelegate());
-  bool rv = server->AddSocket(GetUniqueSocketName());
+  auto server = CreateServer();
+  bool rv = server->Open(/*default_path=*/false);
   EXPECT_TRUE(rv);
 
   // Check that the returned file descriptor is valid.
@@ -106,13 +106,11 @@ TEST_F(ServerTest, CreateAsync) {
 }
 
 TEST_F(ServerTest, Dispatch) {
-  auto server = CreateServer(SecurityDelegate::GetDefaultSecurityDelegate());
-
-  std::string socket_name = GetUniqueSocketName();
-  bool rv = server->AddSocket(socket_name);
+  auto server = CreateServer();
+  bool rv = server->Open(/*default_path=*/false);
   EXPECT_TRUE(rv);
 
-  base::Thread client_thread("client-" + socket_name);
+  base::Thread client_thread("client");
   client_thread.Start();
 
   TestListener client_creation_listener;
@@ -130,12 +128,14 @@ TEST_F(ServerTest, Dispatch) {
         // is required to ensure `connected_to_server` is set before it is
         // accessed on the main thread.
         base::AutoLock locker(lock);
-        client_display = wl_display_connect(socket_name.c_str());
+        client_display =
+            wl_display_connect(server->socket_path().MaybeAsASCII().c_str());
         connected_to_server = !!client_display;
       }));
 
-  while (!client_creation_listener.notified)
+  while (!client_creation_listener.notified) {
     server->Dispatch(base::Milliseconds(10));
+  }
 
   {
     base::AutoLock locker(lock);
@@ -154,14 +154,14 @@ TEST_F(ServerTest, Dispatch) {
       FROM_HERE, base::BindLambdaForTesting(
                      [&]() { wl_display_disconnect(client_display); }));
 
-  while (!client_destruction_listener.notified)
+  while (!client_destruction_listener.notified) {
     server->Dispatch(base::Milliseconds(10));
+  }
 }
 
 TEST_F(ServerTest, Flush) {
-  auto server = CreateServer(SecurityDelegate::GetDefaultSecurityDelegate());
-
-  bool rv = server->AddSocket(GetUniqueSocketName());
+  auto server = CreateServer();
+  bool rv = server->Open(/*default_path=*/false);
   EXPECT_TRUE(rv);
 
   // Just call Flush to check that it doesn't have any bad side-effects.

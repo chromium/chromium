@@ -9,7 +9,9 @@
 #include <mfidl.h>
 #include <wrl/implements.h>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
+#include "media/cdm/aes_decryptor.h"
 
 namespace media {
 
@@ -27,7 +29,9 @@ class MediaFoundationClearKeyInputTrustAuthority final
   MediaFoundationClearKeyInputTrustAuthority& operator=(
       const MediaFoundationClearKeyInputTrustAuthority&) = delete;
 
-  HRESULT RuntimeClassInitialize(_In_ UINT32 stream_id);
+  HRESULT RuntimeClassInitialize(
+      _In_ UINT32 stream_id,
+      _In_ scoped_refptr<AesDecryptor> aes_decryptor);
 
   // IMFInputTrustAuthority
   STDMETHODIMP GetDecrypter(_In_ REFIID riid, _COM_Outptr_ void** ppv) override;
@@ -51,6 +55,8 @@ class MediaFoundationClearKeyInputTrustAuthority final
     base::AutoLock lock(lock_);
     return (is_shutdown_) ? MF_E_SHUTDOWN : S_OK;
   }
+
+  scoped_refptr<AesDecryptor> aes_decryptor_;
 
   // For IMFShutdown
   base::Lock lock_;

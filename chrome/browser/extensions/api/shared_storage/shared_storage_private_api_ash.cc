@@ -32,14 +32,14 @@ ExtensionFunction::ResponseAction SharedStoragePrivateGetFunction::Run() {
   PrefService* prefs =
       Profile::FromBrowserContext(browser_context())->GetPrefs();
   return RespondNow(
-      OneArgument(prefs->GetValue(prefs::kSharedStorage).Clone()));
+      WithArguments(prefs->GetValue(prefs::kSharedStorage).Clone()));
 }
 
 SharedStoragePrivateSetFunction::SharedStoragePrivateSetFunction() = default;
 SharedStoragePrivateSetFunction::~SharedStoragePrivateSetFunction() = default;
 
 ExtensionFunction::ResponseAction SharedStoragePrivateSetFunction::Run() {
-  std::unique_ptr<shared_api::Set::Params> params =
+  absl::optional<shared_api::Set::Params> params =
       shared_api::Set::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   PrefService* prefs =
@@ -55,7 +55,7 @@ SharedStoragePrivateRemoveFunction::~SharedStoragePrivateRemoveFunction() =
     default;
 
 ExtensionFunction::ResponseAction SharedStoragePrivateRemoveFunction::Run() {
-  std::unique_ptr<shared_api::Remove::Params> params =
+  absl::optional<shared_api::Remove::Params> params =
       shared_api::Remove::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   PrefService* prefs =

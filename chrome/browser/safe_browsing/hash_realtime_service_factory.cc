@@ -7,6 +7,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/network_context_service_factory.h"
+#include "chrome/browser/safe_browsing/ohttp_key_service_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
@@ -30,9 +31,17 @@ HashRealTimeServiceFactory* HashRealTimeServiceFactory::GetInstance() {
 }
 
 HashRealTimeServiceFactory::HashRealTimeServiceFactory()
-    : ProfileKeyedServiceFactory("HashRealTimeService") {
+    : ProfileKeyedServiceFactory(
+          "HashRealTimeService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(VerdictCacheManagerFactory::GetInstance());
   DependsOn(NetworkContextServiceFactory::GetInstance());
+  DependsOn(OhttpKeyServiceFactory::GetInstance());
 }
 
 KeyedService* HashRealTimeServiceFactory::BuildServiceInstanceFor(
@@ -47,7 +56,10 @@ KeyedService* HashRealTimeServiceFactory::BuildServiceInstanceFor(
               profile));
   return new HashRealTimeService(
       network::SharedURLLoaderFactory::Create(std::move(url_loader_factory)),
+      base::BindRepeating(&HashRealTimeServiceFactory::GetNetworkContext,
+                          profile),
       VerdictCacheManagerFactory::GetForProfile(profile),
+      OhttpKeyServiceFactory::GetForProfile(profile),
       base::BindRepeating(
           &HashRealTimeServiceFactory::IsEnhancedProtectionEnabled, profile));
 }
@@ -55,6 +67,12 @@ KeyedService* HashRealTimeServiceFactory::BuildServiceInstanceFor(
 // static
 bool HashRealTimeServiceFactory::IsEnhancedProtectionEnabled(Profile* profile) {
   return safe_browsing::IsEnhancedProtectionEnabled(*(profile->GetPrefs()));
+}
+
+// static
+network::mojom::NetworkContext* HashRealTimeServiceFactory::GetNetworkContext(
+    Profile* profile) {
+  return g_browser_process->safe_browsing_service()->GetNetworkContext(profile);
 }
 
 }  // namespace safe_browsing

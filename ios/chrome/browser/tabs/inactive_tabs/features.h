@@ -7,6 +7,8 @@
 
 #import "base/feature_list.h"
 
+#import <Foundation/Foundation.h>
+
 namespace base {
 class TimeDelta;
 }  // namespace base
@@ -25,21 +27,12 @@ extern const char kTabInactivityThresholdThreeWeeksParam[];
 bool IsInactiveTabsEnabled();
 
 // Convenience method for determining the tab inactivity threshold.
-// The default is 15 days.
-// Note: Even though a week is 7 days, the threshold value is returned with one
-// extra day in all cases as it matches the user expectations in the following
-// case:
-//
-//     The user opens a tab every Monday. Last Monday it was opened at 10:05am.
-//     The tab should not immediately be considered inactive at 10:06am today.
-//
-// The padding is here to encompass a flexbility of a day.
-base::TimeDelta TabInactivityThreshold();
+// The default is 14 days.
+const base::TimeDelta InactiveTabsTimeThreshold();
 
-// Convenience method for getting a displayable representation of the thrsshold.
+// Convenience method for getting a displayable representation of the threshold.
 // This is the number of days as a string.
-// The default is "14".
-std::u16string TabInactivityThresholdDisplayString();
+NSString* InactiveTabsTimeThresholdDisplayString();
 
 // Feature flag to enable the display of the count of Inactive Tabs in Tab Grid.
 BASE_DECLARE_FEATURE(kShowInactiveTabsCount);

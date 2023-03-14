@@ -51,9 +51,9 @@ class TestListener : public internal::ShillPropertyHandler::Listener {
   TestListener() : technology_list_updates_(0), errors_(0) {}
 
   void UpdateManagedList(ManagedState::ManagedType type,
-                         const base::Value& entries) override {
+                         const base::Value::List& entries) override {
     VLOG(1) << "UpdateManagedList[" << ManagedState::TypeToString(type)
-            << "]: " << entries.GetList().size();
+            << "]: " << entries.size();
     UpdateEntries(GetTypeString(type), entries);
   }
 
@@ -65,11 +65,8 @@ class TestListener : public internal::ShillPropertyHandler::Listener {
     initial_property_updates(GetTypeString(type))[path] += 1;
   }
 
-  void ProfileListChanged(const base::Value& profile_list) override {
-    if (!profile_list.is_list()) {
-      return;
-    }
-    profile_list_size_ = profile_list.GetList().size();
+  void ProfileListChanged(const base::Value::List& profile_list) override {
+    profile_list_size_ = profile_list.size();
   }
 
   void UpdateNetworkServiceProperty(const std::string& service_path,
@@ -142,13 +139,16 @@ class TestListener : public internal::ShillPropertyHandler::Listener {
     return std::string();
   }
 
-  void UpdateEntries(const std::string& type, const base::Value& entries) {
-    if (type.empty())
+  void UpdateEntries(const std::string& type,
+                     const base::Value::List& entries) {
+    if (type.empty()) {
       return;
+    }
     entries_[type].clear();
-    for (const auto& entry : entries.GetList()) {
-      if (entry.is_string())
+    for (const auto& entry : entries) {
+      if (entry.is_string()) {
         entries_[type].push_back(entry.GetString());
+      }
     }
   }
 

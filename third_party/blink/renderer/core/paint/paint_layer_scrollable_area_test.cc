@@ -352,8 +352,8 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest, SelectElementPromotionTest) {
   element->setAttribute("class", "composited");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsComposited(element->GetLayoutObject()));
-#if BUILDFLAG(IS_ANDROID)
-  // <select> implementation is different and not scrollable on Android.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // <select> implementation is different and not scrollable on Android and iOS.
   EXPECT_FALSE(UsesCompositedScrolling(element->GetLayoutObject()));
 #else
   EXPECT_TRUE(UsesCompositedScrolling(element->GetLayoutObject()));

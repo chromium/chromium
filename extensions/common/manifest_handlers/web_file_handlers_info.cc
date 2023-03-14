@@ -224,13 +224,14 @@ bool WebFileHandlersParser::Validate(
     const Extension* extension,
     std::string* error,
     std::vector<InstallWarning>* warnings) const {
-  // TODO(1313786): Validate that icons exist.
+  // TODO(1313786): Verify that icons exist.
   return true;
 }
 
 bool WebFileHandlers::SupportsWebFileHandlers(const int manifest_version) {
   return manifest_version >= 3 &&
-         base::FeatureList::IsEnabled(extensions_features::kWebFileHandlers);
+         base::FeatureList::IsEnabled(
+             extensions_features::kExtensionWebFileHandlers);
 }
 
 }  // namespace extensions

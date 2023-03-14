@@ -21,7 +21,7 @@
 #include "content/browser/loader/content_security_notifier.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
-#include "content/browser/renderer_host/private_network_access_util.h"
+#include "content/browser/renderer_host/local_network_access_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
@@ -400,7 +400,7 @@ void DedicatedWorkerHost::DidStartScriptLoad(
       worker_client_security_state_->is_web_secure_context =
           network::IsUrlPotentiallyTrustworthy(final_response_url) &&
           creator_client_security_state_->is_web_secure_context;
-      worker_client_security_state_->private_network_request_policy =
+      worker_client_security_state_->local_network_request_policy =
           DerivePrivateNetworkRequestPolicy(
               worker_client_security_state_->ip_address_space,
               worker_client_security_state_->is_web_secure_context,
@@ -952,16 +952,19 @@ void DedicatedWorkerHost::EvictFromBackForwardCache(
 }
 
 void DedicatedWorkerHost::DidChangeBackForwardCacheDisablingFeatures(
-    uint64_t features_mask) {
+    BackForwardCacheBlockingDetails details) {
   RenderFrameHostImpl* ancestor_render_frame_host =
       RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
   if (!ancestor_render_frame_host) {
     // The frame may have already been closed.
     return;
   }
-  bfcache_disabling_features_ =
-      blink::scheduler::WebSchedulerTrackedFeatures::FromEnumBitmask(
-          features_mask);
+  bfcache_disabling_features_.Clear();
+  for (auto& feature_details : details) {
+    bfcache_disabling_features_.Put(
+        static_cast<blink::scheduler::WebSchedulerTrackedFeature>(
+            feature_details->feature));
+  }
   ancestor_render_frame_host->MaybeEvictFromBackForwardCache();
 }
 

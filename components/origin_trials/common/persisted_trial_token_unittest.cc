@@ -157,7 +157,7 @@ TEST(PersistedTrialTokenTest, StreamOperatorTest) {
   PersistedTrialToken token(token_name, base::Time::Now(),
                             blink::TrialToken::UsageRestriction::kSubset,
                             "signature", partition_sites);
-  std::string token_str = base::StreamableToString(token);
+  std::string token_str = base::ToString(token);
   EXPECT_NE("", token_str);
   EXPECT_NE(std::string::npos, token_str.find(token_name));
 }

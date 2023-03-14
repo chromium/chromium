@@ -175,7 +175,7 @@ class FrameSizeButtonTest : public AshTestBase {
     minimize_button_ = test.minimize_button();
     size_button_ = test.size_button();
     static_cast<FrameSizeButton*>(size_button_)
-        ->set_delay_to_set_buttons_to_snap_mode(0);
+        ->set_long_tap_delay_for_testing(base::Milliseconds(0));
     close_button_ = test.close_button();
   }
 
@@ -569,13 +569,11 @@ namespace {
 class FrameSizeButtonNonResizableTest : public FrameSizeButtonTest {
  public:
   FrameSizeButtonNonResizableTest() : FrameSizeButtonTest(false) {}
-
   FrameSizeButtonNonResizableTest(const FrameSizeButtonNonResizableTest&) =
       delete;
   FrameSizeButtonNonResizableTest& operator=(
       const FrameSizeButtonNonResizableTest&) = delete;
-
-  ~FrameSizeButtonNonResizableTest() override {}
+  ~FrameSizeButtonNonResizableTest() override = default;
 };
 
 }  // namespace
@@ -661,12 +659,19 @@ TEST_F(FrameSizeButtonPortraitDisplayTest, SnapButtons) {
 // setup.
 class MultitaskMenuTest : public FrameSizeButtonTest {
  public:
-  MultitaskMenuTest() = default;
-
+  MultitaskMenuTest()
+      : scoped_feature_list_(chromeos::wm::features::kWindowLayoutMenu) {}
   MultitaskMenuTest(const MultitaskMenuTest&) = delete;
   MultitaskMenuTest& operator=(const MultitaskMenuTest&) = delete;
-
   ~MultitaskMenuTest() override = default;
+
+  MultitaskMenu* GetMultitaskMenu() {
+    views::Widget* widget = static_cast<FrameSizeButton*>(size_button())
+                                ->multitask_menu_widget_for_testing();
+    return widget ? static_cast<MultitaskMenu*>(
+                        widget->widget_delegate()->AsDialogDelegate())
+                  : nullptr;
+  }
 
   void ShowMultitaskMenu() {
     DCHECK(size_button());
@@ -676,30 +681,11 @@ class MultitaskMenuTest : public FrameSizeButtonTest {
         std::string(kMultitaskMenuBubbleWidgetName));
     static_cast<FrameSizeButton*>(size_button())
         ->ShowMultitaskMenu(MultitaskMenuEntryType::kFrameSizeButtonHover);
-    views::WidgetDelegate* delegate =
-        waiter.WaitIfNeededAndGet()->widget_delegate();
-    multitask_menu_ = static_cast<MultitaskMenu*>(delegate->AsDialogDelegate());
-
-    // Note that this is sync because we use `views::Widget::CloseNow()` in
-    // `MultitaskMenu.`
-    delegate->RegisterWindowClosingCallback(base::BindOnce(
-        &MultitaskMenuTest::OnMultitaskMenuClosed, base::Unretained(this)));
+    waiter.WaitIfNeededAndGet();
   }
 
-  void OnMultitaskMenuClosed() { multitask_menu_ = nullptr; }
-
-  void SetUp() override {
-    // Ensure float feature is enabled.
-    scoped_feature_list_.InitWithFeatures(
-        {chromeos::wm::features::kWindowLayoutMenu}, {});
-    FrameSizeButtonTest::SetUp();
-  }
-
-  MultitaskMenu* multitask_menu() { return multitask_menu_; }
-
- protected:
+ private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  MultitaskMenu* multitask_menu_ = nullptr;
 };
 
 // Test Float Button Functionality.
@@ -709,7 +695,7 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuFloatFunctionality) {
   ui::test::EventGenerator* generator = GetEventGenerator();
   ShowMultitaskMenu();
   generator->MoveMouseTo(CenterPointInScreen(
-      multitask_menu()->multitask_menu_view()->float_button_for_testing()));
+      GetMultitaskMenu()->multitask_menu_view()->float_button_for_testing()));
   generator->ClickLeftButton();
   EXPECT_TRUE(window_state()->IsFloated());
   histogram_tester.ExpectBucketCount(
@@ -723,7 +709,7 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuHalfFunctionality) {
   EXPECT_TRUE(window_state()->IsNormalStateType());
   ui::test::EventGenerator* generator = GetEventGenerator();
   ShowMultitaskMenu();
-  generator->MoveMouseTo(multitask_menu()
+  generator->MoveMouseTo(GetMultitaskMenu()
                              ->multitask_menu_view()
                              ->half_button_for_testing()
                              ->GetBoundsInScreen()
@@ -743,7 +729,7 @@ TEST_F(MultitaskMenuTest, HalfButtonRTL) {
   base::i18n::SetRTLForTesting(true);
 
   ShowMultitaskMenu();
-  GetEventGenerator()->MoveMouseTo(multitask_menu()
+  GetEventGenerator()->MoveMouseTo(GetMultitaskMenu()
                                        ->multitask_menu_view()
                                        ->half_button_for_testing()
                                        ->GetBoundsInScreen()
@@ -771,7 +757,7 @@ TEST_F(MultitaskMenuTest, HalfButtonSecondaryLayout) {
   // Click on the left side of the half button. It should be in secondary
   // snapped state, because in this orientation secondary snapped is actually
   // physically on the left side.
-  GetEventGenerator()->MoveMouseToInHost(multitask_menu()
+  GetEventGenerator()->MoveMouseToInHost(GetMultitaskMenu()
                                              ->multitask_menu_view()
                                              ->half_button_for_testing()
                                              ->GetBoundsInScreen()
@@ -799,7 +785,7 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuPartialSplit) {
 
   // Snap to primary with 0.67f screen ratio.
   ShowMultitaskMenu();
-  generator->MoveMouseTo(multitask_menu()
+  generator->MoveMouseTo(GetMultitaskMenu()
                              ->multitask_menu_view()
                              ->partial_button()
                              ->GetBoundsInScreen()
@@ -817,7 +803,7 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuPartialSplit) {
 
   // Snap to secondary with 0.33f screen ratio.
   ShowMultitaskMenu();
-  gfx::Rect partial_bounds(multitask_menu()
+  gfx::Rect partial_bounds(GetMultitaskMenu()
                                ->multitask_menu_view()
                                ->partial_button()
                                ->GetBoundsInScreen());
@@ -844,7 +830,7 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuFullFunctionality) {
   ui::test::EventGenerator* generator = GetEventGenerator();
   ShowMultitaskMenu();
   generator->MoveMouseTo(CenterPointInScreen(
-      multitask_menu()->multitask_menu_view()->full_button_for_testing()));
+      GetMultitaskMenu()->multitask_menu_view()->full_button_for_testing()));
   generator->ClickLeftButton();
   EXPECT_TRUE(window_state()->IsFullscreen());
   histogram_tester.ExpectBucketCount(
@@ -854,11 +840,13 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuFullFunctionality) {
 
 TEST_F(MultitaskMenuTest, MultitaskMenuClosesOnTabletMode) {
   ShowMultitaskMenu();
-  ASSERT_TRUE(multitask_menu());
-  ASSERT_TRUE(multitask_menu()->GetWidget());
+  ASSERT_TRUE(GetMultitaskMenu());
 
-  ash::TabletMode::Get()->SetEnabledForTest(true);
-  EXPECT_FALSE(multitask_menu()->IsBubbleShown());
+  TabletMode::Get()->SetEnabledForTest(true);
+
+  // Closing the widget is done on a post task.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(GetMultitaskMenu());
 }
 
 // Verifies that long touch on the size button shows the multitask menu.
@@ -909,6 +897,21 @@ TEST_F(MultitaskMenuTest, EntryTypeHistogram) {
   // Check total counts for each histogram to ensure calls aren't counted in
   // multiple buckets.
   histogram_tester.ExpectTotalCount(chromeos::GetEntryTypeHistogramName(), 3);
+}
+
+// Tests that we do not create a new widget when hovering on the size button
+// when the multitask menu is already opened.
+TEST_F(MultitaskMenuTest, HoverWhenMenuAlreadyShown) {
+  ShowMultitaskMenu();
+  MultitaskMenu* multitask_menu = GetMultitaskMenu();
+  ASSERT_TRUE(multitask_menu);
+
+  // Ensure the mouse is not already on the size button then move it back on.
+  // The menu should be the same one opened beforehand.
+  GetEventGenerator()->MoveMouseTo(
+      size_button()->GetBoundsInScreen().bottom_right() + gfx::Vector2d(2, 2));
+  GetEventGenerator()->MoveMouseTo(CenterPointInScreen(size_button()));
+  EXPECT_EQ(multitask_menu, GetMultitaskMenu());
 }
 
 }  // namespace ash

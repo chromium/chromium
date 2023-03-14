@@ -6,6 +6,7 @@
 #define UI_ACCESSIBILITY_ANDROID_ACCESSIBILITY_STATE_H_
 
 #include <vector>
+#include "base/no_destructor.h"
 
 namespace ui {
 
@@ -21,36 +22,44 @@ class AccessibilityState {
     virtual void OnAnimatorDurationScaleChanged() = 0;
   };
 
-  // --------------------------------------------------------------------------
-  // Methods that call into AccessibilityState.java via JNI
-  // --------------------------------------------------------------------------
-  //
-  // Register Java-side Android accessibility state observers and ensure
-  // AccessibilityState is initialized.
-  static void RegisterObservers();
-  // Returns the event mask of all running accessibility services.
-  static int GetAccessibilityServiceEventTypeMask();
-  // Returns the feedback type mask of all running accessibility services.
-  static int GetAccessibilityServiceFeedbackTypeMask();
-  // Returns the flags mask of all running accessibility services.
-  static int GetAccessibilityServiceFlagsMask();
-  // Returns the capabilities mask of all running accessibility services.
-  static int GetAccessibilityServiceCapabilitiesMask();
-  // Returns a vector containing the IDs of all running accessibility services.
-  static std::vector<std::string> GetAccessibilityServiceIds();
-  // Returns true if there is a spoken feedback service running.
-  static bool HasSpokenFeedbackServicePresent();
-
   // Registers a delegate to listen to animator duration scale changes.
   static void RegisterAnimatorDurationScaleDelegate(Delegate* delegate);
+
   // Unregisters a delegate to listen to animator duration scale changes.
   static void UnregisterAnimatorDurationScaleDelegate(Delegate* delegate);
+
   // Notifies all delegates of an animator duration scale change.
   static void NotifyAnimatorDurationScaleObservers();
 
+  // --------------------------------------------------------------------------
+  // Methods that call into AccessibilityState.java via JNI
+  // --------------------------------------------------------------------------
+
+  // Register Java-side Android accessibility state observers and ensure
+  // AccessibilityState is initialized.
+  static void RegisterObservers();
+
+  // Returns the event mask of all running accessibility services.
+  static int GetAccessibilityServiceEventTypeMask();
+
+  // Returns the feedback type mask of all running accessibility services.
+  static int GetAccessibilityServiceFeedbackTypeMask();
+
+  // Returns the flags mask of all running accessibility services.
+  static int GetAccessibilityServiceFlagsMask();
+
+  // Returns the capabilities mask of all running accessibility services.
+  static int GetAccessibilityServiceCapabilitiesMask();
+
+  // Returns a vector containing the IDs of all running accessibility services.
+  static std::vector<std::string> GetAccessibilityServiceIds();
+
  private:
   // Returns the static vector of Delegates.
-  static std::vector<Delegate*> GetDelegates();
+  static std::vector<Delegate*> GetDelegates() {
+    static base::NoDestructor<std::vector<Delegate*>> delegates;
+    return *delegates;
+  }
 };
 
 }  // namespace ui

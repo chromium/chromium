@@ -22,6 +22,7 @@
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/ozone/evdev/event_converter_evdev.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
+#include "ui/events/ozone/evdev/input_controller_evdev.h"
 #include "ui/events/ozone/evdev/input_device_factory_evdev_metrics.h"
 #include "ui/events/ozone/evdev/input_device_opener.h"
 #include "ui/events/ozone/evdev/input_device_settings_evdev.h"
@@ -55,7 +56,8 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdev {
   InputDeviceFactoryEvdev(
       std::unique_ptr<DeviceEventDispatcherEvdev> dispatcher,
       CursorDelegateEvdev* cursor,
-      std::unique_ptr<InputDeviceOpener> input_device_opener);
+      std::unique_ptr<InputDeviceOpener> input_device_opener,
+      InputControllerEvdev* input_controller);
 
   InputDeviceFactoryEvdev(const InputDeviceFactoryEvdev&) = delete;
   InputDeviceFactoryEvdev& operator=(const InputDeviceFactoryEvdev&) = delete;
@@ -107,7 +109,6 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdev {
 
   // Sync input_device_settings_ to attached devices.
   void ApplyInputDeviceSettings();
-  void ApplyRelativePointingDeviceSettings(EventDeviceType type);
   void ApplyCapsLockLed();
 
   // Policy for device enablement.
@@ -128,12 +129,22 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdev {
   // received.
   void UpdateKeyboardDevicesOnKeyPress(const EventConverterEvdev* converter);
 
+  void SetMousePropertiesPerDevice();
+  void SetTouchpadPropertiesPerDevice();
+  void SetPointingStickPropertiesPerDevice();
+
   void SetIntPropertyForOneType(const EventDeviceType type,
                                 const std::string& name,
                                 int value);
   void SetBoolPropertyForOneType(const EventDeviceType type,
                                  const std::string& name,
                                  bool value);
+  void SetIntPropertyForOneDevice(int device_id,
+                                  const std::string& name,
+                                  int value);
+  void SetBoolPropertyForOneDevice(int device_id,
+                                   const std::string& name,
+                                   bool value);
   void EnablePalmSuppression(bool enabled);
   void EnableDevices();
 
@@ -202,6 +213,10 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdev {
 
   // Handles ioctl calls and creation of event converters.
   const std::unique_ptr<InputDeviceOpener> input_device_opener_;
+
+  // Used to inform the input controller when devices are removed from the
+  // system.
+  raw_ptr<InputControllerEvdev> input_controller_;
 
   // Support weak pointers for attach & detach callbacks.
   base::WeakPtrFactory<InputDeviceFactoryEvdev> weak_ptr_factory_{this};

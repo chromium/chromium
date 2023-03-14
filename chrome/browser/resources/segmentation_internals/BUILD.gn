@@ -15,7 +15,6 @@ build_webui("build") {
   mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/segmentation_internals/segmentation_internals.mojom-webui.ts" ]
   ts_deps = [
     "//ui/webui/resources/js:build_ts",
-    "//ui/webui/resources/mojo:library",
+    "//ui/webui/resources/mojo:build_ts",
   ]
-  ts_use_local_config = false
 }

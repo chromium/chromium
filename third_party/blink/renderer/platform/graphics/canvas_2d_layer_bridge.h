@@ -31,10 +31,13 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
 #include "base/rand_util.h"
+#include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/memory_dump_provider.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "cc/layers/texture_layer_client.h"
@@ -42,10 +45,12 @@
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "third_party/khronos/GLES2/gl2.h"
@@ -70,6 +75,7 @@ class StaticBitmapImage;
 // All the fields are main-thread only. See DCheckInvariant() for invariants.
 class PLATFORM_EXPORT HibernationHandler {
  public:
+  ~HibernationHandler();
   // Semi-arbitrary threshold. Some past experiments (e.g. tile discard) have
   // shown that taking action after 5 minutes has a positive impact on memory,
   // and a minimal impact on tab switching latency (and on needless
@@ -137,6 +143,7 @@ class PLATFORM_EXPORT HibernationHandler {
       std::unique_ptr<HibernationHandler::BackgroundTaskParams> params,
       sk_sp<SkData> encoded);
   scoped_refptr<base::SingleThreadTaskRunner> GetMainThreadTaskRunner() const;
+  static size_t ImageMemorySize(const SkImage& image);
 
   // Incremented each time the canvas is hibernated.
   uint64_t epoch_ = 0;
@@ -155,6 +162,26 @@ class PLATFORM_EXPORT HibernationHandler {
   base::WeakPtrFactory<HibernationHandler> weak_ptr_factory_{this};
 };
 
+// memory-infra metrics for all hibernated canvases in this process. Main thread
+// only.
+class PLATFORM_EXPORT HibernatedCanvasMemoryDumpProvider
+    : public base::trace_event::MemoryDumpProvider {
+ public:
+  static HibernatedCanvasMemoryDumpProvider& GetInstance();
+  void Register(HibernationHandler* handler);
+  void Unregister(HibernationHandler* handler);
+
+  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
+                    base::trace_event::ProcessMemoryDump* pmd) override;
+
+ private:
+  friend class base::NoDestructor<HibernatedCanvasMemoryDumpProvider>;
+  HibernatedCanvasMemoryDumpProvider();
+
+  base::Lock lock_;
+  WTF::HashSet<HibernationHandler*> handlers_ GUARDED_BY(lock_);
+};
+
 class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
  public:
   Canvas2DLayerBridge(const gfx::Size&, RasterMode, OpacityMode opacity_mode);
@@ -169,7 +196,7 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
       viz::TransferableResource* out_resource,
       viz::ReleaseCallback* out_release_callback) override;
 
-  void FinalizeFrame(bool printing = false);
+  void FinalizeFrame(CanvasResourceProvider::FlushReason);
   void SetIsInHiddenPage(bool);
   void SetIsBeingDisplayed(bool);
   void SetFilterQuality(cc::PaintFlags::FilterQuality filter_quality);
@@ -185,6 +212,8 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
   virtual void DrawFullImage(const cc::PaintImage&);
   virtual void DidRestoreCanvasMatrixClipStack(cc::PaintCanvas*) {}
   virtual bool IsAccelerated() const;
+
+  bool IsComposited() const;
 
   // This may recreate CanvasResourceProvider
   cc::PaintCanvas* GetPaintCanvas();
@@ -205,7 +234,8 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
 
   bool HasRecordedDrawCommands() { return have_recorded_draw_commands_; }
 
-  scoped_refptr<StaticBitmapImage> NewImageSnapshot();
+  scoped_refptr<StaticBitmapImage> NewImageSnapshot(
+      CanvasResourceProvider::FlushReason);
 
   cc::TextureLayer* layer_for_testing() { return layer_.get(); }
 
@@ -240,7 +270,7 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
   }
   CanvasResourceProvider* GetOrCreateResourceProvider();
   CanvasResourceProvider* ResourceProvider() const;
-  void FlushRecording(bool printing = false);
+  void FlushRecording(CanvasResourceProvider::FlushReason);
 
   cc::PaintRecord* getLastRecord() {
     return last_record_tainted_by_write_pixels_

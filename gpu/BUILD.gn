@@ -422,7 +422,7 @@ test("gl_tests") {
     libs += [ "android" ]
     deps += [ "//ui/android:ui_java" ]
     sources += [ "command_buffer/service/shared_image/ahardwarebuffer_image_backing_factory_unittest.cc" ]
-  } else if (is_mac) {
+  } else if (is_apple) {
     frameworks = [ "IOSurface.framework" ]
     sources += [ "command_buffer/service/shared_image/iosurface_image_backing_factory_unittest.cc" ]
   } else if (is_win) {
@@ -571,6 +571,7 @@ test("gpu_unittests") {
     "config/gpu_test_config_unittest.cc",
     "config/gpu_test_expectations_parser_unittest.cc",
     "config/gpu_util_unittest.cc",
+    "config/webgpu_blocklist_unittest.cc",
     "ipc/client/command_buffer_proxy_impl_unittest.cc",
     "ipc/client/image_decode_accelerator_proxy_unittest.cc",
     "ipc/common/gpu_memory_buffer_impl_shared_memory_unittest.cc",
@@ -673,6 +674,7 @@ test("gpu_unittests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//base/test:test_trace_processor",
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//cc:test_support",

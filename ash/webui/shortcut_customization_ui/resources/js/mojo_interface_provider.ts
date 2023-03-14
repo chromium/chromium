@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {AcceleratorConfigurationProvider, AcceleratorConfigurationProviderRemote, AcceleratorsUpdatedObserverRemote} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
+import {AcceleratorConfigurationProvider, AcceleratorConfigurationProviderRemote, AcceleratorResultData, AcceleratorsUpdatedObserverRemote} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 
 import {fakeAcceleratorConfig, fakeLayoutInfo} from './fake_data.js';
 import {FakeShortcutProvider} from './fake_shortcut_provider.js';
@@ -25,11 +25,15 @@ let shortcutProvider: ShortcutProviderInterface|null = null;
  * This variable is intended to be manually set by developers for the
  * purposes of debugging.
  */
-const useFakeProvider: boolean = false;
+export let useFakeProvider: boolean = false;
 
 export function setShortcutProviderForTesting(
     testProvider: ShortcutProviderInterface): void {
   shortcutProvider = testProvider;
+}
+
+export function setUseFakeProviderForTesting(useFake: boolean): void {
+  useFakeProvider = useFake;
 }
 
 /**
@@ -80,9 +84,8 @@ export class ShortcutProviderWrapper implements ShortcutProviderInterface {
 
   removeAccelerator(
       source: AcceleratorSource, action: number,
-      accelerator: Accelerator): Promise<AcceleratorConfigResult> {
-    // TODO(cambickel) Replace with real mojo method.
-    return this.fakeProvider.removeAccelerator(source, action, accelerator);
+      accelerator: Accelerator): Promise<{result: AcceleratorResultData}> {
+    return this.remote.removeAccelerator(source, action, accelerator);
   }
 
   replaceAccelerator(
@@ -102,6 +105,10 @@ export class ShortcutProviderWrapper implements ShortcutProviderInterface {
 
   addObserver(observer: AcceleratorsUpdatedObserverRemote): void {
     return this.remote.addObserver(observer);
+  }
+
+  restoreAllDefaults(): Promise<{result: AcceleratorResultData}> {
+    return this.remote.restoreAllDefaults();
   }
 }
 

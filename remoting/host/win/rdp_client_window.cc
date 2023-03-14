@@ -9,13 +9,13 @@
 #include <list>
 #include <string>
 
+#include "base/auto_reset.h"
 #include "base/functional/bind.h"
-#include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/threading/thread_local.h"
 #include "base/win/scoped_bstr.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace remoting {
 
@@ -58,8 +58,7 @@ enum RdpAudioMode {
 };
 
 // Points to a per-thread instance of the window activation hook handle.
-base::LazyInstance<base::ThreadLocalPointer<RdpClientWindow::WindowHook>>::
-    DestructorAtExit g_window_hook = LAZY_INSTANCE_INITIALIZER;
+ABSL_CONST_INIT thread_local RdpClientWindow::WindowHook* window_hook = nullptr;
 
 // Finds a child window with the class name matching |class_name|. Unlike
 // FindWindowEx() this function walks the tree of windows recursively. The walk
@@ -142,6 +141,7 @@ class RdpClientWindow::WindowHook : public base::RefCounted<WindowHook> {
                                                   WPARAM wparam,
                                                   LPARAM lparam);
 
+  const base::AutoReset<WindowHook*> resetter_;
   HHOOK hook_;
 };
 
@@ -636,18 +636,14 @@ void RdpClientWindow::ReapplyDesktopResolution() {
 
 scoped_refptr<RdpClientWindow::WindowHook>
 RdpClientWindow::WindowHook::Create() {
-  scoped_refptr<WindowHook> window_hook = g_window_hook.Pointer()->Get();
-
-  if (!window_hook.get()) {
-    window_hook = new WindowHook();
+  if (!window_hook) {
+    new WindowHook();  // Sets `window_hook`.
   }
-
   return window_hook;
 }
 
-RdpClientWindow::WindowHook::WindowHook() : hook_(nullptr) {
-  DCHECK(!g_window_hook.Pointer()->Get());
-
+RdpClientWindow::WindowHook::WindowHook()
+    : resetter_(&window_hook, this, nullptr), hook_(nullptr) {
   // Install a window hook to be called on window activation.
   hook_ = SetWindowsHookEx(WH_CBT, &WindowHook::CloseWindowOnActivation,
                            nullptr, GetCurrentThreadId());
@@ -655,15 +651,10 @@ RdpClientWindow::WindowHook::WindowHook() : hook_(nullptr) {
   // modal UI windows. This will block the UI message loop so it is better to
   // terminate the process now.
   CHECK(hook_);
-
-  // Let CloseWindowOnActivation() to access the hook handle.
-  g_window_hook.Pointer()->Set(this);
 }
 
 RdpClientWindow::WindowHook::~WindowHook() {
-  DCHECK(g_window_hook.Pointer()->Get() == this);
-
-  g_window_hook.Pointer()->Set(nullptr);
+  DCHECK_EQ(window_hook, this);
 
   BOOL result = UnhookWindowsHookEx(hook_);
   DCHECK(result);
@@ -675,7 +666,7 @@ RdpClientWindow::WindowHook::CloseWindowOnActivation(int code,
                                                      WPARAM wparam,
                                                      LPARAM lparam) {
   // Get the hook handle.
-  HHOOK hook = g_window_hook.Pointer()->Get()->hook_;
+  HHOOK hook = window_hook->hook_;
 
   if (code != HCBT_ACTIVATE) {
     return CallNextHookEx(hook, code, wparam, lparam);

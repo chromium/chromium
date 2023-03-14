@@ -281,7 +281,8 @@ std::unique_ptr<VideoCaptureParams> VideoCaptureParams::CreateForRegionCapture(
 }
 
 void VideoCaptureParams::InitializeVideoCapturer(
-    mojo::Remote<viz::mojom::FrameSinkVideoCapturer>& capturer) const {
+    mojo::Remote<viz::mojom::FrameSinkVideoCapturer>& capturer,
+    media::VideoPixelFormat supported_pixel_format) const {
   DCHECK(capturer);
 
   capturer->SetMinCapturePeriod(kMinCapturePeriod);
@@ -290,7 +291,7 @@ void VideoCaptureParams::InitializeVideoCapturer(
   capturer->SetAutoThrottlingEnabled(false);
   // TODO(afakhry): Discuss with //media/ team the implications of color space
   // conversions.
-  capturer->SetFormat(media::PIXEL_FORMAT_I420);
+  capturer->SetFormat(supported_pixel_format);
   capturer->ChangeTarget(
       viz::VideoCaptureTarget(frame_sink_id_, subtree_capture_id_),
       /*crop_version=*/0);

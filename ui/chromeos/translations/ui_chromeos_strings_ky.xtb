@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Кийинки</translation>
 <translation id="1209796539517632982">Автоматтык аталыш серверлери</translation>
 <translation id="1210831758834677569">Лаосчо</translation>
+<translation id="1221555006497674479">Жалпы дисктин сактагычында орун аз. <ph name="TOTAL_SPACE" /> ичинен <ph name="REMAINING_PERCENTAGE" />% калды.</translation>
 <translation id="1243314992276662751">Жүктөп берүү</translation>
 <translation id="1249250836236328755">Жанр</translation>
 <translation id="1254593899333212300">Интернетке түз туташуу</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">Кытайча (пиньинь)</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> файл оффлайн режиминде колдонуу үчүн жүктөлүүдө</translation>
 <translation id="164969095109328410">Chrome түзмөгү</translation>
+<translation id="1661207570040737402">Жалпы дисктеги Google Workspace сактагычынын баарын колдонуп койдуңуз.</translation>
 <translation id="1661867754829461514">ПИН жок</translation>
 <translation id="166439687370499867">Бөлүшүлгөн тармактын конфигурацияларын өзгөртүүгө болбойт</translation>
 <translation id="1665611772925418501">Файл өзгөрүлгөн жок.</translation>
@@ -82,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> файл кысылууда…</translation>
 <translation id="1722687688096767818">Профиль кошулууда...</translation>
 <translation id="1726100011689679555">Ысым серверлери</translation>
+<translation id="1727562178154619254">Шайкештирүүгө даяр</translation>
 <translation id="1729953886957086472">Немисче (Германия)</translation>
 <translation id="1730235522912993863">Кытайча (цанцзе)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> нерсе көчүрүлдү.</translation>
@@ -349,11 +352,11 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Чаптоо</translation>
 <translation id="3952872973865944257">Телугуча (фонетикалык)</translation>
-<translation id="3954354850384043518">Аткарылууда</translation>
 <translation id="3958548648197196644">Киви</translation>
 <translation id="3971140002794351170">Мобилдик профилди жүктөп алуу, <ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Англисче (Улуу Британия)</translation>
 <translation id="3975895378829046965">Бенгаличе (фонетикалык)</translation>
+<translation id="3999574733850440202">Жакында ачылган Microsoft файлдары OneDrive'га жылдырылды</translation>
 <translation id="4002066346123236978">Аталышы</translation>
 <translation id="4017788180641807848">Англисче (АКШ) жана Workman баскычтобу</translation>
 <translation id="4019998208269143058">Ыкчам ачылуучу файлдарга кадап коюу</translation>
@@ -362,6 +365,7 @@
 <translation id="4092890906744441904">Ирландча</translation>
 <translation id="4124935795427217608">Жалгыз мүйүздүү ат</translation>
 <translation id="4131235941541910880">Керексиз нерселерди таштандыга салыңыз</translation>
+<translation id="4134804435730168042"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Түзмөктү тууралагандан кийин иштетиңиз</translation>
 <translation id="4153015322587141338">Текчедеги файлдарды ыкчам ачуу үчүн курсорду файлдын үстүнө алып келип, оң баскычын чыкылдатып, "<ph name="PIN_COMMAND" />" дегенди тандаңыз.</translation>
 <translation id="4157569377477607576">Администратордун саясаты төмөнкүлөрдү сунуштабайт:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> жылдырылды.</translation>
@@ -404,6 +408,7 @@
 <translation id="4414834425328380570">"<ph name="FILE_NAME" />" өчүрүлөт жана аны калыбына келтире албайсыз.</translation>
 <translation id="4418686080762064601">Файлдарга өтүү үчүн ыкчам баскычты түзүү</translation>
 <translation id="4425149324548788773">Менин Drive'ым</translation>
+<translation id="4432921877815220091"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, Түзмөктү тууралагандан кийин иштетиңиз, Администраторуңуз тарабынан тескелет</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Туташуу</translation>
 <translation id="4442424173763614572">DNS каралбай калды</translation>
 <translation id="4462159676511157176">Жалпы ат серверлери</translation>
@@ -610,8 +615,10 @@
 <translation id="5911887972742538906">Linux колдонмосун орнотуу учурунда ката кетти.</translation>
 <translation id="5912396950572065471">Формат</translation>
 <translation id="5913638992615760742">Көчүрүлбөй калды, күтүүсүз ката кетти: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">Жаңы издөө функциялары жеткиликтүү</translation>
 <translation id="5926082595146149752">Голландча (Голландия) жана эл аралык АКШ баскычтобу (жеке компьютерлер үчүн)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, Түзмөктү тууралагандан кийин иштетиңиз</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> элемент</translation>
 <translation id="5957366693331451795">Chromebox түзмөктөрү</translation>
 <translation id="5982621672636444458">Иреттөө опциясы</translation>
@@ -698,6 +705,7 @@
 <translation id="6732801395666424405">Тастыктамалар жүктөлгөн жок</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Bruschetta менен папка бөлүшүү</translation>
+<translation id="6750737795876287924">Учурдагы каталог</translation>
 <translation id="6751256176799620176">1 куржун тандалды</translation>
 <translation id="6755827872271341378">ChromeOS Flex түзмөгү</translation>
 <translation id="6790428901817661496">Ойнотуу</translation>
@@ -735,7 +743,6 @@
 <translation id="6973630695168034713">Куржундар</translation>
 <translation id="6976795442547527108">Арстан</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">Бардыгы</translation>
 <translation id="6989942356279143254">Шведче</translation>
 <translation id="6990081529015358884">Бош орун калбай калды</translation>
 <translation id="6993826899923627728">Бул нерселер таштандыда</translation>
@@ -758,6 +765,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;Drive'ды издөө&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Каннада (фонетикалык)</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Сервердин аныктыгын текшерүү мүмкүн эмес, анткени "Субъекттин кошумча аталышына дал келүү" же "Домен суффиксине дал келүү" жок</translation>
 <translation id="7165320105431587207">Тармак конфигурацияланбай калды</translation>
 <translation id="7170041865419449892">Арымдан тышкары</translation>
 <translation id="7180611975245234373">Жаңылоо</translation>
@@ -790,7 +798,6 @@
 <translation id="7458955835361612701">Жаңы сүрөттөр жок</translation>
 <translation id="7460898608667578234">Украинче</translation>
 <translation id="7469894403370665791">Бул тармакка автоматтык түрдө туташуу</translation>
-<translation id="7481358317100446445">Даяр</translation>
 <translation id="7486315294984620427">Parallels Desktop'ко файлды көчүрүү үчүн файл Windows файлдарына көчүрүлүшү керек.</translation>
 <translation id="749452993132003881">Хираганача</translation>
 <translation id="7495372004724182530">Малайаламча, фонетикалык</translation>
@@ -828,6 +835,7 @@
 <translation id="7724603315864178912">Кесүү</translation>
 <translation id="7732111077498238432">Тармак саясат аркылуу көзөмөлдөнөт</translation>
 <translation id="7736003208887389532">Бул файлдарды биротоло өчүрөсүзбү?</translation>
+<translation id="7740287852186792672">Издөө натыйжалары</translation>
 <translation id="7748626145866214022">Аракет тилкесинде дагы башка параметрлер бар. Ал жерге өтүү үчүн Alt + A баскычтарын басыңыз.</translation>
 <translation id="7760449188139285140">Кытайча (Wubi)</translation>
 <translation id="7765158879357617694">Жылуу</translation>
@@ -879,6 +887,7 @@
 <translation id="8116072619078571545">Муз кошулган суу</translation>
 <translation id="8128733386027980860">Англисче (Улуу Британия) жана Dvorak баскычтобу</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" сиз менен бөлүшүлдү. Ал сизге таандык эмес болгондуктан, аны жок кыла албайсыз.</translation>
+<translation id="8138705869659070104">Түзмөк тууралангандан кийин иштетилсин</translation>
 <translation id="813913629614996137">Баштапкы маанини берүүдө...</translation>
 <translation id="8147028810663464959">Символдун эни Толук</translation>
 <translation id="8151638057146502721">Конфигурациялоо</translation>
@@ -904,6 +913,7 @@
 <translation id="8300849813060516376">OTASP кыйрады</translation>
 <translation id="8312871300878166382">Папкага чаптоо</translation>
 <translation id="8329978297633540474">Жөнөкөй текст</translation>
+<translation id="8332007959299458842">Жакында ачылган Microsoft файлдары Google Drive'га жылдырылды</translation>
 <translation id="8335587457941836791">Текчеден бошотуу</translation>
 <translation id="8335837413233998004">Беларусча</translation>
 <translation id="8336153091935557858">Кечээ <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -930,6 +940,7 @@
 <translation id="8487700953926739672">Оффлайнда жеткиликтүү</translation>
 <translation id="8492972329130824181">Үйдөгү тармак жеткиликсиз. Туташуу үчүн мобилдик интернет-роуминг иштетилиши керек.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> нерсе чыгарылууда...</translation>
+<translation id="8502913769543567768"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Түзмөктү тууралагандан кийин иштетиңиз, Администраторуңуз тарабынан тескелет</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="853494022971700746">Французча (Франция)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Чоо-жайы</translation>
@@ -991,6 +1002,7 @@
 <translation id="9046895021617826162">Туташпай калды</translation>
 <translation id="9065512565307033593">Эгер текшерүүдөн өтпөсөңүз, тармакка кирүү мүмкүнчүлүгү өчүрүлөт.</translation>
 <translation id="908378762078012445">Орусча (AATSEEL фонетикалык баскычтобу)</translation>
+<translation id="9086302186042011942">Шайкештештирилүүдө</translation>
 <translation id="9099674669267916096">Барактардын саны</translation>
 <translation id="9100610230175265781">Купуя сөз айкашы талап кылынат</translation>
 <translation id="9110990317705400362">Серептөө аракетиңиздин коопсуздугун чыңдоо үчүн болгон аракетибизди жумшап жатабыз. Буга чейин серепчиңизге кеңейтүү кошууну вебсайттар сунуштап турушчу. Ал эми Google Chrome'дун эң акыркы версияларында керектүү кеңейтүүлөрдү Кеңейтүүлөр бетинен кошуп, орното турганыңызды Chrome'го өзүңүз ачык билдиресиз. <ph name="BEGIN_LINK" />Көбүрөөк билүү<ph name="END_LINK" /></translation>

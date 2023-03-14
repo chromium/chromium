@@ -2659,6 +2659,20 @@ TEST_F(FeedApiTest, CreateAndCommitEphemeralChange) {
             surface.DescribeUpdates());
 }
 
+TEST_F(FeedApiTest, CreateAndCommitEphemeralChangeOnNoOperation) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  EphemeralChangeId change_id =
+      stream_->CreateEphemeralChange(surface.GetStreamType(), {});
+  stream_->CommitEphemeralChange(surface.GetStreamType(), change_id);
+  WaitForIdleTaskQueue();
+
+  ASSERT_EQ("loading -> [user@foo] 2 slices -> 2 slices -> 2 slices",
+            surface.DescribeUpdates());
+}
+
 TEST_F(FeedApiTest, RejectEphemeralChange) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());

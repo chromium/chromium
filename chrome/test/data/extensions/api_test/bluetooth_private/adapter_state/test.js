@@ -8,7 +8,7 @@ function testSetAdapterState() {
   chrome.bluetooth.getAdapterState(function(state) {
     chrome.test.assertNoLastError();
     chrome.test.assertFalse(state.powered);
-    chrome.test.assertTrue(state.name != newAdapterName);
+    chrome.test.assertNe(newAdapterName, state.name);
     // TODO(tengs): Check if adapter is discoverable when the attribute is
     // exposed to the chrome.bluetooth API.
     setAdapterState();

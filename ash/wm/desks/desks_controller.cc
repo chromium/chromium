@@ -55,6 +55,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/cxx17_backports.h"
 #include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/guid.h"
 #include "base/i18n/number_formatting.h"
@@ -62,6 +63,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -117,6 +119,13 @@ constexpr int kDeskTraversalsMaxValue = 20;
 // |kNumberOfDeskTraversalsHistogramName| will be recorded after this time
 // interval.
 constexpr base::TimeDelta kDeskTraversalsTimeout = base::Seconds(5);
+
+constexpr char kCloseAllZombieWindowsFoundHistogramName[] =
+    "Ash.Desks.CloseAllZombieWindowsFound";
+
+// The amount of time we wait after `CleanUpClosedAppWindowsTask` runs before
+// we check how many of those windows are still in memory.
+constexpr base::TimeDelta kCloseAllWindowsZombieCheckTimeout = base::Minutes(1);
 
 constexpr int kDeskDefaultNameIds[] = {
     IDS_ASH_DESKS_DESK_1_MINI_VIEW_TITLE,
@@ -259,6 +268,13 @@ void ShowDeskRemovalUndoToast(const std::string& toast_id,
   undo_toast_data.dismiss_callback = std::move(dismiss_callback);
   undo_toast_data.expired_callback = std::move(expired_callback);
   ToastManager::Get()->Show(std::move(undo_toast_data));
+}
+
+// Reports the number of windows that still exist in `window_tracker`.
+void ReportNumberOfZombieWindows(
+    std::unique_ptr<aura::WindowTracker> window_tracker) {
+  base::UmaHistogramCounts100(kCloseAllZombieWindowsFoundHistogramName,
+                              window_tracker->windows().size());
 }
 
 }  // namespace
@@ -2017,6 +2033,8 @@ void DesksController::MaybeCommitPendingDeskRemoval(
 
 void DesksController::CleanUpClosedAppWindowsTask(
     std::unique_ptr<aura::WindowTracker> closing_window_tracker) {
+  auto widgetless_windows = std::make_unique<aura::WindowTracker>();
+
   // We have waited long enough for these app windows to close cleanly.
   // If there is any app windows still around, we will close them forcefully.
   // These window's desk has already been removed. We should not let these
@@ -2024,75 +2042,27 @@ void DesksController::CleanUpClosedAppWindowsTask(
   while (!closing_window_tracker->windows().empty()) {
     aura::Window* window = closing_window_tracker->Pop();
     views::Widget* widget = views::Widget::GetWidgetForNativeView(window);
-    DCHECK(widget);
-
-    // TODO(b/266617023): Clean this up when bug is resolved.
-    // Crash keys for b/266617023.
-    // We want to understand everything about the window that is causing the
-    // crash so we know how to reproduce.
-    SCOPED_CRASH_KEY_NUMBER("CloseAll", "window_type", window->GetType());
-    SCOPED_CRASH_KEY_NUMBER("CloseAll", "window_app_type",
-                            window->GetProperty(aura::client::kAppType));
-    SCOPED_CRASH_KEY_NUMBER(
-        "CloseAll", "window_z_level",
-        static_cast<int>(window->GetProperty(aura::client::kZOrderingKey)));
-    SCOPED_CRASH_KEY_BOOL("CloseAll", "window_is_visible", window->IsVisible());
-    SCOPED_CRASH_KEY_BOOL("CloseAll", "window_has_focus", window->HasFocus());
-    SCOPED_CRASH_KEY_BOOL("CloseAll", "window_visible_all",
-                          desks_util::IsWindowVisibleOnAllWorkspaces(window));
-
-    // Window bounds logging.
-    SCOPED_CRASH_KEY_STRING64("CloseAll", "window_bounds",
-                              window->bounds().ToString());
-
-    // Window state logging.
-    WindowState* window_state = WindowState::Get(window);
-    SCOPED_CRASH_KEY_BOOL("CloseAll", "window_state_exists", !!window_state);
-    if (window_state) {
-      SCOPED_CRASH_KEY_NUMBER("CloseAll", "window_state_type",
-                              static_cast<int>(window_state->GetStateType()));
-      SCOPED_CRASH_KEY_BOOL("CloseAll", "window_state_is_minimized",
-                            window_state->IsMinimized());
-      SCOPED_CRASH_KEY_BOOL("CloseAll", "window_state_is_maximized",
-                            window_state->IsMaximized());
-      SCOPED_CRASH_KEY_BOOL("CloseAll", "window_state_is_fullscreen",
-                            window_state->IsFullscreen());
-      SCOPED_CRASH_KEY_BOOL("CloseAll", "window_state_is_snapped",
-                            window_state->IsSnapped());
-      SCOPED_CRASH_KEY_BOOL("CloseAll", "window_state_is_pinned",
-                            window_state->IsPinned());
-      SCOPED_CRASH_KEY_BOOL("CloseAll", "window_state_is_trustedpinned",
-                            window_state->IsTrustedPinned());
-      SCOPED_CRASH_KEY_BOOL("CloseAll", "window_state_is_pip",
-                            window_state->IsPip());
-      SCOPED_CRASH_KEY_BOOL("CloseAll", "window_state_is_floated",
-                            window_state->IsFloated());
-      SCOPED_CRASH_KEY_BOOL("CloseAll", "window_state_is_active",
-                            window_state->IsActive());
-      SCOPED_CRASH_KEY_BOOL("CloseAll", "window_state_userpositionable",
-                            window_state->IsUserPositionable());
-    }
-
-    // Environment logging.
-    SCOPED_CRASH_KEY_BOOL(
-        "CloseAll", "in_overview_session",
-        Shell::Get()->overview_controller()->InOverviewSession());
-    SCOPED_CRASH_KEY_NUMBER("CloseAll", "desk_count", desks_.size());
-
-    // Understand the window's connection to the widget.
-    views::internal::NativeWidgetPrivate* native_widget =
-        views::internal::NativeWidgetPrivate::GetNativeWidgetForNativeView(
-            window);
-    SCOPED_CRASH_KEY_BOOL("CloseAll", "native_widget_exists", !!native_widget);
-    SCOPED_CRASH_KEY_BOOL("CloseAll", "native_widget_has_widget",
-                          native_widget && native_widget->GetWidget());
 
     // Forcefully close this app window. `CloseNow` which directly deleted the
     // associated native widget. This will skip many Window shutdown hook
     // logic. However, the desk controller has waited for the app window to
     // close cleanly before this.
-    widget->CloseNow();
+    if (widget) {
+      widget->CloseNow();
+    } else {
+      // If the window does not have a widget, we add it to the
+      // `widgetless_windows` tracker to check back on later.
+      widgetless_windows->Add(window);
+    }
   }
+
+  // We post a delayed task to check that all of the windows in
+  // `widgetless_windows eventually end up closing.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&ReportNumberOfZombieWindows,
+                     std::move(widgetless_windows)),
+      kCloseAllWindowsZombieCheckTimeout);
 }
 
 void DesksController::MoveVisibleOnAllDesksWindowsFromActiveDeskTo(
@@ -2150,7 +2120,22 @@ void DesksController::RestackVisibleOnAllDesksWindowsOnActiveDesk() {
     auto* desk_container =
         visible_on_all_desks_window->GetRootWindow()->GetChildById(
             active_desk_->container_id());
-    DCHECK_EQ(desk_container, visible_on_all_desks_window->parent());
+    if (desk_container != visible_on_all_desks_window->parent()) {
+      // TODO(b/252556509): Clean this up when the root cause has been resolved.
+      // This can sometimes happen and we're still trying to nail down the root
+      // cause. Rather than proceeding to stack the window (which will crash),
+      // we'll log some info and skip the window.
+      SCOPED_CRASH_KEY_NUMBER("Restack", "adw_type",
+                              visible_on_all_desks_window->GetType());
+      SCOPED_CRASH_KEY_NUMBER(
+          "Restack", "adw_app_type",
+          visible_on_all_desks_window->GetProperty(aura::client::kAppType));
+      SCOPED_CRASH_KEY_STRING32(
+          "Restack", "adw_app_id",
+          full_restore::GetAppId(visible_on_all_desks_window));
+      base::debug::DumpWithoutCrashing();
+      continue;
+    }
 
     // Search through the MRU list for the next element that shares the same
     // parent. This will be used to stack |visible_on_all_desks_window| in

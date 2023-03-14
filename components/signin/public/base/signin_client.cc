@@ -23,3 +23,8 @@ bool SigninClient::IsRevokeSyncConsentAllowed() const {
   return is_clear_primary_account_allowed_for_testing_.value_or(
              SignoutDecision::ALLOW) != SignoutDecision::REVOKE_SYNC_DISALLOWED;
 }
+
+bool SigninClient::is_clear_primary_account_allowed_for_testing() const {
+  return is_clear_primary_account_allowed_for_testing_ ==
+         SignoutDecision::ALLOW;
+}

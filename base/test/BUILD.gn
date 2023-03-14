@@ -236,7 +236,6 @@ static_library("test_support") {
       "../ios/weak_nsobject.mm",
       "ios/wait_util.h",
       "ios/wait_util.mm",
-      "launcher/unit_test_launcher_ios.cc",
       "test_file_util_mac.cc",
       "test_listener_ios.h",
       "test_listener_ios.mm",
@@ -244,6 +243,11 @@ static_library("test_support") {
       "test_support_ios.mm",
     ]
     deps += [ ":google_test_runner_shared_headers" ]
+
+    # With blink, we use the standard unit_test_launcher.cc.
+    if (!use_blink) {
+      sources += [ "launcher/unit_test_launcher_ios.cc" ]
+    }
   }
 
   if (is_posix || is_fuchsia) {
@@ -255,7 +259,10 @@ static_library("test_support") {
   }
 
   if (is_fuchsia) {
-    deps += [ "//third_party/fuchsia-sdk/sdk/pkg/zx" ]
+    deps += [
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io:fuchsia.io_cpp_hlcpp_conversion",
+      "//third_party/fuchsia-sdk/sdk/pkg/zx",
+    ]
     public_deps += [ "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp" ]
     sources += [
       "../fuchsia/test_component_context_for_process.cc",
@@ -460,4 +467,28 @@ if (is_ios) {
 executable("test_child_process") {
   testonly = true
   sources = [ "test_child_process.cc" ]
+}
+
+if (enable_base_tracing) {
+  # We encapsulate the trace processor as a separate component to prevent any
+  # duplicate symbols issues.Perfetto symbols are exported by chromium's base via
+  # a public_dep on libperfetto; libtrace_processor also depends on these symbols.
+  # The issue can occur if we try to use some symbol exported by both libperfetto
+  # and libtrace_processor.By encapsulating the libtrace_processor in a
+  # component, we can "hide" the perfetto symbols from the exported interface of
+  # this component and limit the issue to TestTraceProcessor only, rather than all
+  # of test_support.
+  component("test_trace_processor") {
+    defines = [ "TEST_TRACE_PROCESSOR_IMPL" ]
+    testonly = true
+    sources = [
+      "test_trace_processor.cc",
+      "test_trace_processor.h",
+      "test_trace_processor_export.h",
+    ]
+    deps = [
+      "//third_party/abseil-cpp:absl",
+      "//third_party/perfetto:libtrace_processor",
+    ]
+  }
 }

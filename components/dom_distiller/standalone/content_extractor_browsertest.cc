@@ -399,9 +399,7 @@ class ContentExtractor : public ContentBrowserTest {
 
     if (command_line.HasSwitch(kOutputFile)) {
       base::FilePath filename = command_line.GetSwitchValuePath(kOutputFile);
-      ASSERT_EQ(
-          (int)output_data_.size(),
-          base::WriteFile(filename, output_data_.c_str(), output_data_.size()));
+      ASSERT_TRUE(base::WriteFile(filename, output_data_));
     } else {
       VLOG(0) << output_data_;
     }

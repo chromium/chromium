@@ -18,6 +18,9 @@ class WebState;
 // associated web state is realized, and deinstantiated when it is not.
 @interface FindInPageController : NSObject
 
+// Clear search term.
++ (void)clearSearchTerm;
+
 #pragma mark - Properties
 
 // Find In Page model reported to the delegate when the Find session is updated.

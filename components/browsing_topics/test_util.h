@@ -23,7 +23,7 @@ class TestAutoSetUkmRecorder;
 namespace browsing_topics {
 
 struct ApiResultUkmMetrics {
-  ApiResultUkmMetrics(absl::optional<ApiAccessFailureReason> failure_reason,
+  ApiResultUkmMetrics(absl::optional<ApiAccessResult> failure_reason,
                       CandidateTopic topic0,
                       CandidateTopic topic1,
                       CandidateTopic topic2)
@@ -32,7 +32,7 @@ struct ApiResultUkmMetrics {
         topic1(std::move(topic1)),
         topic2(std::move(topic2)) {}
 
-  absl::optional<ApiAccessFailureReason> failure_reason;
+  absl::optional<ApiAccessResult> failure_reason;
   CandidateTopic topic0;
   CandidateTopic topic1;
   CandidateTopic topic2;

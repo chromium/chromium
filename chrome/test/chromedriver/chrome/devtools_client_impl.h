@@ -154,6 +154,7 @@ class DevToolsClientImpl : public DevToolsClient {
   // Precondition: !IsConnected() || !listener.ListensToConnections()
   // Precondition: listener != nullptr
   void AddListener(DevToolsEventListener* listener) override;
+  void RemoveListener(DevToolsEventListener* listener) override;
   Status HandleEventsUntil(const ConditionalFunc& conditional_func,
                            const Timeout& timeout) override;
   Status HandleReceivedEvents() override;

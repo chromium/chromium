@@ -34,6 +34,12 @@ class MockNearbyProcessManager : public NearbyProcessManager {
                 GetNearbySharingDecoder,
                 (),
                 (const, override));
+
+    MOCK_METHOD(
+        const mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder>&,
+        GetQuickStartDecoder,
+        (),
+        (const, override));
   };
 
   MockNearbyProcessManager();

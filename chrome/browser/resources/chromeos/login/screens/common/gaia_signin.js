@@ -28,6 +28,7 @@ import {AuthFlow, AuthMode, SUPPORTED_PARAMS} from '../../../../gaia_auth_host/a
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
+import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
 import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 import {OobeTypes} from '../../components/oobe_types.js';
 import {Oobe} from '../../cr_ui.js';
@@ -84,6 +85,14 @@ const POSSIBLE_FIRST_SIGNIN_STEPS = [DialogMode.GAIA, DialogMode.LOADING];
  */
 const GaiaSigninElementBase = mixinBehaviors(
     [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
+
+/**
+ * @typedef {{
+ *   enrollmentNudge: OobeModalDialog
+ * }}
+ */
+GaiaSigninElementBase.$;
+
 
 /**
  * @polymer
@@ -277,6 +286,14 @@ class GaiaSigninElement extends GaiaSigninElementBase {
         type: String,
         value: 'allowlistErrorConsumer',
       },
+
+      /**
+       * Domain extracted from user's email.
+       * @private
+       */
+      emailDomain_: {
+        type: String,
+      },
     };
   }
 
@@ -347,6 +364,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
       'loadAuthExtension',
       'doReload',
       'showAllowlistCheckFailedError',
+      'showEnrollmentNudge',
       'showPinDialog',
       'closePinDialog',
       'clickPrimaryButtonForTesting',
@@ -472,7 +490,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
     if (Oobe.getInstance().currentScreen.id != 'gaia-signin') {
       return;
     }
-    this.loadingTimer_ = undefined;
+    this.clearLoadingTimer_();
     chrome.send('showLoadingTimeoutError');
   }
 
@@ -910,6 +928,50 @@ class GaiaSigninElement extends GaiaSigninElementBase {
     this.$['gaia-allowlist-error'].submitButton.focus();
     this.isAllowlistErrorShown_ = true;
   }
+
+
+  /**
+   * Show enrollment nudge pop-up.
+   * @param {string} domain User's email domain.
+   */
+  showEnrollmentNudge(domain) {
+    this.reset();
+    this.emailDomain_ = domain;
+    this.$.enrollmentNudge.showDialog();
+  }
+
+  /**
+   * Build localized message to display on enrollment nudge pop-up.
+   * @param {string} locale i18n locale data
+   * @param {string} domain User's email domain.
+   * @return {string}
+   * @private
+   */
+  getEnrollmentNudgeMessage_(locale, domain) {
+    return this.i18n('enrollmentNudgeMessage', domain);
+  }
+
+  /**
+   * Handler for a button on enrollment nudge pop-up. Should lead the user to
+   * reloaded sign in screen.
+   * @private
+   */
+  onEnrollmentNudgeUseAnotherAccount_() {
+    this.$.enrollmentNudge.hideDialog();
+    this.doReload();
+  }
+
+  /**
+   * Handler for a button on enrollment nudge pop-up. Should switch to
+   * enrollment screen.
+   * @private
+   */
+  onEnrollmentNudgeEnroll_() {
+    this.$.enrollmentNudge.hideDialog();
+    // TODO(b/271104781): pass user's email to autofill it on enrollment screen
+    this.userActed('startEnrollment');
+  }
+
 
   /**
    * Shows the PIN dialog according to the given parameters.

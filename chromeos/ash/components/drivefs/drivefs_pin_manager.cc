@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
 
+#include <iomanip>
 #include <locale>
 #include <type_traits>
 
@@ -12,11 +13,9 @@
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/strings/stringprintf.h"
-#include "base/system/sys_info.h"
+#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
+#include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/drive/file_errors.h"
 #include "third_party/cros_system_api/constants/cryptohome.h"
@@ -24,8 +23,29 @@
 namespace drivefs::pinning {
 namespace {
 
+using base::SequencedTaskRunner;
+using base::TimeDelta;
+using std::ostream;
+using Path = PinManager::Path;
+
 bool InProgress(const Stage stage) {
-  return stage > Stage::kNotStarted && stage < Stage::kSuccess;
+  switch (stage) {
+    case Stage::kGettingFreeSpace:
+    case Stage::kListingFiles:
+    case Stage::kSyncing:
+      return true;
+
+    case Stage::kNotStarted:
+    case Stage::kPaused:
+    case Stage::kSuccess:
+    case Stage::kStopped:
+    case Stage::kCannotGetFreeSpace:
+    case Stage::kCannotListFiles:
+    case Stage::kNotEnoughSpace:
+      return false;
+  }
+
+  NOTREACHED_NORETURN() << "Unexpected Stage " << stage;
 }
 
 int Percentage(const int64_t a, const int64_t b) {
@@ -40,13 +60,17 @@ mojom::QueryParametersPtr CreateMyDriveQuery() {
   return query;
 }
 
-// Calls `base::SysInfo::AmountOfFreeDiskSpace` on a blocking thread.
-void GetFreeSpace(const base::FilePath& path,
-                  PinManager::SpaceResult callback) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&base::SysInfo::AmountOfFreeDiskSpace, path),
-      std::move(callback));
+// Calls the spaced daemon.
+void GetFreeSpace(const Path& path, PinManager::SpaceResult callback) {
+  ash::SpacedClient* const spaced = ash::SpacedClient::Get();
+  DCHECK(spaced);
+  spaced->GetFreeDiskSpace(path.value(),
+                           base::BindOnce(
+                               [](PinManager::SpaceResult callback,
+                                  const absl::optional<int64_t> space) {
+                                 std::move(callback).Run(space.value_or(-1));
+                               },
+                               std::move(callback)));
 }
 
 class NumPunct : public std::numpunct<char> {
@@ -65,16 +89,36 @@ Quoter<T> Quote(const T& value) {
   return {value};
 }
 
-std::ostream& operator<<(std::ostream& out, Quoter<base::FilePath> q) {
+ostream& operator<<(ostream& out, Quoter<TimeDelta> q) {
+  const int64_t ms = q.value.InMilliseconds();
+  if (ms < 1000) {
+    return out << ms << " ms";
+  }
+
+  const double seconds = ms / 1000.0;
+  if (seconds < 60) {
+    return out << std::setprecision(2) << seconds << " seconds";
+  }
+
+  const double minutes = seconds / 60.0;
+  if (minutes < 60) {
+    return out << std::setprecision(2) << minutes << " minutes";
+  }
+
+  const double hours = minutes / 60.0;
+  return out << std::setprecision(2) << hours << " hours";
+}
+
+ostream& operator<<(ostream& out, Quoter<Path> q) {
   return out << "'" << q.value << "'";
 }
 
-std::ostream& operator<<(std::ostream& out, Quoter<std::string> q) {
+ostream& operator<<(ostream& out, Quoter<std::string> q) {
   return out << "'" << q.value << "'";
 }
 
 template <typename T>
-std::ostream& operator<<(std::ostream& out, Quoter<absl::optional<T>> q) {
+ostream& operator<<(ostream& out, Quoter<absl::optional<T>> q) {
   if (!q.value.has_value()) {
     return out << "(nullopt)";
   }
@@ -82,8 +126,7 @@ std::ostream& operator<<(std::ostream& out, Quoter<absl::optional<T>> q) {
   return out << Quote(*q.value);
 }
 
-std::ostream& operator<<(std::ostream& out,
-                         Quoter<mojom::FileMetadata::Type> q) {
+ostream& operator<<(ostream& out, Quoter<mojom::FileMetadata::Type> q) {
   using Type = mojom::FileMetadata::Type;
   switch (q.value) {
 #define PRINT(s)   \
@@ -99,7 +142,7 @@ std::ostream& operator<<(std::ostream& out,
              << static_cast<std::underlying_type_t<Type>>(q.value) << ")";
 }
 
-std::ostream& operator<<(std::ostream& out, Quoter<mojom::ItemEvent::State> q) {
+ostream& operator<<(ostream& out, Quoter<mojom::ItemEvent::State> q) {
   using State = mojom::ItemEvent::State;
   switch (q.value) {
 #define PRINT(s)    \
@@ -116,7 +159,7 @@ std::ostream& operator<<(std::ostream& out, Quoter<mojom::ItemEvent::State> q) {
              << static_cast<std::underlying_type_t<State>>(q.value) << ")";
 }
 
-std::ostream& operator<<(std::ostream& out, Quoter<mojom::FileChange::Type> q) {
+ostream& operator<<(ostream& out, Quoter<mojom::FileChange::Type> q) {
   using Type = mojom::FileChange::Type;
   switch (q.value) {
 #define PRINT(s)   \
@@ -132,8 +175,8 @@ std::ostream& operator<<(std::ostream& out, Quoter<mojom::FileChange::Type> q) {
              << static_cast<std::underlying_type_t<Type>>(q.value) << ")";
 }
 
-std::ostream& operator<<(std::ostream& out,
-                         Quoter<mojom::ShortcutDetails::LookupStatus> q) {
+ostream& operator<<(ostream& out,
+                    Quoter<mojom::ShortcutDetails::LookupStatus> q) {
   using LookupStatus = mojom::ShortcutDetails::LookupStatus;
   switch (q.value) {
 #define PRINT(s)           \
@@ -151,12 +194,12 @@ std::ostream& operator<<(std::ostream& out,
              << ")";
 }
 
-std::ostream& operator<<(std::ostream& out, Quoter<mojom::ShortcutDetails> q) {
+ostream& operator<<(ostream& out, Quoter<mojom::ShortcutDetails> q) {
   return out << "{id: " << PinManager::Id(q.value.target_stable_id)
              << ", status: " << Quote(q.value.target_lookup_status) << "}";
 }
 
-std::ostream& operator<<(std::ostream& out, Quoter<mojom::FileMetadata> q) {
+ostream& operator<<(ostream& out, Quoter<mojom::FileMetadata> q) {
   const mojom::FileMetadata& md = q.value;
   out << "{" << Quote(md.type) << " " << PinManager::Id(md.stable_id)
       << ", size: " << HumanReadableSize(md.size) << ", pinned: " << md.pinned
@@ -168,7 +211,7 @@ std::ostream& operator<<(std::ostream& out, Quoter<mojom::FileMetadata> q) {
   return out << "}";
 }
 
-std::ostream& operator<<(std::ostream& out, Quoter<mojom::ItemEvent> q) {
+ostream& operator<<(ostream& out, Quoter<mojom::ItemEvent> q) {
   const mojom::ItemEvent& e = q.value;
   return out << "{" << Quote(e.state) << " " << PinManager::Id(e.stable_id)
              << " " << Quote(e.path) << ", bytes_transferred: "
@@ -177,14 +220,14 @@ std::ostream& operator<<(std::ostream& out, Quoter<mojom::ItemEvent> q) {
              << HumanReadableSize(e.bytes_to_transfer) << "}";
 }
 
-std::ostream& operator<<(std::ostream& out, Quoter<mojom::FileChange> q) {
+ostream& operator<<(ostream& out, Quoter<mojom::FileChange> q) {
   const mojom::FileChange& change = q.value;
   return out << "{" << Quote(change.type) << " "
              << PinManager::Id(change.stable_id) << " " << Quote(change.path)
              << "}";
 }
 
-std::ostream& operator<<(std::ostream& out, Quoter<mojom::DriveError::Type> q) {
+ostream& operator<<(ostream& out, Quoter<mojom::DriveError::Type> q) {
   using Type = mojom::DriveError::Type;
   switch (q.value) {
 #define PRINT(s)   \
@@ -201,7 +244,7 @@ std::ostream& operator<<(std::ostream& out, Quoter<mojom::DriveError::Type> q) {
              << static_cast<std::underlying_type_t<Type>>(q.value) << ")";
 }
 
-std::ostream& operator<<(std::ostream& out, Quoter<mojom::DriveError> q) {
+ostream& operator<<(ostream& out, Quoter<mojom::DriveError> q) {
   const mojom::DriveError& e = q.value;
   return out << "{" << Quote(e.type) << " " << PinManager::Id(e.stable_id)
              << " " << Quote(e.path) << "}";
@@ -224,11 +267,11 @@ int64_t GetSize(const mojom::FileMetadata& metadata) {
 
 }  // namespace
 
-std::ostream& operator<<(std::ostream& out, const PinManager::Id id) {
+ostream& operator<<(ostream& out, const PinManager::Id id) {
   return out << "#" << static_cast<int64_t>(id);
 }
 
-std::ostream& operator<<(std::ostream& out, HumanReadableSize size) {
+ostream& operator<<(ostream& out, HumanReadableSize size) {
   int64_t i = static_cast<int64_t>(size);
   if (i == 0) {
     return out << "zilch";
@@ -258,16 +301,16 @@ std::ostream& operator<<(std::ostream& out, HumanReadableSize size) {
     unit++;
   }
 
-  const int precision = d < 10 ? 2 : d < 100 ? 1 : 0;
-  return out << base::StringPrintf(" (%.*f %c)", precision, d, *unit);
+  return out << " (" << std::setprecision(3) << d << " " << *unit << ")";
 }
 
-std::ostream& operator<<(std::ostream& out, const Stage stage) {
+ostream& operator<<(ostream& out, const Stage stage) {
   switch (stage) {
 #define PRINT(s)    \
   case Stage::k##s: \
     return out << #s;
     PRINT(NotStarted)
+    PRINT(Paused)
     PRINT(GettingFreeSpace)
     PRINT(ListingFiles)
     PRINT(Syncing)
@@ -283,7 +326,7 @@ std::ostream& operator<<(std::ostream& out, const Stage stage) {
              << ")";
 }
 
-std::ostream& PinManager::File::PrintTo(std::ostream& out) const {
+ostream& PinManager::File::PrintTo(ostream& out) const {
   return out << "{path: " << Quote(path)
              << ", transferred: " << HumanReadableSize(transferred)
              << ", total: " << HumanReadableSize(total)
@@ -295,10 +338,22 @@ Progress::Progress() = default;
 Progress::Progress(const Progress&) = default;
 Progress& Progress::operator=(const Progress&) = default;
 
+bool Progress::HasEnoughFreeSpace() const {
+  // The free space should not go below this limit.
+  const int64_t margin = cryptohome::kMinFreeSpaceInBytes;
+  const bool enough = required_space + margin <= free_space;
+  LOG_IF(ERROR, !enough) << "Not enough space: Free space "
+                         << HumanReadableSize(free_space)
+                         << " is less than required space "
+                         << HumanReadableSize(required_space) << " + margin "
+                         << HumanReadableSize(margin);
+  return enough;
+}
+
 // TODO(b/261530666): This was chosen arbitrarily, this should be experimented
 // with and potentially made dynamic depending on feedback of the in progress
 // queue.
-constexpr base::TimeDelta kPeriodicRemovalInterval = base::Seconds(10);
+constexpr TimeDelta kStalledFileInterval = base::Seconds(10);
 
 bool PinManager::CanPin(const mojom::FileMetadata& md, const Path& path) {
   using Type = mojom::FileMetadata::Type;
@@ -342,7 +397,7 @@ bool PinManager::Add(const mojom::FileMetadata& md, const Path& path) {
   VLOG(3) << "Considering " << id << " " << Quote(path) << " " << Quote(md);
 
   if (!CanPin(md, path)) {
-    progress_.skipped_files++;
+    progress_.skipped_items++;
     return false;
   }
 
@@ -431,8 +486,10 @@ void PinManager::Remove(const Files::iterator it,
 
     if (file.pinned) {
       progress_.syncing_files--;
+      DCHECK_EQ(files_to_pin_.count(id), 0u);
     } else {
-      files_to_pin_.erase(id);
+      const size_t erased = files_to_pin_.erase(id);
+      DCHECK_EQ(erased, 1u);
     }
   }
 
@@ -515,6 +572,7 @@ PinManager::PinManager(Path profile_path, mojom::DriveFs* const drivefs)
 PinManager::~PinManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!InProgress(progress_.stage)) << "Pin manager is " << progress_.stage;
+
   for (Observer& observer : observers_) {
     observer.OnDrop();
   }
@@ -523,21 +581,30 @@ PinManager::~PinManager() {
 
 void PinManager::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!InProgress(progress_.stage)) << "Pin manager is " << progress_.stage;
+
+  if (InProgress(progress_.stage)) {
+    LOG(ERROR) << "Pin manager is already started: " << progress_.stage;
+    return;
+  }
 
   progress_ = {};
   files_to_pin_.clear();
   files_to_track_.clear();
   DCHECK_EQ(progress_.syncing_files, 0);
 
-  VLOG(1) << "Calculating free space...";
+  if (!is_online_) {
+    LOG(WARNING) << "Device is currently offline";
+    return Complete(Stage::kPaused);
+  }
+
+  VLOG(2) << "Getting free space...";
   timer_ = base::ElapsedTimer();
   progress_.stage = Stage::kGettingFreeSpace;
   NotifyProgress();
 
   space_getter_.Run(
       profile_path_.AppendASCII("GCache"),
-      base::BindOnce(&PinManager::OnFreeSpaceRetrieved, GetWeakPtr()));
+      base::BindOnce(&PinManager::OnFreeSpaceRetrieved1, GetWeakPtr()));
 }
 
 void PinManager::Stop() {
@@ -552,53 +619,98 @@ void PinManager::Stop() {
 void PinManager::Enable(bool enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (enabled == InProgress(progress_.stage)) {
-    VLOG(1) << "Pin manager is already " << (enabled ? "enabled" : "disabled");
-    return;
-  }
-
   if (enabled) {
-    VLOG(1) << "Starting";
     Start();
-    VLOG(1) << "Started";
   } else {
     Stop();
   }
 }
 
-void PinManager::OnFreeSpaceRetrieved(const int64_t free_space) {
+void PinManager::OnFreeSpaceRetrieved1(const int64_t free_space) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(progress_.stage, Stage::kGettingFreeSpace);
 
   if (free_space < 0) {
-    LOG(ERROR) << "Cannot calculate free space";
+    LOG(ERROR) << "Cannot get free space: " << free_space;
     return Complete(Stage::kCannotGetFreeSpace);
   }
 
   progress_.free_space = free_space;
-  VLOG(1) << "Calculated free space " << HumanReadableSize(free_space) << " in "
-          << timer_.Elapsed().InMilliseconds() << " ms";
+  VLOG(1) << "Free space: " << HumanReadableSize(free_space);
 
-  VLOG(1) << "Calculating required space...";
+  VLOG(1) << "Listing files...";
   timer_ = base::ElapsedTimer();
   progress_.stage = Stage::kListingFiles;
   NotifyProgress();
 
   drivefs_->StartSearchQuery(search_query_.BindNewPipeAndPassReceiver(),
                              CreateMyDriveQuery());
-  search_query_->GetNextPage(base::BindOnce(
-      &PinManager::OnSearchResultForSizeCalculation, GetWeakPtr()));
+  GetNextPage();
 }
 
-void PinManager::OnSearchResultForSizeCalculation(
+void PinManager::CheckFreeSpace() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  VLOG(2) << "Getting free space...";
+  space_getter_.Run(
+      profile_path_.AppendASCII("GCache"),
+      base::BindOnce(&PinManager::OnFreeSpaceRetrieved2, GetWeakPtr()));
+}
+
+void PinManager::OnFreeSpaceRetrieved2(const int64_t free_space) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (free_space < 0) {
+    LOG(ERROR) << "Cannot get free space: " << free_space;
+    return Complete(Stage::kCannotGetFreeSpace);
+  }
+
+  progress_.free_space = free_space;
+  VLOG(1) << "Free space: " << HumanReadableSize(progress_.free_space);
+  NotifyProgress();
+
+  if (!progress_.HasEnoughFreeSpace()) {
+    return Complete(Stage::kNotEnoughSpace);
+  }
+
+  SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(&PinManager::CheckFreeSpace, GetWeakPtr()),
+      space_check_interval_);
+}
+
+void PinManager::GetNextPage() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(progress_.stage, Stage::kListingFiles);
+  DCHECK(search_query_);
+  VLOG(2) << "Getting next batch of items...";
+  search_query_->GetNextPage(
+      base::BindOnce(&PinManager::OnSearchResult, GetWeakPtr()));
+}
+
+void PinManager::OnSearchResult(
     const drive::FileError error,
     const absl::optional<std::vector<mojom::QueryItemPtr>> items) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(progress_.stage, Stage::kListingFiles);
 
   if (error != drive::FILE_ERROR_OK || !items) {
     LOG(ERROR) << "Cannot list files: " << error;
-    return Complete(Stage::kCannotListFiles);
+    switch (error) {
+      default:
+        return Complete(Stage::kCannotListFiles);
+
+      case drive::FILE_ERROR_NO_CONNECTION:
+      case drive::FILE_ERROR_SERVICE_UNAVAILABLE:
+        const TimeDelta delay = base::Seconds(5);
+        VLOG(1) << "Will retry in " << Quote(delay) << "...";
+        SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+            FROM_HERE, base::BindOnce(&PinManager::GetNextPage, GetWeakPtr()),
+            delay);
+        return;
+    }
   }
 
+  DCHECK(items);
   if (items->empty()) {
     search_query_.reset();
     return StartPinning();
@@ -612,12 +724,12 @@ void PinManager::OnSearchResultForSizeCalculation(
     Add(*item->metadata, item->path);
   }
 
-  VLOG(1) << "Skipped " << progress_.skipped_files << " files, Tracking "
-          << files_to_track_.size() << " files";
+  progress_.listed_items += items->size();
+  VLOG(1) << "Listed " << progress_.listed_items << " items in "
+          << Quote(timer_.Elapsed()) << ", Skipped " << progress_.skipped_items
+          << " items, Tracking " << files_to_track_.size() << " files";
   NotifyProgress();
-  DCHECK(search_query_);
-  search_query_->GetNextPage(base::BindOnce(
-      &PinManager::OnSearchResultForSizeCalculation, GetWeakPtr()));
+  GetNextPage();
 }
 
 void PinManager::Complete(const Stage stage) {
@@ -628,6 +740,10 @@ void PinManager::Complete(const Stage stage) {
   switch (stage) {
     case Stage::kSuccess:
       VLOG(1) << "Finished with success";
+      break;
+
+    case Stage::kPaused:
+      VLOG(1) << "Paused";
       break;
 
     case Stage::kStopped:
@@ -653,27 +769,11 @@ void PinManager::Complete(const Stage stage) {
 void PinManager::StartPinning() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  VLOG(1) << "Calculated required space "
-          << HumanReadableSize(progress_.required_space) << " in "
-          << timer_.Elapsed().InMilliseconds() << " ms";
-
-  VLOG(1) << "Free space: " << HumanReadableSize(progress_.free_space);
-  VLOG(1) << "Required space: " << HumanReadableSize(progress_.required_space);
-  VLOG(1) << "Skipped: " << progress_.skipped_files << " files";
   VLOG(1) << "To pin: " << files_to_pin_.size() << " files, "
           << HumanReadableSize(progress_.bytes_to_pin);
-  VLOG(1) << "To track: " << files_to_track_.size() << " files";
+  VLOG(1) << "Required space: " << HumanReadableSize(progress_.required_space);
 
-  // The free space should not go below this limit.
-  const int64_t margin = cryptohome::kMinFreeSpaceInBytes;
-  const int64_t required_with_margin = progress_.required_space + margin;
-
-  if (progress_.free_space < required_with_margin) {
-    LOG(ERROR) << "Not enough space: Free space "
-               << HumanReadableSize(progress_.free_space)
-               << " is less than required space "
-               << HumanReadableSize(progress_.required_space) << " + margin "
-               << HumanReadableSize(margin);
+  if (!progress_.HasEnoughFreeSpace()) {
     return Complete(Stage::kNotEnoughSpace);
   }
 
@@ -687,10 +787,12 @@ void PinManager::StartPinning() {
   NotifyProgress();
 
   if (should_check_stalled_files_) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+    SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, base::BindOnce(&PinManager::CheckStalledFiles, GetWeakPtr()),
-        kPeriodicRemovalInterval);
+        kStalledFileInterval);
   }
+
+  CheckFreeSpace();
 
   PinSomeFiles();
   NotifyProgress();
@@ -743,7 +845,7 @@ void PinManager::PinSomeFiles() {
         << "Failed to pin " << progress_.failed_files << " files";
     VLOG(1) << "Pinned " << progress_.pinned_files << " files and "
             << HumanReadableSize(progress_.pinned_bytes) << " in "
-            << timer_.Elapsed().InMilliseconds() << " ms";
+            << Quote(timer_.Elapsed());
     VLOG(2) << "Useful events: " << progress_.useful_events;
     VLOG(2) << "Duplicated events: " << progress_.duplicated_events;
   }
@@ -916,6 +1018,8 @@ void PinManager::OnFileDeleted(const mojom::FileChange& event) {
   const Path& path = event.path;
   const Id id = static_cast<Id>(event.stable_id);
 
+  // TODO(b/271203956) Remove this code once DriveFS automatically unpins
+  // deleted files and folders.
   drivefs_->SetPinnedByStableId(
       event.stable_id, /*pinned=*/false,
       base::BindOnce(
@@ -994,9 +1098,9 @@ void PinManager::CheckStalledFiles() {
                        path));
   }
 
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+  SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(&PinManager::CheckStalledFiles, GetWeakPtr()),
-      kPeriodicRemovalInterval);
+      kStalledFileInterval);
 }
 
 void PinManager::OnMetadataForCreatedFile(
@@ -1077,6 +1181,21 @@ void PinManager::OnMetadataForModifiedFile(
     progress_.pinned_files++;
     PinSomeFiles();
     NotifyProgress();
+  }
+}
+
+void PinManager::SetOnline(const bool online) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_online_ = online;
+
+  if (!is_online_ && InProgress(progress_.stage)) {
+    VLOG(1) << "Going offline...";
+    return Complete(Stage::kPaused);
+  }
+
+  if (is_online_ && progress_.stage == Stage::kPaused) {
+    VLOG(1) << "Coming back online...";
+    return Start();
   }
 }
 

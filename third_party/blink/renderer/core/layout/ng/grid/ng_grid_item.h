@@ -17,8 +17,8 @@ enum class AxisEdge { kStart, kCenter, kEnd, kFirstBaseline, kLastBaseline };
 enum class SizingConstraint { kLayout, kMinContent, kMaxContent };
 
 struct GridItemIndices {
-  wtf_size_t begin = kNotFound;
-  wtf_size_t end = kNotFound;
+  wtf_size_t begin{kNotFound};
+  wtf_size_t end{kNotFound};
 };
 
 struct OutOfFlowItemPlacement {
@@ -120,6 +120,11 @@ struct CORE_EXPORT GridItemData {
                                             : row_range_indices;
   }
 
+  void ResetPlacementIndices() {
+    column_range_indices = row_range_indices = GridItemIndices();
+    column_set_indices = row_set_indices = GridItemIndices();
+  }
+
   const GridSpan& Span(GridTrackSizingDirection track_direction) const {
     return resolved_position.Span(track_direction);
   }
@@ -133,8 +138,13 @@ struct CORE_EXPORT GridItemData {
     return resolved_position.SpanSize(track_direction);
   }
 
+  // This item is considered a subgrid if it has at least one subgridded axis.
+  // However, for the purpose of iterating over the subgrids of a grid we don't
+  // want to consider subgridded items since they should be iterated over by
+  // their parent grid, otherwise they'll appear twice in the sizing tree.
   bool IsSubgrid() const {
-    return has_subgridded_columns || has_subgridded_rows;
+    return !is_subgridded_to_parent_grid &&
+           (has_subgridded_columns || has_subgridded_rows);
   }
 
   bool IsConsideredForSizing(GridTrackSizingDirection track_direction) const {

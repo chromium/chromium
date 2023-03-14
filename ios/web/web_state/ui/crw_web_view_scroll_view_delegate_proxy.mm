@@ -18,6 +18,9 @@
 
 @property(nonatomic, weak) CRWWebViewScrollViewProxy* scrollViewProxy;
 
+// Return YES if the user is currently performing a zoom gestures.
+@property(nonatomic, assign) BOOL userIsZooming;
+
 @end
 
 // Calls to methods supported by CRWWebViewScrollViewProxyObserver are forwarded
@@ -200,13 +203,22 @@
     [self.delegateOfProxy
         scrollViewDidZoom:[self.scrollViewProxy asUIScrollView]];
   }
-  [self.scrollViewProxy.observers
-      webViewScrollViewDidZoom:self.scrollViewProxy];
+  if (self.userIsZooming) {
+    [self.scrollViewProxy.observers
+        webViewScrollViewDidZoom:self.scrollViewProxy];
+  } else {
+    if (@available(iOS 16.0, *)) {
+      // In iOS < 16 versions, changing the value of `zoomScale` calls
+      // `scrollViewDidZoom`.
+      scrollView.zoomScale = scrollView.minimumZoomScale;
+    }
+  }
 }
 
 - (void)scrollViewWillBeginZooming:(UIScrollView*)scrollView
                           withView:(UIView*)view {
   DCHECK_EQ(self.scrollViewProxy.underlyingScrollView, scrollView);
+  self.userIsZooming = YES;
   if ([self.delegateOfProxy
           respondsToSelector:@selector(scrollViewWillBeginZooming:withView:)]) {
     [self.delegateOfProxy
@@ -221,6 +233,7 @@
                        withView:(UIView*)view
                         atScale:(CGFloat)scale {
   DCHECK_EQ(self.scrollViewProxy.underlyingScrollView, scrollView);
+  self.userIsZooming = NO;
   if ([self.delegateOfProxy respondsToSelector:@selector
                             (scrollViewDidEndZooming:withView:atScale:)]) {
     [self.delegateOfProxy

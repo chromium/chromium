@@ -116,9 +116,7 @@ class WebRtcEventLogUploaderImplTest : public ::testing::Test {
     ASSERT_TRUE(base::CreateTemporaryFileInDir(logs_dir, &log_file_));
     constexpr size_t kLogFileSizeBytes = 100u;
     const std::string file_contents(kLogFileSizeBytes, 'A');
-    ASSERT_EQ(
-        base::WriteFile(log_file_, file_contents.c_str(), file_contents.size()),
-        static_cast<int>(file_contents.size()));
+    ASSERT_TRUE(base::WriteFile(log_file_, file_contents));
   }
 
   // For tests which imitate a response (or several).

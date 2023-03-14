@@ -31,16 +31,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
 
   scoped_refptr<Authenticator> Create(AuthStatusConsumer* consumer);
 
-  // Sets up the stub Authenticator to report password changed.
-  // |old_password| - the expected old user password. The authenticator will use
-  //   it to handle data migration requests (it will report failure if the
-  //   provided old password does not match this one).
-  // |notifier| - can be empty. If set called when a user data recovery is
-  //     attempted.
-  void SetUpPasswordChange(
-      const std::string& old_password,
-      const StubAuthenticator::DataRecoveryNotifier& notifier);
-
   // Sets up the stub Authenticator to report that user's cryptohome was
   // encrypted using old encryption method, and should be migrated accordingly.
   // |has_incomplete_migration| - whether a migration was attempted but did not
@@ -60,9 +50,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
 
   // For kPasswordChange action, the old user password.
   std::string old_password_;
-  // For kPasswordChange action, the callback to be called to report user data
-  // recovery result.
-  StubAuthenticator::DataRecoveryNotifier data_recovery_notifier_;
 
   // For kOldEncryption action - whether an incomplete migration
   // attempt exists.

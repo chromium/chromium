@@ -903,11 +903,6 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreForeignSession) {
 
   GURL url1("http://google.com");
   GURL url2("http://google2.com");
-  SerializedNavigationEntry nav1 =
-      ContentTestHelper::CreateNavigation(url1.spec(), "one");
-  SerializedNavigationEntry nav2 =
-      ContentTestHelper::CreateNavigation(url2.spec(), "two");
-  SerializedNavigationEntryTestHelper::SetIsOverridingUserAgent(true, &nav2);
 
   // Set up the restore data -- one window with two tabs.
   std::vector<const sessions::SessionWindow*> session;
@@ -1499,11 +1494,10 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoresForwardAndBackwardNavs) {
 }
 
 // Tests that the SiteInstances used for entries in a restored tab's history
-// are given appropriate max page IDs, so that going back to a restored
-// cross-site page and then forward again works.  (Bug 1204135)
-// This test fails. See http://crbug.com/237497.
+// are correctly initialized, so that going back to a restored cross-site page
+// and then forward again works.  (See b/1204135.)
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
-                       DISABLED_RestoresCrossSiteForwardAndBackwardNavs) {
+                       RestoresCrossSiteForwardAndBackwardNavs) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL cross_site_url(embedded_test_server()->GetURL("/title2.html"));
@@ -1515,26 +1509,25 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
 
   GoBack(browser());
   Browser* new_browser = QuitBrowserAndRestore(browser());
+  WaitForTabsToLoad(new_browser);
   ASSERT_EQ(1u, active_browser_list_->size());
   ASSERT_EQ(1, new_browser->tab_strip_model()->count());
 
   // Check that back and forward work as expected.
-  ASSERT_EQ(cross_site_url,
-            new_browser->tab_strip_model()->GetActiveWebContents()->GetURL());
+  content::WebContents* tab =
+      new_browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_EQ(cross_site_url, tab->GetLastCommittedURL());
 
   GoBack(new_browser);
-  ASSERT_EQ(GetUrl1(),
-            new_browser->tab_strip_model()->GetActiveWebContents()->GetURL());
+  ASSERT_EQ(GetUrl1(), tab->GetLastCommittedURL());
 
   GoForward(new_browser);
-  ASSERT_EQ(cross_site_url,
-            new_browser->tab_strip_model()->GetActiveWebContents()->GetURL());
+  ASSERT_EQ(cross_site_url, tab->GetLastCommittedURL());
 
   // Test renderer-initiated back/forward as well.
   GURL go_forward_url("javascript:history.forward();");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(new_browser, go_forward_url));
-  ASSERT_EQ(GetUrl2(),
-            new_browser->tab_strip_model()->GetActiveWebContents()->GetURL());
+  ASSERT_EQ(GetUrl2(), tab->GetLastCommittedURL());
 }
 
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest, TwoTabsSecondSelected) {

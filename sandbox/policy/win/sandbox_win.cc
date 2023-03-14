@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/debug/activity_tracker.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -677,11 +676,14 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
   }
 
 #if !defined(NACL_WIN64)
-  if (process_type == switches::kRendererProcess ||
-      process_type == switches::kPpapiPluginProcess ||
-      sandbox_type == Sandbox::kPrintCompositor) {
-    AddDirectory(base::DIR_WINDOWS_FONTS, NULL, true,
-                 Semantics::kFilesAllowReadonly, config);
+  if (base::FeatureList::IsEnabled(
+          sandbox::policy::features::kWinSboxAllowSystemFonts)) {
+    if (process_type == switches::kRendererProcess ||
+        process_type == switches::kPpapiPluginProcess ||
+        sandbox_type == Sandbox::kPrintCompositor) {
+      AddDirectory(base::DIR_WINDOWS_FONTS, NULL, true,
+                   Semantics::kFilesAllowReadonly, config);
+    }
   }
 #endif
 
@@ -724,6 +726,11 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
     if (result != SBOX_ALL_OK)
       return result;
   }
+
+  if (!delegate->InitializeConfig(config)) {
+    return SBOX_ERROR_DELEGATE_INITIALIZE_CONFIG;
+  }
+
   return SBOX_ALL_OK;
 }
 
@@ -1016,11 +1023,7 @@ ResultCode SandboxWin::StartSandboxedProcess(
                                 process);
   }
 
-  std::string tag;
-  if (base::FeatureList::IsEnabled(features::kSharedSandboxPolicies))
-    tag = delegate->GetSandboxTag();
-
-  auto policy = g_broker_services->CreatePolicy(tag);
+  auto policy = g_broker_services->CreatePolicy(delegate->GetSandboxTag());
   ResultCode result = GeneratePolicyForSandboxedProcess(
       cmd_line, process_type, handles_to_inherit, delegate, policy.get());
   if (SBOX_ALL_OK != result)
@@ -1046,13 +1049,6 @@ ResultCode SandboxWin::StartSandboxedProcess(
     else
       DLOG(ERROR) << "Failed to launch process. Error: " << result;
     return result;
-  }
-
-  base::debug::GlobalActivityTracker* tracker =
-      base::debug::GlobalActivityTracker::Get();
-  if (tracker) {
-    tracker->RecordProcessLaunch(target.process_id(),
-                                 cmd_line.GetCommandLineString());
   }
 
   delegate->PostSpawnTarget(target.process_handle());

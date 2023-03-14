@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<meta charset="utf-8"/>
+<meta name="referrer" content="origin">
+<head>
+<!-- The token below was generated via the following command:
+tools/origin_trials/generate_token.py https://not-web-platform.test:8444
+DisableThirdPartyStoragePartitioning --expire-timestamp=2000000000 -->
+<meta http-equiv="origin-trial" content="A3ZYQsFHtugB1Z3q2WH09q8z1PyaZJiyKkAZ1HUAPqUHmP4QWcypAKy7SKS27/b5t93rFDEEoSqCgs0PtRIDswcAAAB5eyJvcmlnaW4iOiAiaHR0cHM6Ly9ub3Qtd2ViLXBsYXRmb3JtLnRlc3Q6ODQ0NCIsICJmZWF0dXJlIjogIkRpc2FibGVUaGlyZFBhcnR5U3RvcmFnZVBhcnRpdGlvbmluZyIsICJleHBpcnkiOiAyMDAwMDAwMDAwfQ==">
+</head>
+<script>
+async function onLoad() {
+  self.addEventListener('message', evt => {
+    if (self.opener)
+      self.opener.postMessage(evt.data, '*');
+    else
+      self.top.postMessage(evt.data, '*');
+  }, { once: true });
+
+  const params = new URLSearchParams(self.location.search);
+  const frame = document.createElement('iframe');
+  frame.src = params.get('target');
+  document.body.appendChild(frame);
+
+  frame.addEventListener('load', function(){
+    frame.contentWindow.postMessage({op: 'request',
+        name: 'testLock', ifAvailable: true}, '*');
+  });
+}
+self.addEventListener('load', onLoad);
+</script>

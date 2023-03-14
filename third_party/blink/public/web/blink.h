@@ -129,6 +129,7 @@ BLINK_EXPORT void SetIsCrossOriginIsolated(bool value);
 //
 // TODO(mkwst): We need a specification for this restriction.
 BLINK_EXPORT void SetIsIsolatedContext(bool value);
+BLINK_EXPORT bool IsIsolatedContext();
 
 // Set a list of CORS exempt headers. This list is used for fetching resources
 // from frames.

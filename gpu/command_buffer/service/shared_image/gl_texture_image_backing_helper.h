@@ -95,7 +95,7 @@ class GPU_GLES2_EXPORT GLTextureImageBackingHelper {
       GLenum target,
       bool framebuffer_attachment_angle,
       scoped_refptr<gles2::TexturePassthrough>* passthrough_texture,
-      raw_ptr<gles2::Texture>* texture);
+      raw_ptr<gles2::Texture, DanglingUntriaged>* texture);
 
   // Create a Dawn backing. This will use |backing|'s ProduceGLTexture or
   // ProduceGLTexturePassthrough method, and populate the dawn backing via

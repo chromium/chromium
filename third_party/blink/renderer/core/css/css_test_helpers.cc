@@ -52,7 +52,7 @@ CSSRuleList* TestStyleSheet::CssRules() {
 
 RuleSet& TestStyleSheet::GetRuleSet() {
   RuleSet& rule_set = style_sheet_->Contents()->EnsureRuleSet(
-      MediaQueryEvaluator(document_->GetFrame()), kRuleHasNoSpecialState);
+      MediaQueryEvaluator(document_->GetFrame()));
   rule_set.CompactRulesIfNeeded();
   return rule_set;
 }
@@ -164,12 +164,9 @@ void DeclareProperty(Document& document,
 }
 
 scoped_refptr<CSSVariableData> CreateVariableData(String s) {
-  CSSTokenizer tokenizer(s);
-  auto tokens = tokenizer.TokenizeToEOF();
-  CSSParserTokenRange range(tokens);
   bool is_animation_tainted = false;
   bool needs_variable_resolution = false;
-  return CSSVariableData::Create({range, StringView(s)}, is_animation_tainted,
+  return CSSVariableData::Create(s, is_animation_tainted,
                                  needs_variable_resolution);
 }
 
@@ -205,7 +202,7 @@ StyleRuleBase* ParseRule(Document& document, String text) {
   auto* sheet = CSSStyleSheet::CreateInline(
       document, NullURL(), TextPosition::MinimumPosition(), UTF8Encoding());
   const auto* context = MakeGarbageCollected<CSSParserContext>(document);
-  return CSSParser::ParseRule(context, sheet->Contents(),
+  return CSSParser::ParseRule(context, sheet->Contents(), CSSNestingType::kNone,
                               /*parent_rule_for_nesting=*/nullptr, text);
 }
 
@@ -218,11 +215,18 @@ const CSSValue* ParseValue(Document& document, String syntax, String value) {
   CSSTokenizer tokenizer(value);
   auto tokens = tokenizer.TokenizeToEOF();
   CSSParserTokenRange range(tokens);
-  return syntax_definition->Parse(range, *context,
+  return syntax_definition->Parse(CSSTokenizedValue{range, value}, *context,
                                   /* is_animation_tainted */ false);
 }
 
 CSSSelectorList* ParseSelectorList(const String& string) {
+  return ParseSelectorList(string, CSSNestingType::kNone,
+                           /*parent_rule_for_nesting=*/nullptr);
+}
+
+CSSSelectorList* ParseSelectorList(const String& string,
+                                   CSSNestingType nesting_type,
+                                   const StyleRule* parent_rule_for_nesting) {
   auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
   auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
@@ -231,7 +235,7 @@ CSSSelectorList* ParseSelectorList(const String& string) {
   CSSParserTokenRange range(tokens);
   HeapVector<CSSSelector> arena;
   base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
-      range, context, /*parent_rule_for_nesting=*/nullptr, sheet, arena);
+      range, context, nesting_type, parent_rule_for_nesting, sheet, arena);
   return CSSSelectorList::AdoptSelectorVector(vector);
 }
 

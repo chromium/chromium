@@ -21,6 +21,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
+#include "headless/public/switches.h"
 #include "headless/test/headless_browser_test.h"
 #include "headless/test/headless_browser_test_utils.h"
 #include "headless/test/headless_devtooled_browsertest.h"
@@ -1011,5 +1012,28 @@ class NavigatorLanguages : public HeadlessDevTooledBrowserTest {
 };
 
 HEADLESS_DEVTOOLED_TEST_F(NavigatorLanguages);
+
+class AcceptLanguagesSwitch : public HeadlessDevTooledBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HeadlessDevTooledBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kAcceptLang, "cz-CZ");
+  }
+
+  void RunDevTooledTest() override {
+    devtools_client_.SendCommand(
+        "Runtime.evaluate",
+        Param("expression", "JSON.stringify(navigator.languages)"),
+        base::BindOnce(&AcceptLanguagesSwitch::OnEvaluateResult,
+                       base::Unretained(this)));
+  }
+
+  void OnEvaluateResult(base::Value::Dict result) {
+    EXPECT_THAT(result, DictHasValue("result.result.value", "[\"cz-CZ\"]"));
+    FinishAsynchronousTest();
+  }
+};
+
+HEADLESS_DEVTOOLED_TEST_F(AcceptLanguagesSwitch);
 
 }  // namespace headless

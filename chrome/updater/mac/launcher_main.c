@@ -53,7 +53,6 @@
 #include <mach/vm_param.h>
 #include <machine/vmparam.h>
 #include <membership.h>
-#include <os/availability.h>
 #include <pwd.h>
 #include <signal.h>
 #include <spawn.h>
@@ -75,9 +74,6 @@
 
 #include "chrome/updater/mac/launcher_constants.h"
 #include "chrome/updater/updater_branding.h"
-
-int responsibility_spawnattrs_setdisclaim(posix_spawnattr_t attrs, int disclaim)
-    API_AVAILABLE(macosx(10.14));
 
 #define ARRAYSIZE(x) (sizeof(x) / sizeof(*(x)))
 
@@ -478,12 +474,6 @@ static void Launch(bool is_system, bool is_qualifying, const char* path) {
                         POSIX_SPAWN_SETSID | POSIX_SPAWN_CLOEXEC_DEFAULT);
   if (posix_err) {
     errc(EX_OSERR, posix_err, "can't set spawn flags");
-  }
-  if (__builtin_available(macOS 10.14, *)) {
-    posix_err = responsibility_spawnattrs_setdisclaim(&spawn_attrs, 1);
-    if (posix_err) {
-      errc(EX_OSERR, posix_err, "can't disclaim responsibility");
-    }
   }
   posix_err = posix_spawnattr_setsigdefault(&spawn_attrs, &full_sigset);
   if (posix_err) {

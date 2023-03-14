@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/json/json_reader.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "remoting/host/setup/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,9 +53,8 @@ TEST_F(NativeMessagingWriterTest, GoodMessage) {
   EXPECT_EQ(static_cast<int>(length), read);
 
   // |content| should now contain serialized |message|.
-  std::unique_ptr<base::Value> written_message =
-      base::JSONReader::ReadDeprecated(content);
-  EXPECT_EQ(message, *written_message);
+  base::Value::Dict written_message = base::test::ParseJsonDict(content);
+  EXPECT_EQ(message, written_message);
 
   // Nothing more should have been written. Close the write-end of the pipe,
   // and verify the read end immediately hits EOF.
@@ -86,9 +86,8 @@ TEST_F(NativeMessagingWriterTest, SecondMessage) {
   }
 
   // |content| should now contain serialized |message2|.
-  std::unique_ptr<base::Value> written_message2 =
-      base::JSONReader::ReadDeprecated(content);
-  EXPECT_EQ(message2, *written_message2);
+  base::Value::Dict written_message2 = base::test::ParseJsonDict(content);
+  EXPECT_EQ(message2, written_message2);
 }
 
 TEST_F(NativeMessagingWriterTest, FailedWrite) {

@@ -4,7 +4,8 @@
 
 typedef (object or FrozenArray<object>) CanvasFilterInput;
 [
-    Exposed=(Window,Worker,PaintWorklet)
+    Exposed=(Window,Worker,PaintWorklet),
+    RuntimeEnabled=Canvas2dCanvasFilter
 ] interface CanvasFilter {
 
     [CallWith=ExecutionContext, RaisesException] constructor(CanvasFilterInput init);

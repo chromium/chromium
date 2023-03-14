@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -53,7 +53,7 @@ void FilterPrefs(const std::vector<std::string>& valid_prefixes,
 
 }  // namespace internal
 
-bool GetPrefsAsJson(PrefService* pref_service, std::string* json_string) {
+absl::optional<std::string> GetPrefsAsJson(PrefService* pref_service) {
   base::Value::Dict local_state_values =
       pref_service->GetPreferenceValues(PrefService::EXCLUDE_DEFAULTS);
   if (ENABLE_FILTERING) {
@@ -64,7 +64,11 @@ bool GetPrefsAsJson(PrefService* pref_service, std::string* json_string) {
     internal::FilterPrefs(allowed_prefixes, local_state_values);
   }
 
-  JSONStringValueSerializer serializer(json_string);
-  serializer.set_pretty_print(true);
-  return serializer.Serialize(local_state_values);
+  std::string result;
+  if (!base::JSONWriter::WriteWithOptions(
+          local_state_values, base::JSONWriter::OPTIONS_PRETTY_PRINT,
+          &result)) {
+    return absl::nullopt;
+  }
+  return result;
 }

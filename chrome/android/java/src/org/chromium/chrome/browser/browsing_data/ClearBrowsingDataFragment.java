@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.historyreport.AppIndexingReporter;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.settings.ClearDataProgressDialog;
@@ -408,6 +409,10 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         Activity activity = getActivity();
 
         List<TimePeriodSpinnerOption> options = new ArrayList<>();
+        if (QuickDeleteController.isQuickDeleteEnabled()) {
+            options.add(new TimePeriodSpinnerOption(TimePeriod.LAST_15_MINUTES,
+                    activity.getString(R.string.clear_browsing_data_tab_period_15_minutes)));
+        }
         options.add(new TimePeriodSpinnerOption(TimePeriod.LAST_HOUR,
                 activity.getString(R.string.clear_browsing_data_tab_period_hour)));
         options.add(new TimePeriodSpinnerOption(TimePeriod.LAST_DAY,
@@ -533,6 +538,18 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         clearButton.setEnabled(isEnabled);
     }
 
+    private int getSpinnerIndex(
+            @TimePeriod int timePeriod, TimePeriodSpinnerOption[] spinnerOptions) {
+        int spinnerOptionIndex = -1;
+        for (int i = 0; i < spinnerOptions.length; ++i) {
+            if (spinnerOptions[i].getTimePeriod() == timePeriod) {
+                spinnerOptionIndex = i;
+                break;
+            }
+        }
+        return spinnerOptionIndex;
+    }
+
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         if (savedInstanceState != null) {
@@ -580,12 +597,10 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         @TimePeriod
         int selectedTimePeriod = BrowsingDataBridge.getInstance().getBrowsingDataDeletionTimePeriod(
                 getClearBrowsingDataTabType());
-        int spinnerOptionIndex = -1;
-        for (int i = 0; i < spinnerOptions.length; ++i) {
-            if (spinnerOptions[i].getTimePeriod() == selectedTimePeriod) {
-                spinnerOptionIndex = i;
-                break;
-            }
+        int spinnerOptionIndex = getSpinnerIndex(selectedTimePeriod, spinnerOptions);
+        // If there is no previously-selected value, use last hour as the default.
+        if (spinnerOptionIndex == -1) {
+            spinnerOptionIndex = getSpinnerIndex(TimePeriod.LAST_HOUR, spinnerOptions);
         }
         assert spinnerOptionIndex != -1;
         spinner.setOptions(spinnerOptions, spinnerOptionIndex);

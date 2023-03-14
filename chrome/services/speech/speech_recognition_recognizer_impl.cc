@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -121,6 +122,10 @@ GetSodaSpeechRecognitionMode(
 }  // namespace
 
 SpeechRecognitionRecognizerImpl::~SpeechRecognitionRecognizerImpl() {
+  base::UmaHistogramBoolean(
+      base::StrCat({"Accessibility.LiveCaption.", primary_language_name_,
+                    ".SessionContainsRecognizedSpeech"}),
+      session_contains_speech_);
   RecordDuration();
   soda_client_.reset();
 }
@@ -145,6 +150,10 @@ bool SpeechRecognitionRecognizerImpl::IsMultichannelSupported() {
 
 void SpeechRecognitionRecognizerImpl::OnRecognitionEvent(
     media::SpeechRecognitionResult event) {
+  if (!event.transcription.empty()) {
+    session_contains_speech_ = true;
+  }
+
   if (!client_remote_.is_bound())
     return;
 

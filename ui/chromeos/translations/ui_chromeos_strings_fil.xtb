@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Susunod</translation>
 <translation id="1209796539517632982">Mga awtomatikong server ng pangalan</translation>
 <translation id="1210831758834677569">Lao</translation>
+<translation id="1221555006497674479">Paubos na ang storage, <ph name="REMAINING_PERCENTAGE" />% na lang ang natitira sa <ph name="TOTAL_SPACE" /> na storage ng iyong shared drive.</translation>
 <translation id="1243314992276662751">I-upload</translation>
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Direktang koneksyon ng Internet</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">Chinese Pinyin</translation>
 <translation id="1646019627374511909">Ginagawang available offline ang <ph name="NUMBER_OF_ITEMS" /> (na) file</translation>
 <translation id="164969095109328410">Chrome device</translation>
+<translation id="1661207570040737402">Nagamit mo na ang lahat ng iyong storage ng Shared Drive sa Google Workspace.</translation>
 <translation id="1661867754829461514">Nawawala ang PIN</translation>
 <translation id="166439687370499867">Hindi pinapayagan ang pagbago sa mga nakabahaging configuration ng network</translation>
 <translation id="1665611772925418501">Hindi mababago ang file.</translation>
@@ -82,6 +84,7 @@
 <translation id="1722487484194605434">Zini-zip ang <ph name="NUMBER_OF_ITEMS" /> (na) item...</translation>
 <translation id="1722687688096767818">Idinaragdag ang Profile...</translation>
 <translation id="1726100011689679555">Mga name server</translation>
+<translation id="1727562178154619254">Handa nang mag-sync</translation>
 <translation id="1729953886957086472">German (Germany)</translation>
 <translation id="1730235522912993863">Chinese Cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> (na) item ang nakopya.</translation>
@@ -349,11 +352,11 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">I-paste</translation>
 <translation id="3952872973865944257">Telugu Phonetic</translation>
-<translation id="3954354850384043518">Kasalukuyang isinasagawa</translation>
 <translation id="3958548648197196644">Kiwi</translation>
 <translation id="3971140002794351170">I-download ang mobile profile, Network <ph name="NETWORK_INDEX" /> ng <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">English (UK)</translation>
 <translation id="3975895378829046965">Bangla Phonetic</translation>
+<translation id="3999574733850440202">Inilipat sa OneDrive ang mga kakabukas lang na Microsoft file</translation>
 <translation id="4002066346123236978">Pamagat</translation>
 <translation id="4017788180641807848">English (US) na may Workman keyboard</translation>
 <translation id="4019998208269143058">I-pin sa mga mabilisang file</translation>
@@ -362,6 +365,7 @@
 <translation id="4092890906744441904">Irish</translation>
 <translation id="4124935795427217608">Unicorn</translation>
 <translation id="4131235941541910880">Ilipat sa trash ang mga item na hindi mo kailangan</translation>
+<translation id="4134804435730168042">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, I-activate pagkatapos ng pag-set up ng device</translation>
 <translation id="4153015322587141338">Mag-right click sa isang file, at piliin ang "<ph name="PIN_COMMAND" />" para sa mabilis na pag-access sa iyong mga file sa shelf.</translation>
 <translation id="4157569377477607576">Hindi inirerekomenda ng patakaran ng administrator:</translation>
 <translation id="4159731583141908892">Inilipat ang <ph name="FILE_NAME" />.</translation>
@@ -404,6 +408,7 @@
 <translation id="4414834425328380570">Ide-delete ang "<ph name="FILE_NAME" />" at hindi mo ito mare-restore.</translation>
 <translation id="4418686080762064601">Gumawa ng shortcut para sa iyong mga file</translation>
 <translation id="4425149324548788773">Aking Drive</translation>
+<translation id="4432921877815220091">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, I-activate pagkatapos ng pag-set up ng device, Pinapamahalaan ng iyong Administrator</translation>
 <translation id="4439427728133035643">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Kumonekta</translation>
 <translation id="4442424173763614572">Nabigo ang paghahanap sa DNS</translation>
 <translation id="4462159676511157176">Custom na mga server ng pangalan</translation>
@@ -611,8 +616,10 @@
 <translation id="5911887972742538906">Nagkaroon ng error habang ini-install ang iyong Linux application.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5913638992615760742">Hindi nakopya, nagkaroon ng hindi inaasahang error: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">Available na ang mga bagong feature sa paghahanap</translation>
 <translation id="5926082595146149752">Dutch (Netherlands) na may US International PC keyboard</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, I-activate pagkatapos ng pag-set up ng device</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> item</translation>
 <translation id="5957366693331451795">Mga Chromebox</translation>
 <translation id="5982621672636444458">Mga opsyon sa pag-uuri</translation>
@@ -699,6 +706,7 @@
 <translation id="6732801395666424405">Hindi na-load ang mga certificate</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">I-share ang folder sa Bruschetta</translation>
+<translation id="6750737795876287924">Kasalukuyang directory</translation>
 <translation id="6751256176799620176">1 folder ang napili</translation>
 <translation id="6755827872271341378">ChromeOS Flex device</translation>
 <translation id="6790428901817661496">I-play</translation>
@@ -736,7 +744,6 @@
 <translation id="6973630695168034713">Mga Folder</translation>
 <translation id="6976795442547527108">Leon</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">Lahat ng oras</translation>
 <translation id="6989942356279143254">Swedish</translation>
 <translation id="6990081529015358884">Naubusan ka na ng espasyo</translation>
 <translation id="6993826899923627728">Nasa iyong trash ang mga item na ito</translation>
@@ -759,6 +766,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;maghanap sa Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannada Phonetic</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Nawawala ang 'Tugma ng alternatibong pangalan ng paksa' o 'Tugma ng domain suffix' para i-validate ang pagkakakilanlan ng server ng pag-authenticate</translation>
 <translation id="7165320105431587207">Nabigong ma-configure ang network</translation>
 <translation id="7170041865419449892">Wala sa sakop</translation>
 <translation id="7180611975245234373">I-refresh</translation>
@@ -791,7 +799,6 @@
 <translation id="7458955835361612701">Walang kamakailang larawan</translation>
 <translation id="7460898608667578234">Ukrainian</translation>
 <translation id="7469894403370665791">Awtomatikong kumonekta sa network na ito</translation>
-<translation id="7481358317100446445">Handa</translation>
 <translation id="7486315294984620427">Para makapag-drop ng mga file sa Parallels Desktop, dapat kopyahin ang file sa mga Windows file.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam Phonetic</translation>
@@ -829,6 +836,7 @@
 <translation id="7724603315864178912">I-cut</translation>
 <translation id="7732111077498238432">Kinokontrol ng patakaran ang network</translation>
 <translation id="7736003208887389532">Permanenteng i-delete ang mga file na ito?</translation>
+<translation id="7740287852186792672">Mga resulta sa paghahanap</translation>
 <translation id="7748626145866214022">Available ang higit pang opsyon sa action bar. Pindutin ang Alt + A para i-focus ang action bar.</translation>
 <translation id="7760449188139285140">Chinese Wubi</translation>
 <translation id="7765158879357617694">Ilipat</translation>
@@ -880,6 +888,7 @@
 <translation id="8116072619078571545">Tubig na may yelo</translation>
 <translation id="8128733386027980860">English (UK) na may Dvorak keyboard</translation>
 <translation id="8137331602592933310">Ibinahagi sa iyo ang "<ph name="FILENAME" />." Hindi mo ito matatanggal dahil hindi mo ito pagmamay-ari.</translation>
+<translation id="8138705869659070104">I-activate matapos ang setup</translation>
 <translation id="813913629614996137">Sinisimulan...</translation>
 <translation id="8147028810663464959">Puno na ang lapad ng character</translation>
 <translation id="8151638057146502721">I-configure</translation>
@@ -905,6 +914,7 @@
 <translation id="8300849813060516376">Nabigo ang OTASP</translation>
 <translation id="8312871300878166382">I-paste sa loob ng folder</translation>
 <translation id="8329978297633540474">Plain text</translation>
+<translation id="8332007959299458842">Inilipat sa Google Drive ang mga kakabukas lang na Microsoft file</translation>
 <translation id="8335587457941836791">I-unpin mula sa shelf</translation>
 <translation id="8335837413233998004">Belarusian</translation>
 <translation id="8336153091935557858">Kahapon <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -931,6 +941,7 @@
 <translation id="8487700953926739672">Available sa offline</translation>
 <translation id="8492972329130824181">Hindi available ang network sa bahay. Dapat naka-enable ang mobile data roaming para kumonekta.</translation>
 <translation id="8499098729323186194">Ine-extract ang <ph name="NUMBER_OF_ITEMS" /> (na) item...</translation>
+<translation id="8502913769543567768">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, I-activate pagkatapos ng pag-set up ng device, Pinapamahalaan ng iyong Administrator</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="853494022971700746">French (France)</translation>
 <translation id="8540608333167683902">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Mga Detalye</translation>
@@ -992,6 +1003,7 @@
 <translation id="9046895021617826162">Nabigo ang pagkonekta</translation>
 <translation id="9065512565307033593">Kung hindi ka makakapag-verify, madi-disable ang iyong access sa network.</translation>
 <translation id="908378762078012445">Russian na may Phonetic AATSEEL keyboard</translation>
+<translation id="9086302186042011942">Nagsi-sync</translation>
 <translation id="9099674669267916096">Bilang ng page</translation>
 <translation id="9100610230175265781">Kinakailangan ang passphrase</translation>
 <translation id="9110990317705400362">Patuloy kaming naghahanap ng mga paraan upang gawing mas ligtas ang iyong pagba-browse. Noong nakaraan, maaari kang i-prompt ng anumang website na magdagdag ng extension sa iyong browser. Sa mga pinakabagong bersyon ng Google Chrome, dapat na tahasan mong sabihin sa Chrome na gusto mong i-install ang mga extension na ito sa pamamagitan ng pagdaragdag sa mga ito sa page ng Mga Extension. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>

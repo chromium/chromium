@@ -275,15 +275,23 @@ void UpdateServiceProxy::RunPeriodicTasks(base::OnceClosure callback) {
   remote_->RunPeriodicTasks(std::move(wrapped_callback));
 }
 
-void UpdateServiceProxy::UpdateAll(StateChangeCallback state_update,
-                                   Callback callback) {
+void UpdateServiceProxy::CheckForUpdate(
+    const std::string& app_id,
+    UpdateService::Priority priority,
+    PolicySameVersionUpdate policy_same_version_update,
+    StateChangeCallback state_update,
+    Callback callback) {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureConnecting();
-  mojom::UpdateService::UpdateAllCallback state_change_observer_callback =
+  mojom::UpdateService::UpdateCallback state_change_observer_callback =
       MakeStateChangeObserver(OnCurrentSequence(state_update),
                               OnCurrentSequence(std::move(callback)));
-  remote_->UpdateAll(std::move(state_change_observer_callback));
+  remote_->CheckForUpdate(
+      app_id, static_cast<mojom::UpdateService::Priority>(priority),
+      static_cast<mojom::UpdateService::PolicySameVersionUpdate>(
+          policy_same_version_update),
+      std::move(state_change_observer_callback));
 }
 
 void UpdateServiceProxy::Update(
@@ -291,7 +299,6 @@ void UpdateServiceProxy::Update(
     const std::string& install_data_index,
     Priority priority,
     PolicySameVersionUpdate policy_same_version_update,
-    bool do_update_check_only,
     StateChangeCallback state_update,
     Callback callback) {
   VLOG(1) << __func__;
@@ -304,8 +311,19 @@ void UpdateServiceProxy::Update(
                   static_cast<mojom::UpdateService::Priority>(priority),
                   static_cast<mojom::UpdateService::PolicySameVersionUpdate>(
                       policy_same_version_update),
-                  do_update_check_only,
+                  /*do_update_check_only=*/false,
                   std::move(state_change_observer_callback));
+}
+
+void UpdateServiceProxy::UpdateAll(StateChangeCallback state_update,
+                                   Callback callback) {
+  VLOG(1) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EnsureConnecting();
+  mojom::UpdateService::UpdateAllCallback state_change_observer_callback =
+      MakeStateChangeObserver(OnCurrentSequence(state_update),
+                              OnCurrentSequence(std::move(callback)));
+  remote_->UpdateAll(std::move(state_change_observer_callback));
 }
 
 void UpdateServiceProxy::Install(const RegistrationRequest& registration,

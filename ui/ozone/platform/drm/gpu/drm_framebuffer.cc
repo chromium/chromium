@@ -8,7 +8,6 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gfx/linux/gbm_buffer.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
@@ -116,7 +115,7 @@ scoped_refptr<DrmFramebuffer> DrmFramebuffer::AddFramebuffer(
   // a bo with modifiers, otherwise, we rely on the "no modifiers"
   // behavior doing the right thing.
   params.flags = 0;
-  if (drm->allow_addfb2_modifiers() &&
+  if (IsAddfb2ModifierCapable(*drm) &&
       params.modifier != DRM_FORMAT_MOD_INVALID) {
     params.flags |= DRM_MODE_FB_MODIFIERS;
   }

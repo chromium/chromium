@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/policy/scoped_policy_list.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
@@ -31,12 +31,6 @@ using chrome_test_util::NTPIncognitoView;
 
 @implementation IncognitoInterstitialTestCase {
   ScopedPolicyList scopedPolicies;
-}
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_enabled.push_back(kIOS3PIntentsInIncognito);
-  return config;
 }
 
 - (void)setUp {

@@ -28,6 +28,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/header_view.h"
 #include "chromeos/ui/wm/constants.h"
 #include "chromeos/ui/wm/features.h"
@@ -477,6 +478,46 @@ TEST_F(ClientControlledStateTest, SnapWindow) {
             delegate()->requested_bounds().bottom_right());
   EXPECT_EQ(WindowStateType::kDefault, delegate()->old_state());
   EXPECT_EQ(WindowStateType::kSecondarySnapped, delegate()->new_state());
+}
+
+TEST_F(ClientControlledStateTest, PartialSnap) {
+  // Snap enabled.
+  widget_delegate()->EnableSnap();
+
+  const gfx::Rect work_area =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+
+  // Test that snap from half to partial works.
+  const WMEvent snap_left_half(WM_EVENT_SNAP_PRIMARY);
+  window_state()->OnWMEvent(&snap_left_half);
+  gfx::Rect expected_bounds(work_area.x(), work_area.y(),
+                            work_area.width() * chromeos::kDefaultSnapRatio,
+                            work_area.height());
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, delegate()->new_state());
+  EXPECT_EQ(expected_bounds, delegate()->requested_bounds());
+
+  const WMEvent snap_left_partial(WM_EVENT_SNAP_PRIMARY,
+                                  chromeos::kTwoThirdSnapRatio);
+  window_state()->OnWMEvent(&snap_left_partial);
+  expected_bounds.set_width(work_area.width() * chromeos::kTwoThirdSnapRatio);
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, delegate()->new_state());
+  EXPECT_EQ(expected_bounds, delegate()->requested_bounds());
+
+  // Test that snap from primary to secondary works.
+  const WMEvent snap_right_half(WM_EVENT_SNAP_SECONDARY);
+  window_state()->OnWMEvent(&snap_right_half);
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, delegate()->new_state());
+  expected_bounds.set_x(work_area.width() * chromeos::kDefaultSnapRatio);
+  expected_bounds.set_width(work_area.width() * chromeos::kDefaultSnapRatio);
+  EXPECT_EQ(expected_bounds, delegate()->requested_bounds());
+
+  const WMEvent snap_right_partial(WM_EVENT_SNAP_SECONDARY,
+                                   chromeos::kOneThirdSnapRatio);
+  window_state()->OnWMEvent(&snap_right_partial);
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, delegate()->new_state());
+  expected_bounds.set_x(work_area.width() * chromeos::kTwoThirdSnapRatio);
+  expected_bounds.set_width(work_area.width() * chromeos::kOneThirdSnapRatio);
+  EXPECT_EQ(expected_bounds, delegate()->requested_bounds());
 }
 
 TEST_F(ClientControlledStateTest, SnapInSecondaryDisplay) {
@@ -969,7 +1010,8 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, FloatWindow) {
   EXPECT_NE(kShellWindowId_FloatContainer, window()->parent()->GetId());
 }
 
-TEST_P(ClientControlledStateTestClamshellAndTablet, DragOverviewWindowToSnap) {
+TEST_P(ClientControlledStateTestClamshellAndTablet,
+       DragOverviewWindowToSnapOneSide) {
   auto* const overview_controller = Shell::Get()->overview_controller();
   auto* const split_view_controller = SplitViewController::Get(window());
 
@@ -1011,6 +1053,71 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, DragOverviewWindowToSnap) {
             SplitViewController::State::kPrimarySnapped);
   EXPECT_EQ(split_view_controller->primary_window(), window());
   EXPECT_TRUE(overview_controller->InOverviewSession());
+}
+
+TEST_P(ClientControlledStateTestClamshellAndTablet,
+       DragOverviewWindowToSnapBothSide) {
+  auto* const overview_controller = Shell::Get()->overview_controller();
+  auto* const split_view_controller = SplitViewController::Get(window());
+  auto* const event_generator = GetEventGenerator();
+
+  widget_delegate()->EnableSnap();
+
+  // Create a normal (non-client-controlled) window in addition to `window()`
+  // (client-controlled window) to fill the one side of the split view.
+  auto non_client_controlled_window = CreateAppWindow();
+
+  // Enter overview.
+  ToggleOverview();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_FALSE(split_view_controller->InSplitViewMode());
+
+  {
+    // Drag `non_client_controlled_window`'s overview item to snap to left.
+    auto* const overview_item =
+        GetOverviewItemForWindow(non_client_controlled_window.get());
+    event_generator->set_current_screen_location(
+        gfx::ToRoundedPoint(overview_item->target_bounds().CenterPoint()));
+    event_generator->DragMouseTo(0, 0);
+  }
+
+  {
+    // Click `window()`'s overview item to snap to right.
+    auto* const overview_item = GetOverviewItemForWindow(window());
+    event_generator->set_current_screen_location(
+        gfx::ToRoundedPoint(overview_item->target_bounds().CenterPoint()));
+    event_generator->ClickLeftButton();
+  }
+
+  // Ensures the window is in a transitional snapped state.
+  EXPECT_TRUE(split_view_controller->IsWindowInTransitionalState(window()));
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, delegate()->new_state());
+  EXPECT_FALSE(window_state()->IsSnapped());
+
+  // Activating window just before accepting the request shouldn't end the
+  // overview.
+  widget()->Activate();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+
+  // Accept the snap request.
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  ApplyPendingRequestedBounds();
+  EXPECT_TRUE(window_state()->IsSnapped());
+
+  if (InTabletMode()) {
+    // In tablet mode, we should keep splitview while overview should end.
+    EXPECT_TRUE(split_view_controller->InSplitViewMode());
+    EXPECT_EQ(split_view_controller->state(),
+              SplitViewController::State::kBothSnapped);
+    EXPECT_EQ(split_view_controller->secondary_window(), window());
+    EXPECT_FALSE(overview_controller->InOverviewSession());
+  } else {
+    // In clamshell mode, we should end both splitview and overview.
+    EXPECT_FALSE(split_view_controller->InSplitViewMode());
+    EXPECT_EQ(split_view_controller->state(),
+              SplitViewController::State::kNoSnap);
+    EXPECT_FALSE(overview_controller->InOverviewSession());
+  }
 }
 
 }  // namespace ash

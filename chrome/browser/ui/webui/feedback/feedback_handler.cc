@@ -29,6 +29,7 @@ void ShowChildPage(Profile* profile,
                    const FeedbackDialog* dialog,
                    const GURL& url,
                    const std::u16string& title,
+                   const std::string& args = "",
                    int dialog_width = 640,
                    int dialog_height = 400,
                    bool can_resize = true,
@@ -38,8 +39,8 @@ void ShowChildPage(Profile* profile,
   ChildWebDialog* child_dialog = new ChildWebDialog(
       profile, dialog->GetWidget(), url, title,
       /*modal_type=*/
-      isParentModal ? ui::MODAL_TYPE_WINDOW : ui::MODAL_TYPE_NONE, dialog_width,
-      dialog_height, can_resize, can_minimize);
+      isParentModal ? ui::MODAL_TYPE_WINDOW : ui::MODAL_TYPE_NONE, args,
+      dialog_width, dialog_height, can_resize, can_minimize);
 
   child_dialog->Show();
 }
@@ -91,6 +92,7 @@ void FeedbackHandler::HandleShowAssistantLogsInfo(
     const base::Value::List& args) {
   ShowChildPage(Profile::FromWebUI(web_ui()), dialog_,
                 ChildPageURL("html/assistant_logs_info.html"), std::u16string(),
+                std::string(),
                 /*dialog_width=*/400, /*dialog_height=*/120,
                 /*can_resize=*/false, /*can_minimize=*/false);
 }
@@ -98,6 +100,7 @@ void FeedbackHandler::HandleShowBluetoothLogsInfo(
     const base::Value::List& args) {
   ShowChildPage(Profile::FromWebUI(web_ui()), dialog_,
                 ChildPageURL("html/bluetooth_logs_info.html"), std::u16string(),
+                std::string(),
                 /*dialog_width=*/400, /*dialog_height=*/120,
                 /*can_resize=*/false, /*can_minimize=*/false);
 }
@@ -105,7 +108,12 @@ void FeedbackHandler::HandleShowBluetoothLogsInfo(
 
 void FeedbackHandler::HandleShowAutofillMetadataInfo(
     const base::Value::List& args) {
-  // TODO(crbug.com/1407646): Introduce autofill metadata child page.
+  DCHECK(!args.empty());
+  ShowChildPage(
+      Profile::FromWebUI(web_ui()), dialog_,
+      ChildPageURL("html/autofill_metadata_info.html"),
+      l10n_util::GetStringUTF16(IDS_FEEDBACK_AUTOFILL_METADATA_PAGE_TITLE),
+      args.front().GetString());
 }
 
 void FeedbackHandler::HandleShowSystemInfo(const base::Value::List& args) {

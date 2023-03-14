@@ -130,19 +130,17 @@ def GenerateConfig(config_dir, env, special_args=[]):
             (r'(#define _WIN32_WINNT .*)',
              r'// \1 -- Windows version is controlled by Chromium'),
 
-            # Clang LTO doesn't respect stack alignment, so we must use the
-            # platform's default stack alignment; https://crbug.com/928743.
-            (r'(#define STACK_ALIGNMENT \d{1,2})',
-             r'// \1 -- Stack alignment is controlled by Chromium'),
-
-            # Android doesn't have pthread_getaffinity_np.
-            (r'(#define HAVE_PTHREAD_GETAFFINITY_NP \d{1,2})',
+            # Android doesn't have pthread_{get,set}affinity_np.
+            (r'(#define HAVE_PTHREAD_(GET|SET)AFFINITY_NP \d{1,2})',
              r'// \1 -- Controlled by Chomium'),
         ])
 
     config_asm_path = os.path.join(temp_dir, 'config.asm')
     if (os.path.exists(config_asm_path)):
         RewriteFile(config_asm_path,
+                    # Clang LTO doesn't respect stack alignment, so we must use
+                    # the platform's default stack alignment;
+                    # https://crbug.com/928743.
                     [(r'(%define STACK_ALIGNMENT \d{1,2})',
                       r'; \1 -- Stack alignment is controlled by Chromium')])
 

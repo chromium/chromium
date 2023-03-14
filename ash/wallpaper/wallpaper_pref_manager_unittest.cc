@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/session/session_controller_impl.h"
@@ -18,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/user_type.h"
@@ -457,7 +457,7 @@ TEST_F(WallpaperPrefManagerTest, SetCalculatedColors) {
 
 TEST_F(WallpaperPrefManagerTest, CalculatedColorsEmptyIfKMeanMissing) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature({features::kJelly});
+  scoped_feature_list.InitAndDisableFeature({chromeos::features::kJelly});
   const char location[] = "location";
 
   const std::vector<SkColor> prominent_colors = {
@@ -469,7 +469,7 @@ TEST_F(WallpaperPrefManagerTest, CalculatedColorsEmptyIfKMeanMissing) {
 }
 
 TEST_F(WallpaperPrefManagerTest, CalculatedColorsWhenJellyEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list(features::kJelly);
+  base::test::ScopedFeatureList scoped_feature_list(chromeos::features::kJelly);
   const char location[] = "location";
 
   const SkColor k_mean_color = SkColorSetRGB(0xAB, 0xBC, 0xEF);
@@ -487,7 +487,7 @@ TEST_F(WallpaperPrefManagerTest, CalculatedColorsWhenJellyEnabled) {
 
 TEST_F(WallpaperPrefManagerTest,
        CalculatedColorsEmptyIfCelebiMissingWhenJellyEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list(features::kJelly);
+  base::test::ScopedFeatureList scoped_feature_list(chromeos::features::kJelly);
   const char location[] = "location";
 
   const SkColor k_mean_color = SkColorSetRGB(0xAB, 0xBC, 0xEF);

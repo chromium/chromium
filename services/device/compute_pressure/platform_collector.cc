@@ -22,6 +22,16 @@ namespace device {
 
 namespace {
 
+// Delta for the state decision hysteresis
+constexpr double kThresholdDelta = 0.03;
+
+constexpr std::array<double,
+                     static_cast<size_t>(mojom::PressureState::kMaxValue) + 1>
+    kStateThresholds = {0.3,   // kNominal
+                        0.6,   // kFair
+                        0.9,   // kSerious
+                        1.0};  // kCritical
+
 scoped_refptr<base::SequencedTaskRunner> CreateProbeTaskRunner() {
   // While some samples can be collected without doing blocking operations,
   // this isn't guaranteed on all operating systems.
@@ -111,25 +121,31 @@ void PlatformCollector::DidUpdateProbe(PressureSample sample) {
   sampling_callback_.Run(CalculateState(sample));
 }
 
-mojom::PressureState PlatformCollector::CalculateState(
-    PressureSample sample) const {
+mojom::PressureState PlatformCollector::CalculateState(PressureSample sample) {
   // TODO(crbug.com/1342528): A more advanced algorithm that calculates
   // PressureState using PressureSample needs to be determined.
   // At this moment the algorithm is the simplest possible
   // with thresholds defining the state.
-  mojom::PressureState state = mojom::PressureState::kNominal;
-  if (sample.cpu_utilization < 0.3)
-    state = mojom::PressureState::kNominal;
-  else if (sample.cpu_utilization < 0.6)
-    state = mojom::PressureState::kFair;
-  else if (sample.cpu_utilization < 0.9)
-    state = mojom::PressureState::kSerious;
-  else if (sample.cpu_utilization <= 1.00)
-    state = mojom::PressureState::kCritical;
-  else
-    NOTREACHED() << "unexpected value: " << sample.cpu_utilization;
 
-  return state;
+  auto* it =
+      base::ranges::lower_bound(kStateThresholds, sample.cpu_utilization);
+  if (it == kStateThresholds.end()) {
+    NOTREACHED_NORETURN() << "unexpected value: " << sample.cpu_utilization;
+  }
+
+  size_t state_index = std::distance(kStateThresholds.begin(), it);
+
+  // Hysterisis to avoid flip-flop between state.
+  // Threshold needs to drop by level and
+  // cpu_utilization needs a drop of kThresholdDelta below the state
+  // threshold to be validated as a lower pressure state.
+  if (last_state_index_ - state_index != 1 ||
+      kStateThresholds[state_index] - sample.cpu_utilization >=
+          kThresholdDelta) {
+    last_state_index_ = state_index;
+  }
+
+  return static_cast<mojom::PressureState>(last_state_index_);
 }
 
 }  // namespace device

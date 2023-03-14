@@ -180,8 +180,7 @@ void ExtensionSettingsOverriddenDialog::DisableControllingExtension() {
 void ExtensionSettingsOverriddenDialog::AcknowledgeControllingExtension() {
   extensions::ExtensionPrefs::Get(profile_)->UpdateExtensionPref(
       params_.controlling_extension_id,
-      params_.extension_acknowledged_preference_name,
-      std::make_unique<base::Value>(true));
+      params_.extension_acknowledged_preference_name, base::Value(true));
 }
 
 bool ExtensionSettingsOverriddenDialog::HasAcknowledgedExtension(

@@ -234,6 +234,12 @@ struct VisitContentModelAnnotations {
 };
 
 // A structure containing the annotations made to page content for a visit.
+//
+// Note: only `page_language` and `password_state` are being synced to remote
+// devices; other fields should not be synced without auditing the usages (
+// e.g. `BrowsingTopicsCalculator` is currently assuming that a visit entry
+// comes from the local history as long as it is associated with a non-empty
+// `annotation_flags`).
 struct VisitContentAnnotations {
   // Values are persisted; do not reorder or reuse, and only add new values at
   // the end.

@@ -1745,6 +1745,7 @@ $L$epilogue:
 	DB	0F3h,0C3h		;repret
 
 $L$SEH_end_sha512_block_data_order:
+section	.rdata rdata align=8
 ALIGN	64
 
 K512:
@@ -1836,6 +1837,8 @@ K512:
 	DB	52,44,32,67,82,89,80,84,79,71,65,77,83,32,98,121
 	DB	32,60,97,112,112,114,111,64,111,112,101,110,115,115,108,46
 	DB	111,114,103,62,0
+section	.text
+
 
 ALIGN	64
 sha512_block_data_order_avx:

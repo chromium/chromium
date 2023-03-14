@@ -159,7 +159,7 @@ void FlyingIndicator::AnimationProgressed(const gfx::Animation* animation) {
       widget_->SetOpacity(opacity);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_NORETURN();
   }
   gfx::Size bubble_size = bubble_size_;
   if (opacity < 1.0) {

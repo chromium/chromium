@@ -498,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // same_origin_request_url request has two fetch Prefs requests: one fetch
   // for initially adding header and another one for restart fetch.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 2);
   // One store for same_origin_request_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
@@ -528,7 +528,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(), "zh");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 1);
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 1);
   // Persist won't happen.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
 
@@ -555,7 +555,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   histograms.ExpectBucketCount(
       "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
       /*=kVariantsAndContentLanguageHeaderPresent=*/2, 0);
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 1);
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 1);
   // Persist won't happen.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
 }
@@ -575,7 +575,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // One request, one prefs fetch when initially adding header.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 1);
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 1);
   // Persist won't happen.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
 }
@@ -599,7 +599,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
       "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
       /*=kNavigationRestarted=*/3, 0);
   // One request, one Prefs fetch request when initially adding header.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 1);
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 1);
   // Persist won't happen.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
 }
@@ -625,7 +625,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
       /*=kNavigationRestarted=*/3, 1);
   // One request same_origin_request_url: one Prefs fetch request when initial
   // add header.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 2);
   // One store for same_origin_request_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
@@ -645,7 +645,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
       /*=kNavigationRestarted=*/3, 0);
   // One request same_origin_request_url: one fetch for initially adding header
   // and no restart fetch.
-  histograms_after.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 1);
+  histograms_after.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 1);
   // One store for same_origin_request_url main frame.
   histograms_after.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 }
@@ -673,7 +673,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // Total two Prefs fetch requests: one for initially adding header and another
   // one for the restart request adding header.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 2);
   // One store for create_service_worker_request_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
@@ -692,7 +692,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // One Prefs fetch request when initially adding header. No restart.
-  histograms2.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 1);
+  histograms2.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 1);
   histograms2.ExpectBucketCount(
       "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
       /*=kServiceWorkerPreloadRequest=*/2, 1);
@@ -718,7 +718,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // One Prefs fetch request when initially adding header.
-  histograms3.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 1);
+  histograms3.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 1);
   histograms3.ExpectBucketCount(
       "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
       /*=kServiceWorkerPreloadRequest=*/2, 1);
@@ -752,7 +752,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // For above two same_origin_request_url requests, both only have one Prefs
   // fetch when initially adding header.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 2);
   // Expect no perf storage updates.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
 }
@@ -779,7 +779,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   // * same_origin_img.html: one fetch for initially adding header.
   // * subresource_simple.jpg: no prefs read, it directly reads from the
   // navigation commit language.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 1);
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
@@ -803,7 +803,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
       /*=kNavigationRestarted=*/3, 1);
   // One request same_origin_request_url: one fetch for initially adding header
   // and another one for restart fetch.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 2);
   // One store for same_origin_request_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
@@ -823,7 +823,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
       /*=kNavigationRestarted=*/3, 0);
   // One request same_origin_request_url: one fetch for initially adding header
   // and no restart fetch.
-  histograms_after.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 1);
+  histograms_after.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 1);
   // One store for same_origin_request_url main frame.
   histograms_after.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 }
@@ -852,7 +852,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // For above two same_origin_request_url requests: each has one Prefs fetch
   // request when initially adding header.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 2);
   // Expect no perf storage updates.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
 }
@@ -910,7 +910,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   // * same_origin_iframe_url: one fetch for initially adding header and another
   // one for the restart request adding header.
   // * simple_request_url: one fetch for initially adding header.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 3);
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 3);
 
   EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
 
@@ -954,7 +954,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   // fetch Prefs requests: one fetch for initially adding header and another one
   // for the restart request adding header. For image request, it will directly
   // read the persisted from the navigation commit reduced accept language.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 2);
   // One store for same_origin_img_url main frame.
 
   EXPECT_EQ(LastRequestUrl().path(), "/subresource_simple.jpg");
@@ -986,7 +986,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   // * same_origin_iframe_url: one fetch for initially adding header and another
   // one for the restart request adding header.
   // * simple_request_url: one fetch for initially adding header.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 3);
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 3);
   // One store for same_origin_iframe_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
@@ -1019,7 +1019,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   // * same_origin_iframe_url: one fetch for initially adding header and another
   // one for the restart request adding header.
   // * simple_request_url: one fetch for initially adding header.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 3);
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 3);
   // One store for same_origin_iframe_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
@@ -1052,7 +1052,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   // * same_origin_iframe_url: one fetch for initially adding header and another
   // one for the restart request adding header.
   // * simple_request_url: one fetch for initially adding header.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 3);
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 3);
   // One store for same_origin_iframe_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
@@ -1085,7 +1085,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   // * same_origin_iframe_url: one fetch for initially adding header and another
   // one for the restart request adding header.
   // * simple_request_url: one fetch for initially adding header.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 3);
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 3);
   // One store for same_origin_iframe_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
@@ -1174,7 +1174,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageBrowserTest,
   // * cross_origin_iframe_url: one fetch for initially adding header and
   // another one for the restart request adding header.
   // * simple_3p_request_url: one fetch for initially adding header.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 3);
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 3);
   // One store for same_origin_iframe_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
@@ -1213,7 +1213,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageBrowserTest,
   // adding header and another one for the restart request adding header.
   // * iframe_3p_request_url(1): one fetch for initially adding header.
   // * other_site_b_basic_request_url(1): one fetch for initially adding header.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 4);
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 4);
   // One store for cross_region_iframe_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
@@ -1251,7 +1251,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageBrowserTest,
   // header and another one for the restart request adding header.
   // * subframe_3p_request_url(1): one fetch for initially adding header.
   // * other_site_css_request_url(0): directly read from commit parameter.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 3);
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 3);
   // One store for top_level_with_iframe_redirect_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
@@ -1328,7 +1328,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReduceAcceptLanguageBrowserTest,
   // fenced frame but not a main frame will result in a nullopt origin value
   // when getting top-level main frame origin. In this case, we set the
   // Accept-Language header with the first user’s accept-language.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 2);
   // One store for cross_region_fenced_frame_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
@@ -1367,7 +1367,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReduceAcceptLanguageBrowserTest,
   // frame but not a main frame will result in a nullopt origin value when
   // getting top-level main frame origin. In this case, we set the
   // Accept-Language header with the first user’s accept-language.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 2);
   // One store for cross_region_fenced_frame_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
@@ -2330,7 +2330,7 @@ class SameOriginReduceAcceptLanguageOTBrowserTest
     histograms.ExpectBucketCount(
         "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
         /*=kNavigationRestarted=*/3, 1);
-    histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency",
+    histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs",
                                 expect_fetch_count);
 
     // Verify navigator.languages only returns an array length 1 if
@@ -2359,7 +2359,7 @@ class SameOriginReduceAcceptLanguageOTBrowserTest
     histograms.ExpectBucketCount(
         "ReduceAcceptLanguage.AcceptLanguageNegotiationRestart",
         /*=kNavigationRestarted=*/3, 0);
-    histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency",
+    histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs",
                                 expect_fetch_count);
     // Expect one storage update when response has a valid origin token.
     histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
@@ -2437,7 +2437,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageOTBrowserTest,
         /*=kNavigationRestarted=*/3, 1);
 
     // Two fetches for initially adding header and restart fetch.
-    histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
+    histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 2);
     // Expect no perf storage updates.
     histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
   }
@@ -2519,7 +2519,7 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageOTBrowserTest,
   // navigation request commits.
   // * subresource_simple.jpg: no prefs read, it directly reads from the
   // navigation commit language.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 2);
 
   // Verify navigator.languages only returns an array length 1 if
   // has valid origin trial token.
@@ -2580,7 +2580,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageOTBrowserTest,
   // following two URLs:
   // * cross_origin_iframe_url.
   // * simple_3p_request_url.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 4);
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 4);
   // No persist reduce accept language happens.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
 
@@ -2628,7 +2628,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageOTBrowserTest,
   // * cross_origin_iframe_with_subrequests_url.
   // * iframe_3p_request_url.
   // * other_site_b_basic_request_url.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 6);
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 6);
   // No persist reduce accept language happens.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
 

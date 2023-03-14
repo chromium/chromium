@@ -15,6 +15,7 @@ build_webui("build") {
   static_files = [
     # The shared images are used on the first run experience, sync confirmation
     # and the profile picker.
+    "enterprise_profile_welcome/images/enterprise_profile_welcome_illustration.svg",
     "images/shared_left_banner.svg",
     "images/shared_left_banner_dark.svg",
     "images/shared_right_banner.svg",
@@ -40,12 +41,6 @@ build_webui("build") {
       "signin_email_confirmation/signin_email_confirmation.html",
       "signin_error/signin_error.html",
     ]
-  }
-  if (is_chromeos_lacros) {
-    static_files += [ "enterprise_profile_welcome/images/lacros_enterprise_profile_welcome_illustration.svg" ]
-  }
-  if (!is_chromeos) {
-    static_files += [ "enterprise_profile_welcome/images/enterprise_profile_welcome_illustration.svg" ]
   }
   if (enable_dice_support) {
     static_files += [
@@ -101,6 +96,7 @@ build_webui("build") {
   css_files = [
     "signin_shared.css",
     "signin_vars.css",
+    "tangible_sync_style_shared.css",
   ]
 
   ts_composite = true

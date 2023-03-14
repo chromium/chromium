@@ -5,8 +5,11 @@
 #include "components/commerce/core/price_tracking_utils.h"
 
 #include <memory>
+#include <unordered_set>
 
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -49,15 +52,34 @@ void UpdateBookmarksForSubscriptionsResult(
       if (!specifics || specifics->product_cluster_id() != cluster_id)
         continue;
 
-      specifics->set_is_price_tracked(enabled);
       // Always use the Windows epoch to keep consistency. This also align with
       // how we set the time fields in the bookmark_specifics.proto and in the
       // subscriptions_manager.cc.
       specifics->set_last_subscription_change_time(
           base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
 
+      // If being untracked and the bookmark was created by price tracking
+      // rather than by explicitly bookmarking, delete the bookmark.
+      bool should_delete_node = false;
+      if (!enabled && specifics->bookmark_created_by_price_tracking()) {
+        // If there is more than one bookmark with the specified cluster ID,
+        // don't delete the bookmark.
+        should_delete_node =
+            GetBookmarksWithClusterId(model.get(), cluster_id, 2).size() < 2;
+
+        if (should_delete_node) {
+          // Clear the shopping specifics so other observers don't fire on
+          // deletion.
+          meta->clear_shopping_specifics();
+        }
+      }
+
       power_bookmarks::SetNodePowerBookmarkMeta(model.get(), node,
                                                 std::move(meta));
+
+      if (should_delete_node) {
+        model->Remove(node);
+      }
     }
   }
 
@@ -66,13 +88,26 @@ void UpdateBookmarksForSubscriptionsResult(
 
 }  // namespace
 
-bool IsBookmarkPriceTracked(bookmarks::BookmarkModel* model,
-                            const bookmarks::BookmarkNode* node) {
+void IsBookmarkPriceTracked(ShoppingService* service,
+                            bookmarks::BookmarkModel* model,
+                            const bookmarks::BookmarkNode* node,
+                            base::OnceCallback<void(bool)> callback) {
   std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
       power_bookmarks::GetNodePowerBookmarkMeta(model, node);
 
-  return meta && meta->has_shopping_specifics() &&
-         meta->shopping_specifics().is_price_tracked();
+  if (!meta || !meta->has_shopping_specifics() ||
+      !meta->shopping_specifics().has_product_cluster_id()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+    return;
+  }
+
+  CommerceSubscription sub(
+      SubscriptionType::kPriceTrack, IdentifierType::kProductClusterId,
+      base::NumberToString(meta->shopping_specifics().product_cluster_id()),
+      ManagementType::kUserManaged);
+
+  service->IsSubscribed(sub, std::move(callback));
 }
 
 bool IsProductBookmark(bookmarks::BookmarkModel* model,
@@ -113,11 +148,13 @@ void SetPriceTrackingStateForClusterId(
   }
 }
 
-void SetPriceTrackingStateForBookmark(ShoppingService* service,
-                                      bookmarks::BookmarkModel* model,
-                                      const bookmarks::BookmarkNode* node,
-                                      bool enabled,
-                                      base::OnceCallback<void(bool)> callback) {
+void SetPriceTrackingStateForBookmark(
+    ShoppingService* service,
+    bookmarks::BookmarkModel* model,
+    const bookmarks::BookmarkNode* node,
+    bool enabled,
+    base::OnceCallback<void(bool)> callback,
+    bool was_bookmark_created_by_price_tracking) {
   if (!service || !model || !node)
     return;
 
@@ -176,6 +213,13 @@ void SetPriceTrackingStateForBookmark(ShoppingService* service,
       std::move(callback), enabled, specifics->product_cluster_id());
 
   if (enabled) {
+    // If the bookmark was created through the price tracking flow, make sure
+    // that is recorded. If untracked, this bookmark will be deleted.
+    if (was_bookmark_created_by_price_tracking) {
+      specifics->set_bookmark_created_by_price_tracking(true);
+      power_bookmarks::SetNodePowerBookmarkMeta(model, node, std::move(meta));
+    }
+
     service->Subscribe(std::move(subs), std::move(update_bookmarks_callback));
   } else {
     service->Unsubscribe(std::move(subs), std::move(update_bookmarks_callback));
@@ -214,29 +258,63 @@ std::vector<const bookmarks::BookmarkNode*> GetBookmarksWithClusterId(
   return bookmarks_with_cluster;
 }
 
-std::vector<const bookmarks::BookmarkNode*> GetAllPriceTrackedBookmarks(
-    bookmarks::BookmarkModel* model) {
-  std::vector<const bookmarks::BookmarkNode*> results =
-      GetAllShoppingBookmarks(model);
-
-  std::vector<const bookmarks::BookmarkNode*> bookmarks_with_cluster;
-  for (const auto* node : results) {
-    std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
-        power_bookmarks::GetNodePowerBookmarkMeta(model, node);
-
-    if (!meta)
-      continue;
-
-    const power_bookmarks::ShoppingSpecifics specifics =
-        meta->shopping_specifics();
-
-    if (!specifics.is_price_tracked())
-      continue;
-
-    bookmarks_with_cluster.push_back(node);
+void GetAllPriceTrackedBookmarks(
+    ShoppingService* shopping_service,
+    bookmarks::BookmarkModel* bookmark_model,
+    base::OnceCallback<void(std::vector<const bookmarks::BookmarkNode*>)>
+        callback) {
+  if (!shopping_service || !bookmark_model) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       std::vector<const bookmarks::BookmarkNode*>()));
+    return;
   }
 
-  return bookmarks_with_cluster;
+  shopping_service->GetAllSubscriptions(
+      SubscriptionType::kPriceTrack,
+      base::BindOnce(
+          [](base::WeakPtr<ShoppingService> service,
+             base::WeakPtr<bookmarks::BookmarkModel> model,
+             base::OnceCallback<void(
+                 std::vector<const bookmarks::BookmarkNode*>)> callback,
+             std::vector<CommerceSubscription> subscriptions) {
+            std::vector<const bookmarks::BookmarkNode*> shopping_bookmarks =
+                GetAllShoppingBookmarks(model.get());
+
+            // Get all cluster IDs in a map for easier lookup.
+            std::unordered_set<uint64_t> cluster_set;
+            for (auto sub : subscriptions) {
+              if (sub.management_type == ManagementType::kUserManaged) {
+                uint64_t cluster_id;
+                if (base::StringToUint64(sub.id, &cluster_id)) {
+                  cluster_set.insert(cluster_id);
+                }
+              }
+            }
+
+            std::vector<const bookmarks::BookmarkNode*> tracked_bookmarks;
+            for (const auto* node : shopping_bookmarks) {
+              std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
+                  power_bookmarks::GetNodePowerBookmarkMeta(model.get(), node);
+
+              if (!meta || !meta->has_shopping_specifics()) {
+                continue;
+              }
+
+              const power_bookmarks::ShoppingSpecifics specifics =
+                  meta->shopping_specifics();
+
+              if (!cluster_set.contains(specifics.product_cluster_id())) {
+                continue;
+              }
+
+              tracked_bookmarks.push_back(node);
+            }
+            std::move(callback).Run(std::move(tracked_bookmarks));
+          },
+          shopping_service->AsWeakPtr(), bookmark_model->AsWeakPtr(),
+          std::move(callback)));
 }
 
 std::vector<const bookmarks::BookmarkNode*> GetAllShoppingBookmarks(
@@ -292,6 +370,10 @@ bool PopulateOrUpdateBookmarkMetaIfNeeded(
     specifics->mutable_previous_price()->set_amount_micros(
         info.previous_amount_micros.value());
     changed = true;
+  } else if (!info.previous_amount_micros.has_value() &&
+             specifics->has_previous_price()) {
+    specifics->clear_previous_price();
+    changed = true;
   }
 
   if (specifics->offer_id() != info.offer_id) {
@@ -331,6 +413,12 @@ bool IsEmailDisabledByUser(PrefService* pref_service) {
     }
   }
   return false;
+}
+
+CommerceSubscription BuildUserSubscriptionForClusterId(uint64_t cluster_id) {
+  return CommerceSubscription(
+      SubscriptionType::kPriceTrack, IdentifierType::kProductClusterId,
+      base::NumberToString(cluster_id), ManagementType::kUserManaged);
 }
 
 }  // namespace commerce

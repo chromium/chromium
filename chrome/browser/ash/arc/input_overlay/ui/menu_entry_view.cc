@@ -9,11 +9,11 @@
 #include "base/cxx17_backports.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_uma.h"
+#include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/color/color_id.h"
-#include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/color_utils.h"
@@ -32,9 +32,9 @@ constexpr SkColor kDragColor100White = SK_ColorWHITE;
 constexpr SkColor kDragColor60Blue =
     SkColorSetA(gfx::kGoogleBlue300, 0x99 /*60%*/);
 constexpr SkColor kHoverColor = SkColorSetA(gfx::kGoogleBlue600, 0x66 /*40%*/);
+constexpr SkColor kBorderColor = SkColorSetA(SK_ColorBLACK, 0x33 /*20%*/);
 
 constexpr int kParentPadding = 16;
-constexpr int kBackgroundBlur = 20;
 constexpr int kMenuEntrySize = 48;
 constexpr int kMenuEntryIconSize = 24;
 constexpr int kMenuEntryCornerRadius = 8;
@@ -57,9 +57,11 @@ constexpr float kHaloThicknessAlpha = 2;
 
 MenuEntryView::MenuEntryView(
     PressedCallback pressed_callback,
-    OnPositionChangedCallback on_position_changed_callback)
+    OnPositionChangedCallback on_position_changed_callback,
+    DisplayOverlayController* display_overlay_controller)
     : views::ImageButton(std::move(pressed_callback)),
-      on_position_changed_callback_(on_position_changed_callback) {
+      on_position_changed_callback_(on_position_changed_callback),
+      display_overlay_controller_(display_overlay_controller) {
   auto game_icon = ui::ImageModel::FromVectorIcon(
       allow_reposition_ ? kGameControlsGamepadIcon
                         : vector_icons::kVideogameAssetOutlineIcon,
@@ -67,10 +69,11 @@ MenuEntryView::MenuEntryView(
   SetImageModel(views::Button::STATE_NORMAL, game_icon);
   SetBackground(views::CreateRoundedRectBackground(kDefaultColor,
                                                    kMenuEntryCornerRadius));
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetBackgroundBlur(kBackgroundBlur);
-  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kMenuEntryCornerRadius));
+
+  if (allow_reposition_) {
+    SetBorder(views::CreateRoundedRectBorder(
+        kMenuEntryBorderThickness, kMenuEntryCornerRadius, kBorderColor));
+  }
 
   SetSize(allow_reposition_
               ? gfx::Size(kMenuEntrySize, kMenuEntrySize)
@@ -98,8 +101,9 @@ MenuEntryView::MenuEntryView(
 MenuEntryView::~MenuEntryView() = default;
 
 void MenuEntryView::ChangeHoverState(bool is_hovered) {
-  if (!allow_reposition_ || is_hovered == hover_state_)
+  if (!allow_reposition_ || is_hovered == hover_state_) {
     return;
+  }
 
   SetBackground(views::CreateRoundedRectBackground(
       is_hovered
@@ -110,8 +114,9 @@ void MenuEntryView::ChangeHoverState(bool is_hovered) {
 }
 
 bool MenuEntryView::OnMousePressed(const ui::MouseEvent& event) {
-  if (allow_reposition_)
+  if (allow_reposition_) {
     OnDragStart(event);
+  }
   return views::Button::OnMousePressed(event);
 }
 
@@ -130,7 +135,10 @@ void MenuEntryView::OnMouseReleased(const ui::MouseEvent& event) {
   } else {
     SetCursor(ui::mojom::CursorType::kGrab);
     OnDragEnd();
-    RecordInputOverlayMenuEntryReposition(RepositionType::kMouseDragRepostion);
+    RecordInputOverlayMenuEntryReposition(
+        display_overlay_controller_->GetPackageName(),
+        RepositionType::kMouseDragRepostion,
+        display_overlay_controller_->GetWindowStateType());
   }
 }
 
@@ -155,7 +163,9 @@ void MenuEntryView::OnGestureEvent(ui::GestureEvent* event) {
       OnDragEnd();
       event->SetHandled();
       RecordInputOverlayMenuEntryReposition(
-          RepositionType::kTouchscreenDragRepostion);
+          display_overlay_controller_->GetPackageName(),
+          RepositionType::kTouchscreenDragRepostion,
+          display_overlay_controller_->GetWindowStateType());
       break;
     default:
       views::Button::OnGestureEvent(event);
@@ -175,13 +185,16 @@ bool MenuEntryView::OnKeyPressed(const ui::KeyEvent& event) {
 }
 
 bool MenuEntryView::OnKeyReleased(const ui::KeyEvent& event) {
-  if (!allow_reposition_ || !ash::IsArrowKeyEvent(event))
+  if (!allow_reposition_ || !ash::IsArrowKeyEvent(event)) {
     return views::ImageButton::OnKeyReleased(event);
+  }
 
   on_position_changed_callback_.Run(/*leave_focus=*/false,
                                     absl::make_optional(origin()));
   RecordInputOverlayMenuEntryReposition(
-      RepositionType::kKeyboardArrowKeyReposition);
+      display_overlay_controller_->GetPackageName(),
+      RepositionType::kKeyboardArrowKeyReposition,
+      display_overlay_controller_->GetWindowStateType());
   return true;
 }
 
@@ -233,15 +246,17 @@ void MenuEntryView::ChangeMenuEntryOnDrag(bool is_dragging) {
   } else {
     SetBackground(views::CreateRoundedRectBackground(kDefaultColor,
                                                      kMenuEntryCornerRadius));
-    SetBorder(views::CreateEmptyBorder(kMenuEntryBorderThickness));
+    SetBorder(views::CreateRoundedRectBorder(
+        kMenuEntryBorderThickness, kMenuEntryCornerRadius, kBorderColor));
   }
 }
 
 void MenuEntryView::SetCursor(ui::mojom::CursorType cursor_type) {
   auto* widget = GetWidget();
   // widget is null for test.
-  if (widget)
+  if (widget) {
     widget->SetCursor(cursor_type);
+  }
 }
 
 }  // namespace arc::input_overlay

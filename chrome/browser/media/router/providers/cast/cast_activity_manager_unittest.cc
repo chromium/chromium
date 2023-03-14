@@ -25,6 +25,7 @@
 #include "chrome/browser/media/router/providers/cast/cast_session_client.h"
 #include "chrome/browser/media/router/providers/cast/mirroring_activity.h"
 #include "chrome/browser/media/router/providers/cast/mock_app_activity.h"
+#include "chrome/browser/media/router/providers/cast/mock_mirroring_activity.h"
 #include "chrome/browser/media/router/providers/cast/test_util.h"
 #include "chrome/browser/media/router/providers/common/buffered_message_sender.h"
 #include "chrome/browser/media/router/test/mock_mojo_media_router.h"
@@ -65,8 +66,8 @@ constexpr int kChannelId = 42;
 constexpr int kChannelId2 = 43;
 constexpr char kClientId[] = "theClientId";
 constexpr char kOrigin[] = "https://google.com";
-constexpr int kFrameTreeNodeId = 1;
-constexpr int kFrameTreeNodeId2 = 2;
+constexpr int kFrameTreeNodeId = 123;
+constexpr int kFrameTreeNodeId2 = 234;
 constexpr char kAppId1[] = "ABCDEFGH";
 constexpr char kAppId2[] = "BBBBBBBB";
 constexpr char kAppParams[] = R"(
@@ -118,26 +119,6 @@ class MockLaunchSessionCallback {
                mojom::RoutePresentationConnectionPtr presentation_connections,
                const absl::optional<std::string>& error_message,
                media_router::mojom::RouteRequestResultCode result_code));
-};
-
-class MockMirroringActivity : public MirroringActivity {
- public:
-  MockMirroringActivity(const MediaRoute& route,
-                        const std::string& app_id,
-                        OnStopCallback on_stop)
-      : MirroringActivity(route,
-                          app_id,
-                          nullptr,
-                          nullptr,
-                          0,
-                          CastSinkExtraData(),
-                          std::move(on_stop)) {}
-
-  MOCK_METHOD(void, CreateMojoBindings, (mojom::MediaRouter * media_router));
-  MOCK_METHOD(void, OnSessionSet, (const CastSession& session));
-  MOCK_METHOD(void,
-              SendStopSessionMessageToClients,
-              (const std::string& hash_token));
 };
 
 using MockAppActivityCallback = base::RepeatingCallback<void(MockAppActivity*)>;
@@ -206,9 +187,10 @@ class CastActivityManagerTest : public testing::Test,
   std::unique_ptr<MirroringActivity> MakeMirroringActivity(
       const MediaRoute& route,
       const std::string& app_id,
-      MirroringActivity::OnStopCallback on_stop) override {
+      MirroringActivity::OnStopCallback on_stop,
+      OnSourceChangedCallback on_source_changed) override {
     auto activity = std::make_unique<NiceMock<MockMirroringActivity>>(
-        route, app_id, std::move(on_stop));
+        route, app_id, std::move(on_stop), std::move(on_source_changed));
     mirroring_activity_ = activity.get();
     mirroring_activity_callback_.Run(activity.get());
     return activity;
@@ -497,8 +479,12 @@ class CastActivityManagerTest : public testing::Test,
     EXPECT_TRUE(manager_->GetRoute(route_id_to_terminate));
     EXPECT_EQ(manager_->GetSinkForMirroringActivity(frame_id_after), sink2_);
 
-    session_tracker_->OnSourceChanged(route_id_to_move, frame_id_before,
-                                      frame_id_after);
+    ExpectMirroringActivityStoppedTimes(1);
+    ExpectSingleRouteUpdate();
+    manager_->OnSourceChanged(route_id_to_move, frame_id_before,
+                              frame_id_after);
+    router_remote_.FlushForTesting();
+    testing::Mock::VerifyAndClearExpectations(&mock_router_);
     // The route with id `route_id_to_terminate` should be terminated.
     // `frame_id_before` should have no route connected to it.
     // `frame_id_after` should be connected to `route_id_to_move`.
@@ -512,8 +498,9 @@ class CastActivityManagerTest : public testing::Test,
     EXPECT_FALSE(manager_->GetSinkForMirroringActivity(frame_id_before));
     EXPECT_EQ(manager_->GetSinkForMirroringActivity(frame_id_after), sink_);
 
-    session_tracker_->OnSourceChanged(route_id_to_move, frame_id_before,
-                                      frame_id_after);
+    ExpectNoRouteUpdate();
+    manager_->OnSourceChanged(route_id_to_move, frame_id_before,
+                              frame_id_after);
     // Nothing is expected to happen as there is no route exist for the given
     // `frame_id_before`.
     EXPECT_EQ(1u, manager_->GetRoutes().size());
@@ -1006,6 +993,18 @@ TEST_F(CastActivityManagerWithTerminatingTest,
                             base::BindOnce(&MockLaunchSessionCallback::Run,
                                            base::Unretained(&callback)));
   }
+}
+
+TEST_F(CastActivityManagerTest, FindMirroringActivityByRouteIdNonMirroring) {
+  LaunchAppSession();
+  EXPECT_FALSE(
+      manager_->FindMirroringActivityByRouteId(route_->media_route_id()));
+}
+
+TEST_F(CastActivityManagerTest, FindMirroringActivityByRouteId) {
+  LaunchCastSdkMirroringSession();
+  EXPECT_TRUE(
+      manager_->FindMirroringActivityByRouteId(route_->media_route_id()));
 }
 
 }  // namespace media_router

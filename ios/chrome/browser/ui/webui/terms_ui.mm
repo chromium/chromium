@@ -10,7 +10,7 @@
 #import "base/memory/ref_counted_memory.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/ui/util/terms_util.h"
+#import "ios/chrome/browser/shared/ui/util/terms_util.h"
 #import "ios/web/public/webui/url_data_source_ios.h"
 #import "ios/web/public/webui/web_ui_ios.h"
 

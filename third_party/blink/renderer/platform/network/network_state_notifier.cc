@@ -279,54 +279,55 @@ void NetworkStateNotifier::NotifyObservers(ObserverListMap& map,
   DCHECK(IsMainThread());
   base::AutoLock locker(lock_);
   for (const auto& entry : map) {
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner = entry.key;
-    PostCrossThreadTask(
-        *task_runner, FROM_HERE,
-        CrossThreadBindOnce(&NetworkStateNotifier::NotifyObserversOnTaskRunner,
-                            CrossThreadUnretained(this),
-                            CrossThreadUnretained(&map), type, task_runner,
-                            state));
+    entry.value->PostTask(
+        FROM_HERE,
+        base::BindOnce(&NetworkStateNotifier::NotifyObserverOnTaskRunner,
+                       base::Unretained(this), base::UnsafeDangling(entry.key),
+                       type, state));
   }
 }
 
-void NetworkStateNotifier::NotifyObserversOnTaskRunner(
-    ObserverListMap* map,
+void NetworkStateNotifier::NotifyObserverOnTaskRunner(
+    MayBeDangling<NetworkStateObserver> observer,
     ObserverType type,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     const NetworkState& state) {
-  ObserverList* observer_list = LockAndFindObserverList(*map, task_runner);
-
-  // The context could have been removed before the notification task got to
-  // run.
-  if (!observer_list)
-    return;
-
-  DCHECK(task_runner->RunsTasksInCurrentSequence());
-
-  observer_list->iterating = true;
-
-  for (wtf_size_t i = 0; i < observer_list->observers.size(); ++i) {
-    // Observers removed during iteration are zeroed out, skip them.
-    if (!observer_list->observers[i])
-      continue;
-    switch (type) {
-      case ObserverType::kOnLineState:
-        observer_list->observers[i]->OnLineStateChange(state.on_line);
-        continue;
-      case ObserverType::kConnectionType:
-        observer_list->observers[i]->ConnectionChange(
-            state.type, state.max_bandwidth_mbps, state.effective_type,
-            state.http_rtt, state.transport_rtt, state.downlink_throughput_mbps,
-            state.save_data);
-        continue;
+  {
+    base::AutoLock locker(lock_);
+    ObserverListMap& map = GetObserverMapFor(type);
+    // It's safe to pass a MayBeDangling pointer to find().
+    ObserverListMap::iterator it = map.find(observer);
+    if (map.end() == it) {
+      return;
     }
-    NOTREACHED();
+    DCHECK(it->value->RunsTasksInCurrentSequence());
   }
 
-  observer_list->iterating = false;
+  switch (type) {
+    case ObserverType::kOnLineState:
+      observer->OnLineStateChange(state.on_line);
+      return;
+    case ObserverType::kConnectionType:
+      observer->ConnectionChange(
+          state.type, state.max_bandwidth_mbps, state.effective_type,
+          state.http_rtt, state.transport_rtt, state.downlink_throughput_mbps,
+          state.save_data);
+      return;
+    default:
+      NOTREACHED();
+  }
+}
 
-  if (!observer_list->zeroed_observers.empty())
-    CollectZeroedObservers(*map, observer_list, std::move(task_runner));
+NetworkStateNotifier::ObserverListMap& NetworkStateNotifier::GetObserverMapFor(
+    ObserverType type) {
+  switch (type) {
+    case ObserverType::kConnectionType:
+      return connection_observers_;
+    case ObserverType::kOnLineState:
+      return on_line_state_observers_;
+    default:
+      NOTREACHED();
+      return connection_observers_;
+  }
 }
 
 void NetworkStateNotifier::AddObserverToMap(
@@ -338,85 +339,20 @@ void NetworkStateNotifier::AddObserverToMap(
 
   base::AutoLock locker(lock_);
   ObserverListMap::AddResult result =
-      map.insert(std::move(task_runner), nullptr);
-  if (result.is_new_entry)
-    result.stored_value->value = std::make_unique<ObserverList>();
-
-  DCHECK(result.stored_value->value->observers.Find(observer) == kNotFound);
-  result.stored_value->value->observers.push_back(observer);
+      map.insert(observer, std::move(task_runner));
+  DCHECK(result.is_new_entry);
 }
 
 void NetworkStateNotifier::RemoveObserver(
     ObserverType type,
     NetworkStateObserver* observer,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  switch (type) {
-    case ObserverType::kConnectionType:
-      RemoveObserverFromMap(connection_observers_, observer,
-                            std::move(task_runner));
-      break;
-    case ObserverType::kOnLineState:
-      RemoveObserverFromMap(on_line_state_observers_, observer,
-                            std::move(task_runner));
-      break;
-  }
-}
-
-void NetworkStateNotifier::RemoveObserverFromMap(
-    ObserverListMap& map,
-    NetworkStateObserver* observer,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK(task_runner->RunsTasksInCurrentSequence());
   DCHECK(observer);
 
-  ObserverList* observer_list = LockAndFindObserverList(map, task_runner);
-  if (!observer_list)
-    return;
-
-  Vector<NetworkStateObserver*>& observers = observer_list->observers;
-  wtf_size_t index = observers.Find(observer);
-  if (index != kNotFound) {
-    observers[index] = 0;
-    observer_list->zeroed_observers.push_back(index);
-  }
-
-  if (!observer_list->iterating && !observer_list->zeroed_observers.empty())
-    CollectZeroedObservers(map, observer_list, std::move(task_runner));
-}
-
-NetworkStateNotifier::ObserverList*
-NetworkStateNotifier::LockAndFindObserverList(
-    ObserverListMap& map,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  base::AutoLock locker(lock_);
-  ObserverListMap::iterator it = map.find(task_runner);
-  return it == map.end() ? nullptr : it->value.get();
-}
-
-void NetworkStateNotifier::CollectZeroedObservers(
-    ObserverListMap& map,
-    ObserverList* list,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  DCHECK(task_runner->RunsTasksInCurrentSequence());
-  DCHECK(!list->iterating);
-
-  // If any observers were removed during the iteration they will have
-  // 0 values, clean them up.
-  std::sort(list->zeroed_observers.begin(), list->zeroed_observers.end());
-  int removed = 0;
-  for (wtf_size_t i = 0; i < list->zeroed_observers.size(); ++i) {
-    int index_to_remove = list->zeroed_observers[i] - removed;
-    DCHECK_EQ(nullptr, list->observers[index_to_remove]);
-    list->observers.EraseAt(index_to_remove);
-    removed += 1;
-  }
-
-  list->zeroed_observers.clear();
-
-  if (list->observers.empty()) {
-    base::AutoLock locker(lock_);
-    map.erase(task_runner);  // deletes list
-  }
+  ObserverListMap& map = GetObserverMapFor(type);
+  DCHECK_NE(map.end(), map.find(observer));
+  map.erase(observer);
 }
 
 // static

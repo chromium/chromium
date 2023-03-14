@@ -56,5 +56,5 @@ void Test() {
 
   // Chained Pass is handled correctly.
   A a6;
-  A a7 = std::move(std::move(a6));
+  A a7 = std::move(a6);
 }

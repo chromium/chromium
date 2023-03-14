@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/metrics/cached_metrics_profile.h"
 #include "components/metrics/metrics_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/extension_install.pb.h"
 
 class Profile;
@@ -61,7 +62,7 @@ class ExtensionsMetricsProvider : public metrics::MetricsProvider {
   // Exposed for the sake of mocking in test code.
 
   // Retrieves the set of extensions installed in the given |profile|.
-  virtual std::unique_ptr<extensions::ExtensionSet> GetInstalledExtensions(
+  virtual absl::optional<extensions::ExtensionSet> GetInstalledExtensions(
       Profile* profile);
 
   // Retrieves the client ID.

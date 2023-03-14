@@ -25,7 +25,8 @@
           // timestamp: 2014-05-13T16:53:20.123Z
           timestamp: timestamp || baseTimestamp + 123,
         });
-    SDK.consoleModel.addMessage(message, true);  // allowGrouping
+    const consoleModel = SDK.targetManager.primaryPageTarget().model(SDK.ConsoleModel);
+    consoleModel.addMessage(message, true);  // allowGrouping
   }
 
   TestRunner.addResult('Console messages with timestamps disabled:');

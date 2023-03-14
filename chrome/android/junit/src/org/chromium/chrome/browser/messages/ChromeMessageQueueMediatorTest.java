@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.messages;
 
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -20,6 +22,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
@@ -29,7 +32,9 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
@@ -44,6 +49,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.TokenHolder;
+
+import java.util.concurrent.TimeoutException;
 
 /**
  * Unit tests for {@link ChromeMessageQueueMediator}.
@@ -223,6 +230,55 @@ public class ChromeMessageQueueMediatorTest {
 
         mMediator.onFinishHiding();
         Assert.assertFalse(mMediator.isReadyForShowing());
+    }
+
+    /**
+     * Test multiple show requests can be made when tab browser controls state changes while browser
+     * controls is not fully visible.
+     * 1. Initially, tab constraints state is hidden but browser controls is not fully visible yet.
+     * 2. A message is allowed to be displayed.
+     * 3. Tab constraints is assumed to change from the hidden state while the first message is on
+     * the screen.
+     * 4. If a second message is enqueued but browser controls is still not ready, it will trigger
+     * #onRequestShowing again.
+     */
+    @Test
+    public void testRequestMultipleTimesWhenTabConstraintsChanges() throws TimeoutException {
+        final ArgumentCaptor<ChromeMessageQueueMediator.BrowserControlsObserver>
+                observerArgumentCaptor = ArgumentCaptor.forClass(
+                        ChromeMessageQueueMediator.BrowserControlsObserver.class);
+        doNothing().when(mBrowserControlsManager).addObserver(observerArgumentCaptor.capture());
+        var visibilitySupplier = new ObservableSupplierImpl<Boolean>();
+        visibilitySupplier.set(false);
+
+        // Simulate the browser controls to not be fully visible.
+        when(mBrowserControlsManager.getBrowserControlHiddenRatio()).thenReturn(0.5f);
+        var visibilityDelegate =
+                new BrowserStateBrowserControlsVisibilityDelegate(visibilitySupplier);
+        when(mBrowserControlsManager.getBrowserVisibilityDelegate()).thenReturn(visibilityDelegate);
+        initMediator();
+        var mediator = Mockito.spy(mMediator);
+
+        // #areBrowserControlsReady would return true when the tab browser controls constraint state
+        // is hidden.
+        doReturn(true).when(mediator).areBrowserControlsReady();
+        Assert.assertFalse(mediator.isReadyForShowing());
+        CallbackHelper callbackHelper = new CallbackHelper();
+        mediator.onRequestShowing(callbackHelper::notifyCalled);
+        callbackHelper.waitForFirst();
+        ChromeMessageQueueMediator.BrowserControlsObserver observer =
+                observerArgumentCaptor.getValue();
+        Assert.assertFalse(observer.isRequesting());
+
+        // Real method invocation will return false when the tab browser controls constraint state
+        // changes from the hidden state.
+        doCallRealMethod().when(mediator).areBrowserControlsReady();
+        Assert.assertFalse(
+                BrowserControlsUtils.areBrowserControlsFullyVisible(mBrowserControlsManager));
+        Assert.assertFalse(mediator.areBrowserControlsReady());
+        Assert.assertFalse(mediator.isReadyForShowing());
+        mediator.onRequestShowing(() -> {});
+        Assert.assertTrue(observer.isRequesting());
     }
 
     /**

@@ -1414,6 +1414,21 @@ LayoutNGBlockFlow DIV id="mc"
             ToSimpleLayoutTree(container));
 }
 
+TEST_F(MultiColumnRenderingTest, FlowThreadUpdateGeometryCrash) {
+  SetBodyInnerHTML(R"HTML(
+      <video width="64" height="64" controls>
+      <iframe width=320 height=320></iframe>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  InsertStyleElement(R"CSS(
+      body, html {
+        column-count: 2;
+        overflow: clip;
+      })CSS");
+  UpdateAllLifecyclePhasesForTest();
+  // Pass if no crash in LayoutMultiColumnFlowThread::UpdateGeometry() call
+  // from LayoutMedia::ComputePanelWidth().
+}
+
 }  // anonymous namespace
 
 }  // namespace blink

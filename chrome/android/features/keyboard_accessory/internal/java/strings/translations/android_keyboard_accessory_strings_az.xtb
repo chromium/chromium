@@ -1,13 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="az">
+<translation id="1347497506789975534">Saxlanmış ödəniş metodlarını göstərin</translation>
 <translation id="1383876407941801731">Axtar</translation>
-<translation id="1566281227936819866">Yadda saxlanılmış ödəniş metodları göstərilir</translation>
 <translation id="1717486229951421299">Yarı hündürlükdə açılan toxunuşla doldurulacaq kredensialların siyahısı.</translation>
 <translation id="207576718733492531">Toxunuşla doldurulacaq kredensialların siyahısı bağlıdır.</translation>
 <translation id="2610239185026711824">Parol təklif edin</translation>
 <translation id="2652129567809778422">Parol seçin</translation>
-<translation id="2803478378562657435">Yadda saxlanmış parollar və parol seçimləri göstərilir</translation>
 <translation id="2903493209154104877">Ünvanlar</translation>
 <translation id="3399357656427473483">Toxunuşla doldurulacaq kredensialların siyahısı.</translation>
 <translation id="3688051737190211318"><ph name="ORIGIN" /> mənbəyinə etibar edirsinizsə, saxlanmış parolu giriş üçün istifadə edə bilərsiniz</translation>
@@ -15,16 +14,14 @@
 <translation id="4660011489602794167">Klaviaturanı göstərin</translation>
 <translation id="4694050069269396220"><ph name="ORIGIN" /> mənbəyinə etibar edirsinizsə, saxlanmış parolu başqa sayt üçün istifadə edə bilərsiniz.</translation>
 <translation id="5016175294846053194">Avtomatik doldurma təklifləri klaviaturanın yuxarısında əlçatandır</translation>
-<translation id="5088366526685584589">Yadda saxlanılan ünvanlar göstərilir</translation>
 <translation id="5441504010984421144">Tam hündürlükdə açılan toxunuşla doldurulacaq kredensialların siyahısı.</translation>
+<translation id="6296921860874265377">Saxlanmış parollar və parol seçimlərini göstərin</translation>
 <translation id="6393156038355142111">Güclü parol təklif edin</translation>
 <translation id="6558703547256592471">Hər sayt üçün unikal parol istifadə edin.</translation>
 <translation id="7029809446516969842">Parollar</translation>
-<translation id="7299100402441711551">Ünvanları Göstərin</translation>
-<translation id="7494879913343971937">Parolları göstərin</translation>
 <translation id="7594473730623999723">Daha çox təklif görmək üçün sürüşdürün</translation>
+<translation id="7873973044507799456">Saxlanmış ünvanları göstərin</translation>
 <translation id="7992095260806105436">Chrome'un avto doldurma təklifindən istifadə edin</translation>
-<translation id="8037472847879765671">Ödəniş metodlarını göstərin</translation>
 <translation id="8507520749471379845">Parollar əlçatandır</translation>
 <translation id="8705308553596171387">Parol yoxdur</translation>
 <translation id="879180780857354295">Alternativ doldurma seçimləri klaviaturanın yuxarısında əlçatandır</translation>

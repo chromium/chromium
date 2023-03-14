@@ -5,6 +5,7 @@
 #ifndef GOOGLE_APIS_GAIA_OAUTH2_ACCESS_TOKEN_FETCHER_IMMEDIATE_ERROR_H_
 #define GOOGLE_APIS_GAIA_OAUTH2_ACCESS_TOKEN_FETCHER_IMMEDIATE_ERROR_H_
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -28,7 +29,8 @@
 //
 // This class can handle one request at a time. To parallelize requests,
 // create multiple instances.
-class OAuth2AccessTokenFetcherImmediateError : public OAuth2AccessTokenFetcher {
+class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2AccessTokenFetcherImmediateError
+    : public OAuth2AccessTokenFetcher {
  public:
   OAuth2AccessTokenFetcherImmediateError(OAuth2AccessTokenConsumer* consumer,
                                          const GoogleServiceAuthError& error);
@@ -47,7 +49,8 @@ class OAuth2AccessTokenFetcherImmediateError : public OAuth2AccessTokenFetcher {
   void CancelRequest() override;
 
  private:
-  class FailCaller : public base::RefCounted<FailCaller> {
+  class COMPONENT_EXPORT(GOOGLE_APIS) FailCaller
+      : public base::RefCounted<FailCaller> {
    public:
     FailCaller(OAuth2AccessTokenFetcherImmediateError* fetcher);
 

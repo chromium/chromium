@@ -53,6 +53,7 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_state/core/security_state.h"
 #include "components/send_tab_to_self/metrics_util.h"
@@ -242,6 +243,9 @@ void OmniboxViewViews::Init() {
 }
 
 void OmniboxViewViews::SaveStateToTab(content::WebContents* tab) {
+  if (base::FeatureList::IsEnabled(omnibox::kDiscardTemporaryInputOnTabSwitch))
+    return;
+
   DCHECK(tab);
 
   // We don't want to keep the IME status, so force quit the current
@@ -262,6 +266,13 @@ void OmniboxViewViews::SaveStateToTab(content::WebContents* tab) {
 }
 
 void OmniboxViewViews::OnTabChanged(content::WebContents* web_contents) {
+  if (base::FeatureList::IsEnabled(
+          omnibox::kDiscardTemporaryInputOnTabSwitch)) {
+    model()->RestoreState(nullptr);
+    ClearEditHistory();
+    return;
+  }
+
   const OmniboxState* state = static_cast<OmniboxState*>(
       web_contents->GetUserData(&OmniboxState::kKey));
   model()->RestoreState(state ? &state->model_state : nullptr);
@@ -289,7 +300,8 @@ void OmniboxViewViews::OnTabChanged(content::WebContents* web_contents) {
 }
 
 void OmniboxViewViews::ResetTabState(content::WebContents* web_contents) {
-  web_contents->SetUserData(OmniboxState::kKey, nullptr);
+  if (!base::FeatureList::IsEnabled(omnibox::kDiscardTemporaryInputOnTabSwitch))
+    web_contents->SetUserData(OmniboxState::kKey, nullptr);
 }
 
 void OmniboxViewViews::InstallPlaceholderText() {
@@ -1587,13 +1599,8 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
       } else if (shift) {
         disposition = WindowOpenDisposition::NEW_WINDOW;
       }
-      if (model()->PopupIsOpen() &&
-          model()->TriggerPopupSelectionAction(
-              model()->GetPopupSelection(), event.time_stamp(), disposition)) {
-        return true;
-      } else {
-        model()->AcceptInput(disposition, event.time_stamp());
-      }
+      model()->OpenSelection(model()->GetPopupSelection(), event.time_stamp(),
+                             disposition);
       return true;
     }
     case ui::VKEY_ESCAPE:
@@ -1699,10 +1706,8 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
       if (model()->PopupIsOpen()) {
         OmniboxPopupSelection selection = model()->GetPopupSelection();
         if (selection.IsButtonFocused() && !control && !alt && !shift) {
-          if (model()->TriggerPopupSelectionAction(selection,
-                                                   event.time_stamp())) {
-            return true;
-          }
+          model()->OpenSelection(selection, event.time_stamp());
+          return true;
         }
       }
       break;

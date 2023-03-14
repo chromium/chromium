@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_result.h"
-#include "third_party/blink/renderer/core/navigation_api/navigation_api.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_history_entry.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 
@@ -17,7 +16,6 @@ namespace blink {
 
 NavigationApiNavigation::NavigationApiNavigation(
     ScriptState* script_state,
-    NavigationApi* navigation_api,
     NavigationOptions* options,
     const String& key,
     scoped_refptr<SerializedScriptValue> state)
@@ -26,7 +24,6 @@ NavigationApiNavigation::NavigationApiNavigation(
           ScriptValue(script_state->GetIsolate(),
                       v8::Undefined(script_state->GetIsolate())))),
       key_(key),
-      navigation_api_(navigation_api),
       committed_resolver_(
           MakeGarbageCollected<ScriptPromiseResolver>(script_state)),
       finished_resolver_(
@@ -63,19 +60,10 @@ void NavigationApiNavigation::NotifyAboutTheCommittedToEntry(
 }
 
 void NavigationApiNavigation::ResolveFinishedPromise() {
-  if (!navigation_api_)
-    return;
-
   finished_resolver_->Resolve(committed_to_entry_);
-
-  navigation_api_->CleanupApiNavigation(*this);
-  navigation_api_ = nullptr;
 }
 
 void NavigationApiNavigation::RejectFinishedPromise(const ScriptValue& value) {
-  if (!navigation_api_)
-    return;
-
   if (committed_resolver_) {
     // We never hit NotifyAboutTheCommittedToEntry(), so we should reject that
     // too.
@@ -83,28 +71,18 @@ void NavigationApiNavigation::RejectFinishedPromise(const ScriptValue& value) {
   }
 
   finished_resolver_->Reject(value);
-
   serialized_state_.reset();
-
-  navigation_api_->CleanupApiNavigation(*this);
-  navigation_api_ = nullptr;
 }
 
 void NavigationApiNavigation::CleanupForWillNeverSettle() {
   DCHECK_EQ(committed_to_entry_, nullptr);
-
   committed_resolver_->Detach();
   finished_resolver_->Detach();
-
   serialized_state_.reset();
-
-  navigation_api_->CleanupApiNavigation(*this);
-  navigation_api_ = nullptr;
 }
 
 void NavigationApiNavigation::Trace(Visitor* visitor) const {
   visitor->Trace(info_);
-  visitor->Trace(navigation_api_);
   visitor->Trace(committed_to_entry_);
   visitor->Trace(committed_resolver_);
   visitor->Trace(finished_resolver_);

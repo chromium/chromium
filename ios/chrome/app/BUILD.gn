@@ -48,7 +48,7 @@ source_set("app") {
 
   deps = [
     "//base",
-    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/url:constants",
     "//net",
     "//url",
@@ -328,10 +328,10 @@ source_set("first_run_app_state_agent") {
     "//ios/chrome/app/application_delegate:application_delegate_internal",
     "//ios/chrome/browser/browsing_data",
     "//ios/chrome/browser/geolocation",
-    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/shared/public/commands:commands",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/blocking_overlay",
     "//ios/chrome/browser/ui/browser_view",
-    "//ios/chrome/browser/ui/commands:commands",
     "//ios/chrome/browser/ui/first_run",
     "//ios/chrome/browser/ui/first_run:field_trial",
     "//ios/chrome/browser/ui/first_run:first_run_provider",
@@ -507,13 +507,14 @@ source_set("app_internal") {
     "//ios/chrome/browser/sessions:scene_util",
     "//ios/chrome/browser/sessions:session_service",
     "//ios/chrome/browser/share_extension",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/snapshots",
     "//ios/chrome/browser/sync",
-    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/appearance",
     "//ios/chrome/browser/ui/authentication",
-    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/download",
     "//ios/chrome/browser/ui/first_run",
     "//ios/chrome/browser/ui/first_run:utils",
@@ -528,7 +529,6 @@ source_set("app_internal") {
     "//ios/chrome/browser/ui/tabs",
     "//ios/chrome/browser/ui/toolbar:toolbar_ui",
     "//ios/chrome/browser/ui/toolbar/public",
-    "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/ui/webui:webui_internal",
     "//ios/chrome/browser/upgrade",
     "//ios/chrome/browser/url_loading",
@@ -623,23 +623,6 @@ source_set("main") {
       "//ios/third_party/material_components_ios:material_components_ios+bundle",
       "//ios/third_party/material_components_ios:material_components_ios+link",
     ]
-  }
-
-  # Lottie links with GLKit which does not support macCatalyst environment
-  # (see https://crbug.com/1394553 for details of the build failure). This
-  # is a stop-gap solution.
-  if (target_environment != "catalyst") {
-    if (ios_chrome_links_with_lottie_framework) {
-      deps += [
-        "//ios/third_party/lottie:lottie+bundle",
-        "//ios/third_party/lottie:lottie+link",
-      ]
-    } else {
-      assert_no_deps += [
-        "//ios/third_party/lottie:lottie+bundle",
-        "//ios/third_party/lottie:lottie+link",
-      ]
-    }
   }
 }
 
@@ -747,6 +730,18 @@ ios_app_bundle("chrome") {
     assert_no_deps += [
       "//ios/third_party/material_components_ios:material_components_ios+bundle",
       "//ios/third_party/material_components_ios:material_components_ios+link",
+    ]
+  }
+
+  # Lottie links with GLKit which does not support macCatalyst environment
+  # (see https://crbug.com/1394553 for details of the build failure). This
+  # is a stop-gap solution.
+  if (target_environment == "catalyst" ||
+      ios_provider_target !=
+      "//ios/chrome/browser/providers:chromium_providers") {
+    assert_no_deps += [
+      "//ios/third_party/lottie:lottie+bundle",
+      "//ios/third_party/lottie:lottie+link",
     ]
   }
 }

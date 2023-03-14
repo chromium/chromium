@@ -247,15 +247,6 @@ class EventRouter : public KeyedService,
   void AddObserverForTesting(TestObserver* observer);
   void RemoveObserverForTesting(TestObserver* observer);
 
-  // Add or remove the extension as having a lazy background page that listens
-  // to the event. The difference from the above methods is that these will be
-  // remembered even after the process goes away. We use this list to decide
-  // which extension pages to load when dispatching an event.
-  void AddLazyEventListener(const std::string& event_name,
-                            const ExtensionId& extension_id);
-  void RemoveLazyEventListener(const std::string& event_name,
-                               const ExtensionId& extension_id);
-
   // If |add_lazy_listener| is true also add the lazy version of this listener.
   void AddFilteredEventListener(
       const std::string& event_name,
@@ -357,6 +348,8 @@ class EventRouter : public KeyedService,
                            OnUserSiteSettingsChanged);
   FRIEND_TEST_ALL_PREFIXES(DeveloperPrivateApiAllowlistUnitTest,
                            ExtensionUpdatedEventOnAllowlistWarningChange);
+  FRIEND_TEST_ALL_PREFIXES(DeveloperPrivateApiWithPermittedSitesUnitTest,
+                           OnUserSiteSettingsChanged);
   FRIEND_TEST_ALL_PREFIXES(StorageApiUnittest, StorageAreaOnChanged);
   FRIEND_TEST_ALL_PREFIXES(StorageApiUnittest,
                            StorageAreaOnChangedOtherListener);

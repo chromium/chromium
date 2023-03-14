@@ -14,7 +14,7 @@ namespace autofill {
 
 class FormTypesTest : public testing::Test {
  private:
-  test::AutofillEnvironment autofill_environment_;
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
 TEST_F(FormTypesTest, FormHasAllCreditCardFieldsReturnsTrue) {

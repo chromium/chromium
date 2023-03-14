@@ -167,6 +167,12 @@ class POLICY_EXPORT PolicyConversionsClient {
  private:
   friend class PolicyConversionsClientTest;
 
+  // Returns the policy scope to be used for UI. The |policy_scope| from the
+  // input is the generic scope: device or user policy. But in Lacros case we
+  // need to filter the user policies based on per_profile flag.
+  std::string GetPolicyScope(const std::string& policy_name,
+                             const PolicyScope& policy_scope) const;
+
   bool convert_types_enabled_ = true;
   bool convert_values_enabled_ = false;
   bool device_local_account_policies_enabled_ = false;
@@ -174,6 +180,11 @@ class POLICY_EXPORT PolicyConversionsClient {
   bool pretty_print_enabled_ = true;
   bool user_policies_enabled_ = true;
   bool drop_default_values_enabled_ = false;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void PopulatePerProfileMap();
+  std::unique_ptr<std::map<std::string, bool>> per_profile_map_;
+#endif
 };
 
 }  // namespace policy

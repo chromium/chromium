@@ -70,11 +70,25 @@ class PlatformDelegate {
   virtual absl::optional<ProductMetadata> GetProductMetadata(
       const base::FilePath& file_path);
 
+  struct SigningCertificatesPublicKeys {
+    SigningCertificatesPublicKeys();
+    SigningCertificatesPublicKeys(const SigningCertificatesPublicKeys&);
+    SigningCertificatesPublicKeys& operator=(
+        const SigningCertificatesPublicKeys&);
+    ~SigningCertificatesPublicKeys();
+
+    std::vector<std::string> hashes;
+
+    // The following fields apply to the leaf certificate.
+    bool is_os_verified = false;
+    absl::optional<std::string> subject_name;
+  };
+
   // Returns the public key SHA256 hashes of the certificates used to sign an
   // executable file located at `file_path`. Returns absl::nullopt if
   // unsupported on the current platform.
-  virtual absl::optional<std::vector<std::string>>
-  GetSigningCertificatesPublicKeyHashes(const base::FilePath& file_path);
+  virtual absl::optional<SigningCertificatesPublicKeys>
+  GetSigningCertificatesPublicKeys(const base::FilePath& file_path);
 };
 
 }  // namespace device_signals

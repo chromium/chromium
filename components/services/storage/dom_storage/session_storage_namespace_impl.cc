@@ -4,11 +4,11 @@
 
 #include "components/services/storage/dom_storage/session_storage_namespace_impl.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/ranges/algorithm.h"
 
 namespace storage {
 
@@ -92,12 +92,13 @@ void SessionStorageNamespaceImpl::PopulateAsClone(
   state_ = State::kPopulated;
   pending_population_from_parent_namespace_.clear();
   namespace_entry_ = namespace_metadata;
-  std::transform(areas_to_clone.begin(), areas_to_clone.end(),
-                 std::inserter(storage_key_areas_, storage_key_areas_.begin()),
-                 [namespace_metadata](const auto& source) {
-                   return std::make_pair(
-                       source.first, source.second->Clone(namespace_metadata));
-                 });
+  base::ranges::transform(
+      areas_to_clone,
+      std::inserter(storage_key_areas_, storage_key_areas_.begin()),
+      [namespace_metadata](const auto& source) {
+        return std::make_pair(source.first,
+                              source.second->Clone(namespace_metadata));
+      });
   if (!run_after_population_.empty()) {
     for (base::OnceClosure& callback : run_after_population_)
       std::move(callback).Run();

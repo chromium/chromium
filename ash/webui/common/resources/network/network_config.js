@@ -637,6 +637,11 @@ Polymer({
         return;
       }
       this.eapProperties_.subjectAltNameMatch = sanm;
+      if (!this.eapConfigServerCaCertAllowed_()) {
+        this.setError_('missingEapDefaultServerCaSubjectVerification');
+        this.propertiesSent_ = false;
+        return;
+      }
     }
     const propertiesToSet = this.getPropertiesToSet_();
     if (this.managedProperties_.source === OncSource.kNone) {
@@ -1821,12 +1826,6 @@ Polymer({
         this.managedProperties_.source !== OncSource.kNone) {
       return false;
     }
-
-    // Insecure WiFi networks are always shared.
-    if (this.mojoType_ === NetworkType.kWiFi &&
-        this.securityType_ === SecurityType.kNone) {
-      return false;
-    }
     return true;
   },
 
@@ -2493,5 +2492,39 @@ Polymer({
       // Reset error if user starts typing new password.
       this.setError_('');
     }
+  },
+
+  /**
+   * Verifies if the selected server CA certificate can be used for the selected
+   * EAP method. This method returns false is the selected EAP method requires a
+   * server CA certificate and the user selected the default certificate without
+   * configuring the domain suffix match or subject alternative match and
+   * without explicitly allowing insecure connections via Chrome flags.
+   * Otherwise returns true.
+   * @return {boolean}
+   * @private
+   */
+  eapConfigServerCaCertAllowed_() {
+    if (loadTimeData.getBoolean(
+            'eapDefaultCasWithoutSubjectVerificationAllowed')) {
+      return true;
+    }
+
+    const outer = this.eapProperties_.outer;
+    if (!(outer === 'EAP-TLS' || outer === 'EAP-TTLS' || outer === 'PEAP')) {
+      return true;
+    }
+
+    if (this.selectedServerCaHash_ !== DEFAULT_HASH) {
+      // Does not use default CA server certs.
+      return true;
+    }
+
+    if (this.eapProperties_.domainSuffixMatch.length != 0 ||
+        this.eapProperties_.subjectAltNameMatch.length != 0) {
+      return true;
+    }
+
+    return false;
   },
 });

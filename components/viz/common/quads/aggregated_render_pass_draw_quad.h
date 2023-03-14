@@ -21,6 +21,8 @@ namespace viz {
 class VIZ_COMMON_EXPORT AggregatedRenderPassDrawQuad
     : public RenderPassDrawQuadInternal {
  public:
+  static constexpr Material kMaterial = Material::kAggregatedRenderPass;
+
   AggregatedRenderPassDrawQuad();
   AggregatedRenderPassDrawQuad(const AggregatedRenderPassDrawQuad& other);
   ~AggregatedRenderPassDrawQuad() override;

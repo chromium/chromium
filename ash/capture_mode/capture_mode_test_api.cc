@@ -53,6 +53,10 @@ void CaptureModeTestApi::SetCaptureModeSource(CaptureModeSource source) {
   controller_->SetSource(source);
 }
 
+void CaptureModeTestApi::SetRecordingType(RecordingType recording_type) {
+  controller_->SetRecordingType(recording_type);
+}
+
 bool CaptureModeTestApi::IsSessionActive() const {
   return controller_->IsActive();
 }

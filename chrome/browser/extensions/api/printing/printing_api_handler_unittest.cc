@@ -178,7 +178,7 @@ constexpr char kPdfExample[] =
     "%PDF- This is a string starting with a PDF's magic bytes and long enough "
     "to be seen as a PDF by LooksLikePdf.";
 
-std::unique_ptr<api::printing::SubmitJob::Params> ConstructSubmitJobParams(
+absl::optional<api::printing::SubmitJob::Params> ConstructSubmitJobParams(
     const std::string& printer_id,
     const std::string& title,
     const std::string& ticket,

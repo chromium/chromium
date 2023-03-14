@@ -11,10 +11,6 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-if (is_ios) {
-  import("//build/config/ios/bundle_data_from_filelist.gni")
-}
-
 cc_component("cc") {
   sources = [
     "benchmarks/benchmark_instrumentation.cc",
@@ -674,9 +670,11 @@ cc_test_static_library("test_support") {
 }
 
 if (is_ios) {
-  bundle_data_from_filelist("unit_tests_bundle_data") {
+  bundle_data("unit_tests_bundle_data") {
     testonly = true
-    filelist_name = "unit_tests_bundle_data.filelist"
+    sources = [ "test/data/lottie/animation_with_2_text_nodes.json" ]
+    outputs = [ "{{bundle_resources_dir}}/" +
+                "{{source_root_relative_dir}}/{{source_file_part}}" ]
   }
 }
 
@@ -910,7 +908,7 @@ cc_test("cc_unittests") {
     "//ui/gl:test_support",
   ]
 
-  data = [ "//components/viz/test/data/" ]
+  data = [ "//components/test/data/viz/" ]
   data_deps = [
     "//testing/buildbot/filters:cc_unittests_filters",
     "//third_party/mesa_headers",
@@ -944,7 +942,10 @@ cc_test("cc_unittests") {
   }
 
   if (is_ios) {
-    public_deps = [ ":unit_tests_bundle_data" ]
+    public_deps = [
+      ":unit_tests_bundle_data",
+      "//components/test:viz_test_bundle_data",
+    ]
   }
 }
 
@@ -1000,7 +1001,7 @@ cc_test("cc_perftests") {
   # This target should not require the Chrome executable to run.
   assert_no_deps = [ "//chrome" ]
 
-  data = [ "//components/viz/test/data/" ]
+  data = [ "//components/test/data/viz/" ]
 
   data_deps = [
     # Needed for isolate script to execute.

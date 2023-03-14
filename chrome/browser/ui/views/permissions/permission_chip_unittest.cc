@@ -1,11 +1,14 @@
 // Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "chrome/browser/ui/views/permissions/permission_prompt_chip.h"
+
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/permissions/chip_controller.h"
-#include "chrome/browser/ui/views/permissions/permission_prompt_chip.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_ui_selector.h"
@@ -21,28 +24,33 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
   explicit TestDelegate(
       const GURL& origin,
       const std::vector<permissions::RequestType> request_types,
-      bool with_gesture)
-      : TestDelegate(origin, request_types, with_gesture, absl::nullopt) {}
+      bool with_gesture,
+      content::WebContents* web_contents)
+      : TestDelegate(origin,
+                     request_types,
+                     with_gesture,
+                     absl::nullopt,
+                     web_contents) {}
 
   explicit TestDelegate(
       const GURL& origin,
       const std::vector<permissions::RequestType> request_types,
       bool with_gesture,
       absl::optional<permissions::PermissionUiSelector::QuietUiReason>
-          quiet_ui_reason)
-      : quiet_ui_reason_(quiet_ui_reason) {
-    std::transform(
-        request_types.begin(), request_types.end(),
-        std::back_inserter(requests_), [&](auto& request_type) {
+          quiet_ui_reason,
+      content::WebContents* web_contents)
+      : quiet_ui_reason_(quiet_ui_reason), web_contents_(web_contents) {
+    base::ranges::transform(
+        request_types, std::back_inserter(requests_), [&](auto& request_type) {
           return std::make_unique<permissions::MockPermissionRequest>(
               origin, request_type,
               with_gesture
                   ? permissions::PermissionRequestGestureType::GESTURE
                   : permissions::PermissionRequestGestureType::NO_GESTURE);
         });
-    std::transform(requests_.begin(), requests_.end(),
-                   std::back_inserter(raw_requests_),
-                   [](auto& req) { return req.get(); });
+    base::ranges::transform(
+        requests_, std::back_inserter(raw_requests_),
+        &std::unique_ptr<permissions::PermissionRequest>::get);
   }
 
   const std::vector<permissions::PermissionRequest*>& Requests() override {
@@ -90,6 +98,10 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
     return weak_factory_.GetWeakPtr();
   }
 
+  content::WebContents* GetAssociatedWebContents() override {
+    return web_contents_;
+  }
+
   bool IsRequestInProgress() { return !requests_.empty(); }
 
   void SetAlreadyDisplayed() { was_current_request_already_displayed_ = true; }
@@ -100,6 +112,7 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
   bool was_current_request_already_displayed_ = false;
   absl::optional<permissions::PermissionUiSelector::QuietUiReason>
       quiet_ui_reason_;
+  raw_ptr<content::WebContents> web_contents_;
   base::WeakPtrFactory<TestDelegate> weak_factory_{this};
 };
 }  // namespace
@@ -137,7 +150,8 @@ class PermissionChipUnitTest : public TestWithBrowserView {
 
 TEST_F(PermissionChipUnitTest, AlreadyDisplayedRequestTest) {
   TestDelegate delegate(GURL("https://test.origin"),
-                        {permissions::RequestType::kNotifications}, false);
+                        {permissions::RequestType::kNotifications}, false,
+                        web_contents_);
   delegate.SetAlreadyDisplayed();
 
   EXPECT_TRUE(delegate.WasCurrentRequestAlreadyDisplayed());
@@ -172,7 +186,8 @@ TEST_F(PermissionChipUnitTest, AlreadyDisplayedRequestTest) {
 
 TEST_F(PermissionChipUnitTest, DisplayChipAutoPopupTest) {
   TestDelegate delegate(GURL("https://test.origin"),
-                        {permissions::RequestType::kNotifications}, true);
+                        {permissions::RequestType::kNotifications}, true,
+                        web_contents_);
   PermissionPromptChip chip_prompt(browser(), web_contents_, &delegate);
   ChipController* chip_controller =
       chip_prompt.get_chip_controller_for_testing();
@@ -216,7 +231,8 @@ TEST_F(PermissionChipUnitTest, DisplayChipAutoPopupTest) {
 
 TEST_F(PermissionChipUnitTest, MultiClickOnChipAutoPopupTest) {
   TestDelegate delegate(GURL("https://test.origin"),
-                        {permissions::RequestType::kNotifications}, true);
+                        {permissions::RequestType::kNotifications}, true,
+                        web_contents_);
   PermissionPromptChip chip_prompt(browser(), web_contents_, &delegate);
   ChipController* chip_controller =
       chip_prompt.get_chip_controller_for_testing();
@@ -293,7 +309,8 @@ TEST_F(PermissionChipUnitTest, MultiClickOnChipAutoPopupTest) {
 TEST_F(PermissionChipUnitTest, DisplayQuietChipNoAbusiveTest) {
   TestDelegate delegate(
       GURL("https://test.origin"), {permissions::RequestType::kNotifications},
-      true, permissions::PermissionUiSelector::QuietUiReason::kEnabledInPrefs);
+      true, permissions::PermissionUiSelector::QuietUiReason::kEnabledInPrefs,
+      web_contents_);
   PermissionPromptChip chip_prompt(browser(), web_contents_, &delegate);
   ChipController* chip_controller =
       chip_prompt.get_chip_controller_for_testing();
@@ -338,7 +355,8 @@ TEST_F(PermissionChipUnitTest, DisplayQuietChipNoAbusiveTest) {
 TEST_F(PermissionChipUnitTest, MultiClickOnQuietChipNoAbusiveTest) {
   TestDelegate delegate(
       GURL("https://test.origin"), {permissions::RequestType::kNotifications},
-      true, permissions::PermissionUiSelector::QuietUiReason::kEnabledInPrefs);
+      true, permissions::PermissionUiSelector::QuietUiReason::kEnabledInPrefs,
+      web_contents_);
   PermissionPromptChip chip_prompt(browser(), web_contents_, &delegate);
   ChipController* chip_controller =
       chip_prompt.get_chip_controller_for_testing();
@@ -431,7 +449,8 @@ TEST_F(PermissionChipUnitTest, DisplayQuietChipAbusiveTest) {
   TestDelegate delegate(GURL("https://test.origin"),
                         {permissions::RequestType::kNotifications}, true,
                         permissions::PermissionUiSelector::QuietUiReason::
-                            kTriggeredDueToAbusiveRequests);
+                            kTriggeredDueToAbusiveRequests,
+                        web_contents_);
 
   PermissionPromptChip chip_prompt(browser(), web_contents_, &delegate);
   ChipController* chip_controller =
@@ -465,7 +484,8 @@ TEST_F(PermissionChipUnitTest, MultiClickOnQuietChipAbusiveTest) {
   TestDelegate delegate(GURL("https://test.origin"),
                         {permissions::RequestType::kNotifications}, true,
                         permissions::PermissionUiSelector::QuietUiReason::
-                            kTriggeredDueToAbusiveRequests);
+                            kTriggeredDueToAbusiveRequests,
+                        web_contents_);
   PermissionPromptChip chip_prompt(browser(), web_contents_, &delegate);
   ChipController* chip_controller =
       chip_prompt.get_chip_controller_for_testing();

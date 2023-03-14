@@ -78,27 +78,19 @@ suite('NewTabPageAppTest', () => {
       assertFalse(!!app.shadowRoot!.querySelector('ntp-customize-dialog'));
     });
 
-    test('clicking customize button opens customize dialog', async () => {
-      // Act.
-      $$<HTMLElement>(app, '#customizeButton')!.click();
-      await flushTasks();
-
-      // Assert.
-      assertTrue(!!app.shadowRoot!.querySelector('ntp-customize-dialog'));
-      assertEquals(
-          'true',
-          $$<HTMLElement>(
-              app, '#customizeButton')!.getAttribute('aria-pressed'));
-    });
-
     test('logs height', async () => {
       // Assert.
       assertEquals(1, metrics.count('NewTabPage.Height'));
       assertEquals(
           1,
-          metrics.count(
-              'NewTabPage.Height',
-              Math.floor(document.documentElement.clientHeight)));
+          metrics.count('NewTabPage.Height', Math.floor(window.innerHeight)));
+    });
+
+    test('logs width', async () => {
+      // Assert.
+      assertEquals(1, metrics.count('NewTabPage.Width'));
+      assertEquals(
+          1, metrics.count('NewTabPage.Width', Math.floor(window.innerWidth)));
     });
 
     test('open voice search event opens voice search overlay', async () => {
@@ -211,36 +203,6 @@ suite('NewTabPageAppTest', () => {
   });
 
   suite('theming', () => {
-    test('setting theme updates customize dialog', async () => {
-      // Arrange.
-      $$<HTMLElement>(app, '#customizeButton')!.click();
-      const theme = createTheme();
-
-      // TypeScript definitions for Mojo are not perfect, and the following
-      // fields are incorrectly marked as non-optional and non-nullable, when
-      // in reality they are optional and nullable.
-      // TODO(crbug.com/1002798): Remove ignore statements if/when proper Mojo
-      // TS support is added.
-      // @ts-ignore:next-line
-      theme.backgroundImage = null;
-      // @ts-ignore:next-line
-      theme.backgroundImageAttributionUrl = null;
-      // @ts-ignore:next-line
-      theme.logoColor = null;
-
-      // Act.
-      callbackRouterRemote.setTheme(theme);
-      await callbackRouterRemote.$.flushForTesting();
-
-      // Assert.
-      assertDeepEquals(
-          theme, app.shadowRoot!.querySelector('ntp-customize-dialog')!.theme);
-      assertEquals(
-          'true',
-          $$<HTMLElement>(
-              app, '#customizeButton')!.getAttribute('aria-pressed'));
-    });
-
     test('setting theme updates ntp', async () => {
       // Act.
       callbackRouterRemote.setTheme(createTheme());
@@ -253,7 +215,7 @@ suite('NewTabPageAppTest', () => {
           (await backgroundManager.whenCalled('setBackgroundColor')).value);
       assertStyle(
           $$(app, '#content')!, '--color-new-tab-page-attribution-foreground',
-          'rgba(0, 0, 255, 1)');
+          'rgba(0, 0, 255, 1.00)');
       assertEquals(1, backgroundManager.getCallCount('setShowBackgroundImage'));
       assertFalse(await backgroundManager.whenCalled('setShowBackgroundImage'));
       assertStyle($$(app, '#backgroundImageAttribution')!, 'display', 'none');
@@ -352,7 +314,7 @@ suite('NewTabPageAppTest', () => {
 
       // Assert.
       assertTrue(app.$.logo.singleColored);
-      assertStyle(app.$.logo, '--ntp-logo-color', 'rgba(255, 0, 0, 1)');
+      assertStyle(app.$.logo, '--ntp-logo-color', 'rgba(255, 0, 0, 1.00)');
     });
 
     test('theme updates add shortcut color', async () => {
@@ -623,24 +585,6 @@ suite('NewTabPageAppTest', () => {
           });
         });
 
-    test('clicking customize records click', () => {
-      // Act.
-      $$<HTMLElement>(app, '#customizeButton')!.click();
-      app.$.customizeDialogIf.render();
-      $$<HTMLElement>(app, 'ntp-customize-dialog')!.click();
-
-      // Assert.
-      assertEquals(2, metrics.count('NewTabPage.Click'));
-      assertEquals(
-          1, metrics.count('NewTabPage.Click', NtpElement.CUSTOMIZE_BUTTON));
-      assertEquals(
-          1, metrics.count('NewTabPage.Click', NtpElement.CUSTOMIZE_DIALOG));
-      assertEquals(
-          'true',
-          $$<HTMLElement>(
-              app, '#customizeButton')!.getAttribute('aria-pressed'));
-    });
-
     test('clicking OGB records click', () => {
       // Act.
       window.dispatchEvent(new MessageEvent('message', {
@@ -699,18 +643,6 @@ suite('NewTabPageAppTest', () => {
       modules.dispatchEvent(new Event('modules-loaded'));
 
       assertStyle(modules, 'width', `${sampleMaxWidthPx}px`);
-    });
-
-    test('modules can open customize dialog', async () => {
-      // Act.
-      $$(app, 'ntp-modules')!.dispatchEvent(new Event('customize-module'));
-      app.$.customizeDialogIf.render();
-
-      // Assert.
-      assertTrue(!!$$(app, 'ntp-customize-dialog'));
-      assertEquals(
-          CustomizeDialogPage.MODULES,
-          $$(app, 'ntp-customize-dialog')!.selectedPage);
     });
 
     test('promo and modules coordinate', async () => {
@@ -779,22 +711,108 @@ suite('NewTabPageAppTest', () => {
     });
   });
 
-  suite('customize URL', () => {
+  suite('customize dialog', () => {
     suiteSetup(() => {
-      // We inject the URL param in this suite setup so that the URL is updated
-      // before the app element gets created.
-      url.searchParams.append('customize', CustomizeDialogPage.THEMES);
+      loadTimeData.overrideValues({
+        customizeChromeEnabled: false,
+      });
     });
 
-    test('URL opens customize dialog', () => {
+    test('customize dialog closed on start', () => {
+      // Assert.
+      assertFalse(!!app.shadowRoot!.querySelector('ntp-customize-dialog'));
+    });
+
+    test('clicking customize button opens customize dialog', async () => {
       // Act.
-      app.$.customizeDialogIf.render();
+      $$<HTMLElement>(app, '#customizeButton')!.click();
+      await flushTasks();
 
       // Assert.
-      assertTrue(!!$$(app, 'ntp-customize-dialog'));
+      assertTrue(!!app.shadowRoot!.querySelector('ntp-customize-dialog'));
       assertEquals(
-          CustomizeDialogPage.THEMES,
-          $$(app, 'ntp-customize-dialog')!.selectedPage);
+          'true',
+          $$<HTMLElement>(
+              app, '#customizeButton')!.getAttribute('aria-pressed'));
+      assertEquals(1, metrics.count('NewTabPage.Click'));
+      assertEquals(
+          1, metrics.count('NewTabPage.Click', NtpElement.CUSTOMIZE_BUTTON));
+
+      // Act.
+      $$<HTMLElement>(app, 'ntp-customize-dialog')!.click();
+
+      // Assert.
+      assertEquals(2, metrics.count('NewTabPage.Click'));
+      assertEquals(
+          1, metrics.count('NewTabPage.Click', NtpElement.CUSTOMIZE_DIALOG));
+    });
+
+    test('setting theme updates customize dialog', async () => {
+      // Arrange.
+      $$<HTMLElement>(app, '#customizeButton')!.click();
+      const theme = createTheme();
+
+      // TypeScript definitions for Mojo are not perfect, and the following
+      // fields are incorrectly marked as non-optional and non-nullable, when
+      // in reality they are optional and nullable.
+      // TODO(crbug.com/1002798): Remove ignore statements if/when proper Mojo
+      // TS support is added.
+      // @ts-ignore:next-line
+      theme.backgroundImage = null;
+      // @ts-ignore:next-line
+      theme.backgroundImageAttributionUrl = null;
+      // @ts-ignore:next-line
+      theme.logoColor = null;
+
+      // Act.
+      callbackRouterRemote.setTheme(theme);
+      await callbackRouterRemote.$.flushForTesting();
+
+      // Assert.
+      assertDeepEquals(
+          theme, app.shadowRoot!.querySelector('ntp-customize-dialog')!.theme);
+      assertEquals(
+          'true',
+          $$<HTMLElement>(
+              app, '#customizeButton')!.getAttribute('aria-pressed'));
+    });
+
+    suite('modules', () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({
+          modulesEnabled: true,
+        });
+      });
+      test('modules can open customize dialog', async () => {
+        // Act.
+        $$(app, 'ntp-modules')!.dispatchEvent(new Event('customize-module'));
+        app.$.customizeDialogIf.render();
+
+        // Assert.
+        assertTrue(!!$$(app, 'ntp-customize-dialog'));
+        assertEquals(
+            CustomizeDialogPage.MODULES,
+            $$(app, 'ntp-customize-dialog')!.selectedPage);
+      });
+    });
+
+    suite('customize URL', () => {
+      suiteSetup(() => {
+        // We inject the URL param in this suite setup so that the URL is
+        // updated before the app element gets created.
+        url.searchParams.append('customize', CustomizeDialogPage.THEMES);
+      });
+
+      test('URL opens customize dialog', () => {
+        // Act.
+        app.$.customizeDialogIf.render();
+
+        // Assert.
+        assertTrue(!!$$(app, 'ntp-customize-dialog'));
+        assertEquals(
+            CustomizeDialogPage.THEMES,
+            $$(app, 'ntp-customize-dialog')!.selectedPage);
+      });
     });
   });
 

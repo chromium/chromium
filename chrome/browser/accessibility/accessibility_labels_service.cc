@@ -200,19 +200,13 @@ void AccessibilityLabelsService::Init() {
           weak_factory_.GetWeakPtr()));
 }
 
-ui::AXMode AccessibilityLabelsService::GetAXMode() {
-  ui::AXMode ax_mode =
-      content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
-
+bool AccessibilityLabelsService::IsEnabled() {
 #if !BUILDFLAG(IS_ANDROID)
-  ax_mode.set_mode(ui::AXMode::kLabelImages,
-                   profile_->GetPrefs()->GetBoolean(
-                       prefs::kAccessibilityImageLabelsEnabled));
+  return profile_->GetPrefs()->GetBoolean(
+      prefs::kAccessibilityImageLabelsEnabled);
 #else
-  ax_mode.set_mode(ui::AXMode::kLabelImages, GetAndroidEnabledStatus());
+  return GetAndroidEnabledStatus();
 #endif
-
-  return ax_mode;
 }
 
 void AccessibilityLabelsService::EnableLabelsServiceOnce() {

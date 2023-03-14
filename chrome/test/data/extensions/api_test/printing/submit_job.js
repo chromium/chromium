@@ -5,10 +5,10 @@
 chrome.test.getConfig(function(config) {
   const url = 'http://localhost:' + config.testServer.port + '/pdf/test.pdf';
   submitJob('id', 'test job', url, response => {
-    chrome.test.assertTrue(response != undefined);
-    chrome.test.assertTrue(response.status != undefined);
+    chrome.test.assertNe(undefined, response);
+    chrome.test.assertNe(undefined, response.status);
     chrome.test.assertEq(chrome.printing.SubmitJobStatus.OK, response.status);
-    chrome.test.assertTrue(response.jobId != undefined);
+    chrome.test.assertNe(undefined, response.jobId);
 
     chrome.test.notifyPass();
   });

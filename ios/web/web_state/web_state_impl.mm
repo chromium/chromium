@@ -68,21 +68,6 @@ void IgnoreOverRealizationCheck() {
   g_last_realized_count = 0;
 }
 
-#pragma mark - WebState factory methods
-
-/* static */
-std::unique_ptr<WebState> WebState::Create(const CreateParams& params) {
-  return std::make_unique<WebStateImpl>(params);
-}
-
-/* static */
-std::unique_ptr<WebState> WebState::CreateWithStorageSession(
-    const CreateParams& params,
-    CRWSessionStorage* session_storage) {
-  DCHECK(session_storage);
-  return std::make_unique<WebStateImpl>(params, session_storage);
-}
-
 #pragma mark - WebStateImpl public methods
 
 WebStateImpl::WebStateImpl(const CreateParams& params)
@@ -198,8 +183,14 @@ int WebStateImpl::GetNavigationItemCount() const {
                         : saved_->GetNavigationItemCount();
 }
 
-WebFramesManagerImpl& WebStateImpl::GetWebFramesManagerImpl() {
-  return RealizedState()->GetPageWorldWebFramesManager();
+WebFramesManagerImpl& WebStateImpl::GetWebFramesManagerImpl(
+    ContentWorld world) {
+  DCHECK_NE(world, ContentWorld::kAllContentWorlds);
+
+  if (!managers_[world]) {
+    managers_[world] = base::WrapUnique(new WebFramesManagerImpl());
+  }
+  return *managers_[world].get();
 }
 
 SessionCertificatePolicyCacheImpl&
@@ -329,20 +320,14 @@ id<CRWWebViewNavigationProxy> WebStateImpl::GetWebViewNavigationProxy() const {
 
 #pragma mark - WebFrame management
 
-void WebStateImpl::WebFrameBecameAvailable(std::unique_ptr<WebFrame> frame) {
-  RealizedState()->WebFrameBecameAvailable(std::move(frame));
-}
-
-void WebStateImpl::WebFrameBecameUnavailable(const std::string& frame_id) {
-  RealizedState()->WebFrameBecameUnavailable(frame_id);
-}
-
 void WebStateImpl::RetrieveExistingFrames() {
   RealizedState()->RetrieveExistingFrames();
 }
 
 void WebStateImpl::RemoveAllWebFrames() {
-  RealizedState()->RemoveAllWebFrames();
+  for (const auto& iterator : managers_) {
+    iterator.second->RemoveAllWebFrames();
+  }
 }
 
 void WebStateImpl::RequestPermissionsWithDecisionHandler(
@@ -486,12 +471,12 @@ NavigationManager* WebStateImpl::GetNavigationManager() {
   return &RealizedState()->GetNavigationManager();
 }
 
-const WebFramesManager* WebStateImpl::GetPageWorldWebFramesManager() const {
-  return LIKELY(pimpl_) ? &pimpl_->GetPageWorldWebFramesManager() : nullptr;
+WebFramesManager* WebStateImpl::GetPageWorldWebFramesManager() {
+  return &GetWebFramesManagerImpl(ContentWorld::kPageContentWorld);
 }
 
-WebFramesManager* WebStateImpl::GetPageWorldWebFramesManager() {
-  return &RealizedState()->GetPageWorldWebFramesManager();
+WebFramesManager* WebStateImpl::GetWebFramesManager(ContentWorld world) {
+  return &GetWebFramesManagerImpl(world);
 }
 
 const SessionCertificatePolicyCache*
@@ -651,6 +636,11 @@ NSData* WebStateImpl::SessionStateData() {
   return LIKELY(pimpl_) ? pimpl_->SessionStateData() : nil;
 }
 
+void WebStateImpl::SetSwipeRecognizerProvider(
+    id<CRWSwipeRecognizerProvider> delegate) {
+  RealizedState()->SetSwipeRecognizerProvider(delegate);
+}
+
 PermissionState WebStateImpl::GetStateForPermission(
     Permission permission) const {
   return LIKELY(pimpl_) ? pimpl_->GetStateForPermission(permission)
@@ -710,6 +700,13 @@ void WebStateImpl::SetFindInteractionEnabled(bool enabled) {
 id<CRWFindInteraction> WebStateImpl::GetFindInteraction()
     API_AVAILABLE(ios(16)) {
   return [GetWebController() findInteraction];
+}
+
+id WebStateImpl::GetActivityItem() API_AVAILABLE(ios(16.4)) {
+  if (UNLIKELY(!IsRealized())) {
+    return nil;
+  }
+  return [GetWebController() activityItem];
 }
 
 #pragma mark - WebStateImpl private methods

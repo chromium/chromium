@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION_CONTEXT_DELEGATE_H_
 #define CONTENT_PUBLIC_BROWSER_FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION_CONTEXT_DELEGATE_H_
 
+#include "base/time/time.h"
 #include "content/common/content_export.h"
 
 namespace url {
@@ -20,9 +21,22 @@ class CONTENT_EXPORT FederatedIdentityAutoReauthnPermissionContextDelegate {
   FederatedIdentityAutoReauthnPermissionContextDelegate() = default;
   virtual ~FederatedIdentityAutoReauthnPermissionContextDelegate() = default;
 
-  // Returns the permission status of the FedCM API's auto re-authn feature for
-  // the passed-in |relying_party_embedder|.
-  virtual bool HasAutoReauthnPermission(
+  // Returns whether the FedCM API's auto re-authn is unblocked based on content
+  // settings. A caller should also use `IsAutoReauthnEmbargoed()` to determine
+  // whether auto re-authn is allowed or not.
+  virtual bool HasAutoReauthnContentSetting() = 0;
+
+  // Returns whether the FedCM API's auto re-authn feature is embargoed for the
+  // passed-in |relying_party_embedder|. A caller should also use
+  // `HasAutoReauthnContentSetting()` to determine whether auto re-authn is
+  // allowed or not.
+  virtual bool IsAutoReauthnEmbargoed(
+      const url::Origin& relying_party_embedder) = 0;
+
+  // Returns the most recent recorded time an auto-reauthn embargo was started
+  // with the given |relying_party_embedder|. Returns base::Time() if no record
+  // is found.
+  virtual base::Time GetAutoReauthnEmbargoStartTime(
       const url::Origin& relying_party_embedder) = 0;
 
   // Records that an auto re-authn prompt was displayed to the user and places

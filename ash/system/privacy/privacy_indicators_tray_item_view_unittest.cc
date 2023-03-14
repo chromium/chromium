@@ -118,7 +118,13 @@ class PrivacyIndicatorsTrayItemViewTest : public AshTestBase {
   // Set `privacy_indicators_view_` to be visible and perform animation.
   void SetViewVisibleWithAnimation() {
     privacy_indicators_view()->SetVisible(true);
-    privacy_indicators_view_->PerformVisibilityAnimation(/*visible=*/true);
+    privacy_indicators_view_->PerformAnimation();
+  }
+
+  // Simulates completing the animation.
+  void SimulateAnimationEnded() {
+    privacy_indicators_view_->AnimationEnded(
+        privacy_indicators_view_->shorter_side_shrink_animation_.get());
   }
 
  protected:
@@ -143,10 +149,6 @@ class PrivacyIndicatorsTrayItemViewTest : public AshTestBase {
   PrivacyIndicatorsTrayItemView::AnimationState animation_state() {
     return privacy_indicators_view_->animation_state_;
   }
-  void set_animation_state(
-      PrivacyIndicatorsTrayItemView::AnimationState state) {
-    privacy_indicators_view_->animation_state_ = state;
-  }
 
   gfx::LinearAnimation* longer_side_shrink_animation() {
     return privacy_indicators_view_->longer_side_shrink_animation_.get();
@@ -164,9 +166,6 @@ class PrivacyIndicatorsTrayItemViewTest : public AshTestBase {
 
 TEST_F(PrivacyIndicatorsTrayItemViewTest, IconsVisibility) {
   EXPECT_FALSE(privacy_indicators_view()->GetVisible());
-
-  // Set animation to expand to allow showing icons.
-  set_animation_state(PrivacyIndicatorsTrayItemView::AnimationState::kExpand);
 
   privacy_indicators_view()->Update(/*app_id=*/"app_id",
                                     /*is_camera_used=*/true,
@@ -195,11 +194,79 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, IconsVisibility) {
   EXPECT_FALSE(privacy_indicators_view()->GetVisible());
 }
 
+TEST_F(PrivacyIndicatorsTrayItemViewTest, IconsVisibilityAfterAnimation) {
+  privacy_indicators_view()->Update(/*app_id=*/"app_id",
+                                    /*is_camera_used=*/true,
+                                    /*is_microphone_used=*/true);
+  EXPECT_EQ(PrivacyIndicatorsTrayItemView::AnimationState::kExpand,
+            animation_state());
+  ASSERT_TRUE(privacy_indicators_view()->GetVisible());
+  EXPECT_TRUE(camera_icon()->GetVisible());
+  EXPECT_TRUE(microphone_icon()->GetVisible());
+
+  // No icons shown after the animation.
+  SimulateAnimationEnded();
+  EXPECT_EQ(PrivacyIndicatorsTrayItemView::AnimationState::kIdle,
+            animation_state());
+  ASSERT_TRUE(privacy_indicators_view()->GetVisible());
+  EXPECT_FALSE(camera_icon()->GetVisible());
+  EXPECT_FALSE(microphone_icon()->GetVisible());
+
+  // Since there's no new sensor and new media stream added, no icons should be
+  // visible and animation should not be triggered.
+  privacy_indicators_view()->Update(/*app_id=*/"app_id",
+                                    /*is_camera_used=*/true,
+                                    /*is_microphone_used=*/false);
+  EXPECT_EQ(PrivacyIndicatorsTrayItemView::AnimationState::kIdle,
+            animation_state());
+  ASSERT_TRUE(privacy_indicators_view()->GetVisible());
+  EXPECT_FALSE(camera_icon()->GetVisible());
+  EXPECT_FALSE(microphone_icon()->GetVisible());
+
+  // New sensor is accessed (microphone), so we show all icons accessing that
+  // particular app. Animation should start.
+  privacy_indicators_view()->Update(/*app_id=*/"app_id",
+                                    /*is_camera_used=*/true,
+                                    /*is_microphone_used=*/true);
+  EXPECT_EQ(PrivacyIndicatorsTrayItemView::AnimationState::kExpand,
+            animation_state());
+  ASSERT_TRUE(privacy_indicators_view()->GetVisible());
+  EXPECT_TRUE(camera_icon()->GetVisible());
+  EXPECT_TRUE(microphone_icon()->GetVisible());
+
+  SimulateAnimationEnded();
+
+  privacy_indicators_view()->Update(/*app_id=*/"app_id",
+                                    /*is_camera_used=*/true,
+                                    /*is_microphone_used=*/false);
+
+  // New app accessed, show the indicator according to that app.
+  privacy_indicators_view()->Update(/*app_id=*/"app_id2",
+                                    /*is_camera_used=*/false,
+                                    /*is_microphone_used=*/true);
+  EXPECT_EQ(PrivacyIndicatorsTrayItemView::AnimationState::kExpand,
+            animation_state());
+  ASSERT_TRUE(privacy_indicators_view()->GetVisible());
+  EXPECT_FALSE(camera_icon()->GetVisible());
+  EXPECT_TRUE(microphone_icon()->GetVisible());
+
+  SimulateAnimationEnded();
+
+  // Updates the previous app. However, since no new sensor is accessed
+  // (microphone is already accessed by the second app), the indicator should
+  // remain the same with no animation.
+  privacy_indicators_view()->Update(/*app_id=*/"app_id",
+                                    /*is_camera_used=*/true,
+                                    /*is_microphone_used=*/true);
+  EXPECT_EQ(PrivacyIndicatorsTrayItemView::AnimationState::kIdle,
+            animation_state());
+  ASSERT_TRUE(privacy_indicators_view()->GetVisible());
+  EXPECT_FALSE(camera_icon()->GetVisible());
+  EXPECT_FALSE(microphone_icon()->GetVisible());
+}
+
 TEST_F(PrivacyIndicatorsTrayItemViewTest, ScreenShareIconsVisibility) {
   EXPECT_FALSE(privacy_indicators_view()->GetVisible());
-
-  // Set animation to expand to allow showing icons.
-  set_animation_state(PrivacyIndicatorsTrayItemView::AnimationState::kExpand);
 
   privacy_indicators_view()->UpdateScreenShareStatus(
       /*is_screen_sharing=*/true);
@@ -483,9 +550,6 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, StateChangeDuringAnimation) {
 TEST_F(PrivacyIndicatorsTrayItemViewTest, MultipleAppsAccess) {
   EXPECT_FALSE(privacy_indicators_view()->GetVisible());
 
-  // Set animation to expand to allow showing icons.
-  set_animation_state(PrivacyIndicatorsTrayItemView::AnimationState::kExpand);
-
   privacy_indicators_view()->Update(/*app_id=*/"app_id1",
                                     /*is_camera_used=*/true,
                                     /*is_microphone_used=*/false);
@@ -493,20 +557,32 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, MultipleAppsAccess) {
   EXPECT_TRUE(camera_icon()->GetVisible());
   EXPECT_FALSE(microphone_icon()->GetVisible());
 
+  // When a new app accessing mic/cam, we will show the icons according to the
+  // access state of that particular app.
   privacy_indicators_view()->Update(/*app_id=*/"app_id2",
                                     /*is_camera_used=*/true,
-                                    /*is_microphone_used=*/true);
-  EXPECT_TRUE(privacy_indicators_view()->GetVisible());
-  EXPECT_TRUE(camera_icon()->GetVisible());
-  EXPECT_TRUE(microphone_icon()->GetVisible());
-
-  // Indicator should still show when removing 1 app.
-  privacy_indicators_view()->Update(/*app_id=*/"app_id2",
-                                    /*is_camera_used=*/false,
                                     /*is_microphone_used=*/false);
   EXPECT_TRUE(privacy_indicators_view()->GetVisible());
   EXPECT_TRUE(camera_icon()->GetVisible());
   EXPECT_FALSE(microphone_icon()->GetVisible());
+
+  privacy_indicators_view()->Update(/*app_id=*/"app_id3",
+                                    /*is_camera_used=*/false,
+                                    /*is_microphone_used=*/true);
+  EXPECT_TRUE(privacy_indicators_view()->GetVisible());
+  EXPECT_FALSE(camera_icon()->GetVisible());
+  EXPECT_TRUE(microphone_icon()->GetVisible());
+
+  // Indicator should still show when removing 1 and 2 app(s).
+  privacy_indicators_view()->Update(/*app_id=*/"app_id2",
+                                    /*is_camera_used=*/false,
+                                    /*is_microphone_used=*/false);
+  EXPECT_TRUE(privacy_indicators_view()->GetVisible());
+
+  privacy_indicators_view()->Update(/*app_id=*/"app_id3",
+                                    /*is_camera_used=*/false,
+                                    /*is_microphone_used=*/false);
+  EXPECT_TRUE(privacy_indicators_view()->GetVisible());
 
   // Indicator should hide when removing all apps.
   privacy_indicators_view()->Update(/*app_id=*/"app_id1",

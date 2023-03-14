@@ -435,10 +435,9 @@ bool URLDownloader::SaveHTMLForURL(std::string html, const GURL& url) {
   base::FilePath path = reading_list::OfflineURLAbsolutePathFromRelativePath(
       base_directory_,
       reading_list::OfflinePagePath(url, reading_list::OFFLINE_TYPE_HTML));
-  int written = base::WriteFile(path, html.c_str(), html.length());
-  if (written <= 0) {
+  if (!base::WriteFile(path, html)) {
     return false;
   }
-  saved_size_ += written;
+  saved_size_ += html.size();
   return true;
 }

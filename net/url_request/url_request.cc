@@ -281,7 +281,7 @@ LoadStateWithParam URLRequest::GetLoadState() const {
                             std::u16string());
 }
 
-base::Value URLRequest::GetStateAsValue() const {
+base::Value::Dict URLRequest::GetStateAsValue() const {
   base::Value::Dict dict;
   dict.Set("url", original_url().possibly_invalid_spec());
 
@@ -314,7 +314,7 @@ base::Value URLRequest::GetStateAsValue() const {
 
   if (status_ != OK)
     dict.Set("net_error", status_);
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 void URLRequest::LogBlockedBy(base::StringPiece blocked_by) {
@@ -1188,8 +1188,7 @@ IsolationInfo URLRequest::CreateIsolationInfoFromNetworkAnonymizationKey(
       network_anonymization_key.GetTopFrameSite()->site_as_origin_;
 
   absl::optional<url::Origin> frame_origin;
-  if (NetworkAnonymizationKey::IsCrossSiteFlagSchemeEnabled() &&
-      network_anonymization_key.GetIsCrossSite().value()) {
+  if (network_anonymization_key.IsCrossSite()) {
     // If we know that the origin is cross site to the top level site, create an
     // empty origin to use as the frame origin for the isolation info. This
     // should be cross site with the top level origin.

@@ -32,17 +32,26 @@ namespace {
 constexpr const char* kBrowserVersionNames[] = {"name1", "name2"};
 constexpr char kResponseMetricsName[] = "Enterprise.CloudReportingResponse";
 
+// Returns a function that schedules a callback it is passed as second parameter
+// with the given result. Useful to test `UploadReport` function.
+auto ScheduleResponse(policy::CloudPolicyClient::Result result) {
+  return [result](auto /*report*/, auto callback) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), result));
+  };
+}
+
 }  // namespace
 
 class ReportUploaderTest : public ::testing::Test {
  public:
-  // Different CloudPolicyClient proxy function will be used in test cases based
+  // Different CloudPolicyClient functions will be used in test cases based
   // on the current operation system. They share same retry and error handling
   // behaviors provided by ReportUploader.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#define UploadReportProxy UploadChromeOsUserReportProxy
+#define UploadReport UploadChromeOsUserReport
 #else
-#define UploadReportProxy UploadChromeDesktopReportProxy
+#define UploadReport UploadChromeDesktopReport
 #endif
 
   ReportUploaderTest()
@@ -139,10 +148,9 @@ class ReportUploaderTestWithReportType
 #if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 TEST_F(ReportUploaderTest, NotRegisteredCrashes) {
   CreateUploader(/* retry_count = */ 1);
-  EXPECT_CALL(client_, UploadReportProxy(_, _))
-      .WillOnce(WithArgs<1>(
-          policy::ScheduleResultCallback(policy::CloudPolicyClient::Result(
-              policy::CloudPolicyClient::NotRegistered()))));
+  EXPECT_CALL(client_, UploadReport)
+      .WillOnce(ScheduleResponse(policy::CloudPolicyClient::Result(
+          policy::CloudPolicyClient::NotRegistered())));
   ReportRequestQueue requests;
   requests.push(std::make_unique<ReportRequest>(GetReportType()));
   base::test::TestFuture<ReportUploader::ReportStatus> future;
@@ -154,10 +162,9 @@ TEST_F(ReportUploaderTest, NotRegisteredCrashes) {
 
 TEST_F(ReportUploaderTest, PersistentError) {
   CreateUploader(/* retry_count = */ 1);
-  EXPECT_CALL(client_, UploadReportProxy(_, _))
-      .WillOnce(WithArgs<1>(
-          policy::ScheduleResultCallback(policy::CloudPolicyClient::Result(
-              policy::DM_STATUS_SERVICE_DEVICE_NOT_FOUND))));
+  EXPECT_CALL(client_, UploadReport)
+      .WillOnce(ScheduleResponse(policy::CloudPolicyClient::Result(
+          policy::DM_STATUS_SERVICE_DEVICE_NOT_FOUND)));
   UploadReportAndSetExpectation(/*number_of_request=*/2,
                                 ReportUploader::kPersistentError);
   RunNextTask();
@@ -169,14 +176,12 @@ TEST_F(ReportUploaderTest, PersistentError) {
 
 TEST_F(ReportUploaderTest, RequestTooBigError) {
   CreateUploader(/* *retry_count = */ 2);
-  EXPECT_CALL(client_, UploadReportProxy(_, _))
+  EXPECT_CALL(client_, UploadReport)
       .Times(2)
-      .WillOnce(WithArgs<1>(
-          policy::ScheduleResultCallback(policy::CloudPolicyClient::Result(
-              policy::DM_STATUS_REQUEST_TOO_LARGE))))
-      .WillOnce(WithArgs<1>(
-          policy::ScheduleResultCallback(policy::CloudPolicyClient::Result(
-              policy::DM_STATUS_REQUEST_TOO_LARGE))));
+      .WillOnce(ScheduleResponse(policy::CloudPolicyClient::Result(
+          policy::DM_STATUS_REQUEST_TOO_LARGE)))
+      .WillOnce(ScheduleResponse(policy::CloudPolicyClient::Result(
+          policy::DM_STATUS_REQUEST_TOO_LARGE)));
   UploadReportAndSetExpectation(/*number_of_request=*/2,
                                 ReportUploader::kSuccess);
   RunNextTask();
@@ -188,13 +193,12 @@ TEST_F(ReportUploaderTest, RequestTooBigError) {
 }
 
 TEST_F(ReportUploaderTest, RetryAndSuccess) {
-  EXPECT_CALL(client_, UploadReportProxy(_, _))
+  EXPECT_CALL(client_, UploadReport)
       .Times(2)
-      .WillOnce(WithArgs<1>(
-          policy::ScheduleResultCallback(policy::CloudPolicyClient::Result(
-              policy::DM_STATUS_TEMPORARY_UNAVAILABLE))))
-      .WillOnce(WithArgs<1>(policy::ScheduleResultCallback(
-          policy::CloudPolicyClient::Result(policy::DM_STATUS_SUCCESS))));
+      .WillOnce(ScheduleResponse(policy::CloudPolicyClient::Result(
+          policy::DM_STATUS_TEMPORARY_UNAVAILABLE)))
+      .WillOnce(ScheduleResponse(
+          policy::CloudPolicyClient::Result(policy::DM_STATUS_SUCCESS)));
   CreateUploader(/* retry_count = */ 1);
   UploadReportAndSetExpectation(/*number_of_request=*/1,
                                 ReportUploader::kSuccess);
@@ -214,11 +218,10 @@ TEST_F(ReportUploaderTest, RetryAndSuccess) {
 }
 
 TEST_F(ReportUploaderTest, RetryAndFailedWithPersistentError) {
-  EXPECT_CALL(client_, UploadReportProxy(_, _))
+  EXPECT_CALL(client_, UploadReport)
       .Times(1)
-      .WillOnce(WithArgs<1>(
-          policy::ScheduleResultCallback(policy::CloudPolicyClient::Result(
-              policy::DM_STATUS_TEMPORARY_UNAVAILABLE))));
+      .WillOnce(ScheduleResponse(policy::CloudPolicyClient::Result(
+          policy::DM_STATUS_TEMPORARY_UNAVAILABLE)));
   CreateUploader(/* retry_count = */ 1);
   UploadReportAndSetExpectation(/*number_of_request=*/1,
                                 ReportUploader::kPersistentError);
@@ -231,11 +234,10 @@ TEST_F(ReportUploaderTest, RetryAndFailedWithPersistentError) {
   // No response, request is retried.
   EXPECT_FALSE(has_responded_);
   // Error is changed.
-  EXPECT_CALL(client_, UploadReportProxy(_, _))
+  EXPECT_CALL(client_, UploadReport)
       .Times(1)
-      .WillOnce(WithArgs<1>(
-          policy::ScheduleResultCallback(policy::CloudPolicyClient::Result(
-              policy::DM_STATUS_SERVICE_DEVICE_NOT_FOUND))));
+      .WillOnce(ScheduleResponse(policy::CloudPolicyClient::Result(
+          policy::DM_STATUS_SERVICE_DEVICE_NOT_FOUND)));
   RunNextTask();
   EXPECT_TRUE(has_responded_);
   ::testing::Mock::VerifyAndClearExpectations(&client_);
@@ -245,11 +247,10 @@ TEST_F(ReportUploaderTest, RetryAndFailedWithPersistentError) {
 }
 
 TEST_F(ReportUploaderTest, RetryAndFailedWithTransientError) {
-  EXPECT_CALL(client_, UploadReportProxy(_, _))
+  EXPECT_CALL(client_, UploadReport)
       .Times(2)
-      .WillRepeatedly(WithArgs<1>(
-          policy::ScheduleResultCallback(policy::CloudPolicyClient::Result(
-              policy::DM_STATUS_TEMPORARY_UNAVAILABLE))));
+      .WillRepeatedly(ScheduleResponse(policy::CloudPolicyClient::Result(
+          policy::DM_STATUS_TEMPORARY_UNAVAILABLE)));
   CreateUploader(/* retry_count = */ 1);
   UploadReportAndSetExpectation(/*number_of_request=*/1,
                                 ReportUploader::kTransientError);
@@ -275,35 +276,33 @@ TEST_F(ReportUploaderTest, MultipleReports) {
     // First report
     EXPECT_CALL(
         client_,
-        UploadReportProxy(
-            Property(&ReportRequest::DeviceReportRequestProto::browser_report,
-                     Property(&em::BrowserReport::browser_version,
-                              Eq(kBrowserVersionNames[0]))),
+        UploadReport(
+            Pointee(Property(
+                &ReportRequest::DeviceReportRequestProto::browser_report,
+                Property(&em::BrowserReport::browser_version,
+                         Eq(kBrowserVersionNames[0])))),
             _))
         .Times(3)
-        .WillOnce(WithArgs<1>(
-            policy::ScheduleResultCallback(policy::CloudPolicyClient::Result(
-                policy::DM_STATUS_TEMPORARY_UNAVAILABLE))))
-        .WillOnce(WithArgs<1>(
-            policy::ScheduleResultCallback(policy::CloudPolicyClient::Result(
-                policy::DM_STATUS_TEMPORARY_UNAVAILABLE))))
-        .WillOnce(WithArgs<1>(policy::ScheduleResultCallback(
-            policy::CloudPolicyClient::Result(policy::DM_STATUS_SUCCESS))));
+        .WillOnce(ScheduleResponse(policy::CloudPolicyClient::Result(
+            policy::DM_STATUS_TEMPORARY_UNAVAILABLE)))
+        .WillOnce(ScheduleResponse(policy::CloudPolicyClient::Result(
+            policy::DM_STATUS_TEMPORARY_UNAVAILABLE)))
+        .WillOnce(ScheduleResponse(
+            policy::CloudPolicyClient::Result(policy::DM_STATUS_SUCCESS)));
     // Second report
     EXPECT_CALL(
         client_,
-        UploadReportProxy(
-            Property(&ReportRequest::DeviceReportRequestProto::browser_report,
-                     Property(&em::BrowserReport::browser_version,
-                              Eq(kBrowserVersionNames[1]))),
+        UploadReport(
+            Pointee(Property(
+                &ReportRequest::DeviceReportRequestProto::browser_report,
+                Property(&em::BrowserReport::browser_version,
+                         Eq(kBrowserVersionNames[1])))),
             _))
         .Times(2)
-        .WillOnce(WithArgs<1>(
-            policy::ScheduleResultCallback(policy::CloudPolicyClient::Result(
-                policy::DM_STATUS_TEMPORARY_UNAVAILABLE))))
-        .WillOnce(WithArgs<1>(
-            policy::ScheduleResultCallback(policy::CloudPolicyClient::Result(
-                policy::DM_STATUS_TEMPORARY_UNAVAILABLE))));
+        .WillOnce(ScheduleResponse(policy::CloudPolicyClient::Result(
+            policy::DM_STATUS_TEMPORARY_UNAVAILABLE)))
+        .WillOnce(ScheduleResponse(policy::CloudPolicyClient::Result(
+            policy::DM_STATUS_TEMPORARY_UNAVAILABLE)));
   }
   CreateUploader(/* retry_count = */ 2);
   UploadReportAndSetExpectation(/*number_of_request=*/2,
@@ -334,9 +333,9 @@ TEST_F(ReportUploaderTest, MultipleReports) {
 
 // Verified three DM server error that is transient.
 TEST_P(ReportUploaderTestWithTransientError, WithoutRetry) {
-  EXPECT_CALL(client_, UploadReportProxy(_, _))
-      .WillOnce(WithArgs<1>(policy::ScheduleResultCallback(
-          policy::CloudPolicyClient::Result(GetParam()))));
+  EXPECT_CALL(client_, UploadReport)
+      .WillOnce(
+          ScheduleResponse(policy::CloudPolicyClient::Result(GetParam())));
   UploadReportAndSetExpectation(/*number_of_request=*/2,
                                 ReportUploader::kTransientError);
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -355,14 +354,14 @@ TEST_P(ReportUploaderTestWithReportType, Success) {
   switch (GetReportType()) {
     case ReportType::kFull:
     case ReportType::kBrowserVersion:
-      EXPECT_CALL(client_, UploadReportProxy(_, _))
-          .WillOnce(WithArgs<1>(policy::ScheduleResultCallback(
-              policy::CloudPolicyClient::Result(policy::DM_STATUS_SUCCESS))));
+      EXPECT_CALL(client_, UploadReport)
+          .WillOnce(ScheduleResponse(
+              policy::CloudPolicyClient::Result(policy::DM_STATUS_SUCCESS)));
       break;
     case ReportType::kProfileReport:
-      EXPECT_CALL(client_, UploadChromeProfileReportProxy(_, _))
-          .WillOnce(WithArgs<1>(policy::ScheduleResultCallback(
-              policy::CloudPolicyClient::Result(policy::DM_STATUS_SUCCESS))));
+      EXPECT_CALL(client_, UploadChromeProfileReport)
+          .WillOnce(ScheduleResponse(
+              policy::CloudPolicyClient::Result(policy::DM_STATUS_SUCCESS)));
       break;
   }
 

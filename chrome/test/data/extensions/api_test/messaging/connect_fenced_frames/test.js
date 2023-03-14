@@ -11,7 +11,7 @@ var testTab = null;
 function compareSenders(expected, actual) {
   // documentId is a unique ID so we can't assume anything about it, just
   // that it is provided.
-  chrome.test.assertTrue(actual.documentId != undefined);
+  chrome.test.assertNe(undefined, actual.documentId);
   chrome.test.assertEq('active', actual.documentLifecycle);
   chrome.test.assertEq(expected.frameId, actual.frameId);
   chrome.test.assertEq(expected.url, actual.url);

@@ -20,7 +20,9 @@ from gpu_tests import skia_gold_matching_algorithms as algo
 
 import gpu_path_util
 
-CRASH_TYPE_GPU = 'gpu'
+CRASH_TYPE_BROWSER = 'browser'
+CRASH_TYPE_GPU = 'gpu-process'
+CRASH_TYPE_RENDERER = 'renderer'
 
 # These tests attempt to use test rects that are larger than the small screen
 # on some Fuchsia devices, so we need to use a less-desirable screenshot capture
@@ -416,8 +418,7 @@ class PixelTestPages():
       VULKAN_SWIFTSHADER = 2
 
     def webgpu_pages_helper(base_name, mode):
-      webgpu_args = [
-          cba.ENABLE_UNSAFE_WEBGPU,
+      webgpu_args = cba.ENABLE_WEBGPU_FOR_TESTING + [
           cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES
       ]
       video_frame_query_params = '?sourceType=hw_decoder'
@@ -533,8 +534,8 @@ class PixelTestPages():
 
   @staticmethod
   def WebGPUCanvasCapturePages(base_name):
-    webgpu_args = [
-        cba.ENABLE_UNSAFE_WEBGPU, cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES
+    webgpu_args = cba.ENABLE_WEBGPU_FOR_TESTING + [
+        cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES
     ]
 
     browser_args_canvas_one_copy_capture = webgpu_args + [

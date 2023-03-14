@@ -164,8 +164,9 @@ LoginScreenExtensionsLifetimeManager::GetPolicyExtensionIds() const {
     return {};
   }
   extensions::ExtensionIdList extension_ids;
-  for (const auto item : pref->GetValue()->DictItems())
+  for (const auto item : pref->GetValue()->GetDict()) {
     extension_ids.push_back(item.first);
+  }
   return extension_ids;
 }
 

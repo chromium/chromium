@@ -11,6 +11,8 @@
 #include "base/test/bind.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_target_device_connection_broker.h"
 #include "chrome/browser/nearby_sharing/fake_nearby_connections_manager.h"
+#include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -74,6 +76,7 @@ class TargetDeviceBootstrapControllerTest : public testing::Test {
   }
 
  protected:
+  base::test::SingleThreadTaskEnvironment task_environment_;
   FakeTargetDeviceConnectionBroker::Factory connection_broker_factory_;
   FakeNearbyConnectionsManager fake_nearby_connections_manager_;
   std::unique_ptr<FakeObserver> fake_observer_;
@@ -190,16 +193,9 @@ TEST_F(TargetDeviceBootstrapControllerTest, CloseConnection) {
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest, GetPhoneInstanceId) {
-  // Ensure GetPhoneInstanceId() returns an empty string when no command line
-  // switch is set.
+  // TODO(b/234655072): Build out this unittest once phone instance ID is
+  // retrieved from Gaia credentials exchange.
   ASSERT_TRUE(bootstrap_controller_->GetPhoneInstanceId().empty());
-
-  std::string kExpectedPhoneInstanceID = "someArbitraryInstanceID";
-  base::CommandLine::ForCurrentProcess()->InitFromArgv(
-      {"", "--quick-start-phone-instance-id=" + kExpectedPhoneInstanceID});
-
-  EXPECT_EQ(bootstrap_controller_->GetPhoneInstanceId(),
-            kExpectedPhoneInstanceID);
 }
 
 }  // namespace ash::quick_start

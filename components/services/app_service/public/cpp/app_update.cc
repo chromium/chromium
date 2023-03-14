@@ -5,6 +5,7 @@
 #include "components/services/app_service/public/cpp/app_update.h"
 
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
@@ -26,6 +27,10 @@ static const std::vector<std::string>& EmptyStringVector() {
 absl::optional<apps::RunOnOsLogin> CloneRunOnOsLogin(
     const apps::RunOnOsLogin& login_data) {
   return apps::RunOnOsLogin(login_data.login_mode, login_data.is_managed);
+}
+
+std::string FormatBytes(absl::optional<uint64_t> bytes) {
+  return bytes.has_value() ? base::NumberToString(bytes.value()) : "null";
 }
 
 }  // namespace
@@ -493,8 +498,8 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
         << EnumToString(app.RunOnOsLogin().value().login_mode) << std::endl;
   }
 
-  out << "App Size: " << app.AppSizeInBytes().value_or(-1) << std::endl;
-  out << "Data Size: " << app.DataSizeInBytes().value_or(-1) << std::endl;
+  out << "App Size: " << FormatBytes(app.AppSizeInBytes()) << std::endl;
+  out << "Data Size: " << FormatBytes(app.DataSizeInBytes()) << std::endl;
 
   return out;
 }

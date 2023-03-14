@@ -78,6 +78,7 @@ class CC_EXPORT SoftwareImageDecodeCache
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
   size_t GetNumCacheEntriesForTesting();
+  size_t GetMaxNumCacheEntriesForTesting();
 
  private:
   using CacheEntry = Utils::CacheEntry;

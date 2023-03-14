@@ -20,23 +20,6 @@ namespace ash {
 // specify which optional screens to go through from the CHOOBE screen.
 class ChoobeFlowController {
  public:
-  // Resources of the strings used in the tiles shown in the CHOOBE
-  // screen. Resources will be added to the `LocalizedValuesBuilder`
-  // in `LocaleSwitchScreenHandler::DeclareLocalizedValues()`.
-  struct OptionalScreenResource {
-    const char* key;
-    int message_id;
-  };
-
-  // Optional screen which is part of CHOOBE. The screen tile will
-  // be shown in the CHOOBE screen if it is eligible for the user
-  // (`Screen::ShouldBeSkipped()` method returns `false`).
-  struct OptionalScreen {
-    StaticOobeScreenId screen_id;
-    const char* icon_id;
-    OptionalScreenResource title_resource;
-  };
-
   ChoobeFlowController();
 
   ChoobeFlowController(const ChoobeFlowController&) = delete;
@@ -44,53 +27,52 @@ class ChoobeFlowController {
 
   ~ChoobeFlowController();
 
-  // Called before the CHOOBE screen is shown:
-  //  * Populates the `eligible_screens_` vector with the optional
-  //    screens that the user can go through.
-  //  * Sets `is_choobe_flow_active_` to `true` if the number of eligible
-  //    screens falls in the allowed range for CHOOBE screen to be shown.
-  void Start();
+  // Whether CHOOBE flow should be started.
+  // Precondition: Should only be called if CHOOBE was not started before.
+  // To check whether CHOOBE has started and should be resumed use
+  // ShouldResumeChoobe();
+  static bool ShouldStartChoobe();
 
-  // * Clears `eligible_screens_` and `selected_screens_`.
-  // * Sets `is_choobe_flow_active_` to `false` so that future calls to
-  //   `ShouldScreenBeSkipped(screen_id)` returns `false`.
-  // * Clears `kChoobeSelectedScreens` preference from `prefs`.
-  void Stop(PrefService& prefs);
+  // Whether CHOOBE flow was interrupted by a shutdown and should be resumed.
+  // The check is based on whether `kChoobeSelectedScreens` pref is stored.
+  static bool ShouldResumeChoobe(const PrefService& prefs);
 
-  // Returns `true` if CHOOBE is active and the user has selected the screen.
+  // Resume CHOOBE flow by loading stored prefs.
+  // Precondition: `ShouldResumeChoobe()` returns true.
+  void ResumeChoobe(const PrefService& prefs);
+
+  // Returns `true` if CHOOBE has started and the user has selected the screen
+  // from CHOOBE screen.
   bool ShouldScreenBeSkipped(OobeScreenId screen_id);
 
-  // Returns screens that the user is eligible to go through.
-  std::vector<OptionalScreen> GetEligibleCHOOBEScreens();
+  // Returns summaries of screens that the user is eligible to go through.
+  // Used to fill CHOOBE screen tiles. The order of screens tiles should match
+  // the order of the returned vector.
+  std::vector<ScreenSummary> GetEligibleScreensSummaries();
 
-  // Returns whether a screen is one of CHOOBE oprional screens.
-  static bool IsOptionalScreen(OobeScreenId screen_id);
-
-  // Returns string resources for all optional screens stored in
-  // `kNonFoundationalScreens`.
-  static std::vector<OptionalScreenResource> GetOptionalScreensResources();
-
-  // Populates `selected_screens_` with `screens_ids`.
-  // Persists `screens_ids` using `prefs`.
+  // Called once the user has selected the screens to go through to persist
+  // their selection.
+  // This allows us to resume CHOOBE in case of unexpected shutdown.
+  // Precondition: `screen_ids` order should match the relative order of
+  // `kOptionalScreens.`
   void OnScreensSelected(PrefService& prefs, base::Value::List screens_ids);
 
-  bool IsChoobeFlowActive() { return is_choobe_flow_active_; }
+  // Called once an optional screen is completed, this will reflect later on the
+  // screen's tile in CHOOBE screen.
+  void OnScreenCompleted(PrefService& prefs, OobeScreenId screen_id);
 
-  // If there are persisted selected screens list in `prefs`, insert its
-  // items to `selected_screens_` set, and set `is_choobe_flow_active_`
-  // to `true`.
-  void MaybeResumeChoobe(const PrefService& prefs);
+  // The return button in optional screens is only shown if the current screen
+  // is the last selected screen, and there are still unselected screens.
+  bool ShouldShowReturnButton(OobeScreenId screen_id);
 
  private:
-  // Screens that the user can select in the CHOOBE screen. Populated by
-  // the `Start()` method.
-  std::vector<OptionalScreen> eligible_screens_;
+  static bool IsScreenEligible(OobeScreenId id);
+  void EnsureEligibleScreensPopulated();
+  void ClearPreferences(PrefService& prefs);
 
-  // Screens that the user has selected. Populated by the `OnScreensSelected`
-  // method.
-  base::flat_set<OobeScreenId> selected_screens_;
-
-  bool is_choobe_flow_active_ = false;
+  base::flat_set<OobeScreenId> eligible_screens_ids_;
+  base::flat_set<OobeScreenId> selected_screens_ids_;
+  base::flat_set<OobeScreenId> completed_screens_ids_;
 };
 
 }  // namespace ash

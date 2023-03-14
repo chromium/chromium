@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/views/upgrade_notification_controller.h"
 
+#include "base/i18n/time_formatting.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/views/critical_notification_bubble_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "content/public/test/browser_test.h"
 
@@ -45,6 +47,9 @@ IN_PROC_BROWSER_TEST_F(OutdatedUpgradeBubbleTest, InvokeUi_NoAutoUpdate) {
 // The critical upgrade dialog is intentionally only shown on Windows.
 #if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(OutdatedUpgradeBubbleTest, InvokeUi_Critical) {
+  // Omit seconds so as to have a consistent string for pixel tests.
+  CriticalNotificationBubbleView::ScopedSetTimeFormatterForTesting scoper(
+      &base::TimeDurationFormat);
   ShowAndVerifyUi();
 }
 #endif

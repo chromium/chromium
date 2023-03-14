@@ -87,6 +87,7 @@ void ReadAnythingPageHandler::OnReadAnythingThemeChanged(
     ui::ColorId foreground_color_id,
     ui::ColorId background_color_id,
     ui::ColorId separator_color_id,
+    ui::ColorId dropdown_color_id,
     read_anything::mojom::LineSpacing line_spacing,
     read_anything::mojom::LetterSpacing letter_spacing) {
   content::WebContents* web_contents = web_ui_->GetWebContents();
@@ -99,6 +100,12 @@ void ReadAnythingPageHandler::OnReadAnythingThemeChanged(
       ReadAnythingTheme::New(font_name, font_scale, foreground_skcolor,
                              background_skcolor, line_spacing, letter_spacing));
 }
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+void ReadAnythingPageHandler::ScreenAIServiceReady() {
+  page_->ScreenAIServiceReady();
+}
+#endif
 
 void ReadAnythingPageHandler::OnLinkClicked(const ui::AXTreeID& target_tree_id,
                                             ui::AXNodeID target_node_id) {

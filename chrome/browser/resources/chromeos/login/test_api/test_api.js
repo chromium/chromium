@@ -525,6 +525,21 @@ class EnrollmentSignInStep extends PolymerElementApi {
   }
 }
 
+class EnrollmentAttributeStep extends PolymerElementApi {
+  constructor(parent) {
+    super(parent, '#step-attribute-prompt');
+    this.skipButton = new PolymerElementApi(parent, '#attributesSkip');
+  }
+
+  isReadyForTesting() {
+    return this.isVisible() && this.skipButton.isVisible();
+  }
+
+  clickSkip() {
+    return this.skipButton.click();
+  }
+}
+
 class EnrollmentSuccessStep extends PolymerElementApi {
   constructor(parent) {
     super(parent, '#step-success');
@@ -589,6 +604,7 @@ class EnterpriseEnrollmentScreenTester extends ScreenElementApi {
   constructor() {
     super('enterprise-enrollment');
     this.signInStep = new EnrollmentSignInStep(this);
+    this.attributeStep = new EnrollmentAttributeStep(this);
     this.successStep = new EnrollmentSuccessStep(this);
     this.errorStep = new EnrollmentErrorStep(this);
     this.enrollmentInProgressDlg = new PolymerElementApi(this, '#step-working');
@@ -849,6 +865,13 @@ class ConsolidatedConsentScreenTester extends ScreenElementApi {
   /** @return {string} */
   getPrivacyPolicyLinkName() {
     return this.privacyPolicyLink.element().text.trim();
+  }
+
+  /**
+   * Click `accept` button to go to the next screen.
+   */
+  clickAcceptButton() {
+    this.nextButton.element().click();
   }
 }
 

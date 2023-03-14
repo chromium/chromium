@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management.suggestions;
 
-import static org.mockito.Mockito.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;

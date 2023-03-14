@@ -14,7 +14,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -232,6 +231,8 @@ public class LocationBarMediatorTest {
     private PreloadPagesSettingsBridge.Natives mPreloadPagesSettingsJni;
     @Mock
     private LocationBarMediator.OmniboxUma mOmniboxUma;
+    @Mock
+    private OmniboxSuggestionsDropdownEmbedderImpl mEmbedderImpl;
 
     @Captor
     private ArgumentCaptor<Runnable> mRunnableCaptor;
@@ -261,7 +262,6 @@ public class LocationBarMediatorTest {
         Profile.setLastUsedProfileForTesting(mProfile);
         doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(mProfile);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
-        Runnable noAction = () -> {}; // launchAssistanceSettingsAction
         OneshotSupplierImpl<TemplateUrlService> templateUrlServiceSupplier =
                 new OneshotSupplierImpl<>();
         templateUrlServiceSupplier.set(mTemplateUrlService);
@@ -269,8 +269,8 @@ public class LocationBarMediatorTest {
                 mProfileSupplier, mPrivacyPreferencesManager, mOverrideUrlLoadingDelegate,
                 mLocaleManager, templateUrlServiceSupplier, mOverrideBackKeyBehaviorDelegate,
                 mWindowAndroid,
-                /*isTablet=*/false, mSearchEngineLogoUtils, mLensController, noAction,
-                tab -> true, mOmniboxUma, () -> mIsToolbarMicEnabled);
+                /*isTablet=*/false, mSearchEngineLogoUtils, mLensController,
+                tab -> true, mOmniboxUma, () -> mIsToolbarMicEnabled, mEmbedderImpl);
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         ObjectAnimatorShadow.setUrlAnimator(mUrlAnimator);
         GSAStateShadow.setGSAState(mGSAState);
@@ -279,8 +279,10 @@ public class LocationBarMediatorTest {
                 mLocationBarDataProvider, mProfileSupplier, mPrivacyPreferencesManager,
                 mOverrideUrlLoadingDelegate, mLocaleManager, templateUrlServiceSupplier,
                 mOverrideBackKeyBehaviorDelegate, mWindowAndroid,
-                /*isTablet=*/true, mSearchEngineLogoUtils, mLensController, noAction,
-                tab -> true, (tab, transition, isNtp) -> {}, () -> mIsToolbarMicEnabled);
+                /*isTablet=*/true, mSearchEngineLogoUtils, mLensController,
+                tab
+                -> true,
+                (tab, transition, isNtp) -> {}, () -> mIsToolbarMicEnabled, mEmbedderImpl);
         mTabletMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         ShadowUrlUtilities.sIsNtp = false;
@@ -674,7 +676,7 @@ public class LocationBarMediatorTest {
     public void testUpdateAssistantVoiceSearchDrawablesAndColors() {
         AssistantVoiceSearchService avs = Mockito.mock(AssistantVoiceSearchService.class);
         ColorStateList csl = Mockito.mock(ColorStateList.class);
-        doReturn(csl).when(avs).getButtonColorStateList(anyInt(), anyObject());
+        doReturn(csl).when(avs).getButtonColorStateList(anyInt(), any());
         mMediator.setAssistantVoiceSearchServiceForTesting(avs);
 
         verify(mLocationBarLayout).setMicButtonTint(csl);
@@ -684,7 +686,7 @@ public class LocationBarMediatorTest {
     public void testUpdateLensButtonColors() {
         AssistantVoiceSearchService avs = Mockito.mock(AssistantVoiceSearchService.class);
         ColorStateList csl = Mockito.mock(ColorStateList.class);
-        doReturn(csl).when(avs).getButtonColorStateList(anyInt(), anyObject());
+        doReturn(csl).when(avs).getButtonColorStateList(anyInt(), any());
         mMediator.setAssistantVoiceSearchServiceForTesting(avs);
 
         verify(mLocationBarLayout).setLensButtonTint(csl);
@@ -760,7 +762,7 @@ public class LocationBarMediatorTest {
         doReturn(true).when(mUrlCoordinator).setBrandedColorScheme(anyInt());
 
         mMediator.updateBrandedColorScheme();
-        verify(mLocationBarLayout).setDeleteButtonTint(anyObject());
+        verify(mLocationBarLayout).setDeleteButtonTint(any());
         verify(mUrlCoordinator)
                 .setUrlBarData(
                         urlBarData, UrlBar.ScrollType.SCROLL_TO_TLD, SelectionState.SELECT_ALL);
@@ -853,7 +855,7 @@ public class LocationBarMediatorTest {
                 mLocaleManager, templateUrlServiceSupplier, mOverrideBackKeyBehaviorDelegate,
                 mWindowAndroid,
                 /*isTablet=*/false, mSearchEngineLogoUtils, mLensController,
-                () -> {}, tab -> true, mOmniboxUma, () -> mIsToolbarMicEnabled);
+                tab -> true, mOmniboxUma, () -> mIsToolbarMicEnabled, mEmbedderImpl);
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         int primeCount = sGeoHeaderPrimeCount;
         mMediator.addUrlFocusChangeListener(mUrlCoordinator);

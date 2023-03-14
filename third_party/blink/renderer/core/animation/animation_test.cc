@@ -1547,6 +1547,24 @@ TEST_P(AnimationAnimationTestCompositing, InfiniteDurationAnimation) {
             animation->CheckCanStartAnimationOnCompositor(nullptr));
 }
 
+TEST_P(AnimationAnimationTestCompositing, ZeroPlaybackSpeed) {
+  ResetWithCompositedAnimation();
+  EXPECT_EQ(CompositorAnimations::kNoFailure,
+            animation->CheckCanStartAnimationOnCompositor(nullptr));
+
+  animation->updatePlaybackRate(0.0);
+  EXPECT_TRUE(CompositorAnimations::kInvalidAnimationOrEffect |
+              animation->CheckCanStartAnimationOnCompositor(nullptr));
+
+  animation->updatePlaybackRate(1.0E-120);
+  EXPECT_TRUE(CompositorAnimations::kInvalidAnimationOrEffect |
+              animation->CheckCanStartAnimationOnCompositor(nullptr));
+
+  animation->updatePlaybackRate(0.0001);
+  EXPECT_EQ(CompositorAnimations::kNoFailure,
+            animation->CheckCanStartAnimationOnCompositor(nullptr));
+}
+
 // crbug.com/1149012
 // Regression test to ensure proper restart logic for composited animations on
 // relative transforms after a size change. In this test, the transform depends

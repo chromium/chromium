@@ -127,7 +127,8 @@ class CertVerifyImpl {
 std::unique_ptr<CertVerifyImpl> CreateCertVerifyImplFromName(
     base::StringPiece impl_name,
     scoped_refptr<net::CertNetFetcher> cert_net_fetcher) {
-#if !(BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
+#if !(BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || \
+      BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(CHROME_ROOT_STORE_ONLY))
   if (impl_name == "platform") {
     return std::make_unique<CertVerifyImpl>(
         "CertVerifyProc (system)", net::CertVerifyProc::CreateSystemVerifyProc(
@@ -206,8 +207,6 @@ std::string TrialComparisonResultToString(net::TrialComparisonResult result) {
       return "ignored_multiple_ev_policies_one_matches_root";
     case net::TrialComparisonResult::kIgnoredDifferentPathReVerifiesEquivalent:
       return "ignored_different_path_reverifies_equivalent";
-    case net::TrialComparisonResult::kIgnoredLocallyTrustedLeaf:
-      return "ignored_locally_trusted_leaf";
     case net::TrialComparisonResult::kIgnoredConfigurationChanged:
       return "ignored_configuration_changed";
     case net::TrialComparisonResult::kIgnoredSHA1SignaturePresent:
@@ -223,6 +222,8 @@ std::string TrialComparisonResultToString(net::TrialComparisonResult result) {
       return "ignored_builtin_authority_invalid_platform_symantec";
     case net::TrialComparisonResult::kIgnoredLetsEncryptExpiredRoot:
       return "ignored_lets_encrypt_expired_root";
+    case net::TrialComparisonResult::kIgnoredAndroidErrorDatePriority:
+      return "ignored_android_error_date_priority";
   }
 }
 

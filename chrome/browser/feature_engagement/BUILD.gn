@@ -9,6 +9,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/feature_engagement/ScreenshotMonitor.java",
     "java/src/org/chromium/chrome/browser/feature_engagement/ScreenshotMonitorDelegate.java",
+    "java/src/org/chromium/chrome/browser/feature_engagement/ScreenshotMonitorImpl.java",
     "java/src/org/chromium/chrome/browser/feature_engagement/ScreenshotTabObserver.java",
     "java/src/org/chromium/chrome/browser/feature_engagement/TrackerFactory.java",
   ]

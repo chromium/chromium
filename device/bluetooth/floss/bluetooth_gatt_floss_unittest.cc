@@ -45,7 +45,7 @@ constexpr char kFakeUuidShort[] = "1812";
 
 namespace floss {
 
-using CharProperty = device::BluetoothGattCharacteristic::Property;
+using FlossCharacteristic = floss::GattCharacteristic;
 
 // Unit tests exercising GATT in device/bluetooth/floss implementations, with
 // abstract Floss API implemented as a fake Floss*Client.
@@ -255,46 +255,72 @@ TEST_F(BluetoothGattFlossTest, UpgradeToFullDiscovery) {
 }
 
 TEST_F(BluetoothGattFlossTest, TranslateReadWriteAuthentication) {
-  std::vector<std::pair<uint32_t, AuthRequired>> property_to_auth_read_map = {
-      {CharProperty::PROPERTY_NONE, AuthRequired::kNoAuth},
-      {CharProperty::PROPERTY_READ, AuthRequired::kNoAuth},
+  std::vector<std::pair<std::pair<uint32_t, uint32_t>, AuthRequired>>
+      property_to_auth_read_map = {
+          {{0, 0}, AuthRequired::kNoAuth},
+          {{FlossCharacteristic::GATT_CHAR_PROP_BIT_READ, 0},
+           AuthRequired::kNoAuth},
+          {{
+               FlossCharacteristic::GATT_CHAR_PROP_BIT_READ,
+               FlossCharacteristic::GATT_PERM_READ_ENCRYPTED,
+           },
+           AuthRequired::kNoMitm},
+          {{
+               FlossCharacteristic::GATT_CHAR_PROP_BIT_READ,
+               FlossCharacteristic::GATT_PERM_READ_ENC_MITM,
+           },
+           AuthRequired::kReqMitm},
 
-      {CharProperty::PROPERTY_READ_ENCRYPTED, AuthRequired::kNoMitm},
-      {CharProperty::PROPERTY_READ_ENCRYPTED_AUTHENTICATED,
-       AuthRequired::kReqMitm},
+          // Use more restrictive requirement.
+          {{FlossCharacteristic::GATT_CHAR_PROP_BIT_READ,
+            FlossCharacteristic::GATT_PERM_READ_ENCRYPTED |
+                FlossCharacteristic::GATT_PERM_READ_ENC_MITM},
+           AuthRequired::kReqMitm},
+      };
 
-      // Use more restrictive requirement.
-      {CharProperty::PROPERTY_READ_ENCRYPTED |
-           CharProperty::PROPERTY_READ_ENCRYPTED_AUTHENTICATED,
-       AuthRequired::kReqMitm},
-  };
+  std::vector<std::pair<std::pair<uint32_t, uint32_t>, AuthRequired>>
+      property_to_auth_write_map = {
+          {{0, 0}, AuthRequired::kNoAuth},
+          {{FlossCharacteristic::GATT_CHAR_PROP_BIT_WRITE, 0},
+           AuthRequired::kNoAuth},
 
-  std::vector<std::pair<uint32_t, AuthRequired>> property_to_auth_write_map = {
-      {CharProperty::PROPERTY_NONE, AuthRequired::kNoAuth},
-      {CharProperty::PROPERTY_WRITE, AuthRequired::kNoAuth},
+          // Don't accept signed writes without authentication/encryption.
+          {{FlossCharacteristic::GATT_CHAR_PROP_BIT_WRITE,
+            FlossCharacteristic::GATT_PERM_WRITE_SIGNED},
+           AuthRequired::kNoAuth},
 
-      // Don't accept signed writes without authentication/encryption.
-      {CharProperty::PROPERTY_AUTHENTICATED_SIGNED_WRITES,
-       AuthRequired::kNoAuth},
+          {{FlossCharacteristic::GATT_CHAR_PROP_BIT_WRITE,
+            FlossCharacteristic::GATT_PERM_WRITE_ENCRYPTED},
+           AuthRequired::kNoMitm},
 
-      {CharProperty::PROPERTY_WRITE_ENCRYPTED, AuthRequired::kNoMitm},
-      {CharProperty::PROPERTY_WRITE_ENCRYPTED_AUTHENTICATED,
-       AuthRequired::kReqMitm},
-      {CharProperty::PROPERTY_WRITE_ENCRYPTED |
-           CharProperty::PROPERTY_WRITE_ENCRYPTED_AUTHENTICATED,
-       AuthRequired::kReqMitm},
+          {{FlossCharacteristic::GATT_CHAR_PROP_BIT_WRITE,
+            FlossCharacteristic::GATT_PERM_WRITE_ENC_MITM},
+           AuthRequired::kReqMitm},
 
-      {CharProperty::PROPERTY_WRITE_ENCRYPTED |
-           CharProperty::PROPERTY_AUTHENTICATED_SIGNED_WRITES,
-       AuthRequired::kSignedNoMitm},
-      {CharProperty::PROPERTY_WRITE_ENCRYPTED_AUTHENTICATED |
-           CharProperty::PROPERTY_AUTHENTICATED_SIGNED_WRITES,
-       AuthRequired::kSignedReqMitm},
-      {CharProperty::PROPERTY_WRITE_ENCRYPTED |
-           CharProperty::PROPERTY_WRITE_ENCRYPTED_AUTHENTICATED |
-           CharProperty::PROPERTY_AUTHENTICATED_SIGNED_WRITES,
-       AuthRequired::kSignedReqMitm},
-  };
+          // Prefer encrypted + authenticated over encrypted.
+          {{
+               FlossCharacteristic::GATT_CHAR_PROP_BIT_WRITE,
+               FlossCharacteristic::GATT_PERM_WRITE_ENCRYPTED |
+                   FlossCharacteristic::GATT_PERM_WRITE_ENC_MITM,
+           },
+           AuthRequired::kReqMitm},
+
+          {{FlossCharacteristic::GATT_CHAR_PROP_BIT_WRITE,
+            FlossCharacteristic::GATT_PERM_WRITE_ENCRYPTED |
+                FlossCharacteristic::GATT_PERM_WRITE_SIGNED},
+           AuthRequired::kSignedNoMitm},
+
+          {{FlossCharacteristic::GATT_CHAR_PROP_BIT_WRITE,
+            FlossCharacteristic::GATT_PERM_WRITE_ENC_MITM |
+                FlossCharacteristic::GATT_PERM_WRITE_SIGNED},
+           AuthRequired::kSignedReqMitm},
+
+          {{FlossCharacteristic::GATT_CHAR_PROP_BIT_WRITE,
+            FlossCharacteristic::GATT_PERM_WRITE_ENCRYPTED |
+                FlossCharacteristic::GATT_PERM_WRITE_ENC_MITM |
+                FlossCharacteristic::GATT_PERM_WRITE_SIGNED},
+           AuthRequired::kSignedReqMitm},
+      };
 
   device::BluetoothDevice* device =
       adapter_->GetDevice(FakeFlossAdapterClient::kBondedAddress1);
@@ -306,13 +332,15 @@ TEST_F(BluetoothGattFlossTest, TranslateReadWriteAuthentication) {
 
   auto service = BluetoothRemoteGattServiceFloss::Create(
       static_cast<BluetoothAdapterFloss*>(adapter_.get()),
-      static_cast<BluetoothDeviceFloss*>(device), underlying_service, true);
+      static_cast<BluetoothDeviceFloss*>(device), underlying_service);
 
-  for (const auto& [props, auth] : property_to_auth_read_map) {
+  for (const auto& [pair, auth] : property_to_auth_read_map) {
+    const auto& [props, perms] = pair;
     GattCharacteristic tmp;
     tmp.uuid = device::BluetoothUUID("1912");
     tmp.instance_id = 2;
     tmp.properties = props;
+    tmp.permissions = perms;
 
     auto characteristic =
         BluetoothRemoteGattCharacteristicFloss::Create(service.get(), &tmp);
@@ -320,11 +348,13 @@ TEST_F(BluetoothGattFlossTest, TranslateReadWriteAuthentication) {
     EXPECT_EQ(characteristic->GetAuthForRead(), auth);
   }
 
-  for (const auto& [props, auth] : property_to_auth_write_map) {
+  for (const auto& [pair, auth] : property_to_auth_write_map) {
+    const auto& [props, perms] = pair;
     GattCharacteristic tmp;
     tmp.uuid = device::BluetoothUUID("1912");
     tmp.instance_id = 2;
     tmp.properties = props;
+    tmp.permissions = perms;
 
     auto characteristic =
         BluetoothRemoteGattCharacteristicFloss::Create(service.get(), &tmp);
@@ -344,9 +374,10 @@ TEST_F(BluetoothGattFlossTest, VerifyAllIdentifiers) {
 
   auto service = BluetoothRemoteGattServiceFloss::Create(
       static_cast<BluetoothAdapterFloss*>(adapter_.get()),
-      static_cast<BluetoothDeviceFloss*>(device), underlying_service, true);
+      static_cast<BluetoothDeviceFloss*>(device), underlying_service);
   EXPECT_EQ(service->GetIdentifier(),
-            base::StringPrintf("%s/%d", device->GetAddress().c_str(), 16));
+            base::StringPrintf("%s-%s/%04x", device->GetAddress().c_str(),
+                               service->GetUUID().value().c_str(), 16));
 
   GattCharacteristic underlying_characteristic;
   underlying_characteristic.uuid = device::BluetoothUUID(kFakeUuidShort);
@@ -354,9 +385,9 @@ TEST_F(BluetoothGattFlossTest, VerifyAllIdentifiers) {
 
   auto characteristic = BluetoothRemoteGattCharacteristicFloss::Create(
       service.get(), &underlying_characteristic);
-  EXPECT_EQ(
-      characteristic->GetIdentifier(),
-      base::StringPrintf("%s/%d/%d", device->GetAddress().c_str(), 16, 47));
+  EXPECT_EQ(characteristic->GetIdentifier(),
+            base::StringPrintf("%s-%s/%04x/%04x", device->GetAddress().c_str(),
+                               service->GetUUID().value().c_str(), 16, 47));
 
   GattDescriptor underlying_descriptor;
   underlying_descriptor.uuid = device::BluetoothUUID(kFakeUuidShort);
@@ -364,9 +395,10 @@ TEST_F(BluetoothGattFlossTest, VerifyAllIdentifiers) {
 
   auto descriptor = BluetoothRemoteGattDescriptorFloss::Create(
       service.get(), characteristic.get(), &underlying_descriptor);
-  EXPECT_EQ(descriptor->GetIdentifier(),
-            base::StringPrintf("%s/%d/%d/%d", device->GetAddress().c_str(), 16,
-                               47, 72));
+  EXPECT_EQ(
+      descriptor->GetIdentifier(),
+      base::StringPrintf("%s-%s/%04x/%04x/%04x", device->GetAddress().c_str(),
+                         service->GetUUID().value().c_str(), 16, 47, 72));
 }
 
 }  // namespace floss

@@ -103,10 +103,10 @@ class AXTreeSerializer {
   // call to SerializeChanges, and it's reset with each call.
   std::vector<AXNodeID> GetIncompleteNodeIds();
 
-  // Invalidate the subtree rooted at this node, ensuring that the whole
+  // Invalidate the subtree rooted at this node, ensuring that the entire
   // subtree is re-serialized the next time any of those nodes end up
   // being serialized.
-  void InvalidateSubtree(AXSourceNode node);
+  void MarkSubtreeDirty(AXSourceNode node);
 
   // Return whether or not this node is in the client tree. If you call
   // this immediately after serializing, this indicates whether a given
@@ -117,6 +117,9 @@ class AXTreeSerializer {
   // reachable. If one of its ancestors is hidden and it was pruned
   // from the accessibility tree, this would return false.
   bool IsInClientTree(AXSourceNode node);
+
+  // Return true if this node is marked dirty.
+  bool IsDirty(AXSourceNode node);
 
   // Only for unit testing. Normally this class relies on getting a call
   // to SerializeChanges() every time the source tree changes. For unit
@@ -169,7 +172,7 @@ class AXTreeSerializer {
 
   // Return the least common ancestor of |node| that's in the client tree.
   // This just walks up the ancestors of |node| until it finds a node that's
-  // also in the client tree and not inside an invalid subtree, and then calls
+  // also in the client tree and not inside a dirty subtree, and then calls
   // LeastCommonAncestor on the source node and client node.
   AXSourceNode LeastCommonAncestor(AXSourceNode node);
 
@@ -182,8 +185,8 @@ class AXTreeSerializer {
 
   ClientTreeNode* ClientTreeNodeById(AXNodeID id);
 
-  // Invalidate the subtree rooted at this node.
-  void InvalidateClientSubtree(ClientTreeNode* client_node);
+  // Mark as dirty the subtree rooted at this node.
+  void MarkClientSubtreeDirty(ClientTreeNode* client_node);
 
   // Delete all descendants of this node.
   void DeleteDescendants(ClientTreeNode* client_node);
@@ -239,7 +242,7 @@ class AXTreeSerializer {
 
 // In order to keep track of what nodes the client knows about, we keep a
 // representation of the client tree - just IDs and parent/child
-// relationships, and a marker indicating whether it's been invalidated.
+// relationships, and a marker indicating whether it's been dirtied.
 struct AX_EXPORT ClientTreeNode {
   ClientTreeNode();
   virtual ~ClientTreeNode();
@@ -247,7 +250,14 @@ struct AX_EXPORT ClientTreeNode {
   raw_ptr<ClientTreeNode, DanglingUntriaged> parent;
   std::vector<ClientTreeNode*> children;
   bool ignored;
-  bool invalid;
+  // Additional nodes that must be serialized. When a dirty subtree is reached,
+  // the entire subtree will be added to the current serialization.
+  // For this to occur, the root of the dirty subtree must be reached in
+  // SerializedChanges(), which occurs when one of its nodes or an ancestor is
+  // passed in.
+  // TODO(accessibility) It is an error if there any dirty nodes to remain
+  // after serialization is complete, and this could be turned into a DCHECK.
+  bool in_dirty_subtree;
 };
 
 template <typename AXSourceNode>
@@ -339,17 +349,18 @@ AXSourceNode AXTreeSerializer<AXSourceNode>::LeastCommonAncestor(
   // client tree, whose parent is not invalid, then call LeastCommonAncestor
   // on those two nodes.
   //
-  // Note that it's okay if |client_node| is invalid - the LCA can be the
-  // root of an invalid subtree, since we're going to serialize the
-  // LCA. But it's not okay if |client_node->parent| is invalid - that means
-  // that we're inside of an invalid subtree that all needs to be
-  // re-serialized, so the LCA should be higher.
+  // Note that it's okay if |client_node| is dirty - the LCA can be the
+  // root of a dirty subtree, since we're going to serialize the
+  // LCA. But it's not okay if |client_node->parent| is dirty - that means
+  // that we're inside of a dirty subtree that all needs to be re-serialized, so
+  // the LCA should be higher.
   ClientTreeNode* client_node = ClientTreeNodeById(tree_->GetId(node));
   while (tree_->IsValid(node)) {
     if (client_node) {
       ClientTreeNode* parent = GetClientTreeNodeParent(client_node);
-      if (!parent || !parent->invalid)
+      if (!parent || !parent->in_dirty_subtree) {
         break;
+      }
     }
     node = tree_->GetParent(node);
     if (tree_->IsValid(node))
@@ -364,10 +375,14 @@ bool AXTreeSerializer<AXSourceNode>::AnyDescendantWasReparented(
     AXSourceNode* out_lca) {
   bool result = false;
   int id = tree_->GetId(node);
-  std::vector<AXSourceNode> children;
-  tree_->GetChildren(node, &children);
-  for (size_t i = 0; i < children.size(); ++i) {
-    AXSourceNode& child = children[i];
+  tree_->CacheChildrenIfNeeded(node);
+  auto num_children = tree_->GetChildCount(node);
+  for (size_t i = 0; i < num_children; ++i) {
+    AXSourceNode child = tree_->ChildAt(node, i);
+    if (!child) {
+      continue;
+    }
+
     DCHECK(tree_->IsValid(child));
     int child_id = tree_->GetId(child);
     ClientTreeNode* client_child = ClientTreeNodeById(child_id);
@@ -377,6 +392,7 @@ bool AXTreeSerializer<AXSourceNode>::AnyDescendantWasReparented(
         // If the client child has no parent, it must have been the
         // previous root node, so there is no LCA and we can exit early.
         *out_lca = tree_->GetNull();
+        tree_->ClearChildCache(node);
         return true;
       } else if (parent->id != id) {
         // If the client child's parent is not this node, update the LCA
@@ -384,8 +400,8 @@ bool AXTreeSerializer<AXSourceNode>::AnyDescendantWasReparented(
         *out_lca = LeastCommonAncestor(*out_lca, client_child);
         result = true;
         continue;
-      } else if (!client_child->invalid) {
-        // This child is already in the client tree and valid, we won't
+      } else if (!client_child->in_dirty_subtree) {
+        // This child is already in the client tree and not dirty, we won't
         // recursively serialize it so we don't need to check this
         // subtree recursively for reparenting.
         // However, if the child is or was ignored, the children may now be
@@ -399,6 +415,7 @@ bool AXTreeSerializer<AXSourceNode>::AnyDescendantWasReparented(
     if (AnyDescendantWasReparented(child, out_lca))
       result = true;
   }
+  tree_->ClearChildCache(node);
   return result;
 }
 
@@ -527,29 +544,35 @@ std::vector<AXNodeID> AXTreeSerializer<AXSourceNode>::GetIncompleteNodeIds() {
 }
 
 template <typename AXSourceNode>
-void AXTreeSerializer<AXSourceNode>::InvalidateSubtree(AXSourceNode node) {
+void AXTreeSerializer<AXSourceNode>::MarkSubtreeDirty(AXSourceNode node) {
   ClientTreeNode* client_node = ClientTreeNodeById(tree_->GetId(node));
   if (client_node)
-    InvalidateClientSubtree(client_node);
+    MarkClientSubtreeDirty(client_node);
 }
 
 template <typename AXSourceNode>
 bool AXTreeSerializer<AXSourceNode>::IsInClientTree(AXSourceNode node) {
-  ClientTreeNode* client_node = ClientTreeNodeById(tree_->GetId(node));
-  return client_node ? !client_node->invalid : false;
+  return ClientTreeNodeById(tree_->GetId(node));
 }
 
 template <typename AXSourceNode>
-void AXTreeSerializer<AXSourceNode>::InvalidateClientSubtree(
+bool AXTreeSerializer<AXSourceNode>::IsDirty(AXSourceNode node) {
+  ClientTreeNode* client_node = ClientTreeNodeById(tree_->GetId(node));
+  return client_node ? client_node->in_dirty_subtree : false;
+}
+
+template <typename AXSourceNode>
+void AXTreeSerializer<AXSourceNode>::MarkClientSubtreeDirty(
     ClientTreeNode* client_node) {
-  // Return early if already marked invalid, in order to avoid duplicate work in
-  // subtree, as the only method that marks nodes invalid is this one.
-  if (client_node->invalid) {
+  // Return early if already marked dirty, in order to avoid duplicate work in
+  // subtree, as the only method that marks nodes dirty is this one.
+  if (client_node->in_dirty_subtree) {
     return;
   }
-  client_node->invalid = true;
-  for (size_t i = 0; i < client_node->children.size(); ++i)
-    InvalidateClientSubtree(client_node->children[i]);
+  client_node->in_dirty_subtree = true;
+  for (ClientTreeNode* child : client_node->children) {
+    MarkClientSubtreeDirty(child);
+  }
 }
 
 template <typename AXSourceNode>
@@ -625,7 +648,7 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
   DCHECK_EQ(tree_->GetId(tree_->GetRoot()), client_root_->id);
 
   // We're about to serialize it, so mark it as valid.
-  client_node->invalid = false;
+  client_node->in_dirty_subtree = false;
   client_node->ignored = tree_->IsIgnored(node);
 
   // Terminate early if a maximum number of nodes is reached.
@@ -656,14 +679,21 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
   // consistent results.
   std::set<AXNodeID> new_ignored_ids;
   std::set<AXNodeID> new_child_ids;
-  std::vector<AXSourceNode> children;
+  size_t num_children = 0;
   if (should_terminate_early) {
     incomplete_node_ids_.push_back(id);
   } else {
-    tree_->GetChildren(node, &children);
+    tree_->CacheChildrenIfNeeded(node);
+    num_children = tree_->GetChildCount(node);
   }
-  for (size_t i = 0; i < children.size(); ++i) {
-    AXSourceNode& child = children[i];
+  size_t actual_num_children = 0;
+  for (size_t i = 0; i < num_children; ++i) {
+    AXSourceNode child = tree_->ChildAt(node, i);
+    if (!child) {
+      continue;
+    }
+    actual_num_children++;
+
     int new_child_id = tree_->GetId(child);
     new_child_ids.insert(new_child_id);
     if (tree_->IsIgnored(child))
@@ -692,6 +722,7 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
         LOG(ERROR) << error.str();
         Reset();
       }
+      tree_->ClearChildCache(node);
       return false;
     }
   }
@@ -750,9 +781,13 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
   // Iterate over the children, serialize them, and update the ClientTreeNode
   // data structure to reflect the new tree.
   std::vector<AXNodeID> actual_serialized_node_child_ids;
-  client_node->children.reserve(children.size());
-  for (size_t i = 0; i < children.size(); ++i) {
-    AXSourceNode& child = children[i];
+  client_node->children.reserve(actual_num_children);
+  for (size_t i = 0; i < num_children; ++i) {
+    AXSourceNode child = tree_->ChildAt(node, i);
+    if (!child) {
+      continue;
+    }
+
     int child_id = tree_->GetId(child);
 
     // Skip if the child isn't valid.
@@ -776,18 +811,20 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
       const bool ignored_state_changed =
           reused_child->ignored !=
           (new_ignored_ids.find(reused_child->id) != new_ignored_ids.end());
-      // Re-serialize it if the child is marked as invalid, otherwise
+      // Re-serialize it if the child is marked as dirty, otherwise
       // we don't have to because the client already has it.
-      if (reused_child->invalid || ignored_state_changed) {
-        if (!SerializeChangedNodes(child, out_update))
+      if (reused_child->in_dirty_subtree || ignored_state_changed) {
+        if (!SerializeChangedNodes(child, out_update)) {
+          tree_->ClearChildCache(node);
           return false;
+        }
       }
     } else {
       ClientTreeNode* new_child = new ClientTreeNode();
       new_child->id = child_id;
       new_child->parent = client_node;
       new_child->ignored = tree_->IsIgnored(child);
-      new_child->invalid = false;
+      new_child->in_dirty_subtree = false;
       client_node->children.push_back(new_child);
       if (ClientTreeNodeById(child_id)) {
         // TODO(accessibility) Remove all cases where this occurs and re-add
@@ -810,13 +847,17 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
           LOG(ERROR) << error.str();
           Reset();
         }
+        tree_->ClearChildCache(node);
         return false;
       }
       client_id_map_[child_id] = new_child;
-      if (!SerializeChangedNodes(child, out_update))
+      if (!SerializeChangedNodes(child, out_update)) {
+        tree_->ClearChildCache(node);
         return false;
+      }
     }
   }
+  tree_->ClearChildCache(node);
 
   // Finally, update the child ids of this node to reflect the actual child
   // ids that were valid during serialization.

@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/accessibility/pumpkin_installer.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -22,8 +21,6 @@ namespace ash {
 class PumpkinInstallerTest : public testing::Test {
  protected:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kExperimentalAccessibilityDictationWithPumpkin);
     installer_ = std::make_unique<PumpkinInstaller>();
 
     DlcserviceClient::InitializeFake();
@@ -107,7 +104,6 @@ class PumpkinInstallerTest : public testing::Test {
   bool install_succeeded_ = false;
   bool install_failed_ = false;
   std::string last_error_ = std::string();
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Verifies that PumpkinInstaller can successfully download the Pumpkin DLC.

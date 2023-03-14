@@ -22,11 +22,13 @@
 #include "device/gamepad/raw_input_data_fetcher_win.h"
 #include "device/gamepad/wgi_data_fetcher_win.h"
 #include "device/gamepad/xinput_data_fetcher_win.h"
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
 #include "device/gamepad/game_controller_data_fetcher_mac.h"
+#if BUILDFLAG(IS_MAC)
 #include "device/gamepad/gamepad_platform_data_fetcher_mac.h"
 #include "device/gamepad/nintendo_data_fetcher.h"
 #include "device/gamepad/xbox_data_fetcher_mac.h"
+#endif
 #elif (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_UDEV)
 #include "device/gamepad/gamepad_platform_data_fetcher_linux.h"
 #include "device/gamepad/nintendo_data_fetcher.h"
@@ -51,12 +53,14 @@ void AddGamepadPlatformDataFetchers(GamepadDataFetcherManager* manager) {
   manager->AddFactory(new NintendoDataFetcher::Factory());
   manager->AddFactory(new RawInputDataFetcher::Factory());
 
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
 
   manager->AddFactory(new GameControllerDataFetcherMac::Factory());
+#if BUILDFLAG(IS_MAC)
   manager->AddFactory(new GamepadPlatformDataFetcherMac::Factory());
   manager->AddFactory(new NintendoDataFetcher::Factory());
   manager->AddFactory(new XboxDataFetcher::Factory());
+#endif
 
 #elif (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_UDEV)
 

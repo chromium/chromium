@@ -31,7 +31,6 @@
 #include "chrome/browser/web_applications/os_integration/shortcut_menu_handling_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/shortcut_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/uninstallation_via_os_settings_sub_manager.h"
-#include "chrome/browser/web_applications/os_integration/url_handling_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/os_integration/web_app_uninstallation_via_os_settings_registration.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
@@ -190,19 +189,16 @@ void OsIntegrationManager::SetSubsystems(WebAppSyncBridge* sync_bridge,
       *profile_, *registrar, *sync_bridge);
   auto protocol_handling_sub_manager =
       std::make_unique<ProtocolHandlingSubManager>(profile_, *registrar);
-  auto url_handling_sub_manager =
-      std::make_unique<UrlHandlingSubManager>(*registrar);
   auto shortcut_menu_handling_sub_manager =
       std::make_unique<ShortcutMenuHandlingSubManager>(
           profile_->GetPath(), *icon_manager, *registrar);
-  auto run_on_os_login_sub_manager =
-      std::make_unique<RunOnOsLoginSubManager>(*registrar);
+  auto run_on_os_login_sub_manager = std::make_unique<RunOnOsLoginSubManager>(
+      *profile_, *registrar, *sync_bridge, *icon_manager);
   auto uninstallation_via_os_settings_sub_manager =
       std::make_unique<UninstallationViaOsSettingsSubManager>(*registrar);
   sub_managers_.push_back(std::move(shortcut_sub_manager));
   sub_managers_.push_back(std::move(file_handling_sub_manager));
   sub_managers_.push_back(std::move(protocol_handling_sub_manager));
-  sub_managers_.push_back(std::move(url_handling_sub_manager));
   sub_managers_.push_back(std::move(shortcut_menu_handling_sub_manager));
   sub_managers_.push_back(std::move(run_on_os_login_sub_manager));
   sub_managers_.push_back(
@@ -229,7 +225,16 @@ void OsIntegrationManager::Synchronize(
     const AppId& app_id,
     base::OnceClosure callback,
     absl::optional<SynchronizeOsOptions> options) {
+  DCHECK(registrar_->GetAppById(app_id))
+      << "Can't perform OS integration without the app existing in the "
+         "registrar.";
+
   if (!AreOsIntegrationSubManagersEnabled()) {
+    std::move(callback).Run();
+    return;
+  }
+
+  if (sub_managers_.empty()) {
     std::move(callback).Run();
     return;
   }
@@ -592,11 +597,18 @@ void OsIntegrationManager::ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
 
 void OsIntegrationManager::RegisterRunOnOsLogin(const AppId& app_id,
                                                 ResultCallback callback) {
+  ResultCallback metrics_callback =
+      base::BindOnce([](Result result) {
+        base::UmaHistogramBoolean("WebApp.RunOnOsLogin.Registration.Result",
+                                  (result == Result::kOk));
+        return result;
+      }).Then(std::move(callback));
+
   GetShortcutInfoForApp(
       app_id,
       base::BindOnce(
           &OsIntegrationManager::OnShortcutInfoRetrievedRegisterRunOnOsLogin,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+          weak_ptr_factory_.GetWeakPtr(), std::move(metrics_callback)));
 }
 
 void OsIntegrationManager::MacAppShimOnAppInstalledForProfile(
@@ -641,10 +653,17 @@ bool OsIntegrationManager::UnregisterShortcutsMenu(const AppId& app_id,
 
 void OsIntegrationManager::UnregisterRunOnOsLogin(const AppId& app_id,
                                                   ResultCallback callback) {
+  ResultCallback metrics_callback =
+      base::BindOnce([](Result result) {
+        base::UmaHistogramBoolean("WebApp.RunOnOsLogin.Unregistration.Result",
+                                  (result == Result::kOk));
+        return result;
+      }).Then(std::move(callback));
+
   ScheduleUnregisterRunOnOsLogin(
       sync_bridge_, app_id, profile_->GetPath(),
       base::UTF8ToUTF16(registrar_->GetAppShortName(app_id)),
-      std::move(callback));
+      std::move(metrics_callback));
 }
 
 void OsIntegrationManager::DeleteShortcuts(
@@ -954,6 +973,7 @@ void OsIntegrationManager::WriteStateToDB(
   {
     ScopedRegistryUpdate update(sync_bridge_);
     WebApp* web_app = update->UpdateApp(app_id);
+    DCHECK(web_app);
     web_app->SetCurrentOsIntegrationStates(*desired_states.get());
   }
 
@@ -968,6 +988,10 @@ void OsIntegrationManager::OnShortcutsCreated(
     bool shortcuts_created) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(barrier);
+
+  if (registrar_ && !registrar_->GetAppById(app_id)) {
+    return;
+  }
 
   bool shortcut_creation_failure =
       !shortcuts_created && options.os_hooks[OsHookType::kShortcuts];

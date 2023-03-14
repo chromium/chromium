@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">Zaznana je bila povezava. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Stran <ph name="PAGE_NUMBER" /> je izbrisana</translation>
 <translation id="1258009455399840361">Zavrti za 90 stopinj v desno</translation>
-<translation id="1300209025925956156">Optično branje dokumenta</translation>
-<translation id="1309250603447638106">Prenašanje posodobitev za optično branje dokumentov</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Tipka za iskanja + puščica levo za dostop.</translation>
 <translation id="1417314334557041815">Uredi stran <ph name="INDEX" /></translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> ni priključena.</translation>
 <translation id="1473110567575736769">3-sekundni časovnik</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">Nič ni posneto</translation>
 <translation id="1838104802459806957">Nagni navzgor</translation>
 <translation id="1843105061469674856">Optično preberi dodatno stran</translation>
-<translation id="1851169887664797861">Na voljo so dodatni kontrolniki kamere.</translation>
 <translation id="1851616744363735765">ZAČASNO ZAUSTAVLJENO</translation>
 <translation id="1899697626337024495">Ločljivost fotografije</translation>
 <translation id="1925845977604399247">V galerijo</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">Vrsta optičnega branja</translation>
 <translation id="28682968802727151">Predogled zrcaljenja</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> je priključena.</translation>
-<translation id="2904654629665923749">Na voljo je optično branje dokumentov</translation>
 <translation id="3067436040345934772">Premakni v desno</translation>
 <translation id="3081586908890909590">Preklop na snemanje videa</translation>
 <translation id="313467653172006084">30 sličic/s</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">Kopiraj naslov povezave</translation>
 <translation id="4281620174117014503">Srednja ločljivost</translation>
 <translation id="428234092390943511">Sličica strani</translation>
-<translation id="4340659173795395806">Zdaj lahko ustvarite večstranski PDF.</translation>
 <translation id="4383571725254449280">Tiskanje dnevnikov delovanja</translation>
 <translation id="4445542136948522167">Ustavitev fotografiranja</translation>
 <translation id="4570032796877367747">Sprednji fotoaparat</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">Shrani</translation>
 <translation id="5320594929574852403">Premikanje proti levi</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5444515100983837161">Postavite vse robe dokumenta znotraj okvira. Optično branje deluje najbolje, če sta dokument in ozadje različnih barv.</translation>
 <translation id="5662366948659129155">Optično branje <ph name="COUNT" />. strani</translation>
 <translation id="5671277269877808209">Kvadratno</translation>
 <translation id="5746169159649715125">Shrani kot PDF</translation>
@@ -157,7 +150,6 @@
 <translation id="8428213095426709021">Nastavitve</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Preklopite izklop zvoka. Izklop zvoka je aktiven.</translation>
-<translation id="8712637175834984815">Razumem</translation>
 <translation id="8730621377337864115">Končano</translation>
 <translation id="8732462232047530626">Predogled metapodatkov</translation>
 <translation id="8815966864175525708">Preklop na snemanje portretnih fotografij</translation>

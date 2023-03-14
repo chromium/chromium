@@ -9,7 +9,7 @@
 
 #include "base/base_export.h"
 #include "base/check_op.h"
-#include "base/win/variant_util.h"
+#include "base/win/variant_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -32,7 +32,8 @@ class BASE_EXPORT ScopedSafearray {
    public:
     // Type declarations to support std::iterator_traits
     using iterator_category = std::random_access_iterator_tag;
-    using value_type = typename internal::VariantUtil<ElementVartype>::Type;
+    using value_type =
+        typename internal::VariantConverter<ElementVartype>::Type;
     using difference_type = ptrdiff_t;
     using reference = value_type&;
     using const_reference = const value_type&;
@@ -142,7 +143,7 @@ class BASE_EXPORT ScopedSafearray {
     VARTYPE vartype;
     HRESULT hr = SafeArrayGetVartype(safearray_, &vartype);
     if (FAILED(hr) ||
-        !internal::VariantUtil<ElementVartype>::IsConvertibleTo(vartype)) {
+        !internal::VariantConverter<ElementVartype>::IsConvertibleTo(vartype)) {
       return absl::nullopt;
     }
 

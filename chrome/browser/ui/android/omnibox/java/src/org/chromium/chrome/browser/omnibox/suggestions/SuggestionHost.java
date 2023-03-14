@@ -67,4 +67,9 @@ public interface SuggestionHost {
      * @param text The text to be displayed in the Omnibox.
      */
     void setOmniboxEditingText(@NonNull String text);
+
+    /**
+     * Clear focus, close the suggestions list and complete the interaction with the Omnibox.
+     */
+    void finishInteraction();
 }

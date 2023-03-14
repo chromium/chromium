@@ -6,11 +6,13 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
+#include "chromeos/ash/components/network/metrics/hotspot_metrics_helper.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
@@ -87,6 +89,7 @@ class HotspotCapabilitiesProviderTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_;
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<HotspotCapabilitiesProvider> hotspot_capabilities_provider_;
   TestObserver observer_;
   NetworkStateTestHelper network_state_test_helper_{
@@ -213,6 +216,11 @@ TEST_F(HotspotCapabilitiesProviderTest, CheckTetheringReadiness) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(CheckTetheringReadiness(),
             HotspotCapabilitiesProvider::CheckTetheringReadinessResult::kReady);
+  histogram_tester_.ExpectTotalCount(
+      HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram, 1);
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram,
+      HotspotMetricsHelper::HotspotMetricsCheckReadinessResult::kReady, 1);
 
   network_state_test_helper_.manager_test()
       ->SetSimulateCheckTetheringReadinessResult(
@@ -222,15 +230,26 @@ TEST_F(HotspotCapabilitiesProviderTest, CheckTetheringReadiness) {
   EXPECT_EQ(
       CheckTetheringReadiness(),
       HotspotCapabilitiesProvider::CheckTetheringReadinessResult::kNotAllowed);
+  histogram_tester_.ExpectTotalCount(
+      HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram, 2);
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram,
+      HotspotMetricsHelper::HotspotMetricsCheckReadinessResult::kNotAllowed, 1);
 
   network_state_test_helper_.manager_test()
       ->SetSimulateCheckTetheringReadinessResult(
           FakeShillSimulatedResult::kSuccess,
           /*readiness_status=*/std::string());
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(
-      CheckTetheringReadiness(),
-      HotspotCapabilitiesProvider::CheckTetheringReadinessResult::kNotAllowed);
+  EXPECT_EQ(CheckTetheringReadiness(),
+            HotspotCapabilitiesProvider::CheckTetheringReadinessResult::
+                kUnknownResult);
+  histogram_tester_.ExpectTotalCount(
+      HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram, 3);
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram,
+      HotspotMetricsHelper::HotspotMetricsCheckReadinessResult::kUnknownResult,
+      1);
 
   network_state_test_helper_.manager_test()
       ->SetSimulateCheckTetheringReadinessResult(
@@ -240,6 +259,13 @@ TEST_F(HotspotCapabilitiesProviderTest, CheckTetheringReadiness) {
   EXPECT_EQ(CheckTetheringReadiness(),
             HotspotCapabilitiesProvider::CheckTetheringReadinessResult::
                 kShillOperationFailed);
+  histogram_tester_.ExpectTotalCount(
+      HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram, 4);
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotCheckReadinessResultHistogram,
+      HotspotMetricsHelper::HotspotMetricsCheckReadinessResult::
+          kShillOperationFailed,
+      1);
 }
 
 }  // namespace ash

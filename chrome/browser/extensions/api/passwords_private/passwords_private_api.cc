@@ -4,8 +4,6 @@
 
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_api.h"
 
-#include <memory>
-
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -137,7 +135,7 @@ ResponseAction PasswordsPrivateRequestPlaintextPasswordFunction::Run() {
 void PasswordsPrivateRequestPlaintextPasswordFunction::GotPassword(
     absl::optional<std::u16string> password) {
   if (password) {
-    Respond(OneArgument(base::Value(std::move(*password))));
+    Respond(WithArguments(std::move(*password)));
     return;
   }
 
@@ -341,8 +339,8 @@ ResponseAction PasswordsPrivateIsOptedInForAccountStorageFunction::Run() {
     return RespondNow(Error(kNoDelegateError));
   }
 
-  return RespondNow(OneArgument(base::Value(
-      GetDelegate(browser_context())->IsOptedInForAccountStorage())));
+  return RespondNow(WithArguments(
+      GetDelegate(browser_context())->IsOptedInForAccountStorage()));
 }
 
 // PasswordsPrivateOptInForAccountStorageFunction
@@ -353,7 +351,7 @@ ResponseAction PasswordsPrivateOptInForAccountStorageFunction::Run() {
 
   auto parameters =
       api::passwords_private::OptInForAccountStorage::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(parameters.get());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
 
   GetDelegate(browser_context())
       ->SetAccountStorageOptIn(parameters->opt_in, GetSenderWebContents());
@@ -511,9 +509,9 @@ ResponseAction PasswordsPrivateIsAccountStoreDefaultFunction::Run() {
     return RespondNow(Error(kNoDelegateError));
   }
 
-  return RespondNow(OneArgument(
-      base::Value(GetDelegate(browser_context())
-                      ->IsAccountStoreDefault(GetSenderWebContents()))));
+  return RespondNow(
+      WithArguments(GetDelegate(browser_context())
+                        ->IsAccountStoreDefault(GetSenderWebContents())));
 }
 
 // PasswordsPrivateGetUrlCollectionFunction:

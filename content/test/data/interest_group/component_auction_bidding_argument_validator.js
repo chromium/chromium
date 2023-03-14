@@ -17,6 +17,7 @@ function generateBid(
   return {
       'ad': ad,
       'bid': 2,
+      'adCost': 3,
       'render': ad.renderUrl,
       'adComponents': [interestGroup.adComponents[0].renderUrl],
       'allowComponentAuction': true,
@@ -38,7 +39,7 @@ function validateInterestGroup(interestGroup) {
   if (!interestGroup)
     throw 'No interest group';
 
-  if (Object.keys(interestGroup).length !== 11) {
+  if (Object.keys(interestGroup).length !== 12) {
     throw 'Wrong number of interestGroupFields ' +
         JSON.stringify(interestGroup);
   }
@@ -65,9 +66,15 @@ function validateInterestGroup(interestGroup) {
     throw 'Incorrect biddingLogicUrl ' + interestGroup.biddingLogicUrl;
   }
 
+  if (!interestGroup.updateUrl.startsWith('https://a.test') ||
+      !interestGroup.updateUrl.endsWith('/not_found_update_url.json')) {
+    throw 'Incorrect updateUrl ' + interestGroup.updateUrl;
+  }
+
+  // TODO(https://crbug.com/1420080): Remove this block and decrease number of
+  // expected keys above when removing support for dailyUpdateUrl.
   if (!interestGroup.dailyUpdateUrl.startsWith('https://a.test') ||
-      !interestGroup.dailyUpdateUrl.endsWith(
-          '/not_found_daily_update_url.json')) {
+      !interestGroup.dailyUpdateUrl.endsWith('/not_found_update_url.json')) {
     throw 'Incorrect dailyUpdateUrl ' + interestGroup.dailyUpdateUrl;
   }
 
@@ -158,7 +165,7 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
     if (browserSignals.prevWins.length !== 0)
       throw 'Wrong prevWins ' + JSON.stringify(browserSignals.prevWins);
   } else {
-    if (Object.keys(browserSignals).length !== 9) {
+    if (Object.keys(browserSignals).length !== 10) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }
@@ -174,6 +181,8 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
       throw 'Wrong highestScoringOtherBid ' +
           browserSignals.highestScoringOtherBid;
     }
+    if (browserSignals.adCost !== 3)
+      throw 'Wrong adCost ' + browserSignals.adCost;
   }
 }
 

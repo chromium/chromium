@@ -40,7 +40,10 @@
 #include "ui/views/widget/native_widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/wm/desks/desks_helper.h"
+#include "ui/aura/window.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -329,6 +332,8 @@ void BrowserFrame::ShowContextMenuForViewImpl(views::View* source,
 }
 
 ui::MenuModel* BrowserFrame::GetSystemMenuModel() {
+  // TODO(b/271137301): Refactor this class to remove chromeos specific code to
+  // subclasses.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (user_manager::UserManager::IsInitialized() &&
       user_manager::UserManager::Get()->GetLoggedInUsers().size() > 1) {
@@ -347,6 +352,14 @@ ui::MenuModel* BrowserFrame::GetSystemMenuModel() {
     // changes happened since the last invocation.
     menu_model_builder_.reset();
     num_desks_ = current_num_desks;
+  }
+
+  bool is_float_state_type =
+      GetNativeWindow()->GetProperty(chromeos::kWindowStateTypeKey) ==
+      chromeos::WindowStateType::kFloated;
+  if (is_float_state_type != is_float_state_type_) {
+    menu_model_builder_.reset();
+    is_float_state_type_ = is_float_state_type;
   }
 #endif
   if (!menu_model_builder_.get()) {

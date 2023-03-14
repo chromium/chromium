@@ -31,6 +31,10 @@
 #include "components/viz/service/frame_sinks/external_begin_frame_source_android.h"
 #endif
 
+#if BUILDFLAG(IS_IOS)
+#include "components/viz/service/frame_sinks/external_begin_frame_source_ios.h"
+#endif
+
 namespace viz {
 
 class RootCompositorFrameSinkImpl::StandaloneBeginFrameObserver
@@ -130,6 +134,10 @@ RootCompositorFrameSinkImpl::Create(
         std::make_unique<ExternalBeginFrameSourceAndroid>(
             restart_id, params->refresh_rate,
             /*requires_align_with_java=*/false);
+#elif BUILDFLAG(IS_IOS)
+    hw_support_for_multiple_refresh_rates = true;
+    external_begin_frame_source =
+        std::make_unique<ExternalBeginFrameSourceIOS>(restart_id);
 #else
     if (params->disable_frame_rate_limit) {
       synthetic_begin_frame_source =
@@ -527,11 +535,20 @@ RootCompositorFrameSinkImpl::RootCompositorFrameSinkImpl(
                        Display::kEnableSharedImages,
                        hw_support_for_multiple_refresh_rates);
   support_->SetUpHitTest(display_.get());
+#if BUILDFLAG(IS_IOS)
+  // iOS supports preferred refresh rate interval set as a hint how often a
+  // client wants to refresh the content. It works two ways - a client setting a
+  // preferred refresh rate and the system throttling the refresh rate in case
+  // of battery saving or any other events.
+  DCHECK(hw_support_for_multiple_refresh_rates);
+  use_preferred_interval_ = true;
+#else
   if (!hw_support_for_multiple_refresh_rates) {
     display_->SetSupportedFrameIntervals(
         {display_frame_interval_, display_frame_interval_ * 2});
     use_preferred_interval_ = true;
   }
+#endif
 }
 
 void RootCompositorFrameSinkImpl::DisplayOutputSurfaceLost() {

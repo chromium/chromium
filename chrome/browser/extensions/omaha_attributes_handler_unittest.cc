@@ -31,11 +31,12 @@ TEST_F(OmahaAttributesHandlerUnitTest, LogPolicyViolationUWSMetrics) {
   base::HistogramTester histograms;
   InitializeGoodInstalledExtensionService();
   service()->Init();
-  base::Value attributes(base::Value::Type::DICT);
-  attributes.SetBoolKey("_policy_violation", true);
-  attributes.SetBoolKey("_potentially_uws", true);
+  base::Value::Dict attributes;
+  attributes.Set("_policy_violation", true);
+  attributes.Set("_potentially_uws", true);
 
-  service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
+  service()->PerformActionBasedOnOmahaAttributes(
+      kTestExtensionId, base::Value(std::move(attributes)));
 
   histograms.ExpectBucketCount(
       "Extensions.ExtensionDisabledRemotely2",

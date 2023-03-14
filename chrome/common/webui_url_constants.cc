@@ -254,6 +254,10 @@ const char kChromeUIBookmarksSidePanelHost[] =
     "bookmarks-side-panel.top-chrome";
 const char kChromeUIBookmarksSidePanelURL[] =
     "chrome://bookmarks-side-panel.top-chrome/";
+const char kChromeUIUntrustedCompanionSidePanelHost[] =
+    "companion-side-panel.top-chrome";
+const char kChromeUIUntrustedCompanionSidePanelURL[] =
+    "chrome-untrusted://companion-side-panel.top-chrome/";
 const char kChromeUICustomizeChromeSidePanelHost[] =
     "customize-chrome-side-panel.top-chrome";
 const char kChromeUICustomizeChromeSidePanelURL[] =
@@ -430,6 +434,7 @@ const char kOsUIMultiDeviceInternalsURL[] = "os://multidevice-internals";
 const char kOsUINearbyInternalsURL[] = "os://nearby-internals";
 const char kOsUINetworkURL[] = "os://network";
 const char kOsUINetExportURL[] = "os://net-export";
+const char kOsUIPrefsInternalsURL[] = "os://prefs-internals";
 const char kOsUIRestartURL[] = "os://restart";
 const char kOsUISettingsURL[] = "os://settings";
 const char kOsUISignInInternalsURL[] = "os://signin-internals";
@@ -716,6 +721,7 @@ const char* const kChromeHostURLs[] = {
     safe_browsing::kChromeUISafeBrowsingHost,
     kChromeUISyncInternalsHost,
 #if !BUILDFLAG(IS_ANDROID)
+    kChromeUITabSearchHost,
     kChromeUITermsHost,
 #endif
     kChromeUITranslateInternalsHost,

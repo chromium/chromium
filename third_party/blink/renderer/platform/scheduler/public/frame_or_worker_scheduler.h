@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_lifecycle_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
+#include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_queue_type.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
@@ -97,18 +98,27 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
    public:
     using BFCacheBlockingFeatureAndLocations =
         FrameOrWorkerScheduler::BFCacheBlockingFeatureAndLocations;
+
+    struct BlockingDetails {
+      // TODO(crbug.com/1366675): Remove features_mask.
+      uint64_t feature_mask;
+      const BFCacheBlockingFeatureAndLocations&
+          non_sticky_features_and_js_locations;
+      const BFCacheBlockingFeatureAndLocations&
+          sticky_features_and_js_locations;
+      BlockingDetails(uint64_t mask,
+                      BFCacheBlockingFeatureAndLocations& non_sticky,
+                      BFCacheBlockingFeatureAndLocations& sticky)
+          : feature_mask(mask),
+            non_sticky_features_and_js_locations(non_sticky),
+            sticky_features_and_js_locations(sticky) {}
+    };
     virtual ~Delegate() = default;
 
     // Notifies that the list of active blocking features for this worker has
     // changed when a blocking feature and its JS location are registered or
     // removed.
-    // TODO(crbug.com/1366675): Remove features_mask
-    virtual void UpdateBackForwardCacheDisablingFeatures(
-        uint64_t features_mask,
-        const BFCacheBlockingFeatureAndLocations&
-            non_sticky_features_and_js_locations,
-        const BFCacheBlockingFeatureAndLocations&
-            sticky_features_and_js_locations) = 0;
+    virtual void UpdateBackForwardCacheDisablingFeatures(BlockingDetails) = 0;
   };
 
   virtual ~FrameOrWorkerScheduler();
@@ -154,7 +164,10 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
       ObserverType,
       OnLifecycleStateChangedCallback);
 
+  // Creates a new task queue for use with the web-exposed scheduling API with
+  // the given priority and type. See https://wicg.github.io/scheduling-apis.
   virtual std::unique_ptr<WebSchedulingTaskQueue> CreateWebSchedulingTaskQueue(
+      WebSchedulingQueueType,
       WebSchedulingPriority) = 0;
 
   virtual FrameScheduler* ToFrameScheduler() { return nullptr; }

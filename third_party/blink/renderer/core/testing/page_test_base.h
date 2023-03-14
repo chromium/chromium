@@ -47,6 +47,8 @@ class PageTestBase : public testing::Test, public ScopedMockOverlayScrollbars {
     // |interface_broker| argument.
     void Install(blink::BrowserInterfaceBrokerProxy& interface_broker);
 
+    MockClipboardHost* clipboard_host() { return &host_; }
+
    private:
     void BindClipboardHost(mojo::ScopedMessagePipeHandle handle);
 

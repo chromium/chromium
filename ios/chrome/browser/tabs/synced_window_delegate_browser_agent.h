@@ -21,7 +21,7 @@ class SyncedTabDelegate;
 // SyncedWindowDelegate.
 class SyncedWindowDelegateBrowserAgent
     : public sync_sessions::SyncedWindowDelegate,
-      BrowserObserver,
+      public BrowserObserver,
       public BrowserUserData<SyncedWindowDelegateBrowserAgent>,
       public WebStateListObserver {
  public:

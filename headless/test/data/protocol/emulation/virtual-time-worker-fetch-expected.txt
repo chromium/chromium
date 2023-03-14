@@ -1,0 +1,8 @@
+Tests virtual time is paused while a fetched is pending in workers.
+Request to http://test.com/index.html, type: Document
+Request to http://test.com/worker.js, type: Other
+Started worker: 100020
+Request to http://test.com/test.txt, type: XHR
+fetch response: hello, world!
+Time after fetch: 100035
+Virtual time budget expired

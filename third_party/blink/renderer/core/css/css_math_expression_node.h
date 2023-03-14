@@ -254,6 +254,10 @@ class CORE_EXPORT CSSMathExpressionOperation final
       const CSSMathExpressionNode* right_side,
       CSSMathOperator op);
 
+  static CSSMathExpressionNode* CreateSignRelatedFunctionSimplified(
+      Operands&& operands,
+      CSSValueID function_id);
+
   CSSMathExpressionOperation(const CSSMathExpressionNode* left_side,
                              const CSSMathExpressionNode* right_side,
                              CSSMathOperator op,

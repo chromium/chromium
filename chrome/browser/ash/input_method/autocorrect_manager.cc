@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/input_method/assistive_prefs.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/ash/input_method/autocorrect_enums.h"
 #include "chrome/browser/ash/input_method/autocorrect_prefs.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/ime_bridge.h"
@@ -41,10 +43,12 @@ constexpr int kDistanceUntilUnderlineHides = 3;
 constexpr int kMaxValidationTries = 4;
 constexpr base::TimeDelta kVeryFastInteractionPeriod = base::Milliseconds(200);
 constexpr base::TimeDelta kFastInteractionPeriod = base::Milliseconds(500);
+constexpr int kUndoWindowShowSettingMaxCount = 10;
+constexpr char kUndoWindowShowSettingCount[] = "undo_window.show_setting_count";
 
 bool IsVkAutocorrect() {
   return ChromeKeyboardControllerClient::HasInstance() &&
-         ChromeKeyboardControllerClient::Get()->is_keyboard_visible();
+         ChromeKeyboardControllerClient::Get()->is_keyboard_enabled();
 }
 
 bool IsCurrentInputMethodExperimentalMultilingual() {
@@ -341,6 +345,12 @@ void RecordPhysicalKeyboardAutocorrectPref(const std::string& engine_id,
       "InputMethod.Assistive.AutocorrectV2.PkUserPreference.All", pref);
 }
 
+void RecordSuggestionProviderMetric(
+    const ime::AutocorrectSuggestionProvider& provider) {
+  base::UmaHistogramEnumeration(
+      "InputMethod.Assistive.AutocorrectV2.SuggestionProvider.Pk", provider);
+}
+
 bool CouldTriggerAutocorrectWithSurroundingText(
     const std::u16string& text,
     const gfx::Range selection_range) {
@@ -369,12 +379,27 @@ bool IsAutocorrectSuggestionInSurroundingText(
                                  autocorrect_range.length()) == suggested_text;
 }
 
+bool UserInAutocorrectByDefaultBucket(const PrefService& prefs,
+                                      const std::string& engine_id) {
+  return base::FeatureList::IsEnabled(features::kAutocorrectByDefault) &&
+         IsUsEnglishId(engine_id) && !IsVkAutocorrect() &&
+         GetPhysicalKeyboardAutocorrectPref(prefs, engine_id) ==
+             AutocorrectPreference::kEnabledByDefault;
+}
+
 }  // namespace
 
 AutocorrectManager::AutocorrectManager(
     SuggestionHandlerInterface* suggestion_handler,
     Profile* profile)
-    : suggestion_handler_(suggestion_handler), profile_(profile) {}
+    : suggestion_handler_(suggestion_handler), profile_(profile) {
+  undo_button_.id = ui::ime::ButtonId::kUndo;
+  undo_button_.window_type = ash::ime::AssistiveWindowType::kUndoWindow;
+  learn_more_button_.id = ui::ime::ButtonId::kLearnMore;
+  learn_more_button_.announce_string =
+      l10n_util::GetStringUTF16(IDS_LEARN_MORE);
+  learn_more_button_.window_type = ash::ime::AssistiveWindowType::kLearnMore;
+}
 
 AutocorrectManager::~AutocorrectManager() = default;
 
@@ -447,13 +472,46 @@ void AutocorrectManager::ProcessSetAutocorrectRangeDone(
   pending_autocorrect_ = AutocorrectManager::PendingAutocorrectState(
       /*original_text=*/original_text, /*suggested_text=*/current_text,
       /*start_time=*/base::TimeTicks::Now(),
-      /*virtual_keyboard_visible=*/IsVkAutocorrect());
+      /*virtual_keyboard_visible=*/IsVkAutocorrect(),
+      /*learn_more_button_visible=*/
+      GetPrefValue(kUndoWindowShowSettingCount, *profile_) <
+          kUndoWindowShowSettingMaxCount);
 
   LogAssistiveAutocorrectInternalState(
       AutocorrectInternalStates::kUnderlineShown);
 
   LogAssistiveAutocorrectAction(AutocorrectActions::kUnderlined);
   RecordAssistiveCoverage(AssistiveType::kAutocorrectUnderlined);
+}
+
+void AutocorrectManager::RecordPendingMetricsAwaitingKeyPress() {
+  if (pending_user_pref_metric_ && IsVkAutocorrect()) {
+    // We only want to record a pending user pref metric if the user is
+    // currently using the physical keyboard.
+    pending_user_pref_metric_ = absl::nullopt;
+  }
+
+  if (pending_user_pref_metric_) {
+    const std::string& engine_id = pending_user_pref_metric_->engine_id;
+    RecordPhysicalKeyboardAutocorrectPref(
+        engine_id,
+        GetPhysicalKeyboardAutocorrectPref(*(profile_->GetPrefs()), engine_id));
+    pending_user_pref_metric_ = absl::nullopt;
+  }
+
+  if (pending_suggestion_provider_metric_ && IsVkAutocorrect()) {
+    // TODO(b/270090192): Unfortunately the virtual keyboard does not support
+    // the callback used to inform Chromium of the AutocorrectSuggestionProvider
+    // used in the IME service. Once it does then we can record this same metric
+    // for the virtual keyboard.
+    pending_suggestion_provider_metric_ = absl::nullopt;
+  }
+
+  if (pending_suggestion_provider_metric_) {
+    RecordSuggestionProviderMetric(
+        /*provider=*/pending_suggestion_provider_metric_->provider);
+    pending_suggestion_provider_metric_ = absl::nullopt;
+  }
 }
 
 bool AutocorrectManager::AutoCorrectPrefIsPkEnabledByDefault() {
@@ -692,6 +750,9 @@ void AutocorrectManager::LogAssistiveAutocorrectQualityBreakdown(
 
 void AutocorrectManager::OnActivate(const std::string& engine_id) {
   active_engine_id_ = engine_id;
+  // Reset the previously stored suggestion_provider, we should expect a new
+  // provider to be returned on the next OnConnectedToSuggestionProvider call.
+  suggestion_provider_ = absl::nullopt;
 
   PrefService* pref_service = profile_->GetPrefs();
   auto autocorrect_pref =
@@ -710,19 +771,7 @@ void AutocorrectManager::OnActivate(const std::string& engine_id) {
 }
 
 bool AutocorrectManager::OnKeyEvent(const ui::KeyEvent& event) {
-  if (pending_user_pref_metric_ && IsVkAutocorrect()) {
-    // We only want to record a pending user pref metric if the user is
-    // currently using the physical keyboard.
-    pending_user_pref_metric_ = absl::nullopt;
-  }
-
-  if (pending_user_pref_metric_) {
-    const std::string& engine_id = pending_user_pref_metric_->engine_id;
-    RecordPhysicalKeyboardAutocorrectPref(
-        engine_id,
-        GetPhysicalKeyboardAutocorrectPref(*(profile_->GetPrefs()), engine_id));
-    pending_user_pref_metric_ = absl::nullopt;
-  }
+  RecordPendingMetricsAwaitingKeyPress();
 
   if (!pending_autocorrect_.has_value() || event.type() != ui::ET_KEY_PRESSED) {
     return false;
@@ -736,17 +785,34 @@ bool AutocorrectManager::OnKeyEvent(const ui::KeyEvent& event) {
     return false;
   }
 
-  if (event.code() == ui::DomCode::ARROW_UP ||
-      event.code() == ui::DomCode::TAB) {
-    HighlightUndoButton();
+  if (event.code() == ui::DomCode::ARROW_UP) {
+    HighlightButtons(/*should_highlight_undo=*/true,
+                     /*should_highlight_learn_more=*/false);
     return true;
   }
-  if (event.code() == ui::DomCode::ENTER &&
-      pending_autocorrect_->undo_button_highlighted) {
-    UndoAutocorrect();
-    return true;
+  if (event.code() == ui::DomCode::TAB) {
+    if (!pending_autocorrect_->undo_button_highlighted) {
+      HighlightButtons(/*should_highlight_undo=*/true,
+                       /*should_highlight_learn_more=*/false);
+      return true;
+    }
+    if (pending_autocorrect_->learn_more_button_visible) {
+      HighlightButtons(/*should_highlight_undo=*/false,
+                       /*should_highlight_learn_more=*/true);
+      return true;
+    }
   }
-
+  if (event.code() == ui::DomCode::ENTER) {
+    if (pending_autocorrect_->undo_button_highlighted) {
+      UndoAutocorrect();
+      return true;
+    }
+    if (pending_autocorrect_->learn_more_button_highlighted) {
+      HideUndoWindow();
+      suggestion_handler_->ClickButton(learn_more_button_);
+      return true;
+    }
+  }
   return false;
 }
 
@@ -880,6 +946,15 @@ void AutocorrectManager::OnFocus(int context_id) {
   ProcessTextFieldChange();
 }
 
+void AutocorrectManager::OnConnectedToSuggestionProvider(
+    const ime::AutocorrectSuggestionProvider& suggestion_provider) {
+  suggestion_provider_ = suggestion_provider;
+  if (active_engine_id_ && IsUsEnglishId(*active_engine_id_)) {
+    pending_suggestion_provider_metric_ =
+        PendingSuggestionProviderMetric{.provider = suggestion_provider};
+  }
+}
+
 void AutocorrectManager::OnBlur() {
   LogAssistiveAutocorrectInternalState(AutocorrectInternalStates::kOnBlurEvent);
 
@@ -959,9 +1034,8 @@ void AutocorrectManager::UndoAutocorrect() {
   LogAssistiveAutocorrectAction(AutocorrectActions::kReverted);
   RecordAssistiveCoverage(AssistiveType::kAutocorrectReverted);
   RecordAssistiveSuccess(AssistiveType::kAutocorrectReverted);
-  LogAssistiveAutocorrectDelay(
-    base::TimeTicks::Now() - pending_autocorrect_->start_time);
-
+  LogAssistiveAutocorrectDelay(base::TimeTicks::Now() -
+                               pending_autocorrect_->start_time);
   pending_autocorrect_.reset();
 }
 
@@ -979,6 +1053,8 @@ void AutocorrectManager::ShowUndoWindow(
   AssistiveWindowProperties properties;
   properties.type = ash::ime::AssistiveWindowType::kUndoWindow;
   properties.visible = true;
+  properties.show_setting_link =
+      pending_autocorrect_->learn_more_button_visible;
   properties.announce_string = l10n_util::GetStringFUTF16(
       IDS_SUGGESTION_AUTOCORRECT_UNDO_WINDOW_SHOWN,
       pending_autocorrect_->original_text,
@@ -1003,6 +1079,13 @@ void AutocorrectManager::ShowUndoWindow(
   if (!pending_autocorrect_->window_shown_logged) {
     LogAssistiveAutocorrectAction(AutocorrectActions::kWindowShown);
     RecordAssistiveCoverage(AssistiveType::kAutocorrectWindowShown);
+    if (pending_autocorrect_->learn_more_button_visible) {
+      base::UmaHistogramBoolean(
+          "InputMethod.Assistive.AutocorrectV2.UndoWindow.LearnMoreButtonShown",
+          true);
+    }
+    IncrementPrefValueUntilCapped(kUndoWindowShowSettingCount,
+                                  kUndoWindowShowSettingMaxCount, *profile_);
     pending_autocorrect_->window_shown_logged = true;
   }
 
@@ -1039,36 +1122,39 @@ void AutocorrectManager::HideUndoWindow() {
 
   if (pending_autocorrect_.has_value()) {
     pending_autocorrect_->undo_button_highlighted = false;
+    pending_autocorrect_->learn_more_button_highlighted = false;
     pending_autocorrect_->undo_window_visible = false;
   }
 }
 
-void AutocorrectManager::HighlightUndoButton() {
+void AutocorrectManager::HighlightButtons(
+    const bool should_highlight_undo,
+    const bool should_highlight_learn_more) {
   if (!pending_autocorrect_.has_value() ||
-      !pending_autocorrect_->undo_window_visible ||
-      pending_autocorrect_->undo_button_highlighted) {
+      !pending_autocorrect_->undo_window_visible) {
     return;
   }
 
   std::string error;
-  ui::ime::AssistiveWindowButton button = ui::ime::AssistiveWindowButton();
-  button.id = ui::ime::ButtonId::kUndo;
-  button.window_type = ash::ime::AssistiveWindowType::kUndoWindow;
-  button.announce_string = l10n_util::GetStringFUTF16(
-      IDS_SUGGESTION_AUTOCORRECT_UNDO_BUTTON,
-      pending_autocorrect_->original_text);
-  suggestion_handler_->SetButtonHighlighted(context_id_, button, true,
-                                            &error);
-
-  LogAssistiveAutocorrectInternalState(
-      AutocorrectInternalStates::kHighlightUndoWindow);
-
+  undo_button_.announce_string =
+      l10n_util::GetStringFUTF16(IDS_SUGGESTION_AUTOCORRECT_UNDO_BUTTON,
+                                 pending_autocorrect_->original_text);
+  suggestion_handler_->SetButtonHighlighted(context_id_, undo_button_,
+                                            should_highlight_undo, &error);
   if (!error.empty()) {
     LOG(ERROR) << "Failed to highlight undo button.";
     return;
   }
+  suggestion_handler_->SetButtonHighlighted(
+      context_id_, learn_more_button_, should_highlight_learn_more, &error);
+  if (!error.empty()) {
+    LOG(ERROR) << "Failed to highlight learn more button.";
+    return;
+  }
 
-  pending_autocorrect_->undo_button_highlighted = true;
+  pending_autocorrect_->undo_button_highlighted = should_highlight_undo;
+  pending_autocorrect_->learn_more_button_highlighted =
+      should_highlight_learn_more;
 }
 
 void AutocorrectManager::AcceptOrClearPendingAutocorrect() {
@@ -1128,15 +1214,33 @@ bool AutocorrectManager::DisabledByRule() {
   return disabled_by_rule_;
 }
 
+bool AutocorrectManager::DisabledByInvalidExperimentContext() {
+  if (!active_engine_id_ || !UserInAutocorrectByDefaultBucket(
+                                *(profile_->GetPrefs()), *active_engine_id_)) {
+    return false;
+  }
+
+  // If the user is in the autocorrect by default bucket, and the en840 model is
+  // not available or the updated parameter list is not enabled, then disable
+  // autocorrect.
+  return !(
+      suggestion_provider_ &&
+      suggestion_provider_ ==
+          ime::AutocorrectSuggestionProvider::kUsEnglish840 &&
+      base::FeatureList::IsEnabled(ash::features::kImeFstDecoderParamsUpdate));
+}
+
 AutocorrectManager::PendingAutocorrectState::PendingAutocorrectState(
     const std::u16string& original_text,
     const std::u16string& suggested_text,
     const base::TimeTicks& start_time,
-    bool virtual_keyboard_visible)
+    bool virtual_keyboard_visible,
+    bool learn_more_button_visible)
     : original_text(original_text),
       suggested_text(suggested_text),
       start_time(start_time),
-      virtual_keyboard_visible(virtual_keyboard_visible) {}
+      virtual_keyboard_visible(virtual_keyboard_visible),
+      learn_more_button_visible(learn_more_button_visible) {}
 
 AutocorrectManager::PendingAutocorrectState::PendingAutocorrectState(
   const PendingAutocorrectState& other) = default;

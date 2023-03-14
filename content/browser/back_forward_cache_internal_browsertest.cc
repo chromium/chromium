@@ -710,6 +710,48 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                     FROM_HERE);
 }
 
+// Navigate from A(B)->C. Send postMessage from A to B upon pagehide, and
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, PostMessageDelivered) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
+
+  // 1) Navigate to A(B).
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  RenderFrameHostImplWrapper rfh_b(rfh_a->child_at(0)->current_frame_host());
+  // Register message handler for b.com.
+  ASSERT_TRUE(ExecJs(rfh_b.get(), R"(
+      localStorage.setItem('postMessage_dispatched', 'not_dispatched');
+      window.addEventListener('message', (event) => {
+          console.log(`Received message: ${event.data}`);
+          localStorage.setItem('postMessage_dispatched', 'dispatched');
+      });
+  )"));
+  // Register pagehide handler for a.com. Inside pagehide handler, send a
+  // postMessage to b.com.
+  ASSERT_TRUE(ExecJs(rfh_a.get(), R"(
+      window.addEventListener("pagehide", (event) => {
+        document.getElementById('child-0')
+          .contentWindow.postMessage('foo', '*');
+      }, false);
+      )"));
+
+  // 2) Navigate to C. This will invoke pagehide handler and postMessage.
+  ASSERT_TRUE(NavigateToURL(shell(), url_c));
+  // Onmessage event should be queued and not triggered in back/forward cache.
+  // Thus JavaScript execution does not happen and the page does not get
+  // evicted.
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // 4) Go back to A(B). Make sure that JavaSc
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectRestored(FROM_HERE);
+  EXPECT_EQ("dispatched",
+            GetLocalStorage(rfh_b.get(), "postMessage_dispatched"));
+}
+
 // Navigates from page A -> page B -> page C -> page B -> page C. Page B becomes
 // ineligible for bfcache in pagehide handler, so Page A stays in bfcache
 // without being evicted even after the navigation to Page C.

@@ -725,9 +725,8 @@ config("compiler") {
         # ARM was originally set lower than x86 to keep the size
         # bloat of ThinLTO to <10%, but that's potentially no longer true.
         # FIXME(inglorion): maybe tune these?
-        if (target_cpu == "arm" || target_cpu == "arm64") {
-          import_instr_limit = 20
-        }
+        # TODO(b/271459198): Revert limit on amd64 to 30 when fixed.
+        import_instr_limit = 20
       } else if (is_android) {
         # TODO(crbug.com/1308318): Investigate if we can get the > 6% perf win
         # of import_instr_limit 30 with a binary size hit smaller than ~2 MiB.
@@ -880,6 +879,11 @@ config("compiler") {
     # `-nodefaultlibs` from the linker invocation from Rust, which would be used
     # to compile dylibs on Android, such as for constructing unit test APKs.
     "-Cdefault-linker-libraries",
+
+    # Require `unsafe` blocks even in `unsafe` fns. This is intended to become
+    # an error by default eventually; see
+    # https://github.com/rust-lang/rust/issues/71668
+    "-Dunsafe_op_in_unsafe_fn",
 
     # Turn warnings into the "deny" lint level, which produce compiler errors.
     # The equivalent of -Werror for clang/gcc.
@@ -1305,7 +1309,7 @@ config("compiler_codegen") {
     configs += [ "//build/config/nacl:compiler_codegen" ]
   }
 
-  if (current_cpu == "arm64" && !is_win) {
+  if (current_cpu == "arm64" && !is_win && is_clang) {
     # Disable outlining everywhere on arm64 except Win. For more information see
     # crbug.com/931297 for Android and crbug.com/1410297 for iOS.
     # TODO(crbug.com/1411363): Enable this on Windows if possible.
@@ -1773,8 +1777,8 @@ config("chromium_code") {
     ]
 
     # TODO(thakis): Enable this more often, https://crbug.com/346399
-    # use_libfuzzer: https://crbug.com/1063180
-    if ((!is_nacl || is_nacl_saigo) && !use_libfuzzer) {
+    # use_fuzzing_engine_with_lpm: https://crbug.com/1063180
+    if ((!is_nacl || is_nacl_saigo) && !use_fuzzing_engine_with_lpm) {
       cflags += [ "-Wunreachable-code-aggressive" ]
     }
 
@@ -2315,10 +2319,12 @@ if (is_clang && is_a_target_toolchain) {
     if (is_android || is_castos) {
       _clang_sample_profile = "//chrome/android/profiles/afdo.prof"
     } else {
-      assert(chromeos_afdo_platform == "atom" ||
-                 chromeos_afdo_platform == "bigcore" ||
-                 chromeos_afdo_platform == "arm",
-             "Only atom, bigcore and arm are valid Chrome OS profiles.")
+      assert(
+          chromeos_afdo_platform == "atom" ||
+              chromeos_afdo_platform == "bigcore" ||
+              chromeos_afdo_platform == "arm" ||
+              chromeos_afdo_platform == "arm-exp",
+          "Only 'atom', 'bigcore', 'arm' and 'arm-exp' are valid ChromeOS profiles.")
       _clang_sample_profile =
           "//chromeos/profiles/${chromeos_afdo_platform}.afdo.prof"
     }

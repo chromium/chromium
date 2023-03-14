@@ -26,6 +26,7 @@
 #include "chromeos/ui/frame/multitask_menu/multitask_button.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu.h"
 #include "chromeos/ui/wm/features.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/wm/core/window_util.h"
@@ -162,11 +163,11 @@ TEST_F(MultitaskMenuNudgeControllerTest,
   views::NamedWidgetShownWaiter waiter(
       views::test::AnyWidgetTestPasskey{},
       std::string("MultitaskMenuBubbleWidget"));
-  auto* size_button = static_cast<chromeos::FrameSizeButton*>(
+  chromeos::FrameSizeButton* size_button =
       NonClientFrameViewAsh::Get(window.get())
           ->GetHeaderView()
           ->caption_button_container()
-          ->size_button());
+          ->size_button();
   size_button->ShowMultitaskMenu(
       chromeos::MultitaskMenuEntryType::kFrameSizeButtonHover);
   views::WidgetDelegate* delegate =
@@ -180,8 +181,7 @@ TEST_F(MultitaskMenuNudgeControllerTest,
                                        ->GetBoundsInScreen()
                                        .CenterPoint());
   GetEventGenerator()->ClickLeftButton();
-  ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
-  EXPECT_TRUE(GetNudgeWidgetForWindow(window.get()));
+  EXPECT_TRUE(WindowState::Get(window.get())->IsFloated());
 }
 
 TEST_F(MultitaskMenuNudgeControllerTest, NudgeTimeout) {
@@ -192,6 +192,37 @@ TEST_F(MultitaskMenuNudgeControllerTest, NudgeTimeout) {
   EXPECT_FALSE(GetNudgeWidgetForWindow(window.get()));
 }
 
+// Tests that the nudge bounds is within display bounds when the associated
+// window is maximized.
+TEST_F(MultitaskMenuNudgeControllerTest, ClamshellNudgeBounds) {
+  auto window = CreateAppWindow(gfx::Rect(300, 300));
+  ASSERT_TRUE(GetNudgeWidgetForWindow(window.get()));
+
+  WindowState::Get(window.get())->Maximize();
+  auto* nudge_widget = GetNudgeWidgetForWindow(window.get());
+  ASSERT_TRUE(nudge_widget);
+  EXPECT_TRUE(display::Screen::GetScreen()
+                  ->GetDisplayNearestView(window.get())
+                  .work_area()
+                  .Contains(nudge_widget->GetWindowBoundsInScreen()));
+
+  // Cleanup some state for the next test.
+  FireDismissNudgeTimer(window.get());
+  window.reset();
+  test_clock_.Advance(base::Hours(26));
+
+  // Test the same thing in RTL.
+  base::i18n::SetRTLForTesting(true);
+  window = CreateAppWindow(gfx::Rect(300, 300));
+  WindowState::Get(window.get())->Maximize();
+  nudge_widget = GetNudgeWidgetForWindow(window.get());
+  ASSERT_TRUE(nudge_widget);
+  EXPECT_TRUE(display::Screen::GetScreen()
+                  ->GetDisplayNearestView(window.get())
+                  .work_area()
+                  .Contains(nudge_widget->GetWindowBoundsInScreen()));
+}
+
 TEST_F(MultitaskMenuNudgeControllerTest, NudgeMultiDisplay) {
   UpdateDisplay("800x700,801+0-800x700");
   ASSERT_EQ(2u, Shell::GetAllRootWindows().size());
@@ -199,27 +230,21 @@ TEST_F(MultitaskMenuNudgeControllerTest, NudgeMultiDisplay) {
   auto window = CreateAppWindow(gfx::Rect(300, 300));
   ASSERT_TRUE(GetNudgeWidgetForWindow(window.get()));
 
+  // Move the window using the shortcut. Test that the nudge is on the correct
+  // display.
+  display_move_window_util::HandleMoveActiveWindowBetweenDisplays();
+  EXPECT_EQ(Shell::GetAllRootWindows()[1], GetNudgeWidgetForWindow(window.get())
+                                               ->GetNativeWindow()
+                                               ->GetRootWindow());
+
   // Drag from the caption the window to the other display. The nudge should be
-  // on the other display, even though the window is not (the window stays
-  // offscreen and a mirrored version called the drag window is the one on the
-  // secondary display).
+  // gone, but there is no crash.
+  display_move_window_util::HandleMoveActiveWindowBetweenDisplays();
   auto* event_generator = GetEventGenerator();
   event_generator->set_current_screen_location(gfx::Point(150, 10));
   event_generator->PressLeftButton();
-  event_generator->MoveMouseTo(gfx::Point(900, 0));
-  EXPECT_EQ(Shell::GetAllRootWindows()[1], GetNudgeWidgetForWindow(window.get())
-                                               ->GetNativeWindow()
-                                               ->GetRootWindow());
-
-  event_generator->ReleaseLeftButton();
-  EXPECT_EQ(Shell::GetAllRootWindows()[1], GetNudgeWidgetForWindow(window.get())
-                                               ->GetNativeWindow()
-                                               ->GetRootWindow());
-
-  display_move_window_util::HandleMoveActiveWindowBetweenDisplays();
-  EXPECT_EQ(Shell::GetAllRootWindows()[0], GetNudgeWidgetForWindow(window.get())
-                                               ->GetNativeWindow()
-                                               ->GetRootWindow());
+  event_generator->MoveMouseTo(gfx::Point(1200, 0));
+  EXPECT_FALSE(GetNudgeWidgetForWindow(window.get()));
 }
 
 // Tests that based on preferences (shown count, and last shown time), the nudge
@@ -255,6 +280,36 @@ TEST_F(MultitaskMenuNudgeControllerTest, NudgePreferences) {
 
   // Advance the clock and attempt to show the nudge for a forth time. Verify
   // that it will not show.
+  test_clock_.Advance(base::Hours(25));
+  window.reset();
+  window = CreateAppWindow(gfx::Rect(300, 300));
+  EXPECT_FALSE(GetNudgeWidgetForWindow(window.get()));
+}
+
+// Tests that after the multitask menu is shown, the nudge does not show
+// anymore.
+TEST_F(MultitaskMenuNudgeControllerTest, MenuShown) {
+  // Create a window, the nudge is shown on new window activation.
+  auto window = CreateAppWindow(gfx::Rect(300, 300));
+  ASSERT_TRUE(GetNudgeWidgetForWindow(window.get()));
+
+  // Fake waiting for nudge to dismiss and open the multitask menu.
+  FireDismissNudgeTimer(window.get());
+  ASSERT_FALSE(GetNudgeWidgetForWindow(window.get()));
+  views::NamedWidgetShownWaiter waiter(
+      views::test::AnyWidgetTestPasskey{},
+      std::string("MultitaskMenuBubbleWidget"));
+  chromeos::FrameSizeButton* size_button =
+      NonClientFrameViewAsh::Get(window.get())
+          ->GetHeaderView()
+          ->caption_button_container()
+          ->size_button();
+  size_button->ShowMultitaskMenu(
+      chromeos::MultitaskMenuEntryType::kFrameSizeButtonHover);
+  waiter.WaitIfNeededAndGet();
+
+  // Advance the clock and then destroy the window and create a new window.
+  // Test that the nudge does not show up.
   test_clock_.Advance(base::Hours(25));
   window.reset();
   window = CreateAppWindow(gfx::Rect(300, 300));

@@ -85,7 +85,7 @@ class CustomInputProcessor : public QueryProcessor {
                            FeatureProcessorState* feature_processor_state,
                            std::vector<ProcessedValue>& out_tensor);
 
-  const raw_ptr<InputDelegateHolder> input_delegate_holder_;
+  const raw_ptr<InputDelegateHolder, DanglingUntriaged> input_delegate_holder_;
 
   // List of custom inputs to process into input tensors.
   base::flat_map<FeatureIndex, proto::CustomInput> custom_inputs_;

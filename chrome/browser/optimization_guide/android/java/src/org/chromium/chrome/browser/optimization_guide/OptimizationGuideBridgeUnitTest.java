@@ -8,7 +8,6 @@ import static org.mockito.AdditionalMatchers.aryEq;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.never;
@@ -104,7 +103,7 @@ public class OptimizationGuideBridgeUnitTest {
         bridge.canApplyOptimization(gurl, OptimizationType.PERFORMANCE_HINTS, mCallbackMock);
 
         verify(mOptimizationGuideBridgeJniMock, never())
-                .canApplyOptimization(anyLong(), anyObject(), anyInt(),
+                .canApplyOptimization(anyLong(), any(), anyInt(),
                         any(OptimizationGuideBridge.OptimizationGuideCallback.class));
         verify(mCallbackMock)
                 .onOptimizationGuideDecision(eq(OptimizationGuideDecision.UNKNOWN), isNull());
@@ -139,7 +138,7 @@ public class OptimizationGuideBridgeUnitTest {
                 navHandle, OptimizationType.PERFORMANCE_HINTS, mCallbackMock);
 
         verify(mOptimizationGuideBridgeJniMock, never())
-                .canApplyOptimization(anyLong(), anyObject(), anyInt(),
+                .canApplyOptimization(anyLong(), any(), anyInt(),
                         any(OptimizationGuideBridge.OptimizationGuideCallback.class));
         verify(mCallbackMock)
                 .onOptimizationGuideDecision(eq(OptimizationGuideDecision.UNKNOWN), isNull());

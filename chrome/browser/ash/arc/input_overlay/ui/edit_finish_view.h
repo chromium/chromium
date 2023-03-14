@@ -5,14 +5,20 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_EDIT_FINISH_VIEW_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_EDIT_FINISH_VIEW_H_
 
-#include <memory>
-
 #include "base/memory/raw_ptr.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/view.h"
 
-// View displaying the 3 possible options to finish edit mode.
+namespace ui {
+class Cursor;
+}  // namespace ui
+
+namespace arc::input_overlay {
+
+class DisplayOverlayController;
+
+// EditFinishView displays the 3 possible options to finish edit mode.
 //
 // These actions refer to what the user can do wrt customized key-bindings, they
 // can either reset to a set of default key-bindings or just accept/cancel the
@@ -26,16 +32,11 @@
 // |                      |
 // |        Cancel        |
 // +----------------------+
-
-namespace arc::input_overlay {
-
-class DisplayOverlayController;
-
 class EditFinishView : public views::View {
  public:
-  static std::unique_ptr<EditFinishView> BuildView(
+  static EditFinishView* BuildView(
       DisplayOverlayController* display_overlay_controller,
-      const gfx::Size& parent_size);
+      views::View* parent);
 
   explicit EditFinishView(DisplayOverlayController* display_overlay_controller);
 
@@ -50,6 +51,7 @@ class EditFinishView : public views::View {
   void OnGestureEvent(ui::GestureEvent* event) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnKeyReleased(const ui::KeyEvent& event) override;
+  ui::Cursor GetCursor(const ui::MouseEvent& event) override;
 
  private:
   class ChildButton;
@@ -60,10 +62,15 @@ class EditFinishView : public views::View {
   void OnSaveButtonPressed();
   void OnCancelButtonPressed();
 
+  // Focus ring specs.
+  void SetFocusRing();
+
   // Drag operations.
   void OnDragStart(const ui::LocatedEvent& event);
   void OnDragUpdate(const ui::LocatedEvent& event);
   void OnDragEnd();
+
+  void SetCursor(ui::mojom::CursorType cursor_type);
 
   raw_ptr<ChildButton> reset_button_ = nullptr;
   raw_ptr<ChildButton> save_button_ = nullptr;

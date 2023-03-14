@@ -202,6 +202,30 @@ git cl upload -r foo@example.com,bar@example.com -b 123456
 
 See `git cl help upload` for a full list of flags.
 
+### Uploading dependent changes
+
+If you wish to work on multiple related changes without waiting for
+them to land, you can do so in Gerrit using dependent changes.
+
+To put this into an example, let‘s say you have a commit for feature A
+and this is in the process of being reviewed on Gerrit.  Now let’s say
+you want to start more work based on it before it lands on main.
+
+```
+git checkout featureA
+git checkout -b featureB
+git branch --set-upstream-to featureA
+# ... edit some files
+# ... git add ...
+git commit
+git cl upload
+```
+
+In Gerrit, there would then be a “relation chain” shown where the
+feature A change is the parent of the feature B change.  If A
+introduces a new file which B changes, the review for B will only show
+the diff from A.
+
 ## Code review
 
 Code reviews are covered in more detail on the [code review
@@ -357,7 +381,7 @@ general rules of thumb can be helpful in navigating how to structure changes:
 
   When you are adding support for a new OS, a new architecture, a new port or
   a new top-level directory, please send an email to
-  chrome-eng-review@google.com and get approval. For long-term maintenance
+  chrome-atls@google.com and get approval. For long-term maintenance
   reasons, we will accept only things that are used by the Chromium project
   (including Chromium-supported projects like V8 and Skia) and things whose
   benefit to Chromium outweighs any cost increase in maintaining Chromium's

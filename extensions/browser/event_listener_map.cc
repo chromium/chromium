@@ -301,19 +301,6 @@ void EventListenerMap::LoadUnfilteredLazyListeners(
   }
 }
 
-void EventListenerMap::LoadUnfilteredWorkerListeners(
-    content::BrowserContext* browser_context,
-    const ExtensionId& extension_id,
-    const std::set<std::string>& event_names) {
-  for (const auto& name : event_names) {
-    AddListener(EventListener::ForExtensionServiceWorker(
-        name, extension_id, nullptr, browser_context,
-        Extension::GetBaseURLFromExtensionId(extension_id),
-        blink::mojom::kInvalidServiceWorkerVersionId, kMainThreadId,
-        absl::nullopt));
-  }
-}
-
 void EventListenerMap::LoadFilteredLazyListeners(
     content::BrowserContext* browser_context,
     const std::string& extension_id,

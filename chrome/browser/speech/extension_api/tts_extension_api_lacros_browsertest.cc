@@ -365,4 +365,18 @@ IN_PROC_BROWSER_TEST_F(LacrosTtsApiTest, PauseDuringSpeakWithLacrosTtsEngine) {
       << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(LacrosTtsApiTest, IsSpeaking) {
+  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
+          crosapi::mojom::Tts::Uuid_) <
+      static_cast<int>(crosapi::mojom::Tts::kIsSpeakingMinVersion)) {
+    GTEST_SKIP() << "Unsupported ash version.";
+  }
+
+  // Load Lacros tts engine extension, register the tts engine events, and
+  // call tts.isSpeaking before/during/after tts.speak.
+  ASSERT_TRUE(RunExtensionTest("tts/is_speaking/",
+                               {}, {.ignore_manifest_warnings = true}))
+      << message_;
+}
+
 }  // namespace extensions

@@ -6,7 +6,7 @@
 #include "base/check_op.h"
 #include "base/test/bind.h"
 #include "chromeos/ash/components/dbus/featured/fake_featured_client.h"
-#include "chromeos/ash/components/dbus/featured/featured.pb.h"
+#include "components/variations/proto/cros_safe_seed.pb.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
@@ -92,7 +92,7 @@ TEST_F(FeaturedClientTest, HandleSeedFetched_Success) {
 
   ASSERT_NE(client, nullptr);
 
-  ::featured::SeedDetails safe_seed;
+  variations::SeedDetails safe_seed;
 
   bool ran_callback = false;
   client->HandleSeedFetched(
@@ -128,7 +128,7 @@ TEST_F(FeaturedClientTest, HandleSeedFetched_Failure_ErrorResponse) {
 
   ASSERT_NE(client, nullptr);
 
-  ::featured::SeedDetails safe_seed;
+  variations::SeedDetails safe_seed;
 
   bool ran_callback = false;
   client->HandleSeedFetched(
@@ -159,7 +159,7 @@ TEST_F(FeaturedClientTest, HandleSeedFetched_Failure_NullResponse) {
 
   ASSERT_NE(client, nullptr);
 
-  ::featured::SeedDetails safe_seed;
+  variations::SeedDetails safe_seed;
 
   bool ran_callback = false;
   client->HandleSeedFetched(
@@ -183,7 +183,7 @@ TEST_F(FeaturedClientTest, FakeHandleSeedFetched_Success) {
 
   ASSERT_NE(client, nullptr);
 
-  ::featured::SeedDetails safe_seed;
+  variations::SeedDetails safe_seed;
 
   bool ran_callback = false;
   client->HandleSeedFetched(
@@ -207,7 +207,7 @@ TEST_F(FeaturedClientTest, FakeHandleSeedFetched_Failure) {
 
   ASSERT_NE(client, nullptr);
 
-  ::featured::SeedDetails safe_seed;
+  variations::SeedDetails safe_seed;
   client->SetCallbackSuccess(false);
 
   bool ran_callback = false;

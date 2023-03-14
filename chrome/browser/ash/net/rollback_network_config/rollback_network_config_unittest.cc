@@ -193,7 +193,7 @@ bool NetworkExists(const std::string& guid) {
 void SetUpDeviceWideNetworkConfig(const base::Value& config) {
   base::test::TestFuture<const std::string&, const std::string&> result;
   managed_network_configuration_handler()->CreateConfiguration(
-      kDeviceUserHash, config, result.GetCallback(),
+      kDeviceUserHash, config.GetDict(), result.GetCallback(),
       base::BindOnce(&PrintErrorAndFail));
   ASSERT_TRUE(result.Wait()) << "Failed to configure " << config;
 }
@@ -207,7 +207,7 @@ void SetPropertiesForExistingNetwork(const std::string& guid,
 
   base::test::TestFuture<void> signal;
   managed_network_configuration_handler()->SetProperties(
-      network_state->path(), config, signal.GetCallback(),
+      network_state->path(), config.GetDict(), signal.GetCallback(),
       base::BindOnce(&PrintErrorAndFail));
   ASSERT_TRUE(signal.Wait()) << "Failed to set " << config << " for " << guid;
 }
@@ -293,8 +293,8 @@ class RollbackNetworkConfigTest : public testing::Test {
   void SetEmptyDevicePolicy() {
     managed_network_configuration_handler()->SetPolicy(
         ::onc::ONC_SOURCE_DEVICE_POLICY, kDeviceUserHash,
-        /*network_configs_onc=*/base::Value(base::Value::Type::LIST),
-        /*global_network_config=*/base::Value(base::Value::Type::DICT));
+        /*network_configs_onc=*/base::Value::List(),
+        /*global_network_config=*/base::Value::Dict());
     task_environment_.RunUntilIdle();
   }
 
@@ -303,9 +303,8 @@ class RollbackNetworkConfigTest : public testing::Test {
     base::Value::Dict global_network_config;
     network_configs_onc.Append(network_config.Clone());
     managed_network_configuration_handler()->SetPolicy(
-        onc::ONC_SOURCE_DEVICE_POLICY, kDeviceUserHash,
-        base::Value(std::move(network_configs_onc)),
-        base::Value(std::move(global_network_config)));
+        onc::ONC_SOURCE_DEVICE_POLICY, kDeviceUserHash, network_configs_onc,
+        global_network_config);
     task_environment_.RunUntilIdle();
   }
 
@@ -742,6 +741,24 @@ TEST_F(RollbackNetworkConfigTest, EnrollmentToDifferentDeletesPolicyNetworks) {
   SetEmptyDevicePolicy();
 
   EXPECT_FALSE(NetworkExists(guid));
+}
+
+// Currently, Chrome may send the signal that an empty device policy was
+// applied before enrollment took place. Make sure we do not delete networks too
+// early. See b/270355500.
+TEST_F(RollbackNetworkConfigTest,
+       PolicyApplicationWithoutOwnershipDoesNotDeleteNetworks) {
+  base::Value network = *base::JSONReader::Read(kOpenWiFi);
+  SetUpDevicePolicyNetworkConfig(network);
+  const std::string& guid =
+      GetStringValue(network.GetDict(), onc::network_config::kGUID);
+
+  EXPECT_TRUE(NetworkExists(guid));
+  SimulateRollback();
+  EXPECT_TRUE(NetworkExists(guid));
+  SetEmptyDevicePolicy();
+
+  EXPECT_TRUE(NetworkExists(guid));
 }
 
 TEST_F(RollbackNetworkConfigTest, ExactlyRecommendedValuesPreserved) {

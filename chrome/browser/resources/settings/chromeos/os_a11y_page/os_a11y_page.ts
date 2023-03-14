@@ -18,6 +18,7 @@ import './display_and_magnification_page.js';
 import './keyboard_and_text_input_page.js';
 import './cursor_and_touchpad_page.js';
 import './audio_and_captions_page.js';
+import './chromevox_subpage.js';
 import './select_to_speak_subpage.js';
 import './switch_access_subpage.js';
 import './tts_subpage.js';
@@ -27,9 +28,9 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
-import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router} from '../router.js';
@@ -66,11 +67,30 @@ class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
       },
 
       /**
+       * Whether a screen reader is enabled.
+       */
+      hasScreenReader_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
        * Whether to show accessibility labels settings.
        */
       showAccessibilityLabelsSetting_: {
         type: Boolean,
         value: false,
+      },
+
+      /**
+       * Whether ChromeVox page migration is enabled.
+       */
+      isAccessibilityChromeVoxPageMigrationEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'isAccessibilityChromeVoxPageMigrationEnabled');
+        },
       },
 
       /**
@@ -120,11 +140,14 @@ class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
 
   currentRoute: Route;
   private browserProxy_: OsA11yPageBrowserProxy;
+  private hasScreenReader_: boolean;
   private isAccessibilityOSSettingsVisibilityEnabled_: boolean;
   private isGuest_: boolean;
   private isKioskModeActive_: boolean;
   private route_: Route;
   private showAccessibilityLabelsSetting_: boolean;
+  private isAccessibilityChromeVoxPageMigrationEnabled_: boolean;
+  private isAccessibilitySelectToSpeakPageMigrationEnabled_: boolean;
 
   constructor() {
     super();
@@ -185,7 +208,8 @@ class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
   }
 
   private onScreenReaderStateChanged_(hasScreenReader: boolean): void {
-    this.showAccessibilityLabelsSetting_ = hasScreenReader;
+    this.hasScreenReader_ = hasScreenReader;
+    this.showAccessibilityLabelsSetting_ = this.hasScreenReader_;
   }
 
   private onToggleAccessibilityImageLabels_(): void {

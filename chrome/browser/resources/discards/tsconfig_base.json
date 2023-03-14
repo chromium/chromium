@@ -1,10 +1,7 @@
 {
-  "extends": "../../../../tools/typescript/tsconfig_base.json",
+  "extends": "../../../../tools/typescript/tsconfig_base_polymer.json",
   "compilerOptions": {
     "allowUmdGlobalAccess": true,
-    "noUncheckedIndexedAccess": false,
-    "noUnusedLocals": false,
-    "strictPropertyInitialization": false,
     "typeRoots": [ "../../../../third_party/node/node_modules/@types" ],
     "types": [ "d3" ]
   }

@@ -220,13 +220,13 @@ When specifying the `source` in 3pp.pb, it is possible to use a custom catch-all
 script to probe for the latest version and obtain the latest sources. A simple
 example can be like the following:
 
+> Note that this python script should be **python3-compatible**.
+
 ```
-#!/usr/bin/env python
-# Copyright 2021 The Chromium Authors
+#!/usr/bin/env python3
+# Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
-from __future__ import print_function
 
 import argparse
 import json

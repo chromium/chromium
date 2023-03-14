@@ -7,18 +7,15 @@
     width: 512px;
   }
 
-  .title {
+  #header:focus-visible {
+    outline: none;
+  }
+
+  #title {
     color: var(--cros-text-color-primary);
     font: var(--cros-headline-1-font);
     padding-block-end: 8px;
     padding-block-start: 24px;
-    padding-inline: 24px;
-  }
-
-  .description {
-    color: var(--cros-text-color-secondary);
-    font: var(--cros-body-2-font);
-    padding-block-end: 18px;
     padding-inline: 24px;
   }
 
@@ -59,17 +56,28 @@
     padding-block-start: 32px;
     padding-inline: 24px;
   }
+
+  cr-button {
+    border-radius: 16px;
+  }
+
+  cr-button:focus-visible {
+    /* disable cr-button default keyboard focus style */
+    box-shadow: none;
+    outline: 2px solid var(--cros-focus-ring-color);
+    outline-offset: 2px;
+  }
 </style>
 
 <!-- TODO(b:251046594): Use localized strings -->
-<div class="title">
-  Choose an application to open “<span id="file-name"></span>”
+<!-- autofocus for screen reader to read header on dialog open-->
+<div id="header" autofocus tabindex="-1">
+  <div id="title">
+    Choose an app to open <span id="file-type"></span> files
+  </div>
 </div>
-<div class="description">
-  Choose how you'd like to open files like this. You can always change this
-  later by right-clicking on a file.
-</div>
-<div id="content"></div>
+<div id="content" role="listbox" 
+  aria-multiselectable="false" tabindex="-1"></div>
 <div id="button-container">
   <cr-button class="cancel-button">Cancel</cr-button>
   <cr-button class="action-button">Open</cr-button>

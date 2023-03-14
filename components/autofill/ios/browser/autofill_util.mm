@@ -312,7 +312,6 @@ void ExecuteJavaScriptFunction(const std::string& name,
     }
     return;
   }
-  DCHECK(frame->CanCallJavaScriptFunction());
   if (!cb.is_null()) {
     bool called = frame->CallJavaScriptFunction(
         name, parameters, base::BindOnce(^(const base::Value* res) {

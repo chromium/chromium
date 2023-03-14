@@ -149,7 +149,6 @@ interface IUpdaterCallbackSystem : IUpdaterCallback {
 interface IUpdater : IUnknown {
   HRESULT GetVersion([out, retval] BSTR* version);
   HRESULT FetchPolicies([in] IUpdaterCallback* callback);
-  HRESULT CheckForUpdate([in, string] const WCHAR* app_id);
   HRESULT RegisterApp([in, string] const WCHAR* app_id,
                       [in, string] const WCHAR* brand_code,
                       [in, string] const WCHAR* brand_path,
@@ -158,11 +157,14 @@ interface IUpdater : IUnknown {
                       [in, string] const WCHAR* existence_checker_path,
                       [in] IUpdaterCallback* callback);
   HRESULT RunPeriodicTasks([in] IUpdaterCallback* callback);
+  HRESULT CheckForUpdate([in, string] const WCHAR* app_id,
+                         [in] LONG priority,
+                         [in] BOOL same_version_update_allowed,
+                         [in] IUpdaterObserver* observer);
   HRESULT Update([in, string] const WCHAR* app_id,
                  [in, string] const WCHAR* install_data_index,
                  [in] LONG priority,
                  [in] BOOL same_version_update_allowed,
-                 [in] BOOL do_update_check_only,
                  [in] IUpdaterObserver* observer);
   HRESULT UpdateAll([in] IUpdaterObserver* observer);
   HRESULT Install([in, string] const WCHAR* app_id,
@@ -195,7 +197,6 @@ interface IUpdater : IUnknown {
 interface IUpdaterUser : IUnknown {
   HRESULT GetVersion([out, retval] BSTR* version);
   HRESULT FetchPolicies([in] IUpdaterCallbackUser* callback);
-  HRESULT CheckForUpdate([in, string] const WCHAR* app_id);
   HRESULT RegisterApp([in, string] const WCHAR* app_id,
                       [in, string] const WCHAR* brand_code,
                       [in, string] const WCHAR* brand_path,
@@ -204,11 +205,14 @@ interface IUpdaterUser : IUnknown {
                       [in, string] const WCHAR* existence_checker_path,
                       [in] IUpdaterCallbackUser* callback);
   HRESULT RunPeriodicTasks([in] IUpdaterCallbackUser* callback);
+  HRESULT CheckForUpdate([in, string] const WCHAR* app_id,
+                         [in] LONG priority,
+                         [in] BOOL same_version_update_allowed,
+                         [in] IUpdaterObserverUser* observer);
   HRESULT Update([in, string] const WCHAR* app_id,
                  [in, string] const WCHAR* install_data_index,
                  [in] LONG priority,
                  [in] BOOL same_version_update_allowed,
-                 [in] BOOL do_update_check_only,
                  [in] IUpdaterObserverUser* observer);
   HRESULT UpdateAll([in] IUpdaterObserverUser* observer);
   HRESULT Install([in, string] const WCHAR* app_id,
@@ -241,7 +245,6 @@ interface IUpdaterUser : IUnknown {
 interface IUpdaterSystem : IUnknown {
   HRESULT GetVersion([out, retval] BSTR* version);
   HRESULT FetchPolicies([in] IUpdaterCallbackSystem* callback);
-  HRESULT CheckForUpdate([in, string] const WCHAR* app_id);
   HRESULT RegisterApp([in, string] const WCHAR* app_id,
                       [in, string] const WCHAR* brand_code,
                       [in, string] const WCHAR* brand_path,
@@ -250,11 +253,14 @@ interface IUpdaterSystem : IUnknown {
                       [in, string] const WCHAR* existence_checker_path,
                       [in] IUpdaterCallbackSystem* callback);
   HRESULT RunPeriodicTasks([in] IUpdaterCallbackSystem* callback);
+  HRESULT CheckForUpdate([in, string] const WCHAR* app_id,
+                         [in] LONG priority,
+                         [in] BOOL same_version_update_allowed,
+                         [in] IUpdaterObserverSystem* observer);
   HRESULT Update([in, string] const WCHAR* app_id,
                  [in, string] const WCHAR* install_data_index,
                  [in] LONG priority,
                  [in] BOOL same_version_update_allowed,
-                 [in] BOOL do_update_check_only,
                  [in] IUpdaterObserverSystem* observer);
   HRESULT UpdateAll([in] IUpdaterObserverSystem* observer);
   HRESULT Install([in, string] const WCHAR* app_id,

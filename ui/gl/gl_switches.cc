@@ -61,17 +61,6 @@ const char kSwapChainFormatBGRA[] = "bgra";
 
 namespace switches {
 
-// Disables use of D3D11.
-const char kDisableD3D11[]                  = "disable-d3d11";
-
-// Disables use of ES3 backend (use ES2 backend instead).
-const char kDisableES3GLContext[]           = "disable-es3-gl-context";
-
-// Disables use of ES3 backend at a lower level, for testing purposes.
-// This isn't guaranteed to work everywhere, so it's test-only.
-const char kDisableES3GLContextForTesting[] =
-    "disable-es3-gl-context-for-testing";
-
 // Disable workarounds for various GPU driver bugs.
 const char kDisableGpuDriverBugWorkarounds[] =
     "disable-gpu-driver-bug-workarounds";
@@ -145,18 +134,10 @@ const char kDisableGLExtensions[] = "disable-gl-extensions";
 // Enables SwapBuffersWithBounds if it is supported.
 const char kEnableSwapBuffersWithBounds[] = "enable-swap-buffers-with-bounds";
 
-// Disables DirectComposition surface.
-const char kDisableDirectComposition[] = "disable-direct-composition";
-
 // Enables using DirectComposition video overlays, even if hardware overlays
 // aren't supported.
 const char kEnableDirectCompositionVideoOverlays[] =
     "enable-direct-composition-video-overlays";
-
-// Disables using DirectComposition video overlays, even if hardware overlays
-// are supported.
-const char kDisableDirectCompositionVideoOverlays[] =
-    "disable-direct-composition-video-overlays";
 
 // Initialize the GPU process using the adapter with the specified LUID. This is
 // only used on Windows, as LUID is a Windows specific structure.
@@ -173,9 +154,6 @@ const char kDirectCompositionVideoSwapChainFormat[] =
 const char* const kGLSwitchesCopiedFromGpuProcessHost[] = {
     kDisableGpuDriverBugWorkarounds,
     kDisableGpuVsync,
-    kDisableD3D11,
-    kDisableES3GLContext,
-    kDisableES3GLContextForTesting,
     kEnableGPUServiceLogging,
     kEnableGPUServiceTracing,
     kEnableSgiVideoSync,
@@ -184,9 +162,7 @@ const char* const kGLSwitchesCopiedFromGpuProcessHost[] = {
     kOverrideUseSoftwareGLForTests,
     kUseANGLE,
     kEnableSwapBuffersWithBounds,
-    kDisableDirectComposition,
     kEnableDirectCompositionVideoOverlays,
-    kDisableDirectCompositionVideoOverlays,
     kDirectCompositionVideoSwapChainFormat,
 };
 const int kGLSwitchesCopiedFromGpuProcessHostNumSwitches =

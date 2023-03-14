@@ -195,6 +195,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
   bool CanSnap() override;
   void ShowSnapPreview(SnapDirection snap, bool allow_haptic_feedback) override;
   void CommitSnap(SnapDirection snap) override;
+  MultitaskMenuNudgeController* GetMultitaskMenuNudgeController() override;
 
   // The widget that the buttons act on.
   raw_ptr<views::Widget> frame_;

@@ -685,7 +685,7 @@ TEST_F(ServiceWorkerRegistryTest, CreateNewRegistration) {
   storage::QuotaErrorOr<storage::BucketInfo> result =
       quota_manager_proxy_sync.GetBucket(kKey, storage::kDefaultBucketName,
                                          blink::mojom::StorageType::kTemporary);
-  ASSERT_TRUE(result.ok());
+  ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->name, storage::kDefaultBucketName);
   EXPECT_EQ(result->storage_key, kKey);
   EXPECT_GT(result->id.value(), 0);
@@ -2125,7 +2125,7 @@ TEST_F(ServiceWorkerRegistryTest,
         quota_manager_proxy_sync.GetBucket(
             kKey, storage::kDefaultBucketName,
             blink::mojom::StorageType::kTemporary);
-    ASSERT_TRUE(result.ok());
+    ASSERT_TRUE(result.has_value());
     EXPECT_EQ(result->name, storage::kDefaultBucketName);
     EXPECT_EQ(result->storage_key, kKey);
     EXPECT_GT(result->id.value(), 0);

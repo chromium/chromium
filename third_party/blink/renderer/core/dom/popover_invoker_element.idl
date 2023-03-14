@@ -1,0 +1,8 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+interface mixin PopoverInvokerElement {
+  [CEReactions,RuntimeEnabled=HTMLPopoverAttribute,Reflect=popovertarget] attribute Element? popoverTargetElement;
+  [CEReactions,RuntimeEnabled=HTMLPopoverAttribute,Reflect,ReflectOnly=("toggle","show","hide"),ReflectEmpty="toggle",ReflectInvalid="toggle",ReflectMissing="toggle"] attribute DOMString popoverTargetAction;
+};

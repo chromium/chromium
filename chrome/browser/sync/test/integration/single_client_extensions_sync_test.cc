@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientExtensionsSyncTest, UninstallWinsConflicts) {
   std::unique_ptr<syncer::LoopbackServerEntity> tombstone(
       syncer::PersistentTombstoneEntity::CreateNew(
           server_extensions[0].id_string(),
-          server_extensions[0].client_defined_unique_tag()));
+          server_extensions[0].client_tag_hash()));
   GetFakeServer()->InjectEntity(std::move(tombstone));
 
   // Modify the extension in the local profile to cause a conflict.

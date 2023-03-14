@@ -228,7 +228,7 @@ stage_install_common() {
   if [ -f "${OUTPUTDIR}/libvulkan.so.1" ]; then
     file="libvulkan.so.1"
     strippedfile="${OUTPUTDIR}/${file}.stripped"
-    install -m 755 "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${file}"
+    install -m ${SHLIB_PERMS} "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${file}"
   fi
 
   # SwiftShader VK
@@ -423,7 +423,7 @@ stage_install_common() {
     elif [[ "${file_type}" = *"shell script"* ]]; then
       local expected_perms=755
     elif [[ "${file_type}" = ELF* ]]; then
-      if [[ "${base_name}" = *".so" ]]; then
+      if [[ "${base_name}" = *".so" || "${base_name}" = *".so."[[:digit:]]* ]]; then
         local expected_perms=${SHLIB_PERMS}
       else
         local expected_perms=755

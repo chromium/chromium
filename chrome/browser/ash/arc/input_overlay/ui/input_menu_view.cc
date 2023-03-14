@@ -138,8 +138,9 @@ class InputMenuView::FeedbackButton : public views::LabelButton {
 
     auto* color_provider = ash::AshColorProvider::Get();
     DCHECK(color_provider);
-    if (!color_provider)
+    if (!color_provider) {
       return;
+    }
 
     SetTextColor(
         views::Button::STATE_NORMAL,
@@ -166,8 +167,9 @@ std::unique_ptr<InputMenuView> InputMenuView::BuildMenuView(
     views::View* entry_view,
     const gfx::Size& parent_size) {
   // Ensure there is only one menu at any time.
-  if (display_overlay_controller->HasMenuView())
+  if (display_overlay_controller->HasMenuView()) {
     display_overlay_controller->RemoveInputMenuView();
+  }
 
   auto menu_view_ptr =
       std::make_unique<InputMenuView>(display_overlay_controller, entry_view);
@@ -191,8 +193,9 @@ void InputMenuView::OnThemeChanged() {
 }
 
 void InputMenuView::CloseMenu() {
-  if (display_overlay_controller_)
+  if (display_overlay_controller_) {
     display_overlay_controller_->SetDisplayMode(DisplayMode::kView);
+  }
 }
 
 void InputMenuView::Init(const gfx::Size& parent_size) {
@@ -360,30 +363,35 @@ void InputMenuView::Init(const gfx::Size& parent_size) {
     x = entry_view_->x();
     // If the menu entry view is on the right side of the screen, bias toward
     // the center.
-    if (x > parent_size.width() / 2)
+    if (x > parent_size.width() / 2) {
       x -= width() - entry_view_->width();
+    }
     // Set the menu at the middle if there is not enough margin on the right
     // or left side.
-    if (x + width() > parent_size.width() || x < 0)
+    if (x + width() > parent_size.width() || x < 0) {
       x = std::max(0, parent_size.width() - width() - kMenuMarginSmall);
+    }
 
     // If the menu entry is at the bottom side of the screen, bias towards the
     // center.
-    if (y > parent_size.height() / 2)
+    if (y > parent_size.height() / 2) {
       y -= height() - entry_view_->height();
+    }
   } else {
     int menu_margin_right = GetMenuMarginRight(parent_size.width());
     x = std::max(0, parent_size.width() - width() - menu_margin_right);
     // Set the menu in the middle if there is not enough margin on the left
     // side.
-    if (x < menu_margin_right)
+    if (x < menu_margin_right) {
       x = std::max(0, (parent_size.width() - width()) / 2);
+    }
   }
 
   // Set the menu at the bottom if there is not enough margin on the bottom
   // side.
-  if (y + height() > parent_size.height())
+  if (y + height() > parent_size.height()) {
     y = std::max(0, parent_size.height() - height() - kMenuMarginSmall);
+  }
 
   SetPosition(gfx::Point(x, y));
 }
@@ -397,8 +405,9 @@ std::unique_ptr<views::View> InputMenuView::BuildSeparator() {
 
 void InputMenuView::OnToggleGameControlPressed() {
   DCHECK(display_overlay_controller_);
-  if (!display_overlay_controller_)
+  if (!display_overlay_controller_) {
     return;
+  }
   const bool enabled = game_control_toggle_->GetIsOn();
   display_overlay_controller_->SetTouchInjectorEnable(enabled);
   // Adjust |enabled_| and |visible_| properties to match |Game controls|.
@@ -416,12 +425,13 @@ void InputMenuView::OnToggleShowHintPressed() {
 
 void InputMenuView::OnEditButtonPressed() {
   DCHECK(display_overlay_controller_);
-  if (!display_overlay_controller_)
+  if (!display_overlay_controller_) {
     return;
+  }
   // Force key-binding labels ON before entering edit mode.
   if (!show_mapping_toggle_->GetIsOn()) {
     show_mapping_toggle_->SetIsOn(true);
-    display_overlay_controller_->SetInputMappingVisible(true);
+    display_overlay_controller_->SetInputMappingVisibleTemporary();
   }
   RecordInputOverlayCustomizedUsage();
   InputOverlayUkm::RecordInputOverlayCustomizedUsageUkm(
@@ -434,8 +444,9 @@ void InputMenuView::OnEditButtonPressed() {
 
 void InputMenuView::OnButtonSendFeedbackPressed() {
   DCHECK(display_overlay_controller_);
-  if (!display_overlay_controller_)
+  if (!display_overlay_controller_) {
     return;
+  }
 
   GURL url = GetAssembleUrl(display_overlay_controller_->GetPackageName());
   ash::NewWindowDelegate::GetPrimary()->OpenUrl(
@@ -459,8 +470,9 @@ gfx::Insets InputMenuView::CalculateInsets(views::View* view,
 
 void InputMenuView::SetCustomToggleColor(views::ToggleButton* toggle) {
   auto* color_provider = ash::AshColorProvider::Get();
-  if (!color_provider)
+  if (!color_provider) {
     return;
+  }
 
   toggle->SetThumbOnColor(color_provider->GetContentLayerColor(
       ash::AshColorProvider::ContentLayerType::kSwitchKnobColorActive));

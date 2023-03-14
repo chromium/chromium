@@ -30,11 +30,11 @@ class FullscreenControllerStateTest {
  public:
   // Events names for FullscreenController methods.
   enum Event {
-    TOGGLE_FULLSCREEN,         // ToggleBrowserFullscreenMode()
-    TAB_FULLSCREEN_TRUE,       // ToggleFullscreenModeForTab(, true)
-    TAB_FULLSCREEN_FALSE,      // ToggleFullscreenModeForTab(, false)
-    BUBBLE_EXIT_LINK,          // ExitTabOrBrowserFullscreenToPreviousState()
-    WINDOW_CHANGE,             // ChangeWindowFullscreenState()
+    TOGGLE_FULLSCREEN,     // ToggleBrowserFullscreenMode()
+    ENTER_TAB_FULLSCREEN,  // EnterFullscreenModeForTab()
+    EXIT_TAB_FULLSCREEN,   // ExitFullscreenModeForTab()
+    BUBBLE_EXIT_LINK,      // ExitTabOrBrowserFullscreenToPreviousState()
+    WINDOW_CHANGE,         // ChangeWindowFullscreenState()
     NUM_EVENTS,
     EVENT_INVALID,
   };
@@ -178,11 +178,11 @@ class FullscreenControllerStateTest {
 
  private:
   // The state the FullscreenController is expected to be in.
-  State state_;
+  State state_ = STATE_NORMAL;
 
   // The state when the previous NOTIFICATION_FULLSCREEN_CHANGED notification
   // was received.
-  State last_notification_received_state_;
+  State last_notification_received_state_ = STATE_NORMAL;
 
   // Listens for the NOTIFICATION_FULLSCREEN_CHANGED notification.
   std::unique_ptr<FullscreenNotificationObserver>

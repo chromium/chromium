@@ -16,8 +16,6 @@ namespace features {
 // Keep sorted!
 
 COMPONENT_EXPORT(UI_BASE_FEATURES)
-BASE_DECLARE_FEATURE(kCompositorThreadedScrollbarScrolling);
-COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kExperimentalFlingAnimation);
 COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kFocusFollowsCursor);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -43,6 +41,11 @@ COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kElasticOverscroll);
 
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kUseToastManager);
+
+// Causes the Tinted Resource cache to only be cleared when Chrome goes to the
+// background.
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kKeepAndroidTintedResources);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
@@ -79,11 +82,14 @@ COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kDeprecateAltBasedSixPack);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 bool IsDeprecateAltBasedSixPackEnabled();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if defined(USE_AURA)
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kTouchTextEditingRedesign);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 bool IsTouchTextEditingRedesignEnabled();
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // defined(USE_AURA)
 
 // Used to enable forced colors mode for web content.
 COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kForcedColors);
@@ -210,6 +216,11 @@ bool IsLacrosColorManagementEnabled();
 
 COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kChromeRefresh2023);
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsChromeRefresh2023();
+
+// Сreating a MotionEvent from Java MotionEvent use the event time in
+// nanoseconds instead of milliseconds.
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kUseNanosecondsForMotionEvent);
 
 }  // namespace features
 

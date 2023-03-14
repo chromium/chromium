@@ -26,8 +26,10 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
+#include "net/cookies/site_for_cookies.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_IOS)
 #include "components/content_settings/core/common/features.h"
@@ -73,7 +75,7 @@ class CookieSettingsObserver : public CookieSettings::Observer {
 
 struct TestCase {
   std::string test_name;
-  bool storage_access_api_enabled;
+  bool storage_access_grant_eligible;
   bool top_level_storage_access_grant_eligible;
   bool force_allow_third_party_cookies;
 };
@@ -110,7 +112,7 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
 #if BUILDFLAG(IS_IOS)
     enabled_features.push_back(kImprovedCookieControls);
 #else
-    if (IsStorageAccessAPIEnabled()) {
+    if (IsStorageAccessGrantEligible()) {
       enabled_features.push_back(blink::features::kStorageAccessAPI);
     } else {
       disabled_features.push_back(blink::features::kStorageAccessAPI);
@@ -142,8 +144,8 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
     task_environment_.FastForwardBy(delta);
   }
 
-  bool IsStorageAccessAPIEnabled() const {
-    return GetParam().storage_access_api_enabled;
+  bool IsStorageAccessGrantEligible() const {
+    return GetParam().storage_access_grant_eligible;
   }
 
   bool IsTopLevelStorageAccessGrantEligible() const {
@@ -156,7 +158,7 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
 
   net::CookieSettingOverrides GetCookieSettingOverrides() const {
     net::CookieSettingOverrides overrides;
-    if (IsStorageAccessAPIEnabled()) {
+    if (IsStorageAccessGrantEligible()) {
       overrides.Put(net::CookieSettingOverride::kStorageAccessGrantEligible);
     }
     if (IsTopLevelStorageAccessGrantEligible()) {
@@ -172,7 +174,7 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
   // Assumes that cookie access would be blocked if not for a Storage Access API
   // grant or force allow.
   ContentSetting SettingWithEitherOverride() const {
-    return IsStorageAccessAPIEnabled() || IsForceAllowThirdPartyCookies()
+    return IsStorageAccessGrantEligible() || IsForceAllowThirdPartyCookies()
                ? CONTENT_SETTING_ALLOW
                : CONTENT_SETTING_BLOCK;
   }
@@ -182,7 +184,7 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
   ContentSetting SettingWithEitherOverrideForTopLevel() const {
     // TODO(crbug.com/1385156): Check TopLevelStorageAccessAPI instead after
     // separating the feature flag.
-    return (IsStorageAccessAPIEnabled() &&
+    return (IsStorageAccessGrantEligible() &&
             IsTopLevelStorageAccessGrantEligible()) ||
                    IsForceAllowThirdPartyCookies()
                ? CONTENT_SETTING_ALLOW
@@ -198,7 +200,7 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
   // grant or force allow.
   net::cookie_util::StorageAccessResult
   BlockedStorageAccessResultWithEitherOverride() const {
-    if (IsStorageAccessAPIEnabled()) {
+    if (IsStorageAccessGrantEligible()) {
       return net::cookie_util::StorageAccessResult::
           ACCESS_ALLOWED_STORAGE_ACCESS_GRANT;
     }
@@ -215,7 +217,8 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
   BlockedStorageAccessResultWithTopLevelOverride() const {
     // TODO(crbug.com/1385156): Check TopLevelStorageAccessAPI instead after
     // separating the feature flag.
-    if (IsStorageAccessAPIEnabled() && IsTopLevelStorageAccessGrantEligible()) {
+    if (IsStorageAccessGrantEligible() &&
+        IsTopLevelStorageAccessGrantEligible()) {
       // TODO(crbug.com/1385156): Separate metrics between StorageAccessAPI
       // and the page-level variant.
       return net::cookie_util::StorageAccessResult::
@@ -311,24 +314,44 @@ TEST_P(CookieSettingsTest, CookiesBlockSingle) {
 TEST_P(CookieSettingsTest, CookiesBlockThirdParty) {
   prefs_.SetInteger(prefs::kCookieControlsMode,
                     static_cast<int>(CookieControlsMode::kBlockThirdParty));
-  auto cookie_setting_overrides = GetCookieSettingOverrides();
   // Cookie is allowed only when block is overridden.
+
+  // A(B) context. Inner frame is cross-origin from top-level frame.
   EXPECT_EQ(
-      cookie_setting_overrides.Has(
-          net::CookieSettingOverride::kForceThirdPartyByUser),
+      IsForceAllowThirdPartyCookies(),
       cookie_settings_->IsFullCookieAccessAllowed(
           kBlockedSite, kFirstPartySiteForCookies,
           /*top_frame_origin=*/absl::nullopt, GetCookieSettingOverrides()));
+  EXPECT_EQ(IsForceAllowThirdPartyCookies(),
+            cookie_settings_->IsFullCookieAccessAllowed(
+                kBlockedSite, net::SiteForCookies(),
+                /*top_frame_origin=*/url::Origin::Create(kFirstPartySite),
+                GetCookieSettingOverrides()));
+  EXPECT_EQ(
+      IsForceAllowThirdPartyCookies(),
+      cookie_settings_->IsFullCookieAccessAllowed(
+          kBlockedSite, net::SiteForCookies(),
+          /*top_frame_origin=*/absl::nullopt, GetCookieSettingOverrides()));
   EXPECT_FALSE(cookie_settings_->IsCookieSessionOnly(kBlockedSite));
+
+  // A(B(A)) context. The inner frame is same-origin with the top-level frame,
+  // but there's an intermediate cross-site frame.
+  EXPECT_EQ(IsForceAllowThirdPartyCookies() || IsStorageAccessGrantEligible(),
+            cookie_settings_->IsFullCookieAccessAllowed(
+                kBlockedSite, net::SiteForCookies(),
+                /*top_frame_origin=*/url::Origin::Create(kBlockedSite),
+                GetCookieSettingOverrides()));
 }
 
 TEST_P(CookieSettingsTest, CookiesControlsDefault) {
   EXPECT_TRUE(cookie_settings_->IsFullCookieAccessAllowed(
       kBlockedSite, kFirstPartySiteForCookies,
-      /*top_frame_origin=*/absl::nullopt, net::CookieSettingOverrides()));
-  EXPECT_FALSE(cookie_settings_incognito_->IsFullCookieAccessAllowed(
-      kBlockedSite, kFirstPartySiteForCookies,
-      /*top_frame_origin=*/absl::nullopt, net::CookieSettingOverrides()));
+      /*top_frame_origin=*/absl::nullopt, GetCookieSettingOverrides()));
+  EXPECT_EQ(
+      cookie_settings_incognito_->IsFullCookieAccessAllowed(
+          kBlockedSite, kFirstPartySiteForCookies,
+          /*top_frame_origin=*/absl::nullopt, GetCookieSettingOverrides()),
+      IsForceAllowThirdPartyCookies());
 }
 
 TEST_P(CookieSettingsTest, CookiesControlsEnabled) {

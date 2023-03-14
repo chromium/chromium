@@ -12,6 +12,7 @@
 #include <stddef.h>
 
 #include <iosfwd>
+#include <type_traits>
 
 #include "base/base_export.h"
 #include "base/message_loop/message_pump_type.h"
@@ -44,6 +45,7 @@ typedef mach_port_t PlatformThreadId;
 #elif BUILDFLAG(IS_POSIX)
 typedef pid_t PlatformThreadId;
 #endif
+static_assert(std::is_integral_v<PlatformThreadId>, "Always an integer value.");
 
 // Used to operate on threads.
 class PlatformThreadHandle {

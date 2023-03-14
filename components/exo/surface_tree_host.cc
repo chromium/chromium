@@ -209,7 +209,6 @@ void SurfaceTreeHost::SubmitCompositorFrameForTesting(
 // SurfaceDelegate overrides:
 
 void SurfaceTreeHost::OnSurfaceCommit() {
-  DCHECK(presentation_callbacks_.empty());
   root_surface_->CommitSurfaceHierarchy(false);
   UpdateHostWindowBounds();
 }
@@ -296,19 +295,17 @@ void SurfaceTreeHost::SubmitCompositorFrame() {
   }
 
   std::list<Surface::FrameCallback> current_frame_callbacks;
+  PresentationCallbacks presentation_callbacks;
   root_surface_->AppendSurfaceHierarchyCallbacks(&current_frame_callbacks,
-                                                 &presentation_callbacks_);
+                                                 &presentation_callbacks);
 
   frame_callbacks_.push(std::move(current_frame_callbacks));
 
   const uint32_t frame_token = frame.metadata.frame_token;
-  if (!presentation_callbacks_.empty()) {
-    DCHECK_EQ(active_presentation_callbacks_.count(frame_token), 0u);
-    active_presentation_callbacks_[frame_token] =
-        std::move(presentation_callbacks_);
-  } else {
-    active_presentation_callbacks_[frame_token] = PresentationCallbacks();
-  }
+
+  DCHECK_EQ(active_presentation_callbacks_.count(frame_token), 0u);
+  active_presentation_callbacks_[frame_token] =
+      std::move(presentation_callbacks);
 
   root_surface_->AppendSurfaceHierarchyContentsToFrame(
       gfx::PointF(root_surface_origin_), GetScaleFactor(),
@@ -494,16 +491,14 @@ float SurfaceTreeHost::GetScaleFactor() {
 }
 
 void SurfaceTreeHost::CleanUpCallbacks() {
-  // Call all frame callbacks with a null frame time to indicate that they
-  // have been cancelled.
+  const base::TimeTicks now = base::TimeTicks::Now();
   while (!frame_callbacks_.empty()) {
     for (auto& callback : frame_callbacks_.front()) {
-      callback.Run(base::TimeTicks());
+      callback.Run(now);
     }
     frame_callbacks_.pop();
   }
 
-  DCHECK(presentation_callbacks_.empty());
   for (auto entry : active_presentation_callbacks_) {
     while (!entry.second.empty()) {
       entry.second.front().Run(gfx::PresentationFeedback());

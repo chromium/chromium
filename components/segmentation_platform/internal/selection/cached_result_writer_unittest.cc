@@ -10,6 +10,7 @@
 #include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
+#include "components/segmentation_platform/internal/post_processor/post_processing_test_utils.h"
 #include "components/segmentation_platform/internal/selection/client_result_prefs.h"
 #include "components/segmentation_platform/public/config.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -21,44 +22,6 @@ using testing::Return;
 using testing::SaveArg;
 
 namespace segmentation_platform {
-
-namespace {
-
-// Labels for BinaryClassifier.
-const char kNotShowShare[] = "Not Show Share";
-const char kShowShare[] = "Show Share";
-
-// TTL for BinaryClassifier labels.
-const int kShowShareTTL = 3;
-const int kDefaultTTL = 5;
-
-const char kClientKey[] = "test_key";
-
-std::unique_ptr<Config> CreateTestConfig() {
-  auto config = std::make_unique<Config>();
-  config->segmentation_key = kClientKey;
-  config->segmentation_uma_name = "test_key";
-  config->segment_selection_ttl = base::Days(28);
-  config->unknown_selection_ttl = base::Days(14);
-  config->AddSegmentId(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
-  return config;
-}
-
-proto::OutputConfig GetTestOutputConfigForBinaryClassifier() {
-  proto::SegmentationModelMetadata model_metadata;
-  MetadataWriter writer(&model_metadata);
-
-  writer.AddOutputConfigForBinaryClassifier(
-      /*threshold=*/0.5, /*positive_label=*/kShowShare,
-      /*negative_label=*/kNotShowShare);
-
-  writer.AddPredictedResultTTLInOutputConfig({{kShowShare, kShowShareTTL}},
-                                             kDefaultTTL, proto::TimeUnit::DAY);
-
-  return model_metadata.output_config();
-}
-
-}  // namespace
 
 class CachedResultWriterTest : public testing::Test {
  public:
@@ -78,15 +41,12 @@ class CachedResultWriterTest : public testing::Test {
 
   proto::ClientResult CreateClientResult(std::vector<float> model_scores,
                                          base::Time result_timestamp) {
-    proto::ClientResult client_result;
     proto::PredictionResult pred_result =
         metadata_utils::CreatePredictionResult(
-            model_scores, GetTestOutputConfigForBinaryClassifier(),
+            model_scores, test_utils::GetTestOutputConfigForBinaryClassifier(),
             /*timestamp=*/base::Time::Now());
-    client_result.mutable_client_result()->CopyFrom(pred_result);
-    client_result.set_timestamp_us(
-        result_timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
-    return client_result;
+    return metadata_utils::CreateClientResultFromPredResult(pred_result,
+                                                            result_timestamp);
   }
 
  protected:
@@ -98,7 +58,7 @@ class CachedResultWriterTest : public testing::Test {
 };
 
 TEST_F(CachedResultWriterTest, UpdatePrefsIfResultUnavailable) {
-  std::unique_ptr<Config> config = CreateTestConfig();
+  std::unique_ptr<Config> config = test_utils::CreateTestConfig();
   // Prefs doesn't have result for this client config.
   absl::optional<proto::ClientResult> client_result =
       client_result_prefs_->ReadClientResultFromPrefs(config->segmentation_key);
@@ -118,7 +78,7 @@ TEST_F(CachedResultWriterTest, UpdatePrefsIfResultUnavailable) {
 }
 
 TEST_F(CachedResultWriterTest, UpdatePrefsIfForceRefreshResult) {
-  std::unique_ptr<Config> config = CreateTestConfig();
+  std::unique_ptr<Config> config = test_utils::CreateTestConfig();
   // Saving unexpired result for client in prefs.
   proto::ClientResult unexpired_client_result = CreateClientResult(
       /*model_scores=*/{0.8}, /*result_timestamp=*/base::Time::Now());
@@ -151,13 +111,13 @@ TEST_F(CachedResultWriterTest, UpdatePrefsIfForceRefreshResult) {
 }
 
 TEST_F(CachedResultWriterTest, UpdatePrefsIfExpiredResult) {
-  std::unique_ptr<Config> config = CreateTestConfig();
+  std::unique_ptr<Config> config = test_utils::CreateTestConfig();
   // Saving expired result for client in prefs.
   client_result_prefs_->SaveClientResultToPrefs(
       config->segmentation_key,
-      CreateClientResult(/*model_scores=*/{0.4},
-                         /*result_timestamp=*/base::Time::Now() -
-                             base::Days(kDefaultTTL + 3)));
+      CreateClientResult(
+          /*model_scores=*/{0.4},
+          /*result_timestamp=*/base::Time::Now() - base::Days(8)));
 
   proto::ClientResult new_client_result = CreateClientResult(
       /*model_scores=*/{0.8}, /*result_timestamp=*/base::Time::Now());

@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
+#include "third_party/blink/renderer/core/css/parser/css_nesting_type.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/style_rule_keyframe.h"
@@ -40,6 +41,7 @@ class CORE_EXPORT CSSParser {
   // As well as regular rules, allows @import and @namespace but not @charset
   static StyleRuleBase* ParseRule(const CSSParserContext* context,
                                   StyleSheetContents* style_sheet,
+                                  CSSNestingType,
                                   StyleRule* parent_rule_for_nesting,
                                   const String& rule);
 
@@ -49,11 +51,11 @@ class CORE_EXPORT CSSParser {
       const String&,
       CSSDeferPropertyParsing defer_property_parsing =
           CSSDeferPropertyParsing::kNo,
-      bool allow_import_rules = true,
-      std::unique_ptr<CachedCSSTokenizer> tokenizer = nullptr);
+      bool allow_import_rules = true);
   // See CSSSelectorParser for lifetime of the returned value.
   static base::span<CSSSelector> ParseSelector(
       const CSSParserContext*,
+      CSSNestingType,
       StyleRule* parent_rule_for_nesting,
       StyleSheetContents*,
       const String&,

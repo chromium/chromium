@@ -12,6 +12,7 @@
 
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -70,6 +72,23 @@ using extensions::mojom::APIPermissionID;
 namespace extensions {
 
 namespace {
+
+// This enum is used for counting schemes used via a navigation triggered by
+// extensions.
+enum class NavigationScheme {
+  // http: or https: scheme.
+  kHttpOrHttps = 0,
+  // chrome: scheme.
+  kChrome = 1,
+  // file: scheme where extension has access to local files.
+  kFileWithPermission = 2,
+  // file: scheme where extension does NOT have access to local files.
+  kFileWithoutPermission = 3,
+  // Everything else.
+  kOther = 4,
+
+  kMaxValue = kOther,
+};
 
 Browser* CreateBrowser(Profile* profile, bool user_gesture) {
   if (Browser::GetCreationStatusForProfile(profile) !=
@@ -147,6 +166,24 @@ bool HasValidMainFrameProcess(content::WebContents* contents) {
   return process_host->IsReady() && process_host->IsInitializedAndNotDead();
 }
 
+void RecordNavigationScheme(const GURL& url,
+                            const Extension& extension,
+                            content::BrowserContext* browser_context) {
+  NavigationScheme scheme = NavigationScheme::kOther;
+
+  if (url.SchemeIsHTTPOrHTTPS()) {
+    scheme = NavigationScheme::kHttpOrHttps;
+  } else if (url.SchemeIs(content::kChromeUIScheme)) {
+    scheme = NavigationScheme::kChrome;
+  } else if (url.SchemeIsFile()) {
+    scheme = (util::AllowFileAccess(extension.id(), browser_context))
+                 ? NavigationScheme::kFileWithPermission
+                 : NavigationScheme::kFileWithoutPermission;
+  }
+
+  base::UmaHistogramEnumeration("Extensions.Navigation.Scheme", scheme);
+}
+
 }  // namespace
 
 ExtensionTabUtil::OpenTabParams::OpenTabParams() = default;
@@ -204,10 +241,12 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
 
   GURL url;
   if (params.url) {
-    if (!ExtensionTabUtil::PrepareURLForNavigation(
-            *params.url, function->extension(), &url, &error)) {
-      return base::unexpected(error);
+    auto result = ExtensionTabUtil::PrepareURLForNavigation(
+        *params.url, function->extension(), function->browser_context());
+    if (!result.has_value()) {
+      return base::unexpected(result.error());
     }
+    url = std::move(*result);
   } else {
     url = GURL(chrome::kChromeUINewTabURL);
   }
@@ -773,10 +812,10 @@ bool ExtensionTabUtil::IsKillURL(const GURL& url) {
   return base::Contains(kill_hosts, url.host_piece());
 }
 
-bool ExtensionTabUtil::PrepareURLForNavigation(const std::string& url_string,
-                                               const Extension* extension,
-                                               GURL* return_url,
-                                               std::string* error) {
+base::expected<GURL, std::string> ExtensionTabUtil::PrepareURLForNavigation(
+    const std::string& url_string,
+    const Extension* extension,
+    content::BrowserContext* browser_context) {
   GURL url =
       ExtensionTabUtil::ResolvePossiblyRelativeURL(url_string, extension);
 
@@ -788,15 +827,13 @@ bool ExtensionTabUtil::PrepareURLForNavigation(const std::string& url_string,
 
   // Reject invalid URLs.
   if (!url.is_valid()) {
-    *error = ErrorUtils::FormatErrorMessage(tabs_constants::kInvalidUrlError,
-                                            url_string);
-    return false;
+    return base::unexpected(ErrorUtils::FormatErrorMessage(
+        tabs_constants::kInvalidUrlError, url_string));
   }
 
   // Don't let the extension crash the browser or renderers.
   if (ExtensionTabUtil::IsKillURL(url)) {
-    *error = tabs_constants::kNoCrashBrowserError;
-    return false;
+    return base::unexpected(tabs_constants::kNoCrashBrowserError);
   }
 
   // Don't let the extension navigate directly to devtools scheme pages, unless
@@ -808,19 +845,20 @@ bool ExtensionTabUtil::PrepareURLForNavigation(const std::string& url_string,
                       extension->permissions_data()->HasAPIPermission(
                           APIPermissionID::kDebugger));
     if (!has_permission) {
-      *error = tabs_constants::kCannotNavigateToDevtools;
-      return false;
+      return base::unexpected(tabs_constants::kCannotNavigateToDevtools);
     }
   }
 
   // Don't let the extension navigate directly to chrome-untrusted scheme pages.
   if (url.SchemeIs(content::kChromeUIUntrustedScheme)) {
-    *error = tabs_constants::kCannotNavigateToChromeUntrusted;
-    return false;
+    return base::unexpected(tabs_constants::kCannotNavigateToChromeUntrusted);
   }
 
-  return_url->Swap(&url);
-  return true;
+  if (extension && browser_context) {
+    RecordNavigationScheme(url, *extension, browser_context);
+  }
+
+  return url;
 }
 
 void ExtensionTabUtil::CreateTab(

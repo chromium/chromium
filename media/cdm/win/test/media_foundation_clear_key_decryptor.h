@@ -8,6 +8,9 @@
 #include <mfidl.h>
 #include <wrl/implements.h>
 
+#include "base/memory/scoped_refptr.h"
+#include "media/cdm/aes_decryptor.h"
+
 namespace media {
 
 class MediaFoundationClearKeyDecryptor final
@@ -20,7 +23,8 @@ class MediaFoundationClearKeyDecryptor final
   MediaFoundationClearKeyDecryptor();
   ~MediaFoundationClearKeyDecryptor() override;
 
-  HRESULT RuntimeClassInitialize();
+  HRESULT RuntimeClassInitialize(
+      _In_ scoped_refptr<AesDecryptor> aes_decryptor);
 
   // IMFTransform
   STDMETHODIMP GetStreamLimits(_Out_ DWORD* input_minimum,
@@ -88,6 +92,9 @@ class MediaFoundationClearKeyDecryptor final
   // IMFShutdown
   STDMETHODIMP Shutdown() override;
   STDMETHODIMP GetShutdownStatus(_Out_ MFSHUTDOWN_STATUS* status) override;
+
+ private:
+  scoped_refptr<AesDecryptor> aes_decryptor_;
 };
 
 }  // namespace media

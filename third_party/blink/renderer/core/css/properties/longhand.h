@@ -31,7 +31,9 @@ class Longhand : public CSSProperty {
   }
   virtual void ApplyInitial(StyleResolverState&) const { NOTREACHED(); }
   virtual void ApplyInherit(StyleResolverState&) const { NOTREACHED(); }
-  virtual void ApplyValue(StyleResolverState&, const CSSValue&) const {
+  virtual void ApplyValue(StyleResolverState&,
+                          const CSSValue&,
+                          ValueMode) const {
     NOTREACHED();
   }
   void ApplyUnset(StyleResolverState& state) const {

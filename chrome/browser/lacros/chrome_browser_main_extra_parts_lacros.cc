@@ -4,11 +4,14 @@
 
 #include "chrome/browser/lacros/chrome_browser_main_extra_parts_lacros.h"
 
+#include <memory>
+
 #include "base/feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/reporting/metric_reporting_manager_lacros.h"
+#include "chrome/browser/chromeos/smart_reader/smart_reader_client_impl.h"
 #include "chrome/browser/chromeos/tablet_mode/tablet_mode_page_behavior.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_manager_client.h"
 #include "chrome/browser/lacros/app_mode/chrome_kiosk_launch_controller_lacros.h"
@@ -20,6 +23,7 @@
 #include "chrome/browser/lacros/desk_template_client_lacros.h"
 #include "chrome/browser/lacros/download_controller_client_lacros.h"
 #include "chrome/browser/lacros/drivefs_cache.h"
+#include "chrome/browser/lacros/drivefs_native_message_host_bridge_lacros.h"
 #include "chrome/browser/lacros/field_trial_observer.h"
 #include "chrome/browser/lacros/force_installed_tracker_lacros.h"
 #include "chrome/browser/lacros/fullscreen_controller_client_lacros.h"
@@ -29,6 +33,7 @@
 #include "chrome/browser/lacros/lacros_file_system_provider.h"
 #include "chrome/browser/lacros/lacros_memory_pressure_evaluator.h"
 #include "chrome/browser/lacros/launcher_search/search_controller_lacros.h"
+#include "chrome/browser/lacros/multitask_menu_nudge_delegate_lacros.h"
 #include "chrome/browser/lacros/net/network_change_manager_bridge.h"
 #include "chrome/browser/lacros/screen_orientation_delegate_lacros.h"
 #include "chrome/browser/lacros/standalone_browser_test_controller.h"
@@ -105,6 +110,8 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   automation_manager_ = std::make_unique<AutomationManagerLacros>();
   browser_service_ = std::make_unique<BrowserServiceLacros>();
   desk_template_client_ = std::make_unique<DeskTemplateClientLacros>();
+  drivefs_native_message_host_bridge_ =
+      std::make_unique<drive::DriveFsNativeMessageHostBridge>();
   download_controller_client_ =
       std::make_unique<DownloadControllerClientLacros>();
   file_system_provider_ = std::make_unique<LacrosFileSystemProvider>();
@@ -205,6 +212,14 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
           ->IsAvailable<crosapi::mojom::VideoConferenceManager>()) {
     video_conference_manager_client_ =
         std::make_unique<video_conference::VideoConferenceManagerClientImpl>();
+  }
+
+  smart_reader_client_ =
+      std::make_unique<smart_reader::SmartReaderClientImpl>();
+
+  if (chromeos::BrowserParamsProxy::Get()->IsWindowLayoutMenuEnabled()) {
+    multitask_menu_nudge_delegate_ =
+        std::make_unique<MultitaskMenuNudgeDelegateLacros>();
   }
 }
 

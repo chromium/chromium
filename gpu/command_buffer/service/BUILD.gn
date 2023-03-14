@@ -397,6 +397,8 @@ target(link_target_type, "gles2_sources") {
 
   if (use_ozone) {
     sources += [
+      "shared_image/gl_image_native_pixmap.cc",
+      "shared_image/gl_image_native_pixmap.h",
       "shared_image/gl_ozone_image_representation.cc",
       "shared_image/gl_ozone_image_representation.h",
       "shared_image/ozone_image_backing.cc",

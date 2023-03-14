@@ -95,6 +95,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kChildWallpaperSmall[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kCrosRegion[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kCryptohomeRecoveryReauthUrl[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kCryptohomeRecoveryUseTestEnvironment[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kCryptohomeUseAuthSession[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kCryptohomeUseOldEncryptionForTesting[];
@@ -160,7 +162,11 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEnableTouchpadThreeFingerClick[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnterpriseDisableArc[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kEnterpriseForceManualEnrollmentInTestBuilds[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEnterpriseEnableForcedReEnrollment[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kEnterpriseEnableUnifiedStateDetermination[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEnterpriseEnableInitialEnrollment[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -262,16 +268,27 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kHiddenNetworkMigrationInterval[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kHiddenNetworkMigrationAge[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kPrintingPpdChannel[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kPrintingPpdChannelProduction[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kPrintingPpdChannelStaging[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kPrintingPpdChannelDev[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kPrintingPpdChannelLocalhost[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kProfileRequiresPolicy[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kPublicAccountsSamlAclUrl[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kQsAddFakeBluetoothDevices[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kQsAddFakeCastDevices[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kRegulatoryLabelDir[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kRemoteRebootCommandTimeoutInSecondsForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kRevenBranding[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kRlzPingDelay[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kRmaNotAllowed[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSafeMode[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSamlPasswordChangeUrl[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kScheduledRebootGracePeriodInSecondsForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShelfHotseat[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShelfHoverPreviews[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShowLoginDevOverlay[];
@@ -309,6 +326,8 @@ extern const char kWaitForInitialPolicyFetchForTest[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kWebUiDataSourcePathForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kGetAccessTokenForTest[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kCameraEffectsSupportedByHardware[];
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -408,6 +427,9 @@ bool IsSkipRecorderNudgeShowThresholdDurationEnabled();
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsStabilizeTimeDependentViewForTestsEnabled();
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsCameraEffectsSupportedByHardware();
 
 }  // namespace ash::switches
 

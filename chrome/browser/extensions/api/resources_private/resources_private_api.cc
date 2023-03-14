@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/api/resources_private/resources_private_api.h"
 
-#include <memory>
 #include <string>
 #include <utility>
 
@@ -67,8 +66,8 @@ ResourcesPrivateGetStringsFunction::ResourcesPrivateGetStringsFunction() {}
 ResourcesPrivateGetStringsFunction::~ResourcesPrivateGetStringsFunction() {}
 
 ExtensionFunction::ResponseAction ResourcesPrivateGetStringsFunction::Run() {
-  std::unique_ptr<get_strings::Params> params(
-      get_strings::Params::Create(args()));
+  absl::optional<get_strings::Params> params =
+      get_strings::Params::Create(args());
   base::Value::Dict dict;
 
   api::resources_private::Component component = params->component;

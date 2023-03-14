@@ -183,6 +183,24 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   DeviceActiveUseCase* GetUseCasePtr(
       private_membership::rlwe::RlweUseCase psm_use_case) const;
 
+  // Update the local state values based after cohort check in updates the
+  // active status value.
+  // Specifically, the churn observation local state fields are relative to
+  // the previous active status value:
+  // 1. kDeviceActiveLastKnownIsActiveCurrentPeriodMinus0
+  // 2. kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1
+  // 3. kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2
+  void UpdateChurnLocalStateAfterCheckIn(DeviceActiveUseCase* current_use_case);
+
+  // Read the cohort active status int32 and
+  // period status booleans that indicate which observation periods
+  // were already reported.
+  //
+  // Note the observation periods are relative to the current month stored
+  // in the active status int32.
+  // Method must also update the observation last ping timestamp in local state.
+  void ReadChurnPreservedFile(const private_computing::ActiveStatus& status);
+
   // Generate the proto with the latest last ping date values.
   private_computing::SaveStatusRequest GetSaveStatusRequest();
 

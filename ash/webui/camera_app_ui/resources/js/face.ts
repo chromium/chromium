@@ -75,6 +75,8 @@ export class FaceOverlay {
 
       const canvasAspectRatio = this.canvas.width / this.canvas.height;
       const sensorAspectRatio =
+          this.orientation === 90 || this.orientation === 270 ?
+          this.activeArraySize.height / this.activeArraySize.width :
           this.activeArraySize.width / this.activeArraySize.height;
       if (canvasAspectRatio > sensorAspectRatio) {
         // Canvas has wider aspect than the sensor, e.g. when we're showing a

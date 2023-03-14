@@ -107,18 +107,12 @@ class SupervisedUserFaviconRequestHandlerTest : public ::testing::Test {
   SupervisedUserFaviconRequestHandlerTest& operator=(
       const SupervisedUserFaviconRequestHandlerTest&) = delete;
 
-  void OnFaviconFetched(base::RunLoop* run_loop,
-                        const gfx::ImageSkia& favicon) {
-    favicon_result_ = favicon;
-    run_loop->Quit();
-  }
+  void OnFaviconFetched(base::RunLoop* run_loop) { run_loop->Quit(); }
 
  protected:
-  gfx::ImageSkia favicon_result() const { return favicon_result_; }
   base::test::SingleThreadTaskEnvironment task_environment;
 
  private:
-  gfx::ImageSkia favicon_result_;
   base::OnceClosure quit_closure_;
 };
 
@@ -147,7 +141,8 @@ TEST_F(SupervisedUserFaviconRequestHandlerTest, GetUncachedFavicon) {
                      base::Unretained(this), &run_loop));
   run_loop.Run();
 
-  EXPECT_EQ(favicon_result().bitmap(), large_icon_service.favicon().bitmap());
+  EXPECT_EQ(handler.GetFaviconOrFallback().bitmap(),
+            large_icon_service.favicon().bitmap());
   histogram_tester.ExpectUniqueSample(
       SupervisedUserFaviconRequestHandler::
           GetFaviconAvailabilityHistogramForTesting(),
@@ -180,7 +175,8 @@ TEST_F(SupervisedUserFaviconRequestHandlerTest, GetCachedFavicon) {
                      base::Unretained(this), &run_loop));
   run_loop.Run();
 
-  EXPECT_EQ(favicon_result().bitmap(), large_icon_service.favicon().bitmap());
+  EXPECT_EQ(handler.GetFaviconOrFallback().bitmap(),
+            large_icon_service.favicon().bitmap());
   histogram_tester.ExpectUniqueSample(
       SupervisedUserFaviconRequestHandler::
           GetFaviconAvailabilityHistogramForTesting(),

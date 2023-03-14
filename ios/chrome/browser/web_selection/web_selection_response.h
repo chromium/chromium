@@ -7,9 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-namespace base {
-class Value;
-}
+#import "base/values.h"
 
 namespace web {
 class WebState;
@@ -20,10 +18,10 @@ class WebState;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Parses a serialized response stored in `value` into a WebSelectionResponse.
+// Parses a serialized response stored in `dict` into a WebSelectionResponse.
 // `webState` must not be null.
-+ (instancetype)selectionResponseWithValue:(const base::Value&)value
-                                  webState:(web::WebState*)webState;
++ (instancetype)selectionResponseWithDict:(const base::Value::Dict&)dict
+                                 webState:(web::WebState*)webState;
 
 // Return a response with every field nil and `valid`=NO.
 + (instancetype)invalidResponse;

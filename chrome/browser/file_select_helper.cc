@@ -701,9 +701,13 @@ void FileSelectHelper::CheckDownloadRequestWithSafeBrowsing(
   // Download Protection is not supported on Android.
   safe_browsing::SafeBrowsingService* sb_service =
       g_browser_process->safe_browsing_service();
+  bool real_time_download_protection_request_allowed =
+      safe_browsing::IsRealTimeDownloadProtectionRequestAllowed(
+          *profile_->GetPrefs());
 
   if (!sb_service || !sb_service->download_protection_service() ||
-      !sb_service->download_protection_service()->enabled()) {
+      !sb_service->download_protection_service()->enabled() ||
+      !real_time_download_protection_request_allowed) {
     RunFileChooserOnUIThread(default_file_path, std::move(params));
     return;
   }

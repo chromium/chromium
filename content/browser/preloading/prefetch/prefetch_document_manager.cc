@@ -35,7 +35,8 @@ static PrefetchService* g_prefetch_service_for_testing = nullptr;
 
 PrefetchDocumentManager::PrefetchDocumentManager(RenderFrameHost* rfh)
     : DocumentUserData(rfh),
-      WebContentsObserver(WebContents::FromRenderFrameHost(rfh)) {}
+      WebContentsObserver(WebContents::FromRenderFrameHost(rfh)),
+      no_vary_search_helper_(base::MakeRefCounted<NoVarySearchHelper>()) {}
 
 PrefetchDocumentManager::~PrefetchDocumentManager() {
   // On destruction, removes any owned prefetches from |PrefetchService|. Other
@@ -144,6 +145,8 @@ void PrefetchDocumentManager::ProcessCandidates(
         // https://crbug.com/1296309.
 
         if (candidate->action == blink::mojom::SpeculationAction::kPrefetch) {
+          // TODO(https://crbug.com/1414582): Change this check to look at site
+          // instead of origin.
           bool use_isolated_network_context = !is_same_origin;
           bool use_prefetch_proxy = !is_same_origin && private_prefetch;
           prefetches.emplace_back(
@@ -193,6 +196,9 @@ void PrefetchDocumentManager::PrefetchUrl(
       render_frame_host().GetGlobalId(), url, prefetch_type, referrer,
       weak_method_factory_.GetWeakPtr());
   container->SetDevToolsObserver(std::move(devtools_observer));
+  if (base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch)) {
+    container->SetNoVarySearchHelper(no_vary_search_helper_);
+  }
   base::WeakPtr<PrefetchContainer> weak_container = container->GetWeakPtr();
   owned_prefetches_[url] = std::move(container);
   all_prefetches_[url] = weak_container;
@@ -265,10 +271,12 @@ bool PrefetchDocumentManager::IsPrefetchAttemptFailedOrDiscarded(
     case PrefetchStatus::kPrefetchIsStaleNSPAttemptDenied:
     case PrefetchStatus::kPrefetchIsStaleNSPNotStarted:
     case PrefetchStatus::kPrefetchNotUsedCookiesChanged:
-    case PrefetchStatus::kPrefetchFailedRedirectsDisabled:
+    case PrefetchStatus::kPrefetchFailedRedirectsDisabled_DEPRECATED:
     case PrefetchStatus::kPrefetchNotEligibleBrowserContextOffTheRecord:
     case PrefetchStatus::kPrefetchHeldback:
     case PrefetchStatus::kPrefetchAllowed:
+    case PrefetchStatus::kPrefetchFailedInvalidRedirect:
+    case PrefetchStatus::kPrefetchFailedIneligibleRedirect:
       return true;
   }
 }
@@ -292,7 +300,7 @@ PrefetchService* PrefetchDocumentManager::GetPrefetchService() const {
 
 const NoVarySearchHelper& PrefetchDocumentManager::GetNoVarySearchHelper()
     const {
-  return no_vary_search_helper_;
+  return *no_vary_search_helper_.get();
 }
 
 void PrefetchDocumentManager::OnEligibilityCheckComplete(bool is_eligible) {
@@ -313,7 +321,9 @@ void PrefetchDocumentManager::OnPrefetchedHeadReceived(const GURL& url) {
 
   const auto* head = it->second->GetHead();
   DCHECK(head);
-  no_vary_search_helper_.AddUrl(url, *head);
+  no_vary_search_helper_->MaybeSendErrorsToConsole(url, *head,
+                                                   render_frame_host());
+  no_vary_search_helper_->AddUrl(url, *head);
 }
 
 void PrefetchDocumentManager::OnPrefetchSuccessful() {

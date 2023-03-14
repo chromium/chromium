@@ -16,6 +16,7 @@ struct COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) NotificationTheme {
   SkColor enabled_icon_color = 0;
   SkColor disabled_icon_color = 0;
   SkColor separator_color = 0;
+  SkColor background_color = 0;
 };
 
 }  // namespace media_message_center

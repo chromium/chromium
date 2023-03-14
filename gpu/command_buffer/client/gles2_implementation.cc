@@ -4618,6 +4618,86 @@ void GLES2Implementation::GetUniformuiv(GLuint program,
   CheckGLError();
 }
 
+void GLES2Implementation::ReadbackARGBImagePixelsINTERNAL(
+    const GLbyte* mailbox,
+    const void* dst_sk_color_space,
+    GLuint dst_color_space_size,
+    GLuint dst_size,
+    GLuint dst_width,
+    GLuint dst_height,
+    GLuint dst_sk_color_type,
+    GLuint dst_sk_alpha_type,
+    GLuint dst_row_bytes,
+    GLint src_x,
+    GLint src_y,
+    GLint plane_index,
+    void* pixels) {
+  DCHECK(mailbox);
+  // We can't use GetResultAs<>() to store our result because it uses
+  // TransferBuffer under the hood and this function is potentially
+  // asynchronous. Instead, store the result at the beginning of the shared
+  // memory we allocate to transfer pixels.
+  // We have the following stored at offsets from `shm_address`:
+  // 0: stores ReadbackARGBImagePixelsINTERNAL::Result,
+  // color_space_offset: stores destination SkColorSpace,
+  // mailbox_offset: stores the gpu::Mailbox,
+  // pixels_offset: stores the pixels
+  GLuint color_space_offset = base::bits::AlignUp(
+      sizeof(cmds::ReadbackARGBImagePixelsINTERNAL::Result), sizeof(uint64_t));
+
+  // Add the size of the SkColorSpace while maintaining 8-byte alignment.
+  GLuint mailbox_offset = color_space_offset;
+  if (dst_sk_color_space) {
+    mailbox_offset =
+        base::bits::AlignUp(color_space_offset + dst_color_space_size,
+                            static_cast<GLuint>(sizeof(uint64_t)));
+  }
+
+  // Add the size of the mailbox while maintaining 8-byte alignment.
+  GLuint pixels_offset = base::bits::AlignUp(
+      mailbox_offset + sizeof(gpu::Mailbox), sizeof(uint64_t));
+
+  GLuint total_size =
+      pixels_offset +
+      base::bits::AlignUp(dst_size, static_cast<GLuint>(sizeof(uint64_t)));
+
+  ScopedMappedMemoryPtr scoped_shared_memory(total_size, helper(),
+                                             mapped_memory_.get());
+  if (!scoped_shared_memory.valid()) {
+    return;
+  }
+
+  GLint shm_id = scoped_shared_memory.shm_id();
+  GLuint shm_offset = scoped_shared_memory.offset();
+  void* shm_address = scoped_shared_memory.address();
+
+  // Readback success/failure result is stored at the beginning of the shared
+  // memory region. Client is responsible for initialization so we do so here.
+  auto* readback_result =
+      static_cast<cmds::ReadbackARGBImagePixelsINTERNAL::Result*>(shm_address);
+  *readback_result = 0;
+
+  if (dst_sk_color_space) {
+    // Copy destination color space to the destination color space offset.
+    memcpy(static_cast<uint8_t*>(shm_address) + color_space_offset,
+           dst_sk_color_space, dst_color_space_size);
+  }
+  // Copy shared image mailbox to the mailbox offset.
+  memcpy(static_cast<uint8_t*>(shm_address) + mailbox_offset, mailbox,
+         sizeof(gpu::Mailbox));
+
+  helper_->ReadbackARGBImagePixelsINTERNAL(
+      plane_index, src_x, src_y, dst_width, dst_height, dst_row_bytes,
+      dst_sk_color_type, dst_sk_alpha_type, shm_id, shm_offset,
+      color_space_offset, pixels_offset, mailbox_offset);
+
+  WaitForCmd();
+  if (!*readback_result) {
+    return;
+  }
+  memcpy(pixels, static_cast<uint8_t*>(shm_address) + pixels_offset, dst_size);
+}
+
 void GLES2Implementation::ReadPixels(GLint xoffset,
                                      GLint yoffset,
                                      GLsizei width,

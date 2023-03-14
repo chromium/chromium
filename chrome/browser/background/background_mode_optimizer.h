@@ -48,11 +48,7 @@ class BackgroundModeOptimizer : public KeepAliveStateObserver,
   // Virtual for testing purposes.
   virtual void DoRestart();
 
-  // Used for a histogram that records the duration of a session before
-  // browser got restarted into background mode.
-  base::TimeTicks creation_time_;
-
-  bool browser_was_added_;
+  bool browser_was_added_ = false;
 };
 
 #endif  // CHROME_BROWSER_BACKGROUND_BACKGROUND_MODE_OPTIMIZER_H_

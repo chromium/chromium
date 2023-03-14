@@ -1028,6 +1028,7 @@ WebAppManagement::Type ConvertInstallSurfaceToWebAppSource(
     case webapps::WebappInstallSource::SYNC:
     case webapps::WebappInstallSource::MENU_CREATE_SHORTCUT:
     case webapps::WebappInstallSource::CHROME_SERVICE:
+    case webapps::WebappInstallSource::PROFILE_MENU:
       return WebAppManagement::kSync;
 
     case webapps::WebappInstallSource::ISOLATED_APP_DEV_INSTALL:

@@ -91,6 +91,7 @@ android_library("unit_device_javatests") {
   testonly = true
 
   sources = [
+    "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogWithDetailsRenderTest.java",
     "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogWithDetailsViewTest.java",
     "java/src/org/chromium/chrome/browser/password_edit_dialog/UsernameSelectionConfirmationViewTest.java",
   ]
@@ -99,7 +100,9 @@ android_library("unit_device_javatests") {
     ":java",
     "//base:base_java_test_support",
     "//chrome/browser/flags:java",
+    "//chrome/browser/ui/android/night_mode:java",
     "//chrome/test/android:chrome_java_integration_test_support",
+    "//components/browser_ui/theme/android:java_resources",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_test_runner_java",

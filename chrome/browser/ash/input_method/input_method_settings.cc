@@ -6,7 +6,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/input_method/autocorrect_enums.h"
 #include "chrome/browser/ash/input_method/autocorrect_prefs.h"
 #include "chrome/common/pref_names.h"
@@ -162,8 +164,7 @@ mojom::LatinSettingsPtr CreateLatinSettings(
       base::StartsWith(engine_id, "experimental_",
                        base::CompareCase::SENSITIVE) ||
       base::FeatureList::IsEnabled(features::kAutocorrectParamsTuning) ||
-      autocorrect_pref == AutocorrectPreference::kEnabled ||
-      autocorrect_pref == AutocorrectPreference::kEnabledByDefault;
+      autocorrect_pref == AutocorrectPreference::kEnabled;
   settings->predictive_writing =
       features::IsAssistiveMultiWordEnabled() &&
       prefs.GetBoolean(prefs::kAssistPredictiveWritingEnabled) &&
@@ -576,6 +577,34 @@ void MigrateJapaneseSettingsToPrefs(PrefService& prefs,
 
   prefs.SetDict(::prefs::kLanguageInputMethodSpecificSettings,
                 std::move(all_input_method_prefs));
+}
+
+bool IsAutocorrectSupported(const std::string& engine_id) {
+  static const base::NoDestructor<base::flat_set<std::string>>
+      enabledInputMethods({
+          "xkb:be::fra",        "xkb:be::ger",
+          "xkb:be::nld",        "xkb:br::por",
+          "xkb:ca::fra",        "xkb:ca:eng:eng",
+          "xkb:ca:multix:fra",  "xkb:ch::ger",
+          "xkb:ch:fr:fra",      "xkb:de::ger",
+          "xkb:de:neo:ger",     "xkb:dk::dan",
+          "xkb:es::spa",        "xkb:fi::fin",
+          "xkb:fr::fra",        "xkb:fr:bepo:fra",
+          "xkb:gb:dvorak:eng",  "xkb:gb:extd:eng",
+          "xkb:it::ita",        "xkb:latam::spa",
+          "xkb:no::nob",        "xkb:pl::pol",
+          "xkb:pt::por",        "xkb:se::swe",
+          "xkb:tr::tur",        "xkb:tr:f:tur",
+          "xkb:us:intl:nld",    "xkb:us:intl:por",
+          "xkb:us:intl_pc:nld", "xkb:us:intl_pc:por",
+          "xkb:us::eng",        "xkb:us:altgr-intl:eng",
+          "xkb:us:colemak:eng", "xkb:us:dvorak:eng",
+          "xkb:us:dvp:eng",     "xkb:us:intl:eng",
+          "xkb:us:intl_pc:eng", "xkb:us:workman-intl:eng",
+          "xkb:us:workman:eng",
+      });
+
+  return enabledInputMethods->find(engine_id) != enabledInputMethods->end();
 }
 
 }  // namespace input_method

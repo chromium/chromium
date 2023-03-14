@@ -68,10 +68,6 @@ ArcAccessibilityTreeTracker::TreeKey KeyForTaskId(int32_t task_id) {
           {} /* notification_key */};
 }
 
-bool ShouldTrackWindow(aura::Window* window) {
-  return IsArcOrGhostWindow(window);
-}
-
 void SetChildAxTreeIDForWindow(aura::Window* window,
                                const ui::AXTreeID& treeID) {
   DCHECK(window);
@@ -155,6 +151,7 @@ class ArcAccessibilityTreeTracker::FocusChangeObserver
   // because exo::WMHelper can be destroyed earlier than this class.
 };
 
+// Observes windows corresponds to each task.
 class ArcAccessibilityTreeTracker::WindowsObserver
     : public aura::WindowObserver {
  public:
@@ -173,17 +170,70 @@ class ArcAccessibilityTreeTracker::WindowsObserver
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override {
+    // TODO(b/270904414): remove kClientAccessibilityIdKey once sending a11y id
+    // is fully migrated to per-window level.
     if (key != exo::kApplicationIdKey &&
         key != ash::kClientAccessibilityIdKey) {
       return;
     }
-    owner_->UpdateWindowIdMapping(window);
+    owner_->UpdateTopWindowIds(window);
+  }
+
+  void OnWindowAdded(aura::Window* new_window) override {
+    owner_->TrackChildWindow(new_window);
   }
 
   void OnWindowDestroying(aura::Window* window) override {
     if (window_observations_.IsObservingSource(window))
       window_observations_.RemoveObservation(window);
     owner_->OnWindowDestroying(window);
+  }
+
+  int GetTrackingWindowCount() const {
+    return window_observations_.GetSourcesCount();
+  }
+
+ private:
+  ArcAccessibilityTreeTracker* owner_;
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      window_observations_{this};
+};
+
+// Observes child windows of toplevel ARC++ window, in order to get a value for
+// |ash::kClientAccessibilityIdKey|, which is set on window level.
+class ArcAccessibilityTreeTracker::ChildWindowsObserver
+    : public aura::WindowObserver {
+ public:
+  explicit ChildWindowsObserver(ArcAccessibilityTreeTracker* owner)
+      : owner_(owner) {}
+
+  void Observe(aura::Window* window) {
+    if (window_observations_.IsObservingSource(window)) {
+      return;
+    }
+
+    window_observations_.AddObservation(window);
+  }
+
+  void Reset() { window_observations_.RemoveAllObservations(); }
+
+  void OnWindowPropertyChanged(aura::Window* window,
+                               const void* key,
+                               intptr_t old) override {
+    if (key != ash::kClientAccessibilityIdKey) {
+      return;
+    }
+    owner_->UpdateChildWindowIds(window);
+  }
+
+  void OnWindowAdded(aura::Window* new_window) override {
+    owner_->TrackChildWindow(new_window);
+  }
+
+  void OnWindowDestroying(aura::Window* window) override {
+    if (window_observations_.IsObservingSource(window)) {
+      window_observations_.RemoveObservation(window);
+    }
   }
 
   int GetTrackingWindowCount() const {
@@ -418,6 +468,7 @@ ArcAccessibilityTreeTracker::ArcAccessibilityTreeTracker(
       tree_source_delegate_(tree_source_delegate),
       accessibility_helper_instance_(accessibility_helper_instance),
       windows_observer_(std::make_unique<WindowsObserver>(this)),
+      child_windows_observer_(std::make_unique<ChildWindowsObserver>(this)),
       input_manager_service_observer_(
           std::make_unique<ArcInputMethodManagerServiceObserver>(this,
                                                                  profile)),
@@ -428,8 +479,9 @@ ArcAccessibilityTreeTracker::ArcAccessibilityTreeTracker(
 ArcAccessibilityTreeTracker::~ArcAccessibilityTreeTracker() = default;
 
 void ArcAccessibilityTreeTracker::OnWindowInitialized(aura::Window* window) {
-  if (ShouldTrackWindow(window))
+  if (IsArcOrGhostWindow(window)) {
     TrackWindow(window);
+  }
 }
 
 void ArcAccessibilityTreeTracker::OnWindowFocused(aura::Window* gained_focus,
@@ -440,8 +492,8 @@ void ArcAccessibilityTreeTracker::OnWindowFocused(aura::Window* gained_focus,
   // ToggleNativeChromeVoxArcSupport event.
   //  - When non-ChromeVox ARC window becomes inactive, dispatch |true|.
   //  - When non-ChromeVox ARC window becomes active, dispatch |false|.
-  bool lost_arc = ShouldTrackWindow(lost_focus);
-  bool gained_arc = ShouldTrackWindow(gained_focus);
+  bool lost_arc = IsArcOrGhostWindow(lost_focus);
+  bool gained_arc = IsArcOrGhostWindow(gained_focus);
   bool talkback_enabled = !native_chromevox_enabled_;
   if (talkback_enabled && lost_arc != gained_arc)
     DispatchCustomSpokenFeedbackToggled(gained_arc);
@@ -489,6 +541,7 @@ void ArcAccessibilityTreeTracker::OnEnabledFeatureChanged(
     DCHECK(aura::Env::HasInstance());
     env_observation_.Reset();
     windows_observer_->Reset();
+    child_windows_observer_->Reset();
   }
 }
 
@@ -748,40 +801,77 @@ int ArcAccessibilityTreeTracker::GetTrackingArcWindowCount() const {
 }
 
 bool ArcAccessibilityTreeTracker::IsArcFocused() const {
-  aura::Window* focused_window = GetFocusedArcWindow();
-  return focused_window && ShouldTrackWindow(focused_window);
+  return GetFocusedArcWindow();
 }
 
 void ArcAccessibilityTreeTracker::TrackWindow(aura::Window* window) {
   windows_observer_->Observe(window);
-  UpdateWindowIdMapping(window);
+  UpdateTopWindowIds(window);
   UpdateWindowProperties(window);
   uma_recorder_->OnWindowCreated();
 }
 
-void ArcAccessibilityTreeTracker::UpdateWindowIdMapping(aura::Window* window) {
+void ArcAccessibilityTreeTracker::TrackChildWindow(aura::Window* window) {
+  child_windows_observer_->Observe(window);
+  UpdateChildWindowIds(window);
+
+  for (aura::Window* child : window->children()) {
+    TrackChildWindow(child);
+  }
+}
+
+void ArcAccessibilityTreeTracker::UpdateTopWindowIds(aura::Window* window) {
   auto task_id = GetWindowTaskId(window);
   if (!task_id.has_value())
     return;
 
-  if (task_id_to_window_.count(task_id.value()) == 0)
+  if (task_id_to_window_.count(task_id.value()) == 0) {
     task_id_to_window_.emplace(task_id.value(), window);
 
-  const auto window_id = exo::GetShellClientAccessibilityId(window);
-  if (!window_id.has_value())
-    return;
+    // Force re-evaluate children so that window_id and task_id are correctly
+    // mapped.
+    for (aura::Window* child : window->children()) {
+      TrackChildWindow(child);
+    }
+  }
 
-  if (window_id_to_task_id_.find(window_id.value()) !=
-      window_id_to_task_id_.end()) {
+  // TODO(b/270904414): remove a11y window id check on top window once sending
+  // a11y id is fully migrated to per-window level.
+  const auto window_id = exo::GetShellClientAccessibilityId(window);
+  if (!window_id.has_value()) {
+    return;
+  }
+
+  UpdateWindowIdAndTaskId(window_id.value(), task_id.value());
+}
+
+void ArcAccessibilityTreeTracker::UpdateChildWindowIds(aura::Window* window) {
+  const auto window_id = exo::GetShellClientAccessibilityId(window);
+  if (!window_id.has_value()) {
+    return;
+  }
+
+  aura::Window* parent = FindArcWindow(window);
+  auto task_id = GetWindowTaskId(parent);
+  if (!task_id.has_value()) {
+    return;
+  }
+
+  UpdateWindowIdAndTaskId(window_id.value(), task_id.value());
+}
+
+void ArcAccessibilityTreeTracker::UpdateWindowIdAndTaskId(int32_t window_id,
+                                                          int32_t task_id) {
+  if (window_id_to_task_id_.find(window_id) != window_id_to_task_id_.end()) {
     // We already know this window ID.
     return;
   }
 
-  window_id_to_task_id_[window_id.value()] = *task_id;
+  window_id_to_task_id_[window_id] = task_id;
 
   // The window ID is new to us. Request the entire tree.
   arc::mojom::AccessibilityWindowKeyPtr window_key =
-      arc::mojom::AccessibilityWindowKey::NewWindowId(window_id.value());
+      arc::mojom::AccessibilityWindowKey::NewWindowId(window_id);
   accessibility_helper_instance_.RequestSendAccessibilityTree(
       std::move(window_key));
 }
@@ -823,7 +913,7 @@ void ArcAccessibilityTreeTracker::StartTrackingWindows() {
 }
 
 void ArcAccessibilityTreeTracker::StartTrackingWindows(aura::Window* window) {
-  if (ShouldTrackWindow(window)) {
+  if (IsArcOrGhostWindow(window)) {
     TrackWindow(window);
     return;
   }

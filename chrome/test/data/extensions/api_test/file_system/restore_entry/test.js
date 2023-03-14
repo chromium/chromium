@@ -11,7 +11,7 @@ chrome.test.runTests([
     }));
     chrome.fileSystem.restoreEntry(id, chrome.test.callbackPass(
         function(restoredEntry) {
-      chrome.test.assertTrue(restoredEntry != null);
+      chrome.test.assertNe(null, restoredEntry);
       chrome.test.assertEq(
           chrome.fileSystem.retainEntry(restoredEntry), id);
       checkEntry(restoredEntry, 'writable.txt', false /* isNew */,

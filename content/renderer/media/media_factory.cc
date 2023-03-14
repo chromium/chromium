@@ -78,8 +78,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_CAST_RECEIVER)
-#include "components/cast_streaming/public/cast_streaming_url.h"  // nogncheck
-#include "components/cast_streaming/public/features.h"            // nogncheck
+#include "components/cast_streaming/common/public/cast_streaming_url.h"  // nogncheck
+#include "components/cast_streaming/common/public/features.h"  // nogncheck
 #include "components/cast_streaming/renderer/public/resource_provider.h"  // nogncheck
 #include "components/cast_streaming/renderer/public/wrapping_renderer_factory_selector.h"  // nogncheck
 #endif

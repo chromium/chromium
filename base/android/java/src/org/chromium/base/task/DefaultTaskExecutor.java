@@ -4,10 +4,6 @@
 
 package org.chromium.base.task;
 
-import android.view.Choreographer;
-
-import org.chromium.base.ThreadUtils;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,13 +17,11 @@ class DefaultTaskExecutor implements TaskExecutor {
 
     @Override
     public TaskRunner createTaskRunner(TaskTraits taskTraits) {
-        if (taskTraits.mIsChoreographerFrame) return createChoreographerTaskRunner();
         return new TaskRunnerImpl(taskTraits);
     }
 
     @Override
     public SequencedTaskRunner createSequencedTaskRunner(TaskTraits taskTraits) {
-        if (taskTraits.mIsChoreographerFrame) return createChoreographerTaskRunner();
         return new SequencedTaskRunnerImpl(taskTraits);
     }
 
@@ -38,7 +32,6 @@ class DefaultTaskExecutor implements TaskExecutor {
      */
     @Override
     public SingleThreadTaskRunner createSingleThreadTaskRunner(TaskTraits taskTraits) {
-        if (taskTraits.mIsChoreographerFrame) return createChoreographerTaskRunner();
         // Tasks posted via this API will not execute until after native has started.
         return new SingleThreadTaskRunnerImpl(null, taskTraits);
     }
@@ -61,11 +54,5 @@ class DefaultTaskExecutor implements TaskExecutor {
     @Override
     public boolean canRunTaskImmediately(TaskTraits traits) {
         return false;
-    }
-
-    private synchronized ChoreographerTaskRunner createChoreographerTaskRunner() {
-        // TODO(alexclarke): Migrate to the new Android UI thread trait when available.
-        return ThreadUtils.runOnUiThreadBlockingNoException(
-                () -> { return new ChoreographerTaskRunner(Choreographer.getInstance()); });
     }
 }

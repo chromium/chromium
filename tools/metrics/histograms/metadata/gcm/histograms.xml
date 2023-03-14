@@ -33,7 +33,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GCM.CheckinRequestStatus" enum="GCMCheckinRequestStatus"
-    expires_after="2023-06-25">
+    expires_after="2023-08-27">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>Status code of the outcome of a GCM checkin request.</summary>
@@ -46,56 +46,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Network error code for a GCM checkin request that failed because of a
     network error.
-  </summary>
-</histogram>
-
-<histogram name="GCM.ConnectionDisconnectErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="M77">
-  <owner>zea@chromium.org</owner>
-  <summary>URL response and error codes from GCM disconnect events.</summary>
-</histogram>
-
-<histogram name="GCM.ConnectionEndpoint" enum="GCMEndpoints"
-    expires_after="2018-08-30">
-  <owner>zea@chromium.org</owner>
-  <summary>Number of connections made to each specific MCS endpoint.</summary>
-</histogram>
-
-<histogram name="GCM.ConnectionFailureErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2018-08-30">
-  <owner>zea@chromium.org</owner>
-  <summary>URL response and error codes from GCM connection attempts.</summary>
-</histogram>
-
-<histogram name="GCM.ConnectionLatency" units="ms" expires_after="M88">
-  <owner>peter@chromium.org</owner>
-  <owner>zea@chromium.org</owner>
-  <summary>
-    The time between the initiation of a connection and the successful
-    completion of it.
-  </summary>
-</histogram>
-
-<histogram name="GCM.ConnectionResetReason" enum="GCMConnectionResetReason"
-    expires_after="2018-08-30">
-  <owner>zea@chromium.org</owner>
-  <summary>Reasons for GCM connection resets.</summary>
-</histogram>
-
-<histogram name="GCM.ConnectionSuccessRate" enum="BooleanSuccess"
-    expires_after="2018-08-30">
-  <owner>zea@chromium.org</owner>
-  <summary>
-    GCM connection success rate. Does not take into account login success. See
-    GCM.ConnectionFailureErrorCode for a breakdown of connection failure
-    reasons.
-  </summary>
-</histogram>
-
-<histogram name="GCM.ConnectionUpTime" units="ms" expires_after="2018-08-30">
-  <owner>zea@chromium.org</owner>
-  <summary>
-    Time (from login until reset) that a GCM connection was active.
   </summary>
 </histogram>
 
@@ -117,16 +67,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Result of decryption on a received GCM message, which includes unencrypted
     messages, successfully decrypted messages and decryption failures.
-  </summary>
-</histogram>
-
-<histogram name="GCM.Crypto.EncryptMessageResult" enum="GCMEncryptionResult"
-    expires_after="M92">
-  <owner>peter@chromium.org</owner>
-  <owner>alexchau@chromium.org</owner>
-  <summary>
-    Result of encryption of outgoing GCM message, which includes successfully
-    encrypted messages and encryption failures.
   </summary>
 </histogram>
 
@@ -188,39 +128,6 @@ chromium-metrics-reviews@google.com.
   <summary>The result of a database open attempt by the GCM store.</summary>
 </histogram>
 
-<histogram name="GCM.DataMessageReceived" enum="BooleanReceived"
-    expires_after="M88">
-  <owner>peter@chromium.org</owner>
-  <owner>zea@chromium.org</owner>
-  <summary>
-    Number of DATA_MESSAGE messages received from Google Cloud Messaging for
-    which a matching registration exists. Recorded when processing the received
-    message. Prior to M56 this also counted received DELETED_MESSAGES messages
-    (whether or not a registration existed).
-  </summary>
-</histogram>
-
-<histogram name="GCM.DataMessageReceivedHasCollapseKey"
-    enum="BooleanHasCollapseKey" expires_after="2018-08-30">
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records whether a non-empty collapse_key token is set for each received
-    DATA_MESSAGE message from Google Cloud Messaging for which a matching
-    registration exists. Recorded while processing the received message.
-  </summary>
-</histogram>
-
-<histogram name="GCM.DeletedMessagesReceived" units="messages"
-    expires_after="2018-08-30">
-  <owner>peter@chromium.org</owner>
-  <summary>
-    For every DELETED_MESSAGES message received from Google Cloud Messaging
-    (whether or not a matching registration exists), this records the provided
-    count of how many messages were simultaneously deleted, or zero if the count
-    is unknown.
-  </summary>
-</histogram>
-
 <histogram name="GCM.DeliveredToAppHandler{AppHandler}" enum="BooleanDelivered"
     expires_after="2023-10-19">
   <owner>peter@chromium.org</owner>
@@ -236,24 +143,6 @@ chromium-metrics-reviews@google.com.
     <variant name=".FcmInvalidations" summary="FCM invalidations"/>
     <variant name=".SyncInvalidations" summary="Sync standalone invalidations"/>
   </token>
-</histogram>
-
-<histogram name="GCM.HeartbeatMissedDelta" units="ms"
-    expires_after="2018-08-30">
-  <owner>zea@chromium.org</owner>
-  <summary>
-    If a heartbeat was missed, the time delta by which it was missed (in system
-    time, not ticks).
-  </summary>
-</histogram>
-
-<histogram name="GCM.IncomingSendErrors" units="messages" expires_after="M98">
-  <owner>peter@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    Number of SEND_ERROR messages received from Google Cloud Messaging. Recorded
-    when processing the received message.
-  </summary>
 </histogram>
 
 <histogram name="GCM.LoadStatus" enum="GCMLoadStatus" expires_after="M98">
@@ -368,16 +257,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GCM.SendMessageStatus" enum="GCMSendMessageStatus"
-    expires_after="2018-08-30">
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Result of sending an upstream message through Google Cloud Messaging.
-    Recorded when the message has either been queued, sent, or has been dropped
-    because it expired or an error happened.
-  </summary>
-</histogram>
-
 <histogram name="GCM.SendWebPushMessagePayloadSize" units="units"
     expires_after="M98">
   <owner>knollr@chromium.org</owner>
@@ -389,7 +268,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GCM.SendWebPushMessageResult" enum="SendWebPushMessageResult"
-    expires_after="2023-06-25">
+    expires_after="2023-08-27">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -436,11 +315,6 @@ chromium-metrics-reviews@google.com.
     Success indicates successfully updating the GCM persistent store on message
     update. Failure indicates a failure updating the persistence store.
   </summary>
-</histogram>
-
-<histogram name="GCM.SuspendTime" units="ms" expires_after="2018-08-30">
-  <owner>zea@chromium.org</owner>
-  <summary>Time elapsed from machine suspend until resume.</summary>
 </histogram>
 
 <histogram name="GCM.UnregistrationRequestStatus"

@@ -113,10 +113,9 @@ TEST_F(OncCertificatePatternTest, PatternMatchingIssuer) {
   }
 
   {
-    base::Value* issuer =
-        parsed_json->FindKeyOfType("Issuer", base::Value::Type::DICT);
+    base::Value::Dict* issuer = parsed_json->GetDict().FindDict("Issuer");
     ASSERT_TRUE(issuer);
-    issuer->SetKey("CommonName", base::Value("SomeOtherCA"));
+    issuer->Set("CommonName", "SomeOtherCA");
 
     auto pattern =
         OncCertificatePattern::ReadFromONCDictionary(parsed_json->GetDict());
@@ -149,10 +148,9 @@ TEST_F(OncCertificatePatternTest, PatternMatchingSubject) {
   }
 
   {
-    base::Value* issuer =
-        parsed_json->FindKeyOfType("Subject", base::Value::Type::DICT);
+    base::Value::Dict* issuer = parsed_json->GetDict().FindDict("Subject");
     ASSERT_TRUE(issuer);
-    issuer->SetKey("CommonName", base::Value("B CA"));
+    issuer->Set("CommonName", "B CA");
 
     auto pattern =
         OncCertificatePattern::ReadFromONCDictionary(parsed_json->GetDict());

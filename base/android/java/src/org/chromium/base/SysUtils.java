@@ -18,7 +18,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.MainDex;
 
 import java.io.BufferedReader;
@@ -178,17 +177,6 @@ public class SysUtils {
         } else {
             isLowEnd = sAmountOfPhysicalMemoryKB / 1024 <= ANDROID_LOW_MEMORY_DEVICE_THRESHOLD_MB;
         }
-
-        // For evaluation purposes check whether our computation agrees with Android API value.
-        Context appContext = ContextUtils.getApplicationContext();
-        boolean isLowRam = false;
-        if (appContext != null) {
-            isLowRam = ((ActivityManager) ContextUtils.getApplicationContext().getSystemService(
-                                Context.ACTIVITY_SERVICE))
-                               .isLowRamDevice();
-        }
-        RecordHistogram.recordBooleanHistogram(
-                "Android.SysUtilsLowEndMatches", isLowEnd == isLowRam);
 
         return isLowEnd;
     }

@@ -4,9 +4,13 @@
 
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
 
-#include <string>
+#include <memory>
+#include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -42,16 +46,22 @@ void PopupCellView::SetSelected(bool selected) {
   }
 }
 
-void PopupCellView::SetVoiceOverString(std::u16string voice_over) {
-  voice_over_ = std::move(voice_over);
+void PopupCellView::SetTooltipText(std::u16string tooltip_text) {
+  if (tooltip_text_ == tooltip_text) {
+    return;
+  }
+
+  tooltip_text_ = std::move(tooltip_text);
+  TooltipTextChanged();
 }
 
-void PopupCellView::SetSetSizeForAccessibility(absl::optional<int> set_size) {
-  set_size_ = set_size;
+std::u16string PopupCellView::GetTooltipText(const gfx::Point& p) const {
+  return tooltip_text_;
 }
 
-void PopupCellView::SetSetIndexForAccessibility(absl::optional<int> set_index) {
-  set_index_ = set_index;
+void PopupCellView::SetAccessibilityDelegate(
+    std::unique_ptr<AccessibilityDelegate> a11y_delegate) {
+  a11y_delegate_ = std::move(a11y_delegate);
 }
 
 void PopupCellView::SetOnEnteredCallback(base::RepeatingClosure callback) {
@@ -107,6 +117,7 @@ void PopupCellView::OnMouseExited(const ui::MouseEvent& event) {
   // overlays this item and the mouse is above the new popup
   // (crbug.com/1287364).
   mouse_observed_outside_item_bounds_ |= !IsMouseInsideItemBounds();
+
   if (on_exited_callback_) {
     on_exited_callback_.Run();
   }
@@ -157,17 +168,8 @@ bool PopupCellView::HandleAccessibleAction(
 }
 
 void PopupCellView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // Options are selectable.
-  node_data->role = ax::mojom::Role::kListBoxOption;
-  node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected,
-                              GetSelected());
-  node_data->SetNameChecked(GetVoiceOverString());
-
-  if (set_size_) {
-    node_data->AddIntAttribute(ax::mojom::IntAttribute::kSetSize, *set_size_);
-  }
-  if (set_index_) {
-    node_data->AddIntAttribute(ax::mojom::IntAttribute::kPosInSet, *set_index_);
+  if (a11y_delegate_) {
+    a11y_delegate_->GetAccessibleNodeData(GetSelected(), node_data);
   }
 }
 
@@ -180,16 +182,23 @@ void PopupCellView::RefreshStyle() {
   ui::ColorId kBackgroundColorId = GetSelected()
                                        ? ui::kColorDropdownBackgroundSelected
                                        : ui::kColorDropdownBackground;
-  SetBackground(views::CreateThemedSolidBackground(kBackgroundColorId));
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillShowAutocompleteDeleteButton)) {
+    SetBackground(views::CreateThemedRoundedRectBackground(
+        kBackgroundColorId, ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+                                views::Emphasis::kMedium)));
+  } else {
+    SetBackground(views::CreateThemedSolidBackground(kBackgroundColorId));
+  }
 
   // Set style for each label in this cell depending on its current selection
   // state.
   for (raw_ptr<views::Label>& label : tracked_labels_) {
     label->SetAutoColorReadabilityEnabled(false);
 
-    // If the current suggestion is selected or the label is disabled, override
-    // the style. Otherwise, use the color that corresponds to the actual style
-    // of the label.
+    // If the current suggestion is selected or the label is disabled,
+    // override the style. Otherwise, use the color that corresponds to the
+    // actual style of the label.
     int style = label->GetEnabled()
                     ? (GetSelected() ? views::style::STYLE_SELECTED
                                      : label->GetTextStyle())
@@ -203,9 +212,7 @@ void PopupCellView::RefreshStyle() {
 
 BEGIN_METADATA(PopupCellView, views::View)
 ADD_PROPERTY_METADATA(bool, Selected)
-ADD_PROPERTY_METADATA(std::u16string, VoiceOverString)
-ADD_PROPERTY_METADATA(absl::optional<int>, SetSizeForAccessibility)
-ADD_PROPERTY_METADATA(absl::optional<int>, SetIndexForAccessibility)
+ADD_PROPERTY_METADATA(std::u16string, TooltipText)
 ADD_PROPERTY_METADATA(base::RepeatingClosure, OnEnteredCallback)
 ADD_PROPERTY_METADATA(base::RepeatingClosure, OnExitedCallback)
 ADD_PROPERTY_METADATA(base::RepeatingClosure, OnAcceptedCallback)

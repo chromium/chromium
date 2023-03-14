@@ -1608,6 +1608,11 @@ void V4L2VideoEncodeAccelerator::RequestEncodingParametersChangeTask(
           NOTIFY_ERROR(kPlatformFailureError);
           return;
         }
+        break;
+      case Bitrate::Mode::kExternal:
+        VLOGF(1) << "Unsupported rate control mode.";
+        NOTIFY_ERROR(kInvalidArgumentError);
+        return;
     }
   }
 

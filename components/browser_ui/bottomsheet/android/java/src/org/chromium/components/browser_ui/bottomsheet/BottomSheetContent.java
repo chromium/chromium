@@ -9,7 +9,6 @@ import android.view.View;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 
 import java.lang.annotation.Retention;
@@ -155,18 +154,6 @@ public interface BottomSheetContent {
     }
 
     /**
-     * Set a {@link ContentSizeListener} that should be notified when the size of the content
-     * has changed. This will be called only if {@link #getFullHeightRatio()} returns {@link
-     * HeightMode#WRAP_CONTENT}. Note that you need to implement this method only if the content
-     * view height changes are animated.
-     *
-     * @return Whether the listener was correctly set.
-     */
-    default boolean setContentSizeListener(@Nullable ContentSizeListener listener) {
-        return false;
-    }
-
-    /**
      * @return Whether the sheet should be hidden when it is in the PEEK state and the user
      *         scrolls down the page.
      */
@@ -225,23 +212,4 @@ public interface BottomSheetContent {
      *         typically the name of your feature followed by 'closed'.
      */
     int getSheetClosedAccessibilityStringId();
-
-    /**
-     * Return {@code true} if the content expects {@link #setOffsetController} to be called.
-     *
-     * This is an experimental feature. Use it at your own risks. TODO(b/177037825): Remove or
-     * cleanup.
-     */
-    default boolean contentControlsOffset() {
-        return false;
-    }
-
-    /**
-     * Set or reset the set offset callback.
-     *
-     * The active content can use this callback to move the sheet to the given offset.
-     *
-     * Only called if {@link #contentControlsOffset} returns {@code true}.
-     */
-    default void setOffsetController(@Nullable Callback<Integer> setOffset) {}
 }

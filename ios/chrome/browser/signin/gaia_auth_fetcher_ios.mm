@@ -37,7 +37,10 @@ void GaiaAuthFetcherIOS::CreateAndStartGaiaFetcher(
   DCHECK(!HasPendingFetch()) << "Tried to fetch two things at once!";
 
   bool cookies_required =
-      credentials_mode != network::mojom::CredentialsMode::kOmit;
+      credentials_mode != network::mojom::CredentialsMode::kOmit &&
+      credentials_mode !=
+          network::mojom::CredentialsMode::kOmitBug_775438_Workaround;
+
   if (!cookies_required) {
     GaiaAuthFetcher::CreateAndStartGaiaFetcher(body, body_content_type, headers,
                                                gaia_gurl, credentials_mode,

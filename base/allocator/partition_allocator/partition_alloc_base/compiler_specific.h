@@ -37,7 +37,9 @@
 // Annotate a function indicating it should not be inlined.
 // Use like:
 //   NOINLINE void DoStuff() { ... }
-#if defined(COMPILER_GCC) || defined(__clang__)
+#if defined(__clang__) && PA_HAS_ATTRIBUTE(noinline)
+#define PA_NOINLINE [[clang::noinline]]
+#elif defined(COMPILER_GCC) && PA_HAS_ATTRIBUTE(noinline)
 #define PA_NOINLINE __attribute__((noinline))
 #elif defined(COMPILER_MSVC)
 #define PA_NOINLINE __declspec(noinline)
@@ -45,7 +47,10 @@
 #define PA_NOINLINE
 #endif
 
-#if defined(COMPILER_GCC) && defined(NDEBUG)
+#if defined(__clang__) && defined(NDEBUG) && PA_HAS_ATTRIBUTE(always_inline)
+#define PA_ALWAYS_INLINE [[clang::always_inline]] inline
+#elif defined(COMPILER_GCC) && defined(NDEBUG) && \
+    PA_HAS_ATTRIBUTE(always_inline)
 #define PA_ALWAYS_INLINE inline __attribute__((__always_inline__))
 #elif defined(COMPILER_MSVC) && defined(NDEBUG)
 #define PA_ALWAYS_INLINE __forceinline
@@ -62,35 +67,26 @@
 // Use like:
 //   void NOT_TAIL_CALLED FooBar();
 #if defined(__clang__) && PA_HAS_ATTRIBUTE(not_tail_called)
-#define PA_NOT_TAIL_CALLED __attribute__((not_tail_called))
+#define PA_NOT_TAIL_CALLED [[clang::not_tail_called]]
 #else
 #define PA_NOT_TAIL_CALLED
 #endif
 
 // Specify memory alignment for structs, classes, etc.
 // Use like:
-//   class ALIGNAS(16) MyClass { ... }
-//   ALIGNAS(16) int array[4];
+//   class PA_ALIGNAS(16) MyClass { ... }
+//   PA_ALIGNAS(16) int array[4];
 //
 // In most places you can use the C++11 keyword "alignas", which is preferred.
 //
-// But compilers have trouble mixing __attribute__((...)) syntax with
-// alignas(...) syntax.
-//
-// Doesn't work in clang or gcc:
-//   struct alignas(16) __attribute__((packed)) S { char c; };
-// Works in clang but not gcc:
-//   struct __attribute__((packed)) alignas(16) S2 { char c; };
-// Works in clang and gcc:
-//   struct alignas(16) S3 { char c; } __attribute__((packed));
-//
-// There are also some attributes that must be specified *before* a class
-// definition: visibility (used for exporting functions/classes) is one of
-// these attributes. This means that it is not possible to use alignas() with a
-// class that is marked as exported.
-#if defined(COMPILER_MSVC)
+// Historically, compilers had trouble mixing __attribute__((...)) syntax with
+// alignas(...) syntax. However, at least Clang is very accepting nowadays. It
+// may be that this macro can be removed entirely.
+#if defined(__clang__)
+#define PA_ALIGNAS(byte_alignment) alignas(byte_alignment)
+#elif defined(COMPILER_MSVC)
 #define PA_ALIGNAS(byte_alignment) __declspec(align(byte_alignment))
-#elif defined(COMPILER_GCC)
+#elif defined(COMPILER_GCC) && PA_HAS_ATTRIBUTE(aligned)
 #define PA_ALIGNAS(byte_alignment) __attribute__((aligned(byte_alignment)))
 #endif
 
@@ -108,13 +104,13 @@
 #define PA_NO_UNIQUE_ADDRESS
 #endif
 
-// Tell the compiler a function is using a printf-style format string.
+// Tells the compiler a function is using a printf-style format string.
 // |format_param| is the one-based index of the format string parameter;
 // |dots_param| is the one-based index of the "..." parameter.
 // For v*printf functions (which take a va_list), pass 0 for dots_param.
 // (This is undocumented but matches what the system C headers do.)
 // For member functions, the implicit this parameter counts as index 1.
-#if defined(COMPILER_GCC) || defined(__clang__)
+#if (defined(COMPILER_GCC) || defined(__clang__)) && PA_HAS_ATTRIBUTE(format)
 #define PA_PRINTF_FORMAT(format_param, dots_param) \
   __attribute__((format(printf, format_param, dots_param)))
 #else
@@ -247,7 +243,7 @@
 // please document the problem for someone who is going to cleanup it later.
 // E.g. platform, bot, benchmark or test name in patch description or next to
 // the attribute.
-#define PA_STACK_UNINITIALIZED __attribute__((uninitialized))
+#define PA_STACK_UNINITIALIZED [[clang::uninitialized]]
 #else
 #define PA_STACK_UNINITIALIZED
 #endif

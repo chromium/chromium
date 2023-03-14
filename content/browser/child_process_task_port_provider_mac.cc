@@ -12,9 +12,13 @@
 #include "base/mac/mach_logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "content/common/child_process.mojom.h"
-#include "content/common/mac/task_port_policy.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "content/common/mac/task_port_policy.h"
+#endif
 
 namespace content {
 
@@ -64,6 +68,7 @@ ChildProcessTaskPortProvider::ChildProcessTaskPortProvider() {
 ChildProcessTaskPortProvider::~ChildProcessTaskPortProvider() {}
 
 bool ChildProcessTaskPortProvider::ShouldRequestTaskPorts() const {
+#if BUILDFLAG(IS_MAC)
   // Set a crash key for the lifetime of the browser process to help debug
   // other failures.
   static auto* crash_key = base::debug::AllocateCrashKeyString(
@@ -80,6 +85,9 @@ bool ChildProcessTaskPortProvider::ShouldRequestTaskPorts() const {
     return !allow_everything;
   }(crash_key);
   return should_request_task_ports;
+#else
+  return true;
+#endif
 }
 
 void ChildProcessTaskPortProvider::OnTaskPortReceived(

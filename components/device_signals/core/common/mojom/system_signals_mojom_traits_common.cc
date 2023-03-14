@@ -61,10 +61,12 @@ bool StructTraits<device_signals::mojom::ExecutableMetadataDataView,
     Read(device_signals::mojom::ExecutableMetadataDataView data,
          device_signals::ExecutableMetadata* output) {
   output->is_running = data.is_running();
+  output->is_os_verified = data.is_os_verified();
 
   if (!data.ReadPublicKeysHashes(&output->public_keys_hashes) ||
       !data.ReadProductName(&output->product_name) ||
-      !data.ReadVersion(&output->version)) {
+      !data.ReadVersion(&output->version) ||
+      !data.ReadSubjectName(&output->subject_name)) {
     return false;
   }
 

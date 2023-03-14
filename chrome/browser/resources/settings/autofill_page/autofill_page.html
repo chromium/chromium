@@ -12,7 +12,8 @@
       <div route-path="default">
         <cr-link-row id="passwordManagerButton" start-icon="settings20:vpn-key"
             label="$i18n{passwords}" on-click="onPasswordsClick_"
-            role-description="$i18n{subpageArrowRoleDescription}">
+            role-description="$i18n{subpageArrowRoleDescription}"
+            external="[[enableNewPasswordManagerPage_]]">
           <span id="passwordManagerSubLabel" slot="sub-label">
               [[passwordManagerSubLabel_]]</span>
         </cr-link-row>

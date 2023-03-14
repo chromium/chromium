@@ -5,33 +5,31 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_CONTROLLER_IMPL_H_
 
-#include <stddef.h>
-
 #include <string>
 #include <type_traits>
 #include <vector>
 
-#include "base/containers/span.h"
 #include "base/functional/invoke.h"
 #include "base/gtest_prod_util.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/common/aliases.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rect_f.h"
 
 namespace content {
 struct NativeWebKeyboardEvent;
 class WebContents;
 }  // namespace content
+
+namespace gfx {
+class RectF;
+}  // namespace gfx
 
 namespace password_manager {
 class ContentPasswordManagerDriver;
@@ -56,10 +54,10 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   AutofillPopupControllerImpl& operator=(const AutofillPopupControllerImpl&) =
       delete;
 
-  // Creates a new |AutofillPopupControllerImpl|, or reuses |previous| if the
-  // construction arguments are the same. |previous| may be invalidated by this
+  // Creates a new `AutofillPopupControllerImpl`, or reuses `previous` if the
+  // construction arguments are the same. `previous` may be invalidated by this
   // call. The controller will listen for keyboard input routed to
-  // |web_contents| while the popup is showing, unless |web_contents| is NULL.
+  // `web_contents` while the popup is showing, unless `web_contents` is NULL.
   static base::WeakPtr<AutofillPopupControllerImpl> GetOrCreate(
       base::WeakPtr<AutofillPopupControllerImpl> previous,
       base::WeakPtr<AutofillPopupDelegate> delegate,
@@ -84,7 +82,7 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   void KeepPopupOpenForTesting() { keep_popup_open_for_testing_ = true; }
 
   // Hides the popup and destroys the controller. This also invalidates
-  // |delegate_|.
+  // `delegate_`.
   void Hide(PopupHidingReason reason) override;
 
   // Invoked when the view was destroyed by by someone other than this class.
@@ -97,6 +95,11 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
 
   // AutofillPopupController:
   std::vector<Suggestion> GetSuggestions() const override;
+
+  // Disables show thresholds. See the documentation of the member for details.
+  void DisableThresholdForTesting(bool disable_threshold) {
+    disable_threshold_for_testing_ = disable_threshold;
+  }
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(AutofillPopupControllerUnitTest,
@@ -113,12 +116,13 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   content::WebContents* GetWebContents() const override;
   const gfx::RectF& element_bounds() const override;
   void SetElementBounds(const gfx::RectF& bounds);
-  bool IsRTL() const override;
+  base::i18n::TextDirection GetElementTextDirection() const override;
 
   // AutofillPopupController:
   void OnSuggestionsChanged() override;
   void SelectSuggestion(absl::optional<size_t> index) override;
-  void AcceptSuggestion(int index, base::TimeDelta show_threshold) override;
+  void AcceptSuggestion(int index) override;
+  void AcceptSuggestionWithoutThreshold(int index) override;
   bool RemoveSuggestion(int list_index) override;
   int GetLineCount() const override;
   const Suggestion& GetSuggestionAt(int row) const override;
@@ -149,7 +153,7 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   // to find the AXPlatformNode specifically for the autofill text field.
   virtual ui::AXPlatformNode* GetRootAXPlatformNodeForWebContents();
 
-  // Hides |view_| unless it is null and then deletes |this|.
+  // Hides `view_` unless it is null and then deletes `this`.
   virtual void HideViewAndDie();
 
  private:
@@ -160,16 +164,17 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   // management issue in AutofillPopupView.
   class AutofillPopupViewPtr {
    public:
-    AutofillPopupViewPtr() = default;
+    AutofillPopupViewPtr();
     AutofillPopupViewPtr(const AutofillPopupViewPtr&) = delete;
     AutofillPopupViewPtr& operator=(const AutofillPopupViewPtr&) = delete;
+    ~AutofillPopupViewPtr();
 
-    AutofillPopupViewPtr& operator=(AutofillPopupView* ptr) {
-      ptr_ = ptr;
+    AutofillPopupViewPtr& operator=(base::WeakPtr<AutofillPopupView> ptr) {
+      ptr_ = std::move(ptr);
       return *this;
     }
 
-    explicit operator bool() const { return ptr_; }
+    explicit operator bool() const { return !!ptr_; }
 
     // If `ptr_ == nullptr`, returns something that converts to false.
     // If `ptr_ != nullptr`, calls `ptr_->func(args...)` and, if that returns a
@@ -188,7 +193,7 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
     }
 
    private:
-    raw_ptr<AutofillPopupView, DanglingUntriaged> ptr_ = nullptr;
+    base::WeakPtr<AutofillPopupView> ptr_;
   };
 
   // The user has accepted the currently selected line. Returns whether there
@@ -212,7 +217,7 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
 
   friend class AutofillPopupControllerUnitTest;
   friend class AutofillPopupControllerAccessibilityUnitTest;
-  void SetViewForTesting(AutofillPopupView* view);
+  void SetViewForTesting(base::WeakPtr<AutofillPopupView> view);
 
   PopupControllerCommon controller_common_;
   raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
@@ -223,6 +228,11 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   // accepting suggestions too quickly after a the popup view was shown (see the
   // `show_threshold` parameter of `AcceptSuggestion`).
   base::TimeTicks time_view_shown_;
+
+  // An override to suppress minimum show thresholds. It should only be set
+  // during tests that cannot mock time (e.g. the autofill interactive
+  // browsertests).
+  bool disable_threshold_for_testing_ = false;
 
   // If set to true, the popup will never be hidden because of stale data or if
   // the user interacts with native UI.

@@ -743,14 +743,16 @@ void DeviceInfoSyncBridge::OnReadAllMetadata(
     return;
   }
 
+  bool was_local_cache_guid_empty = local_cache_guid_.empty();
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
 
   // In rare cases a mismatch between cache GUIDs should cause all sync metadata
   // dropped. In that case, MergeSyncData() will eventually follow.
   if (!change_processor()->IsTrackingMetadata()) {
     // In this scenario, ApplyStopSyncChanges() should have been exercised.
-    // However OnSyncStarting() must have been called during ModelReadyToSync().
-    DCHECK(!local_cache_guid_.empty());
+    // If OnSyncStarting() had already been called before, then it must have
+    // been called again during ModelReadyToSync().
+    DCHECK(was_local_cache_guid_empty == local_cache_guid_.empty());
     DCHECK(all_data_.empty());
     return;
   }

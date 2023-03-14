@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_observer_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_source.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/document_picture_in_picture/picture_in_picture_controller_impl.h"
@@ -60,21 +59,22 @@ const char PressureObserverManager::kSupplementName[] =
     "PressureObserverManager";
 
 // static
-PressureObserverManager* PressureObserverManager::From(LocalDOMWindow& window) {
+PressureObserverManager* PressureObserverManager::From(
+    ExecutionContext* context) {
   PressureObserverManager* manager =
-      Supplement<LocalDOMWindow>::From<PressureObserverManager>(window);
+      Supplement<ExecutionContext>::From<PressureObserverManager>(context);
   if (!manager) {
-    manager = MakeGarbageCollected<PressureObserverManager>(window);
-    Supplement<LocalDOMWindow>::ProvideTo(window, manager);
+    manager = MakeGarbageCollected<PressureObserverManager>(context);
+    Supplement<ExecutionContext>::ProvideTo(*context, manager);
   }
   return manager;
 }
 
-PressureObserverManager::PressureObserverManager(LocalDOMWindow& window)
-    : ExecutionContextLifecycleStateObserver(&window),
-      Supplement<LocalDOMWindow>(window),
-      pressure_manager_(GetSupplementable()->GetExecutionContext()),
-      receiver_(this, GetSupplementable()->GetExecutionContext()) {
+PressureObserverManager::PressureObserverManager(ExecutionContext* context)
+    : ExecutionContextLifecycleStateObserver(context),
+      Supplement<ExecutionContext>(*context),
+      pressure_manager_(context),
+      receiver_(this, context) {
   UpdateStateIfNeeded();
 }
 
@@ -169,7 +169,7 @@ void PressureObserverManager::Trace(blink::Visitor* visitor) const {
   visitor->Trace(pressure_manager_);
   visitor->Trace(receiver_);
   ExecutionContextLifecycleStateObserver::Trace(visitor);
-  Supplement<LocalDOMWindow>::Trace(visitor);
+  Supplement<ExecutionContext>::Trace(visitor);
 }
 
 void PressureObserverManager::EnsureServiceConnection() {
@@ -190,10 +190,15 @@ void PressureObserverManager::EnsureServiceConnection() {
 
 // https://wicg.github.io/compute-pressure/#dfn-passes-privacy-test
 bool PressureObserverManager::PassesPrivacyTest() const {
-  LocalFrame* this_frame = GetSupplementable()->GetFrame();
-  // 2. If associated document is not fully active, return false.
-  if (GetSupplementable()->IsContextDestroyed() || !this_frame)
+  if (!DomWindow()) {
     return false;
+  }
+
+  LocalFrame* this_frame = DomWindow()->GetFrame();
+  // 2. If associated document is not fully active, return false.
+  if (GetSupplementable()->IsContextDestroyed() || !this_frame) {
+    return false;
+  }
 
   // 4. If associated document is same-domain with initiators of active
   // Picture-in-Picture sessions, return true.
@@ -205,19 +210,27 @@ bool PressureObserverManager::PassesPrivacyTest() const {
   // can access to PressureRecord.
   auto& pip_controller =
       PictureInPictureControllerImpl::From(*(this_frame->GetDocument()));
-  if (pip_controller.PictureInPictureElement())
+  if (pip_controller.PictureInPictureElement()) {
     return true;
+  }
 
   // 5. If browsing context is capturing, return true.
-  if (this_frame->IsCapturingMedia())
+  if (this_frame->IsCapturingMedia()) {
     return true;
+  }
 
   // 7. If top-level browsing context does not have system focus, return false.
   DCHECK(this_frame->GetPage());
-  LocalFrame* focused_frame =
-      this_frame->GetPage()->GetFocusController().FocusedFrame();
-  if (!focused_frame || !focused_frame->IsOutermostMainFrame())
+  const auto& focus_controller = this_frame->GetPage()->GetFocusController();
+  if (!focus_controller.IsFocused()) {
     return false;
+  }
+
+  // 8. Let focused document be the currently focused area's node document.
+  const LocalFrame* focused_frame = focus_controller.FocusedFrame();
+  if (!focused_frame) {
+    return false;
+  }
 
   // 9. If origin is same origin-domain with focused document, return true.
   // 10. Otherwise, return false.

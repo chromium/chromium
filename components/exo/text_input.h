@@ -154,11 +154,13 @@ class TextInput : public ui::TextInputClient,
   void SetSurroundingText(const std::u16string& text,
                           const gfx::Range& cursor_pos);
 
-  // Sets the text input type, mode, flags, and |should_do_learning|.
+  // Sets the text input type, mode, flags, |should_do_learning|, and
+  // |can_compose_inline|.
   void SetTypeModeFlags(ui::TextInputType type,
                         ui::TextInputMode mode,
                         int flags,
-                        bool should_do_learning);
+                        bool should_do_learning,
+                        bool can_compose_inline);
 
   // Sets the bounds of the text caret, relative to the window origin.
   void SetCaretBounds(const gfx::Rect& bounds);
@@ -276,6 +278,7 @@ class TextInput : public ui::TextInputClient,
   ui::TextInputMode input_mode_ = ui::TEXT_INPUT_MODE_DEFAULT;
   int flags_ = ui::TEXT_INPUT_FLAG_NONE;
   bool should_do_learning_ = true;
+  bool can_compose_inline_ = true;
   ui::TextInputClient::FocusReason focus_reason_ =
       ui::TextInputClient::FOCUS_REASON_NONE;
 

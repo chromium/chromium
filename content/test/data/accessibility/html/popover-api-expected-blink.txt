@@ -10,6 +10,9 @@ rootWebArea
 ++++++++genericContainer ignored invisible
 ++++++++++staticText ignored invisible name='Listbox role on ul'
 ++++++details ignored invisible
+++++++++genericContainer ignored invisible
+++++++++++disclosureTriangle ignored invisible
+++++++++++++staticText ignored invisible name='summary/details popover'
 ++++++button collapsed name='Button pointing to hidden popover'
 ++++++++staticText name='Button pointing to hidden popover'
 ++++++++++inlineTextBox name='Button pointing to hidden popover'
@@ -50,14 +53,14 @@ rootWebArea
 ++++++paragraph
 ++++++++staticText name='Showing/visible popovers below'
 ++++++++++inlineTextBox name='Showing/visible popovers below'
-++++++button name='Button pointing to showing popover' detailsIds=group
+++++++button expanded name='Button pointing to showing popover' detailsIds=group
 ++++++++staticText name='Button pointing to showing popover'
 ++++++++++inlineTextBox name='Button pointing to showing popover'
 ++++++textField
 ++++++++genericContainer
 ++++++staticText name='Tel input pointing to showing popover '
 ++++++++inlineTextBox name='Tel input pointing to showing popover '
-++++++button name='Show button pointing to nested popover' detailsIds=group
+++++++button expanded name='Show button pointing to nested popover' detailsIds=group
 ++++++++staticText name='Show button pointing to nested popover'
 ++++++++++inlineTextBox name='Show button pointing to nested popover'
 ++++++textField

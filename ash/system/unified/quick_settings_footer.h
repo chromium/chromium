@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_UNIFIED_QUICK_SETTINGS_FOOTER_H_
 
 #include "ash/ash_export.h"
+#include "ash/system/unified/power_button.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/views/view.h"
 
@@ -29,6 +30,8 @@ class ASH_EXPORT QuickSettingsFooter : public views::View {
   // Registers preferences used by this class in the provided `registry`.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
+  PowerButton* power_button_for_testing() { return power_button_; }
+
  private:
   friend class QuickSettingsFooterTest;
 
@@ -38,6 +41,9 @@ class ASH_EXPORT QuickSettingsFooter : public views::View {
 
   // Owned.
   IconButton* settings_button_ = nullptr;
+
+  // Owned by views hierarchy.
+  PowerButton* power_button_ = nullptr;
 
   // The registrar used to watch prefs changes.
   PrefChangeRegistrar local_state_pref_change_registrar_;

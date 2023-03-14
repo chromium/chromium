@@ -61,6 +61,7 @@
 <translation id="2573731672208488250">{HOURS,plural, =1{1시간 후}other{#시간 후}}</translation>
 <translation id="2583543531130364912">터치스크린 보정</translation>
 <translation id="2586657967955657006">클립보드</translation>
+<translation id="2653844658857826081">NEW</translation>
 <translation id="2666092431469916601">맨 위</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" />에서 공유함</translation>
 <translation id="271033894570825754">New</translation>
@@ -75,6 +76,7 @@
 <translation id="3157931365184549694">복구</translation>
 <translation id="3183922693828471536">여기로 스크롤</translation>
 <translation id="3234408098842461169">아래 화살표</translation>
+<translation id="3240426699337459095">링크 복사됨</translation>
 <translation id="3291688615589870984">{DAYS,plural, =1{1일}other{#일}}</translation>
 <translation id="3295886253693811851">사용 가능한 전화 서비스</translation>
 <translation id="3306688585798492231">내장 디스플레이</translation>

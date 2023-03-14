@@ -525,14 +525,8 @@ void GetInitializationDataTask::FinishWithError(
     }
   }
 
-  ReportStorageError();
-
   std::move(callback_).Run(error, std::move(results));
   Finished();  // Destroys |this|.
-}
-
-std::string GetInitializationDataTask::HistogramName() const {
-  return "GetInitializationDataTask";
 }
 
 }  // namespace background_fetch

@@ -23,8 +23,9 @@
 
 namespace base {
 
-// Converts module id to match the id that Breakpad outputs.
-BASE_EXPORT std::string TransformModuleIDToBreakpadFormat(
+// Converts module id to match the id that the Google-internal symbol server
+// expects.
+BASE_EXPORT std::string TransformModuleIDToSymbolServerFormat(
     StringPiece module_id);
 
 // Supports cached lookup of modules by address, with caching based on module

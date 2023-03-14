@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
@@ -137,7 +136,7 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     autofill::ChromeAutofillClient* autofill_client =
-        autofill::ChromeAutofillClient::FromWebContents(web_contents);
+        autofill::ChromeAutofillClient::FromWebContentsForTesting(web_contents);
     autofill_client->KeepPopupOpenForTesting();
 
     // Execute the Conditional UI request.
@@ -176,8 +175,7 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
     EXPECT_EQ(webauthn_entry.icon, "globeIcon");
 
     // Click the credential.
-    popup_controller->AcceptSuggestion(suggestion_index,
-                                       /*show_threshold=*/base::TimeDelta());
+    popup_controller->AcceptSuggestionWithoutThreshold(suggestion_index);
     std::string result;
     ASSERT_TRUE(message_queue.WaitForMessage(&result));
     EXPECT_EQ(result, "\"webauthn: OK\"");
@@ -188,7 +186,7 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     autofill::ChromeAutofillClient* autofill_client =
-        autofill::ChromeAutofillClient::FromWebContents(web_contents);
+        autofill::ChromeAutofillClient::FromWebContentsForTesting(web_contents);
     autofill_client->KeepPopupOpenForTesting();
 
     // Execute the Conditional UI request.

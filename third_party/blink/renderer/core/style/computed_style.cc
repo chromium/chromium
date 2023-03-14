@@ -205,10 +205,6 @@ PositionFallbackStyleCache& ComputedStyle::EnsurePositionFallbackStyleCache(
   return *cached_data_->position_fallback_styles_;
 }
 
-scoped_refptr<ComputedStyle> ComputedStyle::Clone(const ComputedStyle& other) {
-  return base::AdoptRef(new ComputedStyle(PassKey(), other));
-}
-
 ALWAYS_INLINE ComputedStyle::ComputedStyle()
     : ComputedStyleBase(), RefCounted<ComputedStyle>() {}
 
@@ -367,6 +363,9 @@ bool ComputedStyle::NeedsReattachLayoutTree(const Element& element,
     return true;
   }
 
+  if (old_style->TopLayer() != new_style->TopLayer()) {
+    return true;
+  }
   return false;
 }
 
@@ -1649,13 +1648,12 @@ static String DisableNewGeorgianCapitalLetters(const String& text) {
 
 namespace {
 
-// TODO(https://crbug.com/1076420): this needs to handle all text-transform
-// values.
-static void ApplyMathTransform(String* text, ETextTransform math_variant) {
-  DCHECK(math_variant == ETextTransform::kMathAuto);
-  DCHECK_EQ(text->length(), 1u);
+static void ApplyMathAutoTransform(String* text) {
+  if (text->length() != 1) {
+    return;
+  }
   UChar character = (*text)[0];
-  UChar32 transformed_char = MathVariant((*text)[0]);
+  UChar32 transformed_char = ItalicMathVariant((*text)[0]);
   if (transformed_char == static_cast<UChar32>(character)) {
     return;
   }
@@ -1689,9 +1687,7 @@ void ComputedStyle::ApplyTextTransform(String* text,
       return;
     }
     case ETextTransform::kMathAuto:
-      if (text->length() == 1) {
-        ApplyMathTransform(text, ETextTransform::kMathAuto);
-      }
+      ApplyMathAutoTransform(text);
       return;
   }
   NOTREACHED();
@@ -2463,6 +2459,20 @@ bool ComputedStyle::CalculateIsStackingContextWithoutContainment() const {
     return true;
   }
   return false;
+}
+
+bool ComputedStyle::IsInTopLayer(const Element& element) const {
+  return element.IsInTopLayer() && TopLayer() == ETopLayer::kBrowser;
+}
+
+ComputedStyleBuilder::ComputedStyleBuilder(const ComputedStyle& style) {
+  style_ = base::AdoptRef(new ComputedStyle(style));
+  SetStyleBase(*style_);
+}
+
+scoped_refptr<const ComputedStyle> ComputedStyleBuilder::CloneStyle() const {
+  DCHECK(style_);
+  return base::AdoptRef(new ComputedStyle(*style_));
 }
 
 void ComputedStyleBuilder::PropagateIndependentInheritedProperties(

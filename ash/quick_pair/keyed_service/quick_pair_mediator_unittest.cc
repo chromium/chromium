@@ -601,7 +601,7 @@ TEST_F(MediatorTest, AssociateAccountKeyAction_AssociateAccount) {
   retroactive_device_->set_version(DeviceFastPairVersion::kHigherThanV1);
   retroactive_device_->set_account_key(kAccountKey1);
   mock_ui_broker_->NotifyAssociateAccountAction(
-      retroactive_device_, AssociateAccountAction::kAssoicateAccount);
+      retroactive_device_, AssociateAccountAction::kAssociateAccount);
 }
 
 TEST_F(MediatorTest, AssociateAccountKeyAction_LearnMore) {

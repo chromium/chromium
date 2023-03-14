@@ -70,6 +70,10 @@ class FakeFastPairRepository : public FastPairRepository {
       scoped_refptr<Device> device) override;
   void DeleteAssociatedDevice(const std::string& mac_address,
                               DeleteAssociatedDeviceCallback callback) override;
+  void UpdateAssociatedDeviceFootprintsName(const std::string& mac_address,
+                                            const std::string& display_name,
+                                            bool cache_may_be_stale) override;
+
   void FetchDeviceImages(scoped_refptr<Device> device) override;
   absl::optional<std::string> GetDeviceDisplayNameFromCache(
       std::vector<uint8_t> account_key) override;

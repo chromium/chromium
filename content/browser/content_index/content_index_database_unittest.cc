@@ -502,39 +502,4 @@ TEST_F(ContentIndexDatabaseTest, BlockedOriginsCannotRegisterContent) {
             blink::mojom::ContentIndexError::NONE);
 }
 
-TEST_F(ContentIndexDatabaseTest, UmaRecorded) {
-  base::HistogramTester histogram_tester;
-
-  EXPECT_EQ(AddEntry(CreateDescription("id")),
-            blink::mojom::ContentIndexError::NONE);
-  histogram_tester.ExpectBucketCount("ContentIndex.Database.Add",
-                                     blink::ServiceWorkerStatusCode::kOk, 1);
-
-  EXPECT_FALSE(GetIcons("id").empty());
-  histogram_tester.ExpectBucketCount("ContentIndex.Database.GetIcon",
-                                     blink::ServiceWorkerStatusCode::kOk, 1);
-
-  EXPECT_EQ(GetAllEntries().size(), 1u);
-  histogram_tester.ExpectBucketCount("ContentIndex.Database.GetAllEntries",
-                                     blink::ServiceWorkerStatusCode::kOk, 1);
-
-  EXPECT_EQ(GetDescriptions().size(), 1u);
-  histogram_tester.ExpectBucketCount("ContentIndex.Database.GetDescriptions",
-                                     blink::ServiceWorkerStatusCode::kOk, 1);
-
-  EXPECT_TRUE(GetEntry("id"));
-  histogram_tester.ExpectBucketCount("ContentIndex.Database.GetEntry",
-                                     blink::ServiceWorkerStatusCode::kOk, 1);
-
-  EXPECT_EQ(DeleteEntry("id"), blink::mojom::ContentIndexError::NONE);
-  histogram_tester.ExpectBucketCount("ContentIndex.Database.Delete",
-                                     blink::ServiceWorkerStatusCode::kOk, 1);
-
-  database()->BlockOrigin(origin());
-  AddEntry(CreateDescription("id"));
-  histogram_tester.ExpectBucketCount("ContentIndex.RegistrationBlocked",
-                                     blink::mojom::ContentCategory::HOME_PAGE,
-                                     1);
-}
-
 }  // namespace content

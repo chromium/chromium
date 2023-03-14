@@ -10,7 +10,7 @@
       "symbol_level": 1,
       "target_os": "android",
       "use_dawn": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "dawn-android-arm-deps-rel": {
@@ -24,7 +24,7 @@
       "symbol_level": 1,
       "target_os": "android",
       "use_dawn": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "dawn-linux-x64-deps-rel": {
@@ -43,13 +43,10 @@
     "gn_args": {
       "dawn_enable_opengles": true,
       "dcheck_always_on": true,
-      "enable_backup_ref_ptr_support": false,
-      "enable_mte_checked_ptr_support": false,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
       "use_dawn": true,
-      "use_partition_alloc_as_malloc": false,
       "use_remoteexec": true
     }
   },
@@ -57,28 +54,22 @@
     "gn_args": {
       "dawn_enable_opengles": true,
       "dcheck_always_on": true,
-      "enable_backup_ref_ptr_support": false,
-      "enable_mte_checked_ptr_support": false,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
       "use_dawn": true,
-      "use_goma": true,
-      "use_partition_alloc_as_malloc": false
+      "use_remoteexec": true
     }
   },
   "dawn-try-mac-intel-exp": {
     "gn_args": {
       "dawn_enable_opengles": true,
       "dcheck_always_on": true,
-      "enable_backup_ref_ptr_support": false,
-      "enable_mte_checked_ptr_support": false,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
       "use_dawn": true,
-      "use_goma": true,
-      "use_partition_alloc_as_malloc": false
+      "use_remoteexec": true
     }
   },
   "dawn-try-win-x64-intel-exp": {
@@ -167,14 +158,11 @@
     "gn_args": {
       "dawn_enable_opengles": true,
       "dcheck_always_on": true,
-      "enable_backup_ref_ptr_support": false,
-      "enable_mte_checked_ptr_support": false,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
       "use_dawn": true,
-      "use_goma": true,
-      "use_partition_alloc_as_malloc": false
+      "use_remoteexec": true
     }
   },
   "win-dawn-rel": {

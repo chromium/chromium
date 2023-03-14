@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/url_formatter/elide_url.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_image_container_view.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_menu_button.h"
@@ -14,7 +15,6 @@
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_track_button.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_constants.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -30,6 +30,7 @@ namespace {
 
 const CGFloat kCellContentHeight = 64.0;
 const CGFloat kCellContentSpacing = 14;
+const CGFloat kTableViewColumnSpacing = 8;
 // Notification icon's point size.
 const CGFloat kNotificationIconPointSize = 20;
 // The space in between elements in the vertical UIStackView element.
@@ -106,8 +107,8 @@ UIStackView* CreateHorizontalStack(TableViewItemStackContent content) {
         verticalStack, content.menu_button, content.track_button
       ]];
   horizontalStack.axis = UILayoutConstraintAxisHorizontal;
-  horizontalStack.spacing = kTableViewHorizontalSpacing;
-  horizontalStack.distribution = UIStackViewDistributionEqualSpacing;
+  horizontalStack.spacing = kTableViewColumnSpacing;
+  horizontalStack.distribution = UIStackViewDistributionFill;
   horizontalStack.alignment = UIStackViewAlignmentCenter;
   horizontalStack.translatesAutoresizingMaskIntoConstraints = NO;
 
@@ -339,12 +340,14 @@ UIStackView* CreateLoadingScreen(UIView* track_button, UIView* menu_button) {
   [super prepareForReuse];
   self.delegate = nil;
   self.loading = NO;
+  [self.trackButton setUserInteractionEnabled:YES];
 }
 
 #pragma mark - Private
 
 // Initiates the user's subscription to the product's price tracking events.
 - (void)trackItem {
+  [self.trackButton setUserInteractionEnabled:NO];
   [self.delegate trackItemForCell:self];
 }
 

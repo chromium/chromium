@@ -1,0 +1,45 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("almanac_api_client") {
+  sources = [
+    "almanac_api_util.cc",
+    "almanac_api_util.h",
+    "device_info_manager.cc",
+    "device_info_manager.h",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/apps:user_type_filter",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:channel_info",
+    "//chromeos/version",
+    "//components/language/core/browser",
+    "//components/prefs",
+    "//components/version_info",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "device_info_manager_unittest.cc" ]
+
+  deps = [
+    ":almanac_api_client",
+    "//base",
+    "//chrome/common:channel_info",
+    "//chrome/test:test_support",
+    "//components/language/core/browser",
+    "//components/prefs:prefs",
+    "//testing/gtest:gtest",
+  ]
+}

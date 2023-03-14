@@ -21,10 +21,3 @@ enum GPUBindingType {
     "multisampled-texture",
     "writeonly-storage-texture",
 };
-
-enum GPUTextureComponentType {
-    "float",
-    "sint",
-    "uint",
-    "depth-comparison"
-};

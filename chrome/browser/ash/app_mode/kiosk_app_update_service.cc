@@ -152,7 +152,14 @@ void KioskAppUpdateService::OnKioskAppCacheUpdated(const std::string& app_id) {
 }
 
 KioskAppUpdateServiceFactory::KioskAppUpdateServiceFactory()
-    : ProfileKeyedServiceFactory("KioskAppUpdateService") {
+    : ProfileKeyedServiceFactory(
+          "KioskAppUpdateService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
 }

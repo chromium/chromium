@@ -107,7 +107,7 @@
 </template>
 <template is="dom-if" if="[[showEditPasswordDialog_]]" restamp>
   <edit-password-dialog on-close="onEditPasswordDialogClosed_"
-      id="editPasswordDialog" password="[[item]]">
+      id="editPasswordDialog" credential="[[item]]" show-redirect>
   </edit-password-dialog>
 </template>
 <template is="dom-if" if="[[showDeletePasswordDialog_]]" restamp>

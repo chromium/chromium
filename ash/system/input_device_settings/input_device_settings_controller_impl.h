@@ -13,6 +13,9 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/system/input_device_settings/input_device_notifier.h"
 #include "ash/system/input_device_settings/pref_handlers/keyboard_pref_handler.h"
+#include "ash/system/input_device_settings/pref_handlers/mouse_pref_handler.h"
+#include "ash/system/input_device_settings/pref_handlers/pointing_stick_pref_handler.h"
+#include "ash/system/input_device_settings/pref_handlers/touchpad_pref_handler.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -28,8 +31,11 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
       public SessionObserver {
  public:
   InputDeviceSettingsControllerImpl();
-  explicit InputDeviceSettingsControllerImpl(
-      std::unique_ptr<KeyboardPrefHandler> keyboard_pref_handler);
+  InputDeviceSettingsControllerImpl(
+      std::unique_ptr<KeyboardPrefHandler> keyboard_pref_handler,
+      std::unique_ptr<TouchpadPrefHandler> touchpad_pref_handler,
+      std::unique_ptr<MousePrefHandler> mouse_pref_handler,
+      std::unique_ptr<PointingStickPrefHandler> pointing_stick_pref_handler);
   InputDeviceSettingsControllerImpl(const InputDeviceSettingsControllerImpl&) =
       delete;
   InputDeviceSettingsControllerImpl& operator=(
@@ -43,8 +49,19 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   std::vector<mojom::TouchpadPtr> GetConnectedTouchpads() override;
   std::vector<mojom::MousePtr> GetConnectedMice() override;
   std::vector<mojom::PointingStickPtr> GetConnectedPointingSticks() override;
+  const mojom::KeyboardSettings* GetKeyboardSettings(DeviceId id) override;
+  const mojom::MouseSettings* GetMouseSettings(DeviceId id) override;
+  const mojom::TouchpadSettings* GetTouchpadSettings(DeviceId id) override;
+  const mojom::PointingStickSettings* GetPointingStickSettings(
+      DeviceId id) override;
   void SetKeyboardSettings(DeviceId id,
-                           const mojom::KeyboardSettings& settings) override;
+                           mojom::KeyboardSettingsPtr settings) override;
+  void SetTouchpadSettings(DeviceId id,
+                           mojom::TouchpadSettingsPtr settings) override;
+  void SetMouseSettings(DeviceId id, mojom::MouseSettingsPtr settings) override;
+  void SetPointingStickSettings(
+      DeviceId id,
+      mojom::PointingStickSettingsPtr settings) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 
@@ -68,20 +85,27 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   void Init();
 
   void DispatchKeyboardConnected(DeviceId id);
-  void DispatchKeyboardDisconnected(DeviceId id);
+  void DispatchKeyboardDisconnectedAndEraseFromList(DeviceId id);
+  void DispatchKeyboardSettingsChanged(DeviceId id);
 
   void DispatchTouchpadConnected(DeviceId id);
-  void DispatchTouchpadDisconnected(DeviceId id);
+  void DispatchTouchpadDisconnectedAndEraseFromList(DeviceId id);
+  void DispatchTouchpadSettingsChanged(DeviceId id);
 
   void DispatchMouseConnected(DeviceId id);
-  void DispatchMouseDisconnected(DeviceId id);
+  void DispatchMouseDisconnectedAndEraseFromList(DeviceId id);
+  void DispatchMouseSettingsChanged(DeviceId id);
 
   void DispatchPointingStickConnected(DeviceId id);
-  void DispatchPointingStickDisconnected(DeviceId id);
+  void DispatchPointingStickDisconnectedAndEraseFromList(DeviceId id);
+  void DispatchPointingStickSettingsChanged(DeviceId id);
 
   base::ObserverList<InputDeviceSettingsController::Observer> observers_;
 
   std::unique_ptr<KeyboardPrefHandler> keyboard_pref_handler_;
+  std::unique_ptr<TouchpadPrefHandler> touchpad_pref_handler_;
+  std::unique_ptr<MousePrefHandler> mouse_pref_handler_;
+  std::unique_ptr<PointingStickPrefHandler> pointing_stick_pref_handler_;
 
   base::flat_map<DeviceId, mojom::KeyboardPtr> keyboards_;
   base::flat_map<DeviceId, mojom::TouchpadPtr> touchpads_;

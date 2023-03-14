@@ -20,7 +20,7 @@
 
 using base::UmaHistogramBoolean;
 
-namespace autofill {
+namespace autofill::autofill_metrics {
 
 namespace {
 
@@ -519,4 +519,4 @@ AutofillMetrics::FormEventSet FormEventLoggerBase::GetFormEvents(
   return form_events_set_[form_global_id];
 }
 
-}  // namespace autofill
+}  // namespace autofill::autofill_metrics

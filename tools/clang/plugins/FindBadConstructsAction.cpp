@@ -21,13 +21,9 @@ namespace {
 // - FilterFile
 const char kExcludeFieldsArgPrefix[] = "exclude-fields=";
 
-// Name of a cmdline parameter that can be used to specify a file listing
-// regular expressions describing paths that should be excluded from the
-// rewrite.
-//
-// See also:
-// - PathFilterFile
-const char kExcludePathsArgPrefix[] = "exclude-paths=";
+// Name of a cmdline parameter that can be used to add a regular expressions
+// that matches paths that should be excluded from the raw_ptr checks.
+const char kRawPtrExcludePathArgPrefix[] = "raw-ptr-exclude-path=";
 
 }  // namespace
 
@@ -65,9 +61,9 @@ bool FindBadConstructsAction::ParseArgs(const CompilerInstance& instance,
     if (arg.startswith(kExcludeFieldsArgPrefix)) {
       options_.exclude_fields_file =
           arg.substr(strlen(kExcludeFieldsArgPrefix)).str();
-    } else if (arg.startswith(kExcludePathsArgPrefix)) {
-      options_.exclude_paths_file =
-          arg.substr(strlen(kExcludePathsArgPrefix)).str();
+    } else if (arg.startswith(kRawPtrExcludePathArgPrefix)) {
+      options_.raw_ptr_paths_to_exclude_lines.push_back(
+          arg.substr(strlen(kRawPtrExcludePathArgPrefix)).str());
     } else if (arg == "check-base-classes") {
       // TODO(rsleevi): Remove this once http://crbug.com/123295 is fixed.
       options_.check_base_classes = true;

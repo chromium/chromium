@@ -7,14 +7,19 @@
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/mac/foundation_util.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_navigation_controller.h"
-#import "ios/chrome/browser/ui/bookmarks/folder_editor/bookmarks_folder_editor_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_coordinator.h"
+#import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_editor/bookmarks_folder_editor_view_controller.h"
-#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -22,6 +27,7 @@
 
 @interface BookmarksFolderEditorCoordinator () <
     BookmarksFolderEditorViewControllerDelegate,
+    BookmarksFolderChooserCoordinatorDelegate,
     UIAdaptivePresentationControllerDelegate> {
   // The navigation controller is `nullptr` if the folder chooser view
   // controller is pushed into the base navigation controller.
@@ -29,6 +35,8 @@
   // controller.
   UINavigationController* _navigationController;
   BookmarksFolderEditorViewController* _viewController;
+  // Coordinator to show the folder chooser UI.
+  BookmarksFolderChooserCoordinator* _folderChooserCoordinator;
   // `_parentFolderNode` is only used when a new folder is added. The new
   // folder should be added in `_parentFolderNode`. If `_parentFolderNode` is
   // `nullptr`, then the new folder needs to be added in the default folder.
@@ -74,15 +82,21 @@
 - (void)start {
   [super start];
   // TODO(crbug.com/1402758): Create a mediator.
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
   bookmarks::BookmarkModel* model =
-      ios::BookmarkModelFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      ios::BookmarkModelFactory::GetForBrowserState(browserState);
+  SyncSetupService* syncSetupService =
+      SyncSetupServiceFactory::GetForBrowserState(browserState);
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(browserState);
   if (_baseNavigationController) {
     DCHECK(!_folderNode);
     _viewController = [BookmarksFolderEditorViewController
         folderCreatorWithBookmarkModel:model
                           parentFolder:_parentFolderNode
-                               browser:self.browser];
+                               browser:self.browser
+                      syncSetupService:syncSetupService
+                           syncService:syncService];
     _viewController.delegate = self;
     _viewController.snackbarCommandsHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), SnackbarCommands);
@@ -94,14 +108,16 @@
     _viewController = [BookmarksFolderEditorViewController
         folderEditorWithBookmarkModel:model
                                folder:_folderNode
-                              browser:self.browser];
+                              browser:self.browser
+                     syncSetupService:syncSetupService
+                          syncService:syncService];
     _viewController.delegate = self;
     _viewController.snackbarCommandsHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), SnackbarCommands);
     _navigationController = [[BookmarkNavigationController alloc]
         initWithRootViewController:_viewController];
-    _navigationController.presentationController.delegate = self;
     _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    _navigationController.presentationController.delegate = self;
 
     [self.baseViewController presentViewController:_navigationController
                                           animated:YES
@@ -111,6 +127,8 @@
 
 - (void)stop {
   [super stop];
+  // Stop child coordinator before stopping `self`.
+  [self stopBookmarksFolderChooserCoordinator];
 
   DCHECK(_viewController);
   if (_baseNavigationController) {
@@ -122,14 +140,13 @@
   } else {
     // If there is no `_baseNavigationController` and `_navigationController`,
     // the view controller has been already dismissed. See
-    // `presentationControllerDidDismiss:`.
+    // `presentationControllerDidDismiss:` and
+    // `bookmarksFolderEditorDidDismiss:`.
     // Therefore `self.baseViewController.presentedViewController` must be
-    // `nullptr`. This should only happend when the user is editing an existing
-    // folder node.
+    // `nullptr`.
     DCHECK(!self.baseViewController.presentedViewController);
-    DCHECK(_folderNode);
-    DCHECK(!_parentFolderNode);
   }
+  [_viewController disconnect];
   _viewController = nil;
 }
 
@@ -139,6 +156,25 @@
 }
 
 #pragma mark - BookmarksFolderEditorViewControllerDelegate
+
+- (void)showBookmarksFolderChooserWithParentFolder:
+            (const bookmarks::BookmarkNode*)parent
+                                       hiddenNodes:
+                                           (const std::set<
+                                               const bookmarks::BookmarkNode*>&)
+                                               hiddenNodes {
+  DCHECK(!_folderChooserCoordinator);
+  _folderChooserCoordinator = [[BookmarksFolderChooserCoordinator alloc]
+      initWithBaseNavigationController:(_baseNavigationController
+                                            ? _baseNavigationController
+                                            : _navigationController)
+                               browser:self.browser
+                           hiddenNodes:hiddenNodes];
+  _folderChooserCoordinator.allowsNewFolders = NO;
+  [_folderChooserCoordinator setSelectedFolder:parent];
+  _folderChooserCoordinator.delegate = self;
+  [_folderChooserCoordinator start];
+}
 
 - (void)bookmarksFolderEditor:(BookmarksFolderEditorViewController*)folderEditor
        didFinishEditingFolder:(const bookmarks::BookmarkNode*)folder {
@@ -160,15 +196,43 @@
   [_delegate bookmarksFolderEditorCoordinatorShouldStop:self];
 }
 
+- (void)bookmarksFolderEditorDidDismiss:
+    (BookmarksFolderEditorViewController*)folderEditor {
+  DCHECK(_baseNavigationController);
+  _baseNavigationController = nil;
+  [_delegate bookmarksFolderEditorCoordinatorShouldStop:self];
+}
+
 - (void)bookmarksFolderEditorWillCommitTitleChange:
     (BookmarksFolderEditorViewController*)controller {
   [_delegate bookmarksFolderEditorWillCommitTitleChange:self];
+}
+
+#pragma mark - BookmarksFolderChooserCoordinatorDelegate
+
+- (void)bookmarksFolderChooserCoordinatorDidConfirm:
+            (BookmarksFolderChooserCoordinator*)coordinator
+                                 withSelectedFolder:
+                                     (const bookmarks::BookmarkNode*)folder {
+  DCHECK(_folderChooserCoordinator);
+  DCHECK(folder);
+  [self stopBookmarksFolderChooserCoordinator];
+
+  [_viewController updateParentFolder:folder];
+}
+
+- (void)bookmarksFolderChooserCoordinatorDidCancel:
+    (BookmarksFolderChooserCoordinator*)coordinator {
+  DCHECK(_folderChooserCoordinator);
+  [self stopBookmarksFolderChooserCoordinator];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
 - (void)presentationControllerDidAttemptToDismiss:
     (UIPresentationController*)presentationController {
+  base::RecordAction(
+      base::UserMetricsAction("IOSBookmarksFolderEditorClosedWithSwipeDown"));
   [_viewController presentationControllerDidAttemptToDismiss];
 }
 
@@ -189,6 +253,14 @@
 - (BOOL)presentationControllerShouldDismiss:
     (UIPresentationController*)presentationController {
   return [self canDismiss];
+}
+
+#pragma mark - Private
+
+- (void)stopBookmarksFolderChooserCoordinator {
+  [_folderChooserCoordinator stop];
+  _folderChooserCoordinator.delegate = nil;
+  _folderChooserCoordinator = nil;
 }
 
 @end

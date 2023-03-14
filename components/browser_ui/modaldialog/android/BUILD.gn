@@ -4,17 +4,37 @@
 
 import("//build/config/android/rules.gni")
 
+generate_jni("modaldialog_jni_headers") {
+  sources = [ "java/src/org/chromium/components/browser_ui/modaldialog/ModalDialogFeatureList.java" ]
+}
+
+source_set("android") {
+  sources = [
+    "features.cc",
+    "features.h",
+    "modaldialog_feature_list.cc",
+  ]
+  deps = [
+    ":modaldialog_jni_headers",
+    "//base",
+  ]
+}
+
 android_library("java") {
   sources = [
     "java/src/org/chromium/components/browser_ui/modaldialog/AppModalPresenter.java",
+    "java/src/org/chromium/components/browser_ui/modaldialog/ModalDialogFeatureList.java",
     "java/src/org/chromium/components/browser_ui/modaldialog/ModalDialogView.java",
     "java/src/org/chromium/components/browser_ui/modaldialog/ModalDialogViewBinder.java",
     "java/src/org/chromium/components/browser_ui/modaldialog/TabModalPresenter.java",
   ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
   deps = [
     ":java_resources",
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//content/public/android:content_java",
@@ -76,6 +96,7 @@ android_library("unit_device_javatests") {
     ":java",
     ":java_resources",
     ":test_support_java",
+    "//base:base_java",
     "//base:base_java_test_support",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:espresso_java",

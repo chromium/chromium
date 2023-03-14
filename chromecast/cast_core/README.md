@@ -6,6 +6,8 @@ Cast Core library.
 
 # Local Testing
 
+### The below instructions are intended for Googlers only!
+
 ## Build
 
 Building of this directory can be done by building the

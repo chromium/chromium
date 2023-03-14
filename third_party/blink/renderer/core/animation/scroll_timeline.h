@@ -68,10 +68,16 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
                  ScrollAxis axis);
 
   bool IsScrollTimeline() const override { return true; }
-  // ScrollTimeline is not active if source is null, does not currently
+
+  // ScrollTimeline is not resolved if source is null, does not currently
   // have a CSS layout box, or if its layout box is not a scroll container.
+  bool IsResolved() const override { return is_resolved_; }
+
+  // ScrollTimeline is not active if not resolved or if the current time is
+  // unresolved (e.g. before the timeline ticks).
   // https://github.com/WICG/scroll-animations/issues/31
   bool IsActive() const override;
+
   absl::optional<base::TimeDelta> InitialStartTimeForAnimations() override;
   AnimationTimeDelta CalculateIntrinsicIterationDuration(
       const Animation*,
@@ -131,9 +137,10 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
     return absl::make_optional(ANIMATION_TIME_DELTA_FROM_SECONDS(100));
   }
 
-  AnimationTimeline::TimeDelayPair ComputeEffectiveAnimationDelays(
-      const Animation* animation,
-      const Timing& timing) const override;
+  // Called when forcing a style update in response to a web-animations API call
+  // that require a fresh style (e.g. getKeyframes) Resolves scroll offsets and
+  // the resolved source so that timeline offsets can be properly computed.
+  virtual void FlushStyleUpdate();
 
  protected:
   PhaseAndTime CurrentPhaseAndTime() override;
@@ -161,14 +168,14 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
       ScrollOrientation physical_orientation) const;
 
   // ScrollSnapshotClient:
+  // https://wicg.github.io/scroll-animations/#avoiding-cycles
+  // Snapshots scroll timeline current time and phase.
+  // Called once per animation frame.
   void UpdateSnapshot() override;
   bool ValidateSnapshot() override;
   bool ShouldScheduleNextService() override;
 
-  // https://wicg.github.io/scroll-animations/#avoiding-cycles
-  // Snapshots scroll timeline current time and phase.
-  // Called once per animation frame.
-  bool ComputeIsActive() const;
+  bool ComputeIsResolved() const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ScrollTimelineTest, MultipleScrollOffsetsClamping);
@@ -193,6 +200,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   Member<Element> reference_element_;
   Member<Node> resolved_source_;
   ScrollAxis axis_;
+  bool is_resolved_ = false;
 
   // Snapshotted value produced by the last SnapshotState call.
   TimelineState timeline_state_snapshotted_;

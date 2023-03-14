@@ -51,7 +51,6 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/display/test/scoped_screen_override.h"
 #include "ui/display/test/test_screen.h"
 
 namespace app_list {
@@ -191,10 +190,12 @@ std::unique_ptr<ui::SimpleMenuModel> GetMenuModel(
 
 class AppContextMenuTest : public AppListTestBase {
  public:
-  AppContextMenuTest() : screen_override_(&test_screen_) {}
+  AppContextMenuTest() { display::Screen::SetScreenInstance(&test_screen_); }
   AppContextMenuTest(const AppContextMenuTest&) = delete;
   AppContextMenuTest& operator=(const AppContextMenuTest&) = delete;
-  ~AppContextMenuTest() override = default;
+  ~AppContextMenuTest() override {
+    display::Screen::SetScreenInstance(nullptr);
+  }
 
   void SetUp() override {
     AppListTestBase::SetUp();
@@ -370,7 +371,6 @@ class AppContextMenuTest : public AppListTestBase {
  private:
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   display::test::TestScreen test_screen_;
-  display::test::ScopedScreenOverride screen_override_;
   std::unique_ptr<KeyedService> menu_manager_;
   std::unique_ptr<FakeAppListControllerDelegate> controller_;
   std::unique_ptr<FakeAppContextMenuDelegate> menu_delegate_;

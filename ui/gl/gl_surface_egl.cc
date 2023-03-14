@@ -174,8 +174,7 @@ EGLConfig ChooseConfig(EGLDisplay display,
   // On X this is only used for PBuffer surfaces.
 
   std::vector<EGLint> renderable_types;
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableES3GLContext)) {
+  if (!GetGlWorkarounds().disable_es3gl_context) {
     renderable_types.push_back(EGL_OPENGL_ES3_BIT);
   }
   renderable_types.push_back(EGL_OPENGL_ES2_BIT);
@@ -1011,17 +1010,6 @@ gfx::SwapResult NativeViewGLSurfaceEGL::PostSubBuffer(
   return scoped_swap_buffers.result();
 }
 
-bool NativeViewGLSurfaceEGL::SupportsCommitOverlayPlanes() {
-  return false;
-}
-
-gfx::SwapResult NativeViewGLSurfaceEGL::CommitOverlayPlanes(
-    PresentationCallback callback,
-    gfx::FrameData data) {
-  NOTREACHED();
-  return gfx::SwapResult::SWAP_FAILED;
-}
-
 bool NativeViewGLSurfaceEGL::OnMakeCurrent(GLContext* context) {
   if (presentation_helper_)
     presentation_helper_->OnMakeCurrent(context, this);
@@ -1040,14 +1028,6 @@ void NativeViewGLSurfaceEGL::SetVSyncEnabled(bool enabled) {
     LOG(ERROR) << "eglSwapInterval failed with error "
                << GetLastEGLErrorString();
   }
-}
-
-bool NativeViewGLSurfaceEGL::ScheduleOverlayPlane(
-    OverlayImage image,
-    std::unique_ptr<gfx::GpuFence> gpu_fence,
-    const gfx::OverlayPlaneData& overlay_plane_data) {
-  NOTIMPLEMENTED();
-  return false;
 }
 
 NativeViewGLSurfaceEGL::~NativeViewGLSurfaceEGL() {

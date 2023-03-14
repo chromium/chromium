@@ -19,14 +19,15 @@ import node
 import node_modules
 
 from path_mappings import GetDepToPathMappings
-from validate_tsconfig import validateTsconfigJson, validateJavaScriptAllowed, validateRootDir
+from validate_tsconfig import validateTsconfigJson, validateJavaScriptAllowed, validateRootDir, isUnsupportedJsTarget
 
 
 def _write_tsconfig_json(gen_dir, tsconfig, tsconfig_file):
   if not os.path.exists(gen_dir):
     os.makedirs(gen_dir)
 
-  with open(os.path.join(gen_dir, tsconfig_file), 'w') as generated_tsconfig:
+  with open(os.path.join(gen_dir, tsconfig_file), 'w',
+            encoding='utf-8') as generated_tsconfig:
     json.dump(tsconfig, generated_tsconfig, indent=2)
   return
 
@@ -46,8 +47,9 @@ def main(argv):
   parser.add_argument('--manifest_excludes', nargs='*')
   parser.add_argument('--definitions', nargs='*')
   parser.add_argument('--composite', action='store_true')
-  parser.add_argument('--allow_js', action='store_true')
-  parser.add_argument('--is_ios', action='store_true')
+  parser.add_argument('--platform',
+                      choices=['other', 'ios', 'chromeos_ash'],
+                      default='other')
   parser.add_argument('--enable_source_maps', action='store_true')
   parser.add_argument('--output_suffix', required=True)
   args = parser.parse_args(argv)
@@ -56,7 +58,8 @@ def main(argv):
   out_dir = os.path.relpath(args.out_dir, args.gen_dir)
 
   is_root_dir_valid, error = validateRootDir(args.root_dir, args.gen_dir,
-                                             args.root_gen_dir, args.is_ios)
+                                             args.root_gen_dir,
+                                             args.platform == 'ios')
   if not is_root_dir_valid:
     raise AssertionError(error)
 
@@ -76,9 +79,11 @@ def main(argv):
   with io.open(tsconfig_base_file, encoding='utf-8', mode='r') as f:
     tsconfig_base = json.loads(f.read())
 
+    is_base_tsconfig = args.tsconfig_base is None or \
+        args.tsconfig_base.endswith('/tools/typescript/tsconfig_base.json')
     is_tsconfig_valid, error = validateTsconfigJson(tsconfig_base,
                                                     tsconfig_base_file,
-                                                    args.tsconfig_base is None)
+                                                    is_base_tsconfig)
     if not is_tsconfig_valid:
       raise AssertionError(error)
 
@@ -108,13 +113,19 @@ def main(argv):
   tsconfig['compilerOptions']['rootDir'] = root_dir
   tsconfig['compilerOptions']['outDir'] = out_dir
 
-  if args.allow_js:
+  includes_js = False
+  if (args.in_files):
+    for file in args.in_files:
+      if file.endswith('.js'):
+        includes_js = True
+
+  if includes_js or isUnsupportedJsTarget(args.gen_dir, args.root_gen_dir):
     source_dir = os.path.realpath(os.path.join(_CWD, args.gen_dir,
                                                root_dir)).replace('\\', '/')
     out_dir = os.path.realpath(os.path.join(_CWD, args.gen_dir,
                                             out_dir)).replace('\\', '/')
     is_js_allowed, error = validateJavaScriptAllowed(source_dir, out_dir,
-                                                     args.is_ios)
+                                                     args.platform == 'ios')
     if not is_js_allowed:
       raise AssertionError(error)
     tsconfig['compilerOptions']['allowJs'] = True
@@ -149,13 +160,17 @@ def main(argv):
     tsconfig['references'] = [{'path': dep} for dep in args.deps]
 
     assert args.raw_deps is not None
-    dep_to_path_mappings = GetDepToPathMappings(args.root_gen_dir)
+    dep_to_path_mappings = GetDepToPathMappings(args.root_gen_dir,
+                                                args.platform)
 
     for dep in args.raw_deps:
       if dep not in dep_to_path_mappings:
-        assert not (dep.startswith("//ui/webui/resources")
-                    and dep.endswith(':build_ts'))
-        # Dependencies outside of ui/webui/resources are not inferred yet.
+        assert not dep.startswith("//ui/webui/resources"), \
+            f'Missing path mapping for \'{dep}\'. Update ' \
+            '//tools/typescript/path_mappings.py accordingly.'
+
+        # Path mappings outside of //ui/webui/resources are not inferred from
+        # |args.deps| yet.
         continue
 
       mappings = dep_to_path_mappings[dep]
@@ -237,7 +252,7 @@ def main(argv):
   if args.in_files is not None:
 
     manifest_path = os.path.join(args.gen_dir, f'{args.output_suffix}.manifest')
-    with open(manifest_path, 'w') as manifest_file:
+    with open(manifest_path, 'w', encoding='utf-8') as manifest_file:
       manifest_data = {}
       manifest_data['base_dir'] = args.out_dir
       manifest_files = args.in_files

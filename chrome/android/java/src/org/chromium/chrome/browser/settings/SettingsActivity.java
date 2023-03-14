@@ -109,7 +109,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
          */
         boolean onBackPressed();
     }
-    static final String EXTRA_SHOW_FRAGMENT = "show_fragment";
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public static final String EXTRA_SHOW_FRAGMENT = "show_fragment";
     static final String EXTRA_SHOW_FRAGMENT_ARGUMENTS = "show_fragment_args";
 
     /** The current instance of SettingsActivity in the resumed state, if any. */

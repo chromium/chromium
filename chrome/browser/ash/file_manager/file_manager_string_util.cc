@@ -32,6 +32,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -828,6 +829,9 @@ void AddStringsGeneric(base::Value::Dict* dict) {
              IDS_FILE_BROWSER_SEARCH_NO_MATCHING_RESULTS_TITLE);
   SET_STRING("SEARCH_NO_MATCHING_RESULTS_DESC",
              IDS_FILE_BROWSER_SEARCH_NO_MATCHING_RESULTS_DESC);
+  SET_STRING("SEARCH_RESULTS_LABEL", IDS_FILE_BROWSER_SEARCH_RESULTS_LABEL);
+  SET_STRING("SEARCH_V2_EDUCATION_NUDGE",
+             IDS_FILE_BROWSER_SEARCH_V2_EDUCATION_NUDGE);
 
   SET_STRING("SELECT_ALL_COMMAND_LABEL",
              IDS_FILE_BROWSER_SELECT_ALL_COMMAND_LABEL);
@@ -921,6 +925,8 @@ void AddStringsGeneric(base::Value::Dict* dict) {
   SET_STRING("SELECTION_ADD_RANGE", IDS_FILE_BROWSER_SELECTION_ADD_RANGE);
   SET_STRING("SELECTION_CANCELLATION", IDS_FILE_BROWSER_SELECTION_CANCELLATION);
   SET_STRING("SELECTION_ALL_ENTRIES", IDS_FILE_BROWSER_SELECTION_ALL_ENTRIES);
+  SET_STRING("CURRENT_DIRECTORY_LABEL",
+             IDS_FILE_BROWSER_CURRENT_DIRECTORY_LABEL);
   SET_STRING("SIZE_GB", IDS_FILE_BROWSER_SIZE_GB);
   SET_STRING("SIZE_KB", IDS_FILE_BROWSER_SIZE_KB);
   SET_STRING("SIZE_MB", IDS_FILE_BROWSER_SIZE_MB);
@@ -1206,7 +1212,7 @@ void AddFileManagerFeatureStrings(const std::string& locale,
 
   dict->Set("GUEST_OS", true);
 
-  dict->Set("JELLY", base::FeatureList::IsEnabled(ash::features::kJelly));
+  dict->Set("JELLY", chromeos::features::IsJellyEnabled());
 
   dict->Set("DRIVE_SHORTCUTS",
             base::FeatureList::IsEnabled(ash::features::kFilesDriveShortcuts));

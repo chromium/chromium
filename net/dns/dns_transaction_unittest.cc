@@ -95,8 +95,9 @@ class NetLogCountingObserver : public net::NetLog::ThreadSafeObserver {
 
   void OnAddEntry(const NetLogEntry& entry) override {
     ++count_;
-    if (!entry.params.is_none() && entry.params.is_dict())
+    if (!entry.params.empty()) {
       dict_count_++;
+    }
   }
 
   int count() const { return count_; }
@@ -1224,6 +1225,30 @@ TEST_F(DnsTransactionTest, MismatchedResponseNxdomain) {
   TransactionHelper helper0(ERR_NAME_NOT_RESOLVED);
   helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
                            false /* secure */, resolve_context_.get());
+  helper0.RunUntilComplete();
+}
+
+// This is a regression test for https://crbug.com/1410442.
+TEST_F(DnsTransactionTest, ZeroSizeResponseAsync) {
+  config_.attempts = 2;
+  ConfigureFactory();
+
+  // First attempt receives zero size response asynchronously.
+  auto data0 = std::make_unique<DnsSocketData>(/*id=*/0, kT0HostName, kT0Qtype,
+                                               ASYNC, Transport::UDP);
+  data0->AddReadError(0, ASYNC);
+  AddSocketData(std::move(data0));
+
+  // Second attempt receives valid response asynchronously.
+  auto data1 = std::make_unique<DnsSocketData>(/*id=*/0, kT0HostName, kT0Qtype,
+                                               ASYNC, Transport::UDP);
+  data1->AddResponseData(kT0ResponseDatagram, std::size(kT0ResponseDatagram),
+                         ASYNC);
+  AddSocketData(std::move(data1));
+
+  TransactionHelper helper0(kT0RecordCount);
+  helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
+                           /*secure=*/false, resolve_context_.get());
   helper0.RunUntilComplete();
 }
 
@@ -2602,8 +2627,8 @@ TEST_F(DnsTransactionTest, HttpsPostLookupWithLog) {
                            true /* secure */, resolve_context_.get());
   helper0.RunUntilComplete();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(observer.count(), 14);
-  EXPECT_EQ(observer.dict_count(), 6);
+  EXPECT_EQ(observer.count(), 18);
+  EXPECT_EQ(observer.dict_count(), 9);
 }
 
 // Test for when a slow DoH response is delayed until after the initial fallback

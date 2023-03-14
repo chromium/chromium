@@ -74,6 +74,9 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView,
 
   ~PrivacyIndicatorsTrayItemView() override;
 
+  views::ImageView* camera_icon() { return camera_icon_; }
+  views::ImageView* microphone_icon() { return microphone_icon_; }
+
   // Update the view according to the state of camara/microphone access.
   void Update(const std::string& app_id,
               bool is_camera_used,
@@ -103,6 +106,10 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView,
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
   void AnimationCanceled(const gfx::Animation* animation) override;
+
+  // Performs a sequence of expand, dwell, and then shrink animations to notify
+  // users about the usage of camera, microphone, and screen sharing.
+  void PerformAnimation();
 
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;

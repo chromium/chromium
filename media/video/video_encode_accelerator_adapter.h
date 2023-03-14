@@ -65,7 +65,7 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
                   OutputCB output_cb,
                   EncoderStatusCB done_cb) override;
   void Encode(scoped_refptr<VideoFrame> frame,
-              bool key_frame,
+              const EncodeOptions& encode_options,
               EncoderStatusCB done_cb) override;
   void ChangeOptions(const Options& options,
                      OutputCB output_cb,
@@ -115,7 +115,7 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
                                      EncoderStatusCB done_cb);
   void InitializeInternalOnAcceleratorThread();
   void EncodeOnAcceleratorThread(scoped_refptr<VideoFrame> frame,
-                                 bool key_frame,
+                                 const EncodeOptions& encode_options,
                                  EncoderStatusCB done_cb);
   void FlushOnAcceleratorThread(EncoderStatusCB done_cb);
   void ChangeOptionsOnAcceleratorThread(const Options options,

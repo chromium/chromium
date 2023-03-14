@@ -18,6 +18,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "mojo/buildflags.h"
 #include "mojo/core/connection_params.h"
 #include "mojo/core/platform_handle_in_transit.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
@@ -146,7 +147,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
       uint32_t num_bytes;
     };
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
     struct MachPortsEntry {
       // The PlatformHandle::Type.
       uint8_t type;
@@ -327,10 +328,12 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
   Channel(const Channel&) = delete;
   Channel& operator=(const Channel&) = delete;
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL) && \
+    !BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
   // At this point only ChannelPosix needs InitFeatures.
   static void set_posix_use_writev(bool use_writev);
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL) &&
+        // !BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
 
   static void set_use_trivial_messages(bool use_trivial_messages);
 

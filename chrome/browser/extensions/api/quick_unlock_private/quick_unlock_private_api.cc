@@ -217,7 +217,7 @@ QuickUnlockPrivateGetAuthTokenFunction::
 
 ExtensionFunction::ResponseAction
 QuickUnlockPrivateGetAuthTokenFunction::Run() {
-  std::unique_ptr<quick_unlock_private::GetAuthToken::Params> params =
+  absl::optional<quick_unlock_private::GetAuthToken::Params> params =
       quick_unlock_private::GetAuthToken::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -399,7 +399,7 @@ QuickUnlockPrivateCheckCredentialFunction::
 
 ExtensionFunction::ResponseAction
 QuickUnlockPrivateCheckCredentialFunction::Run() {
-  std::unique_ptr<CheckCredential::Params> params_ =
+  absl::optional<CheckCredential::Params> params_ =
       CheckCredential::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_);
 
@@ -446,7 +446,7 @@ QuickUnlockPrivateGetCredentialRequirementsFunction::
 
 ExtensionFunction::ResponseAction
 QuickUnlockPrivateGetCredentialRequirementsFunction::Run() {
-  std::unique_ptr<GetCredentialRequirements::Params> params_ =
+  absl::optional<GetCredentialRequirements::Params> params_ =
       GetCredentialRequirements::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_);
 

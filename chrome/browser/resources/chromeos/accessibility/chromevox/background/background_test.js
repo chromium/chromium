@@ -581,7 +581,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'ShouldNotFocusIframe', async function() {
   iframe.addEventListener('focus', function() {
     didFocus = true;
   });
-  ChromeVoxState.instance.currentRange_ = CursorRange.fromNode(button);
+  ChromeVoxRange.instance.current_ = CursorRange.fromNode(button);
   doCmd('previousElement');
   assertFalse(didFocus);
 });
@@ -602,7 +602,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'ShouldFocusLink', async function() {
   link.addEventListener('focus', this.newCallback(function() {
     // Success
   }));
-  ChromeVoxState.instance.currentRange_ = CursorRange.fromNode(button);
+  ChromeVoxRange.instance.current_ = CursorRange.fromNode(button);
   doCmd('previousElement');
 });
 
@@ -1023,12 +1023,8 @@ AX_TEST_F(
     </div>
   `;
       const root = await this.runWithLoadedTree(site);
-      const assertRangeHasText = function(text) {
-        return function() {
-          assertEquals(
-              text, ChromeVoxState.instance.getCurrentRange().start.node.name);
-        };
-      };
+      const assertRangeHasText = (text) => () =>
+          assertEquals(text, ChromeVoxRange.current.start.node.name);
 
       mockFeedback.call(doCmd('nextEditText'))
           .expectSpeech('Top News Most Popular Sports')
@@ -3026,7 +3022,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'AlertNoAnnouncement', async function() {
   const button = root.find({role: RoleType.BUTTON});
   const alertEvt = new CustomAutomationEvent(EventType.ALERT, button);
   mockFeedback
-      .call(DesktopAutomationInterface.instance.onAlert.bind(
+      .call(DesktopAutomationInterface.instance.onAlert_.bind(
           DesktopAutomationInterface.instance, alertEvt))
       .call(() => assertFalse(mockFeedback.utteranceInQueue('Alert')));
   await mockFeedback.replay();
@@ -3044,7 +3040,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'AlertAnnouncement', async function() {
   const button = root.find({role: RoleType.BUTTON});
   const alertEvt = new CustomAutomationEvent(EventType.ALERT, button);
   mockFeedback
-      .call(DesktopAutomationInterface.instance.onAlert.bind(
+      .call(DesktopAutomationInterface.instance.onAlert_.bind(
           DesktopAutomationInterface.instance, alertEvt))
       .expectNextSpeechUtteranceIsNot('Alert')
       .expectSpeech('hello world');
@@ -3520,11 +3516,9 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'FocusAfterClick', async function() {
       .expectSpeech('Click me')
       .call(doCmd('forceClickOnCurrentItem'))
       .expectSpeech('Focus me')
-      .call(() => {
-        assertEquals(
-            'Focus me',
-            ChromeVoxState.instance.getCurrentRange().start.node.name);
-      });
+      .call(
+          () =>
+              assertEquals('Focus me', ChromeVoxRange.current.start.node.name));
   await mockFeedback.replay();
 });
 

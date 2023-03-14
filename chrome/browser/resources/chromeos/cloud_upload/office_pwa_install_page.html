@@ -26,8 +26,19 @@
   .installed::before {
     -webkit-mask-image: url(icons/check.svg);
   }
+
+  cr-button {
+    border-radius: 16px;
+  }
+
+  cr-button:focus-visible {
+    /* disable cr-button default keyboard focus style */
+    box-shadow: none;
+    outline: 2px solid var(--cros-focus-ring-color);
+    outline-offset: 2px;
+  }
 </style>
-<svg slot="header-image">
+<svg slot="header-image" viewBox="0 0 448 200">
   <use href="images/install_office.svg#EXPORT_image"></use>
 </svg>
 <div slot="title">
@@ -35,8 +46,8 @@
 </div>
 <div slot="body">
   <p>
-    Open, edit, save, and share Word, Excel, and PowerPoint files in the
-    Microsoft 365 app. A subscription may be required for some features.
+    Open, edit, and save Word, Excel, and PowerPoint files.
+    A subscription may be required for some features.
   </p>
 </div>
 <div slot="button-container">

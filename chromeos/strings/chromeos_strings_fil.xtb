@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">Napakabilis (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2364498172489649528">Nakapasa</translation>
+<translation id="2367335866686097760">Key para sa keymapping</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Magpadala ng Ulat ng Feedback</translation>
 <translation id="2407209115954268704">Status ng Lock ng SIM</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">Pinalitan ang larawan ng avatar</translation>
 <translation id="3192947282887913208">Mga Audio File</translation>
 <translation id="3199982728237701504">Document Feeder (Dalawang bahagi)</translation>
+<translation id="3211671540163313381">D-pad para sa keymapping</translation>
 <translation id="3226405216343213872">Naghahanap ng mga scanner</translation>
+<translation id="3226657629376379887">Menu ng mga pagkilos sa layout</translation>
 <translation id="3246869037381808805">Aalisin ang mga pag-print na lampas 1 araw na</translation>
 <translation id="3268178239013324452">Hindi na-print - Nakabukas ang takip</translation>
 <translation id="3275729367986477355">Larawan ng avatar</translation>
@@ -253,6 +256,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Seguridad</translation>
 <translation id="3435896845095436175">I-enable</translation>
+<translation id="345256797477978759">I-dock ang window sa mas malaking bahagi sa <ph name="DIRECTION" /> ng screen</translation>
 <translation id="3456078764689556234">Na-print ang page <ph name="PRINTED_PAGES" /> sa <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Sina-scan ang pahina <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% na ang natapos.</translation>
 <translation id="3459509316159669723">Pagpi-print</translation>
@@ -273,12 +277,14 @@
 <translation id="3595596368722241419">Puno na ang baterya</translation>
 <translation id="3600339377155080675">Mirror ng screen</translation>
 <translation id="3602290021589620013">I-preview</translation>
+<translation id="360282891121575443">Puwedeng i-update ng iba pang user ang mga larawan sa mga naka-share na album. Ang palitan araw-araw ay posibleng magpakita ng mga wallpaper na kasalukuyang wala sa album.</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Palitan ang wallpaper</translation>
 <translation id="360565022852130722">Naka-secure ang WiFi network gamit ang mahinang protocol na WEP 802.1x</translation>
 <translation id="3606583719724308068">Mataas ang latency sa mga HTTPS na website</translation>
 <translation id="361575905210396100">Salamat sa iyong feedback</translation>
 <translation id="3632579075709132555">Toggle ng Privacy screen</translation>
+<translation id="3639846061339007994">itaas</translation>
 <translation id="3651050199673793219">Pumili ng unit ng temperatura</translation>
 <translation id="3689839747745352263">Pagsusuri sa <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Naglo-load...</translation>
@@ -520,6 +526,7 @@
 <translation id="576835345334454681">Taasan ang liwanag ng display</translation>
 <translation id="57838592816432529">I-mute</translation>
 <translation id="5784136236926853061">Mataas na latency ng HTTP</translation>
+<translation id="5826644637650799838">Tungkol sa sining</translation>
 <translation id="5832805196449965646">Magdagdag ng Tao</translation>
 <translation id="583281660410589416">Hindi-alam</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
@@ -562,6 +569,7 @@
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> pang album</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Serbisyo ng Pamamaraan ng Pag-input ng ChromeOS</translation>
+<translation id="6136285399872347291">backspace</translation>
 <translation id="6137767437444130246">Certificate ng user</translation>
 <translation id="6146993107019042706">Para tapusin, ilagay ang bago mong password</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -609,6 +617,7 @@
 <translation id="650266656685499220">Para gumawa ng mga album, pumunta sa Google Photos</translation>
 <translation id="6516990319416533844">Para masubukan ang rate ng pag-charge ng baterya, gumamit ng malaking porsyento ng baterya sa maikling panahon</translation>
 <translation id="6517239166834772319">Explore</translation>
+<translation id="6526200165918397681">Itugma sa wallpaper</translation>
 <translation id="6527081081771465939">Hindi alam na panseguridad na protocol ng WiFi</translation>
 <translation id="6535178685492749208">Offline ka. Ipapadala ang feedback sa ibang pagkakataon.</translation>
 <translation id="65587193855025101">Flatbed</translation>
@@ -628,6 +637,7 @@
 <translation id="6657585470893396449">Password</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6692996468359469499">Kumuha ng impormasyon kaugnay ng iyong pinili</translation>
+<translation id="6698459586333070823">Puwedeng i-update ng iba pang user ang mga naka-share na album</translation>
 <translation id="6704062477274546131">Resolution ng DNS</translation>
 <translation id="6723839937902243910">Power</translation>
 <translation id="6723847290197874913">Backlight ng keyboard</translation>
@@ -664,6 +674,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Nabigo - Hindi Nabigyan ng Pahintulot</translation>
 <translation id="7103252855940681301">Device <ph name="INDEX" /> sa <ph name="COUNT" /> na nagngangalang <ph name="NAME" />.</translation>
+<translation id="7108668606237948702">enter</translation>
 <translation id="7130438335435247835">Access point name (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Name server}one{Mga name server}other{Mga name server}}</translation>
 <translation id="7143207342074048698">Kumokonekta</translation>
@@ -673,6 +684,7 @@
 <translation id="7155171745945906037">Kasalukuyang larawan mula sa camera o file</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7170236477717446850">Larawan sa profile</translation>
+<translation id="7171919371520438592">I-dock ang window sa mas maliit na bahagi sa <ph name="DIRECTION" /> ng screen</translation>
 <translation id="7172721935181587524">1 Larawan</translation>
 <translation id="7177485034254901881">Pinapamahalaan ng <ph name="MANAGER" /> ang <ph name="DEVICE_TYPE" /> na ito. Puwedeng i-configure ng mga administrator ang device sa remote na paraan.</translation>
 <translation id="7180611975245234373">I-refresh</translation>
@@ -748,6 +760,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Uri ng provider</translation>
 <translation id="7882501334836096755">Pampublikong key</translation>
+<translation id="78957024357676568">pakaliwa</translation>
 <translation id="7915220255123750251">Pamahalaan ang mga setting ng APN ng network. Nagtatatag ang mga APN ng koneksyon sa pagitan ng isang cellular network at internet.</translation>
 <translation id="7936303884198020182">Walang nakitang name server</translation>
 <translation id="7942349550061667556">Pula</translation>
@@ -776,9 +789,11 @@
 <translation id="8183974620058026102">I-attach</translation>
 <translation id="8206859287963243715">Cellular</translation>
 <translation id="8208861521865154048">Mga Perk</translation>
+<translation id="8210733748736414123">ibaba</translation>
 <translation id="8226628635270268143">Piliin ang iyong mga paboritong larawan at album</translation>
 <translation id="8227119283605456246">Mag-attach ng file</translation>
 <translation id="8230672074305416752">Hindi na-ping ang default na network gateway</translation>
+<translation id="8242426110754782860">Magpatuloy</translation>
 <translation id="8246209727385807362">Hindi kilalang carrier</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8286154143153872371">Kumonekta sa network at i-reload ang page para makita ang wallpaper.</translation>
@@ -789,9 +804,11 @@
 <translation id="8318753676953949627">Walang Larawan</translation>
 <translation id="8336739000755212683">Baguhin ang larawan ng account ng device</translation>
 <translation id="8347227221149377169">Mga pag-print</translation>
+<translation id="8351855506390808906">Touch point para sa keymapping</translation>
 <translation id="8352772353338965963">Magdagdag ng account sa multiple na pag-sign in. Maa-access ang lahat ng naka-sign in na account nang walang password, kaya dapat na gamitin lang ang feature na ito sa mga pinagkakatiwalaang account.</translation>
 <translation id="8364946094152050673">Mga walang lamang name server</translation>
 <translation id="8372477600026034341">Mga karagdagang host</translation>
+<translation id="8380114448424469341">I-dock ang window sa <ph name="DIRECTION" /> bahagi ng screen</translation>
 <translation id="8395584934117017006">Pinapamahalaan ng enterprise ang <ph name="DEVICE_TYPE" /> na ito</translation>
 <translation id="8398927464629426868">Ang rate ng kasalukuyang pag-charge o pag-discharge ng device</translation>
 <translation id="8410244574650205435">Awtomatikong na-detect</translation>
@@ -856,6 +873,7 @@
 <translation id="8930622219860340959">Wireless</translation>
 <translation id="8936793075252196307">IP address ng client</translation>
 <translation id="894617464444543719">Telepono ang device.</translation>
+<translation id="8957423540740801332">pakanan</translation>
 <translation id="8968751544471797276">Rate ng Pag-charge</translation>
 <translation id="8970109610781093811">Patakbuhing muli</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -883,6 +901,7 @@
 <translation id="9137526406337347448">Mga Serbisyo ng Google</translation>
 <translation id="9138630967333032450">Kaliwang shift</translation>
 <translation id="9149391708638971077">Patakbuhin ang pagsusuri sa Memory</translation>
+<translation id="9161276708550942948">space</translation>
 <translation id="9173638680043580060">Wala nang isang minuto ang natitira</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Awtomatikong maitutugma ng iyong keyboard ang wallpaper mo</translation>

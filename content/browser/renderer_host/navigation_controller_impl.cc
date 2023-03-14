@@ -2692,7 +2692,9 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
     base::TimeTicks navigation_start_time,
     bool is_embedder_initiated_fenced_frame_navigation,
     bool is_unfenced_top_navigation,
-    bool force_new_browsing_instance) {
+    bool force_new_browsing_instance,
+    bool is_container_initiated,
+    absl::optional<std::u16string> embedder_shared_storage_context) {
   if (is_renderer_initiated)
     DCHECK(initiator_origin.has_value());
 
@@ -2817,7 +2819,8 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
           false /* has_user_gesture */, std::move(source_location),
           ReloadType::NONE, entry.get(), frame_entry.get(),
           navigation_start_time, is_embedder_initiated_fenced_frame_navigation,
-          is_unfenced_top_navigation);
+          is_unfenced_top_navigation, is_container_initiated,
+          embedder_shared_storage_context);
 
   if (!request)
     return;
@@ -3760,7 +3763,9 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
     FrameNavigationEntry* frame_entry,
     base::TimeTicks navigation_start_time,
     bool is_embedder_initiated_fenced_frame_navigation,
-    bool is_unfenced_top_navigation) {
+    bool is_unfenced_top_navigation,
+    bool is_container_initiated,
+    absl::optional<std::u16string> embedder_shared_storage_context) {
   DCHECK_EQ(-1, GetIndexOfEntry(entry));
   DCHECK(frame_entry);
   // All renderer-initiated navigations must have an initiator_origin.
@@ -3855,7 +3860,8 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           network::mojom::CSPDisposition::CHECK, std::vector<int>(),
           params.href_translate,
           false /* is_history_navigation_in_new_child_frame */,
-          params.input_start, network::mojom::RequestDestination::kEmpty);
+          params.input_start, network::mojom::RequestDestination::kEmpty,
+          /*has_storage_access=*/false);
 
   blink::mojom::CommitNavigationParamsPtr commit_params =
       blink::mojom::CommitNavigationParams::New(
@@ -3930,7 +3936,8 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
       params.is_form_submission,
       params.navigation_ui_data ? params.navigation_ui_data->Clone() : nullptr,
       params.impression, params.initiator_activation_and_ad_status,
-      params.is_pdf, is_embedder_initiated_fenced_frame_navigation);
+      params.is_pdf, is_embedder_initiated_fenced_frame_navigation,
+      is_container_initiated, embedder_shared_storage_context);
   navigation_request->set_from_download_cross_origin_redirect(
       params.from_download_cross_origin_redirect);
   navigation_request->set_force_new_browsing_instance(

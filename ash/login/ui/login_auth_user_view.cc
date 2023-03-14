@@ -26,15 +26,16 @@
 #include "ash/login/ui/pin_keyboard_animation.h"
 #include "ash/login/ui/pin_request_view.h"
 #include "ash/login/ui/smart_lock_auth_factor_model.h"
-#include "ash/login/ui/system_label_button.h"
 #include "ash/login/ui/views_utils.h"
 #include "ash/public/cpp/smartlock_state.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
+#include "ash/style/pill_button.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/time_of_day.h"
@@ -46,6 +47,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -212,8 +214,7 @@ class FingerprintLabel : public views::Label {
   FingerprintLabel() {
     SetSubpixelRenderingEnabled(false);
     SetAutoColorReadabilityEnabled(false);
-    SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorSecondary));
+    SetEnabledColorId(kColorAshTextColorSecondary);
     SetMultiLine(true);
 
     SetTextBasedOnState(FingerprintState::AVAILABLE_DEFAULT,
@@ -266,13 +267,6 @@ class FingerprintLabel : public views::Label {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     node_data->role = ax::mojom::Role::kStaticText;
     node_data->SetNameChecked(GetAccessibleName());
-  }
-
-  // views::Label:
-  void OnThemeChanged() override {
-    views::Label::OnThemeChanged();
-    SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorSecondary));
   }
 
  private:
@@ -1101,7 +1095,7 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
       gfx::Insets::TLBR(kPinPasswordToggleButtonPaddingTop, 0,
                         kPinPasswordToggleButtonPaddingBottom, 0)));
   pin_password_toggle_ =
-      toggle_container->AddChildView(std::make_unique<SystemLabelButton>(
+      toggle_container->AddChildView(std::make_unique<PillButton>(
           base::BindRepeating(&LoginAuthUserView::OnSwitchButtonClicked,
                               base::Unretained(this)),
           GetPinPasswordToggleText()));
@@ -1134,7 +1128,7 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
         l10n_util::GetStringUTF16(IDS_ASH_LOCK_SCREEN_VERIFY_ACCOUNT_MESSAGE);
   }
 
-  auto online_sign_in_button = std::make_unique<SystemLabelButton>(
+  auto online_sign_in_button = std::make_unique<PillButton>(
       base::BindRepeating(&LoginAuthUserView::OnOnlineSignInMessageTap,
                           base::Unretained(this)),
       button_message);
@@ -1821,6 +1815,14 @@ void LoginAuthUserView::OnOnlineSignInMessageTap() {
       session_manager::SessionState::LOGIN_SECONDARY) {
     return;
   }
+
+  user_manager::KnownUser known_user(Shell::Get()->local_state());
+  int reauth_reason =
+      known_user.FindReauthReason(current_user().basic_user_info.account_id)
+          .value_or(-1);
+  LOG(WARNING) << "Showing online GAIA signin, the reauth reason was: "
+               << reauth_reason;
+
   Shell::Get()->login_screen_controller()->ShowGaiaSignin(
       current_user().basic_user_info.account_id);
 }

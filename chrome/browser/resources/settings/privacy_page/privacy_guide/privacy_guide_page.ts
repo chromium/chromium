@@ -23,15 +23,16 @@ import './step_indicator.js';
 import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../../hats_browser_proxy.js';
 import {loadTimeData} from '../../i18n_setup.js';
-import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideInteractions} from '../../metrics_browser_proxy.js';
+import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyGuideStepsEligibleAndReached} from '../../metrics_browser_proxy.js';
 import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '../../people_page/sync_browser_proxy.js';
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from '../../prefs/prefs_types.js';
+import {PrivacyGuideAvailabilityMixin} from '../../privacy_page/privacy_guide_availability_mixin.js';
 import {SafeBrowsingSetting} from '../../privacy_page/security_page.js';
 import {routes} from '../../route.js';
 import {Route, RouteObserverMixin, Router} from '../../router.js';
@@ -49,14 +50,32 @@ interface PrivacyGuideStepComponents {
   isAvailable(): boolean;
 }
 
+function eligibilityToRecord(step: PrivacyGuideStep):
+    PrivacyGuideStepsEligibleAndReached {
+  switch (step) {
+    case PrivacyGuideStep.MSBB:
+      return PrivacyGuideStepsEligibleAndReached.MSBB_ELIGIBLE;
+    case PrivacyGuideStep.HISTORY_SYNC:
+      return PrivacyGuideStepsEligibleAndReached.HISTORY_SYNC_ELIGIBLE;
+    case PrivacyGuideStep.SAFE_BROWSING:
+      return PrivacyGuideStepsEligibleAndReached.SAFE_BROWSING_ELIGIBLE;
+    case PrivacyGuideStep.COOKIES:
+      return PrivacyGuideStepsEligibleAndReached.COOKIES_ELIGIBLE;
+    case PrivacyGuideStep.COMPLETION:
+      return PrivacyGuideStepsEligibleAndReached.COMPLETION_ELIGIBLE;
+    default:
+      assertNotReached();
+  }
+}
+
 export interface SettingsPrivacyGuidePageElement {
   $: {
     viewManager: CrViewManagerElement,
   };
 }
 
-const PrivacyGuideBase = RouteObserverMixin(
-    WebUiListenerMixin(I18nMixin(PrefsMixin(PolymerElement))));
+const PrivacyGuideBase = RouteObserverMixin(PrivacyGuideAvailabilityMixin(
+    WebUiListenerMixin(I18nMixin(PrefsMixin(PolymerElement)))));
 
 export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
   static get is() {
@@ -114,18 +133,13 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
       },
 
       syncStatus_: Object,
-
-      isManaged_: {
-        type: Boolean,
-        value: false,
-      },
     };
   }
 
   static get observers() {
     return [
       'onPrefsChanged_(prefs.generated.cookie_primary_setting, prefs.generated.safe_browsing)',
-      'exitIfNecessary(isManaged_, syncStatus_.childUser)',
+      'exitIfNecessary(isPrivacyGuideAvailable)',
     ];
   }
 
@@ -137,9 +151,6 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
       SyncBrowserProxyImpl.getInstance();
   private syncStatus_: SyncStatus;
   private animationsEnabled_: boolean = true;
-  // The privacy guide flag is only enabled when the user was not managed at
-  // the time settings were loaded, so this is default false.
-  private isManaged_: boolean = false;
   private translateMultiplier_: number;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
@@ -159,8 +170,6 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
         (syncStatus: SyncStatus) => this.onSyncStatusChanged_(syncStatus));
     this.syncBrowserProxy_.getSyncStatus().then(
         (syncStatus: SyncStatus) => this.onSyncStatusChanged_(syncStatus));
-    this.addWebUiListener(
-        'is-managed-changed', this.onIsManagedChanged_.bind(this));
   }
 
   disableAnimationsForTesting() {
@@ -193,6 +202,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
                 'Settings.PrivacyGuide.NextClickWelcome');
             this.metricsBrowserProxy_.recordPrivacyGuideFlowLengthHistogram(
                 this.computeStepIndicatorModel().total);
+            this.recordEligibleSteps_();
           },
         },
       ],
@@ -289,7 +299,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
   }
 
   private exitIfNecessary(): boolean {
-    if (this.isManaged_ || (this.syncStatus_ && this.syncStatus_.childUser)) {
+    if (!this.isPrivacyGuideAvailable) {
       Router.getInstance().navigateTo(routes.PRIVACY);
       return true;
     }
@@ -300,10 +310,6 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
   private onSyncStatusChanged_(syncStatus: SyncStatus) {
     this.syncStatus_ = syncStatus;
     this.navigateForwardIfCurrentCardNoLongerAvailable();
-  }
-
-  private onIsManagedChanged_(isManaged: boolean) {
-    this.isManaged_ = isManaged;
   }
 
   /** Update the privacy guide state based on changed prefs. */
@@ -355,6 +361,26 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
 
   private onNextButtonClick_() {
     this.navigateForward_();
+  }
+
+  private recordEligibleSteps_(): void {
+    for (const key in PrivacyGuideStep) {
+      const step = PrivacyGuideStep[key as keyof typeof PrivacyGuideStep];
+      if (step === PrivacyGuideStep.WELCOME) {
+        // This card has no status since it is always eligible to be shown and
+        // is always reached.
+        continue;
+      }
+
+      const component = this.privacyGuideStepToComponentsMap_.get(step);
+      assert(component);
+      if (!component.isAvailable()) {
+        continue;
+      }
+      this.metricsBrowserProxy_
+          .recordPrivacyGuideStepsEligibleAndReachedHistogram(
+              eligibilityToRecord(step));
+    }
   }
 
   private navigateForward_() {

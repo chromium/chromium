@@ -52,12 +52,10 @@ class AutofillErrorDialogViewNativeViewsBrowserTest
     } else if (name.find("permanent") != std::string::npos) {
       autofill_error_dialog_context.type =
           AutofillErrorDialogType::kVirtualCardPermanentError;
-    } else if (name.find("eligibility") != std::string::npos) {
+    } else {
+      CHECK_NE(name.find("eligibility"), std::string::npos);
       autofill_error_dialog_context.type =
           AutofillErrorDialogType::kVirtualCardNotEligibleError;
-    } else {
-      NOTREACHED();
-      return;
     }
 
     controller()->Show(autofill_error_dialog_context);

@@ -9,7 +9,7 @@ dictionary CookieListItem {
   USVString value;
   USVString? domain;
   USVString path;
-  EpochTimeStamp? expires;
+  DOMHighResTimeStamp? expires;
   boolean secure;
   CookieSameSite sameSite;
   [RuntimeEnabled=PartitionedCookies] boolean partitioned;

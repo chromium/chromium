@@ -47,7 +47,6 @@ class MockPrivacySandboxObserver
   MockPrivacySandboxObserver();
   ~MockPrivacySandboxObserver();
   MOCK_METHOD(void, OnTopicsDataAccessibleSinceUpdated, (), (override));
-  MOCK_METHOD1(OnTrustTokenBlockingChanged, void(bool));
   MOCK_METHOD1(OnFirstPartySetsEnabledChanged, void(bool));
 };
 

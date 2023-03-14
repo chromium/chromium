@@ -345,7 +345,7 @@ int32_t LayoutShiftUmaValue(float shift_score) {
 }
 
 int32_t LayoutShiftUmaValue10000(float shift_score) {
-  // Report (shift_score * 10000) as an int in the range [0, 1000].
+  // Report (shift_score * 10000) as an int in the range [0, 100000].
   return static_cast<int>(roundf(std::min(shift_score, 10.0f) * 10000.0f));
 }
 

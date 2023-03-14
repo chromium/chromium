@@ -26,11 +26,10 @@ import {getImage} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingChangeValue} from '../../mojom-webui/search/user_action_recorder.mojom-webui.js';
-import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {assertExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {routes} from '../os_settings_routes.js';
 import {ParentalControlsBrowserProxyImpl} from '../parental_controls_page/parental_controls_browser_proxy.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
@@ -211,8 +210,7 @@ class SettingsAccountManagerElement extends SettingsAccountManagerElementBase {
 
   private addAccount_(): void {
     recordSettingChange(
-        Setting.kAddAccount,
-        {intValue: this.accounts_.length + 1} as SettingChangeValue);
+        Setting.kAddAccount, {intValue: this.accounts_.length + 1});
     this.browserProxy_.addAccount();
   }
 

@@ -4,8 +4,6 @@
 
 #include "extensions/browser/api/virtual_keyboard/virtual_keyboard_api.h"
 
-#include <memory>
-
 #include "base/functional/bind.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_delegate.h"
@@ -20,12 +18,12 @@ namespace extensions {
 
 void VirtualKeyboardRestrictFeaturesFunction::OnRestrictFeatures(
     api::virtual_keyboard::FeatureRestrictions update) {
-  Respond(OneArgument(base::Value(update.ToValue())));
+  Respond(WithArguments(update.ToValue()));
 }
 
 ExtensionFunction::ResponseAction
 VirtualKeyboardRestrictFeaturesFunction::Run() {
-  std::unique_ptr<api::virtual_keyboard::RestrictFeatures::Params> params =
+  absl::optional<api::virtual_keyboard::RestrictFeatures::Params> params =
       api::virtual_keyboard::RestrictFeatures::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 #if BUILDFLAG(IS_CHROMEOS_ASH)

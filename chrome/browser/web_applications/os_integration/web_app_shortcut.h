@@ -45,6 +45,8 @@ namespace proto {
 class WebAppOsIntegrationState;
 class ShortcutMenus;
 }
+class WebApp;
+class WebAppIconManager;
 
 // Represents the info required to create a shortcut for an app.
 struct ShortcutInfo {
@@ -54,11 +56,10 @@ struct ShortcutInfo {
   ~ShortcutInfo();
 
   GURL url;
-  // If |extension_id| is non-empty, this is short cut is to an extension-app
-  // and the launch url will be detected at start-up. In this case, |url|
-  // is still used to generate the app id (windows app id, not chrome app id).
-  // TODO(loyso): Rename it to app_id.
-  std::string extension_id;
+  // If `app_id` is non-empty, this is short cut is to a web app and the launch
+  // url will be detected at start-up. In this case, `url` is still used to
+  // generate the OS app id (distinct from the Chrome web app id).
+  std::string app_id;
   std::u16string title;
   std::u16string description;
   gfx::ImageFamily favicon;
@@ -97,6 +98,12 @@ std::unique_ptr<ShortcutInfo> BuildShortcutInfoWithoutFavicon(
     const base::FilePath& profile_path,
     const std::string& profile_name,
     const proto::WebAppOsIntegrationState& state);
+
+void PopulateFaviconForShortcutInfo(
+    const WebApp* app,
+    WebAppIconManager& icon_manager,
+    std::unique_ptr<ShortcutInfo> shortcut_info_to_populate,
+    base::OnceCallback<void(std::unique_ptr<ShortcutInfo>)> callback);
 
 std::vector<WebAppShortcutsMenuItemInfo> CreateShortcutsMenuItemInfos(
     const proto::ShortcutMenus& shortcut_menus);

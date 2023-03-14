@@ -22,7 +22,6 @@
 #include "components/site_isolation/site_isolation_policy.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/client_hints_controller_delegate.h"
 #include "content/public/browser/resource_context.h"
 #include "fuchsia_web/webengine/browser/web_engine_net_log_observer.h"
 #include "fuchsia_web/webengine/switches.h"
@@ -151,9 +150,7 @@ WebEngineBrowserContext::GetPermissionControllerDelegate() {
 
 content::ClientHintsControllerDelegate*
 WebEngineBrowserContext::GetClientHintsControllerDelegate() {
-  // TODO(crbug.com/1356277): Temporarily disable Client Hints as it is causing
-  // several apps to fail. Re-enable Client Hints after breakage is fixed.
-  return nullptr;
+  return &client_hints_delegate_;
 }
 
 content::BackgroundFetchDelegate*

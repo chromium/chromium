@@ -937,16 +937,14 @@ TEST_F(PermissionsUpdaterTest, DesiredActivePermissionsAreFixedOnLoad) {
 }
 
 class PermissionsUpdaterTestWithEnhancedHostControls
-    : public PermissionsUpdaterTest,
-      public testing::WithParamInterface<bool> {
+    : public PermissionsUpdaterTest {
  public:
   PermissionsUpdaterTestWithEnhancedHostControls() {
-    const base::Feature& feature =
-        extensions_features::kExtensionsMenuAccessControl;
-    if (GetParam())
-      feature_list_.InitAndEnableFeature(feature);
-    else
-      feature_list_.InitAndDisableFeature(feature);
+    std::vector<base::test::FeatureRef> enabled_features = {
+        extensions_features::kExtensionsMenuAccessControl,
+        extensions_features::kExtensionsMenuAccessControlWithPermittedSites};
+    std::vector<base::test::FeatureRef> disabled_features = {};
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
   ~PermissionsUpdaterTestWithEnhancedHostControls() override = default;
 
@@ -954,13 +952,9 @@ class PermissionsUpdaterTestWithEnhancedHostControls
   base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         PermissionsUpdaterTestWithEnhancedHostControls,
-                         testing::Bool());
-
 // Tests the behavior of revoking permissions from the extension while the
 // user has specified a set of sites that all extensions are allowed to run on.
-TEST_P(PermissionsUpdaterTestWithEnhancedHostControls,
+TEST_F(PermissionsUpdaterTestWithEnhancedHostControls,
        RevokingPermissionsWithUserPermittedSites) {
   InitializeEmptyExtensionService();
 
@@ -1031,20 +1025,6 @@ TEST_P(PermissionsUpdaterTestWithEnhancedHostControls,
   // Withhold host permissions from the extension.
   ScriptingPermissionsModifier(profile(), extension)
       .SetWithholdHostPermissions(true);
-
-  // If the enhanced host controls feature is disabled, then both hosts are
-  // withheld.
-  if (!GetParam()) {
-    EXPECT_EQ(PermissionsData::PageAccess::kWithheld,
-              get_site_access(first_url));
-    EXPECT_EQ(PermissionsData::PageAccess::kWithheld,
-              get_site_access(second_url));
-    // There's nothing more we need to test in this case.
-    return;
-  }
-
-  // Otherwise, the feature is enabled, and user host settings are considered
-  // in the permissions adjustment.
 
   // The extension should be allowed to run on `first_url`, since the
   // user indicated all extensions can always run there. However, it should not

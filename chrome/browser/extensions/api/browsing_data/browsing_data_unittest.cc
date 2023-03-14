@@ -136,8 +136,11 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
 
   void SetSinceAndVerify(browsing_data::TimePeriod since_pref) {
     PrefService* prefs = browser()->profile()->GetPrefs();
-    prefs->SetInteger(browsing_data::prefs::kDeleteTimePeriod,
-                      static_cast<int>(since_pref));
+    browsing_data::ClearBrowsingDataTab tab =
+        static_cast<browsing_data::ClearBrowsingDataTab>(
+            prefs->GetInteger(browsing_data::prefs::kLastClearBrowsingDataTab));
+    auto* time_period_pref = browsing_data::GetTimePeriodPreferenceName(tab);
+    prefs->SetInteger(time_period_pref, static_cast<int>(since_pref));
 
     scoped_refptr<BrowsingDataSettingsFunction> function =
         new BrowsingDataSettingsFunction();
@@ -190,9 +193,6 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
     prefs->SetBoolean(browsing_data::prefs::kDeletePasswords,
                       !!(data_type_flags &
                          chrome_browsing_data_remover::DATA_TYPE_PASSWORDS));
-    prefs->SetBoolean(prefs::kClearPluginLSODataEnabled,
-                      !!(data_type_flags &
-                         chrome_browsing_data_remover::DATA_TYPE_PLUGIN_DATA));
 
     VerifyRemovalMask(expected_origin_type_mask, expected_removal_mask);
   }
@@ -213,9 +213,6 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
     prefs->SetBoolean(
         browsing_data::prefs::kDeleteBrowsingHistoryBasic,
         !!(data_type_flags & chrome_browsing_data_remover::DATA_TYPE_HISTORY));
-    prefs->SetBoolean(prefs::kClearPluginLSODataEnabled,
-                      !!(data_type_flags &
-                         chrome_browsing_data_remover::DATA_TYPE_PLUGIN_DATA));
 
     VerifyRemovalMask(expected_origin_type_mask, expected_removal_mask);
   }
@@ -457,7 +454,6 @@ TEST_F(BrowsingDataApiTest, BrowsingDataRemovalInputFromSettings) {
   prefs->SetBoolean(browsing_data::prefs::kDeleteFormData, false);
   prefs->SetBoolean(browsing_data::prefs::kDeleteHostedAppsData, false);
   prefs->SetBoolean(browsing_data::prefs::kDeletePasswords, false);
-  prefs->SetBoolean(prefs::kClearPluginLSODataEnabled, false);
   uint64_t expected_mask = content::BrowsingDataRemover::DATA_TYPE_CACHE |
                            content::BrowsingDataRemover::DATA_TYPE_DOWNLOADS |
                            chrome_browsing_data_remover::DATA_TYPE_HISTORY;
@@ -471,7 +467,8 @@ TEST_F(BrowsingDataApiTest, BrowsingDataRemovalInputFromSettings) {
         settings_function.get(), std::string("[]"), browser()));
 
     EXPECT_TRUE(result->is_dict());
-    base::Value* data_to_remove = result->FindDictKey("dataToRemove");
+    base::Value::Dict* data_to_remove =
+        result->GetDict().FindDict("dataToRemove");
     EXPECT_TRUE(data_to_remove);
 
     JSONStringValueSerializer serializer(&json);
@@ -519,6 +516,7 @@ TEST_F(BrowsingDataApiTest, ShortcutFunctionRemovalMask) {
 // Test the processing of the 'delete since' preference.
 TEST_F(BrowsingDataApiTest, SettingsFunctionSince) {
   SetSinceAndVerify(browsing_data::TimePeriod::ALL_TIME);
+  SetSinceAndVerify(browsing_data::TimePeriod::LAST_15_MINUTES);
   SetSinceAndVerify(browsing_data::TimePeriod::LAST_HOUR);
   SetSinceAndVerify(browsing_data::TimePeriod::LAST_DAY);
   SetSinceAndVerify(browsing_data::TimePeriod::LAST_WEEK);

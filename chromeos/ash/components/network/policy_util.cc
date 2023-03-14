@@ -151,15 +151,15 @@ void ApplyGlobalAutoconnectPolicy(NetworkProfile::Type profile_type,
 
 }  // namespace
 
-base::Value::Dict CreateManagedONC(const base::Value* global_policy,
-                                   const base::Value* network_policy,
-                                   const base::Value* user_settings,
+base::Value::Dict CreateManagedONC(const base::Value::Dict* global_policy,
+                                   const base::Value::Dict* network_policy,
+                                   const base::Value::Dict* user_settings,
                                    const base::Value::Dict* active_settings,
                                    const NetworkProfile* profile) {
-  const base::Value* user_policy = nullptr;
-  const base::Value* device_policy = nullptr;
-  const base::Value* nonshared_user_settings = nullptr;
-  const base::Value* shared_user_settings = nullptr;
+  const base::Value::Dict* user_policy = nullptr;
+  const base::Value::Dict* device_policy = nullptr;
+  const base::Value::Dict* nonshared_user_settings = nullptr;
+  const base::Value::Dict* shared_user_settings = nullptr;
 
   if (profile) {
     switch (profile->type()) {
@@ -184,11 +184,10 @@ base::Value::Dict CreateManagedONC(const base::Value* global_policy,
   // If present, apply the Autoconnect policy only to networks that are not
   // managed by policy.
   if (!network_policy && global_policy && profile) {
-    DCHECK(global_policy->is_dict());
     bool allow_only_policy_autoconnect =
-        global_policy->GetDict()
-            .FindBool(::onc::global_network_config::
-                          kAllowOnlyPolicyNetworksToAutoconnect)
+        global_policy
+            ->FindBool(::onc::global_network_config::
+                           kAllowOnlyPolicyNetworksToAutoconnect)
             .value_or(false);
     if (allow_only_policy_autoconnect) {
       ApplyGlobalAutoconnectPolicy(profile->type(), &augmented_onc_network);
@@ -207,16 +206,18 @@ base::Value::Dict CreateManagedONC(const base::Value* global_policy,
 // encountered.
 void FixupEthernetUIDataGUID(const base::Value::Dict& new_policy,
                              const std::string& guid,
-                             base::Value* user_settings) {
+                             base::Value::Dict* user_settings) {
   DCHECK(user_settings);
   const std::string* type = new_policy.FindString(::onc::network_config::kType);
-  if (!type || *type != ::onc::network_type::kEthernet)
+  if (!type || *type != ::onc::network_type::kEthernet) {
     return;
+  }
 
   std::string* ui_data_guid =
-      user_settings->GetDict().FindString(::onc::network_config::kGUID);
-  if (!ui_data_guid)
+      user_settings->FindString(::onc::network_config::kGUID);
+  if (!ui_data_guid) {
     return;
+  }
   if (*ui_data_guid != guid) {
     LOG(ERROR) << "Fixing Ethernet UIData GUID";
     *ui_data_guid = guid;
@@ -226,7 +227,7 @@ void FixupEthernetUIDataGUID(const base::Value::Dict& new_policy,
 void SetShillPropertiesForGlobalPolicy(
     const base::Value::Dict& shill_dictionary,
     const base::Value::Dict& global_network_policy,
-    base::Value::Dict* shill_properties_to_update) {
+    base::Value::Dict& shill_properties_to_update) {
   // kAllowOnlyPolicyNetworksToAutoconnect is currently the only global config.
 
   std::string type = GetString(shill_dictionary, shill::kTypeProperty);
@@ -251,15 +252,15 @@ void SetShillPropertiesForGlobalPolicy(
 
   // If autoconnect is not explicitly set yet, it might automatically be enabled
   // by Shill. To prevent that, disable it explicitly.
-  shill_properties_to_update->Set(shill::kAutoConnectProperty, false);
+  shill_properties_to_update.Set(shill::kAutoConnectProperty, false);
 }
 
 base::Value::Dict CreateShillConfiguration(
     const NetworkProfile& profile,
     const std::string& guid,
-    const base::Value* global_policy,
+    const base::Value::Dict* global_policy,
     const base::Value::Dict* network_policy,
-    const base::Value* user_settings) {
+    const base::Value::Dict* user_settings) {
   base::Value::Dict effective;
   ::onc::ONCSource onc_source = ::onc::ONC_SOURCE_NONE;
   if (network_policy) {
@@ -284,7 +285,7 @@ base::Value::Dict CreateShillConfiguration(
     }
     DCHECK(onc_source != ::onc::ONC_SOURCE_NONE);
   } else if (user_settings) {
-    effective = user_settings->GetDict().Clone();
+    effective = user_settings->Clone();
     // TODO(pneubeck): change to source ONC_SOURCE_USER
     onc_source = ::onc::ONC_SOURCE_NONE;
   } else {
@@ -321,8 +322,8 @@ base::Value::Dict CreateShillConfiguration(
 
   if (!network_policy && global_policy) {
     // The network isn't managed. Global network policies have to be applied.
-    SetShillPropertiesForGlobalPolicy(
-        shill_dictionary, global_policy->GetDict(), &shill_dictionary);
+    SetShillPropertiesForGlobalPolicy(shill_dictionary, *global_policy,
+                                      shill_dictionary);
   }
 
   std::unique_ptr<NetworkUIData> ui_data(
@@ -346,7 +347,7 @@ base::Value::Dict CreateShillConfiguration(
             .value_or(true);
     const std::string credential_mask =
         saving_credentials ? kFakeCredential : std::string();
-    base::Value sanitized_user_settings =
+    base::Value::Dict sanitized_user_settings =
         chromeos::onc::MaskCredentialsInOncObject(
             chromeos::onc::kNetworkConfigurationSignature, *user_settings,
             credential_mask);

@@ -10,6 +10,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/browser_signin_policy_handler.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
@@ -45,6 +46,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
 #include "ui/chromeos/devicetype_utils.h"
 #endif
 
@@ -94,6 +96,15 @@ std::string GetManagedDeviceDisclaimer() {
     return l10n_util::GetStringUTF8(managed_id);
   }
   return l10n_util::GetStringFUTF8(managed_by_id, base::UTF8ToUTF16(*manager));
+}
+
+int GetMainViewTitleId() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_LACROS;
+#else
+  return ProfilePicker::Shown() ? IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_V2
+                                : IDS_PROFILE_PICKER_MAIN_VIEW_TITLE;
+#endif
 }
 
 void AddStrings(content::WebUIDataSource* html_source) {
@@ -178,8 +189,6 @@ void AddStrings(content::WebUIDataSource* html_source) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     {"accountSelectionLacrosTitle",
      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_TITLE},
-    {"accountSelectionLacrosSubtitle",
-     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_SUBTITLE},
     {"accountSelectionLacrosOtherAccountButtonLabel",
      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_OTHER_ACCOUNT_BUTTON_LABEL},
     {"lacrosPrimaryProfileDeletionWarningTitle",
@@ -197,14 +206,7 @@ void AddStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  int main_view_title_id = IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_LACROS;
-#else
-  int main_view_title_id = ProfilePicker::Shown()
-                               ? IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_V2
-                               : IDS_PROFILE_PICKER_MAIN_VIEW_TITLE;
-#endif
-  html_source->AddLocalizedString("mainViewTitle", main_view_title_id);
+  html_source->AddLocalizedString("mainViewTitle", GetMainViewTitleId());
 
   html_source->AddLocalizedString(
       "signInButtonLabel",
@@ -243,6 +245,23 @@ void AddStrings(content::WebUIDataSource* html_source) {
       l10n_util::GetStringUTF16(IDS_OS_SETTINGS_PEOPLE_V2));
   html_source->AddString("removeWarningProfileLacros", remove_warning_profile);
   html_source->AddString("deviceType", ui::GetChromeOSDeviceName());
+
+  bool guest_mode_enabled = true;
+  // Device settings may be nullptr in tests.
+  if (crosapi::mojom::DeviceSettings* device_settings =
+          g_browser_process->browser_policy_connector()->GetDeviceSettings()) {
+    if (device_settings->device_guest_mode_enabled ==
+        crosapi::mojom::DeviceSettings::OptionalBool::kFalse) {
+      guest_mode_enabled = false;
+    }
+  }
+  const int account_selection_lacros_subtitle =
+      guest_mode_enabled
+          ? IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_SUBTITLE_WITH_GUEST
+          : IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_SUBTITLE;
+  html_source->AddLocalizedString("accountSelectionLacrosSubtitle",
+                                  account_selection_lacros_subtitle);
+
 #endif
 
   // Add policies.
@@ -296,6 +315,12 @@ ProfilePickerUI::ProfilePickerUI(content::WebUI* web_ui)
       chrome::kChromeUIProfilePickerStartupQuery) {
     profile_picker_handler_->EnableStartupMetrics();
   }
+
+  // Setting the title here instead of relying on the one provided from the
+  // page itself makes it available much earlier, and avoids having to fallback
+  // to the one obtained from `NavigationEntry::GetTitleForDisplay()` (which
+  // ends up being the URL) when we try to get it on startup for a11y purposes.
+  web_ui->OverrideTitle(l10n_util::GetStringUTF16(GetMainViewTitleId()));
 
   AddStrings(html_source);
   webui::SetupWebUIDataSource(

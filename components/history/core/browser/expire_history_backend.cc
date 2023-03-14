@@ -193,10 +193,14 @@ void ExpireHistoryBackend::DeleteURLs(const std::vector<GURL>& urls,
   for (const auto& url : urls) {
     const bool is_pinned = backend_client_ && backend_client_->IsPinnedURL(url);
     URLRow url_row;
-    if (!main_db_->GetRowForURL(url, &url_row) && !is_pinned) {
-      // If the URL isn't in the database and not pinned, we should still
-      // check to see if any favicons need to be deleted.
-      DeleteIcons(url, &effects);
+    if (!main_db_->GetRowForURL(url, &url_row)) {
+      if (!is_pinned) {
+        // If the URL isn't in the database and not pinned, we should still
+        // check to see if any favicons need to be deleted.
+        DeleteIcons(url, &effects);
+      }
+      // Otherwise, nothing to do: If the URL doesn't exist, it also can't have
+      // any visits that would need to be deleted.
       continue;
     }
 

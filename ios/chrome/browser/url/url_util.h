@@ -46,6 +46,15 @@ bool ShouldLoadUrlInDesktopMode(const GURL& url,
 // Method to set the scheme to callback Chrome iOS for testing.
 - (void)setCallbackSchemeForTesting:(NSString*)callbackScheme;
 
+// Returns a set of NSStrings that are URL schemes for iTunes Stores.
+NSSet<NSString*>* GetItmsSchemes();
+
+// Returns whether `url` has an app store scheme.
+bool UrlHasAppStoreScheme(const GURL& url);
+
+// Returns whether `scheme` is an app store scheme.
+bool SchemeIsAppStoreScheme(const std::string& scheme);
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_URL_URL_UTIL_H_

@@ -57,19 +57,19 @@ static bool GetDeviceChannels(AudioUnit audio_unit,
 
 // Helper method to construct AudioObjectPropertyAddress structure given
 // property selector and scope. The property element is always set to
-// kAudioObjectPropertyElementMaster.
+// kAudioObjectPropertyElementMain.
 static AudioObjectPropertyAddress GetAudioObjectPropertyAddress(
     AudioObjectPropertySelector selector,
     bool is_input) {
   AudioObjectPropertyScope scope = is_input ? kAudioObjectPropertyScopeInput
                                             : kAudioObjectPropertyScopeOutput;
   AudioObjectPropertyAddress property_address = {
-      selector, scope, kAudioObjectPropertyElementMaster};
+      selector, scope, kAudioObjectPropertyElementMain};
   return property_address;
 }
 
 static const AudioObjectPropertyAddress kNoiseReductionPropertyAddress = {
-    'nzca', kAudioDevicePropertyScopeInput, kAudioObjectPropertyElementMaster};
+    'nzca', kAudioDevicePropertyScopeInput, kAudioObjectPropertyElementMain};
 
 // Get IO buffer size range from HAL given device id and scope.
 static OSStatus GetIOBufferFrameSizeRange(AudioDeviceID device_id,
@@ -98,9 +98,9 @@ static bool HasAudioHardware(AudioObjectPropertySelector selector) {
   DCHECK(AudioManager::Get()->GetTaskRunner()->BelongsToCurrentThread());
   AudioDeviceID output_device_id = kAudioObjectUnknown;
   const AudioObjectPropertyAddress property_address = {
-    selector,
-    kAudioObjectPropertyScopeGlobal,            // mScope
-    kAudioObjectPropertyElementMaster           // mElement
+      selector,
+      kAudioObjectPropertyScopeGlobal,  // mScope
+      kAudioObjectPropertyElementMain   // mElement
   };
   UInt32 output_device_id_size = static_cast<UInt32>(sizeof(output_device_id));
   OSStatus err = AudioObjectGetPropertyData(kAudioObjectSystemObject,
@@ -176,10 +176,8 @@ AudioDeviceID AudioManagerMac::GetAudioDeviceIdByUId(
     const std::string& device_id) {
   DCHECK(AudioManager::Get()->GetTaskRunner()->BelongsToCurrentThread());
   AudioObjectPropertyAddress property_address = {
-    kAudioHardwarePropertyDevices,
-    kAudioObjectPropertyScopeGlobal,
-    kAudioObjectPropertyElementMaster
-  };
+      kAudioHardwarePropertyDevices, kAudioObjectPropertyScopeGlobal,
+      kAudioObjectPropertyElementMain};
   AudioDeviceID audio_device_id = kAudioObjectUnknown;
   UInt32 device_size = sizeof(audio_device_id);
   OSStatus result = -1;
@@ -233,7 +231,7 @@ static bool GetDefaultDevice(AudioDeviceID* device, bool input) {
   pa.mSelector = input ? kAudioHardwarePropertyDefaultInputDevice
                        : kAudioHardwarePropertyDefaultOutputDevice;
   pa.mScope = kAudioObjectPropertyScopeGlobal;
-  pa.mElement = kAudioObjectPropertyElementMaster;
+  pa.mElement = kAudioObjectPropertyElementMain;
 
   UInt32 size = sizeof(*device);
   OSStatus result = AudioObjectGetPropertyData(kAudioObjectSystemObject, &pa, 0,
@@ -262,7 +260,7 @@ static bool GetDeviceTotalChannelCount(AudioDeviceID device,
   // buffer pointers set to nullptr) which describes the list of streams and the
   // number of channels in each stream.
   AudioObjectPropertyAddress pa = {kAudioDevicePropertyStreamConfiguration,
-                                   scope, kAudioObjectPropertyElementMaster};
+                                   scope, kAudioObjectPropertyElementMain};
 
   UInt32 size;
   OSStatus result = AudioObjectGetPropertyDataSize(device, &pa, 0, 0, &size);
@@ -647,10 +645,8 @@ int AudioManagerMac::HardwareSampleRateForDevice(AudioDeviceID device_id) {
   UInt32 info_size = sizeof(nominal_sample_rate);
 
   static const AudioObjectPropertyAddress kNominalSampleRateAddress = {
-      kAudioDevicePropertyNominalSampleRate,
-      kAudioObjectPropertyScopeGlobal,
-      kAudioObjectPropertyElementMaster
-  };
+      kAudioDevicePropertyNominalSampleRate, kAudioObjectPropertyScopeGlobal,
+      kAudioObjectPropertyElementMain};
   OSStatus result = AudioObjectGetPropertyData(device_id,
                                                &kNominalSampleRateAddress,
                                                0,
@@ -852,10 +848,8 @@ std::string AudioManagerMac::GetDefaultDeviceID(bool is_input) {
     return std::string();
 
   const AudioObjectPropertyAddress property_address = {
-    kAudioDevicePropertyDeviceUID,
-    kAudioObjectPropertyScopeGlobal,
-    kAudioObjectPropertyElementMaster
-  };
+      kAudioDevicePropertyDeviceUID, kAudioObjectPropertyScopeGlobal,
+      kAudioObjectPropertyElementMain};
   CFStringRef device_uid = NULL;
   UInt32 size = sizeof(device_uid);
   OSStatus status = AudioObjectGetPropertyData(device_id,

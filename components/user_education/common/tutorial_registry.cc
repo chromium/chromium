@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
+#include "base/ranges/algorithm.h"
 #include "components/user_education/common/tutorial.h"
 #include "components/user_education/common/tutorial_description.h"
 #include "components/user_education/common/tutorial_identifier.h"
@@ -36,9 +37,8 @@ const std::vector<TutorialIdentifier>
 TutorialRegistry::GetTutorialIdentifiers() {
   DCHECK(tutorial_registry_.size() > 0);
   std::vector<TutorialIdentifier> id_strings;
-  std::transform(tutorial_registry_.begin(), tutorial_registry_.end(),
-                 std::back_inserter(id_strings),
-                 [](const auto& pair) { return pair.first; });
+  base::ranges::transform(tutorial_registry_, std::back_inserter(id_strings),
+                          &Registry::value_type::first);
   return id_strings;
 }
 

@@ -1,1 +1,0 @@
-This test passes if there is a console message saying the plugin was blocked. The test must be run manually; ContentShell doesn't support applet in DumpRenderTree mode. :(

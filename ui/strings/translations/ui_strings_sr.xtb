@@ -61,6 +61,7 @@
 <translation id="2573731672208488250">{HOURS,plural, =1{за 1 ч}one{за # ч}few{за # ч}other{за # ч}}</translation>
 <translation id="2583543531130364912">Калибрација додирног екрана</translation>
 <translation id="2586657967955657006">Меморија</translation>
+<translation id="2653844658857826081">НОВО</translation>
 <translation id="2666092431469916601">Врх</translation>
 <translation id="2701330563083355633">Дељено са: <ph name="DEVICE_NAME" /></translation>
 <translation id="271033894570825754">Ново</translation>
@@ -75,6 +76,7 @@
 <translation id="3157931365184549694">Поново отвори</translation>
 <translation id="3183922693828471536">Помери се овде</translation>
 <translation id="3234408098842461169">Стрелица надоле</translation>
+<translation id="3240426699337459095">Линк је копиран</translation>
 <translation id="3291688615589870984">{DAYS,plural, =1{1 дан}one{# дан}few{# дана}other{# дана}}</translation>
 <translation id="3295886253693811851">Позовите са уређаја</translation>
 <translation id="3306688585798492231">Уграђени екран</translation>

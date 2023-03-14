@@ -12,8 +12,11 @@
 #include "base/component_export.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace absl {
+class uint128;
+}  // namespace absl
 
 namespace attribution_reporting {
 

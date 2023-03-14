@@ -68,34 +68,6 @@ TranslateManager::TranslateInitCallbackList* g_init_callback_list_ = nullptr;
 TranslateManager::LanguageDetectedCallbackList* g_detection_callback_list_ =
     nullptr;
 
-std::set<std::string> GetSkippedLanguagesForExperiments(
-    std::string source_lang,
-    translate::TranslatePrefs* translate_prefs) {
-  // Under this experiment, skip english as the target language if possible so
-  // that Translate triggers on English pages.
-  std::set<std::string> skipped_languages;
-  if (language::ShouldForceTriggerTranslateOnEnglishPages(
-          translate_prefs->GetForceTriggerOnEnglishPagesCount()) &&
-      source_lang == "en") {
-    skipped_languages.insert("en");
-  }
-  return skipped_languages;
-}
-
-// Moves any element in |languages| for which |lang_code| is found in
-// |skipped_languages| to the end of |languages|. Otherwise preserves relative
-// ordering of elements. Modifies |languages| in place.
-void MoveSkippedLanguagesToEndIfNecessary(
-    std::vector<std::string>* languages,
-    const std::set<std::string>& skipped_languages) {
-  if (!skipped_languages.empty()) {
-    std::stable_partition(
-        languages->begin(), languages->end(), [&](const auto& lang) {
-          return skipped_languages.find(lang) == skipped_languages.end();
-        });
-  }
-}
-
 }  // namespace
 
 TranslateManager::~TranslateManager() = default;
@@ -236,6 +208,11 @@ bool TranslateManager::CanManuallyTranslate(bool menuLogging) {
   }
 
   const std::string source_language = language_state_.source_language();
+  // The source language is empty when language detection has not finished
+  // running. In this case, Android queues the translation and waits until the
+  // source language has been determined. Android is the only platform that
+  // supports manual translation in this case.
+#if !BUILDFLAG(IS_ANDROID)
   if (source_language.empty()) {
     if (!menuLogging)
       return false;
@@ -244,6 +221,8 @@ bool TranslateManager::CanManuallyTranslate(bool menuLogging) {
             kSourceLangUnknown);
     can_translate = false;
   }
+#endif
+
   bool unknown_source_supported = translate::IsForceTranslateEnabled();
   if (!unknown_source_supported &&
       source_language == translate::kUnknownLanguageCode) {
@@ -604,11 +583,15 @@ std::string TranslateManager::GetTargetLanguage(
       if (TranslateDownloadManager::IsSupportedLanguage(lang_code))
         language_codes.push_back(lang_code);
     }
-    const std::set<std::string>& skipped_languages =
-        GetSkippedLanguagesForExperiments(source_lang_code, prefs);
-    // If some languages need to be skipped, move them to the end of the
-    // language vector so that any other eligible language takes priority.
-    MoveSkippedLanguagesToEndIfNecessary(&language_codes, skipped_languages);
+
+    // If forcing triggering on English, skip English as the target language if
+    // possible by moving it to the end of |language_codes|.
+    if (prefs->ShouldForceTriggerTranslateOnEnglishPages() &&
+        source_lang_code == "en") {
+      std::stable_partition(
+          language_codes.begin(), language_codes.end(),
+          [&](const auto& lang) { return lang.compare("en") != 0; });
+    }
 
     // Use the first language from the model that translate supports.
     if (!language_codes.empty()) {
@@ -809,11 +792,7 @@ const TranslateTriggerDecision TranslateManager::ComputePossibleOutcomes(
 
   // Querying the ranker now, but not exiting immediately so that we may log
   // other potential suppression reasons.
-  // Ignore Ranker's decision under triggering experiments since it wasn't
-  // trained appropriately under those scenarios.
-  if (!language::ShouldPreventRankerEnforcementInIndia(
-          translate_prefs->GetForceTriggerOnEnglishPagesCount()) &&
-      !translate_ranker_->ShouldOfferTranslation(
+  if (!translate_ranker_->ShouldOfferTranslation(
           translate_event_.get(), GetActiveTranslateMetricsLogger())) {
     decision.SuppressFromRanker();
   }

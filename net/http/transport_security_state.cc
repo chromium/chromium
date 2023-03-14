@@ -399,7 +399,7 @@ bool TransportSecurityState::ShouldSSLErrorsBeFatal(const std::string& host) {
   return GetSTSState(host, &unused_sts) || GetPKPState(host, &unused_pkp);
 }
 
-base::Value TransportSecurityState::NetLogUpgradeToSSLParam(
+base::Value::Dict TransportSecurityState::NetLogUpgradeToSSLParam(
     const std::string& host) {
   STSState sts_state;
   base::Value::Dict dict;
@@ -408,7 +408,7 @@ base::Value TransportSecurityState::NetLogUpgradeToSSLParam(
   dict.Set("should_upgrade_to_ssl", sts_state.ShouldUpgradeToSSL());
   dict.Set("host_found_in_hsts_bypass_list",
            hsts_host_bypass_list_.find(host) != hsts_host_bypass_list_.end());
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 bool TransportSecurityState::ShouldUpgradeToSSL(

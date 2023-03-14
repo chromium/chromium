@@ -13,6 +13,7 @@
 #include "components/optimization_guide/core/entity_metadata.h"
 #include "components/optimization_guide/core/page_content_annotation_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace optimization_guide {
 
@@ -117,6 +118,32 @@ using BatchAnnotationCallback =
 // response with a single error.
 std::vector<BatchAnnotationResult> CreateEmptyBatchAnnotationResults(
     const std::vector<std::string>& inputs);
+
+// The result of various types of PageContentAnnotation.
+class PageContentAnnotationsResult {
+  // The various type of results.
+  typedef float ContentVisibilityScore;
+
+ public:
+  // Creates a result for a content visibility annotation.
+  static PageContentAnnotationsResult CreateContentVisibilityScoreResult(
+      const ContentVisibilityScore& score);
+
+  PageContentAnnotationsResult(const PageContentAnnotationsResult&);
+  PageContentAnnotationsResult& operator=(const PageContentAnnotationsResult&);
+  ~PageContentAnnotationsResult();
+
+  // Returns the type of annotation in this result.
+  AnnotationType GetType() const;
+
+  ContentVisibilityScore GetContentVisibilityScore() const;
+
+ private:
+  PageContentAnnotationsResult();
+
+  // The page content annotation of this result.
+  absl::variant<void* /*Unknown*/, ContentVisibilityScore> result_;
+};
 
 }  // namespace optimization_guide
 

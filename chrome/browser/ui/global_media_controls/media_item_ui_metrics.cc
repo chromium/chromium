@@ -22,6 +22,8 @@ GlobalMediaControlsCastMode GetGlobalMediaControlsCastMode(
       return GlobalMediaControlsCastMode::kPresentation;
     case media_router::MediaCastMode::REMOTE_PLAYBACK:
       return GlobalMediaControlsCastMode::kRemotePlayback;
+    case media_router::MediaCastMode::TAB_MIRROR:
+      return GlobalMediaControlsCastMode::kTabMirror;
     default:
       NOTREACHED();
   }

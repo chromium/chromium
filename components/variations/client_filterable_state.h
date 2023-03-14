@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/version.h"
@@ -29,6 +30,7 @@ enum class RestrictionPolicy {
 };
 
 using IsEnterpriseFunction = base::OnceCallback<bool()>;
+using GoogleGroupsFunction = base::OnceCallback<base::flat_set<uint64_t>()>;
 
 // A container for all of the client state which is used for filtering studies.
 struct COMPONENT_EXPORT(VARIATIONS) ClientFilterableState {
@@ -37,7 +39,8 @@ struct COMPONENT_EXPORT(VARIATIONS) ClientFilterableState {
   // base::Version used in {min,max}_os_version filtering.
   static base::Version GetOSVersion();
 
-  explicit ClientFilterableState(IsEnterpriseFunction is_enterprise_function);
+  explicit ClientFilterableState(IsEnterpriseFunction is_enterprise_function,
+                                 GoogleGroupsFunction google_groups_function);
 
   ClientFilterableState(const ClientFilterableState&) = delete;
   ClientFilterableState& operator=(const ClientFilterableState&) = delete;
@@ -94,8 +97,7 @@ struct COMPONENT_EXPORT(VARIATIONS) ClientFilterableState {
   // The list of Google groups that one of more signed-in syncing users are a
   // a member of.
   // Each value is the Gaia ID of the google group.
-  // TODO(b/264838828): populate this field.
-  std::set<uint64_t> google_groups;
+  base::flat_set<uint64_t> GoogleGroups() const;
 
  private:
   // Evaluating enterprise status negatively affects performance, so we only
@@ -103,6 +105,12 @@ struct COMPONENT_EXPORT(VARIATIONS) ClientFilterableState {
   // most once.
   mutable IsEnterpriseFunction is_enterprise_function_;
   mutable absl::optional<bool> is_enterprise_;
+
+  // Evaluating group memberships involves parsing data received from Chrome
+  // Sync server.  For safe rollout we do this only for studies that require
+  // inspecting group memberships (and for efficiency we do it only once.)
+  mutable GoogleGroupsFunction google_groups_function_;
+  mutable absl::optional<base::flat_set<uint64_t>> google_groups_;
 };
 
 }  // namespace variations

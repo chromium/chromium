@@ -83,6 +83,25 @@ interface UserNotesPageHandler {
   // should be shown.
   NoteOverviewSelected(url.mojom.Url url,
                        ui.mojom.ClickModifiers click_modifiers);
+
+  // Called when the sort option has been updated and the profile pref should be
+  // updated.
+  SetSortOrder(bool sort_by_newest);
+
+  // Return whether there are any notes in any pages.
+  // Used to determine if the empty state UI should be shown.
+  HasNotesInAnyPages() => (bool has_notes);
+
+  // Opens the url in a new tab.
+  OpenInNewTab(url.mojom.Url url);
+
+  // Opens the url in a new window and makes sure the user notes side panel is
+  // showing.
+  OpenInNewWindow(url.mojom.Url url);
+
+  // Opens the url in an incognito window and makes sure the user notes side
+  // panel is showing.
+  OpenInIncognitoWindow(url.mojom.Url url);
 };
 
 // WebUI-side handler for requests from the browser.
@@ -97,5 +116,12 @@ interface UserNotesPage {
   // Called when the URL of the current tab has changed.
   // This could be triggered by either switching tab or navigating to
   // a new URL.
-  CurrentTabUrlChanged();
+  CurrentTabUrlChanged(bool start_note_creation);
+
+  // Called when the kUserNotesSortByNewest pref has changed so that the UI can
+  // match this sort order if it doesn't already.
+  SortByNewestPrefChanged(bool sort_by_newest);
+
+  // Called when the user triggers for the note creation flow to start.
+  StartNoteCreation();
 };

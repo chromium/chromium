@@ -5411,7 +5411,6 @@ TEST_F(CookieMonsterTest, CookieSourceSchemeNameHistogram) {
       {CookieSourceSchemeName::kWsScheme, url::kWsScheme},
       {CookieSourceSchemeName::kChromeExtensionScheme, "chrome-extension"},
       {CookieSourceSchemeName::kFileScheme, url::kFileScheme},
-      {CookieSourceSchemeName::kQuicTransportScheme, url::kQuicTransportScheme},
       {CookieSourceSchemeName::kOther, "abcd1234"}};
 
   // Make sure all the schemes are considered cookieable.

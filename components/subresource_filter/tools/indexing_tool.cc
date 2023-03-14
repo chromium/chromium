@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/numerics/safe_conversions.h"
@@ -45,8 +46,7 @@ bool IndexAndWriteRuleset(const base::FilePath& unindexed_path,
 
   indexer.Finish();
 
-  base::WriteFile(indexed_path, reinterpret_cast<const char*>(indexer.data()),
-                  base::checked_cast<int>(indexer.size()));
+  base::WriteFile(indexed_path, base::make_span(indexer));
 
   if (out_checksum)
     *out_checksum = indexer.GetChecksum();
@@ -69,7 +69,7 @@ void WriteVersionMetadata(const base::FilePath& path,
   std::string version = base::StringPrintf(
       version_format, content_version.c_str(),
       subresource_filter::RulesetIndexer::kIndexedFormatVersion, checksum);
-  base::WriteFile(path, version.data(), version.size());
+  base::WriteFile(path, version);
 }
 
 }  // namespace subresource_filter

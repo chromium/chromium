@@ -43,7 +43,6 @@ if (!enable_cast_receiver) {
     # include as much of "//components/cast_streaming/*" with as few individual
     # exclusions as is reasonable.
     "//components/cast_streaming/browser/*",
-    "//components/cast_streaming/common/*",
     "//components/cast_streaming/renderer/*",
 
     # TODO(crbug.com/1354845): Once this bug is fixed, update this list to
@@ -260,8 +259,8 @@ component("web_engine_core") {
 
   if (enable_cast_receiver) {
     deps += [
-      "//components/cast_streaming/public",
-      "//components/cast_streaming/public/mojom",
+      "//components/cast_streaming/common",
+      "//components/cast_streaming/common:mojom",
       "//components/fuchsia_legacymetrics",
     ]
   }
@@ -688,7 +687,7 @@ test("web_engine_unittests") {
   additional_manifest_fragments = [
     "//build/config/fuchsia/test/cfv1_launcher.shard.test-cml",
     "//build/config/fuchsia/test/network.shard.test-cml",
-    "//media/fuchsia/test_support.shard.test-cml",
+    "//build/config/fuchsia/test/sysmem.shard.test-cml",
   ]
   additional_manifests = [
     # Required by ContextProvider unit-tests to launch the FakeContext process.
@@ -751,7 +750,7 @@ test("web_engine_integration_tests") {
 source_set("cast_streaming_receiver") {
   public_deps = [
     "//base",
-    "//components/cast_streaming/public/mojom",
+    "//components/cast_streaming/common:mojom",
     "//mojo/public/cpp/bindings",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web:fuchsia.web_hlcpp",
   ]
@@ -759,7 +758,6 @@ source_set("cast_streaming_receiver") {
     ":switches",
     "//components/cast/message_port",
     "//components/cast_streaming/browser",
-    "//components/cast_streaming/public:config_conversions",
     "//url",
   ]
   public = [

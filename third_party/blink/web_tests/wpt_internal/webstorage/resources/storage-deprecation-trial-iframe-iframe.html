@@ -3,11 +3,11 @@
 <script type="module">
 import { getOrCreateID, clearID } from "/wpt_internal/webstorage/resources/storage-deprecation-trial-utils.js";
 
-// Step 5 (wpt_internal/webstorage/storage-deprecation-trial-{enabled|disabled}-{local|session}.sub.https.html)
+// Step 5 (wpt_internal/webstorage/{general-}storage-deprecation-trial-{enabled|disabled}-{local|session}.sub.https.html)
 const userID = getOrCreateID();
 clearID();
 
-// Step 6 (wpt_internal/webstorage/storage-deprecation-trial-{enabled|disabled}-{local|session}.sub.https.html)
+// Step 6 (wpt_internal/webstorage/{general-}storage-deprecation-trial-{enabled|disabled}-{local|session}.sub.https.html)
 const payload = {
   message: "UserID",
   userID: userID,

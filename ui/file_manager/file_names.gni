@@ -155,7 +155,6 @@ static_js_files = [
   "file_manager/foreground/js/task_history.js",
   "file_manager/foreground/js/thumbnail_loader.js",
   "file_manager/foreground/js/toolbar_controller.js",
-  "file_manager/foreground/js/webui_command_extender.js",
 
   # Metadata:
   "file_manager/foreground/js/metadata/byte_reader.js",
@@ -274,6 +273,7 @@ ts_files = [
   # Widgets.
   "file_manager/widgets/xf_base.ts",
   "file_manager/widgets/xf_breadcrumb.ts",
+  "file_manager/widgets/xf_bulk_pinning_dialog.ts",
   "file_manager/widgets/xf_conflict_dialog.ts",
   "file_manager/widgets/xf_dlp_restriction_details_dialog.ts",
   "file_manager/widgets/xf_icon.ts",
@@ -284,6 +284,7 @@ ts_files = [
   "file_manager/widgets/xf_splitter.ts",
   "file_manager/widgets/xf_pie_progress.ts",
   "file_manager/foreground/js/ui/search_autocomplete_list.ts",
+  "file_manager/widgets/xf_cloud_panel.ts",
   "file_manager/widgets/xf_tree.ts",
   "file_manager/widgets/xf_tree_item.ts",
 

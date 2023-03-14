@@ -171,20 +171,26 @@ PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting::
   ResetProfilingStateFlag(ProfilingStateFlag::kHookedSamplesMutedForTesting);
 }
 
+#if !BUILDFLAG(USE_ALLOCATION_EVENT_DISPATCHER)
 // static
 PoissonAllocationSampler* PoissonAllocationSampler::instance_ = nullptr;
+#endif
 
 // static
 ABSL_CONST_INIT std::atomic<PoissonAllocationSampler::ProfilingStateFlagMask>
     PoissonAllocationSampler::profiling_state_{0};
 
 PoissonAllocationSampler::PoissonAllocationSampler() {
+#if !BUILDFLAG(USE_ALLOCATION_EVENT_DISPATCHER)
   CHECK_EQ(nullptr, instance_);
   instance_ = this;
+#endif
+
   Init();
   auto* sampled_addresses = new LockFreeAddressHashSet(64);
   g_sampled_addresses_set.store(sampled_addresses, std::memory_order_release);
 
+#if !BUILDFLAG(USE_ALLOCATION_EVENT_DISPATCHER)
   // Install the allocator hooks immediately, to better match the behaviour
   // of base::allocator::Initializer.
   //
@@ -193,6 +199,7 @@ PoissonAllocationSampler::PoissonAllocationSampler() {
   // initializer at the same time so this will install the hooks even
   // earlier in process startup.
   allocator::dispatcher::InstallStandardAllocatorHooks();
+#endif
 }
 
 // static

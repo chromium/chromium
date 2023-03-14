@@ -82,10 +82,11 @@ class MultiLogCTVerifierTest : public ::testing::Test {
       return false;
 
     const NetLogEntry& parsed = entries[1];
-    if (!parsed.params.is_dict())
+    if (parsed.params.empty()) {
       return false;
+    }
 
-    const base::Value::List* scts = parsed.params.GetDict().FindList("scts");
+    const base::Value::List* scts = parsed.params.FindList("scts");
     if (!scts || scts->size() != 1)
       return false;
 

@@ -1256,8 +1256,7 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
       case ax::mojom::DescriptionFrom::kPopoverAttribute:
         // The following types of markup are mapped to "tooltip":
         // * The title attribute.
-        // * A related popover=something related via popovertoggletarget /
-        // popovershowtarget / popoverhidetarget.
+        // * A popover=something related via the `popovertarget` attribute.
         // * A tooltip related via aria-describedby (see kRelatedElement above).
         from = "tooltip";
         break;
@@ -1355,6 +1354,9 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
         break;
       case ax::mojom::IsPopup::kAuto:
         AddAttributeToList("ispopup", "auto", attributes);
+        break;
+      case ax::mojom::IsPopup::kHint:
+        AddAttributeToList("ispopup", "hint", attributes);
         break;
     }
   }

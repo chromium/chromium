@@ -6,6 +6,7 @@ import("//build/rust/rust_static_library.gni")
 
 rust_static_library("wrapper") {
   crate_root = "lib.rs"
+  allow_unsafe = true
   sources = [
     "lib.rs",
     "visitor.rs",

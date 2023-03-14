@@ -8,7 +8,7 @@ source_set("android") {
   sources = [ "installed_app_verifier.cc" ]
   deps = [
     "//base",
-    "//components/digital_asset_links",
+    "//components/content_relationship_verification",
     "//content/public/browser",
   ]
   public_deps = [ ":jni_headers" ]

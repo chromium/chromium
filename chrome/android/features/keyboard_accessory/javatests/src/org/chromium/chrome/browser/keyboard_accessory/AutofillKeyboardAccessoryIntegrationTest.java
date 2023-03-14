@@ -37,6 +37,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -239,7 +240,7 @@ public class AutofillKeyboardAccessoryIntegrationTest {
                 .perform(scrollTo(isKeyboardAccessoryTabLayout()))
                 .perform(actionOnItem(isKeyboardAccessoryTabLayout(), selectTabAtPosition(0)));
 
-        whenDisplayed(withChild(withId(R.id.keyboard_accessory_sheet)));
+        whenDisplayed(withChild(withId(R.id.keyboard_accessory_sheet_frame)));
 
         assertTrue(TestThreadUtils.runOnUiThreadBlocking(
                 ()
@@ -249,11 +250,12 @@ public class AutofillKeyboardAccessoryIntegrationTest {
         assertTrue(TestThreadUtils.runOnUiThreadBlocking(
                 () -> mHelper.getManualFillingCoordinator().onBackPressed()));
 
-        waitToBeHidden(withChild(withId(R.id.keyboard_accessory_sheet)));
+        waitToBeHidden(withChild(withId(R.id.keyboard_accessory_sheet_frame)));
     }
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1420520")
     public void testSheetHasMinimumSizeWhenTriggeredBySuggestion() throws TimeoutException {
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
         loadTestPage(MultiWindowKeyboard::new);
@@ -265,18 +267,18 @@ public class AutofillKeyboardAccessoryIntegrationTest {
                         actionOnItem(isKeyboardAccessoryTabLayout(), selectTabAtPosition(0)));
 
         CriteriaHelper.pollUiThread(() -> {
-            View sheetView =
-                    mActivityTestRule.getActivity().findViewById(R.id.keyboard_accessory_sheet);
+            View sheetView = mActivityTestRule.getActivity().findViewById(
+                    R.id.keyboard_accessory_sheet_frame);
             return sheetView.isShown() && sheetView.getHeight() > 0;
         });
 
         // Click the back arrow.
         whenDisplayed(withId(R.id.show_keyboard)).perform(click());
-        waitToBeHidden(withChild(withId(R.id.keyboard_accessory_sheet)));
+        waitToBeHidden(withChild(withId(R.id.keyboard_accessory_sheet_frame)));
 
         CriteriaHelper.pollUiThread(() -> {
-            View sheetView =
-                    mActivityTestRule.getActivity().findViewById(R.id.keyboard_accessory_sheet);
+            View sheetView = mActivityTestRule.getActivity().findViewById(
+                    R.id.keyboard_accessory_sheet_frame);
             return sheetView.getHeight() == 0 || !sheetView.isShown();
         });
     }

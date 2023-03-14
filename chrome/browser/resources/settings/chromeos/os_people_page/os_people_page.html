@@ -20,6 +20,10 @@
     --cr-secondary-text-color: var(--cros-text-color-alert);
   }
 
+  :host-context(body.jelly-enabled) #sync-setup {
+    --cr-secondary-text-color: var(--cros-sys-error);
+  }
+
   cr-link-row {
     --cr-link-row-icon-width: var(--icon-width);
     border-top: var(--cr-separator-line);
@@ -107,8 +111,3 @@
     </os-settings-subpage>
   </template>
 </os-settings-animated-pages>
-<template is="dom-if" if="[[showSignoutDialog_]]" restamp>
-  <os-settings-signout-dialog sync-status="[[syncStatus]]"
-      on-close="onDisconnectDialogClosed_">
-  </os-settings-signout-dialog>
-</template>

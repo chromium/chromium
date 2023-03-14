@@ -30,11 +30,6 @@ POLICY_EXPORT BASE_DECLARE_FEATURE(kPasswordBreachEventReporting);
 POLICY_EXPORT BASE_DECLARE_FEATURE(
     kEnableUserCloudSigninRestrictionPolicyFetcher);
 
-// Enable MetricsReportingEnabled policy to alter MetricsReportingState on
-// Android.
-POLICY_EXPORT BASE_DECLARE_FEATURE(
-    kActivateMetricsReportingEnabledPolicyAndroid);
-
 // Causes the DMToken to be deleted (rather than invalidated) when a browser is
 // deleted from CBCM.
 POLICY_EXPORT BASE_DECLARE_FEATURE(kDmTokenDeletion);
@@ -42,10 +37,18 @@ POLICY_EXPORT BASE_DECLARE_FEATURE(kDmTokenDeletion);
 #if BUILDFLAG(IS_ANDROID)
 // Enable logging and chrome://policy/logs page on Android.
 POLICY_EXPORT BASE_DECLARE_FEATURE(kPolicyLogsPageAndroid);
+
+// Enable SafeSitesFilterBehavior policy on Android.
+POLICY_EXPORT BASE_DECLARE_FEATURE(kSafeSitesFilterBehaviorPolicyAndroid);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Prevent policies set by a single source from being treated as merged.
 POLICY_EXPORT BASE_DECLARE_FEATURE(kPolicyMergeMultiSource);
+
+#if BUILDFLAG(IS_IOS)
+// Enable logging and chrome://policy/logs page on IOS.
+POLICY_EXPORT BASE_DECLARE_FEATURE(kPolicyLogsPageIOS);
+#endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace features
 }  // namespace policy

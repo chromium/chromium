@@ -108,17 +108,24 @@ void FakeFontCollection::GetFamilyNames(uint32_t family_index,
   std::move(callback).Run(std::move(family_names));
 }
 
-void FakeFontCollection::GetFontFiles(uint32_t family_index,
-                                      GetFontFilesCallback callback) {
-  message_types_.push_back(MessageType::kGetFontFiles);
-  std::vector<base::FilePath> file_paths;
+void FakeFontCollection::GetFontFileHandles(
+    uint32_t family_index,
+    GetFontFileHandlesCallback callback) {
+  message_types_.push_back(MessageType::kGetFontFileHandles);
   std::vector<base::File> file_handles;
   if (family_index < fonts_.size()) {
-    file_paths = fonts_[family_index].file_paths_;
+    for (const auto& font_path : fonts_[family_index].file_paths_) {
+      base::File file(base::FilePath(font_path),
+                      base::File::FLAG_OPEN | base::File::FLAG_READ |
+                          base::File::FLAG_WIN_EXCLUSIVE_WRITE);
+      if (file.IsValid()) {
+        file_handles.emplace_back(std::move(file));
+      }
+    }
     for (auto& file : fonts_[family_index].file_handles_)
       file_handles.emplace_back(file.Duplicate());
   }
-  std::move(callback).Run(file_paths, std::move(file_handles));
+  std::move(callback).Run(std::move(file_handles));
 }
 
 void FakeFontCollection::MapCharacters(

@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/collected_cookies_infobar_delegate.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/url_identity.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -181,6 +182,15 @@ void SetAllowRunningInsecureContent(
   mojo::AssociatedRemote<content_settings::mojom::ContentSettingsAgent> agent;
   frame->GetRemoteAssociatedInterfaces()->GetInterface(&agent);
   agent->SetAllowRunningInsecureContent();
+}
+
+constexpr UrlIdentity::TypeSet allowed_types = {
+    UrlIdentity::Type::kDefault, UrlIdentity::Type::kFile,
+    UrlIdentity::Type::kIsolatedWebApp};
+constexpr UrlIdentity::FormatOptions options;
+
+UrlIdentity GetUrlIdentity(Profile* profile, const GURL& url) {
+  return UrlIdentity::CreateFromUrl(profile, url, allowed_types, options);
 }
 
 }  // namespace
@@ -556,7 +566,7 @@ bool ContentSettingSingleRadioGroup::settings_changed() const {
 // content type and setting the default value based on the content setting.
 void ContentSettingSingleRadioGroup::SetRadioGroup() {
   const GURL& url = web_contents()->GetURL();
-  std::u16string display_host = url_formatter::FormatUrlForSecurityDisplay(url);
+  const UrlIdentity url_identity = GetUrlIdentity(GetProfile(), url);
 
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(&GetPage().GetMainDocument());
@@ -605,7 +615,7 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
     radio_allow_label = l10n_util::GetStringFUTF16(
         GetIdForContentType(kBlockedAllowIDs, std::size(kBlockedAllowIDs),
                             content_type()),
-        display_host);
+        url_identity.name);
   }
 
   static const ContentSettingsTypeIdEntry kBlockedBlockIDs[] = {
@@ -632,7 +642,8 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
   if (allowed) {
     int resource_id = GetIdForContentType(
         kAllowedBlockIDs, std::size(kAllowedBlockIDs), content_type());
-    radio_block_label = l10n_util::GetStringFUTF16(resource_id, display_host);
+    radio_block_label =
+        l10n_util::GetStringFUTF16(resource_id, url_identity.name);
   } else {
     radio_block_label = l10n_util::GetStringUTF16(GetIdForContentType(
         kBlockedBlockIDs, std::size(kBlockedBlockIDs), content_type()));
@@ -968,8 +979,7 @@ void ContentSettingMediaStreamBubbleModel::SetRadioGroup() {
   GURL url = content_settings->media_stream_access_origin();
   RadioGroup radio_group;
   radio_group.url = url;
-
-  std::u16string display_host = url_formatter::FormatUrlForSecurityDisplay(url);
+  const UrlIdentity url_identity = GetUrlIdentity(GetProfile(), url);
 
   DCHECK(CameraAccessed() || MicrophoneAccessed());
   int radio_allow_label_id = 0;
@@ -1023,7 +1033,7 @@ void ContentSettingMediaStreamBubbleModel::SetRadioGroup() {
   }
 
   std::u16string radio_allow_label =
-      l10n_util::GetStringFUTF16(radio_allow_label_id, display_host);
+      l10n_util::GetStringFUTF16(radio_allow_label_id, url_identity.name);
   std::u16string radio_block_label =
       l10n_util::GetStringUTF16(radio_block_label_id);
 
@@ -1427,8 +1437,10 @@ void ContentSettingDownloadsBubbleModel::SetRadioGroup() {
       g_browser_process->download_request_limiter();
   const GURL& download_origin =
       download_request_limiter->GetDownloadOrigin(web_contents());
-  std::u16string display_host =
-      url_formatter::FormatUrlForSecurityDisplay(download_origin);
+
+  const UrlIdentity url_identity =
+      GetUrlIdentity(GetProfile(), download_origin);
+
   DCHECK(download_request_limiter);
 
   RadioGroup radio_group;
@@ -1437,13 +1449,14 @@ void ContentSettingDownloadsBubbleModel::SetRadioGroup() {
     case DownloadRequestLimiter::DOWNLOAD_UI_ALLOWED:
       radio_group.radio_items = {
           l10n_util::GetStringUTF16(IDS_ALLOWED_DOWNLOAD_NO_ACTION),
-          l10n_util::GetStringFUTF16(IDS_ALLOWED_DOWNLOAD_BLOCK, display_host)};
+          l10n_util::GetStringFUTF16(IDS_ALLOWED_DOWNLOAD_BLOCK,
+                                     url_identity.name)};
       radio_group.default_item = kAllowButtonIndex;
       break;
     case DownloadRequestLimiter::DOWNLOAD_UI_BLOCKED:
       radio_group.radio_items = {
           l10n_util::GetStringFUTF16(IDS_BLOCKED_DOWNLOAD_UNBLOCK,
-                                     display_host),
+                                     url_identity.name),
           l10n_util::GetStringUTF16(IDS_BLOCKED_DOWNLOAD_NO_ACTION)};
       radio_group.default_item = 1;
       break;

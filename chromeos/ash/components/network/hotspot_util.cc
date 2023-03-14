@@ -93,6 +93,34 @@ hotspot_config::mojom::HotspotState ShillTetheringStateToMojomState(
   return HotspotState::kDisabled;
 }
 
+hotspot_config::mojom::DisableReason ShillTetheringIdleReasonToMojomState(
+    const std::string& idle_reason) {
+  using hotspot_config::mojom::DisableReason;
+
+  if (idle_reason == shill::kTetheringIdleReasonInactive) {
+    return DisableReason::kAutoDisabled;
+  }
+
+  if (idle_reason == shill::kTetheringIdleReasonUpstreamDisconnect) {
+    return DisableReason::kUpstreamNetworkNotAvailable;
+  }
+
+  if (idle_reason == shill::kTetheringIdleReasonError) {
+    return DisableReason::kInternalError;
+  }
+
+  if (idle_reason == shill::kTetheringIdleReasonSuspend) {
+    return DisableReason::kSuspended;
+  }
+
+  if (idle_reason == shill::kTetheringIdleReasonUserExit ||
+      idle_reason == shill::kTetheringIdleReasonClientStop) {
+    return DisableReason::kUserInitiated;
+  }
+
+  NOTREACHED_NORETURN() << "Unexpected idle reason: " << idle_reason;
+}
+
 hotspot_config::mojom::WiFiSecurityMode ShillSecurityToMojom(
     const std::string& shill_security) {
   using hotspot_config::mojom::WiFiSecurityMode;
@@ -164,24 +192,21 @@ hotspot_config::mojom::HotspotConfigPtr ShillTetheringConfigToMojomConfig(
   return result;
 }
 
-base::Value MojomConfigToShillConfig(
+base::Value::Dict MojomConfigToShillConfig(
     const hotspot_config::mojom::HotspotConfigPtr mojom_config) {
   using hotspot_config::mojom::HotspotConfig;
 
-  base::Value result(base::Value::Type::DICT);
-  result.GetDict().Set(shill::kTetheringConfAutoDisableProperty,
-                       base::Value(mojom_config->auto_disable));
-  result.GetDict().Set(shill::kTetheringConfBandProperty,
-                       base::Value(MojomBandToString(mojom_config->band)));
-  result.GetDict().Set(
-      shill::kTetheringConfSecurityProperty,
-      base::Value(MojomSecurityToString(mojom_config->security)));
-  result.GetDict().Set(shill::kTetheringConfSSIDProperty,
-                       base::Value(HexEncode(mojom_config->ssid)));
-  result.GetDict().Set(shill::kTetheringConfPassphraseProperty,
-                       base::Value(mojom_config->passphrase));
-  result.GetDict().Set(shill::kTetheringConfMARProperty,
-                       base::Value(mojom_config->bssid_randomization));
+  base::Value::Dict result;
+  result.Set(shill::kTetheringConfAutoDisableProperty,
+             mojom_config->auto_disable);
+  result.Set(shill::kTetheringConfBandProperty,
+             MojomBandToString(mojom_config->band));
+  result.Set(shill::kTetheringConfSecurityProperty,
+             MojomSecurityToString(mojom_config->security));
+  result.Set(shill::kTetheringConfSSIDProperty, HexEncode(mojom_config->ssid));
+  result.Set(shill::kTetheringConfPassphraseProperty, mojom_config->passphrase);
+  result.Set(shill::kTetheringConfMARProperty,
+             mojom_config->bssid_randomization);
   return result;
 }
 

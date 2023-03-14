@@ -7,7 +7,7 @@
 presets:
   chrome_health:
     telemetry_batch_experiment:
-      - benchmark: speedometer2-chrome-health
+      - benchmark: speedometer2
         configs:
           - mac-laptop_low_end-perf
           - mac-m1_mini_2020-perf
@@ -69,7 +69,7 @@ presets:
           - JetStream2
   chrome_health_pgo:
     telemetry_batch_experiment:
-      - benchmark: speedometer2-chrome-health
+      - benchmark: speedometer2
         configs:
           - mac-laptop_low_end-perf-pgo
           - mac-m1_mini_2020-perf-pgo
@@ -140,7 +140,7 @@ presets:
           - Speedometer2
   speedometer2_pgo:
     telemetry_batch_experiment:
-      - benchmark: speedometer2-chrome-health
+      - benchmark: speedometer2
         configs:
           - mac-laptop_low_end-perf-pgo
           - mac-m1_mini_2020-perf-pgo

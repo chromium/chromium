@@ -40,6 +40,7 @@ struct ExternalTextureSource {
 struct ExternalTexture {
   WGPUExternalTexture wgpu_external_texture = nullptr;
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture = nullptr;
+  bool is_zero_copy = false;
 };
 
 std::array<float, 12> GetYUVToRGBMatrix(gfx::ColorSpace color_space,

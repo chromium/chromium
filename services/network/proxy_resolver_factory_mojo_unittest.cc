@@ -501,7 +501,7 @@ void CheckCapturedNetLogEntries(const std::string& expected_string,
   EXPECT_EQ(net::NetLogEventType::PAC_JAVASCRIPT_ALERT, entries[0].type);
   EXPECT_EQ(expected_string,
             net::GetStringValueFromParams(entries[0], "message"));
-  ASSERT_FALSE(entries[0].params.GetDict().contains("line_number"));
+  ASSERT_FALSE(entries[0].params.contains("line_number"));
   EXPECT_EQ(net::NetLogEventType::PAC_JAVASCRIPT_ERROR, entries[1].type);
   EXPECT_EQ(expected_string,
             net::GetStringValueFromParams(entries[1], "message"));
@@ -945,7 +945,8 @@ TEST_F(ProxyResolverFactoryMojoTest,
        GetProxyForURL_DnsRequestWithNetworkAnonymizationKey) {
   net::SchemefulSite kSite =
       net::SchemefulSite(url::Origin::Create(GURL("https://origin.test/")));
-  const net::NetworkAnonymizationKey kNetworkAnonymizationKey(kSite, kSite);
+  const auto kNetworkAnonymizationKey =
+      net::NetworkAnonymizationKey::CreateSameSite(kSite);
   const GURL kUrl(kExampleUrl);
 
   mock_proxy_resolver_.AddGetProxyAction(

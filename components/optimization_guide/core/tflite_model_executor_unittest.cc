@@ -494,5 +494,25 @@ TEST_F(CancelledTFLiteModelExecutorTest, RunsTooLong) {
       "OptimizationGuide.ModelExecutor.DidTimeout.PainfulPageLoad", true, 1);
 }
 
+TEST_F(TFLiteModelExecutorTest, UpdateModelFileWithPreloading) {
+  base::HistogramTester histogram_tester;
+  CreateModelHandler();
+
+  model_handler_->SetShouldUnloadModelOnComplete(false);
+  // Invoke UpdateModelFile() to preload model.
+  PushModelFileToModelExecutor(
+      proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      /*model_metadata=*/absl::nullopt);
+
+  // Ensures pending tasks are processed. They are generating UMA metrics.
+  RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecutor.ModelLoadedSuccessfully." +
+          optimization_guide::GetStringNameForOptimizationTarget(
+              proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
+      true, 1);
+}
+
 }  // namespace
 }  // namespace optimization_guide

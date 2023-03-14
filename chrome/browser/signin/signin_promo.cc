@@ -72,13 +72,20 @@ GURL GetEmbeddedReauthURLWithEmail(signin_metrics::AccessPoint access_point,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-GURL GetChromeSyncURLForDice(const std::string& email,
-                             const std::string& continue_url) {
+GURL GetChromeSyncURLForDice(ChromeSyncUrlArgs args) {
   GURL url = GaiaUrls::GetInstance()->signin_chrome_sync_dice();
-  if (!email.empty())
-    url = net::AppendQueryParameter(url, "email_hint", email);
-  if (!continue_url.empty())
-    url = net::AppendQueryParameter(url, "continue", continue_url);
+  if (!args.email.empty()) {
+    url = net::AppendQueryParameter(url, "email_hint", args.email);
+  }
+  if (!args.continue_url.empty()) {
+    url = net::AppendQueryParameter(url, "continue", args.continue_url);
+  }
+  if (args.request_dark_scheme) {
+    url = net::AppendQueryParameter(url, "color_scheme", "dark");
+  }
+  if (args.for_promo_flow) {
+    url = net::AppendQueryParameter(url, "flow", "promo");
+  }
   return url;
 }
 

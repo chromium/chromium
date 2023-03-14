@@ -96,8 +96,9 @@ int GetBorderSides(bool portrait_mode) {
 }
 
 int GetDialogWidth(int parent_width) {
-  if (parent_width < kDialogWidthMax + 2 * kDialogMarginMin)
+  if (parent_width < kDialogWidthMax + 2 * kDialogMarginMin) {
     return std::max(kDialogWidthMin, parent_width - 2 * kDialogMarginMin);
+  }
 
   return kDialogWidthMax;
 }

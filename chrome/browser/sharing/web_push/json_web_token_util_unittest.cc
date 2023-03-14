@@ -35,10 +35,10 @@ TEST(JSONWebTokenUtilTest, VerifiesCreateJSONWebToken) {
   ASSERT_TRUE(private_key);
 
   // Create JWS.
-  base::Value claims(base::Value::Type::DICT);
-  claims.SetKey("aud", base::Value("https://chromium.org"));
+  base::Value::Dict claims;
+  claims.Set("aud", "https://chromium.org");
   absl::optional<std::string> jwt =
-      CreateJSONWebToken(claims, private_key.get());
+      CreateJSONWebToken(base::Value(claims.Clone()), private_key.get());
   ASSERT_TRUE(jwt);
 
   // Decompose JWS into data and signautre.
@@ -89,8 +89,8 @@ TEST(JSONWebTokenUtilTest, VerifiesCreateJSONWebToken) {
       base::JSONReader::Read(header_decoded);
   ASSERT_TRUE(header_value);
   ASSERT_TRUE(header_value->is_dict());
-  ASSERT_EQ(base::Value("ES256"), header_value->ExtractKey("alg"));
-  ASSERT_EQ(base::Value("JWT"), header_value->ExtractKey("typ"));
+  ASSERT_EQ("ES256", *header_value->GetDict().FindString("alg"));
+  ASSERT_EQ("JWT", *header_value->GetDict().FindString("typ"));
 
   // Verify payload.
   std::string payload_decoded;

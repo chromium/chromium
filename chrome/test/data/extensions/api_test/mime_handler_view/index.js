@@ -48,14 +48,14 @@ function expectSuccessfulReadLong(response) {
 function checkStreamDetails(name, embedded) {
   checkStreamDetailsNoFile();
   chrome.test.assertEq(embedded, streamDetails.embedded);
-  chrome.test.assertTrue(streamDetails.originalUrl.indexOf(name) != -1);
+  chrome.test.assertNe(-1, streamDetails.originalUrl.indexOf(name));
   chrome.test.assertEq('text/csv',
                        streamDetails.responseHeaders['Content-Type']);
 }
 
 function checkStreamDetailsNoFile() {
   chrome.test.assertEq('text/csv', streamDetails.mimeType);
-  chrome.test.assertTrue(streamDetails.tabId != -1);
+  chrome.test.assertNe(-1, streamDetails.tabId);
 }
 
 // The following helper methods are used in BrowserPlugin-specific tests.
@@ -180,7 +180,7 @@ var tests = [
           chrome.test.assertEq(document.body, document.webkitFullscreenElement);
           await waitForFullscreenAnimation();
           chrome.tabs.get(streamDetails.tabId, tab => {
-            chrome.test.assertTrue(tab != null);
+            chrome.test.assertNe(null, tab);
             windowId = tab.windowId;
             chrome.windows.get(windowId, currentWindow => {
               chrome.test.assertEq('fullscreen', currentWindow.state);
@@ -260,7 +260,7 @@ var tests = [
       window.setTimeout(() => {
         // If the background page has shut down, its window.localStorage will be
         // null.
-        chrome.test.assertTrue(backgroundPage.window.localStorage != null);
+        chrome.test.assertNe(null, backgroundPage.window.localStorage);
         backgroundPage.endBackgroundPageTest();
         chrome.test.succeed();
       }, 100);

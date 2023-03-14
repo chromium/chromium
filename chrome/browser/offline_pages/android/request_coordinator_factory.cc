@@ -61,7 +61,14 @@ class ActiveTabInfo : public RequestCoordinator::ActiveTabInfo {
 };
 
 RequestCoordinatorFactory::RequestCoordinatorFactory()
-    : ProfileKeyedServiceFactory("OfflineRequestCoordinator") {
+    : ProfileKeyedServiceFactory(
+          "OfflineRequestCoordinator",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   // Depends on OfflinePageModelFactory in SimpleDependencyManager.
 }
 

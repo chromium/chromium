@@ -15,8 +15,7 @@ namespace ash {
 
 class IMEObserver;
 class NetworkObserver;
-class ScreenCaptureObserver;
-class ScreenShareObserver;
+class ScreenSecurityObserver;
 class SystemTrayObserver;
 class VirtualKeyboardObserver;
 
@@ -45,20 +44,15 @@ class ASH_EXPORT SystemTrayNotifier {
   void RemoveNetworkObserver(NetworkObserver* observer);
   void NotifyRequestToggleWifi();
 
-  // Screen capture.
-  void AddScreenCaptureObserver(ScreenCaptureObserver* observer);
-  void RemoveScreenCaptureObserver(ScreenCaptureObserver* observer);
-  void NotifyScreenCaptureStart(base::RepeatingClosure stop_callback,
-                                base::RepeatingClosure source_callback,
-                                const std::u16string& sharing_app_name);
-  void NotifyScreenCaptureStop();
-
-  // Screen share.
-  void AddScreenShareObserver(ScreenShareObserver* observer);
-  void RemoveScreenShareObserver(ScreenShareObserver* observer);
-  void NotifyScreenShareStart(base::RepeatingClosure stop_callback,
-                              const std::u16string& helper_name);
-  void NotifyScreenShareStop();
+  // Screen security.
+  void AddScreenSecurityObserver(ScreenSecurityObserver* observer);
+  void RemoveScreenSecurityObserver(ScreenSecurityObserver* observer);
+  void NotifyScreenAccessStart(base::RepeatingClosure stop_callback,
+                               base::RepeatingClosure source_callback,
+                               const std::u16string& access_app_name);
+  void NotifyScreenAccessStop();
+  void NotifyRemotingScreenShareStart(base::RepeatingClosure stop_callback);
+  void NotifyRemotingScreenShareStop();
 
   // System tray focus.
   void AddSystemTrayObserver(SystemTrayObserver* observer);
@@ -74,9 +68,8 @@ class ASH_EXPORT SystemTrayNotifier {
  private:
   base::ObserverList<IMEObserver>::Unchecked ime_observers_;
   base::ObserverList<NetworkObserver>::Unchecked network_observers_;
-  base::ObserverList<ScreenCaptureObserver>::Unchecked
-      screen_capture_observers_;
-  base::ObserverList<ScreenShareObserver>::Unchecked screen_share_observers_;
+  base::ObserverList<ScreenSecurityObserver>::Unchecked
+      screen_security_observers_;
   base::ObserverList<SystemTrayObserver>::Unchecked system_tray_observers_;
   base::ObserverList<VirtualKeyboardObserver>::Unchecked
       virtual_keyboard_observers_;

@@ -16,6 +16,7 @@ import android.util.Pair;
 import android.view.KeyEvent;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.AnimRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -43,6 +44,7 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandler.Int
 import org.chromium.chrome.browser.customtabs.content.TabCreationMode;
 import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityComponent;
 import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityModule;
+import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabDisplayManager;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
 import org.chromium.chrome.browser.dependency_injection.ModuleFactoryOverrides;
@@ -278,7 +280,15 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
         super.performPreInflationStartup();
 
         if (mIntentDataProvider.isPartialCustomTab()) {
-            overridePendingTransition(R.anim.slide_in_up, R.anim.no_anim);
+            if (ChromeFeatureList.sCctResizableSideSheet.isEnabled()) {
+                @AnimRes
+                int startAnimResId = PartialCustomTabDisplayManager.getStartAnimationOverride(this,
+                        getIntentDataProvider(), getIntentDataProvider().getAnimationEnterRes());
+                overridePendingTransition(startAnimResId, R.anim.no_anim);
+            } else if (getIntentDataProvider().isPartialHeightCustomTab()) {
+                // Take care of only the bottom sheet animation if side sheet is not enabled.
+                overridePendingTransition(R.anim.slide_in_up, R.anim.no_anim);
+            }
         }
 
         WebappExtras webappExtras = getIntentDataProvider().getWebappExtras();

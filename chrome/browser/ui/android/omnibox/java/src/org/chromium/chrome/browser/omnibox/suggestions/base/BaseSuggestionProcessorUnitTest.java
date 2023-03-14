@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.base;
 
-import static org.mockito.Mockito.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
@@ -50,7 +50,7 @@ public class BaseSuggestionProcessorUnitTest {
         private final Context mContext;
         public TestBaseSuggestionProcessor(
                 Context context, SuggestionHost suggestionHost, FaviconFetcher faviconFetcher) {
-            super(context, suggestionHost, faviconFetcher);
+            super(context, suggestionHost, null, faviconFetcher);
             mContext = context;
         }
 

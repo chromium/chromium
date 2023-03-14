@@ -162,10 +162,11 @@
     </div>
     <template is="dom-if" if="[[showHttpsOnlyModeSetting_]]">
       <settings-toggle-button
-        id="httpsOnlyModeToggle"
-        pref="{{prefs.https_only_mode_enabled}}"
-        label="$i18n{httpsOnlyModeTitle}"
-        sub-label="$i18n{httpsOnlyModeDescription}">
+         id="httpsOnlyModeToggle"
+         pref="{{prefs.generated.https_first_mode_enabled}}"
+         label="$i18n{httpsOnlyModeTitle}"
+         sub-label="[[getHttpsFirstModeSubLabel_(
+                        prefs.generated.https_first_mode_enabled.*)]]">
       </settings-toggle-button>
     </template>
     <template is="dom-if" if="[[showSecureDnsSetting_]]">

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 330 tests; 322 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 332 tests; 324 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing origin: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -339,5 +339,7 @@ PASS Parsing origin: <foo://host/dir/? !"$%&'()*+,-./:;<=>?@[\]^_`{|}~> against 
 PASS Parsing origin: <wss://host/dir/? !"$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank>
 PASS Parsing origin: <foo://host/dir/# !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank>
 PASS Parsing origin: <wss://host/dir/# !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank>
+PASS Parsing origin: <https://example.com/"quoted"> against <about:blank>
+PASS Parsing origin: <https://a%C2%ADb/> against <about:blank>
 Harness: the test ran to completion.
 

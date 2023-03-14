@@ -8,7 +8,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -96,7 +95,6 @@ public class CreatorMediatorTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    private final String mTitle = "Example";
     private final String mUrl = JUnitTestGURLs.EXAMPLE_URL;
     private final byte[] mWebFeedId = "webFeedId".getBytes();
     private CreatorCoordinator mCreatorCoordinator;
@@ -120,8 +118,8 @@ public class CreatorMediatorTest {
 
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         mCreatorCoordinator = new CreatorCoordinator(mActivity, mWebFeedId, mSnackbarManager,
-                mWindowAndroid, mProfile, mTitle, mUrl, mCreatorWebContents, mCreatorOpenTab,
-                mShareDelegateSupplier, SingleWebFeedEntryPoint.OTHER);
+                mWindowAndroid, mProfile, mUrl, mCreatorWebContents, mCreatorOpenTab,
+                mShareDelegateSupplier, SingleWebFeedEntryPoint.OTHER, /* isFollowing= */ false);
         mCreatorModel = mCreatorCoordinator.getCreatorModel();
 
         mCreatorMediator =

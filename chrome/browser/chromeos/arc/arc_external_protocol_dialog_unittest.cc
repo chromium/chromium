@@ -9,6 +9,7 @@
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
 #include "chrome/browser/sharing/fake_device_info.h"
+#include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/mock_sharing_service.h"
 #include "chrome/browser/sharing/proto/click_to_call_message.pb.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
@@ -77,6 +78,7 @@ class ArcExternalProtocolDialogTestUtils : public BrowserWithTestWindowTest {
   content::WebContents* web_contents() { return web_contents_; }
 
  private:
+  base::test::ScopedFeatureList features_{kClickToCall};
   // Keep only one |WebContents| at a time.
   raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<ArcIconCacheDelegate> arc_icon_cache_;

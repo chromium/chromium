@@ -78,8 +78,10 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
       menuOpenNewWindowWithCount: 'Open all in new window',
       menuOpenIncognito: 'Open in Incognito window',
       menuOpenIncognitoWithCount: 'Open all in Incognito window',
+      menuEdit: 'Edit…',
       menuMoveToBookmarksBar: 'Move to Bookmarks Bar folder',
       menuTrackPrice: 'Track price',
+      menuUntrackPrice: 'Untrack price',
       menuRename: 'Rename',
       tooltipDelete: 'Delete',
     });
@@ -91,8 +93,43 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
     await delegate.whenCalled('onBookmarksLoaded');
   });
 
-  test('ShowsMenuItemsForSingleSelect', () => {
+  test('ShowsMenuItemsForSingleSelectUrl', () => {
     const selection = [service.findBookmarkWithId('3')!];
+    powerBookmarksContextMenu.showAtPosition(
+        new MouseEvent('click'), selection, false, false);
+
+    flush();
+
+    const menuItems = powerBookmarksContextMenu.shadowRoot!.querySelectorAll(
+        '.dropdown-item');
+    assertEquals(menuItems.length, 6);
+    assertEquals(
+        menuItems[0]!.textContent!.includes(
+            loadTimeData.getString('menuOpenNewTab')),
+        true);
+    assertEquals(
+        menuItems[1]!.textContent!.includes(
+            loadTimeData.getString('menuOpenNewWindow')),
+        true);
+    assertEquals(
+        menuItems[2]!.textContent!.includes(
+            loadTimeData.getString('menuOpenIncognito')),
+        true);
+    assertEquals(
+        menuItems[3]!.textContent!.includes(loadTimeData.getString('menuEdit')),
+        true);
+    assertEquals(
+        menuItems[4]!.textContent!.includes(
+            loadTimeData.getString('menuMoveToBookmarksBar')),
+        true);
+    assertEquals(
+        menuItems[5]!.textContent!.includes(
+            loadTimeData.getString('tooltipDelete')),
+        true);
+  });
+
+  test('ShowsMenuItemsForSingleSelectFolder', () => {
+    const selection = [service.findBookmarkWithId('5')!];
     powerBookmarksContextMenu.showAtPosition(
         new MouseEvent('click'), selection, false, false);
 
@@ -175,16 +212,15 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
             loadTimeData.getString('menuOpenIncognito')),
         true);
     assertEquals(
-        menuItems[3]!.textContent!.includes(
-            loadTimeData.getString('menuMoveToBookmarksBar')),
+        menuItems[3]!.textContent!.includes(loadTimeData.getString('menuEdit')),
         true);
     assertEquals(
         menuItems[4]!.textContent!.includes(
-            loadTimeData.getString('menuTrackPrice')),
+            loadTimeData.getString('menuMoveToBookmarksBar')),
         true);
     assertEquals(
         menuItems[5]!.textContent!.includes(
-            loadTimeData.getString('menuRename')),
+            loadTimeData.getString('menuUntrackPrice')),
         true);
     assertEquals(
         menuItems[6]!.textContent!.includes(

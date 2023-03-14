@@ -146,12 +146,6 @@ void NetworkPortalDetectorImpl::Enable() {
   DCHECK(is_idle());
   enabled_ = true;
 
-  // Ensure that Shill portal detection is enabled.
-  // TODO(b/265806000): Remove calls to SetCheckPortalList entirely once
-  // shill/init/shill.sh is updated.
-  NetworkHandler::Get()->network_state_handler()->SetCheckPortalList(
-      NetworkStateHandler::kDefaultCheckPortalList);
-
   const NetworkState* network = DefaultNetwork();
   if (!network)
     return;
@@ -179,7 +173,7 @@ void NetworkPortalDetectorImpl::PortalStateChanged(
   }
 
   default_network_id_ = default_network->guid();
-  bool has_proxy = !default_network->proxy_config().is_none();
+  bool has_proxy = default_network->proxy_config().has_value();
   NET_LOG(EVENT) << "PortalStateChanged, id="
                  << NetworkGuidId(default_network_id_)
                  << " state=" << default_network->connection_state()
@@ -457,7 +451,7 @@ void NetworkPortalDetectorImpl::DetectionCompleted(
     SetNetworkPortalState(network, portal_state);
 
     base::UmaHistogramBoolean("Network.NetworkPortalDetectorHasProxy",
-                              !network->proxy_config().is_none());
+                              network->proxy_config().has_value());
   }
 
   ResetCountersAndSendMetrics();

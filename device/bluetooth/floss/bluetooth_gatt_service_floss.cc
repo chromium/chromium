@@ -10,6 +10,17 @@
 
 namespace floss {
 
+using GattErrorCode = device::BluetoothGattService::GattErrorCode;
+
+constexpr std::pair<GattStatus, device::BluetoothGattService::GattErrorCode>
+    kGattStatusMap[] = {
+        {GattStatus::kInvalidAttributeLen, GattErrorCode::kInvalidLength},
+        {GattStatus::kReadNotPermitted, GattErrorCode::kNotPermitted},
+        {GattStatus::kWriteNotPermitted, GattErrorCode::kNotPermitted},
+        {GattStatus::kInsufficientAuthorization, GattErrorCode::kNotAuthorized},
+        {GattStatus::kReqNotSupported, GattErrorCode::kNotSupported},
+};
+
 BluetoothGattServiceFloss::BluetoothGattServiceFloss(
     BluetoothAdapterFloss* adapter)
     : adapter_(adapter) {
@@ -29,7 +40,12 @@ device::BluetoothGattService::GattErrorCode
 BluetoothGattServiceFloss::GattStatusToServiceError(const GattStatus status) {
   DCHECK(status != GattStatus::kSuccess);
 
-  // TODO(b/193686564) - Translate remote service gatt errors to correct values.
+  for (auto& [source, target] : kGattStatusMap) {
+    if (status == source) {
+      return target;
+    }
+  }
+
   return GattErrorCode::kUnknown;
 }
 

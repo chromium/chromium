@@ -1,1 +1,1 @@
-chromeos-chrome-amd64-bigcore-112-5563.8-1676285000-benchmark-112.0.5596.0-r1-redacted.afdo.xz
+chromeos-chrome-amd64-bigcore-113-5599.0-1678099432-benchmark-113.0.5635.0-r2-redacted.afdo.xz

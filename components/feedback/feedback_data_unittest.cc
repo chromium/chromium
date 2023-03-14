@@ -26,6 +26,7 @@ namespace {
 constexpr char kHistograms[] = "Histogram Data";
 constexpr char kImageData[] = "Image Data";
 constexpr char kFileData[] = "File Data";
+constexpr char kAutofillMetadata[] = "Autofill Metadata";
 
 class MockUploader : public FeedbackUploader {
  public:
@@ -110,6 +111,8 @@ class FeedbackDataTest : public testing::Test {
 
 TEST_F(FeedbackDataTest, ReportSending) {
   data_->SetAndCompressHistograms(kHistograms);
+  data_->set_autofill_metadata(kAutofillMetadata);
+  data_->CompressAutofillMetadata();
   data_->set_image(kImageData);
   data_->AttachAndCompressFileData(kFileData);
   RunMessageLoop();
@@ -121,6 +124,8 @@ TEST_F(FeedbackDataTest, ReportSending) {
 
 TEST_F(FeedbackDataTest, ReportSendingWithEmail) {
   data_->SetAndCompressHistograms(kHistograms);
+  data_->set_autofill_metadata(kAutofillMetadata);
+  data_->CompressAutofillMetadata();
   data_->set_image(kImageData);
   data_->AttachAndCompressFileData(kFileData);
   data_->set_user_email("foo@bar.com");
@@ -129,6 +134,18 @@ TEST_F(FeedbackDataTest, ReportSendingWithEmail) {
   EXPECT_TRUE(data_->IsDataComplete());
   EXPECT_TRUE(uploader_->called_queue_report());
   EXPECT_TRUE(uploader_->report_had_email());
+}
+
+TEST_F(FeedbackDataTest, ReportSendingAutofillMetadata) {
+  data_->set_autofill_metadata(kAutofillMetadata);
+  data_->CompressAutofillMetadata();
+  RunMessageLoop();
+  EXPECT_EQ(data_->user_email(), "");
+  EXPECT_TRUE(data_->IsDataComplete());
+  EXPECT_TRUE(uploader_->called_queue_report());
+  EXPECT_FALSE(uploader_->report_had_email());
+  ASSERT_EQ(data_->attachments(), 1UL);
+  EXPECT_EQ(data_->attachment(0)->name, "autofill_metadata.zip");
 }
 
 }  // namespace feedback

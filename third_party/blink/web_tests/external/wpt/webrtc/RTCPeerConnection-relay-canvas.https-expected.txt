@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Two PeerConnections relaying a canvas source assert_not_equals: webgl is a prerequisite for this test got disallowed value null
+Harness: the test ran to completion.
+

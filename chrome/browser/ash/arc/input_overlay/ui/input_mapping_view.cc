@@ -12,7 +12,22 @@
 namespace arc::input_overlay {
 namespace {
 // UI specs.
-constexpr SkColor kEditModeBgColor = SkColorSetA(SK_ColorBLACK, 0x99);
+constexpr SkColor kEditModeBgColorAlpha =
+    SkColorSetA(SK_ColorBLACK, 0x99 /*60%*/);
+constexpr SkColor kEditModeBgColor = SkColorSetA(SK_ColorBLACK, 0x66 /*40%*/);
+
+// Return true if |v1| is on top than |v2|, or |v1| is on the left side of |v2|
+// when |v1| has the same y position as |v2|.
+bool CompareActionViewPosition(const ActionView* v1, const ActionView* v2) {
+  auto center1 = v1->GetTouchCenterInWindow();
+  auto center2 = v2->GetTouchCenterInWindow();
+
+  if (center1.y() != center2.y()) {
+    return center1.y() < center2.y();
+  }
+  return center1.x() < center2.x();
+}
+
 }  // namespace
 
 InputMappingView::InputMappingView(
@@ -24,11 +39,13 @@ InputMappingView::InputMappingView(
   SetBounds(content_bounds.x(), content_bounds.y(), content_bounds.width(),
             content_bounds.height());
   for (auto& action : actions) {
-    if (action->deleted())
+    if (action->deleted()) {
       continue;
+    }
     auto view = action->CreateView(display_overlay_controller_);
-    if (view)
+    if (view) {
       AddChildView(std::move(view));
+    }
   }
 }
 
@@ -40,19 +57,20 @@ void InputMappingView::SetDisplayMode(const DisplayMode mode) {
       mode == DisplayMode::kPreMenu) {
     return;
   }
-  if (!AllowReposition()) {
-    switch (mode) {
-      case DisplayMode::kView:
-        SetBackground(nullptr);
-        break;
-      case DisplayMode::kEdit:
-        SetBackground(views::CreateSolidBackground(kEditModeBgColor));
-        break;
-      default:
-        NOTREACHED();
-        break;
-    }
+  switch (mode) {
+    case DisplayMode::kView:
+      SetBackground(nullptr);
+      break;
+    case DisplayMode::kEdit:
+      SortChildren();
+      SetBackground(views::CreateSolidBackground(
+          AllowReposition() ? kEditModeBgColor : kEditModeBgColorAlpha));
+      break;
+    default:
+      NOTREACHED();
+      break;
   }
+
   for (auto* view : children()) {
     auto* action_view = static_cast<ActionView*>(view);
     action_view->SetDisplayMode(mode);
@@ -71,8 +89,9 @@ void InputMappingView::OnActionAdded(Action* action) {
 void InputMappingView::OnActionRemoved(Action* action) {
   for (auto* view : children()) {
     auto* action_view = static_cast<ActionView*>(view);
-    if (action != action_view->action())
+    if (action != action_view->action()) {
       continue;
+    }
 
     action->set_action_view(nullptr);
     RemoveChildViewT(action_view);
@@ -85,8 +104,9 @@ void InputMappingView::ProcessPressedEvent(const ui::LocatedEvent& event) {
   for (auto* const child : children()) {
     auto* action_view = static_cast<ActionView*>(child);
     for (auto* action_label : action_view->labels()) {
-      if (!action_label->HasFocus())
+      if (!action_label->HasFocus()) {
         continue;
+      }
       auto bounds = action_label->GetBoundsInScreen();
       if (!bounds.Contains(event_location)) {
         action_label->ClearFocus();
@@ -99,9 +119,34 @@ void InputMappingView::ProcessPressedEvent(const ui::LocatedEvent& event) {
   }
 }
 
+void InputMappingView::SortChildren() {
+  std::vector<ActionView*> left, right;
+  float aspect_ratio = (float)width() / height();
+  for (auto* child : children()) {
+    auto* action_view = static_cast<ActionView*>(child);
+    if (aspect_ratio > 1 &&
+        action_view->GetTouchCenterInWindow().x() < width() / 2) {
+      left.emplace_back(action_view);
+    } else {
+      right.emplace_back(action_view);
+    }
+  }
+
+  std::sort(left.begin(), left.end(), CompareActionViewPosition);
+  std::sort(right.begin(), right.end(), CompareActionViewPosition);
+
+  for (auto* child : left) {
+    AddChildView(child);
+  }
+  for (auto* child : right) {
+    AddChildView(child);
+  }
+}
+
 void InputMappingView::OnMouseEvent(ui::MouseEvent* event) {
-  if (event->type() == ui::ET_MOUSE_PRESSED)
+  if (event->type() == ui::ET_MOUSE_PRESSED) {
     ProcessPressedEvent(*event);
+  }
 }
 
 void InputMappingView::OnGestureEvent(ui::GestureEvent* event) {

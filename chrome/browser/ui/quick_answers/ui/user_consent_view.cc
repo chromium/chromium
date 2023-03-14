@@ -303,8 +303,9 @@ void UserConsentView::InitButtonBar() {
             // When user consent is accepted, QuickAnswersView will be
             // displayed instead of dismissing the menu.
             handler->set_dismiss_anchor_menu_on_view_closed(false);
-            if (controller)
+            if (controller) {
               controller->OnUserConsentResult(true);
+            }
           },
           &event_handler_, controller_),
       l10n_util::GetStringUTF16(
@@ -323,15 +324,14 @@ void UserConsentView::InitWidget() {
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
 
   // Parent the widget to the owner of the menu.
-  // Skip the logic for browser tests since the menu controller is not
-  // available.
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kBrowserTest)) {
-    auto* active_menu_controller = views::MenuController::GetActiveInstance();
-    DCHECK(active_menu_controller && active_menu_controller->owner());
-    params.parent = active_menu_controller->owner()->GetNativeView();
-    params.child = true;
-  }
+  auto* active_menu_controller = views::MenuController::GetActiveInstance();
+  DCHECK(active_menu_controller && active_menu_controller->owner());
+
+  // This widget has to be a child of menu owner's widget to make keyboard focus
+  // work.
+  params.parent = active_menu_controller->owner()->GetNativeView();
+  params.child = true;
+  params.name = kWidgetName;
 
   views::Widget* widget = new views::Widget();
   widget->Init(std::move(params));

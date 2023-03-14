@@ -35,16 +35,6 @@ public class TabUiFeatureUtilities {
             new DoubleCachedFieldTrialParameter(
                     ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, THUMBNAIL_ASPECT_RATIO_PARAM, 0.85);
 
-    private static final String LAUNCH_BUG_FIX_PARAM = "enable_launch_bug_fix";
-    public static final BooleanCachedFieldTrialParameter ENABLE_LAUNCH_BUG_FIX =
-            new BooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID, LAUNCH_BUG_FIX_PARAM, false);
-
-    private static final String LAUNCH_POLISH_PARAM = "enable_launch_polish";
-    public static final BooleanCachedFieldTrialParameter ENABLE_LAUNCH_POLISH =
-            new BooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID, LAUNCH_POLISH_PARAM, false);
-
     // Field trial parameter for the minimum physical memory size to enable zooming animation.
     private static final String MIN_MEMORY_MB_PARAM = "zooming-min-memory-mb";
     public static final IntCachedFieldTrialParameter ZOOMING_MIN_MEMORY =
@@ -68,23 +58,6 @@ public class TabUiFeatureUtilities {
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
                     SHOW_OPEN_IN_TAB_GROUP_MENU_ITEM_FIRST_PARAM, false);
 
-    private static final String TAB_GROUP_SHARING_PARAM = "enable_tab_group_sharing";
-    public static final BooleanCachedFieldTrialParameter ENABLE_TAB_GROUP_SHARING =
-            new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
-                    TAB_GROUP_SHARING_PARAM, false);
-
-    // Field trial parameter for enabling launch polish for the grid tab switcher for tablets.
-    private static final String GRID_TAB_SWITCHER_FOR_TABLETS_POLISH_PARAM = "enable_launch_polish";
-    public static final BooleanCachedFieldTrialParameter GRID_TAB_SWITCHER_FOR_TABLETS_POLISH =
-            new BooleanCachedFieldTrialParameter(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS,
-                    GRID_TAB_SWITCHER_FOR_TABLETS_POLISH_PARAM, true);
-
-    // Field trial parameter for controlling delay grid tab switcher creation for tablets.
-    private static final String DELAY_GTS_CREATION_PARAM = "delay_creation";
-    public static final BooleanCachedFieldTrialParameter DELAY_GTS_CREATION =
-            new BooleanCachedFieldTrialParameter(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS,
-                    DELAY_GTS_CREATION_PARAM, true);
-
     // Field trial parameter for defining tab width for tab strip improvements.
     private static final String TAB_STRIP_IMPROVEMENTS_TAB_WIDTH_PARAM = "min_tab_width";
     public static final DoubleCachedFieldTrialParameter TAB_STRIP_TAB_WIDTH =
@@ -95,7 +68,8 @@ public class TabUiFeatureUtilities {
     private static final String TAB_SELECTION_EDITOR_V2_SHARE_PARAM = "enable_share";
     public static final BooleanCachedFieldTrialParameter ENABLE_TAB_SELECTION_EDITOR_V2_SHARE =
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_SELECTION_EDITOR_V2,
-                    TAB_SELECTION_EDITOR_V2_SHARE_PARAM, false);
+                    TAB_SELECTION_EDITOR_V2_SHARE_PARAM, true);
+
     // Field trial parameter for controlling longpress entry into TabSelectionEditorV2 from
     // TabGridDialog and TabSwitcher.
     private static final String TAB_SELECTION_EDITOR_V2_LONGPRESS_ENTRY_PARAM =
@@ -109,17 +83,9 @@ public class TabUiFeatureUtilities {
     private static final String TAB_SELECTION_EDITOR_V2_BOOKMARKS_PARAM = "enable_bookmarks";
     public static final BooleanCachedFieldTrialParameter ENABLE_TAB_SELECTION_EDITOR_V2_BOOKMARKS =
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_SELECTION_EDITOR_V2,
-                    TAB_SELECTION_EDITOR_V2_BOOKMARKS_PARAM, false);
-
-    // Field trial parameter for deferring favicon fetching until required.
-    private static final String DEFERRED_FAVICON = "deferred_favicon";
-    public static final BooleanCachedFieldTrialParameter ENABLE_DEFERRED_FAVICON =
-            new BooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID, DEFERRED_FAVICON, false);
+                    TAB_SELECTION_EDITOR_V2_BOOKMARKS_PARAM, true);
 
     private static Boolean sTabManagementModuleSupportedForTesting;
-    private static Boolean sGridTabSwitcherPolishEnabledForTesting;
-    private static Boolean sGridTabSwitcherDelayCreationEnabledForTesting;
 
     /**
      * Set whether the tab management module is supported for testing.
@@ -145,21 +111,12 @@ public class TabUiFeatureUtilities {
      */
     public static boolean isGridTabSwitcherEnabled(Context context) {
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
-            return isTabletGridTabSwitcherEnabled(context);
+            return true;
         }
 
         // Having Tab Groups or Start implies Grid Tab Switcher.
         return isTabManagementModuleSupported() || isTabGroupsAndroidEnabled(context)
                 || ReturnToChromeUtil.isStartSurfaceEnabled(context);
-    }
-
-    /**
-     * @return Whether the tablet Grid Tab Switcher UI is enabled and available for use.
-     * @param context The activity context.
-     */
-    public static boolean isTabletGridTabSwitcherEnabled(Context context) {
-        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                && ChromeFeatureList.sGridTabSwitcherForTablets.isEnabled();
     }
 
     /**
@@ -177,49 +134,9 @@ public class TabUiFeatureUtilities {
      */
     public static boolean isTabletTabGroupsEnabled(Context context) {
         return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                && ChromeFeatureList.sGridTabSwitcherForTablets.isEnabled()
                 && ChromeFeatureList.sTabStripImprovements.isEnabled()
                 && ChromeFeatureList.sTabGroupsForTablets.isEnabled()
                 && !DeviceClassManager.enableAccessibilityLayout(context);
-    }
-
-    /**
-     * Set whether the tablet grid tab switcher polish is enabled for testing.
-     */
-    public static void setTabletGridTabSwitcherPolishEnabledForTesting(@Nullable Boolean enabled) {
-        sGridTabSwitcherPolishEnabledForTesting = enabled;
-    }
-
-    /**
-     * Set whether the tablet grid tab switcher polish is enabled for testing.
-     */
-    public static void setGtsDelayCreationEnabledForTesting(@Nullable Boolean enabled) {
-        sGridTabSwitcherDelayCreationEnabledForTesting = enabled;
-    }
-
-    /**
-     * @return Whether the tablet Grid Tab Switcher Polish is enabled.
-     * @param context The activity context.
-     */
-    public static boolean isTabletGridTabSwitcherPolishEnabled(Context context) {
-        if (sGridTabSwitcherPolishEnabledForTesting != null) {
-            return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                    && sGridTabSwitcherPolishEnabledForTesting;
-        }
-        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                && GRID_TAB_SWITCHER_FOR_TABLETS_POLISH.getValue();
-    }
-
-    /**
-     * @return Whether the tablet Grid Tab Switcher creation should be delayed to on GTS load
-     *         instead of on startup.
-     */
-    public static boolean isTabletGridTabSwitcherDelayCreationEnabled() {
-        if (sGridTabSwitcherDelayCreationEnabledForTesting != null) {
-            return sGridTabSwitcherDelayCreationEnabledForTesting;
-        }
-
-        return DELAY_GTS_CREATION.getValue();
     }
 
     /**
@@ -280,13 +197,6 @@ public class TabUiFeatureUtilities {
                 && !SysUtils.isLowEndDevice();
     }
 
-    /**
-     * @return Whether the Grid/Group launch polish is enabled.
-     */
-    public static boolean isLaunchPolishEnabled() {
-        return ENABLE_LAUNCH_POLISH.getValue();
-    }
-
     private static Float sTabMinWidthForTesting;
 
     /**
@@ -305,13 +215,6 @@ public class TabUiFeatureUtilities {
         }
 
         return (float) TAB_STRIP_TAB_WIDTH.getValue();
-    }
-
-    /**
-     * @return Whether the Grid/Group launch bug fix is enabled.
-     */
-    public static boolean isLaunchBugFixEnabled() {
-        return ENABLE_LAUNCH_BUG_FIX.getValue();
     }
 
     /**

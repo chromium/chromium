@@ -152,7 +152,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cras.DeviceNoiseCancellationStatus"
-    enum="CrasNoiseCancellationStatus" expires_after="2023-06-25">
+    enum="CrasNoiseCancellationStatus" expires_after="2023-08-27">
 <!-- Name completed by histogram_suffixes
      name="Cras.DeviceType" -->
 
@@ -383,6 +383,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cras.InputGainChangedSource" enum="AudioSettingsChangeSource"
+    expires_after="2024-02-14">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>Records the source of a change to the input gain.</summary>
+</histogram>
+
 <histogram name="Cras.kHfpWidebandSpeechSelectedCodec" enum="CrasHfpCodec"
     expires_after="2022-12-01">
   <owner>hychao@chromium.org</owner>
@@ -488,6 +496,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cras.OutputVolumeChangedSource"
+    enum="AudioSettingsChangeSource" expires_after="2024-02-14">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>Records the source of a change to the output volume.</summary>
+</histogram>
+
 <histogram name="Cras.RtcDevicePair" enum="CrasDevicePair"
     expires_after="2023-08-08">
   <owner>yuhsuan@chromium.org</owner>
@@ -585,7 +601,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cras.StreamCallbackThreshold" units="frames"
-    expires_after="2023-06-25">
+    expires_after="2023-08-27">
 <!-- Name completed by histogram_suffixes
      name="Cras.Direction" and
      name="Cras.ClientType" -->
@@ -720,7 +736,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cras.UnderrunsPerDevice" units="count"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
@@ -731,7 +747,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cras.WebRTC.Audio.ApmCaptureInputLevelAverageRms"
-    units="dBFS (negated)" expires_after="2023-06-04">
+    units="dBFS (negated)" expires_after="2023-09-03">
   <owner>hychao@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>

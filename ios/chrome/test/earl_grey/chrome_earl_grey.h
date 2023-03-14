@@ -87,6 +87,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // cleared within a timeout.
 - (void)removeBrowsingCache;
 
+// Persists the current list of tabs to disk immediately.
+- (void)saveSessionImmediately;
+
 #pragma mark - Navigation Utilities (EG2)
 
 // Instructs some connected scene to open `URL` with default opening
@@ -686,6 +689,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 // Returns whether SF Symbols are used.
 - (BOOL)isSFSymbolEnabled;
+
+// Returns whether UIButtonConfiguration changes are enabled.
+- (BOOL)isUIButtonConfigurationEnabled;
 
 #pragma mark - ContentSettings
 

@@ -28,7 +28,14 @@ FamilyUserMetricsServiceFactory::GetInstance() {
 }
 
 FamilyUserMetricsServiceFactory::FamilyUserMetricsServiceFactory()
-    : ProfileKeyedServiceFactory("FamilyUserMetricsServiceFactory") {
+    : ProfileKeyedServiceFactory(
+          "FamilyUserMetricsServiceFactory",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(apps::AppServiceProxyFactory::GetInstance());
   DependsOn(ChildUserServiceFactory::GetInstance());
   DependsOn(SupervisedUserServiceFactory::GetInstance());

@@ -278,14 +278,14 @@ class WebUITabStripContainerView::AutoCloser : public ui::EventHandler,
 
   void OnViewIsDeleting(views::View* observed_view) override {
     view_observations_.RemoveObservation(observed_view);
-    if (observed_view == content_area_)
+    if (observed_view == content_area_) {
       content_area_ = nullptr;
-    else if (observed_view == omnibox_)
+    } else if (observed_view == omnibox_) {
       omnibox_ = nullptr;
-    else if (observed_view == top_container_)
+    } else {
+      CHECK_EQ(observed_view, top_container_);
       top_container_ = nullptr;
-    else
-      NOTREACHED();
+    }
   }
 
   void OnViewAddedToWidget(views::View* observed_view) override {

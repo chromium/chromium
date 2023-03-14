@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -149,17 +150,17 @@ bool ProfilePicker::Shown() {
 }
 
 // static
-bool ProfilePicker::ShouldShowAtLaunch() {
+StartupProfileModeReason ProfilePicker::GetStartupModeReason() {
   AvailabilityOnStartup availability_on_startup = GetAvailabilityOnStartup();
 
   if (availability_on_startup == AvailabilityOnStartup::kDisabled)
-    return false;
+    return StartupProfileModeReason::kPickerDisabledByPolicy;
 
   // TODO (crbug/1155158): Move this over the urls check (in
   // startup_browser_creator.cc) once the profile picker can forward urls
   // specified in command line.
   if (availability_on_startup == AvailabilityOnStartup::kForced)
-    return true;
+    return StartupProfileModeReason::kPickerForcedByPolicy;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Don't show the profile picker if secondary profiles are not allowed.
@@ -168,7 +169,7 @@ bool ProfilePicker::ShouldShowAtLaunch() {
           prefs::kLacrosSecondaryProfilesAllowed);
 
   if (!lacros_secondary_profiles_allowed)
-    return false;
+    return StartupProfileModeReason::kProfilesDisabledLacros;
 #endif
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -176,7 +177,7 @@ bool ProfilePicker::ShouldShowAtLaunch() {
   size_t number_of_profiles = profile_manager->GetNumberOfProfiles();
   // Need to consider 0 profiles as this is what happens in some browser-tests.
   if (number_of_profiles <= 1)
-    return false;
+    return StartupProfileModeReason::kSingleProfile;
 
   std::vector<ProfileAttributesEntry*> profile_attributes =
       profile_manager->GetProfileAttributesStorage().GetAllProfilesAttributes();
@@ -189,10 +190,13 @@ bool ProfilePicker::ShouldShowAtLaunch() {
   // active profiles. However, if the user has already seen the profile picker
   // before, respect user's preference.
   if (number_of_active_profiles < 2 && !Shown())
-    return false;
+    return StartupProfileModeReason::kInactiveProfiles;
 
   bool pref_enabled = g_browser_process->local_state()->GetBoolean(
       prefs::kBrowserShowProfilePickerOnStartup);
   base::UmaHistogramBoolean("ProfilePicker.AskOnStartup", pref_enabled);
-  return pref_enabled;
+  if (pref_enabled) {
+    return StartupProfileModeReason::kMultipleProfiles;
+  }
+  return StartupProfileModeReason::kUserOptedOut;
 }

@@ -1504,7 +1504,7 @@ bool HostProcess::OnPairingPolicyUpdate(const base::Value::Dict& policies) {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
 
   absl::optional<bool> allow_pairing =
-      policies.Find(policy::key::kRemoteAccessHostAllowClientPairing);
+      policies.FindBool(policy::key::kRemoteAccessHostAllowClientPairing);
   if (!allow_pairing.has_value()) {
     return false;
   }
@@ -1522,7 +1522,7 @@ bool HostProcess::OnGnubbyAuthPolicyUpdate(const base::Value::Dict& policies) {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
 
   absl::optional<bool> security_key_auth_policy_enabled =
-      policies.Find(policy::key::kRemoteAccessHostAllowGnubbyAuth);
+      policies.FindBool(policy::key::kRemoteAccessHostAllowGnubbyAuth);
   if (!security_key_auth_policy_enabled.has_value()) {
     return false;
   }
@@ -1542,7 +1542,7 @@ bool HostProcess::OnFileTransferPolicyUpdate(
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
 
   absl::optional<bool> file_transfer_enabled =
-      policies.Find(policy::key::kRemoteAccessHostAllowFileTransfer);
+      policies.FindBool(policy::key::kRemoteAccessHostAllowFileTransfer);
   if (!file_transfer_enabled.has_value()) {
     return false;
   }
@@ -1565,7 +1565,7 @@ bool HostProcess::OnEnableUserInterfacePolicyUpdate(
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
 
   absl::optional<bool> enable_user_interface =
-      policies.Find(policy::key::kRemoteAccessHostEnableUserInterface);
+      policies.FindBool(policy::key::kRemoteAccessHostEnableUserInterface);
   if (!enable_user_interface) {
     return false;
   }

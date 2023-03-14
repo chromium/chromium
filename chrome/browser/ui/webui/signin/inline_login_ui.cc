@@ -253,10 +253,15 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
           : profile->GetPrefs()->GetBoolean(
                 ash::prefs::kShouldSkipInlineLoginWelcomePage));
   if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
-    int message_id =
-        profiles::IsGuestModeEnabled()
-            ? IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_V2_WITH_GUEST_MODE
-            : IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_V2;
+    int message_id = IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_V2_WITHOUT_GUEST;
+    // Offer browser guest mode or device guest mode, if available.
+    if (profiles::IsGuestModeEnabled()) {
+      message_id = IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_V2_WITH_GUEST_MODE;
+    } else if (user_manager::UserManager::Get()->IsGuestSessionAllowed()) {
+      message_id =
+          IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_V2_WITH_DEVICE_GUEST_MODE;
+    }
+
     source->AddString(
         "accountManagerDialogWelcomeBody",
         l10n_util::GetStringFUTF16(

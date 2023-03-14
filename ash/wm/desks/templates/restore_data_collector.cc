@@ -16,6 +16,7 @@
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
+#include "components/desks_storage/core/desk_template_util.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -147,7 +148,8 @@ void RestoreDataCollector::SendDeskTemplate(uint32_t serial) {
 
   base::GUID desk_template_guid =
       call.template_type == DeskTemplateType::kFloatingWorkspace
-          ? base::GUID::ParseLowercase(kFloatingWorkspaceTemplateUuid)
+          ? base::GUID::ParseLowercase(desks_storage::desk_template_util::
+                                           kFloatingWorkspaceTemplateUuid)
           : base::GUID::GenerateRandomV4();
 
   auto desk_template = std::make_unique<DeskTemplate>(

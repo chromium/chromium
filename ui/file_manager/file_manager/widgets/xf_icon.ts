@@ -50,6 +50,8 @@ export class XfIcon extends XfBase {
           svg`<use xlink:href="foreground/images/files/ui/cloud_sync.svg#cloud_sync"></use>`,
       [constants.ICON_TYPES.CLOUD]:
           svg`<use xlink:href="foreground/images/files/ui/cloud.svg#cloud"></use>`,
+      [constants.ICON_TYPES.ERROR]:
+          svg`<use xlink:href="foreground/images/files/ui/error.svg#error"></use>`,
     };
   }
 
@@ -76,6 +78,7 @@ export class XfIcon extends XfBase {
     }
 
     const shouldKeepColor = [
+      constants.ICON_TYPES.DRIVE_LOGO,
       constants.ICON_TYPES.EXCEL,
       constants.ICON_TYPES.POWERPOINT,
       constants.ICON_TYPES.WORD,
@@ -209,6 +212,10 @@ function getCSS() {
       -webkit-mask-image: url(../foreground/images/volumes/shared.svg);
     }
 
+    :host([type="drive_logo"]) span {
+      background-image: url(../foreground/images/files/ui/drive_logo.svg);
+    }
+
     :host([type="excel"]) span {
       background-image: url(../foreground/images/filetype/filetype_excel.svg);
     }
@@ -335,10 +342,6 @@ function getCSS() {
       -webkit-mask-image: url(../foreground/images/files/ui/filetype_placeholder_generic.svg);
     }
 
-    :host([type="offline"]) span {
-      -webkit-mask-image: url(../foreground/images/files/ui/offline.svg);
-    }
-
     :host([type="tini"]) span {
       -webkit-mask-image: url(../foreground/images/filetype/filetype_tini.svg);
     }
@@ -353,6 +356,10 @@ function getCSS() {
 
     :host([type="word"]) span {
       background-image: url(../foreground/images/filetype/filetype_word.svg);
+    }
+
+    :host([type="check"]) span {
+      -webkit-mask-image: url(../foreground/images/files/ui/check.svg);
     }
   `;
 }

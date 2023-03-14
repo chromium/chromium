@@ -29,6 +29,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -66,20 +67,6 @@ namespace {
 
 const std::vector<SearchConcept>& GetDeviceSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_KEYBOARD,
-       mojom::kKeyboardSubpagePath,
-       mojom::SearchResultIcon::kKeyboard,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kKeyboard}},
-      {IDS_OS_SETTINGS_TAG_KEYBOARD_AUTO_REPEAT,
-       mojom::kKeyboardSubpagePath,
-       mojom::SearchResultIcon::kKeyboard,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kKeyboardAutoRepeat},
-       {IDS_OS_SETTINGS_TAG_KEYBOARD_AUTO_REPEAT_ALT1,
-        SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_POWER,
        mojom::kPowerSubpagePath,
        mojom::SearchResultIcon::kPower,
@@ -124,24 +111,12 @@ const std::vector<SearchConcept>& GetDeviceSearchConcepts() {
        {.subpage = mojom::Subpage::kDisplay},
        {IDS_OS_SETTINGS_TAG_DISPLAY_ALT1, IDS_OS_SETTINGS_TAG_DISPLAY_ALT2,
         SearchConcept::kAltTagEnd}},
-      {IDS_OS_SETTINGS_TAG_KEYBOARD_SHORTCUTS,
-       mojom::kKeyboardSubpagePath,
-       mojom::SearchResultIcon::kKeyboard,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kKeyboardShortcuts}},
       {IDS_OS_SETTINGS_TAG_DEVICE,
        mojom::kDeviceSectionPath,
        mojom::SearchResultIcon::kLaptop,
        mojom::SearchResultDefaultRank::kHigh,
        mojom::SearchResultType::kSection,
        {.section = mojom::Section::kDevice}},
-      {IDS_OS_SETTINGS_TAG_KEYBOARD_FUNCTION_KEYS,
-       mojom::kKeyboardSubpagePath,
-       mojom::SearchResultIcon::kKeyboard,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kKeyboardFunctionKeys}},
       {IDS_OS_SETTINGS_TAG_POWER_IDLE_WHILE_CHARGING,
        mojom::kPowerSubpagePath,
        mojom::SearchResultIcon::kPower,
@@ -158,6 +133,70 @@ const std::vector<SearchConcept>& GetDeviceSearchConcepts() {
        {.setting = mojom::Setting::kPowerIdleBehaviorWhileOnBattery},
        {IDS_OS_SETTINGS_TAG_POWER_IDLE_WHILE_ON_BATTERY_ALT1,
         SearchConcept::kAltTagEnd}},
+  });
+  return *tags;
+}
+
+const std::vector<SearchConcept>& GetKeyboardSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_KEYBOARD,
+       mojom::kKeyboardSubpagePath,
+       mojom::SearchResultIcon::kKeyboard,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSubpage,
+       {.subpage = mojom::Subpage::kKeyboard}},
+      {IDS_OS_SETTINGS_TAG_KEYBOARD_AUTO_REPEAT,
+       mojom::kKeyboardSubpagePath,
+       mojom::SearchResultIcon::kKeyboard,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kKeyboardAutoRepeat},
+       {IDS_OS_SETTINGS_TAG_KEYBOARD_AUTO_REPEAT_ALT1,
+        SearchConcept::kAltTagEnd}},
+      {IDS_OS_SETTINGS_TAG_KEYBOARD_SHORTCUTS,
+       mojom::kKeyboardSubpagePath,
+       mojom::SearchResultIcon::kKeyboard,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kKeyboardShortcuts}},
+      {IDS_OS_SETTINGS_TAG_KEYBOARD_FUNCTION_KEYS,
+       mojom::kKeyboardSubpagePath,
+       mojom::SearchResultIcon::kKeyboard,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kKeyboardFunctionKeys}},
+  });
+  return *tags;
+}
+
+const std::vector<SearchConcept>& GetPerDeviceKeyboardSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_KEYBOARD,
+       mojom::kPerDeviceKeyboardSubpagePath,
+       mojom::SearchResultIcon::kKeyboard,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSubpage,
+       {.subpage = mojom::Subpage::kPerDeviceKeyboard}},
+      {IDS_OS_SETTINGS_TAG_KEYBOARD_AUTO_REPEAT,
+       mojom::kPerDeviceKeyboardSubpagePath,
+       mojom::SearchResultIcon::kKeyboard,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kKeyboardAutoRepeat},
+       {IDS_OS_SETTINGS_TAG_KEYBOARD_AUTO_REPEAT_ALT1,
+        SearchConcept::kAltTagEnd}},
+      {IDS_OS_SETTINGS_TAG_KEYBOARD_SHORTCUTS,
+       mojom::kPerDeviceKeyboardSubpagePath,
+       mojom::SearchResultIcon::kKeyboard,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kKeyboardShortcuts}},
+      {IDS_OS_SETTINGS_TAG_KEYBOARD_FUNCTION_KEYS,
+       mojom::kPerDeviceKeyboardSubpagePath,
+       mojom::SearchResultIcon::kKeyboard,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kKeyboardFunctionKeys}},
   });
   return *tags;
 }
@@ -205,6 +244,49 @@ const std::vector<SearchConcept>& GetTouchpadSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetPerDeviceTouchpadSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_TOUCHPAD_SPEED,
+       mojom::kPerDeviceTouchpadSubpagePath,
+       mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kTouchpadSpeed}},
+      {IDS_OS_SETTINGS_TAG_TOUCHPAD_TAP_DRAGGING,
+       mojom::kPerDeviceTouchpadSubpagePath,
+       mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kTouchpadTapDragging}},
+      {IDS_OS_SETTINGS_TAG_TOUCHPAD_TAP_TO_CLICK,
+       mojom::kPerDeviceTouchpadSubpagePath,
+       mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kTouchpadTapToClick}},
+      {IDS_OS_SETTINGS_TAG_TOUCHPAD,
+       mojom::kPerDeviceTouchpadSubpagePath,
+       mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSubpage,
+       {.subpage = mojom::Subpage::kPerDeviceTouchpad},
+       {IDS_OS_SETTINGS_TAG_TOUCHPAD_ALT1, SearchConcept::kAltTagEnd}},
+      {IDS_OS_SETTINGS_TAG_TOUCHPAD_REVERSE_SCROLLING,
+       mojom::kPerDeviceTouchpadSubpagePath,
+       mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kTouchpadReverseScrolling}},
+      {IDS_OS_SETTINGS_TAG_TOUCHPAD_ACCELERATION,
+       mojom::kPerDeviceTouchpadSubpagePath,
+       mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kTouchpadAcceleration}},
+  });
+  return *tags;
+}
+
 const std::vector<SearchConcept>&
 GetTouchpadScrollAccelerationSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
@@ -218,7 +300,20 @@ GetTouchpadScrollAccelerationSearchConcepts() {
   return *tags;
 }
 
-const std::vector<SearchConcept>& GetTouchpadHapticFeedback() {
+const std::vector<SearchConcept>&
+GetPerDeviceTouchpadScrollAccelerationSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_TOUCHPAD_SCROLL_ACCELERATION,
+       mojom::kPerDeviceTouchpadSubpagePath,
+       mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kTouchpadScrollAcceleration}},
+  });
+  return *tags;
+}
+
+const std::vector<SearchConcept>& GetTouchpadHapticSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_TOUCHPAD_HAPTIC_FEEDBACK,
        mojom::kPointersSubpagePath,
@@ -226,14 +321,26 @@ const std::vector<SearchConcept>& GetTouchpadHapticFeedback() {
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTouchpadHapticFeedback}},
+      {IDS_OS_SETTINGS_TAG_TOUCHPAD_HAPTIC_CLICK_SENSITIVITY,
+       mojom::kPointersSubpagePath,
+       mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kTouchpadHapticClickSensitivity}},
   });
   return *tags;
 }
 
-const std::vector<SearchConcept>& GetTouchpadHapticClickSensitivity() {
+const std::vector<SearchConcept>& GetPerDeviceTouchpadHapticSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_TOUCHPAD_HAPTIC_FEEDBACK,
+       mojom::kPerDeviceTouchpadSubpagePath,
+       mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kTouchpadHapticFeedback}},
       {IDS_OS_SETTINGS_TAG_TOUCHPAD_HAPTIC_CLICK_SENSITIVITY,
-       mojom::kPointersSubpagePath,
+       mojom::kPerDeviceTouchpadSubpagePath,
        mojom::SearchResultIcon::kLaptop,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
@@ -246,6 +353,19 @@ const std::vector<SearchConcept>& GetMouseScrollAccelerationSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_MOUSE_SCROLL_ACCELERATION,
        mojom::kPointersSubpagePath,
+       mojom::SearchResultIcon::kMouse,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kMouseScrollAcceleration}},
+  });
+  return *tags;
+}
+
+const std::vector<SearchConcept>&
+GetPerDeviceMouseScrollAccelerationSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_MOUSE_SCROLL_ACCELERATION,
+       mojom::kPerDeviceMouseSubpagePath,
        mojom::SearchResultIcon::kMouse,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
@@ -290,6 +410,42 @@ const std::vector<SearchConcept>& GetMouseSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetPerDeviceMouseSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_MOUSE_ACCELERATION,
+       mojom::kPerDeviceMouseSubpagePath,
+       mojom::SearchResultIcon::kMouse,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kMouseAcceleration}},
+      {IDS_OS_SETTINGS_TAG_MOUSE_SWAP_BUTTON,
+       mojom::kPerDeviceMouseSubpagePath,
+       mojom::SearchResultIcon::kMouse,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kMouseSwapPrimaryButtons}},
+      {IDS_OS_SETTINGS_TAG_MOUSE_SPEED,
+       mojom::kPerDeviceMouseSubpagePath,
+       mojom::SearchResultIcon::kMouse,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kMouseSpeed}},
+      {IDS_OS_SETTINGS_TAG_MOUSE_REVERSE_SCROLLING,
+       mojom::kPerDeviceMouseSubpagePath,
+       mojom::SearchResultIcon::kMouse,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kMouseReverseScrolling}},
+      {IDS_OS_SETTINGS_TAG_MOUSE,
+       mojom::kPerDeviceMouseSubpagePath,
+       mojom::SearchResultIcon::kMouse,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSubpage,
+       {.subpage = mojom::Subpage::kPerDeviceMouse}},
+  });
+  return *tags;
+}
+
 const std::vector<SearchConcept>& GetPointingStickSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_POINTING_STICK_PRIMARY_BUTTON,
@@ -306,6 +462,30 @@ const std::vector<SearchConcept>& GetPointingStickSearchConcepts() {
        {.setting = mojom::Setting::kPointingStickAcceleration}},
       {IDS_OS_SETTINGS_TAG_POINTING_STICK_SPEED,
        mojom::kPointersSubpagePath,
+       mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kPointingStickSpeed}},
+  });
+  return *tags;
+}
+
+const std::vector<SearchConcept>& GetPerDevicePointingStickSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_POINTING_STICK_PRIMARY_BUTTON,
+       mojom::kPerDevicePointingStickSubpagePath,
+       mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kPointingStickSwapPrimaryButtons}},
+      {IDS_OS_SETTINGS_TAG_POINTING_STICK_ACCELERATION,
+       mojom::kPerDevicePointingStickSubpagePath,
+       mojom::SearchResultIcon::kLaptop,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kPointingStickAcceleration}},
+      {IDS_OS_SETTINGS_TAG_POINTING_STICK_SPEED,
+       mojom::kPerDevicePointingStickSubpagePath,
        mojom::SearchResultIcon::kLaptop,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
@@ -751,6 +931,10 @@ void AddDeviceDisplayStrings(content::WebUIDataSource* html_source) {
       "displayArrangementText",
       IDS_SETTINGS_DISPLAY_ARRANGEMENT_WITH_KEYBOARD_TEXT);
 
+  html_source->AddBoolean(
+      "isCryptohomeDataEphemeral",
+      user_manager::UserManager::Get()->IsCurrentUserCryptohomeDataEphemeral());
+
   html_source->AddBoolean("unifiedDesktopAvailable",
                           IsUnifiedDesktopAvailable());
 
@@ -834,6 +1018,12 @@ void AddDeviceAudioStrings(content::WebUIDataSource* html_source) {
       {"audioDeviceUsbLabel", IDS_SETTINGS_AUDIO_DEVICE_USB_LABEL},
       {"audioInputDeviceTitle", IDS_SETTINGS_AUDIO_INPUT_DEVICE_TITLE},
       {"audioInputGainTitle", IDS_SETTINGS_AUDIO_INPUT_GAIN_TITLE},
+      {"audioInputMuteButtonAriaLabelMuted",
+       IDS_SETTINGS_AUDIO_INPUT_MUTE_BUTTON_ARIA_LABEL_MUTED},
+      {"audioInputMuteButtonAriaLabelMutedByHardwareSwitch",
+       IDS_SETTINGS_AUDIO_INPUT_MUTE_BUTTON_ARIA_LABEL_MUTED_BY_HARDWARE_SWITCH},
+      {"audioInputMuteButtonAriaLabelNotMuted",
+       IDS_SETTINGS_AUDIO_INPUT_MUTE_BUTTON_ARIA_LABEL_NOT_MUTED},
       {"audioInputNoiseCancellationTitle",
        IDS_SETTINGS_AUDIO_INPUT_NOISE_CANCELLATION_TITLE},
       {"audioInputTitle", IDS_SETTINGS_AUDIO_INPUT_TITLE},
@@ -842,6 +1032,10 @@ void AddDeviceAudioStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_AUDIO_MUTED_EXTERNALLY_TOOLTIP},
       {"audioOutputDeviceTitle", IDS_SETTINGS_AUDIO_OUTPUT_DEVICE_TITLE},
       {"audioOutputTitle", IDS_SETTINGS_AUDIO_OUTPUT_TITLE},
+      {"audioOutputMuteButtonAriaLabelMuted",
+       IDS_SETTINGS_AUDIO_OUTPUT_MUTE_BUTTON_ARIA_LABEL_MUTED},
+      {"audioOutputMuteButtonAriaLabelNotMuted",
+       IDS_SETTINGS_AUDIO_OUTPUT_MUTE_BUTTON_ARIA_LABEL_NOT_MUTED},
       {"audioTitle", IDS_SETTINGS_AUDIO_TITLE},
       {"audioToggleToMuteTooltip", IDS_SETTINGS_AUDIO_TOGGLE_TO_MUTE_TOOLTIP},
       {"audioToggleToUnmuteTooltip",
@@ -910,6 +1104,11 @@ DeviceSection::DeviceSection(Profile* profile,
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetDeviceSearchConcepts());
 
+  if (ash::features::IsInputDeviceSettingsSplitEnabled()) {
+    updater.AddSearchTags(GetPerDeviceKeyboardSearchConcepts());
+  } else {
+    updater.AddSearchTags(GetKeyboardSearchConcepts());
+  }
   if (ShouldShowExternalStorageSettings(profile))
     updater.AddSearchTags(GetExternalStorageSearchConcepts());
 
@@ -1193,48 +1392,97 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
 
 void DeviceSection::TouchpadExists(bool exists) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
-  updater.RemoveSearchTags(GetTouchpadSearchConcepts());
-  updater.RemoveSearchTags(GetTouchpadScrollAccelerationSearchConcepts());
+
+  if (!ash::features::IsInputDeviceSettingsSplitEnabled()) {
+    updater.RemoveSearchTags(GetTouchpadSearchConcepts());
+    updater.RemoveSearchTags(GetTouchpadScrollAccelerationSearchConcepts());
+
+    if (exists) {
+      updater.AddSearchTags(GetTouchpadSearchConcepts());
+      if (base::FeatureList::IsEnabled(features::kAllowScrollSettings)) {
+        updater.AddSearchTags(GetTouchpadScrollAccelerationSearchConcepts());
+      }
+    }
+    return;
+  }
+
+  updater.RemoveSearchTags(GetPerDeviceTouchpadSearchConcepts());
+  updater.RemoveSearchTags(
+      GetPerDeviceTouchpadScrollAccelerationSearchConcepts());
 
   if (exists) {
-    updater.AddSearchTags(GetTouchpadSearchConcepts());
-    if (base::FeatureList::IsEnabled(features::kAllowScrollSettings))
-      updater.AddSearchTags(GetTouchpadScrollAccelerationSearchConcepts());
+    updater.AddSearchTags(GetPerDeviceTouchpadSearchConcepts());
+    if (base::FeatureList::IsEnabled((features::kAllowScrollSettings))) {
+      updater.AddSearchTags(
+          GetPerDeviceTouchpadScrollAccelerationSearchConcepts());
+    }
   }
 }
 
 void DeviceSection::HapticTouchpadExists(bool exists) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
-  updater.RemoveSearchTags(GetTouchpadHapticFeedback());
-  updater.RemoveSearchTags(GetTouchpadHapticClickSensitivity());
 
-  if (!exists) {
+  if (!ash::features::IsInputDeviceSettingsSplitEnabled()) {
+    updater.RemoveSearchTags(GetTouchpadHapticSearchConcepts());
+
+    if (exists) {
+      updater.AddSearchTags(GetTouchpadHapticSearchConcepts());
+    }
     return;
   }
 
-  updater.AddSearchTags(GetTouchpadHapticFeedback());
-  updater.AddSearchTags(GetTouchpadHapticClickSensitivity());
+  updater.RemoveSearchTags(GetPerDeviceTouchpadHapticSearchConcepts());
+
+  if (exists) {
+    updater.AddSearchTags(GetPerDeviceTouchpadHapticSearchConcepts());
+  }
 }
 
 void DeviceSection::MouseExists(bool exists) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
-  updater.RemoveSearchTags(GetMouseSearchConcepts());
-  updater.RemoveSearchTags(GetMouseScrollAccelerationSearchConcepts());
+
+  if (!ash::features::IsInputDeviceSettingsSplitEnabled()) {
+    updater.RemoveSearchTags(GetMouseSearchConcepts());
+    updater.RemoveSearchTags(GetMouseScrollAccelerationSearchConcepts());
+
+    if (exists) {
+      updater.AddSearchTags(GetMouseSearchConcepts());
+      if (AreScrollSettingsAllowed()) {
+        updater.AddSearchTags(GetMouseScrollAccelerationSearchConcepts());
+      }
+    }
+    return;
+  }
+
+  updater.RemoveSearchTags(GetPerDeviceMouseSearchConcepts());
+  updater.RemoveSearchTags(GetPerDeviceMouseScrollAccelerationSearchConcepts());
 
   if (exists) {
-    updater.AddSearchTags(GetMouseSearchConcepts());
-    if (AreScrollSettingsAllowed())
-      updater.AddSearchTags(GetMouseScrollAccelerationSearchConcepts());
+    updater.AddSearchTags(GetPerDeviceMouseSearchConcepts());
+    if (AreScrollSettingsAllowed()) {
+      updater.AddSearchTags(
+          GetPerDeviceMouseScrollAccelerationSearchConcepts());
+    }
   }
 }
 
 void DeviceSection::PointingStickExists(bool exists) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
 
-  if (exists)
-    updater.AddSearchTags(GetPointingStickSearchConcepts());
-  else
+  if (!ash::features::IsInputDeviceSettingsSplitEnabled()) {
     updater.RemoveSearchTags(GetPointingStickSearchConcepts());
+
+    if (exists) {
+      updater.AddSearchTags(GetPointingStickSearchConcepts());
+    }
+    return;
+  }
+
+  updater.RemoveSearchTags(GetPerDevicePointingStickSearchConcepts());
+
+  if (exists) {
+    updater.AddSearchTags(GetPerDevicePointingStickSearchConcepts());
+  }
 }
 
 void DeviceSection::OnDeviceListsComplete() {

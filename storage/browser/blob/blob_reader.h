@@ -13,9 +13,13 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "components/file_access/scoped_file_access.h"
+#include "components/file_access/scoped_file_access_delegate.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/completion_once_callback.h"
@@ -168,7 +172,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobReader {
   FRIEND_TEST_ALL_PREFIXES(BlobReaderTest, HandleBeforeAsyncCancel);
   FRIEND_TEST_ALL_PREFIXES(BlobReaderTest, ReadFromIncompleteBlob);
 
-  BlobReader(const BlobDataHandle* blob_handle);
+  explicit BlobReader(const BlobDataHandle* blob_handle);
 
   bool total_size_calculated() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -208,7 +212,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobReader {
   void AdvanceItem();
   void AdvanceBytesRead(int result);
   void ReadBytesItem(const BlobDataItem& item, int bytes_to_read);
-  BlobReader::Status ReadFileItem(FileStreamReader* reader, int bytes_to_read);
+  BlobReader::Status ReadFileItem(
+      FileStreamReader* reader,
+      int bytes_to_read,
+      file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
+          file_access);
   void DidReadFile(int result);
   void DeleteItemReaders();
   Status ReadReadableDataHandle(const BlobDataItem& item, int bytes_to_read);

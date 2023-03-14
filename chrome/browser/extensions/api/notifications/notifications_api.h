@@ -74,7 +74,7 @@ class NotificationsCreateFunction : public NotificationsApiFunction {
   ~NotificationsCreateFunction() override;
 
  private:
-  std::unique_ptr<api::notifications::Create::Params> params_;
+  absl::optional<api::notifications::Create::Params> params_;
 
   DECLARE_EXTENSION_FUNCTION("notifications.create", NOTIFICATIONS_CREATE)
 };
@@ -90,7 +90,7 @@ class NotificationsUpdateFunction : public NotificationsApiFunction {
   ~NotificationsUpdateFunction() override;
 
  private:
-  std::unique_ptr<api::notifications::Update::Params> params_;
+  absl::optional<api::notifications::Update::Params> params_;
 
   DECLARE_EXTENSION_FUNCTION("notifications.update", NOTIFICATIONS_UPDATE)
 };
@@ -106,7 +106,7 @@ class NotificationsClearFunction : public NotificationsApiFunction {
   ~NotificationsClearFunction() override;
 
  private:
-  std::unique_ptr<api::notifications::Clear::Params> params_;
+  absl::optional<api::notifications::Clear::Params> params_;
 
   DECLARE_EXTENSION_FUNCTION("notifications.clear", NOTIFICATIONS_CLEAR)
 };

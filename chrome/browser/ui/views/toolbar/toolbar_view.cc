@@ -92,6 +92,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/color/color_id.h"
@@ -159,6 +160,9 @@ auto& GetViewCommandMap() {
   return kViewCommandMap;
 }
 
+constexpr int kToolbarDividerWidth = 2;
+constexpr int kToolbarDividerHeight = 16;
+constexpr int kToolbarDividerCornerRadius = 1;
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -240,12 +244,17 @@ void ToolbarView::Init() {
       base::BindRepeating(callback, browser_, IDC_HOME), prefs);
 
   std::unique_ptr<ExtensionsToolbarContainer> extensions_container;
+  std::unique_ptr<views::View> toolbar_divider;
 
   // Do not create the extensions or browser actions container if it is a guest
   // profile (only regular and incognito profiles host extensions).
   if (!browser_->profile()->IsGuestSession()) {
     extensions_container =
         std::make_unique<ExtensionsToolbarContainer>(browser_);
+
+    if (features::IsChromeRefresh2023()) {
+      toolbar_divider = std::make_unique<views::View>();
+    }
   }
   std::unique_ptr<media_router::CastToolbarButton> cast;
   if (media_router::MediaRouterEnabled(browser_->profile()))
@@ -286,6 +295,12 @@ void ToolbarView::Init() {
 
   if (extensions_container)
     extensions_container_ = AddChildView(std::move(extensions_container));
+
+  if (toolbar_divider) {
+    toolbar_divider_ = AddChildView(std::move(toolbar_divider));
+    toolbar_divider_->SetPreferredSize(
+        gfx::Size(kToolbarDividerWidth, kToolbarDividerHeight));
+  }
 
   if (base::FeatureList::IsEnabled(features::kChromeLabs)) {
     chrome_labs_model_ = std::make_unique<ChromeLabsBubbleViewModel>();
@@ -493,13 +508,13 @@ void ToolbarView::ShowBookmarkBubble(const GURL& url, bool already_bookmarked) {
       GetPageActionIconView(PageActionIconType::kBookmarkStar);
 
   std::unique_ptr<BubbleSyncPromoDelegate> delegate;
-  Profile* profile = browser_->profile();
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  delegate = std::make_unique<BookmarkBubbleSignInDelegate>(profile);
+  delegate =
+      std::make_unique<BookmarkBubbleSignInDelegate>(browser_->profile());
 #endif
   BookmarkBubbleView::ShowBubble(anchor_view, GetWebContents(),
                                  bookmark_star_icon, std::move(delegate),
-                                 profile, url, already_bookmarked);
+                                 browser_, url, already_bookmarked);
 }
 
 ExtensionsToolbarButton* ToolbarView::GetExtensionsButton() const {
@@ -628,6 +643,10 @@ void ToolbarView::Layout() {
 
   LayoutCommon();
 
+  if (features::IsChromeRefresh2023()) {
+    UpdateClipPath();
+  }
+
   // Call super implementation to ensure layout manager and child layouts
   // happen.
   AccessiblePaneView::Layout();
@@ -642,6 +661,22 @@ void ToolbarView::OnThemeChanged() {
     LoadImages();
 
   SchedulePaint();
+}
+
+void ToolbarView::UpdateClipPath() {
+  const int corner_radius = GetLayoutConstant(TOOLBAR_CORNER_RADIUS);
+  SkPath path;
+  const gfx::Rect local_bounds = GetLocalBounds();
+  path.moveTo(0, local_bounds.height());
+  path.lineTo(0, corner_radius);
+  path.arcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
+             SkPathDirection::kCW, corner_radius, 0);
+  path.lineTo(local_bounds.width() - corner_radius, 0);
+  path.arcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
+             SkPathDirection::kCW, local_bounds.width(), corner_radius);
+  path.lineTo(local_bounds.width(), local_bounds.height());
+  path.lineTo(0, local_bounds.height());
+  SetClipPath(path);
 }
 
 bool ToolbarView::AcceleratorPressed(const ui::Accelerator& accelerator) {
@@ -705,6 +740,12 @@ void ToolbarView::InitLayout() {
 
     extensions_container_->SetProperty(views::kFlexBehaviorKey,
                                        extensions_flex_rule);
+  }
+
+  if (toolbar_divider_) {
+    SkColor color = GetColorProvider()->GetColor(ui::kColorSysOutline);
+    toolbar_divider_->SetBackground(
+        views::CreateRoundedRectBackground(color, kToolbarDividerCornerRadius));
   }
 
   LayoutCommon();

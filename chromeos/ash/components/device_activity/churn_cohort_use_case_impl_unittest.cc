@@ -36,14 +36,14 @@ constexpr char kHardwareClassKeyNotFound[] = "HARDWARE_CLASS_KEY_NOT_FOUND";
 // https://crsrc.org/o/src/third_party/chromiumos-overlay/chromeos-base/chromeos-activate-date/files/activate_date;l=67
 const char kFakeFirstActivateDate[] = "2022-50";
 
-// The decimal representation of the bit string `100010001100000000000001101`
+// The decimal representation of the bit string `0100010001 000000000000001101`
 // The first 10 bits represent the number of months since 2000 is 275, which
 // represents the 2022-12.
 // The right 18 bits represent the churn cohort active status for past 18
 // months. The right most bit represents the status of previous active mont,
 // in this case, it represent 2022-12. And the second right most bit
 // represents 2022-11, etc.
-const int kFakeChurnActiveStatus = 109450913;
+const int kFakeChurnActiveStatus = 71565325;
 
 constexpr ChromeDeviceMetadataParameters kFakeChromeParameters = {
     version_info::Channel::STABLE /* chromeos_channel */,
@@ -101,20 +101,53 @@ class ChurnCohortUseCaseImplTest : public testing::Test {
   system::FakeStatisticsProvider statistics_provider_;
 };
 
-TEST_F(ChurnCohortUseCaseImplTest, ValidateWindowIdFormattedCorrectly) {
-  // Create fixed timestamp used to generate a fixed window identifier.
-  base::Time new_daily_ts;
-  EXPECT_TRUE(
-      base::Time::FromString("01 Jan 2022 23:59:59 GMT", &new_daily_ts));
+class ChurnCohortUseCaseImplEmptyFirstActiveTest : public testing::Test {
+ public:
+  ChurnCohortUseCaseImplEmptyFirstActiveTest() = default;
+  ChurnCohortUseCaseImplEmptyFirstActiveTest(
+      const ChurnCohortUseCaseImplEmptyFirstActiveTest&) = delete;
+  ChurnCohortUseCaseImplEmptyFirstActiveTest& operator=(
+      const ChurnCohortUseCaseImplEmptyFirstActiveTest&) = delete;
+  ~ChurnCohortUseCaseImplEmptyFirstActiveTest() override = default;
 
-  std::string window_id =
-      churn_cohort_use_case_impl_->GenerateWindowIdentifier(new_daily_ts);
+ protected:
+  // testing::Test:
+  void SetUp() override {
+    DeviceActivityController::RegisterPrefs(local_state_.registry());
 
-  EXPECT_EQ(static_cast<int>(window_id.size()), 6);
-  EXPECT_EQ(window_id, "202201");
-}
+    system::StatisticsProvider::SetTestProvider(&statistics_provider_);
 
-TEST_F(ChurnCohortUseCaseImplTest, ValidateChurnMetadata) {
+    // Initialize the churn active status to a default value of 0.
+    churn_active_status_ = std::make_unique<ChurnActiveStatus>(0);
+
+    const std::vector<psm_rlwe::RlwePlaintextId> plaintext_ids;
+    churn_cohort_use_case_impl_ = std::make_unique<ChurnCohortUseCaseImpl>(
+        churn_active_status_.get(), kFakePsmDeviceActiveSecret,
+        kFakeChromeParameters, &local_state_,
+        // |FakePsmDelegate| can use any test case parameters.
+        std::make_unique<FakePsmDelegate>(std::string() /* ec_cipher_key */,
+                                          std::string() /* seed */,
+                                          std::move(plaintext_ids)));
+  }
+
+  void TearDown() override {
+    DCHECK(churn_cohort_use_case_impl_);
+    DCHECK(churn_active_status_);
+
+    // Safely destruct unique pointers.
+    churn_cohort_use_case_impl_.reset();
+    churn_active_status_.reset();
+  }
+
+  std::unique_ptr<ChurnActiveStatus> churn_active_status_;
+  std::unique_ptr<ChurnCohortUseCaseImpl> churn_cohort_use_case_impl_;
+
+  // Fake pref service for unit testing the local state.
+  TestingPrefServiceSimple local_state_;
+  system::FakeStatisticsProvider statistics_provider_;
+};
+
+TEST_F(ChurnCohortUseCaseImplTest, ValidateChurnMetadataWithFirstActiveIsTrue) {
   churn_active_status_->InitializeValue(kFakeChurnActiveStatus);
   base::Time new_daily_ts;
   EXPECT_TRUE(
@@ -142,7 +175,7 @@ TEST_F(ChurnCohortUseCaseImplTest, ValidateChurnMetadata) {
   EXPECT_EQ(exploded.month, 12);
 }
 
-TEST_F(ChurnCohortUseCaseImplTest, ValidateFirstActiveStatus) {
+TEST_F(ChurnCohortUseCaseImplTest, ValidateFirstActiveStatusIsFalse) {
   base::Time new_daily_ts;
   EXPECT_TRUE(
       base::Time::FromString("01 Nov 2022 23:59:59 GMT", &new_daily_ts));
@@ -154,5 +187,24 @@ TEST_F(ChurnCohortUseCaseImplTest, ValidateFirstActiveStatus) {
       churn_cohort_use_case_impl_->GenerateImportRequestBody().value();
   EXPECT_FALSE(
       req.import_data(0).churn_cohort_metadata().is_first_active_in_cohort());
+}
+
+TEST_F(ChurnCohortUseCaseImplEmptyFirstActiveTest,
+       ValidateFirstActiveStatusWithVPDNullField) {
+  base::Time new_daily_ts;
+  EXPECT_TRUE(
+      base::Time::FromString("01 Dec 2022 23:59:59 GMT", &new_daily_ts));
+  churn_cohort_use_case_impl_->SetWindowIdentifier(new_daily_ts);
+  std::string window_id_str =
+      churn_cohort_use_case_impl_->GetWindowIdentifier().value();
+  EXPECT_EQ(window_id_str, "202212");
+  FresnelImportDataRequest req =
+      churn_cohort_use_case_impl_->GenerateImportRequestBody().value();
+  EXPECT_FALSE(req.import_data(0)
+                   .churn_cohort_metadata()
+                   .has_is_first_active_in_cohort());
+
+  // First active week should be null.
+  EXPECT_TRUE(churn_active_status_->GetFirstActiveWeek() == base::Time());
 }
 }  // namespace ash::device_activity

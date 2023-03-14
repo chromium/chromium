@@ -40,9 +40,9 @@ TEST_F(ScreenProjectionChangeMonitorTest, ScreenSharingChangeTriggersCallback) {
   RepeatingTestFuture<bool> monitor_future;
   ScreenProjectionChangeMonitor monitor(monitor_future.GetCallback());
 
-  Shell::Get()->system_tray_notifier()->NotifyScreenCaptureStart(
+  Shell::Get()->system_tray_notifier()->NotifyScreenAccessStart(
       base::DoNothing(), base::DoNothing(), u"");
-  Shell::Get()->system_tray_notifier()->NotifyScreenCaptureStop();
+  Shell::Get()->system_tray_notifier()->NotifyScreenAccessStop();
 
   EXPECT_TRUE(monitor_future.Take());
   EXPECT_FALSE(monitor_future.Take());
@@ -59,7 +59,7 @@ TEST_F(ScreenProjectionChangeMonitorTest, NoChangeDoesNotTriggerCallback) {
   display_manager->UpdateDisplays();
   // Turning on screen capture will not change the screen projection state
   // because we are already mirroring.
-  Shell::Get()->system_tray_notifier()->NotifyScreenCaptureStart(
+  Shell::Get()->system_tray_notifier()->NotifyScreenAccessStart(
       base::DoNothing(), base::DoNothing(), u"");
 
   EXPECT_TRUE(monitor_future.Take());

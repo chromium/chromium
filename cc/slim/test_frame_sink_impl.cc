@@ -30,7 +30,9 @@ class TestFrameSinkImpl::TestMojoCompositorFrameSink
       viz::CompositorFrame frame,
       absl::optional<::viz::HitTestRegionList> hit_test_region_list,
       uint64_t submit_time) override {
+    did_submit_ = true;
     last_frame_ = std::move(frame);
+    hit_test_region_list_ = std::move(hit_test_region_list);
   }
   void SubmitCompositorFrameSync(
       const viz::LocalSurfaceId& local_surface_id,
@@ -38,7 +40,9 @@ class TestFrameSinkImpl::TestMojoCompositorFrameSink
       absl::optional<::viz::HitTestRegionList> hit_test_region_list,
       uint64_t submit_time,
       SubmitCompositorFrameSyncCallback callback) override {}
-  void DidNotProduceFrame(const viz::BeginFrameAck& ack) override {}
+  void DidNotProduceFrame(const viz::BeginFrameAck& ack) override {
+    did_not_produce_frame_ = true;
+  }
   void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
                                const gpu::Mailbox& id) override {}
   void DidDeleteSharedBitmap(const gpu::Mailbox& id) override {}
@@ -49,9 +53,27 @@ class TestFrameSinkImpl::TestMojoCompositorFrameSink
 #endif
 
   viz::CompositorFrame TakeLastFrame() { return std::move(last_frame_); }
+  const absl::optional<::viz::HitTestRegionList>& hit_test_region_list() const {
+    return hit_test_region_list_;
+  }
+
+  bool GetDidSubmitAndReset() {
+    bool rv = did_submit_;
+    did_submit_ = false;
+    return rv;
+  }
+
+  bool GetDidNotProduceFrameAndReset() {
+    bool rv = did_not_produce_frame_;
+    did_not_produce_frame_ = false;
+    return rv;
+  }
 
  private:
   viz::CompositorFrame last_frame_;
+  absl::optional<::viz::HitTestRegionList> hit_test_region_list_;
+  bool did_submit_ = false;
+  bool did_not_produce_frame_ = false;
 };
 
 // static
@@ -86,8 +108,21 @@ TestFrameSinkImpl::TestFrameSinkImpl(
 
 TestFrameSinkImpl::~TestFrameSinkImpl() = default;
 
+bool TestFrameSinkImpl::GetDidSubmitAndReset() {
+  return mojo_sink_->GetDidSubmitAndReset();
+}
+
+bool TestFrameSinkImpl::GetDidNotProduceFrameAndReset() {
+  return mojo_sink_->GetDidNotProduceFrameAndReset();
+}
+
 viz::CompositorFrame TestFrameSinkImpl::TakeLastFrame() {
   return mojo_sink_->TakeLastFrame();
+}
+
+const absl::optional<::viz::HitTestRegionList>&
+TestFrameSinkImpl::GetLastHitTestRegionList() const {
+  return mojo_sink_->hit_test_region_list();
 }
 
 bool TestFrameSinkImpl::BindToClient(FrameSinkImplClient* client) {
@@ -95,6 +130,9 @@ bool TestFrameSinkImpl::BindToClient(FrameSinkImplClient* client) {
   client_ = client;
   frame_sink_ = mojo_sink_.get();
   bind_to_client_called_ = true;
+  if (bind_to_client_result_) {
+    context_provider_->BindToCurrentSequence();
+  }
   return bind_to_client_result_;
 }
 

@@ -103,13 +103,11 @@ class CORE_EXPORT HTMLImageElement final
     return GetImageLoader().GetContent();
   }
   void LoadDeferredImageFromMicrotask() {
-    GetImageLoader().LoadDeferredImage(referrer_policy_,
-                                       /*force_blocking*/ false,
+    GetImageLoader().LoadDeferredImage(/*force_blocking*/ false,
                                        /*update_from_microtask*/ true);
   }
   void LoadDeferredImageBlockingLoad() {
-    GetImageLoader().LoadDeferredImage(referrer_policy_,
-                                       /*force_blocking*/ true);
+    GetImageLoader().LoadDeferredImage(/*force_blocking*/ true);
   }
   void SetImageForTest(ImageResourceContent* content) {
     GetImageLoader().SetImageForTest(content);
@@ -294,8 +292,6 @@ class CORE_EXPORT HTMLImageElement final
   bool is_changed_shortly_after_mouseover_ : 1;
   bool has_sizes_attribute_in_img_or_sibling_ : 1;
   bool is_lazy_loaded_ : 1;
-
-  network::mojom::ReferrerPolicy referrer_policy_;
 
   std::unique_ptr<LazyLoadImageObserver::VisibleLoadTimeMetrics>
       visible_load_time_metrics_;

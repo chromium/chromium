@@ -36,7 +36,7 @@ class UtilitySandboxedProcessLauncherDelegate
   bool GetAppContainerId(std::string* appcontainer_id) override;
   bool DisableDefaultPolicy() override;
   bool ShouldLaunchElevated() override;
-  bool PreSpawnTarget(sandbox::TargetPolicy* policy) override;
+  bool InitializeConfig(sandbox::TargetConfig* config) override;
   bool ShouldUnsandboxedRunInJob() override;
   bool CetCompatible() override;
 #endif  // BUILDFLAG(IS_WIN)

@@ -75,7 +75,7 @@ namespace {
 
 using syncer::ModelTypeStore;
 
-// The maximum number of templates the local storage can hold.
+// The maximum number of templates the chrome sync storage can hold.
 constexpr size_t kMaxTemplateCount = 6u;
 
 // The maximum number of bytes a template can be.
@@ -447,29 +447,25 @@ size_t DeskSyncBridge::GetEntryCount() const {
   return GetSaveAndRecallDeskEntryCount() + GetDeskTemplateEntryCount();
 }
 
-size_t DeskSyncBridge::GetMaxEntryCount() const {
-  return GetMaxSaveAndRecallDeskEntryCount() +
-         GetMaxFloatingWorkspaceDeskEntryCount() +
-         GetMaxDeskTemplateEntryCount();
-}
-
 // Return 0 for now since chrome sync does not support save and recall desks.
 size_t DeskSyncBridge::GetSaveAndRecallDeskEntryCount() const {
   return 0u;
 }
 
 size_t DeskSyncBridge::GetDeskTemplateEntryCount() const {
-  return desk_template_entries_.size() + policy_entries_.size();
+  size_t template_count = std::count_if(
+      desk_template_entries_.begin(), desk_template_entries_.end(),
+      [](const std::pair<base::GUID, std::unique_ptr<ash::DeskTemplate>>&
+             entry) {
+        return entry.second->type() == ash::DeskTemplateType::kTemplate;
+      });
+  return template_count + policy_entries_.size();
 }
 
 // Chrome sync does not support save and recall desks yet. Return 0 for max
 // count.
 size_t DeskSyncBridge::GetMaxSaveAndRecallDeskEntryCount() const {
   return 0u;
-}
-
-size_t DeskSyncBridge::GetMaxFloatingWorkspaceDeskEntryCount() const {
-  return (ash::features::IsFloatingWorkspaceV2Enabled() ? 1u : 0u);
 }
 
 size_t DeskSyncBridge::GetMaxDeskTemplateEntryCount() const {

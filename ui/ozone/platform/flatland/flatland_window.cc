@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/flatland/flatland_window.h"
 
+#include <fidl/fuchsia.ui.pointer/cpp/hlcpp_conversion.h>
 #include <fuchsia/sys/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/ui/scenic/cpp/view_identity.h>
@@ -72,13 +73,24 @@ FlatlandWindow::FlatlandWindow(FlatlandWindowManager* window_manager,
   view_ref_focused_.set_error_handler([](zx_status_t status) {
     ZX_LOG(ERROR, status) << "ViewRefFocused disconnected.";
   });
-  fuchsia::ui::pointer::TouchSourceHandle touch_source;
-  view_bound_protocols.set_touch_source(touch_source.NewRequest());
-  fuchsia::ui::pointer::MouseSourceHandle mouse_source;
-  view_bound_protocols.set_mouse_source(mouse_source.NewRequest());
+
+  auto touch_source_endpoints =
+      fidl::CreateEndpoints<fuchsia_ui_pointer::TouchSource>();
+  ZX_CHECK(touch_source_endpoints.is_ok(),
+           touch_source_endpoints.status_value());
+  view_bound_protocols.set_touch_source(
+      fidl::NaturalToHLCPP(std::move(touch_source_endpoints->server)));
+
+  auto mouse_source_endpoints =
+      fidl::CreateEndpoints<fuchsia_ui_pointer::MouseSource>();
+  ZX_CHECK(mouse_source_endpoints.is_ok(),
+           mouse_source_endpoints.status_value());
+  view_bound_protocols.set_mouse_source(
+      fidl::NaturalToHLCPP(std::move(mouse_source_endpoints->server)));
 
   pointer_handler_ = std::make_unique<PointerEventsHandler>(
-      std::move(touch_source), std::move(mouse_source));
+      std::move(touch_source_endpoints->client),
+      std::move(mouse_source_endpoints->client));
   pointer_handler_->StartWatching(base::BindRepeating(
       &FlatlandWindow::DispatchEvent,
       // This is safe since |pointer_handler_| is a class member.
@@ -274,7 +286,6 @@ void FlatlandWindow::Restore() {
 }
 
 PlatformWindowState FlatlandWindow::GetPlatformWindowState() const {
-  NOTIMPLEMENTED_LOG_ONCE();
   if (is_fullscreen_)
     return PlatformWindowState::kFullScreen;
   if (!is_view_attached_)
@@ -367,8 +378,15 @@ void FlatlandWindow::OnGetStatus(
     case fuchsia::ui::composition::ParentViewportStatus::CONNECTED_TO_DISPLAY:
       OnViewAttachedChanged(true);
       break;
+
     case fuchsia::ui::composition::ParentViewportStatus::
         DISCONNECTED_FROM_DISPLAY:
+      // We may get here after the initial `GetStatus()` call. There is no need
+      // to do anything in this case.
+      if (!is_view_attached_) {
+        break;
+      }
+
       OnViewAttachedChanged(false);
 
       // Detach the surface view. This is necessary to ensure that the
@@ -386,6 +404,7 @@ void FlatlandWindow::OnGetStatus(
       platform_window_delegate_->OnAcceleratedWidgetAvailable(window_id_);
 
       break;
+
     default:
       NOTIMPLEMENTED();
       break;

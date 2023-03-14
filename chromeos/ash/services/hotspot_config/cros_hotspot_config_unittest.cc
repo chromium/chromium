@@ -5,6 +5,7 @@
 #include "chromeos/ash/services/hotspot_config/cros_hotspot_config.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/memory/ptr_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -13,6 +14,7 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/services/hotspot_config/public/cpp/cros_hotspot_config_test_observer.h"
+#include "chromeos/ash/services/hotspot_config/public/cpp/hotspot_enabled_state_test_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -56,9 +58,9 @@ class CrosHotspotConfigTest : public testing::Test {
     network_handler_test_helper_->AddDefaultProfiles();
     network_handler_test_helper_->ResetDevicesAndServices();
     NetworkHandler* network_handler = NetworkHandler::Get();
-    // Use absl::WrapUnique(new CrosHotspotConfig(...)) instead of
+    // Use base::WrapUnique(new CrosHotspotConfig(...)) instead of
     // std::make_unique<CrosHotspotConfig> to access a private constructor.
-    cros_hotspot_config_ = absl::WrapUnique(
+    cros_hotspot_config_ = base::WrapUnique(
         new CrosHotspotConfig(network_handler->hotspot_capabilities_provider(),
                               network_handler->hotspot_state_handler(),
                               network_handler->hotspot_controller()));
@@ -74,6 +76,11 @@ class CrosHotspotConfigTest : public testing::Test {
   void SetupObserver() {
     observer_ = std::make_unique<CrosHotspotConfigTestObserver>();
     cros_hotspot_config_->AddObserver(observer_->GenerateRemote());
+
+    hotspot_enabled_state_observer_ =
+        std::make_unique<HotspotEnabledStateTestObserver>();
+    cros_hotspot_config_->ObserveEnabledStateChanges(
+        hotspot_enabled_state_observer_->GenerateRemote());
   }
 
   void SetValidHotspotCapabilities() {
@@ -185,12 +192,18 @@ class CrosHotspotConfigTest : public testing::Test {
 
   CrosHotspotConfigTestObserver* observer() { return observer_.get(); }
 
+  HotspotEnabledStateTestObserver* hotspotStateObserver() {
+    return hotspot_enabled_state_observer_.get();
+  }
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<CrosHotspotConfig> cros_hotspot_config_;
   std::unique_ptr<CrosHotspotConfigTestObserver> observer_;
+  std::unique_ptr<HotspotEnabledStateTestObserver>
+      hotspot_enabled_state_observer_;
 };
 
 TEST_F(CrosHotspotConfigTest, GetHotspotInfo) {
@@ -256,6 +269,7 @@ TEST_F(CrosHotspotConfigTest, SetHotspotConfig) {
 }
 
 TEST_F(CrosHotspotConfigTest, EnableHotspot) {
+  SetupObserver();
   EXPECT_EQ(mojom::HotspotControlResult::kNotAllowed, EnableHotspot());
 
   SetReadinessCheckResultReady();
@@ -266,6 +280,7 @@ TEST_F(CrosHotspotConfigTest, EnableHotspot) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(mojom::HotspotControlResult::kSuccess, EnableHotspot());
+  EXPECT_EQ(hotspotStateObserver()->hotspot_turned_on_count(), 1u);
 
   // Simulate check tethering readiness operation fail.
   helper()->manager_test()->SetSimulateCheckTetheringReadinessResult(
@@ -278,11 +293,15 @@ TEST_F(CrosHotspotConfigTest, EnableHotspot) {
 }
 
 TEST_F(CrosHotspotConfigTest, DisableHotspot) {
+  SetupObserver();
   helper()->manager_test()->SetSimulateTetheringEnableResult(
       FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(mojom::HotspotControlResult::kSuccess, DisableHotspot());
+  EXPECT_EQ(hotspotStateObserver()->hotspot_turned_off_count(), 1u);
+  EXPECT_EQ(hotspotStateObserver()->last_disable_reason(),
+            hotspot_config::mojom::DisableReason::kUserInitiated);
 }
 
 }  // namespace ash::hotspot_config

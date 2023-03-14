@@ -94,6 +94,7 @@ std::vector<std::unique_ptr<std::string>> LoadComponentResources(
 void LoadAndLocalizeResources(const Extension& extension,
                               std::vector<ExtensionResource> resources,
                               bool localize_file,
+                              size_t max_script_length,
                               LoadAndLocalizeResourcesCallback callback) {
   DCHECK(!resources.empty());
   DCHECK(base::ranges::all_of(resources, [](const ExtensionResource& resource) {
@@ -162,8 +163,8 @@ void LoadAndLocalizeResources(const Extension& extension,
   }
 
   auto file_reader = base::MakeRefCounted<FileReader>(
-      std::move(resources), std::move(get_file_and_l10n_callback),
-      std::move(callback));
+      std::move(resources), max_script_length,
+      std::move(get_file_and_l10n_callback), std::move(callback));
   file_reader->Start();
 }
 

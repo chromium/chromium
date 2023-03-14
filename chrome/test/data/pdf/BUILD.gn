@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/browser/resources/pdf/pdf.gni")
+import("//components/services/screen_ai/buildflags/features.gni")
 import("//pdf/features.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -62,12 +62,24 @@ ts_library("build_ts") {
     ]
   }
 
+  if (enable_screen_ai_service) {
+    in_files += [ "pdf_ocr_toolbar_test.ts" ]
+  }
+
   if (is_chromeos_ash) {
     in_files += [ "printing_icon_test.ts" ]
   }
 
-  definitions =
-      ts_definitions + [ "//tools/typescript/definitions/chrome_test.d.ts" ]
+  definitions = [
+    "//tools/typescript/definitions/chrome_test.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/mime_handler_private.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
+  ]
+  if (enable_ink) {
+    definitions += [ "//chrome/browser/resources/pdf/ink/drawing_canvas.d.ts" ]
+  }
+
   deps = [
     "../webui:build_ts",
     "//chrome/browser/resources/pdf:build_ts",

@@ -10,12 +10,11 @@
 class ChromeDirectSocketsDelegate : public content::DirectSocketsDelegate {
  public:
   // content::DirectSocketsDelegate:
-  bool ValidateAddressAndPort(
-      content::BrowserContext* browser_context,
-      const GURL& lock_url,
-      const std::string& address,
-      uint16_t port,
-      blink::mojom::DirectSocketProtocolType protocol) const override;
+  bool ValidateAddressAndPort(content::BrowserContext* browser_context,
+                              const GURL& lock_url,
+                              const std::string& address,
+                              uint16_t port,
+                              ProtocolType protocol) const override;
 };
 
 #endif  // CHROME_BROWSER_DIRECT_SOCKETS_CHROME_DIRECT_SOCKETS_DELEGATE_H_

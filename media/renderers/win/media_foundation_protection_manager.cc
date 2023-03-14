@@ -37,9 +37,6 @@ HRESULT MediaFoundationProtectionManager::RuntimeClassInitialize(
   task_runner_ = std::move(task_runner);
   waiting_cb_ = std::move(waiting_cb);
 
-  if (!base::win::ScopedHString::ResolveCoreWinRTStringDelayload())
-    return kErrorResolveCoreWinRTStringDelayload;
-
   // Init an empty |property_set_| as MFMediaEngine could access it via
   // |get_Properties| before we populate it within SetPMPServer.
   base::win::ScopedHString property_set_id = base::win::ScopedHString::Create(

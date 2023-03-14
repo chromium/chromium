@@ -106,6 +106,7 @@ class CORE_EXPORT WebDevToolsAgentImpl final
   // InspectorPageAgent::Client implementation.
   void PageLayoutInvalidated(bool resized) override;
   void WaitForDebugger() override;
+  bool IsPausedForNewWindow() override;
 
   // InspectorLayerTreeAgent::Client implementation.
   bool IsInspectorLayer(const cc::Layer*) override;
@@ -128,6 +129,7 @@ class CORE_EXPORT WebDevToolsAgentImpl final
   Member<Node> node_to_inspect_;
   bool include_view_agents_;
   bool wait_for_debugger_when_shown_ = false;
+  bool is_paused_for_new_window_shown_ = false;
 };
 
 }  // namespace blink

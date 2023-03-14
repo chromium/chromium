@@ -23,9 +23,9 @@ PasswordChanges JoinPasswordStoreChanges(
 // holds an error.
 LoginsResult GetLoginsOrEmptyListOnFailure(LoginsResultOrError result);
 
-// Returns password changes if |result| holds them, empty changelist if the
-// |result| holds an error and absl::nullopt if the result is absl::nullopt.
-PasswordChanges GetPasswordChangesOrEmptyListOnFailure(
+// Returns password changes if |result| holds them, or absl::nullopt if |result|
+// holds an absl::nullopt or error.
+PasswordChanges GetPasswordChangesOrNulloptOnFailure(
     PasswordChangesOrError result);
 
 }  // namespace password_manager

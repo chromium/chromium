@@ -5,15 +5,15 @@
 #ifndef SANDBOX_POLICY_LINUX_BPF_PRINT_BACKEND_POLICY_LINUX_H_
 #define SANDBOX_POLICY_LINUX_BPF_PRINT_BACKEND_POLICY_LINUX_H_
 
-#include "sandbox/policy/linux/bpf_network_policy_linux.h"
+#include "sandbox/policy/export.h"
+#include "sandbox/policy/linux/bpf_base_policy_linux.h"
 
-namespace sandbox {
-namespace policy {
+namespace sandbox::policy {
 
 // This policy can be used by print backend utility processes.
 // It is based upon NetworkProcessPolicy because print backend talks to CUPS
 // servers over network.
-class PrintBackendProcessPolicy : public NetworkProcessPolicy {
+class SANDBOX_POLICY_EXPORT PrintBackendProcessPolicy : public BPFBasePolicy {
  public:
   PrintBackendProcessPolicy();
   PrintBackendProcessPolicy(const PrintBackendProcessPolicy&) = delete;
@@ -21,13 +21,9 @@ class PrintBackendProcessPolicy : public NetworkProcessPolicy {
       delete;
   ~PrintBackendProcessPolicy() override;
 
-  // Currently no need to override EvaluateSyscall() because network base class
-  // already provides sufficient capabilities.
-  // TODO(crbug.com/809738) Provide more specific policy allowances once
-  // network receives refined restrictions.
+  bpf_dsl::ResultExpr EvaluateSyscall(int sysno) const override;
 };
 
-}  // namespace policy
-}  // namespace sandbox
+}  // namespace sandbox::policy
 
 #endif  // SANDBOX_POLICY_LINUX_BPF_PRINT_BACKEND_POLICY_LINUX_H_

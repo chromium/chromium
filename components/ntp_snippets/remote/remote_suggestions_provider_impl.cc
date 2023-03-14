@@ -36,7 +36,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/variations/variations_associated_data.h"
 #include "ui/gfx/image/image.h"
 
 namespace ntp_snippets {
@@ -73,7 +72,7 @@ bool IsOrderingNewRemoteCategoriesBasedOnArticlesCategoryEnabled() {
   // TODO(vitaliii): Use GetFieldTrialParamByFeature(As.*)? from
   // base/metrics/field_trial_params.h. GetVariationParamByFeature(As.*)? are
   // deprecated.
-  return variations::GetVariationParamByFeatureAsBool(
+  return base::GetFieldTrialParamByFeatureAsBool(
       kArticleSuggestionsFeature,
       kOrderNewRemoteCategoriesBasedOnArticlesCategory,
       /*default_value=*/false);

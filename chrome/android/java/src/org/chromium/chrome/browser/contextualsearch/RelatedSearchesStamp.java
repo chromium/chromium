@@ -35,7 +35,6 @@ class RelatedSearchesStamp {
     private static final String RELATED_SEARCHES_EXPERIMENT_RECIPE_STAGE = "R";
     private static final String RELATED_SEARCHES_NO_EXPERIMENT = "n";
     private static final String RELATED_SEARCHES_LANGUAGE_RESTRICTION = "l";
-    private static final String RELATED_SEARCHES_DARK_LAUNCH = "d";
     private static final String RELATED_SEARCHES_USER_INTERACTION = "U";
     private static final String RELATED_SEARCHES_SELECTED_POSITION = "p";
     private static final String NO_EXPERIMENT_STAMP = RELATED_SEARCHES_STAMP_VERSION
@@ -43,17 +42,6 @@ class RelatedSearchesStamp {
 
     private final ContextualSearchPolicy mPolicy;
     private boolean mDisableDefaultAllowedLanguagesForTesting;
-
-    /**
-     * Verbosity param used to control requested results.
-     * <ul>
-     *   <li> "d" specifies a dark launch, which means return none </li>
-     *   <li> "v" for verbose  </li>
-     *   <li> "x" for extra verbose </li>
-     *   <li> "" for the default </li></ul>
-     * See also the verbosity entry in about_flags to correlate.
-     */
-    private static final String RELATED_SEARCHES_VERBOSITY_PARAM = "verbosity";
 
     /**
      * Creates a Related Searches Stamp handling instance that works with the given {@code
@@ -208,27 +196,13 @@ class RelatedSearchesStamp {
     }
 
     /**
-     * Returns the number of results to request from the server, as a single coded letter, or
-     * {@code null} if the server should just return the default number of Related Searches.
-     */
-    private String getNumberOfRelatedSearchesToRequestCode() {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES_UI)) {
-            return RELATED_SEARCHES_DARK_LAUNCH;
-        }
-        // Return the Feature param, which could be an empty string if not present.
-        return ChromeFeatureList.getFieldTrialParamByFeature(
-                ChromeFeatureList.RELATED_SEARCHES_UI, RELATED_SEARCHES_VERBOSITY_PARAM);
-    }
-
-    /**
      * Builds the "stamp" that tracks the processing of Related Searches and describes what was
      * done at each stage using a shorthand notation. The notation is described in go/rsearches-dd
      * here: http://doc/1DryD8NAP5LQAo326LnxbqkIDCNfiCOB7ak3gAYaNWAM#bookmark=id.nx7ivu2upqw
      * <p>The first stage is built here: "1" for schema version one, "R" for the configuration
      * Recipe which has a character describing how we'll formulate the search. Typically all of
      * this comes from the Variations config at runtime. We programmatically append an "l" that
-     * indicates a language restriction (when present), and currently a "d" for "dark launch" so
-     * the server knows to return normal Contextual Search results for this older client.
+     * indicates a language restriction (when present).
      * @param isLanguageRestricted Whether there are any language restrictions needed by the
      *        server.
      * @return A string that represents and encoded description of the current request processing.
@@ -239,14 +213,21 @@ class RelatedSearchesStamp {
         if (TextUtils.isEmpty(experimentConfigStamp)) experimentConfigStamp = NO_EXPERIMENT_STAMP;
         StringBuilder stampBuilder = new StringBuilder().append(experimentConfigStamp);
         if (isLanguageRestricted) stampBuilder.append(RELATED_SEARCHES_LANGUAGE_RESTRICTION);
-        // Add a tag so the server knows this version of the client is doing a dark launch
-        // and cannot decode Related Searches, unless overridden by a Feature flag.
-        String resultsToReturnCode = getNumberOfRelatedSearchesToRequestCode();
-        if (resultsToReturnCode.length() > 0) stampBuilder.append(resultsToReturnCode);
+
         return stampBuilder.toString();
     }
 
+    /**
+     * get the allowed languages for the related searches.
+     * @return A string that contains the allowed languages, or empty string which means all the
+     *         languages are allowed.
+     */
     private String getAllowedLanguages() {
+        if (ContextualSearchFieldTrial.isRelatedSearchesParamEnabled(
+                    ContextualSearchFieldTrial
+                            .RELATED_SEARCHES_LANGUAGE_SUPPORT_ALL_LANGUAGES_PARAM_NAME)) {
+            return "";
+        }
         String allowedLanguages = ContextualSearchFieldTrial.getRelatedSearchesParam(
                 ContextualSearchFieldTrial.RELATED_SEARCHES_LANGUAGE_ALLOWLIST_PARAM_NAME);
         // If there is no language found, we use default language list.

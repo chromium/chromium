@@ -24,6 +24,7 @@ aggregate_vector_icons("views_vector_icons") {
 
   sources = [
     "checkbox_active.icon",
+    "checkbox_active_cr2023.icon",
     "checkbox_normal.icon",
     "close.icon",
     "drag_general_selection.icon",
@@ -46,7 +47,6 @@ aggregate_vector_icons("views_vector_icons") {
     "pin.icon",
     "radio_button_active.icon",
     "radio_button_normal.icon",
-    "toggle_button_check.icon",
     "uninstall.icon",
     "unpin.icon",
   ]
@@ -583,7 +583,10 @@ component("views") {
   if (is_chromeos) {
     public += [ "highlight_border.h" ]
     sources += [ "highlight_border.cc" ]
-    deps += [ "//chromeos/constants" ]
+    deps += [
+      "//chromeos/constants",
+      "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
+    ]
   }
 
   if (is_linux) {
@@ -1001,6 +1004,8 @@ source_set("test_support") {
     "test/menu_runner_test_api.h",
     "test/menu_test_utils.cc",
     "test/menu_test_utils.h",
+    "test/mock_drag_controller.cc",
+    "test/mock_drag_controller.h",
     "test/mock_input_event_activation_protector.cc",
     "test/mock_input_event_activation_protector.h",
     "test/native_widget_factory.cc",

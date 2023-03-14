@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">Na-detect na link. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Na-delete ang page <ph name="PAGE_NUMBER" /></translation>
 <translation id="1258009455399840361">I-rotate nang 90 degree clockwise</translation>
-<translation id="1300209025925956156">I-scan ang iyong dokumento</translation>
-<translation id="1309250603447638106">Dina-download ang mga update para sa pag-scan ng dokumento</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Search + Kaliwang arrow para i-access.</translation>
 <translation id="1417314334557041815">I-edit ang page <ph name="INDEX" /></translation>
 <translation id="1467231725790366244">Hindi nakasaksak ang <ph name="CAMERA" />.</translation>
 <translation id="1473110567575736769">3 segundong timer</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">Walang na-record</translation>
 <translation id="1838104802459806957">Mag-tilt pataas</translation>
 <translation id="1843105061469674856">Mag-scan ng karagdagang page</translation>
-<translation id="1851169887664797861">Available ang mga karagdagang kontrol sa camera</translation>
 <translation id="1851616744363735765">NAKA-PAUSE</translation>
 <translation id="1899697626337024495">Resolution ng larawan</translation>
 <translation id="1925845977604399247">Pumunta sa Gallery</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">Uri ng pag-scan</translation>
 <translation id="28682968802727151">Preview ng mirror</translation>
 <translation id="2879583609344924966">Nakasaksak ang <ph name="CAMERA" />.</translation>
-<translation id="2904654629665923749">Available ang scan ng dokumento</translation>
 <translation id="3067436040345934772">Mag-pan sa kanan</translation>
 <translation id="3081586908890909590">Lumipat sa pag-record ng video</translation>
 <translation id="313467653172006084">30 FPS</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">Kopyahin ang address ng link</translation>
 <translation id="4281620174117014503">Katamtamang resolution</translation>
 <translation id="428234092390943511">Thumbnail ng page</translation>
-<translation id="4340659173795395806">Puwede ka na ngayong gumawa ng maraming page na PDF</translation>
 <translation id="4383571725254449280">Mag-print ng mga log ng pagganap</translation>
 <translation id="4445542136948522167">Ihinto ang pagkuha ng larawan</translation>
 <translation id="4570032796877367747">Camera sa harap</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">I-save</translation>
 <translation id="5320594929574852403">Gumagalaw pakaliwa</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5444515100983837161">Ilagay sa loob ng frame ang lahat ng gilid ng dokumento. Pinakamahusay na gumagana ang pag-scan kung magkaiba ng kulay ang dokumento at background.</translation>
 <translation id="5662366948659129155">Sina-scan ang page <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Parisukat</translation>
 <translation id="5746169159649715125">I-save bilang PDF</translation>
@@ -157,7 +150,6 @@ Kung tungkol ang iyong feedback sa kalidad ng larawan o video, mag-attach ng hal
 <translation id="8428213095426709021">Mga Setting</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">I-toggle ang pagkaka-mute ng mikropono. Naka-on ang mute</translation>
-<translation id="8712637175834984815">Nakuha ko</translation>
 <translation id="8730621377337864115">Tapos na</translation>
 <translation id="8732462232047530626">I-preview ang metadata</translation>
 <translation id="8815966864175525708">Lumipat para kumuha ng portrait na larawan</translation>

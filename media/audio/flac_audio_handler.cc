@@ -177,13 +177,11 @@ FLAC__StreamDecoderWriteStatus FlacAudioHandler::WriteCallbackInternal(
     return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
   }
 
-  if (!bus_) {
-    bus_ = AudioBus::Create(num_channels, num_samples);
+  // Discard the packet if there are more than the number of `max_blocksize`
+  // frames.
+  if (num_samples > bus_->frames()) {
+    return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
   }
-
-  // During the last time calling this callback, it may not have
-  // `bus_->frames()` frames.
-  DCHECK_LE(num_samples, bus_->frames());
 
   for (int ch = 0; ch < num_channels; ++ch) {
     float* channel_data = bus_->channel(ch);
@@ -227,6 +225,12 @@ void FlacAudioHandler::MetaCallbackInternal(
     return;
   }
 
+  int max_blocksize =
+      static_cast<int>(metadata->data.stream_info.max_blocksize);
+  if (max_blocksize <= 0) {
+    return;
+  }
+
   // There will be at most `max_blocksize` of frames for each call to the
   // `WriteCallback()`. For the client bus in `CopyTo()`, it will always
   // have `kDefaultFrameCount` frames. We want to make sure the `fifo_`
@@ -239,9 +243,9 @@ void FlacAudioHandler::MetaCallbackInternal(
   // `max_blocksize + kDefaultFrameCount - 1`. 2 is just used for
   // simplicity.
   fifo_ = std::make_unique<AudioFifo>(
-      num_channels_,
-      std::max(kDefaultFrameCount * 2,
-               static_cast<int>(metadata->data.stream_info.max_blocksize * 2)));
+      num_channels_, std::max(kDefaultFrameCount * 2, max_blocksize * 2));
+
+  bus_ = AudioBus::Create(num_channels_, max_blocksize);
 }
 
 bool FlacAudioHandler::AreParamsValid() const {

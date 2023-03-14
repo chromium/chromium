@@ -17,6 +17,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::ElementsAre;
+using ::testing::ElementsAreArray;
 
 namespace autofill {
 namespace {
@@ -102,6 +103,29 @@ std::pair<FormData, std::string> CreateFormAndServerClassification(
   return std::make_pair(form, response_string);
 }
 
+std::unique_ptr<FormStructure> BuildFormStructure(FormData form,
+                                                  std::string response_string,
+                                                  bool run_heuristics) {
+  auto form_structure = std::make_unique<FormStructure>(form);
+  // Identifies the sections based on the heuristics types.
+  if (run_heuristics) {
+    form_structure->DetermineHeuristicTypes(nullptr, nullptr);
+  }
+  // Calls RationalizeFieldTypePredictions.
+  FormStructure::ParseApiQueryResponse(
+      response_string, {form_structure.get()},
+      test::GetEncodedSignatures({form_structure.get()}), nullptr, nullptr);
+  return form_structure;
+}
+
+std::unique_ptr<FormStructure> BuildFormStructure(
+    std::pair<FormData, std::string> form_and_server_classifications,
+    bool run_heuristics) {
+  return BuildFormStructure(std::move(form_and_server_classifications.first),
+                            std::move(form_and_server_classifications.second),
+                            run_heuristics);
+}
+
 std::vector<ServerFieldType> GetTypes(const FormStructure& form_structure) {
   std::vector<ServerFieldType> server_types;
   server_types.reserve(form_structure.field_count());
@@ -112,8 +136,8 @@ std::vector<ServerFieldType> GetTypes(const FormStructure& form_structure) {
   return server_types;
 }
 
-FormStructureTestApi test_api(FormStructure* form_structure) {
-  return FormStructureTestApi(form_structure);
+FormStructureTestApi test_api(FormStructure& form_structure) {
+  return FormStructureTestApi(&form_structure);
 }
 
 class FormStructureRationalizerTest : public testing::Test {
@@ -122,67 +146,52 @@ class FormStructureRationalizerTest : public testing::Test {
 
  protected:
   base::test::ScopedFeatureList scoped_features_;
-  test::AutofillEnvironment autofill_environment_;
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
 FormStructureRationalizerTest::FormStructureRationalizerTest() {
-  scoped_features_.InitAndEnableFeature(
-      features::kAutofillRationalizeStreetAddressAndHouseNumber);
+  scoped_features_.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillRationalizeStreetAddressAndHouseNumber,
+       features::kAutofillEnableSupportForPhoneNumberTrunkTypes},
+      /*disabled_features=*/{});
 }
 
 TEST_F(FormStructureRationalizerTest, ParseQueryResponse_RationalizeLoneField) {
-  auto [form, response_string] = CreateFormAndServerClassification(
-      {{"fullname", "fullname", NAME_FULL},
-       {"address", "address", ADDRESS_HOME_LINE1},
-       {"height", "height", CREDIT_CARD_EXP_MONTH},  // Uh-oh!
-       {"email", "email", EMAIL_ADDRESS}});
-
-  FormStructure form_structure(form);
-  std::vector<FormStructure*> forms = {&form_structure};
-  // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(response_string, forms,
-                                       test::GetEncodedSignatures(forms),
-                                       nullptr, nullptr);
-
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      CreateFormAndServerClassification(
+          {{"fullname", "fullname", NAME_FULL},
+           {"address", "address", ADDRESS_HOME_LINE1},
+           {"height", "height", CREDIT_CARD_EXP_MONTH},  // Uh-oh!
+           {"email", "email", EMAIL_ADDRESS}}),
+      /*run_heuristics=*/false);
   EXPECT_THAT(
-      GetTypes(form_structure),
+      GetTypes(*form_structure),
       ElementsAre(NAME_FULL, ADDRESS_HOME_LINE1, UNKNOWN_TYPE, EMAIL_ADDRESS));
 }
 
 TEST_F(FormStructureRationalizerTest, ParseQueryResponse_RationalizeCCName) {
-  auto [form, response_string] = CreateFormAndServerClassification(
-      {{"First Name", "fname", CREDIT_CARD_NAME_FIRST},
-       {"Last Name", "lname", CREDIT_CARD_NAME_LAST},
-       {"email", "email", EMAIL_ADDRESS}});
-
-  FormStructure form_structure(form);
-  std::vector<FormStructure*> forms = {&form_structure};
-  // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(response_string, forms,
-                                       test::GetEncodedSignatures(forms),
-                                       nullptr, nullptr);
-
-  EXPECT_THAT(GetTypes(form_structure),
+  std::unique_ptr<FormStructure> form_structure =
+      BuildFormStructure(CreateFormAndServerClassification(
+                             {{"First Name", "fname", CREDIT_CARD_NAME_FIRST},
+                              {"Last Name", "lname", CREDIT_CARD_NAME_LAST},
+                              {"email", "email", EMAIL_ADDRESS}}),
+                         /*run_heuristics=*/false);
+  EXPECT_THAT(GetTypes(*form_structure),
               ElementsAre(NAME_FIRST, NAME_LAST, EMAIL_ADDRESS));
 }
 TEST_F(FormStructureRationalizerTest,
        ParseQueryResponse_RationalizeMultiMonth_1) {
-  auto [form, response_string] = CreateFormAndServerClassification({
-      {"Cardholder", "fullname", CREDIT_CARD_NAME_FULL},
-      {"Card Number", "address", CREDIT_CARD_NUMBER},
-      {"Month", "expiry_month", CREDIT_CARD_EXP_MONTH},
-      {"Year", "expiry_year", CREDIT_CARD_EXP_2_DIGIT_YEAR},
-      {"Quantity", "quantity", CREDIT_CARD_EXP_MONTH}  // Uh-oh!
-  });
-
-  FormStructure form_structure(form);
-  std::vector<FormStructure*> forms = {&form_structure};
-  // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(response_string, forms,
-                                       test::GetEncodedSignatures(forms),
-                                       nullptr, nullptr);
-
-  EXPECT_THAT(GetTypes(form_structure),
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      CreateFormAndServerClassification({
+          {"Cardholder", "fullname", CREDIT_CARD_NAME_FULL},
+          {"Card Number", "address", CREDIT_CARD_NUMBER},
+          {"Month", "expiry_month", CREDIT_CARD_EXP_MONTH},
+          {"Year", "expiry_year", CREDIT_CARD_EXP_2_DIGIT_YEAR},
+          {"Quantity", "quantity", CREDIT_CARD_EXP_MONTH}  // Uh-oh!
+      }),
+      /*run_heuristics=*/false);
+  EXPECT_THAT(GetTypes(*form_structure),
               ElementsAre(CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
                           CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR,
                           UNKNOWN_TYPE));
@@ -190,69 +199,50 @@ TEST_F(FormStructureRationalizerTest,
 
 TEST_F(FormStructureRationalizerTest,
        ParseQueryResponse_RationalizeMultiMonth_2) {
-  auto [form, response_string] = CreateFormAndServerClassification({
-      {"Cardholder", "fullname", CREDIT_CARD_NAME_FULL},
-      {"Card Number", "address", CREDIT_CARD_NUMBER},
-      {"Expiry Date (MMYY)", "expiry", CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
-      {"Quantity", "quantity", CREDIT_CARD_EXP_MONTH},  // Uh-oh!
-  });
-
-  FormStructure form_structure(form);
-  std::vector<FormStructure*> forms = {&form_structure};
-  // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(response_string, forms,
-                                       test::GetEncodedSignatures(forms),
-                                       nullptr, nullptr);
-
-  EXPECT_THAT(GetTypes(form_structure),
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      CreateFormAndServerClassification({
+          {"Cardholder", "fullname", CREDIT_CARD_NAME_FULL},
+          {"Card Number", "address", CREDIT_CARD_NUMBER},
+          {"Expiry Date (MMYY)", "expiry", CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+          {"Quantity", "quantity", CREDIT_CARD_EXP_MONTH},  // Uh-oh!
+      }),
+      /*run_heuristics=*/false);
+  EXPECT_THAT(GetTypes(*form_structure),
               ElementsAre(CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
                           CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, UNKNOWN_TYPE));
 }
 
 TEST_F(FormStructureRationalizerTest,
        RationalizePhoneNumber_RunsOncePerSection) {
-  auto [form, response_string] = CreateFormAndServerClassification({
-      {"Full Name", "fullName", NAME_FULL},
-      {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
-      {"Home Phone", "homePhoneNumber", PHONE_HOME_WHOLE_NUMBER},
-      {"Cell Phone", "cellPhoneNumber", PHONE_HOME_WHOLE_NUMBER},
-  });
-
-  FormStructure form_structure(form);
-  std::vector<FormStructure*> forms = {&form_structure};
-  // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(response_string, forms,
-                                       test::GetEncodedSignatures(forms),
-                                       nullptr, nullptr);
-
-  Section s = forms[0]->field(0)->section;
-  EXPECT_FALSE(test_api(&form_structure).phone_rationalized(s));
-  form_structure.RationalizePhoneNumbersInSection(s);
-  EXPECT_TRUE(test_api(&form_structure).phone_rationalized(s));
-
-  EXPECT_THAT(GetTypes(form_structure),
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      CreateFormAndServerClassification({
+          {"Full Name", "fullName", NAME_FULL},
+          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
+          {"Home Phone", "homePhoneNumber", PHONE_HOME_WHOLE_NUMBER},
+          {"Cell Phone", "cellPhoneNumber", PHONE_HOME_WHOLE_NUMBER},
+      }),
+      /*run_heuristics=*/false);
+  Section s = form_structure->field(0)->section;
+  EXPECT_FALSE(test_api(*form_structure).phone_rationalized(s));
+  form_structure->RationalizePhoneNumbersInSection(s);
+  EXPECT_TRUE(test_api(*form_structure).phone_rationalized(s));
+  EXPECT_THAT(GetTypes(*form_structure),
               ElementsAre(NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
                           PHONE_HOME_WHOLE_NUMBER, PHONE_HOME_WHOLE_NUMBER));
 
-  EXPECT_FALSE(forms[0]->field(2)->only_fill_when_focused());
-  EXPECT_TRUE(forms[0]->field(3)->only_fill_when_focused());
+  EXPECT_FALSE(form_structure->field(2)->only_fill_when_focused());
+  EXPECT_TRUE(form_structure->field(3)->only_fill_when_focused());
 }
 
 TEST_F(FormStructureRationalizerTest, RationalizeStreetAddressAndAddressLine) {
-  auto [form, response_string] = CreateFormAndServerClassification({
-      {"Full Name", "fullName", NAME_FULL},
-      {"Address1", "address1", ADDRESS_HOME_STREET_ADDRESS},
-      {"Address2", "address2", ADDRESS_HOME_LINE2},
-  });
-
-  FormStructure form_structure(form);
-  std::vector<FormStructure*> forms = {&form_structure};
-  // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(response_string, forms,
-                                       test::GetEncodedSignatures(forms),
-                                       nullptr, nullptr);
-
-  EXPECT_THAT(GetTypes(form_structure),
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      CreateFormAndServerClassification({
+          {"Full Name", "fullName", NAME_FULL},
+          {"Address1", "address1", ADDRESS_HOME_STREET_ADDRESS},
+          {"Address2", "address2", ADDRESS_HOME_LINE2},
+      }),
+      /*run_heuristics=*/false);
+  EXPECT_THAT(GetTypes(*form_structure),
               ElementsAre(NAME_FULL, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2));
 }
 
@@ -260,42 +250,80 @@ TEST_F(FormStructureRationalizerTest, RationalizeStreetAddressAndAddressLine) {
 // name, house number). We have seen several cases where the field preceding the
 // house number was not classified as a street name.
 TEST_F(FormStructureRationalizerTest, RationalizeStreetAddressAndHouseNumber) {
-  auto [form, response_string] = CreateFormAndServerClassification({
-      {"Full Name", "fullName", NAME_FULL},
-      {"Address1", "address1", ADDRESS_HOME_STREET_ADDRESS},
-      {"Address2", "address2", ADDRESS_HOME_HOUSE_NUMBER},
-  });
-
-  FormStructure form_structure(form);
-  std::vector<FormStructure*> forms = {&form_structure};
-  // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(response_string, forms,
-                                       test::GetEncodedSignatures(forms),
-                                       nullptr, nullptr);
-
-  EXPECT_THAT(GetTypes(form_structure),
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      CreateFormAndServerClassification({
+          {"Full Name", "fullName", NAME_FULL},
+          {"Address1", "address1", ADDRESS_HOME_STREET_ADDRESS},
+          {"Address2", "address2", ADDRESS_HOME_HOUSE_NUMBER},
+      }),
+      /*run_heuristics=*/false);
+  EXPECT_THAT(GetTypes(*form_structure),
               ElementsAre(NAME_FULL, ADDRESS_HOME_STREET_NAME,
                           ADDRESS_HOME_HOUSE_NUMBER));
+}
+
+// Tests that phone number trunk types are rationalized correctly.
+TEST_F(FormStructureRationalizerTest, RationalizePhoneNumberTrunkTypes) {
+  // Different phone number representations spanned over one or more fields,
+  // with incorrect and correct trunk-types.
+  const std::vector<ServerFieldType> kIncorrectTypes = {
+      PHONE_HOME_COUNTRY_CODE,
+      PHONE_HOME_CITY_AND_NUMBER,
+
+      PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX,
+
+      PHONE_HOME_COUNTRY_CODE,
+      PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX,
+      PHONE_HOME_NUMBER,
+
+      PHONE_HOME_CITY_CODE,
+      PHONE_HOME_NUMBER};
+  const std::vector<ServerFieldType> kCorrectTypes = {
+      PHONE_HOME_COUNTRY_CODE,
+      PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX,
+
+      PHONE_HOME_CITY_AND_NUMBER,
+
+      PHONE_HOME_COUNTRY_CODE,
+      PHONE_HOME_CITY_CODE,
+      PHONE_HOME_NUMBER,
+
+      PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX,
+      PHONE_HOME_NUMBER};
+
+  // Create a form contain fields corresponding to all the `kIncorrectTypes` and
+  // the `kCorrectTypes`. Expect that the `kIncorrectTypes` are changed to
+  // `kCorrectTypes` and that the `kCorrectTypes` remain as-is.
+  // Labels and field names are irrelevant.
+  std::vector<FieldTemplate> fields;
+  for (ServerFieldType type : kIncorrectTypes) {
+    fields.push_back({"", "", type});
+  }
+  for (ServerFieldType type : kCorrectTypes) {
+    fields.push_back({"", "", type});
+  }
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      CreateFormAndServerClassification(fields), /*run_heuristics=*/false);
+
+  // Expect `kCorrectTypes` twice.
+  std::vector<ServerFieldType> expected_types = kCorrectTypes;
+  expected_types.insert(expected_types.end(), kCorrectTypes.begin(),
+                        kCorrectTypes.end());
+  EXPECT_THAT(GetTypes(*form_structure), ElementsAreArray(expected_types));
 }
 
 // Ensure that a tuple of (address-line1, house number) is rewritten to (street
 // name, house number). We have seen several cases where the field preceding the
 // house number was not classified as a street name.
 TEST_F(FormStructureRationalizerTest, RationalizeAddressLine1AndHouseNumber) {
-  auto [form, response_string] = CreateFormAndServerClassification({
-      {"Full Name", "fullName", NAME_FULL},
-      {"Address1", "address1", ADDRESS_HOME_LINE1},
-      {"Address2", "address2", ADDRESS_HOME_HOUSE_NUMBER},
-  });
-
-  FormStructure form_structure(form);
-  std::vector<FormStructure*> forms = {&form_structure};
-  // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(response_string, forms,
-                                       test::GetEncodedSignatures(forms),
-                                       nullptr, nullptr);
-
-  EXPECT_THAT(GetTypes(form_structure),
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      CreateFormAndServerClassification({
+          {"Full Name", "fullName", NAME_FULL},
+          {"Address1", "address1", ADDRESS_HOME_LINE1},
+          {"Address2", "address2", ADDRESS_HOME_HOUSE_NUMBER},
+      }),
+      /*run_heuristics=*/false);
+  EXPECT_THAT(GetTypes(*form_structure),
               ElementsAre(NAME_FULL, ADDRESS_HOME_STREET_NAME,
                           ADDRESS_HOME_HOUSE_NUMBER));
 }
@@ -303,21 +331,15 @@ TEST_F(FormStructureRationalizerTest, RationalizeAddressLine1AndHouseNumber) {
 // Tests that a form that has only one address predicted as
 // ADDRESS_HOME_STREET_ADDRESS is not modified by the address rationalization.
 TEST_F(FormStructureRationalizerTest, RationalizeRepeatedFields_OneAddress) {
-  auto [form, response_string] = CreateFormAndServerClassification({
-      {"Full Name", "fullName", NAME_FULL},
-      {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
-      {"City", "city", ADDRESS_HOME_CITY},
-  });
-
-  FormStructure form_structure(form);
-  std::vector<FormStructure*> forms = {&form_structure};
-  // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(response_string, forms,
-                                       test::GetEncodedSignatures(forms),
-                                       nullptr, nullptr);
-
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      CreateFormAndServerClassification({
+          {"Full Name", "fullName", NAME_FULL},
+          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
+          {"City", "city", ADDRESS_HOME_CITY},
+      }),
+      /*run_heuristics=*/false);
   EXPECT_THAT(
-      GetTypes(form_structure),
+      GetTypes(*form_structure),
       ElementsAre(NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY));
 }
 
@@ -325,21 +347,15 @@ TEST_F(FormStructureRationalizerTest, RationalizeRepeatedFields_OneAddress) {
 // ADDRESS_HOME_STREET_ADDRESS is modified by the address rationalization to be
 // ADDRESS_HOME_LINE1 and ADDRESS_HOME_LINE2 instead.
 TEST_F(FormStructureRationalizerTest, RationalizeRepreatedFields_TwoAddresses) {
-  auto [form, response_string] = CreateFormAndServerClassification({
-      {"Full Name", "fullName", NAME_FULL},
-      {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
-      {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
-      {"City", "city", ADDRESS_HOME_CITY},
-  });
-
-  FormStructure form_structure(form);
-  std::vector<FormStructure*> forms = {&form_structure};
-  // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(response_string, forms,
-                                       test::GetEncodedSignatures(forms),
-                                       nullptr, nullptr);
-
-  EXPECT_THAT(GetTypes(form_structure),
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      CreateFormAndServerClassification({
+          {"Full Name", "fullName", NAME_FULL},
+          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
+          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
+          {"City", "city", ADDRESS_HOME_CITY},
+      }),
+      /*run_heuristics=*/false);
+  EXPECT_THAT(GetTypes(*form_structure),
               ElementsAre(NAME_FULL, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2,
                           ADDRESS_HOME_CITY));
 }
@@ -349,22 +365,16 @@ TEST_F(FormStructureRationalizerTest, RationalizeRepreatedFields_TwoAddresses) {
 // ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2 and ADDRESS_HOME_LINE3 instead.
 TEST_F(FormStructureRationalizerTest,
        RationalizeRepreatedFields_ThreeAddresses) {
-  auto [form, response_string] = CreateFormAndServerClassification({
-      {"Full Name", "fullName", NAME_FULL},
-      {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
-      {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
-      {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
-      {"City", "city", ADDRESS_HOME_CITY},
-  });
-
-  FormStructure form_structure(form);
-  std::vector<FormStructure*> forms = {&form_structure};
-  // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(response_string, forms,
-                                       test::GetEncodedSignatures(forms),
-                                       nullptr, nullptr);
-
-  EXPECT_THAT(GetTypes(form_structure),
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      CreateFormAndServerClassification({
+          {"Full Name", "fullName", NAME_FULL},
+          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
+          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
+          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
+          {"City", "city", ADDRESS_HOME_CITY},
+      }),
+      /*run_heuristics=*/false);
+  EXPECT_THAT(GetTypes(*form_structure),
               ElementsAre(NAME_FULL, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2,
                           ADDRESS_HOME_LINE3, ADDRESS_HOME_CITY));
 }
@@ -375,24 +385,18 @@ TEST_F(FormStructureRationalizerTest,
 // sections according to the heuristics.
 TEST_F(FormStructureRationalizerTest,
        RationalizeRepreatedFields_FourAddresses) {
-  auto [form, response_string] = CreateFormAndServerClassification({
-      {"Full Name", "fullName", NAME_FULL},
-      {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
-      {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
-      {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
-      {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
-      {"City", "city", ADDRESS_HOME_CITY},
-  });
-
-  FormStructure form_structure(form);
-  std::vector<FormStructure*> forms = {&form_structure};
-  // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(response_string, forms,
-                                       test::GetEncodedSignatures(forms),
-                                       nullptr, nullptr);
-
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      CreateFormAndServerClassification({
+          {"Full Name", "fullName", NAME_FULL},
+          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
+          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
+          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
+          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
+          {"City", "city", ADDRESS_HOME_CITY},
+      }),
+      /*run_heuristics=*/false);
   EXPECT_THAT(
-      GetTypes(form_structure),
+      GetTypes(*form_structure),
       ElementsAre(NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
                   ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_STREET_ADDRESS,
                   ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY));
@@ -402,25 +406,19 @@ TEST_F(FormStructureRationalizerTest,
 // ADDRESS_HOME_STREET_ADDRESS is not modified by the address rationalization.
 TEST_F(FormStructureRationalizerTest,
        RationalizeRepreatedFields_OneAddressEachSection) {
-  auto [form, response_string] = CreateFormAndServerClassification({
-      // Billing
-      {"Full Name", "fullName", NAME_FULL, "Billing"},
-      {"Address", "address", ADDRESS_HOME_STREET_ADDRESS, "Billing"},
-      {"City", "city", ADDRESS_HOME_CITY, "Billing"},
-      // Shipping
-      {"Full Name", "fullName", NAME_FULL, "Shipping"},
-      {"Address", "address", ADDRESS_HOME_STREET_ADDRESS, "Shipping"},
-      {"City", "city", ADDRESS_HOME_CITY, "Shipping"},
-  });
-
-  FormStructure form_structure(form);
-  std::vector<FormStructure*> forms = {&form_structure};
-  // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(response_string, forms,
-                                       test::GetEncodedSignatures(forms),
-                                       nullptr, nullptr);
-
-  EXPECT_THAT(GetTypes(form_structure),
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      CreateFormAndServerClassification({
+          // Billing
+          {"Full Name", "fullName", NAME_FULL, "Billing"},
+          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS, "Billing"},
+          {"City", "city", ADDRESS_HOME_CITY, "Billing"},
+          // Shipping
+          {"Full Name", "fullName", NAME_FULL, "Shipping"},
+          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS, "Shipping"},
+          {"City", "city", ADDRESS_HOME_CITY, "Shipping"},
+      }),
+      /*run_heuristics=*/false);
+  EXPECT_THAT(GetTypes(*form_structure),
               ElementsAre(
                   // Billing:
                   NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY,
@@ -435,36 +433,30 @@ TEST_F(FormStructureRationalizerTest,
 TEST_F(
     FormStructureRationalizerTest,
     RationalizeRepreatedFields_SectionTwoAddress_SectionThreeAddress_SectionFourAddresses) {
-  auto [form, response_string] = CreateFormAndServerClassification({
-      // Shipping.
-      {"Full Name", "fullName", NAME_FULL, "Shipping"},
-      {"Address", "address", ADDRESS_HOME_STREET_ADDRESS, "Shipping"},
-      {"Address", "address", ADDRESS_HOME_STREET_ADDRESS, "Shipping"},
-      {"City", "city", ADDRESS_HOME_CITY, "Shipping"},
-      // Billing.
-      {"Full Name", "fullName", NAME_FULL, "Billing"},
-      {"Address", "address", ADDRESS_HOME_STREET_ADDRESS, "Billing"},
-      {"Address", "address", ADDRESS_HOME_STREET_ADDRESS, "Billing"},
-      {"Address", "address", ADDRESS_HOME_STREET_ADDRESS, "Billing"},
-      {"City", "city", ADDRESS_HOME_CITY, "Billing"},
-      // Work address (not realistic).
-      {"Full Name", "fullName", NAME_FULL, "Work"},
-      {"Address", "address", ADDRESS_HOME_STREET_ADDRESS, "Work"},
-      {"Address", "address", ADDRESS_HOME_STREET_ADDRESS, "Work"},
-      {"Address", "address", ADDRESS_HOME_STREET_ADDRESS, "Work"},
-      {"Address", "address", ADDRESS_HOME_STREET_ADDRESS, "Work"},
-      {"City", "city", ADDRESS_HOME_CITY, "Work"},
-  });
-
-  FormStructure form_structure(form);
-  std::vector<FormStructure*> forms = {&form_structure};
-  // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(response_string, forms,
-                                       test::GetEncodedSignatures(forms),
-                                       nullptr, nullptr);
-
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      CreateFormAndServerClassification({
+          // Shipping.
+          {"Full Name", "fullName", NAME_FULL, "Shipping"},
+          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS, "Shipping"},
+          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS, "Shipping"},
+          {"City", "city", ADDRESS_HOME_CITY, "Shipping"},
+          // Billing.
+          {"Full Name", "fullName", NAME_FULL, "Billing"},
+          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS, "Billing"},
+          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS, "Billing"},
+          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS, "Billing"},
+          {"City", "city", ADDRESS_HOME_CITY, "Billing"},
+          // Work address (not realistic).
+          {"Full Name", "fullName", NAME_FULL, "Work"},
+          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS, "Work"},
+          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS, "Work"},
+          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS, "Work"},
+          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS, "Work"},
+          {"City", "city", ADDRESS_HOME_CITY, "Work"},
+      }),
+      /*run_heuristics=*/false);
   EXPECT_THAT(
-      GetTypes(form_structure),
+      GetTypes(*form_structure),
       ElementsAre(
           // Shipping.
           NAME_FULL, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_HOME_CITY,
@@ -482,26 +474,19 @@ TEST_F(
 // while the sections are previously determined by the heuristics.
 TEST_F(FormStructureRationalizerTest,
        RationalizeRepreatedFields_MultipleSectionsByHeuristics_OneAddressEach) {
-  auto [form, response_string] = CreateFormAndServerClassification({
-      // Billing.
-      {"Full Name", "fullName", NAME_FULL},
-      {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
-      {"City", "city", ADDRESS_HOME_CITY},
-      // Shipping.
-      {"Full Name", "fullName", NAME_FULL},
-      {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
-      {"City", "city", ADDRESS_HOME_CITY},
-  });
-
-  FormStructure form_structure(form);
-  // Will identify the sections based on the heuristics types.
-  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  std::vector<FormStructure*> forms = {&form_structure};
-  FormStructure::ParseApiQueryResponse(response_string, forms,
-                                       test::GetEncodedSignatures(forms),
-                                       nullptr, nullptr);
-
-  EXPECT_THAT(GetTypes(form_structure),
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      CreateFormAndServerClassification({
+          // Billing.
+          {"Full Name", "fullName", NAME_FULL},
+          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
+          {"City", "city", ADDRESS_HOME_CITY},
+          // Shipping.
+          {"Full Name", "fullName", NAME_FULL},
+          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
+          {"City", "city", ADDRESS_HOME_CITY},
+      }),
+      /*run_heuristics=*/true);
+  EXPECT_THAT(GetTypes(*form_structure),
               ElementsAre(
                   // Billing.
                   NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY,
@@ -515,31 +500,23 @@ TEST_F(FormStructureRationalizerTest,
 TEST_F(
     FormStructureRationalizerTest,
     RationalizeRepreatedFields_MultipleSectionsByHeuristics_TwoAddress_ThreeAddress) {
-  auto [form, response_string] = CreateFormAndServerClassification({
-      // Shipping
-      {"Full Name", "fullName", NAME_FULL},
-      {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
-      {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
-      {"City", "city", ADDRESS_HOME_CITY},
-      // Billing
-      {"Full Name", "fullName", NAME_FULL},
-      {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
-      {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
-      {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
-      {"City", "city", ADDRESS_HOME_CITY},
-  });
-
-  FormStructure form_structure(form);
-  // Will identify the sections based on the heuristics types.
-  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  std::vector<FormStructure*> forms = {&form_structure};
-  // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(response_string, forms,
-                                       test::GetEncodedSignatures(forms),
-                                       nullptr, nullptr);
-
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      CreateFormAndServerClassification({
+          // Shipping
+          {"Full Name", "fullName", NAME_FULL},
+          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
+          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
+          {"City", "city", ADDRESS_HOME_CITY},
+          // Billing
+          {"Full Name", "fullName", NAME_FULL},
+          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
+          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
+          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
+          {"City", "city", ADDRESS_HOME_CITY},
+      }),
+      /*run_heuristics=*/true);
   EXPECT_THAT(
-      GetTypes(form_structure),
+      GetTypes(*form_structure),
       ElementsAre(
           // Shipping.
           NAME_FULL, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_HOME_CITY,
@@ -550,33 +527,25 @@ TEST_F(
 
 TEST_F(FormStructureRationalizerTest,
        RationalizeRepreatedFields_StateCountry_NoRationalization) {
-  auto [form, response_string] = CreateFormAndServerClassification({
-      // First Section
-      {"Full Name", "fullName", NAME_FULL},
-      {"State", "state", ADDRESS_HOME_STATE},
-      {"Country", "country", ADDRESS_HOME_COUNTRY},
-      // Second Section
-      {"Country", "country", ADDRESS_HOME_COUNTRY},
-      {"Full Name", "fullName", NAME_FULL},
-      {"State", "state", ADDRESS_HOME_STATE},
-      // Third Section
-      {"Full Name", "fullName", NAME_FULL},
-      {"State", "state", ADDRESS_HOME_STATE},
-      // Fourth Section
-      {"Full Name", "fullName", NAME_FULL},
-      {"Country", "country", ADDRESS_HOME_COUNTRY},
-  });
-
-  FormStructure form_structure(form);
-  // Will identify the sections based on the heuristics types.
-  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  std::vector<FormStructure*> forms = {&form_structure};
-  // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(response_string, forms,
-                                       test::GetEncodedSignatures(forms),
-                                       nullptr, nullptr);
-
-  EXPECT_THAT(GetTypes(form_structure),
+  std::unique_ptr<FormStructure> form_structure =
+      BuildFormStructure(CreateFormAndServerClassification({
+                             // First Section
+                             {"Full Name", "fullName", NAME_FULL},
+                             {"State", "state", ADDRESS_HOME_STATE},
+                             {"Country", "country", ADDRESS_HOME_COUNTRY},
+                             // Second Section
+                             {"Country", "country", ADDRESS_HOME_COUNTRY},
+                             {"Full Name", "fullName", NAME_FULL},
+                             {"State", "state", ADDRESS_HOME_STATE},
+                             // Third Section
+                             {"Full Name", "fullName", NAME_FULL},
+                             {"State", "state", ADDRESS_HOME_STATE},
+                             // Fourth Section
+                             {"Full Name", "fullName", NAME_FULL},
+                             {"Country", "country", ADDRESS_HOME_COUNTRY},
+                         }),
+                         /*run_heuristics=*/true);
+  EXPECT_THAT(GetTypes(*form_structure),
               ElementsAre(
                   // First section.
                   NAME_FULL, ADDRESS_HOME_STATE, ADDRESS_HOME_COUNTRY,
@@ -590,40 +559,34 @@ TEST_F(FormStructureRationalizerTest,
 
 TEST_F(FormStructureRationalizerTest,
        RationalizeRepreatedFields_CountryStateNoHeuristics) {
-  auto [form, response_string] = CreateFormAndServerClassification({
-      // Shipping.
-      {"Full Name", "fullName", NAME_FULL, "shipping"},
-      {"City", "city", ADDRESS_HOME_CITY, "shipping"},
-      {"State", "state", ADDRESS_HOME_STATE, "shipping"},
-      {"Country", "country", ADDRESS_HOME_STATE, "shipping"},
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      CreateFormAndServerClassification({
+          // Shipping.
+          {"Full Name", "fullName", NAME_FULL, "shipping"},
+          {"City", "city", ADDRESS_HOME_CITY, "shipping"},
+          {"State", "state", ADDRESS_HOME_STATE, "shipping"},
+          {"Country", "country", ADDRESS_HOME_STATE, "shipping"},
 
-      // Billing.
-      ToSelectOne(ToNotFocusable(
-          {"Country", "country2", ADDRESS_HOME_STATE, "billing"})),
-      ToSelectOne({"Country", "country", ADDRESS_HOME_STATE, "billing"}),
-      ToSelectOne(ToNotFocusable(
-          {"Country", "country2", ADDRESS_HOME_STATE, "billing"})),
-      ToSelectOne(ToNotFocusable(
-          {"Country", "country2", ADDRESS_HOME_STATE, "billing"})),
-      ToSelectOne(ToNotFocusable(
-          {"Country", "country2", ADDRESS_HOME_STATE, "billing"})),
-      ToSelectOne({"Full Name", "fullName", NAME_FULL, "billing"}),
-      {"State", "state", ADDRESS_HOME_STATE, "billing"},
+          // Billing.
+          ToSelectOne(ToNotFocusable(
+              {"Country", "country2", ADDRESS_HOME_STATE, "billing"})),
+          ToSelectOne({"Country", "country", ADDRESS_HOME_STATE, "billing"}),
+          ToSelectOne(ToNotFocusable(
+              {"Country", "country2", ADDRESS_HOME_STATE, "billing"})),
+          ToSelectOne(ToNotFocusable(
+              {"Country", "country2", ADDRESS_HOME_STATE, "billing"})),
+          ToSelectOne(ToNotFocusable(
+              {"Country", "country2", ADDRESS_HOME_STATE, "billing"})),
+          ToSelectOne({"Full Name", "fullName", NAME_FULL, "billing"}),
+          {"State", "state", ADDRESS_HOME_STATE, "billing"},
 
-      // Billing-2.
-      {"Country", "country", ADDRESS_HOME_STATE, "billing-2"},
-      {"Full Name", "fullName", NAME_FULL, "billing-2"},
-      {"State", "state", ADDRESS_HOME_STATE, "billing-2"},
-  });
-
-  FormStructure form_structure(form);
-  std::vector<FormStructure*> forms = {&form_structure};
-  // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(response_string, forms,
-                                       test::GetEncodedSignatures(forms),
-                                       nullptr, nullptr);
-
-  EXPECT_THAT(GetTypes(form_structure),
+          // Billing-2.
+          {"Country", "country", ADDRESS_HOME_STATE, "billing-2"},
+          {"Full Name", "fullName", NAME_FULL, "billing-2"},
+          {"State", "state", ADDRESS_HOME_STATE, "billing-2"},
+      }),
+      /*run_heuristics=*/false);
+  EXPECT_THAT(GetTypes(*form_structure),
               ElementsAre(
                   // Shipping.
                   NAME_FULL, ADDRESS_HOME_CITY, ADDRESS_HOME_STATE,
@@ -638,41 +601,34 @@ TEST_F(FormStructureRationalizerTest,
 
 TEST_F(FormStructureRationalizerTest,
        RationalizeRepreatedFields_StateCountryWithHeuristics) {
-  auto [form, response_string] = CreateFormAndServerClassification({
-      // First section.
-      {"Full Name", "fullName", NAME_FULL},
-      ToSelectOne(ToNotFocusable({"Country", "country", ADDRESS_HOME_COUNTRY})),
-      {"Country", "country2", ADDRESS_HOME_COUNTRY},
-      {"city", "City", ADDRESS_HOME_CITY},
-      ToSelectOne(
-          SetRolePresentation({"State", "state2", ADDRESS_HOME_COUNTRY})),
-      {"State", "state", ADDRESS_HOME_COUNTRY},
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      CreateFormAndServerClassification({
+          // First section.
+          {"Full Name", "fullName", NAME_FULL},
+          ToSelectOne(
+              ToNotFocusable({"Country", "country", ADDRESS_HOME_COUNTRY})),
+          {"Country", "country2", ADDRESS_HOME_COUNTRY},
+          {"city", "City", ADDRESS_HOME_CITY},
+          ToSelectOne(
+              SetRolePresentation({"State", "state2", ADDRESS_HOME_COUNTRY})),
+          {"State", "state", ADDRESS_HOME_COUNTRY},
 
-      // Second Section
-      {"Country", "country", ADDRESS_HOME_COUNTRY},
-      {"city", "City", ADDRESS_HOME_CITY},
-      {"State", "state", ADDRESS_HOME_COUNTRY},
+          // Second Section
+          {"Country", "country", ADDRESS_HOME_COUNTRY},
+          {"city", "City", ADDRESS_HOME_CITY},
+          {"State", "state", ADDRESS_HOME_COUNTRY},
 
-      // Third Section
-      {"city", "City", ADDRESS_HOME_CITY},
-      ToSelectOne(
-          SetRolePresentation({"State", "state2", ADDRESS_HOME_COUNTRY})),
-      {"State", "state", ADDRESS_HOME_COUNTRY},
-      {"Country", "country", ADDRESS_HOME_COUNTRY},
-      ToSelectOne(
-          ToNotFocusable({"Country", "country2", ADDRESS_HOME_COUNTRY})),
-  });
-
-  FormStructure form_structure(form);
-  // Will identify the sections based on the heuristics types.
-  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  std::vector<FormStructure*> forms = {&form_structure};
-  // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(response_string, forms,
-                                       test::GetEncodedSignatures(forms),
-                                       nullptr, nullptr);
-
-  EXPECT_THAT(GetTypes(form_structure),
+          // Third Section
+          {"city", "City", ADDRESS_HOME_CITY},
+          ToSelectOne(
+              SetRolePresentation({"State", "state2", ADDRESS_HOME_COUNTRY})),
+          {"State", "state", ADDRESS_HOME_COUNTRY},
+          {"Country", "country", ADDRESS_HOME_COUNTRY},
+          ToSelectOne(
+              ToNotFocusable({"Country", "country2", ADDRESS_HOME_COUNTRY})),
+      }),
+      /*run_heuristics=*/true);
+  EXPECT_THAT(GetTypes(*form_structure),
               ElementsAre(
                   // First section.
                   NAME_FULL, ADDRESS_HOME_COUNTRY, ADDRESS_HOME_COUNTRY,
@@ -686,50 +642,38 @@ TEST_F(FormStructureRationalizerTest,
 
 TEST_F(FormStructureRationalizerTest,
        RationalizeRepreatedFields_FirstFieldRationalized) {
-  auto [form, response_string] = CreateFormAndServerClassification({
-      {"Country", "country", ADDRESS_HOME_STATE, "billing"},
-      ToSelectOne(ToNotFocusable(
-          {"Country", "country2", ADDRESS_HOME_STATE, "billing"})),
-      ToSelectOne(ToNotFocusable(
-          {"Country", "country3", ADDRESS_HOME_STATE, "billing"})),
-      {"Full Name", "fullName", NAME_FULL, "billing"},
-      {"State", "state", ADDRESS_HOME_STATE, "billing"},
-  });
-
-  FormStructure form_structure(form);
-  std::vector<FormStructure*> forms = {&form_structure};
-  // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(response_string, forms,
-                                       test::GetEncodedSignatures(forms),
-                                       nullptr, nullptr);
-
-  EXPECT_THAT(GetTypes(form_structure),
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      CreateFormAndServerClassification({
+          {"Country", "country", ADDRESS_HOME_STATE, "billing"},
+          ToSelectOne(ToNotFocusable(
+              {"Country", "country2", ADDRESS_HOME_STATE, "billing"})),
+          ToSelectOne(ToNotFocusable(
+              {"Country", "country3", ADDRESS_HOME_STATE, "billing"})),
+          {"Full Name", "fullName", NAME_FULL, "billing"},
+          {"State", "state", ADDRESS_HOME_STATE, "billing"},
+      }),
+      /*run_heuristics=*/false);
+  EXPECT_THAT(GetTypes(*form_structure),
               ElementsAre(ADDRESS_HOME_COUNTRY, ADDRESS_HOME_COUNTRY,
                           ADDRESS_HOME_COUNTRY, NAME_FULL, ADDRESS_HOME_STATE));
 }
 
 TEST_F(FormStructureRationalizerTest,
        RationalizeRepreatedFields_LastFieldRationalized) {
-  auto [form, response_string] = CreateFormAndServerClassification({
-      {"Country", "country", ADDRESS_HOME_COUNTRY, "billing"},
-      ToSelectOne(ToNotFocusable(
-          {"Country", "country2", ADDRESS_HOME_COUNTRY, "billing"})),
-      ToSelectOne(ToNotFocusable(
-          {"Country", "country3", ADDRESS_HOME_COUNTRY, "billing"})),
-      ToSelectOne({"Full Name", "fullName", NAME_FULL, "billing"}),
-      ToSelectOne(
-          ToNotFocusable({"State", "state", ADDRESS_HOME_COUNTRY, "billing"})),
-      ToSelectOne({"State", "state2", ADDRESS_HOME_COUNTRY, "billing"}),
-  });
-
-  FormStructure form_structure(form);
-  std::vector<FormStructure*> forms = {&form_structure};
-  // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(response_string, forms,
-                                       test::GetEncodedSignatures(forms),
-                                       nullptr, nullptr);
-
-  EXPECT_THAT(GetTypes(form_structure),
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      CreateFormAndServerClassification({
+          {"Country", "country", ADDRESS_HOME_COUNTRY, "billing"},
+          ToSelectOne(ToNotFocusable(
+              {"Country", "country2", ADDRESS_HOME_COUNTRY, "billing"})),
+          ToSelectOne(ToNotFocusable(
+              {"Country", "country3", ADDRESS_HOME_COUNTRY, "billing"})),
+          ToSelectOne({"Full Name", "fullName", NAME_FULL, "billing"}),
+          ToSelectOne(ToNotFocusable(
+              {"State", "state", ADDRESS_HOME_COUNTRY, "billing"})),
+          ToSelectOne({"State", "state2", ADDRESS_HOME_COUNTRY, "billing"}),
+      }),
+      /*run_heuristics=*/false);
+  EXPECT_THAT(GetTypes(*form_structure),
               ElementsAre(ADDRESS_HOME_COUNTRY, ADDRESS_HOME_COUNTRY,
                           ADDRESS_HOME_COUNTRY, NAME_FULL, ADDRESS_HOME_STATE,
                           ADDRESS_HOME_STATE));
@@ -742,20 +686,20 @@ struct RationalizationTypeRelationshipsTestParams {
 class RationalizationFieldTypeFilterTest
     : public testing::Test,
       public testing::WithParamInterface<ServerFieldType> {
-  test::AutofillEnvironment autofill_environment_;
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 class RationalizationFieldTypeRelationshipsTest
     : public testing::Test,
       public testing::WithParamInterface<
           RationalizationTypeRelationshipsTestParams> {
-  test::AutofillEnvironment autofill_environment_;
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
+INSTANTIATE_TEST_SUITE_P(FormStructureRationalizerTest,
                          RationalizationFieldTypeFilterTest,
                          testing::Values(PHONE_HOME_COUNTRY_CODE));
 
-INSTANTIATE_TEST_SUITE_P(All,
+INSTANTIATE_TEST_SUITE_P(FormStructureRationalizerTest,
                          RationalizationFieldTypeRelationshipsTest,
                          testing::Values(
                              RationalizationTypeRelationshipsTestParams{
@@ -770,23 +714,15 @@ TEST_P(RationalizationFieldTypeFilterTest, Rationalization_Rules_Filter_Out) {
   ServerFieldType filtered_off_field = GetParam();
 
   // Just adding >=3 random fields to trigger rationalization.
-  auto [form, response_string] = CreateFormAndServerClassification(
-      {{"First Name", "firstName", NAME_FIRST},
-       {"Last Name", "lastName", NAME_LAST},
-       {"Address", "address", ADDRESS_HOME_LINE1},
-       {"Something under test", "tested-thing", filtered_off_field}});
-
-  FormStructure form_structure(form);
-  std::vector<FormStructure*> forms = {&form_structure};
-  // Will identify the sections based on the heuristics types.
-  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(response_string, forms,
-                                       test::GetEncodedSignatures(forms),
-                                       nullptr, nullptr);
-
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      CreateFormAndServerClassification(
+          {{"First Name", "firstName", NAME_FIRST},
+           {"Last Name", "lastName", NAME_LAST},
+           {"Address", "address", ADDRESS_HOME_LINE1},
+           {"Something under test", "tested-thing", filtered_off_field}}),
+      /*run_heuristics=*/true);
   EXPECT_THAT(
-      GetTypes(form_structure),
+      GetTypes(*form_structure),
       ElementsAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_LINE1,
                   // Last field's type should have been overwritten to expected.
                   UNKNOWN_TYPE));
@@ -799,24 +735,16 @@ TEST_P(RationalizationFieldTypeRelationshipsTest,
   RationalizationTypeRelationshipsTestParams test_params = GetParam();
 
   // Just adding >=3 random fields to trigger rationalization.
-  auto [form, response_string] = CreateFormAndServerClassification(
-      {{"First Name", "firstName", NAME_FIRST},
-       {"Last Name", "lastName", NAME_LAST},
-       {"Some field with required type", "some-name",
-        test_params.required_type},
-       {"Something under test", "tested-thing", test_params.server_type}});
-
-  FormStructure form_structure(form);
-  std::vector<FormStructure*> forms = {&form_structure};
-  // Will identify the sections based on the heuristics types.
-  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  // Will call RationalizeFieldTypePredictions
-  FormStructure::ParseApiQueryResponse(response_string, forms,
-                                       test::GetEncodedSignatures(forms),
-                                       nullptr, nullptr);
-
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      CreateFormAndServerClassification(
+          {{"First Name", "firstName", NAME_FIRST},
+           {"Last Name", "lastName", NAME_LAST},
+           {"Some field with required type", "some-name",
+            test_params.required_type},
+           {"Something under test", "tested-thing", test_params.server_type}}),
+      /*run_heuristics=*/true);
   EXPECT_THAT(
-      GetTypes(form_structure),
+      GetTypes(*form_structure),
       ElementsAre(NAME_FIRST, NAME_LAST, test_params.required_type,
                   // Last field's type should have been overwritten to expected.
                   test_params.server_type));

@@ -1131,6 +1131,7 @@
     Continue
   </message>
 
+   <!-- Strings for sync consent screen -->
   <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE_WITH_DEVICE" desc="Alternate title for the dialog that explains Chrome Sync and privacy options on first login.">
     Sync your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
   </message>
@@ -1175,7 +1176,56 @@
   <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_DECLINE2" desc="Alternate label on the button that closes the dialog while not agreeing to sync.">
     No thanks
   </message>
-
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_TITLE" desc="Title of the screen that explains Chrome Sync and privacy options."  translateable="false">
+    Back up and restore your apps and settings
+  </message>
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_SUBTITLE" desc="Subtitle of the dialog that explains Chrome Sync and privacy options."  translateable="false">
+    Turn on device sync to restore your apps, settings, Wi-Fi networks, and wallpaper from your previous Chromebook. Make changes anytime in Settings > Accounts.
+  </message>
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_ADDITIONAL_SUBTITLE" desc="Additional subtitle of the dialog that explains Chrome Sync and privacy options."  translateable="false">
+    New to Chromebook? Turn on sync so your preferences will be backed up.
+  </message>
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_SYNC_OPTIONS" desc="The label on the button that displays the manage sync option screen." translateable="false">
+    Manage sync options
+  </message>
+  <!-- Strings for OS sync consent screen options -->
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_APPS_TITLE" desc="Title of the os sync screen option Apps."  translateable="false">
+    Apps
+  </message>
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_APPS_SUBTITLE" desc="Subtitle of the os sync screen option Apps."  translateable="false">
+    Apps installed from the Play Store and web apps from Chrome browser
+  </message>
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_SETTINGS_TITLE" desc="Title of the os sync screen option Settings."  translateable="false">
+    Settings
+  </message>
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_SETTINGS_SUBTITLE" desc="Subtitle of the os sync screen option Settings."  translateable="false">
+    Keyboard and mouse behavior, language preferences, and more
+  </message>
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_WIFI_TITLE" desc="Title of the os sync screen option Wifi networks."  translateable="false">
+    Wi-Fi networks
+  </message>
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_WIFI_SUBTITLE" desc="Subtitle of the os sync screen option Wifi networks."  translateable="false">
+    Saved networks and passwords so you can connect instantly
+  </message>
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_WALLPAPER_TITLE" desc="Title of the os sync screen option Wallpaper."  translateable="false">
+    Wallpaper
+  </message>
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_OPTION_WALLPAPER_SUBTITLE" desc="Subtitle of the os sync screen option Wallpaper."  translateable="false">
+    Remember your desktop background across devices
+  </message>
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_TOOLTIP_TEXT" desc="Text of the disclaimer to the toggle of the Apps item in sync screen option."  translateable="false">
+    Once turned on, your apps will be available on any ChromeOS devices after you sign in with your Google Account.  Web apps will be synced through Chrome even if other browser sync features are turned off.
+  </message>
+   <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_TOOLTIP_ADDITIONAL_TEXT" desc="Additional text of the disclaimer to the toggle of the Apps item in sync screen option."  translateable="false">
+    If you also chose to send diagnostic and usage data in the previous step, this data will be collected for installed apps.
+  </message>
+  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_MANAGE_SYNC_TITLE" desc="Title of the screen that displays sync options and allows user to control them."  translateable="false">
+    Manage sync options
+  </message>
+   <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_MANAGE_SYNC_SUBTITLE" desc="Subtitle of the dialog that displays sync options and allows user to control them."  translateable="false">
+    Selected items will be available on this Chromebook. If you're new to Chromebook, sync all items so your preferences will be backed up. Make changes anytime in Settings > Accounts.
+  </message>
+  <!-- Strings for recommend apps screen -->
   <message name="IDS_LOGIN_RECOMMEND_APPS_SCREEN_TITLE" desc="The title of the dialog that recommend apps to user">
     Install apps for your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> from the Google Play Store
   </message>
@@ -1368,23 +1418,20 @@
   <message name="IDS_LOGIN_PASSWORD_CHANGED_DATA_LOSS_WARNING_TITLE" desc="Title for the data loss warning screen if the user decided not to recover local data">
     Local data will be deleted
   </message>
-  <message name="IDS_LOGIN_PASSWORD_CHANGED_DATA_LOSS_WARNING_SUBTITLE_P1" desc="First paragraph of subtitle message for the data loss warning screen if the user decided not to recover local data">
-    Local data is protected by your old password. If you recently changed your password, try your old password again.
-  </message>
-  <message name="IDS_LOGIN_PASSWORD_CHANGED_DATA_LOSS_WARNING_SUBTITLE_P2" desc="Second paragraph of subtitle message for the data loss warning screen if the user decided not to recover local data">
-    If you continue without entering your old password, your local data will be deleted. You’ll sign in with your Google Account to set up this user again.
+  <message name="IDS_LOGIN_PASSWORD_CHANGED_DATA_LOSS_WARNING_SUBTITLE" desc="Subtitle message for the data loss warning screen if the user decided not to recover local data">
+    You can recover <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>, but local data will be deleted.
   </message>
   <message name="IDS_LOGIN_PASSWORD_CHANGED_RECOVER_DATA_TITLE" desc="Title for the screen to recover local data by entering old password.">
-    Restore your local data
+    Your password has changed since the last time you signed in
   </message>
   <message name="IDS_LOGIN_PASSWORD_CHANGED_RECOVER_DATA_SUBTITLE" desc="Subtitle for the screen to recover local data by entering old password.">
-    Your password has changed. To restore your local data, you need to enter your old password.
+    Your local data is protected by your old password. Enter your old password to recover local data.
   </message>
   <message name="IDS_LOGIN_PASSWORD_CHANGED_CONTINUE_AND_DELETE_BUTTON" desc="Button to continue and delete data without providing old password on the data loss warning dialog.">
-    Continue and delete data
+    Continue anyway
   </message>
-  <message name="IDS_LOGIN_PASSWORD_CHANGED_CONTINUE_WITHOUT_LOCAL_DATA_BUTTON" desc="Button to confirm continue without local data on the recover local data dialog.">
-    Continue without local data
+  <message name="IDS_LOGIN_PASSWORD_CHANGED_FORGOT_OLD_PASSWORD_BUTTON" desc="Forgot old password button on the recover local data dialog.">
+    Forgot old password
   </message>
   <message name="IDS_LOGIN_PASSWORD_CHANGED_RECOVERY_TITLE" desc="Screen title shown on the opt-in page to the user data recovery feature.">
     Turn on local data recovery to protect your data?
@@ -1406,7 +1453,7 @@
     Failed to enable local data recovery
   </message>
   <message name="IDS_LOGIN_CRYPTOHOME_RECOVERY_SETUP_ERROR_SUBTITLE" desc="The subtitle message when Cryptohome recovery setup failed.">
-    You can skip for now and we will retry automatically after you finish the setup
+    You can enable it later in Settings > Security and Privacy > Lock screen and sign-in
   </message>
   <message name="IDS_LOGIN_CRYPTOHOME_RECOVERY_SETUP_RETRY_BUTTON" desc="Label for the button to retry when Cryptohome recovery setup failed.">
     Retry
@@ -3050,6 +3097,20 @@
     Skip
   </message>
 
+  <!-- String for enrollment nudging pop-up -->
+  <message name="IDS_ENROLLMENT_NUDGE_TITLE" desc="The title for the modal dialog shown when managed user is required to go through enrollment during OOBE.">
+    Use enterprise enrollment for work and school accounts
+  </message>
+  <message name="IDS_ENROLLMENT_NUDGE_MESSAGE" desc="The message for the modal dialog shown when managed user is required to go through enrollment during OOBE. It mentions their email domain.">
+    To use your email address from your organization (<ph name="EMAIL_DOMAIN">$1<ex>example.com</ex></ph>), you need to use enterprise enrollment. If this device is for your personal use, sign in with your personal Google Account.
+  </message>
+  <message name="IDS_ENROLLMENT_NUDGE_ENROLL_BUTTON" desc="Button which sends a user to enterprise enrollment screen.">
+    Enterprise enrollment
+  </message>
+  <message name="IDS_ENROLLMENT_NUDGE_USE_ANOTHER_ACCOUNT_BUTTON" desc="Button which sends a user back to sign in screen where they can try to sign in with another account.">
+    Use another account
+  </message>
+
   <!-- Administrator facing strings for Active Directory screens. -->
   <message name="IDS_AD_DEVICE_NAME_INPUT_LABEL" desc="Admin-facing. Label for device name input field on the Active Directory domain join screen. User should tell us the name of their device.">
     Chromebook device name
@@ -3355,6 +3416,12 @@
   </message>
   <message name="IDS_NETWORK_UI_NETWORK_LOGS_DEBUGGING_UNKNOWN" desc="Text displayed when the Shill debugging mode is unknown.">
     Unknown
+  </message>
+  <message name="IDS_NETWORK_UI_RENDER_NETWORK_SELECT_BUTTON_TEXT" desc="Text displayed on the button for rendering network select.">
+    Render Network Select
+  </message>
+  <message name="IDS_NETWORK_UI_RENDER_NETWORK_SELECT_BUTTON_DESCRIPTION" desc="Text displayed above the render button to inform users the impact of rendering network select.">
+    Render network select list will trigger WiFi to scan frequently; this may affect your WiFi network performance.
   </message>
   <message name="IDS_NETWORK_UI_NETWORK_METRICS_LABEL" desc="Title for the section for displaying WiFi performance metrics.">
     WiFi Performance Metrics
@@ -5130,12 +5197,6 @@
   <message name="IDS_EASY_UNLOCK_SCREENLOCK_TOOLTIP_LOGIN_DISABLED" desc="Tooltip for an icon on user's sign-in screen pod shown by EasyUnlock when the feature is only enabled for unlock, not sign-in.">
     To use Smart Lock to sign in to your Google Account, go to Settings &gt; Connected devices &gt; Your phone &gt; Smart Lock.
   </message>
-  <message name="IDS_SMART_LOCK_SIGN_IN_REMOVED_NOTIFICATION_TITLE" desc="Title for notification shown to users who had Sign in with Smart Lock enabled after the Sign in with Smart Lock subfeature is deprecated.">
-    Smart Lock has changed
-  </message>
-  <message name="IDS_SMART_LOCK_SIGN_IN_REMOVED_NOTIFICATION_MESSAGE" desc="Message for notification shown to users who had Sign in with Smart Lock enabled after the Sign in with Smart Lock subfeature is deprecated.">
-    Signing in with Smart Lock is no longer available. You can still unlock with Smart Lock.
-  </message>
   <message name="IDS_SMART_LOCK_SCREENLOCK_TOOLTIP_HARDLOCK_REAUTH_USER" desc="Tooltip text shown on a user's lock screen pod to reauthenticate the user before setting up Smart Lock. A password has to be entered to unlock the device.">
     To set up Smart Lock for Chromebook, Google needs to make sure it’s you—type your password to get started.
   </message>
@@ -5150,6 +5211,9 @@
   </message>
   <message name="IDS_SMART_LOCK_SCREENLOCK_AUTHENTICATED_LABEL" desc="Label for the Smart Lock icon used for accessibility purposes. Describes when a phone eligible to unlock the Chromebook is detected and authenticated.">
     Your device can be unlocked with Smart Lock. Press Enter to unlock.
+  </message>
+  <message name="IDS_CUSTOM_POLICY_PROVIDED_TRUST_ANCHORS_AT_LOCK_SCREEN_TOOLTIP" desc="Tooltip message shown on the lock screen when hovering above the managed icon which is shown when custom policy provided trusted anchors are present.">
+    Certificate provided by your administrator who can view credentials for <ph name="DOMAIN">$1<ex>google.com</ex></ph>
   </message>
 
   <!-- Strings for EcheApp -->
@@ -5284,6 +5348,9 @@
   </message>
   <message name="IDS_OOBE_GESTURE_NAVIGATION_INTRO_GO_HOME" desc="The label for the home gesture item in the gesture list within the gesture navigation education intro OOBE screen shown on the first user login.">
     Go home
+  </message>
+  <message name="IDS_OOBE_GESTURE_NAVIGATION_INTRO_SKIP" desc="A label on the button that skip the gesture navigation flow.">
+    Skip
   </message>
   <message name="IDS_OOBE_GESTURE_NAVIGATION_INTRO_SWITCH_APP" desc="The label for the switch app gesture item in the gesture list within the gesture navigation education intro OOBE screen shown on the first user login.">
     Switch to another open app
@@ -5524,6 +5591,9 @@
   <message name="IDS_VM_STATUS_PAGE_DEFAULT_VM_EXISTS_REQUIREMENT" desc="The message for the requirement that a VM (virtual machine) with the default name should exist">
     VM "<ph name="DEFAULT_VM_NAME">$1<ex>PvmDefault</ex></ph>" exists
   </message>
+  <message name="IDS_VM_STATUS_PAGE_INVALID_DEFAULT_VM_ERROR" desc="The error message shown when the default VM (virtual machine) is not valid">
+    VM "<ph name="DEFAULT_VM_NAME">$1<ex>PvmDefault</ex></ph>" exists, but does not appear to be a valid <ph name="VM_TYPE">$2<ex>Parallels Desktop</ex></ph> VM. Please contact your administrator.
+  </message>
   <message name="IDS_VM_STATUS_PAGE_MISSING_DEFAULT_VM_ERROR" desc="The error message shown when the default VM (virtual machine) does not exist">
     A required virtual machine does not exist. Please try setting up <ph name="VM_TYPE">$1<ex>Parallels Desktop</ex></ph> to continue
   </message>
@@ -5665,6 +5735,9 @@
   <message name="IDS_PLUGIN_VM_INSUFFICIENT_DISK_SPACE_MESSAGE" desc="Error message shown if Plugin VM installation fails because there is not enough free space on the device.">
       Your device is low on storage. At least <ph name="MINIMUM_SPACE">$1<ex>16GB</ex></ph> of free space is required to use <ph name="APP_NAME">$2<ex>Plugin VM</ex></ph>. To increase free space, delete files from device.
   </message>
+  <message name="IDS_PLUGIN_VM_INSTALLER_ERROR_INVALID_IMAGE_MESSAGE" desc="Error message shown if Plugin VM installation fails because there is already VM with given name, but wrong type.">
+      Virtual machine "<ph name="VM_NAME">$1<ex>Plugin VM</ex></ph>" exists, but does not appear to be a valid <ph name="APP_NAME">$2<ex>Parallels Desktop</ex></ph> virtual machine. Please contact your administrator.
+  </message>
   <message name="IDS_PLUGIN_VM_APP_NAME_WINDOWS_SUFFIX" desc="Application name with ' (Windows)' suffix. Do not translate 'Windows'">
     <ph name="APP_NAME">$1<ex>Notepad</ex></ph> (Windows)
   </message>
@@ -5744,6 +5817,16 @@
 You can use this account with Android apps. If you want to add an account for someone else, <ph name="LINK_BEGIN">&lt;a id="newPersonLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>add a new person<ph name="LINK_END">&lt;/a&gt;</ph> to your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph> instead.
 
 Permissions you've already given to apps may apply to this account. You can control permissions for Android apps in <ph name="APPS_LINK_BEGIN">&lt;a id="appsSettingsLink" href="$3<ex>https://google.com/</ex>"&gt;</ph>Apps Settings<ph name="APPS_LINK_END">&lt;/a&gt;</ph>.
+  </message>
+  <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_V2_WITH_DEVICE_GUEST_MODE" desc="Text body for the Welcome screen in ChromiumOS 'Add account' dialog.">
+If you want to use this account one-time only, you can <ph name="GUEST_LINK_BEGIN">&lt;a id="guestModeLink" href="#"&gt;</ph>use the device as guest<ph name="GUEST_LINK_END">&lt;/a&gt;</ph>. If you want to add an account for someone else, <ph name="LINK_BEGIN">&lt;a target="_blank" id="newPersonLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>add a new person<ph name="LINK_END">&lt;/a&gt;</ph> to your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>.
+
+Permissions you've already given to websites and apps may apply to this account. You can manage your Google Accounts in <ph name="SETTINGS_LINK_BEGIN">&lt;a id="osSettingsLink" href="$3<ex>https://google.com/</ex>"&gt;</ph>Settings<ph name="SETTINGS_LINK_END">&lt;/a&gt;</ph>.
+  </message>
+  <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_V2_WITHOUT_GUEST" desc="Text body for the Welcome screen in ChromiumOS 'Add account' dialog.">
+If you want to add an account for someone else, <ph name="LINK_BEGIN">&lt;a target="_blank" id="newPersonLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>add a new person<ph name="LINK_END">&lt;/a&gt;</ph> to your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>.
+
+Permissions you've already given to websites and apps may apply to this account. You can manage your Google Accounts in <ph name="SETTINGS_LINK_BEGIN">&lt;a id="osSettingsLink" href="$3<ex>https://google.com/</ex>"&gt;</ph>Settings<ph name="SETTINGS_LINK_END">&lt;/a&gt;</ph>.
   </message>
   <message name="IDS_ACCOUNT_MANAGER_DIALOG_ARC_TOGGLE_LABEL" desc="Toggle text for the Welcome screen in ChromeOS 'Add account' dialog. If user toggles it on, the account that will be added will be available in Android Apps. The default value for the toggle may be 'on' or 'off' depending on where the dialog is being opened from.">
     Use this account with Android apps. You can control permissions for Android apps in <ph name="LINK_BEGIN">&lt;a id="appsSettingsLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>Apps Settings<ph name="LINK_END">&lt;/a&gt;</ph>.
@@ -6401,6 +6484,11 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   </message>
   <message name="IDS_OS_URL_HANDLER_APP_NAME" translateable="false" desc="Name for a hidden app which shows os:// and chrome:// system pages in an app">
     ChromeOS-URLs
+  </message>
+
+     <!-- Strings for WebAppSettings -->
+  <message name="IDS_RUN_ON_OS_LOGIN_ENABLED" desc="This is the message of the notification when an application is automatically started on OS login.">
+    The app <ph name="APP_NAME">$1</ph> has been configured by your admin to run on OS login
   </message>
 
   <!-- Theme Selection -->

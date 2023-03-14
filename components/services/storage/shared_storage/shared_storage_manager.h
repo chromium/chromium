@@ -18,8 +18,8 @@
 #include "base/timer/timer.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom-forward.h"
 #include "components/services/storage/shared_storage/async_shared_storage_database.h"
-#include "components/services/storage/shared_storage/public/mojom/shared_storage.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
 #include "url/origin.h"
 
 namespace base {
@@ -169,8 +169,7 @@ class SharedStorageManager {
   // via a remote that consumes `pending_listener`. Calls `callback` with an
   // OperationResult to indicate whether the transaction was successful.
   void Keys(url::Origin context_origin,
-            mojo::PendingRemote<
-                shared_storage_worklet::mojom::SharedStorageEntriesListener>
+            mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
                 pending_listener,
             base::OnceCallback<void(OperationResult)> callback);
 
@@ -180,8 +179,7 @@ class SharedStorageManager {
   // Calls `callback` with an OperationResult to indicate whether the
   // transaction was successful.
   void Entries(url::Origin context_origin,
-               mojo::PendingRemote<
-                   shared_storage_worklet::mojom::SharedStorageEntriesListener>
+               mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
                    pending_listener,
                base::OnceCallback<void(OperationResult)> callback);
 

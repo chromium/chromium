@@ -42,9 +42,8 @@ class QuarantineTest : public testing::Test {
     ASSERT_TRUE(com_initializer_.Succeeded());
 #endif
     ASSERT_TRUE(test_dir_.CreateUniqueTempDir());
-    ASSERT_EQ(
-        static_cast<int>(std::size(kTestData)),
-        base::WriteFile(GetTestFilePath(), kTestData, std::size(kTestData)));
+    ASSERT_TRUE(
+        base::WriteFile(GetTestFilePath(), {kTestData, std::size(kTestData)}));
   }
 
  protected:

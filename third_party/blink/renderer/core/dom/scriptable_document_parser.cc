@@ -73,17 +73,4 @@ bool ScriptableDocumentParser::HasInlineScriptStreamerForTesting(
   return inline_script_streamers_.Contains(source);
 }
 
-void ScriptableDocumentParser::AddCSSTokenizer(
-    const String& source,
-    std::unique_ptr<CachedCSSTokenizer> tokenizer) {
-  base::AutoLock lock(tokenizers_lock_);
-  inline_css_tokenizers_.insert(source, std::move(tokenizer));
-}
-
-std::unique_ptr<CachedCSSTokenizer> ScriptableDocumentParser::TakeCSSTokenizer(
-    const String& source) {
-  base::AutoLock lock(tokenizers_lock_);
-  return inline_css_tokenizers_.Take(source);
-}
-
 }  // namespace blink

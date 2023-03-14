@@ -238,6 +238,14 @@
       milestone: 92,
     },
     {
+      name: "InterestGroupDailyUpdateUrl",
+      message: "The `dailyUpdateUrl` field of `InterestGroups` passed to `joinAdInterestGroup()` has been renamed to `updateUrl`, to more accurately reflect its behavior.",
+      translation_note: "This is a deprecated warning to developers that a field in a structure has been renamed.",
+      web_features: [
+        "kDeprecatedInterestGroupDailyUpdateUrl",
+      ],
+    },
+    {
       name: "LocalCSSFileExtensionRejected",
       message: "CSS cannot be loaded from `file:` URLs unless they end in a `.css` file extension.",
       translation_note: "This warning occurs when a stylesheet loaded from a local file directive does not end in the file type `.css`.",
@@ -266,13 +274,13 @@
     },
     {
       name: "NonStandardDeclarativeShadowDOM",
-      message: "The older, non-standardized `shadowroot` attribute is deprecated. Please use the new, standardized `shadowrootmode` attribute instead.",
+      message: "The older, non-standardized `shadowroot` attribute is deprecated, and will *no longer function* in M119. Please use the new, standardized `shadowrootmode` attribute instead.",
       translation_note: "This warning is displayed when a site contains a `<template>` element with the `shadowroot` attribute.",
       web_features: [
         "kDeclarativeShadowRoot",
       ],
       chrome_status_feature: 6239658726391808,
-      milestone: 112,
+      milestone: 119,
     },
     {
       name: "NoSysexWebMIDIWithoutPermission",
@@ -384,14 +392,6 @@
       ],
     },
     {
-      name: "PrefixedStorageInfo",
-      message: "`window.webkitStorageInfo` is deprecated. Please use standardized `navigator.storage` instead.",
-      translation_note: "Warning displayed to developers when `window.webkitStorageInfo` is used to notify that the API is deprecated.",
-      web_features: [
-        "kPrefixedStorageInfo",
-      ],
-    },
-    {
       name: "PrefixedVideoDisplayingFullscreen",
       message: "HTMLVideoElement.webkitDisplayingFullscreen is deprecated. Please use Document.fullscreenElement instead.",
       translation_note: "Standard message when one web API is deprecated in favor of another.",
@@ -483,6 +483,16 @@
       milestone: 97,
     },
     {
+      name: "RTCPeerConnectionGetStatsLegacyNonCompliant",
+      message: "The callback-based getStats() is deprecated and will be removed. Use the spec-compliant getStats() instead.",
+      translation_note: "WebRTC is set of JavaScript APIs for sending and receiving data, audio and video. getStats() is a method used to obtain network and quality metrics. There are two versions of this method, one is being deprecated because it is non-standard.",
+      web_features: [
+        "kRTCPeerConnectionGetStatsLegacyNonCompliant",
+      ],
+      chrome_status_feature: 4631626228695040,
+      milestone: 117,
+    },
+    {
       name: "RtcpMuxPolicyNegotiate",
       message: "The `rtcpMuxPolicy` option is deprecated and will be removed.",
       translation_note: "A deprecation warning shown in the DevTools Issues tab. It's shown then a video conferencing website attempts to use the `RTCP MUX` policy.",
@@ -519,6 +529,26 @@
         "kV8SharedArrayBufferConstructedInExtensionWithoutIsolation",
       ],
       milestone: 96,
+    },
+    {
+      name: "WindowPlacementPermissionDescriptorUsed",
+      message: "The permission descriptor `window-placement` is deprecated. Use `window-management` instead. For more help, check https://bit.ly/window-placement-rename.",
+      translation_note: "A deprecation warning shown in the DevTools Issues tab. 'window-placement' and 'window-management' are the name of the javascript descriptors (do not translate). The warning is shown when web pages attempt to use 'window-placement' in permission APIs (e.g. navigator.permissions.query(...))",
+      web_features: [
+        "kWindowPlacementPermissionDescriptorUsed",
+      ],
+      milestone: 112,
+      chrome_status_feature: 5137018030391296,
+    },
+    {
+      name: "WindowPlacementPermissionPolicyParsed",
+      message: "The permission policy `window-placement` is deprecated. Use `window-management` instead. For more help, check https://bit.ly/window-placement-rename.",
+      translation_note: "A deprecation warning shown in the DevTools Issues tab. 'window-placement' and 'window-management' are the name of the policy descriptors (do not translate). The warning is shown when web pages attempt to use 'window-placement' as a permission policy (parsed in iframe or header).",
+      web_features: [
+        "kWindowPlacementPermissionPolicyParsed",
+      ],
+      milestone: 112,
+      chrome_status_feature: 5137018030391296,
     },
     {
       name: "XHRJSONEncodingDetection",

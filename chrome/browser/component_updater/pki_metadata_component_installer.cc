@@ -21,6 +21,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -398,13 +399,12 @@ PKIMetadataComponentInstallerPolicy::BytesArrayFromProtoBytes(
     google::protobuf::RepeatedPtrField<std::string> proto_bytes) {
   std::vector<std::vector<uint8_t>> bytes;
   bytes.reserve(proto_bytes.size());
-  std::transform(proto_bytes.begin(), proto_bytes.end(),
-                 std::back_inserter(bytes), [](std::string element) {
-                   const uint8_t* raw_data =
-                       reinterpret_cast<const uint8_t*>(element.data());
-                   return std::vector<uint8_t>(raw_data,
-                                               raw_data + element.length());
-                 });
+  base::ranges::transform(
+      proto_bytes, std::back_inserter(bytes), [](std::string element) {
+        const auto bytes =
+            base::as_bytes(base::make_span(element.data(), element.length()));
+        return std::vector<uint8_t>(bytes.begin(), bytes.end());
+      });
   return bytes;
 }
 
@@ -476,8 +476,12 @@ void MaybeRegisterPKIMetadataComponent(ComponentUpdateService* cus) {
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
   should_install |= GetChromeCertVerifierServiceParams(/*local_state=*/nullptr)
                         ->use_chrome_root_store;
+#else
+  should_install = true;
+#endif
 
 // Even if we aren't using Chrome Root Store for cert verification, we may be
 // trialing it. Check if the trial is enabled.

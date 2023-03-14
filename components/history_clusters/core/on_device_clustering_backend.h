@@ -16,9 +16,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/time/time.h"
-#include "components/history_clusters/core/cluster_finalizer.h"
-#include "components/history_clusters/core/cluster_processor.h"
-#include "components/history_clusters/core/clusterer.h"
 #include "components/history_clusters/core/clustering_backend.h"
 
 namespace optimization_guide {
@@ -51,6 +48,7 @@ class OnDeviceClusteringBackend : public ClusteringBackend {
                    std::vector<history::AnnotatedVisit> visits,
                    bool requires_ui_and_triggerability) override;
   void GetClustersForUI(ClusteringRequestSource clustering_request_source,
+                        QueryClustersFilterParams filter_params,
                         ClustersCallback callback,
                         std::vector<history::Cluster> clusters) override;
   void GetClusterTriggerability(
@@ -109,6 +107,7 @@ class OnDeviceClusteringBackend : public ClusteringBackend {
   // thread.
   void DispatchGetClustersForUIToBackgroundThread(
       ClusteringRequestSource clustering_request_source,
+      QueryClustersFilterParams filter_params,
       ClustersCallback callback,
       std::vector<history::Cluster> clusters,
       base::flat_map<std::string, optimization_guide::EntityMetadata>
@@ -142,6 +141,7 @@ class OnDeviceClusteringBackend : public ClusteringBackend {
   //   recorded by the fuller `ClusterVisitsOnBackgroundThread()`.
   static std::vector<history::Cluster> GetClustersForUIOnBackgroundThread(
       ClusteringRequestSource clustering_request_source,
+      QueryClustersFilterParams filter_params,
       bool engagement_score_provider_is_valid,
       std::vector<history::Cluster> clusters,
       base::flat_map<std::string, optimization_guide::EntityMetadata>&

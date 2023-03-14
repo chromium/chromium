@@ -635,7 +635,7 @@ class VideoEncoderTest : public ::testing::Test {
             get_model_frame_cb,
             /*corrupt_frame_processor=*/nullptr,
             VideoFrameValidator::ValidationMode::kAverage,
-            /*tolerance=*/0.0);
+            /*tolerance=*/100.0);
     LOG_ASSERT(log_likelihood_validator);
     quality_metrics_.push_back(BitstreamQualityMetrics(
         psnr_validator.get(), ssim_validator.get(),

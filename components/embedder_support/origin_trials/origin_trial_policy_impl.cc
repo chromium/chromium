@@ -79,13 +79,15 @@ bool OriginTrialPolicyImpl::IsFeatureDisabledForUser(
     base::StringPiece feature) const {
   struct OriginTrialFeatureToBaseFeatureMap {
     const char* origin_trial_feature_name;
-    const base::Feature& field_trial_feature;
+    const raw_ref<const base::Feature> field_trial_feature;
   } origin_trial_feature_to_field_trial_feature_map[] = {
-      {"FrobulateThirdParty", kOriginTrialsSampleAPIThirdPartyAlternativeUsage},
-      {"ConversionMeasurement", kConversionMeasurementAPIAlternativeUsage}};
+      {"FrobulateThirdParty",
+       raw_ref(kOriginTrialsSampleAPIThirdPartyAlternativeUsage)},
+      {"ConversionMeasurement",
+       raw_ref(kConversionMeasurementAPIAlternativeUsage)}};
   for (const auto& mapping : origin_trial_feature_to_field_trial_feature_map) {
     if (feature == mapping.origin_trial_feature_name) {
-      return !base::FeatureList::IsEnabled(mapping.field_trial_feature);
+      return !base::FeatureList::IsEnabled(*mapping.field_trial_feature);
     }
   }
   return false;

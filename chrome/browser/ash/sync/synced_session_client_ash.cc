@@ -83,6 +83,13 @@ void SyncedSessionClientAsh::OnForeignSyncedPhoneSessionsUpdated(
   }
 }
 
+void SyncedSessionClientAsh::OnSessionSyncEnabledChanged(bool enabled) {
+  is_session_sync_enabled_ = enabled;
+  for (auto& observer : observers_) {
+    observer.OnSessionSyncEnabledChanged(is_session_sync_enabled_);
+  }
+}
+
 void SyncedSessionClientAsh::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }

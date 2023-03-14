@@ -11,6 +11,9 @@
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/history/history_ui_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
@@ -2428,6 +2431,42 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:RecentlyClosedTabWithTitle(kTitle2)]
       assertWithMatcher:grey_notNil()];
+}
+
+// Tests that once an account is signed in, the syncing spinner is eventually
+// dismissed: https://crbug.com/1422634.
+- (void)testSyncSpinnerDismissedInRecentlyClosedTabs {
+  // Sign-in with fake identity.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+
+  // Open recently closed tabs.
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
+      performAction:grey_tap()];
+
+  // Wait for the syncing view to disappear.
+  id<GREYMatcher> spinnerMatcher =
+      grey_accessibilityID(kTableViewActivityIndicatorHeaderFooterViewId);
+
+  NSString* conditionDescription =
+      @"Syncing spinner should disappear before timeout";
+  GREYCondition* waitForSpinnerDisappearance = [GREYCondition
+      conditionWithName:conditionDescription
+                  block:^{
+                    NSError* error = nil;
+                    [[EarlGrey selectElementWithMatcher:spinnerMatcher]
+                        assertWithMatcher:grey_nil()
+                                    error:&error];
+                    return error == nil;
+                  }];
+
+  GREYAssertTrue([waitForSpinnerDisappearance
+                     waitWithTimeout:base::Seconds(5).InSecondsF()],
+                 conditionDescription);
 }
 
 #pragma mark - Helper Methods

@@ -100,7 +100,7 @@ std::vector<AudioCapturerMac::AudioDeviceInfo>
 AudioCapturerMac::GetAudioDevices() {
   AudioObjectPropertyAddress property_address;
   property_address.mScope = kAudioObjectPropertyScopeGlobal;
-  property_address.mElement = kAudioObjectPropertyElementMaster;
+  property_address.mElement = kAudioObjectPropertyElementMain;
 
   UInt32 property_size;
 

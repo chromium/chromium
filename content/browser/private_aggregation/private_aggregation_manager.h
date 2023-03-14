@@ -7,9 +7,10 @@
 
 #include "base/functional/callback_forward.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
-#include "content/common/private_aggregation_host.mojom-forward.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-forward.h"
 
 namespace base {
 class Time;
@@ -25,7 +26,7 @@ class BrowserContext;
 
 // Interface that mediates data flow between the Private Aggregation API
 // component and other APIs using it.
-class PrivateAggregationManager {
+class CONTENT_EXPORT PrivateAggregationManager {
  public:
   virtual ~PrivateAggregationManager() = default;
 
@@ -39,7 +40,7 @@ class PrivateAggregationManager {
       url::Origin worklet_origin,
       url::Origin top_frame_origin,
       PrivateAggregationBudgetKey::Api api_for_budgeting,
-      mojo::PendingReceiver<mojom::PrivateAggregationHost>
+      mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
           pending_receiver) = 0;
 
   // Deletes all data in storage for any budgets that could have been set

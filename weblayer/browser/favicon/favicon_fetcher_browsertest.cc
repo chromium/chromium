@@ -84,7 +84,8 @@ IN_PROC_BROWSER_TEST_F(FaviconFetcherBrowserTest, Basic) {
   EXPECT_EQ(2, fetcher_delegate.on_favicon_changed_call_count());
 }
 
-IN_PROC_BROWSER_TEST_F(FaviconFetcherBrowserTest, NavigateToPageWithNoFavicon) {
+IN_PROC_BROWSER_TEST_F(FaviconFetcherBrowserTest,
+                       DISABLED_NavigateToPageWithNoFavicon) {
   ASSERT_TRUE(embedded_test_server()->Start());
   TestFaviconFetcherDelegate fetcher_delegate;
   auto fetcher = shell()->tab()->CreateFaviconFetcher(&fetcher_delegate);

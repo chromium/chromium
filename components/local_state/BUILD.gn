@@ -25,6 +25,7 @@ source_set("local_state") {
     "local_state_utils.cc",
     "local_state_utils.h",
   ]
+  public_deps = [ "//third_party/abseil-cpp:absl" ]
   deps = [
     "//base",
     "//components/prefs",

@@ -69,7 +69,7 @@ class AccessibilityTreeLinkageWinBrowserTest
 
  protected:
   ui::AXPlatformNodeDelegate dummy_ax_node_;
-  raw_ptr<ui::AXPlatformNode> dummy_ax_platform_node_;
+  raw_ptr<ui::AXPlatformNode, DanglingUntriaged> dummy_ax_platform_node_;
 };
 
 IN_PROC_BROWSER_TEST_P(AccessibilityTreeLinkageWinBrowserTest, Linkage) {

@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ash/events/event_rewriter_delegate_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/public/mojom/input_device_settings.mojom.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/notifications/deprecation_notification_controller.h"
 #include "chrome/browser/extensions/extension_commands_global_registry.h"
@@ -23,14 +26,17 @@ EventRewriterDelegateImpl::EventRewriterDelegateImpl(
     : EventRewriterDelegateImpl(
           activation_client,
           std::make_unique<DeprecationNotificationController>(
-              message_center::MessageCenter::Get())) {}
+              message_center::MessageCenter::Get()),
+          InputDeviceSettingsController::Get()) {}
 
 EventRewriterDelegateImpl::EventRewriterDelegateImpl(
     wm::ActivationClient* activation_client,
-    std::unique_ptr<DeprecationNotificationController> deprecation_controller)
+    std::unique_ptr<DeprecationNotificationController> deprecation_controller,
+    InputDeviceSettingsController* input_device_settings_controller)
     : pref_service_for_testing_(nullptr),
       activation_client_(activation_client),
-      deprecation_controller_(std::move(deprecation_controller)) {}
+      deprecation_controller_(std::move(deprecation_controller)),
+      input_device_settings_controller_(input_device_settings_controller) {}
 
 EventRewriterDelegateImpl::~EventRewriterDelegateImpl() {}
 
@@ -73,11 +79,20 @@ bool EventRewriterDelegateImpl::GetKeyboardRemappedPrefValue(
   return true;
 }
 
-bool EventRewriterDelegateImpl::TopRowKeysAreFunctionKeys() const {
-  const PrefService* pref_service = GetPrefService();
-  if (!pref_service)
-    return false;
-  return pref_service->GetBoolean(prefs::kSendFunctionKeys);
+bool EventRewriterDelegateImpl::TopRowKeysAreFunctionKeys(int device_id) const {
+  // When the flag is disabled, `device_id` is unused.
+  if (!ash::features::IsInputDeviceSettingsSplitEnabled()) {
+    const PrefService* pref_service = GetPrefService();
+    if (!pref_service) {
+      return false;
+    }
+    return pref_service->GetBoolean(prefs::kSendFunctionKeys);
+  }
+
+  const mojom::KeyboardSettings* settings =
+      input_device_settings_controller_->GetKeyboardSettings(device_id);
+  // TODO(dpad): Add metric for when settings are not able to be found.
+  return settings && settings->top_row_are_fkeys;
 }
 
 bool EventRewriterDelegateImpl::IsExtensionCommandRegistered(
@@ -112,6 +127,15 @@ bool EventRewriterDelegateImpl::IsSearchKeyAcceleratorReserved() const {
   aura::Window* active_window = activation_client_->GetActiveWindow();
   return active_window &&
          active_window->GetProperty(kSearchKeyAcceleratorReservedKey);
+}
+
+bool EventRewriterDelegateImpl::RewriteMetaTopRowKeyComboEvents() const {
+  return !suppress_meta_top_row_key_rewrites_;
+}
+
+void EventRewriterDelegateImpl::SuppressMetaTopRowKeyComboRewrites(
+    bool should_suppress) {
+  suppress_meta_top_row_key_rewrites_ = should_suppress;
 }
 
 bool EventRewriterDelegateImpl::NotifyDeprecatedRightClickRewrite() {

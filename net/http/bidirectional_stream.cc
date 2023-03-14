@@ -37,24 +37,24 @@ namespace net {
 
 namespace {
 
-base::Value NetLogHeadersParams(const spdy::Http2HeaderBlock* headers,
-                                NetLogCaptureMode capture_mode) {
+base::Value::Dict NetLogHeadersParams(const spdy::Http2HeaderBlock* headers,
+                                      NetLogCaptureMode capture_mode) {
   base::Value::Dict dict;
   dict.Set("headers", ElideHttp2HeaderBlockForNetLog(*headers, capture_mode));
-  return base::Value(std::move(dict));
+  return dict;
 }
 
-base::Value NetLogParams(const GURL& url,
-                         const std::string& method,
-                         const HttpRequestHeaders* headers,
-                         NetLogCaptureMode capture_mode) {
+base::Value::Dict NetLogParams(const GURL& url,
+                               const std::string& method,
+                               const HttpRequestHeaders* headers,
+                               NetLogCaptureMode capture_mode) {
   base::Value::Dict dict;
   dict.Set("url", url.possibly_invalid_spec());
   dict.Set("method", method);
   base::Value headers_param(
       headers->NetLogParams(/*request_line=*/std::string(), capture_mode));
   dict.Set("headers", std::move(headers_param));
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 }  // namespace

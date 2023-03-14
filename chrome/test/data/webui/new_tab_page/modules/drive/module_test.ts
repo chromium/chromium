@@ -113,10 +113,11 @@ suite('NewTabPageModulesDriveModuleTest', () => {
     // Assert.
     const event: DismissModuleEvent = await whenFired;
     assertEquals('Files hidden', event.detail.message);
+    assertTrue(!!event.detail.restoreCallback);
     assertEquals(1, handler.getCallCount('dismissModule'));
 
     // Act.
-    event.detail.restoreCallback();
+    event.detail.restoreCallback!();
 
     // Assert.
     assertEquals(1, handler.getCallCount('restoreModule'));

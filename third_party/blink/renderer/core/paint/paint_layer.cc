@@ -1358,9 +1358,8 @@ Node* PaintLayer::EnclosingNode() const {
   return nullptr;
 }
 
-bool PaintLayer::IsInTopLayer() const {
-  auto* element = DynamicTo<Element>(GetLayoutObject().GetNode());
-  return element && element->IsInTopLayer();
+bool PaintLayer::IsInTopOrViewTransitionLayer() const {
+  return GetLayoutObject().IsInTopOrViewTransitionLayer();
 }
 
 // Compute the z-offset of the point in the transformState.

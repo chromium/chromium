@@ -1,4 +1,0 @@
-CONSOLE ERROR: Refused to load the image 'http://localhost/foo?q=from_icon' because it violates the following Content Security Policy directive: "img-src 'none'".
-
-main frame - didChangeIcons
-Use callbacks to show that favicons are not loaded in violation of CSP when link tags are dynamically added to the page.

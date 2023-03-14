@@ -163,6 +163,30 @@ helpApp.FindResponse = function() {};
 helpApp.FindResponse.prototype.results;
 
 /**
+ * Device info supplied by the DeviceInfoManager.
+ * @record
+ * @struct
+ */
+helpApp.DeviceInfo = function() {};
+/**
+ * The board family of the device. e.g. "brya".
+ * @type {string}
+ */
+helpApp.DeviceInfo.prototype.board;
+/**
+ * The model of the device. e.g. "taniks".
+ * @type {string}
+ */
+helpApp.DeviceInfo.prototype.model;
+/**
+ * The user type of the profile currently running. e.g. "unmanaged".
+ * The possible values for this can be found at
+ * https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/apps/user_type_filter.cc;l=27;drc=0d0b76e40dfff0f4ad58d0640cdf2c4df72030d3.
+ * @type {string}
+ */
+helpApp.DeviceInfo.prototype.userType;
+
+/**
  * The delegate which exposes open source privileged WebUi functions to
  * HelpApp.
  * @record
@@ -238,6 +262,14 @@ helpApp.ClientApiDelegate.prototype.maybeShowDiscoverNotification =
  */
 helpApp.ClientApiDelegate.prototype.maybeShowReleaseNotesNotification =
     function() {};
+
+/**
+ * Gets device info supplied by the DeviceInfoManager. This has to be a MOJO
+ * method rather than additional fields in loadTimeData because the info is
+ * obtained asynchronously.
+ * @return {!Promise<!helpApp.DeviceInfo>}
+ */
+helpApp.ClientApiDelegate.prototype.getDeviceInfo = function() {};
 
 /**
  * Launch data that can be read by the app when it first loads.

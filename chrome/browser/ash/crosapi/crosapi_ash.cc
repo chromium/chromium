@@ -255,6 +255,7 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       search_provider_ash_(std::make_unique<SearchProviderAsh>()),
       select_file_ash_(std::make_unique<SelectFileAsh>()),
       sharesheet_ash_(std::make_unique<SharesheetAsh>()),
+      smart_reader_manager_ash_(std::make_unique<ash::SmartReaderManagerAsh>()),
       speech_recognition_ash_(std::make_unique<SpeechRecognitionAsh>()),
       structured_metrics_service_ash_(
           std::make_unique<StructuredMetricsServiceAsh>()),
@@ -746,6 +747,11 @@ void CrosapiAsh::BindSharesheet(
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   sharesheet_ash_->MaybeSetProfile(profile);
   sharesheet_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindSmartReaderClient(
+    mojo::PendingRemote<mojom::SmartReaderClient> remote) {
+  smart_reader_manager_ash_->BindRemote(std::move(remote));
 }
 
 void CrosapiAsh::BindSpeechRecognition(

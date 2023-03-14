@@ -42,9 +42,11 @@ source_set("present_frame") {
   deps = [
     "//base",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.policy",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.scenic",
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
   ]
   public_deps = [
+    "//third_party/abseil-cpp:absl",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.element",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
   ]
@@ -102,18 +104,31 @@ executable("web_engine_shell_exec") {
   deps = [
     ":present_frame",
     ":remote_debugging_port",
+    ":shell_relauncher",
     "//base",
     "//components/fuchsia_component_support:annotations_manager",
     "//fuchsia_web/common",
-    "//fuchsia_web/common/test:test_support",
     "//fuchsia_web/webinstance_host:webinstance_host",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.component:fuchsia.component_hlcpp",
     "//third_party/fuchsia-sdk/sdk/pkg/fdio",
     "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp",
-    "//third_party/fuchsia-sdk/sdk/pkg/sys_component_cpp_testing",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     "//third_party/widevine/cdm:buildflags",
     "//url",
+  ]
+}
+
+source_set("shell_relauncher") {
+  testonly = true
+  public = [ "shell_relauncher.h" ]
+  sources = [ "shell_relauncher.cc" ]
+  public_deps = [
+    "//base",
+    "//third_party/abseil-cpp:absl",
+  ]
+  deps = [
+    "//fuchsia_web/common/test:test_support",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.component:fuchsia.component_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_component_cpp_testing",
   ]
 }
 
@@ -124,10 +139,23 @@ if (enable_cast_receiver) {
     data_deps = [ ":cast_streaming_shell_exe" ]
   }
 
+  # WebInstanceHost needs to serve capabilities to child components, which is
+  # not possible when running inside a test component, such as
+  # cast_streaming_shell. The shell therefore uses an intermediate component to
+  # actually run the WebInstanceHost, from which the capabilities can be served.
+  fuchsia_component("cast_streaming_shell_for_web_instance_host_component") {
+    testonly = true
+    manifest = "cast_streaming_shell_for_web_instance_host.cml"
+    data_deps = [ ":cast_streaming_shell_exe" ]
+  }
+
   fuchsia_package("cast_streaming_shell_pkg") {
     testonly = true
     package_name = "cast_streaming_shell"
-    deps = [ ":cast_streaming_shell_component" ]
+    deps = [
+      ":cast_streaming_shell_component",
+      ":cast_streaming_shell_for_web_instance_host_component",
+    ]
   }
 
   fuchsia_package_installer("cast_streaming_shell") {
@@ -152,6 +180,7 @@ if (enable_cast_receiver) {
     deps = [
       ":present_frame",
       ":remote_debugging_port",
+      ":shell_relauncher",
       "//base",
       "//base/test:test_support",
       "//components/cast/message_port:message_port",
@@ -161,7 +190,7 @@ if (enable_cast_receiver) {
       "//fuchsia_web/common",
       "//fuchsia_web/common/test:test_support",
       "//fuchsia_web/webengine:switches",
-      "//fuchsia_web/webinstance_host:webinstance_host_v1",
+      "//fuchsia_web/webinstance_host:webinstance_host",
       "//media",
       "//media/gpu/test:test_helpers",
       "//third_party/fuchsia-sdk/sdk/pkg/fdio",

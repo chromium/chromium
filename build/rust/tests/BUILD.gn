@@ -7,10 +7,6 @@ import("//build/rust/rust_unit_tests_group.gni")
 
 if (toolchain_has_rust) {
   target_has_exe = !is_android
-
-  # TODO(crbug.com/1278030): Dylib linking on Android fails due to trying to
-  # link the unwinder from `-lgcc`.
-  target_has_dylib = !is_android
 }
 
 # Build some minimal binaries to exercise the Rust toolchain
@@ -52,12 +48,10 @@ group("deps") {
         "test_rlib_crate:test_rlib_crate_associated_bin",
         "test_rust_exe",
         "test_rust_multiple_dep_versions_exe",
+        "test_rust_shared_library",
         "test_simple_rust_exe",
         "//third_party/rust/bindgen/v0_60:bindgen",
       ]
-    }
-    if (target_has_dylib) {
-      deps += [ "test_rust_shared_library" ]
     }
     if (can_build_rust_unit_tests) {
       deps += [

@@ -23,6 +23,7 @@
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/generated_safe_browsing_pref.h"
+#include "chrome/browser/ssl/generated_https_first_mode_pref.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -327,6 +328,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_NUMBER;
   (*s_allowlist)[::prefs::kHttpsOnlyModeEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[::kGeneratedHttpsFirstModePref] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
   // Cookies page
   (*s_allowlist)[::prefs::kCookieControlsMode] =
@@ -530,6 +533,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[ash::prefs::kAccessibilityAutoclickMovementThreshold] =
       settings_api::PrefType::PREF_TYPE_NUMBER;
+  (*s_allowlist)[ash::prefs::kAccessibilityColorFiltering] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[ash::prefs::kAccessibilityGreyscaleAmount] =
       settings_api::PrefType::PREF_TYPE_NUMBER;
   (*s_allowlist)[ash::prefs::kAccessibilitySaturationAmount] =
@@ -537,6 +542,10 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[ash::prefs::kAccessibilitySepiaAmount] =
       settings_api::PrefType::PREF_TYPE_NUMBER;
   (*s_allowlist)[ash::prefs::kAccessibilityHueRotationAmount] =
+      settings_api::PrefType::PREF_TYPE_NUMBER;
+  (*s_allowlist)[ash::prefs::kAccessibilityColorVisionCorrectionAmount] =
+      settings_api::PrefType::PREF_TYPE_NUMBER;
+  (*s_allowlist)[ash::prefs::kAccessibilityColorVisionDeficiencyType] =
       settings_api::PrefType::PREF_TYPE_NUMBER;
   (*s_allowlist)[ash::prefs::kShouldAlwaysShowAccessibilityMenu] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
@@ -839,39 +848,39 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_LIST;
 
   // Device settings.
-  (*s_allowlist)[::prefs::kTapToClickEnabled] =
+  (*s_allowlist)[ash::prefs::kTapToClickEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[ash::prefs::kNaturalScroll] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[::prefs::kTouchpadSensitivity] =
+  (*s_allowlist)[ash::prefs::kTouchpadSensitivity] =
       settings_api::PrefType::PREF_TYPE_NUMBER;
-  (*s_allowlist)[::prefs::kTouchpadScrollSensitivity] =
+  (*s_allowlist)[ash::prefs::kTouchpadScrollSensitivity] =
       settings_api::PrefType::PREF_TYPE_NUMBER;
-  (*s_allowlist)[::prefs::kTouchpadHapticFeedback] =
+  (*s_allowlist)[ash::prefs::kTouchpadHapticFeedback] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[::prefs::kTouchpadHapticClickSensitivity] =
+  (*s_allowlist)[ash::prefs::kTouchpadHapticClickSensitivity] =
       settings_api::PrefType::PREF_TYPE_NUMBER;
-  (*s_allowlist)[::prefs::kPrimaryMouseButtonRight] =
+  (*s_allowlist)[ash::prefs::kPrimaryMouseButtonRight] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[::prefs::kPrimaryPointingStickButtonRight] =
+  (*s_allowlist)[ash::prefs::kPrimaryPointingStickButtonRight] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[ash::prefs::kMouseReverseScroll] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[::prefs::kMouseAcceleration] =
+  (*s_allowlist)[ash::prefs::kMouseAcceleration] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[::prefs::kMouseScrollAcceleration] =
+  (*s_allowlist)[ash::prefs::kMouseScrollAcceleration] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[::prefs::kPointingStickAcceleration] =
+  (*s_allowlist)[ash::prefs::kPointingStickAcceleration] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[::prefs::kTouchpadAcceleration] =
+  (*s_allowlist)[ash::prefs::kTouchpadAcceleration] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[::prefs::kTouchpadScrollAcceleration] =
+  (*s_allowlist)[ash::prefs::kTouchpadScrollAcceleration] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[::prefs::kMouseSensitivity] =
+  (*s_allowlist)[ash::prefs::kMouseSensitivity] =
       settings_api::PrefType::PREF_TYPE_NUMBER;
-  (*s_allowlist)[::prefs::kMouseScrollSensitivity] =
+  (*s_allowlist)[ash::prefs::kMouseScrollSensitivity] =
       settings_api::PrefType::PREF_TYPE_NUMBER;
-  (*s_allowlist)[::prefs::kPointingStickSensitivity] =
+  (*s_allowlist)[ash::prefs::kPointingStickSensitivity] =
       settings_api::PrefType::PREF_TYPE_NUMBER;
   (*s_allowlist)[::prefs::kLanguageRemapSearchKeyTo] =
       settings_api::PrefType::PREF_TYPE_NUMBER;

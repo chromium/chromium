@@ -259,6 +259,11 @@ class RecordingService : public mojom::RecordingService,
   scoped_refptr<media::AudioCapturerSource> audio_capturer_
       GUARDED_BY_CONTEXT(main_thread_checker_);
 
+  // Abstracts querying the supported capabilities of the currently used encoder
+  // type.
+  std::unique_ptr<RecordingEncoder::Capabilities> encoder_capabilities_
+      GUARDED_BY_CONTEXT(main_thread_checker_);
+
   // Performs all encoding and muxing operations asynchronously on the
   // |encoding_task_runner_|. However, the |encoder_muxer_| object itself is
   // constructed, used, and destroyed on the main thread sequence.

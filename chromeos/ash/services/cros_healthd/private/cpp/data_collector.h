@@ -32,6 +32,12 @@ class DataCollector
     virtual bool IsPrivacyScreenSupported() = 0;
     // Queries if privacy screen is in managed mode.
     virtual bool IsPrivacyScreenManaged() = 0;
+    // Sets privacy screen state.
+    virtual void SetPrivacyScreenState(bool state) = 0;
+    // Queries if audio output device is force muted.
+    virtual bool IsOutputForceMuted() = 0;
+    // Set output mute, mock for testing.
+    virtual void SetOutputMute(bool mute_on) = 0;
   };
 
   DataCollector();
@@ -49,6 +55,8 @@ class DataCollector
   void GetTouchpadLibraryName(GetTouchpadLibraryNameCallback callback) override;
   void SetPrivacyScreenState(bool state,
                              SetPrivacyScreenStateCallback callback) override;
+  void SetAudioOutputMute(bool mute_on,
+                          SetAudioOutputMuteCallback callback) override;
 
   // chromeos::mojo_service_manager::mojom::ServiceProvider overrides.
   void Request(

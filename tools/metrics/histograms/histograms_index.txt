@@ -29,6 +29,7 @@ tools/metrics/histograms/metadata/content_creation/histograms.xml
 tools/metrics/histograms/metadata/cookie/histograms.xml
 tools/metrics/histograms/metadata/cras/histograms.xml
 tools/metrics/histograms/metadata/cros/histograms.xml
+tools/metrics/histograms/metadata/cros_audio/histograms.xml
 tools/metrics/histograms/metadata/cros_ml/histograms.xml
 tools/metrics/histograms/metadata/cross_device/histograms.xml
 tools/metrics/histograms/metadata/crostini/histograms.xml

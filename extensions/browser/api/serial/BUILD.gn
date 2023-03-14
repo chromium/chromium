@@ -17,6 +17,8 @@ source_set("serial") {
     "serial_port_manager.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//content/public/common",
     "//extensions/common/api",

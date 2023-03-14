@@ -38,6 +38,7 @@ extern const CGFloat kPinnedCellHorizontalPadding;
 extern const CGFloat kPinnedCellTitleLeadingPadding;
 extern const CGFloat kPinnedCellSnapshotTopPadding;
 extern const CGFloat kPinnedCellFaviconWidth;
+extern const CGFloat kPinnedCellFaviconSymbolPointSize;
 extern const CGFloat kPinnedCellFaviconContainerWidth;
 extern const CGFloat kPinnedCellFaviconBorderWidth;
 extern const CGFloat kPinnedCellFaviconContainerCornerRadius;

@@ -31,7 +31,28 @@ BASE_DECLARE_FEATURE(kOptimizeImmHideCalls);
 // When enabled, queues navigations instead of cancelling the previous
 // navigation if the previous navigation is already waiting for commit.
 // See https://crbug.com/838348 and https://crbug.com/1220337.
-BASE_DECLARE_FEATURE(kQueueNavigationsWhileWaitingForCommit);
+enum class NavigationQueueingFeatureLevel {
+  // Feature is disabled.
+  kNone,
+  // Navigation code attempts to avoid unnecessary cancellations; otherwise,
+  // queueing navigations is pointless because the slow-to-commit page will
+  // simply cancel the queued navigation request.
+  kAvoidRedundantCancellations,
+  // Navigation code attempts to queue navigations rather than clobbering a
+  // speculative RenderFrameHost that is waiting for the renderer to acknowledge
+  // the navigation commit.
+  kFull,
+};
+
+CONTENT_EXPORT NavigationQueueingFeatureLevel
+GetNavigationQueueingFeatureLevel();
+
+// Returns true if GetNavigationQueueingFeatureLevel() returns at least
+// kAvoidRedundantCancellations.
+CONTENT_EXPORT bool ShouldAvoidRedundantNavigationCancellations();
+
+// Returns true if GetNavigationQueueingFeatureLevel() is kFull.
+CONTENT_EXPORT bool ShouldQueueNavigationsWhenPendingCommitRFHExists();
 
 // When enabled, CanAccessDataForOrigin can only be called from the UI thread.
 // This is related to Citadel desktop protections. See

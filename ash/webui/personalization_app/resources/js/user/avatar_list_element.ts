@@ -262,9 +262,22 @@ export class AvatarList extends WithPersonalizationStore {
     }
   }
 
-  // Called when (1) avatar images fail to load, (2) device goes
-  // offline while the avatar picker is open, (3) user tries to
-  // select an avatar while the device is offline.
+  /**
+   * Called when there's an image load error.
+   *
+   * The most common case would be when trying to load default avatars
+   * from gstatic resources for the first time while the device is offline.
+   */
+  private onImgError_(e: Event) {
+    const divElement = e.currentTarget as HTMLDivElement;
+    divElement.setAttribute('hidden', 'true');
+  }
+
+  /**
+   * Called when (1) avatar images fail to load, (2) the device goes
+   * offline while the avatar picker window is open, or (3) the user
+   * tries to select an avatar while the device is offline.
+   */
   private onAvatarNetworkError_ = () => {
     this.dispatch(setErrorAction({
       id: 'AvatarList',

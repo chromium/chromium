@@ -12,7 +12,7 @@
 ## version id is larger than the version id in download_file_types.asciipb. If
 ## there isn't an ongoing experiment, this version id is equal to the version id
 ## in download_file_types.asciipb.
-version_id: 58
+version_id: 59
 sampled_ping_probability: 0.01
 max_archived_binaries_to_report: 10
 default_file_type {
@@ -1016,6 +1016,7 @@ file_types {
     platform: PLATFORM_TYPE_WINDOWS
     danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
+    file_weight: 10
   }
 }
 file_types {
@@ -2242,6 +2243,7 @@ file_types {
     platform: PLATFORM_TYPE_WINDOWS
     danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
+    file_weight: 10
   }
 }
 file_types {

@@ -40,6 +40,7 @@
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/public/web/web_lifecycle_update.h"
 #include "third_party/blink/public/web/web_window_features.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/vision_deficiency.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
@@ -411,6 +412,8 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   }
   mojom::blink::FencedFrameMode FencedFrameMode() { return fenced_frame_mode_; }
 
+  V8CompileHints& GetV8CompileHints() { return v8_compile_hints_; }
+
  private:
   friend class ScopedPagePauser;
 
@@ -562,6 +565,8 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   mojom::blink::TextAutosizerPageInfo web_text_autosizer_page_info_;
 
   WebScopedVirtualTimePauser history_navigation_virtual_time_pauser_;
+
+  V8CompileHints v8_compile_hints_;
 };
 
 extern template class CORE_EXTERN_TEMPLATE_EXPORT Supplement<Page>;

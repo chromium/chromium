@@ -13,6 +13,7 @@ source_set("annotations") {
     "//ios/web/common",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",
+    "//ios/web/public/annotations",
     "//ios/web/public/js_messaging",
     "//ios/web/public/navigation",
     "//ui/base",
@@ -21,10 +22,9 @@ source_set("annotations") {
   sources = [
     "annotations_java_script_feature.h",
     "annotations_java_script_feature.mm",
-    "annotations_text_manager.h",
     "annotations_text_manager.mm",
-    "annotations_utils.h",
-    "annotations_utils.mm",
+    "annotations_text_manager_impl.h",
+    "annotations_text_manager_impl.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -66,11 +66,13 @@ source_set("inttests") {
     ":annotations_test_ts",
     "//base",
     "//base/test:test_support",
+    "//ios/web/common",
     "//ios/web/common:features",
     "//ios/web/js_messaging",
     "//ios/web/js_messaging:java_script_feature_manager_header",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",
+    "//ios/web/public/annotations",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//ios/web/public/test:test_fixture",

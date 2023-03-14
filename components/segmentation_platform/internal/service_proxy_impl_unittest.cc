@@ -274,16 +274,9 @@ TEST_F(ServiceProxyImplTest, ExecuteModel) {
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
 
   service_proxy_impl_->SetExecutionService(&execution);
-  base::RunLoop wait_for_execution;
-  EXPECT_CALL(*scheduler, RequestModelExecution(_))
-      .WillOnce(Invoke(
-          [&info, &wait_for_execution](const proto::SegmentInfo actual_info) {
-            EXPECT_EQ(info->segment_id(), actual_info.segment_id());
-            wait_for_execution.QuitClosure().Run();
-          }));
+  EXPECT_CALL(*scheduler, RequestModelExecution(_)).Times(0);
   service_proxy_impl_->ExecuteModel(
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
-  wait_for_execution.Run();
 
   EXPECT_CALL(*scheduler, RequestModelExecution(_)).Times(0);
   service_proxy_impl_->ExecuteModel(SegmentId::OPTIMIZATION_TARGET_UNKNOWN);

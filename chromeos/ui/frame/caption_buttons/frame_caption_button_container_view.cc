@@ -704,6 +704,11 @@ void FrameCaptionButtonContainerView::CommitSnap(SnapDirection snap) {
                                     kDefaultSnapRatio);
 }
 
+MultitaskMenuNudgeController*
+FrameCaptionButtonContainerView::GetMultitaskMenuNudgeController() {
+  return &nudge_controller_;
+}
+
 BEGIN_METADATA(FrameCaptionButtonContainerView, views::View)
 END_METADATA
 

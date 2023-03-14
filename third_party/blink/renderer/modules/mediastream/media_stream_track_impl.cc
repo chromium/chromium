@@ -569,23 +569,14 @@ MediaTrackCapabilities* MediaStreamTrackImpl::getCapabilities() const {
 }
 
 MediaTrackConstraints* MediaStreamTrackImpl::getConstraints() const {
-  MediaTrackConstraints* constraints =
-      media_constraints_impl::ConvertConstraints(constraints_);
-  if (!image_capture_)
-    return constraints;
+  if (image_capture_) {
+    if (auto* image_capture_constraints =
+            image_capture_->GetMediaTrackConstraints()) {
+      return image_capture_constraints;
+    }
+  }
 
-  MediaTrackConstraintSet* image_capture_advanced_constraints =
-      const_cast<MediaTrackConstraintSet*>(
-          image_capture_->GetMediaTrackConstraints());
-  if (!image_capture_advanced_constraints)
-    return constraints;
-
-  MediaTrackConstraints* image_capture_constraints =
-      MediaTrackConstraints::Create();
-  HeapVector<Member<MediaTrackConstraintSet>> vector;
-  vector.push_back(image_capture_advanced_constraints);
-  image_capture_constraints->setAdvanced(vector);
-  return image_capture_constraints;
+  return media_constraints_impl::ConvertConstraints(constraints_);
 }
 
 MediaTrackSettings* MediaStreamTrackImpl::getSettings() const {

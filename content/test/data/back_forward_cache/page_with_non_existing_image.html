@@ -1,0 +1,18 @@
+<html>
+<head>
+  <script>
+    var interactivePromise = new Promise(resolve => {
+      document.addEventListener("readystatechange", e => {
+        console.log('Readystatechange event fired', document.readyState);
+        if (document.readyState == "interactive") {
+          resolve(document.readyState);
+        }
+      });
+    });
+  </script>
+</head>
+<body>
+  <img src="./image.png"/>
+  <p>This page has a non existent image.
+</body>
+</html>

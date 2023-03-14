@@ -219,7 +219,7 @@ bool RunFunction(ExtensionFunction* function,
 
   function->set_include_incognito_information(flags & INCLUDE_INCOGNITO);
   function->preserve_results_for_testing();
-  function->RunWithValidation()->Execute();
+  function->RunWithValidation().Execute();
   response_helper.WaitForResponse();
 
   EXPECT_TRUE(response_helper.has_response());

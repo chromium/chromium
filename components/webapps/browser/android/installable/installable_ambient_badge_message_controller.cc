@@ -11,6 +11,7 @@
 #include "components/messages/android/throttler/domain_session_throttler.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
+#include "components/webapps/browser/android/ambient_badge_metrics.h"
 #include "components/webapps/browser/android/installable/installable_ambient_badge_client.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"
 #include "components/webapps/browser/features.h"
@@ -91,6 +92,7 @@ void InstallableAmbientBadgeMessageController::HandleMessageDismissed(
     messages::DismissReason dismiss_reason) {
   DCHECK(message_);
   message_.reset();
+  RecordAmbientBadgeMessageDismissReason(dismiss_reason);
   if (dismiss_reason == messages::DismissReason::GESTURE) {
     client_->BadgeDismissed();
   }

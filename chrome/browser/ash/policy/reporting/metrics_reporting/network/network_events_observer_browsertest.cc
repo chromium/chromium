@@ -5,16 +5,19 @@
 #include <memory>
 #include <string>
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_mixin.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/network/network_events_observer.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/dbus/missive/missive_client_test_observer.h"
+#include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
@@ -51,6 +54,10 @@ class NetworkEventsBrowserTest : public ::policy::DevicePolicyCrosBrowserTest {
  protected:
   NetworkEventsBrowserTest() {
     crypto_home_mixin_.MarkUserAsExisting(affiliation_mixin_.account_id());
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{kEnableWifiSignalEventsReporting,
+                              kEnableNetworkConnectionStateEventsReporting},
+        /*disabled_features=*/{});
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -98,6 +105,7 @@ class NetworkEventsBrowserTest : public ::policy::DevicePolicyCrosBrowserTest {
   ::policy::AffiliationMixin affiliation_mixin_{&mixin_host_, &test_helper_};
   ash::CryptohomeMixin crypto_home_mixin_{&mixin_host_};
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(NetworkEventsBrowserTest,
@@ -149,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(NetworkEventsBrowserTest,
 
   // Testing event found successfully.
   EXPECT_THAT(record_data.event_data().type(),
-              Eq(MetricEventType::NETWORK_SIGNAL_STRENGTH_LOW));
+              Eq(MetricEventType::WIFI_SIGNAL_STRENGTH_LOW));
 }
 
 }  // namespace

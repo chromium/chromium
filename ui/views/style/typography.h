@@ -51,6 +51,9 @@ enum TextContext {
   // An editable text field. Usually matches CONTROL_LABEL.
   CONTEXT_TEXTFIELD,
 
+  // Placeholder text in a text field.
+  CONTEXT_TEXTFIELD_PLACEHOLDER,
+
   // Text in a menu.
   CONTEXT_MENU,
 

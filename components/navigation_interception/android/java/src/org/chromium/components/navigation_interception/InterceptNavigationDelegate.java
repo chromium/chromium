@@ -20,11 +20,12 @@ public abstract class InterceptNavigationDelegate {
      * @param escapedUrl The url from the NavigationHandle, properly escaped for external
      *         navigation.
      * @param crossFrame whether the navigation has been initiated by another frame.
+     * @param isSandboxedFrame whether the navigation was initiated by a sandboxed frame.
      * @return true if the navigation should be ignored.
      */
     @CalledByNative
-    public abstract boolean shouldIgnoreNavigation(
-            NavigationHandle navigationHandle, GURL escapedUrl, boolean crossFrame);
+    public abstract boolean shouldIgnoreNavigation(NavigationHandle navigationHandle,
+            GURL escapedUrl, boolean crossFrame, boolean isSandboxedFrame);
 
     /**
      * This method is called for navigations to external protocols in subframes, which on Android

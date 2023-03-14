@@ -2752,16 +2752,17 @@ IN_PROC_BROWSER_TEST_F(WizardControllerRollbackFlowTest,
       EnrollmentScreenView::kScreenId);
   CheckCurrentScreen(EnrollmentScreenView::kScreenId);
   ASSERT_TRUE(network_config_->imported_config() != nullptr);
+  ASSERT_TRUE(network_config_->imported_config()->is_dict());
 
-  const base::Value* network_list =
-      network_config_->imported_config()->FindListKey("NetworkConfigurations");
+  const base::Value::List* network_list =
+      network_config_->imported_config()->GetDict().FindList(
+          "NetworkConfigurations");
   ASSERT_TRUE(network_list);
-  ASSERT_TRUE(network_list->is_list());
 
-  const base::Value& network = network_list->GetList()[0];
+  const base::Value& network = (*network_list)[0];
   ASSERT_TRUE(network.is_dict());
 
-  const std::string* guid = network.FindStringKey("GUID");
+  const std::string* guid = network.GetDict().FindString("GUID");
   ASSERT_TRUE(guid);
   EXPECT_EQ(*guid, "wpa-psk-network-guid");
 }

@@ -5,6 +5,7 @@
 #include "components/background_sync/background_sync_controller_impl.h"
 
 #include "base/containers/contains.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -12,7 +13,6 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
-#include "components/variations/variations_associated_data.h"
 #include "content/public/browser/background_sync_context.h"
 #include "content/public/browser/background_sync_controller.h"
 #include "content/public/browser/background_sync_parameters.h"
@@ -111,8 +111,9 @@ void BackgroundSyncControllerImpl::GetParameterOverrides(
 #endif
 
   std::map<std::string, std::string> field_params;
-  if (!variations::GetVariationParams(kFieldTrialName, &field_params))
+  if (!base::GetFieldTrialParams(kFieldTrialName, &field_params)) {
     return;
+  }
 
   if (base::EqualsCaseInsensitiveASCII(field_params[kDisabledParameterName],
                                        "true")) {

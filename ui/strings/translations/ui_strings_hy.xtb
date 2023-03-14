@@ -61,6 +61,7 @@
 <translation id="2573731672208488250">{HOURS,plural, =1{1 ժ-ից}one{# ժ-ից}other{# ժ-ից}}</translation>
 <translation id="2583543531130364912">Հպէկրանի չափաբերում</translation>
 <translation id="2586657967955657006">Սեղմատախտակ</translation>
+<translation id="2653844658857826081">ՆՈՐՈՒՅԹ</translation>
 <translation id="2666092431469916601">Վերին</translation>
 <translation id="2701330563083355633">Ուղարկվել է <ph name="DEVICE_NAME" />-ի միջոցով</translation>
 <translation id="271033894570825754">New</translation>
@@ -75,6 +76,7 @@
 <translation id="3157931365184549694">Վերականգնել</translation>
 <translation id="3183922693828471536">Ոլորել այստեղ</translation>
 <translation id="3234408098842461169">Վար սլաք</translation>
+<translation id="3240426699337459095">Հղումը պատճենվեց</translation>
 <translation id="3291688615589870984">{DAYS,plural, =1{1 օր}one{# օր}other{# օր}}</translation>
 <translation id="3295886253693811851">Զանգել հավելվածից</translation>
 <translation id="3306688585798492231">Ներկառուցված էկրան</translation>

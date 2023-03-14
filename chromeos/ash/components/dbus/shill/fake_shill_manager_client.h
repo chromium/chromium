@@ -127,7 +127,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   void SetSimulateCheckTetheringReadinessResult(
       FakeShillSimulatedResult tethering_readiness_result,
       const std::string& readiness_status) override;
-  base::Value GetEnabledServiceList() const override;
+  base::Value::List GetEnabledServiceList() const override;
   void ClearProfiles() override;
   void SetShouldReturnNullProperties(bool value) override;
 

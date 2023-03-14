@@ -264,7 +264,7 @@ class RestrictedCookieManagerMetrics
 
   SEQUENCE_CHECKER(sequence_checker_);
   uint64_t get_cookies_string_count_{0};
-  base::HistogramBase* histogram_;
+  raw_ptr<base::HistogramBase> histogram_;
   base::RepeatingTimer timer_;
 };
 
@@ -566,7 +566,7 @@ void NetworkService::StartNetLog(base::File file,
 
   file_net_log_observer_ = net::FileNetLogObserver::CreateUnboundedPreExisting(
       std::move(file), capture_mode,
-      std::make_unique<base::Value>(std::move(constants)));
+      std::make_unique<base::Value::Dict>(std::move(constants)));
   file_net_log_observer_->StartObserving(net_log_);
 }
 

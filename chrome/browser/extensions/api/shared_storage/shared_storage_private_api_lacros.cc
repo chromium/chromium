@@ -44,14 +44,14 @@ void SharedStoragePrivateGetFunction::OnGet(absl::optional<base::Value> items) {
     LOG(ERROR) << kErrorFetching;
     return Respond(Error(kErrorFetching));
   }
-  Respond(OneArgument(std::move(*items)));
+  Respond(WithArguments(std::move(*items)));
 }
 
 SharedStoragePrivateSetFunction::SharedStoragePrivateSetFunction() = default;
 SharedStoragePrivateSetFunction::~SharedStoragePrivateSetFunction() = default;
 
 ExtensionFunction::ResponseAction SharedStoragePrivateSetFunction::Run() {
-  std::unique_ptr<shared_api::Set::Params> params =
+  absl::optional<shared_api::Set::Params> params =
       shared_api::Set::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   auto* lacros_service = chromeos::LacrosService::Get();
@@ -95,7 +95,7 @@ SharedStoragePrivateRemoveFunction::~SharedStoragePrivateRemoveFunction() =
     default;
 
 ExtensionFunction::ResponseAction SharedStoragePrivateRemoveFunction::Run() {
-  std::unique_ptr<shared_api::Remove::Params> params =
+  absl::optional<shared_api::Remove::Params> params =
       shared_api::Remove::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   auto* lacros_service = chromeos::LacrosService::Get();
@@ -114,12 +114,12 @@ ExtensionFunction::ResponseAction SharedStoragePrivateRemoveFunction::Run() {
 void SharedStoragePrivateRemoveFunction::OnGet(
     std::vector<std::string> keys,
     absl::optional<base::Value> items) {
-  if (!items) {
+  if (!items || !items->is_dict()) {
     LOG(ERROR) << kErrorFetching;
     return Respond(Error(kErrorFetching));
   }
   for (const auto& key : keys) {
-    items->RemoveKey(key);
+    items->GetDict().Remove(key);
   }
   auto* lacros_service = chromeos::LacrosService::Get();
   if (!lacros_service ||

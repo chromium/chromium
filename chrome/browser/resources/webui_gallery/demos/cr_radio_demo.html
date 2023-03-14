@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html $i18n{chromeRefresh2023Attribute}>
   <head>
     <meta charset="utf-8">
     <title>cr-radio demo</title>
@@ -16,9 +16,16 @@
             <cr-radio-button name="option3" label="Option 3">
               <div>With slotted content</div>
             </cr-radio-button>
+            <cr-radio-button name="option4" label="Option 4" disabled>
+              <div>Disabled</div>
+            </cr-radio-button>
           </cr-radio-group>
 
           Selected option: [[selectedOption_]]
+          <cr-radio-group selected="option5">
+            <cr-radio-button name="option5" label="Disabled selected"
+                disabled></cr-radio-button>
+          </cr-radio-group>
         </div>
       </template>
     </dom-bind>

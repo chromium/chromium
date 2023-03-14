@@ -91,8 +91,8 @@ the snapshot stays in sync with associated DOM element.
 * Cached : This refers to a cached copy of a render pass saved in the Viz
 process.
 
-We generate 2 set of SharedElementResourceIDs for snapshots of elements in the
-old and new DOM as follows :
+We generate 2 set of ViewTransitionElementResourceIds for snapshots of elements
+in the old and new DOM as follows :
 
 * At the prepare phase (before the DOM is updated to the new state),
 old_snapshot_id tags elements in the old DOM. This ID refers to a live snapshot

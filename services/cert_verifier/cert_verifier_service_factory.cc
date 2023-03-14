@@ -103,7 +103,7 @@ CertVerifierServiceFactoryImpl::CertVerifierServiceFactoryImpl(
     : service_params_(std::move(params)), receiver_(this, std::move(receiver)) {
   if (!service_params_) {
     service_params_ = mojom::CertVerifierServiceParams::New();
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
     service_params_->use_chrome_root_store =
         base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed);
 #endif

@@ -131,15 +131,15 @@ void ClipboardPortalInjector::SetSelection(std::string mime_type,
       proxy_, "SetSelection",
       g_variant_new("(oa{sv})", session_handle_.c_str(), &options_builder),
       G_DBUS_CALL_FLAGS_NONE, /*timeout=*/-1, cancellable_,
-      reinterpret_cast<GAsyncReadyCallback>(OnSetSelectionCallback), this);
+      OnSetSelectionCallback, this);
 }
 
 // static
-void ClipboardPortalInjector::OnSetSelectionCallback(GDBusProxy* proxy,
+void ClipboardPortalInjector::OnSetSelectionCallback(GObject* object,
                                                      GAsyncResult* result,
                                                      gpointer user_data) {
-  ClipboardPortalInjector* that =
-      static_cast<ClipboardPortalInjector*>(user_data);
+  auto* proxy = reinterpret_cast<GDBusProxy*>(object);
+  auto* that = static_cast<ClipboardPortalInjector*>(user_data);
   DCHECK(that);
 
   Scoped<GError> error;
@@ -171,15 +171,15 @@ void ClipboardPortalInjector::SelectionWrite() {
       proxy_, "SelectionWrite",
       g_variant_new("(oau)", session_handle_.c_str(), &serials_builder),
       G_DBUS_CALL_FLAGS_NONE, /*timeout=*/-1, nullptr, cancellable_,
-      reinterpret_cast<GAsyncReadyCallback>(OnSelectionWriteCallback), this);
+      OnSelectionWriteCallback, this);
 }
 
 // static
-void ClipboardPortalInjector::OnSelectionWriteCallback(GDBusProxy* proxy,
+void ClipboardPortalInjector::OnSelectionWriteCallback(GObject* object,
                                                        GAsyncResult* result,
                                                        gpointer user_data) {
-  ClipboardPortalInjector* that =
-      static_cast<ClipboardPortalInjector*>(user_data);
+  auto* proxy = reinterpret_cast<GDBusProxy*>(object);
+  auto* that = static_cast<ClipboardPortalInjector*>(user_data);
   DCHECK(that);
   DCHECK_CALLED_ON_VALID_SEQUENCE(that->sequence_checker_);
 
@@ -209,7 +209,9 @@ void ClipboardPortalInjector::OnSelectionWriteCallback(GDBusProxy* proxy,
     } else {
       request_successes[serial] =
           base::WriteFileDescriptor(fd.get(), that->write_data_);
-      LOG(ERROR) << "Failed to write clipboard data to file descriptor";
+      if (!request_successes[serial]) {
+        LOG(ERROR) << "Failed to write clipboard data to file descriptor";
+      }
     }
   }
 
@@ -229,21 +231,19 @@ void ClipboardPortalInjector::SelectionWriteDone(
     g_variant_builder_add(&request_successes_builder, "{ub}", serial, success);
   }
 
-  g_dbus_proxy_call(
-      proxy_, "SelectionWriteDone",
-      g_variant_new("(oa{ub})", session_handle_.c_str(),
-                    &request_successes_builder),
-      G_DBUS_CALL_FLAGS_NONE, /*timeout=*/-1, cancellable_,
-      reinterpret_cast<GAsyncReadyCallback>(OnSelectionWriteDoneCallback),
-      this);
+  g_dbus_proxy_call(proxy_, "SelectionWriteDone",
+                    g_variant_new("(oa{ub})", session_handle_.c_str(),
+                                  &request_successes_builder),
+                    G_DBUS_CALL_FLAGS_NONE, /*timeout=*/-1, cancellable_,
+                    OnSelectionWriteDoneCallback, this);
 }
 
 // static
-void ClipboardPortalInjector::OnSelectionWriteDoneCallback(GDBusProxy* proxy,
+void ClipboardPortalInjector::OnSelectionWriteDoneCallback(GObject* object,
                                                            GAsyncResult* result,
                                                            gpointer user_data) {
-  ClipboardPortalInjector* that =
-      static_cast<ClipboardPortalInjector*>(user_data);
+  auto* proxy = reinterpret_cast<GDBusProxy*>(object);
+  auto* that = static_cast<ClipboardPortalInjector*>(user_data);
   DCHECK(that);
   DCHECK_CALLED_ON_VALID_SEQUENCE(that->sequence_checker_);
 
@@ -266,15 +266,15 @@ void ClipboardPortalInjector::SelectionRead(std::string mime_type) {
       proxy_, "SelectionRead",
       g_variant_new("(os)", session_handle_.c_str(), mime_type.c_str()),
       G_DBUS_CALL_FLAGS_NONE, /*timeout=*/-1, nullptr, cancellable_,
-      reinterpret_cast<GAsyncReadyCallback>(OnSelectionReadCallback), this);
+      OnSelectionReadCallback, this);
 }
 
 // static
-void ClipboardPortalInjector::OnSelectionReadCallback(GDBusProxy* proxy,
+void ClipboardPortalInjector::OnSelectionReadCallback(GObject* object,
                                                       GAsyncResult* result,
                                                       gpointer user_data) {
-  ClipboardPortalInjector* that =
-      static_cast<ClipboardPortalInjector*>(user_data);
+  auto* proxy = reinterpret_cast<GDBusProxy*>(object);
+  auto* that = static_cast<ClipboardPortalInjector*>(user_data);
   DCHECK(that);
   DCHECK_CALLED_ON_VALID_SEQUENCE(that->sequence_checker_);
 

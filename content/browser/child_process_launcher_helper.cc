@@ -96,6 +96,9 @@ ChildProcessLauncherHelper::ChildProcessLauncherHelper(
       can_use_warm_up_connection_(can_use_warm_up_connection)
 #endif
 {
+  // command_line_ is always accessed from the launcher thread, so detach it
+  // from the client thread here.
+  command_line_->DetachFromCurrentSequence();
 }
 
 ChildProcessLauncherHelper::~ChildProcessLauncherHelper() = default;
@@ -189,6 +192,13 @@ void ChildProcessLauncherHelper::PostLaunchOnLauncherThread(
   if (launch_elevated) {
     invitation.set_extra_flags(MOJO_SEND_INVITATION_FLAG_ELEVATED);
   }
+
+#if BUILDFLAG(IS_WIN)
+  if (delegate_->ShouldUseUntrustedMojoInvitation()) {
+    invitation.set_extra_flags(MOJO_SEND_INVITATION_FLAG_UNTRUSTED_PROCESS);
+  }
+#endif
+
   if (process.process.IsValid()) {
 #if !BUILDFLAG(IS_FUCHSIA)
     if (mojo_named_channel_) {

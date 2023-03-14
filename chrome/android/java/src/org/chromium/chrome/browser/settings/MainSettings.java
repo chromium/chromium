@@ -340,7 +340,8 @@ public class MainSettings extends PreferenceFragmentCompat
                 UserPrefs.get(mProfile).setBoolean(Pref.PASSWORDS_PREF_WITH_NEW_LABEL_USED, true);
             }
             PasswordManagerLauncher.showPasswordSettings(getActivity(),
-                    ManagePasswordsReferrer.CHROME_SETTINGS, mModalDialogManagerSupplier);
+                    ManagePasswordsReferrer.CHROME_SETTINGS, mModalDialogManagerSupplier,
+                    /*managePasskeys=*/false);
             return true;
         });
     }
@@ -425,7 +426,7 @@ public class MainSettings extends PreferenceFragmentCompat
             }
 
             @Override
-            public boolean isPreferenceClickDisabledByPolicy(Preference preference) {
+            public boolean isPreferenceClickDisabled(Preference preference) {
                 if (PREF_SEARCH_ENGINE.equals(preference.getKey())) {
                     return TemplateUrlServiceFactory.getForProfile(mProfile)
                             .isDefaultSearchManaged();

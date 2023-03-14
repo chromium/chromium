@@ -184,6 +184,7 @@ class ProfileProviderRealCollectionTest : public testing::Test {
     StopSpinningCPU();
 
     profile_provider_.reset();
+    aura_env_.reset();
     TestingBrowserProcess::DeleteInstance();
     ash::LoginState::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
@@ -273,8 +274,13 @@ class ProfileProviderRealCollectionTest : public testing::Test {
   std::unique_ptr<TestProfileProvider> profile_provider_;
 };
 
-// Flaky on chromeos: crbug.com/1184119
-TEST_F(ProfileProviderRealCollectionTest, SuspendDone) {
+// Flaky on chromeos: b/271891628
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_SuspendDone DISABLED_SuspendDone
+#else
+#define MAYBE_SuspendDone SuspendDone
+#endif
+TEST_F(ProfileProviderRealCollectionTest, MAYBE_SuspendDone) {
   // Trigger a resume from suspend.
   profile_provider_->SuspendDone(base::Minutes(10));
 
@@ -284,7 +290,13 @@ TEST_F(ProfileProviderRealCollectionTest, SuspendDone) {
   AssertProfileData(SampledProfile::RESUME_FROM_SUSPEND);
 }
 
-TEST_F(ProfileProviderRealCollectionTest, SessionRestoreDone) {
+// Flaky on chromeos: b/271891628
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_SessionRestoreDone DISABLED_SessionRestoreDone
+#else
+#define MAYBE_SessionRestoreDone SessionRestoreDone
+#endif
+TEST_F(ProfileProviderRealCollectionTest, MAYBE_SessionRestoreDone) {
   // Restored 10 tabs.
   profile_provider_->OnSessionRestoreDone(nullptr, 10);
 
@@ -294,7 +306,13 @@ TEST_F(ProfileProviderRealCollectionTest, SessionRestoreDone) {
   AssertProfileData(SampledProfile::RESTORE_SESSION);
 }
 
-TEST_F(ProfileProviderRealCollectionTest, OnJankStarted) {
+// Flaky on chromeos: b/271891628
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_OnJankStarted DISABLED_OnJankStarted
+#else
+#define MAYBE_OnJankStarted OnJankStarted
+#endif
+TEST_F(ProfileProviderRealCollectionTest, MAYBE_OnJankStarted) {
   // Trigger a resume from suspend.
   profile_provider_->OnJankStarted();
 
@@ -304,7 +322,13 @@ TEST_F(ProfileProviderRealCollectionTest, OnJankStarted) {
   AssertProfileData(SampledProfile::JANKY_TASK);
 }
 
-TEST_F(ProfileProviderRealCollectionTest, OnJankStopped) {
+// Flaky on chromeos: b/271891628
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_OnJankStopped DISABLED_OnJankStopped
+#else
+#define MAYBE_OnJankStopped OnJankStopped
+#endif
+TEST_F(ProfileProviderRealCollectionTest, MAYBE_OnJankStopped) {
   // Override the default collection duration.
   auto test_params_override = GetTestCollectionParams();
   auto full_collection_duration = kCollectionDuration * 2;

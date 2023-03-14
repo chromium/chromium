@@ -40,6 +40,10 @@ bool ShouldResetFirstFollowCount();
 // dismissal conditions. The promo will still only show for signed out users.
 bool ShouldForceFeedSigninPromo();
 
+// Returns true if Tile Ablation should be forced regardless of the value of
+// `isTileAblationExperimentComplete`.
+bool ShouldIgnoreTileAblationConditions();
+
 // Should be called after the count has been reset so that the resetting flag
 // can be turned off.
 // TODO(crbug.com/1312124): Remove after launch.
@@ -79,6 +83,13 @@ bool MustClearApplicationGroupSandbox();
 // launched or resumed. Returns empty string if no promo is to be forced
 // to display. Always returns nil for users in stable/beta.
 NSString* GetForcedPromoToDisplay();
+
+// Returns the selected device segment the user wants to simulate as a string;
+// the string should either be nil or one of the options from synthetic trial
+// "Segmentation_DeviceSwitcher."
+// The value could be set both from Experimental Settings and command line
+// switches, but the former takes precedence.
+std::string GetSegmentForForcedDeviceSwitcherExperience();
 
 }  // namespace experimental_flags
 

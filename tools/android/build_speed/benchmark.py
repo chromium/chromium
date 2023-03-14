@@ -27,7 +27,6 @@ import contextlib
 import dataclasses
 import functools
 import logging
-import os
 import pathlib
 import re
 import statistics
@@ -41,15 +40,19 @@ from typing import Dict, Callable, Iterator, List, Tuple, Optional
 USE_PYTHON_3 = f'{__file__} will only run under python3.'
 
 _SRC_ROOT = pathlib.Path(__file__).resolve().parents[3]
-sys.path.append(str(_SRC_ROOT / 'build' / 'android'))
+sys.path.append(str(_SRC_ROOT / 'build/android'))
 from pylib import constants
 import devil_chromium
 
-sys.path.append(str(_SRC_ROOT / 'third_party' / 'catapult' / 'devil'))
+sys.path.append(str(_SRC_ROOT / 'third_party/catapult/devil'))
 from devil.android.sdk import adb_wrapper
 from devil.android import device_utils
 
-_EMULATOR_AVD_DIR = _SRC_ROOT / 'tools' / 'android' / 'avd'
+_AUTONINJA_PATH = _SRC_ROOT / 'third_party/depot_tools/autoninja'
+_NINJA_PATH = _SRC_ROOT / 'third_party/ninja/ninja'
+_GN_PATH = _SRC_ROOT / 'third_party/depot_tools/gn'
+
+_EMULATOR_AVD_DIR = _SRC_ROOT / 'tools/android/avd'
 _AVD_SCRIPT = _EMULATOR_AVD_DIR / 'avd.py'
 _AVD_CONFIG_DIR = _EMULATOR_AVD_DIR / 'proto'
 _SECONDS_TO_POLL_FOR_EMULATOR = 30
@@ -63,13 +66,17 @@ _SUPPORTED_EMULATORS = {
     'generic_android29.textpb': 'x86',
     'generic_android30.textpb': 'x86',
     'generic_android31.textpb': 'x64',
+    'generic_android32_foldable.textpb': 'x64',
+    'generic_android33': 'x64',
 }
 
 _GN_ARGS = [
     'target_os="android"',
-    'use_goma=true',
     'incremental_install=true',
 ]
+
+_GOMA_GN_ARG = 'use_goma=true'
+_RECLIENT_GN_ARG = 'use_remoteexec=true'
 
 _TARGETS = {
     'bundle': 'monochrome_public_bundle',
@@ -110,112 +117,97 @@ _SUITES = {
 @dataclasses.dataclass
 class Benchmark:
     name: str
-    info: Dict[str, str]
+    is_incremental: bool = True
+    can_build: bool = True
+    can_install: bool = True
+    from_string: str = ''
+    to_string: str = ''
+    change_file: str = ''
 
 
 _BENCHMARKS = [
     Benchmark(
-        'chrome_java_nosig',
-        {
-            'kind':
-            'incremental_build_and_install',
-            'from_string':
-            'sInstance = instance;',
-            'to_string':
-            'sInstance = instance;String test = "Test";',
-            # pylint: disable=line-too-long
-            'change_file':
-            'chrome/android/java/src/org/chromium/chrome/browser/AppHooks.java',
-        }),
+        name='chrome_java_nosig',
+        from_string='sInstance = instance;',
+        to_string='sInstance = instance;String test = "Test";',
+        change_file=
+        'chrome/android/java/src/org/chromium/chrome/browser/AppHooks.java',
+    ),
     Benchmark(
-        'chrome_java_sig',
-        {
-            'kind':
-            'incremental_build_and_install',
-            'from_string':
-            'AppHooksImpl sInstance;',
-            'to_string':
-            'AppHooksImpl sInstance;public void NewInterfaceMethod(){}',
-            # pylint: disable=line-too-long
-            'change_file':
-            'chrome/android/java/src/org/chromium/chrome/browser/AppHooks.java',
-        }),
+        name='chrome_java_sig',
+        from_string='AppHooksImpl sInstance;',
+        to_string='AppHooksImpl sInstance;public void NewInterfaceMethod(){}',
+        change_file=
+        'chrome/android/java/src/org/chromium/chrome/browser/AppHooks.java',
+    ),
     Benchmark(
-        'chrome_java_res', {
-            'kind': 'incremental_build_and_install',
-            'from_string': '14181C',
-            'to_string': '14181D',
-            'change_file': 'chrome/android/java/res/values/colors.xml',
-        }),
+        name='chrome_java_res',
+        from_string='14181C',
+        to_string='14181D',
+        change_file='chrome/android/java/res/values/colors.xml',
+    ),
     Benchmark(
-        'module_java_public_sig',
-        {
-            'kind':
-            'incremental_build_and_install',
-            'from_string':
-            'INVALID_WINDOW_INDEX = -1',
-            'to_string':
-            'INVALID_WINDOW_INDEX = -2',
-            # pylint: disable=line-too-long
-            'change_file':
-            'chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManager.java',
-        }),
+        name='module_java_public_sig',
+        from_string='INVALID_WINDOW_INDEX = -1',
+        to_string='INVALID_WINDOW_INDEX = -2',
+        change_file=
+        'chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManager.java',  # pylint: disable=line-too-long
+    ),
     Benchmark(
-        'module_java_internal_nosig',
-        {
-            'kind':
-            'incremental_build_and_install',
-            'from_string':
-            '"TabModelSelector',
-            'to_string':
-            '"DifferentUniqueString',
-            # pylint: disable=line-too-long
-            'change_file':
-            'chrome/browser/tabmodel/internal/android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManagerImpl.java',
-        }),
+        name='module_java_internal_nosig',
+        from_string='"TabModelSelector',
+        to_string='"DifferentUniqueString',
+        change_file=
+        'chrome/browser/tabmodel/internal/android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManagerImpl.java',  # pylint: disable=line-too-long
+    ),
     Benchmark(
-        'base_java_nosig', {
-            'kind': 'incremental_build_and_install',
-            'from_string': '"SysUtil',
-            'to_string': '"SysUtil1',
-            'change_file':
-            'base/android/java/src/org/chromium/base/SysUtils.java',
-        }),
+        name='base_java_nosig',
+        from_string='"SysUtil',
+        to_string='"SysUtil1',
+        change_file='base/android/java/src/org/chromium/base/SysUtils.java',
+    ),
     Benchmark(
-        'base_java_sig', {
-            'kind': 'incremental_build_and_install',
-            'from_string': 'SysUtils";',
-            'to_string': 'SysUtils";public void NewInterfaceMethod(){}',
-            'change_file':
-            'base/android/java/src/org/chromium/base/SysUtils.java',
-        }),
+        name='base_java_sig',
+        from_string='SysUtils";',
+        to_string='SysUtils";public void NewInterfaceMethod(){}',
+        change_file='base/android/java/src/org/chromium/base/SysUtils.java',
+    ),
     Benchmark(
-        'turbine_headers', {
-            'kind': 'incremental_build',
-            'from_string': '# found in the LICENSE file.',
-            'to_string': '#temporary_edit_for_benchmark.py',
-            'change_file': 'build/android/gyp/turbine.py',
-        }),
+        name='turbine_headers',
+        from_string='# found in the LICENSE file.',
+        to_string='#temporary_edit_for_benchmark.py',
+        change_file='build/android/gyp/turbine.py',
+        can_install=False,
+    ),
     Benchmark(
-        'compile_java', {
-            'kind': 'incremental_build',
-            'from_string': '# found in the LICENSE file.',
-            'to_string': '#temporary_edit_for_benchmark.py',
-            'change_file': 'build/android/gyp/compile_java.py',
-        }),
+        name='compile_java',
+        from_string='# found in the LICENSE file.',
+        to_string='#temporary_edit_for_benchmark.py',
+        change_file='build/android/gyp/compile_java.py',
+        can_install=False,
+    ),
     Benchmark(
-        'write_build_config', {
-            'kind': 'incremental_build',
-            'from_string': '# found in the LICENSE file.',
-            'to_string': '#temporary_edit_for_benchmark.py',
-            'change_file': 'build/android/gyp/write_build_config.py',
-        }),
+        name='write_build_config',
+        from_string='# found in the LICENSE file.',
+        to_string='#temporary_edit_for_benchmark.py',
+        change_file='build/android/gyp/write_build_config.py',
+        can_install=False,
+    ),
 ]
+
+_BENCHMARK_FROM_NAME = {benchmark.name: benchmark for benchmark in _BENCHMARKS}
 
 
 @contextlib.contextmanager
-def _backup_file(file_path: str):
-    file_backup_path = file_path + '.backup'
+def _backup_file(file_path: pathlib.Path):
+    if not file_path.exists():
+        try:
+            yield
+        finally:
+            if file_path.exists():
+                file_path.unlink()
+        return
+    file_backup_path = file_path.with_suffix('.backup')
     logging.info('Creating %s for backup', file_backup_path)
     # Move the original file and copy back to preserve metadata.
     shutil.move(file_path, file_backup_path)
@@ -230,7 +222,7 @@ def _backup_file(file_path: str):
 
 @contextlib.contextmanager
 def _server():
-    cmd = [_SRC_ROOT / 'build' / 'android' / 'fast_local_dev_server.py']
+    cmd = [_SRC_ROOT / 'build/android/fast_local_dev_server.py']
     # Avoid the build server's output polluting benchmark results, but allow
     # stderr to get through in case the build server fails with an error.
     # TODO(wnwen): Switch to using subprocess.run and check=True to quit if the
@@ -250,7 +242,7 @@ def _server():
 def _detect_emulators() -> List[device_utils.DeviceUtils]:
     return [
         device_utils.DeviceUtils(d) for d in adb_wrapper.AdbWrapper.Devices()
-        if d.is_emulator
+        if isinstance(d, adb_wrapper.AdbWrapper) and d.is_emulator
     ]
 
 
@@ -292,6 +284,7 @@ def _emulator(emulator_avd_name):
     _poll_for_emulators(lambda emulators: len(emulators) == 1,
                         expected='exactly one emulator started successfully')
     device = _detect_emulators()[0]
+    assert device.adb is not None
     try:
         # Ensure the emulator and its disk are fully set up.
         device.WaitUntilFullyBooted(decrypt=True)
@@ -335,70 +328,75 @@ def _run_and_time_cmd(cmd: List[str]) -> float:
     return time.time() - start
 
 
-def _run_gn_gen(out_dir: str) -> float:
-    return _run_and_time_cmd(['gn', 'gen', '-C', out_dir])
+def _run_gn_gen(out_dir: pathlib.Path) -> float:
+    return _run_and_time_cmd([str(_GN_PATH), 'gen', '-C', str(out_dir)])
 
 
-def _run_autoninja(out_dir: str, target: str) -> float:
-    return _run_and_time_cmd(['autoninja', '-C', out_dir, target])
+def _run_autoninja(out_dir: pathlib.Path, target: str) -> float:
+    return _run_and_time_cmd(
+        [str(_AUTONINJA_PATH), '-C',
+         str(out_dir), target])
 
 
-def _run_install(out_dir: str, target: str, device_serial: str) -> float:
+def _run_ninja(out_dir: pathlib.Path, target: str, j: str) -> float:
+    return _run_and_time_cmd(
+        [str(_NINJA_PATH), '-j', j, '-C',
+         str(out_dir), target])
+
+
+def _run_install(out_dir: pathlib.Path, target: str,
+                 device_serial: str) -> float:
     # Example script path: out/Debug/bin/chrome_public_apk
-    script_path = os.path.join(out_dir, 'bin', target)
+    script_path = out_dir / 'bin' / target
     # Disable first run to get a more accurate timing of startup.
     cmd = [
-        script_path, 'run', '--device', device_serial, '--args=--disable-fre',
-        '--exit-on-match', '^Successfully loaded native library$'
+        str(script_path), 'run', '--device', device_serial,
+        '--args=--disable-fre', '--exit-on-match',
+        '^Successfully loaded native library$'
     ]
     if logging.getLogger().isEnabledFor(logging.DEBUG):
         cmd += ['-vv']
     return _run_and_time_cmd(cmd)
 
 
-def _run_and_maybe_install(out_dir: str, target: str,
-                           emulator: Optional[device_utils.DeviceUtils]
-                           ) -> float:
-    total_time = _run_autoninja(out_dir, target)
+def _run_and_maybe_install(out_dir: pathlib.Path, target: str,
+                           emulator: Optional[device_utils.DeviceUtils],
+                           j: Optional[str]) -> float:
+    if j is None:
+        total_time = _run_autoninja(out_dir, target)
+    else:
+        total_time = _run_ninja(out_dir, target, j)
     if emulator:
         total_time += _run_install(out_dir, target, emulator.serial)
     return total_time
 
 
-def _run_incremental_benchmark(*, out_dir: str, target: str, from_string: str,
-                               to_string: str, change_file: str,
-                               emulator: Optional[device_utils.DeviceUtils]
-                               ) -> Iterator[float]:
+def _run_benchmark(benchmark: Benchmark, out_dir: pathlib.Path, target: str,
+                   emulator: Optional[device_utils.DeviceUtils],
+                   j: Optional[str]) -> float:
     # This ensures that the only change is the one that this script makes.
-    logging.info(f'Prepping incremental benchmark...')
-    prep_time = _run_and_maybe_install(out_dir, target, emulator)
+    logging.info(f'Prepping benchmark...')
+    if not benchmark.can_install:
+        emulator = None
+    prep_time = _run_and_maybe_install(out_dir, target, emulator, j)
     logging.info(f'Took {prep_time:.1f}s to prep. Sleeping for 1 minute.')
     # 60s is enough to sufficiently reduce load and improve consistency. 30s
     # did not sufficiently lower standard deviation and 90s did not further
     # reduce standard deviation compared to 60s.
     time.sleep(60)
     logging.info(f'Starting actual test...')
-    change_file_path = os.path.join(_SRC_ROOT, change_file)
+    change_file_path = _SRC_ROOT / benchmark.change_file
     with _backup_file(change_file_path):
         with open(change_file_path, 'r') as f:
             content = f.read()
         with open(change_file_path, 'w') as f:
-            new_content = re.sub(from_string, to_string, content)
+            new_content = re.sub(benchmark.from_string, benchmark.to_string,
+                                 content)
             assert content != new_content, (
-                f'Need to update {from_string} in {change_file}')
+                f'Need to update {benchmark.from_string} in '
+                f'{benchmark.change_file}')
             f.write(new_content)
-        return _run_and_maybe_install(out_dir, target, emulator)
-
-
-def _run_benchmark(*, kind: str, emulator: Optional[device_utils.DeviceUtils],
-                   **kwargs: Dict) -> Iterator[float]:
-    if kind == 'incremental_build':
-        assert not emulator, f'Install not supported for {kwargs}.'
-        return _run_incremental_benchmark(emulator=None, **kwargs)
-    elif kind == 'incremental_build_and_install':
-        return _run_incremental_benchmark(emulator=emulator, **kwargs)
-    else:
-        raise NotImplementedError(f'Benchmark type {kind} is not defined.')
+        return _run_and_maybe_install(out_dir, target, emulator, j)
 
 
 def _format_result(time_taken: List[float]) -> str:
@@ -411,27 +409,20 @@ def _format_result(time_taken: List[float]) -> str:
     return result
 
 
-def _get_benchmark_for_name(name: str) -> Benchmark:
-    for benchmark in _BENCHMARKS:
-        if benchmark.name == name:
-            return benchmark
-    assert False, f'{name} is not a valid name.'
-
-
 def _parse_benchmarks(benchmarks: List[str]) -> Iterator[Benchmark]:
     for name in benchmarks:
         if name in _SUITES:
-            yield from _parse_benchmarks(_SUITES[name])
+            for benchmark_name in _SUITES[name]:
+                yield _BENCHMARK_FROM_NAME[benchmark_name]
         else:
-            yield _get_benchmark_for_name(name)
+            yield _BENCHMARK_FROM_NAME[name]
 
 
 def run_benchmarks(benchmarks: List[str], gn_args: List[str],
-                   output_directory: str, target: str, repeat: int,
-                   no_server: bool,
-                   emulator_avd_name: Optional[str]) -> Dict[str, List[float]]:
-    out_dir = os.path.relpath(output_directory, _SRC_ROOT)
-    args_gn_path = os.path.join(out_dir, 'args.gn')
+                   output_directory: pathlib.Path, target: str, repeat: int,
+                   no_server: bool, emulator_avd_name: Optional[str],
+                   j: Optional[str]) -> Dict[str, List[float]]:
+    args_gn_path = output_directory / 'args.gn'
     if emulator_avd_name is None:
         emulator_ctx = contextlib.nullcontext
     else:
@@ -445,7 +436,7 @@ def run_benchmarks(benchmarks: List[str], gn_args: List[str],
             f.write('\n'.join(gn_args))
         for run_num in range(repeat):
             logging.info(f'Run number: {run_num + 1}')
-            timings['gn gen'].append(_run_gn_gen(out_dir))
+            timings['gn gen'].append(_run_gn_gen(output_directory))
             for benchmark in _parse_benchmarks(benchmarks):
                 logging.info(f'Starting {benchmark.name}...')
                 # Run the fast local dev server fresh for each benchmark run
@@ -453,10 +444,11 @@ def run_benchmarks(benchmarks: List[str], gn_args: List[str],
                 # accumulating queued tasks. Start a fresh emulator for each
                 # benchmark to produce more consistent results.
                 with emulator_ctx() as emulator, server_ctx():
-                    elapsed = _run_benchmark(out_dir=out_dir,
+                    elapsed = _run_benchmark(benchmark=benchmark,
+                                             out_dir=output_directory,
                                              target=target,
                                              emulator=emulator,
-                                             **benchmark.info)
+                                             j=j)
                 logging.info(f'Completed {benchmark.name}: {elapsed:.1f}s')
                 timings[benchmark.name].append(elapsed)
     return timings
@@ -477,6 +469,7 @@ def _list_benchmarks() -> str:
 
 
 def main():
+    assert __doc__ is not None
     parser = argparse.ArgumentParser(
         description=__doc__ + _list_benchmarks(),
         formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -508,6 +501,11 @@ def main():
                         help='Specify this to override the default emulator.')
     parser.add_argument('--target',
                         help='Specify this to override the default target.')
+    parser.add_argument('-j',
+                        help='Pass -j to use ninja instead of autoninja.')
+    parser.add_argument('--use-reclient',
+                        action='store_true',
+                        help='Allow bots use reclient instead of goma.')
     parser.add_argument('-v',
                         '--verbose',
                         action='count',
@@ -518,7 +516,8 @@ def main():
     if args.output_directory:
         constants.SetOutputDirectory(args.output_directory)
     constants.CheckOutputDirectory()
-    out_dir: str = constants.GetOutDirectory()
+    out_dir = pathlib.Path(constants.GetOutDirectory()).resolve()
+    out_dir.mkdir(parents=True, exist_ok=True)
 
     if args.verbose >= 2:
         level = logging.DEBUG
@@ -530,6 +529,7 @@ def main():
         level=level, format='%(levelname).1s %(relativeCreated)6d %(message)s')
 
     gn_args = _GN_ARGS
+
     if args.emulator:
         devil_chromium.Initialize()
         logging.info('Using emulator %s', args.emulator)
@@ -540,12 +540,20 @@ def main():
         # mostly using emulator builds so this is more valuable to track.
         gn_args.append('target_cpu="x86"')
 
+    if args.use_reclient:
+        gn_args.append(_RECLIENT_GN_ARG)
+    else:
+        gn_args.append(_GOMA_GN_ARG)
+
     if args.target:
         target = args.target
     else:
         target = _TARGETS['bundle' if args.bundle else 'apk']
+
     results = run_benchmarks(args.benchmark, gn_args, out_dir, target,
-                             args.repeat, args.no_server, args.emulator)
+                             args.repeat, args.no_server, args.emulator,
+                             args.j)
+
     server_str = f'{"not " if args.no_server else ""}using build server'
     print(f'Summary ({server_str})')
     print(f'emulator: {args.emulator}')

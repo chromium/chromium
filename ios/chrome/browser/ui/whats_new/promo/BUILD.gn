@@ -11,6 +11,7 @@ source_set("promo") {
     "whats_new_scene_agent.mm",
   ]
   deps = [
+    "//components/feature_engagement/public",
     "//ios/chrome/browser/promos_manager",
     "//ios/chrome/browser/promos_manager:constants",
     "//ios/chrome/browser/promos_manager:features",

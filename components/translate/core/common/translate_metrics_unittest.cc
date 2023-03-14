@@ -55,16 +55,16 @@ class MetricsRecorder {
     EXPECT_EQ(expected_model_only,
               GetCountWithoutSnapshot(LANGUAGE_VERIFICATION_MODEL_ONLY));
     EXPECT_EQ(expected_unknown,
-              GetCountWithoutSnapshot(LANGUAGE_VERIFICATION_UNKNOWN));
+              GetCountWithoutSnapshot(LANGUAGE_VERIFICATION_MODEL_UNKNOWN));
     EXPECT_EQ(expected_model_agree,
-              GetCountWithoutSnapshot(LANGUAGE_VERIFICATION_MODEL_AGREE));
+              GetCountWithoutSnapshot(LANGUAGE_VERIFICATION_MODEL_AGREES));
     EXPECT_EQ(expected_model_disagree,
-              GetCountWithoutSnapshot(LANGUAGE_VERIFICATION_MODEL_DISAGREE));
+              GetCountWithoutSnapshot(LANGUAGE_VERIFICATION_MODEL_DISAGREES));
     EXPECT_EQ(expected_trust_model,
-              GetCountWithoutSnapshot(LANGUAGE_VERIFICATION_TRUST_MODEL));
+              GetCountWithoutSnapshot(LANGUAGE_VERIFICATION_MODEL_OVERRIDES));
     EXPECT_EQ(expected_model_complement_sub_code,
               GetCountWithoutSnapshot(
-                  LANGUAGE_VERIFICATION_MODEL_COMPLEMENT_SUB_CODE));
+                  LANGUAGE_VERIFICATION_MODEL_COMPLEMENTS_COUNTRY));
   }
 
   void CheckScheme(int expected_http, int expected_https, int expected_others) {
@@ -142,15 +142,15 @@ TEST(TranslateMetricsTest, ReportLanguageVerification) {
   recorder.CheckLanguageVerification(1, 0, 0, 0, 0, 0, 0);
   ReportLanguageVerification(LANGUAGE_VERIFICATION_MODEL_ONLY);
   recorder.CheckLanguageVerification(1, 1, 0, 0, 0, 0, 0);
-  ReportLanguageVerification(LANGUAGE_VERIFICATION_UNKNOWN);
+  ReportLanguageVerification(LANGUAGE_VERIFICATION_MODEL_UNKNOWN);
   recorder.CheckLanguageVerification(1, 1, 1, 0, 0, 0, 0);
-  ReportLanguageVerification(LANGUAGE_VERIFICATION_MODEL_AGREE);
+  ReportLanguageVerification(LANGUAGE_VERIFICATION_MODEL_AGREES);
   recorder.CheckLanguageVerification(1, 1, 1, 1, 0, 0, 0);
-  ReportLanguageVerification(LANGUAGE_VERIFICATION_MODEL_DISAGREE);
+  ReportLanguageVerification(LANGUAGE_VERIFICATION_MODEL_DISAGREES);
   recorder.CheckLanguageVerification(1, 1, 1, 1, 1, 0, 0);
-  ReportLanguageVerification(LANGUAGE_VERIFICATION_TRUST_MODEL);
+  ReportLanguageVerification(LANGUAGE_VERIFICATION_MODEL_OVERRIDES);
   recorder.CheckLanguageVerification(1, 1, 1, 1, 1, 1, 0);
-  ReportLanguageVerification(LANGUAGE_VERIFICATION_MODEL_COMPLEMENT_SUB_CODE);
+  ReportLanguageVerification(LANGUAGE_VERIFICATION_MODEL_COMPLEMENTS_COUNTRY);
   recorder.CheckLanguageVerification(1, 1, 1, 1, 1, 1, 1);
 }
 

@@ -393,6 +393,17 @@ bool ResponseValid(const FidoAuthenticator& authenticator,
 
   return true;
 }
+
+UserVerificationRequirement AtLeastUVPreferred(UserVerificationRequirement uv) {
+  switch (uv) {
+    case UserVerificationRequirement::kDiscouraged:
+      return UserVerificationRequirement::kPreferred;
+    case UserVerificationRequirement::kPreferred:
+    case UserVerificationRequirement::kRequired:
+      return uv;
+  }
+}
+
 }  // namespace
 
 MakeCredentialRequestHandler::MakeCredentialRequestHandler(
@@ -416,6 +427,8 @@ MakeCredentialRequestHandler::MakeCredentialRequestHandler(
       options_.is_off_the_record_context;
   transport_availability_info().resident_key_requirement =
       options_.resident_key;
+  transport_availability_info().request_is_internal_only =
+      options_.authenticator_attachment == AuthenticatorAttachment::kPlatform;
 
   base::flat_set<FidoTransportProtocol> allowed_transports =
       GetTransportsAllowedByRP(options.authenticator_attachment);
@@ -552,7 +565,8 @@ void MakeCredentialRequestHandler::DispatchRequestAfterAppIdExclude(
   auto uv_disposition = authenticator->PINUVDispositionForMakeCredential(
       *request.get(), observer());
   switch (uv_disposition) {
-    case PINUVDisposition::kNoUV:
+    case PINUVDisposition::kUVNotSupportedNorRequired:
+    case PINUVDisposition::kNoUVRequired:
     case PINUVDisposition::kNoTokenInternalUV:
     case PINUVDisposition::kNoTokenInternalUVPINFallback:
       break;
@@ -748,7 +762,7 @@ void MakeCredentialRequestHandler::HandleResponse(
   }
 
 #if BUILDFLAG(IS_WIN)
-  if (authenticator->GetType() == FidoAuthenticator::Type::kWinNative) {
+  if (authenticator->GetType() == AuthenticatorType::kWinNative) {
     state_ = State::kFinished;
     if (status != CtapDeviceResponseCode::kSuccess) {
       std::move(completion_callback_)
@@ -983,7 +997,7 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
       request->resident_key_required =
 #if BUILDFLAG(IS_WIN)
           // Windows does not yet support rk=preferred.
-          authenticator->GetType() != FidoAuthenticator::Type::kWinNative &&
+          authenticator->GetType() != AuthenticatorType::kWinNative &&
 #endif
           auth_options.supports_resident_key &&
           !authenticator->DiscoverableCredentialStorageFull() &&
@@ -1036,6 +1050,15 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
     request->prf = auth_options.supports_prf;
     request->hmac_secret =
         !auth_options.supports_prf && auth_options.supports_hmac_secret;
+    if (request->prf || request->hmac_secret) {
+      // CTAP2 devices have two PRFs per credential: one for non-UV assertions
+      // and another for UV assertions. WebAuthn only exposes the latter so UV
+      // is needed if supported by the authenticator. When `hmac_secret` is
+      // true, uv=preferred is taken to be a stronger signal and will configure
+      // UV on authenticators without it.
+      request->user_verification =
+          AtLeastUVPreferred(request->user_verification);
+    }
   }
 
   if (request->min_pin_length_requested &&

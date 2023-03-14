@@ -278,7 +278,7 @@ command line, you can use `iossim`. For example, to run a debug build of
 $ out/Debug-iphonesimulator/iossim out/Debug-iphonesimulator/Chromium.app
 ```
 
-With Xcode 9, `iossim` no longer automatically launches the Simulator. This must now
+From Xcode 9 on, `iossim` no longer automatically launches the Simulator. This must now
 be done manually from within Xcode (`Xcode > Open Developer Tool > Simulator`), and
 also must be done *after* running `iossim`.
 

@@ -36,7 +36,8 @@ class DlpScopedFileAccessDelegateTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   chromeos::FakeDlpClient fake_dlp_client_;
-  DlpScopedFileAccessDelegate delegate_{&fake_dlp_client_};
+  std::unique_ptr<DlpScopedFileAccessDelegate> delegate_{
+      new DlpScopedFileAccessDelegate(&fake_dlp_client_)};
 };
 
 TEST_F(DlpScopedFileAccessDelegateTest, TestNoSingleton) {
@@ -44,14 +45,14 @@ TEST_F(DlpScopedFileAccessDelegateTest, TestNoSingleton) {
   base::CreateTemporaryFile(&file_path);
 
   base::test::TestFuture<file_access::ScopedFileAccess> future1;
-  delegate_.RequestFilesAccess({file_path}, GURL("example.com"),
-                               future1.GetCallback());
+  delegate_->RequestFilesAccess({file_path}, GURL("example.com"),
+                                future1.GetCallback());
   EXPECT_TRUE(future1.Get<0>().is_allowed());
 
   fake_dlp_client_.SetFileAccessAllowed(false);
   base::test::TestFuture<file_access::ScopedFileAccess> future2;
-  delegate_.RequestFilesAccess({file_path}, GURL("example.com"),
-                               future2.GetCallback());
+  delegate_->RequestFilesAccess({file_path}, GURL("example.com"),
+                                future2.GetCallback());
   EXPECT_FALSE(future2.Get<0>().is_allowed());
 }
 
@@ -85,6 +86,84 @@ TEST_F(DlpScopedFileAccessDelegateTest,
   auto* delegate = file_access::ScopedFileAccessDelegate::Get();
   delegate->RequestFilesAccessForSystem({file_path}, future1.GetCallback());
   EXPECT_TRUE(future1.Get<0>().is_allowed());
+}
+
+TEST_F(DlpScopedFileAccessDelegateTest, CreateFileAccessCallbackAllowTest) {
+  base::FilePath file_path;
+  base::CreateTemporaryFile(&file_path);
+
+  DlpScopedFileAccessDelegate::Initialize(&fake_dlp_client_);
+  fake_dlp_client_.SetFileAccessAllowed(true);
+
+  base::test::TestFuture<file_access::ScopedFileAccess> future;
+  auto* delegate = file_access::ScopedFileAccessDelegate::Get();
+  auto cb = delegate->CreateFileAccessCallback(GURL("https://google.com"));
+  cb.Run({file_path}, future.GetCallback());
+  EXPECT_TRUE(future.Get<0>().is_allowed());
+}
+
+TEST_F(DlpScopedFileAccessDelegateTest, CreateFileAccessCallbackDenyTest) {
+  base::FilePath file_path;
+  base::CreateTemporaryFile(&file_path);
+
+  DlpScopedFileAccessDelegate::Initialize(&fake_dlp_client_);
+  fake_dlp_client_.SetFileAccessAllowed(false);
+
+  base::test::TestFuture<file_access::ScopedFileAccess> future;
+  auto* delegate = file_access::ScopedFileAccessDelegate::Get();
+  auto cb = delegate->CreateFileAccessCallback(GURL("https://google.com"));
+  cb.Run({file_path}, future.GetCallback());
+  EXPECT_FALSE(future.Get<0>().is_allowed());
+}
+
+TEST_F(DlpScopedFileAccessDelegateTest,
+       CreateFileAccessCallbackLostInstanceTest) {
+  base::FilePath file_path;
+  base::CreateTemporaryFile(&file_path);
+
+  DlpScopedFileAccessDelegate::Initialize(&fake_dlp_client_);
+  fake_dlp_client_.SetFileAccessAllowed(false);
+
+  base::test::TestFuture<file_access::ScopedFileAccess> future;
+  auto* delegate = file_access::ScopedFileAccessDelegate::Get();
+  auto cb = delegate->CreateFileAccessCallback(GURL("https://google.com"));
+  delegate_.reset();
+  cb.Run({file_path}, future.GetCallback());
+  EXPECT_TRUE(future.Get<0>().is_allowed());
+}
+
+TEST_F(DlpScopedFileAccessDelegateTest, GetCallbackSystemTest) {
+  base::FilePath file_path;
+  base::CreateTemporaryFile(&file_path);
+
+  DlpScopedFileAccessDelegate::Initialize(&fake_dlp_client_);
+
+  // Post a task on IO thread to sync with to be sure the IO task setting
+  // `request_files_access_for_system_io_callback_` has run.
+  base::RunLoop init;
+  auto io_thread = content::GetIOThreadTaskRunner({});
+  io_thread->PostTask(
+      FROM_HERE, base::BindOnce(&base::RunLoop::Quit, base::Unretained(&init)));
+  init.Run();
+
+  base::test::TestFuture<file_access::ScopedFileAccess> future;
+  auto* delegate = file_access::ScopedFileAccessDelegate::Get();
+  auto cb = delegate->GetCallbackForSystem();
+  EXPECT_TRUE(cb);
+  cb.Run({file_path}, future.GetCallback());
+  EXPECT_TRUE(future.Get<0>().is_allowed());
+}
+
+TEST_F(DlpScopedFileAccessDelegateTest, GetCallbackSystemNoSingeltonTest) {
+  base::FilePath file_path;
+  base::CreateTemporaryFile(&file_path);
+
+  base::test::TestFuture<file_access::ScopedFileAccess> future;
+  auto* delegate = file_access::ScopedFileAccessDelegate::Get();
+  auto cb = delegate->GetCallbackForSystem();
+  EXPECT_TRUE(cb);
+  cb.Run({file_path}, future.GetCallback());
+  EXPECT_TRUE(future.Get<0>().is_allowed());
 }
 
 TEST_F(DlpScopedFileAccessDelegateTest, TestMultipleInstances) {
@@ -191,26 +270,24 @@ TEST_F(DlpScopedFileAccessDelegateTaskTest,
       FROM_HERE, base::BindOnce(&base::RunLoop::Quit, base::Unretained(&init)));
   init.Run();
 
-  file_access::ScopedFileAccessDelegate::RequestFilesAccessForSystemIOCallback*
-      original_callback;
-
   // Callback that calls the original
   // request_files_access_for_system_io_callback_ after destructing
   // DlpScopedFileAccessDelegate.
-  auto decorated_callback = base::BindLambdaForTesting(
-      [this, &original_callback](
-          const std::vector<base::FilePath>& path,
-          base::OnceCallback<void(file_access::ScopedFileAccess)> callback) {
-        ui_thread_->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                &file_access::ScopedFileAccessDelegate::DeleteInstance));
-        original_callback->Run(path, std::move(callback));
-      });
-
-  original_callback = file_access::ScopedFileAccessDelegate::
-      SetRequestFilesAccessForSystemIOCallbackForTesting(decorated_callback);
-
+  file_access::ScopedFileAccessDelegate::
+      ScopedRequestFilesAccessCallbackForTesting file_access_callback(
+          base::BindLambdaForTesting(
+              [this, &file_access_callback](
+                  const std::vector<base::FilePath>& path,
+                  base::OnceCallback<void(file_access::ScopedFileAccess)>
+                      callback) {
+                ui_thread_->PostTask(
+                    FROM_HERE,
+                    base::BindOnce(&file_access::ScopedFileAccessDelegate::
+                                       DeleteInstance));
+                file_access_callback.RunOriginalCallback(path,
+                                                         std::move(callback));
+              }),
+          false /* = restore_original_callback*/);
   // The request for file access should be granted as that is the default
   // behaviour for no running dlp (no rules).
   io_thread_->PostTask(
@@ -224,7 +301,6 @@ TEST_F(DlpScopedFileAccessDelegateTaskTest,
                              }));
       }));
   run_loop_.Run();
-  delete original_callback;
 }
 
 TEST_F(DlpScopedFileAccessDelegateTaskTest,

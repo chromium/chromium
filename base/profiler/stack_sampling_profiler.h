@@ -174,13 +174,18 @@ class BASE_EXPORT StackSamplingProfiler {
   // the target thread.
   class SamplingThread;
 
-  // Friend the global function from sample_metadata.cc so that it can call into
-  // the function below.
+  // Friend the global functions from sample_metadata.cc so that it can call
+  // into the function below.
   friend void ApplyMetadataToPastSamplesImpl(
       TimeTicks period_start,
       TimeTicks period_end,
       uint64_t name_hash,
       absl::optional<int64_t> key,
+      int64_t value,
+      absl::optional<PlatformThreadId> thread_id);
+  friend void AddProfileMetadataImpl(
+      uint64_t name_hash,
+      int64_t key,
       int64_t value,
       absl::optional<PlatformThreadId> thread_id);
 
@@ -193,6 +198,12 @@ class BASE_EXPORT StackSamplingProfiler {
       absl::optional<int64_t> key,
       int64_t value,
       absl::optional<PlatformThreadId> thread_id);
+
+  // Adds metadata as metadata global to the sampling profile.
+  static void AddProfileMetadata(uint64_t name_hash,
+                                 int64_t key,
+                                 int64_t value,
+                                 absl::optional<PlatformThreadId> thread_id);
 
   // The thread whose stack will be sampled.
   SamplingProfilerThreadToken thread_token_;

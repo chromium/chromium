@@ -30,6 +30,7 @@
 #include "net/url_request/url_request_context_builder.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
+#include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/test/fake_test_cert_verifier_params_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -123,8 +124,9 @@ class HttpCacheDataRemoverTest : public testing::Test {
     request_info.method = "GET";
     request_info.network_isolation_key =
         net::NetworkIsolationKey(kOrigin, kOrigin);
-    request_info.network_anonymization_key = net::NetworkAnonymizationKey(
-        net::SchemefulSite(kOrigin), net::SchemefulSite(kOrigin));
+    request_info.network_anonymization_key =
+        net::NetworkAnonymizationKey::CreateSameSite(
+            net::SchemefulSite(kOrigin));
     return *cache_->GenerateCacheKeyForRequest(&request_info);
   }
 

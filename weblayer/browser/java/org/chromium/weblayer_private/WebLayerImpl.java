@@ -288,12 +288,9 @@ public final class WebLayerImpl extends IWebLayer.Stub {
         }
 
         // Enable ATRace on debug OS or app builds. Requires commandline initialization.
-        int applicationFlags = wrappedAppContext.getApplicationInfo().flags;
-        boolean isAppDebuggable = (applicationFlags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
-        boolean isOsDebuggable = BuildInfo.isDebugAndroid();
         // Requires command-line flags.
         TraceEvent.maybeEnableEarlyTracing(
-                (isAppDebuggable || isOsDebuggable) ? TraceEvent.ATRACE_TAG_APP : 0,
+                BuildInfo.isDebugAndroidOrApp() ? TraceEvent.ATRACE_TAG_APP : 0,
                 /*readCommandLine=*/true);
         TraceEvent.begin("WebLayer init");
 

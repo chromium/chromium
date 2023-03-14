@@ -42,11 +42,10 @@ viz::SharedImageFormat PlaneSharedImageFormat(int num_channels,
   return viz::SinglePlaneFormat::kRGBA_8888;
 }
 
-GLenum PlaneGLFormat(int num_channels,
-                     bool for_surface,
-                     const gpu::Capabilities& capabilities) {
+GLenum PlaneGLFormat(int num_channels, const gpu::Capabilities& capabilities) {
   return viz::TextureStorageFormat(
-      PlaneSharedImageFormat(num_channels, for_surface).resource_format(),
+      PlaneSharedImageFormat(num_channels, capabilities.texture_rg)
+          .resource_format(),
       capabilities.angle_rgbx_internal_format);
 }
 
@@ -272,8 +271,8 @@ void VideoFrameYUVMailboxesHolder::ImportTextures(bool for_surface) {
 
     int num_channels = yuva_info_.numChannelsInPlane(plane);
     textures_[plane].texture.fTarget = holders_[plane].texture_target;
-    textures_[plane].texture.fFormat = PlaneGLFormat(
-        num_channels, for_surface, provider_->ContextCapabilities());
+    textures_[plane].texture.fFormat =
+        PlaneGLFormat(num_channels, provider_->ContextCapabilities());
   }
 
   imported_textures_ = true;

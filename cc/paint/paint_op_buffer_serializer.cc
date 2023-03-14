@@ -60,6 +60,10 @@ PaintOpBufferSerializer::~PaintOpBufferSerializer() = default;
 void PaintOpBufferSerializer::Serialize(const PaintOpBuffer& buffer,
                                         const std::vector<size_t>* offsets,
                                         const Preamble& preamble) {
+  TRACE_EVENT_BEGIN1("cc", "PaintOpBufferSerializer::Serialize",
+                     "total_op_count", buffer.total_op_count());
+  DCHECK_EQ(serialized_op_count_, 0u);
+
   std::unique_ptr<SkCanvas> canvas = MakeAnalysisCanvas(options_);
 
   // These PlaybackParams use the initial (identity) canvas matrix, as they are
@@ -68,11 +72,13 @@ void PaintOpBufferSerializer::Serialize(const PaintOpBuffer& buffer,
   // post-preamble canvas.
   PlaybackParams params = MakeParams(canvas.get());
 
-  int saveCount = canvas->getSaveCount();
+  int save_count = canvas->getSaveCount();
   Save(canvas.get(), params);
   SerializePreamble(canvas.get(), preamble, params);
   SerializeBuffer(canvas.get(), buffer, offsets);
-  RestoreToCount(canvas.get(), saveCount, params);
+  RestoreToCount(canvas.get(), save_count, params);
+  TRACE_EVENT_END1("cc", "PaintOpBufferSerializer::Serialize",
+                   "serialized_op_count", serialized_op_count_);
 }
 
 void PaintOpBufferSerializer::Serialize(const PaintOpBuffer& buffer) {
@@ -310,6 +316,7 @@ bool PaintOpBufferSerializer::SerializeOp(SkCanvas* canvas,
     return false;
   }
 
+  ++serialized_op_count_;
   DCHECK_GE(bytes, PaintOpWriter::kHeaderBytes);
   return true;
 }

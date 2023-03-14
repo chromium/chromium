@@ -302,12 +302,10 @@ bool ImageWriterTestUtils::ImageWrittenToDevice() {
 }
 
 bool ImageWriterTestUtils::FillFile(const base::FilePath& file,
-                                    const int pattern,
-                                    const int length) {
-  std::unique_ptr<char[]> buffer(new char[length]);
-  memset(buffer.get(), pattern, length);
-
-  return base::WriteFile(file, buffer.get(), length) == length;
+                                    uint8_t pattern,
+                                    size_t length) {
+  std::vector<uint8_t> buffer(length, pattern);
+  return base::WriteFile(file, buffer);
 }
 
 ImageWriterUnitTestBase::ImageWriterUnitTestBase()

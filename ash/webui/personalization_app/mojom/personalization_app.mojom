@@ -56,6 +56,8 @@ enum OnlineImageType {
   kUnknown = 0,
   kLight = 1,
   kDark = 2,
+  kMorning = 4,
+  kLateAfternoon = 5,
 };
 
 // Values for the user-level setting indicating access to Google Photos data.
@@ -541,8 +543,7 @@ enum AnimationTheme {
   kSlideshow = 0,
   kFeelTheBreeze = 1,
   kFloatOnBy = 2,
-  kVideoNewMexico = 3,
-  kVideoClouds = 4,
+  kVideo = 3,
 };
 
 // The source of the screensaver images come from.
@@ -609,9 +610,8 @@ interface AmbientObserver {
   // Notifies the JS side about the current albums.
   OnAlbumsChanged(array<AmbientModeAlbum> albums);
 
-  // Notifies the JS side about the previews of the selected Google Photos
-  // albums.
-  OnGooglePhotosAlbumsPreviewsFetched(array<url.mojom.Url> previews);
+  // Notifies the JS side about the previews of the selected albums.
+  OnPreviewsFetched(array<url.mojom.Url> previews);
 
   // Notifies the JS side when ambient visibility is changed.
   OnAmbientUiVisibilityChanged(AmbientUiVisibility visibility);
@@ -665,9 +665,6 @@ enum BacklightColor {
   kPurple = 7,
 
   kRainbow = 100,
-  // Indicates multi-zone customization is selected. The actual zone colors are
-  // saved in |ash::prefs::kPersonalizationKeyboardBacklightZoneColors|.
-  kMultiZone = 101,
 };
 
 // Hex values of the colors displayed in the rgb keyboard section.
@@ -679,11 +676,19 @@ const uint32 kBlueColor = 0x00A3C2;
 const uint32 kIndigoColor = 0x4285F4;
 const uint32 kPurpleColor = 0xB76DF8;
 
+union CurrentBacklightState {
+  // Set if the user has selected a specific color as backlight color.
+  BacklightColor color;
+
+  // Set if the user has selected multi-zone colors as backlight color.
+  array<BacklightColor> zone_colors;
+};
+
 // Receives information whenever there are keyboard backlight related changes
 // such as backlight colors.
 interface KeyboardBacklightObserver {
-  // Notifies the JS side about the current state of the backlight color.
-  OnBacklightColorChanged(BacklightColor color);
+  // Notifies the JS side about the current backlight state.
+  OnBacklightStateChanged(CurrentBacklightState currentBacklightState);
 
   // Notifies the JS side the current wallpaper-extracted color.
   OnWallpaperColorChanged(skia.mojom.SkColor wallpaper_color);
@@ -697,6 +702,10 @@ interface KeyboardBacklightProvider {
 
   // Sets the backlight color.
   SetBacklightColor(BacklightColor backlight_color);
+
+  // Sets the backlight color for the given zone. May only be called if device
+  // supports multizone.
+  SetBacklightZoneColor(int32 zone, BacklightColor backlight_color);
 
   // Determines whether to show the education nudge.
   ShouldShowNudge() => (bool should_show_nudge);

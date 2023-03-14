@@ -7,6 +7,7 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {IMPORT_HELP_LANDING_PAGE, ImportDialogState, PasswordsImportDialogElement} from 'chrome://settings/lazy_load.js';
 import {PasswordManagerImpl, SettingsPluralStringProxyImpl, CrButtonElement} from 'chrome://settings/settings.js';
@@ -43,6 +44,10 @@ function assertIntialStatePartsAndClose(
     importDialog: PasswordsImportDialogElement, expectedDescription: string) {
   assertEquals(ImportDialogState.START, importDialog.dialogState);
 
+  assertEquals(
+      importDialog.i18n('importPasswordsTitle'),
+      importDialog.$.dialogTitle.textContent!.trim());
+
   const spinner = importDialog.shadowRoot!.querySelector('paper-spinner-lite');
   assertTrue(!!spinner);
   assertFalse(spinner.active);
@@ -71,6 +76,10 @@ async function assertErrorStateAndClose(
   flush();
   // After the import, the dialog should switch to ERROR state.
   assertEquals(ImportDialogState.ERROR, importDialog.dialogState);
+
+  assertEquals(
+      importDialog.i18n('importPasswordsErrorTitle'),
+      importDialog.$.dialogTitle.textContent!.trim());
 
   assertEquals(
       expectedDescription, importDialog.$.descriptionText.innerHTML!.trim());
@@ -134,7 +143,8 @@ suite('PasswordsImportDialog', function() {
     await eventToPromise('close', importDialog);
   });
 
-  test('hasCorrectSuccessState', async function() {
+  test('hasCorrectSuccessStateM1', async function() {
+    loadTimeData.overrideValues({enablePasswordsImportM2: false});
     const importDialog = elementFactory.createPasswordsImportDialog();
     assertEquals(ImportDialogState.START, importDialog.dialogState);
     passwordManager.setImportResults({
@@ -150,13 +160,54 @@ suite('PasswordsImportDialog', function() {
     // After the import, the dialog should switch to SUCCESS state.
     assertEquals(ImportDialogState.SUCCESS, importDialog.dialogState);
 
+    assertEquals(
+        importDialog.i18n('importPasswordsSuccessTitle'),
+        importDialog.$.dialogTitle.textContent!.trim());
+
     assertTrue(isVisible(
         importDialog.shadowRoot!.querySelector<HTMLElement>('#tipBox')));
+
+    assertTrue(importDialog.$.successTip.textContent!.includes('test.csv'));
+
+    // Failed imports summary should not be visible.
+    assertFalse(isVisible(importDialog.$.failuresSummary));
+
     assertEquals(
-        importDialog.i18nAdvanced('importPasswordsSuccessTip')
-            .toString()
-            .replace('<b></b>', 'test.csv'),
-        importDialog.$.successTip.textContent!.trim());
+        importDialog.i18n('done'), importDialog.$.close.textContent!.trim());
+    assertFalse(importDialog.$.close.disabled);
+    // check console for exceptions!
+    importDialog.$.close.click();
+    await eventToPromise('close', importDialog);
+  });
+
+  test('hasCorrectSuccessStateM2', async function() {
+    loadTimeData.overrideValues({enablePasswordsImportM2: true});
+    const importDialog = elementFactory.createPasswordsImportDialog();
+    assertEquals(ImportDialogState.START, importDialog.dialogState);
+    passwordManager.setImportResults({
+      status: chrome.passwordsPrivate.ImportResultsStatus.SUCCESS,
+      numberImported: 42,
+      failedImports: [],
+      fileName: 'test.csv',
+    });
+
+    await triggerImportHelper(importDialog, passwordManager);
+    await pluralString.whenCalled('getPluralString');
+    flush();
+    // After the import, the dialog should switch to SUCCESS state.
+    assertEquals(ImportDialogState.SUCCESS, importDialog.dialogState);
+
+    assertEquals(
+        importDialog.i18n('importPasswordsSuccessTitle'),
+        importDialog.$.dialogTitle.textContent!.trim());
+
+    assertFalse(isVisible(
+        importDialog.shadowRoot!.querySelector<HTMLElement>('#tipBox')));
+    assertTrue(isVisible(importDialog.shadowRoot!.querySelector<HTMLElement>(
+        '#deleteFileOption')));
+
+    assertTrue(
+        importDialog.$.deleteFileOption.textContent!.includes('test.csv'));
 
     // Failed imports summary should not be visible.
     assertFalse(isVisible(importDialog.$.failuresSummary));
@@ -184,10 +235,12 @@ suite('PasswordsImportDialog', function() {
         importDialog
             .i18nAdvanced(
                 'importPasswordsBadFormatError',
-                {substitutions: [IMPORT_HELP_LANDING_PAGE]},
+                {
+                  attrs: ['class'],
+                  substitutions: ['test.csv', IMPORT_HELP_LANDING_PAGE],
+                },
                 )
-            .toString()
-            .replace('<b></b>', '<b>test.csv</b>'));
+            .toString());
   });
 
   test('hasCorrectUnknownErrorState', async function() {
@@ -299,18 +352,20 @@ suite('PasswordsImportDialog', function() {
 
     await triggerImportHelper(importDialog, passwordManager);
     await pluralString.whenCalled('getPluralString');
+    await pluralString.whenCalled('getPluralString');
     flush();
     // After the import, the dialog should switch to SUCCESS state.
     assertEquals(ImportDialogState.SUCCESS, importDialog.dialogState);
+
+    assertEquals(
+        importDialog.i18n('importPasswordsCompleteTitle'),
+        importDialog.$.dialogTitle.textContent!.trim());
 
     // Success tip should not be visible.
     assertFalse(isVisible(
         importDialog.shadowRoot!.querySelector<HTMLElement>('#tipBox')));
 
     assertTrue(isVisible(importDialog.$.failuresSummary));
-    assertEquals(
-        importDialog.i18n('importPasswordsFailuresSummary', 10),
-        importDialog.$.failuresSummary.textContent!.trim());
 
     assertEquals(
         importDialog.i18n('done'), importDialog.$.close.textContent!.trim());
@@ -334,6 +389,10 @@ suite('PasswordsImportDialog', function() {
     // After the import, the dialog should switch to ALREADY_ACTIVE state.
     assertEquals(ImportDialogState.ALREADY_ACTIVE, importDialog.dialogState);
 
+    assertEquals(
+        importDialog.i18n('importPasswordsTitle'),
+        importDialog.$.dialogTitle.textContent!.trim());
+
     const infoIcon =
         importDialog.shadowRoot!.querySelector<HTMLElement>('#infoIcon');
     assertTrue(!!infoIcon);
@@ -341,7 +400,7 @@ suite('PasswordsImportDialog', function() {
 
     assertEquals(
         importDialog.i18n('importPasswordsAlreadyActive'),
-        importDialog.$.descriptionText.textContent!.trim());
+        importDialog.$.descriptionText.textContent!.toString());
 
     assertFalse(isVisible(
         importDialog.shadowRoot!.querySelector<HTMLElement>('#tipBox')));

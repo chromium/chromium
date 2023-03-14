@@ -146,7 +146,10 @@ void AshTestBase::SetUp(std::unique_ptr<TestShellDelegate> delegate) {
     params.pixel_test_init_params = std::move(pixel_test_init_params);
   }
 
-  ash_test_helper_ = std::make_unique<AshTestHelper>();
+  test_context_factories_ =
+      std::make_unique<ui::TestContextFactories>(/*enable_pixel_output=*/false);
+  ash_test_helper_ = std::make_unique<AshTestHelper>(
+      test_context_factories_->GetContextFactory());
   ash_test_helper_->SetUp(std::move(params));
 }
 

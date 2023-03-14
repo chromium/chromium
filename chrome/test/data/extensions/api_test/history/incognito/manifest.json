@@ -6,6 +6,7 @@
   "permissions": ["history"],
   "incognito": "split",
   "background": {
-    "scripts": ["incognito.js"]
+    "scripts": ["incognito.js"],
+    "persistent": true
   }
 }

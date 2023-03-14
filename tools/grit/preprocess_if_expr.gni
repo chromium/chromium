@@ -37,6 +37,14 @@ template("preprocess_if_expr") {
     foreach(in_file, invoker.in_files) {
       inputs += [ "$in_folder/" + in_file ]
       outputs += [ "$out_folder/" + in_file ]
+
+      if (defined(invoker.enable_removal_comments) &&
+          invoker.enable_removal_comments) {
+        extension = get_path_info(in_file, "extension")
+        assert(
+            extension == "js" || extension == "ts",
+            "enable_removal_comments requires .js or .ts input files. Found ${in_file}")
+      }
     }
 
     args = [

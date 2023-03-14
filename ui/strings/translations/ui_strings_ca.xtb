@@ -61,6 +61,7 @@
 <translation id="2573731672208488250">{HOURS,plural, =1{d'aquí a 1 h}other{d'aquí a # h}}</translation>
 <translation id="2583543531130364912">Calibra la pantalla tàctil</translation>
 <translation id="2586657967955657006">Porta-retalls</translation>
+<translation id="2653844658857826081">NOVETAT</translation>
 <translation id="2666092431469916601">Superior</translation>
 <translation id="2701330563083355633">S'ha compartit des del dispositiu <ph name="DEVICE_NAME" /></translation>
 <translation id="271033894570825754">Nou</translation>
@@ -75,6 +76,7 @@
 <translation id="3157931365184549694">Restaura</translation>
 <translation id="3183922693828471536">Desplaçament fins aquí</translation>
 <translation id="3234408098842461169">Fletxa avall</translation>
+<translation id="3240426699337459095">S'ha copiat l'enllaç.</translation>
 <translation id="3291688615589870984">{DAYS,plural, =1{1 dia}other{# dies}}</translation>
 <translation id="3295886253693811851">Fes una trucada amb</translation>
 <translation id="3306688585798492231">Pantalla integrada</translation>

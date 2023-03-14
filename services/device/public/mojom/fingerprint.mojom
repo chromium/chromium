@@ -99,7 +99,7 @@ interface FingerprintObserver {
 interface Fingerprint {
   // Gets all the records of this user registered with this biometric manager.
   // |records| is a map of record path keys to record label values.
-  GetRecordsForUser(string user_id) => (map<string, string> records);
+  GetRecordsForUser(string user_id) => (map<string, string> records, bool success);
 
   // Starts the biometric enroll session.
   StartEnrollSession(string user_id, string label);

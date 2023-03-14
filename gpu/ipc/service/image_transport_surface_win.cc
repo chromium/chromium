@@ -62,7 +62,7 @@ scoped_refptr<gl::Presenter> ImageTransportSurface::CreatePresenter(
     auto presenter = base::MakeRefCounted<gl::DCompPresenter>(
         display->GetAs<gl::GLDisplayEGL>(), std::move(vsync_callback),
         settings);
-    if (!presenter->Initialize(gl::GLSurfaceFormat())) {
+    if (!presenter->Initialize()) {
       return nullptr;
     }
 

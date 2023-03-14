@@ -93,7 +93,8 @@ class TrustedVaultClient {
 
   // Clears all data associated with |account_info|. Doesn't remove account from
   // storage.
-  virtual void ClearDataForAccount(const CoreAccountInfo& account_info) = 0;
+  virtual void ClearLocalDataForAccount(
+      const CoreAccountInfo& account_info) = 0;
 };
 
 }  // namespace syncer

@@ -108,6 +108,7 @@
 #include "chromeos/crosapi/mojom/remoting.mojom.h"
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
 #include "chromeos/crosapi/mojom/sharesheet.mojom.h"
+#include "chromeos/crosapi/mojom/smart_reader.mojom.h"
 #include "chromeos/crosapi/mojom/speech_recognition.mojom.h"
 #include "chromeos/crosapi/mojom/structured_metrics_service.mojom.h"
 #include "chromeos/crosapi/mojom/sync.mojom.h"
@@ -258,7 +259,7 @@ constexpr InterfaceVersionEntry MakeInterfaceVersionEntry() {
   return {T::Uuid_, T::Version_};
 }
 
-static_assert(crosapi::mojom::Crosapi::Version_ == 102,
+static_assert(crosapi::mojom::Crosapi::Version_ == 103,
               "If you add a new crosapi, please add it to "
               "kInterfaceVersionEntries below.");
 
@@ -343,6 +344,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::ScreenManager>(),
     MakeInterfaceVersionEntry<crosapi::mojom::SearchControllerRegistry>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Sharesheet>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::SmartReaderClient>(),
     MakeInterfaceVersionEntry<crosapi::mojom::SpeechRecognition>(),
     MakeInterfaceVersionEntry<crosapi::mojom::StructuredMetricsService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::SnapshotCapturer>(),
@@ -810,6 +812,14 @@ mojom::DeviceSettingsPtr GetDeviceSettings() {
                                    &device_variations_restrict_parameter)) {
         result->device_variations_restrict_parameter =
             device_variations_restrict_parameter;
+      }
+
+      bool device_guest_mode_enabled = false;
+      if (cros_settings->GetBoolean(ash::kAccountsPrefAllowGuest,
+                                    &device_guest_mode_enabled)) {
+        result->device_guest_mode_enabled = device_guest_mode_enabled
+                                                ? MojoOptionalBool::kTrue
+                                                : MojoOptionalBool::kFalse;
       }
     } else {
       LOG(WARNING) << "Unexpected crossettings trusted values status: "

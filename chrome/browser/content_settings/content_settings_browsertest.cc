@@ -50,6 +50,7 @@
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/commit_message_delayer.h"
@@ -872,15 +873,8 @@ class ContentSettingsBackForwardCacheBrowserTest : public ContentSettingsTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kBackForwardCache,
-          {{"ignore_outstanding_network_request_for_testing", "true"}}},
-         // Set a very long TTL before expiration (longer than the test
-         // timeout) so tests that are expecting deletion don't pass when
-         // they shouldn't.
-         {features::kBackForwardCacheTimeToLiveControl,
-          {{"time_to_live_seconds", "3600"}}}},
-        // Allow BackForwardCache for all devices regardless of their memory.
-        {features::kBackForwardCacheMemoryControls});
+        content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(),
+        content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
     ContentSettingsTest::SetUpCommandLine(command_line);
   }
 
@@ -1651,8 +1645,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithFencedFrameBrowserTest,
       "LocalStorage",     "SessionStorage", "CacheStorage", "FileSystem",
       "FileSystemAccess", "IndexedDb",      "SharedWorker", "ServiceWorker"};
   for (auto storage_type : storage_types_to_test) {
-    EXPECT_TRUE(content::EvalJs(fenced_frame, "set" + storage_type + "();",
-                                content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+    EXPECT_TRUE(content::EvalJs(fenced_frame, "set" + storage_type + "();")
                     .ExtractBool());
   }
 

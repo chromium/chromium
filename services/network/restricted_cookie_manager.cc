@@ -341,12 +341,14 @@ RestrictedCookieManager::RestrictedCookieManager(
     const CookieSettings& cookie_settings,
     const url::Origin& origin,
     const net::IsolationInfo& isolation_info,
+    const net::CookieSettingOverrides& cookie_setting_overrides,
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
     net::FirstPartySetMetadata first_party_set_metadata,
     UmaMetricsUpdater* metrics_updater)
     : role_(role),
       cookie_store_(cookie_store),
       cookie_settings_(cookie_settings),
+      cookie_setting_overrides_(cookie_setting_overrides),
       origin_(origin),
       isolation_info_(isolation_info),
       cookie_observer_(std::move(cookie_observer)),
@@ -360,6 +362,8 @@ RestrictedCookieManager::RestrictedCookieManager(
           net::features::kSamePartyAttributeEnabled)),
       metrics_updater_(metrics_updater) {
   DCHECK(cookie_store);
+  DCHECK(!cookie_setting_overrides_.Has(
+      net::CookieSettingOverride::kStorageAccessGrantEligible));
 }
 
 RestrictedCookieManager::~RestrictedCookieManager() {
@@ -877,10 +881,11 @@ bool RestrictedCookieManager::ValidateAccessToCookiesAt(
 
 net::CookieSettingOverrides RestrictedCookieManager::GetCookieSettingOverrides(
     bool has_storage_access) const {
-  // TODO(https://crbug.com/1401089): the overrides ought to exclude Storage
-  // Access API grants unless the frame has opted in.
-  return net::CookieSettingOverrides(
-      net::CookieSettingOverride::kStorageAccessGrantEligible);
+  net::CookieSettingOverrides overrides = cookie_setting_overrides_;
+  if (has_storage_access) {
+    overrides.Put(net::CookieSettingOverride::kStorageAccessGrantEligible);
+  }
+  return overrides;
 }
 
 }  // namespace network

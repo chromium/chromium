@@ -70,7 +70,7 @@ class POLICY_EXPORT CloudExternalDataStore {
   // Task runner that |this| runs on.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  raw_ptr<ResourceCache> cache_;  // Not owned.
+  raw_ptr<ResourceCache, DanglingUntriaged> cache_;  // Not owned.
 };
 
 }  // namespace policy

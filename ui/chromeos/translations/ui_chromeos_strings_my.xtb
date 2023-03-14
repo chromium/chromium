@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">ရှေ့သို့</translation>
 <translation id="1209796539517632982">အလိုအလျောက် အမည် ဆာဗာများ</translation>
 <translation id="1210831758834677569">လာအို</translation>
+<translation id="1221555006497674479">မျှသုံးဒရိုက်ဗ် သိုလှောင်ခန်း <ph name="TOTAL_SPACE" /> အနက် <ph name="REMAINING_PERCENTAGE" />% အနည်းငယ်သာ ကျန်တော့သည်။</translation>
 <translation id="1243314992276662751">အာပ်လုဒ် လုပ်ရန်</translation>
 <translation id="1249250836236328755">သီချင်းအမျိုးအစား</translation>
 <translation id="1254593899333212300">တိုက်ရိုက် အင်တာနက် ချိတ်ဆက်မှု</translation>
@@ -46,7 +47,7 @@
 <translation id="1395262318152388157">ဆလိုက်ဒါးကို ရှာပါ</translation>
 <translation id="1399511500114202393">အသုံးပြုသူ အသိအမှတ်ပြုလက်မှတ် မရှိပါ</translation>
 <translation id="1403008701842173542">နေရာအနှံ့</translation>
-<translation id="1404323374378969387">နော်ဝေ</translation>
+<translation id="1404323374378969387">နော်ဝေး</translation>
 <translation id="1433628812591023318">Parallels Desktop တွင် ဖိုင်များဆွဲချရန် ဖိုင်ကို Windows ဖိုင်များသို့ ရွှေ့ရပါမည်။</translation>
 <translation id="1435838927755162558">ဖိုင်တွဲကို Parallels Desktop အား မျှဝေခြင်း</translation>
 <translation id="1439919885608649279">ပန်းများနှင့်လူ</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">တရုတ် ပင်ယင်</translation>
 <translation id="1646019627374511909">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ခုကို အော့ဖ်လိုင်းသုံး၍ရအောင် ပြုလုပ်နေသည်</translation>
 <translation id="164969095109328410">Chrome ကိရိယာ</translation>
+<translation id="1661207570040737402">‘မျှသုံးဒရိုက်ဗ်’ Google Workspace သိုလှောင်ခန်းအားလုံးကို သုံးထားသည်။</translation>
 <translation id="1661867754829461514">ပင်နံပါတ်ကုဒ် လိုသေးသည်</translation>
 <translation id="166439687370499867">မျှဝေထားသော ကွန်ရက်စီစဉ်သတ်မှတ်မှုများကို ပြောင်းခွင့်မပြုပါ</translation>
 <translation id="1665611772925418501">ဖိုင်ကို မွမ်းမံ မပေးနိုင်ခဲ့ပါ။</translation>
@@ -82,6 +84,7 @@
 <translation id="1722487484194605434">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ခု ဇစ်လုပ်နေသည်…</translation>
 <translation id="1722687688096767818">ပရိုဖိုင် ပေါင်းထည့်နေသည်...</translation>
 <translation id="1726100011689679555">အမည်ဆာဗာများ</translation>
+<translation id="1727562178154619254">စင့်ခ်လုပ်ရန် အသင့်ဖြစ်ပြီ</translation>
 <translation id="1729953886957086472">ဂျာမန် (ဂျာမနီ)</translation>
 <translation id="1730235522912993863">တရုတ် ချန်ကျီ</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> ခု မိတ္တူကူးထားသည်။</translation>
@@ -349,11 +352,11 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">ကူးဖြည့်ရန်</translation>
 <translation id="3952872973865944257">တယ်လူဂူ အသံထွက်</translation>
-<translation id="3954354850384043518">ဆောင်ရွက်နေဆဲ</translation>
 <translation id="3958548648197196644">NOTHING</translation>
 <translation id="3971140002794351170">မိုဘိုင်းပရိုဖိုင် ဒေါင်းလုဒ်လုပ်ရန်၊ ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">အင်္ဂလိပ် (ယူကေ)</translation>
 <translation id="3975895378829046965">ဘင်္ဂါလီ အသံထွက်</translation>
+<translation id="3999574733850440202">မကြာသေးမီကဖွင့်ထားသော Microsoft ဖိုင်များကို OneDrive သို့ ရွှေ့လိုက်သည်</translation>
 <translation id="4002066346123236978">ခေါင်းစဉ်</translation>
 <translation id="4017788180641807848">Workman ကီးဘုတ်ဖြင့် အင်္ဂလိပ် (ယူအက်စ်)</translation>
 <translation id="4019998208269143058">အမြန်သုံးဖိုင်များတွင် ပင်ထိုးရန်</translation>
@@ -362,6 +365,7 @@
 <translation id="4092890906744441904">အိုင်းရစ်ရှ်</translation>
 <translation id="4124935795427217608">သိင်္ဂဿမြင်း</translation>
 <translation id="4131235941541910880">မလိုသောဖိုင်များကို အမှိုက်ပုံးသို့ ရွှေ့ပါ</translation>
+<translation id="4134804435730168042">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" /> ခုမြောက်၊ <ph name="NETWORK_NAME" />၊ <ph name="NETWORK_PROVIDER_NAME" />။ စက်ကို စနစ်ထည့်သွင်းပြီးနောက် စတင်ပါ</translation>
 <translation id="4153015322587141338">ဖိုင်ကို ညာဘက်ခလုတ်နှိပ်ပြီး စင်ပေါ်ရှိ သင့်ဖိုင်များကို အမြန်သုံးခွင့်အတွက် “<ph name="PIN_COMMAND" />” ကို ရွေးပါ။</translation>
 <translation id="4157569377477607576">စီမံခန့်ခွဲသူ မူဝါဒက အကြံမပြုပါ-</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ကို ရွှေ့ထားသည်။</translation>
@@ -404,6 +408,7 @@
 <translation id="4414834425328380570">“<ph name="FILE_NAME" />” ကို ဖျက်လိုက်မည်ဖြစ်ပြီး ၎င်းကို ပြန်ယူ၍မရပါ။</translation>
 <translation id="4418686080762064601">သင့်ဖိုင်များအတွက် ဖြတ်လမ်းလင့်ခ် ပြုလုပ်ပါ</translation>
 <translation id="4425149324548788773">My Drive</translation>
+<translation id="4432921877815220091">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" /> ခုမြောက်၊ <ph name="NETWORK_NAME" />။ စက်ကို စနစ်ထည့်သွင်းပြီးနောက် စတင်ပါ။ သင့်စီမံခန့်ခွဲသူက စီမံသည်</translation>
 <translation id="4439427728133035643">ကွန်ရက် <ph name="NETWORK_COUNT" />ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ ချိတ်ရန်</translation>
 <translation id="4442424173763614572">DNS ကြည့်ရှုမှု မအောင်မြင်ခဲ့</translation>
 <translation id="4462159676511157176">စိတ်ကြိုက်အမည် ဆာဗာများ</translation>
@@ -610,8 +615,10 @@
 <translation id="5911887972742538906">သင်၏ Linux အပလီကေးရှင်းကို ထည့်သွင်းရာတွင် အမှားအယွင်းရှိနေသည်။</translation>
 <translation id="5912396950572065471">ဖော်မက်</translation>
 <translation id="5913638992615760742">မိတ္တူကူးယူ၍ မရပါ၊ မျှော်လင့်မထားသော အမှား- <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">ရှာဖွေမှုတူးလ်အသစ်များ ရနိုင်သည်</translation>
 <translation id="5926082595146149752">ယူအက်စ်နိုင်ငံတကာ PC ကီးဘုတ်ဖြင့် ဒတ်ချ် (နယ်သာလန်)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" /> ခုမြောက်၊ <ph name="NETWORK_NAME" />။ စက်ကို စနစ်ထည့်သွင်းပြီးနောက် စတင်ပါ</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ခု</translation>
 <translation id="5957366693331451795">Chromebox များ</translation>
 <translation id="5982621672636444458">ရွေးချယ်စရာများ စီရန်</translation>
@@ -676,7 +683,7 @@
 <translation id="649877868557234318"><ph name="FILE_NAME" /> ကို <ph name="FOLDER_NAME" /> တွင် ထုတ်ယူနေသည်</translation>
 <translation id="6499681088828539489">မျှဝေထားသည့် ကွန်ရက်များအတွက် ပရောက်စီများကို ခွင့်မပြုရန်</translation>
 <translation id="6503285896705205014">ဖိုင် <ph name="COUNT" /> ဖိုင် မိတ္တူကူးခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>
-<translation id="6509122719576673235">နော်ဝေ ဂျီယန်</translation>
+<translation id="6509122719576673235">နော်ဝေး ဂျီယန်</translation>
 <translation id="6528513914570774834">ဤစက်ပစ္စည်း၏ အခြားအသုံးပြုသူများအား ဤကွန်ရက်ကို အသုံးပြုခွင့်ပေးရန်</translation>
 <translation id="653019979737152879">စင့်ခ် လုပ်နေ <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">မကြာခင်</translation>
@@ -698,6 +705,7 @@
 <translation id="6732801395666424405">လက်မှတ်ကို တင်မပေးခဲ့</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">ဖိုင်တွဲကို Bruschetta အား မျှဝေရန်</translation>
+<translation id="6750737795876287924">လက်ရှိ ဖိုင်လမ်းညွှန်</translation>
 <translation id="6751256176799620176">ဖိုင်တွဲ ၁ ခု ရွေးချယ်ထားသည်</translation>
 <translation id="6755827872271341378">ChromeOS Flex စက်</translation>
 <translation id="6790428901817661496">ဖွင့်ရန်</translation>
@@ -735,7 +743,6 @@
 <translation id="6973630695168034713">ဖိုင်တွဲ</translation>
 <translation id="6976795442547527108">ခြင်္သေ့</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">အားလုံး</translation>
 <translation id="6989942356279143254">ဆွီဒင်</translation>
 <translation id="6990081529015358884">သင့်ဆီမှာ နေရာ ကုန်သွားပြီ</translation>
 <translation id="6993826899923627728">ဤဖိုင်များသည် အမှိုက်ပုံးထဲတွင် ရှိသည်</translation>
@@ -758,6 +765,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ဒရိုက်ရှာ&lt;/em&gt;</translation>
 <translation id="7135561821015524160">ကန်နာဒါ အသံထွက်</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">အထောက်အထားစိစစ်မှုဆိုင်ရာ ဆာဗာအထောက်အထားကို အတည်ပြုရန် ‘အကြောင်းအရာ၏ အခြားအမည်နှင့် ကိုက်ညီမှု’ (သို့) ‘ဒိုမိန်းနောက်ဆက်နှင့် ကိုက်ညီမှု’ တို့ မပါဝင်ပါ</translation>
 <translation id="7165320105431587207">ကွန်ရက်ပြုပြင်ရန် မအောင်မြင်ပါ</translation>
 <translation id="7170041865419449892">ဘောင်အပြင်မှာ ရှိနေ</translation>
 <translation id="7180611975245234373">ပြန်လည်စတင်ရန်</translation>
@@ -790,7 +798,6 @@
 <translation id="7458955835361612701">လတ်တလောပုံများ မရှိပါ</translation>
 <translation id="7460898608667578234">ယူကရိန်းနီးယန်း</translation>
 <translation id="7469894403370665791">ဒီကွန်ရက်သို့ အလိုအလျောက် ချိတ်ဆက်ရန်</translation>
-<translation id="7481358317100446445">အသင့်ဖြစ်ပြီ</translation>
 <translation id="7486315294984620427">Parallels Desktop တွင် ဖိုင်များဆွဲချရန် ဖိုင်ကို Windows ဖိုင်များသို့ မိတ္တူကူးရပါမည်။</translation>
 <translation id="749452993132003881">ဟိရဂန</translation>
 <translation id="7495372004724182530">မလေယာလမ် အသံထွက်</translation>
@@ -828,6 +835,7 @@
 <translation id="7724603315864178912">ဖြတ်တောက်</translation>
 <translation id="7732111077498238432">ကွန်ရက်မူဝါဒကို ထိန်းချုပ်ထားပါသည်</translation>
 <translation id="7736003208887389532">ဤဖိုင်များကို အပြီးဖျက်မလား။</translation>
+<translation id="7740287852186792672">ရှာဖွေမှု ရလဒ်များ</translation>
 <translation id="7748626145866214022">လုပ်ဆောင်ချက်ဘားတန်းတွင် နောက်ထပ်ရွေးချယ်စရာများ ရှိပါသည်။ လုပ်ဆောင်ချက်ဘားတန်းကို ရွေးရန် Alt + A ကို နှိပ်ပါ။</translation>
 <translation id="7760449188139285140">တရုတ် ဝူဘီ</translation>
 <translation id="7765158879357617694">ရွှေ့ရန်</translation>
@@ -879,6 +887,7 @@
 <translation id="8116072619078571545">ရေခဲရေ</translation>
 <translation id="8128733386027980860">Dvorak ကီးဘုတ်ဖြင့် အင်္ဂလိပ် (ယူအက်စ်)</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" ကို သင့်အား မျှဝေပေးခဲ့သည်။ သင်သည် ၎င်းကို မပိုင်ဆိုင်၍ ၎င်းကို သင် မဖျက်နိုင်ပါ။</translation>
+<translation id="8138705869659070104">စက်စနစ်ထည့်သွင်းပြီးနောက် စသုံးရန်</translation>
 <translation id="813913629614996137">စတင်နေသည်…</translation>
 <translation id="8147028810663464959">စာလုံးအကျယ် ပြည့်သွားပြီ</translation>
 <translation id="8151638057146502721">ပြုပြင်</translation>
@@ -904,6 +913,7 @@
 <translation id="8300849813060516376">OTASP မအောင်မြင်ပါ</translation>
 <translation id="8312871300878166382">ဖိုင်တွဲထဲသို့ ကူးထည့်ရန်</translation>
 <translation id="8329978297633540474">ရိုးရိုး စာသား</translation>
+<translation id="8332007959299458842">မကြာသေးမီကဖွင့်ထားသော Microsoft ဖိုင်များကို Google Drive သို့ ရွှေ့လိုက်သည်</translation>
 <translation id="8335587457941836791">စင် ပေါ်မှ ထုတ်ပစ်ရန်</translation>
 <translation id="8335837413233998004">ဘီလာရုစ်</translation>
 <translation id="8336153091935557858">မနေ့က <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -930,6 +940,7 @@
 <translation id="8487700953926739672">Offline ရနိုင်</translation>
 <translation id="8492972329130824181">အိမ်ကွန်ရက်ကို မရနိုင်ပါ။ ချိတ်ဆက်ရန် ကွန်ရက်ပြင်ပဒေတာ အသုံးပြုခြင်းကို ဖွင့်ထားရမည်။</translation>
 <translation id="8499098729323186194">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ခု ထုတ်ယူနေသည်…</translation>
+<translation id="8502913769543567768">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" /> ခုမြောက်၊ <ph name="NETWORK_NAME" />၊ <ph name="NETWORK_PROVIDER_NAME" />။ စက်ကို စနစ်ထည့်သွင်းပြီးနောက် စတင်ပါ။ သင့်စီမံခန့်ခွဲသူက စီမံသည်</translation>
 <translation id="8521441079177373948">ယူကေ</translation>
 <translation id="853494022971700746">ပြင်သစ် (ပြင်သစ်)</translation>
 <translation id="8540608333167683902">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ အသေးစိတ်များ</translation>
@@ -991,6 +1002,7 @@
 <translation id="9046895021617826162">ကွန်ရက်ချိတ်ဆက်မှု မအောင်မြင်ပါ</translation>
 <translation id="9065512565307033593">အတည်ပြု၍မရပါက သင့်ကွန်ရက်သုံးခွင့်ကို ပိတ်လိုက်ပါမည်။</translation>
 <translation id="908378762078012445">အသံထွက် AATSEEL ကီးဘုတ်ဖြင့် ရုရှား</translation>
+<translation id="9086302186042011942">စင့်က် လုပ်နေ</translation>
 <translation id="9099674669267916096">စာမျက်နှာအရေအတွက်</translation>
 <translation id="9100610230175265781">စကားဝှက် လိုအပ်</translation>
 <translation id="9110990317705400362">သင်၏ ဘရောင်ဇာ သုံးမှု ပိုလုံခြုုံလာရေး နည်းလမ်းများကို ကျွန်ုပ်တို့ တချိန်လုံး ရှာကြံနေကြပါသည်။ အရင်တုန်းက၊ ဘယ် ဝက်ဘ်ဆိုက်မဆို သင်၏ ဘရောက်ဇာ ထဲသို့ တိုးချဲ့မှု တစ်ခုခိုကို ထည့်ပေးရန် တိုက်တွန်းခဲ့ပါမည်။ Google Chrome ၏ နောက်ဆုံး ဗားရှင်း ထဲမှာ၊ သင်သည် တိုးချဲ့မှု စာမျက်နှာ ထဲကို ထည့်ပေးခြင်း မှတစ်ဆင့် ထိုတိုးချဲ့မှုများကို ထည့်သွင်းလိုကြောင်း သင်သည် အတိအလင်း ပြောရန် လိုပါသည်။ <ph name="BEGIN_LINK" />ပိုမို လေ့လာရန်<ph name="END_LINK" /></translation>

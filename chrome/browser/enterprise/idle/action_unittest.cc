@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/idle/action.h"
 
+#include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -15,15 +16,15 @@ TEST(IdleActionTest, Build) {
   auto* factory = ActionFactory::GetInstance();
 
   auto queue = factory->Build(
-      {ActionType::kCloseBrowsers, ActionType::kShowProfilePicker});
+      nullptr, {ActionType::kCloseBrowsers, ActionType::kShowProfilePicker});
   EXPECT_EQ(2u, queue.size());
-  EXPECT_EQ(0u, queue.top()->priority());
+  EXPECT_EQ(0, queue.top()->priority());  // CloseBrowsersAction
   queue.pop();
-  EXPECT_EQ(1u, queue.top()->priority());
+  EXPECT_EQ(1, queue.top()->priority());  // ShowProfilePickerAction
 
-  queue = factory->Build({ActionType::kCloseBrowsers});
+  queue = factory->Build(nullptr, {ActionType::kCloseBrowsers});
   EXPECT_EQ(1u, queue.size());
-  EXPECT_EQ(0u, queue.top()->priority());
+  EXPECT_EQ(0, queue.top()->priority());  // CloseBrowsersAction
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -31,14 +32,22 @@ TEST(IdleActionTest, ClearBrowsingDataIsSingleAction) {
   auto* factory = ActionFactory::GetInstance();
 
   auto queue = factory->Build(
+      nullptr,
       {ActionType::kClearBrowsingHistory, ActionType::kClearDownloadHistory,
        ActionType::kClearCookiesAndOtherSiteData,
        ActionType::kClearCachedImagesAndFiles,
        ActionType::kClearCachedImagesAndFiles, ActionType::kClearPasswordSignin,
        ActionType::kClearAutofill, ActionType::kClearSiteSettings,
        ActionType::kClearHostedAppData});
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(1u, queue.size());
-  EXPECT_EQ(2u, queue.top()->priority());
+  EXPECT_EQ(2, queue.top()->priority());  // ClearBrowsingDataAction
+#else
+  EXPECT_EQ(2u, queue.size());
+  EXPECT_EQ(-1, queue.top()->priority());  // ShowDialogAction
+  queue.pop();
+  EXPECT_EQ(2, queue.top()->priority());  // ClearBrowsingDataAction
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace enterprise_idle

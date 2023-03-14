@@ -36,8 +36,8 @@ MediaRouterInternalsUI::MediaRouterInternalsUI(content::WebUI* web_ui)
   DCHECK(wc);
   content::BrowserContext* context = wc->GetBrowserContext();
   MediaRouter* router = MediaRouterFactory::GetApiForBrowserContext(context);
-  auto handler =
-      std::make_unique<MediaRouterInternalsWebUIMessageHandler>(router);
+  auto handler = std::make_unique<MediaRouterInternalsWebUIMessageHandler>(
+      router, router->GetDebugger());
   web_ui->AddMessageHandler(std::move(handler));
 }
 

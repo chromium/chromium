@@ -69,31 +69,41 @@ bool ReadWebURLsWithTitlesPboardType(NSPasteboard* pboard,
   return true;
 }
 
-// Returns the user-visible name of the file, without any extension. If there
-// is any error, returns nil.
-NSString* ExtractTitleFromFilename(NSURL* file_url) {
-  NSDictionary* resource_values;
-  resource_values = [file_url resourceValuesForKeys:@[
-    NSURLLocalizedNameKey, NSURLHasHiddenExtensionKey
-  ]
-                                              error:nil];
-  if (!resource_values) {
-    return nil;
+// Returns the user-visible name of the file, optionally without any extension.
+// If given a non-empty `file_url`, will always return a title.
+NSString* DeriveTitleFromFilename(NSURL* file_url, bool strip_extension) {
+  NSString* localized_name = nil;
+  BOOL success = [file_url getResourceValue:&localized_name
+                                     forKey:NSURLLocalizedNameKey
+                                      error:nil];
+  if (!success || !localized_name) {
+    // For the case where the actual display name of a file cannot be obtained,
+    // derive a quick-and-dirty version by swapping in "/" for ":", as that's
+    // the most common difference between the last path component of a file and
+    // how that file is presented to the user. See -[NSFileManager
+    // displayNameAtPath:] for an example of macOS doing this. Also, given that
+    // this is a failure case, don't bother trying to figure out the extension
+    // situation.
+    NSString* last_path_component = file_url.lastPathComponent;
+    return [last_path_component stringByReplacingOccurrencesOfString:@":"
+                                                          withString:@"/"];
   }
 
-  NSString* title = resource_values[NSURLLocalizedNameKey];
-  if (!title) {
-    return nil;
+  if (!strip_extension) {
+    return localized_name;
   }
 
-  NSNumber* has_hidden_extension = resource_values[NSURLHasHiddenExtensionKey];
-  if (!has_hidden_extension || has_hidden_extension.boolValue) {
-    // If it's already hidden, or it's unknown if it's hidden, return it
-    // unaltered.
-    return title;
+  NSNumber* has_hidden_extension = nil;
+  success = [file_url getResourceValue:&has_hidden_extension
+                                forKey:NSURLHasHiddenExtensionKey
+                                 error:nil];
+  if (!success || !has_hidden_extension || has_hidden_extension.boolValue) {
+    // If it's unknown if the extension is hidden, or if the extension is
+    // already hidden, return the filename unaltered.
+    return localized_name;
   }
 
-  return [title stringByDeletingPathExtension];
+  return [localized_name stringByDeletingPathExtension];
 }
 
 // A simple pair of URL with title. Valid if the `url` field is not null.
@@ -150,12 +160,7 @@ URLAndTitle ExtractStandardURLAndTitle(NSPasteboardItem* item) {
         }
       }
 
-      title = ExtractTitleFromFilename(file_url);
-      if (!title) {
-        // If there was a file URL but the filename could not be extracted, use
-        // the last bit of the URL as the title.
-        title = file_url.lastPathComponent;
-      }
+      title = DeriveTitleFromFilename(file_url, /*strip_extension=*/true);
     }
   }
 
@@ -187,7 +192,7 @@ URLAndTitle ExtractURLFromURLFile(NSPasteboardItem* item) {
 
     NSNumber* file_size = resource_values[NSURLFileSizeKey];
     if (file_size.unsignedLongValue >
-        ClipboardUtil::internal::kMaximumParsableFileSize) {
+        clipboard_util::internal::kMaximumParsableFileSize) {
       return {};
     }
 
@@ -206,7 +211,7 @@ URLAndTitle ExtractURLFromURLFile(NSPasteboardItem* item) {
 
     NSNumber* file_size = resource_values[NSURLFileSizeKey];
     if (file_size.unsignedLongValue >
-        ClipboardUtil::internal::kMaximumParsableFileSize) {
+        clipboard_util::internal::kMaximumParsableFileSize) {
       return {};
     }
 
@@ -229,18 +234,13 @@ URLAndTitle ExtractURLFromURLFile(NSPasteboardItem* item) {
   }
 
   std::string found_url =
-      ClipboardUtil::internal::ExtractURLFromURLFileContents(
+      clipboard_util::internal::ExtractURLFromURLFileContents(
           base::SysNSStringToUTF8(contents));
   if (found_url.empty()) {
     return {};
   }
 
-  NSString* title = ExtractTitleFromFilename(file_url);
-  if (!title) {
-    // Fall back to the last path component of the .url file URL if there's no
-    // better option.
-    title = file_url.lastPathComponent;
-  }
+  NSString* title = DeriveTitleFromFilename(file_url, /*strip_extension=*/true);
 
   return {.url = base::SysUTF8ToNSString(found_url), .title = title};
 }
@@ -282,17 +282,10 @@ URLAndTitle ExtractFileURL(NSPasteboardItem* item) {
   }
   NSURL* file_url = [NSURL URLWithString:file].filePathURL;
 
-  NSString* filename;
-  BOOL success = [file_url getResourceValue:&filename
-                                     forKey:NSURLLocalizedNameKey
-                                      error:nil];
+  NSString* filename =
+      DeriveTitleFromFilename(file_url, /*strip_extension=*/false);
 
-  if (success) {
-    return {.url = file_url.absoluteString, .title = filename};
-  } else {
-    return {.url = file_url.absoluteString,
-            .title = file_url.lastPathComponent};
-  }
+  return {.url = file_url.absoluteString, .title = filename};
 }
 
 // Reads the given pasteboard, and returns URLs/titles found on it. If
@@ -348,7 +341,7 @@ UniquePasteboard::~UniquePasteboard() {
   [pasteboard_ releaseGlobally];
 }
 
-namespace ClipboardUtil {
+namespace clipboard_util {
 
 NSArray<NSPasteboardItem*>* PasteboardItemsFromUrls(
     NSArray<NSString*>* urls,
@@ -484,6 +477,6 @@ NSString* GetHTMLFromRTFOnPasteboard(NSPasteboard* pboard) {
                                 encoding:NSUTF8StringEncoding] autorelease];
 }
 
-}  // namespace ClipboardUtil
+}  // namespace clipboard_util
 
 }  // namespace ui

@@ -101,6 +101,10 @@ class PageSpecificContentSettings
     // Gets the settings map for the current web contents.
     virtual HostContentSettingsMap* GetSettingsMap() = 0;
 
+    // Gets the `BrowsingDataModel::Delegate` for the current profile.
+    virtual std::unique_ptr<BrowsingDataModel::Delegate>
+    CreateBrowsingDataModelDelegate() = 0;
+
     // Allows delegate to override content setting rules that will be sent to
     // the renderer.
     virtual void SetDefaultRendererContentSettingRules(

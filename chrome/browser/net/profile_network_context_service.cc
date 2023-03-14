@@ -43,6 +43,8 @@
 #include "chrome/common/pref_names.h"
 #include "components/certificate_transparency/pref_names.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/embedder_support/pref_names.h"
 #include "components/embedder_support/switches.h"
 #include "components/language/core/browser/language_prefs.h"
@@ -65,6 +67,7 @@
 #include "net/base/features.h"
 #include "net/http/http_auth_preferences.h"
 #include "net/http/http_util.h"
+#include "net/net_buildflags.h"
 #include "net/ssl/client_cert_store.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
@@ -197,6 +200,19 @@ bool IsAmbientAuthAllowedForProfile(Profile* profile) {
   return false;
 }
 
+void UpdateAntiAbuseSettings(Profile* profile) {
+  ContentSetting content_setting =
+      HostContentSettingsMapFactory::GetForProfile(profile)
+          ->GetDefaultContentSetting(ContentSettingsType::ANTI_ABUSE, nullptr);
+  profile->ForEachLoadedStoragePartition(base::BindRepeating(
+      [](ContentSetting content_setting,
+         content::StoragePartition* storage_partition) {
+        storage_partition->GetNetworkContext()->SetBlockTrustTokens(
+            content_setting == CONTENT_SETTING_BLOCK);
+      },
+      content_setting));
+}
+
 void UpdateCookieSettings(Profile* profile) {
   ContentSettingsForOneType settings;
   HostContentSettingsMapFactory::GetForProfile(profile)->GetSettingsForOneType(
@@ -239,23 +255,30 @@ void UpdateStorageAccessSettings(Profile* profile) {
   }
 }
 
-void UpdateTopLevelStorageAccessSettings(Profile* profile) {
+void UpdateAllStorageAccessSettings(Profile* profile) {
   // TODO(crbug.com/1385156): Switch to an independent feature flag.
   if (base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI) &&
       base::FeatureList::IsEnabled(
           blink::features::kStorageAccessAPIForOriginExtension)) {
-    ContentSettingsForOneType settings;
+    ContentSettingsForOneType top_level_settings;
     HostContentSettingsMapFactory::GetForProfile(profile)
         ->GetSettingsForOneType(ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-                                &settings);
+                                &top_level_settings);
+    ContentSettingsForOneType storage_access_settings;
+    HostContentSettingsMapFactory::GetForProfile(profile)
+        ->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS,
+                                &storage_access_settings);
 
     profile->ForEachLoadedStoragePartition(base::BindRepeating(
-        [](ContentSettingsForOneType settings,
+        [](ContentSettingsForOneType storage_access_settings,
+           ContentSettingsForOneType top_level_settings,
            content::StoragePartition* storage_partition) {
           storage_partition->GetCookieManagerForBrowserProcess()
-              ->SetTopLevelStorageAccessSettings(settings, base::DoNothing());
+              ->SetAllStorageAccessSettings(storage_access_settings,
+                                            top_level_settings,
+                                            base::DoNothing());
         },
-        settings));
+        storage_access_settings, top_level_settings));
   }
 }
 
@@ -437,17 +460,6 @@ void ProfileNetworkContextService::OnExtensionInstalled(
   UpdatePreconnect();
 }
 #endif
-
-void ProfileNetworkContextService::OnTrustTokenBlockingChanged(
-    bool block_trust_tokens) {
-  profile_->ForEachLoadedStoragePartition(base::BindRepeating(
-      [](bool block_trust_tokens,
-         content::StoragePartition* storage_partition) {
-        storage_partition->GetNetworkContext()->SetBlockTrustTokens(
-            block_trust_tokens);
-      },
-      block_trust_tokens));
-}
 
 void ProfileNetworkContextService::OnFirstPartySetsEnabledChanged(
     bool enabled) {
@@ -933,7 +945,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
       cert_verifier_configuration =
           GetChromeCertVerifierServiceParams(/*local_state=*/nullptr);
   DCHECK(cert_verifier_configuration);
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
   is_trial_comparison_supported &=
       !cert_verifier_configuration->use_chrome_root_store;
 #endif
@@ -996,8 +1008,10 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool profile_supports_policy_certs = false;
-  if (ash::ProfileHelper::IsSigninProfile(profile_))
+  if (ash::ProfileHelper::IsSigninProfile(profile_) ||
+      ash::ProfileHelper::IsLockScreenProfile(profile_)) {
     profile_supports_policy_certs = true;
+  }
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   if (user_manager) {
     const user_manager::User* user =
@@ -1038,9 +1052,11 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   // / IsolationInfos, so storage can be isolated on a per-site basis.
   network_context_params->require_network_isolation_key = true;
 
+  ContentSetting anti_abuse_content_setting =
+      HostContentSettingsMapFactory::GetForProfile(profile_)
+          ->GetDefaultContentSetting(ContentSettingsType::ANTI_ABUSE, nullptr);
   network_context_params->block_trust_tokens =
-      !PrivacySandboxSettingsFactory::GetForProfile(profile_)
-           ->IsTrustTokensAllowed();
+      anti_abuse_content_setting == CONTENT_SETTING_BLOCK;
 
   network_context_params->first_party_sets_access_delegate_params =
       network::mojom::FirstPartySetsAccessDelegateParams::New();
@@ -1077,6 +1093,9 @@ void ProfileNetworkContextService::OnContentSettingChanged(
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type) {
   switch (content_type) {
+    case ContentSettingsType::ANTI_ABUSE:
+      UpdateAntiAbuseSettings(profile_);
+      break;
     case ContentSettingsType::COOKIES:
       UpdateCookieSettings(profile_);
       break;
@@ -1087,13 +1106,12 @@ void ProfileNetworkContextService::OnContentSettingChanged(
       UpdateStorageAccessSettings(profile_);
       break;
     case ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS:
-      UpdateTopLevelStorageAccessSettings(profile_);
+      UpdateAllStorageAccessSettings(profile_);
       break;
     case ContentSettingsType::DEFAULT:
       UpdateCookieSettings(profile_);
       UpdateLegacyCookieSettings(profile_);
-      UpdateStorageAccessSettings(profile_);
-      UpdateTopLevelStorageAccessSettings(profile_);
+      UpdateAllStorageAccessSettings(profile_);
       break;
     default:
       return;

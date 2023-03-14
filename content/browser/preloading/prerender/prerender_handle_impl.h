@@ -5,10 +5,14 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_HANDLE_IMPL_H_
 #define CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_HANDLE_IMPL_H_
 
-#include "content/browser/preloading/prerender/prerender_host_registry.h"
+#include "base/memory/weak_ptr.h"
+#include "content/public/browser/preloading.h"
 #include "content/public/browser/prerender_handle.h"
+#include "url/gurl.h"
 
 namespace content {
+
+class PrerenderHostRegistry;
 
 class PrerenderHandleImpl final : public PrerenderHandle {
  public:
@@ -17,6 +21,8 @@ class PrerenderHandleImpl final : public PrerenderHandle {
       int frame_tree_node_id,
       const GURL& url);
   ~PrerenderHandleImpl() override;
+
+  // PrerenderHandle:
   GURL GetInitialPrerenderingUrl() override;
   base::WeakPtr<PrerenderHandle> GetWeakPtr() override;
   void SetPreloadingAttemptFailureReason(

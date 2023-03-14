@@ -408,7 +408,12 @@ class Generator(generator.Generator):
         "should_inline": ShouldInlineStruct,
         "should_inline_union": ShouldInlineUnion,
         "is_array_kind": mojom.IsArrayKind,
+        "is_bool_kind": mojom.IsBoolKind,
         "is_enum_kind": mojom.IsEnumKind,
+        "is_nullable_value_kind_packed_field":
+        pack.IsNullableValueKindPackedField,
+        "is_primary_nullable_value_kind_packed_field":
+        pack.IsPrimaryNullableValueKindPackedField,
         "is_full_header_required_for_import":
         self._IsFullHeaderRequiredForImport,
         "is_integral_kind": mojom.IsIntegralKind,
@@ -664,8 +669,10 @@ class Generator(generator.Generator):
         type_name = _AddOptional(type_name)
       return type_name
     if mojom.IsEnumKind(kind):
-      return self._GetNameForKind(
+      type_name = self._GetNameForKind(
           kind, add_same_module_namespaces=add_same_module_namespaces)
+      return _AddOptional(type_name) if mojom.IsNullableKind(
+          kind) else type_name
     if mojom.IsStructKind(kind) or mojom.IsUnionKind(kind):
       return "%sPtr" % self._GetNameForKind(
           kind, add_same_module_namespaces=add_same_module_namespaces)
@@ -729,8 +736,9 @@ class Generator(generator.Generator):
       return "::mojo::ScopedSharedBufferHandle"
     if mojom.IsPlatformHandleKind(kind):
       return "::mojo::PlatformHandle"
-    if not kind in _kind_to_cpp_type:
-      raise Exception("Unrecognized kind %s" % kind.spec)
+    assert isinstance(kind, mojom.ValueKind)
+    if kind.is_nullable:
+      return _AddOptional(_kind_to_cpp_type[kind.MakeUnnullableKind()])
     return _kind_to_cpp_type[kind]
 
   def _IsMoveOnlyKind(self, kind):
@@ -862,6 +870,7 @@ class Generator(generator.Generator):
       return "mojo::internal::Pointer<mojo::internal::String_Data>"
     if mojom.IsAnyHandleKind(kind):
       return "mojo::internal::Handle_Data"
+    assert isinstance(kind, mojom.ValueKind)
     return _kind_to_cpp_type[kind]
 
   def _GetCppUnionFieldType(self, kind):
@@ -1022,6 +1031,8 @@ class Generator(generator.Generator):
           flatten_nested_kind=True)
 
     if mojom.IsEnumKind(kind):
+      if kind.is_nullable:
+        return f"absl::optional<{_GetName(kind.MakeUnnullableKind())}>"
       return _GetName(kind)
     if mojom.IsStructKind(kind) or mojom.IsUnionKind(kind):
       return "%sDataView" % _GetName(kind)
@@ -1062,6 +1073,9 @@ class Generator(generator.Generator):
       return "mojo::ScopedSharedBufferHandle"
     if mojom.IsPlatformHandleKind(kind):
       return "mojo::PlatformHandle"
+    assert isinstance(kind, mojom.ValueKind)
+    if kind.is_nullable:
+      return f"absl::optional<{_kind_to_cpp_type[kind.MakeUnnullableKind()]}>"
     return _kind_to_cpp_type[kind]
 
   def _UnderToCamel(self, value, digits_split=False):

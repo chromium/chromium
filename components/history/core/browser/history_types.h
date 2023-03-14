@@ -502,9 +502,11 @@ struct DomainMetricSet {
 // unique midnight in that date range.
 using DomainDiversityResults = std::vector<DomainMetricSet>;
 
-// The callback to process all domain diversity metrics
-using DomainDiversityCallback =
-    base::OnceCallback<void(DomainDiversityResults)>;
+// The callback to process all domain diversity metrics. The parameter is a pair
+// of results, where the first member counts only local visits, and the second
+// counts both local and foreign (synced) visits.
+using DomainDiversityCallback = base::OnceCallback<void(
+    std::pair<DomainDiversityResults, DomainDiversityResults>)>;
 
 // The bitmask to specify the types of metrics to compute in
 // HistoryBackend::GetDomainDiversity()

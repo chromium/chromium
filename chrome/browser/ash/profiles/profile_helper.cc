@@ -22,7 +22,6 @@
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/ash/base/file_flusher.h"
 #include "chrome/browser/ash/profiles/browser_context_helper_delegate_impl.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -55,8 +54,6 @@ class ProfileHelperImpl : public ProfileHelper {
       const Profile* profile) const override;
   user_manager::User* GetUserByProfile(Profile* profile) const override;
 
-  void FlushProfile(Profile* profile) override;
-
   void SetProfileToUserMappingForTesting(user_manager::User* user) override;
   void SetUserToProfileMappingForTesting(const user_manager::User* user,
                                          Profile* profile) override;
@@ -65,14 +62,12 @@ class ProfileHelperImpl : public ProfileHelper {
  private:
   std::unique_ptr<BrowserContextHelper> browser_context_helper_;
 
-  // Used for testing by unit tests and FakeUserManager/MockUserManager.
+  // Used for testing by unit tests and FakeUserManager.
   std::map<const user_manager::User*, Profile*> user_to_profile_for_testing_;
 
   // When this list is not empty GetUserByProfile() will find user that has
   // the same user_id as |profile|->GetProfileName().
   user_manager::UserList user_list_for_testing_;
-
-  std::unique_ptr<FileFlusher> profile_flusher_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -162,50 +157,20 @@ bool ProfileHelper::IsLockScreenProfile(const Profile* profile) {
 
 // static
 bool ProfileHelper::IsOwnerProfile(const Profile* profile) {
-  if (!profile)
-    return false;
-  const user_manager::User* user =
-      ProfileHelper::Get()->GetUserByProfile(profile);
-  if (!user)
-    return false;
-  return user->GetAccountId() ==
-         user_manager::UserManager::Get()->GetOwnerAccountId();
+  return user_manager::UserManager::Get()->IsOwnerUser(
+      ProfileHelper::Get()->GetUserByProfile(profile));
 }
 
 // static
 bool ProfileHelper::IsPrimaryProfile(const Profile* profile) {
-  if (!profile)
-    return false;
-  const user_manager::User* user =
-      ProfileHelper::Get()->GetUserByProfile(profile);
-  if (!user)
-    return false;
-  return user == user_manager::UserManager::Get()->GetPrimaryUser();
+  return user_manager::UserManager::Get()->IsPrimaryUser(
+      ProfileHelper::Get()->GetUserByProfile(profile));
 }
 
 // static
 bool ProfileHelper::IsEphemeralUserProfile(const Profile* profile) {
-  if (!profile)
-    return false;
-
-  // Owner profile is always persistent.
-  if (IsOwnerProfile(profile))
-    return false;
-
-  const user_manager::User* user =
-      ProfileHelper::Get()->GetUserByProfile(profile);
-  if (!user)
-    return false;
-
-  // Guest and public account is ephemeral.
-  const user_manager::UserType user_type = user->GetType();
-  if (user_type == user_manager::USER_TYPE_GUEST ||
-      user_type == user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
-    return true;
-  }
-
-  // Otherwise, users are ephemeral when the policy is enabled.
-  return user_manager::UserManager::Get()->AreEphemeralUsersEnabled();
+  return user_manager::UserManager::Get()->IsEphemeralUser(
+      ProfileHelper::Get()->GetUserByProfile(profile));
 }
 
 // static
@@ -356,16 +321,6 @@ void ProfileHelperImpl::RemoveUserFromListForTesting(
                                &user_manager::User::GetAccountId);
   if (it != user_list_for_testing_.end())
     user_list_for_testing_.erase(it);
-}
-
-void ProfileHelperImpl::FlushProfile(Profile* profile) {
-  if (!profile_flusher_)
-    profile_flusher_ = std::make_unique<FileFlusher>();
-
-  // Flushes files directly under profile path since these are the critical
-  // ones.
-  profile_flusher_->RequestFlush(profile->GetPath(), /*recursive=*/false,
-                                 base::OnceClosure());
 }
 
 }  // namespace ash

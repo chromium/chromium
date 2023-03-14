@@ -19,7 +19,9 @@
 #include "chrome/browser/autofill/address_normalizer_factory.h"
 #include "chrome/browser/autofill/autocomplete_history_manager_factory.h"
 #include "chrome/browser/autofill/autofill_offer_manager_factory.h"
+#include "chrome/browser/autofill/autofill_optimization_guide_factory.h"
 #include "chrome/browser/autofill/iban_manager_factory.h"
+#include "chrome/browser/autofill/manual_filling_controller.h"
 #include "chrome/browser/autofill/merchant_promo_code_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
@@ -39,7 +41,7 @@
 #include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_controller.h"
-#include "chrome/browser/ui/autofill/payments/save_iban_bubble_controller_impl.h"
+#include "chrome/browser/ui/autofill/payments/iban_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/risk_util.h"
 #include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller_impl.h"
@@ -52,6 +54,7 @@
 #include "components/autofill/content/browser/autofill_log_router_factory.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/core/browser/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
@@ -136,6 +139,17 @@
 
 namespace autofill {
 
+// static
+void ChromeAutofillClient::CreateForWebContents(
+    content::WebContents* web_contents) {
+  DCHECK(web_contents);
+  if (!FromWebContents(web_contents)) {
+    web_contents->SetUserData(
+        UserDataKey(),
+        base::WrapUnique(new ChromeAutofillClient(web_contents)));
+  }
+}
+
 ChromeAutofillClient::~ChromeAutofillClient() {
   // NOTE: It is too late to clean up the autofill popup; that cleanup process
   // requires that the WebContents instance still be valid and it is not at
@@ -167,6 +181,15 @@ AutofillDownloadManager* ChromeAutofillClient::GetDownloadManager() {
         this, GetChannel(), GetLogManager());
   }
   return download_manager_.get();
+}
+
+AutofillOptimizationGuide* ChromeAutofillClient::GetAutofillOptimizationGuide()
+    const {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  return profile->ShutdownStarted()
+             ? nullptr
+             : AutofillOptimizationGuideFactory::GetForProfile(profile);
 }
 
 PersonalDataManager* ChromeAutofillClient::GetPersonalDataManager() {
@@ -559,9 +582,9 @@ void ChromeAutofillClient::ConfirmSaveIBANLocally(
     const IBAN& iban,
     bool should_show_prompt,
     LocalSaveIBANPromptCallback callback) {
-  // Do lazy initialization of SaveIbanBubbleControllerImpl.
-  SaveIbanBubbleControllerImpl::CreateForWebContents(web_contents());
-  SaveIbanBubbleControllerImpl::FromWebContents(web_contents())
+  // Do lazy initialization of IbanBubbleControllerImpl.
+  IbanBubbleControllerImpl::CreateForWebContents(web_contents());
+  IbanBubbleControllerImpl::FromWebContents(web_contents())
       ->OfferLocalSave(iban, should_show_prompt, std::move(callback));
 }
 
@@ -784,8 +807,18 @@ bool ChromeAutofillClient::IsTouchToFillCreditCardSupported() {
 
 bool ChromeAutofillClient::ShowTouchToFillCreditCard(
     base::WeakPtr<TouchToFillDelegate> delegate,
-    base::span<const autofill::CreditCard* const> cards_to_suggest) {
+    base::span<const autofill::CreditCard> cards_to_suggest) {
 #if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillVirtualCardsOnTouchToFillAndroid)) {
+    // Create the manual filling controller which will be used to show the
+    // unmasked virtual card details in the manual fallback.
+    ManualFillingController::GetOrCreate(web_contents())
+        ->UpdateSourceAvailability(
+            ManualFillingController::FillingSource::CREDIT_CARD_FALLBACKS,
+            !cards_to_suggest.empty());
+  }
+
   return touch_to_fill_credit_card_controller_.Show(
       std::make_unique<TouchToFillCreditCardViewImpl>(web_contents()), delegate,
       std::move(cards_to_suggest));
@@ -863,9 +896,7 @@ ChromeAutofillClient::GetReopenPopupArgs() const {
   gfx::RectF screen_space_independent_bounds =
       controller->element_bounds() - client_area.OffsetFromOrigin();
   return autofill::AutofillClient::PopupOpenArgs(
-      screen_space_independent_bounds,
-      controller->IsRTL() ? base::i18n::RIGHT_TO_LEFT
-                          : base::i18n::LEFT_TO_RIGHT,
+      screen_space_independent_bounds, controller->GetElementTextDirection(),
       controller->GetSuggestions(), AutoselectFirstSuggestion(false));
 }
 
@@ -1124,7 +1155,11 @@ void ChromeAutofillClient::OnZoomChanged(
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
-    : content::WebContentsUserData<ChromeAutofillClient>(*web_contents),
+    : ContentAutofillClient(
+          web_contents,
+          base::BindRepeating(&BrowserDriverInitHook,
+                              this,
+                              g_browser_process->GetApplicationLocale())),
       content::WebContentsObserver(web_contents),
       log_manager_(
           // TODO(crbug.com/928595): Replace the closure with a callback to the
@@ -1189,7 +1224,5 @@ std::u16string ChromeAutofillClient::GetAccountHolderEmail() {
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
   return base::UTF8ToUTF16(primary_account_info.email);
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeAutofillClient);
 
 }  // namespace autofill

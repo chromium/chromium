@@ -222,7 +222,7 @@ void InstallFromManifestCommand::OnInstallFinalized(
 
 void InstallFromManifestCommand::Abort(CommandResult result,
                                        webapps::InstallResultCode code) {
-  debug_value_.Set("error_code", base::StreamableToString(code));
+  debug_value_.Set("error_code", base::ToString(code));
   SignalCompletionAndSelfDestruct(
       result, base::BindOnce(std::move(install_callback_), AppId(), code));
 }

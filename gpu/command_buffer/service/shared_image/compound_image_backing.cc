@@ -287,7 +287,7 @@ class WrappedOverlayCompoundImageRepresentation
 bool CompoundImageBacking::IsValidSharedMemoryBufferFormat(
     const gfx::Size& size,
     viz::SharedImageFormat format) {
-  if (!HasEquivalentBufferFormat(format)) {
+  if (!viz::HasEquivalentBufferFormat(format)) {
     DVLOG(1) << "Not a valid format: " << format.ToString();
     return false;
   }
@@ -582,7 +582,7 @@ CompoundImageBacking::ProduceOverlay(SharedImageManager* manager,
       manager, this, tracker, std::move(real_rep));
 }
 
-void CompoundImageBacking::OnMemoryDump(
+base::trace_event::MemoryAllocatorDump* CompoundImageBacking::OnMemoryDump(
     const std::string& dump_name,
     base::trace_event::MemoryAllocatorDumpGuid client_guid,
     base::trace_event::ProcessMemoryDump* pmd,
@@ -600,7 +600,8 @@ void CompoundImageBacking::OnMemoryDump(
   // Add ownership edge to `client_guid` which expresses shared ownership with
   // the client process for the top level dump.
   pmd->CreateSharedGlobalAllocatorDump(client_guid);
-  pmd->AddOwnershipEdge(dump->guid(), client_guid, kNonOwningEdgeImportance);
+  pmd->AddOwnershipEdge(dump->guid(), client_guid,
+                        static_cast<int>(TracingImportance::kNotOwner));
 
   // Add dumps nested under `dump_name` for child backings owned by compound
   // image. These get different shared GUIDs to add ownership edges with GPU
@@ -616,6 +617,7 @@ void CompoundImageBacking::OnMemoryDump(
     backing->OnMemoryDump(element_dump_name, element_client_guid, pmd,
                           client_tracing_id);
   }
+  return dump;
 }
 
 const std::vector<SkPixmap>& CompoundImageBacking::GetSharedMemoryPixmaps() {
@@ -692,14 +694,27 @@ void CompoundImageBacking::SetLatestContent(SharedImageAccessStream stream,
   element.content_id_ = latest_content_id_;
 }
 
+void CompoundImageBacking::OnAddSecondaryReference() {
+  // When client adds a reference from another processes it expects this
+  // SharedImage can outlive original factory ref and so potentially
+  // SharedimageFactory. We should create all backings now as we might not have
+  // access to corresponding SharedImageBackingFactories later.
+  for (auto& element : elements_) {
+    element.CreateBackingIfNecessary();
+  }
+}
+
 CompoundImageBacking::ElementHolder::ElementHolder() = default;
 CompoundImageBacking::ElementHolder::~ElementHolder() = default;
 
-SharedImageBacking* CompoundImageBacking::ElementHolder::GetBacking() {
+void CompoundImageBacking::ElementHolder::CreateBackingIfNecessary() {
   if (create_callback) {
     std::move(create_callback).Run(backing);
   }
+}
 
+SharedImageBacking* CompoundImageBacking::ElementHolder::GetBacking() {
+  CreateBackingIfNecessary();
   return backing.get();
 }
 

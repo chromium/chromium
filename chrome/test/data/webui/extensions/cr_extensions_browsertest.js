@@ -957,7 +957,7 @@ TEST_F('CrUrlUtilTest', 'All', () => {
 ////////////////////////////////////////////////////////////////////////////////
 // SitePermissionsEditPermissionsDialog tests
 
-var CrExtensionsSitePermissionsEditPermissionsDialog =
+var CrExtensionsSitePermissionsEditPermissionsDialogTest =
     class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -965,7 +965,7 @@ var CrExtensionsSitePermissionsEditPermissionsDialog =
   }
 };
 
-TEST_F('CrExtensionsSitePermissionsEditPermissionsDialog', 'All', () => {
+TEST_F('CrExtensionsSitePermissionsEditPermissionsDialogTest', 'All', () => {
   mocha.run();
 });
 

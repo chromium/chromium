@@ -9,10 +9,13 @@
 
 #include "base/containers/flat_map.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/task_manager/providers/task_provider.h"
+
+class ProfileManager;
 
 namespace task_manager {
 
@@ -43,6 +46,7 @@ class WorkerTaskProvider : public TaskProvider,
 
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;
+  void OnProfileManagerDestroying() override;
 
   // ProfileObserver:
   void OnOffTheRecordProfileCreated(Profile* off_the_record) override;
@@ -60,6 +64,9 @@ class WorkerTaskProvider : public TaskProvider,
 
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       observed_profiles_{this};
+
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      profile_manager_observation_{this};
 
   // Observes all types of workers for a given profile.
   base::flat_map<Profile*, std::unique_ptr<PerProfileWorkerTaskTracker>>

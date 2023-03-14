@@ -36,6 +36,8 @@ class FakeTrustedVaultClientBackend final : public TrustedVaultClientBackend {
   void CancelDialog(BOOL animated, ProceduralBlock callback) final;
   void ClearLocalData(id<SystemIdentity> identity,
                       base::OnceCallback<void(bool)> callback) final;
+  void GetPublicKeyForIdentity(id<SystemIdentity> identity,
+                               GetPublicKeyCallback callback) final;
 
   // Simulates user cancelling the reauth dialog.
   void SimulateUserCancel();

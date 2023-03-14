@@ -96,7 +96,7 @@ ChurnCohortUseCaseImpl::GenerateImportRequestBody() {
   // Only when we can get the ActivateDate from VPD then set whether the
   // device is first active during the churn cohort period. If we cannot
   // get value from VPD, then we don't set value for this field.
-  if (first_active_week != base::Time::UnixEpoch()) {
+  if (first_active_week != base::Time()) {
     cohort_metadata->set_is_first_active_in_cohort(IsFirstActiveInCohort(
         churn_active_status_ptr_->GetFirstActiveWeek(), GetActiveTs()));
   }
@@ -120,9 +120,11 @@ private_computing::ActiveStatus ChurnCohortUseCaseImpl::GenerateActiveStatus() {
   status.set_use_case(private_computing::PrivateComputingUseCase::
                           CROS_FRESNEL_CHURN_MONTHLY_COHORT);
 
+  // TODO(qianwan) Make sure the date in preserved file is PST.
   std::string last_ping_pt_date =
       FormatPTDateString(GetLastKnownPingTimestamp());
   status.set_last_ping_date(last_ping_pt_date);
+  status.set_churn_active_status(churn_active_status_ptr_->GetValueAsInt());
 
   return status;
 }

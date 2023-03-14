@@ -52,13 +52,6 @@ bool g_default_instance_cleaned_up = false;
 bool CreateUiSettingsComObject(ComPtr<IUISettings2>& ptr) {
   DCHECK(!ptr);
 
-  // This is required setup before using ScopedHString.
-  if (!(base::win::ResolveCoreWinRTDelayload() &&
-        base::win::ScopedHString::ResolveCoreWinRTStringDelayload())) {
-    DLOG(ERROR) << "Failed loading functions from combase.dll";
-    return false;
-  }
-
   // Create the COM object.
   auto hstring = base::win::ScopedHString::Create(
       RuntimeClass_Windows_UI_ViewManagement_UISettings);

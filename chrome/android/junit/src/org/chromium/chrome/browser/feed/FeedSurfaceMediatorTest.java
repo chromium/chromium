@@ -7,10 +7,9 @@ package org.chromium.chrome.browser.feed;
 import static junit.framework.Assert.assertEquals;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -232,10 +231,8 @@ public class FeedSurfaceMediatorTest {
                 createMediator(FeedSurfaceCoordinator.StreamTabId.FOLLOWING, sectionHeaderModel);
         mFeedSurfaceMediator.updateContent();
 
-        verify(mForYouStream, never())
-                .bind(any(), any(), any(), any(), any(), any(), anyInt(), anyBoolean());
-        verify(mFollowingStream, times(1))
-                .bind(any(), any(), any(), any(), any(), any(), anyInt(), anyBoolean());
+        verify(mForYouStream, never()).bind(any(), any(), any(), any(), any(), any(), anyInt());
+        verify(mFollowingStream, times(1)).bind(any(), any(), any(), any(), any(), any(), anyInt());
         assertEquals(FeedSurfaceCoordinator.StreamTabId.FOLLOWING,
                 sectionHeaderModel.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
     }
@@ -250,10 +247,8 @@ public class FeedSurfaceMediatorTest {
                 createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, sectionHeaderModel);
         mFeedSurfaceMediator.updateContent();
 
-        verify(mForYouStream, times(1))
-                .bind(any(), any(), any(), any(), any(), any(), anyInt(), anyBoolean());
-        verify(mFollowingStream, never())
-                .bind(any(), any(), any(), any(), any(), any(), anyInt(), anyBoolean());
+        verify(mForYouStream, times(1)).bind(any(), any(), any(), any(), any(), any(), anyInt());
+        verify(mFollowingStream, never()).bind(any(), any(), any(), any(), any(), any(), anyInt());
         assertEquals(FeedSurfaceCoordinator.StreamTabId.FOR_YOU,
                 sectionHeaderModel.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
         assertEquals(2, mFeedSurfaceMediator.getTabToStreamSizeForTesting());

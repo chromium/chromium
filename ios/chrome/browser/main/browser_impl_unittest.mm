@@ -29,17 +29,21 @@ class BrowserImplTest : public PlatformTest {
 
 // Tests that the accessors return the expected values.
 TEST_F(BrowserImplTest, TestAccessors) {
-  BrowserImpl browser(chrome_browser_state_.get());
+  BrowserImpl browser(chrome_browser_state_.get(), /*inactive=*/false);
   EXPECT_EQ(chrome_browser_state_.get(), browser.GetBrowserState());
   EXPECT_TRUE(browser.GetWebStateList());
   EXPECT_TRUE(browser.GetCommandDispatcher());
+  EXPECT_FALSE(browser.IsInactive());
+
+  BrowserImpl inactive_browser(chrome_browser_state_.get(), /*inactive=*/true);
+  EXPECT_TRUE(inactive_browser.IsInactive());
 }
 
 // Tests that the BrowserDestroyed() callback is sent when a browser is deleted.
 TEST_F(BrowserImplTest, BrowserDestroyed) {
   std::unique_ptr<FakeBrowserObserver> observer;
   {
-    BrowserImpl browser(chrome_browser_state_.get());
+    BrowserImpl browser(chrome_browser_state_.get(), /*inactive=*/false);
     observer = std::make_unique<FakeBrowserObserver>(&browser);
   }
   ASSERT_TRUE(observer);

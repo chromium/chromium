@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+async function triggerDialog() {
+  try {
+    const result = await navigator.credentials.get({
+      identity: {
+        providers: [{
+          configURL: `https://${location.host}/resources/fedcm/fedcm.json`,
+          clientId: '123',
+          nonce: '2',
+        }]
+      }
+    });
+    return result.token;
+  } catch (error) {
+    return error.toString();
+  }
+}
+</script>
+</head>
+<body>
+</body>
+</html>

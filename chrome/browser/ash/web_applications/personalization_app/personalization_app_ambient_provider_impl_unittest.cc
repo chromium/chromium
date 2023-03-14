@@ -64,8 +64,7 @@ class TestAmbientObserver
     temperature_unit_ = temperature_unit;
   }
 
-  void OnGooglePhotosAlbumsPreviewsFetched(
-      const std::vector<GURL>& previews) override {
+  void OnPreviewsFetched(const std::vector<GURL>& previews) override {
     previews_ = std::move(previews);
   }
 
@@ -113,7 +112,7 @@ class TestAmbientObserver
     return ambient_ui_visibility_;
   }
 
-  std::vector<GURL> google_photos_albums_previews() {
+  std::vector<GURL> previews() {
     ambient_observer_receiver_.FlushForTesting();
     return previews_;
   }
@@ -235,9 +234,9 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
     return test_ambient_observer_.visibility();
   }
 
-  std::vector<GURL> ObservedGooglePhotosAlbumsPreviews() {
+  std::vector<GURL> ObservedPreviews() {
     ambient_provider_remote_.FlushForTesting();
-    return test_ambient_observer_.google_photos_albums_previews();
+    return test_ambient_observer_.previews();
   }
 
   absl::optional<ash::AmbientSettings>& settings() {
@@ -274,6 +273,8 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
                         bool selected) {
     ambient_provider_->SetAlbumSelected(id, topic_source, selected);
   }
+
+  void FetchPreviewImages() { ambient_provider_->FetchPreviewImages(); }
 
   ash::AmbientModeTopicSource TopicSource() {
     return ambient_provider_->settings_->topic_source;
@@ -430,13 +431,20 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
                                        ash::AmbientTheme::kFeelTheBreeze, 1);
 }
 
+TEST_F(PersonalizationAppAmbientProviderImplTest, FetchPreviewImages) {
+  SetAmbientObserver();
+  EXPECT_TRUE(ObservedPreviews().empty());
+  FetchPreviewImages();
+  EXPECT_FALSE(ObservedPreviews().empty());
+}
+
 TEST_F(PersonalizationAppAmbientProviderImplTest,
        ShouldCallOnTopicSourceChanged) {
   SetAmbientObserver();
   FetchSettings();
   ReplyFetchSettingsAndAlbums(/*success=*/true);
   EXPECT_EQ(ash::AmbientModeTopicSource::kGooglePhotos, ObservedTopicSource());
-  EXPECT_FALSE(ObservedGooglePhotosAlbumsPreviews().empty());
+  EXPECT_FALSE(ObservedPreviews().empty());
 
   SetTopicSource(ash::AmbientModeTopicSource::kArtGallery);
   EXPECT_EQ(ash::AmbientModeTopicSource::kArtGallery, ObservedTopicSource());
@@ -450,7 +458,7 @@ TEST_F(PersonalizationAppAmbientProviderImplTest, ShouldCallOnAlbumsChanged) {
   // The fake albums are set in FakeAmbientBackendControllerImpl. Hidden setting
   // will be sent to JS side.
   EXPECT_EQ(4u, albums.size());
-  EXPECT_FALSE(ObservedGooglePhotosAlbumsPreviews().empty());
+  EXPECT_FALSE(ObservedPreviews().empty());
 }
 
 TEST_F(PersonalizationAppAmbientProviderImplTest,

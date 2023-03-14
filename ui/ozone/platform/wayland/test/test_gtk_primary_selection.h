@@ -5,12 +5,13 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_GTK_PRIMARY_SELECTION_H_
 #define UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_GTK_PRIMARY_SELECTION_H_
 
+#include <memory>
+
 #include "ui/ozone/platform/wayland/test/test_selection_device_manager.h"
 
 namespace wl {
 
-TestSelectionDeviceManager* CreateTestSelectionManagerGtk();
-
+std::unique_ptr<TestSelectionDeviceManager> CreateTestSelectionManagerGtk();
 }
 
 #endif  // UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_GTK_PRIMARY_SELECTION_H_

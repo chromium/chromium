@@ -1,13 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
+<translation id="1347497506789975534">Näytä tallennetut maksutavat</translation>
 <translation id="1383876407941801731">Haku</translation>
-<translation id="1566281227936819866">Näytetään tallennetut maksutavat</translation>
 <translation id="1717486229951421299">Kosketuksella täytettävien kirjautumistietojen lista avattu puolen näytön korkeudella.</translation>
 <translation id="207576718733492531">Kosketuksella täytettävien kirjautumistietojen lista on suljettu.</translation>
 <translation id="2610239185026711824">Ehdota salasanaa</translation>
 <translation id="2652129567809778422">Valitse salasana</translation>
-<translation id="2803478378562657435">Näytetään tallennetut salasanat ja salasana-asetukset</translation>
 <translation id="2903493209154104877">Osoitteet</translation>
 <translation id="3399357656427473483">Kosketuksella täytettävien kirjautumistietojen lista</translation>
 <translation id="3688051737190211318">Jos <ph name="ORIGIN" /> on luotettava, voit kirjautua sisään tallennetulla salasanalla</translation>
@@ -15,16 +14,14 @@
 <translation id="4660011489602794167">Näytä näppäimistö</translation>
 <translation id="4694050069269396220">Jos <ph name="ORIGIN" /> on luotettava, voit käyttää tallennettua salasanaa toisella sivustolla.</translation>
 <translation id="5016175294846053194">Automaattisen täytön ehdotukset saatavilla näppäimistön yläpuolella</translation>
-<translation id="5088366526685584589">Näytetään tallennetut osoitteet</translation>
 <translation id="5441504010984421144">Kosketuksella täytettävien kirjautumistietojen lista avattu koko näytön korkeudella.</translation>
+<translation id="6296921860874265377">Näytä tallennetut salasanat ja salasana-asetukset</translation>
 <translation id="6393156038355142111">Ehdota vahvaa salasanaa</translation>
 <translation id="6558703547256592471">Yritä käyttää jokaisella sivustolla yksilöllistä salasanaa.</translation>
 <translation id="7029809446516969842">Salasanat</translation>
-<translation id="7299100402441711551">Näytä osoitteet</translation>
-<translation id="7494879913343971937">Näytä salasanat</translation>
 <translation id="7594473730623999723">Pyyhkäise nähdäksesi lisää ehdotuksia</translation>
+<translation id="7873973044507799456">Näytä tallennetut osoitteet</translation>
 <translation id="7992095260806105436">Käytä Chromen automaattisen täytön ehdotusta</translation>
-<translation id="8037472847879765671">Näytä maksutavat</translation>
 <translation id="8507520749471379845">Käytettävissä ovat salasanat</translation>
 <translation id="8705308553596171387">Ei salasanaa</translation>
 <translation id="879180780857354295">Vaihtoehtoiset täyttövalinnat saatavilla näppäimistön yläpuolella</translation>

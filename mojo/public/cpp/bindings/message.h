@@ -412,8 +412,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) PassThroughFilter
 // you need to do asynchronous work before you can determine the legitimacy of
 // a message, use GetBadMessageCallback() and retain its result until you're
 // ready to invoke or discard it.
-COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
-NOT_TAIL_CALLED void ReportBadMessage(base::StringPiece error);
+NOT_TAIL_CALLED COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) void ReportBadMessage(
+    base::StringPiece error);
 
 // Acquires a callback which may be run to report the currently dispatching
 // Message as bad. Note that this is only legal to call from directly within the

@@ -727,6 +727,24 @@ TEST_F(LabelButtonTest, SetEnabledTextColorsResetsToThemeColors) {
   EXPECT_NE(themed_normal_text_color_, button_->label()->GetEnabledColor());
 }
 
+TEST_F(LabelButtonTest, SetEnabledTextColorIds) {
+  ASSERT_NE(ui::kColorLabelForeground, ui::kColorAccent);
+
+  // Initially the test should have the normal colors.
+  EXPECT_EQ(button_->label()->GetEnabledColorId(), ui::kColorLabelForeground);
+
+  // Setting the enabled text colors should replace the label's enabled color.
+  button_->SetEnabledTextColorIds(ui::kColorAccent);
+  EXPECT_EQ(button_->label()->GetEnabledColorId(), ui::kColorAccent);
+
+  // Toggle dark mode. This should not replace the enabled text color as it's
+  // been manually overridden above.
+  UseDarkColors();
+  EXPECT_EQ(button_->label()->GetEnabledColorId(), ui::kColorAccent);
+  EXPECT_EQ(button_->label()->GetEnabledColor(),
+            button_->GetColorProvider()->GetColor(ui::kColorAccent));
+}
+
 TEST_F(LabelButtonTest, ImageOrLabelGetClipped) {
   const std::u16string text(u"abc");
   button_->SetText(text);

@@ -1,13 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
+<translation id="1347497506789975534">Opgeslagen betaalmethoden tonen</translation>
 <translation id="1383876407941801731">Zoeken</translation>
-<translation id="1566281227936819866">Opgeslagen betaalmethoden bekijken</translation>
 <translation id="1717486229951421299">De lijst met gegevens die moeten worden ingevuld als je tikt, is op halve hoogte geopend.</translation>
 <translation id="207576718733492531">De lijst met gegevens die moeten worden ingevuld als je tikt, is gesloten.</translation>
 <translation id="2610239185026711824">Wachtwoord voorstellen</translation>
 <translation id="2652129567809778422">Wachtwoord selecteren</translation>
-<translation id="2803478378562657435">Opgeslagen wachtwoorden en wachtwoordopties bekijken</translation>
 <translation id="2903493209154104877">Adressen</translation>
 <translation id="3399357656427473483">De lijst met gegevens die moeten worden ingevuld als je tikt.</translation>
 <translation id="3688051737190211318">Als je <ph name="ORIGIN" /> vertrouwt, kun je een opgeslagen wachtwoord gebruiken om in te loggen</translation>
@@ -15,16 +14,14 @@
 <translation id="4660011489602794167">Toetsenbord bekijken</translation>
 <translation id="4694050069269396220">Als je <ph name="ORIGIN" /> vertrouwt, kun je een opgeslagen wachtwoord gebruiken voor een andere site.</translation>
 <translation id="5016175294846053194">Suggesties via automatisch invullen zijn beschikbaar boven het toetsenbord</translation>
-<translation id="5088366526685584589">Opgeslagen adressen bekijken</translation>
 <translation id="5441504010984421144">De lijst met gegevens die moeten worden ingevuld als je tikt, is op volledige hoogte geopend.</translation>
+<translation id="6296921860874265377">Opgeslagen wachtwoorden en wachtwoordopties tonen</translation>
 <translation id="6393156038355142111">Sterk wachtwoord voorstellen</translation>
 <translation id="6558703547256592471">Probeer een uniek wachtwoord te gebruiken voor elke site.</translation>
 <translation id="7029809446516969842">Wachtwoorden</translation>
-<translation id="7299100402441711551">Adressen bekijken</translation>
-<translation id="7494879913343971937">Wachtwoorden bekijken</translation>
 <translation id="7594473730623999723">Swipe om meer suggesties te zien</translation>
+<translation id="7873973044507799456">Opgeslagen adressen tonen</translation>
 <translation id="7992095260806105436">Suggesties voor automatisch invullen van Chrome gebruiken</translation>
-<translation id="8037472847879765671">Betaalmethoden bekijken</translation>
 <translation id="8507520749471379845">Wachtwoorden beschikbaar</translation>
 <translation id="8705308553596171387">Geen wachtwoord</translation>
 <translation id="879180780857354295">Alternatieve invulopties beschikbaar boven het toetsenbord</translation>

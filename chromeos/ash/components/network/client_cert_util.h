@@ -176,7 +176,7 @@ void OncToClientCertConfig(::onc::ONCSource onc_source,
 // `resolved_cert`.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 void SetResolvedCertInOnc(const ResolvedCert& resolved_cert,
-                          base::Value& network_config);
+                          base::Value::Dict& network_config);
 
 }  // namespace ash::client_cert
 

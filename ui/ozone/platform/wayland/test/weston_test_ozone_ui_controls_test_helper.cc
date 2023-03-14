@@ -277,10 +277,10 @@ void WestonTestOzoneUIControlsTestHelper::SendTouchEvent(
   // case where multiple actions are requested together?
   ui::EventType event_type;
   switch (action) {
-    case ui_controls::PRESS:
+    case ui_controls::kTouchPress:
       event_type = ui::EventType::ET_TOUCH_PRESSED;
       break;
-    case ui_controls::RELEASE:
+    case ui_controls::kTouchRelease:
       event_type = ui::EventType::ET_TOUCH_RELEASED;
       break;
     default:

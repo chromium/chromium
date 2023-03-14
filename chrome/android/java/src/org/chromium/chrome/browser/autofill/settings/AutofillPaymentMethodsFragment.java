@@ -103,7 +103,7 @@ public class AutofillPaymentMethodsFragment extends PreferenceFragmentCompat
             }
 
             @Override
-            public boolean isPreferenceClickDisabledByPolicy(Preference preference) {
+            public boolean isPreferenceClickDisabled(Preference preference) {
                 return PersonalDataManager.isAutofillCreditCardManaged()
                         && !PersonalDataManager.isAutofillCreditCardEnabled();
             }

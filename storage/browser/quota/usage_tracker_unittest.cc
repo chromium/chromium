@@ -179,7 +179,7 @@ class UsageTrackerTest : public testing::Test {
                                            StorageType::kTemporary,
                                            future.GetCallback());
     QuotaErrorOr<BucketInfo> bucket_result = future.Take();
-    DCHECK(bucket_result.ok());
+    DCHECK(bucket_result.has_value());
     return bucket_result.value().ToBucketLocator();
   }
 

@@ -75,8 +75,9 @@ void AudioFocusRequest::MediaSessionInfoChanged(
 
   // If we have transitioned to/from a suspended state then we should
   // re-enforce audio focus.
-  if (suspended_change)
+  if (suspended_change) {
     owner_->EnforceAudioFocus();
+  }
 }
 
 bool AudioFocusRequest::IsSuspended() const {
@@ -91,6 +92,8 @@ mojom::AudioFocusRequestStatePtr AudioFocusRequest::ToAudioFocusRequestState()
   request->audio_focus_type = audio_focus_type_;
   request->request_id = id_;
   request->source_name = source_name_;
+  request->source_id =
+      identity_.is_empty() ? absl::nullopt : absl::make_optional(identity_);
   return request;
 }
 
@@ -122,8 +125,9 @@ void AudioFocusRequest::Suspend(const EnforcementState& state) {
 void AudioFocusRequest::ReleaseTransientHold() {
   DCHECK(!session_info_->force_duck);
 
-  if (!was_suspended_)
+  if (!was_suspended_) {
     return;
+  }
 
   was_suspended_ = false;
 
@@ -178,16 +182,18 @@ void AudioFocusRequest::SetSessionInfo(
 
   session_info_ = std::move(session_info);
 
-  if (is_controllable_changed)
+  if (is_controllable_changed) {
     owner_->MaybeUpdateActiveSession();
+  }
 }
 
 void AudioFocusRequest::OnConnectionError() {
   // Since we have multiple pathways that can call |OnConnectionError| we
   // should use the |encountered_error_| bit to make sure we abandon focus
   // just the first time.
-  if (encountered_error_)
+  if (encountered_error_) {
     return;
+  }
 
   encountered_error_ = true;
 

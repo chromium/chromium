@@ -37,7 +37,6 @@
 #include "content/common/render_message_filter.mojom.h"
 #include "content/common/renderer.mojom.h"
 #include "content/common/renderer_host.mojom.h"
-#include "content/common/shared_storage_worklet_service.mojom.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/renderer/discardable_memory_utils.h"
 #include "content/renderer/media/codec_factory.h"
@@ -57,6 +56,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
+#include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 #include "third_party/blink/public/platform/web_connection_type.h"
@@ -64,7 +64,6 @@
 #include "ui/gfx/native_widget_types.h"
 
 namespace blink {
-class WebResourceRequestSenderDelegate;
 class WebVideoCaptureImplManager;
 }
 
@@ -176,11 +175,6 @@ class CONTENT_EXPORT RenderThreadImpl
   void RemoveFilter(IPC::MessageFilter* filter) override;
   void AddObserver(RenderThreadObserver* observer) override;
   void RemoveObserver(RenderThreadObserver* observer) override;
-  void SetResourceRequestSenderDelegate(
-      blink::WebResourceRequestSenderDelegate* delegate) override;
-  blink::WebResourceRequestSenderDelegate* GetResourceRequestSenderDelegate() {
-    return resource_request_sender_delegate_;
-  }
   int PostTaskToAllWebWorkers(base::RepeatingClosure closure) override;
   base::WaitableEvent* GetShutdownEvent() override;
   int32_t GetClientId() override;
@@ -452,8 +446,10 @@ class CONTENT_EXPORT RenderThreadImpl
 #endif
   void SetIsCrossOriginIsolated(bool value) override;
   void SetIsIsolatedContext(bool value) override;
+#if BUILDFLAG(IS_ANDROID)
   void SetOsSupportForAttributionReporting(
       attribution_reporting::mojom::OsSupport os_support) override;
+#endif
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
 
@@ -596,10 +592,6 @@ class CONTENT_EXPORT RenderThreadImpl
   // this member.
   mojo::Receiver<viz::mojom::CompositingModeWatcher>
       compositing_mode_watcher_receiver_{this};
-
-  // Delegate is expected to live as long as requests may be sent.
-  blink::WebResourceRequestSenderDelegate* resource_request_sender_delegate_ =
-      nullptr;
 
   // Tracks the time the run loop started for this thread.
   base::TimeTicks run_loop_start_time_;

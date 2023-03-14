@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
+#include "chrome/common/accessibility/read_anything_constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
-namespace prefs {
-
 #if !BUILDFLAG(IS_ANDROID)
+
+namespace prefs {
 // String to represent the user's preferred font name for the read anything UI.
 const char kAccessibilityReadAnythingFontName[] =
     "settings.a11y.read_anything.font_name";
@@ -36,7 +36,7 @@ const char kAccessibilityReadAnythingLetterSpacing[] =
 void RegisterReadAnythingProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterStringPref(prefs::kAccessibilityReadAnythingFontName,
-                               kReadAnythingDefaultFontName,
+                               string_constants::kReadAnythingDefaultFontName,
                                user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterDoublePref(prefs::kAccessibilityReadAnythingFontScale,
                                kReadAnythingDefaultFontScale,

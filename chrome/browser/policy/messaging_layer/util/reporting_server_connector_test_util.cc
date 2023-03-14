@@ -5,8 +5,10 @@
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector_test_util.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/memory/singleton.h"
+#include "chrome/browser/policy/messaging_layer/upload/encrypted_reporting_client.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -48,5 +50,11 @@ ReportingServerConnector::TestEnvironment::~TestEnvironment() {
 ReportingServerConnector::TestEnvironment::client() const {
   return reinterpret_cast<::policy::MockCloudPolicyClient*>(
       GetInstance()->core_->client());
+}
+
+void ReportingServerConnector::TestEnvironment::SetEncryptedReportingClient(
+    std::unique_ptr<EncryptedReportingClient> encrypted_reporting_client) {
+  GetInstance()->encrypted_reporting_client_ =
+      std::move(encrypted_reporting_client);
 }
 }  // namespace reporting

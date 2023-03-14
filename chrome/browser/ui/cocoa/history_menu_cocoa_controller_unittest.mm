@@ -50,7 +50,10 @@ class HistoryMenuCocoaControllerTest : public BrowserWithTestWindowTest {
     [controller() initTest];
   }
 
-  void TearDown() override { bridge_.reset(); }
+  void TearDown() override {
+    bridge_.reset();
+    BrowserWithTestWindowTest::TearDown();
+  }
 
   void CreateItems(NSMenu* menu) {
     auto item = std::make_unique<HistoryMenuBridge::HistoryItem>();

@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/path_service.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -1229,6 +1230,27 @@ class PermissionsSecurityModelHTTPS
     CheckPermissionState(rfh, expected_notifications, expected, expected);
   }
 
+  void RequestPermissionAndGrant(content::RenderFrameHost* rfh,
+                                 std::string request_script) {
+    auto* manager = permissions::PermissionRequestManager::FromWebContents(
+        GetWebContents());
+    permissions::PermissionRequestObserver observer(GetWebContents());
+
+    EXPECT_FALSE(manager->IsRequestInProgress());
+
+    EXPECT_TRUE(content::ExecJs(
+        rfh, request_script,
+        content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+    // Wait until a permission request is shown.
+    observer.Wait();
+
+    EXPECT_TRUE(manager->IsRequestInProgress());
+    EXPECT_TRUE(observer.request_shown());
+
+    manager->Accept();
+  }
+
  private:
   content::ContentMockCertVerifier mock_cert_verifier_;
   net::EmbeddedTestServer https_test_server_;
@@ -1270,6 +1292,80 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelHTTPS,
 
   CheckPermissionState(main_rfh, /*notifications_allowed=*/true,
                        /*geolocation_allowed=*/true, /*camera_allowed=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelHTTPS,
+                       TopFramePermissionRequest) {
+  base::HistogramTester histograms;
+  content::WebContents* web_contents = GetWebContents();
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents, GetMainFrameURL()));
+
+  RequestPermissionAndGrant(web_contents->GetPrimaryMainFrame(),
+                            kRequestGeolocation);
+
+  histograms.ExpectUniqueSample("Permissions.Request.SameOrigin.MainFrame",
+                                blink::PermissionType::GEOLOCATION, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelHTTPS,
+                       SubFrameSameOriginPermissionRequest) {
+  base::HistogramTester histograms;
+  content::WebContents* web_contents = GetWebContents();
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents, GetMainFrameURL()));
+
+  content::RenderFrameHost* sameorigin_subframe = CreateIframe(
+      web_contents->GetPrimaryMainFrame(), GetMainFrameURL(), kIframePolicy);
+  ASSERT_TRUE(sameorigin_subframe);
+
+  RequestPermissionAndGrant(sameorigin_subframe, kRequestGeolocation);
+
+  histograms.ExpectUniqueSample("Permissions.Request.SameOrigin.SubFrame",
+                                blink::PermissionType::GEOLOCATION, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelHTTPS,
+                       SubFrameCrossOriginPermissionRequest) {
+  base::HistogramTester histograms;
+  content::WebContents* web_contents = GetWebContents();
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents, GetMainFrameURL()));
+
+  content::RenderFrameHost* crossorigin_subframe = CreateIframe(
+      web_contents->GetPrimaryMainFrame(), GetChildFrameURL(), kIframePolicy);
+  ASSERT_TRUE(crossorigin_subframe);
+
+  RequestPermissionAndGrant(crossorigin_subframe, kRequestGeolocation);
+
+  histograms.ExpectUniqueSample("Permissions.Request.CrossOrigin",
+                                blink::PermissionType::GEOLOCATION, 1);
+}
+
+// Tests multiple layers of embedded iframes a.com(b.com(a.com)).
+IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelHTTPS,
+                       DeepSubFrameCrossOriginPermissionRequest) {
+  base::HistogramTester histograms;
+  content::WebContents* web_contents = GetWebContents();
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents, GetMainFrameURL()));
+
+  content::RenderFrameHost* crossorigin_subframe = CreateIframe(
+      web_contents->GetPrimaryMainFrame(), GetChildFrameURL(), kIframePolicy);
+  ASSERT_TRUE(crossorigin_subframe);
+
+  content::RenderFrameHost* crossorigin_sub_subframe =
+      CreateIframe(crossorigin_subframe, GetMainFrameURL(), kIframePolicy);
+  ASSERT_TRUE(crossorigin_sub_subframe);
+
+  EXPECT_TRUE(
+      crossorigin_sub_subframe->GetLastCommittedOrigin().IsSameOriginWith(
+          web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin()));
+
+  RequestPermissionAndGrant(crossorigin_sub_subframe, kRequestGeolocation);
+
+  histograms.ExpectUniqueSample("Permissions.Request.CrossOrigin",
+                                blink::PermissionType::GEOLOCATION, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(

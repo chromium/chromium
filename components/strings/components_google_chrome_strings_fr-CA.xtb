@@ -40,4 +40,6 @@
 <translation id="8187289872471304532">Sélectionnez
           Applications &gt; Préférences Système &gt; Réseau &gt; Avancé... &gt; Proxys et 
           désélectionnez tous les serveurs mandataires qui ont été sélectionnés.</translation>
+<translation id="8232971017369963250">Chrome est rendu possible par le projet de logiciel libre <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
+<translation id="8279509328145658601">Chrome est également rendu possible par d'autres <ph name="BEGIN_LINK_OSS" />logiciels libres<ph name="END_LINK_OSS" />.</translation>
 </translationbundle>

@@ -21,14 +21,14 @@
 namespace reporting {
 namespace {
 
-using ::ash::cros_healthd::mojom::CrosHealthdAudioObserver;
+using ::ash::cros_healthd::mojom::EventObserver;
 
 class FakeCrosHealthdAudioObserver
-    : public CrosHealthdAudioObserver,
-      public MojoServiceEventsObserverBase<CrosHealthdAudioObserver> {
+    : public EventObserver,
+      public MojoServiceEventsObserverBase<EventObserver> {
  public:
   FakeCrosHealthdAudioObserver()
-      : MojoServiceEventsObserverBase<CrosHealthdAudioObserver>(this) {}
+      : MojoServiceEventsObserverBase<EventObserver>(this) {}
 
   FakeCrosHealthdAudioObserver(const FakeCrosHealthdAudioObserver&) = delete;
   FakeCrosHealthdAudioObserver& operator=(const FakeCrosHealthdAudioObserver&) =
@@ -36,13 +36,11 @@ class FakeCrosHealthdAudioObserver
 
   ~FakeCrosHealthdAudioObserver() override = default;
 
-  void OnUnderrun() override {
+  void OnEvent(const ash::cros_healthd::mojom::EventInfoPtr info) override {
     MetricData metric_data;
     metric_data.mutable_telemetry_data();
     OnEventObserved(std::move(metric_data));
   }
-
-  void OnSevereUnderrun() override {}
 
   void FlushForTesting() { receiver_.FlushForTesting(); }
 
@@ -50,7 +48,8 @@ class FakeCrosHealthdAudioObserver
   void AddObserver() override {
     ash::cros_healthd::ServiceConnection::GetInstance()
         ->GetEventService()
-        ->AddAudioObserver(BindNewPipeAndPassRemote());
+        ->AddEventObserver(ash::cros_healthd::mojom::EventCategoryEnum::kAudio,
+                           BindNewPipeAndPassRemote());
   }
 };
 
@@ -69,6 +68,14 @@ class MojoServiceEventsObserverBaseTest : public ::testing::Test {
 
   void TearDown() override { ::ash::cros_healthd::FakeCrosHealthd::Shutdown(); }
 
+  void EmitAudioUnderrunEventForTesting() {
+    ::ash::cros_healthd::mojom::AudioEventInfo info;
+    info.state = ::ash::cros_healthd::mojom::AudioEventInfo::State::kUnderrun;
+    ::ash::cros_healthd::FakeCrosHealthd::Get()->EmitEventForCategory(
+        ::ash::cros_healthd::mojom::EventCategoryEnum::kAudio,
+        ::ash::cros_healthd::mojom::EventInfo::NewAudioEventInfo(info.Clone()));
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
   ::ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
@@ -86,8 +93,7 @@ TEST_F(MojoServiceEventsObserverBaseTest, Default) {
     base::RunLoop run_loop;
 
     audio_observer.SetReportingEnabled(true);
-    ::ash::cros_healthd::FakeCrosHealthd::Get()
-        ->EmitAudioUnderrunEventForTesting();
+    EmitAudioUnderrunEventForTesting();
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
@@ -106,8 +112,7 @@ TEST_F(MojoServiceEventsObserverBaseTest, Default) {
   {
     base::RunLoop run_loop;
 
-    ::ash::cros_healthd::FakeCrosHealthd::Get()
-        ->EmitAudioUnderrunEventForTesting();
+    EmitAudioUnderrunEventForTesting();
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
@@ -121,8 +126,7 @@ TEST_F(MojoServiceEventsObserverBaseTest, Default) {
     base::RunLoop run_loop;
 
     audio_observer.SetReportingEnabled(false);
-    ::ash::cros_healthd::FakeCrosHealthd::Get()
-        ->EmitAudioUnderrunEventForTesting();
+    EmitAudioUnderrunEventForTesting();
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();

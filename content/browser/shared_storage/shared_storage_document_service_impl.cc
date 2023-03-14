@@ -184,23 +184,17 @@ void SharedStorageDocumentServiceImpl::RunURLSelectionOperationOnWorklet(
     return;
   }
 
-  if (!static_cast<PageImpl&>(
-           render_frame_host().GetOutermostMainFrame()->GetPage())
-           .IsSelectURLAllowed(render_frame_host().GetLastCommittedOrigin())) {
-    std::move(callback).Run(
-        /*success=*/false,
-        /*error_message=*/kSharedStorageSelectURLLimitReachedMessage,
-        /*result_config=*/absl::nullopt);
-    return;
-  }
-
-  int fenced_frame_depth = base::checked_cast<int>(
+  size_t shared_storage_fenced_frame_root_count = 0u;
+  size_t fenced_frame_depth =
       static_cast<RenderFrameHostImpl&>(render_frame_host())
           .frame_tree_node()
-          ->GetFencedFrameDepth());
-  int max_allowed_fenced_frame_depth =
+          ->GetFencedFrameDepth(shared_storage_fenced_frame_root_count);
+
+  DCHECK_LE(shared_storage_fenced_frame_root_count, fenced_frame_depth);
+
+  size_t max_allowed_fenced_frame_depth = base::checked_cast<size_t>(
       blink::features::kSharedStorageMaxAllowedFencedFrameDepthForSelectURL
-          .Get();
+          .Get());
 
   if (fenced_frame_depth > max_allowed_fenced_frame_depth) {
     std::move(callback).Run(
@@ -211,6 +205,18 @@ void SharedStorageDocumentServiceImpl::RunURLSelectionOperationOnWorklet(
              base::NumberToString(fenced_frame_depth),
              ") exceeding the maximum allowed number (",
              base::NumberToString(max_allowed_fenced_frame_depth), ")."}),
+        /*result_config=*/absl::nullopt);
+    return;
+  }
+
+  // TODO(crbug.com/1347953): Remove this check once we put permissions inside
+  // FencedFrameConfig.
+  if (shared_storage_fenced_frame_root_count < fenced_frame_depth) {
+    std::move(callback).Run(
+        /*success=*/false,
+        /*error_message=*/
+        "selectURL() is not allowed in a fenced frame that did not originate "
+        "from shared storage.",
         /*result_config=*/absl::nullopt);
     return;
   }

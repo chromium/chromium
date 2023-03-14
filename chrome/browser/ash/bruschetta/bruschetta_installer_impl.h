@@ -10,8 +10,8 @@
 #include "base/values.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
-#include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "components/download/public/background_service/download_metadata.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -67,6 +67,9 @@ class BruschettaInstallerImpl : public BruschettaInstaller {
   void CreateVmDisk();
   void OnCreateVmDisk(
       absl::optional<vm_tools::concierge::CreateDiskImageResponse> result);
+  void InstallPflash();
+  void OnInstallPflash(
+      absl::optional<vm_tools::concierge::InstallPflashResponse> result);
   void StartVm();
   void OnStartVm(RunningVmPolicy launch_policy,
                  absl::optional<vm_tools::concierge::StartVmResponse> result);

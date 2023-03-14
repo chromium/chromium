@@ -70,8 +70,11 @@ bool SkiaOutputDeviceWebView::Reshape(
   return !!sk_surface_;
 }
 
-void SkiaOutputDeviceWebView::SwapBuffers(BufferPresentedCallback feedback,
-                                          OutputSurfaceFrame frame) {
+void SkiaOutputDeviceWebView::Present(
+    const absl::optional<gfx::Rect>& update_rect,
+    BufferPresentedCallback feedback,
+    OutputSurfaceFrame frame) {
+  DCHECK(!update_rect);
   StartSwapBuffers({});
 
   gfx::Size surface_size =

@@ -6,6 +6,8 @@
 class DictationTestSupport {
   constructor() {
     this.dictation_ = accessibilityCommon.dictation_;
+    this.speechRecognitionPrivateStart_ = chrome.speechRecognitionPrivate.start;
+    this.speechRecognitionPrivateStartCalls_ = 0;
     this.notifyCcTests_();
   }
 
@@ -165,6 +167,36 @@ class DictationTestSupport {
       inputController.onSelectionChangedForTesting_ = onSelectionChanged;
     });
 
+    this.notifyCcTests_();
+  }
+
+  /**
+   * Installs a fake chrome.speechRecognitionPrivate.start() API that counts how
+   * many times it was called.
+   */
+  installFakeSpeechRecognitionPrivateStart() {
+    chrome.speechRecognitionPrivate.start = () => {
+      this.speechRecognitionPrivateStartCalls_ += 1;
+    };
+    this.notifyCcTests_();
+  }
+
+  /**
+   * Ensures that no calls to chrome.speechRecognitionPrivate.start() were made.
+   */
+  ensureNoSpeechRecognitionPrivateStartCalls() {
+    if (this.speechRecognitionPrivateStartCalls_ === 0) {
+      this.notifyCcTests_();
+    }
+  }
+
+  /**
+   * Restores the chrome.speechRecognitionPrivate.start() API to its production
+   * implementation.
+   */
+  restoreSpeechRecognitionPrivateStart() {
+    this.speechRecognitionPrivateStartCalls_ = 0;
+    chrome.speechRecognitionPrivate.start = this.speechRecognitionPrivateStart_;
     this.notifyCcTests_();
   }
 }

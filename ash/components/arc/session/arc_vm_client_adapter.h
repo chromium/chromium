@@ -51,6 +51,7 @@ constexpr size_t k32bitVmRamMaxMib = 3328;
 // The "_2d" in job names below corresponds to "-". Upstart escapes characters
 // that aren't valid in D-Bus object paths with underscore followed by its
 // ascii code in hex. So "arc_2dcreate_2ddata" becomes "arc-create-data".
+constexpr char kArcVmDataMigratorJobName[] = "arcvm_2ddata_2dmigrator";
 constexpr char kArcVmMediaSharingServicesJobName[] =
     "arcvm_2dmedia_2dsharing_2dservices";
 constexpr const char kArcVmPerBoardFeaturesJobName[] =
@@ -65,10 +66,9 @@ constexpr char kArcVmPostVmStartServicesJobName[] =
 // List of Upstart jobs that can outlive ARC sessions (e.g. after Chrome crash,
 // Chrome restart on a feature flag change) and thus should be stopped at the
 // beginning of the ARCVM boot sequence.
-constexpr std::array<const char*, 4> kArcVmUpstartJobsToBeStoppedOnRestart = {
-    kArcVmPreLoginServicesJobName,
-    kArcVmPostLoginServicesJobName,
-    kArcVmPostVmStartServicesJobName,
+constexpr std::array<const char*, 5> kArcVmUpstartJobsToBeStoppedOnRestart = {
+    kArcVmDataMigratorJobName,         kArcVmPreLoginServicesJobName,
+    kArcVmPostLoginServicesJobName,    kArcVmPostVmStartServicesJobName,
     kArcVmMediaSharingServicesJobName,
 };
 

@@ -10,14 +10,6 @@
 // well as feature.h, simple_feature.h, and feature_provider.h.
 
 {
-  "do_not_sync": {
-    "channel": "stable",
-    "component_extensions_auto_granted": false,
-    "extension_types": ["extension"],
-    "allowlist": [
-      "226CF815E39A363090A1E547D53063472B8279FA"   // Media Router Stable
-    ]
-  },
   "zoom_without_bubble": {
     "channel": "stable",
     "extension_types": ["extension"],

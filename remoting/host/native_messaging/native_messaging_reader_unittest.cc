@@ -31,7 +31,7 @@ class NativeMessagingReaderTest : public testing::Test {
 
   // MessageCallback passed to the Reader. Stores |message| so it can be
   // verified by tests.
-  void OnMessage(std::unique_ptr<base::Value> message);
+  void OnMessage(base::Value message);
 
   // Closure passed to the Reader, called back when the reader detects an error.
   void OnError();
@@ -47,7 +47,7 @@ class NativeMessagingReaderTest : public testing::Test {
   base::File read_file_;
   base::File write_file_;
   bool on_error_signaled_ = false;
-  std::unique_ptr<base::Value> message_;
+  absl::optional<base::Value> message_;
 
  private:
   // MessageLoop declared here, since the NativeMessageReader ctor requires a
@@ -79,8 +79,7 @@ void NativeMessagingReaderTest::RunAndWaitForOperationComplete() {
   run_loop_ = std::make_unique<base::RunLoop>();
 }
 
-void NativeMessagingReaderTest::OnMessage(
-    std::unique_ptr<base::Value> message) {
+void NativeMessagingReaderTest::OnMessage(base::Value message) {
   message_ = std::move(message);
   run_loop_->Quit();
 }

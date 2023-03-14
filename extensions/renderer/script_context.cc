@@ -17,10 +17,10 @@
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/content_script_injection_url_getter.h"
-#include "extensions/common/context_data.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_urls.h"
+#include "extensions/common/frame_context_data.h"
 #include "extensions/common/manifest_handlers/sandboxed_page_info.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/renderer/dispatcher.h"
@@ -28,6 +28,7 @@
 #include "extensions/renderer/v8_helpers.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
+#include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -42,18 +43,26 @@ namespace extensions {
 
 namespace {
 
-class RendererContextData : public ContextData {
+class RendererFrameContextData : public FrameContextData {
  public:
-  explicit RendererContextData(const blink::WebLocalFrame* frame)
+  explicit RendererFrameContextData(const blink::WebLocalFrame* frame)
       : frame_(frame) {}
 
-  ~RendererContextData() override = default;
+  ~RendererFrameContextData() override = default;
 
   std::unique_ptr<ContextData> Clone() const override {
-    return std::make_unique<RendererContextData>(frame_);
+    return CloneFrameContextData();
   }
 
-  std::unique_ptr<ContextData> GetLocalParentOrOpener() const override {
+  std::unique_ptr<FrameContextData> CloneFrameContextData() const override {
+    return std::make_unique<RendererFrameContextData>(frame_);
+  }
+
+  bool IsIsolatedApplication() const override {
+    return blink::IsIsolatedContext();
+  }
+
+  std::unique_ptr<FrameContextData> GetLocalParentOrOpener() const override {
     blink::WebFrame* parent_or_opener = nullptr;
     if (frame_->Parent())
       parent_or_opener = frame_->Parent();
@@ -67,7 +76,7 @@ class RendererContextData : public ContextData {
     if (local_parent_or_opener->GetDocument().IsNull())
       return nullptr;
 
-    return std::make_unique<RendererContextData>(local_parent_or_opener);
+    return std::make_unique<RendererFrameContextData>(local_parent_or_opener);
   }
 
   GURL GetUrl() const override {
@@ -86,14 +95,14 @@ class RendererContextData : public ContextData {
     return frame_->GetSecurityOrigin().CanAccess(target);
   }
 
-  bool CanAccess(const ContextData& target) const override {
+  bool CanAccess(const FrameContextData& target) const override {
     // It is important that below `web_security_origin` wraps the security
     // origin of the `target_frame` (rather than a new origin created via
     // url::Origin round-trip - such an origin wouldn't be 100% equivalent -
     // e.g. `disallowdocumentaccess` information might be lost).  FWIW, this
     // scenario is execised by ScriptContextTest.GetEffectiveDocumentURL.
     const blink::WebLocalFrame* target_frame =
-        static_cast<const RendererContextData&>(target).frame_;
+        static_cast<const RendererFrameContextData&>(target).frame_;
     blink::WebSecurityOrigin web_security_origin =
         target_frame->GetDocument().GetSecurityOrigin();
 
@@ -114,7 +123,7 @@ GURL GetEffectiveDocumentURL(
     MatchOriginAsFallbackBehavior match_origin_as_fallback,
     bool allow_inaccessible_parents) {
   return ContentScriptInjectionUrlGetter::Get(
-      RendererContextData(frame), document_url, match_origin_as_fallback,
+      RendererFrameContextData(frame), document_url, match_origin_as_fallback,
       allow_inaccessible_parents);
 }
 
@@ -343,7 +352,8 @@ Feature::Availability ScriptContext::GetAvailability(
   }
   return ExtensionAPI::GetSharedInstance()->IsAvailable(
       api_name, extension, context_type_, url(), check_alias,
-      kRendererProfileId);
+      kRendererProfileId,
+      std::make_unique<RendererFrameContextData>(web_frame()));
 }
 
 std::string ScriptContext::GetContextTypeDescription() const {

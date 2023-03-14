@@ -5,14 +5,13 @@
 #ifndef COMPONENTS_UNEXPORTABLE_KEYS_UNEXPORTABLE_KEY_ID_H_
 #define COMPONENTS_UNEXPORTABLE_KEYS_UNEXPORTABLE_KEY_ID_H_
 
-#include "base/token.h"
-#include "base/types/strong_alias.h"
+#include "base/types/token_type.h"
 
 namespace unexportable_keys {
 
 // Strongly typed id for identifying unexportable signing keys.
-using UnexportableKeyId =
-    base::StrongAlias<class UnexportableKeyIdTag, base::Token>;
+// Default constructor creates a new, unique key ID.
+using UnexportableKeyId = base::TokenType<class UnexportableKeyIdMarker>;
 
 }  // namespace unexportable_keys
 

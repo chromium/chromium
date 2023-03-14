@@ -93,6 +93,10 @@ class StoredPage : public SiteInstanceGroup::Observer {
   RenderFrameProxyHostMap TakeProxyHosts();
   RenderViewHostImplSafeRefSet TakeRenderViewHosts();
 
+  void SetViewTransitionState(
+      absl::optional<blink::ViewTransitionState> view_transition_state);
+  absl::optional<blink::ViewTransitionState> TakeViewTransitionState();
+
  private:
   void ClearAllObservers();
 
@@ -124,6 +128,10 @@ class StoredPage : public SiteInstanceGroup::Observer {
   blink::mojom::PageRestoreParamsPtr page_restore_params_;
 
   raw_ptr<Delegate> delegate_ = nullptr;
+
+  // View transition state to use when the page is activated, either via BFCache
+  // activation or prerender activation.
+  absl::optional<blink::ViewTransitionState> view_transition_state_;
 };
 
 }  // namespace content

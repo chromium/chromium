@@ -20,13 +20,13 @@ namespace operations {
 namespace {
 
 // Convert |input| into |output|. If parsing fails, then returns false.
-bool ConvertRequestValueToEntryList(std::unique_ptr<RequestValue> value,
+bool ConvertRequestValueToEntryList(const RequestValue& value,
                                     storage::AsyncFileUtil::EntryList* output) {
   using extensions::api::file_system_provider::EntryMetadata;
   using extensions::api::file_system_provider_internal::
       ReadDirectoryRequestedSuccess::Params;
 
-  const Params* params = value->read_directory_success_params();
+  const Params* params = value.read_directory_success_params();
   if (!params)
     return false;
 
@@ -84,11 +84,11 @@ bool ReadDirectory::Execute(int request_id) {
 }
 
 void ReadDirectory::OnSuccess(int /* request_id */,
-                              std::unique_ptr<RequestValue> result,
+                              const RequestValue& result,
                               bool has_more) {
   storage::AsyncFileUtil::EntryList entry_list;
   const bool convert_result =
-      ConvertRequestValueToEntryList(std::move(result), &entry_list);
+      ConvertRequestValueToEntryList(result, &entry_list);
 
   if (!convert_result) {
     LOG(ERROR)
@@ -103,7 +103,7 @@ void ReadDirectory::OnSuccess(int /* request_id */,
 }
 
 void ReadDirectory::OnError(int /* request_id */,
-                            std::unique_ptr<RequestValue> /* result */,
+                            const RequestValue& /* result */,
                             base::File::Error error) {
   callback_.Run(
       error, storage::AsyncFileUtil::EntryList(), false /* has_more */);

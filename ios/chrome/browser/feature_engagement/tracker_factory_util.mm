@@ -41,7 +41,7 @@ std::unique_ptr<KeyedService> CreateFeatureEngagementTracker(
       browser_state->GetProtoDatabaseProvider();
 
   return base::WrapUnique(feature_engagement::Tracker::Create(
-      storage_dir, background_task_runner, db_provider));
+      storage_dir, background_task_runner, db_provider, nullptr));
 }
 
 }  // namespace feature_engagement

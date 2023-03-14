@@ -17,6 +17,7 @@ class GURL;
 
 namespace net {
 
+class IPAddress;
 class IPEndPoint;
 struct TransportInfo;
 
@@ -27,6 +28,15 @@ namespace network {
 // Returns a human-readable string representing `space`, suitable for logging.
 base::StringPiece COMPONENT_EXPORT(NETWORK_CPP)
     IPAddressSpaceToStringPiece(mojom::IPAddressSpace space);
+
+// Returns the `IPAddressSpace` to which `address` belongs.
+// Returns `kUnknown` for invalid IP addresses.
+//
+// WARNING: Most callers will want to use `TransportInfoToIPAddressSpace()`
+// below instead, as this does not properly account for proxies nor for
+// command-line overrides.
+mojom::IPAddressSpace COMPONENT_EXPORT(NETWORK_CPP)
+    IPAddressToIPAddressSpace(const net::IPAddress& address);
 
 // Returns the `IPAddressSpace` to which the endpoint of `transport` belongs.
 //

@@ -5,6 +5,9 @@
 #include "components/segmentation_platform/internal/stats.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "components/segmentation_platform/internal/metadata/metadata_utils.h"
+#include "components/segmentation_platform/internal/metadata/metadata_writer.h"
+#include "components/segmentation_platform/internal/post_processor/post_processing_test_utils.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
@@ -97,6 +100,76 @@ TEST(StatsTest, AdaptiveToolbarSegmentSwitch) {
               1)));
   tester.ExpectTotalCount(
       "SegmentationPlatform.AdaptiveToolbar.SegmentSelection.Computed", 3);
+}
+
+TEST(StatsTest, SegmentSwitchWithMultiOutput) {
+  std::string computed_histogram(
+      "SegmentationPlatform.PowerUser.PostProcessing.TopLabel.Computed");
+  std::string switched_histogram(
+      "SegmentationPlatform.PowerUser.PostProcessing.TopLabel.Switched");
+
+  base::HistogramTester tester;
+  Config config;
+  config.segmentation_key = kPowerUserKey;
+  config.segmentation_uma_name =
+      SegmentationKeyToUmaName(config.segmentation_key);
+
+  auto result_low = metadata_utils::CreatePredictionResult(
+      /*model_scores=*/{0.2},
+      test_utils::GetTestOutputConfigForBinnedClassifier(),
+      /*timestamp=*/base::Time::Now());
+
+  auto result_medium = metadata_utils::CreatePredictionResult(
+      /*model_scores=*/{0.3},
+      test_utils::GetTestOutputConfigForBinnedClassifier(),
+      /*timestamp=*/base::Time::Now());
+
+  auto result_high = metadata_utils::CreatePredictionResult(
+      /*model_scores=*/{0.8},
+      test_utils::GetTestOutputConfigForBinnedClassifier(),
+      /*timestamp=*/base::Time::Now());
+
+  auto result_underflow = metadata_utils::CreatePredictionResult(
+      /*model_scores=*/{0.1},
+      test_utils::GetTestOutputConfigForBinnedClassifier(),
+      /*timestamp=*/base::Time::Now());
+
+  // Low -> Low. No switched histograms.
+  RecordSegmentSelectionUpdated(config, result_low, result_low);
+  EXPECT_THAT(tester.GetAllSamples(switched_histogram), testing::ElementsAre());
+
+  // Verify all possible combinations in a 3-label classifier.
+  // none -> label 0 : -200
+  // none -> label 1 : -199
+  // none -> label 2 : -198
+  // label 0 -> label 1 : 1
+  // label 0 -> label 2 : 2
+  // label 1 -> label 0 : 100
+  // label 1 -> label 2 : 102
+  // label 2 -> label 0 : 200
+  // label 2 -> label 1 : 201
+  RecordSegmentSelectionUpdated(config, absl::nullopt, result_low);
+  RecordSegmentSelectionUpdated(config, absl::nullopt, result_medium);
+  RecordSegmentSelectionUpdated(config, absl::nullopt, result_high);
+  RecordSegmentSelectionUpdated(config, result_low, result_medium);
+  RecordSegmentSelectionUpdated(config, result_low, result_high);
+  RecordSegmentSelectionUpdated(config, result_medium, result_low);
+  RecordSegmentSelectionUpdated(config, result_medium, result_high);
+  RecordSegmentSelectionUpdated(config, result_high, result_low);
+  RecordSegmentSelectionUpdated(config, result_high, result_medium);
+
+  tester.ExpectTotalCount(computed_histogram, 10);
+  EXPECT_THAT(tester.GetAllSamples(computed_histogram),
+              testing::ElementsAre(base::Bucket(0, 4), base::Bucket(1, 3),
+                                   base::Bucket(2, 3)));
+
+  tester.ExpectTotalCount(switched_histogram, 9);
+  EXPECT_THAT(tester.GetAllSamples(switched_histogram),
+              testing::ElementsAre(base::Bucket(-200, 1), base::Bucket(-199, 1),
+                                   base::Bucket(-198, 1), base::Bucket(1, 1),
+                                   base::Bucket(2, 1), base::Bucket(100, 1),
+                                   base::Bucket(102, 1), base::Bucket(200, 1),
+                                   base::Bucket(201, 1)));
 }
 
 TEST(StatsTest, BooleanSegmentSwitch) {
@@ -196,6 +269,42 @@ TEST(StatsTest, RecordModelExecutionResult) {
       proto::SegmentationModelMetadata::RETURN_TYPE_INTEGER);
   EXPECT_EQ(1, tester.GetBucketCount(
                    "SegmentationPlatform.ModelExecution.Result.Share", 75));
+}
+
+TEST(StatsTest, RecordModelExecutionResultForMultiOutput) {
+  base::HistogramTester tester;
+  auto output_config = test_utils::GetTestOutputConfigForMultiClassClassifier(
+      /*top_k-outputs=*/2,
+      /*threshold=*/0.8);
+
+  // Multi-class classifier should be recorded with results multiplied by 100.
+  stats::RecordModelExecutionResult(
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_ADAPTIVE_TOOLBAR,
+      {0.4, 0.9, 0.15}, output_config);
+  EXPECT_EQ(
+      1,
+      tester.GetBucketCount(
+          "SegmentationPlatform.ModelExecution.Result0.AdaptiveToolbar", 40));
+  EXPECT_EQ(
+      1,
+      tester.GetBucketCount(
+          "SegmentationPlatform.ModelExecution.Result1.AdaptiveToolbar", 90));
+  EXPECT_EQ(
+      1,
+      tester.GetBucketCount(
+          "SegmentationPlatform.ModelExecution.Result2.AdaptiveToolbar", 15));
+
+  // Binned classifier is recorded as is.
+  proto::SegmentationModelMetadata model_metadata;
+  MetadataWriter writer(&model_metadata);
+  writer.AddOutputConfigForBinnedClassifier({{0.2, "low"}, {0.3, "high"}},
+                                            "none");
+  stats::RecordModelExecutionResult(SegmentId::POWER_USER_SEGMENT, {5},
+                                    model_metadata.output_config());
+  EXPECT_EQ(
+      1,
+      tester.GetBucketCount(
+          "SegmentationPlatform.ModelExecution.Result0.PowerUserSegment", 5));
 }
 
 }  // namespace stats

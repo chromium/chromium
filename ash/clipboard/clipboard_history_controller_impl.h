@@ -95,11 +95,10 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
                 ui::MenuSourceType source_type,
                 crosapi::mojom::ClipboardHistoryControllerShowSource
                     show_source) override;
+  void GetHistoryValues(GetHistoryValuesCallback callback) const override;
 
   // Returns bounds for the contextual menu in screen coordinates.
   gfx::Rect GetMenuBoundsInScreenForTest() const;
-
-  void GetHistoryValuesForTest(GetHistoryValuesCallback callback) const;
 
   // Used to delay the post-encoding step of `GetHistoryValues()` until the
   // completion of some work that needs to happen after history values have been
@@ -154,8 +153,6 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   bool CanShowMenu() const override;
   void OnScreenshotNotificationCreated() override;
   std::unique_ptr<ScopedClipboardHistoryPause> CreateScopedPause() override;
-  void GetHistoryValues(const std::set<std::string>& item_id_filter,
-                        GetHistoryValuesCallback callback) const override;
   std::vector<std::string> GetHistoryItemIds() const override;
   bool PasteClipboardItemById(const std::string& item_id) override;
   bool DeleteClipboardItemById(const std::string& item_id) override;
@@ -173,12 +170,10 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
 
   // Invoked by `GetHistoryValues()` once all clipboard instances with images
   // have been encoded into PNGs. Calls `callback` with the clipboard history
-  // list, which tracks what has been copied to the clipboard. Only the items
-  // listed in `item_id_filter` are returned. If `item_id_filter` is empty, then
-  // all items in the history are returned. If clipboard history is disabled in
-  // the current mode, `callback` will be called with an empty history list.
+  // list, which tracks what has been copied to the clipboard. If clipboard
+  // history is disabled in the current mode, `callback` will be called with an
+  // empty history list.
   void GetHistoryValuesWithEncodedPNGs(
-      const std::set<std::string>& item_id_filter,
       GetHistoryValuesCallback callback,
       std::unique_ptr<std::map<base::UnguessableToken, std::vector<uint8_t>>>
           encoded_pngs);

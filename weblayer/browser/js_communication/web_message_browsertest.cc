@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "weblayer/public/js_communication/web_message.h"
 #include "weblayer/public/js_communication/web_message_host.h"
@@ -167,14 +168,9 @@ class WebMessageTestWithBfCache : public WebLayerBrowserTest {
   // WebLayerBrowserTest:
   void SetUp() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kBackForwardCache, {{}}},
-         {features::kBackForwardCacheTimeToLiveControl,
-          {// Set a very long TTL before expiration (longer than the test
-           // timeout) so tests that are expecting deletion don't pass when
-           // they shouldn't.
-           {"time_to_live_seconds", "3600"}}}},
-        // Allow BackForwardCache for all devices regardless of their memory.
-        {features::kBackForwardCacheMemoryControls});
+        content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(
+            /*ignore_outstanding_network_request=*/false),
+        content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
     WebLayerBrowserTest::SetUp();
   }
 

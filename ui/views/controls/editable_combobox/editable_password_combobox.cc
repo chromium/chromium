@@ -85,16 +85,15 @@ EditablePasswordCombobox::EditablePasswordCombobox(
     std::unique_ptr<ui::ComboboxModel> combobox_model,
     int text_context,
     int text_style,
-    bool display_arrow)
+    bool display_arrow,
+    Button::PressedCallback eye_callback)
     : EditableCombobox(std::move(combobox_model),
                        /*filter_on_edit=*/false,
                        /*show_on_empty=*/true,
                        text_context,
                        text_style,
                        display_arrow) {
-  eye_ = AddControlElement(std::make_unique<Eye>(base::BindRepeating(
-      &EditablePasswordCombobox::RequestTogglePasswordVisibility,
-      base::Unretained(this))));
+  eye_ = AddControlElement(std::make_unique<Eye>(std::move(eye_callback)));
   GetTextfield().SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
   SetMenuDecorationStrategy(
       std::make_unique<PasswordMenuDecorationStrategy>(this));
@@ -122,19 +121,6 @@ void EditablePasswordCombobox::RevealPasswords(bool revealed) {
 
 bool EditablePasswordCombobox::ArePasswordsRevealed() const {
   return are_passwords_revealed_;
-}
-
-void EditablePasswordCombobox::SetIsPasswordRevealPermittedCheck(
-    IsPasswordRevealPermittedCheck check) {
-  reveal_permitted_check_ = std::move(check);
-}
-
-void EditablePasswordCombobox::RequestTogglePasswordVisibility() {
-  if (!are_passwords_revealed_ && reveal_permitted_check_ &&
-      !reveal_permitted_check_.Run()) {
-    return;
-  }
-  RevealPasswords(!are_passwords_revealed_);
 }
 
 BEGIN_METADATA(EditablePasswordCombobox, View)

@@ -403,9 +403,9 @@ bool IsHtmlFile(const base::FilePath& path);
 bool IsOfficeFile(const base::FilePath& path);
 
 // Updates the default task for each of the office file types.
-void SetWordFileHandler(Profile* profile, TaskDescriptor& task);
-void SetExcelFileHandler(Profile* profile, TaskDescriptor& task);
-void SetPowerPointFileHandler(Profile* profile, TaskDescriptor& task);
+void SetWordFileHandler(Profile* profile, const TaskDescriptor& task);
+void SetExcelFileHandler(Profile* profile, const TaskDescriptor& task);
+void SetPowerPointFileHandler(Profile* profile, const TaskDescriptor& task);
 
 // TODO(petermarshall): Move these to a new file office_file_tasks.cc/h
 // Updates the default task for each of the office file types to a Files
@@ -430,6 +430,12 @@ bool OfficeSetupComplete(Profile* profile);
 void SetAlwaysMoveOfficeFiles(Profile* profile, bool complete = true);
 // Whether we should always move office files without first asking the user.
 bool AlwaysMoveOfficeFiles(Profile* profile);
+
+// Sets the user preference storing whether the move confirmation dialog has
+// been shown before.
+void SetOfficeMoveConfirmationShown(Profile* profile, bool complete);
+// Whether the move confirmation dialog has been shown before.
+bool OfficeMoveConfirmationShown(Profile* profile);
 
 // Sets the preference `office.file_moved_one_drive`.
 void SetOfficeFileMovedToOneDrive(Profile* profile, base::Time moved);

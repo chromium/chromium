@@ -6,7 +6,7 @@
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {SafeBrowsingSetting, SettingsSecurityPageElement} from 'chrome://settings/lazy_load.js';
-import {MetricsBrowserProxyImpl, PrivacyElementInteractions, PrivacyPageBrowserProxyImpl, Router, routes, SafeBrowsingInteractions, SecureDnsMode} from 'chrome://settings/settings.js';
+import {MetricsBrowserProxyImpl, PrivacyElementInteractions, PrivacyPageBrowserProxyImpl, Router, routes, SafeBrowsingInteractions, SecureDnsMode, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 // <if expr="chrome_root_store_supported">
 import {OpenWindowProxyImpl} from 'chrome://settings/settings.js';
 // </if>
@@ -36,6 +36,7 @@ function pagePrefs() {
         value: SafeBrowsingSetting.STANDARD,
       },
       password_leak_detection: {value: false},
+      https_first_mode_enabled: {value: false},
     },
     dns_over_https:
         {mode: {value: SecureDnsMode.AUTOMATIC}, templates: {value: ''}},
@@ -126,10 +127,34 @@ suite('SecurityPage', function() {
   test('httpsOnlyModeToggle', function() {
     const httpsOnlyModeToggle =
         page.shadowRoot!.querySelector<HTMLElement>('#httpsOnlyModeToggle')!;
-    assertFalse(page.prefs.https_only_mode_enabled.value);
+    assertFalse(page.prefs.generated.https_first_mode_enabled.value);
+
     httpsOnlyModeToggle.click();
-    assertTrue(page.prefs.https_only_mode_enabled.value);
+    assertTrue(page.prefs.generated.https_first_mode_enabled.value);
   });
+
+  test('HttpsOnlyModeSettingSubLabel', function() {
+    const toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        '#httpsOnlyModeToggle');
+    assertTrue(!!toggle);
+    const defaultSubLabel = loadTimeData.getString('httpsOnlyModeDescription');
+    assertEquals(defaultSubLabel, toggle.subLabel);
+
+    page.set('prefs.https_only_mode_enabled.value', false);
+    page.set(
+        'prefs.generated.https_first_mode_enabled.userControlDisabled', true);
+    flush();
+    const lockedSubLabel =
+        loadTimeData.getString('httpsOnlyModeDescriptionAdvancedProtection');
+    assertEquals(lockedSubLabel, toggle.subLabel);
+
+    page.set('prefs.https_only_mode_enabled.value', true);
+    page.set(
+        'prefs.generated.https_first_mode_enabled.userControlDisabled', true);
+    flush();
+    assertEquals(lockedSubLabel, toggle.subLabel);
+  });
+
 });
 
 suite('SecurityPage_FlagsDisabled', function() {
@@ -660,19 +685,40 @@ suite('SecurityPage_SafeBrowsing', function() {
             'recordSafeBrowsingInteractionHistogram'));
   });
 
-  test('enhancedProtectionAutoExpanded', function() {
+  test('standardProtectionExpandedIfNoQueryParam', function() {
     // Standard protection should be pre-expanded if there is no param.
     Router.getInstance().navigateTo(routes.SECURITY);
+    assertEquals(
+        page.prefs.generated.safe_browsing.value, SafeBrowsingSetting.STANDARD);
     assertFalse(page.$.safeBrowsingEnhanced.expanded);
     assertTrue(page.$.safeBrowsingStandard.expanded);
+  });
+
+  test('enhancedProtectionExpandedIfEsbCollapseDisabled', function() {
     // Enhanced protection should be pre-expanded if the param is set to
-    // enhanced.
+    // enhanced and enableEsbCollapse is false.
+    loadTimeData.overrideValues({enableEsbCollapse: false});
     Router.getInstance().navigateTo(
         routes.SECURITY,
         /* dynamicParams= */ new URLSearchParams('q=enhanced'));
     assertEquals(
-        SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
+        page.prefs.generated.safe_browsing.value, SafeBrowsingSetting.STANDARD);
     assertTrue(page.$.safeBrowsingEnhanced.expanded);
     assertFalse(page.$.safeBrowsingStandard.expanded);
   });
+
+  test('enhancedProtectionCollapsedIfEsbCollapseEnabled', function() {
+    // Enhanced protection should be collapsed if the param is set to
+    // enhanced and enableEsbCollapse is true.
+    loadTimeData.overrideValues({enableEsbCollapse: true});
+
+    Router.getInstance().navigateTo(
+        routes.SECURITY,
+        /* dynamicParams= */ new URLSearchParams('q=enhanced'));
+    assertEquals(
+        page.prefs.generated.safe_browsing.value, SafeBrowsingSetting.STANDARD);
+    assertFalse(page.$.safeBrowsingEnhanced.expanded);
+    assertFalse(page.$.safeBrowsingStandard.expanded);
+  });
+
 });

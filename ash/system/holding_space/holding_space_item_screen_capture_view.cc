@@ -8,6 +8,7 @@
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/rounded_image_view.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/holding_space/holding_space_util.h"
@@ -31,10 +32,40 @@ namespace {
 // Appearance.
 constexpr int kBorderThickness = 1;
 constexpr gfx::Insets kCheckmarkAndPrimaryActionContainerPadding(4);
-constexpr gfx::Size kPlayIconSize(32, 32);
+constexpr gfx::Size kOverlayIconSize(32, 32);
 constexpr gfx::Size kPrimaryActionSize(24, 24);
 
+// Helpers ---------------------------------------------------------------------
+
+absl::optional<const gfx::VectorIcon*> GetOverlayIcon(
+    const HoldingSpaceItem* item) {
+  DCHECK(HoldingSpaceItem::IsScreenCapture(item->type()));
+  switch (item->type()) {
+    case HoldingSpaceItem::Type::kScreenRecording:
+      return &vector_icons::kPlayArrowIcon;
+    case HoldingSpaceItem::Type::kScreenRecordingGif:
+      return &kGifIcon;
+    case HoldingSpaceItem::Type::kArcDownload:
+    case HoldingSpaceItem::Type::kDiagnosticsLog:
+    case HoldingSpaceItem::Type::kDriveSuggestion:
+    case HoldingSpaceItem::Type::kDownload:
+    case HoldingSpaceItem::Type::kLacrosDownload:
+    case HoldingSpaceItem::Type::kLocalSuggestion:
+    case HoldingSpaceItem::Type::kNearbyShare:
+    case HoldingSpaceItem::Type::kPhoneHubCameraRoll:
+    case HoldingSpaceItem::Type::kPinnedFile:
+    case HoldingSpaceItem::Type::kPrintedPdf:
+    case HoldingSpaceItem::Type::kScan:
+      NOTREACHED();
+      [[fallthrough]];
+    case HoldingSpaceItem::Type::kScreenshot:
+      return absl::nullopt;
+  }
+}
+
 }  // namespace
+
+// HoldingSpaceItemScreenCaptureView -------------------------------------------
 
 HoldingSpaceItemScreenCaptureView::HoldingSpaceItemScreenCaptureView(
     HoldingSpaceViewDelegate* delegate,
@@ -51,7 +82,8 @@ HoldingSpaceItemScreenCaptureView::HoldingSpaceItemScreenCaptureView(
                     .SetID(kHoldingSpaceItemImageId)
                     .SetCornerRadius(kHoldingSpaceCornerRadius));
 
-  if (item->type() == HoldingSpaceItem::Type::kScreenRecording) {
+  if (absl::optional<const gfx::VectorIcon*> overlay_icon =
+          GetOverlayIcon(item)) {
     builder.AddChild(
         views::Builder<views::BoxLayoutView>()
             .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
@@ -60,12 +92,12 @@ HoldingSpaceItemScreenCaptureView::HoldingSpaceItemScreenCaptureView(
             .SetFocusBehavior(views::View::FocusBehavior::NEVER)
             .AddChild(
                 views::Builder<views::ImageView>()
-                    .SetID(kHoldingSpaceScreenCapturePlayIconId)
-                    .SetPreferredSize(kPlayIconSize)
+                    .SetID(kHoldingSpaceScreenCaptureOverlayIconId)
+                    .SetPreferredSize(kOverlayIconSize)
                     .SetImageSize(
                         gfx::Size(kHoldingSpaceIconSize, kHoldingSpaceIconSize))
                     .SetImage(ui::ImageModel::FromVectorIcon(
-                        vector_icons::kPlayArrowIcon, kColorAshButtonIconColor,
+                        *overlay_icon.value(), kColorAshButtonIconColor,
                         kHoldingSpaceIconSize))
                     .SetBackground(holding_space_util::CreateCircleBackground(
                         kColorAshShieldAndBase80))));

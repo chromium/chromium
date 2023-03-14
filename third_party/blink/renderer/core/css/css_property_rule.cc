@@ -41,7 +41,7 @@ String CSSPropertyRule::cssText() const {
     builder.Append("; ");
   }
   if (const CSSValue* initial = property_rule_->GetInitialValue()) {
-    builder.Append("initial-value:");
+    builder.Append("initial-value: ");
     builder.Append(initial->CssText());
     builder.Append("; ");
   }

@@ -14,13 +14,13 @@
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/button/button.h"
 
-class GlassBrowserFrameView;
+class BrowserFrameViewWin;
 
 class WindowsCaptionButton : public views::Button {
  public:
   METADATA_HEADER(WindowsCaptionButton);
   WindowsCaptionButton(PressedCallback callback,
-                       GlassBrowserFrameView* frame_view,
+                       BrowserFrameViewWin* frame_view,
                        ViewID button_type,
                        const std::u16string& accessible_name);
   WindowsCaptionButton(const WindowsCaptionButton&) = delete;
@@ -52,7 +52,7 @@ class WindowsCaptionButton : public views::Button {
   // Paints the minimize/maximize/restore/close icon for the button.
   void PaintSymbol(gfx::Canvas* canvas);
 
-  raw_ptr<GlassBrowserFrameView> frame_view_;
+  raw_ptr<BrowserFrameViewWin> frame_view_;
   std::unique_ptr<Windows10IconPainter> icon_painter_;
   ViewID button_type_;
 };

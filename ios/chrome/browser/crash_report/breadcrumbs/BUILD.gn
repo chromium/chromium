@@ -69,7 +69,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/web_content_area",
     "//ios/chrome/browser/overlays/test",
-    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/infobars/test",
     "//ios/chrome/browser/url:constants",
     "//ios/chrome/browser/web_state_list",

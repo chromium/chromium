@@ -27,6 +27,11 @@ TestPageSpecificContentSettingsDelegate::GetSettingsMap() {
   return settings_map_.get();
 }
 
+std::unique_ptr<BrowsingDataModel::Delegate>
+TestPageSpecificContentSettingsDelegate::CreateBrowsingDataModelDelegate() {
+  return nullptr;
+}
+
 void TestPageSpecificContentSettingsDelegate::
     SetDefaultRendererContentSettingRules(content::RenderFrameHost* rfh,
                                           RendererContentSettingRules* rules) {}

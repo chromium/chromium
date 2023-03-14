@@ -4,10 +4,14 @@
 
 #include "media/base/mac/color_space_util_mac.h"
 
+#include <CoreFoundation/CoreFoundation.h>
+#include <CoreVideo/CoreVideo.h>
 #include <simd/simd.h>
 #include <vector>
 
 #include "base/mac/foundation_util.h"
+#include "base/mac/scoped_cftyperef.h"
+#include "base/memory/scoped_policy.h"
 #include "base/no_destructor.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 
@@ -58,7 +62,7 @@ gfx::ColorSpace::PrimaryID GetCoreVideoPrimary(CFTypeRef primaries_untyped) {
         supported_primaries.push_back(
             {kCVImageBufferColorPrimaries_SMPTE_C,
              kCMFormatDescriptionColorPrimaries_SMPTE_C,
-             gfx::ColorSpace::PrimaryID::SMPTE240M});
+             gfx::ColorSpace::PrimaryID::SMPTE170M});
         supported_primaries.push_back(
             {kCVImageBufferColorPrimaries_ITU_R_2020,
              kCMFormatDescriptionColorPrimaries_ITU_R_2020,
@@ -246,14 +250,40 @@ gfx::ColorSpace GetCoreVideoColorSpaceInternal(CFTypeRef primaries_untyped,
 }  // anonymous namespace
 
 gfx::ColorSpace GetImageBufferColorSpace(CVImageBufferRef image_buffer) {
-  return GetCoreVideoColorSpaceInternal(
-      CVBufferGetAttachment(image_buffer, kCVImageBufferColorPrimariesKey,
-                            nullptr),
-      CVBufferGetAttachment(image_buffer, kCVImageBufferTransferFunctionKey,
-                            nullptr),
-      CVBufferGetAttachment(image_buffer, kCVImageBufferGammaLevelKey, nullptr),
-      CVBufferGetAttachment(image_buffer, kCVImageBufferYCbCrMatrixKey,
-                            nullptr));
+  base::ScopedCFTypeRef<CFTypeRef> color_primaries;
+  base::ScopedCFTypeRef<CFTypeRef> transfer_function;
+  base::ScopedCFTypeRef<CFTypeRef> gamma_level;
+  base::ScopedCFTypeRef<CFTypeRef> ycbcr_matrix;
+
+  if (@available(macOS 12, *)) {
+    color_primaries.reset(CVBufferCopyAttachment(
+        image_buffer, kCVImageBufferColorPrimariesKey, nullptr));
+    transfer_function.reset(CVBufferCopyAttachment(
+        image_buffer, kCVImageBufferTransferFunctionKey, nullptr));
+    gamma_level.reset(CVBufferCopyAttachment(
+        image_buffer, kCVImageBufferGammaLevelKey, nullptr));
+    ycbcr_matrix.reset(CVBufferCopyAttachment(
+        image_buffer, kCVImageBufferYCbCrMatrixKey, nullptr));
+  } else {
+    color_primaries.reset(
+        CVBufferGetAttachment(image_buffer, kCVImageBufferColorPrimariesKey,
+                              nullptr),
+        base::scoped_policy::RETAIN);
+    transfer_function.reset(
+        CVBufferGetAttachment(image_buffer, kCVImageBufferTransferFunctionKey,
+                              nullptr),
+        base::scoped_policy::RETAIN);
+    gamma_level.reset(CVBufferGetAttachment(
+                          image_buffer, kCVImageBufferGammaLevelKey, nullptr),
+                      base::scoped_policy::RETAIN);
+    ycbcr_matrix.reset(CVBufferGetAttachment(
+                           image_buffer, kCVImageBufferYCbCrMatrixKey, nullptr),
+                       base::scoped_policy::RETAIN);
+  }
+
+  return GetCoreVideoColorSpaceInternal(color_primaries.get(),
+                                        transfer_function.get(),
+                                        gamma_level.get(), ycbcr_matrix.get());
 }
 
 gfx::ColorSpace GetFormatDescriptionColorSpace(

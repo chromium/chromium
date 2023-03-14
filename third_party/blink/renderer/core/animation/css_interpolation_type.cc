@@ -123,8 +123,7 @@ class RevertChecker : public CSSInterpolationType::ConversionChecker {
 
   RevertChecker(const PropertyHandle& property_handle,
                 const CSSValue* resolved_value)
-      : property_handle_(property_handle), resolved_value_(resolved_value) {
-  }
+      : property_handle_(property_handle), resolved_value_(resolved_value) {}
 
  private:
   bool IsValid(const InterpolationEnvironment& environment,
@@ -336,24 +335,8 @@ void CSSInterpolationType::ApplyCustomPropertyValue(
   const CSSValue* css_value =
       CreateCSSValue(interpolable_value, non_interpolable_value, state);
   DCHECK(!css_value->IsCustomPropertyDeclaration());
-
-  // TODO(alancutter): Defer tokenization of the CSSValue until it is needed.
-  String string_value = css_value->CssText();
-  CSSTokenizer tokenizer(string_value);
-  const auto tokens = tokenizer.TokenizeToEOF();
-  bool is_animation_tainted = true;
-  bool needs_variable_resolution = false;
-  scoped_refptr<CSSVariableData> variable_data = CSSVariableData::Create(
-      {CSSParserTokenRange(tokens), StringView(string_value)},
-      is_animation_tainted, needs_variable_resolution);
-  const PropertyHandle property = GetProperty();
-
-  // TODO(andruud): Avoid making the CSSCustomPropertyDeclaration by allowing
-  // any CSSValue in CustomProperty::ApplyValue.
-  const CSSValue* value = MakeGarbageCollected<CSSCustomPropertyDeclaration>(
-      std::move(variable_data), /* parser_context */ nullptr);
   StyleBuilder::ApplyProperty(GetProperty().GetCSSPropertyName(), state,
-                              *value);
+                              *css_value, StyleBuilder::ValueMode::kAnimated);
 }
 
 }  // namespace blink

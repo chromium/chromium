@@ -49,7 +49,8 @@ ScriptPromise HTMLVideoElementPictureInPicture::requestPictureInPicture(
   if (exception_state.HadException())
     return ScriptPromise();
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
   PictureInPictureController::From(element.GetDocument())

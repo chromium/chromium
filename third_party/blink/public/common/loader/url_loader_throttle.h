@@ -57,6 +57,13 @@ class BLINK_COMMON_EXPORT URLLoaderThrottle {
     virtual void CancelWithError(int error_code,
                                  base::StringPiece custom_reason = "") = 0;
 
+    // Cancels the resource load with the specified error code and an optional,
+    // application-defined reason description with optional extended_reason().
+    virtual void CancelWithExtendedError(int error_code,
+                                         int extended_reason_code,
+                                         base::StringPiece custom_reason = "") {
+    }
+
     // Resumes the deferred resource load. It is a no-op if the resource load is
     // not deferred or has already been canceled.
     virtual void Resume() = 0;

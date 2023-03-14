@@ -20,6 +20,7 @@
 namespace blink {
 
 class ExceptionState;
+class MLActivation;
 class MLContext;
 class MLClampOptions;
 class MLConv2dOptions;
@@ -27,6 +28,7 @@ class MLGemmOptions;
 class MLGraph;
 class MLPool2dOptions;
 class MLResample2dOptions;
+class MLTransposeOptions;
 class MLOperand;
 class MLOperandDescriptor;
 class ScriptPromiseResolver;
@@ -78,7 +80,11 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* clamp(const MLOperand* input,
                    const MLClampOptions* options,
                    ExceptionState& exception_state);
-  MLOperator* clamp(const MLClampOptions* options,
+  MLActivation* clamp(const MLClampOptions* options,
+                      ExceptionState& exception_state);
+
+  MLOperand* concat(const HeapVector<Member<MLOperand>>& inputs,
+                    const uint32_t axis,
                     ExceptionState& exception_state);
 
   MLOperand* conv2d(const MLOperand* input,
@@ -112,7 +118,7 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                   ExceptionState& exception_state);
 
   MLOperand* hardSwish(const MLOperand* input, ExceptionState& exception_state);
-  MLOperator* hardSwish(ExceptionState& exception_state);
+  MLActivation* hardSwish(ExceptionState& exception_state);
 
   // Pooling operations
   MLOperand* averagePool2d(const MLOperand* input,
@@ -123,7 +129,7 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                        ExceptionState& exception_state);
 
   MLOperand* relu(const MLOperand* input, ExceptionState& exception_state);
-  MLOperator* relu(ExceptionState& exception_state);
+  MLActivation* relu(ExceptionState& exception_state);
 
   MLOperand* reshape(const MLOperand* input,
                      const Vector<absl::optional<uint32_t>>& new_shape,
@@ -134,9 +140,13 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                         ExceptionState& exception_state);
 
   MLOperand* sigmoid(const MLOperand* input, ExceptionState& exception_state);
-  MLOperator* sigmoid(ExceptionState& exception_state);
+  MLActivation* sigmoid(ExceptionState& exception_state);
 
   MLOperand* softmax(const MLOperand* input, ExceptionState& exception_state);
+
+  MLOperand* transpose(const MLOperand* input,
+                       const MLTransposeOptions* options,
+                       ExceptionState& exception_state);
 
   ScriptPromise build(ScriptState* script_state,
                       const MLNamedOperands& outputs,

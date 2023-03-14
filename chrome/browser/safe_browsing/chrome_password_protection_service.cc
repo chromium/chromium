@@ -1226,12 +1226,23 @@ void ChromePasswordProtectionService::OnWarningTriggerChanged() {
   password_manager::PasswordReuseManager* reuse_manager =
       GetPasswordReuseManager();
 
+  if (!reuse_manager) {
+    return;
+  }
+
   reuse_manager->ClearAllNonGmailPasswordHash();
   reuse_manager->ClearAllEnterprisePasswordHash();
 }
 
 void ChromePasswordProtectionService::OnEnterprisePasswordUrlChanged() {
-  GetPasswordReuseManager()->ScheduleEnterprisePasswordURLUpdate();
+  password_manager::PasswordReuseManager* reuse_manager =
+      GetPasswordReuseManager();
+
+  if (!reuse_manager) {
+    return;
+  }
+
+  reuse_manager->ScheduleEnterprisePasswordURLUpdate();
 }
 
 bool ChromePasswordProtectionService::CanShowInterstitial(

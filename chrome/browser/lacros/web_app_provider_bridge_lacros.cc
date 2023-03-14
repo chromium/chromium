@@ -9,6 +9,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/office_web_app/office_web_app.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -75,6 +76,15 @@ void WebAppProviderBridgeLacros::InstallMicrosoft365(
                      std::move(callback)));
 }
 
+void WebAppProviderBridgeLacros::GetSubAppIds(const web_app::AppId& app_id,
+                                              GetSubAppIdsCallback callback) {
+  g_browser_process->profile_manager()->LoadProfileByPath(
+      ProfileManager::GetPrimaryUserProfilePath(),
+      /*incognito=*/false,
+      base::BindOnce(&WebAppProviderBridgeLacros::GetSubAppIdsImpl, app_id,
+                     std::move(callback)));
+}
+
 // static
 void WebAppProviderBridgeLacros::WebAppInstalledInArcImpl(
     mojom::ArcWebAppInstallInfoPtr arc_install_info,
@@ -123,6 +133,24 @@ void WebAppProviderBridgeLacros::InstallMicrosoft365Impl(
     InstallMicrosoft365Callback callback,
     Profile* profile) {
   chromeos::InstallMicrosoft365(profile, std::move(callback));
+}
+
+// static
+void WebAppProviderBridgeLacros::GetSubAppIdsImpl(const web_app::AppId& app_id,
+                                                  GetSubAppIdsCallback callback,
+                                                  Profile* profile) {
+  DCHECK(profile);
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
+
+  provider->scheduler().ScheduleCallbackWithLock<web_app::AppLock>(
+      "WebAppServiceAsh::GetSubApps",
+      std::make_unique<web_app::AppLockDescription>(app_id),
+      base::BindOnce(
+          [](web_app::AppId app_id, web_app::AppLock& lock) {
+            return lock.registrar().GetAllSubAppIds(app_id);
+          },
+          app_id)
+          .Then(std::move(callback)));
 }
 
 }  // namespace crosapi

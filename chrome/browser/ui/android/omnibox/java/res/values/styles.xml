@@ -31,11 +31,11 @@ found in the LICENSE file.
         <item name="android:layout_height">match_parent</item>
     </style>
 
-    <style name="OmniboxPedalChipThemeOverlay">
-        <item name="chipStyle">@style/OmniboxPedalChip</item>
+    <style name="OmniboxActionChipThemeOverlay">
+        <item name="chipStyle">@style/OmniboxActionChip</item>
     </style>
 
-    <style name="OmniboxPedalChip" parent="SuggestionChip">
+    <style name="OmniboxActionChip" parent="SuggestionChip">
         <item name="iconWidth">@dimen/omnibox_pedal_suggestion_icon_size</item>
         <item name="iconHeight">@dimen/omnibox_pedal_suggestion_icon_size</item>
         <item name="allowMultipleLines">true</item>
@@ -43,4 +43,12 @@ found in the LICENSE file.
         <item name="textAlignStart">true</item>
     </style>
 
+    <style name="OmniboxIncognitoActionChipThemeOverlay">
+        <item name="chipStyle">@style/OmniboxIncognitoActionChip</item>
+    </style>
+
+    <style name="OmniboxIncognitoActionChip" parent="OmniboxActionChip">
+        <item name="chipColor">@color/default_bg_color_dark</item>
+        <item name="primaryTextAppearance">@style/TextAppearance.TextSmall.Primary.Baseline.Light</item>
+    </style>
 </resources>

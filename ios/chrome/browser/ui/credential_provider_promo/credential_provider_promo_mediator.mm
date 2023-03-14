@@ -6,14 +6,16 @@
 
 #import "base/files/file_path.h"
 #import "base/path_service.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/credential_provider_promo/features.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
-#import "ios/chrome/browser/ui/commands/credential_provider_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_consumer.h"
 #import "ios/chrome/grit/ios_google_chrome_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -34,9 +36,6 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
 // The PrefService used by this mediator.
 @property(nonatomic, assign) PrefService* prefService;
 
-// Local state is used to check promo trigger requirements.
-@property(nonatomic, assign) PrefService* localState;
-
 // Indicates whether the 'first step' or 'learn more' version of the promo is
 // being presented.
 @property(nonatomic, assign) CredentialProviderPromoContext promoContext;
@@ -49,12 +48,10 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
 @implementation CredentialProviderPromoMediator
 
 - (instancetype)initWithPromosManager:(PromosManager*)promosManager
-                          prefService:(PrefService*)prefService
-                           localState:(PrefService*)localState {
+                          prefService:(PrefService*)prefService {
   if (self = [super init]) {
     _prefService = prefService;
     _promosManager = promosManager;
-    _localState = localState;
   }
   return self;
 }
@@ -64,61 +61,87 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
                                         promoSeen:
                                             (BOOL)promoSeenInCurrentSession {
   BOOL impressionLimitMet =
-      self.localState->GetBoolean(
+      GetApplicationContext()->GetLocalState()->GetBoolean(
           prefs::kIosCredentialProviderPromoStopPromo) ||
       (promoSeenInCurrentSession &&
        trigger != CredentialProviderPromoTrigger::RemindMeLater);
+  BOOL policyEnabled = GetApplicationContext()->GetLocalState()->GetBoolean(
+      prefs::kIosCredentialProviderPromoPolicyEnabled);
   return !impressionLimitMet && IsCredentialProviderExtensionPromoEnabled() &&
+         policyEnabled &&
          !password_manager_util::IsCredentialProviderEnabledOnStartup(
              self.prefService);
 }
 
 - (void)configureConsumerWithTrigger:(CredentialProviderPromoTrigger)trigger
                              context:(CredentialProviderPromoContext)context {
-  CredentialProviderPromoSource source;
+  IOSCredentialProviderPromoSource source;
   self.promoContext = context;
   switch (trigger) {
     case CredentialProviderPromoTrigger::PasswordCopied:
-      source = CredentialProviderPromoSource::kPasswordCopied;
+      source = IOSCredentialProviderPromoSource::kPasswordCopied;
       [self setAnimation];
       break;
     case CredentialProviderPromoTrigger::PasswordSaved:
-      source = CredentialProviderPromoSource::kPasswordSaved;
+      source = IOSCredentialProviderPromoSource::kPasswordSaved;
       if (self.promoContext == CredentialProviderPromoContext::kLearnMore) {
         [self setAnimation];
       }
       break;
     case CredentialProviderPromoTrigger::SuccessfulLoginUsingExistingPassword:
-      source = CredentialProviderPromoSource::kAutofillUsed;
+      source = IOSCredentialProviderPromoSource::kAutofillUsed;
       if (self.promoContext == CredentialProviderPromoContext::kLearnMore) {
         [self setAnimation];
       }
       break;
     case CredentialProviderPromoTrigger::RemindMeLater:
-      // TODO(crbug.com/1392116): show the same promo that was shown when
-      // 'remind me later' was selected
-      source = CredentialProviderPromoSource::kRemindLaterSelected;
+      source = [self promoOriginalSource];
+
+      // Reset the state. This case `RemindMeLater` implicitly means it is
+      // presented from and would be deregistered by the Promo Manager
+      // internally.
+      GetApplicationContext()->GetLocalState()->SetBoolean(
+          prefs::kIosCredentialProviderPromoHasRegisteredWithPromoManager,
+          false);
+
       [self setAnimation];
       break;
   }
 
   [self setTextAndImageWithSource:source];
+
+  // Set the promo source in the Prefs. Skip for 'RemindMeLater' triggers as
+  // source is already present.
+  if (trigger != CredentialProviderPromoTrigger::RemindMeLater) {
+    GetApplicationContext()->GetLocalState()->SetInteger(
+        prefs::kIosCredentialProviderPromoSource, static_cast<int>(source));
+  }
 }
 
 - (void)registerPromoWithPromosManager {
-  if (!self.promosManager || !IsFullscreenPromosManagerEnabled()) {
+  if (!self.promosManager) {
     return;
   }
-  // TODO(crbug.com/1392116): register the promo with a 24 hour delay.
   self.promosManager->RegisterPromoForSingleDisplay(
-      promos_manager::Promo::CredentialProviderExtension);
+      promos_manager::Promo::CredentialProviderExtension, base::Hours(24));
+
+  GetApplicationContext()->GetLocalState()->SetBoolean(
+      prefs::kIosCredentialProviderPromoHasRegisteredWithPromoManager, true);
+}
+
+- (IOSCredentialProviderPromoSource)promoOriginalSource {
+  int sourceAsInteger = GetApplicationContext()->GetLocalState()->GetInteger(
+      prefs::kIosCredentialProviderPromoSource);
+  DCHECK(sourceAsInteger <=
+         static_cast<int>(IOSCredentialProviderPromoSource::kMaxValue));
+  return static_cast<IOSCredentialProviderPromoSource>(sourceAsInteger);
 }
 
 #pragma mark - Private
 
 // Sets the animation to the consumer that corresponds to the value of
 // promoContext. Depending on the value of promoContext, either the 'first step'
-// or 'learn more' animation path is set.
+// or 'learn more' animation name is set.
 - (void)setAnimation {
   DCHECK(self.consumer);
   NSString* animationName;
@@ -127,14 +150,12 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
   } else {
     animationName = kLearnMoreAnimation;
   }
-  NSString* path = [[NSBundle mainBundle] pathForResource:animationName
-                                                   ofType:@"json"];
-  [self.consumer setAnimation:path];
+  [self.consumer setAnimation:animationName];
 }
 
 // Sets the text and image to the consumer. The text set depends on the value of
 // promoContext. When `source` is kPasswordCopied, no image is set.
-- (void)setTextAndImageWithSource:(CredentialProviderPromoSource)source {
+- (void)setTextAndImageWithSource:(IOSCredentialProviderPromoSource)source {
   DCHECK(self.consumer);
   NSString* titleString;
   NSString* subtitleString;
@@ -154,15 +175,24 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
         l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_HOW);
     image = ios::provider::GetBrandedImage(
         ios::provider::BrandedImage::kPasswordSuggestionKey);
-    if (source == CredentialProviderPromoSource::kPasswordCopied ||
-        source == CredentialProviderPromoSource::kRemindLaterSelected) {
+    if (source == IOSCredentialProviderPromoSource::kPasswordCopied) {
       image = nil;
     }
   } else {
     titleString = l10n_util::GetNSString(
         IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_TITLE);
-    subtitleString = l10n_util::GetNSString(
-        IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_SUBTITLE);
+    NSString* settingsMenuItemString = nil;
+    if (@available(iOS 16, *)) {
+      settingsMenuItemString = l10n_util::GetNSString(
+          IDS_IOS_CREDENTIAL_PROVIDER_PROMO_OS_PASSWORDS_SETTINGS_TITLE_IOS16);
+    } else {
+      settingsMenuItemString = l10n_util::GetNSString(
+          IDS_IOS_CREDENTIAL_PROVIDER_PROMO_OS_PASSWORDS_SETTINGS_TITLE_BELOW_IOS16);
+    }
+    DCHECK(settingsMenuItemString.length > 0);
+    subtitleString = l10n_util::GetNSStringF(
+        IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_SUBTITLE_WITH_PH,
+        base::SysNSStringToUTF16(settingsMenuItemString));
     primaryActionString = l10n_util::GetNSString(
         IDS_IOS_CREDENTIAL_PROVIDER_PROMO_GO_TO_SETTINGS);
   }

@@ -104,7 +104,8 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
   // A Transaction can perform multiple operations atomically on a
   // TaskSource. While a Transaction is alive, it is guaranteed that nothing
   // else will access the TaskSource; the TaskSource's lock is held for the
-  // lifetime of the Transaction.
+  // lifetime of the Transaction. No Transaction must be held when ~TaskSource()
+  // is called.
   class BASE_EXPORT Transaction {
    public:
     Transaction(Transaction&& other);
@@ -121,6 +122,8 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
     TaskTraits traits() const { return task_source_->traits_; }
 
     TaskSource* task_source() const { return task_source_; }
+
+    void Release();
 
    protected:
     explicit Transaction(TaskSource* task_source);

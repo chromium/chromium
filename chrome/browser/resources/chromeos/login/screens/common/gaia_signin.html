@@ -71,3 +71,21 @@ found in the LICENSE file.
     link-label="[[i18nDynamic(locale, 'learnMoreButton')]]">
   [[i18nDynamic(locale, allowlistError_)]]
 </notification-card>
+<oobe-modal-dialog id="enrollmentNudge">
+  <div slot="title">
+    [[i18nDynamic(locale, 'enrollmentNudgeTitle')]]
+  </div>
+  <div slot="content">
+    [[getEnrollmentNudgeMessage_(locale, emailDomain_)]]
+  </div>
+  <div slot="buttons">
+    <oobe-text-button id="useAnotherAccount"
+      on-click="onEnrollmentNudgeUseAnotherAccount_"
+      text-key="enrollmentNudgeUseAnotherAccountButton">
+    </oobe-text-button>
+    <oobe-text-button id="enterpriseEnrollment"
+      inverse on-click="onEnrollmentNudgeEnroll_"
+      text-key="enrollmentNudgeEnterpriseEnrollmentButton">
+    </oobe-text-button>
+  </div>
+</oobe-modal-dialog>

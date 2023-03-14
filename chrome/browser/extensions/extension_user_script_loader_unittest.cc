@@ -275,8 +275,7 @@ TEST_F(ExtensionUserScriptLoaderTest, Parse8) {
 TEST_F(ExtensionUserScriptLoaderTest, SkipBOMAtTheBeginning) {
   base::FilePath path = temp_dir_.GetPath().AppendASCII("script.user.js");
   const std::string content("\xEF\xBB\xBF alert('hello');");
-  size_t written = base::WriteFile(path, content.c_str(), content.size());
-  ASSERT_EQ(written, content.size());
+  ASSERT_TRUE(base::WriteFile(path, content));
 
   auto user_script = std::make_unique<UserScript>();
   user_script->set_id("_generated");
@@ -310,8 +309,7 @@ TEST_F(ExtensionUserScriptLoaderTest, SkipBOMAtTheBeginning) {
 TEST_F(ExtensionUserScriptLoaderTest, LeaveBOMNotAtTheBeginning) {
   base::FilePath path = temp_dir_.GetPath().AppendASCII("script.user.js");
   const std::string content("alert('here's a BOOM: \xEF\xBB\xBF');");
-  size_t written = base::WriteFile(path, content.c_str(), content.size());
-  ASSERT_EQ(written, content.size());
+  ASSERT_TRUE(base::WriteFile(path, content));
 
   auto user_script = std::make_unique<UserScript>();
   user_script->set_id("test");
@@ -380,19 +378,15 @@ TEST_F(ExtensionUserScriptLoaderTest, ComponentExtensionContentScriptIsLoaded) {
 TEST_F(ExtensionUserScriptLoaderTest, RecordScriptLengthUmas) {
   base::FilePath a_script_path = temp_dir_.GetPath().AppendASCII("a.script.js");
   const std::string a_string(3200, 'a');
-  size_t written =
-      base::WriteFile(a_script_path, a_string.c_str(), a_string.size());
-  ASSERT_EQ(written, a_string.size());
+  ASSERT_TRUE(base::WriteFile(a_script_path, a_string));
 
   base::FilePath b_script_path = temp_dir_.GetPath().AppendASCII("b.script.js");
   const std::string b_string(2200, 'b');
-  written = base::WriteFile(b_script_path, b_string.c_str(), b_string.size());
-  ASSERT_EQ(written, b_string.size());
+  ASSERT_TRUE(base::WriteFile(b_script_path, b_string));
 
   base::FilePath c_script_path = temp_dir_.GetPath().AppendASCII("c.script.js");
   const std::string c_string(1200, 'c');
-  written = base::WriteFile(c_script_path, c_string.c_str(), c_string.size());
-  ASSERT_EQ(written, c_string.size());
+  ASSERT_TRUE(base::WriteFile(c_script_path, c_string));
 
   // Create a dynamic user script which specifies a 3kb and 2kb file.
   auto user_script_1 = std::make_unique<UserScript>();

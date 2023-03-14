@@ -248,10 +248,11 @@ bool ReadValue(const base::Pickle* pickle,
       break;
     }
     case base::Value::Type::BINARY: {
-      base::span<const uint8_t> data;
-      if (!iter->ReadData(&data))
+      absl::optional<base::span<const uint8_t>> data = iter->ReadData();
+      if (!data) {
         return false;
-      *value = base::Value(data);
+      }
+      *value = base::Value(*data);
       break;
     }
     case base::Value::Type::DICT: {

@@ -268,8 +268,7 @@ std::unique_ptr<ResourceFile> WriteDataToTmpFile(
     return nullptr;
 
   auto resource_file = std::make_unique<ResourceFile>(file_path);
-  if (base::WriteFile(file_path, data->front_as<char>(), data_len) !=
-      data_len) {
+  if (!base::WriteFile(file_path, *data)) {
     resource_file.reset();
   }
   return resource_file;

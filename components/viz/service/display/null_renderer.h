@@ -40,14 +40,14 @@ class VIZ_SERVICE_EXPORT NullRenderer : public DirectRenderer {
   void BindFramebufferToTexture(
       const AggregatedRenderPassId render_pass_id) override {}
   void SetScissorTestRect(const gfx::Rect& scissor_rect) override {}
-  void PrepareSurfaceForPass(SurfaceInitializationMode initialization_mode,
-                             const gfx::Rect& render_pass_scissor) override {}
+  void BeginDrawingRenderPass(
+      bool needs_clear,
+      const gfx::Rect& render_pass_update_rect) override {}
   void DoDrawQuad(const DrawQuad* quad,
                   const gfx::QuadF* clip_region) override {}
   void BeginDrawingFrame() override;
   void FinishDrawingFrame() override {}
   bool FlippedFramebuffer() const override;
-  void EnsureScissorTestEnabled() override {}
   void EnsureScissorTestDisabled() override {}
   void DidChangeVisibility() override {}
   void CopyDrawnRenderPass(const copy_output::RenderPassGeometry& geometry,

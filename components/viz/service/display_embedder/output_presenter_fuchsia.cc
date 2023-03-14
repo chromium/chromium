@@ -164,7 +164,6 @@ void OutputPresenterFuchsia::InitializeCapabilities(
   // We expect origin of buffers is at top left.
   capabilities->output_surface_origin = gfx::SurfaceOrigin::kTopLeft;
   capabilities->supports_post_sub_buffer = false;
-  capabilities->supports_commit_overlay_planes = false;
   capabilities->supports_surfaceless = true;
 
   capabilities->sk_color_types[static_cast<int>(gfx::BufferFormat::RGBA_8888)] =
@@ -214,7 +213,7 @@ OutputPresenterFuchsia::AllocateImages(gfx::ColorSpace color_space,
   return images;
 }
 
-void OutputPresenterFuchsia::SwapBuffers(
+void OutputPresenterFuchsia::Present(
     SwapCompletionCallback completion_callback,
     BufferPresentedCallback presentation_callback,
     gfx::FrameData data) {
@@ -225,23 +224,6 @@ void OutputPresenterFuchsia::SwapBuffers(
   next_frame_->presentation_callback = std::move(presentation_callback);
 
   PresentNextFrame();
-}
-
-void OutputPresenterFuchsia::PostSubBuffer(
-    const gfx::Rect& rect,
-    SwapCompletionCallback completion_callback,
-    BufferPresentedCallback presentation_callback,
-    gfx::FrameData data) {
-  // Sub buffer presentation is not supported.
-  NOTREACHED();
-}
-
-void OutputPresenterFuchsia::CommitOverlayPlanes(
-    SwapCompletionCallback completion_callback,
-    BufferPresentedCallback presentation_callback,
-    gfx::FrameData data) {
-  // Overlays are not supported yet.
-  NOTREACHED();
 }
 
 void OutputPresenterFuchsia::SchedulePrimaryPlane(

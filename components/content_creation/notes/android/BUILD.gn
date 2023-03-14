@@ -55,7 +55,6 @@ source_set("android") {
     "//base",
     "//components/content_creation/notes/core",
     "//components/content_creation/notes/core:features",
-    "//components/content_creation/notes/core/server",
     "//components/content_creation/notes/core/templates",
     "//components/content_creation/notes/core/templates:types",
   ]

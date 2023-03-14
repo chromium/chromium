@@ -219,6 +219,10 @@ viz::ViewTransitionElementResourceId Layer::ViewTransitionResourceId() const {
   return viz::ViewTransitionElementResourceId();
 }
 
+bool Layer::IsSolidColorLayerForTesting() const {
+  return false;
+}
+
 void Layer::SetNeedsFullTreeSync() {
   if (!IsAttached())
     return;
@@ -1408,7 +1412,7 @@ void Layer::SetIsDrawable(bool is_drawable) {
     return;
 
   inputs_.Write(*this).is_drawable = is_drawable;
-  SetDrawsContent(HasDrawableContent());
+  UpdateDrawsContent();
 }
 
 void Layer::SetHideLayerAndSubtree(bool hide) {
@@ -1543,7 +1547,8 @@ bool Layer::HasDrawableContent() const {
   return inputs_.Read(*this).is_drawable;
 }
 
-void Layer::SetDrawsContent(bool value) {
+void Layer::UpdateDrawsContent() {
+  bool value = HasDrawableContent();
   DCHECK(inputs_.Read(*this).is_drawable || !value);
   if (!SetBitFlag(value, kDrawsContentFlagMask, /*invalidate=*/true))
     return;

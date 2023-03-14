@@ -182,7 +182,6 @@ android_resources("java_resources") {
     "java/res/drawable/ic_info_outline_grey_24dp.xml",
     "java/res/drawable/ic_lightbulb_24dp.xml",
     "java/res/drawable/ic_link_24dp.xml",
-    "java/res/drawable/ic_logo_assistant_24dp.xml",
     "java/res/drawable/ic_mic_off_white_24dp.xml",
     "java/res/drawable/ic_mic_white_24dp.xml",
     "java/res/drawable/ic_music_note_24dp.xml",

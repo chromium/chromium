@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {SettingsToggleButtonElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {LockScreenSettings_RecoveryDialogAction as RecoveryDialogAction, LockScreenSettingsInterface, LockScreenSettingsReceiver, LockScreenSettingsRemote, OSSettingsBrowserProcess, OSSettingsDriverInterface, OSSettingsDriverReceiver} from './test_api.test-mojom-webui.js';
@@ -426,27 +427,62 @@ export class LockScreenSettings implements LockScreenSettingsInterface {
     (await retryUntilSome(() => this.autosubmitToggle())).click();
     await assertAsync(() => this.isPinAutosubmitEnabled() === false);
   }
+
+  private queryAutoLockScreenToggle(): SettingsToggleButtonElement {
+    const toggle = this.shadowRoot().getElementById('enableLockScreen');
+    assertTrue(toggle instanceof SettingsToggleButtonElement);
+    return toggle;
+  }
+
+  async assertAutoLockScreenEnabled(isEnabled: boolean): Promise<void> {
+    const isAutoLockScreenEnabled = () => {
+      const toggle = this.queryAutoLockScreenToggle();
+      return toggle.checked === isEnabled;
+    };
+
+    assertAsync(isAutoLockScreenEnabled);
+    assertForDuration(isAutoLockScreenEnabled);
+  }
+
+  async enableAutoLockScreen(): Promise<void> {
+    const toggle = await retryUntilSome(() => this.queryAutoLockScreenToggle());
+    await assertAsync(() => !toggle.checked);
+    toggle.click();
+    await assertAsync(() => toggle.checked);
+  }
+
+  async disableAutoLockScreen(): Promise<void> {
+    const toggle = await retryUntilSome(() => this.queryAutoLockScreenToggle());
+    await assertAsync(() => toggle.checked);
+    toggle.click();
+    await assertAsync(() => !toggle.checked);
+  }
+
+  async assertAutoLockScreenFocused(): Promise<void> {
+    const isFocused = () =>
+        this.shadowRoot().activeElement === this.queryAutoLockScreenToggle();
+    assertAsync(isFocused);
+    assertForDuration(isFocused);
+  }
 }
 
 class OsSettingsDriver implements OSSettingsDriverInterface {
-  async goToLockScreenSettings():
-      Promise<{lockScreenSettings: LockScreenSettingsRemote}> {
-    const privacyPage =
-        await retryUntilSome(() => querySelectorShadow(document.body, [
-                               'os-settings-ui',
-                               'os-settings-main',
-                               'os-settings-page',
-                               'os-settings-privacy-page',
-                             ]));
+  private privacyPage(): HTMLElement {
+    const privacyPage = querySelectorShadow(document.body, [
+      'os-settings-ui',
+      'os-settings-main',
+      'os-settings-page',
+      'os-settings-privacy-page',
+    ]);
     assertTrue(privacyPage instanceof HTMLElement);
+    return privacyPage;
+  }
+
+  // Finds the lock screen settings element. Throws an assertion error if it is
+  // not found immediately.
+  private lockScreenSettings(): LockScreenSettings {
+    const privacyPage = this.privacyPage();
     assertTrue(privacyPage.shadowRoot !== null);
-
-
-    // Click on button to go to lock screen settings.
-    const trigger =
-        privacyPage.shadowRoot.getElementById('lockScreenSubpageTrigger');
-    assertTrue(trigger !== null);
-    trigger.click();
 
     const lockScreen: Lazy<HTMLElement> = () => {
       assertTrue(privacyPage.shadowRoot !== null);
@@ -456,17 +492,39 @@ class OsSettingsDriver implements OSSettingsDriverInterface {
       return lockScreen;
     };
 
+    // Get the lock screen element once to ensure that it's there, i.e., throw
+    // an assertion otherwise.
+    lockScreen();
+
     const passwordDialog: Lazy<HTMLElement|null> = () => {
       assertTrue(privacyPage.shadowRoot !== null);
       return privacyPage.shadowRoot.getElementById('passwordDialog');
     };
 
-    const lockScreenSettings =
-        new LockScreenSettings({lockScreen, passwordDialog});
+    return new LockScreenSettings({lockScreen, passwordDialog});
+  }
+
+  async assertOnLockScreenSettings():
+      Promise<{lockScreenSettings: LockScreenSettingsRemote}> {
+    const lockScreenSettings = await retry(() => this.lockScreenSettings());
     const receiver = new LockScreenSettingsReceiver(lockScreenSettings);
     const remote = receiver.$.bindNewPipeAndPassRemote();
 
     return {lockScreenSettings: remote};
+  }
+
+  async goToLockScreenSettings():
+      Promise<{lockScreenSettings: LockScreenSettingsRemote}> {
+    const privacyPage = await retry(() => this.privacyPage());
+    assertTrue(privacyPage.shadowRoot !== null);
+
+    // Click on button to go to lock screen settings.
+    const trigger =
+        privacyPage.shadowRoot.getElementById('lockScreenSubpageTrigger');
+    assertTrue(trigger !== null);
+    trigger.click();
+
+    return await this.assertOnLockScreenSettings();
   }
 }
 

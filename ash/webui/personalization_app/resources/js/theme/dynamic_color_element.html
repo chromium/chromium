@@ -1,4 +1,4 @@
-<style include="common">
+<style include="common cros-button-style">
   :host {
     color: var(--cros-text-color-primary);
     font: var(--personalization-app-label-font);
@@ -35,6 +35,8 @@
     height: 76px;
     justify-items: center;
     padding: 0;
+    --ink-color: rgba(var(--cros-ripple-color-rgb), 1);
+    --paper-ripple-opacity: var(--cros-button-primary-ripple-opacity);
   }
 
   .container {
@@ -86,7 +88,7 @@
       hidden="[[!automaticSeedColorEnabled]]">
     <template is="dom-repeat" items="[[sampleColorSchemes_]]" as="colorScheme">
       <cr-button
-          tabindex$="[[getTabIndex_(colorScheme.scheme)]]"
+          tabindex$="[[getColorSchemeTabIndex_(colorScheme.scheme)]]"
           on-click="onClickColorSchemeButton_"
           data-color-scheme-id$="[[colorScheme.scheme]]"
           aria-checked$="[[getColorSchemeAriaChecked_(colorScheme.scheme, colorSchemeSelected_)]]">
@@ -104,7 +106,7 @@
       hidden$="[[automaticSeedColorEnabled]]">
     <template is="dom-repeat" items="[[staticColors_]]" as="staticColor">
       <cr-button
-          tabindex$="[[getTabIndex_(staticColor)]]"
+          tabindex$="[[getStaticColorTabIndex_(staticColor)]]"
           on-click="onClickStaticColorButton_"
           aria-checked$="[[getStaticColorAriaChecked_(staticColor, staticColorSelected_)]]"
           data-static-color$="[[staticColor]]">

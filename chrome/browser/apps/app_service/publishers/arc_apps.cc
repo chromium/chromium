@@ -1403,7 +1403,13 @@ AppPtr ArcApps::CreateApp(ArcAppListPrefs* prefs,
     app->show_in_management = show;
   }
 
-  app->handles_intents = show;
+  // Package Installer is hidden from the launcher, search and management but
+  // should still handle intents.
+  if (app_id == arc::kPackageInstallerAppId) {
+    app->handles_intents = true;
+  } else {
+    app->handles_intents = show;
+  }
 
   app->allow_uninstall = app_info.ready && !app_info.sticky;
 
@@ -1556,9 +1562,12 @@ void ArcApps::OnGetAppShortcutItems(
 
 void ArcApps::OnInstallationStarted(const std::string& package_name) {
   if (ash::features::ArePromiseIconsEnabled()) {
-    PromiseAppPtr app =
+    PromiseAppPtr promise_app =
         AppPublisher::MakePromiseApp(PackageId(AppType::kArc, package_name));
-    AppPublisher::PublishPromiseApp(std::move(app));
+
+    // All ARC installations start as "Pending".
+    promise_app->status = PromiseStatus::kPending;
+    AppPublisher::PublishPromiseApp(std::move(promise_app));
   }
 }
 

@@ -24,9 +24,9 @@ EnterprisePolicyTestHelper::EnterprisePolicyTestHelper(
       true /* is_first_policy_load_complete_return */);
   // Create a BrowserPolicyConnectorIOS, install the mock policy
   // provider, and hook up Local State.
-  browser_policy_connector_ =
-      std::make_unique<BrowserPolicyConnectorIOS>(base::BindRepeating(
-          &BuildPolicyHandlerList, /* allow_future_policies= */ true));
+  browser_policy_connector_ = std::make_unique<BrowserPolicyConnectorIOS>(
+      base::BindRepeating(&BuildPolicyHandlerList,
+                          /* are_future_policies_allowed_by_default= */ true));
   browser_policy_connector_->SetPolicyProviderForTesting(&policy_provider_);
 
   scoped_refptr<PrefRegistrySimple> local_state_registry(

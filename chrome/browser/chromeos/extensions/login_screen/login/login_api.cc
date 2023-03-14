@@ -4,7 +4,6 @@
 
 #include "chrome/browser/chromeos/extensions/login_screen/login/login_api.h"
 
-#include <memory>
 #include <string>
 #include <utility>
 

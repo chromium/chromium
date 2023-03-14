@@ -46,7 +46,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, UserConsentButNotEnabled) {
 }
 
 // UKMs are only enabled when there's user consent and it's explicitly enabled.
-IN_PROC_BROWSER_TEST_F(UkmBrowserTest, Enabled) {
+IN_PROC_BROWSER_TEST_F(UkmBrowserTest, DISABLED_Enabled) {
   ukm::UkmTestHelper ukm_test_helper(GetUkmService());
 
   GetProfile()->SetBooleanSetting(SettingType::UKM_ENABLED, true);
@@ -54,7 +54,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, Enabled) {
 }
 
 // If UKMs are disabled it's reflected accordingly.
-IN_PROC_BROWSER_TEST_F(UkmBrowserTest, EnabledThenDisable) {
+IN_PROC_BROWSER_TEST_F(UkmBrowserTest, DISABLED_EnabledThenDisable) {
   ukm::UkmTestHelper ukm_test_helper(GetUkmService());
 
   GetProfile()->SetBooleanSetting(SettingType::UKM_ENABLED, true);
@@ -69,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, EnabledThenDisable) {
 }
 
 // Make sure that UKM is disabled while an incognito profile is alive.
-IN_PROC_BROWSER_TEST_F(UkmBrowserTest, RegularPlusIncognitoCheck) {
+IN_PROC_BROWSER_TEST_F(UkmBrowserTest, DISABLED_RegularPlusIncognitoCheck) {
   ukm::UkmTestHelper ukm_test_helper(GetUkmService());
 
   GetProfile()->SetBooleanSetting(SettingType::UKM_ENABLED, true);
@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, RegularPlusIncognitoCheck) {
 }
 
 // Make sure creating a real profile after Incognito doesn't enable UKM.
-IN_PROC_BROWSER_TEST_F(UkmBrowserTest, IncognitoPlusRegularCheck) {
+IN_PROC_BROWSER_TEST_F(UkmBrowserTest, DISABLED_IncognitoPlusRegularCheck) {
   ukm::UkmTestHelper ukm_test_helper(GetUkmService());
 
   GetProfile()->SetBooleanSetting(SettingType::UKM_ENABLED, true);

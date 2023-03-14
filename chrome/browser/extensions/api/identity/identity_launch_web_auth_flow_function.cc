@@ -4,11 +4,13 @@
 
 #include "chrome/browser/extensions/api/identity/identity_launch_web_auth_flow_function.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "chrome/browser/extensions/api/identity/identity_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/identity.h"
@@ -30,6 +32,8 @@ IdentityLaunchWebAuthFlowFunction::Error WebAuthFlowFailureToError(
       return IdentityLaunchWebAuthFlowFunction::Error::kInteractionRequired;
     case WebAuthFlow::LOAD_FAILED:
       return IdentityLaunchWebAuthFlowFunction::Error::kPageLoadFailure;
+    case WebAuthFlow::TIMED_OUT:
+      return IdentityLaunchWebAuthFlowFunction::Error::kPageLoadTimedOut;
     default:
       NOTREACHED() << "Unexpected error from web auth flow: " << failure;
       return IdentityLaunchWebAuthFlowFunction::Error::kUnexpectedError;
@@ -52,6 +56,8 @@ std::string ErrorToString(IdentityLaunchWebAuthFlowFunction::Error error) {
       return identity_constants::kPageLoadFailure;
     case IdentityLaunchWebAuthFlowFunction::Error::kUnexpectedError:
       return identity_constants::kInvalidRedirect;
+    case IdentityLaunchWebAuthFlowFunction::Error::kPageLoadTimedOut:
+      return identity_constants::kPageLoadTimedOut;
   }
 }
 
@@ -62,6 +68,10 @@ void RecordHistogramFunctionResult(
 }
 
 }  // namespace
+
+BASE_FEATURE(kNonInteractiveTimeoutForWebAuthFlow,
+             "NonInteractiveTimeoutForWebAuthFlow",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 IdentityLaunchWebAuthFlowFunction::IdentityLaunchWebAuthFlowFunction() =
     default;
@@ -80,14 +90,29 @@ ExtensionFunction::ResponseAction IdentityLaunchWebAuthFlowFunction::Run() {
     return RespondNow(ExtensionFunction::Error(ErrorToString(error)));
   }
 
-  std::unique_ptr<api::identity::LaunchWebAuthFlow::Params> params(
-      api::identity::LaunchWebAuthFlow::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<api::identity::LaunchWebAuthFlow::Params> params =
+      api::identity::LaunchWebAuthFlow::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   GURL auth_url(params->details.url);
   WebAuthFlow::Mode mode =
-      params->details.interactive && *params->details.interactive ?
-      WebAuthFlow::INTERACTIVE : WebAuthFlow::SILENT;
+      params->details.interactive && *params->details.interactive
+          ? WebAuthFlow::INTERACTIVE
+          : WebAuthFlow::SILENT;
+
+  auto abort_on_load_for_non_interactive = WebAuthFlow::AbortOnLoad::kYes;
+  absl::optional<base::TimeDelta> timeout_for_non_interactive = absl::nullopt;
+  if (base::FeatureList::IsEnabled(kNonInteractiveTimeoutForWebAuthFlow)) {
+    abort_on_load_for_non_interactive =
+        params->details.abort_on_load_for_non_interactive.value_or(true)
+            ? WebAuthFlow::AbortOnLoad::kYes
+            : WebAuthFlow::AbortOnLoad::kNo;
+    if (params->details.timeout_ms_for_non_interactive) {
+      timeout_for_non_interactive = std::clamp(
+          base::Milliseconds(*params->details.timeout_ms_for_non_interactive),
+          base::TimeDelta(), WebAuthFlow::kNonInteractiveMaxTimeout);
+    }
+  }
 
   // Set up acceptable target URLs. (Does not include chrome-extension
   // scheme for this version of the API.)
@@ -95,9 +120,13 @@ ExtensionFunction::ResponseAction IdentityLaunchWebAuthFlowFunction::Run() {
 
   AddRef();  // Balanced in OnAuthFlowSuccess/Failure.
 
-  auth_flow_ = std::make_unique<WebAuthFlow>(this, profile, auth_url, mode,
-                                             WebAuthFlow::LAUNCH_WEB_AUTH_FLOW,
-                                             extension()->name());
+  auth_flow_ = std::make_unique<WebAuthFlow>(
+      this, profile, auth_url, mode, WebAuthFlow::LAUNCH_WEB_AUTH_FLOW,
+      abort_on_load_for_non_interactive, timeout_for_non_interactive);
+  // An extension might call `launchWebAuthFlow()` with any URL. Add an infobar
+  // to attribute displayed URL to the extension.
+  auth_flow_->SetShouldShowInfoBar(extension()->name());
+
   auth_flow_->Start();
   return RespondLater();
 }

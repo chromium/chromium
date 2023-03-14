@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/commerce/merchant_viewer/merchant_viewer_data_manager_factory.h"
 #include "chrome/browser/persisted_state_db/session_proto_db_factory.h"
@@ -65,9 +66,8 @@ class MerchantViewerDataManagerTest : public testing::Test {
                              MerchantViewerDataManager::MerchantSignals found) {
     EXPECT_EQ(true, success);
     vector<string> found_hostnames;
-    std::transform(found.begin(), found.end(),
-                   std::back_inserter(found_hostnames),
-                   [](const auto& item) { return item.second.key(); });
+    base::ranges::transform(found, std::back_inserter(found_hostnames),
+                            [](const auto& item) { return item.second.key(); });
 
     std::sort(found_hostnames.begin(), found_hostnames.end());
     std::sort(expected_hostnames.begin(), expected_hostnames.end());

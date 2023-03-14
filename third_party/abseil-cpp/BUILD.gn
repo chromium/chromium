@@ -252,14 +252,8 @@ if (build_with_chromium) {
     testonly = true
     sources = [ "absl_hardening_test.cc" ]
     deps = [
+      ":absl",
       "//base/test:run_all_unittests",
-      "//third_party/abseil-cpp/absl/base:config",
-      "//third_party/abseil-cpp/absl/container:fixed_array",
-      "//third_party/abseil-cpp/absl/container:inlined_vector",
-      "//third_party/abseil-cpp/absl/strings",
-      "//third_party/abseil-cpp/absl/types:optional",
-      "//third_party/abseil-cpp/absl/types:span",
-      "//third_party/abseil-cpp/absl/types:variant",
       "//third_party/googletest:gtest",
     ]
   }

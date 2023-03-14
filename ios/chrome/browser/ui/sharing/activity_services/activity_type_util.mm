@@ -37,6 +37,7 @@ ActivityType TypeFromString(NSString* activityString) {
       {NATIVE_SAVE_FILE, @"com.apple.DocumentManagerUICore.SaveToFiles", true},
       {NATIVE_MARKUP, @"com.apple.UIKit.activity.MarkupAsPDF", true},
       {NATIVE_PRINT, @"com.apple.UIKit.activity.Print", true},
+      {NATIVE_ADD_TO_HOME, @"com.apple.UIKit.activity.AddToHomeScreen", true},
       {PRINT, @"com.google.chrome.printActivity", true},
       {FIND_IN_PAGE, @"com.google.chrome.FindInPageActivityType", true},
       {GENERATE_QR_CODE, @"com.google.chrome.GenerateQrCodeActivityType", true},
@@ -174,6 +175,9 @@ void RecordMetricForActivity(ActivityType type) {
     case GENERATE_QR_CODE:
       base::RecordAction(
           base::UserMetricsAction("MobileShareMenuGenerateQRCode"));
+      break;
+    case NATIVE_ADD_TO_HOME:
+      base::RecordAction(base::UserMetricsAction("MobileShareMenuAddToHome"));
       break;
   }
 }

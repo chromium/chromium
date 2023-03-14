@@ -19,6 +19,7 @@
 #include "device/fido/attestation_statement_formats.h"
 #include "device/fido/attested_credential_data.h"
 #include "device/fido/authenticator_data.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_transport_protocol.h"
@@ -44,24 +45,31 @@ MakeCredentialOperation::MakeCredentialOperation(
 MakeCredentialOperation::~MakeCredentialOperation() = default;
 
 void MakeCredentialOperation::Run() {
-  // Verify pubKeyCredParams contains ES-256, which is the only algorithm we
-  // support.
   if (!base::Contains(
           request_.public_key_credential_params.public_key_credential_params(),
           static_cast<int>(CoseAlgorithmIdentifier::kEs256),
           &PublicKeyCredentialParams::CredentialInfo::algorithm)) {
-    DVLOG(1) << "No supported algorithm found.";
+    FIDO_LOG(ERROR) << "No supported algorithm found";
     std::move(callback_).Run(
         CtapDeviceResponseCode::kCtap2ErrUnsupportedAlgorithm, absl::nullopt);
     return;
   }
 
-  // Display the macOS Touch ID prompt.
-  touch_id_context_->PromptTouchId(
-      l10n_util::GetStringFUTF16(IDS_WEBAUTHN_TOUCH_ID_PROMPT_REASON,
-                                 base::UTF8ToUTF16(request_.rp.id)),
-      base::BindOnce(&MakeCredentialOperation::PromptTouchIdDone,
-                     base::Unretained(this)));
+  const bool require_uv =
+      !base::FeatureList::IsEnabled(
+          kWebAuthnMacPlatformAuthenticatorOptionalUv) ||
+      DeviceHasBiometricsAvailable() ||
+      request_.user_verification == UserVerificationRequirement::kRequired;
+  if (require_uv) {
+    touch_id_context_->PromptTouchId(
+        l10n_util::GetStringFUTF16(IDS_WEBAUTHN_TOUCH_ID_PROMPT_REASON,
+                                   base::UTF8ToUTF16(request_.rp.id)),
+        base::BindOnce(&MakeCredentialOperation::PromptTouchIdDone,
+                       base::Unretained(this)));
+    return;
+  }
+
+  CreateCredential(/*has_uv=*/false);
 }
 
 void MakeCredentialOperation::PromptTouchIdDone(bool success) {
@@ -77,6 +85,10 @@ void MakeCredentialOperation::PromptTouchIdDone(bool success) {
   credential_store_->set_authentication_context(
       touch_id_context_->authentication_context());
 
+  CreateCredential(/*has_uv=*/true);
+}
+
+void MakeCredentialOperation::CreateCredential(bool has_uv) {
   if (!request_.exclude_list.empty()) {
     absl::optional<std::list<Credential>> credentials =
         credential_store_->FindCredentialsFromCredentialDescriptorList(
@@ -131,7 +143,7 @@ void MakeCredentialOperation::PromptTouchIdDone(bool success) {
   }
   AuthenticatorData authenticator_data = MakeAuthenticatorData(
       credential.metadata.sign_counter_type, request_.rp.id,
-      std::move(*attested_credential_data));
+      std::move(*attested_credential_data), has_uv);
   absl::optional<std::vector<uint8_t>> signature = GenerateSignature(
       authenticator_data, request_.client_data_hash, credential.private_key);
   if (!signature) {

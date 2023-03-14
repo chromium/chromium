@@ -65,6 +65,7 @@ import org.chromium.android_webview.AwThreadUtils;
 import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.components.content_capture.ContentCaptureFeatures;
@@ -486,6 +487,11 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
                             org.chromium.android_webview.R.string.private_browsing_warning));
                     mWebView.addView(warningLabel);
                 }
+            }
+
+            // Needed for https://crbug.com/1417872
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                ApiHelperForO.setDefaultFocusHighlightEnabled(mWebView, false);
             }
 
             if (mAppTargetSdkVersion >= Build.VERSION_CODES.JELLY_BEAN_MR2) {

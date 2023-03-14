@@ -473,6 +473,19 @@ bool DeleteWhereColumnEq(sql::Database* db,
   return statement.Run();
 }
 
+// Wrapper around `DeleteBuilder()`, which initializes the where clause as
+// `column` = `value`.
+// Runs the statement and returns true if it was successful.
+bool DeleteWhereColumnEq(sql::Database* db,
+                         base::StringPiece table_name,
+                         base::StringPiece column,
+                         int value) {
+  sql::Statement statement;
+  DeleteBuilder(db, statement, table_name, base::StrCat({column, " = ?"}));
+  statement.BindInt(0, value);
+  return statement.Run();
+}
+
 // Initializes `statement` with UPDATE `table_name` SET `column_names` = ?, with
 // a placeholder for every `column_names`. A WHERE clause can optionally be
 // specified in `where_clause`.
@@ -1771,7 +1784,7 @@ bool AutofillTable::GetAutofillProfiles(
                 profile_source == AutofillProfile::Source::kAccount
                     ? kContactInfoTable
                     : kAutofillProfilesTable,
-                {kGuid}, "ORDER BY date_modified DESC, guid");
+                {kGuid});
 
   while (s.Step()) {
     std::string guid = s.ColumnString(0);
@@ -2965,6 +2978,11 @@ bool AutofillTable::GetAllSyncMetadata(syncer::ModelType model_type,
   return true;
 }
 
+bool AutofillTable::DeleteAllSyncMetadata(syncer::ModelType model_type) {
+  return DeleteWhereColumnEq(db_, kAutofillSyncMetadataTable, kModelType,
+                             GetKeyValueForModelType(model_type));
+}
+
 bool AutofillTable::UpdateEntityMetadata(
     syncer::ModelType model_type,
     const std::string& storage_key,
@@ -3421,8 +3439,11 @@ bool AutofillTable::MigrateToVersion109AddVirtualCardUsageDataTable() {
 }
 
 bool AutofillTable::MigrateToVersion110AddInitialCreatorIdAndLastModifierId() {
+  if (!db_->DoesTableExist(kContactInfoTable)) {
+    return false;
+  }
   sql::Transaction transaction(db_);
-  return db_->DoesTableExist(kContactInfoTable) && transaction.Begin() &&
+  return transaction.Begin() &&
          AddColumnIfNotExists(db_, kContactInfoTable, kInitialCreatorId,
                               "INTEGER DEFAULT 0") &&
          AddColumnIfNotExists(db_, kContactInfoTable, kLastModifierId,

@@ -15,8 +15,7 @@
 </div>
 
 <script>
-  if (window.internals)
-    internals.settings.setScrollAnimatorEnabled(false);
+  internals.settings.setScrollAnimatorEnabled(false);
 
   window.onload = () => {
     const scroller = document.getElementById("scroller");
@@ -39,6 +38,8 @@
         return;
 
       scroller.scrollTo(0, 0);
+      await waitForCompositorCommit();
+
       const thumb = horizontalThumb(scroller);
       await touchTapOn(trackPos, thumb.y);
       await waitForScrollEnd(scroller, scrollLeft, snapPoint);
@@ -49,6 +50,8 @@
         return;
 
       scroller.scrollTo(0, 0);
+      await waitForCompositorCommit();
+
       const thumb = verticalThumb(scroller);
       await touchTapOn(thumb.x, trackPos);
       await waitForScrollEnd(scroller, scrollTop, snapPoint);

@@ -917,6 +917,25 @@ const FilePath& GlobalHistogramAllocator::GetPersistentLocation() const {
   return persistent_location_;
 }
 
+bool GlobalHistogramAllocator::HasPersistentLocation() const {
+  return !persistent_location_.empty();
+}
+
+bool GlobalHistogramAllocator::MovePersistentFile(const FilePath& dir) {
+  DCHECK(HasPersistentLocation());
+
+  FilePath new_file_path = dir.Append(persistent_location_.BaseName());
+
+  // Change the location of the persistent file. This is fine to do even though
+  // the file is currently "opened" by this process.
+  if (!base::ReplaceFile(persistent_location_, new_file_path, nullptr)) {
+    return false;
+  }
+
+  SetPersistentLocation(new_file_path);
+  return true;
+}
+
 bool GlobalHistogramAllocator::WriteToPersistentLocation() {
 #if BUILDFLAG(IS_NACL)
   // NACL doesn't support file operations, including ImportantFileWriter.
@@ -924,7 +943,7 @@ bool GlobalHistogramAllocator::WriteToPersistentLocation() {
   return false;
 #else
   // Stop if no destination is set.
-  if (persistent_location_.empty()) {
+  if (!HasPersistentLocation()) {
     NOTREACHED() << "Could not write \"" << Name() << "\" persistent histograms"
                  << " to file because no location was set.";
     return false;
@@ -948,8 +967,9 @@ void GlobalHistogramAllocator::DeletePersistentLocation() {
 #if BUILDFLAG(IS_NACL)
   NOTREACHED();
 #else
-  if (persistent_location_.empty())
+  if (!HasPersistentLocation()) {
     return;
+  }
 
   // Open (with delete) and then immediately close the file by going out of
   // scope. This is the only cross-platform safe way to delete a file that may

@@ -5,6 +5,8 @@
 #ifndef CC_TEST_FAKE_PICTURE_LAYER_TILING_CLIENT_H_
 #define CC_TEST_FAKE_PICTURE_LAYER_TILING_CLIENT_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "cc/raster/raster_source.h"
 #include "cc/test/fake_tile_manager_client.h"

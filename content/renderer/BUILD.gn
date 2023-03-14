@@ -363,9 +363,8 @@ target(link_target_type, "renderer") {
 
   if (enable_cast_receiver) {
     deps += [
-      "//components/cast_streaming/public",
+      "//components/cast_streaming/common",
       "//components/cast_streaming/renderer:resource_provider",
-      "//components/cast_streaming/renderer:wrapping_renderer_factory_selector",
     ]
   }
 

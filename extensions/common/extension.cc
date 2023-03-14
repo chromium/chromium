@@ -437,12 +437,6 @@ bool Extension::OverlapsWithOrigin(const GURL& origin) const {
   return web_extent().OverlapsWith(origin_only_pattern_list);
 }
 
-bool Extension::ShouldExposeViaManagementAPI() const {
-  // Hide component extensions because they are only extensions as an
-  // implementation detail of Chrome.
-  return !extensions::Manifest::IsComponentLocation(location());
-}
-
 Extension::ManifestData* Extension::GetManifestData(const std::string& key)
     const {
   DCHECK(finished_parsing_manifest_ || thread_checker_.CalledOnValidThread());
@@ -826,6 +820,8 @@ ExtensionInfo::ExtensionInfo(const base::Value::Dict* manifest,
 }
 
 ExtensionInfo::ExtensionInfo(ExtensionInfo&&) noexcept = default;
+
+ExtensionInfo& ExtensionInfo::operator=(ExtensionInfo&&) = default;
 
 ExtensionInfo::~ExtensionInfo() = default;
 

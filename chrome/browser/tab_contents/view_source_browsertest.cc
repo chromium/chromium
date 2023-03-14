@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -50,7 +51,9 @@ const char kTestMedia[] = "/media/pink_noise_140ms.wav";
 
 class ViewSourceTest : public InProcessBrowserTest {
  public:
-  ViewSourceTest() {}
+  ViewSourceTest() {
+    feature_list_.InitAndDisableFeature(features::kHttpsUpgrades);
+  }
 
   ViewSourceTest(const ViewSourceTest&) = delete;
   ViewSourceTest& operator=(const ViewSourceTest&) = delete;
@@ -60,6 +63,11 @@ class ViewSourceTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
   }
+
+  base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class ViewSourcePermissionsPolicyTest : public ViewSourceTest {
@@ -203,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest,
   // the original tab is navigated cross-process. This is required for the
   // original bug to reproduce.
   {
-    GURL url = embedded_test_server()->GetURL("/title1.html");
+    GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
     ui_test_utils::UrlLoadObserver load_complete(
         url, content::NotificationService::AllSources());
     EXPECT_TRUE(content::ExecuteScript(
@@ -217,8 +225,8 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest,
   browser()->tab_strip_model()->ActivateTabAt(
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUIVersionURL)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("b.com", "/title1.html")));
   EXPECT_TRUE(chrome::CanViewSource(browser()));
 
   // Navigate back in session history to ensure view-source mode is still
@@ -492,15 +500,23 @@ class ViewSourceWithSplitCacheTest
       public ::testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
     bool split_cache_by_network_isolation_key = GetParam();
-    feature_list_.InitWithFeatureState(
-        net::features::kSplitCacheByNetworkIsolationKey,
-        split_cache_by_network_isolation_key);
+    if (split_cache_by_network_isolation_key) {
+      enabled_features.push_back(
+          net::features::kSplitCacheByNetworkIsolationKey);
+    } else {
+      disabled_features.push_back(
+          net::features::kSplitCacheByNetworkIsolationKey);
+    }
+    disabled_features.push_back(features::kHttpsUpgrades);
+    feature_list()->Reset();
+    feature_list()->InitWithFeatures(enabled_features, disabled_features);
+
     ViewSourceTest::SetUp();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that "View Source" works fine for *subframes* shown via HTTP POST.

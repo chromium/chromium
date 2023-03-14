@@ -51,16 +51,7 @@ struct RenderPassGeometry;
 class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
                                              public ExternalUseClient {
  public:
-#if BUILDFLAG(IS_ANDROID)
   using OverlayList = std::vector<OverlayCandidate>;
-#elif BUILDFLAG(IS_APPLE)
-  using OverlayList = CALayerOverlayList;
-#elif BUILDFLAG(IS_OZONE)
-  using OverlayList = std::vector<OverlayCandidate>;
-#else
-  // Default.
-  using OverlayList = std::vector<OverlayCandidate>;
-#endif
 
   explicit SkiaOutputSurface(OutputSurface::Type type);
 
@@ -137,12 +128,15 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
   // |return_release_fence_cb| callback to be called after all commands are
   // submitted. The callback will return the release fence which will be
   // signaled once the submitted commands are processed.
+  // |update_rect| should be the scissor rect used to clear the render pass
+  // backing and cull its draw quads.
   // When finishing painting of a render pass that will be presented as an
   // overlay, |is_overlay| should be true so the GPU thread knows to keep the
   // ScopedWriteAccess open long enough.
   virtual void EndPaint(
       base::OnceClosure on_finished,
       base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb,
+      const gfx::Rect& update_rect,
       bool is_overlay) = 0;
 
   // Make a promise SkImage from a render pass id. The render pass has been

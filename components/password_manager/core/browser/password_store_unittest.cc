@@ -289,6 +289,37 @@ TEST_F(PasswordStoreTest, UpdateLoginPrimaryKeyFields) {
   store->ShutdownOnUIThread();
 }
 
+TEST_F(PasswordStoreTest, AddLogins) {
+  std::vector<std::unique_ptr<PasswordForm>> all_credentials;
+  all_credentials.push_back(FillPasswordFormWithData(
+      CreateTestPasswordFormDataByOrigin(kTestWebRealm1)));
+  all_credentials.push_back(FillPasswordFormWithData(
+      CreateTestPasswordFormDataByOrigin(kTestAndroidRealm1)));
+
+  scoped_refptr<PasswordStore> store = CreatePasswordStore();
+  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+
+  MockPasswordStoreObserver mock_observer;
+  store->AddObserver(&mock_observer);
+
+  EXPECT_CALL(mock_observer, OnLoginsChanged(_, testing::SizeIs(2u)));
+  store->AddLogins({*all_credentials[0], *all_credentials[1]});
+  WaitForPasswordStore();
+
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  MockPasswordStoreConsumer mock_consumer;
+
+  EXPECT_CALL(mock_consumer,
+              OnGetPasswordStoreResultsOrErrorFrom(
+                  store.get(), LoginsResultsOrErrorAre(&all_credentials)));
+  store->GetAutofillableLogins(mock_consumer.GetWeakPtr());
+  WaitForPasswordStore();
+
+  store->RemoveObserver(&mock_observer);
+  store->ShutdownOnUIThread();
+}
+
 // Verify that RemoveLoginsCreatedBetween() fires the completion callback after
 // deletions have been performed and notifications have been sent out. Whether
 // the correct logins are removed or not is verified in detail in other tests.

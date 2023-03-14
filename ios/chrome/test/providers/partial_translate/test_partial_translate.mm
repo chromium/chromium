@@ -1,0 +1,36 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import <UIKit/UIKit.h>
+
+#import "ios/chrome/test/providers/partial_translate/test_partial_translate.h"
+
+#import "ios/public/provider/chrome/browser/partial_translate/partial_translate_api.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+namespace {
+id<PartialTranslateControllerFactory> g_partial_translate_controller_factory;
+}
+
+id<PartialTranslateController> NewPartialTranslateController(
+    NSString* source_text,
+    const CGRect& anchor,
+    BOOL incognito) {
+  return [g_partial_translate_controller_factory
+      createTranslateControllerForSourceText:source_text
+                                  anchorRect:anchor
+                                 inIncognito:incognito];
+}
+
+NSUInteger PartialTranslateLimitMaxCharacters() {
+  return [g_partial_translate_controller_factory maximumCharacterLimit];
+}
+
+void SetPartialTranslateControllerFactory(
+    id<PartialTranslateControllerFactory> factory) {
+  g_partial_translate_controller_factory = factory;
+}

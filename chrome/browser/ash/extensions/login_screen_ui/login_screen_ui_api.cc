@@ -15,7 +15,7 @@ LoginScreenUiShowFunction::LoginScreenUiShowFunction() = default;
 LoginScreenUiShowFunction::~LoginScreenUiShowFunction() = default;
 
 ExtensionFunction::ResponseAction LoginScreenUiShowFunction::Run() {
-  std::unique_ptr<login_screen_ui::Show::Params> parameters =
+  absl::optional<login_screen_ui::Show::Params> parameters =
       login_screen_ui::Show::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 

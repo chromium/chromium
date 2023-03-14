@@ -29,6 +29,7 @@
 #include "chrome/browser/ash/app_list/search/search_metrics_manager.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "chrome/browser/ash/app_list/search/search_session_metrics_manager.h"
+#include "chrome/browser/metrics/structured/event_logging_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -45,6 +46,10 @@ void ClearNonZeroStateResults(ResultsMap& results) {
       ++it;
     }
   }
+}
+
+bool IsTabletMode() {
+  return ash::TabletMode::IsInTabletMode();
 }
 
 }  // namespace
@@ -76,6 +81,8 @@ void SearchController::Initialize() {
           notifier_, federated_service_controller_);
   app_search_data_source_ = std::make_unique<AppSearchDataSource>(
       profile_, list_controller_, base::DefaultClock::GetInstance());
+  app_discovery_metrics_manager_ =
+      std::make_unique<AppDiscoveryMetricsManager>(profile_);
 }
 
 void SearchController::OnBurnInPeriodElapsed() {
@@ -183,9 +190,19 @@ void SearchController::OnZeroStateTimedOut() {
   }
 }
 
-void SearchController::AppListClosing() {
-  for (const auto& provider : providers_) {
-    provider->StopZeroState();
+void SearchController::AppListViewChanging(bool is_visible) {
+  // In tablet mode, the launcher is always visible so do not log launcher open
+  // if the device is in tablet mode.
+  if (is_visible && !IsTabletMode() &&
+      base::FeatureList::IsEnabled(metrics::structured::kAppDiscoveryLogging)) {
+    app_discovery_metrics_manager_->OnLauncherOpen();
+  }
+
+  // On close.
+  if (!is_visible) {
+    for (const auto& provider : providers_) {
+      provider->StopZeroState();
+    }
   }
 }
 
@@ -197,6 +214,9 @@ void SearchController::OpenResult(ChromeSearchResult* result, int event_flags) {
   }
 
   metrics_manager_->OnOpen(result->result_type(), last_query_);
+  if (base::FeatureList::IsEnabled(metrics::structured::kAppDiscoveryLogging)) {
+    app_discovery_metrics_manager_->OnOpenResult(result, last_query_);
+  }
 
   const bool dismiss_view_on_open = result->dismiss_view_on_open();
 
@@ -252,7 +272,7 @@ void SearchController::SetResults(const SearchProvider* provider,
 void SearchController::SetSearchResults(const SearchProvider* provider) {
   Rank(provider->ResultType());
 
-  for (auto& result : provider->results()) {
+  for (const auto& result : results_[provider->ResultType()]) {
     metrics_manager_->OnSearchResultsUpdated(result->scoring());
   }
 

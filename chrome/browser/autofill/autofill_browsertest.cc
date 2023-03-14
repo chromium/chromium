@@ -264,6 +264,7 @@ class AutofillTest : public InProcessBrowserTest {
   }
 
  private:
+  test::AutofillBrowserTestEnvironment autofill_test_environment_;
   TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
 };
 
@@ -507,8 +508,9 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, UsePlusSignForInternationalNumber) {
   data4["PHONE_HOME_WHOLE_NUMBER"] = "+1 (408) 871-4567";
   profiles.push_back(data4);
 
-  for (size_t i = 0; i < profiles.size(); ++i)
-    FillFormAndSubmit("autofill_test_form.html", profiles[i]);
+  for (const FormMap& profile : profiles) {
+    FillFormAndSubmit("autofill_test_form.html", profile);
+  }
 
   ASSERT_EQ(4u, personal_data_manager()->GetProfiles().size());
 
@@ -561,7 +563,7 @@ IN_PROC_BROWSER_TEST_F(AutofillTest,
 }
 
 // Test profiles are not merged without minimum address values.
-// Mininum address values needed during aggregation are: address line 1, city,
+// Minimum address values needed during aggregation are: address line 1, city,
 // state, and zip code.
 // Profiles are merged when data for address line 1 and city match.
 IN_PROC_BROWSER_TEST_F(AutofillTest, ProfilesNotMergedWhenNoMinAddressData) {
@@ -808,6 +810,7 @@ class AutofillTestPrerendering : public InProcessBrowserTest {
   }
 
  private:
+  test::AutofillBrowserTestEnvironment autofill_test_environment_;
   TestAutofillManagerInjector<MockAutofillManager> autofill_manager_injector_;
   content::test::PrerenderTestHelper prerender_helper_{
       base::BindRepeating(&AutofillTestPrerendering::web_contents,
@@ -967,6 +970,7 @@ class AutofillTestFormSubmission
     ui_test_utils::NavigateToURL(&params);
   }
 
+  test::AutofillBrowserTestEnvironment autofill_test_environment_;
   base::test::ScopedFeatureList feature_list_;
   TestAutofillManagerInjector<MockAutofillManager> autofill_manager_injector_;
 };
@@ -988,7 +992,7 @@ IN_PROC_BROWSER_TEST_P(AutofillTestFormSubmission, Submission) {
   run_loop.Run();
 }
 
-// Tests that non-link-click, renderer-inititiated navigation triggers a
+// Tests that non-link-click, renderer-initiated navigation triggers a
 // submission event in BrowserAutofillManager.
 IN_PROC_BROWSER_TEST_P(AutofillTestFormSubmission, ProbableSubmission) {
   base::RunLoop run_loop;

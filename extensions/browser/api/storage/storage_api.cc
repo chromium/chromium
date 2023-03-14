@@ -190,7 +190,7 @@ ExtensionFunction::ResponseValue SettingsFunction::UseReadResult(
   if (!result.status().ok())
     return Error(result.status().message);
 
-  return OneArgument(base::Value(result.PassSettings()));
+  return WithArguments(result.PassSettings());
 }
 
 ExtensionFunction::ResponseValue SettingsFunction::UseWriteResult(
@@ -316,7 +316,7 @@ ExtensionFunction::ResponseValue StorageStorageAreaGetFunction::RunInSession() {
       return BadMessage();
   }
 
-  return OneArgument(base::Value(std::move(value_dict)));
+  return WithArguments(std::move(value_dict));
 }
 
 ExtensionFunction::ResponseValue
@@ -348,7 +348,7 @@ StorageStorageAreaGetBytesInUseFunction::RunWithStorage(ValueStore* storage) {
       return BadMessage();
   }
 
-  return OneArgument(base::Value(static_cast<int>(bytes_in_use)));
+  return WithArguments(static_cast<int>(bytes_in_use));
 }
 
 ExtensionFunction::ResponseValue
@@ -383,7 +383,7 @@ StorageStorageAreaGetBytesInUseFunction::RunInSession() {
   // Checked cast should not overflow since `bytes_in_use` is guaranteed to be a
   // small number, due to the quota limits we have in place for in-memory
   // storage
-  return OneArgument(base::Value(base::checked_cast<int>(bytes_in_use)));
+  return WithArguments(base::checked_cast<int>(bytes_in_use));
 }
 
 ExtensionFunction::ResponseValue StorageStorageAreaSetFunction::RunWithStorage(
@@ -513,8 +513,8 @@ StorageStorageAreaSetAccessLevelFunction::RunInSession() {
   if (source_context_type() != Feature::BLESSED_EXTENSION_CONTEXT)
     return Error("Context cannot set the storage access level");
 
-  std::unique_ptr<api::storage::StorageArea::SetAccessLevel::Params> params(
-      api::storage::StorageArea::SetAccessLevel::Params::Create(args()));
+  absl::optional<api::storage::StorageArea::SetAccessLevel::Params> params =
+      api::storage::StorageArea::SetAccessLevel::Params::Create(args());
 
   if (!params)
     return BadMessage();

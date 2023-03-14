@@ -95,11 +95,10 @@ copy("copy_files") {
 ts_library("build_ts") {
   root_dir = target_gen_dir
   out_dir = "$target_gen_dir/tsc"
-  allow_js = true
   in_files = js_files + html_wrapper_files + mojom_files
   deps = [
     "//ui/webui/resources/js:build_ts",
-    "//ui/webui/resources/mojo:library",
+    "//ui/webui/resources/mojo:build_ts",
   ]
   extra_deps = [
     ":copy_files",

@@ -55,7 +55,7 @@ FileManagerPrivateCancelDialogFunction::Run() {
 
 ExtensionFunction::ResponseAction FileManagerPrivateSelectFileFunction::Run() {
   using extensions::api::file_manager_private::SelectFile::Params;
-  const std::unique_ptr<Params> params(Params::Create(args()));
+  const absl::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   std::vector<GURL> file_paths;
@@ -128,7 +128,7 @@ FileManagerPrivateSelectFilesFunction::
 
 ExtensionFunction::ResponseAction FileManagerPrivateSelectFilesFunction::Run() {
   using extensions::api::file_manager_private::SelectFiles::Params;
-  const std::unique_ptr<Params> params(Params::Create(args()));
+  const absl::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   should_return_local_path_ = params->should_return_local_path;
@@ -217,7 +217,7 @@ void FileManagerPrivateSelectFilesFunction::GetSelectedFileInfoResponse(
 ExtensionFunction::ResponseAction
 FileManagerPrivateGetAndroidPickerAppsFunction::Run() {
   using extensions::api::file_manager_private::GetAndroidPickerApps::Params;
-  const std::unique_ptr<Params> params(Params::Create(args()));
+  const absl::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   auto* intent_helper = ARC_GET_INSTANCE_FOR_METHOD(
@@ -309,7 +309,7 @@ void FileManagerPrivateGetAndroidPickerAppsFunction::OnIconsLoaded(
 ExtensionFunction::ResponseAction
 FileManagerPrivateSelectAndroidPickerAppFunction::Run() {
   using extensions::api::file_manager_private::SelectAndroidPickerApp::Params;
-  const std::unique_ptr<Params> params(Params::Create(args()));
+  const absl::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // Though the user didn't select an actual file, we generate a virtual file

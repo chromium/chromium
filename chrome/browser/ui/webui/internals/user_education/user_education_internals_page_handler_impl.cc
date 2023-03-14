@@ -153,8 +153,9 @@ void UserEducationInternalsPageHandlerImpl::StartTutorial(
   const ui::ElementContext context =
       chrome::FindBrowserWithProfile(profile_)->window()->GetElementContext();
   std::string result;
-  if (!tutorial_service_->StartTutorial(tutorial_id, context)) {
-    result = "Cannot start tutorial.";
+  tutorial_service_->StartTutorial(tutorial_id, context);
+  if (!tutorial_service_->IsRunningTutorial()) {
+    result = "Failed to start tutorial " + tutorial_id;
   }
   std::move(callback).Run(result);
 }

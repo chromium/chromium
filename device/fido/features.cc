@@ -34,7 +34,7 @@ BASE_FEATURE(kWebAuthnGoogleCorpRemoteDesktopClientPrivilege,
 
 BASE_FEATURE(kWebAuthPasskeysUI,
              "WebAuthenticationPasskeysUI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebAuthnNoEmptyDisplayNameCBOR,
              "WebAuthenticationNoEmptyDisplayNameCBOR",
@@ -61,5 +61,10 @@ BASE_FEATURE(kWebAuthnCredProtectThree,
 BASE_FEATURE(kWebAuthnPRFAsAuthenticator,
              "WebAuthenticationPRFAsAuthenticator",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Added in M113. Remove in or after M116.
+BASE_FEATURE(kWebAuthnMacPlatformAuthenticatorOptionalUv,
+             "WebAuthenticationMacPlatformAuthenticatorOptionalUv",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace device

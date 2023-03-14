@@ -138,7 +138,8 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
       const LocalFrameToken* initiator_frame_token,
       std::unique_ptr<SourceLocation> source_location,
       mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
-          initiator_policy_container_keep_alive_handle) override;
+          initiator_policy_container_keep_alive_handle,
+      bool is_container_initiated) override;
   void DispatchWillSendSubmitEvent(HTMLFormElement*) override;
   void DidStartLoading() override;
   void DidStopLoading() override;

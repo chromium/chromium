@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "v8/include/v8-inspector.h"
@@ -254,6 +255,10 @@ class CORE_EXPORT WorkerGlobalScope
     return main_resource_identifier_;
   }
 
+  const SecurityOrigin* top_level_frame_security_origin() const {
+    return top_level_frame_security_origin_.get();
+  }
+
  protected:
   WorkerGlobalScope(std::unique_ptr<GlobalScopeCreationParams>,
                     WorkerThread*,
@@ -377,6 +382,11 @@ class CORE_EXPORT WorkerGlobalScope
   // script has completed loading. This is so that VT does not run while script
   // is being loaded.
   WebScopedVirtualTimePauser loading_virtual_time_pauser_;
+
+  // The security origin of the top level frame associated with the worker. This
+  // can be used, for instance, to check if the top level frame has an opaque
+  // origin.
+  scoped_refptr<const SecurityOrigin> top_level_frame_security_origin_;
 };
 
 template <>

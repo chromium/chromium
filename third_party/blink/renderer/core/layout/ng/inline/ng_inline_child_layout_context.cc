@@ -17,6 +17,7 @@ struct SameSizeAsNGInlineChildLayoutContext {
  public:
   NGFragmentItemsBuilder items_builder_;
   absl::optional<NGInlineLayoutStateStack> box_states_;
+  absl::optional<LayoutUnit> optional_layout_unit;
   void* pointers[3];
   unsigned number;
   HeapVector<Member<const NGBlockBreakToken>> propagated_float_break_tokens_;

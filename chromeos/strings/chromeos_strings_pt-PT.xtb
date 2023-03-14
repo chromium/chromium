@@ -155,7 +155,7 @@
 <translation id="2271469253353559191">Horário do modo escuro</translation>
 <translation id="2276999893457278469">Conteúdo de ajuda principal</translation>
 <translation id="2287186687001756809">Nenhuma imagem disponível. Para adicionar fotos, aceda a <ph name="LINK" /></translation>
-<translation id="2307344026739914387">Utilizar par de chaves atual</translation>
+<translation id="2307344026739914387">Usar par de chaves atual</translation>
 <translation id="2320295602967756579">Ativar tema claro</translation>
 <translation id="2323506179655536734">IGNORADO</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">Excelente (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2364498172489649528">Aprovado</translation>
+<translation id="2367335866686097760">Tecla do mapeamento de teclas</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Enviar relatório de feedback</translation>
 <translation id="2407209115954268704">Estado de bloqueio do SIM</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">Imagem do avatar alterada</translation>
 <translation id="3192947282887913208">Ficheiros de áudio</translation>
 <translation id="3199982728237701504">Alimentador de documentos (dois lados)</translation>
+<translation id="3211671540163313381">Teclado direcional do mapeamento de teclas</translation>
 <translation id="3226405216343213872">A procurar leitores…</translation>
+<translation id="3226657629376379887">Menu de ações do esquema</translation>
 <translation id="3246869037381808805">As tarefas de impressão com mais de um 1 dia serão removidas.</translation>
 <translation id="3268178239013324452">Falha – Porta aberta</translation>
 <translation id="3275729367986477355">Imagem do avatar</translation>
@@ -253,6 +256,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Segurança</translation>
 <translation id="3435896845095436175">Ativar</translation>
+<translation id="345256797477978759">Ancorar a janela na parte <ph name="DIRECTION" /> maior do ecrã</translation>
 <translation id="3456078764689556234">Página <ph name="PRINTED_PAGES" /> impressa de <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">A digitalizar a página <ph name="PAGE_NUM" />… <ph name="PERCENTAGE_VALUE" />% concluído.</translation>
 <translation id="3459509316159669723">Impressão</translation>
@@ -273,12 +277,14 @@
 <translation id="3595596368722241419">Bateria carregada</translation>
 <translation id="3600339377155080675">Espelhamento do ecrã</translation>
 <translation id="3602290021589620013">Pré-visualizar</translation>
+<translation id="360282891121575443">As fotos em álbuns partilhados podem ser atualizadas por outros utilizadores. As alterações diárias podem apresentar imagens de fundo não existentes no álbum.</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Alterar imagem de fundo</translation>
 <translation id="360565022852130722">A rede WiFi está protegida com um protocolo pouco seguro WEP 802.1x.</translation>
 <translation id="3606583719724308068">Latência elevada para Websites HTTPS</translation>
 <translation id="361575905210396100">Agradecemos o seu feedback</translation>
 <translation id="3632579075709132555">Botão do ecrã de privacidade</translation>
+<translation id="3639846061339007994">superior</translation>
 <translation id="3651050199673793219">Selecione uma unidade de temperatura</translation>
 <translation id="3689839747745352263">Teste <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">A carregar...</translation>
@@ -563,6 +569,7 @@
 <translation id="6117895505466548728"><ph name="TITLE" /> e mais <ph name="NUMBER" /> álbuns</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Serviço do método de introdução do ChromeOS</translation>
+<translation id="6136285399872347291">retrocesso</translation>
 <translation id="6137767437444130246">Certificado do utilizador</translation>
 <translation id="6146993107019042706">Para terminar, introduza a nova palavra-passe.</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -610,6 +617,7 @@
 <translation id="650266656685499220">Para criar álbuns, aceda ao Google Fotos.</translation>
 <translation id="6516990319416533844">Para testar a velocidade de carregamento da bateria, descarregue a bateria durante um curto período.</translation>
 <translation id="6517239166834772319">Explore</translation>
+<translation id="6526200165918397681">Corresponder à imagem de fundo</translation>
 <translation id="6527081081771465939">Protocolo de segurança de Wi-Fi desconhecido.</translation>
 <translation id="6535178685492749208">Está offline. O feedback vai ser enviado mais tarde.</translation>
 <translation id="65587193855025101">Plano</translation>
@@ -617,7 +625,7 @@
 <translation id="6566314079205407217">Digitalização de várias páginas</translation>
 <translation id="6574762126505704998">Preenchimento</translation>
 <translation id="6575134580692778371">Não configurado</translation>
-<translation id="6579509898032828423">Utilizar esta foto</translation>
+<translation id="6579509898032828423">Usar esta foto</translation>
 <translation id="6596816719288285829">Endereço IP</translation>
 <translation id="6599673642868607614">Agradecemos o seu feedback. O seu feedback ajuda-nos a melhorar a experiência do Chromebook e vai ser analisado pela nossa equipa. Devido ao elevado número de relatórios, não é possível enviar uma resposta.</translation>
 <translation id="6618744767048954150">Em execução</translation>
@@ -629,6 +637,7 @@
 <translation id="6657585470893396449">Palavra-passe</translation>
 <translation id="6659594942844771486">Separador</translation>
 <translation id="6692996468359469499">Obtenha informações relacionadas com a sua seleção</translation>
+<translation id="6698459586333070823">Os álbuns partilhados podem ser atualizados por outros utilizadores</translation>
 <translation id="6704062477274546131">Resolução de DNS</translation>
 <translation id="6723839937902243910">Alimentação</translation>
 <translation id="6723847290197874913">Retroiluminação do teclado</translation>
@@ -665,6 +674,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Falha – A autorização falhou</translation>
 <translation id="7103252855940681301">Dispositivo <ph name="INDEX" /> de <ph name="COUNT" /> designado <ph name="NAME" />.</translation>
+<translation id="7108668606237948702">enter</translation>
 <translation id="7130438335435247835">Nome do Ponto de Acesso (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de nomes}other{Servidores de nomes}}</translation>
 <translation id="7143207342074048698">A ligar</translation>
@@ -674,6 +684,7 @@
 <translation id="7155171745945906037">Foto existente da câmara ou do ficheiro</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7170236477717446850">Imagem do perfil</translation>
+<translation id="7171919371520438592">Ancorar a janela na parte <ph name="DIRECTION" /> menor do ecrã</translation>
 <translation id="7172721935181587524">1 imagem</translation>
 <translation id="7177485034254901881">Este <ph name="DEVICE_TYPE" /> é gerido por <ph name="MANAGER" />. Os administradores podem configurar remotamente o dispositivo.</translation>
 <translation id="7180611975245234373">Atualizar</translation>
@@ -739,7 +750,7 @@
 <translation id="7791543448312431591">Adicionar</translation>
 <translation id="779591286616261875">Enviar novo relatório</translation>
 <translation id="7799817062559422778">Modo claro</translation>
-<translation id="780301667611848630">Não, obrigado</translation>
+<translation id="780301667611848630">Não</translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7819857487979277519">PSK (WPA ou RSN)</translation>
 <translation id="7841134249932030522">Ativar modo escuro</translation>
@@ -749,6 +760,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipo de fornecedor</translation>
 <translation id="7882501334836096755">Chave pública</translation>
+<translation id="78957024357676568">esquerda</translation>
 <translation id="7915220255123750251">Faça a gestão das definições do APN (Nome do Ponto de Acesso) da rede. Os APNs estabelecem uma ligação entre uma rede móvel e a Internet.</translation>
 <translation id="7936303884198020182">Não foram encontrados servidores de nomes.</translation>
 <translation id="7942349550061667556">Vermelho</translation>
@@ -777,9 +789,11 @@
 <translation id="8183974620058026102">Anexar</translation>
 <translation id="8206859287963243715">Telemóvel</translation>
 <translation id="8208861521865154048">Benefícios</translation>
+<translation id="8210733748736414123">inferior</translation>
 <translation id="8226628635270268143">Escolha os seus álbuns ou fotos favoritos.</translation>
 <translation id="8227119283605456246">Anexar ficheiro</translation>
 <translation id="8230672074305416752">Falha ao enviar ping ao gateway da rede predefinida.</translation>
+<translation id="8242426110754782860">Continuar</translation>
 <translation id="8246209727385807362">Operador desconhecido</translation>
 <translation id="827422111966801947">Índigo</translation>
 <translation id="8286154143153872371">Estabeleça ligação a uma rede e atualize a página para ver a imagem de fundo.</translation>
@@ -790,9 +804,11 @@
 <translation id="8318753676953949627">Não existem imagens</translation>
 <translation id="8336739000755212683">Alterar imagem da conta do dispositivo</translation>
 <translation id="8347227221149377169">Tarefas de impressão</translation>
+<translation id="8351855506390808906">Ponto de toque do mapeamento de teclas</translation>
 <translation id="8352772353338965963">Adicione uma conta para início de sessão integrado. É possível aceder a todas as contas com a sessão iniciada sem uma palavra-passe, por isso, só deve usar esta funcionalidade com contas fidedignas.</translation>
 <translation id="8364946094152050673">Os servidores de nomes estão vazios.</translation>
 <translation id="8372477600026034341">Anfitriões adicionais</translation>
+<translation id="8380114448424469341">Ancorar a janela na metade <ph name="DIRECTION" /> do ecrã</translation>
 <translation id="8395584934117017006">Este <ph name="DEVICE_TYPE" /> é gerido pela empresa.</translation>
 <translation id="8398927464629426868">A velocidade de carregamento ou descarregamento atual do dispositivo.</translation>
 <translation id="8410244574650205435">Detetado automaticamente</translation>
@@ -822,7 +838,7 @@
 <translation id="8675354002693747642">Chave pré-partilhada</translation>
 <translation id="8677859815076891398">Não existem álbuns. Crie um álbum no <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Utilize as teclas das setas para a esquerda ou para a direita para gerir esta funcionalidade.</translation>
-<translation id="8712637175834984815">Entendido</translation>
+<translation id="8712637175834984815">OK</translation>
 <translation id="871560550817059752">Falha – Sem tinta</translation>
 <translation id="8723108084122415655">Rede não predefinida acima do limite de latência.</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
@@ -857,6 +873,7 @@
 <translation id="8930622219860340959">Sem fios</translation>
 <translation id="8936793075252196307">Endereço IP do cliente</translation>
 <translation id="894617464444543719">O dispositivo é um telemóvel.</translation>
+<translation id="8957423540740801332">direita</translation>
 <translation id="8968751544471797276">Velocidade de carregamento</translation>
 <translation id="8970109610781093811">Executar novamente</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -871,7 +888,7 @@
 <translation id="9062831201344759865">A resolução de DNS tem uma latência elevada</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9082718469794970195">Utilizar este vídeo</translation>
+<translation id="9082718469794970195">Usar este vídeo</translation>
 <translation id="9087578468327036362">Denunciar esta consulta</translation>
 <translation id="9088306295921699330">Utilização atual</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
@@ -884,6 +901,7 @@
 <translation id="9137526406337347448">Serviços Google</translation>
 <translation id="9138630967333032450">Shift do lado esquerdo</translation>
 <translation id="9149391708638971077">Executar teste de memória</translation>
+<translation id="9161276708550942948">espaço</translation>
 <translation id="9173638680043580060">Falta menos de um minuto</translation>
 <translation id="917720651393141712">Testar</translation>
 <translation id="9188992814426075118">O teclado pode corresponder automaticamente à sua imagem de fundo</translation>

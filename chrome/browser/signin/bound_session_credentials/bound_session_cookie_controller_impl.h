@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_observer.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -18,6 +19,7 @@
 
 class SigninClient;
 class BoundSessionCookieFetcher;
+class BoundSessionCookieObserver;
 
 // This class is responsible for tracking a single bound session cookie:
 // - It observers cookie changes
@@ -64,8 +66,8 @@ class BoundSessionCookieControllerImpl : public BoundSessionCookieController {
       const;
 
   void StartRefreshCookieRequest();
-  void SetCookieExpirationTimeAndNotify(const base::Time& expiration_time);
-  void OnCookieRefreshFetched(absl::optional<const base::Time> expiration_time);
+  void SetCookieExpirationTimeAndNotify(base::Time expiration_time);
+  void OnCookieRefreshFetched(absl::optional<base::Time> expiration_time);
 
   void set_refresh_cookie_fetcher_factory_for_testing(
       RefreshCookieFetcherFactoryForTesting
@@ -75,6 +77,7 @@ class BoundSessionCookieControllerImpl : public BoundSessionCookieController {
   }
 
   const raw_ptr<SigninClient> client_;
+  std::unique_ptr<BoundSessionCookieObserver> cookie_observer_;
   std::unique_ptr<BoundSessionRefreshCookieFetcher> refresh_cookie_fetcher_;
   RefreshCookieFetcherFactoryForTesting
       refresh_cookie_fetcher_factory_for_testing_;

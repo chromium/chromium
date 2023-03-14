@@ -127,7 +127,7 @@ TEST_F(FileProxyTest, CreateOrOpen_Create) {
 
 TEST_F(FileProxyTest, CreateOrOpen_Open) {
   // Creates a file.
-  base::WriteFile(TestPath(), nullptr, 0);
+  base::WriteFile(TestPath(), base::StringPiece());
   ASSERT_TRUE(PathExists(TestPath()));
 
   // Opens the created file.
@@ -275,7 +275,7 @@ TEST_F(FileProxyTest, DuplicateFile) {
 
 TEST_F(FileProxyTest, GetInfo) {
   // Setup.
-  ASSERT_EQ(4, base::WriteFile(TestPath(), "test", 4));
+  ASSERT_TRUE(base::WriteFile(TestPath(), "test"));
   File::Info expected_info;
   GetFileInfo(TestPath(), &expected_info);
 
@@ -299,10 +299,8 @@ TEST_F(FileProxyTest, GetInfo) {
 
 TEST_F(FileProxyTest, Read) {
   // Setup.
-  const char expected_data[] = "bleh";
-  int expected_bytes = std::size(expected_data);
-  ASSERT_EQ(expected_bytes,
-            base::WriteFile(TestPath(), expected_data, expected_bytes));
+  constexpr base::StringPiece expected_data = "bleh";
+  ASSERT_TRUE(base::WriteFile(TestPath(), expected_data));
 
   // Run.
   FileProxy proxy(file_task_runner());
@@ -316,10 +314,7 @@ TEST_F(FileProxyTest, Read) {
 
   // Verify.
   EXPECT_EQ(File::FILE_OK, error_);
-  EXPECT_EQ(expected_bytes, static_cast<int>(buffer_.size()));
-  for (size_t i = 0; i < buffer_.size(); ++i) {
-    EXPECT_EQ(expected_data[i], buffer_[i]);
-  }
+  EXPECT_EQ(expected_data, base::StringPiece(buffer_.data(), buffer_.size()));
 }
 
 TEST_F(FileProxyTest, WriteAndFlush) {
@@ -396,7 +391,7 @@ TEST_F(FileProxyTest, MAYBE_SetTimes) {
 TEST_F(FileProxyTest, SetLength_Shrink) {
   // Setup.
   const char kTestData[] = "0123456789";
-  ASSERT_EQ(10, base::WriteFile(TestPath(), kTestData, 10));
+  ASSERT_TRUE(base::WriteFile(TestPath(), kTestData));
   File::Info info;
   GetFileInfo(TestPath(), &info);
   ASSERT_EQ(10, info.size);
@@ -424,7 +419,7 @@ TEST_F(FileProxyTest, SetLength_Shrink) {
 TEST_F(FileProxyTest, SetLength_Expand) {
   // Setup.
   const char kTestData[] = "9876543210";
-  ASSERT_EQ(10, base::WriteFile(TestPath(), kTestData, 10));
+  ASSERT_TRUE(base::WriteFile(TestPath(), kTestData));
   File::Info info;
   GetFileInfo(TestPath(), &info);
   ASSERT_EQ(10, info.size);

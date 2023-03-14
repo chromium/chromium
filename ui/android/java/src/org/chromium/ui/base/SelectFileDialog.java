@@ -1309,16 +1309,16 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
     private static boolean showAndroidMediaPicker(WindowAndroid windowAndroid,
             WindowAndroid.IntentCallback intentCallback, boolean allowMultiple,
             List<String> mimeTypes) {
-        // Switch to MediaStore.ACTION_PICK_IMAGES when available in new SDK.
-        String actionPickImages = "android.provider.action.PICK_IMAGES";
-        // Switch to MediaStore.EXTRA_PICK_IMAGES_MAX when available in new SDK.
-        String extraPickImagesMax = "android.provider.extra.PICK_IMAGES_MAX";
-        // Switch to MediaStore.getPickImagesMaxLimit() when available in new SDK.
+        // This default value is kept for backwards compatibility, but it is effectively never used,
+        // because the Android Media Picker is limited to T and newer (in preferAndroidMediaPicker).
         int maxImagesForUpload = 50;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            maxImagesForUpload = MediaStore.getPickImagesMaxLimit();
+        }
 
-        Intent intent = new Intent(actionPickImages);
+        Intent intent = new Intent(MediaStore.ACTION_PICK_IMAGES);
         if (allowMultiple) {
-            intent.putExtra(extraPickImagesMax, maxImagesForUpload);
+            intent.putExtra(MediaStore.EXTRA_PICK_IMAGES_MAX, maxImagesForUpload);
         }
 
         String mimeType = singleMimeTypeForAndroidPicker(mimeTypes);

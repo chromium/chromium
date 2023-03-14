@@ -8,27 +8,18 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/system/privacy_hub/privacy_hub_notification.h"
-#include "base/containers/enum_set.h"
-#include "base/containers/flat_map.h"
-#include "base/memory/weak_ptr.h"
 
 namespace ash {
 
 // A class managing when to show notifications for microphone, camera and
 // geolocation to the user or combining them if necessary.
 class ASH_EXPORT PrivacyHubNotificationController {
+  using Sensor = SensorDisabledNotificationDelegate::Sensor;
+  using SensorSet = SensorDisabledNotificationDelegate::SensorSet;
+
  public:
-  enum class Sensor {
-    kCamera,
-    kMin = kCamera,
-    kLocation,
-    kMicrophone,
-    kMax = kMicrophone
-  };
-
-  using SensorEnumSet = base::EnumSet<Sensor, Sensor::kMin, Sensor::kMax>;
-
   PrivacyHubNotificationController();
   PrivacyHubNotificationController(const PrivacyHubNotificationController&) =
       delete;
@@ -36,20 +27,41 @@ class ASH_EXPORT PrivacyHubNotificationController {
       const PrivacyHubNotificationController&) = delete;
   ~PrivacyHubNotificationController();
 
-  // Called by any sensor system when a notification for `sensor`
-  // should be shown to the user.
-  void ShowSensorDisabledNotification(Sensor sensor);
+  // Called by any sensor system when a software switch notification for
+  // `sensor` should be shown to the user.
+  void ShowSoftwareSwitchNotification(Sensor sensor);
 
-  // Called by any sensor system when a notification for `sensor`
-  // should be removed from the notification center and popups.
-  void RemoveSensorDisabledNotification(Sensor sensor);
+  // Called by any sensor system when a software switch notification for
+  // `sensor` should be removed from the notification center and popups.
+  void RemoveSoftwareSwitchNotification(Sensor sensor);
 
-  // Called by any sensor system when a notification for `sensor` should be
-  // updated, for example, when an application stops accessing `sensor`.
-  void UpdateSensorDisabledNotification(Sensor sensor);
+  // Called by any sensor system when a software switch notification for
+  // `sensor` should be updated, for example, when an application stops
+  // accessing `sensor`.
+  void UpdateSoftwareSwitchNotification(Sensor sensor);
 
+  // Called by any sensor system when a hardware switch notification for
+  // `sensor` should be shown to the user.
+  void ShowHardwareSwitchNotification(Sensor sensor);
+
+  // Called by any sensor system when a hardware switch notification for
+  // `sensor` should be removed from the notification center and popups.
+  void RemoveHardwareSwitchNotification(Sensor sensor);
+
+  // Called by any sensor system when a hardware switch notification for
+  // `sensor` should be updated, for example, when an application stops
+  // accessing `sensor`.
+  void UpdateHardwareSwitchNotification(Sensor sensor);
+
+  // This same id will be used for
+  // - microphone software switch notification
+  // - camera software switch notification
+  // - microphone and camera combined notification
   static constexpr const char kCombinedNotificationId[] =
-      "ash.system.privacy_hub.enable_microphone_and_camera";
+      "ash.system.privacy_hub.enable_microphone_and/or_camera";
+
+  static constexpr const char kMicrophoneHardwareSwitchNotificationId[] =
+      "ash://microphone_hardware_mute";
 
   // Open the Privacy Hub settings page and log that this interaction came from
   // a notification.
@@ -60,26 +72,22 @@ class ASH_EXPORT PrivacyHubNotificationController {
   static void OpenSupportUrl(Sensor sensor);
 
  private:
-  // Show all notifications that are currently active and combine them if
-  // necessary. From the `changed_sensor` in combination with `sensors_`,
-  // `combinable_sensors_` and `ignore_new_combinable_notifications_` the
-  // appropriate notification will be shown and unnecessary notifications
-  // removed if necessary.
-  void ShowAllActiveNotifications(Sensor changed_sensor);
+  void AddSensor(SensorDisabledNotificationDelegate::Sensor sensor);
+  void RemoveSensor(SensorDisabledNotificationDelegate::Sensor sensor);
 
-  void HandleNotificationMessageClicked();
+  const SensorSet combinable_sensors_{Sensor::kMicrophone, Sensor::kCamera};
 
-  const SensorEnumSet combinable_sensors_{Sensor::kMicrophone, Sensor::kCamera};
-  // Flag to keep track if the user opened the settings page and don't show
-  // them new notifications of sensors that can be combined or the combined
-  // notification until the number of active uses falls to 0.
-  bool ignore_new_combinable_notifications_{false};
-  SensorEnumSet sensors_;
+  // `combined_notification_` will be displayed for the sensors which are
+  // currently in `sensors_`. Only `combinable_sensors_` can be in `sensors_`.
+  SensorSet sensors_;
+
+  // This PrivacyHubNotification object will be used to display
+  // - microphone software switch notification
+  // - camera software switch notification
+  // - microphone and camera combined notification
   std::unique_ptr<PrivacyHubNotification> combined_notification_;
-  base::flat_map<Sensor, std::unique_ptr<PrivacyHubNotification>>
-      sw_notifications_;
-  base::WeakPtrFactory<PrivacyHubNotificationController> weak_ptr_factory_{
-      this};
+
+  std::unique_ptr<PrivacyHubNotification> microphone_hw_switch_notification_;
 };
 
 }  // namespace ash

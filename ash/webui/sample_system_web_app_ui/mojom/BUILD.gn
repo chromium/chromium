@@ -45,7 +45,6 @@ mojom("untrusted") {
 # TODO(crbug.com/1002798): Mojo should generate this ts_library() from actual
 # TS files rather than creating d.ts files from the generated JS files.
 ts_library("mojom_ts") {
-  allow_js = true
   mojom_gen_dir = "$root_gen_dir/mojom-webui/$cur_dir"
   root_dir = mojom_gen_dir
   out_dir = "$mojom_gen_dir/tsc"
@@ -56,7 +55,7 @@ ts_library("mojom_ts") {
   ]
 
   # Required for Mojo's bindings.js resolution.
-  deps = [ "//ui/webui/resources/mojo:library" ]
+  deps = [ "//ui/webui/resources/mojo:build_ts" ]
 
   # Targets that generate the above .mojom-webui.js files.
   extra_deps = [

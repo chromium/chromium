@@ -70,6 +70,12 @@ class CORE_EXPORT StyleResolverState {
   // grab the document from.  This is why we have to store the document
   // separately.
   Document& GetDocument() const { return *document_; }
+  // Returns the element we are computing style for. This returns the same as
+  // GetElement() unless this is a pseudo element request or we are resolving
+  // style for an SVG element instantiated in a <use> shadow tree. This method
+  // may return nullptr if it is a pseudo element request with no actual
+  // PseudoElement present.
+  Element* GetStyledElement() const { return styled_element_; }
   // These are all just pass-through methods to ElementResolveContext.
   Element& GetElement() const { return element_context_.GetElement(); }
   const ContainerNode* ParentNode() const {
@@ -88,7 +94,7 @@ class CORE_EXPORT StyleResolverState {
 
   void SetStyle(const ComputedStyle& style) {
     // FIXME: Improve RAII of StyleResolverState to remove this function.
-    style_builder_ = ComputedStyleBuilder(style);
+    style_builder_.emplace(style);
     UpdateLengthConversionData();
   }
   ComputedStyleBuilder& StyleBuilder() { return *style_builder_; }
@@ -181,7 +187,7 @@ class CORE_EXPORT StyleResolverState {
     return uses_highlight_pseudo_inheritance_;
   }
 
-  bool CanCacheBaseStyle() const { return can_cache_base_style_; }
+  bool CanTriggerAnimations() const { return can_trigger_animations_; }
 
   bool HadNoMatchedProperties() const { return had_no_matched_properties_; }
   void SetHadNoMatchedProperties() { had_no_matched_properties_ = true; }
@@ -189,11 +195,16 @@ class CORE_EXPORT StyleResolverState {
   // True if the cascade observed any  "animation" or "transition" properties,
   // or when such properties were found within non-matching container queries.
   //
-  // The flag is supposed to represent whether or not animations can be
+  // The method is supposed to represent whether or not animations can be
   // affected by at least one of the style variations produced by evaluating
   // @container rules differently.
-  bool CanAffectAnimations() const { return can_affect_animations_; }
-  void SetCanAffectAnimations() { can_affect_animations_ = true; }
+  bool CanAffectAnimations() const;
+
+  // Mark the state to say that animations can be affected by at least one of
+  // the style variations produced by evaluating @container rules differently.
+  void SetConditionallyAffectsAnimations() {
+    conditionally_affects_animations_ = true;
+  }
 
   bool AffectsCompositorSnapshots() const {
     return affects_compositor_snapshots_;
@@ -242,7 +253,12 @@ class CORE_EXPORT StyleResolverState {
 
   FontBuilder font_builder_;
 
-  PseudoElement* pseudo_element_;
+  // May be different than GetElement() if the element being styled is a pseudo
+  // element or an instantiation via an SVG <use> element. In those cases,
+  // GetElement() returns the originating element, or the element instatiated
+  // from respectively.
+  Element* styled_element_;
+
   ElementStyleResources element_style_resources_;
   ElementType element_type_;
   Element* container_unit_context_;
@@ -254,9 +270,13 @@ class CORE_EXPORT StyleResolverState {
   // should be used for this highlight pseudo.
   const bool uses_highlight_pseudo_inheritance_;
 
-  // True if the base style can be cached to optimize style recalculations for
-  // animation updates or transition retargeting.
-  bool can_cache_base_style_ = false;
+  // True if this style resolution can start or stop animations and transitions.
+  // One case where animations and transitions can not be triggered is when we
+  // resolve FirstLineInherited style for an element on the first line. Styles
+  // inherited from the ::first-line styles should not cause transitions to
+  // start on such elements. Still, animations and transitions in progress still
+  // need to apply the effect for theses styles as well.
+  bool can_trigger_animations_ = false;
 
   // Set to true if a given style resolve produced an empty MatchResult.
   // This is used to return a nullptr style for pseudo-element style resolves.
@@ -264,7 +284,7 @@ class CORE_EXPORT StyleResolverState {
 
   // True whenever a matching rule in a non-matching container query contains
   // any properties that can affect animations or transitions.
-  bool can_affect_animations_ = false;
+  bool conditionally_affects_animations_ = false;
 
   // True if snapshots of composited keyframes require re-validation.
   bool affects_compositor_snapshots_ = false;

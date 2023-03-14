@@ -75,6 +75,9 @@ void ExecutionService::Initialize(
 
 void ExecutionService::OnNewModelInfoReady(
     const proto::SegmentInfo& segment_info) {
+  // TODO(crbug.com/1420015): Change path flow as
+  // SPSI->RRM->EE::RequestModelExecution and migrate
+  // MES::CancelOutstandingExecutionRequests() to EE.
   model_execution_scheduler_->OnNewModelInfoReady(segment_info);
 }
 
@@ -85,21 +88,6 @@ ModelProvider* ExecutionService::GetModelProvider(SegmentId segment_id) {
 void ExecutionService::RequestModelExecution(
     std::unique_ptr<ExecutionRequest> request) {
   DCHECK(request->segment_info);
-  if (request->save_result_to_db) {
-    DCHECK(!request->record_metrics_for_default)
-        << "cannot record metics for default model from scheduler";
-    // TODO(ssid): Scheduler should use the `request` instead of fetching the
-    // model provider.
-    DCHECK(!request->model_provider)
-        << "using custom model provider to save result is not supported";
-    DCHECK(request->callback.is_null())
-        << "save_result_to_db + callback cannot be set together";
-    DCHECK(!request->input_context)
-        << "saving results keyed on input context is not supported";
-    model_execution_scheduler_->RequestModelExecution(*request->segment_info);
-    return;
-  }
-
   DCHECK(!request->callback.is_null());
   model_executor_->ExecuteModel(std::move(request));
 }

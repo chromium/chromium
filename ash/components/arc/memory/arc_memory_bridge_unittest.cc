@@ -4,6 +4,7 @@
 
 #include "ash/components/arc/memory/arc_memory_bridge.h"
 
+#include "ash/components/arc/mojom/memory.mojom-shared.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/connection_holder_util.h"
@@ -80,6 +81,87 @@ TEST_F(ArcMemoryBridgeTest, DropCaches_NoInstance) {
       [&opt_result](bool result) { opt_result = result; }));
   ASSERT_TRUE(opt_result);
   EXPECT_FALSE(*opt_result);
+}
+
+// Tests that Reclaim runs the callback with memory reclaimed from all
+// processes successfully.
+TEST_F(ArcMemoryBridgeTest, Reclaim_All_Success) {
+  memory_instance()->set_reclaim_all_result(100, 0);
+
+  absl::optional<uint32_t> reclaimed_result;
+  absl::optional<uint32_t> unreclaimed_result;
+  bridge()->Reclaim(
+      mojom::ReclaimRequest::New(mojom::ReclaimType::ALL),
+      base::BindLambdaForTesting([&](mojom::ReclaimResultPtr result) {
+        reclaimed_result = result->reclaimed;
+        unreclaimed_result = result->unreclaimed;
+      }));
+
+  ASSERT_TRUE(reclaimed_result);
+  EXPECT_EQ(*reclaimed_result, 100u);
+  ASSERT_TRUE(unreclaimed_result);
+  EXPECT_EQ(*unreclaimed_result, 0u);
+}
+
+// Tests that Reclaim runs the callback with memory reclaimed from some
+// processes successfully.
+TEST_F(ArcMemoryBridgeTest, Reclaim_Partial_Success) {
+  memory_instance()->set_reclaim_all_result(50, 50);
+
+  absl::optional<uint32_t> reclaimed_result;
+  absl::optional<uint32_t> unreclaimed_result;
+  bridge()->Reclaim(
+      mojom::ReclaimRequest::New(mojom::ReclaimType::ALL),
+      base::BindLambdaForTesting([&](mojom::ReclaimResultPtr result) {
+        reclaimed_result = result->reclaimed;
+        unreclaimed_result = result->unreclaimed;
+      }));
+
+  ASSERT_TRUE(reclaimed_result);
+  EXPECT_EQ(*reclaimed_result, 50u);
+  ASSERT_TRUE(unreclaimed_result);
+  EXPECT_EQ(*unreclaimed_result, 50u);
+}
+
+// Tests that Reclaim runs the callback with memory reclaimed from some
+// processes successfully when anon pages are requested.
+TEST_F(ArcMemoryBridgeTest, Reclaim_Anon_Partial_Success) {
+  memory_instance()->set_reclaim_anon_result(10, 10);
+
+  absl::optional<uint32_t> reclaimed_result;
+  absl::optional<uint32_t> unreclaimed_result;
+  bridge()->Reclaim(
+      mojom::ReclaimRequest::New(mojom::ReclaimType::ANON),
+      base::BindLambdaForTesting([&](mojom::ReclaimResultPtr result) {
+        reclaimed_result = result->reclaimed;
+        unreclaimed_result = result->unreclaimed;
+      }));
+
+  ASSERT_TRUE(reclaimed_result);
+  EXPECT_EQ(*reclaimed_result, 10u);
+  ASSERT_TRUE(unreclaimed_result);
+  EXPECT_EQ(*unreclaimed_result, 10u);
+}
+
+// Tests that Reclaim runs the callback with the instance not available.
+TEST_F(ArcMemoryBridgeTest, Reclaim_NoInstance) {
+  // Inject failure.
+  ArcServiceManager::Get()->arc_bridge_service()->memory()->CloseInstance(
+      memory_instance());
+
+  absl::optional<uint32_t> reclaimed_result;
+  absl::optional<uint32_t> unreclaimed_result;
+  bridge()->Reclaim(
+      mojom::ReclaimRequest::New(mojom::ReclaimType::ALL),
+      base::BindLambdaForTesting([&](mojom::ReclaimResultPtr result) {
+        reclaimed_result = result->reclaimed;
+        unreclaimed_result = result->unreclaimed;
+      }));
+
+  ASSERT_TRUE(reclaimed_result);
+  EXPECT_EQ(*reclaimed_result, 0u);
+  ASSERT_TRUE(unreclaimed_result);
+  EXPECT_EQ(*unreclaimed_result, 0u);
 }
 
 }  // namespace

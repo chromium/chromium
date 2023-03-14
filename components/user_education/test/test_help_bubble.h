@@ -8,10 +8,12 @@
 #include <memory>
 
 #include "base/auto_reset.h"
+#include "base/callback_list.h"
 #include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/help_bubble_factory.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
 
 namespace ui {
 class TrackedElement;
@@ -23,7 +25,7 @@ class TestHelpBubble : public HelpBubble {
  public:
   static constexpr int kNoButtonWithTextIndex = -1;
 
-  TestHelpBubble(ui::ElementContext context, HelpBubbleParams params);
+  TestHelpBubble(ui::TrackedElement* element, HelpBubbleParams params);
   ~TestHelpBubble() override;
 
   DECLARE_FRAMEWORK_SPECIFIC_METADATA()
@@ -54,7 +56,10 @@ class TestHelpBubble : public HelpBubble {
   ui::ElementContext GetContext() const override;
 
  private:
-  ui::ElementContext context_;
+  void OnElementHidden(ui::TrackedElement* element);
+
+  base::raw_ptr<ui::TrackedElement> element_;
+  base::CallbackListSubscription element_hidden_subscription_;
   HelpBubbleParams params_;
   int focus_count_ = 0;
 

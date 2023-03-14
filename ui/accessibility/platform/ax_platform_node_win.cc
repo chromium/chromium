@@ -7,7 +7,6 @@
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
-#include <algorithm>
 #include <map>
 #include <set>
 #include <string>
@@ -19,6 +18,7 @@
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_number_conversions_win.h"
 #include "base/strings/string_util.h"
@@ -426,7 +426,7 @@ void AXPlatformNodeWin::HtmlAttributeToUIAAriaProperty(
 
 std::vector<AXPlatformNodeWin*>
 AXPlatformNodeWin::CreatePlatformNodeVectorFromRelationIdVector(
-    std::vector<int32_t>& relation_id_list) {
+    const std::vector<int32_t>& relation_id_list) {
   std::vector<AXPlatformNodeWin*> platform_node_list;
 
   for (int32_t id : relation_id_list) {
@@ -441,7 +441,7 @@ AXPlatformNodeWin::CreatePlatformNodeVectorFromRelationIdVector(
 }
 
 SAFEARRAY* AXPlatformNodeWin::CreateUIAElementsSafeArray(
-    std::vector<AXPlatformNodeWin*>& platform_node_list) {
+    const std::vector<AXPlatformNodeWin*>& platform_node_list) {
   if (platform_node_list.empty())
     return nullptr;
 
@@ -494,12 +494,9 @@ SAFEARRAY* AXPlatformNodeWin::CreateUIAControllerForArray() {
 
 SAFEARRAY* AXPlatformNodeWin::CreateUIAElementsArrayForRelation(
     const ax::mojom::IntListAttribute& attribute) {
-  std::vector<int32_t> relation_id_list = GetIntListAttribute(attribute);
-
-  std::vector<AXPlatformNodeWin*> platform_node_list =
-      CreatePlatformNodeVectorFromRelationIdVector(relation_id_list);
-
-  return CreateUIAElementsSafeArray(platform_node_list);
+  return CreateUIAElementsSafeArray(
+      CreatePlatformNodeVectorFromRelationIdVector(
+          GetIntListAttribute(attribute)));
 }
 
 SAFEARRAY* AXPlatformNodeWin::CreateUIAElementsArrayForReverseRelation(
@@ -508,16 +505,14 @@ SAFEARRAY* AXPlatformNodeWin::CreateUIAElementsArrayForReverseRelation(
       GetDelegate()->GetSourceNodesForReverseRelations(attribute);
 
   std::vector<int32_t> id_list;
-  std::transform(
-      reverse_relations.cbegin(), reverse_relations.cend(),
-      std::back_inserter(id_list), [](AXPlatformNode* platform_node) {
+  base::ranges::transform(
+      reverse_relations, std::back_inserter(id_list),
+      [](AXPlatformNode* platform_node) {
         return static_cast<AXPlatformNodeWin*>(platform_node)->GetData().id;
       });
 
-  std::vector<AXPlatformNodeWin*> platform_node_list =
-      CreatePlatformNodeVectorFromRelationIdVector(id_list);
-
-  return CreateUIAElementsSafeArray(platform_node_list);
+  return CreateUIAElementsSafeArray(
+      CreatePlatformNodeVectorFromRelationIdVector(id_list));
 }
 
 SAFEARRAY* AXPlatformNodeWin::CreateClickablePointArray() {
@@ -2955,6 +2950,17 @@ bool AXPlatformNodeWin::ISelectionItemProviderIsSelected() const {
   return GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
 }
 
+ToggleState AXPlatformNodeWin::GetToggleStateImpl() {
+  const auto checked_state = GetData().GetCheckedState();
+  if (checked_state == ax::mojom::CheckedState::kTrue) {
+    return ToggleState_On;
+  } else if (checked_state == ax::mojom::CheckedState::kMixed) {
+    return ToggleState_Indeterminate;
+  } else {
+    return ToggleState_Off;
+  }
+}
+
 bool AXPlatformNodeWin::IsNodeInaccessibleForUIA() const {
   // Ignored nodes and those that are descendants of a leaf node shouldn't be
   // exposed to UIA. For example, an atomic text field can have text children
@@ -3058,13 +3064,9 @@ IFACEMETHODIMP AXPlatformNodeWin::GetColumnHeaderItems(SAFEARRAY** result) {
   if (!column)
     return E_FAIL;
 
-  std::vector<int32_t> column_header_ids =
-      GetDelegate()->GetColHeaderNodeIds(*column);
-
-  std::vector<AXPlatformNodeWin*> platform_node_list =
-      CreatePlatformNodeVectorFromRelationIdVector(column_header_ids);
-
-  *result = CreateUIAElementsSafeArray(platform_node_list);
+  *result =
+      CreateUIAElementsSafeArray(CreatePlatformNodeVectorFromRelationIdVector(
+          GetDelegate()->GetColHeaderNodeIds(*column)));
   return S_OK;
 }
 
@@ -3076,13 +3078,9 @@ IFACEMETHODIMP AXPlatformNodeWin::GetRowHeaderItems(SAFEARRAY** result) {
   if (!row)
     return E_FAIL;
 
-  std::vector<int32_t> row_header_ids =
-      GetDelegate()->GetRowHeaderNodeIds(*row);
-
-  std::vector<AXPlatformNodeWin*> platform_node_list =
-      CreatePlatformNodeVectorFromRelationIdVector(row_header_ids);
-
-  *result = CreateUIAElementsSafeArray(platform_node_list);
+  *result =
+      CreateUIAElementsSafeArray(CreatePlatformNodeVectorFromRelationIdVector(
+          GetDelegate()->GetRowHeaderNodeIds(*row)));
   return S_OK;
 }
 
@@ -3094,12 +3092,9 @@ IFACEMETHODIMP AXPlatformNodeWin::GetColumnHeaders(SAFEARRAY** result) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TABLE_GETCOLUMNHEADERS);
   UIA_VALIDATE_CALL_1_ARG(result);
 
-  std::vector<int32_t> column_header_ids = GetDelegate()->GetColHeaderNodeIds();
-
-  std::vector<AXPlatformNodeWin*> platform_node_list =
-      CreatePlatformNodeVectorFromRelationIdVector(column_header_ids);
-
-  *result = CreateUIAElementsSafeArray(platform_node_list);
+  *result =
+      CreateUIAElementsSafeArray(CreatePlatformNodeVectorFromRelationIdVector(
+          GetDelegate()->GetColHeaderNodeIds()));
   return S_OK;
 }
 
@@ -3107,12 +3102,9 @@ IFACEMETHODIMP AXPlatformNodeWin::GetRowHeaders(SAFEARRAY** result) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TABLE_GETROWHEADERS);
   UIA_VALIDATE_CALL_1_ARG(result);
 
-  std::vector<int32_t> row_header_ids = GetDelegate()->GetRowHeaderNodeIds();
-
-  std::vector<AXPlatformNodeWin*> platform_node_list =
-      CreatePlatformNodeVectorFromRelationIdVector(row_header_ids);
-
-  *result = CreateUIAElementsSafeArray(platform_node_list);
+  *result =
+      CreateUIAElementsSafeArray(CreatePlatformNodeVectorFromRelationIdVector(
+          GetDelegate()->GetRowHeaderNodeIds()));
   return S_OK;
 }
 
@@ -3145,14 +3137,7 @@ IFACEMETHODIMP AXPlatformNodeWin::Toggle() {
 IFACEMETHODIMP AXPlatformNodeWin::get_ToggleState(ToggleState* result) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TOGGLE_GET_TOGGLESTATE);
   UIA_VALIDATE_CALL_1_ARG(result);
-  const auto checked_state = GetData().GetCheckedState();
-  if (checked_state == ax::mojom::CheckedState::kTrue) {
-    *result = ToggleState_On;
-  } else if (checked_state == ax::mojom::CheckedState::kMixed) {
-    *result = ToggleState_Indeterminate;
-  } else {
-    *result = ToggleState_Off;
-  }
+  *result = GetToggleStateImpl();
   return S_OK;
 }
 
@@ -5406,6 +5391,12 @@ HRESULT AXPlatformNodeWin::GetPropertyValueImpl(PROPERTYID property_id,
       break;
     }
 
+    case UIA_ToggleToggleStatePropertyId: {
+      result->vt = VT_I4;
+      result->intVal = GetToggleStateImpl();
+      break;
+    }
+
     case UIA_LandmarkTypePropertyId: {
       absl::optional<LONG> landmark_type = ComputeUIALandmarkType();
       if (landmark_type) {
@@ -5787,14 +5778,10 @@ void AXPlatformNodeWin::GetAnnotationObjectsAttribute(
   if (!parent_platform_node || !IsText())
     return;
 
-  std::vector<int32_t> relation_id_list =
-      parent_platform_node->GetIntListAttribute(
-          ax::mojom::IntListAttribute::kDetailsIds);
-
-  std::vector<AXPlatformNodeWin*> platform_node_list =
-      CreatePlatformNodeVectorFromRelationIdVector(relation_id_list);
-
-  for (AXPlatformNodeWin* platform_node : platform_node_list) {
+  for (AXPlatformNodeWin* platform_node :
+       CreatePlatformNodeVectorFromRelationIdVector(
+           parent_platform_node->GetIntListAttribute(
+               ax::mojom::IntListAttribute::kDetailsIds))) {
     Microsoft::WRL::ComPtr<IUnknown> annotation_object;
     if (SUCCEEDED(
             platform_node->QueryInterface(IID_PPV_ARGS(&annotation_object)))) {

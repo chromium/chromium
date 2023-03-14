@@ -62,9 +62,7 @@ void DevicePolicyCrosTestHelper::InstallOwnerKey() {
                                      &owner_key_file));
   std::string owner_key_bits = device_policy()->GetPublicSigningKeyAsString();
   ASSERT_FALSE(owner_key_bits.empty());
-  ASSERT_EQ(base::checked_cast<int>(owner_key_bits.length()),
-            base::WriteFile(owner_key_file, owner_key_bits.data(),
-                            owner_key_bits.length()));
+  ASSERT_TRUE(base::WriteFile(owner_key_file, owner_key_bits));
 }
 
 // static

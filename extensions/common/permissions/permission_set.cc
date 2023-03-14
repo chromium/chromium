@@ -27,7 +27,6 @@ PermissionSet::PermissionSet(APIPermissionSet apis,
       explicit_hosts_(std::move(explicit_hosts)),
       scriptable_hosts_(std::move(scriptable_hosts)) {
   CleanExplicitHostPaths();
-  InitImplicitPermissions();
   InitEffectiveHosts();
 }
 
@@ -215,9 +214,7 @@ bool PermissionSet::HasEffectiveAccessToURL(const GURL& url) const {
 void PermissionSet::SetAPIPermissions(APIPermissionSet new_apis) {
   apis_ = std::move(new_apis);
   // Since we're rewriting the API permissions, we need to re-initialize the
-  // value of whether to warn about all hosts and re-add any implicit API
-  // permissions.
-  InitImplicitPermissions();
+  // value of whether to warn about all hosts.
   api_permissions_should_warn_all_hosts_ = UNINITIALIZED;
 }
 
@@ -277,16 +274,6 @@ void PermissionSet::CleanExplicitHostPaths() {
 
   for (URLPattern& pattern : modified_patterns)
     explicit_hosts_.AddPattern(std::move(pattern));
-}
-
-void PermissionSet::InitImplicitPermissions() {
-  // The downloads permission implies the internal version as well.
-  if (apis_.find(APIPermissionID::kDownloads) != apis_.end())
-    apis_.insert(APIPermissionID::kDownloadsInternal);
-
-  // The fileBrowserHandler permission implies the internal version as well.
-  if (apis_.find(APIPermissionID::kFileBrowserHandler) != apis_.end())
-    apis_.insert(APIPermissionID::kFileBrowserHandlerInternal);
 }
 
 void PermissionSet::InitEffectiveHosts() {

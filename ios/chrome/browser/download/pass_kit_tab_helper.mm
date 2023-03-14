@@ -14,7 +14,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "ios/chrome/browser/download/mime_type_util.h"
 #import "ios/chrome/browser/download/pass_kit_tab_helper_delegate.h"
-#import "ios/chrome/browser/ui/commands/web_content_commands.h"
+#import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
 #import "ios/web/public/download/download_task.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

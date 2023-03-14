@@ -63,8 +63,7 @@ void WriteManifest(const base::FilePath& extension_root) {
 
   base::FilePath manifest_path =
       extension_root.Append(base::FilePath(FILE_PATH_LITERAL("manifest.json")));
-  ASSERT_EQ(static_cast<int>(json.size()),
-            base::WriteFile(manifest_path, json.data(), json.size()));
+  ASSERT_TRUE(base::WriteFile(manifest_path, json));
 }
 
 void WriteComputedHashes(
@@ -317,8 +316,7 @@ TEST_F(ContentVerifyJobUnittest, DeletedAndMissingFiles) {
 
     base::FilePath full_path = unzipped_path.Append(unexpected_resource_path);
     const std::string kContent("42");
-    EXPECT_EQ(static_cast<int>(kContent.size()),
-              base::WriteFile(full_path, kContent.data(), kContent.size()));
+    EXPECT_TRUE(base::WriteFile(full_path, kContent));
 
     std::string contents;
     base::ReadFileToString(full_path, &contents);
@@ -585,10 +583,8 @@ TEST_F(ContentVerifyJobWithoutSignedHashesUnittest, ComputedHashesLoad) {
 
   {
     // Case where computed_hashes.json is corrupted.
-    ASSERT_EQ(
-        static_cast<int>(kCorruptedContents.size()),
-        base::WriteFile(file_util::GetComputedHashesPath(unzipped_path),
-                        kCorruptedContents.data(), kCorruptedContents.size()));
+    ASSERT_TRUE(base::WriteFile(file_util::GetComputedHashesPath(unzipped_path),
+                                kCorruptedContents));
 
     TestContentVerifySingleJobObserver observer(extension->id(), kResourcePath);
     content_verifier()->ClearCacheForTesting();
@@ -635,16 +631,12 @@ TEST_F(ContentVerifyJobWithoutSignedHashesUnittest, UnverifiedExtension) {
   ASSERT_TRUE(extension);
   base::FilePath unzipped_path = temp_dir.GetPath();
 
-  ASSERT_EQ(static_cast<int>(kOkContents.size()),
-            base::WriteFile(unzipped_path.Append(kResourceOkPath),
-                            kOkContents.data(), kOkContents.size()));
-  ASSERT_EQ(
-      static_cast<int>(kCorruptedContents.size()),
-      base::WriteFile(unzipped_path.Append(kResourceCorruptedPath),
-                      kCorruptedContents.data(), kCorruptedContents.size()));
-  ASSERT_EQ(static_cast<int>(kOkContents.size()),
-            base::WriteFile(unzipped_path.Append(kResourceUnexpectedPath),
-                            kOkContents.data(), kOkContents.size()));
+  ASSERT_TRUE(
+      base::WriteFile(unzipped_path.Append(kResourceOkPath), kOkContents));
+  ASSERT_TRUE(base::WriteFile(unzipped_path.Append(kResourceCorruptedPath),
+                              kCorruptedContents));
+  ASSERT_TRUE(base::WriteFile(unzipped_path.Append(kResourceUnexpectedPath),
+                              kOkContents));
 
   {
     // Sanity check that an unmodified file passes content verification.
@@ -698,9 +690,7 @@ TEST_F(ContentVerifyJobWithoutSignedHashesUnittest, ExtensionWithoutHashes) {
   ASSERT_TRUE(extension);
   base::FilePath unzipped_path = temp_dir.GetPath();
   const std::string kContents = "console.log('Nothing special');";
-  ASSERT_EQ(static_cast<int>(kContents.size()),
-            base::WriteFile(unzipped_path.Append(kResourcePath),
-                            kContents.data(), kContents.size()));
+  ASSERT_TRUE(base::WriteFile(unzipped_path.Append(kResourcePath), kContents));
 
   {
     // Make sure good file passes content verification.

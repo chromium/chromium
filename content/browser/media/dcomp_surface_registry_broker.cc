@@ -6,7 +6,6 @@
 
 #include "base/logging.h"
 #include "content/browser/gpu/gpu_process_host.h"
-#include "media/base/bind_to_current_loop.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
 namespace content {

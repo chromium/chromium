@@ -393,7 +393,9 @@ bool BluetoothDeviceFloss::IsGattServicesDiscoveryComplete() const {
 void BluetoothDeviceFloss::Pair(
     device::BluetoothDevice::PairingDelegate* pairing_delegate,
     ConnectCallback callback) {
-  NOTIMPLEMENTED();
+  // Pair is the same as Connect due to influence from BlueZ.
+  // TODO(b/269516642): We should make distinction between them in the future.
+  Connect(pairing_delegate, std::move(callback));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -745,8 +747,7 @@ void BluetoothDeviceFloss::GattSearchComplete(
                          << address_;
 
     std::unique_ptr<BluetoothRemoteGattServiceFloss> remote_service =
-        BluetoothRemoteGattServiceFloss::Create(adapter(), this, service,
-                                                /*primary=*/true);
+        BluetoothRemoteGattServiceFloss::Create(adapter(), this, service);
 
     BluetoothRemoteGattServiceFloss* remote_service_ptr = remote_service.get();
 

@@ -85,6 +85,10 @@ source_set("frame") {
     "//ui/views/window/vector_icons",
     "//ui/wm/public",
   ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//ash/constants" ]
+  }
 }
 
 source_set("test_support") {

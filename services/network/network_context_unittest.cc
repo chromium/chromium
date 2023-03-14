@@ -127,6 +127,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
+#include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/net_log.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -1552,9 +1553,9 @@ TEST_F(NetworkContextTest, P2PHostResolution) {
       url::Origin::Create(GURL(base::StringPrintf("https://%s", kHostname)));
   const net::NetworkAnonymizationKey kOtherNaks[] = {
       net::NetworkAnonymizationKey(),
-      net::NetworkAnonymizationKey(
-          net::SchemefulSite(kDestinationOrigin) /* top_frame_origin */,
-          net::SchemefulSite(kDestinationOrigin) /* frame_origin */)};
+      net::NetworkAnonymizationKey::CreateSameSite(
+          net::SchemefulSite(kDestinationOrigin)),
+  };
   for (const auto& other_nak : kOtherNaks) {
     std::unique_ptr<net::HostResolver::ResolveHostRequest> request2 =
         host_resolver.CreateRequest(kHostPortPair, other_nak,
@@ -2191,12 +2192,12 @@ TEST_F(NetworkContextTest, LookupServerBasicAuthCredentials) {
   GURL origin("http://foo.test");
   GURL origin2("http://bar.test");
   GURL origin3("http://baz.test");
-  net::NetworkAnonymizationKey network_anonymization_key1(
-      net::SchemefulSite(url::Origin::Create(origin)),
-      net::SchemefulSite(url::Origin::Create(origin)));
-  net::NetworkAnonymizationKey network_anonymization_key2(
-      net::SchemefulSite(url::Origin::Create(origin2)),
-      net::SchemefulSite(url::Origin::Create(origin2)));
+  const auto network_anonymization_key1 =
+      net::NetworkAnonymizationKey::CreateSameSite(
+          net::SchemefulSite(url::Origin::Create(origin)));
+  const auto network_anonymization_key2 =
+      net::NetworkAnonymizationKey::CreateSameSite(
+          net::SchemefulSite(url::Origin::Create(origin2)));
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
   network_context->SetSplitAuthCacheByNetworkAnonymizationKey(true);
@@ -3012,7 +3013,8 @@ TEST_F(NetworkContextTest, ProxyLookupWithNetworkIsolationKey) {
   const GURL kUrl("http://bar.test/");
   const net::SchemefulSite kSite =
       net::SchemefulSite(GURL("https://foo.test/"));
-  const net::NetworkAnonymizationKey kNetworkAnonymizationKey(kSite, kSite);
+  const auto kNetworkAnonymizationKey =
+      net::NetworkAnonymizationKey::CreateSameSite(kSite);
 
   // Pac scripts must contain this string to be passed to the
   // ProxyResolverFactory.
@@ -3735,7 +3737,8 @@ TEST_F(NetworkContextTest, ResolveHost_Failure_Async) {
 TEST_F(NetworkContextTest, ResolveHost_NetworkAnonymizationKey) {
   const net::SchemefulSite kSite =
       net::SchemefulSite(GURL("https://foo.test/"));
-  const net::NetworkAnonymizationKey kNetworkAnonymizationKey(kSite, kSite);
+  const auto kNetworkAnonymizationKey =
+      net::NetworkAnonymizationKey::CreateSameSite(kSite);
 
   auto resolver = std::make_unique<net::MockHostResolver>();
   resolver->rules()->AddRule("nik.test", "1.2.3.4");
@@ -4176,8 +4179,6 @@ TEST_F(NetworkContextTest, CreateHostResolverWithConfigOverrides) {
   // enablable for the build config).
   ASSERT_EQ(1u, factory->resolvers().size());
   net::ContextHostResolver* internal_resolver = factory->resolvers().front();
-
-  EXPECT_TRUE(internal_resolver->GetDnsConfigAsValue().is_dict());
 
   // Override DnsClient with a basic mock.
   net::DnsConfig base_configuration;
@@ -4894,14 +4895,10 @@ TEST_F(NetworkContextTest, PreconnectNetworkIsolationKey) {
 
   const auto kSiteFoo = net::SchemefulSite(GURL("http://foo.test"));
   const auto kSiteBar = net::SchemefulSite(GURL("http://bar.test"));
-  const net::NetworkAnonymizationKey kKey1(kSiteFoo, kSiteFoo);
-  const net::NetworkAnonymizationKey kKey2(kSiteBar, kSiteBar);
-  const net::NetworkAnonymizationKey kNak1(net::SchemefulSite(kSiteFoo),
-                                           net::SchemefulSite(kSiteFoo),
-                                           /*is_cross_site=*/false);
-  const net::NetworkAnonymizationKey kNak2(net::SchemefulSite(kSiteBar),
-                                           net::SchemefulSite(kSiteBar),
-                                           /*is_cross_site=*/false);
+  const auto kKey1 = net::NetworkAnonymizationKey::CreateSameSite(kSiteFoo);
+  const auto kKey2 = net::NetworkAnonymizationKey::CreateSameSite(kSiteBar);
+  const auto kNak1 = net::NetworkAnonymizationKey::CreateSameSite(kSiteFoo);
+  const auto kNak2 = net::NetworkAnonymizationKey::CreateSameSite(kSiteBar);
   network_context->PreconnectSockets(1, test_server.base_url(),
                                      /*allow_credentials=*/false, kKey1);
   network_context->PreconnectSockets(2, test_server.base_url(),
@@ -7358,7 +7355,7 @@ TEST_F(NetworkContextTest,
 }
 
 TEST_F(NetworkContextTest,
-       RejectsTrustTokenBearingRequestWhenThirdPartyCookiesAreDisabled) {
+       RejectsTrustTokenBearingRequestWhenTrustTokensAreBlocked) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
 
@@ -7372,7 +7369,38 @@ TEST_F(NetworkContextTest,
           [&run_loop](TrustTokenStore* unused) { run_loop.Quit(); }));
   run_loop.Run();
 
-  network_context->cookie_manager()->BlockThirdPartyCookies(true);
+  network_context->SetBlockTrustTokens(true);
+
+  ResourceRequest my_request;
+  my_request.trust_token_params =
+      OptionalTrustTokenParams(mojom::TrustTokenParams::New());
+
+  std::unique_ptr<TestURLLoaderClient> client = FetchRequest(
+      my_request, network_context.get(), mojom::kURLLoadOptionNone,
+      mojom::kBrowserProcessId, mojom::URLLoaderFactoryParams::New());
+  EXPECT_EQ(client->completion_status().error_code,
+            net::ERR_TRUST_TOKEN_OPERATION_FAILED);
+  EXPECT_EQ(client->completion_status().trust_token_operation_status,
+            mojom::TrustTokenOperationStatus::kUnauthorized);
+}
+
+TEST_F(NetworkContextTest,
+       RejectsTrustTokenBearingRequestWhenStorageIsBlocked) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kPrivateStateTokens);
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  // Allow the store time to initialize asynchronously.
+  base::RunLoop run_loop;
+  network_context->trust_token_store()->ExecuteOrEnqueue(
+      base::BindLambdaForTesting(
+          [&run_loop](TrustTokenStore* unused) { run_loop.Quit(); }));
+  run_loop.Run();
+
+  network_context->SetBlockTrustTokens(false);
+  SetDefaultContentSetting(CONTENT_SETTING_BLOCK, network_context.get());
 
   ResourceRequest my_request;
   my_request.trust_token_params =

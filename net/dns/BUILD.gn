@@ -6,7 +6,7 @@ import("//net/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-enable_built_in_dns = !is_ios
+enable_built_in_dns = use_blink
 
 source_set("dns") {
   # Due to circular dependencies, should only be depended on through //net.

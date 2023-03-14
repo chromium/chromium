@@ -36,8 +36,16 @@ void FakeAffiliationService::KeepPrefetchForFacets(
 void FakeAffiliationService::TrimCacheForFacetURI(const FacetURI& facet_uri) {}
 void FakeAffiliationService::TrimUnusedCache(std::vector<FacetURI> facet_uris) {
 }
-void FakeAffiliationService::GetAllGroups(GroupsCallback callback) const {
-  std::move(callback).Run({});
+void FakeAffiliationService::GetGroupingInfo(std::vector<FacetURI> facet_uris,
+                                             GroupsCallback callback) {
+  // Put each facet into its own group because AffiliationService is supposed to
+  // always return result for each requested facet.
+  std::vector<GroupedFacets> result(facet_uris.size());
+  result.reserve(facet_uris.size());
+  for (size_t i = 0; i < facet_uris.size(); i++) {
+    result[i].facets = {Facet(std::move(facet_uris[i]))};
+  }
+  std::move(callback).Run(std::move(result));
 }
 void FakeAffiliationService::GetPSLExtensions(
     base::OnceCallback<void(std::vector<std::string>)> callback) const {

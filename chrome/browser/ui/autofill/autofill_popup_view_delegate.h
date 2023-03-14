@@ -5,20 +5,18 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_VIEW_DELEGATE_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_VIEW_DELEGATE_H_
 
-#include <stddef.h>
-
+#include "base/i18n/rtl.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "ui/gfx/native_widget_types.h"
-
-namespace gfx {
-class Point;
-class Rect;
-class RectF;
-}  // namespace gfx
 
 namespace content {
 class WebContents;
 }  // namespace content
+
+namespace gfx {
+class RectF;
+}  // namespace gfx
+
 namespace autofill {
 
 // Base class for Controllers of Autofill-style popups. This interface is
@@ -42,8 +40,11 @@ class AutofillPopupViewDelegate {
   // The bounds of the form field element (screen coordinates).
   virtual const gfx::RectF& element_bounds() const = 0;
 
-  // If the current popup should be displayed in RTL mode.
-  virtual bool IsRTL() const = 0;
+  // Returns the text direction of the focused field at the time of creating
+  // this popup. This does not govern whether the popup UI is RTL (that is
+  // determined by the browser language), but it may have an impact on how the
+  // bubble and its arrow are placed on Desktop.
+  virtual base::i18n::TextDirection GetElementTextDirection() const = 0;
 
  protected:
   virtual ~AutofillPopupViewDelegate() = default;

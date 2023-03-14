@@ -875,8 +875,8 @@ TEST_P(NoVarySearchPrefetchDisabledTest, ParsingNVSReturnsDefaultURLVariance) {
   const auto parsed_headers =
       ParseHeaders(WTF::String::FromUTF8(GetParam()), KURL("https://a.com"));
 
-  EXPECT_TRUE(parsed_headers);
-  EXPECT_FALSE(parsed_headers->no_vary_search);
+  ASSERT_TRUE(parsed_headers);
+  EXPECT_FALSE(parsed_headers->no_vary_search_with_parse_error);
 }
 
 constexpr base::StringPiece no_vary_search_prefetch_disabled_data[] = {
@@ -905,8 +905,12 @@ TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsDefaultURLVariance) {
   const auto parsed_headers =
       ParseHeaders(WTF::String::FromUTF8(headers), KURL("https://a.com"));
 
-  EXPECT_TRUE(parsed_headers);
-  EXPECT_FALSE(parsed_headers->no_vary_search);
+  ASSERT_TRUE(parsed_headers);
+  ASSERT_TRUE(parsed_headers->no_vary_search_with_parse_error);
+  ASSERT_TRUE(
+      parsed_headers->no_vary_search_with_parse_error->is_parse_error());
+  EXPECT_EQ(network::mojom::NoVarySearchParseError::kOk,
+            parsed_headers->no_vary_search_with_parse_error->get_parse_error());
 }
 
 struct NoVarySearchTestData {
@@ -935,20 +939,45 @@ TEST_P(NoVarySearchPrefetchEnabledTest, ParsingSuccess) {
   const auto parsed_headers =
       ParseHeaders(test_data.raw_headers, KURL("https://a.com"));
 
-  EXPECT_TRUE(parsed_headers);
-  ASSERT_TRUE(parsed_headers->no_vary_search);
-  ASSERT_TRUE(parsed_headers->no_vary_search->search_variance);
+  ASSERT_TRUE(parsed_headers);
+  ASSERT_TRUE(parsed_headers->no_vary_search_with_parse_error);
+  ASSERT_TRUE(
+      parsed_headers->no_vary_search_with_parse_error->is_no_vary_search());
+  const auto& no_vary_search =
+      parsed_headers->no_vary_search_with_parse_error->get_no_vary_search();
+  ASSERT_TRUE(no_vary_search->search_variance);
   if (test_data.expected_vary_by_default) {
-    EXPECT_THAT(
-        parsed_headers->no_vary_search->search_variance->get_no_vary_params(),
-        test_data.expected_no_vary_params);
+    EXPECT_THAT(no_vary_search->search_variance->get_no_vary_params(),
+                test_data.expected_no_vary_params);
   } else {
-    EXPECT_THAT(
-        parsed_headers->no_vary_search->search_variance->get_vary_params(),
-        test_data.expected_vary_params);
+    EXPECT_THAT(no_vary_search->search_variance->get_vary_params(),
+                test_data.expected_vary_params);
   }
-  EXPECT_EQ(parsed_headers->no_vary_search->vary_on_key_order,
+  EXPECT_EQ(no_vary_search->vary_on_key_order,
             test_data.expected_vary_on_key_order);
+}
+
+TEST(NoVarySearchHeaderValueParsingTest, ParsingSuccessForParseNoVarySearch) {
+  const auto no_vary_search_with_parse_error =
+      blink::ParseNoVarySearch(R"(params=("a"))");
+
+  ASSERT_TRUE(no_vary_search_with_parse_error);
+  ASSERT_TRUE(no_vary_search_with_parse_error->is_no_vary_search());
+  ASSERT_TRUE(
+      no_vary_search_with_parse_error->get_no_vary_search()->search_variance);
+  EXPECT_THAT(no_vary_search_with_parse_error->get_no_vary_search()
+                  ->search_variance->get_no_vary_params(),
+              Vector<String>({"a"}));
+  EXPECT_TRUE(
+      no_vary_search_with_parse_error->get_no_vary_search()->vary_on_key_order);
+}
+
+TEST(NoVarySearchHeaderValueParsingTest, ParsingFailureForParseNoVarySearch) {
+  const auto no_vary_search_with_parse_error =
+      blink::ParseNoVarySearch(R"(params="a")");
+
+  ASSERT_TRUE(no_vary_search_with_parse_error);
+  EXPECT_FALSE(no_vary_search_with_parse_error->is_no_vary_search());
 }
 
 Vector<NoVarySearchTestData> GetNoVarySearchParsingSuccessTestData() {

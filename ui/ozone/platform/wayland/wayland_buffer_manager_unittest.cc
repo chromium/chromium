@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
@@ -21,7 +20,6 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
-#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gfx/overlay_priority_hint.h"
@@ -32,9 +30,9 @@
 #include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_frame_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_linux_dmabuf.h"
-#include "ui/ozone/platform/wayland/mojom/wayland_overlay_config.mojom.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/mock_zwp_linux_dmabuf.h"
 #include "ui/ozone/platform/wayland/test/test_overlay_prioritized_surface.h"
@@ -942,7 +940,6 @@ TEST_P(WaylandBufferManagerTest,
     // Deliberately drop the presentation feedback for the first buffer,
     // since we will destroy it.
     auto* mock_wp_presentation = server->EnsureAndGetWpPresentation();
-    ;
     EXPECT_EQ(1u, mock_wp_presentation->num_of_presentation_callbacks());
     mock_wp_presentation->DropPresentationCallback();
   });
@@ -974,7 +971,6 @@ TEST_P(WaylandBufferManagerTest,
     // Deliberately drop the presentation feedback for the second buffer,
     // since we will destroy it.
     auto* mock_wp_presentation = server->EnsureAndGetWpPresentation();
-    ;
     EXPECT_EQ(1u, mock_wp_presentation->num_of_presentation_callbacks());
     mock_wp_presentation->DropPresentationCallback();
   });
@@ -1010,8 +1006,9 @@ TEST_P(WaylandBufferManagerTest,
     server->EnsureAndGetWpPresentation()->SendPresentationCallback();
   });
 
-  // Let the mojo messages to be processed.
-  base::RunLoop().RunUntilIdle();
+  // Ensure that presentation feedback is flushed.
+  task_environment_.FastForwardBy(
+      WaylandFrameManager::GetPresentationFlushTimerDurationForTesting());
 
   // Verify our expecations.
   testing::Mock::VerifyAndClearExpectations(&mock_surface_gpu);
@@ -1031,6 +1028,8 @@ TEST_P(WaylandBufferManagerTest,
   });
 
   // Let the mojo messages to be processed.
+  // No need to fast forward to ensure the presentation flush timer is fired,
+  // because in this case the OnSubmission should piggyback the feedback.
   base::RunLoop().RunUntilIdle();
 
   testing::Mock::VerifyAndClearExpectations(&mock_surface_gpu);
@@ -1184,8 +1183,9 @@ TEST_P(WaylandBufferManagerTest,
     mock_wp_presentation->SendPresentationCallback();
   });
 
-  // Let the mojo messages to be processed.
-  base::RunLoop().RunUntilIdle();
+  // Ensure that presentation feedback is flushed.
+  task_environment_.FastForwardBy(
+      WaylandFrameManager::GetPresentationFlushTimerDurationForTesting());
 
   testing::Mock::VerifyAndClearExpectations(&mock_surface_gpu);
 
@@ -1213,8 +1213,9 @@ TEST_P(WaylandBufferManagerTest,
     mock_wp_presentation->SendPresentationCallback();
   });
 
-  // Let the mojo messages to be processed.
-  base::RunLoop().RunUntilIdle();
+  // Ensure that presentation feedback is flushed.
+  task_environment_.FastForwardBy(
+      WaylandFrameManager::GetPresentationFlushTimerDurationForTesting());
 
   testing::Mock::VerifyAndClearExpectations(&mock_surface_gpu);
 

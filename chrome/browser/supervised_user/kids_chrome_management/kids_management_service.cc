@@ -100,9 +100,8 @@ AccountInfo GetPrimaryAccount(const IdentityManager& identity_manager) {
       identity_manager.GetPrimaryAccountInfo(ConsentLevel::kSignin));
 }
 
-std::vector<const FamilyMember>::iterator FindFamilyMemberWithRole(
-    const std::vector<FamilyMember>& members,
-    const FamilyRole role) {
+auto FindFamilyMemberWithRole(const std::vector<FamilyMember>& members,
+                              const FamilyRole role) {
   return find(members, role,
               [](const FamilyMember& member) { return member.role(); });
 }
@@ -292,9 +291,15 @@ const std::string& KidsManagementService::GetEndpointUrl() {
 }
 
 KidsManagementServiceFactory::KidsManagementServiceFactory()
-    : ProfileKeyedServiceFactory("KidsManagementService") {
+    : ProfileKeyedServiceFactory(
+          "KidsManagementService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(SupervisedUserServiceFactory::GetInstance());
 }
 KidsManagementServiceFactory::~KidsManagementServiceFactory() = default;

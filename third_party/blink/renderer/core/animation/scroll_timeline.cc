@@ -10,6 +10,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_timeline_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
+#include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline_util.h"
 #include "third_party/blink/renderer/core/animation/worklet_animation_base.h"
 #include "third_party/blink/renderer/core/animation/worklet_animation_controller.h"
@@ -100,7 +101,7 @@ bool ScrollTimeline::IsActive() const {
   return timeline_state_snapshotted_.phase != TimelinePhase::kInactive;
 }
 
-bool ScrollTimeline::ComputeIsActive() const {
+bool ScrollTimeline::ComputeIsResolved() const {
   LayoutBox* layout_box =
       resolved_source_ ? resolved_source_->GetLayoutBox() : nullptr;
   return layout_box && layout_box->IsScrollContainer();
@@ -149,7 +150,7 @@ ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() {
   // 1. If scroll timeline is inactive, return an unresolved time value.
   // https://github.com/WICG/scroll-animations/issues/31
   // https://wicg.github.io/scroll-animations/#current-time-algorithm
-  if (!ComputeIsActive()) {
+  if (!IsResolved()) {
     return {TimelinePhase::kInactive, /*current_time*/ absl::nullopt,
             /* scroll_offsets */ absl::nullopt};
   }
@@ -274,14 +275,7 @@ void ScrollTimeline::ScheduleNextService() {
 }
 
 void ScrollTimeline::UpdateSnapshot() {
-  auto state = ComputeTimelineState();
-  // TODO(crbug.com/1395378): Check for change in target/container size as well
-  // as scroll_offsets.
-  if (timeline_state_snapshotted_ == state)
-    return;
-
-  timeline_state_snapshotted_ = state;
-  InvalidateEffectTargetStyle();
+  timeline_state_snapshotted_ = ComputeTimelineState();
 }
 
 Element* ScrollTimeline::source() const {
@@ -305,7 +299,7 @@ Element* ScrollTimeline::SourceInternal() const {
 
   const LayoutBox* scroll_container = layout_box->ContainingScrollContainer();
   if (!scroll_container)
-    return scroll_container->GetDocument().ScrollingElementNoLayout();
+    return reference_element_->GetDocument().ScrollingElementNoLayout();
 
   Node* node = scroll_container->GetNode();
   if (node->IsElementNode())
@@ -377,11 +371,15 @@ void ScrollTimeline::WorkletAnimationAttached(WorkletAnimationBase* worklet) {
 }
 
 void ScrollTimeline::UpdateResolvedSource() {
-  if (reference_type_ == ReferenceType::kSource && resolved_source_)
+  if (reference_type_ == ReferenceType::kSource && resolved_source_) {
+    is_resolved_ = ComputeIsResolved();
     return;
+  }
 
   Node* old_resolved_source = resolved_source_.Get();
   resolved_source_ = ResolveSource(SourceInternal());
+  is_resolved_ = ComputeIsResolved();
+
   if (old_resolved_source == resolved_source_.Get() || !HasAnimations())
     return;
 
@@ -401,17 +399,35 @@ void ScrollTimeline::Trace(Visitor* visitor) const {
 }
 
 void ScrollTimeline::InvalidateEffectTargetStyle() {
-  for (Animation* animation : GetAnimations())
+  for (Animation* animation : GetAnimations()) {
     animation->InvalidateEffectTargetStyle();
+  }
 }
 
 bool ScrollTimeline::ValidateSnapshot() {
   auto state = ComputeTimelineState();
+
   if (timeline_state_snapshotted_ == state)
     return true;
+
   timeline_state_snapshotted_ = state;
   InvalidateEffectTargetStyle();
   return false;
+}
+
+void ScrollTimeline::FlushStyleUpdate() {
+  UpdateResolvedSource();
+  if (!IsResolved()) {
+    return;
+  }
+
+  DCHECK(resolved_source_);
+  LayoutBox* layout_box = resolved_source_->GetLayoutBox();
+  DCHECK(layout_box);
+  PaintLayerScrollableArea* scrollable_area = layout_box->GetScrollableArea();
+  DCHECK(scrollable_area);
+  auto physical_orientation = ToPhysicalScrollOrientation(axis_, *layout_box);
+  CalculateOffsets(scrollable_area, physical_orientation);
 }
 
 cc::AnimationTimeline* ScrollTimeline::EnsureCompositorTimeline() {
@@ -430,23 +446,6 @@ void ScrollTimeline::UpdateCompositorTimeline() {
       ->UpdateScrollerIdAndScrollOffsets(
           scroll_timeline_util::GetCompositorScrollElementId(resolved_source_),
           GetResolvedScrollOffsets());
-}
-
-ScrollTimeline::TimeDelayPair ScrollTimeline::ComputeEffectiveAnimationDelays(
-    const Animation* animation,
-    const Timing& timing) const {
-  absl::optional<AnimationTimeDelta> duration = GetDuration();
-  if (!duration) {
-    return std::make_pair(AnimationTimeDelta(), AnimationTimeDelta());
-  }
-
-  // Animation delays are effectively insets on the animation range.
-  // Delays must be expressed as percentages. Time-based delays are ignored.
-  double start_delay = timing.start_delay.relative_delay.value_or(0);
-  double end_delay = timing.end_delay.relative_delay.value_or(0);
-
-  return std::make_pair(start_delay * duration.value(),
-                        end_delay * duration.value());
 }
 
 }  // namespace blink

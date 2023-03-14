@@ -12,7 +12,10 @@
 #import "components/url_formatter/url_fixer.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/sync/sync_observer_bridge.h"
+#import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_mediator.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_consumer.h"
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_mediator_delegate.h"
 #import "url/gurl.h"
@@ -21,10 +24,13 @@
 #error "This file requires ARC support."
 #endif
 
-@interface BookmarksEditorMediator () <BookmarkModelBridgeObserver> {
+@interface BookmarksEditorMediator () <BookmarkModelBridgeObserver,
+                                       SyncObserverModelBridge> {
   PrefService* _prefs;
 
   std::unique_ptr<BookmarkModelBridge> _bookmarkModelBridgeObserver;
+  std::unique_ptr<SyncObserverBridge> _syncObserverModelBridge;
+  SyncSetupService* _syncSetupService;
 }
 // Flag to ignore bookmark model changes notifications.
 @property(nonatomic, assign) BOOL ignoresBookmarkModelChanges;
@@ -35,7 +41,9 @@
 
 - (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                              bookmark:(const bookmarks::BookmarkNode*)bookmark
-                                prefs:(PrefService*)prefs {
+                                prefs:(PrefService*)prefs
+                     syncSetupService:(SyncSetupService*)syncSetupService
+                          syncService:(syncer::SyncService*)syncService {
   self = [super init];
   if (self) {
     DCHECK(bookmarkModel);
@@ -48,6 +56,8 @@
     _prefs = prefs;
     _bookmarkModelBridgeObserver.reset(
         new BookmarkModelBridge(self, self.bookmarkModel));
+    _syncObserverModelBridge.reset(new SyncObserverBridge(self, syncService));
+    _syncSetupService = syncSetupService;
   }
   return self;
 }
@@ -56,9 +66,15 @@
   _bookmarkModel = nullptr;
   _bookmark = nullptr;
   _folder = nullptr;
+  _bookmarkModelBridgeObserver = nil;
+  _syncObserverModelBridge = nil;
 }
 
 #pragma mark - BookmarksEditorMutator
+
+- (BOOL)shouldDisplayCloudSlashSymbolForParentFolder {
+  return bookmark_utils_ios::ShouldDisplayCloudSlashIcon(_syncSetupService);
+}
 
 - (void)changeFolder:(const bookmarks::BookmarkNode*)folder {
   DCHECK(folder);
@@ -138,6 +154,12 @@
 
 - (BOOL*)ignoresBookmarkModelChangesPointer {
   return &_ignoresBookmarkModelChanges;
+}
+
+#pragma mark - SyncObserverModelBridge
+
+- (void)onSyncStateChanged {
+  [_consumer updateSync];
 }
 
 @end

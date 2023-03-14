@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/contact_info_model_type_controller.h"
 #include "components/autofill/core/browser/webdata/contact_info_sync_bridge.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/browser_sync/active_devices_provider_impl.h"
 #include "components/browser_sync/browser_sync_client.h"
 #include "components/history/core/browser/sync/history_delete_directives_model_type_controller.h"
@@ -252,10 +253,22 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
     // Wallet data sync is enabled by default. Register unless explicitly
     // disabled.
     if (!disabled_types.Has(syncer::AUTOFILL_WALLET_DATA)) {
-      controllers.push_back(CreateWalletModelTypeControllerWithInMemorySupport(
-          syncer::AUTOFILL_WALLET_DATA,
-          base::BindRepeating(&AutofillWalletDelegateFromDataService),
-          sync_service));
+      if (base::FeatureList::IsEnabled(
+              autofill::features::kAutofillEnableAccountWalletStorage)) {
+        controllers.push_back(
+            CreateWalletModelTypeControllerWithInMemorySupport(
+                syncer::AUTOFILL_WALLET_DATA,
+                base::BindRepeating(&AutofillWalletDelegateFromDataService),
+                sync_service));
+      } else {
+        // Create without a transport-mode delegate otherwise.
+        // Since the feature is already enabled by default, this path is only
+        // executed in integration tests.
+        controllers.push_back(CreateWalletModelTypeController(
+            syncer::AUTOFILL_WALLET_DATA,
+            base::BindRepeating(&AutofillWalletDelegateFromDataService),
+            sync_service));
+      }
     }
 
     // Wallet metadata sync depends on Wallet data sync. Register if neither
@@ -393,8 +406,7 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
   }
 
   // Register reading list unless explicitly disabled.
-  if (!disabled_types.Has(syncer::READING_LIST) &&
-      reading_list::switches::IsReadingListEnabled()) {
+  if (!disabled_types.Has(syncer::READING_LIST)) {
     // The transport-mode delegate may or may not be null depending on
     // platform and feature toggle state.
     syncer::ModelTypeControllerDelegate* delegate_for_transport_mode =

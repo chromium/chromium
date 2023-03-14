@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/policy/remote_commands/crd_host_delegate.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_fetch_crd_availability_info_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_fetch_status_job.h"
+#include "chrome/browser/ash/policy/remote_commands/device_command_fetch_support_packet_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_get_available_routines_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_get_routine_update_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_reboot_job.h"
@@ -72,6 +73,8 @@ std::unique_ptr<RemoteCommandJob> DeviceCommandsFactoryAsh::BuildJobForType(
       return std::make_unique<DeviceCommandResetEuiccJob>();
     case RemoteCommand::FETCH_CRD_AVAILABILITY_INFO:
       return std::make_unique<DeviceCommandFetchCrdAvailabilityInfoJob>();
+    case RemoteCommand::FETCH_SUPPORT_PACKET:
+      return std::make_unique<DeviceCommandFetchSupportPacketJob>();
 
     case RemoteCommand::COMMAND_ECHO_TEST:
     case RemoteCommand::USER_ARC_COMMAND:

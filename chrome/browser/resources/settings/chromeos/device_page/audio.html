@@ -66,6 +66,10 @@
   :host(:not([is-input-muted_])) #audioInputGainMuteButton {
     --cr-icon-button-fill-color: var(--cros-color-prominent);
   }
+
+  paper-tooltip {
+    --paper-tooltip-min-width: max-content;
+  }
 </style>
 
 <!-- Output section -->
@@ -107,9 +111,14 @@
               on-click="onOutputMuteButtonClicked"
               disabled="[[isOutputMutedByPolicy_(
                   audioSystemProperties_.outputMuteState
-                )]]">
+                )]]"
+              aria-description="[[getOutputMuteButtonAriaLabel(
+                  isOutputMuted_
+                )]]"
+              aria-labelledby="audioOutputVolumeLabel"
+              aria-pressed="[[isOutputMuted_]]">
           </cr-icon-button>
-          <paper-tooltip id="audioOutputMuteButtonTooltip"
+          <paper-tooltip id="audioOutputMuteButtonTooltip" aria-hidden="true"
               for="audioOutputMuteButton">
             [[getMuteTooltip_(audioSystemProperties_.outputMuteState)]]
           </paper-tooltip>
@@ -159,9 +168,15 @@
               iron-icon="[[getInputIcon_(isInputMuted_)]]"
               on-click="onInputMuteClicked"
               class="audio-mute-button"
-              disabled="[[shouldDisableInputGainControls(isInputMuted_)]]">
+              disabled="[[shouldDisableInputGainControls(isInputMuted_)]]"
+              aria-description$="[[getInputMuteButtonAriaLabel(
+                  audioSystemProperties_.inputMuteState,
+                  isInputMuted_
+                )]]"
+              aria-labelledby="audioInputGainLabel"
+              aria-pressed="[[isInputMuted_]]">
           </cr-icon-button>
-          <paper-tooltip id="audioInputMuteButtonTooltip"
+          <paper-tooltip id="audioInputMuteButtonTooltip" aria-hidden="true"
               for="audioInputGainMuteButton">
             [[getMuteTooltip_(audioSystemProperties_.inputMuteState)]]
           </paper-tooltip>
@@ -179,11 +194,12 @@
       <div id="audioInputNoiseCancellationSubsection" class="settings-box"
           hidden="[[!isNoiseCancellationSupported_]]">
         <div id="audioInputNoiseCancellationLabel"
-            class="settings-box-text start">
+            class="settings-box-text start" aria-hidden="true">
           $i18n{audioInputNoiseCancellationTitle}
         </div>
         <cr-toggle id="audioInputNoiseCancellationToggle"
-            checked="{{isNoiseCancellationEnabled_}}">
+            checked="{{isNoiseCancellationEnabled_}}"
+            aria-labelledby="audioInputNoiseCancellationLabel">
         </cr-toggle>
       </div>
     </div>

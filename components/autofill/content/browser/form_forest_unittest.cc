@@ -43,8 +43,7 @@ using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::UnorderedElementsAreArray;
 
-namespace autofill {
-namespace internal {
+namespace autofill::internal {
 namespace {
 
 // Matchers.
@@ -411,7 +410,7 @@ class FormForestTest : public content::RenderViewHostTestHarness {
   }
 
   base::test::ScopedFeatureList feature_list_;
-  test::AutofillEnvironment autofill_environment_;
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
   std::map<content::RenderFrameHost*,
            std::unique_ptr<MockContentAutofillDriver>>
       autofill_drivers_;
@@ -454,8 +453,8 @@ class FormForestTestWithMockedTree : public FormForestTest {
             /*relax_shared_autofill=*/relax_shared_autofill) {}
 
   void TearDown() override {
-    mocked_forms_.Reset();
-    flattened_forms_.Reset();
+    TestApi(mocked_forms_).Reset();
+    TestApi(flattened_forms_).Reset();
     drivers_.clear();
     forms_.clear();
     FormForestTest::TearDown();
@@ -551,7 +550,7 @@ class FormForestTestWithMockedTree : public FormForestTest {
 
     // Copy |mocked_forms_| into |flattened_forms_|, without fields.
     if (frame_datas(flattened_forms_).empty() || force_flatten) {
-      flattened_forms_.Reset();
+      TestApi(flattened_forms_).Reset();
       std::vector<std::unique_ptr<FrameData>> copy;
       for (const auto& frame : frame_datas(mocked_forms_)) {
         copy.push_back(std::make_unique<FrameData>(frame->frame_token));
@@ -644,16 +643,6 @@ class FormForestTestUpdateTree : public FormForestTestWithMockedTree {
     ff.UpdateTreeOfRendererForm(GetMockedForm(form_name), driver(form_name));
   }
 };
-
-// Tests that reset empties a FormForest.
-TEST_F(FormForestTestUpdateTree, Reset) {
-  MockFormForest({.forms = {{.name = "main"}}});
-  FormForest ff;
-  UpdateTreeOfRendererForm(ff, "main");
-  EXPECT_FALSE(frame_datas(ff).empty());
-  ff.Reset();
-  EXPECT_TRUE(frame_datas(ff).empty());
-}
 
 // Tests that different root forms are not merged.
 TEST_F(FormForestTestUpdateTree, MultipleRoots) {
@@ -1737,5 +1726,4 @@ INSTANTIATE_TEST_SUITE_P(
         ForEachInSetDifferenceTestParam{{1, 2, 3, 4}, {}, {1, 2, 3, 4}, 0}));
 
 }  // namespace
-}  // namespace internal
-}  // namespace autofill
+}  // namespace autofill::internal

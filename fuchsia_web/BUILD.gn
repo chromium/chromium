@@ -12,7 +12,6 @@ group("gn_all") {
   testonly = true
   deps = [
     "runners:cast_runner",
-    "runners:web_runner",
     "shell",
     "webengine:web_engine",
   ]

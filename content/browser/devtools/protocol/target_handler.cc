@@ -241,8 +241,7 @@ class BrowserToPageConnector {
     base::StringPiece message_sp(reinterpret_cast<const char*>(message.data()),
                                  message.size());
     if (agent_host == page_host_.get()) {
-      std::unique_ptr<base::Value> value =
-          base::JSONReader::ReadDeprecated(message_sp);
+      absl::optional<base::Value> value = base::JSONReader::Read(message_sp);
       if (!value || !value->is_dict()) {
         return;
       }
@@ -497,7 +496,8 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
           base::JSONReader::Read(base::StringPiece(
               reinterpret_cast<const char*>(message.data()), message.size()));
       const std::string* method;
-      if (value.has_value() && (method = value->FindStringKey(kMethod)) &&
+      if (value.has_value() && value->is_dict() &&
+          (method = value->GetDict().FindString(kMethod)) &&
           *method == kResumeMethod) {
         ResumeIfThrottled();
       }
@@ -620,9 +620,12 @@ void TargetHandler::Throttle::Clear() {
   CleanupPointers();
   agent_host_ = nullptr;
   auto_attacher_ = nullptr;
-  if (is_deferring_)
+  if (is_deferring_) {
+    is_deferring_ = false;
     Resume();
-  is_deferring_ = false;
+    // DO NOT ADD CODE after this. The callback above might have destroyed the
+    // NavigationHandle that owns this NavigationThrottle.
+  }
 }
 
 class TargetHandler::TargetFilter {

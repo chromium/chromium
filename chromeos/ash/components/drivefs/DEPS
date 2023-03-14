@@ -1,6 +1,8 @@
 include_rules = [
   "+chromeos/ash/components/dbus/cros_disks",
+  "+chromeos/ash/components/dbus/spaced",
   "+chromeos/ash/components/disks",
+  "+chromeos/ash/components/network",
   "+components/drive",
   "+components/invalidation/impl/fake_invalidation_service.h",
   "+components/signin",

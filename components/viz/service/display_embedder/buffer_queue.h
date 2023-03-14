@@ -13,6 +13,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/ipc/common/surface_handle.h"
@@ -49,6 +50,10 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   // target for compositing).
   gpu::Mailbox GetCurrentBuffer();
 
+  // Returns a mailbox to be used for overlay testing. This will be the last
+  // swapped buffer if one exists, or another buffer in the queue if not. This
+  // will return a zero-mailbox if DestroyBuffers() has been called and buffers
+  // have not been recreated since.
   gpu::Mailbox GetLastSwappedBuffer();
 
   // Returns a rectangle whose contents may have changed since the current
@@ -95,6 +100,15 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   // |available_buffers_|.
   void RecreateBuffers();
 
+  // Destroys all allocated buffers. This should be used when the renderer knows
+  // these buffers will no longer be needed, e.g. when delegating to the system
+  // compositor.
+  // Buffers will only be recreated the next time GetCurrentBuffer() is called.
+  // NOTE: This should not be used on platforms that use buffers for
+  // overlay testing because GetLastSwappedBuffer() will not recreate the
+  // buffers.
+  void DestroyBuffers();
+
  private:
   friend class BufferQueueTest;
   friend class BufferQueueMockedSharedImageInterfaceTest;
@@ -127,6 +141,10 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   // Return a buffer that is available to be drawn into.
   std::unique_ptr<AllocatedBuffer> GetNextBuffer();
 
+  // If |buffers_destroyed_| = true, this will create |number_of_buffers_|
+  // buffers with the settings last set by Reshape().
+  void RecreateBuffersIfDestroyed();
+
   // Used to create and destroy shared images.
   const raw_ptr<SkiaOutputSurface> skia_output_surface_;
   // Used when creating shared images.
@@ -153,6 +171,17 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   // may be nullptr, if they represent frames that have been destroyed, or
   // frames where SwapBuffers() was called without calling GetCurrentBuffer().
   base::circular_deque<std::unique_ptr<AllocatedBuffer>> in_flight_buffers_;
+
+  // Whether the buffers have been destroyed and are not yet recreated. If true,
+  // don't allocate buffers when you normally would. They will be recreated on
+  // demand the next time GetNextBuffer() is called.
+  bool buffers_destroyed_ = false;
+  // Started when DestroyBuffers() destroys all buffers, and reported the next
+  // time RecreateBuffersIfDestroyed() is called. The timer will be reset after
+  // reporting.
+  // Used to see how often we destroy buffers and recreate them very soon, which
+  // we want to be rare.
+  absl::optional<base::ElapsedTimer> destroyed_timer_;
 };
 
 }  // namespace viz

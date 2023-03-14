@@ -178,16 +178,6 @@ base::TimeTicks WebPerformanceMetricsForReporting::
       ->LargestContentfulPaintAsMonotonicTimeForMetrics();
 }
 
-double WebPerformanceMetricsForReporting::ExperimentalLargestImagePaint()
-    const {
-  return 0.0;
-}
-
-uint64_t WebPerformanceMetricsForReporting::ExperimentalLargestImagePaintSize()
-    const {
-  return 0u;
-}
-
 blink::LargestContentfulPaintType
 WebPerformanceMetricsForReporting::LargestContentfulPaintTypeForMetrics()
     const {
@@ -216,15 +206,6 @@ WebPerformanceMetricsForReporting::LargestContentfulPaintImageLoadStart()
 absl::optional<base::TimeDelta>
 WebPerformanceMetricsForReporting::LargestContentfulPaintImageLoadEnd() const {
   return private_->timingForReporting()->LargestContentfulPaintImageLoadEnd();
-}
-
-double WebPerformanceMetricsForReporting::ExperimentalLargestTextPaint() const {
-  return 0.0;
-}
-
-uint64_t WebPerformanceMetricsForReporting::ExperimentalLargestTextPaintSize()
-    const {
-  return 0u;
 }
 
 double WebPerformanceMetricsForReporting::FirstEligibleToPaint() const {

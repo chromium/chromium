@@ -10,6 +10,7 @@ from typing import Any, List
 import unittest
 
 import gpu_path_util
+from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
 
@@ -55,30 +56,6 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
           'source_type':
           source_type
       }])
-      yield ('WebCodecs_GPUExternalTexture_expired_' + source_type,
-             'gpu-external-texture-expired.html', [{
-                 'source_type': source_type,
-                 'use_worker': False
-             }])
-      yield ('WebCodecs_GPUExternalTexture_expired_worker_' + source_type,
-             'gpu-external-texture-expired.html', [{
-                 'source_type': source_type,
-                 'use_worker': True
-             }])
-      yield ('WebCodecs_device_destroy_expired_texture_' + source_type,
-             'gpu-device-destroy-expire-active-external-texture.html', [{
-                 'source_type':
-                 source_type,
-                 'device_destroyed_before_import':
-                 False
-             }])
-      yield ('WebCodecs_texture_expired_from_destroyed_device_' + source_type,
-             'gpu-device-destroy-expire-active-external-texture.html', [{
-                 'source_type':
-                 source_type,
-                 'device_destroyed_before_import':
-                 True
-             }])
 
   @classmethod
   def GenerateAudioTests(cls) -> ct.TestGenerator:
@@ -200,8 +177,8 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     super(WebCodecsIntegrationTest, cls).SetUpProcess()
     args = [
         '--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream',
-        '--enable-unsafe-webgpu', '--enable-blink-features=SharedArrayBuffer'
-    ]
+        '--enable-blink-features=SharedArrayBuffer'
+    ] + cba.ENABLE_WEBGPU_FOR_TESTING
 
     # If we don't call CustomizeBrowserArgs cls.platform is None
     cls.CustomizeBrowserArgs(args)

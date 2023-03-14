@@ -561,6 +561,434 @@ const char* ToString(ax::mojom::Role role) {
   return "";
 }
 
+ax::mojom::Role StringToRole(const std::string& role) {
+  if (role == "kNone") {
+    return ax::mojom::Role::kNone;
+  } else if (role == "kAbbr") {
+    return ax::mojom::Role::kAbbr;
+  } else if (role == "kAlertDialog") {
+    return ax::mojom::Role::kAlertDialog;
+  } else if (role == "kAlert") {
+    return ax::mojom::Role::kAlert;
+  } else if (role == "kApplication") {
+    return ax::mojom::Role::kApplication;
+  } else if (role == "kArticle") {
+    return ax::mojom::Role::kArticle;
+  } else if (role == "kAudio") {
+    return ax::mojom::Role::kAudio;
+  } else if (role == "kBanner") {
+    return ax::mojom::Role::kBanner;
+  } else if (role == "kBlockquote") {
+    return ax::mojom::Role::kBlockquote;
+  } else if (role == "kButton") {
+    return ax::mojom::Role::kButton;
+  } else if (role == "kCanvas") {
+    return ax::mojom::Role::kCanvas;
+  } else if (role == "kCaption") {
+    return ax::mojom::Role::kCaption;
+  } else if (role == "kCaret") {
+    return ax::mojom::Role::kCaret;
+  } else if (role == "kCell") {
+    return ax::mojom::Role::kCell;
+  } else if (role == "kCheckBox") {
+    return ax::mojom::Role::kCheckBox;
+  } else if (role == "kClient") {
+    return ax::mojom::Role::kClient;
+  } else if (role == "kCode") {
+    return ax::mojom::Role::kCode;
+  } else if (role == "kColorWell") {
+    return ax::mojom::Role::kColorWell;
+  } else if (role == "kColumnHeader") {
+    return ax::mojom::Role::kColumnHeader;
+  } else if (role == "kColumn") {
+    return ax::mojom::Role::kColumn;
+  } else if (role == "kComboBoxGrouping") {
+    return ax::mojom::Role::kComboBoxGrouping;
+  } else if (role == "kComboBoxMenuButton") {
+    return ax::mojom::Role::kComboBoxMenuButton;
+  } else if (role == "kComboBoxSelect") {
+    return ax::mojom::Role::kComboBoxSelect;
+  } else if (role == "kComment") {
+    return ax::mojom::Role::kComment;
+  } else if (role == "kComplementary") {
+    return ax::mojom::Role::kComplementary;
+  } else if (role == "kContentDeletion") {
+    return ax::mojom::Role::kContentDeletion;
+  } else if (role == "kContentInsertion") {
+    return ax::mojom::Role::kContentInsertion;
+  } else if (role == "kContentInfo") {
+    return ax::mojom::Role::kContentInfo;
+  } else if (role == "kDate") {
+    return ax::mojom::Role::kDate;
+  } else if (role == "kDateTime") {
+    return ax::mojom::Role::kDateTime;
+  } else if (role == "kDefinition") {
+    return ax::mojom::Role::kDefinition;
+  } else if (role == "kDescriptionListDetail") {
+    return ax::mojom::Role::kDescriptionListDetail;
+  } else if (role == "kDescriptionList") {
+    return ax::mojom::Role::kDescriptionList;
+  } else if (role == "kDescriptionListTerm") {
+    return ax::mojom::Role::kDescriptionListTerm;
+  } else if (role == "kDesktop") {
+    return ax::mojom::Role::kDesktop;
+  } else if (role == "kDetails") {
+    return ax::mojom::Role::kDetails;
+  } else if (role == "kDialog") {
+    return ax::mojom::Role::kDialog;
+  } else if (role == "kDirectory") {
+    return ax::mojom::Role::kDirectory;
+  } else if (role == "kDisclosureTriangle") {
+    return ax::mojom::Role::kDisclosureTriangle;
+  } else if (role == "kDocAbstract") {
+    return ax::mojom::Role::kDocAbstract;
+  } else if (role == "kDocAcknowledgments") {
+    return ax::mojom::Role::kDocAcknowledgments;
+  } else if (role == "kDocAfterword") {
+    return ax::mojom::Role::kDocAfterword;
+  } else if (role == "kDocAppendix") {
+    return ax::mojom::Role::kDocAppendix;
+  } else if (role == "kDocBackLink") {
+    return ax::mojom::Role::kDocBackLink;
+  } else if (role == "kDocBiblioEntry") {
+    return ax::mojom::Role::kDocBiblioEntry;
+  } else if (role == "kDocBibliography") {
+    return ax::mojom::Role::kDocBibliography;
+  } else if (role == "kDocBiblioRef") {
+    return ax::mojom::Role::kDocBiblioRef;
+  } else if (role == "kDocChapter") {
+    return ax::mojom::Role::kDocChapter;
+  } else if (role == "kDocColophon") {
+    return ax::mojom::Role::kDocColophon;
+  } else if (role == "kDocConclusion") {
+    return ax::mojom::Role::kDocConclusion;
+  } else if (role == "kDocCover") {
+    return ax::mojom::Role::kDocCover;
+  } else if (role == "kDocCredit") {
+    return ax::mojom::Role::kDocCredit;
+  } else if (role == "kDocCredits") {
+    return ax::mojom::Role::kDocCredits;
+  } else if (role == "kDocDedication") {
+    return ax::mojom::Role::kDocDedication;
+  } else if (role == "kDocEndnote") {
+    return ax::mojom::Role::kDocEndnote;
+  } else if (role == "kDocEndnotes") {
+    return ax::mojom::Role::kDocEndnotes;
+  } else if (role == "kDocEpigraph") {
+    return ax::mojom::Role::kDocEpigraph;
+  } else if (role == "kDocEpilogue") {
+    return ax::mojom::Role::kDocEpilogue;
+  } else if (role == "kDocErrata") {
+    return ax::mojom::Role::kDocErrata;
+  } else if (role == "kDocExample") {
+    return ax::mojom::Role::kDocExample;
+  } else if (role == "kDocFootnote") {
+    return ax::mojom::Role::kDocFootnote;
+  } else if (role == "kDocForeword") {
+    return ax::mojom::Role::kDocForeword;
+  } else if (role == "kDocGlossary") {
+    return ax::mojom::Role::kDocGlossary;
+  } else if (role == "kDocGlossRef") {
+    return ax::mojom::Role::kDocGlossRef;
+  } else if (role == "kDocIndex") {
+    return ax::mojom::Role::kDocIndex;
+  } else if (role == "kDocIntroduction") {
+    return ax::mojom::Role::kDocIntroduction;
+  } else if (role == "kDocNoteRef") {
+    return ax::mojom::Role::kDocNoteRef;
+  } else if (role == "kDocNotice") {
+    return ax::mojom::Role::kDocNotice;
+  } else if (role == "kDocPageBreak") {
+    return ax::mojom::Role::kDocPageBreak;
+  } else if (role == "kDocPageFooter") {
+    return ax::mojom::Role::kDocPageFooter;
+  } else if (role == "kDocPageHeader") {
+    return ax::mojom::Role::kDocPageHeader;
+  } else if (role == "kDocPageList") {
+    return ax::mojom::Role::kDocPageList;
+  } else if (role == "kDocPart") {
+    return ax::mojom::Role::kDocPart;
+  } else if (role == "kDocPreface") {
+    return ax::mojom::Role::kDocPreface;
+  } else if (role == "kDocPrologue") {
+    return ax::mojom::Role::kDocPrologue;
+  } else if (role == "kDocPullquote") {
+    return ax::mojom::Role::kDocPullquote;
+  } else if (role == "kDocQna") {
+    return ax::mojom::Role::kDocQna;
+  } else if (role == "kDocSubtitle") {
+    return ax::mojom::Role::kDocSubtitle;
+  } else if (role == "kDocTip") {
+    return ax::mojom::Role::kDocTip;
+  } else if (role == "kDocToc") {
+    return ax::mojom::Role::kDocToc;
+  } else if (role == "kDocument") {
+    return ax::mojom::Role::kDocument;
+  } else if (role == "kEmbeddedObject") {
+    return ax::mojom::Role::kEmbeddedObject;
+  } else if (role == "kEmphasis") {
+    return ax::mojom::Role::kEmphasis;
+  } else if (role == "kFeed") {
+    return ax::mojom::Role::kFeed;
+  } else if (role == "kFigcaption") {
+    return ax::mojom::Role::kFigcaption;
+  } else if (role == "kFigure") {
+    return ax::mojom::Role::kFigure;
+  } else if (role == "kFooter") {
+    return ax::mojom::Role::kFooter;
+  } else if (role == "kFooterAsNonLandmark") {
+    return ax::mojom::Role::kFooterAsNonLandmark;
+  } else if (role == "kForm") {
+    return ax::mojom::Role::kForm;
+  } else if (role == "kGenericContainer") {
+    return ax::mojom::Role::kGenericContainer;
+  } else if (role == "kGraphicsDocument") {
+    return ax::mojom::Role::kGraphicsDocument;
+  } else if (role == "kGraphicsObject") {
+    return ax::mojom::Role::kGraphicsObject;
+  } else if (role == "kGraphicsSymbol") {
+    return ax::mojom::Role::kGraphicsSymbol;
+  } else if (role == "kGrid") {
+    return ax::mojom::Role::kGrid;
+  } else if (role == "kGroup") {
+    return ax::mojom::Role::kGroup;
+  } else if (role == "kHeader") {
+    return ax::mojom::Role::kHeader;
+  } else if (role == "kHeaderAsNonLandmark") {
+    return ax::mojom::Role::kHeaderAsNonLandmark;
+  } else if (role == "kHeading") {
+    return ax::mojom::Role::kHeading;
+  } else if (role == "kIframe") {
+    return ax::mojom::Role::kIframe;
+  } else if (role == "kIframePresentational") {
+    return ax::mojom::Role::kIframePresentational;
+  } else if (role == "kImage") {
+    return ax::mojom::Role::kImage;
+  } else if (role == "kImeCandidate") {
+    return ax::mojom::Role::kImeCandidate;
+  } else if (role == "kInlineTextBox") {
+    return ax::mojom::Role::kInlineTextBox;
+  } else if (role == "kInputTime") {
+    return ax::mojom::Role::kInputTime;
+  } else if (role == "kKeyboard") {
+    return ax::mojom::Role::kKeyboard;
+  } else if (role == "kLabelText") {
+    return ax::mojom::Role::kLabelText;
+  } else if (role == "kLayoutTable") {
+    return ax::mojom::Role::kLayoutTable;
+  } else if (role == "kLayoutTableCell") {
+    return ax::mojom::Role::kLayoutTableCell;
+  } else if (role == "kLayoutTableRow") {
+    return ax::mojom::Role::kLayoutTableRow;
+  } else if (role == "kLegend") {
+    return ax::mojom::Role::kLegend;
+  } else if (role == "kLineBreak") {
+    return ax::mojom::Role::kLineBreak;
+  } else if (role == "kLink") {
+    return ax::mojom::Role::kLink;
+  } else if (role == "kList") {
+    return ax::mojom::Role::kList;
+  } else if (role == "kListBoxOption") {
+    return ax::mojom::Role::kListBoxOption;
+  } else if (role == "kListBox") {
+    return ax::mojom::Role::kListBox;
+  } else if (role == "kListGrid") {
+    return ax::mojom::Role::kListGrid;
+  } else if (role == "kListItem") {
+    return ax::mojom::Role::kListItem;
+  } else if (role == "kListMarker") {
+    return ax::mojom::Role::kListMarker;
+  } else if (role == "kLog") {
+    return ax::mojom::Role::kLog;
+  } else if (role == "kMain") {
+    return ax::mojom::Role::kMain;
+  } else if (role == "kMark") {
+    return ax::mojom::Role::kMark;
+  } else if (role == "kMarquee") {
+    return ax::mojom::Role::kMarquee;
+  } else if (role == "kMath") {
+    return ax::mojom::Role::kMath;
+  } else if (role == "kMathMLFraction") {
+    return ax::mojom::Role::kMathMLFraction;
+  } else if (role == "kMathMLIdentifier") {
+    return ax::mojom::Role::kMathMLIdentifier;
+  } else if (role == "kMathMLMath") {
+    return ax::mojom::Role::kMathMLMath;
+  } else if (role == "kMathMLMultiscripts") {
+    return ax::mojom::Role::kMathMLMultiscripts;
+  } else if (role == "kMathMLNoneScript") {
+    return ax::mojom::Role::kMathMLNoneScript;
+  } else if (role == "kMathMLNumber") {
+    return ax::mojom::Role::kMathMLNumber;
+  } else if (role == "kMathMLOperator") {
+    return ax::mojom::Role::kMathMLOperator;
+  } else if (role == "kMathMLOver") {
+    return ax::mojom::Role::kMathMLOver;
+  } else if (role == "kMathMLPrescriptDelimiter") {
+    return ax::mojom::Role::kMathMLPrescriptDelimiter;
+  } else if (role == "kMathMLRoot") {
+    return ax::mojom::Role::kMathMLRoot;
+  } else if (role == "kMathMLRow") {
+    return ax::mojom::Role::kMathMLRow;
+  } else if (role == "kMathMLSquareRoot") {
+    return ax::mojom::Role::kMathMLSquareRoot;
+  } else if (role == "kMathMLStringLiteral") {
+    return ax::mojom::Role::kMathMLStringLiteral;
+  } else if (role == "kMathMLSub") {
+    return ax::mojom::Role::kMathMLSub;
+  } else if (role == "kMathMLSubSup") {
+    return ax::mojom::Role::kMathMLSubSup;
+  } else if (role == "kMathMLSup") {
+    return ax::mojom::Role::kMathMLSup;
+  } else if (role == "kMathMLTable") {
+    return ax::mojom::Role::kMathMLTable;
+  } else if (role == "kMathMLTableCell") {
+    return ax::mojom::Role::kMathMLTableCell;
+  } else if (role == "kMathMLTableRow") {
+    return ax::mojom::Role::kMathMLTableRow;
+  } else if (role == "kMathMLText") {
+    return ax::mojom::Role::kMathMLText;
+  } else if (role == "kMathMLUnder") {
+    return ax::mojom::Role::kMathMLUnder;
+  } else if (role == "kMathMLUnderOver") {
+    return ax::mojom::Role::kMathMLUnderOver;
+  } else if (role == "kMenu") {
+    return ax::mojom::Role::kMenu;
+  } else if (role == "kMenuBar") {
+    return ax::mojom::Role::kMenuBar;
+  } else if (role == "kMenuItem") {
+    return ax::mojom::Role::kMenuItem;
+  } else if (role == "kMenuItemCheckBox") {
+    return ax::mojom::Role::kMenuItemCheckBox;
+  } else if (role == "kMenuItemRadio") {
+    return ax::mojom::Role::kMenuItemRadio;
+  } else if (role == "kMenuListOption") {
+    return ax::mojom::Role::kMenuListOption;
+  } else if (role == "kMenuListPopup") {
+    return ax::mojom::Role::kMenuListPopup;
+  } else if (role == "kMeter") {
+    return ax::mojom::Role::kMeter;
+  } else if (role == "kNavigation") {
+    return ax::mojom::Role::kNavigation;
+  } else if (role == "kNote") {
+    return ax::mojom::Role::kNote;
+  } else if (role == "kPane") {
+    return ax::mojom::Role::kPane;
+  } else if (role == "kParagraph") {
+    return ax::mojom::Role::kParagraph;
+  } else if (role == "kPdfActionableHighlight") {
+    return ax::mojom::Role::kPdfActionableHighlight;
+  } else if (role == "kPdfRoot") {
+    return ax::mojom::Role::kPdfRoot;
+  } else if (role == "kPluginObject") {
+    return ax::mojom::Role::kPluginObject;
+  } else if (role == "kPopUpButton") {
+    return ax::mojom::Role::kPopUpButton;
+  } else if (role == "kPortal") {
+    return ax::mojom::Role::kPortal;
+  } else if (role == "kPre") {
+    return ax::mojom::Role::kPre;
+  } else if (role == "kProgressIndicator") {
+    return ax::mojom::Role::kProgressIndicator;
+  } else if (role == "kRadioButton") {
+    return ax::mojom::Role::kRadioButton;
+  } else if (role == "kRadioGroup") {
+    return ax::mojom::Role::kRadioGroup;
+  } else if (role == "kRegion") {
+    return ax::mojom::Role::kRegion;
+  } else if (role == "kRootWebArea") {
+    return ax::mojom::Role::kRootWebArea;
+  } else if (role == "kRow") {
+    return ax::mojom::Role::kRow;
+  } else if (role == "kRowGroup") {
+    return ax::mojom::Role::kRowGroup;
+  } else if (role == "kRowHeader") {
+    return ax::mojom::Role::kRowHeader;
+  } else if (role == "kRuby") {
+    return ax::mojom::Role::kRuby;
+  } else if (role == "kRubyAnnotation") {
+    return ax::mojom::Role::kRubyAnnotation;
+  } else if (role == "kSection") {
+    return ax::mojom::Role::kSection;
+  } else if (role == "kStrong") {
+    return ax::mojom::Role::kStrong;
+  } else if (role == "kSubscript") {
+    return ax::mojom::Role::kSubscript;
+  } else if (role == "kSuggestion") {
+    return ax::mojom::Role::kSuggestion;
+  } else if (role == "kSuperscript") {
+    return ax::mojom::Role::kSuperscript;
+  } else if (role == "kSvgRoot") {
+    return ax::mojom::Role::kSvgRoot;
+  } else if (role == "kScrollBar") {
+    return ax::mojom::Role::kScrollBar;
+  } else if (role == "kScrollView") {
+    return ax::mojom::Role::kScrollView;
+  } else if (role == "kSearch") {
+    return ax::mojom::Role::kSearch;
+  } else if (role == "kSearchBox") {
+    return ax::mojom::Role::kSearchBox;
+  } else if (role == "kSlider") {
+    return ax::mojom::Role::kSlider;
+  } else if (role == "kSpinButton") {
+    return ax::mojom::Role::kSpinButton;
+  } else if (role == "kSplitter") {
+    return ax::mojom::Role::kSplitter;
+  } else if (role == "kStaticText") {
+    return ax::mojom::Role::kStaticText;
+  } else if (role == "kStatus") {
+    return ax::mojom::Role::kStatus;
+  } else if (role == "kSwitch") {
+    return ax::mojom::Role::kSwitch;
+  } else if (role == "kTabList") {
+    return ax::mojom::Role::kTabList;
+  } else if (role == "kTabPanel") {
+    return ax::mojom::Role::kTabPanel;
+  } else if (role == "kTab") {
+    return ax::mojom::Role::kTab;
+  } else if (role == "kTable") {
+    return ax::mojom::Role::kTable;
+  } else if (role == "kTableHeaderContainer") {
+    return ax::mojom::Role::kTableHeaderContainer;
+  } else if (role == "kTerm") {
+    return ax::mojom::Role::kTerm;
+  } else if (role == "kTextField") {
+    return ax::mojom::Role::kTextField;
+  } else if (role == "kTextFieldWithComboBox") {
+    return ax::mojom::Role::kTextFieldWithComboBox;
+  } else if (role == "kTime") {
+    return ax::mojom::Role::kTime;
+  } else if (role == "kTimer") {
+    return ax::mojom::Role::kTimer;
+  } else if (role == "kTitleBar") {
+    return ax::mojom::Role::kTitleBar;
+  } else if (role == "kToggleButton") {
+    return ax::mojom::Role::kToggleButton;
+  } else if (role == "kToolbar") {
+    return ax::mojom::Role::kToolbar;
+  } else if (role == "kTreeGrid") {
+    return ax::mojom::Role::kTreeGrid;
+  } else if (role == "kTreeItem") {
+    return ax::mojom::Role::kTreeItem;
+  } else if (role == "kTree") {
+    return ax::mojom::Role::kTree;
+  } else if (role == "kUnknown") {
+    return ax::mojom::Role::kUnknown;
+  } else if (role == "kTooltip") {
+    return ax::mojom::Role::kTooltip;
+  } else if (role == "kVideo") {
+    return ax::mojom::Role::kVideo;
+  } else if (role == "kWebView") {
+    return ax::mojom::Role::kWebView;
+  } else if (role == "kWindow") {
+    return ax::mojom::Role::kWindow;
+  }
+
+  // We should never pass in an invalid role.
+  NOTREACHED() << "Invalid role was provided: " << role;
+  return ax::mojom::Role::kUnknown;
+}
+
 const char* ToString(ax::mojom::State state) {
   switch (state) {
     case ax::mojom::State::kNone:
@@ -604,6 +1032,52 @@ const char* ToString(ax::mojom::State state) {
   }
 
   return "";
+}
+
+ax::mojom::State StringToState(const std::string& str) {
+  if (str == "kNone") {
+    return ax::mojom::State::kNone;
+  } else if (str == "kAutofillAvailable") {
+    return ax::mojom::State::kAutofillAvailable;
+  } else if (str == "kCollapsed") {
+    return ax::mojom::State::kCollapsed;
+  } else if (str == "kDefault") {
+    return ax::mojom::State::kDefault;
+  } else if (str == "kEditable") {
+    return ax::mojom::State::kEditable;
+  } else if (str == "kExpanded") {
+    return ax::mojom::State::kExpanded;
+  } else if (str == "kFocusable") {
+    return ax::mojom::State::kFocusable;
+  } else if (str == "kHorizontal") {
+    return ax::mojom::State::kHorizontal;
+  } else if (str == "kHovered") {
+    return ax::mojom::State::kHovered;
+  } else if (str == "kIgnored") {
+    return ax::mojom::State::kIgnored;
+  } else if (str == "kInvisible") {
+    return ax::mojom::State::kInvisible;
+  } else if (str == "kLinked") {
+    return ax::mojom::State::kLinked;
+  } else if (str == "kMultiline") {
+    return ax::mojom::State::kMultiline;
+  } else if (str == "kMultiselectable") {
+    return ax::mojom::State::kMultiselectable;
+  } else if (str == "kProtected") {
+    return ax::mojom::State::kProtected;
+  } else if (str == "kRequired") {
+    return ax::mojom::State::kRequired;
+  } else if (str == "kRichlyEditable") {
+    return ax::mojom::State::kRichlyEditable;
+  } else if (str == "kVertical") {
+    return ax::mojom::State::kVertical;
+  } else if (str == "kVisited") {
+    return ax::mojom::State::kVisited;
+  }
+
+  // We should never pass in an invalid state.
+  NOTREACHED() << "An invalid state was provided: " << str;
+  return ax::mojom::State::kNone;
 }
 
 const char* ToString(ax::mojom::Action action) {
@@ -852,6 +1326,85 @@ const char* ToString(ax::mojom::StringAttribute string_attribute) {
   return "";
 }
 
+ax::mojom::StringAttribute StringToStringAttribute(
+    const std::string& string_attribute) {
+  if (string_attribute == "kNone") {
+    return ax::mojom::StringAttribute::kNone;
+  } else if (string_attribute == "kAccessKey") {
+    return ax::mojom::StringAttribute::kAccessKey;
+  } else if (string_attribute == "kAriaInvalidValue") {
+    return ax::mojom::StringAttribute::kAriaInvalidValue;
+  } else if (string_attribute == "kAutoComplete") {
+    return ax::mojom::StringAttribute::kAutoComplete;
+  } else if (string_attribute == "kAriaBrailleLabel") {
+    return ax::mojom::StringAttribute::kAriaBrailleLabel;
+  } else if (string_attribute == "kAriaBrailleRoleDescription") {
+    return ax::mojom::StringAttribute::kAriaBrailleRoleDescription;
+  } else if (string_attribute == "kCheckedStateDescription") {
+    return ax::mojom::StringAttribute::kCheckedStateDescription;
+  } else if (string_attribute == "kChildTreeId") {
+    return ax::mojom::StringAttribute::kChildTreeId;
+  } else if (string_attribute == "kChildTreeNodeAppId") {
+    return ax::mojom::StringAttribute::kChildTreeNodeAppId;
+  } else if (string_attribute == "kClassName") {
+    return ax::mojom::StringAttribute::kClassName;
+  } else if (string_attribute == "kContainerLiveRelevant") {
+    return ax::mojom::StringAttribute::kContainerLiveRelevant;
+  } else if (string_attribute == "kContainerLiveStatus") {
+    return ax::mojom::StringAttribute::kContainerLiveStatus;
+  } else if (string_attribute == "kDescription") {
+    return ax::mojom::StringAttribute::kDescription;
+  } else if (string_attribute == "kDisplay") {
+    return ax::mojom::StringAttribute::kDisplay;
+  } else if (string_attribute == "kDoDefaultLabel") {
+    return ax::mojom::StringAttribute::kDoDefaultLabel;
+  } else if (string_attribute == "kFontFamily") {
+    return ax::mojom::StringAttribute::kFontFamily;
+  } else if (string_attribute == "kHtmlTag") {
+    return ax::mojom::StringAttribute::kHtmlTag;
+  } else if (string_attribute == "kImageAnnotation") {
+    return ax::mojom::StringAttribute::kImageAnnotation;
+  } else if (string_attribute == "kImageDataUrl") {
+    return ax::mojom::StringAttribute::kImageDataUrl;
+  } else if (string_attribute == "kInnerHtml") {
+    return ax::mojom::StringAttribute::kInnerHtml;
+  } else if (string_attribute == "kInputType") {
+    return ax::mojom::StringAttribute::kInputType;
+  } else if (string_attribute == "kKeyShortcuts") {
+    return ax::mojom::StringAttribute::kKeyShortcuts;
+  } else if (string_attribute == "kLanguage") {
+    return ax::mojom::StringAttribute::kLanguage;
+  } else if (string_attribute == "kName") {
+    return ax::mojom::StringAttribute::kName;
+  } else if (string_attribute == "kLiveRelevant") {
+    return ax::mojom::StringAttribute::kLiveRelevant;
+  } else if (string_attribute == "kLiveStatus") {
+    return ax::mojom::StringAttribute::kLiveStatus;
+  } else if (string_attribute == "kApp") {
+    return ax::mojom::StringAttribute::kAppId;
+  } else if (string_attribute == "kPlaceholder") {
+    return ax::mojom::StringAttribute::kPlaceholder;
+  } else if (string_attribute == "kRole") {
+    return ax::mojom::StringAttribute::kRole;
+  } else if (string_attribute == "kRoleDescription") {
+    return ax::mojom::StringAttribute::kRoleDescription;
+  } else if (string_attribute == "kLongClickLabel") {
+    return ax::mojom::StringAttribute::kLongClickLabel;
+  } else if (string_attribute == "kToolTip") {
+    return ax::mojom::StringAttribute::kTooltip;
+  } else if (string_attribute == "kUrl") {
+    return ax::mojom::StringAttribute::kUrl;
+  } else if (string_attribute == "kValue") {
+    return ax::mojom::StringAttribute::kUrl;
+  } else if (string_attribute == "kVirtualContent") {
+    return ax::mojom::StringAttribute::kVirtualContent;
+  } else {
+    NOTREACHED() << "An invalid StringAttribute was provided: "
+                 << string_attribute;
+    return ax::mojom::StringAttribute::kNone;
+  }
+}
+
 const char* ToString(ax::mojom::IntAttribute int_attribute) {
   switch (int_attribute) {
     case ax::mojom::IntAttribute::kNone:
@@ -987,6 +1540,141 @@ const char* ToString(ax::mojom::IntAttribute int_attribute) {
   return "";
 }
 
+ax::mojom::IntAttribute StringToIntAttribute(const std::string& int_attribute) {
+  if (int_attribute == "kNone") {
+    return ax::mojom::IntAttribute::kNone;
+  } else if (int_attribute == "kDefaultActionVerb") {
+    return ax::mojom::IntAttribute::kDefaultActionVerb;
+  } else if (int_attribute == "kDropeffect") {
+    return ax::mojom::IntAttribute::kDropeffect;
+  } else if (int_attribute == "kScrollX") {
+    return ax::mojom::IntAttribute::kScrollX;
+  } else if (int_attribute == "kScrollXMin") {
+    return ax::mojom::IntAttribute::kScrollXMin;
+  } else if (int_attribute == "kScrollXMax") {
+    return ax::mojom::IntAttribute::kScrollXMax;
+  } else if (int_attribute == "kScrollY") {
+    return ax::mojom::IntAttribute::kScrollY;
+  } else if (int_attribute == "kScrollYMin") {
+    return ax::mojom::IntAttribute::kScrollYMin;
+  } else if (int_attribute == "kScrollYMax") {
+    return ax::mojom::IntAttribute::kScrollYMax;
+  } else if (int_attribute == "kTextSelStart") {
+    return ax::mojom::IntAttribute::kTextSelStart;
+  } else if (int_attribute == "kTextSelEnd") {
+    return ax::mojom::IntAttribute::kTextSelEnd;
+  } else if (int_attribute == "kAriaColumnCount") {
+    return ax::mojom::IntAttribute::kAriaColumnCount;
+  } else if (int_attribute == "kAriaCellColumnIndex") {
+    return ax::mojom::IntAttribute::kAriaCellColumnIndex;
+  } else if (int_attribute == "kAriaCellColumnSpan") {
+    return ax::mojom::IntAttribute::kAriaCellColumnSpan;
+  } else if (int_attribute == "kAriaRowCount") {
+    return ax::mojom::IntAttribute::kAriaRowCount;
+  } else if (int_attribute == "kAriaCellRowIndex") {
+    return ax::mojom::IntAttribute::kAriaCellRowIndex;
+  } else if (int_attribute == "kAriaCellRowSpan") {
+    return ax::mojom::IntAttribute::kAriaCellRowSpan;
+  } else if (int_attribute == "kTableRowCount") {
+    return ax::mojom::IntAttribute::kTableRowCount;
+  } else if (int_attribute == "kTableColumnCount") {
+    return ax::mojom::IntAttribute::kTableColumnCount;
+  } else if (int_attribute == "kTableHeaderId") {
+    return ax::mojom::IntAttribute::kTableHeaderId;
+  } else if (int_attribute == "kTableRowIndex") {
+    return ax::mojom::IntAttribute::kTableRowIndex;
+  } else if (int_attribute == "kTableRowHeaderId") {
+    return ax::mojom::IntAttribute::kTableRowHeaderId;
+  } else if (int_attribute == "kTableColumnIndex") {
+    return ax::mojom::IntAttribute::kTableColumnIndex;
+  } else if (int_attribute == "kTableColumnHeaderId") {
+    return ax::mojom::IntAttribute::kTableColumnHeaderId;
+  } else if (int_attribute == "kTableCellColumnIndex") {
+    return ax::mojom::IntAttribute::kTableCellColumnIndex;
+  } else if (int_attribute == "kTableCellColumnSpan") {
+    return ax::mojom::IntAttribute::kTableCellColumnSpan;
+  } else if (int_attribute == "kTableCellRowIndex") {
+    return ax::mojom::IntAttribute::kTableCellRowIndex;
+  } else if (int_attribute == "kTableCellRowSpan") {
+    return ax::mojom::IntAttribute::kTableCellRowSpan;
+  } else if (int_attribute == "kSortDirection") {
+    return ax::mojom::IntAttribute::kSortDirection;
+  } else if (int_attribute == "kHierarchicalLevel") {
+    return ax::mojom::IntAttribute::kHierarchicalLevel;
+  } else if (int_attribute == "kNameFrom") {
+    return ax::mojom::IntAttribute::kNameFrom;
+  } else if (int_attribute == "kDescriptionFrom") {
+    return ax::mojom::IntAttribute::kDescriptionFrom;
+  } else if (int_attribute == "kActivedescendantId") {
+    return ax::mojom::IntAttribute::kActivedescendantId;
+  } else if (int_attribute == "kErrormessageId") {
+    return ax::mojom::IntAttribute::kErrormessageId;
+  } else if (int_attribute == "kInPageLinkTargetId") {
+    return ax::mojom::IntAttribute::kInPageLinkTargetId;
+  } else if (int_attribute == "kMemberOfId") {
+    return ax::mojom::IntAttribute::kMemberOfId;
+  } else if (int_attribute == "kNextOnLineId") {
+    return ax::mojom::IntAttribute::kNextOnLineId;
+  } else if (int_attribute == "kPopupForId") {
+    return ax::mojom::IntAttribute::kPopupForId;
+  } else if (int_attribute == "kPreviousOnLineId") {
+    return ax::mojom::IntAttribute::kPreviousOnLineId;
+  } else if (int_attribute == "kRestriction") {
+    return ax::mojom::IntAttribute::kRestriction;
+  } else if (int_attribute == "kSetSize") {
+    return ax::mojom::IntAttribute::kSetSize;
+  } else if (int_attribute == "kPosInSet") {
+    return ax::mojom::IntAttribute::kPosInSet;
+  } else if (int_attribute == "kColorValue") {
+    return ax::mojom::IntAttribute::kColorValue;
+  } else if (int_attribute == "kAriaCurrentState") {
+    return ax::mojom::IntAttribute::kAriaCurrentState;
+  } else if (int_attribute == "kBackgroundColor") {
+    return ax::mojom::IntAttribute::kBackgroundColor;
+  } else if (int_attribute == "kColor") {
+    return ax::mojom::IntAttribute::kColor;
+  } else if (int_attribute == "kHasPopup") {
+    return ax::mojom::IntAttribute::kHasPopup;
+  } else if (int_attribute == "kIsPopup") {
+    return ax::mojom::IntAttribute::kIsPopup;
+  } else if (int_attribute == "kInvalidState") {
+    return ax::mojom::IntAttribute::kInvalidState;
+  } else if (int_attribute == "kCheckedState") {
+    return ax::mojom::IntAttribute::kCheckedState;
+  } else if (int_attribute == "kListStyle") {
+    return ax::mojom::IntAttribute::kListStyle;
+  } else if (int_attribute == "kTextAlign") {
+    return ax::mojom::IntAttribute::kTextAlign;
+  } else if (int_attribute == "kTextDirection") {
+    return ax::mojom::IntAttribute::kTextDirection;
+  } else if (int_attribute == "kTextPosition") {
+    return ax::mojom::IntAttribute::kTextPosition;
+  } else if (int_attribute == "kTextStyle") {
+    return ax::mojom::IntAttribute::kTextStyle;
+  } else if (int_attribute == "kTextOverlineStyle") {
+    return ax::mojom::IntAttribute::kTextOverlineStyle;
+  } else if (int_attribute == "kTextStrikethroughStyle") {
+    return ax::mojom::IntAttribute::kTextStrikethroughStyle;
+  } else if (int_attribute == "kTextUnderlineStyle") {
+    return ax::mojom::IntAttribute::kTextUnderlineStyle;
+  } else if (int_attribute == "kPreviousFocusId") {
+    return ax::mojom::IntAttribute::kPreviousFocusId;
+  } else if (int_attribute == "kNextFocusId") {
+    return ax::mojom::IntAttribute::kNextFocusId;
+  } else if (int_attribute == "kImageAnnotationStatus") {
+    return ax::mojom::IntAttribute::kImageAnnotationStatus;
+  } else if (int_attribute == "kDomNodeId") {
+    return ax::mojom::IntAttribute::kDOMNodeId;
+  } else if (int_attribute == "kNextWindowFocusId") {
+    return ax::mojom::IntAttribute::kNextWindowFocusId;
+  } else if (int_attribute == "kPreviousWindowFocusId") {
+    return ax::mojom::IntAttribute::kPreviousWindowFocusId;
+  }
+
+  NOTREACHED() << "An invalid IntAttribute was provided: " << int_attribute;
+  return ax::mojom::IntAttribute::kNone;
+}
+
 const char* ToString(ax::mojom::FloatAttribute float_attribute) {
   switch (float_attribute) {
     case ax::mojom::FloatAttribute::kNone:
@@ -1061,6 +1749,58 @@ const char* ToString(ax::mojom::BoolAttribute bool_attribute) {
   }
 
   return "";
+}
+
+ax::mojom::BoolAttribute StringToBoolAttribute(
+    const std::string& bool_attribute) {
+  if (bool_attribute == "kNone") {
+    return ax::mojom::BoolAttribute::kNone;
+  } else if (bool_attribute == "kBusy") {
+    return ax::mojom::BoolAttribute::kBusy;
+  } else if (bool_attribute == "kNonAtomicTextFieldRoot") {
+    return ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot;
+  } else if (bool_attribute == "kContainerLiveAtomic") {
+    return ax::mojom::BoolAttribute::kContainerLiveAtomic;
+  } else if (bool_attribute == "kContainerLiveBusy") {
+    return ax::mojom::BoolAttribute::kContainerLiveBusy;
+  } else if (bool_attribute == "kGrabbed") {
+    return ax::mojom::BoolAttribute::kGrabbed;
+  } else if (bool_attribute == "kLiveAtomic") {
+    return ax::mojom::BoolAttribute::kLiveAtomic;
+  } else if (bool_attribute == "kModal") {
+    return ax::mojom::BoolAttribute::kModal;
+  } else if (bool_attribute == "kUpdateLocationOnly") {
+    return ax::mojom::BoolAttribute::kUpdateLocationOnly;
+  } else if (bool_attribute == "kCanvasHasFallback") {
+    return ax::mojom::BoolAttribute::kCanvasHasFallback;
+  } else if (bool_attribute == "kScrollable") {
+    return ax::mojom::BoolAttribute::kScrollable;
+  } else if (bool_attribute == "kClickable") {
+    return ax::mojom::BoolAttribute::kClickable;
+  } else if (bool_attribute == "kClipsChildren") {
+    return ax::mojom::BoolAttribute::kClipsChildren;
+  } else if (bool_attribute == "kNotUserSelectableStyle") {
+    return ax::mojom::BoolAttribute::kNotUserSelectableStyle;
+  } else if (bool_attribute == "kSelected") {
+    return ax::mojom::BoolAttribute::kSelected;
+  } else if (bool_attribute == "kSelectedFromFocus") {
+    return ax::mojom::BoolAttribute::kSelectedFromFocus;
+  } else if (bool_attribute == "kSupportsTextLocation") {
+    return ax::mojom::BoolAttribute::kSupportsTextLocation;
+  } else if (bool_attribute == "kIsLineBreakingObject") {
+    return ax::mojom::BoolAttribute::kIsLineBreakingObject;
+  } else if (bool_attribute == "kIsPageBreakingObject") {
+    return ax::mojom::BoolAttribute::kIsPageBreakingObject;
+  } else if (bool_attribute == "kHasAriaAttribute") {
+    return ax::mojom::BoolAttribute::kHasAriaAttribute;
+  } else if (bool_attribute == "kTouchPassthrough") {
+    return ax::mojom::BoolAttribute::kTouchPassthrough;
+  } else if (bool_attribute == "kLongClickable") {
+    return ax::mojom::BoolAttribute::kLongClickable;
+  } else {
+    NOTREACHED() << "An invalid BoolAttribute was provided: " << bool_attribute;
+    return ax::mojom::BoolAttribute::kNone;
+  }
 }
 
 const char* ToString(ax::mojom::IntListAttribute int_list_attribute) {
@@ -1493,6 +2233,8 @@ const char* ToString(ax::mojom::IsPopup is_popup) {
       return "";
     case ax::mojom::IsPopup::kAuto:
       return "auto";
+    case ax::mojom::IsPopup::kHint:
+      return "hint";
     case ax::mojom::IsPopup::kManual:
       return "manual";
   }

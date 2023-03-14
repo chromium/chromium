@@ -1,13 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
+<translation id="1347497506789975534">Показати збережені способи оплати</translation>
 <translation id="1383876407941801731">Пошук</translation>
-<translation id="1566281227936819866">Показано збережені способи оплати</translation>
 <translation id="1717486229951421299">Список облікових даних, які вставляються дотиком, відкрито на половину висоти екрана.</translation>
 <translation id="207576718733492531">Список облікових даних, які вставляються дотиком, закритий.</translation>
 <translation id="2610239185026711824">Запропонувати пароль</translation>
 <translation id="2652129567809778422">Вибрати пароль</translation>
-<translation id="2803478378562657435">Показано збережені паролі та їх параметри</translation>
 <translation id="2903493209154104877">Адреси</translation>
 <translation id="3399357656427473483">Список облікових даних, які вставляються дотиком.</translation>
 <translation id="3688051737190211318">Якщо ви довіряєте сайту <ph name="ORIGIN" />, то можете входити за допомогою збереженого пароля</translation>
@@ -15,16 +14,14 @@
 <translation id="4660011489602794167">Показати клавіатуру</translation>
 <translation id="4694050069269396220">Якщо ви довіряєте сайту <ph name="ORIGIN" />, то можете скористатися збереженим паролем для іншого сайту.</translation>
 <translation id="5016175294846053194">Над клавіатурою показано пропозиції автозаповнення</translation>
-<translation id="5088366526685584589">Показано збережені адреси</translation>
 <translation id="5441504010984421144">Список облікових даних, які вставляються дотиком, відкрито на всю висоту екрана.</translation>
+<translation id="6296921860874265377">Показати збережені паролі та їх параметри</translation>
 <translation id="6393156038355142111">Запропонувати надійний пароль</translation>
 <translation id="6558703547256592471">Намагайтеся використовувати для кожного сайту унікальний пароль.</translation>
 <translation id="7029809446516969842">Паролі</translation>
-<translation id="7299100402441711551">Показати адреси</translation>
-<translation id="7494879913343971937">Показати паролі</translation>
 <translation id="7594473730623999723">Гортайте, щоб переглянути інші пропозиції</translation>
+<translation id="7873973044507799456">Показати збережені адреси</translation>
 <translation id="7992095260806105436">Використати пропозицію автозаповнення Chrome</translation>
-<translation id="8037472847879765671">Показати способи оплати</translation>
 <translation id="8507520749471379845">Доступні паролі</translation>
 <translation id="8705308553596171387">Немає пароля</translation>
 <translation id="879180780857354295">Над клавіатурою показано альтернативні варіанти заповнення</translation>

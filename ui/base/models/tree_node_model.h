@@ -322,9 +322,8 @@ class TreeNodeModel : public TreeModel {
     const auto& children = AsNode(parent)->children();
     Nodes nodes;
     nodes.reserve(children.size());
-    std::transform(children.cbegin(), children.cend(),
-                   std::back_inserter(nodes),
-                   [](const auto& child) { return child.get(); });
+    base::ranges::transform(children, std::back_inserter(nodes),
+                            &TreeNode<NodeType>::TreeNodes::value_type::get);
     return nodes;
   }
 

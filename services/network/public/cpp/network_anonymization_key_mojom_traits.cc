@@ -14,7 +14,7 @@ bool StructTraits<network::mojom::NetworkAnonymizationKeyDataView,
                   net::NetworkAnonymizationKey>::
     Read(network::mojom::NetworkAnonymizationKeyDataView data,
          net::NetworkAnonymizationKey* out) {
-  absl::optional<net::SchemefulSite> top_frame_site, frame_site;
+  absl::optional<net::SchemefulSite> top_frame_site;
 
   // If we fail to parse sites that we expect to be populated return false.
   if (!data.ReadTopFrameSite(&top_frame_site)) {
@@ -22,11 +22,7 @@ bool StructTraits<network::mojom::NetworkAnonymizationKeyDataView,
   }
 
   // Read is_cross_site boolean flag value.
-  absl::optional<bool> is_cross_site = absl::nullopt;
-  if (net::NetworkAnonymizationKey::IsCrossSiteFlagSchemeEnabled() &&
-      top_frame_site.has_value()) {
-    is_cross_site = data.is_cross_site();
-  }
+  bool is_cross_site = data.is_cross_site();
 
   // Read nonce value.
   absl::optional<base::UnguessableToken> nonce;
@@ -36,14 +32,13 @@ bool StructTraits<network::mojom::NetworkAnonymizationKeyDataView,
 
   // If top_frame_site is not populated, the entire key must be empty.
   if (!top_frame_site.has_value()) {
-    if (frame_site.has_value() || nonce.has_value()) {
+    if (is_cross_site || nonce.has_value()) {
       return false;
     }
     *out = net::NetworkAnonymizationKey();
   } else {
-    *out = net::NetworkAnonymizationKey(std::move(top_frame_site.value()),
-                                        std::move(frame_site), is_cross_site,
-                                        nonce);
+    *out = net::NetworkAnonymizationKey::CreateFromParts(top_frame_site.value(),
+                                                         is_cross_site, nonce);
   }
 
   return true;

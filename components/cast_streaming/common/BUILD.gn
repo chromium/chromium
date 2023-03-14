@@ -2,13 +2,44 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-visibility = [ ":*" ]
+import("//mojo/public/tools/bindings/mojom.gni")
 
-source_set("message_serialization") {
-  visibility += [
-    "//components/cast_streaming/browser:*",
-    "//components/cast_streaming/test:*",
+visibility = [ "//components/cast_streaming/*" ]
+
+source_set("common") {
+  visibility += [ "*" ]
+  public = [
+    "public/app_ids.h",
+    "public/cast_streaming_url.h",
+    "public/features.h",
   ]
+  sources = [
+    "app_ids.cc",
+    "cast_streaming_url.cc",
+    "features.cc",
+  ]
+  public_deps = [ "//url" ]
+  deps = [
+    "//base",
+    "//components/cast_streaming:buildflags",
+    "//third_party/openscreen/src/cast/common:public",
+  ]
+}
+
+mojom("mojom") {
+  visibility += [ "*" ]
+  sources = [
+    "public/mojom/demuxer_connector.mojom",
+    "public/mojom/renderer_controller.mojom",
+  ]
+  public_deps = [
+    "//media/mojo/mojom",
+    "//mojo/public/mojom/base",
+  ]
+}
+
+source_set("conversions") {
+  visibility += [ "//components/mirroring/service/*" ]
   public = [ "message_serialization.h" ]
   sources = [ "message_serialization.cc" ]
   public_deps = [ "//base" ]

@@ -50,7 +50,8 @@ FedCmAccountSelectionView::~FedCmAccountSelectionView() {
 }
 
 void FedCmAccountSelectionView::Show(
-    const std::string& rp_etld_plus_one,
+    const std::string& top_frame_etld_plus_one,
+    const absl::optional<std::string>& iframe_etld_plus_one,
     const std::vector<content::IdentityProviderData>&
         identity_provider_data_list,
     Account::SignInMode sign_in_mode,
@@ -75,14 +76,18 @@ void FedCmAccountSelectionView::Show(
           ? absl::make_optional<std::u16string>(
                 idp_display_data_list_[0].idp_etld_plus_one)
           : absl::nullopt;
-  rp_for_display_ = base::UTF8ToUTF16(rp_etld_plus_one);
+  top_frame_for_display_ = base::UTF8ToUTF16(top_frame_etld_plus_one);
+  iframe_for_display_ = iframe_etld_plus_one
+                            ? absl::make_optional<std::u16string>(
+                                  base::UTF8ToUTF16(*iframe_etld_plus_one))
+                            : absl::nullopt;
 
   bool create_bubble = !bubble_widget_;
   if (create_bubble) {
-    bubble_widget_ =
-        CreateBubbleWithAccessibleTitle(rp_for_display_, idp_title, rp_context,
-                                        show_auto_reauthn_checkbox)
-            ->GetWeakPtr();
+    bubble_widget_ = CreateBubbleWithAccessibleTitle(
+                         top_frame_for_display_, iframe_for_display_, idp_title,
+                         rp_context, show_auto_reauthn_checkbox)
+                         ->GetWeakPtr();
 
     // Initialize InputEventActivationProtector to handle potentially unintended
     // input events. Do not override `input_protector_` set by
@@ -106,8 +111,9 @@ void FedCmAccountSelectionView::Show(
   } else if (accounts_size == 1u) {
     state_ = State::PERMISSION;
     GetBubbleView()->ShowSingleAccountConfirmDialog(
-        rp_for_display_, idp_display_data_list_[0].accounts[0],
-        idp_display_data_list_[0], /*show_back_button=*/false);
+        top_frame_for_display_, iframe_for_display_,
+        idp_display_data_list_[0].accounts[0], idp_display_data_list_[0],
+        /*show_back_button=*/false);
   } else {
     state_ = State::ACCOUNT_PICKER;
     GetBubbleView()->ShowMultiAccountPicker(idp_display_data_list_);
@@ -123,18 +129,19 @@ void FedCmAccountSelectionView::Show(
 }
 
 void FedCmAccountSelectionView::ShowFailureDialog(
-    const std::string& rp_etld_plus_one,
+    const std::string& top_frame_etld_plus_one,
     const std::string& idp_etld_plus_one) {
   state_ = State::IDP_SIGNIN_STATUS_MISMATCH;
 
   bool create_bubble = !bubble_widget_;
   if (create_bubble) {
-    bubble_widget_ =
-        CreateBubbleWithAccessibleTitle(base::UTF8ToUTF16(rp_etld_plus_one),
-                                        base::UTF8ToUTF16(idp_etld_plus_one),
-                                        blink::mojom::RpContext::kSignIn,
-                                        /*show_auto_reauthn_checkbox=*/false)
-            ->GetWeakPtr();
+    bubble_widget_ = CreateBubbleWithAccessibleTitle(
+                         base::UTF8ToUTF16(top_frame_etld_plus_one),
+                         /*iframe_etld_plus_one=*/absl::nullopt,
+                         base::UTF8ToUTF16(idp_etld_plus_one),
+                         blink::mojom::RpContext::kSignIn,
+                         /*show_auto_reauthn_checkbox=*/false)
+                         ->GetWeakPtr();
 
     // Initialize InputEventActivationProtector to handle potentially unintended
     // input events. Do not override `input_protector_` set by
@@ -145,7 +152,7 @@ void FedCmAccountSelectionView::ShowFailureDialog(
     }
   }
 
-  GetBubbleView()->ShowFailureDialog(base::UTF8ToUTF16(rp_etld_plus_one),
+  GetBubbleView()->ShowFailureDialog(base::UTF8ToUTF16(top_frame_etld_plus_one),
                                      base::UTF8ToUTF16(idp_etld_plus_one));
 
   if (create_bubble) {
@@ -206,7 +213,8 @@ void FedCmAccountSelectionView::SetInputEventActivationProtectorForTesting(
 }
 
 views::Widget* FedCmAccountSelectionView::CreateBubbleWithAccessibleTitle(
-    const std::u16string& rp_etld_plus_one,
+    const std::u16string& top_frame_etld_plus_one,
+    const absl::optional<std::u16string>& iframe_etld_plus_one,
     const absl::optional<std::u16string>& idp_title,
     blink::mojom::RpContext rp_context,
     bool show_auto_reauthn_checkbox) {
@@ -218,11 +226,12 @@ views::Widget* FedCmAccountSelectionView::CreateBubbleWithAccessibleTitle(
   views::View* anchor_view = browser_view->contents_web_view();
 
   views::Widget* bubble_widget = views::BubbleDialogDelegateView::CreateBubble(
-      new AccountSelectionBubbleView(rp_etld_plus_one, idp_title, rp_context,
-                                     show_auto_reauthn_checkbox, anchor_view,
-                                     SystemNetworkContextManager::GetInstance()
-                                         ->GetSharedURLLoaderFactory(),
-                                     this));
+      new AccountSelectionBubbleView(
+          top_frame_etld_plus_one, iframe_etld_plus_one, idp_title, rp_context,
+          show_auto_reauthn_checkbox, anchor_view,
+          SystemNetworkContextManager::GetInstance()
+              ->GetSharedURLLoaderFactory(),
+          this));
   bubble_widget->AddObserver(this);
 
   return bubble_widget;
@@ -262,7 +271,8 @@ void FedCmAccountSelectionView::OnAccountSelected(
     return;
   }
   GetBubbleView()->ShowSingleAccountConfirmDialog(
-      rp_for_display_, account, idp_display_data, /*show_back_button=*/true);
+      top_frame_for_display_, iframe_for_display_, account, idp_display_data,
+      /*show_back_button=*/true);
 }
 
 void FedCmAccountSelectionView::OnLinkClicked(LinkType link_type,
@@ -337,23 +347,21 @@ void FedCmAccountSelectionView::ShowVerifyingSheet(
 
 FedCmAccountSelectionView::SheetType FedCmAccountSelectionView::GetSheetType() {
   switch (state_) {
-    case State::IDP_SIGNIN_STATUS_MISMATCH: {
+    case State::IDP_SIGNIN_STATUS_MISMATCH:
       return SheetType::SIGN_IN_TO_IDP_STATIC;
-    }
+
     case State::ACCOUNT_PICKER:
-    case State::PERMISSION: {
+    case State::PERMISSION:
       return SheetType::ACCOUNT_SELECTION;
-    }
-    case State::VERIFYING: {
+
+    case State::VERIFYING:
       return SheetType::VERIFYING;
-    }
-    case State::AUTO_REAUTHN: {
+
+    case State::AUTO_REAUTHN:
       return SheetType::AUTO_REAUTHN;
-    }
-    default: {
-      NOTREACHED();
-      return SheetType::ACCOUNT_SELECTION;
-    }
+
+    default:
+      NOTREACHED_NORETURN();
   }
 }
 

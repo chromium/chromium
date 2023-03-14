@@ -232,10 +232,6 @@ class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
     return MediaSessionImpl::Get(contents());
   }
 
-  IPC::TestSink& test_sink() {
-    return main_test_rfh()->GetAgentSchedulingGroup().sink();
-  }
-
   void Suspend() {
     controller_->OnSuspend(controller_->get_player_id_for_testing());
     media_player_->WaitUntilReceivedMessage();

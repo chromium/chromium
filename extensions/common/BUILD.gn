@@ -68,7 +68,6 @@ mojom("mojom") {
   disable_variants = true
 
   sources = [
-    "mojom/activation_sequence.mojom",
     "mojom/api_permission_id.mojom",
     "mojom/app_window.mojom",
     "mojom/automation_query.mojom",
@@ -90,6 +89,7 @@ mojom("mojom") {
     "mojom/renderer.mojom",
     "mojom/renderer_host.mojom",
     "mojom/run_location.mojom",
+    "mojom/service_worker_host.mojom",
     "mojom/stack_frame.mojom",
     "mojom/url_pattern_set.mojom",
     "mojom/view_type.mojom",
@@ -167,18 +167,6 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "extensions.mojom.ActivationSequence"
-          cpp = "::extensions::ActivationSequence"
-        },
-      ]
-      traits_headers =
-          [ "//extensions/common/mojom/activation_sequence_mojom_traits.h" ]
-      traits_sources =
-          [ "//extensions/common/mojom/activation_sequence_mojom_traits.cc" ]
-    },
-    {
-      types = [
-        {
           mojom = "extensions.mojom.StackFrame"
           cpp = "::extensions::StackFrame"
         },
@@ -199,7 +187,6 @@ mojom("mojom") {
 # in. TODO(brettw): This reverse dependency should be fixed.
 static_library("common") {
   sources = [
-    "activation_sequence.h",
     "alias.h",
     "api/bluetooth/bluetooth_manifest_data.cc",
     "api/bluetooth/bluetooth_manifest_data.h",
@@ -319,6 +306,7 @@ static_library("common") {
     "features/simple_feature.h",
     "file_util.cc",
     "file_util.h",
+    "frame_context_data.h",
     "hashed_extension_id.cc",
     "hashed_extension_id.h",
     "identifiability_metrics.cc",
@@ -337,8 +325,6 @@ static_library("common") {
     "manifest_handler_helpers.h",
     "manifest_handlers/app_display_info.cc",
     "manifest_handlers/app_display_info.h",
-    "manifest_handlers/app_isolation_info.cc",
-    "manifest_handlers/app_isolation_info.h",
     "manifest_handlers/automation.cc",
     "manifest_handlers/automation.h",
     "manifest_handlers/background_info.cc",
@@ -429,6 +415,7 @@ static_library("common") {
     "permissions/usb_device_permission.h",
     "permissions/usb_device_permission_data.cc",
     "permissions/usb_device_permission_data.h",
+    "process_context_data.h",
     "script_constants.h",
     "stack_frame.cc",
     "stack_frame.h",
@@ -550,8 +537,6 @@ source_set("test_support") {
     "api/declarative_net_request/test_utils.h",
     "api/extension_action/action_info_test_util.cc",
     "api/extension_action/action_info_test_util.h",
-    "file_test_util.cc",
-    "file_test_util.h",
     "warnings_test_util.cc",
     "warnings_test_util.h",
   ]

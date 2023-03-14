@@ -11,6 +11,7 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
 import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -32,21 +33,22 @@ public class TouchToFillCoordinator implements TouchToFillComponent {
 
     @Override
     public void initialize(Context context, BottomSheetController sheetController,
-            TouchToFillComponent.Delegate delegate) {
+            TouchToFillComponent.Delegate delegate, BottomSheetFocusHelper bottomSheetFocusHelper) {
         mMediator.initialize(context, delegate, mModel,
                 new LargeIconBridge(Profile.getLastUsedRegularProfile()),
                 context.getResources().getDimensionPixelSize(usesUnifiedPasswordManagerBranding()
                                 ? R.dimen.touch_to_fill_favicon_size_modern
-                                : R.dimen.touch_to_fill_favicon_size));
+                                : R.dimen.touch_to_fill_favicon_size),
+                bottomSheetFocusHelper);
         setUpModelChangeProcessors(mModel, new TouchToFillView(context, sheetController));
     }
 
     @Override
     public void showCredentials(GURL url, boolean isOriginSecure,
             List<WebAuthnCredential> webAuthnCredentials, List<Credential> credentials,
-            boolean triggerSubmission) {
-        mMediator.showCredentials(
-                url, isOriginSecure, webAuthnCredentials, credentials, triggerSubmission);
+            boolean triggerSubmission, boolean managePasskeysHidesPasswords) {
+        mMediator.showCredentials(url, isOriginSecure, webAuthnCredentials, credentials,
+                triggerSubmission, managePasskeysHidesPasswords);
     }
 
     /**

@@ -12,6 +12,6 @@ test(function() {
   assert_equals(div.style["--foo"], undefined);
   div.style["--foo"] = "20px";
   assert_equals(div.style["--foo"], "20px");
-  assert_equals(div.style.getPropertyValue("--foo"), " 10px");
+  assert_equals(div.style.getPropertyValue("--foo"), "10px");
 }, "Custom properties can't be accessed as named properties on style object");
 </script>

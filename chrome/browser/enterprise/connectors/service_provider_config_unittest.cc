@@ -99,6 +99,9 @@ TEST(ServiceProviderConfigTest, BrcmChrmCas) {
   ASSERT_EQ("brcm_chrm_cas",
             std::string(service_provider.analysis->local_path));
   ASSERT_FALSE(service_provider.analysis->user_specific);
+  ASSERT_EQ(service_provider.analysis->subject_names.size(), 1u);
+  ASSERT_EQ(std::string(service_provider.analysis->subject_names[0]),
+            "Broadcom Inc");
 
   // The BrcmChrmCas local service provider has 1 tag: dlp.
   ASSERT_EQ(service_provider.analysis->supported_tags.size(), 1u);

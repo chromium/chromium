@@ -6,6 +6,8 @@
 
 #import <WebKit/WebKit.h>
 
+#import "base/ios/block_types.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -45,8 +47,11 @@
                         }];
 }
 
-- (void)cancelDownload API_AVAILABLE(ios(14.5)) {
-  [self.download cancel:^(NSData* resumeData){
+- (void)cancelDownload:(ProceduralBlock)completion API_AVAILABLE(ios(14.5)) {
+  [self.download cancel:^(NSData* resumeData) {
+    if (completion) {
+      completion();
+    }
   }];
 }
 

@@ -392,7 +392,7 @@ void QuickPairMetricsLogger::OnAssociateAccountAction(
     scoped_refptr<Device> device,
     AssociateAccountAction action) {
   switch (action) {
-    case AssociateAccountAction::kAssoicateAccount: {
+    case AssociateAccountAction::kAssociateAccount: {
       if (base::Contains(associate_account_learn_more_devices_, device)) {
         AttemptRecordingFastPairRetroactiveEngagementFlow(
             *device, FastPairRetroactiveEngagementFlowEvent::

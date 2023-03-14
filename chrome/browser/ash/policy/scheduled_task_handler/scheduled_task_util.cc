@@ -7,16 +7,21 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_switches.h"
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "third_party/icu/source/i18n/unicode/gregocal.h"
 
 namespace policy {
 namespace {
+
+constexpr base::TimeDelta kDefaultGracePeriod = base::Hours(1);
 
 ScheduledTaskExecutor::Frequency GetFrequency(const std::string& frequency) {
   if (frequency == "DAILY")
@@ -265,6 +270,38 @@ base::TimeDelta GenerateRandomDelay(int max_delay_in_seconds) {
   int64_t random_delay =
       static_cast<int64_t>(base::RandGenerator(max_delay_in_ms));
   return base::Milliseconds(random_delay);
+}
+
+// Returns grace from commandline if present and valid. Returns default grace
+// time otherwise.
+base::TimeDelta GetScheduledRebootGracePeriod() {
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+
+  std::string grace_time_string = command_line->GetSwitchValueASCII(
+      ash::switches::kScheduledRebootGracePeriodInSecondsForTesting);
+
+  if (grace_time_string.empty()) {
+    return kDefaultGracePeriod;
+  }
+
+  int grace_time_in_seconds;
+  if (!base::StringToInt(grace_time_string, &grace_time_in_seconds) ||
+      grace_time_in_seconds < 0) {
+    LOG(ERROR) << "Ignored "
+               << ash::switches::kScheduledRebootGracePeriodInSecondsForTesting
+               << "=" << grace_time_string;
+    return kDefaultGracePeriod;
+  }
+
+  return base::Seconds(grace_time_in_seconds);
+}
+
+bool ShouldSkipRebootDueToGracePeriod(base::Time boot_time,
+                                      base::Time reboot_time) {
+  // Skip reboot if reboot scheduled within [boot time, boot time + grace time]
+  // interval.
+  return boot_time + GetScheduledRebootGracePeriod() >= reboot_time;
 }
 
 }  // namespace scheduled_task_util

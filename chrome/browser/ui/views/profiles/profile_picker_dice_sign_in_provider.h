@@ -121,6 +121,8 @@ class ProfilePickerDiceSignInProvider
 
   void OnSignInContentsFreedUp();
 
+  GURL BuildSigninURL() const;
+
   // The host must outlive this object.
   const raw_ptr<ProfilePickerWebContentsHost> host_;
 

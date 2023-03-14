@@ -588,8 +588,7 @@ Me2MeNativeMessagingHost::DelegateToElevatedHost(base::Value::Dict message) {
 
   ProcessLaunchResult result = elevated_host_->EnsureElevatedHostCreated();
   if (result == PROCESS_LAUNCH_RESULT_SUCCESS) {
-    elevated_host_->SendMessage(
-        base::Value::ToUniquePtrValue(base::Value(std::move(message))));
+    elevated_host_->SendMessage(message);
   }
 
   switch (result) {

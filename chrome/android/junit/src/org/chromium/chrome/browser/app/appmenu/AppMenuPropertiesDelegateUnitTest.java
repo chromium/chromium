@@ -781,6 +781,7 @@ public class AppMenuPropertiesDelegateUnitTest {
                          "", new GURL(""), clusterId, 0, "", 0, "", Optional.empty()))
                 .when(mShoppingService)
                 .getAvailableProductInfoForUrl(any());
+        doReturn(true).when(mShoppingService).isSubscribedFromCache(any());
         PowerBookmarkMeta meta =
                 PowerBookmarkMeta.newBuilder()
                         .setShoppingSpecifics(ShoppingSpecifics.newBuilder()

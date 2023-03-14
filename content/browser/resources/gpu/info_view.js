@@ -578,20 +578,18 @@ export class InfoViewElement extends CustomElement {
         DAWNInfoList.appendChild(separator);
 
         // e.g. <Discrete GPU> D3D12 backend
-        infoEl = document.createElement('b');
+        infoEl = document.createElement('h3');
         infoEl.textContent = infoString;
         DAWNInfoList.appendChild(infoEl);
-        // Go to the next line.
-        infoEl = document.createElement('br');
-        infoEl.textContent = '';
         inProcessingToggles = false;
       } else if (infoString.startsWith('[')) {
         // e.g. [Default Toggle Names]
-        infoEl = document.createElement('span');
-        infoEl.classList.add('feature-green');
+        infoEl = document.createElement('h4');
+        infoEl.classList.add('dawn-info-header');
         infoEl.textContent = infoString;
 
-        if (infoString === '[Supported Features]') {
+        if (infoString === '[WebGPU Status]' ||
+            infoString === '[Supported Features]') {
           inProcessingToggles = false;
         } else {
           inProcessingToggles = true;

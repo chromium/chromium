@@ -43,11 +43,14 @@ class PowerBookmarkSyncMetadataDatabaseTest : public testing::Test {
     return static_cast<PowerBookmarkSyncMetadataDatabase*>(
         power_bookmark_db_->GetSyncMetadataDatabase());
   }
+
   sql::Database* sql_db() {
     return static_cast<PowerBookmarkSyncMetadataDatabase*>(
                power_bookmark_db_->GetSyncMetadataDatabase())
         ->db_;
   }
+
+  sql::MetaTable* meta_table() { return sync_db()->meta_table_; }
 
  private:
   base::ScopedTempDir temp_directory_;
@@ -60,11 +63,12 @@ TEST_F(PowerBookmarkSyncMetadataDatabaseTest, Init) {
 }
 
 TEST_F(PowerBookmarkSyncMetadataDatabaseTest, EmptyStateIsValid) {
-  syncer::MetadataBatch metadata_batch;
-  EXPECT_TRUE(sync_db()->GetAllEntityMetadata(&metadata_batch));
-  EXPECT_EQ(0u, metadata_batch.TakeAllMetadata().size());
+  std::unique_ptr<syncer::MetadataBatch> metadata_batch =
+      sync_db()->GetAllSyncMetadata();
+  EXPECT_NE(nullptr, metadata_batch);
+  EXPECT_EQ(0u, metadata_batch->TakeAllMetadata().size());
   EXPECT_EQ(sync_pb::ModelTypeState().SerializeAsString(),
-            metadata_batch.GetModelTypeState().SerializeAsString());
+            metadata_batch->GetModelTypeState().SerializeAsString());
 }
 
 TEST_F(PowerBookmarkSyncMetadataDatabaseTest, UpdateEntityMetadata) {
@@ -72,9 +76,12 @@ TEST_F(PowerBookmarkSyncMetadataDatabaseTest, UpdateEntityMetadata) {
   sync_db()->UpdateEntityMetadata(syncer::ModelType::UNSPECIFIED, "test",
                                   entity_metadata);
 
-  syncer::MetadataBatch metadata_batch;
-  EXPECT_TRUE(sync_db()->GetAllEntityMetadata(&metadata_batch));
-  EXPECT_EQ(1u, metadata_batch.TakeAllMetadata().size());
+  std::unique_ptr<syncer::MetadataBatch> metadata_batch =
+      sync_db()->GetAllSyncMetadata();
+  EXPECT_NE(nullptr, metadata_batch);
+  EXPECT_EQ(1u, metadata_batch->TakeAllMetadata().size());
+  EXPECT_EQ(sync_pb::ModelTypeState().SerializeAsString(),
+            metadata_batch->GetModelTypeState().SerializeAsString());
 }
 
 TEST_F(PowerBookmarkSyncMetadataDatabaseTest, ClearEntityMetadata) {
@@ -82,13 +89,17 @@ TEST_F(PowerBookmarkSyncMetadataDatabaseTest, ClearEntityMetadata) {
   sync_db()->UpdateEntityMetadata(syncer::ModelType::UNSPECIFIED, "test",
                                   entity_metadata);
 
-  syncer::MetadataBatch metadata_batch;
-  EXPECT_TRUE(sync_db()->GetAllEntityMetadata(&metadata_batch));
-  EXPECT_EQ(1u, metadata_batch.TakeAllMetadata().size());
+  std::unique_ptr<syncer::MetadataBatch> metadata_batch =
+      sync_db()->GetAllSyncMetadata();
+  EXPECT_NE(nullptr, metadata_batch);
+  EXPECT_EQ(1u, metadata_batch->TakeAllMetadata().size());
 
   sync_db()->ClearEntityMetadata(syncer::ModelType::UNSPECIFIED, "test");
-  EXPECT_TRUE(sync_db()->GetAllEntityMetadata(&metadata_batch));
-  EXPECT_EQ(0u, metadata_batch.TakeAllMetadata().size());
+  metadata_batch = sync_db()->GetAllSyncMetadata();
+  EXPECT_NE(nullptr, metadata_batch);
+  EXPECT_EQ(0u, metadata_batch->TakeAllMetadata().size());
+  EXPECT_EQ(sync_pb::ModelTypeState().SerializeAsString(),
+            metadata_batch->GetModelTypeState().SerializeAsString());
 }
 
 TEST_F(PowerBookmarkSyncMetadataDatabaseTest, FailsToReadCorruptSyncMetadata) {
@@ -98,8 +109,21 @@ TEST_F(PowerBookmarkSyncMetadataDatabaseTest, FailsToReadCorruptSyncMetadata) {
       "VALUES(1, 'unparseable')"));
   ASSERT_TRUE(s.Run());
 
-  syncer::MetadataBatch metadata_batch;
-  EXPECT_FALSE(sync_db()->GetAllEntityMetadata(&metadata_batch));
+  std::unique_ptr<syncer::MetadataBatch> metadata_batch =
+      sync_db()->GetAllSyncMetadata();
+  EXPECT_EQ(nullptr, metadata_batch);
+}
+
+TEST_F(PowerBookmarkSyncMetadataDatabaseTest,
+       FailsToReadCorruptModelTypeState) {
+  std::unique_ptr<syncer::MetadataBatch> metadata_batch =
+      sync_db()->GetAllSyncMetadata();
+  EXPECT_NE(nullptr, metadata_batch);
+
+  meta_table()->SetValue("power_bookmark_type_state", "unparseable");
+
+  metadata_batch = sync_db()->GetAllSyncMetadata();
+  EXPECT_EQ(nullptr, metadata_batch);
 }
 
 }  // namespace power_bookmarks

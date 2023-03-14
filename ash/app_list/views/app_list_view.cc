@@ -405,7 +405,8 @@ void AppListView::UpdatePageResetTimer(bool app_list_visibility) {
 }
 
 gfx::Insets AppListView::GetMainViewInsetsForShelf() const {
-  return gfx::Insets::TLBR(0, 0, delegate_->GetShelfSize(), 0);
+  return gfx::Insets::TLBR(0, 0, delegate_->GetSystemShelfInsetsInTabletMode(),
+                           0);
 }
 
 void AppListView::UpdateWidget() {

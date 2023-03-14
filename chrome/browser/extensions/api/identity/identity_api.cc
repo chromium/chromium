@@ -35,6 +35,7 @@
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -62,7 +63,7 @@ void IdentityAPI::SetGaiaIdForExtension(const std::string& extension_id,
                                         const std::string& gaia_id) {
   DCHECK(!gaia_id.empty());
   extension_prefs_->UpdateExtensionPref(extension_id, kIdentityGaiaIdPref,
-                                        std::make_unique<base::Value>(gaia_id));
+                                        base::Value(gaia_id));
 }
 
 absl::optional<std::string> IdentityAPI::GetGaiaIdForExtension(
@@ -77,7 +78,7 @@ absl::optional<std::string> IdentityAPI::GetGaiaIdForExtension(
 
 void IdentityAPI::EraseGaiaIdForExtension(const std::string& extension_id) {
   extension_prefs_->UpdateExtensionPref(extension_id, kIdentityGaiaIdPref,
-                                        nullptr);
+                                        absl::nullopt);
 }
 
 void IdentityAPI::EraseStaleGaiaIdsForAllExtensions() {

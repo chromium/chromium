@@ -39,7 +39,6 @@ import hashlib
 import json
 import platform
 import os
-import pipes
 import shutil
 import string
 import subprocess
@@ -66,20 +65,21 @@ from update_rust import (CHROMIUM_DIR, RUST_REVISION, RUST_SUB_REVISION,
 
 EXCLUDED_TESTS = [
     # Temporarily disabled due to https://github.com/rust-lang/rust/issues/94322
-    'tests/ui/numeric/numeric-cast.rs',
+    os.path.join('tests', 'ui', 'numeric', 'numeric-cast.rs'),
     # Temporarily disabled due to https://github.com/rust-lang/rust/issues/96497
-    'tests/codegen/issue-96497-slice-size-nowrap.rs',
+    os.path.join('tests', 'codegen', 'issue-96497-slice-size-nowrap.rs'),
     # TODO(crbug.com/1347563): Re-enable when fixed.
-    'tests/codegen/sanitizer-cfi-emit-type-checks.rs',
-    'tests/codegen/sanitizer-cfi-emit-type-metadata-itanium-cxx-abi.rs',
+    os.path.join('tests', 'codegen', 'sanitizer-cfi-emit-type-checks.rs'),
+    os.path.join('tests', 'codegen',
+                 'sanitizer-cfi-emit-type-metadata-itanium-cxx-abi.rs'),
     # Temporarily disabled due to https://github.com/rust-lang/rust/issues/45222
     # which appears to have regressed as of a recent LLVM update. This test is
     # purely performance related, not correctness.
-    'tests/codegen/issue-45222.rs'
+    os.path.join('tests', 'codegen', 'issue-45222.rs')
 ]
 EXCLUDED_TESTS_WINDOWS = [
     # https://github.com/rust-lang/rust/issues/96464
-    'tests/codegen/vec-shrink-panik.rs'
+    os.path.join('tests', 'codegen', 'vec-shrink-panik.rs'),
 ]
 
 RUST_GIT_URL = ('https://chromium.googlesource.com/external/' +
@@ -180,7 +180,7 @@ def VerifyStage0JsonHash():
     sys.exit(1)
 
 
-def Configure(llvm_bins_path, llvm_libs_root):
+def Configure(llvm_bins_path, llvm_libs_root, link_tensorflow):
     # Read the config.toml template file...
     with open(RUST_CONFIG_TEMPLATE_PATH, 'r') as input:
         template = string.Template(input.read())
@@ -193,6 +193,11 @@ def Configure(llvm_bins_path, llvm_libs_root):
     subs['LLVM_LIB_ROOT'] = quote_string(str(llvm_libs_root))
     subs['LLVM_BIN'] = quote_string(str(llvm_bins_path))
     subs['PACKAGE_VERSION'] = GetPackageVersionForBuild()
+
+    if link_tensorflow:
+        subs['RUSTC_LLVM_LDFLAGS'] = '-ltf_xla_runtime'
+    else:
+        subs['RUSTC_LLVM_LDFLAGS'] = ''
 
     # ...and apply substitutions, writing to config.toml in Rust tree.
     with open(os.path.join(RUST_SRC_DIR, 'config.toml'), 'w') as output:
@@ -275,104 +280,137 @@ def CargoVendor(cargo_bin):
                     os.path.join(RUST_SRC_DIR, '.cargo', 'config.toml'))
 
 
-def RunXPy(sub, args, llvm_bins_path, zlib_path, libxml2_dirs, build_mac_arm,
-           gcc_toolchain_path, verbose):
-    ''' Run x.py, Rust's build script'''
-    # We append to these flags, make sure they exist.
-    ENV_FLAGS = [
-        'CFLAGS',
-        'CXXFLAGS',
-        'LDFLAGS',
-        'RUSTFLAGS_BOOTSTRAP',
-        'RUSTFLAGS_NOT_BOOTSTRAP',
-        'RUSTDOCFLAGS',
-    ]
+class XPy:
+    ''' Runner for x.py, Rust's build script. Holds shared state between x.py
+    runs. '''
 
-    RUSTENV = collections.defaultdict(str, os.environ)
-    for f in ENV_FLAGS:
-        RUSTENV.setdefault(f, '')
+    def __init__(self, llvm_bins_path, zlib_path, libxml2_dirs, build_mac_arm,
+                 gcc_toolchain_path, verbose):
+        self._env = collections.defaultdict(str, os.environ)
+        self._build_mac_arm = build_mac_arm
+        self._verbose = verbose
 
-    # The AR, CC, CXX flags control the C/C++ compiler used through the `cc`
-    # crate. There are also C/C++ targets that are part of the Rust toolchain
-    # build for which the tool is controlled from `config.toml`, so these must
-    # be duplicated there.
+        # We append to these flags, make sure they exist.
+        ENV_FLAGS = [
+            'CFLAGS',
+            'CXXFLAGS',
+            'LDFLAGS',
+            'RUSTFLAGS_BOOTSTRAP',
+            'RUSTFLAGS_NOT_BOOTSTRAP',
+            'RUSTDOCFLAGS',
+        ]
 
-    if sys.platform == 'win32':
-        RUSTENV['AR'] = os.path.join(llvm_bins_path, 'llvm-lib.exe')
-        RUSTENV['CC'] = os.path.join(llvm_bins_path, 'clang-cl.exe')
-        RUSTENV['CXX'] = os.path.join(llvm_bins_path, 'clang-cl.exe')
-    else:
-        RUSTENV['AR'] = os.path.join(llvm_bins_path, 'llvm-ar')
-        RUSTENV['CC'] = os.path.join(llvm_bins_path, 'clang')
-        RUSTENV['CXX'] = os.path.join(llvm_bins_path, 'clang++')
+        self._env = collections.defaultdict(str, os.environ)
+        for f in ENV_FLAGS:
+            self._env.setdefault(f, '')
 
-    if sys.platform == 'darwin':
-        # The system/xcode compiler would find system SDK correctly, but
-        # the Clang we've built does not. See
-        # https://github.com/llvm/llvm-project/issues/45225
-        sdk_path = subprocess.check_output(['xcrun', '--show-sdk-path'],
-                                           text=True).rstrip()
-        RUSTENV['CFLAGS'] += f' -isysroot {sdk_path}'
-        RUSTENV['CXXFLAGS'] += f' -isysroot {sdk_path}'
-        RUSTENV['LDFLAGS'] += f' -isysroot {sdk_path}'
-        RUSTENV['RUSTFLAGS_BOOTSTRAP'] += (
-            f' -Clink-arg=-isysroot -Clink-arg={sdk_path}')
-        RUSTENV['RUSTFLAGS_NOT_BOOTSTRAP'] += (
-            f' -Clink-arg=-isysroot -Clink-arg={sdk_path}')
-        # Rust compiletests don't get any of the RUSTFLAGS that we set here and
-        # then the clang linker can't find `-lSystem`, unless we set the
-        # `SDKROOT`.
-        RUSTENV['SDKROOT'] = sdk_path
+        # The AR, CC, CXX flags control the C/C++ compiler used through the `cc`
+        # crate. There are also C/C++ targets that are part of the Rust
+        # toolchain build for which the tool is controlled from `config.toml`,
+        # so these must be duplicated there.
 
-    if zlib_path:
-        RUSTENV['CFLAGS'] += f' -I{zlib_path}'
-        RUSTENV['CXXFLAGS'] += f' -I{zlib_path}'
-        RUSTENV['LDFLAGS'] += f' {LD_PATH_FLAG}{zlib_path}'
-        RUSTENV['RUSTFLAGS_BOOTSTRAP'] += (
-            f' -Clink-arg={LD_PATH_FLAG}{zlib_path}')
-        RUSTENV['RUSTFLAGS_NOT_BOOTSTRAP'] += (
-            f' -Clink-arg={LD_PATH_FLAG}{zlib_path}')
+        if sys.platform == 'win32':
+            self._env['AR'] = os.path.join(llvm_bins_path, 'llvm-lib.exe')
+            self._env['CC'] = os.path.join(llvm_bins_path, 'clang-cl.exe')
+            self._env['CXX'] = os.path.join(llvm_bins_path, 'clang-cl.exe')
+            self._env['LD'] = os.path.join(llvm_bins_path, 'lld-link.exe')
+        else:
+            self._env['AR'] = os.path.join(llvm_bins_path, 'llvm-ar')
+            self._env['CC'] = os.path.join(llvm_bins_path, 'clang')
+            self._env['CXX'] = os.path.join(llvm_bins_path, 'clang++')
+            self._env['LD'] = os.path.join(llvm_bins_path, 'clang')
 
-    if libxml2_dirs:
-        RUSTENV['CFLAGS'] += f' -I{libxml2_dirs.include_dir}'
-        RUSTENV['CXXFLAGS'] += f' -I{libxml2_dirs.include_dir}'
-        RUSTENV['LDFLAGS'] += f' {LD_PATH_FLAG}{libxml2_dirs.lib_dir}'
-        RUSTENV['RUSTFLAGS_BOOTSTRAP'] += (
-            f' -Clink-arg={LD_PATH_FLAG}{libxml2_dirs.lib_dir}')
-        RUSTENV['RUSTFLAGS_NOT_BOOTSTRAP'] += (
-            f' -Clink-arg={LD_PATH_FLAG}{libxml2_dirs.lib_dir}')
+        if sys.platform == 'darwin':
+            # The system/xcode compiler would find system SDK correctly, but
+            # the Clang we've built does not. See
+            # https://github.com/llvm/llvm-project/issues/45225
+            sdk_path = subprocess.check_output(['xcrun', '--show-sdk-path'],
+                                               text=True).rstrip()
+            self._env['CFLAGS'] += f' -isysroot {sdk_path}'
+            self._env['CXXFLAGS'] += f' -isysroot {sdk_path}'
+            self._env['LDFLAGS'] += f' -isysroot {sdk_path}'
+            self._env['RUSTFLAGS_BOOTSTRAP'] += (
+                f' -Clink-arg=-isysroot -Clink-arg={sdk_path}')
+            self._env['RUSTFLAGS_NOT_BOOTSTRAP'] += (
+                f' -Clink-arg=-isysroot -Clink-arg={sdk_path}')
+            # Rust compiletests don't get any of the RUSTFLAGS that we set here
+            # and then the clang linker can't find `-lSystem`, unless we set the
+            # `SDKROOT`.
+            self._env['SDKROOT'] = sdk_path
 
-    if gcc_toolchain_path:
-        # We use these flags to avoid linking with the system libstdc++.
-        gcc_toolchain_flag = f'--gcc-toolchain={gcc_toolchain_path}'
-        RUSTENV['CFLAGS'] += f' {gcc_toolchain_flag}'
-        RUSTENV['CXXFLAGS'] += f' {gcc_toolchain_flag}'
-        RUSTENV['LDFLAGS'] += f' {gcc_toolchain_flag}'
-        # A `-Clink-arg=<foo>` arg passes `foo`` to the linker invovation.
-        RUSTENV['RUSTFLAGS_BOOTSTRAP'] += f' -Clink-arg={gcc_toolchain_flag}'
-        RUSTENV[
-            'RUSTFLAGS_NOT_BOOTSTRAP'] += f' -Clink-arg={gcc_toolchain_flag}'
-        RUSTENV['RUSTFLAGS_BOOTSTRAP'] += (
-            f' -L native={gcc_toolchain_path}/lib64')
-        RUSTENV['RUSTFLAGS_NOT_BOOTSTRAP'] += (
-            f' -L native={gcc_toolchain_path}/lib64')
+        if zlib_path:
+            self._env['CFLAGS'] += f' -I{zlib_path}'
+            self._env['CXXFLAGS'] += f' -I{zlib_path}'
+            self._env['LDFLAGS'] += f' {LD_PATH_FLAG}{zlib_path}'
+            self._env['RUSTFLAGS_BOOTSTRAP'] += (
+                f' -Clink-arg={LD_PATH_FLAG}{zlib_path}')
+            self._env['RUSTFLAGS_NOT_BOOTSTRAP'] += (
+                f' -Clink-arg={LD_PATH_FLAG}{zlib_path}')
 
-    # Rustdoc should use our clang linker as well, as we pass flags that
-    # the system linker may not understand.
-    RUSTENV['RUSTDOCFLAGS'] += f' -Clinker={RUSTENV["CC"]}'
+        if libxml2_dirs:
+            self._env['CFLAGS'] += f' -I{libxml2_dirs.include_dir}'
+            self._env['CXXFLAGS'] += f' -I{libxml2_dirs.include_dir}'
+            self._env['LDFLAGS'] += f' {LD_PATH_FLAG}{libxml2_dirs.lib_dir}'
+            self._env['RUSTFLAGS_BOOTSTRAP'] += (
+                f' -Clink-arg={LD_PATH_FLAG}{libxml2_dirs.lib_dir}')
+            self._env['RUSTFLAGS_NOT_BOOTSTRAP'] += (
+                f' -Clink-arg={LD_PATH_FLAG}{libxml2_dirs.lib_dir}')
 
-    # Cargo normally stores files in $HOME. Override this.
-    RUSTENV['CARGO_HOME'] = CARGO_HOME_DIR
+        if gcc_toolchain_path:
+            # We use these flags to avoid linking with the system libstdc++.
+            gcc_toolchain_flag = f'--gcc-toolchain={gcc_toolchain_path}'
+            self._env['CFLAGS'] += f' {gcc_toolchain_flag}'
+            self._env['CXXFLAGS'] += f' {gcc_toolchain_flag}'
+            self._env['LDFLAGS'] += f' {gcc_toolchain_flag}'
+            # A `-Clink-arg=<foo>` arg passes `foo`` to the linker invovation.
+            self._env['RUSTFLAGS_BOOTSTRAP'] += (
+                f' -Clink-arg={gcc_toolchain_flag}')
+            self._env['RUSTFLAGS_NOT_BOOTSTRAP'] += (
+                f' -Clink-arg={gcc_toolchain_flag}')
+            self._env['RUSTFLAGS_BOOTSTRAP'] += (
+                f' -L native={gcc_toolchain_path}/lib64')
+            self._env['RUSTFLAGS_NOT_BOOTSTRAP'] += (
+                f' -L native={gcc_toolchain_path}/lib64')
 
-    # This enables the compiler to produce Mac ARM binaries.
-    if build_mac_arm:
-        args.extend(['--target', 'aarch64-apple-darwin'])
+        # TODO(danakj): On windows we point the to lld-link in config.toml so
+        # we don't (and can't) specify -fuse-ld=lld, as lld-link doesn't know
+        # that argument, and it's already using lld. Should we do the same for
+        # other platforms and remove this link argument?
+        if sys.platform != 'win32':
+            # Direct rustc to use Chromium's lld instead of the system linker.
+            # This is critical for stage 1 onward since we need to link libs
+            # with LLVM bitcode. It is also good for a hermetic build in
+            # general.
+            self._env['RUSTFLAGS_BOOTSTRAP'] += ' -Clink-arg=-fuse-ld=lld'
+            self._env['RUSTFLAGS_NOT_BOOTSTRAP'] += ' -Clink-arg=-fuse-ld=lld'
 
-    os.chdir(RUST_SRC_DIR)
-    cmd = [sys.executable, 'x.py', sub]
-    if verbose and verbose > 0:
-        cmd.append('-' + verbose * 'v')
-    RunCommand(cmd + args, msvc_arch='x64', env=RUSTENV)
+        # The `--undefined-version` flag is needed due to a bug in libtest:
+        # https://github.com/rust-lang/rust/issues/105967. The flag does
+        # not exist on Mac or Windows.
+        if sys.platform.startswith('linux'):
+            self._env['RUSTFLAGS_BOOTSTRAP'] += (
+                ' -Clink-arg=-Wl,--undefined-version')
+            self._env['RUSTFLAGS_NOT_BOOTSTRAP'] += (
+                ' -Clink-arg=-Wl,--undefined-version')
+
+        # Rustdoc should use our clang linker as well, as we pass flags that
+        # the system linker may not understand.
+        self._env['RUSTDOCFLAGS'] += f' -Clinker={self._env["LD"]}'
+
+        # Cargo normally stores files in $HOME. Override this.
+        self._env['CARGO_HOME'] = CARGO_HOME_DIR
+
+    def run(self, sub, args):
+        ''' Run x.py subcommand with specified args. '''
+        # This enables the compiler to produce Mac ARM binaries.
+        if self._build_mac_arm:
+            args.extend(['--target', 'aarch64-apple-darwin'])
+
+        os.chdir(RUST_SRC_DIR)
+        cmd = [sys.executable, 'x.py', sub]
+        if self._verbose and self._verbose > 0:
+            cmd.append('-' + self._verbose * 'v')
+        RunCommand(cmd + args, msvc_arch='x64', env=self._env)
 
 
 # Get arguments to run desired test suites, minus disabled tests.
@@ -451,7 +489,8 @@ def main():
         '--use-final-llvm-build-dir',
         action='store_true',
         help='use libs in LLVM_BUILD_DIR instead of LLVM_BOOTSTRAP_DIR. Useful '
-        'with --fetch-llvm-libs for local builds.')
+        'with --fetch-llvm-libs for local builds. When enabled, these '
+        'libraries must not use LTO.')
     parser.add_argument(
         '--run-xpy',
         action='store_true',
@@ -468,14 +507,31 @@ def main():
         print('--build-mac-arm only valid on intel to cross-build arm')
         return 1
 
-    # Get the LLVM root for libs. We use LLVM_BUILD_DIR tools either way.
+    # A production Rust toolchain will use our final-stage LLVM build. These
+    # LLVM libs are built with LTO enabled, using the same LLVM revision from an
+    # earlier build stage as backend. The Rust toolchain we start with (the
+    # upstream beta release) however cannot process these since it uses an
+    # earlier LLVM build as its backend.
     #
-    # TODO(https://crbug.com/1245714): use LTO libs from LLVM_BUILD_DIR for
-    # stage 2+.
+    # The Rust toolchain can be bootstrapped using earlier native-code LLVM
+    # artifacts for its first stage, then using the final LLVM libs for further
+    # stages. We do this because the bootstrap libs don't support targeting all
+    # platforms, while the final LLVM libs do.
+    #
+    # Enable conditionally based on arguments and build host.
+    #
+    # TODO(https://crbug.com/1412187): hash out implementation issues on
+    # non-Linux and enable unconditionally (sans script argument).
+    use_lto_llvm = False
+    if not args.use_final_llvm_build_dir and sys.platform.startswith('linux'):
+        use_lto_llvm = True
+
+    # Get the LLVM root for the stage0 build. This normally comes from the LLVM
+    # bootstrap stage, but for local builds we support using LLVM_BUILD_DIR.
     if args.use_final_llvm_build_dir:
-        llvm_libs_root = LLVM_BUILD_DIR
+        llvm_bootstrap_root = LLVM_BUILD_DIR
     else:
-        llvm_libs_root = build.LLVM_BOOTSTRAP_DIR
+        llvm_bootstrap_root = build.LLVM_BOOTSTRAP_DIR
 
     # If we're building for Mac ARM on an x86_64 Mac, we can't use the final
     # clang binaries as they don't have x86_64 support. Building them with that
@@ -511,8 +567,9 @@ def main():
         # `args.gcc_toolchain` if so.
         build.MaybeDownloadHostGcc(args)
 
-    # Set up config.toml in Rust source tree to configure build.
-    Configure(llvm_bins_path, llvm_libs_root)
+    # Set up config.toml in Rust source tree to configure build for stage0.
+    # Normally, we will reconfigure later to use the production LLVM libs.
+    Configure(llvm_bins_path, llvm_bootstrap_root, link_tensorflow=False)
 
     cargo_bin = FetchCargo(checkout_revision)
     CargoVendor(cargo_bin)
@@ -538,25 +595,46 @@ def main():
         # Cargo depends on OpenSSL.
         AddOpenSSLToEnv(args.build_mac_arm)
 
+    xpy = XPy(llvm_bins_path, zlib_path, libxml2_dirs, args.build_mac_arm,
+              args.gcc_toolchain, args.verbose)
+
     if args.run_xpy:
         if rest[0] == '--':
             rest = rest[1:]
-        RunXPy(rest[0], rest[1:], llvm_bins_path, zlib_path, libxml2_dirs,
-               args.build_mac_arm, args.gcc_toolchain, args.verbose)
+        xpy.run(rest[0], rest[1:])
         return 0
     else:
         assert not rest
 
     if not args.skip_clean:
         print('Cleaning build artifacts...')
-        RunXPy('clean', [], llvm_bins_path, zlib_path, libxml2_dirs,
-               args.build_mac_arm, args.gcc_toolchain, args.verbose)
+        xpy.run('clean', [])
+
+    # Run the stage0 build separately using the bootstrap LLVM libs. This will
+    # allow further stages to process the LTO-enabled LLVM libs.
+    #
+    # On the other hand, when `use_lto_llvm` is disabled, we always use the
+    # native-code bootstrap libs.
+    #
+    # The build has already been configured above for the bootstrap stage.
+    xpy.run('build', ['--stage', '0', 'compiler/rustc'])
+
+    xpy_args = []
+    # Reconfigure to use production LLVM libs. After this point we must tell
+    # x.py to keep the stage0 artifacts, even though config.toml changed.
+    #
+    # Note we must link tensorflow into rustc_llvm on Linux, since our LLVM
+    # build includes it for MLGO. Unfortunately llvm-config does not report this
+    # dependency. See https://github.com/llvm/llvm-project/issues/60751.
+    if use_lto_llvm:
+        Configure(llvm_bins_path,
+                  LLVM_BUILD_DIR,
+                  link_tensorflow=sys.platform.startswith('linux'))
+        xpy_args = ['--keep-stage', '0']
 
     if not args.skip_test:
         print('Running stage 2 tests...')
-        # Run a subset of tests. Tell x.py to keep the rustc we already built.
-        RunXPy('test', GetTestArgs(), llvm_bins_path, zlib_path, libxml2_dirs,
-               args.build_mac_arm, args.gcc_toolchain, args.verbose)
+        xpy.run('test', ['--stage', '2'] + xpy_args + GetTestArgs())
 
     targets = [
         'library/proc_macro', 'library/std', 'src/tools/cargo',
@@ -566,8 +644,7 @@ def main():
     # Build stage 2 compiler, tools, and libraries. This should reuse earlier
     # stages from the test command (if run).
     print('Building stage 2 artifacts...')
-    RunXPy('build', ['--stage', '2'] + targets, llvm_bins_path, zlib_path,
-           libxml2_dirs, args.build_mac_arm, args.gcc_toolchain, args.verbose)
+    xpy.run('build', xpy_args + ['--stage', '2'] + targets)
 
     if args.skip_install:
         # Rust is fully built. We can quit.
@@ -578,8 +655,7 @@ def main():
     if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
         shutil.rmtree(RUST_TOOLCHAIN_OUT_DIR)
 
-    RunXPy('install', DISTRIBUTION_ARTIFACTS, llvm_bins_path, zlib_path,
-           libxml2_dirs, args.build_mac_arm, args.gcc_toolchain, args.verbose)
+    xpy.run('install', xpy_args + DISTRIBUTION_ARTIFACTS)
 
     # Copy additional sources required for building stdlib out of
     # RUST_TOOLCHAIN_SRC_DIST_DIR.

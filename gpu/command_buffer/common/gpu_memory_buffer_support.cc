@@ -70,7 +70,8 @@ bool IsImageSizeValidForGpuMemoryBufferFormat(const gfx::Size& size,
 GPU_EXPORT bool IsPlaneValidForGpuMemoryBufferFormat(gfx::BufferPlane plane,
                                                      gfx::BufferFormat format) {
 #if BUILDFLAG(IS_APPLE)
-  // On macOS each plane of a YUV GpuMemoryBuffer must be sampled separately.
+  // On macOS and iOS each plane of a YUV GpuMemoryBuffer must be sampled
+  // separately.
   switch (format) {
     case gfx::BufferFormat::YUV_420_BIPLANAR:
     case gfx::BufferFormat::P010:

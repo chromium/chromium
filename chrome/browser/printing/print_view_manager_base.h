@@ -60,6 +60,9 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
     // This method is never called unless `ENABLE_PRINT_PREVIEW`.
     virtual void OnPrintPreview(const content::RenderFrameHost* rfh) {}
 
+    // This method is never called unless `ENABLE_OOP_PRINTING`.
+    virtual void OnRegisterSystemPrintClient(bool succeeded) {}
+
     virtual void OnDidPrintDocument() {}
   };
 
@@ -117,8 +120,7 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
   void GetDefaultPrintSettings(
       GetDefaultPrintSettingsCallback callback) override;
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-  void UpdatePrintSettings(int32_t cookie,
-                           base::Value::Dict job_settings,
+  void UpdatePrintSettings(base::Value::Dict job_settings,
                            UpdatePrintSettingsCallback callback) override;
 #endif
   void IsPrintingEnabled(IsPrintingEnabledCallback callback) override;

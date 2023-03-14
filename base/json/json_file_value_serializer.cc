@@ -44,12 +44,7 @@ bool JSONFileValueSerializer::SerializeInternal(base::ValueView root,
   if (!result)
     return false;
 
-  int data_size = static_cast<int>(json_string.size());
-  if (base::WriteFile(json_file_path_, json_string.data(), data_size) !=
-      data_size)
-    return false;
-
-  return true;
+  return base::WriteFile(json_file_path_, json_string);
 }
 
 JSONFileValueDeserializer::JSONFileValueDeserializer(

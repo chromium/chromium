@@ -432,9 +432,9 @@ bool CreateDesktopShortcut(base::Environment* env,
   }
 
   base::FilePath shortcut_filename;
-  if (!shortcut_info.extension_id.empty()) {
+  if (!shortcut_info.app_id.empty()) {
     shortcut_filename = GetAppShortcutFilename(shortcut_info.profile_path,
-                                               shortcut_info.extension_id);
+                                               shortcut_info.app_id);
     // For extensions we do not want duplicate shortcuts. So, delete any that
     // already exist and replace them.
     if (creation_locations.on_desktop)
@@ -472,20 +472,18 @@ bool CreateDesktopShortcut(base::Environment* env,
 
   if (creation_locations.on_desktop) {
     std::string contents = shell_integration_linux::GetDesktopFileContents(
-        chrome_exe_path, app_name, shortcut_info.url,
-        shortcut_info.extension_id, shortcut_info.title, icon_name,
-        shortcut_info.profile_path, "", "", false, "",
-        std::move(shortcut_info.actions));
+        chrome_exe_path, app_name, shortcut_info.url, shortcut_info.app_id,
+        shortcut_info.title, icon_name, shortcut_info.profile_path, "", "",
+        false, "", std::move(shortcut_info.actions));
     success = CreateShortcutOnDesktop(shortcut_filename, contents);
   }
 
   if (create_shortcut_in_startup) {
     // if (creation_locations.in_startup) {
     std::string contents = shell_integration_linux::GetDesktopFileContents(
-        chrome_exe_path, app_name, shortcut_info.url,
-        shortcut_info.extension_id, shortcut_info.title, icon_name,
-        shortcut_info.profile_path, "", "", false, kRunOnOsLoginModeWindowed,
-        std::move(shortcut_info.actions));
+        chrome_exe_path, app_name, shortcut_info.url, shortcut_info.app_id,
+        shortcut_info.title, icon_name, shortcut_info.profile_path, "", "",
+        false, kRunOnOsLoginModeWindowed, std::move(shortcut_info.actions));
     success =
         CreateShortcutInAutoStart(env, shortcut_filename, contents) && success;
   }
@@ -494,7 +492,7 @@ bool CreateDesktopShortcut(base::Environment* env,
     std::vector<std::string> protocol_handler(
         shortcut_info.protocol_handlers.begin(),
         shortcut_info.protocol_handlers.end());
-    test_override->RegisterProtocolSchemes(shortcut_info.extension_id,
+    test_override->RegisterProtocolSchemes(shortcut_info.app_id,
                                            std::move(protocol_handler));
   }
 
@@ -530,7 +528,7 @@ bool CreateDesktopShortcut(base::Environment* env,
   // Set NoDisplay=true if hidden. This will hide the application from
   // user-facing menus.
   std::string contents = shell_integration_linux::GetDesktopFileContents(
-      chrome_exe_path, app_name, shortcut_info.url, shortcut_info.extension_id,
+      chrome_exe_path, app_name, shortcut_info.url, shortcut_info.app_id,
       shortcut_info.title, icon_name, shortcut_info.profile_path, "",
       base::JoinString(mime_types, ";"),
       creation_locations.applications_menu_location == APP_MENU_LOCATION_HIDDEN,
@@ -682,7 +680,7 @@ bool UpdateDesktopShortcuts(base::Environment* env,
 
   // Find out whether shortcuts are already installed.
   ShortcutLocations creation_locations = GetExistingShortcutLocations(
-      env, shortcut_info.profile_path, shortcut_info.extension_id);
+      env, shortcut_info.profile_path, shortcut_info.app_id);
 
   // Always create a hidden shortcut in applications if a visible one is not
   // being created. This allows the operating system to identify the app, but
@@ -751,7 +749,7 @@ ShortcutLocations GetAppExistingShortCutLocationImpl(
     const ShortcutInfo& shortcut_info) {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   return GetExistingShortcutLocations(env.get(), shortcut_info.profile_path,
-                                      shortcut_info.extension_id);
+                                      shortcut_info.app_id);
 }
 
 void DeletePlatformShortcuts(const base::FilePath& web_app_path,
@@ -763,7 +761,7 @@ void DeletePlatformShortcuts(const base::FilePath& web_app_path,
       FROM_HERE, base::BindOnce(std::move(callback),
                                 DeleteDesktopShortcuts(
                                     env.get(), shortcut_info.profile_path,
-                                    shortcut_info.extension_id)));
+                                    shortcut_info.app_id)));
 }
 
 Result UpdatePlatformShortcuts(const base::FilePath& /*web_app_path*/,

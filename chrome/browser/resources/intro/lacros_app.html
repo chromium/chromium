@@ -1,72 +1,72 @@
 <style>
-:host {
-  --buttons-container-max-width: 45%;
-  color: var(--cr-primary-text-color);
-  display: block;
-}
+  :host {
+    --buttons-container-max-width: 45%;
+    color: var(--cr-primary-text-color);
+    display: block;
+  }
 
-#headerContainer {
-  height: 244px;
-  position: relative;
-  width: 100%;
-}
+  #header-container {
+    height: 244px;
+    position: relative;
+    width: 100%;
+  }
 
-#banner {
-  background-image: url(images/lacros_intro_banner.svg);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: auto;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  width: 100%;
-  z-index: 0;
-}
+  #banner {
+    background-image: url(images/lacros_intro_banner.svg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: auto;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 0;
+  }
 
-#avatarContainer {
-  --avatar-size: 100px;
-  bottom: calc(var(--avatar-size)/-2);
-  height: var(--avatar-size);
-  left: 0;
-  margin: auto;
-  position: absolute;
-  right: 0;
-  width: var(--avatar-size);
-  z-index: 1;
-}
+  #avatar-container {
+    --avatar-size: 100px;
+    bottom: calc(var(--avatar-size)/-2);
+    height: var(--avatar-size);
+    left: 0;
+    margin: auto;
+    position: absolute;
+    right: 0;
+    width: var(--avatar-size);
+    z-index: 1;
+  }
 
-#avatar {
-  border: 2px solid var(--md-background-color);
-  border-radius: 50%;
-  height: 100%;
-  width: 100%;
-}
+  #avatar {
+    border: 2px solid var(--md-background-color);
+    border-radius: 50%;
+    height: 100%;
+    width: 100%;
+  }
 
-#work-badge {
-  --badge-width: 30px;
-  --badge-offset: -6px;
-  border: 3px solid white;
-  border-radius: 50%;
-  bottom: var(--badge-offset);
-  height: var(--badge-width);
-  inset-inline-end: var(--badge-offset);
-  position: absolute;
-  width: var(--badge-width);
-}
+  #work-badge {
+    --badge-width: 30px;
+    --badge-offset: -6px;
+    border: 3px solid white;
+    border-radius: 50%;
+    bottom: var(--badge-offset);
+    height: var(--badge-width);
+    inset-inline-end: var(--badge-offset);
+    position: absolute;
+    width: var(--badge-width);
+  }
 
-#work-badge > iron-icon {
-  --work-icon-size: 20px;
-  background-color: var(--md-background-color);
-  border-radius: 50%;
-  box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px rgba(60, 64, 67, 0.15);
-  color: var(--google-grey-700);
-  height: var(--work-icon-size);
-  padding: calc((var(--badge-width) - var(--work-icon-size)) / 2);
-  width: var(--work-icon-size);
-}
+  #work-badge>iron-icon {
+    --work-icon-size: 20px;
+    background-color: var(--md-background-color);
+    border-radius: 50%;
+    box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px rgba(60, 64, 67, 0.15);
+    color: var(--google-grey-700);
+    height: var(--work-icon-size);
+    padding: calc((var(--badge-width) - var(--work-icon-size)) / 2);
+    width: var(--work-icon-size);
+  }
 
-#contentContainer {
-  --footer-margin: 40px;
+  #content-container {
+    --footer-margin: 40px;
     font-size: 14px;
     line-height: 20px;
     margin-bottom: calc(48px + var(--footer-margin));
@@ -76,7 +76,7 @@
     width: 382px;
   }
 
-  #contentContainer h2 {
+  #content-container h2 {
     font-size: 24px;
     font-weight: 500;
     line-height: 32px;
@@ -105,7 +105,14 @@
     width: 530px;
   }
 
-  #info-box > p {
+  /* info-box is displayed as a flex-box. Because of that, the hidden property
+    which sets the visibility to hidden doesn't work. We should set the display
+    to none as done below to hide the element. */
+  #info-box[hidden] {
+    display: none;
+  }
+
+  #info-box>p {
     flex-grow: 1;
     margin-block: 0;
     text-align: start;
@@ -127,13 +134,13 @@
     width: var(--icon-size);
   }
 
-  #buttonsContainer {
+  #buttons-container {
     flex-wrap: wrap-reverse;
     max-width: var(--buttons-container-max-width);
     right: 0;
   }
 
-  #buttonsContainer cr-button {
+  #buttons-container cr-button {
     font-size: 1.16em;
     margin: 5px 0;
     min-width: 111px;
@@ -151,55 +158,53 @@
     width: 100%;
   }
 
-@media (prefers-color-scheme: dark) {
-  #work-badge {
-    border-color: var(--md-background-color);
+  @media (prefers-color-scheme: dark) {
+    #work-badge {
+      border-color: var(--md-background-color);
+    }
+
+    #work-badge>iron-icon {
+      box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px rgba(60, 64, 67, 0.15);
+      color: white;
+    }
+
+    #info-box {
+      color: var(--google-grey-100);
+    }
+
+    #icon-container {
+      background-color: var(--google-grey-700);
+    }
   }
 
-  #work-badge > iron-icon {
-    box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px
-      rgba(60, 64, 67, 0.15);
-    color: white;
-  }
-
-  #info-box {
-    color: var(--google-grey-100);
-  }
-
-  #icon-container {
-    background-color: var(--google-grey-700);
-  }
-}
 </style>
 
-<div id="headerContainer">
+<div id="header-container">
   <div id="banner"></div>
-  <div id="avatarContainer">
-    <img id="avatar" alt="" src="[[pictureUrl]]">
-    <div id="work-badge" hidden="[[!showEnterpriseInfo]]">
+  <div id="avatar-container">
+    <img id="avatar" alt="" src="[[pictureUrl_]]">
+    <div id="work-badge" hidden="[[!managementDisclaimer_]]">
       <iron-icon class="icon" icon="cr:domain"></iron-icon>
     </div>
   </div>
 </div>
-<div id="contentContainer">
+<div id="content-container">
   <h2 id="title">
-    $i18n{title}
+    [[title_]]
   </h2>
   <p id="subtitle" class="secondary">
-    $i18n{subtitle}
+    [[subtitle_]]
   </p>
 </div>
-<template is="dom-if" if="[[showEnterpriseInfo]]">
-  <div id="info-box">
-    <div id="icon-container">
-      <iron-icon icon="cr:domain"></iron-icon>
-    </div>
-    <p id="enterpriseInfo">
-      $i18n{enterpriseInfo}
-    </p>
+<div id="info-box" hidden="[[!managementDisclaimer_]]">
+  <div id="icon-container">
+    <iron-icon icon="cr:domain"></iron-icon>
   </div>
-</template>
-<div id="buttonsContainer" class="action-container">
+  <p id="enterprise-info">
+    [[managementDisclaimer_]]
+  </p>
+</div>
+<div id="buttons-container" class="action-container">
   <cr-button id="proceedButton" class="action-button" on-click="onProceed_"
     disabled="[[disableProceedButton_]]">
     $i18n{proceedLabel}

@@ -12,6 +12,7 @@
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/thread_annotations.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
 #include "services/audio/realtime_audio_thread.h"
 
@@ -30,8 +31,12 @@ namespace audio {
 //     processing callback is called.
 class ProcessingAudioFifo {
  public:
-  using ProcessAudioCallback = base::RepeatingCallback<
-      void(const media::AudioBus&, base::TimeTicks, double, bool)>;
+  using ProcessAudioCallback =
+      base::RepeatingCallback<void(const media::AudioBus&,
+                                   base::TimeTicks,
+                                   double,
+                                   bool,
+                                   const media::AudioGlitchInfo&)>;
 
   using LogCallback = base::RepeatingCallback<void(base::StringPiece)>;
 
@@ -54,7 +59,8 @@ class ProcessingAudioFifo {
   void PushData(const media::AudioBus* audio_bus,
                 base::TimeTicks capture_time,
                 double volume,
-                bool key_pressed);
+                bool key_pressed,
+                const media::AudioGlitchInfo& audio_glitch_info);
 
   // Starts the processing thread. Cannot be called more than once.
   void Start();
@@ -116,6 +122,8 @@ class ProcessingAudioFifo {
   std::unique_ptr<StatsReporter> stats_reporter_;
 
   SEQUENCE_CHECKER(owning_sequence_checker_);
+
+  media::AudioGlitchInfo::Accumulator glitch_info_accumulator_;
 };
 
 }  // namespace audio

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/file_system_provider/operations/copy_entry.h"
 
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -120,8 +119,7 @@ TEST_F(FileSystemProviderOperationsCopyEntryTest, OnSuccess) {
 
   EXPECT_TRUE(copy_entry.Execute(kRequestId));
 
-  copy_entry.OnSuccess(kRequestId, std::make_unique<RequestValue>(),
-                       false /* has_more */);
+  copy_entry.OnSuccess(kRequestId, RequestValue(), false /* has_more */);
   ASSERT_EQ(1u, callback_log.size());
   EXPECT_EQ(base::File::FILE_OK, callback_log[0]);
 }
@@ -136,7 +134,7 @@ TEST_F(FileSystemProviderOperationsCopyEntryTest, OnError) {
 
   EXPECT_TRUE(copy_entry.Execute(kRequestId));
 
-  copy_entry.OnError(kRequestId, std::make_unique<RequestValue>(),
+  copy_entry.OnError(kRequestId, RequestValue(),
                      base::File::FILE_ERROR_TOO_MANY_OPENED);
   ASSERT_EQ(1u, callback_log.size());
   EXPECT_EQ(base::File::FILE_ERROR_TOO_MANY_OPENED, callback_log[0]);

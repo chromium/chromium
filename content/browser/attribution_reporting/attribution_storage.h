@@ -8,13 +8,14 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/store_source_result.mojom-forward.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/storage_partition.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace base {
+class Time;
+}  // namespace base
 
 namespace content {
 
@@ -23,43 +24,14 @@ class CreateReportResult;
 class StorableSource;
 class StoredSource;
 
+struct StoreSourceResult;
+
 // This class provides an interface for persisting attribution data to
 // disk, and performing queries on it. AttributionStorage should initialize
 // itself. Calls to a AttributionStorage instance that failed to initialize
 // properly should result in no-ops.
 class AttributionStorage {
  public:
-  struct CONTENT_EXPORT StoreSourceResult {
-    explicit StoreSourceResult(
-        attribution_reporting::mojom::StoreSourceResult status,
-        absl::optional<base::Time> min_fake_report_time = absl::nullopt,
-        absl::optional<int> max_destinations_per_source_site_reporting_origin =
-            absl::nullopt,
-        absl::optional<int> max_sources_per_origin = absl::nullopt);
-
-    ~StoreSourceResult();
-
-    StoreSourceResult(const StoreSourceResult&);
-    StoreSourceResult(StoreSourceResult&&);
-
-    StoreSourceResult& operator=(const StoreSourceResult&);
-    StoreSourceResult& operator=(StoreSourceResult&&);
-
-    attribution_reporting::mojom::StoreSourceResult status;
-
-    // The earliest report time for any fake reports stored alongside the
-    // source, if any.
-    absl::optional<base::Time> min_fake_report_time;
-
-    // Only populated in case of
-    // `attribution_reporting::mojom::StoreSourceResult::kInsufficientUniqueDestinationCapacity`.
-    absl::optional<int> max_destinations_per_source_site_reporting_origin;
-
-    // Only populated in case of
-    // `attribution_reporting::mojom::StoreSourceResult::kInsufficientSourceCapacity`.
-    absl::optional<int> max_sources_per_origin;
-  };
-
   virtual ~AttributionStorage() = default;
 
   // When adding a new method, also add it to
@@ -84,10 +56,7 @@ class AttributionStorage {
   // a negative number for no limit. Reports are shuffled before being returned.
   virtual std::vector<AttributionReport> GetAttributionReports(
       base::Time max_report_time,
-      int limit = -1,
-      AttributionReport::Types report_types = {
-          AttributionReport::Type::kEventLevel,
-          AttributionReport::Type::kAggregatableAttribution}) = 0;
+      int limit = -1) = 0;
 
   // Returns the first report time strictly after `time`.
   virtual absl::optional<base::Time> GetNextReportTime(base::Time time) = 0;

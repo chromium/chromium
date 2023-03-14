@@ -13,7 +13,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "media/base/bind_to_current_loop.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -72,7 +71,7 @@ class AudioDeviceListenerMacTest : public testing::Test {
     const AudioObjectPropertyAddress addresses[] = {
         address,
         {kAudioHardwarePropertySleepingIsAllowed,
-         kAudioObjectPropertyScopeGlobal, kAudioObjectPropertyElementMaster}};
+         kAudioObjectPropertyScopeGlobal, kAudioObjectPropertyElementMain}};
 
     for (void* context : contexts) {
       OSStatus status = AudioDeviceListenerMac::SimulateEventForTesting(

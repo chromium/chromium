@@ -1,0 +1,14 @@
+import("//build/dotfile_settings.gni")
+
+# The location of the build configuration file.
+buildconfig = "//build/config/BUILDCONFIG.gn"
+
+# The python interpreter to use by default. On Windows, this will look
+# for python3.exe and python3.bat.
+script_executable = "python3"
+
+exec_script_whitelist = build_dotfile_settings.exec_script_whitelist
+
+default_args = {
+  clang_use_chrome_plugins = false
+}

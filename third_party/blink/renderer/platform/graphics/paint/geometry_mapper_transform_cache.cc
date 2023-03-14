@@ -44,7 +44,6 @@ void GeometryMapperTransformCache::Update(
   const GeometryMapperTransformCache& parent =
       node.UnaliasedParent()->GetTransformCache();
 
-  has_fixed_ = node.RequiresCompositingForFixedPosition() || parent.has_fixed_;
   has_sticky_ =
       node.RequiresCompositingForStickyPosition() || parent.has_sticky_;
 

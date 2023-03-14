@@ -7,8 +7,8 @@
 #import "base/check_op.h"
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
-#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_action_handler.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_controller.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_delegate.h"
@@ -67,8 +67,12 @@
 }
 
 - (void)stop {
-  [self.baseNavigationController popToViewController:self.viewController
-                                            animated:NO];
+  // Pop the detail view controller if it is at the top of the navigation stack.
+  if (self.baseNavigationController.topViewController == self.viewController) {
+    [self.baseNavigationController popViewControllerAnimated:NO];
+    self.viewController = nil;
+  }
+
   [super stop];
 }
 

@@ -1,4 +1,10 @@
-<div class="search-box">
-  <!-- TODO(longbowei): Localize string -->
-  <cr-input id="input" placeholder="Search for keyboard shortcuts"></cr-input>
+<!-- TODO(longbowei): Localize string -->
+<cr-toolbar-search-field id="search"
+        label="Search for keyboard shortcuts"
+        on-keydown="onKeyDown">
+</cr-toolbar-search-field>
+<div id="searchResultList" hidden="[[!shouldShowDropdown]]">
+  <template is="dom-repeat" items="[[searchResults]]">
+    <search-result-row search-result="[[item]]"></search-result-row>
+  </template>
 </div>

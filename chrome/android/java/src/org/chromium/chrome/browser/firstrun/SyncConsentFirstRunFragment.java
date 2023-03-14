@@ -15,7 +15,6 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.SyncConsentFragmentBase;
@@ -132,7 +131,7 @@ public class SyncConsentFirstRunFragment
     protected void updateAccounts(List<Account> accounts) {
         final boolean selectedAccountDoesNotExist = (mSelectedAccountName != null
                 && AccountUtils.findAccountByName(accounts, mSelectedAccountName) == null);
-        if (FREMobileIdentityConsistencyFieldTrial.isEnabled() && selectedAccountDoesNotExist) {
+        if (selectedAccountDoesNotExist) {
             // With MICe, there's no account picker and the sync consent is fixed for the signed
             // in account on welcome screen. If the signed-in account is removed, this page
             // no longer makes sense, so we abort the FRE here to allow users to restart FRE.

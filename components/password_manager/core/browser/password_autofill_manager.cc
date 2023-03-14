@@ -30,7 +30,7 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/password_generation_util.h"
-#include "components/device_reauth/biometric_authenticator.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "components/favicon/core/favicon_util.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
@@ -168,18 +168,18 @@ void GetSuggestions(const autofill::PasswordFormFillData& fill_data,
                     bool is_password_field,
                     std::vector<autofill::Suggestion>* suggestions) {
   AppendSuggestionIfMatching(
-      fill_data.preferred_login.username, current_username, custom_icon,
+      fill_data.preferred_login.username_value, current_username, custom_icon,
       fill_data.preferred_login.realm, show_all, is_password_field,
       fill_data.preferred_login.uses_account_store,
-      fill_data.preferred_login.password.size(), suggestions);
+      fill_data.preferred_login.password_value.size(), suggestions);
 
   int prefered_match = suggestions->size();
 
   for (const auto& login : fill_data.additional_logins) {
-    AppendSuggestionIfMatching(login.username, current_username, custom_icon,
-                               login.realm, show_all, is_password_field,
-                               login.uses_account_store, login.password.size(),
-                               suggestions);
+    AppendSuggestionIfMatching(login.username_value, current_username,
+                               custom_icon, login.realm, show_all,
+                               is_password_field, login.uses_account_store,
+                               login.password_value.size(), suggestions);
   }
 
   std::sort(suggestions->begin() + prefered_match, suggestions->end(),
@@ -501,13 +501,13 @@ void PasswordAutofillManager::DidAcceptSuggestion(
           password_client_->IsIncognito());
 
       CancelBiometricReauthIfOngoing();
-      scoped_refptr<device_reauth::BiometricAuthenticator> authenticator =
-          password_client_->GetBiometricAuthenticator();
+      scoped_refptr<device_reauth::DeviceAuthenticator> authenticator =
+          password_client_->GetDeviceAuthenticator();
       // Note: this is currently only implemented on Android, Mac and Windows.
       // For other platforms, the `authenticator` will be null.
       if (!password_manager_util::CanUseBiometricAuth(
               authenticator.get(),
-              device_reauth::BiometricAuthRequester::kAutofillSuggestion,
+              device_reauth::DeviceAuthRequester::kAutofillSuggestion,
               password_client_)) {
         bool success = FillSuggestion(
             GetUsernameFromSuggestion(suggestion.main_text.value),
@@ -517,7 +517,7 @@ void PasswordAutofillManager::DidAcceptSuggestion(
         authenticator_ = std::move(authenticator);
 #if BUILDFLAG(IS_ANDROID)
         authenticator_->Authenticate(
-            device_reauth::BiometricAuthRequester::kAutofillSuggestion,
+            device_reauth::DeviceAuthRequester::kAutofillSuggestion,
             base::BindOnce(&PasswordAutofillManager::OnBiometricReauthCompleted,
                            weak_ptr_factory_.GetWeakPtr(),
                            suggestion.main_text.value, suggestion.frontend_id),
@@ -533,7 +533,6 @@ void PasswordAutofillManager::DidAcceptSuggestion(
                            suggestion.main_text.value, suggestion.frontend_id);
 
         authenticator_->AuthenticateWithMessage(
-            device_reauth::BiometricAuthRequester::kAutofillSuggestion,
             l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_FILLING_REAUTH,
                                        origin),
             metrics_util::TimeCallback(
@@ -601,8 +600,8 @@ void PasswordAutofillManager::OnAddPasswordFillData(
 
   // If there are no username or password suggestions, WebAuthn credentials
   // can still cause a popup to appear.
-  if (fill_data.preferred_login.username.empty() &&
-      fill_data.preferred_login.password.empty()) {
+  if (fill_data.preferred_login.username_value.empty() &&
+      fill_data.preferred_login.password_value.empty()) {
     return;
   }
 
@@ -851,8 +850,8 @@ bool PasswordAutofillManager::FillSuggestion(const std::u16string& username,
         FacetURI::FromPotentiallyInvalidSpec(password_and_meta_data.realm)
             .IsValidAndroidFacetURI();
     metrics_util::LogFilledCredentialIsFromAndroidApp(is_android_credential);
-    password_manager_driver_->FillSuggestion(username,
-                                             password_and_meta_data.password);
+    password_manager_driver_->FillSuggestion(
+        username, password_and_meta_data.password_value);
     return true;
   }
   return false;
@@ -869,7 +868,7 @@ bool PasswordAutofillManager::PreviewSuggestion(const std::u16string& username,
       GetPasswordAndMetadataForUsername(username, item_id, *fill_data_,
                                         &password_and_meta_data)) {
     password_manager_driver_->PreviewSuggestion(
-        username, password_and_meta_data.password);
+        username, password_and_meta_data.password_value);
     return true;
   }
   return false;
@@ -889,10 +888,11 @@ bool PasswordAutofillManager::GetPasswordAndMetadataForUsername(
       item_id == autofill::POPUP_ITEM_ID_ACCOUNT_STORAGE_PASSWORD_ENTRY;
 
   // Look for any suitable matches to current field text.
-  if (fill_data.preferred_login.username == current_username &&
+  if (fill_data.preferred_login.username_value == current_username &&
       fill_data.preferred_login.uses_account_store == item_uses_account_store) {
-    password_and_meta_data->username = current_username;
-    password_and_meta_data->password = fill_data.preferred_login.password;
+    password_and_meta_data->username_value = current_username;
+    password_and_meta_data->password_value =
+        fill_data.preferred_login.password_value;
     password_and_meta_data->realm = fill_data.preferred_login.realm;
     password_and_meta_data->uses_account_store =
         fill_data.preferred_login.uses_account_store;
@@ -903,7 +903,7 @@ bool PasswordAutofillManager::GetPasswordAndMetadataForUsername(
   auto iter = base::ranges::find_if(
       fill_data.additional_logins,
       [&](const autofill::PasswordAndMetadata& login) {
-        return current_username == login.username &&
+        return current_username == login.username_value &&
                item_uses_account_store == login.uses_account_store;
       });
   if (iter != fill_data.additional_logins.end()) {
@@ -968,7 +968,7 @@ void PasswordAutofillManager::CancelBiometricReauthIfOngoing() {
   if (!authenticator_)
     return;
   authenticator_->Cancel(
-      device_reauth::BiometricAuthRequester::kAutofillSuggestion);
+      device_reauth::DeviceAuthRequester::kAutofillSuggestion);
   authenticator_.reset();
 }
 

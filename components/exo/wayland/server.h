@@ -34,7 +34,6 @@ struct WaylandSeat;
 struct WaylandTextInputExtension;
 struct WaylandTextInputManager;
 struct WaylandXdgShell;
-struct WaylandZxdgShell;
 struct WaylandRemoteShellData;
 class WaylandDmabufFeedbackManager;
 class WestonTest;
@@ -76,10 +75,6 @@ class Server : public display::DisplayObserver {
 
   void Finalize(StartCallback callback, bool success);
 
-  // This adds a Unix socket to the Wayland display server which can be used
-  // by clients to connect to the display server.
-  bool AddSocket(const std::string& name);
-
   // Returns the file descriptor associated with the server.
   int GetFileDescriptor() const;
 
@@ -117,6 +112,10 @@ class Server : public display::DisplayObserver {
  private:
   friend class ScopedEventDispatchDisabler;
 
+  // This adds a Unix socket to the Wayland display server which can be used
+  // by clients to connect to the display server.
+  bool AddSocket(const std::string& name);
+
   // This has the server's socket inside it, so it must be deleted last.
   base::ScopedTempDir socket_dir_;
   Display* const display_;
@@ -135,7 +134,6 @@ class Server : public display::DisplayObserver {
   std::unique_ptr<WaylandKeyboardExtension> zcr_keyboard_extension_data_;
   std::unique_ptr<WaylandTextInputManager> zwp_text_manager_data_;
   std::unique_ptr<WaylandTextInputExtension> zcr_text_input_extension_data_;
-  std::unique_ptr<WaylandZxdgShell> zxdg_shell_data_;
   std::unique_ptr<WaylandXdgShell> xdg_shell_data_;
   std::unique_ptr<WaylandRemoteShellData> remote_shell_data_;
   std::unique_ptr<WestonTest> weston_test_holder_;

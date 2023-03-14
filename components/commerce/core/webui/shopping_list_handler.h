@@ -6,6 +6,7 @@
 #define COMPONENTS_COMMERCE_CORE_WEBUI_SHOPPING_LIST_HANDLER_H_
 
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -13,6 +14,8 @@
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/mojom/shopping_list.mojom.h"
+#include "components/commerce/core/subscriptions/subscriptions_manager.h"
+#include "components/commerce/core/subscriptions/subscriptions_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -32,7 +35,7 @@ namespace commerce {
 class ShoppingService;
 
 class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
-                            public bookmarks::BaseBookmarkModelObserver {
+                            public SubscriptionsObserver {
  public:
   ShoppingListHandler(
       mojo::PendingRemote<shopping_list::mojom::Page> page,
@@ -54,10 +57,11 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
   void TrackPriceForBookmark(int64_t bookmark_id) override;
   void UntrackPriceForBookmark(int64_t bookmark_id) override;
 
-  // bookmarks::BaseBookmarkModelObserver
-  void BookmarkModelChanged() override;
-  void BookmarkMetaInfoChanged(bookmarks::BookmarkModel* model,
-                               const bookmarks::BookmarkNode* node) override;
+  // SubscriptionsObserver
+  void OnSubscribe(const std::vector<CommerceSubscription>& subscriptions,
+                   bool succeeded) override;
+  void OnUnsubscribe(const std::vector<CommerceSubscription>& subscriptions,
+                     bool succeeded) override;
 
   static std::vector<shopping_list::mojom::BookmarkProductInfoPtr>
   BookmarkListToMojoList(
@@ -68,7 +72,16 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
  private:
   void onPriceTrackResult(int64_t bookmark_id,
                           bookmarks::BookmarkModel* model,
+                          bool is_tracking,
                           bool success);
+
+  void OnFetchPriceTrackedBookmarks(
+      GetAllPriceTrackedBookmarkProductInfoCallback callback,
+      std::vector<const bookmarks::BookmarkNode*> bookmarks);
+
+  void HandleSubscriptionChange(
+      const std::vector<CommerceSubscription>& subscriptions,
+      bool is_tracking);
 
   mojo::Remote<shopping_list::mojom::Page> remote_page_;
   mojo::Receiver<shopping_list::mojom::ShoppingListHandler> receiver_;
@@ -82,9 +95,9 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
   raw_ptr<feature_engagement::Tracker> tracker_;
   const std::string locale_;
   // Automatically remove this observer from its host when destroyed.
-  base::ScopedObservation<bookmarks::BookmarkModel,
-                          bookmarks::BookmarkModelObserver>
+  base::ScopedObservation<ShoppingService, SubscriptionsObserver>
       scoped_observation_{this};
+
   base::WeakPtrFactory<ShoppingListHandler> weak_ptr_factory_{this};
 };
 

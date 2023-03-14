@@ -24,8 +24,7 @@ class EcheStreamOrientationObserver : public mojom::StreamOrientationObserver {
       const EcheStreamOrientationObserver&) = delete;
 
   // mojom::StreamOrientationObserver
-  void OnStreamOrientationChanged(
-      mojom::StreamOrientation orientation) override;
+  void OnStreamOrientationChanged(bool is_landscape) override;
 
   void Bind(mojo::PendingReceiver<mojom::StreamOrientationObserver> receiver);
 

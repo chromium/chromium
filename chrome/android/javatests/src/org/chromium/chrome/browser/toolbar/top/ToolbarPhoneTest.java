@@ -10,7 +10,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.anyInt;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
@@ -144,39 +144,6 @@ public class ToolbarPhoneTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> { mToolbar.onUrlFocusChange(false); });
         onView(allOf(
                 withId(R.id.menu_button_wrapper), withEffectiveVisibility(Visibility.VISIBLE)));
-    }
-
-    @Test
-    @MediumTest
-    public void testOptionalButtonPadding_paddingUpdatesWithMenuVisibility() {
-        mToolbar.setMenuButtonCoordinatorForTesting(mMenuButtonCoordinator);
-        Drawable drawable = AppCompatResources.getDrawable(
-                mActivityTestRule.getActivity(), R.drawable.ic_toolbar_share_offset_24dp);
-
-        // When menu is hidden, optional button should have no padding.
-        doReturn(false).when(mMenuButtonCoordinator).isVisible();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mToolbar.updateOptionalButton(new ButtonDataImpl(false, drawable, null,
-                    mActivityTestRule.getActivity().getString(R.string.share), false, null, false,
-                    AdaptiveToolbarButtonVariant.UNKNOWN));
-            mToolbar.updateButtonVisibility();
-        });
-
-        int padding =
-                mToolbar.findViewById(R.id.optional_toolbar_button_container).getPaddingStart();
-        assertEquals("Optional button's padding should be 0 when menu button is not visible", 0,
-                padding);
-
-        // However when menu is visible, optional button should have
-        // toolbar_phone_optional_button_padding padding.
-        doReturn(true).when(mMenuButtonCoordinator).isVisible();
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mToolbar.updateButtonVisibility(); });
-        padding = mToolbar.findViewById(R.id.optional_toolbar_button_container).getPaddingStart();
-        int expectedPadding = mActivityTestRule.getActivity().getResources().getDimensionPixelSize(
-                R.dimen.toolbar_phone_optional_button_padding);
-        assertEquals(
-                "Optional button should have a 12dp start padding set when menu button is visible",
-                expectedPadding, padding);
     }
 
     @Test

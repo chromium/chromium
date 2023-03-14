@@ -59,6 +59,11 @@ void FakeCrosNetworkConfig::GetVpnProviders(GetVpnProvidersCallback callback) {
   std::move(callback).Run(std::move(providers));
 }
 
+void FakeCrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
+                                            mojom::ApnPropertiesPtr apn) {
+  custom_apns_.push_back(std::move(apn));
+}
+
 void FakeCrosNetworkConfig::SetDeviceProperties(
     mojom::DeviceStatePropertiesPtr device_properties) {
   AddOrReplaceDevice(std::move(device_properties));

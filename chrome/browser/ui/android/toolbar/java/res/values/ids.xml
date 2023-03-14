@@ -10,7 +10,6 @@ found in the LICENSE file.
     <!-- Tab Actions -->
     <item type="id" name="close_tab" />
     <item type="id" name="ungroup_tab" />
-    <item type="id" name="share_tab_group" />
     <item type="id" name="edit_group_name" />
     <item type="id" name="select_tabs" />
 

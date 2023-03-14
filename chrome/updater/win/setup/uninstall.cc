@@ -67,6 +67,8 @@ void DeleteComService(bool uninstall_all) {
     if (!installer::InstallServiceWorkItem::DeleteService(
             service_name.c_str(), UPDATER_KEY, {}, {})) {
       LOG(WARNING) << "DeleteService [" << service_name << "] failed.";
+    } else {
+      VLOG(1) << "DeleteService [" << service_name << "] succeeded.";
     }
   }
 }

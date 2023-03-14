@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Requires this allow since cxx generates unsafe code.
+//
+// TODO(crbug.com/1422745): patch upstream cxx to generate compatible code.
+#[allow(unsafe_op_in_unsafe_fn)]
 #[cxx::bridge]
 mod ffi {
     pub struct SomeStruct {

@@ -2,11 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# TODO(https://crbug.com/1404759): Remove this whole file.
+
 import("//build/config/gclient_args.gni")
 import("//build_overrides/build.gni")
 
 declare_args() {
-  # Google Benchmark is not checked out by default, because it is only used by
-  # a few specialized benchmarks that most developers do not interact with.
-  enable_google_benchmarks = checkout_google_benchmark
+  enable_google_benchmarks = true
 }

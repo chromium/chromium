@@ -180,10 +180,6 @@ class TabDragController : public views::WidgetObserver,
  private:
   friend class TabDragControllerTest;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  class DeferredTargetTabstripObserver;
-#endif
-
   class SourceTabStripEmptinessTracker;
 
   class DraggedTabsClosedTracker;
@@ -446,9 +442,6 @@ class TabDragController : public views::WidgetObserver,
   // |attached_context_hidden_| is false.
   void AttachTabsToNewBrowserOnDrop();
 
-  // Called after the drag ends and |deferred_target_context_| is not nullptr.
-  void PerformDeferredAttach();
-
   // Reverts a cancelled drag operation.
   void RevertDrag();
 
@@ -569,11 +562,6 @@ class TabDragController : public views::WidgetObserver,
   // from the old context or the tab dragging is ended.
   void ClearTabDraggingInfo();
 
-  // Sets |deferred_target_context_| and updates its corresponding window
-  // property. |location| is the location of the pointer when the deferred
-  // target is set.
-  void SetDeferredTargetTabstrip(TabDragContext* deferred_target_context);
-
   DragState current_state_;
 
   // Tests whether a drag can be attached to a |window|.  Drags may be
@@ -613,15 +601,6 @@ class TabDragController : public views::WidgetObserver,
   // The TabDragContext the dragged Tab is currently attached to, or
   // null if the dragged Tab is detached.
   raw_ptr<TabDragContext, DanglingUntriaged> attached_context_;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Observe the target TabDragContext to attach to after the drag
-  // ends. It's only possible to happen in Chrome OS tablet mode, if the dragged
-  // tabs are dragged over an overview window, we should wait until the drag
-  // ends to attach it.
-  std::unique_ptr<DeferredTargetTabstripObserver>
-      deferred_target_context_observer_;
-#endif
 
   // Whether capture can be released during the drag. When false, capture should
   // not be released when transferring capture between widgets and when starting

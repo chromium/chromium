@@ -39,6 +39,8 @@ class ChromeShellDelegate : public ash::ShellDelegate {
       const override;
   std::unique_ptr<ash::SystemSoundsDelegate> CreateSystemSoundsDelegate()
       const override;
+  std::unique_ptr<ash::UserEducationDelegate> CreateUserEducationDelegate()
+      const override;
   scoped_refptr<network::SharedURLLoaderFactory>
   GetGeolocationUrlLoaderFactory() const override;
   void OpenKeyboardShortcutHelpPage() const override;

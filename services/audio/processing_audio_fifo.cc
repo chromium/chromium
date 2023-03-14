@@ -8,6 +8,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_parameters.h"
 
 namespace audio {
 
@@ -71,6 +72,7 @@ struct ProcessingAudioFifo::CaptureData {
   base::TimeTicks capture_time;
   double volume;
   bool key_pressed;
+  media::AudioGlitchInfo audio_glitch_info;
 };
 
 ProcessingAudioFifo::ProcessingAudioFifo(
@@ -148,11 +150,14 @@ void ProcessingAudioFifo::StartInternal(
                                 base::Unretained(new_data_captured)));
 }
 
-void ProcessingAudioFifo::PushData(const media::AudioBus* audio_bus,
-                                   base::TimeTicks capture_time,
-                                   double volume,
-                                   bool key_pressed) {
+void ProcessingAudioFifo::PushData(
+    const media::AudioBus* audio_bus,
+    base::TimeTicks capture_time,
+    double volume,
+    bool key_pressed,
+    const media::AudioGlitchInfo& audio_glitch_info) {
   DCHECK_EQ(audio_bus->frames(), input_params_.frames_per_buffer());
+  glitch_info_accumulator_.Add(audio_glitch_info);
 
   CaptureData* data = nullptr;
   int fifo_space = fifo_size_;
@@ -175,6 +180,8 @@ void ProcessingAudioFifo::PushData(const media::AudioBus* audio_bus,
   if (!data) {
     TRACE_EVENT_INSTANT0("audio", "ProcessingAudioFifo::Overrun",
                          TRACE_EVENT_SCOPE_THREAD);
+    glitch_info_accumulator_.Add(media::AudioGlitchInfo{
+        .duration = input_params_.GetBufferDuration(), .count = 1});
     return;  // Overrun.
   }
 
@@ -182,6 +189,7 @@ void ProcessingAudioFifo::PushData(const media::AudioBus* audio_bus,
   data->capture_time = capture_time;
   data->volume = volume;
   data->key_pressed = key_pressed;
+  data->audio_glitch_info = glitch_info_accumulator_.GetAndReset();
   audio_bus->CopyTo(data->audio_bus.get());
 
   {
@@ -217,7 +225,8 @@ void ProcessingAudioFifo::ProcessAudioLoop(
 
       // Read from the FIFO, and process the data (lock-free).
       processing_callback_.Run(*data->audio_bus, data->capture_time,
-                               data->volume, data->key_pressed);
+                               data->volume, data->key_pressed,
+                               data->audio_glitch_info);
 
       {
         base::AutoLock locker(fifo_index_lock_);

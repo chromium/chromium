@@ -59,8 +59,8 @@ OffscreenCreateDocumentFunction::OffscreenCreateDocumentFunction() = default;
 OffscreenCreateDocumentFunction::~OffscreenCreateDocumentFunction() = default;
 
 ExtensionFunction::ResponseAction OffscreenCreateDocumentFunction::Run() {
-  std::unique_ptr<api::offscreen::CreateDocument::Params> params(
-      api::offscreen::CreateDocument::Params::Create(args()));
+  absl::optional<api::offscreen::CreateDocument::Params> params =
+      api::offscreen::CreateDocument::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(extension());
 
@@ -221,7 +221,7 @@ ExtensionFunction::ResponseAction OffscreenHasDocumentFunction::Run() {
   bool has_document =
       GetManagerToUse(*browser_context(), *extension())
           ->GetOffscreenDocumentForExtension(*extension()) != nullptr;
-  return RespondNow(OneArgument(base::Value(has_document)));
+  return RespondNow(WithArguments(has_document));
 }
 
 }  // namespace extensions

@@ -25,6 +25,8 @@ namespace autofill {
 
 enum class UnmaskAuthFlowType;
 
+namespace autofill_metrics {
+
 class CreditCardFormEventLogger : public FormEventLoggerBase {
  public:
   enum class UnmaskAuthFlowEvent {
@@ -149,6 +151,8 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   raw_ptr<PersonalDataManager> personal_data_manager_;
   raw_ptr<AutofillClient> client_;
 };
+
+}  // namespace autofill_metrics
 
 }  // namespace autofill
 

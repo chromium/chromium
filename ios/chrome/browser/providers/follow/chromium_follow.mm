@@ -21,6 +21,7 @@ class ChromiumFollowService final : public FollowService {
   bool IsWebSiteFollowed(WebPageURLs* web_page_urls) final;
   NSURL* GetRecommendedSiteURL(WebPageURLs* web_page_urls) final;
   NSArray<FollowedWebSite*>* GetFollowedWebSites() final;
+  void LoadFollowedWebSites() final;
   void FollowWebSite(WebPageURLs* web_page_urls,
                      FollowSource source,
                      ResultCallback callback) final;
@@ -42,6 +43,10 @@ NSURL* ChromiumFollowService::GetRecommendedSiteURL(
 
 NSArray<FollowedWebSite*>* ChromiumFollowService::GetFollowedWebSites() {
   return @[];
+}
+
+void ChromiumFollowService::LoadFollowedWebSites() {
+  // Do nothing.
 }
 
 void ChromiumFollowService::FollowWebSite(WebPageURLs* web_page_urls,

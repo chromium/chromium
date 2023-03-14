@@ -5,6 +5,7 @@
 #include "content/browser/client_hints/client_hints.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -116,11 +117,11 @@ class ClientHintsTest : public RenderViewHostImplTestHarness {
       return "";
 
     std::vector<std::string> hints_list;
-    std::transform(hints.value().begin(), hints.value().end(),
-                   std::back_inserter(hints_list),
-                   [](network::mojom::WebClientHintsType hint) {
-                     return network::GetClientHintToNameMap().at(hint);
-                   });
+    const auto& map = network::GetClientHintToNameMap();
+    base::ranges::transform(hints.value(), std::back_inserter(hints_list),
+                            [&map](network::mojom::WebClientHintsType hint) {
+                              return map.at(hint);
+                            });
 
     return base::JoinString(hints_list, ",");
   }

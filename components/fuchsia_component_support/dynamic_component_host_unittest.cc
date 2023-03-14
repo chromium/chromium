@@ -19,6 +19,7 @@
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
+#include "components/fuchsia_component_support/mock_realm.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -101,34 +102,6 @@ bool HasPeerClosedHandle(
 constexpr char kTestCollection[] = "test_collection";
 constexpr char kTestChildId[] = "test-child-id";
 constexpr char kTestComponentUrl[] = "dummy:url";
-
-class MockRealm : public fuchsia::component::testing::Realm_TestBase {
- public:
-  MockRealm(sys::OutgoingDirectory* outgoing) : binding_(outgoing, this) {}
-
-  MOCK_METHOD(void,
-              CreateChild,
-              (fuchsia::component::decl::CollectionRef collection,
-               fuchsia::component::decl::Child decl,
-               fuchsia::component::CreateChildArgs args,
-               fuchsia::component::Realm::CreateChildCallback callback));
-  MOCK_METHOD(void,
-              OpenExposedDir,
-              (fuchsia::component::decl::ChildRef child,
-               fidl::InterfaceRequest<fuchsia::io::Directory> exposed_dir,
-               fuchsia::component::Realm::OpenExposedDirCallback callback));
-  MOCK_METHOD(void,
-              DestroyChild,
-              (fuchsia::component::decl::ChildRef child,
-               fuchsia::component::Realm::DestroyChildCallback callback));
-
-  void NotImplemented_(const std::string& name) override {
-    ADD_FAILURE() << "NotImplemented_: " << name;
-  }
-
- protected:
-  base::ScopedServiceBinding<fuchsia::component::Realm> binding_;
-};
 
 class DynamicComponentHostTest : public testing::Test {
  protected:

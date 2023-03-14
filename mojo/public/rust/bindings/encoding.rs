@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-use crate::bindings::mojom::MOJOM_NULL_POINTER;
-use crate::bindings::util;
+use crate::mojom::MOJOM_NULL_POINTER;
 
 use std::mem;
-use std::ops::{Add, AddAssign, Div, Mul, Rem, Sub};
+use std::ops::{Add, AddAssign, Mul};
 use std::ptr;
 use std::vec::Vec;
 
-use crate::system::UntypedHandle;
+use system::UntypedHandle;
 
 /// Represents some count of bits.
 ///
@@ -24,7 +23,8 @@ pub struct Bits(pub usize);
 impl Bits {
     /// Convert bit representation to bytes, rounding up to the nearest byte.
     pub fn as_bytes(self) -> usize {
-        util::bits_to_bytes(self.0)
+        let bits = self.0;
+        bits.div_ceil(u8::BITS as usize)
     }
 
     /// Convert to a number of bytes plus the number of bits leftover
@@ -50,7 +50,8 @@ impl Bits {
 
     /// Align the bits to some number of bytes.
     pub fn align_to_bytes(&mut self, bytes: usize) {
-        self.0 = util::align_bytes(self.0, 8 * bytes);
+        debug_assert!(bytes.is_power_of_two());
+        self.0 = self.0.next_multiple_of(8 * bytes);
     }
 }
 
@@ -74,30 +75,23 @@ impl Mul<usize> for Bits {
     }
 }
 
-/// This trait is intended to be used by Mojom primitive values
-/// in order to be identified in generic contexts.
-pub trait MojomNumeric:
-    Copy
-    + Clone
-    + Sized
-    + Add<Self>
-    + Sub<Self, Output = Self>
-    + Mul<Self>
-    + Div<Self, Output = Self>
-    + Rem<Self, Output = Self>
-    + PartialEq<Self>
-    + Default
-{
-    /// Converts the primitive to a little-endian representation (the mojom
-    /// endianness).
-    fn to_mojom_endian(self) -> Self;
+/// A generic mojom primitive (bools, integers, floats). Provides methods to
+/// convert to and from the wire format.
+pub trait MojomPrimitive: Copy {
+    type Repr: Copy;
+
+    fn to_repr(self) -> Self::Repr;
+    fn from_repr(repr: Self::Repr) -> Self;
 }
 
 macro_rules! impl_mojom_numeric_for_prim {
     ($($t:ty),*) => {
         $(
-        impl MojomNumeric for $t {
-            fn to_mojom_endian(self) -> $t { self.to_le() }
+        impl MojomPrimitive for $t {
+            type Repr = $t;
+
+            fn to_repr(self) -> Self::Repr { self.to_le() }
+            fn from_repr(repr: Self::Repr) -> Self { Self::from_le(repr) }
         }
         )*
     }
@@ -105,32 +99,42 @@ macro_rules! impl_mojom_numeric_for_prim {
 
 impl_mojom_numeric_for_prim!(i8, i16, i32, i64, u8, u16, u32, u64);
 
-impl MojomNumeric for f32 {
-    fn to_mojom_endian(self) -> f32 {
-        unsafe { mem::transmute::<u32, f32>(mem::transmute::<f32, u32>(self).to_le()) }
+impl MojomPrimitive for f32 {
+    type Repr = u32;
+
+    fn to_repr(self) -> Self::Repr {
+        self.to_bits().to_le()
+    }
+
+    fn from_repr(repr: Self::Repr) -> Self {
+        Self::from_bits(Self::Repr::from_le(repr))
     }
 }
 
-impl MojomNumeric for f64 {
-    fn to_mojom_endian(self) -> f64 {
-        unsafe { mem::transmute::<u64, f64>(mem::transmute::<f64, u64>(self).to_le()) }
+impl MojomPrimitive for f64 {
+    type Repr = u64;
+
+    fn to_repr(self) -> Self::Repr {
+        self.to_bits().to_le()
+    }
+
+    fn from_repr(repr: Self::Repr) -> Self {
+        Self::from_bits(Self::Repr::from_le(repr))
     }
 }
 
 /// Align to the Mojom default of 8 bytes.
-pub fn align_default(bytes: usize) -> usize {
-    util::align_bytes(bytes, 8)
+pub fn align_default(offset: usize) -> usize {
+    offset.next_multiple_of(8)
 }
 
 /// The size in bytes of any data header.
 pub const DATA_HEADER_SIZE: usize = 8;
 
-/// A value that goes in the second u32 of a
-/// a data header.
+/// A value that goes in the second u32 of a a data header.
 ///
-/// Since the data header can head many types,
-/// this enum represents all the kinds of data
-/// that can end up in a data header.
+/// Since the data header can head many types, this enum represents all the
+/// kinds of data that can end up in a data header.
 #[derive(Clone, Copy)]
 pub enum DataHeaderValue {
     Elements(u32),
@@ -211,8 +215,10 @@ impl Context {
     }
 }
 
-/// An encoding state represents the encoding logic for a single
-/// Mojom object that is NOT inlined, such as a struct or an array.
+/// Used to encode a single mojom object's contents. This is backed by a buffer
+/// sized according to the `DataHeader` passed to `Encoder::add`. Each
+/// `EncodingState` maps one-to-one with a mojom object, and all
+/// `EncodingState`s from one `Encoder` are non-overlapping.
 pub struct EncodingState<'slice> {
     /// The buffer the state may write to.
     data: &'slice mut [u8],
@@ -254,27 +260,30 @@ impl<'slice> EncodingState<'slice> {
 
     /// Align the encoding state to the next 'bytes' boundary.
     pub fn align_to_bytes(&mut self, bytes: usize) {
-        self.offset = util::align_bytes(self.offset, bytes);
+        debug_assert!(bytes.is_power_of_two());
+        self.offset = self.offset.next_multiple_of(bytes);
     }
 
     /// Write a primitive into the buffer.
-    fn write<T: MojomNumeric>(&mut self, data: T) {
-        let num_bytes = mem::size_of::<T>();
-        let bytes = data.to_mojom_endian();
-        debug_assert!(num_bytes + self.offset <= self.data.len());
+    fn write<T: MojomPrimitive>(&mut self, data: T) {
+        let size = mem::size_of::<T>();
+        let repr: T::Repr = data.to_repr();
+        assert!(size + self.offset <= self.data.len());
+
+        let ptr = self.data[self.offset..].as_mut_ptr() as *mut T::Repr;
+
+        // SAFETY:
+        // * We checked there is enough room in the buffer, so `ptr` is valid.
         unsafe {
-            ptr::copy_nonoverlapping(
-                mem::transmute::<&T, *const u8>(&bytes),
-                (&mut self.data[self.offset..]).as_mut_ptr(),
-                num_bytes,
-            );
+            ptr::write(ptr, repr);
         }
+
         self.bit_offset = Bits(0);
-        self.offset += num_bytes;
+        self.offset += size;
     }
 
     /// Encode a primitive into the buffer, naturally aligning it.
-    pub fn encode<T: MojomNumeric>(&mut self, data: T) {
+    pub fn encode<T: MojomPrimitive>(&mut self, data: T) {
         self.align_to_byte();
         self.align_to_bytes(mem::size_of::<T>());
         self.write(data);
@@ -332,45 +341,61 @@ impl<'slice> EncodingState<'slice> {
 /// A struct that will encode a given Mojom object and convert it into
 /// bytes and a vector of handles.
 pub struct Encoder<'slice> {
-    bytes: usize,
+    offset: usize,
     buffer: Option<&'slice mut [u8]>,
-    states: Vec<EncodingState<'slice>>,
     handles: Vec<UntypedHandle>,
 }
 
 impl<'slice> Encoder<'slice> {
     /// Create a new Encoder.
     pub fn new(buffer: &'slice mut [u8]) -> Encoder<'slice> {
-        Encoder { bytes: 0, buffer: Some(buffer), states: Vec::new(), handles: Vec::new() }
+        Encoder { offset: 0, buffer: Some(buffer), handles: Vec::new() }
     }
 
     /// Get the current encoded size (useful for writing pointers).
     pub fn size(&self) -> usize {
-        self.bytes
+        self.offset
     }
 
-    /// Start encoding a new object with its data header.
+    /// Reserve space to encode a new object.
     ///
-    /// Creates a new encoding state for the object.
-    pub fn add(&mut self, header: &DataHeader) -> Option<Context> {
-        let buf = self.buffer.take().unwrap();
-        if buf.len() < (header.size() as usize) {
-            self.buffer = Some(buf);
+    /// `header` is the object's data header, which contains its encoded size
+    /// and another field whose interpretation depends on the object type.
+    ///
+    /// Returns a tuple of `(offset, encoding_state, context)`. The
+    /// encoding_state is used to encode the members of the object. The offset
+    /// is relative to the start of the buffer passed to `Encoder::new`, and
+    /// should be used to encode a pointer in the parent object.
+    #[must_use]
+    pub fn add(&mut self, header: &DataHeader) -> Option<(u64, EncodingState<'slice>, Context)> {
+        let obj_size = header.size() as usize;
+        let (obj_offset, claimed) = self.reserve_aligned(obj_size)?;
+
+        // Context id for encoding no longer matters.
+        Some((obj_offset as u64, EncodingState::new(claimed, header, obj_offset), Context::new(0)))
+    }
+
+    /// Split off exactly `size` bytes from the beginning of the wrapped buffer.
+    /// Updates the current offset accordingly. Returns the split off slice and
+    /// the offset relative to the original buffer.
+    fn reserve(&mut self, size: usize) -> Option<(usize, &'slice mut [u8])> {
+        let buf: &'slice mut [u8] = self.buffer.take()?;
+        if size > buf.len() {
             return None;
         }
-        let obj_bytes = header.size() as usize;
-        let (claimed, rest) = buf.split_at_mut(obj_bytes);
-        self.states.push(EncodingState::new(claimed, header, self.bytes));
-        self.bytes += obj_bytes;
-        let padding_bytes = align_default(obj_bytes) - obj_bytes;
-        if padding_bytes <= rest.len() {
-            let (_, new_buffer) = rest.split_at_mut(padding_bytes);
-            self.bytes += padding_bytes;
-            self.buffer = Some(new_buffer);
-        } else {
-            self.buffer = Some(rest);
-        }
-        Some(Context::new(self.states.len() - 1))
+        let claimed_offset = self.offset;
+        let (claimed, rest) = buf.split_at_mut(size);
+        self.offset += size;
+        self.buffer = Some(rest);
+        Some((claimed_offset, claimed))
+    }
+
+    /// Same as `reserve` but aligns the offset to 8 bytes, the mojom standard,
+    /// and skips over the padding bytes.
+    fn reserve_aligned(&mut self, size: usize) -> Option<(usize, &'slice mut [u8])> {
+        let padding_size = align_default(self.offset) - self.offset;
+        let _: (usize, &'slice mut [u8]) = self.reserve(padding_size)?;
+        self.reserve(size)
     }
 
     /// Adds a handle and returns an offset to that handle in the
@@ -378,16 +403,6 @@ impl<'slice> Encoder<'slice> {
     pub fn add_handle(&mut self, handle: UntypedHandle) -> usize {
         self.handles.push(handle);
         self.handles.len() - 1
-    }
-
-    /// Immutably borrow an encoding state via Context.
-    pub fn get(&self, context: &Context) -> &EncodingState<'slice> {
-        &self.states[context.id()]
-    }
-
-    /// Mutably borrow an encoding state via Context.
-    pub fn get_mut(&mut self, context: &Context) -> &mut EncodingState<'slice> {
-        &mut self.states[context.id()]
     }
 
     /// Signal to finish encoding by destroying the Encoder and returning the

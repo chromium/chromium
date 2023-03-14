@@ -875,4 +875,8 @@ void WebContentsAndroid::NotifyBrowserControlsHeightChanged(JNIEnv* env) {
   web_contents_->GetNativeView()->OnBrowserControlsHeightChanged();
 }
 
+bool WebContentsAndroid::NeedToFireBeforeUnloadOrUnloadEvents(JNIEnv* env) {
+  return web_contents_->NeedToFireBeforeUnloadOrUnloadEvents();
+}
+
 }  // namespace content

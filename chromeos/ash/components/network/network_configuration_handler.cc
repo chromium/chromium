@@ -266,9 +266,9 @@ void NetworkConfigurationHandler::GetShillProperties(
        network_state->IsNonShillCellularNetwork())) {
     // This is a Tether network or a Cellular network with no Service.
     // Provide properties from NetworkState.
-    base::Value dictionary(base::Value::Type::DICT);
+    base::Value::Dict dictionary;
     network_state->GetStateProperties(&dictionary);
-    std::move(callback).Run(service_path, std::move(dictionary.GetDict()));
+    std::move(callback).Run(service_path, std::move(dictionary));
     return;
   }
   ShillServiceClient::Get()->GetProperties(

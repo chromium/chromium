@@ -167,8 +167,14 @@ bool IsMonthInput(const blink::WebInputElement& element);
 // Returns true if |element| is a text input element.
 bool IsTextInput(const blink::WebInputElement& element);
 
+// Returns true if `element` is either a select or a selectmenu element.
+bool IsSelectOrSelectMenuElement(const blink::WebFormControlElement& element);
+
 // Returns true if |element| is a select element.
 bool IsSelectElement(const blink::WebFormControlElement& element);
+
+// Returns true if `element` is a selectmenu element.
+bool IsSelectMenuElement(const blink::WebFormControlElement& element);
 
 // Returns true if |element| is a textarea element.
 bool IsTextAreaElement(const blink::WebFormControlElement& element);
@@ -371,13 +377,9 @@ void PreviewSuggestion(const std::u16string& suggestion,
 // Whitespace is trimmed from text accumulated at descendant nodes.
 std::u16string FindChildText(const blink::WebNode& node);
 
-// Returns the button titles for |web_form| (or unowned buttons in |document| if
-// |web_form| is null). |button_titles_cache| can be used to spare recomputation
-// if called multiple times for the same form. Button titles computation for
-// unowned buttons is enabled only in Dev and Canary (crbug.com/1086446),
-// otherwise the method returns an empty list.
+// Returns the button titles for |web_form|. |button_titles_cache| can be used
+// to spare recomputation if called multiple times for the same form.
 ButtonTitleList GetButtonTitles(const blink::WebFormElement& web_form,
-                                const blink::WebDocument& document,
                                 ButtonTitlesCache* button_titles_cache);
 
 // Exposed for testing purposes.

@@ -137,8 +137,9 @@ class FingerprintChromeOSTest : public testing::Test {
     }
   }
 
-  void OnGetRecords(const base::flat_map<std::string, std::string>&
-                        fingerprints_list_mapping) {
+  void OnGetRecords(
+      const base::flat_map<std::string, std::string>& fingerprints_list_mapping,
+      bool success) {
     ++get_records_results_;
   }
 

@@ -20,7 +20,8 @@ class BookmarkNode;
 // Controller (MVC) for the bookmark menu.
 // All bookmark menu item commands get directed here.
 // Unfortunately there is already a C++ class named BookmarkMenuController.
-@interface BookmarkMenuCocoaController : NSObject<NSMenuDelegate>
+@interface BookmarkMenuCocoaController
+    : NSObject <NSMenuDelegate, NSMenuItemValidation>
 
 // Make a relevant tooltip string for node.
 + (NSString*)tooltipForNode:(const bookmarks::BookmarkNode*)node;

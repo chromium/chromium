@@ -599,7 +599,6 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // the layer itself has no content to contribute, even though the layer was
   // given SetIsDrawable(true).
   bool draws_content() const { return GetBitFlag(kDrawsContentFlagMask); }
-  void SetDrawsContent(bool value);
 
   // Returns the number of layers in this layers subtree (excluding itself) for
   // which DrawsContent() is true.
@@ -658,7 +657,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
     return GetBitFlag(kMayContainVideoFlagMask);
   }
 
-  // Stable identifier for clients. See comment in cc/trees/element_id.h.
+  // Stable identifier for clients. See comment in cc/paint/element_id.h.
   void SetElementId(ElementId id);
   ElementId element_id() const { return inputs_.Read(*this).element_id; }
 
@@ -692,6 +691,8 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // which case the layer won't be shown with any content in the tracing
   // display.
   virtual sk_sp<const SkPicture> GetPicture() const;
+
+  virtual bool IsSolidColorLayerForTesting() const;
 
   const LayerDebugInfo* debug_info() const { return debug_info_.Read(*this); }
   LayerDebugInfo& EnsureDebugInfo();
@@ -865,6 +866,10 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // false if there is no content to be displayed. If they do have content, then
   // they should return the value from this base class method.
   virtual bool HasDrawableContent() const;
+
+  // Updates draws_content() according to the current HasDrawableContent().
+  // This should be called when HasDrawableContent() changes.
+  void UpdateDrawsContent();
 
   // Called when the layer's number of drawable descendants changes.
   void AddDrawableDescendants(int num);

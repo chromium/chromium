@@ -29,8 +29,8 @@ namespace {
 
 // Constants used by the different tests.
 const char kPrimaryAccountEmail[] = "primary.account@example.com";
-const char kAnotherAccountEmail[] = "another.account@example.com";
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
+const char kAnotherAccountEmail[] = "another.account@example.com";
 const char kUnknownAccountId[] = "{unknown account id}";
 #endif
 
@@ -96,6 +96,7 @@ class ClearPrimaryAccountTestObserver
       scoped_observation_{this};
 };
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Helper for testing of RevokeSyncConsent/ClearPrimaryAccount(). This function
 // requires lots of tests due to having different behaviors based on its
 // arguments. But the setup and execution of these test is all the boiler plate
@@ -194,14 +195,10 @@ void RunRevokeConsentTest(
           signin_metrics::SignoutDelete::kIgnoreMetric);
       break;
     case RevokeConsentAction::kClearPrimaryAccount:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      NOTREACHED();
-#else
       primary_account_mutator->ClearPrimaryAccount(
           signin_metrics::ProfileSignout::kTest,
           signin_metrics::SignoutDelete::kIgnoreMetric);
       break;
-#endif
   }
   run_loop.Run();
 
@@ -242,7 +239,6 @@ void RunRevokeSyncConsentTest(
                        auth_expection);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void RunClearPrimaryAccountTest(
     signin::AccountConsistencyMethod account_consistency_method) {
   RunRevokeConsentTest(
@@ -387,6 +383,97 @@ TEST_F(PrimaryAccountMutatorTest, SetPrimaryAccount_AlreadyHasPrimaryAccount) {
             primary_account_info.account_id);
 }
 
+// Checks that trying to set the primary account works when there is already a
+// primary account without sync.
+TEST_F(PrimaryAccountMutatorTest,
+       SetPrimaryAccount_AlreadyHasNonSyncPrimaryAccount) {
+  base::test::TaskEnvironment task_environment;
+  signin::IdentityTestEnvironment environment;
+
+  signin::IdentityManager* identity_manager = environment.identity_manager();
+  signin::PrimaryAccountMutator* primary_account_mutator =
+      identity_manager->GetPrimaryAccountMutator();
+
+  // Abort the test if the current platform does not support mutation of the
+  // primary account (the returned PrimaryAccountMutator* will be null).
+  if (!primary_account_mutator) {
+    return;
+  }
+
+  AccountInfo primary_account_info =
+      environment.MakeAccountAvailable(kPrimaryAccountEmail);
+  AccountInfo another_account_info =
+      environment.MakeAccountAvailable(kAnotherAccountEmail);
+
+  EXPECT_FALSE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  signin::PrimaryAccountMutator::PrimaryAccountError setPrimaryAccountResult =
+      primary_account_mutator->SetPrimaryAccount(
+          primary_account_info.account_id, signin::ConsentLevel::kSignin,
+          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  EXPECT_EQ(signin::PrimaryAccountMutator::PrimaryAccountError::kNoError,
+            setPrimaryAccountResult);
+
+  EXPECT_TRUE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  setPrimaryAccountResult = primary_account_mutator->SetPrimaryAccount(
+      another_account_info.account_id, signin::ConsentLevel::kSignin,
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  EXPECT_EQ(signin::PrimaryAccountMutator::PrimaryAccountError::kNoError,
+            setPrimaryAccountResult);
+
+  EXPECT_EQ(
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+      another_account_info.account_id);
+}
+
+// Checks that trying to set the primary account works when there is already a
+// managed primary account without sync.
+TEST_F(PrimaryAccountMutatorTest,
+       SetPrimaryAccount_AlreadyHasNonSyncPrimaryAccountChangeNotAllowed) {
+  base::test::TaskEnvironment task_environment;
+  signin::IdentityTestEnvironment environment;
+
+  signin::IdentityManager* identity_manager = environment.identity_manager();
+  environment.signin_client()->set_is_clear_primary_account_allowed_for_testing(
+      SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
+  signin::PrimaryAccountMutator* primary_account_mutator =
+      identity_manager->GetPrimaryAccountMutator();
+
+  // Abort the test if the current platform does not support mutation of the
+  // primary account (the returned PrimaryAccountMutator* will be null).
+  if (!primary_account_mutator) {
+    return;
+  }
+
+  AccountInfo primary_account_info =
+      environment.MakeAccountAvailable(kPrimaryAccountEmail);
+  AccountInfo another_account_info =
+      environment.MakeAccountAvailable(kAnotherAccountEmail);
+
+  EXPECT_FALSE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  signin::PrimaryAccountMutator::PrimaryAccountError setPrimaryAccountResult =
+      primary_account_mutator->SetPrimaryAccount(
+          primary_account_info.account_id, signin::ConsentLevel::kSignin,
+          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  EXPECT_EQ(signin::PrimaryAccountMutator::PrimaryAccountError::kNoError,
+            setPrimaryAccountResult);
+
+  EXPECT_TRUE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  setPrimaryAccountResult = primary_account_mutator->SetPrimaryAccount(
+      another_account_info.account_id, signin::ConsentLevel::kSignin,
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  EXPECT_EQ(signin::PrimaryAccountMutator::PrimaryAccountError::
+                kPrimaryAccountChangeNotAllowed,
+            setPrimaryAccountResult);
+
+  EXPECT_EQ(
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+      primary_account_info.account_id);
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Checks that trying to set the primary account fails if setting the primary
 // account is not allowed.
@@ -482,7 +569,7 @@ TEST_F(PrimaryAccountMutatorTest, RevokeSyncConsent_MirrorConsistency) {
                            RemoveAccountExpectation::kKeepAll
 #else
                            RemoveAccountExpectation::kRemoveAll
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_ANDROID)
   );
 }
 
@@ -491,24 +578,6 @@ TEST_F(PrimaryAccountMutatorTest, RevokeSyncConsent_MirrorConsistency) {
 TEST_F(PrimaryAccountMutatorTest, RevokeSyncConsent_DiceConsistency) {
   RunRevokeSyncConsentTest(signin::AccountConsistencyMethod::kDice,
                            RemoveAccountExpectation::kKeepAll);
-}
-
-#else  //! BUILDFLAG(IS_CHROMEOS_ASH)
-
-TEST_F(PrimaryAccountMutatorTest, CROS_ASH_RevokeSyncConsent) {
-  RunRevokeSyncConsentTest(signin::AccountConsistencyMethod::kDisabled,
-                           RemoveAccountExpectation::kKeepAll);
-  RunRevokeSyncConsentTest(signin::AccountConsistencyMethod::kMirror,
-                           RemoveAccountExpectation::kKeepAll);
-}
-
-TEST_F(PrimaryAccountMutatorTest, CROS_ASH_RevokeSyncConsent_AuthError) {
-  RunRevokeSyncConsentTest(signin::AccountConsistencyMethod::kDisabled,
-                           RemoveAccountExpectation::kKeepAll,
-                           AuthExpectation::kAuthError);
-  RunRevokeSyncConsentTest(signin::AccountConsistencyMethod::kMirror,
-                           RemoveAccountExpectation::kKeepAll,
-                           AuthExpectation::kAuthError);
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

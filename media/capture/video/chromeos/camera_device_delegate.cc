@@ -309,6 +309,7 @@ void CameraDeviceDelegate::AllocateAndStart(
   is_set_sharpness_ = false;
   is_set_tilt_ = false;
   is_set_zoom_ = false;
+  camera_effect_observer_added_ = false;
 
   chrome_capture_params_ = params;
   device_context_ = device_context;
@@ -372,6 +373,10 @@ void CameraDeviceDelegate::StopAndDeAllocate(
     // In case of Mojo connection error the device may be stopped before
     // StopAndDeAllocate is called; in case of device open failure, the state
     // is set to kError and |request_manager_| is uninitialized.
+    if (camera_effect_observer_added_) {
+      CameraHalDispatcherImpl::GetInstance()->RemoveCameraEffectObserver(this);
+      camera_effect_observer_added_ = false;
+    }
     std::move(device_close_callback).Run();
     return;
   }
@@ -766,7 +771,10 @@ void CameraDeviceDelegate::OnClosed(int32_t result) {
   if (request_manager_) {
     request_manager_->RemoveResultMetadataObserver(this);
   }
-  CameraHalDispatcherImpl::GetInstance()->RemoveCameraEffectObserver(this);
+  if (camera_effect_observer_added_) {
+    CameraHalDispatcherImpl::GetInstance()->RemoveCameraEffectObserver(this);
+    camera_effect_observer_added_ = false;
+  }
   ResetMojoInterface();
   device_context_ = nullptr;
   current_blob_resolution_.SetSize(0, 0);
@@ -839,10 +847,13 @@ void CameraDeviceDelegate::Initialize() {
   // The callback passed to CameraHalDispatcherImpl will be called on a
   // different thread inside CameraHalDispatcherImpl, so we need always
   // post the callback onto current task runner.
-  CameraHalDispatcherImpl::GetInstance()->AddCameraEffectObserver(
-      this, base::BindPostTaskToCurrentDefault(base::BindOnce(
-                &CameraDeviceDelegate::OnCameraEffectObserverAdded,
-                weak_ptr_factory_.GetWeakPtr())));
+  if (!camera_effect_observer_added_) {
+    CameraHalDispatcherImpl::GetInstance()->AddCameraEffectObserver(
+        this, base::BindPostTaskToCurrentDefault(base::BindOnce(
+                  &CameraDeviceDelegate::OnCameraEffectObserverAdded,
+                  weak_ptr_factory_.GetWeakPtr())));
+    camera_effect_observer_added_ = true;
+  }
 
   // For Intel IPU6 platform, set power mode to high quality for CCA and low
   // power mode for others.

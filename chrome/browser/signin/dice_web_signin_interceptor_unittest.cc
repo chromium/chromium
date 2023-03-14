@@ -43,18 +43,28 @@ namespace {
 class MockDiceWebSigninInterceptorDelegate
     : public DiceWebSigninInterceptor::Delegate {
  public:
+  bool IsSigninInterceptionSupported(
+      const content::WebContents& web_contents) override {
+    return true;
+  }
+
   MOCK_METHOD(std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>,
               ShowSigninInterceptionBubble,
               (content::WebContents * web_contents,
                const BubbleParameters& bubble_parameters,
                base::OnceCallback<void(SigninInterceptionResult)> callback),
               (override));
+
   void ShowFirstRunExperienceInNewProfile(
       Browser* browser,
       const CoreAccountId& account_id,
       DiceWebSigninInterceptor::SigninInterceptionType interception_type)
       override {}
 };
+
+MATCHER_P(HasSameAccountIdAs, other, "") {
+  return arg.account_id == other.account_id;
+}
 
 // Matches BubbleParameters fields excepting the color. This is useful in the
 // test because the color is randomly generated.
@@ -69,11 +79,11 @@ MatchBubbleParameters(
       testing::Field("intercepted_account",
                      &DiceWebSigninInterceptor::Delegate::BubbleParameters::
                          intercepted_account,
-                     parameters.intercepted_account),
+                     HasSameAccountIdAs(parameters.intercepted_account)),
       testing::Field("primary_account",
                      &DiceWebSigninInterceptor::Delegate::BubbleParameters::
                          primary_account,
-                     parameters.primary_account),
+                     HasSameAccountIdAs(parameters.primary_account)),
       testing::Field("show_link_data_option",
                      &DiceWebSigninInterceptor::Delegate::BubbleParameters::
                          show_link_data_option,

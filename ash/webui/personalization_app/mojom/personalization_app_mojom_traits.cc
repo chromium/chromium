@@ -154,6 +154,10 @@ EnumTraits<MojomOnlineImageType, ::backdrop::Image::ImageType>::ToMojom(
       return MojomOnlineImageType::kLight;
     case ::backdrop::Image::IMAGE_TYPE_DARK_MODE:
       return MojomOnlineImageType::kDark;
+    case ::backdrop::Image::IMAGE_TYPE_MORNING_MODE:
+      return MojomOnlineImageType::kMorning;
+    case ::backdrop::Image::IMAGE_TYPE_LATE_AFTERNOON_MODE:
+      return MojomOnlineImageType::kLateAfternoon;
   }
 }
 
@@ -169,6 +173,12 @@ bool EnumTraits<MojomOnlineImageType, ::backdrop::Image::ImageType>::FromMojom(
       return true;
     case MojomOnlineImageType::kDark:
       *output = ::backdrop::Image::IMAGE_TYPE_DARK_MODE;
+      return true;
+    case MojomOnlineImageType::kMorning:
+      *output = ::backdrop::Image::IMAGE_TYPE_MORNING_MODE;
+      return true;
+    case MojomOnlineImageType::kLateAfternoon:
+      *output = ::backdrop::Image::IMAGE_TYPE_LATE_AFTERNOON_MODE;
       return true;
   }
   NOTREACHED();
@@ -391,10 +401,8 @@ MojomAnimationTheme EnumTraits<MojomAnimationTheme, ash::AmbientTheme>::ToMojom(
       return MojomAnimationTheme::kFeelTheBreeze;
     case ash::AmbientTheme::kFloatOnBy:
       return MojomAnimationTheme::kFloatOnBy;
-    case ash::AmbientTheme::kVideoNewMexico:
-      return MojomAnimationTheme::kVideoNewMexico;
-    case ash::AmbientTheme::kVideoClouds:
-      return MojomAnimationTheme::kVideoClouds;
+    case ash::AmbientTheme::kVideo:
+      return MojomAnimationTheme::kVideo;
   }
 }
 
@@ -411,11 +419,8 @@ bool EnumTraits<MojomAnimationTheme, ash::AmbientTheme>::FromMojom(
     case MojomAnimationTheme::kFloatOnBy:
       *output = ash::AmbientTheme::kFloatOnBy;
       return true;
-    case MojomAnimationTheme::kVideoNewMexico:
-      *output = ash::AmbientTheme::kVideoNewMexico;
-      return true;
-    case MojomAnimationTheme::kVideoClouds:
-      *output = ash::AmbientTheme::kVideoClouds;
+    case MojomAnimationTheme::kVideo:
+      *output = ash::AmbientTheme::kVideo;
       return true;
   }
   NOTREACHED();

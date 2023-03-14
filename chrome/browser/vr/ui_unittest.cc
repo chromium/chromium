@@ -399,8 +399,6 @@ TEST_F(UiTest, ExitPresentAndFullscreenOnMenuButtonClick) {
   ui_->GetBrowserUiWeakPtr()->SetWebVrMode(true);
   // Clicking menu button should trigger to exit presentation.
   EXPECT_CALL(*browser_, ExitPresent());
-  // And also trigger exit fullscreen.
-  EXPECT_CALL(*browser_, ExitFullscreen());
   InputEventList events;
   events.push_back(
       std::make_unique<InputEvent>(InputEvent::kMenuButtonClicked));

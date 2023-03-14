@@ -29,6 +29,10 @@ public class ContextualSearchFieldTrial {
     // A comma-separated list of lower-case ISO 639 language codes.
     static final String RELATED_SEARCHES_LANGUAGE_ALLOWLIST_PARAM_NAME = "language_allowlist";
     static final String RELATED_SEARCHES_LANGUAGE_DEFAULT_ALLOWLIST = "en";
+    // Enabling this parameter will activate related searches for all languages, overriding any
+    // languages specified in the "language_allowlist".
+    static final String RELATED_SEARCHES_LANGUAGE_SUPPORT_ALL_LANGUAGES_PARAM_NAME =
+            "all_languages";
     private static final String RELATED_SEARCHES_CONFIG_STAMP_PARAM_NAME = "stamp";
     private static final String RELATED_SEARCHES_CONFIG_DEFAULT_STAMP = "1Rs";
 

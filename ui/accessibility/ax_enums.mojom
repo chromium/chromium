@@ -1176,6 +1176,7 @@ enum IsPopup {
   kNone = 0,
   kManual,
   kAuto,
+  kHint,
 };
 
 enum InvalidState {
@@ -1300,7 +1301,7 @@ enum DescriptionFrom {
   kTitle,
 
   // The description comes from a non-tooltip popover, e.g. the
-  // |popovertoggletarget| attribute pointing to `popover=auto`.
+  // |popovertarget| attribute pointing to a `popover=auto`.
   kPopoverAttribute,
 };
 

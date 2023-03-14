@@ -9,7 +9,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "components/url_formatter/url_fixer.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
+#include "ios/chrome/browser/shared/public/features/features.h"
 #include "ios/chrome/browser/url/chrome_url_constants.h"
 #include "ios/components/webui/web_ui_url_constants.h"
 #include "url/url_constants.h"

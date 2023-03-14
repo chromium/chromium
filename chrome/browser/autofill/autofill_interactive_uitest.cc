@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_service.h"
 #include "chrome/browser/translate/translate_test_utils.h"
+#include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -48,11 +50,13 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_delegate.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/test_autofill_tick_clock.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -104,6 +108,7 @@
 
 using base::ASCIIToUTF16;
 using content::URLLoaderInterceptor;
+using ::testing::_;
 using ::testing::AssertionFailure;
 using ::testing::AssertionResult;
 using ::testing::AssertionSuccess;
@@ -290,6 +295,43 @@ bool IsFocusedField(const ElementExpr& e,
       return r;
   }
   return TriggerAndWaitForEvent(e, "focus", execution_target);
+}
+
+// Types the characters of `value` after focusing field `e`.
+[[nodiscard]] AssertionResult EnterTextIntoField(
+    const ElementExpr& e,
+    base::StringPiece value,
+    AutofillUiTest* test,
+    content::ToRenderFrameHost execution_target) {
+  AssertionResult a = FocusField(e, execution_target);
+  if (!a) {
+    return a;
+  }
+
+  for (const char c : value) {
+    ui::DomKey key = ui::DomKey::FromCharacter(c);
+    if (!test->SendKeyToPageAndWait(key, {})) {
+      return AssertionFailure()
+             << __func__ << "(): Could not type '" << value << "' into " << *e;
+    }
+  }
+
+  return AssertionSuccess();
+}
+
+// Executes `EnterTextIntoField()` for a series of fields.
+[[nodiscard]] AssertionResult EnterTextsIntoFields(
+    std::vector<std::pair<ElementExpr, std::string>> values,
+    AutofillUiTest* test,
+    content::ToRenderFrameHost execution_target) {
+  for (const auto& [element, value] : values) {
+    AssertionResult a =
+        EnterTextIntoField(element, value, test, execution_target);
+    if (!a) {
+      return AssertionFailure() << __func__ << "(): " << a;
+    }
+  }
+  return AssertionSuccess();
 }
 
 // The different ways of triggering the Autofill dropdown.
@@ -491,6 +533,17 @@ struct AutofillSuggestionParams {
           .render_frame_host()
           ->GetView()
           ->GetRenderWidgetHost();
+
+  // If `kAutofillPopupUseThresholdForKeyboardAndMobileAccept` is enabled,
+  // then all attempts to accept Autofill suggestions using keyboard "ENTER"
+  // keystrokes will be ignored for the first 500ms after the popup is first
+  // shown. This overrides this threshold.
+  if (base::WeakPtr<AutofillPopupControllerImpl> controller =
+          ChromeAutofillClient::FromWebContentsForTesting(
+              test->GetWebContents())
+              ->popup_controller_for_testing()) {
+    controller->DisableThresholdForTesting(true);
+  }
 
   constexpr auto kFill = ObservedUiEvents::kFormDataFilled;
 
@@ -831,6 +884,21 @@ class ValueWaiter {
   return ValueWaiter(waiterId, execution_target);
 }
 
+// Matcher for a FormData which checks that the submitted fields correspond
+// to the name/value pairs in `expected`.
+auto SubmittedValuesAre(
+    const std::map<std::u16string, std::u16string>& expected) {
+  auto get_submitted_values = [](const FormData& form) {
+    std::map<std::u16string, std::u16string> result;
+    for (const auto& field : form.fields) {
+      result[field.name] = field.value;
+    }
+    return result;
+  };
+  return ResultOf("get_submitted_values", get_submitted_values,
+                  ::testing::ContainerEq(expected));
+}
+
 }  // namespace
 
 // Test fixtures derive from this class. This class hierarchy allows test
@@ -942,13 +1010,14 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
 
   std::unique_ptr<net::test_server::HttpResponse> HandleTestURL(
       const net::test_server::HttpRequest& request) {
-    if (request.relative_url != kTestUrlPath)
+    if (!base::Contains(path_keyed_response_bodies_, request.relative_url)) {
       return nullptr;
+    }
 
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->set_code(net::HTTP_OK);
     response->set_content_type("text/html;charset=utf-8");
-    response->set_content(test_url_content_);
+    response->set_content(path_keyed_response_bodies_[request.relative_url]);
     return std::move(response);
   }
 
@@ -1135,7 +1204,11 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
   GURL GetTestUrl() const { return https_server_.GetURL(kTestUrlPath); }
 
   void SetTestUrlResponse(std::string content) {
-    test_url_content_ = std::move(content);
+    SetResponseForUrlPath(kTestUrlPath, std::move(content));
+  }
+
+  void SetResponseForUrlPath(std::string path, std::string content) {
+    path_keyed_response_bodies_[std::move(path)] = std::move(content);
   }
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
@@ -1162,8 +1235,10 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
   std::unique_ptr<net::test_server::ControllableHttpResponse>
       controllable_http_response_;
 
-  // The response to return for queries to |kTestUrlPath|
-  std::string test_url_content_;
+  // A map of relative paths to content that shall be served with an HTTP_OK
+  // response. If the map contains no entry, the request falls through to the
+  // serving from disk.
+  std::map<std::string, std::string> path_keyed_response_bodies_;
 
   base::test::ScopedFeatureList feature_list_;
 
@@ -1191,8 +1266,8 @@ class AutofillInteractiveTestWithHistogramTester
     : public AutofillInteractiveTest {
  public:
   AutofillInteractiveTestWithHistogramTester() {
-    feature_list_.InitWithFeatureState(features::kAutofillServerCommunication,
-                                       true);
+    feature_list_.InitWithFeatureState(
+        features::test::kAutofillServerCommunication, true);
   }
 
   void SetUp() override {
@@ -2872,11 +2947,7 @@ class AutofillInteractiveIsolationTest : public AutofillInteractiveTestBase {
   ~AutofillInteractiveIsolationTest() override = default;
 
   bool IsPopupShown() {
-    return !!static_cast<ChromeAutofillClient*>(
-                 ContentAutofillDriverFactory::FromWebContents(GetWebContents())
-                     ->DriverForFrame(GetWebContents()->GetPrimaryMainFrame())
-                     ->autofill_manager()
-                     ->client())
+    return !!ChromeAutofillClient::FromWebContentsForTesting(GetWebContents())
                  ->popup_controller_for_testing();
   }
 
@@ -3823,5 +3894,266 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestChromeVox,
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(ENABLE_EXTENSIONS)
+
+// These tests are disabled on LaCros because <select> elements don't listen
+// to typed characters the same way as other platforms. Sending the characters
+// 'W', 'A' while the state selector is focused does not trigger a selection
+// of the entry "WA".
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_AutofillInteractiveFormSubmissionTest \
+  DISABLED_AutofillInteractiveFormSubmissionTest
+#else
+#define MAYBE_AutofillInteractiveFormSubmissionTest \
+  AutofillInteractiveFormSubmissionTest
+#endif
+class MAYBE_AutofillInteractiveFormSubmissionTest
+    : public AutofillInteractiveTestBase {
+ public:
+  class MockAutofillManager : public BrowserAutofillManager {
+   public:
+    MockAutofillManager(ContentAutofillDriver* driver, AutofillClient* client)
+        : BrowserAutofillManager(driver, client, "en-US") {}
+    MOCK_METHOD(void,
+                OnFormSubmittedImpl,
+                (const FormData&, bool, mojom::SubmissionSource),
+                (override));
+  };
+
+  MockAutofillManager* autofill_manager() {
+    return autofill_manager(GetWebContents()->GetPrimaryMainFrame());
+  }
+
+  MockAutofillManager* autofill_manager(content::RenderFrameHost* rfh) {
+    return autofill_manager_injector_[rfh];
+  }
+
+  void SetUpOnMainThread() override {
+    AutofillInteractiveTestBase::SetUpOnMainThread();
+
+    SetUpServer();
+
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
+    ASSERT_TRUE(WaitForMatchingForm(
+        autofill_manager(), base::BindRepeating([](const FormStructure& form) {
+          return form.active_field_count() == 5;
+        })));
+
+    EnterValues();
+  }
+
+  void SetUpServer() {
+    SetTestUrlResponse(R"(
+        <html><body>
+        <form id='form' method='POST' action='/success.html'>
+        Name: <input type='text' id='name'><br>
+        Address: <input type='text' id='address'><br>
+        City: <input type='text' id='city'><br>
+        ZIP: <input type='text' id='zip'><br>
+        State: <select id='state'>
+          <option value='CA'>CA</option>
+          <option value='WA'>WA</option>
+        </select><br>
+        </form>
+    )");
+    SetResponseForUrlPath("/success.html", "<html><body>Happy times!");
+    SetResponseForUrlPath("/xhr", "<foo>Happy times!</foo>");
+  }
+
+  void EnterValues() {
+    TestAutofillManagerWaiter waiter(
+        *autofill_manager(), {AutofillManagerEvent::kTextFieldDidChange,
+                              AutofillManagerEvent::kTextFieldDidChange});
+    // Normally we would enter the state last, but we don't have a
+    // kSelectElementDidChange event, yet. Therefore, we just wait until
+    // the second text field was reported to the autofill manager.
+    ASSERT_TRUE(
+        EnterTextsIntoFields({{GetElementById("name"), "Sarah"},
+                              {GetElementById("state"), "WA"},
+                              {GetElementById("address"), "123 Main Road"}},
+                             this, GetWebContents()));
+    ASSERT_TRUE(waiter.Wait(2u));
+  }
+
+  std::map<std::u16string, std::u16string> GetExpectedValues() {
+    return std::map<std::u16string, std::u16string>{
+        {u"name", u"Sarah"},
+        {u"address", u"123 Main Road"},
+        {u"city", u""},
+        {u"zip", u""},
+        {u"state", u"WA"}};
+  }
+
+  void ExecuteScript(const std::string& script) {
+    ASSERT_TRUE(content::ExecJs(GetWebContents(), script));
+  }
+
+ private:
+  TestAutofillManagerInjector<MockAutofillManager> autofill_manager_injector_;
+};
+
+// Tests that user-triggered submission triggers a submission event in
+// BrowserAutofillManager.
+IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
+                       Submission) {
+  base::RunLoop run_loop;
+  // Ensure that only expected form submissions are recorded.
+  EXPECT_CALL(*autofill_manager(), OnFormSubmittedImpl).Times(0);
+  EXPECT_CALL(*autofill_manager(),
+              OnFormSubmittedImpl(SubmittedValuesAre(GetExpectedValues()),
+                                  /*known_success=*/false,
+                                  mojom::SubmissionSource::FORM_SUBMISSION))
+      .Times(1)
+      .WillRepeatedly(
+          testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+  ExecuteScript("document.getElementById('form').submit();");
+  run_loop.Run();
+}
+
+// Tests that non-link-click, renderer-inititiated navigation triggers a
+// submission event in BrowserAutofillManager.
+IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
+                       ProbableSubmission) {
+  base::RunLoop run_loop;
+  // Ensure that only expected form submissions are recorded.
+  EXPECT_CALL(*autofill_manager(), OnFormSubmittedImpl).Times(0);
+  EXPECT_CALL(
+      *autofill_manager(),
+      OnFormSubmittedImpl(SubmittedValuesAre(GetExpectedValues()),
+                          /*known_success=*/false,
+                          mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED))
+      .Times(1)
+      .WillRepeatedly(
+          testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+  // Add a delay before navigating away to avoid race conditions. This is
+  // appropriate since we're faking user interaction here.
+  ExecuteScript(
+      "setTimeout(() => { window.location.assign('/success.html'); }, 50);");
+  run_loop.Run();
+}
+
+// Tests that a same document navigation can trigger a form submission.
+IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
+                       SameDocumentNavigation) {
+  base::RunLoop run_loop;
+  // Ensure that only expected form submissions are recorded.
+  EXPECT_CALL(*autofill_manager(), OnFormSubmittedImpl).Times(0);
+  EXPECT_CALL(
+      *autofill_manager(),
+      OnFormSubmittedImpl(SubmittedValuesAre(GetExpectedValues()),
+                          /*known_success=*/true,
+                          mojom::SubmissionSource::SAME_DOCUMENT_NAVIGATION))
+      .Times(1)
+      .WillRepeatedly(
+          testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+
+  // Simulate form submission.
+  ExecuteScript(
+      R"(
+      // Same document navigation:
+      document.getElementById('form').style.display = 'none';
+      const url = new URL(window.location);
+      url.searchParams.set('foo', 'bar');
+      window.history.pushState({}, '', url);
+
+      // Hide form, which is the trigger for the submission event.
+      document.getElementById('form').style.display = 'none';
+      )");
+  run_loop.Run();
+}
+
+// Tests that an XHR request can indicate a form submission.
+IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
+                       XhrSuccededAndHideForm) {
+  base::RunLoop run_loop;
+
+  // Ensure that only expected form submissions are recorded.
+  EXPECT_CALL(*autofill_manager(), OnFormSubmittedImpl).Times(0);
+  EXPECT_CALL(*autofill_manager(),
+              OnFormSubmittedImpl(SubmittedValuesAre(GetExpectedValues()),
+                                  /*known_success=*/true,
+                                  mojom::SubmissionSource::XHR_SUCCEEDED))
+      .Times(1)
+      .WillRepeatedly(
+          testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+
+  // Simulate form submission.
+  ExecuteScript(
+      R"(
+      // SubmissionSource::XHR_SUCCEEDED is triggered if an XHR is observed
+      // after the form has been made invisible.
+      document.getElementById('form').style.display = 'none';
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', '/xhr', true);
+      xhr.send(null);
+      )");
+  run_loop.Run();
+}
+
+// Tests that an XHR request can indicate a form submission - even if the form
+// is deleted from the DOM.
+IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
+                       XhrSuccededAndDeleteForm) {
+  base::RunLoop run_loop;
+
+  // Ensure that only expected form submissions are recorded.
+  EXPECT_CALL(*autofill_manager(), OnFormSubmittedImpl).Times(0);
+  EXPECT_CALL(*autofill_manager(),
+              OnFormSubmittedImpl(SubmittedValuesAre(GetExpectedValues()),
+                                  /*known_success=*/true,
+                                  mojom::SubmissionSource::XHR_SUCCEEDED))
+      .Times(1)
+      .WillRepeatedly(
+          testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+
+  // Simulate form submission.
+  ExecuteScript(
+      R"(
+      // SubmissionSource::XHR_SUCCEEDED is triggered if an XHR is observed
+      // after the form has been deleted.
+      const form = document.getElementById('form');
+      form.remove();
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', '/xhr', true);
+      xhr.send(null);
+      )");
+  run_loop.Run();
+}
+
+// Tests that a DOM mutation after an XHR can indicate a form submission.
+IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
+                       DomMutationAfterXhr) {
+  base::RunLoop run_loop;
+
+  // Ensure that only expected form submissions are recorded.
+  EXPECT_CALL(*autofill_manager(), OnFormSubmittedImpl).Times(0);
+  EXPECT_CALL(
+      *autofill_manager(),
+      OnFormSubmittedImpl(SubmittedValuesAre(GetExpectedValues()),
+                          /*known_success=*/true,
+                          mojom::SubmissionSource::DOM_MUTATION_AFTER_XHR))
+      .Times(1)
+      .WillRepeatedly(
+          testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+
+  // Simulate form submission.
+  ExecuteScript(
+      R"(
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', '/xhr', true);
+      xhr.onload = () => {
+        // SubmissionSource::DOM_MUTATION_AFTER_XHR is triggered if a form
+        // is hidden an XHR was observed.
+        // The DOM modification has to happen asynchronously. Otherwise this
+        // is reported as an XHR_SUCCEEDED event.
+        setTimeout(() => {
+            document.getElementById('form').style.display = 'none';
+          }, 50);
+      }
+      xhr.send(null);
+      )");
+  run_loop.Run();
+}
 
 }  // namespace autofill

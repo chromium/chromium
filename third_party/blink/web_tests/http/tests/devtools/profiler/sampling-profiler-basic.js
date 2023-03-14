@@ -6,7 +6,7 @@
   TestRunner.addResult(`Tests that the sampling heap profiler works and supports nesting.\n`);
   await TestRunner.loadLegacyModule('profiler');
 
-  const profiler = SDK.targetManager.mainFrameTarget().model(SDK.HeapProfilerModel);
+  const profiler = SDK.targetManager.primaryPageTarget().model(SDK.HeapProfilerModel);
   await profiler.startSampling();
   await profiler.startSampling();
   await TestRunner.evaluateInPagePromise(`let dump = new Array(5e4).fill(42.42)`);

@@ -73,8 +73,7 @@ public class StandardProtectionSettingsFragment
                 || (is_standard_protection
                         && SafeBrowsingBridge.isSafeBrowsingExtendedReportingEnabled());
         boolean extended_reporting_disabled_by_delegate =
-                mManagedPreferenceDelegate.isPreferenceClickDisabledByPolicy(
-                        mExtendedReportingPreference);
+                mManagedPreferenceDelegate.isPreferenceClickDisabled(mExtendedReportingPreference);
         mExtendedReportingPreference.setEnabled(
                 is_standard_protection && !extended_reporting_disabled_by_delegate);
         mExtendedReportingPreference.setChecked(extended_reporting_checked);
@@ -84,7 +83,7 @@ public class StandardProtectionSettingsFragment
         boolean leak_detection_enabled =
                 mPrefService.getBoolean(Pref.PASSWORD_LEAK_DETECTION_ENABLED);
         boolean leak_detection_disabled_by_delegate =
-                mManagedPreferenceDelegate.isPreferenceClickDisabledByPolicy(
+                mManagedPreferenceDelegate.isPreferenceClickDisabled(
                         mPasswordLeakDetectionPreference);
         boolean should_leak_detection_checked =
                 is_enhanced_protection || (is_standard_protection && leak_detection_enabled);

@@ -27,8 +27,9 @@
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/incognito_interstitial/incognito_interstitial_constants.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/elements/info_popover_view_controller.h"
@@ -45,7 +46,6 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
@@ -170,12 +170,10 @@ const char kSyncSettingsURL[] = "settings://open_sync";
                    prefName:prefs::kHttpsOnlyModeEnabled];
     [_HTTPSOnlyModePref setObserver:self];
 
-    if (base::FeatureList::IsEnabled(kIOS3PIntentsInIncognito)) {
-      _incognitoInterstitialPref = [[PrefBackedBoolean alloc]
-          initWithPrefService:browser->GetBrowserState()->GetPrefs()
-                     prefName:prefs::kIncognitoInterstitialEnabled];
-      [_incognitoInterstitialPref setObserver:self];
-    }
+    _incognitoInterstitialPref = [[PrefBackedBoolean alloc]
+        initWithPrefService:browser->GetBrowserState()->GetPrefs()
+                   prefName:prefs::kIncognitoInterstitialEnabled];
+    [_incognitoInterstitialPref setObserver:self];
   }
   return self;
 }
@@ -216,9 +214,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 
   [model addSectionWithIdentifier:SectionIdentifierWebServices];
   [model addSectionWithIdentifier:SectionIdentifierIncognitoAuth];
-  if (base::FeatureList::IsEnabled(kIOS3PIntentsInIncognito)) {
-    [model addSectionWithIdentifier:SectionIdentifierIncognitoInterstitial];
-  }
+  [model addSectionWithIdentifier:SectionIdentifierIncognitoInterstitial];
 
   // Clear Browsing item.
   [model addItem:[self clearBrowsingDetailItem]
@@ -228,10 +224,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   [model addItem:[self safeBrowsingDetailItem]
       toSectionWithIdentifier:SectionIdentifierSafeBrowsing];
   [model setFooter:[self showPrivacyFooterItem]
-      forSectionWithIdentifier:base::FeatureList::IsEnabled(
-                                   kIOS3PIntentsInIncognito)
-                                   ? SectionIdentifierIncognitoInterstitial
-                                   : SectionIdentifierIncognitoAuth];
+      forSectionWithIdentifier:SectionIdentifierIncognitoInterstitial];
 
   // Web Services item.
   [model addItem:[self handoffDetailItem]
@@ -249,18 +242,16 @@ const char kSyncSettingsURL[] = "settings://open_sync";
       toSectionWithIdentifier:SectionIdentifierIncognitoAuth];
 
   // Show "Ask to Open Links from Other Apps in Incognito" setting.
-  if (base::FeatureList::IsEnabled(kIOS3PIntentsInIncognito)) {
-    // Incognito interstitial item is added. If Incognito mode is
-    // disabled or forced, a disabled version is shown with information
-    // to learn more.
-    TableViewItem* incognitoInterstitialItem =
-        (IsIncognitoModeDisabled(_browserState->GetPrefs()) ||
-         IsIncognitoModeForced(_browserState->GetPrefs()))
-            ? self.incognitoInterstitialItemDisabled
-            : self.incognitoInterstitialItem;
-    [model addItem:incognitoInterstitialItem
-        toSectionWithIdentifier:SectionIdentifierIncognitoInterstitial];
-  }
+  // Incognito interstitial item is added. If Incognito mode is
+  // disabled or forced, a disabled version is shown with information
+  // to learn more.
+  TableViewItem* incognitoInterstitialItem =
+      (IsIncognitoModeDisabled(_browserState->GetPrefs()) ||
+       IsIncognitoModeForced(_browserState->GetPrefs()))
+          ? self.incognitoInterstitialItemDisabled
+          : self.incognitoInterstitialItem;
+  [model addItem:incognitoInterstitialItem
+      toSectionWithIdentifier:SectionIdentifierIncognitoInterstitial];
 }
 
 #pragma mark - Model Objects

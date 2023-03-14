@@ -443,10 +443,17 @@ struct StructTraits<media::mojom::VariableBitrateDataView, media::Bitrate> {
 };
 
 template <>
+struct StructTraits<media::mojom::ExternalBitrateDataView, media::Bitrate> {
+  static bool Read(media::mojom::ExternalBitrateDataView input,
+                   media::Bitrate* output);
+};
+
+template <>
 struct UnionTraits<media::mojom::BitrateDataView, media::Bitrate> {
   static media::mojom::BitrateDataView::Tag GetTag(const media::Bitrate& input);
   static media::Bitrate constant(const media::Bitrate& input) { return input; }
   static media::Bitrate variable(const media::Bitrate& input) { return input; }
+  static media::Bitrate external(const media::Bitrate& input) { return input; }
   static bool Read(media::mojom::BitrateDataView input, media::Bitrate* output);
 };
 

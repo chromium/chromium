@@ -29,6 +29,9 @@ specific_include_rules = {
     "+ui/base/win/hidden_window.h",
     "+ui/platform_window",
   ],
+  "egl_api_unittest.cc": [
+    "+ui/ozone/public/ozone_platform.h",
+  ],
   "gl_angle_util_vulkan.cc": [
     "+third_party/angle/include/EGL/egl.h",
     "+third_party/angle/include/EGL/eglext.h",
@@ -57,5 +60,9 @@ specific_include_rules = {
   ],
   "swap_chain_presenter.cc": [
     "+media/base/win/mf_helpers.h"
+  ],
+  # NOTE: See comment in ./BUILD.gn with respect to this dependency.
+  "gl_image_gl_texture_unittest\.cc": [
+    "+media/gpu/vaapi/gl_image_gl_texture.h"
   ],
 }

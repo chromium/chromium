@@ -9,6 +9,7 @@
 #include "base/threading/thread_checker.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace metrics {
 
@@ -36,6 +37,9 @@ class SingleSampleMetricImpl : public base::SingleSampleMetric {
   mojo::Remote<mojom::SingleSampleMetric> metric_;
 };
 
+ABSL_CONST_INIT thread_local mojo::Remote<mojom::SingleSampleMetricsProvider>*
+    provider = nullptr;
+
 }  // namespace
 
 SingleSampleMetricsFactoryImpl::SingleSampleMetricsFactoryImpl(
@@ -55,9 +59,8 @@ SingleSampleMetricsFactoryImpl::CreateCustomCountsMetric(
 }
 
 void SingleSampleMetricsFactoryImpl::DestroyProviderForTesting() {
-  if (auto* provider = provider_tls_.Get())
-    delete provider;
-  provider_tls_.Set(nullptr);
+  delete provider;
+  provider = nullptr;
 }
 
 std::unique_ptr<base::SingleSampleMetric>
@@ -77,18 +80,15 @@ mojom::SingleSampleMetricsProvider*
 SingleSampleMetricsFactoryImpl::GetProvider() {
   // Check the current TLS slot to see if we have created a provider already for
   // this thread.
-  if (auto* provider = provider_tls_.Get())
-    return provider->get();
+  if (!provider) {
+    // If not, create a new one which will persist until process shutdown and
+    // put it in the TLS slot for the current thread.
+    provider = new mojo::Remote<mojom::SingleSampleMetricsProvider>();
 
-  // If not, create a new one which will persist until process shutdown and put
-  // it in the TLS slot for the current thread.
-  mojo::Remote<mojom::SingleSampleMetricsProvider>* provider =
-      new mojo::Remote<mojom::SingleSampleMetricsProvider>();
-  provider_tls_.Set(provider);
-
-  // Start the provider connection and return it; it won't be fully connected
-  // until later, but mojo will buffer all calls prior to completion.
-  create_provider_cb_.Run(provider->BindNewPipeAndPassReceiver());
+    // Start the provider connection and return it; it won't be fully connected
+    // until later, but mojo will buffer all calls prior to completion.
+    create_provider_cb_.Run(provider->BindNewPipeAndPassReceiver());
+  }
   return provider->get();
 }
 

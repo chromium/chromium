@@ -1,5 +1,0 @@
-CONSOLE ERROR: Refused to execute inline script because it violates the following Content Security Policy directive: "script-src http://127.0.0.1:*". Either the 'unsafe-inline' keyword, a hash ('sha256-zzMJ3EAHvQC0JOIzV5P991E7bH90GtwKGbeeZ9GQ65k='), or a nonce ('nonce-...') is required to enable inline execution.
-
-CONSOLE ERROR: Refused to execute inline script because it violates the following Content Security Policy directive: "script-src http://127.0.0.1:*". Either the 'unsafe-inline' keyword, a hash ('sha256-+IIpv5YdyPg0NE3RA3z60RAAqIwtwpl71DiXhHiCqUY='), or a nonce ('nonce-...') is required to enable inline execution.
-
-

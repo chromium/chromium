@@ -1089,4 +1089,39 @@ TEST_F(MediaRouterMojoImplTest, TestGetCurrentRoutes) {
   EXPECT_TRUE(router()->GetCurrentRoutes().empty());
 }
 
+TEST_F(MediaRouterMojoImplTest, TestGetMirroringStatsNoProviderId) {
+  router()->GetMirroringStats(kRouteId, base::BindOnce([](base::Value dict) {
+                                EXPECT_EQ(base::Value(), dict);
+                              }));
+}
+
+// TODO(gbj): Add a test case where a nonempty dict is returned. Probably need
+// to create a setter in MockMediaRouteProvider.
+TEST_F(MediaRouterMojoImplTest, TestGetMirroringStats) {
+  ProvideTestRoute(mojom::MediaRouteProviderId::CAST, kRouteId);
+  router()->GetMirroringStats(kRouteId, base::BindOnce([](base::Value dict) {
+                                EXPECT_EQ(base::Value(), dict);
+                              }));
+}
+
+TEST_F(MediaRouterMojoImplTest, GetMirroringMediaControllerHost) {
+  MediaSource tab_source(kTabSourceOne);
+  std::vector<MediaRoute> local_mirroring_routes{
+      MediaRoute(kRouteId, tab_source, kSinkId, kDescription, true)};
+  UpdateRoutes(mojom::MediaRouteProviderId::CAST, local_mirroring_routes);
+
+  // Expect the host to exist for a local mirroring source.
+  EXPECT_NE(nullptr, router()->GetMirroringMediaControllerHost(kRouteId));
+
+  std::vector<MediaRoute> nonlocal_mirroring_routes{
+      MediaRoute(kRouteId2, tab_source, kSinkId, kDescription, false)};
+  UpdateRoutes(mojom::MediaRouteProviderId::CAST, nonlocal_mirroring_routes);
+
+  // Expect that the host for kRouteId no longer exists.
+  EXPECT_EQ(nullptr, router()->GetMirroringMediaControllerHost(kRouteId));
+
+  // Expect that no host for kRouteId2 exists, as it is not a local source.
+  EXPECT_EQ(nullptr, router()->GetMirroringMediaControllerHost(kRouteId2));
+}
+
 }  // namespace media_router

@@ -48,6 +48,9 @@ class FollowService : public KeyedService {
   // Returns a list of all followed websites.
   virtual NSArray<FollowedWebSite*>* GetFollowedWebSites() = 0;
 
+  // Load a list of all followed websites.
+  virtual void LoadFollowedWebSites() = 0;
+
   // Follows the website associated with `web_page_urls` and invokes
   // `callback` with the operation result. The callback will not be
   // invoked if the website is already followed.

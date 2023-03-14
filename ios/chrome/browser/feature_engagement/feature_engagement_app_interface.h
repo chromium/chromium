@@ -55,6 +55,10 @@
 // NO if FeatureEngagementTracker failed to load.
 + (BOOL)enableOverflowMenuTipTriggering [[nodiscard]];
 
+// Enables the Tab Pinned tip to be triggered. The tip is triggered after the
+// user pins a tab from the overflow menu.
++ (BOOL)enableTabPinnedTipTriggering [[nodiscard]];
+
 // Starts manual page translation.
 + (void)showTranslate;
 

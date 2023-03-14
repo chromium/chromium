@@ -27,6 +27,8 @@ source_set("async_api_function") {
     "async_api_function.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [
     "//base",
     "//extensions/browser:browser_sources",
@@ -121,6 +123,9 @@ source_set("api_provider") {
     "core_extensions_browser_api_provider.cc",
     "core_extensions_browser_api_provider.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//extensions/browser:browser_sources",
     "//extensions/browser/api:api_registration",

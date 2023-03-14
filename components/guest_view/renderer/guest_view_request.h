@@ -55,7 +55,7 @@ class GuestViewAttachRequest {
   v8::Isolate* const isolate_;
   const int render_frame_routing_id_;
   const int guest_instance_id_;
-  base::Value::Dict params_;
+  const base::Value::Dict params_;
 
   base::WeakPtrFactory<GuestViewAttachRequest> weak_ptr_factory_{this};
 };

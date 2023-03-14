@@ -97,9 +97,7 @@ void CreateModuleList(base::FilePath* module_list_path) {
 
   base::ScopedAllowBlockingForTesting scoped_allow_blocking;
   ASSERT_TRUE(base::CreateDirectory(module_list_path->DirName()));
-  ASSERT_EQ(static_cast<int>(contents.size()),
-            base::WriteFile(*module_list_path, contents.data(),
-                            static_cast<int>(contents.size())));
+  ASSERT_TRUE(base::WriteFile(*module_list_path, contents));
 }
 
 class ThirdPartyBlockingBrowserTest : public InProcessBrowserTest {

@@ -14,6 +14,7 @@
 #include "chrome/services/file_util/public/mojom/safe_archive_analyzer.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace {
 
@@ -21,12 +22,11 @@ namespace {
 // with either `success_callback` or `failure_callback` on the UI thread.
 void PrepareFileToAnalyze(
     base::FilePath file_path,
-    base::OnceCallback<void(base::File, base::File)> success_callback,
+    base::OnceCallback<void(base::File)> success_callback,
     base::OnceCallback<void(safe_browsing::ArchiveAnalysisResult)>
         failure_callback) {
   base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
                                  base::File::FLAG_WIN_SHARE_DELETE);
-
   if (!file.IsValid()) {
     DLOG(ERROR) << "Could not open file: " << file_path.value();
     content::GetUIThreadTaskRunner({})->PostTask(
@@ -35,29 +35,8 @@ void PrepareFileToAnalyze(
                        safe_browsing::ArchiveAnalysisResult::kFailedToOpen));
     return;
   }
-
-  base::FilePath temp_path;
-  base::File temp_file;
-  if (base::CreateTemporaryFile(&temp_path)) {
-    temp_file.Initialize(
-        temp_path, (base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
-                    base::File::FLAG_WRITE | base::File::FLAG_WIN_TEMPORARY |
-                    base::File::FLAG_DELETE_ON_CLOSE));
-  }
-
-  if (!temp_file.IsValid()) {
-    DLOG(ERROR) << "Could not open temp file: " << temp_path.value();
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            std::move(failure_callback),
-            safe_browsing::ArchiveAnalysisResult::kFailedToOpenTempFile));
-    return;
-  }
-
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(success_callback), std::move(file),
-                                std::move(temp_file)));
+      FROM_HERE, base::BindOnce(std::move(success_callback), std::move(file)));
 }
 
 }  // namespace
@@ -116,11 +95,14 @@ void SandboxedZipAnalyzer::ReportFileFailure(
   }
 }
 
-void SandboxedZipAnalyzer::AnalyzeFile(base::File file, base::File temp_file) {
+void SandboxedZipAnalyzer::AnalyzeFile(base::File file) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (remote_analyzer_) {
+    mojo::PendingRemote<chrome::mojom::TemporaryFileGetter>
+        temp_file_getter_remote =
+            temp_file_getter_.GetRemoteTemporaryFileGetter();
     remote_analyzer_->AnalyzeZipFile(
-        std::move(file), std::move(temp_file),
+        std::move(file), std::move(temp_file_getter_remote),
         base::BindOnce(&SandboxedZipAnalyzer::AnalyzeFileDone, GetWeakPtr()));
   } else {
     AnalyzeFileDone(safe_browsing::ArchiveAnalyzerResults());

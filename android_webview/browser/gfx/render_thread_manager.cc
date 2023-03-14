@@ -83,7 +83,7 @@ std::unique_ptr<ChildFrame> RenderThreadManager::SetFrameOnUI(
   std::unique_ptr<ChildFrame> uncommitted_frame;
   DCHECK_LE(child_frames_.size(), 2u);
   ChildFrameQueue pruned_frames =
-      HardwareRenderer::WaitAndPruneFrameQueue(&child_frames_);
+      HardwareRendererViz::WaitAndPruneFrameQueue(&child_frames_);
   DCHECK_LE(pruned_frames.size(), 1u);
   if (pruned_frames.size())
     uncommitted_frame = std::move(pruned_frames.front());
@@ -117,10 +117,7 @@ void RenderThreadManager::PostParentDrawDataToChildCompositorOnRT(
   {
     base::AutoLock lock(lock_);
     parent_draw_constraints_ = parent_draw_constraints;
-    // FrameTimingDetails are a sequence and it's ok to drop something in
-    // the middle of the sequence. This also means its ok to drop the details
-    // from early returned frames from WaitAndPruneFrameQueue as well.
-    timing_details_ = std::move(timing_details);
+    timing_details_.insert(timing_details.begin(), timing_details.end());
     presented_frame_token_ = frame_token;
     frame_sink_id_for_presentation_feedbacks_ = frame_sink_id;
   }

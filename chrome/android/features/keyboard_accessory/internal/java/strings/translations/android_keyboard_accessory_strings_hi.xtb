@@ -1,13 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
+<translation id="1347497506789975534">पैसे चुकाने के सेव किए गए तरीके दिखाएं</translation>
 <translation id="1383876407941801731">Search</translation>
-<translation id="1566281227936819866">सेव किए गए भुगतान के तरीके दिखाए जा रहे हैं</translation>
 <translation id="1717486229951421299">टच करके भरी जाने वाली क्रेडेंशियल की सूची आधी स्क्रीन में खुली हुई है.</translation>
 <translation id="207576718733492531">टच करके भरी जाने वाली क्रेडेंशियल की सूची बंद है.</translation>
 <translation id="2610239185026711824">पासवर्ड सुझाएं</translation>
 <translation id="2652129567809778422">पासवर्ड चुनें</translation>
-<translation id="2803478378562657435">सेव किए हुए पासवर्ड और पासवर्ड के विकल्प दिखाए जा रहे हैं</translation>
 <translation id="2903493209154104877">पते</translation>
 <translation id="3399357656427473483">टच करके भरी जाने वाली क्रेडेंशियल की सूची.</translation>
 <translation id="3688051737190211318">अगर आपको <ph name="ORIGIN" /> पर भरोसा है, तो साइन इन करने के लिए सेव किए गए पासवर्ड का इस्तेमाल करें</translation>
@@ -15,16 +14,14 @@
 <translation id="4660011489602794167">कीबोर्ड दिखाएं</translation>
 <translation id="4694050069269396220">अगर आपको <ph name="ORIGIN" /> पर भरोसा है, तो आप सेव किए गए पासवर्ड को किसी दूसरी साइट के लिए इस्तेमाल कर सकते हैं.</translation>
 <translation id="5016175294846053194">ऑटोमैटिक भरे जाने वाले सुझाव, कीबोर्ड के ऊपर दिए गए हैं</translation>
-<translation id="5088366526685584589">सेव किए गए पते दिखाए जा रहे हैं</translation>
 <translation id="5441504010984421144">टच करके भरी जाने वाली क्रेडेंशियल की सूची पूरी स्क्रीन में खुली हुई है.</translation>
+<translation id="6296921860874265377">सेव किए गए पासवर्ड और पासवर्ड के विकल्प दिखाएं</translation>
 <translation id="6393156038355142111">मज़बूत पासवर्ड सुझाएं</translation>
 <translation id="6558703547256592471">हर साइट के लिए एक अलग पासवर्ड इस्तेमाल करें.</translation>
 <translation id="7029809446516969842">पासवर्ड</translation>
-<translation id="7299100402441711551">पतों की जानकारी दिखाओ</translation>
-<translation id="7494879913343971937">पासवर्ड दिखाएं</translation>
 <translation id="7594473730623999723">ज़्यादा सुझाव देखने के लिए स्वाइप करें</translation>
+<translation id="7873973044507799456">सेव किए गए पते दिखाएं</translation>
 <translation id="7992095260806105436">ऑटोमैटिक जानकारी भरने के Chrome के सुझाव का इस्तेमाल करें</translation>
-<translation id="8037472847879765671">भुगतान के तरीके दिखाएं</translation>
 <translation id="8507520749471379845">पासवर्ड उपलब्ध हैं</translation>
 <translation id="8705308553596171387">पासवर्ड नहीं है</translation>
 <translation id="879180780857354295">अपने-आप भरने के विकल्प कीबोर्ड के ऊपर उपलब्ध हैं</translation>

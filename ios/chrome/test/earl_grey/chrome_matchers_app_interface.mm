@@ -9,6 +9,7 @@
 #import "components/safe_browsing/core/common/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/form_suggestion_constants.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/advanced_settings_signin/advanced_settings_signin_constants.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/address_view_controller.h"
@@ -60,7 +61,6 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_view.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/tab_test_util.h"
@@ -134,10 +134,16 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibility_id,
 }
 
 UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
-  for (UIWindow* window in UIApplication.sharedApplication.windows) {
-    if ([window.accessibilityIdentifier isEqualToString:accessibility_id])
-      return window;
+  for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
+    UIWindowScene* windowScene =
+        base::mac::ObjCCastStrict<UIWindowScene>(scene);
+    for (UIWindow* window in windowScene.windows) {
+      if ([window.accessibilityIdentifier isEqualToString:accessibility_id]) {
+        return window;
+      }
+    }
   }
+
   return nil;
 }
 

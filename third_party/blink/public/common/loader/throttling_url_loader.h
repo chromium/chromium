@@ -110,6 +110,10 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
 
   void CancelWithError(int error_code, base::StringPiece custom_reason);
 
+  void CancelWithExtendedError(int error_code,
+                               int extended_reason_code,
+                               base::StringPiece custom_reason);
+
   // Sets the forwarding client to receive all subsequent notifications.
   void set_forwarding_client(network::mojom::URLLoaderClient* client) {
     forwarding_client_ = client;

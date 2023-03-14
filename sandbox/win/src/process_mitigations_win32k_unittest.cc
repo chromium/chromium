@@ -6,9 +6,10 @@
 
 #include <windows.h>
 
-#include "base/strings/utf_string_conversions.h"
-#include "sandbox/win/src/nt_internals.h"
+#include <string>
+
 #include "sandbox/win/src/process_mitigations_win32k_policy.h"
+#include "sandbox/win/src/sandbox_policy.h"
 #include "sandbox/win/tests/common/controller.h"
 #include "sandbox/win/tests/integration_tests/integration_tests_common.h"
 #include "testing/gtest/include/gtest/gtest.h"

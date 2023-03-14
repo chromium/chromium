@@ -2,13 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import six
-
 # Ignore the following files from SVG optimization checks.
 BLOCKLIST = [
     # Ignore since it holds documentation comments.
     "components/dom_distiller/core/images/dom_distiller_material_spinner.svg",
 ]
+
 
 def CheckOptimized(input_api, output_api):
   file_filter = lambda f: f.LocalPath().endswith('.svg') and \
@@ -22,9 +21,9 @@ def CheckOptimized(input_api, output_api):
   unoptimized = []
 
   def _ToBinary(s):
-    if isinstance(s, six.binary_type):
+    if isinstance(s, bytes):
       return s
-    if isinstance(s, six.text_type):
+    if isinstance(s, str):
       return s.encode('utf-8')
 
   for f in svgs:

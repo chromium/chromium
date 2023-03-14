@@ -24,6 +24,7 @@
 #include "net/cookies/static_cookie_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace network {
 namespace {
@@ -351,6 +352,11 @@ bool CookieSettings::HasSessionOnlyOrigins() const {
 bool CookieSettings::IsAllowedByStorageAccessGrant(
     const GURL& url,
     const GURL& first_party_url) const {
+  if (url::IsSameOriginWith(url, first_party_url)) {
+    // This must be an A(B(A)) case (or similar). The Storage Access API allows
+    // access in such cases.
+    return true;
+  }
   const ContentSettingPatternSource* match =
       FindMatchingSetting(url, first_party_url, storage_access_grants_);
   return match && match->GetContentSetting() == CONTENT_SETTING_ALLOW;

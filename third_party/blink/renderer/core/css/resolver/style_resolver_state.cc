@@ -35,11 +35,17 @@ namespace blink {
 
 namespace {
 
-bool CanCacheBaseStyle(const StyleRequest& style_request) {
-  return style_request.IsPseudoStyleRequest() ||
-         (!style_request.parent_override &&
-          !style_request.layout_parent_override &&
-          style_request.matching_behavior == kMatchAllRules);
+Element* ComputeStyledElement(const StyleRequest& style_request,
+                              Element& element) {
+  Element* styled_element = style_request.styled_element;
+  if (!styled_element) {
+    styled_element = &element;
+  }
+  if (style_request.IsPseudoStyleRequest()) {
+    styled_element = styled_element->GetNestedPseudoElement(
+        style_request.pseudo_id, style_request.pseudo_argument);
+  }
+  return styled_element;
 }
 
 }  // namespace
@@ -57,12 +63,10 @@ StyleResolverState::StyleResolverState(
                                       : nullptr),
       pseudo_request_type_(style_request.type),
       font_builder_(&document),
-      pseudo_element_(
-          element.GetNestedPseudoElement(style_request.pseudo_id,
-                                         style_request.pseudo_argument)),
-      element_style_resources_(GetElement(),
-                               document.DevicePixelRatio(),
-                               pseudo_element_),
+      styled_element_(ComputeStyledElement(style_request, element)),
+      element_style_resources_(
+          GetStyledElement() ? *GetStyledElement() : GetElement(),
+          document.DevicePixelRatio()),
       element_type_(style_request.IsPseudoStyleRequest()
                         ? ElementType::kPseudoElement
                         : ElementType::kElement),
@@ -73,7 +77,7 @@ StyleResolverState::StyleResolverState(
       is_for_highlight_(IsHighlightPseudoElement(style_request.pseudo_id)),
       uses_highlight_pseudo_inheritance_(
           ::blink::UsesHighlightPseudoInheritance(style_request.pseudo_id)),
-      can_cache_base_style_(blink::CanCacheBaseStyle(style_request)) {
+      can_trigger_animations_(style_request.can_trigger_animations) {
   DCHECK(!!parent_style_ == !!layout_parent_style_);
 
   if (UsesHighlightPseudoInheritance()) {
@@ -227,16 +231,14 @@ CSSParserMode StyleResolverState::GetParserMode() const {
 }
 
 Element* StyleResolverState::GetAnimatingElement() const {
-  if (element_type_ == ElementType::kElement) {
-    return &GetElement();
-  }
-  DCHECK_EQ(ElementType::kPseudoElement, element_type_);
-  return pseudo_element_;
+  // When querying pseudo element styles for an element that does not generate
+  // such a pseudo element, the styled_element_ is the originating element. Make
+  // sure we only do animations for true pseudo elements.
+  return IsForPseudoElement() ? GetPseudoElement() : styled_element_;
 }
 
 PseudoElement* StyleResolverState::GetPseudoElement() const {
-  return element_type_ == ElementType::kPseudoElement ? pseudo_element_
-                                                      : nullptr;
+  return DynamicTo<PseudoElement>(styled_element_);
 }
 
 const CSSValue& StyleResolverState::ResolveLightDarkPair(
@@ -262,6 +264,11 @@ void StyleResolverState::UpdateLineHeight() {
       CSSToLengthConversionData::LineHeightSize(
           style_builder_->GetFontSizeStyle(),
           GetDocument().documentElement()->GetComputedStyle()));
+}
+
+bool StyleResolverState::CanAffectAnimations() const {
+  return conditionally_affects_animations_ ||
+         StyleBuilder().CanAffectAnimations();
 }
 
 }  // namespace blink

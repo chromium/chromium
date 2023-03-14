@@ -71,6 +71,7 @@ class OptimizationGuideWebContentsObserver
       content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void WebContentsDestroyed() override;
 
   void PostFetchHintsUsingManager();
 

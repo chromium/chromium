@@ -91,7 +91,7 @@ void SetFirstPartySetsConfig(SetsReadyOnceCallback on_sets_ready) {
 
   if (instance_path->first.empty()) {
     // Registration is complete, but no component version exists on disk.
-    DCHECK(!instance_path->second.IsValid());
+    CHECK(!instance_path->second.IsValid());
     std::move(on_sets_ready).Run(base::Version(), base::File());
     return;
   }

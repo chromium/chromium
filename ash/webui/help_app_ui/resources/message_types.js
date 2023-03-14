@@ -22,4 +22,5 @@ export const Message = {
   MAYBE_SHOW_DISCOVER_NOTIFICATION: 'maybe-show-discover-notification',
   MAYBE_SHOW_RELEASE_NOTES_NOTIFICATION:
       'maybe-show-release-notes-notification',
+  GET_DEVICE_INFO: 'get-device-info',
 };

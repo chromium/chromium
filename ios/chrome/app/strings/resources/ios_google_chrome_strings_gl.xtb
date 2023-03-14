@@ -20,6 +20,7 @@
 <translation id="2339201583852607431">O contrasinal gardarase na túa Conta de Google (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome comparte a localización cos sitios que queiras.</translation>
 <translation id="2347208864470321755">Cando está activada esta función, Chrome ofrece a tradución de páxinas escritas noutros idiomas a través do Tradutor de Google. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
+<translation id="2414068465746584414">Na configuración do teu dispositivo, abre <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> e selecciona Chrome</translation>
 <translation id="2427791862912929107">Chrome inclúe funcións que che axudan a xestionar os teus datos de Internet e a rapidez coa que podes cargar páxinas web.
 <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Usa Chrome para autocompletar facilmente noutras aplicacións os teus contrasinais gardados</translation>
@@ -31,6 +32,7 @@
 <translation id="2689064829982324496">Para pechar sesión na túa Conta de Google en todos os sitios web, <ph name="BEGIN_LINK" />pecha sesión en Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome non puido buscar actualizacións. Téntao máis tarde.</translation>
 <translation id="2732745070297234559">Chrome non puido comprobar todos os contrasinais. Téntao de novo mañá.</translation>
+<translation id="2736805085127235148">As notificacións de Chrome están desactivadas actualmente na configuración do dispositivo.</translation>
 <translation id="2767464022270041271">Non hai contrasinais gardados. O xestor de contrasinais de Google poderá comprobar os teus contrasinais cando os gardes.</translation>
 <translation id="2869959624320573933">Inicia sesión en Chrome</translation>
 <translation id="2957447865124070833">Selecciona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
@@ -112,8 +114,8 @@
 <translation id="7754633291442704733">A túa organización (<ph name="DOMAIN" />) terá acceso aos teus datos de Chrome, así como aos marcadores, ao historial, aos contrasinais e a outras opcións de configuración que almacenes nesta conta. Cando peches sesión, os datos borraranse deste dispositivo.  Non obstante, permanecerán almacenados na túa Conta de Google xestionada e estarán dispoñibles para a túa organización. Esta tamén pode definir políticas de usuario específicas para esa conta que poden modificar o comportamento de Chrome.</translation>
 <translation id="7780154209050837198">Para tirarlle o máximo partido a Chrome, inicia sesión coa túa Conta de Google en Chrome.</translation>
 <translation id="7855730255114109580">Google Chrome está actualizado</translation>
-<translation id="7939179037291298976">Na configuración do teu iPhone, abre Password Options (Opcións de contrasinais) e selecciona Chrome</translation>
 <translation id="8022947259858476807">Usa Chrome de forma predeterminada para abrir ligazóns, realizar buscas desde widgets e autocompletar contrasinais noutras aplicacións</translation>
+<translation id="804638182476029347">Permitir que as notificacións de Chrome avisen sobre as baixadas de prezo</translation>
 <translation id="81358522153858150">Chrome xa admite políticas de usuario para a túa conta xestionada</translation>
 <translation id="8160472928944011082">Non se puido actualizar Chrome</translation>
 <translation id="8357607116237445042">Indicar se queres borrar ou conservar os teus datos de Chrome neste dispositivo</translation>

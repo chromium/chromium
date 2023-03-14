@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">Өте жақсы (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Жалғастыру</translation>
 <translation id="2364498172489649528">Сынақтан өтті</translation>
+<translation id="2367335866686097760">Кілтті түрлендіру пернесі</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Пікірлер есебін жіберу</translation>
 <translation id="2407209115954268704">SIM картасын құлыптау күйі</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">Аватар суреті өзгертілді.</translation>
 <translation id="3192947282887913208">Аудио файлдары</translation>
 <translation id="3199982728237701504">Құжат беруші (екі жақты)</translation>
+<translation id="3211671540163313381">Кілтті түрлендіру D-pad</translation>
 <translation id="3226405216343213872">Сканерлер ізделуде</translation>
+<translation id="3226657629376379887">Форматтың әрекеттер мәзірі</translation>
 <translation id="3246869037381808805">1 күннен асқан баспа жұмыстары өшіріледі.</translation>
 <translation id="3268178239013324452">Сәтсіз: есігі ашық</translation>
 <translation id="3275729367986477355">Аватар суреті</translation>
@@ -253,6 +256,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Қауіпсіздік</translation>
 <translation id="3435896845095436175">Қосу</translation>
+<translation id="345256797477978759">Терезені экранның <ph name="DIRECTION" /> үлкенірек бөлігіне бекіту</translation>
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" /> бет (жалпы саны: <ph name="TOTAL_PAGES" />) басып шығарылды.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" />-бет сканерленуде. <ph name="PERCENTAGE_VALUE" />% орындалды.</translation>
 <translation id="3459509316159669723">Басып шығару</translation>
@@ -273,12 +277,14 @@
 <translation id="3595596368722241419">Батарея толы</translation>
 <translation id="3600339377155080675">Экран көшірмесін көрсету</translation>
 <translation id="3602290021589620013">Алдын ала көру</translation>
+<translation id="360282891121575443">Ортақ альбомдардағы фотосуреттерді басқа пайдаланушылар жаңарта алады. Күн сайын өзгерту қазіргі альбомда жоқ тұсқағаздарды көрсетуі мүмкін.</translation>
 <translation id="3603829704940252505">Аватар</translation>
 <translation id="3604713164406837697">Тұсқағазды өзгерту</translation>
 <translation id="360565022852130722">WiFi желісі WEP 802.1x әлсіз протоколымен қорғалған.</translation>
 <translation id="3606583719724308068">HTTPS веб-сайттарына кідіріс жоғары.</translation>
 <translation id="361575905210396100">Пікіріңіз үшін рақмет!</translation>
 <translation id="3632579075709132555">Құпиялық экранын қосу/өшіру</translation>
+<translation id="3639846061339007994">жоғарғы жақ</translation>
 <translation id="3651050199673793219">Температураның өлшем бірлігін таңдау</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> тексерісі</translation>
 <translation id="370665806235115550">Жүктелуде…</translation>
@@ -520,6 +526,7 @@
 <translation id="576835345334454681">Дисплей жарықтығын арттыру</translation>
 <translation id="57838592816432529">Дыбысын өшіру</translation>
 <translation id="5784136236926853061">HTTP кідірісі жоғары.</translation>
+<translation id="5826644637650799838">Өнер туралы</translation>
 <translation id="5832805196449965646">Адам қосу</translation>
 <translation id="583281660410589416">Белгісіз</translation>
 <translation id="5843706793424741864">Фаренгейт</translation>
@@ -562,6 +569,7 @@
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> альбом</translation>
 <translation id="6122191549521593678">Онлайн</translation>
 <translation id="6122277663991249694">ChromeOS енгізу әдісі қызметі</translation>
+<translation id="6136285399872347291">backspace</translation>
 <translation id="6137767437444130246">Пайдаланушы сертификаты</translation>
 <translation id="6146993107019042706">Аяқтау үшін жаңа құпия сөзді енгізіңіз.</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -609,6 +617,7 @@
 <translation id="650266656685499220">Альбомдарды жасау үшін Google Photos қолданбасына өтіңіз.</translation>
 <translation id="6516990319416533844">Батареяны зарядтау жылдамдығын тексеру үшін оны қысқа уақыт пайдаланып, зарядын азайтыңыз.</translation>
 <translation id="6517239166834772319">Шолу</translation>
+<translation id="6526200165918397681">Матч тұсқағазы</translation>
 <translation id="6527081081771465939">WiFi қауіпсіздік протоколы белгісіз.</translation>
 <translation id="6535178685492749208">Офлайн режимдесіз. Пікір кейінірек жіберіледі.</translation>
 <translation id="65587193855025101">Планшет</translation>
@@ -628,6 +637,7 @@
 <translation id="6657585470893396449">Құпия сөз</translation>
 <translation id="6659594942844771486">Қойынды</translation>
 <translation id="6692996468359469499">Таңдауға қатысты ақпарат алу</translation>
+<translation id="6698459586333070823">Ортақ альбомдарды басқа пайдаланушылар жаңарта алады</translation>
 <translation id="6704062477274546131">DNS ажыратымдылығы</translation>
 <translation id="6723839937902243910">Күш</translation>
 <translation id="6723847290197874913">Пернетақта жарығы</translation>
@@ -664,6 +674,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Орындалмады – авторизация жасалмады</translation>
 <translation id="7103252855940681301"><ph name="NAME" /> атты құрылғы, <ph name="INDEX" />/<ph name="COUNT" /></translation>
+<translation id="7108668606237948702">enter</translation>
 <translation id="7130438335435247835">Кіру нүктесінің атауы (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер атауы}other{Сервер атаулары}}</translation>
 <translation id="7143207342074048698">Қосылып жатыр</translation>
@@ -673,6 +684,7 @@
 <translation id="7155171745945906037">Камерадан немесе файлдан алынған бар суреттер</translation>
 <translation id="7162487448488904999">Галерея</translation>
 <translation id="7170236477717446850">Профиль суреті</translation>
+<translation id="7171919371520438592">Терезені экранның <ph name="DIRECTION" /> кішірек бөлігіне бекіту</translation>
 <translation id="7172721935181587524">1 сурет</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> құрылғысын <ph name="MANAGER" /> басқарады. Әкімшілер құрылғыны қашықтан конфигурациялай алады.</translation>
 <translation id="7180611975245234373">Жаңарту</translation>
@@ -748,6 +760,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Провайдер түрі</translation>
 <translation id="7882501334836096755">Ашық кілт</translation>
+<translation id="78957024357676568">сол</translation>
 <translation id="7915220255123750251">Желінің APN параметрлерін басқарыңыз. APN аттары ұялы желі мен интернет арасында байланыс орнатады.</translation>
 <translation id="7936303884198020182">Атау серверлері табылмады.</translation>
 <translation id="7942349550061667556">Қызыл</translation>
@@ -776,9 +789,11 @@
 <translation id="8183974620058026102">Тіркеу</translation>
 <translation id="8206859287963243715">Ұялы</translation>
 <translation id="8208861521865154048">Бонустар</translation>
+<translation id="8210733748736414123">төменгі жақ</translation>
 <translation id="8226628635270268143">Өзіңізге ұнайтын фотосуреттер мен альбомдарды таңдау</translation>
 <translation id="8227119283605456246">Файл тіркеу</translation>
 <translation id="8230672074305416752">Әдепкі желі шлюзінің байланысы тексерілмеді.</translation>
+<translation id="8242426110754782860">Жалғастыру</translation>
 <translation id="8246209727385807362">Белгісіз оператор</translation>
 <translation id="827422111966801947">Индиго</translation>
 <translation id="8286154143153872371">Тұсқағазды көру үшін желіге қосылып, бетті қайта жүктеңіз.</translation>
@@ -789,9 +804,11 @@
 <translation id="8318753676953949627">Кескіндер жоқ.</translation>
 <translation id="8336739000755212683">Құрылғыда аккаунт суретін өзгерту</translation>
 <translation id="8347227221149377169">Баспа жұмыстары</translation>
+<translation id="8351855506390808906">Кілтті түрлендірудің өзара әрекеттесу нүктесі</translation>
 <translation id="8352772353338965963">Бірнеше аккаунтға кіру үшін аккаунт қосыңыз. Барлық кірілген аккаунтларға құпия сөзсіз кіруге болады, сондықтан бұл мүмкіндікті тек сенімді аккаунтлар пайдалануы тиіс.</translation>
 <translation id="8364946094152050673">Атау серверлері бос.</translation>
 <translation id="8372477600026034341">Қосымша хостар</translation>
+<translation id="8380114448424469341">Терезені экранның <ph name="DIRECTION" /> жартысына бекіту</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> құрылғысын кәсіпорын басқарады.</translation>
 <translation id="8398927464629426868">Құрылғының зарядталу немесе зарядын жоғалту көрсеткіші.</translation>
 <translation id="8410244574650205435">Автоматты түрде анықталады</translation>
@@ -856,6 +873,7 @@
 <translation id="8930622219860340959">Сымсыз</translation>
 <translation id="8936793075252196307">Клиенттің IP мекенжайы</translation>
 <translation id="894617464444543719">Бұл — телефон.</translation>
+<translation id="8957423540740801332">оң</translation>
 <translation id="8968751544471797276">Зарядталу жылдамдығы</translation>
 <translation id="8970109610781093811">Қайта тексеру</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -883,6 +901,7 @@
 <translation id="9137526406337347448">Google қызметтері</translation>
 <translation id="9138630967333032450">Сол жақтағы Shift пернесі</translation>
 <translation id="9149391708638971077">Жад тексерісін іске қосу</translation>
+<translation id="9161276708550942948">бос орын</translation>
 <translation id="9173638680043580060">Бір минутқа жетпейтін уақыт қалды.</translation>
 <translation id="917720651393141712">Тексеру</translation>
 <translation id="9188992814426075118">Пернетақта тұсқағазды автоматты түрде сәйкестендіре алады.</translation>

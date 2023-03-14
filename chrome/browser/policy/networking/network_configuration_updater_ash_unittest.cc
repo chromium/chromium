@@ -300,11 +300,11 @@ MATCHER_P(IsEqualTo,
 }
 
 MATCHER(IsListEmpty, std::string(negation ? "isn't" : "is") + " empty.") {
-  return arg.GetList().empty();
+  return arg.empty();
 }
 
 MATCHER(IsDictEmpty, std::string(negation ? "isn't" : "is") + " empty.") {
-  return arg.DictEmpty();
+  return arg.empty();
 }
 
 ACTION_P(SetCertificateList, list) {
@@ -335,15 +335,16 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
     providers.push_back(&provider_);
     policy_service_ = std::make_unique<PolicyServiceImpl>(std::move(providers));
 
-    base::Value::Dict fake_toplevel_onc =
-        chromeos::onc::ReadDictionaryFromJson(kFakeONC).TakeDict();
+    absl::optional<base::Value::Dict> fake_toplevel_onc =
+        chromeos::onc::ReadDictionaryFromJson(kFakeONC);
+    ASSERT_TRUE(fake_toplevel_onc.has_value());
 
-    base::Value::Dict* global_config = fake_toplevel_onc.FindDict(
+    base::Value::Dict* global_config = fake_toplevel_onc->FindDict(
         onc::toplevel_config::kGlobalNetworkConfiguration);
     fake_global_network_config_.Merge(global_config->Clone());
 
     base::Value::List* certs =
-        fake_toplevel_onc.FindList(onc::toplevel_config::kCertificates);
+        fake_toplevel_onc->FindList(onc::toplevel_config::kCertificates);
     ASSERT_TRUE(certs);
 
     fake_certificates_ =
@@ -357,11 +358,14 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
   }
 
   base::Value::List* GetExpectedFakeNetworkConfigs(::onc::ONCSource source) {
-    base::Value::Dict fake_toplevel_onc =
-        chromeos::onc::ReadDictionaryFromJson(kFakeONC).TakeDict();
+    absl::optional<base::Value::Dict> fake_toplevel_onc =
+        chromeos::onc::ReadDictionaryFromJson(kFakeONC);
+    if (!fake_toplevel_onc.has_value()) {
+      return nullptr;
+    }
     fake_network_configs_ =
         fake_toplevel_onc
-            .FindList(onc::toplevel_config::kNetworkConfigurations)
+            ->FindList(onc::toplevel_config::kNetworkConfigurations)
             ->Clone();
     return &fake_network_configs_;
   }
@@ -505,9 +509,8 @@ TEST_F(NetworkConfigurationUpdaterAshTest,
 
 TEST_F(NetworkConfigurationUpdaterAshTest, PolicyIsValidatedAndRepaired) {
   base::Value::Dict onc_repaired =
-      chromeos::onc::test_utils::ReadTestDictionaryValue(
-          "repaired_toplevel_partially_invalid.onc")
-          .TakeDict();
+      chromeos::onc::test_utils::ReadTestDictionary(
+          "repaired_toplevel_partially_invalid.onc");
 
   base::Value::List* network_configs_repaired =
       onc_repaired.FindList(onc::toplevel_config::kNetworkConfigurations);

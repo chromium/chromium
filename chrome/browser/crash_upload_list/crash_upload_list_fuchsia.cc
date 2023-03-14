@@ -11,7 +11,8 @@ CrashUploadListFuchsia::CrashUploadListFuchsia() = default;
 
 CrashUploadListFuchsia::~CrashUploadListFuchsia() = default;
 
-std::vector<UploadList::UploadInfo> CrashUploadListFuchsia::LoadUploadList() {
+std::vector<std::unique_ptr<UploadList::UploadInfo>>
+CrashUploadListFuchsia::LoadUploadList() {
   // TODO(crbug.com/1234373): Implement using the crash system component.
   NOTIMPLEMENTED_LOG_ONCE();
   return {};

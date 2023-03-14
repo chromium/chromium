@@ -931,6 +931,53 @@ IN_PROC_BROWSER_TEST_P(DictationTest, Punctuation) {
   WaitForRecognitionStopped();
 }
 
+IN_PROC_BROWSER_TEST_P(DictationTest,
+                       TogglesOnIfSodaDownloadingInDifferentLanguage) {
+  if (speech_recognition_type() != speech::SpeechRecognitionType::kOnDevice) {
+    // SodaInstaller only works if on-device speech recognition is available.
+    return;
+  }
+
+  speech::SodaInstaller::GetInstance()->NotifySodaProgressForTesting(
+      30, speech::LanguageCode::kFrFr);
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+}
+
+// Verifies that Dictation cannot be toggled on using the keyboard shortcut if
+// a SODA download is in-progress.
+IN_PROC_BROWSER_TEST_P(DictationTest,
+                       NoToggleOnIfSodaDownloadingInDictationLanguage) {
+  if (speech_recognition_type() != speech::SpeechRecognitionType::kOnDevice) {
+    // SodaInstaller only works if on-device speech recognition is available.
+    return;
+  }
+
+  // Dictation shouldn't work if SODA is downloading in the Dictation locale.
+  speech::SodaInstaller::GetInstance()->NotifySodaProgressForTesting(
+      30, speech::LanguageCode::kEnUs);
+  ExecuteAccessibilityCommonScript(
+      "testSupport.installFakeSpeechRecognitionPrivateStart();");
+  ToggleDictationWithKeystroke();
+  // Sanity check that speech recognition is off and that no calls to
+  // chrome.speechRecognitionPrivate.start() were made.
+  WaitForRecognitionStopped();
+  ExecuteAccessibilityCommonScript(
+      "testSupport.ensureNoSpeechRecognitionPrivateStartCalls();");
+  ExecuteAccessibilityCommonScript(
+      "testSupport.restoreSpeechRecognitionPrivateStart();");
+
+  // Dictation should work again once the SODA download is finished.
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
+      speech::LanguageCode::kEnUs);
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+}
+
 class DictationWithAutoclickTest : public DictationTestBase {
  public:
   DictationWithAutoclickTest() = default;

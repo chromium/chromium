@@ -83,8 +83,9 @@ export class AmbientPreviewSmall extends AmbientPreviewBase {
   }
 
   private getScreenSaverPreviewClass_(): string {
-    return this.screenSaverPreviewActive_ ? 'preview-button-disabled' :
-                                            'preview-button';
+    return this.screenSaverPreviewActive_ ?
+        'preview-button-disabled secondary' :
+        'preview-button secondary';
   }
 
   private getScreenSaverPreviewText_(): string {
@@ -94,11 +95,13 @@ export class AmbientPreviewSmall extends AmbientPreviewBase {
   }
 
   private getScreenSaverPreviewAriaLabel_(): string {
-    if (!this.screenSaverPreviewActive_) {
-      return `${this.i18n('screensaverLabel')} ${
-          this.i18n('screenSaverPreviewButton')}`;
-    }
-    return this.i18n('screenSaverPreviewDownloading');
+    return this.screenSaverPreviewActive_ ?
+        this.i18n('screenSaverPreviewDownloadingAriaLabel') :
+        this.i18n('screenSaverPreviewButtonAriaLabel');
+  }
+
+  private getScreenSaverPreviewRole_(): string {
+    return this.screenSaverPreviewActive_ ? 'none' : 'button';
   }
 }
 

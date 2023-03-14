@@ -9,6 +9,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/browser/cookie_access_details.h"
@@ -41,52 +42,6 @@ using testing::Pair;
 using ukm::builders::DIPS_Redirect;
 
 namespace {
-
-class UserActivationObserver : public content::WebContentsObserver {
- public:
-  explicit UserActivationObserver(content::WebContents* web_contents,
-                                  content::RenderFrameHost* render_frame_host)
-      : WebContentsObserver(web_contents),
-        render_frame_host_(render_frame_host) {}
-
-  // Wait until the frame receives user activation.
-  void Wait() { run_loop_.Run(); }
-
-  // WebContentsObserver override
-  void FrameReceivedUserActivation(
-      content::RenderFrameHost* render_frame_host) override {
-    if (render_frame_host_ == render_frame_host) {
-      run_loop_.Quit();
-    }
-  }
-
- private:
-  raw_ptr<content::RenderFrameHost> const render_frame_host_;
-  base::RunLoop run_loop_;
-};
-
-class CookieAccessObserver : public content::WebContentsObserver {
- public:
-  explicit CookieAccessObserver(content::WebContents* web_contents,
-                                content::RenderFrameHost* render_frame_host)
-      : WebContentsObserver(web_contents),
-        render_frame_host_(render_frame_host) {}
-
-  // Wait until the frame accesses cookies.
-  void Wait() { run_loop_.Run(); }
-
-  // WebContentsObserver override
-  void OnCookiesAccessed(content::RenderFrameHost* render_frame_host,
-                         const content::CookieAccessDetails& details) override {
-    if (render_frame_host_ == render_frame_host) {
-      run_loop_.Quit();
-    }
-  }
-
- private:
-  const raw_ptr<content::RenderFrameHost> render_frame_host_;
-  base::RunLoop run_loop_;
-};
 
 // Returns a simplified URL representation for ease of comparison in tests.
 // Just host+path.
@@ -158,8 +113,7 @@ void WCOCallbackLogger::OnCookiesAccessed(
     const content::CookieAccessDetails& details) {
   // Callbacks for favicons are ignored only in testing logs because their
   // ordering is variable and would cause flakiness
-  if (!render_frame_host->IsInPrimaryMainFrame() ||
-      FormatURL(details.url).find("favicon.ico") != std::string::npos) {
+  if (details.url.path() == "/favicon.ico") {
     return;
   }
 
@@ -220,10 +174,25 @@ class DIPSBounceDetectorBrowserTest : public PlatformBrowserTest {
         base::BindRepeating(&AppendRedirects, redirects));
   }
 
+  // Navigate to /set-cookie on `host` and wait for OnCookiesAccessed() to be
+  // called.
+  [[nodiscard]] bool NavigateToSetCookie(base::StringPiece host) {
+    auto* web_contents = GetActiveWebContents();
+    const auto url =
+        embedded_test_server()->GetURL(host, "/set-cookie?name=value");
+    URLCookieAccessObserver observer(web_contents, url,
+                                     URLCookieAccessObserver::Type::kChange);
+    bool success = content::NavigateToURL(web_contents, url);
+    if (success) {
+      observer.Wait();
+    }
+    return success;
+  }
+
   void CreateImageAndWaitForCookieAccess(const GURL& image_url) {
     WebContents* web_contents = GetActiveWebContents();
-    CookieAccessObserver observer(web_contents,
-                                  web_contents->GetPrimaryMainFrame());
+    URLCookieAccessObserver observer(web_contents, image_url,
+                                     URLCookieAccessObserver::Type::kRead);
     ASSERT_TRUE(content::ExecJs(web_contents,
                                 content::JsReplace(
                                     R"(
@@ -277,25 +246,20 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   content::WebContents* web_contents = GetActiveWebContents();
 
   // Set cookies on all 4 test domains
-  ASSERT_TRUE(content::NavigateToURL(
-      web_contents,
-      embedded_test_server()->GetURL("a.test", "/set-cookie?name=value")));
-  ASSERT_TRUE(content::NavigateToURL(
-      web_contents,
-      embedded_test_server()->GetURL("b.test", "/set-cookie?name=value")));
-  ASSERT_TRUE(content::NavigateToURL(
-      web_contents,
-      embedded_test_server()->GetURL("c.test", "/set-cookie?name=value")));
-  ASSERT_TRUE(content::NavigateToURL(
-      web_contents,
-      embedded_test_server()->GetURL("d.test", "/set-cookie?name=value")));
+  ASSERT_TRUE(NavigateToSetCookie("a.test"));
+  ASSERT_TRUE(NavigateToSetCookie("b.test"));
+  ASSERT_TRUE(NavigateToSetCookie("c.test"));
+  ASSERT_TRUE(NavigateToSetCookie("d.test"));
 
   // Start logging WebContentsObserver callbacks.
   WCOCallbackLogger::CreateForWebContents(web_contents);
   auto* logger = WCOCallbackLogger::FromWebContents(web_contents);
 
   // Visit the redirect.
+  URLCookieAccessObserver observer(web_contents, final_url,
+                                   URLCookieAccessObserver::Type::kChange);
   ASSERT_TRUE(content::NavigateToURL(web_contents, redirect_url, final_url));
+  observer.Wait();
 
   // Verify that the 7 OnCookiesAccessed() executions are called in order, and
   // all between DidStartNavigation() and DidFinishNavigation().
@@ -306,25 +270,28 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   // test will intentionally fail if it happens so that we'll notice.
   EXPECT_THAT(
       logger->log(),
-      ElementsAre(
-          ("DidStartNavigation(a.test/cross-site/b.test/cross-site-with-cookie/"
-           "c.test/cross-site-with-cookie/d.test/set-cookie)"),
-          ("OnCookiesAccessed(NavigationHandle, Read: "
-           "a.test/cross-site/b.test/cross-site-with-cookie/c.test/"
-           "cross-site-with-cookie/d.test/set-cookie)"),
-          ("OnCookiesAccessed(NavigationHandle, Read: "
-           "b.test/cross-site-with-cookie/c.test/cross-site-with-cookie/d.test/"
-           "set-cookie)"),
-          ("OnCookiesAccessed(NavigationHandle, Change: "
-           "b.test/cross-site-with-cookie/c.test/cross-site-with-cookie/d.test/"
-           "set-cookie)"),
-          ("OnCookiesAccessed(NavigationHandle, Read: "
-           "c.test/cross-site-with-cookie/d.test/set-cookie)"),
-          ("OnCookiesAccessed(NavigationHandle, Change: "
-           "c.test/cross-site-with-cookie/d.test/set-cookie)"),
-          "OnCookiesAccessed(NavigationHandle, Read: d.test/set-cookie)",
-          "OnCookiesAccessed(NavigationHandle, Change: d.test/set-cookie)",
-          "DidFinishNavigation(d.test/set-cookie)"));
+      testing::ContainerEq(std::vector<std::string>(
+          {("DidStartNavigation(a.test/cross-site/b.test/"
+            "cross-site-with-cookie/"
+            "c.test/cross-site-with-cookie/d.test/set-cookie)"),
+           ("OnCookiesAccessed(NavigationHandle, Read: "
+            "a.test/cross-site/b.test/cross-site-with-cookie/c.test/"
+            "cross-site-with-cookie/d.test/set-cookie)"),
+           ("OnCookiesAccessed(NavigationHandle, Read: "
+            "b.test/cross-site-with-cookie/c.test/cross-site-with-cookie/"
+            "d.test/"
+            "set-cookie)"),
+           ("OnCookiesAccessed(NavigationHandle, Change: "
+            "b.test/cross-site-with-cookie/c.test/cross-site-with-cookie/"
+            "d.test/"
+            "set-cookie)"),
+           ("OnCookiesAccessed(NavigationHandle, Read: "
+            "c.test/cross-site-with-cookie/d.test/set-cookie)"),
+           ("OnCookiesAccessed(NavigationHandle, Change: "
+            "c.test/cross-site-with-cookie/d.test/set-cookie)"),
+           "OnCookiesAccessed(NavigationHandle, Read: d.test/set-cookie)",
+           "OnCookiesAccessed(NavigationHandle, Change: d.test/set-cookie)",
+           "DidFinishNavigation(d.test/set-cookie)"})));
 }
 
 // An EmbeddedTestServer request handler for
@@ -335,8 +302,9 @@ HandleCrossSiteSameSiteNoneCookieRedirect(
     net::EmbeddedTestServer* server,
     const net::test_server::HttpRequest& request) {
   const std::string prefix = "/cross-site-with-samesite-none-cookie";
-  if (!net::test_server::ShouldHandle(request, prefix))
+  if (!net::test_server::ShouldHandle(request, prefix)) {
     return nullptr;
+  }
 
   std::string dest_all = base::UnescapeBinaryURLComponent(
       request.relative_url.substr(prefix.size() + 1));

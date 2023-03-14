@@ -31,7 +31,7 @@ copy("copy_mojo") {
 ts_library("build_ts") {
   deps = [
     "//third_party/polymer/v3_0:library",
-    "//ui/webui/resources/mojo:library",
+    "//ui/webui/resources/mojo:build_ts",
   ]
   extra_deps = [
     ":copy_mojo",

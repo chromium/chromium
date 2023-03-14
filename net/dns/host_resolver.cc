@@ -316,8 +316,8 @@ HostCache* HostResolver::GetHostCache() {
   return nullptr;
 }
 
-base::Value HostResolver::GetDnsConfigAsValue() const {
-  return base::Value(base::Value::Type::DICT);
+base::Value::Dict HostResolver::GetDnsConfigAsValue() const {
+  return base::Value::Dict();
 }
 
 void HostResolver::SetRequestContext(URLRequestContext* request_context) {
@@ -515,7 +515,7 @@ HostResolver::AddressListToEndpointResults(const AddressList& address_list) {
 
 // static
 AddressList HostResolver::EndpointResultToAddressList(
-    const std::vector<HostResolverEndpointResult>& endpoints,
+    base::span<const HostResolverEndpointResult> endpoints,
     const std::set<std::string>& aliases) {
   AddressList list;
 
@@ -534,12 +534,29 @@ AddressList HostResolver::EndpointResultToAddressList(
 
 // static
 std::vector<IPEndPoint> HostResolver::GetNonProtocolEndpoints(
-    const std::vector<HostResolverEndpointResult>& endpoints) {
+    base::span<const HostResolverEndpointResult> endpoints) {
   auto non_protocol_endpoint =
       base::ranges::find_if(endpoints, &EndpointResultIsNonProtocol);
   if (non_protocol_endpoint == endpoints.end())
     return std::vector<IPEndPoint>();
   return non_protocol_endpoint->ip_endpoints;
+}
+
+// static
+bool HostResolver::AllProtocolEndpointsHaveEch(
+    base::span<const HostResolverEndpointResult> endpoints) {
+  bool has_svcb = false;
+  for (const auto& endpoint : endpoints) {
+    if (!endpoint.metadata.supported_protocol_alpns.empty()) {
+      has_svcb = true;
+      if (endpoint.metadata.ech_config_list.empty()) {
+        return false;  // There is a non-ECH SVCB/HTTPS route.
+      }
+    }
+  }
+  // Either there were no SVCB/HTTPS records (should be SVCB-optional), or there
+  // were and all supported ECH (should be SVCB-reliant).
+  return has_svcb;
 }
 
 HostResolver::HostResolver() = default;

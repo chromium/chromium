@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">Excelente (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2364498172489649528">Aprobou</translation>
+<translation id="2367335866686097760">Tecla de asignación de teclas</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Enviar informe de comentarios</translation>
 <translation id="2407209115954268704">Estado do bloqueo da SIM</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">Modificouse a imaxe do avatar</translation>
 <translation id="3192947282887913208">Ficheiros de audio</translation>
 <translation id="3199982728237701504">Alimentador de documentos (a dúas caras)</translation>
+<translation id="3211671540163313381">Botón direccional de asignación de teclas</translation>
 <translation id="3226405216343213872">Buscando escáneres</translation>
+<translation id="3226657629376379887">Menú de accións de deseño</translation>
 <translation id="3246869037381808805">Quitaranse os traballos de impresión de máis de 1 día</translation>
 <translation id="3268178239013324452">Produciuse un erro: a tapa da impresora está aberta</translation>
 <translation id="3275729367986477355">Imaxe de avatar</translation>
@@ -253,6 +256,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435738964857648380">Seguranza</translation>
 <translation id="3435896845095436175">Activar</translation>
+<translation id="345256797477978759">Fixar ventá na parte máis grande (<ph name="DIRECTION" />) da pantalla</translation>
 <translation id="3456078764689556234">Páxina <ph name="PRINTED_PAGES" /> de <ph name="TOTAL_PAGES" /> impresa.</translation>
 <translation id="345898999683440380">Escaneando páxina <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" /> % completado.</translation>
 <translation id="3459509316159669723">Impresión</translation>
@@ -273,12 +277,14 @@
 <translation id="3595596368722241419">Batería completa</translation>
 <translation id="3600339377155080675">Proxectar pantalla</translation>
 <translation id="3602290021589620013">Previsualizar</translation>
+<translation id="360282891121575443">Outros usuarios poden actualizar as fotos dos álbums compartidos. A opción Cambiar todos os días pode mostrar fondos de pantalla que actualmente non estean no álbum.</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Cambiar fondo de pantalla</translation>
 <translation id="360565022852130722">A rede wifi está protexida co protocolo WEP 802.1x, que non é moi seguro</translation>
 <translation id="3606583719724308068">Latencia alta en sitios web HTTPS</translation>
 <translation id="361575905210396100">Grazas polos teus comentarios</translation>
 <translation id="3632579075709132555">Activar/Desactivar pantalla de privacidade</translation>
+<translation id="3639846061339007994">parte superior</translation>
 <translation id="3651050199673793219">Seleccionar unidade de temperatura</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> (proba)</translation>
 <translation id="370665806235115550">Cargando...</translation>
@@ -520,6 +526,7 @@
 <translation id="576835345334454681">Aumentar brillo da pantalla</translation>
 <translation id="57838592816432529">Silenciar</translation>
 <translation id="5784136236926853061">Latencia de HTTP alta</translation>
+<translation id="5826644637650799838">Acerca da imaxe</translation>
 <translation id="5832805196449965646">Engadir unha persoa</translation>
 <translation id="583281660410589416">Descoñecido</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
@@ -562,6 +569,7 @@
 <translation id="6117895505466548728"><ph name="TITLE" /> e <ph name="NUMBER" /> álbums máis</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Servizo do método de introdución de texto de Chrome OS</translation>
+<translation id="6136285399872347291">retroceso</translation>
 <translation id="6137767437444130246">Certificado de usuario</translation>
 <translation id="6146993107019042706">Para finalizar, introduce o teu novo contrasinal</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -570,7 +578,7 @@
 <translation id="6189418609903030344">A capacidade da batería diminúe co uso</translation>
 <translation id="6191293864534840972">Os servidores de nomes teñen un formato incorrecto</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
-<translation id="6223066887782788441">Saír de pantalla completa</translation>
+<translation id="6223066887782788441">Saír da pantalla completa</translation>
 <translation id="6223752125779001553">Non hai ningún escáner dispoñible</translation>
 <translation id="6232017090690406397">Batería</translation>
 <translation id="6235460611964961764">Restablecer uso de datos de forma manual</translation>
@@ -609,6 +617,7 @@
 <translation id="650266656685499220">Para crear álbums, vai a Google Fotos</translation>
 <translation id="6516990319416533844">Se queres comprobar a taxa de carga da batería, agarda un anaco para deixar que se descargue un pouco</translation>
 <translation id="6517239166834772319">Explorar</translation>
+<translation id="6526200165918397681">Combinar co fondo de pantalla</translation>
 <translation id="6527081081771465939">Descoñécese o protocolo de seguranza da wifi</translation>
 <translation id="6535178685492749208">Estás sen conexión. Os comentarios enviaranse máis tarde.</translation>
 <translation id="65587193855025101">Superficie plana</translation>
@@ -628,6 +637,7 @@
 <translation id="6657585470893396449">Contrasinal</translation>
 <translation id="6659594942844771486">Pestana</translation>
 <translation id="6692996468359469499">Consultar a información relacionada coa túa selección</translation>
+<translation id="6698459586333070823">Outros usuarios poden actualizar os álbums compartidos</translation>
 <translation id="6704062477274546131">Resolución de DNS</translation>
 <translation id="6723839937902243910">A</translation>
 <translation id="6723847290197874913">Luz traseira do teclado</translation>
@@ -664,6 +674,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Produciuse un erro de autorización</translation>
 <translation id="7103252855940681301">Dispositivo <ph name="INDEX" /> de <ph name="COUNT" />. Nome: <ph name="NAME" />.</translation>
+<translation id="7108668606237948702">intro</translation>
 <translation id="7130438335435247835">Nome do punto de acceso (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de nomes}other{Servidores de nomes}}</translation>
 <translation id="7143207342074048698">Conectando</translation>
@@ -673,6 +684,7 @@
 <translation id="7155171745945906037">Foto existente da cámara ou do ficheiro</translation>
 <translation id="7162487448488904999">Galería</translation>
 <translation id="7170236477717446850">Imaxe do perfil</translation>
+<translation id="7171919371520438592">Fixar ventá na parte máis pequena (<ph name="DIRECTION" />) da pantalla</translation>
 <translation id="7172721935181587524">1 imaxe</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> xestiona este dispositivo (<ph name="DEVICE_TYPE" />). Os administradores poden configuralo de forma remota.</translation>
 <translation id="7180611975245234373">Actualizar</translation>
@@ -705,7 +717,7 @@
 <translation id="7481312909269577407">Adiante</translation>
 <translation id="7487067081878637334">Tecnoloxía</translation>
 <translation id="7490813197707563893">Enderezo MAC</translation>
-<translation id="7491478667760509108">Saír de modo flotante</translation>
+<translation id="7491478667760509108">Saír do modo flotante</translation>
 <translation id="7497215489070763236">Certificado de CA do servidor</translation>
 <translation id="7502658306369382406">Enderezo IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -748,6 +760,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipo de fornecedor</translation>
 <translation id="7882501334836096755">Clave pública</translation>
+<translation id="78957024357676568">esquerda</translation>
 <translation id="7915220255123750251">Xestiona a configuración do APN da rede. Os APN establecen unha conexión entre unha rede de telefonía móbil e Internet.</translation>
 <translation id="7936303884198020182">Non se atoparon servidores de nomes</translation>
 <translation id="7942349550061667556">Vermello</translation>
@@ -776,9 +789,11 @@
 <translation id="8183974620058026102">Anexar</translation>
 <translation id="8206859287963243715">Móbil</translation>
 <translation id="8208861521865154048">Vantaxes</translation>
+<translation id="8210733748736414123">parte inferior</translation>
 <translation id="8226628635270268143">Escolle as fotos e os álbums que máis che gustan</translation>
 <translation id="8227119283605456246">Anexar ficheiro</translation>
 <translation id="8230672074305416752">Produciuse un erro ao facer ping na pasarela de rede predeterminada</translation>
+<translation id="8242426110754782860">Continuar</translation>
 <translation id="8246209727385807362">Operador descoñecido</translation>
 <translation id="827422111966801947">Índigo</translation>
 <translation id="8286154143153872371">Para ver o fondo de pantalla, conéctate a unha rede e volve cargar a páxina.</translation>
@@ -789,9 +804,11 @@
 <translation id="8318753676953949627">Sen imaxes</translation>
 <translation id="8336739000755212683">Cambiar imaxe da conta do dispositivo</translation>
 <translation id="8347227221149377169">Traballos de impresión</translation>
+<translation id="8351855506390808906">Punto táctil de asignación de teclas</translation>
 <translation id="8352772353338965963">Engade unha conta ao inicio de sesión múltiple. É posible acceder a todas as contas en que iniciaches sesión sen necesidade de inserir un contrasinal, polo que esta función só se debe utilizar coas contas de confianza.</translation>
 <translation id="8364946094152050673">Os servidores de nomes están baleiros</translation>
 <translation id="8372477600026034341">Hosts extra</translation>
+<translation id="8380114448424469341">Fixar ventá na seguinte metade da pantalla: <ph name="DIRECTION" /></translation>
 <translation id="8395584934117017006">Este dispositivo (<ph name="DEVICE_TYPE" />) está xestionado por unha empresa</translation>
 <translation id="8398927464629426868">O ritmo actual de carga ou descarga da batería do dispositivo</translation>
 <translation id="8410244574650205435">Detectouse automaticamente</translation>
@@ -856,6 +873,7 @@
 <translation id="8930622219860340959">Sen fíos</translation>
 <translation id="8936793075252196307">Enderezo IP do cliente</translation>
 <translation id="894617464444543719">O dispositivo é un teléfono.</translation>
+<translation id="8957423540740801332">dereita</translation>
 <translation id="8968751544471797276">Taxa de carga</translation>
 <translation id="8970109610781093811">Repetir proba</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -883,6 +901,7 @@
 <translation id="9137526406337347448">Servizos de Google</translation>
 <translation id="9138630967333032450">Maiúsculas (esquerda)</translation>
 <translation id="9149391708638971077">Realizar proba de memoria</translation>
+<translation id="9161276708550942948">espazo</translation>
 <translation id="9173638680043580060">Queda menos dun minuto</translation>
 <translation id="917720651393141712">Probar</translation>
 <translation id="9188992814426075118">O teclado pode combinar automaticamente co teu fondo de pantalla</translation>

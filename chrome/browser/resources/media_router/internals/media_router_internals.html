@@ -1,17 +1,33 @@
 <!DOCTYPE HTML>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
   <link rel="stylesheet" href="media_router_internals.css">
   <script type="module" src="media_router_internals.js"></script>
 </head>
+
+<!-- TODO(b/272093671): Make headers collapsible. -->
 <body>
   <h1>Media Router</h1>
   <div id="sink-status-div" class="status"></div>
+
   <h1>Cast Media Route Provider</h1>
   <div id="cast-status-div" class="status"></div>
+
+  <h1>Mirroring Stats</h1>
+  <div id="mirroring-stats-div" class="status">
+    <label>
+      <input id="checkbox-input" type="checkbox">
+      <span>Enable Mirroring Stats</span>
+    </label>
+    <div id="mirroring-stats-enabled-div" class="status"></div>
+  </div>
+
   <h1>Logs</h1>
   <div id="logs-div" class="status"></div>
+
 </body>
+
 </html>

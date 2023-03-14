@@ -4,7 +4,6 @@
 
 #include "components/omnibox/browser/scored_history_match.h"
 
-#include <algorithm>
 #include <memory>
 #include <numeric>
 #include <string>
@@ -13,7 +12,9 @@
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/i18n/break_iterator.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -161,8 +162,9 @@ float ScoredHistoryMatchTest::GetTopicalityScoreOfTermAgainstURLAndTitle(
     const GURL& url,
     const std::u16string& title) {
   String16Vector term_vector;
-  std::transform(terms.begin(), terms.end(), std::back_inserter(term_vector),
-                 [](auto term) { return base::UTF8ToUTF16(term); });
+  base::ranges::transform(
+      terms, std::back_inserter(term_vector),
+      [](const auto& term) { return base::UTF8ToUTF16(term); });
   std::string terms_joint =
       std::accumulate(std::next(terms.begin()), terms.end(), terms[0],
                       [](std::string accumulator, std::string term) {
@@ -841,14 +843,21 @@ TEST_F(ScoredHistoryMatchTest, GetFinalRelevancyScore) {
       &relevance_buckets);
 
   // Check when topicality score is zero.
-  float topicality_score = 0.0;
-  float frequency_score = 10.0;
-  float specificity_score = 1.0;
-  float domain_score = 1.0;
-  // intermediate_score = 0.0 * 10.0 * 1.0 * 1.0 = 0.0.
+  float topicality_score = 0;
+  float frequency_score = 0;
+  float specificity_score = 0;
+  float domain_score = 1;
   EXPECT_EQ(0, ScoredHistoryMatchPublic::GetFinalRelevancyScore(
                    topicality_score, frequency_score, specificity_score,
                    domain_score));
+
+  // Check when topicality score is 0, frequency and specificity scores are
+  // DCHECK'd to be 0 as well.
+  specificity_score = 1;
+  EXPECT_DCHECK_DEATH(ScoredHistoryMatchPublic::GetFinalRelevancyScore(
+      topicality_score, frequency_score, specificity_score, domain_score));
+
+  // intermediate_score = 0.0 * 10.0 * 1.0 * 1.0 = 0.0.
 
   // Check when intermediate score falls at the border range.
   topicality_score = 0.4f;

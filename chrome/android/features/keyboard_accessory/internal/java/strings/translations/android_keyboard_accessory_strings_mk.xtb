@@ -1,13 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
+<translation id="1347497506789975534">Прикажи ги зачуваните начини на плаќање</translation>
 <translation id="1383876407941801731">Барај</translation>
-<translation id="1566281227936819866">Се прикажуваат зачуваните начини на плаќање</translation>
 <translation id="1717486229951421299">Списокот со акредитиви што се пополнуваат со допир е отворен на половина екран.</translation>
 <translation id="207576718733492531">Списокот со акредитиви што се пополнуваат со допир е затворен.</translation>
 <translation id="2610239185026711824">Предложи лозинка</translation>
 <translation id="2652129567809778422">Изберете лозинка</translation>
-<translation id="2803478378562657435">Се прикажуваат зачуваните лозинки и опциите за лозинки</translation>
 <translation id="2903493209154104877">Адреси</translation>
 <translation id="3399357656427473483">Список со акредитиви што се пополнуваат со допир.</translation>
 <translation id="3688051737190211318">Ако имате доверба во <ph name="ORIGIN" />, може да користите зачувана лозинка за да се најавите</translation>
@@ -15,16 +14,14 @@
 <translation id="4660011489602794167">Прикажи тастатура</translation>
 <translation id="4694050069269396220">Ако имате доверба во <ph name="ORIGIN" />, може да користите зачувана лозинка од друг сајт.</translation>
 <translation id="5016175294846053194">Предлозите за автоматско пополнување се прикажуваат над тастатурата</translation>
-<translation id="5088366526685584589">Се прикажуваат зачувани адреси</translation>
 <translation id="5441504010984421144">Списокот со акредитиви што се пополнуваат со допир е отворен на цел екран.</translation>
+<translation id="6296921860874265377">Прикажи ги зачуваните лозинки и опциите за лозинки</translation>
 <translation id="6393156038355142111">Предложи силна лозинка</translation>
 <translation id="6558703547256592471">Добро би било да користите единствена лозинка за секој сајт.</translation>
 <translation id="7029809446516969842">Лозинки</translation>
-<translation id="7299100402441711551">Прикажи ги адресите</translation>
-<translation id="7494879913343971937">Прикажи ги лозинките</translation>
 <translation id="7594473730623999723">Повлечете за да видите повеќе предлози</translation>
+<translation id="7873973044507799456">Прикажи ги зачуваните адреси</translation>
 <translation id="7992095260806105436">Користете го предлогот за автоматско пополнување на Chrome</translation>
-<translation id="8037472847879765671">Прикажете ги начините на плаќање</translation>
 <translation id="8507520749471379845">Достапни лозинки</translation>
 <translation id="8705308553596171387">Нема лозинка</translation>
 <translation id="879180780857354295">Алтернативни опции за пополнување се достапни над тастатурата</translation>

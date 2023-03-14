@@ -1,0 +1,15 @@
+<!doctype html>
+<!--
+  Entry point for the chrome-untrusted://companion-side-panel.top-chrome
+  WebUI.
+-->
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+  <head>
+    <link rel="stylesheet" href="companion.css">
+    <meta charset="utf-8">
+  </head>
+  <body>
+    <iframe id="content" allow="cross-origin-isolated"></iframe>
+    <script type="module" src="companion.js"></script>
+  </body>
+</html>

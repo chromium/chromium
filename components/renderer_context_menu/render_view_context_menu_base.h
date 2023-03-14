@@ -19,6 +19,7 @@
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
 #include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/site_instance.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -181,6 +182,16 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
                                ui::PageTransition transition,
                                const std::string& extra_headers,
                                bool started_from_context_menu);
+
+  // Populates OpenURLParams for opening the specified URL string in a new tab
+  // with the extra headers.
+  content::OpenURLParams GetOpenURLParamsWithExtraHeaders(
+      const GURL& url,
+      const GURL& referring_url,
+      WindowOpenDisposition disposition,
+      ui::PageTransition transition,
+      const std::string& extra_headers,
+      bool started_from_context_menu);
 
   content::ContextMenuParams params_;
   const raw_ptr<content::WebContents, DanglingUntriaged> source_web_contents_;

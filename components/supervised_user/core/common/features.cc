@@ -14,17 +14,17 @@
 namespace supervised_user {
 
 // Enables refreshed version of the website filter interstitial that is shown to
-// Family Link users when the navigate to the blocked website.
+// Family Link users when they navigate to the blocked website.
 // This feature is a prerequisite for `kLocalWebApproval` feature.
-#if BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kWebFilterInterstitialRefresh,
-             "WebFilterInterstitialRefresh",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
+#if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kWebFilterInterstitialRefresh,
              "WebFilterInterstitialRefresh",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#else
+BASE_FEATURE(kWebFilterInterstitialRefresh,
+             "WebFilterInterstitialRefresh",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 // Enables local parent approvals for the blocked website on the Family Link
 // user's device.
@@ -42,7 +42,7 @@ BASE_FEATURE(kLocalWebApprovals,
 BASE_FEATURE(kLocalWebApprovals,
              "LocalWebApprovals",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif
 
 const char kLocalWebApprovalsPreferredButtonLocal[] = "local";
 const char kLocalWebApprovalsPreferredButtonRemote[] = "remote";
@@ -61,7 +61,7 @@ BASE_FEATURE(kAllowHistoryDeletionForChildAccounts,
 BASE_FEATURE(kAllowHistoryDeletionForChildAccounts,
              "AllowHistoryDeletionForChildAccounts",
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif
 
 // Enables the new Kids Management Api.
 BASE_FEATURE(kEnableKidsManagementService,
@@ -84,7 +84,7 @@ bool IsGoogleBrandedBuild() {
   return true;
 #else
   return false;
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif
 }
 
 bool IsLocalWebApprovalsEnabled() {
@@ -99,7 +99,7 @@ bool IsLocalWebApprovalsEnabled() {
 #else
   return IsWebFilterInterstitialRefreshEnabled() &&
          base::FeatureList::IsEnabled(kLocalWebApprovals);
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif
 }
 
 bool IsLocalWebApprovalThePreferredButton() {
@@ -113,6 +113,21 @@ bool IsKidsManagementServiceEnabled() {
   return base::FeatureList::IsEnabled(kEnableKidsManagementService);
 }
 
+// The following flags control whether supervision features are enabled on
+// desktop and iOS. These are structured as follows:
+//
+// * EnableSupervisionOnDesktopAndIOS controls whether *any* supervision
+// features are enabled at all.
+// * Individual granular per-feature flags that control whether individual
+// features are enabled. These should only be enabled if
+// EnableSupervisionOnDesktopAndIOS is also enabled.
+//
+// For a feature to be enabled:
+// * EnableSupervisionOnDesktopAndIOS must be enabled
+// * If that feature has a granular feature flag, it must also be enabled
+BASE_FEATURE(kEnableSupervisionOnDesktopAndIOS,
+             "EnableSupervisionOnDesktopAndIOS",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFilterWebsitesForSupervisedUsersOnThirdParty,
              "FilterWebsitesForSupervisedUsersOnThirdParty",
              base::FEATURE_DISABLED_BY_DEFAULT);

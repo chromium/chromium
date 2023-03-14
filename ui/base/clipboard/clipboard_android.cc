@@ -692,6 +692,13 @@ void ClipboardAndroid::WriteHTML(const char* markup_data,
                   std::string(markup_data, markup_len));
 }
 
+void ClipboardAndroid::WriteUnsanitizedHTML(const char* markup_data,
+                                            size_t markup_len,
+                                            const char* url_data,
+                                            size_t url_len) {
+  WriteHTML(markup_data, markup_len, url_data, url_len);
+}
+
 void ClipboardAndroid::WriteSvg(const char* markup_data, size_t markup_len) {
   g_map.Get().Set(ClipboardFormatType::SvgType(),
                   std::string(markup_data, markup_len));

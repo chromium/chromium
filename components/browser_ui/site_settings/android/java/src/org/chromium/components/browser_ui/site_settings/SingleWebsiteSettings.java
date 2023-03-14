@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.text.format.Formatter;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.Nullable;
@@ -191,8 +192,6 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
     // The callback to be run after this site is reset.
     private Observer mWebsiteSettingsObserver;
 
-    private final SiteDataCleaner mSiteDataCleaner = new SiteDataCleaner();
-
     // The website this page is displaying details about.
     private Website mSite;
 
@@ -346,13 +345,14 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
             }
             Callback<Boolean> onDialogClosed = (Boolean confirmed) -> {
                 if (confirmed) {
-                    mSite.clearAllStoredData(getSiteSettingsDelegate().getBrowserContextHandle(),
-                            mDataClearedCallback::run);
+                    SiteDataCleaner.clearData(getSiteSettingsDelegate().getBrowserContextHandle(),
+                            mSite, mDataClearedCallback);
                 }
             };
             ClearWebsiteStorageDialog dialogFragment =
                     ClearWebsiteStorageDialog.newInstance(preference, onDialogClosed,
-                            getSiteSettingsDelegate().isPrivacySandboxSettings4Enabled());
+                            getSiteSettingsDelegate().isPrivacySandboxSettings4Enabled(),
+                            /*isGroup=*/false);
             dialogFragment.setTargetFragment(this, 0);
             dialogFragment.show(getFragmentManager(), ClearWebsiteStorageDialog.TAG);
         } else {
@@ -544,7 +544,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                         context.getString(R.string.origin_settings_storage_usage_brief),
                         Formatter.formatShortFileSize(context, usage)));
             }
-            preference.setDataForDisplay(mSite.getTitle(), appFound);
+            preference.setDataForDisplay(mSite.getTitle(), appFound, /*isGroup=*/false);
             if (mSite.isCookieDeletionDisabled(
                         getSiteSettingsDelegate().getBrowserContextHandle())) {
                 preference.setEnabled(false);
@@ -1160,35 +1160,11 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
-        int titleResId = mHideNonPermissionPreferences
-                ? R.string.page_info_permissions_reset_dialog_title
-                : R.string.website_reset;
-        String confirmationText = mHideNonPermissionPreferences
-                ? getString(R.string.page_info_permissions_reset_confirmation,
-                        mSite.getAddress().getHost())
-                : getString(R.string.website_reset_confirmation);
-        int buttonResId = mHideNonPermissionPreferences ? R.string.reset : titleResId;
-        // Handle the Clear & Reset preference click by showing a confirmation.
-        mConfirmationDialog =
-                new AlertDialog.Builder(getContext(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
-                        .setTitle(titleResId)
-                        .setMessage(confirmationText)
-                        .setPositiveButton(buttonResId,
-                                (dialog, which) -> {
-                                    if (mHideNonPermissionPreferences) {
-                                        mSiteDataCleaner.resetPermissions(
-                                                getSiteSettingsDelegate().getBrowserContextHandle(),
-                                                mSite);
-                                    } else {
-                                        resetSite();
-                                    }
-                                    if (mWebsiteSettingsObserver != null) {
-                                        mWebsiteSettingsObserver.onPermissionsReset();
-                                    }
-                                })
-                        .setNegativeButton(
-                                R.string.cancel, (dialog, which) -> mConfirmationDialog = null)
-                        .show();
+        if (mHideNonPermissionPreferences) {
+            showResetPermissionsOnlyDialog();
+        } else {
+            showClearAndResetDialog();
+        }
         return true;
     }
 
@@ -1216,9 +1192,9 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         boolean finishActivityImmediately =
                 mSite.getTotalUsage() == 0 && mObjectPolicyPermissionCount == 0;
 
-        mSiteDataCleaner.resetPermissions(
+        SiteDataCleaner.resetPermissions(
                 getSiteSettingsDelegate().getBrowserContextHandle(), mSite);
-        mSiteDataCleaner.clearData(
+        SiteDataCleaner.clearData(
                 getSiteSettingsDelegate().getBrowserContextHandle(), mSite, mDataClearedCallback);
 
         int navigationSource = getArguments().getInt(
@@ -1253,5 +1229,56 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         if (mObjectPolicyPermissionCount > 0) {
             ManagedPreferencesUtils.showManagedSettingsCannotBeResetToast(getContext());
         }
+    }
+
+    private void showResetPermissionsOnlyDialog() {
+        // Handle the reset preference click by showing a confirmation.
+        mConfirmationDialog =
+                new AlertDialog.Builder(getContext(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
+                        .setTitle(R.string.page_info_permissions_reset_dialog_title)
+                        .setMessage(getString(R.string.page_info_permissions_reset_confirmation,
+                                mSite.getAddress().getHost()))
+                        .setPositiveButton(R.string.reset,
+                                (dialog, which) -> {
+                                    SiteDataCleaner.resetPermissions(
+                                            getSiteSettingsDelegate().getBrowserContextHandle(),
+                                            mSite);
+                                    if (mWebsiteSettingsObserver != null) {
+                                        mWebsiteSettingsObserver.onPermissionsReset();
+                                    }
+                                })
+                        .setNegativeButton(
+                                R.string.cancel, (dialog, which) -> mConfirmationDialog = null)
+                        .show();
+    }
+
+    private void showClearAndResetDialog() {
+        // Handle a click on the Clear & Reset button.
+        View dialogView =
+                getActivity().getLayoutInflater().inflate(R.layout.clear_reset_dialog, null);
+        TextView mainMessage = dialogView.findViewById(R.id.main_message);
+        mainMessage.setText(R.string.website_reset_confirmation);
+        TextView signedOutText = dialogView.findViewById(R.id.signed_out_text);
+        signedOutText.setText(R.string.webstorage_clear_data_dialog_sign_out_message);
+        TextView offlineText = dialogView.findViewById(R.id.offline_text);
+        offlineText.setText(R.string.webstorage_clear_data_dialog_offline_message);
+        if (getSiteSettingsDelegate().isPrivacySandboxSettings4Enabled()) {
+            TextView adPersonalizationText = dialogView.findViewById(R.id.ad_personalization_text);
+            adPersonalizationText.setVisibility(View.VISIBLE);
+        }
+        mConfirmationDialog =
+                new AlertDialog.Builder(getContext(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
+                        .setView(dialogView)
+                        .setTitle(R.string.website_reset_confirmation_title)
+                        .setPositiveButton(R.string.website_reset,
+                                (dialog, which) -> {
+                                    resetSite();
+                                    if (mWebsiteSettingsObserver != null) {
+                                        mWebsiteSettingsObserver.onPermissionsReset();
+                                    }
+                                })
+                        .setNegativeButton(
+                                R.string.cancel, (dialog, which) -> mConfirmationDialog = null)
+                        .show();
     }
 }

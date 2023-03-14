@@ -683,6 +683,7 @@ VISIT_PROTO_FIELDS(const sync_pb::ModelTypeState& proto) {
   VISIT(type_context);
   VISIT(encryption_key_name);
   VISIT(initial_sync_done);
+  VISIT_ENUM(initial_sync_state);
   VISIT(cache_guid);
   VISIT(authenticated_account_id);
   VISIT_REP(invalidations);
@@ -778,6 +779,7 @@ VISIT_PROTO_FIELDS(const sync_pb::WebauthnCredentialSpecifics& proto) {
   VISIT(user_name);
   VISIT(user_display_name);
   VISIT(third_party_payments_support);
+  VISIT(last_used_time_windows_epoch_micros);
   VISIT_SECRET(private_key);
   VISIT_SECRET(encrypted);
 }
@@ -876,7 +878,7 @@ VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecificsData_PasswordIssues& proto) {
 
 VISIT_PROTO_FIELDS(
     const sync_pb::PasswordSpecificsData_PasswordIssues_PasswordIssue& proto) {
-  VISIT(date_first_detection_microseconds);
+  VISIT(date_first_detection_windows_epoch_micros);
   VISIT(is_muted);
 }
 
@@ -1138,7 +1140,7 @@ VISIT_PROTO_FIELDS(const sync_pb::SyncEntity& proto) {
   VISIT(originator_client_item_id);
   VISIT(specifics);
   VISIT(folder);
-  VISIT(client_defined_unique_tag);
+  VISIT(client_tag_hash);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SyncInvalidationsPayload& proto) {

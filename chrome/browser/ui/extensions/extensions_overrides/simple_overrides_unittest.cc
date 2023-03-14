@@ -44,7 +44,6 @@ const char* kDisallowedFeatures[] = {
     extensions::manifest_keys::kApp,
     extensions::manifest_keys::kPlatformAppBackground,
     extensions::manifest_keys::kPlatformAppContentSecurityPolicy,
-    extensions::manifest_keys::kIsolation,
     extensions::manifest_keys::kLaunch,
     extensions::manifest_keys::kLinkedAppIcons,
     extensions::manifest_keys::kAutomation,

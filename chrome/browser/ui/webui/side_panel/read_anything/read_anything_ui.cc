@@ -14,6 +14,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/side_panel_read_anything_resources.h"
 #include "chrome/grit/side_panel_read_anything_resources_map.h"
+#include "chrome/grit/side_panel_shared_resources.h"
+#include "chrome/grit/side_panel_shared_resources_map.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -28,7 +30,10 @@ ReadAnythingUI::ReadAnythingUI(content::WebUI* web_ui)
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIReadAnythingSidePanelHost);
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"readAnythingTabTitle", IDS_READ_ANYTHING_TITLE},
+      {"readAnythingTabTitle", IDS_READING_MODE_TITLE},
+      {"emptyStateHeader", IDS_READING_MODE_EMPTY_STATE_HEADER},
+      {"emptyStateSubheader", IDS_READING_MODE_EMPTY_STATE_SUBHEADER},
+      {"readAnythingLoadingMessage", IDS_READ_ANYTHING_LOADING},
   };
   for (const auto& str : kLocalizedStrings)
     webui::AddLocalizedString(source, str.name, str.id);
@@ -38,6 +43,8 @@ ReadAnythingUI::ReadAnythingUI(content::WebUI* web_ui)
       base::make_span(kSidePanelReadAnythingResources,
                       kSidePanelReadAnythingResourcesSize),
       IDR_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_HTML);
+  source->AddResourcePaths(base::make_span(kSidePanelSharedResources,
+                                           kSidePanelSharedResourcesSize));
 }
 
 ReadAnythingUI::~ReadAnythingUI() = default;

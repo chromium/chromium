@@ -46,15 +46,19 @@
         if="[[isBiometricAuthenticationForFillingToggleVisible_]]">
       <pref-toggle-button id="biometricAuthenticationToggle" class="hr"
           label="$i18n{biometricAuthenticaionForFillingLabel}"
+          sub-label="$i18n{biometricAuthenticaionForFillingSublabel}"
           pref-key="password_manager.biometric_authentication_filling"
           change-requires-validation
           on-validate-and-change-pref="switchBiometricAuthBeforeFillingState_">
       </pref-toggle-button>
     </template>
   </if>
-  <cr-link-row id="trustedVaultBanner" class="cr-row settings-cr-link-row"
-      label="$i18n{trustedVaultBannerLabelOfferOptIn}"
-      sub-label="$i18n{trustedVaultBannerSubLabelOfferOptIn}" external>
+  <cr-link-row id="trustedVaultBanner" class="cr-row"
+      label="[[getTrustedVaultBannerTitle_(trustedVaultBannerState_)]]"
+      sub-label="[[getTrustedVaultBannerDescription_(trustedVaultBannerState_)]]"
+      hidden$="[[shouldHideTrustedVaultBanner_(trustedVaultBannerState_)]]"
+      button-aria-description="$i18n{opensInNewTab}"
+      on-click="onTrustedVaultBannerClick_" external>
   </cr-link-row>
   <cr-link-row id="importPasswords" class="cr-row settings-cr-link-row"
       label="$i18n{importPasswords}"
@@ -85,7 +89,9 @@
         <div class="blocked-site-content flex-centered" first$="[[!index]]">
           <div class="label site-url">[[item.urls.shown]]</div>
           <cr-icon-button class="icon-clear" id="removeBlockedValueButton"
-              on-click="onRemoveBlockedSiteClick_"></cr-icon-button>
+              on-click="onRemoveBlockedSiteClick_"
+              aria-label="[[getAriaLabelForBlockedSite_(item)]]">
+          </cr-icon-button>
         </div>
       </div>
     </template>

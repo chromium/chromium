@@ -8,14 +8,16 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/mojo_service_events_observer_base.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
-#include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
+
+BASE_DECLARE_FEATURE(kEnableWifiSignalEventsReporting);
+BASE_DECLARE_FEATURE(kEnableNetworkConnectionStateEventsReporting);
 
 class NetworkEventsObserver
     : public ::chromeos::network_health::mojom::NetworkEventsObserver,
@@ -58,11 +60,9 @@ class NetworkEventsObserver
 
   bool low_signal_reported_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
-  // Last reported connection state change data.
-  absl::optional<std::string> last_reported_connection_guid_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-  absl::optional<::chromeos::network_health::mojom::NetworkState>
-      last_reported_connection_state_ GUARDED_BY_CONTEXT(sequence_checker_);
+  // Connection state events map.
+  base::flat_map<std::string, ::chromeos::network_health::mojom::NetworkState>
+      connection_state_map_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<NetworkEventsObserver> weak_ptr_factory_{this};
 };

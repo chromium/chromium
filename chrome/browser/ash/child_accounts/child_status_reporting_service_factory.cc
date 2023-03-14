@@ -25,7 +25,14 @@ ChildStatusReportingServiceFactory::GetInstance() {
 }
 
 ChildStatusReportingServiceFactory::ChildStatusReportingServiceFactory()
-    : ProfileKeyedServiceFactory("ChildStatusReportingServiceFactory") {}
+    : ProfileKeyedServiceFactory(
+          "ChildStatusReportingServiceFactory",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {}
 
 ChildStatusReportingServiceFactory::~ChildStatusReportingServiceFactory() =
     default;

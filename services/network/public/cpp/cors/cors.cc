@@ -38,22 +38,6 @@ namespace {
 const char kAsterisk[] = "*";
 const char kLowerCaseTrue[] = "true";
 
-// TODO(toyoshim): Consider to move the following method to
-// //net/base/mime_util, and expose to Blink platform/network in order to
-// replace the existing equivalent method in HTTPParser.
-// We may prefer to implement a strict RFC2616 media-type
-// (https://tools.ietf.org/html/rfc2616#section-3.7) parser.
-std::string ExtractMIMETypeFromMediaType(const std::string& media_type) {
-  std::string::size_type semicolon = media_type.find(';');
-  std::string top_level_type;
-  std::string subtype;
-  if (net::ParseMimeTypeWithoutParameter(media_type.substr(0, semicolon),
-                                         &top_level_type, &subtype)) {
-    return top_level_type + "/" + subtype;
-  }
-  return std::string();
-}
-
 // Returns true only if |header_value| satisfies ABNF: 1*DIGIT [ "." 1*DIGIT ]
 bool IsSimilarToDoubleABNF(const std::string& header_value) {
   if (header_value.empty())
@@ -111,9 +95,15 @@ bool IsCorsSafelistedLowerCaseContentType(const std::string& value) {
   if (base::ranges::any_of(value, IsCorsUnsafeRequestHeaderByte))
     return false;
 
-  std::string mime_type = ExtractMIMETypeFromMediaType(value);
-  return mime_type == "application/x-www-form-urlencoded" ||
-         mime_type == "multipart/form-data" || mime_type == "text/plain";
+  absl::optional<std::string> mime_type =
+      net::ExtractMimeTypeFromMediaType(value,
+                                        /*accept_comma_separated=*/false);
+  if (!mime_type.has_value()) {
+    return false;
+  }
+
+  return *mime_type == "application/x-www-form-urlencoded" ||
+         *mime_type == "multipart/form-data" || *mime_type == "text/plain";
 }
 
 bool IsNoCorsSafelistedHeaderNameLowerCase(const std::string& lower_name) {

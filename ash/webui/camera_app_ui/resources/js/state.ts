@@ -10,22 +10,22 @@ import {
   PerfInformation,
   ViewName,
 } from './type.js';
+import {AssertNever, CheckEnumValuesOverlap} from './type_utils.js';
 
 export enum State {
   CAMERA_CONFIGURING = 'camera-configuring',
-  CAMERA_SWITCHING = 'camera-switching',
   DOC_MODE_REVIEWING = 'doc-mode-reviewing',
   ENABLE_GIF_RECORDING = 'enable-gif-recording',
   ENABLE_PTZ = 'enable-ptz',
   ENABLE_SCAN_BARCODE = 'enable-scan-barcode',
   FPS_30 = 'fps-30',
   FPS_60 = 'fps-60',
+  GRID = 'grid',
   /* eslint-disable @typescript-eslint/naming-convention */
   GRID_3x3 = 'grid-3x3',
   GRID_4x4 = 'grid-4x4',
   /* eslint-enable @typescript-eslint/naming-convention */
   GRID_GOLDEN = 'grid-golden',
-  GRID = 'grid',
   HAS_BACK_CAMERA = 'has-back-camera',
   HAS_FRONT_CAMERA = 'has-front-camera',
   HAS_PAN_SUPPORT = 'has-pan-support',
@@ -36,7 +36,6 @@ export enum State {
   MAX_WND = 'max-wnd',
   MIC = 'mic',
   MIRROR = 'mirror',
-  MODE_SWITCHING = 'mode-switching',
   MULTI_CAMERA = 'multi-camera',
   PLAYING_RESULT_VIDEO = 'playing-result-video',
   RECORD_TYPE_GIF = 'record-type-gif',
@@ -57,21 +56,27 @@ export enum State {
   TABLET_LANDSCAPE = 'tablet-landscape',
   TAKING = 'taking',
   TALL = 'tall',
+  TIMER = 'timer',
   TIMER_10SEC = 'timer-10s',
   TIMER_3SEC = 'timer-3s',
-  TIMER = 'timer',
   USE_FAKE_CAMERA = 'use-fake-camera',
 }
 
-export type StateUnion = ExpertOption|Mode|PerfEvent|State|ViewName;
+// All the string enum types that can be accepted by |get| / |set|.
+const stateEnums = [ExpertOption, Mode, PerfEvent, State, ViewName] as const;
 
-const stateValues = new Set<StateUnion>([
-  State,
-  Mode,
-  ViewName,
-  PerfEvent,
-  ExpertOption,
-].flatMap((s) => Object.values(s)));
+// Note that this can't be inlined into StateTypes since this relies on
+// https://github.com/microsoft/TypeScript/pull/26063
+type MapEnumTypesToEnums<T> = {
+  -readonly[K in keyof T]: T[K][keyof T[K]]
+};
+type StateTypes = MapEnumTypesToEnums<typeof stateEnums>;
+
+// The union of all types accepted by |get| / |set|.
+export type StateUnion = StateTypes[number];
+
+const stateValues =
+    new Set<StateUnion>(stateEnums.flatMap((s) => Object.values(s)));
 
 /**
  * Asserts input string is valid state.
@@ -164,3 +169,13 @@ export function set(
     observer(val, perfInfo);
   }
 }
+
+// This checks that all the enums in stateEnums doesn't overlap, so we don't
+// accidentally have two different enum defining the same value.
+type OverlappingStates = CheckEnumValuesOverlap<StateTypes>;
+
+// This is exported here to avoid getting unused type warning from typescript.
+//
+// If you got compile error here, check type of OverlappingStates to see which
+// values are duplicated between the stateEnums, and change one of those.
+export type AssertStatesNotOverlapping = AssertNever<OverlappingStates>;

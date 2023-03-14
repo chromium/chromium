@@ -49,6 +49,10 @@ class QuickStartScreen
   void UnbindFromBootstrapController();
   void SendRandomFiguresForTesting() const;
 
+  // Retrieves the connected phone ID and saves it for later use in OOBE on the
+  // MultideviceSetupScreen.
+  void SavePhoneInstanceID();
+
   base::WeakPtr<TView> view_;
   ScreenExitCallback exit_callback_;
 

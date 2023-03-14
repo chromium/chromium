@@ -36,11 +36,11 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/content/browser/content_autofill_driver_factory_test_api.h"
+#include "components/autofill/content/browser/test_autofill_client_injector.h"
+#include "components/autofill/content/browser/test_autofill_driver_injector.h"
+#include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
@@ -1022,35 +1022,25 @@ class RenderViewContestMenuAutofillTest
   }
 
   void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-    autofill_client_ = std::make_unique<autofill::TestAutofillClient>(
-        std::make_unique<autofill::TestPersonalDataManager>());
-  }
-
-  void TearDown() override {
-    autofill_client_.reset();
-    ChromeRenderViewHostTestHarness::TearDown();
+    RenderViewContextMenuPrefsTest::SetUp();
+    if (IsIncognito()) {
+      SetContents(content::WebContentsTester::CreateTestWebContents(
+          profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true), nullptr));
+    }
   }
 
  protected:
   // Returns true if the test needs to run in incognito mode.
   bool IsIncognito() const { return GetParam(); }
 
-  void InjectAutofillDriver(
-      content::RenderFrameHost* rfh,
-      std::unique_ptr<autofill::TestAutofillDriver> driver) {
-    autofill::ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
-        web_contents(), autofill_client_.get(),
-        autofill::ContentAutofillDriverFactory::DriverInitCallback());
-    auto* cadf =
-        autofill::ContentAutofillDriverFactory::FromWebContents(web_contents());
-    autofill::ContentAutofillDriverFactoryTestApi(cadf).SetDriver(
-        rfh, std::move(driver));
+  autofill::TestContentAutofillClient* autofill_client() {
+    return autofill_client_injector_[web_contents()];
   }
 
  private:
-  std::unique_ptr<autofill::TestAutofillClient> autofill_client_;
   base::test::ScopedFeatureList feature_list_;
+  autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
+      autofill_client_injector_;
 };
 
 INSTANTIATE_TEST_SUITE_P(AutofillContextMenuTest,
@@ -1065,25 +1055,12 @@ TEST_P(RenderViewContestMenuAutofillTest, ShowAutofillOptions) {
   DCHECK(pdm);
   pdm->AddServerCreditCardForTest(
       std::make_unique<autofill::CreditCard>(autofill::test::GetCreditCard()));
-  if (IsIncognito()) {
-    // Verify that Autofill context menu items are displayed on a number field
-    // in Incognito.
-    std::unique_ptr<content::WebContents> incognito_web_contents(
-        content::WebContentsTester::CreateTestWebContents(
-            profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
-            nullptr));
 
-    content::WebContentsTester::For(incognito_web_contents.get())
-        ->NavigateAndCommit(GURL("http://www.foo.com/"));
-  } else {
-    NavigateAndCommit(GURL("http://www.foo.com/"));
-  }
+  NavigateAndCommit(GURL("http://www.foo.com/"));
   content::ContextMenuParams params = CreateParams(MenuItem::EDITABLE);
   params.input_field_type =
       blink::mojom::ContextMenuDataInputFieldType::kPlainText;
 
-  InjectAutofillDriver(web_contents()->GetPrimaryMainFrame(),
-                       std::make_unique<autofill::TestAutofillDriver>());
   auto menu = std::make_unique<TestRenderViewContextMenu>(
       *web_contents()->GetPrimaryMainFrame(), params);
   menu->Init();

@@ -79,6 +79,7 @@ mojom_js_args = [
   # as gen/<path-to-module> for compilation, so we can rewrite them as absolute
   # paths.
   "browser_resolver_prefix_replacements=\"chrome://resources/mojo/=/\"",
+  "browser_resolver_prefix_replacements=\"//resources/mojo/=/\"",
 ]
 
 polymer3_args = [

@@ -88,11 +88,6 @@ void RecordLibassistantDlcLoadStatus(const LoadStatus& status) {
 }  // namespace
 
 void LibassistantLoaderImpl::Load(LoadCallback callback) {
-  if (!assistant::features::IsLibAssistantDlcEnabled()) {
-    std::move(callback).Run(/*success=*/true);
-    return;
-  }
-
   if (entry_point_) {
     std::move(callback).Run(/*success=*/true);
     return;

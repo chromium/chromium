@@ -26,8 +26,8 @@ class UseCounterPageLoadMetricsObserverBrowserTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     feature_list_.InitWithFeaturesAndParameters(
-        content::DefaultEnabledBackForwardCacheParametersForTests(),
-        content::DefaultDisabledBackForwardCacheParametersForTests());
+        content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(),
+        content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
     MetricIntegrationTest::SetUpCommandLine(command_line);
     vmodule_switches_.InitWithSwitches("back_forward_cache_impl=1");
   }

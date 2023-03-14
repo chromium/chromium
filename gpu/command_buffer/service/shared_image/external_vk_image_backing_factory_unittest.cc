@@ -179,7 +179,7 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, DawnWrite_SkiaVulkanRead) {
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space,
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-      false /* is_thread_safe */);
+      /*is_thread_safe=*/false);
   ASSERT_NE(backing, nullptr);
 
   std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
@@ -213,7 +213,7 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, DawnWrite_SkiaVulkanRead) {
 
     wgpu::CommandEncoder encoder = dawn_device_.CreateCommandEncoder();
     wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&renderPassDesc);
-    pass.EndPass();
+    pass.End();
     wgpu::CommandBuffer commands = encoder.Finish();
 
     wgpu::Queue queue = dawn_device_.GetQueue();
@@ -297,7 +297,7 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, SkiaVulkanWrite_DawnRead) {
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space,
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-      false /* is_thread_safe */);
+      /*is_thread_safe=*/false);
   ASSERT_NE(backing, nullptr);
 
   std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
@@ -315,7 +315,7 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, SkiaVulkanWrite_DawnRead) {
     std::vector<GrBackendSemaphore> end_semaphores;
     auto skia_scoped_access = skia_representation->BeginScopedWriteAccess(
         /*final_msaa_count=*/1,
-        SkSurfaceProps(0 /* flags */, kUnknown_SkPixelGeometry),
+        SkSurfaceProps(/*flags=*/0, kUnknown_SkPixelGeometry),
         &begin_semaphores, &end_semaphores,
         gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
 

@@ -209,8 +209,9 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
 
     process_host_root_ =
         std::make_unique<MockRenderProcessHost>(browser_context_.get());
-    site_instance_group_root_ = base::WrapRefCounted(new SiteInstanceGroup(
-        SiteInstanceImpl::NextBrowsingInstanceId(), process_host_root_.get()));
+    site_instance_group_root_ =
+        base::WrapRefCounted(SiteInstanceGroup::CreateForTesting(
+            browser_context_.get(), process_host_root_.get()));
     widget_host_root_ = RenderWidgetHostImpl::Create(
         /*frame_tree=*/nullptr, &delegate_,
         site_instance_group_root_->GetSafeRef(),
@@ -268,9 +269,9 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
 
     child.process_host =
         std::make_unique<MockRenderProcessHost>(browser_context_.get());
-    child.site_instance_group = base::WrapRefCounted(
-        new SiteInstanceGroup(site_instance_group_root_->browsing_instance_id(),
-                              child.process_host.get()));
+    child.site_instance_group =
+        base::WrapRefCounted(SiteInstanceGroup::CreateForTesting(
+            site_instance_group_root_.get(), child.process_host.get()));
     child.widget_host = RenderWidgetHostImpl::Create(
         /*frame_tree=*/nullptr, &delegate_,
         child.site_instance_group->GetSafeRef(),

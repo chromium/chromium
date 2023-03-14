@@ -188,6 +188,13 @@ struct BLINK_EXPORT WebNavigationInfo {
   // alive until we create the NavigationRequest.
   CrossVariantMojoRemote<mojom::PolicyContainerHostKeepAliveHandleInterfaceBase>
       initiator_policy_container_keep_alive_handle;
+
+  // The initiator frame's LocalDOMWindow's has_storage_access state.
+  bool has_storage_access = false;
+  // Whether this navigation was initiated by the container, e.g. iframe changed
+  // src. Only container-initiated navigation report resource timing to the
+  // parent.
+  bool is_container_initiated = false;
 };
 
 // This structure holds all information provided by the embedder that is
@@ -487,7 +494,7 @@ struct BLINK_EXPORT WebNavigationParams {
 
   // Whether the current context would be allowed to create an opaque-ads
   //  frame (based on the browser-side calculations). See
-  // HTMLFencedFrameElement::canLoadOpaqueURL for usage and
+  // NavigatorAuction::canLoadAdAuctionFencedFrame for usage and
   // ::blink::mojom::CommitNavigationParams::ancestor_or_self_has_cspee for
   // where the value is coming from.
   bool ancestor_or_self_has_cspee = false;
@@ -528,6 +535,9 @@ struct BLINK_EXPORT WebNavigationParams {
   // <enum_representing_runtime_enabled_feature, enabled/disabled>
   base::flat_map<::blink::mojom::RuntimeFeatureState, bool>
       modified_runtime_features;
+
+  // Whether the document should be loaded with the has_storage_access bit set.
+  bool has_storage_access = false;
 };
 
 }  // namespace blink

@@ -5,7 +5,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "goma", "os", "reclient")
+load("//lib/builders.star", "os", "reclient")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 
@@ -33,7 +33,6 @@ consoles.list_view(
 try_.builder(
     name = "win-annotator-rel",
     mirrors = ["ci/win-annotator-rel"],
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.builder(
@@ -101,8 +100,6 @@ try_.compilator_builder(
     name = "win-rel-compilator",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     check_for_flakiness = True,
-    goma_backend = goma.backend.RBE_PROD,
-    goma_jobs = goma.jobs.J300,
     # TODO (crbug.com/1245171): Revert when root issue is fixed
     grace_period = 4 * time.minute,
     main_list_view = "try",
@@ -170,7 +167,6 @@ try_.builder(
     mirrors = [
         "ci/win-archive-rel",
     ],
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.builder(
@@ -188,7 +184,6 @@ try_.builder(
         "ci/win10-wpt-content-shell-fyi-rel",
     ],
     os = os.WINDOWS_10,
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.builder(
@@ -197,7 +192,6 @@ try_.builder(
         "ci/win11-wpt-content-shell-fyi-rel",
     ],
     os = os.WINDOWS_ANY,
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.builder(
@@ -221,14 +215,12 @@ try_.builder(
         "ci/Win10 x64 Release (NVIDIA)",
     ],
     os = os.WINDOWS_10,
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.builder(
     name = "win-fieldtrial-rel",
     mirrors = ["ci/win-fieldtrial-rel"],
     os = os.WINDOWS_DEFAULT,
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.builder(
@@ -236,7 +228,6 @@ try_.builder(
     mirrors = [
         "ci/win-perfetto-rel",
     ],
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.builder(
@@ -291,6 +282,7 @@ try_.gpu.optional_tests_builder(
             cq.location_filter(path_regexp = "third_party/blink/renderer/modules/mediastream/.+"),
             cq.location_filter(path_regexp = "third_party/blink/renderer/modules/webcodecs/.+"),
             cq.location_filter(path_regexp = "third_party/blink/renderer/modules/webgl/.+"),
+            cq.location_filter(path_regexp = "third_party/blink/renderer/modules/webgpu/.+"),
             cq.location_filter(path_regexp = "third_party/blink/renderer/modules/xr/.+"),
             cq.location_filter(path_regexp = "third_party/blink/renderer/platform/graphics/gpu/.+"),
             cq.location_filter(path_regexp = "tools/clang/scripts/update.py"),

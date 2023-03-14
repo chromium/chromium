@@ -6,9 +6,21 @@
 
 #include <memory>
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
+#include "ash/system/video_conference/fake_video_conference_tray_controller.h"
+#include "ash/system/video_conference/video_conference_tray_controller.h"
+#endif
+#include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_web_app.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -22,7 +34,7 @@
 
 namespace video_conference {
 
-class FakeVcMediaListener : VideoConferenceMediaListener {
+class FakeVideoConferenceMediaListener : public VideoConferenceMediaListener {
  public:
   struct State {
     int video_capture_count = 0;
@@ -31,20 +43,23 @@ class FakeVcMediaListener : VideoConferenceMediaListener {
     int display_capture_count = 0;
   };
 
-  FakeVcMediaListener()
+  FakeVideoConferenceMediaListener()
       : VideoConferenceMediaListener(
-            base::BindRepeating([]() {}),
+            base::DoNothing(),
             base::BindRepeating(
                 [](content::WebContents* contents) -> VideoConferenceWebApp* {
                   // Should not be called.
                   EXPECT_TRUE(false);
                   return nullptr;
-                })) {}
+                }),
+            base::DoNothing()) {}
 
-  FakeVcMediaListener(const FakeVcMediaListener&) = delete;
-  FakeVcMediaListener& operator=(const FakeVcMediaListener&) = delete;
+  FakeVideoConferenceMediaListener(const FakeVideoConferenceMediaListener&) =
+      delete;
+  FakeVideoConferenceMediaListener& operator=(
+      const FakeVideoConferenceMediaListener&) = delete;
 
-  ~FakeVcMediaListener() override = default;
+  ~FakeVideoConferenceMediaListener() override = default;
 
   // MediaStreamCaptureIndicator::Observer overrides
   void OnIsCapturingVideoChanged(content::WebContents* contents,
@@ -83,6 +98,13 @@ class VideoConferenceMediaListenerBrowserTest : public InProcessBrowserTest {
       const VideoConferenceMediaListenerBrowserTest&) = delete;
 
   ~VideoConferenceMediaListenerBrowserTest() override = default;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(
+        ::ash::switches::kCameraEffectsSupportedByHardware);
+  }
+#endif
 
   // Adds a fake media device with the specified `MediaStreamType` and starts
   // the capturing.
@@ -146,13 +168,57 @@ class VideoConferenceMediaListenerBrowserTest : public InProcessBrowserTest {
   }
 
   int tab_count_{0};
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ash::features::kVideoConference};
+#endif
 };
+
+// As FakeVideoConferenceMediaListener does not setup any mojo connection with
+// VCManagerAsh, this test is currently only supported on ash.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Tests request-on-mute functionality appropriately updates tray controller.
+IN_PROC_BROWSER_TEST_F(VideoConferenceMediaListenerBrowserTest, RequestOnMute) {
+  ash::FakeVideoConferenceTrayController* controller =
+      static_cast<ash::FakeVideoConferenceTrayController*>(
+          ash::VideoConferenceTrayController::Get());
+  ASSERT_TRUE(controller);
+
+  auto* vc_manager = crosapi::CrosapiManager::Get()
+                         ->crosapi_ash()
+                         ->video_conference_manager_ash();
+  ASSERT_TRUE(vc_manager);
+
+  auto* vc_app1 = CreateVcWebAppInNewTab();
+  auto* vc_app2 = CreateVcWebAppInNewTab();
+
+  vc_manager->SetSystemMediaDeviceStatus(
+      crosapi::mojom::VideoConferenceMediaDevice::kCamera, true);
+
+  // Initially should be zero.
+  EXPECT_EQ(controller->device_used_while_disabled_records().size(), 0u);
+
+  // Start capture (and store callback in variable to prevent destructor from
+  // stopping capture).
+  auto stop_capture_callback1 =
+      StartCapture(&vc_app1->GetWebContents(),
+                   blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
+  EXPECT_EQ(controller->device_used_while_disabled_records().size(), 1u);
+
+  vc_manager->SetSystemMediaDeviceStatus(
+      crosapi::mojom::VideoConferenceMediaDevice::kMicrophone, true);
+  auto stop_capture_callback2 =
+      StartCapture(&vc_app2->GetWebContents(),
+                   blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE);
+  EXPECT_EQ(controller->device_used_while_disabled_records().size(), 2u);
+}
+#endif
 
 // Tests video capturing is correctly detected by VideoConferenceMediaListener.
 IN_PROC_BROWSER_TEST_F(VideoConferenceMediaListenerBrowserTest,
                        DeviceVideoCapturing) {
-  std::unique_ptr<FakeVcMediaListener> media_listener =
-      std::make_unique<FakeVcMediaListener>();
+  std::unique_ptr<FakeVideoConferenceMediaListener> media_listener =
+      std::make_unique<FakeVideoConferenceMediaListener>();
 
   // Start video capture
   auto* vc_app1 = CreateVcWebAppInNewTab();
@@ -178,8 +244,8 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceMediaListenerBrowserTest,
 // Tests audio capturing is correctly detected by VideoConferenceMediaListener.
 IN_PROC_BROWSER_TEST_F(VideoConferenceMediaListenerBrowserTest,
                        DeviceAudioCapturing) {
-  std::unique_ptr<FakeVcMediaListener> media_listener =
-      std::make_unique<FakeVcMediaListener>();
+  std::unique_ptr<FakeVideoConferenceMediaListener> media_listener =
+      std::make_unique<FakeVideoConferenceMediaListener>();
 
   // Start audio capture
   auto* vc_app1 = CreateVcWebAppInNewTab();
@@ -206,8 +272,8 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceMediaListenerBrowserTest,
 // VideoConferenceMediaListener.
 IN_PROC_BROWSER_TEST_F(VideoConferenceMediaListenerBrowserTest,
                        DesktopCapturing) {
-  std::unique_ptr<FakeVcMediaListener> media_listener =
-      std::make_unique<FakeVcMediaListener>();
+  std::unique_ptr<FakeVideoConferenceMediaListener> media_listener =
+      std::make_unique<FakeVideoConferenceMediaListener>();
 
   // Start desktop capture
   auto* vc_app1 = CreateVcWebAppInNewTab();
@@ -232,8 +298,8 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceMediaListenerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(VideoConferenceMediaListenerBrowserTest,
                        TestExtensionIDShouldNotBeTracked) {
-  std::unique_ptr<FakeVcMediaListener> media_listener =
-      std::make_unique<FakeVcMediaListener>();
+  std::unique_ptr<FakeVideoConferenceMediaListener> media_listener =
+      std::make_unique<FakeVideoConferenceMediaListener>();
 
   // We can't directly navigate to TestExtensionUrl, so we use this workaround
   // to set the url afterwards.
@@ -249,8 +315,8 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceMediaListenerBrowserTest,
     EXPECT_EQ(web_contents->GetURL().host(), app_id);
 
     // Access video.
-    StartCapture(web_contents,
-                 blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
+    auto stop_capture_callback = StartCapture(
+        web_contents, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
 
     // Verify no app is tracked.
     EXPECT_EQ(media_listener->state().window_capture_count, 0);

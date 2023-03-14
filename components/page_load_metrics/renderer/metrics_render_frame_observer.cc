@@ -687,34 +687,6 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
         LargestContentfulPaintTypeToUKMFlags(
             perf.LargestContentfulPaintTypeForMetrics());
   }
-  if (perf.ExperimentalLargestImagePaintSize() > 0) {
-    timing->paint_timing->experimental_largest_contentful_paint
-        ->largest_image_paint_size = perf.ExperimentalLargestImagePaintSize();
-    // Note that size can be nonzero while the time is 0 since a time of 0 is
-    // sent when the image is painting. We assign the time even when it is 0 so
-    // that it's not ignored, but need to be careful when doing operations on
-    // the value.
-    timing->paint_timing->experimental_largest_contentful_paint
-        ->largest_image_paint =
-        perf.ExperimentalLargestImagePaint() == 0.0
-            ? base::TimeDelta()
-            : CreateTimeDeltaFromTimestampsInSeconds(
-                  perf.ExperimentalLargestImagePaint(), start);
-    timing->paint_timing->experimental_largest_contentful_paint->type =
-        LargestContentfulPaintTypeToUKMFlags(
-            perf.LargestContentfulPaintTypeForMetrics());
-  }
-  if (perf.ExperimentalLargestTextPaintSize() > 0) {
-    // ExperimentalLargestTextPaint and ExperimentalLargestTextPaintSize should
-    // be available at the same time. This is a renderer side DCHECK to ensure
-    // this.
-    DCHECK(perf.ExperimentalLargestTextPaint());
-    timing->paint_timing->experimental_largest_contentful_paint
-        ->largest_text_paint = CreateTimeDeltaFromTimestampsInSeconds(
-        perf.ExperimentalLargestTextPaint(), start);
-    timing->paint_timing->experimental_largest_contentful_paint
-        ->largest_text_paint_size = perf.ExperimentalLargestTextPaintSize();
-  }
   // It is possible for a frame to switch from eligible for painting to
   // ineligible for it prior to the first paint. If this occurs, we need to
   // propagate the null value.

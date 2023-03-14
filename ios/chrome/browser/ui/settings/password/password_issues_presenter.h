@@ -8,12 +8,15 @@
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 
 @protocol PasswordIssue;
+@class CrURL;
 
 // Presenter which handles commands from `PasswordsIssuesTableViewController`.
 @protocol PasswordIssuesPresenter
 
 // Called when view controller is removed.
 - (void)dismissPasswordIssuesTableViewController;
+
+- (void)dismissAndOpenURL:(CrURL*)URL;
 
 // Called when Password Details screen should be shown.
 - (void)presentPasswordIssueDetails:(PasswordIssue*)password;

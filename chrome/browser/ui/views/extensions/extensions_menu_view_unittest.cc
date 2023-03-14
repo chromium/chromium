@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -90,15 +91,14 @@ class ExtensionsMenuViewUnitTest : public ExtensionsToolbarUnitTest {
   }
 
   // Asserts there is exactly 1 menu item and then returns it.
-  InstalledExtensionMenuItemView* GetOnlyMenuItem();
+  ExtensionMenuItemView* GetOnlyMenuItem();
 
-  void ClickPinButton(InstalledExtensionMenuItemView* menu_item) const;
-  void ClickContextMenuButton(InstalledExtensionMenuItemView* menu_item) const;
+  void ClickPinButton(ExtensionMenuItemView* menu_item) const;
+  void ClickContextMenuButton(ExtensionMenuItemView* menu_item) const;
 
   std::vector<ToolbarActionView*> GetPinnedExtensionViews();
 
-  InstalledExtensionMenuItemView* GetInstalledExtensionMenuItemView(
-      const std::string& name);
+  ExtensionMenuItemView* GetExtensionMenuItemView(const std::string& name);
 
   // Returns a list of the names of the currently pinned extensions, in order
   // from left to right.
@@ -126,8 +126,8 @@ ExtensionsMenuViewUnitTest::InstallExtensionAndLayout(const std::string& name) {
   return extension;
 }
 
-InstalledExtensionMenuItemView* ExtensionsMenuViewUnitTest::GetOnlyMenuItem() {
-  base::flat_set<InstalledExtensionMenuItemView*> menu_items =
+ExtensionMenuItemView* ExtensionsMenuViewUnitTest::GetOnlyMenuItem() {
+  base::flat_set<ExtensionMenuItemView*> menu_items =
       extensions_menu()->extensions_menu_items_for_testing();
   if (menu_items.size() != 1u) {
     ADD_FAILURE() << "Not exactly one item; size is: " << menu_items.size();
@@ -137,12 +137,12 @@ InstalledExtensionMenuItemView* ExtensionsMenuViewUnitTest::GetOnlyMenuItem() {
 }
 
 void ExtensionsMenuViewUnitTest::ClickPinButton(
-    InstalledExtensionMenuItemView* menu_item) const {
+    ExtensionMenuItemView* menu_item) const {
   ClickButton(menu_item->pin_button_for_testing());
 }
 
 void ExtensionsMenuViewUnitTest::ClickContextMenuButton(
-    InstalledExtensionMenuItemView* menu_item) const {
+    ExtensionMenuItemView* menu_item) const {
   ClickButton(menu_item->context_menu_button_for_testing());
 }
 
@@ -169,13 +169,12 @@ ExtensionsMenuViewUnitTest::GetPinnedExtensionViews() {
   return result;
 }
 
-InstalledExtensionMenuItemView*
-ExtensionsMenuViewUnitTest::GetInstalledExtensionMenuItemView(
+ExtensionMenuItemView* ExtensionsMenuViewUnitTest::GetExtensionMenuItemView(
     const std::string& name) {
-  base::flat_set<InstalledExtensionMenuItemView*> menu_items =
+  base::flat_set<ExtensionMenuItemView*> menu_items =
       extensions_menu()->extensions_menu_items_for_testing();
-  auto iter = base::ranges::find(
-      menu_items, name, [](InstalledExtensionMenuItemView* item) {
+  auto iter =
+      base::ranges::find(menu_items, name, [](ExtensionMenuItemView* item) {
         return base::UTF16ToUTF8(item->view_controller()->GetActionName());
       });
   return iter == menu_items.end() ? nullptr : *iter;
@@ -185,10 +184,9 @@ std::vector<std::string> ExtensionsMenuViewUnitTest::GetPinnedExtensionNames() {
   std::vector<ToolbarActionView*> views = GetPinnedExtensionViews();
   std::vector<std::string> result;
   result.resize(views.size());
-  std::transform(
-      views.begin(), views.end(), result.begin(), [](ToolbarActionView* view) {
-        return base::UTF16ToUTF8(view->view_controller()->GetActionName());
-      });
+  base::ranges::transform(views, result.begin(), [](ToolbarActionView* view) {
+    return base::UTF16ToUTF8(view->view_controller()->GetActionName());
+  });
   return result;
 }
 
@@ -205,7 +203,7 @@ TEST_F(ExtensionsMenuViewUnitTest, ExtensionsAreShownInTheMenu) {
   InstallExtensionAndLayout(kExtensionName);
 
   {
-    base::flat_set<InstalledExtensionMenuItemView*> menu_items =
+    base::flat_set<ExtensionMenuItemView*> menu_items =
         extensions_menu()->extensions_menu_items_for_testing();
     ASSERT_EQ(1u, menu_items.size());
     EXPECT_EQ(kExtensionName,
@@ -225,7 +223,7 @@ TEST_F(ExtensionsMenuViewUnitTest, ExtensionsAreSortedInTheMenu) {
   constexpr char kExtensionCName[] = "C Extension";
   InstallExtensionAndLayout(kExtensionCName);
 
-  std::vector<InstalledExtensionMenuItemView*> menu_items =
+  std::vector<ExtensionMenuItemView*> menu_items =
       ExtensionsMenuView::GetSortedItemsForSectionForTesting(
           extensions::SitePermissionsHelper::SiteInteraction::kNone);
   ASSERT_EQ(4u, menu_items.size());
@@ -247,7 +245,7 @@ TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionAppearsInToolbar) {
   constexpr char kName[] = "Test Name";
   const std::string& extension_id = InstallExtensionAndLayout(kName)->id();
 
-  InstalledExtensionMenuItemView* menu_item = GetOnlyMenuItem();
+  ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
   ASSERT_TRUE(menu_item);
   EXPECT_FALSE(extensions_container()->IsActionVisibleOnToolbar(extension_id));
   EXPECT_THAT(GetPinnedExtensionNames(), testing::IsEmpty());
@@ -273,7 +271,7 @@ TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionAppearsInAnotherWindow) {
       CreateBrowser(browser()->profile(), browser()->type(),
                     /* hosted_app */ false, /* browser_window */ nullptr));
 
-  InstalledExtensionMenuItemView* menu_item = GetOnlyMenuItem();
+  ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
   ASSERT_TRUE(menu_item);
   ClickPinButton(menu_item);
 
@@ -295,7 +293,7 @@ TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionRemovedWhenDisabled) {
   const extensions::ExtensionId id = InstallExtensionAndLayout(kName)->id();
 
   {
-    InstalledExtensionMenuItemView* menu_item = GetOnlyMenuItem();
+    ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
     ASSERT_TRUE(menu_item);
     ClickPinButton(menu_item);
   }
@@ -359,7 +357,7 @@ TEST_F(ExtensionsMenuViewUnitTest, ReloadExtension) {
   ASSERT_EQ(1u, extensions_menu()->extensions_menu_items_for_testing().size());
 
   {
-    InstalledExtensionMenuItemView* menu_item = GetOnlyMenuItem();
+    ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
     ClickPinButton(menu_item);
     EXPECT_TRUE(
         extensions_container()->IsActionVisibleOnToolbar(extension->id()));
@@ -392,7 +390,7 @@ TEST_F(ExtensionsMenuViewUnitTest, ReloadExtensionFailed) {
   scoped_refptr<const extensions::Extension> extension =
       loader.LoadExtension(extension_directory.UnpackedPath());
   LayoutMenuIfNecessary();
-  InstalledExtensionMenuItemView* menu_item = GetOnlyMenuItem();
+  ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
   ASSERT_TRUE(menu_item);
   ClickPinButton(menu_item);
 
@@ -422,7 +420,7 @@ TEST_F(ExtensionsMenuViewUnitTest, ReloadExtensionFailed) {
 TEST_F(ExtensionsMenuViewUnitTest, PinButtonUserActionWithAccessibility) {
   base::UserActionTester user_action_tester;
   InstallExtensionAndLayout("Test Extension");
-  InstalledExtensionMenuItemView* menu_item = GetOnlyMenuItem();
+  ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
   ASSERT_NE(nullptr, menu_item);
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   constexpr char kPinButtonUserAction[] = "Extensions.Toolbar.PinButtonPressed";

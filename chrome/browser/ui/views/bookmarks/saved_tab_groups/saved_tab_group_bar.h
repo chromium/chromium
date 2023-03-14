@@ -17,6 +17,7 @@
 
 class Browser;
 class SavedTabGroupButton;
+class SavedTabGroupDragData;
 
 namespace content {
 class PageNavigator;
@@ -45,6 +46,19 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
 
   // views::AccessiblePaneView
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+
+  // views::View
+  bool GetDropFormats(int* formats,
+                      std::set<ui::ClipboardFormatType>* format_types) override;
+  bool AreDropTypesRequired() override;
+  bool CanDrop(const OSExchangeData& data) override;
+  void OnDragEntered(const ui::DropTargetEvent& event) override;
+  int OnDragUpdated(const ui::DropTargetEvent& event) override;
+  void OnDragExited() override;
+  void OnDragDone() override;
+  views::View::DropCallback GetDropCallback(
+      const ui::DropTargetEvent& event) override;
+  void OnPaint(gfx::Canvas* canvas) override;
 
   // SavedTabGroupModelObserver
   void SavedTabGroupAddedLocally(const base::GUID& guid) override;
@@ -106,10 +120,16 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   void HideOverflowButton();
   void ShowOverflowButton();
 
+  // Updates the drop index in `drag_data_` based on the current drag location.
+  void UpdateDropIndex();
+
+  // Reorders the dragged group to its new index.
+  void HandleDrop();
+
   // Provides a callback that returns the page navigator
   base::RepeatingCallback<content::PageNavigator*()> GetPageNavigatorGetter();
 
-  raw_ptr<views::MenuButton> overflow_button_;
+  raw_ptr<views::MenuButton, DanglingUntriaged> overflow_button_;
 
   // Used to show the overflow menu when clicked.
   raw_ptr<views::BubbleDialogDelegate> bubble_delegate_ = nullptr;
@@ -120,6 +140,9 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // The page navigator used to create tab groups
   raw_ptr<content::PageNavigator, DanglingUntriaged> page_navigator_ = nullptr;
   raw_ptr<Browser> browser_;
+
+  // During a drag and drop session, `drag_data_` owns the state for the drag.
+  std::unique_ptr<SavedTabGroupDragData> drag_data_;
 
   // animations have been noted to cause issues with tests in the bookmarks bar.
   // this boolean lets the SavedTabGroupButton choose whether they want to

@@ -108,11 +108,13 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
             this.password.id, chrome.passwordsPrivate.PlaintextReason.COPY)
         .then(() => this.showToast_(this.i18n('passwordCopiedToClipboard')))
         .catch(() => {});
+    this.extendAuthValidity_();
   }
 
   private onCopyUsernameClick_() {
     navigator.clipboard.writeText(this.password.username);
     this.showToast_(this.i18n('usernameCopiedToClipboard'));
+    this.extendAuthValidity_();
   }
 
   private onDeleteClick_() {
@@ -136,10 +138,12 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
 
   private onEditClicked_() {
     this.showEditPasswordDialog_ = true;
+    this.extendAuthValidity_();
   }
 
   private onEditPasswordDialogClosed_() {
     this.showEditPasswordDialog_ = false;
+    this.extendAuthValidity_();
   }
 
   private getNoteValue_(): string {
@@ -154,6 +158,11 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   private onshowMoreClick_(e: Event) {
     e.preventDefault();
     this.showNoteFully_ = true;
+    this.extendAuthValidity_();
+  }
+
+  private extendAuthValidity_() {
+    PasswordManagerImpl.getInstance().extendAuthValidity();
   }
 }
 

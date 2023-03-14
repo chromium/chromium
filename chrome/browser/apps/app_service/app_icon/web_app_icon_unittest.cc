@@ -64,12 +64,13 @@
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #endif
 
 namespace apps {
 
-class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
+class WebAppIconFactoryTest : public testing::Test {
  public:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   WebAppIconFactoryTest() {
@@ -83,7 +84,13 @@ class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
   ~WebAppIconFactoryTest() override = default;
 
   void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
+    testing::Test::SetUp();
+
+    TestingProfile::Builder builder;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    builder.SetIsMainProfile(true);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    profile_ = builder.Build();
 
     web_app_provider_ = web_app::WebAppProvider::GetForWebApps(profile());
     ASSERT_TRUE(web_app_provider_);
@@ -262,8 +269,12 @@ class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
 
   web_app::WebAppSyncBridge& sync_bridge() { return *sync_bridge_; }
 
+  Profile* profile() { return profile_.get(); }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfile> profile_;
   raw_ptr<web_app::WebAppProvider> web_app_provider_;
   raw_ptr<web_app::WebAppIconManager> icon_manager_;
   raw_ptr<web_app::WebAppSyncBridge> sync_bridge_;
@@ -912,8 +923,6 @@ class AppServiceWebAppIconTest : public WebAppIconFactoryTest {
     OverrideAppServiceProxyInnerIconLoader(fake_icon_loader_.get());
     fake_publisher_ =
         std::make_unique<apps::FakePublisherForIconTest>(proxy_, AppType::kWeb);
-    scoped_decode_request_for_testing_ =
-        std::make_unique<ScopedDecodeRequestForTesting>();
   }
 
   void OverrideAppServiceProxyInnerIconLoader(apps::IconLoader* icon_loader) {
@@ -1015,14 +1024,11 @@ class AppServiceWebAppIconTest : public WebAppIconFactoryTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 
   raw_ptr<AppServiceProxy> proxy_;
   std::unique_ptr<apps::FakeIconLoader> fake_icon_loader_;
   std::unique_ptr<apps::FakePublisherForIconTest> fake_publisher_;
-  std::unique_ptr<ScopedDecodeRequestForTesting>
-      scoped_decode_request_for_testing_;
-
-  base::WeakPtrFactory<AppServiceWebAppIconTest> weak_ptr_factory_{this};
 };
 
 TEST_F(AppServiceWebAppIconTest, GetNonMaskableCompressedIconData) {

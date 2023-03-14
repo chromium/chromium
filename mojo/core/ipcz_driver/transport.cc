@@ -29,7 +29,7 @@
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "mojo/core/platform_handle_security_util_win.h"
+#include "mojo/public/cpp/platform/platform_handle_security_util_win.h"
 #endif
 
 namespace mojo::core::ipcz_driver {
@@ -67,6 +67,17 @@ enum HandleOwner : uint8_t {
   // already belong to the recipient.
   kRecipient,
 };
+
+// HANDLE value size varies by architecture. We always encode them with 64 bits.
+using HandleData = uint64_t;
+
+HandleData HandleToData(HANDLE handle) {
+  return static_cast<HandleData>(reinterpret_cast<uintptr_t>(handle));
+}
+
+HANDLE DataToHandle(HandleData data) {
+  return reinterpret_cast<HANDLE>(static_cast<uintptr_t>(data));
+}
 #endif
 
 // Header serialized at the beginning of all mojo-ipcz driver objects.
@@ -112,19 +123,19 @@ struct IPCZ_ALIGN(8) TransportHeader {
 // Encodes a Windows HANDLE value for transmission within a serialized driver
 // object payload. See documentation on HandleOwner above for general notes
 // about how handles are communicated over IPC on Windows. Returns true on
-// success, with the encoded handle value in `out_handle`. Returns false if
+// success, with the encoded handle value in `out_handle_data`. Returns false if
 // handle duplication failed.
 bool EncodeHandle(PlatformHandle& handle,
                   const base::Process& remote_process,
                   HandleOwner handle_owner,
-                  HANDLE& out_handle,
+                  HandleData& out_handle_data,
                   bool is_remote_process_untrusted) {
   DCHECK(handle.is_valid());
   if (handle_owner == HandleOwner::kSender) {
     // Nothing to do when sending handles that belong to us. The recipient must
     // be sufficiently privileged and equipped to duplicate such handles to
     // itself.
-    out_handle = handle.ReleaseHandle();
+    out_handle_data = HandleToData(handle.ReleaseHandle());
     return true;
   }
 
@@ -140,18 +151,25 @@ bool EncodeHandle(PlatformHandle& handle,
   }
 #endif
 
-  return ::DuplicateHandle(::GetCurrentProcess(), handle.ReleaseHandle(),
-                           remote_process.Handle(), &out_handle, 0, FALSE,
-                           DUPLICATE_SAME_ACCESS | DUPLICATE_CLOSE_SOURCE);
+  HANDLE new_handle;
+  if (!::DuplicateHandle(::GetCurrentProcess(), handle.ReleaseHandle(),
+                         remote_process.Handle(), &new_handle, 0, FALSE,
+                         DUPLICATE_SAME_ACCESS | DUPLICATE_CLOSE_SOURCE)) {
+    return false;
+  }
+
+  out_handle_data = HandleToData(new_handle);
+  return true;
 }
 
 // Decodes a Windows HANDLE value from a transmission containing a serialized
 // driver object. See documentation on HandleOwner above for general notes about
 // how handles are communicated over IPC on Windows.
-PlatformHandle DecodeHandle(HANDLE handle,
+PlatformHandle DecodeHandle(HandleData data,
                             const base::Process& remote_process,
                             HandleOwner handle_owner,
                             Transport& from_transport) {
+  const HANDLE handle = DataToHandle(data);
   if (handle_owner == HandleOwner::kRecipient) {
     if (from_transport.destination_type() != Transport::kBroker &&
         !from_transport.is_peer_trusted()) {
@@ -197,9 +215,11 @@ Transport::Transport(EndpointTypes endpoint_types,
 // static
 scoped_refptr<Transport> Transport::Create(EndpointTypes endpoint_types,
                                            Channel::Endpoint endpoint,
-                                           base::Process remote_process) {
+                                           base::Process remote_process,
+                                           bool is_remote_process_untrusted) {
   return base::MakeRefCounted<Transport>(endpoint_types, std::move(endpoint),
-                                         std::move(remote_process));
+                                         std::move(remote_process),
+                                         is_remote_process_untrusted);
 }
 
 // static
@@ -370,7 +390,7 @@ IpczResult Transport::SerializeObject(ObjectBase& object,
 
 #if BUILDFLAG(IS_WIN)
   const size_t required_num_bytes = sizeof(ObjectHeader) + object_num_bytes +
-                                    sizeof(HANDLE) * object_num_handles;
+                                    sizeof(HandleData) * object_num_handles;
   const size_t required_num_handles = 0;
 #else
   const size_t required_num_bytes = sizeof(ObjectHeader) + object_num_bytes;
@@ -405,11 +425,12 @@ IpczResult Transport::SerializeObject(ObjectBase& object,
           : HandleOwner::kSender;
   header.handle_owner = handle_owner;
 
-  auto handle_data = base::make_span(reinterpret_cast<HANDLE*>(&header + 1),
+  auto handle_data = base::make_span(reinterpret_cast<HandleData*>(&header + 1),
                                      object_num_handles);
-  auto object_data = base::make_span(reinterpret_cast<uint8_t*>(&header + 1) +
-                                         object_num_handles * sizeof(HANDLE),
-                                     object_num_bytes);
+  auto object_data =
+      base::make_span(reinterpret_cast<uint8_t*>(&header + 1) +
+                          object_num_handles * sizeof(HandleData),
+                      object_num_bytes);
 #else
   auto object_data = base::make_span(reinterpret_cast<uint8_t*>(&header + 1),
                                      object_num_bytes);
@@ -458,14 +479,15 @@ IpczResult Transport::DeserializeObject(
   const HandleOwner handle_owner = header.handle_owner;
 
   size_t available_bytes = bytes.size() - header_size;
-  const size_t max_handles = available_bytes / sizeof(HANDLE);
+  const size_t max_handles = available_bytes / sizeof(HandleData);
   if (num_handles > max_handles) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
-  const size_t handle_data_size = num_handles * sizeof(HANDLE);
+  const size_t handle_data_size = num_handles * sizeof(HandleData);
   auto handle_data = base::make_span(
-      reinterpret_cast<const HANDLE*>(bytes.data() + header_size), num_handles);
+      reinterpret_cast<const HandleData*>(bytes.data() + header_size),
+      num_handles);
   auto object_data = bytes.subspan(header_size + handle_data_size);
 #else
   auto object_data = bytes.subspan(header_size);

@@ -153,11 +153,14 @@ class CONTENT_EXPORT FedCmMetrics {
     kMaxValue = kMultiple
   };
 
-  // Records some auto reauthn metrics.
+  // Records several auto reauthn metrics using the given parameters.
   void RecordAutoReauthnMetrics(
       bool has_single_returning_account,
       const IdentityRequestAccount* auto_signin_account,
-      bool auto_reauthn_success);
+      bool auto_reauthn_success,
+      bool is_auto_reauthn_setting_blocked,
+      bool is_auto_reauthn_embargoed,
+      absl::optional<base::TimeDelta> time_from_embargo);
 
  private:
   // The page's SourceId. Used to log the UKM event Blink.FedCm.

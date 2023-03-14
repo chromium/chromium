@@ -60,10 +60,11 @@ ViewTransitionRequest::CreateAnimateRenderer(uint32_t document_tag,
 
 // static
 std::unique_ptr<ViewTransitionRequest> ViewTransitionRequest::CreateRelease(
-    uint32_t document_tag) {
-  return base::WrapUnique(new ViewTransitionRequest(
-      Type::kRelease, document_tag, 0u, viz::NavigationID::Null(), {},
-      base::OnceClosure()));
+    uint32_t document_tag,
+    viz::NavigationID navigation_id) {
+  return base::WrapUnique(
+      new ViewTransitionRequest(Type::kRelease, document_tag, 0u, navigation_id,
+                                {}, base::OnceClosure()));
 }
 
 ViewTransitionRequest::ViewTransitionRequest(

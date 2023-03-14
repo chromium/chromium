@@ -77,9 +77,7 @@ class FileHandlersMimeUtilTest : public ExtensionsTest {
   base::FilePath CreateTemporaryFile(const std::string& contents) {
     base::FilePath temp_filename;
     EXPECT_TRUE(base::CreateTemporaryFile(&temp_filename));
-    EXPECT_EQ(
-        static_cast<int>(contents.size()),
-        base::WriteFile(temp_filename, contents.c_str(), contents.size()));
+    EXPECT_TRUE(base::WriteFile(temp_filename, contents));
     return temp_filename;
   }
 

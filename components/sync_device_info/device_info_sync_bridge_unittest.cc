@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/sync_device_info/device_info_sync_bridge.h"
-#include "build/build_config.h"
 
 #include <algorithm>
 #include <map>
@@ -21,6 +20,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/model_type.h"
@@ -1000,8 +1000,11 @@ TEST_F(DeviceInfoSyncBridgeTest, CountActiveDevices) {
   EXPECT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 1}}),
             bridge()->CountActiveDevicesByType());
 
+  // CountActiveDevicesByType() may not behave as expected if there are multiple
+  // devices with the same creation and modification time. So we need to ensure
+  // different time here.
   ON_CALL(*processor(), GetEntityCreationTime)
-      .WillByDefault(Return(base::Time::Now()));
+      .WillByDefault(Return(base::Time::Now() - base::Minutes(1)));
   ON_CALL(*processor(), GetEntityModificationTime)
       .WillByDefault(Return(base::Time::Now()));
 
@@ -1174,23 +1177,18 @@ TEST_F(DeviceInfoSyncBridgeTest, CountActiveDevicesWithMalformedTimestamps) {
             bridge()->CountActiveDevicesByType());
 }
 
-// TODO(crbug.com/1416485): Re-enable this test
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ShouldFilterOutNonChromeClientsFromDeviceTracker \
-  DISABLED_ShouldFilterOutNonChromeClientsFromDeviceTracker
-#else
-#define MAYBE_ShouldFilterOutNonChromeClientsFromDeviceTracker \
-  ShouldFilterOutNonChromeClientsFromDeviceTracker
-#endif
 TEST_F(DeviceInfoSyncBridgeTest,
-       MAYBE_ShouldFilterOutNonChromeClientsFromDeviceTracker) {
+       ShouldFilterOutNonChromeClientsFromDeviceTracker) {
   InitializeAndMergeInitialData(SyncMode::kFull);
   // Local device.
   EXPECT_EQ(DeviceCountMap({{kLocalDeviceFormFactor, 1}}),
             bridge()->CountActiveDevicesByType());
 
+  // CountActiveDevicesByType() may not behave as expected if there are multiple
+  // devices with the same creation and modification time. So we need to ensure
+  // different time here.
   ON_CALL(*processor(), GetEntityCreationTime)
-      .WillByDefault(Return(base::Time::Now()));
+      .WillByDefault(Return(base::Time::Now() - base::Minutes(1)));
   ON_CALL(*processor(), GetEntityModificationTime)
       .WillByDefault(Return(base::Time::Now()));
 

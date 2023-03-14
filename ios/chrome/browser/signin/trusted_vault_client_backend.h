@@ -33,13 +33,11 @@ class TrustedVaultClientBackend : public KeyedService {
   // Types for the different callbacks.
   using KeyFetchedCallback = base::OnceCallback<void(const SharedKeyList&)>;
   using CompletionBlock = void (^)(BOOL success, NSError* error);
+  using GetPublicKeyCallback = base::OnceCallback<void(const PublicKey&)>;
 
   // Callback used to verify local device registration and log the result to
-  // UMA metrics. The first argument is the gaia ID and the second is the local
-  // client's public key.
-  using VerifierCallback =
-      base::OnceCallback<void(const std::string&, const PublicKey&)>;
-
+  // UMA metrics. The argument represents the gaia ID subject to verification.
+  using VerifierCallback = base::OnceCallback<void(const std::string&)>;
   TrustedVaultClientBackend();
 
   TrustedVaultClientBackend(const TrustedVaultClientBackend&) = delete;
@@ -54,9 +52,8 @@ class TrustedVaultClientBackend : public KeyedService {
 
   // Registers a delegate-like callback that implements device registration
   // verification.
-  // TODO(crbug.com/1416626): Make abstract once all implementations land.
   virtual void SetDeviceRegistrationPublicKeyVerifierForUMA(
-      VerifierCallback verifier);
+      VerifierCallback verifier) = 0;
 
   // Asynchronously fetches the shared keys for `identity` and invokes
   // `callback` with the fetched keys.
@@ -104,9 +101,12 @@ class TrustedVaultClientBackend : public KeyedService {
 
   // Clears local data belonging to `identity`, such as shared keys. This
   // excludes the physical client's key pair, which remains unchanged.
-  // TODO(crbug.com/1416626): Make abstract once all implementations land.
   virtual void ClearLocalData(id<SystemIdentity> identity,
-                              base::OnceCallback<void(bool)> callback);
+                              base::OnceCallback<void(bool)> callback) = 0;
+
+  // Returns the member public key used to enroll the local device.
+  virtual void GetPublicKeyForIdentity(id<SystemIdentity> identity,
+                                       GetPublicKeyCallback callback) = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_TRUSTED_VAULT_CLIENT_BACKEND_H_

@@ -45,6 +45,12 @@ class MockFastPairRepository : public FastPairRepository {
                DeleteAssociatedDeviceCallback callback),
               (override));
   MOCK_METHOD(void,
+              UpdateAssociatedDeviceFootprintsName,
+              (const std::string& mac_address,
+               const std::string& display_name,
+               bool retry),
+              (override));
+  MOCK_METHOD(void,
               FetchDeviceImages,
               (scoped_refptr<Device> device),
               (override));

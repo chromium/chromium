@@ -55,7 +55,6 @@ class StartupData;
 
 namespace breadcrumbs {
 class ApplicationBreadcrumbsLogger;
-class BreadcrumbPersistentStorageManager;
 }  // namespace breadcrumbs
 
 namespace extensions {
@@ -210,8 +209,6 @@ class BrowserProcessImpl : public BrowserProcess,
 #endif
 
   BuildState* GetBuildState() override;
-  breadcrumbs::BreadcrumbPersistentStorageManager*
-  GetBreadcrumbPersistentStorageManager() override;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 

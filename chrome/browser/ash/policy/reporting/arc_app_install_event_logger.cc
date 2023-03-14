@@ -134,8 +134,8 @@ void ArcAppInstallEventLogger::OnPolicySent(const std::string& policy) {
 
 void ArcAppInstallEventLogger::OnComplianceReportReceived(
     const base::Value* compliance_report) {
-  const base::Value* const details = compliance_report->FindKeyOfType(
-      "nonComplianceDetails", base::Value::Type::LIST);
+  const base::Value::List* const details =
+      compliance_report->GetDict().FindList("nonComplianceDetails");
   if (!details) {
     return;
   }
@@ -146,18 +146,18 @@ void ArcAppInstallEventLogger::OnComplianceReportReceived(
       GetPackagesFromPref(arc::prefs::kArcPushInstallAppsPending);
 
   std::set<std::string> noncompliant_apps_in_report;
-  for (const auto& detail : details->GetList()) {
-    const base::Value* const reason =
-        detail.FindKeyOfType("nonComplianceReason", base::Value::Type::INTEGER);
-    if (!reason || reason->GetInt() != kNonComplianceReasonAppNotInstalled) {
+  for (const auto& detail : *details) {
+    const base::Value::Dict& details_dict = detail.GetDict();
+    const absl::optional<int> reason =
+        details_dict.FindInt("nonComplianceReason");
+    if (!reason || *reason != kNonComplianceReasonAppNotInstalled) {
       continue;
     }
-    const base::Value* const app_name =
-        detail.FindKeyOfType("packageName", base::Value::Type::STRING);
-    if (!app_name || app_name->GetString().empty()) {
+    const std::string* const app_name = details_dict.FindString("packageName");
+    if (!app_name || app_name->empty()) {
       continue;
     }
-    noncompliant_apps_in_report.insert(app_name->GetString());
+    noncompliant_apps_in_report.insert(*app_name);
   }
   const std::set<std::string> all_installed_apps = GetDifference(
       all_force_install_apps_in_policy, noncompliant_apps_in_report);

@@ -30,6 +30,15 @@ class GLDisplayEGL;
 
 namespace gpu {
 class GLContextVirtual;
+
+#if BUILDFLAG(IS_APPLE)
+class GL_EXPORT BackpressureMetalSharedEvent {
+ public:
+  virtual ~BackpressureMetalSharedEvent() = default;
+  virtual bool HasCompleted() const = 0;
+};
+#endif  // #if BUILDFLAG(IS_APPLE)
+
 }  // namespace gpu
 
 namespace gl {
@@ -106,6 +115,9 @@ struct GL_EXPORT GLContextAttribs {
   // If true, EGL_ANGLE_external_context_and_surface extension will be used to
   // create ANGLE context from the current native EGL context.
   bool angle_create_from_external_context = false;
+
+  // If true, ANGLE will support the creation of client arrays.
+  bool angle_create_context_client_arrays = false;
 
   // If true, an ANGLE external context will be created with
   // EGL_EXTERNAL_CONTEXT_SAVE_STATE_ANGLE is true, so when ReleaseCurrent is
@@ -250,6 +262,8 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext>,
 #endif  // USE_EGL
 
 #if BUILDFLAG(IS_APPLE)
+  virtual void AddMetalSharedEventsForBackpressure(
+      std::vector<std::unique_ptr<gpu::BackpressureMetalSharedEvent>> events);
   // Create a fence for all work submitted to this context so far, and return a
   // monotonically increasing handle to it. This returned handle never needs to
   // be freed. This method is used to create backpressure to throttle GL work
@@ -344,7 +358,13 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext>,
   bool context_lost_ = false;
 
 #if BUILDFLAG(IS_APPLE)
-  std::map<uint64_t, std::unique_ptr<GLFence>> backpressure_fences_;
+  using GLFenceAndMetalSharedEvents = std::pair<
+      std::unique_ptr<GLFence>,
+      std::vector<std::unique_ptr<gpu::BackpressureMetalSharedEvent>>>;
+
+  std::vector<std::unique_ptr<gpu::BackpressureMetalSharedEvent>>
+      next_backpressure_events_;
+  std::map<uint64_t, GLFenceAndMetalSharedEvents> backpressure_fences_;
   uint64_t next_backpressure_fence_ = 0;
 #endif
 };

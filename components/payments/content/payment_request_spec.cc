@@ -337,6 +337,15 @@ bool PaymentRequestSpec::IsAppStoreBillingAlsoRequested() const {
               .empty();
 }
 
+bool PaymentRequestSpec::IsPaymentHandlerMinimalHeaderUXEnabled() const {
+  // PaymentHandlerMinimalHeaderUX is enabled when both the browser feature
+  // (enabled by default) and the blink feature (as indicated in the details)
+  // are enabled.
+  return base::FeatureList::IsEnabled(
+             features::kPaymentHandlerMinimalHeaderUX) &&
+         details_->payment_handler_minimal_header_ux_enabled;
+}
+
 base::WeakPtr<PaymentRequestSpec> PaymentRequestSpec::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

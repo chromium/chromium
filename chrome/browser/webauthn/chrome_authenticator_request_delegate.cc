@@ -42,6 +42,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/network_session_configurator/common/network_switches.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_state/core/security_state.h"
@@ -268,7 +269,9 @@ bool ChromeWebAuthenticationDelegate::IsSecurityLevelAcceptableForWebAuthn(
   security_state::SecurityLevel security_level = helper->GetSecurityLevel();
   return security_level == security_state::SecurityLevel::SECURE ||
          security_level ==
-             security_state::SecurityLevel::SECURE_WITH_POLICY_INSTALLED_CERT;
+             security_state::SecurityLevel::SECURE_WITH_POLICY_INSTALLED_CERT ||
+         base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kIgnoreCertificateErrors);
 }
 
 absl::optional<std::string>
@@ -548,7 +551,7 @@ void ChromeAuthenticatorRequestDelegate::ShouldReturnAttestation(
   }
 
 #if BUILDFLAG(IS_WIN)
-  if (authenticator->GetType() == device::FidoAuthenticator::Type::kWinNative &&
+  if (authenticator->GetType() == device::AuthenticatorType::kWinNative &&
       static_cast<const device::WinWebAuthnApiAuthenticator*>(authenticator)
           ->ShowsPrivacyNotice()) {
     // The OS' native API includes an attestation prompt.

@@ -17,9 +17,7 @@
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/sequence_manager/time_domain.h"
-#include "base/task/task_features.h"
 #include "base/threading/platform_thread.h"
-#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "content/browser/scheduler/browser_task_priority.h"
@@ -139,6 +137,7 @@ BrowserUIThreadScheduler::BrowserUIThreadScheduler()
           base::sequence_manager::CreateUnboundSequenceManager(
               base::sequence_manager::SequenceManager::Settings::Builder()
                   .SetMessagePumpType(base::MessagePumpType::UI)
+                  .SetCanRunTasksByBatches(true)
                   .SetPrioritySettings(
                       internal::CreateBrowserTaskPrioritySettings())
                   .Build())),
@@ -176,21 +175,11 @@ BrowserUIThreadScheduler::OnUserInputStart() {
 }
 
 void BrowserUIThreadScheduler::DidStartUserInput() {
-  // Avoiding crashes in tests that doesn't mock sequence manager.
-  if (!owned_sequence_manager_)
+  if (!browser_prioritize_native_work_ ||
+      browser_prioritize_native_work_after_input_end_ms_.is_inf()) {
     return;
-  if (browser_prioritize_native_work_ &&
-      !browser_prioritize_native_work_after_input_end_ms_.is_inf()) {
-    owned_sequence_manager_->PrioritizeYieldingToNative(base::TimeTicks::Max());
   }
-
-  if (browser_enable_periodic_yielding_native_ &&
-      scroll_state_ != kFlingActive) {
-    TRACE_EVENT("input",
-                "RenderWidgetHostImpl::DidStartUserInputExperimentEnabled");
-    owned_sequence_manager_->EnablePeriodicYieldingToNative(
-        yield_to_native_for_normal_input_after_ms_);
-  }
+  owned_sequence_manager_->PrioritizeYieldingToNative(base::TimeTicks::Max());
 }
 
 void BrowserUIThreadScheduler::OnScrollStateUpdate(ScrollState scroll_state) {
@@ -198,26 +187,6 @@ void BrowserUIThreadScheduler::OnScrollStateUpdate(ScrollState scroll_state) {
     UpdatePolicyOnScrollStateUpdate(scroll_state_, scroll_state);
   }
   scroll_state_ = scroll_state;
-  // Avoiding crashes in tests that doesn't mock sequence manager.
-  if (!owned_sequence_manager_ || !browser_enable_periodic_yielding_native_)
-    return;
-  switch (scroll_state) {
-    case kGestureScrollActive:
-      owned_sequence_manager_->EnablePeriodicYieldingToNative(
-          yield_to_native_for_normal_input_after_ms_);
-      break;
-    case kFlingActive:
-      owned_sequence_manager_->EnablePeriodicYieldingToNative(
-          yield_to_native_for_fling_input_after_ms_);
-      break;
-    case kNone:
-      // if count is > 0 it means touch moves  in flight, leave the frequent
-      // alternation enabled for now.
-      if (user_input_active_handle_count == 0)
-        owned_sequence_manager_->EnablePeriodicYieldingToNative(
-            yield_to_native_for_default_after_ms_);
-      break;
-  }
 }
 
 void BrowserUIThreadScheduler::UpdatePolicyOnScrollStateUpdate(
@@ -271,31 +240,18 @@ bool BrowserUIThreadScheduler::Policy::IsQueueEnabled(
 }
 
 void BrowserUIThreadScheduler::DidEndUserInput() {
-  // Avoiding crashes in tests that doesn't mock sequence manager.
-  if (!owned_sequence_manager_)
+  if (!browser_prioritize_native_work_ ||
+      browser_prioritize_native_work_after_input_end_ms_.is_inf()) {
     return;
-  if (browser_prioritize_native_work_ &&
-      !browser_prioritize_native_work_after_input_end_ms_.is_inf()) {
-    owned_sequence_manager_->PrioritizeYieldingToNative(
-        base::TimeTicks::Now() +
-        browser_prioritize_native_work_after_input_end_ms_);
   }
-
-  // This disables the alternating behaviour if there are no scrolls ongoing.
-  if (browser_enable_periodic_yielding_native_ && scroll_state_ == kNone) {
-    owned_sequence_manager_->EnablePeriodicYieldingToNative(
-        yield_to_native_for_default_after_ms_);
-  }
-  return;
+  owned_sequence_manager_->PrioritizeYieldingToNative(
+      base::TimeTicks::Now() +
+      browser_prioritize_native_work_after_input_end_ms_);
 }
 
 void BrowserUIThreadScheduler::PostFeatureListSetup() {
   if (base::FeatureList::IsEnabled(features::kBrowserPrioritizeNativeWork)) {
     EnableBrowserPrioritizesNativeWork();
-  }
-
-  if (base::FeatureList::IsEnabled(base::kBrowserPeriodicYieldingToNative)) {
-    EnableAlternatingScheduler();
   }
 
   if (base::FeatureList::IsEnabled(features::kBrowserDeferUIThreadTasks)) {
@@ -329,39 +285,6 @@ void BrowserUIThreadScheduler::EnableBrowserPrioritizesNativeWork() {
           base::Unretained(this)));
 }
 
-void BrowserUIThreadScheduler::EnableAlternatingScheduler() {
-  // Initialize feature parameters. This can't be done in the constructor
-  // because the FeatureList hasn't been initialized when the
-  // BrowserUIThreadScheduler is created.
-  yield_to_native_for_normal_input_after_ms_ =
-      base::kBrowserPeriodicYieldingToNativeNormalInputAfterMsParam.Get();
-  yield_to_native_for_fling_input_after_ms_ =
-      base::kBrowserPeriodicYieldingToNativeFlingInputAfterMsParam.Get();
-  yield_to_native_for_default_after_ms_ =
-      base::kBrowserPeriodicYieldingToNativeNoInputAfterMsParam.Get();
-
-  // Rather than just enable immediately we post a task at default priority
-  // This ensures most start up work should be finished before we start using
-  // this policy.
-  //
-  // TODO(nuskos): Switch this to use ThreadControllerObserver after start up
-  // notification once available on android.
-  handle_->GetDefaultTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](BrowserUIThreadScheduler* scheduler) {
-            scheduler->browser_enable_periodic_yielding_native_ = true;
-            if (scheduler->scroll_state_ == ScrollState::kNone) {
-              scheduler->owned_sequence_manager_
-                  ->EnablePeriodicYieldingToNative(
-                      scheduler->yield_to_native_for_default_after_ms_);
-            } else {
-              scheduler->OnScrollStateUpdate(scheduler->scroll_state_);
-            }
-          },
-          base::Unretained(this)));
-}
-
 void BrowserUIThreadScheduler::EnableDeferringBrowserUIThreadTasks() {
   // Initialize feature parameters. This can't be done in the constructor
   // because the FeatureList hasn't been initialized when the
@@ -372,4 +295,5 @@ void BrowserUIThreadScheduler::EnableDeferringBrowserUIThreadTasks() {
       features::kDeferKnownLongRunningTasks.Get();
   browser_enable_deferring_ui_thread_tasks_ = true;
 }
+
 }  // namespace content

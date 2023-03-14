@@ -538,6 +538,9 @@ class CORE_EXPORT WebLocalFrameImpl final
   // Copy the current selection to the pboard.
   void CopyToFindPboard();
 
+  // Center the selection in the viewport.
+  void CenterSelection() override;
+
   // Shows a context menu with commands relevant to a specific element on
   // the given frame. Additional context data and location are supplied.
   void ShowContextMenu(

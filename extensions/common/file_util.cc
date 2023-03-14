@@ -185,11 +185,26 @@ base::FilePath InstallExtension(const base::FilePath& unpacked_source_dir,
   return version_dir;
 }
 
-void UninstallExtension(const base::FilePath& extensions_dir,
+void UninstallExtension(const base::FilePath& profile_dir,
+                        const base::FilePath& extensions_dir,
                         const std::string& id) {
   // We don't care about the return value. If this fails (and it can, due to
   // plugins that aren't unloaded yet), it will get cleaned up by
   // ExtensionGarbageCollector::GarbageCollectExtensions.
+
+  // Confirm the profile directory, extensions directory, and the id are not
+  // empty and that the directories are absolute so that the subsequent
+  // comparison has some value.
+  if (profile_dir.empty() || extensions_dir.empty() || id.empty() ||
+      !profile_dir.IsAbsolute() || !extensions_dir.IsAbsolute()) {
+    return;
+  }
+  // Confirm the directory we are deleting from is a direct subdirectory of
+  // the extensions's subdirectory inside the profile directory.
+  if (extensions_dir.DirName() != profile_dir) {
+    return;
+  }
+
   base::DeletePathRecursively(extensions_dir.AppendASCII(id));
 }
 

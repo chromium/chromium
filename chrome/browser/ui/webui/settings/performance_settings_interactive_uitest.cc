@@ -128,8 +128,10 @@ class PerformanceSettingsInteractiveTest : public InteractiveBrowserTest {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<base::test::TestSamplingEventSource> sampling_source_;
-  raw_ptr<base::test::TestBatteryLevelProvider> battery_level_provider_;
+  raw_ptr<base::test::TestSamplingEventSource, DanglingUntriaged>
+      sampling_source_;
+  raw_ptr<base::test::TestBatteryLevelProvider, DanglingUntriaged>
+      battery_level_provider_;
   std::unique_ptr<base::BatteryStateSampler> battery_state_sampler_;
 };
 

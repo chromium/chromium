@@ -116,7 +116,7 @@ class InputInjectorWayland : public InputInjector {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     PointTransformer point_transformer_;
 #endif
-    ClipboardWayland clipboard_;
+    std::unique_ptr<ClipboardWayland> clipboard_;
     xdg_portal::RemoteDesktopPortalInjector remotedesktop_portal_;
 
     // If input is injected before complete initialization then some portal

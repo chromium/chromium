@@ -191,6 +191,12 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
         'authentication for Skia Gold, instead relying on gsutil to be '
         'pre-authenticated. Meant for testing locally instead of on the bots.')
     parser.add_option(
+        '--no-auth',
+        action='store_true',
+        default=False,
+        help='Do not attempt to authenticate with Skia Gold at all. Only meant '
+        'for use in Skylab.')
+    parser.add_option(
         '--service-account',
         help='Specifies the service account to use instead of using '
         'LUCI_CONTEXT or whatever is configured in gsutil. Implies '
@@ -369,6 +375,7 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
         png_file=png_temp_file,
         inexact_matching_args=page.matching_algorithm.GetCmdline(),
         use_luci=use_luci,
+        disable_auth=gold_properties.disable_auth,
         service_account=gold_properties.service_account)
     if not status:
       return

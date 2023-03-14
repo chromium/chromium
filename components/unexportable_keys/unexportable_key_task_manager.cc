@@ -13,6 +13,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/token.h"
+#include "base/types/expected.h"
 #include "components/unexportable_keys/background_long_task_scheduler.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/ref_counted_unexportable_signing_key.h"
@@ -25,16 +26,25 @@
 namespace unexportable_keys {
 
 namespace {
-scoped_refptr<RefCountedUnexportableSigningKey> MakeSigningKeyRefCounted(
-    const UnexportableKeyId& key_id,
-    std::unique_ptr<crypto::UnexportableSigningKey> key) {
+ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
+MakeSigningKeyRefCounted(std::unique_ptr<crypto::UnexportableSigningKey> key) {
   if (!key) {
-    return nullptr;
+    return base::unexpected(ServiceError::kCryptoApiFailed);
   }
 
-  return base::MakeRefCounted<RefCountedUnexportableSigningKey>(std::move(key),
-                                                                key_id);
+  return base::MakeRefCounted<RefCountedUnexportableSigningKey>(
+      std::move(key), UnexportableKeyId());
 }
+
+ServiceErrorOr<std::vector<uint8_t>> OptionalToServiceErrorOr(
+    absl::optional<std::vector<uint8_t>> result) {
+  if (!result) {
+    return base::unexpected(ServiceError::kCryptoApiFailed);
+  }
+
+  return result.value();
+}
+
 }  // namespace
 
 UnexportableKeyTaskManager::UnexportableKeyTaskManager()
@@ -52,42 +62,46 @@ void UnexportableKeyTaskManager::GenerateSigningKeySlowlyAsync(
     base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
         acceptable_algorithms,
     BackgroundTaskPriority priority,
-    base::OnceCallback<void(scoped_refptr<RefCountedUnexportableSigningKey>)>
+    base::OnceCallback<
+        void(ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>)>
         callback) {
   std::unique_ptr<crypto::UnexportableKeyProvider> key_provider =
       crypto::GetUnexportableKeyProvider();
 
   if (!key_provider) {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(base::unexpected(ServiceError::kNoKeyProvider));
+    return;
+  }
+
+  if (!key_provider->SelectAlgorithm(acceptable_algorithms).has_value()) {
+    std::move(callback).Run(
+        base::unexpected(ServiceError::kAlgorithmNotSupported));
     return;
   }
 
   auto task = std::make_unique<GenerateKeyTask>(
       std::move(key_provider), acceptable_algorithms,
-      base::BindOnce(&MakeSigningKeyRefCounted,
-                     UnexportableKeyId(base::Token::CreateRandom()))
-          .Then(std::move(callback)));
+      base::BindOnce(&MakeSigningKeyRefCounted).Then(std::move(callback)));
   task_scheduler_.PostTask(std::move(task), priority);
 }
 
 void UnexportableKeyTaskManager::FromWrappedSigningKeySlowlyAsync(
     base::span<const uint8_t> wrapped_key,
-    const UnexportableKeyId& key_id,
     BackgroundTaskPriority priority,
-    base::OnceCallback<void(scoped_refptr<RefCountedUnexportableSigningKey>)>
+    base::OnceCallback<
+        void(ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>)>
         callback) {
   std::unique_ptr<crypto::UnexportableKeyProvider> key_provider =
       crypto::GetUnexportableKeyProvider();
 
   if (!key_provider) {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(base::unexpected(ServiceError::kNoKeyProvider));
     return;
   }
 
   auto task = std::make_unique<FromWrappedKeyTask>(
       std::move(key_provider), wrapped_key,
-      base::BindOnce(&MakeSigningKeyRefCounted, key_id)
-          .Then(std::move(callback)));
+      base::BindOnce(&MakeSigningKeyRefCounted).Then(std::move(callback)));
   task_scheduler_.PostTask(std::move(task), priority);
 }
 
@@ -95,11 +109,17 @@ void UnexportableKeyTaskManager::SignSlowlyAsync(
     scoped_refptr<RefCountedUnexportableSigningKey> signing_key,
     base::span<const uint8_t> data,
     BackgroundTaskPriority priority,
-    base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)> callback) {
+    base::OnceCallback<void(ServiceErrorOr<std::vector<uint8_t>>)> callback) {
+  if (!signing_key) {
+    std::move(callback).Run(base::unexpected(ServiceError::kKeyNotFound));
+    return;
+  }
+
   // TODO(b/263249728): deduplicate tasks with the same parameters.
   // TODO(b/263249728): implement a cache of recent signings.
-  auto task = std::make_unique<SignTask>(std::move(signing_key), data,
-                                         std::move(callback));
+  auto task = std::make_unique<SignTask>(
+      std::move(signing_key), data,
+      base::BindOnce(&OptionalToServiceErrorOr).Then(std::move(callback)));
   task_scheduler_.PostTask(std::move(task), priority);
 }
 

@@ -6,9 +6,11 @@
 
 #include <memory>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -253,8 +255,9 @@ TEST_F(ItemsBubbleControllerTest, OnUpdatePasswordNote) {
   password_manager::PasswordForm expected_updated_form = updated_form;
 
   EXPECT_CALL(*GetStore(), UpdateLogin(expected_updated_form, _));
-
-  controller()->UpdateStoredCredential(original_form, updated_form);
+  controller()->set_currently_selected_password(original_form);
+  controller()->UpdateSelectedCredentialInPasswordStore(updated_form);
+  EXPECT_EQ(controller()->get_currently_selected_password(), updated_form);
 }
 
 TEST_F(ItemsBubbleControllerTest, OnUpdateUsername) {
@@ -281,8 +284,8 @@ TEST_F(ItemsBubbleControllerTest, OnUpdateUsername) {
   EXPECT_CALL(*GetStore(), UpdateLogin).Times(0);
   EXPECT_CALL(*GetStore(), UpdateLoginWithPrimaryKey(expected_updated_form,
                                                      original_form, _));
-
-  controller()->UpdateStoredCredential(original_form, updated_form);
+  controller()->set_currently_selected_password(original_form);
+  controller()->UpdateSelectedCredentialInPasswordStore(updated_form);
 }
 
 TEST_F(ItemsBubbleControllerTest, OnUpdateUsernameAndPasswordNote) {
@@ -301,6 +304,42 @@ TEST_F(ItemsBubbleControllerTest, OnUpdateUsernameAndPasswordNote) {
   EXPECT_CALL(*GetStore(), UpdateLogin).Times(0);
   EXPECT_CALL(*GetStore(), UpdateLoginWithPrimaryKey(expected_updated_form,
                                                      original_form, _));
+  controller()->set_currently_selected_password(original_form);
+  controller()->UpdateSelectedCredentialInPasswordStore(updated_form);
+}
 
-  controller()->UpdateStoredCredential(original_form, updated_form);
+TEST_F(ItemsBubbleControllerTest,
+       ShouldChangeSelectedPasswordOnSuccessfulOsAuth) {
+  Init();
+  password_manager::PasswordForm selected_form = CreateTestForm();
+
+  EXPECT_CALL(*delegate(), AuthenticateUserWithMessage)
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](PasswordsModelDelegate::AvailabilityCallback callback) {
+            // Respond with true to simulate a successful user reauth.
+            std::move(callback).Run(true);
+          })));
+  base::MockCallback<base::OnceCallback<void(bool)>> mock_callback;
+  EXPECT_CALL(mock_callback, Run(true));
+  controller()->AuthenticateUserAndDisplayDetailsOf(selected_form,
+                                                    mock_callback.Get());
+  EXPECT_EQ(controller()->get_currently_selected_password(), selected_form);
+}
+
+TEST_F(ItemsBubbleControllerTest,
+       ShouldNotChangeSelectedPasswordOnFailedOsAuth) {
+  Init();
+  password_manager::PasswordForm selected_form = CreateTestForm();
+
+  EXPECT_CALL(*delegate(), AuthenticateUserWithMessage)
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](PasswordsModelDelegate::AvailabilityCallback callback) {
+            // Respond with false to simulate a failed user reauth.
+            std::move(callback).Run(false);
+          })));
+  base::MockCallback<base::OnceCallback<void(bool)>> mock_callback;
+  EXPECT_CALL(mock_callback, Run(false));
+  controller()->AuthenticateUserAndDisplayDetailsOf(selected_form,
+                                                    mock_callback.Get());
+  EXPECT_FALSE(controller()->get_currently_selected_password().has_value());
 }

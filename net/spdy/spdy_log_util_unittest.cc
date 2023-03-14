@@ -65,14 +65,12 @@ TEST(SpdyLogUtilTest, Http2HeaderBlockNetLogParams) {
   headers["foo"] = "bar";
   headers["cookie"] = "name=value";
 
-  std::unique_ptr<base::Value> dict = base::Value::ToUniquePtrValue(
-      Http2HeaderBlockNetLogParams(&headers, NetLogCaptureMode::kDefault));
+  base::Value::Dict dict =
+      Http2HeaderBlockNetLogParams(&headers, NetLogCaptureMode::kDefault);
 
-  ASSERT_TRUE(dict);
-  ASSERT_TRUE(dict->is_dict());
-  ASSERT_EQ(1u, dict->GetDict().size());
+  ASSERT_EQ(1u, dict.size());
 
-  auto* header_list = dict->GetDict().FindList("headers");
+  auto* header_list = dict.FindList("headers");
   ASSERT_TRUE(header_list);
   ASSERT_EQ(2u, header_list->size());
 
@@ -82,14 +80,12 @@ TEST(SpdyLogUtilTest, Http2HeaderBlockNetLogParams) {
   ASSERT_TRUE((*header_list)[1].is_string());
   EXPECT_EQ("cookie: [10 bytes were stripped]", (*header_list)[1].GetString());
 
-  dict = base::Value::ToUniquePtrValue(Http2HeaderBlockNetLogParams(
-      &headers, NetLogCaptureMode::kIncludeSensitive));
+  dict = Http2HeaderBlockNetLogParams(&headers,
+                                      NetLogCaptureMode::kIncludeSensitive);
 
-  ASSERT_TRUE(dict);
-  ASSERT_TRUE(dict->is_dict());
-  ASSERT_EQ(1u, dict->GetDict().size());
+  ASSERT_EQ(1u, dict.size());
 
-  header_list = dict->GetDict().FindList("headers");
+  header_list = dict.FindList("headers");
   ASSERT_TRUE(header_list);
   ASSERT_EQ(2u, header_list->size());
 

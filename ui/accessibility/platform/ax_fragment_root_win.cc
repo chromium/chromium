@@ -302,7 +302,7 @@ size_t AXFragmentRootWin::GetChildCount() const {
   return delegate_->GetChildOfAXFragmentRoot() ? 1 : 0;
 }
 
-gfx::NativeViewAccessible AXFragmentRootWin::ChildAtIndex(size_t index) {
+gfx::NativeViewAccessible AXFragmentRootWin::ChildAtIndex(size_t index) const {
   if (index == 0) {
     return delegate_->GetChildOfAXFragmentRoot();
   }
@@ -310,7 +310,7 @@ gfx::NativeViewAccessible AXFragmentRootWin::ChildAtIndex(size_t index) {
   return nullptr;
 }
 
-gfx::NativeViewAccessible AXFragmentRootWin::GetNextSibling() {
+gfx::NativeViewAccessible AXFragmentRootWin::GetNextSibling() const {
   size_t child_index = GetIndexInParentOfChild();
   AXPlatformNodeDelegate* parent = GetParentNodeDelegate();
   if (parent && (child_index + 1) < parent->GetChildCount())
@@ -319,7 +319,7 @@ gfx::NativeViewAccessible AXFragmentRootWin::GetNextSibling() {
   return nullptr;
 }
 
-gfx::NativeViewAccessible AXFragmentRootWin::GetPreviousSibling() {
+gfx::NativeViewAccessible AXFragmentRootWin::GetPreviousSibling() const {
   size_t child_index = GetIndexInParentOfChild();
   if (child_index > 0)
     return GetParentNodeDelegate()->ChildAtIndex(child_index - 1);

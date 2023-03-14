@@ -37,6 +37,7 @@ static_library("structured") {
     deps += [
       "//chrome/browser:browser_process",
       "//chrome/browser/ash/crosapi",
+      "//chromeos/ash/components/login/session:session",
       "//components/user_manager:user_manager",
     ]
   }

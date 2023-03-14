@@ -215,7 +215,7 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  test::AutofillEnvironment autofill_environment_;
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
 
   NiceMock<MockAutofillClient> autofill_client_;
   std::unique_ptr<NiceMock<MockAutofillDriver>> autofill_driver_;
@@ -636,9 +636,11 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillsIbanEntry) {
   // This should call ShowAutofillPopup.
   std::vector<Suggestion> suggestions;
   suggestions.emplace_back();
-  std::u16string iban_value = u"IE12BOFI90000112345678";
-  suggestions[0].main_text.value = iban_value;
+  std::u16string masked_iban_value = u"IE12 **** **** **** **56 78";
+  std::u16string ummasked_iban_value = u"IE12 BOFI 9000 0112 3456 78";
+  suggestions[0].main_text.value = masked_iban_value;
   suggestions[0].labels = {{Suggestion::Text(u"My doctor's IBAN")}};
+  suggestions[0].payload = Suggestion::ValueToFill(ummasked_iban_value);
   suggestions[0].frontend_id = POPUP_ITEM_ID_IBAN_ENTRY;
   external_delegate_->OnSuggestionsReturned(field_id_, suggestions,
                                             AutoselectFirstSuggestion(false));
@@ -649,14 +651,14 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillsIbanEntry) {
                   static_cast<int>(POPUP_ITEM_ID_IBAN_ENTRY))));
 
   EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm()).Times(1);
-  EXPECT_CALL(*autofill_driver_,
-              RendererShouldPreviewFieldWithValue(field_id_, iban_value));
-  external_delegate_->DidSelectSuggestion(iban_value, POPUP_ITEM_ID_IBAN_ENTRY,
-                                          Suggestion::BackendId());
+  EXPECT_CALL(*autofill_driver_, RendererShouldPreviewFieldWithValue(
+                                     field_id_, masked_iban_value));
+  external_delegate_->DidSelectSuggestion(
+      masked_iban_value, POPUP_ITEM_ID_IBAN_ENTRY, Suggestion::BackendId());
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
   EXPECT_CALL(*autofill_driver_,
-              RendererShouldFillFieldWithValue(field_id_, iban_value));
+              RendererShouldFillFieldWithValue(field_id_, ummasked_iban_value));
   external_delegate_->DidAcceptSuggestion(suggestions[0], 0);
 }
 
@@ -960,15 +962,18 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillFieldWithValue) {
                                      dummy_string),
       0);
 
+  std::u16string masked_iban_value = u"IE12 **** **** **** **56 78";
+  std::u16string ummasked_iban_value = u"IE12 BOFI 9000 0112 3456 78";
   // Test that IBANs get autofilled.
   EXPECT_CALL(*autofill_driver_,
-              RendererShouldFillFieldWithValue(field_id_, dummy_string));
-  EXPECT_CALL(
-      *autofill_client_.GetMockIBANManager(),
-      OnSingleFieldSuggestionSelected(dummy_string, POPUP_ITEM_ID_IBAN_ENTRY))
-      .Times(1);
+              RendererShouldFillFieldWithValue(field_id_, ummasked_iban_value));
+  EXPECT_CALL(*autofill_client_.GetMockIBANManager(),
+              OnSingleFieldSuggestionSelected(masked_iban_value,
+                                              POPUP_ITEM_ID_IBAN_ENTRY));
   external_delegate_->DidAcceptSuggestion(
-      test::CreateAutofillSuggestion(POPUP_ITEM_ID_IBAN_ENTRY, dummy_string),
+      test::CreateAutofillSuggestion(
+          POPUP_ITEM_ID_IBAN_ENTRY, masked_iban_value,
+          Suggestion::ValueToFill(ummasked_iban_value)),
       0);
 }
 

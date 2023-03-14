@@ -31,7 +31,7 @@ class WebEngineDebugIntegrationTest : public testing::Test {
             base::CommandLine(base::CommandLine::NO_PROGRAM))),
         dev_tools_listener_binding_(&dev_tools_listener_) {
     web_context_provider_.ptr().set_error_handler(
-        [](zx_status_t status) { ADD_FAILURE(); });
+        [](zx_status_t status) { FAIL() << zx_status_get_string(status); });
   }
 
   WebEngineDebugIntegrationTest(const WebEngineDebugIntegrationTest&) = delete;

@@ -385,7 +385,8 @@ void SigninViewControllerDelegateViews::DisplayModal() {
           modal_signin_widget_->GetNativeWindow(), host_web_contents);
       break;
     default:
-      NOTREACHED() << "Unsupported dialog modal type " << GetModalType();
+      NOTREACHED_NORETURN()
+          << "Unsupported dialog modal type " << GetModalType();
   }
 
   DCHECK(modal_signin_widget_);

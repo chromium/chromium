@@ -309,7 +309,9 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, ClearPrefOrderByItemMove) {
 // or sorted by the apps' icon colors using the context menu in apps grid view.
 // TODO(crbug.com/1267369): Also add a test that verifies the behavior in tablet
 // mode.
-IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, ContextMenuSortItemsInFolder) {
+// Flaky. See https://crbug.com/1423200
+IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
+                       DISABLED_ContextMenuSortItemsInFolder) {
   ash::ShellTestApi().SetTabletModeEnabledForTest(false);
   WaitForAppListTransitionAnimation();
   ash::AcceleratorController::Get()->PerformActionIfEnabled(

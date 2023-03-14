@@ -25,8 +25,7 @@
 #include "components/onc/onc_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-namespace onc {
+namespace chromeos::onc {
 
 namespace {
 
@@ -72,25 +71,26 @@ Validator::Validator(bool error_on_unknown_field,
       error_on_wrong_recommended_(error_on_wrong_recommended),
       error_on_missing_field_(error_on_missing_field),
       managed_onc_(managed_onc),
-      log_warnings_(log_warnings),
-      onc_source_(::onc::ONC_SOURCE_NONE) {}
+      log_warnings_(log_warnings) {}
 
 Validator::~Validator() = default;
 
-base::Value Validator::ValidateAndRepairObject(
+absl::optional<base::Value::Dict> Validator::ValidateAndRepairObject(
     const OncValueSignature* object_signature,
-    const base::Value& onc_object,
+    const base::Value::Dict& onc_object,
     Result* result) {
   CHECK(object_signature);
   *result = VALID;
   bool error = false;
-  base::Value result_value = MapValue(*object_signature, onc_object, &error);
+  base::Value::Dict result_value =
+      MapObject(*object_signature, onc_object, &error);
   if (error) {
     *result = INVALID;
-    return {};
+    return absl::nullopt;
   }
-  if (!validation_issues_.empty())
+  if (!validation_issues_.empty()) {
     *result = VALID_WITH_WARNINGS;
+  }
   return result_value;
 }
 
@@ -244,8 +244,8 @@ bool Validator::ValidateObjectDefault(const OncValueSignature& signature,
                                       const base::Value::Dict& onc_object,
                                       base::Value::Dict* result) {
   bool found_unknown_field = false;
-  bool nested_error_occured = false;
-  MapFields(signature, onc_object, &found_unknown_field, &nested_error_occured,
+  bool nested_error_occurred = false;
+  MapFields(signature, onc_object, &found_unknown_field, &nested_error_occurred,
             result);
 
   if (found_unknown_field && error_on_unknown_field_) {
@@ -253,8 +253,9 @@ bool Validator::ValidateObjectDefault(const OncValueSignature& signature,
     return false;
   }
 
-  if (nested_error_occured)
+  if (nested_error_occurred) {
     return false;
+  }
 
   return ValidateRecommendedField(signature, result);
 }
@@ -1302,9 +1303,9 @@ void Validator::ValidateEthernetConfigs(
   // last one because that's the one which would be effective, as it would be
   // applies last in shill.
   OnlyKeepLast(network_configurations_list, ethernet_auth_none_guids,
-               /*type_for_messages=*/"Ethernet");
+               /*type=*/"Ethernet");
   OnlyKeepLast(network_configurations_list, ethernet_auth_8021x_guids,
-               /*type_for_messages=*/"Ethernet 802.1x");
+               /*type=*/"Ethernet 802.1x");
 }
 
 void Validator::OnlyKeepLast(base::Value::List* network_configurations_list,
@@ -1353,5 +1354,4 @@ void Validator::AddValidationIssue(bool is_error,
   validation_issues_.push_back({is_error, message});
 }
 
-}  // namespace onc
-}  // namespace chromeos
+}  // namespace chromeos::onc

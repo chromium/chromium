@@ -16,6 +16,10 @@ BASE_DECLARE_FEATURE(kIPHGroups);
 // A feature to ensure all arrays can contain at least one group.
 BASE_DECLARE_FEATURE(kIPHDummyGroup);
 
+#if BUILDFLAG(IS_IOS)
+BASE_DECLARE_FEATURE(kiOSFullscreenPromosGroup);
+#endif  // BUILDFLAG(IS_IOS)
+
 }  // namespace feature_engagement
 
 #endif  // COMPONENTS_FEATURE_ENGAGEMENT_PUBLIC_GROUP_CONSTANTS_H_

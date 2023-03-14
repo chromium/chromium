@@ -22,6 +22,9 @@ const UPLOAD_URL_ENTRYPOINT: string = 'cntpubu';
 /** Rendering environment for the NTP searchbox entrypoint. */
 const RENDERING_ENVIRONMENT: string = 'df';
 
+/** The value of Surface.CHROMIUM expected by Lens Web. */
+const CHROMIUM_SURFACE: string = '4';
+
 /** Max length for encoded input URL. */
 const MAX_URL_LENGTH: number = 2000;
 
@@ -89,6 +92,11 @@ export class LensFormElement extends PolymerElement {
         type: String,
         readOnly: true,
         value: RENDERING_ENVIRONMENT,
+      },
+      chromiumSurface_: {
+        type: String,
+        readOnly: true,
+        value: CHROMIUM_SURFACE,
       },
       uploadFileAction_: String,
       uploadUrlAction_: {
@@ -169,6 +177,7 @@ export class LensFormElement extends PolymerElement {
     action.searchParams.set('st', this.startTime_.toString());
     action.searchParams.set('cd', this.clientData_);
     action.searchParams.set('re', RENDERING_ENVIRONMENT);
+    action.searchParams.set('s', CHROMIUM_SURFACE);
     this.uploadFileAction_ = action.toString();
 
     this.dispatchLoading_(LensSubmitType.FILE);

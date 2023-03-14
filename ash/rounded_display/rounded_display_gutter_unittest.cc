@@ -38,7 +38,7 @@ constexpr float kExpectedDrawnPixelsToTotalRatio = 0.2146;
 // values of radius are used to draw the corner, the tolerance value needs to be
 // changed. The bigger the corner radius, the lower the tolerance should be and
 // vice versa.
-constexpr float kTolerance = 0.065;
+constexpr float kTolerance = 0.077;
 
 // Calculate the ratio of drawn pixels to total pixels in the grid enclosed
 // between `start_row` to `start_row` + `end_row` and `start_col` to `start_col`

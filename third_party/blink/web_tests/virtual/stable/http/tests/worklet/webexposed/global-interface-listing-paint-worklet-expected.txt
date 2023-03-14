@@ -175,9 +175,6 @@ CONSOLE MESSAGE:     getter fallback
 CONSOLE MESSAGE:     getter variable
 CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE:     setter variable
-CONSOLE MESSAGE: interface CanvasFilter
-CONSOLE MESSAGE:     attribute @@toStringTag
-CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface CountQueuingStrategy
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter highWaterMark
@@ -575,9 +572,6 @@ CONSOLE MESSAGE:     getter fallback
 CONSOLE MESSAGE:     getter variable
 CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE:     setter variable
-CONSOLE MESSAGE: interface CanvasFilter
-CONSOLE MESSAGE:     attribute @@toStringTag
-CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface CountQueuingStrategy
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter highWaterMark

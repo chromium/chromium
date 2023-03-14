@@ -74,20 +74,6 @@ TEST_F(TaskSwitchMetricsRecorderTest,
   histogram_tester_->ExpectTotalCount(kHistogramName, 1);
 }
 
-// Verifies that the TaskSwitchSource::DESKTOP source adds data to the
-// Ash.Desktop.TimeBetweenNavigateToTaskSwitches histogram.
-TEST_F(TaskSwitchMetricsRecorderTest, VerifyTaskSwitchesForDesktopAreRecorded) {
-  const std::string kHistogramName =
-      "Ash.Desktop.TimeBetweenNavigateToTaskSwitches";
-
-  OnTaskSwitch(TaskSwitchSource::DESKTOP);
-  OnTaskSwitch(TaskSwitchSource::DESKTOP);
-  histogram_tester_->ExpectTotalCount(kHistogramName, 1);
-
-  OnTaskSwitch(TaskSwitchSource::DESKTOP);
-  histogram_tester_->ExpectTotalCount(kHistogramName, 2);
-}
-
 // Verifies that the TaskSwitchSource::WINDOW_CYCLE_CONTROLLER source
 // adds data to the Ash.WindowCycleController.TimeBetweenTaskSwitches histogram.
 TEST_F(TaskSwitchMetricsRecorderTest,
@@ -100,21 +86,6 @@ TEST_F(TaskSwitchMetricsRecorderTest,
   histogram_tester_->ExpectTotalCount(kHistogramName, 1);
 
   OnTaskSwitch(TaskSwitchSource::WINDOW_CYCLE_CONTROLLER);
-  histogram_tester_->ExpectTotalCount(kHistogramName, 2);
-}
-
-// Verifies that the TaskSwitchSource::SHELF source adds data to the
-// Ash.Shelf.TimeBetweenNavigateToTaskSwitches histogram.
-TEST_F(TaskSwitchMetricsRecorderTest,
-       VerifyTaskSwitchesFromTheShelfAreRecorded) {
-  const std::string kHistogramName =
-      "Ash.Shelf.TimeBetweenNavigateToTaskSwitches";
-
-  OnTaskSwitch(TaskSwitchSource::SHELF);
-  OnTaskSwitch(TaskSwitchSource::SHELF);
-  histogram_tester_->ExpectTotalCount(kHistogramName, 1);
-
-  OnTaskSwitch(TaskSwitchSource::SHELF);
   histogram_tester_->ExpectTotalCount(kHistogramName, 2);
 }
 

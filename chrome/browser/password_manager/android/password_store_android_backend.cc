@@ -114,6 +114,10 @@ bool MatchesIncludedPSLAndFederation(const PasswordForm& retrieved_login,
   if (retrieved_login.signon_realm == form_to_match.signon_realm)
     return true;
 
+  if (form_to_match.scheme != retrieved_login.scheme) {
+    return false;
+  }
+
   std::u16string retrieved_login_signon_realm =
       UTF8ToUTF16(retrieved_login.signon_realm);
   const bool include_federated =

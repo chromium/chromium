@@ -102,7 +102,8 @@ ScriptPromise StorageBucketManager::open(ScriptState* script_state,
                                          const String& name,
                                          const StorageBucketOptions* options,
                                          ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
 
   ExecutionContext* context = ExecutionContext::From(script_state);
@@ -137,7 +138,8 @@ ScriptPromise StorageBucketManager::open(ScriptState* script_state,
 
 ScriptPromise StorageBucketManager::keys(ScriptState* script_state,
                                          ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
 
   ExecutionContext* context = ExecutionContext::From(script_state);
@@ -156,7 +158,8 @@ ScriptPromise StorageBucketManager::keys(ScriptState* script_state,
 ScriptPromise StorageBucketManager::Delete(ScriptState* script_state,
                                            const String& name,
                                            ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
 
   ExecutionContext* context = ExecutionContext::From(script_state);

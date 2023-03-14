@@ -46,11 +46,6 @@ void CalendarEventFetch::SendFetchRequest() {
   CalendarClient* client = Shell::Get()->calendar_controller()->GetClient();
   DCHECK(client);
 
-  if (ash::features::IsCalendarModelDebugModeEnabled()) {
-    VLOG(1) << __FUNCTION__ << ": " << time_range_.first << " => "
-            << time_range_.second;
-  }
-
   cancel_closure_ =
       client->GetEventList(base::BindOnce(&CalendarEventFetch::OnResultReceived,
                                           weak_factory_.GetWeakPtr()),

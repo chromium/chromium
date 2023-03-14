@@ -15,9 +15,10 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
 #include <mach/port.h>
 
+#include "base/mac/mach_port_rendezvous.h"
 #include "base/mac/scoped_mach_port.h"
 #elif BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/handle.h>
@@ -40,7 +41,7 @@ namespace {
 // generate a key when setting the file descriptor.
 constexpr int kAndroidClientHandleDescriptor =
     base::GlobalDescriptors::kBaseDescriptor + 10000;
-#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
 bool IsTargetDescriptorUsed(const base::FileHandleMappingVector& mapping,
                             int target_fd) {
   for (auto& [i, fd] : mapping) {
@@ -99,7 +100,7 @@ void PlatformChannelEndpoint::PrepareToPass(HandlePassingInfo& info,
   int mapped_fd = kAndroidClientHandleDescriptor + info.size();
   info.emplace_back(fd, mapped_fd);
   value = base::NumberToString(mapped_fd);
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
   DCHECK(platform_handle().is_mach_receive());
   base::mac::ScopedMachReceiveRight receive_right =
       TakePlatformHandle().TakeMachReceiveRight();
@@ -134,7 +135,7 @@ void PlatformChannelEndpoint::PrepareToPass(base::LaunchOptions& options,
   PrepareToPass(options.handles_to_inherit, command_line);
 #elif BUILDFLAG(IS_FUCHSIA)
   PrepareToPass(options.handles_to_transfer, command_line);
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
   PrepareToPass(options.mach_ports_for_rendezvous, command_line);
 #elif BUILDFLAG(IS_POSIX)
   PrepareToPass(options.fds_to_remap, command_line);
@@ -182,7 +183,7 @@ PlatformChannelEndpoint PlatformChannelEndpoint::RecoverFromString(
   }
   return PlatformChannelEndpoint(PlatformHandle(
       base::ScopedFD(base::GlobalDescriptors::GetInstance()->Get(key))));
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
   auto* client = base::MachPortRendezvousClient::GetInstance();
   if (!client) {
     DLOG(ERROR) << "Mach rendezvous failed.";

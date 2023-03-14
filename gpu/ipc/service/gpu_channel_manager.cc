@@ -810,6 +810,12 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
     return shared_context_state_;
   }
 
+  // Temporarily check the ANGLE metal experiment early in GPU process
+  // initialization. This will help us determine why users sometimes do not
+  // check the feature on subsequent runs of Chrome. crbug.com/1423439
+  [[maybe_unused]] bool default_angle_metal =
+      base::FeatureList::IsEnabled(features::kDefaultANGLEMetal);
+
   scoped_refptr<gl::GLSurface> surface = default_offscreen_surface();
   bool use_virtualized_gl_contexts = false;
 #if BUILDFLAG(IS_MAC)

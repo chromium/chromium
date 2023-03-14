@@ -14,6 +14,13 @@ int AV1RateControl::GetLoopfilterLevel() const {
 }
 
 template <>
+void AV1RateControl::PostEncodeUpdate(uint64_t encoded_frame_size,
+                                      const FrameParams& frame_params) {
+  DCHECK(impl_);
+  return impl_->PostEncodeUpdate(encoded_frame_size);
+}
+
+template <>
 aom::AV1RateControlRtcConfig AV1RateControl::ConvertControlConfig(
     const RateControlConfig& config) {
   aom::AV1RateControlRtcConfig rc_config;

@@ -45,123 +45,98 @@ class MockCloudPolicyClient : public CloudPolicyClient {
   MockCloudPolicyClient& operator=(const MockCloudPolicyClient&) = delete;
   ~MockCloudPolicyClient() override;
 
-  MOCK_METHOD3(SetupRegistration,
-               void(const std::string&,
-                    const std::string&,
-                    const std::vector<std::string>&));
-  MOCK_METHOD3(Register,
-               void(const RegistrationParameters&,
-                    const std::string&,
-                    const std::string&));
-  MOCK_METHOD0(FetchPolicy, void(void));
-  MOCK_METHOD0(Unregister, void(void));
-  MOCK_METHOD2(UploadEnterpriseMachineCertificate,
-               void(const std::string&, ResultCallback));
-  MOCK_METHOD2(UploadEnterpriseEnrollmentCertificate,
-               void(const std::string&, ResultCallback));
-  MOCK_METHOD2(UploadEnterpriseEnrollmentId,
-               void(const std::string&, ResultCallback));
-  void UploadDeviceStatus(
-      const enterprise_management::DeviceStatusReportRequest* device_status,
-      const enterprise_management::SessionStatusReportRequest* session_status,
-      const enterprise_management::ChildStatusReportRequest* child_status,
-      ResultCallback callback) override {
-    UploadDeviceStatus_(device_status, session_status, child_status, callback);
-  }
-
-  MOCK_METHOD4(UploadDeviceStatus_,
-               void(const enterprise_management::DeviceStatusReportRequest*,
-                    const enterprise_management::SessionStatusReportRequest*,
-                    const enterprise_management::ChildStatusReportRequest*,
-                    ResultCallback&));
-  MOCK_METHOD0(CancelAppInstallReportUpload, void(void));
-  MOCK_METHOD0(CancelExtensionInstallReportUpload, void(void));
-  void UpdateGcmId(const std::string& id, StatusCallback callback) override {
-    UpdateGcmId_(id, callback);
-  }
-  MOCK_METHOD2(UpdateGcmId_, void(const std::string&, StatusCallback&));
-  MOCK_METHOD4(UploadPolicyValidationReport,
-               void(CloudPolicyValidatorBase::Status,
-                    const std::vector<ValueValidationIssue>&,
-                    const std::string&,
-                    const std::string&));
-
-  void UploadChromeDesktopReport(
-      std::unique_ptr<enterprise_management::ChromeDesktopReportRequest>
-          request,
-      ResultCallback callback) override {
-    UploadChromeDesktopReportProxy(request.get(), callback);
-  }
-  // Use Proxy function because unique_ptr can't be used in mock function.
-  MOCK_METHOD2(UploadChromeDesktopReportProxy,
-               void(enterprise_management::ChromeDesktopReportRequest*,
-                    ResultCallback&));
-
-  void UploadChromeOsUserReport(
-      std::unique_ptr<enterprise_management::ChromeOsUserReportRequest> request,
-      ResultCallback callback) override {
-    UploadChromeOsUserReportProxy(request.get(), callback);
-  }
-  // Use Proxy function because unique_ptr can't be used in mock function.
-  MOCK_METHOD2(UploadChromeOsUserReportProxy,
-               void(enterprise_management::ChromeOsUserReportRequest*,
-                    ResultCallback&));
-
-  void UploadChromeProfileReport(
-      std::unique_ptr<enterprise_management::ChromeProfileReportRequest>
-          request,
-      ResultCallback callback) override {
-    UploadChromeProfileReportProxy(request.get(), callback);
-  }
-  // Use Proxy function because unique_ptr can't be used in mock function.
-  MOCK_METHOD2(UploadChromeProfileReportProxy,
-               void(enterprise_management::ChromeProfileReportRequest*,
-                    ResultCallback&));
-
-  void UploadEuiccInfo(
-      std::unique_ptr<enterprise_management::UploadEuiccInfoRequest> request,
-      StatusCallback callback) override {
-    UploadEuiccInfoProxy(request.get(), callback);
-  }
-  // Use Proxy function because unique_ptr can't be used in mock function.
-  MOCK_METHOD2(UploadEuiccInfoProxy,
-               void(enterprise_management::UploadEuiccInfoRequest*,
-                    StatusCallback&));
-
-  void UploadSecurityEventReport(content::BrowserContext* context,
-                                 bool include_device_info,
-                                 base::Value::Dict value,
-                                 ResultCallback callback) override {
-    UploadSecurityEventReport_(context, include_device_info, value, callback);
-  }
-  MOCK_METHOD4(UploadSecurityEventReport_,
-               void(content::BrowserContext* context,
-                    bool include_device_info,
-                    base::Value::Dict&,
-                    ResultCallback&));
-
-  MOCK_METHOD3(UploadEncryptedReport,
-               void(base::Value::Dict,
-                    absl::optional<base::Value::Dict>,
-                    ResponseCallback));
-
-  void UploadAppInstallReport(base::Value::Dict value,
-                              ResultCallback callback) override {
-    UploadAppInstallReport_(value, callback);
-  }
-  MOCK_METHOD2(UploadAppInstallReport_,
-               void(base::Value::Dict&, ResultCallback&));
-  void UploadExtensionInstallReport(base::Value::Dict value,
-                                    ResultCallback callback) override {
-    UploadExtensionInstallReport_(value, callback);
-  }
-  MOCK_METHOD2(UploadExtensionInstallReport_,
-               void(base::Value::Dict&, ResultCallback&));
-
-  MOCK_METHOD2(
-      ClientCertProvisioningRequest,
-      void(enterprise_management::ClientCertificateProvisioningRequest request,
-           ClientCertProvisioningRequestCallback callback));
+  MOCK_METHOD(void,
+              SetupRegistration,
+              (const std::string&,
+               const std::string&,
+               const std::vector<std::string>&),
+              (override));
+  MOCK_METHOD(void,
+              Register,
+              (const RegistrationParameters&,
+               const std::string&,
+               const std::string&),
+              (override));
+  MOCK_METHOD(void, FetchPolicy, (), (override));
+  MOCK_METHOD(void,
+              UploadEnterpriseMachineCertificate,
+              (const std::string&, ResultCallback),
+              (override));
+  MOCK_METHOD(void,
+              UploadEnterpriseEnrollmentCertificate,
+              (const std::string&, ResultCallback),
+              (override));
+  MOCK_METHOD(void,
+              UploadEnterpriseEnrollmentId,
+              (const std::string&, ResultCallback),
+              (override));
+  MOCK_METHOD(void,
+              UploadDeviceStatus,
+              (const enterprise_management::DeviceStatusReportRequest*,
+               const enterprise_management::SessionStatusReportRequest*,
+               const enterprise_management::ChildStatusReportRequest*,
+               ResultCallback),
+              (override));
+  MOCK_METHOD(void, CancelAppInstallReportUpload, (), (override));
+  MOCK_METHOD(void, CancelExtensionInstallReportUpload, (), (override));
+  MOCK_METHOD(void,
+              UpdateGcmId,
+              (const std::string&, StatusCallback),
+              (override));
+  MOCK_METHOD(void,
+              UploadPolicyValidationReport,
+              (CloudPolicyValidatorBase::Status,
+               const std::vector<ValueValidationIssue>&,
+               const std::string&,
+               const std::string&),
+              (override));
+  MOCK_METHOD(
+      void,
+      UploadChromeDesktopReport,
+      (std::unique_ptr<enterprise_management::ChromeDesktopReportRequest>,
+       ResultCallback),
+      (override));
+  MOCK_METHOD(
+      void,
+      UploadChromeOsUserReport,
+      (std::unique_ptr<enterprise_management::ChromeOsUserReportRequest>,
+       ResultCallback),
+      (override));
+  MOCK_METHOD(
+      void,
+      UploadChromeProfileReport,
+      (std::unique_ptr<enterprise_management::ChromeProfileReportRequest>,
+       ResultCallback),
+      (override));
+  MOCK_METHOD(void,
+              UploadEuiccInfo,
+              (std::unique_ptr<enterprise_management::UploadEuiccInfoRequest>,
+               StatusCallback),
+              (override));
+  MOCK_METHOD(
+      void,
+      UploadSecurityEventReport,
+      (content::BrowserContext*, bool, base::Value::Dict, ResultCallback),
+      (override));
+  MOCK_METHOD(void,
+              UploadEncryptedReport,
+              (base::Value::Dict,
+               absl::optional<base::Value::Dict>,
+               ResponseCallback),
+              (override));
+  MOCK_METHOD(void,
+              UploadAppInstallReport,
+              (base::Value::Dict value, ResultCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              UploadExtensionInstallReport,
+              (base::Value::Dict, ResultCallback),
+              (override));
+  MOCK_METHOD(void,
+              ClientCertProvisioningRequest,
+              (enterprise_management::ClientCertificateProvisioningRequest,
+               ClientCertProvisioningRequestCallback),
+              (override));
 
   // Sets the DMToken.
   void SetDMToken(const std::string& token);
@@ -201,9 +176,12 @@ class MockCloudPolicyClientObserver : public CloudPolicyClient::Observer {
       const MockCloudPolicyClientObserver&) = delete;
   ~MockCloudPolicyClientObserver() override;
 
-  MOCK_METHOD1(OnPolicyFetched, void(CloudPolicyClient*));
-  MOCK_METHOD1(OnRegistrationStateChanged, void(CloudPolicyClient*));
-  MOCK_METHOD1(OnClientError, void(CloudPolicyClient*));
+  MOCK_METHOD(void, OnPolicyFetched, (CloudPolicyClient*), (override));
+  MOCK_METHOD(void,
+              OnRegistrationStateChanged,
+              (CloudPolicyClient*),
+              (override));
+  MOCK_METHOD(void, OnClientError, (CloudPolicyClient*), (override));
 };
 
 }  // namespace policy

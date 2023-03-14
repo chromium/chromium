@@ -26,18 +26,18 @@ std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
     const base::Time start_time,
     const base::Time end_time,
     bool all_day_event = false,
-    std::string hangout_link = "") {
+    const GURL video_conference_url = GURL()) {
   return calendar_test_utils::CreateEvent(
       "id_0", "summary_0", start_time, end_time,
       google_apis::calendar::CalendarEvent::EventStatus::kConfirmed,
       google_apis::calendar::CalendarEvent::ResponseStatus::kAccepted,
-      all_day_event, hangout_link);
+      all_day_event, video_conference_url);
 }
 
 std::list<std::unique_ptr<google_apis::calendar::CalendarEvent>>
 CreateUpcomingEvents(int event_count = 1,
                      bool all_day_event = false,
-                     std::string hangout_link = "") {
+                     const GURL video_conference_url = GURL()) {
   std::list<std::unique_ptr<google_apis::calendar::CalendarEvent>> events;
   auto event_in_ten_mins_start_time =
       base::subtle::TimeNowIgnoringOverride().LocalMidnight() +
@@ -47,7 +47,7 @@ CreateUpcomingEvents(int event_count = 1,
   for (int i = 0; i < event_count; ++i) {
     events.push_back(CreateEvent(event_in_ten_mins_start_time,
                                  event_in_ten_mins_end_time, all_day_event,
-                                 hangout_link));
+                                 video_conference_url));
   }
 
   return events;
@@ -126,6 +126,16 @@ class CalendarUpNextViewTest : public AshTestBase {
 
   virtual void PressScrollRightButton() {
     PressScrollButton(GetScrollRightButton());
+  }
+
+  void PressTab() {
+    ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+    generator.PressKey(ui::KeyboardCode::VKEY_TAB, ui::EF_NONE);
+  }
+
+  void PressShiftTab() {
+    ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+    generator.PressKey(ui::KeyboardCode::VKEY_TAB, ui::EF_SHIFT_DOWN);
   }
 
   int ScrollPosition() { return GetScrollView()->GetVisibleRect().x(); }
@@ -448,9 +458,9 @@ TEST_F(CalendarUpNextViewTest,
   auto histogram_tester = std::make_unique<base::HistogramTester>();
   // Create up next view with upcoming google meet event.
   CreateUpNextView(
-      CreateUpcomingEvents(1, false, "https://meet.google.com/abc-123"));
+      CreateUpcomingEvents(1, false, GURL("https://meet.google.com/abc-123")));
   EXPECT_EQ(GetContentsView()->children().size(), size_t(1));
-  EXPECT_EQ(GetSystemTrayClient()->show_google_meet_count(), 0);
+  EXPECT_EQ(GetSystemTrayClient()->show_video_conference_count(), 0);
 
   // Click the "Join" meeting button.
   const auto* join_meeting_button =
@@ -458,9 +468,65 @@ TEST_F(CalendarUpNextViewTest,
   ASSERT_TRUE(join_meeting_button);
   LeftClickOn(join_meeting_button);
 
-  EXPECT_EQ(GetSystemTrayClient()->show_google_meet_count(), 1);
+  EXPECT_EQ(GetSystemTrayClient()->show_video_conference_count(), 1);
   histogram_tester->ExpectTotalCount(
       "Ash.Calendar.UpNextView.JoinMeetingButton.Pressed", 1);
+}
+
+// Greenlines can be found in b/258648030.
+TEST_F(CalendarUpNextViewTest, ShouldFocusViewsInCorrectOrder_WhenPressingTab) {
+  // Set time override.
+  base::subtle::ScopedTimeClockOverrides time_override(
+      []() { return base::subtle::TimeNowIgnoringOverride().LocalMidnight(); },
+      nullptr, nullptr);
+
+  // Create up next view with 2 upcoming google meet events.
+  CreateUpNextView(
+      CreateUpcomingEvents(2, false, GURL("https://meet.google.com/abc-123")));
+  EXPECT_EQ(GetContentsView()->children().size(), size_t(2));
+  auto* focus_manager = up_next_view()->GetFocusManager();
+
+  // First the event list item view should be focused.
+  PressTab();
+  auto* first_item = GetContentsView()->children()[0];
+  ASSERT_TRUE(first_item);
+  EXPECT_EQ(first_item, focus_manager->GetFocusedView());
+  EXPECT_STREQ("CalendarEventListItemViewJelly",
+               focus_manager->GetFocusedView()->GetClassName());
+
+  // Next, the "Join" button should be focused.
+  PressTab();
+  EXPECT_EQ(first_item->GetViewByID(kJoinButtonID),
+            focus_manager->GetFocusedView());
+
+  // Next, the second event list item view should be focused.
+  PressTab();
+  auto* second_item = GetContentsView()->children()[1];
+  ASSERT_TRUE(second_item);
+  EXPECT_EQ(second_item, focus_manager->GetFocusedView());
+  EXPECT_STREQ("CalendarEventListItemViewJelly",
+               focus_manager->GetFocusedView()->GetClassName());
+
+  // Next, the second event list item view "Join" button should be focused.
+  PressTab();
+  EXPECT_EQ(second_item->GetViewByID(kJoinButtonID),
+            focus_manager->GetFocusedView());
+
+  // Finally, the show upcoming events button should be focused.
+  PressTab();
+  EXPECT_EQ(GetTodaysEventsButton(), focus_manager->GetFocusedView());
+
+  // Going back, the second event list item view "Join" button should be
+  // focused.
+  PressShiftTab();
+  EXPECT_EQ(second_item->GetViewByID(kJoinButtonID),
+            focus_manager->GetFocusedView());
+
+  // Going back again, the second event list item view should be focused.
+  PressShiftTab();
+  EXPECT_EQ(second_item, focus_manager->GetFocusedView());
+  EXPECT_STREQ("CalendarEventListItemViewJelly",
+               focus_manager->GetFocusedView()->GetClassName());
 }
 
 class CalendarUpNextViewAnimationTest : public CalendarUpNextViewTest {

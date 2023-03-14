@@ -17,11 +17,15 @@ build_webui("build") {
     "icons/office.svg",
     "icons/sheets.svg",
     "icons/slides.svg",
-    "images/connect_one_drive.png",
+    "images/connect_one_drive_app_icon.svg",
+    "images/connect_one_drive.svg",
+    "images/install_office_app_icon.svg",
     "images/install_office.svg",
     "images/one_drive_success.svg",
     "images/welcome.svg",
     "main.html",
+    "move_confirmation_animation_drive.json",
+    "move_confirmation_animation_onedrive.json",
   ]
   web_component_files = [
     "base_setup_page.ts",
@@ -45,7 +49,6 @@ build_webui("build") {
     "//chrome/browser/ui/webui/ash/cloud_upload:mojo_bindings_ts__generator",
   ]
   ts_composite = true
-  ts_use_local_config = false
 
   html_to_wrapper_template = "native"
 
@@ -53,6 +56,6 @@ build_webui("build") {
   ts_deps = [
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
-    "//ui/webui/resources/mojo:library",
+    "//ui/webui/resources/mojo:build_ts",
   ]
 }

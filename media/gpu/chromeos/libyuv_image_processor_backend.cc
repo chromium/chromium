@@ -120,6 +120,7 @@ static constexpr struct {
     CONV(YUYV, YU12, kConversion, Supported),
     CONV(YV12, NV12, kConversion, Supported),
     CONV(MM21, NV12, kConversion, Supported),
+    CONV(MT2T, P010, kConversion, Supported),
     // Scaling.
     CONV(NV12, NV12, kScaling, Supported),
     CONV(YM16, NV12, kScaling, SupportedWithNV12Pivot),
@@ -441,6 +442,21 @@ int LibYUVImageProcessorBackend::DoConversion(const VideoFrame* const input,
 #define YUY2_DATA(fr) \
   fr->visible_data(VideoFrame::kYPlane), fr->stride(VideoFrame::kYPlane)
 
+#define Y_UV_DATA_10BIT(fr)                                                 \
+  reinterpret_cast<const uint16_t*>(fr->visible_data(VideoFrame::kYPlane)), \
+      fr->stride(VideoFrame::kYPlane),                                      \
+      reinterpret_cast<const uint16_t*>(                                    \
+          fr->visible_data(VideoFrame::kUVPlane)),                          \
+      fr->stride(VideoFrame::kUVPlane)
+
+#define Y_UV_DATA_W_10BIT(fr)                                \
+  reinterpret_cast<uint16_t*>(                               \
+      fr->GetWritableVisibleData(VideoFrame::kYPlane)),      \
+      fr->stride(VideoFrame::kYPlane),                       \
+      reinterpret_cast<uint16_t*>(                           \
+          fr->GetWritableVisibleData(VideoFrame::kUVPlane)), \
+      fr->stride(VideoFrame::kUVPlane)
+
 #define LIBYUV_FUNC(func, i, o)                      \
   libyuv::func(i, o, output->visible_rect().width(), \
                output->visible_rect().height())
@@ -581,6 +597,13 @@ int LibYUVImageProcessorBackend::DoConversion(const VideoFrame* const input,
       default:
         VLOGF(1) << "Unexpected input format: " << input->format();
         return -1;
+    }
+  }
+
+  if (output->format() == PIXEL_FORMAT_P016LE) {
+    if (input_config_.fourcc == Fourcc(Fourcc::MT2T)) {
+      return LIBYUV_FUNC(MT2TToP010, Y_UV_DATA(input),
+                         Y_UV_DATA_W_10BIT(output));
     }
   }
 

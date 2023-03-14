@@ -794,7 +794,8 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       cartCarousel.removeEventListener('scroll', onScroll);
     });
 
-    test('click on cart item', async () => {
+    // b/270225100: Flaky
+    test.skip('click on cart item', async () => {
       const carts = [
         {
           merchant: 'Amazon',
@@ -891,7 +892,8 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       loadTimeData.overrideValues({ruleBasedDiscountEnabled: true});
     });
 
-    test('click on cart item with rule-based discount', async () => {
+    // b/270225100: Flaky
+    test.skip('click on cart item with rule-based discount', async () => {
       const carts = [
         {
           merchant: 'Amazon',

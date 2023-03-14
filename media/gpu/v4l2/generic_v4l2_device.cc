@@ -23,6 +23,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "gpu/command_buffer/service/shared_image/gl_image_native_pixmap.h"
 #include "media/base/video_types.h"
 #include "media/gpu/buildflags.h"
 #include "media/gpu/chromeos/fourcc.h"
@@ -32,7 +33,6 @@
 #include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gl/egl_util.h"
 #include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_image_native_pixmap.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 
@@ -281,10 +281,12 @@ EGLImageKHR GenericV4L2Device::CreateEGLImage(
   return egl_image;
 }
 
-scoped_refptr<gl::GLImageNativePixmap> GenericV4L2Device::CreateGLImage(
+scoped_refptr<gpu::GLImageNativePixmap> GenericV4L2Device::CreateGLImage(
     const gfx::Size& size,
     const Fourcc fourcc,
-    gfx::NativePixmapHandle handle) const {
+    gfx::NativePixmapHandle handle,
+    GLenum target,
+    GLuint texture_id) const {
   DVLOGF(3);
   DCHECK(CanCreateEGLImageFrom(fourcc));
 
@@ -315,8 +317,8 @@ scoped_refptr<gl::GLImageNativePixmap> GenericV4L2Device::CreateGLImage(
   DCHECK(pixmap);
 
   // TODO(b/220336463): plumb the right color space.
-  auto image =
-      gl::GLImageNativePixmap::Create(size, buffer_format, std::move(pixmap));
+  auto image = gpu::GLImageNativePixmap::Create(
+      size, buffer_format, std::move(pixmap), target, texture_id);
   DCHECK(image);
   return image;
 }

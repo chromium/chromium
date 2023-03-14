@@ -956,6 +956,9 @@ TEST(AutocompleteMatchTest, BetterDuplicate) {
       new FakeAutocompleteProvider(
           AutocompleteProvider::Type::TYPE_HISTORY_QUICK);
 
+  scoped_refptr<FakeAutocompleteProvider> shortcuts_provider =
+      new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_SHORTCUTS);
+
   // Prefer document provider matches over other providers, even if scored
   // lower.
   EXPECT_TRUE(
@@ -972,6 +975,13 @@ TEST(AutocompleteMatchTest, BetterDuplicate) {
   EXPECT_TRUE(AutocompleteMatch::BetterDuplicate(
       create_match(document_provider, 0),
       create_match(bookmark_provider, 1000)));
+
+  // Prefer non-shortcuts provider matches over shortcuts provider matches.
+  EXPECT_TRUE(AutocompleteMatch::BetterDuplicate(
+      create_match(history_provider, 0),
+      create_match(shortcuts_provider, 1000)));
+
+  // Prefer non-shortcuts provider matches over shortcuts provider matches.
 
   // Prefer more relevant matches.
   EXPECT_FALSE(

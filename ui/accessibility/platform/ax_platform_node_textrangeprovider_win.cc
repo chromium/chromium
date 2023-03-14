@@ -895,6 +895,10 @@ HRESULT AXPlatformNodeTextRangeProviderWin::MoveEndpointByRange(
     TextPatternRangeEndpoint this_endpoint,
     ITextRangeProvider* other,
     TextPatternRangeEndpoint other_endpoint) {
+  // Please refer to the big comment on `FindText` on as to why this is needed.
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kSuppressCharacter);
+
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTRANGE_MOVEENPOINTBYRANGE);
   WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_MOVEENPOINTBYRANGE);
 
@@ -935,6 +939,35 @@ HRESULT AXPlatformNodeTextRangeProviderWin::Select() {
     // Prioritize the end position's tree, as a selection's focus object is the
     // end of a selection.
     selection_start = selection_end->CreatePositionAtStartOfAXTree();
+  }
+
+  // In the renderer side accessibility, we have checks that prevent selections
+  // being made that cross shadow DOM boundaries. Thus, these checks make sure
+  // that if we are attempting to make such a selection, we move the positions
+  // to the text field ancestor such that this does not happen. The new
+  // positions are equivalent to the old ones.
+  AXNode* start_anchor = selection_start->GetAnchor();
+  AXNode* end_anchor = selection_end->GetAnchor();
+  AXNode* atomic_text_field = nullptr;
+  if (start_anchor->data().IsAtomicTextField()) {
+    atomic_text_field = start_anchor;
+  } else if (end_anchor->data().IsAtomicTextField()) {
+    atomic_text_field = end_anchor;
+  }
+  if (atomic_text_field && start_anchor != end_anchor) {
+    AXNode* non_atomic_text_field = end_anchor;
+    if (end_anchor == atomic_text_field) {
+      non_atomic_text_field = start_anchor;
+    }
+    if (non_atomic_text_field->GetTextFieldAncestor() == atomic_text_field) {
+      if (start_anchor == atomic_text_field) {
+        selection_end = selection_end->CreateAncestorPosition(
+            start_anchor, ax::mojom::MoveDirection::kForward);
+      } else {
+        selection_start = selection_start->CreateAncestorPosition(
+            end_anchor, ax::mojom::MoveDirection::kForward);
+      }
+    }
   }
 
   DCHECK(!selection_start->IsNullPosition());

@@ -19,6 +19,8 @@ import {ChromeVoxRange} from './chromevox_range.js';
 import {EarconEngine} from './earcon_engine.js';
 import {LogStore} from './logging/log_store.js';
 
+const DeviceType = chrome.audio.DeviceType;
+
 export class Earcons extends AbstractEarcons {
   constructor() {
     super();
@@ -65,9 +67,9 @@ export class Earcons extends AbstractEarcons {
       LogStore.instance.writeTextLog(earcon, LogType.EARCON);
       console.log('Earcon ' + earcon);
     }
-    if (ChromeVoxRange.current && ChromeVoxRange.current.isValid()) {
+    if (ChromeVoxRange.current?.isValid()) {
       const node = ChromeVoxRange.current.start.node;
-      const rect = opt_location || node.location;
+      const rect = opt_location ?? node.location;
       const container = node.root.location;
       if (this.shouldPan_) {
         this.engine_.setPositionForRect(rect, container);
@@ -103,9 +105,8 @@ export class Earcons extends AbstractEarcons {
    * @private
    */
   updateShouldPanForDevices_(devices) {
-    this.shouldPan_ = !devices.some(device => {
-      return device.isActive &&
-          device.deviceType === chrome.audio.DeviceType.INTERNAL_SPEAKER;
-    });
+    this.shouldPan_ = !devices.some(
+        device => device.isActive &&
+            device.deviceType === DeviceType.INTERNAL_SPEAKER);
   }
 }

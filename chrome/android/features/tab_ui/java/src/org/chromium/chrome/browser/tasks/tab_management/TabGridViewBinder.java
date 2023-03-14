@@ -29,6 +29,7 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ButtonCompat;
@@ -112,11 +113,15 @@ class TabGridViewBinder {
                     model.get(TabProperties.IS_SELECTED));
             updateFavicon(view, model);
         } else if (TabProperties.FAVICON == propertyKey) {
-            if (TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.getValue()) return;
+            if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(view.getContext())) {
+                return;
+            }
 
             updateFavicon(view, model);
         } else if (TabProperties.FAVICON_FETCHER == propertyKey) {
-            if (!TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.getValue()) return;
+            if (!TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(view.getContext())) {
+                return;
+            }
 
             updateFavicon(view, model);
         } else if (TabProperties.THUMBNAIL_FETCHER == propertyKey) {
@@ -175,7 +180,9 @@ class TabGridViewBinder {
         } else if (CARD_ALPHA == propertyKey) {
             view.setAlpha(model.get(CARD_ALPHA));
         } else if (TabProperties.TITLE == propertyKey) {
-            if (TabUiFeatureUtilities.isLaunchPolishEnabled()) return;
+            if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(view.getContext())) {
+                return;
+            }
             String title = model.get(TabProperties.TITLE);
             view.fastFindViewById(R.id.action_button)
                     .setContentDescription(view.getResources().getString(
@@ -245,7 +252,7 @@ class TabGridViewBinder {
             view.setSelected(model.get(TabProperties.IS_SELECTED));
             updateColorForActionButton(view, model.get(TabProperties.IS_INCOGNITO),
                     model.get(TabProperties.IS_SELECTED));
-        } else if (TabUiFeatureUtilities.isLaunchPolishEnabled()
+        } else if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(view.getContext())
                 && TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING == propertyKey) {
             view.fastFindViewById(R.id.action_button)
                     .setContentDescription(
@@ -306,7 +313,6 @@ class TabGridViewBinder {
         final TabListMediator.ThumbnailFetcher fetcher = model.get(TabProperties.THUMBNAIL_FETCHER);
         TabGridThumbnailView thumbnail =
                 (TabGridThumbnailView) view.fastFindViewById(R.id.tab_thumbnail);
-        thumbnail.maybeAdjustThumbnailHeight();
         if (fetcher == null) {
             thumbnail.setImageDrawable(null);
             return;
@@ -317,11 +323,6 @@ class TabGridViewBinder {
         // TODO(crbug/1395467): Consider unsetting the bitmap early to allow memory reuse if needed.
 
         final Size cardSize = model.get(TabProperties.GRID_CARD_SIZE);
-        final Size thumbnailSize =
-                TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(view.getContext())
-                        && cardSize != null
-                ? TabUtils.deriveThumbnailSize(cardSize, view.getContext())
-                : null;
         Callback<Bitmap> callback = result -> {
             if (result != null) {
                 // TODO(crbug/1395467): look into cancelling if there are multiple in-flight
@@ -330,7 +331,7 @@ class TabGridViewBinder {
                     result.recycle();
                     return;
                 }
-                if (TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(view.getContext())
+                if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(view.getContext())
                         && model.get(TabProperties.GRID_CARD_SIZE) != null) {
                     // Adjust bitmap to thumbnail.
                     Size destSize = TabUtils.deriveThumbnailSize(
@@ -343,7 +344,13 @@ class TabGridViewBinder {
                 thumbnail.setImageBitmap(result);
             }
         };
-        if (TabUiFeatureUtilities.isLaunchPolishEnabled() && sThumbnailFetcherForTesting != null) {
+        final Size thumbnailSize =
+                DeviceFormFactor.isNonMultiDisplayContextOnTablet(view.getContext())
+                        && cardSize != null
+                ? TabUtils.deriveThumbnailSize(cardSize, view.getContext())
+                : null;
+        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(view.getContext())
+                && sThumbnailFetcherForTesting != null) {
             sThumbnailFetcherForTesting.fetch(callback, thumbnailSize, isSelected);
         } else {
             fetcher.fetch(callback, thumbnailSize, isSelected);
@@ -392,7 +399,7 @@ class TabGridViewBinder {
      * #bindCommonProperties}.
      */
     private static void updateFavicon(ViewLookupCachingFrameLayout rootView, PropertyModel model) {
-        if (TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.getValue()) {
+        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(rootView.getContext())) {
             final TabListFaviconProvider.TabFaviconFetcher fetcher =
                     model.get(TabProperties.FAVICON_FETCHER);
             if (fetcher == null) {

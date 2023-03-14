@@ -27,7 +27,7 @@ function getTreeForBackgroundTab(foregroundTabRootNode, backgroundTab) {
   // We haven't cheated and loaded the test in the foreground tab.
   chrome.test.assertTrue(foregroundTabRootNode.docLoaded);
   var foregroundTabTitle = foregroundTabRootNode.docTitle;
-  chrome.test.assertFalse(foregroundTabTitle == 'Automation Tests');
+  chrome.test.assertNe('Automation Tests', foregroundTabTitle);
 
 }
 

@@ -402,7 +402,7 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoViewTransitionNew);
     DEFINE_STRING_MAPPING(PseudoViewTransitionOld);
     DEFINE_STRING_MAPPING(PseudoParent);
-    DEFINE_STRING_MAPPING(PseudoParentUnparsed)
+    DEFINE_STRING_MAPPING(PseudoUnparsed)
     DEFINE_STRING_MAPPING(PseudoInitial)
 #undef DEFINE_STRING_MAPPING
   }
@@ -735,6 +735,7 @@ const char kStyleChange[] = "Style changed";
 const char kDomChanged[] = "DOM changed";
 const char kTextChanged[] = "Text changed";
 const char kPrintingChanged[] = "Printing changed";
+const char kPaintPreview[] = "Enter/exit paint preview";
 const char kAttributeChanged[] = "Attribute changed";
 const char kColumnsChanged[] = "Attribute changed";
 const char kChildAnonymousBlockChanged[] = "Child anonymous block changed";

@@ -70,7 +70,7 @@ namespace internal {
 // The crash is generated in a PA_NOINLINE function so that we can classify the
 // crash as an OOM solely by analyzing the stack trace. It is tagged as
 // PA_NOT_TAIL_CALLED to ensure that its parent function stays on the stack.
-[[noreturn]] PA_NOINLINE void PA_NOT_TAIL_CALLED OnNoMemory(size_t size) {
+[[noreturn]] PA_NOINLINE PA_NOT_TAIL_CALLED void OnNoMemory(size_t size) {
   RunPartitionAllocOomCallback();
   TerminateBecauseOutOfMemory(size);
   PA_IMMEDIATE_CRASH();

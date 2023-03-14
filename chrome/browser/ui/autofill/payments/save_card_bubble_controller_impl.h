@@ -118,7 +118,6 @@ class SaveCardBubbleControllerImpl
   const AccountInfo& GetAccountInfo() override;
   Profile* GetProfile() const override;
   const CreditCard& GetCard() const override;
-  AutofillBubbleBase* GetSaveCardBubbleView() const override;
   bool ShouldRequestNameFromUser() const override;
   bool ShouldRequestExpirationDateFromUser() const override;
 
@@ -140,7 +139,8 @@ class SaveCardBubbleControllerImpl
   bool ShouldShowSaveFailureBadge() const override;
   void OnAnimationEnded() override;
   bool IsIconVisible() const override;
-  AutofillBubbleBase* GetSaveBubbleView() const override;
+  AutofillBubbleBase* GetPaymentBubbleView() const override;
+  PaymentBubbleType GetPaymentBubbleType() const override;
 
  protected:
   explicit SaveCardBubbleControllerImpl(content::WebContents* web_contents);

@@ -48,8 +48,7 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   // Returns true if an `url` is either chrome://newtab or about://newtab.
   bool IsNTPURL(const GURL& url);
 
-  // Returns the initially selected feed for the next NTP and then resets it to
-  // default.
+  // Returns the selected feed for the next NTP.
   FeedType GetNextNTPFeedType();
 
   // Sets the default feed for the next NTP.

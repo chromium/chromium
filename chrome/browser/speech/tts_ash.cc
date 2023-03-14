@@ -244,6 +244,10 @@ void TtsAsh::Resume() {
   content::TtsController::GetInstance()->Resume();
 }
 
+void TtsAsh::IsSpeaking(IsSpeakingCallback callback) {
+  std::move(callback).Run(content::TtsController::GetInstance()->IsSpeaking());
+}
+
 void TtsAsh::SpeakWithLacrosVoice(content::TtsUtterance* utterance,
                                   const content::VoiceData& voice) {
   if (!HasTtsClient())

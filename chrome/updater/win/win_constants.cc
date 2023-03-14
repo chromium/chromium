@@ -15,8 +15,6 @@ const wchar_t kGoogleUpdate3WebUserClassProgId[] =
 
 const wchar_t kGlobalPrefix[] = L"Global\\G";
 
-const wchar_t kPrefsAccessMutex[] = L"" PREFS_ACCESS_MUTEX;
-
 const wchar_t kRegKeyCommands[] = L"Commands";
 const wchar_t kRegValueCommandLine[] = L"CommandLine";
 const wchar_t kRegValueAutoRunOnOSUpgrade[] = L"AutoRunOnOSUpgrade";
@@ -35,6 +33,14 @@ const wchar_t kRegValueInstallerResultUIString[] = L"InstallerResultUIString";
 const wchar_t kRegValueInstallerSuccessLaunchCmdLine[] =
     L"InstallerSuccessLaunchCmdLine";
 
+const wchar_t kRegValueLastInstallerResult[] = L"LastInstallerResult";
+const wchar_t kRegValueLastInstallerError[] = L"LastInstallerError";
+const wchar_t kRegValueLastInstallerExtraCode1[] = L"LastInstallerExtraCode1";
+const wchar_t kRegValueLastInstallerResultUIString[] =
+    L"LastInstallerResultUIString";
+const wchar_t kRegValueLastInstallerSuccessLaunchCmdLine[] =
+    L"LastInstallerSuccessLaunchCmdLine";
+
 const wchar_t kRegKeyCompanyCloudManagement[] =
     COMPANY_POLICIES_KEY L"CloudManagement\\";
 const wchar_t kRegValueEnrollmentToken[] = L"EnrollmentToken\\";
@@ -50,5 +56,17 @@ const wchar_t kWindowsInternalServiceName[] = L"InternalService";
 const wchar_t kShutdownEvent[] = L"{A0C1F415-D2CE-4ddc-9B48-14E56FD55162}";
 
 const wchar_t kLegacyExeName[] = COMPANY_SHORTNAME_STRING L"Update.exe";
+
+const wchar_t kLegacyServiceNamePrefix[] = L"" LEGACY_SERVICE_NAME_PREFIX;
+
+const wchar_t kLegacyServiceDisplayNamePrefix[] =
+    COMPANY_SHORTNAME_STRING L" Update Service";
+
+const wchar_t kLegacyRunValuePrefix[] = COMPANY_SHORTNAME_STRING L" Update";
+
+const wchar_t kLegacyTaskNamePrefixSystem[] =
+    COMPANY_SHORTNAME_STRING L"UpdateTaskMachine";
+const wchar_t kLegacyTaskNamePrefixUser[] =
+    COMPANY_SHORTNAME_STRING L"UpdateTaskUser";
 
 }  // namespace updater

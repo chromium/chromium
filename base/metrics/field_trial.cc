@@ -10,9 +10,9 @@
 #include "base/auto_reset.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/debug/activity_tracker.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_param_associator.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -32,6 +32,10 @@
 
 #if !BUILDFLAG(IS_IOS)
 #include "base/process/launch.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mach_port_rendezvous.h"
 #endif
 
 // On POSIX, the fd is shared using the mapping in GlobalDescriptors.
@@ -66,14 +70,14 @@ const char kActivationMarker = '*';
 // Constants for the field trial allocator.
 const char kAllocatorName[] = "FieldTrialAllocator";
 
-// We allocate 128 KiB to hold all the field trial data. This should be enough,
+// We allocate 256 KiB to hold all the field trial data. This should be enough,
 // as most people use 3 - 25 KiB for field trials (as of 11/25/2016).
-// This also doesn't allocate all 128 KiB at once -- the pages only get mapped
+// This also doesn't allocate all 256 KiB at once -- the pages only get mapped
 // to physical memory when they are touched. If the size of the allocated field
-// trials does get larger than 128 KiB, then we will drop some field trials in
+// trials does get larger than 256 KiB, then we will drop some field trials in
 // child processes, leading to an inconsistent view between browser and child
 // processes and possibly causing crashes (see crbug.com/661617).
-const size_t kFieldTrialAllocationSize = 128 << 10;  // 128 KiB
+const size_t kFieldTrialAllocationSize = 256 << 10;  // 256 KiB
 
 #if BUILDFLAG(IS_MAC)
 constexpr MachPortsForRendezvous::key_type kFieldTrialRendezvousKey = 'fldt';
@@ -643,6 +647,9 @@ void FieldTrialList::GetInitiallyActiveFieldTrials(
   DCHECK(global_->create_trials_from_command_line_called_);
 
   if (!global_->field_trial_allocator_) {
+    UmaHistogramBoolean(
+        "ChildProcess.FieldTrials.GetInitiallyActiveFieldTrials.FromString",
+        true);
     GetActiveFieldTrialGroupsFromString(
         command_line.GetSwitchValueASCII(switches::kForceFieldTrials),
         active_groups);
@@ -739,6 +746,8 @@ void FieldTrialList::PopulateLaunchOptionsWithFieldTrialState(
 
   // If the readonly handle did not get created, fall back to flags.
   if (!global_ || !global_->readonly_allocator_region_.IsValid()) {
+    UmaHistogramBoolean(
+        "ChildProcess.FieldTrials.PopulateLaunchOptions.CommandLine", true);
     AddFeatureAndFieldTrialFlags(command_line);
     return;
   }
@@ -964,6 +973,9 @@ void FieldTrialList::ClearParamsFromSharedMemoryForTesting() {
     size_t total_size = sizeof(FieldTrial::FieldTrialEntry) + pickle.size();
     FieldTrial::FieldTrialEntry* new_entry =
         allocator->New<FieldTrial::FieldTrialEntry>(total_size);
+    DCHECK(new_entry)
+        << "Failed to allocate a new entry, likely because the allocator is "
+           "full. Consider increasing kFieldTrialAllocationSize.";
     subtle::NoBarrier_Store(&new_entry->activated,
                             subtle::NoBarrier_Load(&prev_entry->activated));
     new_entry->pickle_size = pickle.size();

@@ -138,13 +138,14 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
 
   // These methods are virtual so that they can be overriden in tests.
 
-  virtual void AddGuest(int guest_instance_id,
-                        content::WebContents* guest_web_contents);
+  virtual void AddGuest(GuestViewBase* guest);
   // If a GuestView is created but never initialized with a guest WebContents,
-  // this should still be called to invalidate `guest_instance_id`.
+  // this should still be called to invalidate `guest`'s `guest_instance_id`.
   // If `invalidate_id` is false, then the id may be reused to associate a guest
   // with a new guest WebContents.
-  void RemoveGuest(int guest_instance_id, bool invalidate_id);
+  void RemoveGuest(GuestViewBase* guest, bool invalidate_id);
+
+  GuestViewBase* GetGuestFromWebContents(content::WebContents* web_contents);
 
   // This method is called when the embedder process with ID
   // |embedder_process_id| has been destroyed.
@@ -209,8 +210,13 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
                                      content::WebContents* guest_web_contents);
 
   // Contains guests' WebContents, mapping from their instance ids.
+  // TODO(1261928): This should be a map to GuestViewBases.
   using GuestInstanceMap = std::map<int, content::WebContents*>;
   GuestInstanceMap guest_web_contents_by_instance_id_;
+
+  using WebContentsGuestViewMap =
+      std::map<const content::WebContents*, GuestViewBase*>;
+  WebContentsGuestViewMap webcontents_guestview_map_;
 
   struct ElementInstanceKey {
     int embedder_process_id;

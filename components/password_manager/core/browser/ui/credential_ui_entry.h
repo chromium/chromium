@@ -68,6 +68,9 @@ struct CredentialUIEntry {
 
     // The URL that will be linked to when an entry is clicked.
     GURL url;
+
+    // signon_realm of a corresponding PasswordForm.
+    std::string signon_realm;
   };
 
   struct Less {
@@ -156,6 +159,9 @@ struct CredentialUIEntry {
 bool operator==(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs);
 bool operator!=(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs);
 bool operator<(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs);
+
+// Returns true when the credential is either leaked or phished.
+bool IsCompromised(const CredentialUIEntry& credential);
 
 }  // namespace password_manager
 

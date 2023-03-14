@@ -4,6 +4,11 @@
 
 #include "ash/app_list/app_list_item_util.h"
 
+#include <string>
+
+#include "base/no_destructor.h"
+#include "base/pickle.h"
+
 namespace ash {
 
 const ui::ClipboardFormatType& GetAppItemFormatType() {
@@ -11,6 +16,22 @@ const ui::ClipboardFormatType& GetAppItemFormatType() {
       ui::ClipboardFormatType::GetType("ash/x-app-item-id"));
 
   return *format;
+}
+
+absl::optional<std::string> GetAppIdFromDropData(
+    const ui::OSExchangeData& data) {
+  base::Pickle data_pickle;
+  if (!data.GetPickledData(GetAppItemFormatType(), &data_pickle)) {
+    return absl::nullopt;
+  }
+
+  std::string app_id;
+  base::PickleIterator iter(data_pickle);
+  if (!iter.ReadString(&app_id)) {
+    return absl::nullopt;
+  }
+
+  return app_id;
 }
 
 }  // namespace ash

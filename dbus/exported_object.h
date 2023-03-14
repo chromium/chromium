@@ -16,7 +16,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
-#include "base/time/time.h"
 #include "dbus/dbus_export.h"
 #include "dbus/object_path.h"
 
@@ -160,8 +159,7 @@ class CHROME_DBUS_EXPORT ExportedObject
                     bool success);
 
   // Helper function for SendSignal().
-  void SendSignalInternal(base::TimeTicks start_time,
-                          DBusMessage* signal_message);
+  void SendSignalInternal(DBusMessage* signal_message);
 
   // Registers this object to the bus.
   // Returns true on success, or the object is already registered.
@@ -176,21 +174,18 @@ class CHROME_DBUS_EXPORT ExportedObject
 
   // Runs the method. Helper function for HandleMessage().
   void RunMethod(const MethodCallCallback& method_call_callback,
-                 std::unique_ptr<MethodCall> method_call,
-                 base::TimeTicks start_time);
+                 std::unique_ptr<MethodCall> method_call);
 
   // Callback invoked by service provider to send a response to a method call.
   // Can be called immediately from a MethodCallCallback to implement a
   // synchronous service or called later to implement an asynchronous service.
-  void SendResponse(base::TimeTicks start_time,
-                    std::unique_ptr<MethodCall> method_call,
+  void SendResponse(std::unique_ptr<MethodCall> method_call,
                     std::unique_ptr<Response> response);
 
   // Called on completion of the method run from SendResponse().
   // Takes ownership of |method_call| and |response|.
   void OnMethodCompleted(std::unique_ptr<MethodCall> method_call,
-                         std::unique_ptr<Response> response,
-                         base::TimeTicks start_time);
+                         std::unique_ptr<Response> response);
 
   // Called when the object is unregistered.
   void OnUnregistered(DBusConnection* connection);

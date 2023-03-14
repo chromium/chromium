@@ -1,7 +1,0 @@
-CONSOLE ERROR: The Content Security Policy directive 'sandbox' is ignored when delivered via a <meta> element.
-CONSOLE ERROR: The Content Security Policy directive 'frame-ancestors' is ignored when delivered via a <meta> element.
-CONSOLE ERROR: The Content Security Policy directive 'report-uri' is ignored when delivered via a <meta> element.
-This is a testharness.js-based test.
-PASS Invalid directives in meta-delivered CSP
-Harness: the test ran to completion.
-

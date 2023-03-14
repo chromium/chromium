@@ -11,10 +11,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_POSITION_DEFAULT;
+import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_POSITION_END;
+import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_POSITION_START;
+import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT;
+import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_BOTTOM;
+import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -424,6 +431,73 @@ public class CustomTabIntentDataProviderTest {
 
         assertTrue("The fixed height resize behavior should return true",
                 dataProvider.isPartialCustomTabFixedHeight());
+    }
+
+    @Test
+    public void sideSheetSlideInBehavior() {
+        // No extra
+        var dataProvider =
+                new CustomTabIntentDataProvider(new Intent(), mContext, COLOR_SCHEME_LIGHT);
+        assertEquals("Should return ..SLIDE_IN_FROM_SIDE for the default slide-in behavior",
+                ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE, dataProvider.getSideSheetSlideInBehavior());
+
+        // Default
+        Intent intent = new Intent().putExtra(
+                CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR,
+                ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT);
+        dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertEquals("Should return ..SLIDE_IN_FROM_SIDE", ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE,
+                dataProvider.getSideSheetSlideInBehavior());
+
+        // Bottom
+        intent = new Intent().putExtra(
+                CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR,
+                ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_BOTTOM);
+        dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertEquals("Should return ..SLIDE_IN_FROM_BOTTOM",
+                ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_BOTTOM,
+                dataProvider.getSideSheetSlideInBehavior());
+
+        // Side
+        intent = new Intent().putExtra(
+                CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR,
+                ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE);
+        dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertEquals("Should return ..SLIDE_IN_FROM_SIDE", ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE,
+                dataProvider.getSideSheetSlideInBehavior());
+    }
+
+    @Test
+    public void sideSheetPosition() {
+        // No extra
+        var dataProvider =
+                new CustomTabIntentDataProvider(new Intent(), mContext, COLOR_SCHEME_LIGHT);
+        assertEquals("Should return ..POSITION_END for the default side sheet position",
+                ACTIVITY_SIDE_SHEET_POSITION_END, dataProvider.getSideSheetPosition());
+
+        // Default
+        Intent intent = new Intent().putExtra(
+                CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_POSITION,
+                ACTIVITY_SIDE_SHEET_POSITION_DEFAULT);
+        dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertEquals("Should return ..POSITION_END for the default side sheet position",
+                ACTIVITY_SIDE_SHEET_POSITION_END, dataProvider.getSideSheetPosition());
+
+        // Start
+        intent = new Intent().putExtra(
+                CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_POSITION,
+                ACTIVITY_SIDE_SHEET_POSITION_START);
+        dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertEquals("Should return ..POSITION_START", ACTIVITY_SIDE_SHEET_POSITION_START,
+                dataProvider.getSideSheetPosition());
+
+        // End
+        intent = new Intent().putExtra(
+                CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_POSITION,
+                ACTIVITY_SIDE_SHEET_POSITION_END);
+        dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertEquals("Should return ..POSITION_END", ACTIVITY_SIDE_SHEET_POSITION_END,
+                dataProvider.getSideSheetPosition());
     }
 
     @Test

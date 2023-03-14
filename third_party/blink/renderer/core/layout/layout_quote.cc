@@ -23,6 +23,7 @@
 
 #include <algorithm>
 
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -89,6 +90,18 @@ void LayoutQuote::UpdateText() {
     return;
 
   text_ = text;
+
+  if (Parent() && !NeedsLayout() &&
+      GetDocument().GetStyleEngine().InContainerQueryStyleRecalc()) {
+    // TODO(crbug.com/882385): Implement style containment for quotes. For now,
+    // make sure we don't crash for container queries. Avoid modifying the
+    // layout tree on the outside of the container unless we know that we will
+    // reach it later during layout.
+    //
+    // The Parent() check makes sure the text is updated for quotes about to be
+    // inserted into the layout tree, which have not been marked for layout yet.
+    return;
+  }
 
   LayoutTextFragment* fragment = FindFragmentChild();
   if (fragment) {
@@ -160,18 +173,8 @@ void LayoutQuote::AttachQuote() {
     return;
   }
 
-  // TODO(crbug.com/882385): Implement style containment for quotes. For now,
-  // make sure we don't crash for container queries. If we are inside a size
-  // query container, don't connect to previous quote, and don't set it as the
-  // LayoutQuoteHead for the LayoutView.
-  bool found_container_root = false;
-
   for (LayoutObject* predecessor = PreviousInPreOrder(); predecessor;
        predecessor = predecessor->PreviousInPreOrder()) {
-    if (predecessor->CanMatchSizeContainerQueries()) {
-      found_container_root = true;
-      break;
-    }
     // Skip unattached predecessors to avoid having stale m_previous pointers
     // if the previous node is never attached and is then destroyed.
     if (!predecessor->IsQuote() || !To<LayoutQuote>(predecessor)->IsAttached())
@@ -184,7 +187,7 @@ void LayoutQuote::AttachQuote() {
     break;
   }
 
-  if (!previous_ && !found_container_root) {
+  if (!previous_) {
     next_ = View()->LayoutQuoteHead();
     View()->SetLayoutQuoteHead(this);
     if (next_)
@@ -192,8 +195,9 @@ void LayoutQuote::AttachQuote() {
   }
   attached_ = true;
 
-  for (LayoutQuote* quote = this; quote; quote = quote->next_)
+  for (LayoutQuote* quote = this; quote; quote = quote->next_) {
     quote->UpdateDepth();
+  }
 
   DCHECK(!next_ || next_->attached_);
   DCHECK(!next_ || next_->previous_ == this);

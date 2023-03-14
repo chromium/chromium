@@ -6,6 +6,7 @@
 #define COMPONENTS_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_H_
 
 #include "base/memory/memory_pressure_listener.h"
+#include "base/time/time.h"
 #include "components/memory_pressure/memory_pressure_voter.h"
 #include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 
@@ -15,6 +16,10 @@ namespace memory_pressure {
 // MemoryPressureVoters to cast their vote on the overall MemoryPressureLevel.
 class SystemMemoryPressureEvaluator {
  public:
+  // The period at which the system is re-notified when the pressure is not
+  // none.
+  static const base::TimeDelta kRenotifyVotePeriod;
+
   // Used by the MemoryPressureMonitor to create the correct Evaluator for the
   // platform in use.
   static std::unique_ptr<SystemMemoryPressureEvaluator>

@@ -1,13 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
+<translation id="1347497506789975534">Show saved payment methods</translation>
 <translation id="1383876407941801731">Search</translation>
-<translation id="1566281227936819866">Showing saved payment methods</translation>
 <translation id="1717486229951421299">List of credentials to be filled in on touch opened at half height.</translation>
 <translation id="207576718733492531">List of credentials to be filled in on touch is closed.</translation>
 <translation id="2610239185026711824">Suggest password</translation>
 <translation id="2652129567809778422">Select password</translation>
-<translation id="2803478378562657435">Showing saved passwords and password options</translation>
 <translation id="2903493209154104877">Addresses</translation>
 <translation id="3399357656427473483">List of credentials to be filled in on touch.</translation>
 <translation id="3688051737190211318">If you trust <ph name="ORIGIN" />, you can use a saved password to sign in</translation>
@@ -15,16 +14,14 @@
 <translation id="4660011489602794167">Show keyboard</translation>
 <translation id="4694050069269396220">If you trust <ph name="ORIGIN" />, you can use a saved password for another site.</translation>
 <translation id="5016175294846053194">Auto-fill suggestions available above the keyboard</translation>
-<translation id="5088366526685584589">Showing saved addresses</translation>
 <translation id="5441504010984421144">List of credentials to be filled in on touch opened at full height.</translation>
+<translation id="6296921860874265377">Show saved passwords and password options</translation>
 <translation id="6393156038355142111">Suggest strong password</translation>
 <translation id="6558703547256592471">Try to use a unique password for every site.</translation>
 <translation id="7029809446516969842">Passwords</translation>
-<translation id="7299100402441711551">Show addresses</translation>
-<translation id="7494879913343971937">Show passwords</translation>
 <translation id="7594473730623999723">Swipe to see more suggestions</translation>
+<translation id="7873973044507799456">Show saved addresses</translation>
 <translation id="7992095260806105436">Use Chrome autofill suggestion</translation>
-<translation id="8037472847879765671">Show payment methods</translation>
 <translation id="8507520749471379845">Passwords available</translation>
 <translation id="8705308553596171387">No password</translation>
 <translation id="879180780857354295">Alternative filling options available above the keyboard</translation>

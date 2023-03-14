@@ -35,7 +35,10 @@
               "destination": "https://destination.test",
               "source_event_id": "456",
               // Rounded to one day (86400 seconds).
-              "expiry": "88400"
+              "expiry": "88400",
+              "aggregation_keys": {
+                "a": "0x1"
+              }
             }
           }
         }]
@@ -110,18 +113,20 @@
         },
         "responses": [{
           "url": "https://reporter.test/register-trigger",
+          "debug_permission": true,
           "response": {
             "Attribution-Reporting-Register-Trigger": {
               "event_trigger_data": [
                 {
                   "trigger_data": "7"
                 }
-              ]
+              ],
+              "debug_reporting": true
             }
           }
         }]
       },
-      // Should not result in an event-level report as the expiry time was
+      // Should not result in an aggregatable report as the expiry time was
       // rounded to one day.
       {
         "timestamp": "1643408374000",
@@ -131,13 +136,19 @@
         },
         "responses": [{
           "url": "https://reporter.test/register-trigger",
+          "debug_permission": true,
           "response": {
             "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
+              "aggregatable_trigger_data": [
                 {
-                  "trigger_data": "6"
+                  "source_keys": ["a"],
+                  "key_piece": "0x1"
                 }
-              ]
+              ],
+              "aggregatable_values": {
+                "a": 123
+              },
+              "debug_reporting": true
             }
           }
         }]
@@ -222,6 +233,28 @@
        },
        "report_time": "1643498374001",
        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution"
+      }
+    ],
+    "verbose_debug_reports": [
+      {
+        "payload": [ {
+          "body": {
+             "attribution_destination": "https://destination.test"
+          },
+          "type": "trigger-no-matching-source"
+       } ],
+       "report_time": "1643321973000",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+          "body": {
+             "attribution_destination": "https://destination.test"
+          },
+          "type": "trigger-no-matching-source"
+       } ],
+       "report_time": "1643408374000",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       }
     ]
   }

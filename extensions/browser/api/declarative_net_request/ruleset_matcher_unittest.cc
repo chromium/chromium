@@ -164,8 +164,7 @@ TEST_F(RulesetMatcherTest, FailedVerification) {
   // Persist invalid data to the ruleset file and ensure that a version mismatch
   // occurs.
   std::string data = "invalid data";
-  ASSERT_EQ(static_cast<int>(data.size()),
-            base::WriteFile(source.indexed_path(), data.c_str(), data.size()));
+  ASSERT_TRUE(base::WriteFile(source.indexed_path(), data));
   EXPECT_EQ(LoadRulesetResult::kErrorVersionMismatch,
             source.CreateVerifiedMatcher(expected_checksum, &matcher));
 
@@ -173,8 +172,7 @@ TEST_F(RulesetMatcherTest, FailedVerification) {
   // correct version header. Ensure that it fails verification due to checksum
   // mismatch.
   data = GetVersionHeaderForTesting() + "invalid data";
-  ASSERT_EQ(static_cast<int>(data.size()),
-            base::WriteFile(source.indexed_path(), data.c_str(), data.size()));
+  ASSERT_TRUE(base::WriteFile(source.indexed_path(), data));
   EXPECT_EQ(LoadRulesetResult::kErrorChecksumMismatch,
             source.CreateVerifiedMatcher(expected_checksum, &matcher));
 }

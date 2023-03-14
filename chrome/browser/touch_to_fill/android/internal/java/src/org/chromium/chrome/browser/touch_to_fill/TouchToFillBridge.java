@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
 import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -29,8 +30,8 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
             BottomSheetController bottomSheetController) {
         mNativeView = nativeView;
         mTouchToFillComponent = new TouchToFillCoordinator();
-        mTouchToFillComponent.initialize(
-                windowAndroid.getContext().get(), bottomSheetController, this);
+        mTouchToFillComponent.initialize(windowAndroid.getContext().get(), bottomSheetController,
+                this, new BottomSheetFocusHelper(bottomSheetController, windowAndroid));
     }
 
     @CalledByNative
@@ -75,9 +76,10 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
     @CalledByNative
     private void showCredentials(GURL url, boolean isOriginSecure,
             WebAuthnCredential[] webAuthnCredentials, Credential[] credentials,
-            boolean submitCredential) {
+            boolean submitCredential, boolean managePasskeysHidesPasswords) {
         mTouchToFillComponent.showCredentials(url, isOriginSecure,
-                Arrays.asList(webAuthnCredentials), Arrays.asList(credentials), submitCredential);
+                Arrays.asList(webAuthnCredentials), Arrays.asList(credentials), submitCredential,
+                managePasskeysHidesPasswords);
     }
 
     @Override
@@ -86,8 +88,10 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
     }
 
     @Override
-    public void onManagePasswordsSelected() {
-        if (mNativeView != 0) TouchToFillBridgeJni.get().onManagePasswordsSelected(mNativeView);
+    public void onManagePasswordsSelected(boolean passkeysShown) {
+        if (mNativeView != 0) {
+            TouchToFillBridgeJni.get().onManagePasswordsSelected(mNativeView, passkeysShown);
+        }
     }
 
     @Override
@@ -109,7 +113,7 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
         void onCredentialSelected(long nativeTouchToFillViewImpl, Credential credential);
         void onWebAuthnCredentialSelected(
                 long nativeTouchToFillViewImpl, WebAuthnCredential credential);
-        void onManagePasswordsSelected(long nativeTouchToFillViewImpl);
+        void onManagePasswordsSelected(long nativeTouchToFillViewImpl, boolean passkeysShown);
         void onDismiss(long nativeTouchToFillViewImpl);
     }
 }

@@ -14,6 +14,9 @@
 
 + (NSString*)stringWithFixupForMessageId:(int)messageId;
 
++ (NSString*)formatStringForMessageId:(int)messageId
+                             argument:(NSString*)argument;
+
 @end
 
 #endif  // UI_BASE_L10N_L10N_UTIL_MAC_BRIDGE_H_

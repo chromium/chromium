@@ -90,7 +90,8 @@ constexpr ReasonAndFactoryMethodPair kReasonAndFactoryMethodPairs[] = {
     {api::offscreen::REASON_DISPLAY_MEDIA, &CreateEmptyEnforcer},
     {api::offscreen::REASON_WEB_RTC, &CreateEmptyEnforcer},
     {api::offscreen::REASON_CLIPBOARD, &CreateEmptyEnforcer},
-};
+    {api::offscreen::REASON_LOCAL_STORAGE, &CreateEmptyEnforcer},
+    {api::offscreen::REASON_WORKERS, &CreateEmptyEnforcer}};
 
 static_assert(std::size(kReasonAndFactoryMethodPairs) ==
                   api::offscreen::REASON_LAST,

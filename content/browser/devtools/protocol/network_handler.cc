@@ -1991,6 +1991,8 @@ String blockedReason(blink::ResourceRequestBlockedReason reason) {
           CorpNotSameOriginAfterDefaultedToSameOriginByCoep;
     case blink::ResourceRequestBlockedReason::kCorpNotSameSite:
       return protocol::Network::BlockedReasonEnum::CorpNotSameSite;
+    case blink::ResourceRequestBlockedReason::kContentRelationshipVerification:
+      return protocol::Network::BlockedReasonEnum::Other;
     case blink::ResourceRequestBlockedReason::kConversionRequest:
       // This is actually never reached, as the conversion request
       // is marked as successful and no blocking reason is reported.
@@ -3270,21 +3272,21 @@ void NetworkHandler::OnSubresourceWebBundleInnerResponseError(
 }
 
 String NetworkHandler::BuildPrivateNetworkRequestPolicy(
-    network::mojom::PrivateNetworkRequestPolicy policy) {
+    network::mojom::LocalNetworkRequestPolicy policy) {
   switch (policy) {
-    case network::mojom::PrivateNetworkRequestPolicy::kAllow:
+    case network::mojom::LocalNetworkRequestPolicy::kAllow:
       return protocol::Network::PrivateNetworkRequestPolicyEnum::Allow;
-    case network::mojom::PrivateNetworkRequestPolicy::kBlock:
+    case network::mojom::LocalNetworkRequestPolicy::kBlock:
       // TODO(https://crbug.com/1141824): Fix this.
       return protocol::Network::PrivateNetworkRequestPolicyEnum::
           BlockFromInsecureToMorePrivate;
-    case network::mojom::PrivateNetworkRequestPolicy::kWarn:
+    case network::mojom::LocalNetworkRequestPolicy::kWarn:
       // TODO(https://crbug.com/1141824): Fix this.
       return protocol::Network::PrivateNetworkRequestPolicyEnum::
           WarnFromInsecureToMorePrivate;
-    case network::mojom::PrivateNetworkRequestPolicy::kPreflightBlock:
+    case network::mojom::LocalNetworkRequestPolicy::kPreflightBlock:
       return protocol::Network::PrivateNetworkRequestPolicyEnum::PreflightBlock;
-    case network::mojom::PrivateNetworkRequestPolicy::kPreflightWarn:
+    case network::mojom::LocalNetworkRequestPolicy::kPreflightWarn:
       return protocol::Network::PrivateNetworkRequestPolicyEnum::PreflightWarn;
   }
 }
@@ -3292,9 +3294,11 @@ String NetworkHandler::BuildPrivateNetworkRequestPolicy(
 String NetworkHandler::BuildIpAddressSpace(
     network::mojom::IPAddressSpace space) {
   switch (space) {
-    case network::mojom::IPAddressSpace::kLocal:
+    case network::mojom::IPAddressSpace::kLoopback:
+      // TODO(https://crbug.com/1418287): Rename as Loopback;
       return protocol::Network::IPAddressSpaceEnum::Local;
-    case network::mojom::IPAddressSpace::kPrivate:
+    case network::mojom::IPAddressSpace::kLocal:
+      // TODO(https://crbug.com/1418287): Rename as Local;
       return protocol::Network::IPAddressSpaceEnum::Private;
     case network::mojom::IPAddressSpace::kPublic:
       return protocol::Network::IPAddressSpaceEnum::Public;
@@ -3310,8 +3314,8 @@ NetworkHandler::MaybeBuildClientSecurityState(
     return {};
   }
   return protocol::Network::ClientSecurityState::Create()
-      .SetPrivateNetworkRequestPolicy(BuildPrivateNetworkRequestPolicy(
-          state->private_network_request_policy))
+      .SetPrivateNetworkRequestPolicy(
+          BuildPrivateNetworkRequestPolicy(state->local_network_request_policy))
       .SetInitiatorIPAddressSpace(BuildIpAddressSpace(state->ip_address_space))
       .SetInitiatorIsSecureContext(state->is_web_secure_context)
       .Build();

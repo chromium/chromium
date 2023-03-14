@@ -3188,42 +3188,6 @@ TEST_F(ViewportMetaSimTest, VirtualKeyboardUnsetWithFlag) {
             ui::mojom::blink::VirtualKeyboardMode::kUnset);
 }
 
-// Test that, when the interactive-widget property is disabled, the mode is
-// unset set when interactive-widget isn't provided
-TEST_F(ViewportMetaSimTest, VirtualKeyboardUnsetWithoutFlag) {
-  ScopedViewportMetaInteractiveWidgetPropertyForTest disable(false);
-
-  // Without a viewport meta tag.
-  LoadPageWithHTML(R"HTML(
-    <!DOCTYPE html>
-  )HTML");
-  EXPECT_EQ(WebView().VirtualKeyboardModeForTesting(),
-            ui::mojom::blink::VirtualKeyboardMode::kUnset);
-
-  // With a viewport meta tag.
-  LoadPageWithHTML(R"HTML(
-    <!DOCTYPE html>
-    <meta name="viewport" content="width=device-width">
-  )HTML");
-  EXPECT_EQ(WebView().VirtualKeyboardModeForTesting(),
-            ui::mojom::blink::VirtualKeyboardMode::kUnset);
-}
-
-// Test that, when the interactive-widget property is disabled, the
-// interactive-widget key is not parsed and is treated as an unknown key.
-TEST_F(ViewportMetaSimTest, VirtualKeyboardNotParsedWithoutFlag) {
-  ScopedViewportMetaInteractiveWidgetPropertyForTest disable(false);
-
-  LoadPageWithHTML(R"HTML(
-    <!DOCTYPE html>
-    <meta name="viewport" content="interactive-widget=invalid-value">
-  )HTML");
-
-  // Parsing should fail at the key.
-  EXPECT_EQ(ConsoleMessages().front(),
-            "The key \"interactive-widget\" is not recognized and ignored.");
-}
-
 // Test that an invalid value to the interactive-widget property fails to be
 // parsed.
 TEST_F(ViewportMetaSimTest, VirtualKeyboardParsingEnabledByFlag) {

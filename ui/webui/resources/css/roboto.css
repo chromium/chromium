@@ -2,7 +2,6 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-<if expr="not chromeos_ash and not is_android">
 @font-face {
   font-family: 'Roboto';
   font-style: normal;
@@ -26,4 +25,3 @@
   src: local('Roboto Bold'), local('Roboto-Bold'),
       url(chrome://resources/roboto/roboto-bold.woff2) format('woff2');
 }
-</if>

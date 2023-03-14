@@ -51,6 +51,7 @@ class WebStateDependencyInstallationObserver : public WebStateListObserver,
   void WebStateDetachedAt(WebStateList* web_state_list,
                           web::WebState* web_state,
                           int index) override;
+  void WebStateListDestroyed(WebStateList* web_state_list) override;
 
   WebStateDependencyInstallationObserver(
       const WebStateDependencyInstallationObserver&) = delete;

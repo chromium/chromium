@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">Isixhumanisi sitholiwe. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Ikhasi <ph name="PAGE_NUMBER" /> lisuliwe</translation>
 <translation id="1258009455399840361">Zungezisa u-90 degrees ngokwewashi</translation>
-<translation id="1300209025925956156">Skena idokhumenti yakho</translation>
-<translation id="1309250603447638106">Idawuniloda izibuyekezo zokuskena amadokhumenti</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Sesha + Umcibisholo ongakwesokunxele ukuze ufinyelele.</translation>
 <translation id="1417314334557041815">Hlela ikhasi <ph name="INDEX" /></translation>
 <translation id="1467231725790366244">I-<ph name="CAMERA" /> ayixhunywanga.</translation>
 <translation id="1473110567575736769">Isibali sikhathi samasekhondi ama-3</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">Akukho okurekhodiwe</translation>
 <translation id="1838104802459806957">Yisa phezulu</translation>
 <translation id="1843105061469674856">Skena ikhasi elengeziwe</translation>
-<translation id="1851169887664797861">Izilawuli zekhamera ezengeziwe ziyatholakala</translation>
 <translation id="1851616744363735765">KUPHUNYUZIWE</translation>
 <translation id="1899697626337024495">Ukulungiswa kwesithombe</translation>
 <translation id="1925845977604399247">Iya Kugalari</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">Uhlobo lokuskena</translation>
 <translation id="28682968802727151">Ukuhlola kuqala isibuko</translation>
 <translation id="2879583609344924966">I-<ph name="CAMERA" /> ixhunyiwe.</translation>
-<translation id="2904654629665923749">Ukuskena idokhumenti kuyatholakala</translation>
 <translation id="3067436040345934772">Jikisela ngakwesokudla</translation>
 <translation id="3081586908890909590">Shintshela ekurekhodeni ividiyo</translation>
 <translation id="313467653172006084">30 FPS</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">Kopisha ikheli lesixhumanisi</translation>
 <translation id="4281620174117014503">Ukucaca okumaphakathi</translation>
 <translation id="428234092390943511">Isithonjana sekhasi</translation>
-<translation id="4340659173795395806">Manje usungakha i-PDF enamakhasi amaningi</translation>
 <translation id="4383571725254449280">Amalogu okusebenza kokuphrinta</translation>
 <translation id="4445542136948522167">Yeka ukuthatha isithombe</translation>
 <translation id="4570032796877367747">Ikhamera ephambili</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">Londoloza</translation>
 <translation id="5320594929574852403">Ihambela ngasohlangothini lwesobunxele</translation>
 <translation id="5374917190292010970">I-4K (2160p)</translation>
-<translation id="5444515100983837161">Beka bonke onqenqema bedokhumenti ngaphakathi kohlaka. Ukuskena kusebenza kangcono uma idokhumenti nengemuva kuyimibala ehlukile.</translation>
 <translation id="5662366948659129155">Iskena ikhasi <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Isikwele</translation>
 <translation id="5746169159649715125">Londoloza njenge-PDF</translation>
@@ -157,7 +150,6 @@ Uma impendulo yakho imayelana nesithombe noma ikhwalithi yevidiyo, sicela unamat
 <translation id="8428213095426709021">Izilungiselelo</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Guqula ukuthulisa imakrofoni. Ukuthulisa kuviliwe</translation>
-<translation id="8712637175834984815">Ngiyitholile</translation>
 <translation id="8730621377337864115">Kwenziwe</translation>
 <translation id="8732462232047530626">Hlola kuqala i-metadata</translation>
 <translation id="8815966864175525708">Shintsha ukuze uthathe isithombe sokuma ngobude</translation>

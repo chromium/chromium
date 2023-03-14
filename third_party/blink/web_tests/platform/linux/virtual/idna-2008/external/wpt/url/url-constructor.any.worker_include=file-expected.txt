@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 125 tests; 77 PASS, 48 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 126 tests; 78 PASS, 48 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <file:/example.com/> against <http://example.org/foo/bar>
 PASS Parsing: <file://example:1/> against <about:blank>
@@ -136,5 +136,6 @@ PASS Parsing: <file://%C2%AD/p> against <about:blank>
 FAIL Parsing: <file://xn--/p> against <about:blank> assert_throws_js: function "function() {
           bURL(expected.input, expected.base)
         }" did not throw
+PASS Parsing: <> against <about:blank>
 Harness: the test ran to completion.
 

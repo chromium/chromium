@@ -58,6 +58,14 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/skia/include/core/SkColor.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/ash/components/login/login_state/login_state.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_init_params.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 using content::NavigationEntry;
 using sessions::ContentTestHelper;
 using sessions::SerializedNavigationEntry;
@@ -190,6 +198,22 @@ class SessionServiceTest : public BrowserWithTestWindowTest {
     helper_.PrepareTabInWindow(window2_id, tab2_id, 0, true);
     UpdateNavigation(window2_id, tab2_id, *nav2, true);
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  void FakeKioskSession() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    ASSERT_TRUE(ash::LoginState::IsInitialized());
+    ash::LoginState::Get()->SetLoggedInState(
+        ash::LoginState::LoggedInState::LOGGED_IN_ACTIVE,
+        ash::LoginState::LoggedInUserType::LOGGED_IN_USER_KIOSK);
+#else   // BUILDFLAG(IS_CHROMEOS_LACROS)
+    crosapi::mojom::BrowserInitParamsPtr init_params =
+        chromeos::BrowserInitParams::GetForTests()->Clone();
+    init_params->session_type = crosapi::mojom::SessionType::kWebKioskSession;
+    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   SessionService* service() { return helper_.service(); }
 
@@ -1445,3 +1469,18 @@ TEST_F(SessionServiceTest, DisableSaving) {
   EXPECT_TRUE(helper_.command_storage_manager()->HasPendingSave());
   EXPECT_TRUE(helper_.command_storage_manager()->pending_reset());
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(SessionServiceTest, OpenedWindowNotRestoredInKiosk) {
+  // These preparation is necessary for `ShouldRestore` function to return true
+  // in the regular user session.
+  helper_.SetHasOpenTrackableBrowsers(false);
+  service()->WindowClosing(window_id);
+  service()->WindowClosed(window_id);
+  // Make sure `ShouldRestore` returns true for the regular user session.
+  EXPECT_TRUE(session_service_->ShouldRestore(browser()));
+
+  FakeKioskSession();
+  EXPECT_FALSE(session_service_->ShouldRestore(browser()));
+}
+#endif  //  BUILDFLAG(IS_CHROMEOS)

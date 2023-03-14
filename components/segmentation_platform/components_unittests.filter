@@ -15,9 +15,11 @@ FailedUkmDatabaseTest.*
 FeatureAggregatorImplTest.*
 FeatureListQueryProcessorTest.*
 FeedUserModelTest.*
+FieldTrialRecorderTest.*
 FrequentFeatureUserModelTest.*
 HistogramSignalHandlerTest.*
 HistoryDelegateImplTest.*
+InputContextAndroidTest.*
 IntentionalUserModelTest.*
 LowUserEngagementModelTest.*
 MetadataUtilsTest.*

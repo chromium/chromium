@@ -49,11 +49,12 @@ namespace network {
 
 namespace {
 
-base::Value NetLogErrorParams(int line_number, const std::string& message) {
+base::Value::Dict NetLogErrorParams(int line_number,
+                                    const std::string& message) {
   base::Value::Dict dict;
   dict.Set("line_number", line_number);
   dict.Set("message", message);
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 // A mixin that forwards logging to (Bound)NetLog and ProxyResolverErrorObserver

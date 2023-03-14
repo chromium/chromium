@@ -104,9 +104,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
   void SetStorageAccessGrantSettings(
       const ContentSettingsForOneType& settings,
       SetStorageAccessGrantSettingsCallback callback) override;
-  void SetTopLevelStorageAccessSettings(
-      const ContentSettingsForOneType& settings,
-      SetTopLevelStorageAccessSettingsCallback callback) override;
+  void SetAllStorageAccessSettings(
+      const ContentSettingsForOneType& standard_settings,
+      const ContentSettingsForOneType& top_level_settings,
+      SetAllStorageAccessSettingsCallback callback) override;
 
   // Configures |out| based on |params|. (This doesn't honor
   // allow_file_scheme_cookies, which affects the cookie store rather than the

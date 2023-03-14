@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_FRAME_WIDGET_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_FRAME_WIDGET_H_
 
+#include "base/time/time.h"
 #include "mojo/public/mojom/base/text_direction.mojom-blink.h"
 #include "services/viz/public/mojom/compositing/frame_sink_id.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -41,6 +42,7 @@ class Cursor;
 
 namespace blink {
 
+class LocalFrame;
 // In interface exposed within Blink from local root frames that provides
 // local-root specific things related to compositing and input. This
 // class extends the FrameWidgetInputHandler implementation. All API calls
@@ -192,7 +194,8 @@ class PLATFORM_EXPORT FrameWidget {
   virtual void FinishComposingText(bool keep_selection) = 0;
 
   virtual bool IsProvisional() = 0;
-  virtual uint64_t GetScrollableContainerIdAt(const gfx::PointF& point) = 0;
+  virtual cc::ElementId GetScrollableContainerIdAt(
+      const gfx::PointF& point) = 0;
 
   virtual bool ShouldHandleImeEvents() { return false; }
 
@@ -290,6 +293,11 @@ class PLATFORM_EXPORT FrameWidget {
   // the bottom so only the height can be affected. Only the outermost main
   // frame's widget returns a non-zero value.
   virtual int GetVirtualKeyboardResizeHeight() const = 0;
+
+  virtual void OnTaskCompletedForFrame(base::TimeTicks start_time,
+                                       base::TimeTicks end_time,
+                                       base::TimeTicks desired_execution_time,
+                                       LocalFrame*) = 0;
 };
 
 }  // namespace blink

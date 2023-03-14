@@ -906,7 +906,8 @@
     </service>  # DIFF-ANCHOR: 4b22c3f5
     <service  # DIFF-ANCHOR: 413310e5
         android:name="org.chromium.chrome.browser.download.DownloadForegroundService"
-        android:exported="false">
+        android:exported="false"
+        android:foregroundServiceType="dataSync">
     </service>  # DIFF-ANCHOR: 413310e5
     <service  # DIFF-ANCHOR: 7e3ff13a
         android:name="org.chromium.chrome.browser.incognito.IncognitoNotificationService"
@@ -918,21 +919,24 @@
     </service>  # DIFF-ANCHOR: ac8469ff
     <service  # DIFF-ANCHOR: 7ef9e4e5
         android:name="org.chromium.chrome.browser.media.ui.ChromeMediaNotificationControllerServices$CastListenerService"
-        android:exported="false">
+        android:exported="false"
+        android:foregroundServiceType="mediaPlayback">
       <intent-filter>  # DIFF-ANCHOR: f401157d
         <action android:name="android.intent.action.MEDIA_BUTTON"/>
       </intent-filter>  # DIFF-ANCHOR: f401157d
     </service>  # DIFF-ANCHOR: 7ef9e4e5
     <service  # DIFF-ANCHOR: 41fa6492
         android:name="org.chromium.chrome.browser.media.ui.ChromeMediaNotificationControllerServices$PlaybackListenerService"
-        android:exported="false">
+        android:exported="false"
+        android:foregroundServiceType="mediaPlayback">
       <intent-filter>  # DIFF-ANCHOR: f401157d
         <action android:name="android.intent.action.MEDIA_BUTTON"/>
       </intent-filter>  # DIFF-ANCHOR: f401157d
     </service>  # DIFF-ANCHOR: 41fa6492
     <service  # DIFF-ANCHOR: 1260bca4
         android:name="org.chromium.chrome.browser.media.ui.ChromeMediaNotificationControllerServices$PresentationListenerService"
-        android:exported="false">
+        android:exported="false"
+        android:foregroundServiceType="mediaPlayback">
       <intent-filter>  # DIFF-ANCHOR: f401157d
         <action android:name="android.intent.action.MEDIA_BUTTON"/>
       </intent-filter>  # DIFF-ANCHOR: f401157d

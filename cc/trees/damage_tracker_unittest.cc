@@ -1328,8 +1328,8 @@ TEST_F(DamageTrackerTest, VerifyDamageForSurfaceChangeFromDescendantLayer) {
 }
 
 TEST_F(DamageTrackerTest, VerifyDamageForSurfaceChangeFromDescendantSurface) {
-  // If descendant surface changes position, the ancestor surface should be
-  // damaged with the old and new descendant surface regions.
+  // CASE 1: If descendant surface changes position, the ancestor surface should
+  //         be damaged with the old and new descendant surface regions.
 
   LayerImpl* root = CreateAndSetUpTestTreeWithTwoSurfaces();
   child1_->SetDrawsContent(true);
@@ -1360,6 +1360,37 @@ TEST_F(DamageTrackerTest, VerifyDamageForSurfaceChangeFromDescendantSurface) {
                   ->damage_tracker()
                   ->has_damage_from_contributing_content());
   EXPECT_TRUE(GetRenderSurface(child1_)
+                  ->damage_tracker()
+                  ->has_damage_from_contributing_content());
+
+  // CASE 2: Change render surface content rect should make
+  //         |has_damage_from_contributing_content| true.
+  ClearDamageForAllSurfaces(root);
+  CreateEffectNode(child2_).render_surface_reason = RenderSurfaceReason::kTest;
+  EmulateDrawingOneFrame(root);
+
+  // Surface property changed only from descendant.
+  child2_->SetBounds(gfx::Size(120, 140));
+  EmulateDrawingOneFrame(root);
+
+  EXPECT_TRUE(GetRenderSurface(root)
+                  ->damage_tracker()
+                  ->has_damage_from_contributing_content());
+
+  EXPECT_TRUE(GetRenderSurface(child2_)
+                  ->damage_tracker()
+                  ->has_damage_from_contributing_content());
+
+  // Surface property changed from both parent and descendant.
+  child2_->SetBounds(gfx::Size(220, 240));
+  root->layer_tree_impl()->SetOpacityMutated(child2_->element_id(), 0.5f);
+  EmulateDrawingOneFrame(root);
+
+  EXPECT_TRUE(GetRenderSurface(root)
+                  ->damage_tracker()
+                  ->has_damage_from_contributing_content());
+
+  EXPECT_TRUE(GetRenderSurface(child2_)
                   ->damage_tracker()
                   ->has_damage_from_contributing_content());
 }

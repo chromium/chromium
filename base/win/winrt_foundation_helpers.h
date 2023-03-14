@@ -11,14 +11,12 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/win/hstring_compare.h"
+#include "base/check.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // This file provides helpers for WinRT types.
 
-namespace base {
-namespace win {
-namespace internal {
+namespace base::win::internal {
 
 // Template tricks needed to dispatch to the correct implementation.
 //
@@ -103,14 +101,15 @@ HRESULT CopyN(
     typename std::vector<Microsoft::WRL::ComPtr<T>>::const_iterator first,
     unsigned count,
     T** result) {
-  for (unsigned i = 0; i < count; ++i)
+  for (unsigned i = 0; i < count; ++i) {
     CopyTo(*first++, result++);
+  }
   return S_OK;
 }
 
 inline bool IsEqual(const HSTRING& lhs, const HSTRING& rhs) {
   INT32 result;
-  HRESULT hr = HStringCompare(lhs, rhs, &result);
+  HRESULT hr = ::WindowsCompareStringOrdinal(lhs, rhs, &result);
   DCHECK(SUCCEEDED(hr));
   return result == 0;
 }
@@ -128,7 +127,7 @@ bool IsEqual(const Microsoft::WRL::ComPtr<T>& com_ptr, const T* ptr) {
 struct Less {
   bool operator()(const HSTRING& lhs, const HSTRING& rhs) const {
     INT32 result;
-    HRESULT hr = HStringCompare(lhs, rhs, &result);
+    HRESULT hr = ::WindowsCompareStringOrdinal(lhs, rhs, &result);
     DCHECK(SUCCEEDED(hr));
     return result < 0;
   }
@@ -145,8 +144,6 @@ struct Less {
   }
 };
 
-}  // namespace internal
-}  // namespace win
-}  // namespace base
+}  // namespace base::win::internal
 
 #endif  // BASE_WIN_WINRT_FOUNDATION_HELPERS_H_

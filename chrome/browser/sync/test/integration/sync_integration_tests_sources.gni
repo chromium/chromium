@@ -25,6 +25,7 @@ if (!is_android) {
     "../browser/sync/test/integration/migration_test.cc",
     "../browser/sync/test/integration/password_manager_sync_test.cc",
     "../browser/sync/test/integration/single_client_app_settings_sync_test.cc",
+    "../browser/sync/test/integration/single_client_common_sync_test.cc",
     "../browser/sync/test/integration/single_client_dictionary_sync_test.cc",
     "../browser/sync/test/integration/single_client_extension_apps_sync_test.cc",
     "../browser/sync/test/integration/single_client_extensions_sync_test.cc",

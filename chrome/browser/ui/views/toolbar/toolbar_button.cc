@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -255,11 +256,11 @@ void ToolbarButton::UpdateColorsAndInsets() {
 
   SetEnabledTextColors(highlight_color_animation_.GetTextColor());
 
-  // ToolbarButtons are always the height the location bar.
+  // ToolbarButton height is constrained by the height of the location bar.
+  const int extra_height = std::max(
+      0, target_size.height() - GetLayoutConstant(LOCATION_BAR_HEIGHT));
   const gfx::Insets paint_insets =
-      gfx::Insets(
-          (target_size.height() - GetLayoutConstant(LOCATION_BAR_HEIGHT)) / 2) +
-      *GetProperty(views::kInternalPaddingKey);
+      gfx::Insets(extra_height / 2) + *GetProperty(views::kInternalPaddingKey);
 
   absl::optional<SkColor> background_color =
       highlight_color_animation_.GetBackgroundColor();
@@ -319,8 +320,7 @@ SkColor ToolbarButton::GetForegroundColor(ButtonState state) const {
     case ButtonState::STATE_NORMAL:
       return color_provider->GetColor(kColorToolbarButtonIcon);
     default:
-      NOTREACHED();
-      return gfx::kPlaceholderColor;
+      NOTREACHED_NORETURN();
   }
 }
 

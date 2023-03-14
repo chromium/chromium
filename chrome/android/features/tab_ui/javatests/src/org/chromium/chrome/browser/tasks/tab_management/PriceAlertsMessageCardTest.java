@@ -49,7 +49,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
@@ -318,7 +317,6 @@ public class PriceAlertsMessageCardTest {
     @Test
     @MediumTest
     @CommandLineFlags.Add({BASE_PARAMS})
-    @DisabledTest(message = "https://crbug.com/1375813")
     public void testDisableMessageAfterShowingTenTimes() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 

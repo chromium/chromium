@@ -25,20 +25,27 @@ class View;
 class WebView;
 }  // namespace views
 
+enum class StartupProfileModeReason;
+
 class ProfilePicker {
  public:
+  // This is used for logging, so do not remove or reorder existing entries.
   enum class FirstRunExitStatus {
     // The user completed the FRE and is continuing to launch the browser.
     kCompleted = 0,
 
-    // The user finished the mandatory FRE steps but abandoned their task
-    // (closed the browser app).
-    kQuitAtEnd = 1,
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     // The user exited the FRE before going through the mandatory steps.
-    kQuitEarly = 2,
+    kQuitEarly = 1,
 #endif
+
+    // The user finished the mandatory FRE steps but abandoned their task
+    // (closed the browser app).
+    kQuitAtEnd = 2,
+
+    // Add any new values above this one, and update kMaxValue to the highest
+    // enumerator value.
+    kMaxValue = kQuitAtEnd
   };
   using FirstRunExitedCallback =
       base::OnceCallback<void(FirstRunExitStatus status)>;
@@ -270,8 +277,7 @@ class ProfilePicker {
   // Returns whether to show profile picker at launch. This can be called on
   // startup or when Chrome is re-opened, e.g. when clicking on the dock icon on
   // MacOS when there are no windows, or from Windows tray icon.
-  // This returns true if the user has multiple profiles and has not opted-out.
-  static bool ShouldShowAtLaunch();
+  static StartupProfileModeReason GetStartupModeReason();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Calls the callback passed to

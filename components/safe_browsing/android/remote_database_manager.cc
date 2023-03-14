@@ -77,7 +77,10 @@ void RemoteSafeBrowsingDatabaseManager::ClientRequest::OnRequestDoneWeak(
     const base::WeakPtr<ClientRequest>& req,
     SBThreatType matched_threat_type,
     const ThreatMetadata& metadata) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(
+      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
+          ? content::BrowserThread::UI
+          : content::BrowserThread::IO);
   if (!req) {
     return;  // Previously canceled
   }
@@ -164,7 +167,7 @@ RemoteSafeBrowsingDatabaseManager::~RemoteSafeBrowsingDatabaseManager() {
 }
 
 void RemoteSafeBrowsingDatabaseManager::CancelCheck(Client* client) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
   DCHECK(enabled_);
   for (auto itr = current_requests_.begin(); itr != current_requests_.end();
        ++itr) {
@@ -196,7 +199,7 @@ bool RemoteSafeBrowsingDatabaseManager::CheckBrowseUrl(
     const SBThreatTypeSet& threat_types,
     Client* client,
     MechanismExperimentHashDatabaseCache experiment_cache_selection) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
   DCHECK(!threat_types.empty());
   DCHECK(SBThreatTypeSetIsValidForCheckBrowseUrl(threat_types));
   if (!enabled_) {
@@ -247,7 +250,7 @@ bool RemoteSafeBrowsingDatabaseManager::CheckResourceUrl(const GURL& url,
 bool RemoteSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
     const GURL& url,
     const std::string& metric_variation) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
 
   if (!enabled_ || !CanCheckUrl(url)) {
     return false;
@@ -269,7 +272,7 @@ bool RemoteSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
 bool RemoteSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
     const GURL& url,
     Client* client) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
 
   if (!enabled_ || !CanCheckUrl(url)) {
     return true;
@@ -295,7 +298,7 @@ bool RemoteSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
 AsyncMatch RemoteSafeBrowsingDatabaseManager::CheckCsdAllowlistUrl(
     const GURL& url,
     Client* client) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
 
   // If this URL's scheme isn't supported, call is safe.
   if (!CanCheckUrl(url)) {
@@ -329,18 +332,18 @@ bool RemoteSafeBrowsingDatabaseManager::IsDownloadProtectionEnabled() const {
   return false;
 }
 
-void RemoteSafeBrowsingDatabaseManager::StartOnIOThread(
+void RemoteSafeBrowsingDatabaseManager::StartOnSBThread(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const V4ProtocolConfig& config) {
   VLOG(1) << "RemoteSafeBrowsingDatabaseManager starting";
-  SafeBrowsingDatabaseManager::StartOnIOThread(url_loader_factory, config);
+  SafeBrowsingDatabaseManager::StartOnSBThread(url_loader_factory, config);
 
   enabled_ = true;
 }
 
-void RemoteSafeBrowsingDatabaseManager::StopOnIOThread(bool shutdown) {
+void RemoteSafeBrowsingDatabaseManager::StopOnSBThread(bool shutdown) {
   // |shutdown| is not used.
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
   DVLOG(1) << "RemoteSafeBrowsingDatabaseManager stopping";
 
   // Call back and delete any remaining clients. OnRequestDone() modifies
@@ -352,7 +355,7 @@ void RemoteSafeBrowsingDatabaseManager::StopOnIOThread(bool shutdown) {
   }
   enabled_ = false;
 
-  SafeBrowsingDatabaseManager::StopOnIOThread(shutdown);
+  SafeBrowsingDatabaseManager::StopOnSBThread(shutdown);
 }
 
 }  // namespace safe_browsing

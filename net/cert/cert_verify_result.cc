@@ -62,7 +62,7 @@ void CertVerifyResult::Reset() {
   ClearAllUserData();
 }
 
-base::Value CertVerifyResult::NetLogParams(int net_error) const {
+base::Value::Dict CertVerifyResult::NetLogParams(int net_error) const {
   base::Value::Dict dict;
   DCHECK_NE(ERR_IO_PENDING, net_error);
   if (net_error < 0)
@@ -86,7 +86,7 @@ base::Value CertVerifyResult::NetLogParams(int net_error) const {
 
   dict.Set("scts", net::NetLogSignedCertificateTimestampParams(&scts));
 
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 }  // namespace net

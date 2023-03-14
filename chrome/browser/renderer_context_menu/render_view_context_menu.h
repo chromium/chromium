@@ -25,6 +25,7 @@
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
 #include "components/search_engines/template_url.h"
+#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "content/public/browser/context_menu_params.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -53,7 +54,9 @@ class Profile;
 class QuickAnswersMenuObserver;
 class SpellingMenuObserver;
 class SpellingOptionsSubMenuObserver;
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 class PdfOcrMenuObserver;
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 namespace content {
 class RenderFrameHost;
@@ -258,7 +261,9 @@ class RenderViewContextMenu
   // Returns true if the items were appended. This might not happen in all
   // cases, e.g. these are only appended if a screen reader is enabled.
   bool AppendAccessibilityLabelsItems();
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void AppendPdfOcrItems();
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void AppendSearchProvider();
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   void AppendAllExtensionItems();
@@ -357,11 +362,6 @@ class RenderViewContextMenu
   // ProtocolHandlerRegistry::Observer:
   void OnProtocolHandlerRegistryChanged() override;
 
-  // Cleans |link_to_text_menu_observer_|. It is useful to clean unused
-  // resources as |RenderViewContextMenu| gets destroyed only with next context
-  // menu is opened.
-  void OnLinkToTextMenuCompleted();
-
   // Whether or not translation on this page can be triggered. This method
   // checks multiple criteria, e.g. whether translation is disabled by a policy
   // or whether the current page can be translated.
@@ -398,9 +398,11 @@ class RenderViewContextMenu
       accessibility_labels_menu_observer_;
   ui::SimpleMenuModel accessibility_labels_submenu_model_;
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // An observer that handles PDF OCR items.
   std::unique_ptr<PdfOcrMenuObserver> pdf_ocr_submenu_model_observer_;
   std::unique_ptr<ui::SimpleMenuModel> pdf_ocr_submenu_model_;
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 #if !BUILDFLAG(IS_MAC)
   // An observer that handles the submenu for showing spelling options. This

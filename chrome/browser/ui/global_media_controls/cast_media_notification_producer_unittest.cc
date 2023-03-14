@@ -27,10 +27,12 @@ using testing::NiceMock;
 
 namespace {
 
+constexpr char kCastSourceId[] = "cast:123456";
+
 MediaRoute CreateRoute(const std::string& route_id,
-                       const std::string& source_id = "source_id") {
+                       const std::string& source_id = kCastSourceId) {
   media_router::MediaRoute route(route_id, media_router::MediaSource(source_id),
-                                 "sink_id", "description", true);
+                                 "sink_id", "description", /* is_local */ true);
   route.set_controller_type(media_router::RouteControllerType::kGeneric);
   return route;
 }
@@ -57,14 +59,19 @@ class CastMediaNotificationProducerTest : public testing::Test {
 };
 
 TEST_F(CastMediaNotificationProducerTest, AddAndRemoveRoute) {
-  const std::string route_id = "route-id-1";
-  MediaRoute route = CreateRoute(route_id);
+  const std::string route_id_1 = "route-id-1";
+  const std::string route_id_2 = "route-id-2";
+  MediaRoute cast_route = CreateRoute(route_id_1);
+  MediaRoute site_initiated_mirroring_route =
+      CreateRoute(route_id_2, "cast:0F5096E8");
 
   EXPECT_CALL(item_manager_, OnItemsChanged());
-  notification_producer_->OnRoutesUpdated({route});
+  notification_producer_->OnRoutesUpdated(
+      {cast_route, site_initiated_mirroring_route});
   testing::Mock::VerifyAndClearExpectations(&item_manager_);
-  EXPECT_EQ(1u, notification_producer_->GetActiveItemCount());
-  EXPECT_NE(nullptr, notification_producer_->GetMediaItem(route_id));
+  EXPECT_EQ(2u, notification_producer_->GetActiveItemCount());
+  EXPECT_NE(nullptr, notification_producer_->GetMediaItem(route_id_1));
+  EXPECT_NE(nullptr, notification_producer_->GetMediaItem(route_id_2));
 
   EXPECT_CALL(item_manager_, OnItemsChanged());
   notification_producer_->OnRoutesUpdated({});
@@ -132,9 +139,12 @@ TEST_F(CastMediaNotificationProducerTest, RoutesWithoutNotifications) {
   MediaRoute multizone_member_route = CreateRoute("route-2", "cast:705D30C6");
   MediaRoute connecting_route = CreateRoute("route-3");
   connecting_route.set_is_connecting(true);
+  MediaRoute remote_streaming_route = CreateRoute("route-4", "cast:0F5096E8");
+  remote_streaming_route.set_local(false);
 
   notification_producer_->OnRoutesUpdated(
-      {mirroring_route, multizone_member_route, connecting_route});
+      {mirroring_route, multizone_member_route, connecting_route,
+       remote_streaming_route});
   EXPECT_EQ(0u, notification_producer_->GetActiveItemCount());
 }
 

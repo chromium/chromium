@@ -8,8 +8,11 @@ assert(is_chromeos_ash)
 
 source_set("recording") {
   sources = [
+    "color_quantization.cc",
+    "color_quantization.h",
     "gif_encoder.cc",
     "gif_encoder.h",
+    "gif_encoding_types.h",
     "gif_file_writer.cc",
     "gif_file_writer.h",
     "lzw_pixel_color_indices_writer.cc",

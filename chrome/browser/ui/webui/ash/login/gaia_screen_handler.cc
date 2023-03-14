@@ -64,6 +64,7 @@
 #include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/certificate_provider/pin_dialog_manager.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/net/nss_temp_certs_cache_chromeos.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -115,6 +116,7 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "net/base/net_errors.h"
 #include "net/cert/x509_certificate.h"
+#include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -639,6 +641,12 @@ void GaiaScreenHandler::DeclareLocalizedValues(
                IDS_SAML_SECURITY_TOKEN_PIN_DIALOG_TITLE);
   builder->Add("securityTokenPinDialogSubtitle",
                IDS_SAML_SECURITY_TOKEN_PIN_DIALOG_SUBTITLE);
+  builder->Add("enrollmentNudgeTitle", IDS_ENROLLMENT_NUDGE_TITLE);
+  builder->Add("enrollmentNudgeMessage", IDS_ENROLLMENT_NUDGE_MESSAGE);
+  builder->Add("enrollmentNudgeEnterpriseEnrollmentButton",
+               IDS_ENROLLMENT_NUDGE_ENROLL_BUTTON);
+  builder->Add("enrollmentNudgeUseAnotherAccountButton",
+               IDS_ENROLLMENT_NUDGE_USE_ANOTHER_ACCOUNT_BUTTON);
 }
 
 void GaiaScreenHandler::InitAfterJavascriptAllowed() {
@@ -681,20 +689,11 @@ void GaiaScreenHandler::RegisterMessages() {
 }
 
 void GaiaScreenHandler::HandleIdentifierEntered(const std::string& user_email) {
-  // We cannot tell a user type from the identifier, so we delay checking if
-  // the account should be allowed.
-  if (ShouldCheckUserTypeBeforeAllowing()) {
+  if (MaybeTriggerEnrollmentNudge(user_email)) {
     return;
   }
 
-  user_manager::KnownUser known_user(g_browser_process->local_state());
-  if (LoginDisplayHost::default_host() &&
-      !LoginDisplayHost::default_host()->IsUserAllowlisted(
-          known_user.GetAccountId(user_email, std::string() /* id */,
-                                  AccountType::UNKNOWN),
-          absl::nullopt)) {
-    ShowAllowlistCheckFailedError();
-  }
+  CheckIfAllowlisted(user_email);
 }
 
 void GaiaScreenHandler::HandleAuthExtensionLoaded() {
@@ -1611,6 +1610,59 @@ void GaiaScreenHandler::SAMLConfirmPassword(
     std::unique_ptr<UserContext> user_context) {
   LoginDisplayHost::default_host()->GetSigninUI()->SAMLConfirmPassword(
       std::move(scraped_saml_passwords), std::move(user_context));
+}
+
+bool GaiaScreenHandler::MaybeTriggerEnrollmentNudge(
+    const std::string& user_email) {
+  const bool is_enterprise_managed = g_browser_process->platform_part()
+                                         ->browser_policy_connector_ash()
+                                         ->IsDeviceEnterpriseManaged();
+  if (is_enterprise_managed) {
+    // Device either already went through enterprise enrollment flow or goes
+    // through it right now. No need for nudging.
+    return false;
+  }
+  const bool is_first_user =
+      user_manager::UserManager::Get()->GetUsers().empty();
+  if (!is_first_user) {
+    // Enrollment nudge targets only initial OOBE flow on unowned devices.
+    // Current user is not a first user which means that device is already
+    // owned.
+    return false;
+  }
+  const std::string email_domain =
+      chrome::enterprise_util::GetDomainFromEmail(user_email);
+  if (chrome::enterprise_util::IsKnownConsumerDomain(email_domain)) {
+    // User doesn't belong to a managed domain, so enrollment nudging can't
+    // apply.
+    return false;
+  }
+
+  // TODO(b/271104781): replace this check with a policy fetch through a special
+  // DM server API when it is available.
+  if (!ash::features::IsEnrollmentNudgingForTestingEnabled()) {
+    return false;
+  }
+
+  CallExternalAPI("showEnrollmentNudge", email_domain);
+  return true;
+}
+
+void GaiaScreenHandler::CheckIfAllowlisted(const std::string& user_email) {
+  // We cannot tell a user type from the identifier, so we delay checking if
+  // the account should be allowed.
+  if (ShouldCheckUserTypeBeforeAllowing()) {
+    return;
+  }
+
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  if (LoginDisplayHost::default_host() &&
+      !LoginDisplayHost::default_host()->IsUserAllowlisted(
+          known_user.GetAccountId(user_email, std::string() /* id */,
+                                  AccountType::UNKNOWN),
+          absl::nullopt)) {
+    ShowAllowlistCheckFailedError();
+  }
 }
 
 }  // namespace ash

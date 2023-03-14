@@ -129,6 +129,10 @@ void FacetManager::GetAffiliationsAndBranding(
   } else if (cache_miss_strategy == StrategyOnCacheMiss::FETCH_OVER_NETWORK) {
     pending_requests_.push_back(std::move(request_info));
     backend_->SignalNeedNetworkRequest();
+  } else if (cache_miss_strategy ==
+             StrategyOnCacheMiss::TRY_ONCE_OVER_NETWORK) {
+    pending_one_time_requests_.push_back(std::move(request_info));
+    backend_->SignalNeedNetworkRequest();
   } else {
     ServeRequestWithFailure(std::move(request_info));
   }
@@ -165,10 +169,21 @@ void FacetManager::OnFetchSucceeded(
   for (auto& request_info : pending_requests_)
     ServeRequestWithSuccess(std::move(request_info), affiliation.facets);
   pending_requests_.clear();
+  for (auto& request_info : pending_one_time_requests_) {
+    ServeRequestWithSuccess(std::move(request_info), affiliation.facets);
+  }
+  pending_one_time_requests_.clear();
 
   base::Time next_required_fetch(GetNextRequiredFetchTimeDueToPrefetch());
   if (next_required_fetch < base::Time::Max())
     backend_->RequestNotificationAtTime(facet_uri_, next_required_fetch);
+}
+
+void FacetManager::OnFetchFailed() {
+  for (auto& request_info : pending_one_time_requests_) {
+    ServeRequestWithFailure(std::move(request_info));
+  }
+  pending_one_time_requests_.clear();
 }
 
 void FacetManager::NotifyAtRequestedTime() {
@@ -185,7 +200,7 @@ void FacetManager::NotifyAtRequestedTime() {
 }
 
 bool FacetManager::CanBeDiscarded() const {
-  return pending_requests_.empty() &&
+  return pending_requests_.empty() && pending_one_time_requests_.empty() &&
          GetMaximumKeepFreshUntilThreshold() <= clock_->Now();
 }
 
@@ -195,7 +210,8 @@ bool FacetManager::CanCachedDataBeDiscarded() const {
 }
 
 bool FacetManager::DoesRequireFetch() const {
-  return (!pending_requests_.empty() && !IsCachedDataFresh()) ||
+  return ((!pending_requests_.empty() || !pending_one_time_requests_.empty()) &&
+          !IsCachedDataFresh()) ||
          GetNextRequiredFetchTimeDueToPrefetch() <= clock_->Now();
 }
 

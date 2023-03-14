@@ -185,9 +185,11 @@ base::Value::List SupportToolMessageHandler::GetAccountsList() {
   Profile* profile = Profile::FromWebUI(web_ui());
   base::Value::List account_list;
 
-  // Guest mode does not have a primary account (or an IdentityManager).
-  if (profile->IsGuestSession())
+  // Guest session and incognito mode do not have a primary account (or an
+  // IdentityManager).
+  if (profile->IsGuestSession() || profile->IsIncognitoProfile()) {
     return account_list;
+  }
   for (const auto& account : signin_ui_util::GetOrderedAccountsForDisplay(
            profile, /*restrict_to_accounts_eligible_for_sync=*/false)) {
     if (!account.IsEmpty())

@@ -14,6 +14,8 @@ namespace viz {
 
 class VIZ_COMMON_EXPORT SurfaceDrawQuad : public DrawQuad {
  public:
+  static constexpr Material kMaterial = Material::kSurfaceContent;
+
   SurfaceDrawQuad();
   SurfaceDrawQuad(const SurfaceDrawQuad& other);
   ~SurfaceDrawQuad() override;

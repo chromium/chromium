@@ -366,6 +366,48 @@ inline ScrollbarGutter CssValueIDToPlatformEnum(CSSValueID v) {
   return kScrollbarGutterAuto;
 }
 
+template <>
+inline EWhiteSpace CssValueIDToPlatformEnum(CSSValueID v) {
+  switch (v) {
+    case CSSValueID::kNormal:
+      return EWhiteSpace::kNormal;
+    case CSSValueID::kPre:
+      return EWhiteSpace::kPre;
+    case CSSValueID::kPreWrap:
+      return EWhiteSpace::kPreWrap;
+    case CSSValueID::kPreLine:
+      return EWhiteSpace::kPreLine;
+    case CSSValueID::kNowrap:
+      return EWhiteSpace::kNowrap;
+    case CSSValueID::kBreakSpaces:
+      return EWhiteSpace::kBreakSpaces;
+    default:
+      NOTREACHED();
+      return EWhiteSpace::kNormal;
+  }
+}
+
+template <>
+inline CSSValueID PlatformEnumToCSSValueID(EWhiteSpace v) {
+  switch (v) {
+    case EWhiteSpace::kNormal:
+      return CSSValueID::kNormal;
+    case EWhiteSpace::kNowrap:
+      return CSSValueID::kNowrap;
+    case EWhiteSpace::kPre:
+      return CSSValueID::kPre;
+    case EWhiteSpace::kPreLine:
+      return CSSValueID::kPreLine;
+    case EWhiteSpace::kPreWrap:
+      return CSSValueID::kPreWrap;
+    case EWhiteSpace::kBreakSpaces:
+      return CSSValueID::kBreakSpaces;
+    default:
+      NOTREACHED();
+      return CSSValueID::kNone;
+  }
+}
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VALUE_ID_MAPPINGS_H_

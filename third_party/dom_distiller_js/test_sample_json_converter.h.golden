@@ -17,9 +17,10 @@ namespace dom_distiller {
          public:
           class Message {
            public:
-            static bool ReadFromValue(const base::Value& dict, dom_distiller::test_sample::proto::TypeTest::Message* message) {
-              if (!dict.is_dict()) goto error;
-              if (const auto* value = dict.FindKey("1")) {
+            static bool ReadFromValue(const base::Value& dict_value, dom_distiller::test_sample::proto::TypeTest::Message* message) {
+              const base::Value::Dict* dict = dict_value.GetIfDict();
+              if (!dict) goto error;
+              if (const auto* value = dict->Find("1")) {
                 if (!(*value).is_bool()) {
                   goto error;
                 }
@@ -32,47 +33,48 @@ namespace dom_distiller {
             }
 
             static base::Value WriteToValue(const dom_distiller::test_sample::proto::TypeTest::Message& message) {
-              base::Value dict(base::Value::Type::DICT);
+              base::Value::Dict dict;
               if (message.has_dummy()) {
-                dict.SetBoolKey("1", message.dummy());
+                dict.Set("1", message.dummy());
               }
-              return dict;
+              return base::Value(std::move(dict));
             }
           };
 
-          static bool ReadFromValue(const base::Value& dict, dom_distiller::test_sample::proto::TypeTest* message) {
-            if (!dict.is_dict()) goto error;
-            if (const auto* value = dict.FindKey("1")) {
+          static bool ReadFromValue(const base::Value& dict_value, dom_distiller::test_sample::proto::TypeTest* message) {
+            const base::Value::Dict* dict = dict_value.GetIfDict();
+            if (!dict) goto error;
+            if (const auto* value = dict->Find("1")) {
               if (!((*value).is_int() || (*value).is_double())) {
                 goto error;
               }
               message->set_float_value(value->GetDouble());
             }
-            if (const auto* value = dict.FindKey("2")) {
+            if (const auto* value = dict->Find("2")) {
               if (!((*value).is_int() || (*value).is_double())) {
                 goto error;
               }
               message->set_double_value(value->GetDouble());
             }
-            if (const auto* value = dict.FindKey("3")) {
+            if (const auto* value = dict->Find("3")) {
               if (!(*value).is_int()) {
                 goto error;
               }
               message->set_int32_value(value->GetInt());
             }
-            if (const auto* value = dict.FindKey("4")) {
+            if (const auto* value = dict->Find("4")) {
               if (!(*value).is_bool()) {
                 goto error;
               }
               message->set_bool_value(value->GetBool());
             }
-            if (const auto* value = dict.FindKey("5")) {
+            if (const auto* value = dict->Find("5")) {
               if (!(*value).is_string()) {
                 goto error;
               }
               message->set_string_value(value->GetString());
             }
-            if (const auto* value = dict.FindKey("6")) {
+            if (const auto* value = dict->Find("6")) {
               if (!dom_distiller::test_sample::proto::json::TypeTest::Message::ReadFromValue(*value, message->mutable_message_value())) {
                 goto error;
               }
@@ -84,28 +86,28 @@ namespace dom_distiller {
           }
 
           static base::Value WriteToValue(const dom_distiller::test_sample::proto::TypeTest& message) {
-            base::Value dict(base::Value::Type::DICT);
+            base::Value::Dict dict;
             if (message.has_float_value()) {
-              dict.SetDoubleKey("1", message.float_value());
+              dict.Set("1", message.float_value());
             }
             if (message.has_double_value()) {
-              dict.SetDoubleKey("2", message.double_value());
+              dict.Set("2", message.double_value());
             }
             if (message.has_int32_value()) {
-              dict.SetIntKey("3", message.int32_value());
+              dict.Set("3", message.int32_value());
             }
             if (message.has_bool_value()) {
-              dict.SetBoolKey("4", message.bool_value());
+              dict.Set("4", message.bool_value());
             }
             if (message.has_string_value()) {
-              dict.SetStringKey("5", message.string_value());
+              dict.Set("5", message.string_value());
             }
             if (message.has_message_value()) {
-              dict.SetKey("6",
-                          dom_distiller::test_sample::proto::json::TypeTest::Message::WriteToValue(
-                              message.message_value()));
+              dict.Set("6",
+                       dom_distiller::test_sample::proto::json::TypeTest::Message::WriteToValue(
+                           message.message_value()));
             }
-            return dict;
+            return base::Value(std::move(dict));
           }
         };
 
@@ -113,9 +115,10 @@ namespace dom_distiller {
          public:
           class Message {
            public:
-            static bool ReadFromValue(const base::Value& dict, dom_distiller::test_sample::proto::Repeated::Message* message) {
-              if (!dict.is_dict()) goto error;
-              if (const auto* value = dict.FindKey("1")) {
+            static bool ReadFromValue(const base::Value& dict_value, dom_distiller::test_sample::proto::Repeated::Message* message) {
+              const base::Value::Dict* dict = dict_value.GetIfDict();
+              if (!dict) goto error;
+              if (const auto* value = dict->Find("1")) {
                 if (!value->is_list()) {
                   goto error;
                 }
@@ -133,7 +136,7 @@ namespace dom_distiller {
             }
 
             static base::Value WriteToValue(const dom_distiller::test_sample::proto::Repeated::Message& message) {
-              base::Value dict(base::Value::Type::DICT);
+              base::Value::Dict dict;
               {
                 const auto& repeated_field = message.dummy();
                 base::Value::List field_list;
@@ -141,16 +144,16 @@ namespace dom_distiller {
                 for (const auto& element : repeated_field) {
                   field_list.Append(element);
                 }
-                dict.SetKey("1",
-                            base::Value(std::move(field_list)));
+                dict.Set("1", std::move(field_list));
               }
-              return dict;
+              return base::Value(std::move(dict));
             }
           };
 
-          static bool ReadFromValue(const base::Value& dict, dom_distiller::test_sample::proto::Repeated* message) {
-            if (!dict.is_dict()) goto error;
-            if (const auto* value = dict.FindKey("1")) {
+          static bool ReadFromValue(const base::Value& dict_value, dom_distiller::test_sample::proto::Repeated* message) {
+            const base::Value::Dict* dict = dict_value.GetIfDict();
+            if (!dict) goto error;
+            if (const auto* value = dict->Find("1")) {
               if (!value->is_list()) {
                 goto error;
               }
@@ -161,7 +164,7 @@ namespace dom_distiller {
                 message->add_float_value(element.GetDouble());
               }
             }
-            if (const auto* value = dict.FindKey("2")) {
+            if (const auto* value = dict->Find("2")) {
               if (!value->is_list()) {
                 goto error;
               }
@@ -172,7 +175,7 @@ namespace dom_distiller {
                 message->add_double_value(element.GetDouble());
               }
             }
-            if (const auto* value = dict.FindKey("3")) {
+            if (const auto* value = dict->Find("3")) {
               if (!value->is_list()) {
                 goto error;
               }
@@ -183,7 +186,7 @@ namespace dom_distiller {
                 message->add_int32_value(element.GetInt());
               }
             }
-            if (const auto* value = dict.FindKey("4")) {
+            if (const auto* value = dict->Find("4")) {
               if (!value->is_list()) {
                 goto error;
               }
@@ -194,7 +197,7 @@ namespace dom_distiller {
                 message->add_bool_value(element.GetBool());
               }
             }
-            if (const auto* value = dict.FindKey("5")) {
+            if (const auto* value = dict->Find("5")) {
               if (!value->is_list()) {
                 goto error;
               }
@@ -205,7 +208,7 @@ namespace dom_distiller {
                 message->add_string_value(element.GetString());
               }
             }
-            if (const auto* value = dict.FindKey("6")) {
+            if (const auto* value = dict->Find("6")) {
               if (!value->is_list()) {
                 goto error;
               }
@@ -222,7 +225,7 @@ namespace dom_distiller {
           }
 
           static base::Value WriteToValue(const dom_distiller::test_sample::proto::Repeated& message) {
-            base::Value dict(base::Value::Type::DICT);
+            base::Value::Dict dict;
             {
               const auto& repeated_field = message.float_value();
               base::Value::List field_list;
@@ -230,8 +233,7 @@ namespace dom_distiller {
               for (const auto& element : repeated_field) {
                 field_list.Append(element);
               }
-              dict.SetKey("1",
-                          base::Value(std::move(field_list)));
+              dict.Set("1", std::move(field_list));
             }
             {
               const auto& repeated_field = message.double_value();
@@ -240,8 +242,7 @@ namespace dom_distiller {
               for (const auto& element : repeated_field) {
                 field_list.Append(element);
               }
-              dict.SetKey("2",
-                          base::Value(std::move(field_list)));
+              dict.Set("2", std::move(field_list));
             }
             {
               const auto& repeated_field = message.int32_value();
@@ -250,8 +251,7 @@ namespace dom_distiller {
               for (const auto& element : repeated_field) {
                 field_list.Append(element);
               }
-              dict.SetKey("3",
-                          base::Value(std::move(field_list)));
+              dict.Set("3", std::move(field_list));
             }
             {
               const auto& repeated_field = message.bool_value();
@@ -260,8 +260,7 @@ namespace dom_distiller {
               for (const auto& element : repeated_field) {
                 field_list.Append(element);
               }
-              dict.SetKey("4",
-                          base::Value(std::move(field_list)));
+              dict.Set("4", std::move(field_list));
             }
             {
               const auto& repeated_field = message.string_value();
@@ -270,8 +269,7 @@ namespace dom_distiller {
               for (const auto& element : repeated_field) {
                 field_list.Append(element);
               }
-              dict.SetKey("5",
-                          base::Value(std::move(field_list)));
+              dict.Set("5", std::move(field_list));
             }
             {
               const auto& repeated_field = message.message_value();
@@ -281,10 +279,9 @@ namespace dom_distiller {
                 field_list.Append(
                     dom_distiller::test_sample::proto::json::Repeated::Message::WriteToValue(element));
               }
-              dict.SetKey("6",
-                          base::Value(std::move(field_list)));
+              dict.Set("6", std::move(field_list));
             }
-            return dict;
+            return base::Value(std::move(dict));
           }
         };
 

@@ -69,23 +69,23 @@ base::Value ConvertUintToValue(uint32_t number) {
 // Gets bool value from base::Value::Dict, e.g. { "key": true } returns
 // true.
 absl::optional<bool> GetBoolValueFromDict(const base::Value::Dict& dict,
-                                          const std::string& key_name) {
+                                          base::StringPiece key_name) {
   return dict.FindBool(key_name);
 }
 
 // Gets int value from base::Value::Dict, e.g. { "key": 100 } returns 100.
 absl::optional<int32_t> GetIntValueFromDict(const base::Value::Dict& dict,
-                                            const std::string& key_name) {
+                                            base::StringPiece key_name) {
   return dict.FindInt(key_name);
 }
 
 // Gets uint32_t value from base::Value::Dict, e.g. { "key": "123" } returns
 // 123.
 absl::optional<uint32_t> GetUIntValueFromDict(const base::Value::Dict& dict,
-                                              const std::string& key_name) {
+                                              base::StringPiece key_name) {
   uint32_t result = 0;
-  if (!dict.contains(key_name) ||
-      !base::StringToUint(dict.FindString(key_name)->c_str(), &result)) {
+  const std::string* value = dict.FindString(key_name);
+  if (!value || !base::StringToUint(*value, &result)) {
     return absl::nullopt;
   }
   return result;
@@ -93,20 +93,20 @@ absl::optional<uint32_t> GetUIntValueFromDict(const base::Value::Dict& dict,
 
 absl::optional<std::string> GetStringValueFromDict(
     const base::Value::Dict& dict,
-    const std::string& key_name) {
+    base::StringPiece key_name) {
   const std::string* value = dict.FindString(key_name);
   return value ? absl::optional<std::string>(*value) : absl::nullopt;
 }
 
 absl::optional<GURL> GetUrlValueFromDict(const base::Value::Dict& dict,
-                                         const std::string& key_name) {
+                                         base::StringPiece key_name) {
   const std::string* value = dict.FindString(key_name);
   return value ? absl::optional<GURL>(*value) : absl::nullopt;
 }
 
 absl::optional<std::u16string> GetU16StringValueFromDict(
     const base::Value::Dict& dict,
-    const std::string& key_name) {
+    base::StringPiece key_name) {
   std::u16string result;
   const std::string* value = dict.FindString(key_name);
   if (!value || !base::UTF8ToUTF16(value->c_str(), value->length(), &result))
@@ -170,7 +170,7 @@ absl::optional<std::vector<base::FilePath>> GetFilePathsFromDict(
 // Gets gfx::Size from base::Value, e.g. { 100, 300 } returns
 // gfx::Size(100, 300).
 absl::optional<gfx::Size> GetSizeFromDict(const base::Value::Dict& dict,
-                                          const std::string& key_name) {
+                                          base::StringPiece key_name) {
   const base::Value::List* size_value = dict.FindList(key_name);
   if (!size_value || size_value->size() != 2) {
     return absl::nullopt;
@@ -186,7 +186,7 @@ absl::optional<gfx::Size> GetSizeFromDict(const base::Value::Dict& dict,
 // Gets gfx::Rect from base::Value, e.g. { 0, 100, 200, 300 } returns
 // gfx::Rect(0, 100, 200, 300).
 absl::optional<gfx::Rect> GetBoundsRectFromDict(const base::Value::Dict& dict,
-                                                const std::string& key_name) {
+                                                base::StringPiece key_name) {
   const base::Value::List* rect_value = dict.FindList(key_name);
   if (!rect_value || rect_value->empty())
     return absl::nullopt;
@@ -223,42 +223,34 @@ absl::optional<ui::WindowShowState> GetPreMinimizedShowStateTypeFromDict(
 
 AppRestoreData::AppRestoreData() = default;
 
-AppRestoreData::AppRestoreData(base::Value&& value) {
-  const base::Value::Dict* data_dict = value.GetIfDict();
-  if (!data_dict) {
-    DVLOG(0) << "Fail to parse app restore data. "
-             << "Cannot find the app restore data dict.";
-    return;
-  }
-
-  event_flag = GetIntValueFromDict(*data_dict, kEventFlagKey);
-  container = GetIntValueFromDict(*data_dict, kContainerKey);
-  disposition = GetIntValueFromDict(*data_dict, kDispositionKey);
-  override_url = GetUrlValueFromDict(*data_dict, kOverrideUrlKey);
-  display_id = GetDisplayIdFromDict(*data_dict);
-  handler_id = GetStringValueFromDict(*data_dict, kHandlerIdKey);
-  urls = GetUrlsFromDict(*data_dict);
-  active_tab_index = GetIntValueFromDict(*data_dict, kActiveTabIndexKey);
-  file_paths = GetFilePathsFromDict(*data_dict);
-  app_type_browser = GetBoolValueFromDict(*data_dict, kAppTypeBrowserKey);
-  app_name = GetStringValueFromDict(*data_dict, kAppNameKey);
-  activation_index = GetIntValueFromDict(*data_dict, kActivationIndexKey);
+AppRestoreData::AppRestoreData(base::Value::Dict&& data) {
+  event_flag = GetIntValueFromDict(data, kEventFlagKey);
+  container = GetIntValueFromDict(data, kContainerKey);
+  disposition = GetIntValueFromDict(data, kDispositionKey);
+  override_url = GetUrlValueFromDict(data, kOverrideUrlKey);
+  display_id = GetDisplayIdFromDict(data);
+  handler_id = GetStringValueFromDict(data, kHandlerIdKey);
+  urls = GetUrlsFromDict(data);
+  active_tab_index = GetIntValueFromDict(data, kActiveTabIndexKey);
+  file_paths = GetFilePathsFromDict(data);
+  app_type_browser = GetBoolValueFromDict(data, kAppTypeBrowserKey);
+  app_name = GetStringValueFromDict(data, kAppNameKey);
+  activation_index = GetIntValueFromDict(data, kActivationIndexKey);
   first_non_pinned_tab_index =
-      GetIntValueFromDict(*data_dict, kFirstNonPinnedTabIndexKey);
-  desk_id = GetIntValueFromDict(*data_dict, kDeskIdKey);
-  current_bounds = GetBoundsRectFromDict(*data_dict, kCurrentBoundsKey);
-  window_state_type = GetWindowStateTypeFromDict(*data_dict);
-  pre_minimized_show_state_type =
-      GetPreMinimizedShowStateTypeFromDict(*data_dict);
-  snap_percentage = GetUIntValueFromDict(*data_dict, kSnapPercentageKey);
-  maximum_size = GetSizeFromDict(*data_dict, kMaximumSizeKey);
-  minimum_size = GetSizeFromDict(*data_dict, kMinimumSizeKey);
-  title = GetU16StringValueFromDict(*data_dict, kTitleKey);
-  bounds_in_root = GetBoundsRectFromDict(*data_dict, kBoundsInRoot);
-  primary_color = GetUIntValueFromDict(*data_dict, kPrimaryColorKey);
-  status_bar_color = GetUIntValueFromDict(*data_dict, kStatusBarColorKey);
+      GetIntValueFromDict(data, kFirstNonPinnedTabIndexKey);
+  desk_id = GetIntValueFromDict(data, kDeskIdKey);
+  current_bounds = GetBoundsRectFromDict(data, kCurrentBoundsKey);
+  window_state_type = GetWindowStateTypeFromDict(data);
+  pre_minimized_show_state_type = GetPreMinimizedShowStateTypeFromDict(data);
+  snap_percentage = GetUIntValueFromDict(data, kSnapPercentageKey);
+  maximum_size = GetSizeFromDict(data, kMaximumSizeKey);
+  minimum_size = GetSizeFromDict(data, kMinimumSizeKey);
+  title = GetU16StringValueFromDict(data, kTitleKey);
+  bounds_in_root = GetBoundsRectFromDict(data, kBoundsInRoot);
+  primary_color = GetUIntValueFromDict(data, kPrimaryColorKey);
+  status_bar_color = GetUIntValueFromDict(data, kStatusBarColorKey);
 
-  const base::Value::Dict* intent_value = data_dict->FindDict(kIntentKey);
+  const base::Value::Dict* intent_value = data.FindDict(kIntentKey);
   if (intent_value) {
     intent = apps_util::ConvertDictToIntent(*intent_value);
   }

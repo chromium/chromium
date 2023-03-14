@@ -865,8 +865,17 @@
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_MENU_ITEM" desc="A menu item in the More Actions menu above the password list in Chrome's settings. Selecting this action will open a dialog, through which the user can import passwords.">
     Import passwords
   </message>
-  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_TITLE" desc="The title of a dialog, which offers the ability for the user to import passwords into Chrome Password Manager.">
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_TITLE" desc="The title of a dialog, which offers the ability for the user to import passwords into Password Manager.">
     Import passwords
+  </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_SUCCESS_TITLE" desc="The title of a dialog, which offers the ability for the user to import passwords into Password Manager. Shown when import has successfully finished with no errors.">
+    Import successful!
+  </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_COMPLETE_TITLE" desc="The title of a dialog, which offers the ability for the user to import passwords into Password Manager. Shown when import has successfully finished, but some errors were found in the imported file.">
+    Import complete
+  </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_ERROR_TITLE" desc="The title of a dialog, which offers the ability for the user to import passwords into Password Manager. Shown when no passwords were imported due to some error.">
+    Something went wrong
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_CHOOSE_FILE" desc="A button in the dialog for importing passwords from Chrome. Passwords will be imported from the file, which the user will be asked to choose after initiating this action.">
     Select file
@@ -894,13 +903,16 @@
     Select where to import your passwords
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_SUCCESS_TIP" desc="Message is shown on the dialog for importing passwords, after a successful import. It is an advice for the user, that they should consider deleting the file, which they used for importing passwords from.">
-    Consider deleting <ph name="FILENAME">&lt;b&gt;&lt;/b&gt;<ex>&lt;b&gt;filename.csv&lt;/b&gt;</ex></ph>, so others who use this device can't see your passwords
+    Consider deleting <ph name="FILENAME">&lt;span class="file-name"&gt;$1&lt;/span&gt;<ex>&lt;span class="file-name"&gt;filename.csv&lt;/span&gt;</ex></ph>, so others who use this device can't see your passwords
+  </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_DELETE_FILE_OPTION" desc="Message is shown on the dialog for importing passwords, after a successful import. It offers a user to delete the file, which they used for importing passwords from, by clicking at the checkbox and 'Done' button afterwards.">
+    Delete <ph name="FILENAME">&lt;span class="file-name"&gt;$1&lt;/span&gt;<ex>&lt;span class="file-name"&gt;filename.csv&lt;/span&gt;</ex></ph>, so others who use this device can't see your passwords
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_ERROR_UNKNOWN" desc="Message is shown on the dialog for importing passwords if no passwords were imported and we don't know the cause of error. Probably error in the backend or in our systems.">
-    Something went wrong and your passwords weren't imported
+    Your passwords weren't imported
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_ERROR_BAD_FORMAT" desc="Message is shown on the dialog for importing passwords if no passwords were imported because file is not formated correctly">
-    Can't import passwords. Check <ph name="FILENAME">&lt;b&gt;&lt;/b&gt;<ex>&lt;b&gt;filename.csv&lt;/b&gt;</ex></ph> and make sure it's formatted correctly. <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+    Can't import passwords. Check <ph name="FILENAME">&lt;span class="file-name"&gt;$1&lt;/span&gt;<ex>&lt;span class="file-name"&gt;filename.csv&lt;/span&gt;</ex></ph> and make sure it's formatted correctly. <ph name="BEGIN_LINK">&lt;a href="$2" target="_blank"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_FILE_SIZE_EXCEEDED" desc="Message is shown on the dialog for importing passwords if no passwords were imported because file size exceeds 150 KB.">
     Can't import passwords. The file size should be less than 150 KB.
@@ -944,7 +956,9 @@
     A password for this account is already saved on this device
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_FAILURES_SUMMARY" desc="Message is shown on the dialog for importing passwords if some passwords weren't imported.">
-    Passwords not imported (<ph name="COUNT"><ex>42</ex>$1</ph>)
+    {NUM_PASSWORDS, plural,
+     =1 {1 password not imported}
+     other {{NUM_PASSWORDS} passwords not imported}}
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_ALREADY_ACTIVE" desc="Message is shown on the dialog for importing passwords if there is the import process is already running in another tab.">
     You're already importing passwords in another tab
@@ -1472,6 +1486,9 @@
   <message name="IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_HEADER" desc="Heading for the exceptions list for tab discarding in the performance settings. Tabs will not be discarded by memory saver mode if on a site matching a rule in this list.">
     Always keep these sites active
   </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADDITIONAL_SITES" desc="Label for button that expands the tab discarding exceptions list to show all entries. Sites added to the list will not be discarded by memory saver.">
+    Additional sites
+  </message>
   <message name="IDS_SETTINGS_BATTERY_PAGE_TITLE" desc="Title of the power section of the performance settings page">
     Power
   </message>
@@ -1712,6 +1729,32 @@
       </message>
     </if>
   </if>
+
+  <!-- Anti-abuse Page -->
+  <message name="IDS_SETTINGS_ANTI_ABUSE_ENABLED_SUB_LABEL" desc="The label used for the anti-abuse site settings sub-label when the anti-abuse setting is turned on.">
+    Sites can help verify you're not a bot
+  </message>
+  <message name="IDS_SETTINGS_ANTI_ABUSE_DISABLED_SUB_LABEL" desc="The label used for the anti-abuse site settings sub-label when the anti-abuse setting is turned off.">
+    Sites can't help verify you're not a bot
+  </message>
+  <message name="IDS_SETTINGS_ANTI_ABUSE_DESCRIPTION" desc="The label used for the anti-abuse site settings description.">
+    Sites you visit can verify that you're a real person and not a bot
+  </message>
+  <message name="IDS_SETTINGS_ANTI_ABUSE_WHEN_ON_HEADER" desc="The header used for the section that informs users of the anti-abuse features.">
+    When on
+  </message>
+  <message name="IDS_SETTINGS_ANTI_ABUSE_WHEN_ON_SECTION_ONE" desc="A description that informs users how their browsing could be helped by the anti-abuse features.">
+    Browsing is faster because a site is less likely to ask you to verify you're a real person
+  </message>
+  <message name="IDS_SETTINGS_ANTI_ABUSE_WHEN_ON_SECTION_TWO" desc="A description that informs users that the anti-abuse features do not reveal their browsing history.">
+    This setting works without identifying you or allowing sites to see your browsing history
+  </message>
+  <message name="IDS_SETTINGS_ANTI_ABUSE_THINGS_TO_CONSIDER_HEADER" desc="The header used for the section that informs users of additional things to consider when the anti-abuse features are enabled.">
+    Things to consider
+  </message>
+  <message name="IDS_SETTINGS_ANTI_ABUSE_THINGS_TO_CONSIDER_SECTION_ONE" desc="A description that informs users that site can save info with Chrome when the anti-abuse features are enabled.">
+    A site you visit can save info with Chrome that validates you're not a bot. As you keep browsing, sites can check with Chrome and verify with a previous site you've visited that you're likely a real person
+  </message>
 
   <!-- Privacy Sandbox -->
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_TITLE" desc="The title of the Privacy Sandbox page. 'Privacy Sandbox' is a noun phrase (title case).">
@@ -2488,6 +2531,9 @@
   </message>
   <message name="IDS_SETTINGS_HTTPS_ONLY_MODE_DESCRIPTION" desc="Secondary, continued explanation of HTTPS-Only Mode in Security settings">
     Upgrade navigations to HTTPS and warn you before loading sites that don't support it
+  </message>
+  <message name="IDS_SETTINGS_HTTPS_ONLY_MODE_DESCRIPTION_ADVANCED_PROTECTION" desc="Secondary, continued explanation of HTTPS-Only Mode in Security settings when the user can't change the setting">
+    Upgrade navigations to HTTPS and warn you before loading sites that don't support it. You can't change this setting because you have Advanced Protection enabled.
   </message>
   <message name="IDS_SETTINGS_MANAGE_CERTIFICATES" desc="Text for manage certificates button in Privacy options">
     Manage certificates

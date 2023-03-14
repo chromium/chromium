@@ -1107,35 +1107,29 @@ void UkmPageLoadMetricsObserver::ReportLayoutInstabilityAfterFirstForeground() {
   DCHECK(!last_time_shown_.is_null());
 
   ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
+  const float layout_shift_score =
+      GetDelegate().GetPageRenderData().layout_shift_score;
   builder.SetExperimental_LayoutInstability_CumulativeShiftScoreAtFirstOnHidden(
-      page_load_metrics::LayoutShiftUkmValue(
-          GetDelegate().GetPageRenderData().layout_shift_score));
+      page_load_metrics::LayoutShiftUkmValue(layout_shift_score));
   // Record CLS normalization UKM.
-  const page_load_metrics::NormalizedCLSData& normalized_cls_data =
-      GetDelegate().GetNormalizedCLSData(
-          page_load_metrics::PageLoadMetricsObserverDelegate::BfcacheStrategy::
-              ACCUMULATE);
-  if (!normalized_cls_data.data_tainted) {
+  const absl::optional<float> cwv_cls_value = GetCoreWebVitalsCLS();
+  if (cwv_cls_value.has_value()) {
     builder
         .SetExperimental_LayoutInstability_MaxCumulativeShiftScoreAtFirstOnHidden_SessionWindow_Gap1000ms_Max5000ms(
-            page_load_metrics::LayoutShiftUkmValue(
-                normalized_cls_data
-                    .session_windows_gap1000ms_max5000ms_max_cls));
-
-    base::UmaHistogramCounts100(
-        "PageLoad.Experimental.LayoutInstability."
+            page_load_metrics::LayoutShiftUkmValue(*cwv_cls_value));
+    base::UmaHistogramCustomCounts(
+        "PageLoad.LayoutInstability."
         "MaxCumulativeShiftScoreAtFirstOnHidden.SessionWindow."
         "Gap1000ms.Max5000ms",
-        page_load_metrics::LayoutShiftUmaValue(
-            normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls));
+        page_load_metrics::LayoutShiftUmaValue10000(*cwv_cls_value), 1, 24000,
+        50);
   }
   builder.Record(ukm::UkmRecorder::Get());
 
   base::UmaHistogramCounts100(
-      "PageLoad.Experimental.LayoutInstability."
+      "PageLoad.LayoutInstability."
       "CumulativeShiftScoreAtFirstOnHidden",
-      page_load_metrics::LayoutShiftUmaValue(
-          GetDelegate().GetPageRenderData().layout_shift_score));
+      page_load_metrics::LayoutShiftUmaValue(layout_shift_score));
 }
 
 void UkmPageLoadMetricsObserver::

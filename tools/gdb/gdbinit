@@ -62,6 +62,13 @@ def set_src_dir(compile_dir):
   else:
     src_dir = src_dir.decode('utf-8').rstrip()
 
+  # If there's no chrome directory in the repo root, we got the wrong git repo.
+  # The most common way to have this happen is to be in a git checkout of
+  # another project that vendors chromium in its own third_party directory. In
+  # that case, try falling back to the current working directory.
+  if not os.path.isdir(os.path.join(src_dir, 'chrome')):
+    src_dir = os.path.abspath(os.getcwd())
+
   load_libcxx_pretty_printers(src_dir)
 
   load_gdb_chrome(src_dir)

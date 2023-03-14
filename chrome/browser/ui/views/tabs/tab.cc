@@ -211,7 +211,6 @@ Tab::Tab(TabSlotController* controller)
   title_->SetHandlesTooltips(false);
   title_->SetAutoColorReadabilityEnabled(false);
   title_->SetText(CoreTabHelper::GetDefaultTitle());
-  title_->SetFontList(tab_style_->GetFontList());
   // |title_| paints on top of an opaque region (the tab background) of a
   // non-opaque layer (the tabstrip's layer), which cannot currently be detected
   // by the subpixel-rendering opacity check.
@@ -797,7 +796,6 @@ void Tab::ActiveStateChanged() {
   UpdateTabIconNeedsAttentionBlocked();
   UpdateForegroundColors();
   alert_indicator_button_->OnParentTabButtonColorChanged();
-  title_->SetFontList(tab_style_->GetFontList());
   Layout();
 }
 

@@ -9,6 +9,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
+#include "components/country_codes/country_codes.h"
 #include "components/language/core/common/locale_util.h"
 
 namespace language {
@@ -57,11 +58,31 @@ const LanguageCodePair kLanguageCodeChineseCompatiblePairs[] = {
 
 }  // namespace
 
+bool OverrideTranslateTriggerInIndia() {
+#if BUILDFLAG(IS_ANDROID)
+  return country_codes::GetCurrentCountryCode() == "IN";
+#else
+  return false;
+#endif
+}
+
+OverrideLanguageModel GetOverrideLanguageModel() {
+  // Note: when there are multiple possible override models, the overrides
+  // ordering is important as it allows us to have concurrent overrides in
+  // experiment without having to partition them explicitly.
+  if (OverrideTranslateTriggerInIndia()) {
+    return OverrideLanguageModel::GEO;
+  }
+
+  return OverrideLanguageModel::DEFAULT;
+}
+
 void ToTranslateLanguageSynonym(std::string* language) {
   // Get the base language (e.g. "es" for "es-MX")
   base::StringPiece main_part = language::SplitIntoMainAndTail(*language).first;
-  if (main_part.empty())
+  if (main_part.empty()) {
     return;
+  }
 
   // Chinese is a special case: we do not return the main_part only.
   // There is not a single base language, but two: traditional and simplified.
@@ -101,8 +122,9 @@ void ToTranslateLanguageSynonym(std::string* language) {
 
 void ToChromeLanguageSynonym(std::string* language) {
   auto [main_part, tail_part] = language::SplitIntoMainAndTail(*language);
-  if (main_part.empty())
+  if (main_part.empty()) {
     return;
+  }
 
   // Apply linear search here because number of items in the list is just three.
   for (const auto& language_pair : kLanguageCodeSynonyms) {

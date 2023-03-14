@@ -7,11 +7,13 @@
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/privacy_hub/privacy_hub_metrics.h"
+#include "ash/system/privacy_hub/privacy_hub_notification.h"
 #include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
 #include "ash/system/system_notification_controller.h"
 #include "base/check.h"
@@ -59,17 +61,18 @@ CameraPrivacySwitchController::CameraPrivacySwitchController()
     : switch_api_(std::make_unique<VCDPrivacyAdapter>()),
       turn_sw_switch_on_notification_(
           kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId,
-          IDS_PRIVACY_HUB_WANT_TO_TURN_OFF_CAMERA_NOTIFICATION_TITLE,
-          {IDS_PRIVACY_HUB_WANT_TO_TURN_OFF_CAMERA_NOTIFICATION_MESSAGE},
-          PrivacyHubNotification::SensorSet(),
-          base::MakeRefCounted<PrivacyHubNotificationClickDelegate>(
-              base::BindRepeating([]() {
-                CameraPrivacySwitchController::
-                    SetAndLogCameraPreferenceFromNotification(false);
-              })),
-          ash::NotificationCatalogName::
-              kPrivacyHubHWCameraSwitchOffSWCameraSwitchOn,
-          IDS_PRIVACY_HUB_TURN_OFF_CAMERA_ACTION_BUTTON) {
+          NotificationCatalogName::kPrivacyHubHWCameraSwitchOffSWCameraSwitchOn,
+          PrivacyHubNotificationDescriptor{
+              SensorDisabledNotificationDelegate::SensorSet{},
+              IDS_PRIVACY_HUB_WANT_TO_TURN_OFF_CAMERA_NOTIFICATION_TITLE,
+              std::vector<int>{IDS_PRIVACY_HUB_TURN_OFF_CAMERA_ACTION_BUTTON},
+              std::vector<int>{
+                  IDS_PRIVACY_HUB_WANT_TO_TURN_OFF_CAMERA_NOTIFICATION_MESSAGE},
+              base::MakeRefCounted<PrivacyHubNotificationClickDelegate>(
+                  base::BindRepeating([]() {
+                    CameraPrivacySwitchController::
+                        SetAndLogCameraPreferenceFromNotification(false);
+                  }))}) {
   Shell::Get()->session_controller()->AddObserver(this);
 }
 
@@ -127,12 +130,12 @@ void CameraPrivacySwitchController::OnPreferenceChanged(
 
   if (pref_val == CameraSWPrivacySwitchSetting::kDisabled) {
     camera_used_while_deactivated_ = true;
-    GetPrivacyHubNotificationController()->ShowSensorDisabledNotification(
-        PrivacyHubNotificationController::Sensor::kCamera);
+    GetPrivacyHubNotificationController()->ShowSoftwareSwitchNotification(
+        SensorDisabledNotificationDelegate::Sensor::kCamera);
   } else {
     camera_used_while_deactivated_ = false;
-    GetPrivacyHubNotificationController()->RemoveSensorDisabledNotification(
-        PrivacyHubNotificationController::Sensor::kCamera);
+    GetPrivacyHubNotificationController()->RemoveSoftwareSwitchNotification(
+        SensorDisabledNotificationDelegate::Sensor::kCamera);
   }
 }
 
@@ -218,15 +221,15 @@ void CameraPrivacySwitchController::ActiveApplicationsChanged(
   if (active_applications_using_camera_count_ == 0 &&
       camera_used_while_deactivated_) {
     camera_used_while_deactivated_ = false;
-    GetPrivacyHubNotificationController()->RemoveSensorDisabledNotification(
-        PrivacyHubNotificationController::Sensor::kCamera);
+    GetPrivacyHubNotificationController()->RemoveSoftwareSwitchNotification(
+        SensorDisabledNotificationDelegate::Sensor::kCamera);
   } else if (application_added) {
     camera_used_while_deactivated_ = true;
-    GetPrivacyHubNotificationController()->ShowSensorDisabledNotification(
-        PrivacyHubNotificationController::Sensor::kCamera);
+    GetPrivacyHubNotificationController()->ShowSoftwareSwitchNotification(
+        SensorDisabledNotificationDelegate::Sensor::kCamera);
   } else {
-    GetPrivacyHubNotificationController()->UpdateSensorDisabledNotification(
-        PrivacyHubNotificationController::Sensor::kCamera);
+    GetPrivacyHubNotificationController()->UpdateSoftwareSwitchNotification(
+        SensorDisabledNotificationDelegate::Sensor::kCamera);
   }
 }
 

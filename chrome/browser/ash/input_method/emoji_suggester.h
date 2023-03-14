@@ -61,13 +61,6 @@ class EmojiSuggester : public Suggester {
   void SetButtonHighlighted(const ui::ime::AssistiveWindowButton& button,
                             bool highlighted);
 
-  int GetPrefValue(const std::string& pref_name);
-
-  // Increment int value for the given pref_name by 1 every time the function is
-  // called. The function has no effect after the int value becomes equal to the
-  // max_value.
-  void IncrementPrefValueTilCapped(const std::string& pref_name, int max_value);
-
   SuggestionHandlerInterface* const suggestion_handler_;
   Profile* profile_;
 

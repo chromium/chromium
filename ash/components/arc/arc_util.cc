@@ -20,6 +20,7 @@
 #include "base/process/process_metrics.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/version/version_loader.h"
@@ -421,19 +422,17 @@ void ConfigureUpstartJobs(std::deque<JobDesc> jobs,
   }
 }
 
-ArcVmDataMigrationStatus GetArcVmDataMigrationStatus(
-    PrefService* profile_prefs) {
+ArcVmDataMigrationStatus GetArcVmDataMigrationStatus(PrefService* prefs) {
   return static_cast<ArcVmDataMigrationStatus>(
-      profile_prefs->GetInteger(prefs::kArcVmDataMigrationStatus));
+      prefs->GetInteger(prefs::kArcVmDataMigrationStatus));
 }
 
-void SetArcVmDataMigrationStatus(PrefService* profile_prefs,
+void SetArcVmDataMigrationStatus(PrefService* prefs,
                                  ArcVmDataMigrationStatus status) {
-  profile_prefs->SetInteger(prefs::kArcVmDataMigrationStatus,
-                            static_cast<int>(status));
+  prefs->SetInteger(prefs::kArcVmDataMigrationStatus, static_cast<int>(status));
 }
 
-bool ShouldUseVirtioBlkData(PrefService* profile_prefs) {
+bool ShouldUseVirtioBlkData(PrefService* prefs) {
   // If kEnableVirtioBlkForData is set, force using virtio-blk /data regardless
   // of the migration status.
   if (base::FeatureList::IsEnabled(kEnableVirtioBlkForData))
@@ -443,13 +442,34 @@ bool ShouldUseVirtioBlkData(PrefService* profile_prefs) {
   if (!base::FeatureList::IsEnabled(kEnableArcVmDataMigration))
     return false;
 
-  ArcVmDataMigrationStatus status = GetArcVmDataMigrationStatus(profile_prefs);
+  ArcVmDataMigrationStatus status = GetArcVmDataMigrationStatus(prefs);
   if (status == ArcVmDataMigrationStatus::kFinished) {
     VLOG(1) << "ARCVM /data migration has finished";
     return true;
   }
   VLOG(1) << "ARCVM /data migration hasn't finished yet. Status=" << status;
   return false;
+}
+
+int GetDaysUntilArcVmDataMigrationDeadline(PrefService* prefs) {
+  const base::Time notification_first_shown_time =
+      prefs->GetTime(prefs::kArcVmDataMigrationNotificationFirstShownTime);
+  if (notification_first_shown_time == base::Time()) {
+    // The preference is uninitialized (the notification has not been shown).
+    LOG(ERROR) << "No deadline can be calculated because ARCVM /data migration "
+                  "notification has not been shown before";
+    return kArcVmDataMigrationDismissibleTimeDelta.InDays();
+  }
+  // TODO(b/258278176): Make this work nicely in any timezones in a robust way.
+  const base::Time deadline =
+      notification_first_shown_time + kArcVmDataMigrationDismissibleTimeDelta;
+  const base::Time now = base::Time::Now();
+  const base::TimeDelta delta = now < deadline ? deadline - now : base::Days(0);
+  return delta.InDays() + 1;
+}
+
+bool ArcVmDataMigrationShouldBeDismissible(int days_until_deadline) {
+  return days_until_deadline > 1;
 }
 
 }  // namespace arc

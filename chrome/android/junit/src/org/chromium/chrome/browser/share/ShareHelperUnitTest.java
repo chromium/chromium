@@ -9,12 +9,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import android.app.Activity;
+import android.app.PendingIntent;
+import android.app.PendingIntent.CanceledException;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.IntentSender.SendIntentException;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Looper;
+import android.os.Parcelable;
+
+import androidx.core.os.BuildCompat;
 
 import org.junit.After;
 import org.junit.Before;
@@ -25,9 +31,12 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowPendingIntent;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Matchers;
@@ -40,6 +49,8 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.JUnitTestGURLs;
+
+import java.util.List;
 
 /**
  * Unit tests for static functions in {@link ShareHelper}.
@@ -189,6 +200,55 @@ public class ShareHelperUnitTest {
                 nextIntent.getComponent());
     }
 
+    @Test
+    @Config(shadows = ShadowBuildCompatForU.class)
+    public void shareWithCustomActions() {
+        // A simple way to mock if correct parcels are attached to the chooser intent.
+        // In production, the array of parcelable is not necessary a "Bundle".
+        Parcelable parcel = new Bundle();
+        List<Parcelable> listOfActions = List.of(parcel);
+
+        ShareHelper.shareWithSystemShareSheetUi(emptyShareParams(), null, false, listOfActions);
+
+        Intent nextIntent = Shadows.shadowOf(mActivity).peekNextStartedActivity();
+        assertNotNull("Shared intent is null.", nextIntent);
+        assertEquals(
+                "Intent is not a chooser intent.", Intent.ACTION_CHOOSER, nextIntent.getAction());
+        assertNotNull("Custom actions are not attached.",
+                nextIntent.getParcelableArrayExtra("android.intent.extra.CHOOSER_CUSTOM_ACTIONS"));
+    }
+
+    @Test
+    public void doNotTrustIntentWithoutTrustedExtra() throws CanceledException {
+        ShareHelper.shareWithSystemShareSheetUi(emptyShareParams(), null, true);
+
+        Intent nextIntent = Shadows.shadowOf(mActivity).peekNextStartedActivity();
+        assertNotNull("Shared intent is null.", nextIntent);
+
+        String packageName = ContextUtils.getApplicationContext().getPackageName();
+        Intent untrustedIntent = new Intent();
+        untrustedIntent.setPackage(packageName);
+        untrustedIntent.setAction(
+                packageName + "/" + TargetChosenReceiver.class.getName() + "_ACTION");
+        untrustedIntent.putExtra(Intent.EXTRA_CHOSEN_COMPONENT, TEST_COMPONENT_NAME_2);
+
+        PendingIntent
+                .getBroadcast(ContextUtils.getApplicationContext(), 0, untrustedIntent,
+                        PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_CANCEL_CURRENT)
+                .send();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+        assertLastComponentNameRecorded(null);
+
+        Intent trustedIntent = new Intent(untrustedIntent);
+        IntentUtils.addTrustedIntentExtras(trustedIntent);
+        PendingIntent
+                .getBroadcast(ContextUtils.getApplicationContext(), 1, trustedIntent,
+                        PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_CANCEL_CURRENT)
+                .send();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+        assertLastComponentNameRecorded(TEST_COMPONENT_NAME_2);
+    }
+
     private void selectComponentFromChooserIntent(Intent chooserIntent, ComponentName componentName)
             throws SendIntentException {
         Intent sendBackIntent = new Intent().putExtra(Intent.EXTRA_CHOSEN_COMPONENT, componentName);
@@ -206,5 +266,15 @@ public class ShareHelperUnitTest {
 
     private ShareParams emptyShareParams() {
         return new ShareParams.Builder(mWindow, "", "").build();
+    }
+
+    // Work around shadow to assume runtime is at least U.
+    // TODO(https://crbug.com/1420388): Switch to @Config(sdk=34) this once API 34 exists.
+    @Implements(BuildCompat.class)
+    static class ShadowBuildCompatForU {
+        @Implementation
+        protected static boolean isAtLeastU() {
+            return true;
+        }
     }
 }

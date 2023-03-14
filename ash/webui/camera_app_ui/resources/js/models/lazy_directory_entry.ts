@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from '../assert.js';
+
 import {
   DirectoryAccessEntry,
   FileAccessEntry,
@@ -41,6 +42,11 @@ class LazyDirectoryEntry implements DirectoryAccessEntry {
   constructor(
       private readonly parent: DirectoryAccessEntry, readonly name: string) {}
 
+  async getHandle(): Promise<FileSystemDirectoryHandle> {
+    const dir = await this.getRealDirectory();
+    return dir.getHandle();
+  }
+
   async getFiles(): Promise<FileAccessEntry[]> {
     if (this.directory === null) {
       return [];
@@ -62,11 +68,11 @@ class LazyDirectoryEntry implements DirectoryAccessEntry {
     return this.directory.getFile(name);
   }
 
-  async isExist(name: string): Promise<boolean> {
+  async exists(name: string): Promise<boolean> {
     if (this.directory === null) {
       return false;
     }
-    return this.directory.isExist(name);
+    return this.directory.exists(name);
   }
 
   async createFile(name: string): Promise<FileAccessEntry> {

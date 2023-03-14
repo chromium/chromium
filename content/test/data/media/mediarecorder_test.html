@@ -458,19 +458,6 @@ function testRecordRemotePeerConnection(mimeType) {
       });
 }
 
-// Tests that MediaRecorder's stop() throws an exception if |state| is not
-// 'recording'.
-function testIllegalStopThrowsDOMError() {
-  navigator.mediaDevices.getUserMedia(DEFAULT_CONSTRAINTS)
-      .then(function(stream) {
-        return createMediaRecorder(stream, DEFAULT_RECORDER_MIME_TYPE);
-      })
-      .then(function(recorder) {
-        assertThrows(function() {recorder.stop()}, 'Calling stop() in' +
-            ' inactive state should cause a DOM error');
-      });
-}
-
 // Tests that MediaRecorder's start() throws an exception if |state| is
 // 'recording'.
 function testIllegalStartInRecordingStateThrowsDOMError() {

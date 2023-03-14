@@ -16,6 +16,7 @@
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/gtest_util.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
@@ -1986,6 +1987,125 @@ TEST_F(DeveloperPrivateApiUnitTest, InstallDroppedFileZip) {
 // Test developerPrivate.getUserSiteSettings.
 TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateGetUserSiteSettings) {
   PermissionsManager* manager = PermissionsManager::Get(browser_context());
+  const url::Origin restricted_url =
+      url::Origin::Create(GURL("http://example.com"));
+
+  manager->AddUserRestrictedSite(restricted_url);
+
+  auto function =
+      base::MakeRefCounted<api::DeveloperPrivateGetUserSiteSettingsFunction>();
+
+  absl::optional<base::Value> result =
+      api_test_utils::RunFunctionAndReturnSingleResult(
+          function.get(), /*args=*/"[]", profile());
+  ASSERT_TRUE(result.has_value());
+  std::unique_ptr<api::developer_private::UserSiteSettings> settings =
+      api::developer_private::UserSiteSettings::FromValue(result.value());
+
+  ASSERT_TRUE(settings);
+  EXPECT_THAT(settings->permitted_sites, testing::IsEmpty());
+  EXPECT_THAT(settings->restricted_sites,
+              testing::UnorderedElementsAre("http://example.com"));
+}
+
+// Test developerPrivate.addUserSpecifiedSite and removeUserSpecifiedSite for
+// restricted sites.
+TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateModifyUserSiteSettings) {
+  static constexpr char kExample[] = "http://example.com";
+  static constexpr char kChromium[] = "http://chromium.org";
+
+  const url::Origin example_url = url::Origin::Create(GURL(kExample));
+  const url::Origin chromium_url = url::Origin::Create(GURL(kChromium));
+
+  // Add restricted sites, and check that these sites are stored in the manager.
+  EXPECT_NO_FATAL_FAILURE(AddUserSpecifiedSites(
+      profile(), base::StringPrintf(R"(["%s","%s"])", kExample, kChromium),
+      /*restricted=*/true));
+
+  PermissionsManager* manager = PermissionsManager::Get(browser_context());
+  EXPECT_THAT(manager->GetUserPermissionsSettings().permitted_sites,
+              testing::IsEmpty());
+  EXPECT_THAT(manager->GetUserPermissionsSettings().restricted_sites,
+              testing::UnorderedElementsAre(example_url, chromium_url));
+
+  // Remove restricted site, and check that the site was removed in the manager.
+  EXPECT_NO_FATAL_FAILURE(RemoveUserSpecifiedSites(
+      profile(), base::StringPrintf(R"(["%s"])", kExample),
+      /*restricted=*/true));
+
+  EXPECT_THAT(manager->GetUserPermissionsSettings().permitted_sites,
+              testing::IsEmpty());
+  EXPECT_THAT(manager->GetUserPermissionsSettings().restricted_sites,
+              testing::UnorderedElementsAre(chromium_url));
+}
+
+// Test that the OnUserSiteSettingsChanged event is fired whenever the user
+// defined site settings update.
+TEST_F(DeveloperPrivateApiUnitTest, OnUserSiteSettingsChanged) {
+  static constexpr char kExample[] = "http://example.com";
+
+  // We need to call DeveloperPrivateAPI::Get() in order to instantiate the
+  // keyed service, since it's not created by default in unit tests.
+  DeveloperPrivateAPI::Get(profile());
+  EventRouter* event_router = EventRouter::Get(profile());
+
+  // The DeveloperPrivateEventRouter will only dispatch events if there's at
+  // least one listener to dispatch to. Create one.
+  const char* kEventName =
+      api::developer_private::OnUserSiteSettingsChanged::kEventName;
+  event_router->AddEventListener(kEventName, render_process_host(),
+                                 crx_file::id_util::GenerateId("listener"));
+
+  TestEventRouterObserver test_observer(event_router);
+
+  api::developer_private::UserSiteSettings settings;
+  EXPECT_FALSE(
+      WasUserSiteSettingsChangedEventDispatched(test_observer, &settings));
+
+  // Add a restricted site, and check the event that it's
+  // only contained in the restricted list.
+  const std::string kExampleArg = base::StringPrintf(R"(["%s"])", kExample);
+  EXPECT_NO_FATAL_FAILURE(
+      AddUserSpecifiedSites(profile(), kExampleArg, /*restricted=*/true));
+  EXPECT_TRUE(
+      WasUserSiteSettingsChangedEventDispatched(test_observer, &settings));
+  EXPECT_THAT(settings.permitted_sites, testing::IsEmpty());
+  EXPECT_THAT(settings.restricted_sites,
+              testing::UnorderedElementsAre(kExample));
+
+  // Remove the site, and check the event that both lists are empty.
+  EXPECT_NO_FATAL_FAILURE(
+      RemoveUserSpecifiedSites(profile(), kExampleArg, /*restricted=*/true));
+  EXPECT_TRUE(
+      WasUserSiteSettingsChangedEventDispatched(test_observer, &settings));
+  EXPECT_THAT(settings.permitted_sites, testing::IsEmpty());
+  EXPECT_THAT(settings.restricted_sites, testing::IsEmpty());
+}
+
+class DeveloperPrivateApiWithPermittedSitesUnitTest
+    : public DeveloperPrivateApiUnitTest {
+ public:
+  DeveloperPrivateApiWithPermittedSitesUnitTest();
+  DeveloperPrivateApiWithPermittedSitesUnitTest(
+      const DeveloperPrivateApiWithPermittedSitesUnitTest&) = delete;
+  const DeveloperPrivateApiWithPermittedSitesUnitTest& operator=(
+      const DeveloperPrivateApiWithPermittedSitesUnitTest&) = delete;
+  ~DeveloperPrivateApiWithPermittedSitesUnitTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+DeveloperPrivateApiWithPermittedSitesUnitTest::
+    DeveloperPrivateApiWithPermittedSitesUnitTest() {
+  feature_list_.InitAndEnableFeature(
+      extensions_features::kExtensionsMenuAccessControlWithPermittedSites);
+}
+
+// Test developerPrivate.getUserSiteSettings.
+TEST_F(DeveloperPrivateApiWithPermittedSitesUnitTest,
+       DeveloperPrivateGetUserSiteSettings) {
+  PermissionsManager* manager = PermissionsManager::Get(browser_context());
   const url::Origin permitted_url =
       url::Origin::Create(GURL("http://a.example.com"));
   const url::Origin restricted_url =
@@ -2012,9 +2132,9 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateGetUserSiteSettings) {
               testing::UnorderedElementsAre("http://b.example.com"));
 }
 
-// Test developerPrivate.addUserPermittedSite, addUserRestrictedSite and
-// removeUserSpecifiedSite.
-TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateModifyUserSiteSettings) {
+// Test developerPrivate.addUserSpecifiedSite and removeUserSpecifiedSite.
+TEST_F(DeveloperPrivateApiWithPermittedSitesUnitTest,
+       DeveloperPrivateModifyUserSiteSettings) {
   static constexpr char kExample[] = "http://example.com";
   static constexpr char kChromium[] = "http://chromium.org";
   static constexpr char kGoogle[] = "http://google.com";
@@ -2057,60 +2177,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateModifyUserSiteSettings) {
   EXPECT_TRUE(manager->GetUserPermissionsSettings().restricted_sites.empty());
 }
 
-// Test that the OnUserSiteSettingsChanged event is fired whenever the user
-// defined site settings updates.
-TEST_F(DeveloperPrivateApiUnitTest, OnUserSiteSettingsChanged) {
-  static constexpr char kExample[] = "http://example.com";
-
-  // We need to call DeveloperPrivateAPI::Get() in order to instantiate the
-  // keyed service, since it's not created by default in unit tests.
-  DeveloperPrivateAPI::Get(profile());
-  EventRouter* event_router = EventRouter::Get(profile());
-
-  // The DeveloperPrivateEventRouter will only dispatch events if there's at
-  // least one listener to dispatch to. Create one.
-  const char* kEventName =
-      api::developer_private::OnUserSiteSettingsChanged::kEventName;
-  event_router->AddEventListener(kEventName, render_process_host(),
-                                 crx_file::id_util::GenerateId("listener"));
-
-  TestEventRouterObserver test_observer(event_router);
-
-  api::developer_private::UserSiteSettings settings;
-  EXPECT_FALSE(
-      WasUserSiteSettingsChangedEventDispatched(test_observer, &settings));
-
-  // Add a permitted site, and check that it is contained within the event's
-  // payload.
-  const std::string kExampleArg = base::StringPrintf(R"(["%s"])", kExample);
-  EXPECT_NO_FATAL_FAILURE(
-      AddUserSpecifiedSites(profile(), kExampleArg, /*restricted=*/false));
-  EXPECT_TRUE(
-      WasUserSiteSettingsChangedEventDispatched(test_observer, &settings));
-  EXPECT_THAT(settings.permitted_sites,
-              testing::UnorderedElementsAre(kExample));
-  EXPECT_TRUE(settings.restricted_sites.empty());
-
-  // Add the same site to the restricted site, and check the event that it's
-  // only contained in the restricted list.
-  EXPECT_NO_FATAL_FAILURE(
-      AddUserSpecifiedSites(profile(), kExampleArg, /*restricted=*/true));
-  EXPECT_TRUE(
-      WasUserSiteSettingsChangedEventDispatched(test_observer, &settings));
-  EXPECT_TRUE(settings.permitted_sites.empty());
-  EXPECT_THAT(settings.restricted_sites,
-              testing::UnorderedElementsAre(kExample));
-
-  // Remove the site, and check the event that both lists are empty.
-  EXPECT_NO_FATAL_FAILURE(
-      RemoveUserSpecifiedSites(profile(), kExampleArg, /*restricted=*/true));
-  EXPECT_TRUE(
-      WasUserSiteSettingsChangedEventDispatched(test_observer, &settings));
-  EXPECT_TRUE(settings.permitted_sites.empty());
-  EXPECT_TRUE(settings.restricted_sites.empty());
-}
-
-TEST_F(DeveloperPrivateApiUnitTest,
+TEST_F(DeveloperPrivateApiWithPermittedSitesUnitTest,
        DeveloperPrivateGetUserAndExtensionSitesByEtld_UserSites) {
   PermissionsManager* manager = PermissionsManager::Get(browser_context());
 
@@ -2151,7 +2218,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
   }])"));
 }
 
-TEST_F(DeveloperPrivateApiUnitTest,
+TEST_F(DeveloperPrivateApiWithPermittedSitesUnitTest,
        DeveloperPrivateGetUserAndExtensionSitesByEtld_UserAndExtensionSites) {
   PermissionsManager* manager = PermissionsManager::Get(browser_context());
   manager->AddUserPermittedSite(
@@ -2234,7 +2301,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
   }])"));
 }
 
-TEST_F(DeveloperPrivateApiUnitTest,
+TEST_F(DeveloperPrivateApiWithPermittedSitesUnitTest,
        DeveloperPrivateGetUserAndExtensionSitesByEtld_EffectiveAllHosts) {
   PermissionsManager* manager = PermissionsManager::Get(browser_context());
   manager->AddUserPermittedSite(
@@ -2263,8 +2330,8 @@ TEST_F(DeveloperPrivateApiUnitTest,
   const base::Value::List* results = function->GetResultListForTest();
   ASSERT_EQ(1u, results->size());
 
-  // `extension_2` should not be counted for https://*.google.ca/* as it cannot
-  // run on .ca sites.
+  // `extension_2` should not be counted for https://*.google.ca/* as it
+  // cannot run on .ca sites.
   EXPECT_THAT((*results)[0], base::test::IsJson(R"([{
     "etldPlusOne": "example.com",
     "numExtensions": 3,

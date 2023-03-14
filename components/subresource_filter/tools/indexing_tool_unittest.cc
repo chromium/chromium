@@ -70,8 +70,7 @@ class IndexingToolTest : public ::testing::Test {
     // Write the test unindexed data to a file.
     const std::vector<uint8_t>& unindexed_data =
         test_ruleset_pair_.unindexed.contents;
-    base::WriteFile(path, reinterpret_cast<const char*>(unindexed_data.data()),
-                    base::checked_cast<int>(unindexed_data.size()));
+    base::WriteFile(path, unindexed_data);
   }
 
   int file_count_ = 0;

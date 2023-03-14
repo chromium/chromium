@@ -6,10 +6,11 @@
 
 #import "base/i18n/rtl.h"
 #import "base/mac/foundation_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -29,6 +30,7 @@
   self = [super initWithType:type];
   if (self) {
     self.accessibilityIdentifier = @"Change Folder";
+    self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     self.cellClass = [BookmarkParentFolderCell class];
   }
   return self;
@@ -42,6 +44,7 @@
   BookmarkParentFolderCell* cell =
       base::mac::ObjCCastStrict<BookmarkParentFolderCell>(tableCell);
   cell.parentFolderNameLabel.text = self.title;
+  cell.cloudSlashedView.hidden = !self.shouldDisplayCloudSlashIcon;
 }
 
 @end
@@ -49,18 +52,15 @@
 #pragma mark - BookmarkParentFolderCell
 
 @interface BookmarkParentFolderCell ()
+
 // Stack view to display label / value which we'll switch from horizontal to
 // vertical based on preferredContentSizeCategory.
 @property(nonatomic, strong) UIStackView* stackView;
-@end
-
-@interface BookmarkParentFolderCell ()
+// Label containing `parentFolderName`
 @property(nonatomic, readwrite, strong) UILabel* parentFolderNameLabel;
 @end
 
 @implementation BookmarkParentFolderCell
-@synthesize parentFolderNameLabel = _parentFolderNameLabel;
-@synthesize stackView = _stackView;
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
               reuseIdentifier:(NSString*)reuseIdentifier {
@@ -95,9 +95,14 @@
       setContentHuggingPriority:UILayoutPriorityDefaultLow
                         forAxis:UILayoutConstraintAxisHorizontal];
 
+  // Slashed cloud view
+  self.cloudSlashedView = bookmark_utils_ios::CloudSlashIcon();
+  self.cloudSlashedView.hidden = YES;
+
   // Container StackView.
-  self.stackView = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ titleLabel, self.parentFolderNameLabel ]];
+  self.stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
+    titleLabel, self.parentFolderNameLabel, self.cloudSlashedView
+  ]];
   self.stackView.axis = UILayoutConstraintAxisHorizontal;
   self.stackView.spacing = kBookmarkCellViewSpacing;
   self.stackView.distribution = UIStackViewDistributionFill;
@@ -114,16 +119,6 @@
                                   kBookmarkCellHorizontalLeadingInset,
                                   kBookmarkCellVerticalInset,
                                   kBookmarkCellHorizontalAccessoryViewSpacing));
-
-  // Chevron accessory view.
-  UIImageView* navigationChevronImage = [[UIImageView alloc]
-      initWithImage:[UIImage imageNamed:@"table_view_cell_chevron"]];
-  self.accessoryView = navigationChevronImage;
-  // TODO(crbug.com/870841): Use default accessory type.
-  if (base::i18n::IsRTL()) {
-    self.accessoryView.transform = CGAffineTransformMakeRotation(M_PI);
-  }
-
   [self applyContentSizeCategoryStyles];
 
   return self;
@@ -132,9 +127,15 @@
 - (void)prepareForReuse {
   [super prepareForReuse];
   self.parentFolderNameLabel.text = nil;
+  self.cloudSlashedView.hidden = YES;
 }
 
 - (NSString*)accessibilityLabel {
+  if (!self.cloudSlashedView.hidden) {
+    return l10n_util::GetNSStringF(
+        IDS_IOS_BOOKMARKS_FOLDER_NAME_WITH_CLOUD_SLASH_ICON_LABEL,
+        base::SysNSStringToUTF16(self.parentFolderNameLabel.text));
+  }
   return self.parentFolderNameLabel.text;
 }
 

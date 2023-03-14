@@ -2,78 +2,86 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+
 import {Keyboard, MetaKey, ModifierKey, Mouse, PointingStick, Touchpad} from './input_device_settings_types.js';
+
+
+export function mojoTimeDelta(timeDelta: number): TimeDelta {
+  return {microseconds: BigInt(Math.floor(timeDelta * 1000))};
+}
 
 export const fakeKeyboards: Keyboard[] = [
   {
     id: 0,
+    deviceKey: 'test:key',
     name: 'ERGO K860',
     isExternal: true,
-    metaKey: MetaKey.COMMAND,
+    metaKey: MetaKey.kCommand,
     modifierKeys: [
-      ModifierKey.ALT,
-      ModifierKey.BACKSPACE,
-      ModifierKey.CAPS_LOCK,
-      ModifierKey.CONTROL,
-      ModifierKey.ESC,
-      ModifierKey.META,
+      ModifierKey.kAlt,
+      ModifierKey.kBackspace,
+      ModifierKey.kCapsLock,
+      ModifierKey.kControl,
+      ModifierKey.kEscape,
+      ModifierKey.kMeta,
     ],
     settings: {
-      modifierRemappings: new Map<ModifierKey, ModifierKey>([
-        [ModifierKey.CONTROL, ModifierKey.CAPS_LOCK],
-        [ModifierKey.CAPS_LOCK, ModifierKey.ASSISTANT],
-      ]),
-      topRowAreFKeys: false,
-      suppressMetaFKeyRewrites: false,
+      modifierRemappings: {
+        [ModifierKey.kControl]: ModifierKey.kCapsLock,
+        [ModifierKey.kCapsLock]: ModifierKey.kAssistant,
+      },
+      topRowAreFkeys: false,
+      suppressMetaFkeyRewrites: false,
       autoRepeatEnabled: false,
-      autoRepeatDelay: 2000,
-      autoRepeatInterval: 2000,
+      autoRepeatDelay: mojoTimeDelta(2000),
+      autoRepeatInterval: mojoTimeDelta(2000),
     },
   },
   {
     id: 1,
+    deviceKey: 'test:key',
     name: 'AT Translated Set 2 ',
     isExternal: false,
-    metaKey: MetaKey.SEARCH,
+    metaKey: MetaKey.kSearch,
     modifierKeys: [
-      ModifierKey.ALT,
-      ModifierKey.ASSISTANT,
-      ModifierKey.BACKSPACE,
-      ModifierKey.CONTROL,
-      ModifierKey.ESC,
-      ModifierKey.META,
+      ModifierKey.kAlt,
+      ModifierKey.kAssistant,
+      ModifierKey.kBackspace,
+      ModifierKey.kControl,
+      ModifierKey.kEscape,
+      ModifierKey.kMeta,
     ],
     settings: {
-      modifierRemappings: new Map<ModifierKey, ModifierKey>(),
-      topRowAreFKeys: true,
-      suppressMetaFKeyRewrites: true,
+      modifierRemappings: {},
+      topRowAreFkeys: true,
+      suppressMetaFkeyRewrites: true,
       autoRepeatEnabled: true,
-      autoRepeatDelay: 150,
-      autoRepeatInterval: 20,
+      autoRepeatDelay: mojoTimeDelta(150),
+      autoRepeatInterval: mojoTimeDelta(20),
     },
   },
   {
     id: 8,
+    deviceKey: 'test:key',
     name: 'Logitech G713 Aurora',
     isExternal: true,
-    metaKey: MetaKey.LAUNCHER,
+    metaKey: MetaKey.kLauncher,
     modifierKeys: [
-      ModifierKey.ALT,
-      ModifierKey.BACKSPACE,
-      ModifierKey.CAPS_LOCK,
-      ModifierKey.CONTROL,
-      ModifierKey.ESC,
-      ModifierKey.META,
+      ModifierKey.kAlt,
+      ModifierKey.kBackspace,
+      ModifierKey.kCapsLock,
+      ModifierKey.kControl,
+      ModifierKey.kEscape,
+      ModifierKey.kMeta,
     ],
     settings: {
-      modifierRemappings: new Map<ModifierKey, ModifierKey>([
-        [ModifierKey.ALT, ModifierKey.ASSISTANT],
-      ]),
-      topRowAreFKeys: true,
-      suppressMetaFKeyRewrites: false,
+      modifierRemappings: {[ModifierKey.kAlt]: ModifierKey.kAssistant},
+      topRowAreFkeys: true,
+      suppressMetaFkeyRewrites: false,
       autoRepeatEnabled: true,
-      autoRepeatDelay: 500,
-      autoRepeatInterval: 100,
+      autoRepeatDelay: mojoTimeDelta(500),
+      autoRepeatInterval: mojoTimeDelta(100),
     },
   },
 ];
@@ -81,6 +89,7 @@ export const fakeKeyboards: Keyboard[] = [
 export const fakeTouchpads: Touchpad[] = [
   {
     id: 2,
+    deviceKey: 'test:key',
     name: 'Default Touchpad',
     isExternal: false,
     isHaptic: true,
@@ -99,6 +108,7 @@ export const fakeTouchpads: Touchpad[] = [
   },
   {
     id: 3,
+    deviceKey: 'test:key',
     name: 'Logitech T650',
     isExternal: true,
     isHaptic: false,
@@ -120,6 +130,7 @@ export const fakeTouchpads: Touchpad[] = [
 export const fakeMice: Mouse[] = [
   {
     id: 4,
+    deviceKey: 'test:key',
     name: 'Razer Basilisk V3',
     isExternal: true,
     settings: {
@@ -133,6 +144,7 @@ export const fakeMice: Mouse[] = [
   },
   {
     id: 5,
+    deviceKey: 'test:key',
     name: 'MX Anywhere 2S',
     isExternal: false,
     settings: {
@@ -149,6 +161,7 @@ export const fakeMice: Mouse[] = [
 export const fakePointingSticks: PointingStick[] = [
   {
     id: 6,
+    deviceKey: 'test:key',
     name: 'Default Pointing Stick',
     isExternal: false,
     settings: {
@@ -159,6 +172,7 @@ export const fakePointingSticks: PointingStick[] = [
   },
   {
     id: 7,
+    deviceKey: 'test:key',
     name: 'Lexmark-Unicomp FSR',
     isExternal: true,
     settings: {

@@ -56,13 +56,6 @@ void RecordNewAccessibilityModeFlags(
       ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_MAX);
 }
 
-// Record a histogram for an experimental accessibility mode when it is enabled.
-void RecordNewExperimentalAccessibilityModeFlags(
-    ui::AXMode::ExperimentalModeFlagHistogramValue experimental_mode_flag) {
-  // TODO(aldietz): Add histogram enumeration for
-  // "Accessibility.ExperimentalModeFlag"
-}
-
 // Update the accessibility histogram 45 seconds after initialization.
 static const int ACCESSIBILITY_HISTOGRAM_DELAY_SECS = 45;
 
@@ -366,11 +359,6 @@ void BrowserAccessibilityStateImpl::UpdateUniqueUserHistograms() {}
 void BrowserAccessibilityStateImpl::SetImageLabelsModeForProfile(
     bool enabled,
     BrowserContext* profile) {}
-
-bool BrowserAccessibilityStateImpl::HasSpokenFeedbackServicePresent() {
-  NOTIMPLEMENTED();
-  return false;
-}
 #endif
 
 void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {
@@ -450,9 +438,8 @@ void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {
   int new_experimental_mode_flags =
       mode.experimental_flags() & (~previous_mode.experimental_flags());
   if (new_experimental_mode_flags & ui::AXMode::kExperimentalFormControls) {
-    RecordNewExperimentalAccessibilityModeFlags(
-        ui::AXMode::ExperimentalModeFlagHistogramValue::
-            UMA_AX_EXPERIMENTAL_MODE_FORM_CONTROLS);
+    base::UmaHistogramBoolean("Accessibility.ExperimentalModeFlag.FormControls",
+                              true);
   }
 
   std::vector<WebContentsImpl*> web_contents_vector =

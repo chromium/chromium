@@ -29,6 +29,8 @@ class AutofillExperimentsTest : public testing::Test {
   void SetUp() override {
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kAutofillWalletImportEnabled, true);
+    pref_service_.registry()->RegisterBooleanPref(prefs::kAutofillHasSeenIban,
+                                                  false);
     log_manager_ = LogManager::Create(nullptr, base::NullCallback());
   }
 
@@ -105,7 +107,7 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_SupportedCountry) {
 }
 
 TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_AuthError) {
-  sync_service_.SetPersistentAuthErrorOtherThanWebSignout();
+  sync_service_.SetPersistentAuthError();
   EXPECT_FALSE(IsCreditCardUploadEnabled(AutofillSyncSigninState::kSyncPaused));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
@@ -356,6 +358,20 @@ TEST_F(AutofillExperimentsTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
       autofill_metrics::CardUploadEnabled::kEmailDomainNotSupported, 4);
+}
+
+TEST_F(AutofillExperimentsTest, ShouldShowIbanOnSettingsPage_FeatureEnabled) {
+  scoped_feature_list_.InitAndEnableFeature(features::kAutofillFillIbanFields);
+  // Use a supported country to verify the feature is enabled.
+  EXPECT_TRUE(ShouldShowIbanOnSettingsPage("AE", &pref_service_));
+
+  // Use an unsupported country to verify the feature is disabled.
+  EXPECT_FALSE(ShouldShowIbanOnSettingsPage("US", &pref_service_));
+
+  // Use an unsupported country to verify the feature is enabled if
+  // kAutofillHasSeenIban in pref is set to true.
+  prefs::SetAutofillHasSeenIban(&pref_service_);
+  EXPECT_TRUE(ShouldShowIbanOnSettingsPage("US", &pref_service_));
 }
 
 }  // namespace autofill

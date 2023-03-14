@@ -10,6 +10,7 @@
 
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/clock.h"
@@ -18,7 +19,6 @@
 #include "components/ntp_snippets/time_serialization.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/variations/variations_associated_data.h"
 
 namespace ntp_snippets {
 
@@ -98,7 +98,7 @@ static_assert(std::size(kMetrics) ==
 
 // Computes the discount rate.
 double GetDiscountRatePerHour() {
-  double discount_rate_per_day = variations::GetVariationParamByFeatureAsDouble(
+  double discount_rate_per_day = base::GetFieldTrialParamByFeatureAsDouble(
       kArticleSuggestionsFeature, kDiscountRatePerDayParam,
       kDiscountRatePerDay);
   // Check for illegal values.
@@ -115,20 +115,20 @@ double GetDiscountRatePerHour() {
 }
 
 double GetInitialHoursBetweenEvents(UserClassifier::Metric metric) {
-  return variations::GetVariationParamByFeatureAsDouble(
+  return base::GetFieldTrialParamByFeatureAsDouble(
       kArticleSuggestionsFeature,
       kInitialHoursBetweenEventsParams[static_cast<int>(metric)],
       kInitialHoursBetweenEvents[static_cast<int>(metric)]);
 }
 
 double GetMinHours() {
-  return variations::GetVariationParamByFeatureAsDouble(
-      kArticleSuggestionsFeature, kMinHoursParam, kMinHours);
+  return base::GetFieldTrialParamByFeatureAsDouble(kArticleSuggestionsFeature,
+                                                   kMinHoursParam, kMinHours);
 }
 
 double GetMaxHours() {
-  return variations::GetVariationParamByFeatureAsDouble(
-      kArticleSuggestionsFeature, kMaxHoursParam, kMaxHours);
+  return base::GetFieldTrialParamByFeatureAsDouble(kArticleSuggestionsFeature,
+                                                   kMaxHoursParam, kMaxHours);
 }
 
 // Returns the new value of the metric using its |old_value|, assuming
@@ -192,12 +192,12 @@ UserClassifier::UserClassifier(PrefService* pref_service, base::Clock* clock)
       min_hours_(GetMinHours()),
       max_hours_(GetMaxHours()),
       active_consumer_clicks_at_least_once_per_hours_(
-          variations::GetVariationParamByFeatureAsDouble(
+          base::GetFieldTrialParamByFeatureAsDouble(
               kArticleSuggestionsFeature,
               kActiveConsumerClicksAtLeastOncePerHoursParam,
               kActiveConsumerClicksAtLeastOncePerHours)),
       rare_user_opens_ntp_at_most_once_per_hours_(
-          variations::GetVariationParamByFeatureAsDouble(
+          base::GetFieldTrialParamByFeatureAsDouble(
               kArticleSuggestionsFeature,
               kRareUserOpensNTPAtMostOncePerHoursParam,
               kRareUserOpensNTPAtMostOncePerHours)) {

@@ -55,7 +55,6 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.query_tiles.QueryTileSection;
 import org.chromium.chrome.browser.query_tiles.QueryTileUtils;
 import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.share.crow.CrowButtonDelegate;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCoordinator;
 import org.chromium.chrome.browser.suggestions.tile.TileGroupDelegateImpl;
 import org.chromium.chrome.browser.tab.Tab;
@@ -124,7 +123,6 @@ public class StartSurfaceCoordinator implements StartSurface {
     // TODO(crbug.com/1315676): Directly return the supplier from {@link TabSwitcherCoordinator}.
     private final ObservableSupplierImpl<TabSwitcherCustomViewManager>
             mTabSwitcherCustomViewManagerSupplier;
-    private final CrowButtonDelegate mCrowButtonDelegate;
     private final OneshotSupplier<IncognitoReauthController> mIncognitoReauthControllerSupplier;
 
     @VisibleForTesting
@@ -267,7 +265,6 @@ public class StartSurfaceCoordinator implements StartSurface {
      * @param multiWindowModeStateDispatcher Gives access to the multi window mode state.
      * @param jankTracker Measures jank while feed or tab switcher are visible.
      * @param toolbarSupplier Supplies the {@link Toolbar}.
-     * @param crowButtonDelegate The {@link CrowButtonDelegate} to handle Crow click events.
      * @param backPressManager {@link BackPressManager} to handle back press.
      * @param incognitoReauthControllerSupplier {@link OneshotSupplier<IncognitoReauthController>}
      *         to detect pending re-auth when tab switcher is shown.
@@ -293,7 +290,7 @@ public class StartSurfaceCoordinator implements StartSurface {
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             @NonNull JankTracker jankTracker, @NonNull Supplier<Toolbar> toolbarSupplier,
-            @NonNull CrowButtonDelegate crowButtonDelegate, BackPressManager backPressManager,
+            BackPressManager backPressManager,
             @NonNull OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
             @NonNull OnClickListener tabSwitcherClickHandler) {
         mConstructedTimeNs = SystemClock.elapsedRealtimeNanos();
@@ -318,7 +315,6 @@ public class StartSurfaceCoordinator implements StartSurface {
         mMenuOrKeyboardActionController = menuOrKeyboardActionController;
         mMultiWindowModeStateDispatcher = multiWindowModeStateDispatcher;
         mToolbarSupplier = toolbarSupplier;
-        mCrowButtonDelegate = crowButtonDelegate;
         mIncognitoReauthControllerSupplier = incognitoReauthControllerSupplier;
 
         mTabSwitcherCustomViewManagerSupplier = new ObservableSupplierImpl<>();
@@ -335,10 +331,9 @@ public class StartSurfaceCoordinator implements StartSurface {
             mGridTabSwitcher = TabManagementModuleProvider.getDelegate().createGridTabSwitcher(
                     activity, activityLifecycleDispatcher, tabModelSelector, tabContentManager,
                     browserControlsManager, tabCreatorManager, menuOrKeyboardActionController,
-                    containerView, shareDelegateSupplier, multiWindowModeStateDispatcher,
-                    scrimCoordinator, /* rootView= */ containerView, dynamicResourceLoaderSupplier,
-                    snackbarManager, modalDialogManager, incognitoReauthControllerSupplier,
-                    backPressManager);
+                    containerView, multiWindowModeStateDispatcher, scrimCoordinator,
+                    /* rootView= */ containerView, dynamicResourceLoaderSupplier, snackbarManager,
+                    modalDialogManager, incognitoReauthControllerSupplier, backPressManager);
             mTabSwitcherCustomViewManagerSupplier.set(
                     mGridTabSwitcher.getTabSwitcherCustomViewManager());
             controller = mGridTabSwitcher.getController();
@@ -509,7 +504,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                     parentView, mPropertyModel, mBottomSheetController, mParentTabSupplier,
                     new ScrollableContainerDelegateImpl(), mSnackbarManager, mShareDelegateSupplier,
                     mWindowAndroid, mTabModelSelector, mToolbarSupplier, mConstructedTimeNs,
-                    mSwipeRefreshLayout, mCrowButtonDelegate);
+                    mSwipeRefreshLayout);
         }
         mStartSurfaceMediator.initWithNative(
                 mIsStartSurfaceEnabled ? mOmniboxStubSupplier.get() : null,
@@ -616,6 +611,12 @@ public class StartSurfaceCoordinator implements StartSurface {
     @Override
     public int getPreviousStartSurfaceState() {
         return mStartSurfaceMediator.getPreviousStartSurfaceState();
+    }
+
+    @Override
+    @Nullable
+    public TabSwitcher.Controller getGridTabSwitcherController() {
+        return mStartSurfaceMediator.getTabSwitcherController();
     }
 
     @Override
@@ -754,7 +755,6 @@ public class StartSurfaceCoordinator implements StartSurface {
      * @param browserControlsStateProvider Gives access to the state of the browser controls.
      * @param tabCreatorManager Manages creation of tabs.
      * @param menuOrKeyboardActionController allows access to menu or keyboard actions.
-     * @param shareDelegateSupplier Supplies the current {@link ShareDelegate}.
      * @param multiWindowModeStateDispatcher Gives access to the multi window mode state.
      * @param rootView The root view of the app.
      * @param incognitoReauthControllerSupplier {@link OneshotSupplier<IncognitoReauthController>}
@@ -773,7 +773,6 @@ public class StartSurfaceCoordinator implements StartSurface {
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
-            @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             @NonNull ViewGroup rootView,
             @Nullable OneshotSupplier<IncognitoReauthController>
@@ -783,8 +782,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                 activityLifecycleDispatcher, tabModelSelector, snackbarManager,
                 dynamicResourceLoaderSupplier, tabContentManager, modalDialogManager,
                 browserControlsStateProvider, tabCreatorManager, menuOrKeyboardActionController,
-                shareDelegateSupplier, multiWindowModeStateDispatcher, rootView,
-                incognitoReauthControllerSupplier);
+                multiWindowModeStateDispatcher, rootView, incognitoReauthControllerSupplier);
     }
 
     @VisibleForTesting
@@ -849,7 +847,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                 mActivityLifecycleDispatcher, mTabModelSelector, mSnackbarManager,
                 mDynamicResourceLoaderSupplier, mTabContentManager, mModalDialogManager,
                 mBrowserControlsManager, mTabCreatorManager, mMenuOrKeyboardActionController,
-                mShareDelegateSupplier, mMultiWindowModeStateDispatcher, mContainerView, null);
+                mMultiWindowModeStateDispatcher, mContainerView, null);
         mTasksSurface.getView().setId(R.id.primary_tasks_surface_view);
         initializeOffsetChangedListener();
         addHeaderOffsetChangeListener(mOffsetChangedListenerToGenerateScrollEvents);
@@ -886,7 +884,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                             mActivityLifecycleDispatcher, mTabModelSelector, mTabContentManager,
                             mBrowserControlsManager, mTabCreatorManager,
                             mMenuOrKeyboardActionController,
-                            mView.getCarouselTabSwitcherContainer(), mShareDelegateSupplier,
+                            mView.getCarouselTabSwitcherContainer(),
                             mMultiWindowModeStateDispatcher, mScrimCoordinator, mView,
                             mDynamicResourceLoaderSupplier, mSnackbarManager, mModalDialogManager);
         } else {
@@ -945,7 +943,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                 mActivityLifecycleDispatcher, mTabModelSelector, mSnackbarManager,
                 mDynamicResourceLoaderSupplier, mTabContentManager, mModalDialogManager,
                 mBrowserControlsManager, mTabCreatorManager, mMenuOrKeyboardActionController,
-                mShareDelegateSupplier, mMultiWindowModeStateDispatcher, mContainerView,
+                mMultiWindowModeStateDispatcher, mContainerView,
                 mIncognitoReauthControllerSupplier);
         if (mIsInitializedWithNative) {
             mSecondaryTasksSurface.onFinishNativeInitialization(

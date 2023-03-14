@@ -144,7 +144,7 @@ gfx::SizeF LayoutImageResource::ImageSizeWithDefaultSize(
 }
 
 Image* LayoutImageResource::BrokenImage(double device_pixel_ratio) {
-  // TODO(schenney): Replace static resources with dynamically
+  // TODO(rendering-core): Replace static resources with dynamically
   // generated ones, to support a wider range of device scale factors.
   if (device_pixel_ratio >= 2) {
     DEFINE_STATIC_REF(

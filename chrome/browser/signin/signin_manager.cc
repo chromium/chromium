@@ -157,7 +157,9 @@ CoreAccountInfo SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
   // `signin_client_->IsClearPrimaryAccountAllowed()` is expected to always
   // return `false` for the main profile and this function to early return the
   // current primary account.
-  DCHECK(!signin_client_->GetInitialPrimaryAccount().has_value());
+  DCHECK(signin_client_
+             ->is_clear_primary_account_allowed_for_testing() ||  // IN-TEST
+         !signin_client_->GetInitialPrimaryAccount().has_value());
 
   // Secondary profile.
   // Unless the user signs out, removes the account, the UPA will stay the same.

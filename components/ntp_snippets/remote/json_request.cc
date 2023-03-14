@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
@@ -23,7 +24,6 @@
 #include "components/ntp_snippets/user_classifier.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/variations/net/variations_http_headers.h"
-#include "components/variations/variations_associated_data.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
@@ -54,13 +54,13 @@ const char kSendTopLanguagesName[] = "send_top_languages";
 const char kSendUserClassName[] = "send_user_class";
 
 bool IsSendingTopLanguagesEnabled() {
-  return variations::GetVariationParamByFeatureAsBool(
+  return base::GetFieldTrialParamByFeatureAsBool(
       ntp_snippets::kArticleSuggestionsFeature, kSendTopLanguagesName,
       /*default_value=*/true);
 }
 
 bool IsSendingUserClassEnabled() {
-  return variations::GetVariationParamByFeatureAsBool(
+  return base::GetFieldTrialParamByFeatureAsBool(
       ntp_snippets::kArticleSuggestionsFeature, kSendUserClassName,
       /*default_value=*/true);
 }
@@ -153,7 +153,7 @@ int JsonRequest::Get5xxRetryCount(bool interactive_request) {
   if (interactive_request) {
     return 2;
   }
-  return std::max(0, variations::GetVariationParamByFeatureAsInt(
+  return std::max(0, base::GetFieldTrialParamByFeatureAsInt(
                          ntp_snippets::kArticleSuggestionsFeature,
                          kBackground5xxRetriesName, 0));
 }

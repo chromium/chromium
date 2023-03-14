@@ -7,11 +7,18 @@
 #import <memory>
 #import <string>
 
+#import "base/json/json_writer.h"
 #import "components/grit/policy_resources.h"
+#import "components/policy/core/common/policy_logger.h"
+#import "components/strings/grit/components_chromium_strings.h"
+#import "components/strings/grit/components_google_chrome_strings.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/version_info/version_info.h"
+#import "components/version_ui/version_handler_helper.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/webui/policy/policy_ui_handler.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/web/public/webui/web_ui_ios.h"
 #import "ios/web/public/webui/web_ui_ios_data_source.h"
 #import "ios/web/public/webui/web_ui_ios_message_handler.h"
@@ -22,6 +29,19 @@
 #endif
 
 namespace {
+
+// Returns the version information to be displayed on the chrome://policy/logs
+// page.
+base::Value::Dict GetVersionInfo() {
+  base::Value::Dict version_info;
+
+  version_info.Set("revision", version_info::GetLastChange());
+  version_info.Set("version", version_info::GetVersionNumber());
+  version_info.Set("deviceOs", "iOS");
+  version_info.Set("variations", version_ui::GetVariationsList());
+
+  return version_info;
+}
 
 web::WebUIIOSDataSource* CreatePolicyUIHtmlSource() {
   web::WebUIIOSDataSource* source =
@@ -89,6 +109,20 @@ web::WebUIIOSDataSource* CreatePolicyUIHtmlSource() {
 
   };
   source->AddLocalizedStrings(kStrings);
+
+  // Localized strings for chrome://policy/logs.
+  static constexpr webui::LocalizedString kPolicyLogsStrings[] = {
+      {"browserName", IDS_IOS_PRODUCT_NAME},
+      {"exportLogsJSON", IDS_EXPORT_POLICY_LOGS_JSON},
+      {"logsTitle", IDS_POLICY_LOGS_TITLE},
+      {"os", IDS_VERSION_UI_OS},
+      {"refreshLogs", IDS_REFRESH_POLICY_LOGS},
+      {"revision", IDS_VERSION_UI_REVISION},
+      {"versionInfoLabel", IDS_VERSION_INFO},
+      {"variations", IDS_VERSION_UI_VARIATIONS},
+  };
+  source->AddLocalizedStrings(kPolicyLogsStrings);
+
   source->UseStringsJs();
 
   source->AddBoolean("hideExportButton", true);
@@ -110,6 +144,21 @@ web::WebUIIOSDataSource* CreatePolicyUIHtmlSource() {
   source->AddResourcePath("policy_table.js", IDR_POLICY_POLICY_TABLE_JS);
   source->AddResourcePath("status_box.html.js", IDR_POLICY_STATUS_BOX_HTML_JS);
   source->AddResourcePath("status_box.js", IDR_POLICY_STATUS_BOX_JS);
+
+  source->AddBoolean(
+      "loggingEnabled",
+      policy::PolicyLogger::GetInstance()->IsPolicyLoggingEnabled());
+
+  if (policy::PolicyLogger::GetInstance()->IsPolicyLoggingEnabled()) {
+    std::string variations_json_value;
+    base::JSONWriter::Write(GetVersionInfo(), &variations_json_value);
+    source->AddString("versionInfo", variations_json_value);
+  }
+  source->AddResourcePath("logs/policy_logs.js",
+                          IDR_POLICY_LOGS_POLICY_LOGS_JS);
+  source->AddResourcePath("logs/", IDR_POLICY_LOGS_POLICY_LOGS_HTML);
+  source->AddResourcePath("logs", IDR_POLICY_LOGS_POLICY_LOGS_HTML);
+
   source->SetDefaultResource(IDR_POLICY_POLICY_HTML);
   source->EnableReplaceI18nInJS();
   return source;

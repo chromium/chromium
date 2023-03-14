@@ -9,7 +9,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.View;
-import android.view.ViewTreeObserver.OnPreDrawListener;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
@@ -23,11 +22,11 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.Promise;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.fonts.FontPreloader;
 import org.chromium.chrome.browser.metrics.UmaUtils;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
@@ -76,22 +75,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         void onExitFirstRun(FirstRunActivity caller);
     }
 
-    // TODO(https://crbug.com/1196404): Replace with call into shared code once
-    // https://crrev.com/c/2815659 lands.
-    private static class ViewDrawBlocker {
-        public static void blockViewDrawUntilReady(View view, Supplier<Boolean> viewReadySupplier) {
-            view.getViewTreeObserver().addOnPreDrawListener(new OnPreDrawListener() {
-                @Override
-                public boolean onPreDraw() {
-                    if (!viewReadySupplier.get()) return false;
-
-                    view.getViewTreeObserver().removeOnPreDrawListener(this);
-                    return true;
-                }
-            });
-        }
-    }
-
     private final BitSet mFreProgressStepsRecorded = new BitSet(MobileFreProgress.MAX);
 
     @Nullable
@@ -135,32 +118,12 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     /** Creates first page and sets up adapter. Should result UI being shown on the screen. */
     private void createFirstPage() {
         BooleanSupplier showWelcomePage = () -> !FirstRunStatus.shouldSkipWelcomePage();
-        if (FREMobileIdentityConsistencyFieldTrial.isEnabled()) {
-            mPages.add(new FirstRunPage<>(SigninFirstRunFragment.class, showWelcomePage));
-        } else {
-            // TODO(crbug.com/1111490): Revisit during post-MVP.
-            // There's an edge case where we accept the welcome page in the main app, abort the FRE,
-            // then go through this CCT FRE again.
-            mPages.add(shouldCreateEnterpriseCctTosPage()
-                            ? new FirstRunPage<>(
-                                    TosAndUmaFirstRunFragmentWithEnterpriseSupport.class,
-                                    showWelcomePage)
-                            : new FirstRunPage<>(ToSAndUMAFirstRunFragment.class, showWelcomePage));
-        }
+        mPages.add(new FirstRunPage<>(SigninFirstRunFragment.class, showWelcomePage));
         mFreProgressStates.add(MobileFreProgress.WELCOME_SHOWN);
         mPagerAdapter = new FirstRunPagerAdapter(FirstRunActivity.this, mPages);
         mPager.setAdapter(mPagerAdapter);
         // Other pages will be created by createPostNativeAndPoliciesPageSequence() after
         // native and policy service have been initialized.
-    }
-
-    private boolean shouldCreateEnterpriseCctTosPage() {
-        // TODO(crbug.com/1111490): Revisit case when #shouldSkipWelcomePage = true.
-        //  If the client has already accepted ToS (FirstRunStatus#shouldSkipWelcomePage), do not
-        //  use the subclass ToSAndUmaCCTFirstRunFragment. Instead, use the base class
-        //  (ToSAndUMAFirstRunFragment) which simply shows a loading spinner while waiting for
-        //  native to be loaded.
-        return mLaunchedFromCCT && !FirstRunStatus.shouldSkipWelcomePage();
     }
 
     /**
@@ -254,14 +217,10 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         setFinishOnTouchOutside(true);
 
         setContentView(createContentView());
-        if (FREMobileIdentityConsistencyFieldTrial.isEnabled() && mPagerAdapter == null) {
-            // SigninFirstRunFragment doesn't use getProperties() and can be shown right away,
-            // without waiting for FirstRunFlowSequencer.
-            createFirstPage();
-        } else {
-            ViewDrawBlocker.blockViewDrawUntilReady(
-                    findViewById(android.R.id.content), () -> mPages.size() > 0);
-        }
+
+        // SigninFirstRunFragment doesn't use getProperties() and can be shown right away, without
+        // waiting for FirstRunFlowSequencer.
+        createFirstPage();
 
         mFirstRunFlowSequencer = new FirstRunFlowSequencer(this, getChildAccountStatusSupplier()) {
             @Override
@@ -318,15 +277,13 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     public void finishNativeInitialization() {
         super.finishNativeInitialization();
 
-        Runnable onNativeFinished = new Runnable() {
-            @Override
-            public void run() {
-                if (isActivityFinishingOrDestroyed()) return;
+        Runnable onNativeFinished = () -> {
+            if (isActivityFinishingOrDestroyed()) return;
 
-                onNativeDependenciesFullyInitialized();
-            }
+            onNativeDependenciesFullyInitialized();
         };
-        TemplateUrlServiceFactory.get().runWhenLoaded(onNativeFinished);
+        TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
+                .runWhenLoaded(onNativeFinished);
     }
 
     private void onNativeDependenciesFullyInitialized() {
@@ -418,11 +375,11 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     }
 
     @Override
-    public void handleBackPress() {
+    public @BackPressResult int handleBackPress() {
         // Terminate if we are still waiting for the native or for Android EDU / GAIA Child checks.
         if (!mPostNativeAndPolicyPagesCreated) {
             abortFirstRunExperience();
-            return;
+            return BackPressResult.SUCCESS;
         }
 
         mFirstRunFlowSequencer.updateFirstRunProperties(mFreProperties);
@@ -437,6 +394,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         } else {
             setCurrentItemForPager(position);
         }
+        return BackPressResult.SUCCESS;
     }
 
     // FirstRunPageDelegate:

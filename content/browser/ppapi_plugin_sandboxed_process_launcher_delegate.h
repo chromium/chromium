@@ -30,7 +30,7 @@ class CONTENT_EXPORT PpapiPluginSandboxedProcessLauncherDelegate
 
 #if BUILDFLAG(IS_WIN)
   std::string GetSandboxTag() override;
-  bool PreSpawnTarget(sandbox::TargetPolicy* policy) override;
+  bool InitializeConfig(sandbox::TargetConfig* config) override;
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(USE_ZYGOTE)

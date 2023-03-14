@@ -26,6 +26,8 @@ namespace net::x509_util {
 NET_EXPORT bool IsSameCertificate(CERTCertificate* a, CERTCertificate* b);
 NET_EXPORT bool IsSameCertificate(CERTCertificate* a, const X509Certificate* b);
 NET_EXPORT bool IsSameCertificate(const X509Certificate* a, CERTCertificate* b);
+NET_EXPORT bool IsSameCertificate(CERTCertificate* a, const CRYPTO_BUFFER* b);
+NET_EXPORT bool IsSameCertificate(const CRYPTO_BUFFER* a, CERTCertificate* b);
 
 // Returns a CERTCertificate handle from the DER-encoded representation. The
 // returned value may reference an already existing CERTCertificate object.

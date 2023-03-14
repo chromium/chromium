@@ -460,9 +460,7 @@ void TestExtensionBuilder::WriteVerifiedContents() {
 
   base::FilePath verified_contents_path =
       file_util::GetVerifiedContentsPath(extension_dir_.UnpackedPath());
-  ASSERT_EQ(static_cast<int>(verified_contents.size()),
-            base::WriteFile(verified_contents_path, verified_contents.data(),
-                            verified_contents.size()));
+  ASSERT_TRUE(base::WriteFile(verified_contents_path, verified_contents));
 }
 
 std::vector<uint8_t> TestExtensionBuilder::GetTestContentVerifierPublicKey()

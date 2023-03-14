@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/services/speech/speech_recognition_recognizer_impl.h"
@@ -147,7 +148,14 @@ void AudioSourceFetcherImpl::Stop() {
     converter_.reset();
   }
   send_audio_callback_.Reset();
-  audio_consumer_->OnAudioCaptureEnd();
+
+  // Ensure `SendAudioEndToSpeechRecognitionService` is executed after
+  // `SendAudioToSpeechRecognitionService`.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &AudioSourceFetcherImpl::SendAudioEndToSpeechRecognitionService,
+          weak_factory_.GetWeakPtr()));
 }
 
 void AudioSourceFetcherImpl::Capture(const media::AudioBus* audio_source,
@@ -229,6 +237,10 @@ void AudioSourceFetcherImpl::OnAudioFinishedConvert(
       *output_bus, server_based_recognition_params_->sample_rate(),
       server_based_recognition_params_->channel_layout(),
       is_multi_channel_supported_));
+}
+
+void AudioSourceFetcherImpl::SendAudioEndToSpeechRecognitionService() {
+  audio_consumer_->OnAudioCaptureEnd();
 }
 
 }  // namespace speech

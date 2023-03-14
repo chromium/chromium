@@ -8,30 +8,34 @@
 #include <memory>
 #include <vector>
 
+#include "ash/ash_export.h"
+#include "ash/frame_sink/frame_sink_host.h"
 #include "base/memory/weak_ptr.h"
-#include "components/viz/common/quads/compositor_frame_metadata.h"
-#include "components/viz/common/resources/resource_id.h"
-#include "gpu/command_buffer/common/mailbox.h"
 #include "ui/views/widget/root_view.h"
-
-namespace gfx {
-struct PresentationFeedback;
-}
 
 namespace views {
 class Widget;
-}
+}  // namespace views
+
+namespace viz {
+class CompositorFrame;
+}  // namespace viz
+
+namespace gfx {
+class Size;
+class Rect;
+}  // namespace gfx
 
 namespace ash {
+
+class ViewTreeHostRootViewFrameFactory;
 
 // ViewTreeHostRootView is a view that submits a compositor frame directly.
 // TODO(oshima): Support partial content update & front buffer rendering and
 // replace FastInkView.
-class ViewTreeHostRootView : public views::internal::RootView {
+class ASH_EXPORT ViewTreeHostRootView : public views::internal::RootView,
+                                        public ash::FrameSinkHost {
  public:
-  using PresentationCallback =
-      base::RepeatingCallback<void(const gfx::PresentationFeedback&)>;
-
   explicit ViewTreeHostRootView(views::Widget* widget);
 
   ViewTreeHostRootView(const ViewTreeHostRootView&) = delete;
@@ -39,60 +43,25 @@ class ViewTreeHostRootView : public views::internal::RootView {
 
   ~ViewTreeHostRootView() override;
 
-  // Set presentation callback.
-  void set_presentation_callback(PresentationCallback callback) {
-    presentation_callback_ = std::move(callback);
-  }
-
-  void SchedulePaintInRect(const gfx::Rect& rect);
+  void SchedulePaintInRect(const gfx::Rect& damage_rect);
 
   bool GetIsOverlayCandidate();
   void SetIsOverlayCandidate(bool is_overlay_candidate);
 
+  // ash::FrameSinkHost:
+  std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
+      const viz::BeginFrameAck& begin_frame_ack,
+      UiResourceManager& resource_manager,
+      bool auto_update,
+      const gfx::Size& last_submitted_frame_size,
+      float last_submitted_frame_dsf) override;
+
  private:
-  struct Resource;
-  class LayerTreeViewTreeFrameSinkHolder;
-
-  std::unique_ptr<Resource> ObtainResource();
-  void Paint();
-
-  // Update content with the |resource| and damage rectangles for surface.
-  void UpdateSurface(const gfx::Rect& damage_rect,
-                     std::unique_ptr<Resource> resource);
-
-  void SubmitCompositorFrame();
-  void SubmitPendingCompositorFrame();
-  void ReclaimResource(std::unique_ptr<Resource> resource);
-  void DidReceiveCompositorFrameAck();
-  void DidPresentCompositorFrame(const gfx::PresentationFeedback& feedback);
-
-  // Constants initialized in constructor.
-  PresentationCallback presentation_callback_;
-
-  // The rotation tranfrom from the panel's original rotation to
-  // the current logical rotation.
-  gfx::Transform rotate_transform_;
-
-  // GPU Memory buffer size.
-  gfx::Size buffer_size_;
-
-  gfx::Rect damaged_paint_rect_;
-  bool pending_paint_ = false;
-
-  // overlay candidate in submitted frame data.
+  // True if the content needs to use hardware-overlays.
   bool is_overlay_candidate_ = true;
 
-  // The resource to be submitted.
-  std::unique_ptr<Resource> pending_resource_;
+  std::unique_ptr<ViewTreeHostRootViewFrameFactory> frame_factory_;
 
-  int resource_group_id_ = 1;
-  viz::ResourceIdGenerator id_generator_;
-  // Total damaged rect in surface.
-  gfx::Rect damage_rect_;
-  bool pending_compositor_frame_ack_ = false;
-  viz::FrameTokenGenerator next_frame_token_;
-  std::vector<std::unique_ptr<Resource>> returned_resources_;
-  std::unique_ptr<LayerTreeViewTreeFrameSinkHolder> frame_sink_holder_;
   base::WeakPtrFactory<ViewTreeHostRootView> weak_ptr_factory_{this};
 };
 

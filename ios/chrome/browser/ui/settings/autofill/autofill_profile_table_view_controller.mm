@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_table_view_controller.h"
 
 #import "base/check.h"
+#import "base/i18n/message_formatter.h"
 #import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -21,6 +22,8 @@
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
@@ -40,8 +43,6 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -182,7 +183,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   TableViewModel* model = self.tableViewModel;
   const std::vector<autofill::AutofillProfile*> autofillProfiles =
-      _personalDataManager->GetProfiles();
+      _personalDataManager->GetProfilesForSettings();
   if (!autofillProfiles.empty()) {
     [model addSectionWithIdentifier:SectionIdentifierProfiles];
     [model setHeader:[self profileSectionHeader]
@@ -265,7 +266,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (BOOL)localProfilesExist {
-  return !_settingsAreDismissed && !_personalDataManager->GetProfiles().empty();
+  return !_settingsAreDismissed &&
+         !_personalDataManager->GetProfilesForSettings().empty();
 }
 
 #pragma mark - SettingsControllerProtocol
@@ -302,9 +304,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (BOOL)shouldHideToolbar {
   // Hide the toolbar if the visible view controller is not the current view
   // controller or the `deletionSheetCoordinator` is shown.
-  return self.navigationController.visibleViewController != self &&
-         self.deletionSheetCoordinator != nil &&
-         ![self.deletionSheetCoordinator isVisible];
+  if (self.navigationController.visibleViewController == self) {
+    return NO;
+  } else if (self.deletionSheetCoordinator != nil) {
+    return ![self.deletionSheetCoordinator isVisible];
+  }
+  return YES;
 }
 
 - (BOOL)shouldShowEditDoneButton {
@@ -365,7 +370,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 
   const std::vector<autofill::AutofillProfile*> autofillProfiles =
-      _personalDataManager->GetProfiles();
+      _personalDataManager->GetProfilesForSettings();
   [self showAddressProfileDetailsPageForProfile:*autofillProfiles[indexPath
                                                                       .item]];
   [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -549,6 +554,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 }
 
+#pragma mark - PopoverLabelViewControllerDelegate
+
+- (void)didTapLinkURL:(NSURL*)URL {
+  [self view:nil didTapLinkURL:[[CrURL alloc] initWithNSURL:URL]];
+}
+
+#pragma mark - AutofillProfileEditCoordinatorDelegate
+
+- (void)autofillProfileEditCoordinatorTableViewControllerDidFinish:
+    (AutofillProfileEditCoordinator*)coordinator {
+  DCHECK_EQ(self.autofillProfileEditCoordinator, coordinator);
+  self.autofillProfileEditCoordinator.delegate = nil;
+  self.autofillProfileEditCoordinator = nil;
+}
+
 #pragma mark - Private
 
 // Removes the item from the personal data manager model.
@@ -622,33 +642,42 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 }
 
-#pragma mark - PopoverLabelViewControllerDelegate
-
-- (void)didTapLinkURL:(NSURL*)URL {
-  [self view:nil didTapLinkURL:[[CrURL alloc] initWithNSURL:URL]];
-}
-
-#pragma mark - AutofillProfileEditCoordinatorDelegate
-
-- (void)autofillProfileEditCoordinatorTableViewControllerDidFinish:
-    (AutofillProfileEditCoordinator*)coordinator {
-  DCHECK_EQ(self.autofillProfileEditCoordinator, coordinator);
-  self.autofillProfileEditCoordinator.delegate = nil;
-  self.autofillProfileEditCoordinator = nil;
-}
-
-#pragma mark - Private
-
 // Shows the action sheet asking for the confirmation on delete from the user.
 - (void)showDeletionConfirmationForIndexPaths:
     (NSArray<NSIndexPath*>*)indexPaths {
-  NSString* deletionConfirmationString =
-      [self getDeletionConfirmationStringFromIndexPaths:indexPaths];
-  if (deletionConfirmationString == nil) {
+  BOOL accountProfiles = NO;
+  BOOL syncProfiles = NO;
+
+  int profileCount = 0;
+
+  for (NSIndexPath* indexPath in indexPaths) {
+    if (![self isItemTypeForIndexPathAddress:indexPath]) {
+      continue;
+    }
+    profileCount++;
+    AutofillProfileItem* item = base::mac::ObjCCastStrict<AutofillProfileItem>(
+        [self.tableViewModel itemAtIndexPath:indexPath]);
+    switch (item.autofillProfileSource) {
+      case AutofillAccountProfile:
+        accountProfiles = YES;
+        break;
+      case AutofillSyncableProfile:
+        syncProfiles = YES;
+        break;
+      case AutofillLocalProfile:
+        break;
+    }
+  }
+
+  // Can happen if user presses delete in quick succesion.
+  if (!profileCount) {
     return;
   }
-  // TODO(crbug.com/1407666): Explore attaching the sheet coordinator to the
-  // cell of the indexPath calling it.
+
+  NSString* deletionConfirmationString =
+      [self getDeletionConfirmationStringUsingProfileCount:profileCount
+                                           accountProfiles:accountProfiles
+                                              syncProfiles:syncProfiles];
   self.deletionSheetCoordinator = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:self
                          browser:_browser
@@ -664,9 +693,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.deletionSheetCoordinator.popoverArrowDirection =
       UIPopoverArrowDirectionAny;
   __weak AutofillProfileTableViewController* weakSelf = self;
-  // TODO(crbug.com/1407666): Add i18n string.
   [self.deletionSheetCoordinator
-      addItemWithTitle:@"Test Delete Address"
+      addItemWithTitle:
+          l10n_util::GetPluralNSStringF(
+              IDS_IOS_SETTINGS_AUTOFILL_DELETE_ADDRESS_CONFIRMATION_BUTTON,
+              profileCount)
                 action:^{
                   [weakSelf willDeleteItemsAtIndexPaths:indexPaths];
                   // TODO(crbug.com/650390) Generalize removing empty sections
@@ -677,45 +708,30 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self.deletionSheetCoordinator start];
 }
 
-// Returns the deletion confirmation message string based on the
-// source of the profiles that are being deleted.
-- (NSString*)getDeletionConfirmationStringFromIndexPaths:
-    (NSArray<NSIndexPath*>*)indexPaths {
-  BOOL hasAccountProfiles = NO;
-  BOOL hasSyncProfiles = NO;
-
-  NSInteger profileCount = 0;
-
-  for (NSIndexPath* indexPath in indexPaths) {
-    if (![self isItemTypeForIndexPathAddress:indexPath]) {
-      continue;
-    }
-    profileCount++;
-    AutofillProfileItem* item = base::mac::ObjCCastStrict<AutofillProfileItem>(
-        [self.tableViewModel itemAtIndexPath:indexPath]);
-    switch (item.autofillProfileSource) {
-      case AutofillAccountProfile:
-        hasAccountProfiles = YES;
-        break;
-      case AutofillSyncableProfile:
-        hasSyncProfiles = YES;
-        break;
-      case AutofillLocalProfile:
-        break;
-    }
+// Returns the deletion confirmation message string based on
+// `profileCount` and if it the source has any `accountProfiles` or
+// `syncProfiles`.
+- (NSString*)getDeletionConfirmationStringUsingProfileCount:(int)profileCount
+                                            accountProfiles:
+                                                (BOOL)accountProfiles
+                                               syncProfiles:(BOOL)syncProfiles {
+  if (accountProfiles) {
+    std::u16string pattern = l10n_util::GetStringUTF16(
+        IDS_IOS_SETTINGS_AUTOFILL_DELETE_ACCOUNT_ADDRESS_CONFIRMATION_TITLE);
+    std::u16string confirmationString =
+        base::i18n::MessageFormatter::FormatWithNamedArgs(
+            pattern, "email", base::SysNSStringToUTF16(self.syncingUserEmail),
+            "count", profileCount);
+    return base::SysUTF16ToNSString(confirmationString);
   }
-
-  BOOL hasMultipleProfiles = profileCount > 1;
-
-  if (hasAccountProfiles) {
-    return hasMultipleProfiles ? @"These GAS address" : @"This GAS address";
-  } else if (hasSyncProfiles) {
-    return hasMultipleProfiles ? @"These Sync address" : @"This Sync address";
-  } else if (profileCount > 0) {
-    return hasMultipleProfiles ? @"These Local address" : @"This Local address";
+  if (syncProfiles) {
+    return l10n_util::GetPluralNSStringF(
+        IDS_IOS_SETTINGS_AUTOFILL_DELETE_SYNC_ADDRESS_CONFIRMATION_TITLE,
+        profileCount);
   }
-  // Can happen if user presses delete in quick succesion.
-  return nil;
+  return l10n_util::GetPluralNSStringF(
+      IDS_IOS_SETTINGS_AUTOFILL_DELETE_LOCAL_ADDRESS_CONFIRMATION_TITLE,
+      profileCount);
 }
 
 // Returns true when the item type for `indexPath` is Address.

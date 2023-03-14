@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/services/recording/gif_file_writer.h"
+
 #include "base/containers/span.h"
 
 namespace recording {
@@ -26,6 +27,20 @@ void GifFileWriter::WriteByte(uint8_t byte) {
 void GifFileWriter::WriteBuffer(const uint8_t* const buffer,
                                 size_t buffer_size) {
   WriteBytesAndCheck(base::make_span(buffer, buffer_size));
+}
+
+void GifFileWriter::WriteString(base::StringPiece string) {
+  WriteBytesAndCheck(base::make_span(
+      reinterpret_cast<const uint8_t*>(string.data()), string.size()));
+}
+
+void GifFileWriter::WriteShort(uint16_t value) {
+  WriteByte(value & 0xFF);
+  WriteByte(((value >> 8) & 0xFF));
+}
+
+void GifFileWriter::FlushFile() {
+  gif_file_.Flush();
 }
 
 void GifFileWriter::WriteBytesAndCheck(base::span<const uint8_t> data) {

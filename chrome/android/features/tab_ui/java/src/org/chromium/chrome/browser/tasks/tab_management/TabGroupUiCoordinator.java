@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
-import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
@@ -75,12 +74,12 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     private final TabModelSelector mTabModelSelector;
     private final OneshotSupplier<LayoutStateProvider> mLayoutStateProviderSupplier;
     private final SnackbarManager mSnackbarManager;
-    private final Supplier<ShareDelegate> mShareDelegateSupplier;
     private final TabCreatorManager mTabCreatorManager;
     private final Supplier<DynamicResourceLoader> mDynamicResourceLoaderSupplier;
     private final TabContentManager mTabContentManager;
     private PropertyModelChangeProcessor mModelChangeProcessor;
     private TabGridDialogCoordinator mTabGridDialogCoordinator;
+    private Supplier<TabGridDialogMediator.DialogController> mTabGridDialogControllerSupplier;
     private TabListCoordinator mTabStripCoordinator;
     private TabGroupUiMediator mMediator;
 
@@ -98,7 +97,6 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             @NonNull TabContentManager tabContentManager, @NonNull ViewGroup rootView,
             @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
             @NonNull TabCreatorManager tabCreatorManager,
-            @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             @NonNull SnackbarManager snackbarManager) {
         try (TraceEvent e = TraceEvent.scoped("TabGroupUiCoordinator.constructor")) {
@@ -119,12 +117,21 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             mLayoutStateProviderSupplier = layoutStateProviderSupplier;
             mRootView = rootView;
             mSnackbarManager = snackbarManager;
-            mShareDelegateSupplier = shareDelegateSupplier;
             mTabCreatorManager = tabCreatorManager;
             mDynamicResourceLoaderSupplier = dynamicResourceLoaderSupplier;
             mTabContentManager = tabContentManager;
             parentView.addView(mToolbarView);
         }
+    }
+
+    private void initTabGridDialogCoordinator() {
+        assert mTabGridDialogControllerSupplier != null;
+        if (mTabGridDialogCoordinator != null) return;
+
+        mTabGridDialogCoordinator = new TabGridDialogCoordinator(mActivity, mTabModelSelector,
+                mTabContentManager, mTabCreatorManager, mActivity.findViewById(R.id.coordinator),
+                null, null, null, mScrimCoordinator, mTabStripCoordinator.getTabGroupTitleEditor(),
+                mRootView);
     }
 
     /**
@@ -154,21 +161,29 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
 
             // TODO(crbug.com/972217): find a way to enable interactions between grid tab switcher
             //  and the dialog here.
-            TabGridDialogMediator.DialogController dialogController = null;
             if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(activity)
                     && mScrimCoordinator != null) {
-                mTabGridDialogCoordinator = new TabGridDialogCoordinator(mActivity,
-                        mTabModelSelector, mTabContentManager, mTabCreatorManager,
-                        mActivity.findViewById(R.id.coordinator), null, null, null,
-                        mShareDelegateSupplier, mScrimCoordinator, mRootView);
-                mTabGridDialogCoordinator.initWithNative(mContext, mTabModelSelector,
-                        mTabContentManager, mTabStripCoordinator.getTabGroupTitleEditor());
-                dialogController = mTabGridDialogCoordinator.getDialogController();
+                mTabGridDialogControllerSupplier =
+                        new Supplier<TabGridDialogMediator.DialogController>() {
+                            @Override
+                            public TabGridDialogMediator.DialogController get() {
+                                initTabGridDialogCoordinator();
+                                return mTabGridDialogCoordinator.getDialogController();
+                            }
+
+                            @Override
+                            public boolean hasValue() {
+                                return mTabGridDialogCoordinator != null;
+                            }
+                        };
+            } else {
+                mTabGridDialogControllerSupplier = null;
             }
 
             mMediator = new TabGroupUiMediator(mActivity, visibilityController, this, mModel,
                     mTabModelSelector, mTabCreatorManager, mLayoutStateProviderSupplier,
-                    mIncognitoStateProvider, dialogController, mOmniboxFocusStateSupplier);
+                    mIncognitoStateProvider, mTabGridDialogControllerSupplier,
+                    mOmniboxFocusStateSupplier);
 
             TabGroupUtils.startObservingForCreationIPH();
 
@@ -207,7 +222,9 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                         == BottomSheetController.SheetState.HIDDEN) {
             TabGroupUtils.maybeShowIPH(FeatureConstants.TAB_GROUPS_TAP_TO_SEE_ANOTHER_TAB_FEATURE,
                     mTabStripCoordinator.getContainerView(),
-                    TabUiFeatureUtilities.isLaunchBugFixEnabled() ? mBottomSheetController : null);
+                    TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)
+                            ? mBottomSheetController
+                            : null);
         }
         mTabStripCoordinator.resetWithListOfTabs(tabs);
     }
@@ -220,8 +237,8 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
      */
     @Override
     public void resetGridWithListOfTabs(List<Tab> tabs) {
-        if (mTabGridDialogCoordinator != null) {
-            mTabGridDialogCoordinator.resetWithListOfTabs(tabs);
+        if (mTabGridDialogControllerSupplier != null) {
+            mTabGridDialogControllerSupplier.get().resetWithListOfTabs(tabs);
         }
     }
 
@@ -234,8 +251,8 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     }
 
     @Override
-    public void handleBackPress() {
-        mMediator.handleBackPress();
+    public @BackPressResult int handleBackPress() {
+        return mMediator.handleBackPress();
     }
 
     @Override
@@ -279,19 +296,17 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
         if (mTabModelSelector == null) return;
         TabModelFilterProvider provider = mTabModelSelector.getTabModelFilterProvider();
 
-        if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
-            TabModelFilter normalTabModelFilter = provider.getTabModelFilter(false);
+        TabModelFilter normalTabModelFilter = provider.getTabModelFilter(false);
 
-            if (!(normalTabModelFilter instanceof TabGroupModelFilter)) {
-                String actualType = normalTabModelFilter == null
-                        ? "null"
-                        : normalTabModelFilter.getClass().getName();
-                assert false
-                    : "Please file bug, this is unexpected. Expected TabGroupModelFilter, but was "
-                      + actualType;
+        if (!(normalTabModelFilter instanceof TabGroupModelFilter)) {
+            String actualType = normalTabModelFilter == null
+                    ? "null"
+                    : normalTabModelFilter.getClass().getName();
+            assert false
+                : "Please file bug, this is unexpected. Expected TabGroupModelFilter, but was "
+                  + actualType;
 
-                return;
-            }
+            return;
         }
 
         TabGroupModelFilter normalFilter = (TabGroupModelFilter) provider.getTabModelFilter(false);
@@ -319,20 +334,18 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     }
 
     private void recordSessionCount() {
-        if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
-            TabModelFilter normalTabModelFilter =
-                    mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(false);
+        TabModelFilter normalTabModelFilter =
+                mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(false);
 
-            if (!(normalTabModelFilter instanceof TabGroupModelFilter)) {
-                String actualType = normalTabModelFilter == null
-                        ? "null"
-                        : normalTabModelFilter.getClass().getName();
-                assert false
-                    : "Please file bug, this is unexpected. Expected TabGroupModelFilter, but was "
-                      + actualType;
+        if (!(normalTabModelFilter instanceof TabGroupModelFilter)) {
+            String actualType = normalTabModelFilter == null
+                    ? "null"
+                    : normalTabModelFilter.getClass().getName();
+            assert false
+                : "Please file bug, this is unexpected. Expected TabGroupModelFilter, but was "
+                  + actualType;
 
-                return;
-            }
+            return;
         }
 
         LayoutStateProvider layoutStateProvider = mLayoutStateProviderSupplier.get();

@@ -11,8 +11,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/image_service/features.h"
+#include "components/image_service/metrics_util.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
+#include "components/optimization_guide/core/new_optimization_guide_decider.h"
+#include "components/optimization_guide/proto/common_types.pb.h"
+#include "components/optimization_guide/proto/hints.pb.h"
+#include "components/optimization_guide/proto/salient_image_metadata.pb.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -141,16 +146,46 @@ class ImageService::SuggestEntityImageURLFetcher {
 
 ImageService::ImageService(
     std::unique_ptr<AutocompleteProviderClient> autocomplete_provider_client,
+    optimization_guide::NewOptimizationGuideDecider* opt_guide,
     syncer::SyncService* sync_service)
     : autocomplete_provider_client_(std::move(autocomplete_provider_client)),
-      url_consent_helper_(
+      personalized_data_collection_consent_helper_(
           unified_consent::UrlKeyedDataCollectionConsentHelper::
-              NewPersonalizedDataCollectionConsentHelper(sync_service)) {}
+              NewPersonalizedDataCollectionConsentHelper(sync_service)),
+      bookmarks_data_collection_consent_helper_(
+          unified_consent::UrlKeyedDataCollectionConsentHelper::
+              NewPersonalizedBookmarksDataCollectionConsentHelper(
+                  sync_service)) {
+  if (opt_guide && base::FeatureList::IsEnabled(
+                       kImageServiceOptimizationGuideSalientImages)) {
+    opt_guide_ = opt_guide;
+    // OptimizationGuide requires registering all desired types in advance.
+    opt_guide_->RegisterOptimizationTypes(
+        {optimization_guide::proto::SALIENT_IMAGE});
+  }
+}
 
 ImageService::~ImageService() = default;
 
 base::WeakPtr<ImageService> ImageService::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+bool ImageService::HasPermissionToFetchImage(mojom::ClientId client_id) const {
+  switch (client_id) {
+    case mojom::ClientId::Journeys:
+    case mojom::ClientId::JourneysSidePanel:
+    case mojom::ClientId::NtpQuests: {
+      return personalized_data_collection_consent_helper_ &&
+             personalized_data_collection_consent_helper_->IsEnabled();
+    }
+    case mojom::ClientId::NtpRealbox:
+      // TODO(b/244507194): Figure out consent story for NTP realbox case.
+      return false;
+    case mojom::ClientId::Bookmarks:
+      return bookmarks_data_collection_consent_helper_ &&
+             bookmarks_data_collection_consent_helper_->IsEnabled();
+  }
 }
 
 void ImageService::FetchImageFor(mojom::ClientId client_id,
@@ -163,10 +198,9 @@ void ImageService::FetchImageFor(mojom::ClientId client_id,
     return std::move(callback).Run(GURL());
   }
 
-  // TODO(b/244507194): This one only checks Sync consent, we probably need to
-  // delegate consent checking to the UI layer entirely, since Bookmarks needs
-  // to use a Bookmarks-specific Sync permission checker.
-  DCHECK(url_consent_helper_ && url_consent_helper_->IsEnabled());
+  if (!HasPermissionToFetchImage(client_id)) {
+    return std::move(callback).Run(GURL());
+  }
 
   if (options.suggest_images &&
       base::FeatureList::IsEnabled(kImageServiceSuggestPoweredImages)) {
@@ -182,44 +216,162 @@ void ImageService::FetchImageFor(mojom::ClientId client_id,
           search_metadata->template_url->GetEngineType(
               template_url_service->search_terms_data()) ==
               SEARCH_ENGINE_GOOGLE) {
-        return FetchImageFor(/*search_query=*/search_metadata->search_terms,
-                             /*entity_id=*/"", std::move(callback));
+        UmaHistogramEnumerationForClient(kBackendHistogramName,
+                                         PageImageServiceBackend::kSuggest,
+                                         client_id);
+        return FetchSuggestImage(/*search_query=*/search_metadata->search_terms,
+                                 /*entity_id=*/"", std::move(callback));
       }
     }
   }
 
-  if (options.optimization_guide_images &&
+  if (options.optimization_guide_images && opt_guide_ &&
       base::FeatureList::IsEnabled(
           kImageServiceOptimizationGuideSalientImages)) {
-    // TODO(b/248367751): Insert OptimizationGuide Salient Image call here.
+    UmaHistogramEnumerationForClient(
+        kBackendHistogramName, PageImageServiceBackend::kOptimizationGuide,
+        client_id);
+    return FetchOptimizationGuideImage(client_id, page_url,
+                                       std::move(callback));
   }
 
+  UmaHistogramEnumerationForClient(kBackendHistogramName,
+                                   PageImageServiceBackend::kNoValidBackend,
+                                   client_id);
   std::move(callback).Run(GURL());
 }
 
-void ImageService::FetchImageFor(const std::u16string& search_query,
-                                 const std::string& entity_id,
-                                 ResultCallback callback) {
-  DCHECK(url_consent_helper_ && url_consent_helper_->IsEnabled());
-
+void ImageService::FetchSuggestImage(const std::u16string& search_query,
+                                     const std::string& entity_id,
+                                     ResultCallback callback) {
   auto fetcher = std::make_unique<SuggestEntityImageURLFetcher>(
       autocomplete_provider_client_.get(), search_query, entity_id);
 
   // Use a raw pointer temporary so we can give ownership of the unique_ptr to
   // the callback and have a well defined SuggestEntityImageURLFetcher lifetime.
   auto* fetcher_raw_ptr = fetcher.get();
-  fetcher_raw_ptr->Start(
-      base::BindOnce(&ImageService::OnImageFetched, weak_factory_.GetWeakPtr(),
-                     std::move(fetcher), std::move(callback)));
+  fetcher_raw_ptr->Start(base::BindOnce(
+      &ImageService::OnSuggestImageFetched, weak_factory_.GetWeakPtr(),
+      std::move(fetcher), std::move(callback)));
 }
 
-void ImageService::OnImageFetched(
+void ImageService::OnSuggestImageFetched(
     std::unique_ptr<SuggestEntityImageURLFetcher> fetcher,
     ResultCallback callback,
     const GURL& image_url) {
   std::move(callback).Run(image_url);
 
   // `fetcher` is owned by this method and will be deleted now.
+}
+
+void ImageService::FetchOptimizationGuideImage(mojom::ClientId client_id,
+                                               const GURL& page_url,
+                                               ResultCallback callback) {
+  DCHECK(opt_guide_) << "FetchOptimizationGuideImage is never called when "
+                        "opt_guide_ is nullptr.";
+
+  optimization_guide::proto::RequestContext request_context;
+  switch (client_id) {
+    case mojom::ClientId::Journeys:
+    case mojom::ClientId::JourneysSidePanel: {
+      request_context = optimization_guide::proto::CONTEXT_JOURNEYS;
+      break;
+    }
+    case mojom::ClientId::NtpQuests:
+    case mojom::ClientId::NtpRealbox: {
+      request_context = optimization_guide::proto::CONTEXT_NEW_TAB_PAGE;
+      break;
+    }
+    case mojom::ClientId::Bookmarks: {
+      request_context = optimization_guide::proto::CONTEXT_BOOKMARKS;
+      break;
+    }
+  }
+
+  // TODO(b/244507194): Consider batching requests in the future.
+  opt_guide_->CanApplyOptimizationOnDemand(
+      {page_url}, {optimization_guide::proto::OptimizationType::SALIENT_IMAGE},
+      request_context,
+      // Note: This is subtle and nasty. OptimizationGuide demands a
+      // RepeatingCallback because it takes a vector of URLs and plans to call
+      // the callback once per URL. But we are only passing in a single URL, and
+      // we only possess the OnceCallback that the original caller gave us.
+      // The callback.md documentation says this is subtle, not ideal, but OK,
+      // so long as the RepeatingCallback is only ever called once in practice.
+      base::BindRepeating(&ImageService::OnOptimizationGuideImageFetched,
+                          weak_factory_.GetWeakPtr(), client_id,
+                          base::Passed(std::move(callback))));
+}
+
+void ImageService::OnOptimizationGuideImageFetched(
+    mojom::ClientId client_id,
+    ResultCallback callback,
+    const GURL& url,
+    const base::flat_map<
+        optimization_guide::proto::OptimizationType,
+        optimization_guide::OptimizationGuideDecisionWithMetadata>& decisions) {
+  if (callback.is_null()) {
+    // This shouldn't happen, but maybe it can if OptimizationGuide decides to
+    // call the repeating callback more than once. Probably a programmer error
+    // in this case, but early exit and mark with NOTREACHED().
+    NOTREACHED() << "Called OnOptimizationGuideImageFetched more than once "
+                 << "while only having a single OnceCallback to respond with.";
+    return;
+  }
+
+  auto iter = decisions.find(optimization_guide::proto::SALIENT_IMAGE);
+  if (iter == decisions.end()) {
+    UmaHistogramEnumerationForClient(
+        kBackendOptimizationGuideResultHistogramName,
+        PageImageServiceOptimizationGuideResult::kDecisionMissing, client_id);
+    return std::move(callback).Run(GURL());
+  }
+
+  optimization_guide::OptimizationGuideDecisionWithMetadata decision =
+      iter->second;
+  if (decision.decision !=
+      optimization_guide::OptimizationGuideDecision::kTrue) {
+    UmaHistogramEnumerationForClient(
+        kBackendOptimizationGuideResultHistogramName,
+        PageImageServiceOptimizationGuideResult::kNoImage, client_id);
+    return std::move(callback).Run(GURL());
+  }
+  if (!decision.metadata.any_metadata().has_value()) {
+    UmaHistogramEnumerationForClient(
+        kBackendOptimizationGuideResultHistogramName,
+        PageImageServiceOptimizationGuideResult::kResponseMalformed, client_id);
+    return std::move(callback).Run(GURL());
+  }
+
+  auto parsed_any = optimization_guide::ParsedAnyMetadata<
+      optimization_guide::proto::SalientImageMetadata>(
+      decision.metadata.any_metadata().value());
+  if (!parsed_any) {
+    UmaHistogramEnumerationForClient(
+        kBackendOptimizationGuideResultHistogramName,
+        PageImageServiceOptimizationGuideResult::kResponseMalformed, client_id);
+    return std::move(callback).Run(GURL());
+  }
+
+  // Look through the metadata, returning the first valid image URL.
+  auto salient_image_metadata = *parsed_any;
+  for (const auto& thumbnail : salient_image_metadata.thumbnails()) {
+    if (thumbnail.has_image_url()) {
+      GURL image_url(thumbnail.image_url());
+      if (image_url.is_valid()) {
+        UmaHistogramEnumerationForClient(
+            kBackendOptimizationGuideResultHistogramName,
+            PageImageServiceOptimizationGuideResult::kSuccess, client_id);
+        return std::move(callback).Run(image_url);
+      }
+    }
+  }
+
+  // Fail if we can't find any.
+  UmaHistogramEnumerationForClient(
+      kBackendOptimizationGuideResultHistogramName,
+      PageImageServiceOptimizationGuideResult::kResponseMalformed, client_id);
+  std::move(callback).Run(GURL());
 }
 
 }  // namespace image_service

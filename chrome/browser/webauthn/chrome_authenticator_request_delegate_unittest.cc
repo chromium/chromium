@@ -18,6 +18,7 @@
 #include "chrome/browser/webauthn/webauthn_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/network_session_configurator/common/network_switches.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/browser_context.h"
@@ -650,6 +651,25 @@ TEST_F(DisableWebAuthnWithBrokenCertsTest, SecurityLevelAcceptable) {
       content::NavigationSimulator::CreateBrowserInitiated(url, web_contents());
   net::SSLInfo ssl_info;
   ssl_info.cert_status = 0;  // ok.
+  ssl_info.cert =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
+  simulator->SetSSLInfo(std::move(ssl_info));
+  simulator->Commit();
+  EXPECT_TRUE(delegate.IsSecurityLevelAcceptableForWebAuthn(
+      main_rfh(), url::Origin::Create(url)));
+}
+
+// Regression test for crbug.com/1421174.
+TEST_F(DisableWebAuthnWithBrokenCertsTest, IgnoreCertificateErrorsFlag) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kIgnoreCertificateErrors);
+  GURL url("https://doofenshmirtz.evil");
+  ChromeWebAuthenticationDelegate delegate;
+  auto simulator =
+      content::NavigationSimulator::CreateBrowserInitiated(url, web_contents());
+  net::SSLInfo ssl_info;
+  ssl_info.cert_status = net::CERT_STATUS_DATE_INVALID;
   ssl_info.cert =
       net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
   simulator->SetSSLInfo(std::move(ssl_info));

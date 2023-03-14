@@ -56,9 +56,9 @@ ExtensionFunction::ResponseAction TestNotifyPassFunction::Run() {
 TestNotifyFailFunction::~TestNotifyFailFunction() = default;
 
 ExtensionFunction::ResponseAction TestNotifyFailFunction::Run() {
-  std::unique_ptr<NotifyFail::Params> params(
-      NotifyFail::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<NotifyFail::Params> params =
+      NotifyFail::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   TestApiObserverRegistry::GetInstance()->NotifyTestFailed(
       browser_context(), params->message);
   return RespondNow(NoArguments());
@@ -67,8 +67,8 @@ ExtensionFunction::ResponseAction TestNotifyFailFunction::Run() {
 TestLogFunction::~TestLogFunction() = default;
 
 ExtensionFunction::ResponseAction TestLogFunction::Run() {
-  std::unique_ptr<Log::Params> params(Log::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<Log::Params> params = Log::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   VLOG(1) << params->message;
   return RespondNow(NoArguments());
 }
@@ -76,20 +76,20 @@ ExtensionFunction::ResponseAction TestLogFunction::Run() {
 TestSendMessageFunction::TestSendMessageFunction() = default;
 
 ExtensionFunction::ResponseAction TestSendMessageFunction::Run() {
-  std::unique_ptr<PassMessage::Params> params(
-      PassMessage::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<PassMessage::Params> params =
+      PassMessage::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   bool listener_will_respond =
       TestApiObserverRegistry::GetInstance()->NotifyTestMessage(
           this, params->message);
   // If none of the listeners intend to respond, or one has already responded,
   // finish the function. We always reply to the message, even if it's just an
   // empty string.
-  if (!listener_will_respond || response_.get()) {
+  if (!listener_will_respond || response_) {
     if (!response_) {
-      response_ = OneArgument(base::Value(std::string()));
+      response_.emplace(WithArguments(std::string()));
     }
-    return RespondNow(std::move(response_));
+    return RespondNow(std::move(*response_));
   }
   // Otherwise, wait for a reply.
   waiting_ = true;
@@ -100,24 +100,24 @@ TestSendMessageFunction::~TestSendMessageFunction() = default;
 
 void TestSendMessageFunction::Reply(const std::string& message) {
   DCHECK(!response_);
-  response_ = OneArgument(base::Value(message));
+  response_.emplace(WithArguments(message));
   if (waiting_)
-    Respond(std::move(response_));
+    Respond(std::move(*response_));
 }
 
 void TestSendMessageFunction::ReplyWithError(const std::string& error) {
   DCHECK(!response_);
-  response_ = Error(error);
+  response_.emplace(Error(error));
   if (waiting_)
-    Respond(std::move(response_));
+    Respond(std::move(*response_));
 }
 
 TestSendScriptResultFunction::TestSendScriptResultFunction() = default;
 TestSendScriptResultFunction::~TestSendScriptResultFunction() = default;
 
 ExtensionFunction::ResponseAction TestSendScriptResultFunction::Run() {
-  std::unique_ptr<api::test::SendScriptResult::Params> params(
-      api::test::SendScriptResult::Params::Create(args()));
+  absl::optional<api::test::SendScriptResult::Params> params =
+      api::test::SendScriptResult::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   TestApiObserverRegistry::GetInstance()->NotifyScriptResult(params->result);
@@ -145,16 +145,15 @@ ExtensionFunction::ResponseAction TestGetConfigFunction::Run() {
   TestConfigState* test_config_state = TestConfigState::GetInstance();
   if (!test_config_state->config_state())
     return RespondNow(Error(kNoTestConfigDataError));
-  return RespondNow(
-      OneArgument(base::Value(test_config_state->config_state()->Clone())));
+  return RespondNow(WithArguments(test_config_state->config_state()->Clone()));
 }
 
 TestWaitForRoundTripFunction::~TestWaitForRoundTripFunction() = default;
 
 ExtensionFunction::ResponseAction TestWaitForRoundTripFunction::Run() {
-  std::unique_ptr<WaitForRoundTrip::Params> params(
-      WaitForRoundTrip::Params::Create(args()));
-  return RespondNow(OneArgument(base::Value(params->message)));
+  absl::optional<WaitForRoundTrip::Params> params =
+      WaitForRoundTrip::Params::Create(args());
+  return RespondNow(WithArguments(params->message));
 }
 
 }  // namespace extensions

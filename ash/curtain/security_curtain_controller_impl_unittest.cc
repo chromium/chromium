@@ -10,13 +10,18 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
+#include "ash/system/power/power_button_controller_test_api.h"
+#include "ash/system/power/power_button_menu_view.h"
+#include "ash/system/power/power_button_test_base.h"
 #include "ash/test/ash_test_base.h"
+#include "base/check_deref.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/metadata/view_factory.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget.h"
 
@@ -101,7 +106,7 @@ EventFilter FakeEventFilter() {
 
 }  // namespace
 
-class SecurityCurtainControllerImplTest : public AshTestBase {
+class SecurityCurtainControllerImplTest : public PowerButtonTestBase {
  public:
   SecurityCurtainControllerImplTest() = default;
   SecurityCurtainControllerImplTest(const SecurityCurtainControllerImplTest&) =
@@ -110,12 +115,22 @@ class SecurityCurtainControllerImplTest : public AshTestBase {
       const SecurityCurtainControllerImplTest&) = delete;
   ~SecurityCurtainControllerImplTest() override = default;
 
-  void SetUp() override { AshTestBase::SetUp(); }
+  void SetUp() override {
+    PowerButtonTestBase::SetUp();
+    InitPowerButtonControllerMembers(
+        chromeos::PowerManagerClient::TabletMode::UNSUPPORTED);
+    power_button_test_api_ = std::make_unique<PowerButtonControllerTestApi>(
+        Shell::Get()->power_button_controller());
+  }
 
-  void TearDown() override { AshTestBase::TearDown(); }
+  void TearDown() override { PowerButtonTestBase::TearDown(); }
 
   SecurityCurtainController& security_curtain_controller() {
     return ash::Shell::Get()->security_curtain_controller();
+  }
+
+  PowerButtonControllerTestApi& power_button_test_api() {
+    return *power_button_test_api_;
   }
 
   SecurityCurtainController::InitParams init_params() {
@@ -221,6 +236,28 @@ class SecurityCurtainControllerImplTest : public AshTestBase {
     return EventTester(CreateTestWindow(display.bounds()),
                        *GetEventGenerator());
   }
+
+  views::Widget& GetCurtainWidget() {
+    return Shell::GetPrimaryRootWindowController()
+        ->security_curtain_widget_controller()
+        ->GetWidget();
+  }
+
+  views::Widget& GetOpenPowerWidget() {
+    EXPECT_TRUE(power_button_test_api().IsMenuOpened());
+    return *power_button_test_api().GetPowerButtonMenuView()->GetWidget();
+  }
+
+  const aura::Window& GetPowerMenuWidgetContainerParent() {
+    EXPECT_TRUE(power_button_test_api().IsMenuOpened());
+
+    return CHECK_DEREF(Shell::GetPrimaryRootWindow()
+                           ->GetChildById(kShellWindowId_PowerMenuContainer)
+                           ->parent());
+  }
+
+ private:
+  std::unique_ptr<PowerButtonControllerTestApi> power_button_test_api_;
 };
 
 TEST_F(SecurityCurtainControllerImplTest,
@@ -526,6 +563,35 @@ TEST_F(SecurityCurtainControllerImplTest,
   security_curtain_controller().Disable();
 
   ASSERT_THAT(IsNativeCursorEnabled(), Eq(true));
+}
+
+TEST_F(SecurityCurtainControllerImplTest,
+       ShouldMovePowerMenuWidgetAboveSecurityCurtainWhenEnabled) {
+  security_curtain_controller().Enable(init_params());
+  PressPowerButton();
+
+  views::Widget& curtain_widget = GetCurtainWidget();
+  views::Widget& power_menu_widget = GetOpenPowerWidget();
+
+  ASSERT_TRUE(power_button_test_api().IsMenuOpened());
+  EXPECT_TRUE(views::test::WidgetTest::IsWindowStackedAbove(&power_menu_widget,
+                                                            &curtain_widget));
+}
+
+TEST_F(SecurityCurtainControllerImplTest,
+       ShouldResetParentOfPowerMenuWidgetWhenDisabled) {
+  PressPowerButton();
+  const aura::Window& parent_before_enabled =
+      GetPowerMenuWidgetContainerParent();
+  ReleasePowerButton();
+
+  security_curtain_controller().Enable(init_params());
+  security_curtain_controller().Disable();
+  PressPowerButton();
+  const aura::Window& parent_after_disabled =
+      GetPowerMenuWidgetContainerParent();
+
+  ASSERT_EQ(&parent_before_enabled, &parent_after_disabled);
 }
 
 }  // namespace ash::curtain

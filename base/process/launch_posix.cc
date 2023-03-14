@@ -60,7 +60,7 @@
 #include <sys/ucontext.h>
 #endif
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_MAC)
 #error "macOS should use launch_mac.cc"
 #endif
 
@@ -699,10 +699,14 @@ int CloneHelper(void* arg) {
 // |stack_buf| is allocated on thread stack instead of ASan's fake stack.
 // Under ASan longjmp() will attempt to clean up the area between the old and
 // new stack pointers and print a warning that may confuse the user.
-__attribute__((no_sanitize_address))
-#endif
-NOINLINE pid_t
+NOINLINE __attribute__((no_sanitize_address)) pid_t
 CloneAndLongjmpInChild(int flags, pid_t* ptid, pid_t* ctid, jmp_buf* env) {
+#else
+NOINLINE pid_t CloneAndLongjmpInChild(int flags,
+                                      pid_t* ptid,
+                                      pid_t* ctid,
+                                      jmp_buf* env) {
+#endif
   // We use the libc clone wrapper instead of making the syscall
   // directly because making the syscall may fail to update the libc's
   // internal pid cache. The libc interface unfortunately requires

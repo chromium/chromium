@@ -124,6 +124,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::PRIVATE_NETWORK_GUARD, "private-network-devices"},
     {ContentSettingsType::PRIVATE_NETWORK_CHOOSER_DATA,
      "private-network-devices-data"},
+    {ContentSettingsType::ANTI_ABUSE, "anti-abuse"},
 
     // Add new content settings here if a corresponding Javascript string
     // representation for it is not required, for example if the content setting
@@ -183,6 +184,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION, nullptr},
     {ContentSettingsType::FEDERATED_IDENTITY_IDENTITY_PROVIDER_REGISTRATION,
      nullptr},
+    {ContentSettingsType::THIRD_PARTY_STORAGE_PARTITIONING, nullptr},
 };
 
 static_assert(std::size(kContentSettingsTypeGroupNames) ==
@@ -371,12 +373,16 @@ bool HasRegisteredGroupName(ContentSettingsType type) {
 }
 
 ContentSettingsType ContentSettingsTypeFromGroupName(base::StringPiece name) {
-  for (size_t i = 0; i < std::size(kContentSettingsTypeGroupNames); ++i) {
-    if (name == kContentSettingsTypeGroupNames[i].name)
-      return kContentSettingsTypeGroupNames[i].type;
+  for (const auto& entry : kContentSettingsTypeGroupNames) {
+    // Content setting types that aren't represented in the settings UI
+    // will have `nullptr` as their `name`. However, converting `nullptr`
+    // to a StringPiece will crash, so we have to handle it explicitly
+    // before comparing.
+    if (entry.name != nullptr && entry.name == name) {
+      return entry.type;
+    }
   }
 
-  NOTREACHED() << name << " is not a recognized content settings type.";
   return ContentSettingsType::DEFAULT;
 }
 
@@ -973,6 +979,7 @@ base::Value::List GetChooserExceptionListFromProfile(
   base::Value::List exceptions;
   ContentSettingsType content_type =
       ContentSettingsTypeFromGroupName(std::string(chooser_type.name));
+  DCHECK(content_type != ContentSettingsType::DEFAULT);
 
   // The BluetoothChooserContext is only available when the
   // WebBluetoothNewPermissionsBackend flag is enabled.

@@ -8,9 +8,11 @@
 #include <memory>
 #include <string>
 
+#include "base/ranges/algorithm.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/ozone/platform/wayland/host/wayland_zaura_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 
 namespace ui {
@@ -67,7 +69,8 @@ void WaylandOutputManager::RemoveWaylandOutput(WaylandOutput::Id output_id) {
   // Remove WaylandOutput in following order :
   // 1. from `WaylandSurface::entered_outputs_`
   // 2. from `WaylandScreen::display_list_`
-  // 3. from `WaylandOutputManager::output_list_`
+  // 3. from `WaylandZAuraOutputManager::output_metrics_map_`
+  // 4. from `WaylandOutputManager::output_list_`
   auto* wayland_window_manager = connection_->window_manager();
   for (auto* window : wayland_window_manager->GetAllWindows())
     window->RemoveEnteredOutput(output_id);
@@ -75,6 +78,12 @@ void WaylandOutputManager::RemoveWaylandOutput(WaylandOutput::Id output_id) {
   if (wayland_screen_)
     wayland_screen_->OnOutputRemoved(output_id);
   DCHECK(output_list_.find(output_id) != output_list_.end());
+
+  if (auto* output_manager = connection_->zaura_output_manager()) {
+    output_manager->RemoveOutputMetrics(output_id);
+    DCHECK(!output_manager->GetOutputMetrics(output_id));
+  }
+
   output_list_.erase(output_id);
 }
 
@@ -120,6 +129,14 @@ void WaylandOutputManager::InitWaylandScreen(WaylandScreen* screen) {
       screen->OnOutputAddedOrUpdated(output.second->GetMetrics());
     }
   }
+}
+
+WaylandOutput::Id WaylandOutputManager::GetOutputId(
+    wl_output* output_resource) const {
+  auto it = base::ranges::find(
+      output_list_, output_resource,
+      [](const auto& pair) { return pair.second->get_output(); });
+  return it == output_list_.end() ? 0 : it->second->output_id();
 }
 
 WaylandOutput* WaylandOutputManager::GetOutput(WaylandOutput::Id id) const {

@@ -13,10 +13,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/cast_streaming/public/decoder_buffer_reader.h"
-#include "components/cast_streaming/public/remoting_proto_utils.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/demuxer_stream.h"
+#include "media/cast/openscreen/decoder_buffer_reader.h"
+#include "media/cast/openscreen/remoting_proto_utils.h"
 #include "media/mojo/common/mojo_data_pipe_read_write.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "media/mojo/mojom/remoting.mojom.h"
@@ -53,7 +53,7 @@ class TestStreamSender final : public mojom::RemotingDataStreamSender {
       SendFrameToSinkCallback callback)
       : receiver_(this, std::move(receiver)),
         decoder_buffer_reader_(
-            std::make_unique<cast_streaming::DecoderBufferReader>(
+            std::make_unique<media::cast::DecoderBufferReader>(
                 base::BindRepeating(&TestStreamSender::OnFrameRead,
                                     base::Unretained(this)),
                 std::move(handle))),
@@ -94,7 +94,7 @@ class TestStreamSender final : public mojom::RemotingDataStreamSender {
 
   uint32_t frame_count_ = 0;
   mojo::Receiver<RemotingDataStreamSender> receiver_;
-  std::unique_ptr<cast_streaming::DecoderBufferReader> decoder_buffer_reader_;
+  std::unique_ptr<media::cast::DecoderBufferReader> decoder_buffer_reader_;
   SendFrameCallback read_complete_cb_;
   const DemuxerStream::Type type_;
   const SendFrameToSinkCallback send_frame_to_sink_cb_;

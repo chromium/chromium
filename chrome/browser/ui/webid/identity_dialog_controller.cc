@@ -24,7 +24,8 @@ int IdentityDialogController::GetBrandIconIdealSize() {
 
 void IdentityDialogController::ShowAccountsDialog(
     content::WebContents* rp_web_contents,
-    const std::string& rp_for_display,
+    const std::string& top_frame_for_display,
+    const absl::optional<std::string>& iframe_url_for_display,
     const std::vector<content::IdentityProviderData>& identity_provider_data,
     content::IdentityRequestAccount::SignInMode sign_in_mode,
     bool show_auto_reauthn_checkbox,
@@ -35,13 +36,14 @@ void IdentityDialogController::ShowAccountsDialog(
   on_dismiss_ = std::move(dismiss_callback);
   if (!account_view_)
     account_view_ = AccountSelectionView::Create(this);
-  account_view_->Show(rp_for_display, identity_provider_data, sign_in_mode,
+  account_view_->Show(top_frame_for_display, iframe_url_for_display,
+                      identity_provider_data, sign_in_mode,
                       show_auto_reauthn_checkbox);
 }
 
 void IdentityDialogController::ShowFailureDialog(
     content::WebContents* rp_web_contents,
-    const std::string& rp_for_display,
+    const std::string& top_frame_for_display,
     const std::string& idp_for_display,
     DismissCallback dismiss_callback) {
   const GURL rp_url = rp_web_contents->GetLastCommittedURL();
@@ -53,7 +55,7 @@ void IdentityDialogController::ShowFailureDialog(
   //   TODO: If the failure dialog is already being shown, notify user that
   //   sign-in attempt failed.
 
-  account_view_->ShowFailureDialog(rp_for_display, idp_for_display);
+  account_view_->ShowFailureDialog(top_frame_for_display, idp_for_display);
 }
 
 void IdentityDialogController::ShowIdpSigninFailureDialog(

@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_BUBBLE_BUBBLE_PRESENTER_H_
 
 #import <UIKit/UIKit.h>
-#import "ios/chrome/browser/ui/commands/help_commands.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 
 @protocol BubblePresenterDelegate;
 @class BubbleViewControllerPresenter;
@@ -58,6 +58,10 @@ class ChromeBrowserState;
 // Presents a help bubble to inform the user that they can track the price of
 // the item on the current website.
 - (void)presentPriceNotificationsWhileBrowsingTipBubble;
+
+// Presents a help bubble to inform the user how they can find the tab they just
+// pinned.
+- (void)presentTabPinnedBubble;
 
 @end
 

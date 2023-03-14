@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/segmentation_platform/internal/database/storage_service.h"
+#include "components/segmentation_platform/internal/metrics/field_trial_recorder.h"
 #include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/scheduler/execution_service.h"
 #include "components/segmentation_platform/internal/selection/cached_result_provider.h"
@@ -177,6 +178,9 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
 
   // Writes to result cache.
   std::unique_ptr<CachedResultWriter> cached_result_writer_;
+
+  // Records field trials for all configs.
+  std::unique_ptr<FieldTrialRecorder> field_trial_recorder_;
 
   // For routing requests to the right handler.
   std::unique_ptr<RequestDispatcher> request_dispatcher_;

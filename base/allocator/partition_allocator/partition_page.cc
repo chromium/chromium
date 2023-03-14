@@ -105,8 +105,9 @@ PA_ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::RegisterEmpty() {
       root->global_empty_slot_span_ring[current_index];
   // The slot span might well have been re-activated, filled up, etc. before we
   // get around to looking at it here.
-  if (slot_span_to_decommit)
+  if (slot_span_to_decommit) {
     slot_span_to_decommit->DecommitIfPossible(root);
+  }
 
   // We put the empty slot span on our global list of "slot spans that were once
   // empty", thus providing it a bit of breathing room to get re-used before we
@@ -116,8 +117,9 @@ PA_ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::RegisterEmpty() {
   empty_cache_index_ = current_index;
   in_empty_cache_ = 1;
   ++current_index;
-  if (current_index == root->global_empty_slot_span_ring_size)
+  if (current_index == root->global_empty_slot_span_ring_size) {
     current_index = 0;
+  }
   root->global_empty_slot_span_ring_index = current_index;
 
   // Avoid wasting too much memory on empty slot spans. Note that we only divide
@@ -185,8 +187,9 @@ void SlotSpanMetadata<thread_safe>::FreeSlowPath(size_t number_of_freed) {
     // chances of it being filled up again. The old current slot span will be
     // the next slot span.
     PA_DCHECK(!next_slot_span);
-    if (PA_LIKELY(bucket->active_slot_spans_head != get_sentinel_slot_span()))
+    if (PA_LIKELY(bucket->active_slot_spans_head != get_sentinel_slot_span())) {
       next_slot_span = bucket->active_slot_spans_head;
+    }
     bucket->active_slot_spans_head = this;
     PA_CHECK(bucket->num_full_slot_spans);  // Underflow.
     --bucket->num_full_slot_spans;
@@ -203,12 +206,14 @@ void SlotSpanMetadata<thread_safe>::FreeSlowPath(size_t number_of_freed) {
 #endif
     // If it's the current active slot span, change it. We bounce the slot span
     // to the empty list as a force towards defragmentation.
-    if (PA_LIKELY(this == bucket->active_slot_spans_head))
+    if (PA_LIKELY(this == bucket->active_slot_spans_head)) {
       bucket->SetNewActiveSlotSpan();
+    }
     PA_DCHECK(bucket->active_slot_spans_head != this);
 
-    if (CanStoreRawSize())
+    if (CanStoreRawSize()) {
       SetRawSize(0);
+    }
 
     RegisterEmpty();
   }
@@ -259,8 +264,9 @@ void SlotSpanMetadata<thread_safe>::DecommitIfPossible(
   PA_DCHECK(empty_cache_index_ < kMaxFreeableSpans);
   PA_DCHECK(this == root->global_empty_slot_span_ring[empty_cache_index_]);
   in_empty_cache_ = 0;
-  if (is_empty())
+  if (is_empty()) {
     Decommit(root);
+  }
 }
 
 template <bool thread_safe>
@@ -295,10 +301,11 @@ void SlotSpanMetadata<thread_safe>::SortFreelist() {
         uintptr_t slot_start = slot_span_start + (slot_size * slot_number);
         auto* entry = PartitionFreelistEntry::EmplaceAndInitNull(slot_start);
 
-        if (!head)
+        if (!head) {
           head = entry;
-        else
+        } else {
           back->SetNext(entry);
+        }
 
         back = entry;
       }

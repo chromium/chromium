@@ -15,7 +15,7 @@ scoped_refptr<ThumbnailLayer> ThumbnailLayer::Create() {
   return base::WrapRefCounted(new ThumbnailLayer());
 }
 
-void ThumbnailLayer::SetThumbnail(Thumbnail* thumbnail) {
+void ThumbnailLayer::SetThumbnail(thumbnail::Thumbnail* thumbnail) {
   layer_->SetUIResourceId(thumbnail->ui_resource_id());
   UpdateSizes(thumbnail->scaled_content_size(), thumbnail->scaled_data_size());
 }
@@ -46,10 +46,11 @@ void ThumbnailLayer::ClearClip() {
 void ThumbnailLayer::AddSelfToParentOrReplaceAt(
     scoped_refptr<cc::slim::Layer> parent,
     size_t index) {
-  if (index >= parent->children().size())
+  if (index >= parent->children().size()) {
     parent->AddChild(layer_);
-  else if (parent->children()[index]->id() != layer_->id())
+  } else if (parent->children()[index]->id() != layer_->id()) {
     parent->ReplaceChild(parent->children()[index].get(), layer_);
+  }
 }
 
 scoped_refptr<cc::slim::Layer> ThumbnailLayer::layer() {
@@ -60,18 +61,18 @@ ThumbnailLayer::ThumbnailLayer() : layer_(cc::slim::UIResourceLayer::Create()) {
   layer_->SetIsDrawable(true);
 }
 
-ThumbnailLayer::~ThumbnailLayer() {
-}
+ThumbnailLayer::~ThumbnailLayer() = default;
 
 void ThumbnailLayer::UpdateSizes(const gfx::SizeF& content_size,
                                  const gfx::SizeF& resource_size) {
   if (content_size != content_size_ || resource_size != resource_size_) {
     content_size_ = content_size;
     resource_size_ = resource_size;
-    if (clipped_)
+    if (clipped_) {
       Clip(last_clipping_);
-    else
+    } else {
       ClearClip();
+    }
   }
 }
 

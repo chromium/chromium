@@ -81,6 +81,8 @@ class MultiDeviceSetupClient {
   virtual void TriggerEventForDebugging(
       mojom::EventTypeForDebugging type,
       mojom::MultiDeviceSetup::TriggerEventForDebuggingCallback callback) = 0;
+  virtual void SetQuickStartPhoneInstanceID(
+      const std::string& qs_phone_instance_id) = 0;
 
  protected:
   void NotifyHostStatusChanged(

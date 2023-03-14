@@ -22,12 +22,12 @@ NonMainThreadSchedulerBase::~NonMainThreadSchedulerBase() = default;
 scoped_refptr<NonMainThreadTaskQueue>
 NonMainThreadSchedulerBase::CreateTaskQueue(
     base::sequence_manager::QueueName name,
-    bool can_be_throttled) {
+    NonMainThreadTaskQueue::QueueCreationParams params) {
   helper_.CheckOnValidThread();
   return helper_.NewTaskQueue(
       base::sequence_manager::TaskQueue::Spec(name).SetShouldMonitorQuiescence(
           true),
-      can_be_throttled);
+      params);
 }
 
 base::TimeTicks

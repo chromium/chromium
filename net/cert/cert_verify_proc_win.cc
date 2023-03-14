@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/memory/free_deleter.h"
 #include "base/metrics/histogram_macros.h"
@@ -16,7 +17,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_local.h"
 #include "base/win/registry.h"
 #include "crypto/capi_util.h"
 #include "crypto/scoped_capi_types.h"
@@ -33,6 +33,7 @@
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util_win.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 #if !defined(CERT_TRUST_HAS_WEAK_SIGNATURE)
 // This was introduced in Windows 8 / Windows Server 2012, but retroactively
@@ -601,56 +602,14 @@ bool CheckEV(PCCERT_CHAIN_CONTEXT chain_context,
   return metadata->HasEVPolicyOID(fingerprint, policy_oid);
 }
 
+// As the revocation parameters passed to CertVerifyProc::VerifyInternal cannot
+// be officially smuggled to the Revocation Provider
+ABSL_CONST_INIT thread_local CRLSet* thread_local_crl_set = nullptr;
+
 // Custom revocation provider function that compares incoming certificates with
 // those in CRLSets. This is called BEFORE the default CRL & OCSP handling
 // is invoked (which is handled by the revocation provider function
 // "CertDllVerifyRevocation" in cryptnet.dll)
-BOOL WINAPI
-CertDllVerifyRevocationWithCRLSet(DWORD encoding_type,
-                                  DWORD revocation_type,
-                                  DWORD num_contexts,
-                                  void* rgpvContext[],
-                                  DWORD flags,
-                                  PCERT_REVOCATION_PARA revocation_params,
-                                  PCERT_REVOCATION_STATUS revocation_status);
-
-// Helper class that installs the CRLSet-based Revocation Provider as the
-// default revocation provider. Because it is installed as a function address
-// (meaning only scoped to the process, and not stored in the registry), it
-// will be used before any registry-based providers, including Microsoft's
-// default provider.
-class RevocationInjector {
- public:
-  CRLSet* GetCRLSet() { return thread_local_crlset.Get(); }
-
-  void SetCRLSet(CRLSet* crl_set) { thread_local_crlset.Set(crl_set); }
-
- private:
-  friend struct base::LazyInstanceTraitsBase<RevocationInjector>;
-
-  RevocationInjector() {
-    const CRYPT_OID_FUNC_ENTRY kInterceptFunction[] = {
-        {CRYPT_DEFAULT_OID,
-         reinterpret_cast<void*>(&CertDllVerifyRevocationWithCRLSet)},
-    };
-    BOOL ok = CryptInstallOIDFunctionAddress(
-        nullptr, X509_ASN_ENCODING, CRYPT_OID_VERIFY_REVOCATION_FUNC,
-        std::size(kInterceptFunction), kInterceptFunction,
-        CRYPT_INSTALL_OID_FUNC_BEFORE_FLAG);
-    DCHECK(ok);
-  }
-
-  ~RevocationInjector() {}
-
-  // As the revocation parameters passed to CertVerifyProc::VerifyInternal
-  // cannot be officially smuggled to the Revocation Provider
-  base::ThreadLocalPointer<CRLSet> thread_local_crlset;
-};
-
-// Leaky, as CertVerifyProc workers are themselves leaky.
-base::LazyInstance<RevocationInjector>::Leaky g_revocation_injector =
-    LAZY_INSTANCE_INITIALIZER;
-
 BOOL WINAPI
 CertDllVerifyRevocationWithCRLSet(DWORD encoding_type,
                                   DWORD revocation_type,
@@ -685,9 +644,9 @@ CertDllVerifyRevocationWithCRLSet(DWORD encoding_type,
 
   // No revocation checking possible if there is no associated
   // CRLSet.
-  CRLSet* crl_set = g_revocation_injector.Get().GetCRLSet();
-  if (!crl_set)
+  if (!thread_local_crl_set) {
     return FALSE;
+  }
 
   // |revocation_params| is an optional structure; to make life simple and avoid
   // the need to constantly check whether or not it was supplied, create a local
@@ -719,7 +678,7 @@ CertDllVerifyRevocationWithCRLSet(DWORD encoding_type,
         return FALSE;
       }
       CRLSetResult result = CheckRevocationWithCRLSet(
-          crl_set, subject_cert, issuer_cert, &issuer_hash);
+          thread_local_crl_set, subject_cert, issuer_cert, &issuer_hash);
       if (result == kCRLSetRevoked) {
         revocation_status->dwIndex = i - 1;
         revocation_status->dwError = static_cast<DWORD>(CRYPT_E_REVOKED);
@@ -812,8 +771,8 @@ CertDllVerifyRevocationWithCRLSet(DWORD encoding_type,
   }
 
   std::string unused;
-  CRLSetResult result = CheckRevocationWithCRLSet(crl_set, subject_cert,
-                                                  issuer_cert.get(), &unused);
+  CRLSetResult result = CheckRevocationWithCRLSet(
+      thread_local_crl_set, subject_cert, issuer_cert.get(), &unused);
   if (result == kCRLSetRevoked) {
     revocation_status->dwError = static_cast<DWORD>(CRYPT_E_REVOKED);
     revocation_status->dwReason = CRL_REASON_UNSPECIFIED;
@@ -831,12 +790,32 @@ CertDllVerifyRevocationWithCRLSet(DWORD encoding_type,
   return FALSE;
 }
 
-class ScopedThreadLocalCRLSet {
+class [[maybe_unused, nodiscard]] ScopedThreadLocalCRLSet {
  public:
-  explicit ScopedThreadLocalCRLSet(CRLSet* crl_set) {
-    g_revocation_injector.Get().SetCRLSet(crl_set);
+  explicit ScopedThreadLocalCRLSet(CRLSet * crl_set)
+      : resetter_(&thread_local_crl_set, crl_set) {
+    [[maybe_unused]] static bool initialized = [] {
+      // Install the CRLSet-based Revocation Provider as the default revocation
+      // provider. Because it is installed as a function address (meaning only
+      // scoped to the process, and not stored in the registry), it will be used
+      // before any registry-based providers, including Microsoft's default
+      // provider.
+      const CRYPT_OID_FUNC_ENTRY kInterceptFunction[] = {
+          {CRYPT_DEFAULT_OID,
+           reinterpret_cast<void*>(&CertDllVerifyRevocationWithCRLSet)},
+      };
+      BOOL ok = CryptInstallOIDFunctionAddress(
+          nullptr, X509_ASN_ENCODING, CRYPT_OID_VERIFY_REVOCATION_FUNC,
+          std::size(kInterceptFunction), kInterceptFunction,
+          CRYPT_INSTALL_OID_FUNC_BEFORE_FLAG);
+      DCHECK(ok);
+      return true;
+    }();
   }
-  ~ScopedThreadLocalCRLSet() { g_revocation_injector.Get().SetCRLSet(nullptr); }
+  ~ScopedThreadLocalCRLSet() = default;
+
+ private:
+  const base::AutoReset<CRLSet*> resetter_;
 };
 
 // Helper class to determine the current version of AuthRoot, as stored in the
@@ -1041,7 +1020,7 @@ int CertVerifyProcWin::VerifyInternal(
     const NetLogWithSource& net_log) {
   // Ensure the Revocation Provider has been installed and configured for this
   // CRLSet.
-  ScopedThreadLocalCRLSet thread_local_crlset(crl_set);
+  ScopedThreadLocalCRLSet crl_set_scoper(crl_set);
 
   crypto::ScopedPCCERT_CONTEXT cert_list =
       x509_util::CreateCertContextWithChain(

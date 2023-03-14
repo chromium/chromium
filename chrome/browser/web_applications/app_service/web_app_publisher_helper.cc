@@ -31,8 +31,6 @@
 #include "base/functional/identity.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_base.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/one_shot_event.h"
 #include "base/ranges/algorithm.h"
@@ -77,11 +75,11 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/extensions/extension_constants.h"
 #include "components/content_settings/core/browser/content_settings_type_set.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
@@ -259,6 +257,7 @@ apps::InstallSource GetInstallSource(
     case webapps::WebappInstallSource::CHROME_SERVICE:
     case webapps::WebappInstallSource::KIOSK:
     case webapps::WebappInstallSource::MICROSOFT_365_SETUP:
+    case webapps::WebappInstallSource::PROFILE_MENU:
       return apps::InstallSource::kBrowser;
     case webapps::WebappInstallSource::ARC:
       return apps::InstallSource::kPlayStore;
@@ -633,9 +632,8 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
       app_type(), web_app->app_id(), readiness,
       provider_->registrar_unsafe().GetAppShortName(web_app->app_id()),
       GetHighestPriorityInstallReason(web_app),
-      GetInstallSource(
-          provider_->registrar_unsafe().GetAppInstallSourceForMetrics(
-              web_app->app_id())));
+      GetInstallSource(provider_->registrar_unsafe().GetLatestAppInstallSource(
+          web_app->app_id())));
 
   app->description =
       provider_->registrar_unsafe().GetAppDescription(web_app->app_id());
@@ -731,12 +729,11 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
 }
 
 apps::AppPtr WebAppPublisherHelper::ConvertUninstalledWebApp(
-    const WebApp* web_app) {
-  auto app = std::make_unique<apps::App>(app_type(), web_app->app_id());
-  // TODO(loyso): Plumb uninstall source (reason) here.
+    const AppId& app_id) {
+  auto app = std::make_unique<apps::App>(app_type(), app_id);
+  // TODO(crbug.com/1423775): Plumb uninstall source (reason) here.
   app->readiness = apps::Readiness::kUninstalledByUser;
 
-  SetWebAppShowInFields(web_app, *app);
   return app;
 }
 
@@ -878,54 +875,6 @@ void WebAppPublisherHelper::Launch(
   if (!web_app) {
     std::move(on_complete).Run(nullptr);
     return;
-  }
-
-  switch (launch_source) {
-    case apps::LaunchSource::kUnknown:
-    case apps::LaunchSource::kFromParentalControls:
-      break;
-    case apps::LaunchSource::kFromAppListGrid:
-    case apps::LaunchSource::kFromAppListGridContextMenu:
-      UMA_HISTOGRAM_ENUMERATION("Extensions.AppLaunch",
-                                extension_misc::APP_LAUNCH_APP_LIST_MAIN,
-                                extension_misc::APP_LAUNCH_BUCKET_BOUNDARY);
-
-      break;
-    case apps::LaunchSource::kFromAppListQuery:
-    case apps::LaunchSource::kFromAppListQueryContextMenu:
-      UMA_HISTOGRAM_ENUMERATION("Extensions.AppLaunch",
-                                extension_misc::APP_LAUNCH_APP_LIST_SEARCH,
-                                extension_misc::APP_LAUNCH_BUCKET_BOUNDARY);
-      break;
-    case apps::LaunchSource::kFromAppListRecommendation:
-    case apps::LaunchSource::kFromShelf:
-    case apps::LaunchSource::kFromFileManager:
-    case apps::LaunchSource::kFromLink:
-    case apps::LaunchSource::kFromOmnibox:
-    case apps::LaunchSource::kFromChromeInternal:
-    case apps::LaunchSource::kFromKeyboard:
-    case apps::LaunchSource::kFromOtherApp:
-    case apps::LaunchSource::kFromMenu:
-    case apps::LaunchSource::kFromInstalledNotification:
-    case apps::LaunchSource::kFromTest:
-    case apps::LaunchSource::kFromArc:
-    case apps::LaunchSource::kFromSharesheet:
-    case apps::LaunchSource::kFromReleaseNotesNotification:
-    case apps::LaunchSource::kFromFullRestore:
-    case apps::LaunchSource::kFromSmartTextContextMenu:
-    case apps::LaunchSource::kFromDiscoverTabNotification:
-    case apps::LaunchSource::kFromManagementApi:
-    case apps::LaunchSource::kFromKiosk:
-    case apps::LaunchSource::kFromCommandLine:
-    case apps::LaunchSource::kFromBackgroundMode:
-    case apps::LaunchSource::kFromNewTabPage:
-    case apps::LaunchSource::kFromIntentUrl:
-    case apps::LaunchSource::kFromOsLogin:
-    case apps::LaunchSource::kFromProtocolHandler:
-    case apps::LaunchSource::kFromUrlHandler:
-    case apps::LaunchSource::kFromLockScreen:
-    case apps::LaunchSource::kFromAppHomePage:
-      break;
   }
 
   DisplayMode display_mode = registrar().GetAppEffectiveDisplayMode(app_id);
@@ -1342,12 +1291,7 @@ void WebAppPublisherHelper::OnWebAppManifestUpdated(
   }
 }
 
-void WebAppPublisherHelper::OnWebAppWillBeUninstalled(const AppId& app_id) {
-  const WebApp* web_app = GetWebApp(app_id);
-  if (!web_app) {
-    return;
-  }
-
+void WebAppPublisherHelper::OnWebAppUninstalled(const AppId& app_id) {
   paused_apps_.MaybeRemoveApp(app_id);
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1358,7 +1302,7 @@ void WebAppPublisherHelper::OnWebAppWillBeUninstalled(const AppId& app_id) {
                                           result.microphone);
 #endif
 
-  delegate_->PublishWebApp(ConvertUninstalledWebApp(web_app));
+  delegate_->PublishWebApp(ConvertUninstalledWebApp(app_id));
 }
 
 void WebAppPublisherHelper::OnWebAppInstallManagerDestroyed() {

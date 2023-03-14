@@ -68,7 +68,6 @@ missing_new_fields,ash/ambient/ambient_weather_controller.cc
 missing_new_fields,ash/assistant/assistant_controller_impl.cc
 missing_new_fields,ash/quick_pair/repository/fast_pair/device_metadata_fetcher.cc
 missing_new_fields,ash/quick_pair/repository/fast_pair/fast_pair_image_decoder_impl.cc
-missing_new_fields,ash/wallpaper/wallpaper_controller_impl.cc
 missing_new_fields,ash/webui/os_feedback_ui/backend/help_content_provider.cc
 missing_new_fields,ash/webui/projector_app/projector_xhr_sender.cc
 missing_new_fields,chrome/browser/apps/app_preload_service/app_preload_server_connector.cc
@@ -192,8 +191,8 @@ missing_new_fields,components/autofill/core/browser/payments/payments_client.cc
 missing_new_fields,components/captive_portal/content/captive_portal_service.cc
 missing_new_fields,components/commerce/core/account_checker.cc
 missing_new_fields,components/commerce/core/subscriptions/subscriptions_server_proxy.cc
+missing_new_fields,components/content_relationship_verification/digital_asset_links_handler.cc
 missing_new_fields,components/contextual_search/core/browser/contextual_search_delegate_impl.cc
-missing_new_fields,components/digital_asset_links/digital_asset_links_handler.cc
 missing_new_fields,components/dom_distiller/core/distiller_url_fetcher.cc
 missing_new_fields,components/domain_reliability/uploader.cc
 missing_new_fields,components/download/internal/common/download_item_impl.cc

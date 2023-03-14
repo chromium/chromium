@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
+#include "base/types/expected.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
@@ -27,6 +28,7 @@
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace net {
 class SchemefulSite;
@@ -67,16 +69,18 @@ FirstPartySetsHandlerImpl* FirstPartySetsHandlerImpl::GetInstance() {
 }
 
 // static
-std::pair<absl::optional<FirstPartySetsHandler::ParseError>,
+std::pair<base::expected<absl::monostate, FirstPartySetsHandler::ParseError>,
           std::vector<FirstPartySetsHandler::ParseWarning>>
 FirstPartySetsHandler::ValidateEnterprisePolicy(
     const base::Value::Dict& policy) {
-  FirstPartySetParser::PolicyParseResult parsed_or_error =
+  auto [parsed, warnings] =
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy);
-  if (!parsed_or_error.has_value()) {
-    return {parsed_or_error.error().first, parsed_or_error.error().second};
-  }
-  return {absl::nullopt, parsed_or_error.value().second};
+
+  return {parsed.transform(
+              [](const FirstPartySetParser::ParsedPolicySetLists& set_lists) {
+                return absl::monostate();
+              }),
+          warnings};
 }
 
 // static
@@ -137,7 +141,7 @@ FirstPartySetsHandlerImpl::~FirstPartySetsHandlerImpl() = default;
 absl::optional<net::GlobalFirstPartySets> FirstPartySetsHandlerImpl::GetSets(
     SetsReadyOnceCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(IsEnabled());
+  CHECK(IsEnabled());
   if (global_sets_.has_value())
     return global_sets_->Clone();
 
@@ -155,7 +159,7 @@ absl::optional<net::GlobalFirstPartySets> FirstPartySetsHandlerImpl::GetSets(
 void FirstPartySetsHandlerImpl::Init(const base::FilePath& user_data_dir,
                                      const LocalSetDeclaration& local_set) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!initialized_);
+  CHECK(!initialized_);
 
   initialized_ = true;
   SetDatabase(user_data_dir);
@@ -179,8 +183,8 @@ void FirstPartySetsHandlerImpl::SetPublicFirstPartySets(
     const base::Version& version,
     base::File sets_file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(enabled_);
-  DCHECK(embedder_will_provide_public_sets_);
+  CHECK(enabled_);
+  CHECK(embedder_will_provide_public_sets_);
 
   // TODO(crbug.com/1219656): Use the version to compute sets diff.
   sets_loader_->SetComponentSets(version, std::move(sets_file));
@@ -193,7 +197,7 @@ void FirstPartySetsHandlerImpl::GetPersistedSetsForTesting(
                                       net::FirstPartySetsContextConfig>>)>
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!browser_context_id.empty());
+  CHECK(!browser_context_id.empty());
   if (db_helper_.is_null()) {
     std::move(callback).Run(absl::nullopt);
     return;
@@ -209,7 +213,7 @@ void FirstPartySetsHandlerImpl::HasBrowserContextClearedForTesting(
     const std::string& browser_context_id,
     base::OnceCallback<void(absl::optional<bool>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!browser_context_id.empty());
+  CHECK(!browser_context_id.empty());
   if (db_helper_.is_null()) {
     std::move(callback).Run(absl::nullopt);
     return;
@@ -224,7 +228,7 @@ void FirstPartySetsHandlerImpl::HasBrowserContextClearedForTesting(
 void FirstPartySetsHandlerImpl::SetCompleteSets(
     net::GlobalFirstPartySets sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!global_sets_.has_value());
+  CHECK(!global_sets_.has_value());
   global_sets_ = std::move(sets);
 
   if (IsEnabled())
@@ -234,7 +238,7 @@ void FirstPartySetsHandlerImpl::SetCompleteSets(
 void FirstPartySetsHandlerImpl::SetDatabase(
     const base::FilePath& user_data_dir) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(db_helper_.is_null());
+  CHECK(db_helper_.is_null());
 
   if (user_data_dir.empty()) {
     VLOG(1) << "Empty path. Failed initializing First-Party Sets database.";
@@ -248,7 +252,7 @@ void FirstPartySetsHandlerImpl::SetDatabase(
 
 void FirstPartySetsHandlerImpl::InvokePendingQueries() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(enabled_);
+  CHECK(enabled_);
   base::circular_deque<base::OnceClosure> queue;
   queue.swap(on_sets_ready_callbacks_);
   while (!queue.empty()) {
@@ -271,7 +275,7 @@ absl::optional<net::FirstPartySetEntry> FirstPartySetsHandlerImpl::FindEntry(
 
 net::GlobalFirstPartySets FirstPartySetsHandlerImpl::GetGlobalSetsSync() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(global_sets_.has_value());
+  CHECK(global_sets_.has_value());
   return global_sets_->Clone();
 }
 
@@ -310,9 +314,9 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContextInternal(
     base::OnceCallback<void(net::FirstPartySetsContextConfig,
                             net::FirstPartySetsCacheFilter)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(global_sets_.has_value());
-  DCHECK(!browser_context_id.empty());
-  DCHECK(enabled_ && features::kFirstPartySetsClearSiteDataOnChangedSets.Get());
+  CHECK(global_sets_.has_value());
+  CHECK(!browser_context_id.empty());
+  CHECK(enabled_ && features::kFirstPartySetsClearSiteDataOnChangedSets.Get());
 
   if (db_helper_.is_null()) {
     VLOG(1) << "Invalid First-Party Sets database. Failed to clear site data "
@@ -384,7 +388,7 @@ void FirstPartySetsHandlerImpl::DidClearSiteDataOnChangedSetsForContext(
                             net::FirstPartySetsCacheFilter)> callback,
     uint64_t failed_data_types) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!db_helper_.is_null());
+  CHECK(!db_helper_.is_null());
 
   // Only measures the successful rate without parsing the failed types, since
   // `failed_data_types` only has value if the failure is related to passwords
@@ -432,7 +436,7 @@ void FirstPartySetsHandlerImpl::ComputeFirstPartySetMetadataInternal(
     const net::FirstPartySetsContextConfig& config,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(global_sets_.has_value());
+  CHECK(global_sets_.has_value());
   std::move(callback).Run(global_sets_->ComputeMetadata(
       site, base::OptionalToPtr(top_frame_site), party_context, config));
 }
@@ -441,12 +445,13 @@ net::FirstPartySetsContextConfig
 FirstPartySetsHandlerImpl::GetContextConfigForPolicyInternal(
     const base::Value::Dict& policy) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  FirstPartySetParser::PolicyParseResult parsed_or_error =
+  CHECK(global_sets_.has_value());
+  auto [parsed, warnings] =
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy);
-  // Provide empty customization if the policy is malformed.
-  return parsed_or_error.has_value()
+
+  return parsed.has_value()
              ? FirstPartySetsHandlerImpl::ComputeEnterpriseContextConfig(
-                   global_sets_.value(), parsed_or_error.value().first)
+                   global_sets_.value(), parsed.value())
              : net::FirstPartySetsContextConfig();
 }
 

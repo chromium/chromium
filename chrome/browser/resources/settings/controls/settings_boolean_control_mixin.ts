@@ -126,6 +126,12 @@ export const SettingsBooleanControlMixin = dedupingMixin(
 
         /** Reset the checked state to match the current pref value. */
         resetToPrefValue() {
+          // Pref can be undefined, and will lead to console errors if accessed.
+          if (this.pref === undefined) {
+            this.checked = false;
+            return;
+          }
+
           this.checked = this.getNewValue_(this.pref!.value);
         }
 

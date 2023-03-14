@@ -18,12 +18,12 @@
       h1 {
         flex: 1;
         font-size: 170%;
-        white-space: var(--cr-toolbar-header-white-space, normal);
         font-weight: var(--cr-toolbar-header-font-weight, 500);
         letter-spacing: .25px;
         line-height: normal;
         margin-inline-start: 6px;
         padding-inline-end: 12px;
+        white-space: var(--cr-toolbar-header-white-space, normal);
       }
 
       @media (prefers-color-scheme: dark) {
@@ -143,14 +143,16 @@
               title="[[menuLabel]]">
           </cr-icon-button>
         </template>
-        <picture>
-          <source media="(prefers-color-scheme: dark)"
-              srcset="//resources/images/chrome_logo_dark.svg">
-          <img id="product-logo"
-              srcset="chrome://theme/current-channel-logo@1x 1x,
-                      chrome://theme/current-channel-logo@2x 2x"
-              role="presentation">
-        </picture>
+        <slot name="product-logo">
+          <picture>
+            <source media="(prefers-color-scheme: dark)"
+                srcset="//resources/images/chrome_logo_dark.svg">
+            <img id="product-logo"
+                srcset="chrome://theme/current-channel-logo@1x 1x,
+                        chrome://theme/current-channel-logo@2x 2x"
+                role="presentation">
+          </picture>
+        </slot>
         <h1>[[pageName]]</h1>
       </div>
     </div>

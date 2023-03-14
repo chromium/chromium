@@ -20,6 +20,11 @@ void FakeFastPairDelegate::SetAdapterStateController(
   adapter_state_controller_ = adapter_state_controller;
 }
 
+void FakeFastPairDelegate::UpdateDeviceNickname(const std::string& mac_address,
+                                                const std::string& nickname) {
+  mac_address_to_nickname_.insert_or_assign(mac_address, nickname);
+}
+
 void FakeFastPairDelegate::SetDeviceNameManager(
     DeviceNameManager* device_name_manager) {
   device_name_manager_ = device_name_manager;

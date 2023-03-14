@@ -8,7 +8,7 @@
 
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/net/crurl.h"
-#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/list_model/list_item+Controller.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_table_view_item.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_constants.h"
@@ -73,8 +73,12 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
   // A boolean value that indicates that the loading state is currently being
   // displayed.
   BOOL _displayedLoadingState;
-
+  // Indicates whether the TableViewController's tableViewModel has been
+  // initialized.
   BOOL _hasModelBeenInitialized;
+  // Indicates whether the user has tracked an item over the TableView's life
+  // time.
+  BOOL _hasExecutedItemTracking;
 }
 
 #pragma mark - UIViewController
@@ -236,44 +240,42 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
 
 - (void)didStopPriceTrackingItem:(PriceNotificationsTableViewItem*)trackedItem
                    onCurrentSite:(BOOL)isViewingProductSite {
-  [self.tableView
-      performBatchUpdates:^{
-        TableViewModel* model = self.tableViewModel;
-        SectionIdentifier trackedSection = SectionIdentifierTrackedItems;
+  TableViewModel* model = self.tableViewModel;
+  SectionIdentifier trackedSection = SectionIdentifierTrackedItems;
+  SectionIdentifier trackableSection =
+      SectionIdentifierTrackableItemsOnCurrentSite;
+  std::vector<SectionIdentifier> sectionsToReload;
+  BOOL addItemToTrackableSection =
+      isViewingProductSite && ![model hasItemForItemType:ItemTypeListItem
+                                       sectionIdentifier:trackableSection];
 
-        NSIndexPath* index = [model indexPathForItem:trackedItem];
-        [model removeItemWithType:ItemTypeListItem
-            fromSectionWithIdentifier:trackedSection
-                              atIndex:index.item];
-        [self.tableView
-            deleteRowsAtIndexPaths:@[ index ]
-                  withRowAnimation:UITableViewRowAnimationAutomatic];
-        trackedItem.tracking = NO;
+  trackedItem.tracking = NO;
+  NSIndexPath* index = [model indexPathForItem:trackedItem];
+  [model removeItemWithType:ItemTypeListItem
+      fromSectionWithIdentifier:trackedSection
+                        atIndex:index.item];
 
-        if (![model hasItemForItemType:ItemTypeListItem
-                     sectionIdentifier:trackedSection]) {
-          _hasTrackedItems = NO;
-          _itemOnCurrentSiteIsTracked = !isViewingProductSite;
-          [model setHeader:[self createHeaderForSectionIndex:
-                                     SectionIdentifierTrackedItems
-                                                     isEmpty:YES]
-              forSectionWithIdentifier:trackedSection];
-          [model setHeader:[self createHeaderForSectionIndex:
-                                     SectionIdentifierTableViewHeader
-                                                     isEmpty:YES]
-              forSectionWithIdentifier:SectionIdentifierTableViewHeader];
-          [self.tableView
-                reloadSections:[self createIndexSetForSectionIdentifiers:
-                                         {SectionIdentifierTrackedItems,
-                                          SectionIdentifierTableViewHeader}]
-              withRowAnimation:UITableViewRowAnimationAutomatic];
-        }
+  if (![model hasItemForItemType:ItemTypeListItem
+               sectionIdentifier:trackedSection]) {
+    _hasTrackedItems = NO;
+    [model setHeader:
+               [self createHeaderForSectionIndex:SectionIdentifierTrackedItems
+                                         isEmpty:YES]
+        forSectionWithIdentifier:trackedSection];
+    sectionsToReload.push_back(trackedSection);
+  }
 
-        if (isViewingProductSite) {
-          [self setTrackableItem:trackedItem currentlyTracking:NO];
-        }
-      }
-               completion:nil];
+  if (addItemToTrackableSection) {
+    self.itemOnCurrentSiteIsTracked = NO;
+    [model setHeader:[self createHeaderForSectionIndex:trackableSection
+                                               isEmpty:NO]
+        forSectionWithIdentifier:trackableSection];
+    [model insertItem:trackedItem
+        inSectionWithIdentifier:trackableSection
+                        atIndex:0];
+    sectionsToReload.push_back(trackableSection);
+  }
+
   NSString* messageText = l10n_util::GetNSString(
       IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_MENU_ITEM_STOP_TRACKING_SNACKBAR);
   MDCSnackbarMessage* message =
@@ -281,6 +283,27 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
   [self.snackbarCommandsHandler
       showSnackbarMessage:message
            withHapticType:UINotificationFeedbackTypeSuccess];
+
+  if (!self.viewIfLoaded.window) {
+    return;
+  }
+
+  if (addItemToTrackableSection) {
+    NSIndexPath* trackableSectionIndex =
+        [model indexPathForItemType:ItemTypeListItem
+                  sectionIdentifier:trackableSection];
+    [self.tableView moveRowAtIndexPath:index toIndexPath:trackableSectionIndex];
+  }
+
+  if (sectionsToReload.size()) {
+    [self.tableView reloadSections:[self createIndexSetForSectionIdentifiers:
+                                             sectionsToReload]
+                  withRowAnimation:UITableViewRowAnimationAutomatic];
+    return;
+  }
+
+  [self.tableView deleteRowsAtIndexPaths:@[ index ]
+                        withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 - (void)didStartPriceTrackingForItem:
@@ -288,6 +311,7 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
   TableViewModel* model = self.tableViewModel;
   SectionIdentifier trackableSectionID =
       SectionIdentifierTrackableItemsOnCurrentSite;
+  _hasExecutedItemTracking = YES;
 
   // This code removes the price trackable item from the trackable section and
   // adds it to the tracked section at the beginning of the list. It assumes
@@ -307,6 +331,12 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
       withRowAnimation:UITableViewRowAnimationAutomatic];
 
   [self addTrackedItem:trackableItem toBeginning:YES];
+}
+
+- (void)resetPriceTrackingItem:(PriceNotificationsTableViewItem*)item {
+  PriceNotificationsTableViewCell* cell = [self.tableView
+      cellForRowAtIndexPath:[self.tableViewModel indexPathForItem:item]];
+  [cell.trackButton setUserInteractionEnabled:YES];
 }
 
 #pragma mark - PriceNotificationsTableViewCellDelegate
@@ -333,6 +363,13 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
 - (void)addItem:(PriceNotificationsTableViewItem*)item
     toBeginning:(BOOL)toBeginning
       ofSection:(SectionIdentifier)sectionID {
+  if (sectionID == SectionIdentifierTrackableItemsOnCurrentSite &&
+      [self.tableViewModel
+          hasItemForItemType:ItemTypeListItem
+           sectionIdentifier:SectionIdentifierTrackableItemsOnCurrentSite]) {
+    return;
+  }
+
   DCHECK(item);
   item.type = ItemTypeListItem;
   item.delegate = self;
@@ -495,10 +532,16 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
     return header;
   }
 
-  if (self.itemOnCurrentSiteIsTracked) {
+  if (self.itemOnCurrentSiteIsTracked && _hasExecutedItemTracking) {
     header.subtitle = l10n_util::GetNSString(
         IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_DESCRIPTION_FOR_TRACKED_ITEM);
     header.URLs = @[ [[CrURL alloc] initWithGURL:GURL(kBookmarksSettingsURL)] ];
+    return header;
+  }
+
+  if (self.itemOnCurrentSiteIsTracked) {
+    header.subtitle = l10n_util::GetNSString(
+        IDS_IOS_PRICE_NOTIFICAITONS_PRICE_TRACK_TRACKABLE_ITEM_IS_TRACKED);
     return header;
   }
 
@@ -525,18 +568,18 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
 
 // Creates the TableViewHeaderFooterItem for the section
 // `SectionIdentifierTableViewHeader`
-- (TableViewLinkHeaderFooterItem*)createHeaderForTableViewHeaderSection:
+- (TableViewTextHeaderFooterItem*)createHeaderForTableViewHeaderSection:
     (BOOL)isEmpty {
-  TableViewLinkHeaderFooterItem* header = [[TableViewLinkHeaderFooterItem alloc]
+  TableViewTextHeaderFooterItem* header = [[TableViewTextHeaderFooterItem alloc]
       initWithType:ItemTypeTableViewHeader];
 
-  if (isEmpty) {
-    header.text = l10n_util::GetNSString(
+  if (isEmpty && !self.hasPreviouslyViewed) {
+    header.subtitle = l10n_util::GetNSString(
         IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_DESCRIPTION_EMPTY_STATE);
     return header;
   }
 
-  header.text = l10n_util::GetNSString(
+  header.subtitle = l10n_util::GetNSString(
       IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_DESCRIPTION);
   return header;
 }

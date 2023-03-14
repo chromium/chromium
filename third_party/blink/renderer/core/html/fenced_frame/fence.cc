@@ -12,6 +12,7 @@
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_fence_event.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_fenceevent_string.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -19,6 +20,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -35,6 +37,8 @@ blink::FencedFrame::ReportingDestination ToPublicDestination(
       return blink::FencedFrame::ReportingDestination::kSeller;
     case V8FenceReportingDestination::Enum::kComponentSeller:
       return blink::FencedFrame::ReportingDestination::kComponentSeller;
+    case V8FenceReportingDestination::Enum::kDirectSeller:
+      return blink::FencedFrame::ReportingDestination::kDirectSeller;
     case V8FenceReportingDestination::Enum::kSharedStorageSelectUrl:
       return blink::FencedFrame::ReportingDestination::kSharedStorageSelectUrl;
   }
@@ -49,39 +53,18 @@ void Fence::Trace(Visitor* visitor) const {
   ExecutionContextClient::Trace(visitor);
 }
 
-LocalFrame* Fence::GetAssociatedFencedFrameForReporting() {
-  LocalFrame* frame = DomWindow()->GetFrame();
-  DCHECK(frame);
-
-  if (blink::features::IsAllowURNsInIframeEnabled() &&
-      !frame->IsInFencedFrameTree()) {
-    DCHECK(frame->GetDocument());
-    return frame;
+void Fence::reportEvent(ScriptState* script_state,
+                        const V8UnionFenceEventOrString* event,
+                        ExceptionState& exception_state) {
+  switch (event->GetContentType()) {
+    case V8UnionFenceEventOrString::ContentType::kString:
+      reportPrivateAggregationEvent(script_state, event->GetAsString(),
+                                    exception_state);
+      return;
+    case V8UnionFenceEventOrString::ContentType::kFenceEvent:
+      reportEvent(script_state, event->GetAsFenceEvent(), exception_state);
+      return;
   }
-
-  // We can only reach this point if we are in a fenced frame tree. If we were
-  // not in a fenced frame tree and `IsAllowURNsInIframeEnabled()` were
-  // disabled, then `this` would not have been constructed in the first place.
-  DCHECK(frame->IsInFencedFrameTree());
-
-  if (frame->GetFencedFrameMode() !=
-      mojom::blink::FencedFrameMode::kOpaqueAds) {
-    AddConsoleMessage(
-        "Fenced event reporting is only available in the 'opaque-ads' mode.");
-    return nullptr;
-  }
-
-  Frame* top_frame = frame->Top();
-  if (!frame->GetSecurityContext()->GetSecurityOrigin()->CanAccess(
-          top_frame->GetSecurityContext()->GetSecurityOrigin())) {
-    AddConsoleMessage(
-        "Fenced event reporting is only available in same-origin subframes.");
-    return nullptr;
-  }
-
-  LocalFrame* fenced_frame = DynamicTo<LocalFrame>(top_frame);
-  DCHECK(fenced_frame);
-  return fenced_frame;
 }
 
 void Fence::reportEvent(ScriptState* script_state,
@@ -100,13 +83,10 @@ void Fence::reportEvent(ScriptState* script_state,
     return;
   }
 
-  LocalFrame* fenced_frame = GetAssociatedFencedFrameForReporting();
-  if (!fenced_frame) {
-    return;
-  }
-
+  LocalFrame* frame = DomWindow()->GetFrame();
+  DCHECK(frame->GetDocument());
   bool has_fenced_frame_reporting =
-      fenced_frame->GetDocument()->Loader()->HasFencedFrameReporting();
+      frame->GetDocument()->Loader()->HasFencedFrameReporting();
   if (!has_fenced_frame_reporting) {
     AddConsoleMessage("This frame did not register reporting metadata.");
     return;
@@ -114,7 +94,7 @@ void Fence::reportEvent(ScriptState* script_state,
 
   for (const V8FenceReportingDestination& web_destination :
        event->destination()) {
-    fenced_frame->GetLocalFrameHostRemote().SendFencedFrameReportingBeacon(
+    frame->GetLocalFrameHostRemote().SendFencedFrameReportingBeacon(
         event->eventData(), event->eventType(),
         ToPublicDestination(web_destination));
   }
@@ -130,10 +110,6 @@ void Fence::setReportEventDataForAutomaticBeacons(
         "fully active");
     return;
   }
-  LocalFrame* fenced_frame = GetAssociatedFencedFrameForReporting();
-  if (!fenced_frame) {
-    return;
-  }
   if (event->eventType() != blink::kFencedFrameTopNavigationBeaconType) {
     AddConsoleMessage(event->eventType() +
                       " is not a valid automatic beacon event type.");
@@ -145,8 +121,10 @@ void Fence::setReportEventDataForAutomaticBeacons(
         "the maximum length, which is 64KB.");
     return;
   }
+  LocalFrame* frame = DomWindow()->GetFrame();
+  DCHECK(frame->GetDocument());
   bool has_fenced_frame_reporting =
-      fenced_frame->GetDocument()->Loader()->HasFencedFrameReporting();
+      frame->GetDocument()->Loader()->HasFencedFrameReporting();
   if (!has_fenced_frame_reporting) {
     AddConsoleMessage("This frame did not register reporting metadata.");
     return;
@@ -156,9 +134,8 @@ void Fence::setReportEventDataForAutomaticBeacons(
        event->destination()) {
     destination_vector.push_back(ToPublicDestination(web_destination));
   }
-  fenced_frame->GetLocalFrameHostRemote()
-      .SetFencedFrameAutomaticBeaconReportEventData(event->eventData(),
-                                                    destination_vector);
+  frame->GetLocalFrameHostRemote().SetFencedFrameAutomaticBeaconReportEventData(
+      event->eventData(), destination_vector);
 }
 
 HeapVector<Member<FencedFrameConfig>> Fence::getNestedConfigs(
@@ -181,6 +158,42 @@ HeapVector<Member<FencedFrameConfig>> Fence::getNestedConfigs(
     }
   }
   return out;
+}
+
+void Fence::reportPrivateAggregationEvent(ScriptState* script_state,
+                                          const String& event,
+                                          ExceptionState& exception_state) {
+  if (!RuntimeEnabledFeatures::PrivateAggregationApiFledgeExtensionsEnabled(
+          ExecutionContext::From(script_state))) {
+    exception_state.ThrowSecurityError(
+        "FLEDGE extensions must be enabled to use reportEvent() for private "
+        "aggregation events.");
+    return;
+  }
+  if (!DomWindow()) {
+    exception_state.ThrowSecurityError(
+        "May not use a Fence object associated with a Document that is not "
+        "fully active");
+    return;
+  }
+
+  if (event.StartsWith(blink::kFencedFrameReservedPAEventPrefix)) {
+    AddConsoleMessage("Reserved events cannot be triggered manually.");
+    return;
+  }
+
+  LocalFrame* frame = DomWindow()->GetFrame();
+  DCHECK(frame->GetDocument());
+
+  bool has_fenced_frame_reporting =
+      frame->GetDocument()->Loader()->HasFencedFrameReporting();
+  if (!has_fenced_frame_reporting) {
+    AddConsoleMessage("This frame did not register reporting metadata.");
+    return;
+  }
+
+  frame->GetLocalFrameHostRemote()
+      .SendPrivateAggregationRequestsForFencedFrameEvent(event);
 }
 
 void Fence::AddConsoleMessage(const String& message) {

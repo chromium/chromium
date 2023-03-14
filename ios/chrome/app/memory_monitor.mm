@@ -62,13 +62,16 @@ void UpdateMemoryValues() {
 void AsynchronousFreeMemoryMonitor() {
   UpdateMemoryValues();
   base::ThreadPool::PostDelayedTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&AsynchronousFreeMemoryMonitor), kMemoryMonitorDelay);
 }
 }  // namespace
 
 void StartFreeMemoryMonitor() {
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&AsynchronousFreeMemoryMonitor));
+  base::ThreadPool::PostTask(FROM_HERE,
+                             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+                              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+                             base::BindOnce(&AsynchronousFreeMemoryMonitor));
 }

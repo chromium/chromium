@@ -5,7 +5,7 @@
 #import "ios/chrome/app/app_startup_parameters.h"
 
 #import "base/feature_list.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "net/base/mac/url_conversions.h"
 #import "net/base/url_util.h"

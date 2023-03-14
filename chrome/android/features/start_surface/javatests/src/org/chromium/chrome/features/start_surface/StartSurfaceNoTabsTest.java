@@ -38,7 +38,6 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
@@ -105,7 +104,6 @@ public class StartSurfaceNoTabsTest {
     @Feature({"StartSurface"})
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "tab_count_button_on_start_surface/true"})
-    @DisabledTest(message = "https://crbug.com/1263910")
     public void testShow_SingleAsHomepage_NoTabs() throws TimeoutException {
         // clang-format on
         CriteriaHelper.pollUiThread(

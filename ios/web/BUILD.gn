@@ -676,9 +676,6 @@ bundle_data("navigation_resources") {
 grit("resources") {
   source = "ios_web_resources.grd"
 
-  # Required due to flattenhtml="true" on a generated file.
-  enable_input_discovery_for_gn_analyze = false
-
   outputs = [
     "grit/ios_web_resources.h",
     "grit/ios_web_resources_map.cc",
@@ -687,8 +684,6 @@ grit("resources") {
   ]
   deps = [
     "//mojo/public/js:bindings",
-    "//ui/base/mojom",
-    "//url/mojom:url_mojom_gurl",
-    "//url/mojom:url_mojom_origin",
+    "//ui/webui/resources/mojo:build_ts",
   ]
 }

@@ -309,21 +309,21 @@ source_set("common") {
 
   if (is_ios) {
     # TOOD: Create ios file instead of stealing android
-    sources += [
-      "cursors/webcursor_android.cc",
-      "font_list_android.cc",
-    ]
+    sources += [ "cursors/webcursor_android.cc" ]
   }
 
   if (is_mac) {
     sources += [
-      "font_list_mac.mm",
       "mac/attributed_string_type_converters.h",
       "mac/attributed_string_type_converters.mm",
       "mac/task_port_policy.cc",
       "mac/task_port_policy.h",
     ]
     deps += [ "//sandbox/mac:seatbelt" ]
+  }
+
+  if (is_apple) {
+    sources += [ "font_list_mac.mm" ]
   }
 
   if (is_win) {
@@ -454,7 +454,6 @@ mojom("mojo_bindings") {
 
   sources = [
     "agent_scheduling_group.mojom",
-    "aggregatable_report.mojom",
     "associated_interfaces.mojom",
     "child_process.mojom",
     "dom_automation_controller.mojom",
@@ -467,12 +466,10 @@ mojom("mojo_bindings") {
     "media/media_log_records.mojom",
     "native_types.mojom",
     "navigation_client.mojom",
-    "private_aggregation_host.mojom",
     "render_message_filter.mojom",
     "renderer.mojom",
     "renderer_host.mojom",
     "renderer_variations_configuration.mojom",
-    "shared_storage_worklet_service.mojom",
     "web_ui.mojom",
   ]
 
@@ -608,7 +605,6 @@ mojom("mojo_bindings") {
   public_deps = [
     "//cc/mojom",
     "//components/attribution_reporting:mojom",
-    "//components/services/storage/shared_storage/public/mojom",
     "//components/variations:variations_mojom",
     "//content/public/common:interfaces",
     "//ipc:mojom",

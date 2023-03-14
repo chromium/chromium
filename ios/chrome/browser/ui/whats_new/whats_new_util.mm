@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/whats_new/feature_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -84,11 +84,10 @@ void SetWhatsNewUsed() {
   }
 
   // Deregister What's New promo.
-  if (IsFullscreenPromosManagerEnabled()) {
-    PromosManager* promosManager = GetApplicationContext()->GetPromosManager();
-    DCHECK(promosManager);
-    promosManager->DeregisterPromo(promos_manager::Promo::WhatsNew);
-  }
+  PromosManager* promosManager = GetApplicationContext()->GetPromosManager();
+  DCHECK(promosManager);
+
+  promosManager->DeregisterPromo(promos_manager::Promo::WhatsNew);
 
   [[NSUserDefaults standardUserDefaults] setBool:YES
                                           forKey:kWhatsNewUsageEntryKey];

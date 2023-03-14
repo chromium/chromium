@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/login/screens/terms_of_service_screen.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -93,7 +92,7 @@ std::unique_ptr<HttpResponse> HandleRequest(const HttpRequest& request) {
 
 class PublicSessionTosScreenTest : public OobeBaseTest {
  public:
-  PublicSessionTosScreenTest() {}
+  PublicSessionTosScreenTest() = default;
   ~PublicSessionTosScreenTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -255,7 +254,8 @@ IN_PROC_BROWSER_TEST_F(PublicSessionTosScreenTest, Skipped) {
   histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Tos", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(PublicSessionTosScreenTest, Accepted) {
+// TODO(crbug.com/1418704) flaky.
+IN_PROC_BROWSER_TEST_F(PublicSessionTosScreenTest, DISABLED_Accepted) {
   SetUpTermsOfServiceUrlPolicy();
   StartPublicSession();
 
@@ -298,10 +298,10 @@ IN_PROC_BROWSER_TEST_F(PublicSessionTosScreenTest, Declined) {
   EXPECT_TRUE(LoginScreenTestApi::IsPublicSessionExpanded());
 }
 
-class ManagedUserTosScreenTestBase : public OobeBaseTest {
+class ManagedUserTosScreenTest : public OobeBaseTest {
  public:
-  ManagedUserTosScreenTestBase() = default;
-  ~ManagedUserTosScreenTestBase() override = default;
+  ManagedUserTosScreenTest() = default;
+  ~ManagedUserTosScreenTest() override = default;
 
   void RegisterAdditionalRequestHandlers() override {
     embedded_test_server()->RegisterRequestHandler(
@@ -338,9 +338,8 @@ class ManagedUserTosScreenTestBase : public OobeBaseTest {
   void SetUpExitCallback() {
     auto* screen = GetTosScreen();
     original_callback_ = screen->get_exit_callback_for_testing();
-    screen->set_exit_callback_for_testing(
-        base::BindRepeating(&ManagedUserTosScreenTestBase::HandleScreenExit,
-                            base::Unretained(this)));
+    screen->set_exit_callback_for_testing(base::BindRepeating(
+        &ManagedUserTosScreenTest::HandleScreenExit, base::Unretained(this)));
   }
 
   void WaitForScreenShown() {
@@ -399,16 +398,6 @@ class ManagedUserTosScreenTestBase : public OobeBaseTest {
                                          {managed_user_},
                                          nullptr,
                                          &cryptohome_mixin_};
-};
-
-class ManagedUserTosScreenTest : public ManagedUserTosScreenTestBase {
- public:
-  ManagedUserTosScreenTest() {
-    feature_list_.InitWithFeatures({features::kManagedTermsOfService}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ManagedUserTosScreenTest, Skipped) {
@@ -495,7 +484,7 @@ OobeScreenId PendingScreenToId(PendingScreen pending_screen) {
 }
 
 class ManagedUserTosOnboardingResumeTest
-    : public ManagedUserTosScreenTestBase,
+    : public ManagedUserTosScreenTest,
       public LocalStateMixin::Delegate,
       public ::testing::WithParamInterface<PendingScreen> {
  public:
@@ -522,7 +511,6 @@ class ManagedUserTosOnboardingResumeTest
   PendingScreen pending_screen_param_;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
 

@@ -72,8 +72,9 @@ void* VirtualAllocWithRetry(void* address,
     // Only retry for commit failures. If this is an address space problem
     // (e.g. caller asked for an address which is not available), this is
     // unlikely to be resolved by waiting.
-    if (ret || !should_retry || !IsOutOfMemory(GetLastError()))
+    if (ret || !should_retry || !IsOutOfMemory(GetLastError())) {
       break;
+    }
 
     Sleep(kDelayMs);
   }
@@ -142,8 +143,9 @@ bool TrySetSystemPagesAccessInternal(
     PageAccessibilityConfiguration accessibility) {
   void* ptr = reinterpret_cast<void*>(address);
   if (accessibility.permissions ==
-      PageAccessibilityConfiguration::kInaccessible)
+      PageAccessibilityConfiguration::kInaccessible) {
     return VirtualFree(ptr, length, MEM_DECOMMIT) != 0;
+  }
   // Call the retry path even though this function can fail, because callers of
   // this are likely to crash the process when this function fails, and we don't
   // want that for transient failures.
@@ -167,8 +169,9 @@ void SetSystemPagesAccessInternal(
     if (!VirtualAllocWithRetry(ptr, length, MEM_COMMIT,
                                GetAccessFlags(accessibility))) {
       int32_t error = GetLastError();
-      if (error == ERROR_COMMITMENT_LIMIT)
+      if (error == ERROR_COMMITMENT_LIMIT) {
         OOM_CRASH(length);
+      }
       // We check `GetLastError` for `ERROR_SUCCESS` here so that in a crash
       // report we get the error number.
       PA_CHECK(ERROR_SUCCESS == error);

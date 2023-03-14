@@ -100,9 +100,9 @@ std::string NetworkTestHelperBase::ConfigureService(
     const std::string& shill_json_string) {
   last_created_service_path_.clear();
 
-  base::Value shill_json_dict =
+  absl::optional<base::Value::Dict> shill_json_dict =
       chromeos::onc::ReadDictionaryFromJson(shill_json_string);
-  if (!shill_json_dict.is_dict()) {
+  if (!shill_json_dict.has_value()) {
     LOG(ERROR) << "Error parsing json: " << shill_json_string;
     return last_created_service_path_;
   }
@@ -113,7 +113,7 @@ std::string NetworkTestHelperBase::ConfigureService(
   // error cases, ConfigureCallback() will not run, resulting in "" being
   // returned from this function.
   ShillManagerClient::Get()->ConfigureService(
-      shill_json_dict.GetDict(),
+      *shill_json_dict,
       base::BindOnce(&NetworkTestHelperBase::ConfigureCallback,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&FailErrorCallback));

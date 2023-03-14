@@ -81,6 +81,9 @@ class AffiliationFetchThrottler
   // completed, either with |success| or not.
   virtual void InformOfNetworkRequestComplete(bool success);
 
+  // Returns whether there is internet connection or not.
+  virtual bool HasInternetConnection() const;
+
  protected:
   raw_ptr<AffiliationFetchThrottlerDelegate> delegate_;
 

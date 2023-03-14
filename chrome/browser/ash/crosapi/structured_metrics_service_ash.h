@@ -28,7 +28,7 @@ class StructuredMetricsServiceAsh final
       mojo::PendingReceiver<mojom::StructuredMetricsService> receiver);
 
   // crosapi::mojom::StructuredMetricsService
-  void Record(const std::vector<::metrics::structured::Event>& events) override;
+  void Record(std::vector<::metrics::structured::Event> events) override;
 
  private:
   mojo::ReceiverSet<mojom::StructuredMetricsService> receivers_;

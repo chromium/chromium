@@ -45,14 +45,15 @@ void AccountSelectFillData::Add(const autofill::PasswordFormFillData& form_data,
   credentials_.clear();
 
   credentials_.push_back(
-      {form_data.preferred_login.username, form_data.preferred_login.password,
+      {form_data.preferred_login.username_value,
+       form_data.preferred_login.password_value,
        is_cross_origin_iframe && form_data.preferred_login.realm.empty()
            ? form_data.url.spec()
            : form_data.preferred_login.realm});
 
   for (const auto& username_password_and_realm : form_data.additional_logins) {
-    const std::u16string& username = username_password_and_realm.username;
-    const std::u16string& password = username_password_and_realm.password;
+    const std::u16string& username = username_password_and_realm.username_value;
+    const std::u16string& password = username_password_and_realm.password_value;
     const std::string& realm = username_password_and_realm.realm;
     if (is_cross_origin_iframe && realm.empty()) {
       credentials_.push_back({username, password, form_data.url.spec()});

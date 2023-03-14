@@ -105,9 +105,9 @@
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/test_switches.h"
-#include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/dbus/cros_disks/fake_cros_disks_client.h"
+#include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/disks/mount_point.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "chromeos/ash/components/drivefs/fake_drivefs.h"
@@ -821,6 +821,45 @@ struct GetLocalPathMessage {
 };
 
 }  // anonymous namespace
+
+ash::LoggedInUserMixin::LogInType LogInTypeFor(
+    TestAccountType test_account_type) {
+  switch (test_account_type) {
+    case kTestAccountTypeNotSet:
+      CHECK(false) << "test_account_type option must be set for "
+                      "LoggedInUserFilesAppBrowserTest";
+      // TODO(crbug.com/1061742): `base::ImmediateCrash` is necessary.
+      base::ImmediateCrash();
+    case kEnterprise:
+      return ash::LoggedInUserMixin::LogInType::kRegular;
+    case kChild:
+      return ash::LoggedInUserMixin::LogInType::kChild;
+    case kNonManaged:
+    case kNonManagedNonOwner:
+      return ash::LoggedInUserMixin::LogInType::kRegular;
+  }
+}
+
+absl::optional<AccountId> AccountIdFor(TestAccountType test_account_type) {
+  switch (test_account_type) {
+    case kTestAccountTypeNotSet:
+      CHECK(false) << "test_account_type option must be set for "
+                      "LoggedInUserFilesAppBrowserTest";
+      // `base::ImmediateCrash` is necessary for https://crbug.com/1061742.
+      base::ImmediateCrash();
+    case kEnterprise:
+      return AccountId::FromUserEmailGaiaId(
+          FakeGaiaMixin::kEnterpriseUser1,
+          FakeGaiaMixin::kEnterpriseUser1GaiaId);
+    case kChild:
+      // Use the default account provided by `LoggedInUserMixin`.
+      return absl::nullopt;
+    case kNonManaged:
+    case kNonManagedNonOwner:
+      // Use the default account provided by `LoggedInUserMixin`.
+      return absl::nullopt;
+  }
+}
 
 std::ostream& operator<<(std::ostream& out, const GuestMode mode) {
   switch (mode) {

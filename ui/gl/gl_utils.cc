@@ -34,6 +34,9 @@
 namespace gl {
 namespace {
 
+// The global set of workarounds.
+GlWorkarounds g_workarounds;
+
 int GetIntegerv(unsigned int name) {
   int value = 0;
   glGetIntegerv(name, &value);
@@ -123,6 +126,14 @@ bool PassthroughCommandDecoderSupported() {
 #endif  // defined(USE_EGL)
 }
 
+const GlWorkarounds& GetGlWorkarounds() {
+  return g_workarounds;
+}
+
+void SetGlWorkarounds(const GlWorkarounds& workarounds) {
+  g_workarounds = workarounds;
+}
+
 #if BUILDFLAG(IS_WIN)
 unsigned int FrameRateToPresentDuration(float frame_rate) {
   if (frame_rate == 0)
@@ -176,13 +187,20 @@ void LabelSwapChainAndBuffers(IDXGISwapChain* swap_chain,
 #endif  // BUILDFLAG(IS_WIN)
 
 GLDisplay* GetDisplay(GpuPreference gpu_preference) {
+  return GetDisplay(gpu_preference, gl::DisplayKey::kDefault);
+}
+
+GL_EXPORT GLDisplay* GetDisplay(GpuPreference gpu_preference,
+                                gl::DisplayKey display_key) {
 #if defined(USE_GLX)
   if (!GLDisplayManagerX11::GetInstance()->IsEmpty()) {
-    return GLDisplayManagerX11::GetInstance()->GetDisplay(gpu_preference);
+    return GLDisplayManagerX11::GetInstance()->GetDisplay(gpu_preference,
+                                                          display_key);
   }
 #endif
 #if defined(USE_EGL)
-  return GLDisplayManagerEGL::GetInstance()->GetDisplay(gpu_preference);
+  return GLDisplayManagerEGL::GetInstance()->GetDisplay(gpu_preference,
+                                                        display_key);
 #endif
   NOTREACHED();
   return nullptr;

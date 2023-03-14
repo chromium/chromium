@@ -152,23 +152,25 @@ TEST(CommanderHandlerTest, DisplayResultsViewModelPassed) {
   EXPECT_EQ("cr.webUIListenerCallback", call_data.function_name());
   EXPECT_EQ("view-model-updated", call_data.arg1()->GetString());
 
-  const base::Value* arg = call_data.arg2();
+  const base::Value::Dict& arg = call_data.arg2()->GetDict();
   EXPECT_EQ(
       "Test item",
-      arg->FindPath("options")->GetList()[0].FindPath("title")->GetString());
-  EXPECT_EQ(0, arg->FindPath("options")
+      arg.Find("options")->GetList()[0].GetDict().Find("title")->GetString());
+  EXPECT_EQ(0, arg.Find("options")
                    ->GetList()[0]
-                   .FindPath("matchedRanges")
+                   .GetDict()
+                   .Find("matchedRanges")
                    ->GetList()[0]
                    .GetList()[0]
                    .GetInt());
-  EXPECT_EQ(4, arg->FindPath("options")
+  EXPECT_EQ(4, arg.Find("options")
                    ->GetList()[0]
-                   .FindPath("matchedRanges")
+                   .GetDict()
+                   .Find("matchedRanges")
                    ->GetList()[0]
                    .GetList()[1]
                    .GetInt());
-  EXPECT_EQ(42, arg->FindPath("resultSetId")->GetInt());
+  EXPECT_EQ(42, arg.Find("resultSetId")->GetInt());
 }
 
 TEST(CommanderHandlerTest, PromptViewModelPassed) {
@@ -187,9 +189,9 @@ TEST(CommanderHandlerTest, PromptViewModelPassed) {
   EXPECT_EQ("cr.webUIListenerCallback", call_data.function_name());
   EXPECT_EQ("view-model-updated", call_data.arg1()->GetString());
 
-  const base::Value* arg = call_data.arg2();
-  EXPECT_EQ("Select fruit", arg->FindPath("promptText")->GetString());
-  EXPECT_EQ(42, arg->FindPath("resultSetId")->GetInt());
+  const base::Value::Dict& arg = call_data.arg2()->GetDict();
+  EXPECT_EQ("Select fruit", arg.Find("promptText")->GetString());
+  EXPECT_EQ(42, arg.Find("resultSetId")->GetInt());
 }
 
 TEST(CommanderHandlerTest, Initialize) {

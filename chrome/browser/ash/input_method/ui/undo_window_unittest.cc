@@ -51,14 +51,14 @@ class UndoWindowTest : public ChromeViewsTestBase {
 };
 
 TEST_F(UndoWindowTest, HighlightsUndoButtonWhenNotHighlighted) {
-  undo_window_->Show();
+  undo_window_->Show(false);
   undo_window_->SetButtonHighlighted(undo_button_, true);
 
   EXPECT_TRUE(undo_window_->GetUndoButtonForTesting()->background() != nullptr);
 }
 
 TEST_F(UndoWindowTest, KeepsHighlightingUndoButtonWhenAlreadyHighlighted) {
-  undo_window_->Show();
+  undo_window_->Show(false);
   undo_window_->SetButtonHighlighted(undo_button_, true);
   undo_window_->SetButtonHighlighted(undo_button_, true);
 
@@ -66,7 +66,7 @@ TEST_F(UndoWindowTest, KeepsHighlightingUndoButtonWhenAlreadyHighlighted) {
 }
 
 TEST_F(UndoWindowTest, UnhighlightsUndoButtonWhenHighlighted) {
-  undo_window_->Show();
+  undo_window_->Show(false);
   undo_window_->SetButtonHighlighted(undo_button_, true);
   undo_window_->SetButtonHighlighted(undo_button_, false);
 
@@ -75,7 +75,7 @@ TEST_F(UndoWindowTest, UnhighlightsUndoButtonWhenHighlighted) {
 
 TEST_F(UndoWindowTest,
        UnhighlightsKeepUndoButtonUnhighlightedWhenAlreadyNotHighlighted) {
-  undo_window_->Show();
+  undo_window_->Show(false);
   undo_window_->SetButtonHighlighted(undo_button_, false);
   undo_window_->SetButtonHighlighted(undo_button_, false);
 

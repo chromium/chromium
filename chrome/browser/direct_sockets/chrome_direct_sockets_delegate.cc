@@ -32,7 +32,7 @@ bool ChromeDirectSocketsDelegate::ValidateAddressAndPort(
     const GURL& lock_url,
     const std::string& address,
     uint16_t port,
-    blink::mojom::DirectSocketProtocolType protocol) const {
+    ProtocolType protocol) const {
   if (!IsLockedToExtension(lock_url)) {
     return true;
   }
@@ -43,18 +43,18 @@ bool ChromeDirectSocketsDelegate::ValidateAddressAndPort(
   DCHECK(extension);
 
   switch (protocol) {
-    case blink::mojom::DirectSocketProtocolType::kTcp:
+    case ProtocolType::kTcp:
       return extensions::SocketsManifestData::CheckRequest(
           extension,
           /*request=*/{content::SocketPermissionRequest::TCP_CONNECT, address,
                        port});
-    case blink::mojom::DirectSocketProtocolType::kUdp:
+    case ProtocolType::kConnectedUdp:
       return extensions::SocketsManifestData::CheckRequest(
           extension,
           /*request=*/{content::SocketPermissionRequest::UDP_SEND_TO, address,
                        port});
-    case blink::mojom::DirectSocketProtocolType::kUdpServer:
-      // For kUdpServer we check both UDP_BIND for the given |address| and
+    case ProtocolType::kBoundUdp:
+      // For kBoundUdp we check both UDP_BIND for the given |address| and
       // |port| as well as ensure that UDP_SEND_TO allows routing packets
       // anywhere. '*' is the wildcard address, 0 is the wildcard port.
       return extensions::SocketsManifestData::CheckRequest(
@@ -65,5 +65,9 @@ bool ChromeDirectSocketsDelegate::ValidateAddressAndPort(
                  extension,
                  /*request=*/{content::SocketPermissionRequest::UDP_SEND_TO,
                               /*host=*/"*", /*port=*/0});
+    case ProtocolType::kTcpServer:
+      return extensions::SocketsManifestData::CheckRequest(
+          extension, /*request=*/{content::SocketPermissionRequest::TCP_LISTEN,
+                                  address, port});
   }
 }

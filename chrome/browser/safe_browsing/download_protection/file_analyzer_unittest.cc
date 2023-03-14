@@ -150,10 +150,9 @@ TEST_F(FileAnalyzerTest, TypeZippedExecutable) {
   base::ScopedTempDir zip_source_dir;
   ASSERT_TRUE(zip_source_dir.CreateUniqueTempDir());
   std::string file_contents = "dummy file";
-  ASSERT_EQ(static_cast<int>(file_contents.size()),
-            base::WriteFile(
-                zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.exe")),
-                file_contents.data(), file_contents.size()));
+  ASSERT_TRUE(base::WriteFile(
+      zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.exe")),
+      file_contents));
   ASSERT_TRUE(zip::Zip(zip_source_dir.GetPath(), tmp_path,
                        /* include_hidden_files= */ false));
 
@@ -204,10 +203,9 @@ TEST_F(FileAnalyzerTest, TypeZippedArchive) {
   base::ScopedTempDir zip_source_dir;
   ASSERT_TRUE(zip_source_dir.CreateUniqueTempDir());
   std::string file_contents = "dummy file";
-  ASSERT_EQ(static_cast<int>(file_contents.size()),
-            base::WriteFile(
-                zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.zip")),
-                file_contents.data(), file_contents.size()));
+  ASSERT_TRUE(base::WriteFile(
+      zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.zip")),
+      file_contents));
   ASSERT_TRUE(zip::Zip(zip_source_dir.GetPath(), tmp_path,
                        /* include_hidden_files= */ false));
 
@@ -232,9 +230,7 @@ TEST_F(FileAnalyzerTest, TypeInvalidZip) {
       temp_dir_.GetPath().Append(FILE_PATH_LITERAL("tmp.crdownload"));
 
   std::string file_contents = "invalid contents";
-  ASSERT_EQ(
-      static_cast<int>(file_contents.size()),
-      base::WriteFile(tmp_path, file_contents.data(), file_contents.size()));
+  ASSERT_TRUE(base::WriteFile(tmp_path, file_contents));
 
   analyzer.Start(
       target_path, tmp_path,
@@ -262,9 +258,7 @@ TEST_F(FileAnalyzerTest, TypeInvalidDmg) {
       temp_dir_.GetPath().Append(FILE_PATH_LITERAL("tmp.crdownload"));
 
   std::string file_contents = "invalid contents";
-  ASSERT_EQ(
-      static_cast<int>(file_contents.size()),
-      base::WriteFile(tmp_path, file_contents.data(), file_contents.size()));
+  ASSERT_TRUE(base::WriteFile(tmp_path, file_contents));
 
   analyzer.Start(
       target_path, tmp_path,
@@ -294,10 +288,9 @@ TEST_F(FileAnalyzerTest, ArchiveIsValidSetForValidArchive) {
   base::ScopedTempDir zip_source_dir;
   ASSERT_TRUE(zip_source_dir.CreateUniqueTempDir());
   std::string file_contents = "dummy file";
-  ASSERT_EQ(static_cast<int>(file_contents.size()),
-            base::WriteFile(
-                zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.exe")),
-                file_contents.data(), file_contents.size()));
+  ASSERT_TRUE(base::WriteFile(
+      zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.exe")),
+      file_contents));
   ASSERT_TRUE(zip::Zip(zip_source_dir.GetPath(), tmp_path,
                        /* include_hidden_files= */ false));
 
@@ -323,9 +316,7 @@ TEST_F(FileAnalyzerTest, ArchiveIsValidSetForInvalidArchive) {
       temp_dir_.GetPath().Append(FILE_PATH_LITERAL("tmp.crdownload"));
 
   std::string file_contents = "invalid zip";
-  ASSERT_EQ(
-      static_cast<int>(file_contents.size()),
-      base::WriteFile(tmp_path, file_contents.data(), file_contents.size()));
+  ASSERT_TRUE(base::WriteFile(tmp_path, file_contents));
 
   analyzer.Start(
       target_path, tmp_path,
@@ -351,10 +342,9 @@ TEST_F(FileAnalyzerTest, ArchivedExecutableSetForZipWithExecutable) {
   base::ScopedTempDir zip_source_dir;
   ASSERT_TRUE(zip_source_dir.CreateUniqueTempDir());
   std::string file_contents = "dummy file";
-  ASSERT_EQ(static_cast<int>(file_contents.size()),
-            base::WriteFile(
-                zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.exe")),
-                file_contents.data(), file_contents.size()));
+  ASSERT_TRUE(base::WriteFile(
+      zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.exe")),
+      file_contents));
   ASSERT_TRUE(zip::Zip(zip_source_dir.GetPath(), tmp_path,
                        /* include_hidden_files= */ false));
 
@@ -381,10 +371,9 @@ TEST_F(FileAnalyzerTest, ArchivedExecutableFalseForZipNoExecutable) {
   base::ScopedTempDir zip_source_dir;
   ASSERT_TRUE(zip_source_dir.CreateUniqueTempDir());
   std::string file_contents = "dummy file";
-  ASSERT_EQ(static_cast<int>(file_contents.size()),
-            base::WriteFile(
-                zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.txt")),
-                file_contents.data(), file_contents.size()));
+  ASSERT_TRUE(base::WriteFile(
+      zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.txt")),
+      file_contents));
   ASSERT_TRUE(zip::Zip(zip_source_dir.GetPath(), tmp_path,
                        /* include_hidden_files= */ false));
 
@@ -411,10 +400,9 @@ TEST_F(FileAnalyzerTest, ArchivedArchiveSetForZipWithArchive) {
   base::ScopedTempDir zip_source_dir;
   ASSERT_TRUE(zip_source_dir.CreateUniqueTempDir());
   std::string file_contents = "dummy file";
-  ASSERT_EQ(static_cast<int>(file_contents.size()),
-            base::WriteFile(
-                zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.zip")),
-                file_contents.data(), file_contents.size()));
+  ASSERT_TRUE(base::WriteFile(
+      zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.zip")),
+      file_contents));
   ASSERT_TRUE(zip::Zip(zip_source_dir.GetPath(), tmp_path,
                        /* include_hidden_files= */ false));
 
@@ -441,10 +429,9 @@ TEST_F(FileAnalyzerTest, ArchivedArchiveSetForZipNoArchive) {
   base::ScopedTempDir zip_source_dir;
   ASSERT_TRUE(zip_source_dir.CreateUniqueTempDir());
   std::string file_contents = "dummy file";
-  ASSERT_EQ(static_cast<int>(file_contents.size()),
-            base::WriteFile(
-                zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.txt")),
-                file_contents.data(), file_contents.size()));
+  ASSERT_TRUE(base::WriteFile(
+      zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.txt")),
+      file_contents));
   ASSERT_TRUE(zip::Zip(zip_source_dir.GetPath(), tmp_path,
                        /* include_hidden_files= */ false));
 
@@ -471,14 +458,12 @@ TEST_F(FileAnalyzerTest, ArchivedBinariesHasArchiveAndExecutable) {
   base::ScopedTempDir zip_source_dir;
   ASSERT_TRUE(zip_source_dir.CreateUniqueTempDir());
   std::string file_contents = "dummy file";
-  ASSERT_EQ(static_cast<int>(file_contents.size()),
-            base::WriteFile(
-                zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.exe")),
-                file_contents.data(), file_contents.size()));
-  ASSERT_EQ(static_cast<int>(file_contents.size()),
-            base::WriteFile(
-                zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.rar")),
-                file_contents.data(), file_contents.size()));
+  ASSERT_TRUE(base::WriteFile(
+      zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.exe")),
+      file_contents));
+  ASSERT_TRUE(base::WriteFile(
+      zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.rar")),
+      file_contents));
   ASSERT_TRUE(zip::Zip(zip_source_dir.GetPath(), tmp_path,
                        /* include_hidden_files= */ false));
 
@@ -505,10 +490,9 @@ TEST_F(FileAnalyzerTest, ArchivedBinariesSkipsSafeFiles) {
   base::ScopedTempDir zip_source_dir;
   ASSERT_TRUE(zip_source_dir.CreateUniqueTempDir());
   std::string file_contents = "dummy file";
-  ASSERT_EQ(static_cast<int>(file_contents.size()),
-            base::WriteFile(
-                zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.txt")),
-                file_contents.data(), file_contents.size()));
+  ASSERT_TRUE(base::WriteFile(
+      zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.txt")),
+      file_contents));
   ASSERT_TRUE(zip::Zip(zip_source_dir.GetPath(), tmp_path,
                        /* include_hidden_files= */ false));
 
@@ -542,14 +526,12 @@ TEST_F(FileAnalyzerTest, ArchivedBinariesRespectsPolicyMaximum) {
   base::ScopedTempDir zip_source_dir;
   ASSERT_TRUE(zip_source_dir.CreateUniqueTempDir());
   std::string file_contents = "dummy file";
-  ASSERT_EQ(static_cast<int>(file_contents.size()),
-            base::WriteFile(
-                zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.exe")),
-                file_contents.data(), file_contents.size()));
-  ASSERT_EQ(static_cast<int>(file_contents.size()),
-            base::WriteFile(
-                zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.rar")),
-                file_contents.data(), file_contents.size()));
+  ASSERT_TRUE(base::WriteFile(
+      zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.exe")),
+      file_contents));
+  ASSERT_TRUE(base::WriteFile(
+      zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.rar")),
+      file_contents));
   ASSERT_TRUE(zip::Zip(zip_source_dir.GetPath(), tmp_path,
                        /* include_hidden_files= */ false));
 
@@ -766,10 +748,9 @@ TEST_F(FileAnalyzerTest, ZipFilesGetFileCount) {
   base::ScopedTempDir zip_source_dir;
   ASSERT_TRUE(zip_source_dir.CreateUniqueTempDir());
   std::string file_contents = "dummy file";
-  ASSERT_EQ(static_cast<int>(file_contents.size()),
-            base::WriteFile(
-                zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.exe")),
-                file_contents.data(), file_contents.size()));
+  ASSERT_TRUE(base::WriteFile(
+      zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.exe")),
+      file_contents));
   ASSERT_TRUE(zip::Zip(zip_source_dir.GetPath(), tmp_path,
                        /* include_hidden_files= */
                        false));
@@ -886,10 +867,9 @@ TEST_F(FileAnalyzerTest, LargeZipSkipsContentInspection) {
   base::ScopedTempDir zip_source_dir;
   ASSERT_TRUE(zip_source_dir.CreateUniqueTempDir());
   std::string file_contents = "dummy file";
-  ASSERT_EQ(static_cast<int>(file_contents.size()),
-            base::WriteFile(
-                zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.exe")),
-                file_contents.data(), file_contents.size()));
+  ASSERT_TRUE(base::WriteFile(
+      zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.exe")),
+      file_contents));
   ASSERT_TRUE(zip::Zip(zip_source_dir.GetPath(), tmp_path,
                        /* include_hidden_files= */ false));
 
@@ -920,10 +900,9 @@ TEST_F(FileAnalyzerTest, ZipAnalysisResultMetric) {
   base::ScopedTempDir zip_source_dir;
   ASSERT_TRUE(zip_source_dir.CreateUniqueTempDir());
   std::string file_contents = "dummy file";
-  ASSERT_EQ(static_cast<int>(file_contents.size()),
-            base::WriteFile(
-                zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.exe")),
-                file_contents.data(), file_contents.size()));
+  ASSERT_TRUE(base::WriteFile(
+      zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.exe")),
+      file_contents));
   ASSERT_TRUE(zip::Zip(zip_source_dir.GetPath(), tmp_path,
                        /* include_hidden_files= */ false));
 

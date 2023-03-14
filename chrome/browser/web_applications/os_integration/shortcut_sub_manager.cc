@@ -13,7 +13,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -25,7 +24,6 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/time.h"
-#include "ui/gfx/image/image_skia_rep_default.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/web_applications/app_shim_registry_mac.h"
@@ -43,63 +41,6 @@ enum class CreationResult {
   kMaxValue = kFailToCreateShortcut
 };
 
-gfx::ImageFamily PackageIconsIntoImageFamily(
-    std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
-  gfx::ImageFamily image_family;
-  for (auto& size_and_bitmap : icon_bitmaps) {
-    image_family.Add(gfx::ImageSkia(
-        gfx::ImageSkiaRep(size_and_bitmap.second, /*scale=*/0.0f)));
-  }
-
-  // If the image failed to load, use the standard application icon.
-  if (image_family.empty()) {
-    SquareSizePx icon_size_in_px = GetDesiredIconSizesForShortcut().back();
-    gfx::ImageSkia image_skia = CreateDefaultApplicationIcon(icon_size_in_px);
-    image_family.Add(gfx::Image(image_skia));
-  }
-
-  return image_family;
-}
-
-std::unique_ptr<ShortcutInfo> SetFavicon(
-    std::unique_ptr<ShortcutInfo> shortcut_info,
-    gfx::ImageFamily image_family) {
-  shortcut_info->favicon = std::move(image_family);
-  return shortcut_info;
-}
-
-void PopulateFaviconForShortcutInfo(
-    const WebApp* app,
-    WebAppIconManager& icon_manager,
-    std::unique_ptr<ShortcutInfo> shortcut_info_to_populate,
-    base::OnceCallback<void(std::unique_ptr<ShortcutInfo>)> callback) {
-  DCHECK(app);
-
-  // Build a common intersection between desired and downloaded icons.
-  auto icon_sizes_in_px = base::STLSetIntersection<std::vector<SquareSizePx>>(
-      app->downloaded_icon_sizes(IconPurpose::ANY),
-      GetDesiredIconSizesForShortcut());
-
-  auto populate_and_return_shortcut_info =
-      base::BindOnce(&SetFavicon, std::move(shortcut_info_to_populate))
-          .Then(std::move(callback));
-
-  if (!icon_sizes_in_px.empty()) {
-    icon_manager.ReadIcons(
-        app->app_id(), IconPurpose::ANY, icon_sizes_in_px,
-        base::BindOnce(&PackageIconsIntoImageFamily)
-            .Then(std::move(populate_and_return_shortcut_info)));
-    return;
-  }
-
-  // If there is no single icon at the desired sizes, we will resize what we can
-  // get.
-  SquareSizePx desired_icon_size = GetDesiredIconSizesForShortcut().back();
-  icon_manager.ReadIconAndResize(
-      app->app_id(), IconPurpose::ANY, desired_icon_size,
-      base::BindOnce(&PackageIconsIntoImageFamily)
-          .Then(std::move(populate_and_return_shortcut_info)));
-}
 }  // namespace
 
 ShortcutSubManager::ShortcutSubManager(Profile& profile,

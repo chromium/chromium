@@ -27,9 +27,25 @@ enum class TrustedVaultDeviceRegistrationStateForUMA {
   kThrottledClientSide = 2,
   kAttemptingRegistrationWithNewKeyPair = 3,
   kAttemptingRegistrationWithExistingKeyPair = 4,
-  kAttemptingRegistrationWithPersistentAuthError = 5,
+  // Deprecated, replaced with more detailed
+  // TrustedVaultDeviceRegistrationOutcomeForUMA.
+  kDeprecatedAttemptingRegistrationWithPersistentAuthError = 5,
   kAlreadyRegisteredV1 = 6,
   kMaxValue = kAlreadyRegisteredV1,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class TrustedVaultDeviceRegistrationOutcomeForUMA {
+  kSuccess = 0,
+  kAlreadyRegistered = 1,
+  kLocalDataObsolete = 2,
+  kTransientAccessTokenFetchError = 3,
+  kPersistentAccessTokenFetchError = 4,
+  kPrimaryAccountChangeAccessTokenFetchError = 5,
+  kNetworkError = 6,
+  kOtherError = 7,
+  kMaxValue = kOtherError,
 };
 
 // Used to provide UMA metric breakdowns.
@@ -83,6 +99,9 @@ void RecordTrustedVaultHintDegradedRecoverabilityChangedReason(
 void RecordTrustedVaultDeviceRegistrationState(
     TrustedVaultDeviceRegistrationStateForUMA registration_state);
 
+void RecordTrustedVaultDeviceRegistrationOutcome(
+    TrustedVaultDeviceRegistrationOutcomeForUMA registration_outcome);
+
 // Records url fetch response status (combined http and net error code). If
 // |http_response_code| is non-zero, it will be recorded, otherwise |net_error|
 // will be recorded. Either |http_status| or |net_error| must be non zero.
@@ -92,12 +111,21 @@ void RecordTrustedVaultURLFetchResponse(
     TrustedVaultURLFetchReasonForUMA reason);
 
 // Records the outcome of trying to download keys from the server.
-// |also_log_with_v1_suffx| allows the caller to determine whether the local
+// |also_log_with_v1_suffix| allows the caller to determine whether the local
 // device's registration is a V1 registration (that is, more reliable), which
 // causes a second histogram to be logged as well.
 void RecordTrustedVaultDownloadKeysStatus(
     TrustedVaultDownloadKeysStatusForUMA status,
-    bool also_log_with_v1_suffx = false);
+    bool also_log_with_v1_suffix);
+
+// Records the outcome of verifying a device registration status, which is
+// achieved by trying to download keys (without actually having the need to
+// download keys), which is the reason why the same enum is used.
+// |also_log_with_v1_suffix| allows the caller to determine whether the local
+// device's registration is a V1 registration (that is, more reliable), which
+// causes a second histogram to be logged as well.
+void RecordVerifyRegistrationStatus(TrustedVaultDownloadKeysStatusForUMA status,
+                                    bool also_log_with_v1_suffix);
 
 void RecordTrustedVaultHistogramBooleanWithMigrationSuffix(
     const std::string& histogram_name,

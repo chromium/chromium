@@ -9103,8 +9103,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   ui::MotionEventAndroid::Pointer pointer0(0, x, y, 0, 0, 0, 0, 0);
   ui::MotionEventAndroid::Pointer pointer1(0, 0, 0, 0, 0, 0, 0, 0);
   ui::MotionEventAndroid event(nullptr, nullptr, 1.f / root_view->GetDipScale(),
-                               0.f, 0.f, 0.f, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
-                               false, &pointer0, &pointer1);
+                               0.f, 0.f, 0.f, base::TimeTicks(), 0, 1, 0, 0, 0,
+                               0, 0, 0, 0, 0, false, &pointer0, &pointer1);
   root_view->OnTouchEventForTesting(event);
 
   EXPECT_TRUE(mock_handler.did_receive_event());
@@ -9430,9 +9430,9 @@ class TouchSelectionControllerClientAndroidSiteIsolationTest
 
     ui::MotionEventAndroid::Pointer p(0, point.x(), point.y(), 10, 0, 0, 0, 0);
     JNIEnv* env = base::android::AttachCurrentThread();
-    auto time_ms = (ui::EventTimeForNow() - base::TimeTicks()).InMilliseconds();
+    auto time_ns = (ui::EventTimeForNow() - base::TimeTicks()).InNanoseconds();
     ui::MotionEventAndroid touch(
-        env, nullptr, 1.f, 0, 0, 0, time_ms,
+        env, nullptr, 1.f, 0, 0, 0, base::TimeTicks::FromJavaNanoTime(time_ns),
         ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0, 0, 0, 0,
         0, 0, false, &p, nullptr);
     view->OnTouchEvent(touch);
@@ -10968,7 +10968,8 @@ class ClosePageBeforeCommitHelper : public DidCommitNavigationInterceptor {
     RenderFrameHostImpl* rfh =
         static_cast<RenderFrameHostImpl*>(render_frame_host);
     EXPECT_TRUE(rfh->render_view_host()->is_active());
-    rfh->GetMainFrame()->ClosePage();
+    rfh->GetMainFrame()->ClosePage(
+        RenderFrameHostImpl::ClosePageSource::kBrowser);
     if (run_loop_)
       run_loop_->Quit();
     return true;

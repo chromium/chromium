@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ui/commands/credential_provider_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_constants.h"
 
 @protocol CredentialProviderPromoConsumer;
@@ -25,7 +25,6 @@ class PromosManager;
 // PromosManager, presenter, and PrefService.
 - (instancetype)initWithPromosManager:(PromosManager*)promosManager
                           prefService:(PrefService*)prefService
-                           localState:(PrefService*)localState
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -45,6 +44,11 @@ class PromosManager;
 
 // Registers the promo for single display.
 - (void)registerPromoWithPromosManager;
+
+// Returns the source for the last time the promo was displayed. ::kUnknown is
+// returned by default. This is persisted so subsequent resurfacing of the promo
+// can access it.
+- (IOSCredentialProviderPromoSource)promoOriginalSource;
 
 @end
 

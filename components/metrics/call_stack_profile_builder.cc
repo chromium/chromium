@@ -133,6 +133,16 @@ void CallStackProfileBuilder::ApplyMetadataRetrospectively(
                           call_stack_profile->mutable_metadata_name_hash());
 }
 
+void CallStackProfileBuilder::AddProfileMetadata(
+    const base::MetadataRecorder::Item& item) {
+  CallStackProfile* call_stack_profile =
+      sampled_profile_.mutable_call_stack_profile();
+
+  metadata_.SetMetadata(item,
+                        call_stack_profile->mutable_profile_metadata()->Add(),
+                        call_stack_profile->mutable_metadata_name_hash());
+}
+
 void CallStackProfileBuilder::OnSampleCompleted(
     std::vector<base::Frame> frames,
     base::TimeTicks sample_timestamp) {

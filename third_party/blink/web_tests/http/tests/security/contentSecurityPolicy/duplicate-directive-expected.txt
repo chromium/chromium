@@ -1,3 +1,0 @@
-CONSOLE ERROR: Ignoring duplicate Content-Security-Policy directive 'script-src'.
-ALERT: PASS (1/1)
-This tests the effect of duplicated directives. It passes if a console warning is visible, and the alert() is executed.

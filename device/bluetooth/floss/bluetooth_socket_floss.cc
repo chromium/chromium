@@ -142,9 +142,8 @@ void BluetoothSocketFloss::Disconnect(base::OnceClosure callback) {
     adapter_ = nullptr;
     connecting_socket_info_.id = FlossSocketManager::kInvalidSocketId;
   }
-
   // Close the socket manager instance.
-  if (listening_socket_info_) {
+  else if (listening_socket_info_) {
     FlossDBusManager::Get()->GetSocketManager()->Close(
         listening_socket_info_->id,
         base::BindOnce(&BluetoothSocketFloss::CompleteClose,

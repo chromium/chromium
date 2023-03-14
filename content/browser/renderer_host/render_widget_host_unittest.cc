@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <tuple>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -89,7 +90,7 @@
 #include "content/browser/renderer_host/test_render_widget_host_view_ios_factory.h"
 #endif
 
-#if defined(USE_AURA) || BUILDFLAG(IS_MAC)
+#if defined(USE_AURA) || BUILDFLAG(IS_APPLE)
 #include "content/browser/compositor/test/test_image_transport_factory.h"
 #endif
 
@@ -562,10 +563,11 @@ class RenderWidgetHostTest : public testing::Test {
     delegate_ = std::make_unique<MockRenderWidgetHostDelegate>();
     process_ =
         std::make_unique<RenderWidgetHostProcess>(browser_context_.get());
-    site_instance_group_ = base::WrapRefCounted(new SiteInstanceGroup(
-        SiteInstanceImpl::NextBrowsingInstanceId(), process_.get()));
+    site_instance_group_ =
+        base::WrapRefCounted(SiteInstanceGroup::CreateForTesting(
+            browser_context_.get(), process_.get()));
     sink_ = &process_->sink();
-#if defined(USE_AURA) || BUILDFLAG(IS_MAC)
+#if defined(USE_AURA) || BUILDFLAG(IS_APPLE)
     ImageTransportFactory::SetFactory(
         std::make_unique<TestImageTransportFactory>());
 #endif
@@ -636,13 +638,12 @@ class RenderWidgetHostTest : public testing::Test {
     site_instance_group_.reset();
     process_.reset();
     browser_context_.reset();
-#if defined(USE_AURA) || BUILDFLAG(IS_MAC)
+#if defined(USE_AURA) || BUILDFLAG(IS_APPLE)
     ImageTransportFactory::Terminate();
+#endif
+#if defined(USE_AURA) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
     display::Screen::SetScreenInstance(nullptr);
     screen_.reset();
-#endif
-#if BUILDFLAG(IS_ANDROID)
-    display::Screen::SetScreenInstance(nullptr);
 #endif
 
     // Process all pending tasks to avoid leaks.
@@ -2423,13 +2424,12 @@ TEST_F(RenderWidgetHostTest, OnVerticalScrollDirectionChanged) {
 }
 
 TEST_F(RenderWidgetHostTest, SetCursorWithBitmap) {
-  ui::Cursor cursor(ui::mojom::CursorType::kCustom);
-
   SkBitmap bitmap;
   bitmap.allocN32Pixels(1, 1);
   bitmap.eraseColor(SK_ColorGREEN);
-  cursor.set_custom_bitmap(bitmap);
 
+  const ui::Cursor cursor =
+      ui::Cursor::NewCustom(std::move(bitmap), gfx::Point());
   host_->SetCursor(cursor);
   EXPECT_EQ(cursor, view_->last_cursor());
 }

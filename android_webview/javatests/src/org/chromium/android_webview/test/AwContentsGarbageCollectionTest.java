@@ -6,6 +6,7 @@ package org.chromium.android_webview.test;
 
 import static org.chromium.android_webview.test.AwActivityTestRule.CHECK_INTERVAL;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.os.Build;
@@ -32,13 +33,16 @@ import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactor
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 
+import java.lang.ref.PhantomReference;
 import java.lang.ref.Reference;
+import java.lang.ref.ReferenceQueue;
 import java.util.concurrent.Callable;
 
 /**
@@ -48,6 +52,7 @@ import java.util.concurrent.Callable;
  * See crbug.com/544098 for why @DisableHardwareAccelerationForTest is needed.
  */
 @RunWith(AwJUnit4ClassRunner.class)
+@DoNotBatch(reason = "GC tests require full restarts")
 public class AwContentsGarbageCollectionTest {
     @Rule
     public AwActivityTestRule mActivityTestRule = new AwActivityTestRule() {
@@ -161,7 +166,7 @@ public class AwContentsGarbageCollectionTest {
                 webContentsA11y.setAccessibilityEnabledForTesting();
                 // Initialize native object.
                 containerView.getAccessibilityNodeProvider();
-                Assert.assertTrue(webContentsA11y.isAccessibilityEnabled());
+                Assert.assertTrue(webContentsA11y.isNativeInitialized());
             });
 
             return null;
@@ -198,6 +203,7 @@ public class AwContentsGarbageCollectionTest {
             mOverridenFactory = new GcTestDependencyFactory(context);
             AwTestContainerView containerView =
                     mActivityTestRule.createAwTestContainerViewOnMainSync(client);
+            context.setAwContentsStrongRef(containerView.getAwContents());
             mOverridenFactory = null;
             mActivityTestRule.loadUrlAsync(
                     containerView.getAwContents(), ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
@@ -282,6 +288,40 @@ public class AwContentsGarbageCollectionTest {
             containerView = null;
             return null;
         });
+    }
+
+    @Test
+    @DisableHardwareAccelerationForTest
+    @LargeTest
+    public void testActivityDoesNotLeak() throws Throwable {
+        // Test that Activity should not leak if view is still attached after activity is destroyed.
+        ReferenceQueue<Activity> referenceQueue = new ReferenceQueue<>();
+        PhantomReference<Activity> reference;
+        {
+            Activity activity = mActivityTestRule.getActivity();
+            reference = new PhantomReference<>(activity, referenceQueue);
+
+            TestAwContentsClient client = new TestAwContentsClient();
+            AwTestContainerView containerView =
+                    mActivityTestRule.createAwTestContainerViewOnMainSync(client);
+            mActivityTestRule.loadUrlAsync(
+                    containerView.getAwContents(), ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+
+            mActivityTestRule.recreateActivity();
+            boolean destroyed =
+                    TestThreadUtils.runOnUiThreadBlockingNoException(() -> activity.isDestroyed());
+            Assert.assertTrue(destroyed);
+        }
+
+        Runtime.getRuntime().gc();
+        final long timeoutMs = 30000L;
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            Runtime.getRuntime().gc();
+            Reference enqueuedReference = referenceQueue.poll();
+            Criteria.checkThat(enqueuedReference, Matchers.notNullValue());
+            Criteria.checkThat(enqueuedReference, Matchers.is(reference));
+        }, timeoutMs, CHECK_INTERVAL);
+        gcAndCheckAllAwContentsDestroyed();
     }
 
     // This moves the test body that manipulates AwContents and such objects into

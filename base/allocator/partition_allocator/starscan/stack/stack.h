@@ -14,7 +14,7 @@ namespace partition_alloc::internal {
 
 // Returns the current stack pointer.
 // TODO(bikineev,1202644): Remove this once base/stack_util.h lands.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC) PA_NOINLINE uintptr_t* GetStackPointer();
+PA_NOINLINE PA_COMPONENT_EXPORT(PARTITION_ALLOC) uintptr_t* GetStackPointer();
 // Returns the top of the stack using system API.
 PA_COMPONENT_EXPORT(PARTITION_ALLOC) void* GetStackTop();
 

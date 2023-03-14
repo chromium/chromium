@@ -31,6 +31,11 @@ const ACTION_BUTTON_ID_PREFIX = 'action-button-';
 export const HELP_BUBBLE_DISMISSED_EVENT = 'help-bubble-dismissed';
 export const HELP_BUBBLE_TIMED_OUT_EVENT = 'help-bubble-timed-out';
 
+export const HELP_BUBBLE_SCROLL_ANCHOR_OPTIONS: ScrollIntoViewOptions = {
+  behavior: 'smooth',
+  block: 'center',
+};
+
 export type HelpBubbleDismissedEvent = CustomEvent<{
   nativeId: any,
   fromActionButton: boolean,
@@ -121,6 +126,13 @@ export class HelpBubbleElement extends PolymerElement {
   private progressData_: void[] = [];
 
   /**
+   * Watches the offsetParent for resize events, allowing the bubble to be
+   * repositioned in response. Useful for when the content around a help bubble
+   * target can be filtered/expanded/repositioned.
+   */
+  private resizeObserver_: ResizeObserver|null = null;
+
+  /**
    * Shows the bubble.
    */
   show(anchorElement: HTMLElement) {
@@ -168,6 +180,14 @@ export class HelpBubbleElement extends PolymerElement {
       };
       this.timeoutTimerId = setTimeout(timedOutCallback, this.timeoutMs);
     }
+
+    if (this.offsetParent && !this.fixed) {
+      this.resizeObserver_ = new ResizeObserver(() => {
+        this.updatePosition_();
+        this.anchorElement_?.scrollIntoView(HELP_BUBBLE_SCROLL_ANCHOR_OPTIONS);
+      });
+      this.resizeObserver_.observe(this.offsetParent);
+    }
   }
 
   /**
@@ -179,6 +199,10 @@ export class HelpBubbleElement extends PolymerElement {
    * bubble will go away on hide.
    */
   hide() {
+    if (this.resizeObserver_) {
+      this.resizeObserver_.disconnect();
+      this.resizeObserver_ = null;
+    }
     this.style.display = 'none';
     this.setAttribute('aria-hidden', 'true');
     this.anchorElement_ = null;

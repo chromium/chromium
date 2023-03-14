@@ -5,6 +5,7 @@
 #ifndef CHROME_TEST_INTERACTION_INTERACTIVE_BROWSER_TEST_H_
 #define CHROME_TEST_INTERACTION_INTERACTIVE_BROWSER_TEST_H_
 
+#include <functional>
 #include <memory>
 #include <type_traits>
 #include <utility>
@@ -96,11 +97,10 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
       // Specify a browser that is known at the time the sequence is created.
       // The browser must persist until the step executes.
       Browser*,
-      // Specify a browser that will be valid by the time the step executes
-      // (i.e is set in a previous step callback) but not at the time the test
-      // sequence is built. The browser will be read from the target variable,
-      // which must point to a valid browser.
-      Browser**>;
+      // Specify a browser pointer that will be valid by the time the step
+      // executes. Use std::ref() to wrap the pointer that will receive the
+      // value.
+      std::reference_wrapper<Browser*>>;
 
   // Instruments tab `tab_index` in `in_browser` as `id`. If `tab_index` is
   // unspecified, the active tab is used.

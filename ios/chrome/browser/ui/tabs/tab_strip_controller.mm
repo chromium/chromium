@@ -10,6 +10,7 @@
 
 #import "base/feature_list.h"
 #import "base/i18n/rtl.h"
+#import "base/ios/ios_util.h"
 #import "base/mac/bundle_locations.h"
 #import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
@@ -25,19 +26,23 @@
 #import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
+#import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/named_guide.h"
+#import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view.h"
-#import "ios/chrome/browser/ui/commands/application_commands.h"
-#import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
-#import "ios/chrome/browser/ui/commands/browser_commands.h"
-#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
-#import "ios/chrome/browser/ui/commands/popup_menu_commands.h"
-#import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
@@ -57,10 +62,6 @@
 #import "ios/chrome/browser/ui/tabs/tab_strip_view.h"
 #import "ios/chrome/browser/ui/tabs/tab_view.h"
 #import "ios/chrome/browser/ui/tabs/target_frame_cache.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/browser/ui/util/named_guide.h"
-#import "ios/chrome/browser/ui/util/rtl_geometry.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web_state_list/all_web_state_observation_forwarder.h"
@@ -546,12 +547,32 @@ const CGFloat kSymbolSize = 18;
       buttonNewTabImage = [buttonNewTabImage
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     }
-    [_buttonNewTab setImage:buttonNewTabImage forState:UIControlStateNormal];
-    [_buttonNewTab.imageView setTintColor:[UIColor colorNamed:kGrey500Color]];
 
-    UIEdgeInsets imageInsets = UIEdgeInsetsMake(
-        0, kNewTabButtonLeadingImageInset, kNewTabButtonBottomImageInset, 0);
-    _buttonNewTab.imageEdgeInsets = imageInsets;
+    // TODO(crbug.com/1418068): Simplify after minimum version required is >=
+    // iOS 15.
+    if (base::ios::IsRunningOnIOS15OrLater() &&
+        IsUIButtonConfigurationEnabled()) {
+      if (@available(iOS 15, *)) {
+        UIButtonConfiguration* buttonConfiguration =
+            [UIButtonConfiguration plainButtonConfiguration];
+        buttonConfiguration.contentInsets =
+            NSDirectionalEdgeInsetsMake(0, kNewTabButtonLeadingImageInset,
+                                        kNewTabButtonBottomImageInset, 0);
+        buttonConfiguration.image = buttonNewTabImage;
+        _buttonNewTab.tintColor = [UIColor colorNamed:kGrey500Color];
+        _buttonNewTab.configuration = buttonConfiguration;
+      }
+    }
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+    else {
+      UIEdgeInsets imageInsets = UIEdgeInsetsMake(
+          0, kNewTabButtonLeadingImageInset, kNewTabButtonBottomImageInset, 0);
+      _buttonNewTab.imageEdgeInsets = imageInsets;
+      [_buttonNewTab setImage:buttonNewTabImage forState:UIControlStateNormal];
+      [_buttonNewTab.imageView setTintColor:[UIColor colorNamed:kGrey500Color]];
+    }
+#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+
     SetA11yLabelAndUiAutomationName(
         _buttonNewTab,
         _isIncognito ? IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB
@@ -694,13 +715,15 @@ const CGFloat kSymbolSize = 18;
     // Configure an action that should be executed on each tap.
     __weak UIButton* weakButton = view;
     __weak __typeof(self) weakSelf = self;
-    UIAction* displayMenu = [UIAction
-        actionWithTitle:@""
-                  image:nil
-             identifier:kMenuActionIdentifier
-                handler:^(UIAction* uiAction) {
-                  weakButton.menu = [weakSelf menuForWebstate:webState];
-                }];
+    base::WeakPtr<web::WebState> weakWebState = webState->GetWeakPtr();
+    UIAction* displayMenu =
+        [UIAction actionWithTitle:@""
+                            image:nil
+                       identifier:kMenuActionIdentifier
+                          handler:^(UIAction* uiAction) {
+                            weakButton.menu =
+                                [weakSelf menuForWebstate:weakWebState.get()];
+                          }];
     [view addAction:displayMenu
         forControlEvents:UIControlEventMenuActionTriggered];
 
@@ -726,6 +749,10 @@ const CGFloat kSymbolSize = 18;
 
 // Returns an UIMenu for the given `webState`.
 - (UIMenu*)menuForWebstate:(web::WebState*)webState {
+  DCHECK(IsPinnedTabsEnabled());
+  if (!webState) {
+    return [UIMenu menuWithTitle:@"" children:@[]];
+  }
   int webStateIndex = _webStateList->GetIndexOfWebState(webState);
   NSString* identifier = webState->GetStableIdentifier();
   BOOL pinnedState = _webStateList->IsWebStatePinnedAt(webStateIndex);

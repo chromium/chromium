@@ -20,6 +20,10 @@
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/web_applications/preinstalled_web_app_window_experiment.h"
+#endif
+
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
@@ -110,6 +114,10 @@ class PreinstalledWebAppManager {
   // global setting.
   void SetSkipStartupSynchronizeForTesting(bool skip_startup);
 
+#if BUILDFLAG(IS_CHROMEOS)
+  PreinstalledWebAppWindowExperiment& GetWindowExperimentForTesting();
+#endif
+
   // Debugging info used by: chrome://web-app-internals
   struct DebugInfo {
     DebugInfo();
@@ -168,6 +176,10 @@ class PreinstalledWebAppManager {
   raw_ptr<ExternallyManagedAppManager, DanglingUntriaged>
       externally_managed_app_manager_ = nullptr;
   const raw_ptr<Profile> profile_;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  PreinstalledWebAppWindowExperiment preinstalled_web_app_window_experiment_;
+#endif
 
   bool skip_startup_for_testing_ = false;
   std::unique_ptr<DebugInfo> debug_info_;

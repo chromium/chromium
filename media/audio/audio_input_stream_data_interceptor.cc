@@ -86,10 +86,12 @@ void AudioInputStreamDataInterceptor::SetOutputDeviceForAec(
   return stream_->SetOutputDeviceForAec(output_device_id);
 }
 
-void AudioInputStreamDataInterceptor::OnData(const AudioBus* source,
-                                             base::TimeTicks capture_time,
-                                             double volume) {
-  callback_->OnData(source, capture_time, volume);
+void AudioInputStreamDataInterceptor::OnData(
+    const AudioBus* source,
+    base::TimeTicks capture_time,
+    double volume,
+    const AudioGlitchInfo& audio_glitch_info) {
+  callback_->OnData(source, capture_time, volume, audio_glitch_info);
   debug_recorder_->OnData(source);
 }
 

@@ -17,7 +17,7 @@ namespace content {
 
 FirstPartySetsHandlerDatabaseHelper::FirstPartySetsHandlerDatabaseHelper(
     const base::FilePath& db_path) {
-  DCHECK(!db_path.empty());
+  CHECK(!db_path.empty());
   db_ = std::make_unique<FirstPartySetsDatabase>(db_path);
 }
 
@@ -62,7 +62,7 @@ FirstPartySetsHandlerDatabaseHelper::UpdateAndGetSitesToClearForContext(
     const net::GlobalFirstPartySets& current_sets,
     const net::FirstPartySetsContextConfig& current_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!browser_context_id.empty());
+  CHECK(!browser_context_id.empty());
   std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig>
       old_sets_with_config = db_->GetGlobalSetsAndConfig(browser_context_id);
   base::flat_set<net::SchemefulSite> diff =
@@ -91,7 +91,7 @@ void FirstPartySetsHandlerDatabaseHelper::PersistSets(
     const net::GlobalFirstPartySets& sets,
     const net::FirstPartySetsContextConfig& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!browser_context_id.empty());
+  CHECK(!browser_context_id.empty());
   if (!db_->PersistSets(browser_context_id, sets, config))
     DVLOG(1) << "Failed to write sets into the database.";
 }
@@ -100,7 +100,7 @@ std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig>
 FirstPartySetsHandlerDatabaseHelper::GetGlobalSetsAndConfigForTesting(
     const std::string& browser_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!browser_context_id.empty());
+  CHECK(!browser_context_id.empty());
   return db_->GetGlobalSetsAndConfig(browser_context_id);
 }
 
@@ -109,7 +109,7 @@ bool FirstPartySetsHandlerDatabaseHelper::
     HasEntryInBrowserContextsClearedForTesting(
         const std::string& browser_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!browser_context_id.empty());
+  CHECK(!browser_context_id.empty());
   return db_->HasEntryInBrowserContextsClearedForTesting(  // IN-TEST
       browser_context_id);
 }

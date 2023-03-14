@@ -1,14 +1,15 @@
 (async function(testRunner) {
   const {session, dp} = await testRunner.startBlank(
-    `Check that TrustTokenParams are included in the basic Trust Token operations on 'fetch'`);
+    `Check that PrivateTokenParams are included in the basic Private Token operations on 'fetch'`);
 
-  const clearTrustTokenState = async () => {
+  const clearPrivateTokenState = async () => {
     await session.evaluateAsync(`await new Promise(res => window.testRunner.clearTrustTokenState(res));`);
   };
 
   const issuanceRequest = `
     fetch('https://trusttoken.test', {
-      trustToken: {
+      privateToken: {
+        type: 'private-state-token',
         version: 1,
         operation: 'token-request'
       }
@@ -17,7 +18,8 @@
 
   const redemptionRequest = `
     fetch('https://trusttoken.test', {
-      trustToken: {
+      privateToken: {
+        type: 'private-state-token',
         version: 1,
         operation: 'token-redemption'
       }
@@ -26,7 +28,8 @@
 
   const signingRequest = `
     fetch('https://destination.test', {
-      trustToken: {
+      privateToken: {
+        type: 'private-state-token',
         version: 1,
         operation: 'send-redemption-record',
         issuers: ['https://issuer.test']
@@ -40,14 +43,14 @@
 
   await dp.Network.enable();
   await dp.Network.onRequestWillBeSent(event => {
-    const trustTokenParams = event.params.request.trustTokenParams;
-    testRunner.log(`Included trustTokenParams in request: ${JSON.stringify(trustTokenParams)}`);
+    const privateTokenParams = event.params.request.trustTokenParams;
+    testRunner.log(`Included privateTokenParams in request: ${JSON.stringify(privateTokenParams)}`);
   });
 
   for (const request of [issuanceRequest, redemptionRequest, signingRequest]) {
     testRunner.log(`Sending request: ${request}`);
     await session.evaluateAsync(request);
-    await clearTrustTokenState();
+    await clearPrivateTokenState();
   }
 
   testRunner.completeTest();

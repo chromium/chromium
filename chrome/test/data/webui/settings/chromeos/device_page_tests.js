@@ -4,7 +4,7 @@
 
 import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-import {crosAudioConfigMojom, DevicePageBrowserProxyImpl, fakeCrosAudioConfig, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, IdleBehavior, LidClosedBehavior, NoteAppLockScreenSupport, Router, routes, setCrosAudioConfigForTesting, setDisplayApiForTesting, setInputDeviceSettingsProviderForTesting, StorageSpaceState} from 'chrome://os-settings/chromeos/os_settings.js';
+import {crosAudioConfigMojom, DevicePageBrowserProxyImpl, fakeCrosAudioConfig, FakeInputDeviceSettingsProvider, fakeKeyboards, IdleBehavior, LidClosedBehavior, NoteAppLockScreenSupport, Router, routes, setCrosAudioConfigForTesting, setDisplayApiForTesting, setInputDeviceSettingsProviderForTesting, StorageSpaceState} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
@@ -1469,6 +1469,67 @@ suite('SettingsDevicePage', function() {
           loadTimeData.getString('audioMutedExternallyTooltip'),
           inputMuteTooltip.textContent.trim());
     });
+
+    test(
+        'mute state updates button aria-description and aria-pressed',
+        async function() {
+          const outputMuteButton =
+              audioPage.shadowRoot.querySelector('#audioOutputMuteButton');
+          const inputMuteButton =
+              audioPage.shadowRoot.querySelector('#audioInputGainMuteButton');
+
+          // Default state should be unmuted so show the toggle mute tooltip.
+          assertEquals(
+              loadTimeData.getString('audioOutputMuteButtonAriaLabelNotMuted'),
+              outputMuteButton.ariaDescription.trim());
+          assertEquals(
+              loadTimeData.getString('audioInputMuteButtonAriaLabelNotMuted'),
+              inputMuteButton.ariaDescription.trim());
+          const ariaNotPressedValue = 'false';
+          assertEquals(ariaNotPressedValue, outputMuteButton.ariaPressed);
+          assertEquals(ariaNotPressedValue, inputMuteButton.ariaPressed);
+
+          // Test muted by user case.
+          crosAudioConfig.setAudioSystemProperties(
+              mutedByUserFakeAudioSystemProperties);
+          await flushTasks();
+          assertEquals(
+              loadTimeData.getString('audioOutputMuteButtonAriaLabelMuted'),
+              outputMuteButton.ariaDescription.trim());
+          assertEquals(
+              loadTimeData.getString('audioInputMuteButtonAriaLabelMuted'),
+              inputMuteButton.ariaDescription.trim());
+          const ariaPressedValue = 'true';
+          assertEquals(ariaPressedValue, outputMuteButton.ariaPressed);
+          assertEquals(ariaPressedValue, inputMuteButton.ariaPressed);
+
+          // Test muted by policy case.
+          crosAudioConfig.setAudioSystemProperties(
+              mutedByPolicyFakeAudioSystemProperties);
+          await flushTasks();
+          assertEquals(
+              loadTimeData.getString('audioOutputMuteButtonAriaLabelMuted'),
+              outputMuteButton.ariaDescription.trim());
+          assertEquals(
+              loadTimeData.getString('audioInputMuteButtonAriaLabelMuted'),
+              inputMuteButton.ariaDescription.trim());
+          assertEquals(ariaPressedValue, outputMuteButton.ariaPressed);
+          assertEquals(ariaPressedValue, inputMuteButton.ariaPressed);
+
+          // Test muted externally case.
+          crosAudioConfig.setAudioSystemProperties(
+              mutedExternallyFakeAudioSystemProperties);
+          await flushTasks();
+          assertEquals(
+              loadTimeData.getString('audioOutputMuteButtonAriaLabelMuted'),
+              outputMuteButton.ariaDescription.trim());
+          assertEquals(
+              loadTimeData.getString(
+                  'audioInputMuteButtonAriaLabelMutedByHardwareSwitch'),
+              inputMuteButton.ariaDescription.trim());
+          assertEquals(ariaPressedValue, outputMuteButton.ariaPressed);
+          assertEquals(ariaPressedValue, inputMuteButton.ariaPressed);
+        });
   });
 
   suite(assert(TestNames.PerDeviceMouse), function() {
@@ -3677,7 +3738,7 @@ suite('SettingsDevicePage', function() {
               .innerText);
 
       // In guest mode, the system row should be hidden.
-      storagePage.isGuest_ = true;
+      storagePage.isEphemeralUser_ = true;
       flush();
       assertFalse(
           isVisible(storagePage.shadowRoot.querySelector('#systemSize')));
@@ -3718,7 +3779,7 @@ suite('SettingsDevicePage', function() {
       assertEquals('322 MB', getStorageItemSubLabelFromId('otherUsersSize'));
 
       // If the user is in Guest mode, the row is not visible.
-      storagePage.isGuest_ = true;
+      storagePage.isEphemeralUser_ = true;
       webUIListenerCallback(
           'storage-other-users-size-changed', '322 MB', false);
       flush();

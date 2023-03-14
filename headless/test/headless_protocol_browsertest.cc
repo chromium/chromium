@@ -168,9 +168,8 @@ void HeadlessProtocolBrowserTest::ProcessTestResult(
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kResetResults)) {
     LOG(INFO) << "Updating expectations at " << expectation_path;
-    int result = base::WriteFile(expectation_path, test_result.data(),
-                                 static_cast<int>(test_result.size()));
-    CHECK(test_result.size() == static_cast<size_t>(result));
+    bool succcess = base::WriteFile(expectation_path, test_result);
+    CHECK(succcess);
   }
 
   std::string expectation;
@@ -271,6 +270,8 @@ HEADLESS_PROTOCOL_TEST(VirtualTimeWorkerBasic,
                        "emulation/virtual-time-worker-basic.js")
 HEADLESS_PROTOCOL_TEST(VirtualTimeWorkerLockstep,
                        "emulation/virtual-time-worker-lockstep.js")
+HEADLESS_PROTOCOL_TEST(VirtualTimeWorkerFetch,
+                       "emulation/virtual-time-worker-fetch.js")
 
 // Flaky on Mac. TODO(crbug.com/1164173): Re-enable.
 #if BUILDFLAG(IS_MAC)

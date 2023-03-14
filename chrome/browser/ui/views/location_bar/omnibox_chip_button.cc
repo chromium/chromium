@@ -43,7 +43,7 @@ OmniboxChipButton::OmniboxChipButton(PressedCallback callback)
   SetCustomPadding(gfx::Insets::VH(
       GetLayoutConstant(LOCATION_BAR_CHILD_INTERIOR_PADDING),
       GetLayoutInsets(LOCATION_BAR_ICON_INTERIOR_PADDING).left()));
-
+  SetCornerRadius(GetIconSize());
   constexpr auto kAnimationDuration = base::Milliseconds(350);
   animation_ = std::make_unique<gfx::SlideAnimation>(this);
   animation_->SetSlideDuration(kAnimationDuration);

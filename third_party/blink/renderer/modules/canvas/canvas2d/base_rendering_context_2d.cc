@@ -165,9 +165,17 @@ void BaseRenderingContext2D::restore() {
 
   // Verify that the current state's transform is invertible.
   if (IsTransformInvertible())
-    path_.Transform(GetState().GetTransform());
+    GetModifiablePath().Transform(GetState().GetTransform());
 
   PopAndRestore();
+}
+
+void BaseRenderingContext2D::pushLayerStack(
+    CanvasRenderingContext2DState::SaveType save_type) {
+  state_stack_.push_back(MakeGarbageCollected<CanvasRenderingContext2DState>(
+      GetState(), CanvasRenderingContext2DState::kDontCopyClipList, save_type));
+  max_state_stack_depth_ =
+      std::max(state_stack_.size(), max_state_stack_depth_);
 }
 
 void BaseRenderingContext2D::beginLayer() {
@@ -187,47 +195,27 @@ void BaseRenderingContext2D::beginLayer() {
   if (!canvas)
     return;
 
-  state_stack_.push_back(MakeGarbageCollected<CanvasRenderingContext2DState>(
-      GetState(), CanvasRenderingContext2DState::kDontCopyClipList,
-      CanvasRenderingContext2DState::SaveType::kBeginEndLayer));
-  max_state_stack_depth_ =
-      std::max(state_stack_.size(), max_state_stack_depth_);
   layer_count_++;
 
-  if (globalAlpha() != 1 &&
-      (StateHasFilter() || GetState().ShouldDrawShadows())) {
-    // For alpha and either filters or shadows, we have to split the save into
-    // two layers, so the shadow and filter can properly interact with alpha.
-    // We also need to flip how and where the shadows and filter are applied
-    // if there are shadows.
+  using SaveType = CanvasRenderingContext2DState::SaveType;
+  const int initial_save_count = canvas->getSaveCount();
+  SaveType save_type = SaveType::kBeginEndLayer;
+  bool composite_op_handled = false;
+
+  // For alpha and shadows (which include filters because they can also produce
+  // shadows), we must use two nested layers. The inner one applies the alpha
+  // and the outer one applies the shadow/filter. This is needed to to get a
+  // transparent shadow foreground, as the alpha would otherwise be applied to
+  // the result of foreground+shadow.
+  if (GetState().ShouldDrawShadows() || StateHasFilter()) {
+    pushLayerStack(save_type);
+    save_type = SaveType::kInternalLayer;
+
     cc::PaintFlags flags;
     flags.setBlendMode(GetState().GlobalComposite());
-    flags.setImageFilter(GetState().ShouldDrawShadows()
-                             ? GetState().ShadowAndForegroundImageFilter()
-                             : StateGetFilter());
-    canvas->saveLayer(flags);
+    composite_op_handled = true;
 
-    // Push to state stack to keep stack size up to date.
-    state_stack_.push_back(MakeGarbageCollected<CanvasRenderingContext2DState>(
-        GetState(), CanvasRenderingContext2DState::kDontCopyClipList,
-        CanvasRenderingContext2DState::SaveType::kInternalLayer));
-    max_state_stack_depth_ =
-        std::max(state_stack_.size(), max_state_stack_depth_);
-
-    if (StateHasFilter() && GetState().ShouldDrawShadows()) {
-      cc::PaintFlags extra_flags;
-      extra_flags.setAlphaf(static_cast<float>(globalAlpha()));
-      extra_flags.setImageFilter(StateGetFilter());
-      canvas->saveLayer(extra_flags);
-    } else {
-      canvas->saveLayerAlphaf(globalAlpha());
-    }
-  } else if (StateHasFilter() || GetState().ShouldDrawShadows() ||
-             GetState().GlobalComposite() != SkBlendMode::kSrcOver) {
-    cc::PaintFlags flags;
-    flags.setBlendMode(GetState().GlobalComposite());
-
-    if (StateHasFilter() && GetState().ShouldDrawShadows()) {
+    if (GetState().ShouldDrawShadows() && StateHasFilter()) {
       flags.setImageFilter(sk_make_sp<ComposePaintFilter>(
           GetState().ShadowAndForegroundImageFilter(), StateGetFilter()));
     } else if (GetState().ShouldDrawShadows()) {
@@ -235,9 +223,19 @@ void BaseRenderingContext2D::beginLayer() {
     } else if (StateHasFilter()) {
       flags.setImageFilter(StateGetFilter());
     }
+    canvas->saveLayer(flags);
+  }
+
+  if (GetState().GlobalComposite() != SkBlendMode::kSrcOver &&
+      !composite_op_handled) {
+    pushLayerStack(save_type);
+    cc::PaintFlags flags;
+    flags.setBlendMode(GetState().GlobalComposite());
     flags.setAlphaf(static_cast<float>(globalAlpha()));
     canvas->saveLayer(flags);
-  } else {
+  } else if (globalAlpha() != 1 ||
+             initial_save_count == canvas->getSaveCount()) {
+    pushLayerStack(save_type);
     canvas->saveLayerAlphaf(globalAlpha());
   }
 
@@ -270,7 +268,7 @@ void BaseRenderingContext2D::endLayer() {
 
   // Verify that the current state's transform is invertible.
   if (IsTransformInvertible())
-    path_.Transform(GetState().GetTransform());
+    GetModifiablePath().Transform(GetState().GetTransform());
 
   // All saves performed since the last beginLayer are no-ops.
   while (state_stack_.back() &&
@@ -310,7 +308,7 @@ void BaseRenderingContext2D::PopAndRestore() {
 
     SetIsTransformInvertible(GetState().IsTransformInvertible());
     if (IsTransformInvertible())
-      path_.Transform(GetState().GetTransform().Inverse());
+      GetModifiablePath().Transform(GetState().GetTransform().Inverse());
 
     DCHECK(state_stack_.back()->GetSaveType() ==
            CanvasRenderingContext2DState::SaveType::kBeginEndLayer);
@@ -322,7 +320,7 @@ void BaseRenderingContext2D::PopAndRestore() {
 
   SetIsTransformInvertible(GetState().IsTransformInvertible());
   if (IsTransformInvertible())
-    path_.Transform(GetState().GetTransform().Inverse());
+    GetModifiablePath().Transform(GetState().GetTransform().Inverse());
 
   canvas->restore();
 
@@ -365,7 +363,7 @@ void BaseRenderingContext2D::ResetInternal() {
   state_stack_.resize(1);
   state_stack_.front() = MakeGarbageCollected<CanvasRenderingContext2DState>();
   SetIsTransformInvertible(true);
-  path_.Clear();
+  Clear();
   if (cc::PaintCanvas* c = GetPaintCanvas()) {
     // The canvas should always have an initial/unbalanced save frame, which
     // we use to reset the top level matrix and clip here.
@@ -851,7 +849,8 @@ void BaseRenderingContext2D::scale(double sx, double sy) {
     return;
 
   c->scale(fsx, fsy);
-  path_.Transform(AffineTransform().ScaleNonUniform(1.0 / fsx, 1.0 / fsy));
+  GetModifiablePath().Transform(
+      AffineTransform().ScaleNonUniform(1.0 / fsx, 1.0 / fsy));
 }
 
 void BaseRenderingContext2D::rotate(double angle_in_radians) {
@@ -875,7 +874,8 @@ void BaseRenderingContext2D::rotate(double angle_in_radians) {
   if (!IsTransformInvertible())
     return;
   c->rotate(ClampTo<float>(angle_in_radians * (180.0 / kPiFloat)));
-  path_.Transform(AffineTransform().RotateRadians(-angle_in_radians));
+  GetModifiablePath().Transform(
+      AffineTransform().RotateRadians(-angle_in_radians));
 }
 
 void BaseRenderingContext2D::translate(double tx, double ty) {
@@ -907,7 +907,7 @@ void BaseRenderingContext2D::translate(double tx, double ty) {
     return;
 
   c->translate(ftx, fty);
-  path_.Transform(AffineTransform().Translate(-ftx, -fty));
+  GetModifiablePath().Transform(AffineTransform().Translate(-ftx, -fty));
 }
 
 void BaseRenderingContext2D::transform(double m11,
@@ -946,7 +946,7 @@ void BaseRenderingContext2D::transform(double m11,
     return;
 
   c->concat(AffineTransformToSkM44(transform));
-  path_.Transform(transform.Inverse());
+  GetModifiablePath().Transform(transform.Inverse());
 }
 
 void BaseRenderingContext2D::resetTransform() {
@@ -971,7 +971,7 @@ void BaseRenderingContext2D::resetTransform() {
   c->setMatrix(SkM44());
 
   if (invertible_ctm)
-    path_.Transform(ctm);
+    GetModifiablePath().Transform(ctm);
   // When else, do nothing because all transform methods didn't update m_path
   // when CTM became non-invertible.
   // It means that resetTransform() restores m_path just before CTM became
@@ -1020,29 +1020,51 @@ AffineTransform BaseRenderingContext2D::GetTransform() const {
 }
 
 void BaseRenderingContext2D::beginPath() {
-  path_.Clear();
+  Clear();
   if (identifiability_study_helper_.ShouldUpdateBuilder()) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kBeginPath);
   }
 }
 
 void BaseRenderingContext2D::DrawPathInternal(
-    const Path& path,
+    const CanvasPath& path,
     CanvasRenderingContext2DState::PaintType paint_type,
     SkPathFillType fill_type,
     UsePaintCache use_paint_cache) {
   if (path.IsEmpty())
     return;
 
-  SkPath sk_path = path.GetSkPath();
   gfx::RectF bounds(path.BoundingRect());
   if (std::isnan(bounds.x()) || std::isnan(bounds.y()) ||
       std::isnan(bounds.width()) || std::isnan(bounds.height()))
     return;
-  sk_path.setFillType(fill_type);
 
   if (paint_type == CanvasRenderingContext2DState::kStrokePaintType)
     InflateStrokeRect(bounds);
+
+  if (path.IsLine()) {
+    auto line = path.line();
+    Draw<OverdrawOp::kNone>(
+        [line](cc::PaintCanvas* c,
+               const cc::PaintFlags* flags)  // draw lambda
+        {
+          c->drawLine(SkFloatToScalar(line.start.x()),
+                      SkFloatToScalar(line.start.y()),
+                      SkFloatToScalar(line.end.x()),
+                      SkFloatToScalar(line.end.y()), *flags);
+        },
+        [](const SkIRect& rect)  // overdraw test lambda
+        { return false; },
+        bounds, paint_type,
+        GetState().HasPattern(paint_type)
+            ? CanvasRenderingContext2DState::kNonOpaqueImage
+            : CanvasRenderingContext2DState::kNoImage,
+        CanvasPerformanceMonitor::DrawType::kPath);
+    return;
+  }
+
+  SkPath sk_path = path.GetPath().GetSkPath();
+  sk_path.setFillType(fill_type);
 
   Draw<OverdrawOp::kNone>(
       [sk_path, use_paint_cache](cc::PaintCanvas* c,
@@ -1072,7 +1094,7 @@ void BaseRenderingContext2D::fill(const String& winding_rule_string) {
   if (identifiability_study_helper_.ShouldUpdateBuilder()) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kFill, winding_rule);
   }
-  DrawPathInternal(path_, CanvasRenderingContext2DState::kFillPaintType,
+  DrawPathInternal(*this, CanvasRenderingContext2DState::kFillPaintType,
                    winding_rule, UsePaintCache::kDisabled);
 }
 
@@ -1083,16 +1105,15 @@ void BaseRenderingContext2D::fill(Path2D* dom_path,
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kFill__Path, dom_path->GetIdentifiableToken(), winding_rule);
   }
-  DrawPathInternal(dom_path->GetPath(),
-                   CanvasRenderingContext2DState::kFillPaintType, winding_rule,
-                   path2d_use_paint_cache_);
+  DrawPathInternal(*dom_path, CanvasRenderingContext2DState::kFillPaintType,
+                   winding_rule, path2d_use_paint_cache_);
 }
 
 void BaseRenderingContext2D::stroke() {
   if (identifiability_study_helper_.ShouldUpdateBuilder()) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kStroke);
   }
-  DrawPathInternal(path_, CanvasRenderingContext2DState::kStrokePaintType,
+  DrawPathInternal(*this, CanvasRenderingContext2DState::kStrokePaintType,
                    SkPathFillType::kWinding, UsePaintCache::kDisabled);
 }
 
@@ -1101,8 +1122,7 @@ void BaseRenderingContext2D::stroke(Path2D* dom_path) {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kStroke__Path, dom_path->GetIdentifiableToken());
   }
-  DrawPathInternal(dom_path->GetPath(),
-                   CanvasRenderingContext2DState::kStrokePaintType,
+  DrawPathInternal(*dom_path, CanvasRenderingContext2DState::kStrokePaintType,
                    SkPathFillType::kWinding, path2d_use_paint_cache_);
 }
 
@@ -1231,7 +1251,7 @@ void BaseRenderingContext2D::clip(const String& winding_rule_string) {
         CanvasOps::kClip,
         IdentifiabilitySensitiveStringToken(winding_rule_string));
   }
-  ClipInternal(path_, winding_rule_string, UsePaintCache::kDisabled);
+  ClipInternal(GetPath(), winding_rule_string, UsePaintCache::kDisabled);
 }
 
 void BaseRenderingContext2D::clip(Path2D* dom_path,
@@ -1248,7 +1268,7 @@ void BaseRenderingContext2D::clip(Path2D* dom_path,
 bool BaseRenderingContext2D::isPointInPath(const double x,
                                            const double y,
                                            const String& winding_rule_string) {
-  return IsPointInPathInternal(path_, x, y, winding_rule_string);
+  return IsPointInPathInternal(GetPath(), x, y, winding_rule_string);
 }
 
 bool BaseRenderingContext2D::isPointInPath(Path2D* dom_path,
@@ -1280,7 +1300,7 @@ bool BaseRenderingContext2D::IsPointInPathInternal(
 }
 
 bool BaseRenderingContext2D::isPointInStroke(const double x, const double y) {
-  return IsPointInStrokeInternal(path_, x, y);
+  return IsPointInStrokeInternal(GetPath(), x, y);
 }
 
 bool BaseRenderingContext2D::isPointInStroke(Path2D* dom_path,
@@ -1644,8 +1664,9 @@ void BaseRenderingContext2D::drawImage(CanvasImageSource* image_source,
   gfx::SizeF default_object_size(Width(), Height());
   SourceImageStatus source_image_status = kInvalidSourceImageStatus;
   if (!image_source->IsVideoElement()) {
-    image = image_source->GetSourceImageForCanvas(&source_image_status,
-                                                  default_object_size);
+    image = image_source->GetSourceImageForCanvas(
+        CanvasResourceProvider::FlushReason::kDrawImage, &source_image_status,
+        default_object_size);
     if (source_image_status == kUndecodableSourceImageStatus) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidStateError,
@@ -1840,7 +1861,9 @@ CanvasPattern* BaseRenderingContext2D::createPattern(
 
   gfx::SizeF default_object_size(Width(), Height());
   scoped_refptr<Image> image_for_rendering =
-      image_source->GetSourceImageForCanvas(&status, default_object_size);
+      image_source->GetSourceImageForCanvas(
+          CanvasResourceProvider::FlushReason::kCreatePattern, &status,
+          default_object_size);
 
   switch (status) {
     case kNormalSourceImageStatus:
@@ -2013,7 +2036,7 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
 
   // Deferred offscreen canvases might have recorded commands, make sure
   // that those get drawn here
-  FinalizeFrame();
+  FinalizeFrame(CanvasResourceProvider::FlushReason::kGetImageData);
 
   num_readbacks_performed_++;
   CanvasContextCreationAttributesCore::WillReadFrequently
@@ -2056,7 +2079,8 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
     }
   }
 
-  scoped_refptr<StaticBitmapImage> snapshot = GetImage();
+  scoped_refptr<StaticBitmapImage> snapshot =
+      GetImage(CanvasResourceProvider::FlushReason::kGetImageData);
 
   // Determine if the array should be zero initialized, or if it will be
   // completely overwritten.

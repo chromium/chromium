@@ -173,12 +173,8 @@ ui::Cursor TouchEmulator::InitCursorFromResource(int resource_id) {
       content::GetContentClient()->GetNativeImageNamed(resource_id);
   SkBitmap bitmap = cursor_image.AsBitmap();
   gfx::Point hotspot(bitmap.width() / 2, bitmap.height() / 2);
-
-  ui::Cursor cursor(ui::mojom::CursorType::kCustom);
-  cursor.set_custom_bitmap(std::move(bitmap));
-  cursor.set_custom_hotspot(std::move(hotspot));
-  cursor.set_image_scale_factor(cursor_scale_factor_);
-  return cursor;
+  return ui::Cursor::NewCustom(std::move(bitmap), std::move(hotspot),
+                               cursor_scale_factor_);
 }
 
 bool TouchEmulator::HandleMouseEvent(const WebMouseEvent& mouse_event,

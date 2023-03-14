@@ -51,8 +51,8 @@ void ClipboardAPI::OnClipboardDataChanged() {
 ClipboardSetImageDataFunction::~ClipboardSetImageDataFunction() = default;
 
 ExtensionFunction::ResponseAction ClipboardSetImageDataFunction::Run() {
-  std::unique_ptr<clipboard::SetImageData::Params> params(
-      clipboard::SetImageData::Params::Create(args()));
+  absl::optional<clipboard::SetImageData::Params> params =
+      clipboard::SetImageData::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // Fill in the omitted additional data items with empty data.

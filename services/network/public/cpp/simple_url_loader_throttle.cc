@@ -86,7 +86,8 @@ class BatchingDelegate
 // Parses field trial parameters and holds parsed parameters.
 class BatchingConfig {
  public:
-  BatchingConfig() = default;
+  BatchingConfig() { Initialize(); }
+
   ~BatchingConfig() = default;
 
   BatchingConfig(const BatchingConfig&) = delete;
@@ -95,22 +96,18 @@ class BatchingConfig {
   BatchingConfig& operator=(BatchingConfig&&) = delete;
 
   bool IsBatchingEnabledForTrafficAnnotation(
-      const net::NetworkTrafficAnnotationTag& traffic_annotation) {
-    if (!initialized_)
-      Initialize();
-
+      const net::NetworkTrafficAnnotationTag& traffic_annotation) const {
     return enabled_traffic_annotation_hashes_.contains(
         traffic_annotation.unique_id_hash_code);
   }
 
   void ResetForTesting() {
     enabled_traffic_annotation_hashes_.clear();
-    initialized_ = false;
+    Initialize();
   }
 
  private:
   void Initialize() {
-    DCHECK(!initialized_);
     DCHECK(enabled_traffic_annotation_hashes_.empty());
 
     std::string comma_separated_hashes = base::GetFieldTrialParamValueByFeature(
@@ -125,11 +122,8 @@ class BatchingConfig {
         continue;
       enabled_traffic_annotation_hashes_.insert(parsed);
     }
-
-    initialized_ = true;
   }
 
-  bool initialized_ = false;
   base::flat_set<uint32_t> enabled_traffic_annotation_hashes_;
 };
 

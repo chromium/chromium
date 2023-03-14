@@ -168,7 +168,7 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
       std::unique_ptr<blink::WebCoalescedInputEvent> event,
       std::unique_ptr<cc::EventMetrics> metrics,
       EventDispositionCallback callback,
-      cc::ElementIdType hit_tests_result);
+      cc::ElementId hit_tests_result);
 
   // Handles creating synthetic gesture events. It is currently used for
   // creating gesture event equivalents for mouse events on a composited

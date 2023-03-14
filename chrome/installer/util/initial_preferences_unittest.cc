@@ -91,8 +91,7 @@ TEST_F(InitialPreferencesTest, ParseDistroParams) {
       "  }\n"
       "} \n";
 
-  EXPECT_TRUE(
-      base::WriteFile(prefs_file(), text, static_cast<int>(strlen(text))));
+  EXPECT_TRUE(base::WriteFile(prefs_file(), text));
   installer::InitialPreferences prefs(prefs_file());
   EXPECT_TRUE(prefs.read_from_file());
 
@@ -138,8 +137,7 @@ TEST_F(InitialPreferencesTest, ParseMissingDistroParams) {
       "  }\n"
       "} \n";
 
-  EXPECT_TRUE(
-      base::WriteFile(prefs_file(), text, static_cast<int>(strlen(text))));
+  EXPECT_TRUE(base::WriteFile(prefs_file(), text));
   installer::InitialPreferences prefs(prefs_file());
   EXPECT_TRUE(prefs.read_from_file());
 
@@ -184,8 +182,7 @@ TEST_F(InitialPreferencesTest, FirstRunTabs) {
       "  ]\n"
       "} \n";
 
-  EXPECT_TRUE(
-      base::WriteFile(prefs_file(), text, static_cast<int>(strlen(text))));
+  EXPECT_TRUE(base::WriteFile(prefs_file(), text));
   installer::InitialPreferences prefs(prefs_file());
   typedef std::vector<std::string> TabsVector;
   TabsVector tabs = prefs.GetFirstRunTabs();
@@ -238,8 +235,7 @@ TEST_F(InitialPreferencesTest, GetInstallPreferencesTest) {
       "     \"verbose_logging\": false\n"
       "  }\n"
       "} \n";
-  EXPECT_TRUE(
-      base::WriteFile(prefs_file, text, static_cast<int>(strlen(text))));
+  EXPECT_TRUE(base::WriteFile(prefs_file, text));
 
   // Make sure command line values override the values in initial preferences.
   std::wstring cmd_str(L"setup.exe --installerdata=\"" + prefs_file.value() +

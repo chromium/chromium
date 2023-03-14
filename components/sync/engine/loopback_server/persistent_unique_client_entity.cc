@@ -38,7 +38,7 @@ std::unique_ptr<LoopbackServerEntity>
 PersistentUniqueClientEntity::CreateFromEntity(
     const sync_pb::SyncEntity& client_entity) {
   ModelType model_type = GetModelTypeFromSpecifics(client_entity.specifics());
-  if (client_entity.has_client_defined_unique_tag() ==
+  if (client_entity.has_client_tag_hash() ==
       syncer::CommitOnlyTypes().Has(model_type)) {
     DLOG(WARNING) << "A UniqueClientEntity should have a client-defined unique "
                      "tag iff it is not a CommitOnly type.";
@@ -48,13 +48,13 @@ PersistentUniqueClientEntity::CreateFromEntity(
   // Without model type specific logic for each CommitOnly type, we cannot infer
   // a reasonable tag from the specifics. We need uniqueness for how the server
   // holds onto all objects, so simply make a new tag from a random  number.
-  std::string effective_tag = client_entity.has_client_defined_unique_tag()
-                                  ? client_entity.client_defined_unique_tag()
+  std::string effective_tag = client_entity.has_client_tag_hash()
+                                  ? client_entity.client_tag_hash()
                                   : base::NumberToString(base::RandUint64());
   std::string id = LoopbackServerEntity::CreateId(model_type, effective_tag);
   return std::make_unique<PersistentUniqueClientEntity>(
       id, model_type, client_entity.version(), client_entity.name(),
-      client_entity.client_defined_unique_tag(), client_entity.specifics(),
+      client_entity.client_tag_hash(), client_entity.specifics(),
       client_entity.ctime(), client_entity.mtime());
 }
 
@@ -94,7 +94,7 @@ void PersistentUniqueClientEntity::SerializeAsProto(
     sync_pb::SyncEntity* proto) const {
   LoopbackServerEntity::SerializeBaseProtoFields(proto);
 
-  proto->set_client_defined_unique_tag(client_tag_hash_);
+  proto->set_client_tag_hash(client_tag_hash_);
   proto->set_ctime(creation_time_);
   proto->set_mtime(last_modified_time_);
 }

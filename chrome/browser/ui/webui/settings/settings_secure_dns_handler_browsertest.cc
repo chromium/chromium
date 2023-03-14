@@ -22,6 +22,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
 #include "net/dns/public/resolve_error_info.h"
+#include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -30,7 +31,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/login/users/mock_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_type.h"
@@ -445,11 +446,11 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest,
   std::string templates = "https://bar.test/dns-query{?dns}";
 
   // Create an affiliated user.
-  std::unique_ptr<ash::MockUserManager> user_manager =
-      std::make_unique<ash::MockUserManager>();
+  auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
   const AccountId account_id0(AccountId::FromUserEmail("testuser@managed.com"));
-  user_manager->AddUserWithAffiliationAndType(
-      account_id0, /* is_affiliated=*/true, user_manager::USER_TYPE_REGULAR);
+  user_manager->AddUserWithAffiliationAndTypeAndProfile(
+      account_id0, /* is_affiliated=*/true, user_manager::USER_TYPE_REGULAR,
+      nullptr);
   user_manager::ScopedUserManager user_manager_enabler(std::move(user_manager));
 
   std::string secure_dns_mode;

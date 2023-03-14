@@ -66,10 +66,7 @@ class TestChromeBrowserState final : public ChromeBrowserState {
   scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory()
       override;
   policy::UserCloudPolicyManager* GetUserCloudPolicyManager() override;
-
-  // This method is defined as empty following the paradigm of
-  // TestingProfile::DestroyOffTheRecordProfile().
-  void DestroyOffTheRecordChromeBrowserState() override {}
+  void DestroyOffTheRecordChromeBrowserState() override;
 
   // Creates an off-the-record TestChromeBrowserState for
   // the current object, installing `testing_factories`

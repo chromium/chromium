@@ -5,8 +5,6 @@
 #ifndef REMOTING_HOST_WIN_RDP_CLIENT_WINDOW_H_
 #define REMOTING_HOST_WIN_RDP_CLIENT_WINDOW_H_
 
-#include "base/memory/raw_ptr.h"
-
 // Must be included before <atlapp.h>.
 #include "base/win/atl.h"  // NOLINT(build/include_order)
 
@@ -14,6 +12,7 @@
 #include <atlcrack.h>
 #include <wrl/client.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/timer/timer.h"
 #include "base/win/atl.h"

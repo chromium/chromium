@@ -91,6 +91,7 @@ void ReadInstallCommandFromManifest(
     const std::string& app_id,
     const std::string& install_data_index,
     update_client::ProtocolParser::Results& results,
+    std::string& installer_version,
     base::FilePath& installer_path,
     std::string& install_args,
     std::string& install_data) {
@@ -134,6 +135,7 @@ void ReadInstallCommandFromManifest(
     return;
   }
 
+  installer_version = it->manifest.version;
   installer_path = [&offline_dir, &app_id, &it]() {
     const base::FilePath app_dir(offline_dir.AppendASCII(app_id));
     const base::FilePath path(app_dir.AppendASCII(it->manifest.run));

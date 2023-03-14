@@ -677,6 +677,13 @@ void OverviewSession::OnWindowDragStarted(aura::Window* dragged_window,
   if (!target_grid)
     return;
   target_grid->OnWindowDragStarted(dragged_window, animate);
+
+  // The stacker object may be already created depending on the overview enter
+  // type.
+  if (!float_container_stacker_) {
+    float_container_stacker_ = std::make_unique<ScopedFloatContainerStacker>();
+  }
+  float_container_stacker_->OnDragStarted(dragged_window);
 }
 
 void OverviewSession::OnWindowDragContinued(
@@ -695,6 +702,9 @@ void OverviewSession::OnWindowDragEnded(aura::Window* dragged_window,
                                         const gfx::PointF& location_in_screen,
                                         bool should_drop_window_into_overview,
                                         bool snap) {
+  DCHECK(float_container_stacker_);
+  float_container_stacker_->OnDragFinished(dragged_window);
+
   OverviewGrid* target_grid =
       GetGridWithRootWindow(dragged_window->GetRootWindow());
   if (!target_grid)
@@ -792,8 +802,8 @@ void OverviewSession::OnStartingAnimationComplete(bool canceled,
   UpdateAccessibilityFocus();
   Shell::Get()->overview_controller()->DelayedUpdateRoundedCornersAndShadow();
 
-  // TODO(sammiequon): This function shouldn't be called more than once but in
-  // tests with zero duration, it does. Investigate and convert to DCHECK.
+  // The stacker object may be already created if a drag has started prior to
+  // this.
   if (!float_container_stacker_) {
     float_container_stacker_ = std::make_unique<ScopedFloatContainerStacker>();
   }
@@ -1352,7 +1362,9 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
     }
     case ui::VKEY_Z: {
       // Ctrl + Z undos a close all operation if the toast has not yet expired.
-      if (!is_control_down) {
+      // Ctrl + Alt + Z triggers ChromeVox so we don't do anything here to
+      // interrupt that.
+      if (!is_control_down || (is_control_down && event->IsAltDown())) {
         return;
       }
 

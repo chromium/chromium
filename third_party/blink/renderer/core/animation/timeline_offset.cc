@@ -74,7 +74,7 @@ absl::optional<TimelineOffset> TimelineOffset::Create(
       CSSPropertyID::kAnimationRangeStart, css_text,
       document.ElementSheet().Contents()->ParserContext());
 
-  if (!value_list) {
+  if (!DynamicTo<CSSValueList>(value_list)) {
     ThrowExcpetionForInvalidTimelineOffset(exception_state);
     return absl::nullopt;
   }

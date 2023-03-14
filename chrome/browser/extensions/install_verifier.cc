@@ -320,12 +320,12 @@ InstallVerifier::PendingOperation::~PendingOperation() = default;
 
 ExtensionIdSet InstallVerifier::GetExtensionsToVerify() const {
   ExtensionIdSet result;
-  std::unique_ptr<ExtensionSet> extensions =
+  const ExtensionSet extensions =
       ExtensionRegistry::Get(context_)->GenerateInstalledExtensionsSet();
-  for (ExtensionSet::const_iterator iter = extensions->begin();
-       iter != extensions->end(); ++iter) {
-    if (NeedsVerification(**iter, context_))
-      result.insert((*iter)->id());
+  for (const auto& extension : extensions) {
+    if (NeedsVerification(*extension, context_)) {
+      result.insert(extension->id());
+    }
   }
   return result;
 }

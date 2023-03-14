@@ -46,6 +46,15 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
  public:
   METADATA_HEADER(TrayBackgroundView);
 
+  // Inherit from this class to be notified of events that happen for a specific
+  // `TrayBackgroundView`.
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when the `TrayBackgroundView`'s preferred visibility changes.
+    // `visible_preferred` is the new preferred visibility.
+    virtual void OnVisiblePreferredChanged(bool visible_preferred) = 0;
+  };
+
   enum RoundedCornerBehavior {
     kNotRounded,
     kStartRounded,
@@ -59,6 +68,9 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   TrayBackgroundView(const TrayBackgroundView&) = delete;
   TrayBackgroundView& operator=(const TrayBackgroundView&) = delete;
   ~TrayBackgroundView() override;
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Overrides default button press handling in `PerformAction()`.
   void SetPressedCallback(
@@ -346,6 +358,8 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   std::unique_ptr<TrayBackgroundViewSessionChangeHandler> handler_;
   std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
+
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<TrayBackgroundView> weak_factory_{this};
 };

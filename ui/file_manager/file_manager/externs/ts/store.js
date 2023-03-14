@@ -26,6 +26,9 @@ export class Store {
 
   /** @return {!State} */
   getState() {}
+
+  /** @param {!State} initialState */
+  init(initialState) {}
 }
 
 /**

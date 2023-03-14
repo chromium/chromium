@@ -34,8 +34,10 @@ struct CORE_EXPORT NGBfcRect {
     return end_offset.block_offset - start_offset.block_offset;
   }
   LayoutUnit InlineSize() const {
-    if (end_offset.line_offset == LayoutUnit::Max())
-      return LayoutUnit::Max();
+    if (end_offset.line_offset == LayoutUnit::Max()) {
+      return start_offset.line_offset == LayoutUnit::Max() ? LayoutUnit()
+                                                           : LayoutUnit::Max();
+    }
 
     return end_offset.line_offset - start_offset.line_offset;
   }

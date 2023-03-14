@@ -9,8 +9,6 @@ source_set("prefs") {
     "ios_chrome_pref_model_associator_client.h",
     "ios_chrome_pref_service_factory.h",
     "ios_chrome_pref_service_factory.mm",
-    "ios_chrome_syncable_prefs_database.cc",
-    "ios_chrome_syncable_prefs_database.h",
   ]
   deps = [
     "//base",
@@ -22,6 +20,7 @@ source_set("prefs") {
     "//components/search_engines",
     "//components/sync_preferences",
     "//ios/chrome/browser/application_context",
+    "//ios/chrome/browser/sync/prefs",
   ]
 }
 
@@ -95,14 +94,13 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/prerender:prerender_pref",
     "//ios/chrome/browser/push_notification:push_notification_service",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/signin",
     "//ios/chrome/browser/ui/bookmarks:constants",
     "//ios/chrome/browser/ui/bookmarks:core",
     "//ios/chrome/browser/ui/content_suggestions",
-    "//ios/chrome/browser/ui/content_suggestions:field_trial",
     "//ios/chrome/browser/ui/first_run:field_trial",
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
     "//ios/chrome/browser/ui/ntp:field_trial",

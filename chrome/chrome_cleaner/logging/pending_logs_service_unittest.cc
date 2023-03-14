@@ -213,9 +213,7 @@ TEST_F(PendingLogsServiceTest, UploadPendingLogs) {
   ASSERT_TRUE(
       base::CreateTemporaryFileInDir(scoped_temp_dir.GetPath(), &log_file));
   ASSERT_TRUE(base::PathExists(log_file));
-  ASSERT_GT(base::WriteFile(log_file, raw_report_string.c_str(),
-                            raw_report_string.size()),
-            0);
+  ASSERT_TRUE(base::WriteFile(log_file, raw_report_string));
 
   // Set it up as a pending log.
   ASSERT_TRUE(registry_logger_->AppendLogFilePath(log_file));
@@ -291,7 +289,7 @@ TEST_F(PendingLogsServiceTest, UploadPendingLogsFromInvalidFile) {
   ASSERT_TRUE(
       base::CreateTemporaryFileInDir(scoped_temp_dir.GetPath(), &invalid_file));
   ASSERT_TRUE(base::PathExists(invalid_file));
-  ASSERT_GT(base::WriteFile(invalid_file, "wat", 3), 0);
+  ASSERT_TRUE(base::WriteFile(invalid_file, "wat"));
 
   ValidatePendingLogsUploadFailure(invalid_file);
 }

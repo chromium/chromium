@@ -7,6 +7,7 @@
 #include "base/metrics/metrics_hashes.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/processing/query_processor.h"
+#include "components/segmentation_platform/internal/post_processor/post_processing_test_utils.h"
 #include "components/segmentation_platform/public/proto/aggregation.pb.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
@@ -813,6 +814,16 @@ TEST_F(MetadataUtilsTest, GetAllUmaFeaturesWithUMAOutput) {
       model_metadata, /*include_outputs=*/true);
   EXPECT_EQ(1u, expected.size());
   EXPECT_EQ("output", expected[0].name());
+}
+
+TEST_F(MetadataUtilsTest, HasMigratedToMultiOutput) {
+  auto config = test_utils::CreateTestConfig(
+      "test_key", SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER);
+  EXPECT_FALSE(metadata_utils::HasMigratedToMultiOutput(config.get()));
+
+  config = test_utils::CreateTestConfig(
+      "test_key", SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER);
+  EXPECT_TRUE(metadata_utils::HasMigratedToMultiOutput(config.get()));
 }
 
 }  // namespace segmentation_platform

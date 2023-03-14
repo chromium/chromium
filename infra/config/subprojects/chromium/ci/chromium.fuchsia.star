@@ -5,7 +5,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "os", "reclient", "sheriff_rotations")
+load("//lib/builders.star", "free_space", "os", "reclient", "sheriff_rotations")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
@@ -37,6 +37,9 @@ consoles.console_view(
 ci.builder(
     name = "Deterministic Fuchsia (dbg)",
     executable = "recipe:swarming/deterministic_build",
+    # Runs two builds, which can cause the builder to run out of disk space
+    # with standard free space.
+    free_space = free_space.high,
     console_view_entry = [
         consoles.console_view_entry(
             category = "det",

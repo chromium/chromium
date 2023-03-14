@@ -251,7 +251,7 @@ class SBBrowserUrlLoaderThrottleTest : public ::testing::Test {
             /*is_mechanism_experiment_allowed=*/false);
     url_checker_ = url_checker.get();
 
-    throttle_->GetIOCheckerForTesting()->SetUrlCheckerForTesting(
+    throttle_->GetSBCheckerForTesting()->SetUrlCheckerForTesting(
         std::move(url_checker));
     throttle_->set_delegate(throttle_delegate_.get());
 

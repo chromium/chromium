@@ -260,6 +260,16 @@
           </div>
         </cr-checkbox>
       </div>
+      <!-- Autofill Metadata (Googler Internal Only) -->
+      <div id="autofillCheckboxContainer" class="checkbox-field-container"
+          hidden="[[!shouldShowAutofillCheckbox]]">
+        <cr-checkbox id="autofillCheckbox"
+            aria-labelledby="autofillCheckboxLabel" checked>
+          <div id="autofillCheckboxLabel"
+            inner-h-t-m-l="[[autofillCheckboxLabel_]]" class="checkbox-label">
+          </div>
+        </cr-checkbox>
+      </div>
       <!-- System Information -->
       <div id="sysInfoContainer" class="checkbox-field-container">
         <cr-checkbox id="sysInfoCheckbox" aria-labelledby="sysInfoCheckboxLabel"

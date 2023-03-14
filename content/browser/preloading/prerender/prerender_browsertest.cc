@@ -2186,15 +2186,46 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SameOriginMainFrameNavigation) {
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), kNavigatedUrl);
 }
 
-// TODO(crbug.com/1239281): Support the same-site cross-origin navigation.
 // Tests that the same-site cross-origin main frame navigation in a prerendering
-// page cancels the prerendering.
-IN_PROC_BROWSER_TEST_F(
-    PrerenderBrowserTest,
-    SameSiteCrossOriginMainFrameNavigationCancelsPrerendering) {
+// page succeeds.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       SameSiteCrossOriginMainFrameNavigation) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
-  const GURL kNavigatedUrl = GetSameSiteCrossOriginUrl("/empty.html?navigated");
+  const GURL kNavigatedUrl =
+      GetSameSiteCrossOriginUrl("/prerender/prerender_with_opt_in_header.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start a prerender.
+  int host_id = AddPrerender(kPrerenderingUrl);
+
+  // Start a same-site cross-origin navigation in the prerender frame tree that
+  // will not cancel the initiator's prerendering.
+  test::PrerenderHostObserver observer(*web_contents_impl(), host_id);
+
+  NavigatePrerenderedPage(host_id, kNavigatedUrl);
+
+  // Activate a prerender and it should succeed.
+  NavigatePrimaryPage(kPrerenderingUrl);
+
+  observer.WaitForActivation();
+  EXPECT_TRUE(observer.was_activated());
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kNavigatedUrl);
+}
+
+// Tests that the same-site cross-origin main frame navigation in a prerendering
+// page cancels the prerendering without opt-in.
+IN_PROC_BROWSER_TEST_F(
+    PrerenderBrowserTest,
+    SameSiteCrossOriginMainFrameNavigationCancelsPrerenderingWithoutOptInHeader) {
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
+  // The cross-origin navigation should fail prerendering without an opt-in
+  // header.
+  const GURL kNavigatedUrl =
+      GetSameSiteCrossOriginUrl("/prerender/empty.html?navigated");
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -2211,7 +2242,7 @@ IN_PROC_BROWSER_TEST_F(
   observer.WaitForDestroyed();
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
   ExpectFinalStatusForSpeculationRule(
-      PrerenderFinalStatus::kSameSiteCrossOriginNavigation);
+      PrerenderFinalStatus::kSameSiteCrossOriginNavigationNotOptIn);
 }
 
 // Tests that the cross-site main frame navigation in a prerendering page
@@ -2220,7 +2251,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        CrossSiteMainFrameNavigationCancelsPrerendering) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
-  const GURL kNavigatedUrl = GetCrossSiteUrl("/empty.html?navigated");
+  const GURL kNavigatedUrl =
+      GetCrossSiteUrl("/prerender/prerender_with_opt_in_header.html");
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -3111,50 +3143,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MojoCapabilityControl_LoosenMode) {
   }
 }
 
-// Test that a PrerenderHost triggered by speculation rules is canceled when
-// it times out in the background.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CancelPrerenderWhenTimeout) {
-  const GURL kInitialUrl = GetUrl("/empty.html");
-  const GURL kPrerenderUrl = GetUrl("/empty.html?prerender");
-
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-
-  int host_id = AddPrerender(kPrerenderUrl);
-  test::PrerenderHostObserver prerender_observer(*web_contents_impl(), host_id);
-
-  PrerenderHostRegistry* registry =
-      web_contents_impl()->GetPrerenderHostRegistry();
-
-  // The timers should not start yet when the prerendered page is in the
-  // foreground.
-  ASSERT_FALSE(registry->GetEmbedderTimerForTesting()->IsRunning());
-  ASSERT_FALSE(registry->GetSpeculationRulesTimerForTesting()->IsRunning());
-
-  // Inject mock time task runner.
-  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
-  registry->SetTaskRunnerForTesting(task_runner);
-
-  // Changing the visibility state to HIDDEN will not stop prerendering
-  // immediately, but start the timers.
-  web_contents()->WasHidden();
-  ASSERT_TRUE(registry->GetEmbedderTimerForTesting()->IsRunning());
-  ASSERT_TRUE(registry->GetSpeculationRulesTimerForTesting()->IsRunning());
-
-  task_runner->FastForwardBy(
-      PrerenderHostRegistry::kTimeToLiveInBackgroundForSpeculationRules);
-
-  prerender_observer.WaitForDestroyed();
-  ASSERT_FALSE(registry->GetEmbedderTimerForTesting()->IsRunning());
-  ASSERT_FALSE(registry->GetSpeculationRulesTimerForTesting()->IsRunning());
-  histogram_tester().ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
-      PrerenderFinalStatus::kTimeoutBackgrounded, 1);
-}
-
-// Test that multiple PrerenderHosts triggered by speculation rules are canceled
-// when it times out in the background.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
-                       CancelMultiplePrerendersWhenTimeout) {
+// Test that prerenders triggered by speculation rules are canceled when a
+// background timeout timer is fired.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CancelPrerendersWhenTimeout) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderUrl1 = GetUrl("/empty.html?prerender1");
   const GURL kPrerenderUrl2 = GetUrl("/empty.html?prerender2");
@@ -5141,31 +5132,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), initial_url);
 }
 
-// TODO(crbug.com/1356907): Remove this and merge it to
-// PrerenderSequentialPrerenderingBrowserTest once kPrerender2InBackground is
-// enabled by default.
-class SequentialPrerenderInBackgroundBrowserTest
-    : public PrerenderSequentialPrerenderingBrowserTest {
- public:
-  SequentialPrerenderInBackgroundBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {// Enable to run prerenderings in the background.
-         blink::features::kPrerender2InBackground},
-        // Disable the memory requirement of Prerender2 so the test can run on
-        // any bot.
-        {blink::features::kPrerender2MemoryControls});
-  }
-
-  ~SequentialPrerenderInBackgroundBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Test that when the current tab gets hidden then the prerender sequence is
 // terminated, and when the current tab gets visible then we start the next
 // prerender if we have some pending prerender hosts.
-IN_PROC_BROWSER_TEST_F(SequentialPrerenderInBackgroundBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
                        SequentialPrerenderingInBackground) {
   net::test_server::ControllableHttpResponse response1(
       embedded_test_server(), "/empty.html?prerender1");
@@ -6737,20 +6707,15 @@ class PrerenderWithBackForwardCacheBrowserTest
       public testing::WithParamInterface<BackForwardCacheType> {
  public:
   PrerenderWithBackForwardCacheBrowserTest() {
-    // Allow the BFCache for all devices regardless of their memory.
-    std::vector<base::test::FeatureRef> disabled_features{
-        features::kBackForwardCacheMemoryControls};
-
     switch (GetParam()) {
       case BackForwardCacheType::kDisabled:
         feature_list_.InitAndDisableFeature(features::kBackForwardCache);
         break;
       case BackForwardCacheType::kEnabled:
         feature_list_.InitWithFeaturesAndParameters(
-            {{features::kBackForwardCache, {{}}},
-             {features::kBackForwardCacheTimeToLiveControl,
-              {{"time_to_live_seconds", "3600"}}}},
-            disabled_features);
+            GetDefaultEnabledBackForwardCacheFeaturesForTesting(
+                /*ignore_outstanding_network_request=*/false),
+            GetDefaultDisabledBackForwardCacheFeaturesForTesting());
         break;
     }
   }

@@ -161,6 +161,12 @@ ShellSurfaceBuilder& ShellSurfaceBuilder::SetCanMinimize(bool can_minimize) {
   return *this;
 }
 
+ShellSurfaceBuilder& ShellSurfaceBuilder::SetCanMaximize(bool can_maximize) {
+  DCHECK(!built_);
+  can_maximize_ = can_maximize;
+  return *this;
+}
+
 ShellSurfaceBuilder& ShellSurfaceBuilder::SetMaximumSize(
     const gfx::Size& size) {
   DCHECK(!built_);
@@ -364,6 +370,8 @@ ShellSurfaceBuilder::BuildClientControlledShellSurface() {
     shell_surface->GetWidget()->GetNativeWindow()->SetProperty(
         aura::client::kAppType, static_cast<int>(ash::AppType::ARC_APP));
   }
+
+  shell_surface->SetCanMaximize(can_maximize_);
 
   return shell_surface;
 }

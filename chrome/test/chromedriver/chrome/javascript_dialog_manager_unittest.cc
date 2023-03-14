@@ -87,8 +87,8 @@ namespace {
 
 class FakeDevToolsClient : public StubDevToolsClient {
  public:
-  FakeDevToolsClient() : listener_(nullptr), closing_count_(0) {}
-  ~FakeDevToolsClient() override {}
+  FakeDevToolsClient() = default;
+  ~FakeDevToolsClient() override = default;
 
   void set_closing_count(int closing_count) {
     closing_count_ = closing_count;
@@ -107,13 +107,20 @@ class FakeDevToolsClient : public StubDevToolsClient {
     }
     return Status(kOk);
   }
+
   void AddListener(DevToolsEventListener* listener) override {
     listener_ = listener;
   }
 
+  void RemoveListener(DevToolsEventListener* listener) override {
+    if (listener == listener_) {
+      listener_ = nullptr;
+    }
+  }
+
  private:
-  raw_ptr<DevToolsEventListener> listener_;
-  int closing_count_;
+  raw_ptr<DevToolsEventListener> listener_ = nullptr;
+  int closing_count_ = 0;
 };
 
 }  // namespace

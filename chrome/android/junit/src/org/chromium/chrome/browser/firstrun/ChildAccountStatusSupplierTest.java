@@ -9,9 +9,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.robolectric.Shadows.shadowOf;
+
+import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
 import android.os.Looper;
 
@@ -154,11 +155,7 @@ public class ChildAccountStatusSupplierTest {
         mAccountManagerTestRule.addAccount(CHILD_ACCOUNT_EMAIL);
         // Block getAccounts call to make sure ChildAccountStatusSupplier checks app restrictions.
         mAccountManagerFacade.blockGetAccounts();
-        doAnswer(invocation -> {
-            Callback<Boolean> callback = invocation.getArgument(0);
-            callback.onResult(true);
-            return null;
-        })
+        doCallback((Callback<Boolean> callback) -> callback.onResult(true))
                 .when(mFirstRunAppRestrictionInfoMock)
                 .getHasAppRestriction(any());
         ChildAccountStatusSupplier supplier = new ChildAccountStatusSupplier(

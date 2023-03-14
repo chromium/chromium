@@ -128,7 +128,7 @@ class FeedbackPrivateApiUnittest : public FeedbackPrivateApiUnittestBase {
     base::Value values = base::test::ParseJson(args);
     EXPECT_TRUE(values.is_list());
 
-    std::unique_ptr<api::feedback_private::SendFeedback::Params> params =
+    absl::optional<api::feedback_private::SendFeedback::Params> params =
         api::feedback_private::SendFeedback::Params::Create(values.GetList());
     EXPECT_TRUE(params);
 
@@ -164,6 +164,8 @@ class FeedbackPrivateApiUnittest : public FeedbackPrivateApiUnittestBase {
           EXPECT_EQ(expected_params.send_histograms, params.send_histograms);
           EXPECT_EQ(expected_params.send_bluetooth_logs,
                     params.send_bluetooth_logs);
+          EXPECT_EQ(expected_params.send_autofill_metadata,
+                    params.send_autofill_metadata);
 
           std::move(callback).Run(true);
         });
@@ -419,17 +421,20 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithSysInfo) {
     },
     "assistantDebugInfoAllowed": true,
     "attachedFileBlobUuid": "2e3996de-db9e-4c3d-b62c-80d19b6418b9",
+    "autofillMetadata": "",
     "categoryTag": "test-tag",
     "description": "test-desc",
     "descriptionPlaceholder": "",
     "email": "tester@test.com",
     "flow": "regular",
     "fromAssistant": true,
+    "fromAutofill": false,
     "includeBluetoothLogs": true,
     "pageUrl": "https://test.com",
     "productId": 1122,
     "screenshot": {},
     "screenshotBlobUuid": "3e72cc3c-550f-49f0-b5d2-bf21f3fbab15",
+    "sendAutofillMetadata": false,
     "sendBluetoothLogs": true,
     "sendHistograms": true,
     "sendTabTitles": true,
@@ -445,7 +450,8 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithSysInfo) {
                                        /*load_system_info=*/false,
                                        /*send_tab_titles=*/true,
                                        /*send_histograms=*/true,
-                                       /*send_bluetooth_logs=*/true};
+                                       /*send_bluetooth_logs=*/true,
+                                       /*send_autofill_metadata=*/false};
   auto feedback_data = RunSendFeedbackFunction(args, expected_params);
 
   EXPECT_EQ(9966, feedback_data->trace_id());
@@ -474,16 +480,19 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithoutSysInfo) {
       "name":""
     },
     "assistantDebugInfoAllowed": false,
+    "autofillMetadata": "",
     "categoryTag": "",
     "description": "test-desc",
     "descriptionPlaceholder": "",
     "email": "",
     "flow": "regular",
     "fromAssistant": false,
+    "fromAutofill": false,
     "includeBluetoothLogs": false,
     "pageUrl": "",
     "screenshot": {},
     "screenshotBlobUuid": "",
+    "sendAutofillMetadata": false,
     "sendBluetoothLogs": false,
     "sendHistograms": false,
     "sendTabTitles": false,
@@ -496,7 +505,8 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithoutSysInfo) {
                                        /*load_system_info=*/false,
                                        /*send_tab_titles=*/false,
                                        /*send_histograms=*/false,
-                                       /*send_bluetooth_logs=*/false};
+                                       /*send_bluetooth_logs=*/false,
+                                       /*send_autofill_metadata=*/false};
   auto feedback_data = RunSendFeedbackFunction(args, expected_params);
 
   EXPECT_EQ(0, feedback_data->trace_id());
@@ -524,17 +534,20 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackV2WithOptionsTrue) {
     },
     "assistantDebugInfoAllowed": true,
     "attachedFileBlobUuid": "2e3996de-db9e-4c3d-b62c-80d19b6418b9",
+    "autofillMetadata": "",
     "categoryTag": "test-tag",
     "description": "test-desc",
     "descriptionPlaceholder": "",
     "email": "tester@test.com",
     "flow": "regular",
     "fromAssistant": true,
+    "fromAutofill": false,
     "includeBluetoothLogs": true,
     "pageUrl": "https://test.com",
     "productId": 1122,
     "screenshot": {},
     "screenshotBlobUuid": "3e72cc3c-550f-49f0-b5d2-bf21f3fbab15",
+    "sendAutofillMetadata": false,
     "sendBluetoothLogs": true,
     "sendHistograms": true,
     "sendTabTitles": true,
@@ -550,7 +563,8 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackV2WithOptionsTrue) {
                                        /*load_system_info=*/true,
                                        /*send_tab_titles=*/true,
                                        /*send_histograms=*/true,
-                                       /*send_bluetooth_logs=*/true};
+                                       /*send_bluetooth_logs=*/true,
+                                       /*send_autofill_metadata=*/false};
   auto feedback_data = RunSendFeedbackFunction(args, expected_params);
 
   EXPECT_EQ(9966, feedback_data->trace_id());
@@ -579,16 +593,19 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackV2WithOptionsFalse) {
       "name":""
     },
     "assistantDebugInfoAllowed": false,
+    "autofillMetadata": "",
     "categoryTag": "",
     "description": "test-desc",
     "descriptionPlaceholder": "",
     "email": "",
     "flow": "regular",
     "fromAssistant": false,
+    "fromAutofill": false,
     "includeBluetoothLogs": false,
     "pageUrl": "",
     "screenshot": {},
     "screenshotBlobUuid": "",
+    "sendAutofillMetadata": false,
     "sendBluetoothLogs": false,
     "sendHistograms": false,
     "sendTabTitles": false,
@@ -603,7 +620,8 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackV2WithOptionsFalse) {
                                        /*load_system_info=*/false,
                                        /*send_tab_titles=*/false,
                                        /*send_histograms=*/false,
-                                       /*send_bluetooth_logs=*/false};
+                                       /*send_bluetooth_logs=*/false,
+                                       /*send_autofill_metadata=*/false};
   auto feedback_data = RunSendFeedbackFunction(args, expected_params);
 
   EXPECT_EQ(0, feedback_data->trace_id());
@@ -622,4 +640,61 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackV2WithOptionsFalse) {
   EXPECT_TRUE(feedback_data->sys_info()->size() == 0);
 }
 
+TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithAutofillInfo) {
+  const std::string args = R"([
+  {
+    "attachedFile": {
+      "data": {},
+      "name": "C:\\fakepath\\chrome_40px.svg"
+    },
+    "assistantDebugInfoAllowed": true,
+    "attachedFileBlobUuid": "2e3996de-db9e-4c3d-b62c-80d19b6418b9",
+    "autofillMetadata": "test-metadata",
+    "categoryTag": "test-tag",
+    "description": "test-desc",
+    "descriptionPlaceholder": "",
+    "email": "tester@test.com",
+    "flow": "regular",
+    "fromAssistant": false,
+    "fromAutofill": true,
+    "includeBluetoothLogs": true,
+    "pageUrl": "https://test.com",
+    "productId": 1122,
+    "screenshot": {},
+    "screenshotBlobUuid": "3e72cc3c-550f-49f0-b5d2-bf21f3fbab15",
+    "sendAutofillMetadata": true,
+    "sendBluetoothLogs": true,
+    "sendHistograms": true,
+    "sendTabTitles": true,
+    "systemInformation": [],
+    "traceId": 9966,
+    "useSystemWindowFrame": false
+  }
+])";
+
+  const FeedbackParams expected_params{/*is_internal_email=*/false,
+                                       /*load_system_info=*/false,
+                                       /*send_tab_titles=*/true,
+                                       /*send_histograms=*/true,
+                                       /*send_bluetooth_logs=*/true,
+                                       /*send_autofill_metadata=*/true};
+  auto feedback_data = RunSendFeedbackFunction(args, expected_params);
+
+  EXPECT_EQ(9966, feedback_data->trace_id());
+  EXPECT_EQ(1122, feedback_data->product_id());
+  EXPECT_EQ("chrome_40px.svg", feedback_data->attached_filename());
+  EXPECT_EQ("test-desc", feedback_data->description());
+  EXPECT_EQ("test-tag", feedback_data->category_tag());
+  EXPECT_EQ("tester@test.com", feedback_data->user_email());
+  EXPECT_EQ("2e3996de-db9e-4c3d-b62c-80d19b6418b9",
+            feedback_data->attached_file_uuid());
+  EXPECT_EQ("3e72cc3c-550f-49f0-b5d2-bf21f3fbab15",
+            feedback_data->screenshot_uuid());
+  EXPECT_EQ("https://test.com", feedback_data->page_url());
+  EXPECT_EQ("test-metadata", feedback_data->autofill_metadata());
+
+  EXPECT_FALSE(feedback_data->from_assistant());
+  EXPECT_TRUE(feedback_data->assistant_debug_info_allowed());
+  EXPECT_TRUE(feedback_data->sys_info());
+}
 }  // namespace extensions

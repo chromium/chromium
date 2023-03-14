@@ -96,13 +96,6 @@ inline bool IsValidDivisor(double d) {
   return d != 0.0;
 }
 
-// Can't use std::round() because it is only available in C++11.
-// Note that we ignore the possibility of floating-point over/underflow.
-template <typename Double>
-inline double Round(Double d) {
-  return d < 0 ? std::ceil(d - 0.5) : std::floor(d + 0.5);
-}
-
 // *sec may be positive or negative.  *ticks must be in the range
 // -kTicksPerSecond < *ticks < kTicksPerSecond.  If *ticks is negative it
 // will be normalized to a positive value by adjusting *sec accordingly.
@@ -260,7 +253,7 @@ inline Duration ScaleDouble(Duration d, double r) {
   double lo_frac = std::modf(lo_doub, &lo_int);
 
   // Rolls lo into hi if necessary.
-  int64_t lo64 = Round(lo_frac * kTicksPerSecond);
+  int64_t lo64 = std::round(lo_frac * kTicksPerSecond);
 
   Duration ans;
   if (!SafeAddRepHi(hi_int, lo_int, &ans)) return ans;
@@ -741,7 +734,7 @@ void AppendNumberUnit(std::string* out, double n, DisplayUnit unit) {
   char buf[kBufferSize];  // also large enough to hold integer part
   char* ep = buf + sizeof(buf);
   double d = 0;
-  int64_t frac_part = Round(std::modf(n, &d) * unit.pow10);
+  int64_t frac_part = std::round(std::modf(n, &d) * unit.pow10);
   int64_t int_part = d;
   if (int_part != 0 || frac_part != 0) {
     char* bp = Format64(ep, 0, int_part);  // always < 1000

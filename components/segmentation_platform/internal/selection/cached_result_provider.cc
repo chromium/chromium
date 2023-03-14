@@ -23,7 +23,7 @@ CachedResultProvider::CachedResultProvider(
     : configs_(configs), result_prefs_(std::move(prefs)) {
   PostProcessor post_processor;
 
-  for (const auto& config : configs_) {
+  for (const auto& config : *configs_) {
     absl::optional<proto::ClientResult> client_result =
         result_prefs_->ReadClientResultFromPrefs(config->segmentation_key);
     bool has_valid_result = client_result.has_value() &&

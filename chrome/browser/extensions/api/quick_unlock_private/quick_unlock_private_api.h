@@ -239,7 +239,7 @@ class QuickUnlockPrivateSetModesFunction : public ExtensionFunction {
   void FireEvent(const std::vector<QuickUnlockMode>& modes);
 
   ChromeExtensionFunctionDetails chrome_details_;
-  std::unique_ptr<api::quick_unlock_private::SetModes::Params> params_;
+  absl::optional<api::quick_unlock_private::SetModes::Params> params_;
 
   std::vector<QuickUnlockMode> initial_modes_;
 

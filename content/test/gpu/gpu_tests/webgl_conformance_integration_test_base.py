@@ -347,9 +347,6 @@ class WebGLConformanceIntegrationTestBase(
         # intermittent GPU process hangs that have been seen on the
         # waterfall. crbug.com/596622 crbug.com/609252
         '--disable-gpu-watchdog',
-        # TODO(http://crbug.com/832952): Remove this when WebXR spec is more
-        # stable and setCompatibleXRDevice is part of the conformance test.
-        '--disable-blink-features=WebXR',
         # Force-enable SharedArrayBuffer to be able to test its
         # support in WEBGL_multi_draw.
         '--enable-blink-features=SharedArrayBuffer',
@@ -453,7 +450,7 @@ class WebGLConformanceIntegrationTestBase(
       raise Exception('The WebGL conformance test path specified ' +
                       'does not exist: ' + full_path)
 
-    with open(full_path, 'r') as f:
+    with open(full_path, 'r', encoding='utf-8') as f:
       for line in f:
         line = line.strip()
 

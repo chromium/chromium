@@ -593,9 +593,7 @@ public abstract class ToolbarLayout
      */
     void onTabContentViewChanged() {}
 
-    protected CaptureReadinessResult isReadyForTextureCapture() {
-        return CaptureReadinessResult.unknown(/*isReady=*/true);
-    }
+    protected abstract CaptureReadinessResult isReadyForTextureCapture();
 
     boolean setForceTextureCapture(boolean forceTextureCapture) {
         return false;

@@ -61,7 +61,14 @@ void DeviceInfoSyncServiceFactory::GetAllDeviceInfoTrackers(
 }
 
 DeviceInfoSyncServiceFactory::DeviceInfoSyncServiceFactory()
-    : ProfileKeyedServiceFactory("DeviceInfoSyncService") {
+    : ProfileKeyedServiceFactory(
+          "DeviceInfoSyncService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
   DependsOn(SyncInvalidationsServiceFactory::GetInstance());
 }

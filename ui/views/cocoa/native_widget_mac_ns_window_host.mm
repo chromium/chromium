@@ -1184,6 +1184,7 @@ void NativeWidgetMacNSWindowHost::OnWindowDisplayChanged(
     }
 
     if (compositor_) {
+      RequestVSyncParametersUpdate();
       compositor_->compositor()->SetVSyncDisplayID(display_.id());
     }
   }
@@ -1654,32 +1655,31 @@ void NativeWidgetMacNSWindowHost::AcceleratedWidgetCALayerParamsUpdated() {
   if (const auto* ca_layer_params = compositor_->widget()->GetCALayerParams())
     GetNSWindowMojo()->SetCALayerParams(*ca_layer_params);
 
-  // Take this opportunity to update the VSync parameters, if needed.
-  if (display_link_) {
-    base::TimeTicks timebase;
-    base::TimeDelta interval;
-    bool register_for_vsync_update = display_link_->IsVSyncPotentiallyStale();
-    if (display_link_->GetVSyncParameters(&timebase, &interval)) {
-      compositor_->compositor()->SetDisplayVSyncParameters(timebase, interval);
-    } else {
-      register_for_vsync_update = true;
-    }
-    if (register_for_vsync_update) {
-      if (!weak_factory_for_vsync_update_.HasWeakPtrs()) {
-        display_link_->RegisterCallbackForNextVSyncUpdate(base::BindOnce(
-            &NativeWidgetMacNSWindowHost::OnVSyncParametersUpdated,
-            weak_factory_for_vsync_update_.GetWeakPtr()));
-      }
-    } else {
-      weak_factory_for_vsync_update_.InvalidateWeakPtrs();
-    }
+  // The VSync parameters skew over time (astonishingly quickly -- 0.1 msec per
+  // second). If too much time has elapsed since the last time the vsync
+  // parameters were calculated, re-calculate them.
+  if (base::TimeTicks::Now() >= display_link_next_update_time_) {
+    RequestVSyncParametersUpdate();
   }
 }
 
+void NativeWidgetMacNSWindowHost::RequestVSyncParametersUpdate() {
+  if (!display_link_ || display_link_updater_) {
+    return;
+  }
+  display_link_updater_ = display_link_->RegisterCallback(base::BindRepeating(
+      &NativeWidgetMacNSWindowHost::OnVSyncParametersUpdated,
+      weak_factory_for_vsync_update_.GetWeakPtr()));
+}
+
 void NativeWidgetMacNSWindowHost::OnVSyncParametersUpdated(
-    base::TimeTicks timebase,
-    base::TimeDelta interval) {
-  compositor_->compositor()->SetDisplayVSyncParameters(timebase, interval);
+    ui::VSyncParamsMac params) {
+  if (compositor_ && params.display_times_valid) {
+    compositor_->compositor()->SetDisplayVSyncParameters(
+        params.display_timebase, params.display_interval);
+    display_link_next_update_time_ = base::TimeTicks::Now() + base::Seconds(10);
+  }
+  display_link_updater_ = nullptr;
 }
 
 }  // namespace views

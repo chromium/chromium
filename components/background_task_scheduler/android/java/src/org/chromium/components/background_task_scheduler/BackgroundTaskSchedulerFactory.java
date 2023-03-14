@@ -7,7 +7,6 @@ package org.chromium.components.background_task_scheduler;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.components.background_task_scheduler.internal.BackgroundTaskSchedulerFactoryInternal;
-import org.chromium.components.background_task_scheduler.internal.BackgroundTaskSchedulerPrefs;
 import org.chromium.components.background_task_scheduler.internal.BackgroundTaskSchedulerUma;
 
 /**
@@ -48,13 +47,6 @@ public final class BackgroundTaskSchedulerFactory {
     @VisibleForTesting
     public static void setUmaReporterForTesting(BackgroundTaskSchedulerExternalUma externalUma) {
         sExternalUmaForTesting = externalUma;
-    }
-
-    /**
-     * Pre-load shared prefs to avoid being blocked on the disk reads in the future.
-     */
-    public static void warmUpSharedPrefs() {
-        BackgroundTaskSchedulerPrefs.warmUpSharedPrefs();
     }
 
     // Do not instantiate.

@@ -228,6 +228,8 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
   void OnDragExited() override;
   aura::client::DragDropDelegate::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override;
+  aura::client::DragDropDelegate::DropCallbackWithAnimation
+  GetDropCallbackWithAnimation(const ui::DropTargetEvent& event) override;
 
   // aura::TransientWindowObserver:
   void OnTransientParentChanged(aura::Window* new_parent) override;

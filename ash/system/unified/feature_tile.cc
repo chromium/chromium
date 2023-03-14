@@ -4,11 +4,11 @@
 
 #include "ash/system/unified/feature_tile.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/system/tray/tray_constants.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -47,25 +47,6 @@ constexpr gfx::Insets kCompactIconContainerInteriorMargin(
     gfx::Insets::TLBR(0, 0, 4, 0));
 
 }  // namespace
-
-// Constructor for prototype tiles without a callback.
-// TODO(b/252871301): Remove when having implemented each feature tile.
-FeatureTile::FeatureTile(TileType type)
-    : Button(PressedCallback()), type_(type) {
-  UpdateColors();
-  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                kButtonRadius);
-  SetAccessibleName(u"Placeholder Tile");
-
-  CreateChildViews();
-  if (type == TileType::kPrimary) {
-    label_->SetText(u"Title");
-    sub_label_->SetText(u"Subtitle");
-  } else {
-    label_->SetText(u"Two line\ntitle");
-  }
-  SetVectorIcon(vector_icons::kDogfoodIcon);
-}
 
 FeatureTile::FeatureTile(base::RepeatingCallback<void()> callback,
                          bool is_togglable,
@@ -202,7 +183,7 @@ void FeatureTile::UpdateColors() {
         toggled_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                  : cros_tokens::kCrosSysSecondary;
 
-    if (!features::IsJellyEnabled() && drill_in_arrow_) {
+    if (!chromeos::features::IsJellyEnabled() && drill_in_arrow_) {
       // TODO(b/262615213): Only the toggled states are interesting here. The
       // un-toggled states are the defaults for `IconButton` so when Jelly
       // launches, this can be deleted safely.

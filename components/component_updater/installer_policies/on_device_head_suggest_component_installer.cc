@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
@@ -48,8 +49,8 @@ std::string GetNormalizedLocale(const std::string& raw_locale) {
   for (const auto c : "-_")
     locale.erase(std::remove(locale.begin(), locale.end(), c), locale.end());
 
-  std::transform(locale.begin(), locale.end(), locale.begin(),
-                 [](char c) -> char { return base::ToUpperASCII(c); });
+  base::ranges::transform(locale, locale.begin(),
+                          [](char c) { return base::ToUpperASCII(c); });
 
   if (!locale_constraint.empty())
     locale += locale_constraint;

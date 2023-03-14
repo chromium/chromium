@@ -151,8 +151,9 @@ class WebStatePolicyDecider : public base::CheckedObserver {
   explicit WebStatePolicyDecider(WebState* web_state);
 
  private:
-  friend class WebStateImpl;
+  friend class ContentWebState;
   friend class FakeWebState;
+  friend class WebStateImpl;
 
   // Resets the current web state.
   void ResetWebState();

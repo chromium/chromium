@@ -41,8 +41,7 @@ class SoftNavigationHeuristics
                     bool skip_descendant_check = false);
   void ModifiedDOM(ScriptState*);
   uint32_t SoftNavigationCount() { return soft_navigation_count_; }
-  void SetBackForwardNavigationURL(ScriptState* script_state,
-                                   const String& url);
+  void SetAsyncSoftNavigationURL(ScriptState* script_state, const String& url);
 
   // TaskAttributionTracker::Observer's implementation.
   void OnCreateTaskScope(const scheduler::TaskAttributionId&) override;

@@ -4,8 +4,8 @@
 
 use std::sync::{Arc, Condvar, Mutex};
 
-use crate::system::mojo_types::{HandleSignals, MojoHandle, MojoResult, SignalsState};
-use crate::system::trap::{Trap, TrapEvent, TriggerCondition};
+use crate::mojo_types::{HandleSignals, MojoHandle, MojoResult, SignalsState};
+use crate::trap::{Trap, TrapEvent, TriggerCondition};
 
 /// The result of `wait`ing on a handle. There are three possible outcomes:
 ///     * A requested signal was satisfied

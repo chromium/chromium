@@ -17,6 +17,8 @@ import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 
+import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
@@ -33,6 +35,12 @@ import {PasswordViewPageInteractions, PasswordViewPageRequestedEvent, PasswordVi
 
 const SettingsAutofillPageElementBase = PrefsMixin(
     PasswordCheckMixin(PasswordRequestorMixin(BaseMixin(PolymerElement))));
+
+export interface SettingsAutofillPageElement {
+  $: {
+    passwordManagerButton: CrLinkRowElement,
+  };
+}
 
 export class SettingsAutofillPageElement extends
     SettingsAutofillPageElementBase {
@@ -79,6 +87,13 @@ export class SettingsAutofillPageElement extends
         },
       },
 
+      enableNewPasswordManagerPage_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableNewPasswordManagerPage');
+        },
+      },
+
       // The credential is only used to pass the credential from password-view
       // to settings-subpage
       credential: {
@@ -93,6 +108,7 @@ export class SettingsAutofillPageElement extends
   private focusConfig_: Map<string, string>;
   private passwordManagerSubLabel_: string;
   private enablePasswordViewPage_: string;
+  private enableNewPasswordManagerPage_: boolean;
   credential: chrome.passwordsPrivate.PasswordUiEntry|null;
 
   // <if expr="is_chromeos">
@@ -124,6 +140,12 @@ export class SettingsAutofillPageElement extends
    */
   private onPasswordsClick_() {
     PasswordManagerImpl.getInstance().recordPasswordsPageAccessInSettings();
+    if (this.enableNewPasswordManagerPage_) {
+      // TODO(crbug.com/1416887): It will always open a new tab with Password
+      // Manager. Find a way to use chrome::ShowPasswordManager instead.
+      OpenWindowProxyImpl.getInstance().openUrl('chrome://password-manager');
+      return;
+    }
     Router.getInstance().navigateTo(routes.PASSWORDS);
   }
 
@@ -131,6 +153,9 @@ export class SettingsAutofillPageElement extends
    * @return The sub-title message indicating the result of password check.
    */
   private computePasswordManagerSubLabel_(): string {
+    if (this.enableNewPasswordManagerPage_) {
+      return '';
+    }
     return this.leakedPasswords.length > 0 ? this.compromisedPasswordsCount :
                                              '';
   }

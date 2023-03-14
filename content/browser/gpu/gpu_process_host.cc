@@ -86,6 +86,7 @@
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/switches.h"
 #include "ui/gl/gl_switches.h"
+#include "ui/latency/janky_duration_tracker.h"
 #include "ui/latency/latency_info.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -112,6 +113,7 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
+#include "content/browser/gpu/browser_child_process_backgrounded_bridge.h"
 #include "content/browser/gpu/ca_transaction_gpu_coordinator.h"
 #endif
 
@@ -261,13 +263,15 @@ static const char* const kSwitchNames[] = {
     switches::kRunAllCompositorStagesBeforeDraw,
     switches::kSkiaFontCacheLimitMb,
     switches::kSkiaResourceCacheLimitMb,
+    switches::kForceSkiaAnalyticAntialiasing,
     switches::kTestGLLib,
     switches::kTraceToConsole,
+    switches::kUseAdapterLuid,
     switches::kUseFakeMjpegDecodeAccelerator,
     switches::kUseGpuInTests,
     switches::kV,
     switches::kVModule,
-    switches::kUseAdapterLuid,
+    switches::kWatchDirForScrollJankReport,
     switches::kWebViewDrawFunctorUsesVulkan,
 #if BUILDFLAG(IS_MAC)
     sandbox::policy::switches::kEnableSandboxLogging,
@@ -389,10 +393,8 @@ class GpuSandboxedProcessLauncherDelegate
   // which is USER_RESTRICTED breaks both the DirectX backend and the OpenGL
   // backend. Note that the GPU process is connected to the interactive
   // desktop.
-  bool PreSpawnTarget(sandbox::TargetPolicy* policy) override {
-    sandbox::TargetConfig* config = policy->GetConfig();
-    if (config->IsConfigured())
-      return true;
+  bool InitializeConfig(sandbox::TargetConfig* config) override {
+    DCHECK(!config->IsConfigured());
 
     if (UseOpenGLRenderer()) {
       // Open GL path.
@@ -929,6 +931,14 @@ void GpuProcessHost::OnProcessLaunched() {
     process_id_ = process_->GetProcess().Pid();
     DCHECK_NE(base::kNullProcessId, process_id_);
     gpu_host_->SetProcessId(process_id_);
+
+#if BUILDFLAG(IS_MAC)
+    if (base::FeatureList::IsEnabled(features::kAdjustGpuProcessPriority)) {
+      browser_child_process_backgrounded_bridge_ =
+          std::make_unique<BrowserChildProcessBackgroundedBridge>(
+              process_.get());
+    }
+#endif
   }
 }
 

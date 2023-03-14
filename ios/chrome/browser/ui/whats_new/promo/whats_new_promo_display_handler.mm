@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/metrics/user_metrics.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/promo_config.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
@@ -32,7 +33,8 @@
 #pragma mark - PromoProtocol
 
 - (PromoConfig)config {
-  return PromoConfig(promos_manager::Promo::WhatsNew);
+  return PromoConfig(promos_manager::Promo::WhatsNew,
+                     &feature_engagement::kIPHiOSPromoWhatsNewFeature);
 }
 
 - (void)promoWasDisplayed {

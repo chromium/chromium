@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -16,6 +17,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "components/account_id/account_id.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
@@ -256,6 +258,9 @@ class ChromeAssistantUtilTest : public testing::Test {
     return GetFakeUserManager()->GetGuestAccountId();
   }
 
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir data_dir_;
@@ -403,6 +408,28 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForKiosk_WebKioskApp) {
                     user_manager::USER_TYPE_WEB_KIOSK_APP);
 
   EXPECT_EQ(ash::assistant::AssistantAllowedState::DISALLOWED_BY_KIOSK_MODE,
+            IsAssistantAllowedForProfile(profile()));
+}
+
+TEST_F(ChromeAssistantUtilTest, IsAssistantAllowed_DLCEnabled) {
+  feature_list_.InitAndEnableFeature(
+      ash::assistant::features::kEnableLibAssistantDLC);
+
+  ScopedLogIn login(GetFakeUserManager(), identity_test_env(),
+                    GetGaiaUserAccountId("user2@googlemail.com", "0123456789"));
+
+  EXPECT_EQ(ash::assistant::AssistantAllowedState::ALLOWED,
+            IsAssistantAllowedForProfile(profile()));
+}
+
+TEST_F(ChromeAssistantUtilTest, IsAssistantAllowed_DLCDisabled) {
+  feature_list_.InitAndDisableFeature(
+      ash::assistant::features::kEnableLibAssistantDLC);
+
+  ScopedLogIn login(GetFakeUserManager(), identity_test_env(),
+                    GetGaiaUserAccountId("user2@googlemail.com", "0123456789"));
+
+  EXPECT_EQ(ash::assistant::AssistantAllowedState::DISALLOWED_BY_NO_BINARY,
             IsAssistantAllowedForProfile(profile()));
 }
 

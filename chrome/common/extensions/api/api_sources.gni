@@ -83,7 +83,6 @@ if (is_chromeos) {
     "enterprise_networking_attributes.idl",
     "enterprise_platform_keys.idl",
     "enterprise_platform_keys_internal.idl",
-    "file_browser_handler_internal.json",
     "file_system_provider.idl",
     "file_system_provider_internal.idl",
     "login.idl",

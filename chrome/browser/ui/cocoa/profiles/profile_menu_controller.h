@@ -7,30 +7,12 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include <memory>
-
-class AvatarMenu;
 class Browser;
-
-namespace ProfileMenuControllerInternal {
-class Observer;
-}
 
 // This controller manages the title and submenu of the Profiles item in the
 // system menu bar. It updates the contents of the menu and the menu's title
 // whenever the active browser changes.
-@interface ProfileMenuController : NSObject {
- @private
-  // The controller for the profile submenu.
-  std::unique_ptr<AvatarMenu> _avatarMenu;
-
-  // An observer to be notified when the active browser changes and when the
-  // menu model changes.
-  std::unique_ptr<ProfileMenuControllerInternal::Observer> _observer;
-
-  // The main menu item to which the profile menu is attached.
-  NSMenuItem* _mainMenuItem;  // weak
-}
+@interface ProfileMenuController<NSMenuItemValidation> : NSObject
 
 // Designated initializer.
 - (instancetype)initWithMainMenuItem:(NSMenuItem*)item;

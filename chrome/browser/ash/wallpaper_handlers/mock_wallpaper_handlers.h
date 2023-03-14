@@ -5,11 +5,39 @@
 #ifndef CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_MOCK_WALLPAPER_HANDLERS_H_
 #define CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_MOCK_WALLPAPER_HANDLERS_H_
 
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace wallpaper_handlers {
+
+class MockBackdropCollectionInfoFetcher : public BackdropCollectionInfoFetcher {
+ public:
+  MockBackdropCollectionInfoFetcher();
+
+  MockBackdropCollectionInfoFetcher(const MockBackdropCollectionInfoFetcher&) =
+      delete;
+  MockBackdropCollectionInfoFetcher& operator=(
+      const MockBackdropCollectionInfoFetcher&) = delete;
+
+  ~MockBackdropCollectionInfoFetcher() override;
+
+  MOCK_METHOD(void, Start, (OnCollectionsInfoFetched callback), (override));
+};
+
+class MockBackdropImageInfoFetcher : public BackdropImageInfoFetcher {
+ public:
+  explicit MockBackdropImageInfoFetcher(const std::string& collection_id);
+
+  MockBackdropImageInfoFetcher(const MockBackdropImageInfoFetcher&) = delete;
+  MockBackdropImageInfoFetcher& operator=(const MockBackdropImageInfoFetcher&) =
+      delete;
+
+  ~MockBackdropImageInfoFetcher() override;
+
+  MOCK_METHOD(void, Start, (OnImagesInfoFetched callback), (override));
+};
 
 // Fetcher that returns an empty album list and no resume token in response to a
 // request for the user's Google Photos albums. Used to avoid network requests

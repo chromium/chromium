@@ -31,8 +31,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
-namespace cert_provisioning {
+namespace chromeos::cert_provisioning {
 
 namespace {
 
@@ -89,8 +88,9 @@ constexpr char kUserCertProfileName[] = "User Certificate Profile 1";
 void FormatDictRecurse(base::Value* value,
                        const std::vector<std::string>& messages) {
   if (value->is_dict()) {
-    for (const auto child : value->DictItems())
+    for (const auto child : value->GetDict()) {
       FormatDictRecurse(&child.second, messages);
+    }
     return;
   }
   if (value->is_list()) {
@@ -420,5 +420,4 @@ TEST_F(CertificateProvisioningUiHandlerTest, Updates) {
 
 }  // namespace
 
-}  // namespace cert_provisioning
-}  // namespace chromeos
+}  // namespace chromeos::cert_provisioning

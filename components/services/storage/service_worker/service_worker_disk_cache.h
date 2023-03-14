@@ -52,7 +52,7 @@ class ServiceWorkerDiskCacheEntry {
 
  private:
   // The disk_cache::Entry is owned by this entry and closed on destruction.
-  raw_ptr<disk_cache::Entry> disk_cache_entry_;
+  raw_ptr<disk_cache::Entry, DanglingUntriaged> disk_cache_entry_;
 
   // The cache that this entry belongs to.
   const raw_ptr<ServiceWorkerDiskCache> cache_;

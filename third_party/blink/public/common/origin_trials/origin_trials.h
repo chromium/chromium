@@ -42,7 +42,7 @@ BLINK_COMMON_EXPORT bool IsTrialPersistentToNextResponse(
     base::StringPiece trial_name);
 
 // Returns the trial type of the given |feature|.
-OriginTrialType GetTrialType(OriginTrialFeature feature);
+BLINK_COMMON_EXPORT OriginTrialType GetTrialType(OriginTrialFeature feature);
 
 // Return origin trials features that are enabled by the passed |trial_name|.
 // The trial name MUST be valid (call IsTrialValid() before calling this

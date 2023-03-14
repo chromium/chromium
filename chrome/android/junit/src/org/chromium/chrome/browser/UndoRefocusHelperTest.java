@@ -19,10 +19,9 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
-import org.chromium.base.metrics.UmaRecorder;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.overlays.strip.TestTabModel;
 import org.chromium.chrome.browser.tab.Tab;
@@ -45,8 +44,6 @@ public class UndoRefocusHelperTest {
     TabModelSelector mTabModelSelector;
     @Mock
     ObservableSupplier<LayoutManagerImpl> mLayoutManagerObservableSupplier;
-    @Mock
-    private UmaRecorder mUmaRecorder;
 
     private static final String UNDO_CLOSE_TAB_USER_ACTION = "TabletTabStrip.UndoCloseTab";
     private final TestTabModel mModel = new TestTabModel();
@@ -55,14 +52,16 @@ public class UndoRefocusHelperTest {
     private final Tab mTab2 = getMockedTab(2);
     private final Tab mTab3 = getMockedTab(3);
 
+    private UserActionTester mUserActionTester;
     private UndoRefocusHelper mUndoRefocusHelper;
 
     @Before
     public void setUp() throws TimeoutException {
         MockitoAnnotations.initMocks(this);
-        UmaRecorderHolder.setNonNativeDelegate(mUmaRecorder);
         Mockito.when(mTabModelSelector.getCurrentModel()).thenReturn(mModel);
         Mockito.when(mTabModelSelector.getModel(false)).thenReturn(mModel);
+
+        mUserActionTester = new UserActionTester();
 
         mUndoRefocusHelper =
                 new UndoRefocusHelper(mTabModelSelector, mLayoutManagerObservableSupplier, true);
@@ -77,7 +76,9 @@ public class UndoRefocusHelperTest {
     }
 
     @After
-    public void tearDown() {}
+    public void tearDown() {
+        mUserActionTester.tearDown();
+    }
 
     @Test
     public void testUndoSingleTabClose_SelectedTab_ReSelectsTab() {
@@ -230,8 +231,7 @@ public class UndoRefocusHelperTest {
         tabModelSelectorTabModelObserver.tabClosureUndone(tab);
 
         // Assert: User action is recorded.
-        Mockito.verify(mUmaRecorder)
-                .recordUserAction(Mockito.eq(UNDO_CLOSE_TAB_USER_ACTION), Mockito.anyLong());
+        assertEquals(1, mUserActionTester.getActionCount(UNDO_CLOSE_TAB_USER_ACTION));
     }
 
     @Test
@@ -248,8 +248,7 @@ public class UndoRefocusHelperTest {
         tabModelSelectorTabModelObserver.tabClosureUndone(tab);
 
         // Assert: User action is not recorded.
-        Mockito.verify(mUmaRecorder, Mockito.never())
-                .recordUserAction(Mockito.eq(UNDO_CLOSE_TAB_USER_ACTION), Mockito.anyLong());
+        assertEquals(0, mUserActionTester.getActionCount(UNDO_CLOSE_TAB_USER_ACTION));
     }
 
     @Test
@@ -271,8 +270,7 @@ public class UndoRefocusHelperTest {
         tabModelSelectorTabModelObserver.tabClosureUndone(tab);
 
         // Assert: User action is recorded exactly once.
-        Mockito.verify(mUmaRecorder, Mockito.times(1))
-                .recordUserAction(Mockito.eq(UNDO_CLOSE_TAB_USER_ACTION), Mockito.anyLong());
+        assertEquals(1, mUserActionTester.getActionCount(UNDO_CLOSE_TAB_USER_ACTION));
     }
 
     @Test
@@ -332,8 +330,7 @@ public class UndoRefocusHelperTest {
         tabModelSelectorTabModelObserver.allTabsClosureUndone();
 
         // Assert: User action is recorded exactly once.
-        Mockito.verify(mUmaRecorder, Mockito.times(1))
-                .recordUserAction(Mockito.eq(UNDO_CLOSE_TAB_USER_ACTION), Mockito.anyLong());
+        assertEquals(1, mUserActionTester.getActionCount(UNDO_CLOSE_TAB_USER_ACTION));
     }
 
     @Test
@@ -369,8 +366,7 @@ public class UndoRefocusHelperTest {
         tabModelSelectorTabModelObserver.allTabsClosureUndone();
 
         // Assert: User action is recorded exactly once.
-        Mockito.verify(mUmaRecorder, Mockito.times(1))
-                .recordUserAction(Mockito.eq(UNDO_CLOSE_TAB_USER_ACTION), Mockito.anyLong());
+        assertEquals(1, mUserActionTester.getActionCount(UNDO_CLOSE_TAB_USER_ACTION));
     }
 
     @Test

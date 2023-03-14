@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/extensions/mixin_based_extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -44,7 +45,7 @@ enum TestAccountType {
   kTestAccountTypeNotSet,
   kEnterprise,
   kChild,
-  kNonManged,
+  kNonManaged,
   // Non-managed account as a non owner profile on a device.
   kNonManagedNonOwner,
 };
@@ -61,6 +62,11 @@ class MediaViewTestVolume;
 class SmbfsTestVolume;
 class HiddenTestVolume;
 class GuestOsTestVolume;
+
+ash::LoggedInUserMixin::LogInType LogInTypeFor(
+    TestAccountType test_account_type);
+
+absl::optional<AccountId> AccountIdFor(TestAccountType test_account_type);
 
 class FileManagerBrowserTestBase
     : public content::DevToolsAgentHostObserver,

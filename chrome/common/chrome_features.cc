@@ -618,7 +618,7 @@ BASE_FEATURE(kHttpsFirstModeForAdvancedProtectionUsers,
 // Enables the new implementation of HTTPS-First Mode.
 BASE_FEATURE(kHttpsFirstModeV2,
              "HttpsFirstModeV2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables automatically upgrading main frame navigations to HTTPS.
 BASE_FEATURE(kHttpsUpgrades,
@@ -626,11 +626,19 @@ BASE_FEATURE(kHttpsUpgrades,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_MAC)
+// Enables immersive fullscreen. The tab strip and toolbar are placed underneath
+// the titlebar. The tab strip and toolbar can auto hide and reveal.
 BASE_FEATURE(kImmersiveFullscreen,
              "ImmersiveFullscreen",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables immerisve fullscreen mode for PWA windows. PWA windows will use
+// Moves the tab strip into the titlebar. kImmersiveFullscreen must be enabled
+// for this feature to have an effect.
+BASE_FEATURE(kImmersiveFullscreenTabs,
+             "ImmersiveFullscreenTabs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables immersive fullscreen mode for PWA windows. PWA windows will use
 // immersive fullscreen mode if and only if both this and the previous feature
 // are enabled.
 BASE_FEATURE(kImmersiveFullscreenPWAs,
@@ -1486,11 +1494,7 @@ bool IsParentAccessCodeForOnlineLoginEnabled() {
 // Enables omnibox trigger prerendering.
 BASE_FEATURE(kOmniboxTriggerForPrerender2,
              "OmniboxTriggerForPrerender2",
-#if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
 
 BASE_FEATURE(kSupportSearchSuggestionForPrerender2,
              "SupportSearchSuggestionForPrerender2",
@@ -1507,6 +1511,16 @@ const base::FeatureParam<SearchSuggestionPrerenderImplementationType>
         SearchSuggestionPrerenderImplementationType::kIgnorePrefetch,
         &search_suggestion_implementation_types};
 
+const base::FeatureParam<SearchPreloadShareableCacheType>::Option
+    search_preload_shareable_cache_types[] = {
+        {SearchPreloadShareableCacheType::kEnabled, "enabled"},
+        {SearchPreloadShareableCacheType::kDisabled, "disabled"}};
+const base::FeatureParam<SearchPreloadShareableCacheType>
+    kSearchPreloadShareableCacheTypeParam{
+        &kSupportSearchSuggestionForPrerender2, "shareable_cache",
+        SearchPreloadShareableCacheType::kDisabled,
+        &search_preload_shareable_cache_types};
+
 BASE_FEATURE(kAutocompleteActionPredictorConfidenceCutoff,
              "AutocompleteActionPredictorConfidenceCutoff",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1518,7 +1532,7 @@ BASE_FEATURE(kAutocompleteActionPredictorConfidenceCutoff,
 // TODO(crbug.com/1267731): Remove this flag once the experiments are completed.
 BASE_FEATURE(kOmniboxTriggerForNoStatePrefetch,
              "OmniboxTriggerForNoStatePrefetch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // A feature to indicate whether setting wake time >24hours away is supported by

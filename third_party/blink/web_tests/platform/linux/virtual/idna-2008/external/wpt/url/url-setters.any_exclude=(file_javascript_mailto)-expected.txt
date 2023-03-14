@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 204 tests; 125 PASS, 79 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 216 tests; 134 PASS, 82 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS URL: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged.
 PASS URL: Setting <a://example.net>.protocol = 'b'
@@ -98,6 +98,10 @@ FAIL URL: Setting <sc://test@test/>.host = '' assert_equals: expected "test" but
 FAIL URL: Setting <sc://test:12/>.host = '' assert_equals: expected "test:12" but got ""
 PASS URL: Setting <http://example.com/>.host = '///bad.com' Leading / is not stripped
 FAIL URL: Setting <sc://example.com/>.host = '///bad.com' Leading / is not stripped assert_equals: expected "sc:///" but got "sc://example.com/"
+PASS URL: Setting <https://example.com/>.host = 'a%C2%ADb'
+PASS URL: Setting <https://example.com/>.host = '­'
+PASS URL: Setting <https://example.com/>.host = '%C2%AD'
+FAIL URL: Setting <https://example.com/>.host = 'xn--' assert_equals: expected "https://example.com/" but got "https://xn--/"
 FAIL URL: Setting <sc://x/>.hostname = '\0' Non-special scheme assert_equals: expected "x" but got ""
 FAIL URL: Setting <sc://x/>.hostname = '	' assert_equals: expected "sc:///" but got "sc://x/"
 FAIL URL: Setting <sc://x/>.hostname = '
@@ -133,6 +137,10 @@ FAIL URL: Setting <non-spec:/.//p>.hostname = 'h' Drop /. from path assert_equal
 FAIL URL: Setting <non-spec:/.//p>.hostname = '' assert_equals: expected "non-spec:////p" but got "non-spec:/.//p"
 PASS URL: Setting <http://example.com/>.hostname = '///bad.com' Leading / is not stripped
 FAIL URL: Setting <sc://example.com/>.hostname = '///bad.com' Leading / is not stripped assert_equals: expected "sc:///" but got "sc://example.com/"
+PASS URL: Setting <https://example.com/>.hostname = 'a%C2%ADb'
+PASS URL: Setting <https://example.com/>.hostname = '­'
+PASS URL: Setting <https://example.com/>.hostname = '%C2%AD'
+FAIL URL: Setting <https://example.com/>.hostname = 'xn--' assert_equals: expected "https://example.com/" but got "https://xn--/"
 PASS URL: Setting <http://example.net>.port = '8080'
 PASS URL: Setting <http://example.net:8080>.port = '' Port number is removed if empty is the new value
 PASS URL: Setting <http://example.net:8080>.port = '80' Default port number is removed
@@ -147,10 +155,14 @@ PASS URL: Setting <http://example.net/path>.port = '8080stuff2' Anything other t
 PASS URL: Setting <http://example.net/path>.port = '8080+2' Anything other than ASCII digit stops the port parser in a setter but is not an error
 PASS URL: Setting <http://example.net/path>.port = '65535' Port numbers are 16 bit integers
 FAIL URL: Setting <http://example.net:8080/path>.port = '65536' Port numbers are 16 bit integers, overflowing is an error assert_equals: expected "http://example.net:8080/path" but got "http://example.net:0/path"
+PASS URL: Setting <http://example.net:8080/path>.port = 'randomstring' Setting port to a string that doesn't parse as a number
 FAIL URL: Setting <non-special://example.net:8080/path>.port = '65536' Port numbers are 16 bit integers, overflowing is an error assert_equals: expected "example.net:8080" but got ""
 PASS URL: Setting <non-base:value>.port = '12'
 PASS URL: Setting <sc:///>.port = '12'
 FAIL URL: Setting <sc://x/>.port = '12' assert_equals: expected "sc://x:12/" but got "sc://x/"
+PASS URL: Setting <https://domain.com:443>.port = '	8080' Leading u0009 on special scheme
+FAIL URL: Setting <wpt++://domain.com:443>.port = '	8080' Leading u0009 on non-special scheme assert_equals: expected "8080" but got ""
+PASS URL: Setting <https://www.google.com:4343>.port = '4wpt' Should use all ascii prefixed characters as port
 PASS URL: Setting <data:original>.pathname = 'new value'
 PASS URL: Setting <sc:original>.pathname = 'new value'
 FAIL URL: Setting <foo://somehost/some/path>.pathname = '' Non-special URLs can have their paths erased assert_equals: expected "foo://somehost" but got "foo://somehost/some/path"

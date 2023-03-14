@@ -112,10 +112,8 @@ Model LoadModelFromDisk(const ModellerImpl::ModelSavingSpec& spec,
 // Saves |data| to |path|. Returns whether successful and logs error if an
 // error occurs.
 bool SaveDataAndLogError(const base::FilePath& path, const std::string& data) {
-  const int bytes_written = base::WriteFile(path, data.data(), data.size());
-  if (bytes_written != static_cast<int>(data.size())) {
-    LOG(ERROR) << "Wrote " << bytes_written << " byte(s) instead of "
-               << data.size() << " to " << path.value();
+  if (!base::WriteFile(path, data)) {
+    LOG(ERROR) << "Writing to " << path.value() << " failed.";
     return false;
   }
   return true;

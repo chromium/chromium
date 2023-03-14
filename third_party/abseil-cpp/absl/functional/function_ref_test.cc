@@ -253,6 +253,16 @@ TEST(FunctionRef, PassByValueTypes) {
   }
 }
 
+TEST(FunctionRef, ReferenceToIncompleteType) {
+  struct IncompleteType;
+  auto test = [](IncompleteType&) {};
+  absl::FunctionRef<void(IncompleteType&)> ref(test);
+
+  struct IncompleteType {};
+  IncompleteType obj;
+  ref(obj);
+}
+
 }  // namespace
 ABSL_NAMESPACE_END
 }  // namespace absl

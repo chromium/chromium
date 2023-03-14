@@ -201,13 +201,13 @@ TEST_F(ApplyStyleCommandTest, ItalicCrossingIgnoredContentBoundary) {
       InputEvent::InputType::kFormatItalic)
       ->Apply();
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   EXPECT_EQ("|a<select multiple><option></option></select>b",
             GetSelectionTextFromBody());
 #else
   EXPECT_EQ("<i>^a<select multiple><option>|</option></select></i>b",
             GetSelectionTextFromBody());
-#endif
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 // This is a regression test for https://crbug.com/1246190

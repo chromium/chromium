@@ -68,7 +68,6 @@
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
 #include "third_party/blink/public/platform/url_conversion.h"
-#include "third_party/blink/public/platform/web_request_peer.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
@@ -79,6 +78,7 @@
 #include "third_party/blink/public/web/web_security_policy.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/resource_request_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/resource_request_sender.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
@@ -97,7 +97,7 @@ namespace blink {
 // This inner class exists since the URLLoader may be deleted while inside a
 // call to URLLoaderClient. Refcounting is to keep the context from being
 // deleted if it may have work to do after calling into the client.
-class URLLoader::Context : public WebRequestPeer {
+class URLLoader::Context : public ResourceRequestClient {
  public:
   Context(URLLoader* loader,
           const Vector<String>& cors_exempt_header_list,
@@ -131,7 +131,7 @@ class URLLoader::Context : public WebRequestPeer {
              std::unique_ptr<ResourceLoadInfoNotifierWrapper>
                  resource_load_info_notifier_wrapper);
 
-  // WebRequestPeer overrides:
+  // ResourceRequestClient overrides:
   void OnUploadProgress(uint64_t position, uint64_t size) override;
   bool OnReceivedRedirect(const net::RedirectInfo& redirect_info,
                           network::mojom::URLResponseHeadPtr head,
@@ -494,14 +494,15 @@ URLLoader::URLLoader(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
     BackForwardCacheLoaderHelper* back_forward_cache_loader_helper)
-    : context_(new Context(this,
-                           cors_exempt_header_list,
-                           terminate_sync_load_event,
-                           std::move(freezable_task_runner),
-                           std::move(unfreezable_task_runner),
-                           std::move(url_loader_factory),
-                           std::move(keep_alive_handle),
-                           back_forward_cache_loader_helper)) {}
+    : context_(
+          base::MakeRefCounted<Context>(this,
+                                        cors_exempt_header_list,
+                                        terminate_sync_load_event,
+                                        std::move(freezable_task_runner),
+                                        std::move(unfreezable_task_runner),
+                                        std::move(url_loader_factory),
+                                        std::move(keep_alive_handle),
+                                        back_forward_cache_loader_helper)) {}
 
 URLLoader::URLLoader() = default;
 

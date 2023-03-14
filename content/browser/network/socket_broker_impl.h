@@ -28,6 +28,8 @@ class CONTENT_EXPORT SocketBrokerImpl : public network::mojom::SocketBroker {
   // mojom::SocketBroker implementation.
   void CreateTcpSocket(net::AddressFamily address_family,
                        CreateTcpSocketCallback callback) override;
+  void CreateUdpSocket(net::AddressFamily address_family,
+                       CreateUdpSocketCallback callback) override;
 
   // Returns a mojo::PendingRemote to this instance. Adds a receiver to
   // `receivers_`.

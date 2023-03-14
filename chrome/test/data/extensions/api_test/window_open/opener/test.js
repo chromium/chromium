@@ -22,7 +22,7 @@ chrome.test.runTests([
 
     window.onCheckOpenerLoaded = function(testWindow) {
       // The opener should now be set...
-      chrome.test.assertTrue(testWindow.opener != null);
+      chrome.test.assertNe(null, testWindow.opener);
       // ...and the test window should only have one tab (because it was
       // targetted via the "target-window" name).
       chrome.tabs.getAllInWindow(

@@ -16,7 +16,8 @@ class HttpsOnlyModeBlockingPage : public SecurityInterstitialPage {
   HttpsOnlyModeBlockingPage(
       content::WebContents* web_contents,
       const GURL& request_url,
-      std::unique_ptr<SecurityInterstitialControllerClient> controller_client);
+      std::unique_ptr<SecurityInterstitialControllerClient> controller_client,
+      bool is_under_advanced_protection);
 
   static const SecurityInterstitialPage::TypeID kTypeForTesting;
   ~HttpsOnlyModeBlockingPage() override;
@@ -32,6 +33,9 @@ class HttpsOnlyModeBlockingPage : public SecurityInterstitialPage {
 
  private:
   bool user_made_decision_ = false;
+  // True if the interstitial is shown because the user is under Advanced
+  // Protection which automatically enables HTTPS-First Mode.
+  bool is_under_advanced_protection_ = false;
 };
 
 }  // namespace security_interstitials

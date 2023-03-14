@@ -136,9 +136,9 @@ ExtensionFunction::ResponseAction IdentityGetAuthTokenFunction::Run() {
     return RespondNow(Error(error.ToString()));
   }
 
-  std::unique_ptr<api::identity::GetAuthToken::Params> params(
-      api::identity::GetAuthToken::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<api::identity::GetAuthToken::Params> params =
+      api::identity::GetAuthToken::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   ComputeInteractivityStatus(params->details);
 
   enable_granular_permissions_ =
@@ -888,7 +888,7 @@ void IdentityGetAuthTokenFunction::ShowExtensionLoginPrompt() {
 void IdentityGetAuthTokenFunction::ShowRemoteConsentDialog(
     const RemoteConsentResolutionData& resolution_data) {
   gaia_remote_consent_flow_ = std::make_unique<GaiaRemoteConsentFlow>(
-      this, GetProfile(), token_key_, resolution_data, extension()->name());
+      this, GetProfile(), token_key_, resolution_data);
   gaia_remote_consent_flow_->Start();
 }
 

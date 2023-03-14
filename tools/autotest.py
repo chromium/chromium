@@ -48,6 +48,8 @@ DEBUG = False
 # Some test suites use suffixes that would also match non-test-suite targets.
 # Those test suites should be manually added here.
 _OTHER_TEST_TARGETS = [
+    # Running ash_pixeltests requires the --no-try-android-wrappers flag.
+    '//ash:ash_pixeltests',
     '//chrome/test:browser_tests',
     '//chrome/test:interactive_ui_tests',
     '//chrome/test:unit_tests',

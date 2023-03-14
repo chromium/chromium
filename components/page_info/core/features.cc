@@ -53,11 +53,14 @@ BASE_FEATURE(kPageInfoAboutThisSiteMoreInfo,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kPageInfoAboutThisSiteDescriptionPlaceholder,
-             "PageInfoAboutThisSiteDescriptionPlaceholder",
+#if !BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kPageInfoAboutThisSiteSecondaryIcon,
+             "PageInfoAboutThisSiteSecondaryIcon",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if !BUILDFLAG(IS_ANDROID)
+const base::FeatureParam<int> kAboutThisSiteSecondaryIconId{
+    &kPageInfoAboutThisSiteSecondaryIcon, "IconId", 0};
+
 BASE_FEATURE(kPageInfoHistoryDesktop,
              "PageInfoHistoryDesktop",
              base::FEATURE_DISABLED_BY_DEFAULT);

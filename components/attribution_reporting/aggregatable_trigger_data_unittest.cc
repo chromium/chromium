@@ -88,7 +88,7 @@ TEST(AggregatableTriggerDataTest, FromJSON) {
          })json"),
           *AggregatableTriggerData::Create(
               /*key_piece=*/1, /*source_keys=*/{},
-              FilterPair{.positive = *Filters::Create({{"a", {"b", "c"}}})}),
+              FilterPair(/*positive=*/{{{"a", {"b", "c"}}}}, /*negative=*/{})),
       },
       {
           "not_filters",
@@ -98,7 +98,7 @@ TEST(AggregatableTriggerDataTest, FromJSON) {
           })json"),
           *AggregatableTriggerData::Create(
               /*key_piece=*/2, /*source_keys=*/{},
-              FilterPair{.negative = *Filters::Create({{"a", {"b", "c"}}})}),
+              FilterPair(/*positive=*/{}, /*negative=*/{{{"a", {"b", "c"}}}})),
       },
       {
           "not_dictionary",
@@ -204,13 +204,13 @@ TEST(AggregatableTriggerDataTest, ToJson) {
           *AggregatableTriggerData::Create(
               /*key_piece=*/1,
               /*source_keys=*/{"a", "b"},
-              FilterPair{.positive = *Filters::Create({{"c", {}}}),
-                         .negative = *Filters::Create({{"d", {}}})}),
+              FilterPair(/*positive=*/{{{"c", {}}}},
+                         /*negative=*/{{{"d", {}}}})),
           R"json({
             "key_piece":"0x1",
             "source_keys": ["a", "b"],
-            "filters": {"c": []},
-            "not_filters": {"d": []}
+            "filters": [{"c": []}],
+            "not_filters": [{"d": []}]
           })json",
       },
   };

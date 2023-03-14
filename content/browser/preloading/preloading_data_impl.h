@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_PRELOADING_PRELOADING_DATA_IMPL_H_
 
 #include <memory>
+#include <tuple>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
@@ -20,6 +21,23 @@ namespace content {
 class PreloadingAttemptImpl;
 class PreloadingPrediction;
 class PrefetchDocumentManager;
+
+// Defines predictors confusion matrix enums used by UMA records. Entries should
+// not be renumbered and numeric values should never be reused. Please update
+// "PredictorConfusionMatrix" in `tools/metrics/histograms/enums.xml` when new
+// enums are added.
+enum class PredictorConfusionMatrix {
+  // True positive.
+  kTruePositive = 0,
+  // False positive.
+  kFalsePositive = 1,
+  // True negative.
+  kTrueNegative = 2,
+  // False negative.
+  kFalseNegative = 3,
+  // Required by UMA histogram macro.
+  kMaxValue = kFalseNegative
+};
 
 // The scope of current preloading logging is only limited to the same
 // WebContents navigations. If the predicted URL is opened in a new tab we lose
@@ -57,6 +75,9 @@ class CONTENT_EXPORT PreloadingDataImpl
       PreloadingPredictor predictor,
       int64_t confidence,
       PreloadingURLMatchCallback url_match_predicate) override;
+  void SetIsNavigationInDomainCallback(
+      PreloadingPredictor predictor,
+      PredictorDomainCallback is_navigation_in_domain_callback) override;
 
   // WebContentsObserver override.
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
@@ -73,6 +94,43 @@ class CONTENT_EXPORT PreloadingDataImpl
   void RecordUKMForPreloadingPredictions(
       ukm::SourceId navigated_page_source_id);
   void SetIsAccurateTriggeringAndPrediction(const GURL& navigated_url);
+
+  void RecordPreloadingAttemptPrecisionToUMA(
+      const PreloadingAttemptImpl& attempt);
+  void RecordPredictionPrecisionToUMA(const PreloadingPrediction& prediction);
+
+  void UpdatePreloadingAttemptRecallStats(const PreloadingAttemptImpl& attempt);
+  void UpdatePredictionRecallStats(const PreloadingPrediction& prediction);
+
+  void ResetRecallStats();
+  void RecordRecallStatsToUMA(NavigationHandle* navigation_handle);
+
+  // Stores recall statistics for preloading predictions/attempts to later
+  // record them to UMA.
+  struct PreloadingPredictorLess {
+    bool operator()(const PreloadingPredictor& lhs,
+                    const PreloadingPredictor& rhs) const {
+      return lhs.ukm_value() < rhs.ukm_value();
+    }
+  };
+  struct PreloadingAttemptLess {
+    bool operator()(
+        const std::pair<PreloadingPredictor, PreloadingType>& lhs,
+        const std::pair<PreloadingPredictor, PreloadingType>& rhs) const {
+      return std::forward_as_tuple(lhs.first.ukm_value(), lhs.second) <
+             std::forward_as_tuple(rhs.first.ukm_value(), rhs.second);
+    }
+  };
+
+  base::flat_map<PreloadingPredictor,
+                 PredictorDomainCallback,
+                 PreloadingPredictorLess>
+      is_navigation_in_predictor_domain_callbacks_;
+  base::flat_set<PreloadingPredictor, PreloadingPredictorLess>
+      predictions_recall_stats_;
+  base::flat_set<std::pair<PreloadingPredictor, PreloadingType>,
+                 PreloadingAttemptLess>
+      preloading_attempt_recall_stats_;
 
   // Stores all the preloading attempts that are happening for the next
   // navigation until the navigation takes place.

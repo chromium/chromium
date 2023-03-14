@@ -54,7 +54,9 @@ class HttpsOnlyModeBrowserTest : public InProcessBrowserTest {
   ~HttpsOnlyModeBrowserTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kHttpsOnlyMode);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kHttpsOnlyMode},
+        /*disabled_features=*/{features::kHttpsFirstModeV2});
     InProcessBrowserTest::SetUp();
   }
 
@@ -933,6 +935,110 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest, PreferHstsOverHttpsFirstMode) {
   histograms()->ExpectTotalCount(kEventHistogram, 0);
 }
 
+// Tests that if the HttpAllowlist enterprise policy is set, then HTTPS upgrades
+// are skipped for hosts in the allowlist.
+IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
+                       EnterpriseAllowlistDisablesUpgrades) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Without any policy allowlist, navigate to HTTP URL on foo.test. It *should*
+  // get upgraded to HTTPS.
+  auto http_url = http_server()->GetURL("foo.test", "/simple.html");
+  auto https_url = https_server()->GetURL("foo.test", "/simple.html");
+  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+  EXPECT_EQ(https_url, contents->GetLastCommittedURL());
+
+  // Artificially add the pref that gets mapped from the enterprise policy.
+  auto* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
+  auto* prefs = profile->GetPrefs();
+  base::Value::List allowlist;
+  allowlist.Append("foo.test");
+  allowlist.Append("[*.]bar.test");
+  allowlist.Append(http_server()->GetIPLiteralString());
+  // These cases should not work, but the policy->pref mapping won't immediately
+  // reject them.
+  allowlist.Append("[*]");
+  allowlist.Append("*");
+  prefs->SetList(prefs::kHttpAllowlist, std::move(allowlist));
+
+  // Navigate to HTTP URL on foo.test. It should not get upgraded to HTTPS and
+  // no interstitial should be shown.
+  http_url = http_server()->GetURL("foo.test", "/simple.html");
+  https_url = https_server()->GetURL("foo.test", "/simple.html");
+  EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+  EXPECT_FALSE(
+      chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+          contents));
+
+  // Navigate to HTTP URL on bar.test. Same result.
+  http_url = http_server()->GetURL("bar.test", "/simple.html");
+  https_url = https_server()->GetURL("bar.test", "/simple.html");
+  EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+  EXPECT_FALSE(
+      chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+          contents));
+
+  // Navigate to HTTP URL on bar.bar.test. Same result as subdomain wildcard
+  // was specified.
+  http_url = http_server()->GetURL("bar.bar.test", "/simple.html");
+  https_url = https_server()->GetURL("bar.bar.test", "/simple.html");
+  EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+  EXPECT_FALSE(
+      chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+          contents));
+
+  // Navigate to HTTP URL on foo.foo.test. Subdomains of foo.test should not be
+  // considered as being in the allowlist as no wildcard was specified. This
+  // should get upgraded to HTTPS.
+  http_url = http_server()->GetURL("foo.foo.test", "/simple.html");
+  https_url = https_server()->GetURL("foo.foo.test", "/simple.html");
+  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+  EXPECT_EQ(https_url, contents->GetLastCommittedURL());
+
+  // Navigate to HTTP URL on baz.test, which is not on the allowlist. Should get
+  // upgraded to HTTPS.
+  http_url = http_server()->GetURL("baz.test", "/simple.html");
+  https_url = https_server()->GetURL("baz.test", "/simple.html");
+  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+  EXPECT_EQ(https_url, contents->GetLastCommittedURL());
+
+  // Navigate to HTTP URL on the HTTP test server's IP address. It should not
+  // get upgraded ot HTTPS and no interstitial should be shown.
+  http_url = http_server()->GetURL("/simple.html");
+  https_url = https_server()->GetURL("/simple.html");
+  EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+  EXPECT_FALSE(
+      chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+          contents));
+}
+
+// Tests that if HTTPS-First Mode is disabled, metrics are recorded on
+// upgrade-eligible navigations.
+IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
+                       MetricsRecordedWhenHFMDisabled) {
+  GURL http_url = http_server()->GetURL("foo.test", "/simple.html");
+
+  // Ensure HTTPS-First Mode is off.
+  SetPref(false);
+
+  // NavigateToURL() returns `true` because the navigation is not redirected.
+  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+  EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
+
+  // Verify that navigation event metrics were correctly recorded.
+  histograms()->ExpectTotalCount(kEventHistogram, 1);
+  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeNotAttempted,
+                                  1);
+}
+
 // A simple test fixture that ensures the kHttpsOnlyMode feature is enabled and
 // constructs a HistogramTester (so that it gets initialized before browser
 // startup). Used for testing pref tracking logic.
@@ -1022,8 +1128,19 @@ class HttpsOnlyModeForAdvancedProtectionBrowserTest
     InProcessBrowserTest::SetUp();
   }
 
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    http_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    ASSERT_TRUE(http_server_.Start());
+  }
+
  protected:
   bool is_enabled_for_advanced_protection() const { return GetParam(); }
+
+  net::EmbeddedTestServer* http_server() { return &http_server_; }
+
+ private:
+  net::EmbeddedTestServer http_server_{net::EmbeddedTestServer::TYPE_HTTP};
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1041,12 +1158,23 @@ IN_PROC_BROWSER_TEST_P(HttpsOnlyModeForAdvancedProtectionBrowserTest,
   EXPECT_FALSE(ap_manager->IsUnderAdvancedProtection());
   EXPECT_FALSE(GetPref());
 
+  GURL http_url = http_server()->GetURL("foo.test", "/simple.html");
+  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+
   ap_manager->SetAdvancedProtectionStatusForTesting(true);
   if (is_enabled_for_advanced_protection()) {
     EXPECT_TRUE(GetPref());
+
+    EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+    EXPECT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(contents));
+    EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
+        contents->GetPrimaryMainFrame(), "Advanced Protection"));
   } else {
     EXPECT_FALSE(GetPref());
-  }
 
-  // TODO(crbug.com/1414633): Check that the HFM UI setting is locked.
+    EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+    EXPECT_FALSE(
+        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+            contents));
+  }
 }

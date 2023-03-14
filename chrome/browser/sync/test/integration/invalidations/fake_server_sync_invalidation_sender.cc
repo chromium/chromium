@@ -32,6 +32,11 @@ void FakeServerSyncInvalidationSender::AddFakeGCMDriver(
   // It's safe to cast since SyncTest uses FakeGCMProfileService.
   fake_gcm_drivers_.push_back(fake_gcm_driver);
   fake_gcm_driver->AddConnectionObserver(this);
+
+  DVLOG(1) << "Added FakeGCMDriver";
+
+  // If there were incoming invalidations, deliver them to the given GCMDriver.
+  DeliverInvalidationsToHandlers();
 }
 
 void FakeServerSyncInvalidationSender::RemoveFakeGCMDriver(

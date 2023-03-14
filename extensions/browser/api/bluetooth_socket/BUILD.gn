@@ -17,6 +17,8 @@ source_set("bluetooth_socket") {
     "bluetooth_socket_event_dispatcher.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//content/public/browser",
     "//extensions/browser/api:async_api_function",

@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.ActiveTabState;
@@ -192,7 +193,8 @@ public class AppLaunchDrawBlocker {
 
     private void writeSearchEngineHadLogoPref() {
         boolean searchEngineHasLogo =
-                TemplateUrlServiceFactory.get().doesDefaultSearchEngineHaveLogo();
+                TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
+                        .doesDefaultSearchEngineHaveLogo();
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO, searchEngineHasLogo);
     }
@@ -296,7 +298,8 @@ public class AppLaunchDrawBlocker {
         boolean singleUrlBarNtp = false;
         if (!isOverviewShownWithoutInstantStart) {
             boolean searchEngineHasLogo =
-                    TemplateUrlServiceFactory.get().doesDefaultSearchEngineHaveLogo();
+                    TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
+                            .doesDefaultSearchEngineHaveLogo();
             boolean singleUrlBarMode =
                     NewTabPage.isInSingleUrlBarMode(mIsTabletSupplier.get(), searchEngineHasLogo);
             singleUrlBarNtp = isTabRegularNtp && singleUrlBarMode;

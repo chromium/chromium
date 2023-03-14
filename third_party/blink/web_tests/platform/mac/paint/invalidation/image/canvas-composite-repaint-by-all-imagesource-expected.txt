@@ -1,56 +1,235 @@
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [785, 928],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF",
-      "invalidations": [
-        [569, 562, 133, 42],
-        [569, 512, 133, 42],
-        [569, 462, 133, 42],
-        [569, 412, 133, 42],
-        [569, 362, 133, 42],
-        [569, 312, 133, 42],
-        [569, 262, 133, 42],
-        [569, 212, 133, 42],
-        [569, 162, 133, 42],
-        [569, 112, 133, 42],
-        [569, 62, 133, 42],
-        [427, 562, 133, 42],
-        [427, 512, 133, 42],
-        [427, 462, 133, 42],
-        [427, 412, 133, 42],
-        [427, 362, 133, 42],
-        [427, 312, 133, 42],
-        [427, 262, 133, 42],
-        [427, 212, 133, 42],
-        [427, 162, 133, 42],
-        [427, 112, 133, 42],
-        [427, 62, 133, 42],
-        [285, 562, 133, 42],
-        [285, 512, 133, 42],
-        [285, 462, 133, 42],
-        [285, 412, 133, 42],
-        [285, 362, 133, 42],
-        [285, 312, 133, 42],
-        [285, 262, 133, 42],
-        [285, 212, 133, 42],
-        [285, 162, 133, 42],
-        [285, 112, 133, 42],
-        [285, 62, 133, 42],
-        [143, 562, 133, 42],
-        [143, 512, 133, 42],
-        [143, 462, 133, 42],
-        [143, 412, 133, 42],
-        [143, 362, 133, 42],
-        [143, 312, 133, 42],
-        [143, 262, 133, 42],
-        [143, 212, 133, 42],
-        [143, 162, 133, 42],
-        [143, 112, 133, 42],
-        [143, 62, 133, 42]
-      ]
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='source-oversolid color'",
+      "position": [145, 63],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='source-overimage'",
+      "position": [287, 63],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='source-overcanvas'",
+      "position": [429, 63],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='source-overvideo'",
+      "position": [571, 63],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='source-insolid color'",
+      "position": [145, 113],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='source-inimage'",
+      "position": [287, 113],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='source-incanvas'",
+      "position": [429, 113],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='source-invideo'",
+      "position": [571, 113],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='source-outsolid color'",
+      "position": [145, 163],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='source-outimage'",
+      "position": [287, 163],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='source-outcanvas'",
+      "position": [429, 163],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='source-outvideo'",
+      "position": [571, 163],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='source-atopsolid color'",
+      "position": [145, 213],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='source-atopimage'",
+      "position": [287, 213],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='source-atopcanvas'",
+      "position": [429, 213],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='source-atopvideo'",
+      "position": [571, 213],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='destination-oversolid color'",
+      "position": [145, 263],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='destination-overimage'",
+      "position": [287, 263],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='destination-overcanvas'",
+      "position": [429, 263],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='destination-overvideo'",
+      "position": [571, 263],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='destination-insolid color'",
+      "position": [145, 313],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='destination-inimage'",
+      "position": [287, 313],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='destination-incanvas'",
+      "position": [429, 313],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='destination-invideo'",
+      "position": [571, 313],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='destination-outsolid color'",
+      "position": [145, 363],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='destination-outimage'",
+      "position": [287, 363],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='destination-outcanvas'",
+      "position": [429, 363],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='destination-outvideo'",
+      "position": [571, 363],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='destination-atopsolid color'",
+      "position": [145, 413],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='destination-atopimage'",
+      "position": [287, 413],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='destination-atopcanvas'",
+      "position": [429, 413],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='destination-atopvideo'",
+      "position": [571, 413],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='lightersolid color'",
+      "position": [145, 463],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='lighterimage'",
+      "position": [287, 463],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='lightercanvas'",
+      "position": [429, 463],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='lightervideo'",
+      "position": [571, 463],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='copysolid color'",
+      "position": [145, 513],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='copyimage'",
+      "position": [287, 513],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='copycanvas'",
+      "position": [429, 513],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='copyvideo'",
+      "position": [571, 513],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='xorsolid color'",
+      "position": [145, 563],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='xorimage'",
+      "position": [287, 563],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='xorcanvas'",
+      "position": [429, 563],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='xorvideo'",
+      "position": [571, 563],
+      "bounds": [130, 40]
+    },
+    {
+      "name": "LayoutHTMLCanvas CANVAS id='source-canvas'",
+      "position": [16, 751],
+      "bounds": [150, 60]
     },
     {
       "name": "LayoutVideo VIDEO id='video'",
@@ -60,7 +239,6 @@
     {
       "name": "LayoutNGFlexibleBox DIV class='sizing-small phase-pre-ready state-no-source'",
       "bounds": [150, 60],
-      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 1
     },

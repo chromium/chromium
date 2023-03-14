@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/memory/weak_ptr.h"
 
 namespace global_media_controls {
 
@@ -67,6 +68,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemManager {
 
   // True if there is an open MediaDialogDelegate associated with this service.
   virtual bool HasOpenDialog() = 0;
+
+  virtual base::WeakPtr<MediaItemManager> GetWeakPtr() = 0;
 };
 
 }  // namespace global_media_controls

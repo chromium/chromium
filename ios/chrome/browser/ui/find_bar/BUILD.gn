@@ -28,16 +28,16 @@ source_set("find_bar") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/find_in_page",
     "//ios/chrome/browser/main",
-    "//ios/chrome/browser/ui:feature_flags",
-    "//ios/chrome/browser/ui/commands",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/image_util",
     "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/presenters",
     "//ios/chrome/browser/ui/resources:menu_shadow",
     "//ios/chrome/browser/ui/toolbar/accessory",
     "//ios/chrome/browser/ui/toolbar/public",
-    "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
@@ -64,19 +64,21 @@ source_set("eg2_tests") {
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  sources = [ "find_in_page_egtest.mm" ]
+  sources = [ "java_script_find_in_page_egtest.mm" ]
   deps = [
     ":constants",
     ":eg_test_support+eg2",
     "//base",
     "//base/test:test_support",
     "//components/strings",
+    "//ios/chrome/browser/find_in_page:features",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/toolbar/accessory:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",
     "//ios/web/public/test/http_server",
+    "//net:test_support",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]

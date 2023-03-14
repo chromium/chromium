@@ -8,6 +8,10 @@
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "ui/views/view.h"
 
+namespace ui {
+class Cursor;
+}  // namespace ui
+
 namespace arc::input_overlay {
 
 // Represent elements in the TouchPoint. It can be touch point center, inside
@@ -16,6 +20,9 @@ class TouchPointElement : public views::View {
  public:
   TouchPointElement();
   ~TouchPointElement() override;
+
+  // views::View:
+  ui::Cursor GetCursor(const ui::MouseEvent& event) override;
 
   virtual void SetToDefault() = 0;
   virtual void SetToHover() = 0;
@@ -54,6 +61,8 @@ class TouchPoint : public views::View {
   // views::View:
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnKeyReleased(const ui::KeyEvent& event) override;
+  void OnFocus() override;
+  void OnBlur() override;
 
  protected:
   raw_ptr<TouchPointElement> touch_center_;

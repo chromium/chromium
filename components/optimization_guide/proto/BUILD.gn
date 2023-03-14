@@ -11,6 +11,7 @@ if (is_android) {
 proto_library("optimization_guide_proto") {
   proto_in_dir = "//"
   sources = [
+    "autocomplete_scoring_model_metadata.proto",
     "common_types.proto",
     "hint_cache.proto",
     "hints.proto",

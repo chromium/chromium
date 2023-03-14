@@ -24,6 +24,12 @@
 // Returns a shared logger if debugging features are enabled, nil otherwise.
 + (instancetype)sharedLogger;
 
+/// Logs any spotlight error. This method is available even when spotlight
+/// debugger isn't enabled. When spotlight debugger is enabled, it shows an
+/// alert and logs the error to a file that can be found in the debug UI. When
+/// it's disabled, the error is reported through UMA.
++ (void)logSpotlightError:(NSError*)error;
+
 - (void)logIndexedItem:(CSSearchableItem*)item;
 - (void)logIndexedItems:(NSArray<CSSearchableItem*>*)items;
 

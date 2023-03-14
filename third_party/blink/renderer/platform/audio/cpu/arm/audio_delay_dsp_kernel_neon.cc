@@ -11,7 +11,7 @@
 namespace blink {
 
 #if defined(CPU_ARM_NEON)
-static ALWAYS_INLINE int32x4_t WrapIndexVector(int32x4_t v_write_index,
+ALWAYS_INLINE static int32x4_t WrapIndexVector(int32x4_t v_write_index,
                                                int32x4_t v_buffer_length) {
   // Wrap the write_index if any index is past the end of the buffer.
   // This implements
@@ -29,8 +29,9 @@ static ALWAYS_INLINE int32x4_t WrapIndexVector(int32x4_t v_write_index,
   return vsubq_s32(v_write_index, vandq_s32(cmp, v_buffer_length));
 }
 
-static ALWAYS_INLINE float32x4_t
-WrapPositionVector(float32x4_t v_position, float32x4_t v_buffer_length) {
+ALWAYS_INLINE static float32x4_t WrapPositionVector(
+    float32x4_t v_position,
+    float32x4_t v_buffer_length) {
   // Wrap the read position if it exceed the buffer length.
   // This implements
   //

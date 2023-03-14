@@ -15,6 +15,7 @@
 #include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
+#include "components/segmentation_platform/internal/post_processor/post_processing_test_utils.h"
 #include "components/segmentation_platform/internal/selection/client_result_prefs.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 #include "components/segmentation_platform/public/config.h"
@@ -28,50 +29,19 @@ using testing::Invoke;
 namespace segmentation_platform {
 namespace {
 
-// Labels for BinaryClassifier.
-const char kNotShowShare[] = "Not Show Share";
-const char kShowShare[] = "Show Share";
-
-// TTL for BinaryClassifier labels.
-const int kShowShareTTL = 3;
-const int kDefaultTTL = 5;
-
 // Test clients.
 const char kTestClient1[] = "client_1";
 const char kTestClient2[] = "client_2";
 
 // Test Ids.
 const proto::SegmentId kSegmentId =
-    proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+    proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER;
 
 class MockResultProvider : public SegmentResultProvider {
  public:
   MOCK_METHOD1(GetSegmentResult,
                void(std::unique_ptr<GetResultOptions> options));
 };
-
-std::unique_ptr<Config> CreateTestConfig(const std::string& key) {
-  auto config = std::make_unique<Config>();
-  config->segmentation_key = key;
-  config->segmentation_uma_name = "TestUmaKey";
-  config->on_demand_execution = false;
-  config->AddSegmentId(kSegmentId);
-  return config;
-}
-
-proto::OutputConfig GetTestOutputConfigForBinaryClassifier() {
-  proto::SegmentationModelMetadata model_metadata;
-  MetadataWriter writer(&model_metadata);
-
-  writer.AddOutputConfigForBinaryClassifier(
-      /*threshold=*/0.5, /*positive_label=*/kShowShare,
-      /*negative_label=*/kNotShowShare);
-
-  writer.AddPredictedResultTTLInOutputConfig({{kShowShare, kShowShareTTL}},
-                                             kDefaultTTL, proto::TimeUnit::DAY);
-
-  return model_metadata.output_config();
-}
 
 class ResultRefreshManagerTest : public testing::Test {
  public:
@@ -82,8 +52,10 @@ class ResultRefreshManagerTest : public testing::Test {
     base::SetRecordActionTaskRunner(
         task_environment_.GetMainThreadTaskRunner());
 
-    configs_.emplace_back(CreateTestConfig(kTestClient1));
-    configs_.emplace_back(CreateTestConfig(kTestClient2));
+    configs_.emplace_back(
+        test_utils::CreateTestConfig(kTestClient1, kSegmentId));
+    configs_.emplace_back(
+        test_utils::CreateTestConfig(kTestClient2, kSegmentId));
     cached_result_writer_ = SetupCachedResultWriter();
 
     client1_result_provider_ = std::make_unique<MockResultProvider>();
@@ -105,16 +77,7 @@ class ResultRefreshManagerTest : public testing::Test {
                                                 &clock_);
   }
 
-  proto::ClientResult CreateClientResult(proto::PredictionResult pred_result,
-                                         base::Time timestamp) {
-    proto::ClientResult client_result;
-    client_result.mutable_client_result()->CopyFrom(pred_result);
-    client_result.set_timestamp_us(
-        timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
-    return client_result;
-  }
-
-  void ExpectResultFromDatabase(
+  void ExpectSegmentResult(
       MockResultProvider* segment_result_provider,
       const proto::PredictionResult& result,
       const SegmentResultProvider::ResultState& result_state,
@@ -129,37 +92,6 @@ class ResultRefreshManagerTest : public testing::Test {
               auto segment_result =
                   std::make_unique<SegmentResultProvider::SegmentResult>(
                       result_state, result, /*rank=*/1);
-              std::move(options->callback).Run(std::move(segment_result));
-            }));
-  }
-
-  void ExpectResultFromModelExecution(
-      MockResultProvider* segment_result_provider,
-      const std::vector<proto::PredictionResult>& result_list,
-      const std::vector<SegmentResultProvider::ResultState>& result_state_list,
-      const std::vector<bool>& ignore_db_scores) {
-    EXPECT_CALL(*segment_result_provider, GetSegmentResult(_))
-        .Times(2)
-        .WillOnce(
-            Invoke([result_list, result_state_list, ignore_db_scores](
-                       std::unique_ptr<SegmentResultProvider::GetResultOptions>
-                           options) {
-              EXPECT_EQ(options->ignore_db_scores, ignore_db_scores[0]);
-              EXPECT_EQ(options->segment_id, kSegmentId);
-              auto segment_result =
-                  std::make_unique<SegmentResultProvider::SegmentResult>(
-                      result_state_list[0], result_list[0], /*rank=*/1);
-              std::move(options->callback).Run(std::move(segment_result));
-            }))
-        .WillOnce(
-            Invoke([result_list, result_state_list, ignore_db_scores](
-                       std::unique_ptr<SegmentResultProvider::GetResultOptions>
-                           options) {
-              EXPECT_EQ(options->ignore_db_scores, ignore_db_scores[1]);
-              EXPECT_EQ(options->segment_id, kSegmentId);
-              auto segment_result =
-                  std::make_unique<SegmentResultProvider::SegmentResult>(
-                      result_state_list[1], result_list[1], /*rank=*/1);
               std::move(options->callback).Run(std::move(segment_result));
             }));
   }
@@ -195,27 +127,26 @@ TEST_F(ResultRefreshManagerTest, TestRefreshModelResultsSuccess) {
   // Client 1 gets model result from database.
   proto::PredictionResult result_from_db_for_client1 =
       metadata_utils::CreatePredictionResult(
-          /*model_scores=*/{0.8}, GetTestOutputConfigForBinaryClassifier(),
+          /*model_scores=*/{0.8},
+          test_utils::GetTestOutputConfigForBinaryClassifier(),
           /*timestamp=*/base::Time::Now());
 
-  ExpectResultFromDatabase(
-      client1_result_provider_.get(), result_from_db_for_client1,
-      SegmentResultProvider::ResultState::kSuccessFromDatabase,
-      /*ignore_db_scores=*/false);
+  ExpectSegmentResult(client1_result_provider_.get(),
+                      result_from_db_for_client1,
+                      SegmentResultProvider::ResultState::kSuccessFromDatabase,
+                      /*ignore_db_scores=*/false);
 
   // Client 2 gets model result by running the model.
-  proto::PredictionResult result_from_db_for_client2;
   proto::PredictionResult result_from_model_for_client2 =
       metadata_utils::CreatePredictionResult(
-          /*model_scores=*/{0.8}, GetTestOutputConfigForBinaryClassifier(),
+          /*model_scores=*/{0.8},
+          test_utils::GetTestOutputConfigForBinaryClassifier(),
           /*timestamp=*/base::Time::Now());
 
-  ExpectResultFromModelExecution(
-      client2_result_provider_.get(),
-      {result_from_db_for_client2, result_from_model_for_client2},
-      {SegmentResultProvider::ResultState::kDatabaseScoreNotReady,
-       SegmentResultProvider::ResultState::kTfliteModelScoreUsed},
-      /*ignore_db_scores=*/{false, true});
+  ExpectSegmentResult(client2_result_provider_.get(),
+                      result_from_model_for_client2,
+                      SegmentResultProvider::ResultState::kTfliteModelScoreUsed,
+                      /*ignore_db_scores=*/false);
 
   std::map<std::string, std::unique_ptr<SegmentResultProvider>>
       result_providers;
@@ -230,20 +161,21 @@ TEST_F(ResultRefreshManagerTest, TestRefreshModelResultsSuccess) {
 
 TEST_F(ResultRefreshManagerTest, TestRefreshModelResultWithNoResult) {
   // Client 1 tries to get model result from database, but signal not collected.
-  proto::PredictionResult result_for_client1;
-  ExpectResultFromDatabase(
-      client1_result_provider_.get(), result_for_client1,
-      SegmentResultProvider::ResultState::kSignalsNotCollected,
-      /*ignore_db_scores=*/false);
+  proto::PredictionResult result_for_client =
+      metadata_utils::CreatePredictionResult(
+          /*model_scores=*/{},
+          test_utils::GetTestOutputConfigForBinaryClassifier(),
+          /*timestamp=*/base::Time::Now());
+  ExpectSegmentResult(client1_result_provider_.get(), result_for_client,
+                      SegmentResultProvider::ResultState::kSignalsNotCollected,
+                      /*ignore_db_scores=*/false);
 
   // Client 2 tries gets model result by running the model and model execution
   // fails.
-  proto::PredictionResult result_for_client2;
-  ExpectResultFromModelExecution(
-      client2_result_provider_.get(), {result_for_client2, result_for_client2},
-      {SegmentResultProvider::ResultState::kDatabaseScoreNotReady,
-       SegmentResultProvider::ResultState::kDefaultModelExecutionFailed},
-      /*ignore_db_scores=*/{false, true});
+  ExpectSegmentResult(
+      client2_result_provider_.get(), result_for_client,
+      SegmentResultProvider::ResultState::kDefaultModelExecutionFailed,
+      /*ignore_db_scores=*/false);
 
   std::map<std::string, std::unique_ptr<SegmentResultProvider>>
       result_providers;

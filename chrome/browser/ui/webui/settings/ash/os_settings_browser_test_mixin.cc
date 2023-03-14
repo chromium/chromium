@@ -4,6 +4,12 @@
 
 #include "chrome/browser/ui/webui/settings/ash/os_settings_browser_test_mixin.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 #include "base/path_service.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -106,12 +112,13 @@ void OSSettingsBrowserTestMixin::SetUpOnMainThread() {
 }
 
 mojo::Remote<mojom::OSSettingsDriver>
-OSSettingsBrowserTestMixin::OpenOSSettings() {
+OSSettingsBrowserTestMixin::OpenOSSettings(const std::string& relative_url) {
   // Open os-settings page.
   BrowserList* browser_list = BrowserList::GetInstance();
   CHECK(browser_list);
   Browser* browser = browser_list->GetLastActive();
-  GURL test_url("chrome://os-settings");
+
+  GURL test_url("chrome://os-settings" + relative_url);
   content::RenderFrameHost* render_frame_host =
       ui_test_utils::NavigateToURL(browser, test_url);
 

@@ -88,7 +88,7 @@ TEST_F(VideoFrameExtractorTest, ExtractVideoFrame) {
 TEST_F(VideoFrameExtractorTest, ExtractInvalidVideoFile) {
   // Creates a dummy video file, frame extraction should fail.
   base::FilePath file = temp_dir().AppendASCII("test.txt");
-  EXPECT_GT(base::WriteFile(file, "123", sizeof("123")), 0);
+  EXPECT_TRUE(base::WriteFile(file, "123"));
 
   auto result = ExtractFrame(file);
   EXPECT_FALSE(result.success);

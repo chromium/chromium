@@ -7,17 +7,16 @@ desc: |-
 
                     When this policy is set to Disabled, the First-Party Sets feature is disabled.
 
-                    It controls whether Chrome supports First-Party Sets related features (e.g. the SameParty cookie attribute).
+                    It controls whether Chrome supports First-Party Sets related integrations.
 example_value: false
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- chrome.*
-- chrome_os
-- android
-- webview_android
-- fuchsia
+supported_on:
+- chrome.*:113-
+- chrome_os:113-
+- android:113-
+- fuchsia:113-
 items:
 - caption: Enable First-Party Sets for all affected users
   value: true

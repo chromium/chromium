@@ -782,7 +782,13 @@ TEST_F(MobileFriendlinessCheckerTest, TextTooWide) {
               20);
 }
 
-TEST_F(MobileFriendlinessCheckerTest, TextAbsolutePositioning) {
+#if BUILDFLAG(IS_IOS)
+// TODO(crbug.com/1141478)
+#define MAYBE_TextAbsolutePositioning DISABLED_TextAbsolutePositioning
+#else
+#define MAYBE_TextAbsolutePositioning TextAbsolutePositioning
+#endif  // BUILDFLAG(IS_IOS)
+TEST_F(MobileFriendlinessCheckerTest, MAYBE_TextAbsolutePositioning) {
   ukm::mojom::UkmEntry ukm = CalculateMetricsForHTMLString(
       R"HTML(
 <html>

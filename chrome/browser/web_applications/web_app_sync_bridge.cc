@@ -17,7 +17,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/types/pass_key.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -456,9 +455,6 @@ void WebAppSyncBridge::UpdateSync(
     // Include the app in the sync "view" if IsSynced flag becomes true. Update
     // the app if IsSynced flag stays true. Exclude the app from the sync "view"
     // if IsSynced flag becomes false.
-    //
-    // TODO(loyso): Send an update to sync server only if any sync-specific
-    // data was changed. Implement some dirty flags in WebApp setter methods.
     if (new_state->IsSynced()) {
       change_processor()->Put(app_id, CreateSyncEntityData(*new_state),
                               metadata_change_list);
@@ -487,6 +483,13 @@ void WebAppSyncBridge::OnDatabaseOpened(
 
   registrar_->InitRegistry(std::move(registry));
   std::move(callback).Run();
+
+  // Already have data stored in web app system and shouldn't expect further
+  // callbacks once `IsTrackingMetadata` is true.
+  if (!on_sync_connected_.is_signaled() &&
+      change_processor()->IsTrackingMetadata()) {
+    on_sync_connected_.Signal();
+  }
 
   MaybeUninstallAppsPendingUninstall();
   MaybeInstallAppsFromSyncAndPendingInstallation();
@@ -677,14 +680,20 @@ absl::optional<syncer::ModelError> WebAppSyncBridge::MergeSyncData(
                      weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
 
   ApplySyncChangesToRegistrar(std::move(update_local_data));
+
+  if (!on_sync_connected_.is_signaled()) {
+    on_sync_connected_.Signal();
+  }
+
   return absl::nullopt;
 }
 
 absl::optional<syncer::ModelError> WebAppSyncBridge::ApplySyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
-  if (!disable_checks_for_testing_)
-    CHECK(change_processor()->IsTrackingMetadata());
+  // `change_processor()->IsTrackingMetadata()` may be false if
+  // the sync database is invalid and CheckForInvalidPersistedMetadata()
+  // is resetting it.
 
   auto update_local_data = std::make_unique<RegistryUpdateData>();
 
@@ -697,6 +706,11 @@ absl::optional<syncer::ModelError> WebAppSyncBridge::ApplySyncChanges(
                      weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
 
   ApplySyncChangesToRegistrar(std::move(update_local_data));
+
+  if (!on_sync_connected_.is_signaled()) {
+    on_sync_connected_.Signal();
+  }
+
   return absl::nullopt;
 }
 

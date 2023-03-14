@@ -23,7 +23,8 @@
 
       :host-context([chrome-refresh-2023]) cr-icon-button {
         --cr-icon-button-fill-color: var(--cr-toolbar-search-field-icon-color,
-            var(--cr-secondary-text-color));
+            var(--color-toolbar-search-field-icon,
+            var(--cr-secondary-text-color)));
         --cr-icon-button-size: var(--cr-toolbar-icon-container-size, 28px);
         --cr-icon-button-icon-size: 20px;
         margin: var(--cr-toolbar-icon-margin, 0);
@@ -73,7 +74,7 @@
 
       :host-context([chrome-refresh-2023]) #prompt {
         color: var(--cr-toolbar-search-field-prompt-color,
-            var(--color-textfield-foreground-placeholder,
+            var(--color-toolbar-search-field-foreground-placeholder,
             var(--cr-secondary-text-color)));
       }
 
@@ -159,7 +160,7 @@
         caret-color: var(--cr-toolbar-serch-field-input-caret-color,
             currentColor);
         color: var(--cr-toolbar-search-field-input-text-color,
-            var(--color-textfield-foreground,
+            var(--color-toolbar-search-field-foreground,
             var(--cr-fallback-color-on-surface)));
         font-size: 12px;
         font-weight: 500;
@@ -194,12 +195,52 @@
       }
 
       :host-context([chrome-refresh-2023]):host(:not([narrow])) {
-        background: var(--cr-toolbar-search-field-background,
-            var(--color-textfield-background,
-            var(--cr-fallback-color-surface)));
+        background: none;
         border-radius: 100px;
         height: 36px;
+        overflow: hidden;
         padding: 0 6px;
+        position: relative;
+      }
+
+      #background,
+      #stateBackground {
+        display: none;
+      }
+
+      :host-context([chrome-refresh-2023]):host(:not([narrow])) #background {
+        background: var(--cr-toolbar-search-field-background,
+            var(--color-toolbar-search-field-background,
+            var(--cr-fallback-color-surface)));
+        border: 2px solid transparent;
+        border-radius: inherit;
+        display: block;
+        inset: 0;
+        pointer-events: none;
+        position: absolute;
+        z-index: -1;
+      }
+
+      :host-context([chrome-refresh-2023].focus-outline-visible):host(
+            [search-focused_]:not([narrow])) {
+        outline: 2px solid var(--cr-focus-outline-color);
+      }
+
+      :host-context([chrome-refresh-2023].focus-outline-visible):host(
+            [search-focused_]:not([narrow])) #background {
+        background-clip: padding-box;
+      }
+
+      :host-context([chrome-refresh-2023]) #stateBackground {
+        display: block;
+        inset: 0;
+        pointer-events: none;
+        position: absolute;
+      }
+
+      :host-context([chrome-refresh-2023]):host(:hover) #stateBackground {
+        background: var(--color-toolbar-search-field-background-hover,
+            var(--cr-hover-background-color));
       }
 
       :host(:not([narrow]):not([showing-search])) #icon {
@@ -233,7 +274,20 @@
         margin-inline-start:
             var(--cr-toolbar-search-icon-margin-inline-start, 18px);
       }
+
+      paper-ripple {
+        display: none;
+      }
+
+      :host-context([chrome-refresh-2023]):host paper-ripple {
+        color: var(--color-toolbar-search-field-background-pressed,
+            var(--cr-active-background-color));
+        display: block;
+        --paper-ripple-opacity: 1;
+      }
     </style>
+    <div id="background"></div>
+    <div id="stateBackground"></div>
     <template is="dom-if" id="spinnerTemplate">
       <paper-spinner-lite active="[[isSpinnerShown_]]">
       </paper-spinner-lite>

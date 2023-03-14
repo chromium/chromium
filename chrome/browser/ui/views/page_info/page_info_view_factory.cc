@@ -10,9 +10,11 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -339,8 +341,7 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
     default:
       // All other |ContentSettingsType|s do not have icons on desktop or are
       // not shown in the Page Info bubble.
-      NOTREACHED();
-      break;
+      NOTREACHED_NORETURN();
   }
 
   ContentSetting setting = info.setting == CONTENT_SETTING_DEFAULT
@@ -380,8 +381,7 @@ const ui::ImageModel PageInfoViewFactory::GetChosenObjectIcon(
     default:
       // All other content settings types do not represent chosen object
       // permissions.
-      NOTREACHED();
-      break;
+      NOTREACHED_NORETURN();
   }
 
   return ui::ImageModel::FromVectorIcon(
@@ -421,6 +421,12 @@ const ui::ImageModel PageInfoViewFactory::GetLaunchIcon() {
 }
 
 // static
+const ui::ImageModel PageInfoViewFactory::GetSidePanelIcon() {
+  return ui::ImageModel::FromVectorIcon(kSidePanelIcon, ui::kColorIconSecondary,
+                                        GetIconSize());
+}
+
+// static
 const ui::ImageModel PageInfoViewFactory::GetConnectionNotSecureIcon() {
   return ui::ImageModel::FromVectorIcon(vector_icons::kNotSecureWarningIcon,
                                         ui::kColorAlertHighSeverity);
@@ -440,16 +446,20 @@ const ui::ImageModel PageInfoViewFactory::GetOpenSubpageIcon() {
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetAboutThisSiteIcon() {
-  return ui::ImageModel::FromVectorIcon(views::kInfoIcon, ui::kColorIcon,
-                                        GetIconSize());
+  return ui::ImageModel::FromVectorIcon(GetAboutThisSiteVectorIcon(),
+                                        ui::kColorIcon, GetIconSize());
 }
 
 // static
-const ui::ImageModel PageInfoViewFactory::GetAboutThisPageIcon() {
-  return ui::ImageModel::FromVectorIcon(views::kInfoIcon, ui::kColorIcon,
-                                        GetIconSize());
-}
+const gfx::VectorIcon& PageInfoViewFactory::GetAboutThisSiteVectorIcon() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (page_info::IsAboutThisSiteNewIconFeatureEnabled()) {
+    return vector_icons::kPageInsightsIcon;
+  }
+#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+  return views::kInfoIcon;
+}
 // static
 const ui::ImageModel PageInfoViewFactory::GetHistoryIcon() {
   return ui::ImageModel::FromVectorIcon(vector_icons::kHistoryIcon,
@@ -496,8 +506,7 @@ const ui::ImageModel PageInfoViewFactory::GetEnforcedCookieControlsIcon(
     case CookieControlsEnforcement::kEnforcedByCookieSetting:
       return GetEnforcedBySettingsIcon();
     case CookieControlsEnforcement::kNoEnforcement:
-      NOTREACHED();
-      return ui::ImageModel();
+      NOTREACHED_NORETURN();
   }
 }
 

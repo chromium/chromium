@@ -142,6 +142,24 @@ class BundleDataPresubmit(unittest.TestCase):
                                                 'test_data/duplicates', '.')
     self.assertEqual([], results)
 
+  def testCheckOutsideGloblistDir(self):
+    """
+        Checks that including files outside the globlist directory is an error.
+        """
+    results = presubmit_support.CheckBundleData(
+        self.mock_input_api, self.mock_output_api,
+        'test_data/outside_globlist_dir', '.')
+    self.assertEqual(1, len(results))
+
+  def testCheckIgnoreOutsideGloblistDir(self):
+    """
+        Checks that files outside the globlist directory can be ignored.
+        """
+    results = presubmit_support.CheckBundleData(
+        self.mock_input_api, self.mock_output_api,
+        'test_data/ignore_outside_globlist_dir', '.')
+    self.assertEqual([], results)
+
 
 if __name__ == '__main__':
   unittest.main()

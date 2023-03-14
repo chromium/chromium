@@ -137,14 +137,14 @@ const base::FilePath& GetCpuTemperaturePathOnFileThread() {
   return instance->path();
 }
 
-bool ReadNonNegativeInt(const base::Value& root,
+bool ReadNonNegativeInt(const base::Value::Dict& root,
                         const std::string& key,
                         int* out) {
-  const base::Value* value =
-      root.FindKeyOfType(key, base::Value::Type::INTEGER);
-  if (!value || value->GetInt() < 0)
+  absl::optional<int> value = root.FindInt(key);
+  if (!value || *value < 0) {
     return false;
-  *out = value->GetInt();
+  }
+  *out = *value;
   return true;
 }
 
@@ -518,57 +518,60 @@ bool ArcSystemStatCollector::LoadFromJson(const std::string& json_data) {
 
 bool ArcSystemStatCollector::LoadFromValue(const base::Value& root) {
   samples_.clear();
+  const base::Value::Dict& root_dict = root.GetDict();
 
   int64_t max_interval_mcs;
-  const base::Value* max_interval =
-      root.FindKeyOfType(kKeyMaxInterval, base::Value::Type::STRING);
-  if (!max_interval ||
-      !base::StringToInt64(max_interval->GetString(), &max_interval_mcs)) {
+  const std::string* max_interval = root_dict.FindString(kKeyMaxInterval);
+  if (!max_interval || !base::StringToInt64(*max_interval, &max_interval_mcs)) {
     return false;
   }
 
   max_interval_ = base::Microseconds(max_interval_mcs);
 
-  const base::Value* sample_list =
-      root.FindKeyOfType(kKeySamples, base::Value::Type::LIST);
+  const base::Value::List* sample_list = root_dict.FindList(kKeySamples);
   if (!sample_list)
     return false;
 
-  for (const auto& sample_entry : sample_list->GetList()) {
-    if (!sample_entry.is_dict())
+  for (const auto& sample_entry : *sample_list) {
+    const base::Value::Dict* sample_entry_dict = sample_entry.GetIfDict();
+    if (!sample_entry_dict) {
       return false;
+    }
 
     Sample sample;
     int64_t timestamp_mcs;
-    const base::Value* timestamp =
-        sample_entry.FindKeyOfType(kKeyTimestamp, base::Value::Type::STRING);
-    if (!timestamp ||
-        !base::StringToInt64(timestamp->GetString(), &timestamp_mcs))
+    const std::string* timestamp = sample_entry_dict->FindString(kKeyTimestamp);
+    if (!timestamp || !base::StringToInt64(*timestamp, &timestamp_mcs)) {
       return false;
+    }
 
     sample.timestamp = base::TimeTicks() + base::Microseconds(timestamp_mcs);
 
-    if (!ReadNonNegativeInt(sample_entry, kKeySwapSectorsRead,
+    if (!ReadNonNegativeInt(*sample_entry_dict, kKeySwapSectorsRead,
                             &sample.swap_sectors_read) ||
-        !ReadNonNegativeInt(sample_entry, kKeySwapSectorsWrite,
+        !ReadNonNegativeInt(*sample_entry_dict, kKeySwapSectorsWrite,
                             &sample.swap_sectors_write) ||
-        !ReadNonNegativeInt(sample_entry, kKeySwapWaitingTimeMs,
+        !ReadNonNegativeInt(*sample_entry_dict, kKeySwapWaitingTimeMs,
                             &sample.swap_waiting_time_ms) ||
-        !ReadNonNegativeInt(sample_entry, kKeyMemTotalKb,
+        !ReadNonNegativeInt(*sample_entry_dict, kKeyMemTotalKb,
                             &sample.mem_total_kb) ||
-        !ReadNonNegativeInt(sample_entry, kKeyMemUsedKb, &sample.mem_used_kb) ||
-        !ReadNonNegativeInt(sample_entry, kKeyGemObjects,
+        !ReadNonNegativeInt(*sample_entry_dict, kKeyMemUsedKb,
+                            &sample.mem_used_kb) ||
+        !ReadNonNegativeInt(*sample_entry_dict, kKeyGemObjects,
                             &sample.gem_objects) ||
-        !ReadNonNegativeInt(sample_entry, kKeyGemSizeKb, &sample.gem_size_kb) ||
-        !ReadNonNegativeInt(sample_entry, kKeyCpuTemperature,
+        !ReadNonNegativeInt(*sample_entry_dict, kKeyGemSizeKb,
+                            &sample.gem_size_kb) ||
+        !ReadNonNegativeInt(*sample_entry_dict, kKeyCpuTemperature,
                             &sample.cpu_temperature) ||
-        !ReadNonNegativeInt(sample_entry, kKeyCpuFrequency,
+        !ReadNonNegativeInt(*sample_entry_dict, kKeyCpuFrequency,
                             &sample.cpu_frequency) ||
-        !ReadNonNegativeInt(sample_entry, kKeyCpuPower, &sample.cpu_power) ||
-        !ReadNonNegativeInt(sample_entry, kKeyGpuPower, &sample.gpu_power) ||
-        !ReadNonNegativeInt(sample_entry, kKeyMemoryPower,
+        !ReadNonNegativeInt(*sample_entry_dict, kKeyCpuPower,
+                            &sample.cpu_power) ||
+        !ReadNonNegativeInt(*sample_entry_dict, kKeyGpuPower,
+                            &sample.gpu_power) ||
+        !ReadNonNegativeInt(*sample_entry_dict, kKeyMemoryPower,
                             &sample.memory_power) ||
-        !ReadNonNegativeInt(sample_entry, kKeyPackagePowerConstraint,
+        !ReadNonNegativeInt(*sample_entry_dict, kKeyPackagePowerConstraint,
                             &sample.package_power_constraint)) {
       return false;
     }

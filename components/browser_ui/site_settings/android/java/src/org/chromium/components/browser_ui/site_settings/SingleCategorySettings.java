@@ -205,6 +205,13 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
     public static final String EXPLAIN_PROTECTED_MEDIA_KEY = "protected_content_learn_more";
     public static final String ADD_EXCEPTION_KEY = "add_exception";
     public static final String INFO_TEXT_KEY = "info_text";
+    public static final String ANTI_ABUSE_WHEN_ON_HEADER = "anti_abuse_when_on_header";
+    public static final String ANTI_ABUSE_WHEN_ON_SECTION_ONE = "anti_abuse_when_on_section_one";
+    public static final String ANTI_ABUSE_WHEN_ON_SECTION_TWO = "anti_abuse_when_on_section_two";
+    public static final String ANTI_ABUSE_THINGS_TO_CONSIDER_HEADER =
+            "anti_abuse_things_to_consider_header";
+    public static final String ANTI_ABUSE_THINGS_TO_CONSIDER_SECTION_ONE =
+            "anti_abuse_things_to_consider_section_one";
 
     // Keys for Allowed/Blocked preference groups/headers.
     public static final String ALLOWED_GROUP = "allowed_group";
@@ -1152,6 +1159,25 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
             screen.removePreference(infoText);
         }
 
+        // Hide the anti-abuse text preferences, as needed.
+        if (mCategory.getType() != SiteSettingsCategory.Type.ANTI_ABUSE) {
+            Preference antiAbuseWhenOnHeader = screen.findPreference(ANTI_ABUSE_WHEN_ON_HEADER);
+            Preference antiAbuseWhenOnSectionOne =
+                    screen.findPreference(ANTI_ABUSE_WHEN_ON_SECTION_ONE);
+            Preference antiAbuseWhenOnSectionTwo =
+                    screen.findPreference(ANTI_ABUSE_WHEN_ON_SECTION_TWO);
+            Preference antiAbuseThingsToConsiderHeader =
+                    screen.findPreference(ANTI_ABUSE_THINGS_TO_CONSIDER_HEADER);
+            Preference antiAbuseThingsToConsiderSectionOne =
+                    screen.findPreference(ANTI_ABUSE_THINGS_TO_CONSIDER_SECTION_ONE);
+
+            screen.removePreference(antiAbuseWhenOnHeader);
+            screen.removePreference(antiAbuseWhenOnSectionOne);
+            screen.removePreference(antiAbuseWhenOnSectionTwo);
+            screen.removePreference(antiAbuseThingsToConsiderHeader);
+            screen.removePreference(antiAbuseThingsToConsiderSectionOne);
+        }
+
         if (permissionBlockedByOs) {
             maybeShowOsWarning(screen);
 
@@ -1480,6 +1506,9 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
      * @return Whether exceptions should be added for the category.
      */
     private boolean shouldAddExceptionsForCategory() {
+        if (mCategory.getType() == SiteSettingsCategory.Type.ANTI_ABUSE) {
+            return false;
+        }
         if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE
                 && !ContentFeatureList.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
                 && SiteSettingsFeatureList.isEnabled(
@@ -1528,7 +1557,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
              * Click is always enabled as a toast will be shown if a managed preference is clicked.
              */
             @Override
-            public boolean isPreferenceClickDisabledByPolicy(Preference preference) {
+            public boolean isPreferenceClickDisabled(Preference preference) {
                 return false;
             }
         };

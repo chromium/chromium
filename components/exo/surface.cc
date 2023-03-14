@@ -999,7 +999,6 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
         cached_state_.buffer.reset();
       }
       state_.rounded_corners_bounds = cached_state_.rounded_corners_bounds;
-      state_.overlay_priority_hint = cached_state_.overlay_priority_hint;
       state_.clip_rect = cached_state_.clip_rect;
       state_.surface_transform = cached_state_.surface_transform;
       state_.acquire_fence = std::move(cached_state_.acquire_fence);
@@ -1008,6 +1007,12 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
       if (state_.basic_state.alpha)
         needs_update_resource_ = true;
     }
+
+    // The overlay priority hint can get set before any buffer gets
+    // allocated/attached and may influence the format/modifier selection for
+    // these.
+    UpdateOverlayPriorityHint(cached_state_.overlay_priority_hint);
+
     // Either we didn't have a pending acquire fence, or we had one along with
     // a new buffer, and it was already moved to state_.acquire_fence. Note that
     // it is a commit-time client error to commit a fence without a buffer.
@@ -1340,6 +1345,17 @@ void Surface::UpdateBufferTransform(bool y_invert) {
   if (state_.basic_state.buffer_scale != 0) {
     buffer_transform_.PostScale(1.0f / state_.basic_state.buffer_scale,
                                 1.0f / state_.basic_state.buffer_scale);
+  }
+}
+
+void Surface::UpdateOverlayPriorityHint(OverlayPriority overlay_priority_hint) {
+  if (state_.overlay_priority_hint == overlay_priority_hint) {
+    return;
+  }
+
+  state_.overlay_priority_hint = overlay_priority_hint;
+  for (SurfaceObserver& observer : observers_) {
+    observer.OnOverlayPriorityHintChanged(overlay_priority_hint);
   }
 }
 
@@ -1782,6 +1798,27 @@ SecurityDelegate* Surface::GetSecurityDelegate() {
   if (delegate_)
     return delegate_->GetSecurityDelegate();
   return nullptr;
+}
+
+void Surface::SetClientAccessibilityId(int id) {
+  if (!window_) {
+    return;
+  }
+
+  if (id >= 0) {
+    exo::SetShellClientAccessibilityId(window_.get(), id);
+  } else {
+    exo::SetShellClientAccessibilityId(window_.get(), absl::nullopt);
+  }
+}
+
+void Surface::OnFullscreenStateChanged(bool fullscreen) {
+  for (SurfaceObserver& observer : observers_) {
+    observer.OnFullscreenStateChanged(fullscreen);
+  }
+  for (const auto& [surface, point] : sub_surfaces_) {
+    surface->OnFullscreenStateChanged(fullscreen);
+  }
 }
 
 }  // namespace exo

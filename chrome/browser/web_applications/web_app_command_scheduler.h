@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_COMMAND_SCHEDULER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_COMMAND_SCHEDULER_H_
 
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/commands/fetch_installability_for_chrome_management.h"
-#include "chrome/browser/web_applications/commands/manifest_update_data_fetch_command.h"
+#include "chrome/browser/web_applications/commands/manifest_update_check_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
@@ -48,8 +49,6 @@ enum class ApiApprovalState;
 // * Operations have the necessary dependencies from the WebAppProvider system.
 class WebAppCommandScheduler {
  public:
-  using ManifestFetchCallback =
-      ManifestUpdateDataFetchCommand::ManifestFetchCallback;
   using ManifestWriteCallback =
       ManifestUpdateFinalizeCommand::ManifestWriteCallback;
   using InstallIsolatedWebAppCallback = base::OnceCallback<void(
@@ -68,7 +67,8 @@ class WebAppCommandScheduler {
                                bool bypass_service_worker_check,
                                WebAppInstallDialogCallback dialog_callback,
                                OnceInstallCallback callback,
-                               bool use_fallback);
+                               bool use_fallback,
+                               const base::Location& location = FROM_HERE);
 
   // Install with provided `WebAppInstallInfo` instead of fetching data from
   // manifest.
@@ -77,14 +77,16 @@ class WebAppCommandScheduler {
   void InstallFromInfo(std::unique_ptr<WebAppInstallInfo> install_info,
                        bool overwrite_existing_manifest_fields,
                        webapps::WebappInstallSource install_surface,
-                       OnceInstallCallback install_callback);
+                       OnceInstallCallback install_callback,
+                       const base::Location& location = FROM_HERE);
 
   void InstallFromInfoWithParams(
       std::unique_ptr<WebAppInstallInfo> install_info,
       bool overwrite_existing_manifest_fields,
       webapps::WebappInstallSource install_surface,
       OnceInstallCallback install_callback,
-      const WebAppInstallParams& install_params);
+      const WebAppInstallParams& install_params,
+      const base::Location& location = FROM_HERE);
 
   void InstallFromInfoWithParams(
       std::unique_ptr<WebAppInstallInfo> install_info,
@@ -94,7 +96,8 @@ class WebAppCommandScheduler {
                               webapps::InstallResultCode code,
                               bool did_uninstall_and_replace)> install_callback,
       const WebAppInstallParams& install_params,
-      const std::vector<AppId>& apps_to_uninstall);
+      const std::vector<AppId>& apps_to_uninstall,
+      const base::Location& location = FROM_HERE);
 
   // Install web apps managed by `ExternallyInstalledAppManager`.
   void InstallExternallyManagedApp(
@@ -104,7 +107,8 @@ class WebAppCommandScheduler {
                               bool did_uninstall_and_replace)> install_callback,
       base::WeakPtr<content::WebContents> contents,
       std::unique_ptr<WebAppDataRetriever> data_retriever,
-      WebAppUrlLoader* web_app_url_loader);
+      WebAppUrlLoader* web_app_url_loader,
+      const base::Location& location = FROM_HERE);
 
   // Install a placeholder app, this is used during externally managed install
   // flow when url load fails.
@@ -113,19 +117,23 @@ class WebAppCommandScheduler {
       base::OnceCallback<void(const AppId& app_id,
                               webapps::InstallResultCode code,
                               bool did_uninstall_and_replace)> callback,
-      base::WeakPtr<content::WebContents> web_contents);
+      base::WeakPtr<content::WebContents> web_contents,
+      const base::Location& location = FROM_HERE);
 
-  void PersistFileHandlersUserChoice(const AppId& app_id,
-                                     bool allowed,
-                                     base::OnceClosure callback);
+  void PersistFileHandlersUserChoice(
+      const AppId& app_id,
+      bool allowed,
+      base::OnceClosure callback,
+      const base::Location& location = FROM_HERE);
 
   // Schedule a command that performs fetching data from the manifest
   // for a manifest update.
-  void ScheduleManifestUpdateDataFetch(
+  void ScheduleManifestUpdateCheck(
       const GURL& url,
       const AppId& app_id,
       base::WeakPtr<content::WebContents> contents,
-      ManifestFetchCallback callback);
+      ManifestUpdateCheckCommand::CompletedCallback callback,
+      const base::Location& location = FROM_HERE);
 
   // Schedules a command that performs the data writes into the DB for
   // completion of the manifest update.
@@ -133,53 +141,64 @@ class WebAppCommandScheduler {
       const GURL& url,
       const AppId& app_id,
       WebAppInstallInfo install_info,
-      bool app_identity_update_allowed,
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
-      ManifestWriteCallback callback);
+      ManifestWriteCallback callback,
+      const base::Location& location = FROM_HERE);
 
   void FetchInstallabilityForChromeManagement(
       const GURL& url,
       base::WeakPtr<content::WebContents> web_contents,
-      FetchInstallabilityForChromeManagementCallback callback);
+      FetchInstallabilityForChromeManagementCallback callback,
+      const base::Location& location = FROM_HERE);
 
   // Schedules a command that installs the Isolated Web App described by the
   // given IsolatedWebAppUrlInfo and IsolationData.
   void InstallIsolatedWebApp(const IsolatedWebAppUrlInfo& url_info,
                              const IsolatedWebAppLocation& location,
-                             InstallIsolatedWebAppCallback callback);
+                             InstallIsolatedWebAppCallback callback,
+                             const base::Location& call_location = FROM_HERE);
 
   // Scheduler a command that installs a web app from sync.
-  void InstallFromSync(const WebApp& web_app, OnceInstallCallback callback);
+  void InstallFromSync(const WebApp& web_app,
+                       OnceInstallCallback callback,
+                       const base::Location& location = FROM_HERE);
 
   // Schedules a command that uninstalls a web app.
   void Uninstall(const AppId& app_id,
                  absl::optional<WebAppManagement::Type> external_install_source,
                  webapps::WebappUninstallSource uninstall_source,
-                 WebAppInstallFinalizer::UninstallWebAppCallback callback);
+                 WebAppInstallFinalizer::UninstallWebAppCallback callback,
+                 const base::Location& location = FROM_HERE);
 
   // Schedules a command that updates run on os login to provided `login_mode`
   // for a web app.
   void SetRunOnOsLoginMode(const AppId& app_id,
                            RunOnOsLoginMode login_mode,
-                           base::OnceClosure callback);
+                           base::OnceClosure callback,
+                           const base::Location& location = FROM_HERE);
 
   // Schedules a command that syncs the run on os login mode from web app DB to
   // OS.
-  void SyncRunOnOsLoginMode(const AppId& app_id, base::OnceClosure callback);
+  void SyncRunOnOsLoginMode(const AppId& app_id,
+                            base::OnceClosure callback,
+                            const base::Location& location = FROM_HERE);
 
   // Updates the approved or disallowed protocol list for the given app. If
   // necessary, it also updates the protocol registration with the OS.
-  void UpdateProtocolHandlerUserApproval(const AppId& app_id,
-                                         const std::string& protocol_scheme,
-                                         ApiApprovalState approval_state,
-                                         base::OnceClosure callback);
+  void UpdateProtocolHandlerUserApproval(
+      const AppId& app_id,
+      const std::string& protocol_scheme,
+      ApiApprovalState approval_state,
+      base::OnceClosure callback,
+      const base::Location& location = FROM_HERE);
 
   // Set app to disabled, This is Chrome OS specific and no-op on other
   // platforms.
   void SetAppIsDisabled(const AppId& app_id,
                         bool is_disabled,
-                        base::OnceClosure callback);
+                        base::OnceClosure callback,
+                        const base::Location& location = FROM_HERE);
 
   // Schedules provided callback after `lock` is granted. The callback can
   // access web app resources through the `lock`. The `operation_name` is used
@@ -192,7 +211,8 @@ class WebAppCommandScheduler {
   void ScheduleCallbackWithLock(
       const std::string& operation_name,
       std::unique_ptr<DescriptionType> lock_description,
-      base::OnceCallback<void(LockType& lock)> callback);
+      base::OnceCallback<void(LockType& lock)> callback,
+      const base::Location& location = FROM_HERE);
   // Same as above, but the callback can return a debug value to also be used in
   // WebAppCommandManager logs, viewable from chrome://web-app-internals.
   template <typename LockType,
@@ -200,13 +220,15 @@ class WebAppCommandScheduler {
   void ScheduleCallbackWithLock(
       const std::string& operation_name,
       std::unique_ptr<DescriptionType> lock_description,
-      base::OnceCallback<base::Value(LockType& lock)> callback);
+      base::OnceCallback<base::Value(LockType& lock)> callback,
+      const base::Location& location = FROM_HERE);
 
   // Schedules to clear the browsing data for web app, given the inclusive time
   // range.
   void ClearWebAppBrowsingData(const base::Time& begin_time,
                                const base::Time& end_time,
-                               base::OnceClosure done);
+                               base::OnceClosure done,
+                               const base::Location& location = FROM_HERE);
 
   // Launches the given app. This call also uses keep-alives to guarantee that
   // the browser and profile will not destruct before the launch is complete.
@@ -217,21 +239,26 @@ class WebAppCommandScheduler {
                  const absl::optional<GURL>& protocol_handler_launch_url,
                  const absl::optional<GURL>& file_launch_url,
                  const std::vector<base::FilePath>& launch_files,
-                 LaunchWebAppCallback callback);
+                 LaunchWebAppCallback callback,
+                 const base::Location& location = FROM_HERE);
 
   // Used to launch apps with a custom launch params. This does not respect the
   // configuration of the app, and will respect whatever the params say.
   void LaunchAppWithCustomParams(apps::AppLaunchParams params,
-                                 LaunchWebAppCallback callback);
+                                 LaunchWebAppCallback callback,
+                                 const base::Location& location = FROM_HERE);
 
   // Used to locally install an app from the chrome://apps page, triggered
   // by the AppLauncherHandler.
-  void InstallAppLocally(const AppId& app_id, base::OnceClosure callback);
+  void InstallAppLocally(const AppId& app_id,
+                         base::OnceClosure callback,
+                         const base::Location& location = FROM_HERE);
 
   // Used to schedule a synchronization of a web app's OS states with the
   // current DB states.
   void SynchronizeOsIntegration(const AppId& app_id,
-                                base::OnceClosure synchronize_callback);
+                                base::OnceClosure synchronize_callback,
+                                const base::Location& location = FROM_HERE);
 
   // TODO(https://crbug.com/1298130): expose all commands for web app
   // operations.
@@ -239,14 +266,16 @@ class WebAppCommandScheduler {
  private:
   void LaunchApp(apps::AppLaunchParams params,
                  LaunchWebAppWindowSetting option,
-                 LaunchWebAppCallback callback);
+                 LaunchWebAppCallback callback,
+                 const base::Location& location);
 
   void LaunchAppWithKeepAlives(
       apps::AppLaunchParams params,
       LaunchWebAppWindowSetting option,
       LaunchWebAppCallback callback,
       std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
-      std::unique_ptr<ScopedKeepAlive> browser_keep_alive);
+      std::unique_ptr<ScopedKeepAlive> browser_keep_alive,
+      const base::Location& location);
 
   bool IsShuttingDown() const;
 

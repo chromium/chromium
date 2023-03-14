@@ -614,6 +614,34 @@ CSSMathExpressionOperation::CreateTrigonometricFunctionSimplified(
   return CSSMathExpressionNumericLiteral::Create(value, unit_type);
 }
 
+CSSMathExpressionNode*
+CSSMathExpressionOperation::CreateSignRelatedFunctionSimplified(
+    Operands&& operands,
+    CSSValueID function_id) {
+  if (!RuntimeEnabledFeatures::CSSSignRelatedFunctionsEnabled() ||
+      operands[0]->ResolvedUnitType() ==
+          CSSPrimitiveValue::UnitType::kUnknown) {
+    return nullptr;
+  }
+
+  const double value = operands[0]->DoubleValue();
+
+  switch (function_id) {
+    case CSSValueID::kAbs:
+      return CSSMathExpressionNumericLiteral::Create(
+          std::abs(value), operands[0]->ResolvedUnitType());
+    case CSSValueID::kSign: {
+      const double signum =
+          (value == 0 || std::isnan(value)) ? value : ((value > 0) ? 1 : -1);
+      return CSSMathExpressionNumericLiteral::Create(
+          signum, CSSPrimitiveValue::UnitType::kNumber);
+    };
+    default:
+      NOTREACHED();
+      return nullptr;
+  }
+}
+
 // static
 CSSMathExpressionNode*
 CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
@@ -1418,6 +1446,9 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kAtan:
       case CSSValueID::kAtan2:
         return RuntimeEnabledFeatures::CSSTrigonometricFunctionsEnabled();
+      case CSSValueID::kAbs:
+      case CSSValueID::kSign:
+        return RuntimeEnabledFeatures::CSSSignRelatedFunctionsEnabled();
       case CSSValueID::kAnchor:
       case CSSValueID::kAnchorSize:
         return RuntimeEnabledFeatures::CSSAnchorPositioningEnabled();
@@ -1542,6 +1573,12 @@ class CSSMathExpressionNodeParser {
         max_argument_count = 2;
         min_argument_count = 2;
         break;
+      case CSSValueID::kAbs:
+      case CSSValueID::kSign:
+        DCHECK(RuntimeEnabledFeatures::CSSSignRelatedFunctionsEnabled());
+        max_argument_count = 1;
+        min_argument_count = 1;
+        break;
       // TODO(crbug.com/1284199): Support other math functions.
       default:
         break;
@@ -1593,6 +1630,15 @@ class CSSMathExpressionNodeParser {
         return CSSMathExpressionOperation::
             CreateTrigonometricFunctionSimplified(std::move(nodes),
                                                   function_id);
+      case CSSValueID::kAbs:
+      case CSSValueID::kSign:
+        // TODO(seokho): Relative and Percent values cannot be evaluated at the
+        // parsing time. So we should implement cannot be simplified value
+        // using CalculationExpressionNode
+        DCHECK(RuntimeEnabledFeatures::CSSSignRelatedFunctionsEnabled());
+        return CSSMathExpressionOperation::CreateSignRelatedFunctionSimplified(
+            std::move(nodes), function_id);
+
       // TODO(crbug.com/1284199): Support other math functions.
       default:
         return nullptr;

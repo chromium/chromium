@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -56,11 +57,11 @@ public class BookmarkItemRow extends BookmarkRow implements LargeIconCallback {
 
     @Override
     public void onClick() {
-        switch (mDelegate.getCurrentState()) {
-            case BookmarkUIState.STATE_FOLDER:
-            case BookmarkUIState.STATE_SEARCHING:
+        switch (mDelegate.getCurrentUiMode()) {
+            case BookmarkUiMode.FOLDER:
+            case BookmarkUiMode.SEARCHING:
                 break;
-            case BookmarkUIState.STATE_LOADING:
+            case BookmarkUiMode.LOADING:
                 assert false :
                         "The main content shouldn't be inflated if it's still loading";
                 break;

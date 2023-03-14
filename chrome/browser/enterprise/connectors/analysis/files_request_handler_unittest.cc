@@ -509,7 +509,7 @@ TEST_F(FilesRequestHandlerTest, FileIsLarge_LocalAnalysis) {
   base::FilePath file_path = temp_dir.GetPath().AppendASCII("large.doc");
   std::string contents(
       safe_browsing::BinaryUploadService::kMaxUploadSizeBytes + 1, 'a');
-  base::WriteFile(file_path, contents.data(), contents.size());
+  base::WriteFile(file_path, contents);
   paths.emplace_back(file_path);
   SetExpectedUserActionRequestsCount(1);
 

@@ -785,10 +785,10 @@ TEST_P(FlingControllerWithPhysicsBasedFlingTest,
   // We use a velocity of 4500 in this test because it yields a scroll delta
   // that is greater than viewport * boost_multiplier * kDefaultBoundsMultiplier
 
-  // Android and Chromecast use Mobile fling curve so they are ignored
+  // Android, Chromecast and iOS use Mobile fling curve so they are ignored
   // for this test
   bool use_mobile_fling_curve = false;
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CASTOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_IOS)
   use_mobile_fling_curve = true;
 #endif
   if (use_mobile_fling_curve)
@@ -832,10 +832,10 @@ TEST_P(FlingControllerWithPhysicsBasedFlingTest,
 // Ensure that once a fling finishes, the next fling has a boost_multiplier of 1
 TEST_P(FlingControllerWithPhysicsBasedFlingTest,
        ControllerDoesntBoostFinishedFling) {
-  // Android and Chromecast use Mobile fling curve so they are ignored
+  // Android, Chromecast and iOS use Mobile fling curve so they are ignored
   // for this test
   bool use_mobile_fling_curve = false;
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CASTOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_IOS)
   use_mobile_fling_curve = true;
 #endif
   if (use_mobile_fling_curve)

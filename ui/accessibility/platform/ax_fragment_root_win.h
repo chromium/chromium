@@ -62,9 +62,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXFragmentRootWin
   // AXPlatformNodeDelegate overrides.
   gfx::NativeViewAccessible GetParent() const override;
   size_t GetChildCount() const override;
-  gfx::NativeViewAccessible ChildAtIndex(size_t index) override;
-  gfx::NativeViewAccessible GetNextSibling() override;
-  gfx::NativeViewAccessible GetPreviousSibling() override;
+  gfx::NativeViewAccessible ChildAtIndex(size_t index) const override;
+  gfx::NativeViewAccessible GetNextSibling() const override;
+  gfx::NativeViewAccessible GetPreviousSibling() const override;
   gfx::NativeViewAccessible HitTestSync(int x, int y) const override;
   gfx::NativeViewAccessible GetFocus() const override;
   const ui::AXUniqueId& GetUniqueId() const override;

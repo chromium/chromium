@@ -512,10 +512,11 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
     save_group_toggle_->SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_SAVE_GROUP));
 
-    const bool is_saved =
-        tab_strip_model->group_model()->GetTabGroup(group_)->IsSaved();
+    const SavedTabGroupKeyedService* const saved_tab_group_service =
+        SavedTabGroupServiceFactory::GetForProfile(browser_->profile());
 
-    save_group_toggle_->SetIsOn(is_saved);
+    save_group_toggle_->SetIsOn(
+        saved_tab_group_service->model()->Contains(group_));
   }
 
   auto* const new_tab_menu_item = AddChildView(CreateMenuItem(
@@ -617,8 +618,8 @@ tab_groups::TabGroupColorId TabGroupEditorBubbleView::InitColorSet() {
 void TabGroupEditorBubbleView::UpdateGroup() {
   const absl::optional<int> selected_element =
       color_selector_->GetSelectedElement();
-  const TabStripModel *const model = browser_->tab_strip_model();
-  TabGroup *const tab_group = model->group_model()->GetTabGroup(group_);
+  TabGroup* const tab_group =
+      browser_->tab_strip_model()->group_model()->GetTabGroup(group_);
 
   const tab_groups::TabGroupVisualData* current_visual_data =
       tab_group->visual_data();
@@ -648,15 +649,14 @@ const std::u16string TabGroupEditorBubbleView::GetTextForCloseButton() {
     return l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP);
   }
 
-  const bool is_saved = browser_->tab_strip_model()
-                            ->group_model()
-                            ->GetTabGroup(group_)
-                            ->IsSaved();
+  SavedTabGroupKeyedService* const saved_tab_group_service =
+      SavedTabGroupServiceFactory::GetForProfile(browser_->profile());
 
-  return is_saved ? l10n_util::GetStringUTF16(
-                        IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP)
-                  : l10n_util::GetStringUTF16(
-                        IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP);
+  return saved_tab_group_service->model()->Contains(group_)
+             ? l10n_util::GetStringUTF16(
+                   IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP)
+             : l10n_util::GetStringUTF16(
+                   IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP);
 }
 
 void TabGroupEditorBubbleView::OnSaveTogglePressed() {

@@ -16,14 +16,17 @@ enum class TaskPriority : base::sequence_manager::TaskQueue::QueuePriority {
   kControlPriority = 0,
   kHighestPriority = 1,
   kVeryHighPriority = 2,
-  kHighPriority = 3,
-  kNormalPriority = 4,
+  kHighPriorityContinuation = 3,
+  kHighPriority = 4,
+  kNormalPriorityContinuation = 5,
+  kNormalPriority = 6,
   kDefaultPriority = kNormalPriority,
-  kLowPriority = 5,
-  kBestEffortPriority = 6,
+  kLowPriorityContinuation = 7,
+  kLowPriority = 8,
+  kBestEffortPriority = 9,
 
   // Must be the last entry.
-  kPriorityCount = 7,
+  kPriorityCount = 10,
 };
 
 base::sequence_manager::SequenceManager::PrioritySettings PLATFORM_EXPORT

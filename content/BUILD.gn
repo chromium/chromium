@@ -98,16 +98,16 @@ grit("content_resources") {
     "//components/ukm/debug:build_ts",
     "//content/browser/resources/histograms:build_ts",
     "//gpu/ipc/common:vulkan_interface_js__generator",
-    "//ui/base/accelerators/mojom:mojom_js__generator",
-    "//ui/base/mojom:mojom_js",
-    "//ui/events/mojom:mojom_js__generator",
-    "//ui/gfx/geometry/mojom:mojom_js",
-    "//ui/gfx/image/mojom:mojom_js",
-    "//ui/gfx/range/mojom:mojom_js",
-    "//ui/latency/mojom:mojom_js__generator",
-    "//url/mojom:url_mojom_gurl_js__generator",
-    "//url/mojom:url_mojom_origin_js__generator",
   ]
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//mojo/public/mojom/base:base_js__generator",
+      "//ui/base/mojom:mojom_js__generator",
+      "//url/mojom:url_mojom_gurl_js__generator",
+      "//url/mojom:url_mojom_origin_js__generator",
+    ]
+  }
 }
 
 grit("dev_ui_content_resources") {

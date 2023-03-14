@@ -675,7 +675,7 @@ void BrowserAppInstanceTracker::CreateBrowserWindowInstance(Browser* browser) {
       std::make_unique<BrowserWindowInstance>(
           GenerateId(), browser->window()->GetNativeWindow(),
           browser->session_id().id(), browser->create_params().restore_id,
-          IsBrowserActive(browser)));
+          browser->profile()->IsIncognitoProfile(), IsBrowserActive(browser)));
   for (auto& observer : observers_) {
     observer.OnBrowserWindowAdded(instance);
   }

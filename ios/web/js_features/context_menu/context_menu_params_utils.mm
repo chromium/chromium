@@ -19,63 +19,68 @@ namespace web {
 
 ContextMenuParams ContextMenuParamsFromElementDictionary(base::Value* element) {
   ContextMenuParams params;
-  if (!element || !element->is_dict()) {
+  const base::Value::Dict* element_dict =
+      element ? element->GetIfDict() : nullptr;
+  if (!element_dict) {
     // Invalid `element`.
     return params;
   }
 
-  std::string* tag_name = element->FindStringKey(kContextMenuElementTagName);
+  const std::string* tag_name =
+      element_dict->FindString(kContextMenuElementTagName);
   if (tag_name) {
     params.tag_name = base::SysUTF8ToNSString(*tag_name);
   }
 
-  std::string* href = element->FindStringKey(kContextMenuElementHyperlink);
+  const std::string* href =
+      element_dict->FindString(kContextMenuElementHyperlink);
   if (href) {
     params.link_url = GURL(*href);
   }
 
-  std::string* src = element->FindStringKey(kContextMenuElementSource);
+  const std::string* src = element_dict->FindString(kContextMenuElementSource);
   if (src) {
     params.src_url = GURL(*src);
   }
 
-  std::string* referrer_policy =
-      element->FindStringKey(kContextMenuElementReferrerPolicy);
+  const std::string* referrer_policy =
+      element_dict->FindString(kContextMenuElementReferrerPolicy);
   if (referrer_policy) {
     params.referrer_policy = web::ReferrerPolicyFromString(*referrer_policy);
   }
 
-  std::string* inner_text =
-      element->FindStringKey(kContextMenuElementInnerText);
+  const std::string* inner_text =
+      element_dict->FindString(kContextMenuElementInnerText);
   if (inner_text && !inner_text->empty()) {
     params.text = base::SysUTF8ToNSString(*inner_text);
   }
 
-  std::string* title_attribute =
-      element->FindStringKey(web::kContextMenuElementTitle);
+  const std::string* title_attribute =
+      element_dict->FindString(web::kContextMenuElementTitle);
   if (title_attribute) {
     params.title_attribute = base::SysUTF8ToNSString(*title_attribute);
   }
 
-  std::string* alt_text = element->FindStringKey(web::kContextMenuElementAlt);
+  const std::string* alt_text =
+      element_dict->FindString(web::kContextMenuElementAlt);
   if (alt_text) {
     params.alt_text = base::SysUTF8ToNSString(*alt_text);
   }
 
   absl::optional<double> text_offset =
-      element->FindDoubleKey(web::kContextMenuElementTextOffset);
+      element_dict->FindDouble(web::kContextMenuElementTextOffset);
   if (text_offset.has_value()) {
     params.text_offset = *text_offset;
   }
 
-  std::string* surrounding_text =
-      element->FindStringKey(kContextMenuElementSurroundingText);
+  const std::string* surrounding_text =
+      element_dict->FindString(kContextMenuElementSurroundingText);
   if (surrounding_text && !surrounding_text->empty()) {
     params.surrounding_text = base::SysUTF8ToNSString(*surrounding_text);
   }
 
   absl::optional<double> surrounding_text_offset =
-      element->FindDoubleKey(web::kContextMenuElementSurroundingTextOffset);
+      element_dict->FindDouble(web::kContextMenuElementSurroundingTextOffset);
   if (surrounding_text_offset.has_value()) {
     params.surrounding_text_offset = *surrounding_text_offset;
   }

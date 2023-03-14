@@ -704,6 +704,9 @@ void SharesheetBubbleView::AnimateToExpandedState() {
 }
 
 void SharesheetBubbleView::TargetButtonPressed(TargetInfo target) {
+  if (!intent_) {
+    return;
+  }
   auto type = target.type;
   if (type == ::sharesheet::TargetType::kAction) {
     active_target_ = target.launch_name;

@@ -19,6 +19,7 @@
 #include "base/strings/string_piece.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "crypto/sha2.h"
 #include "net/base/expiring_cache.h"
 #include "net/base/hash_value.h"
@@ -516,7 +517,7 @@ class NET_EXPORT TransportSecurityState {
   typedef ExpiringCache<std::string, bool, base::TimeTicks, std::less<>>
       ReportCache;
 
-  base::Value NetLogUpgradeToSSLParam(const std::string& host);
+  base::Value::Dict NetLogUpgradeToSSLParam(const std::string& host);
 
   // IsBuildTimely returns true if the current build is new enough ensure that
   // built in security information (i.e. HSTS preloading and pinning

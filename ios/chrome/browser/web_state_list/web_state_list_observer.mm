@@ -64,3 +64,6 @@ void WebStateListObserver::WillBeginBatchOperation(
     WebStateList* web_state_list) {}
 
 void WebStateListObserver::BatchOperationEnded(WebStateList* web_state_list) {}
+
+void WebStateListObserver::WebStateListDestroyed(WebStateList* web_state_list) {
+}

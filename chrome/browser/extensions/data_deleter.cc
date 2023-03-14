@@ -12,6 +12,7 @@
 #include "chrome/browser/extensions/chrome_extension_cookies.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
@@ -26,7 +27,6 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/manifest_handlers/app_isolation_info.h"
 
 using base::WeakPtr;
 using content::BrowserContext;
@@ -106,7 +106,7 @@ void DataDeleter::StartDeleting(Profile* profile,
   GURL launch_web_url_origin;
   StoragePartition* partition = nullptr;
 
-  if (AppIsolationInfo::HasIsolatedStorage(extension)) {
+  if (extensions::util::LegacyHasIsolatedStorage(extension)) {
     has_isolated_storage = true;
     ++num_tasks;
   } else {

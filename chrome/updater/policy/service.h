@@ -5,6 +5,7 @@
 #ifndef CHROME_UPDATER_POLICY_SERVICE_H_
 #define CHROME_UPDATER_POLICY_SERVICE_H_
 
+#include <set>
 #include <string>
 #include <vector>
 
@@ -126,6 +127,8 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   // in legacy interfaces where a PolicyStatus<int> is required.
   PolicyStatus<int> DeprecatedGetLastCheckPeriodMinutes() const;
 
+  std::string GetAllPoliciesAsString() const;
+
  protected:
   virtual ~PolicyService();
 
@@ -167,6 +170,8 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
           absl::optional<T>(const PolicyManagerInterface*,
                             const std::string& app_id)>& policy_query_callback,
       const std::string& app_id) const;
+
+  std::set<std::string> GetAppsWithPolicy() const;
 };
 
 // Decouples the proxy configuration from `PolicyService`.

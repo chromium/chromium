@@ -141,16 +141,25 @@ interface StreamActionObserver {
   OnStreamAction(StreamAction action);
 };
 
-// Enum representing orientations for the app stream.
-enum StreamOrientation {
-  kPortrait,
-  kLandscape,
-};
-
 // Interface to send new orientation for the app streaming bubble from Eche SWA.
 interface StreamOrientationObserver {
   // Notifies what orientation the stream has changed to.
-  OnStreamOrientationChanged(StreamOrientation orientation);
+  OnStreamOrientationChanged(bool isLandscape);
+};
+
+// Enum representing the bootstrap connection status to the phone.
+enum ConnectionStatus {
+  kConnectionStatusDisconnected, // Initial state before connection is started
+  kConnectionStatusConnecting,   // Attempting to establish connection
+  kConnectionStatusConnected,    // Connected to phone
+  kConnectionStatusFailed,       // Failed to bootstrap connection
+};
+
+// Interface to notify bootstrap connection status from Eche browser to Eche
+// SWA native code.
+interface ConnectionStatusObserver {
+  // Notifies the connection status change for Eche.
+  OnConnectionStatusChanged(ConnectionStatus status);
 };
 
 // Enum representing what EntryPoint was used to launch the eche app stream.

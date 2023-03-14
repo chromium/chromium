@@ -22,7 +22,7 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "use_rust"
+                  "checkout_clang_libs"
                 ],
                 "config": "chromium"
               }
@@ -38,11 +38,6 @@
         }
       ]
     }
-  },
-  "$build/goma": {
-    "enable_ats": true,
-    "rpc_extra_params": "?prod",
-    "server_host": "goma.chromium.org"
   },
   "$build/reclient": {
     "instance": "rbe-chromium-untrusted",

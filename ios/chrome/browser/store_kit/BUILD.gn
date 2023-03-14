@@ -10,7 +10,7 @@ source_set("store_kit") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/web",
   ]
   frameworks = [

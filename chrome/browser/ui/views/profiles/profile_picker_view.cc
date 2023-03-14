@@ -70,13 +70,14 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/ui/views/profiles/first_run_flow_controller_lacros.h"
-#include "chrome/grit/generated_resources.h"
 #endif
 
 namespace {
 
 ProfilePickerView* g_profile_picker_view = nullptr;
 base::OnceClosure* g_profile_picker_opened_callback_for_testing = nullptr;
+
+constexpr int kWindowTitleId = IDS_PRODUCT_NAME;
 
 constexpr int kWindowWidth = 1024;
 constexpr int kWindowHeight = 758;
@@ -528,7 +529,7 @@ ProfilePickerView::ProfilePickerView(ProfilePicker::Params&& params)
       params_(std::move(params)) {
   // Setup the WidgetDelegate.
   SetHasWindowSizeControls(true);
-  SetTitle(IDS_PRODUCT_NAME);
+  SetTitle(kWindowTitleId);
 
   ConfigureAccelerators();
 
@@ -614,6 +615,10 @@ void ProfilePickerView::Init(Profile* picker_profile) {
       picker_profile->GetOriginalProfile(),
       ProfileKeepAliveOrigin::kProfilePickerView);
 
+  // The `FlowController` is created before the widget so it can be used to
+  // determine certain aspects of it. E.g. see `GetAccessibleWindowTitle()`.
+  flow_controller_ = CreateFlowController(picker_profile, GetClearClosure());
+
   // The widget is owned by the native widget.
   new ProfilePickerWidget(this);
 
@@ -625,7 +630,6 @@ void ProfilePickerView::Init(Profile* picker_profile) {
       views::HWNDForWidget(GetWidget()));
 #endif
 
-  flow_controller_ = CreateFlowController(picker_profile, GetClearClosure());
   DCHECK(flow_controller_);
   flow_controller_->Init();
 }
@@ -764,15 +768,18 @@ views::View* ProfilePickerView::GetContentsView() {
 }
 
 std::u16string ProfilePickerView::GetAccessibleWindowTitle() const {
-  if (!web_view_ || !web_view_->GetWebContents() ||
-      web_view_->GetWebContents()->GetTitle().empty()) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    return l10n_util::GetStringUTF16(IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_LACROS);
-#else
-    return l10n_util::GetStringUTF16(IDS_PROFILE_PICKER_MAIN_VIEW_TITLE);
-#endif
+  if (web_view_ && web_view_->GetWebContents() &&
+      !web_view_->GetWebContents()->GetTitle().empty()) {
+    return web_view_->GetWebContents()->GetTitle();
   }
-  return web_view_->GetWebContents()->GetTitle();
+
+  auto flow_fallback_title =
+      flow_controller_->GetFallbackAccessibleWindowTitle();
+  if (!flow_fallback_title.empty()) {
+    return flow_fallback_title;
+  }
+
+  return l10n_util::GetStringUTF16(kWindowTitleId);
 }
 
 gfx::Size ProfilePickerView::CalculatePreferredSize() const {
@@ -828,8 +835,7 @@ bool ProfilePickerView::AcceleratorPressed(const ui::Accelerator& accelerator) {
 
 #endif
     default:
-      NOTREACHED() << "Unexpected command_id: " << command_id;
-      break;
+      NOTREACHED_NORETURN() << "Unexpected command_id: " << command_id;
   }
 
   return true;

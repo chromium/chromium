@@ -1,0 +1,61 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+visibility = [ "//components/cast_streaming/renderer/*" ]
+
+source_set("control") {
+  public = [ "renderer_controller_proxy.h" ]
+  sources = [ "renderer_controller_proxy.cc" ]
+  public_deps = [ "//components/cast_streaming/renderer:resource_provider" ]
+  deps = [
+    "//base",
+    "//components/cast_streaming/common",
+    "//components/cast_streaming/common:mojom",
+    "//media",
+    "//media/mojo/common",
+    "//media/mojo/mojom",
+    "//mojo/public/cpp/bindings",
+    "//url",
+  ]
+}
+
+source_set("renderer") {
+  public = [ "playback_command_forwarding_renderer_factory.h" ]
+  sources = [
+    "playback_command_forwarding_renderer.cc",
+    "playback_command_forwarding_renderer.h",
+    "playback_command_forwarding_renderer_factory.cc",
+  ]
+  deps = [
+    "//base",
+    "//media",
+    "//media/mojo/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+  friend = [ ":unit_tests" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  public = []
+  sources = [
+    "playback_command_forwarding_renderer_factory_unittest.cc",
+    "playback_command_forwarding_renderer_unittest.cc",
+  ]
+  deps = [
+    ":control",
+    ":renderer",
+    "//base",
+    "//base/test:test_support",
+    "//components/cast_streaming/common:mojom",
+    "//media:test_support",
+    "//media/",
+    "//media/mojo/common",
+    "//media/mojo/mojom",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx",
+  ]
+}

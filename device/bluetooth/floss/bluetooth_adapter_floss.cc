@@ -243,6 +243,41 @@ void BluetoothAdapterFloss::Init() {
   std::move(init_callback_).Run();
 }
 
+void BluetoothAdapterFloss::NotifyDeviceFound(uint8_t scanner_id,
+                                              const std::string& address) {
+  if (!base::Contains(devices_, address)) {
+    return;
+  }
+
+  BluetoothDeviceFloss* device_ptr =
+      static_cast<BluetoothDeviceFloss*>(devices_[address].get());
+
+  for (const auto& [key, scanner] : scanners_) {
+    if (scanner->GetScannerId() == scanner_id) {
+      scanner->OnDeviceFound(device_ptr);
+    }
+  }
+}
+
+BluetoothDeviceFloss* BluetoothAdapterFloss::CreateOrGetDeviceForUpdate(
+    const std::string& address,
+    const std::string& name) {
+  BluetoothDeviceFloss* device_ptr;
+  std::string canonical_address = device::CanonicalizeBluetoothAddress(address);
+
+  if (base::Contains(devices_, canonical_address)) {
+    device_ptr =
+        static_cast<BluetoothDeviceFloss*>(devices_[canonical_address].get());
+    device_ptr->UpdateTimestamp();
+  } else {
+    auto device = CreateBluetoothDeviceFloss(
+        FlossDeviceId({.address = address, .name = name}));
+    device_ptr = device.get();
+    devices_.emplace(canonical_address, std::move(device));
+  }
+  return device_ptr;
+}
+
 BluetoothAdapterFloss::UUIDList BluetoothAdapterFloss::GetUUIDs() const {
   return {};
 }
@@ -630,6 +665,11 @@ void BluetoothAdapterFloss::AdapterEnabledChanged(int adapter, bool enabled) {
 
   if (enabled) {
     PopulateInitialDevices();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // No need to do this in Lacros because Ash would be around, and would have
+    // done this already.
+    SetStandardChromeOSAdapterName();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   } else {
     ClearAllDevices();
   }
@@ -1062,7 +1102,9 @@ void BluetoothAdapterFloss::ConnectDevice(
   // createRfcommSocketToServiceRecord(UUID). This should be called after
   // ConnectDevice. Since all that is required on Floss for insecure connection
   // is an address, this function currently just creates a device pointer.
-  // TODO(b/259725491): This function should actually create an ACL connection.
+  // TODO(b/269500327): This behavior is actually a better design. We should
+  // rename this function to CreateDevice which does only device creation and
+  // let the caller decide what to do with it (Connect, Pair, etc).
   BluetoothDeviceFloss* device_ptr;
   std::string canonical_address = device::CanonicalizeBluetoothAddress(address);
 
@@ -1177,7 +1219,12 @@ BluetoothAdapterFloss::GetLowEnergyScanSessionHardwareOffloadingStatus() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void BluetoothAdapterFloss::SetStandardChromeOSAdapterName() {
-  DCHECK(IsPresent());
+  if (!IsPresent()) {
+    BLUETOOTH_LOG(ERROR)
+        << "SetStandardChromeOSAdapterName called when adapter is not present.";
+    return;
+  }
+
   std::string alias = ash::GetDeviceBluetoothName(GetAddress());
   FlossDBusManager::Get()->GetAdapterClient()->SetName(base::DoNothing(),
                                                        alias);
@@ -1212,20 +1259,8 @@ void BluetoothAdapterFloss::ScannerRegistered(device::BluetoothUUID uuid,
 void BluetoothAdapterFloss::ScanResultReceived(ScanResult scan_result) {
   BLUETOOTH_LOG(DEBUG) << __func__ << ": " << scan_result.address;
 
-  BluetoothDeviceFloss* device_ptr;
-  std::string canonical_address =
-      device::CanonicalizeBluetoothAddress(scan_result.address);
-
-  if (base::Contains(devices_, canonical_address)) {
-    device_ptr =
-        static_cast<BluetoothDeviceFloss*>(devices_[canonical_address].get());
-    device_ptr->UpdateTimestamp();
-  } else {
-    auto device = CreateBluetoothDeviceFloss(FlossDeviceId(
-        {.address = scan_result.address, .name = scan_result.name}));
-    device_ptr = device.get();
-    devices_.emplace(canonical_address, std::move(device));
-  }
+  BluetoothDeviceFloss* device_ptr =
+      CreateOrGetDeviceForUpdate(scan_result.address, scan_result.name);
 
   device::BluetoothDevice::ServiceDataMap service_data_map;
   for (const auto& [uuid, bytes] : scan_result.service_data) {
@@ -1242,14 +1277,33 @@ void BluetoothAdapterFloss::ScanResultReceived(ScanResult scan_result) {
   for (auto& observer : observers_)
     observer.DeviceAdvertisementReceived(this, device_ptr, scan_result.rssi,
                                          scan_result.adv_data);
-
-  // All scanners share scan results
-  for (const auto& [key, scanner] : scanners_) {
-    scanner->OnDeviceFound(device_ptr);
-  }
 }
 
-void BluetoothAdapterFloss::ScanResultLost(ScanResult scan_result) {
+void BluetoothAdapterFloss::AdvertisementFound(uint8_t scanner_id,
+                                               ScanResult scan_result) {
+  BLUETOOTH_LOG(DEBUG) << __func__ << ": " << scan_result.address;
+
+  CreateOrGetDeviceForUpdate(scan_result.address, scan_result.name);
+
+  // MSFT event does not arrive together with the advertisement data, but they
+  // always arrive very close to each other.
+  // Ideally Floss daemon should consolidate the advertisement data into the
+  // AdvertisementFound callback, but for now the workaround is to delay
+  // notifying client for a little bit to practically be sure that the client
+  // will have updated the advertisement data by the time they hear
+  // OnDeviceFound.
+  // TODO(b/271165074): Fix this by combining AdvertisementFound with the first
+  // advertisement data.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&BluetoothAdapterFloss::NotifyDeviceFound,
+                     weak_ptr_factory_.GetWeakPtr(), scanner_id,
+                     device::CanonicalizeBluetoothAddress(scan_result.address)),
+      base::Seconds(1));
+}
+
+void BluetoothAdapterFloss::AdvertisementLost(uint8_t scanner_id,
+                                              ScanResult scan_result) {
   BLUETOOTH_LOG(DEBUG) << __func__ << ": " << scan_result.address;
 
   auto device = CreateBluetoothDeviceFloss(FlossDeviceId(
@@ -1264,17 +1318,19 @@ void BluetoothAdapterFloss::ScanResultLost(ScanResult scan_result) {
   }
 
   BluetoothDeviceFloss* device_ptr = device.get();
-  BluetoothDeviceFloss* found_ptr =
+  BluetoothDeviceFloss* deleted_ptr =
       static_cast<BluetoothDeviceFloss*>(GetDevice(device->GetAddress()));
 
   // Only remove devices from devices_ that are not paired or connected.
-  if (!found_ptr || (!found_ptr->IsPaired() && !found_ptr->IsConnected())) {
+  if (!deleted_ptr ||
+      (!deleted_ptr->IsPaired() && !deleted_ptr->IsConnected())) {
     devices_.erase(canonical_address);
   }
 
-  // All scanners share scan results
   for (const auto& [key, scanner] : scanners_) {
-    scanner->OnDeviceLost(device_ptr);
+    if (scanner->GetScannerId() == scanner_id) {
+      scanner->OnDeviceLost(device_ptr);
+    }
   }
 }
 

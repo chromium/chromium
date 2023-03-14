@@ -166,6 +166,11 @@ class WebClient {
   // Enables the logic to handle long press context menu with UIContextMenu.
   virtual bool EnableLongPressUIContextMenu() const;
 
+  // Allows WKWebViews to be inspected using Safari's Web Inspector.
+  // TODO(crbug.com/1418431): Remove this method when Web Inspector is enabled
+  // unconditionally.
+  virtual bool EnableWebInspector() const;
+
   // Returns the UserAgentType that should be used by default for the web
   // content, based on the `web_state`.
   virtual UserAgentType GetDefaultUserAgent(web::WebState* web_state,

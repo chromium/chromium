@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/passwords/password_check_observer_bridge.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
@@ -43,7 +44,6 @@
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/upgrade/upgrade_constants.h"
 #import "ios/chrome/browser/upgrade/upgrade_recommended_details.h"
 #import "ios/chrome/common/string_util.h"
@@ -75,6 +75,9 @@ typedef NS_ENUM(NSInteger, SafetyCheckItemType) {
   TimestampFooterItem,
 };
 
+// The size of trailing symbol icons.
+NSInteger kTrailingSymbolImagePointSize = 18;
+
 using password_manager::InsecureCredential;
 using password_manager::InsecureType;
 using password_manager::TestPasswordStore;
@@ -92,7 +95,8 @@ PrefService* SetPrefService() {
 // The image when the state is safe.
 UIImage* SafeImage() {
   if (UseSymbols()) {
-    return DefaultSymbolTemplateWithPointSize(kCheckmarkCircleFillSymbol, 18);
+    return DefaultSymbolTemplateWithPointSize(kCheckmarkCircleFillSymbol,
+                                              kTrailingSymbolImagePointSize);
   }
   return [[UIImage imageNamed:@"settings_safe_state"]
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -101,7 +105,8 @@ UIImage* SafeImage() {
 // The image when the state is unsafe.
 UIImage* UnsafeImage() {
   if (UseSymbols()) {
-    return DefaultSymbolTemplateWithPointSize(kWarningFillSymbol, 18);
+    return DefaultSymbolTemplateWithPointSize(kWarningFillSymbol,
+                                              kTrailingSymbolImagePointSize);
   }
   return [[UIImage imageNamed:@"settings_unsafe_state"]
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];

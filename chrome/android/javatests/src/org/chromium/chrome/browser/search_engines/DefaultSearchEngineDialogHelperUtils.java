@@ -14,6 +14,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -58,7 +59,8 @@ public class DefaultSearchEngineDialogHelperUtils {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> Assert.assertEquals("Search engine wasn't set",
-                                TemplateUrlServiceFactory.get()
+                                TemplateUrlServiceFactory
+                                        .getForProfile(Profile.getLastUsedRegularProfile())
                                         .getDefaultSearchEngineTemplateUrl()
                                         .getKeyword(),
                                 sSelectedEngine));

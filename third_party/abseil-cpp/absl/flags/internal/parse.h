@@ -32,7 +32,6 @@ namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace flags_internal {
 
-enum class ArgvListAction { kRemoveParsedArgs, kKeepParsedArgs };
 enum class UsageFlagsAction { kHandleUsage, kIgnoreUsage };
 enum class OnUndefinedFlag {
   kIgnoreUndefined,
@@ -41,7 +40,6 @@ enum class OnUndefinedFlag {
 };
 
 std::vector<char*> ParseCommandLineImpl(int argc, char* argv[],
-                                        ArgvListAction arg_list_act,
                                         UsageFlagsAction usage_flag_act,
                                         OnUndefinedFlag on_undef_flag);
 

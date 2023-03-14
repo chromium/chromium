@@ -46,7 +46,8 @@ class AccessorySheetMetricsRecorder {
             }
             if (propertyKey == ACTIVE_TAB_INDEX || propertyKey == AccessorySheetProperties.HEIGHT
                     || propertyKey == AccessorySheetProperties.TOP_SHADOW_VISIBLE
-                    || propertyKey == AccessorySheetProperties.PAGE_CHANGE_LISTENER) {
+                    || propertyKey == AccessorySheetProperties.PAGE_CHANGE_LISTENER
+                    || propertyKey == AccessorySheetProperties.SHOW_KEYBOARD_CALLBACK) {
                 return;
             }
             assert false : "Every property update needs to be handled explicitly!";

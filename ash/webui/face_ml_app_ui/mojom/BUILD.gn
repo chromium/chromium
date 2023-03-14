@@ -17,14 +17,13 @@ mojom("trusted") {
 }
 
 ts_library("mojom_ts") {
-  allow_js = true
   mojom_gen_dir = "$root_gen_dir/mojom-webui/$cur_dir"
   root_dir = mojom_gen_dir
   out_dir = "$mojom_gen_dir/tsc"
   in_files = [ "face_ml_app_ui.mojom-webui.js" ]
 
   # Required for Mojo's bindings.js resolution.
-  deps = [ "//ui/webui/resources/mojo:library" ]
+  deps = [ "//ui/webui/resources/mojo:build_ts" ]
 
   # Targets that generate the above .mojom-webui.js files.
   extra_deps = [ ":trusted_webui_js" ]

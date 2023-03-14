@@ -17,6 +17,7 @@
 #include "ash/style/default_color_constants.h"
 #include "ash/style/default_colors.h"
 #include "ash/style/dot_indicator.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
@@ -651,6 +652,10 @@ const char* ShelfAppButton::GetClassName() const {
 }
 
 bool ShelfAppButton::OnMousePressed(const ui::MouseEvent& event) {
+  // Clear any closing desks so that the user does not try to interact with an
+  // app that is open on a closing desk.
+  DesksController::Get()->MaybeCommitPendingDeskRemoval();
+
   // TODO: This call should probably live somewhere else (such as inside
   // |ShelfView.PointerPressedOnButton|.
   // No need to scale up the app for mouse right click since the app can't be

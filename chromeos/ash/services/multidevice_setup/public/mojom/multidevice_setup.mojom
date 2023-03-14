@@ -277,6 +277,19 @@ interface MultiDeviceSetup {
   // intended to be used only for debugging in the chrome://proximity-auth page.
   // During normal usage, events are triggered internally within the service.
   TriggerEventForDebugging(EventTypeForDebugging type) => (bool success);
+
+  // Sets the instance ID of the phone that this Chromebook connected to during
+  // OOBE Quick Start. MultideviceSetup OOBE can inspect this instance ID later
+  // on to determine whether to show UI enhancements (see
+  // GetQuickStartPhoneInstanceID below).
+  SetQuickStartPhoneInstanceID(string qs_phone_instance_id);
+
+  // Informs whether the user already connected their phone using OOBE Quick
+  // Start. If so, it returns the string of the phone instance ID. If not, it
+  // returns absl::nullopt. MultideviceSetup in OOBE uses this value to prefer
+  // the device and update UI strings if the matching phone is present.
+  GetQuickStartPhoneInstanceID() =>
+      (string? qs_phone_instance_id);
 };
 
 // Provides an API for setting a MultiDevice host without the need to provide an

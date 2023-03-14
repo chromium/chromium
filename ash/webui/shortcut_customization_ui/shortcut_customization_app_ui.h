@@ -5,9 +5,6 @@
 #ifndef ASH_WEBUI_SHORTCUT_CUSTOMIZATION_UI_SHORTCUT_CUSTOMIZATION_APP_UI_H_
 #define ASH_WEBUI_SHORTCUT_CUSTOMIZATION_UI_SHORTCUT_CUSTOMIZATION_APP_UI_H_
 
-#include <memory>
-
-#include "ash/webui/shortcut_customization_ui/backend/accelerator_configuration_provider.h"
 #include "ash/webui/shortcut_customization_ui/backend/search/search.mojom.h"
 #include "ash/webui/shortcut_customization_ui/backend/search/search_handler.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
@@ -51,8 +48,6 @@ class ShortcutCustomizationAppUI : public ui::MojoWebUIController {
           receiver);
 
  private:
-  std::unique_ptr<shortcut_ui::AcceleratorConfigurationProvider> provider_;
-  std::unique_ptr<shortcut_ui::SearchHandler> search_handler_;
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 

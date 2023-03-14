@@ -59,12 +59,8 @@ void FakeBrowserManager::StartRunning() {
   SetState(State::RUNNING);
 }
 
-bool FakeBrowserManager::IsRunning() const {
-  return is_running_;
-}
-
-bool FakeBrowserManager::IsRunningOrWillRun() const {
-  return is_running_;
+void FakeBrowserManager::StopRunning() {
+  SetState(State::STOPPED);
 }
 
 void FakeBrowserManager::NewFullscreenWindow(
@@ -76,8 +72,13 @@ void FakeBrowserManager::NewFullscreenWindow(
 void FakeBrowserManager::GetFeedbackData(GetFeedbackDataCallback callback) {
   // Run |callback| with the pre-set |feedback_responses_|, unless testing
   // client requests waiting for crosapi mojo disconnected event being observed.
-  if (!wait_for_mojo_disconnect_)
+  if (!wait_for_mojo_disconnect_) {
     std::move(callback).Run(std::move(feedback_response_));
+  }
+}
+
+void FakeBrowserManager::InitializeAndStartIfNeeded() {
+  StartRunning();
 }
 
 void FakeBrowserManager::OnSessionStateChanged() {}

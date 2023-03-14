@@ -173,13 +173,17 @@ class RasterInterface : public InterfaceBase {
       base::OnceCallback<void()> release_mailbox,
       base::OnceCallback<void(bool)> readback_done) = 0;
 
-  // Synchronously does a readback of SkImage pixels from |source_mailbox| into
-  // caller-owned memory |dst_pixels|.
+  // Synchronously does a readback of SkImage pixels for given |plane_index|
+  // from |source_mailbox| into caller-owned memory |dst_pixels|. |plane_index|
+  // applies to multiplanar textures in mailboxes, for example YUV images
+  // produced by the VideoDecoder. |plane_index| as 0 should be passed for known
+  // single-plane textures.
   virtual void ReadbackImagePixels(const gpu::Mailbox& source_mailbox,
                                    const SkImageInfo& dst_info,
                                    GLuint dst_row_bytes,
                                    int src_x,
                                    int src_y,
+                                   int plane_index,
                                    void* dst_pixels) = 0;
 
   // Raster via GrContext.

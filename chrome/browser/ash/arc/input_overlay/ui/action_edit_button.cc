@@ -60,8 +60,9 @@ ActionEditButton::ActionEditButton(PressedCallback callback)
   auto* color_provider = ash::AshColorProvider::Get();
   DCHECK(focus_ring);
   DCHECK(color_provider);
-  if (!focus_ring || !color_provider)
+  if (!focus_ring || !color_provider) {
     return;
+  }
   focus_ring->SetColorId(ui::kColorAshFocusRing);
   focus_ring->SetHaloThickness(kFocusRingStrokeWidth);
   focus_ring->SetPathGenerator(

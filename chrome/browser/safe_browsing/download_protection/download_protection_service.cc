@@ -230,15 +230,14 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
       profile && IsSafeBrowsingEnabled(*profile->GetPrefs());
   auto settings = DeepScanningRequest::ShouldUploadBinary(item);
   bool report_only_scan =
-      base::FeatureList::IsEnabled(kConnectorsScanningReportOnlyUI) &&
       settings.has_value() &&
       settings.value().block_until_verdict ==
           enterprise_connectors::BlockUntilVerdict::kNoBlock;
+  bool real_time_download_protection_request_allowed =
+      profile &&
+      IsRealTimeDownloadProtectionRequestAllowed(*profile->GetPrefs());
 
-  if (base::FeatureList::IsEnabled(kSafeBrowsingEnterpriseCsd) &&
-      base::FeatureList::IsEnabled(
-          kSafeBrowsingDisableConsumerCsdForEnterprise) &&
-      settings.has_value() && !report_only_scan) {
+  if (settings.has_value() && !report_only_scan) {
     // Since this branch implies that the CSD check is done through the deep
     // scanning request and not with a consumer check, the pre-deep scanning
     // DownloadCheckResult is considered UNKNOWN. This shouldn't trigger on
@@ -253,14 +252,15 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
     return true;
   }
 
-  if (safe_browsing_enabled) {
+  if (safe_browsing_enabled && real_time_download_protection_request_allowed) {
     CheckClientDownload(item, std::move(callback));
     return true;
   }
 
   if (settings.has_value()) {
     DCHECK(report_only_scan);
-    DCHECK(!safe_browsing_enabled);
+    DCHECK(!safe_browsing_enabled ||
+           !real_time_download_protection_request_allowed);
     // Since this branch implies that Safe Browsing is disabled, the pre-deep
     // scanning DownloadCheckResult is considered UNKNOWN.
     UploadForDeepScanning(item, std::move(callback),
@@ -304,8 +304,12 @@ void DownloadProtectionService::CheckDownloadUrl(
   scoped_refptr<DownloadUrlSBClient> client(new DownloadUrlSBClient(
       item, this, std::move(callback), ui_manager_, database_manager_));
   // The client will release itself once it is done.
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&DownloadUrlSBClient::StartCheck, client));
+  if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
+    client->StartCheck();
+  } else {
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&DownloadUrlSBClient::StartCheck, client));
+  }
 }
 
 bool DownloadProtectionService::IsSupportedDownload(

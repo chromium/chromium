@@ -135,7 +135,7 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetDriveThumbnailFunction::Run() {
   using extensions::api::file_manager_private_internal::GetDriveThumbnail::
       Params;
-  const std::unique_ptr<Params> params(Params::Create(args()));
+  const absl::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
@@ -201,7 +201,7 @@ FileManagerPrivateInternalGetPdfThumbnailFunction::
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetPdfThumbnailFunction::Run() {
   using extensions::api::file_manager_private_internal::GetPdfThumbnail::Params;
-  const std::unique_ptr<Params> params(Params::Create(args()));
+  const absl::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
@@ -291,7 +291,7 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::Run() {
   using extensions::api::file_manager_private_internal::
       GetArcDocumentsProviderThumbnail::Params;
-  const std::unique_ptr<Params> params(Params::Create(args()));
+  const absl::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   scoped_refptr<storage::FileSystemContext> file_system_context =

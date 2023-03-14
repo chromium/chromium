@@ -239,9 +239,9 @@ class SavedDeskTest : public OverviewTestBase {
     ASSERT_TRUE(zero_button->GetVisible() || expanded_button->GetVisible());
 
     if (zero_button->GetVisible())
-      ClickOnView(zero_button);
+      LeftClickOn(zero_button);
     else
-      ClickOnView(expanded_button);
+      LeftClickOn(expanded_button);
   }
 
   // Helper function for attempting to delete a saved desk entry based on its
@@ -280,7 +280,7 @@ class SavedDeskTest : public OverviewTestBase {
     ASSERT_TRUE(item_view);
     ASSERT_TRUE(grid_view);
 
-    ClickOnView(SavedDeskItemViewTestApi(item_view).delete_button());
+    LeftClickOn(SavedDeskItemViewTestApi(item_view).delete_button());
 
     // Clicking on the delete button should bring up the delete dialog.
     ASSERT_TRUE(Shell::IsSystemModalWindowOpen());
@@ -316,17 +316,7 @@ class SavedDeskTest : public OverviewTestBase {
     WaitForSavedDeskLibrary();
   }
 
-  void ClickOnView(const views::View* view) {
-    DCHECK(view);
-
-    const gfx::Point view_center = view->GetBoundsInScreen().CenterPoint();
-    auto* event_generator = GetEventGenerator();
-    event_generator->MoveMouseTo(view_center);
-    DCHECK(view->GetVisible());
-    event_generator->ClickLeftButton();
-  }
-
-  void SpamClickOnView(const views::View* view) {
+  void SpamLeftClickOn(const views::View* view) {
     DCHECK(view);
 
     auto* event_generator = GetEventGenerator();
@@ -365,7 +355,7 @@ class SavedDeskTest : public OverviewTestBase {
         GetSaveDeskAsTemplateButtonForRoot(root);
     ASSERT_TRUE(
         GetOverviewGridForRoot(root)->IsSaveDeskButtonContainerVisible());
-    ClickOnView(save_desk_as_template_button);
+    LeftClickOn(save_desk_as_template_button);
     WaitForSavedDeskUI();
     WaitForSavedDeskLibrary();
     // Clicking the save desk as template button selects the newly created saved
@@ -386,7 +376,7 @@ class SavedDeskTest : public OverviewTestBase {
     auto* save_desk_button = GetSaveDeskForLaterButtonForRoot(root);
     ASSERT_TRUE(
         GetOverviewGridForRoot(root)->IsSaveDeskForLaterButtonVisible());
-    ClickOnView(save_desk_button);
+    LeftClickOn(save_desk_button);
     WaitForSavedDeskUI();
     WaitForSavedDeskUI();
 
@@ -517,7 +507,7 @@ TEST_F(SavedDeskTest, LibraryButtonsVisibilityClamshell) {
                              /*trace_string=*/"one-desk-one-entry");
 
   // Click on the library button. It should expand the desks bar.
-  ClickOnView(GetZeroStateLibraryButtonForRoot(Shell::GetPrimaryRootWindow()));
+  LeftClickOn(GetZeroStateLibraryButtonForRoot(Shell::GetPrimaryRootWindow()));
   verify_button_visibilities(/*zero_state_shown=*/false,
                              /*expanded_state_shown=*/true,
                              /*trace_string=*/"expand-from-zero-state");
@@ -761,7 +751,7 @@ TEST_F(SavedDeskTest, OverviewItemsStayHiddenInSavedDeskGridOnDeskClose) {
   const auto* desks_bar_view = overview_grid->desks_bar_view();
   auto* mini_view =
       desks_bar_view->FindMiniViewForDesk(desks_controller->active_desk());
-  ClickOnView(mini_view->desk_action_view()->combine_desks_button());
+  LeftClickOn(mini_view->desk_action_view()->combine_desks_button());
 
   // Expect we stay in the saved desk grid.
   ASSERT_TRUE(overview_grid->IsShowingSavedDeskLibrary());
@@ -945,7 +935,7 @@ TEST_F(SavedDeskTest, SaveDeskButtonContainerAligned) {
   const DesksBarView* desks_bar_view = overview_grid->desks_bar_view();
   ASSERT_TRUE(desks_bar_view->IsZeroState());
   auto* new_desk_button = desks_bar_view->zero_state_new_desk_button();
-  ClickOnView(new_desk_button);
+  LeftClickOn(new_desk_button);
   ASSERT_FALSE(desks_bar_view->IsZeroState());
   verify_save_desk_widget_bounds();
 }
@@ -1138,7 +1128,7 @@ TEST_F(SavedDeskTest, SaveDeskAsTemplateButtonShowsSavedDeskGrid) {
                   ->IsSaveDeskAsTemplateButtonVisible());
 
   // Click on `save_desk_as_template_button`.
-  ClickOnView(save_desk_as_template_button);
+  LeftClickOn(save_desk_as_template_button);
   ASSERT_EQ(1ul, GetAllEntries().size());
 
   WaitForSavedDeskUI();
@@ -1208,7 +1198,7 @@ TEST_F(SavedDeskTest, DesksBarLoadsBeforeSaveDeskButtons) {
   // Click on the button to save a desk. We should transition into the desk
   // library and there should be no crash.
   auto* save_for_later_button = GetSaveDeskForLaterButtonForRoot(root_window);
-  ClickOnView(save_for_later_button);
+  LeftClickOn(save_for_later_button);
   WaitForSavedDeskUI();
   WaitForSavedDeskUI();
   EXPECT_TRUE(GetOverviewGridList()[0]->IsShowingSavedDeskLibrary());
@@ -1231,7 +1221,7 @@ TEST_F(SavedDeskTest, SaveTemplateNudgesNameView) {
   // We open overview and save template without clicking out of the newly
   // created template name view.
   ToggleOverview();
-  ClickOnView(
+  LeftClickOn(
       GetSaveDeskAsTemplateButtonForRoot(Shell::Get()->GetPrimaryRootWindow()));
   WaitForSavedDeskUI();
   ASSERT_EQ(3ul, GetAllEntries().size());
@@ -1260,7 +1250,7 @@ TEST_F(SavedDeskTest, LaunchTemplate) {
   ASSERT_EQ(1ul, GetAllEntries().size());
 
   // Click on the grid item to launch the template.
-  ClickOnView(GetItemViewFromSavedDeskGrid(/*grid_item_index=*/0));
+  LeftClickOn(GetItemViewFromSavedDeskGrid(/*grid_item_index=*/0));
 
   // Verify that we have created and activated a new desk.
   EXPECT_EQ(2ul, desks_controller->desks().size());
@@ -1276,7 +1266,7 @@ TEST_F(SavedDeskTest, LaunchTemplate) {
   OpenOverviewAndShowSavedDeskGrid();
   SavedDeskItemView* item_view = GetItemViewFromSavedDeskGrid(
       /*grid_item_index=*/0);
-  ClickOnView(SavedDeskItemViewTestApi(item_view).launch_button());
+  LeftClickOn(SavedDeskItemViewTestApi(item_view).launch_button());
 
   EXPECT_EQ(3ul, desks_controller->desks().size());
   EXPECT_EQ(2, desks_controller->GetActiveDeskIndex());
@@ -1297,7 +1287,7 @@ TEST_F(SavedDeskTest, LaunchTemplateNudgesNewDeskName) {
   OpenOverviewAndShowSavedDeskGrid();
   SavedDeskItemView* item_view = GetItemViewFromSavedDeskGrid(
       /*grid_item_index=*/0);
-  ClickOnView(SavedDeskItemViewTestApi(item_view).launch_button());
+  LeftClickOn(SavedDeskItemViewTestApi(item_view).launch_button());
 
   // Verify that we have created and activated a new desk.
   EXPECT_EQ(2ul, desks_controller->desks().size());
@@ -2040,7 +2030,7 @@ TEST_F(SavedDeskTest, DesksBarDoesNotReturnToZeroState) {
   // Close one of the desks. Test that we remain in expanded state.
   auto* mini_view = desks_bar_view->FindMiniViewForDesk(
       DesksController::Get()->active_desk());
-  ClickOnView(mini_view->desk_action_view()->close_all_button());
+  LeftClickOn(mini_view->desk_action_view()->close_all_button());
   auto* expanded_new_desk_button =
       desks_bar_view->expanded_state_new_desk_button();
   auto* expanded_templates_button =
@@ -2080,7 +2070,7 @@ TEST_F(SavedDeskTest, UnsupportedAppsDialog) {
   auto* save_desk_as_template_button = GetSaveDeskAsTemplateButtonForRoot(root);
   ASSERT_TRUE(
       GetOverviewGridForRoot(root)->IsSaveDeskAsTemplateButtonVisible());
-  ClickOnView(save_desk_as_template_button);
+  LeftClickOn(save_desk_as_template_button);
   EXPECT_TRUE(Shell::IsSystemModalWindowOpen());
 
   // Decline the dialog. We should stay in overview and no template should have
@@ -2096,7 +2086,7 @@ TEST_F(SavedDeskTest, UnsupportedAppsDialog) {
 
   // Click on the save template button again. The unsupported apps dialog should
   // show up.
-  ClickOnView(save_desk_as_template_button);
+  LeftClickOn(save_desk_as_template_button);
   EXPECT_TRUE(Shell::IsSystemModalWindowOpen());
 
   // Accept the dialog. The template should have been saved and the saved desk
@@ -2260,7 +2250,7 @@ TEST_F(SavedDeskTest, LaunchTemplateWithMinimizedOverviewWindow) {
 
   // Click on the grid item to launch the template. We should remain in overview
   // and there should be no crash.
-  ClickOnView(GetItemViewFromSavedDeskGrid(/*grid_item_index=*/0));
+  LeftClickOn(GetItemViewFromSavedDeskGrid(/*grid_item_index=*/0));
 
   EXPECT_TRUE(InOverviewSession());
 }
@@ -2285,7 +2275,7 @@ TEST_F(SavedDeskTest, LaunchTemplateAfterClosingActiveDesk) {
   RemoveDesk(desks_controller->active_desk());
 
   // Click on the grid item to launch the template. There should be no crash.
-  ClickOnView(GetItemViewFromSavedDeskGrid(/*grid_item_index=*/0));
+  LeftClickOn(GetItemViewFromSavedDeskGrid(/*grid_item_index=*/0));
 
   EXPECT_TRUE(InOverviewSession());
 }
@@ -2341,7 +2331,7 @@ TEST_F(SavedDeskTest, DesksTemplatesButtonFocusColor) {
 
   // Tests that when we are viewing the saved desk grid, the button border is
   // active.
-  ClickOnView(button);
+  LeftClickOn(button);
   EXPECT_EQ(active_color_id, *button->GetFocusColorIdForTesting());
 
   // Tests that when focused, the library button border has a focused color.
@@ -2404,7 +2394,7 @@ TEST_F(SavedDeskTest, TemplateNameBounds) {
 
   // Add a long name which will cause `name_view` to reach its max width. Test
   // that the distance from `item_view` is the same on both sides.
-  ClickOnView(name_view);
+  LeftClickOn(name_view);
   for (int i = 0; i < 200; ++i)
     SendKey(ui::VKEY_A);
   SendKey(ui::VKEY_RETURN);
@@ -2428,7 +2418,7 @@ TEST_F(SavedDeskTest, EditSavedDeskName) {
   SavedDeskNameView* name_view = GetItemViewFromSavedDeskGrid(0)->name_view();
 
   // Test that we can add characters to the name and press enter to save it.
-  ClickOnView(name_view);
+  LeftClickOn(name_view);
   SendKey(ui::VKEY_RIGHT);
   SendKey(ui::VKEY_A);
   SendKey(ui::VKEY_B);
@@ -2438,7 +2428,7 @@ TEST_F(SavedDeskTest, EditSavedDeskName) {
   EXPECT_EQ(base::UTF8ToUTF16(template_name) + u"ab", name_view->GetText());
 
   // Deleting characters and pressing enter saves the name.
-  ClickOnView(name_view);
+  LeftClickOn(name_view);
   SendKey(ui::VKEY_RIGHT);
   SendKey(ui::VKEY_BACK);
   SendKey(ui::VKEY_BACK);
@@ -2450,7 +2440,7 @@ TEST_F(SavedDeskTest, EditSavedDeskName) {
   // The `name_view` defaults to select all, so typing a letter while all
   // selected replaces the text. Also, clicking anywhere outside of the text
   // field will try to save it.
-  ClickOnView(name_view);
+  LeftClickOn(name_view);
   SendKey(ui::VKEY_A);
   auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseTo(gfx::Point(0, 0));
@@ -2462,16 +2452,16 @@ TEST_F(SavedDeskTest, EditSavedDeskName) {
 
   // Test that clicking on the grid item (outside of the textfield) will save
   // it.
-  ClickOnView(name_view);
+  LeftClickOn(name_view);
   SendKey(ui::VKEY_RIGHT);
   SendKey(ui::VKEY_B);
-  ClickOnView(GetItemViewFromSavedDeskGrid(0));
+  LeftClickOn(GetItemViewFromSavedDeskGrid(0));
   WaitForSavedDeskUI();
   name_view = GetItemViewFromSavedDeskGrid(0)->name_view();
   EXPECT_EQ(u"ab", name_view->GetText());
 
   // Pressing TAB also saves the name.
-  ClickOnView(name_view);
+  LeftClickOn(name_view);
   SendKey(ui::VKEY_RIGHT);
   SendKey(ui::VKEY_C);
   SendKey(ui::VKEY_TAB);
@@ -2500,7 +2490,7 @@ TEST_F(SavedDeskTest, SavedDeskNameChangeAborted) {
   SavedDeskNameView* name_view = GetItemViewFromSavedDeskGrid(0)->name_view();
 
   // Pressing enter with no changes to the text.
-  ClickOnView(name_view);
+  LeftClickOn(name_view);
   EXPECT_TRUE(overview_grid->IsSavedDeskNameBeingModified());
   EXPECT_TRUE(name_view->HasFocus());
   EXPECT_TRUE(name_view->HasSelection());
@@ -2510,7 +2500,7 @@ TEST_F(SavedDeskTest, SavedDeskNameChangeAborted) {
 
   // Pressing the escape key will revert the changes made to the name in the
   // textfield.
-  ClickOnView(name_view);
+  LeftClickOn(name_view);
   SendKey(ui::VKEY_A);
   SendKey(ui::VKEY_B);
   SendKey(ui::VKEY_C);
@@ -2518,7 +2508,7 @@ TEST_F(SavedDeskTest, SavedDeskNameChangeAborted) {
   EXPECT_EQ(base::UTF8ToUTF16(template_name), name_view->GetText());
 
   // Empty text fields will also revert back to the original name.
-  ClickOnView(name_view);
+  LeftClickOn(name_view);
   SendKey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
   SendKey(ui::VKEY_BACK);
   SendKey(ui::VKEY_RETURN);
@@ -2539,7 +2529,7 @@ TEST_F(SavedDeskTest, TemplateNameTestSpaces) {
   SavedDeskNameView* name_view = GetItemViewFromSavedDeskGrid(0)->name_view();
 
   // Pressing spacebar does not cause `name_view` to lose focus.
-  ClickOnView(name_view);
+  LeftClickOn(name_view);
   SendKey(ui::VKEY_RIGHT);
   SendKey(ui::VKEY_SPACE);
   EXPECT_TRUE(name_view->HasFocus());
@@ -2557,7 +2547,7 @@ TEST_F(SavedDeskTest, TemplateNameTestSpaces) {
   // A string consisting of just spaces is considered an empty string, and the
   // name change is reverted.
   EXPECT_FALSE(name_view->HasFocus());
-  ClickOnView(name_view);
+  LeftClickOn(name_view);
   EXPECT_TRUE(name_view->HasFocus());
   SendKey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
   SendKey(ui::VKEY_SPACE);
@@ -2668,7 +2658,7 @@ TEST_F(SavedDeskTest, UnFocusNameChangeOnClickingLibrary) {
       overview_grid->desks_bar_view()->mini_views().back()->desk_name_view();
   // Tests if the desk name view rename can work correctly.
   // Click the new desk name view which will be focused.
-  ClickOnView(desk_name_view);
+  LeftClickOn(desk_name_view);
   EXPECT_TRUE(overview_grid->IsDeskNameBeingModified());
   EXPECT_TRUE(desk_name_view->HasFocus());
   EXPECT_TRUE(desk_name_view->HasSelection());
@@ -2684,14 +2674,14 @@ TEST_F(SavedDeskTest, UnFocusNameChangeOnClickingLibrary) {
   // Tests if the saved desk name view rename can work correctly.
   // Click the desk name view at first, and then click the saved desk name view,
   // and finally click the Library button.
-  ClickOnView(desk_name_view);
+  LeftClickOn(desk_name_view);
   EXPECT_TRUE(overview_grid->IsDeskNameBeingModified());
   EXPECT_TRUE(desk_name_view->HasFocus());
   EXPECT_TRUE(desk_name_view->HasSelection());
 
   SavedDeskNameView* saved_name_view =
       GetItemViewFromSavedDeskGrid(0)->name_view();
-  ClickOnView(saved_name_view);
+  LeftClickOn(saved_name_view);
   EXPECT_TRUE(overview_grid->IsSavedDeskNameBeingModified());
   EXPECT_TRUE(saved_name_view->HasFocus());
   EXPECT_TRUE(saved_name_view->HasSelection());
@@ -2966,7 +2956,7 @@ TEST_F(SavedDeskTest, LaunchTemplateRecordsMetric) {
   ASSERT_EQ(1ul, GetAllEntries().size());
 
   // Click on the grid item to launch the template.
-  ClickOnView(GetItemViewFromSavedDeskGrid(/*grid_item_index=*/0));
+  LeftClickOn(GetItemViewFromSavedDeskGrid(/*grid_item_index=*/0));
 
   // Verify that we have created and activated a new desk.
   EXPECT_EQ(2ul, desks_controller->desks().size());
@@ -3005,7 +2995,7 @@ TEST_F(SavedDeskTest, SaveDeskAsTemplateRecordsMetric) {
                   ->IsSaveDeskAsTemplateButtonVisible());
 
   // Click on `save_desk_as_template_button`.
-  ClickOnView(save_desk_as_template_button);
+  LeftClickOn(save_desk_as_template_button);
   WaitForSavedDeskUI();
   ASSERT_EQ(1ul, GetAllEntries().size());
 
@@ -3045,7 +3035,7 @@ TEST_F(SavedDeskTest, UnsupportedAppDialogRecordsMetric) {
       GetSaveDeskAsTemplateButtonForRoot(root);
   ASSERT_TRUE(
       GetOverviewGridForRoot(root)->IsSaveDeskAsTemplateButtonVisible());
-  ClickOnView(save_template_button);
+  LeftClickOn(save_template_button);
   EXPECT_TRUE(Shell::IsSystemModalWindowOpen());
 
   // Now we assert that we've recorded the metric.
@@ -3136,7 +3126,7 @@ TEST_F(SavedDeskTest, UserTemplateCountRecordsMetricCorrectly) {
                     ->IsSaveDeskAsTemplateButtonVisible());
 
     // Click on `save_desk_as_template_button` button.
-    ClickOnView(save_desk_as_template_button);
+    LeftClickOn(save_desk_as_template_button);
     WaitForSavedDeskUI();
     ASSERT_EQ(num_templates + 1, GetAllEntries().size());
 
@@ -3175,7 +3165,7 @@ TEST_F(SavedDeskTest, ReplaceTemplateAndExitOverview) {
   // Ensure that we have the right item.
   EXPECT_EQ(name_view->GetText(), u"template_2");
 
-  ClickOnView(name_view);
+  LeftClickOn(name_view);
   EXPECT_TRUE(name_view->HasFocus());
 
   // Change the name of "template_2" to "template_1", which will trigger the
@@ -3354,7 +3344,7 @@ TEST_F(SavedDeskTest, WindowOpacityResetAfterLeavingOverview) {
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Launch a new desk.
-  ClickOnView(GetItemViewFromSavedDeskGrid(/*grid_item_index=*/0));
+  LeftClickOn(GetItemViewFromSavedDeskGrid(/*grid_item_index=*/0));
 
   views::Widget* library_widget =
       GetOverviewGridList()[0]->saved_desk_library_widget();
@@ -3488,7 +3478,7 @@ TEST_F(SavedDeskTest, SnapWindowTest) {
   OpenOverviewAndSaveTemplate(Shell::Get()->GetPrimaryRootWindow());
   ASSERT_EQ(1ul, GetAllEntries().size());
 
-  ClickOnView(GetItemViewFromSavedDeskGrid(/*grid_item_index=*/0));
+  LeftClickOn(GetItemViewFromSavedDeskGrid(/*grid_item_index=*/0));
 
   // Test that overview is still active and there is no crash.
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
@@ -3534,7 +3524,7 @@ TEST_F(SavedDeskTest, ClickOrTapToExitGridView) {
     EXPECT_FALSE(name_view->HasFocus());
 
     // The name view should receive focus after getting a mouse click.
-    ClickOnView(name_view);
+    LeftClickOn(name_view);
     EXPECT_TRUE(name_view->HasFocus());
 
     // The name view should release focus after getting a mouse click outside
@@ -3605,7 +3595,7 @@ TEST_F(SavedDeskTest, LongPressToCommitNameChanges) {
   // Tests that long pressing on template1 which is in edit mode should commit
   // changes and bring up the hover button.
   auto* event_generator = GetEventGenerator();
-  ClickOnView(name_view1);
+  LeftClickOn(name_view1);
   EXPECT_TRUE(overview_grid->IsSavedDeskNameBeingModified());
   EXPECT_TRUE(name_view1->HasFocus());
   EXPECT_TRUE(name_view1->HasSelection());
@@ -3616,7 +3606,7 @@ TEST_F(SavedDeskTest, LongPressToCommitNameChanges) {
 
   // Test that long pressing the library view outside of template2 which is in
   // edit mode should commit changes.
-  ClickOnView(name_view2);
+  LeftClickOn(name_view2);
   EXPECT_FALSE(hover_container_view1->GetVisible());
   EXPECT_TRUE(overview_grid->IsSavedDeskNameBeingModified());
   EXPECT_TRUE(name_view2->HasFocus());
@@ -3630,7 +3620,7 @@ TEST_F(SavedDeskTest, LongPressToCommitNameChanges) {
 
   // Tests that long pressing on template2 when template1 in edit mode should
   // commit changes for template1 and bring up the hover button for template2.
-  ClickOnView(name_view1);
+  LeftClickOn(name_view1);
   EXPECT_TRUE(overview_grid->IsSavedDeskNameBeingModified());
   EXPECT_TRUE(name_view1->HasFocus());
   EXPECT_TRUE(name_view1->HasSelection());
@@ -3696,7 +3686,7 @@ TEST_F(SavedDeskTest, VisibleOnAllDesksWindowShownProperly) {
   SavedDeskItemView* template_item =
       GetItemViewFromSavedDeskGrid(/*grid_item_index=*/0);
   DCHECK(template_item);
-  ClickOnView(template_item);
+  LeftClickOn(template_item);
   ASSERT_EQ(2, controller->GetNumberOfDesks());
 
   // The visible on all desks window belongs to the active desk, and has an
@@ -3721,7 +3711,7 @@ TEST_F(SavedDeskTest, NoDuplicateDisplayedName) {
                   ->IsSaveDeskAsTemplateButtonVisible());
 
   // Click on `save_desk_as_template_button`.
-  ClickOnView(save_desk_as_template_button);
+  LeftClickOn(save_desk_as_template_button);
   ASSERT_EQ(1ul, GetAllEntries().size());
   WaitForSavedDeskUI();
   ASSERT_EQ(u"Desk 1", DesksController::Get()->active_desk()->name());
@@ -3742,7 +3732,7 @@ TEST_F(SavedDeskTest, NoDuplicateDisplayedName) {
 
   // Click on `save_desk_as_template_button`. At this point the template
   // name matches the desk name.
-  ClickOnView(save_desk_as_template_button);
+  LeftClickOn(save_desk_as_template_button);
   ASSERT_EQ(2ul, GetAllEntries().size());
   WaitForSavedDeskUI();
   // Newly created template name_view.
@@ -3823,7 +3813,7 @@ TEST_F(SavedDeskTest, SelectAllAfterSavingDuplicateTemplate) {
   // Click on `save_desk_as_template_button` button.
   SavedDeskSaveDeskButton* save_desk_as_template_button =
       GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
-  ClickOnView(save_desk_as_template_button);
+  LeftClickOn(save_desk_as_template_button);
   WaitForSavedDeskUI();
 
   // Expect that the entire text of the new template is selected.
@@ -3858,7 +3848,7 @@ TEST_F(SavedDeskTest, NoSortBeforeNameConfirmed) {
 
   // Click on `save_desk_as_template_button`. The newly saved template
   // should be in the front, even though its name is not in alphabetical order.
-  ClickOnView(save_desk_as_template_button);
+  LeftClickOn(save_desk_as_template_button);
   ASSERT_EQ(2ul, GetAllEntries().size());
   WaitForSavedDeskUI();
 
@@ -3890,7 +3880,7 @@ TEST_F(SavedDeskTest, NudgeOnTheCorrectDisplay) {
   // Click on `save_desk_as_template_button` button on the primary display.
   SavedDeskSaveDeskButton* save_desk_as_template_button =
       GetSaveDeskAsTemplateButtonForRoot(Shell::GetAllRootWindows()[0]);
-  ClickOnView(save_desk_as_template_button);
+  LeftClickOn(save_desk_as_template_button);
   WaitForSavedDeskUI();
 
   // The desks templates widget associated with the primary display should be
@@ -4107,7 +4097,7 @@ TEST_F(SavedDeskTest, FocusedDeskItemFullyVisible) {
   ToggleOverview();
   auto* save_desk_button =
       GetSaveDeskForLaterButtonForRoot(Shell::Get()->GetPrimaryRootWindow());
-  ClickOnView(save_desk_button);
+  LeftClickOn(save_desk_button);
   WaitForSavedDeskUI();
   WaitForSavedDeskUI();
 
@@ -4159,7 +4149,7 @@ TEST_F(SavedDeskTest,
 
   // Close the active desk and check that the save desk button updates
   // correctly.
-  ClickOnView(mini_view_to_be_removed->desk_action_view()->close_all_button());
+  LeftClickOn(mini_view_to_be_removed->desk_action_view()->close_all_button());
   EXPECT_FALSE(overview_grid->IsSaveDeskButtonContainerVisible());
 
   // Try undoing desk close to see if the save desk button returns to the right
@@ -4167,7 +4157,7 @@ TEST_F(SavedDeskTest,
   views::Button* undo_button =
       DesksTestApi::GetCloseAllUndoToastDismissButton();
   ASSERT_TRUE(undo_button);
-  ClickOnView(undo_button);
+  LeftClickOn(undo_button);
   EXPECT_TRUE(overview_grid->IsSaveDeskButtonContainerVisible());
 }
 
@@ -4333,7 +4323,7 @@ TEST_F(DeskSaveAndRecallTest, RecallSavedDesk) {
   SavedDeskItemView* template_item =
       GetItemViewFromSavedDeskGrid(/*grid_item_index=*/0);
   ASSERT_TRUE(template_item);
-  ClickOnView(template_item);
+  LeftClickOn(template_item);
 
   // Verify that a new desk has been created and that it has the name of the
   // saved desk.
@@ -4392,7 +4382,7 @@ TEST_F(DeskSaveAndRecallTest, SaveDeskWithDuplicateName) {
 
     // Open overview and save the desk.
     ToggleOverview();
-    ClickOnView(
+    LeftClickOn(
         GetSaveDeskForLaterButtonForRoot(Shell::Get()->GetPrimaryRootWindow()));
 
     WaitForSavedDeskUI();
@@ -4503,7 +4493,7 @@ TEST_F(DeskSaveAndRecallTest, NewDeskButtonDisabledWhenRecallingToMaxDesks) {
   // again.
   auto* root = Shell::GetPrimaryRootWindow();
   ASSERT_TRUE(GetOverviewGridForRoot(root)->IsSaveDeskForLaterButtonVisible());
-  ClickOnView(GetSaveDeskForLaterButtonForRoot(root));
+  LeftClickOn(GetSaveDeskForLaterButtonForRoot(root));
   WaitForSavedDeskUI();
   WaitForSavedDeskUI();
   ASSERT_TRUE(controller->CanCreateDesks());
@@ -4516,7 +4506,7 @@ TEST_F(DeskSaveAndRecallTest, NewDeskButtonDisabledWhenRecallingToMaxDesks) {
   SavedDeskItemView* template_item =
       GetItemViewFromSavedDeskGrid(/*grid_item_index=*/0);
   ASSERT_TRUE(template_item);
-  ClickOnView(template_item);
+  LeftClickOn(template_item);
   ASSERT_FALSE(controller->CanCreateDesks());
   EXPECT_FALSE(new_desk_button->GetEnabled());
 }
@@ -4550,7 +4540,7 @@ TEST_F(SavedDeskTest, SpamClickSaveDeskButtons) {
   SavedDeskSaveDeskButton* save_template_button =
       GetSaveDeskAsTemplateButtonForRoot(root);
   ASSERT_TRUE(save_template_button);
-  SpamClickOnView(save_template_button);
+  SpamLeftClickOn(save_template_button);
   WaitForSavedDeskUI();
   WaitForSavedDeskLibrary();
 
@@ -4572,7 +4562,7 @@ TEST_F(SavedDeskTest, SpamClickSaveDeskButtons) {
   SavedDeskSaveDeskButton* save_desk_button =
       GetSaveDeskForLaterButtonForRoot(root);
   ASSERT_TRUE(save_desk_button);
-  SpamClickOnView(save_desk_button);
+  SpamLeftClickOn(save_desk_button);
   // Wait an extra time like in `OpenOverviewAndSaveDeskForLater` to wait for
   // the WindowCloseObserver watcher that handles blocking dialogs.
   WaitForSavedDeskUI();

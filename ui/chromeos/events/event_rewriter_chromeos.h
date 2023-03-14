@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "ui/chromeos/events/keyboard_capability.h"
+#include "ui/chromeos/events/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/event.h"
 #include "ui/events/event_rewriter.h"
@@ -85,6 +86,14 @@ class EventRewriterChromeOS : public EventRewriter {
     // always return false if |should_supress| is true.
     virtual void SuppressModifierKeyRewrites(bool should_supress) = 0;
 
+    // Returns whether or not Meta + Top Row Keys should be rewritten. Should
+    // return correctly with respect to the values set in
+    // |SuppressMetaTopRowKeyRewrites|.
+    virtual bool RewriteMetaTopRowKeyComboEvents() const = 0;
+
+    // Set whether or not Meta + Top Row Keys key events should be rewritten.
+    virtual void SuppressMetaTopRowKeyComboRewrites(bool should_suppress) = 0;
+
     // Returns true if get keyboard remapped preference value successfully and
     // the value will be stored in |value|.
     virtual bool GetKeyboardRemappedPrefValue(const std::string& pref_name,
@@ -94,7 +103,7 @@ class EventRewriterChromeOS : public EventRewriter {
     // function keys instead of having them rewritten into back, forward,
     // brightness, volume, etc. or if the user has specified that they desire
     // top-row keys to be treated as function keys globally.
-    virtual bool TopRowKeysAreFunctionKeys() const = 0;
+    virtual bool TopRowKeysAreFunctionKeys(int device_id) const = 0;
 
     // Returns true if the |key_code| and |flags| have been resgistered for
     // extensions and EventRewriterChromeOS will not rewrite the event.
@@ -115,6 +124,24 @@ class EventRewriterChromeOS : public EventRewriter {
     // is only sent once per user session, and this function returns true if
     // the notification was shown.
     virtual bool NotifyDeprecatedSixPackKeyRewrite(KeyboardCode key_code) = 0;
+  };
+
+  // Enum used to record the usage of the modifier keys on all devices. Do not
+  // edit the ordering of the values.
+  enum class ModifierKeyUsageMetric {
+    kMetaLeft,
+    kMetaRight,
+    kControlLeft,
+    kControlRight,
+    kAltLeft,
+    kAltRight,
+    kShiftLeft,
+    kShiftRight,
+    kCapsLock,
+    kBackspace,
+    kEscape,
+    kAssistant,
+    kMaxValue = kAssistant
   };
 
   // Does not take ownership of the |sticky_keys_controller|, which may also be
@@ -219,7 +246,7 @@ class EventRewriterChromeOS : public EventRewriter {
   // By default the top row (F1-F12) keys are system keys for back, forward,
   // brightness, volume, etc. However, windows for v2 apps can optionally
   // request raw function keys for these keys.
-  bool ForceTopRowAsFunctionKeys() const;
+  bool ForceTopRowAsFunctionKeys(int device_id) const;
 
   // Adds a device to |device_id_to_info_| only if no failure occurs in
   // identifying the keyboard, and returns the device type of this keyboard
@@ -252,6 +279,11 @@ class EventRewriterChromeOS : public EventRewriter {
                                int flags,
                                int* matched_mask,
                                bool* matched_alt_deprecation) const;
+
+  // Records when modifier keys are pressed to metrics for tracking usage of
+  // various metrics before and after remapping.
+  void RecordModifierKeyPressedBeforeRemapping(DomCode dom_code);
+  void RecordModifierKeyPressedAfterRemapping(DomCode dom_code);
 
   // Rewrite a particular kind of event.
   EventRewriteStatus RewriteKeyEvent(const KeyEvent& key_event,

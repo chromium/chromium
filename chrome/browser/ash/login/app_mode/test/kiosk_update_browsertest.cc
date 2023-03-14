@@ -912,9 +912,7 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest, UpdateMultiAppKioskAddOneApp) {
   EXPECT_TRUE(IsAppInstalled(kTestSecondaryApp3, "1.0.0"));
 }
 
-// TODO(crbug.com/1415928): Flaky.
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest,
-                       DISABLED_LaunchKioskAppWithSecondaryExtension) {
+IN_PROC_BROWSER_TEST_F(KioskUpdateTest, LaunchKioskAppWithSecondaryExtension) {
   base::AddFeatureIdTagToTestResult(
       "screenplay-22a4b826-851a-4065-a32b-273a0e261bf3");
 

@@ -4,12 +4,12 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyBoolean;
-import static org.mockito.Mockito.anyInt;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -98,7 +98,7 @@ public class AutocompleteMediatorUnitTest {
     private @Mock TabModel mTabModel;
     private @Mock TabWindowManager mTabManager;
     private @Mock WindowAndroid mMockWindowAndroid;
-    private @Mock OmniboxPedalDelegate mPedalDelegate;
+    private @Mock ActionChipsDelegate mActionChipsDelegate;
     private @Mock LargeIconBridge.Natives mLargeIconBridgeJniMock;
 
     private PropertyModel mListModel;
@@ -126,7 +126,7 @@ public class AutocompleteMediatorUnitTest {
                     mAutocompleteDelegate, mTextStateProvider, mListModel,
                     new Handler(), () -> mModalDialogManager, null, null,
                     mLocationBarDataProvider, tab -> {}, mTabWindowManagerSupplier, url -> false,
-                    new DummyJankTracker(), mPedalDelegate);
+                    new DummyJankTracker(), mActionChipsDelegate);
             mMediator.setAutocompleteProfile(mProfile);
         });
         // clang-format on

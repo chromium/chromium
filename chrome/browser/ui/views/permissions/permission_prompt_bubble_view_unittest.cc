@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_view.h"
+
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
 #include "chrome/grit/generated_resources.h"
@@ -22,15 +24,14 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
   explicit TestDelegate(
       const GURL& origin,
       const std::vector<permissions::RequestType> request_types) {
-    std::transform(
-        request_types.begin(), request_types.end(),
-        std::back_inserter(requests_), [&](auto& request_type) {
+    base::ranges::transform(
+        request_types, std::back_inserter(requests_), [&](auto& request_type) {
           return std::make_unique<permissions::MockPermissionRequest>(
               origin, request_type);
         });
-    std::transform(requests_.begin(), requests_.end(),
-                   std::back_inserter(raw_requests_),
-                   [](auto& req) { return req.get(); });
+    base::ranges::transform(
+        requests_, std::back_inserter(raw_requests_),
+        &std::unique_ptr<permissions::PermissionRequest>::get);
   }
 
   const std::vector<permissions::PermissionRequest*>& Requests() override {
@@ -72,6 +73,8 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
   base::WeakPtr<permissions::PermissionPrompt::Delegate> GetWeakPtr() override {
     return weak_factory_.GetWeakPtr();
   }
+
+  content::WebContents* GetAssociatedWebContents() override { return nullptr; }
 
  private:
   std::vector<std::unique_ptr<permissions::PermissionRequest>> requests_;

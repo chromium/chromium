@@ -18,7 +18,6 @@ import("//chrome/browser/buildflags.gni")
 import("//chrome/chrome_paks.gni")
 import("//chrome/common/features.gni")
 import("//chrome/process_version_rc_template.gni")
-import("//components/gwp_asan/buildflags/buildflags.gni")
 import("//components/nacl/features.gni")
 import("//components/optimization_guide/features.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -196,17 +195,18 @@ if (!is_android && !is_mac) {
         "//base",
         "//build:branding_buildflags",
         "//chrome/app:chrome_exe_main_exports",
+        "//chrome/app:exit_code_watcher",
         "//chrome/app/version_assembly:chrome_exe_manifest",
         "//chrome/browser:active_use_util",
         "//chrome/browser:chrome_process_finder",
         "//chrome/browser/policy:path_parser",
         "//chrome/chrome_elf",
         "//chrome/common:constants",
+        "//chrome/common/win:delay_load_failure_support",
         "//chrome/install_static:install_static_util",
         "//chrome/install_static:secondary_module",
         "//chrome/installer/util:constants",
         "//chrome/installer/util:did_run_support",
-        "//components/browser_watcher:browser_watcher_client",
         "//components/crash/core/app",
         "//components/crash/core/app:run_as_crashpad_handler",
         "//components/crash/core/common",
@@ -411,8 +411,8 @@ if (is_win) {
       "//chrome/common/profiler",
       "//chrome/install_static:install_static_util",
       "//chrome/install_static:secondary_module",
-      "//components/browser_watcher:stability_client",
       "//components/crash/core/app",
+      "//components/memory_system",
       "//components/policy:generated",
       "//content/public/app",
       "//crypto",
@@ -1137,6 +1137,7 @@ if (is_win) {
       "//chrome/common:buildflags",
       "//chrome/common/profiler",
       "//components/crash/core/app",
+      "//components/memory_system",
       "//components/policy:generated",
       "//content/public/app",
       "//headless:headless_shell_lib",
@@ -1403,9 +1404,8 @@ group("dependencies") {
     "//chrome/renderer",
     "//chrome/utility",
     "//components/about_ui",
-    "//components/gwp_asan/buildflags",
-    "//components/heap_profiling/in_process",
-    "//components/services/heap_profiling",
+    "//components/devtools/devtools_pipe",
+    "//components/memory_system",
     "//components/startup_metric_utils/browser",
     "//components/sync",
     "//components/upload_list:upload_list",
@@ -1423,10 +1423,6 @@ group("dependencies") {
 
   if (enable_printing) {
     public_deps += [ "//printing" ]
-  }
-
-  if (enable_gwp_asan) {
-    public_deps += [ "//components/gwp_asan/client" ]
   }
 
   if (enable_nacl) {
@@ -1586,21 +1582,18 @@ if (!is_android) {
   }
 }
 
-repack("unit_tests_pak") {
-  testonly = true
-  sources = [ "$root_gen_dir/chrome/chrome_test_resources.pak" ]
-  output = "$root_out_dir/unit_tests.pak"
-  deps = [ "//chrome/test/data:chrome_test_resources" ]
-}
-
-repack("browser_tests_pak") {
-  testonly = true
-  sources = [ "$root_gen_dir/chrome/webui_test_resources.pak" ]
-  output = "$root_out_dir/browser_tests.pak"
-  deps = [ "//chrome/test/data:webui_test_resources" ]
-  if (!is_android) {
-    sources += [ "$root_gen_dir/chrome/webui_generated_test_resources.pak" ]
-    deps += [ "//chrome/test/data/webui:resources" ]
+if (!is_android) {
+  repack("browser_tests_pak") {
+    testonly = true
+    sources = [
+      "$root_gen_dir/chrome/webui_generated_test_resources.pak",
+      "$root_gen_dir/chrome/webui_test_resources.pak",
+    ]
+    output = "$root_out_dir/browser_tests.pak"
+    deps = [
+      "//chrome/test/data:webui_test_resources",
+      "//chrome/test/data/webui:resources",
+    ]
   }
 }
 
@@ -1628,10 +1621,6 @@ if (is_android) {
       "browser/download/download_dialog_types.h",
       "browser/download/download_prompt_status.h",
     ]
-  }
-
-  java_cpp_enum("supervised_user_url_filter_enum_javagen") {
-    sources = [ "browser/supervised_user/supervised_user_url_filter.h" ]
   }
 
   java_cpp_enum("context_menu_image_format_enum_javagen") {
@@ -1667,13 +1656,10 @@ if (is_android) {
       "//chrome/common/profiler",
       "//chrome/gpu",
       "//chrome/renderer",
-      "//components/gwp_asan/buildflags",
-      "//components/heap_profiling/in_process",
       "//components/minidump_uploader",
       "//components/safe_browsing:buildflags",
       "//components/safe_browsing/android:safe_browsing_api_handler",
       "//components/safe_browsing/android:safe_browsing_mobile",
-      "//components/services/heap_profiling",
       "//content/public/app",
     ]
 
@@ -1700,10 +1686,6 @@ if (is_android) {
 
     if (enable_vr) {
       deps += [ "//third_party/gvr-android-sdk:gvr_shim" ]
-    }
-
-    if (enable_gwp_asan) {
-      deps += [ "//components/gwp_asan/client" ]
     }
   }
 }

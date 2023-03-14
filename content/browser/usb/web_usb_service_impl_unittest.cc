@@ -20,6 +20,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/mock_web_contents_observer.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_web_contents_factory.h"
@@ -28,6 +29,8 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/device/public/cpp/test/fake_usb_device_info.h"
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
@@ -245,6 +248,12 @@ class WebUsbServiceImplBaseTest : public testing::Test {
 
   MockUsbDelegate& delegate() { return test_client_.delegate(); }
 
+  TestWebContentsFactory& web_contents_factory() {
+    return web_contents_factory_;
+  }
+
+  TestBrowserContext& browser_context() { return browser_context_; }
+
  private:
   BrowserTaskEnvironment task_environment_;
   mojo::Remote<blink::mojom::WebUsbService> service_;
@@ -373,6 +382,73 @@ TEST_F(WebUsbServiceImplFrameTest, OpenAndNavigateCrossOrigin) {
   contents()->NavigateAndCommit(GURL(kCrossOriginTestUrl));
   loop.Run();
   CheckIsConnected(false);
+}
+
+TEST_F(WebUsbServiceImplFrameTest, RejectOpaqueOrigin) {
+  // Create a fake dispatch context to trigger a bad message in.
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  auto response_headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>(std::string());
+  response_headers->SetHeader("Content-Security-Policy",
+                              "sandbox allow-scripts");
+  auto* web_contents = static_cast<TestWebContents*>(
+      web_contents_factory().CreateWebContents(&browser_context()));
+  auto navigation_simulator = NavigationSimulator::CreateRendererInitiated(
+      GURL("https://opaque.com"), web_contents->GetPrimaryMainFrame());
+  navigation_simulator->SetResponseHeaders(response_headers);
+  navigation_simulator->Start();
+  navigation_simulator->Commit();
+  EXPECT_TRUE(
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().opaque());
+
+  mojo::Remote<blink::mojom::WebUsbService> service;
+  web_contents->GetPrimaryMainFrame()->CreateWebUsbService(
+      service.BindNewPipeAndPassReceiver());
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "WebUSB is not allowed when the top-level document has an "
+            "opaque origin.");
+}
+
+TEST_F(WebUsbServiceImplFrameTest, RejectOpaqueOriginEmbeddedFrame) {
+  // Create a fake dispatch context to trigger a bad message in.
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+  auto* web_contents = static_cast<TestWebContents*>(
+      web_contents_factory().CreateWebContents(&browser_context()));
+
+  auto response_headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>(std::string());
+  response_headers->SetHeader("Content-Security-Policy",
+                              "sandbox allow-scripts");
+  auto navigation_simulator = NavigationSimulator::CreateRendererInitiated(
+      GURL("https://opaque.com"), web_contents->GetPrimaryMainFrame());
+  navigation_simulator->SetResponseHeaders(response_headers);
+  navigation_simulator->Start();
+  navigation_simulator->Commit();
+  EXPECT_TRUE(
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().opaque());
+
+  const GURL kEmbeddedUrl("https://non-opaque");
+  RenderFrameHost* embedded_rfh =
+      RenderFrameHostTester::For(web_contents->GetPrimaryMainFrame())
+          ->AppendChildWithPolicy(
+              "embedded_frame",
+              {{blink::mojom::PermissionsPolicyFeature::kUsb,
+                std::vector{blink::OriginWithPossibleWildcards(
+                    url::Origin::Create(kEmbeddedUrl),
+                    /*has_subdomain_wildcard=*/false)},
+                /*matches_all_origins=*/false, /*matches_opaque_src=*/true}});
+  embedded_rfh = NavigationSimulator::NavigateAndCommitFromDocument(
+      kEmbeddedUrl, embedded_rfh);
+
+  mojo::Remote<blink::mojom::WebUsbService> service;
+  static_cast<TestRenderFrameHost*>(embedded_rfh)
+      ->CreateWebUsbService(service.BindNewPipeAndPassReceiver());
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "WebUSB is not allowed when the top-level document has an "
+            "opaque origin.");
 }
 
 class WebUsbServiceImplProtectedInterfaceTest

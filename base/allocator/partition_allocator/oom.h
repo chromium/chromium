@@ -49,8 +49,8 @@ namespace internal {
 // The crash is generated in a PA_NOINLINE function so that we can classify the
 // crash as an OOM solely by analyzing the stack trace. It is tagged as
 // PA_NOT_TAIL_CALLED to ensure that its parent function stays on the stack.
-[[noreturn]] PA_COMPONENT_EXPORT(PARTITION_ALLOC) void PA_NOT_TAIL_CALLED
-    OnNoMemory(size_t size);
+[[noreturn]] PA_NOT_TAIL_CALLED PA_COMPONENT_EXPORT(
+    PARTITION_ALLOC) void OnNoMemory(size_t size);
 
 // OOM_CRASH(size) - Specialization of IMMEDIATE_CRASH which will raise a custom
 // exception on Windows to signal this is OOM and not a normal assert.

@@ -113,13 +113,25 @@ class ProfileHelper {
   // Returns true if |profile| is the lockscreen profile.
   static bool IsLockScreenProfile(const Profile* profile);
 
+  // DEPRECATED. Please use
+  // user_manager::UserManager::Get()->IsOwnerUser(
+  //     BrowserContextHelper::Get()->GetUserByBrowserContext(profile))
+  // instead.
   // Returns true when |profile| corresponds to owner's profile.
   static bool IsOwnerProfile(const Profile* profile);
 
+  // DEPRECATED. Please use
+  // user_manager::UserManager::Get()->IsPrimaryUser(
+  //     BrowserContextHelper::Get()->GetUserByBrowserContext(profile))
+  // instead.
   // Returns true when |profile| corresponds to the primary user profile
   // of the current session.
   static bool IsPrimaryProfile(const Profile* profile);
 
+  // DEPRECATED. Please use
+  // user_manager::UserManager::Get()->IsEphemeralUser(
+  //     BrowserContextHelper::Get()->GetUserByBrowserContext(profile))
+  // instead.
   // Returns true when |profile| is for an ephemeral user.
   static bool IsEphemeralUserProfile(const Profile* profile);
 
@@ -157,9 +169,6 @@ class ProfileHelper {
   // primary user.
   static void SetAlwaysReturnPrimaryUserForTesting(bool value);
 
-  // Flushes all files of |profile|.
-  virtual void FlushProfile(Profile* profile) = 0;
-
   // DEPRECATED: please set up UserManager.
   // Associates |user| with profile with the same user_id,
   // for GetUserByProfile() testing.
@@ -181,7 +190,6 @@ class ProfileHelper {
   // TODO(nkostylev): Create a test API class that will be the only one allowed
   // to access private test methods.
   friend class FakeChromeUserManager;
-  friend class MockUserManager;
   friend class ProfileHelperTest;
   friend class ::IndependentOTRProfileManagerTest;
 

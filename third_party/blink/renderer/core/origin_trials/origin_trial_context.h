@@ -9,8 +9,11 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/origin_trials/trial_token.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
+#include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom-shared.h"
+#include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state_controller.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
@@ -250,6 +253,14 @@ class CORE_EXPORT OriginTrialContext final
   const SecurityOrigin* GetSecurityOrigin();
   bool IsSecureContext();
   OriginInfo GetCurrentOriginInfo();
+
+  // Send the token to the browser process to update persistent origin trial
+  // tokens. Will check if |parsed_token| is persistable before sending to the
+  // browser, and |parsed_token| should be the parsed version of |raw_token|.
+  void SendTokenToBrowser(const OriginInfo& origin_info,
+                          const TrialToken& parsed_token,
+                          const String& raw_token,
+                          const Vector<OriginInfo>* script_origin_info);
 
   HashSet<OriginTrialFeature> enabled_features_;
   HashSet<OriginTrialFeature> installed_features_;

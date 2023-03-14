@@ -8,6 +8,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationManagerCompat;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -164,7 +165,8 @@ public class NotificationPermissionController implements UnownedUserData {
      * @return True if any UI was shown (either rationale dialog or OS prompt), false otherwise.
      */
     public boolean requestPermissionIfNeeded(boolean contextual) {
-        if (!BuildInfo.isAtLeastT() || !BuildInfo.targetsAtLeastT()) {
+        if (!BuildInfo.isAtLeastT() || !BuildInfo.targetsAtLeastT()
+                || ApiCompatibilityUtils.isDemoUser()) {
             return false;
         }
 

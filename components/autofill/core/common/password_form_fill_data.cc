@@ -41,9 +41,9 @@ PasswordFormFillData MaybeClearPasswordValues(
   if (!data.wait_for_username && !is_fallback)
     return data;
   PasswordFormFillData result(data);
-  result.preferred_login.password.clear();
+  result.preferred_login.password_value.clear();
   for (auto& credentials : result.additional_logins)
-    credentials.password.clear();
+    credentials.password_value.clear();
   return result;
 }
 

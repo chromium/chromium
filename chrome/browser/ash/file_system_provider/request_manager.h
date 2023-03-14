@@ -67,14 +67,14 @@ class RequestManager {
     // Execute(). It may be called more than once, until |has_more| is set to
     // false.
     virtual void OnSuccess(int request_id,
-                           std::unique_ptr<RequestValue> result,
+                           const RequestValue& result,
                            bool has_more) = 0;
 
     // Error callback invoked by the providing extension in response to
     // Execute(). It can be called at most once. It can be also called if the
     // request is aborted due to a timeout.
     virtual void OnError(int request_id,
-                         std::unique_ptr<RequestValue> result,
+                         const RequestValue& result,
                          base::File::Error error) = 0;
 
     // Called when the request is aborted due to timeout, before |OnError| is
@@ -129,14 +129,14 @@ class RequestManager {
   // returns base::File::FILE_OK. Otherwise returns an error code. |response|
   // must not be NULL.
   base::File::Error FulfillRequest(int request_id,
-                                   std::unique_ptr<RequestValue> response,
+                                   const RequestValue& response,
                                    bool has_more);
 
   // Handles error response for the |request_id|. If handling the error
   // succeeds, theen returns base::File::FILE_OK. Otherwise returns an error
   // code. Always disposes the request. |response| must not be NULL.
   base::File::Error RejectRequest(int request_id,
-                                  std::unique_ptr<RequestValue> response,
+                                  const RequestValue& response,
                                   base::File::Error error);
 
   // Sets a custom timeout for tests. The new timeout value will be applied to

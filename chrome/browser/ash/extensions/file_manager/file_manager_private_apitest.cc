@@ -42,8 +42,8 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
-#include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
+#include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/mock_disk_mount_manager.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
@@ -649,7 +649,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, CrostiniIncognito) {
 
   extensions::api_test_utils::SendResponseHelper response_helper(
       function.get());
-  function->RunWithValidation()->Execute();
+  function->RunWithValidation().Execute();
   response_helper.WaitForResponse();
   EXPECT_TRUE(response_helper.GetResponse());
 }
@@ -848,14 +848,21 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpMetadata) {
   ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
   EXPECT_CALL(*mock_rules_manager_, IsFilesPolicyEnabled).Times(1);
 
-  AddLocalFileSystem(browser()->profile(), temp_dir_.GetPath());
+  base::FilePath my_files_dir_ =
+      file_manager::util::GetMyFilesFolderForProfile(browser()->profile());
+  {
+    base::ScopedAllowBlockingForTesting allow_io;
+
+    ASSERT_TRUE(base::CreateDirectory(my_files_dir_));
+  }
+  AddLocalFileSystem(browser()->profile(), my_files_dir_);
 
   const base::FilePath blocked_file_path =
-      temp_dir_.GetPath().Append("blocked_file.txt");
+      my_files_dir_.Append("blocked_file.txt");
   const base::FilePath unrestricted_file_path =
-      temp_dir_.GetPath().Append("unrestricted_file.txt");
+      my_files_dir_.Append("unrestricted_file.txt");
   const base::FilePath untracked_file_path =
-      temp_dir_.GetPath().Append("untracked_file.txt");
+      my_files_dir_.Append("untracked_file.txt");
 
   {
     base::ScopedAllowBlockingForTesting allow_io;

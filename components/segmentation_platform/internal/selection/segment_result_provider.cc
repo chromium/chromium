@@ -16,6 +16,7 @@
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/scheduler/execution_service.h"
+#include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
@@ -73,7 +74,7 @@ class SegmentResultProviderImpl : public SegmentResultProvider {
  private:
   struct RequestState {
     std::unordered_map<DefaultModelManager::SegmentSource,
-                       raw_ptr<ModelProvider>>
+                       raw_ptr<ModelProvider, DanglingUntriaged>>
         model_providers;
     DefaultModelManager::SegmentInfoList available_segments;
     std::unique_ptr<GetResultOptions> options;
@@ -83,8 +84,13 @@ class SegmentResultProviderImpl : public SegmentResultProvider {
       std::unique_ptr<GetResultOptions> options,
       DefaultModelManager::SegmentInfoList available_segments);
 
-  void OnGotDatabaseModelScore(std::unique_ptr<RequestState> request_state,
-                               std::unique_ptr<SegmentResult> db_result);
+  // `fallback_source_to_execute` tells us whether to execute server or default
+  // model next. If database doesn't have score then database model is executed,
+  // and if its not present or fails, then default model is executed.
+  void OnGotDatabaseModelScore(
+      DefaultModelManager::SegmentSource fallback_source_to_execute,
+      std::unique_ptr<RequestState> request_state,
+      std::unique_ptr<SegmentResult> db_result);
 
   void TryGetScoreFromDefaultModel(
       std::unique_ptr<RequestState> request_state,
@@ -107,6 +113,12 @@ class SegmentResultProviderImpl : public SegmentResultProvider {
 
   void PostResultCallback(std::unique_ptr<RequestState> request_state,
                           std::unique_ptr<SegmentResult> result);
+
+  void RunCallback(SegmentId segment_id,
+                   std::unique_ptr<RequestState> request_state,
+                   std::unique_ptr<SegmentResult> segment_result,
+                   ResultCallbackWithState callback,
+                   bool success);
 
   const raw_ptr<SegmentInfoDatabase> segment_database_;
   const raw_ptr<SignalStorageConfig> signal_storage_config_;
@@ -144,10 +156,20 @@ void SegmentResultProviderImpl::OnGetSegmentInfo(
       default_model_manager_
           ? default_model_manager_->GetDefaultProvider(segment_id)
           : nullptr;
-
-  auto db_score_callback =
-      base::BindOnce(&SegmentResultProviderImpl::OnGotDatabaseModelScore,
-                     weak_ptr_factory_.GetWeakPtr());
+  // If `ignore_db_scores` is true than the server model will be executed now,
+  // if that fails to give result, fallback to default model, hence default
+  // model is the `fallback_source_to_execute` if `ignore_db_score` is true. If
+  // `ignore_db_scores` is false than the score from database would be read, if
+  // that fails to read score from database, fallback to running server model,
+  // hence running server model is the `fallback_source_to_execute` if
+  // `ignore_db_score` is false.
+  DefaultModelManager::SegmentSource fallback_source_to_execute =
+      request_state->options->ignore_db_scores
+          ? DefaultModelManager::SegmentSource::DEFAULT_MODEL
+          : DefaultModelManager::SegmentSource::DATABASE;
+  auto db_score_callback = base::BindOnce(
+      &SegmentResultProviderImpl::OnGotDatabaseModelScore,
+      weak_ptr_factory_.GetWeakPtr(), fallback_source_to_execute);
 
   if (request_state->options->ignore_db_scores) {
     VLOG(1) << __func__ << ": segment="
@@ -163,12 +185,34 @@ void SegmentResultProviderImpl::OnGetSegmentInfo(
 }
 
 void SegmentResultProviderImpl::OnGotDatabaseModelScore(
+    DefaultModelManager::SegmentSource fallback_source_to_execute,
     std::unique_ptr<RequestState> request_state,
     std::unique_ptr<SegmentResult> db_result) {
   if (db_result && db_result->rank.has_value()) {
     PostResultCallback(std::move(request_state), std::move(db_result));
     return;
   }
+
+  // If previously the `fallback_source_to_execute` was server model, that means
+  // that the server model will be running this time, and if that fails to
+  // provide the result, the fallback to this fallback will be running default
+  // model. Hence in this case, `fallback_source_to_execute` is running default
+  // model.
+  if (fallback_source_to_execute ==
+      DefaultModelManager::SegmentSource::DATABASE) {
+    auto db_score_callback =
+        base::BindOnce(&SegmentResultProviderImpl::OnGotDatabaseModelScore,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       DefaultModelManager::SegmentSource::DEFAULT_MODEL);
+    VLOG(1) << __func__ << ": segment="
+            << SegmentId_Name(request_state->options->segment_id)
+            << " executing model to get score";
+    ExecuteModelAndGetScore(std::move(request_state),
+                            fallback_source_to_execute,
+                            std::move(db_score_callback));
+    return;
+  }
+
   VLOG(1) << __func__
           << ": segment=" << SegmentId_Name(request_state->options->segment_id)
           << " failed to get database model score, trying default model.";
@@ -276,27 +320,13 @@ void SegmentResultProviderImpl::ExecuteModelAndGetScore(
       source == DefaultModelManager::SegmentSource::DEFAULT_MODEL;
   request->input_context = request_state->options->input_context;
 
-  if (source == DefaultModelManager::SegmentSource::DATABASE &&
-      request_state->options->save_results_to_db) {
-    // If the request needs to save result to database, ensure that the model is
-    // from database. This will drop the callback and not run.
-    if (!request->callback.is_null()) {
-      DLOG(WARNING)
-          << "Callback will not be run when save_results_to_db is set";
-    }
-    request->save_result_to_db = true;
-    request->callback.Reset();
-    // Provider will be fetched by scheduler.
-    request->model_provider = nullptr;
-  } else {
     request->callback =
         base::BindOnce(&SegmentResultProviderImpl::OnModelExecuted,
                        weak_ptr_factory_.GetWeakPtr(), std::move(request_state),
                        source, std::move(callback));
     request->model_provider = provider;
-  }
 
-  execution_service_->RequestModelExecution(std::move(request));
+    execution_service_->RequestModelExecution(std::move(request));
 }
 
 void SegmentResultProviderImpl::OnModelExecuted(
@@ -306,28 +336,46 @@ void SegmentResultProviderImpl::OnModelExecuted(
     std::unique_ptr<ModelExecutionResult> result) {
   auto* segment_info =
       FilterSegmentInfoBySource(request_state->available_segments, source);
-  if (result->status == ModelExecutionStatus::kSuccess) {
-    ResultState state =
-        source == DefaultModelManager::SegmentSource::DEFAULT_MODEL
-            ? ResultState::kDefaultModelScoreUsed
-            : ResultState::kTfliteModelScoreUsed;
-    auto prediction_result = metadata_utils::CreatePredictionResult(
+
+  ResultState state = ResultState::kUnknown;
+  proto::PredictionResult prediction_result;
+  std::unique_ptr<SegmentResult> segment_result;
+
+  bool success = result->status == ModelExecutionStatus::kSuccess;
+
+  if (success) {
+    state = source == DefaultModelManager::SegmentSource::DEFAULT_MODEL
+                ? ResultState::kDefaultModelScoreUsed
+                : ResultState::kTfliteModelScoreUsed;
+    prediction_result = metadata_utils::CreatePredictionResult(
         result->scores, segment_info->model_metadata().output_config(),
         clock_->Now());
     segment_info->mutable_prediction_result()->CopyFrom(prediction_result);
     float rank = ComputeDiscreteMapping(
         request_state->options->discrete_mapping_key, *segment_info);
-    std::move(callback).Run(
-        std::move(request_state),
-        std::make_unique<SegmentResult>(state, prediction_result, rank));
+    segment_result =
+        std::make_unique<SegmentResult>(state, prediction_result, rank);
   } else {
-    ResultState state =
-        source == DefaultModelManager::SegmentSource::DEFAULT_MODEL
-            ? ResultState::kDefaultModelExecutionFailed
-            : ResultState::kTfliteModelExecutionFailed;
-    std::move(callback).Run(std::move(request_state),
-                            std::make_unique<SegmentResult>(state));
+    state = source == DefaultModelManager::SegmentSource::DEFAULT_MODEL
+                ? ResultState::kDefaultModelExecutionFailed
+                : ResultState::kTfliteModelExecutionFailed;
+    segment_result = std::make_unique<SegmentResult>(state);
   }
+
+  if (source == DefaultModelManager::SegmentSource::DATABASE &&
+      request_state->options->save_results_to_db) {
+    // Saving results to database.
+    segment_database_->SaveSegmentResult(
+        segment_info->segment_id(),
+        success ? absl::make_optional(prediction_result) : absl::nullopt,
+        base::BindOnce(&SegmentResultProviderImpl::RunCallback,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       segment_info->segment_id(), std::move(request_state),
+                       std::move(segment_result), std::move(callback)));
+    return;
+  }
+  RunCallback(segment_info->segment_id(), std::move(request_state),
+              std::move(segment_result), std::move(callback), success);
 }
 
 void SegmentResultProviderImpl::PostResultCallback(
@@ -336,6 +384,24 @@ void SegmentResultProviderImpl::PostResultCallback(
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(std::move(request_state->options->callback),
                                 std::move(result)));
+}
+
+void SegmentResultProviderImpl::RunCallback(
+    SegmentId segment_id,
+    std::unique_ptr<RequestState> request_state,
+    std::unique_ptr<SegmentResult> segment_result,
+    ResultCallbackWithState callback,
+    bool success) {
+  stats::RecordModelExecutionSaveResult(segment_id, success);
+  if (!success) {
+    // TODO(ssid): Consider removing this enum, this is the only case where the
+    // execution status is recorded twice for the same execution request.
+    stats::RecordModelExecutionStatus(
+        segment_id,
+        /*default_provider=*/false,
+        ModelExecutionStatus::kFailedToSaveResultAfterSuccess);
+  }
+  std::move(callback).Run(std::move(request_state), std::move(segment_result));
 }
 
 }  // namespace

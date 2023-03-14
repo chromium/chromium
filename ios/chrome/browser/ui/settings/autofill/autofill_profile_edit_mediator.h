@@ -10,8 +10,9 @@
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_table_view_controller_delegate.h"
 
 namespace autofill {
+class AutofillProfile;
 class PersonalDataManager;
-}
+}  // namespace autofill
 
 @protocol AutofillProfileEditConsumer;
 @protocol AutofillProfileEditMediatorDelegate;
@@ -26,6 +27,7 @@ class PersonalDataManager;
 - (instancetype)initWithDelegate:
                     (id<AutofillProfileEditMediatorDelegate>)delegate
              personalDataManager:(autofill::PersonalDataManager*)dataManager
+                 autofillProfile:(autofill::AutofillProfile*)profile
                      countryCode:(NSString*)countryCode
     NS_DESIGNATED_INITIALIZER;
 

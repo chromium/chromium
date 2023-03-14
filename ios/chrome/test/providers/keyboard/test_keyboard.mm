@@ -4,6 +4,8 @@
 
 #import "ios/public/provider/chrome/browser/keyboard/keyboard_api.h"
 
+#import "base/mac/foundation_util.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -12,7 +14,16 @@ namespace ios {
 namespace provider {
 
 UIWindow* GetKeyboardWindow() {
-  return [[[UIApplication sharedApplication] windows] lastObject];
+  UIWindow* last_window = nil;
+  for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
+    UIWindowScene* window_scene =
+        base::mac::ObjCCastStrict<UIWindowScene>(scene);
+    if (window_scene.windows.count) {
+      last_window = [window_scene.windows lastObject];
+    }
+  }
+
+  return last_window;
 }
 
 }  // namespace provider

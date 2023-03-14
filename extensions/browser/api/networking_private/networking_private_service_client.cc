@@ -200,7 +200,7 @@ void NetworkingPrivateServiceClient::SetProperties(
 
 void NetworkingPrivateServiceClient::CreateNetwork(
     bool shared,
-    base::Value properties,
+    base::Value::Dict properties,
     StringCallback success_callback,
     FailureCallback failure_callback) {
   ServiceCallbacks* service_callbacks = AddServiceCallbacks();
@@ -214,7 +214,7 @@ void NetworkingPrivateServiceClient::CreateNetwork(
       FROM_HERE,
       base::BindOnce(&WiFiService::CreateNetwork,
                      base::Unretained(wifi_service_.get()), shared,
-                     std::move(properties).TakeDict(), network_guid, error),
+                     std::move(properties), network_guid, error),
       base::BindOnce(&NetworkingPrivateServiceClient::AfterCreateNetwork,
                      weak_factory_.GetWeakPtr(), service_callbacks->id,
                      base::Owned(network_guid), base::Owned(error)));

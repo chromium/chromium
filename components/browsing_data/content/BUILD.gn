@@ -43,7 +43,6 @@ static_library("content") {
     "//components/prefs",
     "//components/services/storage",
     "//components/services/storage/privileged/mojom",
-    "//components/services/storage/shared_storage/public/mojom",
     "//components/site_isolation",
     "//content/public/browser",
     "//net",
@@ -100,12 +99,13 @@ source_set("test_support") {
     "mock_service_worker_helper.h",
     "mock_shared_worker_helper.cc",
     "mock_shared_worker_helper.h",
+    "test_browsing_data_model_delegate.cc",
+    "test_browsing_data_model_delegate.h",
   ]
   deps = [
     ":content",
     "//base",
     "//components/services/storage",
-    "//components/services/storage/shared_storage/public/mojom",
     "//content/public/browser",
     "//testing/gmock",
     "//testing/gtest",

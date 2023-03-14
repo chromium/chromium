@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_display_cutout_fullscreen_button_element.h"
+#include "third_party/blink/renderer/core/page/page_animator.h"
 
 #include "third_party/blink/public/mojom/page/display_cutout.mojom-blink.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_touch_event_init.h"
+#include "third_party/blink/renderer/core/dom/scripted_animation_controller.h"
 #include "third_party/blink/renderer/core/events/touch_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
@@ -76,7 +78,9 @@ class MediaControlDisplayCutoutFullscreenButtonElementTest
     }
 
     test::RunPendingTasks();
-    GetDocument().ServiceScriptedAnimations(base::TimeTicks());
+    PageAnimator::ServiceScriptedAnimations(
+        base::TimeTicks(),
+        {{GetDocument().GetScriptedAnimationController(), false}});
 
     EXPECT_TRUE(video_->IsFullscreen());
   }
@@ -84,7 +88,9 @@ class MediaControlDisplayCutoutFullscreenButtonElementTest
   void SimulateExitFullscreen() {
     Fullscreen::FullyExitFullscreen(GetDocument());
 
-    GetDocument().ServiceScriptedAnimations(base::TimeTicks());
+    PageAnimator::ServiceScriptedAnimations(
+        base::TimeTicks(),
+        {{GetDocument().GetScriptedAnimationController(), false}});
 
     EXPECT_FALSE(video_->IsFullscreen());
   }

@@ -7,8 +7,8 @@
 
 #include <stddef.h>
 
-#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_64_BITS)
@@ -66,10 +66,10 @@ extern PageCharacteristics page_characteristics;
 namespace partition_alloc::internal {
 
 // Forward declaration, implementation below
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 PageAllocationGranularity();
 
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 PageAllocationGranularityShift() {
 #if BUILDFLAG(IS_WIN) || defined(ARCH_CPU_PPC64)
   // Modern ppc64 systems support 4kB (shift = 12) and 64kB (shift = 16) page
@@ -96,7 +96,7 @@ PageAllocationGranularityShift() {
 #endif
 }
 
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 PageAllocationGranularity() {
 #if BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_64_BITS)
   // This is literally equivalent to |1 << PageAllocationGranularityShift()|
@@ -116,17 +116,17 @@ PageAllocationGranularity() {
 #endif
 }
 
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 PageAllocationGranularityOffsetMask() {
   return PageAllocationGranularity() - 1;
 }
 
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 PageAllocationGranularityBaseMask() {
   return ~PageAllocationGranularityOffsetMask();
 }
 
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 SystemPageShift() {
   // On Windows allocation granularity is higher than the page size. This comes
   // into play when reserving address space range (allocation granularity),
@@ -138,7 +138,7 @@ SystemPageShift() {
 #endif
 }
 
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 SystemPageSize() {
 #if (BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_64_BITS)) || \
     (BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_ARM64))
@@ -151,12 +151,12 @@ SystemPageSize() {
 #endif
 }
 
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 SystemPageOffsetMask() {
   return SystemPageSize() - 1;
 }
 
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 SystemPageBaseMask() {
   return ~SystemPageOffsetMask();
 }

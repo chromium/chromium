@@ -1131,6 +1131,25 @@ TEST(Mutex, DeadlockDetectorBazelWarning) {
   absl::SetMutexDeadlockDetectionMode(absl::OnDeadlockCycle::kAbort);
 }
 
+TEST(Mutex, DeadlockDetectorLongCycle) {
+  absl::SetMutexDeadlockDetectionMode(absl::OnDeadlockCycle::kReport);
+
+  // This test generates a warning if it passes, and crashes otherwise.
+  // Cause bazel to ignore the warning.
+  ScopedDisableBazelTestWarnings disable_bazel_test_warnings;
+
+  // Check that we survive a deadlock with a lock cycle.
+  std::vector<absl::Mutex> mutex(100);
+  for (size_t i = 0; i != mutex.size(); i++) {
+    mutex[i].Lock();
+    mutex[(i + 1) % mutex.size()].Lock();
+    mutex[i].Unlock();
+    mutex[(i + 1) % mutex.size()].Unlock();
+  }
+
+  absl::SetMutexDeadlockDetectionMode(absl::OnDeadlockCycle::kAbort);
+}
+
 // This test is tagged with NO_THREAD_SAFETY_ANALYSIS because the
 // annotation-based static thread-safety analysis is not currently
 // predicate-aware and cannot tell if the two for-loops that acquire and

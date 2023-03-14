@@ -733,11 +733,10 @@ VirtualCtap2Device::VirtualCtap2Device(scoped_refptr<State> state,
 
   if (!config.advertised_algorithms.empty()) {
     device_info_->algorithms.emplace();
-    std::transform(
-        config.advertised_algorithms.begin(),
-        config.advertised_algorithms.end(),
+    base::ranges::transform(
+        config.advertised_algorithms,
         std::back_inserter(device_info_->algorithms.value()),
-        [](auto algo) -> int32_t { return static_cast<int32_t>(algo); });
+        [](auto algo) { return static_cast<int32_t>(algo); });
   }
 
   if (config.pin_support || config.pin_uv_auth_token_support) {

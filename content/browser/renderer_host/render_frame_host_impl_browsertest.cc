@@ -38,6 +38,7 @@
 #include "content/browser/renderer_host/input/timeout_monitor.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/browser/renderer_host/runtime_feature_state_controller_impl.h"
 #include "content/browser/sms/test/mock_sms_provider.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
@@ -47,6 +48,7 @@
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/javascript_dialog_manager.h"
+#include "content/public/browser/origin_trials_controller_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -304,6 +306,24 @@ bool NavigateToURLAndDoNotWaitForLoadStop(Shell* window, const GURL& url) {
   EXPECT_TRUE(observer.WaitForNavigationFinished());
   return url ==
          window->web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL();
+}
+
+using blink::mojom::BlockingDetails;
+using BackForwardCacheBlockingDetails =
+    RenderFrameHostImpl::BackForwardCacheBlockingDetails;
+using BlocklistedFeature = blink::scheduler::WebSchedulerTrackedFeature;
+using BlocklistedFeatures = blink::scheduler::WebSchedulerTrackedFeatures;
+// Helper function to create a vector which contains the mojom feature
+// information.
+BackForwardCacheBlockingDetails CreateBlockingDetails(
+    BlocklistedFeatures features) {
+  BackForwardCacheBlockingDetails feature_vector;
+  for (auto feature : features) {
+    auto feature_info = BlockingDetails::New();
+    feature_info->feature = static_cast<uint32_t>(feature);
+    feature_vector.push_back(std::move(feature_info));
+  }
+  return feature_vector;
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
@@ -797,10 +817,18 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 // A separate class needed to test with Origin Trial tokens.
 class RenderFrameHostImplWithTokensBrowserTest : public ContentBrowserTest {
  public:
-  RenderFrameHostImplWithTokensBrowserTest() = default;
+  RenderFrameHostImplWithTokensBrowserTest() {
+    test_features_.InitAndEnableFeature(::features::kPersistentOriginTrials);
+  }
+
+  ~RenderFrameHostImplWithTokensBrowserTest() override = default;
 
   // The URL that will be used for Origin Trials.
   static constexpr char kOriginTrialUrl[] = "https://127.0.0.1:44444";
+  // The URL that will be used to load third-party scripts.
+  static constexpr char kThirdPartyScriptUrl[] = "https://127.0.0.1:44445";
+  // URL for empty page responses.
+  static constexpr char kEmptyPageUrl[] = "https://127.0.0.1:44440";
 
  protected:
   void SetUpOnMainThread() override {
@@ -817,6 +845,7 @@ class RenderFrameHostImplWithTokensBrowserTest : public ContentBrowserTest {
 
   void TearDownOnMainThread() override {
     url_loader_interceptor_.reset();
+    GetOriginTrialsDelegate()->ClearPersistedTokens();
     ContentBrowserTest::TearDownOnMainThread();
   }
 
@@ -824,8 +853,32 @@ class RenderFrameHostImplWithTokensBrowserTest : public ContentBrowserTest {
     origin_trial_token_ = token;
   }
 
+  OriginTrialsControllerDelegate* GetOriginTrialsDelegate() {
+    return shell()
+        ->web_contents()
+        ->GetPrimaryMainFrame()
+        ->GetBrowserContext()
+        ->GetOriginTrialsControllerDelegate();
+  }
+
+  GURL empty_page_url() const {
+    return GURL(base::StrCat({kEmptyPageUrl, "/empty.html"}));
+  }
+
   GURL simple_origin_trial_url() const {
     return GURL(base::StrCat({kOriginTrialUrl, "/title1.html"}));
+  }
+
+  GURL meta_tag_origin_trial_url() const {
+    return GURL(base::StrCat({kOriginTrialUrl, "/meta.html"}));
+  }
+
+  GURL script_meta_tag_origin_trial_url() const {
+    return GURL(base::StrCat({kOriginTrialUrl, "/meta_script.html"}));
+  }
+
+  GURL meta_tag_injecting_javascript_url() const {
+    return GURL(base::StrCat({kThirdPartyScriptUrl, "/meta.js"}));
   }
 
   WebContentsImpl* web_contents() const {
@@ -833,13 +886,16 @@ class RenderFrameHostImplWithTokensBrowserTest : public ContentBrowserTest {
   }
 
  private:
-  // Create the framework to intercept origin trial header requests.
-  bool InterceptURLRequest(URLLoaderInterceptor::RequestParams* params) {
-    // We are only interested in requests from simple_origin_trial_url().
-    // Additionally, we should not send a response if the `origin_trial_token_`
-    // is empty.
-    if ((params->url_request.url != simple_origin_trial_url()) ||
-        origin_trial_token_.empty()) {
+  bool RespondForEmptyUrl(URLLoaderInterceptor::RequestParams* params) {
+    std::string headers = "HTTP/1.1 200 OK\nContent-Type: text/html\n";
+    std::string body = "<html>This page has no title.</html>";
+    URLLoaderInterceptor::WriteResponse(headers, body, params->client.get());
+    return true;
+  }
+
+  bool RespondForSimpleOriginTrialUrl(
+      URLLoaderInterceptor::RequestParams* params) {
+    if (origin_trial_token_.empty()) {
       return false;
     }
     // Construct the origin trial header response.
@@ -850,6 +906,78 @@ class RenderFrameHostImplWithTokensBrowserTest : public ContentBrowserTest {
     return true;
   }
 
+  bool RespondForMetaTagOriginTrialUrl(
+      URLLoaderInterceptor::RequestParams* params) {
+    if (origin_trial_token_.empty()) {
+      return false;
+    }
+    // Construct the origin trial header response.
+    std::string headers = "HTTP/1.1 200 OK\nContent-Type: text/html\n";
+    std::string body = base::StrCat(
+        {"<html><head><meta http-equiv=\"origin-trial\" content=\"",
+         origin_trial_token_,
+         "\"></head><body>"
+         "This page has no title.</body></html>"});
+    URLLoaderInterceptor::WriteResponse(headers, body, params->client.get());
+    return true;
+  }
+
+  bool RespondForScriptMetaTagOriginTrialUrl(
+      URLLoaderInterceptor::RequestParams* params) {
+    if (origin_trial_token_.empty()) {
+      return false;
+    }
+    // Construct the origin trial header response.
+    std::string headers = "HTTP/1.1 200 OK\nContent-Type: text/html\n";
+    std::string body = base::StrCat(
+        {"<html><head><script src=\"",
+         meta_tag_injecting_javascript_url().spec(),
+         "\"></script></head><body>This page has no title.</body></html>"});
+    URLLoaderInterceptor::WriteResponse(headers, body, params->client.get());
+    return true;
+  }
+
+  bool RespondForMetaTagInjectingScriptUrl(
+      URLLoaderInterceptor::RequestParams* params) {
+    if (origin_trial_token_.empty()) {
+      return false;
+    }
+    // Construct the origin trial header response.
+    std::string headers =
+        "HTTP/1.1 200 OK\nContent-Type: application/javascript\n";
+    std::string body =
+        base::StrCat({"const otMeta = document.createElement('meta'); "
+                      "otMeta.httpEquiv = 'origin-trial'; "
+                      "otMeta.content = '",
+                      origin_trial_token_,
+                      "'; "
+                      "document.head.append(otMeta);"});
+    URLLoaderInterceptor::WriteResponse(headers, body, params->client.get());
+    return true;
+  }
+
+  // Create the framework to intercept origin trial header requests.
+  bool InterceptURLRequest(URLLoaderInterceptor::RequestParams* params) {
+    if (params->url_request.url == empty_page_url()) {
+      return RespondForEmptyUrl(params);
+    }
+    if (params->url_request.url == simple_origin_trial_url()) {
+      return RespondForSimpleOriginTrialUrl(params);
+    }
+    if (params->url_request.url == meta_tag_origin_trial_url()) {
+      return RespondForMetaTagOriginTrialUrl(params);
+    }
+    if (params->url_request.url == script_meta_tag_origin_trial_url()) {
+      return RespondForScriptMetaTagOriginTrialUrl(params);
+    }
+    if (params->url_request.url == meta_tag_injecting_javascript_url()) {
+      return RespondForMetaTagInjectingScriptUrl(params);
+    }
+
+    return false;
+  }
+
+  base::test::ScopedFeatureList test_features_;
   std::string origin_trial_token_;
   std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor_;
 };
@@ -875,7 +1003,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
   // Create a test remote to initiate the IPC.
   mojo::Remote<blink::mojom::RuntimeFeatureStateController>
       runtime_feature_state_controller_remote;
-  web_contents()->GetPrimaryMainFrame()->CreateRuntimeFeatureStateController(
+  RuntimeFeatureStateControllerImpl::Create(
+      web_contents()->GetPrimaryMainFrame(),
       runtime_feature_state_controller_remote.BindNewPipeAndPassReceiver());
   ASSERT_TRUE(runtime_feature_state_controller_remote.is_connected());
 
@@ -924,7 +1053,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
   // Create a test remote to initiate the IPC.
   mojo::Remote<blink::mojom::RuntimeFeatureStateController>
       runtime_feature_state_controller_remote;
-  web_contents()->GetPrimaryMainFrame()->CreateRuntimeFeatureStateController(
+  RuntimeFeatureStateControllerImpl::Create(
+      web_contents()->GetPrimaryMainFrame(),
       runtime_feature_state_controller_remote.BindNewPipeAndPassReceiver());
   ASSERT_TRUE(runtime_feature_state_controller_remote.is_connected());
 
@@ -955,6 +1085,117 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
   EXPECT_EQ(expected_overrides,
             actual_document_data->runtime_feature_read_context()
                 .GetFeatureOverrides());
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
+                       BrowserValidatesTokensFromMetaTags) {
+  // Generated with
+  // tools/origin_trials/generate_token.py https://127.0.0.1:44444 \
+  // FrobulatePersistent --expire-timestamp=2000000000
+  const char kValidToken[] =
+      "A156ll3LJpuECt+dqMQpOAg3H6ayl6AfL6v3Lf/"
+      "pu2RWy4VHhJ6dnNYoaLbdXnhQUmOxjxcoIarc6lrgGvmKBwgAAABdeyJvcmlnaW4iOiAiaHR"
+      "0cHM6Ly8xMjcuMC4wLjE6NDQ0NDQiLCAiZmVhdHVyZSI6ICJGcm9idWxhdGVQZXJzaXN0ZW5"
+      "0IiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9";
+  base::Time validTime = base::Time::FromDoubleT(1000000000);
+  SetOriginTrialToken(kValidToken);
+
+  EXPECT_TRUE(NavigateToURL(shell(), meta_tag_origin_trial_url()));
+  // Navigate to a different page as a means of waiting, due to flakiness
+  // caused by a race between the meta tag being pushed and us checking the
+  // origin trial.
+  EXPECT_TRUE(NavigateToURL(shell(), empty_page_url()));
+
+  OriginTrialsControllerDelegate* delegate = GetOriginTrialsDelegate();
+
+  url::Origin trial_origin = url::Origin::Create(GURL(kOriginTrialUrl));
+  EXPECT_TRUE(delegate->IsTrialPersistedForOrigin(
+      /*origin=*/trial_origin, /*partition_origin=*/trial_origin,
+      "FrobulatePersistent", validTime));
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
+                       BrowserRejectsInvalidTokensFromMetaTags) {
+  const char kInvalidToken[] = "invalid";
+  base::Time validTime = base::Time::FromDoubleT(1000000000);
+  SetOriginTrialToken(kInvalidToken);
+
+  EXPECT_TRUE(NavigateToURL(shell(), meta_tag_origin_trial_url()));
+  // Navigate to a different page as a means of waiting, due to flakiness
+  // caused by a race between the meta tag being pushed and us checking the
+  // origin trial.
+  EXPECT_TRUE(NavigateToURL(shell(), empty_page_url()));
+
+  OriginTrialsControllerDelegate* delegate = GetOriginTrialsDelegate();
+
+  url::Origin trial_origin = url::Origin::Create(GURL(kOriginTrialUrl));
+  EXPECT_TRUE(delegate
+                  ->GetPersistedTrialsForOrigin(
+                      /*origin=*/trial_origin,
+                      /*partition_origin=*/trial_origin, validTime)
+                  .empty());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplWithTokensBrowserTest,
+    BrowserValidatesThirdPartyDeprecationTokensFromMetaTags) {
+  // Generated with
+  // tools/origin_trials/generate_token.py https://127.0.0.1:44445
+  // FrobulatePersistentThirdPartyDeprecation --expire-timestamp=2000000000
+  // --is-third-party
+  const char kValidToken[] =
+      "A8B9KtAVHmLw5hAydE4P2L/"
+      "AU3V2CWYHQyFtbm2EJIED3tLM4MTg85xMiXrwj8fzQZbIEvnJjJV+"
+      "azzrkWAxUw8AAACIeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NDUiLCAiZmVh"
+      "dHVyZSI6ICJGcm9idWxhdGVQZXJzaXN0ZW50VGhpcmRQYXJ0eURlcHJlY2F0aW9uIiwgImV4"
+      "cGlyeSI6IDIwMDAwMDAwMDAsICJpc1RoaXJkUGFydHkiOiB0cnVlfQ==";
+  base::Time validTime = base::Time::FromDoubleT(1000000000);
+  SetOriginTrialToken(kValidToken);
+
+  EXPECT_TRUE(NavigateToURL(shell(), script_meta_tag_origin_trial_url()));
+  // Navigate to a different page as a means of waiting, due to flakiness
+  // caused by a race between the meta tag being pushed and us checking the
+  // origin trial.
+  EXPECT_TRUE(NavigateToURL(shell(), empty_page_url()));
+
+  OriginTrialsControllerDelegate* delegate = GetOriginTrialsDelegate();
+
+  // The Trial should be enabled in the context where it was set.
+  url::Origin main_origin = url::Origin::Create(GURL(kOriginTrialUrl));
+  url::Origin trial_origin = url::Origin::Create(GURL(kThirdPartyScriptUrl));
+  EXPECT_TRUE(delegate->IsTrialPersistedForOrigin(
+      /*origin=*/trial_origin, /*partition_origin=*/main_origin,
+      "FrobulatePersistentThirdPartyDeprecation", validTime));
+}
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
+                       BrowserRejectsThirdPartyMetaTagsNonDeprecation) {
+  // Generated with
+  // tools/origin_trials/generate_token.py https://127.0.0.1:44445 \
+  // FrobulatePersistent --expire-timestamp=2000000000 --is-third-party
+  const char kValidToken[] =
+      "A5It5cGJLhpgVjvJ/GFD/hJci1G7qeWdhAdZEJ4/"
+      "RQz0ZtVOfRufZVsYjATJe5DNuDjLtH4IjC5tYUQiDq6hsQgAAABzeyJvcmlnaW4iOiAiaHR0"
+      "cHM6Ly8xMjcuMC4wLjE6NDQ0NDUiLCAiZmVhdHVyZSI6ICJGcm9idWxhdGVQZXJzaXN0ZW50"
+      "IiwgImV4cGlyeSI6IDIwMDAwMDAwMDAsICJpc1RoaXJkUGFydHkiOiB0cnVlfQ==";
+  base::Time validTime = base::Time::FromDoubleT(1000000000);
+  SetOriginTrialToken(kValidToken);
+
+  EXPECT_TRUE(NavigateToURL(shell(), script_meta_tag_origin_trial_url()));
+  // Navigate to a different page as a means of waiting, due to flakiness
+  // caused by a race between the meta tag being pushed and us checking the
+  // origin trial.
+  EXPECT_TRUE(NavigateToURL(shell(), empty_page_url()));
+
+  OriginTrialsControllerDelegate* delegate = GetOriginTrialsDelegate();
+
+  url::Origin main_origin = url::Origin::Create(GURL(kOriginTrialUrl));
+  url::Origin trial_origin = url::Origin::Create(GURL(kThirdPartyScriptUrl));
+  EXPECT_TRUE(delegate
+                  ->GetPersistedTrialsForOrigin(
+                      /*origin=*/trial_origin,
+                      /*partition_origin=*/main_origin, validTime)
+                  .empty());
 }
 
 // Helper class for beforunload tests.  Sets up a custom dialog manager for the
@@ -3346,20 +3587,30 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   RenderFrameHostImpl* main_frame = web_contents()->GetPrimaryMainFrame();
-  // Simulate getting 0b1 as a feature vector from the renderer.
-  main_frame->DidChangeBackForwardCacheDisablingFeatures(0b1u);
-  DCHECK_EQ(main_frame->GetBackForwardCacheDisablingFeatures().ToEnumBitmask(),
-            0b1u);
-  // Simulate the browser side reporting a feature usage.
+  // Simulate getting WebSocket in a feature vector from the renderer.
+  main_frame->DidChangeBackForwardCacheDisablingFeatures(
+      CreateBlockingDetails(BlocklistedFeature::kWebSocket));
+  ASSERT_EQ(main_frame->GetBackForwardCacheDisablingFeatures(),
+            BlocklistedFeatures(BlocklistedFeature::kWebSocket));
+
+  // Simulate the browser side reporting WebRTC usage.
   main_frame->OnBackForwardCacheDisablingStickyFeatureUsed(
-      static_cast<blink::scheduler::WebSchedulerTrackedFeature>(1));
-  DCHECK_EQ(main_frame->GetBackForwardCacheDisablingFeatures().ToEnumBitmask(),
-            0b11u);
+      static_cast<BlocklistedFeature>(BlocklistedFeature::kWebRTC));
+  ASSERT_EQ(main_frame->GetBackForwardCacheDisablingFeatures(),
+            BlocklistedFeatures(BlocklistedFeature::kWebSocket,
+                                BlocklistedFeature::kWebRTC));
+
   // Simulate a feature vector being updated from the renderer with some
   // features being activated and some being deactivated.
-  main_frame->DidChangeBackForwardCacheDisablingFeatures(0b100u);
-  DCHECK_EQ(main_frame->GetBackForwardCacheDisablingFeatures().ToEnumBitmask(),
-            0b110u);
+  // [kWebSocket(0), kWebRTC(1)] -> [kWebRTC(1),
+  // kMainResourceHasCacheControlNoCache(2)]
+  main_frame->DidChangeBackForwardCacheDisablingFeatures(CreateBlockingDetails(
+      {BlocklistedFeature::kWebRTC,
+       BlocklistedFeature::kMainResourceHasCacheControlNoCache}));
+  ASSERT_EQ(main_frame->GetBackForwardCacheDisablingFeatures(),
+            BlocklistedFeatures(
+                BlocklistedFeature::kWebRTC,
+                BlocklistedFeature::kMainResourceHasCacheControlNoCache));
 
   // Navigate away and expect that no values persist the navigation.
   // Note that we are still simulating the renderer call, otherwise features
@@ -3367,7 +3618,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
   main_frame = web_contents()->GetPrimaryMainFrame();
-  main_frame->DidChangeBackForwardCacheDisablingFeatures(0b0u);
+  BackForwardCacheBlockingDetails empty_vector;
+  main_frame->DidChangeBackForwardCacheDisablingFeatures(
+      CreateBlockingDetails({}));
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
@@ -5507,7 +5760,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // Not isolated:
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
-  EXPECT_EQ(RenderFrameHost::WebExposedIsolationLevel::kNotIsolated,
+  EXPECT_EQ(WebExposedIsolationLevel::kNotIsolated,
             root_frame_host()->GetWebExposedIsolationLevel());
 
   // Cross-Origin Isolated:
@@ -5517,11 +5770,10 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                                 "Cross-Origin-Opener-Policy: same-origin&"
                                 "Cross-Origin-Embedder-Policy: require-corp")));
   // Status can be kIsolated or kMaybeIsolated.
-  EXPECT_LT(RenderFrameHost::WebExposedIsolationLevel::kNotIsolated,
+  EXPECT_LT(WebExposedIsolationLevel::kNotIsolated,
             root_frame_host()->GetWebExposedIsolationLevel());
-  EXPECT_GT(
-      RenderFrameHost::WebExposedIsolationLevel::kMaybeIsolatedApplication,
-      root_frame_host()->GetWebExposedIsolationLevel());
+  EXPECT_GT(WebExposedIsolationLevel::kMaybeIsolatedApplication,
+            root_frame_host()->GetWebExposedIsolationLevel());
 }
 
 namespace {
@@ -5587,7 +5839,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithRestrictedApis,
   navigation_observer.Wait();
 
   EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
-  EXPECT_EQ(RenderFrameHost::WebExposedIsolationLevel::kNotIsolated,
+  EXPECT_EQ(WebExposedIsolationLevel::kNotIsolated,
             root_frame_host()->GetWebExposedIsolationLevel());
 
   // Cross-Origin Isolated:
@@ -5597,7 +5849,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithRestrictedApis,
                              "/set-header?"
                              "Cross-Origin-Opener-Policy: same-origin&"
                              "Cross-Origin-Embedder-Policy: require-corp")));
-  EXPECT_EQ(RenderFrameHost::WebExposedIsolationLevel::kMaybeIsolated,
+  EXPECT_EQ(WebExposedIsolationLevel::kMaybeIsolated,
             root_frame_host()->GetWebExposedIsolationLevel());
 
   // Isolated Application:
@@ -5606,11 +5858,10 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithRestrictedApis,
       /*site_instance=*/nullptr, gfx::Size());
   EXPECT_TRUE(NavigateToURL(app_shell,
                             https_server()->GetURL(kAppHost, "/empty.html")));
-  EXPECT_EQ(
-      RenderFrameHost::WebExposedIsolationLevel::kMaybeIsolatedApplication,
-      app_shell->web_contents()
-          ->GetPrimaryMainFrame()
-          ->GetWebExposedIsolationLevel());
+  EXPECT_EQ(WebExposedIsolationLevel::kMaybeIsolatedApplication,
+            app_shell->web_contents()
+                ->GetPrimaryMainFrame()
+                ->GetWebExposedIsolationLevel());
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
@@ -7042,23 +7293,45 @@ class RenderFrameHostImplBrowsingContextStateNameTest
 
  protected:
   void SetUp() override {
-    if (testing::get<0>(GetParam())) {
-      browsing_context_state_feature_list_.InitAndEnableFeature(
-          features::kNewBrowsingContextStateOnBrowsingContextGroupSwap);
-    } else {
-      browsing_context_state_feature_list_.InitAndDisableFeature(
-          features::kNewBrowsingContextStateOnBrowsingContextGroupSwap);
+    // TODO(https://crbug.com/1326944): Flaky on Mac and Android.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+    GTEST_SKIP();
+#else
+    // TODO(1326944): This configuration is flaky, for every tests.
+    if (!DisableFrameNameUpdateOnNonCurrentRenderFrameHost()) {
+      GTEST_SKIP();
     }
 
-    if (testing::get<1>(GetParam())) {
-      disable_name_update_feature_list_.InitAndEnableFeature(
-          features::kDisableFrameNameUpdateOnNonCurrentRenderFrameHost);
-    } else {
-      disable_name_update_feature_list_.InitAndDisableFeature(
-          features::kDisableFrameNameUpdateOnNonCurrentRenderFrameHost);
+    // TODO(https://crbug.com/1422190):
+    // A RenderViewHostImpl from outside the BackForward take a
+    // `main_browsing_context_state` associated with a RenderFrameHost from
+    // within the BackForwardCache.
+    //
+    // During WebContents deletion, this causes the
+    // RenderViewHostImpl::main_browsing_context_state SafeRef to become
+    // dangling, because the BackForwardCache is cleared first.
+    if (NewBrowsingContextStateOnBrowsingContextGroupSwap()) {
+      GTEST_SKIP();
     }
+
+    browsing_context_state_feature_list_.InitWithFeatureState(
+        features::kNewBrowsingContextStateOnBrowsingContextGroupSwap,
+        NewBrowsingContextStateOnBrowsingContextGroupSwap());
+
+    disable_name_update_feature_list_.InitWithFeatureState(
+        features::kDisableFrameNameUpdateOnNonCurrentRenderFrameHost,
+        DisableFrameNameUpdateOnNonCurrentRenderFrameHost());
 
     RenderFrameHostImplBrowserTest::SetUp();
+#endif
+  }
+
+  bool DisableFrameNameUpdateOnNonCurrentRenderFrameHost() {
+    return testing::get<0>(GetParam());
+  }
+
+  bool NewBrowsingContextStateOnBrowsingContextGroupSwap() {
+    return testing::get<1>(GetParam());
   }
 
  private:
@@ -7069,28 +7342,12 @@ class RenderFrameHostImplBrowsingContextStateNameTest
 // Test that, when the RenderFrameHostImpl is in the BackForwardCache, the
 // name update is blocked if kDisableFrameNameUpdateOnNonCurrentRenderFrameHost
 // is enabled
-//
-// TODO(crbug.com/1326943): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_BlockNameUpdateForBackForwardCache \
-  DISABLED_BlockNameUpdateForBackForwardCache
-#else
-#define MAYBE_BlockNameUpdateForBackForwardCache \
-  BlockNameUpdateForBackForwardCache
-#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(RenderFrameHostImplBrowsingContextStateNameTest,
-                       MAYBE_BlockNameUpdateForBackForwardCache) {
+                       BlockNameUpdateForBackForwardCache) {
   // This test specifically wants to test with BackForwardCache enabled, so skip
   // it if BackForwardCache is disabled.
   if (!IsBackForwardCacheEnabled())
     return;
-  const bool disable_frame_name_update = base::FeatureList::IsEnabled(
-      features::kDisableFrameNameUpdateOnNonCurrentRenderFrameHost);
-
-  // TODO(1326943): This configuration is flaky.
-  if (!disable_frame_name_update) {
-    GTEST_SKIP();
-  }
 
   // Create the RenderFrameHost and store it in the BackForwardCache.
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -7125,7 +7382,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostImplBrowsingContextStateNameTest,
                                 ->current_replication_state()
                                 .unique_name;
 
-  if (disable_frame_name_update) {
+  if (DisableFrameNameUpdateOnNonCurrentRenderFrameHost()) {
     // Verify that the frame name and unique name haven't been changed, even
     // though a name change was triggered by the Javascript.
     EXPECT_EQ(frame_name, "page_name");
@@ -7141,24 +7398,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostImplBrowsingContextStateNameTest,
 // Test that, when the RenderFrameHostImpl is in a pending delete state, the
 // name update is blocked if kDisableFrameNameUpdateOnNonCurrentRenderFrameHost
 // is enabled
-//
-// TODO(https://crbug.com/1326944): Flaky on Mac and Android.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
-#define MAYBE_BlockNameUpdateForPendingDelete \
-  DISABLED_BlockNameUpdateForPendingDelete
-#else
-#define MAYBE_BlockNameUpdateForPendingDelete BlockNameUpdateForPendingDelete
-#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(RenderFrameHostImplBrowsingContextStateNameTest,
-                       MAYBE_BlockNameUpdateForPendingDelete) {
-  const bool disable_frame_name_update = base::FeatureList::IsEnabled(
-      features::kDisableFrameNameUpdateOnNonCurrentRenderFrameHost);
-
-  // TODO(1326944): This configuration is flaky.
-  if (!disable_frame_name_update) {
-    GTEST_SKIP();
-  }
-
+                       BlockNameUpdateForPendingDelete) {
   // Disable BackForwardCache so that a pending delete state can be forced.
   web_contents()->GetController().GetBackForwardCache().DisableForTesting(
       content::BackForwardCache::TEST_USES_UNLOAD_EVENT);
@@ -7197,7 +7438,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostImplBrowsingContextStateNameTest,
                                 ->current_replication_state()
                                 .unique_name;
 
-  if (disable_frame_name_update) {
+  if (DisableFrameNameUpdateOnNonCurrentRenderFrameHost()) {
     // Verify that the frame name and unique name haven't been changed, even
     // though a name change was triggered by the Javascript.
     EXPECT_EQ(frame_name, "page_name");
@@ -7280,11 +7521,9 @@ class RenderFrameHostImplBrowserTestWithBFCache
  public:
   RenderFrameHostImplBrowserTestWithBFCache() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kBackForwardCache, {{}}},
-         {features::kBackForwardCacheTimeToLiveControl,
-          {{"time_to_live_seconds", "3600"}}}},
-        // Allow BackForwardCache for all devices regardless of their memory.
-        {features::kBackForwardCacheMemoryControls});
+        GetDefaultEnabledBackForwardCacheFeaturesForTesting(
+            /*ignore_outstanding_network_request=*/false),
+        GetDefaultDisabledBackForwardCacheFeaturesForTesting());
   }
   ~RenderFrameHostImplBrowserTestWithBFCache() override = default;
 

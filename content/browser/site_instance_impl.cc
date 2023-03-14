@@ -125,7 +125,8 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::Create(
   DCHECK(browser_context);
   return base::WrapRefCounted(new SiteInstanceImpl(new BrowsingInstance(
       browser_context, WebExposedIsolationInfo::CreateNonIsolated(),
-      /*is_guest=*/false, /*is_fenced=*/false)));
+      /*is_guest=*/false, /*is_fenced=*/false,
+      /*coop_related_group=*/nullptr, /*common_coop_origin=*/absl::nullopt)));
 }
 
 // static
@@ -151,7 +152,8 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForUrlInfo(
       new BrowsingInstance(browser_context,
                            url_info.web_exposed_isolation_info.value_or(
                                WebExposedIsolationInfo::CreateNonIsolated()),
-                           is_guest, is_fenced));
+                           is_guest, is_fenced, /*coop_related_group=*/nullptr,
+                           url_info.common_coop_origin));
 
   // Note: The |allow_default_instance| value used here MUST match the value
   // used in DoesSiteForURLMatch().
@@ -175,11 +177,15 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForServiceWorker(
                                    url_info.storage_partition_config.value());
   } else {
     // This will create a new SiteInstance and BrowsingInstance.
-    scoped_refptr<BrowsingInstance> instance(
-        new BrowsingInstance(browser_context,
-                             url_info.web_exposed_isolation_info.value_or(
-                                 WebExposedIsolationInfo::CreateNonIsolated()),
-                             is_guest, is_fenced));
+    // TODO(https://crbug.com/1221127): Verify that having different common
+    // COOP origins does not hinder the ability of a ServiceWorker to share its
+    // page's process.
+    scoped_refptr<BrowsingInstance> instance(new BrowsingInstance(
+        browser_context,
+        url_info.web_exposed_isolation_info.value_or(
+            WebExposedIsolationInfo::CreateNonIsolated()),
+        is_guest, is_fenced, /*coop_related_group=*/nullptr,
+        url_info.common_coop_origin));
 
     // We do NOT want to allow the default site instance here because workers
     // need to be kept separate from other sites.
@@ -217,7 +223,8 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForGuest(
       base::WrapRefCounted(new SiteInstanceImpl(new BrowsingInstance(
           browser_context, guest_site_info.web_exposed_isolation_info(),
           /*is_guest=*/true,
-          /*is_fenced=*/false)));
+          /*is_fenced=*/false, /*coop_related_group=*/nullptr,
+          /*common_coop_origin=*/absl::nullopt)));
 
   site_instance->SetSiteInfoInternal(guest_site_info);
   return site_instance;
@@ -234,7 +241,9 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForFencedFrame(
       base::WrapRefCounted(new SiteInstanceImpl(new BrowsingInstance(
           browser_context, embedder_site_instance->GetWebExposedIsolationInfo(),
           embedder_site_instance->IsGuest(),
-          /*is_fenced=*/should_isolate_fenced_frames)));
+          /*is_fenced=*/should_isolate_fenced_frames,
+          /*coop_related_group=*/nullptr,
+          /*common_coop_origin=*/absl::nullopt)));
 
   // Give the new fenced frame SiteInstance the same site url as its embedder's
   // SiteInstance to allow it to reuse its embedder's process. We avoid doing
@@ -277,7 +286,9 @@ SiteInstanceImpl::CreateReusableInstanceForTesting(
   // This will create a new SiteInstance and BrowsingInstance.
   scoped_refptr<BrowsingInstance> instance(new BrowsingInstance(
       browser_context, WebExposedIsolationInfo::CreateNonIsolated(),
-      /*is_guest=*/false, /*is_fenced=*/false));
+      /*is_guest=*/false, /*is_fenced=*/false,
+      /*coop_related_group=*/nullptr,
+      /*common_coop_origin=*/absl::nullopt));
   auto site_instance = instance->GetSiteInstanceForURL(
       UrlInfo(UrlInfoInit(url)), /* allow_default_instance */ false);
   site_instance->set_process_reuse_policy(
@@ -682,6 +693,12 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::GetRelatedSiteInstanceImpl(
       url_info, /* allow_default_instance */ true);
 }
 
+scoped_refptr<SiteInstanceImpl>
+SiteInstanceImpl::GetCoopRelatedSiteInstanceImpl(const UrlInfo& url_info) {
+  return browsing_instance_->GetCoopRelatedSiteInstanceForURL(
+      url_info, /* allow_default_instance */ true);
+}
+
 AgentSchedulingGroupHost& SiteInstanceImpl::GetOrCreateAgentSchedulingGroup() {
   if (!site_instance_group_)
     GetProcess();
@@ -700,7 +717,7 @@ bool SiteInstanceImpl::IsRelatedSiteInstance(const SiteInstance* instance) {
 }
 
 size_t SiteInstanceImpl::GetRelatedActiveContentsCount() {
-  return browsing_instance_->active_contents_count();
+  return browsing_instance_->GetCoopRelatedGroupActiveContentsCount();
 }
 
 namespace {
@@ -815,11 +832,11 @@ bool SiteInstanceImpl::RequiresOriginKeyedProcess() {
 }
 
 void SiteInstanceImpl::IncrementRelatedActiveContentsCount() {
-  browsing_instance_->increment_active_contents_count();
+  browsing_instance_->IncrementActiveContentsCount();
 }
 
 void SiteInstanceImpl::DecrementRelatedActiveContentsCount() {
-  browsing_instance_->decrement_active_contents_count();
+  browsing_instance_->DecrementActiveContentsCount();
 }
 
 BrowserContext* SiteInstanceImpl::GetBrowserContext() {
@@ -845,10 +862,9 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForURL(
     BrowserContext* browser_context,
     const GURL& url) {
   DCHECK(browser_context);
-  return SiteInstanceImpl::CreateForUrlInfo(browser_context,
-                                            UrlInfo(UrlInfoInit(url)),
-                                            /*is_guest=*/false,
-                                            /*is_fenced=*/false);
+  return SiteInstanceImpl::CreateForUrlInfo(
+      browser_context, UrlInfo(UrlInfoInit(url)), /*is_guest=*/false,
+      /*is_fenced=*/false);
 }
 
 // static
@@ -1369,6 +1385,11 @@ bool SiteInstanceImpl::IsCrossOriginIsolated() const {
   return GetWebExposedIsolationInfo().is_isolated();
 }
 
+const absl::optional<url::Origin>& SiteInstanceImpl::GetCommonCoopOrigin()
+    const {
+  return browsing_instance_->common_coop_origin();
+}
+
 // static
 void SiteInstance::StartIsolatingSite(
     BrowserContext* context,
@@ -1470,6 +1491,16 @@ RenderProcessHost* SiteInstanceImpl::GetDefaultProcessForBrowsingInstance() {
     return browsing_instance_->site_instance_group_manager().default_process();
   }
   return nullptr;
+}
+
+bool SiteInstanceImpl::IsCoopRelatedSiteInstance(
+    const SiteInstanceImpl* instance) const {
+  return instance->browsing_instance_->GetCoopRelatedGroupId() ==
+         browsing_instance_->GetCoopRelatedGroupId();
+}
+
+void SiteInstanceImpl::SetProcessForTesting(RenderProcessHost* process) {
+  SetProcessInternal(process);
 }
 
 }  // namespace content

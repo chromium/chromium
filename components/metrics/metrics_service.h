@@ -237,6 +237,14 @@ class MetricsService {
 
   variations::SyntheticTrialRegistry* GetSyntheticTrialRegistry();
 
+  // Returns the delay before the init tasks (to asynchronously initialize
+  // metrics providers) run.
+  base::TimeDelta GetInitializationDelay();
+
+  // Returns the delay before the task to update the "last alive timestamp" is
+  // run.
+  base::TimeDelta GetUpdateLastAliveTimestampDelay();
+
   MetricsLogStore* LogStoreForTest() {
     return reporting_service_.metrics_log_store();
   }
@@ -271,6 +279,12 @@ class MetricsService {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   bool IsInForegroundForTesting() const { return is_in_foreground_; }
 #endif
+
+  // Creates a new MetricsLog instance with the given |log_type|.
+  std::unique_ptr<MetricsLog> CreateLogForTesting(
+      MetricsLog::LogType log_type) {
+    return CreateLog(log_type);
+  }
 
  protected:
   // Sets the persistent system profile. Virtual for tests.

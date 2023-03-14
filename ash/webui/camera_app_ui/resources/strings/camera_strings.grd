@@ -198,15 +198,6 @@
       <message desc="Label for the button to open pan tilt zoom control panel" name="IDS_OPEN_PTZ_PANEL_BUTTON">
         Pan tilt zoom
       </message>
-      <message desc="Toast message notifying user about new document scanning feature is available" name="IDS_NEW_DOCUMENT_SCAN_TOAST">
-        Document scan available
-      </message>
-      <message desc="Toast message notifying user about new controls available" name="IDS_NEW_CONTROL_TOAST">
-        Additional camera controls available
-      </message>
-      <message desc="Message for how to navigate to new controls UI with accessibility tool" name="IDS_NEW_CONTROL_NAVIGATION">
-        <ph name="aspect_ratio_width">$1<ex>Additional camera controls available</ex></ph>. Search + Left arrow to access.
-      </message>
       <message desc="Label for the radio button to toggle the 3 seconds countdown timer." name="IDS_ARIA_TIMER_3S">
         3 seconds timer
       </message>
@@ -480,15 +471,6 @@ If your feedback is about image or video quality, please attach a sample photo o
       <message desc="Error message shown when users capture a video which is too short." name="IDS_ERROR_MSG_VIDEO_TOO_SHORT">
         Video isn't saved since it's too short
       </message>
-      <message desc="Title of dialog introducing document mode." name="IDS_DOCUMENT_MODE_DIALOG_INTRO_TITLE">
-        Scan your document
-      </message>
-      <message desc="Detail description introducing document mode." name="IDS_DOCUMENT_MODE_DIALOG_MSG">
-        Place all edges of the document within the frame. Scanning works best if the document and background are different colors.
-      </message>
-      <message desc="Text on ack button in dialog introducing document mode." name="IDS_DOCUMENT_MODE_DIALOG_GOT_IT">
-        Got it
-      </message>
       <message desc="Toast message for guiding user to reposition document when no document in the camera FOV." name="IDS_NO_DOCUMENT_GUIDE_MSG">
         Place all edges of the document within the frame
       </message>
@@ -642,9 +624,6 @@ If your feedback is about image or video quality, please attach a sample photo o
       <message desc="Label for spoken feedback to indicate that the mute button is now on." name="IDS_ARIA_MUTE_ON">
         Toggle microphone mute. Mute is on
       </message>
-      <message desc="Toast message notifying user about the document scanner feature is currently downloading" name="IDS_DOWNLOADING_DOCUMENT_SCANNING_FEATURE">
-        Downloading updates for document scanning
-      </message>
       <message desc="Label for the button of adding a new document page." name="IDS_ADD_NEW_PAGE_BUTTON">
         Scan additional page
       </message>
@@ -656,9 +635,6 @@ If your feedback is about image or video quality, please attach a sample photo o
       </message>
       <message desc="Message for the next page count of document scanning mode." name="IDS_NEXT_PAGE_COUNT">
         Scanning page <ph name="count">$1<ex>2</ex></ph>
-      </message>
-      <message desc="Toast message notifying user about multi-page PDF in document mode is available." name="IDS_DOCUMENT_MODE_MULTI_PAGE_TOAST">
-        You can now create multi-page PDF
       </message>
       <message desc="Label for the button to edit the selected document page." name="IDS_FIX_PAGE_BUTTON">
         Edit page <ph name="index">$1<ex>1</ex></ph>

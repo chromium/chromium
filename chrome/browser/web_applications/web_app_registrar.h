@@ -38,6 +38,10 @@ namespace apps {
 struct ShareTarget;
 }  // namespace apps
 
+namespace content {
+class StoragePartitionConfig;
+}  // namespace content
+
 namespace webapps {
 enum class WebappInstallSource;
 }
@@ -223,7 +227,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
   base::Time GetAppLastLaunchTime(const AppId& app_id) const;
   base::Time GetAppInstallTime(const AppId& app_id) const;
 
-  absl::optional<webapps::WebappInstallSource> GetAppInstallSourceForMetrics(
+  absl::optional<webapps::WebappInstallSource> GetLatestAppInstallSource(
       const AppId& app_id) const;
 
   // Returns the "icons" field from the app manifest, use |WebAppIconManager| to
@@ -338,6 +342,13 @@ class WebAppRegistrar : public ProfileManagerObserver {
   absl::optional<proto::WebAppOsIntegrationState>
   GetAppCurrentOsIntegrationState(const AppId& app_id) const;
 
+  // Returns the StoragePartitionConfig of all StoragePartitions used by
+  // |isolated_web_app_id|. Both the primary and any <controlledframe>
+  // StoragePartitions will be returned.
+  std::vector<content::StoragePartitionConfig>
+  GetIsolatedWebAppStoragePartitionConfigs(
+      const AppId& isolated_web_app_id) const;
+
 #if BUILDFLAG(IS_MAC)
   bool AlwaysShowToolbarInFullscreen(const AppId& app_id) const;
   void NotifyAlwaysShowToolbarInFullscreenChanged(const AppId& app_id,
@@ -448,6 +459,17 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // is a subset of GetAppsIncludingStubs().
   AppSet GetApps() const;
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Set (or replace existing) temporary experimental overrides for
+  // UserDisplayMode. `overrides` maps app IDs to their overridden value.
+  void SetUserDisplayModeOverridesForExperiment(
+      base::flat_map<AppId, mojom::UserDisplayMode> overrides);
+#endif
+
+  // Returns a dict with debug values for each app in the registry, including
+  // registrar-evaluated effective fields.
+  base::Value AsDebugValue() const;
+
  protected:
   Profile* profile() const { return profile_; }
 
@@ -477,6 +499,9 @@ class WebAppRegistrar : public ProfileManagerObserver {
 #if DCHECK_IS_ON()
   size_t mutations_count_ = 0;
 #endif
+
+  base::flat_map<AppId, mojom::UserDisplayMode>
+      user_display_mode_overrides_for_experiment_;
 
   base::WeakPtrFactory<WebAppRegistrar> weak_factory_{this};
 };

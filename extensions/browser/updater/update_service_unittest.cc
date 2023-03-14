@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -14,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -85,7 +87,9 @@ class FakeUpdateClient : public update_client::UpdateClient {
     if (observer)
       observers_.push_back(observer);
   }
+
   void RemoveObserver(Observer* observer) override {}
+
   base::RepeatingClosure Install(
       const std::string& id,
       CrxDataCallback crx_data_callback,
@@ -93,11 +97,21 @@ class FakeUpdateClient : public update_client::UpdateClient {
       update_client::Callback callback) override {
     return base::DoNothing();
   }
+
   void Update(const std::vector<std::string>& ids,
               CrxDataCallback crx_data_callback,
               CrxStateChangeCallback crx_state_change_callback,
               bool is_foreground,
               update_client::Callback callback) override;
+
+  void CheckForUpdate(const std::string& id,
+                      CrxDataCallback crx_data_callback,
+                      CrxStateChangeCallback crx_state_change_callback,
+                      bool is_foreground,
+                      update_client::Callback callback) override {
+    NOTREACHED();
+  }
+
   bool GetCrxUpdateState(
       const std::string& id,
       update_client::CrxUpdateItem* update_item) const override {
@@ -114,8 +128,11 @@ class FakeUpdateClient : public update_client::UpdateClient {
       update_item->custom_updatecheck_data = custom_attributes;
     return true;
   }
+
   bool IsUpdating(const std::string& id) const override { return false; }
+
   void Stop() override {}
+
   void SendUninstallPing(const update_client::CrxComponent& crx_component,
                          int reason,
                          update_client::Callback callback) override {
@@ -134,6 +151,7 @@ class FakeUpdateClient : public update_client::UpdateClient {
   bool delay_update() const { return delay_update_; }
 
   UpdateRequest& update_request(int index) { return delayed_requests_[index]; }
+
   int num_update_requests() const {
     return static_cast<int>(delayed_requests_.size());
   }
@@ -360,10 +378,8 @@ class UpdateServiceTest : public ExtensionsTest {
                           const base::FilePath& relative_path,
                           const std::string& content) {
     base::FilePath full_path = directory.Append(relative_path);
-    if (!CreateDirectory(full_path.DirName()))
-      return false;
-    int result = base::WriteFile(full_path, content.data(), content.size());
-    return (static_cast<size_t>(result) == content.size());
+    return base::CreateDirectory(full_path.DirName()) &&
+           base::WriteFile(full_path, content);
   }
 
   FakeExtensionSystem* extension_system() {

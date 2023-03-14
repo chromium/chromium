@@ -43,9 +43,7 @@ class PrefModelAssociatorClient {
 
   // Returns a pointer to the instance of SyncablePrefsDatabase. This should
   // define the list of syncable preferences.
-  // TODO(crbug.com/1401271): Mark this method as pure virtual once
-  // platform-specific implementations are complete.
-  virtual const SyncablePrefsDatabase& GetSyncablePrefsDatabase() const;
+  virtual const SyncablePrefsDatabase& GetSyncablePrefsDatabase() const = 0;
 
  protected:
   PrefModelAssociatorClient() {}

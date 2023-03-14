@@ -443,6 +443,7 @@ textSizeAdjust
 textTransform
 textUnderlineOffset
 textUnderlinePosition
+textWrap
 toggle
 toggleGroup
 toggleRoot

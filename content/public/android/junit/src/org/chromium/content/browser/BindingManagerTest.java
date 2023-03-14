@@ -29,13 +29,10 @@ import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.base.process_launcher.TestChildProcessConnection;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.content_public.common.ContentFeatures;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Unit tests for BindingManager and ChildProcessConnection.
@@ -47,13 +44,6 @@ import java.util.Map;
 @Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.Q)
 @LooperMode(LooperMode.Mode.LEGACY)
 public class BindingManagerTest {
-    private static final Map<String, Boolean> DISABLE_NOT_PERCEPTIBLE_BINDING = new HashMap<>() {
-        { put(ContentFeatures.BINDING_MANAGER_USE_NOT_PERCEPTIBLE_BINDING, false); }
-    };
-    private static final Map<String, Boolean> ENABLE_NOT_PERCEPTIBLE_BINDING = new HashMap<>() {
-        { put(ContentFeatures.BINDING_MANAGER_USE_NOT_PERCEPTIBLE_BINDING, true); }
-    };
-
     private static final int BINDING_COUNT_LIMIT = 5;
 
     // Creates a mocked ChildProcessConnection that is optionally added to a BindingManager.
@@ -99,14 +89,13 @@ public class BindingManagerTest {
     }
 
     private void setupBindingType(boolean useNotPerceptibleBinding) {
-        BindingManager.resetUseNotPerceptibleBindingForTesting();
+        boolean isQOrHigher = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
+        BindingManager.setUseNotPerceptibleBindingForTesting(
+                useNotPerceptibleBinding && isQOrHigher);
         if (useNotPerceptibleBinding) {
-            FeatureList.setTestFeatures(ENABLE_NOT_PERCEPTIBLE_BINDING);
-            boolean isQOrHigher = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
             Assert.assertEquals(isQOrHigher, BindingManager.useNotPerceptibleBinding());
             return;
         }
-        FeatureList.setTestFeatures(DISABLE_NOT_PERCEPTIBLE_BINDING);
         Assert.assertFalse(BindingManager.useNotPerceptibleBinding());
     }
 

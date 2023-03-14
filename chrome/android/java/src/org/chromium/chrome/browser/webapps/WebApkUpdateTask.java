@@ -76,7 +76,4 @@ public class WebApkUpdateTask extends NativeBackgroundTask {
         // WebAPKs that we need to update.
         return true;
     }
-
-    @Override
-    public void reschedule(Context context) {}
 }

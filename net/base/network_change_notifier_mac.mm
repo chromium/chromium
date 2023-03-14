@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "net/dns/dns_config_service.h"
 

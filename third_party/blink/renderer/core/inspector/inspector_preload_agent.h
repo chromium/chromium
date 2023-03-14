@@ -7,11 +7,12 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
 #include "third_party/blink/renderer/core/inspector/protocol/preload.h"
-#include "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h"
 
 namespace blink {
 
 class Document;
+class SpeculationCandidate;
+class SpeculationRuleSet;
 
 class CORE_EXPORT InspectorPreloadAgent final
     : public InspectorBaseAgent<protocol::Preload::Metainfo> {
@@ -25,6 +26,9 @@ class CORE_EXPORT InspectorPreloadAgent final
   void DidAddSpeculationRuleSet(Document& document,
                                 const SpeculationRuleSet& rule_set);
   void DidRemoveSpeculationRuleSet(const SpeculationRuleSet& rule_set);
+  void SpeculationCandidatesUpdated(
+      Document& document,
+      const HeapVector<Member<SpeculationCandidate>>& candidates);
 
  private:
   void Restore() override;

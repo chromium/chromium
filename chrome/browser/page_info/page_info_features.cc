@@ -21,15 +21,14 @@ bool IsMoreAboutThisSiteFeatureEnabled() {
       page_info::kPageInfoAboutThisSiteMoreInfo);
 }
 
-bool IsDescriptionPlaceholderFeatureEnabled() {
+bool IsAboutThisSiteNewIconFeatureEnabled() {
   return IsMoreAboutThisSiteFeatureEnabled() &&
-         base::FeatureList::IsEnabled(
-             page_info::kPageInfoAboutThisSiteDescriptionPlaceholder);
+         base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSiteNewIcon);
 }
 
 bool IsAboutThisSiteForNonMsbbFeatureEnabled() {
   return IsMoreAboutThisSiteFeatureEnabled() &&
-         IsDescriptionPlaceholderFeatureEnabled() &&
+         IsAboutThisSiteNewIconFeatureEnabled() &&
          base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSiteNonMsbb);
 }
 

@@ -73,11 +73,11 @@ constexpr uint32_t kWestonTestVersion = 1;
 int WaylandToUIControlsTouchType(int type) {
   switch (type) {
     case WL_TOUCH_DOWN:
-      return ui_controls::PRESS;
+      return ui_controls::kTouchPress;
     case WL_TOUCH_UP:
-      return ui_controls::RELEASE;
+      return ui_controls::kTouchRelease;
     default:
-      return ui_controls::MOVE;
+      return ui_controls::kTouchMove;
   }
 }
 
@@ -200,6 +200,42 @@ static void weston_test_reset_pointer(struct wl_client* client,
     weston_test_send_pointer_button(resource, BTN_RIGHT,
                                     WL_POINTER_BUTTON_STATE_RELEASED);
   }
+
+  // Reset accelerator states.
+  if (weston_test->control_pressed) {
+    base::RunLoop run_loop;
+    ui_controls::SendKeyEventsNotifyWhenDone(
+        /*window=*/nullptr, ui::VKEY_CONTROL, ui_controls::kKeyRelease,
+        run_loop.QuitClosure(), ui_controls::kNoAccelerator);
+    run_loop.Run();
+    weston_test->control_pressed = false;
+  }
+  if (weston_test->alt_pressed) {
+    base::RunLoop run_loop;
+    ui_controls::SendKeyEventsNotifyWhenDone(
+        /*window=*/nullptr, ui::VKEY_MENU, ui_controls::kKeyRelease,
+        run_loop.QuitClosure(), ui_controls::kNoAccelerator);
+    run_loop.Run();
+    weston_test->control_pressed = false;
+  }
+  if (weston_test->shift_pressed) {
+    base::RunLoop run_loop;
+    ui_controls::SendKeyEventsNotifyWhenDone(
+        /*window=*/nullptr, ui::VKEY_SHIFT, ui_controls::kKeyRelease,
+        run_loop.QuitClosure(), ui_controls::kNoAccelerator);
+    run_loop.Run();
+    weston_test->shift_pressed = false;
+  }
+  if (weston_test->command_pressed) {
+    base::RunLoop run_loop;
+    ui_controls::SendKeyEventsNotifyWhenDone(
+        /*window=*/nullptr, ui::VKEY_COMMAND, ui_controls::kKeyRelease,
+        run_loop.QuitClosure(), ui_controls::kNoAccelerator);
+    run_loop.Run();
+    weston_test->command_pressed = false;
+  }
+
+  // TODO(crbug.com/1414800): Should reset other key events as well.
 }
 
 static void weston_test_send_axis(struct wl_client* client,

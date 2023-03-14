@@ -68,6 +68,7 @@ class BrowserTabsModelProviderImpl
   // Crosapi. The session is used to update the model.
   void OnForeignSyncedPhoneSessionsUpdated(
       const std::vector<ForeignSyncedSessionAsh>& phone_sessions) override;
+  void OnSessionSyncEnabledChanged(bool enabled) override;
 
   void AttemptBrowserTabsModelUpdate();
   void InvalidateWeakPtrsAndClearTabMetadata(bool is_tab_sync_enabled);

@@ -92,6 +92,7 @@ mojom("mojom_platform") {
     "image_downloader/image_downloader.mojom",
     "input/focus_type.mojom",
     "input/gesture_event.mojom",
+    "input/handwriting_gesture_result.mojom",
     "input/input_event.mojom",
     "input/input_event_result.mojom",
     "input/input_handler.mojom",
@@ -101,6 +102,7 @@ mojom("mojom_platform") {
     "input/stylus_writing_gesture.mojom",
     "input/touch_event.mojom",
     "interest_group/ad_auction_service.mojom",
+    "interest_group/ad_display_size.mojom",
     "interest_group/interest_group_types.mojom",
     "keyboard_lock/keyboard_lock.mojom",
     "leak_detector/leak_detector.mojom",
@@ -164,6 +166,8 @@ mojom("mojom_platform") {
     "preloading/anchor_element_interaction_host.mojom",
     "prerender/prerender.mojom",
     "presentation/presentation.mojom",
+    "private_aggregation/aggregatable_report.mojom",
+    "private_aggregation/private_aggregation_host.mojom",
     "push_messaging/push_messaging.mojom",
     "push_messaging/push_messaging_status.mojom",
     "render_accessibility.mojom",
@@ -183,6 +187,7 @@ mojom("mojom_platform") {
     "service_worker/service_worker_container_type.mojom",
     "service_worker/service_worker_error_type.mojom",
     "service_worker/service_worker_event_status.mojom",
+    "service_worker/service_worker_fetch_handler_bypass_option.mojom",
     "service_worker/service_worker_fetch_handler_type.mojom",
     "service_worker/service_worker_fetch_response_callback.mojom",
     "service_worker/service_worker_installed_scripts_manager.mojom",
@@ -191,6 +196,7 @@ mojom("mojom_platform") {
     "service_worker/service_worker_worker_client.mojom",
     "service_worker/service_worker_worker_client_registry.mojom",
     "shared_storage/shared_storage.mojom",
+    "shared_storage/shared_storage_worklet_service.mojom",
     "site_engagement/site_engagement.mojom",
     "smart_card/smart_card.mojom",
     "sms/webotp_service.mojom",
@@ -767,15 +773,23 @@ mojom("mojom_platform") {
     {
       types = [
         {
-          mojom = "blink.mojom.InterestGroup"
-          cpp = "::blink::InterestGroup"
+          mojom = "blink.mojom.AdSize"
+          cpp = "::blink::AdSize"
+        },
+        {
+          mojom = "blink.mojom.AdDescriptor"
+          cpp = "::blink::AdDescriptor"
         },
       ]
-      traits_headers = [ "//third_party/blink/public/common/interest_group/interest_group_mojom_traits.h" ]
+      traits_headers = [ "//third_party/blink/public/common/interest_group/ad_display_size_mojom_traits.h" ]
       traits_public_deps = [ "//url/mojom:mojom_traits" ]
     },
     {
       types = [
+        {
+          mojom = "blink.mojom.InterestGroup"
+          cpp = "::blink::InterestGroup"
+        },
         {
           mojom = "blink.mojom.InterestGroupAd"
           cpp = "::blink::InterestGroup::Ad"

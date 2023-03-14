@@ -43,11 +43,11 @@ BASE_FEATURE(kPersistedClusters,
 
 BASE_FEATURE(kOmniboxAction,
              "JourneysOmniboxAction",
-             enabled_by_default_desktop_only);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOmniboxHistoryClusterProvider,
              "JourneysOmniboxHistoryClusterProvider",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             enabled_by_default_desktop_only);
 
 BASE_FEATURE(kNonUserVisibleDebug,
              "JourneysNonUserVisibleDebug",

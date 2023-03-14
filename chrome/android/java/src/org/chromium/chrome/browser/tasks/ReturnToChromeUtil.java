@@ -126,12 +126,13 @@ public final class ReturnToChromeUtil {
         }
 
         @Override
-        public void handleBackPress() {
+        public @BackPressResult int handleBackPress() {
             Tab tab = mActivityTabProvider.get();
-            assert tab != null
-                    && !tab.canGoBack()
+            boolean res = tab != null && !tab.canGoBack() && isTabFromStartSurface(tab);
+            assert res
                 : String.format("tab %s; back press state %s", tab, tab != null && tab.canGoBack());
             mOnBackPressedCallback.run();
+            return res ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
         }
 
         @Override
@@ -403,7 +404,7 @@ public final class ReturnToChromeUtil {
     public static boolean shouldHideStartSurfaceWithAccessibilityOn(Context context) {
         // TODO(crbug.com/1127732): Move this method back to StartSurfaceConfiguration.
         return ChromeAccessibilityUtil.get().isAccessibilityEnabled()
-                && !(StartSurfaceConfiguration.SUPPORT_ACCESSIBILITY.getValue()
+                && !(ChromeFeatureList.sStartSurfaceWithAccessibility.isEnabled()
                         && TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(context));
     }
 

@@ -88,11 +88,7 @@ bool NewTabPageTabHelper::IsNTPURL(const GURL& url) {
 }
 
 FeedType NewTabPageTabHelper::GetNextNTPFeedType() {
-  FeedType feed_type = next_ntp_feed_type_;
-  // Resets feed type to default in case next_ntp_feed_type_ was overriden by
-  // SetNextNTPFeedType.
-  next_ntp_feed_type_ = DefaultFeedType();
-  return feed_type;
+  return next_ntp_feed_type_;
 }
 
 void NewTabPageTabHelper::SetNextNTPFeedType(FeedType feed_type) {

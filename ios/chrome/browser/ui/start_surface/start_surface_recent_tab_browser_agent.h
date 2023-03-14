@@ -46,7 +46,7 @@ class StartSurfaceRecentTabObserver {
 // updates to the current page's favicon for that WebState.
 class StartSurfaceRecentTabBrowserAgent
     : public BrowserUserData<StartSurfaceRecentTabBrowserAgent>,
-      BrowserObserver,
+      public BrowserObserver,
       public WebStateListObserver,
       public web::WebStateObserver,
       public favicon::FaviconDriverObserver {

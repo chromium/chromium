@@ -9,11 +9,13 @@
 #include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/overloaded.h"
+#include "base/values.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_feedback_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -21,7 +23,10 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/unique_ids.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/gfx/favicon_size.h"
 
 namespace autofill {
 
@@ -34,6 +39,38 @@ static constexpr int kAutofillContextCustomLast =
     IDC_CONTENT_CONTEXT_AUTOFILL_CUSTOM_LAST;
 static constexpr int kAutofillContextFeedback =
     IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK;
+
+base::Value::Dict LoadTriggerFormAndFieldLogs(
+    AutofillManager* manager,
+    content::RenderFrameHost* rfh,
+    const content::ContextMenuParams& params) {
+  if (!params.form_renderer_id) {
+    return base::Value::Dict();
+  }
+
+  LocalFrameToken frame_token(rfh->GetFrameToken().value());
+  FormGlobalId form_global_id = {frame_token,
+                                 FormRendererId(*params.form_renderer_id)};
+
+  base::Value::Dict trigger_form_logs;
+  if (FormStructure* form = manager->FindCachedFormById(form_global_id)) {
+    trigger_form_logs.Set("trigger_form_signature", form->FormSignatureAsStr());
+
+    if (params.field_renderer_id) {
+      FieldGlobalId field_global_id = {
+          frame_token, FieldRendererId(*params.field_renderer_id)};
+      auto field =
+          base::ranges::find_if(*form, [&field_global_id](const auto& field) {
+            return field->global_id() == field_global_id;
+          });
+      if (field != form->end()) {
+        trigger_form_logs.Set("trigger_field_signature",
+                              (*field)->FieldSignatureAsStr());
+      }
+    }
+  }
+  return trigger_form_logs;
+}
 
 }  // namespace
 
@@ -121,7 +158,7 @@ void AutofillContextMenuManager::AppendItems() {
 
     content::WebContents* web_contents = delegate_->GetWebContents();
     AutofillClient* autofill_client =
-        autofill::ChromeAutofillClient::FromWebContents(web_contents);
+        autofill::ContentAutofillClient::FromWebContents(web_contents);
     // If the autofill popup is shown and the user double clicks from within the
     // bounds of the initiating field, it is assumed that the context menu would
     // overlap with the autofill popup. In that case, hide the autofill popup.
@@ -143,12 +180,16 @@ void AutofillContextMenuManager::AppendItems() {
     command_id_to_menu_item_value_mapper_ =
         base::flat_map<CommandId, ContextMenuItem>(
             std::move(detail_items_added_to_context_menu));
+    menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
   }
 
   // Includes the option of submitting feedback on Autofill.
   if (base::FeatureList::IsEnabled(features::kAutofillFeedback)) {
-    menu_model_->AddItemWithStringId(IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK,
-                                     IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK);
+    menu_model_->AddItemWithStringIdAndIcon(
+        IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK,
+        IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK,
+        ui::ImageModel::FromVectorIcon(vector_icons::kDogfoodIcon));
+    menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
   }
 }
 
@@ -196,7 +237,9 @@ void AutofillContextMenuManager::ExecuteAutofillFeedbackCommand(
       /*description_placeholder_text=*/std::string(),
       /*category_tag=*/"dogfood_autofill_feedback",
       /*extra_diagnostics=*/std::string(),
-      /*autofill_metadata=*/data_logs::FetchAutofillFeedbackData(manager));
+      /*autofill_metadata=*/
+      data_logs::FetchAutofillFeedbackData(
+          manager, LoadTriggerFormAndFieldLogs(manager, rfh, params_)));
 }
 
 void AutofillContextMenuManager::ExecuteMenuManagerCommand(
@@ -479,8 +522,9 @@ bool AutofillContextMenuManager::HaveEnoughIdsForProfile(
       base::ranges::count_if(field_types_to_show, non_empty_values_in_profile);
   // For addresses, include the "Other" section in the count. For credit cards,
   // this should be empty.
-  if (absl::holds_alternative<const CreditCard*>(profile_or_credit_card))
+  if (absl::holds_alternative<const CreditCard*>(profile_or_credit_card)) {
     DCHECK(other_fields_to_show.empty());
+  }
   count_of_items_to_be_added +=
       base::ranges::count_if(other_fields_to_show, non_empty_values_in_profile);
 

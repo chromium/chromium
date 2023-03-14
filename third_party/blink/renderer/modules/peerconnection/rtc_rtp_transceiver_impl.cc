@@ -277,21 +277,20 @@ class RTCRtpTransceiverImpl::RTCRtpTransceiverInternal
     return webrtc_transceiver_->SetCodecPreferences(codec_preferences);
   }
 
-  webrtc::RTCError SetOfferedRtpHeaderExtensions(
-      std::vector<webrtc::RtpHeaderExtensionCapability>
-          header_extensions_to_offer) {
-    return webrtc_transceiver_->SetOfferedRtpHeaderExtensions(
-        header_extensions_to_offer);
+  webrtc::RTCError SetHeaderExtensionsToNegotiate(
+      std::vector<webrtc::RtpHeaderExtensionCapability> header_extensions) {
+    return webrtc_transceiver_->SetHeaderExtensionsToNegotiate(
+        header_extensions);
   }
 
-  Vector<webrtc::RtpHeaderExtensionCapability> HeaderExtensionsNegotiated()
+  Vector<webrtc::RtpHeaderExtensionCapability> GetNegotiatedHeaderExtensions()
       const {
     return state_.header_extensions_negotiated();
   }
 
-  std::vector<webrtc::RtpHeaderExtensionCapability> HeaderExtensionsToOffer()
-      const {
-    return webrtc_transceiver_->HeaderExtensionsToOffer();
+  std::vector<webrtc::RtpHeaderExtensionCapability>
+  GetHeaderExtensionsToNegotiate() const {
+    return webrtc_transceiver_->GetHeaderExtensionsToNegotiate();
   }
 
  private:
@@ -436,23 +435,22 @@ webrtc::RTCError RTCRtpTransceiverImpl::SetCodecPreferences(
   return internal_->setCodecPreferences(std_codec_preferences);
 }
 
-webrtc::RTCError RTCRtpTransceiverImpl::SetOfferedRtpHeaderExtensions(
-    Vector<webrtc::RtpHeaderExtensionCapability> header_extensions_to_offer) {
+webrtc::RTCError RTCRtpTransceiverImpl::SetHeaderExtensionsToNegotiate(
+    Vector<webrtc::RtpHeaderExtensionCapability> header_extensions) {
   std::vector<webrtc::RtpHeaderExtensionCapability> std_header_extensions;
-  std::move(header_extensions_to_offer.begin(),
-            header_extensions_to_offer.end(),
+  std::move(header_extensions.begin(), header_extensions.end(),
             std::back_inserter(std_header_extensions));
-  return internal_->SetOfferedRtpHeaderExtensions(std_header_extensions);
+  return internal_->SetHeaderExtensionsToNegotiate(std_header_extensions);
 }
 
 Vector<webrtc::RtpHeaderExtensionCapability>
-RTCRtpTransceiverImpl::HeaderExtensionsNegotiated() const {
-  return internal_->HeaderExtensionsNegotiated();
+RTCRtpTransceiverImpl::GetNegotiatedHeaderExtensions() const {
+  return internal_->GetNegotiatedHeaderExtensions();
 }
 
 Vector<webrtc::RtpHeaderExtensionCapability>
-RTCRtpTransceiverImpl::HeaderExtensionsToOffer() const {
-  auto std_extensions = internal_->HeaderExtensionsToOffer();
+RTCRtpTransceiverImpl::GetHeaderExtensionsToNegotiate() const {
+  auto std_extensions = internal_->GetHeaderExtensionsToNegotiate();
   Vector<webrtc::RtpHeaderExtensionCapability> extensions;
   std::move(std_extensions.begin(), std_extensions.end(),
             std::back_inserter(extensions));

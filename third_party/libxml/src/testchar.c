@@ -270,6 +270,7 @@ static int testCharRangeByte1(xmlParserCtxtPtr ctxt) {
     for (i = 0;i <= 0xFF;i++) {
         data[0] = (char) i;
 	ctxt->charset = XML_CHAR_ENCODING_UTF8;
+        ctxt->nbErrors = 0;
 
 	lastError = 0;
         c = xmlCurrentChar(ctxt, &len);
@@ -305,6 +306,7 @@ static int testCharRangeByte2(xmlParserCtxtPtr ctxt) {
 	    data[0] = (char) i;
 	    data[1] = (char) j;
 	    ctxt->charset = XML_CHAR_ENCODING_UTF8;
+            ctxt->nbErrors = 0;
 
 	    lastError = 0;
 	    c = xmlCurrentChar(ctxt, &len);
@@ -398,6 +400,7 @@ static int testCharRangeByte3(xmlParserCtxtPtr ctxt) {
 	data[2] = (char) K;
 	value = (K & 0x3F) + ((j & 0x3F) << 6) + ((i & 0xF) << 12);
 	ctxt->charset = XML_CHAR_ENCODING_UTF8;
+        ctxt->nbErrors = 0;
 
 	lastError = 0;
 	c = xmlCurrentChar(ctxt, &len);
@@ -500,6 +503,7 @@ static int testCharRangeByte4(xmlParserCtxtPtr ctxt) {
 	value = (L & 0x3F) + ((K & 0x3F) << 6) + ((j & 0x3F) << 12) +
 	        ((i & 0x7) << 18);
 	ctxt->charset = XML_CHAR_ENCODING_UTF8;
+        ctxt->nbErrors = 0;
 
 	lastError = 0;
 	c = xmlCurrentChar(ctxt, &len);

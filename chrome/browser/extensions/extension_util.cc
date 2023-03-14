@@ -30,12 +30,9 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_icon_set.h"
 #include "extensions/common/extension_urls.h"
-#include "extensions/common/manifest_handlers/app_isolation_info.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "extensions/grit/extensions_browser_resources.h"
-#include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -80,10 +77,14 @@ bool HasIsolatedStorage(const std::string& extension_id,
   const Extension* extension =
       ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
           extension_id);
+  return extension && HasIsolatedStorage(*extension, context);
+}
 
+bool HasIsolatedStorage(const Extension& extension,
+                        content::BrowserContext* context) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const bool is_policy_extension =
-      extension && Manifest::IsPolicyLocation(extension->location());
+      Manifest::IsPolicyLocation(extension.location());
   Profile* profile = Profile::FromBrowserContext(context);
   if (profile && ash::ProfileHelper::IsSigninProfile(profile) &&
       is_policy_extension) {
@@ -91,14 +92,10 @@ bool HasIsolatedStorage(const std::string& extension_id,
   }
 #endif
 
-  return extension && AppIsolationInfo::HasIsolatedStorage(extension);
+  return LegacyHasIsolatedStorage(&extension);
 }
 
-bool IsChromeApp(const std::string& extension_id,
-                 content::BrowserContext* context) {
-  const Extension* extension =
-      ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
-          extension_id);
+bool LegacyHasIsolatedStorage(const Extension* extension) {
   return extension->is_platform_app();
 }
 
@@ -250,16 +247,6 @@ base::Value::Dict GetExtensionInfo(const Extension* extension) {
   dict.Set("icon", icon.spec());
 
   return dict;
-}
-
-const gfx::ImageSkia& GetDefaultAppIcon() {
-  return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-      IDR_APP_DEFAULT_ICON);
-}
-
-const gfx::ImageSkia& GetDefaultExtensionIcon() {
-  return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-      IDR_EXTENSION_DEFAULT_ICON);
 }
 
 std::unique_ptr<const PermissionSet> GetInstallPromptPermissionSetForExtension(

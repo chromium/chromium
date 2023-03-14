@@ -120,9 +120,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPClientSocketBrokered
   raw_ptr<net::NetworkQualityEstimator> network_quality_estimator_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  raw_ptr<net::NetLog> net_log_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  const net::NetLogSource source_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const net::NetLogWithSource net_log_source_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // State to track whether socket is currently attempting to connect.
   bool is_connect_in_progress_ GUARDED_BY_CONTEXT(sequence_checker_) = false;

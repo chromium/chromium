@@ -33,6 +33,7 @@
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
@@ -218,6 +219,7 @@ struct MockConfiguration {
   bool delay_token_response;
   AccountsDialogAction accounts_dialog_action;
   IdpSigninStatusMismatchDialogAction idp_signin_status_mismatch_dialog_action;
+  bool succeed_with_console_message = false;
 };
 
 static const MockClientIdConfiguration kDefaultClientMetadata{
@@ -501,7 +503,8 @@ class TestDialogController
 
   void ShowAccountsDialog(
       WebContents* rp_web_contents,
-      const std::string& rp_for_display,
+      const std::string& top_frame_for_display,
+      const absl::optional<std::string>& iframe_url_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
       IdentityRequestAccount::SignInMode sign_in_mode,
       bool show_auto_reauthn_checkbox,
@@ -540,7 +543,7 @@ class TestDialogController
   }
 
   void ShowFailureDialog(content::WebContents* rp_web_contents,
-                         const std::string& rp_for_display,
+                         const std::string& top_frame_for_display,
                          const std::string& idp_for_display,
                          IdentityRequestDialogController::DismissCallback
                              dismiss_callback) override {
@@ -718,16 +721,18 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     std::vector<blink::mojom::IdentityProviderGetParametersPtr> idp_get_params;
     for (const auto& identity_provider :
          request_parameters.identity_providers) {
-      std::vector<blink::mojom::IdentityProviderConfigPtr> idp_ptrs;
+      std::vector<blink::mojom::IdentityProviderPtr> idp_ptrs;
       blink::mojom::IdentityProviderLoginHintPtr login_hint_ptr =
           blink::mojom::IdentityProviderLoginHint::New(
               identity_provider.login_hint.email,
               identity_provider.login_hint.id,
               identity_provider.login_hint.is_required);
-      blink::mojom::IdentityProviderConfigPtr idp_ptr =
+      blink::mojom::IdentityProviderConfigPtr config =
           blink::mojom::IdentityProviderConfig::New(
               GURL(identity_provider.provider), identity_provider.client_id,
               identity_provider.nonce, std::move(login_hint_ptr));
+      blink::mojom::IdentityProviderPtr idp_ptr =
+          blink::mojom::IdentityProvider::NewFederated(std::move(config));
       idp_ptrs.push_back(std::move(idp_ptr));
       blink::mojom::IdentityProviderGetParametersPtr get_params =
           blink::mojom::IdentityProviderGetParameters::New(
@@ -782,16 +787,18 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
             main_test_rfh()->GetFederatedAuthRequestIssueCount(absl::nullopt);
         EXPECT_EQ(0, issue_count);
       }
-      CheckConsoleMessages(expectation.devtools_issue_statuses);
+      CheckConsoleMessages(expectation.devtools_issue_statuses,
+                           configuration.succeed_with_console_message);
     }
   }
 
   void CheckConsoleMessages(
-      const std::vector<FederatedAuthRequestResult>& devtools_issue_statuses) {
+      const std::vector<FederatedAuthRequestResult>& devtools_issue_statuses,
+      bool succeed_with_console_message) {
     std::vector<std::string> messages =
         RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
 
-    bool did_expect_any_messages = false;
+    bool did_expect_any_messages = succeed_with_console_message;
     size_t expected_message_index = messages.size() - 1;
     for (const auto& expected_status :
          base::Reversed(devtools_issue_statuses)) {
@@ -974,9 +981,28 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     EXPECT_TRUE(metric_found) << "No Status.SignInStateMatch was found";
   }
 
-  void ExpectAutoReauthnUKM(
+  void ExpectAutoReauthnMetrics(
       FedCmMetrics::NumReturningAccounts expected_returning_accounts,
-      bool expected_succeeded) {
+      bool expected_succeeded,
+      bool expected_auto_reauthn_setting_blocked,
+      bool expected_auto_reauthn_embargoed) {
+    // UMA checks
+    histogram_tester_.ExpectUniqueSample("Blink.FedCm.AutoReauthn.Succeeded",
+                                         expected_succeeded, 1);
+    histogram_tester_.ExpectUniqueSample(
+        "Blink.FedCm.AutoReauthn.ReturningAccounts",
+        static_cast<int>(expected_returning_accounts), 1);
+    histogram_tester_.ExpectUniqueSample(
+        "Blink.FedCm.AutoReauthn.BlockedByContentSettings",
+        expected_auto_reauthn_setting_blocked, 1);
+    histogram_tester_.ExpectUniqueSample(
+        "Blink.FedCm.AutoReauthn.BlockedByEmbargo",
+        expected_auto_reauthn_embargoed, 1);
+    histogram_tester_.ExpectTotalCount(
+        "Blink.FedCm.AutoReauthn.TimeFromEmbargoWhenBlocked",
+        expected_auto_reauthn_embargoed ? 1 : 0);
+
+    // UKM checks
     auto entries = ukm_recorder()->GetEntriesByName(FedCmEntry::kEntryName);
     ASSERT_FALSE(entries.empty()) << "No FedCM UKM entry was found!";
 
@@ -986,22 +1012,41 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
           ukm_recorder()->GetEntryMetric(entry, "AutoReauthn.Succeeded");
       if (!metric) {
         EXPECT_FALSE(ukm_recorder()->GetEntryMetric(
-            entry, "AutoReauthn.ReturningAccounts"))
-            << "Found an entry with AutoReauthn.ReturningAccounts but without "
-               "AutoReauthn.Succeeded";
+            entry, "AutoReauthn.ReturningAccounts"));
+        EXPECT_FALSE(ukm_recorder()->GetEntryMetric(
+            entry, "AutoReauthn.BlockedByContentSettings"));
+        EXPECT_FALSE(ukm_recorder()->GetEntryMetric(
+            entry, "AutoReauthn.BlockedByEmbargo"));
+        EXPECT_FALSE(ukm_recorder()->GetEntryMetric(
+            entry, "AutoReauthn.TimeFromEmbargoWhenBlocked"));
         continue;
       }
       EXPECT_FALSE(metric_found) << "Found more than one AutoReauthn entry";
       metric_found = true;
       EXPECT_EQ(expected_succeeded, *metric);
-      const int64_t* returning_accounts_metric = ukm_recorder()->GetEntryMetric(
-          entry, "AutoReauthn.ReturningAccounts");
-      ASSERT_TRUE(returning_accounts_metric)
-          << "AutoReauthn.ReturningAccounts was not found";
-      EXPECT_EQ(static_cast<int>(expected_returning_accounts),
-                *returning_accounts_metric);
+
+      metric = ukm_recorder()->GetEntryMetric(entry,
+                                              "AutoReauthn.ReturningAccounts");
+      ASSERT_TRUE(metric) << "AutoReauthn.ReturningAccounts was not found";
+      EXPECT_EQ(static_cast<int>(expected_returning_accounts), *metric);
+
+      metric = ukm_recorder()->GetEntryMetric(
+          entry, "AutoReauthn.BlockedByContentSettings");
+      ASSERT_TRUE(metric)
+          << "AutoReauthn.BlockedByContentSettings was not found";
+      EXPECT_EQ(expected_auto_reauthn_setting_blocked, *metric);
+
+      metric =
+          ukm_recorder()->GetEntryMetric(entry, "AutoReauthn.BlockedByEmbargo");
+      ASSERT_TRUE(metric) << "AutoReauthn.BlockedByEmbargo was not found";
+      EXPECT_EQ(expected_auto_reauthn_embargoed, *metric);
+
+      metric = ukm_recorder()->GetEntryMetric(
+          entry, "AutoReauthn.TimeFromEmbargoWhenBlocked");
+      EXPECT_EQ(expected_auto_reauthn_embargoed, !!metric);
     }
     EXPECT_TRUE(metric_found) << "Did not find AutoReauthn metrics";
+    CheckAllFedCmSessionIDs();
   }
 
   void CheckAllFedCmSessionIDs() {
@@ -1382,8 +1427,11 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnEmbargo) {
 
   // Pretend the auto re-authn permission has been granted.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
-              HasAutoReauthnPermission(OriginFromString(kRpUrl)))
+              HasAutoReauthnContentSetting())
       .WillOnce(Return(true));
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
+      .WillOnce(Return(false));
 
   RequestParameters request_parameters = kDefaultRequestParameters;
   request_parameters.auto_reauthn = true;
@@ -1395,14 +1443,10 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnEmbargo) {
   EXPECT_TRUE(test_auto_reauthn_permission_delegate_->embargoed_origins_.count(
       OriginFromString(kRpUrl)));
 
-  histogram_tester_.ExpectUniqueSample("Blink.FedCm.AutoReauthn.Succeeded",
-                                       true, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Blink.FedCm.AutoReauthn.ReturningAccounts",
-      static_cast<int>(FedCmMetrics::NumReturningAccounts::kOne), 1);
-  ExpectAutoReauthnUKM(FedCmMetrics::NumReturningAccounts::kOne,
-                       /*expected_succeeded=*/true);
-  CheckAllFedCmSessionIDs();
+  ExpectAutoReauthnMetrics(FedCmMetrics::NumReturningAccounts::kOne,
+                           /*expected_succeeded=*/true,
+                           /*expected_auto_reauthn_setting_blocked=*/false,
+                           /*expected_auto_reauthn_embargoed=*/false);
 }
 
 // Test that auto re-authn with a single account where the account is a
@@ -1422,8 +1466,11 @@ TEST_F(FederatedAuthRequestImplTest,
 
   // Pretend the auto re-authn permission has been granted.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
-              HasAutoReauthnPermission(OriginFromString(kRpUrl)))
+              HasAutoReauthnContentSetting())
       .WillOnce(Return(true));
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
+      .WillOnce(Return(false));
 
   for (const auto& idp_info : kConfigurationValid.idp_info) {
     ASSERT_EQ(idp_info.second.accounts.size(), 1u);
@@ -1436,14 +1483,10 @@ TEST_F(FederatedAuthRequestImplTest,
   EXPECT_EQ(displayed_accounts()[0].login_state, LoginState::kSignIn);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kAuto);
 
-  histogram_tester_.ExpectUniqueSample("Blink.FedCm.AutoReauthn.Succeeded",
-                                       true, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Blink.FedCm.AutoReauthn.ReturningAccounts",
-      static_cast<int>(FedCmMetrics::NumReturningAccounts::kOne), 1);
-  ExpectAutoReauthnUKM(FedCmMetrics::NumReturningAccounts::kOne,
-                       /*expected_succeeded=*/true);
-  CheckAllFedCmSessionIDs();
+  ExpectAutoReauthnMetrics(FedCmMetrics::NumReturningAccounts::kOne,
+                           /*expected_succeeded=*/true,
+                           /*expected_auto_reauthn_setting_blocked=*/false,
+                           /*expected_auto_reauthn_embargoed=*/false);
 }
 
 // Test that auto re-authn with multiple accounts and a single returning user
@@ -1477,8 +1520,11 @@ TEST_F(FederatedAuthRequestImplTest,
 
   // Pretend the auto re-authn permission has been granted.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
-              HasAutoReauthnPermission(OriginFromString(kRpUrl)))
+              HasAutoReauthnContentSetting())
       .WillOnce(Return(true));
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
+      .WillOnce(Return(false));
 
   RequestParameters request_parameters = kDefaultRequestParameters;
   request_parameters.auto_reauthn = true;
@@ -1492,14 +1538,10 @@ TEST_F(FederatedAuthRequestImplTest,
   EXPECT_EQ(CountNumLoginStateIsSignin(), 1);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kAuto);
 
-  histogram_tester_.ExpectUniqueSample("Blink.FedCm.AutoReauthn.Succeeded",
-                                       true, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Blink.FedCm.AutoReauthn.ReturningAccounts",
-      static_cast<int>(FedCmMetrics::NumReturningAccounts::kOne), 1);
-  ExpectAutoReauthnUKM(FedCmMetrics::NumReturningAccounts::kOne,
-                       /*expected_succeeded=*/true);
-  CheckAllFedCmSessionIDs();
+  ExpectAutoReauthnMetrics(FedCmMetrics::NumReturningAccounts::kOne,
+                           /*expected_succeeded=*/true,
+                           /*expected_auto_reauthn_setting_blocked=*/false,
+                           /*expected_auto_reauthn_embargoed=*/false);
 }
 
 // Test that auto re-authn with multiple accounts and multiple returning users
@@ -1534,8 +1576,11 @@ TEST_F(FederatedAuthRequestImplTest,
 
   // Pretend the auto re-authn permission has been granted.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
-              HasAutoReauthnPermission(OriginFromString(kRpUrl)))
+              HasAutoReauthnContentSetting())
       .WillOnce(Return(true));
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
+      .WillOnce(Return(false));
 
   RequestParameters request_parameters = kDefaultRequestParameters;
   request_parameters.auto_reauthn = true;
@@ -1550,14 +1595,10 @@ TEST_F(FederatedAuthRequestImplTest,
   EXPECT_EQ(CountNumLoginStateIsSignin(), 2);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
 
-  histogram_tester_.ExpectUniqueSample("Blink.FedCm.AutoReauthn.Succeeded",
-                                       false, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Blink.FedCm.AutoReauthn.ReturningAccounts",
-      static_cast<int>(FedCmMetrics::NumReturningAccounts::kMultiple), 1);
-  ExpectAutoReauthnUKM(FedCmMetrics::NumReturningAccounts::kMultiple,
-                       /*expected_succeeded=*/false);
-  CheckAllFedCmSessionIDs();
+  ExpectAutoReauthnMetrics(FedCmMetrics::NumReturningAccounts::kMultiple,
+                           /*expected_succeeded=*/false,
+                           /*expected_auto_reauthn_setting_blocked=*/false,
+                           /*expected_auto_reauthn_embargoed=*/false);
 }
 
 // Test that auto re-authn with single non-returning account sets the sign-in
@@ -1575,8 +1616,11 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnForZeroReturningUsers) {
 
   // Pretend the auto re-authn permission has been granted.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
-              HasAutoReauthnPermission(OriginFromString(kRpUrl)))
+              HasAutoReauthnContentSetting())
       .WillOnce(Return(true));
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
+      .WillOnce(Return(false));
 
   for (const auto& idp_info : kConfigurationValid.idp_info) {
     ASSERT_EQ(idp_info.second.accounts.size(), 1u);
@@ -1589,14 +1633,10 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnForZeroReturningUsers) {
   EXPECT_EQ(displayed_accounts()[0].login_state, LoginState::kSignUp);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
 
-  histogram_tester_.ExpectUniqueSample("Blink.FedCm.AutoReauthn.Succeeded",
-                                       false, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Blink.FedCm.AutoReauthn.ReturningAccounts",
-      static_cast<int>(FedCmMetrics::NumReturningAccounts::kZero), 1);
-  ExpectAutoReauthnUKM(FedCmMetrics::NumReturningAccounts::kZero,
-                       /*expected_succeeded=*/false);
-  CheckAllFedCmSessionIDs();
+  ExpectAutoReauthnMetrics(FedCmMetrics::NumReturningAccounts::kZero,
+                           /*expected_succeeded=*/false,
+                           /*expected_auto_reauthn_setting_blocked=*/false,
+                           /*expected_auto_reauthn_embargoed=*/false);
 }
 
 // Test that auto re-authn with multiple accounts and a single returning user
@@ -1639,8 +1679,11 @@ TEST_F(FederatedAuthRequestImplTest,
 
   // Pretend the auto re-authn permission has been granted.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
-              HasAutoReauthnPermission(OriginFromString(kRpUrl)))
+              HasAutoReauthnContentSetting())
       .WillOnce(Return(true));
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
+      .WillOnce(Return(false));
 
   RequestParameters request_parameters = kDefaultRequestParameters;
   request_parameters.auto_reauthn = true;
@@ -1665,8 +1708,11 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnForFirstTimeUser) {
 
   // Pretend the auto re-authn permission has been granted.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
-              HasAutoReauthnPermission(OriginFromString(kRpUrl)))
+              HasAutoReauthnContentSetting())
       .WillOnce(Return(true));
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
+      .WillOnce(Return(false));
 
   RequestParameters request_parameters = kDefaultRequestParameters;
   request_parameters.auto_reauthn = true;
@@ -1693,7 +1739,7 @@ TEST_F(FederatedAuthRequestImplTest,
 
   // Pretend the auto re-authn permission has been blocked for this account.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
-              HasAutoReauthnPermission(OriginFromString(kRpUrl)))
+              HasAutoReauthnContentSetting())
       .WillOnce(Return(false));
 
   RequestParameters request_parameters = kDefaultRequestParameters;
@@ -1703,6 +1749,57 @@ TEST_F(FederatedAuthRequestImplTest,
   ASSERT_EQ(displayed_accounts().size(), 1u);
   EXPECT_EQ(displayed_accounts()[0].login_state, LoginState::kSignIn);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
+
+  ExpectAutoReauthnMetrics(FedCmMetrics::NumReturningAccounts::kOne,
+                           /*expected_succeeded=*/false,
+                           /*expected_auto_reauthn_setting_blocked=*/true,
+                           /*expected_auto_reauthn_embargoed=*/false);
+}
+
+// Test that auto re-authn where the auto re-authn cooldown is on sets
+// the sign-in mode to explicit.
+TEST_F(FederatedAuthRequestImplTest, AutoReauthnWithCooldown) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmAutoReauthn);
+
+  // Pretend the sharing permission has been granted for this account.
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrlFull), kAccountId))
+      .WillRepeatedly(Return(true));
+
+  // Pretend the auto re-authn permission has been granted for this account.
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              HasAutoReauthnContentSetting())
+      .WillOnce(Return(true));
+  // Pretend that auto re-authn is embargoed.
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
+      .WillOnce(Return(true));
+
+  RequestParameters request_parameters = kDefaultRequestParameters;
+  request_parameters.auto_reauthn = true;
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.succeed_with_console_message = true;
+  RunAuthTest(request_parameters, kExpectationSuccess, configuration);
+
+  ASSERT_EQ(displayed_accounts().size(), 1u);
+  EXPECT_EQ(displayed_accounts()[0].login_state, LoginState::kSignIn);
+  EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
+
+  ExpectAutoReauthnMetrics(FedCmMetrics::NumReturningAccounts::kOne,
+                           /*expected_succeeded=*/false,
+                           /*expected_auto_reauthn_setting_blocked=*/false,
+                           /*expected_auto_reauthn_embargoed=*/true);
+
+  std::vector<std::string> messages =
+      RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
+  ASSERT_EQ(1U, messages.size());
+  EXPECT_EQ(
+      "Auto re-authn was previously triggered less than 10 minutes ago. Only "
+      "one auto re-authn request can be made every 10 minutes.",
+      messages[0]);
 }
 
 TEST_F(FederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
@@ -2182,7 +2279,8 @@ class DisableApiWhenDialogShownDialogController : public TestDialogController {
 
   void ShowAccountsDialog(
       content::WebContents* rp_web_contents,
-      const std::string& rp_for_display,
+      const std::string& top_frame_for_display,
+      const absl::optional<std::string>& iframe_url_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
       SignInMode sign_in_mode,
       bool show_auto_reauthn_checkbox,
@@ -2195,8 +2293,9 @@ class DisableApiWhenDialogShownDialogController : public TestDialogController {
 
     // Call parent class method in order to store callback parameters.
     TestDialogController::ShowAccountsDialog(
-        rp_web_contents, rp_for_display, std::move(identity_provider_data),
-        sign_in_mode, show_auto_reauthn_checkbox, std::move(on_selected),
+        rp_web_contents, top_frame_for_display, iframe_url_for_display,
+        std::move(identity_provider_data), sign_in_mode,
+        show_auto_reauthn_checkbox, std::move(on_selected),
         std::move(dismiss_callback));
   }
 
@@ -2349,10 +2448,10 @@ void NavigateToUrl(content::WebContents* web_contents, const GURL& url) {
 TEST_F(FederatedAuthRequestImplTest,
        NavigateDuringClientMetadataFetchBFCacheEnabled) {
   base::test::ScopedFeatureList list;
-  list.InitWithFeatures(
-      /*enabled_features=*/{features::kBackForwardCache},
-      /*disabled_features=*/{features::kBackForwardCacheMemoryControls});
-  ASSERT_TRUE(content::IsBackForwardCacheEnabled());
+  list.InitWithFeaturesAndParameters(
+      GetBasicBackForwardCacheFeatureForTesting(),
+      GetDefaultDisabledBackForwardCacheFeaturesForTesting());
+  ASSERT_TRUE(IsBackForwardCacheEnabled());
 
   SetNetworkRequestManager(
       std::make_unique<IdpNetworkRequestManagerClientMetadataTaskRunner>(
@@ -2373,7 +2472,7 @@ TEST_F(FederatedAuthRequestImplTest,
        NavigateDuringClientMetadataFetchBFCacheDisabled) {
   base::test::ScopedFeatureList list;
   list.InitAndDisableFeature(features::kBackForwardCache);
-  ASSERT_FALSE(content::IsBackForwardCacheEnabled());
+  ASSERT_FALSE(IsBackForwardCacheEnabled());
 
   SetNetworkRequestManager(
       std::make_unique<IdpNetworkRequestManagerClientMetadataTaskRunner>(

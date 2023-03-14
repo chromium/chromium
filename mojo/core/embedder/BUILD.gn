@@ -20,6 +20,7 @@ component("embedder") {
 
   public_deps = [
     "//base",
+    "//mojo:buildflags",
     "//mojo/public/cpp/platform",
     "//third_party/ipcz/src:ipcz_chromium",
   ]
@@ -39,5 +40,8 @@ component("features") {
   public = [ "features.h" ]
   sources = [ "features.cc" ]
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//mojo:buildflags",
+  ]
 }

@@ -64,7 +64,7 @@ class BASE_EXPORT SamplingHeapProfiler
   enum class StackUnwinder {
     DEPRECATED_kNotChecked,
     kDefault,
-    kCFIBacktrace,
+    DEPRECATED_kCFIBacktrace,
     kUnavailable,
     kFramePointers,
     kMaxValue = kFramePointers,

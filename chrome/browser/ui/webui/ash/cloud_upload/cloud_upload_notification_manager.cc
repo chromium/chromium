@@ -11,8 +11,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
+#include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -37,16 +41,22 @@ CloudUploadNotificationManager::CloudUploadNotificationManager(
     Profile* profile,
     const std::string& file_name,
     const std::string& cloud_provider_name,
-    const std::string& target_app_name)
+    const std::string& target_app_name,
+    int num_files)
     : profile_(profile),
       file_name_(file_name),
       cloud_provider_name_(cloud_provider_name),
-      target_app_name_(target_app_name) {
+      target_app_name_(target_app_name),
+      num_files_(num_files) {
   // Generate a unique ID for the cloud upload notifications.
   notification_id_ =
       "cloud-upload-" +
       base::NumberToString(
           ++CloudUploadNotificationManager::notification_manager_counter_);
+
+  // Set the system notification source display name to "Files".
+  display_source_ =
+      l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME_FILES);
 
   // Keep the new `CloudUploadNotificationManager` instance alive at least until
   // `OnNotificationManagerDone` executes.
@@ -68,14 +78,17 @@ CloudUploadNotificationManager::GetNotificationDisplayService() {
 std::unique_ptr<message_center::Notification>
 CloudUploadNotificationManager::CreateUploadProgressNotification() {
   std::string title =
-      "Moving \"" + file_name_ + "\" to " + cloud_provider_name_;
-  std::string message =
-      "Your file will open in " + target_app_name_ + " when completed.";
+      // TODO(b/242685536) Use "files" for multi-files when support for
+      // multi-files is added.
+      "Moving " + base::NumberToString(num_files_) + " file to " +
+      cloud_provider_name_;
+  std::string message = "File will open in " + target_app_name_;
 
   return ash::CreateSystemNotificationPtr(
       /*type=*/message_center::NOTIFICATION_TYPE_PROGRESS,
       /*id=*/notification_id_, base::UTF8ToUTF16(title),
-      base::UTF8ToUTF16(message), /*display_source=*/std::u16string(),
+      // TODO(b/272601262) Display or delete this message.
+      base::UTF8ToUTF16(message), /*display_source=*/display_source_,
       /*origin_url=*/GURL(), /*notifier_id=*/message_center::NotifierId(),
       /*optional_fields=*/{},
       /*delegate=*/
@@ -89,35 +102,46 @@ CloudUploadNotificationManager::CreateUploadProgressNotification() {
 
 std::unique_ptr<message_center::Notification>
 CloudUploadNotificationManager::CreateUploadCompleteNotification() {
-  std::string title = "Move completed";
-  std::string message = "1 item moved to " + cloud_provider_name_ +
-                        ". Opening in " + target_app_name_;
-  return ash::CreateSystemNotificationPtr(
+  // TODO(b/242685536) Use "files" for multi-files when support for multi-files
+  // is added.
+  std::string title = "Moved " + base::NumberToString(num_files_) + " file";
+  std::string message = "Opening in " + target_app_name_;
+  auto notification = ash::CreateSystemNotificationPtr(
       /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
       /*id=*/notification_id_, base::UTF8ToUTF16(title),
       base::UTF8ToUTF16(message),
-      /*display_source=*/std::u16string(),
+      /*display_source=*/display_source_,
       /*origin_url=*/GURL(), /*notifier_id=*/message_center::NotifierId(),
       /*optional_fields=*/{},
       /*delegate=*/
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(
-              &CloudUploadNotificationManager::CloseNotification,
+              &CloudUploadNotificationManager::HandleNotificationClick,
               weak_ptr_factory_.GetWeakPtr())),
       /*small_image=*/gfx::VectorIcon(),
       /*warning_level=*/
       message_center::SystemNotificationWarningLevel::NORMAL);
+
+  DCHECK(!destination_path_.empty());
+  if (!destination_path_.empty()) {
+    //  Add "Show in folder" button.
+    std::string button_title = "Show in folder";
+    std::vector<message_center::ButtonInfo> notification_buttons = {
+        message_center::ButtonInfo(base::UTF8ToUTF16(button_title))};
+    notification->set_buttons(notification_buttons);
+  }
+  return notification;
 }
 
 std::unique_ptr<message_center::Notification>
 CloudUploadNotificationManager::CreateUploadErrorNotification(
     std::string message) {
-  std::string title = "Failed to move " + file_name_;
+  std::string title = "Can't move file";
   return ash::CreateSystemNotificationPtr(
       /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
       /*id=*/notification_id_, base::UTF8ToUTF16(title),
       base::UTF8ToUTF16(message),
-      /*display_source=*/std::u16string(),
+      /*display_source=*/display_source_,
       /*origin_url=*/GURL(), /*notifier_id=*/message_center::NotifierId(),
       /*optional_fields=*/{},
       /*delegate=*/
@@ -159,7 +183,8 @@ void CloudUploadNotificationManager::ShowCompleteNotification() {
                                            *notification,
                                            /*metadata=*/nullptr);
 
-  // Start the timer to automatically dismiss the "Complete" notification.
+  // Start the timer to automatically dismiss the "Complete" notification if
+  // "Show in folder" button not clicked.
   complete_notification_timer_.Start(
       FROM_HERE, kCompleteNotificationTime,
       base::BindOnce(&CloudUploadNotificationManager::CloseNotification,
@@ -206,6 +231,19 @@ void CloudUploadNotificationManager::CloseNotification() {
   if (callback_) {
     std::move(callback_).Run();
   }
+}
+
+void CloudUploadNotificationManager::HandleNotificationClick(
+    absl::optional<int> button_index) {
+  if (callback_for_testing_) {
+    std::move(callback_for_testing_).Run(destination_path_);
+  } else if (button_index) {
+    // Show In Folder if button was pressed, rather than a click to somewhere
+    // else in the notification.
+    platform_util::ShowItemInFolder(profile_, destination_path_);
+  }
+
+  CloseNotification();
 }
 
 void CloudUploadNotificationManager::CloseForTest() {

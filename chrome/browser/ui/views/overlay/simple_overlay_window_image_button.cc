@@ -43,8 +43,8 @@ void SimpleOverlayWindowImageButton::OnBoundsChanged(
 void SimpleOverlayWindowImageButton::UpdateImage() {
   const int icon_size = std::max(0, width() - (2 * kPipWindowIconPadding));
   SetImageModel(views::Button::STATE_NORMAL,
-                ui::ImageModel::FromVectorIcon(icon_, kColorPipWindowForeground,
-                                               icon_size));
+                ui::ImageModel::FromVectorIcon(
+                    *icon_, kColorPipWindowForeground, icon_size));
 }
 
 BEGIN_METADATA(SimpleOverlayWindowImageButton, OverlayWindowImageButton)

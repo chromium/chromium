@@ -76,11 +76,11 @@
         <include name="IDS_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION" file="chromeos/arc_input_overlay/onboarding_illustration.png" type="BINDATA" />
         <include name="IDS_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION_DARK" file="chromeos/arc_input_overlay/onboarding_illustration_dark.png" type="BINDATA" />
       </if>
-      <include name="IDS_READ_ANYTHING_DEFAULT_PNG" file="side_panel/read_anything/images/read_anything_default.png" type="BINDATA" />
-      <include name="IDS_READ_ANYTHING_LIGHT_PNG" file="side_panel/read_anything/images/read_anything_light.png" type="BINDATA" />
-      <include name="IDS_READ_ANYTHING_DARK_PNG" file="side_panel/read_anything/images/read_anything_dark.png" type="BINDATA" />
-      <include name="IDS_READ_ANYTHING_YELLOW_PNG" file="side_panel/read_anything/images/read_anything_yellow.png" type="BINDATA" />
-      <include name="IDS_READ_ANYTHING_BLUE_PNG" file="side_panel/read_anything/images/read_anything_blue.png" type="BINDATA" />
+      <include name="IDS_READING_MODE_DEFAULT_PNG" file="side_panel/read_anything/images/read_anything_default.png" type="BINDATA" />
+      <include name="IDS_READING_MODE_LIGHT_PNG" file="side_panel/read_anything/images/read_anything_light.png" type="BINDATA" />
+      <include name="IDS_READING_MODE_DARK_PNG" file="side_panel/read_anything/images/read_anything_dark.png" type="BINDATA" />
+      <include name="IDS_READING_MODE_YELLOW_PNG" file="side_panel/read_anything/images/read_anything_yellow.png" type="BINDATA" />
+      <include name="IDS_READING_MODE_BLUE_PNG" file="side_panel/read_anything/images/read_anything_blue.png" type="BINDATA" />
     </includes>
   </release>
 </grit>

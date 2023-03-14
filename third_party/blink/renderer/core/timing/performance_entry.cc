@@ -143,6 +143,9 @@ PerformanceEntry::EntryType PerformanceEntry::ToEntryTypeEnum(
     return kBackForwardCacheRestoration;
   if (entry_type == performance_entry_names::kSoftNavigation)
     return kSoftNavigation;
+  if (entry_type == performance_entry_names::kLongAnimationFrame) {
+    return kLongAnimationFrame;
+  }
   return kInvalid;
 }
 

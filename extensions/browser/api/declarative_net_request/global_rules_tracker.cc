@@ -22,14 +22,14 @@ namespace dnr_api = api::declarative_net_request;
 size_t CalculateAllocatedGlobalRuleCount(
     const ExtensionPrefs* extension_prefs,
     const ExtensionRegistry* extension_registry) {
-  std::unique_ptr<ExtensionSet> installed_extensions =
+  const ExtensionSet installed_extensions =
       extension_registry->GenerateInstalledExtensionsSet();
 
   // For each extension, fetch its allocated rules count and add it to
   // |allocated_global_rule_count_|.
   size_t allocated_rule_count;
   size_t allocated_global_rule_count = 0;
-  for (const auto& extension : *installed_extensions) {
+  for (const auto& extension : installed_extensions) {
     if (extension_prefs->GetDNRAllocatedGlobalRuleCount(
             extension->id(), &allocated_rule_count)) {
       allocated_global_rule_count += allocated_rule_count;
@@ -55,11 +55,12 @@ size_t CalculateInitialAllocatedGlobalRuleCount(
   for (const auto& info : extensions_info) {
     // Skip extensions that were loaded from the command-line because we don't
     // want those to persist across browser restart.
-    if (info->extension_location == mojom::ManifestLocation::kCommandLine)
+    if (info.extension_location == mojom::ManifestLocation::kCommandLine) {
       continue;
+    }
 
     if (extension_prefs->GetDNRAllocatedGlobalRuleCount(
-            info->extension_id, &allocated_rule_count)) {
+            info.extension_id, &allocated_rule_count)) {
       allocated_global_rule_count += allocated_rule_count;
     }
   }

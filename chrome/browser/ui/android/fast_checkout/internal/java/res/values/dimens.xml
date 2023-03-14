@@ -34,4 +34,5 @@ found in the LICENSE file.
     <dimen name="fast_checkout_detail_sheet_selected_icon_margin_end">16dp</dimen>
     <dimen name="fast_checkout_detail_sheet_height_single_address">160dp</dimen>
     <dimen name="fast_checkout_detail_sheet_height_single_credit_card">92dp</dimen>
+    <dimen name="fast_checkout_detail_sheet_header_height">77dp</dimen>
 </resources>

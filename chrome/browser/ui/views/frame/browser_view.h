@@ -25,7 +25,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
-#include "chrome/browser/ui/performance_controls/high_efficiency_iph_controller.h"
+#include "chrome/browser/ui/performance_controls/high_efficiency_opt_in_iph_controller.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
@@ -165,11 +165,6 @@ class BrowserView : public BrowserWindow,
 
   void SetDownloadShelfForTest(DownloadShelf* download_shelf);
 
-  // This suppresses the slide behaviors of top-controls and so the top controls
-  // will stay showing under any situation. This is only for testing behaviors
-  // of top controls which should be visible always.
-  void DisableTopControlsSlideForTesting();
-
   // Initializes (or re-initializes) the status bubble.  We try to only create
   // the bubble once and re-use it for the life of the browser, but certain
   // events (such as changing enabling/disabling Aero on Win) can force a need
@@ -198,6 +193,8 @@ class BrowserView : public BrowserWindow,
 
 #if BUILDFLAG(IS_MAC)
   views::Widget* overlay_widget() { return overlay_widget_.get(); }
+  views::Widget* tab_overlay_widget() { return tab_overlay_widget_.get(); }
+  views::View* tab_overlay_view() { return tab_overlay_view_.get(); }
 
   // Returns if this browser view will use immersive fullscreen mode, based
   // on the state of the two relevant base::Features, as well as the type of
@@ -418,8 +415,6 @@ class BrowserView : public BrowserWindow,
   bool window_management_permission_granted_for_testing() const {
     return window_management_permission_granted_;
   }
-
-  void set_isolated_web_app_true_for_testing() { is_isolated_web_app_ = true; }
 
   // Update the side panel's horizontal alignment when
   // prefs::kSidePanelHorizontalAlignment is changed from the appearance
@@ -957,9 +952,6 @@ class BrowserView : public BrowserWindow,
   void SetWindowManagementPermissionSubscriptionForBorderlessMode(
       content::WebContents* web_contents);
 
-  // Updates whether the web app is an isolated web app.
-  void UpdateIsIsolatedWebApp();
-
   WebAppFrameToolbarView* web_app_frame_toolbar();
   const WebAppFrameToolbarView* web_app_frame_toolbar() const;
 
@@ -1045,7 +1037,21 @@ class BrowserView : public BrowserWindow,
   // Used when calling CreateMacOverlayView(). This widget owns `overlay_view_`.
   // Its content NSView will be reparented to a NSToolbarFullScreenWindow
   // during fullscreen.
-  raw_ptr<views::Widget, DanglingUntriaged> overlay_widget_;
+  raw_ptr<views::Widget, DanglingUntriaged> overlay_widget_ = nullptr;
+
+  // Also used when calling CreateMacOverlayView(). This widget will host the
+  // tabstrip contents. Its content NSView will be reparented to a separate
+  // section of the NSToolbarFullScreenWindow allowing for the tabs to live in
+  // the Titlebar.
+  raw_ptr<views::Widget, DanglingUntriaged> tab_overlay_widget_ = nullptr;
+
+  // The hosting view of TabStripRegionView during immersive fullscreen.
+  raw_ptr<views::View, DanglingUntriaged> tab_overlay_view_ = nullptr;
+
+  // Targeter for the tab_overlay_view_. Ensures tab_overlay_view_ does not
+  // handle events, while allowing for child views to handle events.
+  std::unique_ptr<views::ViewTargeterDelegate> tab_overlay_view_targeter_;
+
 #endif
 
   // The Bookmark Bar View for this window. Lazily created. May be null for
@@ -1214,7 +1220,8 @@ class BrowserView : public BrowserWindow,
 
   OnLinkOpeningFromGestureCallbackList link_opened_from_gesture_callbacks_;
 
-  std::unique_ptr<HighEfficiencyIPHController> high_efficiency_iph_controller_;
+  std::unique_ptr<HighEfficiencyOptInIPHController>
+      high_efficiency_opt_in_iph_controller_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // |loading_animation_tracker_| is used to measure animation smoothness for
@@ -1226,7 +1233,6 @@ class BrowserView : public BrowserWindow,
   bool should_show_window_controls_overlay_toggle_ = false;
   bool borderless_mode_enabled_ = false;
   bool window_management_permission_granted_ = false;
-  bool is_isolated_web_app_ = false;
   absl::optional<content::PermissionController::SubscriptionId>
       window_management_subscription_id_;
 

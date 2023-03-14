@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "chromeos/ash/services/bluetooth_config/device_conversion_util.h"
 #include "components/device_event_log/device_event_log.h"
@@ -165,6 +166,12 @@ void DeviceCacheImpl::OnDeviceNicknameChanged(
   for (device::BluetoothDevice* device : bluetooth_adapter_->GetDevices()) {
     if (device->GetIdentifier() != device_id)
       continue;
+
+    if (ash::features::IsFastPairSavedDevicesNicknamesEnabled() &&
+        fast_pair_delegate_ && nickname.has_value()) {
+      fast_pair_delegate_->UpdateDeviceNickname(device->GetAddress(),
+                                                nickname.value());
+    }
 
     DeviceChanged(bluetooth_adapter_.get(), device);
     return;

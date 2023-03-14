@@ -115,7 +115,6 @@ class DatabaseTask : public DatabaseTaskHost {
   // UMA reporting.
   void SetStorageError(BackgroundFetchStorageError error);
   void SetStorageErrorAndFinish(BackgroundFetchStorageError error);
-  void ReportStorageError();
   bool HasStorageError();
 
   // Quota.
@@ -152,9 +151,6 @@ class DatabaseTask : public DatabaseTaskHost {
   // 2) Run the provided callback.
   // 3) Call Finished().
   virtual void FinishWithError(blink::mojom::BackgroundFetchError error) = 0;
-
-  // The Histogram name to report with the Error.
-  virtual std::string HistogramName() const;
 
   void DidGetStorageVersion(StorageVersionCallback callback,
                             const std::vector<std::string>& data,

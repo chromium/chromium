@@ -46,13 +46,15 @@ if (!is_win) {
       "cast_streaming_test_sender.cc",
     ]
     deps = [
-      "//components/cast_streaming/common:message_serialization",
-      "//components/cast_streaming/public:config_conversions",
+      "//components/cast_streaming/common:conversions",
+      "//media",
+      "//media/cast/openscreen:config_conversions",
 
       # Partial implementation of the platform API used by
       # //third_party/openscreen/src/cast/*.
       "//components/openscreen_platform:openscreen_platform_without_sockets",
       "//third_party/openscreen/src/cast/streaming:common",
+      "//third_party/openscreen/src/cast/streaming:streaming_configs",
       "//third_party/openscreen/src/platform:base",
     ]
     public_deps = [

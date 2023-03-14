@@ -71,11 +71,6 @@ void RecordUmaResponseCode(int code) {
                            code);
 }
 
-void RecordUmaNetError(int net_error) {
-  base::UmaHistogramSparse("Geolocation.NetworkLocationRequest.NetError",
-                           -net_error);
-}
-
 void RecordUmaAccessPoints(int count) {
   const int min = 1;
   const int max = 20;
@@ -329,7 +324,6 @@ void GetLocationFromResponse(int net_error,
                         "DevTools console for more information.",
                         net::ErrorToShortString(net_error), position);
     RecordUmaEvent(NETWORK_LOCATION_REQUEST_EVENT_RESPONSE_EMPTY);
-    RecordUmaNetError(net_error);
     return;
   }
 

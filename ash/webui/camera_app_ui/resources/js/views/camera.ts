@@ -8,7 +8,6 @@ import {
   assertInstanceof,
   assertNotReached,
 } from '../assert.js';
-import * as customToast from '../custom_effect.js';
 import {
   CameraConfig,
   CameraManager,
@@ -75,9 +74,6 @@ import {WarningType} from './warning.js';
 export class Camera extends View implements CameraViewUI {
   private readonly documentReview: DocumentReview;
 
-  private readonly docModeDialogView =
-      new Dialog(ViewName.DOCUMENT_MODE_DIALOG);
-
   private currentLowStorageType: LowStorageDialogType|null = null;
 
   private readonly lowStorageDialogView: Dialog;
@@ -140,7 +136,6 @@ export class Camera extends View implements CameraViewUI {
       new PTZPanel(),
       this.review,
       this.documentReview,
-      this.docModeDialogView,
       this.lowStorageDialogView,
       new View(ViewName.FLASH),
     ];
@@ -292,9 +287,9 @@ export class Camera extends View implements CameraViewUI {
           const mode = util.assertEnumVariant(Mode, el.dataset['mode']);
           this.updateModeUI(mode);
           this.updateShutterLabel(mode);
-          state.set(state.State.MODE_SWITCHING, true);
+          state.set(PerfEvent.MODE_SWITCHING, true);
           const isSuccess = await this.cameraManager.switchMode(mode);
-          state.set(state.State.MODE_SWITCHING, false, {hasError: !isSuccess});
+          state.set(PerfEvent.MODE_SWITCHING, false, {hasError: !isSuccess});
         }
       });
     }
@@ -412,11 +407,6 @@ export class Camera extends View implements CameraViewUI {
 
     // Check the view is still on the top after await.
     if (!nav.isTopMostView(ViewName.CAMERA)) {
-      return;
-    }
-
-    if (customToast.isShowing()) {
-      customToast.focus();
       return;
     }
 

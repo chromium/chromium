@@ -712,7 +712,7 @@ export class EmojiPicker extends PolymerElement {
     this.scrollToGroup(nextTab?.groupId);
   }
 
-  private scrollToGroup(newGroup?: string) {
+  scrollToGroup(newGroup?: string) {
     // TODO(crbug/1152237): This should use behaviour:'smooth', but when you do
     // that it doesn't scroll.
     if (newGroup) {
@@ -1052,7 +1052,7 @@ export class EmojiPicker extends PolymerElement {
    * change of incognito state.
    *
    */
-  private updateIncognitoState(incognito: boolean) {
+  updateIncognitoState(incognito: boolean) {
     this.incognito = incognito;
     // Load the history item for each category.
     for (const category of Object.values(CategoryEnum)) {

@@ -307,6 +307,13 @@ mojom::blink::HoverType MediaValues::CalculatePrimaryHoverType(
   return frame->GetSettings()->GetPrimaryHoverType();
 }
 
+mojom::blink::OutputDeviceUpdateAbilityType
+MediaValues::CalculateOutputDeviceUpdateAbilityType(LocalFrame* frame) {
+  DCHECK(frame);
+  DCHECK(frame->GetSettings());
+  return frame->GetSettings()->GetOutputDeviceUpdateAbilityType();
+}
+
 int MediaValues::CalculateAvailableHoverTypes(LocalFrame* frame) {
   DCHECK(frame);
   DCHECK(frame->GetSettings());

@@ -86,10 +86,8 @@ class UpdateDataProviderTest : public ExtensionsTest {
                           const base::FilePath& relative_path,
                           const std::string& content) const {
     const base::FilePath full_path = directory.Append(relative_path);
-    if (!base::CreateDirectory(full_path.DirName()))
-      return false;
-    int result = base::WriteFile(full_path, content.data(), content.size());
-    return (static_cast<size_t>(result) == content.size());
+    return base::CreateDirectory(full_path.DirName()) &&
+           base::WriteFile(full_path, content);
   }
 
   void AddExtension(const std::string& extension_id,

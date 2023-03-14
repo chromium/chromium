@@ -273,6 +273,16 @@ deps: Targets generating any files being bundled. Note that this should include
 excludes: Paths of files that are not bundled. Often used for large mojo files
           that would otherwise be in many bundles, and for cr.js which relies
           on global variables.
+external_paths: Mappings between absolute URLs and paths where files imported
+                from these URLs can be found. Used for files that are not in
+                |input|. For example, the following external_path is
+                automatically added for all targets:
+                "chrome://resources/|$resources_path" where resources_path is
+                the path to where ts_library()s within ui/webui/resources place
+                their output (e.g. gen/ui/webui/resources/tsc).
+                Note: all absolute URLs must either be listed in |excludes| or
+                be mapped in |external_paths|, otherwise a build time error is
+                raised.
 ```
 
 #### **Example**
@@ -475,10 +485,12 @@ ts_definitions: See |definitions| in ts_library(). Optional parameter.
 ts_deps: See |deps| in ts_library(). Optional parameter.
 ts_extra_deps: See |extra_deps| in ts_library(). Optional parameter.
 ts_path_mappings: See |path_mappings| in ts_library(). Optional parameter.
-ts_use_local_config: Whether to pass a local "tsconfig_base.json" file as the
-                     |tsconfig_base| to ts_library(). Optional, defaults to true.
-                     If false, the default //tools/typescript/tsconfig_base.json
-                     will be used.
+ts_tsconfig_base: The tsconfig file to use for ts_library(). Optional, defaults
+                  to "//tools/typescript/tsconfig_base_polymer.json" for Polymer
+                  UIs (i.e. UIs that specify |web_component_files| and/or
+                  |icons_html_files| and do not set |html_to_wrapper_template|
+                  to "native"). Defaults to
+                  "//tools/typescript/tsconfig_base.json" for non-Polymer UIs.
 
 HTML/CSS/JS optimization related params:
 optimize: Specifies whether any optimization steps will be used, defaults to
@@ -591,6 +603,9 @@ List of files params:
 files: Required parameter. List of all test related files.
 
 TypeScript (ts_library()) related params:
+ts_tsconfig_base: See |tsconfig_base| in ts_library(). Optional parameter. If
+                  not provided the default configuration at
+                  '//chrome/test/data/webui/tsconfig_base.json' is used.
 ts_definitions: See |definitions| in ts_library(). Optional parameter.
 ts_deps: See |deps| in ts_library(). Required parameter.
 ts_path_mappings: See |path_mappings| in ts_library(). Optional parameter.
@@ -680,7 +695,7 @@ ts_definitions: Same as build_webui()
 ts_deps: Same as build_webui()
 ts_extra_deps: Same as build_webui()
 ts_path_mappings: Same as build_webui()
-ts_use_local_config: Same as build_webui()
+ts_tsconfig_base: Same as build_webui()
 
 Other params:
 grd_prefix: See |grd_prefix| in generate_grd(). Required parameter.
@@ -689,6 +704,10 @@ resource_path_prefix: See |resource_path_prefix| in generate_grd(). Required
 optimize: Optional parameter, defaults to false. If specified it is passed as
           the |minify| parameter to the underlying html_to_wrapper() and
           css_to_wrapper() targets.
+enable_source_maps: Defaults to "false". Incompatible with |optimize=true|.
+                    Setting it to "true" turns on source map generation for a
+                    few underlying targets. See ts_library()'s
+                    |enable_source_maps| for more details.
 ```
 
 #### **Example**

@@ -27,6 +27,8 @@ class NearbyProcessManager : public KeyedService {
     GetNearbyConnections() const = 0;
     virtual const mojo::SharedRemote<sharing::mojom::NearbySharingDecoder>&
     GetNearbySharingDecoder() const = 0;
+    virtual const mojo::SharedRemote<quick_start::mojom::QuickStartDecoder>&
+    GetQuickStartDecoder() const = 0;
   };
 
   // These values are used for metrics. Entries should not be renumbered and

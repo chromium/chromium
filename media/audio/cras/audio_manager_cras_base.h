@@ -70,7 +70,8 @@ class MEDIA_EXPORT AudioManagerCrasBase : public AudioManagerBase {
 
   // Called by MakeLinearInputStream and MakeLowLatencyInputStream.
   AudioInputStream* MakeInputStream(const AudioParameters& params,
-                                    const std::string& device_id);
+                                    const std::string& device_id,
+                                    const LogCallback& log_callback);
 
  private:
   // Manages starting / stopping of aecdump recording.

@@ -240,7 +240,9 @@ PowerButton::PowerButton()
                               base::Unretained(this)),
           IconButton::Type::kMediumFloating,
           &kUnifiedMenuPowerIcon,
-          IDS_ASH_STATUS_TRAY_SHUTDOWN))),
+          IDS_ASH_STATUS_TRAY_SHUTDOWN,
+          /*is_togglable=*/true,
+          /*has_border=*/false))),
       context_menu_(std::make_unique<MenuController>(/*button=*/this)) {
   SetID(VIEW_ID_QS_POWER_BUTTON);
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -266,6 +268,10 @@ PowerButton::PowerButton()
           std::make_unique<HighlightPathGenerator>(/*power_button=*/this));
   button_content_->SetFocusPainter(nullptr);
   button_content_->SetIconColorId(cros_tokens::kCrosSysOnSurface);
+  button_content_->SetIconToggledColorId(
+      cros_tokens::kCrosSysSystemOnPrimaryContainer);
+  button_content_->SetBackgroundToggledColorId(
+      cros_tokens::kCrosSysSystemPrimaryContainer);
 }
 
 PowerButton::~PowerButton() = default;
@@ -296,6 +302,7 @@ void PowerButton::UpdateView() {
     focus_ring->InvalidateLayout();
     focus_ring->SchedulePaint();
   }
+  button_content_->SetToggled(IsMenuShowing());
 }
 
 void PowerButton::UpdateRoundedCorners() {

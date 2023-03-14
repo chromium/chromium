@@ -29,7 +29,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
-#include "base/threading/thread_local.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -49,6 +48,7 @@
 #include "mojo/public/cpp/bindings/pipe_control_message_proxy.h"
 #include "mojo/public/cpp/bindings/sequence_local_sync_event_watcher.h"
 #include "mojo/public/cpp/bindings/tracing_helpers.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace IPC {
@@ -57,14 +57,7 @@ namespace {
 
 class ChannelAssociatedGroupController;
 
-base::ThreadLocalBoolean& GetOffSequenceBindingAllowedFlag() {
-  static base::NoDestructor<base::ThreadLocalBoolean> flag;
-  return *flag;
-}
-
-bool CanBindOffSequence() {
-  return GetOffSequenceBindingAllowedFlag().Get();
-}
+ABSL_CONST_INIT thread_local bool off_sequence_binding_allowed = false;
 
 // Used to track some internal Channel state in pursuit of message leaks.
 //
@@ -541,8 +534,9 @@ class ChannelAssociatedGroupController
       task_runner_ = std::move(runner);
       client_ = client;
 
-      if (CanBindOffSequence())
+      if (off_sequence_binding_allowed) {
         was_bound_off_sequence_ = true;
+      }
     }
 
     void DetachClient() {
@@ -1265,14 +1259,10 @@ class MojoBootstrapImpl : public MojoBootstrap {
 
 ScopedAllowOffSequenceChannelAssociatedBindings::
     ScopedAllowOffSequenceChannelAssociatedBindings()
-    : outer_flag_(GetOffSequenceBindingAllowedFlag().Get()) {
-  GetOffSequenceBindingAllowedFlag().Set(true);
-}
+    : resetter_(&off_sequence_binding_allowed, true) {}
 
 ScopedAllowOffSequenceChannelAssociatedBindings::
-    ~ScopedAllowOffSequenceChannelAssociatedBindings() {
-  GetOffSequenceBindingAllowedFlag().Set(outer_flag_);
-}
+    ~ScopedAllowOffSequenceChannelAssociatedBindings() = default;
 
 // static
 std::unique_ptr<MojoBootstrap> MojoBootstrap::Create(

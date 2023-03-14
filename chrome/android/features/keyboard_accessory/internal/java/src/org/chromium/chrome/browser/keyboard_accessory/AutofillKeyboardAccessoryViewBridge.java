@@ -122,7 +122,7 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
      * @param suggestions Autofill suggestions to be displayed.
      */
     @CalledByNative
-    private void show(AutofillSuggestion[] suggestions, boolean isRtl) {
+    private void show(AutofillSuggestion[] suggestions) {
         mChipProvider.notifyObservers(suggestions);
     }
 

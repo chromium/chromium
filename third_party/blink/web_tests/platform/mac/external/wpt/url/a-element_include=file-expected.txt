@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 125 tests; 74 PASS, 51 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 126 tests; 75 PASS, 51 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <file:/example.com/> against <http://example.org/foo/bar>
 PASS Parsing: <file://example:1/> against <about:blank>
@@ -126,5 +126,6 @@ FAIL Parsing: <file://loC𝐀𝐋𝐇𝐨𝐬𝐭/usr/bin> against <about:blank>
 FAIL Parsing: <file://­/p> against <about:blank> assert_equals: failure should set href to input expected "file://­/p" but got "file://%C2%AD/p"
 PASS Parsing: <file://%C2%AD/p> against <about:blank>
 FAIL Parsing: <file://xn--/p> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
+PASS Parsing: <> against <about:blank>
 Harness: the test ran to completion.
 

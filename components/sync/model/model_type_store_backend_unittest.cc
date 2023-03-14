@@ -222,8 +222,7 @@ TEST_F(ModelTypeStoreBackendTest, RecoverAfterCorruption) {
 
   // Prepare environment that looks corrupt to leveldb.
   // Easiest way to simulate leveldb corruption is to create empty CURRENT file.
-  base::WriteFile(temp_dir.GetPath().Append(FILE_PATH_LITERAL("CURRENT")), "",
-                  0);
+  base::WriteFile(temp_dir.GetPath().Append(FILE_PATH_LITERAL("CURRENT")), "");
 
   scoped_refptr<ModelTypeStoreBackend> backend =
       ModelTypeStoreBackend::CreateUninitialized();

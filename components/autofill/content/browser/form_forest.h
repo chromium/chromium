@@ -11,9 +11,8 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/global_routing_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -275,9 +274,6 @@ class FormForest {
   // Deletes all forms and fields that originate from |frame| and unsets the
   // FrameData::parent_form pointers of all child forms.
   void EraseFrame(LocalFrameToken frame);
-
-  // Resets the object to the initial state.
-  void Reset() { frame_datas_.clear(); }
 
   // Returns the set of FrameData nodes of the forest.
   const base::flat_set<std::unique_ptr<FrameData>,

@@ -9,13 +9,11 @@
 #import "base/mac/foundation_util.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/link_to_text/link_to_text_payload.h"
 #import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
-#import "ios/chrome/browser/ui/commands/activity_service_commands.h"
-#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/commands/share_highlight_command.h"
-#import "ios/chrome/browser/ui/link_to_text/link_to_text_consumer.h"
+#import "ios/chrome/browser/ui/browser_container/edit_menu_alert_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "testing/platform_test.h"
@@ -58,45 +56,32 @@ class BrowserContainerCoordinatorTest : public PlatformTest {
   ScopedKeyWindow scoped_key_window_;
 };
 
-// Tests that the coordinator properly handles link-to-text payload updates.
-TEST_F(BrowserContainerCoordinatorTest, LinkToTextConsumerGeneratePayload) {
-  BrowserContainerCoordinator* coordinator = CreateAndStartCoordinator();
-
-  LinkToTextPayload* test_payload =
-      [[LinkToTextPayload alloc] initWithURL:GURL("https://google.com")
-                                       title:@"Some title"
-                                selectedText:@"Selected on page"
-                                  sourceView:[[UIView alloc] init]
-                                  sourceRect:CGRectMake(0, 1, 2, 3)];
-  [[mocked_handler_ expect]
-      shareHighlight:[OCMArg checkWithBlock:^BOOL(
-                                 ShareHighlightCommand* command) {
-        EXPECT_EQ(test_payload.URL, command.URL);
-        EXPECT_TRUE([test_payload.title isEqualToString:command.title]);
-        EXPECT_TRUE(
-            [test_payload.selectedText isEqualToString:command.selectedText]);
-        EXPECT_EQ(test_payload.sourceView, command.sourceView);
-        EXPECT_TRUE(
-            CGRectEqualToRect(test_payload.sourceRect, command.sourceRect));
-        return YES;
-      }]];
-
-  id<LinkToTextConsumer> consumer =
-      static_cast<id<LinkToTextConsumer>>(coordinator);
-  [consumer generatedPayload:test_payload];
-
-  [mocked_handler_ verify];
-}
-
-// Tests that the coordinator displays an alert when getting an update about how
-// a link-to-text link generation failed.
+// Tests that the coordinator displays an alert with given title, message and
+// actions.
 TEST_F(BrowserContainerCoordinatorTest,
        LinkToTextConsumerLinkGenerationFailed) {
   BrowserContainerCoordinator* coordinator = CreateAndStartCoordinator();
 
-  id<LinkToTextConsumer> consumer =
-      static_cast<id<LinkToTextConsumer>>(coordinator);
-  [consumer linkGenerationFailed];
+  EditMenuAlertDelegateAction* action_ok = [[EditMenuAlertDelegateAction alloc]
+      initWithTitle:l10n_util::GetNSString(IDS_APP_OK)
+             action:^{
+             }
+              style:UIAlertActionStyleCancel
+          preferred:NO];
+
+  EditMenuAlertDelegateAction* action_share =
+      [[EditMenuAlertDelegateAction alloc]
+          initWithTitle:l10n_util::GetNSString(IDS_IOS_SHARE_PAGE_BUTTON_LABEL)
+                 action:^{
+                 }
+                  style:UIAlertActionStyleDefault
+              preferred:NO];
+
+  id<EditMenuAlertDelegate> alert_delegate =
+      static_cast<id<EditMenuAlertDelegate>>(coordinator);
+  [alert_delegate showAlertWithTitle:@"alert title"
+                             message:@"alert message"
+                             actions:@[ action_ok, action_share ]];
 
   EXPECT_TRUE([coordinator.viewController.presentedViewController
       isKindOfClass:[UIAlertController class]]);

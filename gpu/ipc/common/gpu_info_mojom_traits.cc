@@ -455,6 +455,9 @@ bool StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo>::Read(
          data.ReadMaxMsaaSamples(&out->max_msaa_samples) &&
          data.ReadMachineModelName(&out->machine_model_name) &&
          data.ReadMachineModelVersion(&out->machine_model_version) &&
+         data.ReadGlImplementation(&out->gl_implementation) &&
+         data.ReadAngleImplementation(&out->angle_implementation) &&
+         data.ReadDisplayType(&out->display_type) &&
          data.ReadGlVersion(&out->gl_version) &&
          data.ReadGlVendor(&out->gl_vendor) &&
          data.ReadGlRenderer(&out->gl_renderer) &&

@@ -119,14 +119,13 @@ std::vector<ApiResultUkmMetrics> ReadApiResultUkmMetrics(
 
     DCHECK_EQ(topics.size(), 3u);
 
-    absl::optional<ApiAccessFailureReason> failure_reason;
+    absl::optional<ApiAccessResult> failure_reason;
 
     const int64_t* failure_reason_metric =
         ukm_recorder.GetEntryMetric(entry, Event::kFailureReasonName);
 
     if (failure_reason_metric) {
-      failure_reason =
-          static_cast<ApiAccessFailureReason>(*failure_reason_metric);
+      failure_reason = static_cast<ApiAccessResult>(*failure_reason_metric);
     }
 
     result.emplace_back(std::move(failure_reason), std::move(topics[0]),

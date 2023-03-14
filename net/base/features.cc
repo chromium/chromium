@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "net/net_buildflags.h"
 
 namespace net::features {
 
@@ -65,12 +66,20 @@ BASE_FEATURE(kUseDnsHttpsSvcbAlpn,
              "UseDnsHttpsSvcbAlpn",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSHA1ServerSignature,
+             "SHA1ServerSignature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableTLS13EarlyData,
              "EnableTLS13EarlyData",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEncryptedClientHello,
              "EncryptedClientHello",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEncryptedClientHelloQuic,
+             "EncryptedClientHelloQuic",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNetworkQualityEstimator,
@@ -93,10 +102,6 @@ BASE_FEATURE(kPartitionConnectionsByNetworkIsolationKey,
              "PartitionConnectionsByNetworkIsolationKey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kForceIsolationInfoFrameOriginToTopLevelFrame,
-             "ForceIsolationInfoFrameOriginToTopLevelFrame",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPartitionHttpServerPropertiesByNetworkIsolationKey,
              "PartitionHttpServerPropertiesByNetworkIsolationKey",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -107,10 +112,6 @@ BASE_FEATURE(kPartitionSSLSessionsByNetworkIsolationKey,
 
 BASE_FEATURE(kPartitionNelAndReportingByNetworkIsolationKey,
              "PartitionNelAndReportingByNetworkIsolationKey",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableCrossSiteFlagNetworkAnonymizationKey,
-             "EnableCrossSiteFlagNetworkAnonymizationKey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTLS13KeyUpdate,
@@ -152,26 +153,13 @@ BASE_FEATURE(kSameSiteDefaultChecksMethodRigorously,
 BASE_FEATURE(kCertDualVerificationTrialFeature,
              "CertDualVerificationTrial",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#if BUILDFLAG(IS_MAC)
-const base::FeatureParam<int> kCertDualVerificationTrialImpl{
-    &kCertDualVerificationTrialFeature, "impl", 0};
-#endif /* BUILDFLAG(IS_MAC) */
 #endif
 
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
 BASE_FEATURE(kChromeRootStoreUsed,
              "ChromeRootStoreUsed",
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-#if BUILDFLAG(IS_MAC)
-const base::FeatureParam<int> kChromeRootStoreSysImpl{&kChromeRootStoreUsed,
-                                                      "sysimpl", 0};
-#endif /* BUILDFLAG(IS_MAC) */
-#endif /* BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED) */
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(USE_NSS_CERTS) || BUILDFLAG(IS_WIN)
 BASE_FEATURE(kTrustStoreTrustedLeafSupport,
@@ -246,10 +234,6 @@ BASE_FEATURE(kPartitionedCookies,
 BASE_FEATURE(kNoncedPartitionedCookies,
              "NoncedPartitionedCookies",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kRecordRadioWakeupTrigger,
-             "RecordRadioWakeupTrigger",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kClampCookieExpiryTo400Days,
              "ClampCookieExpiryTo400Days",
@@ -329,5 +313,14 @@ BASE_FEATURE(kPriorityIncremental,
 BASE_FEATURE(kPrefetchFollowsNormalCacheSemantics,
              "PrefetchFollowsNormalCacheSemantics",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// A flag for new Kerberos feature, that suggests new UI
+// when Kerberos authentication in browser fails on ChromeOS.
+// b/260522530
+#if BUILDFLAG(IS_CHROMEOS)
+BASE_FEATURE(kKerberosInBrowserRedirect,
+             "KerberosInBrowserRedirect",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 }  // namespace net::features

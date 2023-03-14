@@ -12,7 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "components/digital_asset_links/response_header_verifier.h"
+#include "components/content_relationship_verification/response_header_verifier.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -563,10 +563,10 @@ void NavigationControllerImpl::DidFinishNavigation(
       !navigation_handle->IsErrorPage()) {
     if (!navigation_handle->IsSameDocument()) {
       navigation->set_consenting_content(
-          digital_asset_links::ResponseHeaderVerifier::Verify(
+          content_relationship_verification::ResponseHeaderVerifier::Verify(
               tab_->browser()->GetPackageName(),
               navigation->GetNormalizedHeader(
-                  digital_asset_links::kEmbedderAncestorHeader)));
+                  content_relationship_verification::kEmbedderAncestorHeader)));
     }
 #if BUILDFLAG(IS_ANDROID)
     if (java_controller_) {

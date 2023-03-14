@@ -28,6 +28,7 @@
 #include "media/audio/audio_unittest_util.h"
 #include "media/audio/mock_audio_source_callback.h"
 #include "media/audio/test_audio_thread.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/seekable_buffer.h"
 #include "media/base/test_data_util.h"
@@ -157,10 +158,11 @@ std::ostream& operator<<(std::ostream& os, const AudioParameters& params) {
 // Gmock implementation of AudioInputStream::AudioInputCallback.
 class MockAudioInputCallback : public AudioInputStream::AudioInputCallback {
  public:
-  MOCK_METHOD3(OnData,
+  MOCK_METHOD4(OnData,
                void(const AudioBus* src,
                     base::TimeTicks capture_time,
-                    double volume));
+                    double volume,
+                    const AudioGlitchInfo& glitch_info));
   MOCK_METHOD0(OnError, void());
 };
 
@@ -279,7 +281,8 @@ class FileAudioSink : public AudioInputStream::AudioInputCallback {
   // AudioInputStream::AudioInputCallback implementation.
   void OnData(const AudioBus* src,
               base::TimeTicks capture_time,
-              double volume) override {
+              double volume,
+              const AudioGlitchInfo& glitch_info) override {
     const int num_samples = src->frames() * src->channels();
     std::unique_ptr<int16_t> interleaved(new int16_t[num_samples]);
     src->ToInterleaved<SignedInt16SampleTypeTraits>(src->frames(),
@@ -331,7 +334,8 @@ class FullDuplexAudioSinkSource
   void OnError() override {}
   void OnData(const AudioBus* src,
               base::TimeTicks capture_time,
-              double volume) override {
+              double volume,
+              const AudioGlitchInfo& glitch_info) override {
     const base::TimeTicks now_time = base::TimeTicks::Now();
     const int diff = (now_time - previous_time_).InMilliseconds();
 
@@ -656,7 +660,7 @@ class AudioAndroidInputTest : public AudioAndroidOutputTest,
     MockAudioInputCallback sink;
 
     base::RunLoop run_loop;
-    EXPECT_CALL(sink, OnData(NotNull(), _, _))
+    EXPECT_CALL(sink, OnData(NotNull(), _, _, _))
         .Times(AtLeast(num_callbacks))
         .WillRepeatedly(CheckCountAndPostQuitTask(
             &count, num_callbacks,

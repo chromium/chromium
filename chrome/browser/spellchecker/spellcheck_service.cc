@@ -878,9 +878,9 @@ std::vector<std::string> SpellcheckService::GetNormalizedAcceptLanguages(
                         ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   if (normalize_for_spellcheck) {
-    std::transform(
-        accept_languages.begin(), accept_languages.end(),
-        accept_languages.begin(), [&](const std::string& language) {
+    base::ranges::transform(
+        accept_languages, accept_languages.begin(),
+        [&](const std::string& language) {
 #if BUILDFLAG(IS_WIN)
           if (spellcheck::UseBrowserSpellChecker() &&
               UsesWindowsDictionary(language))

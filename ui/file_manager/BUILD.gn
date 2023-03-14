@@ -123,7 +123,6 @@ ash_ts_library("build_ts") {
   root_dir = preprocess_folder
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
-  allow_js = true
   composite = true
   use_lit = true
 
@@ -140,6 +139,7 @@ ash_ts_library("build_ts") {
   ]
 
   deps = [
+    "//ash/webui/common/resources:build_ts",
     "//third_party/material_web_components:library",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
@@ -173,7 +173,6 @@ ts_library("test_build_ts") {
   testonly = true
   root_dir = preprocess_folder
   out_dir = "$target_gen_dir/tsc"
-  allow_js = true
   tsconfig_base = "tsconfig_base.json"
 
   in_files =
@@ -202,6 +201,7 @@ ts_library("test_build_ts") {
 
   deps = [
     ":build_ts",
+    "//ash/webui/common/resources:build_ts",
     "//chrome/test/data/webui:build_ts",
     "//chrome/test/data/webui/chromeos:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",

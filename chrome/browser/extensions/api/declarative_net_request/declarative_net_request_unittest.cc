@@ -726,11 +726,119 @@ TEST_P(SingleRulesetTest, NoApplicableResourceTypes) {
                             *rule.id);
 }
 
+// Ensure that rules with both "domains" and "initiator_domains" conditions fail
+// parsing.
+TEST_P(SingleRulesetTest, DuplicateDomainsList) {
+  TestRule rule = CreateGenericRule();
+  rule.condition->domains = std::vector<std::string>({"domain.example"});
+  rule.condition->initiator_domains =
+      std::vector<std::string>({"domain.example"});
+  AddRule(rule);
+  LoadAndExpectParseFailure(
+      ParseResult::ERROR_DOMAINS_AND_INITIATOR_DOMAINS_BOTH_SPECIFIED,
+      *rule.id);
+}
+
+// Ensure that rules with both "excluded_domains" and
+// "excluded_initiator_domains" conditions fail parsing.
+TEST_P(SingleRulesetTest, DuplicateExcludedDomainsList) {
+  TestRule rule = CreateGenericRule();
+  rule.condition->excluded_domains =
+      std::vector<std::string>({"domain.example"});
+  rule.condition->excluded_initiator_domains =
+      std::vector<std::string>({"domain.example"});
+  AddRule(rule);
+  LoadAndExpectParseFailure(
+      ParseResult::
+          ERROR_EXCLUDED_DOMAINS_AND_EXCLUDED_INITIATOR_DOMAINS_BOTH_SPECIFIED,
+      *rule.id);
+}
+
+// Ensure that rules with an empty "domains" condition fail parsing.
 TEST_P(SingleRulesetTest, EmptyDomainsList) {
   TestRule rule = CreateGenericRule();
   rule.condition->domains = std::vector<std::string>();
   AddRule(rule);
   LoadAndExpectParseFailure(ParseResult::ERROR_EMPTY_DOMAINS_LIST, *rule.id);
+}
+
+// Ensure that rules with an empty "initiator_domains" condition fail parsing.
+TEST_P(SingleRulesetTest, EmptyInitiatorDomainsList) {
+  TestRule rule = CreateGenericRule();
+  rule.condition->initiator_domains = std::vector<std::string>();
+  AddRule(rule);
+  LoadAndExpectParseFailure(ParseResult::ERROR_EMPTY_INITIATOR_DOMAINS_LIST,
+                            *rule.id);
+}
+
+// Ensure that rules with an empty "request_domains" condition fail parsing.
+TEST_P(SingleRulesetTest, EmptyRequestDomainsList) {
+  TestRule rule = CreateGenericRule();
+  rule.condition->request_domains = std::vector<std::string>();
+  AddRule(rule);
+  LoadAndExpectParseFailure(ParseResult::ERROR_EMPTY_REQUEST_DOMAINS_LIST,
+                            *rule.id);
+}
+
+// Ensure that rules with a "domains" condition that contains non-ascii
+// characters fail parsing.
+TEST_P(SingleRulesetTest, NonAsciiDomainsList) {
+  TestRule rule = CreateGenericRule();
+  rule.condition->domains = std::vector<std::string>({"😎.example"});
+  AddRule(rule);
+  LoadAndExpectParseFailure(ParseResult::ERROR_NON_ASCII_DOMAIN, *rule.id);
+}
+
+// Ensure that rules with a "excluded_domains" condition that contains non-ascii
+// characters fail parsing.
+TEST_P(SingleRulesetTest, NonAsciiExcludedDomainsList) {
+  TestRule rule = CreateGenericRule();
+  rule.condition->excluded_domains = std::vector<std::string>({"😎.example"});
+  AddRule(rule);
+  LoadAndExpectParseFailure(ParseResult::ERROR_NON_ASCII_EXCLUDED_DOMAIN,
+                            *rule.id);
+}
+
+// Ensure that rules with a "initiator_domains" condition that contains
+// non-ascii characters fail parsing.
+TEST_P(SingleRulesetTest, NonAsciiInitiatorDomainsList) {
+  TestRule rule = CreateGenericRule();
+  rule.condition->initiator_domains = std::vector<std::string>({"😎.example"});
+  AddRule(rule);
+  LoadAndExpectParseFailure(ParseResult::ERROR_NON_ASCII_INITIATOR_DOMAIN,
+                            *rule.id);
+}
+
+// Ensure that rules with a "excluded_initiator_domains" condition that contains
+// non-ascii characters fail parsing.
+TEST_P(SingleRulesetTest, NonAsciiExcludedInitiatorDomainsList) {
+  TestRule rule = CreateGenericRule();
+  rule.condition->excluded_initiator_domains =
+      std::vector<std::string>({"😎.example"});
+  AddRule(rule);
+  LoadAndExpectParseFailure(
+      ParseResult::ERROR_NON_ASCII_EXCLUDED_INITIATOR_DOMAIN, *rule.id);
+}
+
+// Ensure that rules with a "request_domains" condition that contains non-ascii
+// characters fail parsing.
+TEST_P(SingleRulesetTest, NonAsciiRequestDomainsList) {
+  TestRule rule = CreateGenericRule();
+  rule.condition->request_domains = std::vector<std::string>({"😎.example"});
+  AddRule(rule);
+  LoadAndExpectParseFailure(ParseResult::ERROR_NON_ASCII_REQUEST_DOMAIN,
+                            *rule.id);
+}
+
+// Ensure that rules with a "excluded_request_domains" condition that contains
+// non-ascii characters fail parsing.
+TEST_P(SingleRulesetTest, NonAsciiExcludedRequestDomainsList) {
+  TestRule rule = CreateGenericRule();
+  rule.condition->excluded_request_domains =
+      std::vector<std::string>({"😎.example"});
+  AddRule(rule);
+  LoadAndExpectParseFailure(
+      ParseResult::ERROR_NON_ASCII_EXCLUDED_REQUEST_DOMAIN, *rule.id);
 }
 
 TEST_P(SingleRulesetTest, EmptyResourceTypeList) {

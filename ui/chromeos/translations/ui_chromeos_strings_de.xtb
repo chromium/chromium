@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Weiter</translation>
 <translation id="1209796539517632982">Automatische Wahl des Nameservers</translation>
 <translation id="1210831758834677569">Lao</translation>
+<translation id="1221555006497674479">Nur noch <ph name="REMAINING_PERCENTAGE" /> % von <ph name="TOTAL_SPACE" /> Speicherplatz in der geteilten Ablage frei.</translation>
 <translation id="1243314992276662751">Hochladen</translation>
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Direkte Internetverbindung</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">Chinesisch (Pinyin)</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> Dateien werden offline verfügbar gemacht</translation>
 <translation id="164969095109328410">Chrome-Gerät</translation>
+<translation id="1661207570040737402">Dein gesamter Google Workspace-Speicherplatz in der geteilten Ablage ist belegt.</translation>
 <translation id="1661867754829461514">PIN fehlt</translation>
 <translation id="166439687370499867">Freigegebene Netzwerkkonfigurationen dürfen nicht geändert werden</translation>
 <translation id="1665611772925418501">Die Datei konnte nicht geändert werden.</translation>
@@ -82,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> Elemente werden gezippt...</translation>
 <translation id="1722687688096767818">Profil wird hinzugefügt…</translation>
 <translation id="1726100011689679555">Nameserver</translation>
+<translation id="1727562178154619254">Bereit zur Synchronisierung</translation>
 <translation id="1729953886957086472">Deutsch (Deutschland)</translation>
 <translation id="1730235522912993863">Chinesisch (Cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> Elemente kopiert.</translation>
@@ -349,11 +352,11 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Einfügen</translation>
 <translation id="3952872973865944257">Telugu (phonetisch)</translation>
-<translation id="3954354850384043518">In Arbeit</translation>
 <translation id="3958548648197196644">Kiwi</translation>
 <translation id="3971140002794351170">Mobiles Profil herunterladen, Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Englisch (Vereinigtes Königreich)</translation>
 <translation id="3975895378829046965">Bengalisch (phonetisch)</translation>
+<translation id="3999574733850440202">Kürzlich geöffnete Microsoft-Dateien wurden in OneDrive verschoben</translation>
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4017788180641807848">Englisch (USA) mit Workman-Tastatur</translation>
 <translation id="4019998208269143058">An Schnellzugriff anpinnen</translation>
@@ -362,6 +365,7 @@
 <translation id="4092890906744441904">Irisch</translation>
 <translation id="4124935795427217608">Einhorn</translation>
 <translation id="4131235941541910880">Verschiebe nicht benötigte Elemente in den Papierkorb</translation>
+<translation id="4134804435730168042">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Nach Geräteeinrichtung aktivieren</translation>
 <translation id="4153015322587141338">Klicke mit der rechten Maustaste auf eine Datei und wähle „<ph name="PIN_COMMAND" />“ aus, um schnell auf die Datei in der Ablage zugreifen zu können.</translation>
 <translation id="4157569377477607576">Gemäß der Administratorrichtlinie wird Folgendes nicht empfohlen:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> verschoben.</translation>
@@ -404,6 +408,7 @@
 <translation id="4414834425328380570">„<ph name="FILE_NAME" />“ wird gelöscht und kann nicht wiederhergestellt werden.</translation>
 <translation id="4418686080762064601">Verknüpfung zu Dateien erstellen</translation>
 <translation id="4425149324548788773">Meine Ablage</translation>
+<translation id="4432921877815220091">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Nach Geräteeinrichtung aktivieren, Von deinem Administrator verwaltet</translation>
 <translation id="4439427728133035643">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Verbinden</translation>
 <translation id="4442424173763614572">DNS-Suche fehlgeschlagen</translation>
 <translation id="4462159676511157176">Benutzerdefinierte Nameserver</translation>
@@ -611,8 +616,10 @@
 <translation id="5911887972742538906">Bei der Installation deiner Linux-Anwendung ist ein Fehler aufgetreten.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5913638992615760742">Unerwarteter Fehler beim Kopieren: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">Es sind neue Suchfunktionen verfügbar</translation>
 <translation id="5926082595146149752">Niederländisch (Niederlande) mit internationaler US-amerikanischer PC-Tastatur</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Nach Geräteeinrichtung aktivieren</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> Elemente</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">Sortieroptionen</translation>
@@ -699,6 +706,7 @@
 <translation id="6732801395666424405">Zertifikate nicht geladen</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Ordner für Bruschetta freigeben</translation>
+<translation id="6750737795876287924">Aktuelles Verzeichnis</translation>
 <translation id="6751256176799620176">1 Ordner ausgewählt</translation>
 <translation id="6755827872271341378">Chrome OS Flex-Gerät</translation>
 <translation id="6790428901817661496">Wiedergabe</translation>
@@ -736,7 +744,6 @@
 <translation id="6973630695168034713">Ordner</translation>
 <translation id="6976795442547527108">Löwe</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">Gesamte Zeit</translation>
 <translation id="6989942356279143254">Schwedisch</translation>
 <translation id="6990081529015358884">Du hast keinen freien Speicherplatz mehr.</translation>
 <translation id="6993826899923627728">Diese Elemente befinden sich im Papierkorb</translation>
@@ -759,6 +766,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' – &lt;em&gt;Ablage durchsuchen&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannada (phonetisch)</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Fehlende Angabe bei „Alternativer Name für Betreff stimmt überein“ oder „Domain-Suffix stimmt überein“ zur Bestätigung der Identität des Authentifizierungsservers</translation>
 <translation id="7165320105431587207">Fehler beim Konfigurieren des Netzwerks</translation>
 <translation id="7170041865419449892">Außer Reichweite</translation>
 <translation id="7180611975245234373">Aktualisieren</translation>
@@ -791,7 +799,6 @@
 <translation id="7458955835361612701">Keine zuletzt angesehenen Bilder</translation>
 <translation id="7460898608667578234">Ukrainisch</translation>
 <translation id="7469894403370665791">Verbindung zu diesem Netzwerk automatisch herstellen</translation>
-<translation id="7481358317100446445">Bereit</translation>
 <translation id="7486315294984620427">Um Dateien in Parallels Desktop per Drag-and-drop abzulegen, muss die Datei in „Windows-Dateien“ kopiert werden.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam (phonetisch)</translation>
@@ -829,6 +836,7 @@
 <translation id="7724603315864178912">Ausschneiden</translation>
 <translation id="7732111077498238432">Das Netzwerk ist richtliniengesteuert</translation>
 <translation id="7736003208887389532">Diese Dateien endgültig löschen?</translation>
+<translation id="7740287852186792672">Suchergebnisse</translation>
 <translation id="7748626145866214022">Auf der Aktionsleiste sind weitere Optionen verfügbar. Drücke Alt + A, um den Fokus auf die Aktionsleiste zu setzen.</translation>
 <translation id="7760449188139285140">Chinesisch (Wubi)</translation>
 <translation id="7765158879357617694">Verschieben</translation>
@@ -880,6 +888,7 @@
 <translation id="8116072619078571545">Wasser mit Eis</translation>
 <translation id="8128733386027980860">Englisch (Vereinigtes Königreich) mit Dvorak-Tastatur</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" wurde mit dir geteilt. Du kannst die Datei nicht löschen, da du nicht der Inhaber bist.</translation>
+<translation id="8138705869659070104">Nach Einrichtung aktivieren</translation>
 <translation id="813913629614996137">Initialisierung…</translation>
 <translation id="8147028810663464959">Zeichenbreite ist „Voll“</translation>
 <translation id="8151638057146502721">Konfigurieren</translation>
@@ -905,6 +914,7 @@
 <translation id="8300849813060516376">OTASP fehlgeschlagen</translation>
 <translation id="8312871300878166382">In Ordner einfügen</translation>
 <translation id="8329978297633540474">Unformatierter Text</translation>
+<translation id="8332007959299458842">Kürzlich geöffnete Microsoft-Dateien wurden in Google Drive verschoben</translation>
 <translation id="8335587457941836791">Von Ablage loslösen</translation>
 <translation id="8335837413233998004">Belarussisch</translation>
 <translation id="8336153091935557858">Gestern <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -931,6 +941,7 @@
 <translation id="8487700953926739672">Offline verfügbar</translation>
 <translation id="8492972329130824181">Heimnetzwerk ist nicht verfügbar. Mobiles Daten-Roaming muss aktiviert sein, um eine Verbindung herzustellen.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> Elemente werden extrahiert...</translation>
+<translation id="8502913769543567768">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Nach Geräteeinrichtung aktivieren, Von deinem Administrator verwaltet</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="853494022971700746">Französisch (Frankreich)</translation>
 <translation id="8540608333167683902">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Details</translation>
@@ -992,6 +1003,7 @@
 <translation id="9046895021617826162">Verbindungsaufbau fehlgeschlagen</translation>
 <translation id="9065512565307033593">Ohne diese Bestätigung wird der Netzwerkzugriff deaktiviert.</translation>
 <translation id="908378762078012445">Russisch mit phonetischer Tastatur (AATSEEL)</translation>
+<translation id="9086302186042011942">Synchronisierung läuft...</translation>
 <translation id="9099674669267916096">Seitenzahl</translation>
 <translation id="9100610230175265781">Passphrase erforderlich</translation>
 <translation id="9110990317705400362">Wir arbeiten stets daran, das Surfen für dich sicherer zu machen. Früher konntest du von jeder beliebigen Website aufgefordert werden, deinem Browser eine Erweiterung hinzuzufügen. In neueren Versionen von Google Chrome musst du Chrome ausdrücklich mitteilen, dass du diese Erweiterungen installieren möchtest, indem du sie über die Seite „Erweiterungen“ hinzufügst. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>

@@ -37,21 +37,12 @@ class FamilyInfoFetcher {
     kNetworkError,  // Network failure.
     kServiceError   // Service returned an error or malformed reply.
   };
-  // Note: If you add or update an entry, also update |kFamilyMemberRoleStrings|
-  // in the .cc file.
-  enum FamilyMemberRole {
-    HEAD_OF_HOUSEHOLD = 0,
-    PARENT,
-    MEMBER,
-    CHILD
-  };
-  struct FamilyProfile {
-    FamilyProfile();
-    FamilyProfile(const std::string& id, const std::string& name);
-    ~FamilyProfile();
-    std::string id;
-    std::string name;
-  };
+
+  // Must be reflected in kFamilyMemberRoleStrings.
+  // LINT.IfChange(family_member_roles)
+  enum FamilyMemberRole { HEAD_OF_HOUSEHOLD = 0, PARENT, MEMBER, CHILD };
+  // LINT.ThenChange(//chrome/browser/supervised_user/child_accounts/family_info_fetcher.cc:family_member_roles)
+
   struct FamilyMember {
     FamilyMember();
     FamilyMember(const std::string& obfuscated_gaia_id,
@@ -73,7 +64,6 @@ class FamilyInfoFetcher {
 
   class Consumer {
    public:
-    virtual void OnGetFamilyProfileSuccess(const FamilyProfile& family) {}
     virtual void OnGetFamilyMembersSuccess(
         const std::vector<FamilyMember>& members) {}
     virtual void OnFailure(ErrorCode error) {}
@@ -96,9 +86,7 @@ class FamilyInfoFetcher {
   static std::string RoleToString(FamilyMemberRole role);
   static bool StringToRole(const std::string& str, FamilyMemberRole* role);
 
-  // Start a fetch for the family profile or members.
-  // Note: Only one fetch is supported at a time.
-  void StartGetFamilyProfile();
+  // Start a fetch for the family members.
   void StartGetFamilyMembers();
 
   // Public so tests can use it.
@@ -119,14 +107,12 @@ class FamilyInfoFetcher {
 
   void StartFetching();
   void StartFetchingAccessToken();
-  void FamilyProfileFetched(const std::string& response);
   void FamilyMembersFetched(const std::string& response);
 
   raw_ptr<Consumer> consumer_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
-  GURL request_url_;
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;
   std::string access_token_;

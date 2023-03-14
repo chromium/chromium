@@ -5,6 +5,10 @@
 # See build/ios/update_bundle_filelist.py for details on how .globlist
 # files are used to update their .filelist counterparts.
 
+# We generally avoid including globs that include files that aren't in the
+# current directory or a subdirectory, but since we don't want to add globlist
+# machinery to ../../webtests_external/wpt, we make an exception here.
+# push(ignore-relative)
 ../../web_tests/external/wpt/css/css-fonts/resources/COLR-palettes-test-font.ttf
 ../../web_tests/external/wpt/fonts/**/*.otf
 ../../web_tests/external/wpt/fonts/**/*.ttf
@@ -15,6 +19,9 @@
 -../../web_tests/external/wpt/fonts/noto/**
 ../../web_tests/images/resources/**
 ../../web_tests/third_party/**/*.ttf
+../../web_tests/third_party/**/*.otf
+# pop(ignore-relative)
+
 image-decoders/testing/**
 testing/data/*
 testing/data/third_party/**/*.woff

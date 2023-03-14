@@ -189,7 +189,7 @@ class SharedPasswordControllerTest : public PlatformTest {
   }
 
  protected:
-  autofill::test::AutofillEnvironment autofill_environment_;
+  autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
   web::FakeWebState web_state_;
   web::FakeWebFramesManager* web_frames_manager_;
   testing::StrictMock<MockPasswordManager> password_manager_;

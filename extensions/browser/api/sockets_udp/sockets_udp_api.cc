@@ -96,9 +96,9 @@ SocketsUdpCreateFunction::SocketsUdpCreateFunction() = default;
 SocketsUdpCreateFunction::~SocketsUdpCreateFunction() = default;
 
 ExtensionFunction::ResponseAction SocketsUdpCreateFunction::Work() {
-  std::unique_ptr<sockets_udp::Create::Params> params =
+  absl::optional<sockets_udp::Create::Params> params =
       sockets_udp::Create::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   mojo::PendingRemote<network::mojom::UDPSocketListener> listener_remote;
   mojo::PendingReceiver<network::mojom::UDPSocketListener>
@@ -132,9 +132,9 @@ SocketsUdpUpdateFunction::SocketsUdpUpdateFunction() = default;
 SocketsUdpUpdateFunction::~SocketsUdpUpdateFunction() = default;
 
 ExtensionFunction::ResponseAction SocketsUdpUpdateFunction::Work() {
-  std::unique_ptr<sockets_udp::Update::Params> params =
+  absl::optional<sockets_udp::Update::Params> params =
       sockets_udp::Update::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   ResumableUDPSocket* socket = GetUdpSocket(params->socket_id);
   if (!socket) {
@@ -150,9 +150,9 @@ SocketsUdpSetPausedFunction::SocketsUdpSetPausedFunction() = default;
 SocketsUdpSetPausedFunction::~SocketsUdpSetPausedFunction() = default;
 
 ExtensionFunction::ResponseAction SocketsUdpSetPausedFunction::Work() {
-  std::unique_ptr<sockets_udp::SetPaused::Params> params =
+  absl::optional<sockets_udp::SetPaused::Params> params =
       api::sockets_udp::SetPaused::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   UDPSocketEventDispatcher* socket_event_dispatcher =
       UDPSocketEventDispatcher::Get(browser_context());
@@ -183,7 +183,7 @@ SocketsUdpBindFunction::~SocketsUdpBindFunction() = default;
 
 ExtensionFunction::ResponseAction SocketsUdpBindFunction::Work() {
   params_ = sockets_udp::Bind::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params_.get());
+  EXTENSION_FUNCTION_VALIDATE(params_);
 
   socket_event_dispatcher_ = UDPSocketEventDispatcher::Get(browser_context());
   DCHECK(socket_event_dispatcher_)
@@ -222,7 +222,7 @@ void SocketsUdpBindFunction::OnCompleted(int net_result) {
 
   OpenFirewallHole(params_->address, params_->socket_id, socket);
   if (!did_respond()) {
-    Respond(OneArgument(base::Value(net_result)));
+    Respond(WithArguments(net_result));
   }
 }
 
@@ -232,7 +232,7 @@ SocketsUdpSendFunction::~SocketsUdpSendFunction() = default;
 
 ExtensionFunction::ResponseAction SocketsUdpSendFunction::Work() {
   params_ = sockets_udp::Send::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params_.get());
+  EXTENSION_FUNCTION_VALIDATE(params_);
   io_buffer_size_ = params_->data.size();
 
   io_buffer_ = base::MakeRefCounted<net::IOBuffer>(params_->data.size());
@@ -318,9 +318,9 @@ SocketsUdpCloseFunction::SocketsUdpCloseFunction() = default;
 SocketsUdpCloseFunction::~SocketsUdpCloseFunction() = default;
 
 ExtensionFunction::ResponseAction SocketsUdpCloseFunction::Work() {
-  std::unique_ptr<sockets_udp::Close::Params> params =
+  absl::optional<sockets_udp::Close::Params> params =
       sockets_udp::Close::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   ResumableUDPSocket* socket = GetUdpSocket(params->socket_id);
   if (!socket) {
@@ -337,9 +337,9 @@ SocketsUdpGetInfoFunction::SocketsUdpGetInfoFunction() = default;
 SocketsUdpGetInfoFunction::~SocketsUdpGetInfoFunction() = default;
 
 ExtensionFunction::ResponseAction SocketsUdpGetInfoFunction::Work() {
-  std::unique_ptr<sockets_udp::GetInfo::Params> params =
+  absl::optional<sockets_udp::GetInfo::Params> params =
       sockets_udp::GetInfo::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   ResumableUDPSocket* socket = GetUdpSocket(params->socket_id);
   if (!socket) {
@@ -376,9 +376,9 @@ SocketsUdpJoinGroupFunction::SocketsUdpJoinGroupFunction() = default;
 SocketsUdpJoinGroupFunction::~SocketsUdpJoinGroupFunction() = default;
 
 ExtensionFunction::ResponseAction SocketsUdpJoinGroupFunction::Work() {
-  std::unique_ptr<sockets_udp::JoinGroup::Params> params =
+  absl::optional<sockets_udp::JoinGroup::Params> params =
       sockets_udp::JoinGroup::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   ResumableUDPSocket* socket = GetUdpSocket(params->socket_id);
   if (!socket) {
@@ -401,7 +401,7 @@ ExtensionFunction::ResponseAction SocketsUdpJoinGroupFunction::Work() {
 
 void SocketsUdpJoinGroupFunction::OnCompleted(int net_result) {
   if (net_result == net::OK) {
-    Respond(OneArgument(base::Value(net_result)));
+    Respond(WithArguments(net_result));
   } else {
     Respond(ErrorWithCode(net_result, net::ErrorToString(net_result)));
   }
@@ -412,9 +412,9 @@ SocketsUdpLeaveGroupFunction::SocketsUdpLeaveGroupFunction() = default;
 SocketsUdpLeaveGroupFunction::~SocketsUdpLeaveGroupFunction() = default;
 
 ExtensionFunction::ResponseAction SocketsUdpLeaveGroupFunction::Work() {
-  std::unique_ptr<sockets_udp::LeaveGroup::Params> params =
+  absl::optional<sockets_udp::LeaveGroup::Params> params =
       api::sockets_udp::LeaveGroup::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   ResumableUDPSocket* socket = GetUdpSocket(params->socket_id);
   if (!socket) {
@@ -436,7 +436,7 @@ ExtensionFunction::ResponseAction SocketsUdpLeaveGroupFunction::Work() {
 
 void SocketsUdpLeaveGroupFunction::OnCompleted(int result) {
   if (result == net::OK) {
-    Respond(OneArgument(base::Value(result)));
+    Respond(WithArguments(result));
   } else {
     Respond(ErrorWithCode(result, net::ErrorToString(result)));
   }
@@ -450,9 +450,9 @@ SocketsUdpSetMulticastTimeToLiveFunction::
 
 ExtensionFunction::ResponseAction
 SocketsUdpSetMulticastTimeToLiveFunction::Work() {
-  std::unique_ptr<sockets_udp::SetMulticastTimeToLive::Params> params =
+  absl::optional<sockets_udp::SetMulticastTimeToLive::Params> params =
       api::sockets_udp::SetMulticastTimeToLive::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   ResumableUDPSocket* socket = GetUdpSocket(params->socket_id);
   if (!socket) {
@@ -461,7 +461,7 @@ SocketsUdpSetMulticastTimeToLiveFunction::Work() {
 
   int net_result = socket->SetMulticastTimeToLive(params->ttl);
   if (net_result == net::OK) {
-    return RespondNow(OneArgument(base::Value(net_result)));
+    return RespondNow(WithArguments(net_result));
   }
   return RespondNow(ErrorWithCode(net_result, net::ErrorToString(net_result)));
 }
@@ -474,9 +474,9 @@ SocketsUdpSetMulticastLoopbackModeFunction::
 
 ExtensionFunction::ResponseAction
 SocketsUdpSetMulticastLoopbackModeFunction::Work() {
-  std::unique_ptr<sockets_udp::SetMulticastLoopbackMode::Params> params =
+  absl::optional<sockets_udp::SetMulticastLoopbackMode::Params> params =
       api::sockets_udp::SetMulticastLoopbackMode::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   ResumableUDPSocket* socket = GetUdpSocket(params->socket_id);
   if (!socket) {
@@ -485,7 +485,7 @@ SocketsUdpSetMulticastLoopbackModeFunction::Work() {
 
   int net_result = socket->SetMulticastLoopbackMode(params->enabled);
   if (net_result == net::OK) {
-    return RespondNow(OneArgument(base::Value(net_result)));
+    return RespondNow(WithArguments(net_result));
   }
   return RespondNow(ErrorWithCode(net_result, net::ErrorToString(net_result)));
 }
@@ -497,9 +497,9 @@ SocketsUdpGetJoinedGroupsFunction::~SocketsUdpGetJoinedGroupsFunction() =
     default;
 
 ExtensionFunction::ResponseAction SocketsUdpGetJoinedGroupsFunction::Work() {
-  std::unique_ptr<sockets_udp::GetJoinedGroups::Params> params =
+  absl::optional<sockets_udp::GetJoinedGroups::Params> params =
       api::sockets_udp::GetJoinedGroups::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   ResumableUDPSocket* socket = GetUdpSocket(params->socket_id);
   if (!socket) {
@@ -524,9 +524,9 @@ SocketsUdpSetBroadcastFunction::SocketsUdpSetBroadcastFunction() = default;
 SocketsUdpSetBroadcastFunction::~SocketsUdpSetBroadcastFunction() = default;
 
 ExtensionFunction::ResponseAction SocketsUdpSetBroadcastFunction::Work() {
-  std::unique_ptr<sockets_udp::SetBroadcast::Params> params =
+  absl::optional<sockets_udp::SetBroadcast::Params> params =
       api::sockets_udp::SetBroadcast::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   ResumableUDPSocket* socket = GetUdpSocket(params->socket_id);
   if (!socket) {
@@ -541,7 +541,7 @@ ExtensionFunction::ResponseAction SocketsUdpSetBroadcastFunction::Work() {
 
 void SocketsUdpSetBroadcastFunction::OnCompleted(int net_result) {
   if (net_result == net::OK) {
-    Respond(OneArgument(base::Value(net_result)));
+    Respond(WithArguments(net_result));
     return;
   }
   Respond(ErrorWithCode(net_result, net::ErrorToString(net_result)));

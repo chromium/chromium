@@ -36,7 +36,6 @@
 #ifndef BASE_JSON_JSON_READER_H_
 #define BASE_JSON_JSON_READER_H_
 
-#include <memory>
 #include <string>
 
 #include "base/base_export.h"
@@ -103,16 +102,6 @@ class BASE_EXPORT JSONReader {
   // Reads and parses |json|, returning a Value.
   // If |json| is not a properly formed JSON string, returns absl::nullopt.
   static absl::optional<Value> Read(
-      StringPiece json,
-      int options = JSON_PARSE_CHROMIUM_EXTENSIONS,
-      size_t max_depth = internal::kAbsoluteMaxDepth);
-
-  // Deprecated. Use the Read() method above.
-  // Reads and parses |json|, returning a Value.
-  // If |json| is not a properly formed JSON string, returns nullptr.
-  // Wrap this in base::FooValue::From() to check the Value is of type Foo and
-  // convert to a FooValue at the same time.
-  static std::unique_ptr<Value> ReadDeprecated(
       StringPiece json,
       int options = JSON_PARSE_CHROMIUM_EXTENSIONS,
       size_t max_depth = internal::kAbsoluteMaxDepth);

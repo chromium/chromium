@@ -49,8 +49,6 @@ class GetDeveloperIdsTask : public DatabaseTask {
 
   void FinishWithError(blink::mojom::BackgroundFetchError error) override;
 
-  std::string HistogramName() const override;
-
   int64_t service_worker_registration_id_;
   blink::StorageKey storage_key_;
 

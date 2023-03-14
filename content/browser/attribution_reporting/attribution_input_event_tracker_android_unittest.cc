@@ -30,10 +30,9 @@ ui::MotionEventAndroid CreateTouchEventAt(
     base::TimeTicks event_time = base::TimeTicks()) {
   ui::MotionEventAndroid::Pointer pointer0(0, x, y, 0, 0, 0, 0, 0);
   ui::MotionEventAndroid::Pointer pointer1(0, 0, 0, 0, 0, 0, 0, 0);
-  return ui::MotionEventAndroid(
-      nullptr, event, 1.f, 0, 0, 0,
-      (event_time - base::TimeTicks()).InMilliseconds(), 0, 1, 0, 0, 0, 0, 0, 0,
-      0, 0, false, &pointer0, &pointer1);
+  return ui::MotionEventAndroid(nullptr, event, 1.f, 0, 0, 0, event_time, 0, 1,
+                                0, 0, 0, 0, 0, 0, 0, 0, false, &pointer0,
+                                &pointer1);
 }
 
 }  // namespace

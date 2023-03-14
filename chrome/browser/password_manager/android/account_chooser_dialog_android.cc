@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/passwords/account_avatar_fetcher.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/device_reauth/biometric_authenticator.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -123,7 +123,7 @@ AccountChooserDialogAndroid::AccountChooserDialogAndroid(
 AccountChooserDialogAndroid::~AccountChooserDialogAndroid() {
   if (authenticator_) {
     authenticator_->Cancel(
-        device_reauth::BiometricAuthRequester::kAccountChooserDialog);
+        device_reauth::DeviceAuthRequester::kAccountChooserDialog);
   }
 
   // |dialog_jobject_| can be null in tests or if the dialog could not
@@ -242,15 +242,14 @@ bool AccountChooserDialogAndroid::HandleCredentialChosen(
     return true;
   }
 
-  scoped_refptr<device_reauth::BiometricAuthenticator> authenticator =
-      client_->GetBiometricAuthenticator();
+  scoped_refptr<device_reauth::DeviceAuthenticator> authenticator =
+      client_->GetDeviceAuthenticator();
   if (password_manager_util::CanUseBiometricAuth(
           authenticator.get(),
-          device_reauth::BiometricAuthRequester::kAccountChooserDialog,
-          client_)) {
+          device_reauth::DeviceAuthRequester::kAccountChooserDialog, client_)) {
     authenticator_ = std::move(authenticator);
     authenticator_->Authenticate(
-        device_reauth::BiometricAuthRequester::kAccountChooserDialog,
+        device_reauth::DeviceAuthRequester::kAccountChooserDialog,
         base::BindOnce(&AccountChooserDialogAndroid::OnReauthCompleted,
                        base::Unretained(this), index),
         /*use_last_valid_auth=*/true);

@@ -100,6 +100,9 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
     // Cross fade animation. Copies old layer, and fades it out while fading the
     // new layer in.
     kCrossFade,
+    // Custom cross fade animations when floating/unfloating a window.
+    kCrossFadeFloat,
+    kCrossFadeUnfloat,
     // Bounds animation.
     kAnimate,
     // Bounds animation with zero tween. Updates the bounds once at the end of
@@ -415,8 +418,8 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // Sets the currently stored restore bounds and clears the restore bounds.
   void SetAndClearRestoreBounds();
 
-  // Notifies that the drag operation has been started. Optionally returns
-  // a presentation time recorder for the drag.
+  // Notifies that the drag operation has been started. Optionally returns a
+  // presentation time recorder for the drag.
   std::unique_ptr<PresentationTimeRecorder> OnDragStarted(int window_component);
 
   // Notifies that the drag operation has been either completed or reverted.
@@ -522,7 +525,7 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   void NotifyPostStateTypeChange(
       chromeos::WindowStateType old_window_state_type);
 
-  // Sets |bounds| as is and ensure the layer is aligned with pixel boundary.
+  // Sets `bounds` as is and ensure the layer is aligned with pixel boundary.
   void SetBoundsDirect(const gfx::Rect& bounds);
 
   // Sets the window's |bounds| with constraint where the size of the

@@ -61,6 +61,7 @@
 <translation id="2573731672208488250">{HOURS,plural, =1{تا ۱ ساعت دیگر}one{تا # ساعت دیگر}other{تا # ساعت دیگر}}</translation>
 <translation id="2583543531130364912">کالیبراسیون صفحه لمسی</translation>
 <translation id="2586657967955657006">بریده‌دان</translation>
+<translation id="2653844658857826081">جدید</translation>
 <translation id="2666092431469916601">بالا</translation>
 <translation id="2701330563083355633">هم‌رسانی‌شده از <ph name="DEVICE_NAME" /></translation>
 <translation id="271033894570825754">جدید</translation>
@@ -75,6 +76,7 @@
 <translation id="3157931365184549694">بازیابی</translation>
 <translation id="3183922693828471536">پیمایش به اینجا</translation>
 <translation id="3234408098842461169">کلید پایین‌بر</translation>
+<translation id="3240426699337459095">پیوند کپی شد</translation>
 <translation id="3291688615589870984">{DAYS,plural, =1{۱ روز}one{# روز}other{# روز}}</translation>
 <translation id="3295886253693811851">برقراری تماس از</translation>
 <translation id="3306688585798492231">نمایشگر داخلی</translation>

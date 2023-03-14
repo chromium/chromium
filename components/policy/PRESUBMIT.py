@@ -24,9 +24,9 @@ import pyyaml
 _CACHED_FILES = {}
 _CACHED_POLICY_CHANGE_LIST = []
 
-_TEST_CASES_DEPOT_PATH = os.path.join(
-      'chrome', 'test', 'data', 'policy', 'policy_test_cases.json')
 _COMPONENTS_POLICY_PATH = os.path.join('components', 'policy')
+_TEST_CASES_DEPOT_PATH = os.path.join(
+    _COMPONENTS_POLICY_PATH, 'test' , 'data', 'policy_test_cases.json')
 _PRESUBMIT_PATH = os.path.join(_COMPONENTS_POLICY_PATH, 'PRESUBMIT.py')
 _TOOLS_PATH = os.path.join(_COMPONENTS_POLICY_PATH, 'tools')
 _SYNTAX_CHECK_SCRIPT_PATH = os.path.join(_TOOLS_PATH,
@@ -207,7 +207,7 @@ def CheckPolicyTestCases(input_api, output_api):
       [_TEST_CASES_DEPOT_PATH, _POLICIES_YAML_PATH, _PRESUBMIT_PATH]):
     return results
 
-  # Read list of policies in chrome/test/data/policy/policy_test_cases.json.
+  # Read list of policies in components/policy/test/data/policy_test_cases.json.
   root = input_api.change.RepositoryRoot()
   with open(os.path.join(root, _TEST_CASES_DEPOT_PATH), encoding='utf-8') as f:
     test_names = input_api.json.load(f).keys()
@@ -221,12 +221,16 @@ def CheckPolicyTestCases(input_api, output_api):
   # Finally check if any policies are missing.
   missing = policy_names - tested_policies
   extra = tested_policies - policy_names
-  error_missing = ("Policy '%s' was added to policy_templates.json but not "
-                   "to src/chrome/test/data/policy/policy_test_cases.json. "
-                   "Please update both files.")
+  error_missing = ("Policy '%s' was added to "
+                   "//components/policy/resources/templates/policy_definitions/"
+                   " but not to "
+                   "//components/policy/test/data/policy_test_cases.json. "
+                   "Please update both places.")
   error_extra = ("Policy '%s' is tested by "
-                 "src/chrome/test/data/policy/policy_test_cases.json but is not"
-                 " defined in policy_templates.json. Please update both files.")
+                 "//components/policy/test/policy_test_cases.json but is not"
+                 " defined in "
+                 "//components/policy/resources/templates/policy_definitions/."
+                 " Please update both places.")
   results = []
   for policy in missing:
     results.append(output_api.PresubmitError(error_missing % policy))
@@ -611,7 +615,7 @@ def CheckPoliciesYamlOrdering(input_api, output_api):
     return results
 
   root = input_api.change.RepositoryRoot()
-  with open(os.path.join(root, _POLICIES_YAML_PATH), 'r') as f:
+  with open(os.path.join(root, _POLICIES_YAML_PATH), 'r', encoding='utf-8') as f:
     policies_yaml_lines = f.readlines()
 
   previous_id = 0

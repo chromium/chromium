@@ -54,7 +54,6 @@ class ASH_EXPORT LoginRemoveAccountDialog : public LoginBaseBubbleView,
 
   // LoginBaseBubbleView:
   LoginButton* GetBubbleOpener() const override;
-  void OnThemeChanged() override;
 
   // views::View:
   void RequestFocus() override;

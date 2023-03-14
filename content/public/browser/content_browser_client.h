@@ -168,7 +168,7 @@ struct ResourceRequest;
 
 namespace sandbox {
 class SandboxCompiler;
-class TargetPolicy;
+class TargetConfig;
 namespace mojom {
 enum class Sandbox;
 }  // namespace mojom
@@ -252,7 +252,7 @@ class TtsEnvironmentAndroid;
 class TtsControllerDelegate;
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_CHROMEOS)
 class SmartCardDelegate;
 #endif
 
@@ -1344,6 +1344,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   // returns a non-null value.
   virtual bool OverridesAudioManager();
 
+  // Returns true if the system audio echo cancellation shall be enforced.
+  virtual bool EnforceSystemAudioEchoCancellation();
+
   // Populates |mappings| with all files that need to be mapped before launching
   // a child process.
 #if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)) || BUILDFLAG(IS_FUCHSIA)
@@ -1375,11 +1378,12 @@ class CONTENT_EXPORT ContentBrowserClient {
   };
 
   // This may be called on the PROCESS_LAUNCHER thread before the child process
-  // is launched. It gives the embedder a chance to add modify the sandbox
-  // policy. Returns false if child should not spawn.
-  // Only use this for embedder-specific policies, since the bulk of sandbox
-  // policies should go inside the relevant SandboxedProcessLauncherDelegate.
-  virtual bool PreSpawnChild(sandbox::TargetPolicy* policy,
+  // configuration is set. It gives the embedder a chance to modify the sandbox
+  // configuration. Returns false if configuration is invalid and the child
+  // should not spawn. Only use this for embedder-specific policies, since the
+  // bulk of sandbox policies should go inside the relevant
+  // SandboxedProcessLauncherDelegate.
+  virtual bool PreSpawnChild(sandbox::TargetConfig* config,
                              sandbox::mojom::Sandbox sandbox_type,
                              ChildSpawnFlags flags);
 
@@ -1860,7 +1864,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // API.
   virtual FontAccessDelegate* GetFontAccessDelegate();
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_CHROMEOS)
   // Allows the embedder to provide an implementation of the Web Smart Card API.
   virtual SmartCardDelegate* GetSmartCardDelegate(
       BrowserContext* browser_context);
@@ -2388,6 +2392,12 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Checks if Isolated Web Apps are enabled, e.g. by feature flag
   // or in any other way.
   virtual bool AreIsolatedWebAppsEnabled(BrowserContext* browser_context);
+
+  // This function can serve to block third-party storage partitioning
+  // from being enabled if it returns false. If it returns true, then
+  // we fallback on the base feature to determine if partitioning is on.
+  virtual bool IsThirdPartyStoragePartitioningAllowed(
+      content::BrowserContext* browser_context);
 };
 
 }  // namespace content

@@ -48,12 +48,16 @@ public class PageZoomUtils {
     // The max value for the seek bar to help with rounding effects (not shown to user).
     public static final int PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE = 250;
 
-    // The minimum and maximum zoom values as a percentage (e.g. 50% = 0.50, 300% = 3.0)
+    // The minimum and maximum zoom values as a percentage (e.g. 50% = 0.50, 300% = 3.0).
     protected static final float PAGE_ZOOM_MINIMUM_ZOOM_LEVEL = 0.50f;
     protected static final float PAGE_ZOOM_MAXIMUM_ZOOM_LEVEL = 3.00f;
 
     // The timeout for when to dismiss the slider from the last user interaction
     protected static final long LAST_INTERACTION_DISMISSAL = 5000; // 5 seconds = 5 * 1000
+
+    // The range of user-readable zoom values at which the seek bar should snap to the
+    // default zoom value, (e.g. 0.03 = range of +/- 3%).
+    private static final double DEFAULT_ZOOM_LEVEL_SNAP_RANGE = 0.03;
 
     /**
      * Returns whether the Accessibility Settings page should include the 'Zoom' UI. The page
@@ -100,7 +104,7 @@ public class PageZoomUtils {
         // To get to a seekbar value from an index, raise the base (1.2) to the given |zoomFactor|
         // exponent to get the zoom level. Find where this level sits proportionately between the
         // min and max level, and use that percentage as the corresponding seek value.
-        double zoomLevel = Math.pow(TEXT_SIZE_MULTIPLIER_RATIO, zoomFactor);
+        double zoomLevel = convertZoomFactorToZoomLevel(zoomFactor);
         double zoomLevelPercent = (double) (zoomLevel - PAGE_ZOOM_MINIMUM_ZOOM_LEVEL)
                 / (PAGE_ZOOM_MAXIMUM_ZOOM_LEVEL - PAGE_ZOOM_MINIMUM_ZOOM_LEVEL);
 
@@ -109,7 +113,7 @@ public class PageZoomUtils {
 
     /**
      * This method converts the seekbar value to a zoom level so that the level can be displayed
-     * to the user in a human-readable format.
+     * to the user in a human-readable format, e.g. 1.0, 1.50.
      * @param newValue      seek bar value to convert to zoom level
      * @return double
      */
@@ -117,6 +121,34 @@ public class PageZoomUtils {
         return PAGE_ZOOM_MINIMUM_ZOOM_LEVEL
                 + ((PAGE_ZOOM_MAXIMUM_ZOOM_LEVEL - PAGE_ZOOM_MINIMUM_ZOOM_LEVEL)
                         * ((float) newValue / PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE));
+    }
+
+    /**
+     * This method converts the zoom factor to a zoom level in a human-readable format,
+     * e.g. 1.0, 1.50.
+     *
+     * @param zoomFactor    zoom factor to get zoom level for.
+     * @return double
+     */
+    public static double convertZoomFactorToZoomLevel(double zoomFactor) {
+        // To get the zoom level from the zoom factor, raise the base (1.2) to the given
+        // |zoomFactor| exponent to get the zoom level.
+        return Math.pow(TEXT_SIZE_MULTIPLIER_RATIO, zoomFactor);
+    }
+
+    /**
+     * Returns true if the given seek bar value falls within the range at which
+     * the seek bar should be snapped to the default global zoom level. Returns false otherwise.
+     * @param seekBarValue  the seek bar value.
+     * @param defaultZoomFactor the default zoom factor to compare against.
+     * @return boolean
+     */
+    public static boolean shouldSnapSeekBarValueToDefaultZoom(
+            int seekBarValue, double defaultZoomFactor) {
+        double currentZoomLevel = convertSeekBarValueToZoomLevel(seekBarValue);
+        double defaultZoomLevel = convertZoomFactorToZoomLevel(defaultZoomFactor);
+        return (MathUtils.roundTwoDecimalPlaces(Math.abs(currentZoomLevel - defaultZoomLevel)))
+                <= PageZoomUtils.DEFAULT_ZOOM_LEVEL_SNAP_RANGE;
     }
 
     /**
@@ -135,6 +167,15 @@ public class PageZoomUtils {
      */
     public static int getDefaultZoomAsSeekBarValue(BrowserContextHandle context) {
         return convertZoomFactorToSeekBarValue(getDefaultZoomLevel(context));
+    }
+
+    /**
+     * Returns the current user choice for default zoom level as a zoom factor.
+     * This is part of the Profile and is set in Desktop through Settings > Appearance.
+     * @return double
+     */
+    public static double getDefaultZoomLevelAsZoomFactor(BrowserContextHandle context) {
+        return getDefaultZoomLevel(context);
     }
 
     // Methods to interact with SharedPreferences. These do not use SharedPreferencesManager so

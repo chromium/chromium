@@ -63,6 +63,7 @@ class ThemeSelectionScreen : public BaseScreen {
   void ShowImpl() override;
   void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;
+  ScreenSummary GetScreenSummary() override;
 
   base::WeakPtr<ThemeSelectionScreenView> view_;
   ScreenExitCallback exit_callback_;

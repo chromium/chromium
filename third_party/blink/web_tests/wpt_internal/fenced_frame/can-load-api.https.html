@@ -13,14 +13,14 @@ async function runTest(expected_result, attribute_list, header_list, use_fencedf
       attachFencedFrameContext({attributes:attribute_list, headers:header_list}) :
       attachIFrameContext({attributes:attribute_list, headers:header_list});
   await frame.execute(async (expected_result, attribute_list) => {
-    assert_equals(HTMLFencedFrameElement.canLoadOpaqueURL(), expected_result,
+    assert_equals(navigator.canLoadAdAuctionFencedFrame(), expected_result,
     "A frame with attributes " + attribute_list + " should return " +
     expected_result + " for canLoadOpaqueURL.");
   }, [expected_result, attribute_list]);
 }
 
 promise_test(async(t) => {
-  assert_true(HTMLFencedFrameElement.canLoadOpaqueURL());
+  assert_true(navigator.canLoadAdAuctionFencedFrame());
 }, 'canLoadOpaqueURL called on a page that can load a FF should return true');
 
 promise_test(async(t) => {

@@ -6,4 +6,18 @@ specific_include_rules = {
     "+ash/test/ash_test_helper.h",
     "+chrome/browser/ash/app_mode/test_kiosk_extension_builder.h",
   ],
+  "kiosk_troubleshooting_controller_ash.cc": [
+    "+ash/accelerators/accelerator_commands.h",
+    "+ash/accelerators/accelerator_controller_impl.h",
+    "+ash/public/cpp/new_window_delegate.h",
+    "+ash/shell.h"
+  ],
+  "app_session_unittest.cc": [
+    "+ash/accelerators/accelerator_controller_impl.h",
+    "+ash/public/cpp/session/session_types.h",
+    "+ash/public/cpp/test/test_new_window_delegate.h",
+    "+ash/session/session_controller_impl.h",
+    "+ash/shell.h",
+    "+ash/test/ash_test_helper.h",
+  ],
 }

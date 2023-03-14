@@ -433,6 +433,11 @@ std::u16string ReplaceStringPlaceholders(const std::u16string& format_string,
 size_t strlcpy(char* dst, const char* src, size_t dst_size) {
   return internal::lcpyT(dst, src, dst_size);
 }
+
+size_t u16cstrlcpy(char16_t* dst, const char16_t* src, size_t dst_size) {
+  return internal::lcpyT(dst, src, dst_size);
+}
+
 size_t wcslcpy(wchar_t* dst, const wchar_t* src, size_t dst_size) {
   return internal::lcpyT(dst, src, dst_size);
 }

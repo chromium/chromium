@@ -15,9 +15,8 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
+#include "base/system/sys_info.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_util.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/scoped_wake_lock.h"
@@ -44,6 +43,10 @@ constexpr char kWakeLockReason[] = "DeviceScheduledRebootHandler";
 // Task name used for parsing ScheduledTaskData.
 constexpr char kTaskTimeFieldName[] = "reboot_time";
 
+base::Time GetBootTime() {
+  return base::Time::Now() - base::SysInfo::Uptime();
+}
+
 }  // namespace
 
 constexpr char DeviceScheduledRebootHandler::kRebootTimerTag[];
@@ -51,7 +54,17 @@ constexpr char DeviceScheduledRebootHandler::kRebootTimerTag[];
 DeviceScheduledRebootHandler::DeviceScheduledRebootHandler(
     ash::CrosSettings* cros_settings,
     std::unique_ptr<ScheduledTaskExecutor> scheduled_task_executor,
-    std::unique_ptr<RebootNotificationsScheduler> notifications_scheduler)
+    RebootNotificationsScheduler* notifications_scheduler)
+    : DeviceScheduledRebootHandler(cros_settings,
+                                   std::move(scheduled_task_executor),
+                                   notifications_scheduler,
+                                   base::BindRepeating(GetBootTime)) {}
+
+DeviceScheduledRebootHandler::DeviceScheduledRebootHandler(
+    ash::CrosSettings* cros_settings,
+    std::unique_ptr<ScheduledTaskExecutor> scheduled_task_executor,
+    RebootNotificationsScheduler* notifications_scheduler,
+    GetBootTimeCallback get_boot_time_callback)
     : cros_settings_(cros_settings),
       cros_settings_subscription_(cros_settings_->AddSettingsObserver(
           ash::kDeviceScheduledReboot,
@@ -59,7 +72,10 @@ DeviceScheduledRebootHandler::DeviceScheduledRebootHandler(
               &DeviceScheduledRebootHandler::OnScheduledRebootDataChanged,
               base::Unretained(this)))),
       scheduled_task_executor_(std::move(scheduled_task_executor)),
-      notifications_scheduler_(std::move(notifications_scheduler)) {
+      notifications_scheduler_(notifications_scheduler),
+      get_boot_time_callback_(std::move(get_boot_time_callback)) {
+  DCHECK(get_boot_time_callback_);
+
   ash::system::TimezoneSettings::GetInstance()->AddObserver(this);
   auto* power_manager_client = chromeos::PowerManagerClient::Get();
   if (power_manager_client) {
@@ -200,13 +216,15 @@ void DeviceScheduledRebootHandler::OnRebootTimerStartResult(
   // policy comes or Chrome is restarted.
   if (!result) {
     LOG(ERROR) << "Failed to start reboot timer";
-    notifications_scheduler_->ResetState();
+    notifications_scheduler_->CancelRebootNotifications(
+        RebootNotificationsScheduler::Requester::kScheduledRebootPolicy);
     skip_reboot_ = false;
     scheduled_reboot_data_ = absl::nullopt;
     return;
   }
-  // Set |skip_reboot_| flag if the grace time should be applied.
-  skip_reboot_ = notifications_scheduler_->ShouldApplyGraceTime(
+
+  skip_reboot_ = scheduled_task_util::ShouldSkipRebootDueToGracePeriod(
+      get_boot_time_callback_.Run(),
       scheduled_task_executor_->GetScheduledTaskTime());
 
   // If the flag is enabled, schedule reboot notification and dialog.
@@ -216,13 +234,15 @@ void DeviceScheduledRebootHandler::OnRebootTimerStartResult(
       notifications_scheduler_->SchedulePendingRebootNotifications(
           base::BindOnce(&DeviceScheduledRebootHandler::OnRebootButtonClicked,
                          base::Unretained(this)),
-          scheduled_task_executor_->GetScheduledTaskTime());
+          scheduled_task_executor_->GetScheduledTaskTime(),
+          RebootNotificationsScheduler::Requester::kScheduledRebootPolicy);
     }
   }
 }
 
 void DeviceScheduledRebootHandler::ResetState() {
-  notifications_scheduler_->ResetState();
+  notifications_scheduler_->CancelRebootNotifications(
+      RebootNotificationsScheduler::Requester::kScheduledRebootPolicy);
   scheduled_task_executor_->Reset();
   skip_reboot_ = false;
   scheduled_reboot_data_ = absl::nullopt;

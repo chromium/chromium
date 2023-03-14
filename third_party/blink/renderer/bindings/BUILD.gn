@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/python.gni")
 import("//third_party/blink/renderer/bindings/bindings.gni")
 import("//third_party/blink/renderer/bindings/generated_in_core.gni")
@@ -411,4 +412,11 @@ group("v8_context_snapshot_influential_libs") {
     "//third_party/blink/renderer/modules",
     "//third_party/blink/renderer/platform",
   ]
+}
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  header_dir = "third_party/blink/renderer/bindings"
+
+  flags = [ "ENABLE_V8_COMPILE_HINTS=$enable_v8_compile_hints" ]
 }

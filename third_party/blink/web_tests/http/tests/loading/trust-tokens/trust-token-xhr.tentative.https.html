@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Tests the prototype Trust Token API's functionality through its XHR interface.</title>
+<title>Tests the prototype Private Token API's functionality through its XHR interface.</title>
 <link rel="help" href="https://github.com/WICG/trust-token-api#trust-token-redemption" />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -11,12 +11,13 @@
   async_test((t) => {
     let request = new XMLHttpRequest();
     request.open('GET', 'https://trusttoken.test');
-    request.setTrustToken({
+    request.setPrivateToken({
+      type: "private-state-token",
       version: 1,
       operation: 'token-request'
     });
     request.onerror = t.step_func(() => {
-      assert_equals(request.trustTokenOperationError.name, "InvalidStateError");
+      assert_equals(request.privateTokenOperationError.name, "InvalidStateError");
 
       if (window.testRunner)
         window.testRunner.clearTrustTokenState(t.step_func_done(() => {}));
@@ -27,12 +28,13 @@
   async_test((t) => {
     let request = new XMLHttpRequest();
     request.open('GET', 'https://trusttoken.test');
-    request.setTrustToken({
+    request.setPrivateToken({
+      type: "private-state-token",
       version: 1,
       operation: 'token-redemption'
     });
     request.onerror = t.step_func(() => {
-      assert_equals(request.trustTokenOperationError.name, "InvalidStateError");
+      assert_equals(request.privateTokenOperationError.name, "InvalidStateError");
 
       if (window.testRunner)
         window.testRunner.clearTrustTokenState(t.step_func_done(() => {}));
@@ -43,14 +45,15 @@
   async_test((t) => {
       let request = new XMLHttpRequest();
       request.open('GET', 'https://destination.test');
-      request.setTrustToken({
+      request.setPrivateToken({
+        type: "private-state-token",
         version: 1,
         operation: 'send-redemption-record',
         issuers: ['https://issuer.test']
       });
       request.onerror = t.step_func(() => {
-        assert_equals(request.trustTokenOperationError, null,
-          'The request should fail for a reason unrelated to its Trust Tokens ' +
+        assert_equals(request.privateTokenOperationError, null,
+          'The request should fail for a reason unrelated to its Private Tokens ' +
           ' operation (namely that its destination doesn\'t exist)');
 
         if (window.testRunner)

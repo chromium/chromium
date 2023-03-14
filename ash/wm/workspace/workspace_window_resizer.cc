@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/metrics/pip_uma.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
 #include "ash/scoped_animation_disabler.h"
 #include "ash/screen_util.h"
@@ -23,10 +24,7 @@
 #include "ash/wm/float/tablet_mode_float_window_resizer.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/pip/pip_window_resizer.h"
-#include "ash/wm/tablet_mode/tablet_mode_browser_window_drag_delegate.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_window_drag_delegate.h"
-#include "ash/wm/tablet_mode/tablet_mode_window_resizer.h"
 #include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/window_animations.h"
 #include "ash/wm/window_positioning_utils.h"
@@ -312,64 +310,7 @@ std::unique_ptr<WindowResizer> CreateWindowResizerForTabletMode(
     return std::make_unique<TabletModeFloatWindowResizer>(window_state);
   }
 
-  // Window dragging from top and tab dragging are disabled if "WebUITabStrip"
-  // feature is enabled. "WebUITabStrip" will be enabled on 81 for Krane and on
-  // 82 for all other boards.
-  if (features::IsWebUITabStripEnabled()) {
-    return nullptr;
-  }
-
-  // Only maximized/fullscreen/snapped window can be dragged from the top of
-  // the screen.
-  if (!window_state->IsMaximized() && !window_state->IsFullscreen() &&
-      !window_state->IsSnapped()) {
-    return nullptr;
-  }
-
-  AppType app_type =
-      static_cast<AppType>(window->GetProperty(aura::client::kAppType));
-  // App windows can be dragged from the client area (see
-  // ToplevelWindowEventHandler).
-  if (app_type != AppType::BROWSER && app_type != AppType::LACROS &&
-      window_component == HTCLIENT) {
-    DCHECK_EQ(source, ::wm::WINDOW_MOVE_SOURCE_TOUCH);
-    window_state->CreateDragDetails(point_in_parent, HTCLIENT,
-                                    ::wm::WINDOW_MOVE_SOURCE_TOUCH);
-    std::unique_ptr<WindowResizer> window_resizer =
-        std::make_unique<TabletModeWindowResizer>(
-            window_state, std::make_unique<TabletModeWindowDragDelegate>());
-    return std::make_unique<DragWindowResizer>(std::move(window_resizer),
-                                               window_state);
-  }
-
-  // Only allow drag that happens on caption or top area. Note: for a maximized
-  // or fullscreen window, the window component here is always HTCAPTION, but
-  // for a snapped window, the window component here can either be HTCAPTION or
-  // HTTOP.
-  if (window_component != HTCAPTION && window_component != HTTOP) {
-    return nullptr;
-  }
-
-  // Note: only browser windows and chrome app windows are included here.
-  // For browser windows, this piece of codes will be called no matter the
-  // drag happens on the tab(s) or on the non-tabstrip caption or top area.
-  // But for app window, this piece of codes will only be called if the chrome
-  // app window has its customized caption area and can't be hidden in tablet
-  // mode (and thus the drag for this type of chrome app window always happens
-  // on caption or top area). The case where the caption area of the chrome app
-  // window can be hidden is handled above.
-  if (app_type != AppType::BROWSER && app_type != AppType::CHROME_APP &&
-      app_type != AppType::LACROS) {
-    return nullptr;
-  }
-
-  window_state->CreateDragDetails(point_in_parent, window_component, source);
-  std::unique_ptr<WindowResizer> window_resizer =
-      std::make_unique<TabletModeWindowResizer>(
-          window_state,
-          std::make_unique<TabletModeBrowserWindowDragDelegate>());
-  return std::make_unique<DragWindowResizer>(std::move(window_resizer),
-                                             window_state);
+  return nullptr;
 }
 
 // When dragging, drags events have to moved pass this threshold before the
@@ -955,7 +896,7 @@ void WorkspaceWindowResizer::CompleteDrag() {
         NOTREACHED();
         type = WM_EVENT_MAXIMIZE;
         break;
-    };
+    }
 
     const WMEvent event(type);
     window_state()->OnWMEvent(&event);
@@ -1719,7 +1660,7 @@ WorkspaceWindowResizer::SnapType WorkspaceWindowResizer::GetSnapType(
       break;
     case SnapType::kNone:
       break;
-  };
+  }
   return snap_type;
 }
 

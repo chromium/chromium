@@ -7,7 +7,6 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
-#include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -20,37 +19,6 @@
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/page_transition_types.h"
-
-SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
-    content::WebContents* web_contents,
-    base::Token token,
-    SavedTabGroupModel* model)
-    : token_(token), web_contents_(web_contents), model_(model) {
-  Observe(web_contents_);
-}
-
-SavedTabGroupWebContentsListener::~SavedTabGroupWebContentsListener() = default;
-
-void SavedTabGroupWebContentsListener::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  ui::PageTransition page_transition = navigation_handle->GetPageTransition();
-  if (!ui::IsValidPageTransitionType(page_transition) ||
-      ui::PageTransitionIsRedirect(page_transition) ||
-      !ui::PageTransitionIsMainFrame(page_transition)) {
-    return;
-  }
-
-  SavedTabGroup* group = model_->GetGroupContainingTab(token_);
-  if (!group) {
-    return;
-  }
-
-  SavedTabGroupTab* tab = group->GetTab(token_);
-  tab->SetTitle(web_contents_->GetTitle());
-  tab->SetURL(web_contents_->GetURL());
-  tab->SetFavicon(favicon::TabFaviconFromWebContents(web_contents_));
-  model_->UpdateTabInGroup(group->saved_guid(), *tab);
-}
 
 // TODO(crbug/1376259): Update SavedTabGroupModel state with any groups that
 // should be in the SavedTabGroupModel.
@@ -84,7 +52,6 @@ base::Token SavedTabGroupBrowserListener::GetOrCreateTrackedIDForWebContents(
 
 void SavedTabGroupBrowserListener::StopTrackingWebContents(
     content::WebContents* web_contents) {
-  CHECK(web_contents_to_tab_id_map_.count(web_contents) > 0);
   web_contents_to_tab_id_map_.erase(web_contents);
 }
 
@@ -153,7 +120,8 @@ void SavedTabGroupBrowserListener::TabGroupedStateChanged(
     return;
 
   // If the group is not currently saved then there is nothing to do.
-  SavedTabGroup* new_saved_group = model_->Get(new_local_group_id.value());
+  const SavedTabGroup* new_saved_group =
+      model_->Get(new_local_group_id.value());
   if (new_saved_group == nullptr)
     return;
 

@@ -48,6 +48,7 @@
 #endif
 #include "build/chromeos_buildflags.h"
 #include "components/page_info/core/features.h"
+#include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -728,12 +729,19 @@ void PageInfo::OnSitePermissionChanged(ContentSettingsType type,
         type, setting_old, setting, is_subscribed_to_permission_change_event);
   }
 
-  // Show the infobar only if permission's status is not handled by an
-  // origin.
+  // Show the infobar only if permission's status is not handled by an origin.
   // When the sound setting is changed, no reload is necessary.
   if (!is_subscribed_to_permission_change_event &&
       type != ContentSettingsType::SOUND) {
     show_info_bar_ = true;
+  }
+
+  if (permissions::PermissionUtil::IsPermission(type)) {
+    auto* permission_tracker =
+        permissions::PermissionRecoverySuccessRateTracker::FromWebContents(
+            web_contents_.get());
+
+    permission_tracker->PermissionStatusChanged(type, setting, show_info_bar_);
   }
 
   // Refresh the UI to reflect the new setting.
@@ -1572,6 +1580,5 @@ bool PageInfo::IsIsolatedWebApp() const {
 
   return web_contents_ &&
          web_contents_->GetPrimaryMainFrame()->GetWebExposedIsolationLevel() >=
-             content::RenderFrameHost::WebExposedIsolationLevel::
-                 kMaybeIsolatedApplication;
+             content::WebExposedIsolationLevel::kMaybeIsolatedApplication;
 }

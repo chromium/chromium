@@ -165,6 +165,11 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
           std::make_unique<AuthenticatorInternalUnrecognizedErrorSheetModel>(
               dialog_model));
       break;
+    case Step::kErrorWindowsHelloNotEnabled:
+      sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
+          AuthenticatorGenericErrorSheetModel::ForWindowsHelloNotEnabled(
+              dialog_model));
+      break;
     case Step::kBlePowerOnAutomatic:
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
           std::make_unique<AuthenticatorBlePowerOnAutomaticSheetModel>(

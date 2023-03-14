@@ -360,7 +360,7 @@ TEST_F(RegistryUtilTest, ProgramCompare) {
   // Tests where the expected file exists.
   static const char data[] = "data";
   ASSERT_TRUE(base::CreateDirectory(some_long_dir));
-  ASSERT_NE(-1, base::WriteFile(expect, data, std::size(data) - 1));
+  ASSERT_TRUE(base::WriteFile(expect, data));
   // Paths don't match.
   EXPECT_FALSE(ProgramCompare(expect).Evaluate(L"\"" + other.value() + L"\""));
   // Paths match exactly.

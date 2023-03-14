@@ -1,0 +1,34 @@
+<!doctype html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="color-scheme" content="light dark">
+  <title>$i18n{autofillMetadataPageTitle}</title>
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+  <link rel="stylesheet" href="../css/about_sys.css">
+  <link rel="stylesheet" href="../css/logs_map_page.css">
+  <link rel="stylesheet" href="../css/feedback_shared_styles.css">
+<script type="module" src="../js/autofill_metadata.js"></script>
+</head>
+
+<body>
+  <div id="header">
+    <h1 id="title">$i18n{autofillMetadataPageTitle}</h1>
+  </div>
+  <div id="content">
+    <h2 id="tableTitle">$i18n{logsMapPageTableTitle}</h2>
+    <div id="anchor"></div>
+    <button id="expandAllBtn"
+            class="global-button">$i18n{logsMapPageExpandAllBtn}</button>
+    <button id="collapseAllBtn"
+            class="global-button">$i18n{logsMapPageCollapseAllBtn}</button>
+    <div id="spinner-container">
+      <div class="inline-spinner"></div>
+      <p id="status">$i18n{logsMapPageStatusLoading}</p>
+    </div>
+    <table class="list" id="detailsTable"></table>
+  </div>
+</body>
+
+</html>

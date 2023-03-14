@@ -5,6 +5,7 @@
 #include "components/ntp_snippets/remote/remote_suggestions_fetcher_impl.h"
 
 #include "base/functional/bind.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
@@ -21,7 +22,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
-#include "components/variations/variations_associated_data.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -49,7 +49,7 @@ const char kAppendRequestPriorityAsQueryParameterParamName[] =
 const bool kAppendRequestPriorityAsQueryParameterParamDefault = true;
 
 bool IsAppendingRequestPriorityAsQueryParameterEnabled() {
-  return variations::GetVariationParamByFeatureAsBool(
+  return base::GetFieldTrialParamByFeatureAsBool(
       ntp_snippets::kArticleSuggestionsFeature,
       kAppendRequestPriorityAsQueryParameterParamName,
       kAppendRequestPriorityAsQueryParameterParamDefault);

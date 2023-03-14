@@ -190,7 +190,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
-import org.chromium.chrome.browser.vr.ArDelegateProvider;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -223,7 +222,8 @@ import org.chromium.components.webapps.AddToHomescreenCoordinator;
 import org.chromium.components.webapps.InstallTrigger;
 import org.chromium.components.webapps.bottomsheet.PwaBottomSheetController;
 import org.chromium.components.webapps.bottomsheet.PwaBottomSheetControllerProvider;
-import org.chromium.components.webxr.ArDelegate;
+import org.chromium.components.webxr.XrDelegate;
+import org.chromium.components.webxr.XrDelegateProvider;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.ScreenOrientationProvider;
@@ -397,7 +397,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     // returned by {@link isInPictureInPictureMode}.
     private boolean mLastPictureInPictureModeForTesting;
 
-    protected BackPressManager mBackPressManager = new BackPressManager();
+    protected BackPressManager mBackPressManager = new BackPressManager(this::handleOnBackPressed);
     private TextBubbleBackPressHandler mTextBubbleBackPressHandler;
     private SelectionPopupBackPressHandler mSelectionPopupBackPressHandler;
     private Callback<TabModelSelector> mSelectionPopupBackPressInitCallback;
@@ -645,7 +645,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                     getControlContainerHeightResource());
 
             mBottomContainer.initialize(getBrowserControlsManager(),
-                    getWindowAndroid().getApplicationBottomInsetProvider(),
+                    getWindowAndroid().getApplicationBottomInsetSupplier(),
                     mManualFillingComponentSupplier.get().getBottomInsetSupplier());
 
             ShareDelegate shareDelegate =
@@ -1024,6 +1024,16 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         if (tabModelSelector != null && !tabModelSelector.isReparentingInProgress()
                 && tab != null) {
             tab.hide(TabHidingType.ACTIVITY_HIDDEN);
+        }
+
+        if (mNativeInitialized
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.KEEP_ANDROID_TINTED_RESOURCES)
+                && mCompositorViewHolderSupplier.hasValue()) {
+            LayoutManagerImpl layoutManager =
+                    mCompositorViewHolderSupplier.get().getLayoutManager();
+            if (layoutManager != null && layoutManager.getResourceManager() != null) {
+                layoutManager.getResourceManager().clearTintedResourceCache();
+            }
         }
     }
 
@@ -2032,7 +2042,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         compositorViewHolder.setAutofillUiBottomInsetSupplier(
                 mManualFillingComponentSupplier.get().getBottomInsetSupplier());
         compositorViewHolder.setApplicationViewportInsetSupplier(
-                getWindowAndroid().getApplicationBottomInsetProvider());
+                getWindowAndroid().getApplicationBottomInsetSupplier());
 
         compositorViewHolder.setTopUiThemeColorProvider(
                 mRootUiCoordinator.getTopUiThemeColorProvider());
@@ -2193,8 +2203,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     /** Handles back press events for Chrome in various states. */
     protected final boolean handleOnBackPressed() {
-        assert !BackPressManager.isEnabled()
-            : "Back press should be handled by implementors of BackPressHandler if enabled";
         RecordUserAction.record(
                 mNativeInitialized ? "SystemBack" : "SystemBackBeforeNativeInitialized");
         if (isActivityFinishingOrDestroyed()) {
@@ -2213,9 +2221,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             return true;
         }
 
-        ArDelegate arDelegate = ArDelegateProvider.getDelegate();
-        if (arDelegate != null && arDelegate.onBackPressed()) {
-            BackPressManager.record(Type.AR_DELEGATE);
+        XrDelegate xrDelegate = XrDelegateProvider.getDelegate();
+        if (xrDelegate != null && xrDelegate.onBackPressed()) {
+            BackPressManager.record(Type.XR_DELEGATE);
             return true;
         }
 
@@ -2272,8 +2280,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             mBackPressManager.addHandler(mTextBubbleBackPressHandler, Type.TEXT_BUBBLE);
             mBackPressManager.addHandler(VrModuleProvider.getDelegate(), Type.VR_DELEGATE);
 
-            if (ArDelegateProvider.getDelegate() != null) {
-                mBackPressManager.addHandler(ArDelegateProvider.getDelegate(), Type.AR_DELEGATE);
+            if (XrDelegateProvider.getDelegate() != null) {
+                mBackPressManager.addHandler(XrDelegateProvider.getDelegate(), Type.XR_DELEGATE);
             }
 
             mLayoutManagerSupplier.addObserver((layoutManager) -> {
@@ -2531,7 +2539,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 Profile profile = getCurrentTabModel().getProfile();
                 RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(
                         profile, currentTab.getUrl(), usingDesktopUserAgent);
-                currentTab.reload();
+                // Use TabUtils.switchUserAgent() instead of Tab.reload(). Because we need to reload
+                // with ReloadType::ORIGINAL_REQUEST_URL. See http://crbug/1418587 for details.
+                TabUtils.switchUserAgent(currentTab, usingDesktopUserAgent,
+                        /* forcedByUser */ false,
+                        UseDesktopUserAgentCaller.ON_MENU_OR_KEYBOARD_ACTION);
                 RequestDesktopUtils.maybeShowUserEducationPromptForAppMenuSelection(
                         profile, this, getModalDialogManager());
                 TrackerFactory.getTrackerForProfile(profile).notifyEvent(

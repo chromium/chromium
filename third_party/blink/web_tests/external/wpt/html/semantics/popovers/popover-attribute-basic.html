@@ -9,12 +9,12 @@
 <script src="/resources/testdriver-actions.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="resources/popover-utils.js"></script>
-<script src="../../resources/common.js"></script>
 
 <div id=popovers>
   <div popover id=boolean>Pop up</div>
   <div popover="">Pop up</div>
   <div popover=auto>Pop up</div>
+  <div popover=hint>Pop up</div>
   <div popover=manual>Pop up</div>
   <article popover>Different element type</article>
   <header popover>Different element type</header>
@@ -52,59 +52,6 @@
 setup({ explicit_done: true });
 window.onload = () => {
   const outsideElement = document.getElementById('outside');
-  function assertPopoverVisibility(popover, isPopover, expectedVisibility, message) {
-    const isVisible = isElementVisible(popover);
-    assert_equals(isVisible, expectedVisibility,`${message}: Expected this element to be ${expectedVisibility ? "visible" : "not visible"}`);
-    // Check other things related to being visible or not:
-    if (isVisible) {
-      assert_not_equals(window.getComputedStyle(popover).display,'none');
-      assert_equals(popover.matches(':open'),isPopover,`${message}: Visible popovers should match :open`);
-      assert_false(popover.matches(':closed'),`${message}: Visible popovers and *all* non-popovers should *not* match :closed`);
-    } else {
-      assert_equals(window.getComputedStyle(popover).display,'none',`${message}: Non-showing popovers should have display:none`);
-      assert_false(popover.matches(':open'),`${message}: Non-showing popovers should *not* match :open`);
-      assert_true(popover.matches(':closed'),`${message}: Non-showing popovers should match :closed`);
-    }
-  }
-  function assertIsFunctionalPopover(popover) {
-    assertPopoverVisibility(popover, /*isPopover*/true, /*expectedVisibility*/false, 'A popover should start out hidden');
-    popover.showPopover();
-    assertPopoverVisibility(popover, /*isPopover*/true, /*expectedVisibility*/true, 'After showPopover(), a popover should be visible');
-    assert_throws_dom("InvalidStateError",() => popover.showPopover(),'Calling showPopover on a showing popover should throw InvalidStateError');
-    popover.hidePopover();
-    assertPopoverVisibility(popover, /*isPopover*/true, /*expectedVisibility*/false, 'After hidePopover(), a popover should be hidden');
-    assert_throws_dom("InvalidStateError",() => popover.hidePopover(),'Calling hidePopover on a hidden popover should throw InvalidStateError');
-    popover.togglePopover();
-    assertPopoverVisibility(popover, /*isPopover*/true, /*expectedVisibility*/true, 'After togglePopover() on hidden popover, it should be visible');
-    popover.togglePopover();
-    assertPopoverVisibility(popover, /*isPopover*/true, /*expectedVisibility*/false, 'After togglePopover() on visible popover, it should be hidden');
-    popover.togglePopover(/*force=*/true);
-    assertPopoverVisibility(popover, /*isPopover*/true, /*expectedVisibility*/true, 'After togglePopover(true) on hidden popover, it should be visible');
-    popover.togglePopover(/*force=*/true);
-    assertPopoverVisibility(popover, /*isPopover*/true, /*expectedVisibility*/true, 'After togglePopover(true) on visible popover, it should be visible');
-    popover.togglePopover(/*force=*/false);
-    assertPopoverVisibility(popover, /*isPopover*/true, /*expectedVisibility*/false, 'After togglePopover(false) on visible popover, it should be hidden');
-    popover.togglePopover(/*force=*/false);
-    assertPopoverVisibility(popover, /*isPopover*/true, /*expectedVisibility*/false, 'After togglePopover(false) on hidden popover, it should be hidden');
-    const parent = popover.parentElement;
-    popover.remove();
-    assert_throws_dom("InvalidStateError",() => popover.showPopover(),'Calling showPopover on a disconnected popover should throw InvalidStateError');
-    assert_throws_dom("InvalidStateError",() => popover.hidePopover(),'Calling hidePopover on a disconnected popover should throw InvalidStateError');
-    assert_throws_dom("InvalidStateError",() => popover.togglePopover(),'Calling hidePopover on a disconnected popover should throw InvalidStateError');
-    parent.appendChild(popover);
-  }
-  function assertNotAPopover(nonPopover) {
-    // If the non-popover element nonetheless has a 'popover' attribute, it should
-    // be invisible. Otherwise, it should be visible.
-    const expectVisible = !nonPopover.hasAttribute('popover');
-    assertPopoverVisibility(nonPopover, /*isPopover*/false, expectVisible, 'A non-popover should start out visible');
-    assert_throws_dom("NotSupportedError",() => nonPopover.showPopover(),'Calling showPopover on a non-popover should throw NotSupported');
-    assertPopoverVisibility(nonPopover, /*isPopover*/false, expectVisible, 'Calling showPopover on a non-popover should leave it visible');
-    assert_throws_dom("NotSupportedError",() => nonPopover.hidePopover(),'Calling hidePopover on a non-popover should throw NotSupported');
-    assertPopoverVisibility(nonPopover, /*isPopover*/false, expectVisible, 'Calling hidePopover on a non-popover should leave it visible');
-    assert_throws_dom("NotSupportedError",() => nonPopover.togglePopover(),'Calling togglePopover on a non-popover should throw NotSupported');
-    assertPopoverVisibility(nonPopover, /*isPopover*/false, expectVisible, 'Calling togglePopover on a non-popover should leave it visible');
-  }
 
   // Start with the provided examples:
   Array.from(document.getElementById('popovers').children).forEach(popover => {
@@ -116,25 +63,6 @@ window.onload = () => {
     test((t) => {
       assertNotAPopover(nonPopover);
     }, `The element ${nonPopover.outerHTML} should *not* behave as a popover.`);
-  });
-
-  // Then loop through all HTML5 elements that render a box by default:
-  let elementsThatDontRender = ['audio','base','br','datalist','dialog','embed','head','link','meta','noscript','param','rp','script','slot','style','template','title','wbr'];
-  const elements = HTML5_ELEMENTS.filter(el => !elementsThatDontRender.includes(el));
-  elements.forEach(tag => {
-    test((t) => {
-      const element = document.createElement(tag);
-      element.setAttribute('popover','auto');
-      document.body.appendChild(element);
-      t.add_cleanup(() => element.remove());
-      assertIsFunctionalPopover(element);
-    }, `A <${tag} popover> element should behave as a popover.`);
-    test((t) => {
-      const element = document.createElement(tag);
-      document.body.appendChild(element);
-      t.add_cleanup(() => element.remove());
-      assertNotAPopover(element);
-    }, `A <${tag}> element should *not* behave as a popover.`);
   });
 
   function createPopover(t) {
@@ -163,6 +91,10 @@ window.onload = () => {
     assert_equals(popover.popover,'manual','Invalid values should reflect as "manual"');
     popover.removeAttribute('popover');
     assert_equals(popover.popover,null,'No value should reflect as null');
+    if (popoverHintSupported()) {
+      popover.popover='hint';
+      assert_equals(popover.getAttribute('popover'),'hint');
+    }
     popover.popover='auto';
     assert_equals(popover.getAttribute('popover'),'auto');
     popover.popover='';
@@ -223,7 +155,13 @@ window.onload = () => {
     const popover = createPopover(t);
     popover.showPopover();
     assert_true(popover.matches(':open'));
-    popover.setAttribute('popover','manual'); // Change popover type
+    if (popoverHintSupported()) {
+      popover.setAttribute('popover','hint'); // Change popover type
+      assert_false(popover.matches(':open'));
+      popover.showPopover();
+      assert_true(popover.matches(':open'));
+    }
+    popover.setAttribute('popover','manual');
     assert_false(popover.matches(':open'));
     popover.showPopover();
     assert_true(popover.matches(':open'));
@@ -237,16 +175,7 @@ window.onload = () => {
     assert_false(popover.matches(':open'),'From "auto" to "invalid" (which is interpreted as "manual") should close the popover');
   },'Changing attribute values should close open popovers');
 
-  function modalPseudoSupported() {
-    try {
-      document.createElement('dialog').matches(':modal');
-      return true; // No exception means :modal is supported.
-    } catch(e) {
-      return false;
-    }
-  }
-
-  const validTypes = ["auto","manual"];
+  const validTypes = popoverHintSupported() ? ["auto","hint","manual"] : ["auto","manual"];
   validTypes.forEach(type => {
     test((t) => {
       const popover = createPopover(t);
@@ -259,16 +188,14 @@ window.onload = () => {
       assert_false(popover.matches(':open'));
     },`Removing a visible popover=${type} element from the document should close the popover`);
 
-    if (modalPseudoSupported()) {
-      test((t) => {
-        const popover = createPopover(t);
-        popover.setAttribute('popover',type);
-        popover.showPopover();
-        assert_true(popover.matches(':open'));
-        assert_false(popover.matches(':modal'));
-        popover.hidePopover();
-      },`A showing popover=${type} does not match :modal`);
-    }
+    test((t) => {
+      const popover = createPopover(t);
+      popover.setAttribute('popover',type);
+      popover.showPopover();
+      assert_true(popover.matches(':open'));
+      assert_false(popover.matches(':modal'));
+      popover.hidePopover();
+    },`A showing popover=${type} does not match :modal`);
   });
 
   test((t) => {
@@ -387,6 +314,7 @@ window.onload = () => {
                     popover.hidePopover();
                     break;
                   case 'auto':
+                  case 'hint':
                     assert_false(popover.matches(':open'),'A popover=auto should light-dismiss');
                     break;
                 }

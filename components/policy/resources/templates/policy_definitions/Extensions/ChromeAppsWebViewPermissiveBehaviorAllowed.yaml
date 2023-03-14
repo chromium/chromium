@@ -33,16 +33,16 @@ desc: |-
 
   This policy is a temporary workaround in the event that enterprises
   experience breakage due to these changes. This policy will be removed
-  in a future release.
+  in version 117.
 
-# TODO(crbug.com/1261928): When `extensions_features::kWebviewTagMPArchBehavior`
-# is enabled by default, launch this policy, and specify the timeline in the
-# description.
 # On ChromeOS, this policy should reach an LTS release before being removed.
-future_on:
-- chrome.*
-- chrome_os
-- fuchsia
+# TODO(crbug.com/1261928): The supported_on range is intended to be 113-116,
+# but until_version doesn't allow future versions. In M117, set the
+# until_version and remove the supporting code.
+supported_on:
+- chrome.*:113-
+- chrome_os:113-
+- fuchsia:113-
 
 supported_chrome_os_management: ['google_cloud', 'active_directory']
 

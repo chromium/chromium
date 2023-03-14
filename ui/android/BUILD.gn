@@ -185,7 +185,6 @@ android_resources("ui_java_resources") {
     "java/res/font/accent_font.xml",
     "java/res/layout/custom_toast_layout.xml",
     "java/res/layout/dropdown_item.xml",
-    "java/res/layout/dropdown_window.xml",
     "java/res/values-ldrtl/dimens.xml",
     "java/res/values-ldrtl/values.xml",
     "java/res/values-night/colors.xml",
@@ -222,6 +221,7 @@ java_group("ui_java") {
 android_library("ui_utils_java") {
   sources = [
     "java/src/org/chromium/ui/KeyboardVisibilityDelegate.java",
+    "java/src/org/chromium/ui/MotionEventUtils.java",
     "java/src/org/chromium/ui/UiUtils.java",
   ]
   deps = [
@@ -448,6 +448,7 @@ android_library("ui_java_test_support") {
     "javatests/src/org/chromium/ui/test/util/BlankUiTestActivity.java",
     "javatests/src/org/chromium/ui/test/util/BlankUiTestActivityTestCase.java",
     "javatests/src/org/chromium/ui/test/util/DisableAnimationsTestRule.java",
+    "javatests/src/org/chromium/ui/test/util/MockitoHelper.java",
     "javatests/src/org/chromium/ui/test/util/NightModeTestUtils.java",
     "javatests/src/org/chromium/ui/test/util/RenderTestRule.java",
     "javatests/src/org/chromium/ui/test/util/UiDisableIf.java",
@@ -464,6 +465,7 @@ android_library("ui_java_test_support") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//components/browser_ui/modaldialog/android:java",
+    "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_java",

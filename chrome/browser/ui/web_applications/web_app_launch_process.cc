@@ -112,7 +112,9 @@ content::WebContents* WebAppLaunchProcess::Run() {
               *ash::GetSystemWebAppTypeForAppId(&*profile_, params_->app_id))
           ->IsUrlInSystemAppScope(launch_url);
   DCHECK(registrar_->IsUrlInAppScope(launch_url, params_->app_id) ||
-         is_url_in_system_web_app_sccope);
+         is_url_in_system_web_app_sccope)
+      << "Url " << launch_url.spec() << " not in scope for app "
+      << params_->app_id;
 #else
   DCHECK(registrar_->IsUrlInAppScope(launch_url, params_->app_id));
 #endif
@@ -135,8 +137,9 @@ content::WebContents* WebAppLaunchProcess::Run() {
   NavigateResult navigate_result =
       MaybeNavigateBrowser(browser, is_new_browser, launch_url, share_target);
   content::WebContents* web_contents = navigate_result.web_contents;
-  if (!web_contents)
+  if (!web_contents) {
     return nullptr;
+  }
 
   MaybeEnqueueWebLaunchParams(
       launch_url, is_file_handling, web_contents,
@@ -144,8 +147,7 @@ content::WebContents* WebAppLaunchProcess::Run() {
 
   UpdateLaunchStats(web_contents, params_->app_id, launch_url);
   RecordLaunchMetrics(params_->app_id, params_->container,
-                      apps::GetAppLaunchSource(params_->launch_source),
-                      launch_url, web_contents);
+                      params_->launch_source, launch_url, web_contents);
 
   return web_contents;
 }

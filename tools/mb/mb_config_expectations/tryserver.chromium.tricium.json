@@ -40,7 +40,7 @@
       "target_os": "ios",
       "treat_warnings_as_errors": false,
       "use_cxx17": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-chromeos-clang-tidy-rel": {
@@ -90,7 +90,7 @@
       "symbol_level": 0,
       "treat_warnings_as_errors": false,
       "use_cxx17": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "win10-clang-tidy-rel": {

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/webui/eche_app_ui/eche_app_manager.h"
+
 #include <memory>
 
 #include "ash/constants/ash_features.h"
@@ -11,6 +12,7 @@
 #include "ash/webui/eche_app_ui/eche_alert_generator.h"
 #include "ash/webui/eche_app_ui/eche_connection_metrics_recorder.h"
 #include "ash/webui/eche_app_ui/eche_connection_scheduler_impl.h"
+#include "ash/webui/eche_app_ui/eche_connection_status_observer.h"
 #include "ash/webui/eche_app_ui/eche_connector_impl.h"
 #include "ash/webui/eche_app_ui/eche_message_receiver_impl.h"
 #include "ash/webui/eche_app_ui/eche_presence_manager.h"
@@ -109,7 +111,9 @@ EcheAppManager::EcheAppManager(
               stream_status_change_handler_.get(),
               feature_status_provider_.get())),
       eche_stream_orientation_observer_(
-          std::make_unique<EcheStreamOrientationObserver>()) {
+          std::make_unique<EcheStreamOrientationObserver>()),
+      eche_connection_status_observer_(
+          std::make_unique<EcheConnectionStatusObserver>()) {
   ash::GetNetworkConfigService(
       remote_cros_network_config_.BindNewPipeAndPassReceiver());
   system_info_provider_ = std::make_unique<SystemInfoProvider>(
@@ -150,6 +154,11 @@ void EcheAppManager::BindStreamOrientationObserverInterface(
   eche_stream_orientation_observer_->Bind(std::move(receiver));
 }
 
+void EcheAppManager::BindConnectionStatusObserverInterface(
+    mojo::PendingReceiver<mojom::ConnectionStatusObserver> receiver) {
+  eche_connection_status_observer_->Bind(std::move(receiver));
+}
+
 AppsAccessManager* EcheAppManager::GetAppsAccessManager() {
   return apps_access_manager_.get();
 }
@@ -165,6 +174,7 @@ void EcheAppManager::StreamGoBack() {
 // NOTE: These should be destroyed in the opposite order of how these objects
 // are initialized in the constructor.
 void EcheAppManager::Shutdown() {
+  eche_connection_status_observer_.reset();
   eche_stream_orientation_observer_.reset();
   system_info_provider_.reset();
   eche_tray_stream_status_observer_.reset();

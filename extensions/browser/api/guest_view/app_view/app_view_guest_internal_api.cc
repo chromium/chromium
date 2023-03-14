@@ -18,22 +18,20 @@ AppViewGuestInternalAttachFrameFunction::
 
 ExtensionFunction::ResponseAction
 AppViewGuestInternalAttachFrameFunction::Run() {
-  std::unique_ptr<appview::AttachFrame::Params> params(
-      appview::AttachFrame::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<appview::AttachFrame::Params> params =
+      appview::AttachFrame::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   GURL url = extension()->GetResourceURL(params->url);
   EXTENSION_FUNCTION_VALIDATE(url.is_valid());
 
-  ResponseValue response;
   if (AppViewGuest::CompletePendingRequest(
           browser_context(), url, params->guest_instance_id, extension_id(),
           render_frame_host()->GetProcess())) {
-    response = NoArguments();
+    return RespondNow(NoArguments());
   } else {
-    response = Error("could not complete");
+    return RespondNow(Error("could not complete"));
   }
-  return RespondNow(std::move(response));
 }
 
 AppViewGuestInternalDenyRequestFunction::
@@ -42,21 +40,19 @@ AppViewGuestInternalDenyRequestFunction::
 
 ExtensionFunction::ResponseAction
 AppViewGuestInternalDenyRequestFunction::Run() {
-  std::unique_ptr<appview::DenyRequest::Params> params(
-      appview::DenyRequest::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<appview::DenyRequest::Params> params =
+      appview::DenyRequest::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   // Since the URL passed into AppViewGuest:::CompletePendingRequest is invalid,
   // a new <appview> WebContents will not be created.
-  ResponseValue response;
   if (AppViewGuest::CompletePendingRequest(
           browser_context(), GURL(), params->guest_instance_id, extension_id(),
           render_frame_host()->GetProcess())) {
-    response = NoArguments();
+    return RespondNow(NoArguments());
   } else {
-    response = Error("could not complete");
+    return RespondNow(Error("could not complete"));
   }
-  return RespondNow(std::move(response));
 }
 
 }  // namespace extensions

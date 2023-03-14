@@ -884,9 +884,9 @@ void ExistingUserController::ContinueAuthSuccessAfterResumeAttempt(
 
   // Mark device will be consumer owned if the device is not managed and this is
   // the first user on the device.
-  if (!is_enterprise_managed && InstallAttributes::Get()->IsFirstSignIn()) {
+  if (!is_enterprise_managed &&
+      user_manager::UserManager::Get()->GetUsers().empty()) {
     DeviceSettingsService::Get()->MarkWillEstablishConsumerOwnership();
-    user_manager::UserManager::Get()->RecordOwner(user_context.GetAccountId());
   }
 
   if (user_context.CanLockManagedGuestSession()) {
@@ -1506,8 +1506,9 @@ void ExistingUserController::SetPublicSessionKeyboardLayoutAndLogin(
   UserContext new_user_context = user_context;
   std::string keyboard_layout;
   for (auto& entry : keyboard_layouts) {
-    if (entry.FindBoolKey("selected").value_or(false)) {
-      const std::string* keyboard_layout_ptr = entry.FindStringKey("value");
+    base::Value::Dict& entry_dict = entry.GetDict();
+    if (entry_dict.FindBool("selected").value_or(false)) {
+      const std::string* keyboard_layout_ptr = entry_dict.FindString("value");
       if (keyboard_layout_ptr)
         keyboard_layout = *keyboard_layout_ptr;
       break;

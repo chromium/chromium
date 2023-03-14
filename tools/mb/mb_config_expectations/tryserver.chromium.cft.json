@@ -10,7 +10,7 @@
       "proprietary_codecs": true,
       "symbol_level": 0,
       "use_dummy_lastchange": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "mac-rel-cft": {
@@ -22,7 +22,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "win-rel-cft": {
@@ -35,7 +35,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   }
 }

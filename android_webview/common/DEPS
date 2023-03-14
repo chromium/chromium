@@ -4,6 +4,7 @@ include_rules = [
   "+android_webview/common_jni_headers",
   "+components/cdm/common",
   "+components/embedder_support/origin_trials",
+  "+components/gwp_asan/common/crash_key_name.h"
   "+components/printing/common",
   "+media/base/android",
 ]

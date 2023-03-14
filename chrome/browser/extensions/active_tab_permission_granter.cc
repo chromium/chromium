@@ -225,8 +225,9 @@ void ActiveTabPermissionGranter::OnExtensionUnloaded(
 }
 
 void ActiveTabPermissionGranter::ClearActiveExtensionsAndNotify() {
-  if (granted_extensions_.is_empty())
+  if (granted_extensions_.empty()) {
     return;
+  }
 
   std::set<content::RenderFrameHost*> frame_hosts;
   std::vector<std::string> extension_ids;

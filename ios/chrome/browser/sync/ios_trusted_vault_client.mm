@@ -4,21 +4,44 @@
 
 #import "ios/chrome/browser/sync/ios_trusted_vault_client.h"
 
+#import "base/feature_list.h"
+#import "base/functional/callback_helpers.h"
+#import "base/task/sequenced_task_runner.h"
 #import "components/signin/public/identity_manager/account_info.h"
+#import "components/sync/base/features.h"
+#import "components/sync/trusted_vault/trusted_vault_registration_verifier.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/trusted_vault_client_backend.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+constexpr base::TimeDelta kVerifyDeviceRegistrationDelay = base::Seconds(10);
+
+}  // namespace
+
 IOSTrustedVaultClient::IOSTrustedVaultClient(
     ChromeAccountManagerService* account_manager_service,
-    TrustedVaultClientBackend* trusted_vault_client_backend)
+    signin::IdentityManager* identity_manager,
+    TrustedVaultClientBackend* trusted_vault_client_backend,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
     : account_manager_service_(account_manager_service),
-      backend_(trusted_vault_client_backend) {
+      backend_(trusted_vault_client_backend),
+      registration_verifier_(identity_manager,
+                             std::move(shared_url_loader_factory)) {
   DCHECK(account_manager_service_);
   DCHECK(backend_);
+
+  if (base::FeatureList::IsEnabled(
+          syncer::kSyncTrustedVaultVerifyDeviceRegistration)) {
+    backend_->SetDeviceRegistrationPublicKeyVerifierForUMA(
+        base::BindOnce(&IOSTrustedVaultClient::VerifyDeviceRegistration,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 IOSTrustedVaultClient::~IOSTrustedVaultClient() = default;
@@ -72,13 +95,41 @@ void IOSTrustedVaultClient::AddTrustedRecoveryMethod(
   NOTREACHED();
 }
 
-void IOSTrustedVaultClient::ClearDataForAccount(
+void IOSTrustedVaultClient::ClearLocalDataForAccount(
     const CoreAccountInfo& account_info) {
-  // TODO(crbug.com/1273080): decide whether this logic needs to be implemented
-  // on iOS.
+  backend_->ClearLocalData(IdentityForAccount(account_info), base::DoNothing());
 }
 
 id<SystemIdentity> IOSTrustedVaultClient::IdentityForAccount(
     const CoreAccountInfo& account_info) {
   return account_manager_service_->GetIdentityWithGaiaID(account_info.gaia);
+}
+
+void IOSTrustedVaultClient::VerifyDeviceRegistration(
+    const std::string& gaia_id) {
+  backend_->GetPublicKeyForIdentity(
+      account_manager_service_->GetIdentityWithGaiaID(gaia_id),
+      base::BindOnce(
+          &IOSTrustedVaultClient::VerifyDeviceRegistrationWithPublicKey,
+          weak_ptr_factory_.GetWeakPtr(), gaia_id));
+}
+
+void IOSTrustedVaultClient::VerifyDeviceRegistrationWithPublicKey(
+    const std::string& gaia_id,
+    const std::vector<uint8_t>& public_key) {
+  // Delay the logic, to be consistent with how other implementations do it.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          &IOSTrustedVaultClient::VerifyDeviceRegistrationWithPublicKeyDelayed,
+          weak_ptr_factory_.GetWeakPtr(), gaia_id, public_key),
+      kVerifyDeviceRegistrationDelay);
+}
+
+void IOSTrustedVaultClient::VerifyDeviceRegistrationWithPublicKeyDelayed(
+    const std::string& gaia_id,
+    const std::vector<uint8_t>& public_key) {
+  // Note that this code is reachable once at most, because
+  // SetDeviceRegistrationPublicKeyVerifierForUMA() registers a OnceCallback.
+  registration_verifier_.VerifyMembership(gaia_id, public_key);
 }

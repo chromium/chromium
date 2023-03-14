@@ -498,10 +498,10 @@ Browser* InteractiveBrowserTestApi::GetBrowserFor(
     CHECK(*browser) << "BrowserSpecifier: Browser* is null.";
     return *browser;
   }
-  Browser** const browser_ptr = absl::get<Browser**>(spec);
-  CHECK(browser_ptr) << "BrowserSpecifier: Browser** is null.";
-  CHECK(*browser_ptr) << "BrowserSpecifier: Browser** points to null browser.";
-  return *browser_ptr;
+  Browser* const browser_ptr =
+      absl::get<std::reference_wrapper<Browser*>>(spec).get();
+  CHECK(browser_ptr) << "BrowserSpecifier: Browser* is null.";
+  return browser_ptr;
 }
 
 InteractiveBrowserTest::InteractiveBrowserTest() = default;
@@ -520,7 +520,6 @@ void InteractiveBrowserTest::SetUpOnMainThread() {
 }
 
 void InteractiveBrowserTest::TearDownOnMainThread() {
-  SetContextWidget(nullptr);
   private_test_impl().DoTestTearDown();
   InProcessBrowserTest::TearDownOnMainThread();
 }

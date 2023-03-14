@@ -80,9 +80,6 @@
 # crbug.com/1128665
 -org.chromium.chrome.browser.download.DownloadTest.testDuplicateHttpPostDownload_Cancel__UseDownloadOfflineContentProviderEnabled
 
-# crbug.com/1165449
--org.chromium.chrome.browser.firstrun.TosAndUmaFirstRunFragmentWithEnterpriseSupportTest.testAcceptTosWithoutCrashUpload
-
 # crbug.com/1165459
 -org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsEntryTest.testCaptured
 

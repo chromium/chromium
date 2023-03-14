@@ -9,7 +9,6 @@
     {
       "name": "LayoutIFrame IFRAME class='container'",
       "bounds": [304, 154],
-      "contentsOpaqueForText": true,
       "transform": 1
     },
     {
@@ -37,7 +36,6 @@
       "name": "Scroll corner of LayoutIFrame IFRAME class='container'",
       "position": [287, 137],
       "bounds": [15, 15],
-      "contentsOpaqueForText": true,
       "transform": 1
     }
   ],

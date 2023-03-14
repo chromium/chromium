@@ -135,7 +135,7 @@ class ExtensionsToolbarContainerUITest : public ExtensionsToolbarUITest {
     action->OnMouseEvent(&click_up_event);
   }
 
-  void ShowUi(const std::string& name) override { NOTREACHED(); }
+  void ShowUi(const std::string& name) override { NOTREACHED_NORETURN(); }
 
   void RemoveExtension(ExtensionRemovalMethod method,
                        const std::string& extension_id) {
@@ -924,16 +924,13 @@ class ExtensionsToolbarContainerFeatureUITest
 // extensions listed which requires a page refresh.
 IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerFeatureUITest,
                        ClickingRequestAccessButtonRunsAction_RefreshRequired) {
-  constexpr char kExtensionAName[] = "A Extension";
-  constexpr char kExtensionBName[] = "B Extension";
-  constexpr char kExtensionCName[] = "C Extension";
   auto extensionA = InstallExtensionWithHostPermissions(
-      kExtensionAName, "<all_urls>",
+      "A Extension", "<all_urls>",
       /*content_script_run_location=*/"document_start");
-  auto extensionB = InstallExtensionWithHostPermissions(kExtensionBName,
-                                                        "http://example.com/");
+  auto extensionB =
+      InstallExtensionWithHostPermissions("B Extension", "http://example.com/");
   auto extensionC =
-      InstallExtensionWithHostPermissions(kExtensionCName, "<all_urls>");
+      InstallExtensionWithHostPermissions("C Extension", "<all_urls>");
 
   // Withheld site access for extensions A and B.
   extensions::ScriptingPermissionsModifier(profile(), extensionA)
@@ -949,8 +946,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerFeatureUITest,
   // pending site interaction.
   extensions::SitePermissionsHelper permissions(browser()->profile());
   EXPECT_TRUE(request_access_button()->GetVisible());
-  EXPECT_THAT(request_access_button()->GetExtensionsNamesForTesting(),
-              testing::ElementsAre(kExtensionAName, kExtensionBName));
+  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
+              testing::ElementsAre(extensionA->id(), extensionB->id()));
 
   EXPECT_EQ(permissions.GetSiteInteraction(*extensionA, web_contents()),
             SiteInteraction::kWithheld);
@@ -1014,8 +1011,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerFeatureUITest,
   // Extension A and B should have pending access again and the request access
   // button should be visible.
   EXPECT_TRUE(request_access_button()->GetVisible());
-  EXPECT_THAT(request_access_button()->GetExtensionsNamesForTesting(),
-              testing::ElementsAre(kExtensionAName, kExtensionBName));
+  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
+              testing::ElementsAre(extensionA->id(), extensionB->id()));
   EXPECT_EQ(permissions.GetSiteInteraction(*extensionA, web_contents()),
             SiteInteraction::kWithheld);
   EXPECT_EQ(permissions.GetSiteInteraction(*extensionB, web_contents()),
@@ -1052,8 +1049,8 @@ IN_PROC_BROWSER_TEST_F(
   // Verify request access button is visible because extensions A and B have
   // pending site interaction.
   EXPECT_TRUE(request_access_button()->GetVisible());
-  EXPECT_THAT(request_access_button()->GetExtensionsNamesForTesting(),
-              testing::ElementsAre(kExtensionAName, kExtensionBName));
+  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
+              testing::ElementsAre(extensionA->id(), extensionB->id()));
   extensions::SitePermissionsHelper permissions(browser()->profile());
   EXPECT_EQ(permissions.GetSiteInteraction(*extensionA, web_contents()),
             SiteInteraction::kWithheld);
@@ -1096,8 +1093,8 @@ IN_PROC_BROWSER_TEST_F(
   // Extension A and B should have pending access again and the request access
   // button should be visible.
   EXPECT_TRUE(request_access_button()->GetVisible());
-  EXPECT_THAT(request_access_button()->GetExtensionsNamesForTesting(),
-              testing::ElementsAre(kExtensionAName, kExtensionBName));
+  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
+              testing::ElementsAre(extensionA->id(), extensionB->id()));
   EXPECT_EQ(permissions.GetSiteInteraction(*extensionA, web_contents()),
             SiteInteraction::kWithheld);
   EXPECT_EQ(permissions.GetSiteInteraction(*extensionB, web_contents()),

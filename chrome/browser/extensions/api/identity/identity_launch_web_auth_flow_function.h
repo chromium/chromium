@@ -13,6 +13,12 @@
 
 namespace extensions {
 
+// When enabled, abortOnLoadForNonInteractive and timeoutMsForNonInteractive
+// arguments to launchWebAuthFlow will be used to allow the loaded auth page to
+// wait before failing with an 'interaction required' error. This allows JS to
+// run and redirects to happen after page load.
+BASE_DECLARE_FEATURE(kNonInteractiveTimeoutForWebAuthFlow);
+
 class IdentityLaunchWebAuthFlowFunction : public ExtensionFunction,
                                           public WebAuthFlow::Delegate {
  public:
@@ -30,7 +36,8 @@ class IdentityLaunchWebAuthFlowFunction : public ExtensionFunction,
     kInteractionRequired = 3,
     kPageLoadFailure = 4,
     kUnexpectedError = 5,
-    kMaxValue = kUnexpectedError,
+    kPageLoadTimedOut = 6,
+    kMaxValue = kPageLoadTimedOut,
   };
 
   IdentityLaunchWebAuthFlowFunction();

@@ -130,16 +130,20 @@ void PasswordProtectionRequest::CheckAllowlist() {
   // callback immediately on the IO thread or take some time if a full-hash-
   // check is required.
   auto result_callback =
-      base::BindOnce(&OnAllowlistCheckDoneOnIO, ui_task_runner(), AsWeakPtr());
+      base::BindOnce(&OnAllowlistCheckDoneOnSB, ui_task_runner(), AsWeakPtr());
+  auto task_runner =
+      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
+          ? ui_task_runner()
+          : io_task_runner_;
   tracker_.PostTask(
-      io_task_runner_.get(), FROM_HERE,
+      task_runner.get(), FROM_HERE,
       base::BindOnce(&AllowlistCheckerClient::StartCheckCsdAllowlist,
                      password_protection_service_->database_manager(),
                      main_frame_url_, std::move(result_callback)));
 }
 
 // static
-void PasswordProtectionRequest::OnAllowlistCheckDoneOnIO(
+void PasswordProtectionRequest::OnAllowlistCheckDoneOnSB(
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     base::WeakPtr<PasswordProtectionRequest> weak_request,
     bool match_allowlist) {

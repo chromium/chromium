@@ -83,7 +83,7 @@ void RenderingTestChromeClient::InjectGestureScrollEvent(
           delta, granularity);
   if (injected_type == WebInputEvent::Type::kGestureScrollBegin) {
     gesture_event->data.scroll_begin.scrollable_area_element_id =
-        scrollable_area_element_id.GetStableId();
+        scrollable_area_element_id.GetInternalValue();
   }
   local_frame.GetEventHandler().HandleGestureEvent(*gesture_event);
 }

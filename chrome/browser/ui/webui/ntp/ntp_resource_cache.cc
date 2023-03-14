@@ -269,9 +269,7 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
       CookieControlsServiceFactory::GetForProfile(incognito_profile);
 
   replacements["incognitoTabDescription"] =
-      l10n_util::GetStringUTF8(reading_list::switches::IsReadingListEnabled()
-                                   ? IDS_NEW_TAB_OTR_SUBTITLE_WITH_READING_LIST
-                                   : IDS_NEW_TAB_OTR_SUBTITLE);
+      l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_SUBTITLE_WITH_READING_LIST);
 
   bool use_revamped_ui =
       base::FeatureList::IsEnabled(features::kIncognitoNtpRevamp);

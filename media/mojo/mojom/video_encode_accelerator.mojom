@@ -128,10 +128,14 @@ struct VariableBitrate {
   uint32 peak_bps;
 };
 
+struct ExternalBitrate {
+};
+
 // This defines a mojo transport format for media::Bitrate.
 union Bitrate {
   ConstantBitrate constant;
   VariableBitrate variable;
+  ExternalBitrate external;
 };
 
 // This defines a mojo transport format for

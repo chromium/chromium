@@ -16,8 +16,8 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
-#include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
+#include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -52,13 +52,6 @@ class TestAutofillSuggestionGenerator : public AutofillSuggestionGenerator {
     return AutofillSuggestionGenerator::CreateCreditCardSuggestion(
         credit_card, type, /*prefix_matched_suggestion=*/false,
         virtual_card_option, /*app_locale=*/"", card_linked_offer_available);
-  }
-
-  std::map<Suggestion::BackendId, InternalId> backend_to_internal_map() {
-    return backend_to_internal_map_;
-  }
-  std::map<InternalId, Suggestion::BackendId> internal_to_backend_map() {
-    return internal_to_backend_map_;
   }
 };
 
@@ -144,7 +137,7 @@ class AutofillSuggestionGeneratorTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_async_parse_form_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::SYSTEM_TIME};
-  test::AutofillEnvironment autofill_environment_;
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
   std::unique_ptr<TestAutofillSuggestionGenerator> suggestion_generator_;
   TestAutofillClient autofill_client_;
   scoped_refptr<AutofillWebDataService> database_;
@@ -491,21 +484,9 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
   }
 }
 
+// Test that the virtual card option is shown when all of the prerequisites are
+// met.
 TEST_F(AutofillSuggestionGeneratorTest, ShouldShowVirtualCardOption) {
-  // Create a complete form.
-  FormData credit_card_form;
-  test::CreateTestCreditCardFormData(&credit_card_form, true, false);
-  FormStructure form_structure(credit_card_form);
-  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  // Clear the heuristic types, and instead set the appropriate server types.
-  std::vector<ServerFieldType> heuristic_types, server_types;
-  for (size_t i = 0; i < credit_card_form.fields.size(); ++i) {
-    heuristic_types.push_back(UNKNOWN_TYPE);
-    server_types.push_back(form_structure.field(i)->heuristic_type());
-  }
-  FormStructureTestApi(&form_structure)
-      .SetFieldTypes(heuristic_types, server_types);
-
   // Create a server card.
   CreditCard server_card =
       CreateServerCard(/*guid=*/"00000000-0000-0000-0000-000000000001");
@@ -521,23 +502,89 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldShowVirtualCardOption) {
   EXPECT_TRUE(
       suggestion_generator()->ShouldShowVirtualCardOption(&server_card));
   EXPECT_TRUE(suggestion_generator()->ShouldShowVirtualCardOption(&local_card));
+}
 
-  // Reset server card virtual card enrollment state.
+// Test that the virtual card option is shown when the autofill optimization
+// guide is not present.
+TEST_F(AutofillSuggestionGeneratorTest,
+       ShouldShowVirtualCardOption_AutofillOptimizationGuideNotPresent) {
+  // Create a server card.
+  CreditCard server_card =
+      CreateServerCard(/*guid=*/"00000000-0000-0000-0000-000000000001");
   server_card.set_virtual_card_enrollment_state(
-      CreditCard::VirtualCardEnrollmentState::UNSPECIFIED);
-  personal_data()->ClearCreditCards();
+      CreditCard::VirtualCardEnrollmentState::ENROLLED);
+  personal_data()->AddServerCreditCard(server_card);
+  autofill_client()->ResetAutofillOptimizationGuide();
+
+  // Create a local card with same information.
+  CreditCard local_card =
+      CreateLocalCard(/*guid=*/"00000000-0000-0000-0000-000000000002");
+
+  // If all prerequisites are met, it should return true.
+  EXPECT_TRUE(
+      suggestion_generator()->ShouldShowVirtualCardOption(&server_card));
+  EXPECT_TRUE(suggestion_generator()->ShouldShowVirtualCardOption(&local_card));
+}
+
+// Test that the virtual card option is not shown if the merchant is opted-out
+// of virtual cards.
+TEST_F(AutofillSuggestionGeneratorTest,
+       ShouldNotShowVirtualCardOption_MerchantOptedOutOfVirtualCards) {
+  // Create an enrolled server card.
+  CreditCard server_card =
+      CreateServerCard(/*guid=*/"00000000-0000-0000-0000-000000000001");
+  server_card.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::ENROLLED);
   personal_data()->AddServerCreditCard(server_card);
 
-  // For server card not enrolled, should return false.
+  // Create a local card with same information.
+  CreditCard local_card =
+      CreateLocalCard(/*guid=*/"00000000-0000-0000-0000-000000000002");
+
+  // If the URL is opted-out of virtual cards for `server_card`, do not display
+  // the virtual card suggestion.
+  auto* optimization_guide = autofill_client()->GetAutofillOptimizationGuide();
+  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(optimization_guide),
+          ShouldBlockFormFieldSuggestion)
+      .WillByDefault(testing::Return(true));
   EXPECT_FALSE(
       suggestion_generator()->ShouldShowVirtualCardOption(&server_card));
   EXPECT_FALSE(
       suggestion_generator()->ShouldShowVirtualCardOption(&local_card));
+}
 
-  // Remove the server credit card.
-  personal_data()->ClearCreditCards();
+// Test that the virtual card option is not shown if the server card we might be
+// showing a virtual card option for is not enrolled into virtual card.
+TEST_F(AutofillSuggestionGeneratorTest,
+       ShouldNotShowVirtualCardOption_ServerCardNotEnrolledInVirtualCard) {
+  // Create an unenrolled server card.
+  CreditCard server_card =
+      CreateServerCard(/*guid=*/"00000000-0000-0000-0000-000000000001");
+  server_card.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::UNSPECIFIED);
+  personal_data()->AddServerCreditCard(server_card);
 
-  // The local card no longer has a server duplicate, should return false.
+  // Create a local card with same information.
+  CreditCard local_card =
+      CreateLocalCard(/*guid=*/"00000000-0000-0000-0000-000000000002");
+
+  // For server card not enrolled, both local and server card should return
+  // false.
+  EXPECT_FALSE(
+      suggestion_generator()->ShouldShowVirtualCardOption(&server_card));
+  EXPECT_FALSE(
+      suggestion_generator()->ShouldShowVirtualCardOption(&local_card));
+}
+
+// Test that the virtual card option is not shown for a local card with no
+// server card duplicate.
+TEST_F(AutofillSuggestionGeneratorTest,
+       ShouldNotShowVirtualCardOption_LocalCardWithoutServerCardDuplicate) {
+  // Create a local card with same information.
+  CreditCard local_card =
+      CreateLocalCard(/*guid=*/"00000000-0000-0000-0000-000000000002");
+
+  // The local card does not have a server duplicate, should return false.
   EXPECT_FALSE(
       suggestion_generator()->ShouldShowVirtualCardOption(&local_card));
 }
@@ -564,6 +611,8 @@ TEST_F(AutofillSuggestionGeneratorTest, GetIBANSuggestions) {
 
   EXPECT_EQ(iban_suggestions[0].main_text.value,
             iban0.GetIdentifierStringForAutofillDisplay());
+  EXPECT_EQ(iban_suggestions[0].GetPayload<Suggestion::ValueToFill>().value(),
+            iban0.GetStrippedValue());
   ASSERT_EQ(iban_suggestions[0].labels.size(), 1u);
   ASSERT_EQ(iban_suggestions[0].labels[0].size(), 1u);
   EXPECT_EQ(iban_suggestions[0].labels[0][0].value, u"My doctor's IBAN");
@@ -571,6 +620,8 @@ TEST_F(AutofillSuggestionGeneratorTest, GetIBANSuggestions) {
 
   EXPECT_EQ(iban_suggestions[1].main_text.value,
             iban1.GetIdentifierStringForAutofillDisplay());
+  EXPECT_EQ(iban_suggestions[1].GetPayload<Suggestion::ValueToFill>().value(),
+            iban1.GetStrippedValue());
   ASSERT_EQ(iban_suggestions[1].labels.size(), 1u);
   ASSERT_EQ(iban_suggestions[1].labels[0].size(), 1u);
   EXPECT_EQ(iban_suggestions[1].labels[0][0].value, u"My brother's IBAN");
@@ -578,6 +629,8 @@ TEST_F(AutofillSuggestionGeneratorTest, GetIBANSuggestions) {
 
   EXPECT_EQ(iban_suggestions[2].main_text.value,
             iban2.GetIdentifierStringForAutofillDisplay());
+  EXPECT_EQ(iban_suggestions[2].GetPayload<Suggestion::ValueToFill>().value(),
+            iban2.GetStrippedValue());
   ASSERT_EQ(iban_suggestions[2].labels.size(), 1u);
   ASSERT_EQ(iban_suggestions[2].labels[0].size(), 1u);
   EXPECT_EQ(iban_suggestions[2].labels[0][0].value, u"My teacher's IBAN");
@@ -585,6 +638,8 @@ TEST_F(AutofillSuggestionGeneratorTest, GetIBANSuggestions) {
 
   EXPECT_EQ(iban_suggestions[3].main_text.value,
             iban3.GetIdentifierStringForAutofillDisplay());
+  EXPECT_EQ(iban_suggestions[3].GetPayload<Suggestion::ValueToFill>().value(),
+            iban3.GetStrippedValue());
   EXPECT_EQ(iban_suggestions[3].labels.size(), 0u);
   EXPECT_EQ(iban_suggestions[3].frontend_id, POPUP_ITEM_ID_IBAN_ENTRY);
 }
@@ -681,58 +736,57 @@ TEST_F(AutofillSuggestionGeneratorTest,
             POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY);
 }
 
-TEST_F(AutofillSuggestionGeneratorTest, BackendIdAndInternalIdMappings) {
-  // Test that internal ID retrieval with an invalid backend ID works correctly.
+TEST_F(AutofillSuggestionGeneratorTest, BackendIdAndFrontendIdMappings) {
+  // Test that frontend ID retrieval with an invalid backend ID works correctly.
   Suggestion::BackendId backend_id = Suggestion::BackendId();
-  EXPECT_FALSE(
-      suggestion_generator()->BackendIdToInternalIdForTesting(backend_id));
+  EXPECT_FALSE(suggestion_generator()->MakeFrontendIdFromBackendId(backend_id));
 
-  // Test that internal ID retrieval with valid backend IDs works correctly.
+  // Test that frontend ID retrieval with valid backend IDs works correctly.
   std::string valid_guid_digits = "00000000-0000-0000-0000-000000000000";
   for (int i = 1; i <= 2; i++) {
     valid_guid_digits.back() = base::NumberToString(i)[0];
     backend_id = Suggestion::BackendId(valid_guid_digits);
 
-    // Check that querying AutofillSuggestionGenerator::BackendIdToInternalId(~)
-    // with a new backend id creates a new entry in the
-    // backend_to_internal_map() and internal_to_backend_map() maps.
-    const InternalId& internal_id =
-        suggestion_generator()->BackendIdToInternalIdForTesting(backend_id);
-    EXPECT_TRUE(internal_id);
-    EXPECT_EQ(static_cast<int>(
-                  suggestion_generator()->backend_to_internal_map().size()),
+    // Check that querying
+    // AutofillSuggestionGenerator::MakeFrontendIdFromBackendId(~) with a new
+    // backend id creates a new entry in the backend_to_frontend_map() and
+    // frontend_to_backend_map() maps.
+    const int& frontend_id =
+        suggestion_generator()->MakeFrontendIdFromBackendId(backend_id);
+    EXPECT_GT(frontend_id, 0);
+    EXPECT_EQ(static_cast<int>(suggestion_generator()
+                                   ->backend_to_frontend_map_for_testing()
+                                   .size()),
               i);
-    EXPECT_EQ(static_cast<int>(
-                  suggestion_generator()->internal_to_backend_map().size()),
+    EXPECT_EQ(static_cast<int>(suggestion_generator()
+                                   ->frontend_to_backend_map_for_testing()
+                                   .size()),
               i);
 
-    // Check that querying AutofillSuggestionGenerator::BackendIdToInternalId(~)
-    // again returns the previously added entry, and does not create a new entry
-    // in the backend_to_internal_map() and internal_to_backend_map() maps.
-    EXPECT_TRUE(suggestion_generator()->BackendIdToInternalIdForTesting(
-                    backend_id) == internal_id);
-    EXPECT_EQ(static_cast<int>(
-                  suggestion_generator()->backend_to_internal_map().size()),
+    // Check that querying
+    // AutofillSuggestionGenerator::GetBackendIdFromFrontendId(~) again returns
+    // the previously added entry, and does not create a new entry in the
+    // backend_to_frontend_map() and frontend_to_backend_map() maps.
+    EXPECT_TRUE(suggestion_generator()->MakeFrontendIdFromBackendId(
+                    backend_id) == frontend_id);
+    EXPECT_EQ(static_cast<int>(suggestion_generator()
+                                   ->backend_to_frontend_map_for_testing()
+                                   .size()),
               i);
-    EXPECT_EQ(static_cast<int>(
-                  suggestion_generator()->internal_to_backend_map().size()),
+    EXPECT_EQ(static_cast<int>(suggestion_generator()
+                                   ->frontend_to_backend_map_for_testing()
+                                   .size()),
               i);
   }
 
   // The test cases below are run after the
-  // AutofillSuggestionGenerator::BackendIdToInternalId(~) test cases to ensure
-  // the maps backend_to_internal_map() and internal_to_backend_map() are
+  // AutofillSuggestionGenerator::GetBackendIdFromFrontendId(~) test cases to
+  // ensure the maps backend_to_frontend_map() and frontend_to_backend_map() are
   // populated.
 
-  // Test that backend ID retrieval with an invalid internal ID works correctly.
-  EXPECT_TRUE(suggestion_generator()
-                  ->InternalIdToBackendIdForTesting(InternalId())
-                  ->empty());
-
-  // Test that backend ID retrieval with valid internal IDs works correctly.
+  // Test that backend ID retrieval with valid frontend IDs works correctly.
   for (int i = 1; i <= 2; i++) {
-    backend_id =
-        suggestion_generator()->InternalIdToBackendIdForTesting(InternalId(i));
+    backend_id = suggestion_generator()->GetBackendIdFromFrontendId(i);
     EXPECT_FALSE(backend_id->empty());
     valid_guid_digits.back() = base::NumberToString(i)[0];
     EXPECT_EQ(*backend_id, valid_guid_digits);

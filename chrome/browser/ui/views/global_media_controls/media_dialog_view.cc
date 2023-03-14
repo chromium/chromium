@@ -79,31 +79,60 @@ std::u16string GetLiveCaptionTitle(PrefService* profile_prefs) {
   return l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION);
 }
 
-const std::string GetRemotePlaybackRouteId(
+void UpdateMediaSessionItemReceiverName(
+    base::WeakPtr<media_message_center::MediaNotificationItem> item,
+    const absl::optional<media_router::MediaRoute>& route) {
+  if (item->SourceType() ==
+      media_message_center::SourceType::kLocalMediaSession) {
+    auto* media_session_item =
+        static_cast<global_media_controls::MediaSessionNotificationItem*>(
+            item.get());
+    if (route.has_value()) {
+      media_session_item->UpdateDeviceName(route->media_sink_name());
+    } else {
+      media_session_item->UpdateDeviceName(absl::nullopt);
+    }
+  }
+}
+
+bool HasRemotePlaybackRoute(
+    base::WeakPtr<media_message_center::MediaNotificationItem> item) {
+  if (base::FeatureList::IsEnabled(media::kMediaRemotingWithoutFullscreen) &&
+      item &&
+      item->SourceType() ==
+          media_message_center::SourceType::kLocalMediaSession) {
+    const auto* media_session_item =
+        static_cast<global_media_controls::MediaSessionNotificationItem*>(
+            item.get());
+    return media_session_item->GetRemotePlaybackMetadata() &&
+           media_session_item->GetRemotePlaybackMetadata()
+               ->remote_playback_started;
+  }
+  return false;
+}
+
+const absl::optional<media_router::MediaRoute> GetSessionRoute(
     const std::string& item_id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item,
     content::BrowserContext* context) {
-  // Return an empty string if the item is not a local media session or the
-  // media session doesn't have an associated Remote Playback route.
-  if (!base::FeatureList::IsEnabled(media::kMediaRemotingWithoutFullscreen) ||
-      !item ||
-      item->SourceType() !=
-          media_message_center::SourceType::kLocalMediaSession) {
-    return "";
+  // Return absl::nullopt if the item is not a local media session.
+  if (!item || item->SourceType() !=
+                   media_message_center::SourceType::kLocalMediaSession) {
+    return absl::nullopt;
   }
-  const auto* media_session_item =
-      static_cast<global_media_controls::MediaSessionNotificationItem*>(
-          item.get());
-  if (!media_session_item->GetRemotePlaybackMetadata() ||
-      !media_session_item->GetRemotePlaybackMetadata()
-           ->remote_playback_started) {
-    return "";
+
+  // Return absl::nullopt if fallback to tab mirroring is disabled, and
+  // media session doesn't have an associated Remote Playback route.
+  if (!base::FeatureList::IsEnabled(
+          media_router::kFallbackToAudioTabMirroring) &&
+      !HasRemotePlaybackRoute(item)) {
+    return absl::nullopt;
   }
 
   auto* web_contents =
       content::MediaSession::GetWebContentsFromRequestId(item_id);
   if (!web_contents) {
-    return "";
+    return absl::nullopt;
   }
 
   const int item_tab_id =
@@ -121,11 +150,11 @@ const std::string GetRemotePlaybackRouteId(
 
     if (tab_id_from_route_id.has_value() &&
         tab_id_from_route_id.value() == item_tab_id) {
-      return route.media_route_id();
+      return route;
     }
   }
 
-  return "";
+  return absl::nullopt;
 }
 
 bool ShouldShowDeviceSelectorView(
@@ -144,9 +173,9 @@ bool ShouldShowDeviceSelectorView(
   }
 
   // Hide device selector view if the local media session has started Remote
-  // Playback.
+  // Playback or Tab Mirroring.
   if (source_type == media_message_center::SourceType::kLocalMediaSession &&
-      !GetRemotePlaybackRouteId(item_id, item, profile).empty()) {
+      GetSessionRoute(item_id, item, profile).has_value()) {
     return false;
   }
 
@@ -558,25 +587,34 @@ MediaDialogView::BuildFooterView(
   }
 
   // Show a footer view for a local media item when it has an associated Remote
-  // Playback session.
+  // Playback session or a Tab Mirroring Session.
   if (item->SourceType() !=
       media_message_center::SourceType::kLocalMediaSession) {
     return nullptr;
   }
-  auto route_id = GetRemotePlaybackRouteId(id, item, profile_);
-  if (route_id.empty()) {
+
+  auto route = GetSessionRoute(id, item, profile_);
+  UpdateMediaSessionItemReceiverName(item, route);
+  if (!route.has_value()) {
     return nullptr;
   }
+  const auto& route_id = route->media_route_id();
+  auto cast_mode = HasRemotePlaybackRoute(item)
+                       ? media_router::MediaCastMode::REMOTE_PLAYBACK
+                       : media_router::MediaCastMode::TAB_MIRROR;
   auto stop_casting_cb = base::BindRepeating(
       [](const std::string& route_id, media_router::MediaRouter* router,
-         global_media_controls::GlobalMediaControlsEntryPoint entry_point) {
+         global_media_controls::GlobalMediaControlsEntryPoint entry_point,
+         media_router::MediaCastMode cast_mode) {
         router->TerminateRoute(route_id);
-        MediaItemUIMetrics::RecordStopCastingMetrics(
-            media_router::MediaCastMode::REMOTE_PLAYBACK, entry_point);
+        MediaItemUIMetrics::RecordStopCastingMetrics(cast_mode, entry_point);
+        if (cast_mode == media_router::MediaCastMode::TAB_MIRROR) {
+          MediaDialogView::HideDialog();
+        }
       },
       route_id,
       media_router::MediaRouterFactory::GetApiForBrowserContext(profile_),
-      entry_point_);
+      entry_point_, cast_mode);
   return std::make_unique<MediaItemUILegacyCastFooterView>(
       std::move(stop_casting_cb));
 }

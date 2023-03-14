@@ -8,24 +8,27 @@
 #import <vector>
 
 #import "base/mac/foundation_util.h"
-#import "base/metrics/histogram_functions.h"
-#import "base/ranges/algorithm.h"
+#import "base/memory/scoped_refptr.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/credential_provider_promo/features.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
+#import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/password_tab_helper.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
-#import "ios/chrome/browser/ui/commands/application_commands.h"
-#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/commands/credential_provider_promo_commands.h"
-#import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
-#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator_delegate.h"
@@ -33,7 +36,6 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/utils/password_utils.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -47,11 +49,12 @@
   password_manager::AffiliatedGroup _affiliatedGroup;
   password_manager::CredentialUIEntry _credential;
 
-  // Manager responsible for password check feature.
-  IOSChromePasswordCheckManager* _manager;
-
   // The handler used for CredentialProviderPromoCommands.
   id<CredentialProviderPromoCommands> _credentialProviderPromoHandler;
+
+  // Tells whether or not to support move to account option. If YES, move option
+  // will be supported, NO otherwise.
+  BOOL _supportMoveToAccount;
 }
 
 // Main view controller for this coordinator.
@@ -84,17 +87,16 @@
                               (const password_manager::CredentialUIEntry&)
                                   credential
                         reauthModule:(ReauthenticationModule*)reauthModule
-                passwordCheckManager:(IOSChromePasswordCheckManager*)manager {
+                supportMoveToAccount:(BOOL)supportMoveToAccount {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
     DCHECK(navigationController);
-    DCHECK(manager);
 
     _baseNavigationController = navigationController;
     _credential = credential;
-    _manager = manager;
     _reauthenticationModule = reauthModule;
+    _supportMoveToAccount = supportMoveToAccount;
     if (IsCredentialProviderExtensionPromoEnabledOnPasswordCopied()) {
       _credentialProviderPromoHandler = HandlerForProtocol(
           browser->GetCommandDispatcher(), CredentialProviderPromoCommands);
@@ -110,17 +112,16 @@
                      affiliatedGroup:(const password_manager::AffiliatedGroup&)
                                          affiliatedGroup
                         reauthModule:(ReauthenticationModule*)reauthModule
-                passwordCheckManager:(IOSChromePasswordCheckManager*)manager {
+                supportMoveToAccount:(BOOL)supportMoveToAccount {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
     DCHECK(navigationController);
-    DCHECK(manager);
 
     _baseNavigationController = navigationController;
     _affiliatedGroup = affiliatedGroup;
-    _manager = manager;
     _reauthenticationModule = reauthModule;
+    _supportMoveToAccount = supportMoveToAccount;
     if (IsCredentialProviderExtensionPromoEnabledOnPasswordCopied()) {
       _credentialProviderPromoHandler = HandlerForProtocol(
           browser->GetCommandDispatcher(), CredentialProviderPromoCommands);
@@ -130,8 +131,7 @@
 }
 
 - (void)start {
-  self.viewController =
-      [[PasswordDetailsTableViewController alloc] initWithSyncingUserEmail:nil];
+  self.viewController = [[PasswordDetailsTableViewController alloc] init];
 
   std::vector<password_manager::CredentialUIEntry> credentials;
   NSString* displayName;
@@ -145,9 +145,24 @@
     credentials.push_back(_credential);
   }
 
-  self.mediator = [[PasswordDetailsMediator alloc] initWithPasswords:credentials
-                                                         displayName:displayName
-                                                passwordCheckManager:_manager];
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  web::WebState* webState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  DCHECK(webState) << "It is impossible to open password details UI when all "
+                      "tabs are closed.";
+  // It's safe to inject PasswordManagerClient, because `webState` (current tab)
+  // can't be closed while this UI is open.
+  self.mediator = [[PasswordDetailsMediator alloc]
+          initWithPasswords:credentials
+                displayName:displayName
+       passwordCheckManager:IOSChromePasswordCheckManagerFactory::
+                                GetForBrowserState(browserState)
+                                    .get()
+                prefService:browserState->GetPrefs()
+                syncService:SyncServiceFactory::GetForBrowserState(browserState)
+       supportMoveToAccount:_supportMoveToAccount
+      passwordManagerClient:PasswordTabHelper::FromWebState(webState)
+                                ->GetPasswordManagerClient()];
   self.mediator.consumer = self.viewController;
   self.viewController.handler = self;
   self.viewController.delegate = self.mediator;
@@ -278,14 +293,11 @@
                                      title:title
                                    message:message
                              barButtonItem:self.viewController.deleteButton];
-  __weak __typeof(self) weakSelf = self;
+  __weak __typeof(self.mediator) weakMediator = self.mediator;
   [self.actionSheetCoordinator
       addItemWithTitle:buttonText
                 action:^{
-                  [weakSelf
-                      passwordDeletionConfirmedForCompromised:password
-                                                                  .isCompromised
-                                                     password:password];
+                  [weakMediator removeCredential:password];
                 }
                  style:UIAlertActionStyleDestructive];
   [self.actionSheetCoordinator
@@ -298,41 +310,11 @@
 - (void)moveCredentialToAccountStore:(PasswordDetails*)password {
   // TODO(crbug.com/1400217): Instantiate the coordinator for the confirmation
   // dialog in case there are conflicting passwords.
-  const std::vector<password_manager::CredentialUIEntry>& credentials =
-      self.mediator.credentials;
-  auto it = base::ranges::find_if(
-      credentials,
-      [password](const password_manager::CredentialUIEntry& credential) {
-        return base::SysNSStringToUTF8(password.signonRealm) ==
-                   credential.GetFirstSignonRealm() &&
-               base::SysNSStringToUTF16(password.username) ==
-                   credential.username &&
-               base::SysNSStringToUTF16(password.password) ==
-                   credential.password;
-      });
-  if (it != credentials.end()) {
-    web::WebState* webState =
-        self.browser->GetWebStateList()->GetActiveWebState();
-    DCHECK(webState) << "It is impossible to open password details UI when all "
-                        "tabs are closed.";
-    [self.mediator
-        moveCredentialToAccountStore:*it
-                              client:PasswordTabHelper::FromWebState(webState)
-                                         ->GetPasswordManagerClient()];
-  }
+  [self.mediator moveCredentialToAccountStore:password];
 }
 
 - (void)showPasswordDetailsInEditModeWithoutAuthentication {
   [self.viewController showEditViewWithoutAuthentication];
-}
-
-- (void)removeCredentialFromCacheAndRefreshTableView:
-    (const password_manager::CredentialUIEntry&)credential {
-  // Remove credential from the credentials cache of the password details
-  // manager.
-  [self.mediator removeCredential:credential];
-
-  [self.mediator didFinishEditingPasswordDetails];
 }
 
 - (void)onPasswordCopiedByUser {
@@ -344,40 +326,10 @@
   }
 }
 
-#pragma mark - Private
-
-// Notifies delegate about password deletion and records metric if needed.
-- (void)passwordDeletionConfirmedForCompromised:(BOOL)compromised
-                                       password:(PasswordDetails*)password {
-  // Map from PasswordDetails to CredentialUIEntry. Should support blocklists.
-  // `self.mediator.credentials` returns a different copy on each call, so cache
-  // in a single local variable for use below.
-  std::vector<password_manager::CredentialUIEntry> credentials =
-      self.mediator.credentials;
-  auto it = base::ranges::find_if(
-      credentials,
-      [password](const password_manager::CredentialUIEntry& credential) {
-        return credential.GetFirstSignonRealm() ==
-                   base::SysNSStringToUTF8(password.signonRealm) &&
-               credential.username ==
-                   base::SysNSStringToUTF16(password.username) &&
-               credential.password ==
-                   base::SysNSStringToUTF16(password.password);
-      });
-  if (it == credentials.end()) {
-    // TODO(crbug.com/1359392): Convert into DCHECK.
-    return;
-  }
-
-  [self.delegate passwordDetailsCoordinator:self
-                           deleteCredential:*it
-                          shouldDismissView:(credentials.size() - 1 == 0)];
-  if (compromised) {
-    base::UmaHistogramEnumeration(
-        "PasswordManager.BulkCheck.UserAction",
-        password_manager::metrics_util::PasswordCheckInteraction::
-            kRemovePassword);
-  }
+- (void)onAllPasswordsDeleted {
+  DCHECK_EQ(self.baseNavigationController.topViewController,
+            self.viewController);
+  [self.baseNavigationController popViewControllerAnimated:YES];
 }
 
 @end

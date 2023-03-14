@@ -505,7 +505,7 @@ struct SSLSocketDataProvider {
   scoped_refptr<X509Certificate> expected_client_cert;
   absl::optional<HostPortPair> expected_host_and_port;
   absl::optional<NetworkAnonymizationKey> expected_network_anonymization_key;
-  absl::optional<bool> expected_disable_legacy_crypto;
+  absl::optional<bool> expected_disable_sha1_server_signatures;
   absl::optional<std::vector<uint8_t>> expected_ech_config_list;
 
   bool is_connect_data_consumed = false;

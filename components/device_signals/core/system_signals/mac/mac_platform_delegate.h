@@ -19,9 +19,8 @@ class MacPlatformDelegate : public PosixPlatformDelegate {
                        base::FilePath* resolved_file_path) override;
   absl::optional<ProductMetadata> GetProductMetadata(
       const base::FilePath& file_path) override;
-  absl::optional<std::vector<std::string>>
-  GetSigningCertificatesPublicKeyHashes(
-      const base::FilePath& file_path) override;
+  absl::optional<SigningCertificatesPublicKeys>
+  GetSigningCertificatesPublicKeys(const base::FilePath& file_path) override;
 };
 
 }  // namespace device_signals

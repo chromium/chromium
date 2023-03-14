@@ -41,8 +41,7 @@ RequestManager::~RequestManager() {
   while (it != requests_.end()) {
     const int request_id = it->first;
     ++it;
-    RejectRequest(request_id, std::make_unique<RequestValue>(),
-                  base::File::FILE_ERROR_ABORT);
+    RejectRequest(request_id, RequestValue(), base::File::FILE_ERROR_ABORT);
   }
 
   DCHECK_EQ(0u, requests_.size());
@@ -85,20 +84,17 @@ int RequestManager::CreateRequest(RequestType type,
   return request_id;
 }
 
-base::File::Error RequestManager::FulfillRequest(
-    int request_id,
-    std::unique_ptr<RequestValue> response,
-    bool has_more) {
-  CHECK(response.get());
+base::File::Error RequestManager::FulfillRequest(int request_id,
+                                                 const RequestValue& response,
+                                                 bool has_more) {
   auto request_it = requests_.find(request_id);
   if (request_it == requests_.end())
     return base::File::FILE_ERROR_NOT_FOUND;
 
   for (auto& observer : observers_)
-    observer.OnRequestFulfilled(request_id, *response.get(), has_more);
+    observer.OnRequestFulfilled(request_id, response, has_more);
 
-  request_it->second->handler->OnSuccess(request_id, std::move(response),
-                                         has_more);
+  request_it->second->handler->OnSuccess(request_id, response, has_more);
 
   if (!has_more) {
     DestroyRequest(request_id);
@@ -111,11 +107,9 @@ base::File::Error RequestManager::FulfillRequest(
   return base::File::FILE_OK;
 }
 
-base::File::Error RequestManager::RejectRequest(
-    int request_id,
-    std::unique_ptr<RequestValue> response,
-    base::File::Error error) {
-  CHECK(response.get());
+base::File::Error RequestManager::RejectRequest(int request_id,
+                                                const RequestValue& response,
+                                                base::File::Error error) {
   auto request_it = requests_.find(request_id);
   if (request_it == requests_.end())
     return base::File::FILE_ERROR_NOT_FOUND;
@@ -125,8 +119,8 @@ base::File::Error RequestManager::RejectRequest(
   }
 
   for (auto& observer : observers_)
-    observer.OnRequestRejected(request_id, *response.get(), error);
-  request_it->second->handler->OnError(request_id, std::move(response), error);
+    observer.OnRequestRejected(request_id, response, error);
+  request_it->second->handler->OnError(request_id, response, error);
   DestroyRequest(request_id);
 
   return base::File::FILE_OK;
@@ -166,8 +160,7 @@ void RequestManager::OnRequestTimeout(int request_id) {
     observer.OnRequestTimeouted(request_id);
 
   if (!notification_manager_) {
-    RejectRequest(request_id, std::make_unique<RequestValue>(),
-                  base::File::FILE_ERROR_ABORT);
+    RejectRequest(request_id, RequestValue(), base::File::FILE_ERROR_ABORT);
     return;
   }
 
@@ -189,8 +182,7 @@ void RequestManager::OnUnresponsiveNotificationResult(
     return;
   }
 
-  RejectRequest(request_id, std::make_unique<RequestValue>(),
-                base::File::FILE_ERROR_ABORT);
+  RejectRequest(request_id, RequestValue(), base::File::FILE_ERROR_ABORT);
 }
 
 void RequestManager::ResetTimer(int request_id) {

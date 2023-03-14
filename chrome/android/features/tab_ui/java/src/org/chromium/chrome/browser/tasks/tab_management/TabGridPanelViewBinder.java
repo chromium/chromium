@@ -35,6 +35,7 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.tab.TabUtils;
@@ -147,25 +148,20 @@ class TabGridPanelViewBinder {
         } else if (TITLE_CURSOR_VISIBILITY == propertyKey) {
             viewHolder.toolbarView.setTitleCursorVisibility(model.get(TITLE_CURSOR_VISIBILITY));
         } else if (IS_TITLE_TEXT_FOCUSED == propertyKey) {
-            if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+            if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
+                        viewHolder.contentView.getContext())) {
                 viewHolder.toolbarView.updateTitleTextFocus(model.get(IS_TITLE_TEXT_FOCUSED));
                 return;
             }
-            // Don't explicitly request focus since it should happen automatically.
-            if (!model.get(IS_TITLE_TEXT_FOCUSED)) {
-                viewHolder.toolbarView.clearTitleTextFocus();
-            }
         } else if (IS_KEYBOARD_VISIBLE == propertyKey) {
-            if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+            if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
+                        viewHolder.contentView.getContext())) {
                 viewHolder.toolbarView.updateKeyboardVisibility(model.get(IS_KEYBOARD_VISIBLE));
                 return;
             }
-            // Don't explicitly show keyboard since it should happen automatically.
-            if (!model.get(IS_KEYBOARD_VISIBLE)) {
-                viewHolder.toolbarView.hideKeyboard();
-            }
         } else if (COLLAPSE_BUTTON_CONTENT_DESCRIPTION == propertyKey) {
-            if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+            if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
+                        viewHolder.contentView.getContext())) {
                 viewHolder.toolbarView.setLeftButtonContentDescription(
                         model.get(COLLAPSE_BUTTON_CONTENT_DESCRIPTION));
             }
@@ -173,16 +169,24 @@ class TabGridPanelViewBinder {
     }
 
     private static void setScrollIndex(RecyclerView view, int index) {
-        GridLayoutManager layoutManager = (GridLayoutManager) view.getLayoutManager();
+        LinearLayoutManager layoutManager = (LinearLayoutManager) view.getLayoutManager();
         int offset = computeOffset(view, layoutManager);
         layoutManager.scrollToPositionWithOffset(index, offset);
     }
 
-    private static int computeOffset(View view, GridLayoutManager layoutManager) {
+    private static int computeOffset(RecyclerView view, LinearLayoutManager layoutManager) {
         int width = view.getWidth();
         int height = view.getHeight();
-        int cardWidth = width / layoutManager.getSpanCount();
-        int cardHeight = TabUtils.deriveGridCardHeight(cardWidth, view.getContext());
-        return height / 2 - cardHeight / 2;
+        int cardHeight = 0;
+        if (layoutManager instanceof GridLayoutManager) {
+            int cardWidth = width / ((GridLayoutManager) layoutManager).getSpanCount();
+            cardHeight = TabUtils.deriveGridCardHeight(cardWidth, view.getContext());
+        } else {
+            // Avoid divide by 0 when there are no tabs.
+            if (layoutManager.getItemCount() == 0) return 0;
+
+            cardHeight = view.computeVerticalScrollRange() / layoutManager.getItemCount();
+        }
+        return Math.max(0, height / 2 - cardHeight / 2);
     }
 }

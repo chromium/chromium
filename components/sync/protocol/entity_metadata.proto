@@ -21,7 +21,7 @@ import "components/sync/protocol/unique_position.proto";
 message EntityMetadata {
   // A hash based on the client tag and model type.
   // Used for various map lookups. Should always be available.
-  // Sent to the server as SyncEntity::client_defined_unique_tag.
+  // Sent to the server as SyncEntity::client_tag_hash.
   optional string client_tag_hash = 1;
 
   // The entity's server-assigned ID.

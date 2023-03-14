@@ -1,5 +1,5 @@
 AXWebArea
-++AXButton AXTitle='Button pointing to hidden popover'
+++AXButton AXExpanded=0 AXTitle='Button pointing to hidden popover'
 ++AXTextField
 ++AXStaticText AXValue='Text input pointing to hidden popover '
 ++AXButton AXTitle='Hide button pointing to hidden manual'
@@ -15,10 +15,10 @@ AXWebArea
 ++AXStaticText AXValue='Text input pointing to invalid popover value'
 ++AXGroup
 ++++AXStaticText AXValue='Showing/visible popovers below'
-++AXButton AXTitle='Button pointing to showing popover'
+++AXButton AXExpanded=1 AXTitle='Button pointing to showing popover'
 ++AXTextField
 ++AXStaticText AXValue='Tel input pointing to showing popover '
-++AXButton AXTitle='Show button pointing to nested popover'
+++AXButton AXExpanded=1 AXTitle='Show button pointing to nested popover'
 ++AXTextField
 ++AXStaticText AXValue='Url input pointing to nested popover '
 ++AXGroup AXSubrole=AXApplicationGroup

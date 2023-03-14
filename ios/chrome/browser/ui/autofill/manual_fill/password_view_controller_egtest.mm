@@ -472,9 +472,7 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
 }
 
 // Tests that the Password View Controller stays on rotation.
-// TODO(crbug.com/1416561): Test fails due to rotation in TearDown. Reenable
-// this test.
-- (void)FLAKY_testPasswordControllerSupportsRotation {
+- (void)testPasswordControllerSupportsRotation {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];

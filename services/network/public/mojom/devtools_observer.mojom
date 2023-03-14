@@ -95,13 +95,13 @@ interface DevToolsObserver {
     int32 http_status_code,
     CookiePartitionKey? cookie_partition_key);
 
-  // Called to send information about a private network request that was blocked
+  // Called to send information about a local network request that was blocked
   // (then |is_warning| is false), or will be blocked in the future (then
   // |is_warning| is true). It is possible to share sensitive information with
   // DevTools as this is handled in the browser process. Called even when
   // |devtool_request_id| is not available to the URLLoader to ensure the
   // information can be recorded even when DevTools is closed.
-  OnPrivateNetworkRequest(
+  OnLocalNetworkRequest(
     string? devtool_request_id,
     url.mojom.Url url,
     bool is_warning,

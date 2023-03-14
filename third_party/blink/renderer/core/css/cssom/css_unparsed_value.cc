@@ -83,7 +83,10 @@ CSSUnparsedValue* CSSUnparsedValue::FromCSSValue(
 
 CSSUnparsedValue* CSSUnparsedValue::FromCSSVariableData(
     const CSSVariableData& value) {
-  return CSSUnparsedValue::Create(ParserTokenRangeToTokens(value.TokenRange()));
+  CSSTokenizer tokenizer(value.OriginalText());
+  Vector<CSSParserToken, 32> tokens = tokenizer.TokenizeToEOF();
+  CSSParserTokenRange range(tokens);
+  return CSSUnparsedValue::Create(ParserTokenRangeToTokens(range));
 }
 
 V8CSSUnparsedSegment* CSSUnparsedValue::AnonymousIndexedGetter(
@@ -117,7 +120,7 @@ IndexedPropertySetterResult CSSUnparsedValue::AnonymousIndexedSetter(
 }
 
 const CSSValue* CSSUnparsedValue::ToCSSValue() const {
-  CSSTokenizer tokenizer(ToString());
+  CSSTokenizer tokenizer(ToStringInternal(/*separate_tokens=*/true));
   const auto tokens = tokenizer.TokenizeToEOF();
   CSSParserTokenRange range(tokens);
 
@@ -126,19 +129,26 @@ const CSSValue* CSSUnparsedValue::ToCSSValue() const {
         CSSVariableData::Create());
   }
 
+  // The string we just parsed has /**/ inserted between every token
+  // to make sure we get back the correct sequence of tokens,
+  // but the spec says we must not do that for the original text
+  // (which we use for serialization):
+  // https://drafts.css-houdini.org/css-typed-om-1/#unparsedvalue-serialization
+  String original_text = ToStringInternal(/*separate_tokens=*/false);
+
   // TODO(crbug.com/985028): We should probably propagate the CSSParserContext
   // to here.
   return MakeGarbageCollected<CSSVariableReferenceValue>(
-      CSSVariableData::Create({range, StringView()},
+      CSSVariableData::Create({range, original_text},
                               false /* is_animation_tainted */,
                               false /* needs_variable_resolution */));
 }
 
-String CSSUnparsedValue::ToString() const {
+String CSSUnparsedValue::ToStringInternal(bool separate_tokens) const {
   StringBuilder input;
 
   for (unsigned i = 0; i < tokens_.size(); i++) {
-    if (i) {
+    if (separate_tokens && i) {
       input.Append("/**/");
     }
     switch (tokens_[i]->GetContentType()) {
@@ -149,7 +159,8 @@ String CSSUnparsedValue::ToString() const {
         input.Append(reference_value->variable());
         if (reference_value->fallback()) {
           input.Append(",");
-          input.Append(reference_value->fallback()->ToString());
+          input.Append(reference_value->fallback()->ToStringInternal(
+              /*separate_tokens=*/false));
         }
         input.Append(")");
         break;

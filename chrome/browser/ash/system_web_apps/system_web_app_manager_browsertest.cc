@@ -21,6 +21,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_tags.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -1510,6 +1511,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
 // is installed.
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
                        AppSuspendedAfterInstall) {
+  base::AddFeatureIdTagToTestResult(
+      "screenplay-44570758-2d0f-4ed9-8172-102244523249");
+
   WaitForTestSystemAppInstall();
   absl::optional<web_app::AppId> settings_id =
       GetManager().GetAppIdForSystemApp(SystemWebAppType::SETTINGS);

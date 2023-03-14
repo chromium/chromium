@@ -9,7 +9,9 @@
 #include <utility>
 
 #include "base/dcheck_is_on.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/i18n/rtl.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/platform_util.h"
@@ -37,6 +39,7 @@
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/widget/widget.h"
 
 #if DCHECK_IS_ON()
@@ -61,17 +64,22 @@ constexpr int kMaximumWidthPercentageToMoveTheSuggestionToCenter = 50;
 // static
 int PopupBaseView::GetCornerRadius() {
   return ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-      views::Emphasis::kMedium);
+      base::FeatureList::IsEnabled(
+          features::kAutofillShowAutocompleteDeleteButton)
+          ? views::Emphasis::kHigh
+          : views::Emphasis::kMedium);
 }
 
 // static
 int PopupBaseView::GetHorizontalMargin() {
-  return views::MenuConfig::instance().item_horizontal_padding +
-         GetCornerRadius();
+  // The horizontal margin should match the offset of the bubble arrow (if
+  // that arrow happens to be shown on the top).
+  return views::BubbleBorder::kVisibleArrowBuffer;
 }
 
 // static
 int PopupBaseView::GetHorizontalPadding() {
+  // TODO(crbug.com/1411172): Combine with `GetHorizontalMargin`.
   return GetHorizontalMargin();
 }
 
@@ -344,7 +352,8 @@ gfx::Rect PopupBaseView::GetOptionalPositionAndPlaceArrowOnPopup(
       /*content_area_bounds=*/max_bounds_for_popup,
       /*element_bounds=*/element_bounds,
       /*popup_preferred_size=*/preferred_size,
-      /*right_to_left=*/delegate_->IsRTL(),
+      /*right_to_left=*/delegate_->GetElementTextDirection() ==
+          base::i18n::TextDirection::RIGHT_TO_LEFT,
       /*scrollbar_width=*/gfx::scrollbar_size(),
       /*maximum_pixel_offset_to_center=*/
       maximum_pixel_offset_to_center,

@@ -9,7 +9,6 @@
 #include <lib/fidl/cpp/binding.h>
 
 #include "base/sequence_checker.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/memory_pressure/system_memory_pressure_evaluator.h"
 
@@ -26,10 +25,6 @@ class SystemMemoryPressureEvaluatorFuchsia
       public fuchsia::memorypressure::Watcher {
  public:
   using SystemMemoryPressureEvaluator::SendCurrentVote;
-
-  // The period at which the system is re-notified when the pressure is not
-  // none.
-  static const base::TimeDelta kRenotifyVotePeriod;
 
   explicit SystemMemoryPressureEvaluatorFuchsia(
       std::unique_ptr<memory_pressure::MemoryPressureVoter> voter);

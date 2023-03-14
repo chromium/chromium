@@ -8,6 +8,8 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/time/time.h"
+#include "base/trace_event/typed_macros.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/vsync_observer.h"
 
@@ -142,7 +144,10 @@ void VSyncThreadWin::WaitForVSync() {
       base::TimeTicks::Now() - wait_for_vblank_start_time;
   if (!wait_for_vblank_succeeded ||
       wait_for_vblank_elapsed_time < kVBlankIntervalThreshold) {
+    TRACE_EVENT("gpu", "WaitForVSync Sleep");
+    base::Time::ActivateHighResolutionTimer(true);
     Sleep(static_cast<DWORD>(vsync_interval.InMillisecondsRoundedUp()));
+    base::Time::ActivateHighResolutionTimer(false);
   }
 
   base::AutoLock auto_lock(lock_);

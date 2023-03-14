@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ash/printing/ppd_provider_factory.h"
 
-#include "ash/constants/ash_features.h"
+#include <string>
+
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/browser_process.h"
@@ -27,27 +30,28 @@ network::mojom::URLLoaderFactory* GetURLLoaderFactory() {
       ->GetURLLoaderFactory();
 }
 
-chromeos::PpdIndexChannel ToPpdIndexChannel(
-    ash::features::PrintingPpdChannel channel) {
-  switch (channel) {
-    case ash::features::PrintingPpdChannel::kProduction:
-      return chromeos::PpdIndexChannel::kProduction;
-    case ash::features::PrintingPpdChannel::kStaging:
-      return chromeos::PpdIndexChannel::kStaging;
-    case ash::features::PrintingPpdChannel::kDev:
-      return chromeos::PpdIndexChannel::kDev;
-    case ash::features::PrintingPpdChannel::kLocalhost:
-      return chromeos::PpdIndexChannel::kLocalhost;
+chromeos::PpdIndexChannel ToPpdIndexChannel(const std::string& channel) {
+  if (channel == ash::switches::kPrintingPpdChannelStaging) {
+    return chromeos::PpdIndexChannel::kStaging;
   }
+  if (channel == ash::switches::kPrintingPpdChannelDev) {
+    return chromeos::PpdIndexChannel::kDev;
+  }
+  if (channel == ash::switches::kPrintingPpdChannelLocalhost) {
+    return chromeos::PpdIndexChannel::kLocalhost;
+  }
+  return chromeos::PpdIndexChannel::kProduction;
 }
 
 }  // namespace
 
 scoped_refptr<chromeos::PpdProvider> CreatePpdProvider(Profile* profile) {
-  const ash::features::PrintingPpdChannel channel =
-      ash::features::kPrintingPpdChannelParam.Get();
+  const chromeos::PpdIndexChannel channel = ToPpdIndexChannel(
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          ash::switches::kPrintingPpdChannel));
+
   const bool use_localhost_as_root =
-      (channel == ash::features::PrintingPpdChannel::kLocalhost);
+      (channel == chromeos::PpdIndexChannel::kLocalhost);
   base::FilePath ppd_cache_path = profile->GetPath().Append(
       use_localhost_as_root ? FILE_PATH_LITERAL("PPDCacheLocalhost")
                             : FILE_PATH_LITERAL("PPDCache"));
@@ -60,7 +64,7 @@ scoped_refptr<chromeos::PpdProvider> CreatePpdProvider(Profile* profile) {
       base::DefaultClock::GetInstance(),
       base::BindRepeating(&GetURLLoaderFactory), use_localhost_as_root);
   auto metadata_manager = chromeos::PpdMetadataManager::Create(
-      g_browser_process->GetApplicationLocale(), ToPpdIndexChannel(channel),
+      g_browser_process->GetApplicationLocale(), channel,
       base::DefaultClock::GetInstance(), std::move(manager_config_cache));
 
   return chromeos::PpdProvider::Create(

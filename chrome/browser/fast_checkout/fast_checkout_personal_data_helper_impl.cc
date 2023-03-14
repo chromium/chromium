@@ -4,6 +4,7 @@
 
 #include "chrome/browser/fast_checkout/fast_checkout_personal_data_helper_impl.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"

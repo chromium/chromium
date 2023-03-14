@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include "components/attribution_reporting/registration_type.mojom-blink-forward.h"
-#include "services/network/public/cpp/trigger_attestation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -117,12 +116,12 @@ class CORE_EXPORT AttributionSrcLoader
   // Returns whether OS-level attribution is supported.
   bool HasOsSupport() const;
 
+  struct AttributionHeaders;
+
   void RegisterAttributionHeaders(
       attribution_reporting::mojom::blink::RegistrationType,
       attribution_reporting::SuitableOrigin reporting_origin,
-      const AtomicString& source_json,
-      const AtomicString& trigger_json,
-      uint64_t request_id,
+      const AttributionHeaders&,
       const absl::optional<network::TriggerAttestation>& trigger_attestation);
 
   const Member<LocalFrame> local_frame_;

@@ -5,7 +5,8 @@
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
 import {fakeSearchResults} from '../fake_data.js';
-import {ShortcutSearchHandlerInterface} from '../shortcut_types.js';
+import {ShortcutSearchHandler, ShortcutSearchHandlerInterface} from '../shortcut_types.js';
+import {isSearchEnabled} from '../shortcut_utils.js';
 
 import {FakeShortcutSearchHandler} from './fake_shortcut_search_handler.js';
 
@@ -23,9 +24,8 @@ export function setShortcutSearchHandlerForTesting(
 
 /**
  * Create a Fake ShortcutSearchHandler with reasonable fake data.
- * TODO(longbowei): Remove once mojo bindings are implemented.
  */
-function setupFakeShortcutSearchHandler(): void {
+export function setupFakeShortcutSearchHandler(): void {
   // Create handler.
   const handler = new FakeShortcutSearchHandler();
 
@@ -38,8 +38,11 @@ function setupFakeShortcutSearchHandler(): void {
 
 export function getShortcutSearchHandler(): ShortcutSearchHandlerInterface {
   if (!shortcutSearchHandler) {
-    // TODO(longbowei): Instantiate a real mojo interface here.
-    setupFakeShortcutSearchHandler();
+    if (isSearchEnabled()) {
+      shortcutSearchHandler = ShortcutSearchHandler.getRemote();
+    } else {
+      setupFakeShortcutSearchHandler();
+    }
   }
   assert(!!shortcutSearchHandler);
   return shortcutSearchHandler;

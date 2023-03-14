@@ -22,7 +22,7 @@ var tests = [
 
   function no_properties() {
     chrome.contextMenus.create({}, function(id) {
-      chrome.test.assertTrue(chrome.runtime.lastError != null);
+      chrome.test.assertNe(null, chrome.runtime.lastError);
       chrome.test.succeed();
     });
   },

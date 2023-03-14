@@ -23,9 +23,9 @@ test(function() {
   var cssRules = document.styleSheets[0].cssRules;
   assert_equals(cssRules[0].cssText, "#test1 { --camelCase: blue; color: var(--camelCase); }");
   assert_equals(cssRules[1].cssText, "#test2 { --Aå: 100px; width: var(--Aå); }");
-  assert_equals(cssRules[0].style.getPropertyValue("--camelCase"), " blue");
+  assert_equals(cssRules[0].style.getPropertyValue("--camelCase"), "blue");
   assert_equals(cssRules[0].style.getPropertyValue("color"), "var(--camelCase)");
-  assert_equals(cssRules[1].style.getPropertyValue("--Aå"), " 100px");
+  assert_equals(cssRules[1].style.getPropertyValue("--Aå"), "100px");
   assert_equals(cssRules[1].style.getPropertyValue("width"), "var(--Aå)");
   assert_equals(cssRules[2].style.getPropertyValue("background"), "var(--colour)");
   assert_equals(cssRules[2].style.getPropertyValue("color"), "var(--color)");

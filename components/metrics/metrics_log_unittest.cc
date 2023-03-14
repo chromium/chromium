@@ -107,7 +107,7 @@ std::string GetExpectedHardwareClass() {
 
 class MetricsLogTest : public testing::Test {
  public:
-  MetricsLogTest() {}
+  MetricsLogTest() { MetricsLog::RegisterPrefs(prefs_.registry()); }
 
   MetricsLogTest(const MetricsLogTest&) = delete;
   MetricsLogTest& operator=(const MetricsLogTest&) = delete;
@@ -124,6 +124,7 @@ class MetricsLogTest : public testing::Test {
     EXPECT_TRUE(system_profile.has_channel());
     EXPECT_FALSE(system_profile.has_is_extended_stable_channel());
     EXPECT_TRUE(system_profile.has_application_locale());
+    EXPECT_TRUE(system_profile.has_client_uuid());
 
     const SystemProfileProto::OS& os = system_profile.os();
     EXPECT_TRUE(os.has_name());
@@ -144,24 +145,45 @@ class MetricsLogTest : public testing::Test {
     // TODO(isherman): Verify other data written into the protobuf as a result
     // of this call.
   }
+
+  TestMetricsServiceClient client_;
+  TestingPrefServiceSimple prefs_;
 };
 
-TEST_F(MetricsLogTest, LogType) {
-  TestMetricsServiceClient client;
-  TestingPrefServiceSimple prefs;
+TEST_F(MetricsLogTest, RecordId) {
+  MetricsLog log1(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client_);
+  MetricsLog log2(kClientId, kSessionId, MetricsLog::INDEPENDENT_LOG, &client_);
+  MetricsLog log3(kClientId, kSessionId, MetricsLog::INITIAL_STABILITY_LOG,
+                  &client_);
 
-  MetricsLog log1("id", 0, MetricsLog::ONGOING_LOG, &client);
+  ASSERT_FALSE(log1.uma_proto()->has_record_id());
+  ASSERT_FALSE(log2.uma_proto()->has_record_id());
+  ASSERT_FALSE(log3.uma_proto()->has_record_id());
+
+  // Set an initial record-id value in prefs, so test values are predictable.
+  prefs_.SetInteger(prefs::kMetricsLogRecordId, 500);
+
+  log1.AssignRecordId(&prefs_);
+  log2.AssignRecordId(&prefs_);
+  log3.AssignRecordId(&prefs_);
+
+  EXPECT_EQ(501, log1.uma_proto()->record_id());
+  EXPECT_EQ(502, log2.uma_proto()->record_id());
+  EXPECT_EQ(503, log3.uma_proto()->record_id());
+}
+
+TEST_F(MetricsLogTest, LogType) {
+  MetricsLog log1(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client_);
   EXPECT_EQ(MetricsLog::ONGOING_LOG, log1.log_type());
 
-  MetricsLog log2("id", 0, MetricsLog::INITIAL_STABILITY_LOG, &client);
+  MetricsLog log2(kClientId, kSessionId, MetricsLog::INITIAL_STABILITY_LOG,
+                  &client_);
   EXPECT_EQ(MetricsLog::INITIAL_STABILITY_LOG, log2.log_type());
 }
 
 TEST_F(MetricsLogTest, BasicRecord) {
-  TestMetricsServiceClient client;
-  client.set_version_string("bogus version");
+  client_.set_version_string("bogus version");
   const std::string kOtherClientId = "totally bogus client ID";
-  TestingPrefServiceSimple prefs;
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   // Clears existing command line flags and sets mock flags:
   // "--mock-flag-1 --mock-flag-2=unused_value"
@@ -182,10 +204,10 @@ TEST_F(MetricsLogTest, BasicRecord) {
       metrics::SystemProfileProto::OS::WAYLAND;
 #endif
 
-  MetricsLog log(kOtherClientId, 137, MetricsLog::ONGOING_LOG, &client);
+  MetricsLog log(kOtherClientId, 137, MetricsLog::ONGOING_LOG, &client_);
 
   std::string encoded;
-  log.FinalizeLog(/*truncate_events=*/false, client.GetVersionString(),
+  log.FinalizeLog(/*truncate_events=*/false, client_.GetVersionString(),
                   &encoded);
 
   // A couple of fields are hard to mock, so these will be copied over directly
@@ -202,8 +224,8 @@ TEST_F(MetricsLogTest, BasicRecord) {
   // Make sure |client_uuid| in the system profile is the unhashed client id
   // and is the same as the client id in |local_prefs|.
   system_profile->set_client_uuid(kOtherClientId);
-  system_profile->set_channel(client.GetChannel());
-  system_profile->set_application_locale(client.GetApplicationLocale());
+  system_profile->set_channel(client_.GetChannel());
+  system_profile->set_application_locale(client_.GetApplicationLocale());
   system_profile->set_brand_code(TestMetricsServiceClient::kBrandForTesting);
   // Hashes of "mock-flag-1" and "mock-flag-2" from SetUpCommandLine.
   system_profile->add_command_line_key_hash(2578836236);
@@ -272,12 +294,10 @@ TEST_F(MetricsLogTest, BasicRecord) {
 TEST_F(MetricsLogTest, FinalizeLog) {
   static const char kVersionString[] = "1";
   static const char kNewVersionString[] = "2";
+  client_.set_version_string(kVersionString);
 
-  TestMetricsServiceClient client;
-  client.set_version_string(kVersionString);
-
-  TestMetricsLog log(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client);
-  TestMetricsLog log2(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client);
+  TestMetricsLog log(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client_);
+  TestMetricsLog log2(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client_);
 
   // Fill logs with user actions and omnibox events. We put more than the limit
   // to verify that when calling FinalizeLog(), we may optionally truncate
@@ -298,14 +318,14 @@ TEST_F(MetricsLogTest, FinalizeLog) {
   // Finalize |log|. We truncate events, and we pass the same version string as
   // the one that was used when the log was created.
   std::string encoded;
-  log.FinalizeLog(/*truncate_events=*/true, client.GetVersionString(),
+  log.FinalizeLog(/*truncate_events=*/true, client_.GetVersionString(),
                   &encoded);
 
   // Finalize |log2|. We do not truncate events, and we pass a different version
   // string than the one that was used when the log was created.
-  client.set_version_string(kNewVersionString);
+  client_.set_version_string(kNewVersionString);
   std::string encoded2;
-  log2.FinalizeLog(/*truncate_events=*/false, client.GetVersionString(),
+  log2.FinalizeLog(/*truncate_events=*/false, client_.GetVersionString(),
                    &encoded2);
 
   ChromeUserMetricsExtension parsed;
@@ -332,17 +352,16 @@ TEST_F(MetricsLogTest, FinalizeLog) {
 }
 
 TEST_F(MetricsLogTest, Timestamps_InitialStabilityLog) {
-  TestMetricsServiceClient client;
   std::unique_ptr<base::SimpleTestClock> clock =
       std::make_unique<base::SimpleTestClock>();
 
   // Should not have times from initial stability logs.
   clock->SetNow(base::Time::FromTimeT(1));
-  MetricsLog log("id", 0, MetricsLog::INITIAL_STABILITY_LOG, clock.get(),
-                 nullptr, &client);
+  MetricsLog log(kClientId, kSessionId, MetricsLog::INITIAL_STABILITY_LOG,
+                 clock.get(), nullptr, &client_);
   clock->SetNow(base::Time::FromTimeT(2));
   std::string encoded;
-  log.FinalizeLog(/*truncate_events=*/false, client.GetVersionString(),
+  log.FinalizeLog(/*truncate_events=*/false, client_.GetVersionString(),
                   &encoded);
   ChromeUserMetricsExtension parsed;
   ASSERT_TRUE(parsed.ParseFromString(encoded));
@@ -351,17 +370,16 @@ TEST_F(MetricsLogTest, Timestamps_InitialStabilityLog) {
 }
 
 TEST_F(MetricsLogTest, Timestamps_IndependentLog) {
-  TestMetricsServiceClient client;
   std::unique_ptr<base::SimpleTestClock> clock =
       std::make_unique<base::SimpleTestClock>();
 
   // Should not have times from independent logs.
   clock->SetNow(base::Time::FromTimeT(1));
-  MetricsLog log("id", 0, MetricsLog::INDEPENDENT_LOG, clock.get(), nullptr,
-                 &client);
+  MetricsLog log(kClientId, kSessionId, MetricsLog::INDEPENDENT_LOG,
+                 clock.get(), nullptr, &client_);
   clock->SetNow(base::Time::FromTimeT(2));
   std::string encoded;
-  log.FinalizeLog(/*truncate_events=*/false, client.GetVersionString(),
+  log.FinalizeLog(/*truncate_events=*/false, client_.GetVersionString(),
                   &encoded);
   ChromeUserMetricsExtension parsed;
   ASSERT_TRUE(parsed.ParseFromString(encoded));
@@ -370,17 +388,16 @@ TEST_F(MetricsLogTest, Timestamps_IndependentLog) {
 }
 
 TEST_F(MetricsLogTest, Timestamps_OngoingLog) {
-  TestMetricsServiceClient client;
   std::unique_ptr<base::SimpleTestClock> clock =
       std::make_unique<base::SimpleTestClock>();
 
   // Should have times from regular (ongoing) logs.
   clock->SetNow(base::Time::FromTimeT(1));
-  MetricsLog log("id", 0, MetricsLog::ONGOING_LOG, clock.get(), nullptr,
-                 &client);
+  MetricsLog log(kClientId, kSessionId, MetricsLog::ONGOING_LOG, clock.get(),
+                 nullptr, &client_);
   clock->SetNow(base::Time::FromTimeT(2));
   std::string encoded;
-  log.FinalizeLog(/*truncate_events=*/false, client.GetVersionString(),
+  log.FinalizeLog(/*truncate_events=*/false, client_.GetVersionString(),
                   &encoded);
   ChromeUserMetricsExtension parsed;
   ASSERT_TRUE(parsed.ParseFromString(encoded));
@@ -416,10 +433,7 @@ TEST_F(MetricsLogTest, HistogramBucketFields) {
   samples.Accumulate(8, 1);   // Bucket 8-9. (7-8 skipped)
   samples.Accumulate(10, 1);  // Bucket 10-11. (9-10 skipped)
   samples.Accumulate(11, 1);  // Bucket 11-12.
-
-  TestMetricsServiceClient client;
-  TestingPrefServiceSimple prefs;
-  TestMetricsLog log(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client);
+  TestMetricsLog log(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client_);
   log.RecordHistogramDelta("Test", samples);
 
   const ChromeUserMetricsExtension& uma_proto = log.uma_proto();
@@ -459,9 +473,7 @@ TEST_F(MetricsLogTest, HistogramBucketFields) {
 
 TEST_F(MetricsLogTest, HistogramSamplesCount) {
   const std::string histogram_name = "test";
-  TestMetricsServiceClient client;
-  TestingPrefServiceSimple prefs;
-  TestMetricsLog log(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client);
+  TestMetricsLog log(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client_);
 
   // Create buckets: 1-5.
   base::BucketRanges ranges(2);
@@ -481,8 +493,7 @@ TEST_F(MetricsLogTest, HistogramSamplesCount) {
 }
 
 TEST_F(MetricsLogTest, RecordEnvironment) {
-  TestMetricsServiceClient client;
-  TestMetricsLog log(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client);
+  TestMetricsLog log(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client_);
 
   DelegatingProvider delegating_provider;
   auto cpu_provider = std::make_unique<metrics::CPUMetricsProvider>();
@@ -506,9 +517,8 @@ TEST_F(MetricsLogTest, RecordEnvironment) {
 }
 
 TEST_F(MetricsLogTest, RecordEnvironmentExtendedStable) {
-  TestMetricsServiceClient client;
-  client.set_is_extended_stable_channel(true);
-  TestMetricsLog log(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client);
+  client_.set_is_extended_stable_channel(true);
+  TestMetricsLog log(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client_);
 
   DelegatingProvider delegating_provider;
   auto cpu_provider = std::make_unique<metrics::CPUMetricsProvider>();
@@ -520,33 +530,32 @@ TEST_F(MetricsLogTest, RecordEnvironmentExtendedStable) {
 }
 
 TEST_F(MetricsLogTest, RecordEnvironmentEnableDefault) {
-  TestMetricsServiceClient client;
   TestMetricsLog log_unknown(kClientId, kSessionId, MetricsLog::ONGOING_LOG,
-                             &client);
+                             &client_);
 
   DelegatingProvider delegating_provider;
   log_unknown.RecordEnvironment(&delegating_provider);
   EXPECT_FALSE(log_unknown.system_profile().has_uma_default_state());
 
-  client.set_enable_default(EnableMetricsDefault::OPT_IN);
+  client_.set_enable_default(EnableMetricsDefault::OPT_IN);
   TestMetricsLog log_opt_in(kClientId, kSessionId, MetricsLog::ONGOING_LOG,
-                            &client);
+                            &client_);
   log_opt_in.RecordEnvironment(&delegating_provider);
   EXPECT_TRUE(log_opt_in.system_profile().has_uma_default_state());
   EXPECT_EQ(SystemProfileProto_UmaDefaultState_OPT_IN,
             log_opt_in.system_profile().uma_default_state());
 
-  client.set_enable_default(EnableMetricsDefault::OPT_OUT);
+  client_.set_enable_default(EnableMetricsDefault::OPT_OUT);
   TestMetricsLog log_opt_out(kClientId, kSessionId, MetricsLog::ONGOING_LOG,
-                             &client);
+                             &client_);
   log_opt_out.RecordEnvironment(&delegating_provider);
   EXPECT_TRUE(log_opt_out.system_profile().has_uma_default_state());
   EXPECT_EQ(SystemProfileProto_UmaDefaultState_OPT_OUT,
             log_opt_out.system_profile().uma_default_state());
 
-  client.set_reporting_is_managed(true);
+  client_.set_reporting_is_managed(true);
   TestMetricsLog log_managed(kClientId, kSessionId, MetricsLog::ONGOING_LOG,
-                             &client);
+                             &client_);
   log_managed.RecordEnvironment(&delegating_provider);
   EXPECT_TRUE(log_managed.system_profile().has_uma_default_state());
   EXPECT_EQ(SystemProfileProto_UmaDefaultState_POLICY_FORCED_ENABLED,
@@ -554,16 +563,14 @@ TEST_F(MetricsLogTest, RecordEnvironmentEnableDefault) {
 }
 
 TEST_F(MetricsLogTest, InitialLogStabilityMetrics) {
-  TestMetricsServiceClient client;
   TestMetricsLog log(kClientId, kSessionId, MetricsLog::INITIAL_STABILITY_LOG,
-                     &client);
+                     &client_);
   TestMetricsProvider* test_provider = new TestMetricsProvider();
   DelegatingProvider delegating_provider;
   delegating_provider.RegisterMetricsProvider(
       base::WrapUnique<MetricsProvider>(test_provider));
   log.RecordEnvironment(&delegating_provider);
-  TestingPrefServiceSimple prefs;
-  log.RecordPreviousSessionData(&delegating_provider, &prefs);
+  log.RecordPreviousSessionData(&delegating_provider, &prefs_);
 
   // The test provider should have been called upon to provide initial
   // stability and regular stability metrics.
@@ -572,16 +579,14 @@ TEST_F(MetricsLogTest, InitialLogStabilityMetrics) {
 }
 
 TEST_F(MetricsLogTest, OngoingLogStabilityMetrics) {
-  TestMetricsServiceClient client;
-  TestMetricsLog log(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client);
+  TestMetricsLog log(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client_);
   TestMetricsProvider* test_provider = new TestMetricsProvider();
   DelegatingProvider delegating_provider;
   delegating_provider.RegisterMetricsProvider(
       base::WrapUnique<MetricsProvider>(test_provider));
   log.RecordEnvironment(&delegating_provider);
-  TestingPrefServiceSimple prefs;
   log.RecordCurrentSessionData(base::TimeDelta(), base::TimeDelta(),
-                               &delegating_provider, &prefs);
+                               &delegating_provider, &prefs_);
 
   // The test provider should have been called upon to provide regular but not
   // initial stability metrics.
@@ -590,15 +595,13 @@ TEST_F(MetricsLogTest, OngoingLogStabilityMetrics) {
 }
 
 TEST_F(MetricsLogTest, ChromeChannelWrittenToProtobuf) {
-  TestMetricsServiceClient client;
-  TestMetricsLog log(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client);
+  TestMetricsLog log(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client_);
   EXPECT_TRUE(log.uma_proto().system_profile().has_channel());
 }
 
 TEST_F(MetricsLogTest, ProductNotSetIfDefault) {
-  TestMetricsServiceClient client;
-  EXPECT_EQ(ChromeUserMetricsExtension::CHROME, client.GetProduct());
-  TestMetricsLog log(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client);
+  EXPECT_EQ(ChromeUserMetricsExtension::CHROME, client_.GetProduct());
+  TestMetricsLog log(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client_);
   // Check that the product isn't set, since it's default and also verify the
   // default value is indeed equal to Chrome.
   EXPECT_FALSE(log.uma_proto().has_product());
@@ -608,10 +611,8 @@ TEST_F(MetricsLogTest, ProductNotSetIfDefault) {
 TEST_F(MetricsLogTest, ProductSetIfNotDefault) {
   const int32_t kTestProduct = 100;
   EXPECT_NE(ChromeUserMetricsExtension::CHROME, kTestProduct);
-
-  TestMetricsServiceClient client;
-  client.set_product(kTestProduct);
-  TestMetricsLog log(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client);
+  client_.set_product(kTestProduct);
+  TestMetricsLog log(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client_);
   // Check that the product is set to |kTestProduct|.
   EXPECT_TRUE(log.uma_proto().has_product());
   EXPECT_EQ(kTestProduct, log.uma_proto().product());

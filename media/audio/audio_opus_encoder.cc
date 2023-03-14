@@ -372,8 +372,7 @@ EncoderStatus::Or<OwnedOpusEncoder> AudioOpusEncoder::CreateOpusEncoder(
   }
 
   const unsigned int use_dtx = opus_options.value().use_dtx ? 1 : 0;
-  if (opus_encoder_ctl(encoder.get(), OPUS_SET_INBAND_FEC(use_dtx)) !=
-      OPUS_OK) {
+  if (opus_encoder_ctl(encoder.get(), OPUS_SET_DTX(use_dtx)) != OPUS_OK) {
     return EncoderStatus(
         EncoderStatus::Codes::kEncoderInitializationError,
         base::StringPrintf("Failed to set Opus DTX: %d", use_dtx));

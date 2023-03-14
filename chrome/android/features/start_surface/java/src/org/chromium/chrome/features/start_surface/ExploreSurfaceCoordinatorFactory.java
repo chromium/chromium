@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.feed.ScrollableContainerDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.share.crow.CrowButtonDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
@@ -41,7 +40,6 @@ class ExploreSurfaceCoordinatorFactory {
     private final long mEmbeddingSurfaceConstructedTimeNs;
     @Nullable
     private final FeedSwipeRefreshLayout mSwipeRefreshLayout;
-    private final CrowButtonDelegate mCrowButtonDelegate;
     @NonNull
     private final ViewGroup mParentView;
     private ExploreSurfaceFeedLifecycleManager mExploreSurfaceFeedLifecycleManager;
@@ -60,7 +58,6 @@ class ExploreSurfaceCoordinatorFactory {
      * @param toolbarSupplier Supplies the {@link Toolbar}.
      * @param embeddingSurfaceConstructedTimeNs Timestamp taken when the caller was constructed.
      * @param swipeRefreshLayout The layout to support pull-to-refresg.
-     * @param crowButtonDelegate The {@link CrowButtonDelegate} to handle Crow click events.
      */
     ExploreSurfaceCoordinatorFactory(@NonNull Activity activity, @NonNull ViewGroup parentView,
             @NonNull PropertyModel containerPropertyModel,
@@ -71,8 +68,7 @@ class ExploreSurfaceCoordinatorFactory {
             @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
             @NonNull WindowAndroid windowAndroid, @NonNull TabModelSelector tabModelSelector,
             @NonNull Supplier<Toolbar> toolbarSupplier, long embeddingSurfaceConstructedTimeNs,
-            @Nullable FeedSwipeRefreshLayout swipeRefreshLayout,
-            @Nullable CrowButtonDelegate crowButtonDelegate) {
+            @Nullable FeedSwipeRefreshLayout swipeRefreshLayout) {
         mActivity = activity;
         mParentView = parentView;
         mParentTabSupplier = parentTabSupplier;
@@ -85,7 +81,6 @@ class ExploreSurfaceCoordinatorFactory {
         mToolbarSupplier = toolbarSupplier;
         mEmbeddingSurfaceConstructedTimeNs = embeddingSurfaceConstructedTimeNs;
         mSwipeRefreshLayout = swipeRefreshLayout;
-        mCrowButtonDelegate = crowButtonDelegate;
         mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
                 containerPropertyModel, parentView, ExploreSurfaceViewBinder::bind);
     }
@@ -104,6 +99,6 @@ class ExploreSurfaceCoordinatorFactory {
                 mBottomSheetController, mScrollableContainerDelegate, launchOrigin,
                 mToolbarSupplier, mEmbeddingSurfaceConstructedTimeNs, mSwipeRefreshLayout,
                 mParentView, mParentTabSupplier, mSnackbarManager, mShareDelegateSupplier,
-                mCrowButtonDelegate, mWindowAndroid, mTabModelSelector);
+                mWindowAndroid, mTabModelSelector);
     }
 }

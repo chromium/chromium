@@ -28,8 +28,14 @@ component("platform") {
     sources += [ "socket_utils_posix.cc" ]
   }
 
+  if (is_win) {
+    public += [ "platform_handle_security_util_win.h" ]
+    sources += [ "platform_handle_security_util_win.cc" ]
+  }
+
   public_deps = [
     "//base",
+    "//mojo:buildflags",
     "//mojo/public/c/system:headers",
   ]
 

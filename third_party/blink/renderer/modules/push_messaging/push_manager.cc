@@ -97,7 +97,8 @@ ScriptPromise PushManager::subscribe(
   if (!ValidateOptions(options, exception_state))
     return ScriptPromise();
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
 
   // The window is the only reasonable context from which to ask the

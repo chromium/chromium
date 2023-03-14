@@ -77,7 +77,9 @@ void CrosHotspotConfig::EnableHotspot(EnableHotspotCallback callback) {
 }
 
 void CrosHotspotConfig::DisableHotspot(DisableHotspotCallback callback) {
-  hotspot_controller_->DisableHotspot(std::move(callback));
+  hotspot_controller_->DisableHotspot(
+      std::move(callback),
+      hotspot_config::mojom::DisableReason::kUserInitiated);
 }
 
 // HotspotStateHandler::Observer:
@@ -90,6 +92,11 @@ void CrosHotspotConfig::OnHotspotStatusChanged() {
 void CrosHotspotConfig::OnHotspotCapabilitiesChanged() {
   for (auto& observer : observers_)
     observer->OnHotspotInfoChanged();
+}
+
+void CrosHotspotConfig::ObserveEnabledStateChanges(
+    mojo::PendingRemote<mojom::HotspotEnabledStateObserver> observer) {
+  hotspot_controller_->ObserveEnabledStateChanges(std::move(observer));
 }
 
 }  // namespace ash::hotspot_config

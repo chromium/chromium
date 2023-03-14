@@ -65,16 +65,15 @@ const CGFloat kSymbolIncognitoFullScreenPointSize = 14.;
 
 #pragma mark - Private
 - (BadgeButton*)passwordsSaveBadgeButton {
-  UIImage* symbol =
+  UIImage* image =
       CustomSymbolWithPointSize(kPasswordSymbol, kInfobarSymbolPointSize);
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
   if (base::FeatureList::IsEnabled(
           password_manager::features::kIOSShowPasswordStorageInSaveInfobar)) {
-    symbol = CustomSymbolWithPointSize(kMulticolorPasswordSymbol,
-                                       kInfobarSymbolPointSize);
+    image = CustomSymbolWithPointSize(kMulticolorPasswordSymbol,
+                                      kInfobarSymbolPointSize);
   }
 #endif  // BUILDFLAG(IS_IOS_MACCATALYST)
-  UIImage* image = UseSymbols() ? symbol : [UIImage imageNamed:@"password_key"];
   BadgeButton* button =
       [self createButtonForType:kBadgeTypePasswordSave
                           image:[image imageWithRenderingMode:
@@ -90,16 +89,15 @@ const CGFloat kSymbolIncognitoFullScreenPointSize = 14.;
 }
 
 - (BadgeButton*)passwordsUpdateBadgeButton {
-  UIImage* symbol =
+  UIImage* image =
       CustomSymbolWithPointSize(kPasswordSymbol, kInfobarSymbolPointSize);
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
   if (base::FeatureList::IsEnabled(
           password_manager::features::kIOSShowPasswordStorageInSaveInfobar)) {
-    symbol = CustomSymbolWithPointSize(kMulticolorPasswordSymbol,
-                                       kInfobarSymbolPointSize);
+    image = CustomSymbolWithPointSize(kMulticolorPasswordSymbol,
+                                      kInfobarSymbolPointSize);
   }
 #endif  // BUILDFLAG(IS_IOS_MACCATALYST)
-  UIImage* image = UseSymbols() ? symbol : [UIImage imageNamed:@"password_key"];
   BadgeButton* button =
       [self createButtonForType:kBadgeTypePasswordUpdate
                           image:[image imageWithRenderingMode:

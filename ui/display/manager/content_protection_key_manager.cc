@@ -105,8 +105,11 @@ void ContentProtectionKeyManager::OnKeyFetchedFromServer(
 }
 
 void ContentProtectionKeyManager::InjectKeyToKernel(int64_t display_id) {
-  // TODO(markyacoub): Replace and truly inject key to kernel.
-  OnKeyInjectedToKernel(display_id, true);
+  DCHECK(native_display_delegate_);
+  native_display_delegate_->SetHdcpKeyProp(
+      display_id, cached_provisioned_key_,
+      base::BindOnce(&ContentProtectionKeyManager::OnKeyInjectedToKernel,
+                     weak_ptr_factory_.GetWeakPtr(), display_id));
 }
 
 void ContentProtectionKeyManager::OnKeyInjectedToKernel(int64_t display_id,

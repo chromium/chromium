@@ -40,8 +40,11 @@ WorkerSchedulerImpl::WorkerSchedulerImpl(
     WorkerSchedulerProxy* proxy)
     : throttleable_task_queue_(worker_thread_scheduler->CreateTaskQueue(
           base::sequence_manager::QueueName::WORKER_THROTTLEABLE_TQ,
-          true)),
+          NonMainThreadTaskQueue::QueueCreationParams().SetCanBeThrottled(
+              true))),
       pausable_task_queue_(worker_thread_scheduler->CreateTaskQueue(
+          base::sequence_manager::QueueName::WORKER_PAUSABLE_TQ)),
+      pausable_non_vt_task_queue_(worker_thread_scheduler->CreateTaskQueue(
           base::sequence_manager::QueueName::WORKER_PAUSABLE_TQ)),
       unpausable_task_queue_(worker_thread_scheduler->CreateTaskQueue(
           base::sequence_manager::QueueName::WORKER_UNPAUSABLE_TQ)),
@@ -52,6 +55,8 @@ WorkerSchedulerImpl::WorkerSchedulerImpl(
                         throttleable_task_queue_->CreateQueueEnabledVoter());
   task_runners_.emplace(pausable_task_queue_,
                         pausable_task_queue_->CreateQueueEnabledVoter());
+  task_runners_.emplace(pausable_non_vt_task_queue_,
+                        pausable_non_vt_task_queue_->CreateQueueEnabledVoter());
   task_runners_.emplace(unpausable_task_queue_, nullptr);
 
   thread_scheduler_->RegisterWorkerScheduler(this);
@@ -153,10 +158,13 @@ scoped_refptr<base::SingleThreadTaskRunner> WorkerSchedulerImpl::GetTaskRunner(
     case TaskType::kPostedMessage:
     case TaskType::kWorkerAnimation:
       return throttleable_task_queue_->CreateTaskRunner(type);
-    case TaskType::kDOMManipulation:
-    case TaskType::kUserInteraction:
     case TaskType::kNetworking:
     case TaskType::kNetworkingControl:
+    case TaskType::kWebSocket:
+    case TaskType::kInternalLoading:
+      return pausable_non_vt_task_queue_->CreateTaskRunner(type);
+    case TaskType::kDOMManipulation:
+    case TaskType::kUserInteraction:
     case TaskType::kLowPriorityScriptExecution:
     case TaskType::kHistoryTraversal:
     case TaskType::kEmbed:
@@ -164,7 +172,6 @@ scoped_refptr<base::SingleThreadTaskRunner> WorkerSchedulerImpl::GetTaskRunner(
     case TaskType::kCanvasBlobSerialization:
     case TaskType::kMicrotask:
     case TaskType::kRemoteEvent:
-    case TaskType::kWebSocket:
     case TaskType::kUnshippedPortMessage:
     case TaskType::kFileReading:
     case TaskType::kDatabaseAccess:
@@ -180,7 +187,6 @@ scoped_refptr<base::SingleThreadTaskRunner> WorkerSchedulerImpl::GetTaskRunner(
     case TaskType::kBackgroundFetch:
     case TaskType::kPermission:
     case TaskType::kInternalDefault:
-    case TaskType::kInternalLoading:
     case TaskType::kInternalWebCrypto:
     case TaskType::kInternalMedia:
     case TaskType::kInternalMediaRealTime:
@@ -211,7 +217,7 @@ scoped_refptr<base::SingleThreadTaskRunner> WorkerSchedulerImpl::GetTaskRunner(
     case TaskType::kNetworkingUnfreezable:
       return IsInflightNetworkRequestBackForwardCacheSupportEnabled()
                  ? unpausable_task_queue_->CreateTaskRunner(type)
-                 : pausable_task_queue_->CreateTaskRunner(type);
+                 : pausable_non_vt_task_queue_->CreateTaskRunner(type);
     case TaskType::kMainThreadTaskQueueV8:
     case TaskType::kMainThreadTaskQueueCompositor:
     case TaskType::kMainThreadTaskQueueDefault:
@@ -328,11 +334,14 @@ WorkerSchedulerImpl::GetFrameOrWorkerSchedulerWeakPtr() {
 
 std::unique_ptr<WebSchedulingTaskQueue>
 WorkerSchedulerImpl::CreateWebSchedulingTaskQueue(
+    WebSchedulingQueueType queue_type,
     WebSchedulingPriority priority) {
   scoped_refptr<NonMainThreadTaskQueue> task_queue =
       thread_scheduler_->CreateTaskQueue(
-          base::sequence_manager::QueueName::WORKER_WEB_SCHEDULING_TQ);
-  task_queue->SetWebSchedulingPriority(priority);
+          base::sequence_manager::QueueName::WORKER_WEB_SCHEDULING_TQ,
+          NonMainThreadTaskQueue::QueueCreationParams()
+              .SetWebSchedulingQueueType(queue_type)
+              .SetWebSchedulingPriority(priority));
   return std::make_unique<NonMainThreadWebSchedulingTaskQueueImpl>(
       std::move(task_queue));
 }
@@ -347,6 +356,29 @@ WorkerSchedulerImpl::CreateWebScopedVirtualTimePauser(
     const String& name,
     WebScopedVirtualTimePauser::VirtualTaskDuration duration) {
   return thread_scheduler_->CreateWebScopedVirtualTimePauser(name, duration);
+}
+
+void WorkerSchedulerImpl::PauseVirtualTime() {
+  for (auto& [queue, voter] : task_runners_) {
+    // A queue without the voter is treated as unpausable. There's only one
+    // at the time of writing, AKA `unpausable_task_queue_`, but we may have
+    // more than one eventually as other schedulers do, so just check for voter.
+    if (queue == pausable_non_vt_task_queue_.get() || !voter) {
+      continue;
+    }
+    queue->GetTaskQueue()->InsertFence(TaskQueue::InsertFencePosition::kNow);
+  }
+}
+
+void WorkerSchedulerImpl::UnpauseVirtualTime() {
+  for (auto& [queue, voter] : task_runners_) {
+    // This needs to match the logic of `PauseVirtualTime()`, see comment there.
+    if (queue == pausable_non_vt_task_queue_.get() || !voter) {
+      continue;
+    }
+    DCHECK(queue->GetTaskQueue()->HasActiveFence());
+    queue->GetTaskQueue()->RemoveFence();
+  }
 }
 
 }  // namespace scheduler

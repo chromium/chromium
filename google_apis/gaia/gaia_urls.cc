@@ -87,6 +87,8 @@ const char kOAuth2IssueTokenUrlSuffix[] = "v1/issuetoken";
 const char kAccountCapabilitiesBatchGetUrlSuffix[] =
     "v1/accountcapabilities:batchGet";
 
+GaiaUrls* g_instance_for_testing = nullptr;
+
 void GetSwitchValueWithDefault(base::StringPiece switch_value,
                                base::StringPiece default_value,
                                std::string* output_value) {
@@ -154,6 +156,9 @@ void ResolveURLIfInvalid(GURL* url_to_set,
 }  // namespace
 
 GaiaUrls* GaiaUrls::GetInstance() {
+  if (g_instance_for_testing) {
+    return g_instance_for_testing;
+  }
   return base::Singleton<GaiaUrls>::get();
 }
 
@@ -166,6 +171,11 @@ GaiaUrls::GaiaUrls() {
 }
 
 GaiaUrls::~GaiaUrls() = default;
+
+// static
+void GaiaUrls::SetInstanceForTesting(GaiaUrls* gaia_urls) {
+  g_instance_for_testing = gaia_urls;
+}
 
 const GURL& GaiaUrls::google_url() const {
   return google_url_;

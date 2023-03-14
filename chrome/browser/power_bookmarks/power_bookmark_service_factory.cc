@@ -27,7 +27,12 @@ PowerBookmarkServiceFactory* PowerBookmarkServiceFactory::GetInstance() {
 }
 
 PowerBookmarkServiceFactory::PowerBookmarkServiceFactory()
-    : ProfileKeyedServiceFactory("PowerBookmarkService") {
+    : ProfileKeyedServiceFactory(
+          "PowerBookmarkService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              .Build()) {
   DependsOn(BookmarkModelFactory::GetInstance());
 }
 

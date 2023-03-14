@@ -15,7 +15,7 @@ async_test(t => {
   }), { once: true });
 
   video.addEventListener('play', t.step_func(() => {
-    video.addEventListener('webkitfullscreenchange',
+    video.addEventListener('fullscreenchange',
         t.step_func(testFullscreenContinuesPlayback), { once: true });
 
     // Double-tap to go fullscreen.
@@ -37,7 +37,7 @@ async_test(t => {
     assert_equals(video, document.fullscreenElement, 'video should remain in fullscreen');
     assert_true(video.paused, 'video should be paused');
 
-    video.addEventListener('webkitfullscreenchange',
+    video.addEventListener('fullscreenchange',
         t.step_func(testFullscreenKeepsPaused), { once: true });
 
     // Prevent these taps from being double-taps with the previous single-tap.

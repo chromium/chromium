@@ -33,6 +33,11 @@ void FakeWebAppUiManager::SetNumWindowsForApp(const AppId& app_id,
   app_id_to_num_windows_map_[app_id] = num_windows_for_app;
 }
 
+void FakeWebAppUiManager::SetOnLaunchWebAppCallback(
+    OnLaunchWebAppCallback callback) {
+  on_launch_web_app_callback_ = std::move(callback);
+}
+
 WebAppUiManagerImpl* FakeWebAppUiManager::AsImpl() {
   return nullptr;
 }
@@ -107,6 +112,10 @@ base::Value FakeWebAppUiManager::LaunchWebApp(
     AppLock& lock) {
   std::move(callback).Run(nullptr, nullptr,
                           apps::LaunchContainer::kLaunchContainerNone);
+  if (on_launch_web_app_callback_) {
+    on_launch_web_app_callback_.Run(std::move(params),
+                                    std::move(launch_setting));
+  }
   return base::Value("FakeWebAppUiManager::LaunchWebApp");
 }
 

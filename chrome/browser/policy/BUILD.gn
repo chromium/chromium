@@ -56,6 +56,8 @@ source_set("onc") {
     ]
   }
 
+  deps = []
+
   if (is_chromeos_ash) {
     sources += [
       "networking/device_network_configuration_updater_ash.cc",
@@ -63,9 +65,11 @@ source_set("onc") {
       "networking/user_network_configuration_updater_ash.cc",
       "networking/user_network_configuration_updater_ash.h",
     ]
-  }
 
-  deps = []
+    deps += [
+      "//chromeos/ash/components/browser_context_helper:browser_context_helper",
+    ]
+  }
 
   if (is_chromeos) {
     deps += [
@@ -118,6 +122,7 @@ source_set("test_support") {
     "//chrome/test:test_support",
     "//components/policy/core/common",
     "//components/policy/core/common:common_constants",
+    "//components/safe_search_api",
     "//components/security_interstitials/content:security_interstitial_page",
     "//url:url",
   ]
@@ -240,7 +245,6 @@ source_set("policy_specific_browser_tests") {
       "test/quic_allowed_browsertest.cc",
       "test/signed_exchange_browsertest.cc",
       "test/task_manager_end_process_enabled_browsertest.cc",
-      "test/unthrottled_nested_timeout_policy_browsertest.cc",
       "test/web_rtc_event_log_collection_allowed_policy_browsertest.cc",
       "test/web_rtc_local_ips_allowed_urls_policy_browsertest.cc",
       "test/window_management_policy_browsertest.cc",
@@ -406,6 +410,8 @@ source_set("browser_tests") {
   if (!is_android && !is_chromeos) {
     sources += [
       "test/hardware_acceleration_mode_enabled_browsertest.cc",
+
+      # Chrome OS does not support this policy.
       "test/native_messaging_policy_browsertest.cc",
     ]
   }

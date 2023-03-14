@@ -844,10 +844,7 @@ bool ScreenLocker::IsUserLoggedIn(const AccountId& account_id) const {
   return false;
 }
 
-void ScreenLocker::OnRestarted() {
-  StartFingerprintAuthSession(
-      user_manager::UserManager::Get()->GetPrimaryUser());
-}
+void ScreenLocker::OnRestarted() {}
 
 void ScreenLocker::OnStatusChanged(
     device::mojom::BiometricsManagerStatus status) {

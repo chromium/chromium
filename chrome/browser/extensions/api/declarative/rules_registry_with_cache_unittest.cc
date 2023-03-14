@@ -245,11 +245,11 @@ TEST_F(RulesRegistryWithCacheTest, DeclarativeRulesStored) {
   EXPECT_TRUE(cache_delegate->GetDeclarativeRulesStored(extension1_->id()));
 
   extension_prefs->UpdateExtensionPref(extension1_->id(), rules_stored_key,
-                                       std::make_unique<base::Value>(false));
+                                       base::Value(false));
   EXPECT_FALSE(cache_delegate->GetDeclarativeRulesStored(extension1_->id()));
 
   extension_prefs->UpdateExtensionPref(extension1_->id(), rules_stored_key,
-                                       std::make_unique<base::Value>(true));
+                                       base::Value(true));
   EXPECT_TRUE(cache_delegate->GetDeclarativeRulesStored(extension1_->id()));
 
   // 2. Test writing behavior.
@@ -342,7 +342,7 @@ TEST_F(RulesRegistryWithCacheTest, RulesStoredFlagMultipleRegistries) {
 
   // Update the flag for the first registry.
   extension_prefs->UpdateExtensionPref(extension1_->id(), rules_stored_key1,
-                                       std::make_unique<base::Value>(false));
+                                       base::Value(false));
   EXPECT_FALSE(cache_delegate1->GetDeclarativeRulesStored(extension1_->id()));
   EXPECT_TRUE(cache_delegate2->GetDeclarativeRulesStored(extension1_->id()));
 }

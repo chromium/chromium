@@ -317,6 +317,21 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
     new_request->trust_token_params =
         *request_info.begin_params->trust_token_params;
   }
+
+  // TODO(https://crbug.com/1423092): This is more restrictive than necessary,
+  // since `request_info.common_params->has_storage_access` really represents
+  // "does this navigation have an initiator, and if so, did the initiator
+  // obtain storage access, and if so, is the initiator the same as the frame
+  // being navigated, and is the navigation same-origin?". While here, we only
+  // really need "does this navigation have an initiator, and if so, did it
+  // obtain storage access?". So in particular, cross-origin same-site
+  // navigations and non-self-initiated navigations won't include cookies from
+  // Storage Access API, but they should. This is ok for now, since the most
+  // common case for this is expected to be a refresh, which does fit the
+  // stricter criteria.
+  new_request->has_storage_access =
+      request_info.common_params->has_storage_access;
+
   return new_request;
 }
 
@@ -399,7 +414,8 @@ void CheckParsedHeadersEquals(const network::mojom::ParsedHeadersPtr& lhs,
   DCHECK(mojo::Equals(lhs->reporting_endpoints, rhs->reporting_endpoints));
   DCHECK(mojo::Equals(lhs->variants_headers, rhs->variants_headers));
   DCHECK(mojo::Equals(lhs->content_language, rhs->content_language));
-  DCHECK(mojo::Equals(lhs->no_vary_search, rhs->no_vary_search));
+  DCHECK(mojo::Equals(lhs->no_vary_search_with_parse_error,
+                      rhs->no_vary_search_with_parse_error));
   NOTREACHED() << "The parsed headers don't match, but we don't know which "
                   "field does not match. Please add a DCHECK before this one "
                   "checking for the missing field.";

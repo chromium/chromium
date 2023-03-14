@@ -92,7 +92,7 @@ class GPU_GLES2_EXPORT SharedImageFactory {
 #if BUILDFLAG(IS_WIN)
   bool CreateSwapChain(const Mailbox& front_buffer_mailbox,
                        const Mailbox& back_buffer_mailbox,
-                       viz::ResourceFormat format,
+                       viz::SharedImageFormat format,
                        const gfx::Size& size,
                        const gfx::ColorSpace& color_space,
                        GrSurfaceOrigin surface_origin,
@@ -110,6 +110,7 @@ class GPU_GLES2_EXPORT SharedImageFactory {
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
   bool RegisterBacking(std::unique_ptr<SharedImageBacking> backing);
+  bool AddSecondaryReference(const gpu::Mailbox& mailbox);
 
   SharedContextState* GetSharedContextState() const {
     return shared_context_state_;

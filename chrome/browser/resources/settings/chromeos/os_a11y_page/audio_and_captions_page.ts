@@ -25,8 +25,8 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route} from '../router.js';
@@ -34,7 +34,7 @@ import {Route} from '../router.js';
 import {getTemplate} from './audio_and_captions_page.html.js';
 import {AudioAndCaptionsPageBrowserProxy, AudioAndCaptionsPageBrowserProxyImpl} from './audio_and_captions_page_browser_proxy.js';
 
-interface SettingsAudioAndCaptionsPageElement {
+export interface SettingsAudioAndCaptionsPageElement {
   $: {
     startupSoundEnabled: CrToggleElement,
   };
@@ -43,7 +43,7 @@ interface SettingsAudioAndCaptionsPageElement {
 const SettingsAudioAndCaptionsPageElementBase = DeepLinkingMixin(
     RouteOriginMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
 
-class SettingsAudioAndCaptionsPageElement extends
+export class SettingsAudioAndCaptionsPageElement extends
     SettingsAudioAndCaptionsPageElementBase {
   static get is() {
     return 'settings-audio-and-captions-page';

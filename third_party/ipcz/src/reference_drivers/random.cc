@@ -17,7 +17,6 @@
 #include <zircon/syscalls.h>
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include <asm/unistd.h>
-#include <errno.h>
 #include <sys/syscall.h>
 #include <unistd.h>
 #elif BUILDFLAG(IS_MAC)
@@ -28,6 +27,7 @@
 #endif
 
 #if BUILDFLAG(IS_POSIX)
+#include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
 #endif

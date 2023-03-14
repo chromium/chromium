@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {CrosHotspotConfigInterface, CrosHotspotConfigObserverRemote, HotspotAllowStatus, HotspotConfig, HotspotControlResult, HotspotInfo, HotspotState, SetHotspotConfigResult} from './cros_hotspot_config.mojom-webui.js';
+import {FakeMethodResolver} from '../fake_method_resolver.js';
+
+import {CrosHotspotConfigInterface, CrosHotspotConfigObserverRemote, HotspotAllowStatus, HotspotConfig, HotspotControlResult, HotspotEnabledStateObserverRemote, HotspotInfo, HotspotState, SetHotspotConfigResult} from './cros_hotspot_config.mojom-webui.js';
 
 /**
  * @fileoverview
@@ -16,6 +17,7 @@ export class FakeHotspotConfig implements CrosHotspotConfigInterface {
   private methods_: FakeMethodResolver = new FakeMethodResolver();
   private hotspotInfo_: HotspotInfo|null = null;
   private observers_: CrosHotspotConfigObserverRemote[] = [];
+  private stateObservers_: HotspotEnabledStateObserverRemote[] = [];
   private setHotspotConfigResult_: SetHotspotConfigResult|null = null;
   private enableHotspotResult_: HotspotControlResult|null = null;
   private disableHotspotResult_: HotspotControlResult|null = null;
@@ -136,6 +138,11 @@ export class FakeHotspotConfig implements CrosHotspotConfigInterface {
   // Implements CrosHotspotConfigInterface.addObserver().
   addObserver(remote: CrosHotspotConfigObserverRemote): void {
     this.observers_.push(remote);
+  }
+
+  // Implements CrosHotspotConfigInterface.observeEnabledStateChanges()
+  observeEnabledStateChanges(remote: HotspotEnabledStateObserverRemote): void {
+    this.stateObservers_.push(remote);
   }
 
   // Setup method resolvers.

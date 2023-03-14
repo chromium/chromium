@@ -234,6 +234,10 @@ class LookalikeUrlNavigationThrottleBrowserTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<PrewarmLookalike> {
  protected:
+  LookalikeUrlNavigationThrottleBrowserTest()
+      : https_server_(
+            new net::EmbeddedTestServer(net::EmbeddedTestServer::TYPE_HTTPS)) {}
+
   void SetUp() override {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
@@ -252,7 +256,6 @@ class LookalikeUrlNavigationThrottleBrowserTest
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(embedded_test_server()->Start());
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     test_helper_ =
         std::make_unique<LookalikeTestHelper>(test_ukm_recorder_.get());
@@ -264,6 +267,11 @@ class LookalikeUrlNavigationThrottleBrowserTest
         LookalikeUrlService::Get(browser()->profile());
     lookalike_service->SetClockForTesting(&test_clock_);
 
+    // Use HTTPS URLs in tests.
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+    https_server_->AddDefaultHandlers(GetChromeTestDataDir());
+    ASSERT_TRUE(https_server_->Start());
+
     LookalikeTestHelper::SetUpLookalikeTestParams();
     InProcessBrowserTest::SetUpOnMainThread();
   }
@@ -273,8 +281,20 @@ class LookalikeUrlNavigationThrottleBrowserTest
     LookalikeTestHelper::TearDownLookalikeTestParams();
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+  }
+
   GURL GetURL(const char* hostname) const {
-    return embedded_test_server()->GetURL(hostname, "/title1.html");
+    return https_server()->GetURL(hostname, "/title1.html");
   }
 
   GURL GetURLWithoutPath(const char* hostname) const {
@@ -285,10 +305,10 @@ class LookalikeUrlNavigationThrottleBrowserTest
                        const char* via_hostname2,
                        const char* dest_hostname) const {
     GURL dest = GetURL(dest_hostname);
-    GURL mid = embedded_test_server()->GetURL(
-        via_hostname2, "/server-redirect?" + dest.spec());
-    return embedded_test_server()->GetURL(via_hostname1,
-                                          "/server-redirect?" + mid.spec());
+    GURL mid = https_server()->GetURL(via_hostname2,
+                                      "/server-redirect?" + dest.spec());
+    return https_server()->GetURL(via_hostname1,
+                                  "/server-redirect?" + mid.spec());
   }
 
   // Checks that UKM recorded an event for each URL in |navigated_urls| with the
@@ -442,11 +462,14 @@ class LookalikeUrlNavigationThrottleBrowserTest
   ukm::TestUkmRecorder* test_ukm_recorder() { return test_ukm_recorder_.get(); }
 
   base::SimpleTestClock* test_clock() { return &test_clock_; }
+  net::EmbeddedTestServer* https_server() const { return https_server_.get(); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<LookalikeTestHelper> test_helper_;
+  std::unique_ptr<net::EmbeddedTestServer> https_server_;
+  content::ContentMockCertVerifier mock_cert_verifier_;
   base::SimpleTestClock test_clock_;
 };
 
@@ -1073,7 +1096,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
 IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
                        Idn_SiteEngagement_SafeRedirect) {
   const GURL kExpectedSuggestedUrl = GetURLWithoutPath("site1.com");
-  const GURL kNavigatedUrl = embedded_test_server()->GetURL(
+  const GURL kNavigatedUrl = https_server()->GetURL(
       "sité1.com", "/server-redirect?" + kExpectedSuggestedUrl.spec());
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
   SetEngagementScore(browser(), kExpectedSuggestedUrl, kHighEngagement);
@@ -1088,9 +1111,9 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
 IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
                        Idn_SiteEngagement_MidRedirectSpoofsIgnored) {
   const GURL kFinalUrl = GetURLWithoutPath("site1.com");
-  const GURL kMidUrl = embedded_test_server()->GetURL(
+  const GURL kMidUrl = https_server()->GetURL(
       "sité1.com", "/server-redirect?" + kFinalUrl.spec());
-  const GURL kNavigatedUrl = embedded_test_server()->GetURL(
+  const GURL kNavigatedUrl = https_server()->GetURL(
       "other-site.test", "/server-redirect?" + kMidUrl.spec());
 
   SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
@@ -1531,7 +1554,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
   // Go to the affected site directly. This should not result in an
   // interstitial.
   TestInterstitialNotShown(browser(),
-                           embedded_test_server()->GetURL("example.net", "/"));
+                           https_server()->GetURL("example.net", "/"));
 }
 
 // Navigate to a URL that triggers combo squatting heuristic via the
@@ -1766,7 +1789,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleSignedExchangeBrowserTest,
                                          "content/test/data/sxg/fallback.html");
   const GURL kSgxCacheUrl = https_server_.GetURL(
       "google-com.test.com", "/sxg/test.example.org_test.sxg");
-  const GURL kNavigatedUrl = embedded_test_server()->GetURL(
+  const GURL kNavigatedUrl = https_server()->GetURL(
       "apple-com.site.test", "/server-redirect?" + kSgxCacheUrl.spec());
 
   TestInterstitialNotShown(browser(), kNavigatedUrl);
@@ -1831,7 +1854,7 @@ class LookalikeUrlNavigationThrottlePrerenderBrowserTest
   }
 
   void SetUpOnMainThread() override {
-    prerender_helper_->SetUp(embedded_test_server());
+    prerender_helper_->SetUp(https_server());
     LookalikeUrlNavigationThrottleBrowserTest::SetUpOnMainThread();
   }
 
@@ -1864,7 +1887,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottlePrerenderBrowserTest,
 
   // Start a prerender.
   const GURL kPrerenderUrl =
-      embedded_test_server()->GetURL("googlé.com", "/title1.html?prerender");
+      https_server()->GetURL("googlé.com", "/title1.html?prerender");
   content::test::PrerenderHostObserver host_observer(*web_contents(),
                                                      kPrerenderUrl);
   prerender_helper_->AddPrerenderAsync(kPrerenderUrl);

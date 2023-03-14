@@ -281,7 +281,9 @@ void PasswordManager::RegisterProfilePrefs(
       prefs::kSyncedLastTimePasswordCheckCompleted, base::Time(),
       user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
 
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   registry->RegisterDictionaryPref(prefs::kAccountStoragePerAccountSettings);
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
   registry->RegisterTimePref(prefs::kProfileStoreDateLastUsedForFilling,
                              base::Time());
@@ -337,6 +339,7 @@ void PasswordManager::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kBiometricAuthenticationBeforeFilling,
                                 false);
 #endif
+  registry->RegisterBooleanPref(prefs::kPasswordsGroupingInfoRequested, false);
 }
 
 // static
@@ -1013,7 +1016,7 @@ void PasswordManager::OnPasswordFormsRendered(
       driver &&
 #endif
       !driver->IsInPrimaryMainFrame() &&
-      submitted_manager->driver_id() != driver->GetId()) {
+      submitted_manager->GetFrameId() != driver->GetFrameId()) {
     // Frames different from the main frame and the frame of the submitted form
     // are unlikely relevant to success of submission.
     return;

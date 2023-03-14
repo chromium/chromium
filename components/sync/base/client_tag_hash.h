@@ -14,7 +14,7 @@
 namespace syncer {
 
 // Represents a client defined unique hash for sync entities. Hash is derived
-// from client tag, and should be used as |client_defined_unique_tag| for
+// from client tag, and should be used as |client_tag_hash| for
 // SyncEntity at least for CommitMessages. For convenience it supports storing
 // in ordered stl containers, logging and equality comparisons. It also supports
 // unordered stl containers using ClientTagHash::Hash.

@@ -175,6 +175,9 @@ class SystemLiveCaptionServiceTest : public InProcessBrowserTest {
     speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(
         speech::LanguageCode::kEnUs);
     speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+    SystemLiveCaptionServiceFactory::GetInstance()
+        ->GetForProfile(primary_profile_)
+        ->OnNonChromeOutputStarted();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -211,6 +214,17 @@ IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest, Triggering) {
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
   base::RunLoop().RunUntilIdle();
 
+  // After language and binary install, still should be false until output is
+  // triggered.
+  EXPECT_FALSE(fake_speech_recognition_service_->is_capturing_audio());
+
+  // Start audio.
+  // Set audio output running.
+  SystemLiveCaptionServiceFactory::GetInstance()
+      ->GetForProfile(primary_profile_)
+      ->OnNonChromeOutputStarted();
+  base::RunLoop().RunUntilIdle();
+
   // Should now be processing system audio.
   EXPECT_TRUE(fake_speech_recognition_service_->is_capturing_audio());
 
@@ -238,6 +252,10 @@ IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest, SodaError) {
 
 // Tests that our feature listens to the correct SODA language.
 IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest, SodaIrrelevantError) {
+  // Set audio output running
+  SystemLiveCaptionServiceFactory::GetInstance()
+      ->GetForProfile(primary_profile_)
+      ->OnNonChromeOutputStarted();
   // Enable feature so that we start listening for SODA install status.
   SetLiveCaptionsPref(primary_profile_, /*enabled=*/true);
 
@@ -278,6 +296,44 @@ IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest, DispatchToProfile) {
   EXPECT_EQ("System audio caption",
             primary_bubble->GetBubbleLabelTextForTesting());
 
+  // Transcribed speech should _not_ be shown for any other profiles.
+  EXPECT_EQ(nullptr, GetCaptionBubbleController(secondary_profile_));
+}
+
+IN_PROC_BROWSER_TEST_F(SystemLiveCaptionServiceTest, StartStopStart) {
+  StartLiveCaptioning();
+
+  // Capture fake audio.
+  EmulateRecognizedSpeech("System audio caption");
+  EXPECT_TRUE(fake_speech_recognition_service_->is_capturing_audio());
+
+  // Transcribed speech should be displayed from the primary profile.
+  // The added captions are all added as non-finals, so they over-write not
+  // append.
+  auto* primary_bubble = GetCaptionBubbleController(primary_profile_);
+  ASSERT_NE(nullptr, primary_bubble);
+  EXPECT_TRUE(primary_bubble->IsWidgetVisibleForTesting());
+  EXPECT_FALSE(primary_bubble->IsGenericErrorMessageVisibleForTesting());
+  EXPECT_EQ("System audio caption",
+            primary_bubble->GetBubbleLabelTextForTesting());
+
+  // Stop
+  SystemLiveCaptionServiceFactory::GetInstance()
+      ->GetForProfile(primary_profile_)
+      ->OnNonChromeOutputStopped();
+  EmulateRecognizedSpeech(" more after stop ");
+  EXPECT_EQ(" more after stop ",
+            primary_bubble->GetBubbleLabelTextForTesting());
+  // Idle stop.
+  base::RunLoop().RunUntilIdle();
+
+  // Start again.
+  SystemLiveCaptionServiceFactory::GetInstance()
+      ->GetForProfile(primary_profile_)
+      ->OnNonChromeOutputStarted();
+  EmulateRecognizedSpeech(" and yet more ");
+
+  EXPECT_EQ(" and yet more ", primary_bubble->GetBubbleLabelTextForTesting());
   // Transcribed speech should _not_ be shown for any other profiles.
   EXPECT_EQ(nullptr, GetCaptionBubbleController(secondary_profile_));
 }

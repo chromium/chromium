@@ -74,7 +74,10 @@ mojom::ResultCode PrintingContextLinux::UseDefaultSettings() {
 
   if (!print_dialog_)
     print_dialog_ = ui::LinuxUi::instance()->CreatePrintDialog(this);
-  print_dialog_->UseDefaultSettings();
+
+  if (print_dialog_) {
+    print_dialog_->UseDefaultSettings();
+  }
 #endif
 
   return mojom::ResultCode::kSuccess;
@@ -101,10 +104,12 @@ mojom::ResultCode PrintingContextLinux::UpdatePrinterSettings(
   if (!print_dialog_)
     print_dialog_ = ui::LinuxUi::instance()->CreatePrintDialog(this);
 
-  // PrintDialogGtk::UpdateSettings() calls InitWithSettings() so settings_ will
-  // remain non-null after this line.
-  print_dialog_->UpdateSettings(std::move(settings_));
-  DCHECK(settings_);
+  if (print_dialog_) {
+    // PrintDialogGtk::UpdateSettings() calls InitWithSettings() so settings_ will
+    // remain non-null after this line.
+    print_dialog_->UpdateSettings(std::move(settings_));
+    DCHECK(settings_);
+  }
 #endif
 
   return mojom::ResultCode::kSuccess;

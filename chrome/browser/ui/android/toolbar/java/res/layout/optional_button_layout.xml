@@ -7,7 +7,6 @@ found in the LICENSE file.
 
 <org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:paddingStart="@dimen/toolbar_phone_optional_button_padding"
     android:layout_height="match_parent"
     android:layout_width="52dp">
     <org.chromium.ui.widget.ChromeImageView
@@ -16,34 +15,38 @@ found in the LICENSE file.
         style="@style/ToolbarButton"
         android:scaleType="fitXY"
         android:id="@+id/swappable_icon_secondary_background"
+        android:paddingStart="@dimen/toolbar_phone_optional_button_background_start_padding"
+        android:paddingVertical="@dimen/toolbar_phone_optional_button_background_vertical_padding"
         android:layout_gravity="center"
         android:visibility="gone"
         android:importantForAccessibility="no" />
     <org.chromium.components.browser_ui.widget.listmenu.ListMenuButton
         android:layout_width="match_parent"
-        android:layout_height="40dp"
         android:scaleType="fitStart"
         android:id="@+id/optional_toolbar_button"
         style="@style/ToolbarButton"
+        android:paddingStart="@dimen/toolbar_phone_optional_button_foreground_start_padding"
+        android:paddingVertical="@dimen/toolbar_phone_optional_button_foreground_vertical_padding"
         android:layout_gravity="center_vertical|start"
-        android:visibility="gone"
-        android:paddingVertical="8dp"
-        android:paddingStart="8dp"/>
+        android:visibility="gone"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:id="@+id/action_chip_label"
-        android:layout_marginStart="40dp"
+        android:layout_marginStart="48dp"
         android:gravity="center"
         android:visibility="gone"
         android:maxLines="1"
         android:ellipsize="end"
         android:textAppearance="@style/TextAppearance.TextLarge.Primary"/>
     <org.chromium.ui.widget.ChromeImageView
-        android:layout_width="40dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:scaleType="fitStart"
         android:id="@+id/swappable_icon_animation_image"
-        android:layout_gravity="center"
+        android:paddingStart="@dimen/toolbar_phone_optional_button_foreground_start_padding"
+        android:paddingVertical="@dimen/toolbar_phone_optional_button_foreground_vertical_padding"
+        android:layout_gravity="center_vertical|start"
         android:visibility="gone"
         style="@style/ToolbarButton"
         android:importantForAccessibility="no" />

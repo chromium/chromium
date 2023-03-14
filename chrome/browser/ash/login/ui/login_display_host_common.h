@@ -78,7 +78,8 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   void SetAuthSessionForOnboarding(const UserContext& user_context) final;
   void ClearOnboardingAuthSession() final;
   void StartUserOnboarding() final;
-  void ResumeUserOnboarding(OobeScreenId screen_id) final;
+  void ResumeUserOnboarding(const PrefService& prefs,
+                            OobeScreenId screen_id) final;
   void StartManagementTransition() final;
   void ShowTosForExistingUser() final;
   void ShowNewTermsForFlexUsers() final;

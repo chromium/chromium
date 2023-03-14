@@ -7,6 +7,7 @@
 #include <new>
 #include <stdexcept>
 #include <type_traits>
+#include <utility>
 
 #include <cstdint>
 #include <cassert>

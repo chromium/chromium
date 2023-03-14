@@ -13,11 +13,16 @@ a trademark which we don't want to release under Chromium's open source
 license.
 
 Therefore, if you want to add a trademarked resource, check it into an internal
-repository (see section below), and pick a resource based on the branding
-(`is_chrome_branded` in GN, `#if BUILDFLAG(GOOGLE_CHROME_BRANDING)` in cpp, `<if
-expr="_google_chrome">` in grit preprocessing). If possible, check an open
-source version into Chromium, so the feature continues to work as expected in
-the open source build.
+repository (see section below), and pick a resource based on the branding.  To
+query in code whether the current build is branded, use:
+
+- GN: `is_chrome_branded`
+- C++: `#if BUILDFLAG(GOOGLE_CHROME_BRANDING)`
+- Java: `BuildConfig.IS_CHROME_BRANDED`
+- Grit: `<if expr="_google_chrome">`
+
+If possible, check an open source version into Chromium, so the feature
+continues to work as expected in the open source build.
 
 E.g.
 [`//components/resources/default_100_percent/chromium`](../components/resources/default_100_percent/chromium)
@@ -69,3 +74,25 @@ Once that CL lands, an auto-roller bot will update the main repo's src-internal
 hash reference in `//DEPS` ([example autoroll CL](https://crrev.com/c/4024955))
 and your new internal resources will be available on the bots. The chromium-side
 CL making use of it can then be uploaded.
+
+## Internal Clank assets
+
+Internal Clank assets live in [Clank's internal downstream repo](https://chrome-internal.googlesource.com/clank/internal/apps).
+In general, to check in product-specific assets:
+- Add `//components` ones under
+  `//components/[product_name]/java/res/drawable/[asset_name]`.
+  E.g.
+  [`//components/page_info/java/res/drawable/product_logo.png`](https://chrome-internal.googlesource.com/clank/internal/apps/+/refs/heads/main/components/page_info/java/res/drawable)
+
+To add assets there, `cd` to this repo, add your new assets and `git cl
+upload` to start an internal code review. Once it lands, an auto-roller bot will
+update the main repo's src/clank hash reference in `//DEPS`
+([example autoroll CL](https://chromium-review.googlesource.com/c/chromium/src/+/4282317))
+and your new internal assets will be available on the bots. The chromium-side
+CL making use of it can then be uploaded.
+
+The internal asset is only available on a Chrome branded build. We can not
+utilize icons from the internal repo directly from Java because the assets
+wouldn't be available in public builds. We can work around this by passing the
+resource id to the native side and then back to Java (example [CL1](https://crrev.com/c/3327235),
+[CL2](https://crrev.com/c/4286715)).

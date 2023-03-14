@@ -41,14 +41,14 @@ std::string GetAppIdFromPackageName(const std::string& package_name,
   return app_ids.empty() ? std::string() : *app_ids.begin();
 }
 
-bool GetUint16FromDict(const base::Value& dict,
+bool GetUint16FromDict(const base::Value::Dict& dict,
                        const std::string& key,
                        uint16_t* result) {
-  const base::Value* value =
-      dict.FindKeyOfType(key, base::Value::Type::INTEGER);
-  if (!value)
+  absl::optional<int> value = dict.FindInt(key);
+  if (!value.has_value()) {
     return false;
-  int tmp = value->GetInt();
+  }
+  int tmp = *value;
   if (tmp < 0 || tmp > UINT16_MAX)
     return false;
   *result = static_cast<uint16_t>(tmp);
@@ -157,57 +157,59 @@ void ArcUsbHostPermissionManager::RestorePermissionFromChromePrefs() {
       arc_app_list_prefs_->GetPackagesFromPrefs();
   for (auto& package : packages) {
     // Restore scan device list permission.
-    const base::Value* scan_permision_value =
+    const base::Value* scan_permission_value =
         arc_app_list_prefs_->GetPackagePrefs(package,
                                              kUsbScanDeviceListPermission);
-    if (scan_permision_value && scan_permision_value->is_bool() &&
-        scan_permision_value->GetBool()) {
+    if (scan_permission_value && scan_permission_value->is_bool() &&
+        scan_permission_value->GetBool()) {
       usb_scan_devicelist_permission_packages_.emplace(package);
     }
 
-    // Restore device accesss permission.
-    const base::Value* access_permision_list_value =
+    // Restore device access permission.
+    const base::Value* access_permission_list_value =
         arc_app_list_prefs_->GetPackagePrefs(package, kUsbAccessPermission);
-    if (!access_permision_list_value)
+    if (!access_permission_list_value) {
       continue;
+    }
 
-    if (!access_permision_list_value->is_list()) {
+    if (!access_permission_list_value->is_list()) {
       LOG(ERROR) << "Wrong value type found for device access permission list.";
       continue;
     }
 
-    for (const auto& access_permision :
-         access_permision_list_value->GetList()) {
-      const base::Value* serial_number_value = access_permision.FindKeyOfType(
-          kUsbSerialNumber, base::Value::Type::STRING);
-      if (!serial_number_value) {
-        LOG(WARNING) << "Invalid device access permisison: No serial number.";
+    for (const auto& access_permission_value :
+         access_permission_list_value->GetList()) {
+      const base::Value::Dict& access_permission =
+          access_permission_value.GetDict();
+      const std::string* serial_number =
+          access_permission.FindString(kUsbSerialNumber);
+      if (!serial_number) {
+        LOG(WARNING) << "Invalid device access permission: No serial number.";
         continue;
       }
 
-      const base::Value* device_name_value = access_permision.FindKeyOfType(
-          kUsbDeviceName, base::Value::Type::STRING);
-      if (!device_name_value) {
-        LOG(WARNING) << "Invalid device access permisison: No device name.";
+      const std::string* device_name =
+          access_permission.FindString(kUsbDeviceName);
+      if (!device_name) {
+        LOG(WARNING) << "Invalid device access permission: No device name.";
         continue;
       }
 
       uint16_t vendor_id;
       uint16_t product_id;
 
-      if (!GetUint16FromDict(access_permision, kUsbVendorId, &vendor_id) ||
-          !GetUint16FromDict(access_permision, kUsbProductId, &product_id)) {
-        LOG(WARNING) << "Invalid device access permisison: Invalid vendor_id "
+      if (!GetUint16FromDict(access_permission, kUsbVendorId, &vendor_id) ||
+          !GetUint16FromDict(access_permission, kUsbProductId, &product_id)) {
+        LOG(WARNING) << "Invalid device access permission: Invalid vendor_id "
                         "and/or product_id.";
         continue;
       }
 
       usb_access_permission_dict_.emplace(
-          package,
-          UsbDeviceEntry(std::string() /*guid*/,
-                         base::UTF8ToUTF16(device_name_value->GetString()),
-                         base::UTF8ToUTF16(serial_number_value->GetString()),
-                         vendor_id, product_id));
+          package, UsbDeviceEntry(std::string() /*guid*/,
+                                  base::UTF8ToUTF16(*device_name),
+                                  base::UTF8ToUTF16(*serial_number), vendor_id,
+                                  product_id));
     }
   }
 }
@@ -431,7 +433,7 @@ void ArcUsbHostPermissionManager::OnUsbPermissionReceived(
 
   const std::string& package_name = request.package_name();
 
-  // If the package can is uninstalled while user clicks permisison UI dialog.
+  // If the package can is uninstalled while user clicks permission UI dialog.
   // Ignore current callback as it's outdated.
   if (package_name != current_requesting_package_) {
     MaybeProcessNextPermissionRequest();

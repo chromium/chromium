@@ -6,6 +6,7 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/barrier_closure.h"
 #include "base/functional/callback.h"
@@ -16,12 +17,14 @@
 #include "base/values.h"
 #include "chrome/browser/ash/net/rollback_network_config/rollback_onc_util.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_policy_observer.h"
 #include "chromeos/ash/components/network/network_profile_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/onc/onc_constants.h"
@@ -34,11 +37,6 @@ namespace ash {
 namespace {
 
 const char kDeviceUserHash[] = "";
-
-bool IsOwnershipTaken() {
-  return DeviceSettingsService::Get()->GetOwnershipStatus() ==
-         DeviceSettingsService::OwnershipStatus::OWNERSHIP_TAKEN;
-}
 
 bool IsDeviceEnterpriseEnrolled() {
   return InstallAttributes::Get()->IsEnterpriseManaged();
@@ -73,12 +71,15 @@ NetworkStateHandler* network_state_handler() {
 // if it was a device wide user configured network. In particular this will
 // configure policy-set values as user configured as well.
 void ManagedOncConfigureActivePartAsDeviceWide(
-    base::Value network,
+    base::Value::Dict network,
     base::OnceCallback<void(bool)> callback) {
-  rollback_network_config::ManagedOncCollapseToActive(&network);
+  base::Value network_value(std::move(network));
+  rollback_network_config::ManagedOncCollapseToActive(&network_value);
+  DCHECK(network_value.is_dict());
+  network = std::move(network_value).TakeDict();
 
   const std::string& guid = rollback_network_config::GetStringValue(
-      network.GetDict(), onc::network_config::kGUID);
+      network, onc::network_config::kGUID);
   const NetworkState* network_state =
       network_state_handler()->GetNetworkStateFromGuid(guid);
 
@@ -86,8 +87,7 @@ void ManagedOncConfigureActivePartAsDeviceWide(
   auto success_callback = base::BindOnce(std::move(callbacks.first), true);
   auto failure_callback = base::BindOnce(std::move(callbacks.second), false);
 
-  network.SetStringKey(onc::network_config::kSource,
-                       onc::network_config::kSourceDevice);
+  network.Set(onc::network_config::kSource, onc::network_config::kSourceDevice);
   if (!network_state || !network_state->IsInProfile()) {
     managed_network_configuration_handler()->CreateConfiguration(
         kDeviceUserHash, network,
@@ -121,16 +121,16 @@ NetworkStateHandler::NetworkStateList GetDeviceWideWiFiAndEthernetNetworks() {
   return networks;
 }
 
-void ReconfigureUiData(const base::Value& network_config,
+void ReconfigureUiData(const base::Value::Dict& network_config,
                        const std::string& guid) {
   const NetworkState* network_state =
       network_state_handler()->GetNetworkStateFromGuid(guid);
 
-  base::Value ui_data = network_config.Clone();
+  base::Value ui_data(network_config.Clone());
   rollback_network_config::ManagedOncCollapseToUiData(&ui_data);
 
   managed_network_configuration_handler()->SetProperties(
-      network_state->path(), ui_data, base::DoNothing(),
+      network_state->path(), ui_data.GetDict(), base::DoNothing(),
       base::BindOnce(&PrintError));
 }
 
@@ -328,8 +328,8 @@ class RollbackNetworkConfig::Importer : public DeviceSettingsService::Observer,
   // NetworkPolicyObserver
   void PoliciesApplied(const std::string& userhash) override;
 
-  void set_skip_ownership_check_for_testing() {
-    skip_ownership_check_for_testing_ = true;
+  void set_fake_ownership_taken_for_testing() {
+    fake_ownership_taken_for_testing_ = true;
   }
 
  private:
@@ -338,11 +338,13 @@ class RollbackNetworkConfig::Importer : public DeviceSettingsService::Observer,
   void NetworkConfigured(base::RepeatingClosure closure, bool success);
   void AllNetworksConfigured(ImportCallback callback);
 
-  std::vector<base::Value> imported_networks_;
+  bool IsOwnershipTaken() const;
+
+  std::vector<base::Value::Dict> imported_networks_;
 
   bool all_networks_successfully_configured = true;
 
-  bool skip_ownership_check_for_testing_ = false;
+  bool fake_ownership_taken_for_testing_ = false;
 
   base::WeakPtrFactory<Importer> weak_factory_{this};
 };
@@ -369,20 +371,22 @@ void RollbackNetworkConfig::Importer::Import(const std::string& network_config,
   absl::optional<base::Value> managed_onc_network_config =
       base::JSONReader::Read(network_config);
 
-  if (!managed_onc_network_config.has_value()) {
+  if (!managed_onc_network_config.has_value() ||
+      !managed_onc_network_config->is_dict()) {
     std::move(callback).Run(false);
     return;
   }
 
-  base::Value* network_list = managed_onc_network_config->FindListKey(
-      onc::toplevel_config::kNetworkConfigurations);
-  if (!network_list || !network_list->is_list()) {
+  base::Value::List* network_list =
+      managed_onc_network_config->GetDict().FindList(
+          onc::toplevel_config::kNetworkConfigurations);
+  if (!network_list) {
     std::move(callback).Run(false);
     return;
   }
 
   auto barrier_closure = base::BarrierClosure(
-      network_list->GetList().size(),
+      network_list->size(),
       base::BindOnce(&RollbackNetworkConfig::Importer::AllNetworksConfigured,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 
@@ -392,40 +396,65 @@ void RollbackNetworkConfig::Importer::Import(const std::string& network_config,
 
   bool ownership_taken = IsOwnershipTaken();
 
-  for (base::Value& network : network_list->GetList()) {
+  for (base::Value& network : *network_list) {
+    base::Value::Dict* network_dict = network.GetIfDict();
+    if (!network_dict) {
+      continue;
+    }
+
     if (!ownership_taken) {
-      ManagedOncConfigureActivePartAsDeviceWide(network.Clone(),
+      ManagedOncConfigureActivePartAsDeviceWide(network_dict->Clone(),
                                                 finished_a_network);
     }
     // If ownership is taken already we may still be waiting for policy
     // application to finish. Once it's finished, `PoliciesApplied`
     // reconfigures the networks.
-    imported_networks_.push_back(std::move(network));
+    imported_networks_.push_back(std::move(*network_dict));
   }
 }
 
 void RollbackNetworkConfig::Importer::OwnershipStatusChanged() {
-  if ((skip_ownership_check_for_testing_ || IsOwnershipTaken()) &&
-      !IsDeviceEnterpriseEnrolled()) {
-    LOG(WARNING)
-        << "Device was not enrolled, deleting all policy imported networks.";
+  if (IsOwnershipTaken() && !IsDeviceEnterpriseEnrolled()) {
+    // Rollback should always automatically re-enroll. Delete all previously
+    // policy-configured networks if that did not happen.
+    LOG(ERROR) << "Device was not enrolled after rollback. Deleting all "
+                  "policy imported networks.";
     DeleteImportedPolicyNetworks();
   }
 }
 
 void RollbackNetworkConfig::Importer::PoliciesApplied(
     const std::string& userhash) {
-  for (const base::Value& network_config : imported_networks_) {
+  if (!IsOwnershipTaken()) {
+    // TODO(b/270355500): Improve this logic once the `PoliciesApplied` callback
+    // tells us whether it actually applied any policies. At the moment it is
+    // called on the welcome screen of oobe, long before any policies are
+    // present.
+    LOG(WARNING) << "Not deleting rollback-configured temporary networks - "
+                    "ownership yet not taken.";
+    return;
+  }
+
+  if (userhash != kDeviceUserHash) {
+    // We want to remove or reconfigure the temporary networks once device
+    // policy is applied.
+    return;
+  }
+
+  for (const base::Value::Dict& network_config : imported_networks_) {
     const std::string& guid = rollback_network_config::GetStringValue(
-        network_config.GetDict(), onc::network_config::kGUID);
+        network_config, onc::network_config::kGUID);
     const NetworkState* network_state =
         network_state_handler()->GetNetworkStateFromGuid(guid);
 
-    if (network_state && rollback_network_config::OncIsSourceDevicePolicy(
-                             network_config.GetDict())) {
+    if (network_state &&
+        rollback_network_config::OncIsSourceDevicePolicy(network_config)) {
       if (network_state->IsManagedByPolicy()) {
         ReconfigureUiData(network_config, guid);
       } else {  // Policy did not reconfigure the network, delete it.
+        LOG(WARNING)
+            << "Deleting a temporary rollback-preserved network after "
+               "policies were applied because it was not reconfigured.";
         managed_network_configuration_handler()->RemoveConfiguration(
             network_state->path(), base::DoNothing(),
             base::BindOnce(&PrintError));
@@ -435,12 +464,11 @@ void RollbackNetworkConfig::Importer::PoliciesApplied(
 }
 
 void RollbackNetworkConfig::Importer::DeleteImportedPolicyNetworks() {
-  for (const base::Value& network_config : imported_networks_) {
+  for (const base::Value::Dict& network_config : imported_networks_) {
     const std::string& guid = rollback_network_config::GetStringValue(
-        network_config.GetDict(), onc::network_config::kGUID);
+        network_config, onc::network_config::kGUID);
 
-    if (rollback_network_config::OncIsSourceDevicePolicy(
-            network_config.GetDict())) {
+    if (rollback_network_config::OncIsSourceDevicePolicy(network_config)) {
       const NetworkState* network_state =
           network_state_handler()->GetNetworkStateFromGuid(guid);
 
@@ -463,6 +491,14 @@ void RollbackNetworkConfig::Importer::NetworkConfigured(
 void RollbackNetworkConfig::Importer::AllNetworksConfigured(
     ImportCallback callback) {
   std::move(callback).Run(all_networks_successfully_configured);
+}
+
+bool RollbackNetworkConfig::Importer::IsOwnershipTaken() const {
+  if (fake_ownership_taken_for_testing_) {
+    return true;
+  }
+  return DeviceSettingsService::Get()->GetOwnershipStatus() ==
+         DeviceSettingsService::OwnershipStatus::OWNERSHIP_TAKEN;
 }
 
 RollbackNetworkConfig::RollbackNetworkConfig() = default;
@@ -495,7 +531,7 @@ void RollbackNetworkConfig::RollbackConfigExport(ExportCallback callback) {
 }
 
 void RollbackNetworkConfig::fake_ownership_taken_for_testing() {
-  importer_->set_skip_ownership_check_for_testing();  // IN-TEST
+  importer_->set_fake_ownership_taken_for_testing();  // IN-TEST
   importer_->OwnershipStatusChanged();
 }
 

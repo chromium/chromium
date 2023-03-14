@@ -27,7 +27,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           ಮತ್ತು ನಿಮ್ಮ ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು "ಯಾವುದೇ ಪ್ರಾಕ್ಸಿ ಇಲ್ಲ" ಅಥವಾ "ನೇರವಾಗಿ" ಗೆ ಹೊಂದಿಸಲಾಗಿದೆಯೇ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
+<translation id="6549378540556750549">ಇತರ <ph name="BEGIN_LINK_OSS" />ಓಪನ್ ಸೋರ್ಸ್ ಸಾಫ್ಟ್‌ವೇರ್<ph name="END_LINK_OSS" /> ನಿಂದ Chromium ಅನ್ನು ಸಾಕಾರಗೊಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="6613594504749178791">ನೀವು ಮುಂದಿನ ಬಾರಿ Chromium ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿದಾಗ ನಿಮ್ಮ ಬದಲಾವಣೆಗಳು ಕಾರ್ಯಗತಗೊಳ್ಳುತ್ತವೆ.</translation>
+<translation id="7681937895330411637"><ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ಓಪನ್ ಸೋರ್ಸ್ ಪ್ರಾಜೆಕ್ಟ್‌ನಿಂದ Chromium ಅನ್ನು ಸಾಕಾರಗೊಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="7861509383340276692">ಇದಕ್ಕೆ ಹೋಗಿ
         Chromium ಮೆನು &gt;
         <ph name="SETTINGS_TITLE" />

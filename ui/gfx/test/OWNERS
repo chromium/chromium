@@ -1,3 +1,6 @@
 # Fonts and fallback fonts.
 per-file font*=etienneb@chromium.org
 per-file font*=robliao@chromium.org
+
+# Anyone can update test bundle data filelists.
+per-file *.filelist=*

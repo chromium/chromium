@@ -8,4 +8,5 @@ import android.view.SurfaceControlViewHost.SurfacePackage;
 
 oneway interface IWebSandboxCallback {
     void onBrowserProcessInitialized() = 1;
+    void onBrowserProcessInitializationFailure() = 2;
 }

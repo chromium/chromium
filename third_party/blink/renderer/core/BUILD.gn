@@ -77,6 +77,10 @@ import("//third_party/blink/renderer/core/xmlhttprequest/build.gni")
 import("//third_party/blink/renderer/platform/platform_generated.gni")
 import("//third_party/protobuf/proto_library.gni")
 
+if (is_ios) {
+  import("//build/config/ios/bundle_data_from_filelist.gni")
+}
+
 visibility = [
   "//third_party/blink/public/*",
   "//third_party/blink/renderer/*",
@@ -308,6 +312,7 @@ component("core") {
     "//skia",
     "//third_party/blink/public/mojom:mojom_broadcastchannel_bindings_blink",
     "//third_party/blink/public/mojom:mojom_core_blink",
+    "//third_party/blink/renderer/bindings:buildflags",
     "//third_party/blink/renderer/bindings/core/v8",
     "//third_party/blink/renderer/core/animation",
     "//third_party/blink/renderer/core/exported",
@@ -550,6 +555,21 @@ source_set("testing") {
   ]
 
   public_deps = [ "//testing/gmock:gmock" ]
+}
+
+if (is_ios) {
+  bundle_data_from_filelist("core_test_bundle_data") {
+    testonly = true
+    filelist_name = "testing/data/core_test_bundle_data.filelist"
+  }
+  bundle_data_from_filelist("animation_test_bundle_data") {
+    testonly = true
+    filelist_name = "animation/test_data/animation_test_bundle_data.filelist"
+  }
+  bundle_data_from_filelist("paint_test_bundle_data") {
+    testonly = true
+    filelist_name = "paint/test_data/paint_test_bundle_data.filelist"
+  }
 }
 
 # generate_event_interfaces ----------------------------------------------------
@@ -1428,6 +1448,10 @@ source_set("unit_tests") {
     "//ui/base/dragdrop/mojom:mojom_blink",
     "//ui/gfx:test_support",
   ]
+
+  if (is_ios) {
+    deps += [ "//third_party/text-fragments-polyfill:test_bundle_data" ]
+  }
 
   data_deps = [ ":unit_tests_data" ]
 

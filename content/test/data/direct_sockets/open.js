@@ -7,7 +7,7 @@ async function openTcp(address, port, options = {}) {
     return ('openTcp succeeded: ' +
             '{remoteAddress: "' + remoteAddress +
             '", remotePort: ' + remotePort + '}');
-  } catch(error) {
+  } catch (error) {
     return ('openTcp failed: ' + error);
   }
 }
@@ -19,7 +19,19 @@ async function openUdp(options) {
     return ('openUdp succeeded: ' +
             '{remoteAddress: "' + remoteAddress +
             '", remotePort: ' + remotePort + '}');
-  } catch(error) {
+  } catch (error) {
     return ('openUdp failed: ' + error);
+  }
+}
+
+async function openTcpServer(address, options = {}) {
+  try {
+    let tcpServerSocket = new TCPServerSocket(address, options);
+    let { localAddress, localPort } = await tcpServerSocket.opened;
+    return ('openTcpServer succeeded: ' +
+      '{localAddress: "' + localAddress +
+      '", localPort: ' + localPort + '}');
+  } catch (error) {
+    return ('openTcpServer failed: ' + error);
   }
 }

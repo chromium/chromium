@@ -15,6 +15,10 @@
 #include "ui/gl/init/gl_display_initializer.h"
 #include "ui/gl/init/gl_factory.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace gl {
 
 class EGLApiTest : public testing::Test {
@@ -36,6 +40,12 @@ class EGLApiTest : public testing::Test {
     SetGLImplementation(kGLImplementationEGLANGLE);
 #else
     SetGLImplementation(kGLImplementationEGLGLES2);
+#endif
+
+#if BUILDFLAG(IS_OZONE)
+    ui::OzonePlatform::InitParams params;
+    params.single_process = true;
+    ui::OzonePlatform::InitializeForGPU(params);
 #endif
   }
 

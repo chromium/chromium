@@ -37,6 +37,8 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle,
  private:
   FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest, DefersHttpsUrl);
   FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest,
+                           DoesNotDeferHttpsImageUrl);
+  FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest,
                            DoesNotDeferChromeUrl);
   FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest,
                            VerifyTotalDelayHistograms_DoesNotDefer);
@@ -46,6 +48,9 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle,
                            VerifyTotalDelayHistograms_Defer);
   FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest,
                            VerifyTotalDelayHistograms_DeferFromCache);
+  FRIEND_TEST_ALL_PREFIXES(
+      SBRendererUrlLoaderThrottleDisableSkipImageCssFontTest,
+      DefersHttpsImageUrl);
 
   // blink::URLLoaderThrottle implementation.
   void DetachFromCurrentSequence() override;

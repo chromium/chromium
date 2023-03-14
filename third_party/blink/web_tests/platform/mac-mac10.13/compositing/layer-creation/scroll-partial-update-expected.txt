@@ -2,7 +2,7 @@ scroll me
 {
   "layers": [
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "Scrolling background of LayoutNGView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -10,15 +10,13 @@ scroll me
     {
       "name": "LayoutNGBlockFlow DIV id='composited'",
       "bounds": [20, 20],
-      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 1
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='overlay'",
       "position": [10, 8],
-      "bounds": [400, 204],
-      "contentsOpaqueForText": true
+      "bounds": [400, 204]
     }
   ],
   "transforms": [

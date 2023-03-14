@@ -4,7 +4,6 @@
 
 #include "chrome/browser/apps/platform_apps/api/browser/browser_api.h"
 
-#include <memory>
 #include <string>
 
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -16,9 +15,9 @@ namespace api {
 BrowserOpenTabFunction::~BrowserOpenTabFunction() {}
 
 ExtensionFunction::ResponseAction BrowserOpenTabFunction::Run() {
-  std::unique_ptr<browser::OpenTab::Params> params(
+  absl::optional<browser::OpenTab::Params> params(
       browser::OpenTab::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  EXTENSION_FUNCTION_VALIDATE(params.has_value());
 
   extensions::ExtensionTabUtil::OpenTabParams options;
   options.create_browser_if_needed = true;

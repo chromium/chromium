@@ -64,6 +64,5 @@ crbug.com/1266821 transforms/3d/point-mapping/3d-point-mapping-origins.html [ Fa
 crbug.com/1266821 transforms/shadows.html [ Failure ]
 crbug.com/1266821 transforms/svg-vs-css.xhtml [ Failure ]
 crbug.com/1266821 transforms/transformed-caret.html [ Failure ]
-crbug.com/1266821 transforms/transformed-document-element.html [ Failure ]
 crbug.com/1266821 virtual/android/fullscreen/video-controls-timeline.html [ Failure ]
 crbug.com/1268259 images/color-profile-image-canvas-pattern.html [ Failure ]

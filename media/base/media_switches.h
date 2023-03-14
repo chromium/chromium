@@ -65,6 +65,7 @@ MEDIA_EXPORT extern const char kAudioCapturerWithEchoCancellation[];
 
 #if defined(USE_CRAS)
 MEDIA_EXPORT extern const char kUseCras[];
+MEDIA_EXPORT extern const char kSystemAecEnabled[];
 #endif
 
 MEDIA_EXPORT extern const char
@@ -216,6 +217,8 @@ MEDIA_EXPORT extern const base::FeatureParam<int>
     kHardwareSecureDecryptionFallbackMinDisablingDays;
 MEDIA_EXPORT extern const base::FeatureParam<int>
     kHardwareSecureDecryptionFallbackMaxDisablingDays;
+MEDIA_EXPORT extern const base::FeatureParam<bool>
+    kHardwareSecureDecryptionFallbackOnHardwareContextReset;
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kInternalMediaSession);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kKeepRvfcFrameAlive);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kKeyPressMonitoring);
@@ -312,18 +315,17 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kRequestSystemAudioFocus);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseAudioLatencyFromHAL);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUsePooledSharedImageVideoProvider);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseRealColorSpaceForAndroidVideo);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
 // The feature |kHlsPlayer| enables the use of Android's builtin media-player
 // based HLS implementation, which chrome currently relies on when playing
 // on android, while this feature enabled chrome's built-in HLS parser and
 // demuxer. When this feature is enabled, the media-player based HLS player
-// will NOT be used. This will roll out first on android (hence inside the
-// IS_ANDROID buildflag), but will eventually land in desktop chrome as well.
+// will NOT be used. This will roll out first on android, but will eventually
+// land in desktop chrome as well.
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kBuiltInHlsPlayer);
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
-
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kChromeOSHWAV1Decoder);
@@ -404,6 +406,7 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseOutOfProcessVideoEncoding);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseMojoVideoDecoderForPepper);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseSequencedTaskRunnerForMediaService);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseSequencedTaskRunnerForMojoVEAProvider);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseSequencedTaskRunnerForMojoVEAService);
 
 #if BUILDFLAG(IS_FUCHSIA)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kFuchsiaMediacodecVideoEncoder);

@@ -5,13 +5,15 @@
 #include "base/fuchsia/system_info.h"
 #include "base/functional/callback_forward.h"
 
-#include <fuchsia/buildinfo/cpp/fidl.h>
-#include <fuchsia/hwinfo/cpp/fidl.h>
-#include <fuchsia/hwinfo/cpp/fidl_test_base.h>
+#include <fidl/fuchsia.buildinfo/cpp/fidl.h>
+#include <fidl/fuchsia.hwinfo/cpp/fidl.h>
+#include <lib/async/default.h>
+#include <lib/fidl/cpp/wire/connect_service.h>
+
 #include <memory>
+#include <string>
 
 #include "base/fuchsia/scoped_service_binding.h"
-#include "base/fuchsia/scoped_service_publisher.h"
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -29,34 +31,29 @@ namespace base {
 
 namespace {
 
-class FakeHardwareInfoProduct
-    : public fuchsia::hwinfo::testing::Product_TestBase {
+class FakeHardwareInfoProduct : public fidl::Server<fuchsia_hwinfo::Product> {
  public:
   FakeHardwareInfoProduct(const base::StringPiece model,
                           const base::StringPiece manufacturer,
                           sys::OutgoingDirectory* outgoing_services)
       : model_(model),
         manufacturer_(manufacturer),
-        binding_(outgoing_services, this) {}
+        binding_(outgoing_services, this, async_get_default_dispatcher()) {}
   FakeHardwareInfoProduct(const FakeHardwareInfoProduct&) = delete;
   FakeHardwareInfoProduct& operator=(const FakeHardwareInfoProduct&) = delete;
   ~FakeHardwareInfoProduct() override = default;
 
-  // fuchsia::hwinfo::testing::Provider_TestBase implementation
-  void GetInfo(GetInfoCallback callback) override {
-    fuchsia::hwinfo::ProductInfo product_info;
-    product_info.set_model(model_);
-    product_info.set_manufacturer(manufacturer_);
-    callback(std::move(product_info));
-  }
-  void NotImplemented_(const std::string& name) final {
-    ADD_FAILURE() << "Unexpected call: " << name;
+  void GetInfo(GetInfoCompleter::Sync& completer) override {
+    completer.Reply(fuchsia_hwinfo::ProductInfo{{
+        .model = model_,
+        .manufacturer = manufacturer_,
+    }});
   }
 
  private:
   std::string model_;
   std::string manufacturer_;
-  ScopedServiceBinding<fuchsia::hwinfo::Product> binding_;
+  ScopedNaturalServiceBinding<fuchsia_hwinfo::Product> binding_;
 };
 
 }  // namespace
@@ -73,21 +70,22 @@ class ProductInfoTest : public testing::Test {
     thread_.StartWithOptions(
         base::Thread::Options(base::MessagePumpType::IO, 0));
     ClearCachedSystemInfoForTesting();
-    component_context_.AddService(fuchsia::buildinfo::Provider::Name_);
+    component_context_.AddService(
+        fidl::DiscoverableProtocolName<fuchsia_buildinfo::Provider>);
   }
   ~ProductInfoTest() override { ClearCachedSystemInfoForTesting(); }
 
   // Fetch the product info in a separate thread, while servicing the
   // FIDL fake implementation on the main thread.
-  fuchsia::hwinfo::ProductInfo GetProductInfoViaTask() {
-    fuchsia::hwinfo::ProductInfo product_info;
+  fuchsia_hwinfo::ProductInfo GetProductInfoViaTask() {
+    fuchsia_hwinfo::ProductInfo product_info;
     base::RunLoop run_loop;
     thread_.task_runner()->PostTaskAndReplyWithResult(
         FROM_HERE, base::BindOnce(&GetProductInfo),
         base::BindOnce(
             [](base::RunLoop& run_loop,
-               fuchsia::hwinfo::ProductInfo& product_info,
-               fuchsia::hwinfo::ProductInfo result) {
+               fuchsia_hwinfo::ProductInfo& product_info,
+               fuchsia_hwinfo::ProductInfo result) {
               product_info = std::move(result);
               run_loop.Quit();
             },
@@ -109,19 +107,20 @@ TEST_F(ProductInfoTest, GetProductInfoReturnsFakedValues) {
       component_context_.additional_services());
 
   const auto product_info = GetProductInfoViaTask();
-  EXPECT_EQ(product_info.model(), "test.model");
-  EXPECT_EQ(product_info.manufacturer(), "test.manufacturer");
+  EXPECT_EQ(product_info.model().value(), "test.model");
+  EXPECT_EQ(product_info.manufacturer().value(), "test.manufacturer");
 }
 
 TEST_F(ProductInfoTest, SystemServiceReturnsValidValues) {
-  component_context_.AddService(fuchsia::hwinfo::Product::Name_);
+  component_context_.AddService(
+      fidl::DiscoverableProtocolName<fuchsia_hwinfo::Product>);
 
   const auto product_info = GetProductInfoViaTask();
-  EXPECT_TRUE(product_info.has_model());
-  EXPECT_FALSE(product_info.model().empty());
+  EXPECT_TRUE(product_info.model().has_value());
+  EXPECT_FALSE(product_info.model()->empty());
 
-  EXPECT_TRUE(product_info.has_manufacturer());
-  EXPECT_FALSE(product_info.manufacturer().empty());
+  EXPECT_TRUE(product_info.manufacturer().has_value());
+  EXPECT_FALSE(product_info.manufacturer()->empty());
 }
 
 // TODO(crbug.com/101396): Re-enable once all clients

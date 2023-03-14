@@ -39,11 +39,11 @@ void DispatchOnEmbedRequestedEventImpl(
   auto event = std::make_unique<Event>(
       events::APP_RUNTIME_ON_EMBED_REQUESTED,
       app_runtime::OnEmbedRequested::kEventName, std::move(args), context);
-  EventRouter::Get(context)
-      ->DispatchEventWithLazyListener(extension_id, std::move(event));
+  EventRouter::Get(context)->DispatchEventWithLazyListener(extension_id,
+                                                           std::move(event));
 
-  ExtensionPrefs::Get(context)
-      ->SetLastLaunchTime(extension_id, base::Time::Now());
+  ExtensionPrefs::Get(context)->SetLastLaunchTime(extension_id,
+                                                  base::Time::Now());
 }
 
 void DispatchOnLaunchedEventImpl(const std::string& extension_id,
@@ -68,10 +68,10 @@ void DispatchOnLaunchedEventImpl(const std::string& extension_id,
   auto event = std::make_unique<Event>(events::APP_RUNTIME_ON_LAUNCHED,
                                        app_runtime::OnLaunched::kEventName,
                                        std::move(args), context);
-  EventRouter::Get(context)
-      ->DispatchEventWithLazyListener(extension_id, std::move(event));
-  ExtensionPrefs::Get(context)
-      ->SetLastLaunchTime(extension_id, base::Time::Now());
+  EventRouter::Get(context)->DispatchEventWithLazyListener(extension_id,
+                                                           std::move(event));
+  ExtensionPrefs::Get(context)->SetLastLaunchTime(extension_id,
+                                                  base::Time::Now());
 }
 
 #define ASSERT_ENUM_EQUAL(Name, Name2)                                 \
@@ -113,8 +113,9 @@ app_runtime::LaunchSource GetLaunchSourceEnum(
   // it to SOURCE_CHROME_INTERNAL.
   if (source == extensions::AppLaunchSource::kSourceRunOnOsLogin ||
       source == extensions::AppLaunchSource::kSourceProtocolHandler ||
-      source == extensions::AppLaunchSource::kSourceReparenting)
+      source == extensions::AppLaunchSource::kSourceReparenting) {
     source = extensions::AppLaunchSource::kSourceChromeInternal;
+  }
 
   // The +3 accounts for kSourceRunOnOsLogin, kSourceProtocolHandler and
   // kSourceReparenting not having a corresponding entry in
@@ -143,8 +144,9 @@ void AppRuntimeEventRouter::DispatchOnLaunchedEvent(
     const Extension* extension,
     extensions::AppLaunchSource source,
     absl::optional<app_runtime::LaunchData> launch_data) {
-  if (!launch_data)
+  if (!launch_data) {
     launch_data.emplace();
+  }
   app_runtime::LaunchSource source_enum = GetLaunchSourceEnum(source);
   if (extensions::FeatureSwitch::trace_app_source()->IsEnabled()) {
     launch_data->source = source_enum;
@@ -161,8 +163,8 @@ void AppRuntimeEventRouter::DispatchOnRestartedEvent(
   auto event = std::make_unique<Event>(events::APP_RUNTIME_ON_RESTARTED,
                                        app_runtime::OnRestarted::kEventName,
                                        base::Value::List(), context);
-  EventRouter::Get(context)
-      ->DispatchEventToExtension(extension->id(), std::move(event));
+  EventRouter::Get(context)->DispatchEventToExtension(extension->id(),
+                                                      std::move(event));
 }
 
 // static
@@ -185,8 +187,9 @@ void AppRuntimeEventRouter::DispatchOnLaunchedEventWithFileEntries(
     launch_data.Set("source", app_runtime::ToString(source_enum));
   }
 
-  if (action_data)
+  if (action_data) {
     launch_data.Set("actionData", action_data->ToValue());
+  }
 
   base::Value::List items;
   DCHECK(file_entries.size() == entries.size());

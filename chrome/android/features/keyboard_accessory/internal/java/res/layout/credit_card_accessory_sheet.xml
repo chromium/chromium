@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<androidx.recyclerview.widget.RecyclerView
+<org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/credit_card_sheet"
     android:fillViewport="true"

@@ -89,6 +89,12 @@ MediaRoute& MediaRoute::operator=(MediaRoute&&) = default;
 
 MediaRoute::~MediaRoute() = default;
 
+bool MediaRoute::IsLocalMirroringRoute() const {
+  // TODO(b/272368609): Update this to include site-intiated mirroring sources.
+  return is_local_ && (media_source_.IsTabMirroringSource() ||
+                       media_source_.IsDesktopMirroringSource());
+}
+
 bool MediaRoute::operator==(const MediaRoute& other) const {
   return media_route_id_ == other.media_route_id_ &&
          presentation_id_ == other.presentation_id_ &&

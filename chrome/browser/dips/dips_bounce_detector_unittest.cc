@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/dips/dips_service.h"
+#include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -208,6 +209,10 @@ class DIPSBounceDetectorTest : public ::testing::Test {
     detector_.OnClientCookiesAccessed(delegate_.GetLastCommittedURL(), op);
   }
 
+  void LateAccessClientCookie(const std::string& url, CookieOperation op) {
+    detector_.OnClientCookiesAccessed(GURL(url), op);
+  }
+
   void ActivatePage() { detector_.OnUserActivation(); }
 
   void EndRedirectChain() {
@@ -288,6 +293,39 @@ TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Server) {
                                   /*stateful=*/false),
                   MakeBounceTuple("http://c.test", GetCurrentTime(),
                                   /*stateful=*/true),
+                  MakeBounceTuple("http://d.test", GetCurrentTime(),
+                                  /*stateful=*/true)));
+}
+
+TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Server_LateNotification) {
+  NavigateTo("http://a.test", kWithUserGesture);
+  StartNavigation("http://b.test", kWithUserGesture)
+      .AccessCookie(CookieOperation::kRead)
+      .RedirectTo("http://c.test")
+      .RedirectTo("http://d.test")
+      .RedirectTo("http://e.test")
+      .Finish(true);
+
+  LateAccessClientCookie("http://b.test", CookieOperation::kChange);
+  LateAccessClientCookie("http://c.test", CookieOperation::kRead);
+  LateAccessClientCookie("http://d.test", CookieOperation::kChange);
+  LateAccessClientCookie("http://e.test", CookieOperation::kRead);
+  LateAccessClientCookie("http://e.test", CookieOperation::kChange);
+
+  EndRedirectChain();
+
+  EXPECT_THAT(
+      redirects(),
+      testing::ElementsAre(("[1/3] a.test/ -> b.test/ (ReadWrite) -> e.test/"),
+                           ("[2/3] a.test/ -> c.test/ (Read) -> e.test/"),
+                           ("[3/3] a.test/ -> d.test/ (Write) -> e.test/")));
+
+  EXPECT_THAT(GetRecordedBounces(),
+              testing::UnorderedElementsAre(
+                  MakeBounceTuple("http://b.test", GetCurrentTime(),
+                                  /*stateful=*/true),
+                  MakeBounceTuple("http://c.test", GetCurrentTime(),
+                                  /*stateful=*/false),
                   MakeBounceTuple("http://d.test", GetCurrentTime(),
                                   /*stateful=*/true)));
 }
@@ -422,15 +460,15 @@ TEST_F(DIPSBounceDetectorTest, InteractionRecording_Throttled) {
   NavigateTo("http://a.test", kNoUserGesture);
   ActivatePage();
 
-  AdvanceDIPSTime(DIPSBounceDetector::kInteractionUpdateInterval / 2);
+  AdvanceDIPSTime(DIPSBounceDetector::kTimestampUpdateInterval / 2);
   ActivatePage();
 
-  AdvanceDIPSTime(DIPSBounceDetector::kInteractionUpdateInterval / 2);
+  AdvanceDIPSTime(DIPSBounceDetector::kTimestampUpdateInterval / 2);
   base::Time last_time = GetCurrentTime();
   ActivatePage();
 
   // Verify only the first and last interactions were recorded. The second
-  // interaction happened less than |kInteractionUpdateInterval| after the
+  // interaction happened less than |kTimestampUpdateInterval| after the
   // first, so it should be ignored.
   EXPECT_THAT(GetRecordedEvents(), testing::SizeIs(2));
   EXPECT_THAT(GetRecordedEvents(),
@@ -446,15 +484,15 @@ TEST_F(DIPSBounceDetectorTest, InteractionRecording_NotThrottled_AfterRefresh) {
   NavigateTo("http://a.test", kNoUserGesture);
   ActivatePage();
 
-  AdvanceDIPSTime(DIPSBounceDetector::kInteractionUpdateInterval / 4);
+  AdvanceDIPSTime(DIPSBounceDetector::kTimestampUpdateInterval / 4);
   NavigateTo("http://a.test", kWithUserGesture);
 
-  AdvanceDIPSTime(DIPSBounceDetector::kInteractionUpdateInterval / 4);
+  AdvanceDIPSTime(DIPSBounceDetector::kTimestampUpdateInterval / 4);
   base::Time last_time = GetCurrentTime();
   ActivatePage();
 
   // Verify the first and last interactions were both recorded. Despite the last
-  // interaction happening less than |kInteractionUpdateInterval| after the
+  // interaction happening less than |kTimestampUpdateInterval| after the
   // first, it happened after the page was refreshed, so it should be recorded.
   EXPECT_THAT(GetRecordedEvents(), testing::SizeIs(2));
   EXPECT_THAT(GetRecordedEvents(),
@@ -463,6 +501,65 @@ TEST_F(DIPSBounceDetectorTest, InteractionRecording_NotThrottled_AfterRefresh) {
                                  /*event=*/DIPSRecordedEvent::kInteraction),
                   MakeEventTuple("http://a.test", last_time,
                                  /*event=*/DIPSRecordedEvent::kInteraction)));
+}
+
+TEST_F(DIPSBounceDetectorTest, StorageRecording_Throttled) {
+  base::Time first_time = GetCurrentTime();
+
+  // Navigate to a.test, then simulate a late cookie access for a previous site,
+  // before a.test's cookie access.
+  NavigateTo("http://a.test", kNoUserGesture);
+  LateAccessClientCookie("http://b.test", CookieOperation::kChange);
+  AccessClientCookie(CookieOperation::kChange);
+
+  // Cause a second cookie access by a.test, less than
+  // |kTimestampUpdateInterval| after its first one.
+  AdvanceDIPSTime(DIPSBounceDetector::kTimestampUpdateInterval / 2);
+  AccessClientCookie(CookieOperation::kChange);
+
+  AdvanceDIPSTime(DIPSBounceDetector::kTimestampUpdateInterval / 2);
+  base::Time last_time = GetCurrentTime();
+  AccessClientCookie(CookieOperation::kChange);
+
+  // Verify only the first and last cookie accesses were recorded for a.test and
+  // that the cookie access for b.test was recorded. The cookie access for
+  // b.test happened immediately before a.test's first cookie access, but it
+  // is for a different site, so it shouldn't affect a.test's first cookie
+  // access. The second cookie access for a.test happened less than
+  // |kTimestampUpdateInterval| after its first, so it should be ignored.
+  EXPECT_THAT(GetRecordedEvents(), testing::SizeIs(3));
+  EXPECT_THAT(GetRecordedEvents(),
+              testing::UnorderedElementsAre(
+                  MakeEventTuple("http://b.test", first_time,
+                                 /*event=*/DIPSRecordedEvent::kStorage),
+                  MakeEventTuple("http://a.test", first_time,
+                                 /*event=*/DIPSRecordedEvent::kStorage),
+                  MakeEventTuple("http://a.test", last_time,
+                                 /*event=*/DIPSRecordedEvent::kStorage)));
+}
+
+TEST_F(DIPSBounceDetectorTest, StorageRecording_NotThrottled_AfterRefresh) {
+  base::Time first_time = GetCurrentTime();
+  NavigateTo("http://a.test", kNoUserGesture);
+  AccessClientCookie(CookieOperation::kChange);
+
+  AdvanceDIPSTime(DIPSBounceDetector::kTimestampUpdateInterval / 4);
+  NavigateTo("http://a.test", kWithUserGesture);
+
+  AdvanceDIPSTime(DIPSBounceDetector::kTimestampUpdateInterval / 4);
+  base::Time last_time = GetCurrentTime();
+  AccessClientCookie(CookieOperation::kChange);
+
+  // Verify both cookie accesses were  recorded. Despite the last cookie access
+  // happening less than |kTimestampUpdateInterval| after the first, it happened
+  // after the page was refreshed, so it should be recorded.
+  EXPECT_THAT(GetRecordedEvents(), testing::SizeIs(2));
+  EXPECT_THAT(GetRecordedEvents(),
+              testing::UnorderedElementsAre(
+                  MakeEventTuple("http://a.test", first_time,
+                                 /*event=*/DIPSRecordedEvent::kStorage),
+                  MakeEventTuple("http://a.test", last_time,
+                                 /*event=*/DIPSRecordedEvent::kStorage)));
 }
 
 const std::vector<std::string>& GetAllRedirectMetrics() {
@@ -582,13 +679,14 @@ void AppendChainPair(std::vector<ChainPair>& vec,
 
 std::vector<DIPSRedirectInfoPtr> MakeServerRedirects(
     size_t offset,
-    std::vector<std::string> urls) {
+    std::vector<std::string> urls,
+    CookieAccessType access_type = CookieAccessType::kReadWrite) {
   std::vector<DIPSRedirectInfoPtr> redirects;
   for (size_t i = 0; i < urls.size(); i++) {
     redirects.push_back(std::make_unique<DIPSRedirectInfo>(
         /*url=*/GURL(urls[i]),
         /*redirect_type=*/DIPSRedirectType::kServer,
-        /*access_type=*/CookieAccessType::kReadWrite,
+        /*access_type=*/access_type,
         /*index=*/offset + i,
         /*source_id=*/ukm::SourceId(),
         /*time=*/base::Time::Now()));
@@ -596,11 +694,14 @@ std::vector<DIPSRedirectInfoPtr> MakeServerRedirects(
   return redirects;
 }
 
-DIPSRedirectInfoPtr MakeClientRedirect(size_t offset, std::string url) {
+DIPSRedirectInfoPtr MakeClientRedirect(
+    size_t offset,
+    std::string url,
+    CookieAccessType access_type = CookieAccessType::kReadWrite) {
   return std::make_unique<DIPSRedirectInfo>(
       /*url=*/GURL(url),
       /*redirect_type=*/DIPSRedirectType::kClient,
-      /*access_type=*/CookieAccessType::kReadWrite,
+      /*access_type=*/access_type,
       /*index=*/offset,
       /*source_id=*/ukm::SourceId(),
       /*time=*/base::Time::Now(),
@@ -618,6 +719,12 @@ MATCHER_P(HasRedirectType, redirect_type, "") {
                    << DIPSRedirectTypeToString(arg->redirect_type);
   return ExplainMatchResult(Eq(redirect_type), arg->redirect_type,
                             result_listener);
+}
+
+MATCHER_P(HasCookieAccessType, access_type, "") {
+  *result_listener << "whose access_type is "
+                   << CookieAccessTypeToString(arg->access_type);
+  return ExplainMatchResult(Eq(access_type), arg->access_type, result_listener);
 }
 
 MATCHER_P(HasInitialUrl, url, "") {
@@ -846,4 +953,73 @@ TEST(DIPSRedirectContextTest, NoRedirects) {
               AllOf(HasInitialUrl("http://b.test/"),
                     HasFinalUrl("http://e.test/"), HasLength(0)));
   EXPECT_THAT(chains[2].second, IsEmpty());
+}
+
+TEST(DIPSRedirectContextTest, AddLateCookieAccess) {
+  std::vector<ChainPair> chains;
+  DIPSRedirectContext context(
+      base::BindRepeating(AppendChainPair, std::ref(chains)), GURL());
+
+  context.AppendCommitted(
+      GURL("http://a.test/"),
+      MakeServerRedirects(
+          0, {"http://b.test/", "http://c.test/", "http://d.test/"},
+          CookieAccessType::kNone));
+
+  EXPECT_TRUE(context.AddLateCookieAccess(GURL("http://b.test/"),
+                                          CookieOperation::kChange));
+  EXPECT_TRUE(context.AddLateCookieAccess(GURL("http://d.test/"),
+                                          CookieOperation::kRead));
+  EXPECT_TRUE(context.AddLateCookieAccess(GURL("http://d.test/"),
+                                          CookieOperation::kChange));
+  // Can't modify c.test record after d.test record already updated.
+  EXPECT_FALSE(context.AddLateCookieAccess(GURL("http://c.test/"),
+                                           CookieOperation::kRead));
+  // The failed attempt to add an access to c.test prevents additions to any
+  // other URL (since the c.test access is interpreted as a post-navigation
+  // cookie access).
+  EXPECT_FALSE(context.AddLateCookieAccess(GURL("http://d.test/"),
+                                           CookieOperation::kRead));
+
+  context.AppendCommitted(
+      MakeClientRedirect(3, "http://e.test/", CookieAccessType::kNone),
+      MakeServerRedirects(4, {"http://f.test/", "http://g.test/"},
+                          CookieAccessType::kRead));
+
+  // This late "write" will be merged with the "read" already recorded.
+  EXPECT_TRUE(context.AddLateCookieAccess(GURL("http://g.test/"),
+                                          CookieOperation::kChange));
+
+  context.AppendCommitted(
+      MakeClientRedirect(6, "http://h.test/", CookieAccessType::kNone),
+      MakeServerRedirects(7, {"http://i.test/"}, CookieAccessType::kRead));
+
+  // Can't modify h.test since i.test already has a known cookie access.
+  EXPECT_FALSE(context.AddLateCookieAccess(GURL("http://h.test/"),
+                                           CookieOperation::kRead));
+
+  context.EndChain(GURL("http://j.test/"));
+
+  ASSERT_EQ(chains.size(), 1u);
+  EXPECT_THAT(chains[0].first,
+              AllOf(HasInitialUrl("http://a.test/"),
+                    HasFinalUrl("http://j.test/"), HasLength(8)));
+  EXPECT_THAT(
+      chains[0].second,
+      ElementsAre(AllOf(HasUrl("http://b.test/"),
+                        HasCookieAccessType(CookieAccessType::kWrite)),
+                  AllOf(HasUrl("http://c.test/"),
+                        HasCookieAccessType(CookieAccessType::kNone)),
+                  AllOf(HasUrl("http://d.test/"),
+                        HasCookieAccessType(CookieAccessType::kReadWrite)),
+                  AllOf(HasUrl("http://e.test/"),
+                        HasCookieAccessType(CookieAccessType::kNone)),
+                  AllOf(HasUrl("http://f.test/"),
+                        HasCookieAccessType(CookieAccessType::kRead)),
+                  AllOf(HasUrl("http://g.test/"),
+                        HasCookieAccessType(CookieAccessType::kReadWrite)),
+                  AllOf(HasUrl("http://h.test/"),
+                        HasCookieAccessType(CookieAccessType::kNone)),
+                  AllOf(HasUrl("http://i.test/"),
+                        HasCookieAccessType(CookieAccessType::kRead))));
 }

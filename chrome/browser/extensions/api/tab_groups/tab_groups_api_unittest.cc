@@ -237,9 +237,8 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsQueryTitle) {
 
   const base::Value& group_info = groups_list[0];
   ASSERT_TRUE(group_info.is_dict());
-  EXPECT_EQ(
-      tab_groups_util::GetGroupId(group1),
-      group_info.FindKeyOfType("id", base::Value::Type::INTEGER)->GetInt());
+  EXPECT_EQ(tab_groups_util::GetGroupId(group1),
+            *group_info.GetDict().FindInt("id"));
 }
 
 // Test that querying groups by color returns the correct groups.
@@ -275,9 +274,8 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsQueryColor) {
 
   const base::Value& group_info = groups_list[0];
   ASSERT_EQ(base::Value::Type::DICT, group_info.type());
-  EXPECT_EQ(
-      tab_groups_util::GetGroupId(group3),
-      group_info.FindKeyOfType("id", base::Value::Type::INTEGER)->GetInt());
+  EXPECT_EQ(tab_groups_util::GetGroupId(group3),
+            *group_info.GetDict().FindInt("id"));
 }
 
 // Test that getting a group returns the correct metadata.

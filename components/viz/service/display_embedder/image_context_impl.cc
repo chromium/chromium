@@ -20,7 +20,6 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
-#include "ui/gl/gl_image.h"
 
 namespace {
 
@@ -59,11 +58,11 @@ ImageContextImpl::ImageContextImpl(
     bool maybe_concurrent_reads,
     const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
     sk_sp<SkColorSpace> color_space,
-    bool allow_keeping_read_access,
+    bool is_for_render_pass,
     bool raw_draw_if_possible)
     : ImageContext(mailbox_holder, size, format, ycbcr_info, color_space),
       maybe_concurrent_reads_(maybe_concurrent_reads),
-      allow_keeping_read_access_(allow_keeping_read_access),
+      is_for_render_pass_(is_for_render_pass),
       raw_draw_if_possible_(raw_draw_if_possible) {}
 
 ImageContextImpl::~ImageContextImpl() {
@@ -108,6 +107,12 @@ void ImageContextImpl::DeleteFallbackGrBackendTextures() {
 
 void ImageContextImpl::CreateFallbackImage(
     gpu::SharedContextState* context_state) {
+  // Render pass backings are managed by the renderer, so we expect them to be
+  // available if we try to reference one. If this trips, it likely indicates a
+  // bug in viz.
+  LOG_IF(DFATAL, is_for_render_pass_)
+      << "Expected to fulfill promise texture for render pass backing.";
+
   // We can't allocate a fallback texture as the original texture was externally
   // allocated. Skia will skip drawing a null SkPromiseImageTexture, do nothing
   // and leave it null.
@@ -336,8 +341,9 @@ void ImageContextImpl::EndAccessIfNecessary() {
   // Avoid unnecessary read access churn for representations that
   // support multiple readers.
   if (representation_->SupportsMultipleConcurrentReadAccess() &&
-      allow_keeping_read_access_)
+      !is_for_render_pass_) {
     return;
+  }
 
   representation_scoped_read_access_.reset();
   promise_image_textures_.clear();

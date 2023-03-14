@@ -39,7 +39,8 @@ ScriptPromise ImageBitmapSource::FulfillImageBitmap(
         WebFeature::kObsoleteCreateImageBitmapImageOrientationNone);
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
   resolver->Resolve(image_bitmap);
   return promise;

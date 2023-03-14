@@ -68,56 +68,83 @@ std::vector<uint64_t> HapticsTrackingTestInputController::GetKeyboardKeyBits(
   return std::vector<uint64_t>();
 }
 
-void HapticsTrackingTestInputController::SetTouchpadSensitivity(int value) {}
-
-void HapticsTrackingTestInputController::SetTouchpadScrollSensitivity(
-    int value) {}
-
-void HapticsTrackingTestInputController::SetTapToClick(bool enabled) {}
-
 void HapticsTrackingTestInputController::SetThreeFingerClick(bool enabled) {}
 
-void HapticsTrackingTestInputController::SetTapDragging(bool enabled) {}
+void HapticsTrackingTestInputController::SetTouchpadSensitivity(
+    absl::optional<int> device_id,
+    int value) {}
 
-void HapticsTrackingTestInputController::SetNaturalScroll(bool enabled) {}
-
-void HapticsTrackingTestInputController::SetTouchpadAcceleration(bool enabled) {
-}
-
-void HapticsTrackingTestInputController::SetTouchpadScrollAcceleration(
-    bool enabled) {}
+void HapticsTrackingTestInputController::SetTouchpadScrollSensitivity(
+    absl::optional<int> device_id,
+    int value) {}
 
 void HapticsTrackingTestInputController::SetTouchpadHapticFeedback(
+    absl::optional<int> device_id,
     bool enabled) {}
 
 void HapticsTrackingTestInputController::SetTouchpadHapticClickSensitivity(
+    absl::optional<int> device_id,
     int value) {}
 
-void HapticsTrackingTestInputController::SetMouseSensitivity(int value) {}
+void HapticsTrackingTestInputController::SetTapToClick(
+    absl::optional<int> device_id,
+    bool enabled) {}
 
-void HapticsTrackingTestInputController::SetMouseScrollSensitivity(int value) {}
+void HapticsTrackingTestInputController::SetTapDragging(
+    absl::optional<int> device_id,
+    bool enabled) {}
 
-void HapticsTrackingTestInputController::SetPrimaryButtonRight(bool right) {}
+void HapticsTrackingTestInputController::SetNaturalScroll(
+    absl::optional<int> device_id,
+    bool enabled) {}
 
-void HapticsTrackingTestInputController::SetMouseReverseScroll(bool enabled) {}
+void HapticsTrackingTestInputController::SetMouseSensitivity(
+    absl::optional<int> device_id,
+    int value) {}
 
-void HapticsTrackingTestInputController::SetMouseAcceleration(bool enabled) {}
+void HapticsTrackingTestInputController::SetMouseScrollSensitivity(
+    absl::optional<int> device_id,
+    int value) {}
+
+void HapticsTrackingTestInputController::SetMouseReverseScroll(
+    absl::optional<int> device_id,
+    bool enabled) {}
+
+void HapticsTrackingTestInputController::SetMouseAcceleration(
+    absl::optional<int> device_id,
+    bool enabled) {}
+
+void HapticsTrackingTestInputController::SetMouseScrollAcceleration(
+    absl::optional<int> device_id,
+    bool enabled) {}
+
+void HapticsTrackingTestInputController::SetPointingStickSensitivity(
+    absl::optional<int> device_id,
+    int value) {}
+
+void HapticsTrackingTestInputController::SetPointingStickAcceleration(
+    absl::optional<int> device_id,
+    bool enabled) {}
+
+void HapticsTrackingTestInputController::SetTouchpadAcceleration(
+    absl::optional<int> device_id,
+    bool enabled) {}
+
+void HapticsTrackingTestInputController::SetTouchpadScrollAcceleration(
+    absl::optional<int> device_id,
+    bool enabled) {}
+
+void HapticsTrackingTestInputController::SetPrimaryButtonRight(
+    absl::optional<int> device_id,
+    bool right) {}
+
+void HapticsTrackingTestInputController::SetPointingStickPrimaryButtonRight(
+    absl::optional<int> device_id,
+    bool right) {}
 
 void HapticsTrackingTestInputController::SuspendMouseAcceleration() {}
 
 void HapticsTrackingTestInputController::EndMouseAccelerationSuspension() {}
-
-void HapticsTrackingTestInputController::SetMouseScrollAcceleration(
-    bool enabled) {}
-
-void HapticsTrackingTestInputController::SetPointingStickSensitivity(
-    int value) {}
-
-void HapticsTrackingTestInputController::SetPointingStickPrimaryButtonRight(
-    bool right) {}
-
-void HapticsTrackingTestInputController::SetPointingStickAcceleration(
-    bool enabled) {}
 
 void HapticsTrackingTestInputController::SetGamepadKeyBitsMapping(
     base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) {}

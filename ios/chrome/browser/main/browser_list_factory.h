@@ -28,8 +28,6 @@ class BrowserListFactory : public BrowserStateKeyedServiceFactory {
 
  private:
   friend class base::NoDestructor<BrowserListFactory>;
-  // Allow tests to call BrowserStateShutdown().
-  FRIEND_TEST_ALL_PREFIXES(BrowserListImplTest, ShutdownOTRBrowserState);
 
   BrowserListFactory();
 
@@ -38,8 +36,6 @@ class BrowserListFactory : public BrowserStateKeyedServiceFactory {
       web::BrowserState* context) const override;
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
-
-  void BrowserStateShutdown(web::BrowserState* context) override;
 };
 
 #endif  // IOS_CHROME_BROWSER_MAIN_BROWSER_LIST_FACTORY_H_

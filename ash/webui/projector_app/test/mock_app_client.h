@@ -55,8 +55,8 @@ class MockAppClient : public ProjectorAppClient {
                      void(const std::string&,
                           const std::string&,
                           ProjectorAppClient::OnGetVideoCallback));
-  MOCK_METHOD1(SetAnnotatorMessageHandler, void(AnnotatorMessageHandler*));
-  MOCK_METHOD1(ResetAnnotatorMessageHandler, void(AnnotatorMessageHandler*));
+  MOCK_METHOD1(SetAnnotatorPageHandler, void(AnnotatorPageHandlerImpl*));
+  MOCK_METHOD1(ResetAnnotatorPageHandler, void(AnnotatorPageHandlerImpl*));
   MOCK_METHOD1(SetTool, void(const AnnotatorTool&));
   MOCK_METHOD0(Clear, void());
   MOCK_METHOD1(NotifyAppUIActive, void(bool active));

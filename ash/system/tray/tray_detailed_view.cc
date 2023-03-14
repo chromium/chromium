@@ -41,6 +41,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
@@ -62,6 +63,8 @@ constexpr int kQsItemBetweenSpacing = 8;
 
 constexpr int kQsScrollViewCornerRadius = 16;
 
+constexpr int kQsTriViewRightPadding = 16;
+
 // Inset the scroll bar to avoid the rounded corners at top and bottom.
 constexpr auto kQsScrollBarInsets =
     gfx::Insets::VH(kQsScrollViewCornerRadius, 0);
@@ -76,9 +79,11 @@ void ConfigureTitleTriView(TriView* tri_view, TriView::Container container) {
       const int left_padding = container == TriView::Container::START
                                    ? kUnifiedBackButtonLeftPadding
                                    : 0;
+      const int right_padding =
+          container == TriView::Container::END ? kQsTriViewRightPadding : 0;
       layout = std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
-          gfx::Insets::TLBR(0, left_padding, 0, 0),
+          gfx::Insets::TLBR(0, left_padding, 0, right_padding),
           features::IsQsRevampEnabled() ? kQsItemBetweenSpacing
                                         : kUnifiedTopShortcutSpacing);
       layout->set_main_axis_alignment(
@@ -485,6 +490,15 @@ HoverHighlightView* TrayDetailedView::AddScrollListItem(
                       AshColorProvider::ContentLayerType::kIconColorPrimary)),
         text);
   }
+
+  if (features::IsQsRevampEnabled()) {
+    views::FocusRing::Install(item);
+    views::InstallRoundRectHighlightPathGenerator(item, gfx::Insets(2),
+                                                  /*corner_radius=*/0);
+    // Unset the focus painter set by `ActionableView`.
+    item->SetFocusPainter(nullptr);
+  }
+
   return item;
 }
 
@@ -601,8 +615,6 @@ std::unique_ptr<TriView> TrayDetailedView::CreateTitleTriView(int string_id) {
                                    TrayPopupUtils::FontStyle::kTitle);
   tri_view->AddView(TriView::Container::CENTER, title_label_);
   tri_view->SetContainerVisible(TriView::Container::END, false);
-  tri_view->SetBorder(
-      views::CreateEmptyBorder(kUnifiedDetailedViewTitlePadding));
 
   return tri_view;
 }

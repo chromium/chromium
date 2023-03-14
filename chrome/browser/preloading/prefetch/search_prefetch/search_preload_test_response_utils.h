@@ -23,6 +23,11 @@ enum class SearchPreloadTestResponseDeferralType {
   // Defer dispatching response head until a explicit signal, and then block
   // the response until receiving the next signal.
   kDeferHeaderThenBody = 3,
+  // Send headers immediately, but defer dispatching the first part of response
+  // body and then the remaining part with the complete signal. Note: Callers
+  // should guarantee it has provided a valid response content whose size is
+  // greater than 1, so that server can split the body.
+  kDeferChunkedResponseBody = 4
 };
 
 // A test base that allows test fixtures to control when and what to respond.

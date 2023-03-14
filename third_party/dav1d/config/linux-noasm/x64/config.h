@@ -37,8 +37,8 @@
 
 // #define HAVE_PTHREAD_GETAFFINITY_NP 1 -- Controlled by Chomium
 
-#define HAVE_UNISTD_H 1
+// #define HAVE_PTHREAD_SETAFFINITY_NP 1 -- Controlled by Chomium
 
-// #define STACK_ALIGNMENT 32 -- Stack alignment is controlled by Chromium
+#define HAVE_UNISTD_H 1
 
 #define TRIM_DSP_FUNCTIONS 1

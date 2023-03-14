@@ -147,8 +147,8 @@ EnterprisePlatformKeysInternalGenerateKeyFunction::
 
 ExtensionFunction::ResponseAction
 EnterprisePlatformKeysInternalGenerateKeyFunction::Run() {
-  std::unique_ptr<api_epki::GenerateKey::Params> params(
-      api_epki::GenerateKey::Params::Create(args()));
+  absl::optional<api_epki::GenerateKey::Params> params =
+      api_epki::GenerateKey::Params::Create(args());
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // TODO(b/191958380): Lift the restriction when *.platformKeys.* APIs are
@@ -210,8 +210,8 @@ void EnterprisePlatformKeysInternalGenerateKeyFunction::OnGeneratedKey(
 
 ExtensionFunction::ResponseAction
 EnterprisePlatformKeysGetCertificatesFunction::Run() {
-  std::unique_ptr<api_epk::GetCertificates::Params> params(
-      api_epk::GetCertificates::Params::Create(args()));
+  absl::optional<api_epk::GetCertificates::Params> params =
+      api_epk::GetCertificates::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   std::string error = ValidateCrosapi(
@@ -256,8 +256,8 @@ void EnterprisePlatformKeysGetCertificatesFunction::OnGetCertificates(
 
 ExtensionFunction::ResponseAction
 EnterprisePlatformKeysImportCertificateFunction::Run() {
-  std::unique_ptr<api_epk::ImportCertificate::Params> params(
-      api_epk::ImportCertificate::Params::Create(args()));
+  absl::optional<api_epk::ImportCertificate::Params> params =
+      api_epk::ImportCertificate::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   std::string error = ValidateCrosapi(
@@ -291,8 +291,8 @@ void EnterprisePlatformKeysImportCertificateFunction::OnAddCertificate(
 
 ExtensionFunction::ResponseAction
 EnterprisePlatformKeysRemoveCertificateFunction::Run() {
-  std::unique_ptr<api_epk::RemoveCertificate::Params> params(
-      api_epk::RemoveCertificate::Params::Create(args()));
+  absl::optional<api_epk::RemoveCertificate::Params> params =
+      api_epk::RemoveCertificate::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   std::string error = ValidateCrosapi(
@@ -373,8 +373,8 @@ void EnterprisePlatformKeysInternalGetTokensFunction::OnGetKeyStores(
 
 ExtensionFunction::ResponseAction
 EnterprisePlatformKeysChallengeMachineKeyFunction::Run() {
-  std::unique_ptr<api_epk::ChallengeMachineKey::Params> params(
-      api_epk::ChallengeMachineKey::Params::Create(args()));
+  absl::optional<api_epk::ChallengeMachineKey::Params> params =
+      api_epk::ChallengeMachineKey::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const std::string error = ValidateCrosapi(
@@ -422,8 +422,8 @@ void EnterprisePlatformKeysChallengeMachineKeyFunction::
 
 ExtensionFunction::ResponseAction
 EnterprisePlatformKeysChallengeUserKeyFunction::Run() {
-  std::unique_ptr<api_epk::ChallengeUserKey::Params> params(
-      api_epk::ChallengeUserKey::Params::Create(args()));
+  absl::optional<api_epk::ChallengeUserKey::Params> params =
+      api_epk::ChallengeUserKey::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const std::string error = ValidateCrosapi(
@@ -472,8 +472,8 @@ const uint64_t kChallengeKeystoreAlgorithmParameterMinVersion = 17;
 
 ExtensionFunction::ResponseAction
 EnterprisePlatformKeysChallengeKeyFunction::Run() {
-  std::unique_ptr<api_epk::ChallengeKey::Params> params(
-      api_epk::ChallengeKey::Params::Create(args()));
+  absl::optional<api_epk::ChallengeKey::Params> params =
+      api_epk::ChallengeKey::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   std::string error = ValidateCrosapi(

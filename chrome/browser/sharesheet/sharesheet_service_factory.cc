@@ -6,14 +6,13 @@
 
 #include <memory>
 
+#include "base/command_line.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#include "content/public/common/content_switches.h"
 
 namespace sharesheet {
 
@@ -34,10 +33,8 @@ SharesheetServiceFactory::SharesheetServiceFactory()
           "SharesheetService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-              // We allow sharing in guest mode or incognito mode..
-              .WithGuest(ProfileSelection::kOwnInstance)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+              // Some tests need the service to exist in guest profiles.
+              .WithGuest(ProfileSelection::kOffTheRecordOnly)
               .WithSystem(ProfileSelection::kNone)
               .Build()) {
   DependsOn(apps::AppServiceProxyFactory::GetInstance());
@@ -48,11 +45,16 @@ SharesheetServiceFactory::~SharesheetServiceFactory() = default;
 KeyedService* SharesheetServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // When Ash is launched in guest mode, regular profiles are also guest
+  // sessions. Do not create the service in this case.
+  if (profile->IsRegularProfile() && profile->IsGuestSession()) {
+    return nullptr;
+  }
+
   if (ash::ProfileHelper::IsSigninProfile(profile)) {
     return nullptr;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return new SharesheetService(profile);
 }

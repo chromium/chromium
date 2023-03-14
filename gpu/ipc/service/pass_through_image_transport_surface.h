@@ -55,11 +55,6 @@ class PassThroughImageTransportSurface : public gl::GLSurfaceAdapter {
                           SwapCompletionCallback completion_callback,
                           PresentationCallback presentation_callback,
                           gfx::FrameData data) override;
-  gfx::SwapResult CommitOverlayPlanes(PresentationCallback callback,
-                                      gfx::FrameData data) override;
-  void CommitOverlayPlanesAsync(SwapCompletionCallback completion_callback,
-                                PresentationCallback presentation_callback,
-                                gfx::FrameData data) override;
   void SetVSyncEnabled(bool enabled) override;
 
  private:

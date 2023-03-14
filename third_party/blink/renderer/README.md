@@ -14,7 +14,7 @@ All code in `blink/renderer` is an implementation detail of Blink
 and should not be used outside of it. Use [Blink's public API](../public)
 in code outside of Blink.
 
-### `core/`
+### [`core/`](core/README.md)
 
 The `core/` directory implements the essence of the Web Platform defined by specs
 and IDL interfaces. Due to historical reasons, `core/` contains a lot of features with
@@ -35,7 +35,7 @@ that satisfy requirements above are added.
 
 For example, `modules/crypto` implements WebCrypto API.
 
-### `platform/`
+### [`platform/`](platform/README.md)
 
 The `platform/` directory is a collection of lower level features of Blink that are factored
 out of a monolithic `core/`. These features follow the same principles as `modules/`,

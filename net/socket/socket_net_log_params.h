@@ -5,11 +5,8 @@
 #ifndef NET_SOCKET_SOCKET_NET_LOG_PARAMS_H_
 #define NET_SOCKET_SOCKET_NET_LOG_PARAMS_H_
 
+#include "base/values.h"
 #include "net/log/net_log_event_type.h"
-
-namespace base {
-class Value;
-}
 
 namespace net {
 
@@ -24,14 +21,15 @@ void NetLogSocketError(const NetLogWithSource& net_log,
                        int os_error);
 
 // Creates a NetLog parameters for a HostPortPair.
-base::Value CreateNetLogHostPortPairParams(const HostPortPair* host_and_port);
+base::Value::Dict CreateNetLogHostPortPairParams(
+    const HostPortPair* host_and_port);
 
 // Creates a NetLog parameters for an IPEndPoint.
-base::Value CreateNetLogIPEndPointParams(const IPEndPoint* address);
+base::Value::Dict CreateNetLogIPEndPointParams(const IPEndPoint* address);
 
 // Creates a NetLog parameters for the local and remote IPEndPoints on connect
 // events.
-base::Value CreateNetLogAddressPairParams(
+base::Value::Dict CreateNetLogAddressPairParams(
     const net::IPEndPoint& local_address,
     const net::IPEndPoint& remote_address);
 

@@ -149,7 +149,8 @@ For more information on when to use `const char *` vs `const char[]`, see
   that it cannot be called (i.e. your testing infrastructure is being shipped to
   our users). For example if a method marked as @CalledByNative calls your
   ForTest method, the check may fail since R8 cannot remove anything reachable
-  from a @CalledByNative method.
+  from a @CalledByNative method. If this native method is only used in tests,
+  you can use @CalledByNativeForTesting instead.
 
 ### Uncompressed Pak Entry
 

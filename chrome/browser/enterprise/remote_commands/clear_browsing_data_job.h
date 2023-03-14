@@ -26,8 +26,7 @@ class ClearBrowsingDataJob : public policy::RemoteCommandJob,
   // RemoteCommandJob:
   enterprise_management::RemoteCommand_Type GetType() const override;
   bool ParseCommandPayload(const std::string& command_payload) override;
-  void RunImpl(CallbackWithResult succeeded_callback,
-               CallbackWithResult failed_callback) override;
+  void RunImpl(CallbackWithResult result_callback) override;
 
   // content::BrowsingDataRemover::Observer:
   void OnBrowsingDataRemoverDone(uint64_t failed_data_types) override;
@@ -36,9 +35,8 @@ class ClearBrowsingDataJob : public policy::RemoteCommandJob,
   bool clear_cache_;
   bool clear_cookies_;
 
-  // RunImpl callbacks which will be invoked by OnBrowsingDataRemoverDone.
-  CallbackWithResult succeeded_callback_;
-  CallbackWithResult failed_callback_;
+  // RunImpl callback which will be invoked by OnBrowsingDataRemoverDone.
+  CallbackWithResult result_callback_;
 
   // Non-owned pointer to the ProfileManager of the current browser process.
   raw_ptr<ProfileManager> profile_manager_;

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_HASHPREFIX_REALTIME_HASH_REALTIME_SERVICE_H_
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_HASHPREFIX_REALTIME_HASH_REALTIME_SERVICE_H_
 
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -13,7 +14,10 @@
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/utils/backoff_operator.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5_alpha1.pb.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/oblivious_http_request.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -35,18 +39,24 @@ using HPRTLookupRequestCallback =
 using HPRTLookupResponseCallback =
     base::OnceCallback<void(bool, absl::optional<SBThreatType>)>;
 
+class OhttpKeyService;
 class VerdictCacheManager;
 
 // This class implements the backoff logic, cache logic, and lookup request for
 // hash-prefix real-time lookups. For testing purposes, the request is currently
-// sent to the Safe Browsing server directly. In the future, it will be sent to
-// a proxy via OHTTP.
-// TODO(1407283): Update "For testing purposes..." portion of description.
+// sent to the Safe Browsing server directly. If the
+// SafeBrowsingHashRealTimeOverOhttp flag is enabled, the request will be sent
+// to a proxy via OHTTP
+// (https://www.ietf.org/archive/id/draft-thomson-http-oblivious-01.html) in
+// order to anonymize the source of the requests.
 class HashRealTimeService : public KeyedService {
  public:
-  explicit HashRealTimeService(
+  HashRealTimeService(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      base::RepeatingCallback<network::mojom::NetworkContext*()>
+          get_network_context,
       VerdictCacheManager* cache_manager,
+      OhttpKeyService* ohttp_key_service,
       base::RepeatingCallback<bool()> get_is_enhanced_protection_enabled);
 
   HashRealTimeService(const HashRealTimeService&) = delete;
@@ -59,11 +69,6 @@ class HashRealTimeService : public KeyedService {
   // TODO(crbug.com/1410253): Deprecate this (including the factory populating
   // it).
   bool IsEnhancedProtectionEnabled();
-
-  // Returns true if the lookups are currently in backoff mode due to too many
-  // prior errors. If this happens, the checking falls back to hash-based
-  // database method.
-  virtual bool IsInBackoffMode() const;
 
   // Start the lookup for |url|, and call |response_callback| on
   // |callback_task_runner| when response is received.
@@ -88,10 +93,18 @@ class HashRealTimeService : public KeyedService {
                            TestLookupFailure_IncorrectFullHashLength);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
                            TestLookupFailure_MissingCacheDuration);
+  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest, TestBackoffModeSet);
+  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
+                           TestBackoffModeSet_MissingOhttpKey);
+  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
+                           TestBackoffModeRespected_FullyCached);
+  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
+                           TestBackoffModeRespected_NotCached);
 
   constexpr static int kLeastSeverity = std::numeric_limits<int>::max();
   using PendingHPRTLookupRequests =
-      base::flat_map<network::SimpleURLLoader*, HPRTLookupResponseCallback>;
+      base::flat_set<std::unique_ptr<network::SimpleURLLoader>,
+                     base::UniquePtrComparator>;
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -121,8 +134,54 @@ class HashRealTimeService : public KeyedService {
 
   // Get a resource request with URL, load_flags, credentials mode, and method
   // set.
-  std::unique_ptr<network::ResourceRequest> GetResourceRequest(
+  std::unique_ptr<network::ResourceRequest> GetDirectFetchResourceRequest(
       std::unique_ptr<V5::SearchHashesRequest> request) const;
+
+  // Get the URL that will return a response containing full hashes.
+  std::string GetResourceUrl(
+      std::unique_ptr<V5::SearchHashesRequest> request) const;
+
+  // Callback for getting the OHTTP key. Most parameters are used by
+  // |OnURLLoaderComplete|, see the description above |OnURLLoaderComplete| for
+  // details. |key| is returned from |ohttp_key_service_|.
+  void OnGetOhttpKey(
+      std::unique_ptr<V5::SearchHashesRequest> request,
+      const GURL& url,
+      const std::vector<std::string>& hash_prefixes_in_request,
+      std::vector<V5::FullHash> result_full_hashes,
+      base::TimeTicks request_start_time,
+      scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
+      HPRTLookupResponseCallback response_callback,
+      absl::optional<std::string> key);
+
+  // Callback for requests sent via OHTTP. Most parameters are used by
+  // |OnURLLoaderComplete|, see the description above |OnURLLoaderComplete| for
+  // details. |response_body| and |net_error| are returned from the OHTTP
+  // client.
+  void OnOhttpComplete(
+      const GURL& url,
+      const std::vector<std::string>& hash_prefixes_in_request,
+      std::vector<V5::FullHash> result_full_hashes,
+      base::TimeTicks request_start_time,
+      scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
+      HPRTLookupResponseCallback response_callback,
+      const absl::optional<std::string>& response_body,
+      int net_error);
+
+  // Callback for requests sent directly to the Safe Browsing server. Most
+  // parameters are used by |OnURLLoaderComplete|, see the description above
+  // |OnURLLoaderComplete| for details. |url_loader| is the loader that was used
+  // to send the request. |response_body| is returned from the
+  // URL loader.
+  void OnDirectURLLoaderComplete(
+      const GURL& url,
+      const std::vector<std::string>& hash_prefixes_in_request,
+      std::vector<V5::FullHash> result_full_hashes,
+      network::SimpleURLLoader* url_loader,
+      base::TimeTicks request_start_time,
+      scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
+      HPRTLookupResponseCallback response_callback,
+      std::unique_ptr<std::string> response_body);
 
   // Called when the response from the Safe Browsing V5 remote endpoint is
   // received. This is responsible for parsing the response, determining if
@@ -136,20 +195,24 @@ class HashRealTimeService : public KeyedService {
   //    This method mutates this parameter to include the results from the
   //    server response as well, and then uses the combined results to determine
   //    the most severe threat type.
-  //  - |url_loader| is the loader that was used to send the request.
   //  - |request_start_time| represents when the request was sent, and is used
   //    for logging.
   //  - |response_callback_task_runner| is the callback the original caller
   //    passed through that will be called when the method completes.
+  //  - |response_callback| is the callback the original caller passed through.
   //  - |response_body| is the unparsed response from the server.
+  //  - |net_error| is the net error code from the server.
+  //  - |response_code| is the HTTP status code from the server.
   void OnURLLoaderComplete(
       const GURL& url,
       const std::vector<std::string>& hash_prefixes_in_request,
       std::vector<V5::FullHash> result_full_hashes,
-      network::SimpleURLLoader* url_loader,
       base::TimeTicks request_start_time,
       scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
-      std::unique_ptr<std::string> response_body);
+      HPRTLookupResponseCallback response_callback,
+      std::unique_ptr<std::string> response_body,
+      int net_error,
+      int response_code);
 
   // Determines the most severe threat type based on |result_full_hashes|, which
   // contains the merged caching and server response results. The |url| is
@@ -221,11 +284,24 @@ class HashRealTimeService : public KeyedService {
   // The URLLoaderFactory we use to issue network requests.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
+  // Fetches the NetworkContext that we use to send requests over OHTTP.
+  base::RepeatingCallback<network::mojom::NetworkContext*()>
+      get_network_context_;
+
   // Unowned object used for getting and storing cache entries.
   raw_ptr<VerdictCacheManager> cache_manager_;
 
-  // All requests that are sent but haven't received a response yet.
+  // Unowned object used for getting OHTTP key.
+  raw_ptr<OhttpKeyService> ohttp_key_service_;
+
+  // All requests that are sent directly to the server but haven't received a
+  // response yet.
   PendingHPRTLookupRequests pending_requests_;
+
+  // All pending receivers that are sent via OHTTP but haven't received a
+  // response yet.
+  mojo::UniqueReceiverSet<network::mojom::ObliviousHttpClient>
+      ohttp_client_receivers_;
 
   // Helper object that manages backoff state.
   std::unique_ptr<BackoffOperator> backoff_operator_;

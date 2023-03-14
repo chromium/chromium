@@ -25,7 +25,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           သင့်ပြုပြင်ချက်များကို "no proxy" သို့မဟုတ် "direct" ဟုသတ်မှတ်ပါ။</translation>
+<translation id="6549378540556750549">အခြား <ph name="BEGIN_LINK_OSS" />အခမဲ့ ရင်းမြစ်ဆော့ဖ်ဝဲ<ph name="END_LINK_OSS" /> ဖြင့်လည်း Chromium ကို ထုတ်လုပ်ထားသည်။</translation>
 <translation id="6613594504749178791">Chromium ကိုသင်နောက်တစ်ကြိမ် ပြန်လည်စတင်လျှင် သင့်ပြောင်းလဲမှုများ အကျိုးသက်ရောက်မှု ရှိမည်ဖြစ်သည်။</translation>
+<translation id="7681937895330411637"><ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> အခမဲ့ ရင်းမြစ်ပရောဂျက်ဖြင့် Chromium ကို ထုတ်လုပ်ထားသည်။</translation>
 <translation id="7861509383340276692">Chromium မီနူးဆီကို သွားပါ &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;

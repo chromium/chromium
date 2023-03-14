@@ -69,8 +69,9 @@ class DeviceNetworkConfigurationUpdaterAsh
   // NetworkConfigurationUpdater:
   void Init() override;
   void ImportClientCertificates() override;
-  void ApplyNetworkPolicy(base::Value::List network_configs_onc,
-                          base::Value::Dict global_network_config) override;
+  void ApplyNetworkPolicy(
+      const base::Value::List& network_configs_onc,
+      const base::Value::Dict& global_network_config) override;
   void OnDataRoamingSettingChanged();
 
   // Pointer to the global singleton or a test instance.

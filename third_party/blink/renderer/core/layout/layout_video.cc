@@ -57,6 +57,10 @@ void LayoutVideo::IntrinsicSizeChanged() {
 
 void LayoutVideo::UpdateIntrinsicSize(bool is_in_layout) {
   NOT_DESTROYED();
+  DCHECK(
+      RuntimeEnabledFeatures::UpdateVideoIntrinsicSizeDuringLayoutEnabled() ||
+      !is_in_layout);
+
   LayoutSize size = CalculateIntrinsicSize(StyleRef().EffectiveZoom());
 
   // Never set the element size to zero when in a media document.
@@ -163,6 +167,9 @@ LayoutVideo::DisplayMode LayoutVideo::GetDisplayMode() const {
 void LayoutVideo::PaintReplaced(const PaintInfo& paint_info,
                                 const PhysicalOffset& paint_offset) const {
   NOT_DESTROYED();
+  if (ChildPaintBlockedByDisplayLock()) {
+    return;
+  }
   VideoPainter(*this).PaintReplaced(paint_info, paint_offset);
 }
 
@@ -187,7 +194,10 @@ void LayoutVideo::UpdateFromElement() {
 
 void LayoutVideo::UpdatePlayer(bool is_in_layout) {
   NOT_DESTROYED();
-  UpdateIntrinsicSize(is_in_layout);
+  if (RuntimeEnabledFeatures::UpdateVideoIntrinsicSizeDuringLayoutEnabled() ||
+      !is_in_layout) {
+    UpdateIntrinsicSize(is_in_layout);
+  }
 
   WebMediaPlayer* media_player = MediaElement()->GetWebMediaPlayer();
   if (!media_player)

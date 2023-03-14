@@ -223,11 +223,8 @@ bool WebNode::Focused() const {
   return private_->IsFocused();
 }
 
-uint64_t WebNode::ScrollingElementIdForTesting() const {
-  return private_->GetLayoutBox()
-      ->GetScrollableArea()
-      ->GetScrollElementId()
-      .GetStableId();
+cc::ElementId WebNode::ScrollingElementIdForTesting() const {
+  return private_->GetLayoutBox()->GetScrollableArea()->GetScrollElementId();
 }
 
 WebPluginContainer* WebNode::PluginContainer() const {

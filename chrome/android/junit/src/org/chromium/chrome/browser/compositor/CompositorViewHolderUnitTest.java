@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.browser.compositor;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
@@ -47,21 +48,39 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Unit tests for {@link CompositorViewHolder}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class CompositorViewHolderUnitTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
-
     // Since these tests don't depend on the heights being pixels, we can use these as dpi directly.
     private static final int TOOLBAR_HEIGHT = 56;
+    private static final int KEYBOARD_HEIGHT = 741;
+
+    private static final long TOUCH_TIME = 0;
+    private static final MotionEvent MOTION_EVENT_DOWN =
+            MotionEvent.obtain(TOUCH_TIME, TOUCH_TIME, MotionEvent.ACTION_DOWN, 1, 1, 0);
+    private static final MotionEvent MOTION_EVENT_UP =
+            MotionEvent.obtain(TOUCH_TIME, TOUCH_TIME, MotionEvent.ACTION_UP, 1, 1, 0);
+
+    enum EventSource {
+        IN_MOTION,
+        TOUCH_EVENT_OBSERVER;
+    }
+
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock
     private Activity mActivity;
@@ -116,15 +135,37 @@ public class CompositorViewHolderUnitTest {
 
         mContext = new ContextThemeWrapper(
                 ApplicationProvider.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+
         mCompositorViewHolder = spy(new CompositorViewHolder(mContext));
         mCompositorViewHolder.setCompositorViewForTesting(mCompositorView);
         mCompositorViewHolder.setBrowserControlsManager(mBrowserControlsManager);
-        when(mCompositorViewHolder.getContentView()).thenReturn(mContentView);
-        when(mCompositorViewHolder.getWebContents()).thenReturn(mWebContents);
+        when(mCompositorViewHolder.getCurrentTab()).thenReturn(mTab);
         when(mTab.getWebContents()).thenReturn(mWebContents);
+        when(mTab.getContentView()).thenReturn(mContentView);
+        when(mTab.getView()).thenReturn(mContentView);
 
         IBinder windowToken = mock(IBinder.class);
         when(mContainerView.getWindowToken()).thenReturn(windowToken);
+        when(mContentView.getWindowToken()).thenReturn(windowToken);
+    }
+
+    private List<EventSource> observeTouchAndMotionEvents() {
+        List<EventSource> eventSequence = new ArrayList<>();
+        mCompositorViewHolder.getInMotionSupplier().addObserver(
+                (inMotion) -> eventSequence.add(EventSource.IN_MOTION));
+        // This touch observer is used as a proxy for when ViewGroup#dispatchTouchEvent is called,
+        // which is when the touch is propagated to children.
+        mCompositorViewHolder.addTouchEventObserver(new TouchEventObserver() {
+            @Override
+            public boolean shouldInterceptTouchEvent(MotionEvent e) {
+                return false;
+            }
+            @Override
+            public void handleTouchEvent(MotionEvent e) {
+                eventSequence.add(EventSource.TOUCH_EVENT_OBSERVER);
+            }
+        });
+        return eventSequence;
     }
 
     // controlsResizeView tests ---
@@ -289,130 +330,182 @@ public class CompositorViewHolderUnitTest {
     // Keyboard resize tests for geometrychange event fired to JS.
     @Test
     public void testWebContentResizeTriggeredDueToKeyboardShow() {
-        // Set the overlaycontent flag.
         mCompositorViewHolder.updateVirtualKeyboardMode(VirtualKeyboardMode.OVERLAYS_CONTENT);
-        // show the keyboard and set height of the webcontent.
-        // totalAdjustedHeight = keyboardHeight (741) + height passed to #setSize (200)
-        int totalAdjustedHeight = 941;
-        int totalAdjustedWidth = 1080;
-        // Set keyboard height and visibility.
+
+        // Viewport dimensions when keyboard is hidden.
+        int fullViewportHeight = 941;
+        int fullViewportWidth = 1080;
+
+        // adjustedHeight is the height of the CompositorViewHolder from Android View layout
+        // after showing the keyboard. This simulates a reduced layout height from the keyboard
+        // taking up the bottom space.
+        int adjustedHeight = fullViewportHeight - KEYBOARD_HEIGHT;
+
         when(mMockKeyboard.isKeyboardShowing(any(), any())).thenReturn(true);
-        when(mMockKeyboard.calculateKeyboardHeight(any())).thenReturn(741);
-        mCompositorViewHolder.setSize(mWebContents, mContainerView, 1080, 200);
-        verify(mWebContents, times(1)).setSize(totalAdjustedWidth, totalAdjustedHeight);
+        when(mMockKeyboard.calculateKeyboardHeight(any())).thenReturn(KEYBOARD_HEIGHT);
+        when(mCompositorViewHolder.getWidth()).thenReturn(fullViewportWidth);
+        when(mCompositorViewHolder.getHeight()).thenReturn(adjustedHeight);
+
+        mCompositorViewHolder.updateWebContentsSize(mTab);
+
+        // Expect fullViewportHeight since in OVERLAYS_CONTENT the keyboard doesn't cause a resize
+        // to the WebContents.
+        verify(mWebContents, times(1)).setSize(fullViewportWidth, fullViewportHeight);
         verify(mCompositorViewHolder, times(1))
-                .notifyVirtualKeyboardOverlayRect(mWebContents, 0, 0, totalAdjustedWidth, 741);
+                .notifyVirtualKeyboardOverlayRect(
+                        mWebContents, 0, 0, fullViewportWidth, KEYBOARD_HEIGHT);
+
+        reset(mWebContents);
 
         // Hide the keyboard.
         when(mMockKeyboard.isKeyboardShowing(any(), any())).thenReturn(false);
         when(mMockKeyboard.calculateKeyboardHeight(any())).thenReturn(0);
-        mCompositorViewHolder.setSize(mWebContents, mContainerView, 1080, 700);
-        verify(mWebContents, times(1)).setSize(1080, 700);
+        when(mCompositorViewHolder.getWidth()).thenReturn(fullViewportWidth);
+        when(mCompositorViewHolder.getHeight()).thenReturn(fullViewportHeight);
+
+        mCompositorViewHolder.updateWebContentsSize(mTab);
+        verify(mWebContents, times(1)).setSize(fullViewportWidth, fullViewportHeight);
         verify(mCompositorViewHolder, times(1))
                 .notifyVirtualKeyboardOverlayRect(mWebContents, 0, 0, 0, 0);
     }
 
     @Test
     public void testOverlayGeometryNotTriggeredDueToNoKeyboard() {
-        // Set the overlaycontent flag.
         mCompositorViewHolder.updateVirtualKeyboardMode(VirtualKeyboardMode.OVERLAYS_CONTENT);
-        // show the keyboard and set height of the webcontent.
-        // totalAdjustedHeight = height passed to #setSize (700)
-        int totalAdjustedHeight = 700;
-        int totalAdjustedWidth = 1080;
+
+        int viewportHeight = 941;
+        int viewportWidth = 1080;
+
+        // Simulate the keyboard being hidden
         when(mMockKeyboard.isKeyboardShowing(any(), any())).thenReturn(false);
         when(mMockKeyboard.calculateKeyboardHeight(any())).thenReturn(0);
-        mCompositorViewHolder.setSize(
-                mWebContents, mContainerView, totalAdjustedWidth, totalAdjustedHeight);
-        verify(mWebContents, times(1)).setSize(totalAdjustedWidth, totalAdjustedHeight);
+        when(mCompositorViewHolder.getWidth()).thenReturn(viewportWidth);
+        when(mCompositorViewHolder.getHeight()).thenReturn(viewportHeight);
+
+        // Ensure updating the WebContents size doesn't dispatch a keyboard geometry event to
+        // web content.
+        mCompositorViewHolder.updateWebContentsSize(mTab);
+        verify(mWebContents, times(1)).setSize(viewportWidth, viewportHeight);
         verify(mCompositorViewHolder, times(0))
                 .notifyVirtualKeyboardOverlayRect(mWebContents, 0, 0, 0, 0);
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.OSK_RESIZES_VISUAL_VIEWPORT)
-    public void testWebContentResizeWhenInOSKResizeVisualMode() {
-        // Ensure the default virtual keyboard mode is used.
+    public void testWebContentResizeWhenInOSKResizesVisualMode() {
         mCompositorViewHolder.updateVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_VISUAL);
-        // show the keyboard and set height of the webcontent.
-        // totalAdjustedHeight = height passed to #setSize (200).
-        // The reduced height is because of the keyboard taking up the bottom space.
-        int totalAdjustedHeight = 200;
-        int totalAdjustedWidth = 1080;
-        when(mMockKeyboard.isKeyboardShowing(any(), any())).thenReturn(true);
-        when(mMockKeyboard.calculateKeyboardHeight(any())).thenReturn(741);
-        mCompositorViewHolder.setSize(
-                mWebContents, mContainerView, totalAdjustedWidth, totalAdjustedHeight);
 
-        // In RESIZES_VISUAL mode, the virtual keyboard will not resize the web contents.
-        int expectedWebContentsHeight = 941;
-        verify(mWebContents, times(1)).setSize(totalAdjustedWidth, expectedWebContentsHeight);
+        // Viewport dimensions while keyboard is hidden.
+        int fullViewportHeight = 941;
+        int fullViewportWidth = 1080;
+
+        // adjustedHeight is height of the CompositorViewHolder from Android View layout. This
+        // simulates a reduced layout height from the keyboard taking up the bottom space.
+        int adjustedHeight = fullViewportHeight - KEYBOARD_HEIGHT;
+
+        when(mMockKeyboard.isKeyboardShowing(any(), any())).thenReturn(true);
+        when(mMockKeyboard.calculateKeyboardHeight(any())).thenReturn(KEYBOARD_HEIGHT);
+        when(mCompositorViewHolder.getWidth()).thenReturn(fullViewportWidth);
+        when(mCompositorViewHolder.getHeight()).thenReturn(adjustedHeight);
+
+        mCompositorViewHolder.updateWebContentsSize(mTab);
+
+        // In RESIZES_VISUAL mode, CompositorViewHolder ensures that size changes from the virtual
+        // keyboard don't affect the WebContents' size.
+        verify(mWebContents, times(1)).setSize(fullViewportWidth, fullViewportHeight);
         verify(mCompositorViewHolder, times(0))
                 .notifyVirtualKeyboardOverlayRect(mWebContents, 0, 0, 0, 0);
     }
 
     @Test
-    public void testWebContentResizeWhenInOSKResizeLayoutMode() {
-        // Ensure the default virtual keyboard mode is used.
+    public void testWebContentResizeWhenInOSKResizesContentMode() {
         mCompositorViewHolder.updateVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_CONTENT);
-        // show the keyboard and set height of the webcontent.
-        // totalAdjustedHeight = height passed to #setSize (200).
-        // The reduced height is because of the keyboard taking up the bottom space.
-        int totalAdjustedHeight = 200;
-        int totalAdjustedWidth = 1080;
-        when(mMockKeyboard.isKeyboardShowing(any(), any())).thenReturn(true);
-        when(mMockKeyboard.calculateKeyboardHeight(any())).thenReturn(741);
-        mCompositorViewHolder.setSize(
-                mWebContents, mContainerView, totalAdjustedWidth, totalAdjustedHeight);
+        // Viewport dimensions while keyboard is hidden.
+        int fullViewportHeight = 941;
+        int fullViewportWidth = 1080;
 
-        // In RESIZES_CONTENT mode, the web contents are resized to exclude the keyboard height.
-        int expectedWebContentsHeight = totalAdjustedHeight;
-        verify(mWebContents, times(1)).setSize(totalAdjustedWidth, expectedWebContentsHeight);
+        // adjustedHeight is height of the CompositorViewHolder from Android View layout. This
+        // simulates a reduced layout height from the keyboard taking up the bottom space.
+        int adjustedHeight = fullViewportHeight - KEYBOARD_HEIGHT;
+
+        when(mMockKeyboard.isKeyboardShowing(any(), any())).thenReturn(true);
+        when(mMockKeyboard.calculateKeyboardHeight(any())).thenReturn(KEYBOARD_HEIGHT);
+        when(mCompositorViewHolder.getWidth()).thenReturn(fullViewportWidth);
+        when(mCompositorViewHolder.getHeight()).thenReturn(adjustedHeight);
+
+        mCompositorViewHolder.updateWebContentsSize(mTab);
+
+        // In RESIZES_CONTENT mode, CompositorViewHolder resizes the WebContents by the keyboard
+        // height.
+        verify(mWebContents, times(1)).setSize(fullViewportWidth, adjustedHeight);
         verify(mCompositorViewHolder, times(0))
                 .notifyVirtualKeyboardOverlayRect(mWebContents, 0, 0, 0, 0);
     }
 
     @Test
     public void testOverlayGeometryWhenViewNotAttachedToWindow() {
-        // Set the overlaycontent flag.
         mCompositorViewHolder.updateVirtualKeyboardMode(VirtualKeyboardMode.OVERLAYS_CONTENT);
-        when(mContainerView.getWindowToken()).thenReturn(null);
-        // show the keyboard and set height of the webcontent.
-        // totalAdjustedHeight = height passed to #setSize (200)
-        // The reduced height is because of the keyboard taking up the bottom space.
-        int totalAdjustedHeight = 200;
-        int totalAdjustedWidth = 1080;
+        when(mContentView.getWindowToken()).thenReturn(null);
+        // Viewport dimensions while keyboard is hidden.
+        int fullViewportHeight = 941;
+        int fullViewportWidth = 1080;
+
+        // adjustedHeight is height of the CompositorViewHolder from Android View layout. This
+        // simulates a reduced layout height from the keyboard taking up the bottom space.
+        int adjustedHeight = fullViewportHeight - KEYBOARD_HEIGHT;
+
         when(mMockKeyboard.isKeyboardShowing(any(), any())).thenReturn(true);
-        when(mMockKeyboard.calculateKeyboardHeight(any())).thenReturn(741);
-        mCompositorViewHolder.setSize(
-                mWebContents, mContainerView, totalAdjustedWidth, totalAdjustedHeight);
+        when(mMockKeyboard.calculateKeyboardHeight(any())).thenReturn(KEYBOARD_HEIGHT);
+        when(mCompositorViewHolder.getWidth()).thenReturn(fullViewportWidth);
+        when(mCompositorViewHolder.getHeight()).thenReturn(adjustedHeight);
+
+        // Ensure updateWebContentsSize in OVERLAYS_CONTENT mode doesn't send keyboard geometry
+        // events to content if the view is detached.
+        mCompositorViewHolder.updateWebContentsSize(mTab);
         verify(mCompositorViewHolder, times(0))
                 .notifyVirtualKeyboardOverlayRect(mWebContents, 0, 0, 0, 0);
     }
 
     @Test
     public void testInMotionSupplier() {
-        long time = System.currentTimeMillis();
-        MotionEvent down = MotionEvent.obtain(time, time, MotionEvent.ACTION_DOWN, 1, 1, 0);
-        MotionEvent up = MotionEvent.obtain(time, time, MotionEvent.ACTION_UP, 1, 1, 0);
-
-        mCompositorViewHolder.dispatchTouchEvent(down);
-        mCompositorViewHolder.onInterceptTouchEvent(down);
+        mCompositorViewHolder.dispatchTouchEvent(MOTION_EVENT_DOWN);
+        mCompositorViewHolder.onInterceptTouchEvent(MOTION_EVENT_DOWN);
         Assert.assertTrue(mCompositorViewHolder.getInMotionSupplier().get());
 
-        mCompositorViewHolder.dispatchTouchEvent(up);
-        mCompositorViewHolder.onInterceptTouchEvent(up);
+        mCompositorViewHolder.dispatchTouchEvent(MOTION_EVENT_UP);
+        mCompositorViewHolder.onInterceptTouchEvent(MOTION_EVENT_UP);
         Assert.assertFalse(mCompositorViewHolder.getInMotionSupplier().get());
 
-        mCompositorViewHolder.dispatchTouchEvent(down);
-        mCompositorViewHolder.onInterceptTouchEvent(down);
+        mCompositorViewHolder.dispatchTouchEvent(MOTION_EVENT_DOWN);
+        mCompositorViewHolder.onInterceptTouchEvent(MOTION_EVENT_DOWN);
         Assert.assertTrue(mCompositorViewHolder.getInMotionSupplier().get());
 
         // Simulate a child handling a scroll, where they call requestDisallowInterceptTouchEvent
         // and then we no longer get onInterceptTouchEvent. The dispatchTouchEvent alone should
         // still cause our motion status to correctly update.
         mCompositorViewHolder.requestDisallowInterceptTouchEvent(true);
-        mCompositorViewHolder.dispatchTouchEvent(up);
+        mCompositorViewHolder.dispatchTouchEvent(MOTION_EVENT_UP);
         Assert.assertFalse(mCompositorViewHolder.getInMotionSupplier().get());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.DEFER_NOTIFY_IN_MOTION)
+    public void testInMotionOrdering_NoDefer() {
+        // With the 'defer in motion' experiment disabled, touch events are routed to android UI
+        // before being sent to native/web content.
+        List<EventSource> eventSequence = observeTouchAndMotionEvents();
+        mCompositorViewHolder.dispatchTouchEvent(MOTION_EVENT_DOWN);
+        assertEquals(Arrays.asList(EventSource.IN_MOTION, EventSource.TOUCH_EVENT_OBSERVER),
+                eventSequence);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DEFER_NOTIFY_IN_MOTION)
+    public void testInMotionOrdering_WithDefer() {
+        // With the 'defer in motion' experiment enabled, touch events are routed to android UI
+        // after being sent to native/web content.
+        List<EventSource> eventSequence = observeTouchAndMotionEvents();
+        mCompositorViewHolder.dispatchTouchEvent(MOTION_EVENT_DOWN);
+        assertEquals(Arrays.asList(EventSource.TOUCH_EVENT_OBSERVER, EventSource.IN_MOTION),
+                eventSequence);
     }
 }

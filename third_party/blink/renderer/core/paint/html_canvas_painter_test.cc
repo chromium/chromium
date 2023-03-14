@@ -75,14 +75,15 @@ TEST_F(HTMLCanvasPainterTest, Canvas2DLayerAppearsInLayerTree) {
   std::unique_ptr<Canvas2DLayerBridge> bridge = MakeCanvas2DLayerBridge(size);
   element->SetResourceProviderForTesting(nullptr, std::move(bridge), size);
   ASSERT_EQ(context, element->RenderingContext());
-  ASSERT_TRUE(context->IsComposited());
-  ASSERT_TRUE(element->IsAccelerated());
 
   // Force the page to paint.
   element->PreFinalizeFrame();
-  context->FinalizeFrame();
-  element->PostFinalizeFrame();
+  context->FinalizeFrame(CanvasResourceProvider::FlushReason::kTesting);
+  element->PostFinalizeFrame(CanvasResourceProvider::FlushReason::kTesting);
   UpdateAllLifecyclePhasesForTest();
+
+  ASSERT_TRUE(context->IsComposited());
+  ASSERT_TRUE(element->IsAccelerated());
 
   // Fetch the layer associated with the <canvas>, and check that it was
   // correctly configured in the layer tree.

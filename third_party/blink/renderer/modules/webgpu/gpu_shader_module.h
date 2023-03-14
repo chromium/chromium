@@ -28,7 +28,7 @@ class GPUShaderModule : public DawnObject<WGPUShaderModule> {
   GPUShaderModule(const GPUShaderModule&) = delete;
   GPUShaderModule& operator=(const GPUShaderModule&) = delete;
 
-  ScriptPromise compilationInfo(ScriptState* script_state);
+  ScriptPromise getCompilationInfo(ScriptState* script_state);
 
  private:
   void OnCompilationInfoCallback(ScriptPromiseResolver* resolver,

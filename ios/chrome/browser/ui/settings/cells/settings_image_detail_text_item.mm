@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_cell.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 

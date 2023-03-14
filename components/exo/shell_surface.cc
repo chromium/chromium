@@ -38,9 +38,10 @@
 namespace exo {
 namespace {
 
-// Maximum amount of time to wait for contents after a change to maximize,
-// fullscreen or pinned state.
-constexpr int kMaximizedOrFullscreenOrPinnedLockTimeoutMs = 100;
+// Default maximum amount of time to wait for contents to change. For example,
+// happens during a maximize, fullscreen or pinned state change, or raster scale
+// change.
+constexpr int kDefaultCompositorLockTimeoutMs = 100;
 
 gfx::Rect GetClientBoundsInScreen(views::Widget* widget) {
   gfx::Rect window_bounds = widget->GetWindowBoundsInScreen();
@@ -484,6 +485,39 @@ void ShellSurface::OnWindowAddedToRootWindow(aura::Window* window) {
   }
 }
 
+void ShellSurface::OnWindowPropertyChanged(aura::Window* window,
+                                           const void* key,
+                                           intptr_t old_value) {
+  ShellSurfaceBase::OnWindowPropertyChanged(window, key, old_value);
+
+  if (widget_ && window == widget_->GetNativeWindow()) {
+    if (key == aura::client::kRasterScale) {
+      float raster_scale = window->GetProperty(aura::client::kRasterScale);
+
+      if (raster_scale == pending_raster_scale_) {
+        return;
+      }
+
+      // We need to wait until raster scale changes are acked by the client. For
+      // example, upon entering overview mode, updating the raster scale of
+      // clients is meant to reduce buffer sizes and improve the smoothness of
+      // the overview enter animation. But, if we don't wait for these updated
+      // buffers, we will end up animating with unnecessarily large buffers,
+      // which negates the entire point of updating the raster scale. So, lock
+      // the compositor until we get an ack for updating the raster scale.
+      if (!configure_callback_.is_null()) {
+        ui::Compositor* compositor =
+            widget_->GetNativeWindow()->layer()->GetCompositor();
+        configure_compositor_lock_ = compositor->GetCompositorLock(
+            nullptr, base::Milliseconds(kDefaultCompositorLockTimeoutMs));
+      }
+      pending_raster_scale_ = raster_scale;
+
+      Configure();
+    }
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // ash::WindowStateObserver overrides:
 
@@ -512,8 +546,7 @@ void ShellSurface::OnPreWindowStateTypeChange(
       ui::Compositor* compositor =
           widget_->GetNativeWindow()->layer()->GetCompositor();
       configure_compositor_lock_ = compositor->GetCompositorLock(
-          nullptr,
-          base::Milliseconds(kMaximizedOrFullscreenOrPinnedLockTimeoutMs));
+          nullptr, base::Milliseconds(kDefaultCompositorLockTimeoutMs));
     } else {
       animations_disabler_ = std::make_unique<ash::ScopedAnimationDisabler>(
           widget_->GetNativeWindow());
@@ -538,6 +571,12 @@ void ShellSurface::OnPostWindowStateTypeChange(
   if (widget_) {
     UpdateWidgetBounds();
     UpdateShadow();
+  }
+
+  if (root_surface() && window_state->GetStateType() != old_type &&
+      (window_state->GetStateType() == chromeos::WindowStateType::kFullscreen ||
+       old_type == chromeos::WindowStateType::kFullscreen)) {
+    root_surface()->OnFullscreenStateChanged(window_state->IsFullscreen());
   }
 
   // Re-enable animations if they were disabled in pre state change handler.

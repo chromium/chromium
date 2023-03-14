@@ -845,6 +845,13 @@ void ClipboardNonBacked::WriteHTML(const char* markup_data,
   ClipboardDataBuilder::WriteHTML(markup_data, markup_len, url_data, url_len);
 }
 
+void ClipboardNonBacked::WriteUnsanitizedHTML(const char* markup_data,
+                                              size_t markup_len,
+                                              const char* url_data,
+                                              size_t url_len) {
+  ClipboardDataBuilder::WriteHTML(markup_data, markup_len, url_data, url_len);
+}
+
 void ClipboardNonBacked::WriteSvg(const char* markup_data, size_t markup_len) {
   ClipboardDataBuilder::WriteSvg(markup_data, markup_len);
 }

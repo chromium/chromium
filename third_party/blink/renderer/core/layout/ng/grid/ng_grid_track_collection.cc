@@ -761,32 +761,23 @@ LayoutUnit NGGridSizingTrackCollection::TotalTrackSize() const {
   return total_track_size - gutter_size_;
 }
 
-void NGGridSizingTrackCollection::CacheDefiniteSetsGeometry(
-    LayoutUnit grid_available_size) {
+void NGGridSizingTrackCollection::CacheDefiniteSetsGeometry() {
   DCHECK(sets_geometry_.empty() && last_indefinite_indices_.empty());
 
-  LayoutUnit current_set_offset;
+  LayoutUnit first_set_offset;
   last_indefinite_indices_.push_back(kNotFound);
-  sets_geometry_.emplace_back(current_set_offset, /* track_count */ 0);
+  sets_geometry_.emplace_back(first_set_offset, /* track_count */ 0);
 
   for (const auto& set : sets_) {
-    const auto& track_size = set.track_size;
-
-    if (track_size.IsDefinite()) {
-      DCHECK(!track_size.MinTrackBreadth().HasPercentage() ||
-             grid_available_size != kIndefiniteSize);
-
-      LayoutUnit fixed_breadth = MinimumValueForLength(
-          track_size.MinTrackBreadth().length(), grid_available_size);
-
-      current_set_offset += (fixed_breadth + gutter_size_) * set.track_count;
+    if (set.track_size.IsDefinite()) {
+      first_set_offset += set.base_size + gutter_size_ * set.track_count;
       last_indefinite_indices_.push_back(last_indefinite_indices_.back());
     } else {
       last_indefinite_indices_.push_back(last_indefinite_indices_.size() - 1);
     }
 
-    DCHECK_LE(sets_geometry_.back().offset, current_set_offset);
-    sets_geometry_.emplace_back(current_set_offset, set.track_count);
+    DCHECK_LE(sets_geometry_.back().offset, first_set_offset);
+    sets_geometry_.emplace_back(first_set_offset, set.track_count);
   }
 }
 
@@ -977,8 +968,9 @@ void NGGridSizingTrackCollection::BuildSets(
 }
 
 // https://drafts.csswg.org/css-grid-2/#algo-init
-void NGGridSizingTrackCollection::InitializeSets(
-    LayoutUnit grid_available_size) {
+void NGGridSizingTrackCollection::InitializeSets(LayoutUnit grid_available_size,
+                                                 LayoutUnit gutter_size) {
+  gutter_size_ = gutter_size;
   for (auto& set : sets_) {
     const auto& track_size = set.track_size;
 

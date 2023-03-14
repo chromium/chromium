@@ -140,7 +140,9 @@ class CORE_EXPORT SelectorChecker {
     bool has_selection_pseudo = false;
     bool treat_shadow_host_as_normal_scope = false;
     bool in_nested_complex_selector = false;
-    bool is_inside_visited_link = false;
+    // If true, elements that are links will match :visited. Otherwise,
+    // they will match :link.
+    bool match_visited = false;
     bool pseudo_has_in_rightmost_compound = true;
     bool is_inside_has_pseudo_class = false;
     // Set to true if :initial pseudo class should match.
@@ -301,7 +303,13 @@ class CORE_EXPORT SelectorChecker {
       const StyleScope&,
       const StyleScopeActivations& outer_activations,
       StyleScopeFrame*) const;
-  bool MatchesWithScope(Element&, const CSSSelectorList&, Element* scope) const;
+  bool MatchesWithScope(Element&,
+                        const CSSSelector& selector_list,
+                        const ContainerNode* scope) const;
+  // https://drafts.csswg.org/css-cascade-6/#scoping-limit
+  bool ElementIsScopingLimit(const StyleScope&,
+                             const StyleScopeActivation&,
+                             Element& element) const;
 
   CustomScrollbar* scrollbar_;
   PartNames* part_names_;
@@ -350,7 +358,7 @@ class CORE_EXPORT EasySelectorChecker {
   //
   // If IsEasy() is true, this selector can never return any match flags,
   // or match (dynamic) pseudos.
-  static ALWAYS_INLINE bool IsEasy(const CSSSelector* selector);
+  ALWAYS_INLINE static bool IsEasy(const CSSSelector* selector);
 
   // Returns whether the given selector matches the given element.
   // The following preconditions apply:
@@ -362,17 +370,21 @@ class CORE_EXPORT EasySelectorChecker {
   //
   // Unlike SelectorChecker, does not check style_scope; the caller
   // will need to do that if desired.
-  static ALWAYS_INLINE bool Match(const CSSSelector* selector,
+  ALWAYS_INLINE static bool Match(const CSSSelector* selector,
                                   const Element* element);
 
  private:
-  static ALWAYS_INLINE bool MatchOne(const CSSSelector* selector,
+  ALWAYS_INLINE static bool MatchOne(const CSSSelector* selector,
                                      const Element* element);
-  static ALWAYS_INLINE bool AttributeIsSet(const Element& element,
+  ALWAYS_INLINE static bool AttributeIsSet(const Element& element,
                                            const QualifiedName& attr);
-  static ALWAYS_INLINE bool AttributeMatches(const Element& element,
+  ALWAYS_INLINE static bool AttributeMatches(const Element& element,
                                              const QualifiedName& attr,
                                              const AtomicString& value);
+  ALWAYS_INLINE static bool AttributeItemHasName(
+      const Attribute& attribute_item,
+      const Element& element,
+      const QualifiedName& name);
 };
 
 }  // namespace blink

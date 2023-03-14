@@ -117,7 +117,7 @@ GizmoFrobulateFunction::~ GizmoFrobulateFunction() = default;
 
 ExtensionFunction::ResponseAction GizmoFrobulateFunction::Run() {
   // We can create a typed struct of the arguments from the generated code.
-  std::unique_ptr<api::gizmo::Frobulate::Params> params(
+  absl::optional<api::gizmo::Frobulate::Params> params(
       api::gizmo::Frobulate::Params::Create(args()));
 
   // EXTENSION_FUNCTION_VALIDATE() is used to assert things that should only
@@ -156,7 +156,7 @@ implement.
 
 ```
 ExtensionFunction::ResponseAction GizmoFrobulateFunction::Run() {
-  std::unique_ptr<api::gizmo::Frobulate::Params> params(
+  absl::optional<api::gizmo::Frobulate::Params> params(
       api::gizmo::Frobulate::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 

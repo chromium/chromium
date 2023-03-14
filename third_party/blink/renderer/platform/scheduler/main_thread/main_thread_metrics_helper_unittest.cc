@@ -46,10 +46,6 @@ class MainThreadMetricsHelperTest : public testing::Test {
   ~MainThreadMetricsHelperTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {} /* enabled_features */,
-        {features::
-             kPurgeRendererMemoryWhenBackgrounded} /* disabled_features */);
     histogram_tester_ = std::make_unique<base::HistogramTester>();
     auto settings = base::sequence_manager::SequenceManager::Settings::Builder()
                         .SetPrioritySettings(CreatePrioritySettings())
@@ -202,7 +198,6 @@ class MainThreadMetricsHelperTest : public testing::Test {
     return builder.Build();
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MainThreadSchedulerImpl> scheduler_;
   MainThreadMetricsHelper* metrics_helper_;  // NOT OWNED

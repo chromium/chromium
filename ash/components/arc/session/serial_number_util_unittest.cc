@@ -253,8 +253,7 @@ TEST_F(SerialNumberUtilTest, ReadSaltOnDisk) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath arc_salt_path = temp_dir.GetPath().Append("arc_salt");
-  ASSERT_EQ(kSaltLen, base::WriteFile(arc_salt_path, expected_salt_value.data(),
-                                      expected_salt_value.size()));
+  ASSERT_TRUE(base::WriteFile(arc_salt_path, expected_salt_value));
 
   // Verify the function can read the salt file even when the file contains
   // non-ASCII characters like '\0'.

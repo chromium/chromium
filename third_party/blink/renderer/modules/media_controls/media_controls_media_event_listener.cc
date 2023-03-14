@@ -71,8 +71,8 @@ void MediaControlsMediaEventListener::Attach() {
   // old APIs are handled.
   GetMediaElement().addEventListener(event_type_names::kWebkitfullscreenchange,
                                      this, /*use_capture=*/false);
-  media_controls_->GetDocument().addEventListener(
-      event_type_names::kFullscreenchange, this, false);
+  GetMediaElement().addEventListener(event_type_names::kFullscreenchange, this,
+                                     /*use_capture=*/false);
 
   // Picture-in-Picture events.
   if (media_controls_->GetDocument().GetSettings() &&

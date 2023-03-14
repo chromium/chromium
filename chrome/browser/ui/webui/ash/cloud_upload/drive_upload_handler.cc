@@ -39,13 +39,13 @@ void OnUploadDone(scoped_refptr<DriveUploadHandler> drive_upload_handler,
 
 std::string GetTargetAppName(base::FilePath file_path) {
   const std::string extension = file_path.FinalExtension();
-  if (extension == "doc" || extension == "docx") {
+  if (extension == ".doc" || extension == ".docx") {
     return "Google Docs";
   }
-  if (extension == "xls" || extension == "xlsx") {
+  if (extension == ".xls" || extension == ".xlsx") {
     return "Google Sheets";
   }
-  if (extension == "ppt" || extension == "pptx") {
+  if (extension == ".ppt" || extension == ".pptx") {
     return "Google Slides";
   }
   return "Google Docs";
@@ -75,8 +75,10 @@ DriveUploadHandler::DriveUploadHandler(Profile* profile,
           base::MakeRefCounted<CloudUploadNotificationManager>(
               profile,
               source_url.path().BaseName().value(),
-              "Drive",
-              GetTargetAppName(source_url.path()))),
+              "Google Drive",
+              GetTargetAppName(source_url.path()),
+              // TODO(b/242685536) Update when support for multi-files is added.
+              /*num_files=*/1)),
       source_url_(source_url) {
   observed_task_id_ = -1;
 }
@@ -128,8 +130,7 @@ void DriveUploadHandler::Run(UploadCallback callback) {
 
   // Destination url.
   base::FilePath destination_folder_path =
-      drive_integration_service_->GetMountPointPath().Append("root").Append(
-          kDestinationFolder);
+      drive_integration_service_->GetMountPointPath().Append("root");
   FileSystemURL destination_folder_url = FilePathToFileSystemURL(
       profile_, file_system_context_, destination_folder_path);
   // TODO (b/243095484) Define error behavior.
@@ -138,13 +139,14 @@ void DriveUploadHandler::Run(UploadCallback callback) {
     return;
   }
 
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CreateDirectoryOnIOThread, file_system_context_,
-                     destination_folder_url,
-                     google_apis::CreateRelayCallback(base::BindOnce(
-                         &DriveUploadHandler::OnDestinationDirectoryCreated,
-                         this, destination_folder_url))));
+  std::vector<FileSystemURL> source_urls{source_url_};
+  std::unique_ptr<file_manager::io_task::IOTask> task =
+      std::make_unique<file_manager::io_task::CopyOrMoveIOTask>(
+          file_manager::io_task::OperationType::kMove, std::move(source_urls),
+          std::move(destination_folder_url), profile_, file_system_context_,
+          /*show_notification=*/false);
+
+  observed_task_id_ = io_task_controller_->Add(std::move(task));
 }
 
 void DriveUploadHandler::UpdateProgressNotification() {
@@ -172,28 +174,6 @@ void DriveUploadHandler::OnEndUpload(GURL hosted_url,
   if (callback_) {
     std::move(callback_).Run(hosted_url);
   }
-}
-
-void DriveUploadHandler::OnDestinationDirectoryCreated(
-    FileSystemURL destination_folder_url,
-    base::File::Error error) {
-  if (error != base::File::FILE_OK) {
-    OnEndUpload(GURL(), "Unable to create destination folder");
-    return;
-  }
-  if (!destination_folder_url.is_valid()) {
-    OnEndUpload(GURL(), "Received destination URL is invalid");
-    return;
-  }
-
-  std::vector<FileSystemURL> source_urls{source_url_};
-  std::unique_ptr<file_manager::io_task::IOTask> task =
-      std::make_unique<file_manager::io_task::CopyOrMoveIOTask>(
-          file_manager::io_task::OperationType::kMove, std::move(source_urls),
-          std::move(destination_folder_url), profile_, file_system_context_,
-          /*show_notification=*/false);
-
-  observed_task_id_ = io_task_controller_->Add(std::move(task));
 }
 
 void DriveUploadHandler::OnIOTaskStatus(
@@ -236,6 +216,7 @@ void DriveUploadHandler::OnIOTaskStatus(
       return;
     case file_manager::io_task::State::kSuccess:
       move_progress_ = 100;
+      notification_manager_->SetDestinationPath(status.outputs[0].url.path());
       UpdateProgressNotification();
       DCHECK_EQ(status.outputs.size(), 1u);
       return;

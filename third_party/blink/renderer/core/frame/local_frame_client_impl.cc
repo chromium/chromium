@@ -526,7 +526,8 @@ void LocalFrameClientImpl::BeginNavigation(
     const LocalFrameToken* initiator_frame_token,
     std::unique_ptr<SourceLocation> source_location,
     mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
-        initiator_policy_container_keep_alive_handle) {
+        initiator_policy_container_keep_alive_handle,
+    bool is_container_initiated) {
   if (!web_frame_->Client())
     return;
 
@@ -576,6 +577,19 @@ void LocalFrameClientImpl::BeginNavigation(
   }
 
   navigation_info->impression = impression;
+
+  // Propagate `has_storage_access` to the next document under certain
+  // circumstances. This corresponds to the "snapshotting source snapshot
+  // params" change and some of the "create navigation params by fetching"
+  // changes in the Storage Access API spec:
+  // https://privacycg.github.io/storage-access/#navigation
+  navigation_info->has_storage_access =
+      origin_window && origin_window->HasStorageAccess() &&
+      navigation_info->initiator_frame_token.has_value() &&
+      navigation_info->initiator_frame_token.value() ==
+          web_frame_->GetLocalFrameToken() &&
+      web_frame_->GetSecurityOrigin().IsSameOriginWith(
+          WebSecurityOrigin::Create(navigation_info->url_request.Url()));
 
   // Can be null.
   LocalFrame* local_parent_frame = GetLocalParentFrame(web_frame_);
@@ -672,6 +686,7 @@ void LocalFrameClientImpl::BeginNavigation(
                                                     .GetSandboxFlags();
 
   navigation_info->href_translate = href_translate;
+  navigation_info->is_container_initiated = is_container_initiated;
 
   web_frame_->Client()->BeginNavigation(std::move(navigation_info));
 }

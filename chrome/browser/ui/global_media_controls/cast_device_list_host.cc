@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/global_media_controls/media_item_ui_metrics.h"
 #include "chrome/browser/ui/media_router/cast_dialog_model.h"
 #include "chrome/browser/ui/media_router/ui_media_sink.h"
@@ -43,13 +44,25 @@ IconType GetIcon(const media_router::UIMediaSink& sink) {
   }
 }
 
+bool SupportsTabAudioMirroring(media_router::CastModeSet cast_mode,
+                               media_router::SinkIconType icon_type) {
+  return base::FeatureList::IsEnabled(
+             media_router::kFallbackToAudioTabMirroring) &&
+         base::Contains(cast_mode, media_router::MediaCastMode::TAB_MIRROR) &&
+         (icon_type == media_router::SinkIconType::CAST_AUDIO ||
+          icon_type == media_router::SinkIconType::CAST_AUDIO_GROUP);
+}
+
 absl::optional<media_router::MediaCastMode> GetPreferredCastMode(
-    media_router::CastModeSet cast_mode) {
+    media_router::CastModeSet cast_mode,
+    media_router::SinkIconType icon_type) {
   if (base::Contains(cast_mode, media_router::MediaCastMode::PRESENTATION)) {
     return media_router::MediaCastMode::PRESENTATION;
   } else if (base::Contains(cast_mode,
                             media_router::MediaCastMode::REMOTE_PLAYBACK)) {
     return media_router::MediaCastMode::REMOTE_PLAYBACK;
+  } else if (SupportsTabAudioMirroring(cast_mode, icon_type)) {
+    return media_router::MediaCastMode::TAB_MIRROR;
   }
   return absl::nullopt;
 }
@@ -70,10 +83,12 @@ global_media_controls::mojom::DevicePtr CreateDevice(
 CastDeviceListHost::CastDeviceListHost(
     std::unique_ptr<media_router::CastDialogController> dialog_controller,
     mojo::PendingRemote<global_media_controls::mojom::DeviceListClient> client,
-    MediaRemotingCallback media_remoting_callback)
+    MediaRemotingCallback media_remoting_callback,
+    base::RepeatingClosure hide_dialog_callback)
     : cast_controller_(std::move(dialog_controller)),
       client_(std::move(client)),
-      media_remoting_callback_(std::move(media_remoting_callback)) {
+      media_remoting_callback_(std::move(media_remoting_callback)),
+      hide_dialog_callback_(std::move(hide_dialog_callback)) {
   cast_controller_->AddObserver(this);
   cast_controller_->RegisterDestructor(
       base::BindOnce(&CastDeviceListHost::DestroyCastController,
@@ -134,20 +149,28 @@ void CastDeviceListHost::OnModelUpdated(
   sinks_ = model.media_sinks();
   std::vector<global_media_controls::mojom::DevicePtr> devices;
   for (const auto& sink : sinks_) {
-    devices.push_back(CreateDevice(sink));
+    if (GetPreferredCastMode(sink.cast_modes, sink.icon_type)) {
+      devices.push_back(CreateDevice(sink));
+    }
   }
   client_->OnDevicesUpdated(std::move(devices));
 }
 
+void CastDeviceListHost::OnCastingStarted() {
+  hide_dialog_callback_.Run();
+}
+
 void CastDeviceListHost::StartCasting(const media_router::UIMediaSink& sink) {
-  auto cast_mode = GetPreferredCastMode(sink.cast_modes);
+  auto cast_mode = GetPreferredCastMode(sink.cast_modes, sink.icon_type);
   if (!cast_mode) {
-    NOTREACHED() << "Cast mode is not supported.";
+    // The UI calls this method asynchronously over Mojo, so by the time this
+    // gets called it's possible for the set of Cast modes to no longer be
+    // valid.
     return;
   }
   cast_controller_->StartCasting(sink.id, cast_mode.value());
   if (cast_mode.value() == media_router::MediaCastMode::REMOTE_PLAYBACK) {
-    media_remoting_callback_.Run(sink.id);
+    media_remoting_callback_.Run();
   }
   // TODO(crbug.com/1411139): Call RecordStartCastingMetrics() here.
 }

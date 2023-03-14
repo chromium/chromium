@@ -9,6 +9,6 @@
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   base::StringPiece data_piece(reinterpret_cast<const char*>(data), size);
   std::string url =
-      ui::ClipboardUtil::internal::ExtractURLFromURLFileContents(data_piece);
+      ui::clipboard_util::internal::ExtractURLFromURLFileContents(data_piece);
   return 0;
 }

@@ -8,11 +8,11 @@
 
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
-#include "content/browser/attribution_reporting/attribution_observer_types.h"
-#include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
+#include "content/browser/attribution_reporting/create_report_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/attribution_reporting/store_source_result.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -44,7 +44,7 @@ TEST(AttributionDebugReportTest, NoDebugReporting_NoReportReturned) {
   EXPECT_FALSE(AttributionDebugReport::Create(
       SourceBuilder().Build(),
       /*is_debug_cookie_set=*/false,
-      AttributionStorage::StoreSourceResult(
+      StoreSourceResult(
           StorableSource::Result::kInsufficientUniqueDestinationCapacity,
           /*min_fake_report_time=*/absl::nullopt,
           /*max_destinations_per_source_site_reporting_origin=*/3)));
@@ -63,7 +63,7 @@ TEST(AttributionDebugReportTest,
       AttributionDebugReport::Create(
           SourceBuilder().SetDebugReporting(true).Build(),
           /*is_debug_cookie_set=*/false,
-          AttributionStorage::StoreSourceResult(
+          StoreSourceResult(
               StorableSource::Result::kInsufficientUniqueDestinationCapacity,
               /*min_fake_report_time=*/absl::nullopt,
               /*max_destinations_per_source_site_reporting_origin=*/3));
@@ -94,7 +94,7 @@ TEST(AttributionDebugReportTest, WithinFencedFrame_NoDebugReport) {
           .SetIsWithinFencedFrame(true)
           .Build(),
       /*is_debug_cookie_set=*/false,
-      AttributionStorage::StoreSourceResult(
+      StoreSourceResult(
           StorableSource::Result::kInsufficientUniqueDestinationCapacity,
           /*min_fake_report_time=*/absl::nullopt,
           /*max_destinations_per_source_site_reporting_origin=*/3)));
@@ -124,7 +124,14 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
        /*max_sources_per_origin=*/absl::nullopt,
        /*debug_key=*/absl::nullopt,
        /*expected_report_body_without_cookie=*/nullptr,
-       /*expected_report_body_with_cookie=*/nullptr},
+       R"json([{
+         "body": {
+           "attribution_destination": "https://conversion.test",
+           "source_event_id": "123",
+           "source_site": "https://impression.test"
+         },
+         "type": "source-success"
+       }])json"},
       {StorableSource::Result::kInternalError,
        /*max_destinations_per_source_site_reporting_origin=*/absl::nullopt,
        /*max_sources_per_origin=*/absl::nullopt,
@@ -199,6 +206,21 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
          },
          "type": "source-noised"
        }])json"},
+      {StorableSource::Result::kExcessiveReportingOrigins,
+       /*max_destinations_per_source_site_reporting_origin=*/absl::nullopt,
+       /*max_sources_per_origin=*/absl::nullopt,
+       /*debug_key=*/789,
+       /*expected_report_body_without_cookie=*/nullptr,
+       /*expected_report_body_with_cookie=*/
+       R"json([{
+         "body": {
+           "attribution_destination": "https://conversion.test",
+           "source_debug_key": "789",
+           "source_event_id": "123",
+           "source_site": "https://impression.test"
+         },
+         "type": "source-success"
+       }])json"},
   };
 
   for (bool is_debug_cookie_set : {false, true}) {
@@ -210,7 +232,7 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
                   .SetDebugKey(test_case.debug_key)
                   .Build(),
               is_debug_cookie_set,
-              AttributionStorage::StoreSourceResult(
+              StoreSourceResult(
                   test_case.result,
                   /*min_fake_report_time=*/absl::nullopt,
                   test_case.max_destinations_per_source_site_reporting_origin,
@@ -240,7 +262,7 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
                 })
                 .Build(),
             /*is_debug_cookie_set=*/true,
-            AttributionStorage::StoreSourceResult(
+            StoreSourceResult(
                 StorableSource::Result::kSuccessNoised,
                 /*min_fake_report_time=*/absl::nullopt,
                 /*max_destinations_per_source_site_reporting_origin=*/

@@ -319,9 +319,9 @@ class ChromiumFuchsiaDriver(driver.Driver):
         # Use Scenic on AEMU
         else:
             cmd.extend([
-                '--ozone-platform=scenic', '--use-vulkan',
-                '--enable-gpu-rasterization', '--force-device-scale-factor=1',
-                '--enable-features=Vulkan', '--gpu-watchdog-timeout-seconds=60'
+                '--use-vulkan', '--enable-gpu-rasterization',
+                '--force-device-scale-factor=1', '--enable-features=Vulkan',
+                '--gpu-watchdog-timeout-seconds=60'
             ])
         return cmd
 

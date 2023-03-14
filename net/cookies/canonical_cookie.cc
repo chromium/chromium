@@ -540,6 +540,13 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   }
   *status = CookieInclusionStatus();
 
+  // Check the URL; it may be nonsense since some platform APIs may permit
+  // it to be specified directly.
+  if (!url.is_valid()) {
+    status->AddExclusionReason(CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+    return nullptr;
+  }
+
   ParsedCookie parsed_cookie(cookie_line, status);
 
   // We record this metric before checking validity because the presence of an

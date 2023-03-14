@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/constants/app_types.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/system/toast_manager.h"
@@ -125,7 +126,17 @@ void CrostiniUnsupportedActionNotifier::
 
 void CrostiniUnsupportedActionNotifier::
     ShowIMEUnsupportedNotificationIfNeeded() {
-  auto method = delegate_->GetCurrentInputMethod();
+  if (base::FeatureList::IsEnabled(ash::features::kCrostiniImeSupport)) {
+    // IME support is not yet available for all Crostini apps, but Chrome can
+    // not yet determine up front whether an app is supported or not.
+    return;
+  }
+  auto method_opt = delegate_->GetCurrentInputMethod();
+  if (!method_opt.has_value()) {
+    return;
+  }
+  auto method = *method_opt;
+
   if (IsIMESupportedByCrostini(method) ||
       !delegate_->IsFocusedWindowCrostini()) {
     return;
@@ -164,11 +175,15 @@ bool CrostiniUnsupportedActionNotifier::Delegate::IsFocusedWindowCrostini() {
           static_cast<int>(ash::AppType::CROSTINI_APP));
 }
 
-ash::input_method::InputMethodDescriptor
+absl::optional<ash::input_method::InputMethodDescriptor>
 CrostiniUnsupportedActionNotifier::Delegate::GetCurrentInputMethod() {
-  return ash::input_method::InputMethodManager::Get()
-      ->GetActiveIMEState()
-      ->GetCurrentInputMethod();
+  auto active_ime_state =
+      ash::input_method::InputMethodManager::Get()->GetActiveIMEState();
+  if (!active_ime_state) {
+    return absl::nullopt;
+  }
+
+  return active_ime_state->GetCurrentInputMethod();
 }
 
 bool CrostiniUnsupportedActionNotifier::Delegate::IsVirtualKeyboardVisible() {

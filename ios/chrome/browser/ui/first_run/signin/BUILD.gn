@@ -20,6 +20,7 @@ source_set("signin") {
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/policy:policy_util",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:system_identity",
     "//ios/chrome/browser/sync",
@@ -28,12 +29,11 @@ source_set("signin") {
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/ui/authentication/signin/user_signin/logging",
     "//ios/chrome/browser/ui/authentication/unified_consent/identity_chooser",
-    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/first_run:constants",
     "//ios/chrome/browser/ui/first_run:screen_delegate",
     "//ios/chrome/browser/ui/first_run:utils",
+    "//ios/chrome/browser/ui/first_run/tos",
     "//ios/chrome/browser/ui/first_run/uma",
-    "//ios/chrome/browser/ui/first_run/welcome",
   ]
 }
 
@@ -46,8 +46,8 @@ source_set("signin_ui") {
   ]
   deps = [
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/authentication/views",
-    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/elements:elements_internal",
     "//ios/chrome/browser/ui/first_run:constants",
     "//ios/chrome/browser/ui/first_run:field_trial",

@@ -6,8 +6,7 @@ class SomeClass {};
 
 class MyClass {
  public:
-  // No error expected because of exclude-paths file,
-  // raw_ptr_exclude_paths.exclude.
+  // No error expected because of raw-ptr-exclude-path arg.
   SomeClass* raw_ptr_field1;
   // No error expected because of exclude-paths file,
   // raw_ptr_exclude_paths.exclude.

@@ -20,10 +20,13 @@ ash::DeskTemplate* FindOtherEntryWithName(
       [name, uuid](const std::pair<base::GUID,
                                    std::unique_ptr<ash::DeskTemplate>>& entry) {
         // Name duplication is allowed if one of the templates is an admin
-        // template.
-        return (entry.second->uuid() != uuid &&
-                entry.second->template_name() == name &&
-                entry.second->source() != ash::DeskTemplateSource::kPolicy);
+        // template or if it's a floating workspace template.
+        return (
+            entry.second->uuid() != uuid &&
+            entry.second->template_name() == name &&
+            entry.second->source() != ash::DeskTemplateSource::kPolicy &&
+            (entry.second->type() == ash::DeskTemplateType::kTemplate ||
+             entry.second->type() == ash::DeskTemplateType::kSaveAndRecall));
       });
   if (iter == entries.end()) {
     return nullptr;

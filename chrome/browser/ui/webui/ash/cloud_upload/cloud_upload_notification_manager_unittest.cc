@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_notification_manager.h"
 
+#include "base/files/file_path.h"
+#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/stub_notification_display_service.h"
@@ -11,6 +13,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 
 namespace ash::cloud_upload {
 
@@ -50,34 +54,47 @@ class CloudUploadNotificationManagerTest : public testing::Test {
   bool HaveProgressNotification() {
     return notification().has_value() &&
            notification()->type() ==
-               message_center::NotificationType::NOTIFICATION_TYPE_PROGRESS;
+               message_center::NotificationType::NOTIFICATION_TYPE_PROGRESS &&
+           notification()->display_source() ==
+               l10n_util::GetStringUTF16(
+                   IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME_FILES);
   }
 
   bool HaveCompleteNotification() {
     return notification().has_value() &&
            notification()->type() ==
                message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE &&
-           notification()->title().starts_with(u"Move completed");
+           notification()->title().starts_with(u"Moved ") &&
+           notification()->display_source() ==
+               l10n_util::GetStringUTF16(
+                   IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME_FILES) &&
+           !notification()->buttons().empty() &&
+           (notification()->buttons().front().title == u"Show in folder");
   }
 
   bool HaveErrorNotification() {
     return notification().has_value() &&
            notification()->type() ==
                message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE &&
-           notification()->title().starts_with(u"Failed");
+           notification()->title().starts_with(u"Can't move file") &&
+           notification()->display_source() ==
+               l10n_util::GetStringUTF16(
+                   IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME_FILES);
   }
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfile> profile_;
   StubNotificationDisplayService* display_service_;
+  std::string file_name_ = "foo.docx";
+  base::FilePath file_path_ = base::FilePath("/some/path/foo.doc");
 };
 
 TEST_F(CloudUploadNotificationManagerTest,
        ShowUploadProgressCreatesNotification) {
   scoped_refptr<CloudUploadNotificationManager> manager =
       base::MakeRefCounted<CloudUploadNotificationManager>(
-          profile(), "foo.docx", "Google Drive", "Google Docs");
+          profile(), file_name_, "Google Drive", "Google Docs", 1);
 
   ASSERT_EQ(absl::nullopt, notification());
   manager->ShowUploadProgress(1);
@@ -89,10 +106,11 @@ TEST_F(CloudUploadNotificationManagerTest,
 TEST_F(CloudUploadNotificationManagerTest, MinimumTiming) {
   scoped_refptr<CloudUploadNotificationManager> manager =
       base::MakeRefCounted<CloudUploadNotificationManager>(
-          profile(), "foo.docx", "Google Drive", "Google Docs");
+          profile(), file_name_, "Google Drive", "Google Docs", 1);
 
   manager->ShowUploadProgress(1);
   manager->ShowUploadProgress(100);
+  manager->SetDestinationPath(file_path_);
   manager->MarkUploadComplete();
   ASSERT_TRUE(HaveProgressNotification());
 
@@ -116,8 +134,9 @@ TEST_F(CloudUploadNotificationManagerTest, MinimumTiming) {
 TEST_F(CloudUploadNotificationManagerTest, CompleteWithoutProgress) {
   scoped_refptr<CloudUploadNotificationManager> manager =
       base::MakeRefCounted<CloudUploadNotificationManager>(
-          profile(), "foo.docx", "Google Drive", "Google Docs");
+          profile(), file_name_, "Google Drive", "Google Docs", 1);
 
+  manager->SetDestinationPath(file_path_);
   manager->MarkUploadComplete();
   ASSERT_TRUE(HaveCompleteNotification());
 
@@ -130,10 +149,38 @@ TEST_F(CloudUploadNotificationManagerTest, CompleteWithoutProgress) {
   ASSERT_EQ(absl::nullopt, notification());
 }
 
+TEST_F(CloudUploadNotificationManagerTest, ShowInFolderClick) {
+  scoped_refptr<CloudUploadNotificationManager> manager =
+      base::MakeRefCounted<CloudUploadNotificationManager>(
+          profile(), file_name_, "Google Drive", "Google Docs", 1);
+
+  manager->SetDestinationPath(file_path_);
+  manager->MarkUploadComplete();
+  ASSERT_TRUE(HaveCompleteNotification());
+
+  base::RunLoop run_loop;
+  manager->SetHandleNotificationClickCallbackForTesting(
+      base::BindLambdaForTesting(
+          [&run_loop, this](base::FilePath destination_path) {
+            // Check |destination_path| is as expected.
+            EXPECT_EQ(destination_path, file_path_);
+            run_loop.Quit();
+          }));
+
+  // Click "Show in folder" button (0th button) which triggers
+  // |HandleNotificationClick|.
+  display_service_->SimulateClick(NotificationHandler::Type::TRANSIENT,
+                                  notification()->id(), /*action_index=*/0,
+                                  absl::nullopt);
+
+  // Run loop until |HandleNotificationClick| is called.
+  run_loop.Run();
+}
+
 TEST_F(CloudUploadNotificationManagerTest, ErrorStaysOpen) {
   scoped_refptr<CloudUploadNotificationManager> manager =
       base::MakeRefCounted<CloudUploadNotificationManager>(
-          profile(), "foo.docx", "Google Drive", "Google Docs");
+          profile(), file_name_, "Google Drive", "Google Docs", 1);
 
   manager->ShowUploadProgress(1);
   manager->ShowUploadProgress(100);
@@ -152,7 +199,7 @@ TEST_F(CloudUploadNotificationManagerTest, ManagerLifetime) {
   {
     scoped_refptr<CloudUploadNotificationManager> manager =
         base::MakeRefCounted<CloudUploadNotificationManager>(
-            profile(), "foo.docx", "Google Drive", "Google Docs");
+            profile(), file_name_, "Google Drive", "Google Docs", 1);
 
     manager->ShowUploadProgress(1);
     manager->ShowUploadError("error");

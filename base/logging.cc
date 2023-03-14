@@ -20,6 +20,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/immediate_crash.h"
 #include "base/pending_task.h"
+#include "base/process/process_handle.h"
 #include "base/strings/string_piece.h"
 #include "base/task/common/task_annotator.h"
 #include "base/trace_event/base_tracing.h"
@@ -72,7 +73,6 @@ typedef HANDLE FileHandle;
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
-#include "base/process/process_handle.h"
 #define MAX_PATH PATH_MAX
 typedef FILE* FileHandle;
 #endif
@@ -88,7 +88,6 @@ typedef FILE* FileHandle;
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/containers/stack.h"
-#include "base/debug/activity_tracker.h"
 #include "base/debug/alias.h"
 #include "base/debug/debugger.h"
 #include "base/debug/stack_trace.h"
@@ -933,12 +932,6 @@ LogMessage::~LogMessage() {
   }
 
   if (severity_ == LOGGING_FATAL) {
-    // Write the log message to the global activity tracker, if running.
-    base::debug::GlobalActivityTracker* tracker =
-        base::debug::GlobalActivityTracker::Get();
-    if (tracker)
-      tracker->RecordLogMessage(str_newline);
-
     char str_stack[1024];
     base::strlcpy(str_stack, str_newline.data(), std::size(str_stack));
     base::debug::Alias(&str_stack);

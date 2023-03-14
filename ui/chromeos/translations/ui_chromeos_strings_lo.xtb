@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">ຕໍ່ໄປ</translation>
 <translation id="1209796539517632982">ເຊີບເວີ​ຊື່​ອັດ​ຕະ​ໂນ​ມັດ</translation>
 <translation id="1210831758834677569">ພາສາລາວ</translation>
+<translation id="1221555006497674479">ບ່ອນຈັດເກັບຂໍ້ມູນຍັງເຫຼືອໜ້ອຍພຽງ <ph name="REMAINING_PERCENTAGE" />% ຂອງບ່ອນຈັດເກັບຂໍ້ມູນ Drive <ph name="TOTAL_SPACE" /> ຂອງທ່ານ.</translation>
 <translation id="1243314992276662751">ອັບ​ໂຫຼດ</translation>
 <translation id="1249250836236328755">ປະເພດ</translation>
 <translation id="1254593899333212300">ການເຊື່ອມຕໍ່ອິນເຕີເນັດໂດຍກົງ</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">ພາສາຈີນພິນອິນ</translation>
 <translation id="1646019627374511909">ກຳລັງເຮັດໃຫ້ <ph name="NUMBER_OF_ITEMS" /> ໄຟລ໌ເປັນໄຟລ໌ອອບລາຍ</translation>
 <translation id="164969095109328410">ອຸປະກອນ Chrome</translation>
+<translation id="1661207570040737402">ທ່ານໃຊ້ບ່ອນຈັດເກັບຂໍ້ມູນ Google Workspace ໃນໄດຣຟ໌ທີ່ແບ່ງປັນຂອງທ່ານໝົດແລ້ວ.</translation>
 <translation id="1661867754829461514">PIN ຂາດຫາຍໄປ</translation>
 <translation id="166439687370499867">ບໍ່ອະນຸຍາດໃຫ້ປ່ຽນການກຳນົດຄ່າເຄືອຂ່າຍທີ່ໃຊ້ຮ່ວມກັນ</translation>
 <translation id="1665611772925418501">ບໍ່​ສາ​ມາດ​ດັດແປງໄຟລ​໌​ນີ້ໄດ້​.</translation>
@@ -82,6 +84,7 @@
 <translation id="1722487484194605434">ກຳລັງຊິບ <ph name="NUMBER_OF_ITEMS" /> ລາຍການ...</translation>
 <translation id="1722687688096767818">ກຳລັງເພີ່ມໂປຣໄຟລ໌...</translation>
 <translation id="1726100011689679555">ຕັ້ງຊື່ເຊີບເວີ</translation>
+<translation id="1727562178154619254">ພ້ອມທີ່ຈະຊິ້ງແລ້ວ</translation>
 <translation id="1729953886957086472">ພາສາເຢຍລະມັນ (ເຢຍລະມັນ)</translation>
 <translation id="1730235522912993863">ພາສາຈີນ (Cangjie)</translation>
 <translation id="1731889557567069540">ສຳເນົາ <ph name="NUMBER_OF_ITEMS" /> ລາຍການແລ້ວ.</translation>
@@ -349,11 +352,11 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">ແປະໃສ່</translation>
 <translation id="3952872973865944257">ການອອກສຽງພາສາເຕລູກູ</translation>
-<translation id="3954354850384043518">ດໍາເນີນການຢູ່</translation>
 <translation id="3958548648197196644">Kiwi</translation>
 <translation id="3971140002794351170">ດາວໂຫຼດໂປຣໄຟລ໌ມືຖື, ເຄືອຂ່າຍ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">ພາສາອັງກິດ (ສະຫະລາດຊະອານາຈັກ)</translation>
 <translation id="3975895378829046965">ການອອກສຽງພາສາບັງກລາ</translation>
+<translation id="3999574733850440202">ໄຟລ໌ Microsoft ທີ່ເປີດຫຼ້າສຸດໄດ້ຖືກຍ້າຍໄປ OneDrive ແລ້ວ</translation>
 <translation id="4002066346123236978">ຫົວຂໍ້</translation>
 <translation id="4017788180641807848">ພາສາອັງກິດ (ສະຫະລັດ) ທີ່ໃຊ້ແປ້ນພິມ Workman</translation>
 <translation id="4019998208269143058">ປັກໝຸດໃສ່ໄຟລ໌ດ່ວນ</translation>
@@ -362,6 +365,7 @@
 <translation id="4092890906744441904">ພາສາໄອຣິຊ</translation>
 <translation id="4124935795427217608">ຢູນິຄອນ</translation>
 <translation id="4131235941541910880">ຍ້າຍລາຍການທີ່ທ່ານບໍ່ຕ້ອງການໄປໃສ່ຖັງຂີ້ເຫຍື້ອ</translation>
+<translation id="4134804435730168042"><ph name="NETWORK_INDEX" /> ເຄືອຂ່າຍຈາກ <ph name="NETWORK_COUNT" /> ເຄືອຂ່າຍ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ເປີດການນຳໃຊ້ຫຼັງຈາກຕັ້ງຄ່າອຸປະກອນ</translation>
 <translation id="4153015322587141338">ຄລິກຂວາໃສ່ໄຟລ໌, ແລ້ວເລືອກ "<ph name="PIN_COMMAND" />" ສຳລັບການເຂົ້າເຖິງດ່ວນຫາໄຟລ໌ຂອງທ່ານໃນຖ້ານ.</translation>
 <translation id="4157569377477607576">ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳ:</translation>
 <translation id="4159731583141908892">ຍ້າຍ <ph name="FILE_NAME" /> ແລ້ວ.</translation>
@@ -404,6 +408,7 @@
 <translation id="4414834425328380570">"<ph name="FILE_NAME" />" ຈະຖືກລຶບອອກ ແລະ ທ່ານຈະບໍ່ສາມາດກູ້ຄືນມັນໄດ້.</translation>
 <translation id="4418686080762064601">ສ້າງທາງລັດສຳລັບໄຟລ໌ຂອງທ່ານ</translation>
 <translation id="4425149324548788773">My Drive</translation>
+<translation id="4432921877815220091"><ph name="NETWORK_INDEX" /> ເຄືອຂ່າຍຈາກ <ph name="NETWORK_COUNT" /> ເຄືອຂ່າຍ, <ph name="NETWORK_NAME" />, ເປີດການນຳໃຊ້ຫຼັງຈາກຕັ້ງຄ່າອຸປະກອນ, ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="4439427728133035643">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ເຊື່ອມຕໍ່</translation>
 <translation id="4442424173763614572">ການຊອກເບິ່ງ DNS ບໍ່ສໍາເລັດ</translation>
 <translation id="4462159676511157176">ເຊີບເວີຊື່ກໍານົດເອງ</translation>
@@ -610,8 +615,10 @@
 <translation id="5911887972742538906">ເກີດຜິດພາດໃນລະຫວ່າງການຕິດຕັ້ງແອັບພລິເຄຊັນ Linux ຂອງທ່ານ.</translation>
 <translation id="5912396950572065471">ຮູບແບບ</translation>
 <translation id="5913638992615760742">ດຳເນີນການສຳເນົາບໍ່ສຳເລັດ, ເກີດຄວາມຜິດພາດທີ່ບໍ່ຄາດຄິດ: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">ມີຄຸນສົມບັດການຊອກຫາໃໝ່</translation>
 <translation id="5926082595146149752">ພາສາດັຈ (ເນເທີແລນ) ທີ່ໃຊ້ແປ້ນພິມຄອມພິວເຕີສະຫະລັດແບບສາກົນ</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063"><ph name="NETWORK_INDEX" /> ເຄືອຂ່າຍຈາກ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> ເຄືອຂ່າຍ, ເປີດການນຳໃຊ້ຫຼັງຈາກຕັ້ງຄ່າອຸປະກອນ</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ລາຍການ</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">ລຽງ​ລຳ​ດັບ​ທາງ​ເລືອກ</translation>
@@ -698,6 +705,7 @@
 <translation id="6732801395666424405">ໃບ​ຢັ້ງ​ຢືນບໍ່ຖືກໂຫຼດ​</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">ແບ່ງປັນໂຟນເດີກັບ Bruschetta</translation>
+<translation id="6750737795876287924">ໄດເຣັກທໍຣີປັດຈຸບັນ</translation>
 <translation id="6751256176799620176">ເລືອກ 1 ໂຟນເດີແລ້ວ</translation>
 <translation id="6755827872271341378">ອຸປະກອນ ChromeOS Flex</translation>
 <translation id="6790428901817661496">​ຫຼິ້ນ</translation>
@@ -735,7 +743,6 @@
 <translation id="6973630695168034713">ໂຟ​ລ​ເດີ</translation>
 <translation id="6976795442547527108">ສິງ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">ທຸກເວລາ</translation>
 <translation id="6989942356279143254">ພາສາສະວີດິດ</translation>
 <translation id="6990081529015358884">ທ່ານໝົດບ່ອນ​ວ່າງ​ແລ້ວ</translation>
 <translation id="6993826899923627728">ລາຍການເຫຼົ່ານີ້ແມ່ນຢູ່ໃນຖັງຂີ້ເຫຍື້ອຂອງທ່ານ</translation>
@@ -758,6 +765,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ຊອກຫາ Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">ການອອກສຽງພາສາຄັນນາດາ</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">ບໍ່ມີ 'ການຈັບຄູ່ຊື່ສຳຮອງຂອງຫົວຂໍ້' ຫຼື 'ການຈັບຄູ່ຄຳຕໍ່ທ້າຍໂດເມນ' ເພື່ອກວດສອບຕົວຕົນເຊີບເວີການພິສູດຢືນຢັນ</translation>
 <translation id="7165320105431587207">ປັບຕັ້ງເຄືອ​ຂ່າຍບໍ່ສໍາເລັດ</translation>
 <translation id="7170041865419449892">ຢູ່ນອກຂອບເຂດ</translation>
 <translation id="7180611975245234373">ຣີເຟຣຊ</translation>
@@ -790,7 +798,6 @@
 <translation id="7458955835361612701">ບໍ່ມີຮູບຫຼ້າສຸດ</translation>
 <translation id="7460898608667578234">ພາສາຢູ​ເຄຣນ</translation>
 <translation id="7469894403370665791">ເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍນີ້ອັດຕະໂນມັດ</translation>
-<translation id="7481358317100446445">ພ້ອມແລ້ວ</translation>
 <translation id="7486315294984620427">ເພື່ອວາງໄຟລ໌ໃນ Parallels Desktop, ໄຟລ໌ນັ້ນຈະຕ້ອງຖືກສຳເນົາໄປໃສ່ໄຟລ໌ Windows ກ່ອນ.</translation>
 <translation id="749452993132003881">ຮິຣະງະນະ</translation>
 <translation id="7495372004724182530">ການອອກສຽງພາສາມາລາຢາລຳ</translation>
@@ -828,6 +835,7 @@
 <translation id="7724603315864178912">ຕັດ</translation>
 <translation id="7732111077498238432">ຄວບຄຸມເຄືອຂ່າຍຕາມນະໂຍບາຍ</translation>
 <translation id="7736003208887389532">ລຶບໄຟລ໌ເຫຼົ່ານີ້ອອກຢ່າງຖາວອນບໍ?</translation>
+<translation id="7740287852186792672">ຜົນ​ການ​ຊອກ​ຫາ</translation>
 <translation id="7748626145866214022">ມີຕົວເລືອກເພີ່ມເຕີມຢູ່ໃນແຖບດຳເນີນການ. ກະລຸນາກົດ Alt + A ເພື່ອເນັ້ນໜັກໃສ່ແຖບດຳເນີນການ.</translation>
 <translation id="7760449188139285140">ພາສາຈີນ (Wubi)</translation>
 <translation id="7765158879357617694">ຍ້າຍ</translation>
@@ -879,6 +887,7 @@
 <translation id="8116072619078571545">ນໍ້າກ້ອນ</translation>
 <translation id="8128733386027980860">ພາສາອັງກິດ (ສະຫະລາດຊະອານາຈັກ) ທີ່ໃຊ້ແປ້ນພິມ Dvorak</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" ໄດ້ຖືກແຊຣ໌ກັບທ່ານ. ທ່ານບໍ່ສາມາດລຶບມັນໄດ້ ເພາະວ່າທ່ານບໍ່ເປັນເຈົ້າຂອງມັນ.</translation>
+<translation id="8138705869659070104">ເປີດໃຊ້ຫຼັງຈາກຕິດຕັ້ງອຸປະກອນ</translation>
 <translation id="813913629614996137">ກຳລັງລິເລີ່ມ...</translation>
 <translation id="8147028810663464959">ຄວາມກວ້າງຕົວອັກສອນເຕັມແລ້ວ</translation>
 <translation id="8151638057146502721">ປັບ​ຕັ້ງ​ຄ່າ</translation>
@@ -904,6 +913,7 @@
 <translation id="8300849813060516376">OTASP ລົ້ມເຫຼວ</translation>
 <translation id="8312871300878166382">ແປະໃສ່ໃນໂຟລເດີ</translation>
 <translation id="8329978297633540474">ຂໍ້ຄວາມທໍາມະດາ</translation>
+<translation id="8332007959299458842">ໄຟລ໌ Microsoft ທີ່ເປີດຫຼ້າສຸດໄດ້ຖືກຍ້າຍໄປ Google Drive ແລ້ວ</translation>
 <translation id="8335587457941836791">ຖອນປັກໝຸດຈາກຖ້ານ</translation>
 <translation id="8335837413233998004">ພາສາເບລາຣຸສຊຽນ</translation>
 <translation id="8336153091935557858">ມື້​ວານ​ນີ້ <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -930,6 +940,7 @@
 <translation id="8487700953926739672">ມີອອຟລາຍນ໌ຢູ່</translation>
 <translation id="8492972329130824181">ເຄືອຂ່າຍເຮືອນບໍ່ພ້ອມນຳໃຊ້. ຕ້ອງເປີດການນຳໃຊ້ການໂຣມມິງອິນເຕີເນັດມືຖືເພື່ອເຊື່ອມຕໍ່.</translation>
 <translation id="8499098729323186194">ກຳລັງແຕກ <ph name="NUMBER_OF_ITEMS" /> ລາຍການ...</translation>
+<translation id="8502913769543567768"><ph name="NETWORK_INDEX" /> ເຄືອຂ່າຍຈາກ <ph name="NETWORK_COUNT" /> ເຄືອຂ່າຍ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ເປີດການນຳໃຊ້ຫຼັງຈາກຕັ້ງຄ່າອຸປະກອນ, ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="8521441079177373948">ສະຫະ​ລາຊະ​ອານາຈັກ</translation>
 <translation id="853494022971700746">ພາສາຝຣັ່ງ (ຝຣັ່ງ)</translation>
 <translation id="8540608333167683902">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ລາຍລະອຽດ</translation>
@@ -991,6 +1002,7 @@
 <translation id="9046895021617826162">ເຊື່ອມຕໍ່ບໍ່ສໍາເລັດ</translation>
 <translation id="9065512565307033593">ຖ້າທ່ານຢັ້ງຢືນບໍ່ສຳເລັດ, ລະບົບຈະປິດການນຳໃຊ້ສິດເຂົ້າເຖິງເຄືອຂ່າຍຂອງທ່ານ.</translation>
 <translation id="908378762078012445">ພາສາຣັດເຊຍທີ່ໃຊ້ແປ້ນພິມ AATSEEL ຕາມການອອກສຽງ</translation>
+<translation id="9086302186042011942">ກໍາລັງຊິງຄ໌</translation>
 <translation id="9099674669267916096">ຈຳນວນໜ້າ</translation>
 <translation id="9100610230175265781">ຕ້ອງມີລະຫັດຜ່ານ</translation>
 <translation id="9110990317705400362">ພວກເຮົາກໍາລັງຊອກຫາວິທີເຮັດໃຫ້ການທ່ອງເວັບຂອງທ່ານມີຄວາມປອດໄພກ່ວາ​ເກົ່າຢ່າງຕໍ່ເນື່ອງ. ກ່ອນນັ້ນ, ເວັບໄຊທ໌ໃດໜຶ່ງສາມາດເຕືອນໃຫ້ທ່ານເພີມສ່ວນຂະຫຍາຍເຂົ້າໃສ່ບຣາວເຊີຂອງທ່ານ. ຢູ່ໃນ Google Chrome ລຸ້ນຫຼ້າສຸດ, ທ່ານບອກ Chrome ຢ່າງຈະແຈ້ງວ່າ ທ່ານຕ້ອງການຕິດຕັ້ງສ່ວນຂະຫຍາຍນີ້ໂດຍການເພີ່ມພວກມັນຜ່ານໜ້າສ່ວນຂະຫຍາຍ. <ph name="BEGIN_LINK" />ຮຽນຮູ້ເພີ່ມເຕີມ<ph name="END_LINK" /></translation>

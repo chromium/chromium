@@ -43,6 +43,9 @@ class ChromeTableViewControllerTest : public BlockCleanupTest {
   // Returns the number of items in `section`.
   int NumberOfItemsInSection(int section);
 
+  // Indicates whether the collection view has an item at `item` in `section`.
+  bool HasTableViewItem(int section, int item);
+
   // Returns the collection view item at `item` in `section`.
   id GetTableViewItem(int section, int item);
 

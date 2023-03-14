@@ -116,8 +116,7 @@ bool WritePickleFile(BackendFileOperations* file_operations,
   if (!file.IsValid())
     return false;
 
-  int bytes_written =
-      file.Write(0, static_cast<const char*>(pickle->data()), pickle->size());
+  int bytes_written = file.Write(0, pickle->data_as_char(), pickle->size());
   if (bytes_written != base::checked_cast<int>(pickle->size())) {
     file_operations->DeleteFile(
         file_name,

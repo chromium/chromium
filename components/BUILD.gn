@@ -151,6 +151,7 @@ test("components_unittests") {
     "//components/history/core/browser:unit_tests",
     "//components/history/metrics:unit_tests",
     "//components/image_fetcher/core:unit_tests",
+    "//components/image_service:unit_tests",
     "//components/keyed_service/core:unit_tests",
     "//components/language/core/browser:unit_tests",
     "//components/language/core/common:unit_tests",
@@ -338,13 +339,13 @@ test("components_unittests") {
       "//components/cast_streaming:unit_tests",
       "//components/certificate_transparency:unit_tests",
       "//components/content_capture/browser:unit_tests",
+      "//components/content_relationship_verification:unit_tests",
       "//components/content_settings/browser:unit_tests",
       "//components/contextual_search/core/browser:unit_tests",
       "//components/continuous_search/browser:unit_tests",
       "//components/continuous_search/common:unit_tests",
       "//components/custom_handlers:unit_tests",
       "//components/devtools/simple_devtools_protocol_client:unit_tests",
-      "//components/digital_asset_links:unit_tests",
       "//components/discardable_memory/client:unit_tests",
       "//components/discardable_memory/common:unit_tests",
       "//components/discardable_memory/service:unit_tests",
@@ -601,7 +602,7 @@ test("components_unittests") {
 
   if (is_win) {
     deps += [
-      "//components/browser_watcher:unit_tests",
+      "//components/stability_report:unit_tests",
       "//components/winhttp:unit_tests",
     ]
   }

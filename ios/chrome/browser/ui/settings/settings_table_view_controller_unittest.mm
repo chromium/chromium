@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller.h"
 
+#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -20,6 +22,11 @@
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
@@ -27,10 +34,7 @@
 #import "ios/chrome/browser/signin/fake_system_identity_manager.h"
 #import "ios/chrome/browser/sync/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/ui/commands/application_commands.h"
-#import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
-#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
+#import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
@@ -246,6 +250,12 @@ TEST_F(SettingsTableViewControllerTest, SyncPasswordError) {
               l10n_util::GetNSString(IDS_IOS_SYNC_ENCRYPTION_DESCRIPTION));
   ASSERT_EQ(UILayoutConstraintAxisVertical, sync_item.textLayoutConstraintAxis);
 
+  // Verify that the account item does not hold the error when done through the
+  // sync item.
+  TableViewAccountItem* identityAccountItem =
+      base::mac::ObjCCast<TableViewAccountItem>(account_items[0]);
+  EXPECT_FALSE(identityAccountItem.shouldDisplayError);
+
   // Check that there is no sign-in promo when there is a sync error.
   ASSERT_FALSE([controller().tableViewModel
       hasSectionForSectionIdentifier:SettingsSectionIdentifier::
@@ -364,4 +374,136 @@ TEST_F(SettingsTableViewControllerTest, SigninDisabledByPolicy) {
               l10n_util::GetNSString(IDS_IOS_SIGN_IN_TO_CHROME_SETTING_TITLE));
   ASSERT_NSEQ(signin_item.statusText,
               l10n_util::GetNSString(IDS_IOS_SETTING_OFF));
+}
+
+// Verifies that when eligible the account item model holds the Account Storage
+// error.
+TEST_F(SettingsTableViewControllerTest, HoldAccountStorageErrorWhenEligible) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kIndicateAccountStorageErrorInAccountCell);
+
+  // Set account error.
+  ON_CALL(*sync_service_mock_, GetUserActionableError())
+      .WillByDefault(
+          Return(syncer::SyncService::UserActionableError::kNeedsPassphrase));
+
+  auth_service_->SignIn(fake_identity_);
+
+  CreateController();
+  CheckController();
+
+  NSArray* account_items = [controller().tableViewModel
+      itemsInSectionWithIdentifier:SettingsSectionIdentifier::
+                                       SettingsSectionIdentifierAccount];
+  ASSERT_EQ(3U, account_items.count);
+
+  // Verify that the account item is in an error state.
+  TableViewAccountItem* identityAccountItem =
+      base::mac::ObjCCast<TableViewAccountItem>(account_items[0]);
+  EXPECT_TRUE(identityAccountItem.shouldDisplayError);
+}
+
+// Verifies that the error is removed from the model when the Account Storage
+// error is resolved. Triggers the model update by firing a Sync State change.
+TEST_F(SettingsTableViewControllerTest, ClearAccountStorageErrorWhenResolved) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kIndicateAccountStorageErrorInAccountCell);
+
+  // Set account error to resolve.
+  ON_CALL(*sync_service_mock_, GetUserActionableError())
+      .WillByDefault(
+          Return(syncer::SyncService::UserActionableError::kNeedsPassphrase));
+
+  auth_service_->SignIn(fake_identity_);
+
+  CreateController();
+  CheckController();
+
+  NSArray* account_items = [controller().tableViewModel
+      itemsInSectionWithIdentifier:SettingsSectionIdentifier::
+                                       SettingsSectionIdentifierAccount];
+  ASSERT_EQ(3U, account_items.count);
+
+  // Verify that the account item is in an error state.
+  TableViewAccountItem* identityAccountItem =
+      base::mac::ObjCCast<TableViewAccountItem>(account_items[0]);
+  ASSERT_TRUE(identityAccountItem.shouldDisplayError);
+
+  // Resolve the account error.
+  ON_CALL(*sync_service_mock_, GetUserActionableError())
+      .WillByDefault(Return(syncer::SyncService::UserActionableError::kNone));
+
+  // Verify that the account item is not in an error state when the error was
+  // resolved and the data model reloaded.
+  [controller() loadModel];
+  account_items = [controller().tableViewModel
+      itemsInSectionWithIdentifier:SettingsSectionIdentifier::
+                                       SettingsSectionIdentifierAccount];
+  ASSERT_EQ(3U, account_items.count);
+  identityAccountItem =
+      base::mac::ObjCCast<TableViewAccountItem>(account_items[0]);
+  ASSERT_TRUE(identityAccountItem != nil);
+  EXPECT_FALSE(identityAccountItem.shouldDisplayError);
+}
+
+// Verifies that when ineligible the account item model doesn't hold the Account
+// Storage error.
+TEST_F(SettingsTableViewControllerTest, DontHoldAccountErrorWhenIneligible) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kIndicateAccountStorageErrorInAccountCell);
+
+  // Enable Sync to make the account item ineligible to indicate errors.
+  SetupSyncServiceEnabledExpectations();
+
+  // Set account error that would be in the model when eligible.
+  ON_CALL(*sync_service_mock_, GetUserActionableError())
+      .WillByDefault(
+          Return(syncer::SyncService::UserActionableError::kNeedsPassphrase));
+
+  auth_service_->SignIn(fake_identity_);
+
+  CreateController();
+  CheckController();
+
+  NSArray* account_items = [controller().tableViewModel
+      itemsInSectionWithIdentifier:SettingsSectionIdentifier::
+                                       SettingsSectionIdentifierAccount];
+  ASSERT_EQ(3U, account_items.count);
+
+  // Verify that the account item is not in an error state.
+  TableViewAccountItem* identityAccountItem =
+      base::mac::ObjCCast<TableViewAccountItem>(account_items[0]);
+  ASSERT_TRUE(identityAccountItem != nil);
+  EXPECT_FALSE(identityAccountItem.shouldDisplayError);
+}
+
+// Verifies that when eligible the account item model doesn't have the Account
+// Storage error when there is no error.
+TEST_F(SettingsTableViewControllerTest, DontHoldAccountErrorWhenNoError) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kIndicateAccountStorageErrorInAccountCell);
+
+  // Set no account error state.
+  ON_CALL(*sync_service_mock_, GetUserActionableError())
+      .WillByDefault(Return(syncer::SyncService::UserActionableError::kNone));
+
+  auth_service_->SignIn(fake_identity_);
+
+  CreateController();
+  CheckController();
+
+  NSArray* account_items = [controller().tableViewModel
+      itemsInSectionWithIdentifier:SettingsSectionIdentifier::
+                                       SettingsSectionIdentifierAccount];
+  ASSERT_EQ(3U, account_items.count);
+
+  // Verify that the account item is not in an error state.
+  TableViewAccountItem* identityAccountItem =
+      base::mac::ObjCCast<TableViewAccountItem>(account_items[0]);
+  ASSERT_TRUE(identityAccountItem != nil);
+  EXPECT_FALSE(identityAccountItem.shouldDisplayError);
 }

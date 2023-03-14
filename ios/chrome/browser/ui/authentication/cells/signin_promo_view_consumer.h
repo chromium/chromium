@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ui/commands/show_signin_command.h"
+#import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 
 @class SigninPromoViewConfigurator;
 @class SigninPromoViewMediator;

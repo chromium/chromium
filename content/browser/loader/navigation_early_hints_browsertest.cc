@@ -149,9 +149,8 @@ class PreconnectListener
 class NavigationEarlyHintsTest : public ContentBrowserTest {
  public:
   NavigationEarlyHintsTest() {
-    feature_list_.InitWithFeatures(
-        {net::features::kSplitCacheByNetworkIsolationKey},
-        {net::features::kForceIsolationInfoFrameOriginToTopLevelFrame});
+    feature_list_.InitAndEnableFeature(
+        net::features::kSplitCacheByNetworkIsolationKey);
   }
   ~NavigationEarlyHintsTest() override = default;
 

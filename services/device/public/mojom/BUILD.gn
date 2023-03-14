@@ -29,7 +29,6 @@ mojom("mojom") {
     "screen_orientation.mojom",
     "screen_orientation_lock_types.mojom",
     "serial.mojom",
-    "smart_card.mojom",
     "time_zone_monitor.mojom",
     "vibration_manager.mojom",
     "wake_lock.mojom",
@@ -51,6 +50,10 @@ mojom("mojom") {
       "mtp_manager.mojom",
       "mtp_storage_info.mojom",
     ]
+  }
+
+  if (is_chromeos) {
+    sources += [ "smart_card.mojom" ]
   }
 
   cpp_typemaps = [
@@ -88,6 +91,10 @@ mojom("device_service") {
   # interface directly anyway, so don't generate bindings for it.
   disable_variants = true
   cpp_only = true
+
+  # The interfaces defined here are privileged, and not vended to a renderer, so
+  # they are not fuzzable by javascript-based fuzzers.
+  enable_js_fuzzing = false
 
   enabled_features = []
   if ((is_linux || is_chromeos) && use_udev) {
@@ -205,8 +212,4 @@ mojom("usb_test") {
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
   webui_module_path = "/"
   use_typescript_sources = true
-
-  # Generate legacy JS bindings in addition to WebUI bindings for fuzzers,
-  # since fuzzers still use the 3 legacy bindings types.
-  generate_legacy_js_bindings = enable_mojom_fuzzer
 }

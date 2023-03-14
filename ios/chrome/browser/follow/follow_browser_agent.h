@@ -40,6 +40,9 @@ class FollowBrowserAgent final : public BrowserUserData<FollowBrowserAgent> {
   // Returns a list of all followed websites.
   NSArray<FollowedWebSite*>* GetFollowedWebSites();
 
+  // Loads all followed websites.
+  void LoadFollowedWebSites();
+
   // Follows the website associated with `web_page_urls` and presents
   // the UI (snackback, ...) when the operation completes. Nothing
   // is presented if the web channel is already followed.

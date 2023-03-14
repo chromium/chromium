@@ -31,6 +31,9 @@ class MetricsScheduler {
   // Stops scheduling uploads.
   void Stop();
 
+  // Returns the initial delay before the task is run for the first time.
+  static int GetInitialIntervalSeconds();
+
  protected:
   // Subclasses should provide task_callback with a wrapper to call this with.
   // This indicates the triggered task was completed/cancelled and the next

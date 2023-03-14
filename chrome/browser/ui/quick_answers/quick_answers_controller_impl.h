@@ -49,6 +49,8 @@ class QuickAnswersControllerImpl : public QuickAnswersController,
 
   QuickAnswersVisibility GetVisibilityForTesting() const override;
 
+  void SetVisibility(QuickAnswersVisibility visibility) override;
+
   // QuickAnswersDelegate:
   void OnQuickAnswerReceived(
       std::unique_ptr<quick_answers::QuickAnswer> answer) override;
@@ -70,8 +72,6 @@ class QuickAnswersControllerImpl : public QuickAnswersController,
   }
 
  private:
-  void MaybeDismissQuickAnswersConsent();
-
   void HandleQuickAnswerRequest(
       const quick_answers::QuickAnswersRequest& request);
 

@@ -27,7 +27,7 @@ def _load_json_data(input_api, file_path):
                                             'third_party', 'pyjson5', 'src')
         sys.path.append(json5_path)
         import json5
-        return json5.load(open(file_path))
+        return json5.load(open(file_path, encoding='utf-8'))
     finally:
         # Restore sys.path to what it was before.
         sys.path.remove(json5_path)

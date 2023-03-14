@@ -401,8 +401,7 @@ void PluginVmInstaller::OnConciergeAvailable(bool success) {
   vm_tools::concierge::ListVmDisksRequest request;
   request.set_cryptohome_id(
       ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
-  request.set_storage_location(
-      vm_tools::concierge::STORAGE_CRYPTOHOME_PLUGINVM);
+  request.set_all_locations(true);
   request.set_vm_name(kPluginVmName);
 
   GetConciergeClient()->ListVmDisks(
@@ -424,12 +423,20 @@ void PluginVmInstaller::OnListVmDisks(
     return;
   }
 
-  if (response->images_size() == 1) {
-    RecordPluginVmSetupResultHistogram(PluginVmSetupResult::kVmAlreadyExists);
-    if (observer_)
-      observer_->OnVmExists();
-    profile_->GetPrefs()->SetBoolean(prefs::kPluginVmImageExists, true);
-    InstallFinished();
+  if (response->images_size() > 0) {
+    auto& image = response->images(0);
+    if (image.storage_location() ==
+        vm_tools::concierge::STORAGE_CRYPTOHOME_PLUGINVM) {
+      RecordPluginVmSetupResultHistogram(PluginVmSetupResult::kVmAlreadyExists);
+      if (observer_) {
+        observer_->OnVmExists();
+      }
+      profile_->GetPrefs()->SetBoolean(prefs::kPluginVmImageExists, true);
+      InstallFinished();
+    } else {
+      LOG(ERROR) << "VM " << image.name() << " exists, but in wrong location";
+      InstallFailed(FailureReason::EXISTING_IMAGE_INVALID);
+    }
     return;
   }
 
@@ -967,6 +974,10 @@ download::DownloadParams PluginVmInstaller::GetDownloadParams(const GURL& url) {
   // RequestParams
   params.request_params.url = url;
   params.request_params.method = "GET";
+  // Disable Safe Browsing/checks because the download is system-initiated,
+  // the target is specified via enterprise policy, and contents will be
+  // validated by comparing hashes.
+  params.request_params.require_safety_checks = false;
 
   // SchedulingParams
   // User initiates download by clicking on PluginVm icon so priorities should

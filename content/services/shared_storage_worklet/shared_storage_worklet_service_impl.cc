@@ -7,14 +7,14 @@
 #include <utility>
 
 #include "base/check.h"
-#include "content/common/private_aggregation_host.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 
 namespace shared_storage_worklet {
 
 SharedStorageWorkletServiceImpl::SharedStorageWorkletServiceImpl(
-    mojo::PendingReceiver<mojom::SharedStorageWorkletService> receiver,
+    mojo::PendingReceiver<blink::mojom::SharedStorageWorkletService> receiver,
     base::OnceClosure disconnect_handler)
     : receiver_(this, std::move(receiver)) {
   receiver_.set_disconnect_handler(std::move(disconnect_handler));
@@ -23,17 +23,19 @@ SharedStorageWorkletServiceImpl::SharedStorageWorkletServiceImpl(
 SharedStorageWorkletServiceImpl::~SharedStorageWorkletServiceImpl() = default;
 
 void SharedStorageWorkletServiceImpl::Initialize(
-    mojo::PendingAssociatedRemote<mojom::SharedStorageWorkletServiceClient>
-        client,
+    mojo::PendingAssociatedRemote<
+        blink::mojom::SharedStorageWorkletServiceClient> client,
     bool private_aggregation_permissions_policy_allowed,
-    mojo::PendingRemote<content::mojom::PrivateAggregationHost>
-        private_aggregation_host) {
+    mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
+        private_aggregation_host,
+    const absl::optional<std::u16string>& embedder_context) {
   DCHECK(!global_scope_);
   client_.Bind(std::move(client));
   private_aggregation_permissions_policy_allowed_ =
       private_aggregation_permissions_policy_allowed;
   if (private_aggregation_host)
     private_aggregation_host_.Bind(std::move(private_aggregation_host));
+  embedder_context_ = embedder_context;
 }
 
 void SharedStorageWorkletServiceImpl::AddModule(
@@ -68,7 +70,7 @@ SharedStorageWorkletGlobalScope*
 SharedStorageWorkletServiceImpl::GetGlobalScope() {
   if (!global_scope_) {
     global_scope_ = std::make_unique<SharedStorageWorkletGlobalScope>(
-        private_aggregation_permissions_policy_allowed_);
+        private_aggregation_permissions_policy_allowed_, embedder_context_);
   }
 
   return global_scope_.get();

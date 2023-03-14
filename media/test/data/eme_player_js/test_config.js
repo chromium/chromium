@@ -11,7 +11,7 @@ function TestConfig() {
   this.licenseServerURL = null;
   this.useMSE = false;
   this.runFPS = false;
-  this.playTwice = false;
+  this.playCount = 0;
   this.configChangeType = CONFIG_CHANGE_TYPE.CLEAR_TO_CLEAR;
   this.policyCheck = false;
   this.MSESegmentDurationMS = 0;
@@ -30,7 +30,7 @@ TestConfig.prototype.loadQueryParams = function() {
   while (match = r.exec(window.location.search.substring(1)))
     this[decodeURI(match[1])] = decodeURI(match[2]);
   this.useMSE = this.useMSE == '1' || this.useMSE == 'true';
-  this.playTwice = this.playTwice == '1' || this.playTwice == 'true';
+  this.playCount = parseInt(this.playCount) || 0;
   this.policyCheck = this.policyCheck == '1' || this.policyCheck == 'true';
   this.MSESegmentDurationMS = parseInt(this.MSESegmentDurationMS) || 0;
   this.MSESegmentFetchDelayBeforeEndMS =
@@ -53,7 +53,7 @@ TestConfig.updateDocument = function() {
   if (this.mediaType)
     Utils.ensureOptionInList(MEDIA_TYPE_ELEMENT_ID, this.mediaType);
   document.getElementById(USE_MSE_ELEMENT_ID).value = this.useMSE;
-  document.getElementById(USE_PLAY_TWICE_ELEMENT_ID).value = this.playTwice;
+  document.getElementById(USE_PLAY_COUNT_ELEMENT_ID).value = this.playCount;
 };
 
 TestConfig.init = function() {
@@ -62,8 +62,7 @@ TestConfig.init = function() {
   this.keySystem = document.getElementById(KEYSYSTEM_ELEMENT_ID).value;
   this.mediaType = document.getElementById(MEDIA_TYPE_ELEMENT_ID).value;
   this.useMSE = document.getElementById(USE_MSE_ELEMENT_ID).value == 'true';
-  this.playTwice =
-      document.getElementById(USE_PLAY_TWICE_ELEMENT_ID).value == 'true';
+  this.playCount = document.getElementById(USE_PLAY_COUNT_ELEMENT_ID).value;
   this.licenseServerURL =
       document.getElementById(LICENSE_SERVER_ELEMENT_ID).value;
 };

@@ -7,8 +7,10 @@ import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {FakeInputDeviceSettingsProvider, fakeKeyboards, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsPerDeviceKeyboardSubsectionElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
+
+const KEYBOARD_AUTO_REPEAT_SETTING_ID = 412;
 
 suite('PerDeviceKeyboardSubsection', function() {
   /**
@@ -40,7 +42,7 @@ suite('PerDeviceKeyboardSubsection', function() {
     subsection =
         document.createElement('settings-per-device-keyboard-subsection');
     assertTrue(subsection != null);
-    subsection.keyboard = fakeKeyboards[0];
+    subsection.keyboard = {...fakeKeyboards[0]};
     document.body.appendChild(subsection);
     return flushTasks();
   }
@@ -74,7 +76,7 @@ suite('PerDeviceKeyboardSubsection', function() {
     await flushTasks();
     let updatedKeyboards = await provider.getConnectedKeyboardSettings();
     assertEquals(
-        updatedKeyboards[0].settings.topRowAreFKeys,
+        updatedKeyboards[0].settings.topRowAreFkeys,
         externalTopRowAreFunctionKeysButton.pref.value);
 
     const blockMetaFunctionKeyRewritesButton =
@@ -84,7 +86,7 @@ suite('PerDeviceKeyboardSubsection', function() {
     await flushTasks();
     updatedKeyboards = await provider.getConnectedKeyboardSettings();
     assertEquals(
-        updatedKeyboards[0].settings.suppressMetaFKeyRewrites,
+        updatedKeyboards[0].settings.suppressMetaFkeyRewrites,
         blockMetaFunctionKeyRewritesButton.pref.value);
 
     const enableAutoRepeatButton =
@@ -104,7 +106,9 @@ suite('PerDeviceKeyboardSubsection', function() {
     await flushTasks();
     updatedKeyboards = await provider.getConnectedKeyboardSettings();
     assertEquals(
-        updatedKeyboards[0].settings.autoRepeatDelay, delaySlider.pref.value);
+        Number(updatedKeyboards[0].settings.autoRepeatDelay.microseconds) /
+            1000,
+        delaySlider.pref.value);
 
     const repeatRateSlider =
         assert(subsection.shadowRoot.querySelector('#repeatRateSlider'));
@@ -114,7 +118,8 @@ suite('PerDeviceKeyboardSubsection', function() {
     await flushTasks();
     updatedKeyboards = await provider.getConnectedKeyboardSettings();
     assertEquals(
-        updatedKeyboards[0].settings.autoRepeatInterval,
+        Number(updatedKeyboards[0].settings.autoRepeatInterval.microseconds) /
+            1000,
         repeatRateSlider.pref.value);
   });
 
@@ -126,14 +131,14 @@ suite('PerDeviceKeyboardSubsection', function() {
             '#externalTopRowAreFunctionKeysButton');
     assertTrue(isVisible(externalTopRowAreFunctionKeysButton));
     assertEquals(
-        fakeKeyboards[0].settings.topRowAreFKeys,
+        fakeKeyboards[0].settings.topRowAreFkeys,
         externalTopRowAreFunctionKeysButton.pref.value);
     let blockMetaFunctionKeyRewritesButton =
         subsection.shadowRoot.querySelector(
             '#blockMetaFunctionKeyRewritesButton');
     assertTrue(isVisible(blockMetaFunctionKeyRewritesButton));
     assertEquals(
-        fakeKeyboards[0].settings.suppressMetaFKeyRewrites,
+        fakeKeyboards[0].settings.suppressMetaFkeyRewrites,
         blockMetaFunctionKeyRewritesButton.pref.value);
     let internalTopRowAreFunctionKeysButton =
         subsection.shadowRoot.querySelector(
@@ -147,11 +152,13 @@ suite('PerDeviceKeyboardSubsection', function() {
     let delaySlider =
         assert(subsection.shadowRoot.querySelector('#delaySlider'));
     assertEquals(
-        fakeKeyboards[0].settings.autoRepeatDelay, delaySlider.pref.value);
+        Number(fakeKeyboards[0].settings.autoRepeatDelay.microseconds) / 1000,
+        delaySlider.pref.value);
     let repeatRateSlider =
         assert(subsection.shadowRoot.querySelector('#repeatRateSlider'));
     assertEquals(
-        fakeKeyboards[0].settings.autoRepeatInterval,
+        Number(fakeKeyboards[0].settings.autoRepeatInterval.microseconds) /
+            1000,
         repeatRateSlider.pref.value);
 
     changeKeyboardState(fakeKeyboards[1]);
@@ -165,7 +172,7 @@ suite('PerDeviceKeyboardSubsection', function() {
         '#internalTopRowAreFunctionKeysButton');
     assertTrue(isVisible(internalTopRowAreFunctionKeysButton));
     assertEquals(
-        fakeKeyboards[1].settings.topRowAreFKeys,
+        fakeKeyboards[1].settings.topRowAreFkeys,
         internalTopRowAreFunctionKeysButton.pref.value);
     enableAutoRepeatButton =
         subsection.shadowRoot.querySelector('#enableAutoRepeatButton');
@@ -174,11 +181,13 @@ suite('PerDeviceKeyboardSubsection', function() {
         enableAutoRepeatButton.pref.value);
     delaySlider = assert(subsection.shadowRoot.querySelector('#delaySlider'));
     assertEquals(
-        fakeKeyboards[1].settings.autoRepeatDelay, delaySlider.pref.value);
+        Number(fakeKeyboards[1].settings.autoRepeatDelay.microseconds) / 1000,
+        delaySlider.pref.value);
     repeatRateSlider =
         assert(subsection.shadowRoot.querySelector('#repeatRateSlider'));
     assertEquals(
-        fakeKeyboards[1].settings.autoRepeatInterval,
+        Number(fakeKeyboards[1].settings.autoRepeatInterval.microseconds) /
+            1000,
         repeatRateSlider.pref.value);
   });
 
@@ -281,15 +290,18 @@ suite('PerDeviceKeyboardSubsection', function() {
     const remapKeysSubLabel =
         remapKeysRow.shadowRoot.querySelector('#subLabel');
     assertTrue(!!remapKeysSubLabel);
-    assertEquals(2, subsection.keyboard.settings.modifierRemappings.size);
+    assertEquals(
+        2, Object.keys(subsection.keyboard.settings.modifierRemappings).length);
     assertEquals('2 remapped keys', remapKeysSubLabel.textContent.trim());
 
     await changeKeyboardState(fakeKeyboards[2]);
-    assertEquals(1, subsection.keyboard.settings.modifierRemappings.size);
+    assertEquals(
+        1, Object.keys(subsection.keyboard.settings.modifierRemappings).length);
     assertEquals('1 remapped key', remapKeysSubLabel.textContent.trim());
 
     await changeKeyboardState(fakeKeyboards[1]);
-    assertEquals(0, subsection.keyboard.settings.modifierRemappings.size);
+    assertEquals(
+        0, Object.keys(subsection.keyboard.settings.modifierRemappings).length);
     assertEquals('', remapKeysSubLabel.textContent.trim());
   });
 
@@ -316,5 +328,51 @@ suite('PerDeviceKeyboardSubsection', function() {
     const keyboardId = Number(urlSearchQuery);
     const expectedKeyboardId = subsection.keyboard.id;
     assertEquals(expectedKeyboardId, keyboardId);
+  });
+
+  /**
+   * Verify entering the page with search tags matched will auto focus the
+   * searched element.
+   */
+  test('deep linking mixin focus on the first searched element', async () => {
+    await initializePerDeviceKeyboardSubsection();
+    const autoRepeatToggle =
+        subsection.shadowRoot.querySelector('#enableAutoRepeatButton');
+    subsection.keyboardIndex = 0;
+    // Enter the page from auto repeat search tag.
+    const url = new URLSearchParams(
+        'search=keyboard&settingId=' +
+        encodeURIComponent(KEYBOARD_AUTO_REPEAT_SETTING_ID));
+
+    await Router.getInstance().navigateTo(
+        routes.PER_DEVICE_KEYBOARD,
+        /* dynamicParams= */ url, /* removeSearch= */ true);
+
+    await waitAfterNextRender(autoRepeatToggle);
+    assertTrue(!!autoRepeatToggle);
+    assertEquals(subsection.shadowRoot.activeElement, autoRepeatToggle);
+  });
+
+  /**
+   * Verify entering the page with search tags matched wll not auto focus the
+   * searched element if it's not the first keyboard displayed.
+   */
+  test('deep linkng mixin does not focus on second element', async () => {
+    await initializePerDeviceKeyboardSubsection();
+    const autoRepeatToggle =
+        subsection.shadowRoot.querySelector('#enableAutoRepeatButton');
+    subsection.keyboardIndex = 1;
+    // Enter the page from auto repeat search tag.
+    const url = new URLSearchParams(
+        'search=keyboard&settingId=' +
+        encodeURIComponent(KEYBOARD_AUTO_REPEAT_SETTING_ID));
+
+    await Router.getInstance().navigateTo(
+        routes.PER_DEVICE_KEYBOARD,
+        /* dynamicParams= */ url, /* removeSearch= */ true);
+    await flushTasks();
+
+    assertTrue(!!autoRepeatToggle);
+    assertFalse(!!subsection.shadowRoot.activeElement);
   });
 });

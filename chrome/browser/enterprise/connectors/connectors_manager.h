@@ -97,7 +97,7 @@ class ConnectorsManager {
       AnalysisConnector connector);
 
   // Read and cache the policy corresponding to |connector|.
-  void CacheAnalysisConnectorPolicy(AnalysisConnector connector);
+  void CacheAnalysisConnectorPolicy(AnalysisConnector connector) const;
   void CacheReportingConnectorPolicy(ReportingConnector connector);
 
   // Sets up |pref_change_registrar_|. Used by the constructor and
@@ -112,13 +112,19 @@ class ConnectorsManager {
   absl::optional<ReportingSettings> GetReportingSettingsFromConnectorPolicy(
       ReportingConnector connector);
 
+  PrefService* prefs() { return pref_change_registrar_.prefs(); }
+
+  const PrefService* prefs() const { return pref_change_registrar_.prefs(); }
+
   // Cached values of available service providers. This information validates
   // the Connector policies have a valid provider.
   raw_ptr<const ServiceProviderConfig> service_provider_config_;
 
   // Cached values of the connector policies. Updated when a connector is first
-  // used or when a policy is updated.
-  AnalysisConnectorsSettings analysis_connector_settings_;
+  // used or when a policy is updated.  Analysis connectors settings are
+  // mutable because they maybe updated by a call to IsConnectorEnabled(),
+  // which is a const method.
+  mutable AnalysisConnectorsSettings analysis_connector_settings_;
   ReportingConnectorsSettings reporting_connector_settings_;
 
   // Used to track changes of connector policies and propagate them in

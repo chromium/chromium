@@ -123,15 +123,9 @@ void StartNextPendingRequestTask::DidDeletePendingRequest(
 
 void StartNextPendingRequestTask::FinishWithError(
     blink::mojom::BackgroundFetchError error) {
-  ReportStorageError();
-
   std::move(callback_).Run(error, std::move(next_request_));
 
   Finished();  // Destroys |this|.
-}
-
-std::string StartNextPendingRequestTask::HistogramName() const {
-  return "StartNextPendingRequestTask";
 }
 
 }  // namespace background_fetch

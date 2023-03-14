@@ -9,22 +9,12 @@
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/account_id/account_id.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/storage_partition.h"
-#include "net/base/load_flags.h"
 #include "net/url_request/referrer_policy.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace {
-
-Profile* GetProfileForActiveUser() {
-  const user_manager::User* const active_user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  DCHECK(active_user);
-
-  return ash::ProfileHelper::Get()->GetProfileByUser(active_user);
-}
 
 // DownloadTask ----------------------------------------------------------------
 
@@ -32,11 +22,11 @@ class DownloadTask : public BitmapFetcherDelegate {
  public:
   DownloadTask(const GURL& url,
                const net::NetworkTrafficAnnotationTag& annotation_tag,
+               const AccountId& account_id,
                const net::HttpRequestHeaders& additional_headers,
-               absl::optional<AccountId> credentials_account_id,
                ash::ImageDownloader::DownloadCallback callback)
       : callback_(std::move(callback)) {
-    StartTask(url, annotation_tag, additional_headers, credentials_account_id);
+    StartTask(url, annotation_tag, account_id, additional_headers);
   }
 
   DownloadTask(const DownloadTask&) = delete;
@@ -54,15 +44,10 @@ class DownloadTask : public BitmapFetcherDelegate {
  private:
   void StartTask(const GURL& url,
                  const net::NetworkTrafficAnnotationTag& annotation_tag,
-                 const net::HttpRequestHeaders& additional_headers,
-                 absl::optional<AccountId> credentials_account_id) {
-    Profile* profile;
-    if (credentials_account_id.has_value()) {
-      profile = ash::ProfileHelper::Get()->GetProfileByAccountId(
-          credentials_account_id.value());
-    } else {
-      profile = GetProfileForActiveUser();
-    }
+                 const AccountId& account_id,
+                 const net::HttpRequestHeaders& additional_headers) {
+    Profile* profile =
+        ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
     if (!profile) {
       std::move(callback_).Run(gfx::ImageSkia());
       return;
@@ -71,11 +56,8 @@ class DownloadTask : public BitmapFetcherDelegate {
     bitmap_fetcher_ =
         std::make_unique<BitmapFetcher>(url, this, annotation_tag);
 
-    auto credentials_mode = credentials_account_id.has_value()
-                                ? network::mojom::CredentialsMode::kInclude
-                                : network::mojom::CredentialsMode::kOmit;
-
-    bitmap_fetcher_->Init(net::ReferrerPolicy::NEVER_CLEAR, credentials_mode,
+    bitmap_fetcher_->Init(net::ReferrerPolicy::NEVER_CLEAR,
+                          network::mojom::CredentialsMode::kOmit,
                           additional_headers);
 
     bitmap_fetcher_->Start(profile->GetURLLoaderFactory().get());
@@ -96,18 +78,20 @@ ImageDownloaderImpl::~ImageDownloaderImpl() = default;
 void ImageDownloaderImpl::Download(
     const GURL& url,
     const net::NetworkTrafficAnnotationTag& annotation_tag,
+    const AccountId& account_id,
     ash::ImageDownloader::DownloadCallback callback) {
-  Download(url, annotation_tag, /*additional_headers=*/{},
-           /*credentials_account_id=*/absl::nullopt, std::move(callback));
+  Download(url, annotation_tag, account_id, /*additional_headers=*/{},
+           std::move(callback));
 }
 
 void ImageDownloaderImpl::Download(
     const GURL& url,
     const net::NetworkTrafficAnnotationTag& annotation_tag,
+    const AccountId& account_id,
     const net::HttpRequestHeaders& additional_headers,
-    absl::optional<AccountId> credentials_account_id,
     ash::ImageDownloader::DownloadCallback callback) {
+  DCHECK(account_id.is_valid());
   // The download task will delete itself upon task completion.
-  new DownloadTask(url, annotation_tag, additional_headers,
-                   credentials_account_id, std::move(callback));
+  new DownloadTask(url, annotation_tag, account_id, additional_headers,
+                   std::move(callback));
 }

@@ -32,18 +32,19 @@ AuthenticationErrorCategory AuthenticationErrorCategoryFromError(
       [CWVSyncController.dataSource syncErrorForNSError:error
                                                identity:identity];
   switch (sync_error) {
-    case CWVSyncErrorNone:
-      NOTREACHED();
-      return kAuthenticationErrorCategoryUnknownErrors;
     case CWVSyncErrorInvalidGAIACredentials:
       return kAuthenticationErrorCategoryAuthorizationErrors;
     case CWVSyncErrorUserNotSignedUp:
       return kAuthenticationErrorCategoryUnknownIdentityErrors;
+    case CWVSyncErrorConnectionFailed:
+      return kAuthenticationErrorCategoryNetworkServerErrors;
+    case CWVSyncErrorServiceUnavailable:
+      return kAuthenticationErrorCategoryAuthorizationForbiddenErrors;
+    case CWVSyncErrorRequestCanceled:
+      return kAuthenticationErrorCategoryUserCancellationErrors;
     case CWVSyncErrorUnexpectedServiceResponse:
       return kAuthenticationErrorCategoryUnknownErrors;
   }
-
-  NOTREACHED() << "unexpected error: " << static_cast<int>(sync_error);
 }
 
 // Helper function converting the result of fetching the access token from

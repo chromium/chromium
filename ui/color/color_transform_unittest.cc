@@ -229,5 +229,44 @@ TEST(ColorTransformTest, SetAlpha) {
     EXPECT_EQ(SkColorSetA(color, kAlpha), transform.Run(color, ColorMixer()));
 }
 
+// Tests that PickGoogleColor() produces a transform that picks a Google color
+// with appropriate contrast against the specified background.
+TEST(ColorTransformTest, PickGoogleColor) {
+  constexpr SkColor kBackground = gfx::kGoogleGrey600;
+  constexpr float kMinContrast = 2.1f;
+  const ColorTransform transform =
+      PickGoogleColor(FromTransformInput(), kBackground, kMinContrast);
+  EXPECT_EQ(gfx::kGoogleRed900, transform.Run(SK_ColorRED, ColorMixer()));
+  EXPECT_EQ(gfx::kGoogleGreen100, transform.Run(SK_ColorGREEN, ColorMixer()));
+  EXPECT_EQ(gfx::kGoogleBlue900, transform.Run(SK_ColorBLUE, ColorMixer()));
+}
+
+// Tests that PickGoogleColorTwoBackgrounds() produces a transform that picks a
+// Google color with appropriate contrast against both specified backgrounds.
+TEST(ColorTransformTest, PickGoogleColorTwoBackgrounds) {
+  constexpr SkColor kBackgroundA = gfx::kGoogleGrey800;
+  constexpr SkColor kBackgroundB = gfx::kGoogleGrey400;
+  constexpr float kMinContrast = 1.5f;
+  const ColorTransform transform = PickGoogleColorTwoBackgrounds(
+      FromTransformInput(), kBackgroundA, kBackgroundB, kMinContrast);
+  EXPECT_EQ(gfx::kGoogleRed500, transform.Run(SK_ColorRED, ColorMixer()));
+  EXPECT_EQ(gfx::kGoogleGreen050, transform.Run(SK_ColorGREEN, ColorMixer()));
+  EXPECT_EQ(gfx::kGoogleBlue800, transform.Run(SK_ColorBLUE, ColorMixer()));
+}
+
+// Tests that HSLShift() produces a transform that applies the given HSL shift
+// to the given input color.
+TEST(ColorTransformTest, HSLShift) {
+  constexpr color_utils::HSL kHsl = {0.2, 0.3, 0.4};
+  const ColorTransform transform = HSLShift(FromTransformInput(), kHsl);
+  const auto verify_color = [&](SkColor input) {
+    EXPECT_EQ(color_utils::HSLShift(input, kHsl),
+              transform.Run(input, ColorMixer()));
+  };
+  verify_color(SK_ColorBLACK);
+  verify_color(gfx::kGoogleGrey600);
+  verify_color(SK_ColorWHITE);
+}
+
 }  // namespace
 }  // namespace ui

@@ -16,13 +16,13 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_drive_image_download_service.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_image_download_client.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_installer_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_metrics_util.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_test_helper.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/testing_profile.h"
@@ -459,7 +459,9 @@ TEST_F(PluginVmInstallerDownloadServiceTest, VmExists) {
 
   vm_tools::concierge::ListVmDisksResponse list_vm_disks_response;
   list_vm_disks_response.set_success(true);
-  list_vm_disks_response.add_images();
+  auto* image = list_vm_disks_response.add_images();
+  image->set_name(kPluginVmName);
+  image->set_storage_location(vm_tools::concierge::STORAGE_CRYPTOHOME_PLUGINVM);
   fake_concierge_client_->set_list_vm_disks_response(list_vm_disks_response);
 
   ExpectObserverEventsUntil(InstallingState::kCheckingForExistingVm);
@@ -468,6 +470,26 @@ TEST_F(PluginVmInstallerDownloadServiceTest, VmExists) {
 
   histogram_tester_->ExpectUniqueSample(
       kPluginVmSetupResultHistogram, PluginVmSetupResult::kVmAlreadyExists, 1);
+}
+
+TEST_F(PluginVmInstallerDownloadServiceTest, InvalidVmExists) {
+  // This flow works even if the image url is not set.
+  SetPluginVmImagePref("", kHash);
+
+  vm_tools::concierge::ListVmDisksResponse list_vm_disks_response;
+  list_vm_disks_response.set_success(true);
+  auto* image = list_vm_disks_response.add_images();
+  // Pretend we have a VM with the right name in a wrong location.
+  image->set_name(kPluginVmName);
+  image->set_storage_location(vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT);
+  fake_concierge_client_->set_list_vm_disks_response(list_vm_disks_response);
+
+  ExpectObserverEventsUntil(InstallingState::kCheckingForExistingVm);
+  EXPECT_CALL(*observer_, OnError(FailureReason::EXISTING_IMAGE_INVALID));
+  StartAndRunToCompletion();
+
+  histogram_tester_->ExpectUniqueSample(
+      kFailureReasonHistogram, FailureReason::EXISTING_IMAGE_INVALID, 1);
 }
 
 TEST_F(PluginVmInstallerDownloadServiceTest, CancelOnVmExistsCheck) {

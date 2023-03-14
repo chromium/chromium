@@ -198,7 +198,7 @@ TEST_F(AXTreeSerializerTest, ReparentingUpdatesSubtree) {
 // Similar to ReparentingUpdatesSubtree, except that InvalidateSubtree is
 // called on id=1 - we need to make sure that the reparenting is still
 // detected.
-TEST_F(AXTreeSerializerTest, ReparentingWithInvalidationUpdatesSubtree) {
+TEST_F(AXTreeSerializerTest, ReparentingWithDirtySubtreeUpdates) {
   // (1 (2 (3 (4 (5)))))
   treedata0_.root_id = 1;
   treedata0_.nodes.resize(5);
@@ -229,7 +229,7 @@ TEST_F(AXTreeSerializerTest, ReparentingWithInvalidationUpdatesSubtree) {
 
   CreateTreeSerializer();
   AXTreeUpdate update;
-  serializer_->InvalidateSubtree(tree1_->GetFromId(1));
+  serializer_->MarkSubtreeDirty(tree1_->GetFromId(1));
   ASSERT_TRUE(serializer_->SerializeChanges(tree1_->GetFromId(4), &update));
 
   // The update should unserialize without errors.
@@ -259,11 +259,15 @@ class AXTreeSourceWithInvalidId : public AXTreeSource<const AXNode*> {
   AXNode* GetRoot() const override { return tree_->root(); }
   AXNode* GetFromId(AXNodeID id) const override { return tree_->GetFromId(id); }
   AXNodeID GetId(const AXNode* node) const override { return node->id(); }
-  void GetChildren(const AXNode* node,
-                   std::vector<const AXNode*>* out_children) const override {
-    *out_children = std::vector<const AXNode*>(node->children().cbegin(),
-                                               node->children().cend());
+  void CacheChildrenIfNeeded(const AXNode*) override {}
+  size_t GetChildCount(const AXNode* node) const override {
+    return node->children().size();
   }
+  AXNode* ChildAt(const AXNode* node, size_t index) const override {
+    return node->children()[index];
+  }
+  void ClearChildCache(const AXNode*) override {}
+
   AXNode* GetParent(const AXNode* node) const override {
     return node->parent();
   }

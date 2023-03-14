@@ -29,7 +29,7 @@ if (is_win) {
 # Clang LTO doesn't respect stack alignment and clang-cl doesn't support setting
 # the stack alignment, so we must use the platform's default alignment in those
 # cases; https://crbug.com/928743.
-if (current_cpu == "x86" || current_cpu == "x64") {
+if (enable_nasm) {
   if (use_thin_lto || is_win) {
     needs_stack_alignment = false
     # The defaults are stack_alignment=4 for x86 and stack_alignment=16 for x64.
@@ -38,35 +38,12 @@ if (current_cpu == "x86" || current_cpu == "x64") {
     # upstream's meson.build setup:
     # https://chromium.googlesource.com/external/github.com/videolan/dav1d/+/master/meson.build
     needs_stack_alignment = true
-    if (current_cpu == "x86") {
+    if (current_cpu == "x64" || (is_linux && !is_android) || is_apple) {
       stack_alignment = 16
-
-      if (!is_clang) {
-        # Values used by GCC.
-        preferred_stack_boundary = 4
-        incoming_stack_boundary = 2
-      }
-    } else if (current_cpu == "x64") {
-      stack_alignment = 32
-
-      if (!is_clang) {
-        # Values used by GCC.
-        preferred_stack_boundary = 5
-        incoming_stack_boundary = 4
-      }
-    }
-
-    if (is_clang) {
-      stackalign_flag = "-mstack-alignment=$stack_alignment"
-      stackrealign_flag = "-mstackrealign"
     } else {
-      # Assume GCC for now.
-      stackalign_flag = "-mpreferred-stack-boundary=$preferred_stack_boundary"
-      stackrealign_flag = "-mincoming-stack-boundary=$incoming_stack_boundary"
+      stack_alignment = 4
     }
   }
-} else {
-  needs_stack_alignment = false
 }
 
 config("public_dav1d_config") {
@@ -79,12 +56,11 @@ config("public_dav1d_config") {
     defines = [ "CONFIG_LOG=1" ]
   }
 
-  if (needs_stack_alignment) {
-    defines += [ "STACK_ALIGNMENT=$stack_alignment" ]
-  }
-
   if (!is_android && !is_win) {
-    defines += [ "HAVE_PTHREAD_GETAFFINITY_NP=1" ]
+    defines += [
+      "HAVE_PTHREAD_GETAFFINITY_NP=1",
+      "HAVE_PTHREAD_SETAFFINITY_NP=1",
+    ]
   }
 
   # Don't let dav1d export any symbols. Otherwise the verify_order step on macOS
@@ -116,9 +92,6 @@ if (is_win) {
   }
 } else {
   dav1d_copts += [ "-std=c99" ]
-  if (needs_stack_alignment) {
-    dav1d_copts += [ stackalign_flag ]
-  }
   if (is_mac || is_ios) {
     dav1d_copts += [ "-D_DARWIN_C_SOURCE" ]
   }
@@ -168,26 +141,6 @@ source_set("dav1d_headers") {
   ]
 
   sources = c_headers
-}
-
-static_library("dav1d_entrypoints") {
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
-    "//build/config/compiler:no_chromium_code",
-    ":dav1d_config",
-  ]
-
-  sources = entry_point_sources
-  cflags = dav1d_copts
-  if (is_win) {
-    sources += [ "libdav1d/src/win32/thread.c" ]
-  }
-
-  if (needs_stack_alignment) {
-    cflags += [ stackrealign_flag ]
-  }
-
-  deps = [ ":dav1d_headers" ]
 }
 
 static_library("dav1d_8bit") {
@@ -293,6 +246,9 @@ if (current_cpu == "x86" || current_cpu == "x64") {
 
 static_library("dav1d") {
   sources = c_sources
+  if (is_win) {
+    sources += [ "libdav1d/src/win32/thread.c" ]
+  }
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
@@ -304,7 +260,6 @@ static_library("dav1d") {
   deps = [
     ":dav1d_10bit",
     ":dav1d_8bit",
-    ":dav1d_entrypoints",
     ":dav1d_headers",
   ]
 

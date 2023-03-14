@@ -41,6 +41,12 @@ namespace {
 constexpr int kInterceptionBubbleBaseHeight = 500;
 constexpr int kInterceptionBubbleWidth = 290;
 
+views::View* GetBubbleAnchorView(const Browser& browser) {
+  return BrowserView::GetBrowserViewForBrowser(&browser)
+      ->toolbar_button_provider()
+      ->GetAvatarToolbarButton();
+}
+
 }  // namespace
 
 DiceWebSigninInterceptionBubbleView::~DiceWebSigninInterceptionBubbleView() {
@@ -252,6 +258,14 @@ DiceWebSigninInterceptionBubbleView::GetBubbleWebContentsForTesting() {
 
 // DiceWebSigninInterceptorDelegate --------------------------------------------
 
+// static
+bool DiceWebSigninInterceptorDelegate::IsSigninInterceptionSupportedInternal(
+    const Browser& browser) {
+  // Some browsers, such as web apps, don't have an avatar toolbar button to
+  // anchor the bubble.
+  return GetBubbleAnchorView(browser) != nullptr;
+}
+
 std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>
 DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubbleInternal(
     Browser* browser,
@@ -260,9 +274,7 @@ DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubbleInternal(
     base::OnceCallback<void(SigninInterceptionResult)> callback) {
   DCHECK(browser);
 
-  views::View* anchor_view = BrowserView::GetBrowserViewForBrowser(browser)
-                                 ->toolbar_button_provider()
-                                 ->GetAvatarToolbarButton();
+  views::View* anchor_view = GetBubbleAnchorView(*browser);
   DCHECK(anchor_view);
   return DiceWebSigninInterceptionBubbleView::CreateBubble(
       browser, anchor_view, bubble_parameters, std::move(callback));

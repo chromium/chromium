@@ -6,12 +6,12 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
-#include "media/base/bind_to_current_loop.h"
 #include "third_party/blink/renderer/modules/mediarecorder/audio_track_encoder.h"
 #include "third_party/blink/renderer/modules/mediarecorder/audio_track_mojo_encoder.h"
 #include "third_party/blink/renderer/modules/mediarecorder/audio_track_opus_encoder.h"
@@ -95,7 +95,7 @@ std::unique_ptr<AudioTrackEncoder> AudioTrackRecorder::CreateAudioEncoder(
     BitrateMode bitrate_mode) {
   std::unique_ptr<AudioTrackEncoder> encoder;
   auto encoded_audio_cb =
-      media::BindToCurrentLoop(std::move(on_encoded_audio_cb));
+      base::BindPostTaskToCurrentDefault(std::move(on_encoded_audio_cb));
   switch (codec) {
     case CodecId::kPcm:
       return std::make_unique<AudioTrackPcmEncoder>(

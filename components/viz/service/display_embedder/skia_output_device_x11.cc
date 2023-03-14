@@ -86,16 +86,11 @@ bool SkiaOutputDeviceX11::Reshape(
   return true;
 }
 
-void SkiaOutputDeviceX11::SwapBuffers(BufferPresentedCallback feedback,
-                                      OutputSurfaceFrame frame) {
-  return PostSubBuffer(
-      gfx::Rect(0, 0, sk_surface_->width(), sk_surface_->height()),
-      std::move(feedback), std::move(frame));
-}
-
-void SkiaOutputDeviceX11::PostSubBuffer(const gfx::Rect& rect,
-                                        BufferPresentedCallback feedback,
-                                        OutputSurfaceFrame frame) {
+void SkiaOutputDeviceX11::Present(const absl::optional<gfx::Rect>& update_rect,
+                                  BufferPresentedCallback feedback,
+                                  OutputSurfaceFrame frame) {
+  gfx::Rect rect = update_rect.value_or(
+      gfx::Rect(0, 0, sk_surface_->width(), sk_surface_->height()));
   StartSwapBuffers(std::move(feedback));
   if (!rect.IsEmpty()) {
     auto ii =

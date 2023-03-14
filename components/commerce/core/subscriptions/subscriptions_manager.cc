@@ -54,8 +54,7 @@ SubscriptionsManager::SubscriptionsManager(
     : server_proxy_(std::move(server_proxy)),
       storage_(std::move(storage)),
       account_checker_(account_checker),
-      observers_(base::ObserverListPolicy::EXISTING_ONLY),
-      weak_ptr_factory_(this) {
+      observers_(base::ObserverListPolicy::EXISTING_ONLY) {
   // Populate the cache from local stoarge.
   storage_->LoadAllSubscriptions(base::BindOnce(
       [](base::WeakPtr<SubscriptionsManager> manager,
@@ -73,6 +72,8 @@ SubscriptionsManager::SubscriptionsManager(
   SyncSubscriptions();
   scoped_identity_manager_observation_.Observe(identity_manager);
 }
+
+SubscriptionsManager::SubscriptionsManager() = default;
 
 SubscriptionsManager::~SubscriptionsManager() = default;
 
@@ -378,12 +379,14 @@ void SubscriptionsManager::HandleGetSubscriptionsResponse(
 void SubscriptionsManager::HandleManageSubscriptionsResponse(
     SubscriptionType type,
     SubscriptionsRequestCallback callback,
-    SubscriptionsRequestStatus status) {
+    SubscriptionsRequestStatus status,
+    std::unique_ptr<std::vector<CommerceSubscription>> remote_subscriptions) {
   if (status != SubscriptionsRequestStatus::kSuccess) {
     VLOG(1) << "Fail to create or delete subscriptions on server";
     std::move(callback).Run(status);
   } else {
-    GetRemoteSubscriptionsAndUpdateStorage(type, std::move(callback));
+    storage_->UpdateStorage(type, std::move(callback),
+                            std::move(remote_subscriptions));
   }
 }
 

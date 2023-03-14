@@ -40,6 +40,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_sequence_number_token.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/display/display_switches.h"
 #include "ui/gfx/switches.h"
 
 namespace headless {
@@ -111,6 +112,23 @@ void ToggleFullscreenModeSync(Browser* browser) {
   FullscreenNotificationObserver observer(browser);
   chrome::ToggleFullscreenMode(browser);
   observer.Wait();
+}
+
+void HeadlessModeBrowserTestWithWindowSize::SetUpCommandLine(
+    base::CommandLine* command_line) {
+  HeadlessModeBrowserTest::SetUpCommandLine(command_line);
+  command_line->AppendSwitchASCII(
+      ::switches::kWindowSize,
+      base::StringPrintf("%u,%u", kWindowSize.width(), kWindowSize.height()));
+}
+
+void HeadlessModeBrowserTestWithWindowSizeAndScale::SetUpCommandLine(
+    base::CommandLine* command_line) {
+  HeadlessModeBrowserTest::SetUpCommandLine(command_line);
+  command_line->AppendSwitchASCII(
+      ::switches::kWindowSize,
+      base::StringPrintf("%u,%u", kWindowSize.width(), kWindowSize.height()));
+  command_line->AppendSwitchASCII(::switches::kForceDeviceScaleFactor, "1.5");
 }
 
 namespace {

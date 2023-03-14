@@ -11,7 +11,7 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller.h"
-#include "components/device_reauth/biometric_authenticator.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
@@ -63,7 +63,7 @@ bool ContainsNonEmptyUsername(
 TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
     base::PassKey<TouchToFillControllerAutofillTest>,
     password_manager::PasswordManagerClient* password_client,
-    scoped_refptr<device_reauth::BiometricAuthenticator> authenticator,
+    scoped_refptr<device_reauth::DeviceAuthenticator> authenticator,
     base::WeakPtr<password_manager::PasswordManagerDriver> driver,
     autofill::mojom::SubmissionReadinessState submission_readiness)
     : password_client_(password_client),
@@ -73,7 +73,7 @@ TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
 
 TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
     ChromePasswordManagerClient* password_client,
-    scoped_refptr<device_reauth::BiometricAuthenticator> authenticator,
+    scoped_refptr<device_reauth::DeviceAuthenticator> authenticator,
     base::WeakPtr<password_manager::PasswordManagerDriver> driver,
     autofill::mojom::SubmissionReadinessState submission_readiness)
     : password_client_(password_client),
@@ -88,7 +88,7 @@ TouchToFillControllerAutofillDelegate::
     ~TouchToFillControllerAutofillDelegate() {
   if (authenticator_) {
     // This is a noop if no auth triggered by Touch To Fill is in progress.
-    authenticator_->Cancel(device_reauth::BiometricAuthRequester::kTouchToFill);
+    authenticator_->Cancel(device_reauth::DeviceAuthRequester::kTouchToFill);
   }
 }
 
@@ -113,14 +113,17 @@ void TouchToFillControllerAutofillDelegate::OnShow(
 void TouchToFillControllerAutofillDelegate::OnCredentialSelected(
     const UiCredential& credential,
     base::OnceClosure action_complete) {
+  if (!driver_) {
+    return;
+  }
+
   action_complete_ = std::move(action_complete);
   ukm::builders::TouchToFill_Shown(source_id_)
       .SetUserAction(static_cast<int64_t>(UserAction::kSelectedCredential))
       .Record(ukm::UkmRecorder::Get());
   if (!password_manager_util::CanUseBiometricAuth(
           authenticator_.get(),
-          device_reauth::BiometricAuthRequester::kTouchToFill,
-          password_client_)) {
+          device_reauth::DeviceAuthRequester::kTouchToFill, password_client_)) {
     FillCredential(credential);
     return;
   }
@@ -128,7 +131,7 @@ void TouchToFillControllerAutofillDelegate::OnCredentialSelected(
   // the callback being reset by the authenticator. Therefore, it is safe
   // to use base::Unretained.
   authenticator_->Authenticate(
-      device_reauth::BiometricAuthRequester::kTouchToFill,
+      device_reauth::DeviceAuthRequester::kTouchToFill,
       base::BindOnce(&TouchToFillControllerAutofillDelegate::OnReauthCompleted,
                      base::Unretained(this), credential),
       /*use_last_valid_auth=*/true);
@@ -149,6 +152,7 @@ void TouchToFillControllerAutofillDelegate::OnPasskeyCredentialSelected(
 }
 
 void TouchToFillControllerAutofillDelegate::OnManagePasswordsSelected(
+    bool passkeys_shown,
     base::OnceClosure action_complete) {
   if (!driver_)
     return;
@@ -156,8 +160,16 @@ void TouchToFillControllerAutofillDelegate::OnManagePasswordsSelected(
   CleanUpDriverAndReportOutcome(TouchToFillOutcome::kManagePasswordsSelected,
                                 /*show_virtual_keyboard=*/false);
 
-  password_client_->NavigateToManagePasswordsPage(
-      password_manager::ManagePasswordsReferrer::kTouchToFill);
+  if (passkeys_shown) {
+    // On Android there is no passkey management available in Chrome settings
+    // password management. This will attempt to launch the GMS password
+    // manager where passkeys can be seen.
+    password_client_->NavigateToManagePasskeysPage(
+        password_manager::ManagePasswordsReferrer::kTouchToFill);
+  } else {
+    password_client_->NavigateToManagePasswordsPage(
+        password_manager::ManagePasswordsReferrer::kTouchToFill);
+  }
 
   ukm::builders::TouchToFill_Shown(source_id_)
       .SetUserAction(static_cast<int64_t>(UserAction::kSelectedManagePasswords))

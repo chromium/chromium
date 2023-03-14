@@ -20,16 +20,26 @@
     padding: 49px 24px 24px;
   }
 
+  cr-button {
+    border-radius: 16px;
+  }
+
+  cr-button:focus-visible {
+    /* disable cr-button default keyboard focus style */
+    box-shadow: none;
+    outline: 2px solid var(--cros-focus-ring-color);
+    outline-offset: 2px;
+  }
 </style>
 
 <!-- TODO(b/254586358): Use localized strings -->
 <cr-dialog>
-  <div slot="title">Are you sure you want to cancel setup?</div>
+  <div slot="title">Cancel Microsoft 365 setup?</div>
   <div slot="body">
-    You won't be able to open files in Microsoft 365 until setup is complete.
+    You won’t be able to open files in Microsoft 365 until setup is complete
   </div>
   <div slot="button-container">
     <cr-button class="cancel-button">Cancel setup</cr-button>
-    <cr-button class="action-button">Resume setup</cr-button>
+    <cr-button class="action-button">Continue setup</cr-button>
   </div>
 </cr-dialog>

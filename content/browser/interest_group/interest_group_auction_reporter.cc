@@ -6,6 +6,9 @@
 
 #include <stdint.h>
 
+#include <cmath>
+#include <cstddef>
+#include <limits>
 #include <map>
 #include <memory>
 #include <string>
@@ -13,12 +16,14 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
@@ -33,6 +38,7 @@
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
+#include "content/common/private_aggregation_features.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
@@ -52,6 +58,9 @@
 namespace content {
 
 namespace {
+
+// For ad cost truncation and stochastic rounding
+constexpr unsigned kAdCostBits = 8;
 
 // All event-level reporting URLs received from worklets must be valid HTTPS
 // URLs. It's up to callers to call ReportBadMessage() on invalid URLs.
@@ -79,7 +88,7 @@ InterestGroupAuctionReporter::WinningBidInfo::~WinningBidInfo() = default;
 InterestGroupAuctionReporter::InterestGroupAuctionReporter(
     InterestGroupManagerImpl* interest_group_manager,
     AuctionWorkletManager* auction_worklet_manager,
-    AttributionDataHostManager* attribution_data_host_manager,
+    AttributionManager* attribution_manager,
     PrivateAggregationManager* private_aggregation_manager,
     LogPrivateAggregationRequestsCallback
         log_private_aggregation_requests_callback,
@@ -122,9 +131,14 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
           std::move(private_aggregation_requests_reserved)),
       private_aggregation_requests_non_reserved_(
           std::move(private_aggregation_requests_non_reserved)),
-      fenced_frame_reporter_(
-          FencedFrameReporter::CreateForFledge(url_loader_factory_,
-                                               attribution_data_host_manager)) {
+      fenced_frame_reporter_(FencedFrameReporter::CreateForFledge(
+          url_loader_factory_,
+          attribution_manager,
+          /*direct_seller_is_seller=*/
+          !component_seller_winning_bid_info.has_value(),
+          private_aggregation_manager_,
+          main_frame_origin_,
+          winning_bid_info_.storage_interest_group->interest_group.owner)) {
   DCHECK(interest_group_manager_);
   DCHECK(auction_worklet_manager_);
   DCHECK(url_loader_factory_);
@@ -167,14 +181,10 @@ InterestGroupAuctionReporter::OnNavigateToWinningAdCallback() {
 
 void InterestGroupAuctionReporter::OnFledgePrivateAggregationRequests(
     PrivateAggregationManager* private_aggregation_manager,
-    LogPrivateAggregationRequestsCallback
-        log_private_aggregation_requests_callback,
     const url::Origin& main_frame_origin,
     std::map<url::Origin,
              std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>
         private_aggregation_requests) {
-  DCHECK(log_private_aggregation_requests_callback);
-
   // Empty vectors should've been filtered out.
   DCHECK(base::ranges::none_of(private_aggregation_requests,
                                [](auto& it) { return it.second.empty(); }));
@@ -183,14 +193,12 @@ void InterestGroupAuctionReporter::OnFledgePrivateAggregationRequests(
     return;
   }
 
-  log_private_aggregation_requests_callback.Run(private_aggregation_requests);
-
   if (!private_aggregation_manager) {
     return;
   }
 
   for (auto& [origin, requests] : private_aggregation_requests) {
-    mojo::Remote<mojom::PrivateAggregationHost> remote;
+    mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
     if (!private_aggregation_manager->BindNewReceiver(
             origin, main_frame_origin,
             PrivateAggregationBudgetKey::Api::kFledge,
@@ -204,7 +212,7 @@ void InterestGroupAuctionReporter::OnFledgePrivateAggregationRequests(
       // All for-event contributions have already been converted to histogram
       // contributions by filling in post auction signals before reaching here.
       DCHECK(request->contribution->is_histogram_contribution());
-      std::vector<mojom::AggregatableReportHistogramContributionPtr>
+      std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
           contributions;
       contributions.push_back(
           std::move(request->contribution->get_histogram_contribution()));
@@ -213,6 +221,30 @@ void InterestGroupAuctionReporter::OnFledgePrivateAggregationRequests(
                                   std::move(request->debug_mode_details));
     }
   }
+}
+
+/* static */
+double InterestGroupAuctionReporter::RoundStochasticallyToKBits(double value,
+                                                                unsigned k) {
+  int value_exp;
+  if (!std::isfinite(value)) {
+    return value;
+  }
+
+  double norm_value = std::frexp(value, &value_exp);
+
+  if (value_exp < std::numeric_limits<int8_t>::min()) {
+    return std::copysign(0, value);
+  }
+  if (value_exp > std::numeric_limits<int8_t>::max()) {
+    return std::copysign(std::numeric_limits<double>::infinity(), value);
+  }
+
+  double precision_scaled_value = std::ldexp(norm_value, k);
+  double noisy_scaled_value = precision_scaled_value + base::RandDouble();
+  double truncated_scaled_value = std::floor(noisy_scaled_value);
+
+  return std::ldexp(truncated_scaled_value, value_exp - k);
 }
 
 void InterestGroupAuctionReporter::RequestSellerWorklet(
@@ -324,6 +356,8 @@ void InterestGroupAuctionReporter::OnSellerReportResultComplete(
       pa_requests,
       [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
              request_ptr) { return request_ptr.is_null(); }));
+
+  log_private_aggregation_requests_callback_.Run(pa_requests);
 
   const url::Origin& seller = seller_info->auction_config->seller;
   for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
@@ -487,6 +521,12 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
 
   bidder_worklet_handle_->AuthorizeSubresourceUrls(
       *seller_info.subresource_url_builder);
+
+  absl::optional<double> rounded_ad_cost;
+  if (winning_bid_info_.ad_cost.has_value()) {
+    rounded_ad_cost = RoundStochasticallyToKBits(
+        winning_bid_info_.ad_cost.value(), kAdCostBits);
+  }
   bidder_worklet_handle_->GetBidderWorklet()->ReportWin(
       group_name, auction_config->non_shared_params.auction_signals.value(),
       per_buyer_signals,
@@ -501,7 +541,7 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
       seller_info.highest_scoring_other_bid_owner.has_value() &&
           winning_bid_info_.storage_interest_group->interest_group.owner ==
               seller_info.highest_scoring_other_bid_owner.value(),
-      auction_config->seller,
+      rounded_ad_cost, auction_config->seller,
       /*browser_signal_top_level_seller_origin=*/
       component_seller_winning_bid_info_
           ? top_level_seller_winning_bid_info_.auction_config->seller
@@ -540,6 +580,8 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
       pa_requests,
       [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
              request_ptr) { return request_ptr.is_null(); }));
+
+  log_private_aggregation_requests_callback_.Run(pa_requests);
 
   const url::Origin& bidder =
       winning_bid_info_.storage_interest_group->interest_group.owner;
@@ -688,9 +730,22 @@ void InterestGroupAuctionReporter::SendPendingReportsIfNavigated() {
       url_loader_factory_);
   pending_report_urls_.clear();
   OnFledgePrivateAggregationRequests(
-      private_aggregation_manager_, log_private_aggregation_requests_callback_,
-      main_frame_origin_, std::move(private_aggregation_requests_reserved_));
+      private_aggregation_manager_, main_frame_origin_,
+      std::move(private_aggregation_requests_reserved_));
   private_aggregation_requests_reserved_.clear();
+
+  if (base::FeatureList::IsEnabled(content::kPrivateAggregationApi) &&
+      content::kPrivateAggregationApiEnabledInFledge.Get() &&
+      base::FeatureList::IsEnabled(
+          blink::features::kPrivateAggregationApiFledgeExtensions)) {
+    fenced_frame_reporter_->OnForEventPrivateAggregationRequestsReceived(
+        std::move(private_aggregation_requests_non_reserved_));
+  }
+  // TODO(qingxinwu): Check the feature flags when collecting PA requests in
+  // browser process, and report a bad message if PA requests are received when
+  // the feature flags are disabled. Then CHECK that
+  // `private_aggregation_requests_non_reserved_` is empty here.
+  private_aggregation_requests_non_reserved_.clear();
 }
 
 }  // namespace content

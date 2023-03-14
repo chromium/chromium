@@ -224,6 +224,9 @@ able to unit-test their code.
    * Inner class methods must provide the inner class name explicitly
      (ex. `@CalledByNative("InnerClassName")`)
  * Just call the generated stubs defined in generated `.h` files.
+ * For test-only methods you want to call from native, use
+   `@CalledByNativeForTesting` which will ensure that it is stripped in our
+   release binaries.
 
 ### Java Objects and Garbage Collection
 

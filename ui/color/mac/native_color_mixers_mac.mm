@@ -13,85 +13,143 @@
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/color_recipe.h"
-#include "ui/color/mac/scoped_current_nsappearance.h"
 #include "ui/gfx/color_palette.h"
-
-namespace {
-// All the native OS colors which are retrieved from the system directly.
-// clang-format off
-constexpr auto kNativeOSColorIds = base::MakeFixedFlatSet<ui::ColorId>({
-    ui::kColorFocusableBorderFocused,
-    ui::kColorLabelSelectionBackground,
-    ui::kColorMenuBorder,
-    ui::kColorMenuItemForegroundDisabled,
-    ui::kColorMenuItemForeground,
-    ui::kColorMenuSeparator,
-    ui::kColorTableBackgroundAlternate,
-    ui::kColorTableGroupingIndicator,
-    ui::kColorTextfieldSelectionBackground});
-// clang-format on
-}
 
 namespace ui {
 
+namespace {
+
+// All the native OS colors which are retrieved from the system directly.
+constexpr auto kNativeOSColorIds = base::MakeFixedFlatSet<ColorId>({
+    // clang-format off
+    kColorFocusableBorderFocused,
+    kColorLabelSelectionBackground,
+    kColorMenuBorder,
+    kColorMenuItemForegroundDisabled,
+    kColorMenuItemForeground,
+    kColorMenuSeparator,
+    kColorTableBackgroundAlternate,
+    kColorTableGroupingIndicator,
+    kColorTextfieldSelectionBackground
+    // clang-format on
+});
+
+struct AppearanceProperties {
+  bool dark;
+  bool high_contrast;
+};
+
+AppearanceProperties AppearancePropertiesForKey(
+    const ColorProviderManager::Key& key) {
+  return AppearanceProperties{
+      .dark = key.color_mode == ColorProviderManager::ColorMode::kDark,
+      .high_contrast =
+          key.contrast_mode == ColorProviderManager::ContrastMode::kHigh};
+}
+
+NSAppearance* AppearanceForKey(const ColorProviderManager::Key& key)
+    API_AVAILABLE(macos(10.14)) {
+  AppearanceProperties properties = AppearancePropertiesForKey(key);
+
+  // TODO(crbug.com/1420707): How does this work? The documentation says that
+  // the high contrast appearance names are not valid to pass to `-[NSAppearance
+  // appearanceNamed:]` and yet this code does so. This yields the same
+  // `NSAppearance` objects that result from passing the non-high contrast names
+  // to -`appearanceNamed:`.
+  if (properties.dark) {
+    return [NSAppearance
+        appearanceNamed:properties.high_contrast
+                            ? NSAppearanceNameAccessibilityHighContrastDarkAqua
+                            : NSAppearanceNameDarkAqua];
+  } else {
+    return [NSAppearance
+        appearanceNamed:properties.high_contrast
+                            ? NSAppearanceNameAccessibilityHighContrastAqua
+                            : NSAppearanceNameAqua];
+  }
+}
+
+}  // namespace
+
 void AddNativeCoreColorMixer(ColorProvider* provider,
                              const ColorProviderManager::Key& key) {
-  ScopedCurrentNSAppearance scoped_nsappearance(
-      key.color_mode == ColorProviderManager::ColorMode::kDark,
-      key.contrast_mode == ColorProviderManager::ContrastMode::kHigh);
-  ColorMixer& mixer = provider->AddMixer();
-  mixer[kColorItemHighlight] = {SkColorSetA(
-      skia::NSSystemColorToSkColor([NSColor keyboardFocusIndicatorColor]),
-      0x66)};
-  mixer[kColorTextSelectionBackground] = {
-      skia::NSSystemColorToSkColor([NSColor selectedTextBackgroundColor])};
+  auto load_colors = ^{
+    ColorMixer& mixer = provider->AddMixer();
+    mixer[kColorItemHighlight] = {SkColorSetA(
+        skia::NSSystemColorToSkColor(NSColor.keyboardFocusIndicatorColor),
+        0x66)};
+    mixer[kColorTextSelectionBackground] = {
+        skia::NSSystemColorToSkColor(NSColor.selectedTextBackgroundColor)};
+  };
+
+  if (@available(macOS 11, *)) {
+    [AppearanceForKey(key) performAsCurrentDrawingAppearance:load_colors];
+  } else if (@available(macOS 10.14, *)) {
+    NSAppearance* saved_appearance = NSAppearance.currentAppearance;
+    NSAppearance.currentAppearance = AppearanceForKey(key);
+    load_colors();
+    NSAppearance.currentAppearance = saved_appearance;
+  } else {
+    load_colors();
+  }
 }
 
 void AddNativeColorSetInColorMixer(ColorMixer& mixer) {
   mixer[kColorMenuBorder] = {SkColorSetA(SK_ColorBLACK, 0x60)};
   mixer[kColorMenuItemForegroundDisabled] = {
-      skia::NSSystemColorToSkColor([NSColor disabledControlTextColor])};
+      skia::NSSystemColorToSkColor(NSColor.disabledControlTextColor)};
   mixer[kColorMenuItemForeground] = {
-      skia::NSSystemColorToSkColor([NSColor controlTextColor])};
+      skia::NSSystemColorToSkColor(NSColor.controlTextColor)};
 }
 
 void AddNativeUiColorMixer(ColorProvider* provider,
                            const ColorProviderManager::Key& key) {
-  const bool dark_mode =
-      key.color_mode == ColorProviderManager::ColorMode::kDark;
-  const bool high_contrast =
-      key.contrast_mode == ColorProviderManager::ContrastMode::kHigh;
-  ScopedCurrentNSAppearance scoped_nsappearance(dark_mode, high_contrast);
-  ColorMixer& mixer = provider->AddMixer();
+  auto load_colors = ^{
+    AppearanceProperties properties = AppearancePropertiesForKey(key);
 
-  // TODO(crbug.com/1268521): Investigate native color set behaviour for dark
-  // windows on macOS versions running < 10.14.
-  if (@available(macOS 10.14, *)) {
-    AddNativeColorSetInColorMixer(mixer);
-  } else if (!dark_mode) {
-    AddNativeColorSetInColorMixer(mixer);
-  }
+    ColorMixer& mixer = provider->AddMixer();
 
-  if (@available(macOS 10.14, *)) {
-    mixer[kColorTableBackgroundAlternate] = {skia::NSSystemColorToSkColor(
-        NSColor.alternatingContentBackgroundColors[1])};
+    // TODO(crbug.com/1268521): Investigate native color set behaviour for dark
+    // windows on macOS versions running < 10.14.
+    if (@available(macOS 10.14, *)) {
+      AddNativeColorSetInColorMixer(mixer);
+    } else if (!properties.dark) {
+      AddNativeColorSetInColorMixer(mixer);
+    }
+
+    if (@available(macOS 10.14, *)) {
+      mixer[kColorTableBackgroundAlternate] = {skia::NSSystemColorToSkColor(
+          NSColor.alternatingContentBackgroundColors[1])};
+    } else {
+      mixer[kColorTableBackgroundAlternate] = {skia::NSSystemColorToSkColor(
+          NSColor.controlAlternatingRowBackgroundColors[1])};
+    }
+
+    SkColor menu_separator_color = properties.dark
+                                       ? SkColorSetA(gfx::kGoogleGrey800, 0xCC)
+                                       : SkColorSetA(SK_ColorBLACK, 0x26);
+    mixer[kColorMenuSeparator] = {menu_separator_color};
+
+    if (!properties.high_contrast) {
+      return;
+    }
+
+    mixer[kColorMenuItemBackgroundSelected] = {
+        properties.dark ? SK_ColorLTGRAY : SK_ColorDKGRAY};
+    mixer[kColorMenuItemForegroundSelected] = {properties.dark ? SK_ColorBLACK
+                                                               : SK_ColorWHITE};
+  };
+
+  if (@available(macOS 11, *)) {
+    [AppearanceForKey(key) performAsCurrentDrawingAppearance:load_colors];
+  } else if (@available(macOS 10.14, *)) {
+    NSAppearance* saved_appearance = NSAppearance.currentAppearance;
+    NSAppearance.currentAppearance = AppearanceForKey(key);
+    load_colors();
+    NSAppearance.currentAppearance = saved_appearance;
   } else {
-    mixer[kColorTableBackgroundAlternate] = {skia::NSSystemColorToSkColor(
-        NSColor.controlAlternatingRowBackgroundColors[1])};
+    load_colors();
   }
-
-  SkColor menu_separator_color = dark_mode
-                                     ? SkColorSetA(gfx::kGoogleGrey800, 0xCC)
-                                     : SkColorSetA(SK_ColorBLACK, 0x26);
-  mixer[kColorMenuSeparator] = {menu_separator_color};
-
-  if (!high_contrast)
-    return;
-
-  mixer[kColorMenuItemBackgroundSelected] = {dark_mode ? SK_ColorLTGRAY
-                                                       : SK_ColorDKGRAY};
-  mixer[kColorMenuItemForegroundSelected] = {dark_mode ? SK_ColorBLACK
-                                                       : SK_ColorWHITE};
 }
 
 void AddNativePostprocessingMixer(ColorProvider* provider,

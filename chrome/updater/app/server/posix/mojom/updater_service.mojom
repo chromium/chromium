@@ -301,6 +301,21 @@ import "mojo/public/mojom/base/file_path.mojom";
     // installation.
     string install_settings) =>
     (pending_receiver<StateChangeObserver> observer);
+
+  // Check for updates to a specified product, but do not apply them.
+  //
+  // Response:
+  //    The final result from the update engine.
+  [MinVersion=2] CheckForUpdate@10(
+    // ID of app to update.
+    string app_id,
+
+    // Priority for processing this update.
+    Priority priority,
+
+    //  Whether a same-version update is allowed.
+    PolicySameVersionUpdate policy_same_version_update) =>
+    (pending_receiver<StateChangeObserver> observer);
 };
 
 // Callback interface for repeated state change notifications produced by

@@ -23,7 +23,8 @@ UrlInfo::UrlInfo(const UrlInfoInit& init)
       unique_sandbox_id(init.unique_sandbox_id_),
       storage_partition_config(init.storage_partition_config_),
       web_exposed_isolation_info(init.web_exposed_isolation_info_),
-      is_pdf(init.is_pdf_) {
+      is_pdf(init.is_pdf_),
+      common_coop_origin(init.common_coop_origin_) {
   // An origin-keyed process can only be used for origin-keyed agent clusters.
   DCHECK(!requests_origin_keyed_process() || requests_origin_agent_cluster());
   DCHECK(init.is_sandboxed_ ||
@@ -97,6 +98,12 @@ UrlInfoInit& UrlInfoInit::WithWebExposedIsolationInfo(
 
 UrlInfoInit& UrlInfoInit::WithIsPdf(bool is_pdf) {
   is_pdf_ = is_pdf;
+  return *this;
+}
+
+UrlInfoInit& UrlInfoInit::WithCommonCoopOrigin(
+    const url::Origin& common_coop_origin) {
+  common_coop_origin_ = common_coop_origin;
   return *this;
 }
 

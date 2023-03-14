@@ -22,7 +22,6 @@
 #include "components/autofill/core/browser/test_autofill_external_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
@@ -32,15 +31,13 @@
 
 namespace autofill {
 
-class AutofillPopupControllerBrowserTest : public InProcessBrowserTest,
-                                           public content::WebContentsObserver {
+class AutofillPopupControllerBrowserTest : public InProcessBrowserTest {
  public:
   AutofillPopupControllerBrowserTest() = default;
   ~AutofillPopupControllerBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     web_contents()->Focus();
-    Observe(web_contents());
 
     autofill_driver_ =
         ContentAutofillDriverFactory::FromWebContents(web_contents())
@@ -78,10 +75,12 @@ class AutofillPopupControllerBrowserTest : public InProcessBrowserTest,
         browser(), embedded_test_server()->GetURL("/test.html")));
   }
 
-  // Normally the WebContents will automatically delete the delegate, but here
-  // the delegate is owned by this test, so we have to manually destroy.
-  void RenderFrameDeleted(content::RenderFrameHost* rfh) override {
+  void TearDownOnMainThread() override {
+    // Explicitly null these raw pointers to avoid that they become dangling.
     autofill_external_delegate_ = nullptr;
+    autofill_driver_ = nullptr;
+
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
  protected:
@@ -98,9 +97,9 @@ class AutofillPopupControllerBrowserTest : public InProcessBrowserTest,
         *autofill_driver_->autofill_manager());
   }
 
-  raw_ptr<ContentAutofillDriver, DanglingUntriaged> autofill_driver_ = nullptr;
-  raw_ptr<TestAutofillExternalDelegate, DanglingUntriaged>
-      autofill_external_delegate_ = nullptr;
+  test::AutofillBrowserTestEnvironment autofill_test_environment_;
+  raw_ptr<ContentAutofillDriver> autofill_driver_ = nullptr;
+  raw_ptr<TestAutofillExternalDelegate> autofill_external_delegate_ = nullptr;
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> disable_animation_;
 };
 
@@ -193,6 +192,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
   // Delete the external delegate here so that is gets deleted before popup is
   // hidden. This can happen if the web_contents are destroyed before the popup
   // is hidden. See http://crbug.com/232475
+  autofill_external_delegate_ = nullptr;
   autofill_manager().SetExternalDelegateForTest(nullptr);
   autofill_driver_->set_autofill_manager(nullptr);
 }
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest, ResetSelectedLine) {
   GenerateTestAutofillPopup(autofill_external_delegate_);
 
   auto* client =
-      autofill::ChromeAutofillClient::FromWebContents(web_contents());
+      autofill::ChromeAutofillClient::FromWebContentsForTesting(web_contents());
   AutofillPopupController* controller =
       client->popup_controller_for_testing().get();
   ASSERT_TRUE(controller);

@@ -10,7 +10,6 @@
       "name": "LayoutIFrame IFRAME id='parent-iframe'",
       "position": [-30, -30],
       "bounds": [390, 240],
-      "contentsOpaqueForText": true,
       "transform": 1
     },
     {
@@ -38,7 +37,6 @@
       "name": "LayoutNGBlockFlow (positioned) DIV class='overlay'",
       "position": [5, 5],
       "bounds": [50, 50],
-      "contentsOpaqueForText": true,
       "backgroundColor": "#00000033"
     }
   ],

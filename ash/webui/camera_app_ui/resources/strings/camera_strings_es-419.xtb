@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">Se detectó un vínculo. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Se borró la página <ph name="PAGE_NUMBER" /></translation>
 <translation id="1258009455399840361">Rotar 90 grados en el sentido de las manecillas del reloj</translation>
-<translation id="1300209025925956156">Escanea tu documento</translation>
-<translation id="1309250603447638106">Descargando actualizaciones para escanear documentos</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Presiona Búsqueda + flecha hacia la izquierda para acceder.</translation>
 <translation id="1417314334557041815">Editar la página <ph name="INDEX" /></translation>
 <translation id="1467231725790366244">La cámara <ph name="CAMERA" /> está desconectada.</translation>
 <translation id="1473110567575736769">Temporizador de 3 segundos</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">No se grabaron datos</translation>
 <translation id="1838104802459806957">Inclinar hacia arriba</translation>
 <translation id="1843105061469674856">Escanear página adicional</translation>
-<translation id="1851169887664797861">Controles adicionales de cámara disponibles</translation>
 <translation id="1851616744363735765">DETENIDA</translation>
 <translation id="1899697626337024495">Resolución de foto</translation>
 <translation id="1925845977604399247">Ir a la galería</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">Tipo de búsqueda</translation>
 <translation id="28682968802727151">Vista previa del modo espejo</translation>
 <translation id="2879583609344924966">La cámara <ph name="CAMERA" /> está conectada.</translation>
-<translation id="2904654629665923749">Escaneo de documentos disponible</translation>
 <translation id="3067436040345934772">Desplazarse a la derecha</translation>
 <translation id="3081586908890909590">Cambiar al modo para grabar video</translation>
 <translation id="313467653172006084">30 FPS</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">Copiar dirección del vínculo</translation>
 <translation id="4281620174117014503">Resolución media</translation>
 <translation id="428234092390943511">Miniatura de la página</translation>
-<translation id="4340659173795395806">Ahora puedes crear archivos PDF de varias páginas</translation>
 <translation id="4383571725254449280">Registros de rendimiento de impresión</translation>
 <translation id="4445542136948522167">Detener foto</translation>
 <translation id="4570032796877367747">Cámara frontal</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5320594929574852403">Se está moviendo hacia la izquierda</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5444515100983837161">Coloca todos los bordes del documento dentro del cuadro. El escaneado funciona mejor si el documento tiene un color diferente al del fondo.</translation>
 <translation id="5662366948659129155">Escaneando página <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Cuadrado</translation>
 <translation id="5746169159649715125">Guardar como PDF</translation>
@@ -157,7 +150,6 @@ Si tus comentarios están relacionados con la calidad de imagen o video, adjunta
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Activar o desactivar la función para silenciar el micrófono, la función para silenciar está activada</translation>
-<translation id="8712637175834984815">Entendido</translation>
 <translation id="8730621377337864115">Listo</translation>
 <translation id="8732462232047530626">Obtener vista previa de metadatos</translation>
 <translation id="8815966864175525708">Cambiar para tomar una foto de retrato</translation>

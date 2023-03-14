@@ -5,15 +5,11 @@
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
-#include "ash/capture_mode/capture_mode_session.h"
-#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shelf/shelf.h"
-#include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/wm/work_area_insets.h"
@@ -178,26 +174,10 @@ std::vector<gfx::Rect> CollectCollisionRects(
         /*parent=*/root_window));
   }
 
-  // Check the capture bar if capture mode is active.
-  auto* capture_mode_controller = CaptureModeController::Get();
-  if (capture_mode_controller->IsActive()) {
-    aura::Window* capture_bar_window =
-        capture_mode_controller->capture_mode_session()
-            ->capture_mode_bar_widget()
-            ->GetNativeWindow();
-    rects.push_back(ComputeCollisionRectFromBounds(
-        capture_bar_window->GetTargetBounds(), capture_bar_window->parent()));
-  }
-
-  // Check the camera preview if it exists.
-  auto* camera_preview_widget =
-      capture_mode_controller->camera_controller()->camera_preview_widget();
-  if (camera_preview_widget && camera_preview_widget->IsVisible()) {
-    aura::Window* camera_preview_window =
-        camera_preview_widget->GetNativeWindow();
-    rects.push_back(
-        ComputeCollisionRectFromBounds(camera_preview_window->GetTargetBounds(),
-                                       camera_preview_window->parent()));
+  for (auto* window :
+       CaptureModeController::Get()->GetWindowsForCollisionAvoidance()) {
+    rects.push_back(ComputeCollisionRectFromBounds(window->GetTargetBounds(),
+                                                   window->parent()));
   }
 
   // Avoid clamshell-mode launcher bubble.

@@ -15,6 +15,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/string_split.h"
@@ -70,11 +71,10 @@ ExampleVector GetExamplesToShow(ExampleVector examples) {
 
     // Transform list of examples to just the list of names.
     StringVector example_names;
-    std::transform(
-        examples.begin(), examples.end(), std::back_inserter(example_names),
-        [](const auto& example) { return example->example_title(); });
+    base::ranges::transform(examples, std::back_inserter(example_names),
+                            &ExampleBase::example_title);
 
-    std::sort(enabled.begin(), enabled.end());
+    base::ranges::sort(enabled);
 
     // Get an intersection of list of titles between the full list and the list
     // from the command-line.

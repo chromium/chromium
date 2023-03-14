@@ -5,6 +5,10 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_AUTH_METRICS_RECORDER_H_
 #define CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_AUTH_METRICS_RECORDER_H_
 
+#include <vector>
+
+#include "base/time/time.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 
@@ -33,6 +37,30 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthMetricsRecorder {
     kFailure,
     // User opened the account recovery flow from the login screen.
     kRecovery
+  };
+
+  // The result of the cryptohome recovery.
+  // These values are reported to UMA "Login.CryptohomeRecoveryResult". Entries
+  // should not be renumbered and numeric values should never be reused.
+  enum class CryptohomeRecoveryResult {
+    kSucceeded = 0,
+    // Failed to fetch OAuth token with recovery scope.
+    kOAuthTokenFetchError = 1,
+    // Failed to fetch epoch from the server.
+    kEpochFetchError = 2,
+    // Failed to get recovery request.
+    kGetRecoveryRequestError = 3,
+    // Failed to fetch recovery response from the server.
+    kRecoveryResponseFetchError = 4,
+    // Recovery response received with transient error encoded in the response.
+    kRecoveryTransientError = 5,
+    // Recovery response received with fatal error encoded in the response.
+    kRecoveryFatalError = 6,
+    // Failed to authenticate with the recovery factor.
+    kAuthenticateRecoveryFactorError = 7,
+    // Failed to mount Cryptohome.
+    kMountCryptohomeError = 8,
+    kMaxValue = kMountCryptohomeError,
   };
 
   AuthMetricsRecorder(const AuthMetricsRecorder&) = delete;
@@ -88,6 +116,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthMetricsRecorder {
   // `num_login_attempts` is 0.
   void OnExistingUserLoginExit(AuthenticationOutcome exit_type,
                                int num_login_attempts) const;
+
+  // Report which auth factors the user has configured.
+  void RecordUserAuthFactors(
+      const std::vector<cryptohome::AuthFactorType>& auth_factors) const;
+
+  // Report the result of the recovery and time taken to UMA.
+  void OnRecoveryDone(CryptohomeRecoveryResult result,
+                      const base::TimeDelta& time);
 
  private:
   friend class ChromeBrowserMainPartsAsh;

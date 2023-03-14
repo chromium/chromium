@@ -15,6 +15,7 @@ SelectToSpeak*
 SwitchAccess*
 VpnExtensionObserverBrowserTest*
 WebAppsCrosapiBrowserTest*
+WebAppProviderBridgeBrowserTest*
 WebKioskAshRequiresLacrosTest*
 # TODO(b/262789941) Enable more accessibility tests.
 -ChromeVoxBackgroundTest.TabSwitchAndRefreshRecovery

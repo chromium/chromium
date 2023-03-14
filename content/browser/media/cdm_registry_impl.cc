@@ -475,7 +475,8 @@ void CdmRegistryImpl::AttemptToFinalizeKeySystemCapability(
     return;
   }
 
-  // Needs lazy initialize. Use BindToCurrentLoop() to force a post.
+  // Needs lazy initialize. Use base::BindPostTaskToCurrentDefault() to force a
+  // post.
   pending_lazy_initializations_.insert({key_system, robustness});
   LazyInitializeCapability(
       key_system, robustness,

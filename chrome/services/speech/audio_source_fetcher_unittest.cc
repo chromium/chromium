@@ -75,10 +75,13 @@ class MockAudioSourceConsumer : public AudioSourceConsumer {
 
   // AudioSourceConsumer:
   void AddAudio(media::mojom::AudioDataS16Ptr buffer) override {
+    EXPECT_FALSE(is_audio_end_);
     std::move(on_send_audio_to_speech_recognition_callback_)
         .Run(std::move(buffer));
   }
-  void OnAudioCaptureEnd() override {}
+
+  void OnAudioCaptureEnd() override { is_audio_end_ = true; }
+
   void OnAudioCaptureError() override {}
 
   void SetOnSendAudioToSpeechRecognitionCallback(
@@ -90,6 +93,7 @@ class MockAudioSourceConsumer : public AudioSourceConsumer {
   // Used to verify the media::mojom::AudioDataS16 content.
   OnSendAudioToSpeechRecognitionCallback
       on_send_audio_to_speech_recognition_callback_;
+  bool is_audio_end_ = false;
 };
 
 class AudioSourceFetcherImplTest

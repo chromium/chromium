@@ -46,6 +46,8 @@ enum XRReflectionFormat {
   readonly attribute XREnvironmentBlendMode environmentBlendMode;
   readonly attribute XRInteractionMode interactionMode;
   readonly attribute XRVisibilityState visibilityState;
+  [RuntimeEnabled=WebXRFrameRate] readonly attribute float? frameRate;
+  [RuntimeEnabled=WebXRFrameRate] readonly attribute Float32Array? supportedFrameRates;
   [SameObject] readonly attribute XRRenderState renderState;
   [CallWith=ScriptState, MeasureAs=XRSessionGetInputSources, SameObject] readonly attribute XRInputSourceArray inputSources;
   [SameObject] readonly attribute XRDOMOverlayState domOverlayState;
@@ -61,9 +63,10 @@ enum XRReflectionFormat {
   attribute EventHandler onsqueeze;
   attribute EventHandler onsqueezestart;
   attribute EventHandler onsqueezeend;
+  [RuntimeEnabled=WebXRFrameRate] attribute EventHandler onframeratechange;
 
   [RaisesException] void updateRenderState(optional XRRenderStateInit init = {});
-
+  [RuntimeEnabled=WebXRFrameRate, RaisesException] Promise<void> updateTargetFrameRate(float rate);
   [CallWith=ScriptState, RaisesException] Promise<XRReferenceSpace> requestReferenceSpace(XRReferenceSpaceType type);
 
   long requestAnimationFrame(XRFrameRequestCallback callback);

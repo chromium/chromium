@@ -1,16 +1,15 @@
-<style include="signin-shared">
+<style include="signin-shared tangible-sync-style-shared">
   :host {
     --avatar-size: 100px;
     --banner-height: 244px;
     --banner-size: auto;
     --footer-margin: 40px;
-    --content-container-margin-inline: auto;
-    --content-container-margin-bottom: calc(48px + var(--footer-margin));
-    --content-container-margin-top: 104px;
+    --text-container-margin-inline: auto;
+    --text-container-margin-bottom: calc(48px + var(--footer-margin));
+    --text-container-margin-top: 104px;
     --info-box-margin-inline: auto;
     --info-box-margin-top: 32px;
     --info-box-width: 530px;
-    --text-font-size: 1.16em;
     color: var(--cr-primary-text-color);
     display: block;
   }
@@ -19,15 +18,10 @@
     --avatar-size: 76px;
     --banner-height: 128px;
     --banner-size: 90% 90%;
-    --content-container-margin-inline: 32px;
-    --content-container-margin-bottom: 0;
-    --content-container-margin-top: 72px;
-<if expr="chromeos_lacros">
-    --info-box-margin-inline: 32px;
-</if>
-<if expr="not chromeos_lacros">
+    --text-container-margin-inline: 32px;
+    --text-container-margin-bottom: 0;
+    --text-container-margin-top: 72px;
     --info-box-margin-inline: 0;
-</if>
     --info-box-margin-top: 28px;
     --info-box-width: auto;
     --footer-margin: 16px;
@@ -38,53 +32,9 @@
     width: 512px;
   }
 
-  :host([is-modal-dialog_]) #contentContainer h2 {
+  :host([is-modal-dialog_]) #title {
     margin-top: 0;
   }
-
-<if expr="chromeos_lacros">
-  :host {
-    --action-container-padding: 24px;
-    --background-image:
-        url(images/lacros_enterprise_profile_welcome_illustration.svg);
-    --buttons-container-max-width: 45%;
-    --content-container-font-size: 14px;
-    --content-container-line-height: 20px;
-    --content-container-margin-top: 72px;
-    --content-container-width: 382px;
-    --content-container-title-font-size: 24px;
-    --content-container-title-font-weight: 500;
-    --content-container-title-line-height: 32px;
-    --info-box-bottom: 0;
-    --info-box-padding: 24px 8px;
-    --info-box-position: absolute;
-    --info-box-border: none;
-    --info-box-border-radius: 0px;
-    --info-box-font-size: 11px;
-    --info-box-line-height: 16px;
-    --info-box-max-width: calc(100% - var(--buttons-container-max-width));
-  }
-</if>
-
-<if expr="not chromeos_lacros">
-  :host {
-    --background-image: url(images/enterprise_profile_welcome_illustration.svg);
-    --buttons-container-max-width: 100%;
-    --content-container-font-size: auto;
-    --content-container-line-height: auto;
-    --content-container-width: auto;
-    --content-container-title-font-size: 1.85em;
-    --content-container-title-font-weight: normal;
-    --content-container-title-line-height: auto;
-    --info-box-position: auto;
-    --info-box-border: 1px solid var(--google-grey-200);
-    --info-box-border-radius: 8px;
-    --info-box-font-size: auto;
-    --info-box-line-height: auto;
-    --info-box-max-width: none;
-    --info-box-padding: 12px 0;
-  }
-</if>
 
   .secondary {
     color: var(--cr-secondary-text-color);
@@ -103,15 +53,21 @@
     position: relative;
   }
 
-  #headerContainer {
+  #header-container {
+    /* --header-background-color will be defined in typescript. */
     background-color: var(--header-background-color);
     height: var(--banner-height);
     position: relative;
     width: 100%;
   }
 
+  .tangible-sync-style #header-container {
+    background-color: transparent;
+    height: auto;
+  }
+
   #banner {
-    background-image: var(--background-image);
+    background-image: url(images/enterprise_profile_welcome_illustration.svg);
     background-position: center;
     background-repeat: no-repeat;
     background-size: var(--banner-size);
@@ -122,7 +78,7 @@
     z-index: 0;
   }
 
-  #avatarContainer {
+  #avatar-container {
     bottom: calc(var(--avatar-size)/-2);
     height: var(--avatar-size);
     left: 0;
@@ -131,6 +87,12 @@
     right: 0;
     width: var(--avatar-size);
     z-index: 1;
+  }
+
+  .tangible-sync-style #avatar-container {
+    --avatar-size: var(--tangible-sync-style-avatar-size);
+    bottom: unset;
+    position: relative;
   }
 
   #avatar {
@@ -156,46 +118,46 @@
     --work-icon-size: 20px;
     background-color: var(--md-background-color);
     border-radius: 50%;
-    box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px rgba(60, 64, 67, 0.15);
+    box-shadow: 0 0 2px rgba(60, 64, 67, 0.12),
+       0 0 6px rgba(60, 64, 67, 0.15);
     color: var(--signin-work-badge-foreground-color);
     height: var(--work-icon-size);
     padding: calc((var(--badge-width) - var(--work-icon-size)) / 2);
     width: var(--work-icon-size);
   }
 
-  #contentContainer {
-    font-size: var(--content-container-font-size);
-    line-height: var(--content-container-line-height);
-    margin-bottom: var(--content-container-margin-bottom);
-    margin-inline: var(--content-container-margin-inline);
-    margin-top: var(--content-container-margin-top);
-    text-align: center;
-    width: var(--content-container-width);
+  .tangible-sync-style .work-badge {
+    bottom: 0;
   }
 
-  #contentContainer h2 {
-    font-size: var(--content-container-title-font-size);
-    font-weight: var(--content-container-title-font-weight);
-    line-height: var(--content-container-title-line-height);
+  #text-container {
+    margin-bottom: var(--text-container-margin-bottom);
+    margin-inline: var(--text-container-margin-inline);
+    margin-top: var(--text-container-margin-top);
+    text-align: center;
+  }
+
+  #title {
+    font-size: 1.85em;
+    font-weight: normal;
     margin-bottom: 8px;
+  }
+
+  .tangible-sync-style #text-container {
+    margin: 0;
   }
 
   .info-box {
     align-items: center;
-    border: var(--info-box-border);
-    border-radius: var(--info-box-border-radius);
-    bottom: var(--info-box-bottom);
+    border: 1px solid var(--google-grey-200);
+    border-radius: 8px;
     color: var(--google-grey-700);
     display: flex;
     flex-direction: row;
-    font-size: var(--info-box-font-size);
-    line-height: var(--info-box-line-height);
     margin-inline: var(--info-box-margin-inline);
     margin-top: var(--info-box-margin-top);
-    max-width: var(--info-box-max-width);
-    padding: var(--info-box-padding);
+    padding: 12px 0;
     padding-inline-end: 18px;
-    position: var(--info-box-position);
     width: var(--info-box-width);
   }
 
@@ -222,24 +184,52 @@
     width: var(--icon-size);
   }
 
-  #buttonsContainer {
+  #buttons-container {
     flex-wrap: wrap-reverse;
-    max-width: var(--buttons-container-max-width);
+    max-width: 100%;
     right: 0;
   }
 
-  #buttonsContainer cr-button {
-    font-size: var(--text-font-size);
+  cr-button {
+    font-size: 1.16em;
     margin: 5px 0;
     min-width: 111px;
   }
 
-  #buttonsContainer #cancelButton {
+  #buttons-container #cancelButton {
     font-weight: normal;
+  }
+
+  .tangible-sync-style cr-button {
+    margin: 0;
   }
 
   #linkData {
     margin: 16px 32px;
+  }
+
+  #tangible-sync-style-left-banner {
+    content: url(images/left-banner.svg);
+  }
+
+  #tangible-sync-style-right-banner {
+    content: url(images/right-banner.svg);
+  }
+
+  .tangible-sync-style#main-container {
+    height: calc(100vh - (2*var(--action-container-padding) + var(--cr-button-height)));
+    width: 100vw;
+  }
+
+  .tangible-sync-style #content-container {
+    left: 50%;
+    position: relative;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .tangible-sync-style #subtitle {
+    margin-top: 0;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -248,78 +238,90 @@
     }
 
     .work-badge > iron-icon {
-      box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px
-        rgba(60, 64, 67, 0.15);
+      box-shadow: 0 0 2px rgba(60, 64, 67, 0.12),
+         0 0 6px rgba(60, 64, 67, 0.15);
     }
 
     .info-box {
       color: var(--google-grey-100);
     }
 
+    .tangible-sync-style .info-box {
+      border-color: var(--google-grey-600);
+    }
+
     .icon-container {
       background-color: var(--google-grey-700);
+    }
+
+    #tangible-sync-style-right-banner {
+      content: url(images/right-banner-dark.svg);
+    }
+
+    #tangible-sync-style-left-banner {
+      content: url(images/left-banner-dark.svg);
     }
   }
 </style>
 
-<div id="headerContainer">
-  <div id="banner"></div>
-  <div id="avatarContainer">
-    <img id="avatar" alt="" src="[[pictureUrl_]]">
-    <div class="work-badge" hidden="[[!showEnterpriseBadge_]]">
-      <iron-icon class="icon" icon="cr:domain"></iron-icon>
-    </div>
-  </div>
-</div>
-
-<div id="contentContainer">
-  <template is="dom-if" if="[[title_]]">
-    <h2 id="title">
-      [[title_]]
-    </h2>
-  </template>
-  <template is="dom-if" if="[[subtitle_]]">
-    <p id="subtitle" class="secondary">
-      [[subtitle_]]
-    </p>
-  </template>
-  <if expr="not chromeos_lacros">
-  <template is="dom-if" if="[[enterpriseInfo_]]">
-    <div class="info-box">
-      <div class="icon-container">
-        <iron-icon icon="cr:domain"></iron-icon>
+<div id="main-container"
+    class$="[[getTangibleSyncStyleClass_(isTangibleSyncStyleEnabled_,
+        isModalDialog_)]]">
+  <img id="tangible-sync-style-left-banner"
+      hidden="[[!getTangibleSyncStyleClass_(isTangibleSyncStyleEnabled_,
+          isModalDialog_)]]">
+  <img id="tangible-sync-style-right-banner"
+      hidden="[[!getTangibleSyncStyleClass_(isTangibleSyncStyleEnabled_,
+          isModalDialog_)]]">
+  <div id="content-container">
+    <div id="header-container">
+      <div id="banner" hidden="[[getTangibleSyncStyleClass_(
+          isTangibleSyncStyleEnabled_, isModalDialog_)]]"></div>
+      <div id="avatar-container">
+        <img id="avatar" alt="" src="[[pictureUrl_]]">
+        <div class="work-badge" hidden="[[!showEnterpriseBadge_]]">
+          <iron-icon class="icon" icon="cr:domain"></iron-icon>
+        </div>
       </div>
-      <p id="enterpriseInfo" >
-        [[enterpriseInfo_]]
-      </p>
     </div>
-  </template>
-  </if>
-</div>
-<if expr="chromeos_lacros">
-<template is="dom-if" if="[[enterpriseInfo_]]">
-  <div class="info-box">
-    <div class="icon-container">
-      <iron-icon icon="cr:domain"></iron-icon>
+    <div id="text-container">
+      <template is="dom-if" if="[[title_]]">
+        <h2 id="title">
+          [[title_]]
+        </h2>
+      </template>
+      <template is="dom-if" if="[[subtitle_]]">
+        <p id="subtitle" class="secondary">
+          [[subtitle_]]
+        </p>
+      </template>
+      <template is="dom-if" if="[[enterpriseInfo_]]">
+        <div class="info-box">
+          <div class="icon-container">
+            <iron-icon icon="cr:domain"></iron-icon>
+          </div>
+          <p id="enterpriseInfo">
+            [[enterpriseInfo_]]
+          </p>
+        </div>
+      </template>
     </div>
-    <p id="enterpriseInfo" >
-      [[enterpriseInfo_]]
-    </p>
+    <template is="dom-if" if="[[showLinkDataCheckbox_]]">
+      <cr-checkbox id="linkData" checked="{{linkData_}}">
+        <div>$i18n{linkDataText}</div>
+      </cr-checkbox>
+    </template>
   </div>
-</template>
-</if>
-<template is="dom-if" if="[[showLinkDataCheckbox_]]">
-  <cr-checkbox id="linkData" checked="{{linkData_}}">
-    <div>$i18n{linkDataText}</div>
-  </cr-checkbox>
-</template>
-<div id="buttonsContainer" class="action-container">
-  <cr-button id="proceedButton" class="action-button" on-click="onProceed_"
-      autofocus$="[[isModalDialog_]]" disabled="[[disableProceedButton_]]">
-    [[proceedLabel_]]
-  </cr-button>
-  <cr-button id="cancelButton" on-click="onCancel_"
-      hidden="[[!showCancelButton_]]">
-    $i18n{cancelLabel}
-  </cr-button>
+</div>
+<div id="buttons-container"
+    class$="action-container [[getTangibleSyncStyleClass_(
+        isTangibleSyncStyleEnabled_, isModalDialog_)]]">
+    <cr-button id="proceedButton" class="action-button" on-click="onProceed_"
+        autofocus$="[[isModalDialog_]]" disabled="[[disableProceedButton_]]">
+      [[proceedLabel_]]
+    </cr-button>
+    <cr-button id="cancelButton" on-click="onCancel_"
+        hidden="[[!showCancelButton_]]">
+      $i18n{cancelLabel}
+    </cr-button>
 </div>

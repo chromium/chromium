@@ -184,6 +184,13 @@ class StackSamplingProfiler::SamplingThread : public Thread {
                                   int64_t value,
                                   absl::optional<PlatformThreadId> thread_id);
 
+  // Adds the metadata as profile metadata. Profile metadata stores metadata
+  // global to the profile.
+  void AddProfileMetadata(uint64_t name_hash,
+                          absl::optional<int64_t> key,
+                          int64_t value,
+                          absl::optional<PlatformThreadId> thread_id);
+
   // Removes an active collection based on its collection id, forcing it to run
   // its callback if any data has been collected. This can be called externally
   // from any thread.
@@ -242,6 +249,10 @@ class StackSamplingProfiler::SamplingThread : public Thread {
       absl::optional<int64_t> key,
       int64_t value,
       absl::optional<PlatformThreadId> thread_id);
+  void AddProfileMetadataTask(uint64_t name_hash,
+                              absl::optional<int64_t> key,
+                              int64_t value,
+                              absl::optional<PlatformThreadId> thread_id);
   void RemoveCollectionTask(int collection_id);
   void RecordSampleTask(int collection_id);
   void ShutdownTask(int add_events);
@@ -421,6 +432,22 @@ void StackSamplingProfiler::SamplingThread::ApplyMetadataToPastSamples(
                           key, value, thread_id));
 }
 
+void StackSamplingProfiler::SamplingThread::AddProfileMetadata(
+    uint64_t name_hash,
+    absl::optional<int64_t> key,
+    int64_t value,
+    absl::optional<PlatformThreadId> thread_id) {
+  ThreadExecutionState state;
+  scoped_refptr<SingleThreadTaskRunner> task_runner = GetTaskRunner(&state);
+  if (state != RUNNING) {
+    return;
+  }
+  DCHECK(task_runner);
+  task_runner->PostTask(
+      FROM_HERE, BindOnce(&SamplingThread::AddProfileMetadataTask,
+                          Unretained(this), name_hash, key, value, thread_id));
+}
+
 void StackSamplingProfiler::SamplingThread::Remove(int collection_id) {
   // This is not to be run on the sampling thread.
 
@@ -586,6 +613,21 @@ void StackSamplingProfiler::SamplingThread::ApplyMetadataToPastSamplesTask(
       continue;
     id_collection_pair.second->profile_builder->ApplyMetadataRetrospectively(
         period_start, period_end, item);
+  }
+}
+
+void StackSamplingProfiler::SamplingThread::AddProfileMetadataTask(
+    uint64_t name_hash,
+    absl::optional<int64_t> key,
+    int64_t value,
+    absl::optional<PlatformThreadId> thread_id) {
+  DCHECK_EQ(GetThreadId(), PlatformThread::CurrentId());
+  MetadataRecorder::Item item(name_hash, key, thread_id, value);
+  for (auto& id_collection_pair : active_collections_) {
+    if (thread_id && id_collection_pair.second->thread_id != thread_id) {
+      continue;
+    }
+    id_collection_pair.second->profile_builder->AddProfileMetadata(item);
   }
 }
 
@@ -901,6 +943,16 @@ void StackSamplingProfiler::ApplyMetadataToPastSamples(
     absl::optional<PlatformThreadId> thread_id) {
   SamplingThread::GetInstance()->ApplyMetadataToPastSamples(
       period_start, period_end, name_hash, key, value, thread_id);
+}
+
+// static
+void StackSamplingProfiler::AddProfileMetadata(
+    uint64_t name_hash,
+    int64_t key,
+    int64_t value,
+    absl::optional<PlatformThreadId> thread_id) {
+  SamplingThread::GetInstance()->AddProfileMetadata(name_hash, key, value,
+                                                    thread_id);
 }
 
 }  // namespace base

@@ -77,7 +77,7 @@ class MODULES_EXPORT MojoAudioOutputIPC
   MakeProviderReceiver();
 
   // Tries to acquire a RendererAudioOutputStreamFactory and requests device
-  // authorization. On failure to aquire a factory, |callback| is destructed
+  // authorization. On failure to acquire a factory, |callback| is destructed
   // asynchronously.
   void DoRequestDeviceAuthorization(const base::UnguessableToken& session_id,
                                     const std::string& device_id,

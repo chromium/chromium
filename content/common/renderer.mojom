@@ -162,11 +162,6 @@ interface Renderer {
   // TODO(crbug.com/1206150): We need a specification for this restriction.
   SetIsIsolatedContext(bool value);
 
-  // Set the OS-level support for Attribution Reporting indicating whether
-  // OS-level attribution is enabled.
-  SetOsSupportForAttributionReporting(
-      attribution_reporting.mojom.OsSupport os_support);
-
   // Initialize renderer user agent string, user agent metadata and CORS exempt
   // header list on renderer startup.
   //
@@ -194,4 +189,10 @@ interface Renderer {
                      blink.mojom.UserAgentMetadata metadata,
                      array<string> cors_exempt_header_list,
                      attribution_reporting.mojom.OsSupport attribution_os_support);
+
+  // Set the OS-level support for Attribution Reporting indicating whether
+  // OS-level attribution is enabled.
+  [EnableIf=is_android]
+  SetOsSupportForAttributionReporting(
+      attribution_reporting.mojom.OsSupport os_support);
 };

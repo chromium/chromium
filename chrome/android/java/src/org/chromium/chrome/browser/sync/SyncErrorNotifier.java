@@ -19,10 +19,7 @@ import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
-import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.sync.ui.PassphraseActivity;
 import org.chromium.chrome.browser.sync.ui.SyncTrustedVaultProxyActivity;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
@@ -30,9 +27,7 @@ import org.chromium.components.browser_ui.notifications.NotificationManagerProxy
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.base.GoogleServiceAuthError.State;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.PassphraseType;
 import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
@@ -83,12 +78,6 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
 
         if (!mSyncService.isSyncFeatureEnabled()) {
             cancelNotifications();
-        } else if (shouldSyncAuthErrorBeShown()) {
-            // Auth errors take precedence over passphrase errors.
-            showNotification(getString(R.string.sync_error_card_title),
-                    SyncSettingsUtils.getSyncStatusSummaryForAuthError(
-                            ContextUtils.getApplicationContext(), mSyncService.getAuthError()),
-                    createSettingsIntent());
         } else if (mSyncService.isEngineInitialized()
                 && mSyncService.isPassphraseRequiredForPreferredDataTypes()) {
             assert (!mSyncService.isTrustedVaultKeyRequiredForPreferredDataTypes());
@@ -160,34 +149,6 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
         mNotificationManager.notify(notification);
         NotificationUmaTracker.getInstance().onNotificationShown(
                 NotificationUmaTracker.SystemNotificationType.SYNC, notification.getNotification());
-    }
-
-    private boolean shouldSyncAuthErrorBeShown() {
-        switch (mSyncService.getAuthError()) {
-            case State.NONE:
-            case State.CONNECTION_FAILED:
-            case State.SERVICE_UNAVAILABLE:
-            case State.REQUEST_CANCELED:
-            case State.INVALID_GAIA_CREDENTIALS:
-                return false;
-            case State.USER_NOT_SIGNED_UP:
-                return true;
-            default:
-                Log.w(TAG, "Not showing unknown Auth Error: " + mSyncService.getAuthError());
-                return false;
-        }
-    }
-
-    /**
-     * Creates an intent that launches the Chrome settings, and automatically opens the fragment
-     * for signed in users.
-     *
-     * @return the intent for opening the settings
-     */
-    private Intent createSettingsIntent() {
-        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-        return settingsLauncher.createSettingsActivityIntent(ContextUtils.getApplicationContext(),
-                ManageSyncSettings.class.getName(), ManageSyncSettings.createArguments(false));
     }
 
     /**

@@ -11,6 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/core/common/remote_commands/remote_commands_service.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
@@ -53,8 +54,7 @@ bool DeviceCommandRemotePowerwashJob::IsExpired(base::TimeTicks now) {
 }
 
 void DeviceCommandRemotePowerwashJob::RunImpl(
-    CallbackWithResult succeeded_callback,
-    CallbackWithResult failed_callback) {
+    CallbackWithResult result_callback) {
   // Set callback which gets called after command is ACKd to the server. We want
   // to start the powerwash process only after the server got the ACK, otherwise
   // we could reboot before ACKing and then the server would never get the ACK.
@@ -72,7 +72,8 @@ void DeviceCommandRemotePowerwashJob::RunImpl(
 
   // Ack the command.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(succeeded_callback), absl::nullopt));
+      FROM_HERE, base::BindOnce(std::move(result_callback),
+                                ResultType::kSuccess, absl::nullopt));
 }
 
 }  // namespace policy

@@ -98,6 +98,10 @@ class CONTENT_EXPORT PrefetchDocumentManager
 
   void EnableNoVarySearchSupport();
 
+  base::WeakPtr<PrefetchDocumentManager> GetWeakPtr() {
+    return weak_method_factory_.GetWeakPtr();
+  }
+
   static void SetPrefetchServiceForTesting(PrefetchService* prefetch_service);
 
  private:
@@ -129,7 +133,7 @@ class CONTENT_EXPORT PrefetchDocumentManager
 
   // NoVarySearchHelper that manages NoVarySearch data and url matching.
   // Used through the getter GetNoVarySearchHelper
-  NoVarySearchHelper no_vary_search_helper_;
+  scoped_refptr<NoVarySearchHelper> no_vary_search_helper_;
 
   bool no_vary_search_support_enabled_ = false;
 

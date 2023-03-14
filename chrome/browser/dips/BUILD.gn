@@ -11,7 +11,9 @@ source_set("test_utils") {
 
   deps = [
     "//base",
+    "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/test:test_support",
     "//components/ukm:test_support",
     "//services/metrics/public/cpp:metrics_cpp",
     "//testing/gmock",
@@ -25,6 +27,7 @@ source_set("unit_tests") {
   sources = [
     "cookie_access_filter_unittest.cc",
     "dips_bounce_detector_unittest.cc",
+    "dips_cleanup_service_unittest.cc",
     "dips_database_unittest.cc",
     "dips_service_unittest.cc",
     "dips_storage_unittest.cc",

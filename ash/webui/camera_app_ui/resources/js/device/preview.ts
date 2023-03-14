@@ -421,9 +421,11 @@ export class Preview {
       element.textContent = val;
     }
 
-    function buildInverseLookupFunction(
-        obj: Record<string, number>, prefix: string): (key: number) => string {
+    function buildInverseLookupFunction<T extends number>(
+        enumType: Record<string, T|string>, prefix: string): (key: number) =>
+        string {
       const map = new Map<number, string>();
+      const obj = util.getNumberEnumMapping(enumType);
       for (const [key, val] of Object.entries(obj)) {
         if (!key.startsWith(prefix)) {
           continue;

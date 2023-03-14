@@ -37,6 +37,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     kPreparePersistentVault,
     kPrepareVaultForMigration,
     kAddAuthFactor,
+    kUpdateAuthFactor,
     kListAuthFactors,
     kStartMigrateToDircrypto,
   };
@@ -116,6 +117,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     // directory is not initialized or the user doesn't exist.
     absl::optional<base::FilePath> GetUserProfileDir(
         const cryptohome::AccountIdentifier& account_id) const;
+
+    // Creates user directories once UserDataDir is available.
+    void CreatePostponedDirectories();
 
     // Adds the given key as a fake auth factor to the user (the user must
     // already exist).
@@ -298,6 +302,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   FUDAC_OPERATION_TYPES(kPrepareVaultForMigration,
                         PrepareVaultForMigrationRequest);
   FUDAC_OPERATION_TYPES(kAddAuthFactor, AddAuthFactorRequest);
+  FUDAC_OPERATION_TYPES(kUpdateAuthFactor, UpdateAuthFactorRequest);
   FUDAC_OPERATION_TYPES(kListAuthFactors, ListAuthFactorsRequest);
   FUDAC_OPERATION_TYPES(kStartMigrateToDircrypto,
                         StartMigrateToDircryptoRequest);

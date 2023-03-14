@@ -57,6 +57,7 @@ struct FrameCountingData {
 struct FrameCountingPerSinkData {
   CompositorFrameSinkType type;
   bool is_root;
+  string debug_label;
 
   // Bucket index of the first bucket in `presented_frames` based on the
   // timestamp of the first presented frame in the bucket and start time.

@@ -29,6 +29,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
@@ -40,6 +41,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
+import org.chromium.chrome.browser.quick_delete.QuickDeleteMetricsDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils.UseDesktopUserAgentCaller;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
@@ -50,6 +52,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -449,6 +452,23 @@ public class TabbedAppMenuTest {
         int quickDeletePosition = AppMenuTestSupport.findIndexOfMenuItemById(
                 mActivityTestRule.getAppMenuCoordinator(), R.id.quick_delete_menu_id);
         mRenderTestRule.render(getListView().getChildAt(quickDeletePosition), "quick_delete");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Browser", "Main", "QuickDelete"})
+    @EnableFeatures({ChromeFeatureList.QUICK_DELETE_FOR_ANDROID})
+    public void testQuickDeleteMenu_entryFromMenuItemHistogram() throws IOException {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords("Privacy.QuickDelete",
+                                QuickDeleteMetricsDelegate.PrivacyQuickDelete.MENU_ITEM_CLICKED, 1)
+                        .build();
+
+        MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(),
+                mActivityTestRule.getActivity(), R.id.quick_delete_menu_id);
+
+        histogramWatcher.assertExpected();
     }
 
     @Test

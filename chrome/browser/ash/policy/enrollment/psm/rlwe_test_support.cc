@@ -8,18 +8,13 @@
 #include <string>
 
 #include "base/check.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/path_service.h"
-#include "base/threading/thread_restrictions.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/policy/test_support/request_handler_for_psm_auto_enrollment.h"
 #include "third_party/private_membership/src/internal/testing/regression_test_data/regression_test_data.pb.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
 namespace em = enterprise_management;
 using RlweClient = private_membership::rlwe::PrivateMembershipRlweClient;
-using RlweTestData =
-    private_membership::rlwe::PrivateMembershipRlweClientRegressionTestData;
 
 namespace policy::psm::testing {
 
@@ -38,37 +33,13 @@ std::unique_ptr<RlweClient> CreateRlweClient(
   return std::move(status_or_client).value();
 }
 
-RlweTestData ReadTestData() {
-  base::FilePath src_root_dir;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_root_dir));
-  const base::FilePath path_to_test_data =
-      src_root_dir.AppendASCII("third_party")
-          .AppendASCII("private_membership")
-          .AppendASCII("src")
-          .AppendASCII("internal")
-          .AppendASCII("testing")
-          .AppendASCII("regression_test_data")
-          .AppendASCII("test_data.binarypb");
-
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  CHECK(base::PathExists(path_to_test_data))
-      << " path_to_test_data: " << path_to_test_data;
-
-  std::string serialized_test_data;
-  CHECK(base::ReadFileToString(path_to_test_data, &serialized_test_data));
-
-  RlweTestData test_data;
-  CHECK(test_data.ParseFromString(serialized_test_data));
-
-  return test_data;
-}
-
 }  // namespace
 
 RlweTestCase LoadTestCase(bool is_member) {
-  const auto test_data = ReadTestData();
+  const auto test_data = RequestHandlerForPsmAutoEnrollment::LoadTestData();
+  DCHECK(test_data);
 
-  for (const auto& test_case : test_data.test_cases()) {
+  for (const auto& test_case : test_data->test_cases()) {
     if (test_case.is_positive_membership_expected() == is_member) {
       return test_case;
     }

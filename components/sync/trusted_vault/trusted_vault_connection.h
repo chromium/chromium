@@ -26,12 +26,18 @@ enum class TrustedVaultRegistrationStatus {
   // Used when trusted vault request can't be completed successfully due to
   // vault key being outdated or device key being not registered.
   kLocalDataObsolete,
-  // Used when request isn't sent due to access token fetching failure.
-  kAccessTokenFetchingFailure,
+  // Used when request wasn't sent due to transient auth error that prevented
+  // fetching an access token.
+  kTransientAccessTokenFetchError,
+  // Used when request wasn't sent due to persistent auth error that prevented
+  // fetching an access token.
+  kPersistentAccessTokenFetchError,
+  // Used when request wasn't sent because primary account changed meanwhile.
+  kPrimaryAccountChangeAccessTokenFetchError,
   // Used for all network errors.
   kNetworkError,
   // Used for all http and protocol errors not covered by the above.
-  kOtherError
+  kOtherError,
 };
 
 enum class TrustedVaultDownloadKeysStatus {

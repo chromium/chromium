@@ -4,15 +4,23 @@
 
 package org.chromium.chrome.browser.customtabs.features.partialcustomtab;
 
+import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_BOTTOM;
+import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE;
+
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.os.Handler;
+import android.util.SparseBooleanArray;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.AnimRes;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBaseStrategy.PartialCustomTabType;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -42,12 +50,15 @@ public class PartialCustomTabDisplayManager
     private final boolean mIsTablet;
     private final boolean mInteractWithBackground;
     private final boolean mShowMaximizeButton;
+    private final int mSideSheetPosition;
+    private final int mSideSheetAnimation;
     private final PartialCustomTabVersionCompat mVersionCompat;
+    private final SparseBooleanArray mLastMaximizeState = new SparseBooleanArray();
 
     // Simple factory interface creating a new SizeStrategy. Facilitates testing.
     interface SizeStrategyCreator {
-        PartialCustomTabBaseStrategy createForType(
-                @PartialCustomTabType int type, boolean startMaximized);
+        PartialCustomTabBaseStrategy createForType(@PartialCustomTabType int type,
+                boolean startMaximized, int sideSheetPosition, int sideSheetAnimation);
     }
 
     private PartialCustomTabBaseStrategy mStrategy;
@@ -63,7 +74,8 @@ public class PartialCustomTabDisplayManager
             @Px int initialWidth, int breakPointDp, boolean isFixedHeight,
             OnResizedCallback onResizedCallback, ActivityLifecycleDispatcher lifecycleDispatcher,
             FullscreenManager fullscreenManager, boolean isTablet, boolean interactWithBackground,
-            boolean showMaximizeButton, int decorationType) {
+            boolean showMaximizeButton, int decorationType, int sideSheetPosition,
+            int sideSheetAnimation) {
         mActivity = activity;
         mUnclampedInitialHeight = initialHeight;
         mUnclampedInitialWidth = initialWidth;
@@ -75,6 +87,8 @@ public class PartialCustomTabDisplayManager
         mInteractWithBackground = interactWithBackground;
         mShowMaximizeButton = showMaximizeButton;
         mDecorationType = decorationType;
+        mSideSheetPosition = sideSheetPosition;
+        mSideSheetAnimation = sideSheetAnimation;
 
         mActivityLifecycleDispatcher = lifecycleDispatcher;
         lifecycleDispatcher.register(this);
@@ -82,7 +96,8 @@ public class PartialCustomTabDisplayManager
         mVersionCompat = PartialCustomTabVersionCompat.create(mActivity, this::updatePosition);
         mHandleStrategyFactory = new PartialCustomTabHandleStrategyFactory();
         mCurrentPartialCustomTabType = calculatePartialCustomTabType();
-        mStrategy = mSizeStrategyCreator.createForType(mCurrentPartialCustomTabType, false);
+        mStrategy = mSizeStrategyCreator.createForType(
+                mCurrentPartialCustomTabType, false, sideSheetPosition, sideSheetAnimation);
     }
 
     @PartialCustomTabType
@@ -98,12 +113,13 @@ public class PartialCustomTabDisplayManager
     public void onConfigurationChanged(Configuration newConfig) {
         int type = calculatePartialCustomTabType();
         if (type != mCurrentPartialCustomTabType) {
-            boolean startMaximized = false;
             if (mStrategy != null) {
-                startMaximized = mStrategy.isMaximized();
+                mLastMaximizeState.put(mStrategy.getStrategyType(), mStrategy.isMaximized());
                 mStrategy.destroy();
             }
-            mStrategy = mSizeStrategyCreator.createForType(type, startMaximized);
+            boolean startMaximized = mLastMaximizeState.get(type, false);
+            mStrategy = mSizeStrategyCreator.createForType(
+                    type, startMaximized, mSideSheetPosition, mSideSheetAnimation);
             mCurrentPartialCustomTabType = type;
             new Handler().postDelayed(() -> {
                 mStrategy.onToolbarInitialized(
@@ -191,40 +207,83 @@ public class PartialCustomTabDisplayManager
     }
 
     private @PartialCustomTabType int calculatePartialCustomTabType() {
-        // TODO(crbug.com/1407227) Until we are able to handle multi-window case for both
-        // bottom-sheet and side-sheet we will display a full-size PCCT.
-        if (MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity)) {
-            return PartialCustomTabType.FULL_SIZE;
-        }
-
-        int displayWidthDp = mVersionCompat.getDisplayWidthDp();
-        if (mUnclampedInitialWidth == 0 && mUnclampedInitialHeight == 0) {
-            return PartialCustomTabType.FULL_SIZE;
-        }
-
-        if (mUnclampedInitialWidth > 0 && mUnclampedInitialHeight > 0) {
-            return displayWidthDp < mBreakPointDp
-                            || !ChromeFeatureList.sCctResizableSideSheetForThirdParties.isEnabled()
-                    ? PartialCustomTabType.BOTTOM_SHEET
-                    : PartialCustomTabType.SIDE_SHEET;
-        }
-
-        if (mUnclampedInitialWidth > 0) {
-            return displayWidthDp < mBreakPointDp
-                            || !ChromeFeatureList.sCctResizableSideSheetForThirdParties.isEnabled()
-                    ? PartialCustomTabType.FULL_SIZE
-                    : PartialCustomTabType.SIDE_SHEET;
-        }
-
-        if (mUnclampedInitialHeight > 0) {
-            return PartialCustomTabType.BOTTOM_SHEET;
-        }
-
-        return PartialCustomTabType.FULL_SIZE; // unreachable
+        return calculatePartialCustomTabType(mActivity, mUnclampedInitialWidth,
+                mUnclampedInitialHeight, mVersionCompat::getDisplayWidthDp, mBreakPointDp,
+                ChromeFeatureList.sCctResizableSideSheetForThirdParties.isEnabled());
     }
 
-    private PartialCustomTabBaseStrategy createSizeStrategy(
-            @PartialCustomTabType int type, boolean maximized) {
+    @VisibleForTesting
+    static @PartialCustomTabType int calculatePartialCustomTabType(Activity activity,
+            int initialWidth, int initialHeight, Supplier<Integer> displayWidthDpSupplier,
+            int breakPointDp, boolean ssEnabled) {
+        // TODO(crbug.com/1407227) Until we are able to handle multi-window case for both
+        // bottom-sheet and side-sheet we will display a full-size PCCT.
+        if (MultiWindowUtils.getInstance().isInMultiWindowMode(activity)) {
+            return PartialCustomTabType.FULL_SIZE;
+        }
+        if (initialWidth == 0 && initialHeight == 0) {
+            return PartialCustomTabType.FULL_SIZE;
+        }
+        int displayWidthDp = -1;
+        if (initialWidth > 0 && initialHeight > 0) {
+            if (displayWidthDp < 0) displayWidthDp = displayWidthDpSupplier.get();
+            return displayWidthDp < breakPointDp || !ssEnabled ? PartialCustomTabType.BOTTOM_SHEET
+                                                               : PartialCustomTabType.SIDE_SHEET;
+        }
+        if (initialWidth > 0) {
+            if (displayWidthDp < 0) displayWidthDp = displayWidthDpSupplier.get();
+            return displayWidthDp < breakPointDp || !ssEnabled ? PartialCustomTabType.FULL_SIZE
+                                                               : PartialCustomTabType.SIDE_SHEET;
+        }
+        if (initialHeight > 0) {
+            return PartialCustomTabType.BOTTOM_SHEET;
+        }
+        assert false : "Unreachable";
+        return PartialCustomTabType.FULL_SIZE;
+    }
+
+    /**
+     * Get the start animation resource ID to override the default with.
+     * @param activity Activity to get window resource from.
+     * @param provider Intent data provider from which to extract necessary info.
+     * @param defaultResId Default start animation resource ID.
+     * @return Start resource ID if an override was found, or the default one if not.
+     */
+    public static @AnimRes int getStartAnimationOverride(Activity activity,
+            BrowserServicesIntentDataProvider provider, @AnimRes int defaultResId) {
+        // Initialize VersionCompat lazily using a supplier since in many cases (for normal CCTs)
+        // |calculatePartialCustomTabType| won't need the object and will early out.
+        Supplier<Integer> displayWidthDpSupplier = () -> {
+            var versionCompat = PartialCustomTabVersionCompat.create(activity, () -> {});
+            return versionCompat.getDisplayWidthDp();
+        };
+        @PartialCustomTabType
+        int type = calculatePartialCustomTabType(activity, provider.getInitialActivityWidth(),
+                provider.getInitialActivityHeight(), displayWidthDpSupplier,
+                provider.getActivityBreakPoint(),
+                ChromeFeatureList.sCctResizableSideSheetForThirdParties.isEnabled());
+
+        @AnimRes
+        int start_anim_id = defaultResId;
+        if (type == PartialCustomTabType.BOTTOM_SHEET || type == PartialCustomTabType.FULL_SIZE) {
+            start_anim_id = R.anim.slide_in_up;
+        } else if (type == PartialCustomTabType.SIDE_SHEET) {
+            int behavior = provider.getSideSheetSlideInBehavior();
+            if (behavior == ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_BOTTOM) {
+                start_anim_id = R.anim.slide_in_up;
+            } else if (behavior == ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE) {
+                boolean sheetOnRight = PartialCustomTabSideSheetStrategy.isSheetOnRight(
+                        provider.getSideSheetPosition());
+                start_anim_id = sheetOnRight ? R.anim.slide_in_right : R.anim.slide_in_left;
+            } else {
+                assert false : "Invalide slide-in behavior";
+            }
+        }
+        return start_anim_id;
+    }
+
+    private PartialCustomTabBaseStrategy createSizeStrategy(@PartialCustomTabType int type,
+            boolean maximized, int sideSheetPosition, int sideSheetAnimation) {
         switch (type) {
             case PartialCustomTabType.BOTTOM_SHEET: {
                 return new PartialCustomTabBottomSheetStrategy(mActivity, mUnclampedInitialHeight,
@@ -235,7 +294,8 @@ public class PartialCustomTabDisplayManager
             case PartialCustomTabType.SIDE_SHEET: {
                 return new PartialCustomTabSideSheetStrategy(mActivity, mUnclampedInitialWidth,
                         mOnResizedCallback, mFullscreenManager, mIsTablet, mInteractWithBackground,
-                        mShowMaximizeButton, maximized, mHandleStrategyFactory, mDecorationType);
+                        mShowMaximizeButton, maximized, sideSheetPosition, sideSheetAnimation,
+                        mHandleStrategyFactory, mDecorationType);
             }
             case PartialCustomTabType.FULL_SIZE: {
                 return new PartialCustomTabFullSizeStrategy(mActivity, mOnResizedCallback,

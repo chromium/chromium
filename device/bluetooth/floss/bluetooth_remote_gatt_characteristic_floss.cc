@@ -48,7 +48,7 @@ BluetoothRemoteGattCharacteristicFloss::
 }
 
 std::string BluetoothRemoteGattCharacteristicFloss::GetIdentifier() const {
-  return base::StringPrintf("%s/%d", service_->GetIdentifier().c_str(),
+  return base::StringPrintf("%s/%04x", service_->GetIdentifier().c_str(),
                             characteristic_->instance_id);
 }
 
@@ -58,12 +58,16 @@ device::BluetoothUUID BluetoothRemoteGattCharacteristicFloss::GetUUID() const {
 
 BluetoothRemoteGattCharacteristicFloss::Properties
 BluetoothRemoteGattCharacteristicFloss::GetProperties() const {
-  return characteristic_->properties;
+  const auto& [props, perms] = ConvertPropsAndPermsFromFloss(
+      characteristic_->properties, characteristic_->permissions);
+  return props;
 }
 
 BluetoothRemoteGattCharacteristicFloss::Permissions
 BluetoothRemoteGattCharacteristicFloss::GetPermissions() const {
-  return characteristic_->permissions;
+  const auto& [props, perms] = ConvertPropsAndPermsFromFloss(
+      characteristic_->properties, characteristic_->permissions);
+  return perms;
 }
 
 const std::vector<uint8_t>& BluetoothRemoteGattCharacteristicFloss::GetValue()
@@ -218,10 +222,19 @@ void BluetoothRemoteGattCharacteristicFloss::OnWriteCharacteristic(
     base::OnceClosure callback,
     ErrorCallback error_callback,
     std::vector<uint8_t> data,
-    DBusResult<Void> result) {
+    DBusResult<GattWriteRequestStatus> result) {
   if (!result.has_value()) {
     std::move(error_callback)
         .Run(/*error_code=*/BluetoothGattServiceFloss::GattErrorCode::kFailed);
+    return;
+  }
+
+  if (result.value() != GattWriteRequestStatus::kSuccess) {
+    BluetoothGattServiceFloss::GattErrorCode error_code =
+        (result.value() == GattWriteRequestStatus::kBusy
+             ? BluetoothGattServiceFloss::GattErrorCode::kInProgress
+             : BluetoothGattServiceFloss::GattErrorCode::kFailed);
+    std::move(error_callback).Run(error_code);
     return;
   }
 

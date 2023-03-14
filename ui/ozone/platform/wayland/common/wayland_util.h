@@ -26,7 +26,7 @@ class WaylandWindow;
 }  // namespace ui
 
 namespace gfx {
-enum class BufferFormat;
+enum class BufferFormat : uint8_t;
 class Size;
 }  // namespace gfx
 

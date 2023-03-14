@@ -79,6 +79,17 @@ void PrivacyIndicatorsNotificationDelegate::UpdateButtonIndices() {
   }
 }
 
+void ASH_EXPORT UpdatePrivacyIndicators(
+    const std::string& app_id,
+    absl::optional<std::u16string> app_name,
+    bool is_camera_used,
+    bool is_microphone_used,
+    scoped_refptr<PrivacyIndicatorsNotificationDelegate> delegate) {
+  ModifyPrivacyIndicatorsNotification(app_id, app_name, is_camera_used,
+                                      is_microphone_used, delegate);
+  UpdatePrivacyIndicatorsView(app_id, is_camera_used, is_microphone_used);
+}
+
 std::string GetPrivacyIndicatorsNotificationId(const std::string& app_id) {
   return kPrivacyIndicatorsNotificationIdPrefix + app_id;
 }

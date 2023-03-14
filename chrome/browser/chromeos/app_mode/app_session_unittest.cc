@@ -31,12 +31,24 @@
 #include "content/public/common/webplugininfo.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/gfx/geometry/rect.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/accelerators/accelerator_controller_impl.h"
+#include "ash/public/cpp/session/session_types.h"
+#include "ash/public/cpp/test/test_new_window_delegate.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
+#include "ash/test/ash_test_helper.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/chromeos/app_mode/kiosk_session_plugin_handler_delegate.h"
 #include "content/public/browser/plugin_service.h"
-#endif
+#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 namespace chromeos {
 
@@ -158,6 +170,8 @@ void CheckSessionRestartReasonHistogramDependingOnRebootStatus(
 
 }  // namespace
 
+// TODO(b/271336749): split app_session_unittest.cc file into smaller test
+// files.
 template <typename AppSessionParamType = KioskSessionRestartTestCase>
 class AppSessionBaseTest
     : public ::testing::TestWithParam<AppSessionParamType> {
@@ -176,7 +190,13 @@ class AppSessionBaseTest
     chromeos::PowerManagerClient::InitializeFake();
   }
 
-  void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    ash_test_helper_.SetUp(ash::AshTestHelper::InitParams());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  }
 
   static void TearDownTestSuite() { chromeos::PowerManagerClient::Shutdown(); }
 
@@ -286,6 +306,9 @@ class AppSessionBaseTest
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<ScopedTestingLocalState> local_state_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::AshTestHelper ash_test_helper_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Must outlive |app_session_|.
   TestingProfile profile_;
@@ -472,7 +495,7 @@ TEST_F(AppSessionTest, DoNotOpenSecondBrowserInWebKioskIfTypeIsNotAppPopup) {
     Browser::Type::TYPE_DEVTOOLS,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     Browser::Type::TYPE_CUSTOM_TAB,
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     Browser::Type::TYPE_PICTURE_IN_PICTURE,
   };
 
@@ -733,45 +756,71 @@ class AppSessionTroubleshootingTest : public AppSessionBaseTest<bool> {
     StartChromeAppKioskSession();
   }
 
+  void UpdateTroubleshootingToolsPolicy(bool enable) {
+    GetPrefs()->SetBoolean(prefs::kKioskTroubleshootingToolsEnabled, enable);
+  }
+
   std::unique_ptr<Browser> CreateDevToolsBrowserWithTestWindow() {
     auto params = Browser::CreateParams::CreateForDevTools(profile());
-    params.window = &test_window_;
+
+    TestBrowserWindow* test_window_ = new TestBrowserWindow;
+    new TestBrowserWindowOwner(test_window_);
+    params.window = test_window_;
+
     return base::WrapUnique<Browser>(Browser::Create(params));
   }
 
- private:
-  TestBrowserWindow test_window_;
+  std::unique_ptr<Browser> CreateRegularBrowserWithTestWindow() {
+    return CreateBrowserWithTestWindowAndType(Browser::TYPE_NORMAL);
+  }
+
+  std::unique_ptr<Browser> CreateBrowserWithTestWindowAndType(
+      Browser::Type type) {
+    Browser::CreateParams params(profile(), /*user_gesture=*/true);
+    params.type = type;
+    return CreateBrowserWithTestWindowForParams(params);
+  }
 };
 
 TEST_P(AppSessionTroubleshootingTest, EnableTroubleshootingToolsDuringSession) {
   SetUpKioskSession();
-
-  GetPrefs()->SetBoolean(prefs::kKioskTroubleshootingToolsEnabled, true);
+  UpdateTroubleshootingToolsPolicy(/*enable=*/true);
 
   // Kiosk session should shoutdown only if policy is changed from enable to
   // disable.
   EXPECT_FALSE(IsSessionShuttingDown());
 
-  GetPrefs()->SetBoolean(prefs::kKioskTroubleshootingToolsEnabled, false);
-
+  UpdateTroubleshootingToolsPolicy(/*enable=*/false);
   EXPECT_TRUE(IsSessionShuttingDown());
 }
 
 TEST_P(AppSessionTroubleshootingTest,
        EnableTroubleshootingToolsBeforeSessionStarted) {
+  UpdateTroubleshootingToolsPolicy(/*enable=*/true);
+  SetUpKioskSession();
+
+  UpdateTroubleshootingToolsPolicy(/*enable=*/false);
+  EXPECT_TRUE(IsSessionShuttingDown());
+}
+
+TEST_P(AppSessionTroubleshootingTest,
+       MainBrowserShutdownAfterKioskTroubleshootingToolsDisabled) {
   GetPrefs()->SetBoolean(prefs::kKioskTroubleshootingToolsEnabled, true);
 
   SetUpKioskSession();
 
   GetPrefs()->SetBoolean(prefs::kKioskTroubleshootingToolsEnabled, false);
+
+  EXPECT_TRUE(IsSessionShuttingDown());
+
+  CloseMainBrowser();
 
   EXPECT_TRUE(IsSessionShuttingDown());
 }
 
 TEST_P(AppSessionTroubleshootingTest, OpenDevToolsEnabledTroubleshootingTools) {
   SetUpKioskSession();
-
-  GetPrefs()->SetBoolean(prefs::kKioskTroubleshootingToolsEnabled, true);
+  UpdateTroubleshootingToolsPolicy(/*enable=*/true);
 
   EXPECT_FALSE(ShouldBrowserBeClosedByAppSessionBrowserHander(
       CreateDevToolsBrowserWithTestWindow()->window()));
@@ -782,13 +831,69 @@ TEST_P(AppSessionTroubleshootingTest, OpenDevToolsEnabledTroubleshootingTools) {
   histogram()->ExpectTotalCount(kKioskNewBrowserWindowHistogram, 1);
 }
 
-TEST_P(AppSessionTroubleshootingTest,
-       CloseDevToolsDisabledTroubleshootingTools) {
+TEST_P(AppSessionTroubleshootingTest, CloseTroubleshootingToolsByDefault) {
   SetUpKioskSession();
 
   // Kiosk troubleshooting tools are disabled by default.
   EXPECT_TRUE(ShouldBrowserBeClosedByAppSessionBrowserHander(
       CreateDevToolsBrowserWithTestWindow()->window()));
+  histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
+                                 KioskBrowserWindowType::kClosedRegularBrowser,
+                                 1);
+  histogram()->ExpectTotalCount(kKioskNewBrowserWindowHistogram, 1);
+
+  EXPECT_TRUE(ShouldBrowserBeClosedByAppSessionBrowserHander(
+      CreateRegularBrowserWithTestWindow()->window()));
+
+  histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
+                                 KioskBrowserWindowType::kClosedRegularBrowser,
+                                 2);
+  histogram()->ExpectTotalCount(kKioskNewBrowserWindowHistogram, 2);
+}
+
+TEST_P(AppSessionTroubleshootingTest,
+       OpenDevToolsDisableTroubleshootingToolsDuringSession) {
+  SetUpKioskSession();
+  UpdateTroubleshootingToolsPolicy(/*enable=*/true);
+
+  // Kiosk session should shoutdown only if policy is changed from enable to
+  // disable.
+  EXPECT_FALSE(IsSessionShuttingDown());
+  EXPECT_FALSE(ShouldBrowserBeClosedByAppSessionBrowserHander(
+      CreateDevToolsBrowserWithTestWindow()->window()));
+
+  histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
+                                 KioskBrowserWindowType::kOpenedDevToolsBrowser,
+                                 1);
+  histogram()->ExpectTotalCount(kKioskNewBrowserWindowHistogram, 1);
+
+  UpdateTroubleshootingToolsPolicy(/*enable=*/false);
+  EXPECT_TRUE(IsSessionShuttingDown());
+}
+
+TEST_P(AppSessionTroubleshootingTest,
+       OpenNewWindowEnabledTroubleshootingTools) {
+  SetUpKioskSession();
+  UpdateTroubleshootingToolsPolicy(/*enable=*/true);
+
+  std::unique_ptr<Browser> normal_browser =
+      CreateRegularBrowserWithTestWindow();
+  EXPECT_FALSE(
+      ShouldBrowserBeClosedByAppSessionBrowserHander(normal_browser->window()));
+
+  histogram()->ExpectBucketCount(
+      kKioskNewBrowserWindowHistogram,
+      KioskBrowserWindowType::kOpenedTroubleshootingNormalBrowser, 1);
+  histogram()->ExpectTotalCount(kKioskNewBrowserWindowHistogram, 1);
+}
+
+TEST_P(AppSessionTroubleshootingTest,
+       CloseNewWindowDisabledTroubleshootingTools) {
+  UpdateTroubleshootingToolsPolicy(/*enable=*/false);
+  SetUpKioskSession();
+
+  EXPECT_TRUE(ShouldBrowserBeClosedByAppSessionBrowserHander(
+      CreateRegularBrowserWithTestWindow()->window()));
 
   histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
                                  KioskBrowserWindowType::kClosedRegularBrowser,
@@ -797,30 +902,172 @@ TEST_P(AppSessionTroubleshootingTest,
 }
 
 TEST_P(AppSessionTroubleshootingTest,
-       OpenDevToolsDisableTroubleshootingToolsDuringSession) {
+       OnlyAllowRegularBrowserAndDevToolsAsTroubleshootingBrowsers) {
+  const std::vector<Browser::Type> should_be_closed_browser_types = {
+    Browser::Type::TYPE_POPUP,
+    Browser::Type::TYPE_APP,
+    Browser::Type::TYPE_APP_POPUP,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    Browser::Type::TYPE_CUSTOM_TAB,
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    Browser::Type::TYPE_PICTURE_IN_PICTURE,
+  };
   SetUpKioskSession();
+  UpdateTroubleshootingToolsPolicy(/*enable=*/true);
 
-  GetPrefs()->SetBoolean(prefs::kKioskTroubleshootingToolsEnabled, true);
-
-  // Kiosk session should shoutdown only if policy is changed from enable to
-  // disable.
-  EXPECT_FALSE(IsSessionShuttingDown());
-  EXPECT_FALSE(ShouldBrowserBeClosedByAppSessionBrowserHander(
-      CreateDevToolsBrowserWithTestWindow()->window()));
+  for (Browser::Type type : should_be_closed_browser_types) {
+    EXPECT_TRUE(ShouldBrowserBeClosedByAppSessionBrowserHander(
+        CreateBrowserWithTestWindowAndType(type)->window()));
+  }
 
   histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
-                                 KioskBrowserWindowType::kOpenedDevToolsBrowser,
-                                 1);
-  histogram()->ExpectTotalCount(kKioskNewBrowserWindowHistogram, 1);
-
-  GetPrefs()->SetBoolean(prefs::kKioskTroubleshootingToolsEnabled, false);
-
-  EXPECT_TRUE(IsSessionShuttingDown());
+                                 KioskBrowserWindowType::kClosedRegularBrowser,
+                                 should_be_closed_browser_types.size());
+  histogram()->ExpectTotalCount(kKioskNewBrowserWindowHistogram,
+                                should_be_closed_browser_types.size());
 }
 
 INSTANTIATE_TEST_SUITE_P(AppSessionTroubleshootingTools,
                          AppSessionTroubleshootingTest,
                          ::testing::Bool());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class FakeNewWindowDelegate : public ash::TestNewWindowDelegate {
+ public:
+  FakeNewWindowDelegate() = default;
+  ~FakeNewWindowDelegate() override = default;
+
+  void NewWindow(bool incognito, bool should_trigger_session_restore) override {
+    new_window_called_ = true;
+  }
+
+  void NewTab() override { new_tab_called_ = true; }
+
+  void ShowTaskManager() override { task_manager_called_ = true; }
+
+  bool is_new_window_called() const { return new_window_called_; }
+  bool is_new_tab_called() const { return new_tab_called_; }
+  bool is_task_manager_called() const { return task_manager_called_; }
+
+ private:
+  bool new_window_called_ = false;
+  bool new_tab_called_ = false;
+  bool task_manager_called_ = false;
+};
+
+// Tests actions after pressing troubleshooting shortcuts. Runs all tests for
+// web and chrome app kiosks.
+class AppSessionTroubleshootingShortcutsTest
+    : public AppSessionTroubleshootingTest {
+ public:
+  static bool ProcessInController(const ui::Accelerator& accelerator) {
+    return ash::Shell::Get()->accelerator_controller()->Process(accelerator);
+  }
+
+  void SetUp() override {
+    auto new_window_delegate = std::make_unique<FakeNewWindowDelegate>();
+    fake_new_window_delegate_ = new_window_delegate.get();
+    test_new_window_delegate_provider_ =
+        std::make_unique<ash::TestNewWindowDelegateProvider>(
+            std::move(new_window_delegate));
+
+    AppSessionTroubleshootingTest::SetUp();
+
+    ash::SessionInfo info;
+    info.is_running_in_app_mode = true;
+    info.state = session_manager::SessionState::ACTIVE;
+    ash::Shell::Get()->session_controller()->SetSessionInfo(info);
+  }
+
+  bool is_new_window_called() const {
+    return fake_new_window_delegate_->is_new_window_called();
+  }
+
+  bool is_new_tab_called() const {
+    return fake_new_window_delegate_->is_new_tab_called();
+  }
+
+  bool is_task_manager_called() const {
+    return fake_new_window_delegate_->is_task_manager_called();
+  }
+
+ protected:
+  ui::Accelerator new_window_accelerator =
+      ui::Accelerator(ui::VKEY_N, ui::EF_CONTROL_DOWN);
+  ui::Accelerator task_manager_accelerator =
+      ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_COMMAND_DOWN);
+
+ private:
+  raw_ptr<FakeNewWindowDelegate> fake_new_window_delegate_;
+  std::unique_ptr<ash::TestNewWindowDelegateProvider>
+      test_new_window_delegate_provider_;
+};
+
+TEST_P(AppSessionTroubleshootingShortcutsTest, NewWindowShortcutEnabled) {
+  SetUpKioskSession();
+  UpdateTroubleshootingToolsPolicy(/*enable=*/true);
+
+  ProcessInController(new_window_accelerator);
+  EXPECT_TRUE(is_new_window_called());
+}
+
+// Just confirm that other shortcuts (e.g. new tab) do not work.
+TEST_P(AppSessionTroubleshootingShortcutsTest, NewTabShortcutIsNoAction) {
+  SetUpKioskSession();
+  UpdateTroubleshootingToolsPolicy(/*enable=*/true);
+
+  ProcessInController(ui::Accelerator(ui::VKEY_T, ui::EF_CONTROL_DOWN));
+  EXPECT_FALSE(is_new_tab_called());
+  EXPECT_FALSE(is_new_window_called());
+}
+
+TEST_P(AppSessionTroubleshootingShortcutsTest,
+       NewWindowShortcutNoActionByDefault) {
+  SetUpKioskSession();
+
+  ProcessInController(new_window_accelerator);
+  EXPECT_FALSE(is_new_window_called());
+}
+
+TEST_P(AppSessionTroubleshootingShortcutsTest,
+       NewWindowShortcutNoActionIfPolicyDisabled) {
+  SetUpKioskSession();
+  UpdateTroubleshootingToolsPolicy(/*enable=*/false);
+
+  ProcessInController(new_window_accelerator);
+  EXPECT_FALSE(is_new_window_called());
+}
+
+TEST_P(AppSessionTroubleshootingShortcutsTest, TaskManagerShortcutEnabled) {
+  SetUpKioskSession();
+  UpdateTroubleshootingToolsPolicy(/*enable=*/true);
+
+  ProcessInController(task_manager_accelerator);
+  EXPECT_TRUE(is_task_manager_called());
+}
+
+TEST_P(AppSessionTroubleshootingShortcutsTest,
+       TaskManagerShortcutNoActionByDefault) {
+  SetUpKioskSession();
+
+  ProcessInController(task_manager_accelerator);
+  EXPECT_FALSE(is_task_manager_called());
+}
+
+TEST_P(AppSessionTroubleshootingShortcutsTest,
+       TaskManagerShortcutNoActionIfPolicyDisabled) {
+  SetUpKioskSession();
+  UpdateTroubleshootingToolsPolicy(/*enable=*/false);
+
+  ProcessInController(task_manager_accelerator);
+  EXPECT_FALSE(is_task_manager_called());
+}
+
+INSTANTIATE_TEST_SUITE_P(AppSessionTroubleshootingShortcuts,
+                         AppSessionTroubleshootingShortcutsTest,
+                         ::testing::Bool());
+
+#endif  //  BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 TEST_F(AppSessionTest, ShouldHandlePlugin) {

@@ -120,10 +120,15 @@ class PaintControllerPaintTestBase : public RenderingTest {
       begin_index++;
     }
     while (end_index > begin_index &&
-           IsNotContentType(chunks[end_index - 1].id.type))
+           IsNotContentType(chunks[end_index - 1].id.type)) {
       end_index--;
-    return PaintChunkSubset(RootPaintController().GetPaintArtifactShared(),
-                            begin_index, end_index);
+    }
+    auto artifact = RootPaintController().GetPaintArtifactShared();
+    PaintChunkSubset subset(artifact, chunks[begin_index]);
+    for (wtf_size_t i = begin_index + 1; i < end_index; i++) {
+      subset.Merge(PaintChunkSubset(artifact, chunks[i]));
+    }
+    return subset;
   }
 };
 

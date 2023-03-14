@@ -639,14 +639,15 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DISABLED_TextareaAppendPerf) {
 
   absl::optional<base::Value> trace_data =
       base::JSONReader::Read(*stop_tracing_future.Take());
-  ASSERT_TRUE(trace_data);
+  ASSERT_TRUE(trace_data && trace_data->is_dict());
 
-  const base::Value* trace_events = trace_data->FindListKey("traceEvents");
-  ASSERT_TRUE(trace_events && trace_events->is_list());
+  const base::Value::List* trace_events =
+      trace_data->GetDict().FindList("traceEvents");
+  ASSERT_TRUE(trace_events);
 
   int renderer_total_dur = 0;
   int automation_total_dur = 0;
-  for (const base::Value& event : trace_events->GetList()) {
+  for (const base::Value& event : *trace_events) {
     const std::string* cat = event.GetDict().FindString("cat");
     if (!cat || *cat != "accessibility")
       continue;

@@ -4,7 +4,10 @@
 
 create {
   source {
-    script { name: "fetch.py" }
+    script {
+      name: "fetch.py"
+      verification_timeout: "30m"
+    }
   }
   build {}
 }

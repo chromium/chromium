@@ -7,10 +7,15 @@ import("//ios/build/config.gni")
 source_set("annotations") {
   deps = [
     "//base",
+    "//ios/web/public",
+    "//ios/web/public:web_state_observer",
     "//ui/base",
   ]
 
-  sources = [ "annotations_text_observer.h" ]
+  sources = [
+    "annotations_text_manager.h",
+    "annotations_text_observer.h",
+  ]
 
   frameworks = [ "Foundation.framework" ]
 

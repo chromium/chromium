@@ -32,15 +32,9 @@ class WebViewPasswordFeatureManager
   bool ShouldShowAccountStorageOptIn() const override;
   bool ShouldShowAccountStorageReSignin(
       const GURL& current_page_url) const override;
-  void OptInToAccountStorage() override;
-  void OptOutOfAccountStorageAndClearSettings() override;
 
   bool ShouldShowAccountStorageBubbleUi() const override;
 
-  bool ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally() const override;
-
-  void SetDefaultPasswordStore(
-      const password_manager::PasswordForm::Store& store) override;
   password_manager::PasswordForm::Store GetDefaultPasswordStore()
       const override;
   bool IsDefaultPasswordStoreSet() const override;
@@ -48,8 +42,6 @@ class WebViewPasswordFeatureManager
   password_manager::metrics_util::PasswordAccountStorageUsageLevel
   ComputePasswordAccountStorageUsageLevel() const override;
 
-  void RecordMoveOfferedToNonOptedInUser() override;
-  int GetMoveOfferedToNonOptedInUserCount() const override;
   bool IsBiometricAuthenticationBeforeFillingEnabled() const override;
 
  private:

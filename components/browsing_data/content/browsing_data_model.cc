@@ -13,6 +13,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/network_context.h"
+#include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
@@ -45,8 +46,16 @@ struct GetPrimaryHost {
 template <>
 std::string GetPrimaryHost::operator()<url::Origin>(
     const url::Origin& data_key) const {
-  DCHECK_EQ(BrowsingDataModel::StorageType::kTrustTokens, storage_type_);
-  return data_key.host();
+  if (storage_type_ == BrowsingDataModel::StorageType::kTrustTokens) {
+    return data_key.host();
+  }
+
+  if (storage_type_ > BrowsingDataModel::StorageType::kLastType) {
+    return data_key.host();
+  }
+
+  NOTREACHED();
+  return "";
 }
 
 template <>
@@ -90,10 +99,11 @@ std::string GetPrimaryHost::operator()<content::AttributionDataModel::DataKey>(
 // separately from the BrowsingDataModel itself.
 struct StorageRemoverHelper {
   explicit StorageRemoverHelper(
-      content::StoragePartition* storage_partition
+      content::StoragePartition* storage_partition,
+      BrowsingDataModel::Delegate* delegate
       // TODO(crbug.com/1271155): Inject other dependencies.
       )
-      : storage_partition_(storage_partition) {}
+      : storage_partition_(storage_partition), delegate_(delegate) {}
 
   void RemoveByPrimaryHost(
       const std::string& primary_host,
@@ -123,6 +133,7 @@ struct StorageRemoverHelper {
   size_t callbacks_seen_ = 0;
 
   raw_ptr<content::StoragePartition> storage_partition_;
+  raw_ptr<BrowsingDataModel::Delegate> delegate_;
   base::WeakPtrFactory<StorageRemoverHelper> weak_ptr_factory_{this};
 };
 
@@ -141,8 +152,10 @@ void StorageRemoverHelper::RemoveByPrimaryHost(
   // until the loop has completed visiting all its entries whether deletion is
   // synchronous or asynchronous.
   auto sync_completion = GetCompleteCallback();
-  for (const auto& [key, details] : data_key_entries)
+  for (const auto& [key, details] : data_key_entries) {
     absl::visit(Visitor{this, details.storage_types}, key);
+    delegate_->RemoveDataKey(key, details.storage_types, GetCompleteCallback());
+  }
 
   std::move(sync_completion).Run();
 }
@@ -279,6 +292,17 @@ void OnAttributionReportingLoaded(
   std::move(loaded_callback).Run();
 }
 
+void OnDelegateDataLoaded(
+    BrowsingDataModel* model,
+    base::OnceClosure loaded_callback,
+    std::vector<BrowsingDataModel::Delegate::DelegateEntry> delegated_entries) {
+  for (const auto& entry : delegated_entries) {
+    model->AddBrowsingData(entry.data_key, entry.storage_type,
+                           entry.storage_size);
+  }
+  std::move(loaded_callback).Run();
+}
+
 }  // namespace
 
 BrowsingDataModel::DataDetails::~DataDetails() = default;
@@ -297,6 +321,17 @@ BrowsingDataModel::BrowsingDataEntryView::BrowsingDataEntryView(
       data_key(data_key),
       data_details(data_details) {}
 BrowsingDataModel::BrowsingDataEntryView::~BrowsingDataEntryView() = default;
+
+BrowsingDataModel::Delegate::DelegateEntry::DelegateEntry(
+    DataKey data_key,
+    StorageType storage_type,
+    uint64_t storage_size)
+    : data_key(data_key),
+      storage_type(storage_type),
+      storage_size(storage_size) {}
+BrowsingDataModel::Delegate::DelegateEntry::DelegateEntry(
+    const DelegateEntry& other) = default;
+BrowsingDataModel::Delegate::DelegateEntry::~DelegateEntry() = default;
 
 BrowsingDataModel::Iterator::Iterator(const Iterator& iterator) = default;
 BrowsingDataModel::Iterator::~Iterator() = default;
@@ -355,11 +390,12 @@ BrowsingDataModel::~BrowsingDataModel() = default;
 
 void BrowsingDataModel::BuildFromDisk(
     content::StoragePartition* storage_partition,
+    std::unique_ptr<Delegate> delegate,
     base::OnceCallback<void(std::unique_ptr<BrowsingDataModel>)>
         complete_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  auto model = BuildEmpty(storage_partition);
+  auto model = BuildEmpty(storage_partition, std::move(delegate));
   auto* model_pointer = model.get();
 
   // This functor will own the unique_ptr for the model during construction,
@@ -376,9 +412,10 @@ void BrowsingDataModel::BuildFromDisk(
 }
 
 std::unique_ptr<BrowsingDataModel> BrowsingDataModel::BuildEmpty(
-    content::StoragePartition* storage_partition) {
-  return base::WrapUnique(
-      new BrowsingDataModel(storage_partition));  // Private constructor
+    content::StoragePartition* storage_partition,
+    std::unique_ptr<Delegate> delegate) {
+  return base::WrapUnique(new BrowsingDataModel(
+      storage_partition, std::move(delegate)));  // Private constructor
 }
 
 void BrowsingDataModel::AddBrowsingData(const DataKey& data_key,
@@ -401,7 +438,8 @@ void BrowsingDataModel::RemoveBrowsingData(const std::string& primary_host,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Bind the lifetime of the helper to the lifetime of the callback.
-  auto helper = std::make_unique<StorageRemoverHelper>(storage_partition_);
+  auto helper = std::make_unique<StorageRemoverHelper>(storage_partition_,
+                                                       delegate_.get());
   auto* helper_pointer = helper.get();
 
   base::OnceClosure wrapped_completed = base::BindOnce(
@@ -429,7 +467,7 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
       base::FeatureList::IsEnabled(blink::features::kConversionMeasurement);
 
   // TODO(crbug.com/1271155): Derive this from the StorageTypeSet directly.
-  int storage_backend_count = 1;
+  int storage_backend_count = 2;
   if (is_shared_storage_enabled) {
     storage_backend_count++;
   }
@@ -468,8 +506,13 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
     storage_partition_->GetAttributionDataModel()->GetAllDataKeys(
         base::BindOnce(&OnAttributionReportingLoaded, this, completion));
   }
+
+  // Data loaded from non-components storage types via the delegate.
+  delegate_->GetAllDataKeys(
+      base::BindOnce(&OnDelegateDataLoaded, this, completion));
 }
 
 BrowsingDataModel::BrowsingDataModel(
-    content::StoragePartition* storage_partition)
-    : storage_partition_(storage_partition) {}
+    content::StoragePartition* storage_partition,
+    std::unique_ptr<Delegate> delegate)
+    : storage_partition_(storage_partition), delegate_(std::move(delegate)) {}

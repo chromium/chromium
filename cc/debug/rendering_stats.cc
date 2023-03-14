@@ -4,6 +4,8 @@
 
 #include "cc/debug/rendering_stats.h"
 
+#include <utility>
+
 namespace cc {
 
 RenderingStats::TimeDeltaList::TimeDeltaList() = default;

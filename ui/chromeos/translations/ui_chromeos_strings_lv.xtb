@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Tālāk</translation>
 <translation id="1209796539517632982">Automātiski nosaukumu serveri</translation>
 <translation id="1210831758834677569">Laosiešu</translation>
+<translation id="1221555006497674479">Jūsu kopīgā diska <ph name="TOTAL_SPACE" /> krātuvē ir atlicis maz vietas (<ph name="REMAINING_PERCENTAGE" />%).</translation>
 <translation id="1243314992276662751">Augšupielādēt</translation>
 <translation id="1249250836236328755">Žanrs</translation>
 <translation id="1254593899333212300">Tiešais interneta savienojums</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">Ķīniešu, piņjiņs</translation>
 <translation id="1646019627374511909">Vairāki faili tiek padarīti pieejami bezsaistē (skaits: <ph name="NUMBER_OF_ITEMS" />)</translation>
 <translation id="164969095109328410">Chrome ierīce</translation>
+<translation id="1661207570040737402">Jūs esat izmantojis visu savu kopīgā diska Google Workspace krātuvi.</translation>
 <translation id="1661867754829461514">Trūkst PIN koda</translation>
 <translation id="166439687370499867">Nav atļauts mainīt koplietota tīkla konfigurāciju.</translation>
 <translation id="1665611772925418501">Failu nevarēja pārveidot.</translation>
@@ -82,6 +84,7 @@
 <translation id="1722487484194605434">Notiek <ph name="NUMBER_OF_ITEMS" /> vienumu tilpsaspiešana...</translation>
 <translation id="1722687688096767818">Notiek profila pievienošana...</translation>
 <translation id="1726100011689679555">Nosaukumu serveri</translation>
+<translation id="1727562178154619254">Gatavs sinhronizēšanai</translation>
 <translation id="1729953886957086472">Vācu (Vācija)</translation>
 <translation id="1730235522912993863">Ķīniešu, Candže</translation>
 <translation id="1731889557567069540">Nokopēti vienumi: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -349,11 +352,11 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Ielīmēt</translation>
 <translation id="3952872973865944257">Telugu, fonētiskā</translation>
-<translation id="3954354850384043518">Notiek lejupielāde</translation>
 <translation id="3958548648197196644">Kivi</translation>
 <translation id="3971140002794351170">Lejupielādēt mobilo sakaru profilu, tīkls numur <ph name="NETWORK_INDEX" />, tīklu skaits ir <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Angļu (Apvienotā Karaliste)</translation>
 <translation id="3975895378829046965">Bengāļu, fonētiskā</translation>
+<translation id="3999574733850440202">Nesen atvērtie Microsoft faili ir pārvietoti uz pakalpojumu OneDrive.</translation>
 <translation id="4002066346123236978">Nosaukums</translation>
 <translation id="4017788180641807848">Angļu (ASV), ar Workman tastatūru</translation>
 <translation id="4019998208269143058">Piespraust sadaļai “Ātrā piekļuve failiem”</translation>
@@ -362,6 +365,7 @@
 <translation id="4092890906744441904">Īru</translation>
 <translation id="4124935795427217608">Vienradzis</translation>
 <translation id="4131235941541910880">Varat pārvietot nevajadzīgus vienumus uz atkritni</translation>
+<translation id="4134804435730168042"><ph name="NETWORK_INDEX" />. no <ph name="NETWORK_COUNT" /> tīkliem, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, jāaktivizē pēc ierīces iestatīšanas</translation>
 <translation id="4153015322587141338">Noklikšķiniet ar peles labo pogu uz faila un atlasiet opciju “<ph name="PIN_COMMAND" />”, lai varētu ātri piekļūt šim failam plauktā.</translation>
 <translation id="4157569377477607576">Administratora politika nosaka, ka nav ieteicams:</translation>
 <translation id="4159731583141908892">Pārvietots vienums: <ph name="FILE_NAME" />.</translation>
@@ -404,6 +408,7 @@
 <translation id="4414834425328380570">Fails “<ph name="FILE_NAME" />” tiks dzēsts, un jūs vairs nevarēsiet to atjaunot.</translation>
 <translation id="4418686080762064601">Izveidojiet saīsni uz saviem failiem</translation>
 <translation id="4425149324548788773">Mans disks</translation>
+<translation id="4432921877815220091"><ph name="NETWORK_INDEX" />. no <ph name="NETWORK_COUNT" /> tīkliem, <ph name="NETWORK_NAME" />, jāaktivizē pēc ierīces iestatīšanas, pārvalda jūsu administrators</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />%, savienojums</translation>
 <translation id="4442424173763614572">DNS uzmeklēšana neizdevās</translation>
 <translation id="4462159676511157176">Pielāgoti nosaukumu serveri</translation>
@@ -611,8 +616,10 @@
 <translation id="5911887972742538906">Linux lietojumprogrammas instalēšanas laikā radās kļūda.</translation>
 <translation id="5912396950572065471">Formāts</translation>
 <translation id="5913638992615760742">Kopēšana neizdevās; radās neparedzēta kļūda: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">Pieejamas jaunas meklēšanas funkcijas</translation>
 <translation id="5926082595146149752">Holandiešu (Nīderlande), ar ASV starptautisko datora tastatūru</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063"><ph name="NETWORK_INDEX" />. no <ph name="NETWORK_COUNT" /> tīkliem, <ph name="NETWORK_NAME" />, jāaktivizē pēc ierīces iestatīšanas</translation>
 <translation id="5955954492236143329">Vienumu skaits: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Kārtošanas iespējas</translation>
@@ -699,6 +706,7 @@
 <translation id="6732801395666424405">Sertifikāti netika ielādēti.</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Mapes kopīgošana ar Bruschetta</translation>
+<translation id="6750737795876287924">Pašreizējais direktorijs</translation>
 <translation id="6751256176799620176">Atlasīta 1 mape</translation>
 <translation id="6755827872271341378">Chrome OS Flex ierīce</translation>
 <translation id="6790428901817661496">Atskaņot</translation>
@@ -736,7 +744,6 @@
 <translation id="6973630695168034713">Mapes</translation>
 <translation id="6976795442547527108">Lauva</translation>
 <translation id="6979158407327259162">Google disks</translation>
-<translation id="6979737339423435258">Visā periodā</translation>
 <translation id="6989942356279143254">Zviedru</translation>
 <translation id="6990081529015358884">Jums trūkst vietas</translation>
 <translation id="6993826899923627728">Šie vienumi atrodas jūsu atkritnē</translation>
@@ -759,6 +766,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' — &lt;em&gt;meklēt Diskā&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannadu, fonētiskā</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Nevar apstiprināt autentifikācijas servera identitāti, jo nav aizpildīts lauks “Subjekta alternatīvā nosaukuma atbilstība” vai “Domēna sufiksa atbilstība”.</translation>
 <translation id="7165320105431587207">Neizdevās konfigurēt tīklu</translation>
 <translation id="7170041865419449892">Ārpus diapazona</translation>
 <translation id="7180611975245234373">Atsvaidzināt</translation>
@@ -791,7 +799,6 @@
 <translation id="7458955835361612701">Nav nesenu attēlu</translation>
 <translation id="7460898608667578234">Ukraiņu valoda</translation>
 <translation id="7469894403370665791">Automātiski pievienoties šim tīklam</translation>
-<translation id="7481358317100446445">Gatavs</translation>
 <translation id="7486315294984620427">Lai nomestu failus darbvirsmā Parallels Desktop, attiecīgajam failam ir jābūt kopētam Windows failos.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malajalu, fonētiskā</translation>
@@ -829,6 +836,7 @@
 <translation id="7724603315864178912">Izgriezt</translation>
 <translation id="7732111077498238432">Tīklu pārvalda politika</translation>
 <translation id="7736003208887389532">Vai vēlaties neatgriezeniski izdzēst šos failus?</translation>
+<translation id="7740287852186792672">Meklēšanas rezultāti</translation>
 <translation id="7748626145866214022">Vairāk pieejamu opciju darbību joslā. Lai izceltu darbību joslu, nospiediet taustiņu kombināciju Alt+A.</translation>
 <translation id="7760449188139285140">Ķīniešu, Wubi</translation>
 <translation id="7765158879357617694">Pārvietot</translation>
@@ -880,6 +888,7 @@
 <translation id="8116072619078571545">Ūdens ar ledu</translation>
 <translation id="8128733386027980860">Angļu (Apvienotā Karaliste), ar Dvorak tastatūru</translation>
 <translation id="8137331602592933310">Fails “<ph name="FILENAME" />” tika kopīgots ar jums. Jūs nevarat to dzēst, jo tas nepieder jums.</translation>
+<translation id="8138705869659070104">Aktivizēt pēc iestatīšanas</translation>
 <translation id="813913629614996137">Notiek inicializēšana...</translation>
 <translation id="8147028810663464959">Rakstzīmju platums ir pilns.</translation>
 <translation id="8151638057146502721">Konfigurēt</translation>
@@ -905,6 +914,7 @@
 <translation id="8300849813060516376">OTASP neizdevās</translation>
 <translation id="8312871300878166382">Ielīmēt mapē</translation>
 <translation id="8329978297633540474">Vienkāršs teksts</translation>
+<translation id="8332007959299458842">Nesen atvērtie Microsoft faili ir pārvietoti uz Google disku.</translation>
 <translation id="8335587457941836791">Atspraust no plaukta</translation>
 <translation id="8335837413233998004">Baltkrievu</translation>
 <translation id="8336153091935557858">Vakar plkst. <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -931,6 +941,7 @@
 <translation id="8487700953926739672">Pieejams bezsaistē</translation>
 <translation id="8492972329130824181">Mājas tīkls nav pieejams. Lai izveidotu savienojumu, jāiespējo mobilo datu viesabonēšana.</translation>
 <translation id="8499098729323186194">Notiek <ph name="NUMBER_OF_ITEMS" /> vienumu izvilkšana...</translation>
+<translation id="8502913769543567768"><ph name="NETWORK_INDEX" />. no <ph name="NETWORK_COUNT" /> tīkliem, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, jāaktivizē pēc ierīces iestatīšanas, pārvalda jūsu administrators</translation>
 <translation id="8521441079177373948">Lielbritānijas</translation>
 <translation id="853494022971700746">Franču (Francija)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />%, informācija</translation>
@@ -992,6 +1003,7 @@
 <translation id="9046895021617826162">Savienojums neizdevās</translation>
 <translation id="9065512565307033593">Ja verifikācija neizdosies, jūsu piekļuve tīklam tiks atspējota.</translation>
 <translation id="908378762078012445">Krievu, ar fonētisko AATSEEL tastatūru</translation>
+<translation id="9086302186042011942">Notiek sinhronizācija</translation>
 <translation id="9099674669267916096">Lappušu skaits</translation>
 <translation id="9100610230175265781">Jāievada ieejas frāze.</translation>
 <translation id="9110990317705400362">Mēs arvien meklējam veidus, kā papildus aizsargāt pārlūkošanu. Iepriekš jebkura vietne varēja aicināt pievienot paplašinājumu pārlūkā. Jaunākajās Google Chrome versijās lapā “Paplašinājumi” ir precīzi jānorāda, ka vēlaties instalēt šos paplašinājumus. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>

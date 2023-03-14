@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
@@ -164,6 +165,45 @@ class ConnectorsManagerTest : public testing::Test {
 
   std::set<std::string> expected_mime_types_;
 };
+
+// Platform policies should only act as a kill switch.
+class ConnectorsManagerLocalAnalysisPolicyTest
+    : public ConnectorsManagerTest,
+      public testing::WithParamInterface<
+          std::tuple<AnalysisConnector, bool, bool>> {
+ protected:
+  AnalysisConnector connector() const { return std::get<0>(GetParam()); }
+  bool enable_feature() const { return std::get<1>(GetParam()); }
+  bool set_policy() const { return std::get<2>(GetParam()); }
+};
+
+TEST_P(ConnectorsManagerLocalAnalysisPolicyTest, Test) {
+  if (enable_feature()) {
+    scoped_feature_list_.InitWithFeatures({kLocalContentAnalysisEnabled}, {});
+  } else {
+    scoped_feature_list_.InitWithFeatures({}, {kLocalContentAnalysisEnabled});
+  }
+
+  std::unique_ptr<ScopedConnectorPref> scoped_pref =
+      set_policy() ? std::make_unique<ScopedConnectorPref>(
+                         pref_service(), ConnectorPref(connector()),
+                         kNormalLocalAnalysisSettingsPref)
+                   : nullptr;
+
+  ConnectorsManager manager(
+      std::make_unique<BrowserCrashEventRouter>(profile_),
+      std::make_unique<ExtensionInstallEventRouter>(profile_), pref_service(),
+      GetServiceProviderConfig());
+  EXPECT_EQ(enable_feature() && set_policy(),
+            manager.IsConnectorEnabled(connector()));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ConnectorsManagerLocalAnalysisPolicyTest,
+    ConnectorsManagerLocalAnalysisPolicyTest,
+    testing::Combine(testing::ValuesIn(kAllAnalysisConnectors),
+                     testing::Bool(),
+                     testing::Bool()));
 
 class ConnectorsManagerConnectorPoliciesTest
     : public ConnectorsManagerTest,

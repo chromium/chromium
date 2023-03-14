@@ -128,6 +128,11 @@ const char kArcPlayStoreLaunchMetricCanBeRecorded[] =
 // An integer preference to indicate the status of ARCVM /data migration.
 const char kArcVmDataMigrationStatus[] = "arc.vm_data_migration_status";
 
+// A time preference to indicate when the ARCVM /data migration notification is
+// shown for the first time.
+const char kArcVmDataMigrationNotificationFirstShownTime[] =
+    "arc.vm_data_migration_notification_first_shown_time";
+
 // ======== LOCAL STATE PREFS ========
 // ANR count which is currently pending, not flashed to UMA.
 const char kAnrPendingCount[] = "arc.anr_pending_count";
@@ -217,6 +222,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       kArcVmDataMigrationStatus,
       static_cast<int>(ArcVmDataMigrationStatus::kUnnotified));
+  registry->RegisterTimePref(kArcVmDataMigrationNotificationFirstShownTime,
+                             base::Time());
 }
 
 }  // namespace prefs

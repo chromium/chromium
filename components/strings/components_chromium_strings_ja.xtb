@@ -27,7 +27,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           の順に移動して、設定が [プロキシなし] または [直接] になっていることを確認します。</translation>
+<translation id="6549378540556750549">Chromium の実現には、他の<ph name="BEGIN_LINK_OSS" />オープンソース ソフトウェア<ph name="END_LINK_OSS" />もかかわっています。</translation>
 <translation id="6613594504749178791">変更内容は次に Chromium を再起動したときに有効になります。</translation>
+<translation id="7681937895330411637">Chromium は、<ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> のオープンソース プロジェクトによって実現しました。</translation>
 <translation id="7861509383340276692">Chromium メニュー &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;

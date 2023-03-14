@@ -59,7 +59,6 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.FIRST_RUN_SKIP_WELCOME_PAGE,
                 ChromePreferenceKeys.FLAGS_CACHED_ADAPTIVE_TOOLBAR_ENABLED,
                 ChromePreferenceKeys.FLAGS_CACHED_COMMAND_LINE_ON_NON_ROOTED_ENABLED,
-                ChromePreferenceKeys.FLAGS_CACHED_DOWNLOAD_AUTO_RESUMPTION_IN_NATIVE,
                 ChromePreferenceKeys.FLAGS_CACHED_GRID_TAB_SWITCHER_ENABLED,
                 ChromePreferenceKeys.FLAGS_CACHED_NETWORK_SERVICE_WARM_UP_ENABLED,
                 ChromePreferenceKeys.FLAGS_CACHED_START_SURFACE_ENABLED,

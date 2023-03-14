@@ -37,6 +37,12 @@
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_content_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 class DisplayMediaAccessHandlerTest : public ChromeRenderViewHostTestHarness {
  public:
   DisplayMediaAccessHandlerTest() = default;
@@ -487,6 +493,51 @@ TEST_F(DisplayMediaAccessHandlerTest, CorrectHostAsksForPermissionsNormalURLs) {
       content::MEDIA_REQUEST_STATE_CLOSING);
   EXPECT_EQ(u"www.google.com", params.app_name);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+
+TEST_F(DisplayMediaAccessHandlerTest, IsolatedWebAppNameAsksForPermissions) {
+  const GURL app_url(
+      "isolated-app://"
+      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
+  const std::string app_name("Test IWA Name");
+
+  web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
+  web_app::AddDummyIsolatedAppToRegistry(profile(), app_url, app_name);
+
+  const int render_process_id =
+      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
+  const int render_frame_id =
+      web_contents()->GetPrimaryMainFrame()->GetRoutingID();
+  const int page_request_id = 0;
+  const blink::mojom::MediaStreamType video_stream_type =
+      blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE;
+  const blink::mojom::MediaStreamType audio_stream_type =
+      blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE;
+  SetTestFlags({{true /* expect_screens */, true /* expect_windows*/,
+                 true /* expect_tabs */, false /* expect_current_tab */,
+                 true /* expect_audio */, content::DesktopMediaID(),
+                 true /* cancelled */}});
+  content::MediaStreamRequest request(
+      render_process_id, render_frame_id, page_request_id,
+      GURL("http://origin/"), false, blink::MEDIA_GENERATE_STREAM,
+      std::string(), std::string(), audio_stream_type, video_stream_type,
+      /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
+  content::MediaResponseCallback callback;
+  content::WebContents* test_web_contents = web_contents();
+  std::unique_ptr<content::NavigationSimulator> navigation =
+      content::NavigationSimulator::CreateBrowserInitiated(app_url,
+                                                           test_web_contents);
+  navigation->Commit();
+  access_handler_->HandleRequest(test_web_contents, request,
+                                 std::move(callback), nullptr /* extension */);
+  DesktopMediaPicker::Params params = GetParams();
+  access_handler_->UpdateMediaRequestState(
+      render_process_id, render_frame_id, page_request_id, video_stream_type,
+      content::MEDIA_REQUEST_STATE_CLOSING);
+  EXPECT_EQ(base::UTF8ToUTF16(app_name), params.app_name);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(DisplayMediaAccessHandlerTest, WebContentsDestroyed) {
   SetTestFlags({{true /* expect_screens */, true /* expect_windows*/,

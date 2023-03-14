@@ -226,8 +226,8 @@ void ZWPTextInputWrapperV1::SetContentType(ui::TextInputType type,
   // use it to avoid losing the info.
   if (extended_obj_.get() &&
       wl::get_version_of_object(extended_obj_.get()) >=
-          ZCR_EXTENDED_TEXT_INPUT_V1_SET_INPUT_TYPE_SINCE_VERSION) {
-    zcr_extended_text_input_v1_set_input_type(
+          ZCR_EXTENDED_TEXT_INPUT_V1_DEPRECATED_SET_INPUT_TYPE_SINCE_VERSION) {
+    zcr_extended_text_input_v1_deprecated_set_input_type(
         extended_obj_.get(), ui::wayland::ConvertFromTextInputType(type),
         ui::wayland::ConvertFromTextInputMode(mode),
         ui::wayland::ConvertFromTextInputFlags(flags),

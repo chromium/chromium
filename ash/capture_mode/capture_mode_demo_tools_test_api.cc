@@ -41,8 +41,9 @@ CaptureModeDemoToolsTestApi::GetShownModifiersKeyCodes() {
   DCHECK(demo_tools_controller_);
   KeyComboView* key_combo_view = demo_tools_controller_->key_combo_view_;
 
-  if (!key_combo_view || !key_combo_view->modifiers_container_view_)
+  if (!key_combo_view || !key_combo_view->modifiers_container_view_) {
     return std::vector<ui::KeyboardCode>();
+  }
 
   return key_combo_view->GetModifierKeycodeVector();
 }

@@ -218,7 +218,7 @@ TEST_F(CALayerOverlayTest, AllowNonAxisAlignedTransform) {
   pass->shared_quad_state_list.back()
       ->quad_to_target_transform.RotateAboutZAxis(45.f);
 
-  CALayerOverlayList ca_layer_list;
+  OverlayCandidateList ca_layer_list;
   OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
   OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
   AggregatedRenderPassList pass_list;
@@ -244,7 +244,7 @@ TEST_F(CALayerOverlayTest, ThreeDTransform) {
   pass->shared_quad_state_list.back()
       ->quad_to_target_transform.RotateAboutXAxis(45.f);
 
-  CALayerOverlayList ca_layer_list;
+  OverlayCandidateList ca_layer_list;
   OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
   OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
   AggregatedRenderPassList pass_list;
@@ -261,7 +261,8 @@ TEST_F(CALayerOverlayTest, ThreeDTransform) {
   EXPECT_EQ(kRenderPassOutputRect, overlay_damage);
   gfx::Transform expected_transform;
   expected_transform.RotateAboutXAxis(45.f);
-  gfx::Transform actual_transform(ca_layer_list.back().shared_state->transform);
+  gfx::Transform actual_transform(
+      absl::get<gfx::Transform>(ca_layer_list.back().transform));
   EXPECT_EQ(expected_transform.ToString(), actual_transform.ToString());
 }
 
@@ -272,7 +273,7 @@ TEST_F(CALayerOverlayTest, AllowContainingClip) {
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
   pass->shared_quad_state_list.back()->clip_rect = kOverlayRect;
 
-  CALayerOverlayList ca_layer_list;
+  OverlayCandidateList ca_layer_list;
   OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
   OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
   AggregatedRenderPassList pass_list;
@@ -295,7 +296,7 @@ TEST_F(CALayerOverlayTest, NontrivialClip) {
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
   pass->shared_quad_state_list.back()->clip_rect = gfx::Rect(64, 64, 128, 128);
 
-  CALayerOverlayList ca_layer_list;
+  OverlayCandidateList ca_layer_list;
   OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
   OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
   AggregatedRenderPassList pass_list;
@@ -309,8 +310,8 @@ TEST_F(CALayerOverlayTest, NontrivialClip) {
       &damage_rect_, &content_bounds_);
   EXPECT_EQ(gfx::Rect(), damage_rect_);
   EXPECT_EQ(1U, ca_layer_list.size());
-  EXPECT_EQ(gfx::RectF(64, 64, 128, 128),
-            ca_layer_list.back().shared_state->clip_rect);
+  EXPECT_EQ(gfx::Rect(64, 64, 128, 128),
+            ca_layer_list.back().clip_rect.value());
 }
 
 TEST_F(CALayerOverlayTest, SkipTransparent) {
@@ -320,7 +321,7 @@ TEST_F(CALayerOverlayTest, SkipTransparent) {
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
   pass->shared_quad_state_list.back()->opacity = 0;
 
-  CALayerOverlayList ca_layer_list;
+  OverlayCandidateList ca_layer_list;
   OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
   OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
   AggregatedRenderPassList pass_list;
@@ -343,7 +344,7 @@ TEST_F(CALayerOverlayTest, SkipNonVisible) {
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
   pass->quad_list.back()->visible_rect.set_size(gfx::Size());
 
-  CALayerOverlayList ca_layer_list;
+  OverlayCandidateList ca_layer_list;
   OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
   OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
   AggregatedRenderPassList pass_list;
@@ -398,7 +399,7 @@ TEST_F(CALayerOverlayTest, YUVDrawQuadOverlay) {
                      /*video_type=*/gfx::ProtectedVideoType::kClear,
                      /*metadata=*/absl::nullopt);
 
-    CALayerOverlayList ca_layer_list;
+    OverlayCandidateList ca_layer_list;
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
     OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     AggregatedRenderPassList pass_list;
@@ -434,7 +435,7 @@ TEST_F(CALayerOverlayTest, YUVDrawQuadOverlay) {
                      /*video_type=*/gfx::ProtectedVideoType::kClear,
                      /*metadata=*/absl::nullopt);
 
-    CALayerOverlayList ca_layer_list;
+    OverlayCandidateList ca_layer_list;
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
     OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
     AggregatedRenderPassList pass_list;
@@ -462,7 +463,7 @@ TEST_F(CALayerOverlayTest, OverlayErrorCode) {
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
 
-    CALayerOverlayList ca_layer_list;
+    OverlayCandidateList ca_layer_list;
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list;
@@ -490,7 +491,7 @@ TEST_F(CALayerOverlayTest, OverlayErrorCode) {
     // Add a copy request to the render pass
     pass->copy_requests.push_back(CopyOutputRequest::CreateStubForTesting());
 
-    CALayerOverlayList ca_layer_list;
+    OverlayCandidateList ca_layer_list;
     AggregatedRenderPassList pass_list;
     pass_list.push_back(std::move(pass));
     SurfaceDamageRectList surface_damage_rect_list;
@@ -535,7 +536,7 @@ class CALayerOverlayRPDQTest : public CALayerOverlayTest {
   cc::FilterOperations backdrop_filters_;
   OverlayProcessorInterface::FilterOperationsMap render_pass_filters_;
   OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters_;
-  CALayerOverlayList ca_layer_list_;
+  OverlayCandidateList ca_layer_list_;
   SurfaceDamageRectList surface_damage_rect_list_;
 };
 

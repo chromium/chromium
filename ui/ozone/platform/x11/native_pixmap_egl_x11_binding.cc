@@ -18,7 +18,7 @@
 #include "ui/gfx/x/future.h"
 #include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_image_egl_pixmap.h"
+#include "ui/gl/native_pixmap_egl_x11_binding_helper.h"
 #include "ui/gl/scoped_binders.h"
 
 namespace gl {
@@ -139,9 +139,9 @@ x11::Pixmap XPixmapFromNativePixmap(const gfx::NativePixmap& native_pixmap,
 namespace ui {
 
 NativePixmapEGLX11Binding::NativePixmapEGLX11Binding(
-    scoped_refptr<gl::GLImageEGLPixmap> gl_image,
+    std::unique_ptr<gl::NativePixmapEGLX11BindingHelper> binding_helper,
     gfx::BufferFormat format)
-    : gl_image_(std::move(gl_image)), format_(format) {}
+    : binding_helper_(std::move(binding_helper)), format_(format) {}
 NativePixmapEGLX11Binding::~NativePixmapEGLX11Binding() = default;
 
 // static
@@ -174,8 +174,8 @@ std::unique_ptr<NativePixmapGLBinding> NativePixmapEGLX11Binding::Create(
     return nullptr;
   }
 
-  auto gl_image =
-      base::MakeRefCounted<gl::GLImageEGLPixmap>(plane_size, plane_format);
+  auto binding_helper =
+      std::make_unique<gl::NativePixmapEGLX11BindingHelper>(plane_size);
   x11::Pixmap pixmap =
       gl::XPixmapFromNativePixmap(*native_pixmap, plane_format);
   if (pixmap == x11::Pixmap::None) {
@@ -185,14 +185,13 @@ std::unique_ptr<NativePixmapGLBinding> NativePixmapEGLX11Binding::Create(
   // TODO(https://crbug.com/1411749): if we early out below, should we call
   // FreePixmap()?
 
-  // Initialize the image calling eglCreatePixmapSurface.
-  if (!gl_image->Initialize(std::move(pixmap))) {
-    VLOG(1) << "Unable to initialize GL image from pixmap";
+  if (!binding_helper->Initialize(std::move(pixmap))) {
+    VLOG(1) << "Unable to initialize binding from pixmap";
     return nullptr;
   }
 
   auto binding = std::make_unique<NativePixmapEGLX11Binding>(
-      std::move(gl_image), plane_format);
+      std::move(binding_helper), plane_format);
   if (!binding->BindTexture(target, texture_id)) {
     VLOG(1) << "Unable to bind the GL texture";
     return nullptr;
@@ -211,7 +210,7 @@ bool NativePixmapEGLX11Binding::BindTexture(GLenum target, GLuint texture_id) {
   gl::ScopedTextureBinder binder(base::strict_cast<unsigned int>(target),
                                  base::strict_cast<unsigned int>(texture_id));
 
-  if (!gl_image_->BindTexImage(base::strict_cast<unsigned>(target))) {
+  if (!binding_helper_->BindTexImage(base::strict_cast<unsigned>(target))) {
     LOG(ERROR) << "Unable to bind GL image to target = " << target;
     return false;
   }

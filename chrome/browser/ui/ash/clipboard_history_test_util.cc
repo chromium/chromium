@@ -46,8 +46,7 @@ ScopedClipboardHistoryListUpdateWaiter::
   run_loop_.Run();
 }
 
-void ScopedClipboardHistoryListUpdateWaiter::
-    OnClipboardHistoryItemListAddedOrRemoved() {
+void ScopedClipboardHistoryListUpdateWaiter::OnClipboardHistoryItemsUpdated() {
   run_loop_.Quit();
 }
 

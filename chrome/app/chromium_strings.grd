@@ -377,12 +377,24 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
       <message name="IDS_ACCESSIBLE_CANARY_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for the accessible name of a tabbed browser window for the canary (nightly build) channel version of the browser">
         <ph name="PAGE_TITLE">$1<ex>Google</ex></ph> - Chromium Canary
       </message>
-      <message name="IDS_ABOUT_VERSION_COMPANY_NAME" desc="Company name on the about pages">
-        The Chromium Authors
-      </message>
-      <message name="IDS_ABOUT_VERSION_COPYRIGHT" desc="Copyright information on the about pages">
-        Copyright <ph name="YEAR">{0,date,y}<ex>2016</ex></ph> The Chromium Authors. All rights reserved.
-      </message>
+      <if expr="_is_chrome_for_testing_branded">
+        <then>
+          <message name="IDS_ABOUT_VERSION_COMPANY_NAME" desc="Company name on the about pages">
+            Google LLC
+          </message>
+          <message name="IDS_ABOUT_VERSION_COPYRIGHT" desc="Copyright information on the about pages">
+            Copyright <ph name="YEAR">{0,date,y}<ex>2016</ex></ph> Google LLC. All rights reserved.
+          </message>
+        </then>
+        <else>
+          <message name="IDS_ABOUT_VERSION_COMPANY_NAME" desc="Company name on the about pages">
+            The Chromium Authors
+          </message>
+          <message name="IDS_ABOUT_VERSION_COPYRIGHT" desc="Copyright information on the about pages">
+            Copyright <ph name="YEAR">{0,date,y}<ex>2016</ex></ph> The Chromium Authors. All rights reserved.
+          </message>
+        </else>
+      </if>
       <if expr="chromeos_ash">
         <message name="IDS_ABOUT_CROS_VERSION_LICENSE" desc="Additional text displayed beneath the Chromium open source URLs for ChromeOS.">
           ChromiumOS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS">&lt;a target="_blank" href="$1"&gt;</ph>open source software<ph name="END_LINK_CROS_OSS">&lt;/a&gt;</ph>.
@@ -501,11 +513,6 @@ Chromium is unable to recover your settings.
       </message>
       <!-- Add account dialog -->
       <if expr="chromeos_ash">
-        <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_V2" desc="Text body for the Welcome screen in ChromiumOS 'Add account' dialog.">
-If you want to use this account one-time only, you can use Guest mode in Chromium browser. If you want to add an account for someone else, <ph name="LINK_BEGIN">&lt;a target="_blank" id="newPersonLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>add a new person<ph name="LINK_END">&lt;/a&gt;</ph> to your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>.
-
-Permissions you've already given to websites and apps may apply to this account. You can manage your Google Accounts in <ph name="SETTINGS_LINK_BEGIN">&lt;a id="osSettingsLink" href="$3<ex>https://google.com/</ex>"&gt;</ph>Settings<ph name="SETTINGS_LINK_END">&lt;/a&gt;</ph>.
-        </message>
         <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_V2_WITH_GUEST_MODE" desc="Text body for the Welcome screen in ChromiumOS 'Add account' dialog.">
 If you want to use this account one-time only, you can use <ph name="GUEST_LINK_BEGIN">&lt;a id="guestModeLink" href="#"&gt;</ph>Guest mode<ph name="GUEST_LINK_END">&lt;/a&gt;</ph> in Chromium browser. If you want to add an account for someone else, <ph name="LINK_BEGIN">&lt;a target="_blank" id="newPersonLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>add a new person<ph name="LINK_END">&lt;/a&gt;</ph> to your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>.
 
@@ -542,17 +549,8 @@ Permissions you've already given to websites and apps may apply to this account.
         In Password Manager on this device
       </message>
       <if expr="is_macosx">
-        <message name="IDS_PASSWORDS_PAGE_AUTHENTICATION_PROMPT" desc="Text for the dialog box that prompts the user for their OS account password before revealing plaintext passwords on the password page.">
-          Chromium is trying to show passwords.
-        </message>
-        <message name="IDS_PASSWORDS_PAGE_COPY_AUTHENTICATION_PROMPT" desc="Text for the dialog box that prompts the user for their OS account password before copying plaintext passwords into the clipboard.">
-          Chromium is trying to copy passwords.
-        </message>
-        <message name="IDS_PASSWORDS_PAGE_EDIT_AUTHENTICATION_PROMPT" desc="Text for the dialog box that prompts the user for their OS account password before editing plaintext passwords on the password page.">
-          Chromium is trying to edit passwords.
-        </message>
-        <message name="IDS_PASSWORDS_PAGE_EXPORT_AUTHENTICATION_PROMPT" desc="Text for the dialog box that prompts the user for their OS account password before exporting passwords to a file.">
-          Chromium wants to export your passwords.
+      <message name="IDS_PASSWORDS_AUTHENTICATION_PROMPT_PREFIX" desc="Text shown in the beginning of the OS-level user authentication prompt before performing a seneitive operation such as show passwords in plain text.">
+          Chromium is trying to <ph name="AUTHENTICATION_PURPOSE">$1<ex>show passwords</ex></ph>
         </message>
       </if>
       <if expr="is_win">
@@ -581,7 +579,7 @@ Permissions you've already given to websites and apps may apply to this account.
           Installation failed due to unspecified error. Please download Chromium again.
         </message>
         <message name="IDS_INSTALL_OS_NOT_SUPPORTED" desc="Error displayed if OS is not supported">
-          Chromium requires Windows 7 or higher.
+          Chromium requires Windows 10 or higher.
         </message>
         <message name="IDS_INSTALL_OS_ERROR" desc="Error displayed when any Windows API call fails and we do not have more specific information.">
           An operating system error occurred during installation. Please download Chromium again.
@@ -622,9 +620,6 @@ Permissions you've already given to websites and apps may apply to this account.
       </if>
       <message name="IDS_DEFAULT_BROWSER_INFOBAR_TEXT" desc="Text to show in an infobar when Chromium is not the current default browser.">
         Chromium isn't your default browser
-      </message>
-      <message name="IDS_TAILORED_SECURITY_CONSENTED_ENABLE_NOTIFICATION_DESCRIPTION" desc="The text of the notification asking if the user wants to enable Enhanced Safe Browsing">
-        You turned on Enhanced Safe Browsing in your account. Now get it for Chromium.
       </message>
       <if expr="is_win">
         <!-- Try Chrome Toast Dialog -->
@@ -1210,10 +1205,8 @@ Permissions you've already given to websites and apps may apply to this account.
       </message>
 
       <!-- Critical Notification bubble -->
-      <message name="IDS_CRITICAL_NOTIFICATION_TITLE" desc="The title for a bubble that appears when there is a critical update and Chromium must restart to install it. It counts down from # seconds and then Chromium automatically restarts.">
-        {SECONDS, plural,
-         =1 {Chromium will restart in 1 second}
-         other {Chromium will restart in # seconds}}
+      <message name="IDS_CRITICAL_NOTIFICATION_TITLE" desc="The title for a bubble that appears when there is a critical update and Chromium must restart to install it. It counts down a timer and then Chromium automatically restarts.">
+        Chromium will restart in <ph name="REMAINING_TIME">$1<ex>1 minute, 7 seconds</ex></ph>
       </message>
       <message name="IDS_CRITICAL_NOTIFICATION_TITLE_ALTERNATE" desc="The title for a bubble that appears when there is a critical update and Chromium must restart to install it. The title was previously countng down to an automatic restart and now it has finished. Will only be seen if a web page stops the shutdown process.">
         Please restart Chromium now
@@ -1358,19 +1351,29 @@ Permissions you've already given to websites and apps may apply to this account.
       </message>
       <!-- Idle timeout dialog. -->
       <if expr="not is_android and not is_chromeos">
-        <message name="IDS_IDLE_TIMEOUT_TITLE" desc="Title of the Idle Timeout dialog, warning the user that their windows are about to close.">
-          Chromium is inactive
+        <message name="IDS_IDLE_TIMEOUT_CLOSE_TITLE" desc="Title of the Idle Timeout dialog, warning the user that their windows are about to close.">
+          Chromium will soon close
         </message>
-        <message name="IDS_IDLE_TIMEOUT_BODY" desc="First sentence in the Idle Timeout dialog, warning the user that all browsers are about to close automatically.">
+        <message name="IDS_IDLE_TIMEOUT_CLEAR_TITLE" desc="Title of the Idle Timeout dialog, warning the user that their browsing data will be lost soon.">
+          Chromium will soon delete browsing data
+        </message>
+        <message name="IDS_IDLE_TIMEOUT_CLOSE_AND_CLEAR_TITLE" desc="Title of the Idle Timeout dialog, warning the user that their windows are about to close and their browsing data will be lost.">
+          Chromium will soon close and delete data
+        </message>
+        <message name="IDS_IDLE_TIMEOUT_CLOSE_BODY" desc="First sentence in the Idle Timeout dialog, warning the user that Chromium is going to close automatically.">
           {COUNT, plural,
-          =1 {Your administrator has configured Chromium to close if it is idle for more than 1 minute.}
-          other {Your administrator has configured Chromium to close if it is idle for more than # minutes.}}
+          =1 {Your administrator automatically closes Chromium when it isn't used for 1 minute.}
+          other {Your administrator automatically closes Chromium when it isn't used for # minutes.}}
         </message>
-        <message name="IDS_IDLE_TIMEOUT_COUNTDOWN" desc="In the Idle Timeout dialog, a countdown that ticks every second. When it reaches zero, Chrome closes all browsers.">
-          {0, plural,
-          =0 {Chromium will close now.}
-          =1 {Chromium will close in 1 second.}
-          other {Chromium will close in # seconds.}}
+        <message name="IDS_IDLE_TIMEOUT_CLEAR_BODY" desc="First sentence in the Idle Timeout dialog, warning the user that Chromium is going to clear data automatically.">
+          {COUNT, plural,
+          =1 {Your administrator automatically deletes browsing data when it isn't used for 1 minute. This could include history, autofill, and downloads. Your existing tabs will remain open.}
+          other {Your administrator automatically deletes browsing data when it isn't used for # minutes. This could include history, autofill, and downloads. Your existing tabs will remain open.}}
+        </message>
+        <message name="IDS_IDLE_TIMEOUT_CLOSE_AND_CLEAR_BODY" desc="First sentence in the Idle Timeout dialog, warning the user that Chromium is going to close and clear data automatically.">
+          {COUNT, plural,
+          =1 {Your administrator automatically closes Chromium when it isn't used for 1 minute. Browsing data is deleted. This could include history, autofill, and downloads.}
+          other {Your administrator automatically closes Chromium when it isn't used for # minutes. Browsing data is deleted. This could include history, autofill, and downloads.}}
         </message>
         <message name="IDS_IDLE_DISMISS_BUTTON" desc="Button label in the Idle Timeout dialog, this button dismisses the dialog and prevents browsers from closing automatically.">
           Continue using Chromium
@@ -1403,6 +1406,9 @@ Permissions you've already given to websites and apps may apply to this account.
           </message>
           <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_SUBTITLE" desc="Profile picker, account selection screen subtitle">
             Sign in to Chromium
+          </message>
+          <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_SUBTITLE_WITH_GUEST" desc="Profile picker, account selection screen subtitle">
+            Sign in to Chromium. If you want to sign in an account one-time only, you can <ph name="GUEST_LINK_BEGIN">&lt;a id="guestModeLink" href="#"&gt;</ph>use the device as guest<ph name="GUEST_LINK_END">&lt;/a&gt;</ph>.
           </message>
         </if>
         <if expr="not chromeos_lacros">

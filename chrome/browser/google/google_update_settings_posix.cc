@@ -97,12 +97,12 @@ bool GoogleUpdateSettings::SetCollectStatsConsent(bool consented) {
   if (base::PathExists(consent_file) && client_id.empty())
     return true;
 
-  int size = client_id.size();
-  bool write_success =
-      base::WriteFile(consent_file, client_id.c_str(), size) == size;
-  if (write_success)
-    SetConsentFilePermissionIfNeeded(consent_file);
-  return write_success;
+  if (!base::WriteFile(consent_file, client_id)) {
+    return false;
+  }
+
+  SetConsentFilePermissionIfNeeded(consent_file);
+  return true;
 }
 
 // static

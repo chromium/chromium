@@ -74,8 +74,9 @@ StatusAreaWidget::ScopedTrayBubbleCounter::ScopedTrayBubbleCounter(
 
 StatusAreaWidget::ScopedTrayBubbleCounter::~ScopedTrayBubbleCounter() {
   // ScopedTrayBubbleCounter may live longer than StatusAreaWidget.
-  if (!status_area_widget_)
+  if (!status_area_widget_) {
     return;
+  }
 
   --status_area_widget_->tray_bubble_count_;
   if (status_area_widget_->tray_bubble_count_ == 0) {
@@ -158,15 +159,13 @@ void StatusAreaWidget::Initialize() {
   if (features::IsQsRevampEnabled()) {
     notification_center_tray_ =
         AddTrayButton(std::make_unique<NotificationCenterTray>(shelf_));
-    notification_center_tray_->AddObserver(this);
+    notification_center_tray_->views::View::AddObserver(this);
   }
 
   auto unified_system_tray = std::make_unique<UnifiedSystemTray>(shelf_);
   unified_system_tray_ = unified_system_tray.get();
-  if (features::IsCalendarViewEnabled()) {
-    date_tray_ =
-        AddTrayButton(std::make_unique<DateTray>(shelf_, unified_system_tray_));
-  }
+  date_tray_ =
+      AddTrayButton(std::make_unique<DateTray>(shelf_, unified_system_tray_));
   AddTrayButton(std::move(unified_system_tray));
 
   overview_button_tray_ =
@@ -208,8 +207,9 @@ StatusAreaWidget::~StatusAreaWidget() {
   // If QsRevamp flag is enabled, `notification_center_tray_` may be null in
   // some unittests. During the test environment tear-down, removing the
   // observer will lead to a crash.
-  if (features::IsQsRevampEnabled() && notification_center_tray_)
-    notification_center_tray_->RemoveObserver(this);
+  if (features::IsQsRevampEnabled() && notification_center_tray_) {
+    notification_center_tray_->views::View::RemoveObserver(this);
+  }
 
   // If QsRevamp flag is enabled, reset `animation_controller_` before
   // destroying `notification_center_tray_` so that we don't run into a UaF.
@@ -225,22 +225,23 @@ StatusAreaWidget* StatusAreaWidget::ForWindow(aura::Window* window) {
 }
 
 void StatusAreaWidget::UpdateAfterLoginStatusChange(LoginStatus login_status) {
-  if (login_status_ == login_status)
+  if (login_status_ == login_status) {
     return;
+  }
   login_status_ = login_status;
 
-  for (TrayBackgroundView* tray_button : tray_buttons_)
+  for (TrayBackgroundView* tray_button : tray_buttons_) {
     tray_button->UpdateAfterLoginStatusChange();
+  }
 }
 
 void StatusAreaWidget::SetSystemTrayVisibility(bool visible) {
   unified_system_tray_->SetVisiblePreferred(visible);
+  date_tray_->SetVisiblePreferred(visible);
 
-  if (features::IsCalendarViewEnabled())
-    date_tray_->SetVisiblePreferred(visible);
-
-  if (features::IsQsRevampEnabled())
+  if (features::IsQsRevampEnabled()) {
     notification_center_tray_->OnSystemTrayVisibilityChanged(visible);
+  }
 
   if (visible) {
     Show();
@@ -252,8 +253,9 @@ void StatusAreaWidget::SetSystemTrayVisibility(bool visible) {
 
 void StatusAreaWidget::OnSessionStateChanged(
     session_manager::SessionState state) {
-  for (TrayBackgroundView* tray_button : tray_buttons_)
+  for (TrayBackgroundView* tray_button : tray_buttons_) {
     tray_button->UpdateBackground();
+  }
 }
 
 void StatusAreaWidget::UpdateCollapseState() {
@@ -310,8 +312,9 @@ void StatusAreaWidget::LogVisiblePodCountMetric() {
       case TrayBackgroundViewCatalogName::kVirtualKeyboardStatusArea:
       case TrayBackgroundViewCatalogName::kWmMode:
       case TrayBackgroundViewCatalogName::kVideoConferenceTray:
-        if (!tray_button->GetVisible())
+        if (!tray_button->GetVisible()) {
           continue;
+        }
         visible_pod_count += 1;
         break;
     }
@@ -327,8 +330,9 @@ void StatusAreaWidget::LogVisiblePodCountMetric() {
 }
 
 void StatusAreaWidget::CalculateTargetBounds() {
-  for (TrayBackgroundView* tray_button : tray_buttons_)
+  for (TrayBackgroundView* tray_button : tray_buttons_) {
     tray_button->CalculateTargetBounds();
+  }
   status_area_widget_delegate_->CalculateTargetBounds();
 
   gfx::Size status_size(status_area_widget_delegate_->GetTargetBounds().size());
@@ -336,18 +340,20 @@ void StatusAreaWidget::CalculateTargetBounds() {
   const gfx::Point shelf_origin =
       shelf_->shelf_widget()->GetTargetBounds().origin();
 
-  if (shelf_->IsHorizontalAlignment())
+  if (shelf_->IsHorizontalAlignment()) {
     status_size.set_height(shelf_size.height());
-  else
+  } else {
     status_size.set_width(shelf_size.width());
+  }
 
   gfx::Point status_origin = shelf_->SelectValueForShelfAlignment(
       gfx::Point(0, 0),
       gfx::Point(shelf_size.width() - status_size.width(),
                  shelf_size.height() - status_size.height()),
       gfx::Point(0, shelf_size.height() - status_size.height()));
-  if (shelf_->IsHorizontalAlignment() && !base::i18n::IsRTL())
+  if (shelf_->IsHorizontalAlignment() && !base::i18n::IsRTL()) {
     status_origin.set_x(shelf_size.width() - status_size.width());
+  }
   status_origin.Offset(shelf_origin.x(), shelf_origin.y());
   target_bounds_ = gfx::Rect(status_origin, status_size);
 }
@@ -358,24 +364,28 @@ gfx::Rect StatusAreaWidget::GetTargetBounds() const {
 
 void StatusAreaWidget::UpdateLayout(bool animate) {
   const LayoutInputs new_layout_inputs = GetLayoutInputs();
-  if (layout_inputs_ == new_layout_inputs)
+  if (layout_inputs_ == new_layout_inputs) {
     return;
+  }
 
-  if (!new_layout_inputs.should_animate)
+  if (!new_layout_inputs.should_animate) {
     animate = false;
+  }
 
-  for (TrayBackgroundView* tray_button : tray_buttons_)
+  for (TrayBackgroundView* tray_button : tray_buttons_) {
     tray_button->UpdateLayout();
+  }
   status_area_widget_delegate_->UpdateLayout(animate);
 
   // Having a window which is visible but does not have an opacity is an
   // illegal state.
   ui::Layer* layer = GetNativeView()->layer();
   layer->SetOpacity(new_layout_inputs.opacity);
-  if (new_layout_inputs.opacity)
+  if (new_layout_inputs.opacity) {
     ShowInactive();
-  else
+  } else {
     Hide();
+  }
 
   ui::ScopedLayerAnimationSettings animation_setter(layer->GetAnimator());
   animation_setter.SetTransitionDuration(
@@ -389,10 +399,11 @@ void StatusAreaWidget::UpdateLayout(bool animate) {
 }
 
 void StatusAreaWidget::UpdateTargetBoundsForGesture(int shelf_position) {
-  if (shelf_->IsHorizontalAlignment())
+  if (shelf_->IsHorizontalAlignment()) {
     target_bounds_.set_y(shelf_position);
-  else
+  } else {
     target_bounds_.set_x(shelf_position);
+  }
 }
 
 void StatusAreaWidget::HandleLocaleChange() {
@@ -416,8 +427,9 @@ void StatusAreaWidget::NotifyAnyBubbleVisibilityChanged(
 }
 
 void StatusAreaWidget::CalculateButtonVisibilityForCollapsedState() {
-  if (!initialized_)
+  if (!initialized_) {
     return;
+  }
 
   DCHECK(collapse_state_ == CollapseState::COLLAPSED);
 
@@ -437,8 +449,9 @@ void StatusAreaWidget::CalculateButtonVisibilityForCollapsedState() {
 
   // First, reset all tray button to be hidden.
   overflow_button_tray_->ResetStateToCollapsed();
-  for (TrayBackgroundView* tray_button : tray_buttons_)
+  for (TrayBackgroundView* tray_button : tray_buttons_) {
     tray_button->set_show_when_collapsed(false);
+  }
 
   // Iterate backwards making tray buttons visible until |available_width| is
   // exceeded.
@@ -447,11 +460,13 @@ void StatusAreaWidget::CalculateButtonVisibilityForCollapsedState() {
   int used_width = 0;
   for (TrayBackgroundView* tray : base::Reversed(tray_buttons_)) {
     // Skip non-enabled tray buttons.
-    if (!tray->visible_preferred())
+    if (!tray->visible_preferred()) {
       continue;
+    }
     // Skip |stop_recording_button_tray_| since it's always visible.
-    if (tray == stop_recording_button_tray_)
+    if (tray == stop_recording_button_tray_) {
       continue;
+    }
 
     // Show overflow button once available width is exceeded.
     int tray_width = tray->tray_container()->GetPreferredSize().width();
@@ -461,8 +476,10 @@ void StatusAreaWidget::CalculateButtonVisibilityForCollapsedState() {
       // Maybe remove the last tray button to make room for the overflow tray.
       int overflow_button_width =
           overflow_button_tray_->GetPreferredSize().width();
-      if (previous_tray && used_width + overflow_button_width > available_width)
+      if (previous_tray &&
+          used_width + overflow_button_width > available_width) {
         previous_tray->set_show_when_collapsed(false);
+      }
       break;
     }
 
@@ -472,13 +489,15 @@ void StatusAreaWidget::CalculateButtonVisibilityForCollapsedState() {
   }
 
   // Skip |stop_recording_button_tray_| so it's always visible.
-  if (stop_recording_button_tray_->visible_preferred())
+  if (stop_recording_button_tray_->visible_preferred()) {
     stop_recording_button_tray_->set_show_when_collapsed(true);
+  }
 
   overflow_button_tray_->SetVisiblePreferred(show_overflow_button);
   overflow_button_tray_->UpdateAfterStatusAreaCollapseChange();
-  for (TrayBackgroundView* tray_button : tray_buttons_)
+  for (TrayBackgroundView* tray_button : tray_buttons_) {
     tray_button->UpdateAfterStatusAreaCollapseChange();
+  }
 }
 
 void StatusAreaWidget::EnsureTrayOrder() {
@@ -494,12 +513,14 @@ StatusAreaWidget::CollapseState StatusAreaWidget::CalculateCollapseState()
     const {
   // The status area is only collapsible in tablet mode. Otherwise, we just show
   // all trays.
-  if (!Shell::Get()->tablet_mode_controller())
+  if (!Shell::Get()->tablet_mode_controller()) {
     return CollapseState::NOT_COLLAPSIBLE;
+  }
 
   // An update may occur during initialization of the shelf, so just skip it.
-  if (!initialized_)
+  if (!initialized_) {
     return CollapseState::NOT_COLLAPSIBLE;
+  }
 
   bool is_collapsible =
       Shell::Get()->tablet_mode_controller()->InTabletMode() &&
@@ -529,15 +550,18 @@ StatusAreaWidget::CollapseState StatusAreaWidget::CalculateCollapseState()
     for (TrayBackgroundView* tray : base::Reversed(tray_buttons_)) {
       // If we reach the final overflow tray button, then all the tray buttons
       // fit and there is no need for a collapse state.
-      if (tray == overflow_button_tray_)
+      if (tray == overflow_button_tray_) {
         return CollapseState::NOT_COLLAPSIBLE;
+      }
 
       // Skip non-enabled tray buttons.
-      if (!tray->visible_preferred())
+      if (!tray->visible_preferred()) {
         continue;
+      }
       int tray_width = tray->tray_container()->GetPreferredSize().width();
-      if (used_width + tray_width > available_width)
+      if (used_width + tray_width > available_width) {
         break;
+      }
 
       used_width += tray_width;
     }
@@ -549,15 +573,17 @@ TrayBackgroundView* StatusAreaWidget::GetSystemTrayAnchor() const {
   // Use the target visibility of the layer instead of the visibility of the
   // view because the view is still visible when fading away, but we do not want
   // to anchor to this element in that case.
-  if (overview_button_tray_->layer()->GetTargetVisibility())
+  if (overview_button_tray_->layer()->GetTargetVisibility()) {
     return overview_button_tray_;
+  }
 
   return unified_system_tray_;
 }
 
 gfx::Rect StatusAreaWidget::GetMediaTrayAnchorRect() const {
-  if (!media_tray_)
+  if (!media_tray_) {
     return gfx::Rect();
+  }
 
   // Calculate anchor rect of media tray bubble. This is required because the
   // bubble can be visible while the tray button is hidden. (e.g. when user
@@ -572,8 +598,9 @@ gfx::Rect StatusAreaWidget::GetMediaTrayAnchorRect() const {
       continue;
     }
 
-    if (!found_media_tray || !tray_button->GetVisible())
+    if (!found_media_tray || !tray_button->GetVisible()) {
       continue;
+    }
 
     offset += shelf_->IsHorizontalAlignment() ? tray_button->width()
                                               : tray_button->height();
@@ -610,30 +637,35 @@ gfx::Rect StatusAreaWidget::GetMediaTrayAnchorRect() const {
 
 bool StatusAreaWidget::ShouldShowShelf() const {
   // If it has main bubble, return true.
-  if (unified_system_tray_->IsBubbleShown())
+  if (unified_system_tray_->IsBubbleShown()) {
     return true;
+  }
 
   // If any tray is showing a context menu, the shelf should be visible.
   for (TrayBackgroundView* tray_button : tray_buttons_) {
-    if (tray_button->IsShowingMenu())
+    if (tray_button->IsShowingMenu()) {
       return true;
+    }
   }
 
   // If it has a slider bubble, return false.
-  if (unified_system_tray_->IsSliderBubbleShown())
+  if (unified_system_tray_->IsSliderBubbleShown()) {
     return false;
+  }
 
   // Some TrayBackgroundViews' cache their bubble, the shelf should only be
   // forced to show if the bubble is visible, and we should not show the shelf
   // for cached, hidden bubbles.
   if (tray_bubble_count_ > 0) {
     for (TrayBackgroundView* tray_button : tray_buttons_) {
-      if (!tray_button->GetBubbleView())
+      if (!tray_button->GetBubbleView()) {
         continue;
+      }
 
       // Any tray bubble is showing, show shelf.
-      if (tray_button->GetBubbleView()->GetVisible())
+      if (tray_button->GetBubbleView()->GetVisible()) {
         return true;
+      }
 
       // Tray bubble view is not null and not visible, tray bubble is cached
       // for hidden case. If the tray caches the view for hidden, we should
@@ -654,22 +686,26 @@ bool StatusAreaWidget::IsMessageBubbleShown() const {
 }
 
 void StatusAreaWidget::SchedulePaint() {
-  for (TrayBackgroundView* tray_button : tray_buttons_)
+  for (TrayBackgroundView* tray_button : tray_buttons_) {
     tray_button->SchedulePaint();
+  }
 }
 
 bool StatusAreaWidget::OnNativeWidgetActivationChanged(bool active) {
-  if (!Widget::OnNativeWidgetActivationChanged(active))
+  if (!Widget::OnNativeWidgetActivationChanged(active)) {
     return false;
-  if (active)
+  }
+  if (active) {
     status_area_widget_delegate_->SetPaneFocusAndFocusDefault();
+  }
   return true;
 }
 
 void StatusAreaWidget::OnViewVisibilityChanged(views::View* observed_view,
                                                views::View* starting_view) {
-  if (observed_view != notification_center_tray_)
+  if (observed_view != notification_center_tray_) {
     return;
+  }
 
   UpdateDateTrayRoundedCorners();
 }
@@ -706,8 +742,9 @@ void StatusAreaWidget::OnGestureEvent(ui::GestureEvent* event) {
 
 void StatusAreaWidget::OnScrollEvent(ui::ScrollEvent* event) {
   shelf_->ProcessScrollEvent(event);
-  if (!event->handled())
+  if (!event->handled()) {
     views::Widget::OnScrollEvent(event);
+  }
 }
 
 template <typename TrayButtonT>
@@ -725,8 +762,9 @@ StatusAreaWidget::LayoutInputs StatusAreaWidget::GetLayoutInputs() const {
   DCHECK(tray_buttons_.size() <
          std::numeric_limits<decltype(child_visibility_bitmask)>::digits);
   for (unsigned int i = 0; i < tray_buttons_.size(); ++i) {
-    if (tray_buttons_[i]->GetVisible())
+    if (tray_buttons_[i]->GetVisible()) {
       child_visibility_bitmask |= 1 << i;
+    }
   }
 
   bool should_animate = true;
@@ -750,8 +788,9 @@ StatusAreaWidget::LayoutInputs StatusAreaWidget::GetLayoutInputs() const {
 }
 
 void StatusAreaWidget::UpdateDateTrayRoundedCorners() {
-  if (!features::IsQsRevampEnabled() || !date_tray_)
+  if (!features::IsQsRevampEnabled() || !date_tray_) {
     return;
+  }
 
   date_tray_->SetRoundedCornerBehavior(
       notification_center_tray_->GetVisible()
@@ -763,16 +802,15 @@ int StatusAreaWidget::GetCollapseAvailableWidth(bool force_collapsible) const {
   const int shelf_width =
       shelf_->shelf_widget()->GetClientAreaBoundsInScreen().width();
 
-  if (!force_collapsible)
+  if (!force_collapsible) {
     return shelf_width / 2 - kStatusAreaLeftPaddingForOverflow;
+  }
 
   int available_width = kStatusAreaForceCollapseAvailableWidth;
-  // If calendar view is enabled, add the date tray width to the collapse
-  // available width.
-  if (features::IsCalendarViewEnabled()) {
-    DCHECK(date_tray_);
-    available_width += date_tray_->tray_container()->GetPreferredSize().width();
-  }
+  // Add the date tray width to the collapse available width.
+  DCHECK(date_tray_);
+  available_width += date_tray_->tray_container()->GetPreferredSize().width();
+
   return available_width;
 }
 

@@ -112,14 +112,9 @@ class LacrosFirstRunSignedInFlowController
     }
   }
 
-  void SwitchToEnterpriseProfileWelcome(
-      EnterpriseProfileWelcomeUI::ScreenType type,
+  void SwitchToLacrosIntro(
       signin::SigninChoiceCallback proceed_callback) override {
-    if (!base::FeatureList::IsEnabled(kForYouFre)) {
-      ProfilePickerSignedInFlowController::SwitchToEnterpriseProfileWelcome(
-          type, std::move(proceed_callback));
-      return;
-    }
+    DCHECK(proceed_callback);
 
     host()->ShowScreen(
         contents(), GURL(chrome::kChromeUIIntroURL),
@@ -127,6 +122,12 @@ class LacrosFirstRunSignedInFlowController
             &LacrosFirstRunSignedInFlowController::SwitchToIntroFinished,
             // Unretained ok: callback is called by the owner of this instance.
             base::Unretained(this), std::move(proceed_callback)));
+  }
+
+  void SwitchToEnterpriseProfileWelcome(
+      EnterpriseProfileWelcomeUI::ScreenType type,
+      signin::SigninChoiceCallback proceed_callback) override {
+    NOTREACHED();
   }
 
   void SwitchToSyncConfirmation() override {
@@ -205,7 +206,8 @@ void FirstRunFlowControllerLacros::Init(
 }
 
 void FirstRunFlowControllerLacros::CancelPostSignInFlow() {
-  NOTREACHED();  // The whole Lacros FRE is post-sign-in, it's not cancellable.
+  NOTREACHED_NORETURN();  // The whole Lacros FRE is post-sign-in, it's not
+                          // cancellable.
 }
 
 bool FirstRunFlowControllerLacros::PreFinishWithBrowser() {

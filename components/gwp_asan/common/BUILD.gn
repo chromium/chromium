@@ -4,16 +4,23 @@
 
 import("//testing/libfuzzer/fuzzer_test.gni")
 
+source_set("crash_keys") {
+  sources = [ "crash_key_name.h" ]
+}
+
 static_library("common") {
   sources = [
     "allocator_state.cc",
     "allocator_state.h",
-    "crash_key_name.h",
+    "lightweight_detector.h",
     "pack_stack_trace.cc",
     "pack_stack_trace.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    ":crash_keys",
+    "//base",
+  ]
 }
 
 source_set("unit_tests") {

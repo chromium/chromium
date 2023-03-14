@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 function assertContains(string, substring, error) {
-  chrome.test.assertTrue(string.indexOf(substring) != -1, error);
+  chrome.test.assertNe(-1, string.indexOf(substring), error);
 }
 
 chrome.test.runTests([

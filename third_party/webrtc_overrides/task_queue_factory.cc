@@ -20,6 +20,7 @@
 #include "third_party/webrtc/api/task_queue/task_queue_base.h"
 #include "third_party/webrtc/api/task_queue/task_queue_factory.h"
 #include "third_party/webrtc/api/units/time_delta.h"
+#include "third_party/webrtc_overrides/api/location.h"
 #include "third_party/webrtc_overrides/coalesced_tasks.h"
 #include "third_party/webrtc_overrides/metronome_source.h"
 #include "third_party/webrtc_overrides/timer_based_tick_provider.h"
@@ -33,11 +34,13 @@ class WebRtcTaskQueue : public base::RefCountedThreadSafe<WebRtcTaskQueue>,
 
   // webrtc::TaskQueueBase implementation.
   void Delete() override;
-  void PostTask(absl::AnyInvocable<void() &&> task) override;
-  void PostDelayedTask(absl::AnyInvocable<void() &&> task,
-                       webrtc::TimeDelta delay) override;
-  void PostDelayedHighPrecisionTask(absl::AnyInvocable<void() &&> task,
-                                    webrtc::TimeDelta delay) override;
+  void PostTaskImpl(absl::AnyInvocable<void() &&> task,
+                    const PostTaskTraits& traits,
+                    const webrtc::Location& location) override;
+  void PostDelayedTaskImpl(absl::AnyInvocable<void() &&> task,
+                           webrtc::TimeDelta delay,
+                           const PostDelayedTaskTraits& traits,
+                           const webrtc::Location& location) override;
 
  private:
   friend class base::RefCountedThreadSafe<WebRtcTaskQueue>;
@@ -99,10 +102,12 @@ void WebRtcTaskQueue::RunTask(absl::AnyInvocable<void() &&> task) {
   task = nullptr;
 }
 
-void WebRtcTaskQueue::PostTask(absl::AnyInvocable<void() &&> task) {
+void WebRtcTaskQueue::PostTaskImpl(absl::AnyInvocable<void() &&> task,
+                                   const PostTaskTraits& traits,
+                                   const webrtc::Location& location) {
   task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&WebRtcTaskQueue::RunTask,
-                                base::RetainedRef(this), std::move(task)));
+      location, base::BindOnce(&WebRtcTaskQueue::RunTask,
+                               base::RetainedRef(this), std::move(task)));
 }
 
 void WebRtcTaskQueue::MaybeRunCoalescedTasks(
@@ -114,33 +119,30 @@ void WebRtcTaskQueue::MaybeRunCoalescedTasks(
   }
 }
 
-void WebRtcTaskQueue::PostDelayedTask(absl::AnyInvocable<void() &&> task,
-                                      webrtc::TimeDelta delay) {
-  base::TimeTicks target_time =
+void WebRtcTaskQueue::PostDelayedTaskImpl(absl::AnyInvocable<void() &&> task,
+                                          webrtc::TimeDelta delay,
+                                          const PostDelayedTaskTraits& traits,
+                                          const webrtc::Location& location) {
+  const base::TimeTicks target_time =
       base::TimeTicks::Now() + base::Microseconds(delay.us());
-  base::TimeTicks snapped_target_time =
+  const base::TimeTicks snapped_target_time =
       TimerBasedTickProvider::TimeSnappedToNextTick(
           target_time, TimerBasedTickProvider::kDefaultPeriod);
-  if (coalesced_tasks_.QueueDelayedTask(target_time, std::move(task),
+  if (!traits.high_precision &&
+      coalesced_tasks_.QueueDelayedTask(target_time, std::move(task),
                                         snapped_target_time)) {
     task_runner_->PostDelayedTaskAt(
-        base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
+        base::subtle::PostDelayedTaskPassKey(), location,
         base::BindOnce(&WebRtcTaskQueue::MaybeRunCoalescedTasks,
                        base::RetainedRef(this), snapped_target_time),
         snapped_target_time, base::subtle::DelayPolicy::kPrecise);
+  } else if (traits.high_precision) {
+    task_runner_->PostDelayedTaskAt(
+        base::subtle::PostDelayedTaskPassKey(), location,
+        base::BindOnce(&WebRtcTaskQueue::RunTask, base::RetainedRef(this),
+                       std::move(task)),
+        target_time, base::subtle::DelayPolicy::kPrecise);
   }
-}
-
-void WebRtcTaskQueue::PostDelayedHighPrecisionTask(
-    absl::AnyInvocable<void() &&> task,
-    webrtc::TimeDelta delay) {
-  base::TimeTicks target_time =
-      base::TimeTicks::Now() + base::Microseconds(delay.us());
-  task_runner_->PostDelayedTaskAt(
-      base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
-      base::BindOnce(&WebRtcTaskQueue::RunTask, base::RetainedRef(this),
-                     std::move(task)),
-      target_time, base::subtle::DelayPolicy::kPrecise);
 }
 
 namespace {

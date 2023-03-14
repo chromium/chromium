@@ -14,7 +14,7 @@
 
 namespace {
 
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
 bool ShouldUseChromeRootStore(PrefService* local_state) {
 #if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
   // `local_state` should exist when this is called in the browser, but may be
@@ -28,7 +28,7 @@ bool ShouldUseChromeRootStore(PrefService* local_state) {
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
   return base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed);
 }
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
 
 // Calculates and caches the CertVerifierServiceParams so that all calls to
 // GetChromeCertVerifierServiceParams will return the same params. The
@@ -47,7 +47,7 @@ class CertVerifierServiceConfigurationStorage {
   explicit CertVerifierServiceConfigurationStorage(PrefService* local_state) {
     params_ = cert_verifier::mojom::CertVerifierServiceParams::New();
 
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
     if (!local_state) {
       local_state = g_browser_process->local_state();
     }

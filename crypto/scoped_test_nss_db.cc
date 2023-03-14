@@ -51,7 +51,7 @@ void ScopedTestNSSDB::RemoveTrustFromAllCerts() {
   if (!slot_)
     return;
 
-  CERTCertList* cert_list = PK11_ListCertsInSlot(slot_.get());
+  ScopedCERTCertList cert_list(PK11_ListCertsInSlot(slot_.get()));
   if (!cert_list)
     return;
 
@@ -63,7 +63,6 @@ void ScopedTestNSSDB::RemoveTrustFromAllCerts() {
       LOG(ERROR) << "CERT_ChangeCertTrust failed: " << PORT_GetError();
     }
   }
-  CERT_DestroyCertList(cert_list);
 }
 
 }  // namespace crypto

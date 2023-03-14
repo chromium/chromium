@@ -83,6 +83,9 @@ class DevToolsClient {
   // Adds a listener. This must only be done when the client is disconnected.
   virtual void AddListener(DevToolsEventListener* listener) = 0;
 
+  // Remove a listener added by AddListener().
+  virtual void RemoveListener(DevToolsEventListener* listener) = 0;
+
   // Handles events until the given function reports the condition is met
   // and there are no more received events to handle. If the given
   // function ever returns an error, returns immediately with the error.

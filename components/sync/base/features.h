@@ -141,10 +141,6 @@ BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeForCustomPassphraseUsers);
 // If enabled, issues error and disables bookmarks sync when limit is crossed.
 BASE_DECLARE_FEATURE(kSyncEnforceBookmarksCountLimit);
 
-// If enabled, Sync will not use a primary account that doesn't have a refresh
-// token. (This state should only ever occur temporarily during signout.)
-BASE_DECLARE_FEATURE(kSyncIgnoreAccountWithoutRefreshToken);
-
 // Enabled by default, it acts as a kill switch for a newly-introduced logic,
 // which implies that DataTypeManager (and hence individual datatypes) won't be
 // notified about browser shutdown.
@@ -170,6 +166,11 @@ inline constexpr base::FeatureParam<base::TimeDelta>
 // Enable check to ensure only preferences in the allowlist are registered as
 // syncable.
 BASE_DECLARE_FEATURE(kSyncEnforcePreferencesAllowlist);
+
+// Enables a separate account-scoped storage for preferences, for syncing users.
+// (Note that opposed to other "account storage" features, this one does not
+// have any effect for signed-in non-syncing users!)
+BASE_DECLARE_FEATURE(kEnablePreferencesAccountStorage);
 
 }  // namespace syncer
 

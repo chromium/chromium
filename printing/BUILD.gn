@@ -10,11 +10,10 @@ import("//build/config/ui.gni")
 import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//testing/test.gni")
-if (is_mac) {
-  import("//build/config/mac/mac_sdk.gni")
-}
 if (is_android) {
   import("//build/config/android/rules.gni")
+} else if (is_ios && use_blink) {
+  import("//build/config/ios/bundle_data_from_filelist.gni")
 }
 
 assert(enable_printing)
@@ -89,6 +88,7 @@ if (enable_oop_printing && (is_linux || is_chromeos)) {
     configs += [ ":strict" ]
 
     deps = [
+      ":printing_base",
       "//base",
       "//printing/buildflags",
       "//sandbox/linux:sandbox_services",
@@ -137,16 +137,20 @@ component("metafile") {
     "//ui/accessibility",
   ]
 
-  if (is_mac) {
+  if (is_apple) {
     sources += [
       "pdf_metafile_cg_mac.cc",
       "pdf_metafile_cg_mac.h",
     ]
 
     frameworks = [
-      "ApplicationServices.framework",
       "CoreFoundation.framework",
+      "CoreGraphics.framework",
     ]
+  }
+
+  if (is_mac) {
+    frameworks += [ "ApplicationServices.framework" ]
   }
 
   if (is_win) {
@@ -277,7 +281,10 @@ component("printing") {
       "print_settings_conversion_chromeos.h",
     ]
 
-    deps += [ "//third_party/re2" ]
+    deps += [
+      "//chromeos/crosapi/mojom:mojom",
+      "//third_party/re2",
+    ]
   }
 
   if (use_cups) {
@@ -326,11 +333,18 @@ static_library("test_support") {
   if (is_linux || is_chromeos || is_fuchsia) {
     sources += [ "image_linux.cc" ]
   }
-  if (is_mac) {
+  if (is_apple) {
     sources += [ "image_mac.cc" ]
   }
   if (is_win) {
     sources += [ "image_win.cc" ]
+  }
+}
+
+if (is_ios && use_blink) {
+  bundle_data_from_filelist("pdf_metafile_cg_mac_unittest_bundle_data") {
+    testonly = true
+    filelist_name = "test/pdf_metafile_cg_mac_unittest_bundle_data.filelist"
   }
 }
 
@@ -381,13 +395,17 @@ test("printing_unittests") {
     ]
   }
 
-  if (is_mac) {
+  if (is_apple) {
     sources += [ "pdf_metafile_cg_mac_unittest.cc" ]
+  }
 
+  if (is_mac) {
     data = [
       "test/data/pdf_cg/",
       "../pdf/test/data/",
     ]
+  } else if (is_ios && use_blink) {
+    deps += [ ":pdf_metafile_cg_mac_unittest_bundle_data" ]
   }
 
   if (is_win) {

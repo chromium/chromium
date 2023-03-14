@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/incoming_connection.h"
 
-#include "base/strings/string_number_conversions.h"
+#include <memory>
+
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/nearby_sharing/fake_nearby_connection.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
@@ -41,6 +42,12 @@ constexpr std::array<uint8_t, 32> kSharedSecret = {
 constexpr char kSharedSecretBase64[] =
     "VL1Az4p8L2rKFVnP8-sxCJBz79qH1CPAVdWDWwQoSfI";
 
+// Arbitrary string to use as the connection's authentication token.
+constexpr char kAuthenticationToken[] = "auth_token";
+
+// Pin corresponding to |kAuthenticationToken|.
+constexpr char kAuthenticationTokenPin[] = "6229";
+
 }  // namespace
 
 class IncomingConnectionTest : public testing::Test {
@@ -56,7 +63,7 @@ class IncomingConnectionTest : public testing::Test {
     fake_nearby_connection_ = std::make_unique<FakeNearbyConnection>();
     NearbyConnection* nearby_connection = fake_nearby_connection_.get();
     incoming_connection_ = std::make_unique<IncomingConnection>(
-        nearby_connection, session_id, kSharedSecret);
+        nearby_connection, session_id, kAuthenticationToken, kSharedSecret);
   }
 
   std::unique_ptr<IncomingConnection> incoming_connection_;
@@ -78,6 +85,11 @@ TEST_F(IncomingConnectionTest, TestGetQrCodeData) {
   std::vector<uint8_t> actual_data = incoming_connection_->GetQrCodeData();
 
   EXPECT_EQ(expected_data, actual_data);
+}
+
+TEST_F(IncomingConnectionTest, GetConnectionVerificationPin) {
+  EXPECT_EQ(kAuthenticationTokenPin,
+            incoming_connection_->GetConnectionVerificationPin());
 }
 
 }  // namespace ash::quick_start

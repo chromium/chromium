@@ -268,7 +268,10 @@ void FileSystemChooser::CreateAndShow(
       &options.file_type_info(), options.default_file_type_index(),
       /*default_extension=*/base::FilePath::StringType(),
       web_contents ? web_contents->GetTopLevelNativeWindow() : nullptr,
-      /*params=*/nullptr);
+      /*params=*/nullptr,
+      /*caller=*/
+      web_contents ? &web_contents->GetPrimaryMainFrame()->GetLastCommittedURL()
+                   : nullptr);
 }
 
 // static

@@ -2026,7 +2026,6 @@ TEST_P(InputHandlerProxyTest, UpdateBrowserControlsState) {
 class UnifiedScrollingInputHandlerProxyTest : public testing::Test {
  public:
   using ElementId = cc::ElementId;
-  using ElementIdType = cc::ElementIdType;
   using EventDisposition = InputHandlerProxy::EventDisposition;
   using EventDispositionCallback = InputHandlerProxy::EventDispositionCallback;
   using LatencyInfo = ui::LatencyInfo;
@@ -2083,7 +2082,7 @@ class UnifiedScrollingInputHandlerProxyTest : public testing::Test {
 
   void ContinueScrollBeginAfterMainThreadHitTest(
       std::unique_ptr<WebCoalescedInputEvent> event,
-      cc::ElementIdType hit_test_result,
+      cc::ElementId hit_test_result,
       ReturnedDisposition* out_disposition = nullptr) {
     input_handler_proxy_.ContinueScrollBeginAfterMainThreadHitTest(
         std::move(event), nullptr, BindEventHandledCallback(out_disposition),
@@ -2219,7 +2218,7 @@ TEST_F(UnifiedScrollingInputHandlerProxyTest, MainThreadHitTestRequired) {
     EXPECT_CALL(mock_input_handler_, ScrollEnd(_)).Times(0);
 
     ReturnedDisposition disposition;
-    const ElementIdType kHitTestResult = 12345;
+    constexpr ElementId kHitTestResult(12345);
     ContinueScrollBeginAfterMainThreadHitTest(ScrollBegin(), kHitTestResult,
                                               &disposition);
 
@@ -2292,8 +2291,7 @@ TEST_F(UnifiedScrollingInputHandlerProxyTest, MainThreadHitTestEvent) {
             _))
         .Times(1);
 
-    ContinueScrollBeginAfterMainThreadHitTest(ScrollBegin(),
-                                              kHitTestResult.GetStableId());
+    ContinueScrollBeginAfterMainThreadHitTest(ScrollBegin(), kHitTestResult);
     Mock::VerifyAndClearExpectations(&mock_input_handler_);
   }
 }
@@ -2320,7 +2318,7 @@ TEST_F(UnifiedScrollingInputHandlerProxyTest, MainThreadHitTestMetrics) {
     DispatchEvent(ScrollEnd());
 
     // Hit test reply.
-    const ElementIdType kHitTestResult = 12345;
+    constexpr ElementId kHitTestResult(12345);
     ContinueScrollBeginAfterMainThreadHitTest(ScrollBegin(), kHitTestResult);
     Mock::VerifyAndClearExpectations(&mock_input_handler_);
   }
@@ -2345,8 +2343,8 @@ TEST_F(UnifiedScrollingInputHandlerProxyTest, MainThreadHitTestMetrics) {
     DispatchEvent(ScrollEnd());
 
     // Hit test reply failed.
-    const ElementIdType kHitTestResult = 0;
-    ASSERT_FALSE(ElementId::IsValid(kHitTestResult));
+    constexpr ElementId kHitTestResult;
+    ASSERT_FALSE(kHitTestResult);
 
     ContinueScrollBeginAfterMainThreadHitTest(ScrollBegin(), kHitTestResult);
     Mock::VerifyAndClearExpectations(&mock_input_handler_);
@@ -2412,7 +2410,7 @@ TEST_F(UnifiedScrollingInputHandlerProxyTest,
     EXPECT_CALL(mock_input_handler_, ScrollEnd(_)).Times(2);
 
     ReturnedDisposition disposition;
-    const ElementIdType kHitTestResult = 12345;
+    constexpr ElementId kHitTestResult(12345);
     ContinueScrollBeginAfterMainThreadHitTest(ScrollBegin(), kHitTestResult,
                                               &disposition);
 
@@ -2453,8 +2451,8 @@ TEST_F(UnifiedScrollingInputHandlerProxyTest, MainThreadHitTestFailed) {
     EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _)).Times(0);
     EXPECT_CALL(mock_input_handler_, ScrollEnd(_)).Times(0);
 
-    const ElementIdType kHitTestResult = 0;
-    ASSERT_FALSE(ElementId::IsValid(kHitTestResult));
+    constexpr ElementId kHitTestResult;
+    ASSERT_FALSE(kHitTestResult);
 
     ReturnedDisposition gsb_disposition;
     ContinueScrollBeginAfterMainThreadHitTest(ScrollBegin(), kHitTestResult,
@@ -2971,7 +2969,7 @@ TEST_F(InputHandlerProxyEventQueueTest, OriginalEventsTracing) {
   EXPECT_CALL(mock_input_handler_, PinchGestureUpdate(_, _));
   EXPECT_CALL(mock_input_handler_, PinchGestureEnd(_));
 
-  trace_analyzer::Start("*");
+  trace_analyzer::Start("input");
   // Simulate scroll.
   HandleGestureEvent(WebInputEvent::Type::kGestureScrollBegin);
   HandleGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, -20);

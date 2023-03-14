@@ -192,11 +192,8 @@ const char* EffectTypeToString(
       return "DynamicRangeCompression";
     case ABI::Windows::Media::Effects::AudioEffectType_FarFieldBeamForming:
       return "FarFieldBeamForming";
-#if WINDOWS_FOUNDATION_UNIVERSALAPICONTRACT_VERSION >= 0xd0000
-    // This enum appears when upgrading to the Windows 11 10.0.22621.0 SDK.
     case ABI::Windows::Media::Effects::AudioEffectType_DeepNoiseSuppression:
       return "DeepNoiseSuppression";
-#endif
   }
   return "Unknown";
 }
@@ -233,16 +230,6 @@ bool InitializeUWPSupport() {
     // 10.0.10240.0.
     DCHECK_GE(base::win::OSInfo::GetInstance()->version_number().build, 10240u);
 
-    // Provide access to Core WinRT/UWP functions and load all required HSTRING
-    // functions available from Win8 and onwards. ScopedHString is a wrapper
-    // around an HSTRING and it requires certain functions that need to be
-    // delayloaded to avoid breaking Chrome on Windows 7.
-    if (!(base::win::ResolveCoreWinRTDelayload() &&
-          base::win::ScopedHString::ResolveCoreWinRTStringDelayload())) {
-      // Failed loading functions from combase.dll.
-      DLOG(WARNING) << "Failed to initialize WinRT/UWP";
-      return false;
-    }
     return true;
   }();
 
@@ -999,13 +986,13 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
           return;
         }
         converter_->Convert(convert_bus_.get());
-        sink_->OnData(convert_bus_.get(), capture_time, volume);
+        sink_->OnData(convert_bus_.get(), capture_time, volume, {});
 
         // Move the capture time forward for each vended block.
         capture_time += AudioTimestampHelper::FramesToTime(
             convert_bus_->frames(), output_format_.nSamplesPerSec);
       } else {
-        sink_->OnData(fifo_->Consume(), capture_time, volume);
+        sink_->OnData(fifo_->Consume(), capture_time, volume, {});
 
         // Move the capture time forward for each vended block.
         capture_time += AudioTimestampHelper::FramesToTime(

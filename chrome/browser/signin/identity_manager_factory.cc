@@ -59,7 +59,14 @@ void IdentityManagerFactory::RegisterProfilePrefs(
 }
 
 IdentityManagerFactory::IdentityManagerFactory()
-    : ProfileKeyedServiceFactory("IdentityManager") {
+    : ProfileKeyedServiceFactory(
+          "IdentityManager",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   DependsOn(WebDataServiceFactory::GetInstance());
 #endif

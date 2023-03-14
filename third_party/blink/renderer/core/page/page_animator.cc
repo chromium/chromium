@@ -5,14 +5,23 @@
 #include "third_party/blink/renderer/core/page/page_animator.h"
 
 #include "base/auto_reset.h"
+#include "base/time/time.h"
 #include "cc/animation/animation_host.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
+#include "third_party/blink/renderer/core/css/css_value.h"
+#include "third_party/blink/renderer/core/dom/document_lifecycle.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/scripted_animation_controller.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
@@ -20,20 +29,15 @@ namespace blink {
 
 namespace {
 
-typedef HeapVector<Member<Document>, 32> DocumentsVector;
-
-enum OnlyThrottledOrNot { kOnlyNonThrottled, kAllDocuments };
-
 // We walk through all the frames in DOM tree order and get all the documents
-DocumentsVector GetAllDocuments(Frame* main_frame,
-                                OnlyThrottledOrNot which_documents) {
+DocumentsVector GetAllDocuments(Frame* main_frame) {
   DocumentsVector documents;
   for (Frame* frame = main_frame; frame; frame = frame->Tree().TraverseNext()) {
     if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
       Document* document = local_frame->GetDocument();
-      if (which_documents == kAllDocuments || !document->View() ||
-          !document->View()->CanThrottleRendering())
-        documents.push_back(document);
+      bool can_throttle =
+          document->View() ? document->View()->CanThrottleRendering() : false;
+      documents.emplace_back(std::make_pair(document, can_throttle));
     }
   }
   return documents;
@@ -59,24 +63,178 @@ void PageAnimator::ServiceScriptedAnimations(
   Clock().SetAllowedToDynamicallyUpdateTime(false);
   Clock().UpdateTime(monotonic_animation_start_time);
 
-  DocumentsVector documents =
-      GetAllDocuments(page_->MainFrame(), kAllDocuments);
+  DocumentsVector documents = GetAllDocuments(page_->MainFrame());
 
-  for (auto& document : documents) {
-    // TODO(szager): The following logic evolved piecemeal, and this conditional
-    // is suspect.
-    if (!document->View() || !document->View()->CanThrottleRendering()) {
-      TRACE_EVENT0("blink,rail", "PageAnimator::serviceScriptedAnimations");
-    }
+  TRACE_EVENT0("blink,rail", "PageAnimator::serviceScriptedAnimations");
+  for (const auto& [document, can_throttle] : documents) {
     if (!document->View()) {
       document->GetDocumentAnimations()
           .UpdateAnimationTimingForAnimationFrame();
+    } else {
+      if (!can_throttle) {
+        document->View()->ServiceScrollAnimations(
+            monotonic_animation_start_time);
+      }
+    }
+  }
+  ControllersVector controllers{};
+  for (const auto& document : documents) {
+    controllers.emplace_back(document.first->GetScriptedAnimationController(),
+                             document.second);
+  }
+  ServiceScriptedAnimations(monotonic_animation_start_time, controllers);
+  page_->GetValidationMessageClient().LayoutOverlay();
+}
+
+void PageAnimator::ServiceScriptedAnimations(
+    base::TimeTicks monotonic_time_now,
+    const ControllersVector& controllers) {
+  Vector<wtf_size_t> active_controllers_ids{};
+  HeapVector<Member<ScriptedAnimationController>> active_controllers{};
+  for (wtf_size_t i = 0; i < controllers.size(); ++i) {
+    auto& [controller, can_throttle] = controllers[i];
+    if (!controller->GetExecutionContext() ||
+        controller->GetExecutionContext()->IsContextFrozenOrPaused()) {
       continue;
     }
-    document->View()->ServiceScriptedAnimations(monotonic_animation_start_time);
+    auto* loader = controller->GetWindow()->document()->Loader();
+    if (!loader) {
+      continue;
+    }
+    controller->SetCurrentFrameTimeMs(
+        loader->GetTiming()
+            .MonotonicTimeToZeroBasedDocumentTime(monotonic_time_now)
+            .InMillisecondsF());
+    controller->SetCurrentFrameLegacyTimeMs(
+        loader->GetTiming()
+            .MonotonicTimeToPseudoWallTime(monotonic_time_now)
+            .InMillisecondsF());
+    if (can_throttle) {
+      continue;
+    }
+    auto* animator = controller->GetPageAnimator();
+    if (animator && controller->HasFrameCallback()) {
+      animator->SetCurrentFrameHadRaf();
+    }
+    if (!controller->HasScheduledFrameTasks()) {
+      continue;
+    }
+    active_controllers_ids.emplace_back(i);
+    active_controllers.emplace_back(controller);
   }
 
-  page_->GetValidationMessageClient().LayoutOverlay();
+  Vector<base::TimeDelta> time_intervals(active_controllers.size());
+  // TODO(rendering-dev): calls to Now() are expensive on ARM architectures.
+  // We can avoid some of these calls by filtering out calls to controllers
+  // where the function() invocation won't do any work (e.g., because there
+  // are no events to dispatch).
+  const auto run_for_all_active_controllers_with_timing =
+      [&](const auto& function) {
+        auto start_time = base::TimeTicks::Now();
+        for (wtf_size_t i = 0; i < active_controllers.size(); ++i) {
+          function(i);
+          auto end_time = base::TimeTicks::Now();
+          time_intervals[i] += end_time - start_time;
+          start_time = end_time;
+        }
+      };
+
+  // https://gpuweb.github.io/gpuweb/#abstract-opdef-expire-stale-external-textures
+  run_for_all_active_controllers_with_timing([&](wtf_size_t i) {
+    active_controllers[i]->WebGPUCheckStateToExpireVideoFrame();
+  });
+
+  // https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model
+
+  // 6. For each fully active Document in docs, flush autofocus
+  // candidates for that Document if its browsing context is a top-level
+  // browsing context.
+  run_for_all_active_controllers_with_timing([&](wtf_size_t i) {
+    if (const auto* window = active_controllers[i]->GetWindow()) {
+      window->document()->FlushAutofocusCandidates();
+    }
+  });
+
+  // 7. For each fully active Document in docs, run the resize steps
+  // for that Document, passing in now as the timestamp.
+  wtf_size_t active_controller_id = 0;
+  auto start_time = base::TimeTicks::Now();
+  for (wtf_size_t i = 0; i < controllers.size(); ++i) {
+    auto& [controller, can_throttle] = controllers[i];
+    controller->DispatchEvents([](const Event* event) {
+      return event->type() == event_type_names::kResize;
+    });
+    auto end_time = base::TimeTicks::Now();
+    if (active_controller_id < active_controllers_ids.size() &&
+        i == active_controllers_ids[active_controller_id]) {
+      time_intervals[active_controller_id++] += end_time - start_time;
+    } else {
+      // For non active controllers (e.g. which can throttle)
+      // that's the only timing we need to measure.
+      if (const auto* window = controller->GetWindow()) {
+        if (auto* frame = window->document()->GetFrame()) {
+          frame->GetFrameScheduler()->AddTaskTime(end_time - start_time);
+        }
+      }
+    }
+    start_time = end_time;
+  }
+
+  // 8. For each fully active Document in docs, run the scroll steps
+  // for that Document, passing in now as the timestamp.
+  run_for_all_active_controllers_with_timing([&](wtf_size_t i) {
+    active_controllers[i]->DispatchEvents([](const Event* event) {
+      return event->type() == event_type_names::kScroll ||
+             event->type() == event_type_names::kScrollend;
+    });
+  });
+
+  // 9. For each fully active Document in docs, evaluate media
+  // queries and report changes for that Document, passing in now as the
+  // timestamp
+  run_for_all_active_controllers_with_timing([&](wtf_size_t i) {
+    active_controllers[i]->CallMediaQueryListListeners();
+  });
+
+  // 10. For each fully active Document in docs, update animations and
+  // send events for that Document, passing in now as the timestamp.
+  run_for_all_active_controllers_with_timing(
+      [&](wtf_size_t i) { active_controllers[i]->DispatchEvents(); });
+
+  // 11. For each fully active Document in docs, run the fullscreen
+  // steps for that Document, passing in now as the timestamp.
+  run_for_all_active_controllers_with_timing(
+      [&](wtf_size_t i) { active_controllers[i]->RunTasks(); });
+
+  // Run the fulfilled HTMLVideoELement.requestVideoFrameCallback() callbacks.
+  // See https://wicg.github.io/video-rvfc/.
+  run_for_all_active_controllers_with_timing([&](wtf_size_t i) {
+    active_controllers[i]->ExecuteVideoFrameCallbacks();
+  });
+
+  // 13. For each fully active Document in docs, run the animation
+  // frame callbacks for that Document, passing in now as the timestamp.
+  run_for_all_active_controllers_with_timing([&](wtf_size_t i) {
+    active_controllers[i]->ExecuteFrameCallbacks();
+    if (!active_controllers[i]->GetExecutionContext()) {
+      return;
+    }
+    auto* animator = active_controllers[i]->GetPageAnimator();
+    if (animator && active_controllers[i]->HasFrameCallback()) {
+      animator->SetNextFrameHasPendingRaf();
+    }
+    // See LocalFrameView::RunPostLifecycleSteps() for 14.
+    active_controllers[i]->ScheduleAnimationIfNeeded();
+  });
+
+  // Add task timings.
+  for (wtf_size_t i = 0; i < active_controllers.size(); ++i) {
+    if (const auto* window = active_controllers[i]->GetWindow()) {
+      if (auto* frame = window->document()->GetFrame()) {
+        frame->GetFrameScheduler()->AddTaskTime(time_intervals[i]);
+      }
+    }
+  }
 }
 
 void PageAnimator::PostAnimate() {
@@ -176,9 +334,8 @@ void PageAnimator::UpdateLifecycleToLayoutClean(LocalFrame& root_frame,
 HeapVector<Member<Animation>> PageAnimator::GetAnimations(
     const TreeScope& tree_scope) {
   HeapVector<Member<Animation>> animations;
-  DocumentsVector documents =
-      GetAllDocuments(page_->MainFrame(), kAllDocuments);
-  for (auto& document : documents) {
+  DocumentsVector documents = GetAllDocuments(page_->MainFrame());
+  for (auto& [document, can_throttle] : documents) {
     document->GetDocumentAnimations().GetAnimationsTargetingTreeScope(
         animations, tree_scope);
   }

@@ -134,7 +134,7 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
     private void showUndoGroupSnackbar(List<TabUndoInfo> tabUndoInfo) {
         int mergedGroupSize = mTabModelSelector.getTabModelFilterProvider()
                                       .getCurrentTabModelFilter()
-                                      .getRelatedTabIds(tabUndoInfo.get(0).tabOriginalGroupId)
+                                      .getRelatedTabIds(tabUndoInfo.get(0).tab.getId())
                                       .size();
         assert mergedGroupSize > 1;
 

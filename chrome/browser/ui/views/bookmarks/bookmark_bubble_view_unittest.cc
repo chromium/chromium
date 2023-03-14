@@ -111,7 +111,7 @@ class BookmarkBubbleViewTest : public BrowserWithTestWindowTest {
     BookmarkBubbleView::ShowBubble(
         anchor_widget_->GetContentsView(),
         browser()->tab_strip_model()->GetActiveWebContents(), nullptr, nullptr,
-        profile(), GURL(kTestBookmarkURL), true);
+        browser(), GURL(kTestBookmarkURL), true);
   }
 
   PriceTrackingView* GetPriceTrackingView() {
@@ -183,6 +183,7 @@ TEST_F(BookmarkBubbleViewTest, PriceTrackingViewIsVisible) {
 
   SimulateProductImageIsAvailable(/*with_valid_image=*/true);
 
+  mock_shopping_service->SetIsSubscribedCallbackValue(false);
   mock_shopping_service->SetResponseForGetProductInfoForUrl(
       commerce::ProductInfo());
   CreateBubbleView();

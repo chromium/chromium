@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <tuple>
 #include <unordered_set>
 #include <vector>
 
@@ -41,6 +42,10 @@ enum class GamepadId : uint32_t {
   // Fake IDs for devices which report as 0x0000 0x0000
   kPowerALicPro = 0x0000ff00,
   // ID values for supported devices.
+  kAcerProduct1304 = 0x05021304,
+  kAcerProduct1305 = 0x05021305,
+  kAcerProduct1316 = 0x05021316,
+  kAcerProduct1317 = 0x05021317,
   kAmazonProduct041a = 0x1949041a,
   kAsusTekProduct4500 = 0x0b054500,
   kBdaProduct6271 = 0x20d66271,

@@ -364,7 +364,8 @@ void LoopbackStream::FlowNetwork::GenerateMoreAudio() {
   }
 
   // Insert the result into the AudioDataPipe.
-  writer_->Write(mix_bus_.get(), output_volume, false, delayed_capture_time);
+  writer_->Write(mix_bus_.get(), output_volume, false, delayed_capture_time,
+                 {});
 
   // Determine when to generate more audio again. This is done by advancing the
   // frame count by one interval's worth, then computing the TimeTicks

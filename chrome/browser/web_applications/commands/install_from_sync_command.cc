@@ -17,11 +17,11 @@
 #include "chrome/browser/web_applications/install_bounce_metric.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
-#include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -105,11 +105,10 @@ InstallFromSyncCommand::InstallFromSyncCommand(
   debug_value_.Set("app_id", params_.app_id);
   debug_value_.Set("manifest_id", params_.manifest_id.value_or("<unset>"));
   debug_value_.Set("title", params_.title);
-  debug_value_.Set(
-      "user_display_mode",
-      params_.user_display_mode
-          ? base::StreamableToString(params_.user_display_mode.value())
-          : "<unset>");
+  debug_value_.Set("user_display_mode",
+                   params_.user_display_mode
+                       ? base::ToString(params_.user_display_mode.value())
+                       : "<unset>");
   debug_value_.Set("scope", params_.scope.spec());
   debug_value_.Set("start_url", params_.start_url.spec());
   debug_value_.Set("fallback_install", false);
@@ -296,7 +295,7 @@ void InstallFromSyncCommand::InstallFallback(webapps::InstallResultCode code) {
   DCHECK(code != webapps::InstallResultCode::kWebContentsDestroyed);
   DCHECK(code != webapps::InstallResultCode::kInstallTaskDestroyed);
   debug_value_.Set("fallback_install", true);
-  debug_value_.Set("fallback_install_reason", base::StreamableToString(code));
+  debug_value_.Set("fallback_install_reason", base::ToString(code));
 
   base::flat_set<GURL> icon_urls =
       GetValidIconUrlsToDownload(*fallback_install_info_);
@@ -322,7 +321,7 @@ void InstallFromSyncCommand::ReportResultAndDestroy(
     const AppId& app_id,
     webapps::InstallResultCode code) {
   bool success = IsSuccess(code);
-  debug_value_.Set("result_code", base::StreamableToString(code));
+  debug_value_.Set("result_code", base::ToString(code));
   if (success) {
     RecordWebAppInstallationTimestamp(profile_->GetPrefs(), app_id,
                                       webapps::WebappInstallSource::SYNC);

@@ -291,6 +291,6 @@ public class AccessorySheetRenderTest {
             mSheetModel.set(ACTIVE_TAB_INDEX, 0);
             mSheetModel.set(VISIBLE, true);
         });
-        ViewUtils.waitForView(mContentView, withId(R.id.keyboard_accessory_sheet));
+        ViewUtils.waitForView(mContentView, withId(R.id.keyboard_accessory_sheet_frame));
     }
 }

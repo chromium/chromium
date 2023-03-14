@@ -43,9 +43,7 @@ void SaveIconToLocalOnBlockingPool(const base::FilePath& icon_path,
     return;
   }
 
-  const int wrote = base::WriteFile(
-      icon_path, reinterpret_cast<char*>(image_data.data()), image_data.size());
-  if (wrote != static_cast<int>(image_data.size())) {
+  if (!base::WriteFile(icon_path, image_data)) {
     LOG(ERROR) << "Failed to write kiosk icon file";
   }
 }

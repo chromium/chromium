@@ -324,21 +324,15 @@ bool HTMLFormControlElement::IsSuccessfulSubmitButton() const {
   return CanBeSuccessfulSubmitButton() && !IsDisabledFormControl();
 }
 
-// The element is returned if a) that element exists, b) it is a valid Popover
-// element, and c) this form control supports popover triggering. If multiple
-// toggle attributes are present:
-//  1. Only one idref will ever be used, if multiple attributes are present.
-//  2. If 'popovertoggletarget' is present, its IDREF will be used.
-//  3. If 'popovershowtarget' is present and 'popovertoggletarget' isn't present
-//     or its value doesn't match that of popovershowtarget, only
-//     popovershowtarget will be used.
-//  4. If both 'popovershowtarget' and 'popoverhidetarget' are present and their
-//     values match, the behavior is to toggle.
+// The element referenced by the `popovertarget` attribute is returned if a)
+// that element exists, b) it is a valid Popover element, and c) this form
+// control supports popover triggering. The return value will include the
+// behavior, which is taken from the `popovertargetaction` attribute, and will
+// be kNone unless there is a valid popover target.
 HTMLFormControlElement::PopoverTargetElement
 HTMLFormControlElement::popoverTargetElement() {
   const PopoverTargetElement no_element{.popover = nullptr,
-                                        .action = PopoverTriggerAction::kNone,
-                                        .attribute_name = g_null_name};
+                                        .action = PopoverTriggerAction::kNone};
   if (!RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
           GetDocument().GetExecutionContext()) ||
       !IsInTreeScope() ||
@@ -348,27 +342,7 @@ HTMLFormControlElement::popoverTargetElement() {
   }
 
   Element* target_element;
-  QualifiedName attribute_name = html_names::kPopovertoggletargetAttr;
-  PopoverTriggerAction action = PopoverTriggerAction::kToggle;
-  target_element = GetElementAttribute(html_names::kPopovertoggletargetAttr);
-  if (!target_element) {
-    target_element = GetElementAttribute(html_names::kPopovershowtargetAttr);
-    if (target_element) {
-      action = PopoverTriggerAction::kShow;
-      attribute_name = html_names::kPopovershowtargetAttr;
-    }
-  }
-  if (Element* hide_target =
-          GetElementAttribute(html_names::kPopoverhidetargetAttr)) {
-    if (!target_element) {
-      target_element = hide_target;
-      action = PopoverTriggerAction::kHide;
-      attribute_name = html_names::kPopoverhidetargetAttr;
-    } else if (hide_target == target_element) {
-      action = PopoverTriggerAction::kToggle;
-      // Leave attribute_name as-is in this case.
-    }
-  }
+  target_element = GetElementAttribute(html_names::kPopovertargetAttr);
   if (!target_element) {
     return no_element;
   }
@@ -376,9 +350,16 @@ HTMLFormControlElement::popoverTargetElement() {
   if (!target_popover || !target_popover->HasPopoverAttribute()) {
     return no_element;
   }
-  return PopoverTargetElement{.popover = target_popover,
-                              .action = action,
-                              .attribute_name = attribute_name};
+  // The default action is "toggle".
+  PopoverTriggerAction action = PopoverTriggerAction::kToggle;
+  auto action_value =
+      getAttribute(html_names::kPopovertargetactionAttr).LowerASCII();
+  if (action_value == "show") {
+    action = PopoverTriggerAction::kShow;
+  } else if (action_value == "hide") {
+    action = PopoverTriggerAction::kHide;
+  }
+  return PopoverTargetElement{.popover = target_popover, .action = action};
 }
 
 void HTMLFormControlElement::DefaultEventHandler(Event& event) {

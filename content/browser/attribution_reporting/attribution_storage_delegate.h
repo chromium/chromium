@@ -6,14 +6,15 @@
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_STORAGE_DELEGATE_H_
 
 #include <stdint.h>
+
 #include <vector>
 
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
-#include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_source_type.h"
+#include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -23,7 +24,9 @@ class GUID;
 
 namespace content {
 
+class AttributionReport;
 class CommonSourceInfo;
+class StoredSource;
 
 // Storage delegate that can supplied to extend basic attribution storage
 // functionality like annotating reports.
@@ -54,7 +57,7 @@ class CONTENT_EXPORT AttributionStorageDelegate {
 
   // Returns the time an event-level report should be sent for a given trigger
   // time and its corresponding source.
-  virtual base::Time GetEventLevelReportTime(const CommonSourceInfo& source,
+  virtual base::Time GetEventLevelReportTime(const StoredSource& source,
                                              base::Time trigger_time) const = 0;
 
   // Returns the time an aggregatable report should be sent for a given trigger
@@ -67,7 +70,8 @@ class CONTENT_EXPORT AttributionStorageDelegate {
   // marked inactive and no new reports will be created for it.
   // Sources will be checked against this limit after they schedule a new
   // report.
-  int GetMaxAttributionsPerSource(AttributionSourceType source_type) const;
+  int GetMaxAttributionsPerSource(
+      attribution_reporting::mojom::SourceType) const;
 
   // These limits are designed solely to avoid excessive disk / memory usage.
   // In particular, they do not correspond with any privacy parameters.
@@ -81,7 +85,8 @@ class CONTENT_EXPORT AttributionStorageDelegate {
   // reporting origins are the actual entities that invoke attribution
   // registration, we could consider changing this limit to be keyed by an
   // <attribution origin, reporting origin> tuple.
-  int GetMaxReportsPerDestination(AttributionReport::Type) const;
+  int GetMaxReportsPerDestination(
+      attribution_reporting::mojom::ReportType) const;
 
   // Returns the maximum number of distinct attribution destinations that can
   // be in storage at any time for sources with the same <source site,
@@ -120,13 +125,24 @@ class CONTENT_EXPORT AttributionStorageDelegate {
   // source with the given source type, as implemented by
   // `GetRandomizedResponse()`. Must be in the range [0, 1] and remain constant
   // for the lifetime of the delegate.
-  double GetRandomizedResponseRate(AttributionSourceType) const;
+  double GetRandomizedResponseRate(
+      attribution_reporting::mojom::SourceType) const;
 
   // Returns a randomized response for the given source, consisting of zero or
   // more fake reports. Returns `absl::nullopt` to indicate that the response
   // should not be randomized.
   virtual RandomizedResponse GetRandomizedResponse(
-      const CommonSourceInfo& source) = 0;
+      const CommonSourceInfo& source,
+      base::Time event_report_window_time) = 0;
+
+  virtual base::Time GetExpiryTime(
+      absl::optional<base::TimeDelta> declared_expiry,
+      base::Time source_time,
+      attribution_reporting::mojom::SourceType) = 0;
+
+  virtual absl::optional<base::Time> GetReportWindowTime(
+      absl::optional<base::TimeDelta> declared_window,
+      base::Time source_time) = 0;
 
   // Returns the maximum sum of the contributions (values) across all buckets
   // per source.
@@ -134,13 +150,11 @@ class CONTENT_EXPORT AttributionStorageDelegate {
 
   // Sanitizes `trigger_data` according to the data limits for `source_type`.
   uint64_t SanitizeTriggerData(uint64_t trigger_data,
-                               AttributionSourceType source_type) const;
-
-  // Sanitizes `source_event_id` according to the data limit.
-  uint64_t SanitizeSourceEventId(uint64_t source_event_id) const;
+                               attribution_reporting::mojom::SourceType) const;
 
  protected:
-  uint64_t TriggerDataCardinality(AttributionSourceType source_type) const;
+  uint64_t TriggerDataCardinality(
+      attribution_reporting::mojom::SourceType) const;
 
   AttributionConfig config_ GUARDED_BY_CONTEXT(sequence_checker_);
 

@@ -61,6 +61,7 @@
 <translation id="2573731672208488250">{HOURS,plural, =1{om 1 t}other{om # t}}</translation>
 <translation id="2583543531130364912">Kalibrer berøringsskjermen din</translation>
 <translation id="2586657967955657006">Utklippstavle</translation>
+<translation id="2653844658857826081">NYHET</translation>
 <translation id="2666092431469916601">Topp</translation>
 <translation id="2701330563083355633">Delt fra <ph name="DEVICE_NAME" /></translation>
 <translation id="271033894570825754">Ny</translation>
@@ -75,6 +76,7 @@
 <translation id="3157931365184549694">Gjenopprett</translation>
 <translation id="3183922693828471536">Rull hit</translation>
 <translation id="3234408098842461169">Pil ned</translation>
+<translation id="3240426699337459095">Linken er kopiert</translation>
 <translation id="3291688615589870984">{DAYS,plural, =1{1 dag}other{# dager}}</translation>
 <translation id="3295886253693811851">Ring fra</translation>
 <translation id="3306688585798492231">Innebygd skjerm</translation>

@@ -59,11 +59,11 @@ class FakeLinuxUi : public LinuxUiAndTheme {
   ui::NativeTheme* GetNativeTheme() const override;
   bool GetColor(int id, SkColor* color, bool use_custom_frame) const override;
   bool GetDisplayProperty(int id, int* result) const override;
-  SkColor GetFocusRingColor() const override;
-  SkColor GetActiveSelectionBgColor() const override;
-  SkColor GetActiveSelectionFgColor() const override;
-  SkColor GetInactiveSelectionBgColor() const override;
-  SkColor GetInactiveSelectionFgColor() const override;
+  void GetFocusRingColor(SkColor* color) const override;
+  void GetActiveSelectionBgColor(SkColor* color) const override;
+  void GetActiveSelectionFgColor(SkColor* color) const override;
+  void GetInactiveSelectionBgColor(SkColor* color) const override;
+  void GetInactiveSelectionFgColor(SkColor* color) const override;
   bool PreferDarkTheme() const override;
   std::unique_ptr<ui::NavButtonProvider> CreateNavButtonProvider() override;
   ui::WindowFrameProvider* GetWindowFrameProvider(bool solid_frame) override;

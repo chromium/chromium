@@ -121,6 +121,7 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
   bool IsMediaSessionControllerAvailable() const;
   bool IsMetricsReportingAvailable() const;
   bool IsMultiCaptureServiceAvailable() const;
+  bool IsSmartReaderClientAvailable() const;
   bool IsSensorHalClientAvailable() const;
   bool IsStableVideoDecoderFactoryAvailable() const;
 

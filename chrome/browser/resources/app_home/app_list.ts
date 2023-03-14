@@ -162,11 +162,16 @@ export class AppListElement extends PolymerElement {
   }
 
   private addApp_(appInfo: AppInfo) {
-    const index = this.apps_.findIndex(app => app.id === appInfo.id);
-    if (index !== -1) {
-      this.set(`apps_.${index}`, appInfo);
+    const currIndex = this.apps_.findIndex(app => app.id === appInfo.id);
+    if (currIndex !== -1) {
+      this.set(`apps_.${currIndex}`, appInfo);
     } else {
-      this.push('apps_', appInfo);
+      const newIndex = this.apps_.findIndex(app => app.name > appInfo.name);
+      if (newIndex === -1) {
+        this.push('apps_', appInfo);
+        return;
+      }
+      this.splice('apps_', newIndex, 0, appInfo);
     }
   }
 
@@ -199,6 +204,13 @@ export class AppListElement extends PolymerElement {
   private switchActiveMenu_(event: MenuHandleEvent) {
     this.closeCurrentAppMenu();
     this.selectedAppItem_ = event.detail.appItem;
+  }
+
+  private notLocallyInstalledString_(installed: boolean, i18nString: string) {
+    if (!installed) {
+      return ' (' + i18nString + ')';
+    }
+    return '';
   }
 }
 

@@ -83,14 +83,43 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // --------------------------------------------------------------------------
 
   void DeleteEarly(JNIEnv* env);
-  void UnInitialize(JNIEnv* env);
 
-  // Global methods.
-  jboolean IsEnabled(JNIEnv* env);
-  void Enable(JNIEnv* env, jboolean screen_reader_mode);
-  void SetAXMode(JNIEnv* env,
-                 jboolean screen_reader_mode,
-                 jboolean is_accessibility_enabled);
+  // To communicate over the JNI bridge, a BrowserAccessibilityManager needs to
+  // have a reference to |this| object. There may be multiple BAMs for a given
+  // frame, but on the Java-side there will be one WebContentsAccessibilityImpl.
+  // We connect only the root BAM to WCAI through a WeakPtr to |this| instance.
+  // We get the root BAM from the primary frame of the RenderFrameHostImpl for
+  // the webContents that is associated with this instance.
+  //
+  // Note: The root BAM may be null during construction, unless the BAM creation
+  // precedes render view updates for the associated web contents. If the root
+  // BAM is still null, this method does not connect the instances. The
+  // Java-side code will make a connection request on every attempt the Android
+  // Framework makes to get an AccessibilityNodeProvider, until the root manager
+  // is connected to |this| (See #IsRootManagerConnected, below). This may
+  // happen multiple times. See WebContentsAccessibilityImpl.java for more info.
+  void ConnectInstanceToRootManager(JNIEnv* env);
+  jboolean IsRootManagerConnected(JNIEnv* env);
+
+  // This method should only be used by the Auto-Disable accessibility feature.
+  //
+  // This method "turns off" the renderer-side accessibility engine. First, it
+  // will reset the weak reference that the root BAM has to |this| (which will
+  // disable the C++ -> Java bridge), then it will clear objects in memory.
+  //
+  // Note: Calling this method should be preceded by calling {SetBrowserAXMode}
+  void DisableRendererAccessibility(JNIEnv* env);
+
+  // This method should only be used by the Auto-Disable accessibility feature.
+  //
+  // This method "turns on" the renderer-side accessibility engine, and builds
+  // the connections needed to communicate over the C++ -> Java bridge. It will
+  // perform the opposite operation as the teardown method above.
+  //
+  // Note: Calling this method should be followed by calling {SetBrowserAXMode}
+  void ReEnableRendererAccessibility(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jweb_contents);
 
   base::android::ScopedJavaGlobalRef<jstring> GetSupportedHtmlElementTypes(
       JNIEnv* env);
@@ -345,7 +374,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   JavaObjectWeakGlobalRef java_ref_;
   JavaObjectWeakGlobalRef java_anib_ref_;
 
-  const raw_ptr<WebContentsImpl> web_contents_;
+  raw_ptr<WebContentsImpl> web_contents_;
 
   bool frame_info_initialized_;
 
@@ -383,9 +412,10 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // Owns itself, and destroyed upon WebContentsObserver::WebContentsDestroyed.
   class Connector;
   raw_ptr<Connector> connector_ = nullptr;
+
   // This isn't associated with a real WebContents and is only populated when
   // this class is constructed with a ui::AXTreeUpdate.
-  std::unique_ptr<BrowserAccessibilityManagerAndroid> manager_;
+  std::unique_ptr<BrowserAccessibilityManagerAndroid> snapshot_root_manager_;
 
   std::unique_ptr<TouchPassthroughManager> touch_passthrough_manager_;
 

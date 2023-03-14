@@ -35,6 +35,8 @@ class DrmDisplayHost : public GpuThreadObserver {
   bool is_dummy() const { return is_dummy_; }
 
   void UpdateDisplaySnapshot(std::unique_ptr<display::DisplaySnapshot> params);
+  void SetHdcpKeyProp(const std::string& key,
+                      display::SetHdcpKeyPropCallback callback);
   void GetHDCPState(display::GetHDCPStateCallback callback);
   void SetHDCPState(display::HDCPState state,
                     display::ContentProtectionMethod protection_method,
@@ -48,6 +50,7 @@ class DrmDisplayHost : public GpuThreadObserver {
 
   // Called when the IPC from the GPU process arrives to answer the above
   // commands.
+  void OnHdcpKeyPropSetReceived(bool success);
   void OnHDCPStateReceived(bool status,
                            display::HDCPState state,
                            display::ContentProtectionMethod protection_method);
@@ -70,6 +73,7 @@ class DrmDisplayHost : public GpuThreadObserver {
   // synchronous and succeed.
   bool is_dummy_;
 
+  display::SetHdcpKeyPropCallback set_hdcp_key_prop_callback_;
   display::GetHDCPStateCallback get_hdcp_callback_;
   display::SetHDCPStateCallback set_hdcp_callback_;
 };

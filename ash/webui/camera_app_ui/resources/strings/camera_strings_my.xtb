@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">လင့်ခ်တွေ့ရှိသည်။ <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">စာမျက်နှာ <ph name="PAGE_NUMBER" /> ကို ဖျက်ပြီးပြီ</translation>
 <translation id="1258009455399840361">၉၀ ဒီဂရီ နာရီလက်တံအတိုင်း လှည့်ရန်</translation>
-<translation id="1300209025925956156">သင့်မှတ်တမ်းဖိုင်ကို စကင်ဖတ်ခြင်း</translation>
-<translation id="1309250603447638106">မှတ်တမ်းစကင်ဖတ်ခြင်းအတွက် အပ်ဒိတ်များ ဒေါင်းလုဒ်လုပ်နေသည်</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />။ ကြည့်ရန် Search + ‘ဘယ်ညွှန်မြား’ နှိပ်ပါ။</translation>
 <translation id="1417314334557041815"><ph name="INDEX" /> စာမျက်နှာကို တည်းဖြတ်ရန်</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> ကို ပလတ်ဖြုတ်ထားသည်။</translation>
 <translation id="1473110567575736769">၃ စက္ကန့် အချိန်တိုင်းစက်</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">မည်သည့်အရာမျှ ရိုက်ကူးမထားပါ</translation>
 <translation id="1838104802459806957">အပေါ်သို့ စောင်းရန်</translation>
 <translation id="1843105061469674856">နောက်ထပ်စာမျက်နှာ စကင်ဖတ်ရန်</translation>
-<translation id="1851169887664797861">နောက်ထပ် ကင်မရာအထိန်းအချုပ်များ ရနိုင်သည်</translation>
 <translation id="1851616744363735765">ခေတ္တရပ်ထားသည်</translation>
 <translation id="1899697626337024495">ဓာတ်ပုံ ပုံရိပ်ပြတ်သားကိန်း</translation>
 <translation id="1925845977604399247">‘ပြခန်း’ သို့သွားရန်</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">ရှာဖွေမှုပုံစံ</translation>
 <translation id="28682968802727151">မှန်အစမ်းကြည့်ရန်</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> ကို ပလတ်တပ်ထားသည်။</translation>
-<translation id="2904654629665923749">မှတ်တမ်းစကင်ဖတ်နိုင်ပြီ</translation>
 <translation id="3067436040345934772">ညာဘက် ရွှေ့ကြည့်ရန်</translation>
 <translation id="3081586908890909590">ဗီဒီယိုရိုက်ခြင်းမုဒ်သို့ ပြောင်းရန်</translation>
 <translation id="313467653172006084">30 FPS</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">လင့် လိပ်စာ ကူးယူရန်</translation>
 <translation id="4281620174117014503">အလယ်အလတ် ပုံရိပ်ပြတ်သားကိန်း</translation>
 <translation id="428234092390943511">စာမျက်နှာ ပုံသေး</translation>
-<translation id="4340659173795395806">စာမျက်နှာများပါသည့် PDF ကို ယခုပြုလုပ်နိုင်ပါပြီ</translation>
 <translation id="4383571725254449280">စွမ်းဆောင်ရည် မှတ်တမ်းများကို ပုံနှိပ်ရန်</translation>
 <translation id="4445542136948522167">ဓာတ်ပုံရိုက်ခြင်း ရပ်တန့်ရန်</translation>
 <translation id="4570032796877367747">အရှေ့ကင်မရာ</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">သိမ်းရန်</translation>
 <translation id="5320594929574852403">ဘယ်ဘက် ဦးတည်ချက်အတိုင်း ရွေ့နေသည်</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5444515100983837161">မှတ်တမ်းဖိုင်၏ အစွန်းအားလုံးကို ဘောင်အတွင်းထားပါ။ မှတ်တမ်းဖိုင်နှင့် နောက်ခံတို့သည် အရောင်မတူလျှင် စကင် အကောင်းဆုံး ဖတ်နိုင်သည်။</translation>
 <translation id="5662366948659129155">စာမျက်နှာ <ph name="COUNT" /> ကို စကင်ဖတ်နေသည်</translation>
 <translation id="5671277269877808209">စတုရန်း</translation>
 <translation id="5746169159649715125">PDF အဖြစ်သိမ်း</translation>
@@ -157,7 +150,6 @@
 <translation id="8428213095426709021">ဆက်တင်များ</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">မိုက်ခရိုဖုန်း အသံပိတ် ခလုတ်။ အသံတိတ်ခြင်း ဖွင့်</translation>
-<translation id="8712637175834984815">ရပါပြီ!</translation>
 <translation id="8730621377337864115">ပြီးပါပြီ</translation>
 <translation id="8732462232047530626">မက်တာဒေတာကို အစမ်းကြည့်ရှုရန်</translation>
 <translation id="8815966864175525708">ဒေါင်လိုက် ဓာတ်ပုံရိုက်ရန်အတွက် ပြောင်းရန်</translation>

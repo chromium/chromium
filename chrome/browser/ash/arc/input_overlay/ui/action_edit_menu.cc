@@ -36,8 +36,9 @@ class ActionEditMenu::BindingButton : public views::LabelButton {
 
     auto* color_provider = ash::AshColorProvider::Get();
     DCHECK(color_provider);
-    if (!color_provider)
+    if (!color_provider) {
       return;
+    }
     SetTextColor(
         views::Button::STATE_NORMAL,
         color_provider->GetContentLayerColor(
@@ -63,8 +64,9 @@ class ActionEditMenu::BindingButton : public views::LabelButton {
   void OnBinding() {
     auto* color_provider = ash::AshColorProvider::Get();
     DCHECK(color_provider);
-    if (!color_provider)
+    if (!color_provider) {
       return;
+    }
     auto check_icon = gfx::CreateVectorIcon(
         ash::kHollowCheckCircleIcon, kCheckIconSize,
         color_provider->GetContentLayerColor(
@@ -90,8 +92,9 @@ std::unique_ptr<ActionEditMenu> ActionEditMenu::BuildActionEditMenu(
     DisplayOverlayController* display_overlay_controller,
     ActionView* anchor,
     ActionType action_type) {
-  if (!display_overlay_controller)
+  if (!display_overlay_controller) {
     return nullptr;
+  }
   display_overlay_controller->RemoveActionEditMenu();
 
   auto menu =
@@ -117,8 +120,9 @@ void ActionEditMenu::InitActionTapEditMenu() {
 
   auto* color_provider = GetColorProvider();
   DCHECK(color_provider);
-  if (!color_provider)
+  if (!color_provider) {
     return;
+  }
   const auto bg_color = color_provider->GetColor(cros_tokens::kBgColor);
   SetBackground(views::CreateRoundedRectBackground(bg_color, kCornerRadius));
 
@@ -151,8 +155,9 @@ void ActionEditMenu::InitActionTapEditMenu() {
   // It is possible that the action has no binding after customizing, such as
   // users bind the key to another action.
   auto& input_binding = action->GetCurrentDisplayedInput();
-  if (IsKeyboardBound(input_binding))
+  if (IsKeyboardBound(input_binding)) {
     keyboard_key_->OnBinding();
+  }
   if (IsMouseBound(input_binding)) {
     switch (input_binding.mouse_action()) {
       case MouseAction::PRIMARY_CLICK:
@@ -174,8 +179,9 @@ void ActionEditMenu::InitActionMoveEditMenu() {
 
 void ActionEditMenu::OnKeyBoardKeyBindingButtonPressed() {
   DCHECK(anchor_view_);
-  if (!anchor_view_)
+  if (!anchor_view_) {
     return;
+  }
 
   anchor_view_->OnBindingToKeyboard();
   display_overlay_controller_->RemoveActionEditMenu();
@@ -183,8 +189,9 @@ void ActionEditMenu::OnKeyBoardKeyBindingButtonPressed() {
 
 void ActionEditMenu::OnMouseLeftClickBindingButtonPressed() {
   DCHECK(anchor_view_);
-  if (!anchor_view_)
+  if (!anchor_view_) {
     return;
+  }
 
   anchor_view_->OnBindingToMouse(kPrimaryClick);
   display_overlay_controller_->RemoveActionEditMenu();
@@ -192,8 +199,9 @@ void ActionEditMenu::OnMouseLeftClickBindingButtonPressed() {
 
 void ActionEditMenu::OnMouseRightClickBindingButtonPressed() {
   DCHECK(anchor_view_);
-  if (!anchor_view_)
+  if (!anchor_view_) {
     return;
+  }
 
   anchor_view_->OnBindingToMouse(kSecondaryClick);
   display_overlay_controller_->RemoveActionEditMenu();
@@ -201,8 +209,9 @@ void ActionEditMenu::OnMouseRightClickBindingButtonPressed() {
 
 void ActionEditMenu::OnResetButtonPressed() {
   DCHECK(anchor_view_);
-  if (!anchor_view_)
+  if (!anchor_view_) {
     return;
+  }
 
   anchor_view_->OnResetBinding();
   display_overlay_controller_->RemoveActionEditMenu();

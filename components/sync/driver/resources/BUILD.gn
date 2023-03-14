@@ -40,7 +40,6 @@ build_webui("build") {
     "//tools/typescript/definitions/pending.d.ts",
     "jstemplate.d.ts",
   ]
-  ts_use_local_config = false
 
   grit_output_dir = "$root_gen_dir/components"
 }

@@ -235,7 +235,7 @@ CookiesGetFunction::~CookiesGetFunction() = default;
 
 ExtensionFunction::ResponseAction CookiesGetFunction::Run() {
   parsed_args_ = api::cookies::Get::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(parsed_args_.get());
+  EXTENSION_FUNCTION_VALIDATE(parsed_args_);
 
   // Read/validate input parameters.
   std::string error;
@@ -310,7 +310,7 @@ CookiesGetAllFunction::~CookiesGetAllFunction() {
 
 ExtensionFunction::ResponseAction CookiesGetAllFunction::Run() {
   parsed_args_ = api::cookies::GetAll::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(parsed_args_.get());
+  EXTENSION_FUNCTION_VALIDATE(parsed_args_);
 
   std::string error;
   if (parsed_args_->details.url &&
@@ -348,38 +348,32 @@ ExtensionFunction::ResponseAction CookiesGetAllFunction::Run() {
 void CookiesGetAllFunction::GetAllCookiesCallback(
     const net::CookieList& cookie_list) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ResponseValue response;
   if (extension()) {
     std::vector<api::cookies::Cookie> match_vector;
     cookies_helpers::AppendMatchingCookiesFromCookieListToVector(
         cookie_list, &parsed_args_->details, extension(), &match_vector);
 
-    response =
-        ArgumentList(api::cookies::GetAll::Results::Create(match_vector));
+    Respond(ArgumentList(api::cookies::GetAll::Results::Create(match_vector)));
   } else {
     // TODO(devlin): When can |extension()| be null for this function?
-    response = WithArguments();
+    Respond(NoArguments());
   }
-  Respond(std::move(response));
 }
 
 void CookiesGetAllFunction::GetCookieListCallback(
     const net::CookieAccessResultList& cookie_list,
     const net::CookieAccessResultList& excluded_cookies) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ResponseValue response;
   if (extension()) {
     std::vector<api::cookies::Cookie> match_vector;
     cookies_helpers::AppendMatchingCookiesFromCookieAccessResultListToVector(
         cookie_list, &parsed_args_->details, extension(), &match_vector);
 
-    response =
-        ArgumentList(api::cookies::GetAll::Results::Create(match_vector));
+    Respond(ArgumentList(api::cookies::GetAll::Results::Create(match_vector)));
   } else {
     // TODO(devlin): When can |extension()| be null for this function?
-    response = WithArguments();
+    Respond(NoArguments());
   }
-  Respond(std::move(response));
 }
 
 void CookiesGetAllFunction::NotifyExtensionTelemetry() {
@@ -413,7 +407,7 @@ CookiesSetFunction::~CookiesSetFunction() {
 
 ExtensionFunction::ResponseAction CookiesSetFunction::Run() {
   parsed_args_ = api::cookies::Set::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(parsed_args_.get());
+  EXTENSION_FUNCTION_VALIDATE(parsed_args_);
 
   // Read/validate input parameters.
   std::string error;
@@ -526,7 +520,7 @@ void CookiesSetFunction::GetCookieListCallback(
     return;
   }
 
-  ResponseValue value;
+  absl::optional<ResponseValue> value;
   for (const net::CookieWithAccessResult& cookie_with_access_result :
        cookie_list) {
     // Return the first matching cookie. Relies on the fact that the
@@ -536,12 +530,13 @@ void CookiesSetFunction::GetCookieListCallback(
     if (cookie_with_access_result.cookie.Name() == name) {
       api::cookies::Cookie api_cookie = cookies_helpers::CreateCookie(
           cookie_with_access_result.cookie, *parsed_args_->details.store_id);
-      value = ArgumentList(api::cookies::Set::Results::Create(api_cookie));
+      value.emplace(
+          ArgumentList(api::cookies::Set::Results::Create(api_cookie)));
       break;
     }
   }
 
-  Respond(value ? std::move(value) : WithArguments());
+  Respond(value ? std::move(*value) : NoArguments());
 }
 
 CookiesRemoveFunction::CookiesRemoveFunction() {
@@ -552,7 +547,7 @@ CookiesRemoveFunction::~CookiesRemoveFunction() {
 
 ExtensionFunction::ResponseAction CookiesRemoveFunction::Run() {
   parsed_args_ = api::cookies::Remove::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(parsed_args_.get());
+  EXTENSION_FUNCTION_VALIDATE(parsed_args_);
 
   // Read/validate input parameters.
   std::string error;

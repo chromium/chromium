@@ -444,6 +444,39 @@ class ClientSideDetectionHostIncognitoTest
       : ClientSideDetectionHostTestBase(true /*is_incognito*/) {}
 };
 
+class ClientSideDetectionHostPolicyTest
+    : public ClientSideDetectionHostTestBase,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  ClientSideDetectionHostPolicyTest()
+      : ClientSideDetectionHostTestBase(false /*is_incognito*/) {}
+
+  // Verify that client side phishing protection follows policy value.
+  void TestPreClassificationCheckCsdPhishingPolicy() {
+    // Configures enterprise policy
+    profile()->GetPrefs()->SetBoolean(
+        prefs::kSafeBrowsingCsdPhishingProtectionAllowedByPolicy, GetParam());
+
+    EXPECT_CALL(*csd_service_, GetModelStr())
+        .WillRepeatedly(ReturnRef(model_str_));
+    GURL url("http://host.com/");
+    if (GetParam()) {
+      ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
+                                    &kFalse, &kFalse);
+    } else {
+      ExpectPreClassificationChecks(url, &kFalse, nullptr, nullptr, nullptr,
+                                    nullptr, &kFalse);
+    }
+    NavigateAndKeepLoading(web_contents(), url);
+    WaitAndCheckPreClassificationChecks();
+    if (GetParam()) {
+      fake_phishing_detector_.CheckMessage(&url);
+    } else {
+      fake_phishing_detector_.CheckMessage(nullptr);
+    }
+  }
+};
+
 TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneInvalidVerdict) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
     GTEST_SKIP();
@@ -1181,6 +1214,17 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationAllowlistedByPolicy) {
   WaitAndCheckPreClassificationChecks();
 
   fake_phishing_detector_.CheckMessage(nullptr);
+}
+
+INSTANTIATE_TEST_SUITE_P(, ClientSideDetectionHostPolicyTest, testing::Bool());
+
+TEST_P(ClientSideDetectionHostPolicyTest,
+       TestPreClassificationCheckPolicyEnabled) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  TestPreClassificationCheckCsdPhishingPolicy();
 }
 
 TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectorResults) {

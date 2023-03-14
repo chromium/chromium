@@ -156,7 +156,12 @@ void FingerprintHandler::HandleGetFingerprintsList(
 
 void FingerprintHandler::OnGetFingerprintsList(
     const std::string& callback_id,
-    const base::flat_map<std::string, std::string>& fingerprints_list_mapping) {
+    const base::flat_map<std::string, std::string>& fingerprints_list_mapping,
+    bool success) {
+  if (!success) {
+    LOG(ERROR) << "OnGetFingerprintsList failed";
+    return;
+  }
   fingerprints_labels_.clear();
   fingerprints_paths_.clear();
   for (auto it = fingerprints_list_mapping.begin();

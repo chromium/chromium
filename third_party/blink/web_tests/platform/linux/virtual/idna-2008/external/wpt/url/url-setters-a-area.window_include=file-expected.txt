@@ -40,5 +40,7 @@ FAIL <a>: Setting <file:///unicorn>.pathname = '//\/' File URLs and (back)slashe
 FAIL <area>: Setting <file:///unicorn>.pathname = '//\/' File URLs and (back)slashes assert_equals: expected "file://////" but got "file:///"
 FAIL <a>: Setting <file:///unicorn>.pathname = '//monkey/..//' File URLs and (back)slashes assert_equals: expected "file://///" but got "file:///"
 FAIL <area>: Setting <file:///unicorn>.pathname = '//monkey/..//' File URLs and (back)slashes assert_equals: expected "file://///" but got "file:///"
+PASS <a>: Setting <file:///var/log/system.log>.href = 'http://0300.168.0xF0'
+PASS <area>: Setting <file:///var/log/system.log>.href = 'http://0300.168.0xF0'
 Harness: the test ran to completion.
 

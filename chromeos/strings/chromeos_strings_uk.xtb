@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">Чудовий сигнал (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Продовжити</translation>
 <translation id="2364498172489649528">Виконано</translation>
+<translation id="2367335866686097760">Клавіша для опції "Прив’язка клавіш"</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Надіслати відгук</translation>
 <translation id="2407209115954268704">Статус блокування SIM-карти</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">Аватар змінено</translation>
 <translation id="3192947282887913208">Аудіофайли</translation>
 <translation id="3199982728237701504">Пристрій автоподачі документів (двосторонній)</translation>
+<translation id="3211671540163313381">Панель керування для опції "Прив’язка клавіш"</translation>
 <translation id="3226405216343213872">Пошук сканерів</translation>
+<translation id="3226657629376379887">Меню дій для макета</translation>
 <translation id="3246869037381808805">Завдання друку, старіші за 1 день, буде вилучено</translation>
 <translation id="3268178239013324452">Не надруковано – відкрито кришку принтера</translation>
 <translation id="3275729367986477355">Зображення аватара</translation>
@@ -253,6 +256,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Безпека</translation>
 <translation id="3435896845095436175">Увімкнути</translation>
+<translation id="345256797477978759">Закріпити вікно <ph name="DIRECTION" /> на більшій частині екрана</translation>
 <translation id="3456078764689556234">Надруковано сторінку <ph name="PRINTED_PAGES" /> з <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Сканування сторінки <ph name="PAGE_NUM" />. Виконано <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Друк</translation>
@@ -273,12 +277,14 @@
 <translation id="3595596368722241419">Акумулятор заряджено</translation>
 <translation id="3600339377155080675">Дзеркалювання екрана</translation>
 <translation id="3602290021589620013">Попередній перегляд</translation>
+<translation id="360282891121575443">Інші користувачі можуть оновлювати фотографії в спільних альбомах. Функція щоденної зміни фонових малюнків може показувати зображення не з альбому.</translation>
 <translation id="3603829704940252505">Аватар</translation>
 <translation id="3604713164406837697">Змінити фоновий малюнок</translation>
 <translation id="360565022852130722">Мережа Wi-Fi захищена ненадійним протоколом WEP 802.1x</translation>
 <translation id="3606583719724308068">Велика затримка для веб-сайтів HTTPS</translation>
 <translation id="361575905210396100">Дякуємо за відгук</translation>
 <translation id="3632579075709132555">Перемикач Екрана конфіденційності</translation>
+<translation id="3639846061339007994">верх</translation>
 <translation id="3651050199673793219">Виберіть одиницю вимірювання температури</translation>
 <translation id="3689839747745352263">Перевірка "<ph name="TEST_NAME" />"</translation>
 <translation id="370665806235115550">Завантаження...</translation>
@@ -482,7 +488,7 @@
 <translation id="5372659122375744710">Мережа Wi-Fi ненадійна</translation>
 <translation id="5376354385557966694">Автоматичний світлий режим</translation>
 <translation id="5378184552853359930">Тип IP-адреси</translation>
-<translation id="5389159777326897627">Оформлення та стиль</translation>
+<translation id="5389159777326897627">Оформлення і стиль</translation>
 <translation id="5389224261615877010">Веселка</translation>
 <translation id="5400907029458559844">Підключення пристрою.</translation>
 <translation id="5401938042319910061">Виконати всі послідовності дій</translation>
@@ -520,6 +526,7 @@
 <translation id="576835345334454681">Збільшити яскравість екрана</translation>
 <translation id="57838592816432529">Вимкнути звук</translation>
 <translation id="5784136236926853061">Велика затримка HTTP</translation>
+<translation id="5826644637650799838">Опис зображення</translation>
 <translation id="5832805196449965646">Додати користувача</translation>
 <translation id="583281660410589416">Невідомий</translation>
 <translation id="5843706793424741864">Градуси Фаренгейта</translation>
@@ -562,6 +569,7 @@
 <translation id="6117895505466548728"><ph name="TITLE" /> та інші альбоми (ще <ph name="NUMBER" />)</translation>
 <translation id="6122191549521593678">Онлайн</translation>
 <translation id="6122277663991249694">Сервіс методів введення в ОС Chrome</translation>
+<translation id="6136285399872347291">видалити перед курсором</translation>
 <translation id="6137767437444130246">Сертифікат користувача</translation>
 <translation id="6146993107019042706">Щоб завершити, введіть новий пароль</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -609,6 +617,7 @@
 <translation id="650266656685499220">Щоб створити альбоми, відкрийте Google Фото</translation>
 <translation id="6516990319416533844">Щоб перевірити швидкість заряджання акумулятора, максимально використайте його заряд протягом короткого періоду часу</translation>
 <translation id="6517239166834772319">Можливості</translation>
+<translation id="6526200165918397681">Вибрати колір, що гармоніює з фоновим малюнком</translation>
 <translation id="6527081081771465939">Невідомий протокол безпеки Wi-Fi</translation>
 <translation id="6535178685492749208">Ви не в мережі. Відгук буде надіслано пізніше.</translation>
 <translation id="65587193855025101">Планшетний сканер</translation>
@@ -628,6 +637,7 @@
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="6659594942844771486">Вкладка</translation>
 <translation id="6692996468359469499">Отримати інформацію, пов'язану з виділеним текстом</translation>
+<translation id="6698459586333070823">Інші користувачі можуть оновлювати спільні альбоми</translation>
 <translation id="6704062477274546131">Розпізнавання DNS</translation>
 <translation id="6723839937902243910">Заряд</translation>
 <translation id="6723847290197874913">Підсвічування клавіатури</translation>
@@ -664,6 +674,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Не вдалося – помилка авторизації</translation>
 <translation id="7103252855940681301">Пристрій <ph name="INDEX" /> з <ph name="COUNT" />: "<ph name="NAME" />".</translation>
+<translation id="7108668606237948702">Enter</translation>
 <translation id="7130438335435247835">Ім’я точки доступу (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер імен}one{Сервери імен}few{Сервери імен}many{Сервери імен}other{Сервери імен}}</translation>
 <translation id="7143207342074048698">Під’єднання</translation>
@@ -673,6 +684,7 @@
 <translation id="7155171745945906037">Наявні фотографії з камери або файлу</translation>
 <translation id="7162487448488904999">Галерея</translation>
 <translation id="7170236477717446850">Зображення профілю</translation>
+<translation id="7171919371520438592">Закріпити вікно <ph name="DIRECTION" /> на меншій частині екрана</translation>
 <translation id="7172721935181587524">1 зображення</translation>
 <translation id="7177485034254901881">Цим пристроєм <ph name="DEVICE_TYPE" /> керує <ph name="MANAGER" />. Адміністратори можуть віддалено налаштовувати його.</translation>
 <translation id="7180611975245234373">Оновити</translation>
@@ -748,6 +760,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Тип постачальника</translation>
 <translation id="7882501334836096755">Відкритий ключ</translation>
+<translation id="78957024357676568">ліворуч</translation>
 <translation id="7915220255123750251">Керуйте налаштуваннями APN мережі: за допомогою ідентифікаторів APN установлюється зв’язок між мобільною мережею й Інтернетом.</translation>
 <translation id="7936303884198020182">не знайдено серверів імен</translation>
 <translation id="7942349550061667556">Червоний</translation>
@@ -776,9 +789,11 @@
 <translation id="8183974620058026102">Вкласти</translation>
 <translation id="8206859287963243715">Мобільний</translation>
 <translation id="8208861521865154048">Бонуси</translation>
+<translation id="8210733748736414123">низ</translation>
 <translation id="8226628635270268143">Вибрати улюблені фотографії й альбоми</translation>
 <translation id="8227119283605456246">Вкласти файл</translation>
 <translation id="8230672074305416752">Не вдалося надіслати запит ping шлюзу мережі за умовчанням</translation>
+<translation id="8242426110754782860">Продовжити</translation>
 <translation id="8246209727385807362">Невідомий оператор</translation>
 <translation id="827422111966801947">Індиго</translation>
 <translation id="8286154143153872371">Щоб переглянути фоновий малюнок, підключіться до мережі й оновіть сторінку.</translation>
@@ -789,9 +804,11 @@
 <translation id="8318753676953949627">Немає зображень</translation>
 <translation id="8336739000755212683">Змінити зображення облікового запису на пристрої</translation>
 <translation id="8347227221149377169">Завдання друку</translation>
+<translation id="8351855506390808906">Точка дотику для опції "Прив’язка клавіш"</translation>
 <translation id="8352772353338965963">Додайте обліковий запис для паралельного входу. Доступ до всіх облікових записів, у які ви ввійшли, можна отримувати без пароля, тому цю функцію варто використовувати лише з надійними обліковими записами.</translation>
 <translation id="8364946094152050673">Сервери імен порожні</translation>
 <translation id="8372477600026034341">Додаткові хости</translation>
+<translation id="8380114448424469341">Закріпити вікно <ph name="DIRECTION" /> на половину екрана</translation>
 <translation id="8395584934117017006">Цим пристроєм <ph name="DEVICE_TYPE" /> керує організація</translation>
 <translation id="8398927464629426868">Поточна сила струму заряджання або розряджання</translation>
 <translation id="8410244574650205435">Визначено автоматично</translation>
@@ -821,7 +838,7 @@
 <translation id="8675354002693747642">Спільний ключ</translation>
 <translation id="8677859815076891398">Немає альбомів. Створіть їх у <ph name="LINK_BEGIN" />Google Фото<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Щоб керувати цією функцією, натискайте стрілки ліворуч або праворуч.</translation>
-<translation id="8712637175834984815">Виконано</translation>
+<translation id="8712637175834984815">OK</translation>
 <translation id="871560550817059752">Не надруковано – закінчилося чорнило</translation>
 <translation id="8723108084122415655">Затримка мережі не за умовчанням задовга</translation>
 <translation id="8725066075913043281">Повторити спробу</translation>
@@ -856,6 +873,7 @@
 <translation id="8930622219860340959">Бездротове</translation>
 <translation id="8936793075252196307">IP-адреса клієнта</translation>
 <translation id="894617464444543719">Це телефон.</translation>
+<translation id="8957423540740801332">праворуч</translation>
 <translation id="8968751544471797276">Швидкість заряджання</translation>
 <translation id="8970109610781093811">Запустити знову</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -883,6 +901,7 @@
 <translation id="9137526406337347448">Служби Google</translation>
 <translation id="9138630967333032450">Ліва клавіша Shift</translation>
 <translation id="9149391708638971077">Виконати перевірку пам'яті</translation>
+<translation id="9161276708550942948">пробіл</translation>
 <translation id="9173638680043580060">Залишилося менше хвилини</translation>
 <translation id="917720651393141712">Перевірити</translation>
 <translation id="9188992814426075118">Колір підсвічування клавіатури може автоматично підлаштовуватися до фонового малюнка</translation>

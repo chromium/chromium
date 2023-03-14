@@ -44,16 +44,12 @@ class DeviceCommandResetEuiccJob : public RemoteCommandJob {
   static void RecordResetEuiccResult(ResetEuiccResult result);
 
   // RemoteCommandJob:
-  void RunImpl(CallbackWithResult succeeded_callback,
-               CallbackWithResult failed_callback) override;
+  void RunImpl(CallbackWithResult result_callback) override;
 
-  CallbackWithResult CreateTimedResetMemorySuccessCallback(
-      CallbackWithResult success_callback);
-
-  void OnResetMemoryResponse(CallbackWithResult succeeded_callback,
-                             CallbackWithResult failed_callback,
-                             bool status);
-  void RunResultCallback(CallbackWithResult callback);
+  void OnResetMemoryResponse(CallbackWithResult result_callback,
+                             base::Time reset_euicc_start_time,
+                             bool success);
+  void RunResultCallback(CallbackWithResult callback, ResultType result);
   void ShowResetEuiccNotification();
 
   base::WeakPtrFactory<DeviceCommandResetEuiccJob> weak_ptr_factory_{this};

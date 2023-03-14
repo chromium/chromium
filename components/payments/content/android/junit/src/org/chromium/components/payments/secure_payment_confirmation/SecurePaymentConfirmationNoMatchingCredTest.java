@@ -30,6 +30,8 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.payments.InputProtector;
+import org.chromium.components.payments.test_support.FakeClock;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
@@ -44,6 +46,11 @@ import java.lang.ref.WeakReference;
         shadows = {SecurePaymentConfirmationNoMatchingCredTest.ShadowBottomSheetControllerProvider
                            .class})
 public class SecurePaymentConfirmationNoMatchingCredTest {
+    private static final long IGNORED_INPUT_DELAY =
+            InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD - 100;
+    private static final long SAFE_INPUT_DELAY =
+            InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD;
+
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.WARN);
     @Rule
@@ -56,6 +63,7 @@ public class SecurePaymentConfirmationNoMatchingCredTest {
     private boolean mUserOptedOut;
     private Runnable mResponseCallback;
     private Runnable mOptOutCallback;
+    private FakeClock mClock;
 
     private SecurePaymentConfirmationNoMatchingCredController mNoMatchingCredController;
 
@@ -99,6 +107,8 @@ public class SecurePaymentConfirmationNoMatchingCredTest {
 
         ShadowBottomSheetControllerProvider.setBottomSheetController(
                 createBottomSheetController(/*requestShowContentResponse=*/true));
+
+        mClock = new FakeClock();
     }
 
     @After
@@ -109,6 +119,10 @@ public class SecurePaymentConfirmationNoMatchingCredTest {
     private void createNoMatchingCredController() {
         mNoMatchingCredController =
                 SecurePaymentConfirmationNoMatchingCredController.create(mWebContents);
+        // Some tests expect a null controller, e.g. for a null web contents.
+        if (mNoMatchingCredController != null) {
+            mNoMatchingCredController.setInputProtectorForTesting(new InputProtector(mClock));
+        }
     }
 
     private BottomSheetController createBottomSheetController(boolean requestShowContentResponse) {
@@ -171,6 +185,7 @@ public class SecurePaymentConfirmationNoMatchingCredTest {
     public void testShowOnResponse() {
         createNoMatchingCredController();
         show();
+        mClock.advanceCurrentTimeMillis(SAFE_INPUT_DELAY);
         mNoMatchingCredController.getView().mOkButton.performClick();
         Assert.assertTrue(mUserResponded);
         Assert.assertTrue(mNoMatchingCredController.isHidden());
@@ -181,9 +196,44 @@ public class SecurePaymentConfirmationNoMatchingCredTest {
     public void testShowOnOptOut() {
         createNoMatchingCredController();
         show(/*enableOptOut=*/true);
+        mClock.advanceCurrentTimeMillis(SAFE_INPUT_DELAY);
         SecurePaymentConfirmationNoMatchingCredView credView = mNoMatchingCredController.getView();
         credView.mOptOutText.getClickableSpans()[0].onClick(credView.mOptOutText);
         Assert.assertTrue(mUserOptedOut);
+        Assert.assertTrue(mNoMatchingCredController.isHidden());
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testUnintentedInput() {
+        createNoMatchingCredController();
+        show(/*enableOptOut=*/true);
+
+        // Clicking immediately is prevented.
+        mNoMatchingCredController.getView().mOkButton.performClick();
+        Assert.assertFalse(mUserResponded);
+        Assert.assertFalse(mNoMatchingCredController.isHidden());
+
+        SecurePaymentConfirmationNoMatchingCredView credView = mNoMatchingCredController.getView();
+        credView.mOptOutText.getClickableSpans()[0].onClick(credView.mOptOutText);
+        Assert.assertFalse(mUserOptedOut);
+        Assert.assertFalse(mNoMatchingCredController.isHidden());
+
+        // Clicking after an interval less than the threshold is still prevented.
+        mClock.advanceCurrentTimeMillis(IGNORED_INPUT_DELAY);
+
+        mNoMatchingCredController.getView().mOkButton.performClick();
+        Assert.assertFalse(mUserResponded);
+        Assert.assertFalse(mNoMatchingCredController.isHidden());
+
+        credView.mOptOutText.getClickableSpans()[0].onClick(credView.mOptOutText);
+        Assert.assertFalse(mUserOptedOut);
+        Assert.assertFalse(mNoMatchingCredController.isHidden());
+
+        // Clicking confirm after the threshold is no longer prevented and closes the dialog.
+        mClock.advanceCurrentTimeMillis(SAFE_INPUT_DELAY);
+        mNoMatchingCredController.getView().mOkButton.performClick();
+        Assert.assertTrue(mUserResponded);
         Assert.assertTrue(mNoMatchingCredController.isHidden());
     }
 

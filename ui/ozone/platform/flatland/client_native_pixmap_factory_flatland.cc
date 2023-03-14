@@ -30,8 +30,9 @@ bool AlignUpToPageSizeChecked(size_t size, size_t* aligned_size) {
   constexpr size_t kPageSizeMinusOne = ZX_PAGE_SIZE - 1;
   base::CheckedNumeric<size_t> aligned_size_checked =
       base::CheckAdd(size, kPageSizeMinusOne) & (~kPageSizeMinusOne);
-  if (!aligned_size_checked.IsValid())
+  if (!aligned_size_checked.IsValid()) {
     return false;
+  }
   *aligned_size = aligned_size_checked.ValueOrDie();
   return true;
 }
@@ -44,8 +45,16 @@ class ClientNativePixmapFuchsia : public gfx::ClientNativePixmap {
       : handle_(std::move(handle)) {}
 
   ~ClientNativePixmapFuchsia() override {
-    if (mapping_)
-      Unmap();
+    if (mapping_) {
+      // Flush the cache if Unmap is not called before the pixmap is destroyed.
+      if (logically_mapped_) {
+        Unmap();
+      }
+
+      zx_status_t status = zx::vmar::root_self()->unmap(
+          reinterpret_cast<uintptr_t>(mapping_), mapping_size_);
+      ZX_DCHECK(status == ZX_OK, status) << "zx_vmar_unmap";
+    }
   }
 
   ClientNativePixmapFuchsia(const ClientNativePixmapFuchsia&) = delete;
@@ -53,11 +62,14 @@ class ClientNativePixmapFuchsia : public gfx::ClientNativePixmap {
       delete;
 
   bool Map() override {
-    if (mapping_)
+    if (mapping_) {
+      logically_mapped_ = true;
       return true;
+    }
 
-    if (handle_.planes.empty() || !handle_.planes[0].vmo)
+    if (handle_.planes.empty() || !handle_.planes[0].vmo) {
       return false;
+    }
 
     // Assume that the last plane is at the end of the VMO. If this assumption
     // is violated, we shouldn't get here because
@@ -90,38 +102,48 @@ class ClientNativePixmapFuchsia : public gfx::ClientNativePixmap {
     // page_aligned which implies that |aligned_mapping_size| <= <size of the
     // VMO>.
     size_t aligned_mapping_size;
-    if (!AlignUpToPageSizeChecked(last_plane_end, &aligned_mapping_size))
+    if (!AlignUpToPageSizeChecked(last_plane_end, &aligned_mapping_size)) {
       return false;
+    }
     mapping_size_ = aligned_mapping_size;
 
+    // Pre-commit the pages of the pixmap, since it is likely that every page
+    // will be touched. This is also necessary to successfully pre-fill the page
+    // table entries during the subsequent map operation.
+    zx_status_t status = handle_.planes[0].vmo.op_range(
+        ZX_VMO_OP_COMMIT, 0, mapping_size_, nullptr, 0);
+    ZX_DCHECK(status == ZX_OK, status) << "zx_vmo_op_range";
+
+    // ZX_VM_MAP_RANGE pre-fills the page table entries for committed pages to
+    // avoid unnecessary page faults.
     zx_vaddr_t addr;
-    zx_status_t status = zx::vmar::root_self()->map(
-        ZX_VM_PERM_READ | ZX_VM_PERM_WRITE, 0, handle_.planes[0].vmo, 0,
-        mapping_size_, &addr);
+    status = zx::vmar::root_self()->map(
+        ZX_VM_PERM_READ | ZX_VM_PERM_WRITE | ZX_VM_MAP_RANGE, 0,
+        handle_.planes[0].vmo, 0, mapping_size_, &addr);
     if (status != ZX_OK) {
       ZX_DLOG(ERROR, status) << "zx_vmar_map";
       return false;
     }
     mapping_ = reinterpret_cast<uint8_t*>(addr);
+    logically_mapped_ = true;
 
     return true;
   }
 
   void Unmap() override {
     DCHECK(mapping_);
+    DCHECK(logically_mapped_);
 
     // Flush the CPu cache in case the GPU reads the data directly from RAM.
+    // Keep the mapping to avoid unnecessary overhead when later reusing the
+    // pixmap. The actual unmap happens when the pixmap is destroyed.
     if (handle_.ram_coherency) {
       zx_status_t status =
           zx_cache_flush(mapping_, mapping_size_,
                          ZX_CACHE_FLUSH_DATA | ZX_CACHE_FLUSH_INVALIDATE);
       ZX_DCHECK(status == ZX_OK, status) << "zx_cache_flush";
     }
-
-    zx_status_t status = zx::vmar::root_self()->unmap(
-        reinterpret_cast<uintptr_t>(mapping_), mapping_size_);
-    ZX_DCHECK(status == ZX_OK, status) << "zx_vmar_unmap";
-    mapping_ = nullptr;
+    logically_mapped_ = false;
   }
 
   size_t GetNumberOfPlanes() const override { return handle_.planes.size(); }
@@ -144,6 +166,7 @@ class ClientNativePixmapFuchsia : public gfx::ClientNativePixmap {
  private:
   gfx::NativePixmapHandle handle_;
 
+  bool logically_mapped_ = false;
   uint8_t* mapping_ = nullptr;
   size_t mapping_size_ = 0;
 };
@@ -165,19 +188,22 @@ class FlatlandClientNativePixmapFactory
       gfx::BufferUsage usage) override {
     // |planes| may be empty for non-mappable pixmaps. No need to validate the
     // handle in that case.
-    if (handle.planes.empty())
+    if (handle.planes.empty()) {
       return std::make_unique<ClientNativePixmapFuchsia>(std::move(handle));
+    }
 
     // Validate that all planes refer to a single memory object.
     const absl::optional<zx_koid_t> first_plane_koid =
         base::GetKoid(handle.planes[0].vmo);
-    if (!first_plane_koid)
+    if (!first_plane_koid) {
       return nullptr;
+    }
     for (const auto& plane : handle.planes) {
       const absl::optional<zx_koid_t> plane_koid = base::GetKoid(plane.vmo);
       DCHECK(plane.vmo.is_valid() || !plane_koid);
-      if (plane_koid != first_plane_koid)
+      if (plane_koid != first_plane_koid) {
         return nullptr;
+      }
     }
 
     if (!CanFitImageForSizeAndFormat(handle, size, format,

@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_LANGUAGES_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_LANGUAGES_SECTION_H_
 
+#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 
 namespace content {
 class WebUIDataSource;
@@ -20,7 +22,8 @@ class SearchTagRegistry;
 // Provides UI strings and search tags for Languages & Input settings. Search
 // tags for some input features (e.g., Smart Inputs) are used only when
 // the relevant features are enabled.
-class LanguagesSection : public OsSettingsSection {
+class LanguagesSection : public OsSettingsSection,
+                         public input_method::InputMethodManager::Observer {
  public:
   LanguagesSection(Profile* profile,
                    SearchTagRegistry* search_tag_registry,
@@ -43,8 +46,18 @@ class LanguagesSection : public OsSettingsSection {
   bool IsSpellCheckEnabled() const;
   void UpdateSpellCheckSearchTags();
 
+  // input_method::InputMethodManager::Observer:
+  void InputMethodChanged(input_method::InputMethodManager* manager,
+                          Profile* profile,
+                          bool show_message) override;
+
   PrefService* pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
+
+  // Used to monitor input method changes.
+  base::ScopedObservation<input_method::InputMethodManager,
+                          input_method::InputMethodManager::Observer>
+      observation_{this};
 };
 
 }  // namespace ash::settings

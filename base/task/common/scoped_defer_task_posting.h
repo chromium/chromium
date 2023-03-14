@@ -23,7 +23,7 @@ namespace base {
 // TODO(altimin): It should be possible to get rid of this scope, but this
 // requires refactoring TimeDomain to ensure that TimeDomain never changes and
 // we can read current time without grabbing a lock.
-class BASE_EXPORT ScopedDeferTaskPosting {
+class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedDeferTaskPosting {
  public:
   static void PostOrDefer(scoped_refptr<SequencedTaskRunner> task_runner,
                           const Location& from_here,

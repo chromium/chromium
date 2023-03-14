@@ -33,7 +33,14 @@ class CrostiniSharedDevicesFactory : public ProfileKeyedServiceFactory {
   friend class base::NoDestructor<CrostiniSharedDevicesFactory>;
 
   CrostiniSharedDevicesFactory()
-      : ProfileKeyedServiceFactory("CrostiniSharedDevicesService") {}
+      : ProfileKeyedServiceFactory(
+            "CrostiniSharedDevicesService",
+            ProfileSelections::Builder()
+                .WithRegular(ProfileSelection::kOriginalOnly)
+                // TODO(crbug.com/1418376): Check if this service is needed in
+                // Guest mode.
+                .WithGuest(ProfileSelection::kOriginalOnly)
+                .Build()) {}
 
   ~CrostiniSharedDevicesFactory() override = default;
 

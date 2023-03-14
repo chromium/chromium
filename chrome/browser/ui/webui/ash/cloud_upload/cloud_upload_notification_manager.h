@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_CLOUD_UPLOAD_NOTIFICATION_MANAGER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_CLOUD_UPLOAD_NOTIFICATION_MANAGER_H_
 
+#include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -18,15 +21,20 @@ namespace ash::cloud_upload {
 
 // Creates, updates and deletes cloud upload system notifications. Ensures that
 // notifications stay in the "in progress" state for a minimum of 5 seconds, and
-// a minimum of 5 seconds for the 'complete' state. For the error state,
-// notifications stay open until the user closes them.
+// a minimum of 5 seconds for the 'complete' state unless the user chooses to
+// click the "Show in folder" button which would close the notification early.
+// For the error state, notifications stay open until the user closes them.
 class CloudUploadNotificationManager
     : public base::RefCounted<CloudUploadNotificationManager> {
  public:
+  using HandleNotificationClickCallback =
+      base::OnceCallback<void(base::FilePath)>;
+
   CloudUploadNotificationManager(Profile* profile,
                                  const std::string& file_name,
                                  const std::string& cloud_provider_name,
-                                 const std::string& target_app_name);
+                                 const std::string& target_app_name,
+                                 int num_files);
 
   // Creates the notification with "in progress" state if it doesn't exist, or
   // updates the progress bar if it does. |progress| is within the 0-100 range.
@@ -47,6 +55,18 @@ class CloudUploadNotificationManager
   // notification life cycle has completed. Tests can use this method to avoid
   // leaking instances of this class.
   void CloseForTest();
+
+  void SetDestinationPath(base::FilePath destination_path) {
+    destination_path_ = destination_path;
+  }
+
+  // Used in tests to set a callback to check if
+  // |HandleNotificationClick| is called with the expected
+  // |destination_path_|.
+  void SetHandleNotificationClickCallbackForTesting(
+      HandleNotificationClickCallback callback) {
+    callback_for_testing_ = std::move(callback);
+  }
 
  private:
   friend base::RefCounted<CloudUploadNotificationManager>;
@@ -78,6 +98,9 @@ class CloudUploadNotificationManager
   // closed, timers are interrupted and the completion callback has been called.
   void CloseNotification();
 
+  // "Show in folder" click handler for upload complete notification.
+  void HandleNotificationClick(absl::optional<int> button_index);
+
   // A state machine and the possible transitions. The state of showing the
   // error notification is not explicit because it is never used to determine
   // later logic.
@@ -100,7 +123,11 @@ class CloudUploadNotificationManager
   std::string cloud_provider_name_;
   std::string notification_id_;
   std::string target_app_name_;
+  std::u16string display_source_;
+  int num_files_;
+  base::FilePath destination_path_;
   base::OnceClosure callback_;
+  HandleNotificationClickCallback callback_for_testing_;
   base::OneShotTimer in_progress_timer_;
   base::OneShotTimer complete_notification_timer_;
   State state_ = State::kUninitialized;

@@ -270,18 +270,20 @@ bool SpellingServiceClient::ParseResponse(
     if (!misspelling.is_dict())
       return false;
 
-    absl::optional<int> start = misspelling.FindIntKey("charStart");
-    absl::optional<int> length = misspelling.FindIntKey("charLength");
-    const base::Value* suggestions = misspelling.FindListKey("suggestions");
+    absl::optional<int> start = misspelling.GetDict().FindInt("charStart");
+    absl::optional<int> length = misspelling.GetDict().FindInt("charLength");
+    const base::Value::List* suggestions =
+        misspelling.GetDict().FindList("suggestions");
     if (!start || !length || !suggestions) {
       return false;
     }
 
-    const base::Value& suggestion = suggestions->GetList()[0];
+    const base::Value& suggestion = (*suggestions)[0];
     if (!suggestion.is_dict())
       return false;
 
-    const std::string* replacement = suggestion.FindStringKey("suggestion");
+    const std::string* replacement =
+        suggestion.GetDict().FindString("suggestion");
     if (!replacement) {
       return false;
     }

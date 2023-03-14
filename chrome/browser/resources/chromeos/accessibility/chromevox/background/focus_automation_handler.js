@@ -42,7 +42,8 @@ export class FocusAutomationHandler extends BaseAutomationHandler {
 
   static async init() {
     if (FocusAutomationHandler.instance) {
-      throw 'Error: Trying to create two instances of singleton FocusAutomationHandler';
+      throw new Error(
+          'Trying to create two instances of singleton FocusAutomationHandler');
     }
     FocusAutomationHandler.instance = new FocusAutomationHandler();
     await FocusAutomationHandler.instance.initListener_();
@@ -54,7 +55,7 @@ export class FocusAutomationHandler extends BaseAutomationHandler {
   onFocus(evt) {
     this.removeAllListeners();
 
-    // Events on roots and web views can be very noisy due to bubling. Ignore
+    // Events on roots and web views can be very noisy due to bubbling. Ignore
     // these.
     if (evt.target.root === evt.target ||
         evt.target.role === RoleType.WEB_VIEW) {
@@ -75,17 +76,16 @@ export class FocusAutomationHandler extends BaseAutomationHandler {
    * Handles active descendant changes.
    * @param {!AutomationEvent} evt
    */
-  onActiveDescendantChanged(evt) {
+  async onActiveDescendantChanged(evt) {
     if (!evt.target.activeDescendant) {
       return;
     }
 
     let skipFocusCheck = false;
-    chrome.automation.getFocus(focus => {
-      if (AutomationPredicate.popUpButton(focus)) {
-        skipFocusCheck = true;
-      }
-    });
+    const focus = await AsyncUtil.getFocus();
+    if (AutomationPredicate.popUpButton(focus)) {
+      skipFocusCheck = true;
+    }
 
     if (!skipFocusCheck && !evt.target.state.focused) {
       return;
@@ -113,7 +113,7 @@ export class FocusAutomationHandler extends BaseAutomationHandler {
    */
   onDetailsChanged(evt) {
     const range = ChromeVoxRange.current;
-    let node = range.start ? range.start.node : null;
+    let node = range.start?.node;
     while (node && (!node.details || !node.details.length)) {
       node = node.parent;
     }

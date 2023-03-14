@@ -4,6 +4,8 @@ desc: |-
   Setting the policy to Enabled or leaving it unset shows the new download bubble UI in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
 
         Setting the policy to Disabled means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> keeps showing the old download shelf UI.
+
+        Note that this policy is temporary and will be removed as soon as the new download bubble UI is fully launched.
 example_value: true
 features:
   dynamic_refresh: true
@@ -17,6 +19,7 @@ items:
   value: false
 owners:
 - file://components/safe_browsing/OWNERS
+- chlily@chromium.org
 - xinghuilu@chromium.org
 schema:
   type: boolean

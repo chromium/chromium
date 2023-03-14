@@ -22,6 +22,7 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/focus_cycler.h"
 #include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/media/media_controller_impl.h"
@@ -95,19 +96,12 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/frame_caption_button.h"
+#include "ui/wm/core/window_animations.h"
 #include "ui/wm/core/window_util.h"
 
 // Keep the functions in this file in alphabetical order.
 namespace ash {
 
-const char kAccessibilityHighContrastShortcut[] =
-    "Accessibility.Shortcuts.CrosHighContrast";
-const char kAccessibilitySpokenFeedbackShortcut[] =
-    "Accessibility.Shortcuts.CrosSpokenFeedback";
-const char kAccessibilityScreenMagnifierShortcut[] =
-    "Accessibility.Shortcuts.CrosScreenMagnifier";
-const char kAccessibilityDockedMagnifierShortcut[] =
-    "Accessibility.Shortcuts.CrosDockedMagnifier";
 const char kAccelWindowSnap[] = "Ash.Accelerators.WindowSnap";
 const char kAccelRotation[] = "Ash.Accelerators.Rotation.Usage";
 const char kAccelActivateDeskByIndex[] = "Ash.Accelerators.ActivateDeskByIndex";
@@ -495,10 +489,6 @@ bool CanSwapPrimaryDisplay() {
   return display::Screen::GetScreen()->GetNumDisplays() > 1;
 }
 
-bool CanToggleCalendar() {
-  return features::IsCalendarViewEnabled();
-}
-
 bool CanToggleDictation() {
   return Shell::Get()->accessibility_controller()->dictation().enabled();
 }
@@ -507,8 +497,7 @@ bool CanToggleFloatingWindow() {
   if (!chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
     return false;
   }
-  aura::Window* window = window_util::GetActiveWindow();
-  return window && chromeos::wm::CanFloatWindow(window);
+  return window_util::GetActiveWindow() != nullptr;
 }
 
 bool CanToggleGameDashboard() {
@@ -516,7 +505,7 @@ bool CanToggleGameDashboard() {
     return false;
   }
   aura::Window* window = window_util::GetActiveWindow();
-  return window && IsArcWindow(window);
+  return window && GameDashboardController::CanStart(window);
 }
 
 bool CanToggleMultitaskMenu() {
@@ -671,10 +660,6 @@ void CycleUser(CycleUserDirection direction) {
 
 void DisableCapsLock() {
   Shell::Get()->ime_controller()->SetCapsLockEnabled(false);
-}
-
-void DumpCalendarModel() {
-  Shell::Get()->system_tray_model()->calendar_model()->DebugDump();
 }
 
 void FocusCameraPreview() {
@@ -916,6 +901,12 @@ void OpenHelp() {
 void PowerPressed(bool pressed) {
   Shell::Get()->power_button_controller()->OnPowerButtonEvent(
       pressed, base::TimeTicks());
+}
+
+void RecordVolumeSource() {
+  base::UmaHistogramEnumeration(
+      CrasAudioHandler::kOutputVolumeChangedSourceHistogramName,
+      CrasAudioHandler::AudioSettingsChangeSource::kAccelerator);
 }
 
 void RemoveCurrentDesk() {
@@ -1161,6 +1152,9 @@ void ToggleAssistant() {
     case AssistantAllowedState::DISALLOWED_BY_KIOSK_MODE:
       // No need to show toast in KIOSK mode.
       return;
+    case AssistantAllowedState::DISALLOWED_BY_NO_BINARY:
+      // No need to show toast.
+      return;
     case AssistantAllowedState::ALLOWED:
       // Nothing need to do if allowed.
       break;
@@ -1216,9 +1210,6 @@ void ToggleDockedMagnifier() {
   const bool is_shortcut_enabled =
       IsAccessibilityShortcutEnabled(prefs::kDockedMagnifierEnabled);
 
-  base::UmaHistogramBoolean(kAccessibilityDockedMagnifierShortcut,
-                            is_shortcut_enabled);
-
   Shell* shell = Shell::Get();
 
   RemoveDockedMagnifierNotification();
@@ -1259,7 +1250,13 @@ void ToggleFloating() {
   DCHECK(chromeos::wm::features::IsWindowLayoutMenuEnabled());
   aura::Window* window = window_util::GetActiveWindow();
   DCHECK(window);
-  DCHECK(chromeos::wm::CanFloatWindow(window));
+  // `CanFloatWindow` check is placed here rather than
+  // `CanToggleFloatingWindow` as otherwise the bounce would not behave
+  // properly.
+  if (!chromeos::wm::CanFloatWindow(window)) {
+    wm::AnimateWindow(window, wm::WINDOW_ANIMATION_TYPE_BOUNCE);
+    return;
+  }
   Shell::Get()->float_controller()->ToggleFloat(window);
   base::RecordAction(base::UserMetricsAction("Accel_Toggle_Floating"));
 }
@@ -1280,9 +1277,6 @@ void ToggleFullscreen() {
 void ToggleFullscreenMagnifier() {
   const bool is_shortcut_enabled = IsAccessibilityShortcutEnabled(
       prefs::kAccessibilityScreenMagnifierEnabled);
-
-  base::UmaHistogramBoolean(kAccessibilityScreenMagnifierShortcut,
-                            is_shortcut_enabled);
 
   Shell* shell = Shell::Get();
 
@@ -1324,15 +1318,17 @@ void ToggleGameDashboard() {
   DCHECK(features::IsGameDashboardEnabled());
   aura::Window* window = window_util::GetActiveWindow();
   DCHECK(window);
-  // TODO(phshah): Connect to the game dashboard controller.
+  auto* controller = Shell::Get()->game_dashboard_controller();
+  if (!controller->IsActive(window)) {
+    controller->Start(window);
+  } else {
+    controller->ToggleMenu(window);
+  }
 }
 
 void ToggleHighContrast() {
   const bool is_shortcut_enabled =
       IsAccessibilityShortcutEnabled(prefs::kAccessibilityHighContrastEnabled);
-
-  base::UmaHistogramBoolean(kAccessibilityHighContrastShortcut,
-                            is_shortcut_enabled);
 
   Shell* shell = Shell::Get();
 
@@ -1369,9 +1365,6 @@ void ToggleHighContrast() {
 void ToggleSpokenFeedback() {
   const bool is_shortcut_enabled = IsAccessibilityShortcutEnabled(
       prefs::kAccessibilitySpokenFeedbackEnabled);
-
-  base::UmaHistogramBoolean(kAccessibilitySpokenFeedbackShortcut,
-                            is_shortcut_enabled);
 
   Shell* shell = Shell::Get();
   const bool old_value =

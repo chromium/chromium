@@ -8,22 +8,14 @@
     role="listitem"
     size="[[size_]]"
     url="[[overview.url.url]]"
-    title="[[overview.title]]"
+    title="[[getTitle_(overview)]]"
+    description="[[description]]"
     on-click="onRowClicked_"
     on-contextmenu="onRowContextMenu_">
-  <button slot="title" id="title" aria-labelledby="title description badges">
-    [[getTitle_(overview)]]
-  </button>
-  <div slot="description" id="description" hidden$="[[!description]]">
-    [[description]]
-  </div>
-  <div slot="badges">
-    <sp-list-item-badge>
-      <iron-icon icon="notes:note-outline"></iron-icon>
-      <div>[[notesCount_]]</div>
-    </sp-list-item-badge>
-  </div>
-  <cr-icon-button slot="suffix-icon" iron-icon="cr:more-vert"
-      on-click="onTrailingIconClicked_">
-  </template>
+  <sp-list-item-badge slot="badges">
+    <iron-icon icon="notes:note-outline"></iron-icon>
+    <div>[[notesCount_]]</div>
+  </sp-list-item-badge>
+  <user-note-overview-row-menu slot="suffix-icon" overview="[[overview]]">
+  </user-note-overview-row-menu>
 </cr-url-list-item>

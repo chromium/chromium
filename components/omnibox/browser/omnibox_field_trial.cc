@@ -358,8 +358,7 @@ void OmniboxFieldTrial::GetDefaultHUPScoringParams(
 void OmniboxFieldTrial::GetExperimentalHUPScoringParams(
     HUPScoringParams* scoring_params) {
   VariationParams params;
-  if (!variations::GetVariationParams(kBundledExperimentFieldTrialName,
-                                      &params)) {
+  if (!base::GetFieldTrialParams(kBundledExperimentFieldTrialName, &params)) {
     return;
   }
 
@@ -580,7 +579,7 @@ const base::FeatureParam<int>
     OmniboxFieldTrial::kFuzzyUrlSuggestionsMinInputLength(
         &omnibox::kOmniboxFuzzyUrlSuggestions,
         "FuzzyUrlSuggestionsMinInputLength",
-        2);
+        3);
 
 // Note about this default, which produces good results for most inputs:
 // Using 10% reasonably took a 1334 relevance match down to 1200,
@@ -612,6 +611,11 @@ const base::FeatureParam<int>
 bool OmniboxFieldTrial::IsDefaultBrowserPedalEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kOmniboxDefaultBrowserPedal);
 }
+
+const base::FeatureParam<bool> OmniboxFieldTrial::kDefaultBrowserPedalImmediate(
+    &omnibox::kOmniboxDefaultBrowserPedal,
+    "DefaultBrowserPedalImmediate",
+    false);
 
 const base::FeatureParam<bool>
     OmniboxFieldTrial::kDefaultBrowserPedalInteractive(
@@ -679,9 +683,23 @@ bool OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() {
 }
 
 // Omnibox UI simplification - Uniform Suggestion Row Heights
-bool OmniboxFieldTrial::IsSquareSuggestIconEnabled() {
-  return base::FeatureList::IsEnabled(omnibox::kSquareSuggestIcons);
-}
+const base::FeatureParam<bool> OmniboxFieldTrial::kSquareSuggestIconAnswers(
+    &omnibox::kSquareSuggestIcons,
+    "OmniboxSquareSuggestIconAnswers",
+    false);
+const base::FeatureParam<bool> OmniboxFieldTrial::kSquareSuggestIconIcons(
+    &omnibox::kSquareSuggestIcons,
+    "OmniboxSquareSuggestIconIcons",
+    false);
+const base::FeatureParam<bool> OmniboxFieldTrial::kSquareSuggestIconEntities(
+    &omnibox::kSquareSuggestIcons,
+    "OmniboxSquareSuggestIconEntities",
+    false);
+const base::FeatureParam<double>
+    OmniboxFieldTrial::kSquareSuggestIconEntitiesScale(
+        &omnibox::kSquareSuggestIcons,
+        "OmniboxSquareSuggestIconEntitiesScale",
+        0.8722);
 
 bool OmniboxFieldTrial::IsUniformRowHeightEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kUniformRowHeight);
@@ -1001,10 +1019,12 @@ const base::FeatureParam<int> kSiteSearchStarterPackRelevanceScore(
 
 // Rather than have a special default value of -1 to signify no limit, simply
 // set it to a large value that'll never be reached in practice.
+// TODO(manukh): Launched (set to 1) 3/2/23 m113. Clean up feature code 5/2 when
+//   m113 reaches stable.
 const base::FeatureParam<int> kDocumentProviderMaxLowQualitySuggestions(
     &omnibox::kDocumentProvider,
     "DocumentProviderMaxLowQualitySuggestions",
-    100);
+    1);
 
 const base::FeatureParam<bool> kDomainSuggestionsCounterfactual(
     &omnibox::kDomainSuggestions,

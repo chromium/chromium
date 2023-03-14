@@ -27,7 +27,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           i upewnij się, że w konfiguracji wybrano połączenie bez serwera proxy lub bezpośrednie.</translation>
+<translation id="6549378540556750549">Stworzenie przeglądarki Chromium było też możliwe dzięki innemu <ph name="BEGIN_LINK_OSS" />oprogramowaniu open source<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Zmiany zostaną zastosowane po ponownym uruchomieniu Chromium.</translation>
+<translation id="7681937895330411637">Stworzenie przeglądarki Chromium było możliwe dzięki projektowi open source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="7861509383340276692">Wybierz
         menu Chromium &gt;
         <ph name="SETTINGS_TITLE" />

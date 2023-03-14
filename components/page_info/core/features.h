@@ -40,13 +40,12 @@ extern const base::FeatureParam<bool> kShowSampleContent;
 // directly.
 BASE_DECLARE_FEATURE(kPageInfoAboutThisSiteMoreInfo);
 
-// Shows a placeholder when a description is missing. Only enable in combination
-// with kPageInfoAboutThisSiteMoreInfo.
-// Use page_info::IsDescriptionPlaceholderEnabled() instead of checking this
-// flag directly.
-BASE_DECLARE_FEATURE(kPageInfoAboutThisSiteDescriptionPlaceholder);
-
 #if !BUILDFLAG(IS_ANDROID)
+// Experiment with different secondary icons.
+BASE_DECLARE_FEATURE(kPageInfoAboutThisSiteSecondaryIcon);
+// Parameter to select one of the icons from AboutThisSiteSeconaryIcon;
+extern const base::FeatureParam<int> kAboutThisSiteSecondaryIconId;
+
 // Enables the history section for Page Info on desktop.
 BASE_DECLARE_FEATURE(kPageInfoHistoryDesktop);
 

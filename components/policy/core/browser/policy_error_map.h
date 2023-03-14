@@ -71,6 +71,13 @@ class POLICY_EXPORT PolicyErrorMap {
       PolicyErrorPath error_path = {},
       PolicyMap::MessageType error_level = PolicyMap::MessageType::kError);
 
+  void AddError(
+      const std::string& policy,
+      int message_id,
+      std::vector<std::string> replacements,
+      PolicyErrorPath error_path = {},
+      PolicyMap::MessageType error_level = PolicyMap::MessageType::kError);
+
   // Returns true if there is any error for |policy|.
   bool HasError(const std::string& policy);
 

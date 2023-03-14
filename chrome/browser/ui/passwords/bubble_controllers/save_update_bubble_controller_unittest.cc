@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
@@ -275,19 +276,6 @@ SaveUpdateBubbleControllerTest::GetCurrentForms() const {
   forms.push_back(
       std::make_unique<password_manager::PasswordForm>(preferred_form));
   return forms;
-}
-
-// Tests that the controller reads the value of
-// ArePasswordsRevealedWhenBubbleIsOpened() before invoking OnBubbleShown()
-// since the latter resets the value returned by the former. (crbug.com/1049085)
-TEST_F(SaveUpdateBubbleControllerTest,
-       ArePasswordsRevealedWhenBubbleIsOpenedBeforeOnBubbleShown) {
-  {
-    testing::InSequence s;
-    EXPECT_CALL(*delegate(), ArePasswordsRevealedWhenBubbleIsOpened());
-    EXPECT_CALL(*delegate(), OnBubbleShown());
-  }
-  PretendPasswordWaiting();
 }
 
 TEST_F(SaveUpdateBubbleControllerTest, CloseWithoutInteraction) {
@@ -646,8 +634,6 @@ TEST_P(SaveUpdateBubbleControllerPasswordRevealingTest,
               : "USER_ACTION"));
 
   pending_password().form_has_autofilled_value = form_has_autofilled_value;
-  EXPECT_CALL(*delegate(), ArePasswordsRevealedWhenBubbleIsOpened())
-      .WillOnce(Return(false));
   EXPECT_CALL(*delegate(), BubbleIsManualFallbackForSaving())
       .WillRepeatedly(Return(is_manual_fallback_for_saving));
 
@@ -662,12 +648,21 @@ TEST_P(SaveUpdateBubbleControllerPasswordRevealingTest,
             controller()->password_revealing_requires_reauth());
 
   if (reauth_expected) {
-    EXPECT_CALL(*delegate(), AuthenticateUser())
-        .WillOnce(Return(!does_os_support_user_auth));
-    EXPECT_EQ(controller()->RevealPasswords(), !does_os_support_user_auth);
+    EXPECT_CALL(*delegate(), AuthenticateUserWithMessage)
+        .WillOnce(testing::WithArg<1>(testing::Invoke(
+            [&](PasswordsModelDelegate::AvailabilityCallback callback) {
+              std::move(callback).Run(!does_os_support_user_auth);
+            })));
+    base::MockCallback<PasswordsModelDelegate::AvailabilityCallback>
+        mock_callback;
+    EXPECT_CALL(mock_callback, Run(!does_os_support_user_auth));
+    controller()->ShouldRevealPasswords(mock_callback.Get());
   } else {
-    EXPECT_CALL(*delegate(), AuthenticateUser()).Times(0);
-    EXPECT_TRUE(controller()->RevealPasswords());
+    EXPECT_CALL(*delegate(), AuthenticateUserWithMessage).Times(0);
+    base::MockCallback<PasswordsModelDelegate::AvailabilityCallback>
+        mock_callback;
+    EXPECT_CALL(mock_callback, Run(true));
+    controller()->ShouldRevealPasswords(mock_callback.Get());
   }
 }
 
@@ -682,36 +677,14 @@ INSTANTIATE_TEST_SUITE_P(
             PasswordBubbleControllerBase::DisplayReason::kAutomatic,
             PasswordBubbleControllerBase::DisplayReason::kUserAction)));
 
-TEST_F(SaveUpdateBubbleControllerTest, EyeIcon_BubbleReopenedAfterAuth) {
-  // Checks re-authentication is not needed if the bubble is opened right after
-  // successful authentication.
-  pending_password().form_has_autofilled_value = true;
-  // After successful authentication this value is set to true.
-  EXPECT_CALL(*delegate(), ArePasswordsRevealedWhenBubbleIsOpened())
-      .WillOnce(Return(true));
-  PretendPasswordWaiting(
-      PasswordBubbleControllerBase::DisplayReason::kUserAction);
-
-  EXPECT_FALSE(controller()->password_revealing_requires_reauth());
-  EXPECT_TRUE(controller()->RevealPasswords());
-}
-
 TEST_F(SaveUpdateBubbleControllerTest, PasswordsRevealedReported) {
   PretendPasswordWaiting();
 
   EXPECT_CALL(*delegate(), OnPasswordsRevealed());
-  EXPECT_TRUE(controller()->RevealPasswords());
-}
-
-TEST_F(SaveUpdateBubbleControllerTest, PasswordsRevealedReportedAfterReauth) {
-  // The bubble is opened after reauthentication and the passwords are revealed.
-  pending_password().form_has_autofilled_value = true;
-  // After successful authentication this value is set to true.
-  EXPECT_CALL(*delegate(), ArePasswordsRevealedWhenBubbleIsOpened())
-      .WillOnce(Return(true));
-  EXPECT_CALL(*delegate(), OnPasswordsRevealed());
-  PretendPasswordWaiting(
-      PasswordBubbleControllerBase::DisplayReason::kUserAction);
+  base::MockCallback<PasswordsModelDelegate::AvailabilityCallback>
+      mock_callback;
+  EXPECT_CALL(mock_callback, Run(true));
+  controller()->ShouldRevealPasswords(mock_callback.Get());
 }
 
 TEST_F(SaveUpdateBubbleControllerTest, DisableEditing) {

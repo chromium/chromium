@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -733,10 +734,8 @@ void FakePhotoDevice::SetPhotoOptions(
 
 void FakeVideoCaptureDevice::TakePhoto(TakePhotoCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&FakePhotoDevice::TakePhoto,
-                                base::Unretained(photo_device_.get()),
-                                std::move(callback), elapsed_time_));
+  photo_device_->TakePhoto(
+      base::BindPostTaskToCurrentDefault(std::move(callback)), elapsed_time_);
 }
 
 OwnBufferFrameDeliverer::OwnBufferFrameDeliverer(

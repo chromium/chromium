@@ -8,6 +8,7 @@
 #include "chrome/browser/download/download_ui_model.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -61,7 +62,7 @@ class DownloadBubbleSecurityView : public views::View {
   void UpdateButton(DownloadUIModel::BubbleUIInfo::SubpageButton button,
                     bool is_secondary_button,
                     bool has_checkbox,
-                    SkColor color);
+                    ui::ColorId color_id);
   void UpdateButtons();
 
   // |is_secondary_button| checks if the command/action originated from the

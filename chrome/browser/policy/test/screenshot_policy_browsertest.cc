@@ -47,7 +47,7 @@ class CaptureNotificationWaiter : public message_center::MessageCenterObserver {
 
   // message_center::MessageCenterObserver:
   void OnNotificationAdded(const std::string& notification_id) override {
-    if (notification_id.starts_with(kScreenCaptureNotificationId))
+    if (notification_id == kScreenCaptureNotificationId)
       run_loop_.Quit();
   }
 

@@ -482,6 +482,11 @@ const char kForcePresentationReceiverForTesting[] =
 // overrides this if present.
 const char kForceRendererAccessibility[]    = "force-renderer-accessibility";
 
+// Force Skia's CPU backend to use analytic anti-aliasing for all content
+// (rather than a mix of analytic and supersampling). Test migration tool for
+// https://crbug.com/1421297
+const char kForceSkiaAnalyticAntialiasing[] = "force-skia-analytic-aa";
+
 // Extra command line options for launching the GPU process (normally used
 // for debugging). Use like renderer-cmd-prefix.
 const char kGpuLauncher[]                   = "gpu-launcher";

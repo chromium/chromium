@@ -55,6 +55,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -63,6 +64,7 @@
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/slow_download_http_response.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_content_browser_client.h"
@@ -2717,11 +2719,9 @@ class DevToolsProtocolBackForwardCacheTest : public DevToolsProtocolTest {
  public:
   DevToolsProtocolBackForwardCacheTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kBackForwardCache, {{}}},
-         {features::kBackForwardCacheTimeToLiveControl,
-          {{"time_to_live_seconds", "3600"}}}},
-        // Allow BackForwardCache for all devices regardless of their memory.
-        {features::kBackForwardCacheMemoryControls});
+        GetDefaultEnabledBackForwardCacheFeaturesForTesting(
+            /*ignore_outstanding_network_request=*/false),
+        GetDefaultDisabledBackForwardCacheFeaturesForTesting());
   }
   ~DevToolsProtocolBackForwardCacheTest() override = default;
 
@@ -3782,7 +3782,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
   int host_id = AddPrerender(kPrerenderingUrl);
   auto* prerender_render_frame_host = GetPrerenderedMainFrameHost(host_id);
   Attach();
-  SendCommandSync("Page.enable");
+  SendCommandSync("Preload.enable");
   SendCommandSync("Runtime.enable");
 
   // Executing `navigator.getGamepads()` to start binding the GamepadMonitor
@@ -3792,7 +3792,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
                                        "navigator.getGamepads()");
 
   base::Value::Dict result =
-      WaitForNotification("Page.prerenderAttemptCompleted", true);
+      WaitForNotification("Preload.prerenderAttemptCompleted", true);
 
   // Verify Mojo capability control cancels prerendering.
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
@@ -3856,17 +3856,55 @@ IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
   AddPrerender(kPrerenderingUrl);
 
   Attach();
-  SendCommandSync("Page.enable");
+  SendCommandSync("Preload.enable");
   SendCommandSync("Runtime.enable");
   NavigatePrimaryPage(kPrerenderingUrl);
 
-  WaitForNotification("Page.prerenderAttemptCompleted", true);
+  WaitForNotification("Preload.prerenderAttemptCompleted", true);
 
   // Navigate away from the prerendered page, and this should trigger the
   // mechanism of removing the stored prerender activation.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
   ASSERT_FALSE(web_contents_impl
                    ->last_navigation_was_prerender_activation_for_devtools());
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
+                       RenderFrameDevToolsAgentHostCacheEvictionCrash) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(web_contents());
+
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Attaching a session via a "tab" target is required to opt-in into
+  // FTN swapping mode during prerender activation.
+  AttachToTabTarget(web_contents_impl);
+  base::Value::Dict command_params;
+  command_params.Set("autoAttach", true);
+  command_params.Set("waitForDebuggerOnStart", false);
+  command_params.Set("flatten", true);
+  SendCommandSync("Target.setAutoAttach", std::move(command_params));
+
+  // Stash current RFDTAH for WebContents that is about to be retained
+  // by BFCache after prerender navigation and flushed later.
+  auto old_host = DevToolsAgentHost::GetOrCreateFor(web_contents_impl);
+  RenderFrameDeletedObserver delete_observer(
+      web_contents_impl->GetPrimaryMainFrame());
+
+  // Activating a prerender should cause FTN swapping on the RFH and put
+  // the old one into the BFCache with frame_tree_node_ == nullptr.
+  AddPrerender(kPrerenderingUrl);
+  NavigatePrimaryPage(kPrerenderingUrl);
+
+  EXPECT_FALSE(delete_observer.deleted());
+  web_contents_impl->GetController().GetBackForwardCache().Flush();
+  delete_observer.WaitUntilDeleted();
+
+  // Assure methods on disconnected host are safe to call.
+  EXPECT_THAT(old_host->GetTitle(), testing::Eq(""));
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
@@ -3886,11 +3924,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
   AddPrerender(kPrerenderingUrl);
 
   Attach();
-  SendCommandSync("Page.enable");
+  SendCommandSync("Preload.enable");
   SendCommandSync("Runtime.enable");
   NavigatePrimaryPage(kPrerenderingUrl);
 
-  WaitForNotification("Page.prerenderAttemptCompleted", true);
+  WaitForNotification("Preload.prerenderAttemptCompleted", true);
 
   // Trigger another prerender activation.
   AddPrerender(kPrerenderingUrl2);
@@ -3916,20 +3954,20 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersDevToolsProtocolTest,
   EXPECT_TRUE(HasHostForUrl(kPrerenderingUrl2));
 
   Attach();
-  SendCommandSync("Page.enable");
+  SendCommandSync("Preload.enable");
   SendCommandSync("Runtime.enable");
 
   // Ensure that prerenderAttemptCompleted can be fired properly with
   // multiple speculation rules is enabled.
   NavigatePrimaryPage(kPrerenderingUrl);
   base::Value::Dict result =
-      WaitForNotification("Page.prerenderAttemptCompleted", true);
+      WaitForNotification("Preload.prerenderAttemptCompleted", true);
   EXPECT_THAT(*result.FindString("finalStatus"), Eq("TriggerDestroyed"));
 
   // TODO(crbug/1332386): Verifies that multiple activations can be received
   // properly when crbug/1350676 is ready. kPrerenderingUrl2 should be canceled
   // as navigating to kPrerenderingUrl2.
-  result = WaitForNotification("Page.prerenderAttemptCompleted", true);
+  result = WaitForNotification("Preload.prerenderAttemptCompleted", true);
   EXPECT_THAT(*result.FindString("finalStatus"), Eq("Activated"));
 }
 
@@ -3943,7 +3981,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderHoldbackDevToolsProtocolTest,
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   Attach();
-  SendCommandSync("Page.enable");
+  SendCommandSync("Preload.enable");
   SendCommandSync("Runtime.enable");
 
   AddPrerender(kPrerenderingUrl);
@@ -3952,7 +3990,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderHoldbackDevToolsProtocolTest,
 
   NavigatePrimaryPage(kPrerenderingUrl);
   base::Value::Dict result =
-      WaitForNotification("Page.prerenderAttemptCompleted", true);
+      WaitForNotification("Preload.prerenderAttemptCompleted", true);
   EXPECT_THAT(*result.FindString("finalStatus"), Eq("Activated"));
 }
 
@@ -3974,7 +4012,7 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersDevToolsProtocolTest,
   EXPECT_TRUE(HasHostForUrl(kPrerenderingUrl2));
 
   Attach();
-  SendCommandSync("Page.enable");
+  SendCommandSync("Preload.enable");
   SendCommandSync("Runtime.enable");
 
   ASSERT_TRUE(NavigateToURL(shell(), kNavigateAwayUrl));
@@ -3982,9 +4020,9 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersDevToolsProtocolTest,
   // Both prerendered pages should receive prerenderAttemptCompleted for
   // cancelation reasons.
   base::Value::Dict result =
-      WaitForNotification("Page.prerenderAttemptCompleted", true);
+      WaitForNotification("Preload.prerenderAttemptCompleted", true);
   EXPECT_THAT(*result.FindString("finalStatus"), Eq("TriggerDestroyed"));
-  result = WaitForNotification("Page.prerenderAttemptCompleted", true);
+  result = WaitForNotification("Preload.prerenderAttemptCompleted", true);
   EXPECT_THAT(*result.FindString("finalStatus"), Eq("TriggerDestroyed"));
 }
 

@@ -34,6 +34,7 @@
 #include "ui/events/event_utils.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/menu/menu_controller.h"
+#include "ui/views/drag_controller.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/focus/focus_manager_factory.h"
@@ -1031,6 +1032,10 @@ void Widget::RunShellDrag(View* view,
 
   for (WidgetObserver& observer : observers_)
     observer.OnWidgetDragWillStart(this);
+
+  if (view && view->drag_controller()) {
+    view->drag_controller()->OnWillStartDragForView(view);
+  }
 
   WidgetDeletionObserver widget_deletion_observer(this);
   native_widget_->RunShellDrag(view, std::move(data), location, operation,

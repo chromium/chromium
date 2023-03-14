@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/side_panel/search_companion/search_companion_page_handler.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autocomplete/zero_suggest_cache_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"

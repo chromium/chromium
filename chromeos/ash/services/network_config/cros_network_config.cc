@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
+#include "base/values.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
@@ -63,6 +64,13 @@ namespace {
 
 namespace mojom = ::chromeos::network_config::mojom;
 using ::chromeos::network_config::GetApnProperties;
+using ::chromeos::network_config::GetBoolean;
+using ::chromeos::network_config::GetDictionary;
+using ::chromeos::network_config::GetManagedDictionary;
+using ::chromeos::network_config::GetManagedString;
+using ::chromeos::network_config::GetRequiredManagedString;
+using ::chromeos::network_config::GetString;
+using ::chromeos::network_config::ManagedDictionary;
 using ::chromeos::network_config::OncApnTypesToMojo;
 using ::chromeos::network_config::UserApnListToOnc;
 using ::user_manager::UserManager;
@@ -218,6 +226,24 @@ std::string MojoSecurityTypeToOnc(mojom::SecurityType security_type) {
   }
   NOTREACHED() << "Unsupported mojo to ONC type: " << security_type;
   return std::string();
+}
+
+mojom::MatchType PasspointMatchTypeToMojo(
+    const absl::optional<std::string>& match_type) {
+  if (!match_type || match_type->empty()) {
+    return mojom::MatchType::kNoMatch;
+  }
+  if (*match_type == shill::kPasspointMatchTypeHome) {
+    return mojom::MatchType::kHome;
+  }
+  if (*match_type == shill::kPasspointMatchTypeRoaming) {
+    return mojom::MatchType::kRoaming;
+  }
+  if (*match_type == shill::kPasspointMatchTypeUnknown) {
+    return mojom::MatchType::kUnknown;
+  }
+  NOTREACHED() << "Unsupported Passpoint match type: " << *match_type;
+  return mojom::MatchType::kUnknown;
 }
 
 mojom::VpnType OncVpnTypeToMojo(const std::string& onc_vpn_type) {
@@ -614,32 +640,8 @@ mojom::DeviceStatePropertiesPtr DeviceStateToMojo(
   return result;
 }
 
-void SetValueIfKeyPresent(const base::Value* dict,
-                          const char* key,
-                          base::Value* out) {
-  const base::Value* v = dict->GetDict().Find(key);
-  if (v)
-    *out = v->Clone();
-}
-
-absl::optional<std::string> GetString(const base::Value::Dict* dict,
-                                      const char* key) {
+std::string GetRequiredString(const base::Value::Dict* dict, const char* key) {
   const base::Value* v = dict->Find(key);
-  if (v && !v->is_string()) {
-    NET_LOG(ERROR) << "Expected string, found: " << *v;
-    return absl::nullopt;
-  }
-  return v ? absl::make_optional(v->GetString()) : absl::nullopt;
-}
-
-// TODO(crbug.com/1412465): Remove.
-absl::optional<std::string> GetString(const base::Value* dict,
-                                      const char* key) {
-  return GetString(&dict->GetDict(), key);
-}
-
-std::string GetRequiredString(const base::Value* dict, const char* key) {
-  const base::Value* v = dict->GetDict().Find(key);
   if (!v) {
     NOTREACHED() << "Required key missing: " << key;
     return std::string();
@@ -651,26 +653,8 @@ std::string GetRequiredString(const base::Value* dict, const char* key) {
   return v->GetString();
 }
 
-bool GetBoolean(const base::Value::Dict* dict,
-                const char* key,
-                bool value_if_key_missing_from_dict = false) {
+int32_t GetInt32(const base::Value::Dict* dict, const char* key) {
   const base::Value* v = dict->Find(key);
-  if (v && !v->is_bool()) {
-    NET_LOG(ERROR) << "Expected bool, found: " << *v;
-    return false;
-  }
-  return v ? v->GetBool() : value_if_key_missing_from_dict;
-}
-
-// TODO(crbug.com/1412465): Remove.
-bool GetBoolean(const base::Value* dict,
-                const char* key,
-                bool value_if_key_missing_from_dict = false) {
-  return GetBoolean(&dict->GetDict(), key, value_if_key_missing_from_dict);
-}
-
-int32_t GetInt32(const base::Value* dict, const char* key) {
-  const base::Value* v = dict->GetDict().Find(key);
   if (v && !v->is_int()) {
     NET_LOG(ERROR) << "Expected int, found: " << *v;
     return 0;
@@ -678,48 +662,43 @@ int32_t GetInt32(const base::Value* dict, const char* key) {
   return v ? v->GetInt() : 0;
 }
 
-std::vector<int32_t> GetInt32List(const base::Value* dict, const char* key) {
+std::vector<int32_t> GetInt32List(const base::Value::Dict* dict,
+                                  const char* key) {
   std::vector<int32_t> result;
-  const base::Value* v = dict->GetDict().Find(key);
+  const base::Value* v = dict->Find(key);
   if (v && !v->is_list()) {
     NET_LOG(ERROR) << "Expected list, found: " << *v;
     return result;
   }
   if (v) {
-    for (const base::Value& e : v->GetList())
+    for (const base::Value& e : v->GetList()) {
       result.push_back(e.GetInt());
+    }
   }
   return result;
 }
 
-const base::Value* GetDictionary(const base::Value::Dict* dict,
-                                 const char* key) {
+absl::optional<std::vector<std::string>> GetStringList(
+    const base::Value::Dict* dict,
+    const char* key) {
   const base::Value* v = dict->Find(key);
-  if (v && !v->is_dict()) {
-    NET_LOG(ERROR) << "Expected dictionary, found: " << *v;
-    return nullptr;
-  }
-  return v;
-}
-
-absl::optional<std::vector<std::string>> GetStringList(const base::Value* dict,
-                                                       const char* key) {
-  const base::Value* v = dict->GetDict().Find(key);
-  if (!v)
+  if (!v) {
     return absl::nullopt;
+  }
   if (!v->is_list()) {
     NET_LOG(ERROR) << "Expected list, found: " << *v;
     return absl::nullopt;
   }
   std::vector<std::string> result;
-  for (const base::Value& e : v->GetList())
+  for (const base::Value& e : v->GetList()) {
     result.push_back(e.GetString());
+  }
   return result;
 }
 
-std::vector<std::string> GetRequiredStringList(const base::Value* dict,
+std::vector<std::string> GetRequiredStringList(const base::Value::Dict* dict,
                                                const char* key) {
-  const base::Value* v = dict->GetDict().Find(key);
+  const base::Value* v = dict->Find(key);
   if (!v) {
     NOTREACHED() << "Required key missing: " << key;
     return {};
@@ -793,136 +772,6 @@ void SetSubjectAltNameMatch(
   dict->Set(key, std::move(subject_alt_name_list));
 }
 
-// GetManagedDictionary() returns a ManagedDictionary representing the active
-// and policy values for a managed property. The types of |active_value| and
-// |policy_value| are expected to match the ONC signature for the property type.
-
-struct ManagedDictionary {
-  base::Value active_value;
-  mojom::PolicySource policy_source = mojom::PolicySource::kNone;
-  base::Value policy_value;
-};
-
-ManagedDictionary GetManagedDictionary(const base::Value* onc_dict) {
-  ManagedDictionary result;
-
-  // When available, the active value (i.e. the value from Shill) is used.
-  SetValueIfKeyPresent(onc_dict, ::onc::kAugmentationActiveSetting,
-                       &result.active_value);
-
-  absl::optional<std::string> effective =
-      GetString(onc_dict, ::onc::kAugmentationEffectiveSetting);
-  if (!effective)
-    return result;
-
-  // If no active value is set (e.g. the network is not visible), use the
-  // effective value.
-  if (result.active_value.is_none())
-    SetValueIfKeyPresent(onc_dict, effective->c_str(), &result.active_value);
-  if (result.active_value.is_none()) {
-    // No active or effective value, return a default dictionary.
-    return result;
-  }
-
-  // If the effective value is set by an extension, use kActiveExtension.
-  if (effective == ::onc::kAugmentationActiveExtension) {
-    result.policy_source = mojom::PolicySource::kActiveExtension;
-    result.policy_value = result.active_value.Clone();
-    return result;
-  }
-
-  // Set policy properties based on the effective source and policies.
-  // NOTE: This does not enforce valid ONC. See onc_merger.cc for details.
-  const base::Value* user_policy =
-      onc_dict->GetDict().Find(::onc::kAugmentationUserPolicy);
-  const base::Value* device_policy =
-      onc_dict->GetDict().Find(::onc::kAugmentationDevicePolicy);
-  bool user_enforced = !GetBoolean(onc_dict, ::onc::kAugmentationUserEditable);
-  bool device_enforced =
-      !GetBoolean(onc_dict, ::onc::kAugmentationDeviceEditable);
-  if (effective == ::onc::kAugmentationUserPolicy ||
-      (user_policy && effective != ::onc::kAugmentationDevicePolicy)) {
-    // Set the policy source to "User" when:
-    // * The effective value is set to "UserPolicy" OR
-    // * A User policy exists and the effective value is not "DevicePolicy",
-    //   i.e. no enforced device policy is overriding a recommended user policy.
-    result.policy_source = user_enforced
-                               ? mojom::PolicySource::kUserPolicyEnforced
-                               : mojom::PolicySource::kUserPolicyRecommended;
-    if (user_policy)
-      result.policy_value = user_policy->Clone();
-  } else if (effective == ::onc::kAugmentationDevicePolicy || device_policy) {
-    // Set the policy source to "Device" when:
-    // * The effective value is set to "DevicePolicy" OR
-    // * A Device policy exists (since we checked for a user policy first).
-    result.policy_source = device_enforced
-                               ? mojom::PolicySource::kDevicePolicyEnforced
-                               : mojom::PolicySource::kDevicePolicyRecommended;
-    if (device_policy)
-      result.policy_value = device_policy->Clone();
-  } else if (effective == ::onc::kAugmentationUserSetting ||
-             effective == ::onc::kAugmentationSharedSetting) {
-    // User or shared setting, no policy source.
-  } else {
-    // Unexpected ONC. No policy source or value will be set.
-    NET_LOG(ERROR) << "Unexpected ONC property: " << *onc_dict;
-  }
-
-  DCHECK(result.policy_value.is_none() ||
-         result.policy_value.type() == result.active_value.type());
-  return result;
-}
-
-mojom::ManagedStringPtr GetManagedString(const base::Value::Dict* dict,
-                                         const char* key) {
-  const base::Value* v = dict->Find(key);
-  if (!v) {
-    return nullptr;
-  }
-  if (v->is_string()) {
-    auto result = mojom::ManagedString::New();
-    result->active_value = v->GetString();
-    return result;
-  }
-  if (v->is_dict()) {
-    ManagedDictionary managed_dict = GetManagedDictionary(v);
-    if (!managed_dict.active_value.is_string()) {
-      NET_LOG(ERROR) << "No active or effective value for: " << key;
-      return nullptr;
-    }
-    auto result = mojom::ManagedString::New();
-    result->active_value = managed_dict.active_value.GetString();
-    result->policy_source = managed_dict.policy_source;
-    if (!managed_dict.policy_value.is_none())
-      result->policy_value = managed_dict.policy_value.GetString();
-    return result;
-  }
-  NET_LOG(ERROR) << "Expected string or dictionary, found: " << *v;
-  return nullptr;
-}
-
-// TODO(crbug.com/1412465): Remove.
-mojom::ManagedStringPtr GetManagedString(const base::Value* dict,
-                                         const char* key) {
-  return GetManagedString(&dict->GetDict(), key);
-}
-
-mojom::ManagedStringPtr GetRequiredManagedString(const base::Value::Dict* dict,
-                                                 const char* key) {
-  mojom::ManagedStringPtr result = GetManagedString(dict, key);
-  if (!result) {
-    // Return an empty string with no policy source.
-    result = mojom::ManagedString::New();
-  }
-  return result;
-}
-
-// TODO(crbug.com/1412465): Remove.
-mojom::ManagedStringPtr GetRequiredManagedString(const base::Value* dict,
-                                                 const char* key) {
-  return GetRequiredManagedString(&dict->GetDict(), key);
-}
-
 mojom::ManagedStringListPtr GetManagedStringList(const base::Value::Dict* dict,
                                                  const char* key) {
   const base::Value* v = dict->Find(key);
@@ -937,7 +786,7 @@ mojom::ManagedStringListPtr GetManagedStringList(const base::Value::Dict* dict,
     return result;
   }
   if (v->is_dict()) {
-    ManagedDictionary managed_dict = GetManagedDictionary(v);
+    ManagedDictionary managed_dict = GetManagedDictionary(&v->GetDict());
     if (!managed_dict.active_value.is_list()) {
       NET_LOG(ERROR) << "No active or effective value for: " << key;
       return nullptr;
@@ -957,12 +806,6 @@ mojom::ManagedStringListPtr GetManagedStringList(const base::Value::Dict* dict,
   return nullptr;
 }
 
-// TODO(crbug.com/1412465): Remove.
-mojom::ManagedStringListPtr GetManagedStringList(const base::Value* dict,
-                                                 const char* key) {
-  return GetManagedStringList(&dict->GetDict(), key);
-}
-
 mojom::ManagedBooleanPtr GetManagedBoolean(const base::Value::Dict* dict,
                                            const char* key) {
   const base::Value* v = dict->Find(key);
@@ -974,7 +817,7 @@ mojom::ManagedBooleanPtr GetManagedBoolean(const base::Value::Dict* dict,
     return result;
   }
   if (v->is_dict()) {
-    ManagedDictionary managed_dict = GetManagedDictionary(v);
+    ManagedDictionary managed_dict = GetManagedDictionary(&v->GetDict());
     if (!managed_dict.active_value.is_bool()) {
       NET_LOG(ERROR) << "No active or effective value for: " << key;
       return nullptr;
@@ -990,12 +833,6 @@ mojom::ManagedBooleanPtr GetManagedBoolean(const base::Value::Dict* dict,
   return nullptr;
 }
 
-// TODO(crbug.com/1412465): Remove.
-mojom::ManagedBooleanPtr GetManagedBoolean(const base::Value* dict,
-                                           const char* key) {
-  return GetManagedBoolean(&dict->GetDict(), key);
-}
-
 mojom::ManagedInt32Ptr GetManagedInt32(const base::Value::Dict* dict,
                                        const char* key) {
   const base::Value* v = dict->Find(key);
@@ -1007,7 +844,7 @@ mojom::ManagedInt32Ptr GetManagedInt32(const base::Value::Dict* dict,
     return result;
   }
   if (v->is_dict()) {
-    ManagedDictionary managed_dict = GetManagedDictionary(v);
+    ManagedDictionary managed_dict = GetManagedDictionary(&v->GetDict());
     if (!managed_dict.active_value.is_int()) {
       NET_LOG(ERROR) << "No active or effective value for: " << key;
       return nullptr;
@@ -1023,7 +860,7 @@ mojom::ManagedInt32Ptr GetManagedInt32(const base::Value::Dict* dict,
   return nullptr;
 }
 
-mojom::SubjectAltNamePtr GetSubjectAltName(const base::Value* dict) {
+mojom::SubjectAltNamePtr GetSubjectAltName(const base::Value::Dict* dict) {
   auto san = mojom::SubjectAltName::New();
   san->value = GetRequiredString(
       dict, ::onc::eap_subject_alternative_name_match::kValue);
@@ -1052,24 +889,27 @@ mojom::ManagedSubjectAltNameMatchListPtr GetManagedSubjectAltNameMatchList(
 
   if (value->is_list()) {
     std::vector<mojom::SubjectAltNamePtr> active;
-    for (const base::Value& e : value->GetList())
-      active.push_back(GetSubjectAltName(&e));
+    for (const base::Value& e : value->GetList()) {
+      active.push_back(GetSubjectAltName(&e.GetDict()));
+    }
     result->active_value = std::move(active);
     return result;
   }
   if (value->is_dict()) {
-    ManagedDictionary managed_dict = GetManagedDictionary(value);
+    ManagedDictionary managed_dict = GetManagedDictionary(&value->GetDict());
     if (!managed_dict.active_value.is_list()) {
       NET_LOG(ERROR) << "No active or effective value for WireGuardPeerList";
       return result;
     }
-    for (const base::Value& e : managed_dict.active_value.GetList())
-      result->active_value.push_back(GetSubjectAltName(&e));
+    for (const base::Value& e : managed_dict.active_value.GetList()) {
+      result->active_value.push_back(GetSubjectAltName(&e.GetDict()));
+    }
     result->policy_source = managed_dict.policy_source;
     if (!managed_dict.policy_value.is_none()) {
       result->policy_value = std::vector<mojom::SubjectAltNamePtr>();
-      for (const base::Value& e : managed_dict.policy_value.GetList())
-        result->policy_value.push_back(GetSubjectAltName(&e));
+      for (const base::Value& e : managed_dict.policy_value.GetList()) {
+        result->policy_value.push_back(GetSubjectAltName(&e.GetDict()));
+      }
     }
     return result;
   }
@@ -1077,7 +917,7 @@ mojom::ManagedSubjectAltNameMatchListPtr GetManagedSubjectAltNameMatchList(
   return result;
 }
 
-mojom::IPConfigPropertiesPtr GetIPConfig(const base::Value* dict) {
+mojom::IPConfigPropertiesPtr GetIPConfig(const base::Value::Dict* dict) {
   auto ip_config = mojom::IPConfigProperties::New();
   ip_config->gateway = GetString(dict, ::onc::ipconfig::kGateway);
   ip_config->ip_address = GetString(dict, ::onc::ipconfig::kIPAddress);
@@ -1102,14 +942,14 @@ mojom::IPConfigPropertiesPtr GetIPConfig(const base::Value* dict) {
 }
 
 mojom::ManagedIPConfigPropertiesPtr GetManagedIPConfig(
-    const base::Value* dict) {
+    const base::Value::Dict* dict) {
   auto ip_config = mojom::ManagedIPConfigProperties::New();
   ip_config->gateway = GetManagedString(dict, ::onc::ipconfig::kGateway);
   ip_config->ip_address = GetManagedString(dict, ::onc::ipconfig::kIPAddress);
   ip_config->name_servers =
       GetManagedStringList(dict, ::onc::ipconfig::kNameServers);
   ip_config->routing_prefix =
-      GetManagedInt32(&dict->GetDict(), ::onc::ipconfig::kRoutingPrefix);
+      GetManagedInt32(dict, ::onc::ipconfig::kRoutingPrefix);
   // The IPConfig type is not actually mutable, so we convert from an optional
   // managed string to a required unmanaged type enum.
   mojom::ManagedStringPtr managed_type =
@@ -1123,17 +963,17 @@ mojom::ManagedIPConfigPropertiesPtr GetManagedIPConfig(
   return ip_config;
 }
 
-mojom::ManagedProxyLocationPtr GetManagedProxyLocation(const base::Value* dict,
-                                                       const char* key) {
-  const base::Value* location_dict = GetDictionary(&dict->GetDict(), key);
+mojom::ManagedProxyLocationPtr GetManagedProxyLocation(
+    const base::Value::Dict* dict,
+    const char* key) {
+  const base::Value::Dict* location_dict = GetDictionary(dict, key);
   if (!location_dict) {
     return nullptr;
   }
   auto proxy_location = mojom::ManagedProxyLocation::New();
   proxy_location->host =
       GetRequiredManagedString(location_dict, ::onc::proxy::kHost);
-  proxy_location->port =
-      GetManagedInt32(&location_dict->GetDict(), ::onc::proxy::kPort);
+  proxy_location->port = GetManagedInt32(location_dict, ::onc::proxy::kPort);
   if (!proxy_location->port) {
     NET_LOG(ERROR) << "ProxyLocation: No port: " << *location_dict;
     return nullptr;
@@ -1144,8 +984,9 @@ mojom::ManagedProxyLocationPtr GetManagedProxyLocation(const base::Value* dict,
 void SetProxyLocation(const char* key,
                       const mojom::ProxyLocationPtr& location,
                       base::Value::Dict* dict) {
-  if (location.is_null())
+  if (location.is_null()) {
     return;
+  }
   base::Value::Dict location_dict;
   location_dict.Set(::onc::proxy::kHost, location->host);
   location_dict.Set(::onc::proxy::kPort, location->port);
@@ -1153,11 +994,11 @@ void SetProxyLocation(const char* key,
 }
 
 mojom::ManagedProxySettingsPtr GetManagedProxySettings(
-    const base::Value* dict) {
+    const base::Value::Dict* dict) {
   auto proxy_settings = mojom::ManagedProxySettings::New();
   proxy_settings->type = GetRequiredManagedString(dict, ::onc::proxy::kType);
-  const base::Value* manual_dict =
-      GetDictionary(&dict->GetDict(), ::onc::proxy::kManual);
+  const base::Value::Dict* manual_dict =
+      GetDictionary(dict, ::onc::proxy::kManual);
   if (manual_dict) {
     auto manual_proxy_settings = mojom::ManagedManualProxySettings::New();
     manual_proxy_settings->http_proxy =
@@ -1251,31 +1092,6 @@ std::vector<std::string> MojoApnTypesToOnc(
   return apn_types_result;
 }
 
-mojom::ManagedApnPropertiesPtr GetManagedApnProperties(const base::Value* dict,
-                                                       const char* key) {
-  const base::Value* apn_dict = dict->GetDict().Find(key);
-  if (!apn_dict)
-    return nullptr;
-  if (!apn_dict->is_dict()) {
-    NET_LOG(ERROR) << "Expected dictionary, found: " << *apn_dict;
-    return nullptr;
-  }
-  auto apn = mojom::ManagedApnProperties::New();
-  apn->access_point_name =
-      GetRequiredManagedString(apn_dict, ::onc::cellular_apn::kAccessPointName);
-  CHECK(apn->access_point_name);
-  apn->authentication =
-      GetManagedString(apn_dict, ::onc::cellular_apn::kAuthentication);
-  apn->language = GetManagedString(apn_dict, ::onc::cellular_apn::kLanguage);
-  apn->localized_name =
-      GetManagedString(apn_dict, ::onc::cellular_apn::kLocalizedName);
-  apn->name = GetManagedString(apn_dict, ::onc::cellular_apn::kName);
-  apn->password = GetManagedString(apn_dict, ::onc::cellular_apn::kPassword);
-  apn->username = GetManagedString(apn_dict, ::onc::cellular_apn::kUsername);
-  apn->attach = GetManagedString(apn_dict, ::onc::cellular_apn::kAttach);
-  return apn;
-}
-
 mojom::ManagedApnListPtr GetManagedApnList(const base::Value* value) {
   if (!value)
     return nullptr;
@@ -1288,7 +1104,7 @@ mojom::ManagedApnListPtr GetManagedApnList(const base::Value* value) {
     result->active_value = std::move(active);
     return result;
   } else if (value->is_dict()) {
-    ManagedDictionary managed_dict = GetManagedDictionary(value);
+    ManagedDictionary managed_dict = GetManagedDictionary(&value->GetDict());
     if (!managed_dict.active_value.is_list()) {
       NET_LOG(ERROR) << "No active or effective value for APNList";
       return nullptr;
@@ -1324,37 +1140,42 @@ bool DoesDefaultApnExist(const base::Value::List& apns) {
 }
 
 std::vector<mojom::FoundNetworkPropertiesPtr> GetFoundNetworksList(
-    const base::Value* dict,
+    const base::Value::Dict* dict,
     const char* key) {
   std::vector<mojom::FoundNetworkPropertiesPtr> result;
-  const base::Value* v = dict->GetDict().Find(key);
+  const base::Value* v = dict->Find(key);
   if (!v)
     return result;
   if (!v->is_list()) {
     NET_LOG(ERROR) << "Expected list, found: " << *v;
     return result;
   }
-  for (const base::Value& e : v->GetList()) {
+  for (const base::Value& entry : v->GetList()) {
+    const base::Value::Dict* entry_dict = entry.GetIfDict();
+    if (!entry_dict) {
+      NET_LOG(ERROR) << "Expected dict, found: " << entry;
+      continue;
+    }
     auto found_network = mojom::FoundNetworkProperties::New();
     found_network->status =
-        GetRequiredString(&e, ::onc::cellular_found_network::kStatus);
-    found_network->network_id =
-        GetRequiredString(&e, ::onc::cellular_found_network::kNetworkId);
-    found_network->technology =
-        GetRequiredString(&e, ::onc::cellular_found_network::kTechnology);
+        GetRequiredString(entry_dict, ::onc::cellular_found_network::kStatus);
+    found_network->network_id = GetRequiredString(
+        entry_dict, ::onc::cellular_found_network::kNetworkId);
+    found_network->technology = GetRequiredString(
+        entry_dict, ::onc::cellular_found_network::kTechnology);
     found_network->short_name =
-        GetString(&e, ::onc::cellular_found_network::kShortName);
+        GetString(entry_dict, ::onc::cellular_found_network::kShortName);
     found_network->long_name =
-        GetString(&e, ::onc::cellular_found_network::kLongName);
+        GetString(entry_dict, ::onc::cellular_found_network::kLongName);
     result.push_back(std::move(found_network));
   }
   return result;
 }
 
 mojom::CellularProviderPropertiesPtr GetCellularProviderProperties(
-    const base::Value* dict,
+    const base::Value::Dict* dict,
     const char* key) {
-  const base::Value* provider_dict = dict->GetDict().Find(key);
+  const base::Value::Dict* provider_dict = dict->FindDict(key);
   if (!provider_dict)
     return nullptr;
   auto provider = mojom::CellularProviderProperties::New();
@@ -1368,13 +1189,15 @@ mojom::CellularProviderPropertiesPtr GetCellularProviderProperties(
 }
 
 mojom::ManagedIssuerSubjectPatternPtr GetManagedIssuerSubjectPattern(
-    const base::Value* dict,
+    const base::Value::Dict* dict,
     const char* key) {
-  const base::Value* pattern_dict = dict->GetDict().Find(key);
-  if (!pattern_dict)
+  const base::Value* pattern_dict_value = dict->Find(key);
+  if (!pattern_dict_value) {
     return nullptr;
-  if (!pattern_dict->is_dict()) {
-    NET_LOG(ERROR) << "Expected dictionary, found: " << *pattern_dict;
+  }
+  const base::Value::Dict* pattern_dict = pattern_dict_value->GetIfDict();
+  if (!pattern_dict) {
+    NET_LOG(ERROR) << "Expected dictionary, found: " << *pattern_dict_value;
     return nullptr;
   }
   auto pattern = mojom::ManagedIssuerSubjectPattern::New();
@@ -1392,11 +1215,13 @@ mojom::ManagedIssuerSubjectPatternPtr GetManagedIssuerSubjectPattern(
 mojom::ManagedCertificatePatternPtr GetManagedCertificatePattern(
     const base::Value::Dict* dict,
     const char* key) {
-  const base::Value* pattern_dict = dict->Find(key);
-  if (!pattern_dict)
+  const base::Value* pattern_dict_value = dict->Find(key);
+  if (!pattern_dict_value) {
     return nullptr;
-  if (!pattern_dict->is_dict()) {
-    NET_LOG(ERROR) << "Expected dictionary, found: " << *pattern_dict;
+  }
+  const base::Value::Dict* pattern_dict = pattern_dict_value->GetIfDict();
+  if (!pattern_dict) {
+    NET_LOG(ERROR) << "Expected dictionary, found: " << *pattern_dict_value;
     return nullptr;
   }
   auto pattern = mojom::ManagedCertificatePattern::New();
@@ -1454,10 +1279,10 @@ mojom::ManagedEAPPropertiesPtr GetManagedEAPProperties(
 }
 
 mojom::ManagedIPSecPropertiesPtr GetManagedIPSecProperties(
-    const base::Value* dict,
+    const base::Value::Dict* dict,
     const char* key) {
   auto ipsec = mojom::ManagedIPSecProperties::New();
-  const base::Value::Dict* ipsec_dict = dict->GetDict().FindDict(key);
+  const base::Value::Dict* ipsec_dict = dict->FindDict(key);
   if (!ipsec_dict) {
     return ipsec;
   }
@@ -1491,10 +1316,10 @@ mojom::ManagedIPSecPropertiesPtr GetManagedIPSecProperties(
 }
 
 mojom::ManagedL2TPPropertiesPtr GetManagedL2TPProperties(
-    const base::Value* dict,
+    const base::Value::Dict* dict,
     const char* key) {
   auto l2tp = mojom::ManagedL2TPProperties::New();
-  const base::Value::Dict* l2tp_dict = dict->GetDict().FindDict(key);
+  const base::Value::Dict* l2tp_dict = dict->FindDict(key);
   if (!l2tp_dict)
     return l2tp;
   l2tp->lcp_echo_disabled =
@@ -1507,10 +1332,10 @@ mojom::ManagedL2TPPropertiesPtr GetManagedL2TPProperties(
 }
 
 mojom::ManagedOpenVPNPropertiesPtr GetManagedOpenVPNProperties(
-    const base::Value* dict,
+    const base::Value::Dict* dict,
     const char* key) {
   auto openvpn = mojom::ManagedOpenVPNProperties::New();
-  const base::Value::Dict* openvpn_dict = dict->GetDict().FindDict(key);
+  const base::Value::Dict* openvpn_dict = dict->FindDict(key);
   if (!openvpn_dict)
     return openvpn;
   openvpn->auth = GetManagedString(openvpn_dict, ::onc::openvpn::kAuth);
@@ -1576,8 +1401,8 @@ mojom::ManagedOpenVPNPropertiesPtr GetManagedOpenVPNProperties(
   openvpn->verb = GetManagedString(openvpn_dict, ::onc::openvpn::kVerb);
   openvpn->verify_hash =
       GetManagedString(openvpn_dict, ::onc::openvpn::kVerifyHash);
-  const base::Value* verify_x509_dict =
-      openvpn_dict->Find(::onc::openvpn::kVerifyX509);
+  const base::Value::Dict* verify_x509_dict =
+      openvpn_dict->FindDict(::onc::openvpn::kVerifyX509);
   if (verify_x509_dict) {
     auto verify_x509 = mojom::ManagedVerifyX509Properties::New();
     verify_x509->name =
@@ -1590,7 +1415,7 @@ mojom::ManagedOpenVPNPropertiesPtr GetManagedOpenVPNProperties(
 }
 
 mojom::WireGuardPeerPropertiesPtr GetWireGuardPeerProperties(
-    const base::Value* dict) {
+    const base::Value::Dict* dict) {
   auto peer = mojom::WireGuardPeerProperties::New();
   peer->public_key = GetRequiredString(dict, ::onc::wireguard::kPublicKey);
   peer->preshared_key = GetString(dict, ::onc::wireguard::kPresharedKey);
@@ -1606,28 +1431,33 @@ mojom::ManagedWireGuardPeerListPtr GetManagedWireGuardPeerList(
     const char* key) {
   auto result = mojom::ManagedWireGuardPeerList::New();
   const base::Value* value = dict->Find(key);
-  if (!value)
+  if (!value) {
     return result;
+  }
   if (value->is_list()) {
     std::vector<mojom::WireGuardPeerPropertiesPtr> active;
-    for (const base::Value& e : value->GetList())
-      active.push_back(GetWireGuardPeerProperties(&e));
+    for (const base::Value& e : value->GetList()) {
+      active.push_back(GetWireGuardPeerProperties(&e.GetDict()));
+    }
     result->active_value = std::move(active);
     return result;
   }
   if (value->is_dict()) {
-    ManagedDictionary managed_dict = GetManagedDictionary(value);
+    ManagedDictionary managed_dict = GetManagedDictionary(&value->GetDict());
     if (!managed_dict.active_value.is_list()) {
       NET_LOG(ERROR) << "No active or effective value for WireGuardPeerList";
       return result;
     }
-    for (const base::Value& e : managed_dict.active_value.GetList())
-      result->active_value.push_back(GetWireGuardPeerProperties(&e));
+    for (const base::Value& e : managed_dict.active_value.GetList()) {
+      result->active_value.push_back(GetWireGuardPeerProperties(&e.GetDict()));
+    }
     result->policy_source = managed_dict.policy_source;
     if (!managed_dict.policy_value.is_none()) {
       result->policy_value = std::vector<mojom::WireGuardPeerPropertiesPtr>();
-      for (const base::Value& e : managed_dict.policy_value.GetList())
-        result->policy_value->push_back(GetWireGuardPeerProperties(&e));
+      for (const base::Value& e : managed_dict.policy_value.GetList()) {
+        result->policy_value->push_back(
+            GetWireGuardPeerProperties(&e.GetDict()));
+      }
     }
     return result;
   }
@@ -1698,13 +1528,13 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
       properties->FindList(::onc::network_config::kIPConfigs);
   if (ip_configs_list) {
     std::vector<mojom::IPConfigPropertiesPtr> ip_configs;
-    for (const base::Value& ip_config_value : *ip_configs_list) {
-      ip_configs.push_back(GetIPConfig(&ip_config_value));
+    for (const base::Value& ip_config : *ip_configs_list) {
+      ip_configs.push_back(GetIPConfig(&ip_config.GetDict()));
     }
     result->ip_configs = std::move(ip_configs);
   }
   result->portal_state = GetMojoPortalState(network_state->GetPortalState());
-  const base::Value* saved_ip_config =
+  const base::Value::Dict* saved_ip_config =
       GetDictionary(properties, ::onc::network_config::kSavedIPConfig);
   if (saved_ip_config)
     result->saved_ip_config = GetIPConfig(saved_ip_config);
@@ -1729,11 +1559,11 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
       GetManagedInt32(properties, ::onc::network_config::kPriority);
 
   // Managed dictionaries (not type specific)
-  const base::Value* proxy_settings =
+  const base::Value::Dict* proxy_settings =
       GetDictionary(properties, ::onc::network_config::kProxySettings);
   if (proxy_settings)
     result->proxy_settings = GetManagedProxySettings(proxy_settings);
-  const base::Value* static_ip_config =
+  const base::Value::Dict* static_ip_config =
       GetDictionary(properties, ::onc::network_config::kStaticIPConfig);
   if (static_ip_config)
     result->static_ip_config = GetManagedIPConfig(static_ip_config);
@@ -1744,7 +1574,7 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
       auto cellular = mojom::ManagedCellularProperties::New();
       cellular->activation_state = network_state->GetMojoActivationState();
 
-      const base::Value* cellular_dict =
+      const base::Value::Dict* cellular_dict =
           GetDictionary(properties, ::onc::network_config::kCellular);
       if (!cellular_dict) {
         result->type_properties =
@@ -1755,9 +1585,10 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
       cellular->auto_connect =
           GetManagedBoolean(cellular_dict, ::onc::cellular::kAutoConnect);
       cellular->selected_apn =
-          GetManagedApnProperties(cellular_dict, ::onc::cellular::kAPN);
-      cellular->apn_list = GetManagedApnList(
-          cellular_dict->GetDict().Find(::onc::cellular::kAPNList));
+          chromeos::network_config::GetManagedApnProperties(
+              cellular_dict, ::onc::cellular::kAPN);
+      cellular->apn_list =
+          GetManagedApnList(cellular_dict->Find(::onc::cellular::kAPNList));
       cellular->allow_roaming =
           GetManagedBoolean(cellular_dict, ::onc::cellular::kAllowRoaming);
       cellular->esn = GetString(cellular_dict, ::onc::cellular::kESN);
@@ -1773,12 +1604,12 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
       cellular->eid = GetString(cellular_dict, ::onc::cellular::kEID);
       cellular->iccid = GetString(cellular_dict, ::onc::cellular::kICCID);
       cellular->imei = GetString(cellular_dict, ::onc::cellular::kIMEI);
-      const base::Value* apn_dict = GetDictionary(
-          &cellular_dict->GetDict(), ::onc::cellular::kLastGoodAPN);
+      const base::Value::Dict* apn_dict =
+          GetDictionary(cellular_dict, ::onc::cellular::kLastGoodAPN);
       if (apn_dict) {
         bool is_apn_revamp_enabled = features::IsApnRevampEnabled();
         cellular->last_good_apn =
-            GetApnProperties(apn_dict->GetDict(), is_apn_revamp_enabled);
+            GetApnProperties(*apn_dict, is_apn_revamp_enabled);
         if (is_apn_revamp_enabled) {
           const absl::optional<std::string> connection_state =
               GetString(properties, ::onc::network_config::kConnectionState);
@@ -1789,8 +1620,7 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
           // present when the network is not connected.
           if (connection_state &&
               *connection_state == ::onc::connection_state::kConnected) {
-            cellular->connected_apn =
-                GetApnProperties(apn_dict->GetDict(), true);
+            cellular->connected_apn = GetApnProperties(*apn_dict, true);
           }
         }
       }
@@ -1802,8 +1632,8 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
       cellular->model_id = GetString(cellular_dict, ::onc::cellular::kModelID);
       cellular->network_technology =
           GetString(cellular_dict, ::onc::cellular::kNetworkTechnology);
-      const base::Value* payment_portal_dict =
-          cellular_dict->GetDict().Find(::onc::cellular::kPaymentPortal);
+      const base::Value::Dict* payment_portal_dict =
+          cellular_dict->FindDict(::onc::cellular::kPaymentPortal);
       if (payment_portal_dict) {
         auto payment_portal = mojom::PaymentPortalProperties::New();
         payment_portal->method = GetRequiredString(
@@ -1840,13 +1670,13 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
     }
     case mojom::NetworkType::kEthernet: {
       auto ethernet = mojom::ManagedEthernetProperties::New();
-      const base::Value* ethernet_dict =
+      const base::Value::Dict* ethernet_dict =
           GetDictionary(properties, ::onc::network_config::kEthernet);
       if (ethernet_dict) {
         ethernet->authentication =
             GetManagedString(ethernet_dict, ::onc::ethernet::kAuthentication);
-        ethernet->eap = GetManagedEAPProperties(&ethernet_dict->GetDict(),
-                                                ::onc::ethernet::kEAP);
+        ethernet->eap =
+            GetManagedEAPProperties(ethernet_dict, ::onc::ethernet::kEAP);
       }
       result->type_properties =
           mojom::NetworkTypeManagedProperties::NewEthernet(std::move(ethernet));
@@ -1866,7 +1696,7 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
     }
     case mojom::NetworkType::kVPN: {
       auto vpn = mojom::ManagedVPNProperties::New();
-      const base::Value* vpn_dict =
+      const base::Value::Dict* vpn_dict =
           GetDictionary(properties, ::onc::network_config::kVPN);
       if (!vpn_dict) {
         result->type_properties =
@@ -1894,13 +1724,13 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
               GetManagedOpenVPNProperties(vpn_dict, ::onc::vpn::kOpenVPN);
           break;
         case mojom::VpnType::kWireGuard:
-          vpn->wireguard = GetManagedWireGuardProperties(
-              &vpn_dict->GetDict(), ::onc::vpn::kWireGuard);
+          vpn->wireguard =
+              GetManagedWireGuardProperties(vpn_dict, ::onc::vpn::kWireGuard);
           break;
         case mojom::VpnType::kExtension:
         case mojom::VpnType::kArc:
           const base::Value::Dict* third_party_dict =
-              vpn_dict->GetDict().FindDict(::onc::vpn::kThirdPartyVpn);
+              vpn_dict->FindDict(::onc::vpn::kThirdPartyVpn);
           if (third_party_dict) {
             vpn->provider_id = GetManagedString(
                 third_party_dict, ::onc::third_party_vpn::kExtensionID);
@@ -1933,7 +1763,7 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
       auto wifi = mojom::ManagedWiFiProperties::New();
       wifi->security = network_state->GetMojoSecurity();
 
-      const base::Value* wifi_dict =
+      const base::Value::Dict* wifi_dict =
           GetDictionary(properties, ::onc::network_config::kWiFi);
       if (!wifi_dict) {
         result->type_properties =
@@ -1945,8 +1775,7 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
       wifi->auto_connect =
           GetManagedBoolean(wifi_dict, ::onc::wifi::kAutoConnect);
       wifi->bssid = GetString(wifi_dict, ::onc::wifi::kBSSID);
-      wifi->eap =
-          GetManagedEAPProperties(&wifi_dict->GetDict(), ::onc::wifi::kEAP);
+      wifi->eap = GetManagedEAPProperties(wifi_dict, ::onc::wifi::kEAP);
       wifi->frequency = GetInt32(wifi_dict, ::onc::wifi::kFrequency);
       wifi->frequency_list =
           GetInt32List(wifi_dict, ::onc::wifi::kFrequencyList);
@@ -1963,6 +1792,9 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
           wifi->security, result->source,
           /*log_result=*/false);
       wifi->is_configured_by_active_user = GetIsConfiguredByUser(result->guid);
+      wifi->passpoint_id = GetString(wifi_dict, ::onc::wifi::kPasspointId);
+      wifi->passpoint_match_type = PasspointMatchTypeToMojo(
+          GetString(wifi_dict, ::onc::wifi::kPasspointMatchType));
 
       result->type_properties =
           mojom::NetworkTypeManagedProperties::NewWifi(std::move(wifi));
@@ -2031,7 +1863,7 @@ bool NetworkTypeCanBeDisabled(mojom::NetworkType type) {
   return false;
 }
 
-base::Value GetEAPProperties(const mojom::EAPConfigProperties& eap) {
+base::Value::Dict GetEAPProperties(const mojom::EAPConfigProperties& eap) {
   base::Value::Dict eap_dict;
 
   SetString(::onc::eap::kAnonymousIdentity, eap.anonymous_identity, &eap_dict);
@@ -2052,7 +1884,7 @@ base::Value GetEAPProperties(const mojom::EAPConfigProperties& eap) {
   SetString(::onc::eap::kSubjectMatch, eap.subject_match, &eap_dict);
   eap_dict.Set(::onc::eap::kUseSystemCAs, eap.use_system_cas);
 
-  return base::Value(std::move(eap_dict));
+  return eap_dict;
 }
 
 base::Value::Dict MojoApnToOnc(const mojom::ApnProperties& apn_props) {
@@ -2109,7 +1941,7 @@ absl::optional<base::Value::Dict> GetOncFromConfigProperties(
     }
     if (cellular.roaming) {
       type_dict.Set(::onc::cellular::kAllowRoaming,
-                    base::Value(cellular.roaming->allow_roaming));
+                    cellular.roaming->allow_roaming);
     }
   } else if (properties->type_config->is_ethernet()) {
     type = mojom::NetworkType::kEthernet;
@@ -2715,7 +2547,7 @@ void CrosNetworkConfig::SetPropertiesInternal(const std::string& guid,
     std::string user_id_hash = LoginState::Get()->primary_user_hash();
 
     network_configuration_handler_->CreateConfiguration(
-        user_id_hash, base::Value(std::move(onc)),
+        user_id_hash, onc,
         base::BindOnce(&CrosNetworkConfig::SetPropertiesConfigureSuccess,
                        weak_factory_.GetWeakPtr(), callback_id),
         base::BindOnce(&CrosNetworkConfig::SetPropertiesFailure,
@@ -2724,7 +2556,7 @@ void CrosNetworkConfig::SetPropertiesInternal(const std::string& guid,
   }
 
   network_configuration_handler_->SetProperties(
-      network.path(), base::Value(std::move(onc)),
+      network.path(), onc,
       base::BindOnce(&CrosNetworkConfig::SetPropertiesSuccess,
                      weak_factory_.GetWeakPtr(), callback_id),
       base::BindOnce(&CrosNetworkConfig::SetPropertiesFailure,
@@ -2791,7 +2623,7 @@ void CrosNetworkConfig::ConfigureNetwork(mojom::ConfigPropertiesPtr properties,
   configure_network_callbacks_[callback_id] = std::move(callback);
 
   network_configuration_handler_->CreateConfiguration(
-      user_id_hash, base::Value(std::move(*onc)),
+      user_id_hash, onc.value(),
       base::BindOnce(&CrosNetworkConfig::ConfigureNetworkSuccess,
                      weak_factory_.GetWeakPtr(), callback_id),
       base::BindOnce(&CrosNetworkConfig::ConfigureNetworkFailure,
@@ -3092,8 +2924,8 @@ std::vector<mojom::ApnPropertiesPtr> CrosNetworkConfig::GetCustomApnList(
     mojom::ApnPropertiesPtr mojo_apn =
         GetApnProperties(apn.GetDict(), is_apn_revamp_enabled);
     if (is_apn_revamp_enabled) {
-      mojo_apn->state = OncApnStateTypeToMojo(
-          base::OptionalToPtr(GetString(&apn, ::onc::cellular_apn::kState)));
+      mojo_apn->state = OncApnStateTypeToMojo(base::OptionalToPtr(
+          GetString(&apn.GetDict(), ::onc::cellular_apn::kState)));
     }
 
     mojo_custom_apns.push_back(std::move(mojo_apn));
@@ -3115,7 +2947,7 @@ void CrosNetworkConfig::GetGlobalPolicy(GetGlobalPolicyCallback callback) {
   }
 
   // Global network configuration policy values come from the device policy.
-  const base::Value* global_policy_dict =
+  const base::Value::Dict* global_policy_dict =
       network_configuration_handler_->GetGlobalConfigFromPolicy(
           /*userhash=*/std::string());
   if (!global_policy_dict) {
@@ -3152,8 +2984,9 @@ void CrosNetworkConfig::GetGlobalPolicy(GetGlobalPolicyCallback callback) {
       result->allow_only_policy_wifi_networks_to_connect_if_available);
   absl::optional<std::vector<std::string>> blocked_hex_ssids = GetStringList(
       global_policy_dict, ::onc::global_network_config::kBlockedHexSSIDs);
-  if (blocked_hex_ssids)
+  if (blocked_hex_ssids) {
     result->blocked_hex_ssids = std::move(*blocked_hex_ssids);
+  }
 
   std::move(callback).Run(std::move(result));
 }
@@ -3417,15 +3250,15 @@ void CrosNetworkConfig::PopulateTrafficCounters(
   std::vector<mojom::TrafficCounterPtr> counters;
   for (const base::Value& tc : traffic_counters->GetList()) {
     DCHECK(tc.is_dict());
-    const base::Value* source =
-        tc.FindKeyOfType("source", base::Value::Type::STRING);
+    const base::Value::Dict& tc_dict = tc.GetDict();
+    const std::string* source = tc_dict.FindString("source");
     DCHECK(source);
 
     // Since rx_bytes may be larger than the maximum value representable by
     // uint32_t, we must check whether it was implicitly converted to a double
     // during D-Bus deserialization.
     uint64_t rx_bytes;
-    const base::Value* rb = tc.GetDict().Find("rx_bytes");
+    const base::Value* rb = tc_dict.Find("rx_bytes");
     DCHECK(rb);
     if (rb->type() == base::Value::Type::INTEGER) {
       rx_bytes = rb->GetInt();
@@ -3439,7 +3272,7 @@ void CrosNetworkConfig::PopulateTrafficCounters(
     // uint32_t, we must check whether it was implicitly converted to a double
     // during D-Bus deserialization.
     uint64_t tx_bytes;
-    const base::Value* tb = tc.GetDict().Find("tx_bytes");
+    const base::Value* tb = tc_dict.Find("tx_bytes");
     DCHECK(tb);
     if (tb->type() == base::Value::Type::INTEGER) {
       tx_bytes = tb->GetInt();
@@ -3449,10 +3282,9 @@ void CrosNetworkConfig::PopulateTrafficCounters(
       NOTREACHED();
     }
 
-    counters.push_back(
-        mojom::TrafficCounter::New(ConvertToTrafficCounterSourceEnum(
-                                       base::ToLowerASCII(source->GetString())),
-                                   rx_bytes, tx_bytes));
+    counters.push_back(mojom::TrafficCounter::New(
+        ConvertToTrafficCounterSourceEnum(base::ToLowerASCII(*source)),
+        rx_bytes, tx_bytes));
   }
   std::move(callback).Run(std::move(counters));
 }
@@ -3613,8 +3445,8 @@ void CrosNetworkConfig::RemoveCustomApn(const std::string& network_guid,
         const std::string* item_id =
             item.GetDict().FindString(::onc::cellular_apn::kId);
         if (item_id && apn_id == *item_id) {
-          removed_apn_apn_types = OncApnTypesToMojo(
-              GetRequiredStringList(&item, ::onc::cellular_apn::kApnTypes));
+          removed_apn_apn_types = OncApnTypesToMojo(GetRequiredStringList(
+              &item.GetDict(), ::onc::cellular_apn::kApnTypes));
           return true;
         }
         return false;
@@ -3705,9 +3537,10 @@ void CrosNetworkConfig::ModifyCustomApn(const std::string& network_guid,
   mojom::ApnState modified_apn_old_apn_state;
 
   bool was_value_replaced = false;
-  for (const base::Value& old_apn : *old_custom_apns) {
+  for (const base::Value& old_apn_value : *old_custom_apns) {
+    const base::Value::Dict& old_apn = old_apn_value.GetDict();
     const std::string* old_apn_id =
-        old_apn.GetDict().FindString(::onc::cellular_apn::kId);
+        old_apn.FindString(::onc::cellular_apn::kId);
     DCHECK(old_apn_id);
 
     if (*apn->id == *old_apn_id) {
@@ -3715,7 +3548,7 @@ void CrosNetworkConfig::ModifyCustomApn(const std::string& network_guid,
       modified_apn_old_apn_types = OncApnTypesToMojo(
           GetRequiredStringList(&old_apn, ::onc::cellular_apn::kApnTypes));
       modified_apn_old_apn_state = OncApnStateTypeToMojo(
-          old_apn.GetDict().FindString(::onc::cellular_apn::kState));
+          old_apn.FindString(::onc::cellular_apn::kState));
       was_value_replaced = true;
     } else {
       new_custom_apns.Append(old_apn.Clone());

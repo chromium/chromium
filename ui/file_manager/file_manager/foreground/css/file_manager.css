@@ -590,6 +590,11 @@ body.check-select .dialog-header
   background-image: none;
 }
 
+.dialog-header #cloud-wrapper {
+  position: relative;
+  display: flex;
+}
+
 .dialog-header #search-wrapper {
   display: flex;
 }
@@ -1356,7 +1361,7 @@ body.files-ng .thumbnail-frame > .img-container {
 }
 
 /* Only display outlines for entries with thumbnails. */
-#list-container.thumbnail-view li.pinned:has(.thumbnail) .inline-status .progress,
+#list-container.thumbnail-view li:has(.thumbnail) .inline-status .progress,
 #list-container.thumbnail-view li.pinned:has(.thumbnail) .inline-status xf-icon[type=offline] {
   --xf-icon-color-outline: var(--cros-bg-color);
 }
@@ -1399,6 +1404,10 @@ body.files-ng .thumbnail-bottom {
 body.files-ng .thumbnail-item .filename-label {
   font-weight: normal;
   padding-inline-end: 12px;
+}
+
+body.files-ng .thumbnail-item.directory.pinned .filename-label {
+  padding-inline-end: 24px;
 }
 
 /* Styles specific for the grid view. */
@@ -2516,4 +2525,19 @@ files-tooltip:not(:defined) {
   padding-inline-start: 0;
   padding-top: 12px;
   visibility: visible;
+}
+
+.table-row-cell > .dateholder {
+  display: flex;
+}
+
+
+.table-row-cell > .dateholder > .date {
+  flex: 1 1;
+  overflow: hidden;
+}
+
+.table-row-cell > .dateholder > .dlp-managed-icon {
+  flex: 0 0 24px;
+  margin-inline-start: 8px;
 }

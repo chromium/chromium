@@ -8,10 +8,14 @@
 
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
+#include "ash/system/privacy/screen_security_controller.h"
+#include "ash/system/system_notification_controller.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_constants.h"
@@ -20,6 +24,7 @@
 #include "ash/system/video_conference/bubble/bubble_view.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/functional/bind.h"
+#include "components/session_manager/session_manager_types.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -178,8 +183,8 @@ VideoConferenceTray::VideoConferenceTray(Shelf* shelf)
           this, base::BindRepeating(&VideoConferenceTray::ToggleBubble,
                                     weak_ptr_factory_.GetWeakPtr())));
 
-  auto* video_conference_tray_controller = VideoConferenceTrayController::Get();
-  video_conference_tray_controller->AddObserver(this);
+  VideoConferenceTrayController::Get()->AddObserver(this);
+  Shell::Get()->session_controller()->AddObserver(this);
 
   // Update visibility of the tray and all child icons and indicators. If this
   // lives on a secondary display, it's possible a media session already exists
@@ -192,11 +197,11 @@ VideoConferenceTray::VideoConferenceTray(Shelf* shelf)
 }
 
 VideoConferenceTray::~VideoConferenceTray() {
+  Shell::Get()->session_controller()->RemoveObserver(this);
   VideoConferenceTrayController::Get()->RemoveObserver(this);
 }
 
 void VideoConferenceTray::CloseBubble() {
-  SetIsActive(false);
   toggle_bubble_button_->SetToggled(false);
 
   bubble_.reset();
@@ -232,6 +237,12 @@ void VideoConferenceTray::HandleLocaleChange() {
   // TODO(b/253646076): Finish this function.
 }
 
+void VideoConferenceTray::AnchorUpdated() {
+  if (bubble_) {
+    bubble_->bubble_view()->UpdateBubble();
+  }
+}
+
 void VideoConferenceTray::OnHasMediaAppStateChange() {
   SetVisiblePreferred(VideoConferenceTrayController::Get()->ShouldShowTray());
 }
@@ -261,14 +272,15 @@ void VideoConferenceTray::OnMicrophoneCapturingStateChange(bool is_capturing) {
 }
 
 SkScalar VideoConferenceTray::GetRotationValueForToggleBubbleButton() {
+  // If `bubble_` is not null, it means that the bubble is opened.
   switch (shelf()->alignment()) {
     case ShelfAlignment::kBottom:
     case ShelfAlignment::kBottomLocked:
-      return is_active() ? 180 : 0;
+      return bubble_ ? 180 : 0;
     case ShelfAlignment::kLeft:
-      return is_active() ? 270 : 90;
+      return bubble_ ? 270 : 90;
     case ShelfAlignment::kRight:
-      return is_active() ? 90 : 270;
+      return bubble_ ? 90 : 270;
   }
 }
 
@@ -288,6 +300,11 @@ void VideoConferenceTray::UpdateTrayAndIconsState() {
   screen_share_icon_->SetIsCapturing(is_capturing_screen);
 }
 
+void VideoConferenceTray::OnSessionStateChanged(
+    session_manager::SessionState state) {
+  SetVisiblePreferred(VideoConferenceTrayController::Get()->ShouldShowTray());
+}
+
 void VideoConferenceTray::ToggleBubble(const ui::Event& event) {
   if (GetBubbleWidget()) {
     CloseBubble();
@@ -298,7 +315,7 @@ void VideoConferenceTray::ToggleBubble(const ui::Event& event) {
   init_params.delegate = GetWeakPtr();
   init_params.parent_window = GetBubbleWindowContainer();
   init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
-  init_params.anchor_rect = shelf()->GetSystemTrayAnchorRect();
+  init_params.anchor_rect = GetAnchorBoundsInScreen();
   init_params.insets = GetTrayBubbleInsets();
   init_params.shelf_alignment = shelf()->alignment();
   init_params.preferred_width = kTrayMenuWidth;
@@ -311,7 +328,6 @@ void VideoConferenceTray::ToggleBubble(const ui::Event& event) {
   bubble_ = std::make_unique<TrayBubbleWrapper>(this);
   bubble_->ShowBubble(std::move(bubble_view));
 
-  SetIsActive(true);
   toggle_bubble_button_->SetToggled(true);
 }
 
@@ -327,7 +343,10 @@ void VideoConferenceTray::OnAudioButtonClicked(const ui::Event& event) {
 }
 
 void VideoConferenceTray::OnScreenShareButtonClicked(const ui::Event& event) {
-  // TODO(b/253277644): Implement the callback for `screen_share_icon_`.
+  Shell::Get()
+      ->system_notification_controller()
+      ->screen_security_controller()
+      ->StopAllSessions(/*is_screen_access=*/true);
 }
 
 BEGIN_METADATA(VideoConferenceTray, TrayBackgroundView)

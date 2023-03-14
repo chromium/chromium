@@ -25,22 +25,21 @@ constexpr DataType DATA_TYPE_EMBEDDER_BEGIN =
 constexpr DataType DATA_TYPE_HISTORY = DATA_TYPE_EMBEDDER_BEGIN;
 constexpr DataType DATA_TYPE_FORM_DATA = DATA_TYPE_EMBEDDER_BEGIN << 1;
 constexpr DataType DATA_TYPE_PASSWORDS = DATA_TYPE_EMBEDDER_BEGIN << 2;
-constexpr DataType DATA_TYPE_PLUGIN_DATA = DATA_TYPE_EMBEDDER_BEGIN << 3;
 #if BUILDFLAG(IS_ANDROID)
-constexpr DataType DATA_TYPE_WEB_APP_DATA = DATA_TYPE_EMBEDDER_BEGIN << 4;
+constexpr DataType DATA_TYPE_WEB_APP_DATA = DATA_TYPE_EMBEDDER_BEGIN << 3;
 #endif
-constexpr DataType DATA_TYPE_SITE_USAGE_DATA = DATA_TYPE_EMBEDDER_BEGIN << 5;
-constexpr DataType DATA_TYPE_DURABLE_PERMISSION = DATA_TYPE_EMBEDDER_BEGIN << 6;
+constexpr DataType DATA_TYPE_SITE_USAGE_DATA = DATA_TYPE_EMBEDDER_BEGIN << 4;
+constexpr DataType DATA_TYPE_DURABLE_PERMISSION = DATA_TYPE_EMBEDDER_BEGIN << 5;
 constexpr DataType DATA_TYPE_EXTERNAL_PROTOCOL_DATA = DATA_TYPE_EMBEDDER_BEGIN
-                                                      << 7;
+                                                      << 6;
 constexpr DataType DATA_TYPE_HOSTED_APP_DATA_TEST_ONLY =
-    DATA_TYPE_EMBEDDER_BEGIN << 8;
-constexpr DataType DATA_TYPE_CONTENT_SETTINGS = DATA_TYPE_EMBEDDER_BEGIN << 9;
-constexpr DataType DATA_TYPE_BOOKMARKS = DATA_TYPE_EMBEDDER_BEGIN << 10;
-constexpr DataType DATA_TYPE_ISOLATED_ORIGINS = DATA_TYPE_EMBEDDER_BEGIN << 11;
-constexpr DataType DATA_TYPE_ACCOUNT_PASSWORDS = DATA_TYPE_EMBEDDER_BEGIN << 12;
+    DATA_TYPE_EMBEDDER_BEGIN << 7;
+constexpr DataType DATA_TYPE_CONTENT_SETTINGS = DATA_TYPE_EMBEDDER_BEGIN << 8;
+constexpr DataType DATA_TYPE_BOOKMARKS = DATA_TYPE_EMBEDDER_BEGIN << 9;
+constexpr DataType DATA_TYPE_ISOLATED_ORIGINS = DATA_TYPE_EMBEDDER_BEGIN << 10;
+constexpr DataType DATA_TYPE_ACCOUNT_PASSWORDS = DATA_TYPE_EMBEDDER_BEGIN << 11;
 constexpr DataType DATA_TYPE_LOCAL_CUSTOM_DICTIONARY = DATA_TYPE_EMBEDDER_BEGIN
-                                                       << 13;
+                                                       << 12;
 
 // Group datatypes.
 
@@ -50,7 +49,6 @@ constexpr DataType DATA_TYPE_SITE_DATA =
     content::BrowsingDataRemover::DATA_TYPE_COOKIES |
     content::BrowsingDataRemover::DATA_TYPE_DOM_STORAGE |
     content::BrowsingDataRemover::DATA_TYPE_MEDIA_LICENSES |
-    DATA_TYPE_PLUGIN_DATA |
 #if BUILDFLAG(IS_ANDROID)
     DATA_TYPE_WEB_APP_DATA |
 #endif

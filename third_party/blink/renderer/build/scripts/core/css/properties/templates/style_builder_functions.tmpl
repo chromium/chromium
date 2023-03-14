@@ -26,7 +26,7 @@ void {{class_name}}::ApplyInherit(StyleResolverState& state) const {
   {% set class_name = property.name.to_upper_camel_case() %}
   {% if property.style_builder_declare %}
     {% if property.style_builder_generate_value %}
-void {{class_name}}::ApplyValue(StyleResolverState& state, const CSSValue& value) const {
+void {{class_name}}::ApplyValue(StyleResolverState& state, const CSSValue& value, ValueMode) const {
 {{(caller(property) ~ '}')}}
     {% endif %}
   {% endif %}

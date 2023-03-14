@@ -127,7 +127,8 @@
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_url_filter.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #endif
 
@@ -263,15 +264,15 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
     return profile_manager->GetProfile(profile_path);
   }
 
-  AppId InstallTestWebApp(const GURL& start_url, bool open_as_window = true) {
+  AppId InstallTestWebApp(const GURL& start_url,
+                          web_app::mojom::UserDisplayMode display_mode =
+                              web_app::mojom::UserDisplayMode::kStandalone) {
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url;
     web_app_info->title = u"Test app 🐐";
     web_app_info->description = u"Test description 🐐";
-    web_app_info->user_display_mode =
-        open_as_window ? web_app::mojom::UserDisplayMode::kStandalone
-                       : web_app::mojom::UserDisplayMode::kBrowser;
+    web_app_info->user_display_mode = display_mode;
 
     return web_app::test::InstallWebApp(browser()->profile(),
                                         std::move(web_app_info));
@@ -553,8 +554,21 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
 }
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
-                       SaveLinkAsEntryIsDisabledForUrlsNotAccessibleForChild) {
+class ContextMenuWithoutFilteringForSupervisedUsersOn3pBrowserTest
+    : public ContextMenuBrowserTest {
+ public:
+  ContextMenuWithoutFilteringForSupervisedUsersOn3pBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        supervised_user::kFilterWebsitesForSupervisedUsersOnThirdParty);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuWithoutFilteringForSupervisedUsersOn3pBrowserTest,
+    SaveLinkAsEntryIsDisabledForUrlsNotAccessibleForChildNo3P) {
   // Set up child user profile.
   Profile* profile = browser()->profile();
   browser()->profile()->GetPrefs()->SetString(
@@ -563,7 +577,48 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   // Block access to http://www.google.com/ in the URL filter.
   SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile);
-  SupervisedUserURLFilter* url_filter = supervised_user_service->GetURLFilter();
+  supervised_user::SupervisedUserURLFilter* url_filter =
+      supervised_user_service->GetURLFilter();
+  std::map<std::string, bool> hosts;
+  hosts["www.google.com"] = false;
+  url_filter->SetManualHosts(std::move(hosts));
+
+  base::RunLoop().RunUntilIdle();
+
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateContextMenuMediaTypeNone(GURL("http://www.google.com/"),
+                                     GURL("http://www.google.com/"));
+
+  ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SAVELINKAS));
+
+  // The entry is only disabled for platforms on which URL filtering is enabled.
+  if (supervised_user_service->IsURLFilteringEnabled()) {
+    EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVELINKAS));
+  } else {
+    EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVELINKAS));
+  }
+}
+
+class ContextMenuWithFilteringForSupervisedUsersOn3pBrowserTest
+    : public ContextMenuBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      supervised_user::kFilterWebsitesForSupervisedUsersOnThirdParty};
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuWithFilteringForSupervisedUsersOn3pBrowserTest,
+    SaveLinkAsEntryIsDisabledForUrlsNotAccessibleForChildWith3P) {
+  // Set up child user profile.
+  Profile* profile = browser()->profile();
+  browser()->profile()->GetPrefs()->SetString(
+      prefs::kSupervisedUserId, supervised_user::kChildAccountSUID);
+
+  // Block access to http://www.google.com/ in the URL filter.
+  SupervisedUserService* supervised_user_service =
+      SupervisedUserServiceFactory::GetForProfile(profile);
+  supervised_user::SupervisedUserURLFilter* url_filter =
+      supervised_user_service->GetURLFilter();
   std::map<std::string, bool> hosts;
   hosts["www.google.com"] = false;
   url_filter->SetManualHosts(std::move(hosts));
@@ -577,8 +632,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SAVELINKAS));
   EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVELINKAS));
 }
-
-#endif
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
@@ -637,7 +691,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
                        OpenInAppAbsentForURLsInScopeOfNonWindowedWebApp) {
-  InstallTestWebApp(GURL(kAppUrl1), /*open_as_window=*/false);
+  InstallTestWebApp(GURL(kAppUrl1), web_app::mojom::UserDisplayMode::kBrowser);
 
   std::unique_ptr<TestRenderViewContextMenu> menu =
       CreateContextMenuMediaTypeNone(GURL(kAppUrl1), GURL(kAppUrl1));
@@ -956,6 +1010,96 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, RealMenu) {
 
   // Verify that it's the correct tab.
   EXPECT_EQ(GURL("about:blank"), tab->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
+                       OpenNewTabInChromeFromWebAppWithAnOpenBrowser) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL title1(embedded_test_server()->GetURL("/title1.html"));
+  GURL title2(embedded_test_server()->GetURL("/title2.html"));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), title1));
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+
+  EXPECT_EQ(tab_strip_model->count(), 1);
+
+  const AppId app_id = InstallTestWebApp(
+      GURL(kAppUrl1), web_app::mojom::UserDisplayMode::kTabbed);
+
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
+  Browser* app_browser = OpenTestWebApp(app_id);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 2u);
+
+  TabStripModel* app_tab_strip_model = app_browser->tab_strip_model();
+  EXPECT_EQ(app_tab_strip_model->count(), 1);
+
+  // Set up menu with link URL.
+  content::ContextMenuParams context_menu_params;
+  context_menu_params.link_url = title2;
+  context_menu_params.page_url = title1;
+
+  // Select "Open Link in New Tab" and wait for the new tab to be added.
+  TestRenderViewContextMenu menu(*app_browser->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
+  menu.Init();
+
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, 0);
+  content::WebContents* tab = add_tab.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(tab));
+
+  EXPECT_EQ(title2, tab->GetLastCommittedURL());
+  EXPECT_EQ(tab_strip_model->count(), 2);
+  EXPECT_EQ(app_tab_strip_model->count(), 1);
+  EXPECT_TRUE(chrome::FindBrowserWithWebContents(tab)->is_type_normal());
+}
+
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
+                       OpenNewTabInChromeFromWebAppWithoutAnOpenBrowser) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL title1(embedded_test_server()->GetURL("/title1.html"));
+
+  const AppId app_id = InstallTestWebApp(
+      GURL(kAppUrl1), web_app::mojom::UserDisplayMode::kTabbed);
+  Browser* app_browser = OpenTestWebApp(app_id);
+
+  browser()->tab_strip_model()->CloseWebContentsAt(/*index=*/0,
+                                                   TabCloseTypes::CLOSE_NONE);
+  web_app::CloseAndWait(browser());
+  EXPECT_FALSE(web_app::IsBrowserOpen(browser()));
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
+
+  TabStripModel* app_tab_strip_model = app_browser->tab_strip_model();
+  EXPECT_EQ(app_tab_strip_model->count(), 1);
+
+  // Set up menu with link URL.
+  content::ContextMenuParams context_menu_params;
+  context_menu_params.link_url = title1;
+  context_menu_params.page_url =
+      app_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL();
+
+  // Select "Open Link in New Tab" and wait for the new tab to be added.
+  TestRenderViewContextMenu menu(*app_browser->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
+  menu.Init();
+
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, 0);
+  content::WebContents* tab = add_tab.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(tab));
+
+  EXPECT_EQ(title1, tab->GetLastCommittedURL());
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 2u);
+  EXPECT_TRUE(chrome::FindBrowserWithWebContents(tab)->is_type_normal());
+
+  TabStripModel* tab_strip_model =
+      chrome::FindBrowserWithWebContents(tab)->tab_strip_model();
+  EXPECT_EQ(app_tab_strip_model->count(), 1);
+  EXPECT_EQ(tab_strip_model->count(), 1);
 }
 
 // Verify that "Open Link in New Tab" doesn't crash for about:blank.
@@ -2627,19 +2771,19 @@ IN_PROC_BROWSER_TEST_F(ContextMenuWithProfileLinksBrowserTest,
 
 #endif
 
-IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenReadAnything) {
-  // Open in Reader is not an option when text is unselected.
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenReadingMode) {
+  // Open in reading mode is not an option when text is unselected.
   std::unique_ptr<TestRenderViewContextMenu> menu1 =
       CreateContextMenuMediaTypeNone(GURL("http://www.google.com/"),
                                      GURL("http://www.google.com/"));
-  ASSERT_FALSE(menu1->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READ_ANYTHING));
+  ASSERT_FALSE(menu1->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
 
-  // Open in Reader is an option when non-editable text is selected.
+  // Open in reading mode is an option when non-editable text is selected.
   std::unique_ptr<TestRenderViewContextMenu> menu2 =
       CreateContextMenuForTextInWebContents(u"selection text");
-  ASSERT_TRUE(menu2->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READ_ANYTHING));
+  ASSERT_TRUE(menu2->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
 
-  // Open in Reader is an option when editable text is selected.
+  // Open in reading mode is an option when editable text is selected.
   content::ContextMenuParams params;
   params.is_editable = true;
   std::unique_ptr<TestRenderViewContextMenu> menu3 =
@@ -2649,7 +2793,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenReadAnything) {
                                                        ->GetPrimaryMainFrame(),
                                                   params);
   menu3->Init();
-  ASSERT_TRUE(menu3->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READ_ANYTHING));
+  ASSERT_TRUE(menu3->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
 }
 
 }  // namespace

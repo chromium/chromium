@@ -33,6 +33,12 @@ struct COMPONENT_EXPORT(UI_BASE_CURSOR) CursorData {
 // Ref-counted cursor that supports both default and custom cursors.
 class COMPONENT_EXPORT(UI_BASE_CURSOR) Cursor {
  public:
+  // Creates a custom cursor with the provided parameters. `bitmap` dimensions
+  // and `image_scale_factor` are DCHECKed to avoid integer overflow when
+  // calculating the final cursor image size.
+  static Cursor NewCustom(SkBitmap bitmap,
+                          gfx::Point hotspot,
+                          float image_scale_factor = 1.0f);
   Cursor();
   Cursor(mojom::CursorType type);
   Cursor(const Cursor& cursor);
@@ -61,20 +67,19 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) Cursor {
   bool operator!=(mojom::CursorType type) const { return type_ != type; }
 
  private:
-  // The basic cursor type.
+  // Custom cursor constructor.
+  Cursor(SkBitmap bitmap, gfx::Point hotspot, float image_scale_factor);
+
   mojom::CursorType type_ = mojom::CursorType::kNull;
 
-  // The native platform cursor.
   scoped_refptr<PlatformCursor> platform_cursor_;
+
+  // Only used for custom cursors:
+  SkBitmap custom_bitmap_;
+  gfx::Point custom_hotspot_;
 
   // The scale factor for the cursor bitmap.
   float image_scale_factor_ = 1.0f;
-
-  // The hotspot for the cursor. This is only used for the custom cursor type.
-  gfx::Point custom_hotspot_;
-
-  // The bitmap for the cursor. This is only used for the custom cursor type.
-  SkBitmap custom_bitmap_;
 };
 
 }  // namespace ui

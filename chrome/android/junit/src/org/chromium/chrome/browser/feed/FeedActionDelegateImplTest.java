@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.feed;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.app.feed.FeedActionDelegateImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
-import org.chromium.chrome.browser.share.crow.CrowButtonDelegate;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
@@ -55,9 +54,6 @@ public final class FeedActionDelegateImplTest {
     @Mock
     private Context mActivityContext;
 
-    @Mock
-    private CrowButtonDelegate mMockCrowButtonDelegate;
-
     @Captor
     ArgumentCaptor<Intent> mIntentCaptor;
 
@@ -69,8 +65,7 @@ public final class FeedActionDelegateImplTest {
 
         SyncConsentActivityLauncherImpl.setLauncherForTest(mMockSyncConsentActivityLauncher);
         mFeedActionDelegateImpl = new FeedActionDelegateImpl(mActivityContext, mMockSnackbarManager,
-                mMockNavigationDelegate, mMockBookmarkModel, mMockCrowButtonDelegate,
-                BrowserUiUtils.HostSurface.NOT_SET);
+                mMockNavigationDelegate, mMockBookmarkModel, BrowserUiUtils.HostSurface.NOT_SET);
     }
 
     @After
@@ -79,19 +74,19 @@ public final class FeedActionDelegateImplTest {
     }
 
     @Test
-    public void testShowSignInActivity_shownWhenFlagEnabled() {
+    public void testShowSyncConsentActivity_shownWhenFlagEnabled() {
         FeatureList.setTestFeatures(
                 ImmutableMap.of(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND, true));
-        mFeedActionDelegateImpl.showSignInActivity();
+        mFeedActionDelegateImpl.showSyncConsentActivity(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS);
         verify(mMockSyncConsentActivityLauncher)
                 .launchActivityIfAllowed(any(), eq(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
     }
 
     @Test
-    public void testShowSignInActivity_dontShowWhenFlagDisabled() {
+    public void testShowSyncConsentActivity_dontShowWhenFlagDisabled() {
         FeatureList.setTestFeatures(
                 ImmutableMap.of(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND, false));
-        mFeedActionDelegateImpl.showSignInActivity();
+        mFeedActionDelegateImpl.showSyncConsentActivity(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS);
         verify(mMockSyncConsentActivityLauncher, never())
                 .launchActivityIfAllowed(any(), eq(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
     }

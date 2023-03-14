@@ -64,6 +64,7 @@ using chrome_test_util::SettingsImportDataKeepSeparateButton;
 using chrome_test_util::SettingsLink;
 using chrome_test_util::StaticTextWithAccessibilityLabelId;
 using l10n_util::GetNSString;
+using l10n_util::GetNSStringF;
 using testing::ButtonWithAccessibilityLabel;
 
 typedef NS_ENUM(NSInteger, OpenSigninMethod) {
@@ -858,8 +859,35 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
   // Select the identity disc particle.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(GetNSString(
-                                          IDS_ACCNAME_PARTICLE_DISC))]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(GetNSStringF(
+                                   IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL,
+                                   base::SysNSStringToUTF16(
+                                       fakeIdentity.userFullName),
+                                   base::SysNSStringToUTF16(
+                                       fakeIdentity.userEmail)))]
+      performAction:grey_tap()];
+
+  // Ensure the Settings menu is displayed.
+  [[EarlGrey selectElementWithMatcher:SettingsCollectionView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests the accessibility string for a signed-in user whose name is not
+// available yet.
+- (void)testAccessiblityStringForSignedInUserWithoutName {
+  NSString* email = @"test@test.com";
+  NSString* gaiaID = @"gaiaID";
+  // Sign in to Chrome.
+  FakeSystemIdentity* fakeIdentity =
+      [FakeSystemIdentity identityWithEmail:email gaiaID:gaiaID name:nil];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+
+  // Select the identity disc particle with the correct accessibility string.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(GetNSStringF(
+                                          IDS_IOS_IDENTITY_DISC_WITH_EMAIL,
+                                          base::SysNSStringToUTF16(
+                                              fakeIdentity.userEmail)))]
       performAction:grey_tap()];
 
   // Ensure the Settings menu is displayed.
@@ -874,7 +902,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
   // Select the identity disc particle.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(GetNSString(
-                                          IDS_ACCNAME_PARTICLE_DISC))]
+                                          IDS_IOS_IDENTITY_DISC_SIGNED_OUT))]
       performAction:grey_tap()];
 
   // Ensure the Settings menu is displayed.
@@ -895,7 +923,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
   // Select the identity disc particle.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(GetNSString(
-                                          IDS_ACCNAME_PARTICLE_DISC))]
+                                          IDS_IOS_IDENTITY_DISC_SIGNED_OUT))]
       performAction:grey_tap()];
 
   // Ensure the Settings menu is displayed.
@@ -907,7 +935,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 - (void)testOpenSignInFromNTP {
   // Select the identity disc particle.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(GetNSString(
-                                          IDS_ACCNAME_PARTICLE_DISC))]
+                                          IDS_IOS_IDENTITY_DISC_SIGNED_OUT))]
       performAction:grey_tap()];
 
   // Ensure the sign-in menu is displayed. The existence of the skip

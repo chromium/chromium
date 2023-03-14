@@ -27,7 +27,9 @@
           <ph name="PROXIES_TITLE" />
           va “proksi-serversiz” yoki “to‘g‘ridan-to‘g‘ri” sozlamalaridan biri
           belgilanganligiga ishonch xosil qiling.</translation>
+<translation id="6549378540556750549">Chromium paydo boʻlishida boshqa <ph name="BEGIN_LINK_OSS" />ochiq kodli dastur<ph name="END_LINK_OSS" /> taʼminotining katta oʻrni bor.</translation>
 <translation id="6613594504749178791">O‘zgartirishlar Chromium qaytadan ishga tushirilganda kuchga kiradi.</translation>
+<translation id="7681937895330411637">Chromium paydo boʻlishida <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ochiq kodli dastur loyihasining katta oʻrni bor.</translation>
 <translation id="7861509383340276692">Bu yerga o‘ting
           Chromium menyusi &gt;
           <ph name="SETTINGS_TITLE" />

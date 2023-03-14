@@ -18,7 +18,6 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
@@ -26,7 +25,6 @@
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/display/display_switches.h"
 #include "ui/events/test/event_generator.h"
-#include "ui/views/widget/widget.h"
 
 namespace ash {
 

@@ -37,11 +37,10 @@ test(function() {
 test(function() {
   testElement.style.width = "   var(   --a   ,   5px   )  ";
   var result = [...testElement.attributeStyleMap.get('width')];
-  assert_equals(result.length, 2);
+  assert_equals(result.length, 1);
   assert_equals(result[0].variable, "--a");
   assert_equals([...result[0].fallback].length, 1);
   assert_equals([...result[0].fallback][0], " 5px ");
-  assert_equals(result[1], " ");
 
   testElement.style.width = "  calc(  var(  --test, 30px ) + 15px  )";
   result = [...testElement.attributeStyleMap.get('width')];
@@ -56,10 +55,9 @@ test(function() {
 test(function() {
   testElement.style.width = "   var(  --a  )  ";
   var result = [...testElement.attributeStyleMap.get('width')];
-  assert_equals(result.length, 2);
+  assert_equals(result.length, 1);
   assert_equals(result[0].variable, "--a");
   assert_equals(result[0].fallback, null);
-  assert_equals(result[1], " ");
 
   testElement.style.width = " calc( var(  --test ) + 15px  ) ";
   result = [...testElement.attributeStyleMap.get('width')];
@@ -67,6 +65,6 @@ test(function() {
   assert_equals(result[0], "calc( ");
   assert_equals(result[1].variable, "--test");
   assert_equals(result[1].fallback, null);
-  assert_equals(result[2], " + 15px ) ");
+  assert_equals(result[2], " + 15px )");
 }, "Can handle extra spaces without fallback");
 </script>

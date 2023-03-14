@@ -20,7 +20,6 @@
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/memory_pressure_listener.h"
@@ -38,7 +37,6 @@
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_local.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
@@ -78,6 +76,7 @@
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 #include "services/tracing/public/cpp/background_tracing/background_tracing_agent_impl.h"
 #include "services/tracing/public/cpp/background_tracing/background_tracing_agent_provider_impl.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include "base/posix/global_descriptors.h"
@@ -88,7 +87,7 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(IS_POSIX)
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/mach_port_rendezvous.h"
 #endif
 
@@ -110,8 +109,7 @@ namespace {
 // How long to wait for a connection to the browser process before giving up.
 const int kConnectionTimeoutS = 15;
 
-base::LazyInstance<base::ThreadLocalPointer<ChildThreadImpl>>::DestructorAtExit
-    g_lazy_child_thread_impl_tls = LAZY_INSTANCE_INITIALIZER;
+ABSL_CONST_INIT thread_local ChildThreadImpl* child_thread_impl = nullptr;
 
 // This isn't needed on Windows because there the sandbox's job object
 // terminates child processes automatically. For unsandboxed processes (i.e.
@@ -224,7 +222,7 @@ mojo::IncomingInvitation InitializeMojoIPCChannel() {
 #elif BUILDFLAG(IS_FUCHSIA)
   endpoint = mojo::PlatformChannel::RecoverPassedEndpointFromCommandLine(
       *base::CommandLine::ForCurrentProcess());
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
   auto* client = base::MachPortRendezvousClient::GetInstance();
   if (!client) {
     LOG(ERROR) << "Mach rendezvous failed, terminating process (parent died?)";
@@ -300,7 +298,7 @@ class ChildThreadImpl::IOThreadState
                                        base::BindOnce(quit_closure_));
   }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   void GetTaskPort(GetTaskPortCallback callback) override {
     mojo::PlatformHandle task_port(
         (base::mac::ScopedMachSendRight(task_self_trap())));
@@ -527,7 +525,8 @@ ChildThreadImpl::ChildThreadImpl(base::RepeatingClosure quit_closure)
 
 ChildThreadImpl::ChildThreadImpl(base::RepeatingClosure quit_closure,
                                  const Options& options)
-    : router_(this),
+    : resetter_(&child_thread_impl, this),
+      router_(this),
       quit_closure_(std::move(quit_closure)),
       browser_process_io_runner_(options.browser_process_io_runner),
       channel_connected_factory_(
@@ -566,7 +565,6 @@ void ChildThreadImpl::SetFieldTrialGroup(const std::string& trial_name,
 
 void ChildThreadImpl::Init(const Options& options) {
   TRACE_EVENT0("startup", "ChildThreadImpl::Init");
-  g_lazy_child_thread_impl_tls.Pointer()->Set(this);
   on_channel_error_called_ = false;
   main_thread_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 #if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
@@ -772,8 +770,6 @@ ChildThreadImpl::~ChildThreadImpl() {
     [[maybe_unused]] auto* leaked_remote_ptr = leaked_remote.release();
     ANNOTATE_LEAKING_OBJECT_PTR(leaked_remote_ptr);
   }
-
-  g_lazy_child_thread_impl_tls.Pointer()->Set(nullptr);
 }
 
 void ChildThreadImpl::Shutdown() {
@@ -902,7 +898,7 @@ void ChildThreadImpl::BindServiceInterface(
 void ChildThreadImpl::OnBindReceiver(mojo::GenericPendingReceiver receiver) {}
 
 ChildThreadImpl* ChildThreadImpl::current() {
-  return g_lazy_child_thread_impl_tls.Pointer()->Get();
+  return child_thread_impl;
 }
 
 void ChildThreadImpl::OnProcessFinalRelease() {

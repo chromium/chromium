@@ -38,14 +38,14 @@ def _CreateSizeInfo(aliases=None, containers=None):
   section_sizes = {'.text': 100, '.bss': 40}
   metrics_by_file = {
       'classes.dex': {
-          'COUNT.HEADER': 1,
-          'COUNT.STRING_ID': 11,
-          'COUNT.CODE': 3,
-          'COUNT.STRING_DATA': 11,
-          'SIZE.HEADER': 1024,
-          'SIZE.STRING_ID': 44,
-          'SIZE.CODE': 1337,
-          'SIZE.STRING_DATA': 888,
+          'COUNT/HEADER': 1,
+          'COUNT/STRING_ID': 11,
+          'COUNT/CODE': 3,
+          'COUNT/STRING_DATA': 11,
+          'SIZE/HEADER': 1024,
+          'SIZE/STRING_ID': 44,
+          'SIZE/CODE': 1337,
+          'SIZE/STRING_DATA': 888,
       },
   }
   if not containers:

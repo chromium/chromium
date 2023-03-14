@@ -215,8 +215,9 @@ public class LightweightFirstRunActivity
     }
 
     @Override
-    public void handleBackPress() {
+    public @BackPressResult int handleBackPress() {
         abortFirstRunExperience();
+        return BackPressResult.SUCCESS;
     }
 
     private void abortFirstRunExperience() {

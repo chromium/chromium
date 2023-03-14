@@ -9,7 +9,7 @@
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/browser/form_parsing/field_candidates.h"
 
-namespace autofill::metrics {
+namespace autofill::autofill_metrics {
 
 namespace {
 
@@ -95,4 +95,4 @@ void LogShadowPredictionComparison(const AutofillField& field) {
 #endif
 }
 
-}  // namespace autofill::metrics
+}  // namespace autofill::autofill_metrics

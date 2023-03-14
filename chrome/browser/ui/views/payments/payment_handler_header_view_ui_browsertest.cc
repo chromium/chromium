@@ -2,14 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
+#include "chrome/test/payments/payment_app_install_util.h"
 #include "components/omnibox/browser/buildflags.h"
+#include "components/payments/content/icon/icon_size.h"
 #include "components/payments/core/features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
+#include "ui/views/controls/image_view.h"
 
 namespace payments {
 namespace {
@@ -18,13 +24,7 @@ class PaymentHandlerHeaderViewUITest
     : public PaymentRequestBrowserTestBase,
       public testing::WithParamInterface<bool> {
  public:
-  PaymentHandlerHeaderViewUITest() : minimal_header_ux_enabled_(GetParam()) {
-    if (minimal_header_ux_enabled_) {
-      features_.InitAndEnableFeature(features::kPaymentHandlerMinimalHeaderUX);
-    } else {
-      features_.InitAndDisableFeature(features::kPaymentHandlerMinimalHeaderUX);
-    }
-  }
+  PaymentHandlerHeaderViewUITest() : minimal_header_ux_enabled_(GetParam()) {}
   ~PaymentHandlerHeaderViewUITest() override = default;
 
   void SetUpOnMainThread() override {
@@ -32,11 +32,30 @@ class PaymentHandlerHeaderViewUITest
     NavigateTo("/payment_handler.html");
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PaymentRequestBrowserTestBase::SetUpCommandLine(command_line);
+    if (minimal_header_ux_enabled_) {
+      command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                      "PaymentHandlerMinimalHeaderUX");
+    }
+  }
+
+  void ExpectHistograms() {
+    // Navigate away in order to flush use counters.
+    ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
+                                       GURL(url::kAboutBlankURL)));
+    histograms_.ExpectBucketCount(
+        "Blink.UseCounter.Features",
+        blink::mojom::WebFeature::kPaymentHandlerMinimalHeaderUX,
+        minimal_header_ux_enabled_ ? 1 : 0);
+  }
+
  protected:
   bool minimal_header_ux_enabled_;
 
  private:
   base::test::ScopedFeatureList features_;
+  base::HistogramTester histograms_;
 };
 
 IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest,
@@ -90,6 +109,8 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest,
     EXPECT_EQ(u"Payment App",
               GetLabelText(DialogViewID::SHEET_TITLE, view_stack->top()));
   }
+
+  ExpectHistograms();
 }
 
 IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest, HeaderWithoutIcon) {
@@ -128,6 +149,8 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest, HeaderWithoutIcon) {
 
   // The payment app has no icon, so it should not be displayed on the header.
   EXPECT_FALSE(IsViewVisible(DialogViewID::PAYMENT_APP_HEADER_ICON));
+
+  ExpectHistograms();
 }
 
 IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest, CloseButtonPressed) {
@@ -181,6 +204,8 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest, CloseButtonPressed) {
     ResetEventWaiter(DialogEvent::BACK_NAVIGATION);
     ClickOnDialogViewAndWait(DialogViewID::BACK_BUTTON);
   }
+
+  ExpectHistograms();
 }
 
 // Test that the header and dialog heights are consistent with when there is no
@@ -241,6 +266,50 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest, ConsistentHeaderHeight) {
           ->height());
 
   ClickOnCancel();
+
+  ExpectHistograms();
+}
+
+IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest, LargeIcon) {
+  // Install a payment app with a large icon that will be sized down at render.
+  std::string method_name = PaymentAppInstallUtil::InstallPaymentApp(
+      *GetActiveWebContents(), *https_server(), "a.com",
+      "/payment_handler_sw.js",
+      PaymentAppInstallUtil::IconInstall::kWithLargeIcon);
+
+  // Trigger PaymentRequest, and wait until the PaymentHandler has loaded a
+  // web-contents that has set a title.
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED,
+                               DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
+  WaitForObservedEvent();
+
+  // We always push the initial browser sheet to the stack, even if it isn't
+  // shown. Since it also defines a SHEET_TITLE, we have to explicitly test the
+  // front PaymentHandler view here.
+  ViewStack* view_stack = dialog_view()->view_stack_for_testing();
+  EXPECT_TRUE(
+      IsViewVisible(DialogViewID::PAYMENT_APP_HEADER_ICON, view_stack->top()));
+  EXPECT_EQ(
+      gfx::Size(
+          IconSizeCalculator::kPaymentAppDeviceIndependentIdealIconHeight,
+          IconSizeCalculator::kPaymentAppDeviceIndependentIdealIconHeight),
+      static_cast<views::ImageView*>(
+          GetChildByDialogViewID(view_stack,
+                                 DialogViewID::PAYMENT_APP_HEADER_ICON))
+          ->GetImageBounds()
+          .size());
+
+  ExpectHistograms();
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PaymentHandlerHeaderViewUITest, testing::Bool());

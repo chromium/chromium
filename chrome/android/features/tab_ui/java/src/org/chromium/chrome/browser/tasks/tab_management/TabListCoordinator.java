@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardPropert
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView.RecyclerViewPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -178,21 +179,7 @@ public class TabListCoordinator
                 ImageView thumbnail = (ImageView) root.fastFindViewById(R.id.tab_thumbnail);
                 if (thumbnail == null) return;
 
-                if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
-                    thumbnail.setImageDrawable(null);
-                    return;
-                }
-
-                if (TabUiFeatureUtilities.isTabThumbnailAspectRatioNotOne()) {
-                    float expectedThumbnailAspectRatio =
-                            TabUtils.getTabThumbnailAspectRatio(context);
-                    int height = (int) (thumbnail.getWidth() * 1.0 / expectedThumbnailAspectRatio);
-                    thumbnail.setMinimumHeight(Math.min(thumbnail.getHeight(), height));
-                    thumbnail.setImageDrawable(null);
-                } else {
-                    thumbnail.setImageDrawable(null);
-                    thumbnail.setMinimumHeight(thumbnail.getWidth());
-                }
+                thumbnail.setImageDrawable(null);
             };
         } else if (mMode == TabListMode.STRIP) {
             mAdapter.registerType(UiType.STRIP, parent -> {
@@ -282,7 +269,7 @@ public class TabListCoordinator
 
         if (mMode == TabListMode.GRID) {
             mGlobalLayoutListener = this::updateThumbnailLocation;
-            if (TabUiFeatureUtilities.isTabletGridTabSwitcherEnabled(mContext)) {
+            if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
                 mListLayoutListener = (view, left, top, right, bottom, oldLeft, oldTop, oldRight,
                         oldBottom) -> updateGridCardLayout(right - left);
             }

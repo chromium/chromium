@@ -106,11 +106,6 @@ struct GPU_EXPORT GpuPreferences {
   // Enables support for outputting NV12 video frames. Windows only.
   bool enable_nv12_dxgi_video = false;
 
-  // Enables MediaFoundationVideoEncoderAccelerator on Windows 7. Windows 7 does
-  // not support some of the attributes which may impact the performance or the
-  // quality of output. So this flag is disabled by default. Windows only.
-  bool enable_media_foundation_vea_on_windows7 = false;
-
   // Disables the use of a 3D software rasterizer, for example, SwiftShader.
   bool disable_software_rasterizer = false;
 
@@ -292,6 +287,10 @@ struct GPU_EXPORT GpuPreferences {
 
   // Disables oppr debug crash dumps.
   bool disable_oopr_debug_crash_dump = false;
+
+  // Forces the use of a separate EGL display for WebGL contexts even when one
+  // GPU is used.
+  bool force_separate_egl_display_for_webgl_testing = false;
 
   // Please update gpu_preferences_unittest.cc when making additions or
   // changes to this struct.

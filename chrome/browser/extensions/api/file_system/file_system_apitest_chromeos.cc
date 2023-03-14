@@ -174,18 +174,14 @@ class FileSystemApiTestForDrive : public PlatformAppBrowserTest {
     CHECK(base::CreateDirectory(root));
 
     std::string data = "Can you see me?";
-    CHECK(base::WriteFile(root.Append("open_existing.txt"), data.data(),
-                          data.size()));
-    CHECK(base::WriteFile(root.Append("open_existing1.txt"), data.data(),
-                          data.size()));
-    CHECK(base::WriteFile(root.Append("open_existing2.txt"), data.data(),
-                          data.size()));
-    CHECK(base::WriteFile(root.Append("save_existing.txt"), data.data(),
-                          data.size()));
+    CHECK(base::WriteFile(root.Append("open_existing.txt"), data));
+    CHECK(base::WriteFile(root.Append("open_existing1.txt"), data));
+    CHECK(base::WriteFile(root.Append("open_existing2.txt"), data));
+    CHECK(base::WriteFile(root.Append("save_existing.txt"), data));
 
     CHECK(base::CreateDirectory(root.Append("subdir")));
     CHECK(base::WriteFile(root.Append("subdir").Append("open_existing.txt"),
-                          data.data(), data.size()));
+                          data));
   }
 
   base::ScopedTempDir test_cache_root_;

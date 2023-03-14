@@ -66,12 +66,7 @@ class FakeWebFrame : public WebFrame {
 
   virtual void set_force_timeout(bool force_timeout) = 0;
 
-  // Sets return value `can_call_function_` of CanCallJavaScriptFunction(),
-  // which defaults to true.
-  virtual void set_can_call_function(bool can_call_function) = 0;
-
-  // Sets a callback to be called at the start of `CallJavaScriptFunction()` if
-  // `CanCallJavaScriptFunction()` returns true.
+  // Sets a callback to be called at the start of `CallJavaScriptFunction()`.
   virtual void set_call_java_script_function_callback(
       base::RepeatingClosure callback) = 0;
 };

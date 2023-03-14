@@ -425,7 +425,9 @@ TEST_F(SandboxedZipAnalyzerTest, CanDeleteDuringExecution) {
 
   FakeFileUtilService service(remote.InitWithNewPipeAndPassReceiver());
   EXPECT_CALL(service.GetSafeArchiveAnalyzer(), AnalyzeZipFile(_, _, _))
-      .WillOnce([&](base::File zip_file, base::File temporary_file,
+      .WillOnce([&](base::File zip_file,
+                    mojo::PendingRemote<chrome::mojom::TemporaryFileGetter>
+                        temp_file_getter,
                     chrome::mojom::SafeArchiveAnalyzer::AnalyzeZipFileCallback
                         callback) {
         EXPECT_TRUE(base::DeleteFile(temp_path));

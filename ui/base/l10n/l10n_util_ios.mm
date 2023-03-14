@@ -19,6 +19,10 @@ namespace l10n_util {
 namespace {
 
 // Class used to implement a per thread cache of the NSLocale.
+// TODO(http://www.openradar.me/39659413): It would be nice to simplify most of
+// this class to a simple `thread_local NSLocale*`, but that causes Clang to
+// emit "error: thread-local variable has non-trivial ownership: type is
+// 'NSLocale *__strong'".
 class LocaleCache {
  public:
   static NSLocale* LocaleForIdentifier(NSString* identifier) {

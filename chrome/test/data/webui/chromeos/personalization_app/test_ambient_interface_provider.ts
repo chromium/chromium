@@ -47,7 +47,7 @@ export class TestAmbientProvider extends TestBrowserProxy implements
     },
   ];
 
-  public googlePhotosAlbumsPreviews: Url[] = [
+  public previews: Url[] = [
     {url: 'http://preview0'},
     {url: 'http://preview1'},
     {url: 'http://preview2'},
@@ -92,8 +92,7 @@ export class TestAmbientProvider extends TestBrowserProxy implements
     this.ambientObserverRemote!.onTopicSourceChanged(TopicSource.kArtGallery);
     this.ambientObserverRemote!.onTemperatureUnitChanged(
         TemperatureUnit.kFahrenheit);
-    this.ambientObserverRemote!.onGooglePhotosAlbumsPreviewsFetched(
-        this.googlePhotosAlbumsPreviews);
+    this.ambientObserverRemote!.onPreviewsFetched(this.previews);
   }
 
   setAmbientModeEnabled(ambientModeEnabled: boolean) {

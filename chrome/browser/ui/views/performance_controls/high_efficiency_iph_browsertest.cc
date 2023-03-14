@@ -32,9 +32,10 @@ class HighEfficiencyHelpPromoTest : public InProcessBrowserTest {
   ~HighEfficiencyHelpPromoTest() override = default;
 
   void SetUp() override {
-    iph_features_.InitAndEnableFeatures(
-        {feature_engagement::kIPHHighEfficiencyModeFeature,
-         performance_manager::features::kHighEfficiencyModeAvailable});
+    iph_features_.InitAndEnableFeaturesWithParameters(
+        {{feature_engagement::kIPHHighEfficiencyModeFeature, {}},
+         {performance_manager::features::kHighEfficiencyModeAvailable,
+          {{"default_state", "false"}}}});
 
     InProcessBrowserTest::SetUp();
   }
@@ -97,13 +98,12 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyHelpPromoTest, ShowPromoOnTabThreshold) {
 // Confirm that High Efficiency mode is enabled when the custom action
 // button for high efficiency mode is clicked
 IN_PROC_BROWSER_TEST_F(HighEfficiencyHelpPromoTest, PromoCustomActionClicked) {
-  PrefService* prefs = g_browser_process->local_state();
-  EXPECT_TRUE(prefs
-                  ->FindPreference(performance_manager::user_tuning::prefs::
-                                       kHighEfficiencyModeEnabled)
-                  ->IsDefaultValue());
-  EXPECT_FALSE(prefs->GetBoolean(
-      performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled));
+  EXPECT_TRUE(performance_manager::user_tuning::UserPerformanceTuningManager::
+                  GetInstance()
+                      ->IsHighEfficiencyModeDefault());
+  EXPECT_FALSE(performance_manager::user_tuning::UserPerformanceTuningManager::
+                   GetInstance()
+                       ->IsHighEfficiencyModeActive());
 
   TriggerHighEfficiencyPromo();
 
@@ -114,12 +114,12 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyHelpPromoTest, PromoCustomActionClicked) {
   auto* custom_action_button = promo_bubble->GetDefaultButtonForTesting();
   PressButton(custom_action_button);
 
-  EXPECT_FALSE(prefs
-                   ->FindPreference(performance_manager::user_tuning::prefs::
-                                        kHighEfficiencyModeEnabled)
-                   ->IsDefaultValue());
-  EXPECT_TRUE(prefs->GetBoolean(
-      performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled));
+  EXPECT_FALSE(performance_manager::user_tuning::UserPerformanceTuningManager::
+                   GetInstance()
+                       ->IsHighEfficiencyModeDefault());
+  EXPECT_TRUE(performance_manager::user_tuning::UserPerformanceTuningManager::
+                  GetInstance()
+                      ->IsHighEfficiencyModeActive());
 }
 
 // Check that the performance menu item is alerted when the high efficiency

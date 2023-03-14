@@ -32,6 +32,8 @@ class CORE_EXPORT MediaValuesDynamic : public MediaValues {
   mojom::blink::PointerType PrimaryPointerType() const override;
   int AvailablePointerTypes() const override;
   mojom::blink::HoverType PrimaryHoverType() const override;
+  mojom::blink::OutputDeviceUpdateAbilityType OutputDeviceUpdateAbilityType()
+      const override;
   int AvailableHoverTypes() const override;
   bool ThreeDEnabled() const override;
   bool StrictMode() const override;

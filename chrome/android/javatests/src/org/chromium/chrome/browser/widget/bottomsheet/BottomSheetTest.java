@@ -7,14 +7,15 @@ package org.chromium.chrome.browser.widget.bottomsheet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.chrome.browser.flags.ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
+
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.test.filters.MediumTest;
 
@@ -23,7 +24,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.Callback;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
@@ -32,13 +32,12 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.ContentPriority;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.TestBottomSheetContent;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
@@ -267,44 +266,48 @@ public class BottomSheetTest {
 
     @Test
     @MediumTest
-    public void testOffsetController() {
-        mLowPriorityContent.setContentControlsOffset(true);
+    public void testWrapContentHeightChange() throws ExecutionException, TimeoutException {
+        final int startingHeight = 300;
+        final int endingHeight = 400;
 
-        BottomSheetObserver forbidStateChanges = new EmptyBottomSheetObserver() {
-            @Override
-            public void onSheetOpened(@StateChangeReason int reason) {
-                fail("onSheetOpened unexpected");
-            }
-
-            @Override
-            public void onSheetClosed(@StateChangeReason int reason) {
-                fail("onSheetClosed unexpected");
-            }
-        };
         runOnUiThreadBlocking(() -> {
-            assertTrue(mSheetController.requestShowContent(mLowPriorityContent, false));
+            // Set up content view.
+            final ViewGroup contentView = new FrameLayout(mTestRule.getActivity());
+            View child = new View(mTestRule.getActivity());
+            child.setLayoutParams(new ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, startingHeight));
+            contentView.addView(child);
 
-            Callback<Integer> offsetController = mLowPriorityContent.getOffsetController();
-            assertNotNull(offsetController);
+            // Set up bottom sheet.
+            TestBottomSheetContent sizeChangingContent = new TestBottomSheetContent(
+                    mTestRule.getActivity(), ContentPriority.HIGH, false, contentView);
+            sizeChangingContent.setFullHeightRatio(HeightMode.WRAP_CONTENT);
+            sizeChangingContent.setHalfHeightRatio(HeightMode.DISABLED);
+            sizeChangingContent.setPeekHeight(HeightMode.DISABLED);
 
-            mSheetController.addObserver(forbidStateChanges);
-
-            int startOffset = mSheetController.getCurrentOffset();
-            int modifiedOffset = startOffset / 2;
-            offsetController.onResult(modifiedOffset);
-            assertEquals(modifiedOffset, mSheetController.getCurrentOffset());
-
-            offsetController.onResult(0);
-            assertEquals(0, mSheetController.getCurrentOffset());
-
-            offsetController.onResult(startOffset);
-            assertEquals(startOffset, mSheetController.getCurrentOffset());
-
-            mSheetController.removeObserver(forbidStateChanges);
-
-            mSheetController.hideContent(mLowPriorityContent, false);
-            assertNull(mLowPriorityContent.getOffsetController());
+            // Show content view in bottom sheet.
+            mSheetController.requestShowContent(sizeChangingContent, false);
         });
+
+        BottomSheetTestSupport.waitForState(mSheetController, SheetState.FULL);
+        assertEquals(startingHeight, mSheetController.getCurrentOffset());
+
+        // Change the size of the content to make sure the sheet's height reflects the change.
+        runOnUiThreadBlocking(() -> {
+            ViewGroup contentView =
+                    (ViewGroup) mSheetController.getCurrentSheetContent().getContentView();
+            View child = contentView.getChildAt(0);
+            ViewGroup.LayoutParams params = (ViewGroup.LayoutParams) child.getLayoutParams();
+            params.height = endingHeight;
+            child.setLayoutParams(params);
+        });
+        // Expect SCROLLING state to be reached to the animation caused by the height change.
+        BottomSheetTestSupport.waitForState(mSheetController, SheetState.SCROLLING);
+
+        // The bottom sheet should reach FULL state again after the animation is finished.
+        BottomSheetTestSupport.waitForState(mSheetController, SheetState.FULL);
+
+        assertEquals(endingHeight, mSheetController.getCurrentOffset());
     }
 
     private void hideSheet() {

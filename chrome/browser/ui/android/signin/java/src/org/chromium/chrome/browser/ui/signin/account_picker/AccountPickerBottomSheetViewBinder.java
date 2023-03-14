@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.ui.signin.account_picker;
 
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
-import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator.EntryPoint;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetProperties.ViewState;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -35,11 +34,11 @@ class AccountPickerBottomSheetViewBinder {
         } else if (propertyKey == AccountPickerBottomSheetProperties.ON_DISMISS_CLICKED) {
             view.getDismissButton().setOnClickListener(
                     model.get(AccountPickerBottomSheetProperties.ON_DISMISS_CLICKED));
-        } else if (propertyKey == AccountPickerBottomSheetProperties.ENTRY_POINT) {
-            if (model.get(AccountPickerBottomSheetProperties.ENTRY_POINT)
-                    == EntryPoint.SEND_TAB_TO_SELF) {
-                view.setSendTabToSelfHeaderAndDismissButtonText();
-            }
+        } else if (propertyKey == AccountPickerBottomSheetProperties.BOTTOM_SHEET_STRINGS) {
+            AccountPickerBottomSheetStrings bottomSheetStrings =
+                    model.get(AccountPickerBottomSheetProperties.BOTTOM_SHEET_STRINGS);
+            view.setBottomSheetStrings(bottomSheetStrings.getTitle(),
+                    bottomSheetStrings.getSubtitle(), bottomSheetStrings.getCancelButton());
         }
     }
 

@@ -135,7 +135,7 @@ public class ChromeTransitionDrawableTest {
     }
 
     @Test
-    public void testResetTransition() {
+    public void testFinishTransition_toInitial() {
         mTransitionDrawable.startTransition();
         assertEquals(255, mInitialDrawableAlpha);
         assertEquals(0, mFinalDrawableAlpha);
@@ -145,10 +145,27 @@ public class ChromeTransitionDrawableTest {
         }
 
         assertEquals(255 - mFinalDrawableAlpha, mInitialDrawableAlpha);
-        mTransitionDrawable.resetTransition();
+        mTransitionDrawable.finishTransition(false);
 
         assertEquals(255, mInitialDrawableAlpha);
         assertEquals(0, mFinalDrawableAlpha);
+    }
+
+    @Test
+    public void testFinishTransition_toFinal() {
+        mTransitionDrawable.startTransition();
+        assertEquals(255, mInitialDrawableAlpha);
+        assertEquals(0, mFinalDrawableAlpha);
+
+        while (mFinalDrawableAlpha < 120) {
+            ShadowLooper.runMainLooperOneTask();
+        }
+
+        assertEquals(255 - mFinalDrawableAlpha, mInitialDrawableAlpha);
+        mTransitionDrawable.finishTransition(true);
+
+        assertEquals(255, mFinalDrawableAlpha);
+        assertEquals(0, mInitialDrawableAlpha);
     }
 
     @Test

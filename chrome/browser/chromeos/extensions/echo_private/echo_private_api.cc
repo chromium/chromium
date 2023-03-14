@@ -4,7 +4,6 @@
 
 #include "chrome/browser/chromeos/extensions/echo_private/echo_private_api.h"
 
-#include <memory>
 #include <string>
 #include <utility>
 
@@ -85,7 +84,7 @@ EchoPrivateGetRegistrationCodeFunction::
 
 ExtensionFunction::ResponseAction
 EchoPrivateGetRegistrationCodeFunction::Run() {
-  std::unique_ptr<echo_api::GetRegistrationCode::Params> params =
+  absl::optional<echo_api::GetRegistrationCode::Params> params =
       echo_api::GetRegistrationCode::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -136,7 +135,7 @@ EchoPrivateSetOfferInfoFunction::EchoPrivateSetOfferInfoFunction() {}
 EchoPrivateSetOfferInfoFunction::~EchoPrivateSetOfferInfoFunction() {}
 
 ExtensionFunction::ResponseAction EchoPrivateSetOfferInfoFunction::Run() {
-  std::unique_ptr<echo_api::SetOfferInfo::Params> params =
+  absl::optional<echo_api::SetOfferInfo::Params> params =
       echo_api::SetOfferInfo::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -155,7 +154,7 @@ EchoPrivateGetOfferInfoFunction::EchoPrivateGetOfferInfoFunction() {}
 EchoPrivateGetOfferInfoFunction::~EchoPrivateGetOfferInfoFunction() {}
 
 ExtensionFunction::ResponseAction EchoPrivateGetOfferInfoFunction::Run() {
-  std::unique_ptr<echo_api::GetOfferInfo::Params> params =
+  absl::optional<echo_api::GetOfferInfo::Params> params =
       echo_api::GetOfferInfo::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -216,7 +215,7 @@ EchoPrivateGetUserConsentFunction::~EchoPrivateGetUserConsentFunction() =
     default;
 
 ExtensionFunction::ResponseAction EchoPrivateGetUserConsentFunction::Run() {
-  std::unique_ptr<echo_api::GetUserConsent::Params> params =
+  absl::optional<echo_api::GetUserConsent::Params> params =
       echo_api::GetUserConsent::Params::Create(args());
 
   // Verify that the passed origin URL is valid.

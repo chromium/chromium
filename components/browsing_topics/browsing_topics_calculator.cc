@@ -4,11 +4,10 @@
 
 #include "components/browsing_topics/browsing_topics_calculator.h"
 
-#include <algorithm>
-
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/browsing_topics/util.h"
 #include "components/history/core/browser/history_service.h"
@@ -259,7 +258,8 @@ void BrowsingTopicsCalculator::DeriveTopTopics(
 
   // Get the top up to `kBrowsingTopicsNumberOfTopTopicsPerEpoch` topics,
   // sorted by decreasing count.
-  std::vector<std::pair<Topic, size_t>> top_topics_count(std::min(
+  using TopicsCountValue = std::pair<Topic, size_t>;
+  std::vector<TopicsCountValue> top_topics_count(std::min(
       static_cast<size_t>(
           blink::features::kBrowsingTopicsNumberOfTopTopicsPerEpoch.Get()),
       topics_count.size()));
@@ -269,9 +269,8 @@ void BrowsingTopicsCalculator::DeriveTopTopics(
       top_topics_count.end(),
       [](auto& left, auto& right) { return left.second > right.second; });
 
-  std::transform(top_topics_count.begin(), top_topics_count.end(),
-                 std::back_inserter(top_topics),
-                 [](auto& topic_count) { return topic_count.first; });
+  base::ranges::transform(top_topics_count, std::back_inserter(top_topics),
+                          &TopicsCountValue::first);
 
   padded_top_topics_start_index = top_topics.size();
 
@@ -445,6 +444,9 @@ void BrowsingTopicsCalculator::OnGetTopicsForHostsCompleted(
   // For each top topic, derive the context domains that observed it
   std::vector<TopicAndDomains> top_topics_and_observing_domains;
 
+  const std::map<Topic, std::vector<Topic>> parent_to_child_topic_map =
+      GetParentToChildTopicMap();
+
   for (const Topic& topic : top_topics) {
     if (!privacy_sandbox_settings_->IsTopicAllowed(
             privacy_sandbox::CanonicalTopic(
@@ -457,6 +459,18 @@ void BrowsingTopicsCalculator::OnGetTopicsForHostsCompleted(
     std::set<HashedDomain> topic_observation_domains =
         GetTopicObservationDomains(topic, topic_hosts_map,
                                    host_context_domains_map_);
+
+    // Calculate descendant topics + their observing context domains
+    std::set<Topic> descendant_topics =
+        GetDescendantTopics(topic, parent_to_child_topic_map);
+    for (const Topic& descendant_topic : descendant_topics) {
+      std::set<HashedDomain> descendant_topic_observation_domains =
+          GetTopicObservationDomains(descendant_topic, topic_hosts_map,
+                                     host_context_domains_map_);
+      topic_observation_domains.insert(
+          descendant_topic_observation_domains.begin(),
+          descendant_topic_observation_domains.end());
+    }
 
     base::UmaHistogramCounts1000(
         "BrowsingTopics.EpochTopicsCalculation."

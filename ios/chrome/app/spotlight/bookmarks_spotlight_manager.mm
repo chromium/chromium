@@ -326,12 +326,10 @@ initWithLargeIconService:(favicon::LargeIconService*)largeIconService
       }
       return;
     }
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [weakSelf completedClearAllSpotlightItems];
-      if (completionHandler) {
-        completionHandler(nil);
-      }
-    });
+    [weakSelf completedClearAllSpotlightItems];
+    if (completionHandler) {
+      completionHandler(nil);
+    }
   }];
 }
 

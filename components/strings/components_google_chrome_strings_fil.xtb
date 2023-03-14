@@ -40,4 +40,6 @@
 <translation id="8187289872471304532">Pumunta sa
           Applications &gt; System Preferences &gt; Network &gt; Advanced &gt; Proxies
           at alisin sa pagkakapili ang anumang mga napiling proxy.</translation>
+<translation id="8232971017369963250">Nagiging posible ang Chrome sa pamamagitan ng <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> open source project.</translation>
+<translation id="8279509328145658601">Nagiging posible rin ang Chrome sa pamamagitan ng iba pang <ph name="BEGIN_LINK_OSS" />open source na software<ph name="END_LINK_OSS" />.</translation>
 </translationbundle>

@@ -253,6 +253,19 @@ void BruschettaPolicyHandler::ApplyPolicySettings(
       pref_config.Set(prefs::kPolicyVTPMKey, std::move(pref_vtpm));
     }
 
+    {
+      base::Value::List pref_oem_strings;
+
+      const auto* oem_strings = config.FindList(prefs::kPolicyOEMStringsKey);
+      if (oem_strings) {
+        for (const auto& oem_string : *oem_strings) {
+          pref_oem_strings.Append(oem_string.GetString());
+        }
+      }
+
+      pref_config.Set(prefs::kPolicyOEMStringsKey, std::move(pref_oem_strings));
+    }
+
     pref.Set(id, std::move(pref_config));
   }
 

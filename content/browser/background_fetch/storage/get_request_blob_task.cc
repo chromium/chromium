@@ -79,14 +79,8 @@ void GetRequestBlobTask::DidMatchRequest(
 
 void GetRequestBlobTask::FinishWithError(
     blink::mojom::BackgroundFetchError error) {
-  ReportStorageError();
-
   std::move(callback_).Run(error, std::move(blob_));
   Finished();
-}
-
-std::string GetRequestBlobTask::HistogramName() const {
-  return "GetRequestBlobTask";
 }
 
 }  // namespace background_fetch

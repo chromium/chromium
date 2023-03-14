@@ -402,13 +402,14 @@ class CORE_EXPORT NGGridSizingTrackCollection final
 
   void BuildSets(const ComputedStyle& grid_style,
                  LayoutUnit grid_available_size);
-  void InitializeSets(LayoutUnit grid_available_size = kIndefiniteSize);
+  void InitializeSets(LayoutUnit grid_available_size = kIndefiniteSize,
+                      LayoutUnit gutter_size = LayoutUnit());
   void SetIndefiniteGrowthLimitsToBaseSize();
 
   // Caches the geometry of definite sets; this is useful when building the sets
   // of a subgrid since we need to determine whether its available size (i.e.,
   // the grid area it spans on its parent grid) is definite or not.
-  void CacheDefiniteSetsGeometry(LayoutUnit grid_available_size);
+  void CacheDefiniteSetsGeometry();
   // Caches the geometry of the initialized sets' growth limit if they're
   // definite; this will be used to measure grid item contributions.
   void CacheInitializedSetsGeometry(LayoutUnit first_set_offset);
@@ -419,8 +420,6 @@ class CORE_EXPORT NGGridSizingTrackCollection final
   void ResetBaselines();
   void SetMajorBaseline(wtf_size_t set_index, LayoutUnit candidate_baseline);
   void SetMinorBaseline(wtf_size_t set_index, LayoutUnit candidate_baseline);
-
-  void SetGutterSize(LayoutUnit gutter_size) { gutter_size_ = gutter_size; }
 
  private:
   friend class NGGridLayoutAlgorithmTest;

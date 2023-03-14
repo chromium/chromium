@@ -39,6 +39,12 @@ struct ExecutableMetadata {
   // Version of this executable.
   absl::optional<std::string> version = absl::nullopt;
 
+  // Is true if the OS has verified the signing certificate.
+  bool is_os_verified = false;
+
+  // The subject name of the signing certificate.
+  absl::optional<std::string> subject_name = absl::nullopt;
+
   bool operator==(const ExecutableMetadata& other) const;
 };
 

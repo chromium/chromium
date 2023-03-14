@@ -30,6 +30,7 @@ generate_grd("build_grd") {
     "css:build_grdp",
     "images:build_grdp",
     "js:build_grdp",
+    "mojo:build_grdp",
     "//third_party/jstemplate:build_grdp",
   ]
   grdp_files = [
@@ -38,6 +39,7 @@ generate_grd("build_grd") {
     "$target_gen_dir/css/resources.grdp",
     "$target_gen_dir/images/resources.grdp",
     "$target_gen_dir/js/resources.grdp",
+    "$target_gen_dir/mojo/resources.grdp",
   ]
 
   if (include_polymer) {
@@ -91,15 +93,13 @@ generate_grd("build_grd") {
   if (is_chromeos_ash) {
     public_deps += [
       ":build_cros_styles_grdp",
-      "//ash/webui/common/resources:build_grdp",
-      "//ash/webui/common/resources:build_html_css_wrapper_files_grdp",
-      "//third_party/material_web_components:build_grdp",
+      "//third_party/material_web_components:build_lit_grdp",
+      "//third_party/material_web_components:build_mwc_grdp",
       "//third_party/web-animations-js:build_grdp",
     ]
     grdp_files += [
-      "$root_gen_dir/ash/webui/common/resources/ash_common_resources.grdp",
-      "$root_gen_dir/ash/webui/common/resources/html_css_wrapper_files_resources.grdp",
-      "$root_gen_dir/third_party/material_web_components/material_web_components_resources.grdp",
+      "$root_gen_dir/third_party/material_web_components/lit_resources.grdp",
+      "$root_gen_dir/third_party/material_web_components/mwc_resources.grdp",
       "$root_gen_dir/third_party/web-animations-js/web_animations_resources.grdp",
       "$target_gen_dir/cros_styles_resources.grdp",
     ]
@@ -108,11 +108,13 @@ generate_grd("build_grd") {
   if (!is_android && !is_ios) {
     public_deps += [
       "cr_components/color_change_listener:build_grdp",
+      "cr_components/image_service:build_grdp",
       "//third_party/lottie:build_grdp",
     ]
     grdp_files += [
       "$root_gen_dir/third_party/lottie/resources.grdp",
       "$root_gen_dir/ui/webui/resources/cr_components/color_change_listener/resources.grdp",
+      "$root_gen_dir/ui/webui/resources/cr_components/image_service/resources.grdp",
     ]
   }
 }

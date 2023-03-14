@@ -30,6 +30,7 @@
 
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
@@ -281,11 +282,10 @@ V8PerIsolateData::FindOrCreateEternalNameCache(
     v8::Isolate* isolate = GetIsolate();
     Vector<v8::Eternal<v8::Name>> new_vector(
         base::checked_cast<wtf_size_t>(names.size()));
-    std::transform(names.begin(), names.end(), new_vector.begin(),
-                   [isolate](const char* name) {
-                     return v8::Eternal<v8::Name>(
-                         isolate, V8AtomicString(isolate, name));
-                   });
+    base::ranges::transform(
+        names, new_vector.begin(), [isolate](const char* name) {
+          return v8::Eternal<v8::Name>(isolate, V8AtomicString(isolate, name));
+        });
     vector = &eternal_name_cache_.Set(lookup_key, std::move(new_vector))
                   .stored_value->value;
   } else {

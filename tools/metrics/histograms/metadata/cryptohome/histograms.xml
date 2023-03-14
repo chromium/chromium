@@ -101,7 +101,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.DircryptoMigrationEndStatus"
-    enum="DircryptoMigrationEndStatus" expires_after="2020-03-01">
+    enum="CrOSFileSystemMigrationEndStatus" expires_after="2020-03-01">
   <owner>dspaid@chromium.org</owner>
   <summary>
     The status of the user home directory migration from ecryptfs to
@@ -172,7 +172,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.DircryptoMigrationStartStatus"
-    enum="DircryptoMigrationStartStatus" expires_after="M81">
+    enum="CrOSFileSystemMigrationStartStatus" expires_after="M81">
   <owner>dspaid@chromium.org</owner>
   <summary>
     The status of the user home directory migration from ecryptfs to
@@ -200,7 +200,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.DircryptoMinimalMigrationEndStatus"
-    enum="DircryptoMigrationEndStatus" expires_after="M77">
+    enum="CrOSFileSystemMigrationEndStatus" expires_after="M77">
   <owner>dspaid@chromium.org</owner>
   <owner>pmarko@chromium.org</owner>
   <summary>
@@ -210,7 +210,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.DircryptoMinimalMigrationStartStatus"
-    enum="DircryptoMigrationStartStatus" expires_after="M77">
+    enum="CrOSFileSystemMigrationStartStatus" expires_after="M77">
   <owner>dspaid@chromium.org</owner>
   <owner>pmarko@chromium.org</owner>
   <summary>
@@ -266,7 +266,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.Error.DevUnexpectedState"
-    enum="CryptohomeErrorLocation" expires_after="2023-07-02">
+    enum="CryptohomeErrorLocation" expires_after="2023-09-03">
   <owner>zuan@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -295,7 +295,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.Error.HashedStack" enum="CryptohomeErrorHashed"
-    expires_after="2023-07-02">
+    expires_after="2023-09-03">
   <owner>zuan@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -322,7 +322,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.Error.LeafErrorWithoutTPM"
-    enum="CryptohomeErrorLocation" expires_after="2023-07-02">
+    enum="CryptohomeErrorLocation" expires_after="2023-09-03">
   <owner>zuan@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -350,7 +350,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.Error.LeafErrorWithTPM"
-    enum="CryptohomeErrorLocationWithTPMError" expires_after="2023-07-02">
+    enum="CryptohomeErrorLocationWithTPMError" expires_after="2023-09-03">
   <owner>zuan@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -450,7 +450,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.HomedirEncryptionType" enum="HomedirEncryptionType"
-    expires_after="2023-06-25">
+    expires_after="2023-08-27">
   <owner>dspaid@chromium.org</owner>
   <summary>
     The encryption type used for a user's cryptohome directory. This is logged
@@ -550,6 +550,16 @@ chromium-metrics-reviews@google.com.
     <variant name="AddKeyResetSeedGeneration"
         summary="Reset seed generated during Add Key operation"/>
   </token>
+</histogram>
+
+<histogram name="Cryptohome.LoginDiskCleanupAvailableSpace" units="MiB"
+    expires_after="2023-12-01">
+  <owner>vsavu@google.com</owner>
+  <owner>chromeos-disk-cleanup@google.com</owner>
+  <summary>
+    Records the amount of free space available (in MiB) on a device before login
+    cleanup is executed. Only recorded when login disk cleanup can run.
+  </summary>
 </histogram>
 
 <histogram name="Cryptohome.LoginDiskCleanupProgress"
@@ -874,7 +884,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToUSSLoadPersisted" units="ms"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>thomascedeno@google.com</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -909,7 +919,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.UssExperiment.FetchUssExperimentConfigRetries"
-    units="retries" expires_after="2023-07-02">
+    units="retries" expires_after="2023-09-03">
   <owner>hcyang@google.com</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -922,7 +932,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.UssExperiment.FetchUssExperimentConfigStatus"
-    enum="CryptohomeFetchUssExperimentConfigStatus" expires_after="2023-07-02">
+    enum="CryptohomeFetchUssExperimentConfigStatus" expires_after="2023-09-03">
   <owner>hcyang@google.com</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -935,7 +945,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.UssExperiment.UssExperimentFlag"
-    enum="CryptohomeUssExperimentFlag" expires_after="2023-07-02">
+    enum="CryptohomeUssExperimentFlag" expires_after="2023-09-03">
   <owner>hcyang@google.com</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -1004,7 +1014,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.WrappingKeyDerivation.Mount"
-    enum="WrappingKeyDerivation" expires_after="2023-07-02">
+    enum="WrappingKeyDerivation" expires_after="2023-09-03">
   <owner>tnagel@chromium.org</owner>
   <owner>zauri@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>

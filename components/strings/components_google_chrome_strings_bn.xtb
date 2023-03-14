@@ -38,4 +38,6 @@
 <translation id="7230956101631259640">আপনি একটি নিরাপদ Chrome পৃষ্ঠা দেখছেন</translation>
 <translation id="8187289872471304532">Applications &gt; System Preferences &gt; Network &gt; Advanced &gt; Proxies এ যান
           এবং নির্বাচিত থাকা যে কোনো প্রক্সি অনির্বাচন করুন৷</translation>
+<translation id="8232971017369963250">এছাড়াও Chrome <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ওপেন সোর্স প্রোজেক্ট দ্বারা পরিচালিত।</translation>
+<translation id="8279509328145658601">এছাড়াও Chrome অন্য <ph name="BEGIN_LINK_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_OSS" /> দ্বারা পরিচালিত।</translation>
 </translationbundle>

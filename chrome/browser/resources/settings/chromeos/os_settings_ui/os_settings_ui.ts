@@ -269,10 +269,8 @@ class OsSettingsUiElement extends OsSettingsUiElementBase {
 
     document.documentElement.classList.remove('loading');
 
-    setTimeout(function() {
-      chrome.send(
-          'metricsHandler:recordTime',
-          ['Settings.TimeUntilInteractive', window.performance.now()]);
+    setTimeout(() => {
+      this.recordTimeUntilInteractive_();
     });
 
     // Preload bold Roboto so it doesn't load and flicker the first time used.
@@ -486,6 +484,12 @@ class OsSettingsUiElement extends OsSettingsUiElementBase {
    */
   private onDrawerIconClick_() {
     this.getDrawer_().cancel();
+  }
+
+  private recordTimeUntilInteractive_(): void {
+    const METRIC_NAME = 'ChromeOS.Settings.TimeUntilInteractive';
+    const timeMs = Math.round(window.performance.now());
+    chrome.metricsPrivate.recordTime(METRIC_NAME, timeMs);
   }
 }
 

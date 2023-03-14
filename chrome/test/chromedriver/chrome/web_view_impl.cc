@@ -6,12 +6,16 @@
 
 #include <stddef.h>
 #include <algorithm>
+#include <memory>
+#include <queue>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/guid.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -34,7 +38,6 @@
 #include "chrome/test/chromedriver/chrome/mobile_emulation_override_manager.h"
 #include "chrome/test/chromedriver/chrome/navigation_tracker.h"
 #include "chrome/test/chromedriver/chrome/network_conditions_override_manager.h"
-#include "chrome/test/chromedriver/chrome/non_blocking_navigation_tracker.h"
 #include "chrome/test/chromedriver/chrome/page_load_strategy.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/chrome/ui_events.h"
@@ -45,12 +48,69 @@
 namespace {
 
 const int kWaitForNavigationStopSeconds = 10;
+const char kElementKey[] = "ELEMENT";
+const char kElementKeyW3C[] = "element-6066-11e4-a52e-4f735466cecf";
+const char kShadowRootKey[] = "shadow-6066-11e4-a52e-4f735466cecf";
+const char kElementIdSeparator[] = "_element_";
+
+absl::optional<std::string> GetBackendNodeIdKey(
+    const base::Value::Dict& element,
+    bool w3c_compliant) {
+  if (element.contains(kShadowRootKey)) {
+    return kShadowRootKey;
+  }
+  if (w3c_compliant && element.contains(kElementKeyW3C)) {
+    return kElementKeyW3C;
+  }
+  if (!w3c_compliant && element.contains(kElementKey)) {
+    return kElementKey;
+  }
+  return absl::nullopt;
+}
+
+absl::optional<std::pair<std::string, int>> GetElementId(
+    const base::Value::Dict& element,
+    std::string key) {
+  const std::string* element_id = element.FindString(std::move(key));
+  if (element_id == nullptr) {
+    return absl::nullopt;
+  }
+  static const size_t separator_length = std::strlen(kElementIdSeparator);
+  const size_t separator_pos = element_id->rfind(
+      kElementIdSeparator, std::string::npos, separator_length);
+  if (separator_pos == std::string::npos) {
+    return absl::nullopt;
+  }
+
+  std::string backend_node_id_str =
+      element_id->substr(separator_pos + separator_length);
+  int backend_node_id;
+  if (!base::StringToInt(backend_node_id_str, &backend_node_id)) {
+    return absl::nullopt;
+  }
+
+  std::string loader_id = element_id->substr(0, separator_pos);
+
+  return std::make_pair(loader_id, backend_node_id);
+}
+
+absl::optional<std::pair<std::string, int>> GetElementId(
+    const base::Value::Dict& element,
+    bool w3c_compliant) {
+  absl::optional<std::string> key = GetBackendNodeIdKey(element, w3c_compliant);
+  if (!key) {
+    return absl::nullopt;
+  }
+
+  return GetElementId(element, std::move(*key));
+}
 
 Status GetContextIdForFrame(WebViewImpl* web_view,
                             const std::string& frame,
                             std::string* context_id) {
   DCHECK(context_id);
-  if (frame.empty() || frame == web_view->GetId()) {
+
+  if (frame.empty()) {
     context_id->clear();
     return Status(kOk);
   }
@@ -59,14 +119,6 @@ Status GetContextIdForFrame(WebViewImpl* web_view,
   if (status.IsError())
     return status;
   return Status(kOk);
-}
-
-WebViewImpl* GetTargetForFrame(WebViewImpl* web_view,
-                               const std::string& frame) {
-  return frame.empty()
-             ? web_view
-             : static_cast<WebViewImpl*>(
-                   web_view->GetFrameTracker()->GetTargetForFrame(frame));
 }
 
 const char* GetAsString(MouseEventType type) {
@@ -161,45 +213,37 @@ base::Value::Dict GenerateTouchPoint(const TouchEvent& event) {
   return point;
 }
 
-Status ReleaseRemoteObject(DevToolsClient* client,
-                           const std::string& object_id) {
-  // Release the remote object before doing anything else.
-  base::Value::Dict params;
-  params.Set("objectId", object_id);
-  Status release_status = client->SendCommand("Runtime.releaseObject", params);
-  if (release_status.IsError()) {
-    LOG(ERROR) << "Failed to release remote object: "
-               << release_status.message();
-  }
-  return release_status;
-}
-
-class RemoteObjectReleaseGuard {
+class ObjectGroup {
  public:
-  RemoteObjectReleaseGuard(DevToolsClient* client, std::string object_id)
-      : client_(client), object_id_(object_id) {}
+  explicit ObjectGroup(DevToolsClient* client)
+      : client_(client), object_group_name_(base::GenerateGUID()) {}
 
-  ~RemoteObjectReleaseGuard() { ReleaseRemoteObject(client_, object_id_); }
+  ~ObjectGroup() {
+    base::Value::Dict params;
+    params.Set("objectGroup", object_group_name_);
+    client_->SendCommandAndIgnoreResponse("Runtime.releaseObjectGroup", params);
+  }
+
+  const std::string& name() const { return object_group_name_; }
 
  private:
   raw_ptr<DevToolsClient> client_;
-  std::string object_id_;
+  std::string object_group_name_;
 };
 
 Status DescribeNode(DevToolsClient* client,
-                    const std::string& object_id,
+                    int backend_node_id,
                     int depth,
                     bool pierce,
                     base::Value* result_node) {
   DCHECK(result_node);
   base::Value::Dict params;
   base::Value::Dict cmd_result;
-  params.Set("objectId", object_id);
+  params.Set("backendNodeId", backend_node_id);
   params.Set("depth", depth);
   params.Set("pierce", pierce);
   Status status =
       client->SendCommandAndGetResult("DOM.describeNode", params, &cmd_result);
-
   if (status.IsError()) {
     return status;
   }
@@ -214,19 +258,20 @@ Status DescribeNode(DevToolsClient* client,
   return status;
 }
 
-Status GetFrameIdForObjectId(DevToolsClient* client,
-                             const std::string& object_id,
-                             bool* found_node,
-                             std::string* frame_id) {
+Status GetFrameIdForBackendNodeId(DevToolsClient* client,
+                                  int backend_node_id,
+                                  bool* found_node,
+                                  std::string* frame_id) {
   DCHECK(frame_id);
   DCHECK(found_node);
 
   Status status{kOk};
-  base::Value node;
-  status = DescribeNode(client, object_id, 0, false, &node);
 
-  if (status.IsError())
+  base::Value node;
+  status = DescribeNode(client, backend_node_id, 0, false, &node);
+  if (status.IsError()) {
     return status;
+  }
 
   std::string* maybe_frame_id = node.GetIfDict()->FindString("frameId");
   if (maybe_frame_id) {
@@ -304,7 +349,13 @@ WebViewImpl::WebViewImpl(const std::string& id,
   client_->SetOwner(this);
 }
 
-WebViewImpl::~WebViewImpl() {}
+WebViewImpl::~WebViewImpl() = default;
+
+WebViewImpl* WebViewImpl::GetTargetForFrame(const std::string& frame) {
+  return frame.empty() ? this
+                       : static_cast<WebViewImpl*>(
+                             GetFrameTracker()->GetTargetForFrame(frame));
+}
 
 bool WebViewImpl::IsServiceWorker() const {
   return is_service_worker_;
@@ -394,7 +445,7 @@ Status WebViewImpl::Load(const std::string& url, const Timeout* timeout) {
   base::Value::Dict params;
   params.Set("url", url);
   if (IsNonBlocking()) {
-    // With non-bloakcing navigation tracker, the previous navigation might
+    // With non-blocking navigation tracker, the previous navigation might
     // still be in progress, and this can cause the new navigate command to be
     // ignored on Chrome v63 and above. Stop previous navigation first.
     client_->SendCommand("Page.stopLoading", base::Value::Dict());
@@ -490,23 +541,254 @@ Status WebViewImpl::TraverseHistory(int delta, const Timeout* timeout) {
                                          timeout);
 }
 
-Status WebViewImpl::EvaluateScriptWithTimeout(
-    const std::string& frame,
-    const std::string& expression,
+Status WebViewImpl::GetLoaderId(const std::string& frame_id,
+                                std::string* loader_id,
+                                Timeout* timeout) {
+  Status status{kOk};
+
+  base::Value::Dict frame_tree_result;
+  status = client_->SendCommandAndGetResultWithTimeout(
+      "Page.getFrameTree", base::Value::Dict(), timeout, &frame_tree_result);
+  if (status.IsError()) {
+    return status;
+  }
+
+  base::Value::Dict* maybe_frame_tree = frame_tree_result.FindDict("frameTree");
+  if (!maybe_frame_tree) {
+    return Status{kUnknownError,
+                  "no frameTree in the response to Page.getFrameTree"};
+  }
+  std::queue<base::Value::Dict*> q;
+  for (q.push(maybe_frame_tree); !q.empty(); q.pop()) {
+    base::Value::Dict* frame_tree = q.front();
+    std::string* current_frame_id =
+        frame_tree->FindStringByDottedPath("frame.id");
+    if (!current_frame_id) {
+      return Status{
+          kUnknownError,
+          "no frame.id in one of the nodes of the Page.getFrameTree response"};
+    }
+    std::string* current_loader_id =
+        frame_tree->FindStringByDottedPath("frame.loaderId");
+    if (!current_loader_id) {
+      return Status{kUnknownError,
+                    "no frame.loaderId in one of the nodes of the "
+                    "Page.getFrameTree response"};
+    }
+
+    if (frame_id == *current_frame_id) {
+      *loader_id = std::move(*current_loader_id);
+      break;
+    }
+
+    base::Value::List* child_frames = frame_tree->FindList("childFrames");
+    if (!child_frames) {
+      continue;
+    }
+
+    for (base::Value& item : (*child_frames)) {
+      if (!item.is_dict()) {
+        return Status{kUnknownError,
+                      "child frame is not a dictionary in one of the nodes of "
+                      "the Page.getFrameTree response"};
+      }
+      q.push(item.GetIfDict());
+    }
+  }
+  return status;
+}
+
+Status WebViewImpl::CallFunctionWithTimeoutInternal(
+    std::string frame,
+    std::string function,
+    base::Value::List args,
     const base::TimeDelta& timeout,
-    const bool await_promise,
     std::unique_ptr<base::Value>* result) {
-  WebViewImpl* target = GetTargetForFrame(this, frame);
-  if (target != nullptr && target != this) {
-    if (target->IsDetached())
-      return Status(kTargetDetached);
-    WebViewImplHolder target_holder(target);
-    return target->EvaluateScriptWithTimeout(frame, expression, timeout,
-                                             await_promise, result);
+  Status status{kOk};
+
+  std::string frame_id = frame.empty() ? id_ : frame;
+
+  Timeout local_timeout(timeout);
+  std::string loader_id;
+
+  // The code below tries to detect if any navigation has happened during its
+  // execution. The navigation is detected if either loaderId or
+  // uniqueContextId has changed.
+
+  status = GetLoaderId(frame_id, &loader_id, &local_timeout);
+  if (status.IsError()) {
+    return status;
+  }
+  if (loader_id.empty()) {
+    // There is probably an ongoing navigation. Giving up.
+    return Status{kNoSuchExecutionContext,
+                  "no loaderId found for the current frame"};
   }
 
   std::string context_id;
-  Status status = GetContextIdForFrame(this, frame, &context_id);
+  // The context_id is obtained early and is used as a guard to detect
+  // navigation (possible if page_load_strategy=none).
+  status = GetFrameTracker()->GetContextIdForFrame(frame_id, &context_id);
+  if (status.IsError()) {
+    return status;
+  }
+
+  ObjectGroup object_group(client_.get());
+
+  base::Value::List nodes;
+  // Resolving the references in the execution context obtained earlier.
+  status =
+      ResolveElementReferences(&args, &nodes, context_id, object_group.name(),
+                               loader_id, w3c_compliant_);
+  // kNoSuchElement is handled in special way:
+  // If loader id has changed then the node was not resolved due to the
+  // navigation.
+  // Otherwise the user has sent us a node id that refers a non-existent node.
+  if (status.IsError() && status.code() != kNoSuchElement) {
+    return status;
+  }
+
+  std::string new_loader_id;
+  Status new_get_loader_id_status =
+      GetLoaderId(frame_id, &new_loader_id, &local_timeout);
+  if (new_get_loader_id_status.IsError()) {
+    return new_get_loader_id_status;
+  }
+  if (new_loader_id != loader_id) {
+    // A navigation has happened while resolving references. Giving up.
+    return Status{kNoSuchExecutionContext,
+                  "loader has changed while resolving nodes"};
+  }
+  // ResolveElementReferences returned kNoSuchElement.
+  // The loader did not change therefore the node indeed does not exist.
+  if (status.IsError()) {
+    return status;
+  }
+
+  std::string new_context_id;
+  status = GetFrameTracker()->GetContextIdForFrame(frame_id, &new_context_id);
+  if (status.IsError()) {
+    return status;
+  }
+  if (context_id != new_context_id) {
+    return Status{kNoSuchExecutionContext,
+                  "context has changed while resolving nodes"};
+  }
+
+  // All BackendNodeId's have been resolved in the same context and using the
+  // same loader. The remote call will succeed if the execution context does not
+  // change in the meand time. This is detected by the remote code implementing
+  // Runtime.callFunctionOn.
+
+  std::string json;
+  base::JSONWriter::Write(args, &json);
+  std::string w3c = w3c_compliant_ ? "true" : "false";
+  // TODO(zachconrad): Second null should be array of shadow host ids.
+  std::string wrapper_function = base::StringPrintf(
+      "function(){ return (%s).apply(null, [%s, %s, %s, arguments]); }",
+      kCallFunctionScript, function.c_str(), json.c_str(), w3c.c_str());
+
+  base::Value::Dict params;
+  params.Set("functionDeclaration", wrapper_function);
+  if (!context_id.empty()) {
+    params.Set("uniqueContextId", context_id);
+  }
+  params.Set("arguments", std::move(nodes));
+  params.Set("generateWebDriverValue", true);
+  params.Set("awaitPromise", true);
+  params.Set("objectGroup", object_group.name());
+  base::Value::Dict cmd_result;
+
+  status = client_->SendCommandAndGetResultWithTimeout(
+      "Runtime.callFunctionOn", params, &local_timeout, &cmd_result);
+  if (status.IsError()) {
+    return status;
+  }
+
+  if (cmd_result.contains("exceptionDetails")) {
+    std::string description = "unknown";
+    if (const std::string* maybe_description =
+            cmd_result.FindStringByDottedPath("result.description")) {
+      description = *maybe_description;
+    }
+    return Status(kUnknownError,
+                  "Runtime.callFunctionOn threw exception: " + description);
+  }
+
+  base::Value::List* maybe_received_list =
+      cmd_result.FindListByDottedPath("result.webDriverValue.value");
+  if (!maybe_received_list || maybe_received_list->empty()) {
+    return Status(kUnknownError,
+                  "result.webdriverValue.value list is missing or empty in "
+                  "Runtime.callFunctionOn response");
+  }
+  base::Value::List& received_list = *maybe_received_list;
+
+  if (!received_list[0].is_dict()) {
+    return Status(kUnknownError,
+                  "first element in result.webDriverValue.value list must be "
+                  "a dictionary");
+  }
+  std::string* serialized_value =
+      received_list[0].GetDict().FindString("value");
+  if (!serialized_value) {
+    return Status(kUnknownError,
+                  "first element in result.webDriverValue.value list must "
+                  "contain a string");
+  }
+  absl::optional<base::Value> maybe_call_result =
+      base::JSONReader::Read(*serialized_value, base::JSON_PARSE_RFC);
+  if (!maybe_call_result) {
+    return Status{kUnknownError,
+                  "cannot deserialize the result value received from "
+                  "Runtime.callFunctionOn"};
+  }
+  received_list.erase(received_list.begin());
+  if (!maybe_call_result->is_dict()) {
+    return Status{
+        kUnknownError,
+        "deserialized Runtime.callFunctionOn result is not a dictionary"};
+  }
+  base::Value::Dict& call_result = maybe_call_result->GetDict();
+
+  absl::optional<int> status_code = call_result.FindInt("status");
+  if (!status_code) {
+    return Status(kUnknownError, "call function result missing int 'status'");
+  }
+  if (*status_code != kOk) {
+    const std::string* message = call_result.FindString("value");
+    return Status(static_cast<StatusCode>(*status_code),
+                  message ? *message : "");
+  }
+  base::Value* call_result_value = call_result.Find("value");
+  if (call_result_value == nullptr) {
+    // Missing 'value' indicates the JavaScript code didn't return a value.
+    return Status(kOk);
+  }
+  status = CreateElementReferences(call_result_value, received_list, loader_id);
+  if (!status.IsOk()) {
+    return status;
+  }
+  *result = std::make_unique<base::Value>(std::move(*call_result_value));
+  return status;
+}
+
+Status WebViewImpl::EvaluateScript(const std::string& frame,
+                                   const std::string& expression,
+                                   const bool await_promise,
+                                   std::unique_ptr<base::Value>* result) {
+  WebViewImplHolder target_holder(this);
+  Status status{kOk};
+
+  WebViewImpl* target = GetTargetForFrame(frame);
+  if (target != nullptr && target != this) {
+    if (target->IsDetached())
+      return Status(kTargetDetached);
+    return target->EvaluateScript(frame, expression, await_promise, result);
+  }
+
+  std::string context_id;
+  status = GetContextIdForFrame(this, frame, &context_id);
   if (status.IsError())
     return status;
   // If the target associated with the current view or its ancestor is detached
@@ -514,17 +796,9 @@ Status WebViewImpl::EvaluateScriptWithTimeout(
   // because we are executing the code in its method.
   // Instead we lock the WebView with target holder and only label the view as
   // detached.
-  WebViewImplHolder target_holder(this);
+  const base::TimeDelta& timeout = base::TimeDelta::Max();
   return internal::EvaluateScriptAndGetValue(
       client_.get(), context_id, expression, timeout, await_promise, result);
-}
-
-Status WebViewImpl::EvaluateScript(const std::string& frame,
-                                   const std::string& expression,
-                                   const bool await_promise,
-                                   std::unique_ptr<base::Value>* result) {
-  return EvaluateScriptWithTimeout(frame, expression, base::TimeDelta::Max(),
-                                   await_promise, result);
 }
 
 Status WebViewImpl::CallFunctionWithTimeout(
@@ -533,22 +807,21 @@ Status WebViewImpl::CallFunctionWithTimeout(
     const base::Value::List& args,
     const base::TimeDelta& timeout,
     std::unique_ptr<base::Value>* result) {
-  std::string json;
-  base::JSONWriter::Write(args, &json);
-  std::string w3c = w3c_compliant_ ? "true" : "false";
-  // TODO(zachconrad): Second null should be array of shadow host ids.
-  std::string expression = base::StringPrintf(
-      "(%s).apply(null, [%s, %s, %s])",
-      kCallFunctionScript,
-      function.c_str(),
-      json.c_str(),
-      w3c.c_str());
-  std::unique_ptr<base::Value> temp_result;
-  Status status =
-      EvaluateScriptWithTimeout(frame, expression, timeout, true, &temp_result);
-  if (status.IsError())
-    return status;
-  return internal::ParseCallFunctionResult(*temp_result, result);
+  WebViewImplHolder target_holder(this);
+  Status status{kOk};
+
+  WebViewImpl* target = GetTargetForFrame(frame);
+  if (target != nullptr && target != this) {
+    if (target->IsDetached()) {
+      return Status(kTargetDetached);
+    }
+    WebViewImpl* target_impl = static_cast<WebViewImpl*>(target);
+    return target_impl->CallFunctionWithTimeout(frame, function, args, timeout,
+                                                result);
+  }
+
+  return CallFunctionWithTimeoutInternal(frame, std::move(function),
+                                         args.Clone(), timeout, result);
 }
 
 Status WebViewImpl::CallFunction(const std::string& frame,
@@ -556,6 +829,7 @@ Status WebViewImpl::CallFunction(const std::string& frame,
                                  const base::Value::List& args,
                                  std::unique_ptr<base::Value>* result) {
   // Timeout set to Max is treated as no timeout.
+
   return CallFunctionWithTimeout(frame, function, args, base::TimeDelta::Max(),
                                  result);
 }
@@ -574,12 +848,23 @@ Status WebViewImpl::CallUserSyncScript(const std::string& frame,
                                        const base::Value::List& args,
                                        const base::TimeDelta& timeout,
                                        std::unique_ptr<base::Value>* result) {
+  WebViewImplHolder target_holder(this);
+  Status status{kOk};
+
+  WebViewImpl* target = GetTargetForFrame(frame);
+  if (target != nullptr && target != this) {
+    if (target->IsDetached()) {
+      return Status(kTargetDetached);
+    }
+    return target->CallUserSyncScript(frame, script, args, timeout, result);
+  }
+
   base::Value::List sync_args;
   sync_args.Append(script);
-  // Clone needed since Append only accepts Value as an rvalue.
   sync_args.Append(args.Clone());
-  return CallFunctionWithTimeout(frame, kExecuteScriptScript, sync_args,
-                                 timeout, result);
+
+  return CallFunctionWithTimeoutInternal(frame, kExecuteScriptScript,
+                                         sync_args.Clone(), timeout, result);
 }
 
 Status WebViewImpl::CallUserAsyncFunction(
@@ -592,28 +877,42 @@ Status WebViewImpl::CallUserAsyncFunction(
       frame, function, args, true, timeout, result);
 }
 
+// TODO (crbug.com/chromedriver/4364): Simplify this function
 Status WebViewImpl::GetFrameByFunction(const std::string& frame,
                                        const std::string& function,
                                        const base::Value::List& args,
                                        std::string* out_frame) {
-  WebViewImpl* target = GetTargetForFrame(this, frame);
+  WebViewImplHolder target_holder(this);
+  Status status{kOk};
+
+  WebViewImpl* target = GetTargetForFrame(frame);
   if (target != nullptr && target != this) {
     if (target->IsDetached())
       return Status(kTargetDetached);
-    WebViewImplHolder target_holder(target);
     return target->GetFrameByFunction(frame, function, args, out_frame);
   }
 
-  std::string context_id;
-  Status status = GetContextIdForFrame(this, frame, &context_id);
-  if (status.IsError())
+  std::unique_ptr<base::Value> result;
+  status = CallFunctionWithTimeoutInternal(frame, function, args.Clone(),
+                                           base::TimeDelta::Max(), &result);
+
+  if (status.IsError()) {
     return status;
+  }
+
+  if (!result->is_dict()) {
+    return Status{kNoSuchFrame};
+  }
+
+  absl::optional<std::pair<std::string, int>> maybe_element_id =
+      GetElementId(result->GetDict(), w3c_compliant_);
+  if (!maybe_element_id) {
+    return Status{kNoSuchFrame, "invalid element id"};
+  }
+
   bool found_node = false;
-
-  status = internal::GetFrameIdFromFunction(client_.get(), context_id, function,
-                                            args, &found_node, out_frame,
-                                            w3c_compliant_);
-
+  status = GetFrameIdForBackendNodeId(client_.get(), maybe_element_id->second,
+                                      &found_node, out_frame);
   if (status.IsError()) {
     return status;
   }
@@ -954,8 +1253,8 @@ Status WebViewImpl::WaitForPendingNavigations(const std::string& frame_id,
                   "Call WaitForPendingNavigations only on the parent WebView");
   VLOG(0) << "Waiting for pending navigations...";
   const auto not_pending_navigation = base::BindRepeating(
-      &WebViewImpl::IsNotPendingNavigation, base::Unretained(this), frame_id,
-      base::Unretained(&timeout));
+      &WebViewImpl::IsNotPendingNavigation, base::Unretained(this),
+      frame_id.empty() ? id_ : frame_id, base::Unretained(&timeout));
   // If the target associated with the current view or its ancestor is detached
   // while we are waiting for the pending navigation we don't want deleting the
   // current WebView because we are executing the code in its method. Instead we
@@ -1056,39 +1355,34 @@ Status WebViewImpl::GetBackendNodeIdByElement(const std::string& frame,
                                               int* backend_node_id) {
   if (!element.is_dict())
     return Status(kUnknownError, "'element' is not a dictionary");
-  std::string context_id;
-  Status status = GetContextIdForFrame(this, frame, &context_id);
-  if (status.IsError())
-    return status;
-  base::Value::List args;
-  args.Append(element.Clone());
-  bool found_node = false;
-  status = internal::GetBackendNodeIdFromFunction(
-      client_.get(), context_id, "function(element) { return element; }", args,
-      &found_node, backend_node_id, w3c_compliant_);
-  if (status.IsError())
-    return status;
-  if (!found_node)
-    return Status(kNoSuchElement, "no node ID for given element");
-  return Status(kOk);
+  absl::optional<std::pair<std::string, int>> maybe_element_id =
+      GetElementId(element.GetDict(), w3c_compliant_);
+  if (!maybe_element_id) {
+    return Status{kNoSuchElement, "invalid element id"};
+  }
+  *backend_node_id = maybe_element_id->second;
+  return Status{kOk};
 }
 
 Status WebViewImpl::SetFileInputFiles(const std::string& frame,
                                       const base::Value& element,
                                       const std::vector<base::FilePath>& files,
                                       const bool append) {
+  WebViewImplHolder target_holder(this);
+  Status status{kOk};
+
   if (!element.is_dict())
     return Status(kUnknownError, "'element' is not a dictionary");
-  WebViewImpl* target = GetTargetForFrame(this, frame);
+
+  WebViewImpl* target = GetTargetForFrame(frame);
   if (target != nullptr && target != this) {
     if (target->IsDetached())
       return Status(kTargetDetached);
-    WebViewImplHolder target_holder(target);
     return target->SetFileInputFiles(frame, element, files, append);
   }
 
   int backend_node_id;
-  Status status = GetBackendNodeIdByElement(frame, element, &backend_node_id);
+  status = GetBackendNodeIdByElement(frame, element, &backend_node_id);
   if (status.IsError())
     return status;
 
@@ -1421,6 +1715,169 @@ std::unique_ptr<base::Value> WebViewImpl::GetCastIssueMessage() {
   return base::Value::ToUniquePtrValue(cast_tracker_->issue().Clone());
 }
 
+Status WebViewImpl::ResolveElementReferences(
+    base::Value::Dict* arg_dict,
+    base::Value::List* nodes,
+    const std::string& context_id,
+    const std::string& object_group_name,
+    const std::string& expected_loader_id,
+    bool w3c_compliant) {
+  Status status{kOk};
+  absl::optional<std::string> maybe_key =
+      GetBackendNodeIdKey(*arg_dict, w3c_compliant);
+  if (!maybe_key) {
+    for (auto it = arg_dict->begin(); status.IsOk() && it != arg_dict->end();
+         ++it) {
+      status = ResolveElementReferences(&(it->second), nodes, context_id,
+                                        object_group_name, expected_loader_id,
+                                        w3c_compliant);
+    }
+    return status;
+  }
+
+  // From this point 'key' can have either of the following two values:
+  // * ELEMENT_KEY ("ELEMENT" or "element-6066-11e4-a52e-4f735466cecf")
+  // * SHADOW_ROOT_KEY ("shadow-6066-11e4-a52e-4f735466cecf")
+  std::string key = *maybe_key;
+
+  absl::optional<std::pair<std::string, int>> maybe_element_id =
+      GetElementId(*arg_dict, key);
+  if (!maybe_element_id) {
+    return Status{kNoSuchElement, "invalid element id"};
+  }
+
+  std::string loader_id;
+  int backend_node_id;
+  std::tie(loader_id, backend_node_id) = *maybe_element_id;
+
+  if (loader_id != expected_loader_id) {
+    // Unexpected loader_id means that the reference is stale.
+    // Now depending on the key used we determine if the user referred a stale
+    // element or a detached shadow root.
+    if (key == kShadowRootKey) {
+      return Status{kDetachedShadowRoot, "detached shadow root"};
+    } else {
+      return Status{kStaleElementReference, "stale element not found"};
+    }
+  }
+
+  base::Value::Dict params;
+  base::Value::Dict resolve_result;
+  params.Set("backendNodeId", backend_node_id);
+  // TODO(crbug.com/chromedriver:4381): add support of uniqueContextId to
+  // DOM.resolveNode params.Set("uniqueContextId", context_id);
+  params.Set("objectGroup", object_group_name);
+  status = client_->SendCommandAndGetResult("DOM.resolveNode", params,
+                                            &resolve_result);
+  if (status.IsError()) {
+    return status;
+  }
+
+  std::string* object_id =
+      resolve_result.FindStringByDottedPath("object.objectId");
+  if (!object_id) {
+    return Status{
+        kUnknownError,
+        "object.objectId is missing in the response to DOM.resolveNode"};
+  }
+
+  arg_dict->Set(std::move(key), static_cast<int>(nodes->size()));
+
+  base::Value::Dict node;
+  node.Set("objectId", std::move(*object_id));
+  nodes->Append(std::move(node));
+  return status;
+}
+
+Status WebViewImpl::ResolveElementReferences(
+    base::Value::List* arg_list,
+    base::Value::List* nodes,
+    const std::string& context_id,
+    const std::string& object_group_name,
+    const std::string& expected_loader_id,
+    bool w3c_compliant) {
+  Status status{kOk};
+  for (auto it = arg_list->begin(); status.IsOk() && it != arg_list->end();
+       ++it) {
+    status =
+        ResolveElementReferences(&*it, nodes, context_id, object_group_name,
+                                 expected_loader_id, w3c_compliant);
+  }
+  return status;
+}
+
+Status WebViewImpl::ResolveElementReferences(
+    base::Value* arg,
+    base::Value::List* nodes,
+    const std::string& context_id,
+    const std::string& object_group_name,
+    const std::string& expected_loader_id,
+    bool w3c_compliant) {
+  if (arg->is_list()) {
+    return ResolveElementReferences(arg->GetIfList(), nodes, context_id,
+                                    object_group_name, expected_loader_id,
+                                    w3c_compliant);
+  }
+  if (arg->is_dict()) {
+    return ResolveElementReferences(arg->GetIfDict(), nodes, context_id,
+                                    object_group_name, expected_loader_id,
+                                    w3c_compliant);
+  }
+  return Status{kOk};
+}
+
+Status WebViewImpl::CreateElementReferences(base::Value* res,
+                                            const base::Value::List& nodes,
+                                            const std::string& loader_id) {
+  Status status{kOk};
+  if (res->is_list()) {
+    base::Value::List& list = res->GetList();
+    for (base::Value& elem : list) {
+      status = CreateElementReferences(&elem, nodes, loader_id);
+      if (status.IsError()) {
+        return status;
+      }
+    }
+    return status;
+  }
+  if (res->is_dict()) {
+    base::Value::Dict& dict = res->GetDict();
+    absl::optional<std::string> maybe_key =
+        GetBackendNodeIdKey(dict, w3c_compliant_);
+    if (maybe_key) {
+      absl::optional<int> maybe_node_idx = dict.FindInt(*maybe_key);
+      if (!maybe_node_idx) {
+        return Status{kUnknownError, "node index is missing"};
+      }
+      if (*maybe_node_idx < 0 ||
+          static_cast<size_t>(*maybe_node_idx) >= nodes.size()) {
+        return Status{kUnknownError, "node index is out of range"};
+      }
+      if (!nodes[*maybe_node_idx].is_dict()) {
+        return Status{kUnknownError, "serialized node is not a dictionary"};
+      }
+      const base::Value::Dict& node = nodes[*maybe_node_idx].GetDict();
+      absl::optional<int> maybe_backend_node_id =
+          node.FindIntByDottedPath("value.backendNodeId");
+      if (!maybe_backend_node_id) {
+        return Status{kUnknownError, "backendNodeId is missing in a node"};
+      }
+      std::string shared_id = loader_id + kElementIdSeparator +
+                              base::NumberToString(*maybe_backend_node_id);
+      dict.Set(std::move(*maybe_key), std::move(shared_id));
+      return status;
+    }
+
+    for (auto p : dict) {
+      status = CreateElementReferences(&p.second, nodes, loader_id);
+      if (status.IsError()) {
+        return status;
+      }
+    }
+  }
+  return status;
+}
+
 WebViewImplHolder::WebViewImplHolder(WebViewImpl* web_view) {
   // Lock input web view and all its parents, to prevent them from being
   // deleted while still in use. Inside |items_|, each web view must appear
@@ -1442,11 +1899,12 @@ WebViewImplHolder::~WebViewImplHolder() {
     if (item.was_locked)
       break;
     WebViewImpl* web_view = item.web_view;
-    if (!web_view->IsDetached())
+    if (!web_view->IsDetached()) {
       web_view->Unlock();
-    else if (web_view->GetParent() != nullptr)
+    } else if (web_view->GetParent() != nullptr) {
       web_view->GetParent()->GetFrameTracker()->DeleteTargetForFrame(
           web_view->GetId());
+    }
   }
 }
 
@@ -1455,21 +1913,21 @@ namespace internal {
 Status EvaluateScript(DevToolsClient* client,
                       const std::string& context_id,
                       const std::string& expression,
-                      EvaluateScriptReturnType return_type,
                       const base::TimeDelta& timeout,
                       const bool await_promise,
                       base::Value::Dict& result) {
+  Status status{kOk};
   base::Value::Dict params;
   params.Set("expression", expression);
   if (!context_id.empty()) {
     params.Set("uniqueContextId", context_id);
   }
-  params.Set("returnByValue", return_type == ReturnByValue);
+  params.Set("returnByValue", true);
   params.Set("awaitPromise", await_promise);
   base::Value::Dict cmd_result;
 
   Timeout local_timeout(timeout);
-  Status status = client->SendCommandAndGetResultWithTimeout(
+  status = client->SendCommandAndGetResultWithTimeout(
       "Runtime.evaluate", params, &local_timeout, &cmd_result);
   if (status.IsError())
     return status;
@@ -1488,31 +1946,8 @@ Status EvaluateScript(DevToolsClient* client,
   if (!unscoped_result)
     return Status(kUnknownError, "evaluate missing dictionary 'result'");
   result = std::move(*unscoped_result);
-  return Status(kOk);
-}
 
-Status EvaluateScriptAndGetObject(DevToolsClient* client,
-                                  const std::string& context_id,
-                                  const std::string& expression,
-                                  const base::TimeDelta& timeout,
-                                  const bool await_promise,
-                                  bool* got_object,
-                                  std::string* object_id) {
-  base::Value::Dict result;
-  Status status = EvaluateScript(client, context_id, expression, ReturnByObject,
-                                 timeout, await_promise, result);
-  if (status.IsError())
-    return status;
-  const base::Value* object_id_val = result.Find("objectId");
-  if (!object_id_val) {
-    *got_object = false;
-    return Status(kOk);
-  }
-  if (!object_id_val->is_string())
-    return Status(kUnknownError, "evaluate has invalid 'objectId'");
-  *object_id = object_id_val->GetString();
-  *got_object = true;
-  return Status(kOk);
+  return status;
 }
 
 Status EvaluateScriptAndGetValue(DevToolsClient* client,
@@ -1522,8 +1957,8 @@ Status EvaluateScriptAndGetValue(DevToolsClient* client,
                                  const bool await_promise,
                                  std::unique_ptr<base::Value>* result) {
   base::Value::Dict temp_result;
-  Status status = EvaluateScript(client, context_id, expression, ReturnByValue,
-                                 timeout, await_promise, temp_result);
+  Status status = EvaluateScript(client, context_id, expression, timeout,
+                                 await_promise, temp_result);
   if (status.IsError())
     return status;
 
@@ -1564,103 +1999,6 @@ Status ParseCallFunctionResult(const base::Value& temp_result,
   }
   *result = base::Value::ToUniquePtrValue(unscoped_value->Clone());
   return Status(kOk);
-}
-
-Status GetBackendNodeIdFromFunction(DevToolsClient* client,
-                                    const std::string& context_id,
-                                    const std::string& function,
-                                    const base::Value::List& args,
-                                    bool* found_node,
-                                    int* backend_node_id,
-                                    bool w3c_compliant) {
-  DCHECK(found_node);
-  DCHECK(backend_node_id);
-  std::string json;
-  base::JSONWriter::Write(args, &json);
-  std::string w3c = w3c_compliant ? "true" : "false";
-  // TODO(zachconrad): Second null should be array of shadow host ids.
-  std::string expression = base::StringPrintf(
-      "(%s).apply(null, [%s, %s, %s, true])",
-      kCallFunctionScript,
-      function.c_str(),
-      json.c_str(),
-      w3c.c_str());
-
-  bool got_object = false;
-  std::string element_id;
-  Status status = internal::EvaluateScriptAndGetObject(
-      client, context_id, expression, base::TimeDelta::Max(), true, &got_object,
-      &element_id);
-
-  if (status.IsError())
-    return status;
-
-  if (!got_object) {
-    *found_node = false;
-
-    return Status(kOk);
-  }
-
-  RemoteObjectReleaseGuard release_guard(client, element_id);
-
-  base::Value::Dict cmd_result;
-  {
-    base::Value::Dict params;
-    params.Set("objectId", element_id);
-    status = client->SendCommandAndGetResult("DOM.describeNode", params,
-                                             &cmd_result);
-  }
-  if (status.IsError())
-    return status;
-
-  base::Value* node = cmd_result.Find("node");
-  if (!node || !node->is_dict()) {
-    return Status(kUnknownError, "Dom.describeNode missing dictionary 'node'");
-  }
-
-  absl::optional<int> maybe_node_id = node->GetDict().FindInt("backendNodeId");
-  if (!maybe_node_id)
-    return Status(kUnknownError, "DOM.requestNode missing int 'backendNodeId'");
-
-  // Note that this emulates the previous Deprecated GetInteger behavior, but
-  // should likely be changed.
-  *backend_node_id = *maybe_node_id;
-  *found_node = true;
-  return Status(kOk);
-}
-
-Status GetFrameIdFromFunction(DevToolsClient* client,
-                              const std::string& context_id,
-                              const std::string& function,
-                              const base::Value::List& args,
-                              bool* found_node,
-                              std::string* frame_id,
-                              bool w3c_compliant) {
-  DCHECK(found_node);
-  DCHECK(frame_id);
-  std::string json;
-  base::JSONWriter::Write(args, &json);
-  std::string w3c = w3c_compliant ? "true" : "false";
-  // TODO(zachconrad): Second null should be array of shadow host ids.
-  std::string expression = base::StringPrintf(
-      "(%s).apply(null, [%s, %s, %s, true])", kCallFunctionScript,
-      function.c_str(), json.c_str(), w3c.c_str());
-
-  bool got_object = false;
-  std::string element_id;
-  Status status = internal::EvaluateScriptAndGetObject(
-      client, context_id, expression, base::TimeDelta::Max(), true, &got_object,
-      &element_id);
-  if (status.IsError())
-    return status;
-  if (!got_object) {
-    *found_node = false;
-    return Status(kOk);
-  }
-
-  RemoteObjectReleaseGuard guard(client, element_id);
-
-  return GetFrameIdForObjectId(client, element_id, found_node, frame_id);
 }
 
 }  // namespace internal

@@ -38,7 +38,6 @@ ci.defaults.set(
     free_space = builders.free_space.standard,
     build_numbers = True,
     execution_timeout = 3 * time.hour,
-    goma_backend = None,
     service_account = (
         "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com"
     ),
@@ -114,12 +113,17 @@ def fyi_reclient_test_builder(
         name,
         console_view_category,
         **kwargs):
+    reclient_bootstrap_env = kwargs.pop("reclient_bootstrap_env", {})
+    reclient_bootstrap_env.update({
+        "RBE_compression_threshold": "4000000",
+    })
     return fyi_reclient_staging_builder(
         name = name,
         console_view_category = console_view_category,
         reclient_instance = "rbe-chromium-%s-test",
         reclient_version = "test",
         untrusted_service_account = ci.DEFAULT_SERVICE_ACCOUNT,
+        reclient_bootstrap_env = reclient_bootstrap_env,
         **kwargs
     )
 
@@ -196,7 +200,7 @@ fyi_reclient_test_builder(
             gclient_config = structs.extend(
                 spec.gclient_config,
                 apply_configs = [
-                    "reclient_test",
+                    "reclient_experimental",
                 ],
             ),
             build_gs_bucket = "chromium-fyi-archive",
@@ -337,7 +341,7 @@ fyi_reclient_test_builder(
             gclient_config = structs.extend(
                 spec.gclient_config,
                 apply_configs = [
-                    "reclient_test",
+                    "reclient_experimental",
                 ],
             ),
             build_gs_bucket = "chromium-fyi-archive",
@@ -515,6 +519,8 @@ ci.builder(
         "RBE_clang_depscan_archive": "true",
         "RBE_use_unified_uploads": "false",
         "RBE_experimental_sysroot_do_not_upload": "true",
+        "GOMA_DEPS_CACHE_TABLE_THRESHOLD": "40000",
+        "RBE_compression_threshold": "4000000",
     },
     reclient_cache_silo = "Comparison Linux remote links - cache siloed",
     reclient_instance = reclient.instance.TEST_TRUSTED,

@@ -36,6 +36,9 @@ BASE_DECLARE_FEATURE(kEnableFeedCardMenuSignInPromo);
 // Feature flag to disable the feed.
 BASE_DECLARE_FEATURE(kEnableFeedAblation);
 
+// Feature flag to enable feed experiment tagging.
+BASE_DECLARE_FEATURE(kEnableFeedExperimentTagging);
+
 // Feature param under `kEnableFeedBackgroundRefresh` to also enable background
 // refresh for the Following feed.
 extern const char kEnableFollowingFeedBackgroundRefresh[];
@@ -68,6 +71,18 @@ extern const char kEnableFeedRefreshPostFeedSession[];
 // Feature param under `kEnableFeedForegroundRefresh` to enable refresh on app
 // backgrounding.
 extern const char kEnableFeedRefreshOnAppBackgrounding[];
+
+// Feature param under `kEnableFeedForegroundRefresh` for the time interval used
+// to set the session end timer.
+extern const char kFeedSessionEndTimerTimeoutInSeconds[];
+
+// Feature param under `kEnableFeedForegroundRefresh` for the refresh threshold
+// when the last refresh was seen.
+extern const char kFeedSeenRefreshThresholdInSeconds[];
+
+// Feature param under `kEnableFeedForegroundRefresh` for the refresh threshold
+// when the last refresh was unseen.
+extern const char kFeedUnseenRefreshThresholdInSeconds[];
 
 // Whether the Following Feed is enabled on NTP.
 bool IsWebChannelsEnabled();
@@ -132,6 +147,16 @@ bool IsFeedRefreshPostFeedSessionEnabled();
 // different from background refresh.
 bool IsFeedRefreshOnAppBackgroundingEnabled();
 
+// Returns the time interval used to set the session end timer.
+double GetFeedSessionEndTimerTimeoutInSeconds();
+
+// Returns the refresh threshold (aka feed expiration) for a feed that has been
+// seen.
+double GetFeedSeenRefreshThresholdInSeconds();
+
+// Returns the refresh threshold (aka feed expiration) for an unseen feed.
+double GetFeedUnseenRefreshThresholdInSeconds();
+
 // YES if enabled Feed bottom sign-in promo.
 bool IsFeedBottomSignInPromoEnabled();
 
@@ -140,5 +165,8 @@ bool IsFeedCardMenuSignInPromoEnabled();
 
 // Whether the feed is disabled.
 bool IsFeedAblationEnabled();
+
+// Whether the feed experiment tagging is enabled.
+bool IsFeedExperimentTaggingEnabled();
 
 #endif  // IOS_CHROME_BROWSER_NTP_FEATURES_H_

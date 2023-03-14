@@ -9,13 +9,13 @@
 
     function issue_token() {
         return fetch('/wpt_internal/trust-tokens/resources/trust_token_issuance.py', {
-            trustToken: { version: 1, operation: 'token-request' }
+            privateToken: { type: 'private-state-token', version: 1, operation: 'token-request' }
         });
     }
 
     function redeem_token() {
         return fetch('/wpt_internal/trust-tokens/resources/trust_token_redemption.py', {
-            trustToken: { version: 1, operation: 'token-redemption', refreshPolicy: "refresh" }
+            privateToken: { type: 'private-state-token', version: 1, operation: 'token-redemption', refreshPolicy: "refresh" }
         });
     }
 

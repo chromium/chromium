@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/crosapi/desk_template_ash.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "components/user_manager/user_manager.h"
 
 namespace crosapi {
@@ -393,16 +394,18 @@ std::unique_ptr<BrowserAction> BrowserAction::CreateBrowserWithRestoredData(
 }
 
 // No window will be opened in the following circumstances:
-// 1. Lacros-chrome is initialized in the web Kiosk session
+// 1. Lacros-chrome is initialized in the Kiosk session
 // 2. Full restore is responsible for restoring/launching Lacros.
 // static
 std::unique_ptr<BrowserAction> BrowserAction::GetActionForSessionStart() {
-  if (user_manager::UserManager::Get()->IsLoggedInAsGuest())
+  if (user_manager::UserManager::Get()->IsLoggedInAsGuest()) {
     return std::make_unique<NewWindowAction>(
         /*incognito=*/false, /*should_trigger_session_restore=*/false, -1);
-  if (user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp() ||
-      ash::full_restore::MaybeCreateFullRestoreServiceForLacros())
+  }
+  if (profiles::IsKioskSession() ||
+      ash::full_restore::MaybeCreateFullRestoreServiceForLacros()) {
     return std::make_unique<NoOpAction>();
+  }
   return std::make_unique<NewWindowAction>(
       /*incognito=*/false, /*should_trigger_session_restore=*/true, -1);
 }

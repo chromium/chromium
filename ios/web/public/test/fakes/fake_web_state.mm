@@ -151,12 +151,12 @@ NavigationManager* FakeWebState::GetNavigationManager() {
   return navigation_manager_.get();
 }
 
-const WebFramesManager* FakeWebState::GetPageWorldWebFramesManager() const {
-  return web_frames_manager_.get();
+WebFramesManager* FakeWebState::GetPageWorldWebFramesManager() {
+  return web_frames_managers_[ContentWorld::kPageContentWorld].get();
 }
 
-WebFramesManager* FakeWebState::GetPageWorldWebFramesManager() {
-  return web_frames_manager_.get();
+WebFramesManager* FakeWebState::GetWebFramesManager(ContentWorld world) {
+  return web_frames_managers_[world].get();
 }
 
 const SessionCertificatePolicyCache*
@@ -186,7 +186,14 @@ void FakeWebState::SetNavigationManager(
 
 void FakeWebState::SetWebFramesManager(
     std::unique_ptr<WebFramesManager> web_frames_manager) {
-  web_frames_manager_ = std::move(web_frames_manager);
+  SetWebFramesManager(ContentWorld::kPageContentWorld,
+                      std::move(web_frames_manager));
+}
+
+void FakeWebState::SetWebFramesManager(
+    ContentWorld content_world,
+    std::unique_ptr<WebFramesManager> web_frames_manager) {
+  web_frames_managers_[content_world] = std::move(web_frames_manager);
 }
 
 void FakeWebState::SetView(UIView* view) {
@@ -509,6 +516,9 @@ NSData* FakeWebState::SessionStateData() {
   return nil;
 }
 
+void FakeWebState::SetSwipeRecognizerProvider(
+    id<CRWSwipeRecognizerProvider> delegate) {}
+
 PermissionState FakeWebState::GetStateForPermission(
     Permission permission) const {
   switch (permission) {
@@ -572,6 +582,10 @@ void FakeWebState::SetFindInteractionEnabled(bool enabled) {
 id<CRWFindInteraction> FakeWebState::GetFindInteraction()
     API_AVAILABLE(ios(16)) {
   return is_find_interaction_enabled_ ? find_interaction_ : nil;
+}
+
+id FakeWebState::GetActivityItem() API_AVAILABLE(ios(16.4)) {
+  return nil;
 }
 
 FakeWebStateWithPolicyCache::FakeWebStateWithPolicyCache(

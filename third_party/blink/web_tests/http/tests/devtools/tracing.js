@@ -77,7 +77,8 @@
 
     for (var i = 0; i < events.length; ++i) {
       var event = events[i];
-      if (event.phase === SDK.TracingModel.Phase.Complete)
+      // X is the letter used to mark an event's phase as being Complete.
+      if (event.phase === "X")
         ++phaseComplete;
       if (event.name in knownEvents)
         ++knownEvents[event.name];

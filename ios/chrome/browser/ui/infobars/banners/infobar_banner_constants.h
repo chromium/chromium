@@ -9,6 +9,8 @@
 
 // Accessibility identifier of the Banner View.
 extern NSString* const kInfobarBannerViewIdentifier;
+// Accessibility identifier of the Banner Labels Stack View.
+extern NSString* const kInfobarBannerLabelsStackViewIdentifier;
 // Accessibility identifier of the Banner Accept Button.
 extern NSString* const kInfobarBannerAcceptButtonIdentifier;
 // Accessibility identifier of the Banner Open Modal Button.

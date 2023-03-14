@@ -71,6 +71,7 @@ source_set("feed_core_v2") {
     "public/public_types.cc",
     "public/stream_type.cc",
     "public/unread_content_observer.cc",
+    "public/web_feed_subscriptions.cc",
     "request_throttler.cc",
     "request_throttler.h",
     "scheduling.cc",

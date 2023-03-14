@@ -141,11 +141,13 @@ void ChromeExtensionCookies::IOData::CreateRestrictedCookieManager(
     net::FirstPartySetMetadata first_party_set_metadata) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
+  // TODO(crbug.com/1386190): Consider whether the following check should
+  // somehow determine real CookieSettingOverrides rather than default to none.
   restricted_cookie_managers_.Add(
       std::make_unique<network::RestrictedCookieManager>(
           network::mojom::RestrictedCookieManagerRole::SCRIPT,
           GetOrCreateCookieStore(), network_cookie_settings_, origin,
-          isolation_info,
+          isolation_info, net::CookieSettingOverrides(),
           /* null cookies_observer disables logging */
           mojo::NullRemote(), std::move(first_party_set_metadata)),
       std::move(receiver));

@@ -277,6 +277,8 @@ bool AppBrowserController::IsIsolatedWebApp() const {
   return false;
 }
 
+void AppBrowserController::SetIsolatedWebAppTrueForTesting() {}
+
 bool AppBrowserController::IsWindowControlsOverlayEnabled() const {
   return false;
 }
@@ -293,6 +295,12 @@ gfx::Rect AppBrowserController::GetDefaultBounds() const {
 bool AppBrowserController::HasReloadButton() const {
   return true;
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+bool AppBrowserController::HasProfileMenuButton() const {
+  return false;
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const ash::SystemWebAppDelegate* AppBrowserController::system_app() const {

@@ -239,6 +239,10 @@ function testCreate() {
           var cw2 = win2.contentWindow.chrome.app.window.current();
           chrome.test.assertEq('testId1', cw1.id);
           chrome.test.assertEq('testId2', cw2.id);
+          // Note: We explicitly use assertTrue(x === y) and
+          // assertFalse(x === y) in these cases (rather than comparing a deep
+          // equals using assertEq() and assertNe()) because we just care about
+          // strict object equality.
           chrome.test.assertTrue(cw1 === win1);
           chrome.test.assertTrue(cw2 === win2);
           chrome.test.assertFalse(cw1 === cw2);
@@ -385,7 +389,7 @@ function testInitialBounds() {
     function testNoOptions() {
       chrome.app.window.create('test.html', {
       }, callbackPass(function(win) {
-        chrome.test.assertTrue(win != null);
+        chrome.test.assertNe(null, win);
         chrome.test.assertTrue(win.innerBounds.width > 0);
         chrome.test.assertTrue(win.innerBounds.height > 0);
         chrome.test.assertTrue(win.outerBounds.width > 0);
@@ -406,7 +410,7 @@ function testInitialBounds() {
       chrome.app.window.create('test.html', {
         innerBounds: innerBounds
       }, callbackPass(function(win) {
-        chrome.test.assertTrue(win != null);
+        chrome.test.assertNe(null, win);
         assertBoundsEq(innerBounds, win.innerBounds);
         assertBoundsConsistent(win);
         assertConstraintsUnspecified(win);
@@ -425,7 +429,7 @@ function testInitialBounds() {
       chrome.app.window.create('test.html', {
         innerBounds: innerBounds
       }, callbackPass(function(win) {
-        chrome.test.assertTrue(win != null);
+        chrome.test.assertNe(null, win);
         assertBoundsEq(innerBounds, win.innerBounds);
         assertBoundsConsistent(win);
         assertConstraintsUnspecified(win);
@@ -443,7 +447,7 @@ function testInitialBounds() {
       chrome.app.window.create('test.html', {
         outerBounds: outerBounds
       }, callbackPass(function(win) {
-        chrome.test.assertTrue(win != null);
+        chrome.test.assertNe(null, win);
         assertBoundsEq(outerBounds, win.outerBounds);
         assertBoundsConsistent(win);
         assertConstraintsUnspecified(win);
@@ -462,7 +466,7 @@ function testInitialBounds() {
         outerBounds: outerBounds,
         frame: 'none'
       }, callbackPass(function(win) {
-        chrome.test.assertTrue(win != null);
+        chrome.test.assertNe(null, win);
         assertBoundsEq(outerBounds, win.outerBounds);
         assertBoundsEq(outerBounds, win.innerBounds);
         assertConstraintsUnspecified(win);
@@ -483,7 +487,7 @@ function testInitialBounds() {
         innerBounds: innerBounds,
         outerBounds: outerBounds
       }, callbackPass(function(win) {
-        chrome.test.assertTrue(win != null);
+        chrome.test.assertNe(null, win);
         chrome.test.assertEq(outerBounds.left, win.outerBounds.left);
         chrome.test.assertEq(outerBounds.top, win.outerBounds.top);
         chrome.test.assertEq(innerBounds.width, win.innerBounds.width);
@@ -507,7 +511,7 @@ function testInitialBounds() {
         innerBounds: innerBounds,
         outerBounds: outerBounds
       }, callbackPass(function(win) {
-        chrome.test.assertTrue(win != null);
+        chrome.test.assertNe(null, win);
         chrome.test.assertEq(innerBounds.left, win.innerBounds.left);
         chrome.test.assertEq(innerBounds.height, win.innerBounds.height);
         chrome.test.assertEq(outerBounds.top, win.outerBounds.top);
@@ -526,7 +530,7 @@ function testInitialBounds() {
       chrome.app.window.create('test.html', {
         outerBounds: outerBounds
       }, callbackPass(function(win) {
-        chrome.test.assertTrue(win != null);
+        chrome.test.assertNe(null, win);
         chrome.test.assertEq(outerBounds.left, win.outerBounds.left);
         chrome.test.assertEq(outerBounds.top, win.outerBounds.top);
         chrome.test.assertTrue(win.innerBounds.width > 0);
@@ -547,7 +551,7 @@ function testInitialBounds() {
       chrome.app.window.create('test.html', {
         outerBounds: outerBounds
       }, callbackPass(function(win) {
-        chrome.test.assertTrue(win != null);
+        chrome.test.assertNe(null, win);
         chrome.test.assertEq(outerBounds.width, win.outerBounds.width);
         chrome.test.assertEq(outerBounds.height, win.outerBounds.height);
         assertBoundsConsistent(win);
@@ -581,7 +585,7 @@ function testInitialConstraints() {
       chrome.app.window.create('test.html', {
         innerBounds: innerBounds
       }, callbackPass(function(win) {
-        chrome.test.assertTrue(win != null);
+        chrome.test.assertNe(null, win);
         chrome.test.assertEq(innerBounds.maxWidth, win.innerBounds.width);
         chrome.test.assertEq(innerBounds.maxHeight, win.innerBounds.height);
         chrome.test.assertEq(innerBounds.maxWidth, win.innerBounds.maxWidth);
@@ -601,7 +605,7 @@ function testInitialConstraints() {
       chrome.app.window.create('test.html', {
         innerBounds: innerBounds
       }, callbackPass(function(win) {
-        chrome.test.assertTrue(win != null);
+        chrome.test.assertNe(null, win);
         chrome.test.assertEq(innerBounds.minWidth, win.innerBounds.width);
         chrome.test.assertEq(innerBounds.minHeight, win.innerBounds.height);
         chrome.test.assertEq(innerBounds.minWidth, win.innerBounds.minWidth);
@@ -621,7 +625,7 @@ function testInitialConstraints() {
       chrome.app.window.create('test.html', {
         outerBounds: outerBounds
       }, callbackPass(function(win) {
-        chrome.test.assertTrue(win != null);
+        chrome.test.assertNe(null, win);
         chrome.test.assertEq(outerBounds.maxWidth, win.outerBounds.width);
         chrome.test.assertEq(outerBounds.maxHeight, win.outerBounds.height);
         chrome.test.assertEq(outerBounds.maxWidth, win.outerBounds.maxWidth);
@@ -641,7 +645,7 @@ function testInitialConstraints() {
       chrome.app.window.create('test.html', {
         outerBounds: outerBounds
       }, callbackPass(function(win) {
-        chrome.test.assertTrue(win != null);
+        chrome.test.assertNe(null, win);
         chrome.test.assertEq(outerBounds.minWidth, win.outerBounds.width);
         chrome.test.assertEq(outerBounds.minHeight, win.outerBounds.height);
         chrome.test.assertEq(outerBounds.minWidth, win.outerBounds.minWidth);
@@ -664,7 +668,7 @@ function testInitialConstraints() {
         innerBounds: innerBounds,
         outerBounds: outerBounds
       }, callbackPass(function(win) {
-        chrome.test.assertTrue(win != null);
+        chrome.test.assertNe(null, win);
         chrome.test.assertEq(outerBounds.minWidth, win.outerBounds.width);
         chrome.test.assertEq(innerBounds.minHeight, win.innerBounds.height);
         chrome.test.assertEq(outerBounds.minWidth, win.outerBounds.minWidth);
@@ -686,7 +690,7 @@ function testInitialConstraints() {
       chrome.app.window.create('test.html', {
         outerBounds: outerBounds
       }, callbackPass(function(win) {
-        chrome.test.assertTrue(win != null);
+        chrome.test.assertNe(null, win);
         chrome.test.assertEq(outerBounds.minWidth, win.outerBounds.width);
         chrome.test.assertEq(outerBounds.minHeight, win.outerBounds.height);
         chrome.test.assertEq(outerBounds.minWidth, win.outerBounds.minWidth);
@@ -709,7 +713,7 @@ function testInitialConstraints() {
         outerBounds: outerBounds,
         frame: 'none'
       }, callbackPass(function(win) {
-        chrome.test.assertTrue(win != null);
+        chrome.test.assertNe(null, win);
         assertConstraintsEq(outerBounds, win.outerBounds);
         assertConstraintsEq(outerBounds, win.innerBounds);
         win.close();

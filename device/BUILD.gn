@@ -62,9 +62,9 @@ test("device_unittests") {
     "test/run_all_unittests.cc",
   ]
 
-  if (is_mac) {
+  if (is_apple) {
     sources += [
-      "bluetooth/bluetooth_adapter_mac_unittest.mm",
+      "bluetooth/bluetooth_low_energy_adapter_apple_unittest.mm",
       "bluetooth/bluetooth_low_energy_advertisement_manager_mac_unittest.mm",
       "bluetooth/test/bluetooth_test_mac.h",
       "bluetooth/test/bluetooth_test_mac.mm",
@@ -81,6 +81,10 @@ test("device_unittests") {
     ]
   }
 
+  if (is_mac) {
+    sources += [ "bluetooth/bluetooth_adapter_mac_unittest.mm" ]
+  }
+
   if (is_android) {
     sources += [
       "bluetooth/bluetooth_adapter_android_unittest.cc",
@@ -93,7 +97,6 @@ test("device_unittests") {
     sources += [
       "bluetooth/bluetooth_adapter_win_unittest.cc",
       "bluetooth/bluetooth_device_win_unittest.cc",
-      "bluetooth/bluetooth_low_energy_win_unittest.cc",
       "bluetooth/bluetooth_service_record_win_unittest.cc",
       "bluetooth/bluetooth_task_manager_win_unittest.cc",
       "bluetooth/test/bluetooth_test_win.cc",
@@ -123,8 +126,6 @@ test("device_unittests") {
     "//device/bluetooth:deprecated_experimental_mojo",
     "//device/bluetooth:fake_bluetooth",
     "//device/bluetooth:mocks",
-    "//device/fido",
-    "//device/fido:test_support",
     "//device/gamepad",
     "//device/gamepad:test_helpers",
     "//device/gamepad/public/cpp:shared_with_blink",
@@ -147,8 +148,15 @@ test("device_unittests") {
     "//ui/resources:ui_test_pak_data",
   ]
 
+  if (!is_ios) {
+    deps += [
+      "//device/fido",
+      "//device/fido:test_support",
+    ]
+  }
+
   # Most of the FIDO implementation is not compiled in for Android.
-  if (!is_android) {
+  if (!is_android && !is_ios) {
     sources += [
       "fido/attestation_statement_formats_unittest.cc",
       "fido/auth_token_requester_unittest.cc",
@@ -219,7 +227,7 @@ test("device_unittests") {
   # FIDO HID:
   # Android doesn't compile.
   # Linux, requires udev.
-  if (!is_linux_without_udev && !is_android) {
+  if (!is_linux_without_udev && !is_android && !is_ios) {
     sources += [
       "fido/hid/fido_hid_device_unittest.cc",
       "fido/hid/fido_hid_discovery_unittest.cc",
@@ -331,14 +339,19 @@ test("device_unittests") {
     ]
   }
 
-  if (is_mac) {
+  if (is_apple) {
     deps += [ "//third_party/ocmock" ]
     ldflags = [ "-ObjC" ]
     frameworks = [
       "CoreBluetooth.framework",
-      "IOBluetooth.framework",
       "IOKit.framework",
       "Foundation.framework",
+    ]
+  }
+
+  if (is_mac) {
+    frameworks += [
+      "IOBluetooth.framework",
       "Security.framework",
     ]
   }
@@ -428,7 +441,7 @@ test("device_unittests") {
 
   # Some gamepad tests require the HID service. Only build these tests on
   # platforms where the HID service is enabled.
-  if (!is_android && !is_fuchsia) {
+  if (!is_android && !is_fuchsia && !is_ios) {
     sources += [ "gamepad/nintendo_data_fetcher_unittest.cc" ]
 
     deps += [

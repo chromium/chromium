@@ -5,6 +5,7 @@
 #import "ios/chrome/test/wpt/cwt_request_handler.h"
 
 #import <XCTest/XCTest.h>
+#import <string>
 
 #import "base/debug/stack_trace.h"
 #import "base/files/file_path.h"
@@ -14,11 +15,13 @@
 #import "base/json/json_writer.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/values.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/test/wpt/cwt_constants.h"
 #import "ios/chrome/test/wpt/cwt_webdriver_app_interface.h"
 #import "ios/third_party/edo/src/Service/Sources/EDOClientService.h"
 #import "net/http/http_status_code.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -155,7 +158,8 @@ base::Value CreateErrorValue(const std::string& error,
 }
 
 bool IsErrorValue(const base::Value& value) {
-  return value.is_dict() && value.FindKey(kWebDriverErrorCodeValueField);
+  return value.is_dict() &&
+         value.GetDict().contains(kWebDriverErrorCodeValueField);
 }
 
 }  // namespace
@@ -208,6 +212,7 @@ absl::optional<base::Value> CWTRequestHandler::ProcessCommand(
       return CreateErrorValue(kWebDriverInvalidArgumentError,
                               kWebDriverMissingRequestMessage);
     }
+    const base::Value::Dict& content_dict = content->GetDict();
 
     if (command == kWebDriverSessionCommand)
       return InitializeSession();
@@ -221,24 +226,26 @@ absl::optional<base::Value> CWTRequestHandler::ProcessCommand(
       return NavigateToUrlForCrashTest(*content);
 
     if (command == kWebDriverNavigationCommand)
-      return NavigateToUrl(content->FindKey(kWebDriverURLRequestField));
+      return NavigateToUrl(content_dict.FindString(kWebDriverURLRequestField));
 
     if (command == kWebDriverTimeoutsCommand)
       return SetTimeouts(*content);
 
     if (command == kWebDriverWindowCommand) {
       return SwitchToTabWithId(
-          content->FindKey(kWebDriverWindowHandleRequestField));
+          content_dict.FindString(kWebDriverWindowHandleRequestField));
     }
 
     if (command == kWebDriverSyncScriptCommand) {
-      return ExecuteScript(content->FindKey(kWebDriverScriptRequestField),
-                           /*is_async_function=*/false);
+      return ExecuteScript(
+          content_dict.FindString(kWebDriverScriptRequestField),
+          /*is_async_function=*/false);
     }
 
     if (command == kWebDriverAsyncScriptCommand) {
-      return ExecuteScript(content->FindKey(kWebDriverScriptRequestField),
-                           /*is_async_function=*/true);
+      return ExecuteScript(
+          content_dict.FindString(kWebDriverScriptRequestField),
+          /*is_async_function=*/true);
     }
 
     if (command == kWebDriverWindowRectCommand)
@@ -342,16 +349,16 @@ base::Value CWTRequestHandler::ReleaseActions() {
   return base::Value(base::Value::Type::NONE);
 }
 
-base::Value CWTRequestHandler::NavigateToUrl(const base::Value* url) {
-  if (!url || !url->is_string()) {
+base::Value CWTRequestHandler::NavigateToUrl(const std::string* url) {
+  if (!url) {
     return CreateErrorValue(kWebDriverInvalidArgumentError,
                             kWebDriverMissingURLMessage);
   }
 
-  NSError* error = [CWTWebDriverAppInterface
-      loadURL:base::SysUTF8ToNSString(url->GetString())
-        inTab:base::SysUTF8ToNSString(target_tab_id_)
-      timeout:page_load_timeout_];
+  NSError* error =
+      [CWTWebDriverAppInterface loadURL:base::SysUTF8ToNSString(*url)
+                                  inTab:base::SysUTF8ToNSString(target_tab_id_)
+                                timeout:page_load_timeout_];
   if (!error)
     return base::Value(base::Value::Type::NONE);
 
@@ -361,13 +368,14 @@ base::Value CWTRequestHandler::NavigateToUrl(const base::Value* url) {
 
 base::Value CWTRequestHandler::NavigateToUrlForCrashTest(
     const base::Value& input) {
-  const base::Value* url_str = input.FindKey(kWebDriverURLRequestField);
-  if (!url_str || !url_str->is_string()) {
+  const base::Value::Dict& input_dict = input.GetDict();
+  const std::string* url_str = input_dict.FindString(kWebDriverURLRequestField);
+  if (!url_str) {
     return CreateErrorValue(kWebDriverInvalidArgumentError,
                             kWebDriverMissingURLMessage);
   }
 
-  GURL url(url_str->GetString());
+  GURL url(*url_str);
   if (!url.is_valid()) {
     return CreateErrorValue(kWebDriverInvalidArgumentError,
                             kChromeInvalidUrlMessage);
@@ -401,14 +409,15 @@ base::Value CWTRequestHandler::NavigateToUrlForCrashTest(
         timeout:page_load_timeout_];
 
     if (!error) {
-      const base::Value* extra_wait = input.FindKey(kChromeCrashWaitTime);
+      const absl::optional<int> extra_wait =
+          input_dict.FindInt(kChromeCrashWaitTime);
       if (extra_wait) {
-        if (!extra_wait->is_int() || extra_wait->GetInt() < 0) {
+        if (!extra_wait || extra_wait.value() < 0) {
           return CreateErrorValue(kWebDriverInvalidArgumentError,
                                   kChromeInvalidExtraWaitMessage);
         }
         base::test::ios::SpinRunLoopWithMinDelay(
-            base::Seconds(extra_wait->GetInt()));
+            base::Seconds(extra_wait.value()));
       }
     }
 
@@ -474,17 +483,17 @@ base::Value CWTRequestHandler::GetAllTabIds() {
   return base::Value(std::move(id_list));
 }
 
-base::Value CWTRequestHandler::SwitchToTabWithId(const base::Value* tab_id) {
-  if (!tab_id || !tab_id->is_string()) {
+base::Value CWTRequestHandler::SwitchToTabWithId(const std::string* tab_id) {
+  if (!tab_id) {
     return CreateErrorValue(kWebDriverInvalidArgumentError,
                             kWebDriverMissingWindowHandleMessage);
   }
 
   NSError* error = [CWTWebDriverAppInterface
-      switchToTabWithID:base::SysUTF8ToNSString(tab_id->GetString())];
+      switchToTabWithID:base::SysUTF8ToNSString(*tab_id)];
 
   if (!error) {
-    target_tab_id_ = tab_id->GetString();
+    target_tab_id_ = *tab_id;
     return base::Value(base::Value::Type::NONE);
   }
 
@@ -505,9 +514,9 @@ base::Value CWTRequestHandler::CloseTargetTab() {
   return GetAllTabIds();
 }
 
-base::Value CWTRequestHandler::ExecuteScript(const base::Value* script,
+base::Value CWTRequestHandler::ExecuteScript(const std::string* script,
                                              bool is_async_function) {
-  if (!script || !script->is_string()) {
+  if (!script) {
     return CreateErrorValue(kWebDriverInvalidArgumentError,
                             kWebDriverMissingScriptMessage);
   }
@@ -518,12 +527,12 @@ base::Value CWTRequestHandler::ExecuteScript(const base::Value* script,
     // argument with the result of its computation.
     function_to_execute =
         [NSString stringWithFormat:@"function f(completionHandler) { %s }",
-                                   script->GetString().c_str()];
+                                   script->c_str()];
   } else {
     // The provided `script` directly computes a result. Convert to a function
     // that calls a completion handler with the result of its computation.
-    NSString* input_function = [NSString
-        stringWithFormat:@"() => { %s }", script->GetString().c_str()];
+    NSString* input_function =
+        [NSString stringWithFormat:@"() => { %s }", script->c_str()];
     function_to_execute =
         [NSString stringWithFormat:@"function f(completionHandler) { "
                                    @"  completionHandler((%@).call()); "

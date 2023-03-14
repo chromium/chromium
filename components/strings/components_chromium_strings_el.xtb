@@ -29,7 +29,9 @@
           <ph name="PROXIES_TITLE" />
           και βεβαιωθείτε ότι η διαμόρφωσή σας είναι ρυθμισμένη στην επιλογή
           "χωρίς διακομιστή μεσολάβησης" ή "άμεση".</translation>
+<translation id="6549378540556750549">Το Chromium υλοποιήθηκε με τη βοήθεια και άλλων <ph name="BEGIN_LINK_OSS" />λογισμικών ανοικτού κώδικα<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Οι αλλαγές που πραγματοποιήσατε θα ισχύσουν την επόμενη φορά που θα εκκινήσετε το Chromium.</translation>
+<translation id="7681937895330411637">Το Chromium υλοποιήθηκε με το έργο ανοικτού κώδικα <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="7861509383340276692">Μεταβείτε
         στο μενού του Chromium &gt;
         <ph name="SETTINGS_TITLE" />

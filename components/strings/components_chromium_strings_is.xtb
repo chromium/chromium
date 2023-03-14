@@ -27,7 +27,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           og gakktu úr skugga um að stillt sé á „ekki proxy“ eða „beint“.</translation>
+<translation id="6549378540556750549">Chromium virkar einnig í krafti annars <ph name="BEGIN_LINK_OSS" />hugbúnaðar með opinn kóða<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Breytingar þínar munu taka gildi næst þegar þú endurræsir Chromium.</translation>
+<translation id="7681937895330411637">Chromium virkar í krafti verkefnis <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> um opinn kóða.</translation>
 <translation id="7861509383340276692">Farðu í
         valmynd Chromium &gt;
         <ph name="SETTINGS_TITLE" />

@@ -32,13 +32,14 @@ class AccountSelectionBubbleViewInterface {
   // Updates to show single account plus a confirm dialog. Used when showing the
   // account confirmation dialog after the user picks one of multiple accounts.
   virtual void ShowSingleAccountConfirmDialog(
-      const std::u16string& rp_for_display,
+      const std::u16string& top_frame_for_display,
+      const absl::optional<std::u16string>& iframe_for_display,
       const content::IdentityRequestAccount& account,
       const IdentityProviderDisplayData& idp_data,
       bool show_back_button) = 0;
 
   // Updates the FedCM bubble to show the "failure" sheet.
-  virtual void ShowFailureDialog(const std::u16string& rp_for_display,
+  virtual void ShowFailureDialog(const std::u16string& top_frame_for_display,
                                  const std::u16string& idp_for_display) = 0;
 };
 

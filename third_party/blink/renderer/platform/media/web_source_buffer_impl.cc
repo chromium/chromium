@@ -187,7 +187,20 @@ void WebSourceBufferImpl::ResetParserState() {
 void WebSourceBufferImpl::Remove(double start, double end) {
   DCHECK_GE(start, 0);
   DCHECK_GE(end, 0);
-  demuxer_->Remove(id_, DoubleToTimeDelta(start), DoubleToTimeDelta(end));
+
+  const auto timedelta_start = DoubleToTimeDelta(start);
+  const auto timedelta_end = DoubleToTimeDelta(end);
+
+  // Since `start - end` may be less than 1 microsecond and base::TimeDelta is
+  // limited to microseconds, treat smaller ranges as zero.
+  //
+  // We could throw an error here, but removing nanosecond ranges is allowed by
+  // the spec and the risk of breaking existing sites is high.
+  if (timedelta_start == timedelta_end) {
+    return;
+  }
+
+  demuxer_->Remove(id_, timedelta_start, timedelta_end);
 }
 
 bool WebSourceBufferImpl::CanChangeType(const WebString& content_type,

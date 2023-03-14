@@ -6,4 +6,5 @@ include_rules = [
   "+components/keyed_service",
   "+content/public/browser",
   "+net/http",
+  "+services/network/public/cpp/features.h",
 ]

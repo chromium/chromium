@@ -27,6 +27,13 @@ class WaylandServerTest : public WaylandServerTestBase {
 
  protected:
   WaylandServerTest();
+
+  // Constructs a WaylandServerTest with |traits| being forwarded to its
+  // TaskEnvironment. See the corresponding |WaylandServerTestBase| constructor.
+  template <typename... TaskEnvironmentTraits>
+  explicit WaylandServerTest(TaskEnvironmentTraits&&... traits)
+      : WaylandServerTestBase(std::forward<TaskEnvironmentTraits>(traits)...) {}
+
   ~WaylandServerTest() override;
 
   // WaylandServerTestBase:

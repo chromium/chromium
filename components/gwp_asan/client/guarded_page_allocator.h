@@ -16,11 +16,20 @@
 #include "base/gtest_prod_util.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "build/build_config.h"
 #include "components/gwp_asan/client/export.h"
 #include "components/gwp_asan/common/allocator_state.h"
+#include "components/gwp_asan/common/lightweight_detector.h"
 
 namespace gwp_asan {
 namespace internal {
+
+// This enum is used during allocator initialization to control the
+// Lightweight UaF Detector - a secondary memory error detection mechanism.
+enum class LightweightDetectorState : bool {
+  kDisabled,
+  kEnabled,
+};
 
 // This class encompasses the allocation and deallocation logic on top of the
 // AllocatorState. Its members are not inspected or used by the crash handler.
@@ -59,7 +68,9 @@ class GWP_ASAN_EXPORT GuardedPageAllocator {
             size_t num_metadata,
             size_t total_pages,
             OutOfMemoryCallback oom_callback,
-            bool is_partition_alloc);
+            bool is_partition_alloc,
+            LightweightDetectorState,
+            size_t num_lightweight_detector_metadata);
 
   // On success, returns a pointer to size bytes of page-guarded memory. On
   // failure, returns nullptr. The allocation is not guaranteed to be
@@ -95,6 +106,10 @@ class GWP_ASAN_EXPORT GuardedPageAllocator {
   inline bool PointerIsMine(const void* ptr) const {
     return state_.PointerIsMine(reinterpret_cast<uintptr_t>(ptr));
   }
+
+  // Records the deallocation stack trace and overwrites the allocation with a
+  // pattern that allows the crash handler to recover the trace ID.
+  void RecordLightweightDeallocation(void* ptr, size_t size);
 
  private:
   // Virtual base class representing a free list of entries T.
@@ -225,6 +240,11 @@ class GWP_ASAN_EXPORT GuardedPageAllocator {
   // TODO(vtsyrklevich): Use an std::vector<> here as well.
   std::unique_ptr<AllocatorState::SlotMetadata[]> metadata_;
 
+  // Same as the above, but used exclusively by the lightweight UAF detector.
+  // Empty if the feature is disabled.
+  std::unique_ptr<AllocatorState::SlotMetadata[]>
+      lightweight_detector_metadata_;
+
   // Maps a slot index to a metadata index (or kInvalidMetadataIdx if no such
   // mapping exists.)
   std::vector<AllocatorState::MetadataIdx> slot_to_metadata_idx_;
@@ -238,10 +258,14 @@ class GWP_ASAN_EXPORT GuardedPageAllocator {
 
   bool is_partition_alloc_ = false;
 
+  std::atomic<LightweightDetector::MetadataId> next_lightweight_metadata_id_{0};
+
   friend class BaseGpaTest;
   friend class CrashAnalyzerTest;
   FRIEND_TEST_ALL_PREFIXES(CrashAnalyzerTest, InternalError);
   FRIEND_TEST_ALL_PREFIXES(CrashAnalyzerTest, StackTraceCollection);
+  FRIEND_TEST_ALL_PREFIXES(LightweightDetectorAllocatorTest, PoisonAlloc);
+  FRIEND_TEST_ALL_PREFIXES(LightweightDetectorAllocatorTest, SlotReuse);
 };
 
 }  // namespace internal

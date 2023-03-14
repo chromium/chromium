@@ -32,11 +32,8 @@ DbusAppmenuRegistrar* DbusAppmenuRegistrar::GetInstance() {
 }
 
 void DbusAppmenuRegistrar::OnMenuBarCreated(DbusAppmenu* menu) {
-  if (base::Contains(menus_, menu)) {
-    NOTREACHED();
-    return;
-  }
-  menus_[menu] = kUninitialized;
+  // Make sure insertion succeeds, we should not already be tracking `menu`.
+  CHECK(menus_.insert({menu, kUninitialized}).second);
   if (service_has_owner_)
     InitializeMenu(menu);
 }

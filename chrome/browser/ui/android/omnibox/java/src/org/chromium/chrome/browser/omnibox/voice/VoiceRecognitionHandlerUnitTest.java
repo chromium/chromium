@@ -4,15 +4,15 @@
 
 package org.chromium.chrome.browser.omnibox.voice;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyBoolean;
-import static org.mockito.Mockito.anyFloat;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyFloat;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.contains;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -132,7 +132,7 @@ public class VoiceRecognitionHandlerUnitTest {
         mProfileSupplier = new ObservableSupplierImpl<>();
         mWindowAndroid = spy(new WindowAndroid(activity));
         mHandler = spy(new VoiceRecognitionHandler(
-                mDelegate, () -> mAssistantVoiceSearchService, () -> {}, mProfileSupplier));
+                mDelegate, () -> mAssistantVoiceSearchService, mProfileSupplier));
         mHandler.addObserver(mObserver);
 
         mWindowAndroid.setAndroidPermissionDelegate(mPermissionDelegate);
@@ -142,9 +142,6 @@ public class VoiceRecognitionHandlerUnitTest {
         doReturn(mDataProvider).when(mDelegate).getLocationBarDataProvider();
         doReturn(mAutocompleteCoordinator).when(mDelegate).getAutocompleteCoordinator();
         doReturn(mWindowAndroid).when(mDelegate).getWindowAndroid();
-
-        doReturn(false).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
-        doReturn(false).when(mAssistantVoiceSearchService).needsEnabledCheck();
 
         mFeatures = new FeatureList.TestValues();
         FeatureList.setTestValues(mFeatures);

@@ -494,7 +494,7 @@
       Site shows intrusive or misleading ads
     </message>
     <message name="IDS_PAGE_INFO_PERMISSION_MANAGED_BY_POLICY" desc="The label used in the toolip for a permission listed in the Page Info bubble if the permission was explicitly set by the user's enterprise policy.">
-      Managed by your organisation
+      Managed by your organization
     </message>
     <message name="IDS_PAGE_INFO_PERMISSION_MANAGED_BY_EXTENSION" desc="The label used in the toolip for a permission listed in the Page Info bubble if the permission was explicitly set by one of the user's extensions.">
       Managed by an extension

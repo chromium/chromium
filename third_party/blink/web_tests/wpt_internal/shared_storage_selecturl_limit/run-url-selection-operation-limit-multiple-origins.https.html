@@ -1,0 +1,41 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="resources/utils.js"></script>
+<script src="../shared_storage/resources/utils.js"></script>
+<script src="../fenced_frame/resources/utils.js"></script>
+
+<body>
+<script>
+'use strict';
+
+function getOtherOriginURL(url) {
+  return new URL(url.toString().replace(location.origin,
+                                        get_host_info().AUTHENTICATED_ORIGIN));
+}
+
+promise_test(async () => {
+  const ancestorKey = token();
+
+  let url0 = generateURL("resources/run-url-selection-operation-limit-inner.https.html", [ancestorKey]);
+  url0.searchParams.append("bits", "24");
+  attachIFrame(url0);
+  const result0 = await nextValueFromServer(ancestorKey);
+  assert_equals(result0, "run_url_selection_limit_inner_loaded");
+
+  let url1 = getRemoteOriginURL(url0);
+  attachIFrame(url1);
+  const result1 = await nextValueFromServer(ancestorKey);
+  assert_equals(result1, "run_url_selection_limit_inner_loaded");
+
+  let url2 = generateURL("resources/run-url-selection-operation-limit-inner.https.html", [ancestorKey]);
+  url2.searchParams.append("bits", "12");
+  url2 = getOtherOriginURL(url2);
+  attachIFrame(url2);
+  const result2 = await nextValueFromServer(ancestorKey);
+  assert_equals(result2, "run_url_selection_limit_inner_loaded");
+}, 'selectURL() with overall per-pageload limit');
+</script>
+</body>

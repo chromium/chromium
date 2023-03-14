@@ -20,6 +20,8 @@
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_coordinator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_edit_table_view_controller.h"
@@ -33,8 +35,6 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -71,6 +71,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   Browser* _browser;
   std::unique_ptr<autofill::PersonalDataManagerObserverBridge> _observer;
+
+  // Whether Settings have been dismissed.
+  BOOL _settingsAreDismissed;
 }
 
 @property(nonatomic, getter=isAutofillCreditCardEnabled)
@@ -114,7 +117,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)dealloc {
-  _personalDataManager->RemoveObserver(_observer.get());
+  if (!_settingsAreDismissed) {
+    _personalDataManager->RemoveObserver(_observer.get());
+  }
 }
 
 #pragma mark - UIViewController
@@ -147,6 +152,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)loadModel {
   [super loadModel];
+  if (_settingsAreDismissed) {
+    return;
+  }
+
   TableViewModel* model = self.tableViewModel;
 
   [model addSectionWithIdentifier:SectionIdentifierSwitches];
@@ -169,6 +178,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Populates card section using personalDataManager.
 - (void)populateCardSection {
+  if (_settingsAreDismissed) {
+    return;
+  }
+
   TableViewModel* model = self.tableViewModel;
   const std::vector<autofill::CreditCard*>& creditCards =
       _personalDataManager->GetCreditCards();
@@ -243,7 +256,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (BOOL)localCreditCardsExist {
-  return !_personalDataManager->GetLocalCreditCards().empty();
+  return !_settingsAreDismissed &&
+         !_personalDataManager->GetLocalCreditCards().empty();
 }
 
 #pragma mark - SettingsControllerProtocol
@@ -254,6 +268,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)reportBackUserAction {
   base::RecordAction(base::UserMetricsAction("MobileCreditCardSettingsBack"));
+}
+
+- (void)settingsWillBeDismissed {
+  DCHECK(!_settingsAreDismissed);
+
+  _personalDataManager->RemoveObserver(_observer.get());
+
+  // Remove observer bridges.
+  _observer.reset();
+
+  // Clear C++ ivars.
+  _personalDataManager = nullptr;
+  _browser = nullptr;
+
+  _settingsAreDismissed = YES;
 }
 
 #pragma mark - SettingsRootTableViewController
@@ -398,6 +427,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   [super tableView:tableView didSelectRowAtIndexPath:indexPath];
+  if (_settingsAreDismissed) {
+    return;
+  }
 
   // Edit mode is the state where the user can select and delete entries. In
   // edit mode, selection is handled by the superclass. When not in edit mode
@@ -426,8 +458,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)tableView:(UITableView*)tableView
     didDeselectRowAtIndexPath:(NSIndexPath*)indexPath {
   [super tableView:tableView didDeselectRowAtIndexPath:indexPath];
-  if (!self.tableView.editing)
+  if (_settingsAreDismissed || !self.tableView.editing) {
     return;
+  }
 
   if (self.tableView.indexPathsForSelectedRows.count == 0)
     self.deleteButton.enabled = NO;
@@ -437,6 +470,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (BOOL)tableView:(UITableView*)tableView
     canEditRowAtIndexPath:(NSIndexPath*)indexPath {
+  if (_settingsAreDismissed) {
+    return NO;
+  }
+
   // Only autofill card cells are editable.
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
   if ([item isKindOfClass:[AutofillCardItem class]]) {
@@ -450,14 +487,20 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)tableView:(UITableView*)tableView
     commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
      forRowAtIndexPath:(NSIndexPath*)indexPath {
-  if (editingStyle != UITableViewCellEditingStyleDelete)
+  if (_settingsAreDismissed ||
+      editingStyle != UITableViewCellEditingStyleDelete) {
     return;
+  }
   [self deleteItemAtIndexPaths:@[ indexPath ]];
 }
 
 #pragma mark - helper methods
 
 - (void)deleteItemAtIndexPaths:(NSArray<NSIndexPath*>*)indexPaths {
+  if (_settingsAreDismissed) {
+    return;
+  }
+
   self.deletionInProgress = YES;
   for (NSIndexPath* indexPath in indexPaths) {
     AutofillCardItem* item = base::mac::ObjCCastStrict<AutofillCardItem>(
@@ -511,6 +554,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Opens new view controller `AutofillAddCreditCardViewController` for fillig
 // credit card details.
 - (void)handleAddPayment {
+  if (_settingsAreDismissed) {
+    return;
+  }
+
   base::RecordAction(
       base::UserMetricsAction("MobileAddCreditCard.AddPaymentMethodButton"));
 

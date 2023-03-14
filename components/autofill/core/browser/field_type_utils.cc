@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/field_type_utils.h"
 
 #include "base/check.h"
+#include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {
 
@@ -32,6 +33,10 @@ bool FieldHasMeaningfulPossibleFieldTypes(const AutofillField& field) {
 
 bool TypeOfFieldIsPossibleType(const AutofillField& field) {
   return field.possible_types().contains(field.Type().GetStorableType());
+}
+
+bool IsStreetNameOrHouseNumberType(const ServerFieldType type) {
+  return type == ADDRESS_HOME_STREET_NAME || type == ADDRESS_HOME_HOUSE_NUMBER;
 }
 
 }  // namespace autofill

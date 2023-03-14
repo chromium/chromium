@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <memory>
 
+#include "base/auto_reset.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -25,7 +26,6 @@ class WaitableEvent;
 }
 
 namespace blink {
-class WebResourceRequestSenderDelegate;
 struct UserAgentMetadata;
 
 namespace scheduler {
@@ -89,12 +89,6 @@ class CONTENT_EXPORT RenderThread : virtual public ChildThread {
   virtual void AddObserver(RenderThreadObserver* observer) = 0;
   virtual void RemoveObserver(RenderThreadObserver* observer) = 0;
 
-  // Set the ResourceRequestSender delegate object for this process.
-  // This does not take the ownership of the delegate. It is expected that the
-  // delegate is kept alive while a request may be dispatched.
-  virtual void SetResourceRequestSenderDelegate(
-      blink::WebResourceRequestSenderDelegate* delegate) = 0;
-
   // Post task to all worker threads. Returns number of workers.
   virtual int PostTaskToAllWebWorkers(base::RepeatingClosure closure) = 0;
 
@@ -124,6 +118,9 @@ class CONTENT_EXPORT RenderThread : virtual public ChildThread {
   // https://github.com/WICG/attribution-reporting-api/blob/main/app_to_web.md.
   virtual attribution_reporting::mojom::OsSupport
   GetOsSupportForAttributionReporting() = 0;
+
+ private:
+  const base::AutoReset<RenderThread*> resetter_;
 };
 
 }  // namespace content

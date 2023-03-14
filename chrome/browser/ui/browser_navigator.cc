@@ -83,8 +83,7 @@
 using content::GlobalRequestID;
 using content::NavigationController;
 using content::WebContents;
-using WebExposedIsolationLevel =
-    content::RenderFrameHost::WebExposedIsolationLevel;
+using WebExposedIsolationLevel = content::WebExposedIsolationLevel;
 
 class BrowserNavigatorWebContentsAdoption {
  public:
@@ -634,6 +633,15 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   if (source_browser && source_browser->is_type_app() &&
       params->disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) {
     params->disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  }
+
+  // Picture-in-picture browser windows must have a source contents in order for
+  // the window to function correctly. If we have no source contents to work
+  // with (e.g. if an extension popup attempts to open a PiP window), we should
+  // cancel the navigation.
+  if (!params->source_contents &&
+      params->disposition == WindowOpenDisposition::NEW_PICTURE_IN_PICTURE) {
+    return nullptr;
   }
 
   // If no source WebContents was specified, we use the selected one from

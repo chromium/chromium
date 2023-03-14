@@ -66,8 +66,7 @@ void PendingLogsService::ScheduleLogsUploadTask(
   base::ScopedClosureRunner delete_file_closure(
       base::GetDeleteFileCallback(temp_file_path));
 
-  if (base::WriteFile(temp_file_path, chrome_cleaner_report_string.c_str(),
-                      chrome_cleaner_report_string.size()) <= 0) {
+  if (!base::WriteFile(temp_file_path, chrome_cleaner_report_string)) {
     PLOG(ERROR) << "Failed to write logging report to "
                 << SanitizePath(temp_file_path);
     return;

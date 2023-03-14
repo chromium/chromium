@@ -8,16 +8,13 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "ash/glanceables/glanceables_controller.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/pill_button.h"
 #include "ash/utility/haptics_util.h"
 #include "ash/wm/desks/cros_next_desk_icon_button.h"
 #include "ash/wm/desks/desk_action_view.h"
@@ -39,7 +36,6 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_session.h"
-#include "ash/wm/overview/overview_types.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/check.h"
@@ -79,9 +75,6 @@ constexpr int kMiniViewsY = 16;
 
 // Spacing between mini views.
 constexpr int kMiniViewsSpacing = 12;
-
-// Location of the "up next" button for glanceables.
-constexpr int kUpNextX = 4;
 
 // Spacing between zero state default desk button and new desk button.
 constexpr int kZeroStateButtonSpacing = 8;
@@ -133,14 +126,6 @@ bool HasExternalKeyboard() {
       return true;
   }
   return false;
-}
-
-// Callback for click/tap on the "Up next" button for glanceables.
-void OnUpNextButtonPressed() {
-  Shell::Get()->overview_controller()->EndOverview(
-      OverviewEndAction::kShowGlanceables,
-      OverviewEnterExitType::kImmediateExit);
-  Shell::Get()->glanceables_controller()->ShowFromOverview();
 }
 
 }  // namespace
@@ -217,16 +202,6 @@ class DesksBarScrollViewLayout : public views::LayoutManager {
 
   void LayoutInternal(views::View* host) {
     const gfx::Rect scroll_bounds = bar_view_->scroll_view_->bounds();
-
-    // The glanceables UI goes on the left edge regardless of zero state or
-    // expanded state.
-    // TODO(crbug.com/1353119): Real layout once we have specs for both modes.
-    auto* up_next_button = bar_view_->up_next_button();
-    if (up_next_button) {
-      const gfx::Size size = up_next_button->GetPreferredSize();
-      const int y = (scroll_bounds.height() / 2) - (size.height() / 2);
-      up_next_button->SetBounds(kUpNextX, y, size.width(), size.height());
-    }
 
     // `host` here is `scroll_view_contents_`.
     if (bar_view_->IsZeroState()) {
@@ -373,16 +348,6 @@ class DesksBarScrollViewLayout : public views::LayoutManager {
   // `LayoutInternal`, and move this to Layout.
   void LayoutInternalCrOSNext(views::View* host) {
     const gfx::Rect scroll_bounds = bar_view_->scroll_view_->bounds();
-
-    // The glanceables UI goes on the left edge regardless of zero state or
-    // expanded state.
-    // TODO(crbug.com/1353119): Real layout once we have specs for both modes.
-    auto* up_next_button = bar_view_->up_next_button();
-    if (up_next_button) {
-      const gfx::Size size = up_next_button->GetPreferredSize();
-      const int y = (scroll_bounds.height() / 2) - (size.height() / 2);
-      up_next_button->SetBounds(kUpNextX, y, size.width(), size.height());
-    }
 
     auto* new_desk_button_label = bar_view_->new_desk_button_label();
     auto* library_button_label = bar_view_->library_button_label();
@@ -594,14 +559,6 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
       scroll_view_->SetContents(std::make_unique<views::View>());
   scroll_view_contents_->SetPaintToLayer();
 
-  if (features::AreGlanceablesEnabled() &&
-      Shell::Get()->session_controller()->IsUserPrimary()) {
-    up_next_button_ =
-        scroll_view_contents_->AddChildView(std::make_unique<PillButton>(
-            base::BindRepeating(&OnUpNextButtonPressed),
-            l10n_util::GetStringUTF16(IDS_GLANCEABLES_UP_NEXT)));
-  }
-
   if (chromeos::features::IsJellyrollEnabled()) {
     default_desk_button_ = scroll_view_contents_->AddChildView(
         std::make_unique<CrOSNextDefaultDeskButton>(this));
@@ -649,8 +606,8 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
           std::make_unique<CrOSNextDeskIconButton>(
               this, &kDesksTemplatesIcon,
               l10n_util::GetStringUTF16(button_text_id),
-              cros_tokens::kCrosSysOnPrimaryContainer,
-              cros_tokens::kCrosSysSystemPrimaryContainer,
+              cros_tokens::kCrosSysOnSecondaryContainer,
+              cros_tokens::kCrosSysInversePrimary,
               /*initially_enabled=*/true,
               base::BindRepeating(&DesksBarView::OnLibraryButtonPressed,
                                   base::Unretained(this))));

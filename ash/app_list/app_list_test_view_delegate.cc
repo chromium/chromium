@@ -180,6 +180,10 @@ int AppListTestViewDelegate::GetShelfSize() {
   return 56;
 }
 
+int AppListTestViewDelegate::GetSystemShelfInsetsInTabletMode() {
+  return GetShelfSize();
+}
+
 bool AppListTestViewDelegate::AppListTargetVisibility() const {
   return true;
 }

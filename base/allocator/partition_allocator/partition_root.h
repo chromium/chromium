@@ -40,7 +40,6 @@
 #include "base/allocator/partition_allocator/chromecast_buildflags.h"
 #include "base/allocator/partition_allocator/freeslot_bitmap.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
-#include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc-inl.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
@@ -713,7 +712,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     return flags.scan_mode == ScanMode::kEnabled;
   }
 
-  static PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+  PA_ALWAYS_INLINE static PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
   GetDirectMapMetadataAndGuardPagesSize() {
     // Because we need to fake a direct-map region to look like a super page, we
     // need to allocate more pages around the payload:
@@ -726,7 +725,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     return 2 * internal::PartitionPageSize();
   }
 
-  static PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+  PA_ALWAYS_INLINE static PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
   GetDirectMapSlotSize(size_t raw_size) {
     // Caller must check that the size is not above the MaxDirectMapped()
     // limit before calling. This also guards against integer overflow in the
@@ -736,8 +735,8 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
         raw_size, internal::SystemPageSize());
   }
 
-  static PA_ALWAYS_INLINE size_t
-  GetDirectMapReservationSize(size_t padded_raw_size) {
+  PA_ALWAYS_INLINE static size_t GetDirectMapReservationSize(
+      size_t padded_raw_size) {
     // Caller must check that the size is not above the MaxDirectMapped()
     // limit before calling. This also guards against integer overflow in the
     // calculation here.
@@ -922,6 +921,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
   // May return an invalid thread cache.
   PA_ALWAYS_INLINE ThreadCache* GetOrCreateThreadCache();
+  PA_ALWAYS_INLINE ThreadCache* GetThreadCache();
 
 #if PA_CONFIG(USE_PARTITION_ROOT_ENUMERATOR)
   static internal::Lock& GetEnumeratorLock();
@@ -946,9 +946,11 @@ class ScopedSyscallTimer {
   ~ScopedSyscallTimer() {
     root_->syscall_count.fetch_add(1, std::memory_order_relaxed);
 
-    uint64_t elapsed_nanos = (base::TimeTicks::Now() - tick_).InNanoseconds();
-    root_->syscall_total_time_ns.fetch_add(elapsed_nanos,
-                                           std::memory_order_relaxed);
+    int64_t elapsed_nanos = (base::TimeTicks::Now() - tick_).InNanoseconds();
+    if (elapsed_nanos > 0) {
+      root_->syscall_total_time_ns.fetch_add(
+          static_cast<uint64_t>(elapsed_nanos), std::memory_order_relaxed);
+    }
   }
 
  private:
@@ -1044,47 +1046,34 @@ PartitionAllocGetSlotStartInBRPPool(uintptr_t address) {
          bucket->slot_size * bucket->GetSlotNumber(offset_in_slot_span);
 }
 
-// Checks whether a given address stays within the same allocation slot after
-// modification.
+// Return values to indicate where a pointer is pointing relative to the bounds
+// of an allocation.
+enum class PtrPosWithinAlloc {
+  // When BACKUP_REF_PTR_POISON_OOB_PTR is disabled, end-of-allocation pointers
+  // are also considered in-bounds.
+  kInBounds,
+#if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
+  kAllocEnd,
+#endif
+  kFarOOB
+};
+
+// Checks whether `test_address` is in the same allocation slot as
+// `orig_address`.
+//
+// This can be called after adding or subtracting from the `orig_address`
+// to produce a different pointer which must still stay in the same allocation.
+//
+// The `type_size` is the size of the type that the raw_ptr is pointing to,
+// which may be the type the allocation is holding or a compatible pointer type
+// such as a base class or char*. It is used to detect pointers near the end of
+// the allocation but not strictly beyond it.
 //
 // This isn't a general purpose function. The caller is responsible for ensuring
 // that the ref-count is in place for this allocation.
-template <typename Z>
-PA_ALWAYS_INLINE PtrPosWithinAlloc
-PartitionAllocIsValidPtrDelta(uintptr_t address, PtrDelta<Z> delta) {
-  // Required for pointers right past an allocation. See
-  // |PartitionAllocGetSlotStartInBRPPool()|.
-  uintptr_t adjusted_address = address - kPartitionPastAllocationAdjustment;
-  PA_DCHECK(IsManagedByNormalBucketsOrDirectMap(adjusted_address));
-  DCheckIfManagedByPartitionAllocBRPPool(adjusted_address);
-
-  uintptr_t slot_start = PartitionAllocGetSlotStartInBRPPool(adjusted_address);
-  // Don't use |adjusted_address| beyond this point at all. It was needed to
-  // pick the right slot, but now we're dealing with very concrete addresses.
-  // Zero it just in case, to catch errors.
-  adjusted_address = 0;
-
-  auto* slot_span = SlotSpanMetadata<ThreadSafe>::FromSlotStart(slot_start);
-  auto* root = PartitionRoot<ThreadSafe>::FromSlotSpan(slot_span);
-  // Double check that ref-count is indeed present.
-  PA_DCHECK(root->brp_enabled());
-
-  uintptr_t object_addr = root->SlotStartToObjectAddr(slot_start);
-  uintptr_t new_address =
-      address + static_cast<uintptr_t>(delta.delta_in_bytes);
-  uintptr_t object_end = object_addr + slot_span->GetUsableSize(root);
-  if (new_address < object_addr || object_end < new_address) {
-    return PtrPosWithinAlloc::kFarOOB;
-#if PA_CONFIG(USE_OOB_POISON)
-  } else if (object_end - delta.type_size < new_address) {
-    // Not even a single element of the type referenced by the pointer can fit
-    // between the pointer and the end of the object.
-    return PtrPosWithinAlloc::kAllocEnd;
-#endif
-  } else {
-    return PtrPosWithinAlloc::kInBounds;
-  }
-}
+PtrPosWithinAlloc IsPtrWithinSameAlloc(uintptr_t orig_address,
+                                       uintptr_t test_address,
+                                       size_t type_size);
 
 PA_ALWAYS_INLINE void PartitionAllocFreeForRefCounting(uintptr_t slot_start) {
   PA_DCHECK(!PartitionRefCountPointer(slot_start)->IsAlive());
@@ -1400,8 +1389,13 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
     // potential use-after-free issues into unexploitable crashes.
     if (PA_UNLIKELY(!ref_count->IsAliveWithNoKnownRefs() &&
                     brp_zapping_enabled())) {
-      internal::SecureMemset(object, internal::kQuarantinedByte,
-                             slot_span->GetUsableSize(this));
+      auto usable_size = slot_span->GetUsableSize(this);
+      auto hook = PartitionAllocHooks::GetQuarantineOverrideHook();
+      if (PA_UNLIKELY(hook)) {
+        hook(object, usable_size);
+      } else {
+        internal::SecureMemset(object, internal::kQuarantinedByte, usable_size);
+      }
     }
 
     if (PA_UNLIKELY(!(ref_count->ReleaseFromAllocator()))) {
@@ -1542,7 +1536,7 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFreeWithThreadCache(
     SlotSpan* slot_span) {
   // PA_LIKELY: performance-sensitive partitions have a thread cache,
   // direct-mapped allocations are uncommon.
-  ThreadCache* thread_cache = GetOrCreateThreadCache();
+  ThreadCache* thread_cache = GetThreadCache();
   if (PA_LIKELY(ThreadCache::IsValid(thread_cache) &&
                 !IsDirectMappedBucket(slot_span->bucket))) {
     size_t bucket_index =
@@ -2267,6 +2261,11 @@ ThreadCache* PartitionRoot<thread_safe>::GetOrCreateThreadCache() {
     }
   }
   return thread_cache;
+}
+
+template <bool thread_safe>
+ThreadCache* PartitionRoot<thread_safe>::GetThreadCache() {
+  return PA_LIKELY(flags.with_thread_cache) ? ThreadCache::Get() : nullptr;
 }
 
 using ThreadSafePartitionRoot = PartitionRoot<internal::ThreadSafe>;

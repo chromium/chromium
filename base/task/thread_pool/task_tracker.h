@@ -217,7 +217,7 @@ class BASE_EXPORT TaskTracker {
                                    TaskSource* task_source,
                                    const SequenceToken& token);
 
-  void NOT_TAIL_CALLED RunTaskImpl(Task& task,
+  NOT_TAIL_CALLED void RunTaskImpl(Task& task,
                                    const TaskTraits& traits,
                                    TaskSource* task_source,
                                    const SequenceToken& token);

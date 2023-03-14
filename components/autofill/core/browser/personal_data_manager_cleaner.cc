@@ -21,9 +21,7 @@ PersonalDataManagerCleaner::PersonalDataManagerCleaner(
     PersonalDataManager* personal_data_manager,
     AlternativeStateNameMapUpdater* alternative_state_name_map_updater,
     PrefService* pref_service)
-    : test_data_creator_(kDisusedDataModelDeletionTimeDelta,
-                         personal_data_manager->app_locale()),
-      personal_data_manager_(personal_data_manager),
+    : personal_data_manager_(personal_data_manager),
       pref_service_(pref_service),
       alternative_state_name_map_updater_(alternative_state_name_map_updater) {
   // Check if profile cleanup has already been performed this major version.
@@ -65,12 +63,8 @@ void PersonalDataManagerCleaner::CleanupDataAndNotifyPersonalDataObservers() {
   if (!personal_data_manager_->IsSyncEnabledFor(syncer::AUTOFILL_WALLET_DATA))
     ApplyCardFixesAndCleanups();
 
-  // Log address, credit card, offer, and usage data startup metrics.
-  personal_data_manager_->LogStoredProfileMetrics();
-  personal_data_manager_->LogStoredCreditCardMetrics();
-  personal_data_manager_->LogStoredIbanMetrics();
-  personal_data_manager_->LogStoredOfferMetrics();
-  personal_data_manager_->LogStoredVirtualCardUsageMetrics();
+  // Log address, credit card, offer, IBAN, and usage data startup metrics.
+  personal_data_manager_->LogStoredDataMetrics();
 
   personal_data_manager_->NotifyPersonalDataObserver();
 }
@@ -122,11 +116,6 @@ void PersonalDataManagerCleaner::ApplyAddressFixesAndCleanups() {
   // Once per major version, otherwise NOP.
   DeleteDisusedAddresses();
 
-  // If feature AutofillCreateDataForTest is enabled, and once per user profile
-  // startup.
-  test_data_creator_.MaybeAddTestProfiles(base::BindRepeating(
-      &PersonalDataManagerCleaner::AddProfileForTest, base::Unretained(this)));
-
   // Ran everytime it is called.
   ClearProfileNonSettingsOrigins();
 
@@ -137,12 +126,6 @@ void PersonalDataManagerCleaner::ApplyAddressFixesAndCleanups() {
 void PersonalDataManagerCleaner::ApplyCardFixesAndCleanups() {
   // Once per major version, otherwise NOP.
   DeleteDisusedCreditCards();
-
-  // If feature AutofillCreateDataForTest is enabled, and once per user profile
-  // startup.
-  test_data_creator_.MaybeAddTestCreditCards(
-      base::BindRepeating(&PersonalDataManagerCleaner::AddCreditCardForTest,
-                          base::Unretained(this)));
 
   // Ran everytime it is called.
   ClearCreditCardNonSettingsOrigins();
@@ -482,16 +465,6 @@ bool PersonalDataManagerCleaner::DeleteDisusedCreditCards() {
   AutofillMetrics::LogNumberOfCreditCardsDeletedForDisuse(num_deleted_cards);
 
   return true;
-}
-
-void PersonalDataManagerCleaner::AddProfileForTest(
-    const AutofillProfile& profile) {
-  personal_data_manager_->AddProfile(profile);
-}
-
-void PersonalDataManagerCleaner::AddCreditCardForTest(
-    const CreditCard& credit_card) {
-  personal_data_manager_->AddCreditCard(credit_card);
 }
 
 }  // namespace autofill

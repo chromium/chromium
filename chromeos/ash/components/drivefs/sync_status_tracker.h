@@ -16,6 +16,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/sequence_checker.h"
 
 namespace drivefs {
 
@@ -72,6 +73,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) SyncStatusTracker {
   SyncStatusTracker& operator=(const SyncStatusTracker&) = delete;
 
   void SetCompleted(const int64_t id, const base::FilePath& path) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
     // Completed events might fire more than once for the same id.
     // Only use completed events to update currently tracked nodes.
     if (id_to_node_.count(id)) {
@@ -141,6 +144,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) SyncStatusTracker {
       const base::FilePath path = base::FilePath()) const;
 
   const base::FilePath GetNodePath(const Node* node) const;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   std::unique_ptr<Node> root_ = std::make_unique<Node>();
   base::flat_map<int64_t, Node*> id_to_node_;

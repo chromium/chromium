@@ -9,7 +9,6 @@ const fileSystemHelpers = requireNative('file_system_natives');
 const entryIdManager = require('entryIdManager');
 
 const GetExternalFileEntry = fileBrowserNatives.GetExternalFileEntry;
-const fileBrowserHandlerInternal = getInternalApi('fileBrowserHandlerInternal');
 const GetIsolatedFileSystem = fileSystemHelpers.GetIsolatedFileSystem;
 
 /**
@@ -92,39 +91,4 @@ bindingUtil.registerEventArgumentMassager('fileBrowserHandler.onExecute',
         onResolve.bind(null, i), onReject,
         /*canCreate*/ false, /*item*/ fileList[i]);
   }
-});
-
-apiBridge.registerCustomHook(function(bindingsAPI) {
-  var apiFunctions = bindingsAPI.apiFunctions;
-
-  apiFunctions.setHandleRequest('selectFile',
-                                function(selectionParams, callback) {
-    function internalCallback(externalCallback, internalResult) {
-      if (!externalCallback)
-        return;
-      let result = undefined;
-      if (internalResult) {
-        result = { success: internalResult.success, entry: null };
-        if (internalResult.success) {
-          GetFileEntry(
-              (fileEntry) => {
-                result.entry = fileEntry;
-                externalCallback(result);
-              },
-              (message) => {
-                result.success = false;
-                result.entry = null;
-                externalCallback(result);
-              },
-              /*canCreate*/ true,
-              /*item*/ internalResult.entry || internalResult.entryForGetFile);
-          return;
-        }
-      }
-      externalCallback(result);
-    }
-
-    return fileBrowserHandlerInternal.selectFile(
-        selectionParams, $Function.bind(internalCallback, null, callback));
-  });
 });

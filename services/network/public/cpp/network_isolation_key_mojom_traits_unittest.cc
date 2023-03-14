@@ -38,9 +38,44 @@ TEST(NetworkIsolationKeyMojomTraitsTest, SerializeAndDeserialize) {
                 network::mojom::NetworkIsolationKey>(original, copied));
     EXPECT_EQ(original, copied);
     EXPECT_EQ(original.GetTopFrameSite(), copied.GetTopFrameSite());
-    EXPECT_EQ(original.GetFrameSite(), copied.GetFrameSite());
+    if (net::NetworkIsolationKey::GetMode() ==
+        net::NetworkIsolationKey::Mode::kFrameSiteEnabled) {
+      EXPECT_EQ(original.GetFrameSite(), copied.GetFrameSite());
+    }
     EXPECT_EQ(original.IsTransient(), copied.IsTransient());
   }
+}
+
+TEST(NetworkIsolationKeyMojomTraitsTest, DeserializeFailure) {
+  std::vector<uint8_t> serialized;
+  net::NetworkIsolationKey deserialized;
+
+  if (net::NetworkIsolationKey::GetMode() ==
+      net::NetworkIsolationKey::Mode::kFrameSiteEnabled) {
+    auto empty_top_level_site = network::mojom::NetworkIsolationKey::New(
+        /*top_frame_site=*/absl::nullopt,
+        net::SchemefulSite(url::Origin::Create(GURL("http://a.test/"))),
+        /*nonce=*/absl::nullopt);
+    serialized =
+        network::mojom::NetworkIsolationKey::Serialize(&empty_top_level_site);
+    EXPECT_FALSE(network::mojom::NetworkIsolationKey::Deserialize(
+        serialized, &deserialized));
+
+    auto empty_frame_site = network::mojom::NetworkIsolationKey::New(
+        net::SchemefulSite(url::Origin::Create(GURL("http://a.test/"))),
+        /*frame_site=*/absl::nullopt, /*nonce=*/absl::nullopt);
+    serialized =
+        network::mojom::NetworkIsolationKey::Serialize(&empty_frame_site);
+    EXPECT_FALSE(network::mojom::NetworkIsolationKey::Deserialize(
+        serialized, &deserialized));
+  }
+
+  auto token_only = network::mojom::NetworkIsolationKey::New(
+      /*top_frame_site=*/absl::nullopt, /*frame_site=*/absl::nullopt,
+      base::UnguessableToken::Create());
+  serialized = network::mojom::NetworkIsolationKey::Serialize(&token_only);
+  EXPECT_FALSE(network::mojom::NetworkIsolationKey::Deserialize(serialized,
+                                                                &deserialized));
 }
 
 }  // namespace mojo

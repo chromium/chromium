@@ -562,6 +562,7 @@ template <typename StringType>
 void TestEscapeAndUnescape() {
   // Check the short strings; this tests the math (and boundaries)
   for (const auto& tc : base64_tests) {
+    // Test plain base64.
     StringType encoded("this junk should be ignored");
     absl::Base64Escape(tc.plaintext, &encoded);
     EXPECT_EQ(encoded, tc.cyphertext);
@@ -571,22 +572,26 @@ void TestEscapeAndUnescape() {
     EXPECT_TRUE(absl::Base64Unescape(encoded, &decoded));
     EXPECT_EQ(decoded, tc.plaintext);
 
-    StringType websafe(tc.cyphertext);
-    for (int c = 0; c < websafe.size(); ++c) {
-      if ('+' == websafe[c]) websafe[c] = '-';
-      if ('/' == websafe[c]) websafe[c] = '_';
+    StringType websafe_with_padding(tc.cyphertext);
+    for (unsigned int c = 0; c < websafe_with_padding.size(); ++c) {
+      if ('+' == websafe_with_padding[c]) websafe_with_padding[c] = '-';
+      if ('/' == websafe_with_padding[c]) websafe_with_padding[c] = '_';
+      // Intentionally keeping padding aka '='.
+    }
+
+    // Test plain websafe (aka without padding).
+    StringType websafe(websafe_with_padding);
+    for (unsigned int c = 0; c < websafe.size(); ++c) {
       if ('=' == websafe[c]) {
         websafe.resize(c);
         break;
       }
     }
-
     encoded = "this junk should be ignored";
     absl::WebSafeBase64Escape(tc.plaintext, &encoded);
     EXPECT_EQ(encoded, websafe);
     EXPECT_EQ(absl::WebSafeBase64Escape(tc.plaintext), websafe);
 
-    // Let's try the string version of the decoder
     decoded = "this junk should be ignored";
     EXPECT_TRUE(absl::WebSafeBase64Unescape(websafe, &decoded));
     EXPECT_EQ(decoded, tc.plaintext);

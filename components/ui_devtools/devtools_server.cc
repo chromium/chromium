@@ -37,8 +37,7 @@ const base::FilePath::CharType kUIDevToolsActivePortFileName[] =
 void WriteUIDevtoolsPortToFile(base::FilePath output_dir, int port) {
   base::FilePath path = output_dir.Append(kUIDevToolsActivePortFileName);
   std::string port_target_string = base::StringPrintf("%d", port);
-  if (base::WriteFile(path, port_target_string.c_str(),
-                      static_cast<int>(port_target_string.length())) < 0) {
+  if (!base::WriteFile(path, port_target_string)) {
     LOG(ERROR) << "Error writing UIDevTools active port to file";
   }
 }
@@ -120,8 +119,11 @@ void UiDevToolsServer::CreateTCPServerSocket(
   // Create the socket using the address 127.0.0.1 to listen on all interfaces.
   net::IPAddress address(127, 0, 0, 1);
   constexpr int kBacklog = 1;
+
+  auto options = network::mojom::TCPServerSocketOptions::New();
+  options->backlog = kBacklog;
   network_context->CreateTCPServerSocket(
-      net::IPEndPoint(address, port), kBacklog,
+      net::IPEndPoint(address, port), std::move(options),
       net::MutableNetworkTrafficAnnotationTag(tag),
       std::move(server_socket_receiver), std::move(callback));
 }

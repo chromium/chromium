@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_POLICY_MESSAGING_LAYER_UTIL_REPORTING_SERVER_CONNECTOR_H_
 #define CHROME_BROWSER_POLICY_MESSAGING_LAYER_UTIL_REPORTING_SERVER_CONNECTOR_H_
 
+#include <memory>
+
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
@@ -17,6 +20,10 @@
 #include "components/reporting/util/statusor.h"
 
 namespace reporting {
+
+class EncryptedReportingClient;
+
+BASE_DECLARE_FEATURE(kEnableEncryptedReportingClientForUpload);
 
 // Singleton wrapper of a client used for uploading events to the reporting
 // server. Enables safe access to the client with an ability to detect when it
@@ -48,6 +55,9 @@ class ReportingServerConnector : public ::policy::CloudPolicyCore::Observer {
                                     ResponseCallback callback);
 
  private:
+  using ResponseCallbackInternal =
+      base::OnceCallback<void(absl::optional<base::Value::Dict>)>;
+
   friend struct base::DefaultSingletonTraits<ReportingServerConnector>;
 
   // Manages reporting accumulated payload sizes per hour via UMA.
@@ -114,6 +124,10 @@ class ReportingServerConnector : public ::policy::CloudPolicyCore::Observer {
   void OnCoreDisconnecting(::policy::CloudPolicyCore* core) override;
   void OnCoreDestruction(::policy::CloudPolicyCore* core) override;
 
+  void UploadEncryptedReportInternal(base::Value::Dict merging_payload,
+                                     absl::optional<base::Value::Dict> context,
+                                     ResponseCallbackInternal callback);
+
   // Manages reporting accumulated payload sizes per hour via UMA.
   PayloadSizePerHourUmaReporter payload_size_per_hour_uma_reporter_;
 
@@ -123,6 +137,8 @@ class ReportingServerConnector : public ::policy::CloudPolicyCore::Observer {
   // Onwed by CloudPolicyCore. Used by `UploadEncryptedReport` - must be
   // non-null by then. Cached here (only on UI task runner).
   raw_ptr<::policy::CloudPolicyClient> client_ = nullptr;
+
+  std::unique_ptr<EncryptedReportingClient> encrypted_reporting_client_;
 };
 }  // namespace reporting
 

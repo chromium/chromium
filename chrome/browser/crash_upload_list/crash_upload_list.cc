@@ -16,7 +16,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/upload_list/crash_upload_list.h"
-#include "components/upload_list/text_log_upload_list.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -30,6 +29,11 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "components/upload_list/combining_upload_list.h"
+#include "components/upload_list/text_log_upload_list.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/crash_upload_list/crash_upload_list_chromeos.h"
 #endif
 
 scoped_refptr<UploadList> CreateCrashUploadList() {
@@ -48,8 +52,6 @@ scoped_refptr<UploadList> CreateCrashUploadList() {
   base::PathService::Get(chrome::DIR_CRASH_DUMPS, &crash_dir_path);
   base::FilePath upload_log_path =
       crash_dir_path.AppendASCII(CrashUploadList::kReporterLogFilename);
-  scoped_refptr<UploadList> result =
-      base::MakeRefCounted<TextLogUploadList>(upload_log_path);
 
 #if BUILDFLAG(IS_LINUX)
   // Crashpad keeps the records of C++ crashes (segfaults, etc) in its
@@ -57,11 +59,14 @@ scoped_refptr<UploadList> CreateCrashUploadList() {
   // records to the older text format. Combine the two to present a complete
   // list to the user.
   std::vector<scoped_refptr<UploadList>> uploaders = {
-      base::MakeRefCounted<CrashUploadListCrashpad>(), std::move(result)};
-  result = base::MakeRefCounted<CombiningUploadList>(std::move(uploaders));
+      base::MakeRefCounted<CrashUploadListCrashpad>(),
+      base::MakeRefCounted<TextLogUploadList>(upload_log_path)};
+  return base::MakeRefCounted<CombiningUploadList>(std::move(uploaders));
+#elif BUILDFLAG(IS_CHROMEOS)
+  return base::MakeRefCounted<CrashUploadListChromeOS>(upload_log_path);
+#else  // BUILDFLAG(IS_LINUX)
+#error "This code snippet must be compiled for either Linux or ChromeOS."
 #endif  // BUILDFLAG(IS_LINUX)
-  return result;
-
 #else
   return new CrashUploadListCrashpad();
 #endif  // BUILDFLAG(IS_ANDROID)

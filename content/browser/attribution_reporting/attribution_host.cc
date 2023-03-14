@@ -18,8 +18,8 @@
 #include "components/attribution_reporting/registration_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
-#include "content/browser/attribution_reporting/attribution_constants.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
+#include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_metrics.h"
@@ -38,6 +38,8 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-shared.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -178,15 +180,10 @@ void AttributionHost::DidRedirectNavigation(
     return;
   }
 
-  DCHECK(navigation_handle->GetImpression());
+  const auto impression = navigation_handle->GetImpression();
+  DCHECK(impression.has_value());
 
-  std::string source_header;
-  if (!navigation_handle->GetResponseHeaders()->GetNormalizedHeader(
-          kAttributionReportingRegisterSourceHeader, &source_header)) {
-    return;
-  }
-
-  AttributionManager* attribution_manager =
+  auto* attribution_manager =
       AttributionManager::FromWebContents(web_contents());
   if (!attribution_manager) {
     return;
@@ -199,7 +196,6 @@ void AttributionHost::DidRedirectNavigation(
 
   const std::vector<GURL>& redirect_chain =
       navigation_handle->GetRedirectChain();
-
   if (redirect_chain.size() < 2) {
     return;
   }
@@ -210,15 +206,13 @@ void AttributionHost::DidRedirectNavigation(
   // redirect chain.
   absl::optional<SuitableOrigin> reporting_origin =
       SuitableOrigin::Create(redirect_chain[redirect_chain.size() - 2]);
-
   if (!reporting_origin) {
     return;
   }
 
-  auto impression = navigation_handle->GetImpression();
   data_host_manager->NotifyNavigationRedirectRegistration(
-      navigation_handle->GetImpression()->attribution_src_token,
-      std::move(source_header), std::move(*reporting_origin),
+      impression->attribution_src_token,
+      navigation_handle->GetResponseHeaders(), std::move(*reporting_origin),
       it->second.source_origin, it->second.input_event, impression->nav_type,
       it->second.is_within_fenced_frame, it->second.initiator_root_frame_id);
 }
@@ -446,7 +440,16 @@ void AttributionHost::BindReceiver(
 void AttributionHost::NotifyFencedFrameReportingBeaconStarted(
     BeaconId beacon_id,
     RenderFrameHostImpl* initiator_frame_host) {
+  if (!base::FeatureList::IsEnabled(kAttributionFencedFrameReportingBeacon)) {
+    return;
+  }
+
   if (!initiator_frame_host) {
+    return;
+  }
+
+  if (!initiator_frame_host->IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kAttributionReporting)) {
     return;
   }
 
@@ -473,7 +476,11 @@ void AttributionHost::NotifyFencedFrameReportingBeaconStarted(
     return;
   }
 
-  absl::optional<AttributionInputEvent> input_event;
+  GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+      initiator_frame_host,
+      blink::mojom::WebFeature::kAttributionFencedFrameReportingBeacon);
+
+  AttributionInputEvent input_event;
   if (absl::holds_alternative<NavigationBeaconId>(beacon_id)) {
     input_event = AttributionHost::FromWebContents(
                       WebContents::FromRenderFrameHost(initiator_frame_host))

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 29
+// Next MinVersion: 31
 
 // This file defines the mojo interface between the ARC networking stack and
 // Chrome OS. There are three different groups of interactions:
@@ -729,7 +729,24 @@ struct LohsConfig {
   string? passphrase@3;
 };
 
-// Next Method ID: 20
+// Request object that is passed to the Chrome API RequestPasspointAppApproval.
+struct PasspointApprovalRequest {
+  // The package name of the app requesting the approval. This is needed for
+  // Chrome to check if the app window is valid.
+  string package_name;
+
+  // The name of the app requesting the approval.
+  string app_name;
+};
+
+// Result object that is returned to the caller to the Chrome API
+// RequestPasspointAppApproval.
+struct PasspointApprovalResponse {
+  // True if the user allowed the request.
+  bool allowed;
+};
+
+// Next Method ID: 22
 // IDs 3 and 9 are missing as they belonged to deprecated methods.
 // Mojo interface exposed by the Chrome browser process for
 // networking/WiFi/VPN, ARC is the client.
@@ -752,6 +769,10 @@ interface NetHost {
 
   // Deletes an existing network.
   [MinVersion=4] ForgetNetwork@6(string guid) => (NetworkResult status);
+
+  // Updates an existing Wifi network.
+  [MinVersion=29] UpdateWifiNetwork@20(string guid, WifiConfiguration cfg) =>
+      (NetworkResult status);
 
   // Initiates a network connection.  If called when connected to a different
   // network, it will drop the current connection first.
@@ -789,6 +810,11 @@ interface NetHost {
   // unless the lockdown is dictated via policy.
   // Call with empty string as |vpnPackage| to lift the restriction.
   [MinVersion=9] SetAlwaysOnVpn@13(string vpnPackage, bool lockdown);
+
+  // Sends a request to Chrome to ask for user approval for the app to set up
+  // WiFi networks through Passpoint.
+  [MinVersion=30] RequestPasspointAppApproval@21(
+      PasspointApprovalRequest request) => (PasspointApprovalResponse response);
 
   // Adds a PasspointCredentials block provided by an Android App onto the host
   // platform.

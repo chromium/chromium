@@ -155,9 +155,6 @@
       <div is="action-link" on-click="discardUrgentNow_">
         [Urgent discard a tab now]
       </div>
-      <div is="action-link" on-click="toggleHighEfficiencyMode_">
-        [Toggle high efficiency mode]
-      </div>
       <div is="action-link" on-click="toggleBatterySaverMode_">
         [Toggle battery saver mode]
       </div>
@@ -274,6 +271,10 @@
                 <div is="action-link" on-click="urgentDiscardTab_"
                     disabled$="[[!canDiscard_(item)]]">
                   [Urgent Discard]
+                </div>
+                <div is="action-link" on-click="proactiveDiscardTab_"
+                    disabled$="[[!canDiscard_(item)]]">
+                  [Proactive Discard]
                 </div>
               </td>
             </tr>

@@ -32,6 +32,7 @@
 <translation id="2450140762465183767">Xa podes utilizar Chromium sempre que toques ligazóns en mensaxes, en documentos e noutras aplicacións.</translation>
 <translation id="2478931088402984578">Selecciona <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
 <translation id="2590893390871230428">Sincronizar os teus datos de Chromium</translation>
+<translation id="2618596336309823556">Na configuración do teu dispositivo, abre <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> e selecciona Chromium</translation>
 <translation id="2650312721222849884">Para ver as túas pestanas desde calquera dispositivo no que utilices Chromium, activa a sincronización</translation>
 <translation id="2684230048001240293">Define Chromium como predeterminado para sincronizar as pestanas, os contrasinais e a información de pago con todos os teus dispositivos</translation>
 <translation id="2730884209570016437">Chromium non pode usar a cámara porque a está usando outra aplicación</translation>
@@ -92,6 +93,7 @@
 <translation id="7118091470949186573">Xa podes utilizar Chromium sempre que toques ligazóns en mensaxes, en documentos e noutras aplicacións.</translation>
 <translation id="7165402419892018581">Escolle Chromium para autocompletar</translation>
 <translation id="7175400662502680481">O teu contrasinal púxose en risco debido a unha violación da seguranza dos datos. O xestor de contrasinais recomenda que o cambies de inmediato.</translation>
+<translation id="7192111075364461693">As notificacións de Chromium están desactivadas actualmente na configuración do dispositivo.</translation>
 <translation id="7208566199746267865">Chromium fai que aforres tempo ao pasar as túas contas á web. Podes engadir ou eliminar contas en Configuración.</translation>
 <translation id="725427773388857052">Chromium pode protexerte contra violacións da seguranza dos datos, sitios web que non son seguros e moito máis.</translation>
 <translation id="7255976941681861701">Coñece o novo menú de Chromium</translation>
@@ -115,7 +117,6 @@
 <translation id="8073677936375100957">Queres borrar os teus datos de Chromium deste dispositivo?</translation>
 <translation id="8240981428553046115">Chromium non puido buscar actualizacións. Téntao máis tarde.</translation>
 <translation id="8409374867500149834">Contas coa máxima seguranza de Chromium contra sitios web daniños</translation>
-<translation id="8460301378281140593">Na configuración do teu iPhone, abre Password Options (Opcións de contrasinais) e selecciona Chromium</translation>
 <translation id="858114650497379505">Podes utilizar os contrasinais que gardaches no xestor de contrasinais noutras aplicacións do teu iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" />, os autores de Chromium. Reservados todos os dereitos.</translation>
 <translation id="865600487977764604">Protéxete en Chromium e pode utilizarse para mellorar a túa seguranza noutras aplicacións de Google cando teñas a sesión iniciada.</translation>
@@ -132,6 +133,7 @@ Cuestións que se deben ter en conta:
   • Se activas a sincronización, nas métricas tamén podería figurar información sobre os URL que visitas.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Esta conta e os datos que estean sen gardar quitaranse de Chromium.</translation>
 <translation id="894437814105052438">Cando peches sesión, Chromium non sincronizará datos novos coa túa Conta de Google. Os datos que se sincronizasen antes permanecerán na conta.</translation>
+<translation id="8963279154877372067">Permitir que as notificacións de Chromium avisen sobre as baixadas de prezo</translation>
 <translation id="9022552996538154597">Iniciar sesión en Chromium</translation>
 <translation id="9059693977935746710">Non terás que lembrar este contrasinal. Gardarase no xestor de contrasinais para <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium está desactualizado</translation>

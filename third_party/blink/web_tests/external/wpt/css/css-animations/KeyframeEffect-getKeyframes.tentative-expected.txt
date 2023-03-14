@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-FAIL KeyframeEffect.getKeyframes() returns no frames for various kinds of empty enimations assert_equals: number of frames with empty @keyframes expected 0 but got 2
+FAIL KeyframeEffect.getKeyframes() returns no frames for various kinds of empty animations assert_equals: number of frames when @keyframes has empty keyframes expected 0 but got 2
 PASS KeyframeEffect.getKeyframes() returns expected frames for a simple animation
 PASS KeyframeEffect.getKeyframes() returns frames with expected easing values, when the easing comes from animation-timing-function on the element
 PASS KeyframeEffect.getKeyframes() returns frames with expected easing values, when the easing is specified on each keyframe
@@ -29,6 +29,6 @@ PASS KeyframeEffect.getKeyframes() returns expected values for animations with C
 PASS KeyframeEffect.getKeyframes() returns expected values for animations with a CSS variable which is overriden by the value in keyframe
 PASS KeyframeEffect.getKeyframes() returns expected values for animations with only custom property in a keyframe
 PASS KeyframeEffect.getKeyframes() reflects changes to @keyframes rules
-FAIL KeyframeEffect.getKeyframes() returns expected values for animations with implicit values and a non-default timingfunction specified for 0% and 100% assert_array_equals: properties on Keyframe #0 should match lengths differ, expected array ["composite", "computedOffset", "easing", "offset"] length 4, got ["composite", "computedOffset", "easing", "left", "offset"] length 5
+PASS KeyframeEffect.getKeyframes() returns expected values for animations with implicit values and a non-default timingfunction specified for 0% and 100%
 Harness: the test ran to completion.
 

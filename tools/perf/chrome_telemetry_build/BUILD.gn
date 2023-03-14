@@ -199,6 +199,14 @@ group("telemetry_chrome_test_without_chrome") {
     ]
   }
 
+  if (is_win) {
+    data_deps += [
+      # This is a stand-in for minidump_stackwalk on Windows since
+      # minidump_stackwalk is not defined on Windows.
+      "//third_party/crashpad/crashpad/tools:dump_minidump_annotations",
+    ]
+  }
+
   if (is_mac) {
     data += [
       # Required for the hermetic otool binary, which is required for

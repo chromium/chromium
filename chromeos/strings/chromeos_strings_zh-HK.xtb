@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">非常好 (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2364498172489649528">已通過</translation>
+<translation id="2367335866686097760">對應緊個制</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">傳送意見反映報告</translation>
 <translation id="2407209115954268704">SIM 卡鎖定狀態</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">改咗顯示圖片</translation>
 <translation id="3192947282887913208">音效檔案</translation>
 <translation id="3199982728237701504">文件送紙器 (雙面)</translation>
+<translation id="3211671540163313381">對應緊十字制</translation>
 <translation id="3226405216343213872">正在尋找掃瞄器</translation>
+<translation id="3226657629376379887">版面配置操作選單</translation>
 <translation id="3246869037381808805">超過 1 天前的列印工作將被移除</translation>
 <translation id="3268178239013324452">失敗 - 機蓋未關</translation>
 <translation id="3275729367986477355">顯示圖片</translation>
@@ -253,6 +256,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">安全性</translation>
 <translation id="3435896845095436175">啟用</translation>
+<translation id="345256797477978759">將視窗固定喺畫面<ph name="DIRECTION" />較大嘅部分</translation>
 <translation id="3456078764689556234">印咗 <ph name="PRINTED_PAGES" /> 頁，總共有 <ph name="TOTAL_PAGES" /> 頁。</translation>
 <translation id="345898999683440380">掃瞄緊第 <ph name="PAGE_NUM" /> 頁。完成咗 <ph name="PERCENTAGE_VALUE" />%。</translation>
 <translation id="3459509316159669723">列印</translation>
@@ -273,12 +277,14 @@
 <translation id="3595596368722241419">電池已滿</translation>
 <translation id="3600339377155080675">螢幕鏡像</translation>
 <translation id="3602290021589620013">預覽</translation>
+<translation id="360282891121575443">其他使用者可更新共享相簿中的相片。「每日變更」選項可能會顯示目前不在相簿中的桌布。</translation>
 <translation id="3603829704940252505">顯示圖片</translation>
 <translation id="3604713164406837697">變更桌布</translation>
 <translation id="360565022852130722">已使用防護力較弱的通訊協定 WEP 802.1x 保護 Wi-Fi 網絡</translation>
 <translation id="3606583719724308068">連線至 HTTPS 網站延遲時間過長</translation>
 <translation id="361575905210396100">多謝您的意見</translation>
 <translation id="3632579075709132555">私隱保護畫面切換</translation>
+<translation id="3639846061339007994">頂部</translation>
 <translation id="3651050199673793219">揀溫度單位</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />測試</translation>
 <translation id="370665806235115550">載入中…</translation>
@@ -520,6 +526,7 @@
 <translation id="576835345334454681">顯示屏校光亮度</translation>
 <translation id="57838592816432529">静音</translation>
 <translation id="5784136236926853061">HTTP 延遲時間過長</translation>
+<translation id="5826644637650799838">關於此桌布</translation>
 <translation id="5832805196449965646">新增使用者</translation>
 <translation id="583281660410589416">不明</translation>
 <translation id="5843706793424741864">華氏</translation>
@@ -562,6 +569,7 @@
 <translation id="6117895505466548728">「<ph name="TITLE" />」和另外 <ph name="NUMBER" /> 個相簿</translation>
 <translation id="6122191549521593678">在線</translation>
 <translation id="6122277663991249694">Chrome OS 輸入方法服務</translation>
+<translation id="6136285399872347291">退格</translation>
 <translation id="6137767437444130246">使用者憑證</translation>
 <translation id="6146993107019042706">如要完成變更，請輸入您的新密碼</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -609,6 +617,7 @@
 <translation id="650266656685499220">如要建立相簿，請前往「Google 相片」</translation>
 <translation id="6516990319416533844">如要測試充電速率，請讓電池耗電一小段時間</translation>
 <translation id="6517239166834772319">探索</translation>
+<translation id="6526200165918397681">相符的桌布</translation>
 <translation id="6527081081771465939">未知的 Wi-Fi 安全通訊協定</translation>
 <translation id="6535178685492749208">您已離線。意見將會在稍後傳送。</translation>
 <translation id="65587193855025101">平台式</translation>
@@ -628,6 +637,7 @@
 <translation id="6657585470893396449">密碼</translation>
 <translation id="6659594942844771486">分頁</translation>
 <translation id="6692996468359469499">取得您選取項目相關資料</translation>
+<translation id="6698459586333070823">其他使用者可更新共享相簿</translation>
 <translation id="6704062477274546131">DNS 解析</translation>
 <translation id="6723839937902243910">電源</translation>
 <translation id="6723847290197874913">鍵盤背光</translation>
@@ -664,6 +674,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">失敗 - 授權失敗</translation>
 <translation id="7103252855940681301">裝置 <ph name="INDEX" /> (總共 <ph name="COUNT" /> 個)，名稱為 <ph name="NAME" />。</translation>
+<translation id="7108668606237948702">Enter 鍵</translation>
 <translation id="7130438335435247835">存取點名稱 (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{域名伺服器}other{域名伺服器}}</translation>
 <translation id="7143207342074048698">正在連接</translation>
@@ -673,6 +684,7 @@
 <translation id="7155171745945906037">相機或檔案中的現有照片</translation>
 <translation id="7162487448488904999">媒體庫</translation>
 <translation id="7170236477717446850">個人檔案相片</translation>
+<translation id="7171919371520438592">將視窗固定喺畫面<ph name="DIRECTION" />較細嘅部分</translation>
 <translation id="7172721935181587524">1 張圖片</translation>
 <translation id="7177485034254901881">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。管理員可能會遠端設定裝置。</translation>
 <translation id="7180611975245234373">重新整理</translation>
@@ -748,6 +760,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">供應商類型</translation>
 <translation id="7882501334836096755">公開金鑰</translation>
+<translation id="78957024357676568">向左</translation>
 <translation id="7915220255123750251">管理網絡 APN 設定。APN 會在流動網絡和互聯網之間建立連線。</translation>
 <translation id="7936303884198020182">找不到域名伺服器</translation>
 <translation id="7942349550061667556">紅色</translation>
@@ -776,9 +789,11 @@
 <translation id="8183974620058026102">附加</translation>
 <translation id="8206859287963243715">蜂窩</translation>
 <translation id="8208861521865154048">獎賞</translation>
+<translation id="8210733748736414123">底部</translation>
 <translation id="8226628635270268143">選擇喜愛的相片和相簿</translation>
 <translation id="8227119283605456246">附加檔案</translation>
 <translation id="8230672074305416752">無法連線偵測預設的網絡閘道</translation>
+<translation id="8242426110754782860">繼續</translation>
 <translation id="8246209727385807362">不明流動網絡供應商</translation>
 <translation id="827422111966801947">靛藍色</translation>
 <translation id="8286154143153872371">如要查看桌布，請連線至網絡，然後重新整理頁面。</translation>
@@ -789,9 +804,11 @@
 <translation id="8318753676953949627">沒有圖片</translation>
 <translation id="8336739000755212683">變更裝置的帳戶圖片</translation>
 <translation id="8347227221149377169">列印工作</translation>
+<translation id="8351855506390808906">對應緊接觸點</translation>
 <translation id="8352772353338965963">新增可多重登入的帳戶。這些帳戶的使用者不需提供密碼即可存取所有已登入的帳戶。因此，建議您只讓信任的帳戶使用這項功能。</translation>
 <translation id="8364946094152050673">域名伺服器空白</translation>
 <translation id="8372477600026034341">其他主機</translation>
+<translation id="8380114448424469341">將視窗固定喺畫面<ph name="DIRECTION" />半部分</translation>
 <translation id="8395584934117017006">此 <ph name="DEVICE_TYPE" /> 由企業管理</translation>
 <translation id="8398927464629426868">裝置目前的充電或放電率</translation>
 <translation id="8410244574650205435">已自動偵測</translation>
@@ -856,6 +873,7 @@
 <translation id="8930622219860340959">無線網絡</translation>
 <translation id="8936793075252196307">用戶端 IP 位址</translation>
 <translation id="894617464444543719">裝置類型係手機。</translation>
+<translation id="8957423540740801332">向右</translation>
 <translation id="8968751544471797276">充電率</translation>
 <translation id="8970109610781093811">再次執行</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -883,6 +901,7 @@
 <translation id="9137526406337347448">Google 服務</translation>
 <translation id="9138630967333032450">左邊 Shift</translation>
 <translation id="9149391708638971077">執行記憶體測試</translation>
+<translation id="9161276708550942948">空格鍵</translation>
 <translation id="9173638680043580060">尚餘不到 1 分鐘</translation>
 <translation id="917720651393141712">測試</translation>
 <translation id="9188992814426075118">鍵盤可自動與桌布配搭</translation>

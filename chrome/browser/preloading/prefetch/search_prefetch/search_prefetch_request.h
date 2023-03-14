@@ -9,7 +9,6 @@
 
 #include "base/functional/callback.h"
 #include "base/state_transitions.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "url/gurl.h"
 
@@ -17,11 +16,16 @@ class PrerenderManager;
 class Profile;
 class SearchPrefetchURLLoader;
 class StreamingSearchPrefetchURLLoader;
+
 namespace content {
 class PreloadingAttempt;
 enum class PreloadingTriggeringOutcome;
 enum class PreloadingFailureReason;
 }  // namespace content
+
+namespace net {
+struct NetworkTrafficAnnotationTag;
+}  // namespace net
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -166,7 +170,6 @@ class SearchPrefetchRequest {
   void StartPrefetchRequestInternal(
       Profile* profile,
       std::unique_ptr<network::ResourceRequest> resource_request,
-      const net::NetworkTrafficAnnotationTag& traffic_annotation,
       base::OnceCallback<void(bool)> report_error_callback);
 
   // Stops the on-going prefetch and should mark |current_status_|
@@ -207,8 +210,6 @@ class SearchPrefetchRequest {
 
   // Whether this is for a navigation-time prefetch.
   bool navigation_prefetch_;
-
-  std::unique_ptr<net::NetworkTrafficAnnotationTag> network_traffic_annotation_;
 
   // The ongoing prefetch request. Null before and after the fetch.
   std::unique_ptr<StreamingSearchPrefetchURLLoader> streaming_url_loader_;

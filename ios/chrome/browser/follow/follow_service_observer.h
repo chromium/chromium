@@ -23,6 +23,9 @@ class FollowServiceObserver : public base::CheckedObserver {
 
   // Invoked when a website is unfollowed.
   virtual void OnWebSiteUnfollowed(FollowedWebSite* web_site) = 0;
+
+  // Invoked when followed websites are loaded.
+  virtual void OnFollowedWebSitesLoaded() = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_FOLLOW_FOLLOW_SERVICE_OBSERVER_H_

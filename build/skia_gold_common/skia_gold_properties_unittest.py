@@ -29,6 +29,8 @@ class SkiaGoldPropertiesInitializationTest(unittest.TestCase):
     self.assertEqual(instance._local_pixel_tests,
                      expected.get('local_pixel_tests'))
     self.assertEqual(instance._no_luci_auth, expected.get('no_luci_auth'))
+    self.assertEqual(instance._disable_auth, expected.get('disable_auth'))
+    self.assertEqual(instance._service_account, expected.get('service_account'))
     self.assertEqual(instance._code_review_system,
                      expected.get('code_review_system'))
     self.assertEqual(instance._continuous_integration_system,
@@ -59,6 +61,14 @@ class SkiaGoldPropertiesInitializationTest(unittest.TestCase):
     args = createSkiaGoldArgs(no_luci_auth=True)
     sgp = skia_gold_properties.SkiaGoldProperties(args)
     self.verifySkiaGoldProperties(sgp, {'no_luci_auth': True})
+
+  def test_initializeSkiaGoldAttributes_explicitDisableAuth(self) -> None:
+    args = createSkiaGoldArgs(disable_auth=True)
+    sgp = skia_gold_properties.SkiaGoldProperties(args)
+    self.verifySkiaGoldProperties(sgp, {
+        'disable_auth': True,
+        'no_luci_auth': True
+    })
 
   def test_initializeSkiaGoldAttributes_explicitServiceAccount(self) -> None:
     args = createSkiaGoldArgs(service_account='a')

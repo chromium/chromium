@@ -185,8 +185,8 @@ struct SlotSpanMetadata {
 
   // Public API
   // Note the matching Alloc() functions are in PartitionPage.
-  PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-  PA_NOINLINE void FreeSlowPath(size_t number_of_freed);
+  PA_NOINLINE PA_COMPONENT_EXPORT(PARTITION_ALLOC) void FreeSlowPath(
+      size_t number_of_freed);
   PA_ALWAYS_INLINE PartitionFreelistEntry* PopForAlloc(size_t size);
   PA_ALWAYS_INLINE void Free(uintptr_t ptr);
   // Appends the passed freelist to the slot-span's freelist. Please note that
@@ -454,14 +454,14 @@ PartitionSuperPageToExtent(uintptr_t super_page) {
 // Size that should be reserved for state bitmap (if present) inside a super
 // page. Elements of a super page are partition-page-aligned, hence the returned
 // size is a multiple of partition page size.
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 ReservedStateBitmapSize() {
   return base::bits::AlignUp(sizeof(AllocationStateMap), PartitionPageSize());
 }
 
 // Size that should be committed for state bitmap (if present) inside a super
 // page. It is a multiple of system page size.
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 CommittedStateBitmapSize() {
   return base::bits::AlignUp(sizeof(AllocationStateMap), SystemPageSize());
 }
@@ -484,7 +484,7 @@ PA_ALWAYS_INLINE AllocationStateMap* SuperPageStateBitmap(
 
 #else  // BUILDFLAG(USE_STARSCAN)
 
-PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
+PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 ReservedStateBitmapSize() {
   return 0ull;
 }
@@ -960,8 +960,9 @@ void IterateSlotSpans(uintptr_t super_page,
       break;
     }
     slot_span = &page->slot_span_metadata;
-    if (callback(slot_span))
+    if (callback(slot_span)) {
       return;
+    }
     page += slot_span->bucket->get_pages_per_slot_span();
   }
   // Each super page must have at least one valid slot span.

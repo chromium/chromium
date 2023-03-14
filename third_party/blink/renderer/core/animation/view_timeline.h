@@ -63,12 +63,10 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
   // a fractional offset.
   double ToFractionalOffset(const TimelineOffset& timeline_offset) const;
 
-  AnimationTimeline::TimeDelayPair ComputeEffectiveAnimationDelays(
-      const Animation* animation,
-      const Timing& timing) const override;
-
   CSSNumericValue* startOffset() const;
   CSSNumericValue* endOffset() const;
+
+  bool ResolveTimelineOffsets(bool invalidate_effect) const;
 
   void Trace(Visitor*) const override;
 
@@ -78,6 +76,12 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
   absl::optional<ScrollOffsets> CalculateOffsets(
       PaintLayerScrollableArea* scrollable_area,
       ScrollOrientation physical_orientation) const override;
+
+  // ScrollSnapshotClient:
+  void UpdateSnapshot() override;
+  bool ValidateSnapshot() override;
+
+  void FlushStyleUpdate() override;
 
  private:
   // Cache values to make timeline phase conversions more efficient.

@@ -41,7 +41,6 @@ namespace {
 // once it is exposed.
 constexpr int kFinalStatusActivated = 0;
 constexpr int kFinalStatusCrossSiteNavigation = 45;
-constexpr int kFinalStatusSameSiteCrossOriginNavigation = 47;
 
 }  // namespace
 
@@ -374,12 +373,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
       kFinalStatusActivated, 1);
 }
 
-// TODO(crbug.com/1239281): Support the same-site cross-origin navigation.
 // Tests that the same-site cross-origin main frame navigation in an embedder
-// triggered prerendering page cancels the prerendering.
-IN_PROC_BROWSER_TEST_F(
-    PrerenderMainFrameNavigationBrowserTest,
-    SameSiteCrossOriginMainFrameNavigationCancelsEmbedderTriggeredPrerendering) {
+// triggered prerendering page succeeds.
+IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
+                       SameSiteCrossOriginMainFrameNavigation) {
   base::HistogramTester histogram_tester;
 
   // Navigate to an initial page.
@@ -387,8 +384,8 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
 
   GURL prerender_url = embedded_test_server()->GetURL("a.test", "/title1.html");
-  GURL navigation_url =
-      embedded_test_server()->GetURL("b.a.test", "/title2.html");
+  GURL navigation_url = embedded_test_server()->GetURL(
+      "b.a.test", "/prerender_with_opt_in_header.html");
 
   // Start an embedder triggered prerendering.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
@@ -409,14 +406,24 @@ IN_PROC_BROWSER_TEST_F(
       *GetActiveWebContents(), host_id);
 
   // Start a same-site cross-origin main frame navigation in the prerender frame
-  // tree. It will cancel the initiator's prerendering.
+  // tree. It will not cancel the initiator's prerendering.
   prerender_helper().NavigatePrerenderedPage(host_id, navigation_url);
 
-  prerender_observer.WaitForDestroyed();
+  // Activate.
+  content::TestActivationManager activation_manager(GetActiveWebContents(),
+                                                    prerender_url);
+  // Simulate a browser-initiated navigation.
+  GetActiveWebContents()->OpenURL(content::OpenURLParams(
+      prerender_url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+      /*is_renderer_initiated=*/false));
+  activation_manager.WaitForNavigationFinished();
+  EXPECT_TRUE(activation_manager.was_activated());
 
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_DirectURLInput",
-      kFinalStatusSameSiteCrossOriginNavigation, 1);
+      kFinalStatusActivated, 1);
 }
 
 // Tests that the cross-site main frame navigation in an embedder triggered
@@ -431,8 +438,8 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
 
   GURL prerender_url = embedded_test_server()->GetURL("a.test", "/title1.html");
-  GURL navigation_url =
-      embedded_test_server()->GetURL("b.test", "/title2.html");
+  GURL navigation_url = embedded_test_server()->GetURL(
+      "b.test", "/prerender_with_opt_in_header.html");
 
   // Start an embedder triggered prerendering.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =

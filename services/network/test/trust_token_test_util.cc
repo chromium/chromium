@@ -140,6 +140,7 @@ SerializeTrustTokenParametersAndConstructExpectation(
   auto trust_token_params = mojom::TrustTokenParams::New();
 
   base::Value::Dict parameters;
+  parameters.Set("type", "private-state-token");
   parameters.Set("version", TrustTokenEnumToInt(input.version));
   parameters.Set("operation", TrustTokenEnumToString(input.operation));
   trust_token_params->version = input.version;

@@ -50,7 +50,6 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "ui/gfx/mac/io_surface.h"
-#include "ui/gl/gl_image_io_surface.h"
 #endif
 
 namespace gpu {

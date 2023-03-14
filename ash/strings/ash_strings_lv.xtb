@@ -100,7 +100,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1420408895951708260">Pārslēgt nakts režīmu. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Skatiet tālruņa jaunākos fotoattēlus un multivides saturu savā ierīcē (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="1426410128494586442">Jā</translation>
-<translation id="1447641497144572814">Tiek aktivizēts ekrānsaudzētājs</translation>
 <translation id="1455242230282523554">Rādīt valodas iestatījumus</translation>
 <translation id="1460620680449458626">Skaņa ir izslēgta.</translation>
 <translation id="14648076227129703">Atļauj piekļuvi kamerai lietotnei <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> un visām lietotnēm un vietnēm, kurām ir kameras atļauja.</translation>
@@ -125,9 +124,12 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1550406609415860283">Ir pieejamas ierīces</translation>
 <translation id="1550523713251050646">Noklikšķiniet, lai skatītu citas iespējas.</translation>
 <translation id="1555130319947370107">Zila</translation>
+<translation id="1576623706766186887">Tālināt, kad ieslēgta lupa</translation>
+<translation id="1586324912145647027">Pāriet uz pirmo no astoņām darbvirsmām</translation>
 <translation id="1589090746204042747">Piekļūt visām jūsu darbībām šīs sesijas laikā</translation>
 <translation id="1610778689852195798">“Undo” (Atsaukt)</translation>
 <translation id="1611993646327628135">Ieslēgts</translation>
+<translation id="1618835956950524778">Plauktā atzīmēt palaidēja pogu</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Slēdžu piekļuvi var atspējot sadaļā Iestatījumi &gt; Pieejamība.</translation>
 <translation id="163517899691012366">Kad ir ieslēgts režīms “Netraucēt”, paziņojumi tiek paslēpti.</translation>
@@ -149,6 +151,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1715293566947629045">Notiek profila atspējošana. Uzgaidiet dažas minūtes.</translation>
 <translation id="1719094688023114093">Subtitri reāllaikā ir ieslēgti.</translation>
 <translation id="1720011244392820496">Wi-Fi sinhronizācijas ieslēgšana</translation>
+<translation id="1731815243805539470">Pāriet uz iepriekšējo lietotāju</translation>
 <translation id="1733996486177697563">Pārslēdzieties starp tumšo un gaišo motīvu. Pieskarieties un turiet darbvirsmā, pēc tam atlasiet “Fona tapete un stils”.</translation>
 <translation id="1736898441010944794">Bluetooth ierīces var uztvert šo ierīci: <ph name="NAME" />.</translation>
 <translation id="174102739345480129">Marķieris ir izslēgts.</translation>
@@ -194,6 +197,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1919743966458266018">Tika mainīti īsinājumtaustiņi, ar kuriem var atvērt uzdevumu pārvaldnieku. Lūdzu, turpmāk izmantojiet <ph name="NEW_SHORTCUT" />, nevis <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automātiskie klikšķi</translation>
 <translation id="1928739107511554905">Lai iegūtu atjauninājumu, izmantojiet skārienekrānu, lai ar pievienoto tastatūru restartētu Chromebook datoru.</translation>
+<translation id="1948405482892809935">Pāriet uz nākamo lietotāju</translation>
 <translation id="1951012854035635156">Asistents</translation>
 <translation id="1954252331066828794">Ekrāna ierakstīšana ir pabeigta</translation>
 <translation id="1957958912175573503">Iestatiet savu valodu.</translation>
@@ -279,6 +283,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2429753432712299108">Bluetooth ierīce “<ph name="DEVICE_NAME" />” vēlas saņemt atļauju, lai izveidotu savienojumu pārī. Pirms piekrītat, lūdzu, pārliecinieties, vai ierīcē tiek parādīta šī ieejas atslēga: <ph name="PASSKEY" />.</translation>
 <translation id="2435457462613246316">Rādīt paroli</translation>
 <translation id="243878895369688216">Atvērts vakar</translation>
+<translation id="2440978926514840421">Tika ierakstīts GIF attēls</translation>
 <translation id="2441427462554639370">Ierakstīšana tika pārtraukta, jo krātuvē ir ļoti maz brīvas vietas.</translation>
 <translation id="24452542372838207">Izvērst paziņojumu</translation>
 <translation id="2449089818483227734">Zems akumulatora uzlādes līmenis</translation>
@@ -288,10 +293,12 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2475982808118771221">Radās kļūda</translation>
 <translation id="2482878487686419369">Paziņojumi</translation>
 <translation id="2484513351006226581">Nospiediet īsinājumtaustiņu <ph name="KEYBOARD_SHORTCUT" />, lai pārslēgtu tastatūras izkārtojumu.</translation>
+<translation id="2487915095798731898">Pievienoties</translation>
 <translation id="2501920221385095727">Taustiņu ķēde</translation>
 <translation id="2509468283778169019">Funkcija Caps Lock ir ieslēgta</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Atbloķēt logus</translation>
+<translation id="2530896289327917474">Taustiņpārlūkošanas ieslēgšana vai izslēgšana</translation>
 <translation id="2542089167727451762">Pieskarieties profila attēlam</translation>
 <translation id="255671100581129685">Google asistents nav pieejams publiskā sesijā.</translation>
 <translation id="256712445991462162">dokota lupa</translation>
@@ -303,6 +310,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2596078834055697711">Uzņemt loga ekrānuzņēmumu</translation>
 <translation id="2598725286293895280">Neatbalstītas lietotnes darbvietā</translation>
 <translation id="2607678425161541573">Nepieciešama pierakstīšanās tiešsaistē</translation>
+<translation id="2612614436418177118">Lietotņu režģī pārvietot lietotnes ikonu</translation>
 <translation id="2620016719323068571">Meklējiet <ph name="CATEGORY" />, failus, lietotnes un citu saturu…</translation>
 <translation id="2620436844016719705">Sistēma</translation>
 <translation id="2621713457727696555">Aizsargāts</translation>
@@ -329,6 +337,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">“Delete” (Dzēst)</translation>
 <translation id="2750941250130734256">Aktīvā loga dokošana ir atcelta.</translation>
+<translation id="2761723519669354964">Atvērt plauktā izcelto vienumu</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> ierīci pārvalda <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Iziet no uzņemšanas režīma</translation>
 <translation id="2791421900609674576">Tā kā tiks rādīti ieteikumi, varēsiet turpināt no vietas, kur beidzāt darbu. Lai noņemtu ieteikumus, varat pieskarties un turēt.</translation>
@@ -366,6 +375,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2970920913501714344">Instalēt lietotnes, paplašinājumus un motīvus</translation>
 <translation id="2977598380246111477">Nākamais cipars</translation>
 <translation id="2985148236010982088">Skatīt visas lietotnes</translation>
+<translation id="29859347674873492">Atvērt palīdzības sadaļu lietotnē Izpēte</translation>
 <translation id="2992327365391326550">Ierīces mikrofona poga ir izslēgta</translation>
 <translation id="2996462380875591307">Dokotās lupas režīms ir iespējots. Lai to izslēgtu, nospiediet taustiņu kombināciju Ctrl+Search+D.</translation>
 <translation id="3000461861112256445">Mono audio</translation>
@@ -392,6 +402,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3100274880412651815">Aizvērt uzņemšanas režīmu</translation>
 <translation id="3105917916468784889">Uzņemt ekrānuzņēmumu</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
+<translation id="3113492864356515707">Plauktā atzīmēt iepriekšējo vienumu</translation>
 <translation id="3120421559657122717">Vai izslēgt ierīci?</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Restartēt, lai atjauninātu</translation>
@@ -417,6 +428,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3249513730522716925">Logs <ph name="WINDOW_TITLE" /> pārvietots no darbvirsmas <ph name="ACTIVE_DESK" /> uz darbvirsmu <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Iestatīšana</translation>
 <translation id="3255483164551725916">Iespējamās darbības</translation>
+<translation id="3256109297135787951">Noņemt plauktā izceltā vienuma izcelšanu</translation>
 <translation id="3260969790895726815">Runa tiek apstrādāta lokāli, un diktēšana darbojas bezsaistē, taču dažas balss komandas nedarbosies.</translation>
 <translation id="3269597722229482060">Noklikšķināt ar peles labo pogu</translation>
 <translation id="3289544412142055976">Linux lietotnes pašlaik netiek atbalstītas.</translation>
@@ -432,6 +444,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3340978935015468852">Iestatījumi</translation>
 <translation id="3341303451326249809">Ekrānuzņēmums ir uzņemts</translation>
 <translation id="334252345105450327">Iegūt ekrānuzņēmumu</translation>
+<translation id="3349345708646875009">Atvērt uzdevumu pārvaldnieku</translation>
 <translation id="3351879221545518001">Jūsu ekrānā šobrīd tiek veikta apraide.</translation>
 <translation id="3364721542077212959">Skārienekrāna pildspalvas rīki</translation>
 <translation id="3365977133351922112">Jūsu tālrunis atrodas pārāk tālu. Pārvietojiet tālruni tuvāk.</translation>
@@ -446,6 +459,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3405101454990027959">Ieslēgt piekļuvi mikrofonam</translation>
 <translation id="3410336247007142655">Rādīt tumšā motīva iestatījumus</translation>
 <translation id="3413817803639110246">Vēl nekas netiek rādīts</translation>
+<translation id="3423744722495840645">Atvērt/aizvērt palaidēju</translation>
 <translation id="3428447136709161042">Pārtraukt savienojumu ar tīklu <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Lai atgrieztos, velciet no labās malas</translation>
 <translation id="3431517721463707585">14. darbvieta</translation>
@@ -500,11 +514,18 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3631369015426612114">Atļaut paziņojumu saņemšanu no:</translation>
 <translation id="3633097874324966332">Atveriet Bluetooth iestatījumus, lai savienotu pārī savu ierīci.</translation>
 <translation id="3638400994746983214">Pārslēgt konfidencialitātes ekrānu. <ph name="STATE_TEXT" />.</translation>
+<translation id="3649256019230929621">Minimizēt logu</translation>
 <translation id="3649505501900178324">Steidzami nepieciešama ierīces atjaunināšana</translation>
+<translation id="3653999174677652346"><ph name="EVENT_POSITION" />
+        <ph name="EVENT_SUMMARY" />,
+        <ph name="START_TIME" /> līdz
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" />. Atlasiet, lai skatītu plašāku informāciju Google kalendārā.</translation>
 <translation id="3659444876902283058">(<ph name="CURRENT_DAY" />. diena no <ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Vēl apmēram <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="366222428570480733">Pārvaldīts lietotājs <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="367531336287639526">Atlasīt pirmo ikonu pa kreisi no adreses joslas</translation>
 <translation id="36813544980941320">Wi-Fi tīkli tiks kopīgoti jūsu tālrunī un <ph name="DEVICE_NAME" /> ierīcē.</translation>
 <translation id="3694122362646626770">Vietnes</translation>
 <translation id="3702809606464356667">Tiek rādīti pašreizējās darbvietas logi. Nospiediet augšupvērsto bulttaustiņu, lai tiktu rādīti visu darbvietu logi.</translation>
@@ -548,6 +569,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />: notiek pasākumu ielāde.</translation>
 <translation id="3932043219784172185">Nav pievienota neviena ierīce</translation>
 <translation id="3934456833412894880">Adaptīvā uzlāde ir ieslēgta. Akumulators tiks uzlādēts līdz 80%, lai paildzinātu tā darbību, taču varat to pilnībā uzlādēt, kad tas ir nepieciešams.</translation>
+<translation id="3936620957945677513">Lai pievienotos pasākumam <ph name="EVENT_SUMMARY" />, nospiediet taustiņu Enter</translation>
 <translation id="3943857333388298514">Ielīmēt</translation>
 <translation id="394485226368336402">Audio iestatījumi</translation>
 <translation id="3945319193631853098">Pieskarieties, lai pabeigtu iestatīšanu.</translation>
@@ -565,7 +587,9 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="4017989525502048489">Lāzera rādītājs</translation>
 <translation id="401993194061514265">Marķieris nav pieejams. Atkārtoti atveriet lietotni Ekrāna apraide.</translation>
 <translation id="4021716437419160885">Ritināt uz leju</translation>
+<translation id="4022497978915111141">Bloķēt ierīci</translation>
 <translation id="4024840464866786680">Ja aizmirsāt PIN un paroli vai nesen mainījāt Google konta paroli, mēģiniet atkopt šo lietotāja profilu.</translation>
+<translation id="4026843240379844265">Aktīvā loga pārvietošana starp attēlojumiem</translation>
 <translation id="4028481283645788203">Papildu drošībai ir nepieciešama parole.</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Jūs šobrīd kopīgojat savu ekrānu</translation>
@@ -602,6 +626,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, instalēta lietotne, darbība apturēta</translation>
 <translation id="423685346499232137">Pašlaik nevar kopēt vai ielīmēt saturu.</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4240486403425279990">Pārskata režīms</translation>
 <translation id="4242533952199664413">Atvērt iestatījumus</translation>
 <translation id="4247123849143712100">Atjaunināt un izslēgt</translation>
 <translation id="4250229828105606438">Ekrānuzņēmums</translation>
@@ -636,7 +661,6 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="4405151984121254935">Pievienotās perifērās ierīces veids netiek atbalstīts.</translation>
 <translation id="4406883609789734330">Subtitri reāllaikā</translation>
 <translation id="4412944820643904175">Funkcija <ph name="FEATURE_NAME" /> ir izslēgta.</translation>
-<translation id="4421231901400348175">Ekrāna pārvaldības koplietošana ar <ph name="HELPER_NAME" />, izmantojot attālo palīdzību.</translation>
 <translation id="4424159417645388645">5. darbvieta</translation>
 <translation id="4430019312045809116">Skaļums</translation>
 <translation id="4435022394553622295">Skatiet tālruņa paziņojumus un lietotnes savā ierīcē (<ph name="DEVICE_TYPE" />).</translation>
@@ -767,6 +791,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="5035236842988137213">Ierīce <ph name="DEVICE_NAME" /> ir savienota ar jaunu tālruni</translation>
 <translation id="5035389544768382859">Displeja konfigurācijas apstiprināšana</translation>
 <translation id="5042305953558921026">Kopsavilkuma režīma taustiņš</translation>
+<translation id="5043679421800073804">Plauktā noklikšķināt uz pēdējās ikonas vai pieskarties tai</translation>
 <translation id="504465286040788597">Iepriekšējā rindkopa</translation>
 <translation id="5045550434625856497">Nepareiza parole</translation>
 <translation id="5078796286268621944">Nepareizs PIN</translation>
@@ -800,6 +825,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="5253783950165989294">Izveidots savienojums ar ierīci “<ph name="DEVICE_NAME" />”, akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">Nav saglabātu darbvietu</translation>
 <translation id="5260676007519551770">4. galds</translation>
+<translation id="5278086053818066789">Ieslēgt/izslēgt ChromeVox (balss komentārus)</translation>
 <translation id="5283099933536931082">Lietotne <ph name="APP_ITEM_TITLE" /> aicina pievērst tai uzmanību.</translation>
 <translation id="5283198616748585639">Pievienot 1 min</translation>
 <translation id="528468243742722775">Beigas</translation>
@@ -809,7 +835,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="5297704307811127955">Izslēgta</translation>
 <translation id="5300589172476337783">Rādīt</translation>
 <translation id="5302048478445481009">Valoda</translation>
-<translation id="5308380583665731573">Pievienošana</translation>
+<translation id="5308380583665731573">Pievienot</translation>
 <translation id="5313326810920013265">Bluetooth iestatījumi</translation>
 <translation id="5314219114274263156">Ekrāna ieraksts uzņemts</translation>
 <translation id="5317780077021120954">Saglabāt</translation>
@@ -826,6 +852,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="536019650977002321">Jūsu administrators neļauj tvert audio. Lai uzzinātu vairāk, sazinieties ar administratoru.</translation>
 <translation id="5361524080961918551">Runas faili (<ph name="LANGUAGE" />) ir daļēji lejupielādēti</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Pāriet uz šo cilni</translation>
+<translation id="5369717264580061086">Priekšskatīt failu lietotnē Faili</translation>
 <translation id="5377367976106153749">Vai ieslēgt piekļuvi kamerai?</translation>
 <translation id="5379115545237091094">Pārāk daudz mēģinājumu</translation>
 <translation id="5391307769715781764">Vai aizstāt saglabāto darbvietu?</translation>
@@ -845,6 +872,8 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="5465662442746197494">Vai nepieciešama palīdzība?</translation>
 <translation id="547979256943495781">Plaukts tiek rādīts labajā pusē</translation>
 <translation id="5491186829646618080">Pieejami aparātprogrammatūras atjauninājumi</translation>
+<translation id="5503884284981862082">Atvērt/aizvērt Google asistentu</translation>
+<translation id="5506975627792768506">Ieslēgt vai izslēgt lupu</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Jūsu administrators ir noņēmis visus eSIM profilus. Lai uzzinātu vairāk, sazinieties ar administratoru.</translation>
 <translation id="5523434445161341166">Funkcijā “<ph name="FEATURE_NAME" />” notiek savienojuma izveide.</translation>
@@ -854,6 +883,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="5537725057119320332">Apraidīt</translation>
 <translation id="5546397813406633847">Lietotāja profila atkopšana</translation>
 <translation id="554893713779400387">Pārslēgt diktēšanas režīmu</translation>
+<translation id="5551456515017410630">Atvērt/aizvērt kalendāru</translation>
 <translation id="5558091555391176027">Pārslēgt augstas redzamības režīmu funkcijai “Kopīgošana tuvumā”</translation>
 <translation id="5560420195677022218">Skatiet tālruņa lietotnes savā ierīcē (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="556042886152191864">Poga</translation>
@@ -884,6 +914,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="5689633613396158040">Izmantojot nakts režīmu, tiek atvieglota skatīšanās ekrānā un lasīšana blāvā apgaismojumā. Pieskarieties, lai mainītu nakts režīma ieslēgšanās laiku, vai izslēdziet to pavisam.</translation>
 <translation id="5691772641933328258">Pirksta nospiedums netika atpazīts</translation>
 <translation id="5693255400847650006">Tiek izmantots mikrofons</translation>
+<translation id="5699366815052349604">Piešķirt aktīvo logu visām darbvirsmām</translation>
 <translation id="570390244361237317">Visas lietotnes: pārvietojieties, nospiežot bulttaustiņus, lai piekļūtu visām lietotnēm.</translation>
 <translation id="5707775774148071965">Jūsu ierīce atbalsta augstāku datu pārraides ātrumu nekā vads. Ierīces veiktspēja var būt ierobežota.</translation>
 <translation id="5710450975648804523">Režīms “Netraucēt” ir ieslēgts</translation>
@@ -902,6 +933,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="576453121877257266">Nakts režīms ir ieslēgts.</translation>
 <translation id="5769373120130404283">Konfidencialitātes ekrāns</translation>
 <translation id="5773950591113557721">Tādējādi piekļuve tiek atļauta lietotnei <ph name="APP_NAME" /> un visām lietotnēm un vietnēm, kurām ir kameras un mikrofona atļauja.</translation>
+<translation id="5774295353725270860">Atvērt lietotni Files</translation>
 <translation id="5777841717266010279">Vai apturēt ekrāna koplietošanu?</translation>
 <translation id="5779721926447984944">Piespraustie faili</translation>
 <translation id="5788127256798019331">Play faili</translation>
@@ -942,6 +974,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="598882571027504733">Lai iegūtu atjauninājumu, restartējiet savu Chromebook datoru ar pievienoto tastatūru.</translation>
 <translation id="6002179289567220515">Jūs izmantojāt fizisko slēdzi, lai izslēgtu vienu kameru. Varat arī izslēgt piekļuvi visām kamerām.</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />. lapa no <ph name="TOTAL_PAGE_NUM" /></translation>
+<translation id="601304062528754300">Plauktā atzīmēt nākamo vienumu</translation>
 <translation id="6018164090099858612">Notiek iziešana no spoguļošanas režīma</translation>
 <translation id="602001110135236999">Ritināt pa kreisi</translation>
 <translation id="6022924867608035986">Notīrīt meklēšanas lodziņa tekstu</translation>
@@ -955,6 +988,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="6043212731627905357">Šis monitors nav saderīgs ar jūsu ierīci <ph name="DEVICE_TYPE" /> (monitors netiek atbalstīts).</translation>
 <translation id="6043994281159824495">Izrakstīties tagad</translation>
 <translation id="6045629311476491587">Izmanto <ph name="APP_COUNT" /> lietotnes</translation>
+<translation id="6045998054441862242">Ieslēgt augsta kontrasta režīmu</translation>
 <translation id="6047696787498798094">Pārslēdzoties uz citu lietotāju, ekrāna koplietošana tiks apturēta. Vai vēlaties turpināt?</translation>
 <translation id="6054305421211936131">Pierakstīties ar viedkarti</translation>
 <translation id="6059276912018042191">Nesen atvērtās Chrome cilnes</translation>
@@ -977,6 +1011,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="615957422585914272">Rādīt ekrāna tastatūru</translation>
 <translation id="6165508094623778733">Uzzināt vairāk</translation>
 <translation id="6166852626429024716">Varat meklēt ierīcē, lietotnēs, iestatījumos, tīmeklī…</translation>
+<translation id="6168318496333165060">Atvērt lietotni Diagnostics</translation>
 <translation id="6179832488876878285">Šeit varat piespraust svarīgos failus. Lai sāktu, atveriet lietotni Faili.</translation>
 <translation id="6182592640011875895">Atvērt darbvietu</translation>
 <translation id="619279033188484792">Skatiet tālruņa jaunākos fotoattēlus, multivides saturu un paziņojumus savā ierīcē (<ph name="DEVICE_TYPE" />).</translation>
@@ -984,12 +1019,14 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="6193431488227440296">Izstrāde</translation>
 <translation id="6200515304866777730">Lietotne neatbalsta šo funkciju</translation>
 <translation id="6210042900243040400">Savienojums ar ierīci <ph name="NAME" /> iepriekš saglabāts kontā <ph name="EMAIL" /></translation>
+<translation id="6213808132343683860">Izveidot daļēju ekrānuzņēmumu vai ekrāna ierakstu</translation>
 <translation id="6220928844947387476">Tagad varat ierakstīt gan savu video, gan savu ekrānu vienlaikus.</translation>
 <translation id="622484624075952240">Lejup</translation>
 <translation id="623116199192908855">Ekrāna apraide no Chromebook datora</translation>
 <translation id="6231419273573514727">Perifēro ierīču veiktspēja var būt ierobežota</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> pašlaik izmanto jūsu kameru un mikrofonu.</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6247728804802644171">Atvērt paziņojumus</translation>
 <translation id="6254629735336163724">Bloķēts horizontāli</translation>
 <translation id="6259254695169772643">Atlasīšanai izmantojiet skārienekrāna pildspalvu.</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: notiek aktivizēšana...</translation>
@@ -998,6 +1035,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="6284232397434400372">Izšķirtspēja nomainīta</translation>
 <translation id="6288235558961782912">Kontu <ph name="USER_EMAIL_ADDRESS" /> var vēlāk atkārtoti pievienot ar vecāku atļauju.</translation>
 <translation id="6291221004442998378">Nenotiek uzlāde</translation>
+<translation id="6309219492973062892">Noklikšķināt uz 1.–8. plaukta ikonas vai pieskarties tai</translation>
 <translation id="6315170314923504164">Balss</translation>
 <translation id="6330012934079202188">Tiek rādīti visu darbvietu logi. Nospiediet augšupvērsto bulttaustiņu, lai tiktu rādīti pašreizējās darbvietas logi.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> ir pārvaldīta sesija, ko pārvalda <ph name="MANAGER" />.</translation>
@@ -1066,6 +1104,7 @@ Jauna instalācija</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> vēlas apstiprināt jūsu identitāti</translation>
 <translation id="6650933572246256093">Bluetooth ierīce “<ph name="DEVICE_NAME" />” vēlas saņemt atļauju, lai izveidotu savienojumu pārī. Lūdzu, ievadiet ierīcē šo ieejas atslēgu: <ph name="PASSKEY" />.</translation>
 <translation id="6657585470893396449">Parole</translation>
+<translation id="666343722268997814">Atvērt izceltā vienuma labās pogas izvēlni</translation>
 <translation id="6665545700722362599">Piešķirt tīmekļa vietnēm, lietotnēm un paplašinājumiem atļauju izmantot atrašanās vietu pakalpojumus, ierīces mikrofonu, kameru un citas funkcijas</translation>
 <translation id="6667908387435388584">Varat izveidot savienojumu ar tālruņa tīklāju, izslēgt ierīces skaņu, noteikt tās atrašanās vietu, kā arī skatīt nesen jūsu tālrunī atvērtās Chrome cilnes</translation>
 <translation id="6670153871843998651">3. galds</translation>
@@ -1092,7 +1131,9 @@ Jauna instalācija</translation>
 <translation id="6786750046913594791">Aizvērt mapi</translation>
 <translation id="6787595647772650851">Atjaunot pēdējo sesiju</translation>
 <translation id="6790428901817661496">Atskaņot</translation>
+<translation id="679368458793552943">Tuvināt, kad ieslēgta lupa</translation>
 <translation id="6801878137098616817">Nesen rediģēts</translation>
+<translation id="6802196538183166658">Atvērt ātros iestatījumus, atlasot laiku</translation>
 <translation id="6802687695197837794">Tādējādi piekļuve tiek atļauta lietotnei <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> un visām lietotnēm un vietnēm, kurām ir kameras un mikrofona atļauja.</translation>
 <translation id="6803622936009808957">Nevarēja spoguļot displejus, jo netika atrasta atbalstīta izšķirtspēja. Tā vietā tika aktivizēts paplašinātās darbvirsmas režīms.</translation>
 <translation id="6812232930908427253">Nevarēja saglabāt darbvietu. Pārāk daudz logu vai ciļņu.</translation>
@@ -1116,6 +1157,7 @@ Jauna instalācija</translation>
 <translation id="6901883536534621389">Pārvietošanās žestu izmēģināšana</translation>
 <translation id="6919251195245069855">Nevarēja atpazīt jūsu viedkarti. Mēģiniet vēlreiz.</translation>
 <translation id="6931576957638141829">Saglabāt šeit:</translation>
+<translation id="6941333068993625698">Iesniegt atsauksmes</translation>
 <translation id="6942518653766415536">Ierakstīšanas formāta izvēlne</translation>
 <translation id="6945221475159498467">Atlasīt</translation>
 <translation id="6960565108681981554">Nav aktivizēts. Sazinieties ar mobilo sakaru operatoru.</translation>
@@ -1152,6 +1194,7 @@ Jauna instalācija</translation>
 <translation id="7088960765736518739">Slēdžu piekļuve</translation>
 <translation id="7098053464892629930">Lai skatītu visas pieejamās funkcijas, pakalpojumā Google Play lejupielādējiet lietotni <ph name="NAME" />.</translation>
 <translation id="7098389117866926363">USB-C ierīce (pieslēgvieta aizmugurē pa kreisi)</translation>
+<translation id="7100906357717321275">Rādīt paslēptos failus lietotnē Faili</translation>
 <translation id="7106330611027933926">Rādīt uzdevumjoslā iegulto rīkjoslu</translation>
 <translation id="7116969082764510092">11. darbvieta</translation>
 <translation id="7118268675952955085">ekrānuzņēmums</translation>
@@ -1197,6 +1240,7 @@ Jauna instalācija</translation>
 <translation id="7384028040782072252">Noklikšķiniet ar labo pogu jebkurā vietā, lai pārkārtotu lietotnes</translation>
 <translation id="7386767620098596324">Pārslēgt tīkla savienojumu. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Varat jebkurā laikā veikt iestatīšanu sadaļā Iestatījumi.</translation>
+<translation id="7401222354741467707">Izveidot pilnu ekrānuzņēmumu vai ekrāna ierakstu</translation>
 <translation id="7405710164030118432">Lai atbloķētu šo ierīci, ievadiet Family Link vecāku piekļuves kodu.</translation>
 <translation id="7406608787870898861">Mobilā tīkla iestatīšanas pabeigšana</translation>
 <translation id="740790383907119240">Lietotņu saīsnes</translation>
@@ -1237,9 +1281,11 @@ Jauna instalācija</translation>
 <translation id="7607002721634913082">Apturēta</translation>
 <translation id="7609951632080598826">Kalendāra skats, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera atkal pievienota.</translation>
+<translation id="7611271430932669992">Izcelt uznirstošos logus un dialoglodziņus</translation>
 <translation id="761736749114493194">Pārslēgt kameras kadrēšanu. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">Kamera pārnesta uz labo apakšējo stūri</translation>
+<translation id="7638572816805275740">Izveidot loga ekrānuzņēmumu vai ekrāna ierakstu</translation>
 <translation id="7642106959537987271">krāsu inversijas režīms</translation>
 <translation id="7642647758716480637">Atvērt tīkla <ph name="NETWORK_NAME" /> iestatījumus. Statuss: <ph name="CONNECTION_STATUS" />.</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (īpašnieks)</translation>
@@ -1303,6 +1349,7 @@ Jauna instalācija</translation>
 <translation id="7944023924886109030">Skatīt visus šodienas pasākumus</translation>
 <translation id="7963992254934562106">No <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Atlasīt mapi…</translation>
+<translation id="797512352675305461">Ieslēgt vai izslēgt pilnekrāna lupu</translation>
 <translation id="7977927628060636163">Notiek mobilo tīklu meklēšana...</translation>
 <translation id="7982789257301363584">Tīkls</translation>
 <translation id="7984197416080286869">Pārāk daudz mēģinājumu atbloķēt ar pirksta nospiedumu</translation>
@@ -1326,9 +1373,11 @@ Jauna instalācija</translation>
 <translation id="8091153018031979607">Sākums: <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automātiskie atjauninājumi</translation>
 <translation id="8098591350844501178">Apturēt ekrāna apraidi uztvērējā “<ph name="RECEIVER_NAME" />”</translation>
+<translation id="810637681351706236">Atspraust lietotni no plaukta</translation>
 <translation id="8113423164597455979">Iesl. v. lietotnēs</translation>
 <translation id="8113515504791187892">Poga “Atlasīt, lai izrunātu”</translation>
 <translation id="8120151603115102514">Jūsu tālrunim nav iespējots bloķēšanas ekrāns. Lai atbloķētu Chromebook datoru, ievadiet paroli.</translation>
+<translation id="8127095419621171197">Atvērt lietotni Kalkulators</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Apstiprināt</translation>
 <translation id="8131994907636310308">Aizvērt kārtošanas paziņojuma logu</translation>
@@ -1346,6 +1395,7 @@ Jauna instalācija</translation>
 <translation id="8155628902202578800">Atvērt lietotāja <ph name="USER_EMAIL_ADDRESS" /> informācijas dialoglodziņu</translation>
 <translation id="8167567890448493835">Izmantotā valoda: <ph name="LOCALE_NAME" /></translation>
 <translation id="8183592608247778598">Skatiet tālruņa jaunākos fotoattēlus, multivides saturu, paziņojumus un lietotnes savā ierīcē (<ph name="DEVICE_TYPE" />).</translation>
+<translation id="8185090165691050712">Ieslēgt/izslēgt bloķēšanas režīma lieluma maiņas izvēlni</translation>
 <translation id="8192202700944119416">Paziņojumi ir paslēpti.</translation>
 <translation id="8196787716797768628">Izmantojiet žestus, lai ātri pārslēgtu lietotnes un mijiedarbotos ar Chromebook datoru planšetdatora režīmā.</translation>
 <translation id="8200772114523450471">Kopsavilkums</translation>
@@ -1354,6 +1404,7 @@ Jauna instalācija</translation>
 <translation id="8214996719228530800">Canary versija</translation>
 <translation id="8219451629189078428">Šajā laika periodā jūsu Chromebook datoram ir jābūt ieslēgtam un pievienotam strāvas avotam. Uzlādes ierīcei vai adaptera vadiem ir jābūt pilnībā pievienotiem gan Chromebook datoram, gan kontaktligzdai. Neizslēdziet Chromebook datoru.</translation>
 <translation id="8230305195727960608">Krāsu inversijas režīms</translation>
+<translation id="8233140502441622270">Atvērt lietotni Keyboard shortcuts</translation>
 <translation id="8236042855478648955">Laiks pārtraukumam</translation>
 <translation id="8246282815785366524">Laipni lūdzam atpakaļ, <ph name="GIVEN_NAME" />!</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />, tālruņa akumulatora statuss: <ph name="BATTERY_STATUS" /></translation>
@@ -1438,6 +1489,7 @@ Jauna instalācija</translation>
 <translation id="8676770494376880701">Pievienots lādētājs ar mazu strāvas padevi</translation>
 <translation id="8683506306463609433">Veiktspējas izsekošana ir aktīva</translation>
 <translation id="8703634754197148428">Sākt ierakstīšanu. Kad ierakstīšana ir sākta, izmantojiet taustiņu kombināciju Alt+Shift+L, lai pārietu uz plauktu un atrastu pogu Apturēt ierakstīšanu.</translation>
+<translation id="870917907284186124">Ieslēgt/izslēgt diktēšanu (rakstīšanu ar balsi)</translation>
 <translation id="8721053961083920564">Skaļuma regulēšana. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Visa ekrāna uzņēmuma izveide</translation>
 <translation id="8731487213223706745">Beigas: <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
@@ -1448,6 +1500,7 @@ Jauna instalācija</translation>
 <translation id="8755498163081687682">Identitātes apstiprināšana: <ph name="ORIGIN_NAME" /> vēlas apstiprināt jūsu identitāti</translation>
 <translation id="875593634123171288">Rādīt VPN iestatījumus</translation>
 <translation id="8759408218731716181">Nevar iestatīt vairākkārtēju pierakstīšanos.</translation>
+<translation id="8763883995157866248">Ierīcē aktivizēt miega režīmu</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, instalēta lietotne, bloķēta</translation>
 <translation id="8785070478575117577">Savienošana ar ierīci <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
@@ -1465,8 +1518,11 @@ Jauna instalācija</translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Joprojām nevarēja verificēt jūsu PIN vai paroli. Piezīme. Ja nesen mainījāt paroli, izmantojiet iepriekšējo paroli. Jaunā parole tiks lietota pēc izrakstīšanās.</translation>
 <translation id="8855885154700222542">Pilnekrāna taustiņš</translation>
+<translation id="8858369206579825206">Konfidencialitātes vadīklas</translation>
 <translation id="8870509716567206129">Lietotnē netiek atbalstīta ekrāna sadalīšana.</translation>
 <translation id="8874184842967597500">Savienojums nav izveidots</translation>
+<translation id="8875021410787719674">Pārvietoties starp apakšējo labo stūri, palaidēju, adreses joslu, grāmatzīmju joslu, atvērto tīmekļa vietni un lejupielādēm</translation>
+<translation id="8876148469852588625">Notikums numur <ph name="EVENT_POSITION" />, kopā ir <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Savienojuma pārbaude</translation>
 <translation id="8877788021141246043">Iestatīt atgādinājumu</translation>
 <translation id="8878886163241303700">Notiek ekrāna izvēršana</translation>
@@ -1484,12 +1540,14 @@ Jauna instalācija</translation>
 <translation id="8940956008527784070">Akumulators gandrīz tukšs (<ph name="PERCENTAGE" />%)</translation>
 <translation id="8949925099261528566">Savienojums izveidots, nav piekļuves internetam</translation>
 <translation id="8951539504029375108">Ar jūsu Chromebook datoru ir saderīgas tikai apstiprinātas Thunderbolt ierīces</translation>
+<translation id="8980862970816311842">Lietotņu režģī pārvietot lietotnes ikonu uz mapi vai no tās</translation>
 <translation id="8982906748181120328">Tuvumā: redzamība</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Izmantojot <ph name="IME_NAME" /></translation>
 <translation id="8991617137207906966">Krāsu inversijas režīms ir iespējots. Lai to izslēgtu, vēlreiz nospiediet taustiņu kombināciju Ctrl+Search+H.</translation>
 <translation id="899350903320462459">Atbloķēt ierīci kā <ph name="LOGIN_ID" />, lai veiktu paziņojuma darbību</translation>
 <translation id="9000771174482730261">PĀRVALDĪT KRĀTUVI</translation>
+<translation id="9005984960510803406">Atvērt Crosh logu</translation>
 <translation id="9017320285115481645">Ievadiet Family Link vecāku piekļuves kodu.</translation>
 <translation id="9024331582947483881">pilnekrāna režīms</translation>
 <translation id="9029736946581028033">Ierīce drīz tiks izslēgta</translation>
@@ -1497,6 +1555,7 @@ Jauna instalācija</translation>
 <translation id="9034924485347205037">Linux faili</translation>
 <translation id="9047624247355796468">Atvērt tīkla <ph name="NETWORK_NAME" /> iestatījumus</translation>
 <translation id="9059834730836941392">Sakļaut paziņojumu</translation>
+<translation id="906458777597946297">Maksimizēt logu</translation>
 <translation id="9065203028668620118">Labot</translation>
 <translation id="9070640332319875144">Asistenta iestatījumi</translation>
 <translation id="9072519059834302790">Atlikušais akumulatora darbības laiks: <ph name="TIME_LEFT" />.</translation>

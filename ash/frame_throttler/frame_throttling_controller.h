@@ -154,7 +154,6 @@ class ASH_EXPORT FrameThrottlingController final
   void ResetThrottleCandidates(ThrottleCandidates* candidates);
 
   viz::HostFrameSinkManager* const host_frame_sink_manager_;
-  base::ObserverList<FrameThrottlingObserver> observers_;
   base::ObserverList<FrameThrottlingObserver> arc_observers_;
 
   // Maps aura::WindowTreeHost* to a set of FrameSinkIds to be throttled.

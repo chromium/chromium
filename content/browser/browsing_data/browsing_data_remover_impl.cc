@@ -40,6 +40,7 @@
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "url/gurl.h"
@@ -212,16 +213,6 @@ void BrowsingDataRemoverImpl::RemoveWithFilterAndReply(
   DCHECK(observer);
   RemoveInternal(delete_begin, delete_end, remove_mask, origin_type_mask,
                  std::move(filter_builder), observer);
-}
-
-void BrowsingDataRemoverImpl::RemoveAllStorageBucketsAndReply(
-    const blink::StorageKey& storage_key,
-    base::OnceClosure callback) {
-  DCHECK(callback);
-  GetStoragePartition()->ClearDataForAllBuckets(
-      storage_key, base::BindPostTaskToCurrentDefault(base::BindOnce(
-                       &BrowsingDataRemoverImpl::DidRemoveStorageBuckets,
-                       GetWeakPtr(), std::move(callback))));
 }
 
 void BrowsingDataRemoverImpl::RemoveStorageBucketsAndReply(

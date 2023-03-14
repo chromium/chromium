@@ -52,6 +52,10 @@ struct CORE_EXPORT NGInlineItemsData
   using OpenTagItems = Vector<const NGInlineItem*, 16>;
   void GetOpenTagItems(wtf_size_t size, OpenTagItems* open_items) const;
 
+#if DCHECK_IS_ON()
+  void CheckConsistency() const;
+#endif
+
   virtual void Trace(Visitor* visitor) const;
 };
 

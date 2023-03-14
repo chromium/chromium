@@ -13,7 +13,7 @@ enum class PrefetchStreamingURLLoaderStatus {
   kHeadReceivedWaitingOnBody = 1,
 
   // The request redirected to a different target.
-  kRedirected = 2,
+  kRedirected_DEPRECATED = 2,
 
   // Both the head and body of the response were received successfully.
   kSuccessfulNotServed = 3,
@@ -32,7 +32,12 @@ enum class PrefetchStreamingURLLoaderStatus {
   kFailedNetError = 11,
   kFailedNetErrorButServed = 12,
 
-  kMaxValue = kFailedNetErrorButServed,
+  // Statuses related to redirects.
+  kFollowRedirect = 13,
+  kPauseRedirectForEligibilityCheck = 14,
+  kFailedInvalidRedirect = 15,
+
+  kMaxValue = kFailedInvalidRedirect,
 };
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_STREAMING_URL_LOADER_STATUS_H_

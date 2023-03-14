@@ -98,7 +98,7 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateInternalExecuteTaskFunction::Run() {
   using api_fmp_internal::ExecuteTask::Params;
   using api_fmp_internal::ExecuteTask::Results::Create;
-  const std::unique_ptr<Params> params(Params::Create(args()));
+  const absl::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   file_manager::file_tasks::TaskType task_type =
@@ -159,7 +159,7 @@ FileManagerPrivateInternalGetFileTasksFunction::
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetFileTasksFunction::Run() {
   using api_fmp_internal::GetFileTasks::Params;
-  const std::unique_ptr<Params> params(Params::Create(args()));
+  const absl::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (params->urls.empty())
@@ -264,7 +264,7 @@ void FileManagerPrivateInternalGetFileTasksFunction::OnFileTasksListed(
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalSetDefaultTaskFunction::Run() {
   using api_fmp_internal::SetDefaultTask::Params;
-  const std::unique_ptr<Params> params(Params::Create(args()));
+  const absl::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* profile = Profile::FromBrowserContext(browser_context());

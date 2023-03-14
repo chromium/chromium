@@ -33,7 +33,7 @@ bool PopupNavigationDelegateImpl::GetOriginalUserGesture() {
   return original_user_gesture_;
 }
 
-const GURL& PopupNavigationDelegateImpl::GetURL() {
+GURL PopupNavigationDelegateImpl::GetURL() {
   return params_.url;
 }
 

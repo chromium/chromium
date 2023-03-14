@@ -52,6 +52,7 @@
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_delegate.h"
@@ -71,6 +72,7 @@
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
+#include "components/autofill/core/browser/metrics/quality_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
@@ -298,8 +300,8 @@ void LogAutocompletePredictionCollisionTypeMetrics(
 
 void LogContextMenuImpressionsForSubmittedField(const AutofillField& field) {
   auto autocomplete_state = AutocompleteStateForSubmittedField(field);
-  AutofillMetrics::LogContextMenuImpressions(field.Type().GetStorableType(),
-                                             autocomplete_state);
+  AutofillMetrics::LogContextMenuImpressionsForField(
+      field.Type().GetStorableType(), autocomplete_state);
 }
 
 // Finds the first field in |form_structure| with |field.value|=|value|.
@@ -530,11 +532,13 @@ BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver,
       suggestion_generator_(
           std::make_unique<AutofillSuggestionGenerator>(client,
                                                         personal_data_)) {
-  address_form_event_logger_ = std::make_unique<AddressFormEventLogger>(
-      driver->IsInAnyMainFrame(), form_interactions_ukm_logger(), client);
-  credit_card_form_event_logger_ = std::make_unique<CreditCardFormEventLogger>(
-      driver->IsInAnyMainFrame(), form_interactions_ukm_logger(),
-      personal_data_, client);
+  address_form_event_logger_ =
+      std::make_unique<autofill_metrics::AddressFormEventLogger>(
+          driver->IsInAnyMainFrame(), form_interactions_ukm_logger(), client);
+  credit_card_form_event_logger_ =
+      std::make_unique<autofill_metrics::CreditCardFormEventLogger>(
+          driver->IsInAnyMainFrame(), form_interactions_ukm_logger(),
+          personal_data_, client);
 
   credit_card_access_manager_ = std::make_unique<CreditCardAccessManager>(
       driver, client, personal_data_, credit_card_form_event_logger_.get());
@@ -795,6 +799,7 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
   }
 
   FormData form_for_autocomplete = submitted_form->ToFormData();
+  int num_fields_where_context_menu_was_shown = 0;
   for (size_t i = 0; i < submitted_form->field_count(); ++i) {
     if (submitted_form->field(i)->Type().GetStorableType() ==
         CREDIT_CARD_VERIFICATION_CODE) {
@@ -823,9 +828,15 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
 
     // The context menu was shown in this field, log the metrics by
     // autocomplete type, form type and autofill type prediction of the field.
-    if (submitted_form->field(i)->was_context_menu_shown())
+    if (submitted_form->field(i)->was_context_menu_shown()) {
+      num_fields_where_context_menu_was_shown++;
       LogContextMenuImpressionsForSubmittedField(*submitted_form->field(i));
+    }
   }
+
+  AutofillMetrics::LogContextMenuImpressionsForForm(
+      num_fields_where_context_menu_was_shown);
+
   single_field_form_fill_router_->OnWillSubmitForm(
       form_for_autocomplete, submitted_form.get(),
       client()->IsAutocompleteEnabled());
@@ -1967,10 +1978,10 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
       }
     }
 
-    submitted_form->LogQualityMetrics(
-        submitted_form->form_parsed_timestamp(), interaction_time,
-        submission_time, form_interactions_ukm_logger(), did_show_suggestions_,
-        observed_submission, form_interaction_counts);
+    autofill_metrics::LogQualityMetrics(
+        *submitted_form, submitted_form->form_parsed_timestamp(),
+        interaction_time, submission_time, form_interactions_ukm_logger(),
+        did_show_suggestions_, observed_submission, form_interaction_counts);
 
     if (observed_submission) {
       // Ensure that callbacks for blur votes get sent as well here because
@@ -2037,12 +2048,14 @@ void BrowserAutofillManager::Reset() {
   credit_card_form_event_logger_->OnDestroyed();
   credit_card_form_event_logger_.reset();
   AutofillManager::Reset();
-  address_form_event_logger_ = std::make_unique<AddressFormEventLogger>(
-      driver()->IsInAnyMainFrame(), form_interactions_ukm_logger(),
-      unsafe_client());
-  credit_card_form_event_logger_ = std::make_unique<CreditCardFormEventLogger>(
-      driver()->IsInAnyMainFrame(), form_interactions_ukm_logger(),
-      personal_data_, unsafe_client());
+  address_form_event_logger_ =
+      std::make_unique<autofill_metrics::AddressFormEventLogger>(
+          driver()->IsInAnyMainFrame(), form_interactions_ukm_logger(),
+          unsafe_client());
+  credit_card_form_event_logger_ =
+      std::make_unique<autofill_metrics::CreditCardFormEventLogger>(
+          driver()->IsInAnyMainFrame(), form_interactions_ukm_logger(),
+          personal_data_, unsafe_client());
   credit_card_access_manager_ = std::make_unique<CreditCardAccessManager>(
       driver(), unsafe_client(), personal_data_,
       credit_card_form_event_logger_.get());
@@ -2108,20 +2121,14 @@ bool BrowserAutofillManager::RefreshDataModels() {
 }
 
 CreditCard* BrowserAutofillManager::GetCreditCard(int unique_id) {
-  // Unpack the |unique_id| into component parts.
-  Suggestion::BackendId credit_card_id;
-  Suggestion::BackendId profile_id;
-  suggestion_generator_->SplitFrontendId(unique_id, &credit_card_id,
-                                         &profile_id);
+  Suggestion::BackendId credit_card_id =
+      suggestion_generator_->GetBackendIdFromFrontendId(unique_id);
   return personal_data_->GetCreditCardByGUID(credit_card_id.value());
 }
 
 AutofillProfile* BrowserAutofillManager::GetProfile(int unique_id) {
-  // Unpack the |unique_id| into component parts.
-  Suggestion::BackendId credit_card_id;
-  Suggestion::BackendId profile_id;
-  suggestion_generator_->SplitFrontendId(unique_id, &credit_card_id,
-                                         &profile_id);
+  Suggestion::BackendId profile_id =
+      suggestion_generator_->GetBackendIdFromFrontendId(unique_id);
 
   std::string guid = profile_id.value();
   if (base::IsValidGUID(guid))
@@ -2160,8 +2167,23 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
 
   // TODO(crbug/1203667#c9): Skip if the form has changed in the meantime, which
   // may happen with refills.
-  if (form_structure->field_count() != form.fields.size())
+  if (action == mojom::RendererFormDataAction::kFill) {
+    base::UmaHistogramBoolean(
+        "Autofill.SkippingFormFillDueToChangedFieldCount",
+        form_structure->field_count() != form.fields.size());
+  }
+  if (form_structure->field_count() != form.fields.size()) {
+    LOG_AF(buffer)
+        << Tr{} << "*"
+        << "Skipped filling of form because the number of fields to be "
+           "filled differs from the number of fields registered in the form "
+           "cache."
+        << CTag{"table"};
+    LOG_AF(log_manager()) << LoggingScope::kFilling
+                          << LogMessage::kSendFillingData << Br{}
+                          << std::move(buffer);
     return;
+  }
 
   if (action == mojom::RendererFormDataAction::kFill && !is_refill) {
     SetFillingContext(
@@ -2370,9 +2392,9 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
       filling_context->type_groups_originally_filled.insert(field_group_type);
 
     // Must match ForEachMatchingFormField() in form_autofill_util.cc.
-    // Only notify autofilling of empty fields and the field that initiated
-    // the filling (note that "select-one" controls may not be empty but will
-    // still be autofilled).
+    // Only notify autofilling of empty fields and the field that initiated the
+    // filling (note that "select-one" controls may not be empty but will still
+    // be autofilled).
     bool should_notify = !is_credit_card &&
                          (result.fields[i].SameFieldAs(field) ||
                           result.fields[i].form_control_type == "select-one" ||
@@ -2670,6 +2692,15 @@ void BrowserAutofillManager::OnFormProcessed(
   }
   if (address_form) {
     address_form_event_logger_->OnDidParseForm(form_structure);
+  }
+
+  // `autofill_optimization_guide_` is not present on unsupported platforms.
+  if (auto* autofill_optimization_guide =
+          client()->GetAutofillOptimizationGuide()) {
+    // Initiate necessary pre-processing based on the forms and fields that are
+    // parsed, as well as the information that the user has saved in the web
+    // database based on `personal_data_`.
+    autofill_optimization_guide->OnDidParseForm(form_structure, personal_data_);
   }
 
   // If a form with the same name was previously filled, and there has not
@@ -3299,7 +3330,8 @@ bool BrowserAutofillManager::ShouldShowVirtualCardOption(
 }
 #endif
 
-FormEventLoggerBase* BrowserAutofillManager::GetEventFormLogger(
+autofill_metrics::FormEventLoggerBase*
+BrowserAutofillManager::GetEventFormLogger(
     FieldTypeGroup field_type_group) const {
   switch (FieldTypeGroupToFormType(field_type_group)) {
     case FormType::kAddressForm:
@@ -3404,7 +3436,7 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
     // This reduces the UKM load by ignoring e.g. search boxes at best effort.
     if (base::FeatureList::IsEnabled(
             features::kAutofillLogUKMEventsWithSampleRate) &&
-        form_structure.ShouldBeParsed()) {
+        ShouldUploadUKM(form_structure)) {
       form_interactions_ukm_logger()->LogAutofillFieldInfoAtFormRemove(
           form_structure, *autofill_field);
     }
@@ -3417,7 +3449,8 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
 
   // Log FormSummary UKM event.
   if (base::FeatureList::IsEnabled(
-          features::kAutofillLogUKMEventsWithSampleRate)) {
+          features::kAutofillLogUKMEventsWithSampleRate) &&
+      ShouldUploadUKM(form_structure)) {
     AutofillMetrics::FormEventSet form_events;
     form_events.insert_all(
         address_form_event_logger_->GetFormEvents(form_structure.global_id()));
@@ -3428,6 +3461,30 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
         form_structure, form_events, is_in_any_main_frame,
         initial_interaction_timestamp_, form_submitted_timestamp_);
   }
+}
+
+bool BrowserAutofillManager::ShouldUploadUKM(
+    const FormStructure& form_structure) {
+  if (!form_structure.ShouldBeParsed()) {
+    return false;
+  }
+
+  // If the form contains a single field which contains the string "search" in
+  // its name/id/placeholder, the function return false and the form is not
+  // recorded into UKM.
+  if (form_structure.field_count() == 1 &&
+      (base::ToLowerASCII(form_structure.field(0)->placeholder)
+               .find(u"search") != std::string::npos ||
+       base::ToLowerASCII(form_structure.field(0)->name).find(u"search") !=
+           std::string::npos ||
+       base::ToLowerASCII(form_structure.field(0)->label).find(u"search") !=
+           std::string::npos ||
+       base::ToLowerASCII(form_structure.field(0)->aria_label)
+               .find(u"search") != std::string::npos)) {
+    return false;
+  }
+
+  return true;
 }
 
 void BrowserAutofillManager::LogEventCountsUMAMetric(

@@ -7,7 +7,6 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "ui_features.h"
 
 namespace features {
 
@@ -49,6 +48,12 @@ BASE_FEATURE(kChromeWhatsNewUI,
 #endif
 );
 
+// Create new Extensions app menu option (removing "More Tools -> Extensions")
+// with submenu to manage extensions and visit chrome web store.
+BASE_FEATURE(kExtensionsMenuInAppMenu,
+             "ExtensionsMenuInAppMenu",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if !defined(ANDROID)
 // Enables "Access Code Cast" UI.
 BASE_FEATURE(kAccessCodeCastUI,
@@ -78,12 +83,6 @@ BASE_FEATURE(kLightweightExtensionOverrideConfirmations,
 // Enables Bookmarks++ Side Panel UI.
 BASE_FEATURE(kPowerBookmarksSidePanel,
              "PowerBookmarksSidePanel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables a more prominent active tab title in dark mode to aid with
-// accessibility.
-BASE_FEATURE(kProminentDarkModeActiveTabTitle,
-             "ProminentDarkModeActiveTabTitle",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the QuickCommands UI surface. See https://crbug.com/1014639
@@ -124,6 +123,15 @@ BASE_FEATURE(kSidePanelJourneysQueryless,
 BASE_FEATURE(kSidePanelSearchCompanion,
              "SidePanelSearchCompanion",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#if !defined(ANDROID)
+// This differs from the search companion by providing a separate WebUI that
+// contains untrusted content in an iframe.
+BASE_FEATURE(kSidePanelCompanion,
+             "SidePanelCompanion",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+constexpr base::FeatureParam<std::string> kHomepageURLForCompanion{
+    &kSidePanelCompanion, "companion-homepage-url", "https://www.example.com"};
+#endif
 
 // Enables tabs to scroll in the tabstrip. https://crbug.com/951078
 BASE_FEATURE(kScrollableTabStrip,
@@ -200,11 +208,6 @@ const char kTabHoverCardImagesCrossfadePreviewAtParameterName[] =
 const char kTabHoverCardAdditionalMaxWidthDelay[] =
     "additional_max_width_delay";
 const char kTabHoverCardAlternateFormat[] = "alternate_format";
-
-// Enables tab outlines in additional situations for accessibility.
-BASE_FEATURE(kTabOutlinesInLowContrastThemes,
-             "TabOutlinesInLowContrastThemes",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabSearchChevronIcon,
              "TabSearchChevronIcon",

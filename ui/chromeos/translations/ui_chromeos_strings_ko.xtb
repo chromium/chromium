@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">다음</translation>
 <translation id="1209796539517632982">자동 네임서버</translation>
 <translation id="1210831758834677569">라오어</translation>
+<translation id="1221555006497674479">저장용량 부족. 공유 드라이브 저장용량 <ph name="TOTAL_SPACE" /> 중 <ph name="REMAINING_PERCENTAGE" />% 남았습니다.</translation>
 <translation id="1243314992276662751">업로드</translation>
 <translation id="1249250836236328755">장르</translation>
 <translation id="1254593899333212300">인터넷에 바로 연결</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">중국어(병음)</translation>
 <translation id="1646019627374511909">파일 <ph name="NUMBER_OF_ITEMS" />개를 오프라인에서 사용하도록 설정 중</translation>
 <translation id="164969095109328410">Chrome 기기</translation>
+<translation id="1661207570040737402">공유 드라이브의 Google Workspace 스토리지를 모두 사용했습니다.</translation>
 <translation id="1661867754829461514">PIN이 없습니다.</translation>
 <translation id="166439687370499867">공유 네트워크 설정 변경은 허용되지 않습니다</translation>
 <translation id="1665611772925418501">파일을 수정하지 못했습니다.</translation>
@@ -82,6 +84,7 @@
 <translation id="1722487484194605434">항목 <ph name="NUMBER_OF_ITEMS" />개 압축 중...</translation>
 <translation id="1722687688096767818">프로필 추가 중...</translation>
 <translation id="1726100011689679555">네임서버</translation>
+<translation id="1727562178154619254">동기화 준비됨</translation>
 <translation id="1729953886957086472">독일어(독일)</translation>
 <translation id="1730235522912993863">중국어(창힐수입법)</translation>
 <translation id="1731889557567069540">항목 <ph name="NUMBER_OF_ITEMS" />개를 복사했습니다.</translation>
@@ -349,11 +352,11 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">붙여넣기</translation>
 <translation id="3952872973865944257">텔루구어(표음)</translation>
-<translation id="3954354850384043518">진행 중</translation>
 <translation id="3958548648197196644">키위</translation>
 <translation id="3971140002794351170">모바일 프로필 다운로드, 네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">영어(영국)</translation>
 <translation id="3975895378829046965">벵골어(표음)</translation>
+<translation id="3999574733850440202">최근에 연 Microsoft 파일이 OneDrive로 이동되었습니다.</translation>
 <translation id="4002066346123236978">제목</translation>
 <translation id="4017788180641807848">영어(미국, 워크맨 키보드)</translation>
 <translation id="4019998208269143058">빠른 파일에 고정</translation>
@@ -362,6 +365,7 @@
 <translation id="4092890906744441904">아일랜드어</translation>
 <translation id="4124935795427217608">유니콘</translation>
 <translation id="4131235941541910880">필요하지 않은 항목은 휴지통으로 옮기세요.</translation>
+<translation id="4134804435730168042">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, 기기 설정 후 활성화</translation>
 <translation id="4153015322587141338">파일을 마우스 오른쪽 버튼으로 클릭하고 실행기에서 파일에 빠르게 액세스할 수 있도록 "<ph name="PIN_COMMAND" />"을 선택합니다.</translation>
 <translation id="4157569377477607576">관리자 정책에서 권장되지 않는 사항:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> 항목을 이동했습니다.</translation>
@@ -404,6 +408,7 @@
 <translation id="4414834425328380570">"<ph name="FILE_NAME" />" 파일이 삭제되며 복원할 수 없습니다.</translation>
 <translation id="4418686080762064601">파일의 바로가기 만들기</translation>
 <translation id="4425149324548788773">내 드라이브</translation>
+<translation id="4432921877815220091">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, 기기 설정 후 활성화, 관리자가 관리함</translation>
 <translation id="4439427728133035643">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 연결</translation>
 <translation id="4442424173763614572">DNS 조회 실패</translation>
 <translation id="4462159676511157176">사용자 지정 네임서버</translation>
@@ -611,8 +616,10 @@
 <translation id="5911887972742538906">Linux 애플리케이션을 설치하는 중에 오류가 발생했습니다.</translation>
 <translation id="5912396950572065471">포맷</translation>
 <translation id="5913638992615760742">복사 작업에 실패했습니다. 예상치 않은 오류: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">새로운 검색결과 기능 사용 가능</translation>
 <translation id="5926082595146149752">네덜란드어(네덜란드, 미국 국제 PC 키보드)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, 기기 설정 후 활성화</translation>
 <translation id="5955954492236143329">항목 <ph name="NUMBER_OF_ITEMS" />개</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">정렬 옵션</translation>
@@ -699,6 +706,7 @@
 <translation id="6732801395666424405">인증서를 로드하지 못했습니다.</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" />[<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Bruschetta와 폴더 공유</translation>
+<translation id="6750737795876287924">현재 디렉터리</translation>
 <translation id="6751256176799620176">폴더 1개 선택됨</translation>
 <translation id="6755827872271341378">ChromeOS Flex 기기</translation>
 <translation id="6790428901817661496">재생</translation>
@@ -736,7 +744,6 @@
 <translation id="6973630695168034713">폴더</translation>
 <translation id="6976795442547527108">사자</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">전체 기간</translation>
 <translation id="6989942356279143254">스웨덴어</translation>
 <translation id="6990081529015358884">저장 공간이 부족합니다.</translation>
 <translation id="6993826899923627728">항목이 휴지통에 있습니다</translation>
@@ -759,6 +766,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;드라이브 검색&lt;/em&gt;</translation>
 <translation id="7135561821015524160">칸나다어(표음)</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">인증 서버 ID를 확인하기 위한 '제목 보조 이름 일치' 또는 '도메인 서픽스 일치'가 누락되었습니다.</translation>
 <translation id="7165320105431587207">네트워크를 설정하지 못했습니다.</translation>
 <translation id="7170041865419449892">범위를 벗어났습니다.</translation>
 <translation id="7180611975245234373">새로고침</translation>
@@ -791,7 +799,6 @@
 <translation id="7458955835361612701">최근 이미지 없음</translation>
 <translation id="7460898608667578234">우크라이나어</translation>
 <translation id="7469894403370665791">네트워크에 자동 연결</translation>
-<translation id="7481358317100446445">준비</translation>
 <translation id="7486315294984620427">Parallels Desktop에 파일을 드롭하려면 파일을 Windows 파일 폴더로 복사해야 합니다.</translation>
 <translation id="749452993132003881">히라가나</translation>
 <translation id="7495372004724182530">말라얄람어(표음)</translation>
@@ -829,6 +836,7 @@
 <translation id="7724603315864178912">잘라내기</translation>
 <translation id="7732111077498238432">네트워크는 정책을 통해 제어됩니다</translation>
 <translation id="7736003208887389532">파일을 완전히 삭제하시겠습니까?</translation>
+<translation id="7740287852186792672">검색결과</translation>
 <translation id="7748626145866214022">작업 표시줄에서 더 많은 옵션을 사용할 수 있습니다. 작업 표시줄에 초점을 맞추려면 Alt + A를 누르세요.</translation>
 <translation id="7760449188139285140">중국어(오필화수입법)</translation>
 <translation id="7765158879357617694">이동</translation>
@@ -880,6 +888,7 @@
 <translation id="8116072619078571545">얼음물</translation>
 <translation id="8128733386027980860">영어(영국, 드보락 키보드)</translation>
 <translation id="8137331602592933310">다른 사용자가 '<ph name="FILENAME" />'을(를) 나와 공유했습니다. 내가 소유자가 아니므로 삭제할 수 없습니다.</translation>
+<translation id="8138705869659070104">기기 설정 후 활성화</translation>
 <translation id="813913629614996137">초기화 중...</translation>
 <translation id="8147028810663464959">문자 폭을 최대로 설정</translation>
 <translation id="8151638057146502721">구성</translation>
@@ -905,6 +914,7 @@
 <translation id="8300849813060516376">OTASP 실패</translation>
 <translation id="8312871300878166382">폴더에 붙여넣기</translation>
 <translation id="8329978297633540474">일반 텍스트</translation>
+<translation id="8332007959299458842">최근에 연 Microsoft 파일이 Google Drive로 이동했습니다.</translation>
 <translation id="8335587457941836791">실행기에서 고정 해제</translation>
 <translation id="8335837413233998004">벨라루스어</translation>
 <translation id="8336153091935557858">어제 <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -931,6 +941,7 @@
 <translation id="8487700953926739672">오프라인으로 사용 가능</translation>
 <translation id="8492972329130824181">홈 네트워크를 사용할 수 없습니다. 연결하려면 모바일 데이터 로밍이 사용 설정되어 있어야 합니다.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" />개 항목 추출 중…</translation>
+<translation id="8502913769543567768">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, 기기 설정 후 활성화, 관리자가 관리함</translation>
 <translation id="8521441079177373948">영어(영국)</translation>
 <translation id="853494022971700746">프랑스어(프랑스)</translation>
 <translation id="8540608333167683902">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 세부정보</translation>
@@ -992,6 +1003,7 @@
 <translation id="9046895021617826162">연결 실패</translation>
 <translation id="9065512565307033593">확인하지 못하면 네트워크 액세스가 사용 중지됩니다.</translation>
 <translation id="908378762078012445">러시아어(표음 AATSEEL 키보드)</translation>
+<translation id="9086302186042011942">동기화 중</translation>
 <translation id="9099674669267916096">페이지 수</translation>
 <translation id="9100610230175265781">암호를 입력해야 합니다.</translation>
 <translation id="9110990317705400362">Google은 더 안전한 인터넷 사용 방법을 끊임없이 모색하고 있습니다. 이전에는 브라우저에 확장 프로그램을 추가하라는 메시지가 어느 웹사이트에서나 표시되었습니다. 하지만 Chrome의 최신 버전에서는 확장 프로그램 페이지를 통해 확장 프로그램을 추가함으로써 설치를 원한다는 사실을 Chrome에 명시적으로 알려야 합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>

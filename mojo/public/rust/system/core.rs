@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-use crate::system::ffi;
-use crate::system::mojo_types::MojoTimeTicks;
+use crate::ffi;
+use crate::mojo_types::MojoTimeTicks;
 
 /// Get the time ticks now according to the Mojo IPC. As
 /// can be seen in the documentation for the Mojo C API,

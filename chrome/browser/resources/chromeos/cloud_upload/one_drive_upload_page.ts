@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
-import {BaseSetupPageElement, CANCEL_SETUP_EVENT} from './base_setup_page.js';
+import {BaseSetupPageElement} from './base_setup_page.js';
 import {UserAction} from './cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
 import {getTemplate} from './one_drive_upload_page.html.js';
@@ -15,7 +15,8 @@ import {getTemplate} from './one_drive_upload_page.html.js';
  */
 export class OneDriveUploadPageElement extends BaseSetupPageElement {
   /** The names of the files to upload. */
-  private fileNames: string[] = [];
+  // Commented out to meet current UX specifications.
+  // private fileNames: string[] = [];
 
   /**
     True if the setup flow is being run for the first time. False if the fixup
@@ -34,8 +35,8 @@ export class OneDriveUploadPageElement extends BaseSetupPageElement {
    * @param fileName Name of the file to be displayed.
    * @param firstTimeSetup Whether the setup flow is running for the first time.
    */
-  setFileNamesAndFirstTimeSetup(fileNames: string[], firstTimeSetup: boolean) {
-    this.fileNames = fileNames;
+  setFileNamesAndFirstTimeSetup(_fileNames: string[], firstTimeSetup: boolean) {
+    // this.fileNames = fileNames;
     this.firstTimeSetup = firstTimeSetup;
     if (this.isConnected) {
       this.connectedCallback();
@@ -53,33 +54,18 @@ export class OneDriveUploadPageElement extends BaseSetupPageElement {
     super.connectedCallback();
 
     this.innerHTML = getTemplate();
-    const fileContainerElement =
-        this.querySelector('#file-container')! as HTMLElement;
-    const fileNameElement = this.querySelector('#file-name')! as HTMLElement;
     const uploadButton = this.querySelector('.action-button')! as HTMLElement;
-    const cancelButton = this.querySelector('.cancel-button') as HTMLElement;
 
     if (this.firstTimeSetup) {
       this.proxy.handler.setOfficeAsDefaultHandler();
     }
-    // TODO(b/251046341): Show multiple files.
-    if (this.fileNames.length > 0) {
-      fileContainerElement.hidden = false;
-      fileNameElement.innerText = this.fileNames[0] || '';
-    }
 
     uploadButton.addEventListener('click', () => this.onUploadButtonClick());
-    cancelButton.addEventListener('click', () => this.onCancelButtonClick());
   }
 
   private onUploadButtonClick(): void {
     this.proxy.handler.respondWithUserActionAndClose(
         UserAction.kConfirmOrUploadToOneDrive);
-  }
-
-  private onCancelButtonClick(): void {
-    this.dispatchEvent(
-        new CustomEvent(CANCEL_SETUP_EVENT, {bubbles: true, composed: true}));
   }
 }
 

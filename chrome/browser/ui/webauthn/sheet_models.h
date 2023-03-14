@@ -437,6 +437,8 @@ class AuthenticatorGenericErrorSheetModel : public AuthenticatorSheetModelBase {
   ForMissingCapability(AuthenticatorRequestDialogModel* dialog_model);
   static std::unique_ptr<AuthenticatorGenericErrorSheetModel> ForStorageFull(
       AuthenticatorRequestDialogModel* dialog_model);
+  static std::unique_ptr<AuthenticatorGenericErrorSheetModel>
+  ForWindowsHelloNotEnabled(AuthenticatorRequestDialogModel* dialog_model);
 
  private:
   AuthenticatorGenericErrorSheetModel(

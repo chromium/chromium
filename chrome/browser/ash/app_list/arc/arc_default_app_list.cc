@@ -56,11 +56,11 @@ bool use_test_apps_directory = false;
 
 std::unique_ptr<ArcDefaultAppList::AppInfoMap> ReadAppsFromFileThread(
     const base::FilePath& base_path) {
-  base::FilePath root_dir;
   // FileEnumerator does not work with a symbolic link dir. So map link
   // to real folder in case |base_path| specifies a symbolic link.
-  if (!base::ReadSymbolicLink(base_path, &root_dir))
-    root_dir = base_path;
+  absl::optional<base::FilePath> link_target =
+      base::ReadSymbolicLinkAbsolute(base_path);
+  base::FilePath root_dir = link_target.value_or(base_path);
 
   std::unique_ptr<ArcDefaultAppList::AppInfoMap> apps =
       std::make_unique<ArcDefaultAppList::AppInfoMap>();

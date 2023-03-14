@@ -108,8 +108,11 @@ void FrameSinkHolder::SubmitCompositorFrame(bool synchronous_draw) {
   // We cannot request to submit a frame via `SubmitCompositorFrame()` if we are
   // in auto_update mode.
   DCHECK(!auto_update_);
+  // Once the lifetime of FrameSinkHolder is extended, we should not submit new
+  // frames since the `get_compositor_frame_callback_` can become null.
+  DCHECK(!WaitingToScheduleDelete());
 
-  if (delete_pending_ || auto_update_) {
+  if (delete_pending_ || auto_update_ || WaitingToScheduleDelete()) {
     return;
   }
 
@@ -155,6 +158,13 @@ void FrameSinkHolder::SubmitCompositorFrameInternal(
 void FrameSinkHolder::OnBeginFrameSourcePausedChanged(bool paused) {}
 
 bool FrameSinkHolder::OnBeginFrameDerivedImpl(const viz::BeginFrameArgs& args) {
+  // Once the lifetime of FrameSinkHolder is extended, we should not submit new
+  // frames asynchronously since the `get_compositor_frame_callback_` can become
+  // null.
+  if (WaitingToScheduleDelete()) {
+    return false;
+  }
+
   viz::BeginFrameAck current_begin_frame_ack(args, false);
 
   first_frame_requested_ = true;

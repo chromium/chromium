@@ -27,7 +27,7 @@ QuickUnlockPrivateGetAuthTokenFunction::
 
 ExtensionFunction::ResponseAction
 QuickUnlockPrivateGetAuthTokenFunction::Run() {
-  std::unique_ptr<quick_unlock_private::GetAuthToken::Params> params =
+  absl::optional<quick_unlock_private::GetAuthToken::Params> params =
       quick_unlock_private::GetAuthToken::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 

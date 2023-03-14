@@ -13,8 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/process/kill.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "content/public/browser/render_process_host_creation_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
 
 namespace content {
@@ -29,7 +28,7 @@ namespace ash {
 // destruction.
 class RendererFreezer
     : public chromeos::PowerManagerClient::RenderProcessManagerDelegate,
-      public content::NotificationObserver,
+      public content::RenderProcessHostCreationObserver,
       public content::RenderProcessHostObserver {
  public:
   class Delegate {
@@ -69,10 +68,8 @@ class RendererFreezer
   void SuspendImminent() override;
   void SuspendDone() override;
 
-  // content::NotificationObserver implementation.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // content::RenderProcessHostCreationObserver implementation.
+  void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
 
   // content::RenderProcessHostObserver overrides.
   void RenderProcessExited(
@@ -93,12 +90,13 @@ class RendererFreezer
   // Delegate that takes care of actually freezing and thawing renderers for us.
   std::unique_ptr<Delegate> delegate_;
 
+  // Records whether the delegate is able to freeze renderers. If not,
+  // RenderProcessHosts are not tracked for freezing.
+  bool can_freeze_renderers_ = false;
+
   // Set that keeps track of the RenderProcessHosts for processes that are
   // hosting GCM extensions.
   std::set<int> gcm_extension_processes_;
-
-  // Manages notification registrations.
-  content::NotificationRegistrar registrar_;
 
   base::WeakPtrFactory<RendererFreezer> weak_factory_{this};
 };

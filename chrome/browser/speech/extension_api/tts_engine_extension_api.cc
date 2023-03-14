@@ -43,6 +43,10 @@
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/speech/tts_client_lacros.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 using extensions::EventRouter;
 using extensions::Extension;
 using extensions::ExtensionSystem;
@@ -446,9 +450,8 @@ ExtensionTtsEngineUpdateVoicesFunction::Run() {
 
   // Save these voices to the extension's prefs if they validated.
   auto* extension_prefs = extensions::ExtensionPrefs::Get(browser_context());
-  extension_prefs->UpdateExtensionPref(
-      extension()->id(), kPrefTtsVoices,
-      base::Value::ToUniquePtrValue(voices_data.Clone()));
+  extension_prefs->UpdateExtensionPref(extension()->id(), kPrefTtsVoices,
+                                       voices_data.Clone());
 
   // Notify that voices have changed.
   content::TtsController::GetInstance()->VoicesChanged();
@@ -511,15 +514,19 @@ ExtensionTtsEngineSendTtsEventFunction::Run() {
   content::TtsEventType tts_event_type;
   if (!GetTtsEventType(*event_type, &tts_event_type)) {
     EXTENSION_FUNCTION_VALIDATE(false);
-  } else if (content::TtsPlatform::GetInstance()
-                 ->GetExternalPlatformDelegate()) {
-    // If lacros_tts_support is enabled, TTS events routes to
-    // ExternalPlatformDelegate.
-    content::TtsPlatform::GetInstance()
-        ->GetExternalPlatformDelegate()
-        ->OnTtsEvent(browser_context(), utterance_id, tts_event_type,
-                     char_index, length, error_message);
   } else {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // TODO(crbug/1422469): Remove the workaround for enable lacros tts support
+    // for testing and call tts_crosapi_util::ShouldEnableLacrosTtsSupport()
+    // instead.
+    if (content::TtsPlatform::GetInstance()->PlatformImplSupported()) {
+      TtsClientLacros::GetForBrowserContext(browser_context())
+          ->OnLacrosSpeechEngineTtsEvent(utterance_id, tts_event_type,
+                                         char_index, length, error_message);
+      return RespondNow(NoArguments());
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
     // If lacros_tts_support is not enabled, TTS events routes to TtsController.
     content::TtsController::GetInstance()->OnTtsEvent(
         utterance_id, tts_event_type, char_index, length, error_message);

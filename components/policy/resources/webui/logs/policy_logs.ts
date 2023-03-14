@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// <if expr="is_ios">
+import 'chrome://resources/js/ios/web_ui.js';
+// </if>
+
+
 import '../strings.m.js';
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
@@ -29,10 +34,14 @@ function dumpFileWithJsonContents() {
 }
 
 function displayList() {
-  logs = logs;
-
   const logMessageContainer = getRequiredElement('logs-container');
-  logMessageContainer.innerHTML = window.trustedTypes!.emptyHTML;
+
+  // TrustedTypes is not supported on iOS
+  if (window.trustedTypes) {
+    logMessageContainer.innerHTML = window.trustedTypes!.emptyHTML;
+  } else {
+    logMessageContainer.innerHTML = '';
+  }
   logs.forEach(log => {
     const logMessage = document.createElement('li');
     logMessage.textContent = log.message;

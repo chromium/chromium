@@ -16,6 +16,7 @@
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/mojo_safe_browsing_impl.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "content/public/browser/browser_associated_interface.h"
@@ -87,11 +88,17 @@ void MaybeCreateSafeBrowsing(
   if (!render_process_host)
     return;
 
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&safe_browsing::MojoSafeBrowsingImpl::MaybeCreate, rph_id,
-                     std::move(resource_context),
-                     std::move(get_checker_delegate), std::move(receiver)));
+  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
+    safe_browsing::MojoSafeBrowsingImpl::MaybeCreate(
+        rph_id, std::move(resource_context), std::move(get_checker_delegate),
+        std::move(receiver));
+  } else {
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&safe_browsing::MojoSafeBrowsingImpl::MaybeCreate,
+                       rph_id, std::move(resource_context),
+                       std::move(get_checker_delegate), std::move(receiver)));
+  }
 }
 
 void BindNetworkHintsHandler(

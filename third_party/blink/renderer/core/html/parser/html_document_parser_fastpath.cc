@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/text/segmented_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
@@ -149,9 +150,6 @@ uint32_t TagnameHash(const String& s) {
 // - Fails if an <img> is encountered. Image elements request the image early
 //   on, resulting in network connections. Additionally, loading the image
 //   may consume preloaded resources.
-// - Fails if Document::IsDirAttributeDirty() is true and CSSPseudoDirEnabled is
-//   enabled. This is necessary as state needed to support css-pseudo dir is set
-//   in HTMLElement::BeginParsingChildren(), which this does not call.
 template <class Char>
 class HTMLFastPathParser {
   STACK_ALLOCATED();
@@ -792,6 +790,14 @@ class HTMLFastPathParser {
       for (size_t i = 0; i < entity.length; ++i) {
         out->push_back(entity.data[i]);
       }
+      // ConsumeHTMLEntity() may not have consumed all the input.
+      const unsigned remaining_length = input_segmented.length();
+      if (remaining_length) {
+        if (*(pos_ - 1) == ';') {
+          --pos_;
+        }
+        pos_ -= remaining_length;
+      }
     }
   }
 
@@ -1042,6 +1048,7 @@ class HTMLFastPathParser {
     if (failed_) {
       return element;
     }
+    element->BeginParsingChildren();
     ParseChildren<Tag>(element);
     if (failed_ || pos_ == end_) {
       return Fail(HtmlFastPathResult::kFailedEndOfInputReachedForContainer,
@@ -1060,11 +1067,17 @@ class HTMLFastPathParser {
     } else {
       return Fail(HtmlFastPathResult::kFailedEndTagNameMismatch, element);
     }
+    element->FinishParsingChildren();
     return element;
   }
 
   Element* ParseVoidElement(Element* element) {
     ParseAttributes(element);
+    if (failed_) {
+      return element;
+    }
+    element->BeginParsingChildren();
+    element->FinishParsingChildren();
     return element;
   }
 };
@@ -1109,13 +1122,6 @@ bool CanUseFastPath(Document& document,
       Traversal<HTMLFormElement>::FirstAncestorOrSelf(context_element) !=
           nullptr) {
     LogFastPathResult(HtmlFastPathResult::kFailedInForm);
-    return false;
-  }
-
-  if (document.IsDirAttributeDirty() &&
-      RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
-    LogFastPathResult(
-        HtmlFastPathResult::kFailedCssPseudoDirEnabledAndDirAttributeDirty);
     return false;
   }
   return true;
@@ -1302,15 +1308,7 @@ bool TryParsingHTMLFragmentImpl(const base::span<const Char>& source,
   int number_of_bytes_parsed;
   HTMLFastPathParser<Char> parser{source, document, fragment};
   success = parser.Run(context_element);
-  // The direction attribute may change as a result of parsing. Check again.
-  if (document.IsDirAttributeDirty() &&
-      RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
-    LogFastPathResult(
-        HtmlFastPathResult::kFailedCssPseudoDirEnabledAndDirAttributeDirty);
-    success = false;
-  } else {
-    LogFastPathResult(parser.parse_result());
-  }
+  LogFastPathResult(parser.parse_result());
   number_of_bytes_parsed = parser.NumberOfBytesParsed();
   // The time needed to parse is typically < 1ms (even at the 99%).
   if (base::TimeTicks::IsHighResolution()) {
@@ -1330,7 +1328,8 @@ bool TryParsingHTMLFragmentImpl(const base::span<const Char>& source,
         parser.parse_result() == HtmlFastPathResult::kFailedUnsupportedTag;
   }
   if (parser.parse_result() ==
-      HtmlFastPathResult::kFailedUnsupportedContextTag) {
+          HtmlFastPathResult::kFailedUnsupportedContextTag &&
+      RuntimeEnabledFeatures::InnerHTMLParserFastpathLogFailureEnabled()) {
     const UnsupportedTagType context_tag_type =
         UnsupportedTagTypeValueForNode(context_element);
     // If the context element isn't a valid container but is supported

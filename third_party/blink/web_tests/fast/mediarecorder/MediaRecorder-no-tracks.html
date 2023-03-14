@@ -5,9 +5,9 @@
 // Check that trying to start a recording from a stream without tracks fails.
 test(function() {
   const recorder = new MediaRecorder(new MediaStream());
-  assert_throws_dom("UnknownError", () => recorder.start());
+  assert_throws_dom("NotSupportedError", () => recorder.start());
   // Try again to verify that it fails the same way.
-  assert_throws_dom("UnknownError", () => recorder.start());
+  assert_throws_dom("NotSupportedError", () => recorder.start());
 }, 'Trying to record a stream without tracks fails');
 
 </script>

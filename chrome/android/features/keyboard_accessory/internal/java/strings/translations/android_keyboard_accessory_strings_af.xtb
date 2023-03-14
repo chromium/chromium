@@ -1,13 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
+<translation id="1347497506789975534">Wys gestoorde betaalmetodes</translation>
 <translation id="1383876407941801731">Soek</translation>
-<translation id="1566281227936819866">Wys tans gestoorde betaalmetodes</translation>
 <translation id="1717486229951421299">Lys eiebewyse wat met aanraking ingevul moet word, is teen halwe hoogte oopgemaak.</translation>
 <translation id="207576718733492531">Lys eiebewyse wat met aanraking ingevul moet word, is toegemaak.</translation>
 <translation id="2610239185026711824">Stel wagwoord voor</translation>
 <translation id="2652129567809778422">Kies wagwoord</translation>
-<translation id="2803478378562657435">Wys gestoorde wagwoorde en wagwoordopsies</translation>
 <translation id="2903493209154104877">Adresse</translation>
 <translation id="3399357656427473483">Lys eiebewyse wat met aanraking ingevul moet word.</translation>
 <translation id="3688051737190211318">As jy <ph name="ORIGIN" /> vertrou, kan jy ’n gestoorde wagwoord gebruik om aan te meld</translation>
@@ -15,16 +14,14 @@
 <translation id="4660011489602794167">Wys sleutelbord</translation>
 <translation id="4694050069269396220">As jy <ph name="ORIGIN" /> vertrou, kan jy 'n gestoorde wagwoord vir 'n ander werf gebruik.</translation>
 <translation id="5016175294846053194">Outovulvoorstelle is bo die sleutelbord beskikbaar</translation>
-<translation id="5088366526685584589">Wys tans gestoorde adresse</translation>
 <translation id="5441504010984421144">Lys eiebewyse wat met aanraking ingevul moet word, is teen volle hoogte oopgemaak.</translation>
+<translation id="6296921860874265377">Wys gestoorde wagwoorde en wagwoordopsies</translation>
 <translation id="6393156038355142111">Stel sterk wagwoord voor</translation>
 <translation id="6558703547256592471">Probeer 'n unieke wagwoord vir elke werf gebruik.</translation>
 <translation id="7029809446516969842">Wagwoorde</translation>
-<translation id="7299100402441711551">Wys adresse</translation>
-<translation id="7494879913343971937">Wys wagwoorde</translation>
 <translation id="7594473730623999723">Swiep om nog voorstelle te sien</translation>
+<translation id="7873973044507799456">Wys gestoorde adresse</translation>
 <translation id="7992095260806105436">Gebruik Chrome-outovulvoorstel</translation>
-<translation id="8037472847879765671">Wys betaalmetodes</translation>
 <translation id="8507520749471379845">Wagwoorde beskikbaar</translation>
 <translation id="8705308553596171387">Geen wagwoord nie</translation>
 <translation id="879180780857354295">Alternatiewe invulopsies is bo die sleutelbord beskikbaar</translation>

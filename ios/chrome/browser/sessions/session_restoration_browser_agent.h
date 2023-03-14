@@ -48,6 +48,9 @@ class SessionRestorationBrowserAgent
   // session to restore. Must be set before restoring/saving the session.
   void SetSessionID(NSString* session_identifier);
 
+  // Returns the session identifier for the associated browser.
+  NSString* GetSessionID() const;
+
   // Adds/Removes Observer to session restoration events.
   void AddObserver(SessionRestorationObserver* observer);
   void RemoveObserver(SessionRestorationObserver* observer);

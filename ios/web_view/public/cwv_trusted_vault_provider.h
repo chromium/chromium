@@ -52,6 +52,10 @@ NS_ASSUME_NONNULL_BEGIN
                                  completion:(void (^)(BOOL, NSError* _Nullable))
                                                 completion;
 
+// Clears local data belonging to |identity|, such as shared keys. This
+// excludes the physical client's key pair, which remains unchanged.
+- (void)clearLocalDataForForIdentity:(CWVIdentity*)identity;
+
 @end
 
 NS_ASSUME_NONNULL_END

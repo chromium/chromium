@@ -404,6 +404,7 @@ class AutofillAcrossIframesTest : public InProcessBrowserTest {
                                             "d.com", "e.com", "f.com"};
   static constexpr const char* kMainHostname = kHostnames[0];
 
+  test::AutofillBrowserTestEnvironment autofill_test_environment_;
   base::test::ScopedFeatureList feature_list_;
   net::EmbeddedTestServer https_server_;
   content::ContentMockCertVerifier cert_verifier_;

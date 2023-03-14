@@ -47,8 +47,6 @@ template <typename Interface>
 class ScopedHandleBase;
 class DataPipeProducerHandle;
 typedef ScopedHandleBase<DataPipeProducerHandle> ScopedDataPipeProducerHandle;
-class DataPipeConsumerHandle;
-typedef ScopedHandleBase<DataPipeConsumerHandle> ScopedDataPipeConsumerHandle;
 }  // namespace mojo
 
 namespace WTF {
@@ -85,13 +83,6 @@ template <>
 struct CrossThreadCopier<mojo::ScopedDataPipeProducerHandle>
     : public CrossThreadCopierByValuePassThrough<
           mojo::ScopedDataPipeProducerHandle> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<mojo::ScopedDataPipeConsumerHandle>
-    : public CrossThreadCopierByValuePassThrough<
-          mojo::ScopedDataPipeConsumerHandle> {
   STATIC_ONLY(CrossThreadCopier);
 };
 

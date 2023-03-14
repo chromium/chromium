@@ -33,7 +33,7 @@ var SidePanelCustomizeChromeColorsFocusTest =
   /** @override */
   get browsePreload() {
     return 'chrome://customize-chrome-side-panel.top-chrome/test_loader.html' +
-        '?module=side_panel_customize_chrome/colors_focus_test.js';
+        '?module=side_panel/customize_chrome/colors_focus_test.js';
   }
 };
 

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_MOCK_PASSWORD_FEATURE_MANAGER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_MOCK_PASSWORD_FEATURE_MANAGER_H_
 
+#include "build/build_config.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -22,17 +23,7 @@ class MockPasswordFeatureManager : public PasswordFeatureManager {
               ShouldShowAccountStorageReSignin,
               (const GURL&),
               (override, const));
-  MOCK_METHOD(void, OptInToAccountStorage, (), (override));
-  MOCK_METHOD(void, OptOutOfAccountStorageAndClearSettings, (), (override));
   MOCK_METHOD(bool, ShouldShowAccountStorageBubbleUi, (), (override, const));
-  MOCK_METHOD(bool,
-              ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally,
-              (),
-              (override, const));
-  MOCK_METHOD(void,
-              SetDefaultPasswordStore,
-              (const PasswordForm::Store& store),
-              (override));
   MOCK_METHOD(PasswordForm::Store,
               GetDefaultPasswordStore,
               (),
@@ -43,12 +34,25 @@ class MockPasswordFeatureManager : public PasswordFeatureManager {
               ComputePasswordAccountStorageUsageLevel,
               (),
               (override, const));
-  MOCK_METHOD(void, RecordMoveOfferedToNonOptedInUser, (), (override));
-  MOCK_METHOD(int, GetMoveOfferedToNonOptedInUserCount, (), (override, const));
   MOCK_METHOD(bool,
               IsBiometricAuthenticationBeforeFillingEnabled,
               (),
               (override, const));
+
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(void, OptInToAccountStorage, (), (override));
+  MOCK_METHOD(void, OptOutOfAccountStorageAndClearSettings, (), (override));
+  MOCK_METHOD(bool,
+              ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally,
+              (),
+              (override, const));
+  MOCK_METHOD(void,
+              SetDefaultPasswordStore,
+              (const PasswordForm::Store& store),
+              (override));
+  MOCK_METHOD(void, RecordMoveOfferedToNonOptedInUser, (), (override));
+  MOCK_METHOD(int, GetMoveOfferedToNonOptedInUserCount, (), (override, const));
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace password_manager

@@ -183,6 +183,11 @@ mojom::blink::HoverType MediaValuesDynamic::PrimaryHoverType() const {
   return CalculatePrimaryHoverType(frame_);
 }
 
+mojom::blink::OutputDeviceUpdateAbilityType
+MediaValuesDynamic::OutputDeviceUpdateAbilityType() const {
+  return CalculateOutputDeviceUpdateAbilityType(frame_);
+}
+
 int MediaValuesDynamic::AvailableHoverTypes() const {
   return CalculateAvailableHoverTypes(frame_);
 }

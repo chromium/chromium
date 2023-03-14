@@ -5,25 +5,48 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/incoming_connection.h"
 
 #include "base/base64url.h"
+#include "base/hash/sha1.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "crypto/random.h"
 
 namespace ash::quick_start {
 
 IncomingConnection::IncomingConnection(NearbyConnection* nearby_connection,
-                                       RandomSessionId session_id)
-    : Connection(nearby_connection), random_session_id_(session_id) {
+                                       RandomSessionId session_id,
+                                       const std::string& authentication_token)
+    : Connection(nearby_connection),
+      random_session_id_(session_id),
+      pin_(DerivePin(authentication_token)) {
   crypto::RandBytes(shared_secret_);
 }
 
 IncomingConnection::IncomingConnection(NearbyConnection* nearby_connection,
                                        RandomSessionId session_id,
+                                       const std::string& authentication_token,
                                        std::array<uint8_t, 32> shared_secret)
     : Connection(nearby_connection),
       random_session_id_(session_id),
-      shared_secret_(shared_secret) {}
+      shared_secret_(shared_secret),
+      pin_(DerivePin(authentication_token)) {}
 
 IncomingConnection::~IncomingConnection() = default;
+
+std::string IncomingConnection::DerivePin(
+    const std::string& authentication_token) {
+  std::string hash_str = base::SHA1HashString(authentication_token);
+  std::vector<int8_t> hash_ints =
+      std::vector<int8_t>(hash_str.begin(), hash_str.end());
+
+  return base::NumberToString(
+             std::abs((hash_ints[0] << 8 | hash_ints[1]) % 10)) +
+         base::NumberToString(
+             std::abs((hash_ints[2] << 8 | hash_ints[3]) % 10)) +
+         base::NumberToString(
+             std::abs((hash_ints[4] << 8 | hash_ints[5]) % 10)) +
+         base::NumberToString(
+             std::abs((hash_ints[6] << 8 | hash_ints[7]) % 10));
+}
 
 std::vector<uint8_t> IncomingConnection::GetQrCodeData() const {
   std::string shared_secret_str(shared_secret_.begin(), shared_secret_.end());

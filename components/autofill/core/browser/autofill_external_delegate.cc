@@ -250,13 +250,22 @@ void AutofillExternalDelegate::DidAcceptSuggestion(const Suggestion& suggestion,
       driver_->RendererShouldAcceptDataListSuggestion(
           query_field_.global_id(), suggestion.main_text.value);
       break;
+    case POPUP_ITEM_ID_IBAN_ENTRY:
+      // User selected an IBAN suggestion, and we should fill the unmasked IBAN
+      // value.
+      driver_->RendererShouldFillFieldWithValue(
+          query_field_.global_id(),
+          suggestion.GetPayload<Suggestion::ValueToFill>().value());
+      manager_->OnSingleFieldSuggestionSelected(suggestion.main_text.value,
+                                                suggestion.frontend_id,
+                                                query_form_, query_field_);
+      break;
     case POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY:
       AutofillMetrics::LogAutocompleteSuggestionAcceptedIndex(position);
       ABSL_FALLTHROUGH_INTENDED;
-    case POPUP_ITEM_ID_IBAN_ENTRY:
     case POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY:
-      // User selected an Autocomplete, Merchant Promo Code field or IBAN, so we
-      // fill directly.
+      // User selected an Autocomplete or Merchant Promo Code field, so we fill
+      // directly.
       driver_->RendererShouldFillFieldWithValue(query_field_.global_id(),
                                                 suggestion.main_text.value);
       manager_->OnSingleFieldSuggestionSelected(suggestion.main_text.value,

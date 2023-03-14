@@ -4,14 +4,15 @@
 
 #include "extensions/browser/permissions_manager.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_test.h"
 #include "extensions/browser/pref_types.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/extension_icon_set.h"
-#include "extensions/common/extensions_client.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/url_pattern_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -186,90 +187,16 @@ TEST_F(PermissionsManagerUnittest, AddAndRemoveRestrictedSite) {
 }
 
 TEST_F(PermissionsManagerUnittest, AddAndRemovePermittedSite) {
-  const url::Origin url = url::Origin::Create(GURL("http://a.example.com"));
-  const std::string expected_url_pattern = "http://a.example.com/*";
-  std::set<url::Origin> set_with_url;
-  set_with_url.insert(url);
-  base::Value::List value_with_url;
-  value_with_url.Append(url.Serialize());
-
   // Verify the permitted sites list is empty.
   EXPECT_EQ(GetPermittedSitesFromManager(), std::set<url::Origin>());
   EXPECT_EQ(GetPermittedSitesFromPrefs(), nullptr);
   EXPECT_THAT(GetPermittedSitesFromPermissionsData(), testing::IsEmpty());
-  EXPECT_EQ(manager_->GetUserSiteSetting(url),
-            PermissionsManager::UserSiteSetting::kCustomizeByExtension);
 
-  // Add `url` to permitted sites. Verify the site is stored both in manager
-  // and prefs permitted sites.
-  manager_->AddUserPermittedSite(url);
-  EXPECT_EQ(GetPermittedSitesFromManager(), set_with_url);
-  EXPECT_EQ(*GetPermittedSitesFromPrefs(), value_with_url);
-  EXPECT_THAT(GetPermittedSitesFromPermissionsData(),
-              testing::UnorderedElementsAre(expected_url_pattern));
-  EXPECT_EQ(manager_->GetUserSiteSetting(url),
-            PermissionsManager::UserSiteSetting::kGrantAllExtensions);
-
-  // Adding an existent permitted site. Verify the entry is not duplicated.
-  manager_->AddUserPermittedSite(url);
-  EXPECT_EQ(GetPermittedSitesFromManager(), set_with_url);
-  EXPECT_EQ(*GetPermittedSitesFromPrefs(), value_with_url);
-  EXPECT_THAT(GetPermittedSitesFromPermissionsData(),
-              testing::UnorderedElementsAre(expected_url_pattern));
-
-  // Remove `url` from permitted sites. Verify the site is removed from both
-  // manager and prefs permitted sites.
-  manager_->RemoveUserPermittedSite(url);
-  EXPECT_EQ(GetPermittedSitesFromManager(), std::set<url::Origin>());
-  EXPECT_EQ(*GetPermittedSitesFromPrefs(),
-            base::Value(base::Value::Type::LIST));
-  EXPECT_THAT(GetPermittedSitesFromPermissionsData(), testing::IsEmpty());
-  EXPECT_EQ(manager_->GetUserSiteSetting(url),
-            PermissionsManager::UserSiteSetting::kCustomizeByExtension);
-}
-
-TEST_F(PermissionsManagerUnittest,
-       RestrictedAndPermittedSitesAreMutuallyExclusive) {
+  // Adding or removing a permitted site is only supported when
+  // kExtensionsMenuAccessControlWithPermittedSites is enabled.
   const url::Origin url = url::Origin::Create(GURL("http://a.example.com"));
-  std::set<url::Origin> empty_set;
-  std::set<url::Origin> set_with_url;
-  set_with_url.insert(url);
-
-  {
-    manager_->AddUserRestrictedSite(url);
-    const PermissionsManager::UserPermissionsSettings& actual_permissions =
-        manager_->GetUserPermissionsSettings();
-    EXPECT_EQ(actual_permissions.restricted_sites, set_with_url);
-    EXPECT_EQ(actual_permissions.permitted_sites, empty_set);
-    EXPECT_EQ(manager_->GetUserSiteSetting(url),
-              PermissionsManager::UserSiteSetting::kBlockAllExtensions);
-  }
-
-  {
-    // Adding an url to the permitted sites that is already in the restricted
-    // sites should remove it from restricted sites and add it to permitted
-    // sites.
-    manager_->AddUserPermittedSite(url);
-    const PermissionsManager::UserPermissionsSettings& actual_permissions =
-        manager_->GetUserPermissionsSettings();
-    EXPECT_EQ(actual_permissions.restricted_sites, empty_set);
-    EXPECT_EQ(actual_permissions.permitted_sites, set_with_url);
-    EXPECT_EQ(manager_->GetUserSiteSetting(url),
-              PermissionsManager::UserSiteSetting::kGrantAllExtensions);
-  }
-
-  {
-    // Adding an url to the restricted sites that is already in the permitted
-    // sites should remove it from permitted sites and add it to restricted
-    // sites.
-    manager_->AddUserRestrictedSite(url);
-    const PermissionsManager::UserPermissionsSettings& actual_permissions =
-        manager_->GetUserPermissionsSettings();
-    EXPECT_EQ(actual_permissions.restricted_sites, set_with_url);
-    EXPECT_EQ(actual_permissions.permitted_sites, empty_set);
-    EXPECT_EQ(manager_->GetUserSiteSetting(url),
-              PermissionsManager::UserSiteSetting::kBlockAllExtensions);
-  }
+  EXPECT_DCHECK_DEATH(manager_->AddUserPermittedSite(url));
+  EXPECT_DCHECK_DEATH(manager_->RemoveUserPermittedSite(url));
 }
 
 TEST_F(PermissionsManagerUnittest, UpdateUserSiteSetting) {
@@ -279,14 +206,10 @@ TEST_F(PermissionsManagerUnittest, UpdateUserSiteSetting) {
   set_with_url.insert(url);
 
   {
-    manager_->UpdateUserSiteSetting(
-        url, PermissionsManager::UserSiteSetting::kGrantAllExtensions);
-    const PermissionsManager::UserPermissionsSettings& actual_permissions =
-        manager_->GetUserPermissionsSettings();
-    EXPECT_EQ(actual_permissions.restricted_sites, empty_set);
-    EXPECT_EQ(actual_permissions.permitted_sites, set_with_url);
-    EXPECT_EQ(manager_->GetUserSiteSetting(url),
-              PermissionsManager::UserSiteSetting::kGrantAllExtensions);
+    // Granting all extensions is only supported when
+    // kExtensionsMenuAccessControlWithPermittedSites flag is enabled.
+    EXPECT_DCHECK_DEATH(manager_->UpdateUserSiteSetting(
+        url, PermissionsManager::UserSiteSetting::kGrantAllExtensions));
   }
 
   {
@@ -445,6 +368,132 @@ TEST_F(PermissionsManagerUnittest, CanAffectExtension_ByLocation) {
     EXPECT_EQ(manager_->CanAffectExtension(*extension),
               test_case.can_be_affected)
         << test_case.location;
+  }
+}
+
+class PermissionsManagerWithPermittedSitesUnitTest
+    : public PermissionsManagerUnittest {
+ public:
+  PermissionsManagerWithPermittedSitesUnitTest();
+  PermissionsManagerWithPermittedSitesUnitTest(
+      const PermissionsManagerWithPermittedSitesUnitTest&) = delete;
+  const PermissionsManagerWithPermittedSitesUnitTest& operator=(
+      const PermissionsManagerWithPermittedSitesUnitTest&) = delete;
+  ~PermissionsManagerWithPermittedSitesUnitTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+PermissionsManagerWithPermittedSitesUnitTest::
+    PermissionsManagerWithPermittedSitesUnitTest() {
+  feature_list_.InitAndEnableFeature(
+      extensions_features::kExtensionsMenuAccessControlWithPermittedSites);
+}
+
+TEST_F(PermissionsManagerWithPermittedSitesUnitTest,
+       AddAndRemovePermittedSite) {
+  const url::Origin url = url::Origin::Create(GURL("http://a.example.com"));
+  const std::string expected_url_pattern = "http://a.example.com/*";
+  std::set<url::Origin> set_with_url;
+  set_with_url.insert(url);
+  base::Value::List value_with_url;
+  value_with_url.Append(url.Serialize());
+
+  // Verify the permitted sites list is empty.
+  EXPECT_EQ(GetPermittedSitesFromManager(), std::set<url::Origin>());
+  EXPECT_EQ(GetPermittedSitesFromPrefs(), nullptr);
+  EXPECT_THAT(GetPermittedSitesFromPermissionsData(), testing::IsEmpty());
+  EXPECT_EQ(manager_->GetUserSiteSetting(url),
+            PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+
+  manager_->AddUserPermittedSite(url);
+
+  // Verify the site is stored both in manager and prefs permitted sites.
+  EXPECT_EQ(GetPermittedSitesFromManager(), set_with_url);
+  EXPECT_EQ(*GetPermittedSitesFromPrefs(), value_with_url);
+  EXPECT_THAT(GetPermittedSitesFromPermissionsData(),
+              testing::UnorderedElementsAre(expected_url_pattern));
+  EXPECT_EQ(manager_->GetUserSiteSetting(url),
+            PermissionsManager::UserSiteSetting::kGrantAllExtensions);
+
+  // Adding an existent permitted site.
+  manager_->AddUserPermittedSite(url);
+
+  // Verify the entry is not duplicated.
+  EXPECT_EQ(GetPermittedSitesFromManager(), set_with_url);
+  EXPECT_EQ(*GetPermittedSitesFromPrefs(), value_with_url);
+  EXPECT_THAT(GetPermittedSitesFromPermissionsData(),
+              testing::UnorderedElementsAre(expected_url_pattern));
+
+  // Remove `url` from permitted sites. Verify the site is removed from both
+  // manager and prefs permitted sites.
+  manager_->RemoveUserPermittedSite(url);
+  EXPECT_EQ(GetPermittedSitesFromManager(), std::set<url::Origin>());
+  EXPECT_EQ(*GetPermittedSitesFromPrefs(),
+            base::Value(base::Value::Type::LIST));
+  EXPECT_THAT(GetPermittedSitesFromPermissionsData(), testing::IsEmpty());
+  EXPECT_EQ(manager_->GetUserSiteSetting(url),
+            PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+}
+
+TEST_F(PermissionsManagerWithPermittedSitesUnitTest, GrantAllExtensionsAccess) {
+  const url::Origin url = url::Origin::Create(GURL("http://a.example.com"));
+  std::set<url::Origin> empty_set;
+  std::set<url::Origin> set_with_url;
+  set_with_url.insert(url);
+
+  manager_->UpdateUserSiteSetting(
+      url, PermissionsManager::UserSiteSetting::kGrantAllExtensions);
+  const PermissionsManager::UserPermissionsSettings& actual_permissions =
+      manager_->GetUserPermissionsSettings();
+  EXPECT_EQ(actual_permissions.restricted_sites, empty_set);
+  EXPECT_EQ(actual_permissions.permitted_sites, set_with_url);
+  EXPECT_EQ(manager_->GetUserSiteSetting(url),
+            PermissionsManager::UserSiteSetting::kGrantAllExtensions);
+}
+
+TEST_F(PermissionsManagerWithPermittedSitesUnitTest,
+       RestrictedAndPermittedSitesAreMutuallyExclusive) {
+  const url::Origin url = url::Origin::Create(GURL("http://a.example.com"));
+  std::set<url::Origin> empty_set;
+  std::set<url::Origin> set_with_url;
+  set_with_url.insert(url);
+
+  {
+    manager_->AddUserRestrictedSite(url);
+    const PermissionsManager::UserPermissionsSettings& actual_permissions =
+        manager_->GetUserPermissionsSettings();
+    EXPECT_EQ(actual_permissions.restricted_sites, set_with_url);
+    EXPECT_EQ(actual_permissions.permitted_sites, empty_set);
+    EXPECT_EQ(manager_->GetUserSiteSetting(url),
+              PermissionsManager::UserSiteSetting::kBlockAllExtensions);
+  }
+
+  {
+    // Adding an url to the permitted sites that is already in the restricted
+    // sites should remove it from restricted sites and add it to permitted
+    // sites.
+    manager_->AddUserPermittedSite(url);
+    const PermissionsManager::UserPermissionsSettings& actual_permissions =
+        manager_->GetUserPermissionsSettings();
+    EXPECT_EQ(actual_permissions.restricted_sites, empty_set);
+    EXPECT_EQ(actual_permissions.permitted_sites, set_with_url);
+    EXPECT_EQ(manager_->GetUserSiteSetting(url),
+              PermissionsManager::UserSiteSetting::kGrantAllExtensions);
+  }
+
+  {
+    // Adding an url to the restricted sites that is already in the permitted
+    // sites should remove it from permitted sites and add it to restricted
+    // sites.
+    manager_->AddUserRestrictedSite(url);
+    const PermissionsManager::UserPermissionsSettings& actual_permissions =
+        manager_->GetUserPermissionsSettings();
+    EXPECT_EQ(actual_permissions.restricted_sites, set_with_url);
+    EXPECT_EQ(actual_permissions.permitted_sites, empty_set);
+    EXPECT_EQ(manager_->GetUserSiteSetting(url),
+              PermissionsManager::UserSiteSetting::kBlockAllExtensions);
   }
 }
 

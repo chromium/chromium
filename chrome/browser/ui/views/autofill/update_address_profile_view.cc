@@ -44,8 +44,7 @@ const gfx::VectorIcon& GetVectorIconForType(ServerFieldType type) {
     case PHONE_HOME_WHOLE_NUMBER:
       return vector_icons::kCallIcon;
     default:
-      NOTREACHED();
-      return vector_icons::kLocationOnIcon;
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -250,6 +249,17 @@ UpdateAddressProfileView::UpdateAddressProfileView(
             DISTANCE_UNRELATED_CONTROL_VERTICAL_LARGE));
     AddValuesRow(main_content_view, profile_diff, /*show_row_label=*/true,
                  /*edit_button_callback=*/{});
+  }
+
+  absl::optional<std::u16string> footer_message =
+      controller_->GetFooterMessage();
+  if (footer_message) {
+    SetFootnoteView(
+        views::Builder<views::Label>()
+            .SetText(footer_message.value())
+            .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+            .SetMultiLine(true)
+            .Build());
   }
 }
 

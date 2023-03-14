@@ -120,7 +120,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "APYMYksv9eNAkU6osFvNXN38pMO1Q1kScjeecePr7NgC"
+              "revision": "D9ziv4Z61qHwterMTFEoPeCZzFNyUfMnWAlYuxEKlM8C"
             }
           ],
           "dimension_sets": [
@@ -174,7 +174,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "APYMYksv9eNAkU6osFvNXN38pMO1Q1kScjeecePr7NgC"
+              "revision": "D9ziv4Z61qHwterMTFEoPeCZzFNyUfMnWAlYuxEKlM8C"
             }
           ],
           "dimension_sets": [
@@ -502,7 +502,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "APYMYksv9eNAkU6osFvNXN38pMO1Q1kScjeecePr7NgC"
+              "revision": "D9ziv4Z61qHwterMTFEoPeCZzFNyUfMnWAlYuxEKlM8C"
             }
           ],
           "dimension_sets": [
@@ -557,7 +557,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "APYMYksv9eNAkU6osFvNXN38pMO1Q1kScjeecePr7NgC"
+              "revision": "D9ziv4Z61qHwterMTFEoPeCZzFNyUfMnWAlYuxEKlM8C"
             }
           ],
           "dimension_sets": [
@@ -888,7 +888,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "APYMYksv9eNAkU6osFvNXN38pMO1Q1kScjeecePr7NgC"
+              "revision": "D9ziv4Z61qHwterMTFEoPeCZzFNyUfMnWAlYuxEKlM8C"
             }
           ],
           "dimension_sets": [
@@ -942,7 +942,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "APYMYksv9eNAkU6osFvNXN38pMO1Q1kScjeecePr7NgC"
+              "revision": "D9ziv4Z61qHwterMTFEoPeCZzFNyUfMnWAlYuxEKlM8C"
             }
           ],
           "dimension_sets": [
@@ -6187,7 +6187,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "APYMYksv9eNAkU6osFvNXN38pMO1Q1kScjeecePr7NgC"
+              "revision": "D9ziv4Z61qHwterMTFEoPeCZzFNyUfMnWAlYuxEKlM8C"
             }
           ],
           "dimension_sets": [
@@ -6259,7 +6259,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "APYMYksv9eNAkU6osFvNXN38pMO1Q1kScjeecePr7NgC"
+              "revision": "D9ziv4Z61qHwterMTFEoPeCZzFNyUfMnWAlYuxEKlM8C"
             }
           ],
           "dimension_sets": [
@@ -7510,6 +7510,7 @@
           "--git-revision=${got_revision}",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.chrome_public_unit_test_apk.filter"
         ],
+        "ci_only": true,
         "merge": {
           "args": [
             "--bucket",
@@ -7584,6 +7585,69 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cores": "8",
+              "cpu": "x86-64",
+              "device_os": null,
+              "device_type": null,
+              "os": "Ubuntu-18.04",
+              "pool": "chromium.tests.avd"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "generic_android31",
+              "path": ".android_emulator/generic_android31"
+            }
+          ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "generic_android31"
+              }
+            ]
+          },
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "components_browsertests",
+        "test_id_prefix": "ninja://components:components_browsertests/"
+      },
+      {
+        "args": [
+          "--use-persistent-shell",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices",
+          "--avd-config=../../tools/android/avd/proto/generic_android31.textpb"
+        ],
+        "ci_only": true,
+        "experiment_percentage": 100,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "components_browsertests_persistent_shell"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "components_browsertests_persistent_shell",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -7830,6 +7894,70 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cores": "8",
+              "cpu": "x86-64",
+              "device_os": null,
+              "device_type": null,
+              "os": "Ubuntu-18.04",
+              "pool": "chromium.tests.avd"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "generic_android31",
+              "path": ".android_emulator/generic_android31"
+            }
+          ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "generic_android31"
+              }
+            ]
+          },
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
+        },
+        "test": "content_unittests",
+        "test_id_prefix": "ninja://content/test:content_unittests/"
+      },
+      {
+        "args": [
+          "--use-persistent-shell",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices",
+          "--avd-config=../../tools/android/avd/proto/generic_android31.textpb"
+        ],
+        "ci_only": true,
+        "experiment_percentage": 100,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "content_unittests_persistent_shell"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "content_unittests_persistent_shell",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -9356,7 +9484,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "services_unittests",
         "test_id_prefix": "ninja://services:services_unittests/"
@@ -10186,7 +10315,71 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 7
+          "shards": 10
+        },
+        "test": "webview_instrumentation_test_apk",
+        "test_id_prefix": "ninja://android_webview/test:webview_instrumentation_test_apk/"
+      },
+      {
+        "args": [
+          "--use-persistent-shell",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices",
+          "--avd-config=../../tools/android/avd/proto/generic_android31.textpb"
+        ],
+        "ci_only": true,
+        "experiment_percentage": 100,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "webview_instrumentation_test_apk_persistent_shell"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "webview_instrumentation_test_apk_persistent_shell",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cores": "8",
+              "cpu": "x86-64",
+              "device_os": null,
+              "device_type": null,
+              "os": "Ubuntu-18.04",
+              "pool": "chromium.tests.avd"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "generic_android31",
+              "path": ".android_emulator/generic_android31"
+            }
+          ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "generic_android31"
+              }
+            ]
+          },
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 10
         },
         "test": "webview_instrumentation_test_apk",
         "test_id_prefix": "ninja://android_webview/test:webview_instrumentation_test_apk/"
@@ -10217,7 +10410,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "APYMYksv9eNAkU6osFvNXN38pMO1Q1kScjeecePr7NgC"
+              "revision": "D9ziv4Z61qHwterMTFEoPeCZzFNyUfMnWAlYuxEKlM8C"
             }
           ],
           "dimension_sets": [
@@ -10289,7 +10482,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "APYMYksv9eNAkU6osFvNXN38pMO1Q1kScjeecePr7NgC"
+              "revision": "D9ziv4Z61qHwterMTFEoPeCZzFNyUfMnWAlYuxEKlM8C"
             }
           ],
           "dimension_sets": [
@@ -14251,7 +14444,8 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.webview_instrumentation_test_apk.filter"
         ],
         "merge": {
           "args": [
@@ -14302,7 +14496,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 7
+          "shards": 9
         },
         "test": "webview_instrumentation_test_apk",
         "test_id_prefix": "ninja://android_webview/test:webview_instrumentation_test_apk/"
@@ -18122,7 +18316,8 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android33.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android33.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.webview_instrumentation_test_apk.filter"
         ],
         "merge": {
           "args": [
@@ -18173,7 +18368,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 7
+          "shards": 9
         },
         "test": "webview_instrumentation_test_apk",
         "test_id_prefix": "ninja://android_webview/test:webview_instrumentation_test_apk/"
@@ -18204,7 +18399,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "APYMYksv9eNAkU6osFvNXN38pMO1Q1kScjeecePr7NgC"
+              "revision": "D9ziv4Z61qHwterMTFEoPeCZzFNyUfMnWAlYuxEKlM8C"
             }
           ],
           "dimension_sets": [
@@ -18276,7 +18471,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "APYMYksv9eNAkU6osFvNXN38pMO1Q1kScjeecePr7NgC"
+              "revision": "D9ziv4Z61qHwterMTFEoPeCZzFNyUfMnWAlYuxEKlM8C"
             }
           ],
           "dimension_sets": [
@@ -18346,7 +18541,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "APYMYksv9eNAkU6osFvNXN38pMO1Q1kScjeecePr7NgC"
+              "revision": "D9ziv4Z61qHwterMTFEoPeCZzFNyUfMnWAlYuxEKlM8C"
             }
           ],
           "dimension_sets": [
@@ -25830,6 +26025,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android24.textpb"
         ],
+        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -28855,6 +29051,7 @@
           "--avd-config=../../tools/android/avd/proto/generic_android24.textpb",
           "--gtest_filter=-PacLibraryTest.ActualPacMyIpAddress*"
         ],
+        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -28906,7 +29103,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
+          "shards": 3
         },
         "test": "services_unittests",
         "test_id_prefix": "ninja://services:services_unittests/"
@@ -29673,7 +29870,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "APYMYksv9eNAkU6osFvNXN38pMO1Q1kScjeecePr7NgC"
+              "revision": "D9ziv4Z61qHwterMTFEoPeCZzFNyUfMnWAlYuxEKlM8C"
             }
           ],
           "dimension_sets": [
@@ -31405,7 +31602,7 @@
           ],
           "quickrun_shards": 6,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 3
+          "shards": 4
         },
         "test": "android_browsertests",
         "test_id_prefix": "ninja://chrome/test:android_browsertests/"
@@ -32056,7 +32253,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "APYMYksv9eNAkU6osFvNXN38pMO1Q1kScjeecePr7NgC"
+              "revision": "D9ziv4Z61qHwterMTFEoPeCZzFNyUfMnWAlYuxEKlM8C"
             }
           ],
           "dimension_sets": [
@@ -35967,7 +36164,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "APYMYksv9eNAkU6osFvNXN38pMO1Q1kScjeecePr7NgC"
+              "revision": "D9ziv4Z61qHwterMTFEoPeCZzFNyUfMnWAlYuxEKlM8C"
             }
           ],
           "dimension_sets": [
@@ -36291,7 +36488,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "APYMYksv9eNAkU6osFvNXN38pMO1Q1kScjeecePr7NgC"
+              "revision": "D9ziv4Z61qHwterMTFEoPeCZzFNyUfMnWAlYuxEKlM8C"
             }
           ],
           "dimension_sets": [
@@ -36363,7 +36560,7 @@
             {
               "cipd_package": "chromium/android_webview/tools/cts_archive",
               "location": "android_webview/tools/cts_archive",
-              "revision": "APYMYksv9eNAkU6osFvNXN38pMO1Q1kScjeecePr7NgC"
+              "revision": "D9ziv4Z61qHwterMTFEoPeCZzFNyUfMnWAlYuxEKlM8C"
             }
           ],
           "dimension_sets": [

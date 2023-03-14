@@ -30,8 +30,8 @@ import {SettingsManager} from '../common/settings_manager.js';
 import {Personality, QueueMode, TtsSettings, TtsSpeechProperties} from '../common/tts_types.js';
 
 import {AutoScrollHandler} from './auto_scroll_handler.js';
-import {BrailleBackground} from './braille/braille_background.js';
 import {BrailleCaptionsBackground} from './braille/braille_captions_background.js';
+import {BrailleTranslatorManager} from './braille/braille_translator_manager.js';
 import {ChromeVox} from './chromevox.js';
 import {ChromeVoxRange} from './chromevox_range.js';
 import {ChromeVoxState} from './chromevox_state.js';
@@ -56,6 +56,8 @@ const AutomationNode = chrome.automation.AutomationNode;
 const Dir = constants.Dir;
 const EventType = chrome.automation.EventType;
 const RoleType = chrome.automation.RoleType;
+const SetNativeChromeVoxResponse =
+    chrome.accessibilityPrivate.SetNativeChromeVoxResponse;
 
 /**
  * @typedef {{
@@ -155,7 +157,7 @@ export class CommandHandler extends CommandHandlerInterface {
             !BrailleCaptionsBackground.isEnabled());
         return false;
       case Command.TOGGLE_BRAILLE_TABLE:
-        this.toggleBrailleTable_();
+        BrailleTranslatorManager.instance.toggleBrailleTable();
         return false;
       case Command.HELP:
         (new PanelCommand(PanelCommandType.TUTORIAL)).send();
@@ -743,7 +745,7 @@ export class CommandHandler extends CommandHandlerInterface {
           } else {
             bound = AutomationUtil.findNodePost(
                         /** @type {!AutomationNode} */ (root), dir,
-                        AutomationPredicate.leaf) ||
+                        AutomationPredicate.leaf) ??
                 bound;
           }
           node = AutomationUtil.findNextNode(
@@ -752,7 +754,7 @@ export class CommandHandler extends CommandHandlerInterface {
 
           if (node && !skipSync) {
             node = AutomationUtil.findNodePre(
-                       node, Dir.FORWARD, AutomationPredicate.object) ||
+                       node, Dir.FORWARD, AutomationPredicate.object) ??
                 node;
           }
 
@@ -833,11 +835,9 @@ export class CommandHandler extends CommandHandlerInterface {
    * @private
    */
   viewGraphicAsBraille_(currentRange) {
-    if (this.imageNode_) {
-      this.imageNode_.removeEventListener(
-          EventType.IMAGE_FRAME_UPDATED, this.onImageFrameUpdated_, false);
-      this.imageNode_ = null;
-    }
+    this.imageNode_?.removeEventListener(
+        EventType.IMAGE_FRAME_UPDATED, this.onImageFrameUpdated_, false);
+    this.imageNode_ = null;
 
     // Find the first node within the current range that supports image data.
     const imageNode = AutomationUtil.findNodePost(
@@ -967,13 +967,12 @@ export class CommandHandler extends CommandHandlerInterface {
     }
 
     // Keep moving past all nodes acting as labels or descriptions.
-    while (currentRange && currentRange.start && currentRange.start.node &&
-           currentRange.start.node.role === RoleType.STATIC_TEXT) {
+    while (currentRange?.start?.node?.role === RoleType.STATIC_TEXT) {
       // We must scan upwards as any ancestor might have a label or description.
       let ancestor = currentRange.start.node;
       while (ancestor) {
-        if ((ancestor.labelFor && ancestor.labelFor.length > 0) ||
-            (ancestor.descriptionFor && ancestor.descriptionFor.length > 0)) {
+        if (ancestor.labelFor?.length > 0 ||
+            ancestor.descriptionFor?.length > 0) {
           break;
         }
         ancestor = ancestor.parent;
@@ -1060,17 +1059,14 @@ export class CommandHandler extends CommandHandlerInterface {
   disableChromeVoxArcSupportForCurrentApp_() {
     chrome.accessibilityPrivate.setNativeChromeVoxArcSupportForCurrentApp(
         false, response => {
-          if (response ===
-              chrome.accessibilityPrivate.SetNativeChromeVoxResponse
-                  .TALKBACK_NOT_INSTALLED) {
+          if (response === SetNativeChromeVoxResponse.TALKBACK_NOT_INSTALLED) {
             ChromeVox.braille.write(
                 NavBraille.fromText(Msgs.getMsg('announce_install_talkback')));
             ChromeVox.tts.speak(
                 Msgs.getMsg('announce_install_talkback'), QueueMode.FLUSH);
           } else if (
               response ===
-              chrome.accessibilityPrivate.SetNativeChromeVoxResponse
-                  .NEED_DEPRECATION_CONFIRMATION) {
+              SetNativeChromeVoxResponse.NEED_DEPRECATION_CONFIRMATION) {
             ChromeVox.braille.write(NavBraille.fromText(
                 Msgs.getMsg('announce_talkback_deprecation')));
             ChromeVox.tts.speak(
@@ -1093,12 +1089,11 @@ export class CommandHandler extends CommandHandlerInterface {
     let actionNode = ChromeVoxRange.current.start.node;
     // Scan for a clickable, which overrides the |actionNode|.
     let clickable = actionNode;
-    while (clickable && !clickable.clickable &&
-           actionNode.root === clickable.root) {
+    while (!clickable?.clickable && actionNode.root === clickable?.root) {
       clickable = clickable.parent;
     }
-    if (clickable && actionNode.root === clickable.root) {
-      clickable.doDefault();
+    if (actionNode.root === clickable?.root) {
+      clickable?.doDefault();
       return;
     }
 
@@ -1177,11 +1172,12 @@ export class CommandHandler extends CommandHandlerInterface {
    * @private
    */
   getNewRangeForJumpToTop_(node, currentRange) {
-    if (!currentRange.start.node || !currentRange.start.node.root) {
+    const root = currentRange.start.node?.root;
+    if (!root) {
       return {node, range: currentRange};
     }
     const newNode = AutomationUtil.findNodePost(
-        currentRange.start.node.root, Dir.FORWARD, AutomationPredicate.object);
+        root, Dir.FORWARD, AutomationPredicate.object);
     if (newNode) {
       return {node: newNode, range: CursorRange.fromNode(newNode)};
     }
@@ -1224,7 +1220,7 @@ export class CommandHandler extends CommandHandlerInterface {
     while (current && !current.details) {
       current = current.parent;
     }
-    if (current && current.details.length) {
+    if (current?.details.length) {
       // TODO currently can only jump to first detail.
       currentRange = CursorRange.fromNode(current.details[0]);
     }
@@ -1281,7 +1277,7 @@ export class CommandHandler extends CommandHandlerInterface {
       current = current.parent;
     }
 
-    const useNode = current || originalNode;
+    const useNode = current ?? originalNode;
     return AutomationPredicate.roles([current.role]);
   }
 
@@ -1362,7 +1358,7 @@ export class CommandHandler extends CommandHandlerInterface {
    */
   nextOrPreviousPage_(command, currentRange) {
     const root = AutomationUtil.getTopLevelRoot(currentRange.start.node);
-    if (root && root.scrollY !== undefined) {
+    if (root?.scrollY !== undefined) {
       let page = Math.ceil(root.scrollY / root.location.height) || 1;
       page = command === Command.NEXT_PAGE ? page + 1 : page - 1;
       ChromeVox.tts.stop();
@@ -1381,7 +1377,7 @@ export class CommandHandler extends CommandHandlerInterface {
 
     let firstWindow;
     let rootViewWindow;
-    if (target.root && target.root.role === RoleType.DESKTOP) {
+    if (target.root?.role === RoleType.DESKTOP) {
       // Search for the first container with a name.
       while (target && (!target.name || !AutomationPredicate.root(target))) {
         target = target.parent;
@@ -1405,7 +1401,7 @@ export class CommandHandler extends CommandHandlerInterface {
     }
 
     // Re-target with preference for the root.
-    target = rootViewWindow || firstWindow || target;
+    target = rootViewWindow ?? firstWindow ?? target;
 
     if (!target) {
       output.format('@no_title');
@@ -1650,29 +1646,6 @@ export class CommandHandler extends CommandHandlerInterface {
         break;
     }
     ChromeVox.tts.speak(announce, QueueMode.FLUSH);
-  }
-
-  /** @private */
-  toggleBrailleTable_() {
-    let brailleTableType = SettingsManager.getString('brailleTableType');
-    let output = '';
-    if (brailleTableType === 'brailleTable6') {
-      brailleTableType = 'brailleTable8';
-
-      // This label reads "switch to 8 dot braille".
-      output = '@OPTIONS_BRAILLE_TABLE_TYPE_6';
-    } else {
-      brailleTableType = 'brailleTable6';
-
-      // This label reads "switch to 6 dot braille".
-      output = '@OPTIONS_BRAILLE_TABLE_TYPE_8';
-    }
-
-    SettingsManager.set('brailleTable', SettingsManager.get(brailleTableType));
-    SettingsManager.set('brailleTableType', brailleTableType);
-    BrailleBackground.instance.getTranslatorManager().refresh(
-        SettingsManager.getString(brailleTableType));
-    new Output().format(output).go();
   }
 
   /** @private */

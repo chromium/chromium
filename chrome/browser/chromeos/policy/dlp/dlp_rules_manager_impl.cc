@@ -112,7 +112,7 @@ DlpRulesManager::Component GetComponentMapping(const std::string& component) {
 // `patterns_mapping`, and saves conditions ids to rules ids mapping in `map`.
 void AddUrlConditions(url_matcher::URLMatcher* matcher,
                       UrlConditionId& condition_id,
-                      const base::Value* urls,
+                      const base::Value::List* urls,
                       url_matcher::URLMatcherConditionSet::Vector& conditions,
                       std::map<UrlConditionId, std::string>& patterns_mapping,
                       RuleId rule_id,
@@ -124,7 +124,7 @@ void AddUrlConditions(url_matcher::URLMatcher* matcher,
   std::string path;
   std::string query;
   bool match_subdomains = true;
-  for (const auto& list_entry : urls->GetList()) {
+  for (const auto& list_entry : *urls) {
     std::string url = list_entry.GetString();
     if (!url_matcher::util::FilterToComponents(
             url, &scheme, &host, &match_subdomains, &port, &path, &query)) {
@@ -588,6 +588,7 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
   dst_patterns_mapping_.clear();
   src_conditions_.clear();
   dst_conditions_.clear();
+  rules_id_metadata_mapping_.clear();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   files_controller_ = nullptr;
 #endif
@@ -612,11 +613,11 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
   // Constructing request to send the policy to DLP Files daemon.
   ::dlp::SetDlpFilesPolicyRequest request_to_daemon;
 
-  for (const base::Value& rule : rules_list) {
-    DCHECK(rule.is_dict());
-    const auto* sources = rule.FindDictKey("sources");
+  for (const base::Value& rule_value : rules_list) {
+    const base::Value::Dict& rule = rule_value.GetDict();
+    const base::Value::Dict* sources = rule.FindDict("sources");
     DCHECK(sources);
-    const auto* sources_urls = sources->FindListKey("urls");
+    const base::Value::List* sources_urls = sources->FindList("urls");
     DCHECK(sources_urls);  // This DCHECK should be removed when other types are
                            // supported as sources.
 
@@ -624,27 +625,27 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
                      src_conditions_, src_patterns_mapping_, rules_counter,
                      src_url_rules_mapping_);
 
-    const auto* destinations = rule.FindDictKey("destinations");
-    const auto* destinations_urls =
-        destinations ? destinations->FindListKey("urls") : nullptr;
+    const base::Value::Dict* destinations = rule.FindDict("destinations");
+    const base::Value::List* destinations_urls =
+        destinations ? destinations->FindList("urls") : nullptr;
     if (destinations_urls) {
       AddUrlConditions(dst_url_matcher_.get(), dst_url_condition_id,
                        destinations_urls, dst_conditions_,
                        dst_patterns_mapping_, rules_counter,
                        dst_url_rules_mapping_);
     }
-    const auto* destinations_components =
-        destinations ? destinations->FindListKey("components") : nullptr;
+    const base::Value::List* destinations_components =
+        destinations ? destinations->FindList("components") : nullptr;
     if (destinations_components) {
-      for (const auto& component : destinations_components->GetList()) {
+      for (const auto& component : *destinations_components) {
         DCHECK(component.is_string());
         components_rules_[GetComponentMapping(component.GetString())].insert(
             rules_counter);
       }
     }
 
-    const auto* rule_name = rule.FindStringKey("name");
-    const auto* rule_id = rule.FindStringKey("rule_id");
+    const std::string* rule_name = rule.FindString("name");
+    const std::string* rule_id = rule.FindString("rule_id");
     // Only add to metadata if both fields are set, so we can control behaviour
     // from the server side.
     if (rule_name && rule_id) {
@@ -652,12 +653,13 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
                                          RuleMetadata(*rule_name, *rule_id));
     }
 
-    const auto* restrictions = rule.FindListKey("restrictions");
+    const base::Value::List* restrictions = rule.FindList("restrictions");
     DCHECK(restrictions);
-    for (const auto& restriction : restrictions->GetList()) {
-      const auto* rule_class_str = restriction.FindStringKey("class");
+    for (const auto& restriction_value : *restrictions) {
+      const base::Value::Dict& restriction = restriction_value.GetDict();
+      const std::string* rule_class_str = restriction.FindString("class");
       DCHECK(rule_class_str);
-      const auto* rule_level_str = restriction.FindStringKey("level");
+      const std::string* rule_level_str = restriction.FindString("level");
       DCHECK(rule_level_str);
 
       const Restriction rule_restriction = GetClassMapping(*rule_class_str);
@@ -669,20 +671,20 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
         continue;
 
       bool rule_has_destinations =
-          destinations_urls && !destinations_urls->GetList().empty();
-      bool rule_has_components = destinations_components &&
-                                 !destinations_components->GetList().empty();
+          destinations_urls && !destinations_urls->empty();
+      bool rule_has_components =
+          destinations_components && !destinations_components->empty();
 
       if (rule_restriction == Restriction::kFiles &&
           (rule_has_destinations || rule_has_components)) {
         ::dlp::DlpFilesRule files_rule;
-        for (const auto& url : sources_urls->GetList()) {
+        for (const auto& url : *sources_urls) {
           DCHECK(url.is_string());
           files_rule.add_source_urls(url.GetString());
         }
 
         if (rule_has_destinations) {
-          for (const auto& url : destinations_urls->GetList()) {
+          for (const auto& url : *destinations_urls) {
             DCHECK(url.is_string());
             files_rule.add_destination_urls(url.GetString());
           }
@@ -702,8 +704,15 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
 
   src_url_matcher_->AddConditionSets(src_conditions_);
   dst_url_matcher_->AddConditionSets(dst_conditions_);
-
-  if (base::Contains(restrictions_map_, Restriction::kClipboard)) {
+  if (base::Contains(restrictions_map_, Restriction::kClipboard)
+  // TODO(b/269610458): It should be instantiated for files in
+  // Lacros as well.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      || (base::FeatureList::IsEnabled(
+              features::kDataLeakPreventionFilesRestriction) &&
+          request_to_daemon.rules_size() > 0)
+#endif
+  ) {
     DataTransferDlpController::Init(*this);
   } else {
     DataTransferDlpController::DeleteInstance();

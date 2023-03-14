@@ -670,23 +670,6 @@ class BASE_EXPORT GSL_OWNER Value {
 
   // ===== DEPRECATED methods that require `type() == Type::DICT` =====
 
-  // `FindKey` looks up `key` in the underlying dictionary. If found, it returns
-  // a pointer to the element. Otherwise it returns nullptr.
-  //
-  // DEPRECATED: prefer `Value::Dict::Find()`.
-  // TODO(https://crbug.com/1406815): Remove this API.
-  Value* FindKey(StringPiece key);
-  const Value* FindKey(StringPiece key) const;
-
-  // `FindKeyOfType` is similar to `FindKey`, but it also requires the found
-  // value to have type `type`. If no type is found, or the found value is of a
-  // different type nullptr is returned.
-  //
-  // DEPRECATED: prefer `Value::Dict::FindBool()`, `Value::Dict::FindInt()`, et
-  // cetera.
-  Value* FindKeyOfType(StringPiece key, Type type);
-  const Value* FindKeyOfType(StringPiece key, Type type) const;
-
   // These are convenience forms of `FindKey`. They return `absl::nullopt` or
   // `nullptr` if the value is not found or doesn't have the type specified in
   // the function's name.
@@ -747,14 +730,6 @@ class BASE_EXPORT GSL_OWNER Value {
   // Deprecated: Prefer `Value::Dict::Remove()`.
   bool RemoveKey(StringPiece key);
 
-  // This attempts to extract the value associated with `key`. In case of
-  // failure, e.g. the key does not exist, nullopt is returned and the
-  // underlying dictionary is not changed. In case of success, `key` is deleted
-  // from the dictionary and the method returns the extracted Value.
-  //
-  // DEPRECATED: Prefer `Value::Dict::Extract()`.
-  absl::optional<Value> ExtractKey(StringPiece key);
-
   // Searches a hierarchy of dictionary values for a given value. If a path
   // of dictionaries exist, returns the item at that path. If any of the path
   // components do not exist or if any but the last path components are not
@@ -765,17 +740,6 @@ class BASE_EXPORT GSL_OWNER Value {
   // DEPRECATED: Prefer `Value::Dict::FindByDottedPath()`.
   Value* FindPath(StringPiece path);
   const Value* FindPath(StringPiece path) const;
-
-  // Like FindPath() but will only return the value if the leaf Value type
-  // matches the given type. Will return nullptr otherwise.
-  // Note: Prefer `Find<Type>Path()` for simple values.
-  //
-  // Note: If there is only one component in the path, use `FindKeyOfType()`
-  // instead for slightly better performance.
-  //
-  // DEPRECATED: Use `Value::Dict::FindBoolByDottedPath()`,
-  // `Value::Dict::FindIntByDottedPath()`, et cetera.
-  const Value* FindPathOfType(StringPiece path, Type type) const;
 
   // Convenience accessors used when the expected type of a value is known.
   // Similar to Find<Type>Key() but accepts paths instead of keys.
@@ -845,18 +809,6 @@ class BASE_EXPORT GSL_OWNER Value {
   Value* SetPath(std::initializer_list<StringPiece> path, Value&& value);
   Value* SetPath(span<const StringPiece> path, Value&& value);
 
-  // Tries to remove a Value at the given path.
-  //
-  // If the current value is not a dictionary or any path component does not
-  // exist, this operation fails, leaves underlying Values untouched and returns
-  // `false`. In case intermediate dictionaries become empty as a result of this
-  // path removal, they will be removed as well.
-  // Note: If there is only one component in the path, use `RemoveKey()`
-  // instead.
-  //
-  // DEPRECATED: Use `Value::Dict::RemoveByDottedPath()`.
-  bool RemovePath(StringPiece path);
-
   using dict_iterator_proxy = detail::dict_iterator_proxy;
   using const_dict_iterator_proxy = detail::const_dict_iterator_proxy;
 
@@ -882,17 +834,6 @@ class BASE_EXPORT GSL_OWNER Value {
 
   // DEPRECATED: prefer `Value::Dict::empty()`.
   bool DictEmpty() const;
-
-  // Merge `dictionary` into this value. This is done recursively, i.e. any
-  // sub-dictionaries will be merged as well. In case of key collisions, the
-  // passed in dictionary takes precedence and data already present will be
-  // replaced. Values within `dictionary` are deep-copied, so `dictionary` may
-  // be freed any time after this call.
-  // Note: This requires that `type()` and `dictionary->type()` is
-  // Type::DICT.
-  //
-  // DEPRECATED: prefer `Value::Dict::Merge()`.
-  void MergeDictionary(const Value* dictionary);
 
   // Note: Do not add more types. See the file-level comment above for why.
 

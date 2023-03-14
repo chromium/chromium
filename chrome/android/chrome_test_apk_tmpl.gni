@@ -23,6 +23,7 @@ template("chrome_test_apk_tmpl") {
     bundles_supported = true
     jinja_input = "//chrome/android/javatests/AndroidManifest.xml"
     manifest_package = chrome_public_test_manifest_package
+    shared_libraries = [ "//chrome/android:libchromefortest" ]
 
     deps = chrome_public_shared_deps + invoker.deps + [
              "//chrome/android:chrome_apk_pak_assets",
@@ -76,10 +77,8 @@ template("monochrome_test_apk_tmpl") {
                              "include_64_bit_webview",
                              "include_32_bit_webview",
                              "loadable_modules",
-                             "min_sdk_version",
                              "proguard_configs",
                              "secondary_abi_loadable_modules",
-                             "shared_libraries",
                              "target_sdk_version",
                            ])
     testonly = true

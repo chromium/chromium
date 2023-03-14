@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
@@ -52,10 +53,10 @@ const char kGlobalSidePanelRegistryKey[] = "global_side_panel_registry_key";
 constexpr int kSidePanelContentViewId = 42;
 constexpr int kSidePanelContentWrapperViewId = 43;
 
-constexpr SidePanelEntry::Id kDefaultEntry = SidePanelEntry::Id::kReadingList;
-
-bool IsExtensionEntry(SidePanelEntry* entry) {
-  return entry->key().id() == SidePanelEntry::Id::kExtension;
+SidePanelEntry::Id GetDefaultEntry() {
+  return base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)
+             ? SidePanelEntry::Id::kBookmarks
+             : SidePanelEntry::Id::kReadingList;
 }
 
 std::unique_ptr<views::ImageButton> CreateControlButton(
@@ -200,7 +201,8 @@ void SidePanelCoordinator::Show(
   if (entry_id.has_value()) {
     Show(SidePanelEntry::Key(entry_id.value()), open_trigger);
   } else {
-    Show(GetLastActiveEntryKey().value_or(SidePanelEntry::Key(kDefaultEntry)),
+    Show(GetLastActiveEntryKey().value_or(
+             SidePanelEntry::Key(GetDefaultEntry())),
          open_trigger);
   }
 }
@@ -277,7 +279,12 @@ void SidePanelCoordinator::Toggle() {
   if (IsSidePanelShowing()) {
     Close();
   } else {
-    Show(absl::nullopt, SidePanelUtil::SidePanelOpenTrigger::kToolbarButton);
+    absl::optional<SidePanelEntry::Id> entry_id = absl::nullopt;
+    if (browser_view_->browser()->window()->IsFeaturePromoActive(
+            feature_engagement::kIPHPowerBookmarksSidePanelFeature)) {
+      entry_id = absl::make_optional(SidePanelEntry::Id::kBookmarks);
+    }
+    Show(entry_id, SidePanelUtil::SidePanelOpenTrigger::kToolbarButton);
   }
 }
 
@@ -342,6 +349,8 @@ void SidePanelCoordinator::Show(
     // Close IPH for side panel if shown.
     browser_view_->browser()->window()->CloseFeaturePromo(
         feature_engagement::kIPHReadingListInSidePanelFeature);
+    browser_view_->browser()->window()->CloseFeaturePromo(
+        feature_engagement::kIPHPowerBookmarksSidePanelFeature);
   }
 
   SidePanelContentSwappingContainer* content_wrapper =
@@ -588,8 +597,9 @@ std::unique_ptr<views::Combobox> SidePanelCoordinator::CreateCombobox() {
   combobox->SetMenuSelectionAtCallback(
       base::BindRepeating(&SidePanelCoordinator::OnComboboxChangeTriggered,
                           base::Unretained(this)));
-  combobox->SetSelectedIndex(combobox_model_->GetIndexForKey(
-      (GetLastActiveEntryKey().value_or(SidePanelEntry::Key(kDefaultEntry)))));
+  combobox->SetSelectedIndex(
+      combobox_model_->GetIndexForKey((GetLastActiveEntryKey().value_or(
+          SidePanelEntry::Key(GetDefaultEntry())))));
   combobox->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_SIDE_PANEL_SELECTOR));
   combobox->SetProperty(
@@ -621,79 +631,72 @@ void SidePanelCoordinator::SetSelectedEntryInCombobox(
   header_combobox_->SchedulePaint();
 }
 
-bool SidePanelCoordinator::ShouldRemoveExtensionFromComboboxOnDeregister(
-    SidePanelRegistry* registry,
+bool SidePanelCoordinator::ShouldRemoveFromComboboxOnDeregister(
+    SidePanelRegistry* deregistering_registry,
     const SidePanelEntry::Key& key) {
-  // Remove the extension entry from the combobox if one of these conditions
-  // are met:
+  // Remove the entry from the combobox if one of these conditions are met:
   //  - The entry will be deregistered from the global registry and there's no
-  //    entry for the extension in the active contextual registry.
+  //    entry with the same key in the active contextual registry.
   //  - The entry will be deregistered from a contextual registry and there's
-  //    no entry for the extension in the global registry.
-  bool remove_if_global =
-      registry == global_registry_ && !GetActiveContextualEntryForKey(key);
-  bool remove_if_contextual = registry == GetActiveContextualRegistry() &&
-                              !global_registry_->GetEntryForKey(key);
+  //    no entry with the same key in the global registry.
+  bool remove_if_global = deregistering_registry == global_registry_ &&
+                          !GetActiveContextualEntryForKey(key);
+  bool remove_if_contextual =
+      deregistering_registry == GetActiveContextualRegistry() &&
+      !global_registry_->GetEntryForKey(key);
 
   return remove_if_global || remove_if_contextual;
 }
 
-void SidePanelCoordinator::OnActiveExtensionEntryWillDeregister(
-    SidePanelRegistry* registry,
+SidePanelEntry* SidePanelCoordinator::GetNewActiveEntryOnDeregister(
+    SidePanelRegistry* deregistering_registry,
     const SidePanelEntry::Key& key) {
-  if (registry == global_registry_) {
-    if (auto* contextual_entry = GetActiveContextualEntryForKey(key)) {
-      // If the global extension entry is being deregistered and there
-      // exists an entry for the current tab, check that the active
-      // contextual entry for the extension is being shown.
-      DCHECK_EQ(current_entry_.get(), contextual_entry);
-    } else {
-      // Otherwise, close the side panel.
-      Close();
-    }
-  } else {
-    if (SidePanelEntry* global_extension_entry =
-            global_registry_->GetEntryForKey(key)) {
-      // If the contextual extension entry is being deregistered and there
-      // exists a global entry for this extension. Show this extension's
-      // global entry.
-      Show(global_extension_entry,
-           SidePanelUtil::SidePanelOpenTrigger::kSidePanelEntryDeregistered);
-    } else if (global_registry_->active_entry().has_value()) {
-      Show(GetLastActiveEntryKey().value_or(SidePanelEntry::Key(kDefaultEntry)),
-           SidePanelUtil::SidePanelOpenTrigger::kSidePanelEntryDeregistered);
-    } else {
-      Close();
-    }
+  // This function should only be called when the side panel view is shown.
+  DCHECK(GetContentView());
+
+  // Attempt to return an entry in the following fallback order: global entry
+  // for `key` if a contextual entry is deregistered > active global entry >
+  // null.
+  if (deregistering_registry == GetActiveContextualRegistry() &&
+      global_registry_->GetEntryForKey(key)) {
+    return global_registry_->GetEntryForKey(key);
   }
+
+  return global_registry_->active_entry().value_or(nullptr);
 }
 
 SidePanelEntry* SidePanelCoordinator::GetNewActiveEntryOnTabChanged() {
   // This function should only be called when the side panel view is shown.
   DCHECK(GetContentView());
 
-  // If the current entry is an extension entry, attempt to return an entry in
-  // the following fallback order: extension's contextual entry for the new tab
-  // > extension's global entry. If neither exist, continue with the default
-  // fallback order.
-  if (current_entry_ && IsExtensionEntry(current_entry_.get())) {
-    if (auto* new_contextual_or_global_extension_entry =
-            GetEntryForKey(current_entry_->key())) {
-      return new_contextual_or_global_extension_entry;
-    }
-  }
-
-  // Attempt to return an entry in the following fallback order: new tab's
-  // active contextual entry > active global entry > null.
+  // Attempt to return an entry in the following fallback order:
+  //  - the new tab's registry's active entry
+  //  - if the active entry's key is registered in the global registry:
+  //    - the new tab's registry's entry with the same key
+  //    - the global registry's entry with the same key (note that
+  //      GetEntryForKey will return this fallback order)
+  //  - if there is an active entry in the global registry:
+  //    - the new tab's registry's entry with the same key
+  //    - the global registry's active entry (note that GetEntryForKey will
+  //      return this fallback order)
+  //  - no entry (this closes the side panel)
   // Note: GetActiveContextualRegistry() returns the registry for the new tab in
   // this function.
-  if (GetActiveContextualRegistry() &&
-      GetActiveContextualRegistry()->active_entry().has_value()) {
-    return GetActiveContextualRegistry()->active_entry().value();
+  // Note: If Show() is called with an entry returned by this function, then
+  // that entry will be active in its owning registry.
+  auto* active_contextual_registry = GetActiveContextualRegistry();
+  if (active_contextual_registry &&
+      active_contextual_registry->active_entry()) {
+    return *active_contextual_registry->active_entry();
+  }
+
+  if (current_entry_ &&
+      global_registry_->GetEntryForKey(current_entry_->key())) {
+    return GetEntryForKey(current_entry_->key());
   }
 
   return global_registry_->active_entry()
-             ? global_registry_->active_entry().value()
+             ? GetEntryForKey((*global_registry_->active_entry())->key())
              : nullptr;
 }
 
@@ -701,13 +704,13 @@ void SidePanelCoordinator::OnEntryRegistered(SidePanelRegistry* registry,
                                              SidePanelEntry* entry) {
   combobox_model_->AddItem(entry);
   if (GetContentView()) {
-    SetSelectedEntryInCombobox(
-        GetLastActiveEntryKey().value_or(SidePanelEntry::Key(kDefaultEntry)));
+    SetSelectedEntryInCombobox(GetLastActiveEntryKey().value_or(
+        SidePanelEntry::Key(GetDefaultEntry())));
   }
 
-  // If `entry` is a contextual extension entry and the global entry for the
-  // same extension is currently being shown, show the new `entry`.
-  if (IsExtensionEntry(entry) && registry == GetActiveContextualRegistry() &&
+  // If `entry` is a contextual entry and the global entry with the same key is
+  // currently being shown, show the new `entry`.
+  if (registry == GetActiveContextualRegistry() &&
       IsGlobalEntryShowing(entry->key())) {
     Show(entry, SidePanelUtil::SidePanelOpenTrigger::kExtensionEntryRegistered);
   }
@@ -716,13 +719,12 @@ void SidePanelCoordinator::OnEntryRegistered(SidePanelRegistry* registry,
 void SidePanelCoordinator::OnEntryWillDeregister(SidePanelRegistry* registry,
                                                  SidePanelEntry* entry) {
   absl::optional<SidePanelEntry::Key> selected_key = GetSelectedKey();
-  if (!IsExtensionEntry(entry) ||
-      ShouldRemoveExtensionFromComboboxOnDeregister(registry, entry->key())) {
+  if (ShouldRemoveFromComboboxOnDeregister(registry, entry->key())) {
     combobox_model_->RemoveItem(entry->key());
 
     if (GetContentView()) {
-      SetSelectedEntryInCombobox(
-          GetLastActiveEntryKey().value_or(SidePanelEntry::Key(kDefaultEntry)));
+      SetSelectedEntryInCombobox(GetLastActiveEntryKey().value_or(
+          SidePanelEntry::Key(GetDefaultEntry())));
     }
   }
 
@@ -734,20 +736,50 @@ void SidePanelCoordinator::OnEntryWillDeregister(SidePanelRegistry* registry,
     last_active_global_entry_key_ = absl::nullopt;
   }
 
+  // Save the entry's view: if it has a cached view, retrieve it. Otherwise if
+  // the entry is shown, get it from the side panel view. This is necessary so
+  // the view can be preserved so it won't be destroyed by Close().
+  std::unique_ptr<views::View> entry_view =
+      entry->CachedView() ? entry->GetContent() : nullptr;
+
   // Update the current entry to make sure we don't show an entry that is being
   // removed or close the panel if the entry being deregistered is the only one
   // that has been visible.
   if (GetContentView() && selected_key.has_value() &&
       selected_key.value() == entry->key()) {
-    if (IsExtensionEntry(entry)) {
-      OnActiveExtensionEntryWillDeregister(registry, entry->key());
-    } else if (global_registry_->active_entry().has_value()) {
-      Show(GetLastActiveEntryKey().value_or(SidePanelEntry::Key(kDefaultEntry)),
+    // If a global entry is deregistered but a contextual entry with the same
+    // key is shown, do nothing.
+    if (registry == global_registry_ &&
+        GetActiveContextualEntryForKey(entry->key())) {
+      entry->CacheView(std::move(entry_view));
+      return;
+    }
+
+    // Fetch the entry's view from the side panel container if it is shown.
+    auto* content_wrapper =
+        GetContentView()->GetViewByID(kSidePanelContentWrapperViewId);
+    DCHECK(content_wrapper);
+    if (content_wrapper->children().size() == 1) {
+      entry_view = content_wrapper->RemoveChildViewT(
+          content_wrapper->children().front());
+      // TODO(crbug.com/1423211): Log the time elapsed between when this view is
+      // removed, to when the new active entry's view is shown. This can
+      // determine if the user will notice a flash in the side panel in between
+      // different entries being shown.
+    }
+
+    if (auto* new_active_entry =
+            GetNewActiveEntryOnDeregister(registry, entry->key())) {
+      Show(new_active_entry,
            SidePanelUtil::SidePanelOpenTrigger::kSidePanelEntryDeregistered);
     } else {
       Close();
     }
   }
+
+  // Cache the deregistering entry's view. This needs to be done after Close()
+  // might be called because Close() clears all cached views.
+  entry->CacheView(std::move(entry_view));
 }
 
 void SidePanelCoordinator::OnEntryIconUpdated(SidePanelEntry* entry) {
@@ -819,7 +851,7 @@ void SidePanelCoordinator::OnTabStripModelChanged(
     }
   } else if (new_contextual_registry &&
              new_contextual_registry->active_entry().has_value()) {
-    Show(new_contextual_registry->active_entry().value()->key().id(),
+    Show(new_contextual_registry->active_entry().value(),
          SidePanelUtil::SidePanelOpenTrigger::kTabChanged);
   }
 }

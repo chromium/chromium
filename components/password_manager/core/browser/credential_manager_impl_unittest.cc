@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include <algorithm>
 #include <map>
 #include <memory>
 #include <string>
@@ -15,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -158,9 +158,8 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
         FROM_HERE, base::BindOnce(std::move(callback),
                                   base::Owned(new PasswordForm(*form))));
     std::vector<PasswordForm*> raw_forms(local_forms.size());
-    std::transform(
-        local_forms.begin(), local_forms.end(), raw_forms.begin(),
-        [](const std::unique_ptr<PasswordForm>& form) { return form.get(); });
+    base::ranges::transform(local_forms, raw_forms.begin(),
+                            &std::unique_ptr<PasswordForm>::get);
     PromptUserToChooseCredentialsPtr(raw_forms, origin, base::DoNothing());
     return true;
   }

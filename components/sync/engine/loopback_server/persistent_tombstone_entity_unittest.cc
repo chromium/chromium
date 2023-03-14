@@ -20,10 +20,10 @@ TEST(PersistentTombstoneEntityTest, CreateFromEntity) {
 }
 
 TEST(PersistentTombstoneEntityTest, CreateNew) {
-  ASSERT_FALSE(PersistentTombstoneEntity::CreateNew(
-      "invalid_id", "client_defined_unique_tag"));
-  ASSERT_TRUE(PersistentTombstoneEntity::CreateNew(
-      "37702_id", "client_defined_unique_tag"));
+  ASSERT_FALSE(
+      PersistentTombstoneEntity::CreateNew("invalid_id", "client_tag_hash"));
+  ASSERT_TRUE(
+      PersistentTombstoneEntity::CreateNew("37702_id", "client_tag_hash"));
 }
 
 }  // namespace

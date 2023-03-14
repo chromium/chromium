@@ -222,11 +222,11 @@
     </div>
     <template is="dom-if" route-path="/help/details">
       <os-settings-subpage page-title="$i18n{aboutDetailedBuildInfo}">
-        <settings-detailed-build-info
+        <settings-detailed-build-info-subpage
             eol-message-with-month-and-year=
                 "[[eolMessageWithMonthAndYear_]]"
             prefs="{{prefs}}">
-        </settings-detailed-build-info>
+        </settings-detailed-build-info-subpage>
       </os-settings-subpage>
     </template>
   </os-settings-animated-pages>
@@ -240,7 +240,13 @@
     </div>
 
     <div class="info-section">
-      <div class="secondary">$i18nRaw{aboutProductLicense}</div>
+      <div class="secondary">
+        <span>$i18nRaw{aboutProductLicenseChromium}</span>
+        <localized-link
+            localized-string="$i18nRaw{aboutProductLicenseOther}"
+            on-link-clicked="onProductLicenseOtherClicked_">
+        </localized-link>
+      </div>
       <div class="secondary"
           inner-h-t-m-l="[[getAboutProductOsLicense_(
               showCrostiniLicense_)]]">

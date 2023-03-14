@@ -12,6 +12,7 @@
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
@@ -209,6 +210,7 @@ void FidoDeviceAuthenticator::OnHaveCompressedLargeBlobForGetAssertion(
     size_t original_size,
     base::expected<mojo_base::BigBuffer, std::string> result) {
   if (!result.has_value()) {
+    LogLargeBlobResult(LargeBlobKeyWriteResult::kCompressionError);
     FIDO_LOG(ERROR) << "Failed to compress large blob: " << result.error();
   } else {
     // If the authenticator supports the largeBlob extension then the blob is
@@ -355,6 +357,7 @@ void FidoDeviceAuthenticator::PerformGetAssertionLargeBlobOperation(
     DCHECK(options_.large_blob_type == LargeBlobSupportType::kKey);
     DCHECK_EQ(responses.size(), 1u);
     if (!responses.at(0).large_blob_key) {
+      LogLargeBlobResult(LargeBlobKeyWriteResult::kCredentialHasNoLargeBlobKey);
       std::move(callback).Run(CtapDeviceResponseCode::kSuccess,
                               std::move(responses));
       return;
@@ -573,6 +576,8 @@ FidoDeviceAuthenticator::PINUVDispositionForMakeCredential(
   const bool can_collect_pin = observer && observer->SupportsPIN();
   const bool pin_supported =
       options_.client_pin_availability != ClientPinAvailability::kNotSupported;
+  const bool uv_supported = options_.user_verification_availability !=
+                            UserVerificationAvailability::kNotSupported;
   const bool pin_configured = options_.client_pin_availability ==
                               ClientPinAvailability::kSupportedAndPinSet;
   const bool uv_configured =
@@ -607,7 +612,10 @@ FidoDeviceAuthenticator::PINUVDispositionForMakeCredential(
         // authenticator could cause the hmac-secret outputs to change as a
         // different seed is used for UV and non-UV assertions.
         (!request.hmac_secret || !options_.supports_hmac_secret)))) {
-    return PINUVDisposition::kNoUV;
+    if (!pin_supported && !uv_supported) {
+      return PINUVDisposition::kUVNotSupportedNorRequired;
+    }
+    return PINUVDisposition::kNoUVRequired;
   }
 
   // Authenticators with built-in UV that don't support UV token should try
@@ -626,7 +634,7 @@ FidoDeviceAuthenticator::PINUVDispositionForMakeCredential(
   }
 
   if (uv_requirement == UserVerificationRequirement::kPreferred) {
-    return PINUVDisposition::kNoUV;
+    return PINUVDisposition::kNoUVRequired;
   }
 
   return PINUVDisposition::kUnsatisfiable;
@@ -640,6 +648,10 @@ FidoDeviceAuthenticator::PINUVDispositionForGetAssertion(
   // enrollment. Perhaps we should change this and align with MakeCredential
   // behavior.
   const bool can_collect_pin = observer && observer->SupportsPIN();
+  const bool pin_supported =
+      options_.client_pin_availability != ClientPinAvailability::kNotSupported;
+  const bool uv_supported = options_.user_verification_availability !=
+                            UserVerificationAvailability::kNotSupported;
   const bool pin_configured = options_.client_pin_availability ==
                               ClientPinAvailability::kSupportedAndPinSet;
 
@@ -654,7 +666,10 @@ FidoDeviceAuthenticator::PINUVDispositionForGetAssertion(
   if (uv_requirement == UserVerificationRequirement::kDiscouraged ||
       (uv_requirement == UserVerificationRequirement::kPreferred &&
        ((!pin_configured || !can_collect_pin) && !uv_configured))) {
-    return PINUVDisposition::kNoUV;
+    if (!pin_supported && !uv_supported) {
+      return PINUVDisposition::kUVNotSupportedNorRequired;
+    }
+    return PINUVDisposition::kNoUVRequired;
   }
 
   // Authenticators with built-in UV that don't support UV token should try
@@ -1006,6 +1021,16 @@ void FidoDeviceAuthenticator::OnWroteLargeBlobForGetAssertion(
     std::vector<AuthenticatorGetAssertionResponse> responses,
     GetAssertionCallback callback,
     CtapDeviceResponseCode status) {
+  switch (status) {
+    case CtapDeviceResponseCode::kSuccess:
+      LogLargeBlobResult(LargeBlobKeyWriteResult::kSuccess);
+      break;
+    case CtapDeviceResponseCode::kCtap2ErrRequestTooLarge:
+      LogLargeBlobResult(LargeBlobKeyWriteResult::kNotEnoughSpace);
+      break;
+    default:
+      LogLargeBlobResult(LargeBlobKeyWriteResult::kCtapError);
+  }
   responses.at(0).large_blob_written =
       status == CtapDeviceResponseCode::kSuccess;
   std::move(callback).Run(CtapDeviceResponseCode::kSuccess,
@@ -1350,6 +1375,14 @@ void FidoDeviceAuthenticator::OnHaveLargeBlobArrayForGarbageCollect(
                 kMinLargeBlobSize));
   WriteLargeBlobArray(std::move(pin_uv_auth_token), std::move(writer),
                       std::move(callback));
+}
+
+void FidoDeviceAuthenticator::LogLargeBlobResult(
+    LargeBlobKeyWriteResult result) {
+  if (options_.large_blob_type == LargeBlobSupportType::kKey) {
+    base::UmaHistogramEnumeration("WebAuthentication.LargeBlobKey.WriteResult",
+                                  result);
+  }
 }
 
 absl::optional<base::span<const int32_t>>

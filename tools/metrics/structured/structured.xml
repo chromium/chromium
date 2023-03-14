@@ -486,7 +486,7 @@
   </event>
 </project>
 
-<project name="CrOSEvents">
+<project name="CrOSEvents" cros_events="true">
   <owner>jongahn@chromium.org</owner>
   <id>per-project</id>
   <scope>device</scope>
@@ -579,9 +579,47 @@
     </metric>
   </event>
 
+  <event name="AppDiscovery.LauncherOpen">
+    <summary>
+      Event collected if the launcher is opened. This is recorded when a zero-
+      state query is initiated.
+    </summary>
+
+  </event>
+
+  <event name="AppDiscovery.AppLauncherResultOpened">
+    <summary>
+      Event collected if a result iis opened in the launcher.
+    </summary>
+    <metric name="FuzzyStringMatch" type="double">
+      <summary>
+        Score that represents how close the initial query was to the app result
+        selected. A score of 1.0 represents an exact match.
+      </summary>
+    </metric>
+    <metric name="AppId" type="raw-string">
+      <summary>
+        App ID that identifies an app on the client. This will only be recorded if
+        the user has consented into app-sync.
+      </summary>
+    </metric>
+    <metric name="AppName" type="raw-string">
+      <summary>
+        Name of the app that was launched. Names are UTF-16 string encoding.
+      </summary>
+    </metric>
+  </event>
+
   <event name="UserLogin">
     <summary>
       An event to signify a user is using the system.
+    </summary>
+
+  </event>
+
+  <event name="UserLogout">
+    <summary>
+      An event to signify a user explicity logged out of the system.
     </summary>
 
   </event>

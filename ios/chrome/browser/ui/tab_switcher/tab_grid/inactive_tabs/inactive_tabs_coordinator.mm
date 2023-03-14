@@ -7,8 +7,13 @@
 #import <UIKit/UIKit.h>
 
 #import "base/notreached.h"
+#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
+#import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_view_controller.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -26,6 +31,9 @@ const NSTimeInterval kDuration = 0.2;
 // The view controller displaying the inactive tabs.
 @property(nonatomic, strong) InactiveTabsViewController* viewController;
 
+// The mediator handling the inactive tabs.
+@property(nonatomic, strong) InactiveTabsMediator* mediator;
+
 // The mutually exclusive constraints for placing `viewController`.
 @property(nonatomic, strong) NSLayoutConstraint* hiddenConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* visibleConstraint;
@@ -36,12 +44,30 @@ const NSTimeInterval kDuration = 0.2;
 
 #pragma mark - ChromeCoordinator
 
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser {
+  DCHECK(IsInactiveTabsEnabled());
+  return [super initWithBaseViewController:viewController browser:browser];
+}
+
 - (void)start {
   [super start];
 
+  // Create the view controller.
   self.viewController = [[InactiveTabsViewController alloc] init];
   self.viewController.delegate = self;
   self.viewController.gridViewController.delegate = self;
+
+  // Create the mediator.
+  SnapshotCache* snapshotCache =
+      SnapshotBrowserAgent::FromBrowser(self.browser)->snapshot_cache();
+  self.mediator = [[InactiveTabsMediator alloc]
+      initWithConsumer:self.viewController.gridViewController
+          webStateList:self.browser->GetWebStateList()
+         snapshotCache:snapshotCache];
+  self.viewController.gridViewController.imageDataSource = self.mediator;
+
+  // Add the view controller to the hierarchy.
   UIView* baseView = self.baseViewController.view;
   UIView* view = self.viewController.view;
   view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -94,7 +120,8 @@ const NSTimeInterval kDuration = 0.2;
 
 - (void)gridViewController:(GridViewController*)gridViewController
        didSelectItemWithID:(NSString*)itemID {
-  // TODO(crbug.com/1408053): Reactivate the tab.
+  [self.delegate inactiveTabsCoordinator:self didSelectItemWithID:itemID];
+  [self.delegate inactiveTabsCoordinatorDidFinish:self];
 }
 
 - (void)gridViewController:(GridViewController*)gridViewController

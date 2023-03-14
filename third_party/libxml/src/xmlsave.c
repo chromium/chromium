@@ -2363,6 +2363,7 @@ xmlDocDumpFormatMemoryEnc(xmlDocPtr out_doc, xmlChar **doc_txt_ptr,
 
     if ((out_buff = xmlAllocOutputBuffer(conv_hdlr)) == NULL ) {
         xmlSaveErrMemory("creating buffer");
+        xmlCharEncCloseFunc(conv_hdlr);
         return;
     }
 

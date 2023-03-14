@@ -34,7 +34,8 @@ class TestOmniboxEditModel : public OmniboxEditModel {
                           const std::u16string& prefix_autocompletion,
                           const std::u16string& keyword,
                           bool is_keyword_hint,
-                          const std::u16string& additional_text) override;
+                          const std::u16string& additional_text,
+                          const AutocompleteMatch& match) override;
 
   bool HasTemporaryText() { return has_temporary_text_; }
 

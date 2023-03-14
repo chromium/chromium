@@ -157,8 +157,8 @@
 
 #pragma mark - TableViewFaviconDataSource
 
-- (void)faviconForURL:(CrURL*)URL
-           completion:(void (^)(FaviconAttributes*))completion {
+- (void)faviconForPageURL:(CrURL*)URL
+               completion:(void (^)(FaviconAttributes*))completion {
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForBrowserState(self.browserState);
   faviconLoader->FaviconForPageUrl(

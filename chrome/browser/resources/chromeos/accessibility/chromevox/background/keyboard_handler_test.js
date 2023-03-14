@@ -44,7 +44,7 @@ AX_TEST_F(
       // A Search keydown does not get eaten when there's no range and there
       // was no previous range. TalkBack is handled elsewhere.
       ChromeVoxRange.set(null);
-      ChromeVoxRange.previous = null;
+      ChromeVoxRange.instance.previous_ = null;
       const searchDown2 = {};
       searchDown2.metaKey = true;
       keyboardHandler.onKeyDown(searchDown2);

@@ -36,6 +36,10 @@
 #include "services/service_manager/public/mojom/service.mojom.h"
 #include "services/service_manager/switches.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mach_port_rendezvous.h"
+#endif
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "sandbox/linux/services/namespace_sandbox.h"
 #endif

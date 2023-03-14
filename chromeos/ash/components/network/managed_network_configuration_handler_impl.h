@@ -61,13 +61,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
       network_handler::PropertiesCallback callback) override;
 
   void SetProperties(const std::string& service_path,
-                     const base::Value& user_settings,
+                     const base::Value::Dict& user_settings,
                      base::OnceClosure callback,
                      network_handler::ErrorCallback error_callback) override;
 
   void CreateConfiguration(
       const std::string& userhash,
-      const base::Value& properties,
+      const base::Value::Dict& properties,
       network_handler::ServiceResultCallback callback,
       network_handler::ErrorCallback error_callback) const override;
 
@@ -86,8 +86,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
 
   void SetPolicy(::onc::ONCSource onc_source,
                  const std::string& userhash,
-                 const base::Value& network_configs_onc,
-                 const base::Value& global_network_config) override;
+                 const base::Value::List& network_configs_onc,
+                 const base::Value::Dict& global_network_config) override;
 
   bool IsAnyPolicyApplicationRunning() const override;
 
@@ -100,17 +100,17 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
       const std::string& guid,
       client_cert::ResolvedCert resolved_cert) override;
 
-  const base::Value* FindPolicyByGUID(
+  const base::Value::Dict* FindPolicyByGUID(
       const std::string userhash,
       const std::string& guid,
       ::onc::ONCSource* onc_source) const override;
 
   bool HasAnyPolicyNetwork(const std::string& userhash) const override;
 
-  const base::Value* GetGlobalConfigFromPolicy(
+  const base::Value::Dict* GetGlobalConfigFromPolicy(
       const std::string& userhash) const override;
 
-  const base::Value* FindPolicyByGuidAndProfile(
+  const base::Value::Dict* FindPolicyByGuidAndProfile(
       const std::string& guid,
       const std::string& profile_path,
       PolicyType policy_type,
@@ -125,7 +125,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
                               const std::string& profile_path) const override;
 
   // This method should be called when the policy has been fully applied and is
-  // reflected in NetworkStateHandler, so it is safe to notify obserers.
+  // reflected in NetworkStateHandler, so it is safe to notify observers.
   // Notifying observers is the last step of policy application to
   // |service_path|.
   void NotifyPolicyAppliedToNetwork(

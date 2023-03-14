@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_FEATURE_MANAGER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_FEATURE_MANAGER_H_
 
+#include "build/build_config.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 
@@ -21,6 +22,19 @@ class PasswordFeatureManager {
   virtual ~PasswordFeatureManager() = default;
 
   virtual bool IsGenerationEnabled() const = 0;
+
+  // Whether the user should be asked for authentication before filling
+  // passwords. This is true for eligible users that have enabled this feature
+  // before.
+  virtual bool IsBiometricAuthenticationBeforeFillingEnabled() const = 0;
+
+  // Note on password-account-storage methods on desktop vs mobile:
+  // On desktop, there is an explicit per-user opt-in, and various associated
+  // settings (e.g. which store is the default). On mobile, there is no explicit
+  // opt-in, and no per-user settings.
+  // As a consequence, all the corresponding setters (opting in/out, setting the
+  // default store, etc) only exist on desktop. The getters exist on mobile too,
+  // but have different (usually simpler) implementation.
 
   // Whether the current signed-in user (aka unconsented primary account) has
   // opted in to use the Google account storage for passwords (as opposed to
@@ -43,31 +57,12 @@ class PasswordFeatureManager {
   virtual bool ShouldShowAccountStorageReSignin(
       const GURL& current_page_url) const = 0;
 
-  // Sets opt-in to using account storage for passwords for the current
-  // signed-in user (unconsented primary account).
-  virtual void OptInToAccountStorage() = 0;
-
-  // Clears the opt-in to using account storage for passwords for the
-  // current signed-in user (unconsented primary account), as well as all other
-  // associated settings (e.g. default store choice).
-  virtual void OptOutOfAccountStorageAndClearSettings() = 0;
-
   // Whether it makes sense to ask the user to move a password to their account,
   // or in which store to save a password (i.e. profile or account store). This
   // is true if the user has opted in already, or hasn't opted in but all other
   // requirements are met (i.e. there is a signed-in user, Sync-the-feature is
   // not enabled, etc).
   virtual bool ShouldShowAccountStorageBubbleUi() const = 0;
-
-  // Whether the user should be asked if they want to use the account store
-  // after saving a password locally. This is true for eligible users that
-  // haven't made this choice before.
-  virtual bool ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally()
-      const = 0;
-
-  // Sets the default password store selected by user in prefs. This store is
-  // used for saving new credentials and adding blacking listing entries.
-  virtual void SetDefaultPasswordStore(const PasswordForm::Store& store) = 0;
 
   // Returns the default storage location for signed-in but non-syncing users
   // (i.e. will new passwords be saved to locally or to the account by default).
@@ -85,6 +80,26 @@ class PasswordFeatureManager {
   virtual metrics_util::PasswordAccountStorageUsageLevel
   ComputePasswordAccountStorageUsageLevel() const = 0;
 
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+  // Sets opt-in to using account storage for passwords for the current
+  // signed-in user (unconsented primary account).
+  virtual void OptInToAccountStorage() = 0;
+
+  // Clears the opt-in to using account storage for passwords for the
+  // current signed-in user (unconsented primary account), as well as all other
+  // associated settings (e.g. default store choice).
+  virtual void OptOutOfAccountStorageAndClearSettings() = 0;
+
+  // Whether the user should be asked if they want to use the account store
+  // after saving a password locally. This is true for eligible users that
+  // haven't made this choice before.
+  virtual bool ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally()
+      const = 0;
+
+  // Sets the default password store selected by user in prefs. This store is
+  // used for saving new credentials and adding blacking listing entries.
+  virtual void SetDefaultPasswordStore(const PasswordForm::Store& store) = 0;
+
   // Increases the count of how many times Chrome automatically offered a user
   // not opted-in to the account-scoped passwords storage to move a password to
   // their account. Should only be called if the user is signed-in and not
@@ -96,11 +111,7 @@ class PasswordFeatureManager {
   // their account. Should only be called if the user is signed-in and not
   // opted-in.
   virtual int GetMoveOfferedToNonOptedInUserCount() const = 0;
-
-  // Whether the user should be asked for authentication before filling
-  // passwords. This is true for eligible users that have enabled this feature
-  // before.
-  virtual bool IsBiometricAuthenticationBeforeFillingEnabled() const = 0;
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace password_manager

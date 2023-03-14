@@ -64,6 +64,25 @@ void SearchPreloadDeferrableResponse::SendResponse(
               &net::test_server::HttpResponseDelegate::SendContentsAndFinish,
               delegate, body_));
       break;
+    case SearchPreloadTestResponseDeferralType::kDeferChunkedResponseBody:
+      size_t body_size = body_.size();
+      ASSERT_GE(body_size, size_t(2));
+      // This task will send the first part.
+      test_harness_->AddDelayedResponseTask(
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
+          base::BindOnce(&net::test_server::HttpResponseDelegate::SendContents,
+                         delegate, body_.substr(0, body_size / 2),
+                         base::DoNothing()));
+      // This task will send the remaining part of the content.
+      test_harness_->AddDelayedResponseTask(
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
+          base::BindOnce(
+              &net::test_server::HttpResponseDelegate::SendContentsAndFinish,
+              delegate, body_.substr(body_size / 2)));
+      delegate->SendResponseHeaders(code(), net::GetHttpReasonPhrase(code()),
+                                    headers_);
+
+      break;
   }
 }
 

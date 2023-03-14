@@ -11,6 +11,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/common/utils/content_script_utils.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
@@ -131,6 +132,14 @@ IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, InjectIntoSubframesOnLoad) {
 
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, RemovedFrames) {
   ASSERT_TRUE(RunExtensionTest("executescript/removed_frames")) << message_;
+}
+
+// Tests that tabs.executeScript called with files exceeding the max size limit
+// will return an error and not execute.
+IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptSizeLimit) {
+  auto single_scripts_limit_reset =
+      script_parsing::CreateScopedMaxScriptLengthForTesting(700u);
+  ASSERT_TRUE(RunExtensionTest("executescript/script_size_limit")) << message_;
 }
 
 // Ensure that an extension can inject a script in a file frame provided it has

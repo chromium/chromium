@@ -1244,13 +1244,12 @@ bool EffectTree::CreateOrReuseRenderSurfaces(
     LayerTreeImpl* layer_tree_impl) {
   // Make a list of {stable id, node id} pairs for nodes that are supposed to
   // have surfaces.
-  std::vector<std::pair<uint64_t, int>> stable_id_node_id_list;
+  std::vector<std::pair<ElementId, int>> stable_id_node_id_list;
   for (int id = kContentsRootPropertyNodeId; id < static_cast<int>(size());
        ++id) {
     EffectNode* node = Node(id);
     if (node->HasRenderSurface()) {
-      stable_id_node_id_list.push_back(
-          std::make_pair(node->stable_id, node->id));
+      stable_id_node_id_list.emplace_back(node->element_id, node->id);
     }
   }
 
@@ -1278,7 +1277,7 @@ bool EffectTree::CreateOrReuseRenderSurfaces(
 
     render_surfaces_changed = true;
 
-    if ((*surfaces_list_it)->id() > id_list_it->first) {
+    if (id_list_it->first < (*surfaces_list_it)->id()) {
       int new_node_id = id_list_it->second;
       render_surfaces_[new_node_id] = std::make_unique<RenderSurfaceImpl>(
           layer_tree_impl, id_list_it->first);
@@ -1609,9 +1608,11 @@ const gfx::PointF ScrollTree::GetPixelSnappedScrollOffset(
 
   const TransformNode* transform_node =
       property_trees()->transform_tree().Node(scroll_node->transform_id);
-  DCHECK(offset == transform_node->scroll_offset)
-      << "Transform node scroll offset does not match the actual offset, this "
-         "means the snapped_amount calculation will be incorrect";
+
+  // TODO(crbug.com/1418689): current_scroll_offset can disagree with
+  // transform_node->scroll_offset if the delta on a main frame update is
+  // simply rounding of the scroll position and not using fractional scroll
+  // deltas (see needs_scroll_update in PushScrollUpdatesFromMainThread).
 
   if (transform_node->scrolls) {
     // If necessary perform a update for this node to ensure snap amount is

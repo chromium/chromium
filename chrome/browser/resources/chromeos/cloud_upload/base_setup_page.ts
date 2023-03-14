@@ -58,6 +58,9 @@ export class BaseSetupPageElement extends HTMLElement {
     contentElement.addEventListener(
         'scroll', this.updateContentFade.bind(undefined, contentElement),
         {passive: true});
+    // Focus the contentElement so that the screen reader reads the title and
+    // the description.
+    contentElement.focus();
   }
 
   attributeChangedCallback(name: string, _oldValue: string, _newValue: string) {

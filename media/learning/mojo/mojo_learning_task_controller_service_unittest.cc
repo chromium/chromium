@@ -113,10 +113,11 @@ class MojoLearningTaskControllerServiceTest : public ::testing::Test {
   // Mojo stuff.
   base::test::TaskEnvironment task_environment_;
 
-  raw_ptr<FakeLearningTaskController> controller_raw_ = nullptr;
-
-  // The learner under test.
+  // The learner under test. Must outlive `controller_raw_`
   std::unique_ptr<MojoLearningTaskControllerService> service_;
+
+  // Raw controller. Owned by `service_`.
+  raw_ptr<FakeLearningTaskController> controller_raw_ = nullptr;
 };
 
 TEST_F(MojoLearningTaskControllerServiceTest, BeginComplete) {

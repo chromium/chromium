@@ -20,6 +20,7 @@ build_webui("build") {
     "images/cookies_banner_dark.svg",
     "images/cookies_banner.svg",
     "images/googleg_standard_clr_32px.svg",
+    "images/iban.svg",
     "images/password_check_neutral_dark.svg",
     "images/password_check_neutral.svg",
     "images/password_check_positive_dark.svg",
@@ -131,6 +132,7 @@ build_webui("build") {
     "people_page/sync_controls.ts",
     "people_page/sync_encryption_options.ts",
     "people_page/sync_page.ts",
+    "privacy_page/anti_abuse_page.ts",
     "privacy_page/collapse_radio_button.ts",
     "privacy_page/cookies_page.ts",
     "privacy_page/disable_safebrowsing_dialog.ts",
@@ -311,6 +313,7 @@ build_webui("build") {
     "prefs/prefs.ts",
     "prefs/prefs_types.ts",
     "prefs/pref_util.ts",
+    "privacy_page/privacy_guide_availability_mixin.ts",
     "privacy_page/privacy_guide/constants.ts",
     "privacy_page/privacy_guide/privacy_guide_browser_proxy.ts",
     "privacy_page/privacy_page_browser_proxy.ts",
@@ -419,6 +422,8 @@ build_webui("build") {
   if (!is_chromeos_ash) {
     ts_deps +=
         [ "//ui/webui/resources/cr_components/customize_themes:build_ts" ]
+  } else {
+    ts_deps += [ "//ash/webui/common/resources:build_ts" ]
   }
 
   if (use_nss_certs) {

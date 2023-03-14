@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NearbyAccountManagerBrowserProxyImpl, Router, routes, setContactManagerForTesting, setNearbyShareSettingsForTesting, setReceiveManagerForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
-import {RegisterReceiveSurfaceResult} from 'chrome://os-settings/mojo/nearby_share.mojom-webui.js';
+import {NearbyAccountManagerBrowserProxyImpl, nearbyShareMojom, Router, routes, setContactManagerForTesting, setNearbyShareSettingsForTesting, setReceiveManagerForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
 import {DeviceNameValidationResult, FastInitiationNotificationState} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
@@ -14,6 +13,8 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {FakeReceiveManager} from './fake_receive_manager.js';
+
+const {RegisterReceiveSurfaceResult} = nearbyShareMojom;
 
 /** @implements {AccountManagerBrowserProxy} */
 class TestAccountManagerBrowserProxy extends TestBrowserProxy {

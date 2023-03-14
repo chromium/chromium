@@ -27,7 +27,6 @@ TEST(SchemeLoggerTest, TestLogScheme) {
       {"https://www.google.com/", UrlScheme::kHttps},
       {"javascript:undefined", UrlScheme::kJavascript},
       {"mailto:nobody", UrlScheme::kMailTo},
-      {"quic-transport://foo/", UrlScheme::kQuicTransport},
       {"tel:123456789", UrlScheme::kTel},
       {"urn:foo", UrlScheme::kUrn},
       {"uuid-in-package:foo", UrlScheme::kUuidInPackage},

@@ -20,7 +20,7 @@
   // Fire a Main Frame Navigation event without firing a NetworkRequest first.
   TestRunner.mainTarget.model(SDK.ResourceTreeModel)
       .dispatchEventToListeners(
-          SDK.ResourceTreeModel.Events.MainFrameNavigated, TestRunner.resourceTreeModel.mainFrame);
+          SDK.ResourceTreeModel.Events.PrimaryPageChanged, {frame: TestRunner.resourceTreeModel.mainFrame, type: 'Navigation'});
   // Validate that this set the MainOrigin in the sidebar
   const detectedMainOrigin = Security.SecurityPanel.instance().sidebarTree.mainOrigin;
   TestRunner.addResult('Detected main origin: ' + detectedMainOrigin);

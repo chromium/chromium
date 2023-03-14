@@ -125,6 +125,12 @@ void GetCertificateAllowlistStrings(
 
 GURL GetFileSystemAccessDownloadUrl(const GURL& frame_url);
 
+// Determine which entries from `src_binaries` should be sent in the download
+// ping.
+google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>
+SelectArchiveEntries(const google::protobuf::RepeatedPtrField<
+                     ClientDownloadRequest::ArchivedBinary>& src_binaries);
+
 }  // namespace safe_browsing
 
 #endif  // CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_DOWNLOAD_PROTECTION_UTIL_H_

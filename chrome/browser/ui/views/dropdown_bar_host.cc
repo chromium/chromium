@@ -66,13 +66,10 @@ void DropdownBarHost::Init(views::View* host_view,
   // Start listening to focus changes, so we can register and unregister our
   // own handler for Escape.
   focus_manager_ = host_->GetFocusManager();
-  if (focus_manager_) {
-    focus_manager_->AddFocusChangeListener(this);
-  } else {
-    // In some cases (see bug http://crbug.com/17056) it seems we may not have
-    // a focus manager.  Please reopen the bug if you hit this.
-    NOTREACHED();
-  }
+  // In some cases (see bug http://crbug.com/17056) it seems we may not have
+  // a focus manager.  Please reopen the bug if you hit this.
+  CHECK(focus_manager_);
+  focus_manager_->AddFocusChangeListener(this);
 
   animation_ = std::make_unique<gfx::SlideAnimation>(this);
   if (!gfx::Animation::ShouldRenderRichAnimation())

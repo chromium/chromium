@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -106,13 +107,23 @@ absl::optional<int32_t> AutofillKeyboardAccessoryAdapter::GetAxUniqueId() {
   return absl::nullopt;
 }
 
+base::WeakPtr<AutofillPopupView>
+AutofillKeyboardAccessoryAdapter::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 // AutofillPopupController implementation.
 
-void AutofillKeyboardAccessoryAdapter::AcceptSuggestion(
-    int index,
-    base::TimeDelta show_threshold) {
+void AutofillKeyboardAccessoryAdapter::AcceptSuggestion(int index) {
+  // Suggestions inside the keyboard accessory adapter are accepted without
+  // requiring a minimum time threshold.
+  NOTREACHED();
+}
+
+void AutofillKeyboardAccessoryAdapter::AcceptSuggestionWithoutThreshold(
+    int index) {
   if (controller_) {
-    controller_->AcceptSuggestion(OffsetIndexFor(index), show_threshold);
+    controller_->AcceptSuggestionWithoutThreshold(OffsetIndexFor(index));
   }
 }
 
@@ -211,8 +222,10 @@ const gfx::RectF& AutofillKeyboardAccessoryAdapter::element_bounds() const {
   return controller_->element_bounds();
 }
 
-bool AutofillKeyboardAccessoryAdapter::IsRTL() const {
-  return controller_ && controller_->IsRTL();
+base::i18n::TextDirection
+AutofillKeyboardAccessoryAdapter::GetElementTextDirection() const {
+  DCHECK(controller_);
+  return controller_->GetElementTextDirection();
 }
 
 std::vector<Suggestion> AutofillKeyboardAccessoryAdapter::GetSuggestions()

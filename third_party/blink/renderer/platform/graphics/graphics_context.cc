@@ -545,29 +545,6 @@ void GraphicsContext::DrawLineForText(const gfx::PointF& pt,
   }
 }
 
-// Draws a filled rectangle with a stroked border.
-void GraphicsContext::DrawRect(const gfx::Rect& rect,
-                               const AutoDarkMode& auto_dark_mode) {
-  if (rect.IsEmpty())
-    return;
-
-  SkRect sk_rect = gfx::RectToSkRect(rect);
-  if (ImmutableState()->FillColor().Alpha())
-    DrawRect(sk_rect, ImmutableState()->FillFlags(), auto_dark_mode);
-
-  if (ImmutableState()->GetStrokeData().Style() != kNoStroke &&
-      ImmutableState()->StrokeColor().Alpha()) {
-    // Stroke a width: 1 inset border
-    cc::PaintFlags flags(ImmutableState()->FillFlags());
-    flags.setColor(StrokeColor().toSkColor4f());
-    flags.setStyle(cc::PaintFlags::kStroke_Style);
-    flags.setStrokeWidth(1);
-
-    sk_rect.inset(0.5f, 0.5f);
-    DrawRect(sk_rect, flags, auto_dark_mode);
-  }
-}
-
 template <typename TextPaintInfo>
 void GraphicsContext::DrawTextInternal(const Font& font,
                                        const TextPaintInfo& text_info,

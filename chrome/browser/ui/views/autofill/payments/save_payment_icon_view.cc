@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/autofill/payments/manage_saved_iban_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_iban_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -50,13 +51,18 @@ views::BubbleDialogDelegate* SavePaymentIconView::GetBubble() const {
   if (!controller)
     return nullptr;
 
-  if (command_id_ == IDC_SAVE_CREDIT_CARD_FOR_PAGE) {
-    return static_cast<autofill::SaveCardBubbleViews*>(
-        controller->GetSaveBubbleView());
-  } else {
-    DCHECK(command_id_ == IDC_SAVE_IBAN_FOR_PAGE);
-    return static_cast<autofill::SaveIbanBubbleView*>(
-        controller->GetSaveBubbleView());
+  switch (controller->GetPaymentBubbleType()) {
+    case SavePaymentIconController::PaymentBubbleType::kUnknown:
+      return nullptr;
+    case SavePaymentIconController::PaymentBubbleType::kCreditCard:
+      return static_cast<autofill::SaveCardBubbleViews*>(
+          controller->GetPaymentBubbleView());
+    case SavePaymentIconController::PaymentBubbleType::kSaveIban:
+      return static_cast<autofill::SaveIbanBubbleView*>(
+          controller->GetPaymentBubbleView());
+    case SavePaymentIconController::PaymentBubbleType::kManageSavedIban:
+      return static_cast<autofill::ManageSavedIbanBubbleView*>(
+          controller->GetPaymentBubbleView());
   }
 }
 

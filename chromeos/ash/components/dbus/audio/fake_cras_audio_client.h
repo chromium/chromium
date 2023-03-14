@@ -50,6 +50,8 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   void GetSystemAgcSupported(
       chromeos::DBusMethodCallback<bool> callback) override;
   void GetNodes(chromeos::DBusMethodCallback<AudioNodeList> callback) override;
+  void GetNumberOfNonChromeOutputStreams(
+      chromeos::DBusMethodCallback<int32_t> callback) override;
   void GetNumberOfActiveOutputStreams(
       chromeos::DBusMethodCallback<int> callback) override;
   void GetNumberOfInputStreamsWithPermission(
@@ -92,6 +94,9 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   void WaitForServiceToBeAvailable(
       chromeos::WaitForServiceToBeAvailableCallback callback) override;
 
+  // Sets the number of non chrome audio streams in output mode.
+  void SetNumberOfNonChromeOutputStreams(int32_t streams);
+
   // Modifies an AudioNode from |node_list_| based on |audio_node.id|.
   // if the |audio_node.id| cannot be found in list, Add an
   // AudioNode to |node_list_|
@@ -129,12 +134,15 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   const uint64_t& active_output_node_id() const {
     return active_output_node_id_;
   }
-  void set_notify_volume_change_with_delay(bool notify_with_delay) {
-    notify_volume_change_with_delay_ = notify_with_delay;
-  }
-  void set_notify_gain_change_with_delay(bool notify_with_delay) {
-    notify_gain_change_with_delay_ = notify_with_delay;
-  }
+
+  // By default the observers are informed when `SetOutputNodeVolume` is
+  // invoked. This disables that. You can then manually invoke the observers by
+  // calling `NotifyOutputNodeVolumeChangedForTesting`.
+  void disable_volume_change_events() { enable_volume_change_events_ = false; }
+  // By default the observers are informed when `SetInputGain` is
+  // invoked. This disables that. You can then manually invoke the observers by
+  // calling `NotifyInputNodeGainChangedForTesting`.
+  void disable_gain_change_events() { enable_gain_change_events_ = false; }
 
   bool noise_cancellation_enabled() const {
     return noise_cancellation_enabled_;
@@ -148,15 +156,12 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   AudioNodeList node_list_;
   uint64_t active_input_node_id_ = 0;
   uint64_t active_output_node_id_ = 0;
-  // By default, immediately sends OutputNodeVolumeChange signal following the
-  // SetOutputNodeVolume fake dbus call.
-  bool notify_volume_change_with_delay_ = false;
-  // By default, immediately sends InputNodeVolumeChange signal following the
-  // SetInputNodeGain fake dbus call.
-  bool notify_gain_change_with_delay_ = false;
+  bool enable_volume_change_events_ = true;
+  bool enable_gain_change_events_ = true;
   bool noise_cancellation_supported_ = false;
   uint32_t battery_level_ = 0;
   uint32_t noise_cancellation_enabled_counter_ = 0;
+  int32_t number_non_chrome_output_streams_ = 0;
   bool noise_cancellation_enabled_ = false;
   // Maps audio client type to the number of active input streams for clients
   // with the type specified

@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/policy/core/device_cloud_policy_validator.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/policy/device_account_initializer.h"
+#include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "chromeos/ash/components/dbus/authpolicy/authpolicy_client.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
@@ -29,7 +30,7 @@
 
 namespace ash {
 namespace attestation {
-class AttestationFlow;
+class AttestationFeatures;
 }  // namespace attestation
 }  // namespace ash
 
@@ -154,6 +155,12 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
   // Starts attestation based enrollment flow. If |is_initial_attempt| is true,
   // uses existing certificate if any. Otherwise, uses a new certificate.
   void StartAttestationBasedEnrollmentFlow(bool is_initial_attempt);
+
+  // Checks the Attestation Features and gets a suitable certificate.
+  void OnGetFeaturesReady(
+      bool force_new_key,
+      ash::attestation::AttestationFlow::CertificateCallback callback,
+      const ash::attestation::AttestationFeatures* features);
 
   // Handles the response to a request for a registration certificate.
   // |is_initial_attempt| indicates whether it is the first attempt to obtain

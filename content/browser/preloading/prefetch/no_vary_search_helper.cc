@@ -9,9 +9,13 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "content/public/browser/render_frame_host.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/no_vary_search_header_parser.h"
+#include "services/network/public/mojom/no_vary_search.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -42,18 +46,51 @@ void NoVarySearchHelper::AddUrl(const GURL& url,
   // Check if the prefetched response has a No-Vary-Search header and
   // add the prefetched response to |prefetches_with_no_vary_search_| if it
   // does.
-  if (head.parsed_headers && head.parsed_headers->no_vary_search) {
-    auto no_vary_search_data =
-        ParseHttpNoVarySearchDataFromMojom(head.parsed_headers->no_vary_search);
-    // Key the map using the url without the reference and query.
-    // In almost all cases we expect one key to only one (url,no-vary-search)
-    // mapping.
-    GURL::Replacements replacements;
-    replacements.ClearRef();
-    replacements.ClearQuery();
-    prefetches_with_no_vary_search_[url.ReplaceComponents(replacements)]
-        .emplace_back(url, std::move(no_vary_search_data));
+  if (!(head.parsed_headers &&
+        head.parsed_headers->no_vary_search_with_parse_error)) {
+    return;
   }
+  if (head.parsed_headers->no_vary_search_with_parse_error->is_parse_error()) {
+    return;
+  }
+  auto no_vary_search_data = ParseHttpNoVarySearchDataFromMojom(
+      head.parsed_headers->no_vary_search_with_parse_error
+          ->get_no_vary_search());
+  // Key the map using the url without the reference and query.
+  // In almost all cases we expect one key to only one (url,no-vary-search)
+  // mapping.
+  GURL::Replacements replacements;
+  replacements.ClearRef();
+  replacements.ClearQuery();
+  prefetches_with_no_vary_search_[url.ReplaceComponents(replacements)]
+      .emplace_back(url, std::move(no_vary_search_data));
+}
+
+void NoVarySearchHelper::MaybeSendErrorsToConsole(
+    const GURL& url,
+    const network::mojom::URLResponseHead& head,
+    RenderFrameHost& rfh) const {
+  DCHECK(
+      base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch));
+  if (!(head.parsed_headers &&
+        head.parsed_headers->no_vary_search_with_parse_error)) {
+    return;
+  }
+  if (!head.parsed_headers->no_vary_search_with_parse_error->is_parse_error()) {
+    return;
+  }
+  const auto parse_error =
+      head.parsed_headers->no_vary_search_with_parse_error->get_parse_error();
+  if (parse_error == network::mojom::NoVarySearchParseError::kOk) {
+    return;
+  }
+  blink::mojom::ConsoleMessageLevel error_level =
+      parse_error == network::mojom::NoVarySearchParseError::kDefaultValue
+          ? blink::mojom::ConsoleMessageLevel::kWarning
+          : blink::mojom::ConsoleMessageLevel::kError;
+  auto error_message = network::GetNoVarySearchConsoleMessage(parse_error, url);
+  CHECK(error_message);
+  rfh.AddMessageToConsole(error_level, error_message.value());
 }
 
 absl::optional<GURL> NoVarySearchHelper::MatchUrl(const GURL& url) const {

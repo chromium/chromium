@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element_with_state.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -66,6 +67,16 @@ class CORE_EXPORT HTMLSelectMenuElement final
 
   bool IsRichlyEditableForAccessibility() const override { return false; }
 
+  using ListItems = HeapVector<Member<HTMLOptionElement>>;
+
+  // Returns list of HTMLOptionElements which are direct children of the
+  // HTMLSelectMenuElement.
+  // GetListItems() does not do any caching. Do not invoke this method from
+  // frequently called functions.
+  // TODO(http://crbug.com/1422027): Expose iterator similar to
+  // HTMLSelectElement::GetOptionList().
+  ListItems GetListItems() const;
+
  private:
   class SelectMutationCallback;
 
@@ -115,6 +126,7 @@ class CORE_EXPORT HTMLSelectMenuElement final
   bool IsRequiredFormControl() const override;
   bool IsOptionalFormControl() const override;
 
+  bool IsEnumeratable() const override { return true; }
   bool IsLabelable() const override;
 
   // HTMLFormControlElementWithState overrides:

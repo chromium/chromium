@@ -31,11 +31,11 @@ void ThrottleDecider::ProcessRenderPass(
   for (viz::QuadList::ConstIterator it = render_pass.quad_list.begin();
        it != render_pass.quad_list.end(); ++it) {
     const viz::DrawQuad* quad = *it;
-    if (quad->material == viz::DrawQuad::Material::kCompositorRenderPass) {
+    if (const auto* render_pass_quad =
+            quad->DynamicCast<viz::CompositorRenderPassDrawQuad>()) {
       // If the quad render pass has a blur backdrop filter without a mask, add
       // the filter bounds to the bounds list.
-      const auto* render_pass_quad =
-          viz::CompositorRenderPassDrawQuad::MaterialCast(quad);
+
       auto found = id_to_pass_map_.find(render_pass_quad->render_pass_id);
       if (found == id_to_pass_map_.end()) {
         // It is possible that this function is called when the render passes in
@@ -59,7 +59,8 @@ void ThrottleDecider::ProcessRenderPass(
         }
         blur_backdrop_filter_bounds.push_back(blur_bounds);
       }
-    } else if (quad->material == viz::DrawQuad::Material::kSurfaceContent) {
+    } else if (const auto* surface_quad =
+                   quad->DynamicCast<viz::SurfaceDrawQuad>()) {
       bool inside_backdrop_filter_bounds = false;
       if (!foreground_blurred && !blur_backdrop_filter_bounds.empty()) {
         gfx::RectF rect_in_target_space =
@@ -77,7 +78,7 @@ void ThrottleDecider::ProcessRenderPass(
           }
         }
       }
-      const auto* surface_quad = viz::SurfaceDrawQuad::MaterialCast(quad);
+
       const viz::SurfaceRange& range = surface_quad->surface_range;
       DCHECK(range.IsValid());
       if (foreground_blurred || inside_backdrop_filter_bounds)

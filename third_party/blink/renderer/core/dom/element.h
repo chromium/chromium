@@ -1297,6 +1297,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void AdjustForceLegacyLayout(const ComputedStyle*,
                                bool* should_force_legacy_layout);
 
+  // Mark for style invalidation/recalc for :lang() selectors to pick up the
+  // changes.
+  void LangAttributeChanged();
+
  private:
   friend class AXObject;
   struct AffectedByPseudoStateChange;

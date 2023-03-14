@@ -21,9 +21,6 @@ extern const wchar_t kGoogleUpdate3WebUserClassProgId[];
 // to avoid collision on kernel object names.
 extern const wchar_t kGlobalPrefix[];
 
-// Serializes access to prefs.
-extern const wchar_t kPrefsAccessMutex[];
-
 // Registry keys and value names.
 #define COMPANY_KEY L"Software\\" COMPANY_SHORTNAME_STRING L"\\"
 
@@ -54,12 +51,24 @@ extern const wchar_t kRegValueName[];
 extern const wchar_t kRegValueUninstallCmdLine[];
 
 // Installer API registry names.
+// Registry values read from the Clients key for transmitting custom install
+// errors, messages, etc. On an update or install, the InstallerXXX values are
+// renamed to LastInstallerXXX values. The LastInstallerXXX values remain around
+// until the next update or install. Legacy MSI installers read values such as
+// the `LastInstallerResultUIString` from the `ClientState` key in the registry
+// and display the string.
 extern const wchar_t kRegValueInstallerError[];
 extern const wchar_t kRegValueInstallerExtraCode1[];
 extern const wchar_t kRegValueInstallerProgress[];
 extern const wchar_t kRegValueInstallerResult[];
 extern const wchar_t kRegValueInstallerResultUIString[];
 extern const wchar_t kRegValueInstallerSuccessLaunchCmdLine[];
+
+extern const wchar_t kRegValueLastInstallerResult[];
+extern const wchar_t kRegValueLastInstallerError[];
+extern const wchar_t kRegValueLastInstallerExtraCode1[];
+extern const wchar_t kRegValueLastInstallerResultUIString[];
+extern const wchar_t kRegValueLastInstallerSuccessLaunchCmdLine[];
 
 // AppCommand registry constants.
 extern const wchar_t kRegKeyCommands[];
@@ -98,6 +107,23 @@ extern const wchar_t kLegacyExeName[];
 // solution is found.
 inline constexpr base::TimeDelta kCreateUpdaterInstanceDelay =
     base::Milliseconds(200);
+
+// `kLegacyServiceNamePrefix` is the common prefix for the legacy GoogleUpdate
+// service names.
+extern const wchar_t kLegacyServiceNamePrefix[];
+
+// "Google Update Service" is the common prefix for the legacy GoogleUpdate
+// service display names.
+extern const wchar_t kLegacyServiceDisplayNamePrefix[];
+
+// "Google Update" is the prefix for the legacy GoogleUpdate "Run" key value
+// under HKCU.
+extern const wchar_t kLegacyRunValuePrefix[];
+
+// "GoogleUpdateTask{Machine/User}" is the common prefix for the legacy
+// GoogleUpdate tasks for system and user respectively.
+extern const wchar_t kLegacyTaskNamePrefixSystem[];
+extern const wchar_t kLegacyTaskNamePrefixUser[];
 
 }  // namespace updater
 

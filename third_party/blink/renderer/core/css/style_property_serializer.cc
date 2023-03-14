@@ -209,10 +209,7 @@ String StylePropertySerializer::GetCustomPropertyText(
   const CSSValue* value = property.Value();
   SerializeIdentifier(property.Name().ToAtomicString(), result,
                       is_not_first_decl);
-  result.Append(':');
-  if (value->IsCSSWideKeyword()) {
-    result.Append(' ');
-  }
+  result.Append(": ");
   result.Append(value->CssText());
   if (property.IsImportant()) {
     result.Append(" !important");
@@ -471,8 +468,12 @@ String StylePropertySerializer::SerializeShorthand(
   switch (property_id) {
     case CSSPropertyID::kAnimation:
       return GetLayeredShorthandValue(animationShorthand());
-    case CSSPropertyID::kAlternativeAnimation:
-      return GetLayeredShorthandValue(alternativeAnimationShorthand());
+    case CSSPropertyID::kAlternativeAnimationWithTimeline:
+      return GetLayeredShorthandValue(
+          alternativeAnimationWithTimelineShorthand());
+    case CSSPropertyID::kAlternativeAnimationWithDelayStartEnd:
+      return GetLayeredShorthandValue(
+          alternativeAnimationWithDelayStartEndShorthand());
     case CSSPropertyID::kAlternativeAnimationDelay:
       return AnimationDelayShorthandValue();
     case CSSPropertyID::kAnimationRange:
@@ -1532,22 +1533,24 @@ String StylePropertySerializer::GetLayeredShorthandValue(
 
       bool is_initial_value = value->IsInitialValue();
 
-      // When serializing shorthands, a component value must be omitted
-      // if doesn't change the meaning of the overall value.
-      // https://drafts.csswg.org/cssom/#serializing-css-values
+      // The shorthand can not represent the following properties if they have
+      // non-initial values. This is because they are always reset to their
+      // initial value by the shorthand.
       if (property->IDEquals(CSSPropertyID::kAnimationTimeline)) {
-        if (auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
-          if (ident->GetValueID() ==
-              CSSAnimationData::InitialTimeline().GetKeyword()) {
-            DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
-            is_initial_value = true;
-          }
+        auto* ident = DynamicTo<CSSIdentifierValue>(value);
+        if (!ident || (ident->GetValueID() !=
+                       CSSAnimationData::InitialTimeline().GetKeyword())) {
+          DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
+          return g_empty_string;
         }
+        is_initial_value = true;
       }
-
       if (property->IDEquals(CSSPropertyID::kAnimationDelayEnd)) {
-        is_initial_value = CSSToStyleMap::MapAnimationDelayEnd(*value) ==
-                           CSSTimingData::InitialDelayEnd();
+        if (CSSToStyleMap::MapAnimationDelayEnd(*value) !=
+            CSSTimingData::InitialDelayEnd()) {
+          return g_empty_string;
+        }
+        is_initial_value = true;
       }
 
       if (!is_initial_value) {

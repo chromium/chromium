@@ -8,12 +8,12 @@ assert(is_chromeos_ash)
 
 source_set("connectivity") {
   deps = [
-    ":decoder",
     "//base",
     "//chrome/browser/ash/login/oobe_quick_start/logging",
     "//chrome/browser/nearby_sharing/public/cpp",
     "//chrome/browser/nearby_sharing/public/cpp",
     "//chromeos/ash/services/nearby/public/cpp",
+    "//chromeos/ash/services/nearby/public/mojom",
     "//components/cbor",
     "//crypto",
     "//device/bluetooth",
@@ -39,21 +39,8 @@ source_set("connectivity") {
     "target_device_connection_broker_factory.h",
     "target_device_connection_broker_impl.cc",
     "target_device_connection_broker_impl.h",
-  ]
-}
-
-source_set("decoder") {
-  sources = [
-    "quick_start_decoder.cc",
-    "quick_start_decoder.h",
-  ]
-
-  deps = [
-    "//base",
-    "//chromeos/ash/services/nearby/public/mojom",
-    "//components/cbor",
-    "//mojo/public/cpp/bindings",
-    "//sandbox/policy",
+    "wifi_credentials.cc",
+    "wifi_credentials.h",
   ]
 }
 
@@ -64,10 +51,15 @@ source_set("test_support") {
     "//base",
     "//chrome/browser/nearby_sharing/public/cpp",
     "//chrome/test:test_support",
+    "//components/cbor",
   ]
   sources = [
+    "fake_quick_start_decoder.cc",
+    "fake_quick_start_decoder.h",
     "fake_target_device_connection_broker.cc",
     "fake_target_device_connection_broker.h",
+    "fido_authentication_message_helper.cc",
+    "fido_authentication_message_helper.h",
   ]
 }
 
@@ -75,7 +67,7 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     ":connectivity",
-    ":decoder",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/nearby_sharing/public/cpp",
@@ -92,7 +84,6 @@ source_set("unit_tests") {
     "connection_unittest.cc",
     "fast_pair_advertiser_unittest.cc",
     "incoming_connection_unittest.cc",
-    "quick_start_decoder_unittest.cc",
     "target_device_connection_broker_impl_unittest.cc",
   ]
 }

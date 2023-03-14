@@ -98,7 +98,7 @@ class GPU_GLES2_EXPORT PassthroughProgramCache : public ProgramCache {
 
   const bool disable_gpu_shader_disk_cache_;
   size_t curr_size_bytes_;
-  ProgramLRUCache store_;
+  ProgramLRUCache store_ GUARDED_BY(lock_);
 
   // TODO(syoussefi): take compression from memory_program_cache, see
   // compress_program_binaries_

@@ -181,7 +181,7 @@ size_t TestAXNodeWrapper::GetChildCount() const {
   return InternalChildCount();
 }
 
-gfx::NativeViewAccessible TestAXNodeWrapper::ChildAtIndex(size_t index) {
+gfx::NativeViewAccessible TestAXNodeWrapper::ChildAtIndex(size_t index) const {
   TestAXNodeWrapper* child_wrapper = InternalGetChild(index);
   return child_wrapper ?
       child_wrapper->ax_platform_node()->GetNativeViewAccessible() :
@@ -382,7 +382,7 @@ AXPlatformNode* TestAXNodeWrapper::GetFromTreeIDAndNodeID(
   return GetFromNodeID(id);
 }
 
-absl::optional<size_t> TestAXNodeWrapper::GetIndexInParent() {
+absl::optional<size_t> TestAXNodeWrapper::GetIndexInParent() const {
   return node_ ? absl::make_optional(node_->GetUnignoredIndexInParent())
                : absl::nullopt;
 }

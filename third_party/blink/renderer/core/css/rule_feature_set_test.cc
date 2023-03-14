@@ -47,8 +47,9 @@ class RuleFeatureSetTest : public testing::Test {
 
   RuleFeatureSet::SelectorPreMatch CollectFeatures(
       const String& selector_text,
+      CSSNestingType nesting_type = CSSNestingType::kNone,
       StyleRule* parent_rule_for_nesting = nullptr) {
-    return CollectFeaturesTo(selector_text, rule_feature_set_,
+    return CollectFeaturesTo(selector_text, rule_feature_set_, nesting_type,
                              parent_rule_for_nesting);
   }
 
@@ -84,11 +85,12 @@ class RuleFeatureSetTest : public testing::Test {
   static RuleFeatureSet::SelectorPreMatch CollectFeaturesTo(
       const String& selector_text,
       RuleFeatureSet& set,
+      CSSNestingType nesting_type,
       StyleRule* parent_rule_for_nesting) {
     HeapVector<CSSSelector> arena;
     base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
         StrictCSSParserContext(SecureContextMode::kInsecureContext),
-        parent_rule_for_nesting, nullptr, selector_text, arena);
+        nesting_type, parent_rule_for_nesting, nullptr, selector_text, arena);
     return CollectFeaturesTo(selector_vector, nullptr /* style_scope */, set);
   }
 
@@ -1969,6 +1971,7 @@ class RuleFeatureSetRefTest : public RuleFeatureSetTest {
   virtual void CollectTo(
       const char*,
       RuleFeatureSet&,
+      CSSNestingType nesting_type = CSSNestingType::kNone,
       StyleRule* parent_rule_for_nesting = nullptr) const = 0;
   virtual void Compare(const RuleFeatureSet&, const RuleFeatureSet&) const = 0;
 };
@@ -1977,8 +1980,9 @@ class RuleFeatureSetSelectorRefTest : public RuleFeatureSetRefTest {
  public:
   void CollectTo(const char* text,
                  RuleFeatureSet& set,
+                 CSSNestingType nesting_type = CSSNestingType::kNone,
                  StyleRule* parent_rule_for_nesting = nullptr) const override {
-    CollectFeaturesTo(text, set, parent_rule_for_nesting);
+    CollectFeaturesTo(text, set, nesting_type, parent_rule_for_nesting);
   }
 };
 
@@ -2071,6 +2075,7 @@ class RuleFeatureSetScopeRefTest
 
   void CollectTo(const char* text,
                  RuleFeatureSet& set,
+                 CSSNestingType nesting_type = CSSNestingType::kNone,
                  StyleRule* parent_rule_for_nesting = nullptr) const override {
     Document* document =
         Document::CreateForTest(execution_context_.GetExecutionContext());
@@ -2844,13 +2849,15 @@ TEST_F(RuleFeatureSetTest, NestedSelector) {
   HeapVector<CSSSelector> arena;
   base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
       StrictCSSParserContext(SecureContextMode::kInsecureContext),
+      CSSNestingType::kNone,
       /*parent_rule_for_nesting=*/nullptr, nullptr, ".a, .b", arena);
   auto* parent_rule = StyleRule::Create(
       selector_vector,
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode));
 
   EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch,
-            CollectFeatures("& .c", parent_rule));
+            CollectFeatures("& .c", CSSNestingType::kNesting,
+                            /*parent_rule_for_nesting=*/parent_rule));
 
   for (const char* parent_class : {"a", "b"}) {
     SCOPED_TRACE(parent_class);

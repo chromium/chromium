@@ -15,6 +15,7 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/screen_pinning_controller.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
@@ -316,6 +317,7 @@ void DoSplitviewClipRectAnimation(
   layer->SetClipRect(target_clip_rect);
 }
 
+// TODO(michelefan@): Restore the snap group.
 void MaybeRestoreSplitView(bool refresh_snapped_windows) {
   if (!ShouldAllowSplitView() ||
       !Shell::Get()->tablet_mode_controller()->InTabletMode()) {
@@ -511,6 +513,17 @@ SplitViewController::SnapPosition GetSnapPosition(
       root_window, location_in_screen, initial_location_in_current_screen,
       snap_distance_from_edge, minimum_drag_distance, horizontal_edge_inset,
       vertical_edge_inset);
+}
+
+bool ShouldAutomaticallyGroupOnWindowsSnappedInClamshell() {
+  auto* snap_group_controller = Shell::Get()->snap_group_controller();
+  TabletModeController* tablet_mode_controller =
+      Shell::Get()->tablet_mode_controller();
+  const bool in_tablet_mode =
+      tablet_mode_controller && tablet_mode_controller->InTabletMode();
+  return snap_group_controller &&
+         snap_group_controller->IsArm1AutomaticallyLockEnabled() &&
+         !in_tablet_mode;
 }
 
 }  // namespace ash

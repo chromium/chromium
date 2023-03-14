@@ -118,7 +118,10 @@ API_AVAILABLE(macos(12.3))
   [config setScalesToFit:YES];
   [config setShowsCursor:YES];
   [config setColorSpaceName:kCGColorSpaceSRGB];
-  [config setMinimumFrameInterval:CMTimeMakeWithSeconds(1 / frameRate, 1)];
+  [config setMinimumFrameInterval:CMTimeMake(media::kFrameRatePrecision,
+                                             static_cast<int>(
+                                                 frameRate *
+                                                 media::kFrameRatePrecision))];
   return config;
 }
 

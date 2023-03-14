@@ -176,18 +176,18 @@ gfx::Size GetMinimumWidgetSize(gfx::Size content_size,
 }
 
 GtkCssContext CreateHeaderContext(bool maximized) {
-  std::string window_selector = "GtkWindow#window.background.csd";
+  std::string window_selector = "window.background.csd";
   if (maximized) {
     window_selector += ".maximized";
   }
   return AppendCssNodeToStyleContext(
       AppendCssNodeToStyleContext({}, window_selector),
-      "GtkHeaderBar#headerbar.header-bar.titlebar");
+      "headerbar.header-bar.titlebar");
 }
 
 GtkCssContext CreateWindowControlsContext(bool maximized) {
   return AppendCssNodeToStyleContext(CreateHeaderContext(maximized),
-                                     "#windowcontrols");
+                                     "windowcontrols");
 }
 
 void CalculateUnscaledButtonSize(
@@ -201,13 +201,12 @@ void CalculateUnscaledButtonSize(
   // states at the size of a GTK_STATE_FLAG_NORMAL button.
   auto button_context = AppendCssNodeToStyleContext(
       CreateWindowControlsContext(maximized),
-      "GtkButton#button.titlebutton." +
+      "button.titlebutton." +
           std::string(ButtonStyleClassFromButtonType(type)));
 
   auto icon_size = LoadNavButtonIcon(type, button_context, 1);
 
-  auto image_context =
-      AppendCssNodeToStyleContext(button_context, "GtkImage#image");
+  auto image_context = AppendCssNodeToStyleContext(button_context, "image");
   gfx::Size image_size =
       GetMinimumWidgetSize(icon_size, nullptr, image_context);
 
@@ -240,9 +239,8 @@ class NavButtonImageSource : public gfx::ImageSkiaSource {
       return gfx::ImageSkiaRep();
     }
 
-    auto button_context =
-        AppendCssNodeToStyleContext(CreateWindowControlsContext(maximized_),
-                                    "GtkButton#button.titlebutton");
+    auto button_context = AppendCssNodeToStyleContext(
+        CreateWindowControlsContext(maximized_), "button.titlebutton");
     gtk_style_context_add_class(button_context,
                                 ButtonStyleClassFromButtonType(type_));
     GtkStateFlags button_state = GtkStateFlagsFromButtonState(state_);

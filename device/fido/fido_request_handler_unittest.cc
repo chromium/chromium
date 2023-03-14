@@ -623,12 +623,27 @@ TEST_F(FidoRequestHandlerTest,
 }
 
 #if BUILDFLAG(IS_WIN)
+
 TEST_F(FidoRequestHandlerTest, TransportAvailabilityOfWindowsAuthenticator) {
+  static const struct {
+    bool api_available = false;
+    bool is_uvpaa = false;
+  } kTestCases[] = {
+      /* clang-format off */
+      /* api_available is_uvpaa */
+      {true,           true},
+      {true,           false},
+      {false,          false},
+      /* clang-format on */
+  };
   FakeWinWebAuthnApi api;
   fake_discovery_factory_.set_win_webauthn_api(&api);
-  for (const bool api_available : {false, true}) {
-    SCOPED_TRACE(::testing::Message() << "api_available=" << api_available);
-    api.set_available(api_available);
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(::testing::Message()
+                 << "api_available=" << test_case.api_available);
+    SCOPED_TRACE(::testing::Message() << "is_uvpaa=" << test_case.is_uvpaa);
+    api.set_available(test_case.api_available);
+    api.set_is_uvpaa(test_case.is_uvpaa);
 
     TestObserver observer;
     ForgeNextHidDiscovery();
@@ -639,19 +654,19 @@ TEST_F(FidoRequestHandlerTest, TransportAvailabilityOfWindowsAuthenticator) {
 
     // If the windows API is not enabled, the request is dispatched to the USB
     // discovery. Simulate a success to fill the transport availability info.
-    if (!api_available)
+    if (!test_case.api_available) {
       discovery()->WaitForCallToStartAndSimulateSuccess();
-
-    task_environment_.FastForwardUntilNoTasksRemain();
+    }
 
     auto transport_availability_info =
         observer.WaitForTransportAvailabilityInfo();
     EXPECT_EQ(transport_availability_info.available_transports.empty(),
-              api_available);
+              test_case.api_available);
     EXPECT_EQ(transport_availability_info.has_win_native_api_authenticator,
-              api_available);
+              test_case.api_available);
     EXPECT_EQ(transport_availability_info.win_native_api_authenticator_id,
-              api_available ? "WinWebAuthnApiAuthenticator" : "");
+              test_case.api_available ? "WinWebAuthnApiAuthenticator" : "");
+    EXPECT_EQ(transport_availability_info.win_is_uvpaa, test_case.is_uvpaa);
   }
 }
 #endif  // BUILDFLAG(IS_WIN)

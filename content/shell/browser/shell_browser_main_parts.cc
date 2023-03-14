@@ -72,10 +72,13 @@
 #include "ui/linux/linux_ui_factory.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(IS_FUCHSIA)
+#include "content/shell/browser/fuchsia_view_presenter.h"
+#endif
+
 namespace content {
 
 namespace {
-#if !BUILDFLAG(IS_IOS)
 GURL GetStartupURL() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kBrowserTest))
@@ -101,7 +104,6 @@ GURL GetStartupURL() {
       base::MakeAbsoluteFilePath(base::FilePath(args[0])));
 #endif
 }
-#endif
 
 scoped_refptr<base::RefCountedMemory> PlatformResourceProvider(int key) {
   if (key == IDR_DIR_HEADER_HTML) {
@@ -157,10 +159,8 @@ void ShellBrowserMainParts::InitializeBrowserContexts() {
 }
 
 void ShellBrowserMainParts::InitializeMessageLoopContext() {
-#if !BUILDFLAG(IS_IOS)
   Shell::CreateNewWindow(browser_context_.get(), GetStartupURL(), nullptr,
                          gfx::Size());
-#endif
 }
 
 void ShellBrowserMainParts::ToolkitInitialized() {
@@ -192,6 +192,10 @@ void ShellBrowserMainParts::PostCreateThreads() {
 }
 
 int ShellBrowserMainParts::PreMainMessageLoopRun() {
+#if BUILDFLAG(IS_FUCHSIA)
+  fuchsia_view_presenter_ = std::make_unique<FuchsiaViewPresenter>();
+#endif
+
   InitializeBrowserContexts();
   Shell::Initialize(CreateShellPlatformDelegate());
   net::NetModule::SetResourceProvider(PlatformResourceProvider);
@@ -214,6 +218,9 @@ void ShellBrowserMainParts::PostMainMessageLoopRun() {
   ui::LinuxUi::SetInstance(nullptr);
 #endif
   performance_manager_lifetime_.reset();
+#if BUILDFLAG(IS_FUCHSIA)
+  fuchsia_view_presenter_.reset();
+#endif
 }
 
 void ShellBrowserMainParts::PostDestroyThreads() {

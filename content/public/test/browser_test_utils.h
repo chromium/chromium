@@ -593,10 +593,6 @@ void ExecuteScriptAsyncWithoutUserGesture(const ToRenderFrameHost& adapter,
 // execution failed or did not evaluate to the expected type.
 //
 // Deprecated: Use EvalJs().
-[[nodiscard]] bool ExecuteScriptAndExtractDouble(
-    const ToRenderFrameHost& adapter,
-    const std::string& script,
-    double* result);
 [[nodiscard]] bool ExecuteScriptAndExtractInt(const ToRenderFrameHost& adapter,
                                               const std::string& script,
                                               int* result);
@@ -834,6 +830,11 @@ enum EvalJsOptions {
   // script will call domAutomationController.send() with the completion
   // value. Setting this bit will disable that, requiring |script| to provide
   // its own call to domAutomationController.send() instead.
+  //
+  // Beware that if your script calls domAutomationController.send more than
+  // once, it can interfere with the results obtained by future calls to EvalJs.
+  // It is safer to use Promise resolution rather than
+  // domAutomationController.send.
   EXECUTE_SCRIPT_USE_MANUAL_REPLY = (1 << 1),
 
   // By default, when the script passed to EvalJs evaluates to a Promise, the

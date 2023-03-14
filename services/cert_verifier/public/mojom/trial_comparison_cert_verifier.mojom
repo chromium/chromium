@@ -18,29 +18,6 @@ interface TrialComparisonCertVerifierConfigClient {
   OnTrialConfigUpdated(bool allowed);
 };
 
-[EnableIf=is_mac]
-struct MacCertEvidenceInfo {
-  // A bitfield indicating various status of the cert, defined in cssmapple.h
-  uint32 status_bits;
-
-  // CSSM_RETURN status codes for the cert, defined in cssmtype.h, values in
-  // cssmerr.h and cssmErrorStrings.h.
-  array<int32> status_codes;
-};
-
-[EnableIf=is_mac]
-struct MacPlatformVerifierDebugInfo {
-  // The SecTrustResultType result from SecTrustEvaluate.
-  uint32 trust_result;
-
-  // The OSStatus resultCode from SecTrustGetCssmResultCode.
-  int32 result_code;
-
-  // The CSSM_TP_APPLE_EVIDENCE_INFO statusChain from SecTrustGetResult. Each
-  // entry corresponds to one of the certs in the verified chain (leaf first).
-  array<MacCertEvidenceInfo> status_chain;
-};
-
 [EnableIf=is_win]
 struct WinPlatformVerifierDebugInfo {
   // The ThisUpdate date for AuthRoot, as reflected in the registry.
@@ -48,6 +25,21 @@ struct WinPlatformVerifierDebugInfo {
 
   // The sequence number for AuthRoot, as reflected in the registry.
   array<uint8> authroot_sequence_number;
+};
+
+[EnableIf=use_nss_certs]
+struct TrustStoreNSSDebugInfo {
+  // Whether the TrustStoreNSS instance is ignoring the NSS builtin trust
+  // records or not.
+  bool ignore_system_trust_settings;
+
+  // Which user slots are allowed by the TrustStoreNSS instance.
+  enum SlotFilterType {
+    kDontFilter = 0,
+    kDoNotAllowUserSlots = 1,
+    kAllowSpecifiedUserSlot = 2,
+  };
+  SlotFilterType slot_filter_type;
 };
 
 [EnableIf=is_chrome_root_store_supported]
@@ -77,11 +69,17 @@ struct CertVerifierDebugInfo {
   [EnableIf=is_mac]
   MacTrustImplType mac_trust_impl;
 
-  [EnableIf=is_mac]
-  MacPlatformVerifierDebugInfo? mac_platform_debug_info;
-
   [EnableIf=is_win]
   WinPlatformVerifierDebugInfo? win_platform_debug_info;
+
+  [EnableIf=use_nss_certs]
+  string nss_version;
+
+  [EnableIf=use_nss_certs]
+  TrustStoreNSSDebugInfo? primary_nss_debug_info;
+
+  [EnableIf=use_nss_certs]
+  TrustStoreNSSDebugInfo? trial_nss_debug_info;
 
   [EnableIf=is_chrome_root_store_supported]
   ChromeRootStoreDebugInfo? chrome_root_store_debug_info;

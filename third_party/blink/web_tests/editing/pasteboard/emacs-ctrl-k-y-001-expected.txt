@@ -1,63 +1,42 @@
 EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
 EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
 EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
-EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
-EDITING DELEGATE: webViewDidChange:WebViewDidChangeNotification
-EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
-EDITING DELEGATE: webViewDidChange:WebViewDidChangeNotification
-EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
-EDITING DELEGATE: webViewDidChange:WebViewDidChangeNotification
-EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
-EDITING DELEGATE: webViewDidChange:WebViewDidChangeNotification
-EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
-EDITING DELEGATE: webViewDidChange:WebViewDidChangeNotification
-four five six
-seven eight nine replacingDOMRange:range from 8 of #text > DIV > DIV > BODY > HTML > #document to 8 of #text > DIV > DIV > BODY > HTML > #document givenAction:WebViewInsertActionTyped
-EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
-EDITING DELEGATE: webViewDidChange:WebViewDidChangeNotification
-EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
-EDITING DELEGATE: webViewDidChange:WebViewDidChangeNotification
-EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
-EDITING DELEGATE: webViewDidChange:WebViewDidChangeNotification
-EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
-EDITING DELEGATE: webViewDidChange:WebViewDidChangeNotification
-EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
-EDITING DELEGATE: webViewDidChange:WebViewDidChangeNotification
 layer at (0,0) size 800x600
   LayoutView at (0,0) size 800x600
 layer at (0,0) size 800x600
-  LayoutBlockFlow {HTML} at (0,0) size 800x600
-    LayoutBlockFlow {BODY} at (8,8) size 784x584
-      LayoutBlockFlow {DIV} at (0,0) size 784x212 [border: (2px solid #0000FF)]
-        LayoutBlockFlow {DIV} at (14,14) size 756x56
-          LayoutText {#text} at (0,0) size 67x28
-            text run at (0,0) width 67: "Tests: "
-          LayoutBR {BR} at (0,0) size 0x0
-          LayoutText {#text} at (0,28) size 348x28
-            text run at (0,28) width 348: "Multiple ctrl-k presses then a ctrl-y."
-        LayoutBlockFlow {DIV} at (14,86) size 756x112
-          LayoutBlockFlow (anonymous) at (0,0) size 756x28
-            LayoutText {#text} at (0,0) size 189x28
-              text run at (0,0) width 189: "Expected Results: "
-            LayoutBR {BR} at (189,22) size 0x0
-          LayoutBlockFlow {DIV} at (0,28) size 756x84
-            LayoutBlockFlow (anonymous) at (0,0) size 756x28
-              LayoutText {#text} at (0,0) size 132x28
-                text run at (0,0) width 132: "one two three"
-            LayoutBlockFlow {DIV} at (0,28) size 756x28
-              LayoutText {#text} at (0,0) size 118x28
-                text run at (0,0) width 118: "four five six"
-            LayoutBlockFlow {DIV} at (0,56) size 756x28
-              LayoutText {#text} at (0,0) size 158x28
-                text run at (0,0) width 158: "seven eight nine"
-      LayoutBlockFlow {DIV} at (0,236) size 784x96
-        LayoutBlockFlow {DIV} at (0,0) size 784x32 [border: (2px solid #FF0000)]
-          LayoutText {#text} at (2,2) size 132x28
-            text run at (2,2) width 132: "one two three"
-        LayoutBlockFlow {DIV} at (0,32) size 784x32 [border: (2px solid #FF0000)]
-          LayoutText {#text} at (2,2) size 118x28
-            text run at (2,2) width 118: "four five six"
-        LayoutBlockFlow {DIV} at (0,64) size 784x32 [border: (2px solid #FF0000)]
-          LayoutText {#text} at (2,2) size 158x28
-            text run at (2,2) width 158: "seven eight nine"
-caret: position 16 of child 0 {#text} of child 3 {DIV} of child 3 {DIV} of body
+  LayoutNGBlockFlow {HTML} at (0,0) size 800x600
+    LayoutNGBlockFlow {BODY} at (8,8) size 784x584
+      LayoutNGBlockFlow {DIV} at (0,0) size 784x212 [border: (2px solid #0000FF)]
+        LayoutNGBlockFlow {DIV} at (14,14) size 756x56
+          LayoutText {#text} at (0,0) size 60x28
+            text run at (0,0) width 60: "Tests:"
+          LayoutBR {BR} at (59,0) size 1x28
+          LayoutText {#text} at (0,28) size 343x28
+            text run at (0,28) width 343: "Multiple ctrl-k presses then a ctrl-y."
+        LayoutNGBlockFlow {DIV} at (14,86) size 756x112
+          LayoutNGBlockFlow (anonymous) at (0,0) size 756x28
+            LayoutText {#text} at (0,0) size 184x28
+              text run at (0,0) width 184: "Expected Results:"
+            LayoutBR {BR} at (183,0) size 1x28
+          LayoutNGBlockFlow {DIV} at (0,28) size 756x84
+            LayoutNGBlockFlow (anonymous) at (0,0) size 756x28
+              LayoutText {#text} at (0,0) size 131x28
+                text run at (0,0) width 131: "one two three"
+            LayoutNGBlockFlow {DIV} at (0,28) size 756x28
+              LayoutText {#text} at (0,0) size 116x28
+                text run at (0,0) width 116: "four five six"
+            LayoutNGBlockFlow {DIV} at (0,56) size 756x28
+              LayoutText {#text} at (0,0) size 156x28
+                text run at (0,0) width 156: "seven eight nine"
+      LayoutNGBlockFlow {DIV} at (0,236) size 784x88
+        LayoutNGBlockFlow {DIV} at (0,0) size 784x88 [border: (2px solid #FF0000)]
+          LayoutNGBlockFlow (anonymous) at (2,2) size 780x28
+            LayoutText {#text} at (0,0) size 131x28
+              text run at (0,0) width 131: "one two three"
+          LayoutNGBlockFlow {DIV} at (2,30) size 780x28
+            LayoutText {#text} at (0,0) size 116x28
+              text run at (0,0) width 116: "four five six"
+          LayoutNGBlockFlow {DIV} at (2,58) size 780x28
+            LayoutText {#text} at (0,0) size 156x28
+              text run at (0,0) width 156: "seven eight nine"
+caret: position 8 of child 0 {#text} of child 1 {DIV} of child 3 {DIV} of body

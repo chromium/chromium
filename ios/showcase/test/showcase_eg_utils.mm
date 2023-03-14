@@ -28,6 +28,10 @@ id<GREYMatcher> HomeScreen() {
   return grey_accessibilityID(@"showcase_home_collection");
 }
 
+id<GREYMatcher> SearchBar() {
+  return grey_accessibilityID(@"showcase_home_search_bar");
+}
+
 // Returns the Showcase navigation controller.
 UINavigationController* ShowcaseNavigationController() {
   UINavigationController* showcaseNavigationController =
@@ -41,31 +45,15 @@ UINavigationController* ShowcaseNavigationController() {
 namespace showcase_utils {
 
 void Open(NSString* name) {
-  [[EarlGrey selectElementWithMatcher:HomeScreen()]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
-  // Matcher for the UI element that has the accessibility label |name| and is
+  Search(name);
+
+  // Matcher for the UI element that has the accessibility label `name` and is
   // sufficiently visible, so EarlGrey will not attempt to tap a partially
   // hidden UI element.
   id<GREYMatcher> visibleCellWithAccessibilityLabelMatcher = grey_allOf(
       grey_accessibilityLabel(name), grey_sufficientlyVisible(), nil);
-
-  // Disable EarlGrey's NSTimer tracking while scrolling.
-  // TODO(crbug.com/1101608): This is a workaround that should be removed once a
-  // proper fix lands in EarlGrey.
-  double original_interval =
-      GREY_CONFIG_DOUBLE(kGREYConfigKeyNSTimerMaxTrackableInterval);
-  [[GREYConfiguration sharedConfiguration]
-          setValue:@0
-      forConfigKey:kGREYConfigKeyNSTimerMaxTrackableInterval];
-
-  [[[EarlGrey selectElementWithMatcher:visibleCellWithAccessibilityLabelMatcher]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-      onElementWithMatcher:HomeScreen()] performAction:grey_tap()];
-
-  // Restore the original NSTimer max tracking interval.
-  [[GREYConfiguration sharedConfiguration]
-          setValue:[NSNumber numberWithDouble:original_interval]
-      forConfigKey:kGREYConfigKeyNSTimerMaxTrackableInterval];
+  [[EarlGrey selectElementWithMatcher:visibleCellWithAccessibilityLabelMatcher]
+      performAction:grey_tap()];
 }
 
 void Close() {
@@ -76,6 +64,17 @@ void Close() {
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:HomeScreen()]
       assertWithMatcher:grey_sufficientlyVisible()];
+  ClearSearch();
+}
+
+void Search(NSString* query) {
+  [[EarlGrey selectElementWithMatcher:SearchBar()]
+      performAction:grey_replaceText(query)];
+}
+
+void ClearSearch() {
+  [[EarlGrey selectElementWithMatcher:SearchBar()]
+      performAction:grey_replaceText(@"")];
 }
 
 }  // namespace showcase_utils

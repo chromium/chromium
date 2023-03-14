@@ -288,7 +288,7 @@ class SocketListenFunction : public SocketApiFunction {
 
  private:
   void OnCompleted(int result, const std::string& error_msg);
-  std::unique_ptr<api::socket::Listen::Params> params_;
+  absl::optional<api::socket::Listen::Params> params_;
 };
 
 class SocketAcceptFunction : public SocketApiFunction {
@@ -416,7 +416,7 @@ class SocketSetNoDelayFunction : public SocketApiFunction {
  private:
   void OnCompleted(bool success);
 
-  std::unique_ptr<api::socket::SetNoDelay::Params> params_;
+  absl::optional<api::socket::SetNoDelay::Params> params_;
 };
 
 class SocketGetInfoFunction : public SocketApiFunction {
@@ -544,7 +544,7 @@ class SocketSecureFunction : public SocketApiFunction {
       mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
       mojo::ScopedDataPipeProducerHandle send_pipe_handle);
 
-  std::unique_ptr<api::socket::Secure::Params> params_;
+  absl::optional<api::socket::Secure::Params> params_;
 };
 
 }  // namespace extensions

@@ -58,12 +58,16 @@ interface CoreProbes {
   class FontCustomPlatformData;
   class FontFace;
   class HTMLDocumentParser;
-  class XMLHttpRequest;
   class HTMLInputElement;
   class HTMLPortalElement;
   class PerformanceEntry;
+  class Script;
+  class ScriptState;
+  class SpeculationCandidate;
+  class XMLHttpRequest;
 
   void DidClearDocumentOfWindowObject([Keep] LocalFrame*);
+  void DidCreateMainWorldContext([Keep] LocalFrame*);
   void WillInsertDOMNode([Keep] Node* parent);
   void DidInsertDOMNode([Keep] Node*);
   void WillRemoveDOMNode([Keep] Node*);
@@ -156,11 +160,14 @@ interface CoreProbes {
   void DocumentWriteFetchScript([Keep] Document*);
   void DidChangeViewport(LocalFrame* document);
   void BreakableLocation(ExecutionContext* context, const char* name);
+  void WillHandlePromise([Keep] ExecutionContext* context, bool resolving, const char* class_like, const char* promise_like);
   RecalculateStyle(Document* document);
   UpdateLayout(Document* document);
   ExecuteScript([Keep] ExecutionContext* context, const v8::Local<v8::Context>& v8_context, const String& script_url, int script_id);
+  CompileAndRunScript([Keep] ExecutionContext* context, const blink::Script* script);
+
   CallFunction([Keep] ExecutionContext* context, const v8::Local<v8::Context>& v8_context, v8::Local<v8::Function> function, int depth = 0);
-  UserCallback([Keep] ExecutionContext* context, const char* name, const AtomicString& atomic_name, bool recurring, EventTarget* event_target = nullptr);
+  UserCallback([Keep] ExecutionContext* context, const char* class_like_name, const char* name, const AtomicString& atomic_name, bool recurring, EventTarget* event_target = nullptr, Event* event = nullptr);
   V8Compile([Keep] ExecutionContext* context, const String& file_name, int line, int column);
   ParseHTML(Document* document, HTMLDocumentParser* parser);
   void ForcePseudoState([Keep] Element* element, CSSSelector::PseudoType pseudo_state, bool* result);
@@ -197,4 +204,5 @@ interface CoreProbes {
   void ApplyAutomationOverride(ExecutionContext*, bool& enabled);
   void DidAddSpeculationRuleSet([Keep] Document&, const SpeculationRuleSet& rule_set);
   void DidRemoveSpeculationRuleSet(Document&, const SpeculationRuleSet& rule_set);
+  void SpeculationCandidatesUpdated([Keep] Document&, const HeapVector<Member<SpeculationCandidate>>& candidates);
 }

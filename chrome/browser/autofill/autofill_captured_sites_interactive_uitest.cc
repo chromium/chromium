@@ -92,13 +92,14 @@ class MetricsScraper {
   // Creates a MetricsScraper if the Finch flag is enabled.
   static std::unique_ptr<MetricsScraper> MaybeCreate(const std::string& test) {
     if (!base::FeatureList::IsEnabled(
-            features::kAutofillCapturedSiteTestsMetricsScraper)) {
+            features::test::kAutofillCapturedSiteTestsMetricsScraper)) {
       return nullptr;
     }
     const std::string& output_dir =
-        features::kAutofillCapturedSiteTestsMetricsScraperOutputDir.Get();
+        features::test::kAutofillCapturedSiteTestsMetricsScraperOutputDir.Get();
     const std::string& histogram_regex =
-        features::kAutofillCapturedSiteTestsMetricsScraperHistogramRegex.Get();
+        features::test::kAutofillCapturedSiteTestsMetricsScraperHistogramRegex
+            .Get();
     return base::WrapUnique(new MetricsScraper(
         base::FilePath::FromASCII(output_dir).AppendASCII(test + ".txt"),
         base::UTF8ToUTF16(histogram_regex)));
@@ -259,9 +260,10 @@ class AutofillCapturedSitesInteractiveTest
   }
 
  protected:
-  AutofillCapturedSitesInteractiveTest() = default;
+  AutofillCapturedSitesInteractiveTest()
+      : AutofillUiTest({.disable_server_communication = false}) {}
 
-  ~AutofillCapturedSitesInteractiveTest() override {}
+  ~AutofillCapturedSitesInteractiveTest() override = default;
 
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
@@ -320,8 +322,10 @@ class AutofillCapturedSitesInteractiveTest
     // elements in a form to determine if the form is ready for interaction.
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{{features::kAutofillAcrossIframes, {}},
-                              {features::kAutofillServerCommunication, {}},
-                              {features::kAutofillShowTypePredictions, {}},
+                              {features::test::kAutofillServerCommunication,
+                               {}},
+                              {features::test::kAutofillShowTypePredictions,
+                               {}},
                               {features::kAutofillParsingPatternProvider,
                                {{"prediction_source", "nextgen"}}}},
         /*disabled_features=*/{});
@@ -346,7 +350,7 @@ class AutofillCapturedSitesInteractiveTest
   bool ShowAutofillSuggestion(const std::string& target_element_xpath,
                               const std::vector<std::string> iframe_path,
                               content::RenderFrameHost* frame) {
-    // First, automation should focus on the frame containg the autofill form.
+    // First, automation should focus on the frame containing the autofill form.
     // Doing so ensures that Chrome scrolls the element into view if the
     // element is off the page.
     test_delegate()->SetExpectations({ObservedUiEvents::kSuggestionShown},

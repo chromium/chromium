@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">Vynikající (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Pokračovat</translation>
 <translation id="2364498172489649528">V pořádku</translation>
+<translation id="2367335866686097760">Klávesa mapování kláves</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Odeslat zpětnou vazbu</translation>
 <translation id="2407209115954268704">Stav uzamčení SIM karty</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">Obrázek avatara se změnil</translation>
 <translation id="3192947282887913208">Zvukové soubory</translation>
 <translation id="3199982728237701504">Podavač dokumentů (oboustranných)</translation>
+<translation id="3211671540163313381">Křížový ovladač mapování kláves</translation>
 <translation id="3226405216343213872">Vyhledávání skenerů</translation>
+<translation id="3226657629376379887">Nabídka akcí s rozvržením</translation>
 <translation id="3246869037381808805">Tiskové úlohy starší než 1 den budou odstraněny</translation>
 <translation id="3268178239013324452">Tisk selhal – jsou otevřená dvířka</translation>
 <translation id="3275729367986477355">Obrázek avatara</translation>
@@ -253,6 +256,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435738964857648380">Zabezpečení</translation>
 <translation id="3435896845095436175">Aktivovat</translation>
+<translation id="345256797477978759">Ukotvit okno na větší část obrazovky <ph name="DIRECTION" /></translation>
 <translation id="3456078764689556234">Vytisknuta stránka <ph name="PRINTED_PAGES" /> z <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Skenování stránky <ph name="PAGE_NUM" />. Hotovo <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Tisk</translation>
@@ -273,12 +277,14 @@
 <translation id="3595596368722241419">Baterie je nabitá</translation>
 <translation id="3600339377155080675">Zrcadlení obrazovky</translation>
 <translation id="3602290021589620013">Náhled</translation>
+<translation id="360282891121575443">Fotky ve sdílených albech mohou aktualizovat ostatní uživatelé. Při nastavení Měnit denně se mohou zobrazit tapety, které v albu aktuálně nejsou.</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Změnit tapetu</translation>
 <translation id="360565022852130722">Síť Wi-Fi je zabezpečena slabým protokolem WEP 802.1x</translation>
 <translation id="3606583719724308068">Vysoká latence připojení k webům HTTPS</translation>
 <translation id="361575905210396100">Děkujeme vám za zpětnou vazbu</translation>
 <translation id="3632579075709132555">Přepínač obrazovky s ochranou soukromí</translation>
+<translation id="3639846061339007994">nahoře</translation>
 <translation id="3651050199673793219">Vyberte jednotku teploty</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Načítání...</translation>
@@ -520,6 +526,7 @@
 <translation id="576835345334454681">Zvýšit jas displeje</translation>
 <translation id="57838592816432529">Ztlumit</translation>
 <translation id="5784136236926853061">Vysoká latence požadavků HTTP</translation>
+<translation id="5826644637650799838">O tomto uměleckém dílu</translation>
 <translation id="5832805196449965646">Přidat uživatele</translation>
 <translation id="583281660410589416">Neznámé</translation>
 <translation id="5843706793424741864">Stupně Fahrenheita</translation>
@@ -562,6 +569,7 @@
 <translation id="6117895505466548728"><ph name="TITLE" /> a další alba (<ph name="NUMBER" />)</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Služba metod zadávání systému ChromeOS</translation>
+<translation id="6136285399872347291">backspace</translation>
 <translation id="6137767437444130246">Certifikát uživatele</translation>
 <translation id="6146993107019042706">Chcete-li akci dokončit, zadejte své nové heslo</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -609,6 +617,7 @@
 <translation id="650266656685499220">Pokud chcete vytvořit alba, přejděte do Fotek Google</translation>
 <translation id="6516990319416533844">Pokud chcete otestovat rychlost nabíjení baterie, nechte ji po krátkou dobu vybíjet</translation>
 <translation id="6517239166834772319">Explore</translation>
+<translation id="6526200165918397681">Přizpůsobit tapetě</translation>
 <translation id="6527081081771465939">Neznámý bezpečnostní protokol Wi-Fi</translation>
 <translation id="6535178685492749208">Jste offline. Zpětná vazba se odešle později.</translation>
 <translation id="65587193855025101">Předlohové sklo</translation>
@@ -628,6 +637,7 @@
 <translation id="6657585470893396449">Heslo</translation>
 <translation id="6659594942844771486">Karta</translation>
 <translation id="6692996468359469499">Získejte informace týkající se vybraného obsahu</translation>
+<translation id="6698459586333070823">Sdílená alba mohou aktualizovat ostatní uživatelé</translation>
 <translation id="6704062477274546131">Překlad DNS</translation>
 <translation id="6723839937902243910">Napájení</translation>
 <translation id="6723847290197874913">Podsvícení klávesnice</translation>
@@ -664,6 +674,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Nezdařilo se – autorizace selhala</translation>
 <translation id="7103252855940681301">Zařízení <ph name="INDEX" /> z <ph name="COUNT" /> s názvem <ph name="NAME" />.</translation>
+<translation id="7108668606237948702">enter</translation>
 <translation id="7130438335435247835">Název přístupového bodu</translation>
 <translation id="7134436342991564651">{0,plural, =1{Názvový server}few{Názvové servery}many{Názvové servery}other{Názvové servery}}</translation>
 <translation id="7143207342074048698">Připojování</translation>
@@ -673,6 +684,7 @@
 <translation id="7155171745945906037">Stávající fotka z fotoaparátu nebo souboru</translation>
 <translation id="7162487448488904999">Galerie</translation>
 <translation id="7170236477717446850">Profilová fotka</translation>
+<translation id="7171919371520438592">Ukotvit okno na menší část obrazovky <ph name="DIRECTION" /></translation>
 <translation id="7172721935181587524">1 obrázek</translation>
 <translation id="7177485034254901881">Toto zařízení <ph name="DEVICE_TYPE" /> spravuje doména <ph name="MANAGER" />. Administrátoři mohou zařízení vzdáleně konfigurovat.</translation>
 <translation id="7180611975245234373">Obnovit</translation>
@@ -748,6 +760,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Typ poskytovatele</translation>
 <translation id="7882501334836096755">Veřejný klíč</translation>
+<translation id="78957024357676568">vlevo</translation>
 <translation id="7915220255123750251">Spravovat nastavení názvů přístupových bodů sítě. Názvy přístupových bodů umožňují navázat spojení mezi mobilní sítí a internetem.</translation>
 <translation id="7936303884198020182">Nebyly nalezeny žádné názvové servery</translation>
 <translation id="7942349550061667556">Červená</translation>
@@ -776,9 +789,11 @@
 <translation id="8183974620058026102">Připojit</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Výhody</translation>
+<translation id="8210733748736414123">dole</translation>
 <translation id="8226628635270268143">Vyberte své oblíbené fotky a alba</translation>
 <translation id="8227119283605456246">Přiložit soubor</translation>
 <translation id="8230672074305416752">Nepodařilo se pingnout bránu výchozí sítě</translation>
+<translation id="8242426110754782860">Pokračovat</translation>
 <translation id="8246209727385807362">Neznámý operátor</translation>
 <translation id="827422111966801947">Indigová</translation>
 <translation id="8286154143153872371">Pokud chcete zobrazit tapetu, připojte se k síti a znovu načtěte stránku.</translation>
@@ -789,9 +804,11 @@
 <translation id="8318753676953949627">Žádné obrázky</translation>
 <translation id="8336739000755212683">Změnit obrázek účtu zařízení</translation>
 <translation id="8347227221149377169">Tiskové úlohy</translation>
+<translation id="8351855506390808906">Kontaktní bod mapování kláves</translation>
 <translation id="8352772353338965963">Přidat účet do vícenásobného přihlášení. Ke všem přihlášeným účtům lze přistupovat bez zadání hesla, proto byste tuto funkci měli používat pouze s důvěryhodnými účty.</translation>
 <translation id="8364946094152050673">Prázdné názvové servery</translation>
 <translation id="8372477600026034341">Extra hostitelské servery</translation>
+<translation id="8380114448424469341">Ukotvit okno na polovinu obrazovky <ph name="DIRECTION" /></translation>
 <translation id="8395584934117017006">Toto zařízení <ph name="DEVICE_TYPE" /> spravuje podnik</translation>
 <translation id="8398927464629426868">Rychlost, s jakou se zařízení momentálně nabíjí nebo vybíjí</translation>
 <translation id="8410244574650205435">Určeno automaticky</translation>
@@ -856,6 +873,7 @@
 <translation id="8930622219860340959">Bezdrátové připojení</translation>
 <translation id="8936793075252196307">IP adresa klienta</translation>
 <translation id="894617464444543719">Zařízení je telefon.</translation>
+<translation id="8957423540740801332">vpravo</translation>
 <translation id="8968751544471797276">Rychlost nabíjení</translation>
 <translation id="8970109610781093811">Spustit znovu</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -883,6 +901,7 @@
 <translation id="9137526406337347448">Služby Google</translation>
 <translation id="9138630967333032450">Levý Shift</translation>
 <translation id="9149391708638971077">Spustit test paměti</translation>
+<translation id="9161276708550942948">mezera</translation>
 <translation id="9173638680043580060">Zbývá méně než minuta</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Klávesnice může automaticky odpovídat tapetě</translation>

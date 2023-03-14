@@ -25,8 +25,6 @@ build_webui("build") {
     "//ui/webui/resources/js:build_ts",
   ]
 
-  ts_use_local_config = false
-
   grit_output_dir = "$root_gen_dir/components"
 }
 

@@ -23,11 +23,8 @@ constexpr uint32_t kSupportedUsage =
     SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
     SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ |
     SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
-    SHARED_IMAGE_USAGE_SCANOUT | SHARED_IMAGE_USAGE_WEBGPU |
-    SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
-    SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
+    SHARED_IMAGE_USAGE_SCANOUT | SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
     SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_CPU_UPLOAD;
-
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -139,31 +136,31 @@ bool GLTextureImageBackingFactory::IsSupported(
     return false;
 
   if (has_cpu_upload_usage) {
-    if (!GLTextureImageBacking::SupportsPixelUploadWithFormat(format))
+    if (!GLTextureImageBacking::SupportsPixelUploadWithFormat(format)) {
       return false;
+    }
 
-    // Drop scanout usage for shared memory GMBs to match legacy behaviour
-    // from GLImageBackingFactory.
-    usage = usage & ~SHARED_IMAGE_USAGE_SCANOUT;
+    // Don't reject scanout usage for shared memory GMBs to match legacy
+    // behaviour from GLImageBackingFactory.
+  } else {
+    if (usage & SHARED_IMAGE_USAGE_SCANOUT) {
+      return false;
+    }
   }
 
-  constexpr uint32_t kInvalidUsages = SHARED_IMAGE_USAGE_VIDEO_DECODE |
-                                      SHARED_IMAGE_USAGE_SCANOUT |
-                                      SHARED_IMAGE_USAGE_WEBGPU;
-  if (usage & kInvalidUsages) {
-    return false;
-  }
-
+  // This is not beneficial on iOS. The main purpose of this is a multi-gpu
+  // support.
+#if BUILDFLAG(IS_MAC)
   if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
     constexpr uint32_t kMetalInvalidUsages =
         SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_SCANOUT |
-        SHARED_IMAGE_USAGE_VIDEO_DECODE | SHARED_IMAGE_USAGE_GLES2 |
-        SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT | SHARED_IMAGE_USAGE_WEBGPU;
+        SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
     if (usage & kMetalInvalidUsages) {
       return false;
     }
   }
+#endif  // BUILDFLAG(IS_MAC)
 
   // Doesn't support contexts other than GL for OOPR Canvas
   if (gr_context_type != GrContextType::kGL &&

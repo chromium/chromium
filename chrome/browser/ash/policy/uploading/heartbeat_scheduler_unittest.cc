@@ -384,7 +384,7 @@ TEST_F(HeartbeatSchedulerTest, SendGcmIdUpdate) {
   // Verifies that GCM id update request was sent after GCM registration.
   cloud_policy_client_.SetDMToken(kDMToken);
   CloudPolicyClient::StatusCallback callback;
-  EXPECT_CALL(cloud_policy_client_, UpdateGcmId_(kRegistrationId, _))
+  EXPECT_CALL(cloud_policy_client_, UpdateGcmId(kRegistrationId, _))
       .WillOnce(MoveArg<1>(&callback));
 
   // Enable heartbeats.
@@ -408,7 +408,7 @@ TEST_F(HeartbeatSchedulerTest, GcmUpstreamNotificationSignup) {
   cloud_policy_client_.SetDMToken(kDMToken);
   EXPECT_CALL(gcm_driver_, RegisterImpl(kHeartbeatGCMAppID, _))
       .Times(AnyNumber());
-  EXPECT_CALL(cloud_policy_client_, UpdateGcmId_(kRegistrationId, _));
+  EXPECT_CALL(cloud_policy_client_, UpdateGcmId(kRegistrationId, _));
 
   // GCM connected event before the registration should be ignored.
   scoped_testing_cros_settings_.device_settings()->SetBoolean(

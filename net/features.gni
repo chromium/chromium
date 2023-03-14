@@ -39,7 +39,7 @@ declare_args() {
   # Platforms where the cert verifier comparison trial is supported.
   # See https://crbug.com/649026.
   trial_comparison_cert_verifier_supported =
-      is_mac || is_win || (is_android && !is_cronet_build)
+      (is_android && !is_cronet_build) || is_linux || is_chromeos
 
   # Platforms for which certificate verification can be performed using the
   # builtin cert verifier with the Chrome Root Store, and this can be
@@ -47,6 +47,25 @@ declare_args() {
   # flag is false, verification may be done with the platform verifier or the
   # builtin verifier using platform roots, depending on the platform.
   # See https://crbug.com/1216547 for status.
+  chrome_root_store_optional =
+      (is_android && !is_cronet_build) || is_linux || is_chromeos
+
+  # Platforms for which certificate verification can only be performed using
+  # the builtin cert verifier with the Chrome Root Store.
+  chrome_root_store_only = is_win || is_mac
+}
+
+assert(!chrome_root_store_optional || !chrome_root_store_only,
+       "at most one of chrome_root_store_optional and chrome_root_store_only " +
+           "may be true")
+
+# Needs to be in a separate declare_args since it refers to args set in the
+# previous declare_args block.
+declare_args() {
+  # All platforms for which certificate verification can be performed using the
+  # builtin cert verifier with the Chrome Root Store. This includes both
+  # platforms where use of the Chrome Root Store is optional and platforms
+  # where it is the only supported method.
   chrome_root_store_supported =
-      is_win || is_mac || (is_android && !is_cronet_build)
+      chrome_root_store_optional || chrome_root_store_only
 }

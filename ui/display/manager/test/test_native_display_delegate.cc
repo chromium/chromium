@@ -146,6 +146,20 @@ void TestNativeDisplayDelegate::Configure(
   }
 }
 
+void TestNativeDisplayDelegate::SetHdcpKeyProp(
+    int64_t display_id,
+    const std::string& key,
+    SetHdcpKeyPropCallback callback) {
+  log_->AppendAction(GetSetHdcpKeyPropAction(display_id, true));
+
+  if (run_async_) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), true));
+  } else {
+    std::move(callback).Run(true);
+  }
+}
+
 void TestNativeDisplayDelegate::GetHDCPState(const DisplaySnapshot& output,
                                              GetHDCPStateCallback callback) {
   if (run_async_) {

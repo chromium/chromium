@@ -185,7 +185,7 @@ class SystemTrustStoreNSS : public SystemTrustStore {
 
 std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStore() {
   return std::make_unique<SystemTrustStoreNSS>(std::make_unique<TrustStoreNSS>(
-      trustSSL, TrustStoreNSS::kUseSystemTrust,
+      TrustStoreNSS::kUseSystemTrust,
       TrustStoreNSS::UseTrustFromAllUserSlots()));
 }
 
@@ -194,7 +194,7 @@ std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStoreChromeRoot(
     std::unique_ptr<TrustStoreChrome> chrome_root) {
   return std::make_unique<SystemTrustStoreChrome>(
       std::move(chrome_root), std::make_unique<TrustStoreNSS>(
-                                  trustSSL, TrustStoreNSS::kIgnoreSystemTrust,
+                                  TrustStoreNSS::kIgnoreSystemTrust,
                                   TrustStoreNSS::UseTrustFromAllUserSlots()));
 }
 
@@ -203,9 +203,9 @@ CreateSslSystemTrustStoreChromeRootWithUserSlotRestriction(
     std::unique_ptr<TrustStoreChrome> chrome_root,
     crypto::ScopedPK11Slot user_slot_restriction) {
   return std::make_unique<SystemTrustStoreChrome>(
-      std::move(chrome_root), std::make_unique<TrustStoreNSS>(
-                                  trustSSL, TrustStoreNSS::kIgnoreSystemTrust,
-                                  std::move(user_slot_restriction)));
+      std::move(chrome_root),
+      std::make_unique<TrustStoreNSS>(TrustStoreNSS::kIgnoreSystemTrust,
+                                      std::move(user_slot_restriction)));
 }
 
 #endif  // CHROME_ROOT_STORE_SUPPORTED
@@ -213,9 +213,8 @@ CreateSslSystemTrustStoreChromeRootWithUserSlotRestriction(
 std::unique_ptr<SystemTrustStore>
 CreateSslSystemTrustStoreNSSWithUserSlotRestriction(
     crypto::ScopedPK11Slot user_slot_restriction) {
-  return std::make_unique<SystemTrustStoreNSS>(
-      std::make_unique<TrustStoreNSS>(trustSSL, TrustStoreNSS::kUseSystemTrust,
-                                      std::move(user_slot_restriction)));
+  return std::make_unique<SystemTrustStoreNSS>(std::make_unique<TrustStoreNSS>(
+      TrustStoreNSS::kUseSystemTrust, std::move(user_slot_restriction)));
 }
 
 #elif BUILDFLAG(IS_MAC)
@@ -226,53 +225,13 @@ std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStore() {
   return std::make_unique<DummySystemTrustStore>();
 }
 
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 namespace {
-
-TrustStoreMac::TrustImplType ParamToTrustImplType(
-    int param,
-    TrustStoreMac::TrustImplType default_impl) {
-  // These values are used in experiment configs, do not change or reuse the
-  // numbers. Next available value: 6.
-  switch (param) {
-    case 2:
-      return TrustStoreMac::TrustImplType::kSimple;
-    case 4:
-      return TrustStoreMac::TrustImplType::kDomainCacheFullCerts;
-    case 5:
-      return TrustStoreMac::TrustImplType::kKeychainCacheFullCerts;
-    default:
-      return default_impl;
-  }
-}
-
-TrustStoreMac::TrustImplType GetTrustStoreImplParam(
-    TrustStoreMac::TrustImplType default_impl) {
-  // TODO(https://crbug.com/1327433): A limitation of this approach is that if
-  // the primary verifier is being set to use the builtin verifier via a
-  // feature flag, it isn't possible to run dual verifier trial comparing that
-  // to the builtin verifier with different flags, since this method can't tell
-  // which flags to use for which verifier.
-  // If handling that becomes necessary, the flags should be checked in the
-  // higher level code (maybe in cert_verifier_creation.cc) so that each
-  // type of CertVerifyProc could be created with the appropriate flags.
-  if (base::FeatureList::IsEnabled(features::kChromeRootStoreUsed)) {
-    return ParamToTrustImplType(features::kChromeRootStoreSysImpl.Get(),
-                                default_impl);
-  }
-  if (base::FeatureList::IsEnabled(
-          features::kCertDualVerificationTrialFeature)) {
-    return ParamToTrustImplType(features::kCertDualVerificationTrialImpl.Get(),
-                                default_impl);
-  }
-  return default_impl;
-}
 
 TrustStoreMac* GetGlobalTrustStoreMacForCRS() {
   constexpr TrustStoreMac::TrustImplType kDefaultMacTrustImplForCRS =
       TrustStoreMac::TrustImplType::kDomainCacheFullCerts;
   static base::NoDestructor<TrustStoreMac> static_trust_store_mac(
-      kSecPolicyAppleSSL, GetTrustStoreImplParam(kDefaultMacTrustImplForCRS));
+      kSecPolicyAppleSSL, kDefaultMacTrustImplForCRS);
   return static_trust_store_mac.get();
 }
 
@@ -287,18 +246,12 @@ std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStoreChromeRoot(
   return std::make_unique<SystemTrustStoreChromeWithUnOwnedSystemStore>(
       std::move(chrome_root), GetGlobalTrustStoreMacForCRS());
 }
-#endif  // CHROME_ROOT_STORE_SUPPORTED
 
 void InitializeTrustStoreMacCache() {
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  if (base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed)) {
-    base::ThreadPool::PostTask(
-        FROM_HERE,
-        {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        base::BindOnce(&InitializeTrustCacheForCRSOnWorkerThread));
-    return;
-  }
-#endif  // CHROME_ROOT_STORE_SUPPORTED
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&InitializeTrustCacheForCRSOnWorkerThread));
 }
 
 #elif BUILDFLAG(IS_FUCHSIA)
@@ -370,8 +323,6 @@ std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStore() {
   return std::make_unique<DummySystemTrustStore>();
 }
 
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-
 namespace {
 TrustStoreWin* GetGlobalTrustStoreWinForCRS() {
   static base::NoDestructor<TrustStoreWin> static_trust_store_win;
@@ -397,12 +348,6 @@ void InitializeTrustStoreWinSystem() {
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&InitializeTrustStoreForCRSOnWorkerThread));
 }
-
-#else
-
-void InitializeTrustStoreWinSystem() {}
-
-#endif  // CHROME_ROOT_STORE_SUPPORTED
 
 #elif BUILDFLAG(IS_ANDROID)
 
@@ -432,9 +377,16 @@ std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStoreChromeRoot(
 }
 
 void InitializeTrustStoreAndroid() {
+  // Start observing DB change before the Trust Store is initialized so we don't
+  // accidentally miss any changes. See https://crrev.com/c/4226436 for context.
+  //
+  // This call is safe here because we're the only callers of
+  // ObserveCertDBChanges on the singleton TrustStoreAndroid.
+  GetGlobalTrustStoreAndroidForCRS()->ObserveCertDBChanges();
+
   base::ThreadPool::PostTask(
       FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&InitializeTrustStoreForCRSOnWorkerThread));
 }
 

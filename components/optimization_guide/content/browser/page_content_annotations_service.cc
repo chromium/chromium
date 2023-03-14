@@ -4,13 +4,13 @@
 
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/barrier_closure.h"
 #include "base/containers/adapters.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros_local.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -320,9 +320,7 @@ void PageContentAnnotationsService::OnAnnotationBatchComplete(
     if (type == AnnotationType::kContentVisibility) {
       DCHECK(result.visibility_score());
       current_annotations.visibility_score = *result.visibility_score();
-    }
-
-    if (type == AnnotationType::kPageEntities) {
+    } else if (type == AnnotationType::kPageEntities) {
       DCHECK(result.entities());
       for (const ScoredEntityMetadata& scored_md : *result.entities()) {
         DCHECK(scored_md.score >= 0.0 && scored_md.score <= 1.0);
@@ -465,6 +463,10 @@ void PageContentAnnotationsService::OnPageContentAnnotated(
   }
 
   MaybeRecordVisibilityUKM(visit, content_annotations);
+  NotifyPageContentAnnotatedObservers(
+      AnnotationType::kContentVisibility, visit.url,
+      PageContentAnnotationsResult::CreateContentVisibilityScoreResult(
+          content_annotations->visibility_score));
 
   if (!features::ShouldWriteContentAnnotationsToHistoryService())
     return;
@@ -569,12 +571,12 @@ void PageContentAnnotationsService::OnRelatedSearchesExtracted(
     if (group->type != continuous_search::mojom::ResultType::kRelatedSearches) {
       continue;
     }
-    std::transform(std::begin(group->results), std::end(group->results),
-                   std::back_inserter(related_searches),
-                   [](const continuous_search::mojom::SearchResultPtr& result) {
-                     return base::UTF16ToUTF8(
-                         base::CollapseWhitespace(result->title, true));
-                   });
+    base::ranges::transform(
+        group->results, std::back_inserter(related_searches),
+        [](const continuous_search::mojom::SearchResultPtr& result) {
+          return base::UTF16ToUTF8(
+              base::CollapseWhitespace(result->title, true));
+        });
     break;
   }
 
@@ -708,6 +710,20 @@ void PageContentAnnotationsService::OnURLVisited(
   }
 }
 
+void PageContentAnnotationsService::AddObserver(
+    AnnotationType annotation_type,
+    PageContentAnnotationsService::PageContentAnnotationsObserver* observer) {
+  DCHECK_EQ(AnnotationType::kContentVisibility, annotation_type);
+  page_content_annotations_observers_[annotation_type].AddObserver(observer);
+}
+
+void PageContentAnnotationsService::RemoveObserver(
+    AnnotationType annotation_type,
+    PageContentAnnotationsService::PageContentAnnotationsObserver* observer) {
+  DCHECK_EQ(AnnotationType::kContentVisibility, annotation_type);
+  page_content_annotations_observers_[annotation_type].RemoveObserver(observer);
+}
+
 void PageContentAnnotationsService::PersistRemotePageMetadata(
     const HistoryVisit& visit,
     const proto::PageEntitiesMetadata& page_entities_metadata) {
@@ -804,6 +820,19 @@ void PageContentAnnotationsService::OnEntityMetadataRetrieved(
         << "Entities: Url=" << url.ReplaceComponents(replacements)
         << " Weight=" << base::NumberToString(weight) << ". "
         << entity_metadata->ToHumanReadableString();
+  }
+}
+
+void PageContentAnnotationsService::NotifyPageContentAnnotatedObservers(
+    AnnotationType annotation_type,
+    const GURL& url,
+    const PageContentAnnotationsResult& page_content_annotations_result) {
+  if (page_content_annotations_observers_.find(annotation_type) ==
+      page_content_annotations_observers_.end()) {
+    return;
+  }
+  for (auto& observer : page_content_annotations_observers_[annotation_type]) {
+    observer.OnPageContentAnnotated(url, page_content_annotations_result);
   }
 }
 

@@ -158,16 +158,6 @@ bool AssociateVariationParams(
   return base::AssociateFieldTrialParams(trial_name, group_name, params);
 }
 
-bool GetVariationParams(const std::string& trial_name,
-                        std::map<std::string, std::string>* params) {
-  return base::GetFieldTrialParams(trial_name, params);
-}
-
-bool GetVariationParamsByFeature(const base::Feature& feature,
-                                 std::map<std::string, std::string>* params) {
-  return base::GetFieldTrialParamsByFeature(feature, params);
-}
-
 std::string GetVariationParamValue(const std::string& trial_name,
                                    const std::string& param_name) {
   return base::GetFieldTrialParamValue(trial_name, param_name);
@@ -176,27 +166,6 @@ std::string GetVariationParamValue(const std::string& trial_name,
 std::string GetVariationParamValueByFeature(const base::Feature& feature,
                                             const std::string& param_name) {
   return base::GetFieldTrialParamValueByFeature(feature, param_name);
-}
-
-int GetVariationParamByFeatureAsInt(const base::Feature& feature,
-                                    const std::string& param_name,
-                                    int default_value) {
-  return base::GetFieldTrialParamByFeatureAsInt(feature, param_name,
-                                                default_value);
-}
-
-double GetVariationParamByFeatureAsDouble(const base::Feature& feature,
-                                          const std::string& param_name,
-                                          double default_value) {
-  return base::GetFieldTrialParamByFeatureAsDouble(feature, param_name,
-                                                   default_value);
-}
-
-bool GetVariationParamByFeatureAsBool(const base::Feature& feature,
-                                      const std::string& param_name,
-                                      bool default_value) {
-  return base::GetFieldTrialParamByFeatureAsBool(feature, param_name,
-                                                 default_value);
 }
 
 // Functions below are exposed for testing explicitly behind this namespace.

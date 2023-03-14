@@ -28,6 +28,7 @@
 #include "base/files/scoped_file.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "gpu/command_buffer/service/shared_image/gl_image_native_pixmap.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_frame.h"
@@ -42,7 +43,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_image_native_pixmap.h"
 
 // TODO(mojahsu): remove this once V4L2 headers are updated.
 #ifndef V4L2_PIX_FMT_JPEG_RAW
@@ -96,6 +96,9 @@
 #ifndef V4L2_PIX_FMT_P010
 #define V4L2_PIX_FMT_P010 \
   v4l2_fourcc('P', '0', '1', '0') /* 24  Y/CbCr 4:2:0 10-bit per component */
+#endif
+#ifndef V4L2_PIX_FMT_MT2T
+#define V4L2_PIX_FMT_MT2T v4l2_fourcc('M', 'T', '2', 'T')
 #endif
 #ifndef V4L2_PIX_FMT_QC08C
 #define V4L2_PIX_FMT_QC08C \
@@ -777,10 +780,12 @@ class MEDIA_GPU_EXPORT V4L2Device
 
   // Create a GLImageNativePixmap from provided |handle|, taking full ownership
   // of it.
-  virtual scoped_refptr<gl::GLImageNativePixmap> CreateGLImage(
+  virtual scoped_refptr<gpu::GLImageNativePixmap> CreateGLImage(
       const gfx::Size& size,
       const Fourcc fourcc,
-      gfx::NativePixmapHandle handle) const = 0;
+      gfx::NativePixmapHandle handle,
+      GLenum target,
+      GLuint texture_id) const = 0;
 
   // Destroys the EGLImageKHR.
   virtual EGLBoolean DestroyEGLImage(EGLDisplay egl_display,

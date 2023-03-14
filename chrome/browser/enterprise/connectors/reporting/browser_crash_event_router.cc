@@ -11,13 +11,16 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/common.h"
+#include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -40,28 +43,43 @@ constexpr char kKeyProfileUserName[] = "profileUserName";
 constexpr char kCrashpadPollingIntervalFlag[] = "crashpad-polling-interval";
 constexpr int kDefaultCrashpadPollingIntervalSeconds = 3600;
 
-constexpr base::FilePath::CharType LATEST_CRASH_REPORT[] =
-    FILE_PATH_LITERAL("LatestCrashReport");
+void SetLatestCrashReportTime(time_t timestamp) {
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetInt64(enterprise_connectors::kLatestCrashReportCreationTime,
+                        timestamp);
+}
+
+time_t GetLatestCrashReportTime() {
+  PrefService* local_state = g_browser_process->local_state();
+  time_t timestamp = local_state->GetInt64(
+      enterprise_connectors::kLatestCrashReportCreationTime);
+  VLOG(1) << "enterprise.crash_reporting: latest crash report time: "
+          << base::Time::FromTimeT(timestamp);
+  return timestamp;
+}
 
 // Get polling interval for crashpad database. This is factored into a
 // function to allow for a dev-only command-line option for ease of
 // manual testing
 base::TimeDelta GetCrashpadPollingInterval() {
-  if (!g_browser_process || !g_browser_process->browser_policy_connector()
-                                 ->IsCommandLineSwitchSupported()) {
-    return base::Seconds(kDefaultCrashpadPollingIntervalSeconds);
-  }
-  base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
-  if (cmd->HasSwitch(kCrashpadPollingIntervalFlag)) {
-    int crashpad_polling_interval_seconds;
-    if (base::StringToInt(
-            cmd->GetSwitchValueASCII(kCrashpadPollingIntervalFlag),
-            &crashpad_polling_interval_seconds) &&
-        crashpad_polling_interval_seconds > 0) {
-      return base::Seconds(crashpad_polling_interval_seconds);
+  base::TimeDelta result =
+      base::Seconds(kDefaultCrashpadPollingIntervalSeconds);
+  if (g_browser_process && g_browser_process->browser_policy_connector()
+                               ->IsCommandLineSwitchSupported()) {
+    base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
+    if (cmd->HasSwitch(kCrashpadPollingIntervalFlag)) {
+      int crashpad_polling_interval_seconds = 0;
+      if (base::StringToInt(
+              cmd->GetSwitchValueASCII(kCrashpadPollingIntervalFlag),
+              &crashpad_polling_interval_seconds) &&
+          crashpad_polling_interval_seconds > 0) {
+        result = base::Seconds(crashpad_polling_interval_seconds);
+      }
     }
   }
-  return base::Seconds(kDefaultCrashpadPollingIntervalSeconds);
+  VLOG(1) << "enterprise.crash_reporting: crashpad polling interval set to "
+          << result;
+  return result;
 }
 
 // Copy new reports (i.e. reports that have not been sent to the
@@ -81,50 +99,15 @@ void CopyNewReports(
   }
 }
 
-// Read latest_creation_time from
-// {User_Data_Dir}/Enterprise/ReportingConnector/LatestCrashReport,
-// and return it. On error, it returns -1.
-int64_t GetLatestCreationTime(base::FilePath& latest_crash_report) {
-  // Get the path of the file that stores the latest crash report info
-  if (!base::PathService::Get(chrome::DIR_USER_DATA, &latest_crash_report)) {
-    return -1;
-  }
-  latest_crash_report = latest_crash_report.Append(RC_BASE_DIR);
-  // CreateDirectory() evaluates to true no matter the directory already exists
-  // or not, unless there is an error.
-  if (!base::CreateDirectory(latest_crash_report)) {
-    return -1;
-  }
-  latest_crash_report = latest_crash_report.Append(LATEST_CRASH_REPORT);
-  std::string latest_creation_time_str;
-  // ReadFileToString() evaluates to false if the file does not exist or it
-  // exceeds the max size 32 bytes.
-  if (!base::ReadFileToStringWithMaxSize(latest_crash_report,
-                                         &latest_creation_time_str, 32)) {
-    // Then we create the file with empty contents.
-    base::ImportantFileWriter::WriteFileAtomically(latest_crash_report,
-                                                   latest_creation_time_str);
-    // No reports have been sent since the file does not even exist.
-    return 0;
-  }
-  base::TrimWhitespaceASCII(latest_creation_time_str,
-                            base::TrimPositions::TRIM_TRAILING,
-                            &latest_creation_time_str);
-  int64_t latest_creation_time;
-  if (!base::StringToInt64(latest_creation_time_str, &latest_creation_time) ||
-      latest_creation_time < 0) {
-    return -1;
-  }
-  return latest_creation_time;
-}
-
 bool GetReportsFromDatabase(
     std::vector<crashpad::CrashReportDatabase::Report>& pending_reports,
     std::vector<crashpad::CrashReportDatabase::Report>& completed_reports) {
-  crashpad::CrashReportDatabase* database =
-      crash_reporter::internal::GetCrashReportDatabase();
+  std::unique_ptr<crashpad::CrashReportDatabase> database =
+      crashpad::CrashReportDatabase::InitializeWithoutCreating(
+          crash_reporter::GetCrashpadDatabasePath());
   // `database` could be null if it has not been initialized yet.
   if (!database) {
+    VLOG(1) << "enterprise.crash_reporting: failed to fetch crashpad db";
     return false;
   }
 
@@ -143,24 +126,17 @@ bool GetReportsFromDatabase(
 // Return a list of new Reports that are ready to be to sent to the
 // reporting server. It returns an empty list if any operation fails or
 // there is no new report.
-std::vector<crashpad::CrashReportDatabase::Report> GetNewReports() {
+std::vector<crashpad::CrashReportDatabase::Report> GetNewReports(
+    time_t latest_creation_time) {
   // Get the creation time of the latest report that was sent to the reporting
   // server last time.
   // latest_crash_report is the filepath where stores the latest report info
-  base::FilePath latest_crash_report;
-  int64_t latest_creation_time = GetLatestCreationTime(latest_crash_report);
   std::vector<crashpad::CrashReportDatabase::Report> reports;
-  if (latest_creation_time < 0) {
-    return reports;
-  }
-
-  // Get all pending and completed reports from the crashpad database
   std::vector<crashpad::CrashReportDatabase::Report> pending_reports;
   std::vector<crashpad::CrashReportDatabase::Report> completed_reports;
   if (!GetReportsFromDatabase(pending_reports, completed_reports)) {
     return reports;
   }
-
   // Get reports that have not been sent (<= latest_creation_time)
   CopyNewReports(pending_reports, latest_creation_time, reports);
   CopyNewReports(completed_reports, latest_creation_time, reports);
@@ -168,22 +144,6 @@ std::vector<crashpad::CrashReportDatabase::Report> GetNewReports() {
   return reports;
 }
 
-void WriteLatestCrashReportTime(int64_t latest_creation_time) {
-  // Read the latest_creation_time
-  base::FilePath latest_crash_report;
-  int64_t prev_latest_creation_time =
-      GetLatestCreationTime(latest_crash_report);
-
-  if (latest_creation_time < prev_latest_creation_time) {
-    LOG(WARNING) << "Current latest_creation_time ("
-                 << prev_latest_creation_time
-                 << ") is greater than the new value (" << latest_creation_time
-                 << "). Not updating " << latest_crash_report.value();
-    return;
-  }
-  base::ImportantFileWriter::WriteFileAtomically(
-      latest_crash_report, base::NumberToString(latest_creation_time));
-}
 }  // namespace
 
 // TODO(b/238427470): unit testing this function
@@ -193,8 +153,11 @@ void BrowserCrashEventRouter::UploadToReportingServer(
     std::vector<crashpad::CrashReportDatabase::Report> reports) {
   DCHECK(reporting_client);
   if (reports.empty()) {
+    VLOG(1) << "enterprise.crash_reporting: no new crashes";
     return;
   }
+  VLOG(1) << "enterprise.crash_reporting: " << reports.size()
+          << " new crashes to report";
   const std::string version = version_info::GetVersionNumber();
   const std::string channel =
       version_info::GetChannelString(chrome::GetChannel());
@@ -216,33 +179,40 @@ void BrowserCrashEventRouter::UploadToReportingServer(
       latest_creation_time = report.creation_time;
     }
   }
-
-  // Write the latest_creation_time back to file
-  if (!reports.empty()) {
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock()},
-        base::BindOnce(&WriteLatestCrashReportTime, latest_creation_time));
-  }
+  SetLatestCrashReportTime(latest_creation_time);
 }
 
 void BrowserCrashEventRouter::ReportCrashes() {
+  VLOG(1) << "enterprise.crash_reporting: checking for unreported crashes";
   DCHECK(reporting_client_);
   const absl::optional<ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
-  if (!settings.has_value() ||
+  bool isBrowserCrashReportingEnabled =
+      settings.has_value() &&
       settings->enabled_event_names.count(
-          ReportingServiceSettings::kBrowserCrashEvent) == 0) {
+          ReportingServiceSettings::kBrowserCrashEvent) != 0;
+  VLOG(1) << "enterprise.crash_reporting: crash reporting enabled: "
+          << isBrowserCrashReportingEnabled;
+  if (!isBrowserCrashReportingEnabled) {
+    g_browser_process->local_state()->ClearPref(
+        enterprise_connectors::kLatestCrashReportCreationTime);
     return;
   }
-  // GetNewReports() may block since it has file I/O operations
+  time_t latest_creation_time = GetLatestCrashReportTime();
+  if (latest_creation_time == 0) {
+    latest_creation_time = base::Time::Now().ToTimeT();
+    SetLatestCrashReportTime(latest_creation_time);
+  }
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()}, base::BindOnce(&GetNewReports),
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&GetNewReports, latest_creation_time),
       base::BindOnce(&BrowserCrashEventRouter::UploadToReportingServer,
                      AsWeakPtr(), reporting_client_, std::move(*settings)));
 }
 
 void BrowserCrashEventRouter::OnCloudReportingLaunched(
     enterprise_reporting::ReportScheduler* report_scheduler) {
+  VLOG(1) << "enterprise.crash_reporting: crash event reporting initializing";
   // An initial call to ReportCrashes() is required because the first call
   // in the repeating callback happens after the delay.
   ReportCrashes();

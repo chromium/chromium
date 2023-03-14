@@ -89,7 +89,7 @@ class UsbGenericTransferFunction : public UsbTransferFunction {
 
   // InterruptTransfer::Params and BulkTransfer::Params
   template <typename T>
-  ExtensionFunction::ResponseAction DoTransfer(T params);
+  ExtensionFunction::ResponseAction DoTransfer(const T& params);
 };
 
 class UsbFindDevicesFunction : public UsbExtensionFunction {
@@ -438,7 +438,7 @@ class UsbResetDeviceFunction : public UsbConnectionFunction {
 
   void OnComplete(bool success);
 
-  std::unique_ptr<api::usb::ResetDevice::Params> parameters_;
+  absl::optional<api::usb::ResetDevice::Params> parameters_;
 };
 }  // namespace extensions
 

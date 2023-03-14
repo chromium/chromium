@@ -188,6 +188,13 @@ void HidService::Create(
     return;
   }
 
+  if (render_frame_host->GetOutermostMainFrame()
+          ->GetLastCommittedOrigin()
+          .opaque()) {
+    mojo::ReportBadMessage("WebHID is not allowed from an opaque origin.");
+    return;
+  }
+
   // DocumentHelper observes the lifetime of the document connected to
   // `render_frame_host` and destroys the HidService when the Mojo connection is
   // disconnected, RenderFrameHost is deleted, or the RenderFrameHost commits a
@@ -202,6 +209,13 @@ void HidService::Create(
     const url::Origin& origin,
     mojo::PendingReceiver<blink::mojom::HidService> receiver) {
   DCHECK(service_worker_context);
+
+  if (origin.opaque()) {
+    // Service worker should not be available to a window/worker client which
+    // origin is opaque according to Service Worker specification.
+    mojo::ReportBadMessage("WebHID is blocked in an opaque origin.");
+    return;
+  }
 
   // Avoid creating the HidService if there is no HID delegate to provide
   // the implementation.

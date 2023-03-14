@@ -75,7 +75,7 @@ class MediaDialogViewWithRemotePlaybackTest : public ChromeViewsTestBase {
         &delegate_,
         content::MediaSession::GetRequestIdFromWebContents(web_contents())
             .ToString(),
-        "source_name", controller_.CreateMediaControllerRemote(),
+        "source_name", absl::nullopt, controller_.CreateMediaControllerRemote(),
         std::move(session_info));
   }
 

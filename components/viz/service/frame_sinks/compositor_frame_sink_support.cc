@@ -1268,6 +1268,20 @@ void CompositorFrameSinkSupport::ProcessCompositorFrameTransitionDirective(
       break;
     case CompositorFrameTransitionDirective::Type::kRelease:
       surface_animation_manager_.reset();
+
+      // This `surface_animation_manager_` could correspond to an in-flight
+      // save, reset the tracking here.
+      in_flight_save_sequence_id_ = 0;
+
+      // If we had a `navigation_id`, also make sure to clean up the
+      // `frame_sink_manager_` in case the animation was never started (which
+      // would be the case if the destination renderer didn't opt-in to the
+      // animation behavior). Note that this operation is harmless if there
+      // is no surface animation manager to clear.
+      if (directive.navigation_id()) {
+        frame_sink_manager_->ClearSurfaceAnimationManager(
+            directive.navigation_id());
+      }
       break;
   }
 }

@@ -6,10 +6,11 @@
 #define IOS_CHROME_BROWSER_SESSIONS_SCENE_UTIL_H_
 
 #import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
 
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
+
+@class UIScene;
 
 // Name of the file storing the list of tabs.
 extern const base::FilePath::CharType kSessionFileName[];
@@ -28,14 +29,6 @@ base::FilePath SessionsDirectoryForDirectory(const base::FilePath& directory);
 base::FilePath SessionPathForDirectory(const base::FilePath& directory,
                                        NSString* session_identifier,
                                        base::StringPiece name);
-
-// Migrates the list of tabs and snapshots for a BrowserState's `directory`
-// to the given `session_identifier`. The `previous_session_identifier` if
-// non-nil is used as a possible previous session for the case of migration
-// between devices (in case of backup restoration).
-void MigrateSessionStorageForDirectory(const base::FilePath& directory,
-                                       NSString* session_identifier,
-                                       NSString* previous_session_identifier);
 
 // Returns the identifier to use for the session for `scene`.
 NSString* SessionIdentifierForScene(UIScene* scene);

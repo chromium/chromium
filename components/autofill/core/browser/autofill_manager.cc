@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/metrics/quality_metrics.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_data_validation.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -506,11 +507,9 @@ void AutofillManager::OnAskForValuesToFill(
                   field.global_id());
   if (!base::FeatureList::IsEnabled(features::kAutofillParseAsync)
 #if BUILDFLAG(IS_ANDROID)
-      // TODO(crbug.com/1379149) Asynchronous parsing breaks Touch To Fill's
-      // keyboard suppression mechanism. Fast Checkout uses the same mechanism.
-      // Also see crbug.com/1375966.
-      || client()->IsTouchToFillCreditCardSupported() ||
-      client()->IsFastCheckoutSupported()
+      // TODO(crbug.com/1375966,crbug.com/1379149) Asynchronous parsing breaks
+      // FastCheckout's keyboard suppression mechanism.
+      || client()->IsFastCheckoutSupported()
 #endif
   ) {
     OnAskForValuesToFillImpl(form, field, bounding_box,
@@ -978,7 +977,7 @@ void AutofillManager::OnLoadedServerPredictions(
   // autocomplete attributes, if available.
   if (auto* logger = form_interactions_ukm_logger()) {
     for (FormStructure* cur_form : queried_forms) {
-      cur_form->LogQualityMetricsBasedOnAutocomplete(logger);
+      autofill_metrics::LogQualityMetricsBasedOnAutocomplete(*cur_form, logger);
     }
   }
 

@@ -13,6 +13,7 @@
 #include "base/mac/mac_logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/sparse_histogram.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "media/audio/mac/audio_manager_mac.h"
 #include "media/base/audio_bus.h"
@@ -284,7 +285,7 @@ void PCMQueueInAudioInputStream::HandleInputBuffer(
     DCHECK_EQ(format_.mBitsPerChannel, 16u);
     audio_bus_->FromInterleaved<SignedInt16SampleTypeTraits>(
         reinterpret_cast<int16_t*>(audio_data), audio_bus_->frames());
-    callback_->OnData(audio_bus_.get(), capture_time, 0.0);
+    callback_->OnData(audio_bus_.get(), capture_time, 0.0, {});
 
     last_fill_ = base::TimeTicks::Now();
   }

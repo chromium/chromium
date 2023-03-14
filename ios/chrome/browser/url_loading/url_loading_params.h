@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_URL_LOADING_URL_LOADING_PARAMS_H_
 #define IOS_CHROME_BROWSER_URL_LOADING_URL_LOADING_PARAMS_H_
 
-#import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -57,11 +57,12 @@ struct UrlLoadParams {
   // Whether this requests opening in incognito or not. Defaults to `false`.
   bool in_incognito;
 
-  // Location where the new tab should be opened. Defaults to `kLastTab`.
+  // Location where the new tab should be opened. Defaults to
+  // `OpenPosition::kLastTab`.
   OpenPosition append_to;
 
   // Specific index where tab should be opened if `append_to` is
-  // `kSpecifiedIndex`
+  // `OpenPosition::kSpecifiedIndex`
   int insertion_index;
 
   // Origin point of the action triggering this command, in main window

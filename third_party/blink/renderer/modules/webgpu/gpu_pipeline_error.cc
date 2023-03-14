@@ -18,7 +18,7 @@ GPUPipelineError* GPUPipelineError::Create(
 
 GPUPipelineError::GPUPipelineError(String message,
                                    V8GPUPipelineErrorReason::Enum reason)
-    : DOMException(DOMExceptionCode::kOperationError, std::move(message)),
+    : DOMException(DOMExceptionCode::kGPUPipelineError, std::move(message)),
       reason_(reason) {}
 
 V8GPUPipelineErrorReason GPUPipelineError::reason() const {

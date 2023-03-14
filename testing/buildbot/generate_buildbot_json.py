@@ -122,7 +122,7 @@ class SkylabGPUTelemetryTestGenerator(GPUTelemetryTestGenerator):
         del test['isolate_name']
       # chromium_GPU is the Autotest wrapper created for browser GPU tests
       # run in Skylab.
-      test['autotest_name'] = 'chromium_GPU'
+      test['autotest_name'] = 'chromium_Graphics'
       # As of 22Q4, Skylab tests are running on a CrOS flavored Autotest
       # framework and it does not support the sub-args like
       # extra-browser-args. So we have to pop it out and create a new

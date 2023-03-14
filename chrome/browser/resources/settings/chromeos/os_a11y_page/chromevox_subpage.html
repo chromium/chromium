@@ -1,0 +1,126 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<style include="settings-shared">
+  :host {
+    --cr-section-indent-width: 60px;
+  }
+
+  h2 {
+    padding-inline-start: var(--cr-section-padding);
+  }
+
+  .sub-item {
+    padding-inline-start: var(--cr-section-indent-width);
+  }
+
+  .settings-box {
+    margin-inline-end: var(--cr-section-padding);
+    padding-inline-end: 0;
+    padding-inline-start: 0;
+  }
+
+  settings-dropdown-menu {
+    --md-select-width: 100%;
+  }
+
+  settings-toggle-button,
+  cr-link-row {
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: var(--cr-section-padding);
+  }
+</style>
+
+<h2>$i18n{chromeVoxGeneralLabel}</h2>
+<div class="sub-item">
+  <settings-toggle-button
+      id="useVerboseModeToggle"
+      class="settings-box continuation"
+      pref="{{prefs.settings.a11y.chromevox.use_verbose_mode}}"
+      label="$i18n{chromeVoxUseVerboseMode}">
+  </settings-toggle-button>
+  <settings-toggle-button
+      id="autoReadToggle"
+      class="settings-box continuation"
+      pref="{{prefs.settings.a11y.chromevox.auto_read}}"
+      label="$i18n{chromeVoxAutoRead}">
+  </settings-toggle-button>
+  <settings-toggle-button
+      id="speakTextUnderMouseToggle"
+      class="settings-box continuation"
+      pref="{{prefs.settings.a11y.chromevox.speak_text_under_mouse}}"
+      label="$i18n{chromeVoxSpeakTextUnderMouse}">
+  </settings-toggle-button>
+  <settings-toggle-button
+      id="announceRichTextAttributesToggle"
+      class="settings-box continuation"
+      pref="{{prefs.settings.a11y.chromevox.announce_rich_text_attributes}}"
+      label="$i18n{chromeVoxAnnounceRichTextAttributes}">
+  </settings-toggle-button>
+  <settings-toggle-button
+      id="usePitchChangesToggle"
+      class="settings-box continuation"
+      pref="{{prefs.settings.a11y.chromevox.use_pitch_changes}}"
+      label="$i18n{chromeVoxUsePitchChanges}"
+      on-change="onUsePitchChangesToggled_">
+  </settings-toggle-button>
+  <div class="settings-box continuation">
+    <div class="start settings-box-text" aria-hidden="true">
+      $i18n{chromeVoxCapitalStrategy}
+    </div>
+    <settings-dropdown-menu id="capitalStrategyDropdown"
+        label="$i18n{chromeVoxCapitalStrategy}"
+        pref="{{prefs.settings.a11y.chromevox.capital_strategy}}"
+        menu-options="[[capitalStrategyOptions_]]">
+    </settings-dropdown-menu>
+  </div>
+  <div class="settings-box continuation">
+    <div class="start settings-box-text" aria-hidden="true">
+      $i18n{chromeVoxNumberReadingStyle}
+    </div>
+    <settings-dropdown-menu id="numberReadingStyleDropdown"
+        label="$i18n{chromeVoxNumberReadingStyle}"
+        pref="{{prefs.settings.a11y.chromevox.number_reading_style}}"
+        menu-options="[[numberReadingStyleOptions_]]">
+    </settings-dropdown-menu>
+  </div>
+  <div class="settings-box continuation">
+    <div class="start settings-box-text" aria-hidden="true">
+      $i18n{chromeVoxPunctuationEcho}
+    </div>
+    <settings-dropdown-menu id="punctuationEchoDropdown"
+        label="$i18n{chromeVoxPunctuationEcho}"
+        pref="{{prefs.settings.a11y.chromevox.punctuation_echo}}"
+        menu-options="[[punctuationEchoOptions_]]">
+    </settings-dropdown-menu>
+  </div>
+  <settings-toggle-button
+      id="announceDownloadNotificationsToggle"
+      class="settings-box continuation"
+      pref="{{prefs.settings.a11y.chromevox.announce_download_notifications}}"
+      label="$i18n{chromeVoxAnnounceDownloadNotifications}">
+  </settings-toggle-button>
+  <settings-toggle-button
+      id="smartStickyModeToggle"
+      class="settings-box continuation"
+      pref="{{prefs.settings.a11y.chromevox.smart_sticky_mode}}"
+      label="$i18n{chromeVoxSmartStickyMode}">
+  </settings-toggle-button>
+  <div class="settings-box continuation">
+    <div class="start settings-box-text" aria-hidden="true">
+      $i18n{chromeVoxAudioStrategy}
+    </div>
+    <settings-dropdown-menu id="audioStrategyDropdown"
+        label="$i18n{chromeVoxAudioStrategy}"
+        pref="{{prefs.settings.a11y.chromevox.audio_strategy}}"
+        menu-options="[[audioStrategyOptions_]]">
+    </settings-dropdown-menu>
+  </div>
+</div>
+<h2>$i18n{chromeVoxVoicesLabel}</h2>
+<h2>$i18n{chromeVoxBrailleLabel}</h2>
+<h2>$i18n{chromeVoxDeveloperOptionsLabel}</h2>
+

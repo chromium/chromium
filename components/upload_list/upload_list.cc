@@ -87,24 +87,24 @@ void UploadList::RequestSingleUploadAsync(const std::string& local_id) {
       base::BindOnce(&UploadList::RequestSingleUpload, this, local_id));
 }
 
-void UploadList::GetUploads(size_t max_count,
-                            std::vector<UploadInfo>* uploads) {
+std::vector<const UploadList::UploadInfo*> UploadList::GetUploads(
+    size_t max_count) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::copy(uploads_.begin(),
-            uploads_.begin() + std::min(uploads_.size(), max_count),
-            std::back_inserter(*uploads));
+  std::vector<const UploadInfo*> uploads;
+  const size_t copied_size = std::min(uploads_.size(), max_count);
+  uploads.reserve(copied_size);
+  for (size_t i = 0; i < copied_size; ++i) {
+    uploads.push_back(uploads_[i].get());
+  }
+  return uploads;
 }
 
-void UploadList::RequestSingleUpload(const std::string& local_id) {
-  // Manual uploads for not-yet uploaded crash reports are only available for
-  // Crashpad systems and for Android.
-  NOTREACHED();
-}
-
-void UploadList::OnLoadComplete(const std::vector<UploadInfo>& uploads) {
-  uploads_ = uploads;
-  if (!load_callback_.is_null())
+void UploadList::OnLoadComplete(
+    std::vector<std::unique_ptr<UploadInfo>> uploads) {
+  uploads_ = std::move(uploads);
+  if (!load_callback_.is_null()) {
     std::move(load_callback_).Run();
+  }
 }
 
 void UploadList::OnClearComplete() {

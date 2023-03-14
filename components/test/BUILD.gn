@@ -5,6 +5,10 @@
 import("//printing/buildflags/buildflags.gni")
 import("//ui/base/ui_features.gni")
 
+if (is_ios) {
+  import("//build/config/ios/bundle_data_from_filelist.gni")
+}
+
 source_set("test_support") {
   testonly = true
 
@@ -55,4 +59,23 @@ source_set("run_all_unittests") {
   sources = [ "run_all_unittests.cc" ]
 
   deps = [ ":test_support" ]
+}
+
+if (is_ios) {
+  bundle_data_from_filelist("history_test_bundle_data") {
+    testonly = true
+    filelist_name = "data/history/unit_tests_bundle_data.filelist"
+  }
+  bundle_data_from_filelist("password_manager_test_bundle_data") {
+    testonly = true
+    filelist_name = "data/password_manager/unit_tests_bundle_data.filelist"
+  }
+  bundle_data_from_filelist("viz_test_bundle_data") {
+    testonly = true
+    filelist_name = "data/viz/unit_tests_bundle_data.filelist"
+  }
+  bundle_data_from_filelist("web_database_test_bundle_data") {
+    testonly = true
+    filelist_name = "data/web_database/unit_tests_bundle_data.filelist"
+  }
 }

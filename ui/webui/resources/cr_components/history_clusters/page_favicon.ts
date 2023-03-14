@@ -5,6 +5,8 @@
 import './shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 
+import {ImageServiceBrowserProxy} from 'chrome://resources/cr_components/image_service/browser_proxy.js';
+import {ClientId as ImageServiceClientId} from 'chrome://resources/cr_components/image_service/image_service.mojom-webui.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
@@ -62,17 +64,24 @@ class PageFavicon extends PolymerElement {
       url: Object,
 
       /**
-       * The URL of the representative image for the page. Not every page has
-       * this defined, in which case we fallback to the favicon.
-       */
-      imageUrl: Object,
-
-      /**
        * Whether this visit is known to sync already. Used for the purpose of
        * fetching higher quality favicons in that case.
        */
       isKnownToSync: Boolean,
+
+      /**
+       * The URL of the representative image for the page. Not every page has
+       * this defined, in which case we fallback to the favicon.
+       */
+      imageUrl_: {
+        type: Object,
+        value: null,
+      },
     };
+  }
+
+  static get observers() {
+    return ['urlAndIsKnownToSyncChanged_(url, isKnownToSync)'];
   }
 
   //============================================================================
@@ -80,15 +89,19 @@ class PageFavicon extends PolymerElement {
   //============================================================================
 
   url: Url;
-  imageUrl: Url;
   isKnownToSync: boolean;
+  private imageUrl_: Url|null;
 
   //============================================================================
   // Helper methods
   //============================================================================
 
+  getImageUrlForTesting(): Url|null {
+    return this.imageUrl_;
+  }
+
   private computeStyle_(): string {
-    if (this.imageUrl && this.imageUrl.url) {
+    if (this.imageUrl_ && this.imageUrl_.url) {
       // Pages with a pre-set image URL don't show the favicon.
       return '';
     }
@@ -99,6 +112,23 @@ class PageFavicon extends PolymerElement {
     return `background-image:${
         getFaviconForPageURL(
             this.url.url, this.isKnownToSync, '', /** --favicon-size */ 16)}`;
+  }
+
+  private async urlAndIsKnownToSyncChanged_() {
+    if (!this.url || !this.isKnownToSync ||
+        !loadTimeData.getBoolean('isHistoryClustersImagesEnabled')) {
+      this.imageUrl_ = null;
+      return;
+    }
+
+    // Fetch the representative image for this page, if possible.
+    const {result} =
+        await ImageServiceBrowserProxy.getInstance().handler.getPageImageUrl(
+            ImageServiceClientId.Journeys, this.url,
+            {suggestImages: true, optimizationGuideImages: true});
+    if (result) {
+      this.imageUrl_ = result.imageUrl;
+    }
   }
 }
 

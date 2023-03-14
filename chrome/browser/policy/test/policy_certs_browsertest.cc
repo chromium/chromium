@@ -56,7 +56,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/login/lock/screen_locker_tester.h"
+#include "chrome/browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+
+using ::testing::NotNull;
 #endif
 
 namespace em = enterprise_management;
@@ -554,6 +561,92 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsRegularUserTest,
   EXPECT_TRUE(IsCertInCertificateList(
       user_policy_certs_helper_.root_cert().get(),
       ash::NetworkCertLoader::Get()->authority_certs()));
+}
+
+// Test that the lock screen profile does not use the policy provided custom
+// trusted anchors of the primary profile by default (i.e. if the
+// PolicyProvidedTrustAnchorsAllowedAtLockScreen flag is disabled).
+IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsRegularUserTest,
+                       LockScreenPrimaryProfileCertsFlagDisabled) {
+  ash::ScreenLockerTester locker;
+  locker.Lock();
+  // Showing the reauth dialog will create the lock screen profile.
+  ash::LockScreenReauthDialogTestHelper::ShowDialogAndWait();
+  ASSERT_THAT(ash::ProfileHelper::GetLockScreenProfile(), NotNull());
+
+  // Set policy provided trusted anchors on the primary profile.
+  user_policy_certs_helper_.SetRootCertONCUserPolicy(
+      browser()->profile(),
+      multi_profile_policy_helper_.policy_for_profile_1());
+
+  EXPECT_EQ(net::OK,
+            VerifyTestServerCert(browser()->profile(),
+                                 user_policy_certs_helper_.server_cert()));
+  // Verify that the lock screen can access the policy provided certs.
+  EXPECT_EQ(net::ERR_CERT_AUTHORITY_INVALID,
+            VerifyTestServerCert(ash::ProfileHelper::GetLockScreenProfile(),
+                                 user_policy_certs_helper_.server_cert()));
+}
+
+class PolicyProvidedCertsLockScreenFeatureTest
+    : public PolicyProvidedCertsRegularUserTest {
+ protected:
+  PolicyProvidedCertsLockScreenFeatureTest() {
+    feature_list_.InitAndEnableFeature(
+        ash::features::kPolicyProvidedTrustAnchorsAllowedAtLockScreen);
+  }
+  ~PolicyProvidedCertsLockScreenFeatureTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test that the lock screen profile uses the policy provided custom trusted
+// anchors of the primary profile when the
+// `PolicyProvidedTrustAnchorsAllowedAtLockScreen` flag is enabled.
+IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsLockScreenFeatureTest,
+                       LockScreenPrimaryProfileCerts) {
+  ash::ScreenLockerTester locker;
+  locker.Lock();
+  // Showing the reauth dialog will create the lock screen profile.
+  ash::LockScreenReauthDialogTestHelper::ShowDialogAndWait();
+  ASSERT_THAT(ash::ProfileHelper::GetLockScreenProfile(), NotNull());
+
+  // Set policy provided trusted anchors on the primary profile.
+  user_policy_certs_helper_.SetRootCertONCUserPolicy(
+      browser()->profile(),
+      multi_profile_policy_helper_.policy_for_profile_1());
+
+  EXPECT_EQ(net::OK,
+            VerifyTestServerCert(browser()->profile(),
+                                 user_policy_certs_helper_.server_cert()));
+  // Verify that the lock screen can access the policy provided certs.
+  EXPECT_EQ(net::OK,
+            VerifyTestServerCert(ash::ProfileHelper::GetLockScreenProfile(),
+                                 user_policy_certs_helper_.server_cert()));
+}
+
+// Test that the lock screen profile doesn't use the policy provided custom
+// trusted anchors of a secondary profile.
+IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsLockScreenFeatureTest,
+                       LockScreenSecondaryProfileCerts) {
+  ash::ScreenLockerTester locker;
+  locker.Lock();
+  // Showing the reauth dialog will create the lock screen profile.
+  ash::LockScreenReauthDialogTestHelper::ShowDialogAndWait();
+  ASSERT_THAT(ash::ProfileHelper::GetLockScreenProfile(), NotNull());
+
+  ASSERT_NO_FATAL_FAILURE(multi_profile_policy_helper_.CreateSecondProfile());
+  user_policy_certs_helper_.SetRootCertONCUserPolicy(
+      multi_profile_policy_helper_.profile_2(),
+      multi_profile_policy_helper_.policy_for_profile_2());
+
+  EXPECT_EQ(net::OK,
+            VerifyTestServerCert(multi_profile_policy_helper_.profile_2(),
+                                 user_policy_certs_helper_.server_cert()));
+  EXPECT_EQ(net::ERR_CERT_AUTHORITY_INVALID,
+            VerifyTestServerCert(ash::ProfileHelper::GetLockScreenProfile(),
+                                 user_policy_certs_helper_.server_cert()));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

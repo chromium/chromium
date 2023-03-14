@@ -171,6 +171,12 @@ suite('TabDiscardExceptionsDialog', function() {
     assertEquals(HighEfficiencyModeExceptionListAction.ADD, action);
   });
 
+  test('testTabDiscardExceptionsAddDialogSubmitExisting', async function() {
+    setupAddDialog();
+    await assertUserInputValidated(EXISTING_RULE);
+    await assertSubmit([EXISTING_RULE]);
+  });
+
   test('testTabDiscardExceptionsEditDialogSubmit', async function() {
     setupEditDialog();
     await assertUserInputValidated(VALID_RULE);
@@ -178,5 +184,13 @@ suite('TabDiscardExceptionsDialog', function() {
     const action =
         await performanceMetricsProxy.whenCalled('recordExceptionListAction');
     assertEquals(HighEfficiencyModeExceptionListAction.EDIT, action);
+  });
+
+  test('testTabDiscardExceptionsEditDialogSubmitExisting', async function() {
+    dialog.setPrefValue(
+        TAB_DISCARD_EXCEPTIONS_PREF, [EXISTING_RULE, VALID_RULE]);
+    setupEditDialog();
+    await assertUserInputValidated(VALID_RULE);
+    await assertSubmit([VALID_RULE]);
   });
 });

@@ -10,6 +10,7 @@
 #include <type_traits>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/cxx20_is_constant_evaluated.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 
@@ -26,20 +27,23 @@ template <bool IsAdjustablePtr>
 struct RawPtrAsanUnownedImpl {
   // Wraps a pointer.
   template <typename T>
-  static PA_ALWAYS_INLINE T* WrapRawPtr(T* ptr) {
+  PA_ALWAYS_INLINE static constexpr T* WrapRawPtr(T* ptr) {
     return ptr;
   }
 
   // Notifies the allocator when a wrapped pointer is being removed or replaced.
   template <typename T>
-  static PA_ALWAYS_INLINE void ReleaseWrappedPtr(T* wrapped_ptr) {
-    ProbeForLowSeverityLifetimeIssue(wrapped_ptr);
+  PA_ALWAYS_INLINE static constexpr void ReleaseWrappedPtr(T* wrapped_ptr) {
+    if (!partition_alloc::internal::base::is_constant_evaluated()) {
+      ProbeForLowSeverityLifetimeIssue(wrapped_ptr);
+    }
   }
 
   // Unwraps the pointer, while asserting that memory hasn't been freed. The
   // function is allowed to crash on nullptr.
   template <typename T>
-  static PA_ALWAYS_INLINE T* SafelyUnwrapPtrForDereference(T* wrapped_ptr) {
+  PA_ALWAYS_INLINE static constexpr T* SafelyUnwrapPtrForDereference(
+      T* wrapped_ptr) {
     // ASAN will catch use of dereferenced ptr without additional probing.
     return wrapped_ptr;
   }
@@ -47,21 +51,25 @@ struct RawPtrAsanUnownedImpl {
   // Unwraps the pointer, while asserting that memory hasn't been freed. The
   // function must handle nullptr gracefully.
   template <typename T>
-  static PA_ALWAYS_INLINE T* SafelyUnwrapPtrForExtraction(T* wrapped_ptr) {
-    ProbeForLowSeverityLifetimeIssue(wrapped_ptr);
+  PA_ALWAYS_INLINE static constexpr T* SafelyUnwrapPtrForExtraction(
+      T* wrapped_ptr) {
+    if (!partition_alloc::internal::base::is_constant_evaluated()) {
+      ProbeForLowSeverityLifetimeIssue(wrapped_ptr);
+    }
     return wrapped_ptr;
   }
 
   // Unwraps the pointer, without making an assertion on whether memory was
   // freed or not.
   template <typename T>
-  static PA_ALWAYS_INLINE T* UnsafelyUnwrapPtrForComparison(T* wrapped_ptr) {
+  PA_ALWAYS_INLINE static constexpr T* UnsafelyUnwrapPtrForComparison(
+      T* wrapped_ptr) {
     return wrapped_ptr;
   }
 
   // Upcasts the wrapped pointer.
   template <typename To, typename From>
-  static PA_ALWAYS_INLINE constexpr To* Upcast(From* wrapped_ptr) {
+  PA_ALWAYS_INLINE static constexpr To* Upcast(From* wrapped_ptr) {
     static_assert(std::is_convertible<From*, To*>::value,
                   "From must be convertible to To.");
     // Note, this cast may change the address if upcasting to base that lies in
@@ -74,21 +82,31 @@ struct RawPtrAsanUnownedImpl {
       typename T,
       typename Z,
       typename =
-          std::enable_if_t<partition_alloc::internal::offset_type<Z>, void>>
-  static PA_ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
+          std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
+  PA_ALWAYS_INLINE static constexpr T* Advance(T* wrapped_ptr, Z delta_elems) {
     return wrapped_ptr + delta_elems;
   }
 
+  // Retreat the wrapped pointer by `delta_elems`.
+  template <
+      typename T,
+      typename Z,
+      typename =
+          std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
+  PA_ALWAYS_INLINE static constexpr T* Retreat(T* wrapped_ptr, Z delta_elems) {
+    return wrapped_ptr - delta_elems;
+  }
+
   template <typename T>
-  static PA_ALWAYS_INLINE ptrdiff_t GetDeltaElems(T* wrapped_ptr1,
-                                                  T* wrapped_ptr2) {
+  PA_ALWAYS_INLINE static constexpr ptrdiff_t GetDeltaElems(T* wrapped_ptr1,
+                                                            T* wrapped_ptr2) {
     return wrapped_ptr1 - wrapped_ptr2;
   }
 
   // Returns a copy of a wrapped pointer, without making an assertion on whether
   // memory was freed or not.
   template <typename T>
-  static PA_ALWAYS_INLINE T* Duplicate(T* wrapped_ptr) {
+  PA_ALWAYS_INLINE static constexpr T* Duplicate(T* wrapped_ptr) {
     return wrapped_ptr;
   }
 
@@ -103,19 +121,21 @@ struct RawPtrAsanUnownedImpl {
   // `WrapRawPtrForDuplication` and `UnsafelyUnwrapPtrForDuplication` are used
   // to create a new raw_ptr<T> from another raw_ptr<T> of a different flavor.
   template <typename T>
-  static PA_ALWAYS_INLINE T* WrapRawPtrForDuplication(T* ptr) {
+  PA_ALWAYS_INLINE static constexpr T* WrapRawPtrForDuplication(T* ptr) {
     return ptr;
   }
 
   template <typename T>
-  static PA_ALWAYS_INLINE T* UnsafelyUnwrapPtrForDuplication(T* wrapped_ptr) {
+  PA_ALWAYS_INLINE static constexpr T* UnsafelyUnwrapPtrForDuplication(
+      T* wrapped_ptr) {
     return wrapped_ptr;
   }
 
   // This is for accounting only, used by unit tests.
-  static PA_ALWAYS_INLINE void IncrementSwapCountForTest() {}
-  static PA_ALWAYS_INLINE void IncrementLessCountForTest() {}
-  static PA_ALWAYS_INLINE void IncrementPointerToMemberOperatorCountForTest() {}
+  PA_ALWAYS_INLINE static constexpr void IncrementSwapCountForTest() {}
+  PA_ALWAYS_INLINE static constexpr void IncrementLessCountForTest() {}
+  PA_ALWAYS_INLINE static constexpr void
+  IncrementPointerToMemberOperatorCountForTest() {}
 };
 
 }  // namespace base::internal

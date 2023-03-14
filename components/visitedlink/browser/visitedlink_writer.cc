@@ -1104,7 +1104,7 @@ void VisitedLinkWriter::WriteHashRangeToFile(Hash first_hash, Hash last_hash) {
     WriteToFile(scoped_file_holder_.get(),
                 first_hash * sizeof(Fingerprint) + kFileHeaderSize,
                 &hash_table_[first_hash],
-                (table_length_ - first_hash + 1) * sizeof(Fingerprint));
+                (table_length_ - first_hash) * sizeof(Fingerprint));
 
     // Now do 0->last_lash.
     WriteToFile(scoped_file_holder_.get(), kFileHeaderSize, hash_table_,

@@ -4,11 +4,14 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_promo_signin_coordinator.h"
 
+#import "base/metrics/user_metrics.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/constants.h"
@@ -24,8 +27,6 @@
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_presentation_controller.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_slide_transition_animator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
-#import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
-#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -100,6 +101,7 @@
 
 - (void)start {
   [super start];
+  base::RecordAction(base::UserMetricsAction("Signin_BottomSheet_Opened"));
   // Create ConsistencyPromoSigninMediator.
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   signin::IdentityManager* identityManager =
@@ -201,6 +203,20 @@
 // Stops all the coordinators and mediator, and run the completion callback.
 - (void)coordinatorDoneWithResult:(SigninCoordinatorResult)signinResult
                    completionInfo:(SigninCompletionInfo*)completionInfo {
+  switch (signinResult) {
+    case SigninCoordinatorResultCanceledByUser:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_BottomSheet_ClosedByCancel"));
+      break;
+    case SigninCoordinatorResultSuccess:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_BottomSheet_ClosedBySignIn"));
+      break;
+    case SigninCoordinatorResultInterrupted:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_BottomSheet_ClosedByInterrupt"));
+      break;
+  }
   DCHECK(!self.alertCoordinator);
   DCHECK(!self.navigationController);
   [self.defaultAccountCoordinator stop];

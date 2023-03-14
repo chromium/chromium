@@ -84,6 +84,9 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
   void QueryWebFeed(
       const GURL& url,
       base::OnceCallback<void(QueryWebFeedResult)> callback) override;
+  void QueryWebFeedId(
+      const std::string& web_feed_id,
+      base::OnceCallback<void(QueryWebFeedResult)> callback) override;
 
   // Types / functions exposed for task implementations.
 

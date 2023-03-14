@@ -48,8 +48,7 @@ class AppUninstallDialogView : public apps::UninstallDialog::UiBase,
  private:
   void InitializeView(Profile* profile,
                       apps::AppType app_type,
-                      const std::string& app_id,
-                      const std::string& app_name);
+                      const std::string& app_id);
 
   void InitializeCheckbox(const GURL& app_start_url);
 

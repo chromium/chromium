@@ -70,9 +70,7 @@ TEST_F(PlatformWrapperTest, WrapPlatformHandle) {
   base::FilePath temp_file_path;
   ASSERT_TRUE(base::CreateTemporaryFile(&temp_file_path));
   const std::string kMessage = "Hello, world!";
-  EXPECT_EQ(base::WriteFile(temp_file_path, kMessage.data(),
-                            static_cast<int>(kMessage.size())),
-            static_cast<int>(kMessage.size()));
+  ASSERT_TRUE(base::WriteFile(temp_file_path, kMessage));
 
   RunTestClient("ReadPlatformFile", [&](MojoHandle h) {
     // Open the temporary file for reading, wrap its handle, and send it to

@@ -12,11 +12,12 @@
  * @param {string} testFixture Fixture name.
  * @param {string} testName Test name.
  * @param {function} testFunction The test impl.
+ * @param {string=} preamble C++ code to execute before the test.
  */
-function AX_TEST_F(testFixture, testName, testFunction) {
+function AX_TEST_F(testFixture, testName, testFunction, preamble) {
   TEST_F(testFixture, testName, function() {
     this.newCallback(testFunction)();
-  });
+  }, preamble);
 }
 
 // var is used to export this function alias outside of the current context

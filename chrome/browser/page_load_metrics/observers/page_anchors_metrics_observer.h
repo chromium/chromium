@@ -49,11 +49,15 @@ class PageAnchorsMetricsObserver
       absl::optional<base::TimeDelta> last_navigation_start_to_entered_viewport;
       // The maximum duration that the anchor element was in the viewport.
       absl::optional<base::TimeDelta> max_time_in_viewport;
-      // If the anchor element is still in viewport, it is the TimeDelta between
-      // the navigation start of the anchor element's root document and the last
-      // time the pointer started to hover over the anchor element, otherwise
-      // empty.
+      // TimeDelta between the navigation start of the anchor element's root
+      // document and the last time the pointer started to hover over the anchor
+      // element, otherwise empty.
       absl::optional<base::TimeDelta> last_navigation_start_to_pointer_over;
+      // TimeDelta between the navigation start of the anchor element's root
+      // document and the last time the pointer down event happened over the
+      // anchor element, otherwise empty.
+      absl::optional<base::TimeDelta>
+          last_navigation_start_to_last_pointer_down;
       // The maximum the pointer hover dwell time over the anchor element.
       absl::optional<base::TimeDelta> max_hover_dwell_time;
     };

@@ -32,11 +32,21 @@ class NearbyConnectionsManager {
    public:
     virtual ~IncomingConnectionListener() = default;
 
+    // Called when the remote device initiates a connection, but has not yet
+    // accepted the connection.
     // |endpoint_info| is returned from remote devices and should be parsed in
     // utilitiy process.
-    virtual void OnIncomingConnection(const std::string& endpoint_id,
-                                      const std::vector<uint8_t>& endpoint_info,
-                                      NearbyConnection* connection) = 0;
+    virtual void OnIncomingConnectionInitiated(
+        const std::string& endpoint_id,
+        const std::vector<uint8_t>& endpoint_info) = 0;
+
+    // Called after the remote device has initiated and accepted the connection.
+    // |endpoint_info| is returned from remote devices and should be parsed in
+    // utilitiy process.
+    virtual void OnIncomingConnectionAccepted(
+        const std::string& endpoint_id,
+        const std::vector<uint8_t>& endpoint_info,
+        NearbyConnection* connection) = 0;
   };
 
   // A callback for handling discovered devices while discovering.
@@ -139,6 +149,10 @@ class NearbyConnectionsManager {
 
   // Clears all incoming payloads.
   virtual void ClearIncomingPayloads() = 0;
+
+  // Gets the user-readable authentication token for the |endpoint_id|.
+  virtual absl::optional<std::string> GetAuthenticationToken(
+      const std::string& endpoint_id) = 0;
 
   // Gets the raw authentication token for the |endpoint_id|.
   virtual absl::optional<std::vector<uint8_t>> GetRawAuthenticationToken(

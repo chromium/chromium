@@ -32,6 +32,7 @@
 
 class FakeAutocompleteProviderClient;
 class HistoryQuickProviderTest;
+class OmniboxTriggeredFeatureService;
 
 namespace base {
 class SequencedTaskRunner;
@@ -44,7 +45,7 @@ class BookmarkModel;
 namespace history {
 class HistoryDatabase;
 class HQPPerfTestOnePopularURL;
-}
+}  // namespace history
 
 class URLIndexPrivateData;
 
@@ -95,10 +96,12 @@ class InMemoryURLIndex : public KeyedService,
   // anything special with the cursor; this is equivalent to the cursor being at
   // the end. If `host_filter` is not empty, filters matches by host. In total,
   // `max_matches` of items will be returned.
-  ScoredHistoryMatches HistoryItemsForTerms(const std::u16string& term_string,
-                                            size_t cursor_position,
-                                            const std::string& host_filter,
-                                            size_t max_matches);
+  ScoredHistoryMatches HistoryItemsForTerms(
+      const std::u16string& term_string,
+      size_t cursor_position,
+      const std::string& host_filter,
+      size_t max_matches,
+      OmniboxTriggeredFeatureService* triggered_feature_service);
 
   // Returns URL hosts that have been visited more than a threshold.
   const std::vector<std::string>& HighlyVisitedHosts() const;
@@ -107,9 +110,7 @@ class InMemoryURLIndex : public KeyedService,
   void DeleteURL(const GURL& url);
 
   // Indicates that the index restoration is complete.
-  bool restored() const {
-    return restored_;
-  }
+  bool restored() const { return restored_; }
 
  private:
   friend class ::FakeAutocompleteProviderClient;
@@ -139,7 +140,7 @@ class InMemoryURLIndex : public KeyedService,
     raw_ptr<InMemoryURLIndex, DanglingUntriaged>
         index_;                   // Call back to this index at completion.
     SchemeSet scheme_allowlist_;  // Schemes to be indexed.
-    bool succeeded_;  // Indicates if the rebuild was successful.
+    bool succeeded_ = false;      // Indicates if the rebuild was successful.
     scoped_refptr<URLIndexPrivateData> data_;  // The rebuilt private data.
     // When the task was first requested from the main thread. This is the same
     // time as when this task object is constructed.

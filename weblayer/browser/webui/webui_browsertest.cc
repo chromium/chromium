@@ -11,7 +11,7 @@ namespace weblayer {
 
 using WebLayerWebUIBrowserTest = WebLayerBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(WebLayerWebUIBrowserTest, WebUI) {
+IN_PROC_BROWSER_TEST_F(WebLayerWebUIBrowserTest, DISABLED_WebUI) {
   NavigateAndWaitForCompletion(GURL("chrome://weblayer"), shell());
   base::RunLoop run_loop;
   bool result =

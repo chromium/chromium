@@ -8,7 +8,9 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/dom/abort_signal_registry.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -22,7 +24,18 @@ namespace blink {
 
 namespace {
 
-enum class TestType { kRemoveEnabled, kRemoveDisabled };
+enum class TestType { kRemoveEnabled, kCompositionEnabled, kNoFeatures };
+
+const char* TestTypeToString(TestType test_type) {
+  switch (test_type) {
+    case TestType::kRemoveEnabled:
+      return "RemoveEnabled";
+    case TestType::kCompositionEnabled:
+      return "CompositionEnabled";
+    case TestType::kNoFeatures:
+      return "NoFeatures";
+  }
+}
 
 class TestEventListener : public NativeEventListener {
  public:
@@ -37,25 +50,37 @@ class AbortSignalTest : public PageTestBase,
                         public ::testing::WithParamInterface<TestType> {
  public:
   AbortSignalTest() {
-    if (GetParam() == TestType::kRemoveEnabled) {
-      feature_list_.InitWithFeatures({features::kAbortSignalHandleBasedRemoval},
-                                     {});
-    } else {
-      feature_list_.InitWithFeatures(
-          {}, {features::kAbortSignalHandleBasedRemoval});
+    switch (GetParam()) {
+      case TestType::kRemoveEnabled:
+        feature_list_.InitWithFeatures(
+            {features::kAbortSignalHandleBasedRemoval},
+            {features::kAbortSignalComposition});
+        break;
+      case TestType::kCompositionEnabled:
+        feature_list_.InitWithFeatures(
+            {features::kAbortSignalComposition},
+            {features::kAbortSignalHandleBasedRemoval});
+        break;
+      case TestType::kNoFeatures:
+        feature_list_.InitWithFeatures(
+            {}, {features::kAbortSignalHandleBasedRemoval,
+                 features::kAbortSignalComposition});
+        break;
     }
+    WebRuntimeFeatures::UpdateStatusFromBaseFeatures();
   }
 
   void SetUp() override {
     PageTestBase::SetUp();
 
-    signal_ = MakeGarbageCollected<AbortSignal>(GetFrame().DomWindow());
+    controller_ = AbortController::Create(GetFrame().DomWindow());
+    signal_ = controller_->signal();
   }
 
   void SignalAbort() {
     ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
     ScriptState::Scope script_scope(script_state);
-    signal_->SignalAbort(script_state);
+    controller_->abort(script_state);
   }
 
   AbortSignalRegistry* GetRegistry() const {
@@ -63,6 +88,7 @@ class AbortSignalTest : public PageTestBase,
   }
 
  protected:
+  Persistent<AbortController> controller_;
   Persistent<AbortSignal> signal_;
   Persistent<AbortSignal::AlgorithmHandle> abort_handle_;
   base::test::ScopedFeatureList feature_list_;
@@ -144,14 +170,31 @@ TEST_P(AbortSignalTest, RegisteredSignalAlgorithmListenerGCed) {
 INSTANTIATE_TEST_SUITE_P(,
                          AbortSignalTest,
                          testing::Values(TestType::kRemoveEnabled,
-                                         TestType::kRemoveDisabled),
+                                         TestType::kNoFeatures),
                          [](const testing::TestParamInfo<TestType>& info) {
-                           switch (info.param) {
-                             case TestType::kRemoveEnabled:
-                               return "RemoveEnabled";
-                             case TestType::kRemoveDisabled:
-                               return "RemoveDisabled";
-                           }
+                           return TestTypeToString(info.param);
+                         });
+
+class AbortSignalCompositionTest : public AbortSignalTest {};
+
+TEST_P(AbortSignalCompositionTest, CanAbort) {
+  EXPECT_TRUE(signal_->CanAbort());
+  SignalAbort();
+  EXPECT_FALSE(signal_->CanAbort());
+}
+
+TEST_P(AbortSignalCompositionTest, CanAbortAfterGC) {
+  controller_.Clear();
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_EQ(signal_->CanAbort(), GetParam() == TestType::kNoFeatures);
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         AbortSignalCompositionTest,
+                         testing::Values(TestType::kCompositionEnabled,
+                                         TestType::kNoFeatures),
+                         [](const testing::TestParamInfo<TestType>& info) {
+                           return TestTypeToString(info.param);
                          });
 
 }  // namespace blink

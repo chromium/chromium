@@ -54,6 +54,10 @@ class PerformanceControlsHatsServiceTest : public testing::Test {
 
   void TearDown() override {
     testing::Test::TearDown();
+    // The service has to be destroyed before the UserPerformanceTuningManager
+    // is destroyed by `environment_.TearDown()`, otherwise the service will try
+    // to unregister as an observer on a freed UserPerformanceTuningManager.
+    performance_controls_hats_service_.reset();
     environment_.TearDown();
   }
 
@@ -66,9 +70,9 @@ class PerformanceControlsHatsServiceTest : public testing::Test {
   }
 
   void SetHighEfficiencyEnabled(const bool high_efficiency_enabled) {
-    g_browser_process->local_state()->SetBoolean(
-        performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled,
-        high_efficiency_enabled);
+    performance_manager::user_tuning::UserPerformanceTuningManager::
+        GetInstance()
+            ->SetHighEfficiencyModeEnabled(high_efficiency_enabled);
   }
 
   PerformanceControlsHatsService* performance_controls_hats_service() {

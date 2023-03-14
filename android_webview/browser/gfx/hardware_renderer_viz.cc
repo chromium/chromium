@@ -54,14 +54,30 @@
 namespace android_webview {
 namespace {
 
-class ContextReleaser {
+class ScopedCurrentContext {
  public:
-  explicit ContextReleaser(gpu::SharedContextState* state) : state_(state) {}
-  ~ContextReleaser() { state_->ReleaseCurrent(nullptr); }
+  explicit ScopedCurrentContext(gpu::SharedContextState* state,
+                                gl::GLSurface* surface)
+      : state_(state), surface_(surface) {
+    state_->MakeCurrent(surface_);
+  }
+  ~ScopedCurrentContext() { state_->ReleaseCurrent(surface_); }
 
  private:
   const raw_ptr<gpu::SharedContextState> state_;
+  gl::GLSurface* surface_;
 };
+
+void MoveCopyRequests(CopyOutputRequestQueue* from,
+                      CopyOutputRequestQueue* to) {
+  std::move(from->begin(), from->end(), std::back_inserter(*to));
+  from->clear();
+}
+
+viz::BeginFrameArgs NewerBeginFrameArgs(const viz::BeginFrameArgs& args1,
+                                        const viz::BeginFrameArgs& args2) {
+  return args1.frame_id.IsNextInSequenceTo(args2.frame_id) ? args1 : args2;
+}
 
 }  // namespace
 
@@ -359,6 +375,61 @@ HardwareRendererViz::OnViz::GetPreferredFrameIntervalForFrameSinkId(
                                                                         type);
 }
 
+// static
+ChildFrameQueue HardwareRendererViz::WaitAndPruneFrameQueue(
+    ChildFrameQueue* child_frames_ptr) {
+  ChildFrameQueue& child_frames = *child_frames_ptr;
+  ChildFrameQueue pruned_frames;
+  if (child_frames.empty()) {
+    return pruned_frames;
+  }
+
+  // First find the last non-empty frame.
+  int remaining_frame_index = -1;
+  for (size_t i = 0; i < child_frames.size(); ++i) {
+    auto& child_frame = *child_frames[i];
+    child_frame.WaitOnFutureIfNeeded();
+    if (child_frame.frame) {
+      remaining_frame_index = i;
+    }
+  }
+  // If all empty, keep the last one.
+  if (remaining_frame_index < 0) {
+    remaining_frame_index = child_frames.size() - 1;
+  }
+
+  // Prune end.
+  while (child_frames.size() > static_cast<size_t>(remaining_frame_index + 1)) {
+    std::unique_ptr<ChildFrame> frame = std::move(child_frames.back());
+    child_frames.pop_back();
+    MoveCopyRequests(&frame->copy_requests,
+                     &child_frames[remaining_frame_index]->copy_requests);
+
+    // If we're dropping frames at the end, we need update begin frame args.
+    child_frames[remaining_frame_index]->begin_frame_args = NewerBeginFrameArgs(
+        child_frames[remaining_frame_index]->begin_frame_args,
+        frame->begin_frame_args);
+    DCHECK(!frame->frame);
+  }
+  DCHECK_EQ(static_cast<size_t>(remaining_frame_index),
+            child_frames.size() - 1);
+
+  // Prune front.
+  while (child_frames.size() > 1) {
+    std::unique_ptr<ChildFrame> frame = std::move(child_frames.front());
+    child_frames.pop_front();
+    MoveCopyRequests(&frame->copy_requests,
+                     &child_frames.back()->copy_requests);
+    // We shouldn't drop newer frames.
+    DCHECK(!frame->begin_frame_args.frame_id.IsNextInSequenceTo(
+        child_frames.back()->begin_frame_args.frame_id));
+    if (frame->frame) {
+      pruned_frames.emplace_back(std::move(frame));
+    }
+  }
+  return pruned_frames;
+}
+
 HardwareRendererViz::HardwareRendererViz(
     RenderThreadManager* state,
     RootFrameSinkGetter root_frame_sink_getter,
@@ -408,11 +479,14 @@ void HardwareRendererViz::DrawAndSwap(const HardwareRendererDrawParams& params,
 
   DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
 
-  // Release the context before returning, it is required for the external ANGLE
-  // context. For non-ANGLE case, fake context and surface are used, so
-  // releasing current context should be very cheap.
-  ContextReleaser context_releaser(
-      output_surface_provider_.shared_context_state().get());
+  // Ensure that the context is current and that it is released before
+  // returning. When using ANGLE, the former is not guaranteed to be true and
+  // the latter is required for the external ANGLE context. For non-ANGLE case,
+  // fake context and surface are used, so releasing current context should be
+  // very cheap.
+  ScopedCurrentContext scoped_context(
+      output_surface_provider_.shared_context_state().get(),
+      output_surface_provider_.gl_surface().get());
 
   viz::FrameTimingDetailsMap timing_details;
 

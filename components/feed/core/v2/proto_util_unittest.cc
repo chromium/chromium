@@ -222,10 +222,11 @@ TEST(ProtoUtilTest, StampEnabled) {
               Contains(feedwire::Capability::AMP_GROUP_DATASTORE));
 }
 
+// ReadLater is enabled by default everywhere with the exception of iOS which
+// has a build-flag to enable it.
+#if !BUILDFLAG(IS_IOS)
+
 TEST(ProtoUtilTest, ReadLaterEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({reading_list::switches::kReadLater},
-                                       {});
   feedwire::FeedRequest request =
       CreateFeedQueryRefreshRequest(
           StreamType(StreamKind::kForYou), feedwire::FeedQuery::MANUAL_REFRESH,
@@ -239,22 +240,7 @@ TEST(ProtoUtilTest, ReadLaterEnabled) {
               Not(Contains((feedwire::Capability::DOWNLOAD_LINK))));
 }
 
-TEST(ProtoUtilTest, ReadLaterDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({},
-                                       {reading_list::switches::kReadLater});
-  feedwire::FeedRequest request =
-      CreateFeedQueryRefreshRequest(
-          StreamType(StreamKind::kForYou), feedwire::FeedQuery::MANUAL_REFRESH,
-          /*request_metadata=*/{},
-          /*consistency_token=*/std::string(), SingleWebFeedEntryPoint::kOther)
-          .feed_request();
-
-  ASSERT_THAT(request.client_capability(),
-              Contains(feedwire::Capability::DOWNLOAD_LINK));
-  ASSERT_THAT(request.client_capability(),
-              Not(Contains((feedwire::Capability::READ_LATER))));
-}
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 TEST(ProtoUtilTest, CrowButtonEnabled) {

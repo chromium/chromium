@@ -3,10 +3,13 @@
 // found in the LICENSE file.
 
 import {App, PageCallbackRouter, PageHandlerInterface, PermissionType, PermissionValue, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {BrowserProxy as ComponentBrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
+import {BrowserProxy as AppManagementComponentBrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 import {AppType, InstallReason, OptionalBool} from 'chrome://resources/cr_components/app_management/constants.js';
 
 import {FakePageHandler} from './fake_page_handler.js';
+
+// Export this module instance that is bundled locally.
+export {AppManagementComponentBrowserProxy};
 
 export interface PermissionOption {
   permissionValue: TriState;
@@ -118,8 +121,9 @@ export class AppManagementBrowserProxy {
       this.fakeHandler.setApps(appList);
 
     } else {
-      this.handler = ComponentBrowserProxy.getInstance().handler;
-      this.callbackRouter = ComponentBrowserProxy.getInstance().callbackRouter;
+      this.handler = AppManagementComponentBrowserProxy.getInstance().handler;
+      this.callbackRouter =
+          AppManagementComponentBrowserProxy.getInstance().callbackRouter;
     }
   }
 }

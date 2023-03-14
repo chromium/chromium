@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/webui/chrome_untrusted_web_ui_configs_desktop.h"
 
 #include "build/branding_buildflags.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/feed/feed_ui_config.h"
+#include "chrome/browser/ui/webui/side_panel/companion/companion_side_panel_untrusted_ui.h"
 #include "components/lens/buildflags.h"
 #include "content/public/browser/webui_config_map.h"
 
@@ -19,6 +21,10 @@ void RegisterDesktopChromeUntrustedWebUIConfigs() {
   // Add untrusted `WebUIConfig`s common across all platforms excluding Android
   // here.
   map.AddUntrustedWebUIConfig(std::make_unique<feed::FeedUIConfig>());
+  if (base::FeatureList::IsEnabled(features::kSidePanelCompanion)) {
+    map.AddUntrustedWebUIConfig(
+        std::make_unique<CompanionSidePanelUntrustedUIConfig>());
+  }
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
   map.AddUntrustedWebUIConfig(std::make_unique<lens::LensUntrustedUIConfig>());
 #endif

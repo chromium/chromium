@@ -9,15 +9,20 @@
 
 namespace base {
 
+using RunTestSuiteCallback = OnceCallback<int(void)>;
+
 // Inits the message loop for tests on iOS.
 void InitIOSTestMessageLoop();
 
-// Inits the run hook for tests on iOS.
-void InitIOSRunHook(TestSuite* suite, int argc, char* argv[]);
+// Inits the run test suite hook.
+void InitIOSRunHook(RunTestSuiteCallback callback);
+
+// Inits the initial args for tests on iOS.
+void InitIOSArgs(int argc, char* argv[]);
 
 // Launches an iOS app that runs the tests in the suite passed to
 // InitIOSRunHook.
-void RunTestsFromIOSApp();
+int RunTestsFromIOSApp();
 
 // Returns true if unittests should be run by the XCTest runnner.
 bool ShouldRunIOSUnittestsWithXCTest();

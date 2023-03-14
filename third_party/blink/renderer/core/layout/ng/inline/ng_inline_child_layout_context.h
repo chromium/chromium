@@ -62,6 +62,13 @@ class CORE_EXPORT NGInlineChildLayoutContext {
   void ClearPropagatedBreakTokens();
   void PropagateBreakToken(const NGBlockBreakToken*);
 
+  const absl::optional<LayoutUnit>& BalancedAvailableWidth() const {
+    return balanced_available_width_;
+  }
+  void SetBalancedAvailableWidth(absl::optional<LayoutUnit> value) {
+    balanced_available_width_ = value;
+  }
+
  private:
   NGBoxFragmentBuilder* container_builder_ = nullptr;
   NGFragmentItemsBuilder items_builder_;
@@ -75,6 +82,9 @@ class CORE_EXPORT NGInlineChildLayoutContext {
   unsigned item_index_ = 0;
 
   HeapVector<Member<const NGBlockBreakToken>> propagated_float_break_tokens_;
+
+  // Used by `NGParagraphLineBreaker`.
+  absl::optional<LayoutUnit> balanced_available_width_;
 };
 
 inline NGLogicalLineItems&

@@ -9,7 +9,7 @@
   children: [
     {
       name: "build-info-service",
-      url: "fuchsia-pkg://fuchsia.com/build-info-service#meta/build-info.cm",
+      url: "fuchsia-pkg://fuchsia.com/fake-build-info#meta/fake_build_info.cm",
     },
     {
       name: "intl_property_manager",
@@ -18,14 +18,9 @@
   ],
   offer: [
     {
-      directory: "build-info",
-      from: "parent",
-      to: "#build-info-service",
-    },
-    {
       protocol: "fuchsia.logger.LogSink",
       from: "parent",
-      to: [ "#build-info-service", "#intl_property_manager" ],
+      to: [ "#intl_property_manager" ],
     }
   ],
   use: [
@@ -40,7 +35,6 @@
     },
     {
       storage: "custom_artifacts",
-      rights: [ "rw*" ],
       path: "/custom_artifacts",
     },
     {
@@ -77,7 +71,7 @@
   facets: {
       "fuchsia.test": {
           "deprecated-allowed-packages": [
-             "build-info-service",
+             "fake-build-info",
              "intl_property_manager",
           ],
       },

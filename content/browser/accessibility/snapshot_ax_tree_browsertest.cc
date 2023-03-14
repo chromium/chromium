@@ -494,7 +494,7 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest, ExcludeOffscreen) {
 
   // Dump the whole tree if one of the assertions below fails
   // to aid in debugging why it failed.
-  SCOPED_TRACE(waiter.snapshot().ToString());
+  //  SCOPED_TRACE(waiter.snapshot().ToString());
 
   // If we didn't exclude offscreen nodes, thee would be at least 200 nodes on
   // the page (2 for every paragraph). By excluding offscreen nodes, we should

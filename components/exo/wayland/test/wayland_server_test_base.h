@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
+#include "components/exo/display.h"
 #include "components/exo/test/exo_test_base.h"
 
 namespace exo {
@@ -25,9 +26,14 @@ using TestBase = exo::test::ExoTestBase;
 // Base class for tests that create an exo's wayland server.
 class WaylandServerTestBase : public TestBase {
  public:
-  static std::string GetUniqueSocketName();
-
   WaylandServerTestBase();
+
+  // Constructs a WaylandServerTestBase with |traits| being forwarded to its
+  // TaskEnvironment. See the corresponding |AshTestBase| constructor.
+  template <typename... TaskEnvironmentTraits>
+  explicit WaylandServerTestBase(TaskEnvironmentTraits&&... traits)
+      : TestBase(std::forward<TaskEnvironmentTraits>(traits)...) {}
+
   WaylandServerTestBase(const WaylandServerTestBase&) = delete;
   WaylandServerTestBase& operator=(const WaylandServerTestBase&) = delete;
   ~WaylandServerTestBase() override;

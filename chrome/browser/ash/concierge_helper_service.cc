@@ -8,8 +8,8 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "content/public/browser/browser_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -111,7 +111,14 @@ ConciergeHelperService* ConciergeHelperServiceFactory::GetForBrowserContext(
 }
 
 ConciergeHelperServiceFactory::ConciergeHelperServiceFactory()
-    : ProfileKeyedServiceFactory("ConciergeHelperServiceFactory") {}
+    : ProfileKeyedServiceFactory(
+          "ConciergeHelperServiceFactory",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {}
 
 KeyedService* ConciergeHelperServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

@@ -9,7 +9,6 @@
 {
 "name": "LayoutNGBlockFlow DIV id='multicol'",
 "bounds": [200, 100],
-"contentsOpaqueForText": true,
 "drawsContent": false,
 "transform": 1
 }

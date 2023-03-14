@@ -289,9 +289,10 @@ void EventFactoryEvdev::DispatchMouseButtonEvent(
   // Mouse buttons can be remapped, touchpad taps & clicks cannot.
   unsigned int button = params.button;
   if (params.map_type == MouseButtonMapType::kMouse) {
-    button = mouse_button_map_.GetMappedButton(button);
+    button = mouse_button_map_.GetMappedButton(params.device_id, button);
   } else if (params.map_type == MouseButtonMapType::kPointingStick) {
-    button = pointing_stick_button_map_.GetMappedButton(button);
+    button =
+        pointing_stick_button_map_.GetMappedButton(params.device_id, button);
   }
 
   int modifier = MODIFIER_NONE;
@@ -546,7 +547,8 @@ void EventFactoryEvdev::StartThread() {
                                      weak_ptr_factory_.GetWeakPtr()));
   thread_.Start(std::move(proxy_dispatcher), cursor_,
                 base::BindOnce(&EventFactoryEvdev::OnThreadStarted,
-                               weak_ptr_factory_.GetWeakPtr()));
+                               weak_ptr_factory_.GetWeakPtr()),
+                &input_controller_);
 }
 
 void EventFactoryEvdev::OnThreadStarted(

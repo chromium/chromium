@@ -40,12 +40,12 @@ void NetLogSource::AddToEventParameters(base::Value::Dict& event_params) const {
   event_params.Set("source_dependency", std::move(dict));
 }
 
-base::Value NetLogSource::ToEventParameters() const {
+base::Value::Dict NetLogSource::ToEventParameters() const {
   if (!IsValid())
-    return base::Value();
+    return base::Value::Dict();
   base::Value::Dict event_params;
   AddToEventParameters(event_params);
-  return base::Value(std::move(event_params));
+  return event_params;
 }
 
 }  // namespace net

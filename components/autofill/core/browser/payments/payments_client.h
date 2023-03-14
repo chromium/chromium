@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
+#include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -341,7 +342,7 @@ class PaymentsClient {
     std::u16string context_token;
     std::string risk_data;
     std::string app_locale;
-    std::vector<const char*> active_experiments;
+    std::vector<ClientBehaviorConstants> client_behavior_signals;
   };
 
   // An enum set in the GetUploadDetailsRequest indicating the source of the
@@ -452,14 +453,13 @@ class PaymentsClient {
   // decisions. |callback| is the callback function when get response from
   // server. |billable_service_number| is used to set the billable service
   // number in the GetUploadDetails request. If the conditions are met, the
-  // legal message will be returned via |callback|. |active_experiments| is used
-  // by Payments server to track requests that were triggered by enabled
-  // features. |upload_card_source| is used by Payments server metrics to track
-  // the source of the request.
+  // legal message will be returned via |callback|. |client_behavior_signals| is
+  // used by Payments server to track Chrome behaviors. |upload_card_source| is
+  // used by Payments server metrics to track the source of the request.
   virtual void GetUploadDetails(
       const std::vector<AutofillProfile>& addresses,
       const int detected_values,
-      const std::vector<const char*>& active_experiments,
+      const std::vector<ClientBehaviorConstants>& client_behavior_signals,
       const std::string& app_locale,
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                               const std::u16string&,

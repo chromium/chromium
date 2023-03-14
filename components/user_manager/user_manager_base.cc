@@ -350,8 +350,13 @@ void UserManagerBase::RemoveUser(const AccountId& account_id,
                                  RemoveUserDelegate* delegate) {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
 
-  if (!CanUserBeRemoved(FindUser(account_id)))
+  UserDirectoryIntegrityManager integrity_manager(GetLocalState());
+  // Misconfigured user would not be included in GetUsers(),
+  // account for them separately.
+  if (!CanUserBeRemoved(FindUser(account_id)) &&
+      !integrity_manager.IsUserMisconfigured(account_id)) {
     return;
+  }
 
   RemoveUserInternal(account_id, reason, delegate);
 }
@@ -380,6 +385,16 @@ void UserManagerBase::RemoveNonOwnerUserInternal(AccountId account_id,
 }
 
 void UserManagerBase::RemoveUserFromList(const AccountId& account_id) {
+  RemoveUserFromListImpl(account_id, /* notify=*/true);
+}
+
+void UserManagerBase::RemoveUserFromListForRecreation(
+    const AccountId& account_id) {
+  RemoveUserFromListImpl(account_id, /* notify=*/false);
+}
+
+void UserManagerBase::RemoveUserFromListImpl(const AccountId& account_id,
+                                             bool notify) {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
   RemoveNonCryptohomeData(account_id);
   KnownUser(GetLocalState()).RemovePrefs(account_id);
@@ -387,8 +402,7 @@ void UserManagerBase::RemoveUserFromList(const AccountId& account_id) {
     // After the User object is deleted from memory in DeleteUser() here,
     // the account_id reference will be invalid if the reference points
     // to the account_id in the User object.
-    DeleteUser(
-        RemoveRegularOrSupervisedUserFromList(account_id, true /* notify */));
+    DeleteUser(RemoveRegularOrSupervisedUserFromList(account_id, notify));
   } else {
     NOTREACHED() << "Users are not loaded yet.";
     return;
@@ -399,7 +413,13 @@ void UserManagerBase::RemoveUserFromList(const AccountId& account_id) {
 }
 
 bool UserManagerBase::IsKnownUser(const AccountId& account_id) const {
-  return FindUser(account_id) != nullptr;
+  // We check for the presence of a misconfigured user as well. This is because
+  // `WallpaperControllerClientImpl::RemoveUserWallpaper` would not remove
+  // the wallpaper prefs if we return false here, thus leaving behind
+  // orphan prefs for the misconfigured users.
+  UserDirectoryIntegrityManager integrity_manager(GetLocalState());
+  return FindUser(account_id) != nullptr ||
+         integrity_manager.IsUserMisconfigured(account_id);
 }
 
 const User* UserManagerBase::FindUser(const AccountId& account_id) const {
@@ -611,6 +631,38 @@ void UserManagerBase::ParseUserList(const base::Value::List& users_list,
     }
     users_vector->push_back(account_id);
   }
+}
+
+bool UserManagerBase::IsOwnerUser(const User* user) const {
+  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  return user && !owner_account_id_.empty() &&
+         user->GetAccountId() == owner_account_id_;
+}
+
+bool UserManagerBase::IsPrimaryUser(const User* user) const {
+  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  return user && user == primary_user_;
+}
+
+bool UserManagerBase::IsEphemeralUser(const User* user) const {
+  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  if (!user) {
+    return false;
+  }
+
+  // Owner user is always persistent.
+  if (IsOwnerUser(user)) {
+    return false;
+  }
+
+  // Guest and public account is ephemeral.
+  if (auto user_type = user->GetType();
+      user_type == USER_TYPE_GUEST || user_type == USER_TYPE_PUBLIC_ACCOUNT) {
+    return true;
+  }
+
+  // Otherwise, if ephemeral_users policy is enabled, it is ephemeral.
+  return AreEphemeralUsersEnabled();
 }
 
 bool UserManagerBase::IsCurrentUserOwner() const {
@@ -914,10 +966,7 @@ void UserManagerBase::EnsureUsersLoaded() {
     }
 
     UserDirectoryIntegrityManager integrity_manager(GetLocalState());
-    absl::optional<AccountId> incomplete_user =
-        integrity_manager.GetMisconfiguredUser();
-    if (incomplete_user.has_value() &&
-        incomplete_user->GetUserEmail() == it->GetUserEmail()) {
+    if (integrity_manager.IsUserMisconfigured(*it)) {
       // Skip misconfigured user.
       VLOG(1) << "Encountered misconfigured user while loading list of "
                  "users, skipping";

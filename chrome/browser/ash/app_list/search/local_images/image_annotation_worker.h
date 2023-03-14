@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/ash/app_list/search/local_images/annotation_storage.h"
 #include "chromeos/services/machine_learning/public/mojom/image_content_annotation.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -24,12 +25,13 @@ class FilePathWatcher;
 }
 
 namespace app_list {
-class AnnotationStorage;
 struct ImageInfo;
 
 // The worker watches `root_path_` for any image changes, runs ICA on every
 // change, and saves the annotation to the AnnotationStorage.
-// It maintains and runs tasks on its own background task runner.
+// It can be created on any sequence but must be initialized on the same
+// sequence as AnnotationStorage. It runs IO heavy tasks on a background
+// task runner.
 // TODO(b/260646344): Revisit the use of a FilePathWatcher for My Files
 //  if needed. (It may hit the folder limit.)
 class ImageAnnotationWorker {
@@ -39,9 +41,10 @@ class ImageAnnotationWorker {
   ImageAnnotationWorker(const ImageAnnotationWorker&) = delete;
   ImageAnnotationWorker& operator=(const ImageAnnotationWorker&) = delete;
 
-  // Spawns the worker in a low-priority sequence and attaches it to the
-  // storage. Can be called from any sequence.
-  void Run(scoped_refptr<AnnotationStorage> annotation_storage);
+  // Initializes a file watcher, connects to ICA and performs a file system
+  // scan for new images. It must be called on the same sequence as
+  // AnnotationStorage is bound to.
+  void Initialize(AnnotationStorage* annotation_storage);
 
   // Disables mojo bindings and file watchers.
   void UseFakeAnnotatorForTests();
@@ -50,7 +53,7 @@ class ImageAnnotationWorker {
   // cannot be awaited by `RunUntilIdle()` and introduce unwanted flakiness.
   void TriggerOnFileChangeForTests(const base::FilePath& path, bool error);
 
- protected:
+ private:
   // Setups file watchers.
   void StartWatching();
   void OnFileChange(const base::FilePath& path, bool error);
@@ -74,7 +77,6 @@ class ImageAnnotationWorker {
 
   std::unique_ptr<base::FilePathWatcher> file_watcher_;
   base::FilePath root_path_;
-  scoped_refptr<AnnotationStorage> annotation_storage_;
 
   mojo::Remote<chromeos::machine_learning::mojom::MachineLearningService>
       ml_service_;
@@ -83,9 +85,15 @@ class ImageAnnotationWorker {
 
   base::FilePathWatcher::Callback on_file_change_callback_;
 
+  // AnnotationStorage owns this ImageAnnotationWorker. All the methods must
+  // be called from the main sequence.
+  AnnotationStorage* annotation_storage_;
+
   bool use_fake_annotator_for_tests_ = false;
 
+  // Owned by this class.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<ImageAnnotationWorker> weak_ptr_factory_{this};
 };
 }  // namespace app_list

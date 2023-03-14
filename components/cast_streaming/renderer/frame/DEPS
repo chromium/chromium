@@ -1,0 +1,6 @@
+include_rules = [
+  "-components/cast_streaming/renderer",
+  "+components/cast_streaming/renderer/common",
+  "+components/cast_streaming/renderer/frame",
+  "+components/cast_streaming/renderer/public",
+]

@@ -71,7 +71,7 @@ void FirstPartySetsManager::ComputeMetadataAndInvoke(
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback,
     base::ElapsedTimer timer) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(sets_.has_value());
+  CHECK(sets_.has_value());
 
   UMA_HISTOGRAM_TIMES("Cookie.FirstPartySets.EnqueueingDelay.ComputeMetadata2",
                       timer.Elapsed());
@@ -87,7 +87,7 @@ net::FirstPartySetMetadata FirstPartySetsManager::ComputeMetadataInternal(
     const std::set<net::SchemefulSite>& party_context,
     const net::FirstPartySetsContextConfig& fps_context_config) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(sets_.has_value());
+  CHECK(sets_.has_value());
 
   return sets_->ComputeMetadata(site, top_frame_site, party_context,
                                 fps_context_config);
@@ -97,7 +97,7 @@ absl::optional<net::FirstPartySetEntry> FirstPartySetsManager::FindEntry(
     const net::SchemefulSite& site,
     const net::FirstPartySetsContextConfig& fps_context_config) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(sets_.has_value());
+  CHECK(sets_.has_value());
   const base::ElapsedTimer timer;
 
   absl::optional<net::FirstPartySetEntry> entry =
@@ -133,7 +133,7 @@ void FirstPartySetsManager::FindEntriesAndInvoke(
     base::OnceCallback<void(FirstPartySetsManager::EntriesResult)> callback,
     base::ElapsedTimer timer) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(sets_.has_value());
+  CHECK(sets_.has_value());
 
   UMA_HISTOGRAM_TIMES("Cookie.FirstPartySets.EnqueueingDelay.FindOwners2",
                       timer.Elapsed());
@@ -145,14 +145,14 @@ FirstPartySetsManager::EntriesResult FirstPartySetsManager::FindEntriesInternal(
     const base::flat_set<net::SchemefulSite>& sites,
     const net::FirstPartySetsContextConfig& fps_context_config) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(sets_.has_value());
+  CHECK(sets_.has_value());
 
   return sets_->FindEntries(sites, fps_context_config);
 }
 
 void FirstPartySetsManager::InvokePendingQueries() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(sets_.has_value());
+  CHECK(sets_.has_value());
 
   UmaHistogramTimes(
       "Cookie.FirstPartySets.InitializationDuration.ReadyToServeQueries2",
@@ -187,8 +187,8 @@ void FirstPartySetsManager::SetCompleteSets(net::GlobalFirstPartySets sets) {
 
 void FirstPartySetsManager::EnqueuePendingQuery(base::OnceClosure run_query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!sets_.has_value());
-  DCHECK(pending_queries_);
+  CHECK(!sets_.has_value());
+  CHECK(pending_queries_);
 
   if (!first_async_query_timer_.has_value())
     first_async_query_timer_ = {base::ElapsedTimer()};

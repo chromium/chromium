@@ -5,13 +5,14 @@
 #include "components/payments/content/manifest_verifier.h"
 
 #include <stdint.h>
-#include <algorithm>
+
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
@@ -250,9 +251,8 @@ void ManifestVerifier::OnPaymentMethodManifestParsed(
       download_and_parse_time);
 
   std::vector<std::string> supported_origin_strings(supported_origins.size());
-  std::transform(supported_origins.begin(), supported_origins.end(),
-                 supported_origin_strings.begin(),
-                 [](const auto& origin) { return origin.Serialize(); });
+  base::ranges::transform(supported_origins, supported_origin_strings.begin(),
+                          &url::Origin::Serialize);
 
   if (cached_manifest_urls_.find(method_manifest_url) ==
       cached_manifest_urls_.end()) {

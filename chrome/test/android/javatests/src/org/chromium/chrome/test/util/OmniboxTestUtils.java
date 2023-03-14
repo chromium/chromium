@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.DropdownItemViewInfo;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdown;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownAdapter;
+import org.chromium.chrome.browser.omnibox.suggestions.base.ActionChipsProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderView;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
@@ -44,6 +45,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 /**
  * Utility methods and classes for testing the Omnibox.
@@ -240,12 +242,34 @@ public class OmniboxTestUtils {
     }
 
     /**
-     * Check whether suggestion of supplied type has been shown in the Suggestions Dropdown.
+     * Return the first suggestion of the specific type.
      *
      * @param type The type of suggestion to check.
      */
-    public <T extends View> SuggestionInfo<T> getSuggestionByType(
+    public <T extends View> SuggestionInfo<T> findSuggestionWithType(
             @OmniboxSuggestionUiType int type) {
+        return findSuggestion(info -> info.type == type);
+    }
+
+    /**
+     * Return the first suggestion that features Action Chips.
+     */
+    public @Nullable<T extends View> SuggestionInfo<T> findSuggestionWithActionChips() {
+        return findSuggestion(info -> {
+            if (!info.model.getAllSetProperties().contains(ActionChipsProperties.ACTION_CHIPS)) {
+                return false;
+            }
+            return info.model.get(ActionChipsProperties.ACTION_CHIPS) != null;
+        });
+    }
+
+    /**
+     * Return the first suggestion that meets requirements set by supplied filter.
+     *
+     * @param filter The filter to use to identify appropriate suggestion type.
+     */
+    public @Nullable<T extends View> SuggestionInfo<T> findSuggestion(
+            @NonNull Function<DropdownItemViewInfo, Boolean> filter) {
         checkSuggestionsShown();
         AtomicReference<SuggestionInfo<T>> result = new AtomicReference<>();
 
@@ -254,7 +278,7 @@ public class OmniboxTestUtils {
                     mLocationBar.getAutocompleteCoordinator().getSuggestionModelListForTest();
             for (int i = 0; i < currentModels.size(); i++) {
                 DropdownItemViewInfo info = (DropdownItemViewInfo) currentModels.get(i);
-                if (info.type == type) {
+                if (filter.apply(info)) {
                     result.set(new SuggestionInfo<T>(i, info.type, mAutocomplete.getSuggestionAt(i),
                             info.model, getSuggestionViewForIndex(i)));
                     return true;

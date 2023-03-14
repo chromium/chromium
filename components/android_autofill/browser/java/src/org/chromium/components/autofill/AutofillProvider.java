@@ -726,7 +726,7 @@ public class AutofillProvider {
                 return;
             }
         }
-        mDatalistPopup.filterAndShow(mDatalistSuggestions, isRtl, false);
+        mDatalistPopup.filterAndShow(mDatalistSuggestions, isRtl);
         if (mWebContentsAccessibility != null) {
             mWebContentsAccessibility.onAutofillPopupDisplayed(mDatalistPopup.getListView());
         }

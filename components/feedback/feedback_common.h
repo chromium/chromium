@@ -67,6 +67,7 @@ class FeedbackCommon : public base::RefCountedThreadSafe<FeedbackCommon> {
   int32_t product_id() const { return product_id_; }
   std::string user_agent() const { return user_agent_; }
   std::string locale() const { return locale_; }
+  std::string& autofill_metadata() { return autofill_metadata_; }
 
   const AttachedFile* attachment(size_t i) const { return &attachments_[i]; }
   size_t attachments() const { return attachments_.size(); }
@@ -88,6 +89,9 @@ class FeedbackCommon : public base::RefCountedThreadSafe<FeedbackCommon> {
     user_agent_ = user_agent;
   }
   void set_locale(const std::string& locale) { locale_ = locale; }
+  void set_autofill_metadata(const std::string& autofill_metadata) {
+    autofill_metadata_ = autofill_metadata;
+  }
 
  protected:
   virtual ~FeedbackCommon();
@@ -118,6 +122,7 @@ class FeedbackCommon : public base::RefCountedThreadSafe<FeedbackCommon> {
   int32_t product_id_;
   std::string user_agent_;
   std::string locale_;
+  std::string autofill_metadata_;
 
   std::string image_;
 

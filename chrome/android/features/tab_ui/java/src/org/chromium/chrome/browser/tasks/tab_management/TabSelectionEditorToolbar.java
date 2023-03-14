@@ -86,9 +86,7 @@ class TabSelectionEditorToolbar extends SelectableListToolbar<Integer> {
         navigationIconDrawable.setTint(lightIconColor);
 
         setNavigationIcon(navigationIconDrawable);
-        setNavigationContentDescription(TabUiFeatureUtilities.isLaunchPolishEnabled()
-                        ? R.string.accessibility_tab_selection_editor_back_button
-                        : R.string.close);
+        setNavigationContentDescription(R.string.accessibility_tab_selection_editor_back_button);
     }
 
     @Override

@@ -49,12 +49,12 @@ class PLATFORM_EXPORT RTCRtpTransceiverPlatform {
       Vector<webrtc::RtpCodecCapability>) {
     return {};
   }
-  virtual webrtc::RTCError SetOfferedRtpHeaderExtensions(
+  virtual webrtc::RTCError SetHeaderExtensionsToNegotiate(
       Vector<webrtc::RtpHeaderExtensionCapability> header_extensions) = 0;
   virtual Vector<webrtc::RtpHeaderExtensionCapability>
-  HeaderExtensionsNegotiated() const = 0;
-  virtual Vector<webrtc::RtpHeaderExtensionCapability> HeaderExtensionsToOffer()
-      const = 0;
+  GetNegotiatedHeaderExtensions() const = 0;
+  virtual Vector<webrtc::RtpHeaderExtensionCapability>
+  GetHeaderExtensionsToNegotiate() const = 0;
 };
 
 }  // namespace blink

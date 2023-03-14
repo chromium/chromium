@@ -5,9 +5,13 @@
 #include "chrome/updater/app/app_update.h"
 
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/updater/app/app.h"
+#include "chrome/updater/constants.h"
+#include "chrome/updater/lock.h"
 #include "chrome/updater/setup.h"
+#include "chrome/updater/util/util.h"
 
 namespace updater {
 
@@ -19,13 +23,31 @@ class AppUpdate : public App {
   void FirstTaskRun() override;
 
   void SetupDone(int result);
+
+  // Inter-process lock taken by AppInstall, AppUninstall, and AppUpdate.
+  std::unique_ptr<ScopedLock> setup_lock_;
 };
 
-void AppUpdate::Initialize() {}
+void AppUpdate::Initialize() {
+  setup_lock_ =
+      ScopedLock::Create(kSetupMutex, updater_scope(), kWaitForSetupLock);
+}
 
 void AppUpdate::Uninitialize() {}
 
 void AppUpdate::FirstTaskRun() {
+  if (WrongUser(updater_scope())) {
+    VLOG(0) << "The current user is not compatible with the current scope.";
+    Shutdown(kErrorWrongUser);
+    return;
+  }
+
+  if (!setup_lock_) {
+    VLOG(0) << "Failed to acquire setup mutex; shutting down.";
+    Shutdown(kErrorFailedToLockSetupMutex);
+    return;
+  }
+
   InstallCandidate(updater_scope(),
                    base::BindOnce(&AppUpdate::SetupDone, this));
 }

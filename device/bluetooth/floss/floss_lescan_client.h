@@ -122,8 +122,11 @@ class ScannerClientObserver : public base::CheckedObserver {
   // A scan result has been received
   virtual void ScanResultReceived(ScanResult scan_result) {}
 
+  // An advertisement has been found
+  virtual void AdvertisementFound(uint8_t scanner_id, ScanResult scan_result) {}
+
   // A scan result has been lost
-  virtual void ScanResultLost(ScanResult scan_result) {}
+  virtual void AdvertisementLost(uint8_t scanner_id, ScanResult scan_result) {}
 };
 
 // Low-level interface to Floss's LE Scan API.
@@ -168,7 +171,8 @@ class DEVICE_BLUETOOTH_EXPORT FlossLEScanClient : public FlossDBusClient,
                          uint8_t scanner_id,
                          GattStatus status) override;
   void ScanResultReceived(ScanResult scan_result) override;
-  void ScanResultLost(ScanResult scan_result) override;
+  void AdvertisementFound(uint8_t scanner_id, ScanResult scan_result) override;
+  void AdvertisementLost(uint8_t scanner_id, ScanResult scan_result) override;
 
   // Managed by FlossDBusManager - we keep local pointer to access object proxy.
   raw_ptr<dbus::Bus> bus_ = nullptr;

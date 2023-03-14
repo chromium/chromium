@@ -5,6 +5,8 @@
 #ifndef CC_TEST_FAKE_VIDEO_FRAME_PROVIDER_H_
 #define CC_TEST_FAKE_VIDEO_FRAME_PROVIDER_H_
 
+#include <utility>
+
 #include "base/memory/raw_ptr.h"
 #include "cc/layers/video_frame_provider.h"
 #include "media/base/video_frame.h"

@@ -247,15 +247,10 @@ void CheckUserAgentStringOrdering(bool mobile_device) {
 }
 
 #if BUILDFLAG(IS_WIN)
-bool ResolveCoreWinRT() {
-  return base::win::ResolveCoreWinRTDelayload() &&
-         base::win::ScopedHString::ResolveCoreWinRTStringDelayload();
-}
 
 // On Windows, the client hint sec-ch-ua-platform-version should be
 // the highest supported version of the UniversalApiContract.
 void VerifyWinPlatformVersion(std::string version) {
-  ASSERT_TRUE(ResolveCoreWinRT());
   base::win::ScopedWinrtInitializer scoped_winrt_initializer;
   ASSERT_TRUE(scoped_winrt_initializer.Succeeded());
 

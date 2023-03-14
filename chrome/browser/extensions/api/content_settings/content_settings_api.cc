@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/api/content_settings/content_settings_api.h"
 
-#include <memory>
 #include <set>
 #include <string>
 #include <utility>
@@ -80,8 +79,8 @@ ContentSettingsContentSettingClearFunction::Run() {
   ContentSettingsType content_type;
   EXTENSION_FUNCTION_VALIDATE(RemoveContentType(mutable_args(), &content_type));
 
-  std::unique_ptr<Clear::Params> params(Clear::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<Clear::Params> params = Clear::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   if (content_type == ContentSettingsType::DEPRECATED_PPAPI_BROKER) {
     NOTREACHED();
@@ -110,7 +109,7 @@ ContentSettingsContentSettingClearFunction::Run() {
   store->ClearContentSettingsForExtensionAndContentType(extension_id(), scope,
                                                         content_type);
 
-  return RespondNow(WithArguments());
+  return RespondNow(NoArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -118,8 +117,8 @@ ContentSettingsContentSettingGetFunction::Run() {
   ContentSettingsType content_type;
   EXTENSION_FUNCTION_VALIDATE(RemoveContentType(mutable_args(), &content_type));
 
-  std::unique_ptr<Get::Params> params(Get::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<Get::Params> params = Get::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   if (content_type == ContentSettingsType::DEPRECATED_PPAPI_BROKER) {
     NOTREACHED();
@@ -189,8 +188,8 @@ ContentSettingsContentSettingSetFunction::Run() {
   ContentSettingsType content_type;
   EXTENSION_FUNCTION_VALIDATE(RemoveContentType(mutable_args(), &content_type));
 
-  std::unique_ptr<Set::Params> params(Set::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<Set::Params> params = Set::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   if (content_type == ContentSettingsType::DEPRECATED_PPAPI_BROKER) {
     NOTREACHED();
@@ -311,7 +310,7 @@ ContentSettingsContentSettingSetFunction::Run() {
                                     secondary_pattern, content_type, setting,
                                     scope);
 
-  return RespondNow(WithArguments());
+  return RespondNow(NoArguments());
 }
 
 ExtensionFunction::ResponseAction
@@ -320,7 +319,7 @@ ContentSettingsContentSettingGetResourceIdentifiersFunction::Run() {
   // plugins have been deprecated since Chrome 87, there are no resource
   // identifiers for existing settings (but we retain the function for
   // backwards and potential forwards compatibility).
-  return RespondNow(WithArguments());
+  return RespondNow(NoArguments());
 }
 
 }  // namespace extensions

@@ -13,6 +13,9 @@
 
 namespace blink {
 
+enum class AutoRepeatType : uint8_t { kNoAutoRepeat, kAutoFill, kAutoFit };
+enum class GridAxisType : uint8_t { kStandaloneAxis, kSubgriddedAxis };
+
 // Stores tracks related data by compressing repeated tracks into a single node.
 struct NGGridTrackRepeater {
   enum RepeatType {
@@ -61,17 +64,28 @@ class CORE_EXPORT NGGridTrackList {
 
   // Returns the count of repeaters.
   wtf_size_t RepeaterCount() const;
-  // Returns the count of all tracks ignoring those within an auto repeater.
+  // Returns the count of all tracks, ignoring those within an auto repeater.
   wtf_size_t TrackCountWithoutAutoRepeat() const;
   // Returns the number of tracks in the auto repeater, or 0 if there is none.
   wtf_size_t AutoRepeatTrackCount() const;
+  // Returns the count of line names not including auto repeaters. Note that
+  // this is subtly different than `TrackCountWithoutAutoRepeat`, as it is
+  // specifically line names (not sizes), and includes empty line names.
+  wtf_size_t NonAutoRepeatLineCount() const;
+  // Increments the count of line names not including auto repeaters.
+  void IncrementNonAutoRepeatLineCount();
   // Adds a repeater.
   bool AddRepeater(const Vector<GridTrackSize, 1>& repeater_track_sizes,
                    NGGridTrackRepeater::RepeatType repeat_type =
                        NGGridTrackRepeater::RepeatType::kNoRepeat,
-                   wtf_size_t repeat_count = 1u);
+                   wtf_size_t repeat_count = 1u,
+                   wtf_size_t repeat_number_of_lines = 1u);
   // Returns true if this list contains an auto repeater.
   bool HasAutoRepeater() const;
+  // Returns true if this is a subgridded track list.
+  bool IsSubgriddedAxis() const;
+  // Sets the axis type (standalone or subgrid).
+  void SetAxisType(GridAxisType axis_type);
 
   // Clears all data.
   void Clear();
@@ -94,9 +108,18 @@ class CORE_EXPORT NGGridTrackList {
 
   // The index of the automatic repeater, if there is one; |kInvalidRangeIndex|
   // otherwise.
-  wtf_size_t auto_repeater_index_ = kNotFound;
+  wtf_size_t auto_repeater_index_{kNotFound};
+
   // Count of tracks ignoring those within an auto repeater.
-  wtf_size_t track_count_without_auto_repeat_ = 0;
+  wtf_size_t track_count_without_auto_repeat_{0};
+
+  // Count of line names outside of auto-repeaters. This is subtly different
+  // than `track_count_without_auto_repeat_`, as that is track definitions,
+  // while this tracks line names (including empty lines).
+  wtf_size_t non_auto_repeat_line_count_{0};
+
+  // The grid axis type (standalone or subgridded).
+  GridAxisType axis_type_{GridAxisType::kStandaloneAxis};
 };
 
 // This class wraps both legacy grid track list type, and the GridNG version:

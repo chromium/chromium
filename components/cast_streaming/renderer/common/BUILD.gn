@@ -1,0 +1,52 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+visibility = [ "//components/cast_streaming/renderer/*" ]
+
+source_set("common") {
+  public = [
+    "buffer_requester.h",
+    "decoder_buffer_provider_impl.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/cast_streaming/common:mojom",
+    "//components/cast_streaming/common/frame",
+    "//media/mojo/mojom",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
+  ]
+  deps = [
+    "//base",
+    "//components/cast_streaming/common/frame",
+    "//components/cast_streaming/renderer:decoder_buffer_provider",
+    "//media",
+    "//media/cast/openscreen:decoder_buffer_reader",
+    "//media/mojo/common",
+    "//mojo/public/cpp/system",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  public = []
+  sources = [
+    "buffer_requester_unittest.cc",
+    "decoder_buffer_provider_impl_unittest.cc",
+  ]
+  deps = [
+    ":common",
+    "//base",
+    "//base/test:test_support",
+    "//components/cast_streaming/common:mojom",
+    "//media:test_support",
+    "//media/",
+    "//media/mojo/common",
+    "//media/mojo/mojom",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx",
+  ]
+}

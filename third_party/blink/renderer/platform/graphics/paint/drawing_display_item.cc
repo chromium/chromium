@@ -21,8 +21,9 @@
 
 namespace blink {
 
-static SkBitmap RecordToBitmap(const PaintRecord& record,
-                               const gfx::Rect& bounds) {
+namespace {
+
+SkBitmap RecordToBitmap(const PaintRecord& record, const gfx::Rect& bounds) {
   SkBitmap bitmap;
   if (!bitmap.tryAllocPixels(
           SkImageInfo::MakeN32Premul(bounds.width(), bounds.height())))
@@ -35,9 +36,9 @@ static SkBitmap RecordToBitmap(const PaintRecord& record,
   return bitmap;
 }
 
-static bool BitmapsEqual(const PaintRecord& record1,
-                         const PaintRecord& record2,
-                         const gfx::Rect& bounds) {
+bool BitmapsEqual(const PaintRecord& record1,
+                  const PaintRecord& record2,
+                  const gfx::Rect& bounds) {
   SkBitmap bitmap1 = RecordToBitmap(record1, bounds);
   SkBitmap bitmap2 = RecordToBitmap(record2, bounds);
   if (bitmap1.isNull() || bitmap2.isNull())
@@ -61,6 +62,26 @@ static bool BitmapsEqual(const PaintRecord& record1,
   }
   return !mismatch_count;
 }
+
+bool PaintFlagsMayChangeColorOrMovePixelsExceptShader(
+    const cc::PaintFlags& flags) {
+  return flags.getStyle() != cc::PaintFlags::kFill_Style || flags.getLooper() ||
+         flags.getMaskFilter() || flags.getColorFilter() ||
+         flags.getImageFilter() ||
+         (flags.getBlendMode() != SkBlendMode::kSrc &&
+          flags.getBlendMode() != SkBlendMode::kSrcOver);
+}
+
+bool IsDrawAreaAnalysisCandidate(const cc::PaintOp& op) {
+  if (!op.IsPaintOpWithFlags()) {
+    return false;
+  }
+  const auto& flags = static_cast<const cc::PaintOpWithFlags&>(op).flags;
+  return !PaintFlagsMayChangeColorOrMovePixelsExceptShader(flags) &&
+         !flags.getShader();
+}
+
+}  // anonymous namespace
 
 bool DrawingDisplayItem::EqualsForUnderInvalidationImpl(
     const DrawingDisplayItem& other) const {
@@ -92,27 +113,24 @@ bool DrawingDisplayItem::EqualsForUnderInvalidationImpl(
   return BitmapsEqual(record, other_record, bounds);
 }
 
-SkColor DrawingDisplayItem::BackgroundColor(float& area) const {
+DrawingDisplayItem::BackgroundColorInfo DrawingDisplayItem::BackgroundColor()
+    const {
   DCHECK(!IsTombstone());
 
-  if (GetType() != DisplayItem::kBoxDecorationBackground &&
-      GetType() != DisplayItem::kDocumentBackground &&
-      GetType() != DisplayItem::kDocumentRootBackdrop &&
-      GetType() != DisplayItem::kCaret &&
-      GetType() != DisplayItem::kScrollCorner)
-    return SK_ColorTRANSPARENT;
-
   if (record_.empty()) {
-    return SK_ColorTRANSPARENT;
+    return {};
   }
 
+  bool may_be_solid_color = record_.size() == 1;
   for (const cc::PaintOp& op : record_) {
-    if (!op.IsPaintOpWithFlags())
-      continue;
-    const auto& flags = static_cast<const cc::PaintOpWithFlags&>(op).flags;
-    // Skip op with looper or shader which may modify the color.
-    if (flags.getLooper() || flags.getShader() ||
-        flags.getStyle() != cc::PaintFlags::kFill_Style) {
+    if (!IsDrawAreaAnalysisCandidate(op)) {
+      if (GetType() != DisplayItem::kBoxDecorationBackground &&
+          GetType() != DisplayItem::kDocumentBackground &&
+          GetType() != DisplayItem::kDocumentRootBackdrop &&
+          GetType() != DisplayItem::kScrollCorner) {
+        // Only analyze the first op for a display item not of the above types.
+        return {};
+      }
       continue;
     }
     SkRect item_rect;
@@ -125,14 +143,17 @@ SkColor DrawingDisplayItem::BackgroundColor(float& area) const {
         break;
       case cc::PaintOpType::DrawRRect:
         item_rect = static_cast<const cc::DrawRRectOp&>(op).rrect.rect();
+        may_be_solid_color = false;
         break;
       default:
-        return SK_ColorTRANSPARENT;
+        return {};
     }
-    area = item_rect.width() * item_rect.height();
-    return flags.getColor();
+    return {static_cast<const cc::PaintOpWithFlags&>(op).flags.getColor4f(),
+            item_rect.width() * item_rect.height(),
+            may_be_solid_color &&
+                item_rect.contains(gfx::RectToSkIRect(VisualRect()))};
   }
-  return SK_ColorTRANSPARENT;
+  return {};
 }
 
 gfx::Rect DrawingDisplayItem::CalculateRectKnownToBeOpaque() const {
@@ -189,14 +210,11 @@ gfx::Rect DrawingDisplayItem::CalculateRectKnownToBeOpaqueForRecord(
         continue;
 
       const auto& flags = static_cast<const cc::PaintOpWithFlags&>(op).flags;
-      if (flags.getStyle() != cc::PaintFlags::kFill_Style ||
-          flags.getLooper() ||
-          (flags.getBlendMode() != SkBlendMode::kSrc &&
-           flags.getBlendMode() != SkBlendMode::kSrcOver) ||
-          flags.getMaskFilter() || flags.getColorFilter() ||
-          flags.getImageFilter() || flags.getAlpha() != SK_AlphaOPAQUE ||
-          (flags.getShader() && !flags.getShader()->IsOpaque()))
+      if (PaintFlagsMayChangeColorOrMovePixelsExceptShader(flags) ||
+          !flags.getColor4f().isOpaque() ||
+          (flags.getShader() && !flags.getShader()->IsOpaque())) {
         continue;
+      }
 
       switch (op.GetType()) {
         case cc::PaintOpType::DrawRect:
@@ -268,13 +286,7 @@ gfx::Rect DrawingDisplayItem::TightenVisualRect(const gfx::Rect& visual_rect,
   DCHECK(ShouldTightenVisualRect(record));
 
   const cc::PaintOp& op = record.GetFirstOp();
-  if (!op.IsPaintOpWithFlags())
-    return visual_rect;
-
-  const auto& flags = static_cast<const cc::PaintOpWithFlags&>(op).flags;
-  // The following can cause the painted output to be outside the paint op rect.
-  if (flags.getStyle() != cc::PaintFlags::kFill_Style || flags.getLooper() ||
-      flags.getMaskFilter() || flags.getImageFilter() || flags.getShader()) {
+  if (!IsDrawAreaAnalysisCandidate(op)) {
     return visual_rect;
   }
 
@@ -305,42 +317,6 @@ gfx::Rect DrawingDisplayItem::TightenVisualRect(const gfx::Rect& visual_rect,
   // was correct and fully contains the recording.
   // DCHECK(visual_rect.Contains(item_rect));
   return item_rect;
-}
-
-bool DrawingDisplayItem::IsSolidColor() const {
-  // TODO(pdr): We could use SolidColorAnalyzer::DetermineIfSolidColor instead
-  // of special-casing just single-op drawrect solid colors.
-  if (record_.size() != 1) {
-    return false;
-  }
-
-  const cc::PaintOp& op = record_.GetFirstOp();
-  if (!op.IsPaintOpWithFlags())
-    return false;
-
-  const auto& flags = static_cast<const cc::PaintOpWithFlags&>(op).flags;
-  // The following can cause the painted output to be outside the paint op rect.
-  if (flags.getStyle() != cc::PaintFlags::kFill_Style || flags.getLooper() ||
-      flags.getMaskFilter() || flags.getImageFilter() || flags.getShader()) {
-    return false;
-  }
-
-  gfx::RectF solid_color_rect;
-  switch (op.GetType()) {
-    case cc::PaintOpType::DrawRect:
-      solid_color_rect =
-          gfx::SkRectToRectF(static_cast<const cc::DrawRectOp&>(op).rect);
-      break;
-    case cc::PaintOpType::DrawIRect:
-      solid_color_rect = gfx::RectF(
-          gfx::SkIRectToRect(static_cast<const cc::DrawIRectOp&>(op).rect));
-      break;
-    default:
-      return false;
-  }
-
-  // The solid color must fully cover the visual rect.
-  return solid_color_rect.Contains(gfx::RectF(VisualRect()));
 }
 
 }  // namespace blink

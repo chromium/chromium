@@ -12,8 +12,9 @@
 #include "content/browser/aggregation_service/aggregation_service_observer.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 
@@ -30,8 +31,8 @@ class CONTENT_EXPORT AggregationServiceInternalsHandlerImpl
  public:
   AggregationServiceInternalsHandlerImpl(
       WebUI* web_ui,
-      mojo::PendingReceiver<aggregation_service_internals::mojom::Handler>
-          receiver);
+      mojo::PendingRemote<aggregation_service_internals::mojom::Observer>,
+      mojo::PendingReceiver<aggregation_service_internals::mojom::Handler>);
   AggregationServiceInternalsHandlerImpl(
       const AggregationServiceInternalsHandlerImpl&) = delete;
   AggregationServiceInternalsHandlerImpl(
@@ -53,11 +54,6 @@ class CONTENT_EXPORT AggregationServiceInternalsHandlerImpl
   void ClearStorage(
       aggregation_service_internals::mojom::Handler::ClearStorageCallback
           callback) override;
-  void AddObserver(
-      mojo::PendingRemote<aggregation_service_internals::mojom::Observer>
-          observer,
-      aggregation_service_internals::mojom::Handler::AddObserverCallback
-          callback) override;
 
  private:
   friend class AggregationServiceInternalsHandlerImplTest;
@@ -71,12 +67,16 @@ class CONTENT_EXPORT AggregationServiceInternalsHandlerImpl
       base::Time actual_report_time,
       AggregationServiceObserver::ReportStatus result) override;
 
+  void OnObserverDisconnected();
+
   raw_ptr<WebUI> web_ui_;
 
-  mojo::Receiver<aggregation_service_internals::mojom::Handler> receiver_;
+  mojo::Remote<aggregation_service_internals::mojom::Observer> observer_;
 
-  mojo::RemoteSet<aggregation_service_internals::mojom::Observer> observers_;
+  mojo::Receiver<aggregation_service_internals::mojom::Handler> handler_;
 
+  // `AggregationService` is bound to the lifetime of the browser context,
+  // therefore outlives the observer.
   base::ScopedObservation<AggregationService, AggregationServiceObserver>
       aggregation_service_observer_{this};
 };

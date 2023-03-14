@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.metrics;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.eq;
 
 import android.Manifest;
 import android.content.Context;

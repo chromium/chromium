@@ -274,7 +274,7 @@ struct DispatcherImpl {
   static AllocatorDispatch allocator_dispatch_;
 #endif
 
-  static ALWAYS_INLINE void DoNotifyAllocation(
+  ALWAYS_INLINE static void DoNotifyAllocation(
       void* address,
       size_t size,
       AllocationSubsystem subSystem,
@@ -283,7 +283,7 @@ struct DispatcherImpl {
                                   subSystem, type_name);
   }
 
-  static ALWAYS_INLINE void DoNotifyFree(void* address) {
+  ALWAYS_INLINE static void DoNotifyFree(void* address) {
     PerformFreeNotification(s_observers, AllObservers{}, address);
   }
 

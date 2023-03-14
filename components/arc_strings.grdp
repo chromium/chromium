@@ -84,4 +84,117 @@
     Updating Android System
     Starting your app may take longer than usual.
   </message>
+
+  <!-- ARC Passpoint approval dialog -->
+  <message name="IDS_ASH_ARC_PASSPOINT_APP_APPROVAL_TITLE" desc="Dialog title that asks user to allow an app to set up WiFi networks through Passpoint">
+    Allow the <ph name="APP_NAME">$1<ex>OpenRoaming</ex></ph> app to set up WiFi networks?
+  </message>
+  <message name="IDS_ASH_ARC_PASSPOINT_APP_APPROVAL_BODY" desc="Dialog body that asks user to allow an app to set up WiFi networks through Passpoint.">
+    This app is requesting permission to set up new WiFi networks. After setup, your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> will automatically connect to participating WiFi networks. <ph name="LEARN_MORE">$2<ex>Learn more</ex></ph>
+  </message>
+  <message name="IDS_ASH_ARC_PASSPOINT_APP_APPROVAL_LEARN_MORE_LABEL" desc="The label for the link that leads to a help support article to learn more about Passpoint.">
+    Learn more
+  </message>
+  <message name="IDS_ASH_ARC_PASSPOINT_APP_APPROVAL_ALLOW_BUTTON" desc="The label for the buton for user to allow an app to set up WiFi networks through Passpoint.">
+    Allow
+  </message>
+  <message name="IDS_ASH_ARC_PASSPOINT_APP_APPROVAL_DONT_ALLOW_BUTTON" desc="The label for the buton for user to disallow an app to set up WiFi networks through Passpoint.">
+    Don't allow
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_NOTIFICATION_TITLE" desc="Title of the notification to inform that there is an important update to improve the performance of Android apps on ChromeOS.">
+    ChromeOS update for Android apps
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_NOTIFICATION_DAYS_UNTIL_DEADLINE" desc="Message of the notification to inform that an important update to improve the performance of Android apps on ChromeOS needs to be done within specific days.">
+    {DAYS_UNTIL_DEADLINE, plural,
+      =1 {Update required today}
+      =2 {Update required by tomorrow}
+      other {Update required within # days}}
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_NOTIFICATION_ACCEPT_BUTTON_LABEL" desc="Label of a notification button to accept an important update to improve the performance of Android apps on ChromeOS.">
+    Update now
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_DIALOG_TITLE" desc="Text to inform that Chrome tabs and apps will be closed when an update to improve the performance of Android apps on ChromeOS is started. The text is displayed as the title of a dialog.">
+    Your Chrome tabs and apps will close when the update starts
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_DIALOG_SAVE_WORK_MESSAGE" desc="Text to ask the user to save their work before starting an update to improve the performance of Android apps on ChromeOS.">
+    Please save your work and start the update when you're ready.
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_DIALOG_DAYS_UNTIL_DEADLINE" desc="Text to inform that an update to improve the performance of Android apps on ChromeOS needs to be done within the specified days.">
+    {DAYS_UNTIL_DEADLINE, plural,
+      =1 {Update required now}
+      =2 {Update required by tomorrow}
+      other {Update required within # days}}
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_DIALOG_UPDATE_NOW_BUTTON_LABEL" desc="Label of a button in the dialog to start an update to improve the performance of Android apps on ChromeOS. This label is used when the update does not need to happen right now and can be skipped.">
+    Start update now
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_DIALOG_SKIP_BUTTON_LABEL" desc="Label of a button in the dialog to skip an update to improve the performance of Android apps on ChromeOS.">
+    Remind me later
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_DIALOG_UPDATE_BUTTON_LABEL" desc="Label of a button in the dialog to start an update to improve the performance of Android apps on ChromeOS. This label is used when the update needs to happen right now and there is no skip button.">
+    Start update
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_LOADING_SCREEN_MESSAGE" desc="Loading message for screen to update Android for better performance.">
+    Loading...
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_WELCOME_SCREEN_TITLE" desc="Title of the initial screen of the update flow to improve the performance of Android apps on ChromeOS.">
+    Critical Android performance update
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_WHAT_TO_EXPECT_TITLE" desc="Header of the description to explain what is expected by an update to improve the performance of Android apps on Chrome.">
+    What to expect
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_UPDATE_DESCRIPTION" desc="Description to explain that it is an important update to improve the performance of Android apps on ChromeOS.">
+    This is a critical update that improves performance of Android apps on ChromeOS.
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_BLOCKING_BEHAVIOR_DESCRIPTION" desc="Description to explain that the device will be unusable during the update process to improve the performance of Android apps on ChromeOS.">
+    During the update you will not be able to use your device for up to 10 minutes.
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_CONNECT_TO_CHARGER_MESSAGE" desc="Message to ask to connect the device to a charger during the update process to improve the performance of Android apps on Chrome.">
+    Please keep your device connected to a charger during the update.
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_NOT_ENOUGH_FREE_DISK_SPACE_MESSAGE" desc="Message to inform that there is not enough free disk space on the device for an update to improve the performance of Android apps on ChromeOS.">
+    Free up more than <ph name="REQUIRED_FREE_DISK_SPACE">$1<ex>1.0 GB</ex></ph> of space
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_NOT_ENOUGH_BATTERY_MESSAGE" desc="Message to inform that there is not enough battery on the device to start an update to improve the performance of Android apps on ChromeOS.">
+    Your battery must be charged above <ph name="REQUIRED_BATTERY_PRECENT">$1<ex>30</ex></ph>%
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_SCREEN_UPDATE_BUTTON_LABEL" desc="Label of a button to proceed to the actual update process to improve the performance of Android apps on ChromeOS.">
+    Next
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_SCREEN_SKIP_BUTTON_LABEL" desc="Label of a button to skip an update to improve the performance of Android apps on ChromeOS and goes back to the login screen.">
+    Remind me later
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_RESUME_SCREEN_TITLE" desc="Title of the screen to resume the update flow to improve the performance of Android apps on ChromeOS. The screen is shown when the update has been previusly stopped halfway.">
+    Resume update
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_RESUME_DESCRIPTION" desc="Description to explain that the resume screen is shown because the device was interrupted during the previous update process.">
+    Your device was interrupted during the update process.
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_SCREEN_RESUME_BUTTON_LABEL" desc="Label of a button to resume an update to improve the performance of Android apps on ChromeOS.">
+    Resume
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_PROGRESS_SCREEN_TITLE" desc="Title of the screen to resume show the progress of an update to improve the performance of Android apps on ChromeOS.">
+    Installing updates
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_PROGRESS_DESCRIPTION" desc="Text to inform the progress of an update to improve the performance of Android apps on ChromeOS. The information is provided in terms of 1) how many percent of the process has completed and 2) how long it is expected to finish the remaining part of update.">
+    <ph name="PROGRESS_PERCENT">$1<ex>30</ex></ph>% completed | <ph name="ESTIMATED_REMAINING_TIME">$2<ex>3 mins left</ex></ph>
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_SUCCESS_SCREEN_TITLE" desc="Title of the screen which is shown when an update to improve the performance of Android apps on ChromeOS successfully finishes.">
+    Finished updating!
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_SCREEN_FINISH_BUTTON_LABEL" desc="Label of a button to finish an update to improve the performance of Android apps on ChromeOS. The device is rebooted after the button is pressed.">
+    Reboot
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_FAILURE_SCREEN_TITLE" desc="Title of the screen which is shown when an update to improve the performance of Android apps on ChromeOS failed.">
+    Update finished with errors
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_FAILURE_DESCRIPTION" desc="Description about the expectation after an update failure. The system has been updated and the performance of Android apps has been improved, but files and local app data have lost. Android apps will be downloaded and installed again automatically after a reboot.">
+    Your system was updated but some of your apps and files could not be recovered. Your apps will be downloaded again automatically.
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_SEND_FEEDBACK_MESSAGE" desc="Message to ask to send a feedback report after an update to improve the performance of Android apps on ChromeOS failed.">
+    Please send a report so we can improve further ChromeOS updates.
+  </message>
+  <message name="IDS_ARC_VM_DATA_MIGRATION_SCREEN_REPORT_BUTTON_LABEL" desc="Label of a button to send a feedback report after an update to improve the performance of Android apps on ChromeOS failed.">
+    Send a report
+  </message>
 </grit-part>

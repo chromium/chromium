@@ -110,6 +110,15 @@ message ConfigureAudioDecoder {
   optional bytes description = 4;
 }
 
+enum AacFormat {
+  AAC = 0;
+  ADTS = 1;
+}
+
+message AacEncoderConfig {
+  optional AacFormat format = 1;
+}
+
 message ConfigureAudioEncoder {
   // String describing codec (e.g. "opus")
   optional string codec = 1;
@@ -119,6 +128,8 @@ message ConfigureAudioEncoder {
   optional uint32 number_of_channels = 3;
 
   optional uint64 bitrate = 4;
+
+  optional AacEncoderConfig aac = 5;
 }
 
 enum EncodedChunkType {

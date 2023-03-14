@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/file_access/scoped_file_access_delegate.h"
+#include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "components/file_access/scoped_file_access.h"
 
 namespace file_access {
 // static
@@ -36,21 +39,18 @@ void ScopedFileAccessDelegate::RequestFilesAccessForSystemIO(
 }
 
 // static
-ScopedFileAccessDelegate::RequestFilesAccessForSystemIOCallback*
-ScopedFileAccessDelegate::SetRequestFilesAccessForSystemIOCallbackForTesting(
-    RequestFilesAccessForSystemIOCallback callback) {
-  auto* old_ptr = request_files_access_for_system_io_callback_;
-  request_files_access_for_system_io_callback_ =
-      new RequestFilesAccessForSystemIOCallback(std::move(callback));
-  return old_ptr;
-}
-
-void ScopedFileAccessDelegate::
-    ResetRequestFilesAccessForSystemIOCallbackForTesting() {
-  if (request_files_access_for_system_io_callback_) {
-    delete request_files_access_for_system_io_callback_;
-  }
-  request_files_access_for_system_io_callback_ = nullptr;
+ScopedFileAccessDelegate::RequestFilesAccessIOCallback
+ScopedFileAccessDelegate::GetCallbackForSystem() {
+  return base::BindRepeating(
+      [](const std::vector<base::FilePath>& file_paths,
+         base::OnceCallback<void(ScopedFileAccess)> callback) {
+        if (request_files_access_for_system_io_callback_) {
+          request_files_access_for_system_io_callback_->Run(
+              file_paths, std::move(callback));
+        } else {
+          std::move(callback).Run(ScopedFileAccess::Allowed());
+        }
+      });
 }
 
 ScopedFileAccessDelegate::ScopedFileAccessDelegate() {
@@ -71,8 +71,37 @@ ScopedFileAccessDelegate*
     ScopedFileAccessDelegate::scoped_file_access_delegate_ = nullptr;
 
 // static
-ScopedFileAccessDelegate::RequestFilesAccessForSystemIOCallback*
+ScopedFileAccessDelegate::RequestFilesAccessIOCallback*
     ScopedFileAccessDelegate::request_files_access_for_system_io_callback_ =
         nullptr;
+
+ScopedFileAccessDelegate::ScopedRequestFilesAccessCallbackForTesting::
+    ScopedRequestFilesAccessCallbackForTesting(
+        RequestFilesAccessIOCallback callback,
+        bool restore_original_callback)
+    : restore_original_callback_(restore_original_callback) {
+  original_callback_ = request_files_access_for_system_io_callback_;
+  request_files_access_for_system_io_callback_ =
+      new RequestFilesAccessIOCallback(std::move(callback));
+}
+
+ScopedFileAccessDelegate::ScopedRequestFilesAccessCallbackForTesting::
+    ~ScopedRequestFilesAccessCallbackForTesting() {
+  if (request_files_access_for_system_io_callback_) {
+    delete request_files_access_for_system_io_callback_;
+  }
+  if (!restore_original_callback_ && original_callback_) {
+    delete original_callback_;
+    original_callback_ = nullptr;
+  }
+  request_files_access_for_system_io_callback_ = original_callback_;
+}
+
+void ScopedFileAccessDelegate::ScopedRequestFilesAccessCallbackForTesting::
+    RunOriginalCallback(
+        const std::vector<base::FilePath>& path,
+        base::OnceCallback<void(file_access::ScopedFileAccess)> callback) {
+  original_callback_->Run(path, std::move(callback));
+}
 
 }  // namespace file_access

@@ -19,7 +19,8 @@ namespace ntp_home {
 
 // Records an NTP impression of type `impression_type`.
 void RecordNTPImpression(ntp_home::IOSNTPImpression impression_type);
-
+// Records when an NTP impression has occurred for Tile Ablation.
+void NTPImpressionHasOccurred();
 }  // namespace ntp_home
 
 // These values are persisted to IOS.ContentSuggestions.ActionOn* histograms.

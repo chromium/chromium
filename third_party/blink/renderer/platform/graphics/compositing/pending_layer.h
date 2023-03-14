@@ -32,7 +32,8 @@ class PLATFORM_EXPORT PendingLayer {
     kOther,
   };
 
-  PendingLayer(const PaintChunkSubset&, const PaintChunkIterator&);
+  PendingLayer(scoped_refptr<const PaintArtifact>,
+               const PaintChunk& first_chunk);
 
   // Returns the offset/bounds for the final cc::Layer, rounded if needed.
   gfx::Vector2dF LayerOffset() const;
@@ -63,7 +64,7 @@ class PLATFORM_EXPORT PendingLayer {
   }
 
   void SetPaintArtifact(scoped_refptr<const PaintArtifact> paint_artifact) {
-    chunks_.SetPaintArtifact(paint_artifact);
+    chunks_.SetPaintArtifact(std::move(paint_artifact));
   }
 
   // Merges |guest| into |this| if it can, by appending chunks of |guest|
@@ -116,7 +117,7 @@ class PLATFORM_EXPORT PendingLayer {
       DCHECK(!content_layer_client_);
       DCHECK_EQ(chunks_.size(), 1u);
     } else {
-      DCHECK(!cc_layer_);
+      DCHECK(!cc_layer_ || UsesSolidColorLayer());
       DCHECK_GE(chunks_.size(), 1u);
     }
 #endif
@@ -156,18 +157,17 @@ class PLATFORM_EXPORT PendingLayer {
 
   SkColor4f ComputeBackgroundColor() const;
 
+  // True if this contains only a single solid color PaintChunk in the same
+  // property tree state (decomposited 2d translations are allowed) as this
+  // PendingLayer.
+  bool IsSolidColor() const { return is_solid_color_; }
+
  private:
-  PendingLayer(const PaintChunkSubset&,
-               const PaintChunk& first_chunk,
-               wtf_size_t first_chunk_index_in_paint_artifact);
   gfx::RectF MapRectKnownToBeOpaque(const PropertyTreeState&) const;
   bool MergeInternal(const PendingLayer& guest,
                      const PropertyTreeState& guest_state,
                      bool prefers_lcd_text,
                      bool dry_run);
-
-  // True if this contains only a single solid color DrawingDisplayItem.
-  bool IsSolidColor() const;
 
   bool PropertyTreeStateChanged(const PendingLayer* old_pending_layer) const;
 
@@ -178,9 +178,14 @@ class PLATFORM_EXPORT PendingLayer {
   void UpdateScrollbarLayer(PendingLayer* old_pending_layer);
   void UpdateContentLayer(PendingLayer* old_pending_layer,
                           bool tracks_raster_invalidations);
+  void UpdateSolidColorLayer(PendingLayer* old_pending_layer);
 
   void UpdateLayerProperties();
   void UpdateLayerSelection(cc::LayerSelection&);
+
+  bool UsesSolidColorLayer() const {
+    return RuntimeEnabledFeatures::SolidColorLayersEnabled() && is_solid_color_;
+  }
 
   // The rects are in the space of property_tree_state.
   gfx::RectF bounds_;
@@ -189,6 +194,7 @@ class PLATFORM_EXPORT PendingLayer {
   bool draws_content_ = false;
   bool text_known_to_be_on_opaque_background_ = false;
   bool has_decomposited_blend_mode_ = false;
+  bool is_solid_color_ = false;
   PaintChunkSubset chunks_;
   RefCountedPropertyTreeState property_tree_state_;
   gfx::Vector2dF offset_of_decomposited_transforms_;
@@ -196,9 +202,11 @@ class PLATFORM_EXPORT PendingLayer {
       PaintPropertyChangeType::kUnchanged;
   CompositingType compositing_type_;
 
-  // This is set to non-null after layerization if ChunkRequiresOwnLayer().
+  // This is set to non-null after layerization if ChunkRequiresOwnLayer() or
+  // UsesSolidColorLayer() is true.
   scoped_refptr<cc::Layer> cc_layer_;
-  // This is set to non-null after layerization if !ChunkRequiresOwnLayer().
+  // This is set to non-null after layerization if !ChunkRequiresOwnLayer() and
+  // UsesSolidColorLayer() is false.
   std::unique_ptr<ContentLayerClientImpl> content_layer_client_;
 };
 

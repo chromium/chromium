@@ -36,13 +36,6 @@ public class TaskInfoBridge {
     }
 
     @CalledByNative
-    private static TaskInfo.TimingInfo createExactInfo(long triggerAtMs) {
-        TaskInfo.TimingInfo timingInfo =
-                TaskInfo.ExactInfo.create().setTriggerAtMs(triggerAtMs).build();
-        return timingInfo;
-    }
-
-    @CalledByNative
     private static TaskInfo createTaskInfo(int taskId, TaskInfo.TimingInfo timingInfo,
             String extras, int networkType, boolean requiresCharging, boolean isPersisted,
             boolean updateCurrent) {

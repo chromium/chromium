@@ -15782,6 +15782,128 @@ static_assert(
     offsetof(CopySharedImageINTERNALImmediate, unpack_flip_y) == 28,
     "offset of CopySharedImageINTERNALImmediate unpack_flip_y should be 28");
 
+struct ReadbackARGBImagePixelsINTERNAL {
+  typedef ReadbackARGBImagePixelsINTERNAL ValueType;
+  static const CommandId kCmdId = kReadbackARGBImagePixelsINTERNAL;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(2);
+
+  typedef uint32_t Result;
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLint _src_x,
+            GLint _src_y,
+            GLint _plane_index,
+            GLuint _dst_width,
+            GLuint _dst_height,
+            GLuint _row_bytes,
+            GLuint _dst_sk_color_type,
+            GLuint _dst_sk_alpha_type,
+            GLint _shm_id,
+            GLuint _shm_offset,
+            GLuint _color_space_offset,
+            GLuint _pixels_offset,
+            GLuint _mailbox_offset) {
+    SetHeader();
+    src_x = _src_x;
+    src_y = _src_y;
+    plane_index = _plane_index;
+    dst_width = _dst_width;
+    dst_height = _dst_height;
+    row_bytes = _row_bytes;
+    dst_sk_color_type = _dst_sk_color_type;
+    dst_sk_alpha_type = _dst_sk_alpha_type;
+    shm_id = _shm_id;
+    shm_offset = _shm_offset;
+    color_space_offset = _color_space_offset;
+    pixels_offset = _pixels_offset;
+    mailbox_offset = _mailbox_offset;
+  }
+
+  void* Set(void* cmd,
+            GLint _src_x,
+            GLint _src_y,
+            GLint _plane_index,
+            GLuint _dst_width,
+            GLuint _dst_height,
+            GLuint _row_bytes,
+            GLuint _dst_sk_color_type,
+            GLuint _dst_sk_alpha_type,
+            GLint _shm_id,
+            GLuint _shm_offset,
+            GLuint _color_space_offset,
+            GLuint _pixels_offset,
+            GLuint _mailbox_offset) {
+    static_cast<ValueType*>(cmd)->Init(
+        _src_x, _src_y, _plane_index, _dst_width, _dst_height, _row_bytes,
+        _dst_sk_color_type, _dst_sk_alpha_type, _shm_id, _shm_offset,
+        _color_space_offset, _pixels_offset, _mailbox_offset);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  int32_t src_x;
+  int32_t src_y;
+  int32_t plane_index;
+  uint32_t dst_width;
+  uint32_t dst_height;
+  uint32_t row_bytes;
+  uint32_t dst_sk_color_type;
+  uint32_t dst_sk_alpha_type;
+  int32_t shm_id;
+  uint32_t shm_offset;
+  uint32_t color_space_offset;
+  uint32_t pixels_offset;
+  uint32_t mailbox_offset;
+};
+
+static_assert(sizeof(ReadbackARGBImagePixelsINTERNAL) == 56,
+              "size of ReadbackARGBImagePixelsINTERNAL should be 56");
+static_assert(offsetof(ReadbackARGBImagePixelsINTERNAL, header) == 0,
+              "offset of ReadbackARGBImagePixelsINTERNAL header should be 0");
+static_assert(offsetof(ReadbackARGBImagePixelsINTERNAL, src_x) == 4,
+              "offset of ReadbackARGBImagePixelsINTERNAL src_x should be 4");
+static_assert(offsetof(ReadbackARGBImagePixelsINTERNAL, src_y) == 8,
+              "offset of ReadbackARGBImagePixelsINTERNAL src_y should be 8");
+static_assert(
+    offsetof(ReadbackARGBImagePixelsINTERNAL, plane_index) == 12,
+    "offset of ReadbackARGBImagePixelsINTERNAL plane_index should be 12");
+static_assert(
+    offsetof(ReadbackARGBImagePixelsINTERNAL, dst_width) == 16,
+    "offset of ReadbackARGBImagePixelsINTERNAL dst_width should be 16");
+static_assert(
+    offsetof(ReadbackARGBImagePixelsINTERNAL, dst_height) == 20,
+    "offset of ReadbackARGBImagePixelsINTERNAL dst_height should be 20");
+static_assert(
+    offsetof(ReadbackARGBImagePixelsINTERNAL, row_bytes) == 24,
+    "offset of ReadbackARGBImagePixelsINTERNAL row_bytes should be 24");
+static_assert(
+    offsetof(ReadbackARGBImagePixelsINTERNAL, dst_sk_color_type) == 28,
+    "offset of ReadbackARGBImagePixelsINTERNAL dst_sk_color_type should be 28");
+static_assert(
+    offsetof(ReadbackARGBImagePixelsINTERNAL, dst_sk_alpha_type) == 32,
+    "offset of ReadbackARGBImagePixelsINTERNAL dst_sk_alpha_type should be 32");
+static_assert(offsetof(ReadbackARGBImagePixelsINTERNAL, shm_id) == 36,
+              "offset of ReadbackARGBImagePixelsINTERNAL shm_id should be 36");
+static_assert(
+    offsetof(ReadbackARGBImagePixelsINTERNAL, shm_offset) == 40,
+    "offset of ReadbackARGBImagePixelsINTERNAL shm_offset should be 40");
+static_assert(offsetof(ReadbackARGBImagePixelsINTERNAL, color_space_offset) ==
+                  44,
+              "offset of ReadbackARGBImagePixelsINTERNAL color_space_offset "
+              "should be 44");
+static_assert(
+    offsetof(ReadbackARGBImagePixelsINTERNAL, pixels_offset) == 48,
+    "offset of ReadbackARGBImagePixelsINTERNAL pixels_offset should be 48");
+static_assert(
+    offsetof(ReadbackARGBImagePixelsINTERNAL, mailbox_offset) == 52,
+    "offset of ReadbackARGBImagePixelsINTERNAL mailbox_offset should be 52");
+
 struct EnableiOES {
   typedef EnableiOES ValueType;
   static const CommandId kCmdId = kEnableiOES;

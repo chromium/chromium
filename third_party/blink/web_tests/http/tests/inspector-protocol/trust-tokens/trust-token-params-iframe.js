@@ -1,14 +1,14 @@
 (async function(testRunner) {
   const {page, dp} = await testRunner.startBlank(
-      `Check that TrustTokenParams are included when an iframe requests a trust token'`);
+      `Check that PrivateTokenParams are included when an iframe requests a private token'`);
 
   await dp.Network.enable();
   await dp.Network.onRequestWillBeSent(event => {
-    const trustTokenParams = event.params.request.trustTokenParams;
-    if (trustTokenParams) {
-      testRunner.log(`Included trustTokenParams in request: ${JSON.stringify(trustTokenParams)}`);
+    const privateTokenParams = event.params.request.trustTokenParams;
+    if (privateTokenParams) {
+      testRunner.log(`Included privateTokenParams in request: ${JSON.stringify(privateTokenParams)}`);
     } else {
-      testRunner.log(`Main frame navigation not expected to contain trustTokenParams.`);
+      testRunner.log(`Main frame navigation not expected to contain privateTokenParams.`);
     }
   });
 

@@ -16,7 +16,6 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUPS_FOR_TABLETS;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_SELECTION_EDITOR_V2;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_STRIP_IMPROVEMENTS;
@@ -83,8 +82,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@Features.EnableFeatures({GRID_TAB_SWITCHER_FOR_TABLETS, TAB_STRIP_IMPROVEMENTS,
-        TAB_GROUPS_FOR_TABLETS, TAB_SELECTION_EDITOR_V2})
+@Features.EnableFeatures({TAB_STRIP_IMPROVEMENTS, TAB_GROUPS_FOR_TABLETS, TAB_SELECTION_EDITOR_V2})
 @Batch(Batch.PER_CLASS)
 public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
     private static final int TAB_COUNT = 3;

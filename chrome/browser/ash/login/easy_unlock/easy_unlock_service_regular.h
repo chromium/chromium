@@ -17,7 +17,6 @@
 #include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
-#include "components/prefs/pref_change_registrar.h"
 
 namespace proximity_auth {
 class ProximityAuthProfilePrefManager;
@@ -70,9 +69,7 @@ class EasyUnlockServiceRegular
   void UseLoadedRemoteDevices(
       const multidevice::RemoteDeviceRefList& remote_devices);
 
-  // Persists Smart Lock host and local device to prefs, and then informs
-  // the base class to potentially update Smart Lock host and local device
-  // stored in the TPM.
+  // Persists Smart Lock host and local device to prefs.
   void SetStoredRemoteDevices(const base::Value::List& devices);
 
   // EasyUnlockService implementation:
@@ -160,9 +157,6 @@ class EasyUnlockServiceRegular
   // the Chromebook is unlocked, we can show the subsequent 'pairing applied'
   // notification.
   bool shown_pairing_changed_notification_ = false;
-
-  // Listens to pref changes.
-  PrefChangeRegistrar registrar_;
 
   base::WeakPtrFactory<EasyUnlockServiceRegular> weak_ptr_factory_{this};
 };

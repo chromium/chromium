@@ -36,6 +36,9 @@ specific_include_rules = {
   "examples_browser_main_parts\.cc": [
     "+ui/wm/test"
   ],
+  "highlight_border\.cc": [
+    "+ui/chromeos/styles/cros_tokens_color_mappings.h"
+  ],
   "run_all_unittests_main\.cc": [
     "+mojo/core/embedder",
   ],

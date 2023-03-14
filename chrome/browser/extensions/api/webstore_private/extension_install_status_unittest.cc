@@ -79,15 +79,14 @@ class ExtensionInstallStatusTest : public BrowserWithTestWindowTest {
   }
 
   void SetPendingList(const std::vector<ExtensionId>& ids) {
-    std::unique_ptr<base::Value> id_values =
-        std::make_unique<base::Value>(base::Value::Type::DICT);
+    base::Value::Dict id_values;
     for (const auto& id : ids) {
-      base::Value request_data(base::Value::Type::DICT);
-      request_data.SetKey(extension_misc::kExtensionRequestTimestamp,
-                          ::base::TimeToValue(base::Time::Now()));
-      id_values->SetKey(id, std::move(request_data));
+      base::Value::Dict request_data;
+      request_data.Set(extension_misc::kExtensionRequestTimestamp,
+                       ::base::TimeToValue(base::Time::Now()));
+      id_values.Set(id, std::move(request_data));
     }
-    profile()->GetTestingPrefService()->SetUserPref(
+    profile()->GetTestingPrefService()->SetDict(
         prefs::kCloudExtensionRequestIds, std::move(id_values));
   }
 };

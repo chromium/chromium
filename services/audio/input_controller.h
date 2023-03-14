@@ -37,6 +37,7 @@ class AudioInputStream;
 class AudioManager;
 class Snoopable;
 class UserInputMonitor;
+struct AudioGlitchInfo;
 }  // namespace media
 
 namespace audio {
@@ -155,7 +156,8 @@ class InputController final : public StreamMonitor {
     virtual void Write(const media::AudioBus* data,
                        double volume,
                        bool key_pressed,
-                       base::TimeTicks capture_time) = 0;
+                       base::TimeTicks capture_time,
+                       const media::AudioGlitchInfo& glitch_info) = 0;
 
     // Close this synchronous writer.
     virtual void Close() = 0;
@@ -285,7 +287,8 @@ class InputController final : public StreamMonitor {
   // Receives new input data on the hw callback thread.
   void OnData(const media::AudioBus* source,
               base::TimeTicks capture_time,
-              double volume);
+              double volume,
+              const media::AudioGlitchInfo& glitch_info);
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   // Called from the constructor. Helper to isolate logic setting up audio
@@ -300,7 +303,8 @@ class InputController final : public StreamMonitor {
   // Used as a callback for |audio_processor_handler_|.
   void DeliverProcessedAudio(const media::AudioBus& audio_bus,
                              base::TimeTicks audio_capture_time,
-                             absl::optional<double> new_volume);
+                             absl::optional<double> new_volume,
+                             const media::AudioGlitchInfo& glitch_info);
 #endif
 
   static StreamType ParamsToStreamType(const media::AudioParameters& params);

@@ -95,7 +95,7 @@ TEST(BookmarkStorageTest, ShouldGenerateBackupFileUponFirstSave) {
       bookmarks_file_path.ReplaceExtension(FILE_PATH_LITERAL("bak"));
 
   // Create a dummy JSON file, to verify backups are created.
-  ASSERT_NE(0, base::WriteFile(bookmarks_file_path, "{}", 2));
+  ASSERT_TRUE(base::WriteFile(bookmarks_file_path, "{}"));
 
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

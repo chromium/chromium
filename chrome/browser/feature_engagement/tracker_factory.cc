@@ -50,7 +50,7 @@ KeyedService* TrackerFactory::BuildServiceInstanceFor(
   leveldb_proto::ProtoDatabaseProvider* db_provider =
       profile->GetDefaultStoragePartition()->GetProtoDatabaseProvider();
   return feature_engagement::Tracker::Create(
-      storage_dir, background_task_runner, db_provider);
+      storage_dir, background_task_runner, db_provider, nullptr);
 }
 
 }  // namespace feature_engagement

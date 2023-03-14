@@ -11,9 +11,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_utils.h"
+#include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
 
@@ -234,6 +236,16 @@ std::vector<std::string> DIPSStorage::GetSitesToClear() const {
   }
 
   return sites_to_clear;
+}
+
+/* static */
+void DIPSStorage::DeleteDatabaseFiles(base::FilePath path,
+                                      base::OnceClosure on_complete) {
+  // TODO (jdh): Decide how to handle the case of failing to delete db files.
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(IgnoreResult(&sql::Database::Delete), std::move(path)),
+      std::move(on_complete));
 }
 
 /* static */

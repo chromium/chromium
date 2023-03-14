@@ -42,6 +42,7 @@ constexpr float kDragHideRatioThreshold = 0.4f;
 
 constexpr int kSystemShelfSizeTabletModeDense = 48;
 constexpr int kSystemShelfSizeTabletModeNormal = 56;
+constexpr int kElevatedSystemShelfSizeTabletMode = 136;
 
 // Records the histogram value tracking the reason shelf control buttons are
 // shown in tablet mode.
@@ -140,16 +141,7 @@ class ShelfConfig::ShelfSplitViewObserver : public SplitViewObserver {
 };
 
 ShelfConfig::ShelfConfig()
-    : use_in_app_shelf_in_overview_(false),
-      overview_mode_(false),
-      in_tablet_mode_(false),
-      is_dense_(false),
-      is_in_app_(true),
-      in_split_view_with_overview_(false),
-      shelf_controls_shown_(true),
-      is_virtual_keyboard_shown_(false),
-      is_app_list_visible_(false),
-      shelf_button_icon_size_(44),
+    : shelf_button_icon_size_(44),
       shelf_button_icon_size_median_(40),
       shelf_button_icon_size_dense_(36),
       shelf_button_size_(56),
@@ -335,6 +327,10 @@ int ShelfConfig::GetHotseatSize(HotseatDensity density) const {
     return shelf_size();
 
   return GetShelfButtonSize(density);
+}
+
+int ShelfConfig::GetHomecherElevatedAppBarOffset() const {
+  return 8;
 }
 
 int ShelfConfig::shelf_size() const {
@@ -546,6 +542,27 @@ int ShelfConfig::GetSystemShelfSizeInTabletMode() const {
   // staying in clamshell mode.
   return IsDenseForCurrentScreen() ? kSystemShelfSizeTabletModeDense
                                    : kSystemShelfSizeTabletModeNormal;
+}
+
+int ShelfConfig::GetSystemShelfInsetsInTabletMode() const {
+  if (elevate_tablet_mode_app_bar_) {
+    return kElevatedSystemShelfSizeTabletMode;
+  } else {
+    return GetSystemShelfSizeInTabletMode();
+  }
+}
+
+int ShelfConfig::GetMinimumInlineAppBarSize() const {
+  return 6 * kSystemShelfSizeTabletModeDense + 5 * shelf_button_spacing_ +
+         2 * app_icon_end_padding_;
+}
+
+void ShelfConfig::UpdateShowElevatedAppBar(
+    const gfx::Size& inline_app_bar_size) {
+  if (features::IsShelfStackedHotseatEnabled()) {
+    elevate_tablet_mode_app_bar_ =
+        inline_app_bar_size.width() < GetMinimumInlineAppBarSize();
+  }
 }
 
 void ShelfConfig::UpdateConfigForAccessibilityState() {

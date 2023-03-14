@@ -6,6 +6,7 @@
 #define ASH_CLIPBOARD_VIEWS_CLIPBOARD_HISTORY_FILE_ITEM_VIEW_H_
 
 #include "ash/clipboard/views/clipboard_history_text_item_view.h"
+#include "base/unguessable_token.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
@@ -13,14 +14,15 @@ class MenuItemView;
 }
 
 namespace ash {
+class ClipboardHistory;
 
 // The menu item showing the copied file.
 class ClipboardHistoryFileItemView : public ClipboardHistoryTextItemView {
  public:
   METADATA_HEADER(ClipboardHistoryFileItemView);
-  ClipboardHistoryFileItemView(
-      const ClipboardHistoryItem* clipboard_history_item,
-      views::MenuItemView* container);
+  ClipboardHistoryFileItemView(const base::UnguessableToken& item_id,
+                               const ClipboardHistory* clipboard_history,
+                               views::MenuItemView* container);
   ClipboardHistoryFileItemView(const ClipboardHistoryFileItemView& rhs) =
       delete;
   ClipboardHistoryFileItemView& operator=(

@@ -92,6 +92,9 @@ void AddAnalysisConnectorVerdictToEvent(
     triggered_rule.Set(
         extensions::SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId,
         trigger.rule_id());
+    triggered_rule.Set(
+        extensions::SafeBrowsingPrivateEventRouter::kKeyUrlCategory,
+        trigger.url_category());
 
     triggered_rule_info.Append(std::move(triggered_rule));
   }

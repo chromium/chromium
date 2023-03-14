@@ -33,8 +33,7 @@ public class BackgroundTaskSchedulerImplWithMockTest {
     @Before
     public void setUp() {
         mDelegate = new MockBackgroundTaskSchedulerDelegate();
-        mTaskScheduler = new BackgroundTaskSchedulerImpl(
-                mDelegate, new BackgroundTaskSchedulerAlarmManager());
+        mTaskScheduler = new BackgroundTaskSchedulerImpl(mDelegate);
     }
 
     @Test

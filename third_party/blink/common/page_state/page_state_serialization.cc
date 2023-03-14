@@ -159,7 +159,7 @@ struct SerializeObject {
   }
 
   std::string GetAsString() {
-    return std::string(static_cast<const char*>(pickle.data()), pickle.size());
+    return std::string(pickle.data_as_char(), pickle.size());
   }
 
   base::Pickle pickle;
@@ -167,6 +167,10 @@ struct SerializeObject {
   int version;
   bool parse_error;
 };
+
+// IMPORTANT: When making updates to the PageState serialization code, be sure
+// to first read
+// https://chromium.googlesource.com/chromium/src/+/main/docs/modifying_session_history_serialization.md
 
 // Version ID of serialized format.
 // 11: Min version

@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
@@ -14,11 +15,16 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/guid.h"
+#include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "net/base/isolation_info.h"
+#include "net/base/schemeful_site.h"
 #include "net/http/http_request_headers.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/url_request.h"
 #include "services/network/attribution/attribution_attestation_mediator.h"
+#include "services/network/attribution/attribution_attestation_mediator_metrics_recorder.h"
 #include "services/network/attribution/boringssl_attestation_cryptographer.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -27,23 +33,26 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/trust_tokens/trust_token_key_commitment_getter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace network {
 
 namespace {
 
-// Same as attribution_reporting::SuitableOrigin
-// TODO(https://crbug.com/1408181): unify logic across browser and network
-// service
-bool IsSuitableDestinationOrigin(const absl::optional<url::Origin>& origin) {
-  if (!origin.has_value()) {
-    return false;
-  }
+void RecordDestinationOriginStatus(
+    AttributionRequestHelper::DestinationOriginStatus status) {
+  base::UmaHistogramEnumeration(
+      "Conversions.TriggerAttestation.DestinationOriginStatus", status);
+}
 
-  const std::string& scheme = origin.value().scheme();
+// Same as `attribution_reporting::SuitableOrigin`
+// TODO(https://crbug.com/1408181): unify logic across browser and network
+// service.
+bool IsSuitableDestinationOrigin(const url::Origin& origin) {
+  const std::string& scheme = origin.scheme();
   return (scheme == url::kHttpsScheme || scheme == url::kHttpScheme) &&
-         network::IsOriginPotentiallyTrustworthy(origin.value());
+         network::IsOriginPotentiallyTrustworthy(origin);
 }
 
 bool IsNeededForRequest(const net::HttpRequestHeaders& request_headers) {
@@ -57,14 +66,23 @@ bool IsNeededForRequest(const net::HttpRequestHeaders& request_headers) {
 
 }  // namespace
 
-AttributionRequestHelper::AttestationOperation::AttestationOperation(
-    const base::RepeatingCallback<AttributionAttestationMediator()>&
-        create_mediator)
-    : aggregatable_report_id(base::GUID::GenerateRandomV4()),
-      mediator(create_mediator.Run()) {}
+struct AttributionRequestHelper::AttestationOperation {
+  explicit AttestationOperation(
+      const base::RepeatingCallback<AttributionAttestationMediator()>&
+          create_mediator)
+      : aggregatable_report_id(base::GUID::GenerateRandomV4()),
+        mediator(create_mediator.Run()) {}
 
-AttributionRequestHelper::AttestationOperation::~AttestationOperation() =
-    default;
+  // Returns the message associated to this atttestation operation. It is
+  // represented by concatenating a trigger`s `destination_origin` and the
+  // `aggregatable_report_id`.
+  std::string Message(const url::Origin& destination_origin);
+
+  // TODO(https://crbug.com/1406645): use explicitly spec compliant structure
+  base::GUID aggregatable_report_id;
+
+  AttributionAttestationMediator mediator;
+};
 
 std::string AttributionRequestHelper::AttestationOperation::Message(
     const url::Origin& destination_origin) {
@@ -91,10 +109,11 @@ AttributionRequestHelper::CreateIfNeeded(
         // The key_commitment_getter instance  (`t`) is a singleton owned by
         // NetworkService, it will always outlive this.
         return AttributionAttestationMediator(
-            t, std::make_unique<BoringsslAttestationCryptographer>());
+            t, std::make_unique<BoringsslAttestationCryptographer>(),
+            std::make_unique<AttributionAttestationMediatorMetricsRecorder>());
       },
       key_commitment_getter);
-  return absl::WrapUnique(
+  return base::WrapUnique(
       new AttributionRequestHelper(std::move(create_mediator)));
 }
 
@@ -106,7 +125,7 @@ AttributionRequestHelper::CreateForTesting(
     return nullptr;
   }
 
-  return absl::WrapUnique(
+  return base::WrapUnique(
       new AttributionRequestHelper(std::move(create_mediator)));
 }
 
@@ -123,8 +142,19 @@ void AttributionRequestHelper::Begin(net::URLRequest& request,
   // TODO(https://crbug.com/1406643): investigate the situations in which
   // `url_request->isolation_info().top_frame_origin()` would not be defined and
   // confirm that it can be relied upon here.
-  if (!IsSuitableDestinationOrigin(
-          request.isolation_info().top_frame_origin())) {
+  if (!request.isolation_info().top_frame_origin().has_value()) {
+    RecordDestinationOriginStatus(
+        AttributionRequestHelper::DestinationOriginStatus::kMissing);
+    std::move(done).Run();
+    return;
+  }
+  has_suitable_destination_origin_ = IsSuitableDestinationOrigin(
+      request.isolation_info().top_frame_origin().value());
+  RecordDestinationOriginStatus(
+      has_suitable_destination_origin_
+          ? AttributionRequestHelper::DestinationOriginStatus::kValid
+          : AttributionRequestHelper::DestinationOriginStatus::kNonSuitable);
+  if (!has_suitable_destination_origin_) {
     std::move(done).Run();
     return;
   }
@@ -168,12 +198,7 @@ void AttributionRequestHelper::OnReceiveRedirect(
     base::OnceCallback<void(mojom::URLResponseHeadPtr response)> done) {
   // No operation was started and none will start for the redirect request as
   // the request's destination origin is not suitable. We can return early.
-  //
-  // TODO(https://crbug.com/1406643): investigate the situations in which
-  // `url_request->isolation_info().top_frame_origin()` would not be defined and
-  // confirm that it can be relied upon here.
-  if (!IsSuitableDestinationOrigin(
-          request.isolation_info().top_frame_origin())) {
+  if (!has_suitable_destination_origin_) {
     std::move(done).Run(std::move(response));
     return;
   }
@@ -182,28 +207,29 @@ void AttributionRequestHelper::OnReceiveRedirect(
   Finalize(*raw_response,
            base::BindOnce(
                &AttributionRequestHelper::OnDoneFinalizingResponseFromRedirect,
-               weak_ptr_factory_.GetWeakPtr(), std::ref(request), redirect_info,
+               weak_ptr_factory_.GetWeakPtr(), std::ref(request),
+               redirect_info.new_url,
                base::BindOnce(std::move(done), std::move(response))));
 }
 
 void AttributionRequestHelper::OnDoneFinalizingResponseFromRedirect(
     net::URLRequest& request,
-    const net::RedirectInfo& redirect_info,
+    const GURL& new_url,
     base::OnceClosure done) {
   // If attribution headers were previously added on the request, we clear them.
-  // This avoid leaking headers in a situation where the first request needed
+  // This avoids leaking headers in a situation where the first request needed
   // attribution headers but the subsequent one does not.
   request.RemoveRequestHeaderByName(
       AttributionAttestationMediator::kTriggerAttestationHeader);
   request.RemoveRequestHeaderByName(kTrustTokensSecTrustTokenVersionHeader);
 
-  // Now that we've finalzied the previous operation, we create a new one for
+  // Now that we've finalized the previous operation, we create a new one for
   // the redirect.
   attestation_operation_ =
       std::make_unique<AttestationOperation>(create_mediator_);
 
   attestation_operation_->mediator.GetHeadersForAttestation(
-      redirect_info.new_url,
+      new_url,
       attestation_operation_->Message(
           /*destination_origin=*/request.isolation_info()
               .top_frame_origin()
@@ -231,8 +257,9 @@ void AttributionRequestHelper::OnDoneProcessingAttestationResponse(
     mojom::URLResponseHead& response,
     base::OnceClosure done,
     absl::optional<std::string> maybe_attestation_header) {
-  auto attestation_operation = std::move(attestation_operation_);
-  attestation_operation_ = nullptr;
+  DCHECK(attestation_operation_);
+  std::unique_ptr<AttestationOperation> attestation_operation(
+      std::move(attestation_operation_));
 
   if (!maybe_attestation_header.has_value()) {
     std::move(done).Run();
@@ -240,7 +267,7 @@ void AttributionRequestHelper::OnDoneProcessingAttestationResponse(
   }
 
   response.trigger_attestation = TriggerAttestation::Create(
-      /*token=*/maybe_attestation_header.value(),
+      /*token=*/*std::move(maybe_attestation_header),
       attestation_operation->aggregatable_report_id.AsLowercaseString());
   std::move(done).Run();
 }

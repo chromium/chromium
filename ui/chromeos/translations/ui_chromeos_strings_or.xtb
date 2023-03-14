@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">ପରବର୍ତ୍ତୀ</translation>
 <translation id="1209796539517632982">ସ୍ୱଚାଳିତ ନାମ ସର୍ଭର</translation>
 <translation id="1210831758834677569">ଲାଓ</translation>
+<translation id="1221555006497674479">ଷ୍ଟୋରେଜ କମ ଅଛି ଆପଣଙ୍କ <ph name="TOTAL_SPACE" /> ସେୟାର କରାଯାଇଥିବା ଡ୍ରାଇଭ ଷ୍ଟୋରେଜରୁ <ph name="REMAINING_PERCENTAGE" />% ବାକି ଅଛି।</translation>
 <translation id="1243314992276662751">ଅପ୍‌ଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="1249250836236328755">ଶୈଳୀ</translation>
 <translation id="1254593899333212300">ସିଧାସଳଖ ଇଣ୍ଟର୍ନେ‍ଟ୍ ସଂଯୋଗ</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">ଚାଇନିଜ୍ ପିନୟିନ୍</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" />ଟି ଫାଇଲକୁ ଅଫଲାଇନରେ ଉପଲବ୍ଧ କରାଯାଉଛି</translation>
 <translation id="164969095109328410">Chrome ଡିଭାଇସ୍</translation>
+<translation id="1661207570040737402">ଆପଣଙ୍କ ସମସ୍ତ ସେୟାର କରାଯାଇଥିବା ଡ୍ରାଇଭ Google Workspace ଷ୍ଟୋରେଜକୁ ଆପଣ ବ୍ୟବହାର କରିସାରିଛନ୍ତି।</translation>
 <translation id="1661867754829461514">PIN ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="166439687370499867">ସେୟାର୍ କରାଯାଇଥିବା କନ୍‌ଫିଗରେସନ୍‌କୁ ବଦଳାଇବାର ଅନୁମତି ନାହିଁ</translation>
 <translation id="1665611772925418501">ଫାଇଲ୍‌ଟି ସଂଶୋଧିତ ହୋଇପାରିଲା ନାହିଁ।</translation>
@@ -82,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍ ଜିପ୍ ହେଉଛି...</translation>
 <translation id="1722687688096767818">ପ୍ରୋଫାଇଲ୍ ଯୋଗ କରାଯାଉଛି...</translation>
 <translation id="1726100011689679555">ନାମ ସର୍ଭର୍</translation>
+<translation id="1727562178154619254">ସିଙ୍କ କରିବାକୁ ପ୍ରସ୍ତୁତ</translation>
 <translation id="1729953886957086472">ଜର୍ମାନ (ଜର୍ମାନୀ)</translation>
 <translation id="1730235522912993863">ଚାଇନିଜ୍ କାଙ୍ଗଜି</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍ କପି ହୋଇଛି।</translation>
@@ -349,11 +352,11 @@
 <translation id="3924145049010392604">ମେଟା</translation>
 <translation id="3943857333388298514">ପେଷ୍ଟ କରନ୍ତୁ</translation>
 <translation id="3952872973865944257">ତେଲୁଗୁ ଫୋନେଟିକ୍</translation>
-<translation id="3954354850384043518">ପ୍ରକ୍ରିୟାରତ ଅଛି</translation>
 <translation id="3958548648197196644">କିୱି</translation>
 <translation id="3971140002794351170">ମୋବାଇଲ ପ୍ରୋଫାଇଲ୍, <ph name="NETWORK_COUNT" />ର <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> ନେଟୱାର୍କ ଡାଉନଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="3973925058222872294">ଇଂରାଜୀ (UK)</translation>
 <translation id="3975895378829046965">ବଙ୍ଗଳା ଫୋନେଟିକ୍</translation>
+<translation id="3999574733850440202">ବର୍ତ୍ତମାନ ଖୋଲାଯାଇଥିବା Microsoft ଫାଇଲଗୁଡ଼ିକ OneDriveକୁ ମୁଭ କରାଯାଇଛି</translation>
 <translation id="4002066346123236978">ଆଖ୍ୟା</translation>
 <translation id="4017788180641807848">ୱାର୍କମ୍ୟାନ୍ କୀବୋର୍ଡ ସହ ଇଂରାଜୀ (US)</translation>
 <translation id="4019998208269143058">କ୍ୱିକ ଫାଇଲଗୁଡ଼ିକରେ ପିନ କରନ୍ତୁ</translation>
@@ -362,6 +365,7 @@
 <translation id="4092890906744441904">ଆଇରିଶ୍</translation>
 <translation id="4124935795427217608">ୟୁନିକର୍ନ</translation>
 <translation id="4131235941541910880">ଆପଣ ଆବଶ୍ୟକ କରୁନଥିବା ଆଇଟମଗୁଡ଼ିକୁ ଟ୍ରାସକୁ ମୁଭ କରନ୍ତୁ</translation>
+<translation id="4134804435730168042"><ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ଡିଭାଇସ ସେଟଅପ ପରେ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="4153015322587141338">ସେଲ୍ଫରେ ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ କ୍ୱିକ ଆକ୍ସେସ ପାଇଁ ଏକ ଫାଇଲରେ ଡାହାଣ-କ୍ଲିକ କରନ୍ତୁ ଏବଂ "<ph name="PIN_COMMAND" />"କୁ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="4157569377477607576">ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ଏହା ସୁପାରିଶ କରେ ନାହିଁ:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ମୁଭ୍ କରାଯାଇଛି।</translation>
@@ -404,6 +408,7 @@
 <translation id="4414834425328380570">"<ph name="FILE_NAME" />" ଡିଲିଟ ହୋଇଯିବ ଏବଂ ଆପଣ ଏହାକୁ ରିଷ୍ଟୋର କରିବା ପାଇଁ ସକ୍ଷମ ହେବେ ନାହିଁ।</translation>
 <translation id="4418686080762064601">ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକ ପାଇଁ ଏକ ସର୍ଟକଟ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="4425149324548788773">ମୋ ଡ୍ରାଇଭ୍</translation>
+<translation id="4432921877815220091"><ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କ, <ph name="NETWORK_NAME" />, ଡିଭାଇସ ସେଟଅପ ପରେ ସକ୍ରିୟ କରନ୍ତୁ, ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="NETWORK_NAME" />, ସିଗ୍‌ନାଲ୍‌ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="4442424173763614572">DNS ଲୁକ୍‍ଅପ୍ ବିଫଳ ହୋଇଛି</translation>
 <translation id="4462159676511157176">କଷ୍ଟମ୍ ନାମ ସର୍ଭର୍</translation>
@@ -605,8 +610,10 @@
 <translation id="5911887972742538906">ଆପଣଙ୍କର Linux ଆପ୍ଲିକେସନ୍ ଇନ୍‌ଷ୍ଟଲେସନ୍‌ ସମୟରେ ଏକ ତ୍ରୁଟି ଦେଖାଦେଲା।</translation>
 <translation id="5912396950572065471">ଫର୍ମାଟ୍</translation>
 <translation id="5913638992615760742">କପି କାର୍ଯ୍ୟ ବିଫଳ ହେଲା, ଅପ୍ରତ୍ୟାଶିତ ତ୍ରୁଟି: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">ନୂଆ ସର୍ଚ୍ଚ ଫିଚରଗୁଡ଼ିକ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="5926082595146149752">US ଆନ୍ତର୍ଜାତୀୟ PC କୀବୋର୍ଡ ସହ ଡଚ୍ (ନେଦରଲ୍ୟାଣ୍ଡ)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063"><ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କ, <ph name="NETWORK_NAME" />, ଡିଭାଇସ ସେଟଅପ ପରେ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">ସଜାଇବା ବିକଳ୍ପଗୁଡ଼ିକ</translation>
@@ -693,6 +700,7 @@
 <translation id="6732801395666424405">ସାର୍ଟିଫିକେଟ୍‌ଗୁଡ଼ିକ ଲୋଡ୍ ହୋଇନାହିଁ</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Bruschetta ସହ ଫୋଲ୍ଡର ସେୟାର କରନ୍ତୁ</translation>
+<translation id="6750737795876287924">ବର୍ତ୍ତମାନର ଡିରେକ୍ଟୋରୀ</translation>
 <translation id="6751256176799620176">1ଟି ଫୋଲ୍ଡର୍ ଚୟନ କରାଯାଇଛି</translation>
 <translation id="6755827872271341378">ChromeOS Flex ଡିଭାଇସ</translation>
 <translation id="6790428901817661496">ଚଲାନ୍ତୁ</translation>
@@ -730,7 +738,6 @@
 <translation id="6973630695168034713">ଫୋଲ୍ଡର୍‌ଗୁଡ଼ିକ</translation>
 <translation id="6976795442547527108">ସିଂହ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">ସବୁ ସମୟରେ</translation>
 <translation id="6989942356279143254">ସ୍ୱେଡିସ</translation>
 <translation id="6990081529015358884">ଆପଣଙ୍କ ପାଖରେ ଥିବା ଜାଗା ସରିଯାଇଛି</translation>
 <translation id="6993826899923627728">ଏହି ଆଇଟମଗୁଡ଼ିକ ଆପଣଙ୍କ ଟ୍ରାସରେ ଅଛି</translation>
@@ -753,6 +760,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ଡ୍ରାଇଭ୍‍‍ରେ ଖୋଜନ୍ତୁ&lt;/em&gt;</translation>
 <translation id="7135561821015524160">କନ୍ନଡ଼ ଫୋନେଟିକ୍</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">ସର୍ଭର ପରିଚୟ ପ୍ରମାଣୀକରଣକୁ ବୈଧ କରିବା ପାଇଁ 'ସବଜେକ୍ଟ ଅଲଟରନେଟିଭ ନାମ ସହ ମେଳ' କିମ୍ବା 'ଡୋମେନ ସଫିକ୍ସ ସହ ମେଳ' ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="7165320105431587207">ନେଟ୍‍ୱର୍କ କନ୍‌ଫିଗର୍‌ କରିବାରେ ବିଫଳ ହେଲା</translation>
 <translation id="7170041865419449892">ପରିସର ବାହାରେ</translation>
 <translation id="7180611975245234373">ରିଫ୍ରେଶ୍</translation>
@@ -785,7 +793,6 @@
 <translation id="7458955835361612701">ବର୍ତ୍ତମାନର କୌଣସି ଇମେଜ ନାହିଁ</translation>
 <translation id="7460898608667578234">ୟୁକ୍ରାନିଆନ୍</translation>
 <translation id="7469894403370665791">ସ୍ୱଚାଳିତ ଭାବେ ଏହି ନେଟ୍‍ୱର୍କ ସହ ସଂଯୋଗ କରନ୍ତୁ</translation>
-<translation id="7481358317100446445">ପ୍ରସ୍ତୁତ</translation>
 <translation id="7486315294984620427">Parallels Desktopରେ ଫାଇଲଗୁଡ଼ିକୁ ଡ୍ରପ୍ କରିବା ପାଇଁ ଫାଇଲକୁ Windows ଫାଇଲ୍ ଫୋଲ୍ଡରରେ କପି କରିବା ଆବଶ୍ୟକ।</translation>
 <translation id="749452993132003881">ହିରାଗାନା</translation>
 <translation id="7495372004724182530">ମାଲାୟଲମ୍ ଫୋନେଟିକ୍</translation>
@@ -823,6 +830,7 @@
 <translation id="7724603315864178912">Cut</translation>
 <translation id="7732111077498238432">ନେଟ୍‍ୱର୍କ ନୀତି ନିୟନ୍ତ୍ରିତ ଅଟେ</translation>
 <translation id="7736003208887389532">ଏହି ଫାଇଲଗୁଡ଼ିକୁ ସ୍ଥାୟୀ ଭାବେ ଡିଲିଟ କରିବେ?</translation>
+<translation id="7740287852186792672">ସନ୍ଧାନ ଫଳାଫଳଗୁଡିକ</translation>
 <translation id="7748626145866214022">ଆକ୍ସନ୍‌ ବାର୍‌ରେ ଅଧିକ ବିକଳ୍ପ ଉପଲବ୍ଧ ଅଛି ଆକ୍ସନ ବାର୍‌କୁ ଫୋକସ୍‌ କରିବାକୁ Alt + A ଦବାନ୍ତୁ।</translation>
 <translation id="7760449188139285140">ଚାଇନିଜ୍ ୟୁବି</translation>
 <translation id="7765158879357617694">ନିଅନ୍ତୁ</translation>
@@ -874,6 +882,7 @@
 <translation id="8116072619078571545">ଥଣ୍ଡା ପାଣି</translation>
 <translation id="8128733386027980860">ଡିଭୋରାକ୍ କୀବୋର୍ଡ ସହ ଇଂରାଜୀ (UK)</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" ଆପଣଙ୍କ ସହ ସେୟାର୍ ହୋଇଛି। ଆପଣଙ୍କ ପାଖରେ ଏହା ନଥିବାରୁ ଆପଣ ଏହାକୁ ଡିଲିଟ୍ କରିପାରିବେ ନାହିଁ।</translation>
+<translation id="8138705869659070104">ଡିଭାଇସ ସେଟଅପ ପରେ ସକ୍ରିୟ କର</translation>
 <translation id="813913629614996137">ଆରମ୍ଭ କରୁଛି…</translation>
 <translation id="8147028810663464959">କେରେକ୍ଟରର ଚଉଡ଼ା ପୂର୍ଣ୍ଣ ଅଛି</translation>
 <translation id="8151638057146502721">କନ୍‍ଫିଗର୍ କରନ୍ତୁ</translation>
@@ -899,6 +908,7 @@
 <translation id="8300849813060516376">OTASP ବିଫଳ ହେଲା</translation>
 <translation id="8312871300878166382">ଫୋଲ୍ଡର୍‌ରେ ପେଷ୍ଟ କରନ୍ତୁ</translation>
 <translation id="8329978297633540474">କେବଳ ଟେକ୍ସଟ୍</translation>
+<translation id="8332007959299458842">ବର୍ତ୍ତମାନ ଖୋଲାଯାଇଥିବା Microsoft ଫାଇଲଗୁଡ଼ିକ Google Driveକୁ ମୁଭ କରାଯାଇଛି</translation>
 <translation id="8335587457941836791">ସେଲ୍ଫରୁ ଅନପିନ୍ କରନ୍ତୁ</translation>
 <translation id="8335837413233998004">ବେଲାରୁସିଆନ୍</translation>
 <translation id="8336153091935557858">ଗତକାଲି <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -925,6 +935,7 @@
 <translation id="8487700953926739672">ଅଫ୍‍ଲାଇନ୍‌ରେ ଉପଲବ୍ଧ</translation>
 <translation id="8492972329130824181">ହୋମ୍ ନେଟୱାର୍କ ଉପଲବ୍ଧ ନାହିଁ। ସଂଯୋଗ କରିବାକୁ ମୋବାଇଲ ଡାଟା ରୋମିଂ ନିଶ୍ଚିତ ରୂପେ ସକ୍ଷମ ହୋଇଥିବା ଆବଶ୍ୟକ।</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ ଏକ୍ସଟ୍ରାକ୍ଟ କରାଯାଉଛି...</translation>
+<translation id="8502913769543567768"><ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ଡିଭାଇସ ସେଟଅପ ପରେ ସକ୍ରିୟ କରନ୍ତୁ, ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="853494022971700746">ଫରାସୀ (ଫ୍ରାନ୍ସ)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ସିଗ୍‌ନାଲ୍‌ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ବିବରଣୀ</translation>
@@ -986,6 +997,7 @@
 <translation id="9046895021617826162">ସଂଯୋଗ ବିଫଳ ହେଲା</translation>
 <translation id="9065512565307033593">ଯଦି ଆପଣ ଯାଞ୍ଚ କରିବାକୁ ବିଫଳ ହୁଅନ୍ତି, ତେବେ ଆପଣଙ୍କ ନେଟୱାର୍କ ଆକ୍ସେସକୁ ଅକ୍ଷମ କରିଦିଆଯିବ।</translation>
 <translation id="908378762078012445">ଫୋନେଟିକ୍ AATSEEL କୀବୋର୍ଡ ସହ ଋଷୀୟ</translation>
+<translation id="9086302186042011942">ସିଙ୍କ୍ ହେଉଛି</translation>
 <translation id="9099674669267916096">ପୃଷ୍ଠା ସଂଖ୍ୟା</translation>
 <translation id="9100610230175265781">ପାସଫ୍ରେଜ୍ ଆବଶ୍ୟକ ଅଟେ</translation>
 <translation id="9110990317705400362">ଆପଣଙ୍କର ବ୍ରାଉଜର୍‌କୁ ସୁରକ୍ଷିତ କରିବାକୁ ଆମେ ନିରିବିଚ୍ଛିନ୍ନ ଭାବରେ ଉପାୟ ଖୋଜୁଛୁ। ପୂର୍ବରୁ, ଯେକୌଣସି ୱେବ୍‌ସାଇଟ୍‍ ଆପଣଙ୍କର ବ୍ରାଉଜର୍‌ରେ ଗୋଟିଏ ଏକ୍ସଟେନ୍‌ସନ୍‌ ଯୋଗ କରିବାକୁ ଆପଣଙ୍କୁ ସଙ୍କେତ ଦେଇଥିଲା। Google Chromeର ନବୀନତମ ସଂସ୍କରଣରେ, ଆପଣଙ୍କୁ ଏକ୍ସଟେନ୍‍ସନ୍‍ ପୃଷ୍ଠା ମାଧ୍ୟମରେ ଏହି ଏକ୍ସଟେନ୍‍ସନ୍‌କୁ ଯୋଗ କରି Chromeକୁ ସ୍ପଷ୍ଟ ଭାବରେ କହିବାକୁ ପଡ଼ିବ ଯେ ଆପଣ ଏହି ଏକ୍ସଟେନ୍‌ସନ୍‌‍ଗୁଡ଼ିକୁ ଇନ୍‍ଷ୍ଟଲ୍‍ କରିବାକୁ ଚାହୁଁଛନ୍ତି। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>

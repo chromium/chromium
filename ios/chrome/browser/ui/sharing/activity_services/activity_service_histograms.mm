@@ -65,7 +65,8 @@ enum class ShareActionType {
   ThirdPartyContentApp = 16,
   SaveFile = 17,
   Markup = 18,
-  kMaxValue = Markup
+  NativeAddToHome = 19,
+  kMaxValue = NativeAddToHome
 };
 
 ShareActionType MapActionType(ActivityType type) {
@@ -143,6 +144,9 @@ ShareActionType MapActionType(ActivityType type) {
     case activity_type_util::THIRD_PARTY_READABILITY:
     case activity_type_util::THIRD_PARTY_INSTAPAPER:
       return ShareActionType::ThirdPartyContentApp;
+
+    case activity_type_util::NATIVE_ADD_TO_HOME:
+      return ShareActionType::NativeAddToHome;
   }
 }
 

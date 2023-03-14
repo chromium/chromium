@@ -412,16 +412,16 @@ void OncToClientCertConfig(::onc::ONCSource onc_source,
 }
 
 void SetResolvedCertInOnc(const ResolvedCert& resolved_cert,
-                          base::Value& network_config) {
+                          base::Value::Dict& network_config) {
   if (resolved_cert.status() == ResolvedCert::Status::kNotKnownYet)
     return;
 
-  base::Value::Dict* dict_with_client_cert = GetOncClientCertConfigDict(
-      network_config.GetDict(), /*out_config_type=*/nullptr);
+  base::Value::Dict* dict_with_client_cert =
+      GetOncClientCertConfigDict(network_config, /*out_config_type=*/nullptr);
   if (!dict_with_client_cert)
     return;
   dict_with_client_cert->Set(::onc::client_cert::kClientCertType,
-                             base::Value(::onc::client_cert::kPKCS11Id));
+                             ::onc::client_cert::kPKCS11Id);
   if (resolved_cert.status() == ResolvedCert::Status::kNothingMatched) {
     // Empty PKCS11Id means that no certificate has been selected and it
     // should be cleared in shill.
@@ -430,8 +430,8 @@ void SetResolvedCertInOnc(const ResolvedCert& resolved_cert,
   } else {
     dict_with_client_cert->Set(
         ::onc::client_cert::kClientCertPKCS11Id,
-        base::Value(base::StringPrintf("%i:%s", resolved_cert.slot_id(),
-                                       resolved_cert.pkcs11_id().c_str())));
+        base::StringPrintf("%i:%s", resolved_cert.slot_id(),
+                           resolved_cert.pkcs11_id().c_str()));
   }
   dict_with_client_cert->Remove(::onc::client_cert::kClientCertPattern);
 }

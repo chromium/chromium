@@ -9,8 +9,9 @@
 
 #import "base/notreached.h"
 #import "base/numerics/safe_conversions.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/browser/ui/util/attributed_string_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/attributed_string_util.h"
+#import "ios/chrome/browser/ui/elements/fade_truncating_label+private.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -83,6 +84,7 @@ NSArray<NSValue*>* StringRangeInLines(NSAttributedString* attributed_string,
     NSRange range = NSMakeRange(line_range.location, line_range.length);
     [line_ranges addObject:[NSValue valueWithRange:range]];
   }
+  CFRelease(frame_setter);
   return line_ranges;
 }
 
@@ -215,7 +217,7 @@ NSArray<NSValue*>* StringRangeInLines(NSAttributedString* attributed_string,
 #pragma mark Text Drawing Private
 
 /// Draws `attributedString` in `requestedRect`.
-/// `applyGradient`: Wheter gradient should be applied when drawing the text.
+/// `applyGradient`: Whether gradient should be applied when drawing the text.
 /// `alignmentOffset`: offset added to draw the text on the left of
 /// `requestedRect`. Note: with NSLineBreakByClipping the text is always clipped
 /// to the right even when the text is aligned to the right, with the offset the

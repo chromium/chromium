@@ -466,6 +466,7 @@ void Session::StopStreaming() {
     audio_input_device_ = nullptr;
   }
   audio_capturing_callback_.reset();
+  session_logger_.reset();
   audio_stream_.reset();
   video_stream_.reset();
   cast_transport_.reset();
@@ -723,6 +724,10 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
       std::make_unique<TransportClient>(this), std::move(udp_client),
       base::SingleThreadTaskRunner::GetCurrentDefault());
 
+  if (session_params_.enable_rtcp_reporting) {
+    session_logger_ = std::make_unique<SessionLogger>(cast_environment_);
+  }
+
   if (state_ == REMOTING) {
     DCHECK(media_remoter_);
     DCHECK(!audio_config ||
@@ -818,7 +823,10 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
   if (initially_starting_session) {
     if (session_params_.is_remote_playback) {
       InitMediaRemoter({});
+      // Hold off video and audio streaming while waiting for the session to
+      // switch to Remoting.
       video_capture_client_->Pause();
+      audio_input_device_->Stop();
       remote_playback_start_time_ = base::Time::Now();
       remote_playback_start_timer_.Start(
           FROM_HERE, kStartRemotePlaybackTimeOut,
@@ -1123,6 +1131,10 @@ void Session::OnRemotingStartTimeout() {
   }
   StopSession();
   RecordRemotePlaybackSessionStartsBeforeTimeout(false);
+}
+
+base::Value::Dict Session::GetMirroringStats() const {
+  return session_logger_ ? session_logger_->GetStats() : base::Value::Dict();
 }
 
 }  // namespace mirroring

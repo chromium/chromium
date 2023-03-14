@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/math_constants.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -66,8 +67,8 @@ std::set<ArTrackableType> GetArCoreEntityTypes(
     const std::vector<device::mojom::EntityTypeForHitTest>& entity_types) {
   std::set<ArTrackableType> result;
 
-  std::transform(entity_types.begin(), entity_types.end(),
-                 std::inserter(result, result.end()), GetArCoreEntityType);
+  base::ranges::transform(entity_types, std::inserter(result, result.end()),
+                          GetArCoreEntityType);
 
   return result;
 }

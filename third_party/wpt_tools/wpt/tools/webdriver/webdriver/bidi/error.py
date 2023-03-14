@@ -39,6 +39,14 @@ class NoSuchFrameException(BidiException):
     error_code = "no such frame"
 
 
+class NoSuchNodeException(BidiException):
+    error_code = "no such node"
+
+
+class NoSuchScriptException(BidiException):
+    error_code = "no such script"
+
+
 class UnknownCommandException(BidiException):
     error_code = "unknown command"
 

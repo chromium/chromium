@@ -93,6 +93,32 @@ public class TabNavigationController {
     }
 
     /**
+     * Reloads this Tab. Does nothing if there are no navigations.
+     */
+    public void reload() {
+        if (mTabNavigationControllerProxy == null) {
+            throw new IllegalStateException("WebSandbox has been destroyed");
+        }
+        try {
+            mTabNavigationControllerProxy.reload();
+        } catch (RemoteException e) {
+        }
+    }
+
+    /**
+     * Stops in progress loading. Does nothing if not in the process of loading.
+     */
+    public void stop() {
+        if (mTabNavigationControllerProxy == null) {
+            throw new IllegalStateException("WebSandbox has been destroyed");
+        }
+        try {
+            mTabNavigationControllerProxy.stop();
+        } catch (RemoteException e) {
+        }
+    }
+
+    /**
      * Returns true if there is a navigation before the current one.
      *
      * @return ListenableFuture with a Boolean stating if there is a navigation before the current

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/badge_painter.h"
 #include "ui/views/controls/label.h"
@@ -100,8 +101,9 @@ class NewBadgeLabel : public views::Label {
   // kInternalPaddingKey will be set so that layouts know this space is empty.
   bool pad_after_new_badge_ = true;
 
-  const std::u16string new_badge_text_ =
-      l10n_util::GetStringUTF16(IDS_NEW_BADGE);
+  const std::u16string new_badge_text_ = l10n_util::GetStringUTF16(
+      features::IsChromeRefresh2023() ? IDS_NEW_BADGE_UPPERCASE
+                                      : IDS_NEW_BADGE);
 };
 
 }  // namespace user_education

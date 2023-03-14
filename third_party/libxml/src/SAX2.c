@@ -388,6 +388,8 @@ xmlSAX2ExternalSubset(void *ctx, const xmlChar *name,
 	int oldcharset;
 	const xmlChar *oldencoding;
 	int oldprogressive;
+        unsigned long consumed;
+        size_t buffered;
 
 	/*
 	 * Ask the Entity resolver to load the damn thing
@@ -460,6 +462,18 @@ xmlSAX2ExternalSubset(void *ctx, const xmlChar *name,
 
 	while (ctxt->inputNr > 1)
 	    xmlPopInput(ctxt);
+
+        consumed = ctxt->input->consumed;
+        buffered = ctxt->input->cur - ctxt->input->base;
+        if (buffered > ULONG_MAX - consumed)
+            consumed = ULONG_MAX;
+        else
+            consumed += buffered;
+        if (consumed > ULONG_MAX - ctxt->sizeentities)
+            ctxt->sizeentities = ULONG_MAX;
+        else
+            ctxt->sizeentities += consumed;
+
 	xmlFreeInputStream(ctxt->input);
         xmlFree(ctxt->inputTab);
 
@@ -1321,25 +1335,25 @@ xmlSAX2AttributeInternal(void *ctx, const xmlChar *fullname,
 
     /* !!!!!! <a toto:arg="" xmlns:toto="http://toto.com"> */
     ret = xmlNewNsPropEatName(ctxt->node, namespace, name, NULL);
+    if (ret == NULL)
+        goto error;
 
-    if (ret != NULL) {
-        if ((ctxt->replaceEntities == 0) && (!ctxt->html)) {
-	    xmlNodePtr tmp;
+    if ((ctxt->replaceEntities == 0) && (!ctxt->html)) {
+        xmlNodePtr tmp;
 
-	    ret->children = xmlStringGetNodeList(ctxt->myDoc, value);
-	    tmp = ret->children;
-	    while (tmp != NULL) {
-		tmp->parent = (xmlNodePtr) ret;
-		if (tmp->next == NULL)
-		    ret->last = tmp;
-		tmp = tmp->next;
-	    }
-	} else if (value != NULL) {
-	    ret->children = xmlNewDocText(ctxt->myDoc, value);
-	    ret->last = ret->children;
-	    if (ret->children != NULL)
-		ret->children->parent = (xmlNodePtr) ret;
-	}
+        ret->children = xmlStringGetNodeList(ctxt->myDoc, value);
+        tmp = ret->children;
+        while (tmp != NULL) {
+            tmp->parent = (xmlNodePtr) ret;
+            if (tmp->next == NULL)
+                ret->last = tmp;
+            tmp = tmp->next;
+        }
+    } else if (value != NULL) {
+        ret->children = xmlNewDocText(ctxt->myDoc, value);
+        ret->last = ret->children;
+        if (ret->children != NULL)
+            ret->children->parent = (xmlNodePtr) ret;
     }
 
 #ifdef LIBXML_VALID_ENABLED
@@ -2270,6 +2284,7 @@ xmlSAX2StartElementNs(void *ctx,
 	        ret->name = lname;
 	    if (ret->name == NULL) {
 	        xmlSAX2ErrMemory(ctxt, "xmlSAX2StartElementNs");
+                xmlFree(ret);
 		return;
 	    }
 	}
@@ -2641,7 +2656,8 @@ xmlSAX2Text(xmlParserCtxtPtr ctxt, const xmlChar *ch, int len,
 	    /* Mixed content, first time */
             if (type == XML_TEXT_NODE) {
                 lastChild = xmlSAX2TextNode(ctxt, ch, len);
-                lastChild->doc = ctxt->myDoc;
+                if (lastChild != NULL)
+                    lastChild->doc = ctxt->myDoc;
             } else
                 lastChild = xmlNewCDataBlock(ctxt->myDoc, ch, len);
 	    if (lastChild != NULL) {

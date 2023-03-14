@@ -104,6 +104,9 @@ BASE_EXPORT bool GetUserDirectory(NSSearchPathDirectory directory,
 // Returns the ~/Library directory.
 BASE_EXPORT FilePath GetUserLibraryPath();
 
+// Returns the ~/Documents directory.
+BASE_EXPORT FilePath GetUserDocumentPath();
+
 // Takes a path to an (executable) binary and tries to provide the path to an
 // application bundle containing it. It takes the outermost bundle that it can
 // find (so for "/Foo/Bar.app/.../Baz.app/..." it produces "/Foo/Bar.app").

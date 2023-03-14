@@ -17,6 +17,8 @@ source_set("test") {
     "test_api_observer_registry.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//content/public/common",

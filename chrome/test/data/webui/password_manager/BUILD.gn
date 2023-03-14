@@ -10,6 +10,7 @@ build_webui_tests("build") {
   resource_path_prefix = "password_manager"
 
   files = [
+    "add_password_dialog_test.ts",
     "checkup_details_section_test.ts",
     "checkup_section_test.ts",
     "edit_password_dialog_test.ts",

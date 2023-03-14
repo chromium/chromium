@@ -1,6 +1,6 @@
 <script src="common.js"></script>
 <script>
-  observeAndReportResourceLoadPriority(new URL('../../resources/dummy.js', location));
+  observeAndReportResourceLoadPriority(new URL('../../resources/dummy.js?parser-blocking', location));
 </script>
 
-<script src="../../resources/dummy.js" onload="reportLoaded()" onerror="reportFailure()"></script>
+<script src="../../resources/dummy.js?parser-blocking" onload="reportLoaded()" onerror="reportFailure()"></script>

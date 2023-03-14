@@ -15,6 +15,7 @@ import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import androidx.test.filters.SmallTest;
 
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -32,6 +33,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.Collections;
+import java.util.Map;
 
 /**
  * Tests for {@link MessageContainer}.
@@ -82,5 +84,35 @@ public class MessageContainerTest {
                 AccessibilityEvent.obtain(AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED);
         delegate.onRequestSendAccessibilityEvent(container, child, unfocus);
         verify(mA11yDelegate, times(2)).onA11yFocusCleared();
+    }
+
+    @Test
+    @SmallTest
+    public void testCustomA11yActions() {
+        FeatureList.setTestFeatures(
+                Map.of(MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION, true));
+        MessageContainer container = new MessageContainer(sActivity, null);
+        container.setA11yDelegate(mA11yDelegate);
+        AccessibilityDelegateCompat delegate = ViewCompat.getAccessibilityDelegate(container);
+        AccessibilityEvent focus =
+                AccessibilityEvent.obtain(AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED);
+        delegate.onInitializeAccessibilityEvent(container, focus);
+
+        View child = new View(sActivity);
+        container.addMessage(child);
+        int action = container.getA11yDismissActionIdForTesting();
+        Assert.assertNotEquals("a11y action is not initialized", View.NO_ID, action);
+        View child2 = new View(sActivity);
+        container.addMessage(child2);
+
+        action = container.getA11yDismissActionIdForTesting();
+        ViewCompat.performAccessibilityAction(container, action, null);
+        verify(mA11yDelegate, times(1)).onA11yDismiss();
+
+        // Simulate removing child.
+        container.removeMessage(child2);
+        action = container.getA11yDismissActionIdForTesting();
+        ViewCompat.performAccessibilityAction(container, action, null);
+        verify(mA11yDelegate, times(2)).onA11yDismiss();
     }
 }

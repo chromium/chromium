@@ -18,6 +18,10 @@ BASE_FEATURE(kEnableNeuralPalmAdaptiveHold,
              "EnableNeuralPalmAdaptiveHold",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableEdgeDetection,
+             "EnableEdgeDetection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableNeuralStylusReportFilter,
              "EnableNeuralStylusReportFilter",
              base::FEATURE_DISABLED_BY_DEFAULT);

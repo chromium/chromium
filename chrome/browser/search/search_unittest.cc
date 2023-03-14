@@ -36,9 +36,11 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_url_filter.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/core/common/features.h"
 #endif
 
 namespace search {
@@ -358,13 +360,45 @@ TEST_F(SearchTest, UseLocalNTPIfNTPURLIsNotSet) {
 }
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-TEST_F(SearchTest, UseLocalNTPIfNTPURLIsBlockedForSupervisedUser) {
+TEST_F(SearchTest, UseLocalNTPIfNTPURLIsBlockedForSupervisedUser3pDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      supervised_user::kFilterWebsitesForSupervisedUsersOnThirdParty);
+
   // Mark the profile as supervised, otherwise the URL filter won't be checked.
   profile()->SetIsSupervisedProfile();
   // Block access to foo.com in the URL filter.
   SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile());
-  SupervisedUserURLFilter* url_filter = supervised_user_service->GetURLFilter();
+  supervised_user::SupervisedUserURLFilter* url_filter =
+      supervised_user_service->GetURLFilter();
+  std::map<std::string, bool> hosts;
+  hosts["foo.com"] = false;
+  url_filter->SetManualHosts(std::move(hosts));
+
+  if (supervised_user_service->IsURLFilteringEnabled()) {
+    EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL,
+              GetNewTabPageURL(profile()));
+    GURL new_tab_url(chrome::kChromeUINewTabURL);
+    EXPECT_TRUE(HandleNewTabURLRewrite(&new_tab_url, profile()));
+    EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL, new_tab_url);
+  } else {
+    EXPECT_EQ("https://foo.com/newtab", GetNewTabPageURL(profile()));
+  }
+}
+
+TEST_F(SearchTest, UseLocalNTPIfNTPURLIsBlockedForSupervisedUser3pEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      supervised_user::kFilterWebsitesForSupervisedUsersOnThirdParty);
+
+  // Mark the profile as supervised, otherwise the URL filter won't be checked.
+  profile()->SetIsSupervisedProfile();
+  // Block access to foo.com in the URL filter.
+  SupervisedUserService* supervised_user_service =
+      SupervisedUserServiceFactory::GetForProfile(profile());
+  supervised_user::SupervisedUserURLFilter* url_filter =
+      supervised_user_service->GetURLFilter();
   std::map<std::string, bool> hosts;
   hosts["foo.com"] = false;
   url_filter->SetManualHosts(std::move(hosts));
@@ -375,7 +409,7 @@ TEST_F(SearchTest, UseLocalNTPIfNTPURLIsBlockedForSupervisedUser) {
   EXPECT_TRUE(HandleNewTabURLRewrite(&new_tab_url, profile()));
   EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL, new_tab_url);
 }
-#endif
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 TEST_F(SearchTest, IsNTPOrRelatedURL) {
   GURL invalid_url;

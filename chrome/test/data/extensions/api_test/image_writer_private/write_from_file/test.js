@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 function assertNotNullOrUndefined(value, message) {
-  chrome.test.assertTrue(value !== null, message);
-  chrome.test.assertTrue(value !== undefined, message);
+  chrome.test.assertNe(null, value, message);
+  chrome.test.assertNe(undefined, value, message);
 }
 
 function testWriteFromFile() {

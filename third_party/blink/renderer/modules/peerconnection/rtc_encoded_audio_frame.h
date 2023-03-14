@@ -9,6 +9,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -44,6 +45,7 @@ class MODULES_EXPORT RTCEncodedAudioFrame final : public ScriptWrappable {
   RTCEncodedAudioFrameMetadata* getMetadata() const;
   void setData(DOMArrayBuffer*);
   String toString() const;
+  RTCEncodedAudioFrame* clone(ExceptionState& exception_state) const;
 
   scoped_refptr<RTCEncodedAudioFrameDelegate> Delegate() const;
   void SyncDelegate() const;

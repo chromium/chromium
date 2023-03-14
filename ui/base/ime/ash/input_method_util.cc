@@ -168,6 +168,7 @@ const struct EnglishToResouceId {
     {"xkb:pl::pol", IDS_STATUSBAR_LAYOUT_POLAND},
     {"xkb:pt::por", IDS_STATUSBAR_LAYOUT_PORTUGAL},
     {"xkb:ro::rum", IDS_STATUSBAR_LAYOUT_ROMANIA},
+    {"xkb:ro:std:rum", IDS_IME_NAME_KEYBOARD_ROMANIAN_STANDARD},
     {"xkb:rs::srp", IDS_STATUSBAR_LAYOUT_SERBIA},
     {"xkb:ru::rus", IDS_STATUSBAR_LAYOUT_RUSSIA},
     {"xkb:ru:phonetic:rus", IDS_STATUSBAR_LAYOUT_RUSSIA_PHONETIC},

@@ -17,7 +17,7 @@ struct zwp_linux_dmabuf_v1;
 struct zwp_linux_buffer_params_v1;
 
 namespace gfx {
-enum class BufferFormat;
+enum class BufferFormat : uint8_t;
 class Size;
 }  // namespace gfx
 

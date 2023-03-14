@@ -11,13 +11,11 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/component_installer_errors.h"
@@ -122,13 +120,6 @@ std::vector<ComponentConfig> GetInstalled() {
       configs.push_back(config);
   }
   return configs;
-}
-
-// Report Error code.
-CrOSComponentManager::Error ReportError(CrOSComponentManager::Error error) {
-  UMA_HISTOGRAM_ENUMERATION("ComponentUpdater.ChromeOS.InstallResult", error,
-                            CrOSComponentManager::Error::ERROR_MAX);
-  return error;
 }
 
 }  // namespace
@@ -328,8 +319,8 @@ void CrOSComponentInstaller::Load(const std::string& name,
   } else {
     // A compatible component is installed, do not load it.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(load_callback),
-                                  ReportError(Error::NONE), base::FilePath()));
+        FROM_HERE, base::BindOnce(std::move(load_callback), Error::NONE,
+                                  base::FilePath()));
   }
 }
 
@@ -424,8 +415,7 @@ void CrOSComponentInstaller::Install(const std::string& name,
   if (!config) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(load_callback),
-                                  ReportError(Error::UNKNOWN_COMPONENT),
-                                  base::FilePath()));
+                                  Error::UNKNOWN_COMPONENT, base::FilePath()));
     return;
   }
 
@@ -472,22 +462,21 @@ void CrOSComponentInstaller::FinishInstall(const std::string& name,
       err = Error::UPDATE_IN_PROGRESS;
     }
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(load_callback), ReportError(err),
-                                  base::FilePath()));
+        FROM_HERE,
+        base::BindOnce(std::move(load_callback), err, base::FilePath()));
   } else if (!IsCompatible(name)) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(load_callback),
-                       ReportError(update_policy == UpdatePolicy::kSkip
-                                       ? Error::NOT_FOUND
-                                       : Error::COMPATIBILITY_CHECK_FAILED),
-                       base::FilePath()));
+        FROM_HERE, base::BindOnce(std::move(load_callback),
+                                  update_policy == UpdatePolicy::kSkip
+                                      ? Error::NOT_FOUND
+                                      : Error::COMPATIBILITY_CHECK_FAILED,
+                                  base::FilePath()));
   } else if (mount_policy == MountPolicy::kMount) {
     LoadInternal(name, std::move(load_callback));
   } else {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(load_callback),
-                                  ReportError(Error::NONE), base::FilePath()));
+        FROM_HERE, base::BindOnce(std::move(load_callback), Error::NONE,
+                                  base::FilePath()));
   }
 }
 
@@ -515,18 +504,12 @@ void CrOSComponentInstaller::LoadInternal(const std::string& name,
   ash::ImageLoaderClient::Get()->LoadComponentAtPath(
       name, path,
       base::BindOnce(&CrOSComponentInstaller::FinishLoad,
-                     base::Unretained(this), std::move(load_callback),
-                     base::TimeTicks::Now(), name));
+                     base::Unretained(this), std::move(load_callback), name));
 }
 
 void CrOSComponentInstaller::FinishLoad(LoadCallback load_callback,
-                                        const base::TimeTicks start_time,
                                         const std::string& name,
                                         absl::optional<base::FilePath> result) {
-  // Report component image mount time.
-  UMA_HISTOGRAM_LONG_TIMES("ComponentUpdater.ChromeOS.MountTime",
-                           base::TimeTicks::Now() - start_time);
-
   bool success = result.has_value();
   base::FilePath path;
   if (success)
@@ -565,8 +548,7 @@ void CrOSComponentInstaller::DispatchLoadCallback(LoadCallback callback,
                                                   bool success) {
   Error error = success ? Error::NONE : Error::MOUNT_FAILURE;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), ReportError(error), std::move(path)));
+      FROM_HERE, base::BindOnce(std::move(callback), error, std::move(path)));
 }
 
 void CrOSComponentInstaller::DispatchFailedLoads(

@@ -39,30 +39,33 @@ bool IsKeyNumerical(const std::string& key) {
 
 absl::optional<base::Value> ConvertRegistryValue(const base::Value& value,
                                                  const Schema& schema) {
-  if (!schema.valid())
+  if (!schema.valid()) {
     return value.Clone();
+  }
 
   // If the type is good already, go with it.
   if (value.type() == schema.type()) {
     // Recurse for complex types.
     if (value.is_dict()) {
-      base::Value result(base::Value::Type::DICT);
-      for (auto entry : value.DictItems()) {
+      base::Value::Dict result;
+      for (auto entry : value.GetDict()) {
         absl::optional<base::Value> converted =
             ConvertRegistryValue(entry.second, schema.GetProperty(entry.first));
-        if (converted.has_value())
-          result.SetKey(entry.first, std::move(converted.value()));
+        if (converted.has_value()) {
+          result.Set(entry.first, std::move(converted.value()));
+        }
       }
-      return result;
+      return base::Value(std::move(result));
     } else if (value.is_list()) {
-      base::Value result(base::Value::Type::LIST);
+      base::Value::List result;
       for (const auto& entry : value.GetList()) {
         absl::optional<base::Value> converted =
             ConvertRegistryValue(entry, schema.GetItems());
-        if (converted.has_value())
-          result.GetList().Append(std::move(converted.value()));
+        if (converted.has_value()) {
+          result.Append(std::move(converted.value()));
+        }
       }
-      return result;
+      return base::Value(std::move(result));
     }
     return value.Clone();
   }
@@ -106,16 +109,18 @@ absl::optional<base::Value> ConvertRegistryValue(const base::Value& value,
       // Lists are encoded as subkeys with numbered value in the registry
       // (non-numerical keys are ignored).
       if (value.is_dict()) {
-        base::Value result(base::Value::Type::LIST);
-        for (auto it : value.DictItems()) {
-          if (!IsKeyNumerical(it.first))
+        base::Value::List result;
+        for (auto it : value.GetDict()) {
+          if (!IsKeyNumerical(it.first)) {
             continue;
+          }
           absl::optional<base::Value> converted =
               ConvertRegistryValue(it.second, schema.GetItems());
-          if (converted.has_value())
-            result.GetList().Append(std::move(converted.value()));
+          if (converted.has_value()) {
+            result.Append(std::move(converted.value()));
+          }
         }
-        return result;
+        return base::Value(std::move(result));
       }
       // Fall through in order to accept lists encoded as JSON strings.
       [[fallthrough]];
@@ -126,8 +131,9 @@ absl::optional<base::Value> ConvertRegistryValue(const base::Value& value,
         absl::optional<base::Value> result = base::JSONReader::Read(
             value.GetString(),
             base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
-        if (result.has_value() && result.value().type() == schema.type())
+        if (result.has_value() && result.value().type() == schema.type()) {
           return std::move(result.value());
+        }
       }
       break;
     }
@@ -147,7 +153,7 @@ bool CaseInsensitiveStringCompare::operator()(const std::string& a,
   return base::CompareCaseInsensitiveASCII(a, b) < 0;
 }
 
-RegistryDict::RegistryDict() {}
+RegistryDict::RegistryDict() = default;
 
 RegistryDict::~RegistryDict() {
   ClearKeys();

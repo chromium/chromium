@@ -240,6 +240,10 @@ cc_library(
         "//absl:clang-cl_compiler": [
             "-DEFAULTLIB:advapi32.lib",
         ],
+        "//absl:mingw_compiler": [
+            "-DEFAULTLIB:advapi32.lib",
+            "-ladvapi32",
+        ],
         "//absl:wasm": [],
         "//conditions:default": ["-pthread"],
     }) + ABSL_DEFAULT_LINKOPTS,

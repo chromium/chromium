@@ -1091,7 +1091,7 @@ TEST_F(SessionSyncBridgeTest, ShouldMergeForeignSession) {
   EXPECT_CALL(
       mock_processor(),
       Put(_, EntityDataHasSpecifics(MatchesHeader(kLocalCacheGuid, _, _)), _));
-  EXPECT_CALL(mock_foreign_session_updated_cb(), Run());
+  EXPECT_CALL(mock_foreign_session_updated_cb(), Run()).Times(AtLeast(1));
   StartSyncing({foreign_header, foreign_tab});
 
   std::vector<const SyncedSession*> foreign_sessions;
@@ -1101,6 +1101,20 @@ TEST_F(SessionSyncBridgeTest, ShouldMergeForeignSession) {
               ElementsAre(MatchesSyncedSession(
                   kForeignSessionTag,
                   {{kForeignWindowId, std::vector<int>{kForeignTabId}}})));
+}
+
+// Starting sync even without remote data should trigger a notification for
+// updated foreign session.
+TEST_F(SessionSyncBridgeTest, ShouldTriggerNotificationWithoutRemoteData) {
+  InitializeBridge();
+  ASSERT_THAT(bridge()->GetOpenTabsUIDelegate(), IsNull());
+  // Starting sync, even without remote data, should trigger a notification that
+  // foreign sessions got updated, because `GetOpenTabsUIDelegate()`'s behavior
+  // changed and it no longer returns null.
+  EXPECT_CALL(mock_foreign_session_updated_cb(), Run());
+  StartSyncing();
+
+  EXPECT_THAT(bridge()->GetOpenTabsUIDelegate(), NotNull());
 }
 
 TEST_F(SessionSyncBridgeTest, ShouldNotExposeForeignHeaderWithoutTabs) {

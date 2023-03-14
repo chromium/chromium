@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/timing/event_counts.h"
 #include "third_party/blink/renderer/core/timing/memory_info.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
+#include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_navigation.h"
 #include "third_party/blink/renderer/core/timing/performance_timing.h"
@@ -51,6 +52,8 @@
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
+
+class AnimationFrameTimingInfo;
 
 class CORE_EXPORT WindowPerformance final : public Performance,
                                             public PerformanceMonitor::Client,
@@ -143,6 +146,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
                         Element*);
 
   void OnBodyLoadFinished(int64_t encoded_body_size, int64_t decoded_body_size);
+  void ReportLongAnimationFrameTiming(AnimationFrameTimingInfo*);
 
   void AddLayoutShiftEntry(LayoutShift*);
   void AddVisibilityStateEntry(bool is_visible, base::TimeTicks start_time);

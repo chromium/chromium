@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/autofill/edit_address_profile_view.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_icon_view.h"
+#include "chrome/browser/ui/views/autofill/payments/manage_saved_iban_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
@@ -105,27 +106,48 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveCreditCardBubble(
   return bubble;
 }
 
-AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveIbanBubble(
+AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowIbanBubble(
     content::WebContents* web_contents,
-    SaveIbanBubbleController* controller,
-    bool is_user_gesture) {
+    IbanBubbleController* controller,
+    bool is_user_gesture,
+    IbanBubbleType bubble_type) {
   PageActionIconView* icon_view =
       toolbar_button_provider_->GetPageActionIconView(
           PageActionIconType::kSaveIban);
+  DCHECK(icon_view);
   views::View* anchor_view =
       toolbar_button_provider_->GetAnchorView(PageActionIconType::kSaveIban);
 
-  SaveIbanBubbleView* bubble =
-      new SaveIbanBubbleView(anchor_view, web_contents, controller);
+  // TODO(crbug.com/1416270): Add Show() to AutofillBubbleBase and refactor
+  // below.
+  switch (bubble_type) {
+    case IbanBubbleType::kLocalSave: {
+      SaveIbanBubbleView* bubble =
+          new SaveIbanBubbleView(anchor_view, web_contents, controller);
 
-  DCHECK(bubble);
-  DCHECK(icon_view);
-  bubble->SetHighlightedButton(icon_view);
+      DCHECK(bubble);
+      bubble->SetHighlightedButton(icon_view);
 
-  views::BubbleDialogDelegateView::CreateBubble(bubble);
-  bubble->Show(is_user_gesture ? LocationBarBubbleDelegateView::USER_GESTURE
-                               : LocationBarBubbleDelegateView::AUTOMATIC);
-  return bubble;
+      views::BubbleDialogDelegateView::CreateBubble(bubble);
+      bubble->Show(is_user_gesture ? LocationBarBubbleDelegateView::USER_GESTURE
+                                   : LocationBarBubbleDelegateView::AUTOMATIC);
+      return bubble;
+    }
+    case IbanBubbleType::kManageSavedIban: {
+      ManageSavedIbanBubbleView* bubble =
+          new ManageSavedIbanBubbleView(anchor_view, web_contents, controller);
+
+      DCHECK(bubble);
+      bubble->SetHighlightedButton(icon_view);
+
+      views::BubbleDialogDelegateView::CreateBubble(bubble);
+      bubble->Show(is_user_gesture ? LocationBarBubbleDelegateView::USER_GESTURE
+                                   : LocationBarBubbleDelegateView::AUTOMATIC);
+      return bubble;
+    }
+    case IbanBubbleType::kInactive:
+      NOTREACHED_NORETURN();
+  }
 }
 
 AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowLocalCardMigrationBubble(

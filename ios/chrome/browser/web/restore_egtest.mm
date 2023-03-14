@@ -7,8 +7,8 @@
 #import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -218,6 +218,7 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
   // Clear cache, save the session and trigger a crash/activate.
   // Test with the Crash Infobar.
   [ChromeEarlGrey removeBrowsingCache];
+  [ChromeEarlGrey saveSessionImmediately];
   [[AppLaunchManager sharedManager]
       ensureAppLaunchedWithFeaturesEnabled:{}
                                   disabled:{kRemoveCrashInfobar}
@@ -233,6 +234,7 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
   // Clear cache, save the session and trigger a crash/activate.
   // Test without the Crash Infobar.
   [ChromeEarlGrey removeBrowsingCache];
+  [ChromeEarlGrey saveSessionImmediately];
   [[AppLaunchManager sharedManager]
       ensureAppLaunchedWithFeaturesEnabled:{kRemoveCrashInfobar}
                                   disabled:{}

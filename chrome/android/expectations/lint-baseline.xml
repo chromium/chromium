@@ -1977,39 +1977,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: ViewType.INVALID, ViewType.PERSONALIZED_SIGNIN_PROMO, ViewType.PERSONALIZED_SYNC_PROMO, ViewType.SYNC_PROMO, ViewType.FOLDER, ViewType.BOOKMARK, ViewType.DIVIDER, ViewType.SECTION_HEADER, ViewType.SHOPPING_POWER_BOOKMARK, ViewType.TAG_CHIP_LIST"
-        errorLine1="            case ViewType.SHOPPING_FILTER:"
-        errorLine2="                          ~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkItemsAdapter.java"
-            line="254"
-            column="27"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ViewType.INVALID, ViewType.PERSONALIZED_SIGNIN_PROMO, ViewType.PERSONALIZED_SYNC_PROMO, ViewType.SYNC_PROMO, ViewType.FOLDER, ViewType.BOOKMARK, ViewType.DIVIDER, ViewType.SECTION_HEADER, ViewType.SHOPPING_POWER_BOOKMARK, ViewType.TAG_CHIP_LIST"
-        errorLine1="        } else if (holder.getItemViewType() == ViewType.SHOPPING_FILTER) {"
-        errorLine2="                                                        ~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkItemsAdapter.java"
-            line="296"
-            column="57"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ViewType.INVALID, ViewType.PERSONALIZED_SIGNIN_PROMO, ViewType.PERSONALIZED_SYNC_PROMO, ViewType.SYNC_PROMO, ViewType.FOLDER, ViewType.BOOKMARK, ViewType.DIVIDER, ViewType.SECTION_HEADER, ViewType.SHOPPING_POWER_BOOKMARK, ViewType.TAG_CHIP_LIST"
-        errorLine1="                ViewType.SHOPPING_FILTER, /*bookmarkItem=*/null, /*sectionHeaderData=*/null);"
-        errorLine2="                         ~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkListEntry.java"
-            line="109"
-            column="26"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: CustomTabsUiType.DEFAULT, CustomTabsUiType.MEDIA_VIEWER, CustomTabsUiType.INFO_PAGE, CustomTabsUiType.READER_MODE, CustomTabsUiType.MINIMAL_UI_WEBAPP, CustomTabsUiType.OFFLINE_PAGE"
         errorLine1="        intent.putExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE, CustomTabsUiType.READ_LATER);"
         errorLine2="                                                                                    ~~~~~~~~~~">
@@ -3220,83 +3187,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN"
-        errorLine1="            mScrollDirection = ScrollDirection.UNKNOWN;"
-        errorLine2="                               ~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChrome.java"
-            line="516"
-            column="32"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN"
-        errorLine1="            mScrollDirection = ScrollDirection.UNKNOWN;"
-        errorLine2="                                               ~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChrome.java"
-            line="516"
-            column="48"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN"
-        errorLine1="            if (mScrollDirection != ScrollDirection.UNKNOWN) {"
-        errorLine2="                                                    ~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChrome.java"
-            line="531"
-            column="53"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN"
-        errorLine1="            if (mScrollDirection == ScrollDirection.UNKNOWN) return;"
-        errorLine2="                                                    ~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChrome.java"
-            line="537"
-            column="53"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN"
-        errorLine1="            int direction = ScrollDirection.UNKNOWN;"
-        errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChrome.java"
-            line="578"
-            column="29"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN"
-        errorLine1="            int direction = ScrollDirection.UNKNOWN;"
-        errorLine2="                                            ~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChrome.java"
-            line="578"
-            column="45"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN"
-        errorLine1="                direction = ScrollDirection.LEFT;"
-        errorLine2="                ~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChrome.java"
-            line="584"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: LensSupportStatus.LENS_SEARCH_SUPPORTED, LensSupportStatus.NON_GOOGLE_SEARCH_ENGINE, LensSupportStatus.ACTIVITY_NOT_ACCESSIBLE, LensSupportStatus.OUT_OF_DATE, LensSupportStatus.SEARCH_BY_IMAGE_UNAVAILABLE, LensSupportStatus.LEGACY_OS, LensSupportStatus.INVALID_PACKAGE, LensSupportStatus.LENS_SHOP_SUPPORTED, LensSupportStatus.LENS_SHOP_AND_SEARCH_SUPPORTED, LensSupportStatus.CAMERA_NOT_AVAILABLE, LensSupportStatus.DISABLED_ON_LOW_END_DEVICE, LensSupportStatus.AGSA_VERSION_NOT_SUPPORTED, LensSupportStatus.DISABLED_ON_INCOGNITO, LensSupportStatus.DISABLED_ON_TABLET, LensSupportStatus.DISABLED_FOR_ENTERPRISE_USER"
         errorLine1="                histogramName, reason, LensSupportStatus.NUM_ENTRIES);"
         errorLine2="                                                         ~~~~~~~~~~~">
@@ -3429,17 +3319,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: MediaType.AUDIO, MediaType.IMAGE, MediaType.VIDEO"
-        errorLine1="        if (mediaType == MediaType.UNKNOWN) {"
-        errorLine2="                                   ~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/media/MediaLauncherActivity.java"
-            line="56"
-            column="36"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: Source.INVALID, Source.MEDIA, Source.PRESENTATION, Source.MEDIA_FLING"
         errorLine1="        if (source == Source.INVALID || source >= Source.NUM_ENTRIES) return;"
         errorLine2="                                                         ~~~~~~~~~~~">
@@ -3491,39 +3370,6 @@
             file="../../components/browser_ui/media/android/java/src/org/chromium/components/browser_ui/media/MediaSessionUma.java"
             line="46"
             column="76"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: MediaType.AUDIO, MediaType.IMAGE, MediaType.VIDEO"
-        errorLine1="        if (TextUtils.isEmpty(mimeType)) return MediaLauncherActivity.MediaType.UNKNOWN;"
-        errorLine2="                                                                                ~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/media/MediaViewerUtils.java"
-            line="168"
-            column="81"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: MediaType.AUDIO, MediaType.IMAGE, MediaType.VIDEO"
-        errorLine1="        if (pieces.length != 2) return MediaLauncherActivity.MediaType.UNKNOWN;"
-        errorLine2="                                                                       ~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/media/MediaViewerUtils.java"
-            line="171"
-            column="72"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: MediaType.AUDIO, MediaType.IMAGE, MediaType.VIDEO"
-        errorLine1="                return MediaLauncherActivity.MediaType.UNKNOWN;"
-        errorLine2="                                                       ~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/media/MediaViewerUtils.java"
-            line="181"
-            column="56"/>
     </issue>
 
     <issue
@@ -4140,28 +3986,6 @@
             file="../../media/capture/video/android/java/src/org/chromium/media/PhotoCapabilities.java"
             line="121"
             column="70"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: PriceTrackingState.PRICE_TRACKING_SHOWN, PriceTrackingState.PRICE_TRACKING_ENABLED, PriceTrackingState.PRICE_TRACKING_DISABLED"
-        errorLine1="                PriceTrackingState.COUNT);"
-        errorLine2="                                   ~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/PowerBookmarkMetrics.java"
-            line="29"
-            column="36"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: PriceTrackingState.PRICE_TRACKING_SHOWN, PriceTrackingState.PRICE_TRACKING_ENABLED, PriceTrackingState.PRICE_TRACKING_DISABLED"
-        errorLine1="                PriceTrackingState.COUNT);"
-        errorLine2="                                   ~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/PowerBookmarkMetrics.java"
-            line="37"
-            column="36"/>
     </issue>
 
     <issue
@@ -6961,61 +6785,6 @@
     <issue
         id="NotifyDataSetChanged"
         message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort."
-        errorLine1="        notifyDataSetChanged();"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkItemsAdapter.java"
-            line="190"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="NotifyDataSetChanged"
-        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort."
-        errorLine1="        notifyDataSetChanged();"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkItemsAdapter.java"
-            line="356"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="NotifyDataSetChanged"
-        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort."
-        errorLine1="        notifyDataSetChanged();"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkItemsAdapter.java"
-            line="406"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="NotifyDataSetChanged"
-        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort."
-        errorLine1="        if (mElements != null) notifyDataSetChanged();"
-        errorLine2="                               ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkItemsAdapter.java"
-            line="419"
-            column="32"/>
-    </issue>
-
-    <issue
-        id="NotifyDataSetChanged"
-        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort."
-        errorLine1="            mAdapter.notifyDataSetChanged();"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkManager.java"
-            line="134"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="NotifyDataSetChanged"
-        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort."
         errorLine1="                    notifyDataSetChanged();"
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -7517,17 +7286,6 @@
             file="../../chrome/android/java/src/org/chromium/chrome/browser/accessibility_tab_switcher/AccessibilityTabModelListItem.java"
             line="465"
             column="20"/>
-    </issue>
-
-    <issue
-        id="ClickableViewAccessibility"
-        message="`onTouch` lambda should call `View#performClick` when a click is detected"
-        errorLine1="            row.setDragHandleOnTouchListener((v, event) -> {"
-        errorLine2="                                             ^">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkItemsAdapter.java"
-            line="279"
-            column="46"/>
     </issue>
 
     <issue

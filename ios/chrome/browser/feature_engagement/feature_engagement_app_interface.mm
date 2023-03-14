@@ -235,6 +235,25 @@ class ScopedFeatureListHolder {
   return LoadFeatureEngagementTracker();
 }
 
++ (BOOL)enableTabPinnedTipTriggering {
+  std::map<std::string, std::string> params;
+
+  params["availability"] = "any";
+  params["session_rate"] = "any";
+  params["event_used"] = "name:popup_menu_tip_used;comparator:==0;window:180;"
+                         "storage:180";
+  params["event_trigger"] =
+      "name:tab_pinned_tip_triggered;comparator:==0;window:1825;"
+      "storage:1825";
+
+  ScopedFeatureListHolder::GetInstance()
+      ->CreateList()
+      .InitAndEnableFeatureWithParameters(
+          feature_engagement::kIPHTabPinnedFeature, params);
+
+  return LoadFeatureEngagementTracker();
+}
+
 + (void)showTranslate {
   [chrome_test_util::HandlerForActiveBrowser() showTranslate];
 }

@@ -73,13 +73,13 @@ struct PartitionBucket {
   // |PartitionRoot::AllocFromBucket|.)
   //
   // Note the matching Free() functions are in SlotSpanMetadata.
-  PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-  PA_NOINLINE uintptr_t SlowPathAlloc(PartitionRoot<thread_safe>* root,
-                                      unsigned int flags,
-                                      size_t raw_size,
-                                      size_t slot_span_alignment,
-                                      bool* is_already_zeroed)
-      PA_EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
+  PA_NOINLINE PA_COMPONENT_EXPORT(PARTITION_ALLOC) uintptr_t
+      SlowPathAlloc(PartitionRoot<thread_safe>* root,
+                    unsigned int flags,
+                    size_t raw_size,
+                    size_t slot_span_alignment,
+                    bool* is_already_zeroed)
+          PA_EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
 
   PA_ALWAYS_INLINE bool CanStoreRawSize() const {
     // For direct-map as well as single-slot slot spans (recognized by checking
@@ -87,8 +87,9 @@ struct PartitionBucket {
     // subsequent PartitionPage to store the raw size. It isn't only metadata
     // space though, slot spans that have more than one slot can't have raw size
     // stored, because we wouldn't know which slot it applies to.
-    if (PA_LIKELY(slot_size <= MaxRegularSlotSpanSize()))
+    if (PA_LIKELY(slot_size <= MaxRegularSlotSpanSize())) {
       return false;
+    }
 
     PA_DCHECK((slot_size % SystemPageSize()) == 0);
     PA_DCHECK(is_direct_mapped() || get_slots_per_span() == 1);

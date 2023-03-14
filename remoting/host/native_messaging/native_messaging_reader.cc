@@ -121,10 +121,9 @@ void NativeMessagingReader::Core::ReadMessage() {
       return;
     }
 
-    std::unique_ptr<base::Value> message =
-        base::JSONReader::ReadDeprecated(message_json);
+    absl::optional<base::Value> message = base::JSONReader::Read(message_json);
     if (!message) {
-      LOG(ERROR) << "Failed to parse JSON message: " << message.get();
+      LOG(ERROR) << "Failed to parse JSON message: " << message_json;
       NotifyEof();
       return;
     }
@@ -132,7 +131,7 @@ void NativeMessagingReader::Core::ReadMessage() {
     // Notify callback of new message.
     caller_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&NativeMessagingReader::InvokeMessageCallback,
-                                  reader_, std::move(message)));
+                                  reader_, std::move(*message)));
   }
 }
 
@@ -193,8 +192,7 @@ void NativeMessagingReader::Start(const MessageCallback& message_callback,
                                 base::Unretained(core_.get())));
 }
 
-void NativeMessagingReader::InvokeMessageCallback(
-    std::unique_ptr<base::Value> message) {
+void NativeMessagingReader::InvokeMessageCallback(base::Value message) {
   message_callback_.Run(std::move(message));
 }
 

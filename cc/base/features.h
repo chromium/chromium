@@ -34,6 +34,10 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kRemoveMobileViewportDoubleTap);
 // https://docs.google.com/document/d/1smLAXs-DSLLmkEt4FIPP7PVglJXOcwRc7A5G0SEwxaY/edit
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kScrollUnification);
 
+// Sets raster tree priority to NEW_CONTENT_TAKES_PRIORITY when performing a
+// unified scroll with main-thread repaint reasons.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMainRepaintScrollPrefersNewContent);
+
 // When enabled, wheel scrolls trigger smoothness mode. When disabled,
 // smoothness mode is limited to non-animated (precision) scrolls, such as
 // touch scrolling.

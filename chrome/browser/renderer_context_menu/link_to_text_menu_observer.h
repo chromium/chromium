@@ -15,16 +15,13 @@
 
 class RenderViewContextMenuProxy;
 
-using CompletionCallback = base::OnceClosure;
-
 // A class that implements the menu item for copying selected text and a link
 // to the selected text to the user's clipboard.
 class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
  public:
   static std::unique_ptr<LinkToTextMenuObserver> Create(
       RenderViewContextMenuProxy* proxy,
-      content::GlobalRenderFrameHostId render_frame_host_id,
-      CompletionCallback callback);
+      content::GlobalRenderFrameHostId render_frame_host_id);
 
   LinkToTextMenuObserver(const LinkToTextMenuObserver&) = delete;
   LinkToTextMenuObserver& operator=(const LinkToTextMenuObserver&) = delete;
@@ -35,7 +32,6 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
   bool IsCommandIdSupported(int command_id) override;
   bool IsCommandIdEnabled(int command_id) override;
   void ExecuteCommand(int command_id) override;
-  void OnMenuClosed() override;
 
   // Used in tests for waiting and receiving generation result.
   static void RegisterGenerationCompleteCallbackForTesting(
@@ -46,8 +42,7 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
 
   explicit LinkToTextMenuObserver(
       RenderViewContextMenuProxy* proxy,
-      content::GlobalRenderFrameHostId render_frame_host_id,
-      CompletionCallback callback);
+      content::GlobalRenderFrameHostId render_frame_host_id);
 
   // Requests link generation if needed.
   void RequestLinkGeneration();
@@ -91,11 +86,6 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
   // Copies given text to clipboard.
   void CopyTextToClipboard(const std::string& text);
 
-  // Uses |CompletionCallback| to notify that |LinkToTextMenuObserver| is not
-  // needed anymore. Calling this function can potentially result in this object
-  // cleanup.
-  void NotifyLinkToTextMenuCompleted();
-
   // Returns |remote_|, for the frame in which the context menu was opened.
   mojo::Remote<blink::mojom::TextFragmentReceiver>& GetRemote();
 
@@ -122,16 +112,6 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
 
   // True when generation is completed.
   bool is_generation_complete_ = false;
-
-  // True when ExecuteCommand was called for any of the supported commands, but
-  // is not finished.
-  bool execute_command_pending_ = false;
-
-  // True if menu is closed.
-  bool is_menu_closed_ = false;
-
-  // Used for self-destruction.
-  CompletionCallback completion_callback_;
 
   base::WeakPtrFactory<LinkToTextMenuObserver> weak_ptr_factory_{this};
 };

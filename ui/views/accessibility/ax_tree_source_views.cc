@@ -79,10 +79,31 @@ int32_t AXTreeSourceViews::GetId(AXAuraObjWrapper* node) const {
   return node->GetUniqueId();
 }
 
-void AXTreeSourceViews::GetChildren(
-    AXAuraObjWrapper* node,
-    std::vector<AXAuraObjWrapper*>* out_children) const {
-  node->GetChildren(out_children);
+void AXTreeSourceViews::CacheChildrenIfNeeded(AXAuraObjWrapper* node) {
+  if (node->cached_children_) {
+    return;
+  }
+
+  node->cached_children_.emplace();
+
+  node->GetChildren(&(*node->cached_children_));
+}
+
+size_t AXTreeSourceViews::GetChildCount(AXAuraObjWrapper* node) const {
+  std::vector<AXAuraObjWrapper*> children;
+  node->GetChildren(&children);
+  return children.size();
+}
+
+AXAuraObjWrapper* AXTreeSourceViews::ChildAt(AXAuraObjWrapper* node,
+                                             size_t index) const {
+  std::vector<AXAuraObjWrapper*> children;
+  node->GetChildren(&children);
+  return children[index];
+}
+
+void AXTreeSourceViews::ClearChildCache(AXAuraObjWrapper* node) {
+  node->cached_children_.reset();
 }
 
 AXAuraObjWrapper* AXTreeSourceViews::GetParent(AXAuraObjWrapper* node) const {

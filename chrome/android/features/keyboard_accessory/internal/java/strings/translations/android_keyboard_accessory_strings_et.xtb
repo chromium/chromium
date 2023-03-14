@@ -1,13 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
+<translation id="1347497506789975534">Kuva salvestatud makseviisid</translation>
 <translation id="1383876407941801731">Otsi</translation>
-<translation id="1566281227936819866">Kuvatud on salvestatud makseviisid</translation>
 <translation id="1717486229951421299">Loend mandaatidest, mis tuleb puudutusega täita, on avatud poolele kõrgusele.</translation>
 <translation id="207576718733492531">Loend mandaatidest, mis tuleb puudutusega täita, on suletud.</translation>
 <translation id="2610239185026711824">Soovita parooli</translation>
 <translation id="2652129567809778422">Parooli valimine</translation>
-<translation id="2803478378562657435">Kuvatud on salvestatud paroolid ja paroolivalikud</translation>
 <translation id="2903493209154104877">Aadressid</translation>
 <translation id="3399357656427473483">Loend mandaatidest, mis tuleb puudutusega täita.</translation>
 <translation id="3688051737190211318">Kui usaldate saiti <ph name="ORIGIN" />, saate sisselogimiseks kasutada salvestatud parooli</translation>
@@ -15,16 +14,14 @@
 <translation id="4660011489602794167">Kuva klaviatuur</translation>
 <translation id="4694050069269396220">Kui saiti <ph name="ORIGIN" /> usaldate, saate kasutada mõne teise saidi jaoks salvestatud parooli.</translation>
 <translation id="5016175294846053194">Automaattäite soovitused on saadaval klaviatuuri kohal</translation>
-<translation id="5088366526685584589">Kuvatakse salvestatud aadresse</translation>
 <translation id="5441504010984421144">Loend mandaatidest, mis tuleb puudutusega täita, on avatud täiskõrgusele.</translation>
+<translation id="6296921860874265377">Kuva salvestatud paroolid ja paroolivalikud</translation>
 <translation id="6393156038355142111">Soovita tugevat parooli</translation>
 <translation id="6558703547256592471">Üritage iga saidi puhul kasutada kordumatut parooli.</translation>
 <translation id="7029809446516969842">Paroolid</translation>
-<translation id="7299100402441711551">Kuva aadressid</translation>
-<translation id="7494879913343971937">Kuva paroolid</translation>
 <translation id="7594473730623999723">Pühkige, et näha rohkem soovitusi</translation>
+<translation id="7873973044507799456">Kuva salvestatud aadressid</translation>
 <translation id="7992095260806105436">Kasuta Chrome'i automaattäite soovitust</translation>
-<translation id="8037472847879765671">Makseviiside kuvamine</translation>
 <translation id="8507520749471379845">Paroolid on saadaval</translation>
 <translation id="8705308553596171387">Parooli pole</translation>
 <translation id="879180780857354295">Klaviatuuri kohal on saadaval alternatiivsed täitevõimalused</translation>

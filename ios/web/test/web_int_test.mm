@@ -86,14 +86,19 @@ void WebIntTest::SetUp() {
 void WebIntTest::TearDown() {
   // Tests can create an unresponsive WebProcess. WebIntTest::TearDown will
   // call ClearBrowingData, which can take a very long time with an unresponsive
-  // WebProcess. Work around this problem by force closing WKWebView via a
-  // private API.
+  // WebProcess. Work around this problem by force closing WKWebView and its
+  // network process via private APIs.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
   WKWebView* web_view = base::mac::ObjCCast<WKWebView>(
       web::WebStateImpl::FromWebState(web_state())
           ->GetWebViewNavigationProxy());
   [web_view performSelector:@selector(_close)];
+
+  if (@available(iOS 15, *)) {
+    [[WKWebsiteDataStore defaultDataStore]
+        performSelector:@selector(_terminateNetworkProcess)];
+  }
 #pragma clang diagnostic pop
 
   RemoveWKWebViewCreatedData([WKWebsiteDataStore defaultDataStore],

@@ -134,6 +134,15 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // `app_list_config_`.
   void UpdateAppListConfig(const AppListConfig* app_list_config);
 
+  // Updates the currently dragged AppListItemView to update the `folder_icon_`.
+  void UpdateDraggedItem(const AppListItem* dragged_item);
+
+  // Updates and repaints the icon view, which could be either `icon_` or
+  // `folder_icon_`.
+  // For `icon_`, update the image icon from AppListItem if `update_item_icon`
+  // is true.
+  void UpdateIconView(bool update_item_icon);
+
   // Sets the icon of this image.
   void SetIcon(const gfx::ImageSkia& icon);
 
@@ -143,8 +152,6 @@ class ASH_EXPORT AppListItemView : public views::Button,
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   void CancelContextMenu();
-
-  gfx::Point GetDragImageOffset();
 
   void SetAsAttemptedFolderTarget(bool is_target_folder);
 
@@ -161,6 +168,9 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // In a synchronous drag the item view isn't informed directly of the drag
   // ending, so the runner of the drag should call this.
   void OnSyncDragEnd();
+
+  // Returns the view that draws the item view icon.
+  views::View* GetIconView() const;
 
   // Returns the icon bounds relative to AppListItemView.
   gfx::Rect GetIconBounds() const;
@@ -259,7 +269,15 @@ class ASH_EXPORT AppListItemView : public views::Button,
   bool has_pending_row_change() { return has_pending_row_change_; }
   void reset_has_pending_row_change() { has_pending_row_change_ = false; }
 
+  const ui::Layer* icon_background_layer_for_test() const {
+    return icon_background_layer_.layer();
+  }
+  bool is_icon_extended_for_test() const { return is_icon_extended_; }
+  absl::optional<size_t> item_counter_count_for_test() const;
+
  private:
+  class FolderIconView;
+
   friend class AppListItemViewTest;
   friend class AppListMainViewTest;
   friend class test::AppsGridViewTest;
@@ -291,20 +309,17 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // Callback used when a menu is closed.
   void OnMenuClosed();
 
-  // Get icon from |item_| and schedule background processing.
-  void UpdateIcon();
-
-  // Update the tooltip text from |item_|.
-  void UpdateTooltip();
-
   void SetUIState(UIState state);
 
   // Scales up app icon if |scale_up| is true; otherwise, scale it back to
   // normal size.
   void ScaleAppIcon(bool scale_up);
 
-  // Scale app icon to |scale_factor| without animation.
+  // Scales app icon to |scale_factor| without animation.
   void ScaleIconImmediatly(float scale_factor);
+
+  // Updates the bounds of the icon background layer.
+  void UpdateBackgroundLayerBounds();
 
   // Sets |touch_dragging_| flag and updates UI.
   void SetTouchDragging(bool touch_dragging);
@@ -382,6 +397,9 @@ class ASH_EXPORT AppListItemView : public views::Button,
 
   void OnExtendingAnimationEnded(bool extend_icon);
 
+  // Returns the layer that paints the icon background.
+  ui::Layer* GetIconBackgroundLayer();
+
   // The app list config used to layout this view. The initial values is set
   // during view construction, but can be changed by calling
   // `UpdateAppListConfig()`.
@@ -402,8 +420,18 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // AppListControllerImpl by another name.
   AppListViewDelegate* const view_delegate_;
 
-  views::ImageView* icon_ = nullptr;  // Strongly typed child view.
-  views::Label* title_ = nullptr;  // Strongly typed child view.
+  // Set to true if the ImageSkia icon in AppListItem is drawn. The refreshed
+  // folder icons are directly drawn on FolderIconView instead of using the
+  // AppListItem icon.
+  const bool use_item_icon_;
+
+  // NOTE: Only one of `icon_` and `folder_icon_` is used for an item view.
+  // The icon view that uses the ImageSkia in AppListItem to draw the icon.
+  views::ImageView* icon_ = nullptr;
+  // The folder icon view used for refreshed folders.
+  FolderIconView* folder_icon_ = nullptr;
+
+  views::Label* title_ = nullptr;
 
   // The background layer added under the `icon_` layer to paint the background
   // of the icon.
@@ -486,6 +514,10 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // Whether the `icon_` is in the extended state, where a dragged view entered
   // this item view.
   bool is_icon_extended_ = false;
+
+  // Whether the icon background animation is being setup. Used to prevent the
+  // background layer from being deleted during setup.
+  bool setting_up_icon_animation_ = false;
 
   base::WeakPtrFactory<AppListItemView> weak_ptr_factory_{this};
 };

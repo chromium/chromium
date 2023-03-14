@@ -184,7 +184,11 @@ def make_aggregate(config_name):
         os.chdir(_TEMP_CONFIG_DIR)
         _do_configure(config_name)
 
-        cmd = ['make', 'shell.c', 'sqlite3.h', 'sqlite3.c']
+        # Chromium compiles 'sqlite3r.c' and 'sqlite3r.h' to use the built-in
+        # corruption recovery module. These files are then mapped to the standard
+        # 'sqlite3.c' and 'sqlite3.h' files below. This mapping is required if
+        # the "SQLITE_HAVE_SQLITE3R" configuration option is specified.
+        cmd = ['make', 'shell.c', 'sqlite3r.h', 'sqlite3r.c']
         subprocess.check_call(cmd)
 
         amalgamation_dir = get_amalgamation_dir(config_name)
@@ -197,12 +201,10 @@ def make_aggregate(config_name):
                                       'README_amalgamation.md')
             copyfile(readme_src, readme_dst)
 
-        copyfile(
-            os.path.join(_TEMP_CONFIG_DIR, 'sqlite3.c'),
-            os.path.join(amalgamation_dir, 'sqlite3.c'))
-        copyfile(
-            os.path.join(_TEMP_CONFIG_DIR, 'sqlite3.h'),
-            os.path.join(amalgamation_dir, 'sqlite3.h'))
+        copyfile(os.path.join(_TEMP_CONFIG_DIR, 'sqlite3r.c'),
+                 os.path.join(amalgamation_dir, 'sqlite3.c'))
+        copyfile(os.path.join(_TEMP_CONFIG_DIR, 'sqlite3r.h'),
+                 os.path.join(amalgamation_dir, 'sqlite3.h'))
 
         # shell.c must be placed in a different directory from sqlite3.h,
         # because it contains an '#include "sqlite3.h"' that we want to resolve

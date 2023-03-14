@@ -32,6 +32,7 @@ SqlDatabase::SqlDatabase(
       current_version_number_(current_version_number) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   DCHECK_GT(current_version_number_, 1);
+  DCHECK(!path_to_db_.empty());
 }
 
 SqlDatabase::~SqlDatabase() = default;
@@ -46,7 +47,7 @@ bool SqlDatabase::Initialize() {
     return false;
   }
 
-  db_ = std::make_unique<sql::Database>();
+  db_ = std::make_unique<sql::Database>(sql::DatabaseOptions());
   db_->set_histogram_tag(histogram_tag_);
   meta_table_ = std::make_unique<sql::MetaTable>();
 
@@ -71,8 +72,11 @@ bool SqlDatabase::Initialize() {
   if (meta_table_->GetVersionNumber() == kUninitializedDbVersionNumber) {
     const int new_version_number = create_table_schema_.Run(this);
     DCHECK_GT(new_version_number, 1);
-    meta_table_->SetVersionNumber(new_version_number);
-    meta_table_->SetCompatibleVersionNumber(new_version_number);
+    // TODO(crbug.com/1414092): Set the version numbers atomically with the
+    // schema within a transaction and check the return values instead of
+    // ignoring them.
+    std::ignore = meta_table_->SetVersionNumber(new_version_number);
+    std::ignore = meta_table_->SetCompatibleVersionNumber(new_version_number);
     return true;
   }
 

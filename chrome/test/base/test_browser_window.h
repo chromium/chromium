@@ -289,8 +289,6 @@ class TestBrowserWindow : public BrowserWindow {
     WindowOpenDisposition GetWindowOpenDisposition() const override;
     ui::PageTransition GetPageTransition() const override;
     base::TimeTicks GetMatchSelectionTimestamp() const override;
-    void AcceptInput() override {}
-    void AcceptInput(base::TimeTicks match_selection_timestamp) override {}
     void FocusLocation(bool select_all) override {}
     void FocusSearch() override {}
     void UpdateContentSettingsIcons() override {}

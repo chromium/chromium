@@ -16,7 +16,6 @@
   }
 
   cr-radio-group {
-    height: var(--radio-group-height);
     padding-inline: 8px;
   }
 
@@ -73,6 +72,7 @@
     <template is="dom-if" if="[[!matchesSubdomains_(site)]]">
       <cr-radio-group selected="{{siteSet_}}">
         <cr-radio-button
+            hidden="[[!showPermittedOption_]]"
             name="[[siteSetEnum_.USER_PERMITTED]]"
             label="[[getPermittedSiteLabel_(site)]]">
         </cr-radio-button>

@@ -92,7 +92,7 @@ separator. The leading _ keeps the generated histogram names the same.
 </histogram>
 
 <histogram name="SoftwareReporter.Cleaner.TimeToCompleteDownload" units="ms"
-    expires_after="2023-03-16">
+    expires_after="2023-09-16">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -184,7 +184,7 @@ separator. The leading _ keeps the generated histogram names the same.
 </histogram>
 
 <histogram name="SoftwareReporter.LastUploadResult" enum="BooleanSuccess"
-    expires_after="2023-03-16">
+    expires_after="2023-09-16">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>The result of the most recent SRT log upload.</summary>
@@ -271,7 +271,7 @@ separator. The leading _ keeps the generated histogram names the same.
 </histogram>
 
 <histogram name="SoftwareReporter.NoPromptReason"
-    enum="SoftwareReporterNoPromptReason" expires_after="2023-03-05">
+    enum="SoftwareReporterNoPromptReason" expires_after="2023-08-05">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

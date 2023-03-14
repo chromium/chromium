@@ -83,9 +83,9 @@ SocketsTcpServerCreateFunction::SocketsTcpServerCreateFunction() = default;
 SocketsTcpServerCreateFunction::~SocketsTcpServerCreateFunction() = default;
 
 ExtensionFunction::ResponseAction SocketsTcpServerCreateFunction::Work() {
-  std::unique_ptr<sockets_tcp_server::Create::Params> params =
+  absl::optional<sockets_tcp_server::Create::Params> params =
       sockets_tcp_server::Create::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   auto* socket = new ResumableTCPServerSocket(browser_context(), GetOriginId());
 
@@ -104,7 +104,7 @@ SocketsTcpServerUpdateFunction::SocketsTcpServerUpdateFunction() = default;
 SocketsTcpServerUpdateFunction::~SocketsTcpServerUpdateFunction() = default;
 
 ExtensionFunction::ResponseAction SocketsTcpServerUpdateFunction::Work() {
-  std::unique_ptr<sockets_tcp_server::Update::Params> params =
+  absl::optional<sockets_tcp_server::Update::Params> params =
       sockets_tcp_server::Update::Params::Create(args());
 
   ResumableTCPServerSocket* socket = GetTcpSocket(params->socket_id);
@@ -123,9 +123,9 @@ SocketsTcpServerSetPausedFunction::~SocketsTcpServerSetPausedFunction() =
     default;
 
 ExtensionFunction::ResponseAction SocketsTcpServerSetPausedFunction::Work() {
-  std::unique_ptr<sockets_tcp_server::SetPaused::Params> params =
+  absl::optional<sockets_tcp_server::SetPaused::Params> params =
       api::sockets_tcp_server::SetPaused::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   TCPServerSocketEventDispatcher* socket_event_dispatcher =
       TCPServerSocketEventDispatcher::Get(browser_context());
@@ -157,7 +157,7 @@ SocketsTcpServerListenFunction::~SocketsTcpServerListenFunction() = default;
 
 ExtensionFunction::ResponseAction SocketsTcpServerListenFunction::Work() {
   params_ = api::sockets_tcp_server::Listen::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params_.get());
+  EXTENSION_FUNCTION_VALIDATE(params_);
 
   socket_event_dispatcher_ =
       TCPServerSocketEventDispatcher::Get(browser_context());
@@ -205,7 +205,7 @@ void SocketsTcpServerListenFunction::OnCompleted(
 
   OpenFirewallHole(params_->address, params_->socket_id, socket);
   if (!did_respond()) {
-    Respond(OneArgument(base::Value(net_result)));
+    Respond(WithArguments(net_result));
   }
 }
 
@@ -216,9 +216,9 @@ SocketsTcpServerDisconnectFunction::~SocketsTcpServerDisconnectFunction() =
     default;
 
 ExtensionFunction::ResponseAction SocketsTcpServerDisconnectFunction::Work() {
-  std::unique_ptr<sockets_tcp_server::Disconnect::Params> params =
+  absl::optional<sockets_tcp_server::Disconnect::Params> params =
       sockets_tcp_server::Disconnect::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   ResumableTCPServerSocket* socket = GetTcpSocket(params->socket_id);
   if (!socket) {
@@ -234,9 +234,9 @@ SocketsTcpServerCloseFunction::SocketsTcpServerCloseFunction() = default;
 SocketsTcpServerCloseFunction::~SocketsTcpServerCloseFunction() = default;
 
 ExtensionFunction::ResponseAction SocketsTcpServerCloseFunction::Work() {
-  std::unique_ptr<sockets_tcp_server::Close::Params> params =
+  absl::optional<sockets_tcp_server::Close::Params> params =
       sockets_tcp_server::Close::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   ResumableTCPServerSocket* socket = GetTcpSocket(params->socket_id);
   if (!socket) {
@@ -252,9 +252,9 @@ SocketsTcpServerGetInfoFunction::SocketsTcpServerGetInfoFunction() = default;
 SocketsTcpServerGetInfoFunction::~SocketsTcpServerGetInfoFunction() = default;
 
 ExtensionFunction::ResponseAction SocketsTcpServerGetInfoFunction::Work() {
-  std::unique_ptr<sockets_tcp_server::GetInfo::Params> params =
+  absl::optional<sockets_tcp_server::GetInfo::Params> params =
       sockets_tcp_server::GetInfo::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   ResumableTCPServerSocket* socket = GetTcpSocket(params->socket_id);
   if (!socket) {

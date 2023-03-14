@@ -20,7 +20,6 @@
 #include "content/public/test/test_web_contents_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/compositor/layer.h"
-#include "ui/display/test/scoped_screen_override.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -77,6 +76,8 @@ class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {
   VideoOverlayWindowViewsTest() = default;
   // ChromeViewsTestBase:
   void SetUp() override {
+    display::Screen::SetScreenInstance(&test_screen_);
+
     // Purposely skip ChromeViewsTestBase::SetUp() as that creates ash::Shell
     // on ChromeOS, which we don't want.
     ViewsTestBase::SetUp();
@@ -102,6 +103,7 @@ class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {
   void TearDown() override {
     overlay_window_.reset();
     ViewsTestBase::TearDown();
+    display::Screen::SetScreenInstance(nullptr);
   }
 
   void SetDisplayWorkArea(const gfx::Rect& work_area) {
@@ -125,7 +127,6 @@ class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {
   TestVideoPictureInPictureWindowController pip_window_controller_;
 
   display::test::TestScreen test_screen_;
-  display::test::ScopedScreenOverride scoped_screen_override_{&test_screen_};
 
   std::unique_ptr<VideoOverlayWindowViews> overlay_window_;
 };

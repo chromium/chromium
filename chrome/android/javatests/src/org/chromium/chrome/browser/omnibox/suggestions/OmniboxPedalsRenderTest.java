@@ -24,7 +24,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.action.OmniboxPedalType;
-import org.chromium.chrome.browser.omnibox.suggestions.pedal.PedalSuggestionView;
+import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -127,8 +127,7 @@ public class OmniboxPedalsRenderTest {
                 AutocompleteResult.fromCache(suggestionsList, null), "Run safety check");
         mOmniboxUtils.checkSuggestionsShown();
 
-        SuggestionInfo<PedalSuggestionView> info =
-                mOmniboxUtils.getSuggestionByType(OmniboxSuggestionUiType.PEDAL_SUGGESTION);
+        SuggestionInfo<BaseSuggestionView> info = mOmniboxUtils.findSuggestionWithActionChips();
         mRenderTestRule.render(info.view, "ClearBrowsingDataPedal");
     }
 
@@ -143,8 +142,7 @@ public class OmniboxPedalsRenderTest {
                 AutocompleteResult.fromCache(suggestionsList, null), "Dino game");
         mOmniboxUtils.checkSuggestionsShown();
 
-        SuggestionInfo<PedalSuggestionView> info =
-                mOmniboxUtils.getSuggestionByType(OmniboxSuggestionUiType.PEDAL_SUGGESTION);
+        SuggestionInfo<BaseSuggestionView> info = mOmniboxUtils.findSuggestionWithActionChips();
         mRenderTestRule.render(info.view, "DinoGamePedal");
     }
 }

@@ -1,0 +1,16 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+visibility = [ "//components/cast_streaming/browser/*" ]
+
+source_set("common") {
+  public = [
+    "decoder_buffer_factory.h",
+    "demuxer_stream_client.h",
+    "streaming_initialization_info.h",
+  ]
+  sources = [ "streaming_initialization_info.cc" ]
+  public_deps = [ "//base" ]
+  deps = [ "//media" ]
+}

@@ -117,7 +117,7 @@ WebAuthenticationProxyCompleteCreateRequestFunction::Run() {
   auto params =
       api::web_authentication_proxy::CompleteCreateRequest::Params::Create(
           args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  EXTENSION_FUNCTION_VALIDATE(params);
   WebAuthenticationProxyService* proxy_service =
       WebAuthenticationProxyService::GetIfProxyAttached(browser_context());
   if (!proxy_service || proxy_service->GetActiveRequestProxy() != extension()) {
@@ -146,7 +146,7 @@ WebAuthenticationProxyCompleteGetRequestFunction::Run() {
   DCHECK(extension());
   auto params =
       api::web_authentication_proxy::CompleteGetRequest::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  EXTENSION_FUNCTION_VALIDATE(params);
   WebAuthenticationProxyService* proxy_service =
       WebAuthenticationProxyService::GetIfProxyAttached(browser_context());
   if (!proxy_service || proxy_service->GetActiveRequestProxy() != extension()) {
@@ -170,7 +170,7 @@ WebAuthenticationProxyCompleteIsUvpaaRequestFunction::Run() {
   auto params =
       api::web_authentication_proxy::CompleteIsUvpaaRequest::Params::Create(
           args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  EXTENSION_FUNCTION_VALIDATE(params);
   WebAuthenticationProxyService* proxy_service =
       WebAuthenticationProxyService::GetIfProxyAttached(browser_context());
   if (!proxy_service || proxy_service->GetActiveRequestProxy() != extension()) {

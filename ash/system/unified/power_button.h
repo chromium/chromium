@@ -33,6 +33,8 @@ class ASH_EXPORT PowerButton : public views::View {
   // If the context mune is currently open.
   bool IsMenuShowing();
 
+  IconButton* button_content_for_testing() { return button_content_; }
+
  private:
   friend class PowerButtonTest;
   friend class QuickSettingsFooterTest;

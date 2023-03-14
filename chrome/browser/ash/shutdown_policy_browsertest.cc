@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/login_status.h"
 #include "ash/public/cpp/ash_view_ids.h"
@@ -55,17 +56,17 @@ void WaitForShutdownButtonVisibility(bool visible) {
 
 }  // namespace
 
-class ShutdownPolicyBaseTest
-    : public policy::DevicePolicyCrosBrowserTest,
-      public DeviceSettingsService::Observer {
+class ShutdownPolicyBaseTest : public policy::DevicePolicyCrosBrowserTest,
+                               public DeviceSettingsService::Observer {
  protected:
   ShutdownPolicyBaseTest() {}
   ~ShutdownPolicyBaseTest() override {}
 
   // DeviceSettingsService::Observer:
   void DeviceSettingsUpdated() override {
-    if (run_loop_)
+    if (run_loop_) {
       run_loop_->Quit();
+    }
   }
 
   // policy::DevicePolicyCrosBrowserTest:
@@ -99,8 +100,9 @@ class ShutdownPolicyBaseTest
     ASSERT_TRUE(oobe_ui);
     base::RunLoop run_loop;
     const bool oobe_ui_ready = oobe_ui->IsJSReady(run_loop.QuitClosure());
-    if (!oobe_ui_ready)
+    if (!oobe_ui_ready) {
       run_loop.Run();
+    }
   }
 
   bool result_;
@@ -108,8 +110,7 @@ class ShutdownPolicyBaseTest
   std::unique_ptr<SystemTrayTestApi> tray_test_api_;
 };
 
-class ShutdownPolicyInSessionTest
-    : public ShutdownPolicyBaseTest {
+class ShutdownPolicyInSessionTest : public ShutdownPolicyBaseTest {
  public:
   ShutdownPolicyInSessionTest(const ShutdownPolicyInSessionTest&) = delete;
   ShutdownPolicyInSessionTest& operator=(const ShutdownPolicyInSessionTest&) =
@@ -127,8 +128,7 @@ class ShutdownPolicyInSessionTest
 
   // Returns true if the shutdown button's tooltip matches |tooltip|.
   bool HasShutdownButtonTooltip(const std::string& tooltip) {
-    std::u16string actual_tooltip =
-        tray_test_api_->GetBubbleViewTooltip(VIEW_ID_QS_POWER_BUTTON);
+    std::u16string actual_tooltip = tray_test_api_->GetShutdownButtonTooltip();
     return base::UTF8ToUTF16(tooltip) == actual_tooltip;
   }
 };

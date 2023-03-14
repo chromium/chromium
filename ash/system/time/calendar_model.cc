@@ -42,8 +42,6 @@ constexpr auto kAllowedResponseStatuses =
          CalendarEvent::ResponseStatus::kNeedsAction,
          CalendarEvent::ResponseStatus::kTentative});
 
-// Methods for debugging and gathering of metrics.
-
 [[maybe_unused]] size_t GetEventMapSize(
     const ash::CalendarModel::SingleMonthEventMap& event_map) {
   size_t total_bytes = 0;
@@ -53,15 +51,6 @@ constexpr auto kAllowedResponseStatuses =
       total_bytes += event.GetApproximateSizeInBytes();
     }
   }
-
-  return total_bytes;
-}
-
-[[maybe_unused]] size_t GetTotalCacheSize(
-    const ash::CalendarModel::MonthToEventsMap& event_map) {
-  size_t total_bytes = 0;
-  for (auto& month : event_map)
-    total_bytes += sizeof(month) + GetEventMapSize(month.second);
 
   return total_bytes;
 }
@@ -85,6 +74,9 @@ void SortByDateAscending(
     std::list<google_apis::calendar::CalendarEvent>& events) {
   events.sort([](google_apis::calendar::CalendarEvent& a,
                  google_apis::calendar::CalendarEvent& b) {
+    if (a.start_time().date_time() == b.start_time().date_time()) {
+      return a.end_time().date_time() < b.end_time().date_time();
+    }
     return a.start_time().date_time() < b.start_time().date_time();
   });
 }
@@ -307,8 +299,6 @@ void CalendarModel::OnEventsFetched(
     return;
   }
 
-  DebugDumpOnEventFetched(events, start_of_month);
-
   // Keep us within storage limits.
   PruneEventCache();
 
@@ -427,12 +417,6 @@ void CalendarModel::InsertMultiDayEvent(
         (last_day_midnight - calendar_utils::kDurationForGettingPreviousDay)
             .UTCMidnight();
 
-  if (ash::features::IsCalendarModelDebugModeEnabled()) {
-    VLOG(1) << __FUNCTION__
-            << " current_day_midnight: " << current_day_midnight;
-    VLOG(1) << __FUNCTION__ << " last_day_midnight: " << last_day_midnight;
-  }
-
   while (current_day_midnight <= last_day_midnight) {
     InsertEventInMonth(event, start_of_month, current_day_midnight);
     current_day_midnight =
@@ -452,11 +436,6 @@ void CalendarModel::InsertEventInMonth(
 
   // Month is now the most-recently-used.
   PromoteMonth(start_of_month);
-
-  if (ash::features::IsCalendarModelDebugModeEnabled()) {
-    VLOG(1) << __FUNCTION__ << " start_of_month " << start_of_month;
-    DebugDumpEventLarge(__FUNCTION__, event);
-  }
 
   auto it = event_months_.find(start_of_month);
   if (it == event_months_.end()) {
@@ -591,20 +570,6 @@ void CalendarModel::RedistributeEvents() {
   }
 }
 
-void CalendarModel::DebugDump() {
-  std::ostringstream out;
-  const char* kDebugDumpPrefix = "CalendarModelDump: ";
-  out << __FUNCTION__ << " START"
-      << "\n";
-  DebugDumpEvents(&out, kDebugDumpPrefix);
-  DebugDumpMruMonths(&out, kDebugDumpPrefix);
-  DebugDumpNonPrunableMonths(&out, kDebugDumpPrefix);
-  DebugDumpMonthsFetched(&out, kDebugDumpPrefix);
-  out << __FUNCTION__ << " END"
-      << "\n";
-  VLOG(1) << out.str();
-}
-
 void CalendarModel::PruneEventCache() {
   while (!mru_months_.empty() &&
          mru_months_.size() > calendar_utils::kMaxNumPrunableMonths) {
@@ -614,128 +579,6 @@ void CalendarModel::PruneEventCache() {
     months_fetched_.erase(lru_month);
     mru_months_.pop_back();
   }
-}
-
-void CalendarModel::DebugDumpOnEventFetched(
-    const google_apis::calendar::EventList* events,
-    base::Time start_of_month) {
-  if (!ash::features::IsCalendarModelDebugModeEnabled() || !events)
-    return;
-
-  VLOG(1) << __FUNCTION__ << " month " << start_of_month << " num events "
-          << events->items().size();
-
-  if (events->items().size() == 0)
-    return;
-
-  // It is possible for incoming events to have a start date (adjusted for
-  // timezone differences) that's not in `start_of_month`. The code below
-  // outputs a breakdown of the events by month.
-  std::map<base::Time, int> included_months;
-  for (auto& event : events->items()) {
-    base::Time adjusted_start =
-        calendar_utils::GetStartTimeAdjusted(event.get());
-    base::Time adjusted_start_of_month =
-        calendar_utils::GetStartOfMonthUTC(adjusted_start);
-    if (included_months.find(adjusted_start_of_month) ==
-        included_months.end()) {
-      included_months[adjusted_start_of_month] = 1;
-    } else {
-      included_months[adjusted_start_of_month]++;
-    }
-  }
-
-  if (included_months.size() <= 1)
-    return;
-
-  VLOG(1) << __FUNCTION__ << " breakdown:";
-  for (auto& included_month : included_months) {
-    VLOG(1) << __FUNCTION__ << "   " << included_month.first << " ("
-            << included_month.second << ")";
-  }
-}
-
-void CalendarModel::DebugDumpEventSmall(
-    std::ostringstream* out,
-    const char* prefix,
-    const google_apis::calendar::CalendarEvent* event) {
-  if (!event)
-    return;
-
-  *out << prefix << "      "
-       << calendar_utils::GetTwelveHourClockTime(
-              event->start_time().date_time())
-       << " -> "
-       << calendar_utils::GetTwelveHourClockTime(event->end_time().date_time())
-       << " (" << event->summary().substr(0, 6) << "...)"
-       << "\n";
-}
-
-void CalendarModel::DebugDumpEventLarge(
-    const char* prefix,
-    const google_apis::calendar::CalendarEvent* event) {
-  if (!event)
-    return;
-
-  VLOG(1) << prefix << " ID: " << event->id();
-  VLOG(1) << prefix << "  summary: \"" << event->summary().substr(0, 6)
-          << "...\"";
-  VLOG(1) << prefix << "  st/et: " << event->start_time().date_time() << " => "
-          << event->end_time().date_time();
-  VLOG(1) << prefix
-          << "  (adj): " << calendar_utils::GetStartTimeAdjusted(event)
-          << " => " << calendar_utils::GetEndTimeAdjusted(event);
-}
-
-void CalendarModel::DebugDumpEvents(std::ostringstream* out,
-                                    const char* prefix) {
-  *out << prefix << " event_months_ START size: " << event_months_.size()
-       << "\n";
-  for (auto& month : event_months_) {
-    *out << prefix << " month: " << month.first << "\n";
-    for (auto& day : month.second) {
-      *out << prefix << "   day: " << day.first << "\n";
-      for (auto it = day.second.begin(); it != day.second.end(); ++it) {
-        google_apis::calendar::CalendarEvent event = *it;
-        DebugDumpEventSmall(out, prefix, &event);
-      }
-    }
-  }
-  *out << prefix << " event_months_ END"
-       << "\n";
-}
-
-void CalendarModel::DebugDumpMruMonths(std::ostringstream* out,
-                                       const char* prefix) {
-  *out << prefix << " mru_months_ START size: " << mru_months_.size() << "\n";
-  for (auto& month : mru_months_) {
-    *out << prefix << "   " << month << "\n";
-  }
-  *out << prefix << " mru_months_ END"
-       << "\n";
-}
-
-void CalendarModel::DebugDumpNonPrunableMonths(std::ostringstream* out,
-                                               const char* prefix) {
-  *out << prefix
-       << " non_prunable_months_ START size: " << non_prunable_months_.size()
-       << "\n";
-  for (auto& month : non_prunable_months_) {
-    *out << prefix << "   " << month << "\n";
-  }
-  *out << prefix << " non_prunable_months_ END"
-       << "\n";
-}
-
-void CalendarModel::DebugDumpMonthsFetched(std::ostringstream* out,
-                                           const char* prefix) {
-  *out << prefix << " months_fetched_ START size: " << months_fetched_.size()
-       << "\n";
-  for (auto& month : months_fetched_) {
-    *out << prefix << "   " << month << "\n";
-  }
-  *out << prefix << " months_fetched_ END"
-       << "\n";
 }
 
 }  // namespace ash

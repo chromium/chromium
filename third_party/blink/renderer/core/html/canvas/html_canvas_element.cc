@@ -584,12 +584,13 @@ void HTMLCanvasElement::PreFinalizeFrame() {
   }
 }
 
-void HTMLCanvasElement::PostFinalizeFrame() {
+void HTMLCanvasElement::PostFinalizeFrame(
+    CanvasResourceProvider::FlushReason reason) {
   if (LowLatencyEnabled() && !dirty_rect_.IsEmpty() &&
       GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)) {
     const base::TimeTicks start_time = base::TimeTicks::Now();
     scoped_refptr<CanvasResource> canvas_resource =
-        ResourceProvider()->ProduceCanvasResource();
+        ResourceProvider()->ProduceCanvasResource(reason);
     const gfx::RectF src_rect((gfx::SizeF(Size())));
     dirty_rect_.Intersect(src_rect);
     const gfx::Rect int_dirty = gfx::ToEnclosingRect(dirty_rect_);
@@ -729,8 +730,6 @@ void HTMLCanvasElement::Reset() {
   if (had_resource_provider && old_size == new_size && IsRenderingContext2D()) {
     if (!canvas_is_clear_) {
       canvas_is_clear_ = true;
-      if (ResourceProvider())
-        ResourceProvider()->ClearFrame();
       context_->ClearRect(0, 0, width(), height());
     }
     return;
@@ -825,7 +824,8 @@ void HTMLCanvasElement::NotifyListenersCanvasChanged() {
 
     if (!source_image) {
       SourceImageStatus status;
-      source_image = GetSourceImageForCanvasInternal(&status);
+      source_image = GetSourceImageForCanvasInternal(
+          CanvasResourceProvider::FlushReason::kDrawListener, &status);
       if (status != kNormalSourceImageStatus)
         continue;
     }
@@ -945,7 +945,8 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
     // display list rendering: we replay the last full PaintRecord, if Canvas
     // has been redraw since beforeprint happened.
     if (IsPrinting() && IsRenderingContext2D() && canvas2d_bridge_) {
-      canvas2d_bridge_->FlushRecording(/*printing=*/true);
+      canvas2d_bridge_->FlushRecording(
+          CanvasResourceProvider::FlushReason::kPrinting);
       if (canvas2d_bridge_->getLastRecord() &&
           FilterQuality() != cc::PaintFlags::FilterQuality::kNone) {
         context.Canvas()->save();
@@ -957,7 +958,12 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
         UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.2DPrintingAsVector", true);
         return;
       }
-      UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.2DPrintingAsVector", false);
+      if (canvas2d_bridge_->ResourceProvider()) {
+        UMA_HISTOGRAM_ENUMERATION(
+            "Blink.Canvas.VectorPrintFallbackReason",
+            canvas2d_bridge_->ResourceProvider()->printing_fallback_reason());
+        UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.2DPrintingAsVector", false);
+      }
     }
     // or image snapshot rendering: grab a snapshot and raster it.
     SkBlendMode composite_operator =
@@ -967,8 +973,12 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
     gfx::RectF src_rect((gfx::SizeF(Size())));
     scoped_refptr<StaticBitmapImage> snapshot =
         canvas2d_bridge_
-            ? canvas2d_bridge_->NewImageSnapshot()
-            : (ResourceProvider() ? ResourceProvider()->Snapshot() : nullptr);
+            ? canvas2d_bridge_->NewImageSnapshot(
+                  CanvasResourceProvider::FlushReason::kPaint)
+            : (ResourceProvider()
+                   ? ResourceProvider()->Snapshot(
+                         CanvasResourceProvider::FlushReason::kPaint)
+                   : nullptr);
     if (snapshot) {
       // GraphicsContext cannot handle gpu resource serialization.
       snapshot = snapshot->MakeUnaccelerated();
@@ -1016,6 +1026,7 @@ const AtomicString HTMLCanvasElement::ImageSourceURL() const {
 }
 
 scoped_refptr<StaticBitmapImage> HTMLCanvasElement::Snapshot(
+    CanvasResourceProvider::FlushReason reason,
     SourceDrawingBuffer source_buffer) const {
   if (size_.IsEmpty())
     return nullptr;
@@ -1028,7 +1039,7 @@ scoped_refptr<StaticBitmapImage> HTMLCanvasElement::Snapshot(
     if (context_->CreationAttributes().premultiplied_alpha) {
       context_->PaintRenderingResultsToCanvas(source_buffer);
       if (ResourceProvider())
-        image_bitmap = ResourceProvider()->Snapshot();
+        image_bitmap = ResourceProvider()->Snapshot(reason);
     } else {
       sk_sp<SkData> pixel_data =
           context_->PaintRenderingResultsToDataArray(source_buffer);
@@ -1056,7 +1067,7 @@ scoped_refptr<StaticBitmapImage> HTMLCanvasElement::Snapshot(
   } else if (context_) {
     DCHECK(IsRenderingContext2D() || IsImageBitmapRenderingContext() ||
            IsWebGPU());
-    image_bitmap = context_->GetImage();
+    image_bitmap = context_->GetImage(reason);
   }
 
   if (image_bitmap)
@@ -1079,7 +1090,8 @@ String HTMLCanvasElement::ToDataURLInternal(
       ImageEncoderUtils::ToEncodingMimeType(
           mime_type, ImageEncoderUtils::kEncodeReasonToDataURL);
 
-  scoped_refptr<StaticBitmapImage> image_bitmap = Snapshot(source_buffer);
+  scoped_refptr<StaticBitmapImage> image_bitmap =
+      Snapshot(CanvasResourceProvider::FlushReason::kToDataURL, source_buffer);
   if (image_bitmap) {
     std::unique_ptr<ImageDataBuffer> data_buffer =
         ImageDataBuffer::Create(image_bitmap);
@@ -1171,7 +1183,8 @@ void HTMLCanvasElement::toBlob(V8BlobCallback* callback,
           mime_type, ImageEncoderUtils::kEncodeReasonToBlobCallback);
 
   CanvasAsyncBlobCreator* async_creator = nullptr;
-  scoped_refptr<StaticBitmapImage> image_bitmap = Snapshot(kBackBuffer);
+  scoped_refptr<StaticBitmapImage> image_bitmap =
+      Snapshot(CanvasResourceProvider::FlushReason::kToBlob, kBackBuffer);
   if (image_bitmap) {
     auto* options = ImageEncodeOptions::Create();
     options->setType(ImageEncodingMimeTypeName(encoding_mime_type));
@@ -1498,14 +1511,16 @@ void HTMLCanvasElement::WillDrawImageTo2DContext(CanvasImageSource* source) {
 }
 
 scoped_refptr<Image> HTMLCanvasElement::GetSourceImageForCanvas(
+    CanvasResourceProvider::FlushReason reason,
     SourceImageStatus* status,
     const gfx::SizeF&,
     const AlphaDisposition alpha_disposition) {
-  return GetSourceImageForCanvasInternal(status, alpha_disposition);
+  return GetSourceImageForCanvasInternal(reason, status, alpha_disposition);
 }
 
 scoped_refptr<StaticBitmapImage>
 HTMLCanvasElement::GetSourceImageForCanvasInternal(
+    CanvasResourceProvider::FlushReason reason,
     SourceImageStatus* status,
     const AlphaDisposition alpha_disposition) {
   if (!width() || !height()) {
@@ -1530,7 +1545,7 @@ HTMLCanvasElement::GetSourceImageForCanvasInternal(
   } else if (!context_) {
     image = GetTransparentImage();
   } else if (HasImageBitmapContext()) {
-    image = context_->GetImage();
+    image = context_->GetImage(reason);
 
     if (!image)
       image = GetTransparentImage();
@@ -1542,11 +1557,11 @@ HTMLCanvasElement::GetSourceImageForCanvasInternal(
     // cached copy of the backing in the canvas's resource provider.
     RenderingContext()->PaintRenderingResultsToCanvas(kBackBuffer);
     if (ResourceProvider())
-      image = ResourceProvider()->Snapshot();
+      image = ResourceProvider()->Snapshot(reason);
     else
       image = GetTransparentImage();
   } else {
-    image = RenderingContext()->GetImage();
+    image = RenderingContext()->GetImage(reason);
     if (!image)
       image = GetTransparentImage();
   }
@@ -1560,7 +1575,8 @@ HTMLCanvasElement::GetSourceImageForCanvasInternal(
   *status = kNormalSourceImageStatus;
   // If the alpha_disposition is already correct, or the image is opaque, this
   // is a no-op.
-  return GetImageWithAlphaDisposition(std::move(image), alpha_disposition);
+  return GetImageWithAlphaDisposition(reason, std::move(image),
+                                      alpha_disposition);
 }
 
 bool HTMLCanvasElement::WouldTaintOrigin() const {
@@ -1571,7 +1587,8 @@ gfx::SizeF HTMLCanvasElement::ElementSize(
     const gfx::SizeF&,
     const RespectImageOrientationEnum) const {
   if (context_ && HasImageBitmapContext()) {
-    scoped_refptr<Image> image = context_->GetImage();
+    scoped_refptr<Image> image =
+        context_->GetImage(CanvasResourceProvider::FlushReason::kNone);
     if (image)
       return gfx::SizeF(image->width(), image->height());
     return gfx::SizeF(0, 0);
@@ -1740,7 +1757,8 @@ void HTMLCanvasElement::ReplaceExisting2dLayerBridge(
   scoped_refptr<StaticBitmapImage> image;
   std::unique_ptr<Canvas2DLayerBridge> old_layer_bridge;
   if (canvas2d_bridge_) {
-    image = canvas2d_bridge_->NewImageSnapshot();
+    image = canvas2d_bridge_->NewImageSnapshot(
+        CanvasResourceProvider::FlushReason::kReplaceLayerBridge);
     // image can be null if allocation failed in which case we should just
     // abort the surface switch to retain the old surface which is still
     // functional.

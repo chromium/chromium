@@ -30,21 +30,28 @@ public class PasswordManagerLauncher {
      */
     public static void showPasswordSettings(Activity activity,
             @ManagePasswordsReferrer int referrer,
-            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
+            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
+            boolean managePasskeys) {
         SyncService syncService = SyncService.get();
         PasswordManagerHelper.showPasswordSettings(activity, referrer, new SettingsLauncherImpl(),
-                syncService, modalDialogManagerSupplier);
+                syncService, modalDialogManagerSupplier, managePasskeys);
     }
 
     @CalledByNative
-    private static void showPasswordSettings(
-            WebContents webContents, @ManagePasswordsReferrer int referrer) {
+    private static void showPasswordSettings(WebContents webContents,
+            @ManagePasswordsReferrer int referrer, boolean managePasskeys) {
         WindowAndroid window = webContents.getTopLevelNativeWindow();
         if (window == null) return;
         WeakReference<Activity> currentActivity = window.getActivity();
         ObservableSupplierImpl<ModalDialogManager> modalDialogManagerSupplier =
                 new ObservableSupplierImpl<>();
         modalDialogManagerSupplier.set(window.getModalDialogManager());
-        showPasswordSettings(currentActivity.get(), referrer, modalDialogManagerSupplier);
+        showPasswordSettings(
+                currentActivity.get(), referrer, modalDialogManagerSupplier, managePasskeys);
+    }
+
+    @CalledByNative
+    private static boolean canManagePasswordsWhenPasskeysPresent() {
+        return PasswordManagerHelper.canUseUpm() || !PasswordManagerHelper.canUseAccountSettings();
     }
 }

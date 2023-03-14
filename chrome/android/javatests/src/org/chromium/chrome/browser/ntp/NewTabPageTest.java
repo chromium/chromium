@@ -39,6 +39,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
@@ -46,8 +47,6 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.GarbageCollectionTestUtils;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.memory.MemoryPressureCallback;
-import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.test.metrics.HistogramTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
@@ -58,6 +57,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.tile.Tile;
@@ -146,8 +147,6 @@ public class NewTabPageTest {
     public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
     @Rule
     public SigninTestRule mSigninTestRule = new SigninTestRule();
-    @Rule
-    public HistogramTestRule mHistogramTestRule = new HistogramTestRule();
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
@@ -162,8 +161,6 @@ public class NewTabPageTest {
     @Mock
     FeedReliabilityLogger mFeedReliabilityLogger;
     @Mock
-    private TemplateUrlService mTemplateUrlService;
-    @Mock
     private Callback mOnVisitComplete;
     @Mock
     private Runnable mOnPageLoaded;
@@ -174,6 +171,7 @@ public class NewTabPageTest {
     private static final String TEST_URL = "https://www.example.com/";
 
     private Tab mTab;
+    private TemplateUrlService mTemplateUrlService;
     private NewTabPage mNtp;
     private View mFakebox;
     private ViewGroup mMvTilesLayout;
@@ -204,6 +202,10 @@ public class NewTabPageTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityWithURL("about:blank");
+        TemplateUrlService originalService = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile()));
+        mTemplateUrlService = Mockito.spy(originalService);
+        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         Assume.assumeFalse(mActivityTestRule.getActivity().isTablet() && mEnableScrollableMVT);
 
         mOmnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
@@ -232,6 +234,7 @@ public class NewTabPageTest {
         if (mTestServer != null) {
             mTestServer.stopAndDestroyServer();
         }
+        TemplateUrlServiceFactory.setInstanceForTesting(null);
     }
 
     @Test
@@ -325,6 +328,8 @@ public class NewTabPageTest {
     @ParameterAnnotations.UseMethodParameter(MVTParams.class)
     public void testClickMostVisitedItem(boolean isScrollableMVTEnabled) {
         Assert.assertNotNull(mMvTilesLayout);
+        HistogramWatcher histogramWatcher = expectMostVisitedTilesRecordForNtpModuleClick();
+
         ChromeTabUtils.waitForTabPageLoaded(
                 mTab, mSiteSuggestions.get(0).url.getSpec(), new Runnable() {
                     @Override
@@ -333,11 +338,9 @@ public class NewTabPageTest {
                         TouchCommon.singleClickView(mostVisitedItem);
                     }
                 });
-        Assert.assertEquals(mSiteSuggestions.get(0).url, ChromeTabUtils.getUrlOnUiThread(mTab));
 
-        assertEquals(1,
-                mHistogramTestRule.getHistogramValueCount(HISTOGRAM_NTP_MODULE_CLICK,
-                        BrowserUiUtils.ModuleTypeOnStartAndNTP.MOST_VISITED_TILES));
+        Assert.assertEquals(mSiteSuggestions.get(0).url, ChromeTabUtils.getUrlOnUiThread(mTab));
+        histogramWatcher.assertExpected();
     }
 
     /**
@@ -366,14 +369,14 @@ public class NewTabPageTest {
     public void testOpenMostVisitedItemInIncognitoTab(boolean isScrollableMVTEnabled)
             throws ExecutionException {
         Assert.assertNotNull(mMvTilesLayout);
+        HistogramWatcher histogramWatcher = expectMostVisitedTilesRecordForNtpModuleClick();
+
         ChromeTabUtils.invokeContextMenuAndOpenInANewTab(mActivityTestRule,
                 mMvTilesLayout.getChildAt(0),
                 ContextMenuManager.ContextMenuItemId.OPEN_IN_INCOGNITO_TAB, true,
                 mSiteSuggestions.get(0).url.getSpec());
 
-        assertEquals(1,
-                mHistogramTestRule.getHistogramValueCount(HISTOGRAM_NTP_MODULE_CLICK,
-                        BrowserUiUtils.ModuleTypeOnStartAndNTP.MOST_VISITED_TILES));
+        histogramWatcher.assertExpected();
     }
 
     /**
@@ -482,7 +485,6 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
     public void testSetSearchProviderInfo() throws Throwable {
-        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         mActivityTestRule.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -515,7 +517,6 @@ public class NewTabPageTest {
     @Feature({"NewTabPage", "FeedNewTabPage"})
     @ParameterAnnotations.UseMethodParameter(MVTParams.class)
     public void testPlaceholder(boolean isScrollableMVTEnabled) {
-        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
 
         final NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();
@@ -688,60 +689,47 @@ public class NewTabPageTest {
             TileGroup.Delegate tileGroupDelegate = mNtp.getTileGroupDelegateForTesting();
 
             // Test clicking on MV tiles.
+            HistogramWatcher histogramWatcher = expectMostVisitedTilesRecordForNtpModuleClick();
             tileGroupDelegate.openMostVisitedItem(WindowOpenDisposition.CURRENT_TAB, tileForTest);
-            assertEquals(HISTOGRAM_NTP_MODULE_CLICK
-                            + " is not recorded correctly when click on MV tiles.",
-                    1,
-                    mHistogramTestRule.getHistogramValueCount(HISTOGRAM_NTP_MODULE_CLICK,
-                            BrowserUiUtils.ModuleTypeOnStartAndNTP.MOST_VISITED_TILES));
+            histogramWatcher.assertExpected(HISTOGRAM_NTP_MODULE_CLICK
+                    + " is not recorded correctly when click on MV tiles.");
 
             // Test long press then open in new tab in group on MV tiles.
+            histogramWatcher = expectMostVisitedTilesRecordForNtpModuleClick();
             tileGroupDelegate.openMostVisitedItemInGroup(
                     WindowOpenDisposition.NEW_BACKGROUND_TAB, tileForTest);
-            assertEquals(HISTOGRAM_NTP_MODULE_CLICK
-                            + " is not recorded correctly when long press then open in new tab in "
-                            + "group on MV tiles.",
-                    2,
-                    mHistogramTestRule.getHistogramValueCount(HISTOGRAM_NTP_MODULE_CLICK,
-                            BrowserUiUtils.ModuleTypeOnStartAndNTP.MOST_VISITED_TILES));
+            histogramWatcher.assertExpected(HISTOGRAM_NTP_MODULE_CLICK
+                    + " is not recorded correctly when long press then open in new tab in group on "
+                    + "MV tiles.");
 
             // Test long press then open in new tab on MV tiles.
+            histogramWatcher = expectMostVisitedTilesRecordForNtpModuleClick();
             tileGroupDelegate.openMostVisitedItem(
                     WindowOpenDisposition.NEW_BACKGROUND_TAB, tileForTest);
-            assertEquals(HISTOGRAM_NTP_MODULE_CLICK
-                            + " is not recorded correctly when long press then open in new tab "
-                            + "on MV tiles.",
-                    3,
-                    mHistogramTestRule.getHistogramValueCount(HISTOGRAM_NTP_MODULE_CLICK,
-                            BrowserUiUtils.ModuleTypeOnStartAndNTP.MOST_VISITED_TILES));
+            histogramWatcher.assertExpected(HISTOGRAM_NTP_MODULE_CLICK
+                    + " is not recorded correctly when long press then open in new tab on MV "
+                    + "tiles.");
 
             // Test long press then open in other window on MV tiles.
+            histogramWatcher = expectNoRecordsForNtpModuleClick();
             tileGroupDelegate.openMostVisitedItem(WindowOpenDisposition.NEW_WINDOW, tileForTest);
-            assertEquals(HISTOGRAM_NTP_MODULE_CLICK
-                            + " shouldn't be recorded when long press then open in other "
-                            + "window on MV tiles.",
-                    3,
-                    mHistogramTestRule.getHistogramValueCount(HISTOGRAM_NTP_MODULE_CLICK,
-                            BrowserUiUtils.ModuleTypeOnStartAndNTP.MOST_VISITED_TILES));
+            histogramWatcher.assertExpected(HISTOGRAM_NTP_MODULE_CLICK
+                    + " shouldn't be recorded when long press then open in other window on MV "
+                    + "tiles.");
 
             // Test long press then download link on MV tiles.
+            histogramWatcher = expectMostVisitedTilesRecordForNtpModuleClick();
             tileGroupDelegate.openMostVisitedItem(WindowOpenDisposition.SAVE_TO_DISK, tileForTest);
-            assertEquals(HISTOGRAM_NTP_MODULE_CLICK
-                            + " is not recorded correctly when long press then download link on "
-                            + "MV tiles.",
-                    4,
-                    mHistogramTestRule.getHistogramValueCount(HISTOGRAM_NTP_MODULE_CLICK,
-                            BrowserUiUtils.ModuleTypeOnStartAndNTP.MOST_VISITED_TILES));
+            histogramWatcher.assertExpected(HISTOGRAM_NTP_MODULE_CLICK
+                    + " is not recorded correctly when long press then download link on MV tiles.");
 
             // Test long press then open in Incognito tab on MV tiles.
+            histogramWatcher = expectMostVisitedTilesRecordForNtpModuleClick();
             tileGroupDelegate.openMostVisitedItem(
                     WindowOpenDisposition.OFF_THE_RECORD, tileForTest);
-            assertEquals(HISTOGRAM_NTP_MODULE_CLICK
-                            + " is not recorded correctly when long press then open in Incognito "
-                            + "tab on MV tiles.",
-                    5,
-                    mHistogramTestRule.getHistogramValueCount(HISTOGRAM_NTP_MODULE_CLICK,
-                            BrowserUiUtils.ModuleTypeOnStartAndNTP.MOST_VISITED_TILES));
+            histogramWatcher.assertExpected(HISTOGRAM_NTP_MODULE_CLICK
+                    + " is not recorded correctly when long press then open in Incognito tab on MV "
+                    + "tiles.");
         });
     }
 
@@ -756,62 +744,45 @@ public class NewTabPageTest {
             FeedActionDelegate feedActionDelegate = mNtp.getFeedActionDelegateForTesting();
 
             // Test click on Feeds or long press then check about this source & topic on Feeds.
+            HistogramWatcher histogramWatcher = expectFeedRecordForNtpModuleClick();
             feedActionDelegate.openSuggestionUrl(WindowOpenDisposition.CURRENT_TAB,
                     new LoadUrlParams(TEST_URL, PageTransition.AUTO_BOOKMARK), false, mOnPageLoaded,
                     mOnVisitComplete);
-            assertEquals(HISTOGRAM_NTP_MODULE_CLICK
-                            + " is not recorded correctly when click on Feeds "
-                            + "or long press then check about this source & topic on Feeds.",
-                    1,
-                    RecordHistogram.getHistogramValueCountForTesting(HISTOGRAM_NTP_MODULE_CLICK,
-                            BrowserUiUtils.ModuleTypeOnStartAndNTP.FEED));
+            histogramWatcher.assertExpected(HISTOGRAM_NTP_MODULE_CLICK
+                    + " is not recorded correctly when click on Feeds or long press then check "
+                    + "about this source & topic on Feeds.");
 
             // Test long press then open in new tab on Feeds.
+            histogramWatcher = expectFeedRecordForNtpModuleClick();
             feedActionDelegate.openSuggestionUrl(WindowOpenDisposition.NEW_BACKGROUND_TAB,
                     new LoadUrlParams(TEST_URL, PageTransition.AUTO_BOOKMARK), false, mOnPageLoaded,
                     mOnVisitComplete);
-            assertEquals(HISTOGRAM_NTP_MODULE_CLICK
-                            + " is not recorded correctly when long press then open in "
-                            + "new tab on Feeds.",
-                    2,
-                    RecordHistogram.getHistogramValueCountForTesting(HISTOGRAM_NTP_MODULE_CLICK,
-                            BrowserUiUtils.ModuleTypeOnStartAndNTP.FEED));
+            histogramWatcher.assertExpected(HISTOGRAM_NTP_MODULE_CLICK
+                    + " is not recorded correctly when long press then open in new tab on Feeds.");
 
             // Test long press then open in incognito tab on Feeds.
+            histogramWatcher = expectFeedRecordForNtpModuleClick();
             feedActionDelegate.openSuggestionUrl(WindowOpenDisposition.OFF_THE_RECORD,
                     new LoadUrlParams(TEST_URL, PageTransition.AUTO_BOOKMARK), false, mOnPageLoaded,
                     mOnVisitComplete);
-            assertEquals(HISTOGRAM_NTP_MODULE_CLICK
-                            + " is not recorded correctly when long press then open "
-                            + "in incognito tab on Feeds.",
-                    3,
-                    RecordHistogram.getHistogramValueCountForTesting(HISTOGRAM_NTP_MODULE_CLICK,
-                            BrowserUiUtils.ModuleTypeOnStartAndNTP.FEED));
+            histogramWatcher.assertExpected(HISTOGRAM_NTP_MODULE_CLICK
+                    + " is not recorded correctly when long press then open in incognito tab on "
+                    + " Feeds.");
 
             // Test manage activity or manage interests on Feeds.
+            histogramWatcher = expectNoRecordsForNtpModuleClick();
             feedActionDelegate.openUrl(WindowOpenDisposition.CURRENT_TAB,
                     new LoadUrlParams(TEST_URL, PageTransition.LINK));
-            assertEquals(HISTOGRAM_NTP_MODULE_CLICK
-                            + " shouldn't be recorded when manage activity or manage interests "
-                            + "on Feeds.",
-                    3,
-                    RecordHistogram.getHistogramValueCountForTesting(HISTOGRAM_NTP_MODULE_CLICK,
-                            BrowserUiUtils.ModuleTypeOnStartAndNTP.FEED));
+            histogramWatcher.assertExpected(HISTOGRAM_NTP_MODULE_CLICK
+                    + " shouldn't be recorded when manage activity or manage interests "
+                    + "on Feeds.");
 
             // Test click Learn More button on Feeds.
+            histogramWatcher = expectFeedRecordForNtpModuleClick();
             feedActionDelegate.openHelpPage();
-            assertEquals(HISTOGRAM_NTP_MODULE_CLICK
-                            + " is not recorded correctly when click Learn More button on Feeds.",
-                    4,
-                    RecordHistogram.getHistogramValueCountForTesting(HISTOGRAM_NTP_MODULE_CLICK,
-                            BrowserUiUtils.ModuleTypeOnStartAndNTP.FEED));
+            histogramWatcher.assertExpected(HISTOGRAM_NTP_MODULE_CLICK
+                    + " is not recorded correctly when click Learn More button on Feeds.");
         });
-    }
-
-    private void assertThumbnailInvalidAndRecapture() {
-        Assert.assertTrue(mNtp.shouldCaptureThumbnail());
-        captureThumbnail();
-        Assert.assertFalse(mNtp.shouldCaptureThumbnail());
     }
 
     private void captureThumbnail() {
@@ -876,5 +847,19 @@ public class NewTabPageTest {
      */
     private void waitForFakeboxTopPosition(final NewTabPage ntp, int position) {
         CriteriaHelper.pollUiThread(() -> Criteria.checkThat(getFakeboxTop(ntp), is(position)));
+    }
+
+    private static HistogramWatcher expectMostVisitedTilesRecordForNtpModuleClick() {
+        return HistogramWatcher.newSingleRecordWatcher(HISTOGRAM_NTP_MODULE_CLICK,
+                BrowserUiUtils.ModuleTypeOnStartAndNTP.MOST_VISITED_TILES);
+    }
+
+    private static HistogramWatcher expectFeedRecordForNtpModuleClick() {
+        return HistogramWatcher.newSingleRecordWatcher(
+                HISTOGRAM_NTP_MODULE_CLICK, BrowserUiUtils.ModuleTypeOnStartAndNTP.FEED);
+    }
+
+    private static HistogramWatcher expectNoRecordsForNtpModuleClick() {
+        return HistogramWatcher.newBuilder().expectNoRecords(HISTOGRAM_NTP_MODULE_CLICK).build();
     }
 }

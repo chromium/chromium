@@ -111,11 +111,15 @@ class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
     }
   }
 
+  void TearDownOnMainThread() override {
+    controller_ = nullptr;
+    DialogBrowserTest::TearDownOnMainThread();
+  }
+
   SaveCardBubbleControllerImpl* controller() { return controller_; }
 
  private:
-  raw_ptr<SaveCardBubbleControllerImpl, DanglingUntriaged> controller_ =
-      nullptr;
+  raw_ptr<SaveCardBubbleControllerImpl> controller_ = nullptr;
 };
 
 // Invokes a bubble asking the user if they want to save a credit card locally.
@@ -166,14 +170,14 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleControllerImplTest, InvokeUi_Failure) {
 // Tests that opening a new tab will hide the save card bubble.
 IN_PROC_BROWSER_TEST_F(SaveCardBubbleControllerImplTest, NewTabHidesDialog) {
   ShowUi("Local");
-  EXPECT_NE(nullptr, controller()->GetSaveCardBubbleView());
+  EXPECT_NE(nullptr, controller()->GetPaymentBubbleView());
   // Open a new tab page in the foreground.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUINewTabURL),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
           ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  EXPECT_EQ(nullptr, controller()->GetSaveCardBubbleView());
+  EXPECT_EQ(nullptr, controller()->GetPaymentBubbleView());
 }
 
 }  // namespace autofill

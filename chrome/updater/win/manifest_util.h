@@ -40,6 +40,7 @@ namespace updater {
 // The function extracts the values from the manifest using a best-effort
 // approach. If matching values are found, then:
 //   `results`: contains the protocol parser results.
+//   `installer_version`: contains the version of the app installer.
 //   `installer_path`: contains the full path to the app installer.
 //   `install_args`: the command line arguments for the app installer.
 //   `install_data`: the text value for the key `install_data_index` if such
@@ -51,6 +52,7 @@ void ReadInstallCommandFromManifest(
     const std::string& app_id,
     const std::string& install_data_index,
     update_client::ProtocolParser::Results& results,
+    std::string& installer_version,
     base::FilePath& installer_path,
     std::string& install_args,
     std::string& install_data);

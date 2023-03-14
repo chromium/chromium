@@ -315,7 +315,8 @@ ScriptPromise Bluetooth::getAvailability(ScriptState* script_state,
   EnsureServiceConnection(window);
 
   // Subsequent steps are handled in the browser process.
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
   service_->GetAvailability(
       WTF::BindOnce([](ScriptPromiseResolver* resolver,
@@ -376,7 +377,8 @@ ScriptPromise Bluetooth::getDevices(ScriptState* script_state,
   CHECK(window->IsSecureContext());
 
   EnsureServiceConnection(window);
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
 
   service_->GetDevices(WTF::BindOnce(&Bluetooth::GetDevicesCallback,
@@ -424,7 +426,8 @@ ScriptPromise Bluetooth::requestDevice(ScriptState* script_state,
     return ScriptPromise();
 
   // Subsequent steps are handled in the browser process.
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
 
   service_->RequestDevice(
@@ -536,7 +539,8 @@ ScriptPromise Bluetooth::requestLEScan(ScriptState* script_state,
     return ScriptPromise();
 
   // Subsequent steps are handled in the browser process.
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
 
   mojo::PendingAssociatedRemote<mojom::blink::WebBluetoothAdvertisementClient>

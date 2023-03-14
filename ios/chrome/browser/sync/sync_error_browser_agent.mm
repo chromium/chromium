@@ -30,8 +30,16 @@ SyncErrorBrowserAgent::~SyncErrorBrowserAgent() {
 void SyncErrorBrowserAgent::SetUIProviders(
     id<SigninPresenter> signin_presenter_provider,
     id<SyncPresenter> sync_presenter_provider) {
+  DCHECK(signin_presenter_provider);
+  DCHECK(sync_presenter_provider);
   signin_presenter_provider_ = signin_presenter_provider;
   sync_presenter_provider_ = sync_presenter_provider;
+
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  for (int i = 0; i < web_state_list->count(); i++) {
+    web::WebState* web_state = web_state_list->GetWebStateAt(i);
+    CreateReSignInInfoBarDelegate(web_state);
+  }
 }
 
 void SyncErrorBrowserAgent::ClearUIProviders() {
@@ -54,6 +62,24 @@ void SyncErrorBrowserAgent::WebStateInsertedAt(WebStateList* web_state_list,
                                                int index,
                                                bool activating) {
   CreateReSignInInfoBarDelegate(web_state);
+}
+
+void SyncErrorBrowserAgent::WebStateReplacedAt(WebStateList* web_state_list,
+                                               web::WebState* old_web_state,
+                                               web::WebState* new_web_state,
+                                               int index) {
+  if (!old_web_state->IsRealized()) {
+    web_state_observations_.RemoveObservation(old_web_state);
+  }
+  CreateReSignInInfoBarDelegate(new_web_state);
+}
+
+void SyncErrorBrowserAgent::WebStateDetachedAt(WebStateList* web_state_list,
+                                               web::WebState* web_state,
+                                               int index) {
+  if (!web_state->IsRealized()) {
+    web_state_observations_.RemoveObservation(web_state);
+  }
 }
 
 void SyncErrorBrowserAgent::WebStateDestroyed(web::WebState* web_state) {

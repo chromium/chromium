@@ -62,7 +62,10 @@
 #include "base/threading/thread_restrictions.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
 #include "components/android_autofill/browser/autofill_provider_android.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
@@ -327,20 +330,10 @@ void AwContents::InitAutofillIfNecessary(bool autocomplete_enabled) {
   if (!autofill_provider && !autocomplete_enabled)
     return;
 
-  AwAutofillClient::CreateForWebContents(web_contents);
-
   // WebView browser tests use BrowserAutofillManager if `!autofill_provider`.
-  ContentAutofillDriverFactory::DriverInitCallback driver_init_hook =
-      autofill_provider
-          ? base::BindRepeating(&autofill::AndroidDriverInitHook,
-                                AwAutofillClient::FromWebContents(web_contents))
-          : base::BindRepeating(&autofill::BrowserDriverInitHook,
-                                AwAutofillClient::FromWebContents(web_contents),
-                                base::android::GetDefaultLocaleString());
-
-  ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
-      web_contents, AwAutofillClient::FromWebContents(web_contents),
-      std::move(driver_init_hook));
+  AwAutofillClient::CreateForWebContents(
+      web_contents,
+      /*use_android_autofill_manager=*/!!autofill_provider);
 }
 
 void AwContents::SetAwAutofillClient(const JavaRef<jobject>& client) {

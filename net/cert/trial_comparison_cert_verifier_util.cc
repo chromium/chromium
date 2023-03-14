@@ -133,13 +133,6 @@ TrialComparisonResult IsSynchronouslyIgnorableDifference(
   DCHECK(primary_result.verified_cert);
   DCHECK(trial_result.verified_cert);
 
-  if (primary_error == OK &&
-      primary_result.verified_cert->intermediate_buffers().empty()) {
-    // Platform may support trusting a leaf certificate directly. Builtin
-    // verifier does not. See https://crbug.com/814994.
-    return TrialComparisonResult::kIgnoredLocallyTrustedLeaf;
-  }
-
   const bool chains_equal = primary_result.verified_cert->EqualsIncludingChain(
       trial_result.verified_cert.get());
 
@@ -229,6 +222,20 @@ TrialComparisonResult IsSynchronouslyIgnorableDifference(
       return TrialComparisonResult::kIgnoredLetsEncryptExpiredRoot;
     }
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  // In the case where a cert is expired and does not have a trusted root,
+  // Android prefers ERR_CERT_DATE_INVALID whereas builtin prefers
+  // ERR_CERT_AUTHORITY_INVALID.
+  if (primary_error == ERR_CERT_DATE_INVALID &&
+      trial_error == ERR_CERT_AUTHORITY_INVALID &&
+      (primary_result.cert_status & CERT_STATUS_ALL_ERRORS) ==
+          CERT_STATUS_DATE_INVALID &&
+      (trial_result.cert_status & CERT_STATUS_ALL_ERRORS) ==
+          CERT_STATUS_AUTHORITY_INVALID) {
+    return TrialComparisonResult::kIgnoredAndroidErrorDatePriority;
+  }
+#endif
 
   return TrialComparisonResult::kInvalid;
 }

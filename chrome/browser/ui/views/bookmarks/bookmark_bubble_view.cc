@@ -11,13 +11,17 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/bookmarks/recently_used_folders_combo_model.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/commerce/price_tracking/shopping_list_ui_tab_helper.h"
 #include "chrome/browser/ui/sync/sync_promo_ui.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_view.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -27,6 +31,8 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
@@ -58,15 +64,15 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
     : public ui::DialogModelDelegate {
  public:
   BookmarkBubbleDelegate(std::unique_ptr<BubbleSyncPromoDelegate> delegate,
-                         Profile* profile,
+                         Browser* browser,
                          const GURL& url)
-      : delegate_(std::move(delegate)), profile_(profile), url_(url) {}
+      : delegate_(std::move(delegate)), browser_(browser), url_(url) {}
 
   void RemoveBookmark() {
     base::RecordAction(UserMetricsAction("BookmarkBubble_Unstar"));
     should_apply_edits_ = false;
     bookmarks::BookmarkModel* model =
-        BookmarkModelFactory::GetForBrowserContext(profile_);
+        BookmarkModelFactory::GetForBrowserContext(browser_->profile());
     const bookmarks::BookmarkNode* node =
         model->GetMostRecentlyAddedUserNodeForURL(url_);
     if (node)
@@ -86,15 +92,17 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
 
   void ShowEditor() {
     DCHECK(dialog_model()->host());
+
+    Profile* const profile = browser_->profile();
+
     const bookmarks::BookmarkNode* node =
-        BookmarkModelFactory::GetForBrowserContext(profile_)
+        BookmarkModelFactory::GetForBrowserContext(profile)
             ->GetMostRecentlyAddedUserNodeForURL(url_);
     DCHECK(bookmark_bubble_->anchor_widget());
     gfx::NativeWindow native_parent =
         bookmark_bubble_->anchor_widget()->GetNativeWindow();
     DCHECK(native_parent);
 
-    Profile* const profile = profile_;
     // Note that closing the dialog with |should_apply_edits_| still true will
     // synchronously save any pending changes.
     dialog_model()->host()->Close();
@@ -122,7 +130,7 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
     should_apply_edits_ = false;
 
     bookmarks::BookmarkModel* const model =
-        BookmarkModelFactory::GetForBrowserContext(profile_);
+        BookmarkModelFactory::GetForBrowserContext(browser_->profile());
     const bookmarks::BookmarkNode* node =
         model->GetMostRecentlyAddedUserNodeForURL(url_);
     if (!node)
@@ -140,6 +148,11 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
         node, dialog_model()
                   ->GetComboboxByUniqueId(kBookmarkFolder)
                   ->selected_index());
+
+    if (base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
+      browser_->window()->MaybeShowFeaturePromo(
+          feature_engagement::kIPHPowerBookmarksSidePanelFeature);
+    }
   }
 
   RecentlyUsedFoldersComboModel* GetFolderModel() {
@@ -154,7 +167,7 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
 
  private:
   std::unique_ptr<BubbleSyncPromoDelegate> delegate_;
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<Browser> browser_;
   const GURL url_;
 
   bool should_apply_edits_ = true;
@@ -166,7 +179,7 @@ void BookmarkBubbleView::ShowBubble(
     content::WebContents* web_contents,
     views::Button* highlighted_button,
     std::unique_ptr<BubbleSyncPromoDelegate> delegate,
-    Profile* profile,
+    Browser* browser,
     const GURL& url,
     bool already_bookmarked) {
   if (bookmark_bubble_)
@@ -174,17 +187,35 @@ void BookmarkBubbleView::ShowBubble(
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   BubbleSyncPromoDelegate* const delegate_ptr = delegate.get();
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+  Profile* profile = browser->profile();
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile);
   const bookmarks::BookmarkNode* bookmark_node =
       bookmark_model->GetMostRecentlyAddedUserNodeForURL(url);
 
   auto bubble_delegate_unique = std::make_unique<BookmarkBubbleDelegate>(
-      std::move(delegate), profile, url);
+      std::move(delegate), browser, url);
   BookmarkBubbleDelegate* bubble_delegate = bubble_delegate_unique.get();
+
+  commerce::ShoppingService* shopping_service =
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
+  absl::optional<commerce::ProductInfo> product_info = absl::nullopt;
+  gfx::Image product_image;
+  if (shopping_service->IsShoppingListEligible()) {
+    product_info = shopping_service->GetAvailableProductInfoForUrl(url);
+    auto* tab_helper =
+        commerce::ShoppingListUiTabHelper::FromWebContents(web_contents);
+    CHECK(tab_helper);
+
+    product_image = tab_helper->GetProductImage();
+  }
 
   auto dialog_model_builder =
       ui::DialogModel::Builder(std::move(bubble_delegate_unique));
+  if (base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel) &&
+      !product_image.IsEmpty()) {
+    dialog_model_builder.SetMainImage(ui::ImageModel::FromImage(product_image));
+  }
   dialog_model_builder
       .SetTitle(l10n_util::GetStringUTF16(
           already_bookmarked ? IDS_BOOKMARK_BUBBLE_PAGE_BOOKMARK
@@ -226,26 +257,19 @@ void BookmarkBubbleView::ShowBubble(
                                   base::Unretained(bubble_delegate))))
       .SetInitiallyFocusedField(kBookmarkName);
 
-  commerce::ShoppingService* shopping_service =
-      commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
-  if (shopping_service->IsShoppingListEligible()) {
-    absl::optional<commerce::ProductInfo> product_info =
-        shopping_service->GetAvailableProductInfoForUrl(url);
-    auto* tab_helper =
-        commerce::ShoppingListUiTabHelper::FromWebContents(web_contents);
-    CHECK(tab_helper);
-
-    const gfx::Image& product_image = tab_helper->GetProductImage();
-    if (product_info.has_value() && !product_image.IsEmpty()) {
-      bool is_price_tracked =
-          commerce::IsBookmarkPriceTracked(bookmark_model, bookmark_node);
-      dialog_model_builder.AddSeparator().AddCustomField(
-          std::make_unique<views::BubbleDialogModelHost::CustomView>(
-              std::make_unique<PriceTrackingView>(
-                  profile, url, *product_image.ToImageSkia(), is_price_tracked),
-              views::BubbleDialogModelHost::FieldType::kControl),
-          kPriceTrackingBookmarkViewElementId);
+  if (product_info.has_value() && !product_image.IsEmpty()) {
+    bool is_price_tracked = shopping_service->IsSubscribedFromCache(
+        commerce::BuildUserSubscriptionForClusterId(
+            product_info->product_cluster_id));
+    if (!base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
+      dialog_model_builder.AddSeparator();
     }
+    dialog_model_builder.AddCustomField(
+        std::make_unique<views::BubbleDialogModelHost::CustomView>(
+            std::make_unique<PriceTrackingView>(
+                profile, url, *product_image.ToImageSkia(), is_price_tracked),
+            views::BubbleDialogModelHost::FieldType::kControl),
+        kPriceTrackingBookmarkViewElementId);
   }
 
   // views:: land below, there's no agnostic reference to arrow / anchors /

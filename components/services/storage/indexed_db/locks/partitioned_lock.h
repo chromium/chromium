@@ -13,7 +13,7 @@
 
 namespace content {
 
-// Represents a granted lock in the PartitionedLockManager. When this object is
+// Represents a granted lock by the PartitionedLockManager. When this object is
 // destroyed, the lock is released. Since default construction is supported,
 // |is_locked()| can be used to inquire locked status. Also, |Release()| can
 // be called to manually release the lock, which appropriately updates the

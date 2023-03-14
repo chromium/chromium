@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -33,20 +32,6 @@ namespace {
 constexpr base::TaskTraits kBackendTaskTraits = {
     base::MayBlock(), base::TaskPriority::USER_VISIBLE,
     base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
-
-constexpr char kDefaultTrustedVaultServiceURL[] =
-    "https://securitydomain-pa.googleapis.com/v1/";
-
-GURL ExtractTrustedVaultServiceURLFromCommandLine() {
-  std::string string_url =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kTrustedVaultServiceURL);
-  if (string_url.empty()) {
-    // Command line switch is not specified or is not a valid ASCII string.
-    return GURL(kDefaultTrustedVaultServiceURL);
-  }
-  return GURL(string_url);
-}
 
 class IdentityManagerObserver : public signin::IdentityManager::Observer {
  public:
@@ -76,6 +61,8 @@ class IdentityManagerObserver : public signin::IdentityManager::Observer {
   void UpdatePrimaryAccountIfNeeded();
   void UpdateAccountsInCookieJarInfoIfNeeded(
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info);
+  StandaloneTrustedVaultBackend::RefreshTokenErrorState
+  GetPrimaryAccountRefreshTokenErrorState() const;
 
   const scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
   const scoped_refptr<StandaloneTrustedVaultBackend> backend_;
@@ -137,12 +124,11 @@ void IdentityManagerObserver::OnErrorStateOfRefreshTokenUpdatedForAccount(
     return;
   }
 
-  const bool has_persistent_auth_error = error.IsPersistentError();
-
   backend_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&StandaloneTrustedVaultBackend::SetPrimaryAccount,
-                     backend_, primary_account_, has_persistent_auth_error));
+                     backend_, primary_account_,
+                     GetPrimaryAccountRefreshTokenErrorState()));
 }
 
 void IdentityManagerObserver::OnRefreshTokensLoaded() {
@@ -152,11 +138,6 @@ void IdentityManagerObserver::OnRefreshTokensLoaded() {
 }
 
 void IdentityManagerObserver::UpdatePrimaryAccountIfNeeded() {
-  if (!identity_manager_->AreRefreshTokensLoaded()) {
-    // Defer setting primary account until refresh tokens are loaded (otherwise,
-    // |has_persistent_auth_error| can't be determined correctly).
-    return;
-  }
   CoreAccountInfo primary_account =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   if (primary_account == primary_account_) {
@@ -167,29 +148,19 @@ void IdentityManagerObserver::UpdatePrimaryAccountIfNeeded() {
   // IdentityManager returns empty CoreAccountInfo if there is no primary
   // account.
   absl::optional<CoreAccountInfo> optional_primary_account;
-  bool has_persistent_auth_error = false;
-  if (!primary_account_.IsEmpty()) {
-    optional_primary_account = primary_account_;
-    has_persistent_auth_error =
-        identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
-            primary_account_.account_id);
+  if (!primary_account.IsEmpty()) {
+    optional_primary_account = primary_account;
   }
 
   backend_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&StandaloneTrustedVaultBackend::SetPrimaryAccount,
                      backend_, optional_primary_account,
-                     has_persistent_auth_error));
+                     GetPrimaryAccountRefreshTokenErrorState()));
 }
 
 void IdentityManagerObserver::UpdateAccountsInCookieJarInfoIfNeeded(
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info) {
-  if (!identity_manager_->AreRefreshTokensLoaded()) {
-    // Defer propagation of changes into backend until refresh tokens are
-    // loaded, since primary account setting is deferred too. Otherwise,
-    // deferred deletion of primary account keys won't work.
-    return;
-  }
   if (accounts_in_cookie_jar_info.accounts_are_fresh) {
     backend_task_runner_->PostTask(
         FROM_HERE,
@@ -197,6 +168,26 @@ void IdentityManagerObserver::UpdateAccountsInCookieJarInfoIfNeeded(
             &StandaloneTrustedVaultBackend::UpdateAccountsInCookieJarInfo,
             backend_, accounts_in_cookie_jar_info));
   }
+}
+
+StandaloneTrustedVaultBackend::RefreshTokenErrorState
+IdentityManagerObserver::GetPrimaryAccountRefreshTokenErrorState() const {
+  if (primary_account_.IsEmpty()) {
+    return StandaloneTrustedVaultBackend::RefreshTokenErrorState::kUnknown;
+  }
+
+  if (!identity_manager_->AreRefreshTokensLoaded()) {
+    // Error state of refresh token can't be determined correctly.
+    return StandaloneTrustedVaultBackend::RefreshTokenErrorState::kUnknown;
+  }
+
+  if (identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
+          primary_account_.account_id)) {
+    return StandaloneTrustedVaultBackend::RefreshTokenErrorState::
+        kPersistentAuthError;
+  }
+  return StandaloneTrustedVaultBackend::RefreshTokenErrorState::
+      kNoPersistentAuthErrors;
 }
 
 // Backend delegate that dispatches delegate notifications to custom callbacks,
@@ -338,13 +329,13 @@ void StandaloneTrustedVaultClient::AddTrustedRecoveryMethod(
                      BindToCurrentSequence(std::move(cb))));
 }
 
-void StandaloneTrustedVaultClient::ClearDataForAccount(
+void StandaloneTrustedVaultClient::ClearLocalDataForAccount(
     const CoreAccountInfo& account_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backend_);
   backend_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&StandaloneTrustedVaultBackend::ClearDataForAccount,
+      base::BindOnce(&StandaloneTrustedVaultBackend::ClearLocalDataForAccount,
                      backend_, account_info));
 }
 

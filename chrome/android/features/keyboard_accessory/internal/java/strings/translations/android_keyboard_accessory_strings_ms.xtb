@@ -1,13 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ms">
+<translation id="1347497506789975534">Tunjukkan kaedah pembayaran yang telah disimpan</translation>
 <translation id="1383876407941801731">Carian</translation>
-<translation id="1566281227936819866">Menunjukkan kaedah pembayaran yang disimpan</translation>
 <translation id="1717486229951421299">Senarai bukti kelayakan untuk diisi apabila disentuh, dibuka pada ketinggian separuh.</translation>
 <translation id="207576718733492531">Senarai bukti kelayakan untuk diisi apabila disentuh telah ditutup.</translation>
 <translation id="2610239185026711824">Cadangkan kata laluan</translation>
 <translation id="2652129567809778422">Pilih kata laluan</translation>
-<translation id="2803478378562657435">Menunjukkan kata laluan yang disimpan dan pilihan kata laluan</translation>
 <translation id="2903493209154104877">Alamat</translation>
 <translation id="3399357656427473483">Senarai bukti kelayakan untuk diisi apabila disentuh.</translation>
 <translation id="3688051737190211318">Jika anda mempercayai <ph name="ORIGIN" />, anda boleh menggunakan kata laluan yang disimpan untuk log masuk</translation>
@@ -15,16 +14,14 @@
 <translation id="4660011489602794167">Tunjukkan papan kekunci</translation>
 <translation id="4694050069269396220">Jika anda mempercayai <ph name="ORIGIN" />, anda boleh menggunakan kata laluan yang disimpan untuk tapak lain.</translation>
 <translation id="5016175294846053194">Autolengkap cadangan tersedia di atas papan kekunci</translation>
-<translation id="5088366526685584589">Menunjukkan alamat yang disimpan</translation>
 <translation id="5441504010984421144">Senarai bukti kelayakan untuk diisi apabila disentuh, dibuka pada ketinggian penuh.</translation>
+<translation id="6296921860874265377">Tunjukkan pilihan kata laluan dan kata laluan yang telah disimpan</translation>
 <translation id="6393156038355142111">Cadangkan kata laluan yang kukuh</translation>
 <translation id="6558703547256592471">Cuba gunakan kata laluan yang unik untuk setiap tapak.</translation>
 <translation id="7029809446516969842">Kata laluan</translation>
-<translation id="7299100402441711551">Tunjukkan Alamat</translation>
-<translation id="7494879913343971937">Tunjukkan kata laluan</translation>
 <translation id="7594473730623999723">Leret untuk melihat pelbagai lagi cadangan</translation>
+<translation id="7873973044507799456">Tunjukkan alamat yang telah disimpan</translation>
 <translation id="7992095260806105436">Gunakan cadangan autolengkap Chrome</translation>
-<translation id="8037472847879765671">Tunjukkan kaedah pembayaran</translation>
 <translation id="8507520749471379845">Kata laluan tersedia</translation>
 <translation id="8705308553596171387">Tiada kata laluan</translation>
 <translation id="879180780857354295">Pilihan pengisian alternatif tersedia di atas papan kekunci</translation>

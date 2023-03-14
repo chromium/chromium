@@ -64,7 +64,7 @@ class PhoneCaptureStateToken {
         } else if (mTabCount != that.mTabCount) {
             return ToolbarSnapshotDifference.TAB_COUNT;
         } else if (!Objects.equals(mOptionalButtonData, that.mOptionalButtonData)) {
-            return ToolbarSnapshotDifference.OPTIONAL_BUTTON_DATA;
+            return ToolbarSnapshotDifference.OPTIONAL_BUTTON;
         } else if (mVisualState != that.mVisualState) {
             return ToolbarSnapshotDifference.VISUAL_STATE;
         } else if (mSecurityIcon != that.mSecurityIcon) {
@@ -82,7 +82,7 @@ class PhoneCaptureStateToken {
             // While there's more to the ColorStateList than just the default color, there's no
             // great way to check for equality. Currently default colors should be sufficient for
             // detecting changes to the toolbar.
-            return ToolbarSnapshotDifference.HOME_BUTTON_COLOR;
+            return ToolbarSnapshotDifference.HOME_BUTTON;
         }
         return ToolbarSnapshotDifference.NONE;
     }

@@ -12,20 +12,18 @@
 
 namespace extensions {
 
-// An interface that contains data about the current context. Additionally, it
-// abstracts away differences in data between the browser and renderer, for
-// example between a RenderFrameHost and RenderFrame.
+// ContextData is an interface that supports a simple API to verify whether
+// a given context is an isolated application. It is used as a base class for
+// FrameContextData, which is an abstract class that's used by concrete classes
+// to implement both the ContextData and FrameContextData APIs. This class
+// allows browser- and renderer-based code to implement these APIs based off
+// of different underlying types, like RenderFrameHost vs RenderFrame.
 // TODO(b/267673751): Adjust ContextData to hold more data.
 class ContextData {
  public:
   virtual ~ContextData() = default;
   virtual std::unique_ptr<ContextData> Clone() const = 0;
-  virtual std::unique_ptr<ContextData> GetLocalParentOrOpener() const = 0;
-  virtual GURL GetUrl() const = 0;
-  virtual url::Origin GetOrigin() const = 0;
-  virtual bool CanAccess(const url::Origin& target) const = 0;
-  virtual bool CanAccess(const ContextData& target) const = 0;
-  virtual uintptr_t GetId() const = 0;
+  virtual bool IsIsolatedApplication() const = 0;
 };
 
 }  // namespace extensions

@@ -8,6 +8,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Tab;
 import org.chromium.ui.modelutil.ListModel;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
@@ -28,8 +29,20 @@ class AccessorySheetProperties {
             new WritableBooleanPropertyKey("top_shadow_visible");
     static final WritableObjectPropertyKey<ViewPager.OnPageChangeListener> PAGE_CHANGE_LISTENER =
             new WritableObjectPropertyKey<>("page_change_listener");
+    static final WritableObjectPropertyKey<Runnable> SHOW_KEYBOARD_CALLBACK =
+            new WritableObjectPropertyKey<>("keyboard_callback");
 
     static final int NO_ACTIVE_TAB = -1;
+
+    static PropertyModel.Builder defaultPropertyModel() {
+        return new PropertyModel
+                .Builder(TABS, ACTIVE_TAB_INDEX, VISIBLE, HEIGHT, TOP_SHADOW_VISIBLE,
+                        PAGE_CHANGE_LISTENER, SHOW_KEYBOARD_CALLBACK)
+                .with(TABS, new ListModel<>())
+                .with(ACTIVE_TAB_INDEX, NO_ACTIVE_TAB)
+                .with(VISIBLE, false)
+                .with(TOP_SHADOW_VISIBLE, false);
+    }
 
     private AccessorySheetProperties() {}
 }

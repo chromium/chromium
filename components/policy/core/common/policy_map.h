@@ -103,6 +103,9 @@ class POLICY_EXPORT PolicyMap {
     // Removes all the conflicts.
     void ClearConflicts();
 
+    // Whether the policy has conflicting policies.
+    bool HasConflicts();
+
     // Getter for |ignored_|.
     bool ignored() const;
     // Sets |ignored_| to true.
@@ -173,6 +176,7 @@ class POLICY_EXPORT PolicyMap {
   };
 
   typedef std::map<std::string, Entry> PolicyMapType;
+  typedef PolicyMapType::const_reference const_reference;
   typedef PolicyMapType::const_iterator const_iterator;
   typedef PolicyMapType::iterator iterator;
 
@@ -253,19 +257,15 @@ class POLICY_EXPORT PolicyMap {
   // could be `map_.end()`).
   iterator EraseIt(const_iterator it);
 
-  // Erase all entries for which |filter| returns true.
-  void EraseMatching(
-      const base::RepeatingCallback<bool(const const_iterator)>& filter);
-
-  // Erase all entries for which |filter| returns false.
-  void EraseNonmatching(
-      const base::RepeatingCallback<bool(const const_iterator)>& filter);
-
   // Swaps the internal representation of |this| with |other|.
   void Swap(PolicyMap* other);
 
   // Returns a copy of |this|.
   PolicyMap Clone() const;
+
+  // Returns a copy of |this| that contains only the entries matching |filter|.
+  PolicyMap CloneIf(
+      const base::RepeatingCallback<bool(const_reference)>& filter) const;
 
   // Helper method used to merge entries corresponding to the same policy.
   // Setting |using_default_precedence| to true results in external factors,
@@ -349,13 +349,7 @@ class POLICY_EXPORT PolicyMap {
   Entry* GetMutableUntrusted(const std::string& policy);
 
   // Helper function for Equals().
-  static bool MapEntryEquals(const PolicyMapType::value_type& a,
-                             const PolicyMapType::value_type& b);
-
-  // Erase all entries for which |filter| returns |deletion_value|.
-  void FilterErase(
-      const base::RepeatingCallback<bool(const const_iterator)>& filter,
-      bool deletion_value);
+  static bool MapEntryEquals(const_reference& a, const_reference& b);
 
 #if !BUILDFLAG(IS_CHROMEOS)
   // Updates the stored state of computed metapolicies.

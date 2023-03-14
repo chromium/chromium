@@ -1,13 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lo">
+<translation id="1347497506789975534">ສະແດງວິທີການຈ່າຍເງິນທີ່ບັນທຶກໄວ້</translation>
 <translation id="1383876407941801731">ຊອກຫາ</translation>
-<translation id="1566281227936819866">ກຳລັງສະແດງວິທີການຈ່າຍເງິນທີ່ບັນທຶກໄວ້</translation>
 <translation id="1717486229951421299">ລາຍການຂໍ້ມູນປະຈຳຕົວທີ່ຈະຕື່ມເມື່ອແຕະເປີດຢູ່ລະດັບລວງສູງເຄິ່ງຈໍ.</translation>
 <translation id="207576718733492531">ລາຍການຂໍ້ມູນປະຈຳຕົວທີ່ຕ້ອງຕື່ມເມື່ອແຕະປິດຢູ່.</translation>
 <translation id="2610239185026711824">ແນະນຳລະຫັດຜ່ານ</translation>
 <translation id="2652129567809778422">ເລືອກລະຫັດຜ່ານ</translation>
-<translation id="2803478378562657435">ກຳລັງສະແດງລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ ແລະ ຕົວເລືອກລະຫັດຜ່ານ</translation>
 <translation id="2903493209154104877">ທີ່​ຢູ່</translation>
 <translation id="3399357656427473483">ລາຍການຂໍ້ມູນປະຈຳຕົວທີ່ຕ້ອງຕື່ມເມື່ອແຕະ.</translation>
 <translation id="3688051737190211318">ຫາກທ່ານເຊື່ອຖື <ph name="ORIGIN" />, ທ່ານສາມາດໃຊ້ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ເພື່ອເຂົ້າສູ່ລະບົບໄດ້</translation>
@@ -15,16 +14,14 @@
 <translation id="4660011489602794167">ສະແດງແປ້ນພິມ</translation>
 <translation id="4694050069269396220">ຖ້າທ່ານເຊື່ອຖື <ph name="ORIGIN" />, ທ່ານສາມາດໃຊ້ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ສຳລັບເວັບໄຊອື່ນໄດ້.</translation>
 <translation id="5016175294846053194">ມີການແນະນຳການຕື່ມໃສ່ອັດຕະໂນມັດຢູ່ເທິງແປ້ນພິມ</translation>
-<translation id="5088366526685584589">ກຳລັງສະແດງທີ່ຢູ່ທີ່ບັນທຶກໄວ້</translation>
 <translation id="5441504010984421144">ລາຍການຂໍ້ມູນປະຈຳຕົວທີ່ຈະຕື່ມເມື່ອແຕະເປີດຢູ່ລະດັບລວງສູງເຕັມຈໍ.</translation>
+<translation id="6296921860874265377">ສະແດງລະຫັດຜ່ານ ແລະ ຕົວເລືອກລະຫັດຜ່ານທີ່ບັນທຶກໄວ້</translation>
 <translation id="6393156038355142111">ແນະນຳລະຫັດຜ່ານທີ່ຄາດເດົາໄດ້ຍາກ</translation>
 <translation id="6558703547256592471">ພະຍາຍາມໃຊ້ລະຫັດຜ່ານສະເພາະສຳລັບທຸກໆເວັບໄຊ.</translation>
 <translation id="7029809446516969842">ລະ​ຫັດ​ຜ່ານ</translation>
-<translation id="7299100402441711551">ສະແດງທີ່ຢູ່</translation>
-<translation id="7494879913343971937">ສະແດງລະຫັດຜ່ານ</translation>
 <translation id="7594473730623999723">ປັດເພື່ອເບິ່ງການແນະນຳເພີ່ມເຕີມ</translation>
+<translation id="7873973044507799456">ສະແດງທີ່ຢູ່ທີ່ບັນທຶກໄວ້</translation>
 <translation id="7992095260806105436">ໃຊ້ການແນະນຳການຕື່ມຂໍ້ມູນອັດຕະໂນມັດຂອງ Chrome</translation>
-<translation id="8037472847879765671">ສະແດງວິທີການຈ່າຍເງິນ</translation>
 <translation id="8507520749471379845">ມີລະຫັດຜ່ານ</translation>
 <translation id="8705308553596171387">ບໍ່ມີລະຫັດຜ່ານ</translation>
 <translation id="879180780857354295">ມີຕົວເລືອກການຕື່ມຂໍ້ມູນສຳຮອງຢູ່ທາງເທິງຂອງແປ້ນພິມ</translation>

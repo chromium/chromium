@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">عالی (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">ادامه</translation>
 <translation id="2364498172489649528">موفق</translation>
+<translation id="2367335866686097760">نگاشتن کلید</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">ارسال گزارش بازخورد</translation>
 <translation id="2407209115954268704">وضعیت قفل سیم‌کارت</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">تصویر چهره‌نما تغییر کرد</translation>
 <translation id="3192947282887913208">فایل‌های صوتی</translation>
 <translation id="3199982728237701504">تغذیه‌کننده سند (دورو)</translation>
+<translation id="3211671540163313381">نگاشتن کلید پد کنترل</translation>
 <translation id="3226405216343213872">درحال جستجوی اسکنرها</translation>
+<translation id="3226657629376379887">منوی کنش‌های طرح‌بندی</translation>
 <translation id="3246869037381808805">کارهای چاپ قدیمی‌تر از ۱ روز برداشته می‌شوند</translation>
 <translation id="3268178239013324452">انجام نشد - در باز است</translation>
 <translation id="3275729367986477355">تصویر چهره‌نما</translation>
@@ -253,6 +256,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />٪</translation>
 <translation id="3435738964857648380">امنیت</translation>
 <translation id="3435896845095436175">فعال کردن</translation>
+<translation id="345256797477978759">پنجره را از بخش بزرگ‌تر سمت <ph name="DIRECTION" /> صفحه‌نمایش روی پایه قرار دهید</translation>
 <translation id="3456078764689556234">صفحه <ph name="PRINTED_PAGES" /> از مجموع <ph name="TOTAL_PAGES" /> صفحه چاپ شده است.</translation>
 <translation id="345898999683440380">درحال اسکن کردن صفحه <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />٪ انجام شده است.</translation>
 <translation id="3459509316159669723">درحال چاپ</translation>
@@ -273,12 +277,14 @@
 <translation id="3595596368722241419">باتری پر است</translation>
 <translation id="3600339377155080675">بازتاب صفحه‌نمایش</translation>
 <translation id="3602290021589620013">پیش‌نمایش</translation>
+<translation id="360282891121575443">کاربران دیگر می‌توانند عکس‌های موجود در آلبوم‌های مشترک را به‌روز کنند. تغییر روزانه ممکن است کاغذدیواری‌هایی را که اکنون در آلبوم نیست نشان دهد.</translation>
 <translation id="3603829704940252505">چهره‌نما</translation>
 <translation id="3604713164406837697">تغییر کاغذدیواری</translation>
 <translation id="360565022852130722">‏شبکه Wi-Fi با پروتکل ضعیف WEP 802.1x ایمن شده است</translation>
 <translation id="3606583719724308068">‏تأخیر بالا در وب‌سایت‌های HTTPS</translation>
 <translation id="361575905210396100">از بازخوردتان سپاس‌گزاریم</translation>
 <translation id="3632579075709132555">پنهان/ نمایان کردن صفحه حریم خصوصی</translation>
+<translation id="3639846061339007994">بالا</translation>
 <translation id="3651050199673793219">انتخاب واحد دما</translation>
 <translation id="3689839747745352263">آزمایش <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">در حال بارکردن…</translation>
@@ -520,6 +526,7 @@
 <translation id="576835345334454681">افزایش روشنایی نمایشگر</translation>
 <translation id="57838592816432529">بی‌صدا کردن</translation>
 <translation id="5784136236926853061">‏تأخیر زیاد HTTP</translation>
+<translation id="5826644637650799838">درباره اثر هنری</translation>
 <translation id="5832805196449965646">افزودن شخص</translation>
 <translation id="583281660410589416">ناشناس</translation>
 <translation id="5843706793424741864">فارنهایت</translation>
@@ -562,6 +569,7 @@
 <translation id="6117895505466548728"><ph name="TITLE" />، +<ph name="NUMBER" /> آلبوم دیگر</translation>
 <translation id="6122191549521593678">آنلاین</translation>
 <translation id="6122277663991249694">‏سرویس روش ورودی ChromeOS</translation>
+<translation id="6136285399872347291">پس‌بر</translation>
 <translation id="6137767437444130246">گواهی کاربر</translation>
 <translation id="6146993107019042706">برای تکمیل کار،‌ گذرواژه جدیدتان را وارد کنید</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -609,6 +617,7 @@
 <translation id="650266656685499220">‏برای ایجاد کردن آلبوم به Google Photos بروید</translation>
 <translation id="6516990319416533844">برای آزمایش کردن نرخ شارژ شدن باتری، اجازه دهید شارژ باتری برای مدت کوتاهی تخلیه شود</translation>
 <translation id="6517239166834772319">کاوش</translation>
+<translation id="6526200165918397681">مطابقت کاغذدیواری</translation>
 <translation id="6527081081771465939">‏پروتکل امنیتی Wi-Fi ناشناس است</translation>
 <translation id="6535178685492749208">آفلاین هستید. بازخورد بعداً ارسال خواهد شد.</translation>
 <translation id="65587193855025101">صفحه مسطح</translation>
@@ -628,6 +637,7 @@
 <translation id="6657585470893396449">گذرواژه</translation>
 <translation id="6659594942844771486">برگه</translation>
 <translation id="6692996468359469499">دریافت اطلاعاتی که با انتخابتان مرتبط است</translation>
+<translation id="6698459586333070823">کاربران دیگر می‌توانند آلبوم‌های مشترک را به‌روز کنند</translation>
 <translation id="6704062477274546131">وضوح ساناد</translation>
 <translation id="6723839937902243910">نیرو</translation>
 <translation id="6723847290197874913">نور پس‌زمینه صفحه‌کلید</translation>
@@ -664,6 +674,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /><ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">ناموفق - مجوز صادر نشد</translation>
 <translation id="7103252855940681301">نام دستگاه <ph name="INDEX" /> از <ph name="COUNT" /> <ph name="NAME" /> است.</translation>
+<translation id="7108668606237948702">Enter</translation>
 <translation id="7130438335435247835">‏نام نقطه دسترسی (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{سرور نام}one{سرور نام}other{سرورهای نام}}</translation>
 <translation id="7143207342074048698">در حال اتصال</translation>
@@ -673,6 +684,7 @@
 <translation id="7155171745945906037">عکس موجود از دوربین یا فایل</translation>
 <translation id="7162487448488904999">گالری</translation>
 <translation id="7170236477717446850">عکس نمایه</translation>
+<translation id="7171919371520438592">پنجره را از بخش کوچک‌تر سمت <ph name="DIRECTION" /> صفحه‌نمایش روی پایه قرار دهید</translation>
 <translation id="7172721935181587524">یک تصویر</translation>
 <translation id="7177485034254901881">این <ph name="DEVICE_TYPE" /> توسط <ph name="MANAGER" /> مدیریت می‌شود. سرپرستان می‌توانند این دستگاه را ازراه‌دور پیکربندی کنند.</translation>
 <translation id="7180611975245234373">بازآوری</translation>
@@ -748,6 +760,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">نوع ارائه‌دهنده</translation>
 <translation id="7882501334836096755">کلید عمومی</translation>
+<translation id="78957024357676568">چپ</translation>
 <translation id="7915220255123750251">‏مدیریت تنظیمات APN شبکه. APN اتصالی میان شبکه تلفن همراه و اینترنت برقرار می‌کند.</translation>
 <translation id="7936303884198020182">سرور نام دامنه پیدا نشد</translation>
 <translation id="7942349550061667556">قرمز</translation>
@@ -776,9 +789,11 @@
 <translation id="8183974620058026102">پیوست</translation>
 <translation id="8206859287963243715">سلولی</translation>
 <translation id="8208861521865154048">هدیه‌ها</translation>
+<translation id="8210733748736414123">پایین</translation>
 <translation id="8226628635270268143">انتخاب عکس‌ها و آلبوم‌های دلخواه</translation>
 <translation id="8227119283605456246">پیوست کردن فایل</translation>
 <translation id="8230672074305416752">پینگ کردن دروازه شبکه پیش‌فرض انجام نشد</translation>
+<translation id="8242426110754782860">ادامه دادن</translation>
 <translation id="8246209727385807362">شرکت مخابراتی ناشناس</translation>
 <translation id="827422111966801947">نیلی سیر</translation>
 <translation id="8286154143153872371">لطفاً برای مشاهده کاغذدیواری، به شبکه متصل شوید و صفحه را بار کردن مجدد کنید.</translation>
@@ -789,9 +804,11 @@
 <translation id="8318753676953949627">تصویری وجود ندارد</translation>
 <translation id="8336739000755212683">تغییر تصویر حساب دستگاه</translation>
 <translation id="8347227221149377169">کارهای چاپی</translation>
+<translation id="8351855506390808906">نگاشتن کلید نقطه لمسی</translation>
 <translation id="8352772353338965963">افزودن یک حساب برای ورود چندگانه به سیستم. کلیه حساب‌هایی که به سیستم وارد شده‌اند بدون گذرواژه قابل دسترسی هستند، بنابراین این قابلیت فقط باید با حساب‌های مورداعتماد استفاده شود.</translation>
 <translation id="8364946094152050673">سرورهای نام دامنه خالی است</translation>
 <translation id="8372477600026034341">میزبان‌های اضافی</translation>
+<translation id="8380114448424469341">پنجره را از نیمه سمت <ph name="DIRECTION" /> صفحه‌نمایش روی پایه قرار دهید</translation>
 <translation id="8395584934117017006">این <ph name="DEVICE_TYPE" /> تحت‌مدیریت سازمان است</translation>
 <translation id="8398927464629426868">سرعت شارژ یا تخلیه شارژ دستگاه درحال‌حاضر</translation>
 <translation id="8410244574650205435">به‌طور خودکار پیدا شد</translation>
@@ -856,6 +873,7 @@
 <translation id="8930622219860340959">بی سیم</translation>
 <translation id="8936793075252196307">‏نشانی IP کارخواه</translation>
 <translation id="894617464444543719">دستگاه تلفن است.</translation>
+<translation id="8957423540740801332">راست</translation>
 <translation id="8968751544471797276">سرعت شارژ کردن</translation>
 <translation id="8970109610781093811">اجرای دوباره</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -883,6 +901,7 @@
 <translation id="9137526406337347448">‏سرویس‌های Google</translation>
 <translation id="9138630967333032450">کلید تبدیل چپ</translation>
 <translation id="9149391708638971077">اجرای آزمایش حافظه</translation>
+<translation id="9161276708550942948">فاصله</translation>
 <translation id="9173638680043580060">کمتر از یک دقیقه باقیمانده است</translation>
 <translation id="917720651393141712">آزمایش کردن</translation>
 <translation id="9188992814426075118">صفحه‌کلیدتان می‌تواند به‌طور خودکار با کاغذدیواری منطبق شود</translation>

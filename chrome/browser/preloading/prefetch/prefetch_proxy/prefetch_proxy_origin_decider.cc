@@ -11,7 +11,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/prefetch/pref_names.h"
 #include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_params.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 

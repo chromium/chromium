@@ -126,8 +126,6 @@ suite('<cloud-upload>', () => {
     await doSignInPage();
 
     checkIsOneDriveUploadPage();
-    const fileContainer = cloudUploadApp.$('#file-container');
-    assertFalse(fileContainer.hidden);
   });
 
   /**
@@ -148,8 +146,6 @@ suite('<cloud-upload>', () => {
     await doSignInPage();
 
     checkIsOneDriveUploadPage();
-    const fileContainer = cloudUploadApp.$('#file-container');
-    assertTrue(fileContainer.hidden);
   });
 
   /**
@@ -208,7 +204,7 @@ suite('<cloud-upload>', () => {
       });
 
   /**
-   * Tests that clicking the open file button triggers the right
+   * Tests that clicking the done button triggers the right
    * `respondWithUserActionAndClose` mojo request.
    */
   test('Open file button', async () => {
@@ -234,34 +230,6 @@ suite('<cloud-upload>', () => {
         1, testProxy.handler.getCallCount('respondWithUserActionAndClose'));
     assertDeepEquals(
         [UserAction.kConfirmOrUploadToOneDrive],
-        testProxy.handler.getArgs('respondWithUserActionAndClose'));
-  });
-
-  /**
-   * Tests that clicking the close button on the last page triggers the right
-   * `respondWithUserActionAndClose` mojo request.
-   */
-  test('Close button on last page', async () => {
-    await setUp({
-      fileName: 'file.docx',
-      officeWebAppInstalled: false,
-      installOfficeWebAppResult: true,
-      odfsMounted: false,
-      dialogPage: DialogPage.kOneDriveSetup,
-    });
-
-    // Go to the OneDrive upload page.
-    await doWelcomePage();
-    await doPWAInstallPage();
-    await doSignInPage();
-
-    checkIsOneDriveUploadPage();
-    cloudUploadApp.$('.cancel-button').click();
-    await testProxy.handler.whenCalled('respondWithUserActionAndClose');
-    assertEquals(
-        1, testProxy.handler.getCallCount('respondWithUserActionAndClose'));
-    assertDeepEquals(
-        [UserAction.kCancel],
         testProxy.handler.getArgs('respondWithUserActionAndClose'));
   });
 

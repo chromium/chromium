@@ -113,7 +113,7 @@ class WebViewAutofillClientIOS : public AutofillClient {
   bool IsTouchToFillCreditCardSupported() override;
   bool ShowTouchToFillCreditCard(
       base::WeakPtr<TouchToFillDelegate> delegate,
-      base::span<const autofill::CreditCard* const> cards_to_suggest) override;
+      base::span<const autofill::CreditCard> cards_to_suggest) override;
   void HideTouchToFillCreditCard() override;
   void ShowAutofillPopup(
       const AutofillClient::PopupOpenArgs& open_args,

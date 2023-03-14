@@ -20,21 +20,21 @@
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_mediator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_parent_folder_item.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_text_field_item.h"
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_mutator.h"
-#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/ui/util/rtl_geometry.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -294,6 +294,8 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
   }
 
   self.folderItem.title = folderName;
+  self.folderItem.shouldDisplayCloudSlashIcon =
+      [self.mutator shouldDisplayCloudSlashSymbolForParentFolder];
   [self.tableView reloadRowsAtIndexPaths:@[ indexPath ]
                         withRowAnimation:UITableViewRowAnimationNone];
 }
@@ -322,6 +324,8 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
       [[BookmarkParentFolderItem alloc] initWithType:ItemTypeFolder];
   self.folderItem.title =
       bookmark_utils_ios::TitleForBookmarkNode([self.mutator folder]);
+  self.folderItem.shouldDisplayCloudSlashIcon =
+      [self.mutator shouldDisplayCloudSlashSymbolForParentFolder];
   [model addItem:self.folderItem toSectionWithIdentifier:SectionIdentifierInfo];
 
   self.URLItem = [[BookmarkTextFieldItem alloc] initWithType:ItemTypeURL];
@@ -342,9 +346,21 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
   [self updateSaveButtonState];
 }
 
+- (void)updateSync {
+  self.folderItem.shouldDisplayCloudSlashIcon =
+      [self.mutator shouldDisplayCloudSlashSymbolForParentFolder];
+  NSIndexPath* indexPath =
+      [self.tableViewModel indexPathForItemType:ItemTypeFolder
+                              sectionIdentifier:SectionIdentifierInfo];
+  [self.tableView reloadRowsAtIndexPaths:@[ indexPath ]
+                        withRowAnimation:UITableViewRowAnimationNone];
+}
+
 #pragma mark - Actions
 
 - (void)deleteBookmark {
+  base::RecordAction(
+      base::UserMetricsAction("MobileBookmarksEditorDeletedBookmark"));
   if ([self.mutator bookmark] && [self.mutator bookmarkModel]->loaded()) {
     // To stop getting recursive events from committed bookmark editing changes
     // ignore bookmark model updates notifications.
@@ -368,14 +384,18 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 }
 
 - (void)moveBookmark {
+  base::RecordAction(
+      base::UserMetricsAction("MobileBookmarksEditorOpenedFolderChooser"));
   [self.delegate moveBookmark];
 }
 
 - (void)cancel {
+  base::RecordAction(base::UserMetricsAction("MobileBookmarksEditorCanceled"));
   [self dismissBookmarkEditorView];
 }
 
 - (void)save {
+  base::RecordAction(base::UserMetricsAction("MobileBookmarksEditorSaved"));
   [self commitBookmarkChanges];
   [self dismissBookmarkEditorView];
 }

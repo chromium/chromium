@@ -126,7 +126,7 @@ chrome.test.runTests([
   async function fetchDictionaryTest() {
     await testParams.dictionaryLoaded;
     const words = await asyncInputMethodPrivate.fetchAllDictionaryWords();
-    chrome.test.assertTrue(words !== undefined);
+    chrome.test.assertNe(undefined, words);
     chrome.test.assertEq(0, words.length);
     chrome.test.succeed();
   },

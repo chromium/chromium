@@ -23,10 +23,10 @@
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "components/update_client/update_query_params.h"
 #include "content/public/browser/notification_service.h"
 #include "extensions/browser/extension_system.h"
@@ -104,7 +104,7 @@ BackoffPolicy::BackoffPolicy() {
   };
 }
 
-BackoffPolicy::~BackoffPolicy() {}
+BackoffPolicy::~BackoffPolicy() = default;
 
 // static
 const net::BackoffEntry::Policy* BackoffPolicy::Get() {
@@ -128,8 +128,7 @@ ChromeRuntimeAPIDelegate::ChromeRuntimeAPIDelegate(
       extensions::ExtensionRegistry::Get(browser_context_));
 }
 
-ChromeRuntimeAPIDelegate::~ChromeRuntimeAPIDelegate() {
-}
+ChromeRuntimeAPIDelegate::~ChromeRuntimeAPIDelegate() = default;
 
 // static
 void ChromeRuntimeAPIDelegate::set_tick_clock_for_tests(
@@ -203,8 +202,7 @@ void ChromeRuntimeAPIDelegate::ReloadExtension(
                        service->AsExtensionServiceWeakPtr(), extension_id));
     extensions::WarningSet warnings;
     warnings.insert(
-        extensions::Warning::CreateReloadTooFrequentWarning(
-            extension_id));
+        extensions::Warning::CreateReloadTooFrequentWarning(extension_id));
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&extensions::WarningService::NotifyWarningsOnUI,
@@ -257,10 +255,12 @@ bool ChromeRuntimeAPIDelegate::CheckForUpdates(const std::string& extension_id,
 void ChromeRuntimeAPIDelegate::OpenURL(const GURL& uninstall_url) {
   Profile* profile = Profile::FromBrowserContext(browser_context_);
   Browser* browser = chrome::FindLastActiveWithProfile(profile);
-  if (!browser)
+  if (!browser) {
     browser = Browser::Create(Browser::CreateParams(profile, false));
-  if (!browser)
+  }
+  if (!browser) {
     return;
+  }
 
   NavigateParams params(browser, uninstall_url,
                         ui::PAGE_TRANSITION_CLIENT_REDIRECT);
@@ -360,8 +360,9 @@ void ChromeRuntimeAPIDelegate::OnExtensionInstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
     bool is_update) {
-  if (!is_update)
+  if (!is_update) {
     return;
+  }
   auto info = update_check_info_.find(extension->id());
   if (info != update_check_info_.end()) {
     info->second.backoff->Reset();
@@ -397,8 +398,9 @@ void ChromeRuntimeAPIDelegate::CallUpdateCallbacks(
     const std::string& extension_id,
     const UpdateCheckResult& result) {
   auto it = update_check_info_.find(extension_id);
-  if (it == update_check_info_.end())
+  if (it == update_check_info_.end()) {
     return;
+  }
   std::vector<UpdateCheckCallback> callbacks;
   it->second.callbacks.swap(callbacks);
   for (auto& callback : callbacks) {

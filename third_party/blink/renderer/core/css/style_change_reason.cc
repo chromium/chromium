@@ -69,18 +69,19 @@ DEFINE_GLOBAL(AtomicString, g_unresolved);
 void Init() {
   DCHECK(IsMainThread());
 
-  new (NotNullTag::kNotNull, (void*)&g_active) AtomicString(":active");
-  new (NotNullTag::kNotNull, (void*)&g_disabled) AtomicString(":disabled");
-  new (NotNullTag::kNotNull, (void*)&g_drag) AtomicString(":-webkit-drag");
-  new (NotNullTag::kNotNull, (void*)&g_focus) AtomicString(":focus");
-  new (NotNullTag::kNotNull, (void*)&g_focus_visible)
+  new (WTF::NotNullTag::kNotNull, (void*)&g_active) AtomicString(":active");
+  new (WTF::NotNullTag::kNotNull, (void*)&g_disabled) AtomicString(":disabled");
+  new (WTF::NotNullTag::kNotNull, (void*)&g_drag) AtomicString(":-webkit-drag");
+  new (WTF::NotNullTag::kNotNull, (void*)&g_focus) AtomicString(":focus");
+  new (WTF::NotNullTag::kNotNull, (void*)&g_focus_visible)
       AtomicString(":focus-visible");
-  new (NotNullTag::kNotNull, (void*)&g_focus_within)
+  new (WTF::NotNullTag::kNotNull, (void*)&g_focus_within)
       AtomicString(":focus-within");
-  new (NotNullTag::kNotNull, (void*)&g_hover) AtomicString(":hover");
-  new (NotNullTag::kNotNull, (void*)&g_past) AtomicString(":past");
-  new (NotNullTag::kNotNull, (void*)&g_toggle) AtomicString(":toggle");
-  new (NotNullTag::kNotNull, (void*)&g_unresolved) AtomicString(":unresolved");
+  new (WTF::NotNullTag::kNotNull, (void*)&g_hover) AtomicString(":hover");
+  new (WTF::NotNullTag::kNotNull, (void*)&g_past) AtomicString(":past");
+  new (WTF::NotNullTag::kNotNull, (void*)&g_toggle) AtomicString(":toggle");
+  new (WTF::NotNullTag::kNotNull, (void*)&g_unresolved)
+      AtomicString(":unresolved");
 }
 
 }  // namespace style_change_extra_data

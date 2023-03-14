@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/sharing/activity_services/activities/find_in_page_activity.h"
 
-#import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
+#import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/data/share_to_data.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"

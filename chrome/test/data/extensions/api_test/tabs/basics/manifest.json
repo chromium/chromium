@@ -3,5 +3,5 @@
   "version": "0.1",
   "manifest_version": 2,
   "description": "end-to-end browser test for chrome.tabs API",
-  "permissions": ["storage", "tabs"]
+  "permissions": ["tabs"]
 }

@@ -74,6 +74,7 @@ class ASH_EXPORT QuickSettingsSlider : public views::Slider {
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
+  void OnThemeChanged() override;
 
   Style slider_style_;
 };

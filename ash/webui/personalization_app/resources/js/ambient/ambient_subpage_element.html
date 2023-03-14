@@ -166,7 +166,7 @@
         </template>
         <template is="dom-if" if="[[!loading_]]">
           <toggle-row id="ambientToggleRow" checked="[[ambientModeEnabled_]]"
-          on-click="onClickAmbientModeButton_" on-change="onToggleStateChanged_">
+              on-click="onClickAmbientModeButton_" on-change="onToggleStateChanged_">
           </toggle-row>
           <template is="dom-if" if="[[ambientModeEnabled_]]">
             <animation-theme-list
@@ -242,8 +242,8 @@
           </div>
         </template>
         <template is="dom-if" if="[[!loading_]]">
-          <toggle-row id="ambientToggleRow" checked="[[ambientModeEnabled_]]"
-          on-click="onClickAmbientModeButton_" on-change="onToggleStateChanged_">
+          <toggle-row id="ambientToggleRow" class="clickable" checked="[[ambientModeEnabled_]]"
+              on-click="onClickAmbientModeButton_" on-change="onToggleStateChanged_">
           </toggle-row>
           <template is="dom-if" if="[[!ambientModeEnabled_]]">
             <ambient-zero-state id="zeroState"></ambient-zero-state>

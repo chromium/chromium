@@ -227,9 +227,7 @@ SaveAddressProfileView::SaveAddressProfileView(
       AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined));
 
   SetTitle(controller_->GetWindowTitle());
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
-                 l10n_util::GetStringUTF16(
-                     IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL));
+  SetButtonLabel(ui::DIALOG_BUTTON_OK, controller_->GetOkButtonLabel());
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                  l10n_util::GetStringUTF16(
                      IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL));
@@ -302,6 +300,17 @@ SaveAddressProfileView::SaveAddressProfileView(
     AddAddressSection(/*parent_view=*/address_components_view_,
                       CreateAddressSectionIcon(vector_icons::kExtensionIcon),
                       CreateNicknameEditableCombobox());
+  }
+
+  absl::optional<std::u16string> footer_message =
+      controller_->GetFooterMessage();
+  if (footer_message) {
+    SetFootnoteView(
+        views::Builder<views::Label>()
+            .SetText(footer_message.value())
+            .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+            .SetMultiLine(true)
+            .Build());
   }
 
   Profile* browser_profile =

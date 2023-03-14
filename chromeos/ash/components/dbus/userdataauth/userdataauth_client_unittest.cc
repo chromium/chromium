@@ -183,7 +183,6 @@ class UserDataAuthClientTest : public testing::Test {
   // The expected replies to the respective D-Bus calls.
   ::user_data_auth::IsMountedReply expected_is_mounted_reply_;
   ::user_data_auth::UnmountReply expected_unmount_reply_;
-  ::user_data_auth::MountReply expected_mount_reply_;
   ::user_data_auth::RemoveReply expected_remove_reply_;
   ::user_data_auth::CheckKeyReply expected_check_key_reply_;
   ::user_data_auth::StartFingerprintAuthSessionReply
@@ -224,8 +223,6 @@ class UserDataAuthClientTest : public testing::Test {
       writer.AppendProtoAsArrayOfBytes(expected_is_mounted_reply_);
     } else if (method_call->GetMember() == ::user_data_auth::kUnmount) {
       writer.AppendProtoAsArrayOfBytes(expected_unmount_reply_);
-    } else if (method_call->GetMember() == ::user_data_auth::kMount) {
-      writer.AppendProtoAsArrayOfBytes(expected_mount_reply_);
     } else if (method_call->GetMember() == ::user_data_auth::kRemove) {
       writer.AppendProtoAsArrayOfBytes(expected_remove_reply_);
     } else if (method_call->GetMember() == ::user_data_auth::kCheckKey) {

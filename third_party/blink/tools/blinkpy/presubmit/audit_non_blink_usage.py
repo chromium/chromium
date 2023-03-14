@@ -94,6 +94,7 @@ _CONFIG = [
             'base::OptionalToPtr',
             'base::Overloaded',
             'base::PassKey',
+            'base::PersistentHash',
             'base::PlatformThread',
             'base::PlatformThreadId',
             'base::RefCountedData',
@@ -1820,7 +1821,7 @@ _CONFIG = [
             'third_party/blink/renderer/modules/browsing_topics/browsing_topics_document_supplement.cc',
         ],
         'allowed': [
-            'browsing_topics::ApiAccessFailureReason',
+            'browsing_topics::ApiAccessResult',
         ]
     },
     {

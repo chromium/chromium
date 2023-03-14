@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
-#include "base/metrics/histogram.h"
 #include "base/notreached.h"
 #include "base/one_shot_event.h"
 #include "base/strings/string_number_conversions.h"
@@ -29,13 +28,11 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/lazy_context_id.h"
 #include "extensions/browser/lazy_context_task_queue.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/common/api/runtime.h"
-#include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
@@ -105,26 +102,30 @@ void DispatchOnStartupEventImpl(
     std::unique_ptr<LazyContextTaskQueue::ContextInfo> context_info) {
   // A NULL ContextInfo from the task callback means the page failed
   // to load. Give up.
-  if (!context_info && !first_call)
+  if (!context_info && !first_call) {
     return;
+  }
 
   // Don't send onStartup events to incognito browser contexts.
-  if (browser_context->IsOffTheRecord())
+  if (browser_context->IsOffTheRecord()) {
     return;
+  }
 
   if (ExtensionsBrowserClient::Get()->IsShuttingDown() ||
-      !ExtensionsBrowserClient::Get()->IsValidContext(browser_context))
+      !ExtensionsBrowserClient::Get()->IsValidContext(browser_context)) {
     return;
+  }
   ExtensionSystem* system = ExtensionSystem::Get(browser_context);
-  if (!system)
+  if (!system) {
     return;
+  }
 
   // If this is a persistent background page, we want to wait for it to load
   // (it might not be ready, since this is startup). But only enqueue once.
   // If it fails to load the first time, don't bother trying again.
-  const Extension* extension =
-      ExtensionRegistry::Get(browser_context)->enabled_extensions().GetByID(
-          extension_id);
+  const Extension* extension = ExtensionRegistry::Get(browser_context)
+                                   ->enabled_extensions()
+                                   .GetByID(extension_id);
   if (extension && BackgroundInfo::HasPersistentBackgroundPage(extension) &&
       first_call) {
     const LazyContextId context_id(browser_context, extension_id);
@@ -210,13 +211,13 @@ RuntimeAPI::RuntimeAPI(content::BrowserContext* context)
       ->AddObserver(this);
 }
 
-RuntimeAPI::~RuntimeAPI() {
-}
+RuntimeAPI::~RuntimeAPI() = default;
 
 void RuntimeAPI::OnExtensionLoaded(content::BrowserContext* browser_context,
                                    const Extension* extension) {
-  if (!dispatch_chrome_updated_event_)
+  if (!dispatch_chrome_updated_event_) {
     return;
+  }
 
   // Dispatch the onInstalled event with reason "chrome_update".
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -347,8 +348,9 @@ bool RuntimeAPI::OpenOptionsPage(const Extension* extension,
 }
 
 void RuntimeAPI::MaybeCancelRunningDelayedRestartTimer() {
-  if (restart_after_delay_timer_.IsRunning())
+  if (restart_after_delay_timer_.IsRunning()) {
     restart_after_delay_timer_.Stop();
+  }
 }
 
 void RuntimeAPI::OnExtensionsReady() {
@@ -430,11 +432,13 @@ void RuntimeEventRouter::DispatchOnInstalledEvent(
     const std::string& extension_id,
     const base::Version& old_version,
     bool chrome_updated) {
-  if (!ExtensionsBrowserClient::Get()->IsValidContext(context))
+  if (!ExtensionsBrowserClient::Get()->IsValidContext(context)) {
     return;
+  }
   ExtensionSystem* system = ExtensionSystem::Get(context);
-  if (!system)
+  if (!system) {
     return;
+  }
 
   // Only dispatch runtime.onInstalled events if:
   // 1. the extension has just been installed/updated
@@ -474,13 +478,12 @@ void RuntimeEventRouter::DispatchOnInstalledEvent(
       std::unique_ptr<ExtensionSet> dependents =
           system->GetDependentExtensions(extension);
       for (ExtensionSet::const_iterator i = dependents->begin();
-           i != dependents->end();
-           i++) {
+           i != dependents->end(); i++) {
         base::Value::List sm_event_args;
-        base::Value sm_info(base::Value::Type::DICT);
-        sm_info.SetStringKey(kInstallReason, kInstallReasonSharedModuleUpdate);
-        sm_info.SetStringKey(kInstallPreviousVersion, old_version.GetString());
-        sm_info.SetStringKey(kInstallId, extension_id);
+        base::Value::Dict sm_info;
+        sm_info.Set(kInstallReason, kInstallReasonSharedModuleUpdate);
+        sm_info.Set(kInstallPreviousVersion, old_version.GetString());
+        sm_info.Set(kInstallId, extension_id);
         sm_event_args.Append(std::move(sm_info));
         auto sm_event = std::make_unique<Event>(
             events::RUNTIME_ON_INSTALLED, runtime::OnInstalled::kEventName,
@@ -498,8 +501,9 @@ void RuntimeEventRouter::DispatchOnUpdateAvailableEvent(
     const std::string& extension_id,
     const base::Value::Dict* manifest) {
   ExtensionSystem* system = ExtensionSystem::Get(context);
-  if (!system)
+  if (!system) {
     return;
+  }
 
   base::Value::List args;
   args.Append(manifest->Clone());
@@ -515,8 +519,9 @@ void RuntimeEventRouter::DispatchOnUpdateAvailableEvent(
 void RuntimeEventRouter::DispatchOnBrowserUpdateAvailableEvent(
     content::BrowserContext* context) {
   ExtensionSystem* system = ExtensionSystem::Get(context);
-  if (!system)
+  if (!system) {
     return;
+  }
 
   EventRouter* event_router = EventRouter::Get(context);
   DCHECK(event_router);
@@ -532,8 +537,9 @@ void RuntimeEventRouter::DispatchOnRestartRequiredEvent(
     const std::string& app_id,
     api::runtime::OnRestartRequiredReason reason) {
   ExtensionSystem* system = ExtensionSystem::Get(context);
-  if (!system)
+  if (!system) {
     return;
+  }
 
   std::unique_ptr<Event> event(
       new Event(events::RUNTIME_ON_RESTART_REQUIRED,
@@ -618,22 +624,23 @@ ExtensionFunction::ResponseAction RuntimeOpenOptionsPageFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction RuntimeSetUninstallURLFunction::Run() {
-  std::unique_ptr<api::runtime::SetUninstallURL::Params> params(
-      api::runtime::SetUninstallURL::Params::Create(args()));
+  absl::optional<api::runtime::SetUninstallURL::Params> params =
+      api::runtime::SetUninstallURL::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  if (!params->url.empty() && !GURL(params->url).SchemeIsHTTPOrHTTPS())
+  if (!params->url.empty() && !GURL(params->url).SchemeIsHTTPOrHTTPS()) {
     return RespondNow(Error(kInvalidUrlError, params->url));
+  }
 
   ExtensionPrefs::Get(browser_context())
-      ->UpdateExtensionPref(
-          extension_id(), kUninstallUrl,
-          std::make_unique<base::Value>(std::move(params->url)));
+      ->UpdateExtensionPref(extension_id(), kUninstallUrl,
+                            base::Value(std::move(params->url)));
   return RespondNow(NoArguments());
 }
 
 ExtensionFunction::ResponseAction RuntimeReloadFunction::Run() {
-  RuntimeAPI::GetFactoryInstance()->Get(browser_context())->ReloadExtension(
-      extension_id());
+  RuntimeAPI::GetFactoryInstance()
+      ->Get(browser_context())
+      ->ReloadExtension(extension_id());
   return RespondNow(NoArguments());
 }
 
@@ -654,14 +661,14 @@ void RuntimeRequestUpdateCheckFunction::CheckComplete(
   api::runtime::RequestUpdateCheck::Results::Result return_result;
   return_result.status = result.status;
   return_result.version = absl::optional<std::string>(result.version);
-  Respond(OneArgument(base::Value(return_result.ToValue())));
+  Respond(WithArguments(return_result.ToValue()));
 }
 
 ExtensionFunction::ResponseAction RuntimeRestartFunction::Run() {
   std::string message;
-  bool result =
-      RuntimeAPI::GetFactoryInstance()->Get(browser_context())->RestartDevice(
-          &message);
+  bool result = RuntimeAPI::GetFactoryInstance()
+                    ->Get(browser_context())
+                    ->RestartDevice(&message);
   if (!result) {
     return RespondNow(Error(message));
   }
@@ -674,14 +681,15 @@ ExtensionFunction::ResponseAction RuntimeRestartAfterDelayFunction::Run() {
     return RespondNow(Error(kErrorOnlyKioskModeAllowed));
   }
 
-  std::unique_ptr<api::runtime::RestartAfterDelay::Params> params(
-      api::runtime::RestartAfterDelay::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<api::runtime::RestartAfterDelay::Params> params =
+      api::runtime::RestartAfterDelay::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   int seconds = params->seconds;
 
-  if (seconds <= 0 && seconds != -1)
+  if (seconds <= 0 && seconds != -1) {
     return RespondNow(
         Error(kErrorInvalidArgument, base::NumberToString(seconds)));
+  }
 
   RuntimeAPI::RestartAfterDelayStatus request_status =
       RuntimeAPI::GetFactoryInstance()
@@ -733,7 +741,7 @@ RuntimeGetPackageDirectoryEntryFunction::Run() {
   base::Value::Dict dict;
   dict.Set("fileSystemId", filesystem.id());
   dict.Set("baseName", relative_path);
-  return RespondNow(OneArgument(base::Value(std::move(dict))));
+  return RespondNow(WithArguments(std::move(dict)));
 }
 
 }  // namespace extensions

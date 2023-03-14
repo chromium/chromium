@@ -27,14 +27,12 @@ using ReadingListTableViewItemTest = PlatformTest;
 TEST_F(ReadingListTableViewItemTest, TextLabels) {
   NSString* titleText = @"Some Title Text";
   NSString* URLText = @"https://www.google.com";
-  NSString* metadataText = @"Metadata text";
 
   ReadingListTableViewItem* item =
       [[ReadingListTableViewItem alloc] initWithType:0];
   item.title = titleText;
   CrURL* url = [[CrURL alloc] initWithNSURL:[NSURL URLWithString:URLText]];
   item.entryURL = url.gurl;
-  item.distillationSizeText = metadataText;
 
   TableViewURLCell* URLCell = [[TableViewURLCell alloc] init];
   EXPECT_FALSE(URLCell.titleLabel.text);
@@ -44,7 +42,6 @@ TEST_F(ReadingListTableViewItemTest, TextLabels) {
   ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
   [item configureCell:URLCell withStyler:styler];
   EXPECT_NSEQ(titleText, URLCell.titleLabel.text);
-  EXPECT_NSEQ(metadataText, URLCell.metadataLabel.text);
   NSString* hostname = base::SysUTF16ToNSString(
       url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
           url.gurl));

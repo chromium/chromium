@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/types/expected.h"
 #include "dbus/bus.h"
 #include "dbus/exported_object.h"
@@ -24,6 +25,7 @@
 namespace floss {
 
 extern DEVICE_BLUETOOTH_EXPORT int kDBusTimeoutMs;
+extern DEVICE_BLUETOOTH_EXPORT int kAdapterPowerTimeoutMs;
 
 // TODO(b/189499077) - Expose via floss package
 extern DEVICE_BLUETOOTH_EXPORT const char kAdapterService[];
@@ -96,7 +98,10 @@ extern DEVICE_BLUETOOTH_EXPORT const char kOnDeviceDisconnected[];
 
 extern DEVICE_BLUETOOTH_EXPORT const char kOnScannerRegistered[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnScanResult[];
-extern DEVICE_BLUETOOTH_EXPORT const char kOnScanResultLost[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnAdvertisementFound[];
+// TODO(b/269343922): Rename this to OnAdvertisementLost for better symmetry
+// with OnAdvertisementFound.
+extern DEVICE_BLUETOOTH_EXPORT const char kOnAdvertisementLost[];
 }  // namespace adapter
 
 namespace manager {
@@ -237,6 +242,7 @@ extern DEVICE_BLUETOOTH_EXPORT const char kOnBatteryInfoUpdated[];
 
 namespace experimental {
 extern DEVICE_BLUETOOTH_EXPORT const char kSetLLPrivacy[];
+extern DEVICE_BLUETOOTH_EXPORT const char kSetDevCoredump[];
 }  // namespace experimental
 
 namespace admin {
@@ -304,28 +310,38 @@ using DBusResult = base::expected<T, Error>;
 template <typename T>
 using ResponseCallback = base::OnceCallback<void(DBusResult<T>)>;
 
-// A Weakly Owned ResponseCallback<T>. The main usecase for this is to have
-// a weak pointer available for |PostDelayedTask|, where deleting the main
+// A Weakly Owned base::OnceCallback<void(T)>. The main usecase for this is to
+// have a weak pointer available for |PostDelayedTask|, where deleting the main
 // object will automatically cancel the posted task.
 template <typename T>
 class WeaklyOwnedCallback {
  public:
-  explicit WeaklyOwnedCallback(ResponseCallback<T> cb) : cb_(std::move(cb)) {}
+  explicit WeaklyOwnedCallback(base::OnceCallback<void(T)> cb)
+      : cb_(std::move(cb)) {}
   ~WeaklyOwnedCallback() = default;
 
-  static std::unique_ptr<WeaklyOwnedCallback> Create(ResponseCallback<T> cb) {
+  static std::unique_ptr<WeaklyOwnedCallback> Create(
+      base::OnceCallback<void(T)> cb) {
     return std::make_unique<WeaklyOwnedCallback>(std::move(cb));
   }
 
-  // If the callback hasn't been executed, run it and return true. Otherwise
-  // false.
-  bool Run(DBusResult<T> ret) {
+  // Creates a pointer to the callback which will run automatically after
+  // |timeout_ms| with given return value unless the callback is deleted.
+  static std::unique_ptr<WeaklyOwnedCallback> CreateWithTimeout(
+      base::OnceCallback<void(T)> cb,
+      int timeout_ms,
+      T error_ret) {
+    std::unique_ptr<WeaklyOwnedCallback> self = Create(std::move(cb));
+    self->PostDelayed(timeout_ms, error_ret);
+
+    return self;
+  }
+
+  // If the callback hasn't been executed, run it.
+  void Run(T ret) {
     if (cb_) {
       std::move(cb_).Run(std::move(ret));
-      return true;
     }
-
-    return false;
   }
 
   base::WeakPtr<WeaklyOwnedCallback> GetWeakPtr() const {
@@ -333,9 +349,21 @@ class WeaklyOwnedCallback {
   }
 
  private:
-  ResponseCallback<T> cb_;
+  void PostDelayed(int timeout_ms, T error_ret) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&WeaklyOwnedCallback<T>::Run,
+                       weak_ptr_factory_.GetWeakPtr(), error_ret),
+        base::Milliseconds(timeout_ms));
+  }
+
+  base::OnceCallback<void(T)> cb_;
   base::WeakPtrFactory<WeaklyOwnedCallback> weak_ptr_factory_{this};
 };
+
+// A Weakly Owned ResponseCallback<T>.
+template <typename T>
+using WeaklyOwnedResponseCallback = WeaklyOwnedCallback<DBusResult<T>>;
 
 struct DBusTypeInfo {
   const std::string dbus_signature;

@@ -37,7 +37,6 @@
 #include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
-#include "ui/gl/gl_image_stub.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_utils.h"
@@ -96,7 +95,7 @@ void CreateSharedContext(const GpuDriverBugWorkarounds& workarounds,
       base::MakeRefCounted<gles2::FeatureInfo>(workarounds, GpuFeatureInfo());
   context_state = base::MakeRefCounted<SharedContextState>(
       std::move(share_group), surface, context,
-      false /* use_virtualized_gl_contexts */, base::DoNothing());
+      /*use_virtualized_gl_contexts=*/false, base::DoNothing());
   context_state->InitializeGrContext(GpuPreferences(), workarounds, nullptr);
   context_state->InitializeGL(GpuPreferences(), feature_info);
 }
@@ -110,11 +109,11 @@ class EGLImageBackingFactoryThreadSafeTest
     // |context_state_| and |context_state2_| must be destroyed on its own
     // context.
     if (context_state2_) {
-      context_state2_->MakeCurrent(surface2_.get(), true /* needs_gl */);
+      context_state2_->MakeCurrent(surface2_.get(), /*needs_gl=*/true);
       context_state2_.reset();
     }
     if (context_state_) {
-      context_state_->MakeCurrent(surface_.get(), true /* needs_gl */);
+      context_state_->MakeCurrent(surface_.get(), /*needs_gl=*/true);
       context_state_.reset();
     }
   }
@@ -249,7 +248,7 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, BasicThreadSafe) {
     return;
 
   CreateAndValidateSharedImageRepresentations shared_image(
-      backing_factory_.get(), get_format(), true /* is_thread_safe */,
+      backing_factory_.get(), get_format(), /*is_thread_safe=*/true,
       &mailbox_manager_, shared_image_manager_.get(),
       memory_type_tracker_.get(), shared_image_representation_factory_.get(),
       context_state_.get(), /*upload_initial_data=*/false);
@@ -262,7 +261,7 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, BasicInitialData) {
     return;
 
   CreateAndValidateSharedImageRepresentations shared_image(
-      backing_factory_.get(), get_format(), true /* is_thread_safe */,
+      backing_factory_.get(), get_format(), /*is_thread_safe=*/true,
       &mailbox_manager_, shared_image_manager_.get(),
       memory_type_tracker_.get(), shared_image_representation_factory_.get(),
       context_state_.get(), /*upload_initial_data=*/true);
@@ -278,7 +277,7 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, OneWriterOneReader) {
 
   // Create it on 1st SharedContextState |context_state_|.
   CreateAndValidateSharedImageRepresentations shared_image(
-      backing_factory_.get(), get_format(), true /* is_thread_safe */,
+      backing_factory_.get(), get_format(), /*is_thread_safe=*/true,
       &mailbox_manager_, shared_image_manager_.get(),
       memory_type_tracker_.get(), shared_image_representation_factory_.get(),
       context_state_.get(), /*upload_initial_data=*/false);

@@ -184,7 +184,7 @@ TestImageBacking::TestImageBacking(const Mailbox& mailbox,
                          alpha_type,
                          usage,
                          estimated_size,
-                         false /* is_thread_safe */),
+                         /*is_thread_safe=*/false),
       service_id_(texture_id) {
   texture_ = new gles2::Texture(service_id_);
   texture_->SetLightweightRef();
@@ -217,7 +217,7 @@ TestImageBacking::TestImageBacking(const Mailbox& mailbox,
                        alpha_type,
                        usage,
                        estimated_size,
-                       203 /* texture_id */) {
+                       /*texture_id=*/203) {
   // Using a dummy |texture_id|, so lose our context so we don't do anything
   // real with it.
   OnContextLost();
@@ -226,7 +226,7 @@ TestImageBacking::TestImageBacking(const Mailbox& mailbox,
 TestImageBacking::~TestImageBacking() {
   // Pretend our context is lost to avoid actual cleanup in |texture_| or
   // |passthrough_texture_|.
-  texture_->RemoveLightweightRef(false /* have_context */);
+  texture_->RemoveLightweightRef(/*have_context=*/false);
   texture_passthrough_->MarkContextLost();
   texture_passthrough_.reset();
 

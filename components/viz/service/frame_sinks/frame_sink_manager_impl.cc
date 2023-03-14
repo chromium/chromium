@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string>
 #include <utility>
 
 #include "base/check_op.h"
@@ -178,8 +179,12 @@ void FrameSinkManagerImpl::SetFrameSinkDebugLabel(
     const FrameSinkId& frame_sink_id,
     const std::string& debug_label) {
   auto it = frame_sink_data_.find(frame_sink_id);
-  if (it != frame_sink_data_.end())
+  if (it != frame_sink_data_.end()) {
     it->second.debug_label = debug_label;
+    if (frame_counter_) {
+      frame_counter_->SetFrameSinkDebugLabel(frame_sink_id, debug_label);
+    }
+  }
 }
 
 void FrameSinkManagerImpl::CreateRootCompositorFrameSink(
@@ -286,7 +291,7 @@ void FrameSinkManagerImpl::UnregisterFrameSinkHierarchy(
   }
 
   auto iter = frame_sink_source_map_.find(parent_frame_sink_id);
-  DCHECK(iter != frame_sink_source_map_.end());
+  CHECK(iter != frame_sink_source_map_.end());
 
   // Remove |child_frame_sink_id| from parents list of children.
   auto& mapping = iter->second;
@@ -433,7 +438,8 @@ void FrameSinkManagerImpl::RegisterCompositorFrameSinkSupport(
 
   if (frame_counter_) {
     frame_counter_->AddFrameSink(frame_sink_id, support->frame_sink_type(),
-                                 support->is_root());
+                                 support->is_root(),
+                                 GetFrameSinkDebugLabel(frame_sink_id));
   }
 }
 
@@ -829,6 +835,11 @@ FrameSinkManagerImpl::TakeSurfaceAnimationManager(NavigationID navigation_id) {
   return manager;
 }
 
+void FrameSinkManagerImpl::ClearSurfaceAnimationManager(
+    NavigationID navigation_id) {
+  navigation_to_animation_manager_.erase(navigation_id);
+}
+
 void FrameSinkManagerImpl::StartFrameCountingForTest(
     base::TimeTicks start_time,
     base::TimeDelta bucket_size) {
@@ -838,7 +849,8 @@ void FrameSinkManagerImpl::StartFrameCountingForTest(
   for (auto& [sink_id, support] : support_map_) {
     DCHECK_EQ(sink_id, support->frame_sink_id());
     frame_counter_->AddFrameSink(sink_id, support->frame_sink_type(),
-                                 support->is_root());
+                                 support->is_root(),
+                                 GetFrameSinkDebugLabel(sink_id));
   }
 }
 

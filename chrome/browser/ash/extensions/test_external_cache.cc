@@ -44,7 +44,9 @@ void TestExternalCache::UpdateExtensionsList(base::Value::Dict prefs) {
 void TestExternalCache::OnDamagedFileDetected(const base::FilePath& path) {
   for (const auto [id, value] : cached_extensions_) {
     const std::string* entry_path =
-        value.FindStringKey(extensions::ExternalProviderImpl::kExternalCrx);
+        value.is_dict() ? value.GetDict().FindString(
+                              extensions::ExternalProviderImpl::kExternalCrx)
+                        : nullptr;
     if (entry_path && *entry_path == path.value()) {
       RemoveExtensions({id});
       return;

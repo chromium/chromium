@@ -183,7 +183,7 @@ DCompSurfaceImageBacking::DCompSurfaceImageBacking(
           alpha_type,
           usage,
           gfx::BufferSizeForBufferFormat(size, ToBufferFormat(format)),
-          false /* is_thread_safe */),
+          /*is_thread_safe=*/false),
       gl_surface_(scoped_refptr(
           new D3DTextureGLSurfaceEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(),
                                      size))),

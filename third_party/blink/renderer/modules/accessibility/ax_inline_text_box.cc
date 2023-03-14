@@ -202,7 +202,11 @@ Node* AXInlineTextBox::GetNode() const {
 }
 
 Document* AXInlineTextBox::GetDocument() const {
-  return ParentObject() ? ParentObject()->GetDocument() : nullptr;
+  return CachedParentObject() ? CachedParentObject()->GetDocument() : nullptr;
+}
+
+AbstractInlineTextBox* AXInlineTextBox::GetInlineTextBox() const {
+  return inline_text_box_.get();
 }
 
 AXObject* AXInlineTextBox::NextOnLine() const {

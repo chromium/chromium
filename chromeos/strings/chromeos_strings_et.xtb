@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">Suurepärane (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Jätka</translation>
 <translation id="2364498172489649528">Läbitud</translation>
+<translation id="2367335866686097760">Klahvide vastendamine, klahv</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Saada tagasisidearuanne</translation>
 <translation id="2407209115954268704">SIM-i luku olek</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">Avatari pilti muudeti</translation>
 <translation id="3192947282887913208">Helifailid</translation>
 <translation id="3199982728237701504">Dokumendisöötur (kahepoolne)</translation>
+<translation id="3211671540163313381">Klahvide vastendamine, juhtimisklahvistik</translation>
 <translation id="3226405216343213872">Skannerite otsimine</translation>
+<translation id="3226657629376379887">Paigutuse toimingute menüü</translation>
 <translation id="3246869037381808805">Prinditööd, mis on vanemad kui 1 päev, eemaldatakse</translation>
 <translation id="3268178239013324452">Ebaõnnestus – luuk on avatud</translation>
 <translation id="3275729367986477355">Avatari pilt</translation>
@@ -253,6 +256,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Turvalisus</translation>
 <translation id="3435896845095436175">Luba</translation>
+<translation id="345256797477978759">Doki aken ekraani <ph name="DIRECTION" /> suuremale osale</translation>
 <translation id="3456078764689556234">Prinditi <ph name="PRINTED_PAGES" />. leht <ph name="TOTAL_PAGES" />-st.</translation>
 <translation id="345898999683440380">Lehe <ph name="PAGE_NUM" /> skannimine. <ph name="PERCENTAGE_VALUE" />% on lõpetatud.</translation>
 <translation id="3459509316159669723">Printimine</translation>
@@ -273,12 +277,14 @@
 <translation id="3595596368722241419">Aku on täis</translation>
 <translation id="3600339377155080675">Ekraanikuva peegeldamine</translation>
 <translation id="3602290021589620013">Eelvaade</translation>
+<translation id="360282891121575443">Jagatud albumites olevaid fotosid saavad uuendada ka teised kasutajad. Igapäevase muutmise korral võidakse kuvada taustapildid, mida albumis praegu pole.</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Taustapildi muutmine</translation>
 <translation id="360565022852130722">WiFi-võrk on kaitstud nõrga protokolliga (WEP 802.1x)</translation>
 <translation id="3606583719724308068">Pikk latentsusaeg HTTPS-veebisaitide puhul</translation>
 <translation id="361575905210396100">Suur tänu tagasiside eest</translation>
 <translation id="3632579075709132555">Privaatsuskuva lüliti</translation>
+<translation id="3639846061339007994">ülemisele</translation>
 <translation id="3651050199673793219">Valige temperatuuriühik</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Laadimine...</translation>
@@ -520,6 +526,7 @@
 <translation id="576835345334454681">Ekraanikuva ereduse suurendamine</translation>
 <translation id="57838592816432529">Vaigista</translation>
 <translation id="5784136236926853061">Pikk HTTP latentsusaeg</translation>
+<translation id="5826644637650799838">Kunsti teave</translation>
 <translation id="5832805196449965646">Lisa inimene</translation>
 <translation id="583281660410589416">Tundmatu</translation>
 <translation id="5843706793424741864">Fahrenheit</translation>
@@ -562,6 +569,7 @@
 <translation id="6117895505466548728"><ph name="TITLE" />, + veel <ph name="NUMBER" /> albumit</translation>
 <translation id="6122191549521593678">Onlain</translation>
 <translation id="6122277663991249694">Chrome OS sisestusmeetodi teenus</translation>
+<translation id="6136285399872347291">tagasilükkeklahv</translation>
 <translation id="6137767437444130246">Kasutaja sertifikaat</translation>
 <translation id="6146993107019042706">Toimingu lõpuleviimiseks sisestage oma uus parool</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -609,6 +617,7 @@
 <translation id="650266656685499220">Albumite loomiseks minge teenusesse Google Photos</translation>
 <translation id="6516990319416533844">Aku laadimiskiiruse testimiseks laske akul lühikese perioodi jooksul tühjeneda</translation>
 <translation id="6517239166834772319">Avastamine</translation>
+<translation id="6526200165918397681">Ühita taustapildiga</translation>
 <translation id="6527081081771465939">Tundmatu WiFi-turvaprotokoll</translation>
 <translation id="6535178685492749208">Võrguühendus puudub. Tagasiside saadetakse hiljem.</translation>
 <translation id="65587193855025101">Tasaskanner</translation>
@@ -628,6 +637,7 @@
 <translation id="6657585470893396449">Parool</translation>
 <translation id="6659594942844771486">Vaheleht</translation>
 <translation id="6692996468359469499">Hankige oma valiku kohta teavet</translation>
+<translation id="6698459586333070823">Teised kasutajad võivad jagatud albumeid värskendada</translation>
 <translation id="6704062477274546131">DNS-lahendus</translation>
 <translation id="6723839937902243910">Toide</translation>
 <translation id="6723847290197874913">Klaviatuuri taustavalgus</translation>
@@ -664,6 +674,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Ebaõnnestus – volitamine ebaõnnestus</translation>
 <translation id="7103252855940681301">Seade <ph name="INDEX" />/<ph name="COUNT" /> nimega <ph name="NAME" />.</translation>
+<translation id="7108668606237948702">sisestusklahv</translation>
 <translation id="7130438335435247835">Pääsupunkti nimi (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nimeserver}other{Nimeserverid}}</translation>
 <translation id="7143207342074048698">Ühendamine</translation>
@@ -673,6 +684,7 @@
 <translation id="7155171745945906037">Olemasolev foto kaamerast või failist</translation>
 <translation id="7162487448488904999">Galerii</translation>
 <translation id="7170236477717446850">Profiilipilt</translation>
+<translation id="7171919371520438592">Doki aken ekraani <ph name="DIRECTION" /> väiksemale poolele</translation>
 <translation id="7172721935181587524">1 pilt</translation>
 <translation id="7177485034254901881">Seadet <ph name="DEVICE_TYPE" /> haldab <ph name="MANAGER" />. Administraatorid saavad seda seadet kaugühenduse teel seadistada.</translation>
 <translation id="7180611975245234373">Värskenda</translation>
@@ -748,6 +760,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Teenusepakkuja tüüp</translation>
 <translation id="7882501334836096755">Avalik võti</translation>
+<translation id="78957024357676568">vasakule</translation>
 <translation id="7915220255123750251">Hallake võrgu APN-ide seadeid. APN-id loovad ühenduse mobiilsidevõrgu ja interneti vahel.</translation>
 <translation id="7936303884198020182">Ei leitud ühtegi nimeserverit</translation>
 <translation id="7942349550061667556">Punane</translation>
@@ -776,9 +789,11 @@
 <translation id="8183974620058026102">Manusta</translation>
 <translation id="8206859287963243715">Mobiil</translation>
 <translation id="8208861521865154048">Hüved</translation>
+<translation id="8210733748736414123">alumisele</translation>
 <translation id="8226628635270268143">Valige oma lemmikfotod ja -albumid</translation>
 <translation id="8227119283605456246">Manusta fail</translation>
 <translation id="8230672074305416752">Vaikevõrgulüüsi pingimine ebaõnnestus</translation>
+<translation id="8242426110754782860">Jätka</translation>
 <translation id="8246209727385807362">Tundmatu operaator</translation>
 <translation id="827422111966801947">Indigosinine</translation>
 <translation id="8286154143153872371">Taustapildi vaatamiseks looge ühendus võrguga ja laadige leht uuesti.</translation>
@@ -789,9 +804,11 @@
 <translation id="8318753676953949627">Pilte pole</translation>
 <translation id="8336739000755212683">Seadme kontopildi muutmine</translation>
 <translation id="8347227221149377169">Prinditööd</translation>
+<translation id="8351855506390808906">Klahvide vastendamine, puutepunkt</translation>
 <translation id="8352772353338965963">Lisage mitmele kontole sisselogimiseks konto. Kõigile kontodele, kuhu on sisse logitud, pääseb juurde ilma paroolita, seega soovitame seda funktsiooni kasutada vaid usaldusväärsete kontodega.</translation>
 <translation id="8364946094152050673">Tühjad nimeserverid</translation>
 <translation id="8372477600026034341">Lisahostid</translation>
+<translation id="8380114448424469341">Doki aken ekraani <ph name="DIRECTION" /> poolele</translation>
 <translation id="8395584934117017006">Seda seadet <ph name="DEVICE_TYPE" /> haldab ettevõte</translation>
 <translation id="8398927464629426868">Praegune seadme laadimise või tühjenemise kiirus</translation>
 <translation id="8410244574650205435">Automaatselt tuvastatud</translation>
@@ -856,6 +873,7 @@
 <translation id="8930622219860340959">Raadiovõrk</translation>
 <translation id="8936793075252196307">Kliendi IP-aadress</translation>
 <translation id="894617464444543719">Seade on telefon.</translation>
+<translation id="8957423540740801332">paremale</translation>
 <translation id="8968751544471797276">Laadimiskiirus</translation>
 <translation id="8970109610781093811">Käita uuesti</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -883,6 +901,7 @@
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9138630967333032450">Vasakpoolne tõstuklahv</translation>
 <translation id="9149391708638971077">Käita mälutest</translation>
+<translation id="9161276708550942948">tühikuklahv</translation>
 <translation id="9173638680043580060">Jäänud on alla minuti</translation>
 <translation id="917720651393141712">Testi</translation>
 <translation id="9188992814426075118">Teie klaviatuuri saab automaatselt sobitada teie taustapildiga</translation>

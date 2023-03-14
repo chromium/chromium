@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/exported/web_page_popup_impl.h"
+#include "third_party/blink/renderer/core/frame/animation_frame_timing_monitor.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/page/event_with_hit_test_results.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
@@ -105,6 +106,7 @@ class CORE_EXPORT WebFrameWidgetImpl
       public viz::mojom::blink::InputTargetClient,
       public mojom::blink::FrameWidgetInputHandler,
       public FrameWidget,
+      public AnimationFrameTimingMonitor::Client,
       public WidgetEventHandler {
  public:
   struct PromiseCallbacks {
@@ -277,7 +279,7 @@ class CORE_EXPORT WebFrameWidgetImpl
                   int relative_cursor_pos) override;
   void FinishComposingText(bool keep_selection) override;
   bool IsProvisional() override;
-  uint64_t GetScrollableContainerIdAt(const gfx::PointF& point) override;
+  cc::ElementId GetScrollableContainerIdAt(const gfx::PointF& point) override;
   bool ShouldHandleImeEvents() override;
   void SetEditCommandsForNextKeyEvent(
       Vector<mojom::blink::EditCommandPtr> edit_commands) override;
@@ -315,8 +317,17 @@ class CORE_EXPORT WebFrameWidgetImpl
       bool may_throttle_if_undrawn_frames) override;
   int GetVirtualKeyboardResizeHeight() const override;
 
+  void OnTaskCompletedForFrame(base::TimeTicks start_time,
+                               base::TimeTicks end_time,
+                               base::TimeTicks desired_execution_time,
+                               LocalFrame*) override;
   void SetVirtualKeyboardResizeHeightForTesting(int);
   bool GetMayThrottleIfUndrawnFramesForTesting();
+
+  // AnimationFrameTimingMonitor::Client overrides
+  void ReportLongAnimationFrameTiming(AnimationFrameTimingInfo* info) override;
+  bool ShouldReportLongAnimationFrameTiming() const override;
+  bool RequestedMainFramePending() override;
 
   // WebFrameWidget overrides.
   void InitializeNonCompositing(WebNonCompositedWidgetClient* client) override;
@@ -428,7 +439,8 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   // mojom::blink::FrameWidgetInputHandler overrides:
   void HandleStylusWritingGestureAction(
-      mojom::blink::StylusWritingGestureDataPtr gesture_data) override;
+      mojom::blink::StylusWritingGestureDataPtr gesture_data,
+      HandleStylusWritingGestureActionCallback callback) override;
 
   // Sets the display mode, which comes from the top-level browsing context and
   // is applied to all widgets.
@@ -784,6 +796,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   void Cut() override;
   void Copy() override;
   void CopyToFindPboard() override;
+  void CenterSelection() override;
   void Paste() override;
   void PasteAndMatchStyle() override;
   void Delete() override;
@@ -802,12 +815,10 @@ class CORE_EXPORT WebFrameWidgetImpl
   void WaitForPageScaleAnimationForTesting(
       WaitForPageScaleAnimationForTestingCallback callback) override;
   void MoveCaret(const gfx::Point& point_in_dips) override;
-#if BUILDFLAG(IS_ANDROID)
   void SelectAroundCaret(mojom::blink::SelectionGranularity granularity,
                          bool should_show_handle,
                          bool should_show_context_menu,
                          SelectAroundCaretCallback callback) override;
-#endif
 
   // PageWidgetEventHandler overrides:
   WebInputEventResult HandleKeyEvent(const WebKeyboardEvent&) override;
@@ -1020,6 +1031,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   // Used to override values given from the browser such as ScreenInfo,
   // WidgetScreenRect, WindowScreenRect, and the widget's size.
   Member<ScreenMetricsEmulator> device_emulator_;
+
+  Member<AnimationFrameTimingMonitor> animation_frame_timing_monitor_;
 
   // keyPress events to be suppressed if the associated keyDown event was
   // handled.

@@ -132,6 +132,7 @@ class IdleTaskControllerFrameScheduler : public FrameScheduler {
     return nullptr;
   }
   std::unique_ptr<WebSchedulingTaskQueue> CreateWebSchedulingTaskQueue(
+      WebSchedulingQueueType,
       WebSchedulingPriority) override {
     return nullptr;
   }

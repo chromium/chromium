@@ -10,7 +10,7 @@ import android.view.MenuItem;
 import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.LifecycleObserver;
 
-import org.chromium.chrome.browser.device_reauth.BiometricAuthRequester;
+import org.chromium.chrome.browser.device_reauth.DeviceAuthRequester;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckChangePasswordHelper;
@@ -83,7 +83,7 @@ class PasswordCheckCoordinator implements PasswordCheckComponentUi, LifecycleObs
         mReauthenticationHelper = new PasswordAccessReauthenticationHelper(
                 mFragmentView.getActivity(), mFragmentView.getParentFragmentManager());
         mReauthenticatorBridge =
-                new ReauthenticatorBridge(BiometricAuthRequester.PASSWORD_CHECK_AUTO_PWD_CHANGE);
+                new ReauthenticatorBridge(DeviceAuthRequester.PASSWORD_CHECK_AUTO_PWD_CHANGE);
 
         PasswordCheckChangePasswordHelper changePasswordHelper =
                 new PasswordCheckChangePasswordHelper(mFragmentView.getActivity(),

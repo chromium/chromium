@@ -12,13 +12,13 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -27,8 +27,9 @@
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_logging.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
+#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
@@ -38,13 +39,6 @@
 namespace web_app {
 
 namespace {
-
-template <typename Streamable>
-std::string StreamableToString(const Streamable& value) {
-  std::ostringstream ss;
-  ss << value;
-  return ss.str();
-}
 
 blink::mojom::SubAppsServiceResultCode InstallResultCodeToMojo(
     webapps::InstallResultCode install_result_code) {
@@ -73,7 +67,6 @@ WebAppInstallFinalizer::FinalizeOptions GetFinalizerOptionsForSubApps(
 
   finalize_options.locally_installed = true;
   finalize_options.overwrite_existing_manifest_fields = false;
-  finalize_options.parent_app_id = parent_app_id;
   if (IsChromeOsDataMandatory()) {
     // Default values for ChromeOS installation.
     finalize_options.chromeos_data.emplace();
@@ -263,6 +256,7 @@ void SubAppInstallCommand::OnGetWebAppInstallInfo(
                        webapps::InstallResultCode::kGetWebAppInstallInfoFailed);
     return;
   }
+  install_info->parent_app_id = parent_app_id_;
 
   DCHECK(base::Contains(pending_installs_map_, unhashed_app_id));
   const GURL& install_url = pending_installs_map_[unhashed_app_id];
@@ -479,8 +473,8 @@ void SubAppInstallCommand::AddResultToDebugData(
   base::Value::Dict install_info;
   install_info.Set("unhashed_app_id", unhashed_app_id);
   install_info.Set("install_url", install_url.spec());
-  install_info.Set("detailed_result_code", StreamableToString(detailed_code));
-  install_info.Set("result_code", StreamableToString(result_code));
+  install_info.Set("detailed_result_code", base::ToString(detailed_code));
+  install_info.Set("result_code", base::ToString(result_code));
   debug_install_results_.Set(installed_app_id,
                              base::Value(std::move(install_info)));
 }

@@ -5,8 +5,10 @@
 #include "device/fido/mac/authenticator.h"
 
 #include "base/test/task_environment.h"
+#include "base/test/with_feature_override.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/discoverable_credential_metadata.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/mac/authenticator_config.h"
@@ -29,8 +31,13 @@ constexpr char kRp2[] = "two.com";
 const std::vector<uint8_t> kUserId1{1, 2, 3, 4};
 const std::vector<uint8_t> kUserId2{5, 6, 7, 8};
 
-class TouchIdAuthenticatorTest : public testing::Test {
+class TouchIdAuthenticatorTest : public testing::Test,
+                                 public base::test::WithFeatureOverride {
  protected:
+  TouchIdAuthenticatorTest()
+      : base::test::WithFeatureOverride(
+            kWebAuthnMacPlatformAuthenticatorOptionalUv) {}
+
   base::test::SingleThreadTaskEnvironment task_environment_;
   fido::mac::AuthenticatorConfig config_{
       .keychain_access_group = "test-keychain-access-group",
@@ -42,7 +49,7 @@ class TouchIdAuthenticatorTest : public testing::Test {
       fido::mac::TouchIdAuthenticator::Create(config_);
 };
 
-TEST_F(TouchIdAuthenticatorTest, GetPlatformCredentialInfoForRequest_RK) {
+TEST_P(TouchIdAuthenticatorTest, GetPlatformCredentialInfoForRequest_RK) {
   // Inject a resident credential for RP 1.
   PublicKeyCredentialUserEntity user(kUserId1);
   fido::mac::Credential credential =
@@ -86,7 +93,7 @@ TEST_F(TouchIdAuthenticatorTest, GetPlatformCredentialInfoForRequest_RK) {
   }
 }
 
-TEST_F(TouchIdAuthenticatorTest, GetPlatformCredentialInfoForRequest_NonRK) {
+TEST_P(TouchIdAuthenticatorTest, GetPlatformCredentialInfoForRequest_NonRK) {
   // Inject a non resident credential for RP 1.
   PublicKeyCredentialUserEntity user(kUserId1);
   fido::mac::Credential credential =
@@ -94,6 +101,8 @@ TEST_F(TouchIdAuthenticatorTest, GetPlatformCredentialInfoForRequest_NonRK) {
           .CreateCredential(kRp1, user,
                             fido::mac::TouchIdCredentialStore::kNonDiscoverable)
           ->first;
+  DiscoverableCredentialMetadata credential_metadata(
+      kRp1, credential.credential_id, std::move(user));
 
   {
     // RP 1 should report the credential if it is in the allow list but not
@@ -105,7 +114,12 @@ TEST_F(TouchIdAuthenticatorTest, GetPlatformCredentialInfoForRequest_NonRK) {
     authenticator_->GetPlatformCredentialInfoForRequest(
         std::move(request), CtapGetAssertionOptions(), callback.callback());
     callback.WaitForCallback();
-    EXPECT_TRUE(std::get<0>(*callback.result()).empty());
+    if (IsParamFeatureEnabled()) {
+      EXPECT_THAT(std::get<0>(*callback.result()),
+                  testing::ElementsAre(credential_metadata));
+    } else {
+      EXPECT_TRUE(std::get<0>(*callback.result()).empty());
+    }
     EXPECT_EQ(
         std::get<1>(*callback.result()),
         FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential);
@@ -139,6 +153,8 @@ TEST_F(TouchIdAuthenticatorTest, GetPlatformCredentialInfoForRequest_NonRK) {
         FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential);
   }
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(TouchIdAuthenticatorTest);
 
 }  // namespace
 

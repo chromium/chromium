@@ -9,13 +9,14 @@
 #include "ash/webui/grit/ash_projector_annotator_trusted_resources_map.h"
 #include "ash/webui/grit/ash_projector_common_resources.h"
 #include "ash/webui/grit/ash_projector_common_resources_map.h"
-#include "ash/webui/projector_app/annotator_message_handler.h"
+#include "ash/webui/projector_app/annotator_page_handler_impl.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "url/gurl.h"
 
@@ -59,14 +60,7 @@ TrustedProjectorAnnotatorUI::TrustedProjectorAnnotatorUI(
     content::WebUI* web_ui,
     const GURL& url,
     PrefService* pref_service)
-    : MojoBubbleWebUIController(web_ui, /*enable_chrome_send=*/true) {
-  // Multiple WebUIs (and therefore TrustedProjectorAnnotatorUIs) are created
-  // for a single Projector recording session, so a new AnnotatorMessageHandler
-  // needs to be created each time and attached to the new WebUI. The new
-  // handler is then referenced in ProjectorClientImpl.
-  auto handler = std::make_unique<ash::AnnotatorMessageHandler>();
-  web_ui->AddMessageHandler(std::move(handler));
-
+    : MojoBubbleWebUIController(web_ui, /*enable_chrome_send=*/false) {
   CreateAndAddProjectorAnnotatorHTMLSource(web_ui);
 
   // The Annotator and Projector SWA embed contents in a sandboxed
@@ -75,6 +69,27 @@ TrustedProjectorAnnotatorUI::TrustedProjectorAnnotatorUI(
 }
 
 TrustedProjectorAnnotatorUI::~TrustedProjectorAnnotatorUI() = default;
+
+void TrustedProjectorAnnotatorUI::BindInterface(
+    mojo::PendingReceiver<annotator::mojom::AnnotatorPageHandlerFactory>
+        receiver) {
+  if (receiver_.is_bound()) {
+    receiver_.reset();
+  }
+  receiver_.Bind(std::move(receiver));
+}
+
+void TrustedProjectorAnnotatorUI::Create(
+    mojo::PendingReceiver<annotator::mojom::AnnotatorPageHandler>
+        annotator_handler,
+    mojo::PendingRemote<annotator::mojom::AnnotatorPage> annotator) {
+  // Multiple WebUIs (and therefore TrustedProjectorAnnotatorUIs) are created
+  // for a single Projector recording session, so a new AnnotatorMessageHandler
+  // needs to be created each time and attached to the new WebUI. The new
+  // handler is then referenced in ProjectorClientImpl.
+  handler_ = std::make_unique<AnnotatorPageHandlerImpl>(
+      std::move(annotator_handler), std::move(annotator), web_ui());
+}
 
 WEB_UI_CONTROLLER_TYPE_IMPL(TrustedProjectorAnnotatorUI)
 

@@ -38,17 +38,11 @@ crbug.com/555703 [ Linux ] virtual/media-gpu-accelerated/* [ Skip ]
 crbug.com/1400717 [ Linux ] webexposed/element-instance-property-listing.html [ Timeout ]
 
 # Tests timing out on WebKit Linux Trusty MSAN
-crbug.com/760543 [ Linux ] http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidations.js [ Pass Timeout ]
-crbug.com/760543 [ Linux ] http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidator-invalidations.js [ Pass Timeout ]
 crbug.com/760543 [ Linux ] http/tests/devtools/oopif/oopif-performance-cpu-profiles.js [ Pass Timeout ]
 
 # Memory allocation hooks are disabled on ASAN/MSAN
 crbug.com/803276 inspector-protocol/memory/sampling-native-profile.js [ Skip ]
 crbug.com/803276 inspector-protocol/memory/sampling-native-snapshot.js [ Skip ]
-
-# The following test is flaky and timing out on chromium.webkit/WebKit Linux Trusty MSAN.
-crbug.com/851497 http/tests/devtools/tracing/timeline-style/timeline-style-recalc-all-invalidator-types.js [ Pass Timeout ]
-
 
 crbug.com/856601 [ Linux ] fast/css/visited-link-hang.html [ Pass Timeout ]
 
@@ -116,3 +110,9 @@ crbug.com/887140 [ Linux ] virtual/hdr/video-canvas-alpha.html [ Skip ]
 crbug.com/1378044 [ Linux ] external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.html [ Timeout ]
 crbug.com/1378044 [ Linux ] external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.sharedworker.html [ Timeout ]
 crbug.com/1378044 [ Linux ] external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.worker.html [ Timeout ]
+
+# Suppress blink canvas web tests that cause MSAN builder failure
+crbug.com/1419916 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-fillPath-shadow.html [ Crash ]
+crbug.com/1419916 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-fillPath-alpha-shadow.html [ Crash ]
+crbug.com/1419916 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-fillPath-gradient-shadow.html [ Crash ]
+

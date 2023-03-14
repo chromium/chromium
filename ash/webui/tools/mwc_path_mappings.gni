@@ -1,0 +1,28 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+_node_modules_path =
+    "//third_party/material_web_components/components-chromium/node_modules"
+
+# When tsc encounters an import from "lit" it won't know where to look to get
+# the packages type information unless we provide a mapping of import to
+# path on disk to the .d.ts files. mwc_path_mappings is such a mapping.
+mwc_path_mappings = [
+  [
+    "lit",
+    "$_node_modules_path/lit-element/lit-element.d.ts",
+  ],
+  [
+    "lit/*",
+    "$_node_modules_path/lit/*",
+  ],
+
+  # When tsc encounters a decorator it'll try to import the code to support
+  # decorators from tslib. As such all code that uses decorators will attempt
+  # to import from tslib.
+  [
+    "tslib",
+    "$_node_modules_path/tslib/tslib.d.ts",
+  ],
+]

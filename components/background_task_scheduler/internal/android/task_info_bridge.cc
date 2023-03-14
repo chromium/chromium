@@ -29,13 +29,6 @@ base::android::ScopedJavaLocalRef<jobject> CreateOneOffInfo(
       timing_info.expires_after_window_end_time);
 }
 
-// static
-base::android::ScopedJavaLocalRef<jobject> CreateExactInfo(
-    JNIEnv* env,
-    const ExactInfo& timing_info) {
-  return Java_TaskInfoBridge_createExactInfo(env, timing_info.trigger_at_ms);
-}
-
 }  // namespace
 
 // static
@@ -44,15 +37,12 @@ base::android::ScopedJavaLocalRef<jobject> TaskInfoBridge::CreateTaskInfo(
     const TaskInfo& task_info) {
   // Only one type of timing info should be active.
   DCHECK((task_info.periodic_info.has_value() +
-          task_info.one_off_info.has_value() +
-          task_info.exact_info.has_value()) == 1);
+          task_info.one_off_info.has_value()) == 1);
   base::android::ScopedJavaLocalRef<jobject> j_timing_info;
   if (task_info.periodic_info.has_value()) {
     j_timing_info = CreatePeriodicInfo(env, task_info.periodic_info.value());
   } else if (task_info.one_off_info.has_value()) {
     j_timing_info = CreateOneOffInfo(env, task_info.one_off_info.value());
-  } else if (task_info.exact_info.has_value()) {
-    j_timing_info = CreateExactInfo(env, task_info.exact_info.value());
   }
 
   auto j_extras = base::android::ConvertUTF8ToJavaString(env, task_info.extras);

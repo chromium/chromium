@@ -60,6 +60,7 @@ mojom("mojom") {
     "screen_capture.mojom",
     "sharesheet.mojom",
     "storage_manager.mojom",
+    "system_state.mojom",
     "system_ui.mojom",
     "timer.mojom",
     "tracing.mojom",
@@ -372,6 +373,12 @@ mojom("media") {
 mojom("camera_intent") {
   sources = [ "camera_intent.mojom" ]
   webui_module_path = "/ash/components/arc/mojom"
+  use_typescript_sources = true
+
+  # Since this is a dependency of the very large target above that is still
+  # generating legacy JS bindings/closure targets, generate legacy bindings
+  # here as well.
+  generate_legacy_js_bindings = true
 }
 
 mojom("notifications") {

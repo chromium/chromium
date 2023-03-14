@@ -40,6 +40,11 @@
   _presentedPassword = password;
 }
 
+- (void)dismissAndOpenURL:(CrURL*)URL {
+  // TODO(crbug.com/1419986): Add unit test checking the right url was passed
+  // after tapping the header's link.
+}
+
 @end
 
 // Unit tests for PasswordIssuesTableViewController.

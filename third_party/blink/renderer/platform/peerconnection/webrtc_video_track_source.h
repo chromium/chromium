@@ -78,10 +78,14 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
   // rtc::AdaptedVideoTrackSource::OnFrame(). If the cropping (given via
   // |frame->visible_rect()|) has changed since the last delivered frame, the
   // whole frame is marked as updated.
+  // |timestamp_us| is |frame->timestamp()| in Microseconds but clipped to
+  // ensure that it doesn't exceed the current system time. However,
+  // |capture_time_identifier| is just |frame->timestamp()|.
   void DeliverFrame(scoped_refptr<media::VideoFrame> frame,
                     std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
                     gfx::Rect* update_rect,
-                    int64_t timestamp_us);
+                    int64_t timestamp_us,
+                    absl::optional<webrtc::Timestamp> capture_time_identifier);
 
   // |thread_checker_| is bound to the libjingle worker thread.
   THREAD_CHECKER(thread_checker_);

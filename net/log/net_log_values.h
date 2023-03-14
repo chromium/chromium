@@ -10,22 +10,21 @@
 
 #include "base/containers/span.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/values.h"
 #include "net/base/net_export.h"
-
-namespace base {
-class Value;
-}
 
 namespace net {
 
 // Helpers to construct dictionaries with a single key and value. Useful for
 // building parameters to include in a NetLog.
-NET_EXPORT base::Value NetLogParamsWithInt(base::StringPiece name, int value);
-NET_EXPORT base::Value NetLogParamsWithInt64(base::StringPiece name,
-                                             int64_t value);
-NET_EXPORT base::Value NetLogParamsWithBool(base::StringPiece name, bool value);
-NET_EXPORT base::Value NetLogParamsWithString(base::StringPiece name,
-                                              base::StringPiece value);
+NET_EXPORT base::Value::Dict NetLogParamsWithInt(base::StringPiece name,
+                                                 int value);
+NET_EXPORT base::Value::Dict NetLogParamsWithInt64(base::StringPiece name,
+                                                   int64_t value);
+NET_EXPORT base::Value::Dict NetLogParamsWithBool(base::StringPiece name,
+                                                  bool value);
+NET_EXPORT base::Value::Dict NetLogParamsWithString(base::StringPiece name,
+                                                    base::StringPiece value);
 
 // Creates a base::Value() to represent the byte string |raw| when adding it to
 // the NetLog.

@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/test_data_creator.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
 #include "components/sync/base/model_type.h"
 
@@ -147,17 +146,8 @@ class PersonalDataManagerCleaner {
   void ClearProfileNonSettingsOrigins();
   void ClearCreditCardNonSettingsOrigins();
 
-  // Used for adding test data by |test_data_creator_|.
-  void AddProfileForTest(const AutofillProfile& profile);
-  void AddCreditCardForTest(const CreditCard& credit_card);
-
   // True if autofill profile cleanup needs to be performed.
   bool is_autofill_profile_cleanup_pending_ = false;
-
-  // Used to create test data. If the AutofillCreateDataForTest feature is
-  // enabled, this helper creates autofill profiles and credit card data that
-  // would otherwise be difficult to create manually using the UI.
-  TestDataCreator test_data_creator_;
 
   // The personal data manager, used to load and update the personal data
   // from/to the web database.

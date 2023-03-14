@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/time/time.h"
 #include "content/public/browser/federated_identity_api_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_auto_reauthn_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_permission_context_delegate.h"
@@ -40,7 +41,10 @@ class ShellFederatedPermissionContext
   bool ShouldCompleteRequestImmediately() const override;
 
   // FederatedIdentityAutoReauthnPermissionContextDelegate
-  bool HasAutoReauthnPermission(
+  bool HasAutoReauthnContentSetting() override;
+  bool IsAutoReauthnEmbargoed(
+      const url::Origin& relying_party_embedder) override;
+  base::Time GetAutoReauthnEmbargoStartTime(
       const url::Origin& relying_party_embedder) override;
   void RecordDisplayAndEmbargo(
       const url::Origin& relying_party_embedder) override;

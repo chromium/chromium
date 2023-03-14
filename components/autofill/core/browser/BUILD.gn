@@ -99,6 +99,8 @@ static_library("browser") {
     "autofill_manager.h",
     "autofill_observer.cc",
     "autofill_observer.h",
+    "autofill_optimization_guide.cc",
+    "autofill_optimization_guide.h",
     "autofill_profile_import_process.cc",
     "autofill_profile_import_process.h",
     "autofill_profile_sync_util.cc",
@@ -160,8 +162,6 @@ static_library("browser") {
     "data_model/iban.h",
     "data_model/phone_number.cc",
     "data_model/phone_number.h",
-    "data_model/test_data_creator.cc",
-    "data_model/test_data_creator.h",
     "field_filler.cc",
     "field_filler.h",
     "field_type_utils.cc",
@@ -250,6 +250,8 @@ static_library("browser") {
     "logging/log_receiver.h",
     "logging/log_router.cc",
     "logging/log_router.h",
+    "logging/text_log_receiver.cc",
+    "logging/text_log_receiver.h",
     "manual_testing_profile_import.cc",
     "manual_testing_profile_import.h",
     "merchant_promo_code_manager.cc",
@@ -291,8 +293,12 @@ static_library("browser") {
     "metrics/payments/virtual_card_manual_fallback_bubble_metrics.h",
     "metrics/payments/wallet_usage_data_metrics.cc",
     "metrics/payments/wallet_usage_data_metrics.h",
+    "metrics/precedence_over_autocomplete_metrics.cc",
+    "metrics/precedence_over_autocomplete_metrics.h",
     "metrics/profile_import_metrics.cc",
     "metrics/profile_import_metrics.h",
+    "metrics/quality_metrics.cc",
+    "metrics/quality_metrics.h",
     "metrics/shadow_prediction_metrics.cc",
     "metrics/shadow_prediction_metrics.h",
     "metrics/stored_profile_metrics.cc",
@@ -310,6 +316,7 @@ static_library("browser") {
     "payments/card_unmask_challenge_option.h",
     "payments/card_unmask_delegate.cc",
     "payments/card_unmask_delegate.h",
+    "payments/client_behavior_constants.h",
     "payments/credit_card_access_manager.cc",
     "payments/credit_card_access_manager.h",
     "payments/credit_card_cvc_authenticator.cc",
@@ -494,6 +501,13 @@ static_library("browser") {
     ]
   }
 
+  if (is_android) {
+    sources += [
+      "metrics/form_events/form_event_logger_weblayer_android.cc",
+      "metrics/form_events/form_event_logger_weblayer_android.h",
+    ]
+  }
+
   if (is_ios || is_android) {
     sources += [
       "payments/autofill_credit_card_filling_infobar_delegate_mobile.cc",
@@ -569,6 +583,8 @@ static_library("browser") {
     "//components/infobars/core",
     "//components/keyed_service/core",
     "//components/language/core/browser",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/os_crypt",
     "//components/policy/core/browser",
     "//components/policy/core/common",
@@ -633,22 +649,6 @@ static_library("browser") {
   }
 }
 
-if (is_android) {
-  java_cpp_enum("java_enum_srcjar") {
-    # External code should depend on ":card_unmask_challenge_option_type_java" instead.
-    visibility = [ ":*" ]
-    sources = [ "payments/card_unmask_challenge_option.h" ]
-  }
-
-  android_library("card_unmask_challenge_option_type_java") {
-    srcjar_deps = [ ":java_enum_srcjar" ]
-
-    # Important: the generated enum uses the @IntDef annotation provided by
-    # this dependency.
-    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
-  }
-}
-
 static_library("test_support") {
   testonly = true
   sources = [
@@ -670,14 +670,14 @@ static_library("test_support") {
     "geo/test_region_data_loader.h",
     "logging/stub_log_manager.cc",
     "logging/stub_log_manager.h",
-    "logging/text_log_receiver.cc",
-    "logging/text_log_receiver.h",
     "metrics/autofill_metrics_test_base.cc",
     "metrics/autofill_metrics_test_base.h",
     "metrics/ukm_metrics_test_utils.cc",
     "metrics/ukm_metrics_test_utils.h",
     "mock_autocomplete_history_manager.cc",
     "mock_autocomplete_history_manager.h",
+    "mock_autofill_optimization_guide.cc",
+    "mock_autofill_optimization_guide.h",
     "mock_iban_manager.cc",
     "mock_iban_manager.h",
     "mock_merchant_promo_code_manager.cc",
@@ -705,7 +705,6 @@ static_library("test_support") {
     "test_address_normalizer.h",
     "test_autofill_async_observer.cc",
     "test_autofill_async_observer.h",
-    "test_autofill_client.cc",
     "test_autofill_client.h",
     "test_autofill_clock.cc",
     "test_autofill_clock.h",
@@ -847,8 +846,10 @@ source_set("unit_tests") {
     "autofill_experiments_unittest.cc",
     "autofill_external_delegate_unittest.cc",
     "autofill_feedback_data_unittest.cc",
+    "autofill_field_unittest.cc",
     "autofill_manager_unittest.cc",
     "autofill_merge_unittest.cc",
+    "autofill_optimization_guide_unittest.cc",
     "autofill_profile_import_process_unittest.cc",
     "autofill_profile_sync_util_unittest.cc",
     "autofill_subject_unittest.cc",
@@ -913,11 +914,14 @@ source_set("unit_tests") {
     "manual_testing_profile_import_unittest.cc",
     "merchant_promo_code_manager_unittest.cc",
     "metrics/autofill_metrics_unittest.cc",
+    "metrics/form_events/address_form_event_logger_unittest.cc",
     "metrics/form_events/form_event_logger_base_unittest.cc",
     "metrics/payments/iban_metrics_unittest.cc",
     "metrics/payments/offers_metrics_unittest.cc",
     "metrics/payments/wallet_usage_data_metrics_unittest.cc",
+    "metrics/precedence_over_autocomplete_metrics_unittest.cc",
     "metrics/profile_import_metrics_unittest.cc",
+    "metrics/quality_metrics_unittest.cc",
     "metrics/shadow_prediction_metrics_unittest.cc",
     "metrics/stored_profile_metrics_unittest.cc",
     "metrics/suggestions_list_metrics_unittest.cc",
@@ -977,6 +981,11 @@ source_set("unit_tests") {
         [ "autofill_save_update_address_profile_delegate_ios_unittest.cc" ]
   }
 
+  if (is_android) {
+    sources +=
+        [ "metrics/form_events/form_event_logger_weblayer_android_unittest.cc" ]
+  }
+
   if (is_ios || is_android) {
     sources += [
       "ui/mobile_label_formatter_unittest.cc",
@@ -986,8 +995,11 @@ source_set("unit_tests") {
   }
 
   if (!is_ios) {
+    sources += [ "autofill_policy_handler_unittest.cc" ]
+  }
+
+  if (is_win || is_mac || is_android) {
     sources += [
-      "autofill_policy_handler_unittest.cc",
       "metrics/payments/better_auth_metrics_unittest.cc",
       "payments/credit_card_fido_authenticator_unittest.cc",
     ]
@@ -1023,6 +1035,8 @@ source_set("unit_tests") {
     "//components/image_fetcher/core:core",
     "//components/image_fetcher/core:test_support",
     "//components/leveldb_proto",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/os_crypt",
     "//components/os_crypt:test_support",
     "//components/policy/core/common",
@@ -1085,7 +1099,7 @@ fuzzer_test("form_structure_fuzzer") {
   dict = "form_structure_fuzzer.dict"
 }
 
-if (use_libfuzzer) {
+if (use_fuzzing_engine_with_lpm) {
   fuzzer_test("form_structure_process_query_response_fuzzer") {
     sources = [ "form_structure_process_query_response_fuzzer.cc" ]
     deps = [

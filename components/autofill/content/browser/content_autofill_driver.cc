@@ -5,6 +5,7 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 
 #include <memory>
+#include <string>
 #include <tuple>
 #include <utility>
 
@@ -17,28 +18,16 @@
 #include "components/autofill/content/browser/content_autofill_router.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/payments/payments_service_url.h"
-#include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_util.h"
-#include "components/version_info/channel.h"
-#include "content/public/browser/back_forward_cache.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/navigation_controller.h"
+#include "components/autofill/core/common/form_data_predictions.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
-#include "content/public/browser/site_instance.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/origin_util.h"
-#include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "ui/gfx/geometry/size_f.h"
 #include "url/origin.h"
 
 namespace autofill {
@@ -62,6 +51,9 @@ ContentAutofillDriver::~ContentAutofillDriver() {
   if (autofill_router_)  // Can be nullptr only in tests.
     autofill_router_->UnregisterDriver(this);
 
+  // DONOTSUBMIT: Need to check whether RWH can be nullptr. I can't find the
+  // test right now where this happened, so I want to run the bots again. I had
+  // a hypothesis why that happened in that test.
   if (render_frame_host_) {  // Can be nullptr only in tests.
     render_frame_host_->GetRenderWidgetHost()->RemoveSuppressShowingImeCallback(
         suppress_showing_ime_callback_);
@@ -607,10 +599,8 @@ ContentAutofillDriver::GetAutofillAgent() {
 void ContentAutofillDriver::UnsetKeyPressHandlerCallback() {
   if (key_press_handler_.is_null())
     return;
-  content::RenderWidgetHostView* view = render_frame_host_->GetView();
-  if (!view)
-    return;
-  view->GetRenderWidgetHost()->RemoveKeyPressEventCallback(key_press_handler_);
+  render_frame_host_->GetRenderWidgetHost()->RemoveKeyPressEventCallback(
+      key_press_handler_);
   key_press_handler_.Reset();
 }
 
@@ -625,11 +615,8 @@ void ContentAutofillDriver::SetKeyPressHandler(
       [](ContentAutofillDriver* target,
          const content::RenderWidgetHost::KeyPressEventCallback& handler) {
         target->UnsetKeyPressHandlerCallback();
-        content::RenderWidgetHostView* view =
-            target->render_frame_host_->GetView();
-        if (!view)
-          return;
-        view->GetRenderWidgetHost()->AddKeyPressEventCallback(handler);
+        target->render_frame_host_->GetRenderWidgetHost()
+            ->AddKeyPressEventCallback(handler);
         target->key_press_handler_ = handler;
       });
 }

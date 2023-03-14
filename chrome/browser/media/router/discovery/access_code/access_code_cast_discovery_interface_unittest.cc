@@ -9,6 +9,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_constants.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_test_util.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -317,6 +318,8 @@ TEST_F(AccessCodeCastDiscoveryInterfaceTest, ServerError) {
   base::RunLoop().RunUntilIdle();
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Revoking Sync consent is not possible on Ash.
 TEST_F(AccessCodeCastDiscoveryInterfaceTest, SyncError) {
   // Test to validate a fetch request without sync set for the account will
   // return a SYNC_ERROR.
@@ -328,6 +331,7 @@ TEST_F(AccessCodeCastDiscoveryInterfaceTest, SyncError) {
   stub_interface()->ValidateDiscoveryAccessCode(mock_callback.Get());
   base::RunLoop().RunUntilIdle();
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(AccessCodeCastDiscoveryInterfaceTest, HttpErrorMapping) {
   ErrorMappingTestHelper(net::HTTP_UNAUTHORIZED, AddSinkResultCode::AUTH_ERROR);

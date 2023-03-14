@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/network/technology_state_controller.h"
 
 #include "ash/constants/ash_features.h"
+#include "chromeos/ash/components/network/metrics/network_metrics_helper.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 
@@ -95,6 +96,8 @@ void TechnologyStateController::OnPrepareEnableWifiCompleted(
                                                    std::move(error_callback));
     return;
   }
+  NetworkMetricsHelper::LogEnableTechnologyResult(
+      shill::kTypeWifi, /*success=*/false, kErrorDisableHotspot);
   network_handler::RunErrorCallback(std::move(error_callback),
                                     kErrorDisableHotspot);
 }

@@ -6,16 +6,19 @@
 
 #include <memory>
 
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/color_util.h"
 #include "ash/webui/firmware_update_ui/url_constants.h"
 #include "ash/webui/grit/ash_firmware_update_app_resources.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/chromeos/styles/cros_styles.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/display/screen.h"
 
 namespace {
@@ -27,9 +30,18 @@ constexpr int kFirmwareUpdateAppDefaultHeight = 640;
 // FirmwareUpdateApp's title bar and background needs to be bg-elevation-2 for
 // dark mode instead of the default dark mode background color.
 SkColor GetDarkModeBackgroundColor() {
-  return cros_styles::ResolveColor(cros_styles::ColorName::kBgColorElevation2,
-                                   /*is_dark_mode=*/true);
+  // This code will be deleted after Jelly launch.  Do NOT copy it! This was
+  // copied from system_web_app_install_utils.cc
+  ui::ColorProviderSource* color_provider_source =
+      ash::ColorUtil::GetColorProviderSourceForWindow(
+          ash::Shell::GetPrimaryRootWindow());
+  DCHECK(color_provider_source);
+  const ui::ColorProvider* color_provider =
+      color_provider_source->GetColorProvider();
+  DCHECK(color_provider);
+  return color_provider->GetColor(cros_tokens::kBgColorElevation2Dark);
 }
+
 }  // namespace
 
 // TODO(michaelcheco): Update to correct icon.
@@ -47,9 +59,13 @@ CreateWebAppInfoForFirmwareUpdateSystemWebApp() {
   info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
   info->theme_color =
       web_app::GetDefaultBackgroundColor(/*use_dark_mode=*/false);
-  info->dark_mode_theme_color = GetDarkModeBackgroundColor();
+  if (!chromeos::features::IsJellyEnabled()) {
+    // Once Jelly is launched, the theme and background colors for SWA are
+    // ignored and this can be deleted.
+    info->dark_mode_theme_color = GetDarkModeBackgroundColor();
+    info->dark_mode_background_color = info->dark_mode_theme_color;
+  }
   info->background_color = info->theme_color;
-  info->dark_mode_background_color = info->dark_mode_theme_color;
 
   return info;
 }

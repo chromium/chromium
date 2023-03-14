@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 
 namespace blink {
@@ -69,7 +70,8 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   SkColorInfo CanvasRenderingContextSkColorInfo() const override {
     return color_params_.GetSkColorInfo();
   }
-  scoped_refptr<StaticBitmapImage> GetImage() final;
+  scoped_refptr<StaticBitmapImage> GetImage(
+      CanvasResourceProvider::FlushReason) final;
   void Reset() override;
   void RestoreCanvasMatrixClipStack(cc::PaintCanvas* c) const override {
     RestoreMatrixClipStack(c);
@@ -165,7 +167,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
     return identifiability_study_helper_.encountered_partially_digested_image();
   }
 
-  void FlushCanvas() override;
+  void FlushCanvas(CanvasResourceProvider::FlushReason) override;
 
  protected:
   PredefinedColorSpace GetDefaultImageDataColorSpace() const final {
@@ -181,8 +183,8 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   void TryRestoreContextEvent(TimerBase*) override;
 
  private:
-  void FinalizeFrame(bool printing = false) final;
-  void FlushRecording();
+  void FinalizeFrame(CanvasResourceProvider::FlushReason) final;
+  void FlushRecording(CanvasResourceProvider::FlushReason);
 
   bool IsPaintable() const final;
   bool IsCanvas2DBufferValid() const override;
@@ -194,7 +196,8 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
                         double* max_width = nullptr);
   const Font& AccessFont();
 
-  scoped_refptr<CanvasResource> ProduceCanvasResource();
+  scoped_refptr<CanvasResource> ProduceCanvasResource(
+      CanvasResourceProvider::FlushReason);
 
   SkIRect dirty_rect_for_commit_;
 

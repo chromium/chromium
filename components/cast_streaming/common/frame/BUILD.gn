@@ -1,0 +1,16 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+visibility = [
+  ":*",
+  "//components/cast_streaming/browser/frame/*",
+  "//components/cast_streaming/renderer/frame/*",
+
+  # Shared between renderer/frame and renderer/web_ui
+  "//components/cast_streaming/renderer/common/*",
+]
+
+source_set("frame") {
+  public = [ "demuxer_stream_traits.h" ]
+}

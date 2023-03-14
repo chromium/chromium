@@ -34,8 +34,9 @@ ChromeSearchResult* GetOmniboxCandidate(Results& results) {
   ChromeSearchResult* top_answer = nullptr;
   double top_score = 0.0;
   for (const auto& result : results) {
-    if (result->display_type() != DisplayType::kAnswerCard)
+    if (result->display_type() != DisplayType::kAnswerCard) {
       continue;
+    }
 
     const double score = result->relevance();
     if (!top_answer || score > top_score) {
@@ -71,8 +72,9 @@ ChromeSearchResult* GetSystemInfoCandidate(Results& results) {
 ChromeSearchResult* GetShortcutCandidate(Results& results) {
   ChromeSearchResult* best_shortcut = nullptr;
   for (auto& result : results) {
-    if (!result->best_match())
+    if (!result->best_match()) {
       continue;
+    }
 
     if (best_shortcut) {
       // A best match shortcut has already been found, so there are at least
@@ -95,24 +97,25 @@ void AnswerRanker::Start(const std::u16string& query,
                          CategoriesList& categories) {
   burn_in_elapsed_ = false;
   chosen_answer_ = nullptr;
+  omnibox_candidates_.clear();
 }
 
 void AnswerRanker::UpdateResultRanks(ResultsMap& results,
                                      ProviderType provider) {
-  if (GetPriority(provider) == 0)
+  if (GetPriority(provider) == 0) {
     return;
+  }
 
   const auto it = results.find(provider);
   DCHECK(it != results.end());
   auto& new_results = it->second;
 
-  // Omnibox answers should not be displayed unless they are selected, so filter
-  // them out by default. If an Omnibox answer is selected later, it will be
-  // un-filtered then.
+  // Keep track of Omnibox candidates. Any candidates that are not selected
+  // should be filtered out later.
   if (provider == ProviderType::kOmnibox) {
-    for (auto& result : new_results) {
+    for (const auto& result : new_results) {
       if (result->display_type() == DisplayType::kAnswerCard) {
-        result->scoring().set_filtered(true);
+        omnibox_candidates_.push_back(result.get());
       }
     }
   }
@@ -120,9 +123,7 @@ void AnswerRanker::UpdateResultRanks(ResultsMap& results,
   // Don't change a selected answer after the burn-in period has elapsed. This
   // includes ensuring that the answer is re-selected.
   if (burn_in_elapsed_ && chosen_answer_) {
-    if (chosen_answer_->result_type() == provider) {
-      PromoteChosenAnswer();
-    }
+    PromoteChosenAnswer();
     return;
   }
 
@@ -148,11 +149,13 @@ void AnswerRanker::UpdateResultRanks(ResultsMap& results,
     default:
       return;
   }
-  if (new_answer)
+  if (new_answer) {
     chosen_answer_ = new_answer->GetWeakPtr();
+  }
 
-  if (burn_in_elapsed_)
+  if (burn_in_elapsed_) {
     PromoteChosenAnswer();
+  }
 }
 
 void AnswerRanker::OnBurnInPeriodElapsed() {
@@ -161,13 +164,20 @@ void AnswerRanker::OnBurnInPeriodElapsed() {
 }
 
 void AnswerRanker::PromoteChosenAnswer() {
-  if (!chosen_answer_)
+  if (!chosen_answer_) {
     return;
+  }
+
+  // Filter out unsuccessful Omnibox candidates.
+  for (auto* result : omnibox_candidates_) {
+    if (result && result->id() != chosen_answer_->id()) {
+      result->scoring().set_filtered(true);
+    }
+  }
 
   chosen_answer_->SetDisplayType(DisplayType::kAnswerCard);
   chosen_answer_->SetMultilineTitle(true);
   chosen_answer_->SetIconDimension(kAnswerCardIconDimension);
-  chosen_answer_->scoring().set_filtered(false);
 }
 
 }  // namespace app_list

@@ -128,8 +128,7 @@ bool SaveBitmap(std::unique_ptr<ImageData> data,
     return false;
   }
 
-  if (base::WriteFile(image_path, reinterpret_cast<char*>(&(*data)[0]),
-                      data->size()) == -1) {
+  if (!base::WriteFile(image_path, *data)) {
     LOG(ERROR) << "Failed to save image to file.";
     return false;
   }

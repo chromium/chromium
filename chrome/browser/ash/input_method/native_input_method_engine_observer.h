@@ -168,7 +168,9 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
   bool IsInputMethodBound();
   bool IsInputMethodConnected();
   bool IsTextClientActive();
-  void ActivateTextClient(int context_id, bool on_focus_success);
+  void OnFocusAck(int context_id,
+                  bool on_focus_success,
+                  ime::mojom::InputMethodMetadataPtr metadata);
 
   PrefService* prefs_ = nullptr;
 

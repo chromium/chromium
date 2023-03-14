@@ -34,6 +34,7 @@
 #include "extensions/common/extension_set.h"
 #include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/extension_install.pb.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
@@ -58,10 +59,9 @@ class TestExtensionsMetricsProvider : public ExtensionsMetricsProvider {
  protected:
   // Override the GetInstalledExtensions method to return a set of extensions
   // for tests.
-  std::unique_ptr<extensions::ExtensionSet> GetInstalledExtensions(
+  absl::optional<extensions::ExtensionSet> GetInstalledExtensions(
       Profile* profile) override {
-    std::unique_ptr<extensions::ExtensionSet> extensions(
-        new extensions::ExtensionSet());
+    extensions::ExtensionSet extensions;
     scoped_refptr<const extensions::Extension> extension;
     extension = extensions::ExtensionBuilder()
                     .SetManifest(extensions::DictionaryBuilder()
@@ -71,7 +71,7 @@ class TestExtensionsMetricsProvider : public ExtensionsMetricsProvider {
                                      .Build())
                     .SetID("ahfgeienlihckogmohjhadlkjgocpleb")
                     .Build();
-    extensions->Insert(extension);
+    extensions.Insert(extension);
     extension = extensions::ExtensionBuilder()
                     .SetManifest(extensions::DictionaryBuilder()
                                      .Set("name", "Test extension 2")
@@ -80,7 +80,7 @@ class TestExtensionsMetricsProvider : public ExtensionsMetricsProvider {
                                      .Build())
                     .SetID("pknkgggnfecklokoggaggchhaebkajji")
                     .Build();
-    extensions->Insert(extension);
+    extensions.Insert(extension);
     extension = extensions::ExtensionBuilder()
                     .SetManifest(extensions::DictionaryBuilder()
                                      .Set("name", "Colliding Extension")
@@ -89,7 +89,7 @@ class TestExtensionsMetricsProvider : public ExtensionsMetricsProvider {
                                      .Build())
                     .SetID("mdhofdjgenpkhlmddfaegdjddcecipmo")
                     .Build();
-    extensions->Insert(extension);
+    extensions.Insert(extension);
     return extensions;
   }
 

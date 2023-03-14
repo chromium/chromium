@@ -172,6 +172,15 @@ PropertyHandleSet StringKeyframe::Properties() const {
   // worry about caching this result.
   EnsureCssPropertyMap();
   PropertyHandleSet properties;
+
+  // Ignore properties for a keyframe if it has an unresolved timeline offset.
+  // TODO(crbug.com/1420616): Determine if keyframes with an unresovled computed
+  // offset should be included in a getKeyframes call.
+  // See https://github.com/w3c/csswg-drafts/issues/8507.
+  if (GetTimelineOffset() && !Offset()) {
+    return properties;
+  }
+
   for (unsigned i = 0; i < css_property_map_->PropertyCount(); ++i) {
     CSSPropertyValueSet::PropertyReference property_reference =
         css_property_map_->PropertyAt(i);

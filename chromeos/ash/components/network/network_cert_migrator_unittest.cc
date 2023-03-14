@@ -165,22 +165,17 @@ class NetworkCertMigratorTest : public testing::Test {
                           const std::string& slot_id,
                           const std::string& pkcs11_id) {
     AddService(shill_profile, kVPNStub, shill::kTypeVPN, shill::kStateIdle);
-    base::Value provider(base::Value::Type::DICT);
+    base::Value::Dict provider;
     if (open_vpn) {
-      provider.SetKey(shill::kTypeProperty,
-                      base::Value(shill::kProviderOpenVpn));
-      provider.SetKey(shill::kOpenVPNClientCertIdProperty,
-                      base::Value(pkcs11_id));
+      provider.Set(shill::kTypeProperty, shill::kProviderOpenVpn);
+      provider.Set(shill::kOpenVPNClientCertIdProperty, pkcs11_id);
     } else {
-      provider.SetKey(shill::kTypeProperty,
-                      base::Value(shill::kProviderL2tpIpsec));
-      provider.SetKey(shill::kL2TPIPsecClientCertSlotProperty,
-                      base::Value(slot_id));
-      provider.SetKey(shill::kL2TPIPsecClientCertIdProperty,
-                      base::Value(pkcs11_id));
+      provider.Set(shill::kTypeProperty, shill::kProviderL2tpIpsec);
+      provider.Set(shill::kL2TPIPsecClientCertSlotProperty, slot_id);
+      provider.Set(shill::kL2TPIPsecClientCertIdProperty, pkcs11_id);
     }
     service_test_->SetServiceProperty(kVPNStub, shill::kProviderProperty,
-                                      provider);
+                                      base::Value(std::move(provider)));
   }
 
   void GetVpnCertId(bool open_vpn,

@@ -4,7 +4,31 @@
 
 module ash.shortcut_customization.mojom;
 
+import "ash/public/mojom/accelerator_configuration.mojom";
 import "ash/public/mojom/accelerator_info.mojom";
+import "ash/public/mojom/accelerator_keys.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+
+// A struct that is returned from modifying an accelerator. It contains
+// an optional field for the accelerator name if the action has a conflict with
+// an existing accelerator. Otherwise it is left empty.
+struct AcceleratorResultData {
+  // Optional field - the name of the confliction shortcut name.
+  // Used in the frontend to display to users what the conflicting shortcut
+  // name.
+  mojo_base.mojom.String16? shortcut_name;
+
+  // Result of the configuration action.
+  ash.mojom.AcceleratorConfigResult result;
+};
+
+// Represents an accelerator with only the KeyCode and Modifier. This struct
+// should only be used for sending data from the renderer to the browser
+// process.
+struct SimpleAccelerator {
+  ash.mojom.VKey key_code;
+  int32 modifiers;
+};
 
 // Observer interface, to be implemented by the Shortcut Customization SWA to
 // receive updated accelerators.
@@ -48,4 +72,15 @@ interface AcceleratorConfigurationProvider {
   // The app uses this to generate the layout structure.
   GetAcceleratorLayoutInfos()
       => (array<ash.mojom.AcceleratorLayoutInfo> layout_infos);
+
+  // Remove an accelerator from `action`. If permitted, this deletes
+  // user-defined accelerators or disables default accelerators.
+  // Removing an accelerator cannot result in a conflict.
+  RemoveAccelerator(ash.mojom.AcceleratorSource source, uint32 action_id,
+                    SimpleAccelerator accelerator)
+        => (AcceleratorResultData result);
+
+  // Restore all accelerators to their system-provided default state, overriding
+  // user customization.
+  RestoreAllDefaults() => (AcceleratorResultData result);
 };

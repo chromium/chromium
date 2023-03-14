@@ -64,6 +64,8 @@ component("network_service") {
     "is_browser_initiated.h",
     "keepalive_statistics_recorder.cc",
     "keepalive_statistics_recorder.h",
+    "local_network_access_checker.cc",
+    "local_network_access_checker.h",
     "mojo_host_resolver_impl.cc",
     "mojo_host_resolver_impl.h",
     "net_log_exporter.cc",
@@ -94,8 +96,6 @@ component("network_service") {
     "oblivious_http_request_handler.h",
     "pending_callback_chain.cc",
     "pending_callback_chain.h",
-    "private_network_access_checker.cc",
-    "private_network_access_checker.h",
     "proxy_auto_config_library.cc",
     "proxy_auto_config_library.h",
     "proxy_config_service_mojo.cc",
@@ -316,11 +316,6 @@ component("network_service") {
       "//crypto",
       "//third_party/boringssl",
     ]
-
-    sources += [
-      "radio_monitor_android.cc",
-      "radio_monitor_android.h",
-    ]
   }
 
   if (is_win) {
@@ -369,6 +364,7 @@ source_set("tests") {
     "http_cache_data_remover_unittest.cc",
     "ignore_errors_cert_verifier_unittest.cc",
     "keepalive_statistics_recorder_unittest.cc",
+    "local_network_access_checker_unittest.cc",
     "mojo_host_resolver_impl_unittest.cc",
     "net_log_proxy_sink_unittest.cc",
     "network_change_manager_unittest.cc",
@@ -380,7 +376,6 @@ source_set("tests") {
     "network_service_unittest.cc",
     "oblivious_http_request_handler_unittest.cc",
     "pending_callback_chain_unittest.cc",
-    "private_network_access_checker_unittest.cc",
     "proxy_auto_config_library_unittest.cc",
     "proxy_config_service_mojo_unittest.cc",
     "proxy_resolving_client_socket_unittest.cc",

@@ -15,29 +15,23 @@
 
 #include <wrl/client.h>
 
-namespace ABI {
-namespace Windows {
-namespace ApplicationModel {
-namespace DataTransfer {
+namespace ABI::Windows {
+namespace ApplicationModel::DataTransfer {
 struct IDataPackage;
 class IDataRequest;
 class IDataRequestDeferral;
 class IDataRequestedEventArgs;
-}  // namespace DataTransfer
-}  // namespace ApplicationModel
+}  // namespace ApplicationModel::DataTransfer
 namespace Storage {
 class IStorageFile;
 class IStorageItem;
 }  // namespace Storage
-}  // namespace Windows
-}  // namespace ABI
+}  // namespace ABI::Windows
 
-namespace base {
-namespace win {
+namespace base::win {
 template <typename T>
 class Vector;
-}  // namespace win
-}  // namespace base
+}  // namespace base::win
 
 namespace content {
 class WebContents;

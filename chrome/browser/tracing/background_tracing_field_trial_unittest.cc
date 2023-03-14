@@ -92,8 +92,7 @@ TEST_F(BackgroundTracingTest, SetupBackgroundTracingFromConfigFile) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath file_path = temp_dir.GetPath().AppendASCII("config.json");
-  base::WriteFile(file_path, kValidTracingConfig,
-                  sizeof(kValidTracingConfig) - 1);
+  base::WriteFile(file_path, kValidTracingConfig);
 
   base::test::ScopedCommandLine scoped_command_line;
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();

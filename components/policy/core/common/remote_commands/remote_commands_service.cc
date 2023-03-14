@@ -68,6 +68,8 @@ RemoteCommandsService::MetricReceivedRemoteCommand RemoteCommandMetricFromType(
       return Metric::kBrowserRotateAttestationCredential;
     case em::RemoteCommand_Type_FETCH_CRD_AVAILABILITY_INFO:
       return Metric::kFetchCrdAvailabilityInfo;
+    case em::RemoteCommand_Type_FETCH_SUPPORT_PACKET:
+      return Metric::kFetchSupportPacket;
   }
 
   // None of possible types matched. May indicate that there is new unhandled
@@ -112,32 +114,12 @@ const char* RemoteCommandTypeToString(em::RemoteCommand_Type type) {
       return "BrowserRotateAttestationCredential";
     case em::RemoteCommand_Type_FETCH_CRD_AVAILABILITY_INFO:
       return "FetchCrdAvailabilityInfo";
+    case em::RemoteCommand_Type_FETCH_SUPPORT_PACKET:
+      return "FetchSupportPacket";
   }
 
   NOTREACHED() << "Unknown command type: " << type;
   return "";
-}
-
-em::RemoteCommandResult::ResultType CommandStatusToResultType(
-    RemoteCommandJob::Status status) {
-  switch (status) {
-    case RemoteCommandJob::SUCCEEDED:
-      return em::RemoteCommandResult_ResultType_RESULT_SUCCESS;
-    case RemoteCommandJob::FAILED:
-      return em::RemoteCommandResult_ResultType_RESULT_FAILURE;
-    case RemoteCommandJob::EXPIRED:
-    case RemoteCommandJob::INVALID:
-      return em::RemoteCommandResult_ResultType_RESULT_IGNORED;
-    case RemoteCommandJob::NOT_INITIALIZED:
-    case RemoteCommandJob::NOT_STARTED:
-    case RemoteCommandJob::RUNNING:
-    case RemoteCommandJob::TERMINATED:
-    case RemoteCommandJob::STATUS_TYPE_SIZE:
-      NOTREACHED();
-      return em::RemoteCommandResult_ResultType_RESULT_IGNORED;
-  }
-  NOTREACHED();
-  return em::RemoteCommandResult_ResultType_RESULT_IGNORED;
 }
 
 std::string ToString(
@@ -381,21 +363,23 @@ void RemoteCommandsService::OnJobFinished(RemoteCommandJob* command) {
   // the server to keep our last acknowledged command ID.
   // See http://crbug.com/466572.
 
-  em::RemoteCommandResult result;
-  result.set_command_id(command->unique_id());
-  result.set_timestamp(command->execution_started_time().ToJavaTime());
-  result.set_result(CommandStatusToResultType(command->status()));
+  if (command->GetResult()) {
+    em::RemoteCommandResult result;
+    result.set_command_id(command->unique_id());
+    result.set_timestamp(command->execution_started_time().ToJavaTime());
+    result.set_result(command->GetResult().value());
 
-  std::unique_ptr<std::string> result_payload = command->GetResultPayload();
-  if (result_payload) {
-    result.set_payload(std::move(*result_payload));
+    std::unique_ptr<std::string> result_payload = command->GetResultPayload();
+    if (result_payload) {
+      result.set_payload(std::move(*result_payload));
+    }
+
+    SYSLOG(INFO) << "Remote command " << command->unique_id()
+                 << " finished with result " << ToString(result.result())
+                 << " (" << result.result() << ")";
+
+    unsent_results_.push_back(result);
   }
-
-  SYSLOG(INFO) << "Remote command " << command->unique_id()
-               << " finished with result " << ToString(result.result()) << " ("
-               << result.result() << ")";
-
-  unsent_results_.push_back(result);
 
   RecordExecutedRemoteCommand(*command);
 

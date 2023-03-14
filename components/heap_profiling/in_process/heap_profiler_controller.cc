@@ -273,7 +273,7 @@ HeapProfilerController::~HeapProfilerController() {
   g_profiling_enabled = ProfilingEnabled::kNoController;
 }
 
-void HeapProfilerController::StartIfEnabled() {
+bool HeapProfilerController::StartIfEnabled() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const bool profiling_enabled =
       g_profiling_enabled == ProfilingEnabled::kEnabled;
@@ -287,7 +287,7 @@ void HeapProfilerController::StartIfEnabled() {
     base::UmaHistogramBoolean(kEnabledHistogramName, profiling_enabled);
   }
   if (!profiling_enabled)
-    return;
+    return false;
   HeapProfilerParameters profiler_params =
       GetHeapProfilerParametersForProcess(process_type_);
   // DecideIfCollectionIsEnabled() should return false if not supported.
@@ -303,6 +303,7 @@ void HeapProfilerController::StartIfEnabled() {
       /*use_random_interval=*/!suppress_randomness_for_testing_, stopped_,
       process_type_, creation_time_);
   ScheduleNextSnapshot(std::move(params));
+  return true;
 }
 
 void HeapProfilerController::SuppressRandomnessForTesting() {

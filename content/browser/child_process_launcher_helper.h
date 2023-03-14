@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/kill.h"
@@ -99,7 +100,7 @@ class ChildProcessLauncherHelper
     base::Process process;
 
 #if BUILDFLAG(USE_ZYGOTE)
-    ZygoteCommunication* zygote = nullptr;
+    raw_ptr<ZygoteCommunication> zygote = nullptr;
 #endif  // BUILDFLAG(USE_ZYGOTE)
 
 #if BUILDFLAG(IS_FUCHSIA)

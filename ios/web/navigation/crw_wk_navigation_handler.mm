@@ -6,6 +6,7 @@
 
 #import "base/feature_list.h"
 #import "base/ios/ns_error_util.h"
+#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
@@ -1617,12 +1618,31 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
     // The leaf cert is used as the key, because the chain provided by
     // `didFailProvisionalNavigation:` will differ (it is the server-supplied
     // chain), thus if intermediates were considered, the keys would mismatch.
-    scoped_refptr<net::X509Certificate> leafCert =
-        net::x509_util::CreateX509CertificateFromSecCertificate(
-            base::ScopedCFTypeRef<SecCertificateRef>(
-                SecTrustGetCertificateAtIndex(trust, 0),
-                base::scoped_policy::RETAIN),
-            {});
+
+    // TODO(crbug.com/1418068): Remove after minimum version required is >=
+    // iOS 15.
+    scoped_refptr<net::X509Certificate> leafCert = nil;
+    if (@available(iOS 15.0, *)) {
+      base::ScopedCFTypeRef<CFArrayRef> certificateChain(
+          SecTrustCopyCertificateChain(trust));
+      SecCertificateRef secCertificate =
+          base::mac::CFCastStrict<SecCertificateRef>(
+              CFArrayGetValueAtIndex(certificateChain, 0));
+      leafCert = net::x509_util::CreateX509CertificateFromSecCertificate(
+          base::ScopedCFTypeRef<SecCertificateRef>(secCertificate,
+                                                   base::scoped_policy::RETAIN),
+          {});
+    }
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+    else {
+      leafCert = net::x509_util::CreateX509CertificateFromSecCertificate(
+          base::ScopedCFTypeRef<SecCertificateRef>(
+              SecTrustGetCertificateAtIndex(trust, 0),
+              base::scoped_policy::RETAIN),
+          {});
+    }
+#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+
     if (leafCert) {
       bool is_recoverable =
           policy == web::CERT_ACCEPT_POLICY_RECOVERABLE_ERROR_UNDECIDED_BY_USER;

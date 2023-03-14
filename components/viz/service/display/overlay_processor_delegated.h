@@ -108,6 +108,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
 
   DelegationStatus delegated_status_ = DelegationStatus::kCompositedOther;
   bool supports_clip_rect_ = false;
+  bool needs_background_image_ = false;
 };
 }  // namespace viz
 

@@ -250,6 +250,22 @@ message ChromeRootStoreDebugInfo {
   optional int64 chrome_root_store_version = 1;
 }
 
+message TrustStoreNSSDebugInfo {
+  reserved 2;
+
+  optional bool ignore_system_trust_settings = 1;
+
+  // Corresponds to TrustStoreNSS:ResultDebugData::SlotFilterType, however the
+  // numeric values are NOT equivalent.
+  enum SlotFilterType {
+    UNKNOWN_SLOT_FILTER_TYPE = 0;
+    DONT_FILTER = 1;
+    DO_NOT_ALLOW_USER_SLOTS = 2;
+    ALLOW_SPECIFIED_USER_SLOT = 3;
+  }
+  optional SlotFilterType slot_filter_type = 3;
+}
+
 // Contains the results of verification by the trial verifier. All fields
 // have the same meaning as those of the same name in CertLoggerRequest.
 message TrialVerificationInfo {
@@ -332,4 +348,15 @@ message TrialVerificationInfo {
 
   // Debug information pertaining to the Chrome Root Store (if it was used).
   optional ChromeRootStoreDebugInfo chrome_root_store_debug_info = 15;
+
+  // The NSS library version (if NSS is used).
+  optional string nss_version = 16;
+
+  // Debug information pertaining to the TrustStoreNSS instance used by the
+  // primary verifier (if NSS is used).
+  optional TrustStoreNSSDebugInfo primary_nss_debug_info = 17;
+
+  // Debug information pertaining to the TrustStoreNSS instance used by the
+  // trial verifier (if NSS is used).
+  optional TrustStoreNSSDebugInfo trial_nss_debug_info = 18;
 }

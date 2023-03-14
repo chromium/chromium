@@ -63,10 +63,8 @@
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "ash/wm/splitview/split_view_utils.h"
-#include "ash/wm/tablet_mode/tablet_mode_browser_window_drag_delegate.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
-#include "ash/wm/tablet_mode/tablet_mode_window_resizer.h"
 #include "ash/wm/window_preview_view.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_delegate.h"
@@ -1093,56 +1091,6 @@ TEST_P(OverviewSessionTest, ActivationCancelsOverview) {
   EXPECT_EQ(window1.get(), window_util::GetFocusedWindow());
 }
 
-// Tests that if a window is dragged while overview is open, the activation
-// of the dragged window does not cancel overview.
-TEST_P(OverviewSessionTest, ActivateDraggedWindowNotCancelOverview) {
-  UpdateDisplay("800x600");
-  EnterTabletMode();
-  std::unique_ptr<aura::Window> window1(CreateTestWindow());
-  window1->SetProperty(aura::client::kAppType,
-                       static_cast<int>(AppType::BROWSER));
-  std::unique_ptr<aura::Window> window2(CreateTestWindow());
-  EXPECT_FALSE(InOverviewSession());
-
-  // Start drag on |window1|.
-  std::unique_ptr<WindowResizer> resizer(CreateWindowResizer(
-      window1.get(), gfx::PointF(), HTCAPTION, ::wm::WINDOW_MOVE_SOURCE_TOUCH));
-  EXPECT_TRUE(InOverviewSession());
-
-  resizer->Drag(gfx::PointF(400, 0), 0);
-  EXPECT_TRUE(InOverviewSession());
-
-  wm::ActivateWindow(window1.get());
-  EXPECT_TRUE(InOverviewSession());
-
-  resizer->CompleteDrag();
-  EXPECT_FALSE(InOverviewSession());
-}
-
-// Tests that activate a non-dragged window during window drag will not cancel
-// overview mode.
-TEST_P(OverviewSessionTest, ActivateAnotherWindowDuringDragNotCancelOverview) {
-  UpdateDisplay("800x600");
-  EnterTabletMode();
-  std::unique_ptr<aura::Window> window1(CreateTestWindow());
-  window1->SetProperty(aura::client::kAppType,
-                       static_cast<int>(AppType::BROWSER));
-  std::unique_ptr<aura::Window> window2(CreateTestWindow());
-  EXPECT_FALSE(InOverviewSession());
-
-  // Start drag on |window1|.
-  wm::ActivateWindow(window1.get());
-  std::unique_ptr<WindowResizer> resizer(CreateWindowResizer(
-      window1.get(), gfx::PointF(), HTCAPTION, ::wm::WINDOW_MOVE_SOURCE_TOUCH));
-  EXPECT_TRUE(InOverviewSession());
-
-  // Activate |window2| should not cancel overview mode.
-  wm::ActivateWindow(window2.get());
-  EXPECT_FALSE(WindowState::Get(window2.get())->is_dragged());
-  EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
-  EXPECT_TRUE(InOverviewSession());
-}
-
 // Tests that if an overview item is dragged, the activation of the
 // corresponding window does not cancel overview.
 TEST_P(OverviewSessionTest, ActivateDraggedOverviewWindowNotCancelOverview) {
@@ -1484,26 +1432,6 @@ TEST_P(OverviewSessionTest, DropTargetOnCorrectDisplayForDraggingFromOverview) {
   GetOverviewSession()->CompleteDrag(secondary_screen_item, drag_point);
   EXPECT_FALSE(GetDropTarget(0));
   EXPECT_FALSE(GetDropTarget(1));
-}
-
-// Tests that the drop target is removed if a window is destroyed while being
-// dragged from the top.
-TEST_P(OverviewSessionTest,
-       DropTargetRemovedIfWindowDraggedFromTopIsDestroyed) {
-  EnterTabletMode();
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
-  std::unique_ptr<aura::Window> window2 = CreateTestWindow();
-  window->SetProperty(aura::client::kAppType,
-                      static_cast<int>(AppType::BROWSER));
-  std::unique_ptr<WindowResizer> resizer =
-      CreateWindowResizer(window.get(), gfx::PointF(400, 0), HTCAPTION,
-                          ::wm::WINDOW_MOVE_SOURCE_TOUCH);
-  ASSERT_TRUE(InOverviewSession());
-  EXPECT_TRUE(GetDropTarget(0));
-  resizer.reset();
-  window.reset();
-  ASSERT_TRUE(InOverviewSession());
-  EXPECT_FALSE(GetDropTarget(0));
 }
 
 namespace {
@@ -2468,29 +2396,6 @@ TEST_P(OverviewSessionTest, OverviewWidgetStackingOrder) {
       "Ash.Overview.WindowDrag.PresentationTime.MaxLatency.TabletMode", 1);
 }
 
-// Test that dragging a window from the top creates a drop target stacked at the
-// bottom. Test that dropping into overview removes the drop target.
-TEST_P(OverviewSessionTest, DropTargetStackedAtBottomForWindowDraggedFromTop) {
-  UpdateDisplay("800x600");
-  EnterTabletMode();
-  std::unique_ptr<aura::Window> window1(CreateTestWindow());
-  window1->SetProperty(aura::client::kAppType,
-                       static_cast<int>(AppType::BROWSER));
-  std::unique_ptr<aura::Window> window2(CreateTestWindow());
-  aura::Window* parent = window1->parent();
-  ASSERT_EQ(parent, window2->parent());
-  wm::ActivateWindow(window2.get());
-  wm::ActivateWindow(window1.get());
-  std::unique_ptr<WindowResizer> resizer =
-      CreateWindowResizer(window1.get(), gfx::PointF(400, 0), HTCAPTION,
-                          ::wm::WINDOW_MOVE_SOURCE_TOUCH);
-  ASSERT_TRUE(GetDropTarget(0));
-  EXPECT_TRUE(IsStackedBelow(GetDropTarget(0)->GetWindow(), window2.get()));
-  resizer->Drag(gfx::PointF(400, 500), ui::EF_NONE);
-  resizer->CompleteDrag();
-  EXPECT_FALSE(GetDropTarget(0));
-}
-
 // Test that dragging an overview item to snap creates a drop target stacked at
 // the bottom. Test that ending the drag removes the drop target.
 TEST_P(OverviewSessionTest, DropTargetStackedAtBottomForOverviewItem) {
@@ -2866,32 +2771,6 @@ TEST_P(OverviewSessionTest, PositionWindows) {
   EXPECT_EQ(bounds1, item1->target_bounds());
   EXPECT_EQ(bounds2, item2->target_bounds());
   EXPECT_NE(bounds3, item3->target_bounds());
-}
-
-// Tests that overview mode is entered with kWindowDragged mode when a window is
-// dragged from the top of the screen. For the purposes of this test, we use a
-// browser window.
-TEST_P(OverviewSessionTest, DraggingFromTopAnimation) {
-  EnterTabletMode();
-  std::unique_ptr<views::Widget> widget(CreateTestWidget(
-      nullptr, desks_util::GetActiveDeskContainerId(), gfx::Rect(200, 200)));
-  widget->GetNativeWindow()->SetProperty(aura::client::kTopViewInset, 20);
-
-  // Drag from the the top of the app to enter overview.
-  ui::GestureEvent event(0, 0, 0, base::TimeTicks(),
-                         ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN));
-  WindowState* window_state = WindowState::Get(widget->GetNativeWindow());
-  window_state->CreateDragDetails(event.location_f(), HTCAPTION,
-                                  ::wm::WINDOW_MOVE_SOURCE_TOUCH);
-  auto drag_controller = std::make_unique<TabletModeWindowResizer>(
-      window_state, std::make_unique<TabletModeBrowserWindowDragDelegate>());
-  ui::Event::DispatcherApi dispatch_helper(&event);
-  dispatch_helper.set_target(widget->GetNativeWindow());
-  drag_controller->Drag(event.location_f(), event.flags());
-
-  ASSERT_TRUE(InOverviewSession());
-  EXPECT_EQ(OverviewEnterExitType::kImmediateEnter,
-            GetOverviewSession()->enter_exit_overview_type());
 }
 
 // Tests the grid bounds are as expected with different shelf auto hide
@@ -3296,6 +3175,18 @@ TEST_P(OverviewSessionTest, ClosingTransientTree) {
   EXPECT_TRUE(child_widget_observer.widget_destroyed());
 }
 
+// Tests that enabling or disabling ChromeVox works in overview mode. Regression
+// test for b/270929836.
+TEST_P(OverviewSessionTest, ToggleChromeVox) {
+  ToggleOverview();
+  PressAndReleaseKey(ui::VKEY_Z, ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN);
+  EXPECT_TRUE(
+      Shell::Get()->accessibility_controller()->spoken_feedback().enabled());
+  PressAndReleaseKey(ui::VKEY_Z, ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN);
+  EXPECT_FALSE(
+      Shell::Get()->accessibility_controller()->spoken_feedback().enabled());
+}
+
 TEST_P(OverviewSessionTest, FrameThrottlingBrowser) {
   FrameThrottlingController* frame_throttling_controller =
       Shell::Get()->frame_throttling_controller();
@@ -3412,8 +3303,8 @@ TEST_P(OverviewSessionTest, FrameThrottlingArc) {
   }
 
   std::vector<aura::Window*> windows_to_throttle(window_count, nullptr);
-  std::transform(windows.begin(), windows.end(), windows_to_throttle.begin(),
-                 [](std::unique_ptr<aura::Window>& w) { return w.get(); });
+  base::ranges::transform(windows, windows_to_throttle.begin(),
+                          &std::unique_ptr<aura::Window>::get);
   EXPECT_CALL(observer,
               OnThrottlingStarted(
                   testing::UnorderedElementsAreArray(windows_to_throttle),
@@ -4552,7 +4443,7 @@ class SplitViewOverviewSessionTest : public OverviewTestBase {
       return;
     split_view_controller()->StopAndShoveAnimatedDivider();
     split_view_controller()->EndResizeWithDividerImpl();
-    split_view_controller()->EndTabletSplitViewAfterResizingIfAppropriate();
+    split_view_controller()->EndSplitViewAfterResizingAtEdgeIfAppropriate();
   }
 
   void EndSplitView() { split_view_controller()->EndSplitView(); }

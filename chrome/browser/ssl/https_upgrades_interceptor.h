@@ -75,6 +75,8 @@ class HttpsUpgradesInterceptor : public content::URLLoaderRequestInterceptor,
   void MaybeCreateLoaderOnHstsQueryCompleted(
       const network::ResourceRequest& tentative_resource_request,
       content::URLLoaderRequestInterceptor::LoaderCallback callback,
+      Profile* profile,
+      content::WebContents* web_contents,
       HttpsOnlyModeTabHelper* tab_helper,
       bool is_hsts_active_for_host);
 

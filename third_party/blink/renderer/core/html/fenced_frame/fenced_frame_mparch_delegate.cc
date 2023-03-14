@@ -33,10 +33,13 @@ FencedFrameMPArchDelegate::FencedFrameMPArchDelegate(
   DCHECK_EQ(remote_frame, GetElement().ContentFrame());
 }
 
-void FencedFrameMPArchDelegate::Navigate(const KURL& url) {
+void FencedFrameMPArchDelegate::Navigate(
+    const KURL& url,
+    const String& embedder_shared_storage_context) {
   DCHECK(remote_);
   const auto navigation_start_time = base::TimeTicks::Now();
-  remote_->Navigate(url, navigation_start_time);
+  remote_->Navigate(url, navigation_start_time,
+                    embedder_shared_storage_context);
 }
 
 void FencedFrameMPArchDelegate::Dispose() {

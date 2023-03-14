@@ -839,10 +839,12 @@ void FrameTree::Init(SiteInstanceImpl* main_frame_site_instance,
                                    main_frame_name, devtools_frame_token);
   root_.SetFencedFramePropertiesIfNeeded();
 
-  // The initial empty document should inherit the origin of its opener (the
-  // origin may change after the first commit), except when they are in
+  // The initial empty document should inherit the origin (the origin may
+  // change after the first commit) and other state (such as the
+  // RuntimeFeatureStateReadContext) from its opener, except when they are in
   // different browsing context groups (`renderer_initiated_creation` will be
-  // false), where it should use a new opaque origin.
+  // false), where it should use a new opaque origin and default values for the
+  // other state, respectively.
   // See also https://crbug.com/932067.
   //
   // Note that the origin of the new frame might depend on sandbox flags.
@@ -850,8 +852,7 @@ void FrameTree::Init(SiteInstanceImpl* main_frame_site_instance,
   // because the flags should be already inherited when creating the root node.
   DCHECK(!renderer_initiated_creation || opener_for_origin);
   root_.current_frame_host()->SetOriginDependentStateOfNewFrame(
-      renderer_initiated_creation ? opener_for_origin->GetLastCommittedOrigin()
-                                  : url::Origin());
+      renderer_initiated_creation ? opener_for_origin : nullptr);
 
   controller().CreateInitialEntry();
 }

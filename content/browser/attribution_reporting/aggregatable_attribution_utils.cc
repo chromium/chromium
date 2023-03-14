@@ -20,15 +20,15 @@
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_source_type.h"
-#include "content/common/aggregatable_report.mojom.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 
 namespace content {
 
@@ -50,9 +50,9 @@ std::string SerializeTimeRoundedDownToWholeDayInSeconds(base::Time time) {
 
 std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
     const attribution_reporting::FilterData& source_filter_data,
-    AttributionSourceType source_type,
+    attribution_reporting::mojom::SourceType source_type,
     const attribution_reporting::AggregationKeys& keys,
-    const attribution_reporting::AggregatableTriggerDataList&
+    const std::vector<attribution_reporting::AggregatableTriggerData>&
         aggregatable_trigger_data,
     const attribution_reporting::AggregatableValues& aggregatable_values) {
   int num_trigger_data_filtered = 0;
@@ -62,7 +62,7 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
   // For each piece of trigger data specified, check if its filters/not_filters
   // match for the given source, and if applicable modify the bucket based on
   // the given key piece.
-  for (const auto& data : aggregatable_trigger_data.vec()) {
+  for (const auto& data : aggregatable_trigger_data) {
     if (!source_filter_data.Matches(source_type, data.filters())) {
       ++num_trigger_data_filtered;
       continue;
@@ -91,11 +91,10 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
     contributions.emplace_back(key, value->second);
   }
 
-  if (!aggregatable_trigger_data.vec().empty()) {
+  if (!aggregatable_trigger_data.empty()) {
     base::UmaHistogramPercentage(
         "Conversions.AggregatableReport.FilteredTriggerDataPercentage",
-        100 * num_trigger_data_filtered /
-            aggregatable_trigger_data.vec().size());
+        100 * num_trigger_data_filtered / aggregatable_trigger_data.size());
   }
 
   if (!buckets.empty()) {
@@ -128,16 +127,17 @@ absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
   const AttributionInfo& attribution_info = report.attribution_info();
 
   AggregatableReportSharedInfo::DebugMode debug_mode =
-      attribution_info.source.common_info().debug_key().has_value() &&
+      attribution_info.source.debug_key().has_value() &&
               attribution_info.debug_key.has_value()
           ? AggregatableReportSharedInfo::DebugMode::kEnabled
           : AggregatableReportSharedInfo::DebugMode::kDisabled;
 
-  std::vector<mojom::AggregatableReportHistogramContribution> contributions;
+  std::vector<blink::mojom::AggregatableReportHistogramContribution>
+      contributions;
   base::ranges::transform(
       data->contributions, std::back_inserter(contributions),
       [](const auto& contribution) {
-        return mojom::AggregatableReportHistogramContribution(
+        return blink::mojom::AggregatableReportHistogramContribution(
             /*bucket=*/contribution.key(),
             /*value=*/static_cast<int>(contribution.value()));
       });
@@ -149,11 +149,12 @@ absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
           attribution_info.source.common_info().source_time()));
   additional_fields.Set(
       "attribution_destination",
-      attribution_info.source.common_info().destination_site().Serialize());
+      net::SchemefulSite(attribution_info.context_origin).Serialize());
   return AggregatableReportRequest::Create(
       AggregationServicePayloadContents(
           AggregationServicePayloadContents::Operation::kHistogram,
-          std::move(contributions), mojom::AggregationServiceMode::kDefault,
+          std::move(contributions),
+          blink::mojom::AggregationServiceMode::kDefault,
           data->aggregation_coordinator),
       AggregatableReportSharedInfo(
           data->initial_report_time, report.external_report_id(),

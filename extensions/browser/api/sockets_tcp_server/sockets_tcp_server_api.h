@@ -91,7 +91,7 @@ class SocketsTcpServerListenFunction : public TCPServerSocketApiFunction {
  private:
   void OnCompleted(int result, const std::string& error_msg);
 
-  std::unique_ptr<sockets_tcp_server::Listen::Params> params_;
+  absl::optional<sockets_tcp_server::Listen::Params> params_;
   raw_ptr<TCPServerSocketEventDispatcher> socket_event_dispatcher_;
 };
 

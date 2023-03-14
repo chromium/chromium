@@ -133,9 +133,7 @@ class IncompatibleApplicationsBrowserTest : public InProcessBrowserTest {
 
     std::string contents;
     ASSERT_TRUE(module_list.SerializeToString(&contents));
-    ASSERT_EQ(base::WriteFile(GetModuleListPath(), contents.data(),
-                              static_cast<int>(contents.size())),
-              static_cast<int>(contents.size()));
+    ASSERT_TRUE(base::WriteFile(GetModuleListPath(), contents));
   }
 
   // Registers an uninstallation entry for the third-party application, and

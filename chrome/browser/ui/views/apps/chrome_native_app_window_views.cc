@@ -17,7 +17,6 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/extensions/chrome_app_icon.h"
 #include "chrome/browser/extensions/chrome_app_icon_service.h"
-#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/accelerator_table.h"
 #include "chrome/browser/ui/views/extensions/extension_keybinding_registry_views.h"
@@ -25,6 +24,7 @@
 #include "components/zoom/page_zoom.h"
 #include "components/zoom/zoom_controller.h"
 #include "extensions/browser/app_window/app_delegate.h"
+#include "extensions/browser/extension_util.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -57,8 +57,11 @@ const AcceleratorMapping kAppWindowKioskAppModeAcceleratorMap[] = {
     {ui::VKEY_ADD, ui::EF_CONTROL_DOWN, IDC_ZOOM_PLUS},
     {ui::VKEY_0, ui::EF_CONTROL_DOWN, IDC_ZOOM_NORMAL},
     {ui::VKEY_NUMPAD0, ui::EF_CONTROL_DOWN, IDC_ZOOM_NORMAL},
-    // TODO(b/265405666): add more devtools related shortcuts.
-    {ui::VKEY_I, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN, IDC_DEV_TOOLS}};
+    {ui::VKEY_I, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN, IDC_DEV_TOOLS},
+    {ui::VKEY_J, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
+     IDC_DEV_TOOLS_CONSOLE},
+    {ui::VKEY_C, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
+     IDC_DEV_TOOLS_INSPECT}};
 
 std::map<ui::Accelerator, int> AcceleratorsFromMapping(
     const AcceleratorMapping mapping_array[],
@@ -317,10 +320,18 @@ bool ChromeNativeAppWindowViews::AcceleratorPressed(
       DevToolsWindow::OpenDevToolsWindow(web_view()->GetWebContents(),
                                          DevToolsToggleAction::Show());
       return true;
+    case IDC_DEV_TOOLS_CONSOLE:
+      DevToolsWindow::OpenDevToolsWindow(
+          web_view()->GetWebContents(),
+          DevToolsToggleAction::ShowConsolePanel());
+      return true;
+    case IDC_DEV_TOOLS_INSPECT:
+      DevToolsWindow::OpenDevToolsWindow(web_view()->GetWebContents(),
+                                         DevToolsToggleAction::Inspect());
+      return true;
     default:
-      NOTREACHED() << "Unknown accelerator sent to app window.";
+      NOTREACHED_NORETURN() << "Unknown accelerator sent to app window.";
   }
-  return NativeAppWindowViews::AcceleratorPressed(accelerator);
 }
 
 // NativeAppWindow implementation.

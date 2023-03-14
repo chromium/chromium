@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-
-#import "base/task/single_thread_task_runner.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 
 #import <objc/runtime.h>
@@ -19,6 +16,7 @@
 #include "base/logging.h"
 #import "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"
@@ -49,6 +47,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/cocoa/cocoa_event_utils.h"
 #include "ui/gfx/geometry/dip_util.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 #import "ui/gfx/mac/nswindow_frame_controls.h"
@@ -136,19 +135,26 @@ display::Display GetDisplayForWindow(NSWindow* window) {
     (remote_cocoa::NativeWidgetNSWindowBridge*)widget {
   if ((self = [super initWithWindow:widget->ns_window()])) {
     _bridgedNativeWidget = widget;
-    [self setDelegate:self];
+    CHECK(_bridgedNativeWidget);
+    self.delegate = self;
   }
   return self;
 }
 - (void)dealloc {
-  DCHECK(!_bridgedNativeWidget);
+  CHECK(!_bridgedNativeWidget);
   [super dealloc];
 }
 - (void)animationDidEnd:(NSAnimation*)animation {
-  DCHECK(_bridgedNativeWidget);
-  _bridgedNativeWidget->OnShowAnimationComplete();
+  CHECK(_bridgedNativeWidget);
+  // The call to `OnShowAnimationComplete()` will immediately reset an owning
+  // pointer of this object. Therefore, make sure all the invariants of the
+  // `-dealloc` method above are satisfied now by moving the pointer value to be
+  // local.
+  remote_cocoa::NativeWidgetNSWindowBridge* bridgedNativeWidget =
+      _bridgedNativeWidget;
   _bridgedNativeWidget = nullptr;
-  [self setDelegate:nil];
+  bridgedNativeWidget->OnShowAnimationComplete();
+  self.delegate = nil;
 }
 - (void)stopAnimation {
   [super stopAnimation];
@@ -493,6 +499,34 @@ void NativeWidgetNSWindowBridge::SetInitialBounds(
 void NativeWidgetNSWindowBridge::SetBounds(
     const gfx::Rect& new_bounds,
     const gfx::Size& minimum_content_size) {
+  // In headless mode we keep track of the expected window size and report it to
+  // the |host_| when it changes. The platform window is positioned only once
+  // during initialization and may have smaller size than the requested window
+  // size because Cocoa clamps windows size to the available display area which
+  // is undesirable for headless mode.
+  if (headless_mode_window_) {
+    if (new_bounds != headless_mode_window_->bounds) {
+      headless_mode_window_->bounds = new_bounds;
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(
+                         [](WeakPtrNSObject* handle) {
+                           if (auto* bridge = ui::WeakPtrNSObjectFactory<
+                                   NativeWidgetNSWindowBridge>::Get(handle)) {
+                             bridge->UpdateWindowGeometry();
+                           }
+                         },
+                         ns_weak_factory_.handle()));
+    }
+
+    if (headless_mode_window_->initial_bounds_set) {
+      return;
+    }
+
+    // Fall through to set platform window size once. This ensures that the
+    // platform window has reasonable size.
+    headless_mode_window_->initial_bounds_set = true;
+  }
+
   // -[NSWindow contentMinSize] is only checked by Cocoa for user-initiated
   // resizes. This is not what toolkit-views expects, so clamp. Note there is
   // no check for maximum size (consistent with aura::Window::SetBounds()).
@@ -718,8 +752,8 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
   //      NSWindow API, or changes propagating out from here.
   wants_to_be_visible_ = new_state != WindowVisibilityState::kHideWindow;
 
-  [show_animation_ stopAnimation];
-  DCHECK(!show_animation_);
+  [show_animation_ stopAnimation];  // If set, calls OnShowAnimationComplete().
+  CHECK(!show_animation_);
 
   if (new_state == WindowVisibilityState::kHideWindow) {
     // Calling -orderOut: on a window with an attached sheet encounters broken
@@ -919,10 +953,20 @@ void NativeWidgetNSWindowBridge::SetCursor(const ui::Cursor& cursor) {
 
 void NativeWidgetNSWindowBridge::EnableImmersiveFullscreen(
     uint64_t fullscreen_overlay_widget_id,
+    uint64_t tab_widget_id,
     EnableImmersiveFullscreenCallback callback) {
-  immersive_mode_controller_ = std::make_unique<ImmersiveModeController>(
-      ns_window(), GetFromId(fullscreen_overlay_widget_id)->ns_window(),
-      std::move(callback));
+  NativeWidgetNSWindowBridge* tab_widget_bridge = GetFromId(tab_widget_id);
+  if (tab_widget_bridge) {
+    NSWindow* tab_window = tab_widget_bridge->ns_window();
+    immersive_mode_controller_ =
+        std::make_unique<ImmersiveModeTabbedController>(
+            ns_window(), GetFromId(fullscreen_overlay_widget_id)->ns_window(),
+            tab_window, std::move(callback));
+  } else {
+    immersive_mode_controller_ = std::make_unique<ImmersiveModeController>(
+        ns_window(), GetFromId(fullscreen_overlay_widget_id)->ns_window(),
+        std::move(callback));
+  }
   immersive_mode_controller_->Enable();
 
   // Reveal locks can outlive immersive_mode_controller_, re-establish any
@@ -1002,7 +1046,7 @@ void NativeWidgetNSWindowBridge::OnWindowWillClose() {
   [[NSNotificationCenter defaultCenter] removeObserver:window_delegate_];
 
   [show_animation_ stopAnimation];  // If set, calls OnShowAnimationComplete().
-  DCHECK(!show_animation_);
+  CHECK(!show_animation_);
 
   [window_ setDelegate:nil];
   [window_ setBridge:nullptr];
@@ -1235,7 +1279,11 @@ void NativeWidgetNSWindowBridge::FullscreenControllerTransitionComplete(
 
   // Add any children that were skipped during the fullscreen transition.
   OrderChildren();
+
   host_->OnWindowFullscreenTransitionComplete(is_fullscreen);
+  if (is_fullscreen && immersive_mode_controller_) {
+    immersive_mode_controller_->FullscreenTransitionCompleted();
+  }
 }
 
 void NativeWidgetNSWindowBridge::FullscreenControllerSetFrame(
@@ -1635,6 +1683,27 @@ void NativeWidgetNSWindowBridge::UpdateWindowGeometry() {
   gfx::Rect window_in_screen = gfx::ScreenRectFromNSRect([window_ frame]);
   gfx::Rect content_in_screen = gfx::ScreenRectFromNSRect(
       [window_ contentRectForFrameRect:[window_ frame]]);
+
+  // In headless mode the platform window dimensions are only used to calculate
+  // content rectangle inset. The host is reported the expected window size that
+  // was set in |SetBounds|.
+  if (headless_mode_window_) {
+    gfx::Insets insets;
+    insets.set_left(content_in_screen.x() - window_in_screen.x());
+    insets.set_right(window_in_screen.right() - content_in_screen.right());
+    insets.set_top(content_in_screen.y() - window_in_screen.y());
+    insets.set_bottom(window_in_screen.bottom() - content_in_screen.bottom());
+
+    // Apply platform window content rectangle insets to the headless bounds
+    // to find out headless content rectangle.
+    gfx::Rect headless_content_rect = headless_mode_window_->bounds;
+    headless_content_rect.Inset(insets);
+
+    host_->OnWindowGeometryChanged(headless_mode_window_->bounds,
+                                   headless_content_rect);
+    return;
+  }
+
   bool content_resized = content_dip_size_ != content_in_screen.size();
   content_dip_size_ = content_in_screen.size();
 
@@ -1699,7 +1768,7 @@ void NativeWidgetNSWindowBridge::ShowAsModalSheet() {
   // Since |this| may destroy [window_ delegate], use |window_| itself as the
   // delegate, which will forward to ViewsNSWindowDelegate if |this| is still
   // alive (i.e. it has not set the window delegate to nil).
-  // TODO(crbug.com/841631): Migrate to `[NSWindow
+  // TODO(crbug.com/1422060): Migrate to `[NSWindow
   // beginSheet:completionHandler:]` instead of this method.
   auto begin_sheet_closure = base::BindOnce(base::RetainBlock(^{
 #pragma clang diagnostic push

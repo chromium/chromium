@@ -55,14 +55,13 @@ suite('AmbientSubpageTest', function() {
       topicSource: TopicSource|null, temperatureUnit: TemperatureUnit|null,
       ambientModeEnabled: boolean|null,
       animationTheme = AnimationTheme.kSlideshow,
-      googlePhotosAlbumsPreviews: Url[] = []): Promise<AmbientSubpage> {
+      previews: Url[] = []): Promise<AmbientSubpage> {
     personalizationStore.data.ambient.albums = ambientProvider.albums;
     personalizationStore.data.ambient.animationTheme = animationTheme;
     personalizationStore.data.ambient.topicSource = topicSource;
     personalizationStore.data.ambient.temperatureUnit = temperatureUnit;
     personalizationStore.data.ambient.ambientModeEnabled = ambientModeEnabled;
-    personalizationStore.data.ambient.googlePhotosAlbumsPreviews =
-        googlePhotosAlbumsPreviews;
+    personalizationStore.data.ambient.previews = previews;
     const ambientSubpage =
         initElement(AmbientSubpage, {path: Paths.AMBIENT, queryParams: {}});
     personalizationStore.notifyObservers();
@@ -683,6 +682,39 @@ suite('AmbientSubpageTest', function() {
   });
 
   test('displays zero state when ambient mode is disabled', async () => {
+    ambientSubpageElement = await displayMainSettings(
+        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
+        /*ambientModeEnabled=*/ false);
+
+    const mainSettings =
+        ambientSubpageElement.shadowRoot!.querySelector('#mainSettings');
+    assertTrue(!!mainSettings, 'main settings should be present');
+
+    assertEquals(
+        null, mainSettings.querySelector('ambient-preview-small'),
+        'preview image should be absent');
+
+    assertEquals(
+        null,
+        ambientSubpageElement.shadowRoot!.querySelector('animation-theme-list'),
+        'animation theme list should be absent');
+
+    assertEquals(
+        null,
+        ambientSubpageElement.shadowRoot!.querySelector('topic-source-list'),
+        'topic source list should be absent');
+
+    assertEquals(
+        null,
+        ambientSubpageElement.shadowRoot!.querySelector('ambient-weather-unit'),
+        'weather unit should be absent');
+
+    const zeroState =
+        ambientSubpageElement.shadowRoot!.querySelector('toggle-row');
+    assertTrue(!!zeroState, 'zero state should be present');
+  });
+
+  test('displays old zero state when ambient mode is disabled', async () => {
     // Disables `isPersonalizationJellyEnabled` to show the previous UI.
     loadTimeData.overrideValues({['isPersonalizationJellyEnabled']: false});
 
@@ -695,7 +727,7 @@ suite('AmbientSubpageTest', function() {
     assertTrue(!!mainSettings, 'main settings should be present');
 
     assertEquals(
-        null, mainSettings.querySelector('ambient-preview'),
+        null, mainSettings.querySelector('ambient-preview-small'),
         'preview image should be absent');
 
     assertEquals(

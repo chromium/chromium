@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/page_info/chrome_page_info_client.h"
 
 #include "chrome/browser/android/resource_mapper.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "content/public/browser/web_contents.h"

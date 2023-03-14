@@ -22,6 +22,7 @@
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
 #include "device/bluetooth/bluez/bluez_features.h"
+#include "device/bluetooth/chromeos_platform_features.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
 #include "device/bluetooth/floss/floss_features.h"
 
@@ -45,35 +46,6 @@ const DBusTypeInfo& GetDBusTypeInfo<AdapterWithEnabled>(
     const AdapterWithEnabled* unused) {
   static DBusTypeInfo info{"a{sv}", "AdapterWithEnabled"};
   return info;
-}
-
-FlossManagerClient::PoweredCallback::PoweredCallback(ResponseCallback<Void> cb,
-                                                     int timeout_ms) {
-  cb_ = std::move(cb);
-  timeout_ms_ = timeout_ms;
-}
-
-FlossManagerClient::PoweredCallback::~PoweredCallback() = default;
-
-// static
-std::unique_ptr<FlossManagerClient::PoweredCallback>
-FlossManagerClient::PoweredCallback::CreateWithTimeout(
-    ResponseCallback<Void> cb,
-    int timeout_ms) {
-  std::unique_ptr<FlossManagerClient::PoweredCallback> self =
-      std::make_unique<FlossManagerClient::PoweredCallback>(std::move(cb),
-                                                            timeout_ms);
-  self->PostDelayedError();
-
-  return self;
-}
-
-void FlossManagerClient::PoweredCallback::PostDelayedError() {
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&PoweredCallback::RunError,
-                     weak_ptr_factory_.GetWeakPtr()),
-      base::Milliseconds(timeout_ms_));
 }
 
 // static
@@ -156,7 +128,7 @@ void FlossManagerClient::SetFlossEnabled(
     absl::optional<ResponseCallback<bool>> cb) {
   if (cb) {
     set_floss_enabled_callback_ =
-        WeaklyOwnedCallback<bool>::Create(std::move(*cb));
+        WeaklyOwnedResponseCallback<bool>::Create(std::move(*cb));
   }
 
   CallManagerMethod<Void>(
@@ -175,8 +147,9 @@ void FlossManagerClient::SetAdapterEnabled(int adapter,
 
   DVLOG(1) << __func__;
 
-  powered_callback_ =
-      PoweredCallback::CreateWithTimeout(std::move(callback), kDBusTimeoutMs);
+  powered_callback_ = WeaklyOwnedResponseCallback<Void>::CreateWithTimeout(
+      std::move(callback), kAdapterPowerTimeoutMs,
+      base::unexpected(Error(kErrorNoResponse, "")));
 
   const char* command = enabled ? manager::kStart : manager::kStop;
   CallManagerMethod<Void>(
@@ -188,7 +161,7 @@ void FlossManagerClient::SetAdapterEnabled(int adapter,
 void FlossManagerClient::OnSetAdapterEnabled(DBusResult<Void> response) {
   // Only handle error cases since non-error called in OnHciEnabledChange
   if (powered_callback_ && !response.has_value()) {
-    powered_callback_->RunError();
+    powered_callback_->Run(base::unexpected(Error(kErrorNoResponse, "")));
     powered_callback_.reset();
   }
 }
@@ -197,6 +170,12 @@ void FlossManagerClient::SetLLPrivacy(ResponseCallback<Void> callback,
                                       const bool enable) {
   CallExperimentalMethod<Void>(std::move(callback), experimental::kSetLLPrivacy,
                                enable);
+}
+
+void FlossManagerClient::SetDevCoredump(ResponseCallback<Void> callback,
+                                        const bool enable) {
+  CallExperimentalMethod<Void>(std::move(callback),
+                               experimental::kSetDevCoredump, enable);
 }
 
 // Register manager client against manager.
@@ -290,6 +269,17 @@ void FlossManagerClient::Init(dbus::Bus* bus,
                   kSetFlossRetryDelayMs,
                   base::BindOnce(&FlossManagerClient::CompleteSetFlossEnabled,
                                  weak_ptr_factory_.GetWeakPtr()));
+
+#if BUILDFLAG(IS_CHROMEOS)
+  SetDevCoredump(base::BindOnce([](DBusResult<Void> ret) {
+                   if (!ret.has_value()) {
+                     LOG(ERROR) << "Fail to set devcoredump.\n";
+                   }
+                 }),
+                 base::FeatureList::IsEnabled(
+                     chromeos::bluetooth::features::kBluetoothCoredump));
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   SetLLPrivacy(
       base::BindOnce([](DBusResult<Void> ret) {
         if (!ret.has_value())
@@ -310,6 +300,11 @@ void FlossManagerClient::HandleGetDefaultAdapter(DBusResult<int32_t> response) {
 
 void FlossManagerClient::HandleGetAvailableAdapters(
     DBusResult<std::vector<AdapterWithEnabled>> adapters) {
+  if (!adapters.has_value()) {
+    LOG(WARNING) << "GetAvailableAdapters return error " << adapters.error();
+    return;
+  }
+
   auto previous_adapters = std::move(adapter_to_powered_);
 
   // Clear existing adapters.
@@ -355,7 +350,7 @@ void FlossManagerClient::OnHciDeviceChanged(int32_t adapter, bool present) {
 
 void FlossManagerClient::OnHciEnabledChanged(int32_t adapter, bool enabled) {
   if (adapter == GetDefaultAdapter() && powered_callback_) {
-    powered_callback_->RunNoError();
+    powered_callback_->Run(Void{});
     powered_callback_.reset();
   }
 

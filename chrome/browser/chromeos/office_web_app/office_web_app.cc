@@ -19,7 +19,7 @@ namespace chromeos {
 
 namespace {
 constexpr char kMicrosoft365WebAppUrl[] =
-    "https://www.office.com/?from=Homescreen";
+    "https://www.microsoft365.com/?from=Homescreen";
 constexpr char kMicrosoft365FallbackName[] = "Microsoft 365";
 
 }  // namespace

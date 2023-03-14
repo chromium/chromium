@@ -13,7 +13,10 @@ source_set("cpp") {
   ]
 
   public_deps = [ "//chromeos/services/network_config/public/mojom" ]
-  deps = [ "//components/onc" ]
+  deps = [
+    "//components/device_event_log:device_event_log",
+    "//components/onc",
+  ]
 }
 
 source_set("test_support") {

@@ -10,7 +10,6 @@
 namespace features {
 
 BASE_DECLARE_FEATURE(kNearbySharing);
-BASE_DECLARE_FEATURE(kNearbySharingChildAccounts);
 BASE_DECLARE_FEATURE(kNearbySharingDeviceContacts);
 BASE_DECLARE_FEATURE(kNearbySharingOnePageOnboarding);
 BASE_DECLARE_FEATURE(kNearbySharingSelfShareAutoAccept);

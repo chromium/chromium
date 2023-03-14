@@ -55,8 +55,6 @@ void ShoppingBookmarkModelObserver::BookmarkNodeChanged(
           meta->mutable_shopping_specifics();
 
       uint64_t cluster_id = specifics->product_cluster_id();
-      meta->clear_shopping_specifics();
-      power_bookmarks::SetNodePowerBookmarkMeta(model, node, std::move(meta));
 
       // Unsubscribe using the cluster ID
       if (shopping_service_) {
@@ -65,11 +63,15 @@ void ShoppingBookmarkModelObserver::BookmarkNodeChanged(
 
         // If there are no other bookmarks with the node's cluster ID,
         // unsubscribe.
-        if (bookmarks_with_cluster.empty())
+        if (bookmarks_with_cluster.size() <= 1) {
           SetPriceTrackingStateForBookmark(shopping_service_, model, node,
                                            false,
                                            base::BindOnce([](bool success) {}));
+        }
       }
+
+      meta->clear_shopping_specifics();
+      power_bookmarks::SetNodePowerBookmarkMeta(model, node, std::move(meta));
     }
   }
 

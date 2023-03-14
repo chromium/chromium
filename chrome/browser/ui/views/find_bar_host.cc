@@ -297,18 +297,15 @@ bool FindBarHost::AcceleratorPressed(const ui::Accelerator& accelerator) {
         find_in_page::SelectionAction::kActivate,
         find_in_page::ResultAction::kClear);
     return true;
-  } else if (key == ui::VKEY_ESCAPE) {
-    // This will end the Find session and hide the window, causing it to loose
-    // focus and in the process unregister us as the handler for the Escape
-    // accelerator through the OnWillChangeFocus event.
-    find_bar_controller_->EndFindSession(find_in_page::SelectionAction::kKeep,
-                                         find_in_page::ResultAction::kKeep);
-    return true;
-  } else {
-    NOTREACHED() << "Unknown accelerator";
   }
 
-  return false;
+  CHECK_EQ(key, ui::VKEY_ESCAPE);
+  // This will end the Find session and hide the window, causing it to loose
+  // focus and in the process unregister us as the handler for the Escape
+  // accelerator through the OnWillChangeFocus event.
+  find_bar_controller_->EndFindSession(find_in_page::SelectionAction::kKeep,
+                                       find_in_page::ResultAction::kKeep);
+  return true;
 }
 
 bool FindBarHost::CanHandleAccelerators() const {

@@ -6,32 +6,18 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/test/ash_test_base.h"
+#include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "media/capture/video/chromeos/mojom/effects_pipeline.mojom.h"
 
 namespace ash {
 namespace {
-
-// Fake CameraEffectsController Observer to record notifications.
-class FakeCameraEffectsControllerObserver
-    : public CameraEffectsController::Observer {
- public:
-  void OnCameraEffectsChanged(
-      cros::mojom::EffectsConfigPtr new_effects) override {
-    last_effects_ = std::move(new_effects);
-    num_of_calls_ += 1;
-  }
-
-  int num_of_calls() { return num_of_calls_; }
-  cros::mojom::EffectsConfigPtr last_effects() { return last_effects_.Clone(); }
-
- private:
-  int num_of_calls_ = 0;
-  cros::mojom::EffectsConfigPtr last_effects_;
-};
 
 class CameraEffectsControllerTest : public NoSessionAshTestBase {
  public:
@@ -39,34 +25,25 @@ class CameraEffectsControllerTest : public NoSessionAshTestBase {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {features::kVideoConference, features::kVcBackgroundReplace}, {});
-
-    // Here we have to create the global instance of `CrasAudioHandler` before
-    // `FakeVideoConferenceTrayController`, so we do it here and not in
-    // `AshTestBase`.
-    CrasAudioClient::InitializeFake();
-    CrasAudioHandler::InitializeForTesting();
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kCameraEffectsSupportedByHardware);
 
     // Instantiates a fake controller (the real one is created in
     // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in
     // ash unit tests).
     controller_ = std::make_unique<FakeVideoConferenceTrayController>();
 
-    set_create_global_cras_audio_handler(false);
-
     AshTestBase::SetUp();
 
     camera_effects_controller_ = Shell::Get()->camera_effects_controller();
 
-    // Mock the SetCameraEffects calls.
-    camera_effects_controller_->set_effect_result_for_testing(
-        cros::mojom::SetEffectResult::kOk);
+    // Enable test mode to mock the SetCameraEffects calls.
+    camera_effects_controller_->bypass_set_camera_effects_for_testing(true);
   }
 
   void TearDown() override {
     NoSessionAshTestBase::TearDown();
     controller_.reset();
-    CrasAudioHandler::Shutdown();
-    CrasAudioClient::Shutdown();
   }
 
   // Sets background blur state.
@@ -121,83 +98,28 @@ class CameraEffectsControllerTest : public NoSessionAshTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(CameraEffectsControllerTest,
-       IsCameraEffectsSupportedShouldBeConsistentWithFlags) {
+TEST_F(CameraEffectsControllerTest, IsEffectControlAvailable) {
   {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitWithFeatures({}, {features::kVideoConference});
-    EXPECT_FALSE(CameraEffectsController::IsCameraEffectsSupported(
-        cros::mojom::CameraEffect::kBackgroundBlur));
     EXPECT_FALSE(camera_effects_controller()->IsEffectControlAvailable(
         cros::mojom::CameraEffect::kBackgroundBlur));
-    EXPECT_FALSE(CameraEffectsController::IsCameraEffectsSupported(
-        cros::mojom::CameraEffect::kPortraitRelight));
     EXPECT_FALSE(camera_effects_controller()->IsEffectControlAvailable(
         cros::mojom::CameraEffect::kPortraitRelight));
+    EXPECT_FALSE(camera_effects_controller()->IsEffectControlAvailable(
+        cros::mojom::CameraEffect::kBackgroundReplace));
   }
 
   {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitWithFeatures({features::kVideoConference}, {});
-    EXPECT_TRUE(CameraEffectsController::IsCameraEffectsSupported(
-        cros::mojom::CameraEffect::kBackgroundBlur));
     EXPECT_TRUE(camera_effects_controller()->IsEffectControlAvailable(
         cros::mojom::CameraEffect::kBackgroundBlur));
-    EXPECT_TRUE(CameraEffectsController::IsCameraEffectsSupported(
-        cros::mojom::CameraEffect::kPortraitRelight));
     EXPECT_TRUE(camera_effects_controller()->IsEffectControlAvailable(
         cros::mojom::CameraEffect::kPortraitRelight));
-  }
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures({}, {features::kVcBackgroundReplace});
-    EXPECT_FALSE(CameraEffectsController::IsCameraEffectsSupported(
-        cros::mojom::CameraEffect::kBackgroundReplace));
     EXPECT_FALSE(camera_effects_controller()->IsEffectControlAvailable(
         cros::mojom::CameraEffect::kBackgroundReplace));
   }
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures({features::kVcBackgroundReplace}, {});
-    EXPECT_TRUE(CameraEffectsController::IsCameraEffectsSupported(
-        cros::mojom::CameraEffect::kBackgroundReplace));
-    EXPECT_FALSE(camera_effects_controller()->IsEffectControlAvailable(
-        cros::mojom::CameraEffect::kBackgroundReplace));
-  }
-}
-
-TEST_F(CameraEffectsControllerTest, NotifyObserverTest) {
-  SimulateUserLogin("testuser@gmail.com");
-
-  FakeCameraEffectsControllerObserver observer;
-  camera_effects_controller_->AddObserver(&observer);
-
-  // Mock the case where setting the effect state encounters an error.
-  camera_effects_controller_->set_effect_result_for_testing(
-      cros::mojom::SetEffectResult::kError);
-  SetBackgroundBlurEffectState(
-      static_cast<int>(cros::mojom::BlurLevel::kMaximum));
-
-  // Observers should not be notified if the SetCameraEffects fails.
-  EXPECT_EQ(observer.num_of_calls(), 0);
-
-  // Now mock the case where setting the effect state succeeds.
-  camera_effects_controller_->set_effect_result_for_testing(
-      cros::mojom::SetEffectResult::kOk);
-  SetBackgroundBlurEffectState(
-      static_cast<int>(cros::mojom::BlurLevel::kMaximum));
-
-  // Observers should be notified if the SetCameraEffects succeeds.
-  EXPECT_EQ(observer.num_of_calls(), 1);
-
-  // Observers should be notified with the new EffectsConfigPtr.
-  cros::mojom::EffectsConfigPtr notifyed_effects = observer.last_effects();
-  EXPECT_TRUE(notifyed_effects->blur_enabled);
-  EXPECT_EQ(notifyed_effects->blur_level, cros::mojom::BlurLevel::kMaximum);
-
-  camera_effects_controller_->RemoveObserver(&observer);
 }
 
 TEST_F(CameraEffectsControllerTest, BackgroundBlurOnEffectControlActivated) {
@@ -243,25 +165,6 @@ TEST_F(CameraEffectsControllerTest, BackgroundBlurOnEffectControlActivated) {
             CameraEffectsController::BackgroundBlurEffectState::kOff);
   EXPECT_EQ(GetBackgroundBlurEffectState(),
             CameraEffectsController::BackgroundBlurEffectState::kOff);
-
-  // Now verify that each of the pref and effect state is set to kOff if any
-  // error is encountered while setting the state.
-  camera_effects_controller_->set_effect_result_for_testing(
-      cros::mojom::SetEffectResult::kError);
-  for (const auto state :
-       {CameraEffectsController::BackgroundBlurEffectState::kOff,
-        CameraEffectsController::BackgroundBlurEffectState::kLowest,
-        CameraEffectsController::BackgroundBlurEffectState::kLight,
-        CameraEffectsController::BackgroundBlurEffectState::kMedium,
-        CameraEffectsController::BackgroundBlurEffectState::kHeavy,
-        CameraEffectsController::BackgroundBlurEffectState::kMaximum}) {
-    camera_effects_controller_->OnEffectControlActivated(
-        static_cast<int>(cros::mojom::CameraEffect::kBackgroundBlur), state);
-    EXPECT_EQ(GetBackgroundBlurPref(),
-              CameraEffectsController::BackgroundBlurEffectState::kOff);
-    EXPECT_EQ(GetBackgroundBlurEffectState(),
-              CameraEffectsController::BackgroundBlurEffectState::kOff);
-  }
 }
 
 TEST_F(CameraEffectsControllerTest,
@@ -293,16 +196,76 @@ TEST_F(CameraEffectsControllerTest,
       absl::nullopt);
   EXPECT_TRUE(GetPortraitRelightingEffectState());
   EXPECT_TRUE(GetPortraitRelightingPref());
+}
 
-  // Verify that the effect state and pref remain in the previous state (true)
-  // if attempt encounters an error.
-  camera_effects_controller_->set_effect_result_for_testing(
-      cros::mojom::SetEffectResult::kError);
-  camera_effects_controller_->OnEffectControlActivated(
-      static_cast<int>(cros::mojom::CameraEffect::kPortraitRelight),
-      absl::nullopt);
+TEST_F(CameraEffectsControllerTest, PrefOnCameraEffectChanged) {
+  SimulateUserLogin("testuser@gmail.com");
+
+  // Initial state should be "off".
+  EXPECT_EQ(GetBackgroundBlurPref(),
+            CameraEffectsController::BackgroundBlurEffectState::kOff);
+  EXPECT_EQ(GetBackgroundBlurEffectState(),
+            CameraEffectsController::BackgroundBlurEffectState::kOff);
+  EXPECT_FALSE(GetPortraitRelightingEffectState());
+  EXPECT_FALSE(GetPortraitRelightingPref());
+
+  // Case 1: when observe effects change from `CameraHalDispatcherImp`, the pref
+  // is updated.
+  cros::mojom::EffectsConfigPtr new_effects = cros::mojom::EffectsConfig::New();
+  new_effects->blur_enabled = true;
+  new_effects->blur_level = cros::mojom::BlurLevel::kMaximum;
+  new_effects->relight_enabled = true;
+  camera_effects_controller_->OnCameraEffectChanged(std::move(new_effects));
+
+  // State should be "on".
+  EXPECT_EQ(GetBackgroundBlurPref(),
+            CameraEffectsController::BackgroundBlurEffectState::kMaximum);
+  EXPECT_EQ(GetBackgroundBlurEffectState(),
+            CameraEffectsController::BackgroundBlurEffectState::kMaximum);
   EXPECT_TRUE(GetPortraitRelightingEffectState());
   EXPECT_TRUE(GetPortraitRelightingPref());
+
+  // Case 2: when new effects is null, the pref is unchanged.
+  new_effects = cros::mojom::EffectsConfigPtr();
+  camera_effects_controller_->OnCameraEffectChanged(std::move(new_effects));
+
+  // State should be "on".
+  EXPECT_EQ(GetBackgroundBlurPref(),
+            CameraEffectsController::BackgroundBlurEffectState::kMaximum);
+  EXPECT_EQ(GetBackgroundBlurEffectState(),
+            CameraEffectsController::BackgroundBlurEffectState::kMaximum);
+  EXPECT_TRUE(GetPortraitRelightingEffectState());
+  EXPECT_TRUE(GetPortraitRelightingPref());
+
+  // Case 3: when observe default effects from `CameraHalDispatcherImp`, the
+  // pref should be back to default.
+  new_effects = cros::mojom::EffectsConfig::New();
+  camera_effects_controller_->OnCameraEffectChanged(std::move(new_effects));
+
+  // State should be "off".
+  EXPECT_EQ(GetBackgroundBlurPref(),
+            CameraEffectsController::BackgroundBlurEffectState::kOff);
+  EXPECT_EQ(GetBackgroundBlurEffectState(),
+            CameraEffectsController::BackgroundBlurEffectState::kOff);
+  EXPECT_FALSE(GetPortraitRelightingEffectState());
+  EXPECT_FALSE(GetPortraitRelightingPref());
+}
+
+TEST_F(CameraEffectsControllerTest, ResourceDependencyFlags) {
+  SimulateUserLogin("testuser@gmail.com");
+
+  // Makes sure that all registered effects have the correct dependency flag.
+  auto* background_blur = camera_effects_controller()->GetEffect(0);
+  ASSERT_EQ(static_cast<int>(cros::mojom::CameraEffect::kBackgroundBlur),
+            background_blur->id());
+  EXPECT_EQ(VcHostedEffect::ResourceDependency::kCamera,
+            background_blur->dependency_flags());
+
+  auto* portrait_relight = camera_effects_controller()->GetEffect(1);
+  ASSERT_EQ(static_cast<int>(cros::mojom::CameraEffect::kPortraitRelight),
+            portrait_relight->id());
+  EXPECT_EQ(VcHostedEffect::ResourceDependency::kCamera,
+            portrait_relight->dependency_flags());
 }
 
 }  // namespace

@@ -1,0 +1,33 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom";
+
+// Wrapper to allow for a null debug key.
+struct DebugKey {
+  uint64 value;
+};
+
+struct DebugModeDetails {
+  // Whether debug mode is enabled.
+  bool is_enabled = false;
+
+  // Must be null if the debug mode is disabled. Can still be null even if the
+  // debug mode is enabled.
+  DebugKey? debug_key;
+};
+
+// Interface implemented in the browser for worklets and renderers to forward
+// histogram report requests.
+interface PrivateAggregationHost {
+  // Requests a histogram report with the specified details be sent to the
+  // origin associated with the remote. Note that only a small number of fields
+  // are controllable by the worklet/renderer.
+  SendHistogramReport(
+      array<AggregatableReportHistogramContribution> contributions,
+      AggregationServiceMode aggregation_mode,
+      DebugModeDetails debug_mode_details);
+};

@@ -5,7 +5,7 @@
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {InsetsF} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 
-import {HelpBubbleElement} from './help_bubble.js';
+import {HELP_BUBBLE_SCROLL_ANCHOR_OPTIONS, HelpBubbleElement} from './help_bubble.js';
 import {HelpBubbleParams} from './help_bubble.mojom-webui.js';
 
 type Root = HTMLElement|ShadowRoot&{shadowRoot?: ShadowRoot};
@@ -176,7 +176,6 @@ export class HelpBubbleController {
       return;
     }
     this.bubble_.show(this.anchor_);
-    this.anchor_.focus();
     this.isBubbleShowing_ = true;
     this.setAnchorHighlight_(true);
   }
@@ -255,6 +254,10 @@ export class HelpBubbleController {
     assert(
         this.anchor_, 'Set anchor highlight: expected valid anchor element.');
     this.anchor_.classList.toggle(ANCHOR_HIGHLIGHT_CLASS, highlight);
+    if (highlight) {
+      this.anchor_.focus();
+      this.anchor_.scrollIntoView(HELP_BUBBLE_SCROLL_ANCHOR_OPTIONS);
+    }
   }
 
   /**

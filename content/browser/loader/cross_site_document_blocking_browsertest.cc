@@ -111,7 +111,7 @@ void InspectHistograms(const base::HistogramTester& histograms,
 
   // No ORB-specific UMA at this point.
   if (base::FeatureList::IsEnabled(
-          network::features::kOpaqueResponseBlockingV01)) {
+          network::features::kOpaqueResponseBlockingV01_LAUNCHED)) {
     return;
   }
 
@@ -513,7 +513,7 @@ class CrossSiteDocumentBlockingImgElementTest
             /* enabled_features= */ {network::features::
                                          kCORBProtectionSniffing},
             /* disabled_features= */ {
-                network::features::kOpaqueResponseBlockingV01,
+                network::features::kOpaqueResponseBlockingV01_LAUNCHED,
                 network::features::kOpaqueResponseBlockingV02});
         break;
       case TestMode::kWithoutCORBProtectionSniffing:
@@ -521,20 +521,20 @@ class CrossSiteDocumentBlockingImgElementTest
             /* enabled_features= */ {},
             /* disabled_features= */ {
                 network::features::kCORBProtectionSniffing,
-                network::features::kOpaqueResponseBlockingV01,
+                network::features::kOpaqueResponseBlockingV01_LAUNCHED,
                 network::features::kOpaqueResponseBlockingV02});
         break;
       case TestMode::kWithORBv01:
         scoped_feature_list_.InitWithFeatures(
             /* enabled_features= */ {network::features::
-                                         kOpaqueResponseBlockingV01},
+                                         kOpaqueResponseBlockingV01_LAUNCHED},
             /* disabled_features= */ {
                 network::features::kOpaqueResponseBlockingV02});
         break;
       case TestMode::kWithORBv02:
         scoped_feature_list_.InitWithFeatures(
             /* enabled_features= */
-            {network::features::kOpaqueResponseBlockingV01,
+            {network::features::kOpaqueResponseBlockingV01_LAUNCHED,
              network::features::kOpaqueResponseBlockingV02},
             /* disabled_features= */ {});
         break;
@@ -773,14 +773,14 @@ class CrossSiteDocumentBlockingTest
       case TestMode::kWithORBv01:
         scoped_feature_list_.InitWithFeatures(
             /* enabled_features= */ {network::features::
-                                         kOpaqueResponseBlockingV01},
+                                         kOpaqueResponseBlockingV01_LAUNCHED},
             /* disabled_features= */ {
                 network::features::kOpaqueResponseBlockingV02});
         break;
       case TestMode::kWithORBv02:
         scoped_feature_list_.InitWithFeatures(
             /* enabled_features= */
-            {network::features::kOpaqueResponseBlockingV01,
+            {network::features::kOpaqueResponseBlockingV01_LAUNCHED,
              network::features::kOpaqueResponseBlockingV02},
             /* disabled_features= */ {});
         break;

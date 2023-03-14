@@ -6,7 +6,7 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-if (use_libfuzzer) {
+if (use_fuzzing_engine_with_lpm) {
   fuzzable_proto_library("webnn_proto") {
     generate_python = true
     sources = [ "fuzzer/webnn.proto" ]

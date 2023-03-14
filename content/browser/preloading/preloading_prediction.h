@@ -38,6 +38,8 @@ class PreloadingPrediction {
   // predicate. It also records `time_to_next_navigation_`.
   void SetIsAccuratePrediction(const GURL& navigated_url);
 
+  bool IsAccuratePrediction() const { return is_accurate_prediction_; }
+
   explicit PreloadingPrediction(
       PreloadingPredictor predictor,
       double confidence,

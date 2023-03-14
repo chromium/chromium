@@ -44,6 +44,7 @@ ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
 
 GPU_EXPORT void SetKeysForCrashLogging(const GPUInfo& gpu_info);
 
+#if BUILDFLAG(IS_ANDROID)
 // Cache GPUInfo so it can be accessed later.
 GPU_EXPORT void CacheGPUInfo(const GPUInfo& gpu_info);
 
@@ -58,7 +59,6 @@ GPU_EXPORT void CacheGpuFeatureInfo(const GpuFeatureInfo& gpu_feature_info);
 // return true; otherwise, return false;
 GPU_EXPORT bool PopGpuFeatureInfoCache(GpuFeatureInfo* gpu_feature_info);
 
-#if BUILDFLAG(IS_ANDROID)
 // Check if GL bindings are initialized. If not, initializes GL
 // bindings, create a GL context, collects GPUInfo, make blocklist and
 // GPU driver bug workaround decisions. This is intended to be called

@@ -229,28 +229,6 @@ namespace blink {
 
 namespace {
 
-const AtomicString& ConvertElementTypeToInitiatorType(
-    blink::FrameOwnerElementType frame_owner_elem_type) {
-  switch (frame_owner_elem_type) {
-    case blink::FrameOwnerElementType::kFrame:
-      return blink::html_names::kFrameTag.LocalName();
-    case blink::FrameOwnerElementType::kIframe:
-      return blink::html_names::kIFrameTag.LocalName();
-    case blink::FrameOwnerElementType::kObject:
-      return blink::html_names::kObjectTag.LocalName();
-    case blink::FrameOwnerElementType::kFencedframe:
-      return blink::html_names::kFencedframeTag.LocalName();
-    case blink::FrameOwnerElementType::kEmbed:
-      return blink::html_names::kEmbedTag.LocalName();
-    case blink::FrameOwnerElementType::kPortal:
-      return blink::html_names::kPortalTag.LocalName();
-    case blink::FrameOwnerElementType::kNone:
-      NOTREACHED();
-  }
-  NOTREACHED();
-  return blink::html_names::kFrameTag.LocalName();
-}
-
 // Maintain a global (statically-allocated) hash map indexed by the the result
 // of hashing the |frame_token| passed on creation of a LocalFrame object.
 using LocalFramesByTokenMap = HeapHashMap<uint64_t, WeakMember<LocalFrame>>;
@@ -313,6 +291,18 @@ void SetViewportSegmentVariablesForRect(StyleEnvironmentVariables& vars,
   vars.SetVariable(UADefinedTwoDimensionalVariable::kViewportSegmentHeight,
                    first_dimension, second_dimension,
                    StyleEnvironmentVariables::FormatPx(segment_rect.height()));
+}
+
+mojom::blink::BlockingDetailsPtr CreateBlockingDetailsMojom(
+    const FeatureAndJSLocationBlockingBFCache& blocking_details) {
+  auto feature_location_to_report = mojom::blink::BlockingDetails::New();
+  feature_location_to_report->feature =
+      static_cast<uint32_t>(blocking_details.Feature());
+  feature_location_to_report->line_number = blocking_details.LineNumber();
+  feature_location_to_report->column_number = blocking_details.ColumnNumber();
+  feature_location_to_report->url = blocking_details.Url();
+  feature_location_to_report->function_name = blocking_details.Function();
+  return feature_location_to_report;
 }
 
 }  // namespace
@@ -747,15 +737,6 @@ ClipPathPaintImageGenerator* LocalFrame::GetClipPathPaintImageGenerator() {
         ClipPathPaintImageGenerator::Create(local_root);
   }
   return local_root.clip_path_paint_image_generator_.Get();
-}
-
-void LocalFrame::AddResourceTimingEntryFromNonNavigatedFrame(
-    mojom::blink::ResourceTimingInfoPtr timing,
-    blink::FrameOwnerElementType initiator_type) {
-  auto* local_dom_window = DomWindow();
-  DOMWindowPerformance::performance(*local_dom_window)
-      ->AddResourceTiming(std::move(timing),
-                          ConvertElementTypeToInitiatorType(initiator_type));
 }
 
 const SecurityContext* LocalFrame::GetSecurityContext() const {
@@ -1318,10 +1299,20 @@ void LocalFrame::SetInvalidationForCapture(bool capturing) {
     }
   }
 
+  auto* layout_view = View()->GetLayoutView();
+  if (!layout_view) {
+    return;
+  }
+
   // Trigger a paint property update to ensure the unclipped behavior is
   // applied to the frame level scroller.
-  if (auto* layout_view = View()->GetLayoutView()) {
-    layout_view->SetNeedsPaintPropertyUpdate();
+  layout_view->SetNeedsPaintPropertyUpdate();
+
+  if (!GetPage()->GetScrollbarTheme().UsesOverlayScrollbars()) {
+    // During CapturePaintPreview, the LayoutView thinks it should not have
+    // scrollbars. So if scrollbars affect layout, we should force relayout
+    // when entering and exiting paint preview.
+    layout_view->SetNeedsLayout(layout_invalidation_reason::kPaintPreview);
   }
 }
 
@@ -2118,17 +2109,29 @@ void LocalFrame::WasShown() {
   }
 }
 
-bool LocalFrame::ClipsContent() const {
+bool LocalFrame::ClipsContent(ScrollbarDisableReason* out_reason) const {
   // A paint preview shouldn't clip to the viewport. Each frame paints to a
   // separate canvas in full to allow scrolling.
-  if (GetDocument()->GetPaintPreviewState() != Document::kNotPaintingPreview)
+  if (GetDocument()->GetPaintPreviewState() != Document::kNotPaintingPreview) {
+    if (out_reason) {
+      *out_reason = ScrollbarDisableReason::kPaintPreview;
+    }
     return false;
+  }
 
-  if (ShouldUsePrintingLayout())
+  if (ShouldUsePrintingLayout()) {
+    if (out_reason) {
+      *out_reason = ScrollbarDisableReason::kPrinting;
+    }
     return false;
+  }
 
-  if (IsOutermostMainFrame())
-    return GetSettings()->GetMainFrameClipsContent();
+  if (IsOutermostMainFrame() && !GetSettings()->GetMainFrameClipsContent()) {
+    if (out_reason) {
+      *out_reason = ScrollbarDisableReason::kMainFrameClipsContentFalse;
+    }
+    return false;
+  }
   // By default clip to viewport.
   return true;
 }
@@ -2384,15 +2387,28 @@ void LocalFrame::UpdateTaskTime(base::TimeDelta time) {
 }
 
 void LocalFrame::UpdateBackForwardCacheDisablingFeatures(
-    uint64_t features_mask,
-    const BFCacheBlockingFeatureAndLocations&
-        non_sticky_features_and_js_locations,
-    const BFCacheBlockingFeatureAndLocations&
-        sticky_features_and_js_locations) {
-  // TODO(crbug.com/1366675): Add two Vectors to argument of
-  // DidChangeBackForwardCacheDisablingFeatures
+    BlockingDetails details) {
+  auto mojom_details = ConvertFeatureAndLocationToMojomStruct(
+      details.non_sticky_features_and_js_locations,
+      details.sticky_features_and_js_locations);
   GetBackForwardCacheControllerHostRemote()
-      .DidChangeBackForwardCacheDisablingFeatures(features_mask);
+      .DidChangeBackForwardCacheDisablingFeatures(std::move(mojom_details));
+}
+
+using BlockingDetailsList = Vector<mojom::blink::BlockingDetailsPtr>;
+BlockingDetailsList LocalFrame::ConvertFeatureAndLocationToMojomStruct(
+    const BFCacheBlockingFeatureAndLocations& non_sticky,
+    const BFCacheBlockingFeatureAndLocations& sticky) {
+  BlockingDetailsList blocking_details_list;
+  for (auto feature : non_sticky) {
+    auto blocking_details = CreateBlockingDetailsMojom(feature);
+    blocking_details_list.push_back(std::move(blocking_details));
+  }
+  for (auto feature : sticky) {
+    auto blocking_details = CreateBlockingDetailsMojom(feature);
+    blocking_details_list.push_back(std::move(blocking_details));
+  }
+  return blocking_details_list;
 }
 
 const base::UnguessableToken& LocalFrame::GetAgentClusterId() const {
@@ -2402,6 +2418,14 @@ const base::UnguessableToken& LocalFrame::GetAgentClusterId() const {
   return base::UnguessableToken::Null();
 }
 
+void LocalFrame::OnTaskCompleted(base::TimeTicks start_time,
+                                 base::TimeTicks end_time,
+                                 base::TimeTicks desired_execution_time) {
+  if (FrameWidget* widget = GetWidgetForLocalRoot()) {
+    widget->OnTaskCompletedForFrame(start_time, end_time,
+                                    desired_execution_time, this);
+  }
+}
 mojom::blink::ReportingServiceProxy* LocalFrame::GetReportingService() {
   return mojo_handler_->ReportingService();
 }

@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/child_accounts/time_limit_test_utils.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -117,7 +117,7 @@ void AddTimeUsageLimit(base::Value::Dict* policy,
   DCHECK_EQ(quota.InNanoseconds() % base::Minutes(1).InNanoseconds(), 0);
   DCHECK_LT(quota, base::Hours(24));
 
-  std::transform(day.begin(), day.end(), day.begin(), ::tolower);
+  base::ranges::transform(day, day.begin(), ::tolower);
   policy->Find(kTimeUsageLimit)
       ->GetDict()
       .Set(day, CreateTimeUsage(quota, last_updated));

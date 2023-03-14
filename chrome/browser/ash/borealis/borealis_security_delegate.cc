@@ -56,4 +56,9 @@ bool BorealisSecurityDelegate::CanLockPointer(aura::Window* window) const {
   return window->GetProperty(chromeos::kUseOverviewToExitPointerLock);
 }
 
+bool BorealisSecurityDelegate::CanSetBoundsWithServerSideDecoration(
+    aura::Window* window) const {
+  return true;
+}
+
 }  // namespace borealis

@@ -226,18 +226,9 @@ TestingApplicationContext::GetBrowserPolicyConnector() {
 PromosManager* TestingApplicationContext::GetPromosManager() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  if (IsFullscreenPromosManagerEnabled()) {
-    promos_manager_ = std::make_unique<MockPromosManager>();
-    return promos_manager_.get();
-  }
+  promos_manager_ = std::make_unique<MockPromosManager>();
 
-  return nullptr;
-}
-
-breadcrumbs::BreadcrumbPersistentStorageManager*
-TestingApplicationContext::GetBreadcrumbPersistentStorageManager() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  return nullptr;
+  return promos_manager_.get();
 }
 
 id<SingleSignOnService> TestingApplicationContext::GetSSOService() {

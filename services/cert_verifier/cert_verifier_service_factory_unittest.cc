@@ -22,6 +22,7 @@
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/log/net_log_with_source.h"
+#include "net/net_buildflags.h"
 #include "net/test/cert_builder.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
@@ -129,7 +130,9 @@ TEST(CertVerifierServiceFactoryTest, GetNewCertVerifierWithUpdatedRootStore) {
   // Configure with Chrome Root Store enabled.
   mojom::CertVerifierServiceParamsPtr service_params =
       mojom::CertVerifierServiceParams::New();
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
   service_params->use_chrome_root_store = true;
+#endif
 
   mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
   CertVerifierServiceFactoryImpl cv_service_factory_impl(
@@ -181,7 +184,9 @@ TEST(CertVerifierServiceFactoryTest, UpdateExistingCertVerifierWithRootStore) {
   // Configure with Chrome Root Store enabled.
   mojom::CertVerifierServiceParamsPtr service_params =
       mojom::CertVerifierServiceParams::New();
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
   service_params->use_chrome_root_store = true;
+#endif
 
   mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
   CertVerifierServiceFactoryImpl cv_service_factory_impl(
@@ -281,7 +286,9 @@ TEST(CertVerifierServiceFactoryTest, OldRootStoreUpdateIgnored) {
   // Configure with Chrome Root Store enabled.
   mojom::CertVerifierServiceParamsPtr service_params =
       mojom::CertVerifierServiceParams::New();
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
   service_params->use_chrome_root_store = true;
+#endif
 
   mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
   CertVerifierServiceFactoryImpl cv_service_factory_impl(
@@ -345,7 +352,9 @@ TEST(CertVerifierServiceFactoryTest, BadRootStoreUpdateIgnored) {
   // Configure with Chrome Root Store enabled.
   mojom::CertVerifierServiceParamsPtr service_params =
       mojom::CertVerifierServiceParams::New();
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
   service_params->use_chrome_root_store = true;
+#endif
 
   mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
   CertVerifierServiceFactoryImpl cv_service_factory_impl(

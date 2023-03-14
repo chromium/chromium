@@ -34,8 +34,9 @@ void FakeFrame::SetNavigationEventListener2(
     fidl::InterfaceHandle<fuchsia::web::NavigationEventListener> listener,
     fuchsia::web::NavigationEventListenerFlags flags) {
   listener_.Bind(std::move(listener));
-  if (on_set_listener_callback_)
+  if (on_set_listener_callback_) {
     std::move(on_set_listener_callback_).Run();
+  }
 }
 
 void FakeFrame::NotImplemented_(const std::string& name) {
@@ -48,8 +49,9 @@ FakeContext::~FakeContext() = default;
 void FakeContext::CreateFrame(
     fidl::InterfaceRequest<fuchsia::web::Frame> frame_request) {
   FakeFrame* new_frame = new FakeFrame(std::move(frame_request));
-  if (on_create_frame_callback_)
+  if (on_create_frame_callback_) {
     on_create_frame_callback_.Run(new_frame);
+  }
 
   // |new_frame| owns itself, so we intentionally leak the pointer.
 }

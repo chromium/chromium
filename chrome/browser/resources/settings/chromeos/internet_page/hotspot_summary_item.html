@@ -10,7 +10,7 @@
 
 <div class="settings-box two-line no-padding">
   <div id="hotspotSummaryItemRow"
-      actionable="[[shouldShowArrowButton_(hotspotInfo.allowStatus)]]"
+      actionable$="[[shouldShowArrowButton_(hotspotInfo.allowStatus)]]"
       on-click="navigateToDetailPage_"
       class="flex layout horizontal center link-wrapper">
     <iron-icon id="hotspotIcon" icon="[[getIconClass_(isHotspotToggleOn_)]]">

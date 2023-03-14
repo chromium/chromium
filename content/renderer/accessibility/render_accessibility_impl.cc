@@ -564,7 +564,7 @@ void RenderAccessibilityImpl::HandleAXEvent(const ui::AXEvent& event) {
   // field, ensure we re-serialize the whole thing including its inline text
   // boxes.
   if (event.event_type == ax::mojom::Event::kFocus && obj.IsEditable())
-    obj.InvalidateSerializerSubtree();
+    obj.MarkSerializerSubtreeDirty();
 #endif
 
   if (!ax_context_->AddPendingEvent(event)) {
@@ -891,6 +891,10 @@ int RenderAccessibilityImpl::GenerateAXID() {
   return ax_context_->GenerateAXID();
 }
 
+ui::AXMode RenderAccessibilityImpl::GetAXMode() const {
+  return accessibility_mode_;
+}
+
 ui::AXTreeID RenderAccessibilityImpl::GetTreeIDForPluginHost() const {
   DCHECK(render_frame_) << "A plugin tree should be under active construction "
                            "only while this render frame is alive.";
@@ -1175,7 +1179,7 @@ bool RenderAccessibilityImpl::SerializeUpdatesAndEvents(
     WebAXObject root,
     std::vector<ui::AXEvent>& events,
     std::vector<ui::AXTreeUpdate>& updates,
-    bool invalidate_plugin_subtree) {
+    bool mark_plugin_subtree_dirty) {
   bool had_end_of_test_event = false;
 
   // If there's a layout complete or a scroll changed message, we need to send
@@ -1197,11 +1201,11 @@ bool RenderAccessibilityImpl::SerializeUpdatesAndEvents(
 
   for (auto& update : updates) {
     if (update.node_id_to_clear > 0) {
-      invalidate_plugin_subtree = true;
+      mark_plugin_subtree_dirty = true;
     }
 
     if (plugin_tree_source_) {
-      AddPluginTreeToUpdate(&update, invalidate_plugin_subtree);
+      AddPluginTreeToUpdate(&update, mark_plugin_subtree_dirty);
     }
 
     AddImageAnnotations(document, update.nodes);
@@ -1340,9 +1344,9 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
 
   // Keep track of if the host node for a plugin has been invalidated,
   // because if so, the plugin subtree will need to be re-serialized.
-  bool invalidate_plugin_subtree = false;
+  bool mark_plugin_subtree_dirty = false;
   if (plugin_tree_source_) {
-    invalidate_plugin_subtree = !plugin_host_node_.IsInClientTree();
+    mark_plugin_subtree_dirty = plugin_host_node_.IsDirty();
   }
 
   // The serialized list of updates and events to send to the browser.
@@ -1351,7 +1355,7 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
 
   bool need_to_send_location_changes = SerializeUpdatesAndEvents(
       document, root, updates_and_events->events, updates_and_events->updates,
-      invalidate_plugin_subtree);
+      mark_plugin_subtree_dirty);
   if (updates_and_events->updates.empty()) {
     // Do not send a serialization if there are no updates.
     DCHECK(updates_and_events->events.empty())
@@ -1488,7 +1492,7 @@ void RenderAccessibilityImpl::OnGetImageData(const ui::AXActionTarget* target,
     return;
   }
 
-  obj.InvalidateSerializerSubtree();
+  obj.MarkSerializerSubtreeDirty();
   if (!serialize_post_lifecycle_) {
     legacy_event_schedule_mode_ =
         LegacyEventScheduleMode::kProcessEventsImmediately;
@@ -1517,10 +1521,11 @@ void RenderAccessibilityImpl::OnDestruct() {
 
 void RenderAccessibilityImpl::AddPluginTreeToUpdate(
     ui::AXTreeUpdate* update,
-    bool invalidate_plugin_subtree) {
+    bool mark_plugin_subtree_dirty) {
   const WebDocument& document = GetMainDocument();
-  if (invalidate_plugin_subtree)
+  if (mark_plugin_subtree_dirty) {
     plugin_serializer_->Reset();
+  }
 
   for (ui::AXNodeData& node : update->nodes) {
     if (node.role == ax::mojom::Role::kEmbeddedObject) {

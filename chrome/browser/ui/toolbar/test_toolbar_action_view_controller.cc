@@ -69,7 +69,7 @@ bool TestToolbarActionViewController::IsShowingPopup() const {
   return popup_showing_;
 }
 
-bool TestToolbarActionViewController::IsRequestingSiteAccess(
+bool TestToolbarActionViewController::ShouldShowSiteAccessRequestInToolbar(
     content::WebContents* web_contents) const {
   return false;
 }

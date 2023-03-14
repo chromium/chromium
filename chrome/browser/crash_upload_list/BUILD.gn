@@ -1,0 +1,70 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//extensions/buildflags/buildflags.gni")
+import("//testing/test.gni")
+
+static_library("crash_upload_list") {
+  sources = [
+    "crash_upload_list.cc",
+    "crash_upload_list.h",
+  ]
+
+  if (is_android) {
+    sources += [
+      "crash_upload_list_android.cc",
+      "crash_upload_list_android.h",
+    ]
+  }
+
+  if (is_chromeos) {
+    sources += [
+      "crash_upload_list_chromeos.cc",
+      "crash_upload_list_chromeos.h",
+    ]
+  }
+
+  if (is_fuchsia) {
+    sources += [
+      "crash_upload_list_fuchsia.cc",
+      "crash_upload_list_fuchsia.h",
+    ]
+  }
+
+  deps = [
+    "//chrome/common:constants",
+    "//components/crash/core/browser:browser",
+    "//components/upload_list",
+    "//ui/base:base",
+  ]
+
+  if (is_android) {
+    deps += [ "//chrome/android:chrome_jni_headers" ]
+  }
+
+  if (!is_fuchsia) {
+    deps += [ "//components/crash/core/app:app" ]
+  }
+
+  public_deps = [
+    "//base",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  if (is_chromeos) {
+    sources = [ "crash_upload_list_chromeos_unittest.cc" ]
+  }
+
+  deps = [
+    ":crash_upload_list",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

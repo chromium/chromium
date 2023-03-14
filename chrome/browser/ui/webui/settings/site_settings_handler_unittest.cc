@@ -184,8 +184,9 @@ net::SchemefulSite ConvertEtldToSchemefulSite(const std::string etld_plus1) {
 void ValidateSitesWithFps(
     const base::Value::List& storage_and_cookie_list,
     base::flat_map<net::SchemefulSite, net::SchemefulSite>& first_party_sets) {
-  for (const base::Value& site_group : storage_and_cookie_list) {
-    std::string etld_plus1 = *site_group.GetDict().FindString("etldPlus1");
+  for (const base::Value& site_group_value : storage_and_cookie_list) {
+    const base::Value::Dict& site_group = site_group_value.GetDict();
+    std::string etld_plus1 = *site_group.FindString("etldPlus1");
     auto schemeful_site = ConvertEtldToSchemefulSite(etld_plus1);
 
     if (first_party_sets.count(schemeful_site)) {
@@ -193,21 +194,20 @@ void ValidateSitesWithFps(
       // |first_party_sets| mapping of site group owners.
       std::string owner_etldplus1 =
           first_party_sets[schemeful_site].GetURL().host();
-      ASSERT_EQ(owner_etldplus1, *site_group.GetDict().FindString("fpsOwner"));
+      ASSERT_EQ(owner_etldplus1, *site_group.FindString("fpsOwner"));
       if (owner_etldplus1 == "google.com") {
-        ASSERT_EQ(2, *site_group.GetDict().FindInt("fpsNumMembers"));
-        ASSERT_EQ(false,
-                  *site_group.GetDict().FindBool("fpsEnterpriseManaged"));
+        ASSERT_EQ(2, *site_group.FindInt("fpsNumMembers"));
+        ASSERT_EQ(false, *site_group.FindBool("fpsEnterpriseManaged"));
       } else if (owner_etldplus1 == "example.com") {
-        ASSERT_EQ(1, *site_group.GetDict().FindInt("fpsNumMembers"));
-        ASSERT_EQ(true, *site_group.GetDict().FindBool("fpsEnterpriseManaged"));
+        ASSERT_EQ(1, *site_group.FindInt("fpsNumMembers"));
+        ASSERT_EQ(true, *site_group.FindBool("fpsEnterpriseManaged"));
       }
     } else {
       // The site is not part of a FPS therefore doesn't have `fpsOwner` or
       // `fpsNumMembers` set. `FindString` and `FindInt` should return null.
-      ASSERT_FALSE(site_group.GetDict().FindString("fpsOwner"));
-      ASSERT_FALSE(site_group.GetDict().FindInt("fpsNumMembers"));
-      ASSERT_FALSE(site_group.GetDict().FindBool("fpsEnterpriseManaged"));
+      ASSERT_FALSE(site_group.FindString("fpsOwner"));
+      ASSERT_FALSE(site_group.FindInt("fpsNumMembers"));
+      ASSERT_FALSE(site_group.FindBool("fpsEnterpriseManaged"));
     }
   }
 }
@@ -352,9 +352,9 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
 
   void RecordNotification(permissions::NotificationsEngagementService* service,
                           GURL url,
-                          int daily_avarage_count) {
+                          int daily_average_count) {
     // This many notifications were recorded during the past week in total.
-    int total_count = daily_avarage_count * 7;
+    int total_count = daily_average_count * 7;
     service->RecordNotificationDisplayed(url, total_count);
   }
 
@@ -418,13 +418,12 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     ASSERT_TRUE(data.arg2()->is_bool());
     ASSERT_TRUE(data.arg2()->GetBool());
 
-    const base::Value* default_value = data.arg3();
-    ASSERT_TRUE(default_value->is_dict());
-    const std::string* setting = default_value->FindStringKey(kSetting);
+    const base::Value::Dict& default_value = data.arg3()->GetDict();
+    const std::string* setting = default_value.FindString(kSetting);
     ASSERT_TRUE(setting);
     EXPECT_EQ(content_settings::ContentSettingToString(expected_setting),
               *setting);
-    const std::string* source = default_value->FindStringKey(kSource);
+    const std::string* source = default_value.FindString(kSource);
     if (source) {
       EXPECT_EQ(site_settings::SiteSettingSourceToString(expected_source),
                 *source);
@@ -450,30 +449,28 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     ASSERT_TRUE(data.arg3()->is_list());
     EXPECT_EQ(1U, data.arg3()->GetList().size());
 
-    const base::Value& exception = data.arg3()->GetList()[0];
-    ASSERT_TRUE(exception.is_dict());
+    const base::Value::Dict& exception = data.arg3()->GetList()[0].GetDict();
 
-    const std::string* origin = exception.FindStringKey(site_settings::kOrigin);
+    const std::string* origin = exception.FindString(site_settings::kOrigin);
     ASSERT_TRUE(origin);
     ASSERT_EQ(expected_origin, *origin);
 
     const std::string* display_name =
-        exception.FindStringKey(site_settings::kDisplayName);
+        exception.FindString(site_settings::kDisplayName);
     ASSERT_TRUE(display_name);
     ASSERT_EQ(expected_display_name, *display_name);
 
     const std::string* embedding_origin =
-        exception.FindStringKey(site_settings::kEmbeddingOrigin);
+        exception.FindString(site_settings::kEmbeddingOrigin);
     ASSERT_TRUE(embedding_origin);
     ASSERT_EQ(expected_embedding, *embedding_origin);
 
-    const std::string* setting =
-        exception.FindStringKey(site_settings::kSetting);
+    const std::string* setting = exception.FindString(site_settings::kSetting);
     ASSERT_TRUE(setting);
     ASSERT_EQ(content_settings::ContentSettingToString(expected_setting),
               *setting);
 
-    const std::string* source = exception.FindStringKey(site_settings::kSource);
+    const std::string* source = exception.FindString(site_settings::kSource);
     ASSERT_TRUE(source);
     ASSERT_EQ(site_settings::SiteSettingSourceToString(expected_source),
               *source);
@@ -554,14 +551,13 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     } else {
       EXPECT_EQ(1U, exceptions.size());
 
-      const base::Value& exception = exceptions[0];
-      ASSERT_TRUE(exception.is_dict());
+      const base::Value::Dict& exception = exceptions[0].GetDict();
 
-      const std::string* host = exception.FindStringKey("origin");
+      const std::string* host = exception.FindString("origin");
       ASSERT_TRUE(host);
       ASSERT_EQ(expected_host, *host);
 
-      const std::string* zoom = exception.FindStringKey("zoom");
+      const std::string* zoom = exception.FindString("zoom");
       ASSERT_TRUE(zoom);
       ASSERT_EQ(expected_zoom, *zoom);
     }
@@ -1420,8 +1416,9 @@ TEST_F(SiteSettingsHandlerTest, IncognitoExceptions) {
   auto validate_exception = [&kOriginToBlock](const base::Value& exception) {
     ASSERT_TRUE(exception.is_dict());
 
-    ASSERT_TRUE(exception.FindStringKey(site_settings::kOrigin));
-    ASSERT_EQ(kOriginToBlock, *exception.FindStringKey(site_settings::kOrigin));
+    ASSERT_TRUE(exception.GetDict().FindString(site_settings::kOrigin));
+    ASSERT_EQ(kOriginToBlock,
+              *exception.GetDict().FindString(site_settings::kOrigin));
   };
 
   CreateIncognitoProfile();
@@ -1941,7 +1938,7 @@ TEST_F(SiteSettingsHandlerTest, ExtensionDisplayName) {
       const base::Value& exception = data.arg3()->GetList()[0];
       ASSERT_TRUE(exception.is_dict());
       const std::string* extension_name_with_id =
-          exception.FindStringKey(site_settings::kExtensionNameWithId);
+          exception.GetDict().FindString(site_settings::kExtensionNameWithId);
       ASSERT_TRUE(extension_name_with_id);
       ASSERT_EQ(base::StringPrintf("Test Extension (ID: %s)",
                                    extension->id().c_str()),
@@ -1972,10 +1969,9 @@ TEST_F(SiteSettingsHandlerTest, ExtensionDisplayName) {
       EXPECT_EQ("cr.webUIResponse", data.function_name());
       ASSERT_TRUE(data.arg3()->is_list());
       EXPECT_EQ(1U, data.arg3()->GetList().size());
-      const base::Value& exception = data.arg3()->GetList()[0];
-      ASSERT_TRUE(exception.is_dict());
+      const base::Value::Dict& exception = data.arg3()->GetList()[0].GetDict();
       const std::string* extension_name_with_id =
-          exception.FindStringKey(site_settings::kExtensionNameWithId);
+          exception.FindString(site_settings::kExtensionNameWithId);
       ASSERT_FALSE(extension_name_with_id);
     }
   }
@@ -2237,12 +2233,12 @@ TEST_F(SiteSettingsHandlerInfobarTest, SettingPermissionsTriggersInfobar) {
   // |origin_query| tab to a different origin.
   const GURL origin_path("https://www.example.com/path/to/page.html");
   content::WebContents* foo_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(/*foo=*/0);
+      browser()->tab_strip_model()->GetWebContentsAt(/*index=*/0);
   NavigateAndCommit(foo_contents, origin_path);
 
   const GURL example_without_www("https://example.com/");
   content::WebContents* origin_query_contents =
-      browser2()->tab_strip_model()->GetWebContentsAt(/*origin_query=*/1);
+      browser2()->tab_strip_model()->GetWebContentsAt(/*index=*/1);
   NavigateAndCommit(origin_query_contents, example_without_www);
 
   // Reset all permissions.
@@ -2279,7 +2275,7 @@ TEST_F(SiteSettingsHandlerInfobarTest, SettingPermissionsTriggersInfobar) {
 
   // Make sure it's the correct infobar that's being shown.
   EXPECT_EQ(infobars::InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE,
-            GetInfoBarManagerForTab(browser(), /*origin_path=*/0, &tab_url)
+            GetInfoBarManagerForTab(browser(), /*tab_index=*/0, &tab_url)
                 ->infobar_at(0)
                 ->delegate()
                 ->GetIdentifier());
@@ -2609,56 +2605,62 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
   const base::Value::List& grants = data.arg3()->GetList();
 
   EXPECT_EQ(grants.size(), 2UL);
-  EXPECT_EQ(grants[0].FindKey(site_settings::kOrigin)->GetString(),
+  const base::Value::Dict& first_grant = grants[0].GetDict();
+  const base::Value::Dict& second_grant = grants[1].GetDict();
+  EXPECT_EQ(CHECK_DEREF(first_grant.FindString(site_settings::kOrigin)),
             "https://www.a.com/");
-  EXPECT_EQ(grants[1].FindKey(site_settings::kOrigin)->GetString(),
+  EXPECT_EQ(CHECK_DEREF(second_grant.FindString(site_settings::kOrigin)),
             "https://www.b.com/");
 
-  auto* kTestOrigin1FileReadGrants =
-      grants[0].FindKey(site_settings::kFileReadGrants);
-  auto* kTestOrigin1FileWriteGrants =
-      grants[0].FindKey(site_settings::kFileWriteGrants);
-  auto* kTestOrigin1DirectoryReadGrants =
-      grants[0].FindKey(site_settings::kDirectoryReadGrants);
-  auto* kTestOrigin1DirectoryWriteGrants =
-      grants[0].FindKey(site_settings::kDirectoryWriteGrants);
+  const base::Value::List* kTestOrigin1FileReadGrants =
+      first_grant.FindList(site_settings::kFileReadGrants);
+  const base::Value::List* kTestOrigin1FileWriteGrants =
+      first_grant.FindList(site_settings::kFileWriteGrants);
+  const base::Value::List* kTestOrigin1DirectoryReadGrants =
+      first_grant.FindList(site_settings::kDirectoryReadGrants);
+  const base::Value::List* kTestOrigin1DirectoryWriteGrants =
+      first_grant.FindList(site_settings::kDirectoryWriteGrants);
 
-  auto* kTestOrigin2FileReadGrants =
-      grants[1].FindKey(site_settings::kFileReadGrants);
-  auto* kTestOrigin2FileWriteGrants =
-      grants[1].FindKey(site_settings::kFileWriteGrants);
-  auto* kTestOrigin2DirectoryReadGrants =
-      grants[1].FindKey(site_settings::kDirectoryReadGrants);
-  auto* kTestOrigin2DirectoryWriteGrants =
-      grants[1].FindKey(site_settings::kDirectoryWriteGrants);
+  const base::Value::List* kTestOrigin2FileReadGrants =
+      second_grant.FindList(site_settings::kFileReadGrants);
+  const base::Value::List* kTestOrigin2FileWriteGrants =
+      second_grant.FindList(site_settings::kFileWriteGrants);
+  const base::Value::List* kTestOrigin2DirectoryReadGrants =
+      second_grant.FindList(site_settings::kDirectoryReadGrants);
+  const base::Value::List* kTestOrigin2DirectoryWriteGrants =
+      second_grant.FindList(site_settings::kDirectoryWriteGrants);
 
   // Checks that the grants for test origins are populated as expected.
-  EXPECT_FALSE(kTestOrigin1FileReadGrants->GetList()[0]
+  EXPECT_FALSE(CHECK_DEREF(kTestOrigin1FileReadGrants)[0]
                    .GetDict()
-                   .Find(site_settings::kIsDirectory)
-                   ->GetBool());
-  EXPECT_EQ(kTestOrigin1FileWriteGrants->GetList().size(), 0UL);
-  EXPECT_EQ(kTestOrigin1DirectoryReadGrants->GetList()[0]
-                .GetDict()
-                .Find(site_settings::kFilePath)
-                ->GetString(),
-            "/e/");
-  EXPECT_EQ(kTestOrigin1DirectoryWriteGrants->GetList().size(), 0UL);
+                   .FindBool(site_settings::kIsDirectory)
+                   .value_or(true));
+  ASSERT_TRUE(kTestOrigin1FileWriteGrants != nullptr);
+  EXPECT_TRUE(kTestOrigin1FileWriteGrants->empty());
+  EXPECT_EQ(
+      CHECK_DEREF(
+          CHECK_DEREF(kTestOrigin1DirectoryReadGrants)[0].GetDict().FindString(
+              site_settings::kFilePath)),
+      "/e/");
+  ASSERT_TRUE(kTestOrigin1DirectoryWriteGrants != nullptr);
+  EXPECT_TRUE(kTestOrigin1DirectoryWriteGrants->empty());
 
   // In the case of kTestOrigin2, check that when an origin has an
   // associated 'write' grant, that the grant is only recorded in the
   // respective write grants list, and is not recorded in the origin's
   // read grants list.
-  EXPECT_EQ(kTestOrigin2FileReadGrants->GetList().size(), 0UL);
-  EXPECT_TRUE(kTestOrigin2FileWriteGrants->GetList()[0]
+  ASSERT_TRUE(kTestOrigin2FileReadGrants != nullptr);
+  EXPECT_TRUE(kTestOrigin2FileReadGrants->empty());
+  EXPECT_TRUE(CHECK_DEREF(kTestOrigin2FileWriteGrants)[0]
                   .GetDict()
-                  .Find(site_settings::kIsWritable)
-                  ->GetBool());
-  EXPECT_EQ(kTestOrigin2DirectoryReadGrants->GetList().size(), 0UL);
-  EXPECT_TRUE(kTestOrigin2DirectoryWriteGrants->GetList()[0]
+                  .FindBool(site_settings::kIsWritable)
+                  .value_or(false));
+  ASSERT_TRUE(kTestOrigin2DirectoryReadGrants != nullptr);
+  EXPECT_TRUE(kTestOrigin2DirectoryReadGrants->empty());
+  EXPECT_TRUE(CHECK_DEREF(kTestOrigin2DirectoryWriteGrants)[0]
                   .GetDict()
-                  .Find(site_settings::kIsDirectory)
-                  ->GetBool());
+                  .FindBool(site_settings::kIsDirectory)
+                  .value_or(false));
 }
 
 // RevokeGrant() revokes a single File System Access permission grant,
@@ -2709,10 +2711,10 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
   // After revoking the `file_read_grant` for kTestOrigin1, only one
   // `directory_read_grant` should remain when retrieving the file system grants
   // for kTestOrigin1.
-  EXPECT_EQ(grants[0].FindKey(site_settings::kFileReadGrants)->GetList().size(),
-            0UL);
+  EXPECT_TRUE(
+      grants[0].GetDict().FindList(site_settings::kFileReadGrants)->empty());
   EXPECT_EQ(
-      grants[0].FindKey(site_settings::kDirectoryReadGrants)->GetList().size(),
+      grants[0].GetDict().FindList(site_settings::kDirectoryReadGrants)->size(),
       1UL);
 
   // Revoking a single grant from an origin with multiple grants in a given
@@ -2731,15 +2733,14 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
   const base::Value::List& updated_grants = updated_data.arg3()->GetList();
 
   EXPECT_EQ(updated_grants[1]
-                .FindKey(site_settings::kDirectoryWriteGrants)
-                ->GetList()
-                .size(),
+                .GetDict()
+                .FindList(site_settings::kDirectoryWriteGrants)
+                ->size(),
             1UL);
-  EXPECT_EQ(updated_grants[1]
-                .FindKey(site_settings::kDirectoryWriteGrants)
-                ->GetList()[0]
-                .FindKey(site_settings::kFilePath)
-                ->GetString(),
+  EXPECT_EQ(CHECK_DEREF(CHECK_DEREF(updated_grants[1].GetDict().FindList(
+                site_settings::kDirectoryWriteGrants))[0]
+                            .GetDict()
+                            .FindString(site_settings::kFilePath)),
             "/f/g/h/");
 }
 
@@ -2800,23 +2801,23 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
   // are unaffected.
   EXPECT_EQ(updated_grants.size(), 1UL);
   EXPECT_EQ(updated_grants[0]
-                .FindKey(site_settings::kFileWriteGrants)
-                ->GetList()
-                .size(),
+                .GetDict()
+                .FindList(site_settings::kFileWriteGrants)
+                ->size(),
             1UL);
   EXPECT_EQ(updated_grants[0]
-                .FindKey(site_settings::kDirectoryWriteGrants)
-                ->GetList()
-                .size(),
+                .GetDict()
+                .FindList(site_settings::kDirectoryWriteGrants)
+                ->size(),
             1UL);
 }
 
 namespace {
 
 std::vector<std::string> GetExceptionDisplayNames(
-    const base::Value& exceptions) {
+    const base::Value::List& exceptions) {
   std::vector<std::string> display_names;
-  for (const base::Value& exception : exceptions.GetList()) {
+  for (const base::Value& exception : exceptions) {
     const std::string* display_name =
         exception.GetDict().FindString(site_settings::kDisplayName);
     if (display_name) {
@@ -2882,24 +2883,24 @@ class SiteSettingsHandlerChooserExceptionTest
     ASSERT_TRUE(data.arg3()->is_list());
   }
 
-  const base::Value& GetChooserExceptionListFromWebUiCallData(
+  const base::Value::List& GetChooserExceptionListFromWebUiCallData(
       const std::string& chooser_type,
       size_t expected_total_calls) {
     ValidateChooserExceptionList(chooser_type, expected_total_calls);
-    return *web_ui()->call_data().back()->arg3();
+    return web_ui()->call_data().back()->arg3()->GetList();
   }
 
   // Iterate through the exception's sites array and return true if a site
   // exception matches |requesting_origin| and |embedding_origin|.
-  bool ChooserExceptionContainsSiteException(const base::Value& exception,
+  bool ChooserExceptionContainsSiteException(const base::Value::Dict& exception,
                                              base::StringPiece origin) {
-    const base::Value* sites = exception.FindListKey(site_settings::kSites);
+    const base::Value::List* sites = exception.FindList(site_settings::kSites);
     if (!sites)
       return false;
 
-    for (const auto& site : sites->GetList()) {
+    for (const auto& site : *sites) {
       const std::string* exception_origin =
-          site.FindStringKey(site_settings::kOrigin);
+          site.GetDict().FindString(site_settings::kOrigin);
       if (!exception_origin)
         continue;
       if (*exception_origin == origin)
@@ -2911,20 +2912,19 @@ class SiteSettingsHandlerChooserExceptionTest
   // Iterate through the |exception_list| array and return true if there is a
   // chooser exception with |display_name| that contains a site exception for
   // |origin|.
-  bool ChooserExceptionContainsSiteException(const base::Value& exceptions,
-                                             base::StringPiece display_name,
-                                             base::StringPiece origin) {
-    if (!exceptions.is_list())
-      return false;
-
-    for (const auto& exception : exceptions.GetList()) {
+  bool ChooserExceptionContainsSiteException(
+      const base::Value::List& exceptions,
+      base::StringPiece display_name,
+      base::StringPiece origin) {
+    for (const auto& exception : exceptions) {
       const std::string* exception_display_name =
-          exception.FindStringKey(site_settings::kDisplayName);
+          exception.GetDict().FindString(site_settings::kDisplayName);
       if (!exception_display_name)
         continue;
 
       if (*exception_display_name == display_name) {
-        return ChooserExceptionContainsSiteException(exception, origin);
+        return ChooserExceptionContainsSiteException(exception.GetDict(),
+                                                     origin);
       }
     }
     return false;
@@ -2944,8 +2944,9 @@ class SiteSettingsHandlerChooserExceptionTest
     const std::string group_name(
         site_settings::ContentSettingsTypeToGroupName(content_type()));
 
-    const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
-        group_name, /*expected_total_calls=*/1u);
+    const base::Value::List& exceptions =
+        GetChooserExceptionListFromWebUiCallData(group_name,
+                                                 /*expected_total_calls=*/1u);
 
     // There are 9 granted permissions:
     // 1. Persistent permission for persistent-device on kChromiumOrigin
@@ -3038,8 +3039,9 @@ class SiteSettingsHandlerChooserExceptionTest
     // The objects returned by GetChooserExceptionListFromProfile should also
     // include the incognito permissions.
     {
-      const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
-          group_name, /*expected_total_calls=*/1u);
+      const base::Value::List& exceptions =
+          GetChooserExceptionListFromWebUiCallData(group_name,
+                                                   /*expected_total_calls=*/1u);
       switch (content_type()) {
         case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
           EXPECT_THAT(
@@ -3081,8 +3083,9 @@ class SiteSettingsHandlerChooserExceptionTest
     EXPECT_EQ(web_ui()->call_data().size(), 2u);
 
     {
-      const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
-          group_name, /*expected_total_calls=*/3u);
+      const base::Value::List& exceptions =
+          GetChooserExceptionListFromWebUiCallData(group_name,
+                                                   /*expected_total_calls=*/3u);
       switch (content_type()) {
         case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
           EXPECT_THAT(
@@ -3139,8 +3142,9 @@ class SiteSettingsHandlerChooserExceptionTest
         kGoogleUrl.DeprecatedGetOriginAsURL().spec();
 
     {
-      const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
-          group_name, /*expected_total_calls=*/1u);
+      const base::Value::List& exceptions =
+          GetChooserExceptionListFromWebUiCallData(group_name,
+                                                   /*expected_total_calls=*/1u);
       switch (content_type()) {
         case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
           EXPECT_THAT(
@@ -3193,8 +3197,9 @@ class SiteSettingsHandlerChooserExceptionTest
     {
       // The exception list size should not have been reduced since there is
       // still a policy granted permission for "persistent-device".
-      const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
-          group_name, /*expected_total_calls=*/4u);
+      const base::Value::List& exceptions =
+          GetChooserExceptionListFromWebUiCallData(group_name,
+                                                   /*expected_total_calls=*/4u);
       switch (content_type()) {
         case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
           EXPECT_THAT(
@@ -3257,8 +3262,9 @@ class SiteSettingsHandlerChooserExceptionTest
     // contentSettingChooserPermissionChanged to fire.
     EXPECT_EQ(web_ui()->call_data().size(), 6u);
     {
-      const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
-          group_name, /*expected_total_calls=*/7u);
+      const base::Value::List& exceptions =
+          GetChooserExceptionListFromWebUiCallData(group_name,
+                                                   /*expected_total_calls=*/7u);
       switch (content_type()) {
         case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
           EXPECT_THAT(
@@ -3326,8 +3332,9 @@ class SiteSettingsHandlerChooserExceptionTest
     // contentSettingChooserPermissionChanged to fire.
     EXPECT_EQ(web_ui()->call_data().size(), 9u);
     {
-      const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
-          group_name, /*expected_total_calls=*/10u);
+      const base::Value::List& exceptions =
+          GetChooserExceptionListFromWebUiCallData(
+              group_name, /*expected_total_calls=*/10u);
       switch (content_type()) {
         case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
           EXPECT_THAT(GetExceptionDisplayNames(exceptions),
@@ -3375,8 +3382,9 @@ class SiteSettingsHandlerChooserExceptionTest
         site_settings::ContentSettingsTypeToGroupName(content_type()));
 
     {
-      const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
-          group_name, /*expected_total_calls=*/1u);
+      const base::Value::List& exceptions =
+          GetChooserExceptionListFromWebUiCallData(group_name,
+                                                   /*expected_total_calls=*/1u);
       switch (content_type()) {
         case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
           EXPECT_THAT(GetExceptionDisplayNames(exceptions),
@@ -3421,11 +3429,13 @@ class SiteSettingsHandlerChooserExceptionTest
         site_settings::GetVisiblePermissionCategories().size();
     EXPECT_EQ(kContentSettingsTypeCount + 3, web_ui()->call_data().size());
     {
-      const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
-          group_name, /*expected_total_calls=*/kContentSettingsTypeCount + 4);
+      const base::Value::List& exceptions =
+          GetChooserExceptionListFromWebUiCallData(
+              group_name,
+              /*expected_total_calls=*/kContentSettingsTypeCount + 4);
       switch (content_type()) {
         case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
-          EXPECT_TRUE(exceptions.GetList().empty());
+          EXPECT_TRUE(exceptions.empty());
           break;
         case ContentSettingsType::HID_CHOOSER_DATA:
         case ContentSettingsType::SERIAL_CHOOSER_DATA:
@@ -3458,11 +3468,12 @@ class SiteSettingsHandlerChooserExceptionTest
         site_settings::ContentSettingsTypeToGroupName(content_type()));
 
     {
-      const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
-          group_name, /*expected_total_calls=*/1u);
+      const base::Value::List& exceptions =
+          GetChooserExceptionListFromWebUiCallData(group_name,
+                                                   /*expected_total_calls=*/1u);
       switch (content_type()) {
         case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
-          EXPECT_TRUE(exceptions.GetList().empty());
+          EXPECT_TRUE(exceptions.empty());
           break;
         case ContentSettingsType::HID_CHOOSER_DATA:
         case ContentSettingsType::SERIAL_CHOOSER_DATA:
@@ -3498,11 +3509,13 @@ class SiteSettingsHandlerChooserExceptionTest
         site_settings::GetVisiblePermissionCategories().size();
     EXPECT_EQ(kContentSettingsTypeCount + 1, web_ui()->call_data().size());
     {
-      const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
-          group_name, /*expected_total_calls=*/kContentSettingsTypeCount + 2);
+      const base::Value::List& exceptions =
+          GetChooserExceptionListFromWebUiCallData(
+              group_name,
+              /*expected_total_calls=*/kContentSettingsTypeCount + 2);
       switch (content_type()) {
         case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
-          EXPECT_TRUE(exceptions.GetList().empty());
+          EXPECT_TRUE(exceptions.empty());
           break;
         case ContentSettingsType::HID_CHOOSER_DATA:
         case ContentSettingsType::SERIAL_CHOOSER_DATA:
@@ -4430,7 +4443,8 @@ TEST_F(SiteSettingsHandlerTest, HandleClearEtldPlus1DataAndCookies) {
   auto verify_site_group = [](const base::Value& site_group,
                               std::string expected_etld_plus1) {
     ASSERT_TRUE(site_group.is_dict());
-    const std::string* etld_plus1 = site_group.FindStringKey("etldPlus1");
+    const std::string* etld_plus1 =
+        site_group.GetDict().FindString("etldPlus1");
     ASSERT_TRUE(etld_plus1);
     ASSERT_EQ(expected_etld_plus1, *etld_plus1);
   };
@@ -4681,7 +4695,7 @@ TEST_F(SiteSettingsHandlerTest, ClearClientHints) {
       ContentSettingsType::CLIENT_HINTS, &client_hints_settings);
   EXPECT_EQ(1U, client_hints_settings.size());
 
-  // www.google.com should be the only remainining entry.
+  // www.google.com should be the only remaining entry.
   EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(hosts[3]),
             client_hints_settings.at(0).primary_pattern);
   EXPECT_EQ(ContentSettingsPattern::Wildcard(),
@@ -4758,7 +4772,7 @@ TEST_F(SiteSettingsHandlerTest, ClearReducedAcceptLanguage) {
       ContentSettingsType::REDUCED_ACCEPT_LANGUAGE, &accept_language_settings);
   EXPECT_EQ(1U, accept_language_settings.size());
 
-  // www.google.com should be the only remainining entry.
+  // www.google.com should be the only remaining entry.
   EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(hosts[3]),
             accept_language_settings.at(0).primary_pattern);
   EXPECT_EQ(ContentSettingsPattern::Wildcard(),
@@ -5225,9 +5239,11 @@ TEST_F(SiteSettingsHandlerTest, PopulateNotificationPermissionReviewData) {
   // descending order of notification count.
   EXPECT_EQ(2UL, notification_permissions.size());
   EXPECT_EQ("https://www.youtube.com:443",
-            *notification_permissions[0].FindStringKey(site_settings::kOrigin));
+            *notification_permissions[0].GetDict().FindString(
+                site_settings::kOrigin));
   EXPECT_EQ("https://google.com:443",
-            *notification_permissions[1].FindStringKey(site_settings::kOrigin));
+            *notification_permissions[1].GetDict().FindString(
+                site_settings::kOrigin));
 
   // Increasing notification count also promotes host in the list.
   RecordNotification(notification_engagement_service,
@@ -5236,10 +5252,10 @@ TEST_F(SiteSettingsHandlerTest, PopulateNotificationPermissionReviewData) {
       handler()->PopulateNotificationPermissionReviewData();
   EXPECT_EQ(2UL, updated_notification_permissions.size());
   EXPECT_EQ("https://google.com:443",
-            *updated_notification_permissions[0].FindStringKey(
+            *updated_notification_permissions[0].GetDict().FindString(
                 site_settings::kOrigin));
   EXPECT_EQ("https://www.youtube.com:443",
-            *updated_notification_permissions[1].FindStringKey(
+            *updated_notification_permissions[1].GetDict().FindString(
                 site_settings::kOrigin));
 }
 

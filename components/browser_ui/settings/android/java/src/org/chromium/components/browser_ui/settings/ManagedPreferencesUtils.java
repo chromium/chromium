@@ -146,7 +146,7 @@ public class ManagedPreferencesUtils {
             preference.setIcon(getManagedIconDrawable(delegate, preference));
         }
 
-        if (delegate.isPreferenceClickDisabledByPolicy(preference)) {
+        if (delegate.isPreferenceClickDisabled(preference)) {
             // Disable the views and prevent the Preference from mucking with the enabled state.
             preference.setShouldDisableView(false);
             preference.setEnabled(false);
@@ -181,7 +181,7 @@ public class ManagedPreferencesUtils {
             return;
         }
 
-        if (delegate.isPreferenceClickDisabledByPolicy(preference)) {
+        if (delegate.isPreferenceClickDisabled(preference)) {
             ViewUtils.setEnabledRecursive(view, false);
         }
 
@@ -209,7 +209,7 @@ public class ManagedPreferencesUtils {
         assert delegate != null;
         if (delegate == null) return;
 
-        if (delegate.isPreferenceClickDisabledByPolicy(preference)) {
+        if (delegate.isPreferenceClickDisabled(preference)) {
             ViewUtils.setEnabledRecursive(view, false);
         }
 
@@ -287,7 +287,7 @@ public class ManagedPreferencesUtils {
      */
     public static boolean onClickPreference(
             @Nullable ManagedPreferenceDelegate delegate, Preference preference) {
-        if (delegate == null || !delegate.isPreferenceClickDisabledByPolicy(preference)) {
+        if (delegate == null || !delegate.isPreferenceClickDisabled(preference)) {
             return false;
         }
 

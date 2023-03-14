@@ -11,10 +11,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
-#include "ui/display/display.h"
-#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/size.h"
 #include "ui/wm/core/transient_window_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
 
@@ -46,7 +43,6 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
 
   SplitViewDivider(const SplitViewDivider&) = delete;
   SplitViewDivider& operator=(const SplitViewDivider&) = delete;
-
   ~SplitViewDivider() override;
 
   // static version of GetDividerBoundsInScreen(bool is_dragging) function.
@@ -55,6 +51,8 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
       bool landscape,
       int divider_position,
       bool is_dragging);
+
+  views::Widget* divider_widget() { return divider_widget_; }
 
   // Do the divider spawning animation that adds a finishing touch to the
   // snapping animation of a window.
@@ -67,13 +65,25 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   // position.
   gfx::Rect GetDividerBoundsInScreen(bool is_dragging);
 
+  // Sets the z-order of the `divider_widget_` to be
+  // `ui::ZOrderLevel::kFloatingUIElement` so that it is always on top which
+  // applies to tablet split view mode.
+  // TODO (b/272365643): Unify the implementation of the split view divider in
+  // the clamshell and tablet mode. The split view divider should be in the same
+  // container as the two snapped windows in the tablet mode.
   void SetAlwaysOnTop(bool on_top);
 
-  // Set adjustability of the divider bar. Unadjustable divider does not receive
-  // event and the divider bar view is not visible. When the divider is moved
-  // for the virtual keyboard, the divider will be set unadjustable.
+  // Stacks the `divider_widget_` to be right on top of the two observed windows
+  // with `ui::ZOrderLevel::kNormal` as the z-order which applies to clamshell
+  // mode when the feature flag `kSnapGroup` is enabled and the feature param
+  // `kAutomaticallyLockGroup` is true.
+  void StackOnTopOfTheObservedWindows();
+
+  // Sets the adjustability of the divider bar. Unadjustable divider does not
+  // receive event and the divider bar view is not visible. When the divider is
+  // moved for the virtual keyboard, the divider will be set unadjustable.
   void SetAdjustable(bool adjustable);
-  // Get the adjustability of the divider bar.
+  // Gets the adjustability of the divider bar.
   bool IsAdjustable() const;
 
   void AddObservedWindow(aura::Window* window);
@@ -83,6 +93,8 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   // divider should be placed beneath the dragged window during dragging.
   void OnWindowDragStarted();
   void OnWindowDragEnded();
+
+  bool IsWindowObserved(const aura::Window* window) const;
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
@@ -101,11 +113,6 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
                              aura::Window* transient) override;
   void OnTransientChildRemoved(aura::Window* window,
                                aura::Window* transient) override;
-
-  // Checks if the `window` is observed.
-  bool IsWindowObserved(const aura::Window* window) const;
-
-  views::Widget* divider_widget() { return divider_widget_; }
 
  private:
   void CreateDividerWidget(SplitViewController* controller);

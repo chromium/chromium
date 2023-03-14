@@ -26,8 +26,7 @@ namespace base {
 // Implementation of the legacy sys.ServiceProvider interface which delegates
 // requests to an underlying fuchsia.io.Directory of services.
 // TODO(https://crbug.com/1065707): Remove this when it is no longer required
-// by //fuchsia_web/runners/common/modular/agent_impl.h and
-// //fuchsia_web/runners/web/web_runner_smoke_test.cc.
+// by //fuchsia_web/runners/common/modular/agent_impl.h.
 class BASE_EXPORT ServiceProviderImpl : public ::fuchsia::sys::ServiceProvider {
  public:
   // Constructor that creates ServiceProvider for public services in the

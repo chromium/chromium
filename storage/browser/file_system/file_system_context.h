@@ -15,6 +15,7 @@
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -22,6 +23,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
+#include "components/file_access/scoped_file_access_delegate.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -281,7 +283,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
       const FileSystemURL& url,
       int64_t offset,
       int64_t max_bytes_to_read,
-      const base::Time& expected_modification_time);
+      const base::Time& expected_modification_time,
+      file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
+          file_access = base::NullCallback());
 
   // Creates new FileStreamWriter instance to write into a file pointed by
   // `url` from `offset`.

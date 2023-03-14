@@ -48,6 +48,8 @@ class ArcMemoryPressureBridge
   // memory_pressure_in_flight_.
   void OnConnectionClosed() override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   // Called by Mojo when the memory pressure call into ARCVM completes.
   // killed - The number of apps killed in reponse to this signal.

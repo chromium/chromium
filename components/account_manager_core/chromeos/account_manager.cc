@@ -639,7 +639,7 @@ void AccountManager::PersistAccountsAsync() {
 
   // Schedule (immediately) a non-blocking write.
   DCHECK(writer_);
-  writer_->WriteNow(std::make_unique<std::string>(GetSerializedAccounts()));
+  writer_->WriteNow(GetSerializedAccounts());
 }
 
 std::string AccountManager::GetSerializedAccounts() {

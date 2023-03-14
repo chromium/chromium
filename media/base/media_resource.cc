@@ -18,7 +18,7 @@ MediaResource::~MediaResource() = default;
 const MediaUrlParams& MediaResource::GetMediaUrlParams() const {
   NOTREACHED();
   static base::NoDestructor<MediaUrlParams> instance{
-      GURL(), net::SiteForCookies(), url::Origin(), false, false};
+      GURL(), net::SiteForCookies(), url::Origin(), false, false, false};
   return *instance;
 }
 

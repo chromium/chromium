@@ -7,9 +7,9 @@ package org.chromium.chrome.browser.toolbar.menu_button;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
-import static org.mockito.Mockito.anyObject;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -227,6 +227,6 @@ public class MenuButtonMediatorTest {
     public void testKeyboardIsNotDismissedWhenMenuShowsWithNoFocusedViews() {
         doReturn(null).when(mActivity).getCurrentFocus();
         mMenuButtonMediator.onMenuVisibilityChanged(true);
-        verify(mKeyboardDelegate, never()).hideKeyboard(anyObject());
+        verify(mKeyboardDelegate, never()).hideKeyboard(any());
     }
 }

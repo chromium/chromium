@@ -34,8 +34,7 @@ public interface SurfaceActionsHandler {
         int DOWNLOAD_LINK = 4;
         // The URL is added for later reading.
         int READ_LATER = 5;
-        // The URL to thank the current creator is opened in a Chrome Custom Tab
-        // (CCT).
+        // Deprecated. The URL to thank the current creator is opened in a Chrome Custom Tab (CCT).
         int THANK_CREATOR = 6;
         // The URL is opened in a new tab that is organized as group.
         int NEW_TAB_IN_GROUP = 7;
@@ -82,34 +81,6 @@ public interface SurfaceActionsHandler {
      */
     @Deprecated
     default void navigateTab(String url, View actionSourceView) {}
-
-    /**
-     * Navigates a new tab to a particular URL.
-     * @param url The url for which to navigate.
-     * @param actionSourceView The View from which the user tap originated. May be null.
-     */
-    @Deprecated
-    default void navigateNewTab(String url, View actionSourceView) {}
-
-    /**
-     * Navigate a new incognito tab to a URL.
-     */
-    @Deprecated
-    default void navigateIncognitoTab(String url) {}
-
-    /**
-     * Get an offline page for a URL.
-     */
-    @Deprecated
-    default void downloadLink(String url) {}
-
-    /** Add the url to the reading list and make it available offline. */
-    @Deprecated
-    default void addToReadingList(String title, String url) {}
-
-    /** Opens Crow CCT for the URL. */
-    @Deprecated
-    default void navigateCrow(String url) {}
 
     /**
      * Open a bottom sheet with the view as contents.
@@ -187,16 +158,15 @@ public interface SurfaceActionsHandler {
      */
     default void openWebFeed(String webFeedName) {}
 
-    /**
-     * Navigates a new tab in group to a particular URL.
-     * @param url The url for which to navigate.
-     * @param actionSourceView The View from which the user tap originated. May be null.
-     */
+    /** Requests that a sign-in prompt be shown. */
     @Deprecated
-    default void navigateNewTabInGroup(String url, View actionSourceView) {}
+    default void showSignInPrompt() {
+        showSyncConsentPrompt();
+    }
 
-    /**
-     * Requests that a sign-in prompt be shown.
-     */
-    default void showSignInPrompt() {}
+    /** Requests that a sync consent prompt be shown. */
+    default void showSyncConsentPrompt() {}
+
+    /** Requests that a sign-in interstitial bottom sheet be shown. */
+    default void showSignInInterstitial() {}
 }

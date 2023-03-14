@@ -74,11 +74,8 @@ View* MenuHostRootView::ProcessGetTooltipHandlerForPoint(
   return RootView::GetTooltipHandlerForPoint(point);
 }
 
-void MenuHostRootView::OnEventProcessingFinished(
-    ui::Event* event,
-    ui::EventTarget* target,
-    const ui::EventDispatchDetails& details) {
-  RootView::OnEventProcessingFinished(event, target, details);
+void MenuHostRootView::OnEventProcessingFinished(ui::Event* event) {
+  RootView::OnEventProcessingFinished(event);
 
   // Forward unhandled gesture events to our menu controller.
   // TODO(tdanderson): Investigate whether this should be moved into a

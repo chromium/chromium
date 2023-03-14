@@ -43,6 +43,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/wallpaper/wallpaper_drivefs_delegate_impl.h"
+#include "chrome/browser/ash/wallpaper_handlers/backdrop_fetcher_delegate.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -124,13 +125,12 @@ std::string HashWallpaperFilesIdStr(const std::string& files_id_unhashed) {
 
   unsigned char binmd[base::kSHA1Length];
   std::string lowercase(files_id_unhashed);
-  std::transform(lowercase.begin(), lowercase.end(), lowercase.begin(),
-                 ::tolower);
+  base::ranges::transform(lowercase, lowercase.begin(), ::tolower);
   std::vector<uint8_t> data = *salt;
   base::ranges::copy(files_id_unhashed, std::back_inserter(data));
   base::SHA1HashBytes(data.data(), data.size(), binmd);
   std::string result = base::HexEncode(binmd, sizeof(binmd));
-  std::transform(result.begin(), result.end(), result.begin(), ::tolower);
+  base::ranges::transform(result, result.begin(), ::tolower);
   return result;
 }
 
@@ -179,7 +179,10 @@ user_manager::User* FindPublicSession(const user_manager::UserList& users) {
 
 }  // namespace
 
-WallpaperControllerClientImpl::WallpaperControllerClientImpl() {
+WallpaperControllerClientImpl::WallpaperControllerClientImpl(
+    std::unique_ptr<wallpaper_handlers::BackdropFetcherDelegate>
+        backdrop_fetcher_delegate)
+    : backdrop_fetcher_delegate_(std::move(backdrop_fetcher_delegate)) {
   local_state_ = g_browser_process->local_state();
   show_user_names_on_signin_subscription_ =
       ash::CrosSettings::Get()->AddSettingsObserver(
@@ -553,8 +556,7 @@ void WallpaperControllerClientImpl::FetchImagesForCollection(
     const std::string& collection_id,
     FetchImagesForCollectionCallback callback) {
   auto images_info_fetcher =
-      std::make_unique<wallpaper_handlers::BackdropImageInfoFetcher>(
-          collection_id);
+      backdrop_fetcher_delegate_->CreateBackdropImageInfoFetcher(collection_id);
   auto* images_info_fetcher_ptr = images_info_fetcher.get();
   images_info_fetcher_ptr->Start(
       base::BindOnce(&WallpaperControllerClientImpl::OnFetchImagesForCollection,

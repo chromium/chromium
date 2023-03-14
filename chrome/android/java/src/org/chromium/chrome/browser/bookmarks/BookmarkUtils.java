@@ -104,7 +104,7 @@ public class BookmarkUtils {
                 tab.getOriginalUrl(),
                 fromExplicitTrackUi ? bookmarkModel.getMobileFolderId() : null, bookmarkType);
         showSaveFlow(activity, bottomSheetController, fromExplicitTrackUi, newBookmarkId,
-                /*wasBookmarkMoved=*/false);
+                /*wasBookmarkMoved=*/false, /*isNewBookmark=*/true);
         callback.onResult(newBookmarkId);
     }
 
@@ -116,22 +116,24 @@ public class BookmarkUtils {
      * @param fromExplicitTrackUi Whether the bookmark was added from the explicit UI.
      * @param bookmarkId The BookmarkId to show the save flow for. Can be null in some cases.
      * @param wasBookmarkMoved Whether the save flow is shown as a reslult of a moved bookmark.
+     * @param isNewBookmark Whether the bookmark is newly created.
      */
     public static void showSaveFlow(@NonNull Activity activity,
             @NonNull BottomSheetController bottomSheetController, boolean fromExplicitTrackUi,
-            @Nullable BookmarkId bookmarkId, boolean wasBookmarkMoved) {
+            @Nullable BookmarkId bookmarkId, boolean wasBookmarkMoved, boolean isNewBookmark) {
         if (bookmarkId == null) {
             Log.e(TAG, "Null bookmark found when showing the save flow, aborting.");
             return;
         }
 
-        ShoppingService shoppingService =
-                ShoppingServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
+        Profile profile = Profile.getLastUsedRegularProfile();
+        ShoppingService shoppingService = ShoppingServiceFactory.getForProfile(profile);
 
         BookmarkSaveFlowCoordinator bookmarkSaveFlowCoordinator =
                 new BookmarkSaveFlowCoordinator(activity, bottomSheetController, shoppingService,
-                        new UserEducationHelper(activity, new Handler()));
-        bookmarkSaveFlowCoordinator.show(bookmarkId, fromExplicitTrackUi, wasBookmarkMoved);
+                        new UserEducationHelper(activity, new Handler()), profile);
+        bookmarkSaveFlowCoordinator.show(
+                bookmarkId, fromExplicitTrackUi, wasBookmarkMoved, isNewBookmark);
     }
 
     // The legacy code path to add or edit bookmark without triggering the bookmark bottom sheet.
@@ -449,7 +451,7 @@ public class BookmarkUtils {
             url = getLastUsedUrl(context);
         } else {
             // Load a specific folder.
-            url = BookmarkUIState.createFolderUrl(folderId).toString();
+            url = BookmarkUiState.createFolderUrl(folderId).toString();
         }
 
         return TextUtils.isEmpty(url) ? UrlConstants.BOOKMARKS_URL : url;

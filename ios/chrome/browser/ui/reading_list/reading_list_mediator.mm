@@ -11,17 +11,18 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/reading_list/core/reading_list_model.h"
+#import "components/reading_list/features/reading_list_switches.h"
 #import "components/reading_list/ios/reading_list_model_bridge_observer.h"
 #import "components/url_formatter/url_formatter.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_data_sink.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item_factory.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item_util.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_table_view_item.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_utils.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 
@@ -143,13 +144,21 @@ bool EntrySorter(scoped_refptr<const ReadingListEntry> rhs,
   std::sort(unreadEntries.begin(), unreadEntries.end(), EntrySorter);
 
   for (scoped_refptr<const ReadingListEntry> entry : readEntries) {
-    [readArray
-        addObject:[self.itemFactory cellItemForReadingListEntry:entry.get()]];
+    bool needsExplicitUpload =
+        self.model->NeedsExplicitUploadToSyncServer(entry->URL());
+    ListItem<ReadingListListItem>* item =
+        [self.itemFactory cellItemForReadingListEntry:entry.get()
+                                  needsExplicitUpload:needsExplicitUpload];
+    [readArray addObject:item];
   }
 
   for (scoped_refptr<const ReadingListEntry> entry : unreadEntries) {
-    [unreadArray
-        addObject:[self.itemFactory cellItemForReadingListEntry:entry.get()]];
+    bool needsExplicitUpload =
+        self.model->NeedsExplicitUploadToSyncServer(entry->URL());
+    ListItem<ReadingListListItem>* item =
+        [self.itemFactory cellItemForReadingListEntry:entry.get()
+                                  needsExplicitUpload:needsExplicitUpload];
+    [unreadArray addObject:item];
   }
 
   DCHECK(self.model->GetKeys().size() ==
@@ -274,7 +283,7 @@ bool EntrySorter(scoped_refptr<const ReadingListEntry> rhs,
         oldItem.entryURL = newItem.entryURL;
         oldItem.distillationState = newItem.distillationState;
         oldItem.distillationDateText = newItem.distillationDateText;
-        oldItem.distillationSizeText = newItem.distillationSizeText;
+        oldItem.showCloudSlashIcon = newItem.showCloudSlashIcon;
       }
       if (oldItem.faviconPageURL != newItem.faviconPageURL) {
         oldItem.faviconPageURL = newItem.faviconPageURL;

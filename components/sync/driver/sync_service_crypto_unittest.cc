@@ -321,7 +321,7 @@ class TestTrustedVaultClient : public TrustedVaultClient {
     std::move(cb).Run();
   }
 
-  void ClearDataForAccount(const CoreAccountInfo& account_info) override {
+  void ClearLocalDataForAccount(const CoreAccountInfo& account_info) override {
     // Not relevant in these tests.
   }
 

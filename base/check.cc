@@ -190,14 +190,9 @@ CheckError::~CheckError() {
   delete log_message_;
 
   // Make sure we crash even if LOG(FATAL) has been overridden.
-  // TODO(crbug.com/1409729): Include Windows and iOS here too. This is done in
-  // steps to prevent backsliding on platforms where this goes through CQ.
-  // Currently iOS is blocked by:
-  //   * ListModelTest.InvalidIndexPath
-  // Windows is blocked by:
-  //   * All/RenderProcessHostWriteableFileDeathTest.
-  //       PassUnsafeWriteableExecutableFile/2
-  if (is_fatal && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_IOS)) {
+  // TODO(crbug.com/1409729): Remove severity checking in the destructor when
+  // LOG(FATAL) is [[noreturn]] and can't be overridden.
+  if (is_fatal) {
     base::ImmediateCrash();
   }
 }
@@ -237,6 +232,22 @@ NotReachedNoreturnError::~NotReachedNoreturnError() {
   // Make sure we die if we haven't. LOG(FATAL) is not yet [[noreturn]] as of
   // writing this.
   base::ImmediateCrash();
+}
+
+LogMessage* CheckOpResult::CreateLogMessage(bool is_dcheck,
+                                            const char* file,
+                                            int line,
+                                            const char* expr_str,
+                                            char* v1_str,
+                                            char* v2_str) {
+  LogMessage* const log_message =
+      is_dcheck ? new DCheckLogMessage(file, line, LOGGING_DCHECK)
+                : new LogMessage(file, line, LOGGING_FATAL);
+  log_message->stream() << "Check failed: " << expr_str << " (" << v1_str
+                        << " vs. " << v2_str << ")";
+  free(v1_str);
+  free(v2_str);
+  return log_message;
 }
 
 void RawCheck(const char* message) {

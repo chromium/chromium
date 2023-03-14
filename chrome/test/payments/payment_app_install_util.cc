@@ -68,8 +68,9 @@ bool PaymentAppInstallUtil::InstallPaymentAppForPaymentMethodIdentifier(
       service_worker_javascript_file_url.GetWithoutFilename();
 
   SkBitmap app_icon;
-  if (icon_install == IconInstall::kWithIcon) {
-    constexpr int kBitmapDimension = 16;
+  if (icon_install != IconInstall::kWithoutIcon) {
+    const int kBitmapDimension =
+        icon_install == IconInstall::kWithLargeIcon ? 128 : 16;
     app_icon.allocN32Pixels(kBitmapDimension, kBitmapDimension);
     app_icon.eraseColor(SK_ColorRED);
   }

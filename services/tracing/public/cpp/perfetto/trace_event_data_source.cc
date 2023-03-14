@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/debug/leak_annotations.h"
 #include "base/functional/bind.h"
@@ -553,8 +554,8 @@ namespace {
 base::ThreadLocalStorage::Slot* ThreadLocalEventSinkSlot() {
   static base::NoDestructor<base::ThreadLocalStorage::Slot>
       thread_local_event_sink_tls([](void* event_sink) {
-        base::tracing::AutoThreadLocalBoolean thread_is_in_trace_event(
-            base::tracing::GetThreadIsInTraceEventTLS());
+        const base::AutoReset<bool> resetter(
+            base::tracing::GetThreadIsInTraceEvent(), true, false);
         delete static_cast<TrackEventThreadLocalEventSink*>(event_sink);
       });
 
@@ -604,8 +605,7 @@ void TraceEventDataSource::RegisterStartupHooks() {
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
-void TraceEventDataSource::RegisterWithTraceLog(
-    const base::trace_event::TraceConfig& trace_config) {
+void TraceEventDataSource::RegisterWithTraceLog() {
   TraceLog::GetInstance()->SetAddTraceEventOverrides(
       &TraceEventDataSource::OnAddLegacyTraceEvent,
       &TraceEventDataSource::FlushCurrentThread,
@@ -650,12 +650,12 @@ TrackEventThreadLocalEventSink* TraceEventDataSource::GetOrPrepareEventSink(bool
   // to deal with these events later would break the event ordering that the
   // JSON traces rely on to merge 'A'/'B' events, as well as having to deal with
   // updating duration of 'X' events which haven't been added yet.
-  if (base::tracing::GetThreadIsInTraceEventTLS()->Get()) {
+  if (*base::tracing::GetThreadIsInTraceEvent()) {
     return nullptr;
   }
 
-  base::tracing::AutoThreadLocalBoolean thread_is_in_trace_event(
-      base::tracing::GetThreadIsInTraceEventTLS());
+  const base::AutoReset<bool> resetter(base::tracing::GetThreadIsInTraceEvent(),
+                                       true);
 
   auto* thread_local_event_sink = static_cast<TrackEventThreadLocalEventSink*>(
       ThreadLocalEventSinkSlot()->Get());
@@ -728,14 +728,7 @@ void TraceEventDataSource::SetupStartupTracing(
   }
   EmitRecurringUpdates();
 
-  base::trace_event::TraceConfig config_for_trace_log(trace_config);
-  // Perfetto backend configures buffer sizes when tracing is started in the
-  // service (see perfetto_config.cc). Zero them out here for TraceLog to
-  // avoid DCHECKs in TraceConfig::Merge.
-  config_for_trace_log.SetTraceBufferSizeInKb(0);
-  config_for_trace_log.SetTraceBufferSizeInEvents(0);
-
-  RegisterWithTraceLog(config_for_trace_log);
+  RegisterWithTraceLog();
   CustomEventRecorder::GetInstance()->OnStartupTracingStarted(
       trace_config, privacy_filtering_enabled);
 
@@ -909,12 +902,12 @@ void TraceEventDataSource::StartTracingInternal(
   if (startup_tracing_active) {
     // Binding startup buffers may cause tasks to be posted. Disable trace
     // events to avoid deadlocks due to reentrancy into tracing code.
-    base::tracing::AutoThreadLocalBoolean thread_is_in_trace_event(
-        base::tracing::GetThreadIsInTraceEventTLS());
+    const base::AutoReset<bool> resetter(
+        base::tracing::GetThreadIsInTraceEvent(), true, false);
     producer->BindStartupTargetBuffer(session_id,
                                       data_source_config.target_buffer());
   } else {
-    RegisterWithTraceLog(trace_config);
+    RegisterWithTraceLog();
   }
 
   // We emit the track/process descriptor another time even if we were
@@ -1075,8 +1068,8 @@ void TraceEventDataSource::OnAddLegacyTraceEvent(
     base::trace_event::TraceEventHandle* handle) {
   auto* thread_local_event_sink = GetOrPrepareEventSink();
   if (thread_local_event_sink) {
-    base::tracing::AutoThreadLocalBoolean thread_is_in_trace_event(
-        base::tracing::GetThreadIsInTraceEventTLS());
+    const base::AutoReset<bool> resetter(
+        base::tracing::GetThreadIsInTraceEvent(), true, false);
     thread_local_event_sink->AddLegacyTraceEvent(trace_event, handle);
   }
 }
@@ -1086,7 +1079,7 @@ base::trace_event::TrackEventHandle TraceEventDataSource::OnAddTypedTraceEvent(
     base::trace_event::TraceEvent* trace_event) {
   auto* thread_local_event_sink = GetOrPrepareEventSink();
   if (thread_local_event_sink) {
-    // GetThreadIsInTraceEventTLS() is handled by the sink for typed events.
+    // GetThreadIsInTraceEvent() is handled by the sink for typed events.
     return thread_local_event_sink->AddTypedTraceEvent(trace_event);
   }
   return base::trace_event::TrackEventHandle();
@@ -1101,12 +1094,12 @@ void TraceEventDataSource::OnUpdateDuration(
     bool explicit_timestamps,
     const base::TimeTicks& now,
     const base::ThreadTicks& thread_now) {
-  if (base::tracing::GetThreadIsInTraceEventTLS()->Get()) {
+  if (*base::tracing::GetThreadIsInTraceEvent()) {
     return;
   }
 
-  base::tracing::AutoThreadLocalBoolean thread_is_in_trace_event(
-      base::tracing::GetThreadIsInTraceEventTLS());
+  const base::AutoReset<bool> resetter(base::tracing::GetThreadIsInTraceEvent(),
+                                       true);
 
   auto* thread_local_event_sink = static_cast<TrackEventThreadLocalEventSink*>(
       ThreadLocalEventSinkSlot()->Get());
@@ -1121,7 +1114,7 @@ void TraceEventDataSource::OnUpdateDuration(
 base::trace_event::TracePacketHandle TraceEventDataSource::OnAddTracePacket() {
   auto* thread_local_event_sink = GetOrPrepareEventSink();
   if (thread_local_event_sink) {
-    // GetThreadIsInTraceEventTLS() is handled by the sink for trace packets.
+    // GetThreadIsInTraceEvent() is handled by the sink for trace packets.
     return thread_local_event_sink->AddTracePacket();
   }
   return base::trace_event::TracePacketHandle();
@@ -1131,7 +1124,7 @@ base::trace_event::TracePacketHandle TraceEventDataSource::OnAddTracePacket() {
 void TraceEventDataSource::OnAddEmptyPacket() {
   auto* thread_local_event_sink = GetOrPrepareEventSink(false);
   if (thread_local_event_sink) {
-    // GetThreadIsInTraceEventTLS() is handled by the sink for trace packets.
+    // GetThreadIsInTraceEvent() is handled by the sink for trace packets.
     thread_local_event_sink->AddEmptyPacket();
   }
 }
@@ -1143,8 +1136,8 @@ void TraceEventDataSource::FlushCurrentThread() {
   if (thread_local_event_sink) {
     // Prevent any events from being emitted while we're deleting
     // the sink (like from the TraceWriter being PostTask'ed for deletion).
-    base::tracing::AutoThreadLocalBoolean thread_is_in_trace_event(
-        base::tracing::GetThreadIsInTraceEventTLS());
+    const base::AutoReset<bool> resetter(
+        base::tracing::GetThreadIsInTraceEvent(), true, false);
     thread_local_event_sink->Flush();
     // TODO(oysteine): To support flushing while still recording, this needs to
     // be changed to not destruct the TLS object as that will emit any
@@ -1197,8 +1190,8 @@ void TraceEventDataSource::EmitRecurringUpdates() {
 void TraceEventDataSource::EmitTrackDescriptor() {
   // Prevent reentrancy into tracing code (flushing the trace writer sends a
   // mojo message which can result in additional trace events).
-  base::tracing::AutoThreadLocalBoolean thread_is_in_trace_event(
-      base::tracing::GetThreadIsInTraceEventTLS());
+  const base::AutoReset<bool> resetter(base::tracing::GetThreadIsInTraceEvent(),
+                                       true, false);
 
   // It's safe to use this writer outside the lock because EmitTrackDescriptor()
   // is either called (a) when startup tracing is set up (from the main thread)

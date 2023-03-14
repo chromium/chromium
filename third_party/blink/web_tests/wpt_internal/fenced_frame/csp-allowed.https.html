@@ -31,7 +31,7 @@ for (const resolve_to_config of [true, false]) {
 
     promise_test(async() => {
       setupCSP(csp);
-      assert_true(HTMLFencedFrameElement.canLoadOpaqueURL());
+      assert_true(navigator.canLoadAdAuctionFencedFrame());
     }, "Opaque-ads can load API returns true for " + csp + " using " +
        (resolve_to_config ? "config" : "urn:uuid"));
   });

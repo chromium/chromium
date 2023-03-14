@@ -15,7 +15,6 @@ found in the LICENSE file.
     <TextView
         android:id="@+id/title"
         android:layout_marginTop="8dp"
-        android:layout_marginHorizontal="16dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="@style/TextAppearance.TextMediumThick.Accent1" />

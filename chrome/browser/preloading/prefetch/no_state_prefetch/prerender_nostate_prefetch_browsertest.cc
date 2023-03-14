@@ -481,9 +481,8 @@ class NoStatePrefetchBrowserTestHttpCache
   void SetUp() override {
     bool split_cache_by_network_isolation_key = GetParam();
     if (split_cache_by_network_isolation_key) {
-      feature_list_.InitWithFeatures(
-          {net::features::kSplitCacheByNetworkIsolationKey},
-          {net::features::kForceIsolationInfoFrameOriginToTopLevelFrame});
+      feature_list_.InitAndEnableFeature(
+          net::features::kSplitCacheByNetworkIsolationKey);
     } else {
       feature_list_.InitAndDisableFeature(
           net::features::kSplitCacheByNetworkIsolationKey);
@@ -1776,12 +1775,11 @@ class NoStatePrefetchOmniboxBrowserTest : public NoStatePrefetchBrowserTest {
 
  protected:
   void SetUp() override {
-    // kOmniboxTriggerForPrerender2 or kOmniboxTriggerForNoStatePrefetch can be
-    // enabled in the experiment. Explicitly disable
-    // kOmniboxTriggerForPrerender2 as fieldtrial tests run with a config to
-    // enable it by default.
-    feature_list_.InitWithFeatures({},
-                                   {features::kOmniboxTriggerForPrerender2});
+    // kOmniboxTriggerForNoStatePrefetch or kOmniboxTriggerForPrerender2 can be
+    // enabled in the experiment. Explicitly enable and disable these flags.
+    feature_list_.InitWithFeatures(
+        {features::kOmniboxTriggerForNoStatePrefetch},
+        {features::kOmniboxTriggerForPrerender2});
 
     NoStatePrefetchBrowserTest::SetUp();
   }

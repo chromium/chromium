@@ -1,0 +1,4 @@
+include_rules = [
+  "-components/cast_streaming/browser/control",
+  "+components/cast_streaming/browser/control/remoting",
+]

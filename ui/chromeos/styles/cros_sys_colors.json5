@@ -118,7 +118,11 @@
     /* Bases */
     header: {
       light: '$cros.ref.secondary90',
-      dark:  '$cros.ref.secondary20',
+      dark:  '$cros.ref.secondary15',
+    },
+    'header-unfocused': {
+      light: 'blend(rgba($cros.ref.primary40.rgb, .11), $cros.ref.neutral99)',
+      dark: 'blend(rgba($cros.ref.primary80.rgb, .11), $cros.ref.neutral10)',
     },
     'app-base-shaded': {
       light: '$cros.ref.neutralvariant95',
@@ -171,12 +175,29 @@
     },
     scrim: {
       light: 'rgba($cros.ref.neutralvariant60.rgb, 0.6)',
-      dark:  'rgba($cros.ref.neutralvariant10.rgb, 0.6)',
+      dark:  'rgba($cros.ref.neutralvariant0.rgb, 0.6)',
+    },
+    scrim2: {
+      light: 'rgba($cros.ref.secondary90.rgb, 0.6)',
+      dark:  'rgba($cros.ref.secondary30.rgb, 0.48)',
     },
     'inverse-surface': {
       light: '$cros.ref.neutral20',
       dark:  '$cros.ref.neutral90',
     },
+    'scrollbar': {
+      light: 'rgba($cros.ref.neutralvariant60.rgb, 0.6)',
+      dark: 'rgba($cros.ref.neutralvariant50.rgb, 0.6)',
+    },
+    'scrollbar-hover': {
+      light: 'rgba($cros.ref.neutralvariant30.rgb, 0.6)',
+      dark: 'rgba($cros.ref.neutralvariant90.rgb, 0.6)',
+    },
+    'scrollbar-border': {
+      light: 'rgba($cros.ref.neutralvariant100.rgb, 0.14)',
+      dark: 'rgba($cros.ref.neutralvariant0.rgb, 0.14)',
+    },
+
     'input-field-light': {
       light: '$cros.ref.neutral99',
       dark: 'rgba($cros.ref.neutral50.rgb, 0.4)'
@@ -317,6 +338,19 @@
     'highlight-text': {
       light: 'rgba($cros.ref.primary70.rgb, 0.6)',
       dark: 'rgba($cros.ref.primary70.rgb, 0.6)',
+    },
+    'system-highlight': {
+      light: 'rgba($cros.ref.neutral100.rgb, 0.16)',
+      dark: 'rgba($cros.ref.neutral100.rgb, 0.06)',
+    },
+    'system-border': 'rgba($cros.ref.neutral0.rgb, 0.08)',
+    'system-highlight1': {
+      light: 'rgba($cros.ref.neutral100.rgb, 0.16)',
+      dark: 'rgba($cros.ref.neutral100.rgb, 0.06)',
+    },
+    'system-border1': {
+      light: 'rgba($cros.ref.neutral0.rgb, 0.06)',
+      dark: 'rgba($cros.ref.neutral0.rgb, 0.08)',
     },
     'focus-ring': {
       light: '$cros.ref.primary40',

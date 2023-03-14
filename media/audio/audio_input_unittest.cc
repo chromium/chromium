@@ -23,6 +23,7 @@
 #include "media/audio/audio_manager.h"
 #include "media/audio/audio_unittest_util.h"
 #include "media/audio/test_audio_thread.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/media_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -70,7 +71,8 @@ class TestInputCallback : public AudioInputStream::AudioInputCallback {
         had_error_(0) {}
   void OnData(const AudioBus* source,
               base::TimeTicks capture_time,
-              double volume) override {
+              double volume,
+              const AudioGlitchInfo& glitch_info) override {
     if (!quit_closure_.is_null()) {
       ++callback_count_;
       if (callback_count_ >= 2) {

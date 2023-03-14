@@ -49,7 +49,7 @@ ExtensionFunction::ResponseAction CrashReportPrivateReportErrorFunction::Run() {
   }
 
   const auto params = crash_report_private::ReportError::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   auto processor = JsErrorReportProcessor::Get();
   if (!processor) {

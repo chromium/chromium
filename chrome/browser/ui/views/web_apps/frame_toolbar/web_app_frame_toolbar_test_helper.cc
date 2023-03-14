@@ -151,63 +151,6 @@ GURL WebAppFrameToolbarTestHelper::LoadTestPageWithDataAndGetURL(
   return url;
 }
 
-GURL WebAppFrameToolbarTestHelper::LoadBorderlessTestPageWithDataAndGetURL(
-    net::test_server::EmbeddedTestServer* embedded_test_server,
-    base::ScopedTempDir* temp_dir) {
-  constexpr char kTestHTML[] =
-      "<!DOCTYPE html>"
-      "<style>"
-      "  body {"
-      "    background: blue;"
-      "  }"
-      "  @media (display-mode: borderless) {"
-      "    body {"
-      "      background: red;"
-      "    }"
-      "  }"
-      "  #draggable {"
-      "     app-region: drag;"
-      "     position: absolute;"
-      "     top: 100px;"
-      "     left: 100px;"
-      "     height: 10px;"
-      "     width: 10px;"
-      "  }"
-      "  #non-draggable {"
-      "     app-region: no-drag;"
-      "     position: relative;"
-      "     top: 5px;"
-      "     left: 5px;"
-      "     height: 2px;"
-      "     width: 2px;"
-      "  }"
-      "  #target {"
-      "     width: 100%;"
-      "     height: 33px;"
-      "  }"
-      "</style>"
-      "<script>"
-      "window.onload = function() {"
-      "  document.title = 'Borderless';"
-      "};"
-      "const mql = window.matchMedia('(display-mode: borderless)');"
-      "mql.addEventListener('change', event => {"
-      "  if (event.matches) {"
-      "    document.title = 'match-media-borderless';"
-      "  } else {"
-      "    document.title = 'Borderless';"  // The same title as set onload.
-      "  }"
-      "});"
-      "</script>"
-      "<div id=\"draggable\">"
-      "  <div id=\"non-draggable\"></div>"
-      "</div>"
-      "<div id=\"target\"></div>";
-
-  return LoadTestPageWithDataAndGetURL(embedded_test_server, temp_dir,
-                                       kTestHTML);
-}
-
 base::Value::List WebAppFrameToolbarTestHelper::GetXYWidthHeightListValue(
     content::WebContents* web_contents,
     const std::string& rect_value_list,

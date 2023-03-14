@@ -60,13 +60,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeWeasleyFooter,
 };
 
-void LogSink(const char* file,
-             int line,
-             const base::StringPiece message,
-             const base::StringPiece stack_trace) {
-  // No-op.
-}
-
 using ListModelTest = PlatformTest;
 
 // Test generic model boxing (check done at compilation time).
@@ -318,24 +311,6 @@ TEST_F(ListModelTest, RetrieveItemsInSection) {
   EXPECT_NSEQ(cheddar, cheeseItems[0]);
   EXPECT_NSEQ(pepperJack, cheeseItems[1]);
   EXPECT_NSEQ(gouda, cheeseItems[2]);
-}
-
-TEST_F(ListModelTest, InvalidIndexPath) {
-  ListModel* model = [[ListModel alloc] init];
-  [model addSectionWithIdentifier:SectionIdentifierCheese];
-
-  logging::ScopedLogAssertHandler scoped_assert_handler(
-      base::BindRepeating(LogSink));
-  bool out_of_bounds_exception_thrown = false;
-  @try {
-    [model indexInItemTypeForIndexPath:[NSIndexPath indexPathForItem:0
-                                                           inSection:0]];
-  } @catch (NSException* exception) {
-    if ([[exception name] isEqualToString:NSRangeException]) {
-      out_of_bounds_exception_thrown = true;
-    }
-  }
-  EXPECT_TRUE(out_of_bounds_exception_thrown);
 }
 
 TEST_F(ListModelTest, RemoveItems) {

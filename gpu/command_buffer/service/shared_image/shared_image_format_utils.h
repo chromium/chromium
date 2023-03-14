@@ -39,9 +39,6 @@ struct GLFormatDesc {
 // Returns the bits per pixel for given `format`.
 GPU_GLES2_EXPORT int BitsPerPixel(viz::SharedImageFormat format);
 
-// Checks if there is an equivalent BufferFormat.
-GPU_GLES2_EXPORT bool HasEquivalentBufferFormat(viz::SharedImageFormat format);
-
 // BufferFormat is being transitioned out of SharedImage code (to use
 // SharedImageFormat instead). Refrain from using this function or preferably
 // use with single planar SharedImageFormats. Returns BufferFormat for given
@@ -84,12 +81,12 @@ GPU_GLES2_EXPORT GLenum TextureStorageFormat(viz::SharedImageFormat format,
 
 // Following functions return the appropriate Vulkan format for a
 // SharedImageFormat.
-// TODO(hitawala): Add multiplanar format support.
 #if BUILDFLAG(ENABLE_VULKAN)
 // Returns true if given `format` is supported by Vulkan.
 GPU_GLES2_EXPORT bool HasVkFormat(viz::SharedImageFormat format);
 // Returns vulkan format for given `format`.
-GPU_GLES2_EXPORT VkFormat ToVkFormat(viz::SharedImageFormat format);
+GPU_GLES2_EXPORT VkFormat ToVkFormat(viz::SharedImageFormat format,
+                                     int plane_index = 0);
 #endif
 
 // Following functions return the appropriate WebGPU/Dawn format for a

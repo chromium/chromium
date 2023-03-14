@@ -29,7 +29,7 @@ enum class NonStandardGroupId;
 
 namespace blink {
 
-class RTCStats;
+class RTCStatsWrapper;
 class RTCStatsMember;
 
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(WebRtcUnshipDeprecatedStats);
@@ -48,16 +48,21 @@ class PLATFORM_EXPORT RTCStatsReportPlatform {
       const Vector<webrtc::NonStandardGroupId>& exposed_group_ids,
       bool is_track_stats_deprecation_trial_enabled);
   virtual ~RTCStatsReportPlatform();
+
   // Creates a new report object that is a handle to the same underlying stats
   // report (the stats are not copied). The new report's iterator is reset,
   // useful when needing multiple iterators.
   std::unique_ptr<RTCStatsReportPlatform> CopyHandle() const;
 
   // Gets stats object by |id|, or null if no stats with that |id| exists.
-  std::unique_ptr<RTCStats> GetStats(const String& id) const;
+  std::unique_ptr<RTCStatsWrapper> GetStats(const String& id) const;
 
   // The next stats object, or null if the end has been reached.
-  std::unique_ptr<RTCStats> Next();
+  std::unique_ptr<RTCStatsWrapper> Next();
+
+  const webrtc::RTCStatsReport& stats_report() const { return *stats_report_; }
+  bool unship_deprecated_stats() const { return unship_deprecated_stats_; }
+  const webrtc::RTCStats* NextStats();
 
   // The number of stats objects.
   size_t Size() const;
@@ -73,13 +78,14 @@ class PLATFORM_EXPORT RTCStatsReportPlatform {
   const size_t size_;
 };
 
-class PLATFORM_EXPORT RTCStats {
+class PLATFORM_EXPORT RTCStatsWrapper {
  public:
-  RTCStats(const scoped_refptr<const webrtc::RTCStatsReport>& stats_owner,
-           const webrtc::RTCStats* stats,
-           const Vector<webrtc::NonStandardGroupId>& exposed_group_ids,
-           bool unship_deprecated_stats);
-  virtual ~RTCStats();
+  RTCStatsWrapper(
+      const scoped_refptr<const webrtc::RTCStatsReport>& stats_owner,
+      const webrtc::RTCStats* stats,
+      const Vector<webrtc::NonStandardGroupId>& exposed_group_ids,
+      bool unship_deprecated_stats);
+  virtual ~RTCStatsWrapper();
 
   String Id() const;
   String GetType() const;

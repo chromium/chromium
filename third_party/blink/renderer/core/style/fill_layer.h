@@ -207,8 +207,6 @@ class CORE_EXPORT FillLayer {
 
   bool VisuallyEqual(const FillLayer&) const;
 
-  bool ImagesAreLoaded() const;
-
   bool ImageOccludesNextLayers(const Document&, const ComputedStyle&) const;
   bool HasRepeatXY() const;
   bool ClipOccludesNextLayers() const;

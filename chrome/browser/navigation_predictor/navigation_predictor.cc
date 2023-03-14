@@ -210,6 +210,43 @@ void NavigationPredictor::ReportAnchorElementClick(
   auto index_it = tracked_anchor_id_to_index_.find(anchor_id);
   if (index_it != tracked_anchor_id_to_index_.end()) {
     anchor_index = index_it->second;
+
+    // Record PreloadOnHover.HoverTakenMs and PreloadOnHover.PointerDownTakenMs
+    // to UKM.
+    auto& user_interactions_data = GetUserInteractionsData();
+    auto& user_interactions = user_interactions_data.user_interactions_;
+    auto& user_interaction = user_interactions[index_it->second];
+    // navigation_start_to_click_ is set to click->navigation_start_to_click and
+    // should always has a value.
+    CHECK(navigation_start_to_click_.has_value());
+    if (user_interaction.last_navigation_start_to_pointer_over.has_value() ||
+        user_interaction.last_navigation_start_to_last_pointer_down
+            .has_value()) {
+      ukm::builders::NavigationPredictorPreloadOnHover preload_on_hover_builder(
+          ukm_source_id_);
+      if (user_interaction.last_navigation_start_to_pointer_over.has_value()) {
+        // `hover_dwell_time` measures the time delta from the last mouse over
+        // event to the last mouse click event.
+        base::TimeDelta hover_dwell_time =
+            navigation_start_to_click_.value() -
+            user_interaction.last_navigation_start_to_pointer_over.value();
+        preload_on_hover_builder.SetHoverTakenMs(ukm::GetExponentialBucketMin(
+            hover_dwell_time.InMilliseconds(), 1.3));
+      }
+      if (user_interaction.last_navigation_start_to_last_pointer_down
+              .has_value()) {
+        // `pointer_down_duration` measures the time delta from the last mouse
+        // down event to the last mouse click event.
+        base::TimeDelta pointer_down_duration =
+            navigation_start_to_click_.value() -
+            user_interaction.last_navigation_start_to_last_pointer_down.value();
+        preload_on_hover_builder.SetMouseDownTakenMs(
+            ukm::GetExponentialBucketMin(pointer_down_duration.InMilliseconds(),
+                                         1.3));
+        user_interaction.last_navigation_start_to_last_pointer_down.reset();
+      }
+      preload_on_hover_builder.Record(ukm_recorder_);
+    }
   }
 
   ukm::builders::NavigationPredictorPageLinkClick builder(ukm_source_id_);
@@ -222,6 +259,9 @@ void NavigationPredictor::ReportAnchorElementClick(
   GetUserInteractionsData().navigation_start_to_click_ =
       navigation_start_to_click_;
 
+  // navigation_start_to_click_ is set to click->navigation_start_to_click and
+  // should always has a value.
+  CHECK(navigation_start_to_click_.has_value());
   builder.SetNavigationStartToLinkClickedMs(ukm::GetExponentialBucketMin(
       navigation_start_to_click_.value().InMilliseconds(), 1.3));
   builder.Record(ukm_recorder_);
@@ -276,11 +316,49 @@ void NavigationPredictor::ReportAnchorElementPointerOut(
   }
 
   auto& user_interaction = user_interactions[index_it->second];
+  // Record PreloadOnHover.HoverNotTakenMs and
+  // PreloadOnHover.MouseDownNotTakenMs to UKM.
+  if (ukm_recorder_) {
+    ukm::builders::NavigationPredictorPreloadOnHover preload_on_hover_builder(
+        ukm_source_id_);
+    preload_on_hover_builder.SetHoverNotTakenMs(ukm::GetExponentialBucketMin(
+        hover_event->hover_dwell_time.InMilliseconds(), 1.3));
+
+    if (user_interaction.last_navigation_start_to_last_pointer_down
+            .has_value() &&
+        user_interaction.last_navigation_start_to_pointer_over.has_value()) {
+      base::TimeDelta pointer_down_duration =
+          user_interaction.last_navigation_start_to_pointer_over.value() +
+          hover_event->hover_dwell_time -
+          user_interaction.last_navigation_start_to_last_pointer_down.value();
+      preload_on_hover_builder.SetMouseDownNotTakenMs(
+          ukm::GetExponentialBucketMin(pointer_down_duration.InMilliseconds(),
+                                       1.3));
+      user_interaction.last_navigation_start_to_last_pointer_down.reset();
+    }
+    preload_on_hover_builder.Record(ukm_recorder_);
+  }
+
   user_interaction.is_hovered = false;
   user_interaction.last_navigation_start_to_pointer_over.reset();
   user_interaction.max_hover_dwell_time = std::max(
       hover_event->hover_dwell_time,
       user_interaction.max_hover_dwell_time.value_or(base::TimeDelta()));
+}
+
+void NavigationPredictor::ReportAnchorElementPointerDown(
+    blink::mojom::AnchorElementPointerDownPtr pointer_down_event) {
+  auto index_it =
+      tracked_anchor_id_to_index_.find(AnchorId(pointer_down_event->anchor_id));
+  if (index_it == tracked_anchor_id_to_index_.end()) {
+    return;
+  }
+
+  auto& user_interactions_data = GetUserInteractionsData();
+  auto& user_interactions = user_interactions_data.user_interactions_;
+  auto& user_interaction = user_interactions[index_it->second];
+  user_interaction.last_navigation_start_to_last_pointer_down =
+      pointer_down_event->navigation_start_to_pointer_down;
 }
 
 void NavigationPredictor::ReportAnchorElementsEnteredViewport(

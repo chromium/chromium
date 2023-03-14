@@ -39,7 +39,9 @@ class NGGridLineResolver {
   // should be used exclusively by subgrids to differentiate such scenario.
   explicit NGGridLineResolver(const ComputedStyle& grid_style,
                               const NGGridLineResolver& parent_line_resolver,
-                              GridArea subgrid_area);
+                              GridArea subgrid_area,
+                              wtf_size_t column_auto_repetitions,
+                              wtf_size_t row_auto_repetitions);
 
   bool operator==(const NGGridLineResolver& other) const;
 
@@ -72,6 +74,9 @@ class NGGridLineResolver {
       GridTrackSizingDirection track_direction) const;
 
   const NamedGridLinesMap& ExplicitNamedLinesMap(
+      GridTrackSizingDirection track_direction) const;
+
+  const NamedGridLinesMap& AutoRepeatLineNamesMap(
       GridTrackSizingDirection track_direction) const;
 
   const blink::ComputedGridTrackList& ComputedGridTrackList(

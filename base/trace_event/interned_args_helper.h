@@ -5,6 +5,8 @@
 #ifndef BASE_TRACE_EVENT_INTERNED_ARGS_HELPER_H_
 #define BASE_TRACE_EVENT_INTERNED_ARGS_HELPER_H_
 
+#include <string>
+
 #include "base/base_export.h"
 #include "base/containers/span.h"
 #include "base/hash/hash.h"

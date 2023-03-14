@@ -7,13 +7,15 @@
 #include <windows.storage.h>
 #include <wrl/event.h>
 
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/win/core_winrt_util.h"
+#include "base/win/scoped_hstring.h"
 #include "base/win/scoped_winrt_initializer.h"
 #include "base/win/vector.h"
 #include "chrome/browser/webshare/win/fake_storage_file_statics.h"
@@ -240,9 +242,6 @@ TEST_F(FakeDataTransferManagerTest, OutOfOrderEventInvocation) {
 }
 
 TEST_F(FakeDataTransferManagerTest, PostDataRequestedCallback) {
-  if (!base::win::ScopedHString::ResolveCoreWinRTStringDelayload())
-    GTEST_SKIP();
-
   base::test::SingleThreadTaskEnvironment task_environment;
 
   // Create a StorageFile/Item to provide to the DataRequested event

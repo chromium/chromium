@@ -51,7 +51,7 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
         }
 
         Callback<Integer> insetObserver = (inset) -> updateInsetViewportBottom();
-        mCurrentInsetSupplier = tab.getWindowAndroid().getApplicationBottomInsetProvider();
+        mCurrentInsetSupplier = tab.getWindowAndroid().getApplicationBottomInsetSupplier();
         mCurrentInsetSupplier.addObserver(insetObserver);
 
         mTab.addObserver(new EmptyTabObserver() {
@@ -59,7 +59,7 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
             public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
                 if (window != null) {
                     mCurrentInsetSupplier =
-                            tab.getWindowAndroid().getApplicationBottomInsetProvider();
+                            tab.getWindowAndroid().getApplicationBottomInsetSupplier();
                     mCurrentInsetSupplier.addObserver(insetObserver);
                 } else {
                     mCurrentInsetSupplier.removeObserver(insetObserver);

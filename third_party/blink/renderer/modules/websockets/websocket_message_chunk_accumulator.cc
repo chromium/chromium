@@ -111,4 +111,8 @@ void WebSocketMessageChunkAccumulator::OnTimerFired(TimerBase*) {
   }
 }
 
+void WebSocketMessageChunkAccumulator::Trace(Visitor* visitor) const {
+  visitor->Trace(timer_);
+}
+
 }  // namespace blink

@@ -36,7 +36,7 @@ TestInterestGroupBuilder::TestInterestGroupBuilder(url::Origin owner,
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/absl::nullopt,
           /*bidding_wasm_helper_url=*/absl::nullopt,
-          /*daily_update_url=*/absl::nullopt,
+          /*update_url=*/absl::nullopt,
           /*trusted_bidding_signals_url=*/absl::nullopt,
           /*trusted_bidding_signals_keys=*/absl::nullopt,
           /*user_bidding_signals=*/absl::nullopt,
@@ -86,15 +86,14 @@ TestInterestGroupBuilder& TestInterestGroupBuilder::SetPrioritySignalsOverrides(
 }
 
 TestInterestGroupBuilder& TestInterestGroupBuilder::SetSellerCapabilities(
-    absl::optional<
-        base::flat_map<url::Origin, InterestGroup::SellerCapabilitiesType>>
+    absl::optional<base::flat_map<url::Origin, SellerCapabilitiesType>>
         seller_capabilities) {
   interest_group_.seller_capabilities = std::move(seller_capabilities);
   return *this;
 }
 
 TestInterestGroupBuilder& TestInterestGroupBuilder::SetAllSellerCapabilities(
-    InterestGroup::SellerCapabilitiesType all_sellers_capabilities) {
+    SellerCapabilitiesType all_sellers_capabilities) {
   interest_group_.all_sellers_capabilities =
       std::move(all_sellers_capabilities);
   return *this;
@@ -118,9 +117,9 @@ TestInterestGroupBuilder& TestInterestGroupBuilder::SetBiddingWasmHelperUrl(
   return *this;
 }
 
-TestInterestGroupBuilder& TestInterestGroupBuilder::SetDailyUpdateUrl(
-    absl::optional<GURL> daily_update_url) {
-  interest_group_.daily_update_url = std::move(daily_update_url);
+TestInterestGroupBuilder& TestInterestGroupBuilder::SetUpdateUrl(
+    absl::optional<GURL> update_url) {
+  interest_group_.update_url = std::move(update_url);
   return *this;
 }
 

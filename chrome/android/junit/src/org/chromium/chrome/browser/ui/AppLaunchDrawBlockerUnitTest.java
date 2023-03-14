@@ -29,6 +29,7 @@ import android.view.ViewTreeObserver.OnPreDrawListener;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -57,6 +58,7 @@ import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactoryJni;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.ActiveTabState;
@@ -86,6 +88,8 @@ public class AppLaunchDrawBlockerUnitTest {
     private ViewTreeObserver mViewTreeObserver;
     @Mock
     private Intent mIntent;
+    @Mock
+    private Profile mProfile;
     @Mock
     private TemplateUrlServiceFactory.Natives mTemplateUrlServiceFactory;
     @Mock
@@ -121,6 +125,7 @@ public class AppLaunchDrawBlockerUnitTest {
         when(mView.getViewTreeObserver()).thenReturn(mViewTreeObserver);
         mJniMocker.mock(TemplateUrlServiceFactoryJni.TEST_HOOKS, mTemplateUrlServiceFactory);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
+        Profile.setLastUsedProfileForTesting(mProfile);
         when(mShouldIgnoreIntentSupplier.get()).thenReturn(false);
         when(mIsTabletSupplier.get()).thenReturn(false);
         when(mShouldShowTabSwitcherOnStartSupplier.get()).thenReturn(false);
@@ -135,6 +140,12 @@ public class AppLaunchDrawBlockerUnitTest {
         validateConstructorAndCaptureObservers();
         UmaRecorderHolder.resetForTesting();
         SystemClock.setCurrentTimeMillis(INITIAL_TIME);
+    }
+
+    @After
+    public void tearDown() {
+        TemplateUrlServiceFactory.setInstanceForTesting(null);
+        Profile.setLastUsedProfileForTesting(null);
     }
 
     @Test

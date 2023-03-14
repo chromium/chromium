@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
-import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -461,8 +460,8 @@ public abstract class SyncConsentFragmentBase
                 IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
                         .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-        mIsSignedInWithoutSync = (FREMobileIdentityConsistencyFieldTrial.isEnabled()
-                && mSigninAccessPoint == SigninAccessPoint.START_PAGE && primaryAccount != null);
+        mIsSignedInWithoutSync =
+                mSigninAccessPoint == SigninAccessPoint.START_PAGE && primaryAccount != null;
         if (mIsSignedInWithoutSync) {
             mSelectedAccountName = primaryAccount.getEmail();
             mAccountManagerFacade.getAccounts().then(this::updateAccounts);
@@ -478,8 +477,7 @@ public abstract class SyncConsentFragmentBase
 
         if (hasAccounts) {
             final boolean hideAccountPicker = mIsSignedInWithoutSync
-                    || (FREMobileIdentityConsistencyFieldTrial.isEnabled()
-                            && mSigninAccessPoint == SigninAccessPoint.START_PAGE && mIsChild);
+                    || (mSigninAccessPoint == SigninAccessPoint.START_PAGE && mIsChild);
             mSigninView.getAccountPickerView().setVisibility(
                     hideAccountPicker ? View.GONE : View.VISIBLE);
             mConsentTextTracker.setText(
@@ -822,8 +820,8 @@ public abstract class SyncConsentFragmentBase
                 IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
                         .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-        mIsSignedInWithoutSync = (FREMobileIdentityConsistencyFieldTrial.isEnabled()
-                && mSigninAccessPoint == SigninAccessPoint.START_PAGE && primaryAccount != null);
+        mIsSignedInWithoutSync =
+                mSigninAccessPoint == SigninAccessPoint.START_PAGE && primaryAccount != null;
         if (mIsSignedInWithoutSync) {
             mSelectedAccountName = primaryAccount.getEmail();
         }

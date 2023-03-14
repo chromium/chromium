@@ -1,18 +1,26 @@
 <style>
   :host {
+    height: 556px;
+    width: 512px;
+  }
+
+  .body-wrapper {
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    height: 552px;
+    height: 320px;
     padding: 32px;
     width: 512px;
   }
 
   #content {
     flex-grow: 1;
-    margin-block: 32px;
     max-height: 192px;
     overflow: scroll;
+  }
+
+  #content:focus-visible {
+    outline: none;
   }
 
   #content.fade-top::before {
@@ -55,9 +63,8 @@
 
   #header-image {
     background-color: var(--cros-highlight-color);
-    border-radius: 12px;
-    height: 200px;
-    width: 448px;
+    height: 236px;
+    width: 512px;
   }
 
   ::slotted([slot=header-image]) {
@@ -89,6 +96,7 @@
 
   div#footer {
     display: flex;
+    margin-block-start: 32px;
   }
 
   div#dots {
@@ -115,11 +123,13 @@
 <div id="header-image">
   <slot name="header-image"></slot>
 </div>
-<div id="content">
-  <slot name="title"></slot>
-  <slot name="body"></slot>
-</div>
-<div id="footer">
-  <div id="dots"></div>
-  <slot name="button-container"></slot>
+<div class="body-wrapper">
+  <div id="content" tabindex="-1">
+    <slot name="title"></slot>
+    <slot name="body"></slot>
+  </div>
+  <div id="footer">
+    <div id="dots"></div>
+    <slot name="button-container"></slot>
+  </div>
 </div>

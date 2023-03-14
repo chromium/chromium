@@ -102,6 +102,28 @@ enum class TapLabelPosition {
   kNone = 4,
 };
 
+// These values are about how the reposition is achieved for the metrics record.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class RepositionType {
+  kTouchscreenDragRepostion = 0,
+  kMouseDragRepostion = 1,
+  kKeyboardArrowKeyReposition = 2,
+  kMaxValue = kKeyboardArrowKeyReposition
+};
+
+// This is about the window state types when recording metrics data for user UI
+// reposition for the metrics record. These values are persisted to logs.
+// Entries should not be renumbered and numeric values should never be reused.
+enum class InputOverlayWindowStateType {
+  kInvalid = 0,
+  kNormal = 1,
+  kMaximized = 2,
+  kFullscreen = 3,
+  kSnapped = 4,
+  kMaxValue = kSnapped
+};
+
 }  // namespace arc::input_overlay
 
 #endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_CONSTANTS_H_

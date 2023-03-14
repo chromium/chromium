@@ -63,7 +63,7 @@ class HistoryCounter : public browsing_data::BrowsingDataCounter {
 
   bool IsHistorySyncEnabled(const syncer::SyncService* sync_service);
 
-  raw_ptr<history::HistoryService> history_service_;
+  raw_ptr<history::HistoryService, DanglingUntriaged> history_service_;
 
   GetUpdatedWebHistoryServiceCallback web_history_service_callback_;
 

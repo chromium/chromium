@@ -1,5 +1,5 @@
 include_rules = [
-  "+components/cast_streaming/public",
+  "+media/cast/openscreen",
   "+mojo/public",
   "+third_party/openscreen/src/cast/streaming",
   "+third_party/openscreen/src/util",

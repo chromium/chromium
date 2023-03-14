@@ -31,7 +31,7 @@ var SidePanelCustomizeChromeButtonLabelTest =
   /** @override */
   get browsePreload() {
     return 'chrome://customize-chrome-side-panel.top-chrome/test_loader.html' +
-        '?module=side_panel_customize_chrome/button_label_test.js';
+        '?module=side_panel/customize_chrome/button_label_test.js';
   }
 };
 
@@ -40,7 +40,7 @@ var SidePanelCustomizeChromeCardsTest =
   /** @override */
   get browsePreload() {
     return 'chrome://customize-chrome-side-panel.top-chrome/test_loader.html' +
-        '?module=side_panel_customize_chrome/cards_test.js';
+        '?module=side_panel/customize_chrome/cards_test.js';
   }
 };
 
@@ -49,7 +49,7 @@ var SidePanelCustomizeChromeShortcutsTest =
   /** @override */
   get browsePreload() {
     return 'chrome://customize-chrome-side-panel.top-chrome/test_loader.html' +
-        '?module=side_panel_customize_chrome/shortcuts_test.js';
+        '?module=side_panel/customize_chrome/shortcuts_test.js';
   }
 };
 
@@ -58,7 +58,7 @@ var SidePanelCustomizeChromeAppTest =
   /** @override */
   get browsePreload() {
     return 'chrome://customize-chrome-side-panel.top-chrome/test_loader.html' +
-        '?module=side_panel_customize_chrome/app_test.js';
+        '?module=side_panel/customize_chrome/app_test.js';
   }
 };
 
@@ -67,7 +67,7 @@ var SidePanelCustomizeChromeAppearanceTest =
   /** @override */
   get browsePreload() {
     return 'chrome://customize-chrome-side-panel.top-chrome/test_loader.html' +
-        '?module=side_panel_customize_chrome/appearance_test.js';
+        '?module=side_panel/customize_chrome/appearance_test.js';
   }
 };
 
@@ -76,7 +76,7 @@ var SidePanelCustomizeChromeCategoriesTest =
   /** @override */
   get browsePreload() {
     return 'chrome://customize-chrome-side-panel.top-chrome/test_loader.html' +
-        '?module=side_panel_customize_chrome/categories_test.js';
+        '?module=side_panel/customize_chrome/categories_test.js';
   }
 };
 
@@ -85,7 +85,7 @@ var SidePanelCustomizeChromeCheckMarkWrapperTest =
   /** @override */
   get browsePreload() {
     return 'chrome://customize-chrome-side-panel.top-chrome/test_loader.html' +
-        '?module=side_panel_customize_chrome/check_mark_wrapper_test.js';
+        '?module=side_panel/customize_chrome/check_mark_wrapper_test.js';
   }
 };
 
@@ -94,7 +94,7 @@ var SidePanelCustomizeChromeColorTest =
   /** @override */
   get browsePreload() {
     return 'chrome://customize-chrome-side-panel.top-chrome/test_loader.html' +
-        '?module=side_panel_customize_chrome/color_test.js';
+        '?module=side_panel/customize_chrome/color_test.js';
   }
 };
 
@@ -103,7 +103,7 @@ var SidePanelCustomizeChromeColorsTest =
   /** @override */
   get browsePreload() {
     return 'chrome://customize-chrome-side-panel.top-chrome/test_loader.html' +
-        '?module=side_panel_customize_chrome/colors_test.js';
+        '?module=side_panel/customize_chrome/colors_test.js';
   }
 };
 
@@ -112,7 +112,7 @@ var SidePanelCustomizeChromeHoverButtonTest =
   /** @override */
   get browsePreload() {
     return 'chrome://customize-chrome-side-panel.top-chrome/test_loader.html' +
-        '?module=side_panel_customize_chrome/hover_button_test.js';
+        '?module=side_panel/customize_chrome/hover_button_test.js';
   }
 };
 
@@ -121,7 +121,7 @@ var SidePanelCustomizeChromeThemesTest =
   /** @override */
   get browsePreload() {
     return 'chrome://customize-chrome-side-panel.top-chrome/test_loader.html' +
-        '?module=side_panel_customize_chrome/themes_test.js';
+        '?module=side_panel/customize_chrome/themes_test.js';
   }
 };
 
@@ -130,7 +130,7 @@ var SidePanelCustomizeChromeThemeSnapshotTest =
   /** @override */
   get browsePreload() {
     return 'chrome://customize-chrome-side-panel.top-chrome/test_loader.html' +
-        '?module=side_panel_customize_chrome/theme_snapshot_test.js';
+        '?module=side_panel/customize_chrome/theme_snapshot_test.js';
   }
 };
 
@@ -139,7 +139,7 @@ var SidePanelCustomizeChromeChromeColorsTest =
   /** @override */
   get browsePreload() {
     return 'chrome://customize-chrome-side-panel.top-chrome/test_loader.html' +
-        '?module=side_panel_customize_chrome/chrome_colors_test.js';
+        '?module=side_panel/customize_chrome/chrome_colors_test.js';
   }
 };
 

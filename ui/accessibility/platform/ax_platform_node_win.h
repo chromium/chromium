@@ -1362,14 +1362,14 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
   // argument. The function will skip over any ids that cannot be resolved as
   // valid relation target.
   std::vector<AXPlatformNodeWin*> CreatePlatformNodeVectorFromRelationIdVector(
-      std::vector<int32_t>& relation_id_list);
+      const std::vector<int32_t>& relation_id_list);
 
   // Create a safearray of automation elements from a vector of
   // AXPlatformNodeWin.
   // The caller should validate that all of the given ax platform nodes are
   // valid relation targets.
   SAFEARRAY* CreateUIAElementsSafeArray(
-      std::vector<AXPlatformNodeWin*>& platform_node_list);
+      const std::vector<AXPlatformNodeWin*>& platform_node_list);
 
   // Return an array that contains the center x, y coordinates of the
   // clickable point.
@@ -1425,6 +1425,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
 
   // Helper method getting the selected status.
   bool ISelectionItemProviderIsSelected() const;
+
+  // Helper method for getting the toggle state.
+  ToggleState GetToggleStateImpl();
 
   // Helper method for IsInaccessibleForUIA.
   bool IsNodeInaccessibleForUIA() const;

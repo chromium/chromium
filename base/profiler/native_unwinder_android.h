@@ -10,10 +10,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/profiler/unwinder.h"
-#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Maps.h"
 #include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Memory.h"
 
 namespace base {
+
+class NativeUnwinderAndroidMapDelegate;
+class NativeUnwinderAndroidMemoryRegionsMap;
 
 // Implementation of unwindstack::Memory that restricts memory access to a stack
 // buffer, used by NativeUnwinderAndroid. While unwinding, only memory accesses
@@ -37,17 +39,25 @@ class NativeUnwinderAndroid : public Unwinder,
   // Creates maps object from /proc/self/maps for use by NativeUnwinderAndroid.
   // Since this is an expensive call, the maps object should be re-used across
   // all profiles in a process.
-  static std::unique_ptr<unwindstack::Maps> CreateMaps();
-  static std::unique_ptr<unwindstack::Memory> CreateProcessMemory();
+  // Set |use_updatable_maps| to true to use unwindstack::LocalUpdatableMaps,
+  // instead of unwindstack::LocalMaps. LocalUpdatableMaps might be preferable
+  // when the frames come from dynamically added ELFs like JITed ELFs, or
+  // dynamically loaded libraries. With LocalMaps the frames corresponding to
+  // newly loaded ELFs don't get unwound since the existing maps structure
+  // fails to find a map for the given pc while LocalUpdatableMaps reparses
+  // /proc/self/maps when it fails to find a map for the given pc and then can
+  // successfully unwind through newly loaded ELFs as well.
+  static std::unique_ptr<NativeUnwinderAndroidMemoryRegionsMap>
+  CreateMemoryRegionsMap(bool use_updatable_maps = false);
 
-  // |memory_regions_map| and |process_memory| must outlive this unwinder.
   // |exclude_module_with_base_address| is used to exclude a specific module and
   // let another unwinder take control. TryUnwind() will exit with
   // UNRECOGNIZED_FRAME and CanUnwindFrom() will return false when a frame is
   // encountered in that module.
-  NativeUnwinderAndroid(unwindstack::Maps* memory_regions_map,
-                        unwindstack::Memory* process_memory,
-                        uintptr_t exclude_module_with_base_address);
+  // |map_delegate| is used to manage memory used by libunwindstack. It must
+  // outlives this object.
+  NativeUnwinderAndroid(uintptr_t exclude_module_with_base_address,
+                        NativeUnwinderAndroidMapDelegate* map_delegate);
   ~NativeUnwinderAndroid() override;
 
   NativeUnwinderAndroid(const NativeUnwinderAndroid&) = delete;
@@ -68,9 +78,9 @@ class NativeUnwinderAndroid : public Unwinder,
   void EmitDexFrame(uintptr_t dex_pc,
                     std::vector<Frame>* stack) const;
 
-  const raw_ptr<unwindstack::Maps> memory_regions_map_;
-  const raw_ptr<unwindstack::Memory> process_memory_;
   const uintptr_t exclude_module_with_base_address_;
+  raw_ptr<NativeUnwinderAndroidMapDelegate> map_delegate_;
+  const raw_ptr<NativeUnwinderAndroidMemoryRegionsMap> memory_regions_map_;
 };
 
 }  // namespace base

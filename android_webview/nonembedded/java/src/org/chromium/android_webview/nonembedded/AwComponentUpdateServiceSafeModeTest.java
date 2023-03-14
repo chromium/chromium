@@ -4,7 +4,7 @@
 
 package org.chromium.android_webview.nonembedded;
 
-import static org.mockito.Mockito.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

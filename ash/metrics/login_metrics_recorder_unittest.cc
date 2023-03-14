@@ -94,7 +94,7 @@ TEST_F(LoginMetricsRecorderTest, NoteActionButtonClick) {
   SetUserCount(1);
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
 
-  LockContentsView::TestApi test_api(contents);
+  LockContentsViewTestApi test_api(contents);
   EXPECT_TRUE(test_api.note_action()->GetVisible());
 
   ui::test::EventGenerator* generator = GetEventGenerator();

@@ -20,6 +20,7 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -135,6 +136,7 @@ public class NotificationPlatformBridgeIntentTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Notifications"})
+    @DisabledTest(message = "https://crbug.com/1420990")
     public void testLaunchProcessForNotificationActivation() throws Exception {
         Assert.assertFalse("The native library should not be loaded yet",
                 LibraryLoader.getInstance().isInitialized());

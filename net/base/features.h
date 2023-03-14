@@ -87,12 +87,23 @@ NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
 // Update protocol using ALPN information in HTTPS DNS records.
 NET_EXPORT BASE_DECLARE_FEATURE(kUseDnsHttpsSvcbAlpn);
 
+// If enabled allows the use of SHA-1 by the server for signatures
+// in the TLS handshake.
+NET_EXPORT BASE_DECLARE_FEATURE(kSHA1ServerSignature);
+
 // Enables TLS 1.3 early data.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableTLS13EarlyData);
 
 // Enables the TLS Encrypted ClientHello feature.
 // https://datatracker.ietf.org/doc/html/draft-ietf-tls-esni-13
 NET_EXPORT BASE_DECLARE_FEATURE(kEncryptedClientHello);
+
+// Enables the TLS Encrypted ClientHello feature for QUIC. Only takes effect if
+// kEncryptedClientHello is also enabled.
+//
+// TODO(crbug.com/1287248): Remove this flag when ECH for QUIC is fully
+// implemented. This flag is just a temporary mechanism for now.
+NET_EXPORT BASE_DECLARE_FEATURE(kEncryptedClientHelloQuic);
 
 // Enables optimizing the network quality estimation algorithms in network
 // quality estimator (NQE).
@@ -113,11 +124,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSplitHostCacheByNetworkIsolationKey);
 // Partitions connections based on the NetworkIsolationKey associated with a
 // request.
 NET_EXPORT BASE_DECLARE_FEATURE(kPartitionConnectionsByNetworkIsolationKey);
-
-// Forces the `frame_origin` value in IsolationInfo to the `top_level_origin`
-// value when an IsolationInfo instance is created. This is to enable
-// expirimenting with double keyed network partitions.
-NET_EXPORT BASE_DECLARE_FEATURE(kForceIsolationInfoFrameOriginToTopLevelFrame);
 
 // Partitions HttpServerProperties based on the NetworkIsolationKey associated
 // with a request.
@@ -141,15 +147,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kPartitionSSLSessionsByNetworkIsolationKey);
 // cache, but internal objects can be created with them (e.g., endpoints), for
 // testing.
 NET_EXPORT BASE_DECLARE_FEATURE(kPartitionNelAndReportingByNetworkIsolationKey);
-
-// Creates a <double key + is_cross_site> NetworkAnonymizationKey which is used
-// to partition the network state. This double key will have the following
-// properties: `top_frame_site` -> the schemeful site of the top level page.
-// `frame_site ` -> nullopt
-// `is_cross_site` -> true if the `top_frame_site` is cross site when compared
-// to the frame site. The frame site will not be stored in this key so the value
-// of is_cross_site will be computed at key construction.
-NET_EXPORT BASE_DECLARE_FEATURE(kEnableCrossSiteFlagNetworkAnonymizationKey);
 
 // Enables sending TLS 1.3 Key Update messages on TLS 1.3 connections in order
 // to ensure that this corner of the spec is exercised. This is currently
@@ -197,18 +194,12 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSameSiteDefaultChecksMethodRigorously);
 
 #if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
 NET_EXPORT BASE_DECLARE_FEATURE(kCertDualVerificationTrialFeature);
-#if BUILDFLAG(IS_MAC)
-NET_EXPORT extern const base::FeatureParam<int> kCertDualVerificationTrialImpl;
-#endif /* BUILDFLAG(IS_MAC) */
-#endif /* BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED) */
+#endif  // BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
 
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
 // When enabled, use the Chrome Root Store instead of the system root store
 NET_EXPORT BASE_DECLARE_FEATURE(kChromeRootStoreUsed);
-#if BUILDFLAG(IS_MAC)
-NET_EXPORT extern const base::FeatureParam<int> kChromeRootStoreSysImpl;
-#endif /* BUILDFLAG(IS_MAC) */
-#endif /* BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED) */
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
 
 // When enabled, TrustStore implementations will use TRUSTED_LEAF,
 // TRUSTED_ANCHOR_OR_LEAF, and TRUSTED_ANCHOR as appropriate. When disabled,
@@ -303,10 +294,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kPartitionedCookies);
 // frames.
 NET_EXPORT BASE_DECLARE_FEATURE(kNoncedPartitionedCookies);
 
-// Enable recording UMAs for network activities which can wake-up radio on
-// Android.
-NET_EXPORT BASE_DECLARE_FEATURE(kRecordRadioWakeupTrigger);
-
 // When enabled, cookies cannot have an expiry date further than 400 days in the
 // future.
 NET_EXPORT BASE_DECLARE_FEATURE(kClampCookieExpiryTo400Days);
@@ -357,6 +344,13 @@ NET_EXPORT BASE_DECLARE_FEATURE(kPriorityIncremental);
 // Prefetch to follow normal semantics instead of 5-minute rule
 // https://crbug.com/1345207
 NET_EXPORT BASE_DECLARE_FEATURE(kPrefetchFollowsNormalCacheSemantics);
+
+// A flag for new Kerberos feature, that suggests new UI
+// when Kerberos authentication in browser fails on ChromeOS.
+// b/260522530
+#if BUILDFLAG(IS_CHROMEOS)
+NET_EXPORT BASE_DECLARE_FEATURE(kKerberosInBrowserRedirect);
+#endif
 
 }  // namespace net::features
 

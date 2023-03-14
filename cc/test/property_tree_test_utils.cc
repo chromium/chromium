@@ -121,10 +121,12 @@ EffectNode& CreateEffectNodeInternal(LayerType* layer,
   auto* node = effect_tree.Node(id);
   if (layer) {
     layer->SetEffectTreeIndex(id);
-    node->stable_id = layer->id();
+    node->element_id = layer->element_id()
+                           ? layer->element_id()
+                           : LayerIdToElementIdForTesting(layer->id());
     if (layer->element_id()) {
       property_trees->effect_tree_mutable().SetElementIdForNodeId(
-          node->id, layer->element_id());
+          node->id, node->element_id);
     }
   }
   node->transform_id =

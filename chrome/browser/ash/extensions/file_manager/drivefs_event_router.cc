@@ -31,18 +31,6 @@ constexpr extensions::events::HistogramValue kTransferEvent =
 constexpr extensions::events::HistogramValue kPinEvent =
     extensions::events::FILE_MANAGER_PRIVATE_ON_PIN_TRANSFERS_UPDATED;
 
-bool IsItemEventCompleted(drivefs::mojom::ItemEvent::State state) {
-  switch (state) {
-    case drivefs::mojom::ItemEvent::State::kQueued:
-    case drivefs::mojom::ItemEvent::State::kInProgress:
-      return false;
-    case drivefs::mojom::ItemEvent::State::kCompleted:
-    case drivefs::mojom::ItemEvent::State::kFailed:
-      return true;
-  }
-  return false;
-}
-
 file_manager_private::DriveConfirmDialogType ConvertDialogReasonType(
     drivefs::mojom::DialogReason::Type type) {
   switch (type) {
@@ -163,28 +151,39 @@ void DriveFsEventRouter::BroadcastAggregateTransferEventForItems(
   std::vector<const drivefs::mojom::ItemEvent*> filtered_items;
   std::vector<const drivefs::mojom::ItemEvent*> ignored_items;
   bool are_any_failed = false;
-  bool are_any_in_progress = false;
-  int64_t total_bytes_transferred = 0;
-  int64_t total_bytes_to_transfer = 0;
-  int num_syncing_items = 0;
+  int64_t in_progress_transferred = 0;
+  int64_t in_progress_total = 0;
+  int64_t num_in_progress_items = 0;
   const drivefs::mojom::ItemEvent* some_syncing_item = nullptr;
 
   for (const auto* item : items) {
     if (base::Contains(ignored_file_paths_, base::FilePath(item->path))) {
       ignored_items.push_back(item);
+      // Stop tracking ignored queued events.
+      if (const auto node =
+              state.group_id_to_queued_bytes.extract(item->group_id)) {
+        state.queued_bytes -= node.mapped();
+      }
     } else {
       filtered_items.push_back(item);
     }
   }
 
   for (const auto* const item : filtered_items) {
-    if (IsItemEventCompleted(item->state)) {
-      auto it = state.group_id_to_bytes_to_transfer.find(item->group_id);
-      if (it != state.group_id_to_bytes_to_transfer.end()) {
-        state.completed_bytes += it->second;
-        state.group_id_to_bytes_to_transfer.erase(it);
+    using State = drivefs::mojom::ItemEvent::State;
+    const auto queued_it = state.group_id_to_queued_bytes.find(item->group_id);
+    const bool was_queued = queued_it != state.group_id_to_queued_bytes.end();
+    if (item->state != State::kQueued && was_queued) {
+      state.queued_bytes -=
+          state.group_id_to_queued_bytes.extract(queued_it).mapped();
+    }
+
+    if (item->state == State::kCompleted || item->state == State::kFailed) {
+      if (const auto node =
+              state.group_id_to_bytes_to_transfer.extract(item->group_id)) {
+        state.completed_bytes += node.mapped();
       }
-      if (item->state == drivefs::mojom::ItemEvent_State::kFailed) {
+      if (item->state == State::kFailed) {
         are_any_failed = true;
       }
       continue;
@@ -195,16 +194,25 @@ void DriveFsEventRouter::BroadcastAggregateTransferEventForItems(
     if (!some_syncing_item) {
       some_syncing_item = item;
     }
-    if (item->state == drivefs::mojom::ItemEvent_State::kInProgress) {
-      are_any_in_progress = true;
+
+    state.group_id_to_bytes_to_transfer[item->group_id] =
+        item->bytes_to_transfer;
+
+    if (item->state == State::kQueued) {
+      if (!was_queued) {
+        state.group_id_to_queued_bytes[item->group_id] =
+            item->bytes_to_transfer;
+        state.queued_bytes += item->bytes_to_transfer;
+      }
+      continue;
     }
-    total_bytes_transferred += item->bytes_transferred;
-    total_bytes_to_transfer += item->bytes_to_transfer;
-    ++num_syncing_items;
-    if (item->bytes_to_transfer) {
-      state.group_id_to_bytes_to_transfer[item->group_id] =
-          item->bytes_to_transfer;
-    }
+
+    DCHECK(item->state == State::kInProgress);
+
+    // If reached, item is "in progress".
+    num_in_progress_items++;
+    in_progress_transferred += item->bytes_transferred;
+    in_progress_total += item->bytes_to_transfer;
   }
 
   FileTransferStatus status;
@@ -212,12 +220,14 @@ void DriveFsEventRouter::BroadcastAggregateTransferEventForItems(
 
   if (some_syncing_item) {
     status.show_notification = true;
-    status.num_total_jobs = num_syncing_items;
-    status.processed = total_bytes_transferred + state.completed_bytes;
-    status.total = total_bytes_to_transfer + state.completed_bytes;
+    status.num_total_jobs =
+        num_in_progress_items + state.group_id_to_queued_bytes.size();
+    status.processed = in_progress_transferred + state.completed_bytes;
+    status.total =
+        in_progress_total + state.completed_bytes + state.queued_bytes;
     status.transfer_state =
-        are_any_in_progress ? file_manager_private::TRANSFER_STATE_IN_PROGRESS
-                            : file_manager_private::TRANSFER_STATE_QUEUED;
+        num_in_progress_items ? file_manager_private::TRANSFER_STATE_IN_PROGRESS
+                              : file_manager_private::TRANSFER_STATE_QUEUED;
 
     base::FilePath path(some_syncing_item->path);
     for (const auto& url : GetEventListenerURLs(event_name)) {
@@ -235,6 +245,7 @@ void DriveFsEventRouter::BroadcastAggregateTransferEventForItems(
       !(filtered_items.empty() && !ignored_items.empty());
   state.completed_bytes = 0;
   state.group_id_to_bytes_to_transfer.clear();
+  state.group_id_to_queued_bytes.clear();
   status.transfer_state = are_any_failed
                               ? file_manager_private::TRANSFER_STATE_FAILED
                               : file_manager_private::TRANSFER_STATE_COMPLETED;

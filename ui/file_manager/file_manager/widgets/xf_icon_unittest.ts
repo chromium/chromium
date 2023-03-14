@@ -77,10 +77,10 @@ export async function testIconSetWithLowDPI(done: () => void) {
 
   const span = getSpanFromIcon(icon);
   assertTrue(span.classList.contains('keep-color'));
-  assertTrue(window.getComputedStyle(span).backgroundImage.includes(
-      '-webkit-image-set'));
-  assertTrue(window.getComputedStyle(span).backgroundImage.includes('1x'));
-  assertFalse(window.getComputedStyle(span).backgroundImage.includes('2x'));
+  assertTrue(
+      window.getComputedStyle(span).backgroundImage.includes('image-set'));
+  assertTrue(window.getComputedStyle(span).backgroundImage.includes('1dppx'));
+  assertFalse(window.getComputedStyle(span).backgroundImage.includes('2dppx'));
 
   done();
 }
@@ -96,10 +96,10 @@ export async function testIconSetWithHighDPI(done: () => void) {
 
   const span = getSpanFromIcon(icon);
   assertTrue(span.classList.contains('keep-color'));
-  assertTrue(window.getComputedStyle(span).backgroundImage.includes(
-      '-webkit-image-set'));
-  assertFalse(window.getComputedStyle(span).backgroundImage.includes('1x'));
-  assertTrue(window.getComputedStyle(span).backgroundImage.includes('2x'));
+  assertTrue(
+      window.getComputedStyle(span).backgroundImage.includes('image-set'));
+  assertFalse(window.getComputedStyle(span).backgroundImage.includes('1dppx'));
+  assertTrue(window.getComputedStyle(span).backgroundImage.includes('2dppx'));
 
   done();
 }
@@ -115,10 +115,10 @@ export async function testIconSetWithBothDPI(done: () => void) {
 
   const span = getSpanFromIcon(icon);
   assertTrue(span.classList.contains('keep-color'));
-  assertTrue(window.getComputedStyle(span).backgroundImage.includes(
-      '-webkit-image-set'));
-  assertTrue(window.getComputedStyle(span).backgroundImage.includes('1x'));
-  assertTrue(window.getComputedStyle(span).backgroundImage.includes('2x'));
+  assertTrue(
+      window.getComputedStyle(span).backgroundImage.includes('image-set'));
+  assertTrue(window.getComputedStyle(span).backgroundImage.includes('1dppx'));
+  assertTrue(window.getComputedStyle(span).backgroundImage.includes('2dppx'));
 
   done();
 }

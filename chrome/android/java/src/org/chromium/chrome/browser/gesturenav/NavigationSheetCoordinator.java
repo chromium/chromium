@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 import androidx.annotation.DimenRes;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.gesturenav.NavigationSheetMediator.ItemProperties;
@@ -104,9 +103,6 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
 
     private boolean mShowCloseIndicator;
 
-    // Metrics. True if sheet has ever been triggered (in peeked state) for an edge swipe.
-    private boolean mSheetTriggered;
-
     // Metrics. True if sheet was opened from long-press on back button.
     private boolean mOpenedAsPopup;
 
@@ -132,13 +128,6 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
             if (mOpenedAsPopup) {
                 GestureNavMetrics.recordUserAction(
                         (index == -1) ? "ShowFullHistory" : "HistoryClick" + (position + 1));
-            } else {
-                GestureNavMetrics.recordHistogram("GestureNavigation.Sheet.Used", mForward);
-
-                // Logs position of the clicked item. Back navigation has negative value,
-                // while forward positive. Show full history is zero.
-                RecordHistogram.recordSparseHistogram("GestureNavigation.Sheet.Selected",
-                        index == -1 ? 0 : (mForward ? position + 1 : -position - 1));
             }
         });
         mModelAdapter.registerType(NAVIGATION_LIST_ITEM_TYPE_ID,
@@ -176,7 +165,6 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
             return false;
         }
         mBottomSheetController.get().addObserver(mSheetObserver);
-        mSheetTriggered = true;
         if (expandIfSmall && history.getEntryCount() <= SKIP_PEEK_COUNT) {
             mFullyExpand = true;
             expandSheet();
@@ -186,7 +174,6 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
 
     private void expandSheet() {
         mBottomSheetController.get().expandSheet();
-        GestureNavMetrics.recordHistogram("GestureNavigation.Sheet.Viewed", mForward);
     }
 
     // NavigationSheet
@@ -201,7 +188,6 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
         if (mBottomSheetController.get() == null) return;
         mForward = forward;
         mShowCloseIndicator = showCloseIndicator;
-        mSheetTriggered = false;
         mFullyExpand = false;
         mOpenedAsPopup = false;
     }
@@ -247,9 +233,6 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
     public void release() {
         if (mBottomSheetController.get() == null) return;
         mHandler.removeCallbacks(mOpenSheetRunnable);
-        if (mSheetTriggered) {
-            GestureNavMetrics.recordHistogram("GestureNavigation.Sheet.Peeked", mForward);
-        }
 
         // Show navigation sheet if released at peek state.
         if (isPeeked()) expandSheet();

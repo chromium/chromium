@@ -16,9 +16,6 @@ namespace features {
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
     kUseDownloadOfflineContentProvider);
 
-// Whether download auto-resumptions are enabled in native.
-COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kDownloadAutoResumptionNative);
-
 // Whether a download can be handled by parallel jobs.
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kParallelDownloading);
 

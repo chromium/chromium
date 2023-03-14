@@ -285,8 +285,8 @@ CertificateProviderInternalReportCertificatesFunction::
 
 ExtensionFunction::ResponseAction
 CertificateProviderInternalReportCertificatesFunction::Run() {
-  std::unique_ptr<api_cpi::ReportCertificates::Params> params(
-      api_cpi::ReportCertificates::Params::Create(args()));
+  absl::optional<api_cpi::ReportCertificates::Params> params =
+      api_cpi::ReportCertificates::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   chromeos::CertificateProviderService* const service =
@@ -338,8 +338,8 @@ CertificateProviderStopPinRequestFunction::
 
 ExtensionFunction::ResponseAction
 CertificateProviderStopPinRequestFunction::Run() {
-  std::unique_ptr<api_cp::StopPinRequest::Params> params(
-      api_cp::StopPinRequest::Params::Create(args()));
+  absl::optional<api_cp::StopPinRequest::Params> params =
+      api_cp::StopPinRequest::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // TODO(crbug.com/1046860): Remove logging after stabilizing the feature.
@@ -438,8 +438,8 @@ void CertificateProviderRequestPinFunction::GetQuotaLimitHeuristics(
 }
 
 ExtensionFunction::ResponseAction CertificateProviderRequestPinFunction::Run() {
-  std::unique_ptr<api_cp::RequestPin::Params> params(
-      api_cp::RequestPin::Params::Create(args()));
+  absl::optional<api_cp::RequestPin::Params> params =
+      api_cp::RequestPin::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const api_cp::PinRequestType pin_request_type =
@@ -524,8 +524,8 @@ CertificateProviderSetCertificatesFunction::
 
 ExtensionFunction::ResponseAction
 CertificateProviderSetCertificatesFunction::Run() {
-  std::unique_ptr<api_cp::SetCertificates::Params> params(
-      api_cp::SetCertificates::Params::Create(args()));
+  absl::optional<api_cp::SetCertificates::Params> params =
+      api_cp::SetCertificates::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (!params->details.client_certificates.empty() && params->details.error) {
@@ -576,8 +576,8 @@ CertificateProviderInternalReportSignatureFunction::
 
 ExtensionFunction::ResponseAction
 CertificateProviderInternalReportSignatureFunction::Run() {
-  std::unique_ptr<api_cpi::ReportSignature::Params> params(
-      api_cpi::ReportSignature::Params::Create(args()));
+  absl::optional<api_cpi::ReportSignature::Params> params =
+      api_cpi::ReportSignature::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   chromeos::CertificateProviderService* const service =
@@ -605,8 +605,8 @@ CertificateProviderReportSignatureFunction::
 
 ExtensionFunction::ResponseAction
 CertificateProviderReportSignatureFunction::Run() {
-  std::unique_ptr<api_cp::ReportSignature::Params> params(
-      api_cp::ReportSignature::Params::Create(args()));
+  absl::optional<api_cp::ReportSignature::Params> params =
+      api_cp::ReportSignature::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (params->details.signature && !params->details.signature->empty() &&

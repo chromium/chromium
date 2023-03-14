@@ -273,8 +273,8 @@ ElementRuleCollector::ElementRuleCollector(
       mode_(SelectorChecker::kResolvingStyle),
       can_use_fast_reject_(
           selector_filter_.ParentStackIsConsistent(context.ParentNode())),
-      same_origin_only_(false),
       matching_ua_rules_(false),
+      suppress_visited_(false),
       inside_link_(inside_link),
       result_(result) {
   if (!g_selector_stats_tracing_enabled) {
@@ -350,11 +350,12 @@ bool SlowMatchWithNoResultFlags(
     SelectorChecker::SelectorCheckingContext& context,
     const CSSSelector& selector,
     const RuleData& rule_data,
+    bool suppress_visited,
     unsigned expected_proximity = std::numeric_limits<unsigned>::max()) {
   SelectorChecker::MatchResult result;
   context.selector = &selector;
-  context.is_inside_visited_link =
-      rule_data.LinkMatchType() == CSSSelector::kMatchVisited;
+  context.match_visited = !suppress_visited && rule_data.LinkMatchType() ==
+                                                   CSSSelector::kMatchVisited;
   bool match = checker.Match(context, result);
   DCHECK_EQ(0, result.flags);
   DCHECK_EQ(kPseudoIdNone, result.dynamic_pseudo);
@@ -404,16 +405,14 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
         static_cast<wtf_size_t>(rules.size()));
   }
 
-  const bool case_sensitive_tag_matching =
-      context.element->IsHTMLElement() ||
-      !IsA<HTMLDocument>(context.element->GetDocument());
-
   for (const RuleData& rule_data : rules) {
     if (perf_trace_enabled) {
       selector_statistics_collector.EndCollectionForCurrentRule();
       selector_statistics_collector.BeginCollectionForRule(&rule_data);
     }
-
+    if (!context.is_initial && rule_data.IsInitial()) {
+      continue;
+    }
     if (can_use_fast_reject_ &&
         selector_filter_.FastRejectSelector<RuleData::kMaximumIdentifierCount>(
             rule_data.DescendantSelectorIdentifierHashes())) {
@@ -421,12 +420,6 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
       if (perf_trace_enabled) {
         selector_statistics_collector.SetWasFastRejected();
       }
-      continue;
-    }
-
-    // Don't return cross-origin rules if we did not explicitly ask for them
-    // through SetSameOriginOnly.
-    if (same_origin_only_ && !rule_data.HasDocumentSecurityOrigin()) {
       continue;
     }
 
@@ -452,13 +445,14 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
       if (context.style_scope != nullptr &&
           RuntimeEnabledFeatures::CSSScopeEnabled() &&
           !checker.CheckInStyleScope(context, result)) {
-        DCHECK(
-            !SlowMatchWithNoResultFlags(checker, context, selector, rule_data));
+        DCHECK(!SlowMatchWithNoResultFlags(checker, context, selector,
+                                           rule_data, suppress_visited_));
         continue;
       }
       DCHECK(SlowMatchWithNoResultFlags(checker, context, selector, rule_data,
-                                        result.proximity));
-    } else if (case_sensitive_tag_matching && rule_data.SelectorIsEasy()) {
+                                        suppress_visited_, result.proximity));
+    } else if (context.vtt_originating_element == nullptr &&
+               rule_data.SelectorIsEasy()) {
       if (pseudo_style_request_.pseudo_id != kPseudoIdNone) {
         continue;
       }
@@ -469,9 +463,9 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
           !checker.CheckInStyleScope(context, result)) {
         easy_match = false;
       }
-      DCHECK_EQ(easy_match,
-                SlowMatchWithNoResultFlags(checker, context, selector,
-                                           rule_data, result.proximity))
+      DCHECK_EQ(easy_match, SlowMatchWithNoResultFlags(
+                                checker, context, selector, rule_data,
+                                suppress_visited_, result.proximity))
           << "Mismatch for selector " << selector.SelectorText()
           << " on element " << context.element;
       if (!easy_match) {
@@ -479,10 +473,9 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
       }
     } else {
       context.selector = &selector;
-      context.is_inside_visited_link =
+      context.match_visited =
+          !suppress_visited_ &&
           rule_data.LinkMatchType() == CSSSelector::kMatchVisited;
-      DCHECK(!context.is_inside_visited_link ||
-             inside_link_ != EInsideLink::kNotInsideLink);
       bool match = checker.Match(context, result);
       result_.AddFlags(result.flags);
       if (!match) {
@@ -743,19 +736,6 @@ void ElementRuleCollector::CollectMatchingRules(
                                   checker);
     }
   }
-  if (inside_link_ != EInsideLink::kNotInsideLink) {
-    // Collect rules for visited links regardless of whether they affect
-    // rendering to prevent sniffing of visited links via CSS transitions.
-    // If the visited or unvisited style changes and an affected property has
-    // a transition rule, we create a transition even if it has no visible
-    // effect.
-    for (const auto bundle : match_request.AllRuleSets()) {
-      CollectMatchingRulesForList(bundle.rule_set->VisitedDependentRules(),
-                                  match_request, bundle.rule_set,
-                                  bundle.style_sheet, bundle.style_sheet_index,
-                                  checker);
-    }
-  }
   if (SelectorChecker::MatchesFocusPseudoClass(element)) {
     for (const auto bundle : match_request.AllRuleSets()) {
       CollectMatchingRulesForList(bundle.rule_set->FocusPseudoClassRules(),
@@ -940,6 +920,9 @@ void ElementRuleCollector::SortAndTransferMatchedRules(
   for (unsigned i = 0; i < matched_rules_.size(); i++) {
     const MatchedRule& matched_rule = matched_rules_[i];
     const RuleData* rule_data = matched_rule.GetRuleData();
+    if (rule_data->IsInitial()) {
+      result_.AddFlags(static_cast<MatchFlags>(MatchFlag::kAffectedByInitial));
+    }
     result_.AddMatchedProperties(
         &rule_data->Rule()->Properties(),
         AddMatchedPropertiesOptions::Builder()

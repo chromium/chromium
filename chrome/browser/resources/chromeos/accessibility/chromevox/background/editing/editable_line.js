@@ -42,10 +42,10 @@ export class EditableLine {
   constructor(startNode, startIndex, endNode, endIndex, opt_baseLineOnStart) {
     /** @private {!Cursor} */
     this.start_ = new Cursor(startNode, startIndex);
-    this.start_ = this.start_.deepEquivalent || this.start_;
+    this.start_ = this.start_.deepEquivalent ?? this.start_;
     /** @private {!Cursor} */
     this.end_ = new Cursor(endNode, endIndex);
-    this.end_ = this.end_.deepEquivalent || this.end_;
+    this.end_ = this.end_.deepEquivalent ?? this.end_;
 
     /** @private {AutomationNode|undefined} */
     this.endContainer_;
@@ -119,7 +119,7 @@ export class EditableLine {
       nameLen = lineBase.node.name.length;
     }
 
-    this.value_ = new Spannable(lineBase.node.name || '', lineBase);
+    this.value_ = new Spannable(lineBase.node.name ?? '', lineBase);
     if (lineBase.node === lineExtend.node) {
       this.value_.setSpan(lineExtend, 0, nameLen);
     }
@@ -130,8 +130,8 @@ export class EditableLine {
     }
     this.startContainerValue_ =
         this.startContainer_.role === RoleType.TEXT_FIELD ?
-        this.startContainer_.value || '' :
-        this.startContainer_.name || '';
+        this.startContainer_.value ?? '' :
+        this.startContainer_.name ?? '';
     this.endContainer_ = this.end_.node;
     if (this.endContainer_.role === RoleType.INLINE_TEXT_BOX) {
       this.endContainer_ = this.endContainer_.parent;
@@ -228,7 +228,7 @@ export class EditableLine {
            (EditableLine.includeOffscreen ||
             !finder.previousSibling.state[StateType.OFFSCREEN])) {
       finder = finder.previousSibling;
-      textCountBeforeLineStart += finder.name ? finder.name.length : 0;
+      textCountBeforeLineStart += finder.name?.length ?? 0;
     }
 
     return {lineStart, value, textCountBeforeLineStart};
@@ -279,7 +279,7 @@ export class EditableLine {
            (EditableLine.includeOffscreen ||
             !finder.nextSibling.state[StateType.OFFSCREEN])) {
       finder = finder.nextSibling;
-      textCountAfterLineEnd += finder.name ? finder.name.length : 0;
+      textCountAfterLineEnd += finder.name?.length ?? 0;
     }
 
     return {lineEnd, value, textCountAfterLineEnd};
@@ -328,6 +328,7 @@ export class EditableLine {
           value.setSpan(parent, prevLen, len);
         }
       } catch (e) {
+        console.error(e);
       }
     }
     return value;
@@ -341,14 +342,14 @@ export class EditableLine {
   getNextOnLine_(node) {
     const nextOnLine = node.nextOnLine;
     const nextSibling = node.nextSibling;
-    if (nextOnLine && nextOnLine.role) {
+    if (nextOnLine?.role) {
       // Ensure that there is a next-on-line node. The role can be undefined
       // for an object that has been destroyed since the object was first
       // cached.
       return nextOnLine;
     }
 
-    if (nextSibling && nextSibling.previousOnLine === node) {
+    if (nextSibling?.previousOnLine === node) {
       // Catches potential breaks in the chain of next-on-line nodes.
       return nextSibling.firstChild;
     }
@@ -364,15 +365,14 @@ export class EditableLine {
   getPreviousOnLine_(node) {
     const previousLine = node.previousOnLine;
     const previousSibling = node.previousSibling;
-    if (previousLine && previousLine.role) {
+    if (previousLine?.role) {
       // Ensure that there is a previous-on-line node. The role can be undefined
       // for an object that has been destroyed since the object was first
       // cached.
       return previousLine;
     }
 
-    if (previousSibling && previousSibling.lastChild &&
-        previousSibling.lastChild.nextOnLine === node) {
+    if (previousSibling?.lastChild?.nextOnLine === node) {
       // Catches potential breaks in the chain of previous-on-line nodes.
       return previousSibling.lastChild;
     }
@@ -405,6 +405,7 @@ export class EditableLine {
       return this.value_.getSpanStart(this.end_) +
           (this.end_.index === CURSOR_NODE_INDEX ? 0 : this.end_.index);
     } catch (e) {
+      // When that happens, fall back to the end of this line.
       return this.value_.length;
     }
   }
@@ -527,16 +528,23 @@ export class EditableLine {
     // Equality is intentionally loose here as any of the state nodes can be
     // invalidated at any time. We rely upon the start/anchor of the line
     // staying the same.
-    return (otherLine.lineStartContainer_ === this.lineStartContainer_ &&
-            otherLine.localLineStartContainerOffset_ ===
-                this.localLineStartContainerOffset_) ||
-        (otherLine.lineEndContainer_ === this.lineEndContainer_ &&
-         otherLine.localLineEndContainerOffset_ ===
-             this.localLineEndContainerOffset_) ||
-        (otherLine.lineStartContainerRecovery_.node ===
-             this.lineStartContainerRecovery_.node &&
-         otherLine.localLineStartContainerOffset_ ===
-             this.localLineStartContainerOffset_);
+    const startNodeAndOffsetMatch =
+        otherLine.lineStartContainer_ === this.lineStartContainer_ &&
+        otherLine.localLineStartContainerOffset_ ===
+            this.localLineStartContainerOffset_;
+    const endNodeAndOffsetMatch =
+        otherLine.lineEndContainer_ === this.lineEndContainer_ &&
+        otherLine.localLineEndContainerOffset_ ===
+            this.localLineEndContainerOffset_;
+    const recoveryNodeAndOffsetMatch =
+        otherLine.lineStartContainerRecovery_.node ===
+            this.lineStartContainerRecovery_.node &&
+        otherLine.localLineStartContainerOffset_ ===
+            this.localLineStartContainerOffset_;
+
+
+    return startNodeAndOffsetMatch || endNodeAndOffsetMatch ||
+        recoveryNodeAndOffsetMatch;
   }
 
   /**
@@ -584,8 +592,8 @@ export class EditableLine {
         this.lineStartContainer_, this.localLineStartContainerOffset_);
     const end = new Cursor(
         this.lineEndContainer_, this.localLineEndContainerOffset_ - 1);
-    const localStart = start.deepEquivalent || start;
-    const localEnd = end.deepEquivalent || end;
+    const localStart = start.deepEquivalent ?? start;
+    const localEnd = end.deepEquivalent ?? end;
     const localStartNode = localStart.node;
     const localEndNode = localEnd.node;
 
@@ -598,11 +606,9 @@ export class EditableLine {
       }
 
       // Hack/workaround for broken *OnLine links.
-      if (testStartNode.nextOnLine && testStartNode.nextOnLine.role) {
+      if (testStartNode.nextOnLine?.role) {
         testStartNode = testStartNode.nextOnLine;
-      } else if (
-          testStartNode.nextSibling &&
-          testStartNode.nextSibling.previousOnLine === testStartNode) {
+      } else if (testStartNode.nextSibling?.previousOnLine === testStartNode) {
         testStartNode = testStartNode.nextSibling;
       } else {
         break;
@@ -616,11 +622,9 @@ export class EditableLine {
       }
 
       // Hack/workaround for broken *OnLine links.
-      if (testEndNode.previousOnLine && testEndNode.previousOnLine.role) {
+      if (testEndNode.previousOnLine?.role) {
         testEndNode = testEndNode.previousOnLine;
-      } else if (
-          testEndNode.previousSibling &&
-          testEndNode.previousSibling.nextOnLine === testEndNode) {
+      } else if (testEndNode.previousSibling?.nextOnLine === testEndNode) {
         testEndNode = testEndNode.previousSibling;
       } else {
         break;
@@ -641,9 +645,8 @@ export class EditableLine {
     // ancestors of line nodes.
     const isLineBreakingSpace = this.text === '\u00a0';
 
-    const prev = (prevLine && prevLine.startContainer_.role) ?
-        prevLine.startContainer_ :
-        null;
+    const prev =
+        prevLine?.startContainer_.role ? prevLine.startContainer_ : null;
     const lineNodes =
         /** @type {Array<!AutomationNode>} */ (this.value_.getSpansInstanceOf(
             /** @type {function()} */ (this.startContainer_.constructor)));
@@ -669,9 +672,7 @@ export class EditableLine {
            CursorRange.fromNode(cur),
            prev ? CursorRange.fromNode(prev) : CursorRange.fromNode(cur),
            OutputCustomEvent.NAVIGATE)
-          .onSpeechEnd(() => {
-            speakNodeAtIndex(++index, cur);
-          });
+          .onSpeechEnd(() => speakNodeAtIndex(++index, cur));
 
       // Ignore whitespace only output except if it is leading content on the
       // line.

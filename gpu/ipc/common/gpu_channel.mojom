@@ -484,6 +484,8 @@ union DeferredSharedImageRequest {
   // Destroys the shared image identified by this Mailbox.
   Mailbox destroy_shared_image;
 
+  AddReferenceToSharedImageParams add_reference_to_shared_image;
+
   // See CreateSwapChainParams.
   [EnableIf=is_win]
   CreateSwapChainParams create_swap_chain;
@@ -684,6 +686,17 @@ struct UpdateSharedImageParams {
   gfx.mojom.GpuFenceHandle? in_fence_handle;
 };
 
+// Adds reference to the shared image that was created on a different
+// GpuChannel. This allows SharedImage that is shared across processes to
+// outlive original client.
+struct AddReferenceToSharedImageParams {
+  // The mailbox identifying the shared image to add ref.
+  Mailbox mailbox;
+
+  // The fence to release once the reference has been added.
+  uint32 release_id;
+};
+
 // Updates the contents of the GpuMemoryBuffer associated with the shared image.
 // Necessary on platforms like Windows where renderer cannot create native GMBs.
 [EnableIf=is_win]
@@ -704,7 +717,7 @@ struct CreateSwapChainParams {
   Mailbox back_buffer_mailbox;
 
   // Pixel format of the front and back buffers.
-  viz.mojom.ResourceFormat format;
+  viz.mojom.SharedImageFormat format;
 
   // Size of the buffers.
   gfx.mojom.Size size;

@@ -140,7 +140,11 @@ void vp9_highbd_fht16x16_c(const int16_t* input,
                            tran_low_t* output,
                            int stride,
                            int tx_type);
-#define vp9_highbd_fht16x16 vp9_highbd_fht16x16_c
+void vp9_highbd_fht16x16_neon(const int16_t* input,
+                              tran_low_t* output,
+                              int stride,
+                              int tx_type);
+#define vp9_highbd_fht16x16 vp9_highbd_fht16x16_neon
 
 void vp9_highbd_fht4x4_c(const int16_t* input,
                          tran_low_t* output,
@@ -156,7 +160,11 @@ void vp9_highbd_fht8x8_c(const int16_t* input,
                          tran_low_t* output,
                          int stride,
                          int tx_type);
-#define vp9_highbd_fht8x8 vp9_highbd_fht8x8_c
+void vp9_highbd_fht8x8_neon(const int16_t* input,
+                            tran_low_t* output,
+                            int stride,
+                            int tx_type);
+#define vp9_highbd_fht8x8 vp9_highbd_fht8x8_neon
 
 void vp9_highbd_fwht4x4_c(const int16_t* input, tran_low_t* output, int stride);
 #define vp9_highbd_fwht4x4 vp9_highbd_fwht4x4_c

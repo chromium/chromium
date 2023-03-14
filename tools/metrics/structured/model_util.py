@@ -39,6 +39,20 @@ def get_attr(elem, tag, regex=None):
   return attr
 
 
+def get_optional_attr(elem, tag, regex=None):
+  """Get an attribute.
+
+  Returns None if it doesn't exist.
+  """
+  attr = elem.attrib.get(tag)
+  if not attr:
+    return None
+  if regex and not re.match(regex, attr):
+    error(elem, ("has '{}' attribute '{}' which does "
+                 "not match regex '{}'").format(tag, attr, regex))
+  return attr
+
+
 def get_compound_children(elem, tag, allow_missing_children=False):
   """Get all child nodes of `elem` with tag `tag`.
 
@@ -100,10 +114,12 @@ def get_text_child(elem, tag, regex=None):
   return result[0]
 
 
-def check_attributes(elem, expected_attrs):
+def check_attributes(elem, expected_attrs, optional_attrs=None):
   """Ensure `elem` has no attributes except those in `expected_attrs`."""
   actual_attrs = set(elem.attrib.keys())
   unexpected_attrs = actual_attrs - set(expected_attrs)
+  if optional_attrs:
+    unexpected_attrs = unexpected_attrs - set(optional_attrs)
   if unexpected_attrs:
     attrs = " ".join(unexpected_attrs)
     error(elem, "has unexpected attributes: " + attrs)

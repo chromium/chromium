@@ -15,7 +15,11 @@
     scriptIds.push(result.result.identifier);
   }
 
+  testRunner.log('Navigating same-process');
   await session.navigate('../resources/blank.html');
+
+  testRunner.log('Navigating cross-process');
+  await session.navigate('http://127.0.0.1:8000/inspector-protocol/resources/empty.html');
 
   testRunner.log('Removing scripts');
   for (let identifier of scriptIds) {
@@ -24,7 +28,11 @@
       testRunner.log('Failed script removal');
   }
 
+  testRunner.log('Navigating cross-process again');
   await session.navigate('../resources/blank.html');
+
+  // Dummy evaluate to wait for all scripts if any.
+  await session.evaluate(`1`);
 
   testRunner.completeTest();
 })

@@ -22,6 +22,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
@@ -34,8 +35,10 @@
 #include "chrome/browser/web_applications/web_app_translation_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
@@ -780,6 +783,31 @@ int WebAppRegistrar::CountUserInstalledApps() const {
   return num_user_installed;
 }
 
+std::vector<content::StoragePartitionConfig>
+WebAppRegistrar::GetIsolatedWebAppStoragePartitionConfigs(
+    const AppId& isolated_web_app_id) const {
+  if (!base::FeatureList::IsEnabled(features::kIsolatedWebApps)) {
+    return {};
+  }
+
+  const WebApp* isolated_web_app = GetAppById(isolated_web_app_id);
+  if (!isolated_web_app || !isolated_web_app->is_locally_installed() ||
+      !isolated_web_app->isolation_data()) {
+    return {};
+  }
+
+  base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
+      IsolatedWebAppUrlInfo::Create(isolated_web_app->scope());
+  if (!url_info.has_value()) {
+    LOG(ERROR) << "Invalid Isolated Web App: " << isolated_web_app->app_id()
+               << ", " << url_info.error();
+    return {};
+  }
+
+  // TODO(crbug.com/1311065): Include Controlled Frame StoragePartitions.
+  return {url_info->storage_partition_config(profile_)};
+}
+
 std::string WebAppRegistrar::GetAppShortName(const AppId& app_id) const {
   if (base::FeatureList::IsEnabled(
           blink::features::kWebAppEnableTranslations)) {
@@ -926,6 +954,16 @@ absl::optional<mojom::UserDisplayMode> WebAppRegistrar::GetAppUserDisplayMode(
     return absl::nullopt;
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(
+          features::kPreinstalledWebAppWindowExperiment)) {
+    auto it = user_display_mode_overrides_for_experiment_.find(app_id);
+    if (it != user_display_mode_overrides_for_experiment_.end()) {
+      return it->second;
+    }
+  }
+#endif
+
   return web_app->user_display_mode();
 }
 
@@ -964,15 +1002,15 @@ base::Time WebAppRegistrar::GetAppInstallTime(const AppId& app_id) const {
 }
 
 absl::optional<webapps::WebappInstallSource>
-WebAppRegistrar::GetAppInstallSourceForMetrics(const AppId& app_id) const {
+WebAppRegistrar::GetLatestAppInstallSource(const AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
   if (!web_app)
     return absl::nullopt;
 
   absl::optional<webapps::WebappInstallSource> value =
-      web_app->install_source_for_metrics();
+      web_app->latest_install_source();
 
-  // If the migration code hasn't run yet, `WebApp::install_source_for_metrics_`
+  // If the migration code hasn't run yet, `WebApp::latest_install_source_`
   // may not be populated. After migration code is removed, this branch can be
   // deleted.
   if (!value) {
@@ -1141,6 +1179,73 @@ WebAppRegistrar::AppSet WebAppRegistrar::GetApps() const {
                !web_app.is_uninstalling();
       },
       /*empty=*/registry_profile_being_deleted_);
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+void WebAppRegistrar::SetUserDisplayModeOverridesForExperiment(
+    base::flat_map<AppId, mojom::UserDisplayMode> overrides) {
+  DCHECK(base::FeatureList::IsEnabled(
+      features::kPreinstalledWebAppWindowExperiment));
+  user_display_mode_overrides_for_experiment_ = std::move(overrides);
+}
+#endif
+
+base::Value WebAppRegistrar::AsDebugValue() const {
+  base::Value::Dict root;
+
+  std::vector<const web_app::WebApp*> web_apps;
+  for (const web_app::WebApp& web_app : GetAppsIncludingStubs()) {
+    web_apps.push_back(&web_app);
+  }
+  base::ranges::sort(web_apps, {}, &web_app::WebApp::untranslated_name);
+
+  // Prefix with a ! so this appears at the top when serialized.
+  base::Value::Dict& index = *root.EnsureDict("!Index");
+  for (const web_app::WebApp* web_app : web_apps) {
+    const std::string& key = web_app->untranslated_name();
+    base::Value* existing_entry = index.Find(key);
+    if (!existing_entry) {
+      index.Set(key, web_app->app_id());
+      continue;
+    }
+    // If any web apps share identical names then collect a list of app IDs.
+    const std::string* existing_id = existing_entry->GetIfString();
+    if (existing_id) {
+      base::Value::List id_list;
+      id_list.Append(*existing_id);
+      index.Set(key, std::move(id_list));
+    }
+    index.FindList(key)->Append(web_app->app_id());
+  }
+
+  base::Value::List& web_app_details = *root.EnsureList("Details");
+  for (const web_app::WebApp* web_app : web_apps) {
+    auto app_id = web_app->app_id();
+
+    base::Value app_debug_value = web_app->AsDebugValue();
+    auto& app_debug_dict = app_debug_value.GetDict();
+
+    base::Value::Dict& effective_fields =
+        *app_debug_dict.EnsureDict("registrar_evaluated_fields");
+    effective_fields.Set(
+        "display_mode",
+        blink::DisplayModeToString(GetAppEffectiveDisplayMode(app_id)));
+    effective_fields.Set("launch_url", base::ToString(GetAppLaunchUrl(app_id)));
+    effective_fields.Set("scope", base::ToString(GetAppScope(app_id)));
+
+    base::Value::Dict& run_on_os_login_fields =
+        *effective_fields.EnsureDict("run_on_os_login_mode");
+    web_app::ValueWithPolicy<web_app::RunOnOsLoginMode> run_on_os_login_mode =
+        GetAppRunOnOsLoginMode(app_id);
+    run_on_os_login_fields.Set(
+        "value", RunOnOsLoginModeToString(run_on_os_login_mode.value));
+    run_on_os_login_fields.Set("user_controllable",
+                               run_on_os_login_mode.user_controllable);
+
+    web_app_details.Append(std::move(app_debug_value));
+  }
+
+  return base::Value(std::move(root));
 }
 
 void WebAppRegistrar::SetRegistry(Registry&& registry) {

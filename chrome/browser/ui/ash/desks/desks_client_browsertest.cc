@@ -90,6 +90,7 @@
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_properties.h"
+#include "components/desks_storage/core/desk_template_util.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/policy/policy_constants.h"
@@ -2834,8 +2835,37 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureFloatingWorkspaceTemplateTest) {
       CaptureActiveDeskAndSaveTemplate(
           ash::DeskTemplateType::kFloatingWorkspace);
   EXPECT_TRUE(desk_template->uuid().is_valid());
-  EXPECT_EQ(desk_template->uuid(),
-            base::GUID::ParseLowercase(ash::kFloatingWorkspaceTemplateUuid));
+  EXPECT_EQ(
+      desk_template->uuid(),
+      base::GUID::ParseLowercase(
+          desks_storage::desk_template_util::kFloatingWorkspaceTemplateUuid));
+}
+
+// Tests that floating workspace templates do not count towards template counts
+// for saved desks functionality.
+IN_PROC_BROWSER_TEST_F(DesksClientTest, FloatingWorkspaceOnSavedDesksUI) {
+  // Create a new browser and add a few tabs to it.
+  CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2)});
+  std::unique_ptr<ash::DeskTemplate> desk_template =
+      CaptureActiveDeskAndSaveTemplate(
+          ash::DeskTemplateType::kFloatingWorkspace);
+  EXPECT_TRUE(desk_template->uuid().is_valid());
+  EXPECT_EQ(
+      desk_template->uuid(),
+      base::GUID::ParseLowercase(
+          desks_storage::desk_template_util::kFloatingWorkspaceTemplateUuid));
+
+  auto* desk_model = DesksClient::Get()->GetDeskModel();
+  ASSERT_EQ(0u, desk_model->GetEntryCount());
+
+  ash::ToggleOverview();
+  ash::WaitForOverviewEnterAnimation();
+
+  // Tests that since we have no saved desk right now, so the library button is
+  // hidden.
+  views::Button* zero_state_templates_button = ash::GetZeroStateLibraryButton();
+  ASSERT_TRUE(zero_state_templates_button);
+  EXPECT_FALSE(zero_state_templates_button->GetVisible());
 }
 
 class DesksTemplatesClientLacrosTest : public InProcessBrowserTest {

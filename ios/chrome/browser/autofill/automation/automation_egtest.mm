@@ -90,7 +90,7 @@ base::Value RecipeJsonToValue(const std::string& recipe_json) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(
-      autofill::features::kAutofillShowTypePredictions);
+      autofill::features::test::kAutofillShowTypePredictions);
   return config;
 }
 
@@ -107,11 +107,10 @@ base::Value RecipeJsonToValue(const std::string& recipe_json) {
   GREYAssertNil(error, error.localizedDescription);
 
   // Extract the starting URL.
-  base::Value* startURLValue =
-      recipeRoot.FindKeyOfType("startingURL", base::Value::Type::STRING);
+  std::string* startURLValue = recipeRoot.GetDict().FindString("startingURL");
   GREYAssert(startURLValue, @"Test file is missing startingURL.");
 
-  const std::string startURLString(startURLValue->GetString());
+  const std::string startURLString(*startURLValue);
   GREYAssert(!startURLString.empty(), @"startingURL is an empty value.");
 
   _startURL = GURL(startURLString);

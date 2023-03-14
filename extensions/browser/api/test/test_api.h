@@ -82,7 +82,7 @@ class TestSendMessageFunction : public ExtensionFunction {
   // Whether or not the function is currently waiting for a reply.
   bool waiting_ = false;
 
-  ResponseValue response_;
+  absl::optional<ResponseValue> response_;
 };
 
 class TestSendScriptResultFunction : public TestExtensionFunction {

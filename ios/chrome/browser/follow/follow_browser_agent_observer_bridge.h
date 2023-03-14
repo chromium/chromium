@@ -21,6 +21,7 @@ class FollowBrowserAgentObserverBridge final
   // FollowServiceObserver implementation.
   void OnWebSiteFollowed(FollowedWebSite* web_site) final;
   void OnWebSiteUnfollowed(FollowedWebSite* web_site) final;
+  void OnFollowedWebSitesLoaded() final;
 
  private:
   __weak id<FollowBrowserAgentObserving> observing_;

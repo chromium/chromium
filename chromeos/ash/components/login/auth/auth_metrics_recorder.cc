@@ -4,6 +4,9 @@
 
 #include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
 
+#include <vector>
+
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -11,6 +14,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 
@@ -19,6 +23,7 @@ namespace {
 
 using AuthenticationSurface = AuthMetricsRecorder::AuthenticationSurface;
 using AuthenticationOutcome = AuthMetricsRecorder::AuthenticationOutcome;
+using CryptohomeRecoveryResult = AuthMetricsRecorder::CryptohomeRecoveryResult;
 
 // Histogram for tracking the reason of auth failure
 constexpr char kFailureReasonHistogramName[] = "Login.FailureReason";
@@ -36,8 +41,28 @@ constexpr char kLoginFlowHistogramPrefix[] = "Login.Flow.";
 constexpr char kNbPasswordAttemptsHistogramName[] =
     "Ash.OSAuth.%s.NbPasswordAttempts.%s";
 
+constexpr char kRecoveryResultHistogramName[] =
+    "Login.CryptohomeRecoveryResult";
+
+constexpr char kRecoveryDurationHistogramPrefix[] =
+    "Login.CryptohomeRecoveryDuration.";
+
 // Limit definition of "many users"
 constexpr int kManyUserLimit = 5;
+
+// Histogram prefix for recording the configured auth factors. The format:
+// "Ash.OSAuth.Login.ConfiguredAuthFactors.{Pin,Password,...}"
+constexpr char kConfiguredAuthFactorsHistogramPrefix[] =
+    "Ash.OSAuth.Login.ConfiguredAuthFactors.";
+
+// The auth factors tracked for "Ash.OSAuth.Login.ConfiguredAuthFactors.*"
+// histogram reporting. When adding new values here, update
+// `GetConfiguredAuthFactorsHistogramSuffix` and
+// metadata/ash/histograms.xml.
+const auto kTrackedAuthFactors = {cryptohome::AuthFactorType::kPassword,
+                                  cryptohome::AuthFactorType::kPin,
+                                  cryptohome::AuthFactorType::kRecovery,
+                                  cryptohome::AuthFactorType::kSmartCard};
 
 // Suffix for grouping total user numbers. Should match suffixes of the
 // Login.Flow.{HideUsers, ShowUsers}.* metrics in metadata/ash/histograms.xml
@@ -109,6 +134,47 @@ std::string GetNbPasswordAttemptsHistogramName(
   return base::StringPrintf(kNbPasswordAttemptsHistogramName,
                             GetAuthenticationSurfaceSuffix(screen).c_str(),
                             GetAuthenticationOutcomeSuffix(exit_type).c_str());
+}
+
+// Should match suffixes of the
+// "Ash.OSAuth.Login.ConfiguredAuthFactors.{Pin,Password,...}"
+// metrics in metadata/ash/histograms.xml.
+std::string GetConfiguredAuthFactorsHistogramSuffix(
+    cryptohome::AuthFactorType factor) {
+  switch (factor) {
+    case cryptohome::AuthFactorType::kPassword:
+      return "GaiaPassword";
+    case cryptohome::AuthFactorType::kPin:
+      return "CryptohomePin";
+    case cryptohome::AuthFactorType::kRecovery:
+      return "Recovery";
+    case cryptohome::AuthFactorType::kSmartCard:
+      return "SmartCard";
+    case cryptohome::AuthFactorType::kUnknownLegacy:
+    case cryptohome::AuthFactorType::kLegacyFingerprint:
+    case cryptohome::AuthFactorType::kKiosk:
+      // These factors are not recorded.
+      DCHECK(false);
+      return "";
+  }
+  return "";
+}
+
+// Complete name of the configured auth factors histogram.
+std::string GetConfiguredAuthFactorsHistogramName(
+    cryptohome::AuthFactorType factor) {
+  return base::StrCat(
+      {kConfiguredAuthFactorsHistogramPrefix,
+       GetConfiguredAuthFactorsHistogramSuffix(factor).c_str()});
+}
+
+std::string GetRecoveryOutcomeSuffix(CryptohomeRecoveryResult result) {
+  return result == CryptohomeRecoveryResult::kSucceeded ? "Success" : "Failure";
+}
+
+std::string GetRecoveryDurationHistogramName(CryptohomeRecoveryResult result) {
+  return base::StrCat(
+      {kRecoveryDurationHistogramPrefix, GetRecoveryOutcomeSuffix(result)});
 }
 
 }  // namespace
@@ -201,6 +267,27 @@ void AuthMetricsRecorder::OnExistingUserLoginExit(
   base::UmaHistogramCounts100(
       GetNbPasswordAttemptsHistogramName(auth_surface_.value(), exit_type),
       num_login_attempts);
+}
+
+void AuthMetricsRecorder::RecordUserAuthFactors(
+    const std::vector<cryptohome::AuthFactorType>& auth_factors) const {
+  // These histograms are recorded only for login at the moment.
+  // If we need to record the auth factors configured for unlock as well, the
+  // DCHECK can be removed and `auth_surface_` value can be used to determine
+  // the metrics type.
+  DCHECK(auth_surface_.has_value());
+  DCHECK_EQ(auth_surface_.value(), AuthenticationSurface::kLogin);
+
+  for (const auto factor : kTrackedAuthFactors) {
+    base::UmaHistogramBoolean(GetConfiguredAuthFactorsHistogramName(factor),
+                              base::Contains(auth_factors, factor));
+  }
+}
+
+void AuthMetricsRecorder::OnRecoveryDone(CryptohomeRecoveryResult result,
+                                         const base::TimeDelta& time) {
+  base::UmaHistogramMediumTimes(GetRecoveryDurationHistogramName(result), time);
+  base::UmaHistogramEnumeration(kRecoveryResultHistogramName, result);
 }
 
 void AuthMetricsRecorder::MaybeUpdateUserLoginType() {

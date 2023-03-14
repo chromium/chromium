@@ -12,6 +12,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_prompt.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 
 namespace blink {
 enum class PermissionType;
@@ -63,6 +64,11 @@ class PermissionUtil {
   // histogram value to count permission request metrics.
   static bool GetPermissionType(ContentSettingsType type,
                                 blink::PermissionType* out);
+
+  // Returns the corresponding permissions policy feature to the given content
+  // settings type, or nullopt if there is none.
+  static absl::optional<blink::mojom::PermissionsPolicyFeature>
+  GetPermissionsPolicyFeature(ContentSettingsType type);
 
   // Checks whether the given ContentSettingsType is a permission. Use this
   // to determine whether a specific ContentSettingsType is supported by the

@@ -434,5 +434,15 @@ proto::ClientResult CreateClientResultFromPredResult(
   return client_result;
 }
 
+bool HasMigratedToMultiOutput(Config* config) {
+  // List of migrated config segments ids supporting multi output.
+  base::flat_set<SegmentId> migrated_config_ids{
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER,
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_ADAPTIVE_TOOLBAR};
+
+  return (config->segments.size() == 1 &&
+          migrated_config_ids.contains(config->segments.begin()->first));
+}
+
 }  // namespace metadata_utils
 }  // namespace segmentation_platform

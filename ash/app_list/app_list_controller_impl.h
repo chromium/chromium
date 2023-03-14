@@ -193,6 +193,7 @@ class ASH_EXPORT AppListControllerImpl
   AppListViewState GetAppListViewState() const override;
   void OnViewStateChanged(AppListViewState state) override;
   int GetShelfSize() override;
+  int GetSystemShelfInsetsInTabletMode() override;
   bool IsInTabletMode() override;
 
   // Notifies observers of AppList visibility changes.

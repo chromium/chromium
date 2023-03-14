@@ -369,9 +369,7 @@ TEST_F(SyncableFileOperationRunnerTest, CopyInForeignFile) {
 
   base::FilePath temp_path;
   ASSERT_TRUE(CreateTempFile(&temp_path));
-  ASSERT_EQ(static_cast<int>(kTestData.size()),
-            base::WriteFile(
-                temp_path, kTestData.data(), kTestData.size()));
+  ASSERT_TRUE(base::WriteFile(temp_path, kTestData));
 
   sync_status()->StartSyncing(URL(kFile));
   ASSERT_FALSE(sync_status()->IsWritable(URL(kFile)));

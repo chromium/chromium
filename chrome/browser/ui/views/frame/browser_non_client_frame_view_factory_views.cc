@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "chrome/browser/ui/views/frame/glass_browser_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view_win.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX)
@@ -38,12 +38,18 @@ std::unique_ptr<OpaqueBrowserFrameView> CreateOpaqueBrowserFrameView(
   auto* linux_ui_theme = ui::LinuxUiTheme::GetForProfile(profile);
   auto* theme_service_factory = ThemeServiceFactory::GetForProfile(profile);
   auto* app_controller = browser_view->browser()->app_controller();
+
   // Ignore the toolkit theme for web apps with window-controls-overlay as the
   // display_override so the web contents can blend with the overlay by using
   // the developer-provided theme color for a better experience. Context:
-  // https://crbug.com/1219073.
+  // https://crbug.com/1219073. Also ignore the toolkit theme for web apps with
+  // borderless as there's no surface left to apply the theme for.
+  bool app_uses_wco_or_borderless =
+      app_controller && (app_controller->AppUsesWindowControlsOverlay() ||
+                         app_controller->AppUsesBorderlessMode());
+
   if (linux_ui_theme && theme_service_factory->UsingSystemTheme() &&
-      !(app_controller && app_controller->AppUsesWindowControlsOverlay())) {
+      !app_uses_wco_or_borderless) {
     auto nav_button_provider = linux_ui_theme->CreateNavButtonProvider();
     if (nav_button_provider) {
       bool solid_frame = !static_cast<DesktopBrowserFrameAuraLinux*>(
@@ -92,7 +98,7 @@ std::unique_ptr<BrowserNonClientFrameView> CreateBrowserNonClientFrameView(
 
 #if BUILDFLAG(IS_WIN)
   if (frame->ShouldUseNativeFrame())
-    return std::make_unique<GlassBrowserFrameView>(frame, browser_view);
+    return std::make_unique<BrowserFrameViewWin>(frame, browser_view);
 #endif
   auto view = CreateOpaqueBrowserFrameView(frame, browser_view);
   view->InitViews();

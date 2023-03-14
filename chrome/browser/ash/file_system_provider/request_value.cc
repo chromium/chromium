@@ -4,78 +4,75 @@
 
 #include "chrome/browser/ash/file_system_provider/request_value.h"
 
-#include <memory>
 #include <utility>
 
 namespace ash {
 namespace file_system_provider {
 
-RequestValue::RequestValue() {
-}
+RequestValue::RequestValue() noexcept = default;
+RequestValue::RequestValue(RequestValue&& other) noexcept = default;
+RequestValue& RequestValue::operator=(RequestValue&& other) noexcept = default;
+RequestValue::~RequestValue() noexcept = default;
 
-RequestValue::~RequestValue() {
-}
-
-std::unique_ptr<RequestValue> RequestValue::CreateForUnmountSuccess(
-    std::unique_ptr<extensions::api::file_system_provider_internal::
-                        UnmountRequestedSuccess::Params> params) {
-  std::unique_ptr<RequestValue> result(new RequestValue);
-  result->unmount_success_params_ = std::move(params);
+RequestValue RequestValue::CreateForUnmountSuccess(
+    extensions::api::file_system_provider_internal::UnmountRequestedSuccess::
+        Params params) {
+  RequestValue result;
+  result.data_.emplace<decltype(params)>(std::move(params));
   return result;
 }
 
-std::unique_ptr<RequestValue> RequestValue::CreateForGetMetadataSuccess(
-    std::unique_ptr<extensions::api::file_system_provider_internal::
-                        GetMetadataRequestedSuccess::Params> params) {
-  std::unique_ptr<RequestValue> result(new RequestValue);
-  result->get_metadata_success_params_ = std::move(params);
+RequestValue RequestValue::CreateForGetMetadataSuccess(
+    extensions::api::file_system_provider_internal::
+        GetMetadataRequestedSuccess::Params params) {
+  RequestValue result;
+  result.data_.emplace<decltype(params)>(std::move(params));
   return result;
 }
 
-std::unique_ptr<RequestValue> RequestValue::CreateForGetActionsSuccess(
-    std::unique_ptr<extensions::api::file_system_provider_internal::
-                        GetActionsRequestedSuccess::Params> params) {
-  std::unique_ptr<RequestValue> result(new RequestValue);
-  result->get_actions_success_params_ = std::move(params);
+RequestValue RequestValue::CreateForGetActionsSuccess(
+    extensions::api::file_system_provider_internal::GetActionsRequestedSuccess::
+        Params params) {
+  RequestValue result;
+  result.data_.emplace<decltype(params)>(std::move(params));
   return result;
 }
 
-std::unique_ptr<RequestValue> RequestValue::CreateForReadDirectorySuccess(
-    std::unique_ptr<extensions::api::file_system_provider_internal::
-                        ReadDirectoryRequestedSuccess::Params> params) {
-  std::unique_ptr<RequestValue> result(new RequestValue);
-  result->read_directory_success_params_ = std::move(params);
+RequestValue RequestValue::CreateForReadDirectorySuccess(
+    extensions::api::file_system_provider_internal::
+        ReadDirectoryRequestedSuccess::Params params) {
+  RequestValue result;
+  result.data_.emplace<decltype(params)>(std::move(params));
   return result;
 }
 
-std::unique_ptr<RequestValue> RequestValue::CreateForReadFileSuccess(
-    std::unique_ptr<extensions::api::file_system_provider_internal::
-                        ReadFileRequestedSuccess::Params> params) {
-  std::unique_ptr<RequestValue> result(new RequestValue);
-  result->read_file_success_params_ = std::move(params);
+RequestValue RequestValue::CreateForReadFileSuccess(
+    extensions::api::file_system_provider_internal::ReadFileRequestedSuccess::
+        Params params) {
+  RequestValue result;
+  result.data_.emplace<decltype(params)>(std::move(params));
   return result;
 }
 
-std::unique_ptr<RequestValue> RequestValue::CreateForOperationSuccess(
-    std::unique_ptr<extensions::api::file_system_provider_internal::
-                        OperationRequestedSuccess::Params> params) {
-  std::unique_ptr<RequestValue> result(new RequestValue);
-  result->operation_success_params_ = std::move(params);
+RequestValue RequestValue::CreateForOperationSuccess(
+    extensions::api::file_system_provider_internal::OperationRequestedSuccess::
+        Params params) {
+  RequestValue result;
+  result.data_.emplace<decltype(params)>(std::move(params));
   return result;
 }
 
-std::unique_ptr<RequestValue> RequestValue::CreateForOperationError(
-    std::unique_ptr<extensions::api::file_system_provider_internal::
-                        OperationRequestedError::Params> params) {
-  std::unique_ptr<RequestValue> result(new RequestValue);
-  result->operation_error_params_ = std::move(params);
+RequestValue RequestValue::CreateForOperationError(
+    extensions::api::file_system_provider_internal::OperationRequestedError::
+        Params params) {
+  RequestValue result;
+  result.data_.emplace<decltype(params)>(std::move(params));
   return result;
 }
 
-std::unique_ptr<RequestValue> RequestValue::CreateForTesting(
-    const std::string& params) {
-  std::unique_ptr<RequestValue> result(new RequestValue);
-  result->testing_params_ = std::make_unique<std::string>(params);
+RequestValue RequestValue::CreateForTesting(const std::string& params) {
+  RequestValue result;
+  result.data_.emplace<std::string>(params);
   return result;
 }
 

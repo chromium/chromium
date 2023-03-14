@@ -44,6 +44,8 @@ class FastCheckoutClientImpl
       const autofill::FormData& form,
       const autofill::FormFieldData& field,
       base::WeakPtr<autofill::AutofillManager> autofill_manager) override;
+  // The parameter `allow_further_runs` is ignored if the UI is not currently
+  // showing.
   void Stop(bool allow_further_runs) override;
   bool IsRunning() const override;
   bool IsShowing() const override;
@@ -103,7 +105,10 @@ class FastCheckoutClientImpl
       DestroyingAutofillDriver_ResetsAutofillManagerPointer);
   FRIEND_TEST_ALL_PREFIXES(
       FastCheckoutClientImplTest,
-      OnOptionsSelected_SavesFormsAndAutofillDataSelections);
+      OnOptionsSelected_LocalCard_SavesFormsAndAutofillDataSelections);
+  FRIEND_TEST_ALL_PREFIXES(
+      FastCheckoutClientImplTest,
+      OnOptionsSelected_ServerCard_SavesFormsAndAutofillDataSelections);
   FRIEND_TEST_ALL_PREFIXES(FastCheckoutClientImplTest,
                            OnAfterLoadedServerPredictions_FillsForms);
   FRIEND_TEST_ALL_PREFIXES(
@@ -112,6 +117,9 @@ class FastCheckoutClientImpl
   FRIEND_TEST_ALL_PREFIXES(
       FastCheckoutClientImplTest,
       OnFullCardRequestSucceeded_InvokesCreditCardFormFill);
+  FRIEND_TEST_ALL_PREFIXES(
+      FastCheckoutClientImplTest,
+      TryToFillForms_LocalCreditCard_ImmediatelyFillsCreditCardForm);
 
   // From autofill::PersonalDataManagerObserver.
   void OnPersonalDataChanged() override;
@@ -177,8 +185,24 @@ class FastCheckoutClientImpl
   autofill::AutofillProfile* GetSelectedAutofillProfile();
 
   // Returns a pointer to the credit card corresponding to
-  // `selected_credit_card_guid_`. Stops the run if it's a `nullptr`.
+  // `selected_credit_card_id_`. Stops the run if it's a `nullptr`.
   autofill::CreditCard* GetSelectedCreditCard();
+
+  // Fills credit card form via the `autofill_manager_` and handles internal
+  // state.
+  void FillCreditCardForm(const autofill::FormStructure& form,
+                          const autofill::FormFieldData& field,
+                          const autofill::CreditCard& credit_card,
+                          const std::u16string& cvc);
+
+  // Same as Stop() but does not require `IsShowing() == true` for
+  // `allow_further_runs == false` to have any effect. The `IsShowing()` guard
+  // is currently required because of uncontrolled `HideFastCheckout()` calls
+  // in `BrowserAutofillManager::OnHidePopupImpl()`.
+  // TODO(crbug.com/1334642): remove `HideFastCheckout()` call from
+  // `BrowserAutofillManger` by introducing a new `AutofillManager::Observer`
+  // methods pair, then remove this method in favor of `Stop()`.
+  void InternalStop(bool allow_further_runs);
 
   // Triggers reparse with a delay of `kSleepBetweenTriggerReparseCalls`.
   // Reparsing updates the forms cache `autofill_manager_->form_structures()`
@@ -222,7 +246,10 @@ class FastCheckoutClientImpl
   absl::optional<std::string> selected_autofill_profile_guid_;
 
   // Credit card selected by the user in the bottomsheet.
-  absl::optional<std::string> selected_credit_card_guid_;
+  absl::optional<std::string> selected_credit_card_id_;
+
+  // Specifis whether the selected credit card is local or a server card.
+  bool selected_credit_card_is_local_ = true;
 
   // The origin for which `TryToStart()` was triggered.
   url::Origin origin_;

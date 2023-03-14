@@ -929,7 +929,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1u, metrics_entries.size());
 
   EXPECT_EQ(metrics_entries[0].failure_reason,
-            ApiAccessFailureReason::kInvalidRequestingContext);
+            ApiAccessResult::kInvalidRequestingContext);
   EXPECT_FALSE(metrics_entries[0].topic0.IsValid());
   EXPECT_FALSE(metrics_entries[0].topic1.IsValid());
   EXPECT_FALSE(metrics_entries[0].topic2.IsValid());

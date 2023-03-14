@@ -334,6 +334,8 @@ static_library("safe_browsing") {
         "incident_reporting/state_store.h",
         "incident_reporting/tracked_preference_incident.cc",
         "incident_reporting/tracked_preference_incident.h",
+        "ohttp_key_service_factory.cc",
+        "ohttp_key_service_factory.h",
         "services_delegate_desktop.cc",
         "services_delegate_desktop.h",
         "tailored_security/notification_handler_desktop.cc",

@@ -4,7 +4,6 @@
 
 #import "components/shared_highlighting/ios/parsing_utils.h"
 
-#import "base/values.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_state.h"
@@ -20,29 +19,24 @@ const CGFloat kCaretWidth = 4.0;
 namespace shared_highlighting {
 
 BOOL IsValidDictValue(const base::Value* value) {
-  return value && value->is_dict() && !value->DictEmpty();
+  return value && value->is_dict() && !value->GetDict().empty();
 }
 
-absl::optional<CGRect> ParseRect(const base::Value* value) {
-  if (!IsValidDictValue(value)) {
+absl::optional<CGRect> ParseRect(const base::Value::Dict* dict) {
+  if (!dict || dict->empty()) {
     return absl::nullopt;
   }
 
-  const base::Value* xValue =
-      value->FindKeyOfType("x", base::Value::Type::DOUBLE);
-  const base::Value* yValue =
-      value->FindKeyOfType("y", base::Value::Type::DOUBLE);
-  const base::Value* widthValue =
-      value->FindKeyOfType("width", base::Value::Type::DOUBLE);
-  const base::Value* heightValue =
-      value->FindKeyOfType("height", base::Value::Type::DOUBLE);
+  absl::optional<double> xValue = dict->FindDouble("x");
+  absl::optional<double> yValue = dict->FindDouble("y");
+  absl::optional<double> widthValue = dict->FindDouble("width");
+  absl::optional<double> heightValue = dict->FindDouble("height");
 
   if (!xValue || !yValue || !widthValue || !heightValue) {
     return absl::nullopt;
   }
 
-  return CGRectMake(xValue->GetDouble(), yValue->GetDouble(),
-                    widthValue->GetDouble(), heightValue->GetDouble());
+  return CGRectMake(*xValue, *yValue, *widthValue, *heightValue);
 }
 
 absl::optional<GURL> ParseURL(const std::string* url_value) {

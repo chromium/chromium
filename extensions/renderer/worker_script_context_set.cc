@@ -4,19 +4,22 @@
 
 #include "extensions/renderer/worker_script_context_set.h"
 
+#include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/ranges/algorithm.h"
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/worker_thread_util.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "v8/include/v8-context.h"
 
 namespace extensions {
 
-using ContextVector = std::vector<std::unique_ptr<ScriptContext>>;
-
 namespace {
+
+using ContextVector = std::vector<std::unique_ptr<ScriptContext>>;
 
 // Returns an iterator to the ScriptContext associated with |v8_context| from
 // |contexts|, or |contexts|->end() if not found.
@@ -31,6 +34,9 @@ ContextVector::iterator FindContext(ContextVector* contexts,
   return base::ranges::find_if(*contexts, context_matches);
 }
 
+// Implement thread safety by storing each ScriptContext in TLS.
+ABSL_CONST_INIT thread_local ContextVector* contexts = nullptr;
+
 }  // namespace
 
 WorkerScriptContextSet::WorkerScriptContextSet() = default;
@@ -42,7 +48,6 @@ void WorkerScriptContextSet::ForEach(
     content::RenderFrame* render_frame,
     const base::RepeatingCallback<void(ScriptContext*)>& callback) {
   DCHECK(!render_frame);
-  ContextVector* contexts = contexts_tls_.Get();
   for (const std::unique_ptr<ScriptContext>& context : *contexts) {
     DCHECK(!context->GetRenderFrame());
     if (!extension_id.empty() && context->GetExtensionID() != extension_id)
@@ -55,12 +60,10 @@ void WorkerScriptContextSet::ForEach(
 void WorkerScriptContextSet::Insert(std::unique_ptr<ScriptContext> context) {
   DCHECK(worker_thread_util::IsWorkerThread())
       << "Must be called on a worker thread";
-  ContextVector* contexts = contexts_tls_.Get();
   if (!contexts) {
     // First context added for this thread. Create a new set, then wait for
     // this thread's shutdown.
     contexts = new ContextVector();
-    contexts_tls_.Set(contexts);
     content::WorkerThread::AddObserver(this);
   }
   CHECK(FindContext(contexts, context->v8_context()) == contexts->end())
@@ -68,12 +71,10 @@ void WorkerScriptContextSet::Insert(std::unique_ptr<ScriptContext> context) {
   contexts->push_back(std::move(context));
 }
 
-// static
 ScriptContext* WorkerScriptContextSet::GetContextByV8Context(
     v8::Local<v8::Context> v8_context) {
   DCHECK(worker_thread_util::IsWorkerThread())
       << "Must be called on a worker thread";
-  ContextVector* contexts = contexts_tls_.Get();
   if (!contexts)
     return nullptr;
 
@@ -85,7 +86,6 @@ void WorkerScriptContextSet::Remove(v8::Local<v8::Context> v8_context,
                                     const GURL& url) {
   DCHECK(worker_thread_util::IsWorkerThread())
       << "Must be called on a worker thread";
-  ContextVector* contexts = contexts_tls_.Get();
   if (!contexts) {
     // Thread has already been torn down, and |v8_context| removed. I'm not
     // sure this can actually happen (depends on in what order blink fires
@@ -102,12 +102,11 @@ void WorkerScriptContextSet::Remove(v8::Local<v8::Context> v8_context,
 
 void WorkerScriptContextSet::WillStopCurrentWorkerThread() {
   content::WorkerThread::RemoveObserver(this);
-  ContextVector* contexts = contexts_tls_.Get();
   DCHECK(contexts);
   for (const auto& context : *contexts)
     context->Invalidate();
-  contexts_tls_.Set(nullptr);
   delete contexts;
+  contexts = nullptr;
 }
 
 }  // namespace extensions

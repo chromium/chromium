@@ -141,6 +141,9 @@ class PasswordManagerDriver
   // Returns the ax tree id associated with this driver.
   virtual ::ui::AXTreeID GetAxTreeId() const = 0;
 
+  // Returns the frame ID of the frame associated with this driver.
+  virtual int GetFrameId() const = 0;
+
   // Returns the last committed URL of the frame.
   virtual const GURL& GetLastCommittedURL() const = 0;
 

@@ -44,7 +44,7 @@ CalculationExpressionAnchorQueryNode::CreateAnchorSize(
       fallback);
 }
 
-bool CalculationExpressionAnchorQueryNode::operator==(
+bool CalculationExpressionAnchorQueryNode::Equals(
     const CalculationExpressionNode& other) const {
   const auto* other_anchor_query =
       DynamicTo<CalculationExpressionAnchorQueryNode>(other);

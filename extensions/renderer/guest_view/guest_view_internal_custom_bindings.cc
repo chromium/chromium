@@ -110,11 +110,6 @@ void GuestViewInternalCustomBindings::AddRoutes() {
           &GuestViewInternalCustomBindings::RegisterDestructionCallback,
           base::Unretained(this)));
   RouteHandlerFunction(
-      "RegisterElementResizeCallback",
-      base::BindRepeating(
-          &GuestViewInternalCustomBindings::RegisterElementResizeCallback,
-          base::Unretained(this)));
-  RouteHandlerFunction(
       "RegisterView",
       base::BindRepeating(&GuestViewInternalCustomBindings::RegisterView,
                           base::Unretained(this)));
@@ -207,9 +202,8 @@ void GuestViewInternalCustomBindings::AttachIframeGuest(
   // This is the first time we hear about the |element_instance_id|.
   DCHECK(!guest_view_container);
   // The <webview> element's GC takes ownership of |guest_view_container|.
-  guest_view_container =
-      new guest_view::GuestViewContainer(embedder_parent_frame);
-  guest_view_container->SetElementInstanceID(element_instance_id);
+  guest_view_container = new guest_view::GuestViewContainer(
+      embedder_parent_frame, element_instance_id);
 
   std::unique_ptr<guest_view::GuestViewAttachRequest> request =
       std::make_unique<guest_view::GuestViewAttachRequest>(
@@ -287,29 +281,6 @@ void GuestViewInternalCustomBindings::RegisterDestructionCallback(
 
   guest_view_container->RegisterDestructionCallback(args[1].As<v8::Function>(),
                                                     args.GetIsolate());
-
-  args.GetReturnValue().Set(v8::Boolean::New(context()->isolate(), true));
-}
-
-void GuestViewInternalCustomBindings::RegisterElementResizeCallback(
-    const v8::FunctionCallbackInfo<v8::Value>& args) {
-  // There are two parameters.
-  CHECK(args.Length() == 2);
-  // Element Instance ID.
-  CHECK(args[0]->IsInt32());
-  // Callback function.
-  CHECK(args[1]->IsFunction());
-
-  int element_instance_id = args[0].As<v8::Int32>()->Value();
-  // An element instance ID uniquely identifies a ExtensionsGuestViewContainer
-  // within a RenderView.
-  auto* guest_view_container =
-      guest_view::GuestViewContainer::FromID(element_instance_id);
-  if (!guest_view_container)
-    return;
-
-  guest_view_container->RegisterElementResizeCallback(
-      args[1].As<v8::Function>(), args.GetIsolate());
 
   args.GetReturnValue().Set(v8::Boolean::New(context()->isolate(), true));
 }

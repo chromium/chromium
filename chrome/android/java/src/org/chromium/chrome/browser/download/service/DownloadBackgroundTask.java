@@ -73,11 +73,6 @@ public class DownloadBackgroundTask extends NativeBackgroundTask {
                 DownloadBackgroundTask.this, key, taskType);
     }
 
-    @Override
-    public void reschedule(Context context) {
-        DownloadTaskScheduler.rescheduleAllTasks();
-    }
-
     @NativeMethods
     interface Natives {
         void startBackgroundTask(DownloadBackgroundTask caller, ProfileKey key, int taskType,

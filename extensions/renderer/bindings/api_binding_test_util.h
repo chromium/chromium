@@ -28,10 +28,6 @@ base::Value::List ListValueFromString(base::StringPiece str);
 // As above, but returning a Value::Dict.
 base::Value::Dict DictValueFromString(base::StringPiece str);
 
-// Returns a base::Value parsed from |str|. EXPECTs the conversion to succeed.
-// DEPRECATED: prefer `ValueFromString`.
-std::unique_ptr<base::Value> DeprecatedValueFromString(base::StringPiece str);
-
 // Converts the given |value| to a JSON string. EXPECTs the conversion to
 // succeed.
 std::string ValueToString(const base::ValueView&);

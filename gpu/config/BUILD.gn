@@ -159,6 +159,8 @@ source_set("config_sources") {
     "gpu_util.h",
     "skia_limits.cc",
     "skia_limits.h",
+    "webgpu_blocklist.cc",
+    "webgpu_blocklist.h",
   ]
 
   if (is_fuchsia) {

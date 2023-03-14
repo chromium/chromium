@@ -69,11 +69,11 @@ class SafeBrowsingLookupMechanismExperimenter
   // the experiment will end.
   void OnWillProcessResponseReached(base::TimeTicks reached_time);
 
-  // The BrowserUrlLoaderThrottle's CheckerOnIO can be destructed before
+  // The BrowserUrlLoaderThrottle's CheckerOnSB can be destructed before
   // WillProcessResponse is reached. If this is the case, if the time
   // WillProcessResponse was reached was the last piece of data the experiment
   // was waiting on, the experiment will end.
-  void OnBrowserUrlLoaderThrottleCheckerOnIODestructed();
+  void OnBrowserUrlLoaderThrottleCheckerOnSBDestructed();
 
   // If SafeBrowsingUrlCheckerImpl is destructed before the latest URL real-time
   // check has completed, the experiment end with the results being thrown away.
@@ -93,6 +93,8 @@ class SafeBrowsingLookupMechanismExperimenter
  private:
   friend class base::RefCounted<SafeBrowsingLookupMechanismExperimenter>;
   friend class SafeBrowsingLookupMechanismExperimenterTest;
+  FRIEND_TEST_ALL_PREFIXES(SafeBrowsingLookupMechanismExperimenterTest,
+                           TestGetDelayInformation);
 
   // Private destructor since the class is ref counted. We only want RefCounted
   // to be able to destruct this object.
@@ -304,11 +306,11 @@ class SafeBrowsingLookupMechanismExperimenter
   // BrowserUrlLoaderThrottle. It's not populated until that result is
   // available.
   absl::optional<base::TimeTicks> will_process_response_reached_time_;
-  // Set to true when BrowserUrlLoaderThrottle::CheckerOnIO gets destructed.
+  // Set to true when BrowserUrlLoaderThrottle::CheckerOnSB gets destructed.
   // If the check results in a warning, WillProcessResponse might never get
   // called, so this property being set ensures that the experiment doesn't keep
   // waiting for a call that will not come.
-  bool is_browser_url_loader_throttle_checker_on_io_destructed_ = false;
+  bool is_browser_url_loader_throttle_checker_on_sb_destructed_ = false;
   // A check is not eligible for the experiment if it wouldn't even show a
   // warning if the result was unsafe. This eligibility can only be computed on
   // the UI thread, and must be done before the user sees a blocking page. To

@@ -162,7 +162,11 @@ class CONTENT_EXPORT SiteInstance : public base::RefCounted<SiteInstance> {
   virtual bool IsRelatedSiteInstance(const SiteInstance* instance) = 0;
 
   // Returns the total active WebContents count for this SiteInstance and all
-  // related SiteInstances in the same BrowsingInstance.
+  // related SiteInstances that have a form of communication with each other.
+  // This include all the WebContents for documents in the same BrowsingInstance
+  // as well as all the BrowsingInstances in the same CoopRelatedGroup. The
+  // latter is useful to include because some interactions (e.g., messaging) are
+  // allowed across such BrowsingInstances.
   virtual size_t GetRelatedActiveContentsCount() = 0;
 
   // Returns true if this SiteInstance is for a site that requires a dedicated

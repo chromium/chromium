@@ -20,9 +20,9 @@ CSS.registerProperty({
 
 test(() => {
   target.style.animationDelay = '-0.25s';
-  assert_equals(getComputedStyle(target).getPropertyValue('--x'), ' underlying', 'at 25%');
+  assert_equals(getComputedStyle(target).getPropertyValue('--x'), 'underlying', 'at 25%');
 
   target.style.animationDelay = '-0.75s';
-  assert_equals(getComputedStyle(target).getPropertyValue('--x'), ' to', 'at 25%');
+  assert_equals(getComputedStyle(target).getPropertyValue('--x'), 'to', 'at 25%');
 }, 'CSS Animations neutral keyframes on registered custom properties should produce the underlying value');
 </script>

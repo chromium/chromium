@@ -58,14 +58,18 @@ class UpdateServiceProxy : public UpdateService {
   void GetAppStates(
       base::OnceCallback<void(const std::vector<AppState>&)>) override;
   void RunPeriodicTasks(base::OnceClosure callback) override;
-  void UpdateAll(StateChangeCallback state_update, Callback callback) override;
+  void CheckForUpdate(const std::string& app_id,
+                      Priority priority,
+                      PolicySameVersionUpdate policy_same_version_update,
+                      StateChangeCallback state_update,
+                      Callback callback) override;
   void Update(const std::string& app_id,
               const std::string& install_data_index,
               Priority priority,
               PolicySameVersionUpdate policy_same_version_update,
-              bool do_update_check_only,
               StateChangeCallback state_update,
               Callback callback) override;
+  void UpdateAll(StateChangeCallback state_update, Callback callback) override;
   void Install(const RegistrationRequest& registration,
                const std::string& client_install_data,
                const std::string& install_data_index,

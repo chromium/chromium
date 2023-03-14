@@ -524,8 +524,8 @@ NewTabPageHandler::~NewTabPageHandler() {
 
 // static
 void NewTabPageHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterListPref(prefs::kNtpDisabledModules, true);
-  registry->RegisterListPref(prefs::kNtpModulesOrder, true);
+  registry->RegisterListPref(prefs::kNtpDisabledModules);
+  registry->RegisterListPref(prefs::kNtpModulesOrder);
   registry->RegisterBooleanPref(prefs::kNtpModulesVisible, true);
   registry->RegisterIntegerPref(prefs::kNtpModulesShownCount, 0);
   registry->RegisterTimePref(prefs::kNtpModulesFirstShownTime, base::Time());

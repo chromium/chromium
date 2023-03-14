@@ -69,6 +69,7 @@ class SystemUIComponentsStyleViewerView::ComponentButton
     label()->SetSubpixelRenderingEnabled(false);
     label()->SetFontList(views::Label::GetDefaultFontList().Derive(
         1, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
+    SetFocusBehavior(views::View::FocusBehavior::NEVER);
   }
   ComponentButton(const ComponentButton&) = delete;
   ComponentButton& operator=(const ComponentButton&) = delete;
@@ -174,6 +175,8 @@ void SystemUIComponentsStyleViewerView::CreateAndShowWidget() {
       base::BindRepeating(&CreateSystemTextfieldInstancesGridView));
   viewer_view->AddComponent(
       u"Pagination", base::BindRepeating(&CreatePaginationInstancesGridView));
+  viewer_view->AddComponent(
+      u"Typography", base::BindRepeating(&CreateTypographyInstancesGridView));
 
   // Show PillButton on start.
   viewer_view->ShowComponentInstances(u"PillButton");

@@ -19,6 +19,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_macros_local.h"
 #include "base/pickle.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
@@ -104,7 +105,7 @@ disk_cache::BackendResult HttpCache::DefaultBackend::CreateBackend(
   disk_cache::ResetHandling reset_handling =
       hard_reset_ ? disk_cache::ResetHandling::kReset
                   : disk_cache::ResetHandling::kResetOnError;
-  UMA_HISTOGRAM_BOOLEAN("HttpCache.HardReset", hard_reset_);
+  LOCAL_HISTOGRAM_BOOLEAN("HttpCache.HardReset", hard_reset_);
 #if BUILDFLAG(IS_ANDROID)
   if (app_status_listener_) {
     return disk_cache::CreateCacheBackend(
@@ -156,7 +157,7 @@ struct HttpCache::PendingOp {
   PendingOp() = default;
   ~PendingOp() = default;
 
-  raw_ptr<disk_cache::Entry> entry = nullptr;
+  raw_ptr<disk_cache::Entry, DanglingUntriaged> entry = nullptr;
   bool entry_opened = false;  // rather than created.
 
   std::unique_ptr<disk_cache::Backend> backend;

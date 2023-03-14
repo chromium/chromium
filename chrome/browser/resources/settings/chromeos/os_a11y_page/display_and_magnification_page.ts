@@ -22,8 +22,8 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router} from '../router.js';
@@ -87,6 +87,21 @@ class SettingsDisplayAndMagnificationElement extends
             {value: 16, name: loadTimeData.getString('screenMagnifierZoom16x')},
             {value: 18, name: loadTimeData.getString('screenMagnifierZoom18x')},
             {value: 20, name: loadTimeData.getString('screenMagnifierZoom20x')},
+          ];
+        },
+      },
+
+      colorVisionDeficiencyTypeOptions_: {
+        readOnly: true,
+        type: Array,
+        value() {
+          // These values correspond to ColorVisionDeficiencyType enums in
+          // ash/color_enhancement/color_enhancement_controller.cc.
+          // CVD types are ordered here by how common they are.
+          return [
+            {value: 1, name: loadTimeData.getString('deuteranomalyFilter')},
+            {value: 0, name: loadTimeData.getString('protanomalyFilter')},
+            {value: 2, name: loadTimeData.getString('tritanomalyFilter')},
           ];
         },
       },

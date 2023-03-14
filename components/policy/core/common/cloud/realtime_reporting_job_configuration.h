@@ -81,7 +81,8 @@ class POLICY_EXPORT RealtimeReportingJobConfiguration
   // Does one time initialization of the payload when the configuration is
   // created.
   void InitializePayloadInternal(CloudPolicyClient* client,
-                                 bool add_connector_url_params);
+                                 bool add_connector_url_params,
+                                 bool include_device_info);
 
   // Gathers the ids of the uploads that failed
   std::set<std::string> GetFailedUploadIds(

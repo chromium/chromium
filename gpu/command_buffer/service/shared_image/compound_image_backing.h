@@ -96,6 +96,7 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
   bool CopyToGpuMemoryBuffer() override;
   gfx::Rect ClearedRect() const override;
   void SetClearedRect(const gfx::Rect& cleared_rect) override;
+  void OnAddSecondaryReference() override;
 
  protected:
   // SharedImageBacking implementation.
@@ -131,8 +132,11 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
     ElementHolder& operator=(const ElementHolder& other) = delete;
     ~ElementHolder();
 
-    // Returns the backing. Will invoke `create_callback` to create backing if
+    // Will invoke `create_callback` to create backing if
     // required.
+    void CreateBackingIfNecessary();
+
+    // Returns the backing. Will call `CreateBackingIfNecessary()`.
     SharedImageBacking* GetBacking();
 
     AccessStreamSet access_streams;
@@ -154,10 +158,11 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
       std::unique_ptr<SharedMemoryImageBacking> shm_backing,
       base::WeakPtr<SharedImageBackingFactory> gpu_backing_factory);
 
-  void OnMemoryDump(const std::string& dump_name,
-                    base::trace_event::MemoryAllocatorDumpGuid client_guid,
-                    base::trace_event::ProcessMemoryDump* pmd,
-                    uint64_t client_tracing_id) override;
+  base::trace_event::MemoryAllocatorDump* OnMemoryDump(
+      const std::string& dump_name,
+      base::trace_event::MemoryAllocatorDumpGuid client_guid,
+      base::trace_event::ProcessMemoryDump* pmd,
+      uint64_t client_tracing_id) override;
 
   // Returns a SkPixmap for shared memory backing.
   const std::vector<SkPixmap>& GetSharedMemoryPixmaps();

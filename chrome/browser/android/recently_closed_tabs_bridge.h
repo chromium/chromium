@@ -11,6 +11,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/android/tab_model/android_live_tab_context_wrapper.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
@@ -55,7 +56,7 @@ class TabIterator {
  private:
   void SetupInnerTabList();
 
-  const sessions::TabRestoreService::Entries& entries_;
+  const raw_ref<const sessions::TabRestoreService::Entries> entries_;
   sessions::TabRestoreService::Entries::const_iterator current_entry_;
   raw_ptr<const std::vector<std::unique_ptr<sessions::TabRestoreService::Tab>>>
       tabs_ = nullptr;

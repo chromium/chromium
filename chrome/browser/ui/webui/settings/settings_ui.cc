@@ -89,6 +89,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "crypto/crypto_buildflags.h"
 #include "printing/buildflags/buildflags.h"
+#include "services/network/public/cpp/features.h"
 #include "ui/base/interaction/element_identifier.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -176,10 +177,7 @@ void SettingsUI::RegisterProfilePrefs(
 }
 
 SettingsUI::SettingsUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
-      webui_load_timer_(web_ui->GetWebContents(),
-                        "Settings.LoadDocumentTime.MD",
-                        "Settings.LoadCompletedTime.MD") {
+    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(
@@ -290,6 +288,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           base::FeatureList::IsEnabled(
                               password_manager::features::kPasswordImport));
 
+  html_source->AddBoolean("enablePasswordsImportM2",
+                          base::FeatureList::IsEnabled(
+                              password_manager::features::kPasswordsImportM2));
+
   html_source->AddBoolean(
       "enablePasswordViewPage",
       base::FeatureList::IsEnabled(
@@ -303,6 +305,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "enableSendPasswords",
       base::FeatureList::IsEnabled(password_manager::features::kSendPasswords));
+
+  html_source->AddBoolean(
+      "enableNewPasswordManagerPage",
+      base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordManagerRedesign));
 
   commerce::ShoppingService* shopping_service =
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
@@ -396,6 +403,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "importPasswordsBadRowsFormat",
       IDS_SETTINGS_PASSWORDS_IMPORT_BAD_ROWS_FORMAT);
   plural_string_handler->AddLocalizedString(
+      "importPasswordsFailuresSummary",
+      IDS_SETTINGS_PASSWORDS_IMPORT_FAILURES_SUMMARY);
+  plural_string_handler->AddLocalizedString(
       "safetyCheckNotificationPermissionReviewHeaderLabel",
       IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_HEADER_LABEL);
   plural_string_handler->AddLocalizedString(
@@ -450,6 +460,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
     html_source->AddResourcePath(
         "privacySandbox", IDR_SETTINGS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_HTML);
   }
+
+  html_source->AddBoolean(
+      "privateStateTokensEnabled",
+      base::FeatureList::IsEnabled(network::features::kPrivateStateTokens));
 
   html_source->AddBoolean("safetyCheckNotificationPermissionsEnabled",
                           base::FeatureList::IsEnabled(

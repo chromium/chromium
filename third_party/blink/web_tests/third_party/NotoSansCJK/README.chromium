@@ -14,12 +14,13 @@ resultant FontMetrics::height() is 24.  The imported font is helpful to test
 such cases.  See crbug.com/519331 for the details.
 Secondly, it's used in fast/ruby/ruby-position-modern-japanese-fonts.html to
 test Ruby positioning.
-
+Last, it's used blink's ShapeResultBloberizerTest.SupplementaryMultiRunNG
+unit test (from blink_platform_unittests test suite).
 
 To combine required glyphs for those two tests, use this command to generate the
 subsetted font (generated from Version 1.004 of the font):
 $ pyftsubset NotoSansCJKjp-Regular.otf\
-   --text="いうかきくしじせちってにゃやゅょよわん㘵和天定弱強折晴洋焼肉衷過雨食〫"\
+   --text="いうかきくしじせちってにゃやゅょよわん㘵和天定弱強折晴洋焼肉衷過雨食〫𠜎𠜱𠝹𠱓𠱸𠲖𠳏𠳕"\
    --output-file=NotoSansCJKjp-Regular-subset.otf
 
 where pyftsubset comes from https://github.com/fonttools/fonttools

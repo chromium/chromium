@@ -149,7 +149,7 @@ htmlParseErrInt(xmlParserCtxtPtr ctxt, xmlParserErrors error,
  *
  * Pushes a new element name on top of the name stack
  *
- * Returns 0 in case of error, the index in the stack otherwise
+ * Returns -1 in case of error, the index in the stack otherwise
  */
 static int
 htmlnamePush(htmlParserCtxtPtr ctxt, const xmlChar * value)
@@ -159,15 +159,17 @@ htmlnamePush(htmlParserCtxtPtr ctxt, const xmlChar * value)
     if ((ctxt->html < 10) && (xmlStrEqual(value, BAD_CAST "body")))
         ctxt->html = 10;
     if (ctxt->nameNr >= ctxt->nameMax) {
-        ctxt->nameMax *= 2;
-        ctxt->nameTab = (const xmlChar * *)
-                         xmlRealloc((xmlChar * *)ctxt->nameTab,
-                                    ctxt->nameMax *
-                                    sizeof(ctxt->nameTab[0]));
-        if (ctxt->nameTab == NULL) {
+        size_t newSize = ctxt->nameMax * 2;
+        const xmlChar **tmp;
+
+        tmp = xmlRealloc((xmlChar **) ctxt->nameTab,
+                         newSize * sizeof(ctxt->nameTab[0]));
+        if (tmp == NULL) {
             htmlErrMemory(ctxt, NULL);
-            return (0);
+            return (-1);
         }
+        ctxt->nameTab = tmp;
+        ctxt->nameMax = newSize;
     }
     ctxt->nameTab[ctxt->nameNr] = value;
     ctxt->name = value;
@@ -2566,6 +2568,7 @@ htmlSkipBogusComment(htmlParserCtxtPtr ctxt) {
 
 static const xmlChar *
 htmlParseHTMLName(htmlParserCtxtPtr ctxt) {
+    const xmlChar *ret;
     int i = 0;
     xmlChar loc[HTML_PARSER_BUFFER_SIZE];
 
@@ -2583,7 +2586,11 @@ htmlParseHTMLName(htmlParserCtxtPtr ctxt) {
 	NEXT;
     }
 
-    return(xmlDictLookup(ctxt->dict, loc, i));
+    ret = xmlDictLookup(ctxt->dict, loc, i);
+    if (ret == NULL)
+        htmlErrMemory(ctxt, NULL);
+
+    return(ret);
 }
 
 
@@ -3699,7 +3706,8 @@ htmlParseDocTypeDecl(htmlParserCtxtPtr ctxt) {
 	htmlParseErr(ctxt, XML_ERR_DOCTYPE_NOT_FINISHED,
 	             "DOCTYPE improperly terminated\n", NULL, NULL);
         /* Ignore bogus content */
-        while ((CUR != 0) && (CUR != '>'))
+        while ((CUR != 0) && (CUR != '>') &&
+               (ctxt->instate != XML_PARSER_EOF))
             NEXT;
     }
     if (CUR == '>')
@@ -4031,7 +4039,8 @@ htmlParseStartTag(htmlParserCtxtPtr ctxt) {
     SKIP_BLANKS;
     while ((CUR != 0) &&
            (CUR != '>') &&
-	   ((CUR != '/') || (NXT(1) != '>'))) {
+	   ((CUR != '/') || (NXT(1) != '>')) &&
+           (ctxt->instate != XML_PARSER_EOF)) {
 	GROW;
 	attname = htmlParseAttribute(ctxt, &attvalue);
         if (attname != NULL) {
@@ -4092,7 +4101,8 @@ htmlParseStartTag(htmlParserCtxtPtr ctxt) {
 	     * the end of the tag. */
 	    while ((CUR != 0) &&
 	           !(IS_BLANK_CH(CUR)) && (CUR != '>') &&
-		   ((CUR != '/') || (NXT(1) != '>')))
+		   ((CUR != '/') || (NXT(1) != '>')) &&
+                   (ctxt->instate != XML_PARSER_EOF))
 		NEXT;
 	}
 
@@ -4727,8 +4737,16 @@ htmlParseContentInternal(htmlParserCtxtPtr ctxt) {
     int depth;
     const xmlChar *name;
 
-    currentNode = xmlStrdup(ctxt->name);
     depth = ctxt->nameNr;
+    if (depth <= 0) {
+        currentNode = NULL;
+    } else {
+        currentNode = xmlStrdup(ctxt->name);
+        if (currentNode == NULL) {
+            htmlErrMemory(ctxt, NULL);
+            return;
+        }
+    }
     while (1) {
         GROW;
 
@@ -4744,8 +4762,16 @@ htmlParseContentInternal(htmlParserCtxtPtr ctxt) {
 		if (currentNode != NULL)
 		    xmlFree(currentNode);
 
-	        currentNode = xmlStrdup(ctxt->name);
 	        depth = ctxt->nameNr;
+                if (depth <= 0) {
+                    currentNode = NULL;
+                } else {
+                    currentNode = xmlStrdup(ctxt->name);
+                    if (currentNode == NULL) {
+                        htmlErrMemory(ctxt, NULL);
+                        break;
+                    }
+                }
 	    }
 	    continue; /* while */
         }
@@ -4767,6 +4793,10 @@ htmlParseContentInternal(htmlParserCtxtPtr ctxt) {
 	            xmlFree(currentNode);
 
 	        currentNode = xmlStrdup(ctxt->name);
+                if (currentNode == NULL) {
+                    htmlErrMemory(ctxt, NULL);
+                    break;
+                }
 	        depth = ctxt->nameNr;
 	        continue;
 	    }
@@ -4790,6 +4820,10 @@ htmlParseContentInternal(htmlParserCtxtPtr ctxt) {
 	    if (currentNode != NULL) xmlFree(currentNode);
 
 	    currentNode = xmlStrdup(ctxt->name);
+            if (currentNode == NULL) {
+                htmlErrMemory(ctxt, NULL);
+                break;
+            }
 	    depth = ctxt->nameNr;
 	    continue;
 	}
@@ -4841,6 +4875,10 @@ htmlParseContentInternal(htmlParserCtxtPtr ctxt) {
             if (currentNode != NULL) xmlFree(currentNode);
 
             currentNode = xmlStrdup(ctxt->name);
+            if (currentNode == NULL) {
+                htmlErrMemory(ctxt, NULL);
+                break;
+            }
             depth = ctxt->nameNr;
         }
         else if (CUR == '<') {
@@ -5221,7 +5259,10 @@ htmlCreateMemoryParserCtxt(const char *buffer, int size) {
 	return(NULL);
 
     buf = xmlParserInputBufferCreateMem(buffer, size, XML_CHAR_ENCODING_NONE);
-    if (buf == NULL) return(NULL);
+    if (buf == NULL) {
+	xmlFreeParserCtxt(ctxt);
+        return(NULL);
+    }
 
     input = xmlNewInputStream(ctxt);
     if (input == NULL) {
@@ -6239,9 +6280,8 @@ htmlParseChunk(htmlParserCtxtPtr ctxt, const char *chunk, int size,
 	res = xmlParserInputBufferPush(ctxt->input->buf, size, chunk);
         xmlBufSetInputBaseCur(ctxt->input->buf->buffer, ctxt->input, base, cur);
 	if (res < 0) {
-	    ctxt->errNo = XML_PARSER_EOF;
-	    ctxt->disableSAX = 1;
-	    return (XML_PARSER_EOF);
+            htmlErrMemory(ctxt, NULL);
+	    return (ctxt->errNo);
 	}
 #ifdef DEBUG_PUSH
 	xmlGenericError(xmlGenericErrorContext, "HPP: pushed %d\n", size);
@@ -6337,7 +6377,7 @@ htmlCreatePushParserCtxt(htmlSAXHandlerPtr sax, void *user_data,
     inputStream = htmlNewInputStream(ctxt);
     if (inputStream == NULL) {
 	xmlFreeParserCtxt(ctxt);
-	xmlFree(buf);
+	xmlFreeParserInputBuffer(buf);
 	return(NULL);
     }
 
@@ -6790,6 +6830,11 @@ htmlCtxtReset(htmlParserCtxtPtr ctxt)
         xmlHashFree(ctxt->attsSpecial, NULL);
         ctxt->attsSpecial = NULL;
     }
+
+    ctxt->nbErrors = 0;
+    ctxt->nbWarnings = 0;
+    if (ctxt->lastError.code != XML_ERR_OK)
+        xmlResetError(&ctxt->lastError);
 }
 
 /**

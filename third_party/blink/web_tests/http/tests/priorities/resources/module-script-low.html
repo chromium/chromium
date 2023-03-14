@@ -1,0 +1,7 @@
+<!DOCTYPE html>
+<script src="common.js"></script>
+<script>
+  observeAndReportResourceLoadPriority(new URL('../../resources/dummy.js?module-low', location));
+</script>
+
+<script src="../../resources/dummy.js?module-low" type="module" fetchpriority="low" onload="reportLoaded()" onerror="rejector()"></script>

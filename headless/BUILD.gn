@@ -18,6 +18,8 @@ import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 
+assert(!is_ios && !is_android)
+
 if (headless_use_policy) {
   assert(headless_use_prefs,
          "'headless_use_policy' requires 'headless_use_prefs'.")
@@ -315,6 +317,8 @@ component("headless_non_renderer") {
     "lib/browser/headless_browser_impl.h",
     "lib/browser/headless_browser_main_parts.cc",
     "lib/browser/headless_browser_main_parts.h",
+    "lib/browser/headless_client_hints_controller_delegate.cc",
+    "lib/browser/headless_client_hints_controller_delegate.h",
     "lib/browser/headless_content_browser_client.cc",
     "lib/browser/headless_content_browser_client.h",
     "lib/browser/headless_devtools.cc",
@@ -379,8 +383,12 @@ component("headless_non_renderer") {
     ]
   }
 
-  if (is_linux || is_chromeos) {
-    sources += [ "lib/browser/headless_browser_main_parts_linux.cc" ]
+  if (is_posix) {
+    sources += [ "lib/browser/headless_browser_main_parts_posix.cc" ]
+  }
+
+  if (is_win) {
+    sources += [ "lib/browser/headless_browser_main_parts_win.cc" ]
   }
 
   if (use_aura) {
@@ -427,7 +435,9 @@ component("headless_non_renderer") {
     "//build:chromeos_buildflags",
     "//components/cookie_config",
     "//components/crash/core/common:common",
+    "//components/devtools/devtools_pipe",
     "//components/embedder_support",
+    "//components/embedder_support:browser_util",
     "//components/embedder_support:embedder_support",
     "//components/embedder_support/origin_trials",
     "//components/headless/clipboard",
@@ -446,6 +456,7 @@ component("headless_non_renderer") {
     "//components/profile_metrics",
     "//components/profile_metrics:profile_metrics",
     "//components/security_state/core",
+    "//components/version_info",
     "//content/public/app",
     "//content/public/app:app",
     "//content/public/browser",
@@ -627,6 +638,8 @@ group("headless_tests") {
 
 test("headless_unittests") {
   sources = [
+    "lib/browser/headless_browser_impl_unittest.cc",
+    "lib/browser/headless_client_hints_controller_delegate_unittest.cc",
     "public/domains/types_unittest.cc",
     "public/util/error_reporter_unittest.cc",
 
@@ -646,12 +659,16 @@ test("headless_unittests") {
     ":headless_shell_lib",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
+    "//components/embedder_support",
+    "//components/embedder_support:browser_util",
+    "//components/embedder_support/origin_trials",
     "//components/security_state/content",
     "//content/public/app",
     "//content/public/child:child",
     "//content/public/common",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/gfx:test_support",
   ]
 
   if (is_win) {
@@ -693,6 +710,7 @@ test("headless_browsertests") {
     "test/headless_browser_test.h",
     "test/headless_browser_test_utils.cc",
     "test/headless_browser_test_utils.h",
+    "test/headless_browser_user_agent_metadata_browsertest.cc",
     "test/headless_client_browsertest.cc",
     "test/headless_devtooled_browsertest.cc",
     "test/headless_devtooled_browsertest.h",
@@ -767,9 +785,13 @@ test("headless_browsertests") {
     "//base",
     "//cc:test_support",
     "//components/devtools/simple_devtools_protocol_client",
+    "//components/embedder_support",
+    "//components/embedder_support:browser_util",
+    "//components/embedder_support:embedder_support",
     "//components/headless/test",
     "//components/policy/core/browser",
     "//components/security_state/content",
+    "//components/version_info",
     "//content/test:browsertest_support",
     "//content/test:test_support",
     "//gin",

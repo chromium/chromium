@@ -429,8 +429,10 @@ source_set("browser_sources") {
 
     # TODO(crbug.com/730220): Ideally web_view should be a separate target on
     # which the extension system depends.
-    "browser_context_data.cc",
-    "browser_context_data.h",
+    "browser_frame_context_data.cc",
+    "browser_frame_context_data.h",
+    "browser_process_context_data.cc",
+    "browser_process_context_data.h",
     "guest_view/web_view/javascript_dialog_helper.cc",
     "guest_view/web_view/javascript_dialog_helper.h",
     "guest_view/web_view/web_view_constants.cc",
@@ -522,6 +524,8 @@ source_set("browser_sources") {
     "sandboxed_unpacker.h",
     "script_executor.cc",
     "script_executor.h",
+    "service_worker/service_worker_host.cc",
+    "service_worker/service_worker_host.h",
     "service_worker/worker_id.cc",
     "service_worker/worker_id.h",
     "service_worker/worker_id_set.cc",
@@ -883,7 +887,7 @@ source_set("unit_tests") {
     "api/web_request/web_request_permissions_unittest.cc",
     "api/web_request/web_request_time_tracker_unittest.cc",
     "app_window/app_window_geometry_cache_unittest.cc",
-    "browser_context_data_unittest.cc",
+    "browser_frame_context_data_unittest.cc",
     "computed_hashes_unittest.cc",
     "content_hash_fetcher_unittest.cc",
     "content_hash_tree_unittest.cc",
@@ -942,6 +946,7 @@ source_set("unit_tests") {
     "//components/content_settings/core/test:test_support",
     "//components/crx_file",
     "//components/feedback",
+    "//components/file_access:test_support",
     "//components/keyed_service/content",
     "//components/onc",
     "//components/permissions:permissions_common",

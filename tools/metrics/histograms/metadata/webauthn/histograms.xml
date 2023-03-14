@@ -180,7 +180,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.ConditionalUiPasskeyCount" units="passkeys"
-    expires_after="2023-06-30">
+    expires_after="2023-09-03">
   <owner>kenrb@chromium.org</owner>
   <owner>nsatragno@chromium.org</owner>
   <owner>chrome-webauthn@google.com</owner>
@@ -218,6 +218,17 @@ chromium-metrics-reviews@google.com.
     Records the result of each Web Authentication
     PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable() API
     call.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.LargeBlobKey.WriteResult"
+    enum="WebAuthenticationLargeBlobKeyWriteResult" expires_after="M114">
+  <owner>nsatragno@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the result of writing a large blob using the CTAP
+    authenticatorLargeBlobs command (0x0C) during a WebAuthentication
+    GetAssertion request.
   </summary>
 </histogram>
 

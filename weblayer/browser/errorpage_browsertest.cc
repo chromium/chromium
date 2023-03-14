@@ -79,7 +79,7 @@ class ErrorPageReloadBrowserTest : public ErrorPageBrowserTest {
       disable_auto_reload =
           std::make_unique<DisableAutoReload>(navigation_controller);
     navigation_controller->Navigate(url, params);
-    navigation.WaitForNavigationFinished();
+    EXPECT_TRUE(navigation.WaitForNavigationFinished());
     return navigation.was_successful();
   }
 

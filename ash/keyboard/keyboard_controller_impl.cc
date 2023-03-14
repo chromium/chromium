@@ -429,11 +429,6 @@ aura::Window* KeyboardControllerImpl::GetContainerForDefaultDisplay() {
 
 void KeyboardControllerImpl::TransferGestureEventToShelf(
     const ui::GestureEvent& e) {
-  if (!base::FeatureList::IsEnabled(
-          features::kShelfGesturesWithVirtualKeyboard)) {
-    return;
-  }
-
   ash::Shelf* shelf =
       ash::Shelf::ForWindow(keyboard_ui_controller_->GetKeyboardWindow());
   if (shelf) {

@@ -13,15 +13,15 @@
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/check_is_test.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
-#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/single_thread_task_runner.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/vector_icon_types.h"
 
 namespace ash {
 
@@ -109,21 +109,18 @@ MapBackgroundBlurCameraHalStateToEffectState(cros::mojom::BlurLevel level,
 
 }  // namespace
 
-CameraEffectsController::CameraEffectsController() {
+CameraEffectsController::CameraEffectsController()
+    : main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   auto* session_controller = Shell::Get()->session_controller();
   DCHECK(session_controller);
   session_observation_.Observe(session_controller);
 
   current_effects_ = cros::mojom::EffectsConfig::New();
 
-  media::CameraHalDispatcherImpl::GetInstance()
-      ->SetCameraEffectsControllerCallback(
-          // The callback passed to CameraHalDispatcherImpl will be called on a
-          // different thread inside CameraHalDispatcherImpl, so we need always
-          // post the callback onto current task runner.
-          base::BindPostTaskToCurrentDefault(base::BindRepeating(
-              &CameraEffectsController::OnNewCameraEffectsSet,
-              weak_factory_.GetWeakPtr())));
+  // The effects are not applied when this is constructed, observe for changes
+  // that will come later.
+  media::CameraHalDispatcherImpl::GetInstance()->AddCameraEffectObserver(
+      this, base::DoNothing());
 }
 
 CameraEffectsController::~CameraEffectsController() {
@@ -134,36 +131,18 @@ CameraEffectsController::~CameraEffectsController() {
     // unregistered.
     effects_manager.UnregisterDelegate(this);
   }
-}
-
-// TODO(b/265586822): this should be eventually detected from hardware support.
-bool CameraEffectsController::IsCameraEffectsSupported(
-    cros::mojom::CameraEffect effect) {
-  switch (effect) {
-    case cros::mojom::CameraEffect::kNone:
-    case cros::mojom::CameraEffect::kBackgroundBlur:
-    case cros::mojom::CameraEffect::kPortraitRelight:
-      return features::IsVideoConferenceEnabled();
-    case cros::mojom::CameraEffect::kBackgroundReplace:
-      return features::IsVcBackgroundReplaceEnabled();
-  }
+  media::CameraHalDispatcherImpl::GetInstance()->RemoveCameraEffectObserver(
+      this);
 }
 
 cros::mojom::EffectsConfigPtr CameraEffectsController::GetCameraEffects() {
   return current_effects_.Clone();
 }
 
-void CameraEffectsController::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-void CameraEffectsController::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
-}
-
 // static
 void CameraEffectsController::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  if (!IsCameraEffectsSupported()) {
+  if (!features::IsVideoConferenceEnabled()) {
     return;
   }
 
@@ -188,9 +167,6 @@ void CameraEffectsController::OnActiveUserPrefServiceChanged(
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(pref_service);
 
-  // Initialize camera effects for the first time. Set the expected initial
-  // state in case camera server isn't registered.
-  SetInitialCameraEffects(GetEffectsConfigFromPref());
   // If the camera has started, it won't get the previous setting so call it
   // here too. If the camera service isn't ready it this call will be ignored.
   SetCameraEffects(GetEffectsConfigFromPref());
@@ -253,6 +229,41 @@ void CameraEffectsController::OnEffectControlActivated(
   SetCameraEffects(std::move(new_effects));
 }
 
+void CameraEffectsController::OnCameraEffectChanged(
+    const cros::mojom::EffectsConfigPtr& new_effects) {
+  // As `CameraHalDispatcher` notifies the `new_effects` from a different
+  // thread, we want to ensure the `current_effects_` is always accessed through
+  // the `main_task_runner_`.
+  if (!main_task_runner_->RunsTasksInCurrentSequence()) {
+    main_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&CameraEffectsController::OnCameraEffectChanged,
+                       weak_factory_.GetWeakPtr(), new_effects.Clone()));
+    return;
+  }
+
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  // If `SetCamerEffects()` finished, update `current_effects_` and prefs.
+  if (!new_effects.is_null()) {
+    SetEffectsConfigToPref(new_effects.Clone());
+    current_effects_ = new_effects.Clone();
+  }
+}
+
+cros::mojom::SegmentationModel
+CameraEffectsController::GetSegmentationModelType() {
+  cros::mojom::SegmentationModel model_type =
+      cros::mojom::SegmentationModel::kHighResolution;
+  const std::string segmentation_model_param = GetFieldTrialParamValueByFeature(
+      ash::features::kVcSegmentationModel, "segmentation_model");
+
+  if (segmentation_model_param == "lower_resolution") {
+    model_type = cros::mojom::SegmentationModel::kLowerResolution;
+  }
+
+  return model_type;
+}
+
 void CameraEffectsController::SetCameraEffects(
     cros::mojom::EffectsConfigPtr config) {
   // For backwards compatibility, will be removed after mojom is updated.
@@ -266,46 +277,16 @@ void CameraEffectsController::SetCameraEffects(
     config->effect = cros::mojom::CameraEffect::kPortraitRelight;
   }
 
+  // Update effects config with settings from feature flags.
+  config->segmentation_model = GetSegmentationModelType();
+
   // Directly calls the callback for testing case.
-  if (effect_result_for_testing_.has_value()) {
+  if (in_testing_mode_) {
     CHECK_IS_TEST();
-    OnNewCameraEffectsSet(std::move(config),
-                          effect_result_for_testing_.value());
+    OnCameraEffectChanged(std::move(config));
   } else {
     media::CameraHalDispatcherImpl::GetInstance()->SetCameraEffects(
         std::move(config));
-  }
-}
-
-void CameraEffectsController::SetInitialCameraEffects(
-    cros::mojom::EffectsConfigPtr config) {
-  media::CameraHalDispatcherImpl::GetInstance()->SetInitialCameraEffects(
-      std::move(config));
-}
-
-void CameraEffectsController::OnNewCameraEffectsSet(
-    cros::mojom::EffectsConfigPtr new_config,
-    cros::mojom::SetEffectResult result) {
-  // If SetCamerEffects succeeded, update `current_effects_` and notify all
-  // observers.
-  // This callback with null EffectsConfigPtr indicates that
-  // (1) The last SetCamerEffect failed.
-  // (2) It was the first SetCamerEffect call after the camera stack
-  // initialized; so no camera effects were applied before that. Assuming this
-  // does not happen very often, the only way to keep the pref to be consisitent
-  // with the prefs is to reset everything.
-  if (result == cros::mojom::SetEffectResult::kOk || new_config.is_null()) {
-    if (new_config.is_null()) {
-      new_config = cros::mojom::EffectsConfig::New();
-    }
-
-    SetEffectsConfigToPref(new_config.Clone());
-
-    current_effects_ = std::move(new_config);
-
-    for (auto& ob : observers_) {
-      ob.OnCameraEffectsChanged(current_effects_.Clone());
-    }
   }
 }
 
@@ -366,28 +347,9 @@ void CameraEffectsController::SetEffectsConfigToPref(
 
 bool CameraEffectsController::IsEffectControlAvailable(
     cros::mojom::CameraEffect effect /* = cros::mojom::CameraEffect::kNone*/) {
-  if (!ash::features::IsVideoConferenceEnabled()) {
-    return false;
-  }
-
-  switch (effect) {
-    case cros::mojom::CameraEffect::kNone:
-      // Return 'true' if any effect is available.
-      return IsCameraEffectsSupported(
-                 cros::mojom::CameraEffect::kBackgroundBlur) ||
-             IsCameraEffectsSupported(
-                 cros::mojom::CameraEffect::kPortraitRelight);
-    case cros::mojom::CameraEffect::kBackgroundBlur:
-      return IsCameraEffectsSupported(
-          cros::mojom::CameraEffect::kBackgroundBlur);
-    case cros::mojom::CameraEffect::kPortraitRelight:
-      return IsCameraEffectsSupported(
-          cros::mojom::CameraEffect::kPortraitRelight);
-    case cros::mojom::CameraEffect::kBackgroundReplace:
-      return false;
-  }
-
-  return false;
+  // UI is not ready to serve the BackgroundReplace effect.
+  return features::IsVideoConferenceEnabled() &&
+         effect != cros::mojom::CameraEffect::kBackgroundReplace;
 }
 
 void CameraEffectsController::InitializeEffectControls() {
@@ -410,18 +372,19 @@ void CameraEffectsController::InitializeEffectControls() {
     effect->set_id(
         static_cast<int>(cros::mojom::CameraEffect::kBackgroundBlur));
     AddBackgroundBlurStateToEffect(
-        effect.get(),
+        effect.get(), kVideoConferenceBackgroundBlurOffIcon,
         /*state_value=*/BackgroundBlurEffectState::kOff,
         /*string_id=*/IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_OFF);
     AddBackgroundBlurStateToEffect(
-        effect.get(),
+        effect.get(), kVideoConferenceBackgroundBlurLightIcon,
         /*state_value=*/BackgroundBlurEffectState::kLight,
         /*string_id=*/IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_LIGHT);
     AddBackgroundBlurStateToEffect(
-        effect.get(),
+        effect.get(), kVideoConferenceBackgroundBlurMaximumIcon,
         /*state_value=*/BackgroundBlurEffectState::kMaximum,
         /*string_id=*/
         IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_FULL);
+    effect->set_dependency_flags(VcHostedEffect::ResourceDependency::kCamera);
     AddEffect(std::move(effect));
   }
 
@@ -436,7 +399,7 @@ void CameraEffectsController::InitializeEffectControls() {
     effect->set_id(
         static_cast<int>(cros::mojom::CameraEffect::kPortraitRelight));
     effect->AddState(std::make_unique<VcEffectState>(
-        /*icon=*/&kPrivacyIndicatorsCameraIcon,
+        /*icon=*/&kVideoConferencePortraitRelightOnIcon,
         /*label_text=*/
         l10n_util::GetStringUTF16(
             IDS_ASH_VIDEO_CONFERENCE_BUBBLE_PORTRAIT_RELIGHT_NAME),
@@ -449,6 +412,7 @@ void CameraEffectsController::InitializeEffectControls() {
             /*effect_id=*/
             static_cast<int>(cros::mojom::CameraEffect::kPortraitRelight),
             /*value=*/absl::nullopt)));
+    effect->set_dependency_flags(VcHostedEffect::ResourceDependency::kCamera);
     AddEffect(std::move(effect));
   }
 
@@ -462,12 +426,12 @@ void CameraEffectsController::InitializeEffectControls() {
 
 void CameraEffectsController::AddBackgroundBlurStateToEffect(
     VcHostedEffect* effect,
+    const gfx::VectorIcon& icon,
     int state_value,
     int string_id) {
   DCHECK(effect);
-  // TODO(b/265200087): Replace the icon with the proper icon per effect.
   effect->AddState(std::make_unique<VcEffectState>(
-      /*icon=*/&ash::kPrivacyIndicatorsCameraIcon,
+      &icon,
       /*label_text=*/l10n_util::GetStringUTF16(string_id),
       /*accessible_name_id=*/string_id,
       /*button_callback=*/

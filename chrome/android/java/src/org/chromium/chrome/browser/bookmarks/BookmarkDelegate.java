@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.dragreorder.DragStateDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
@@ -17,17 +18,6 @@ import java.util.List;
  * and get bookmark data model.
  */
 public interface BookmarkDelegate {
-    /**
-     * Delegate used to open urls for main fragment on tablet.
-     */
-    interface BookmarkStateChangeListener {
-        /**
-         * Let the tab containing bookmark manager load the url and later handle UI updates.
-         * @param url The url to open in tab.
-         */
-        public void onBookmarkUIStateChange(String url);
-    }
-
     /**
      * Returns whether the bookmarks UI will be shown in a dialog, instead of a NativePage. This is
      * typically true on phones and false on tablets, but not always, e.g. in multi-window mode or
@@ -55,7 +45,7 @@ public interface BookmarkDelegate {
      * Notifies the current mode set event to the given observer. For example, if the current mode
      * is MODE_ALL_BOOKMARKS, it calls onAllBookmarksModeSet.
      */
-    void notifyStateChange(BookmarkUIObserver observer);
+    void notifyStateChange(BookmarkUiObserver observer);
 
     /**
      * Closes the Bookmark UI (if on phone) and opens the given bookmark.
@@ -73,22 +63,22 @@ public interface BookmarkDelegate {
     /**
      * Shows the search UI.
      */
-    void openSearchUI();
+    void openSearchUi();
 
     /**
      * Dismisses the search UI.
      */
-    void closeSearchUI();
+    void closeSearchUi();
 
     /**
      * Add an observer to bookmark UI changes.
      */
-    void addUIObserver(BookmarkUIObserver observer);
+    void addUiObserver(BookmarkUiObserver observer);
 
     /**
      * Remove an observer of bookmark UI changes.
      */
-    void removeUIObserver(BookmarkUIObserver observer);
+    void removeUiObserver(BookmarkUiObserver observer);
 
     /**
      * @return Bookmark data model associated with this UI.
@@ -96,10 +86,11 @@ public interface BookmarkDelegate {
     BookmarkModel getModel();
 
     /**
-     * @return Current UIState of bookmark main UI. If no mode is stored,
-     *         {@link BookmarkUIState#STATE_LOADING} is returned.
+     * Returns current mode of bookmark main UI. If no mode is stored,
+     * {@link BookmarkUiMode.LOADING} is returned.
      */
-    int getCurrentState();
+    @BookmarkUiMode
+    int getCurrentUiMode();
 
     /**
      * @return LargeIconBridge instance. By sharing the instance, we can also share the cache.

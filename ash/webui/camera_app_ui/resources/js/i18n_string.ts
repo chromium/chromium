@@ -34,12 +34,6 @@ export enum I18nString {
   DIALOG_CANCEL_BUTTON = 'dialog_cancel_button',
   DIALOG_OK_BUTTON = 'dialog_ok_button',
   DOCUMENT_CORNER_MOVE_DESC = 'document_corner_move_desc',
-  DOCUMENT_MODE_DIALOG_GOT_IT = 'document_mode_dialog_got_it',
-  DOCUMENT_MODE_DIALOG_MSG = 'document_mode_dialog_msg',
-  DOCUMENT_MODE_DIALOG_INTRO_TITLE = 'document_mode_dialog_intro_title',
-  DOCUMENT_MODE_MULTI_PAGE_TOAST = 'document_mode_multi_page_toast',
-  DOWNLOADING_DOCUMENT_SCANNING_FEATURE =
-      'downloading_document_scanning_feature',
   ERROR_MSG_CAMERA_PAUSED = 'error_msg_camera_paused',
   ERROR_MSG_EMPTY_RECORDING = 'error_msg_empty_recording',
   ERROR_MSG_FILE_SYSTEM_FAILED = 'error_msg_file_system_failed',
@@ -87,6 +81,7 @@ export enum I18nString {
   LABEL_NO_RESOLUTION_OPTION = 'label_no_resolution_option',
   LABEL_OFF = 'label_off',
   LABEL_ON = 'label_on',
+  LABEL_OTHER_ASPECT_RATIO = 'label_other_aspect_ratio',
   LABEL_RECORD_GIF_VIDEO_OPTION = 'label_record_gif_video_option',
   LABEL_RECORD_NORMAL_VIDEO_OPTION = 'label_record_normal_video_option',
   LABEL_RESOLUTION_MP = 'label_resolution_mp',
@@ -106,7 +101,6 @@ export enum I18nString {
       'label_switch_take_square_photo_button',
   LABEL_TIMER_10S = 'label_timer_10s',
   LABEL_TIMER_3S = 'label_timer_3s',
-  LABEL_OTHER_ASPECT_RATIO = 'label_other_aspect_ratio',
   LABEL_VIDEO_RESOLUTION_360P = 'label_video_resolution_360p',
   LABEL_VIDEO_RESOLUTION_4K = 'label_video_resolution_4k',
   LABEL_VIDEO_RESOLUTION_FULL_HD = 'label_video_resolution_full_hd',
@@ -132,9 +126,6 @@ export enum I18nString {
   // I18nString.NAME: Bypass the presubmit check for unused strings. Used here:
   // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/web_applications/camera_app/camera_system_web_app_info.cc
   // NAME = 'name',
-  NEW_CONTROL_NAVIGATION = 'new_control_navigation',
-  NEW_CONTROL_TOAST = 'new_control_toast',
-  NEW_DOCUMENT_SCAN_TOAST = 'new_document_scan_toast',
   NEXT_PAGE_COUNT = 'next_page_count',
   NO_DOCUMENT_GUIDE_MSG = 'no_document_guide_msg',
   OPEN_GRID_PANEL_BUTTON = 'open_grid_panel_button',

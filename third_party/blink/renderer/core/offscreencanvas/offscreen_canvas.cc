@@ -244,6 +244,7 @@ void OffscreenCanvas::RecordIdentifiabilityMetric(
 }
 
 scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(
+    CanvasResourceProvider::FlushReason reason,
     SourceImageStatus* status,
     const gfx::SizeF& size,
     const AlphaDisposition alpha_disposition) {
@@ -259,7 +260,7 @@ scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(
     *status = kZeroSizeCanvasSourceImageStatus;
     return nullptr;
   }
-  scoped_refptr<StaticBitmapImage> image = context_->GetImage();
+  scoped_refptr<StaticBitmapImage> image = context_->GetImage(reason);
   if (!image)
     image = CreateTransparentImage(Size());
 
@@ -267,7 +268,8 @@ scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(
 
   // If the alpha_disposition is already correct, or the image is opaque, this
   // is a no-op.
-  return GetImageWithAlphaDisposition(std::move(image), alpha_disposition);
+  return GetImageWithAlphaDisposition(reason, std::move(image),
+                                      alpha_disposition);
 }
 
 gfx::Size OffscreenCanvas::BitmapSourceSize() const {
@@ -279,8 +281,10 @@ ScriptPromise OffscreenCanvas::CreateImageBitmap(
     absl::optional<gfx::Rect> crop_rect,
     const ImageBitmapOptions* options,
     ExceptionState& exception_state) {
-  if (context_)
-    context_->FinalizeFrame();
+  if (context_) {
+    context_->FinalizeFrame(
+        CanvasResourceProvider::FlushReason::kCreateImageBitmap);
+  }
   return ImageBitmapSource::FulfillImageBitmap(
       script_state,
       IsPaintable()

@@ -56,6 +56,7 @@
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "ash/system/unified/feature_pods_container_view.h"
 #include "ash/system/unified/feature_tile.h"
+#include "ash/system/unified/feature_tiles_container_view.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/quick_settings_view.h"
 #include "ash/system/unified/quiet_mode_feature_pod_controller.h"
@@ -302,8 +303,6 @@ void UnifiedSystemTrayController::HandleOpenPowerSettingsAction() {
 }
 
 void UnifiedSystemTrayController::HandleEnterpriseInfoAction() {
-  UMA_HISTOGRAM_ENUMERATION("ChromeOS.SystemTray.OpenHelpPageForManaged",
-                            MANAGED_TYPE_ENTERPRISE, MANAGED_TYPE_COUNT);
   Shell::Get()->system_tray_model()->client()->ShowEnterpriseInfo();
 }
 
@@ -510,10 +509,6 @@ void UnifiedSystemTrayController::ShowNotifierSettingsView() {
 void UnifiedSystemTrayController::ShowCalendarView(
     calendar_metrics::CalendarViewShowSource show_source,
     calendar_metrics::CalendarEventSource event_source) {
-  if (!features::IsCalendarViewEnabled()) {
-    return;
-  }
-
   calendar_metrics::RecordCalendarShowMetrics(show_source, event_source);
   ShowDetailedView(std::make_unique<UnifiedCalendarViewController>(this));
 
@@ -587,18 +582,8 @@ void UnifiedSystemTrayController::EnsureCollapsed() {
 
 void UnifiedSystemTrayController::EnsureExpanded() {
   if (detailed_view_controller_) {
-    showing_audio_detailed_view_ = false;
-    showing_display_detailed_view_ = false;
-    if (features::IsQsRevampEnabled()) {
-      quick_settings_view_->ResetDetailedView();
-    } else {
-      unified_view_->ResetDetailedView();
-    }
-
-    // Destroy `detailed_view_controller_` after resetting
-    // `quick_settings_view_`'s `detailed_view_` because the detailed view has a
-    // reference to its `detailed_view_controller_` which is used in shutdown.
-    detailed_view_controller_.reset();
+    // If a detailed view is showing, first transit to the main view.
+    TransitionToMainView(false);
   }
   StartAnimation(true /*expand*/);
 
@@ -746,6 +731,11 @@ void UnifiedSystemTrayController::InitFeatureTiles() {
               feature_pod_controllers_, tiles);
 
   quick_settings_view_->AddTiles(std::move(tiles));
+
+  quick_settings_metrics_util::RecordQsFeaturePodCount(
+      quick_settings_view_->feature_tiles_container()
+          ->GetVisibleFeatureTileCount(),
+      Shell::Get()->tablet_mode_controller()->InTabletMode());
 }
 
 void UnifiedSystemTrayController::AddFeaturePodItem(

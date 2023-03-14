@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_HIT_TEST_RESULT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_HIT_TEST_RESULT_H_
 
+#include "cc/paint/element_id.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -69,7 +70,7 @@ class BLINK_EXPORT WebHitTestResult {
 
   // Return the ElementId of the first scrollable containing block ancestor
   // of the target, including the target itself if it is scrollable
-  uint64_t GetScrollableContainerId() const;
+  cc::ElementId GetScrollableContainerId() const;
 
 #if INSIDE_BLINK
   WebHitTestResult(const HitTestResult&);

@@ -16,7 +16,7 @@ _REPO_URL = 'https://repo.maven.apache.org/maven2'
 _GROUP_NAME = 'net/bytebuddy'
 _MODULE_NAME = 'byte-buddy'
 _FILE_EXT = 'jar'
-_OVERRIDE_LATEST = '1.12.22'
+_OVERRIDE_LATEST = None
 _PATCH_VERSION = 'cr1'
 
 

@@ -1,0 +1,16 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.annotator.mojom;
+
+// The annotation tool struct sent from the browser process to
+// javascript.
+struct AnnotatorTool {
+   // TODO(b/239979179): Consider adding an enum
+   // to represent the tool instead of just accepting a
+   // string.
+   string tool;
+   string color;
+   int32 size;
+};

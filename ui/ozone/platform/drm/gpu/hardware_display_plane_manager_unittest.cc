@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/files/file_util.h"
-#include "base/files/platform_file.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -22,12 +21,10 @@
 #include "ui/display/types/gamma_ramp_rgb_entry.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_fence_handle.h"
-#include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gfx/linux/gbm_buffer.h"
 #include "ui/gfx/linux/test/mock_gbm_device.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
-#include "ui/ozone/platform/drm/gpu/crtc_controller.h"
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
 #include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_atomic.h"
@@ -249,6 +246,9 @@ TEST_P(HardwareDisplayPlaneManagerTest, ResettingConnectorCache) {
 
 TEST_P(HardwareDisplayPlaneManagerTest, SequenceIncrementOnModesetOnly) {
   auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithNoProperties();
+  // Add some resources so HardwareDisplayPlaneManager can properly initialize
+  // within |fake_drm_|.
+  drm_state.AddCrtcAndConnector();
   fake_drm_->InitializeState(drm_state, /*use_atomic=*/true);
 
   // Modeset Test

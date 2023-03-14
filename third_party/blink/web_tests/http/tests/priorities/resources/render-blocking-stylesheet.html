@@ -1,7 +1,7 @@
 <script src="common.js"></script>
 <script>
-  observeAndReportResourceLoadPriority(new URL("../../resources/dummy.css", location));
+  observeAndReportResourceLoadPriority(new URL("../../resources/dummy.css?render-blocking", location));
 </script>
 
 <!-- Media-matching style sheets block rendering, and are critical -->
-<link href="../../resources/dummy.css" rel="stylesheet" onload="reportLoaded()" onerror="reportFailure()">
+<link href="../../resources/dummy.css?render-blocking" rel="stylesheet" onload="reportLoaded()" onerror="reportFailure()">

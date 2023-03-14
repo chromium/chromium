@@ -27,8 +27,7 @@ TaskSource::Transaction::Transaction(TaskSource::Transaction&& other)
 
 TaskSource::Transaction::~Transaction() {
   if (task_source_) {
-    task_source_->lock_.AssertAcquired();
-    task_source_->lock_.Release();
+    Release();
   }
 }
 
@@ -36,6 +35,13 @@ void TaskSource::Transaction::UpdatePriority(TaskPriority priority) {
   task_source_->traits_.UpdatePriority(priority);
   task_source_->priority_racy_.store(task_source_->traits_.priority(),
                                      std::memory_order_relaxed);
+}
+
+void TaskSource::Transaction::Release() NO_THREAD_SAFETY_ANALYSIS {
+  DCHECK(task_source_);
+  task_source_->lock_.AssertAcquired();
+  task_source_->lock_.Release();
+  task_source_ = nullptr;
 }
 
 void TaskSource::SetImmediateHeapHandle(const HeapHandle& handle) {
@@ -66,7 +72,13 @@ TaskSource::TaskSource(const TaskTraits& traits,
          execution_mode_ == TaskSourceExecutionMode::kJob);
 }
 
-TaskSource::~TaskSource() = default;
+TaskSource::~TaskSource() {
+  // If this fails, a Transaction was likely held while releasing a reference to
+  // its associated task source, which lead to its destruction. Owners of
+  // Transaction must ensure to hold onto a reference of the associated task
+  // source at least until the Transaction is released to prevent UAF.
+  lock_.AssertNotHeld();
+}
 
 TaskSource::Transaction TaskSource::BeginTransaction() {
   return Transaction(this);

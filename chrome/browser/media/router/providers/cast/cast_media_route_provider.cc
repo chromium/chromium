@@ -12,18 +12,23 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_split.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner.h"
+#include "chrome/browser/media/cast_mirroring_service_host.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/providers/cast/cast_activity_manager.h"
 #include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"
 #include "chrome/browser/media/router/providers/cast/cast_media_route_provider_metrics.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_tracker.h"
+#include "chrome/browser/media/router/providers/cast/mirroring_activity.h"
 #include "components/media_router/browser/logger_impl.h"
 #include "components/media_router/common/media_source.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
 #include "components/media_router/common/providers/cast/channel/cast_message_handler.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
@@ -124,13 +129,14 @@ CastMediaRouteProvider::CastMediaRouteProvider(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner)
     : media_sink_service_(media_sink_service),
       app_discovery_service_(app_discovery_service),
-      message_handler_(message_handler) {
+      message_handler_(message_handler),
+      task_runner_(task_runner) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   DCHECK(media_sink_service_);
   DCHECK(app_discovery_service_);
   DCHECK(message_handler_);
 
-  task_runner->PostTask(
+  task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&CastMediaRouteProvider::Init, base::Unretained(this),
                      std::move(receiver), std::move(media_router),
@@ -347,6 +353,36 @@ void CastMediaRouteProvider::GetState(GetStateCallback callback) {
   }
   std::move(callback).Run(
       mojom::ProviderState::NewCastProviderState(std::move(cast_state)));
+}
+
+void CastMediaRouteProvider::GetMirroringStats(
+    const std::string& route_id,
+    GetMirroringStatsCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!activity_manager_) {
+    std::move(callback).Run(base::Value());
+    return;
+  }
+
+  auto* mirroring_activity =
+      activity_manager_->FindMirroringActivityByRouteId(route_id);
+  if (!mirroring_activity) {
+    std::move(callback).Run(base::Value());
+    return;
+  }
+
+  auto* mirroring_host = mirroring_activity->GetHost();
+  if (!mirroring_host) {
+    std::move(callback).Run(base::Value());
+    return;
+  }
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&mirroring::MirroringServiceHost::GetMirroringStats,
+                     mirroring_host->GetWeakPtr(),
+                     base::BindPostTask(task_runner_, std::move(callback))));
 }
 
 void CastMediaRouteProvider::OnSinkQueryUpdated(

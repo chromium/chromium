@@ -7,12 +7,38 @@
 #include <vector>
 
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace wallpaper_handlers {
+
+MockBackdropCollectionInfoFetcher::MockBackdropCollectionInfoFetcher() {
+  ON_CALL(*this, Start).WillByDefault([](OnCollectionsInfoFetched callback) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), /*success=*/false,
+                                  std::vector<backdrop::Collection>()));
+  });
+}
+
+MockBackdropCollectionInfoFetcher::~MockBackdropCollectionInfoFetcher() =
+    default;
+
+MockBackdropImageInfoFetcher::MockBackdropImageInfoFetcher(
+    const std::string& collection_id)
+    : BackdropImageInfoFetcher(collection_id) {
+  ON_CALL(*this, Start)
+      .WillByDefault([&collection_id](OnImagesInfoFetched callback) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(std::move(callback), /*success=*/false,
+                           collection_id, std::vector<backdrop::Image>()));
+      });
+}
+
+MockBackdropImageInfoFetcher::~MockBackdropImageInfoFetcher() = default;
 
 MockGooglePhotosAlbumsFetcher::MockGooglePhotosAlbumsFetcher(Profile* profile)
     : GooglePhotosAlbumsFetcher(profile) {

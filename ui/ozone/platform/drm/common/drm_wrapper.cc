@@ -93,15 +93,13 @@ bool DrmWrapper::Initialize() {
     return false;
   }
 
-  // Set atomic capabilities.
+  // Set atomic capabilities. Note: we cache the outcome since there is no way
+  // to retrieve this outcome later (i.e. it's impossible, and a common mistake,
+  // to try and get DRM_CLIENT_CAP_ATOMIC capability.)
   is_atomic_ = SetCapability(DRM_CLIENT_CAP_ATOMIC, 1);
 
   // Expose all planes (overlay, primary, and cursor) to userspace.
   SetCapability(DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1);
-
-  uint64_t value;
-  allow_addfb2_modifiers_ =
-      GetCapability(DRM_CAP_ADDFB2_MODIFIERS, &value) && value;
 
   return true;
 }
@@ -125,14 +123,9 @@ bool DrmWrapper::SetCrtc(uint32_t crtc_id,
   TRACE_EVENT2("drm", "DrmWrapper::SetCrtc", "crtc", crtc_id, "size",
                gfx::Size(mode.hdisplay, mode.vdisplay).ToString());
 
-  if (!drmModeSetCrtc(drm_fd_.get(), crtc_id, framebuffer, 0, 0,
-                      connectors.data(), connectors.size(),
-                      const_cast<drmModeModeInfo*>(&mode))) {
-    ++modeset_sequence_id_;
-    return true;
-  }
-
-  return false;
+  return !drmModeSetCrtc(drm_fd_.get(), crtc_id, framebuffer, 0, 0,
+                         connectors.data(), connectors.size(),
+                         const_cast<drmModeModeInfo*>(&mode));
 }
 
 bool DrmWrapper::DisableCrtc(uint32_t crtc_id) {
@@ -387,6 +380,7 @@ bool DrmWrapper::SetObjectProperty(uint32_t object_id,
 
 ScopedDrmPropertyPtr DrmWrapper::GetProperty(drmModeConnector* connector,
                                              const char* name) const {
+  DCHECK(drm_fd_.is_valid());
   TRACE_EVENT2("drm", "DrmWrapper::GetProperty", "connector",
                connector->connector_id, "name", name);
   for (int i = 0; i < connector->count_props; ++i) {
@@ -405,6 +399,7 @@ ScopedDrmPropertyPtr DrmWrapper::GetProperty(drmModeConnector* connector,
 }
 
 ScopedDrmPropertyPtr DrmWrapper::GetProperty(uint32_t id) const {
+  DCHECK(drm_fd_.is_valid());
   return ScopedDrmPropertyPtr(drmModeGetProperty(drm_fd_.get(), id));
 }
 
@@ -422,6 +417,7 @@ bool DrmWrapper::SetProperty(uint32_t connector_id,
 
 ScopedDrmPropertyBlob DrmWrapper::CreatePropertyBlob(const void* blob,
                                                      size_t size) {
+  DCHECK(drm_fd_.is_valid());
   uint32_t id = 0;
   int ret = drmModeCreatePropertyBlob(drm_fd_.get(), blob, size, &id);
   DCHECK(!ret && id);
@@ -429,7 +425,27 @@ ScopedDrmPropertyBlob DrmWrapper::CreatePropertyBlob(const void* blob,
   return std::make_unique<DrmPropertyBlobMetadata>(this, id);
 }
 
+ScopedDrmPropertyBlob DrmWrapper::CreatePropertyBlobWithFlags(const void* blob,
+                                                              size_t size,
+                                                              uint32_t flags) {
+// TODO(markyacoub): the flag requires being merged to libdrm then backported to
+// CrOS. Remove the #if once that happens.
+#if defined(DRM_MODE_CREATE_BLOB_WRITE_ONLY)
+  DCHECK(drm_fd_.is_valid());
+  uint32_t id = 0;
+  int ret = -1;
+
+  ret =
+      drmModeCreatePropertyBlobWithFlags(drm_fd_.get(), blob, size, &id, flags);
+  DCHECK(!ret && id);
+  return std::make_unique<DrmPropertyBlobMetadata>(this, id);
+#else
+  return nullptr;
+#endif
+}
+
 void DrmWrapper::DestroyPropertyBlob(uint32_t id) {
+  DCHECK(drm_fd_.is_valid());
   drmModeDestroyPropertyBlob(drm_fd_.get(), id);
 }
 
@@ -493,6 +509,48 @@ absl::optional<std::string> DrmWrapper::GetDriverName() const {
 
 base::ScopedFD DrmWrapper::ToScopedFD(std::unique_ptr<DrmWrapper> drm) {
   return std::move(drm->drm_fd_);
+}
+
+// Protected
+
+bool DrmWrapper::CommitProperties(drmModeAtomicReq* properties,
+                                  uint32_t flags,
+                                  uint64_t page_flip_id) {
+  DCHECK(drm_fd_.is_valid());
+  int result = drmModeAtomicCommit(drm_fd_.get(), properties, flags,
+                                   reinterpret_cast<void*>(page_flip_id));
+
+  // TODO(gildekel): Revisit b/174844386 and see if this case is still relevant,
+  // given significant work has been done around failing pageflips.
+  if (result && errno == EBUSY && (flags & DRM_MODE_ATOMIC_NONBLOCK)) {
+    VLOG(1) << "Nonblocking atomic commit failed with EBUSY, retry without "
+               "nonblock";
+    // There have been cases where we get back EBUSY when attempting a
+    // non-blocking atomic commit. If we return false from here, that will cause
+    // the GPU process to CHECK itself. These are likely due to kernel bugs,
+    // which should be fixed, but rather than crashing we should retry the
+    // commit without the non-blocking flag and then it should work. This will
+    // cause a slight delay, but that should be imperceptible and better than
+    // crashing. We still do want the underlying driver bugs fixed, but this
+    // provide a better user experience.
+    flags &= ~DRM_MODE_ATOMIC_NONBLOCK;
+    result = drmModeAtomicCommit(drm_fd_.get(), properties, flags,
+                                 reinterpret_cast<void*>(page_flip_id));
+  }
+
+  return !result;
+}
+
+bool DrmWrapper::PageFlip(uint32_t crtc_id,
+                          uint32_t framebuffer,
+                          uint64_t page_flip_id) {
+  DCHECK(drm_fd_.is_valid());
+  TRACE_EVENT2("drm", "DrmWrapper::PageFlip", "crtc", crtc_id, "framebuffer",
+               framebuffer);
+
+  return !drmModePageFlip(drm_fd_.get(), crtc_id, framebuffer,
+                          DRM_MODE_PAGE_FLIP_EVENT,
+                          reinterpret_cast<void*>(page_flip_id));
 }
 
 }  // namespace ui

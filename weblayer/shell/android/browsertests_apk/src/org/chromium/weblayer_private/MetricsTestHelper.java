@@ -13,6 +13,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.weblayer.TestProfile;
+import org.chromium.weblayer.TestWebLayer;
 import org.chromium.weblayer.WebLayer;
 
 /**
@@ -71,7 +73,7 @@ class MetricsTestHelper {
     @CalledByNative
     private static void createProfile(String name, boolean incognito) {
         Context appContext = ContextUtils.getApplicationContext();
-        WebLayer weblayer = WebLayer.loadSync(appContext);
+        WebLayer weblayer = TestWebLayer.loadSync(appContext);
 
         if (incognito) {
             String nameOrNull = null;
@@ -85,14 +87,14 @@ class MetricsTestHelper {
     @CalledByNative
     private static void destroyProfile(String name, boolean incognito) {
         Context appContext = ContextUtils.getApplicationContext();
-        WebLayer weblayer = WebLayer.loadSync(appContext);
+        WebLayer weblayer = TestWebLayer.loadSync(appContext);
 
         if (incognito) {
             String nameOrNull = null;
             if (!TextUtils.isEmpty(name)) nameOrNull = name;
-            weblayer.getIncognitoProfile(nameOrNull).destroy();
+            TestProfile.destroy(weblayer.getIncognitoProfile(nameOrNull));
         } else {
-            weblayer.getProfile(name).destroy();
+            TestProfile.destroy(weblayer.getProfile(name));
         }
     }
 

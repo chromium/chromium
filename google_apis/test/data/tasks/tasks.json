@@ -1,0 +1,16 @@
+{
+  "kind": "tasks#tasks",
+  "items": [
+    {
+      "id": "qwe",
+      "title": "Completed child task",
+      "parent": "asd",
+      "status": "completed"
+    },
+    {
+      "id": "asd",
+      "title": "Parent task",
+      "status": "needsAction"
+    }
+  ]
+}

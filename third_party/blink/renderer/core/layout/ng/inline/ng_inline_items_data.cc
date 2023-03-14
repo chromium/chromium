@@ -17,6 +17,14 @@ void NGInlineItemsData::GetOpenTagItems(wtf_size_t size,
   }
 }
 
+#if DCHECK_IS_ON()
+void NGInlineItemsData::CheckConsistency() const {
+  for (const NGInlineItem& item : items) {
+    item.CheckTextType(text_content);
+  }
+}
+#endif
+
 void NGInlineItemsData::Trace(Visitor* visitor) const {
   visitor->Trace(items);
   visitor->Trace(offset_mapping);

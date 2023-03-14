@@ -116,11 +116,10 @@ declare_args() {
 
   # Enable inclusion of the HEVC/H265 parser and also enable HEVC/H265 decoding
   # with hardware acceleration assist. Enabled by default for fuzzer builds,
-  # ChromeOS builds with protected content support, Windows, Mac, and Android.
+  # Windows, Mac, and Android.
   enable_hevc_parser_and_hw_decoder =
       proprietary_codecs &&
-      (use_fuzzing_engine || use_chromeos_protected_media || is_win || is_mac ||
-       is_android || is_linux)
+      (use_fuzzing_engine || is_win || is_mac || is_android || is_linux)
 }
 
 # Use another declare_args() to allow dependence on args defined above.
@@ -137,6 +136,12 @@ declare_args() {
   enable_platform_hevc =
       proprietary_codecs &&
       (enable_hevc_parser_and_hw_decoder || is_cast_media_device)
+}
+
+declare_args() {
+  platform_has_optional_hevc_support =
+      enable_platform_hevc &&
+      (is_win || is_chromeos || is_linux || is_mac || is_android)
 }
 
 assert(!enable_platform_ac3_eac3_audio || proprietary_codecs,

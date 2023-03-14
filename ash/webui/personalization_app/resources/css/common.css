@@ -82,15 +82,13 @@ iron-list {
   animation: 2210ms linear var(--animation-delay, 1s) infinite ripple;
 }
 
-cr-button[aria-pressed=true],
-cr-button[aria-selected=true] {
-  background-color: var(--cros-highlight-color);
-  border: 0;
-}
-
 .preview-container {
   border: 1px solid var(--cros-separator-color);
   border-radius: 16px;
+}
+
+:host-context(body.jelly-enabled) .preview-container {
+  border: none;
 }
 
 .preview-text-container,

@@ -98,6 +98,7 @@ source_set("v4l2") {
     ":libv4l2_stubs",
     ":v4l2_status",
     "//base",
+    "//gpu/command_buffer/service:gles2",
     "//gpu/ipc/common",
     "//gpu/ipc/service",
     "//media",

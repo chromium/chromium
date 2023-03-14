@@ -70,10 +70,7 @@ TEST_F(OwnerKeyUtilImplTest, ImportPublicKey) {
   // Export public key, so that we can compare it to the one we get off disk.
   std::vector<uint8_t> public_key(kTestKeyData,
                                   kTestKeyData + sizeof(kTestKeyData));
-  ASSERT_EQ(static_cast<int>(public_key.size()),
-            base::WriteFile(key_file_,
-                            reinterpret_cast<const char*>(public_key.data()),
-                            public_key.size()));
+  ASSERT_TRUE(base::WriteFile(key_file_, public_key));
   EXPECT_TRUE(util_->IsPublicKeyPresent());
 
   scoped_refptr<PublicKey> from_disk = util_->ImportPublicKey();
@@ -89,7 +86,7 @@ TEST_F(OwnerKeyUtilImplTest, ImportPublicKeyFailed) {
   EXPECT_FALSE(util_->ImportPublicKey());
 
   // Next try empty file. This should fail as well.
-  ASSERT_EQ(0, base::WriteFile(key_file_, "", 0));
+  ASSERT_TRUE(base::WriteFile(key_file_, ""));
   EXPECT_TRUE(util_->IsPublicKeyPresent());
   EXPECT_FALSE(util_->ImportPublicKey());
 }

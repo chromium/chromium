@@ -4,12 +4,16 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate.h"
 
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/process/process_handle.h"
 #include "base/task/bind_post_task.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_access_copy_or_move_delegate_factory.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
+#include "components/file_access/scoped_file_access.h"
+#include "components/file_access/scoped_file_access_copy.h"
+#include "components/file_access/scoped_file_access_delegate.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -56,7 +60,7 @@ void DlpScopedFileAccessDelegate::Initialize(chromeos::DlpClient* client) {
         if (!request_files_access_for_system_io_callback_) {
           request_files_access_for_system_io_callback_ =
               new file_access::ScopedFileAccessDelegate::
-                  RequestFilesAccessForSystemIOCallback(base::BindPostTask(
+                  RequestFilesAccessIOCallback(base::BindPostTask(
                       content::GetUIThreadTaskRunner({}),
                       base::BindRepeating(&RequestFileAccessForSystem)));
         }
@@ -113,6 +117,29 @@ void DlpScopedFileAccessDelegate::RequestFilesAccessForSystem(
   request.set_destination_component(dlp::DlpComponent::SYSTEM);
 
   PostRequestFileAccessToDaemon(request, std::move(callback));
+}
+
+DlpScopedFileAccessDelegate::RequestFilesAccessIOCallback
+DlpScopedFileAccessDelegate::CreateFileAccessCallback(
+    const GURL& destination) const {
+  return base::BindPostTask(
+      content::GetUIThreadTaskRunner({}),
+      base::BindRepeating(
+          [](const GURL& destination, const std::vector<base::FilePath>& files,
+             base::OnceCallback<void(file_access::ScopedFileAccess)> callback) {
+            if (file_access::ScopedFileAccessDelegate::HasInstance()) {
+              file_access::ScopedFileAccessDelegate::Get()->RequestFilesAccess(
+                  files, destination,
+                  base::BindPostTask(content::GetIOThreadTaskRunner({}),
+                                     std::move(callback)));
+            } else {
+              content::GetIOThreadTaskRunner({})->PostTask(
+                  FROM_HERE,
+                  base::BindOnce(std::move(callback),
+                                 file_access::ScopedFileAccess::Allowed()));
+            }
+          },
+          destination));
 }
 
 void DlpScopedFileAccessDelegate::PostRequestFileAccessToDaemon(

@@ -227,14 +227,6 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   // Returns true if this extension or app includes areas within |origin|.
   bool OverlapsWithOrigin(const GURL& origin) const;
 
-  // TODO(devlin): The core Extension class shouldn't be responsible for these
-  // ShouldExpose-style functions; it doesn't know about the Management API,
-  // etc.
-
-  // Returns true if the extension should be exposed via the chrome.management
-  // API.
-  bool ShouldExposeViaManagementAPI() const;
-
   // Get the manifest data associated with the key, or NULL if there is none.
   // Can only be called after InitFromValue is finished.
   ManifestData* GetManifestData(const std::string& key) const;
@@ -476,6 +468,7 @@ struct ExtensionInfo {
   ExtensionInfo(ExtensionInfo&&) noexcept;
   ExtensionInfo(const ExtensionInfo&) = delete;
   ExtensionInfo& operator=(const ExtensionInfo&) = delete;
+  ExtensionInfo& operator=(ExtensionInfo&&);
   ~ExtensionInfo();
 
   // Note: This may be null (e.g. for unpacked extensions retrieved from the

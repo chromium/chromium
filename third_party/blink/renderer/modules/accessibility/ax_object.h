@@ -69,6 +69,7 @@ struct AXRelativeBounds;
 namespace blink {
 
 class AccessibleNodeList;
+class AbstractInlineTextBox;
 class AXObject;
 class AXObjectCacheImpl;
 class LayoutObject;
@@ -327,6 +328,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool HasAOMPropertyOrARIAAttribute(AOMStringProperty,
                                      AtomicString& result) const;
   virtual AccessibleNode* GetAccessibleNode() const;
+  virtual AbstractInlineTextBox* GetInlineTextBox() const { return nullptr; }
 
   static void TokenVectorFromAttribute(Element* element,
                                        Vector<String>&,
@@ -506,6 +508,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Some objects, such as table header containers, could be the children of
   // more than one object but have only one primary parent.
   bool HasIndirectChildren() const;
+  bool IsExcludedByFormControlsFilter() const;
 
   //
   // Accessible name calculation
@@ -733,8 +736,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual ax::mojom::blink::InvalidState GetInvalidState() const {
     return ax::mojom::blink::InvalidState::kNone;
   }
-  // Only used when invalidState() returns InvalidStateOther.
-  virtual String AriaInvalidValue() const { return String(); }
   virtual bool ValueForRange(float* out_value) const { return false; }
   virtual bool MaxValueForRange(float* out_value) const { return false; }
   virtual bool MinValueForRange(float* out_value) const { return false; }
@@ -1146,6 +1147,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // 2. LayoutObject traversal. This is necessary if there is no parent node,
   // or in a pseudo element subtree.
   bool ShouldUseLayoutObjectTraversalForChildren() const;
+  // Is this a safe time to use FlatTreeTraversal in this document? Also covers
+  // use of LayoutTreeBuilderTraversal, which is used often in the accessibility
+  // module, and built on top of FlatTreeTraversal.
+  static bool CanSafelyUseFlatTreeTraversalNow(Document& document);
   virtual bool CanHaveChildren() const { return true; }
   void UpdateChildrenIfNecessary();
   bool NeedsToUpdateChildren() const;
@@ -1285,7 +1290,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool OnNativeShowContextMenuAction();
 
   // Notifications that this object may have changed.
-  virtual void ChildrenChangedWithCleanLayout() {}
+  // TODO(accessibility): Remove virtual -- the only override is in a unit test.
+  virtual void ChildrenChangedWithCleanLayout();
   virtual void HandleActiveDescendantChanged() {}
   virtual void HandleAutofillStateChanged(WebAXAutofillState) {}
   virtual void HandleAriaExpandedChanged() {}

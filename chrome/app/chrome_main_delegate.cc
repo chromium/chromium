@@ -68,11 +68,11 @@
 #include "components/crash/core/app/crash_reporter_client.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/crash/core/common/crash_keys.h"
-#include "components/gwp_asan/buildflags/buildflags.h"
-#include "components/heap_profiling/in_process/heap_profiler_controller.h"
+#include "components/devtools/devtools_pipe/devtools_pipe.h"
+#include "components/memory_system/initializer.h"
+#include "components/memory_system/parameters.h"
 #include "components/metrics/persistent_histograms.h"
 #include "components/nacl/common/buildflags.h"
-#include "components/services/heap_profiling/public/cpp/profiling_client.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
@@ -109,9 +109,6 @@
 #include "chrome/child/v8_crashpad_support_win.h"
 #include "chrome/chrome_elf/chrome_elf_main.h"
 #include "chrome/common/child_process_logging.h"
-#include "chrome/common/win/delay_load_failure_hook.h"
-#include "chrome/install_static/install_util.h"
-#include "components/browser_watcher/extended_crash_reporting.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_factory.h"
 #include "ui/base/resource/resource_bundle_win.h"
@@ -215,10 +212,6 @@
 #include "chrome/browser/process_singleton.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_GWP_ASAN)
-#include "components/gwp_asan/client/gwp_asan.h"  // nogncheck
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/common/chrome_paths_lacros.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"  // nogncheck
@@ -287,29 +280,6 @@ bool IsSandboxedProcess() {
       reinterpret_cast<IsSandboxedProcessFunc>(
           GetProcAddress(GetModuleHandle(NULL), "IsSandboxedProcess"));
   return is_sandboxed_process_func && is_sandboxed_process_func();
-}
-
-void SetUpExtendedCrashReporting(bool is_browser_process) {
-  browser_watcher::ExtendedCrashReporting* extended_crash_reporting =
-      browser_watcher::ExtendedCrashReporting::SetUpIfEnabled(
-          is_browser_process
-              ? browser_watcher::ExtendedCrashReporting::kBrowserProcess
-              : browser_watcher::ExtendedCrashReporting::kOther);
-
-  if (!extended_crash_reporting)
-    return;
-
-  // Record product, version, channel and special build strings.
-  wchar_t exe_file[MAX_PATH] = {};
-  CHECK(::GetModuleFileName(nullptr, exe_file, std::size(exe_file)));
-
-  std::wstring product_name, version_number, channel_name, special_build;
-  install_static::GetExecutableVersionDetails(
-      exe_file, &product_name, &version_number, &special_build, &channel_name);
-
-  extended_crash_reporting->SetProductStrings(
-      base::WideToUTF16(product_name), base::WideToUTF16(version_number),
-      base::WideToUTF16(channel_name), base::WideToUTF16(special_build));
 }
 
 #endif  // BUILDFLAG(IS_WIN)
@@ -710,6 +680,14 @@ absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
     UMA_HISTOGRAM_ENUMERATION("Chrome.ProcessSingleton.NotifyResult",
                               notify_result,
                               ProcessSingleton::kNumNotifyResults);
+
+    // If |notify_result| is not PROCESS_NONE, this process will exit. To ensure
+    // that the histograms emitted in this process are reported, report the
+    // metrics accumulated this session with a future session's metrics.
+    if (notify_result != ProcessSingleton::PROCESS_NONE) {
+      DeferBrowserMetrics(user_data_dir);
+    }
+
     switch (notify_result) {
       case ProcessSingleton::PROCESS_NONE:
         // No process already running, continue on to starting a new one.
@@ -744,11 +722,6 @@ absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
   // Initialize the cleaner of left-behind tmp files now that the main thread
   // has its SequencedTaskRunner; see https://crbug.com/1075917.
   base::ImportantFileWriterCleaner::GetInstance().Initialize();
-
-  // For now, do not enable delay load failure hooks for browser process except
-  // in tests, where failures really shouldn't happen.
-  if (invoked_in_browser->is_running_test)
-    chrome::DisableDelayLoadFailureHooksForCurrentModule();
 #endif
 
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -917,9 +890,10 @@ bool ChromeMainDelegate::ShouldInitializeMojo(InvokedIn invoked_in) {
 }
 
 void ChromeMainDelegate::CommonEarlyInitialization() {
+  const base::CommandLine* const command_line =
+      base::CommandLine::ForCurrentProcess();
   std::string process_type =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kProcessType);
+      command_line->GetSwitchValueASCII(switches::kProcessType);
   bool is_browser_process = process_type.empty();
 
   // Enable Split cache by default here and not in content/ so as to not
@@ -932,36 +906,9 @@ void ChromeMainDelegate::CommonEarlyInitialization() {
   base::PlatformThread::InitFeaturesPostFieldTrial();
 #endif
 
-  version_info::Channel channel = chrome::GetChannel();
-  [[maybe_unused]] bool is_canary_dev =
-      (channel == version_info::Channel::CANARY ||
-       channel == version_info::Channel::DEV);
-  // GWP-ASAN requires crashpad to gather alloc/dealloc stack traces, which is
-  // not always enabled on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-  bool enable_gwp_asan = crash_reporter::IsCrashpadEnabled();
-#else
-  bool enable_gwp_asan = true;
-#endif
-
-  if (enable_gwp_asan) {
-#if BUILDFLAG(ENABLE_GWP_ASAN_MALLOC)
-    gwp_asan::EnableForMalloc(is_canary_dev || is_browser_process,
-                              process_type.c_str());
-#endif
-#if BUILDFLAG(ENABLE_GWP_ASAN_PARTITIONALLOC)
-    gwp_asan::EnableForPartitionAlloc(is_canary_dev || is_browser_process,
-                                      process_type.c_str());
-#endif
-  }
-
-  // Start heap profiling as early as possible so it can start recording
-  // memory allocations.
-  heap_profiler_controller_ =
-      std::make_unique<heap_profiling::HeapProfilerController>(
-          channel,
-          GetProfileParamsProcess(*base::CommandLine::ForCurrentProcess()));
-  heap_profiler_controller_->StartIfEnabled();
+  // Start memory observation as early as possible so it can start recording
+  // memory allocations. This includes heap profiling.
+  InitializeMemorySystem();
 
   if (is_browser_process) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -971,7 +918,6 @@ void ChromeMainDelegate::CommonEarlyInitialization() {
   }
 
 #if BUILDFLAG(IS_WIN)
-  SetUpExtendedCrashReporting(is_browser_process);
   base::sequence_manager::internal::ThreadControllerPowerMonitor::
       InitializeOnMainThread();
   base::InitializePlatformThreadFeatures();
@@ -1087,6 +1033,14 @@ absl::optional<int> ChromeMainDelegate::BasicStartupComplete() {
       base::CommandLine::ForCurrentProcess()->RemoveSwitch(
           switches::kDisableWebSecurity);
     }
+  }
+
+  // The DevTools remote debugging pipe file descriptors need to be checked
+  // before any other files are opened, see https://crbug.com/1423048.
+  if (command_line.HasSwitch(::switches::kRemoteDebuggingPipe) &&
+      !devtools_pipe::AreFileDescriptorsOpen()) {
+    LOG(ERROR) << "Remote debugging pipe file descriptors are not open.";
+    return chrome::RESULT_CODE_UNSUPPORTED_PARAM;
   }
 
 #if BUILDFLAG(IS_WIN)
@@ -1260,14 +1214,6 @@ absl::optional<int> ChromeMainDelegate::BasicStartupComplete() {
   }
 #endif
 
-  // The TLS slot used by the memlog allocator shim needs to be initialized
-  // early to ensure that it gets assigned a low slot number. If it gets
-  // initialized too late, the glibc TLS system will require a malloc call in
-  // order to allocate storage for a higher slot number. Since malloc is hooked,
-  // this causes re-entrancy into the allocator shim, while the TLS object is
-  // partially-initialized, which the TLS object is supposed to protect again.
-  heap_profiling::InitTLSSlot();
-
   return absl::nullopt;
 }
 
@@ -1430,7 +1376,7 @@ void ChromeMainDelegate::PreSandboxStartup() {
 #if BUILDFLAG(IS_WIN)
   // TODO(zturner): Throbber icons and cursors are still stored in chrome.dll,
   // this can be killed once those are merged into resources.pak. See
-  // GlassBrowserFrameView::InitThrobberIcons(), https://crbug.com/368327 and
+  // BrowserFrameViewWin::InitThrobberIcons(), https://crbug.com/368327 and
   // https://crbug.com/1178117.
   ui::SetResourcesDataDLL(_AtlBaseModule.GetResourceInstance());
 #endif
@@ -1806,4 +1752,24 @@ absl::optional<int> ChromeMainDelegate::PreBrowserMain() {
 
   // Do not interrupt startup.
   return absl::nullopt;
+}
+
+void ChromeMainDelegate::InitializeMemorySystem() {
+  const base::CommandLine* const command_line =
+      base::CommandLine::ForCurrentProcess();
+  const std::string process_type =
+      command_line->GetSwitchValueASCII(switches::kProcessType);
+  const bool is_browser_process = process_type.empty();
+  const version_info::Channel channel = chrome::GetChannel();
+  const bool is_canary_dev = (channel == version_info::Channel::CANARY ||
+                              channel == version_info::Channel::DEV);
+  const bool gwp_asan_boost_sampling = is_canary_dev || is_browser_process;
+
+  memory_system::Initializer()
+      .SetGwpAsanParameters(gwp_asan_boost_sampling, process_type)
+      .SetProfilingClientParameters(channel,
+                                    GetProfileParamsProcess(*command_line))
+      .SetDispatcherParameters(memory_system::DispatcherParameters::
+                                   PoissonAllocationSamplerInclusion::kEnforce)
+      .Initialize(memory_system_);
 }

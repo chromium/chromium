@@ -20,6 +20,7 @@
 <translation id="2339201583852607431">Fjalëkalimi yt do të ruhet në "Llogarinë tënde të Google" (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome e ndan vendndodhjen tënde me sajtet që lejon ti.</translation>
 <translation id="2347208864470321755">Kur ky funksion është i aktivizuar, Chrome do të ofrojë që të përkthejë faqet e shkruara në gjuhë të tjera duke përdorur "Përkthe me Google". <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
+<translation id="2414068465746584414">Nga Settings në pajisjen tënde, hap "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" dhe zgjidh "Chrome"</translation>
 <translation id="2427791862912929107">Chrome ka funksione që të ndihmojnë të menaxhosh të dhënat e internetit dhe sa shpejt je në gjendje të ngarkosh faqet e uebit.
 <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Për t'i marrë me lehtësi fjalëkalimet e tua të ruajtura në aplikacionet e tjera, përdor Chrome për AutoFill</translation>
@@ -31,6 +32,7 @@
 <translation id="2689064829982324496">Për të dalë nga "Llogaria jote e Google" në të gjitha sajtet e uebit, <ph name="BEGIN_LINK" />dil nga Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome nuk mund të kontrollonte për përditësime. Provo përsëri më vonë.</translation>
 <translation id="2732745070297234559">Chrome nuk mund t'i kontrollonte të gjitha fjalëkalimet. Provo sërish nesër.</translation>
+<translation id="2736805085127235148">Njoftimet e Chrome janë çaktivizuar aktualisht te cilësimet e pajisjes sate.</translation>
 <translation id="2767464022270041271">Nuk ka asnjë fjalëkalim të ruajtur. "Menaxheri i fjalëkalimeve i Google" mund t'i kontrollojë fjalëkalimet e tua kur ti i ruan ato.</translation>
 <translation id="2869959624320573933">Identifikohu në Chrome</translation>
 <translation id="2957447865124070833">Zgjidh <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
@@ -112,8 +114,8 @@
 <translation id="7754633291442704733">Organizata jote <ph name="DOMAIN" /> do të ketë qasje te të dhënat, faqeshënuesit, historiku, fjalëkalimet dhe cilësimet e tua të tjera të Chrome që ti ruan në këtë llogari. Kur të dalësh nga llogaria, të dhënat e tua do të pastrohen nga kjo pajisje.  Sidoqoftë, të dhënat e tua do të qëndrojnë të ruajtura në "Llogarinë tënde të menaxhuar të Google" dhe do të jenë të disponueshme për organizatën tënde. Organizata jote mund të caktojë po ashtu politika përdoruesi specifike për atë llogari që mund të ndryshojnë sjelljen e Chrome.</translation>
 <translation id="7780154209050837198">Për të marrë maksimumin nga Chrome, identifikohu në Chrome me "Llogarinë tënde të Google".</translation>
 <translation id="7855730255114109580">Google Chrome është i përditësuar</translation>
-<translation id="7939179037291298976">Nga Settings në iPhone, hap "Password Options" dhe zgjidh "Chrome"</translation>
 <translation id="8022947259858476807">Përdor Chrome si parazgjedhje për të hapur lidhjet, për të kërkuar nga miniaplikacionet dhe për të plotësuar automatikisht fjalëkalimet në aplikacione të tjera</translation>
+<translation id="804638182476029347">Lejo që njoftimet e Chrome të shfaqin sinjalizime për uljen e çmimeve</translation>
 <translation id="81358522153858150">Chrome tani mbështet politikat e përdoruesit për llogarinë tënde të menaxhuar</translation>
 <translation id="8160472928944011082">Chrome nuk mund të përditësohet</translation>
 <translation id="8357607116237445042">Zgjidh nëse do t'i pastrosh të dhënat e Chrome nga kjo pajisje apo do t'i mbash ato</translation>

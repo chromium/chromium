@@ -134,17 +134,17 @@ TEST(InterestGroupMojomTraitsTest,
   InterestGroup interest_group = CreateInterestGroup();
 
   interest_group.all_sellers_capabilities.Put(
-      InterestGroup::SellerCapabilities::kInterestGroupCounts);
+      SellerCapabilities::kInterestGroupCounts);
   SerializeAndDeserializeAndCompare(interest_group);
 
   interest_group.all_sellers_capabilities.Put(
-      InterestGroup::SellerCapabilities::kLatencyStats);
+      SellerCapabilities::kLatencyStats);
   SerializeAndDeserializeAndCompare(interest_group);
 
   interest_group.all_sellers_capabilities.Put(
-      InterestGroup::SellerCapabilities::kInterestGroupCounts);
+      SellerCapabilities::kInterestGroupCounts);
   interest_group.all_sellers_capabilities.Put(
-      InterestGroup::SellerCapabilities::kLatencyStats);
+      SellerCapabilities::kLatencyStats);
   SerializeAndDeserializeAndCompare(interest_group);
 }
 
@@ -162,7 +162,7 @@ TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeWasmHelperUrl) {
 
 TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeUpdateUrl) {
   InterestGroup interest_group = CreateInterestGroup();
-  interest_group.daily_update_url = GURL(kUrl1);
+  interest_group.update_url = GURL(kUrl1);
   SerializeAndDeserializeAndCompare(interest_group);
 }
 
@@ -190,20 +190,17 @@ TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeUserBiddingSignals) {
 TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeAds) {
   InterestGroup interest_group = CreateInterestGroup();
   interest_group.ads.emplace();
-  interest_group.ads->emplace_back(
-      InterestGroup::Ad(GURL(kUrl1), /*metadata=*/absl::nullopt));
-  interest_group.ads->emplace_back(
-      InterestGroup::Ad(GURL(kUrl2), /*metadata=*/"[]"));
+  interest_group.ads->emplace_back(GURL(kUrl1), /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(GURL(kUrl2), /*metadata=*/"[]");
   SerializeAndDeserializeAndCompare(interest_group);
 }
 
 TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeAdComponents) {
   InterestGroup interest_group = CreateInterestGroup();
   interest_group.ad_components.emplace();
-  interest_group.ad_components->emplace_back(
-      InterestGroup::Ad(GURL(kUrl1), /*metadata=*/absl::nullopt));
-  interest_group.ad_components->emplace_back(
-      InterestGroup::Ad(GURL(kUrl2), /*metadata=*/"[]"));
+  interest_group.ad_components->emplace_back(GURL(kUrl1),
+                                             /*metadata=*/absl::nullopt);
+  interest_group.ad_components->emplace_back(GURL(kUrl2), /*metadata=*/"[]");
   SerializeAndDeserializeAndCompare(interest_group);
 }
 
@@ -211,13 +208,11 @@ TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeAdSizes) {
   InterestGroup interest_group = CreateInterestGroup();
   interest_group.ad_sizes.emplace();
   interest_group.ad_sizes->emplace(
-      "size_1", blink::InterestGroup::Size(
-                    300, blink::InterestGroup::Size::LengthUnit::kPixels, 150,
-                    blink::InterestGroup::Size::LengthUnit::kPixels));
+      "size_1", blink::AdSize(300, blink::AdSize::LengthUnit::kPixels, 150,
+                              blink::AdSize::LengthUnit::kPixels));
   interest_group.ad_sizes->emplace(
-      "size_2", blink::InterestGroup::Size(
-                    640, blink::InterestGroup::Size::LengthUnit::kPixels, 480,
-                    blink::InterestGroup::Size::LengthUnit::kPixels));
+      "size_2", blink::AdSize(640, blink::AdSize::LengthUnit::kPixels, 480,
+                              blink::AdSize::LengthUnit::kPixels));
   SerializeAndDeserializeAndCompare(interest_group);
 }
 
@@ -227,13 +222,11 @@ TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeSizeGroups) {
   // validation.
   interest_group.ad_sizes.emplace();
   interest_group.ad_sizes->emplace(
-      "size_1", blink::InterestGroup::Size(
-                    300, blink::InterestGroup::Size::LengthUnit::kPixels, 150,
-                    blink::InterestGroup::Size::LengthUnit::kPixels));
+      "size_1", blink::AdSize(300, blink::AdSize::LengthUnit::kPixels, 150,
+                              blink::AdSize::LengthUnit::kPixels));
   interest_group.ad_sizes->emplace(
-      "size_2", blink::InterestGroup::Size(
-                    640, blink::InterestGroup::Size::LengthUnit::kPixels, 480,
-                    blink::InterestGroup::Size::LengthUnit::kPixels));
+      "size_2", blink::AdSize(640, blink::AdSize::LengthUnit::kPixels, 480,
+                              blink::AdSize::LengthUnit::kPixels));
   std::vector<std::string> size_list = {"size_1", "size_2"};
   interest_group.size_groups.emplace();
   interest_group.size_groups->emplace("group_1", size_list);

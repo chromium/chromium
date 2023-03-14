@@ -671,8 +671,7 @@ bool It2MeNativeMessagingHost::DelegateToElevatedHost(
 
   if (elevated_host_->EnsureElevatedHostCreated() ==
       PROCESS_LAUNCH_RESULT_SUCCESS) {
-    elevated_host_->SendMessage(
-        base::Value::ToUniquePtrValue(base::Value(std::move(message))));
+    elevated_host_->SendMessage(message);
     return true;
   }
 

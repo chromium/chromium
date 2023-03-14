@@ -37,7 +37,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/net/safe_search_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -52,6 +51,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_search_api/safe_search_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/web_contents.h"
@@ -757,6 +757,8 @@ TEST_F(ChromeDownloadManagerDelegateTest, BlockedByPolicy) {
   EXPECT_CALL(*download_item, GetURL()).WillRepeatedly(ReturnRef(kUrl));
   EXPECT_CALL(*download_item, GetContentDisposition())
       .WillRepeatedly(Return(kTargetDisposition));
+  EXPECT_CALL(*download_item, RequireSafetyChecks())
+      .WillRepeatedly(Return(true));
 
   base::FilePath kExpectedPath = GetPathInDownloadDir("bar.txt");
 
@@ -778,6 +780,41 @@ TEST_F(ChromeDownloadManagerDelegateTest, BlockedByPolicy) {
   DetermineDownloadTarget(download_item.get(), &result);
   EXPECT_EQ(download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED,
             result.interrupt_reason);
+
+  VerifyAndClearExpectations();
+}
+
+TEST_F(ChromeDownloadManagerDelegateTest, NoSafetyChecksNotBlockedByPolicy) {
+  const GURL kUrl("http://example.com/foo");
+  const std::string kTargetDisposition("attachment; filename=\"foo.txt\"");
+
+  std::unique_ptr<download::MockDownloadItem> download_item =
+      CreateActiveDownloadItem(0);
+  EXPECT_CALL(*download_item, GetURL()).WillRepeatedly(ReturnRef(kUrl));
+  EXPECT_CALL(*download_item, GetContentDisposition())
+      .WillRepeatedly(Return(kTargetDisposition));
+  EXPECT_CALL(*download_item, RequireSafetyChecks())
+      .WillRepeatedly(Return(false));
+
+  base::FilePath kExpectedPath = GetPathInDownloadDir("bar.txt");
+
+  DetermineDownloadTargetResult result;
+
+  EXPECT_CALL(*delegate(), MockReserveVirtualPath(_, _, _, _, _))
+      .WillOnce(DoAll(SetArgPointee<4>(PathValidationResult::CONFLICT),
+                      ReturnArg<1>()));
+  EXPECT_CALL(*delegate(),
+              RequestConfirmation_(
+                  _, _, DownloadConfirmationReason::TARGET_CONFLICT, _))
+      .WillOnce(WithArg<3>(ScheduleCallback2(
+          DownloadConfirmationResult::CONFIRMED, kExpectedPath)));
+
+  pref_service()->SetInteger(
+      prefs::kDownloadRestrictions,
+      static_cast<int>(DownloadPrefs::DownloadRestriction::ALL_FILES));
+
+  DetermineDownloadTarget(download_item.get(), &result);
+  EXPECT_EQ(download::DOWNLOAD_INTERRUPT_REASON_NONE, result.interrupt_reason);
 
   VerifyAndClearExpectations();
 }
@@ -1392,7 +1429,7 @@ TEST_F(ChromeDownloadManagerDelegateTest, SanitizeGoogleSearchLink) {
     delegate()->SanitizeDownloadParameters(&params);
     GURL expected_url = kGoogleSearchUrl;
     if (is_safe_search_enabled)
-      safe_search_util::ForceGoogleSafeSearch(expected_url, &expected_url);
+      safe_search_api::ForceGoogleSafeSearch(expected_url, &expected_url);
     EXPECT_EQ(params.url(), expected_url);
   }
 }

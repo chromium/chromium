@@ -20,7 +20,6 @@ namespace ash {
 
 class GlanceablesDelegate;
 class GlanceablesView;
-class GlanceablesWindowHider;
 
 // Controls the "welcome back" glanceables screen shown on login.
 class ASH_EXPORT GlanceablesController : public wm::ActivationChangeObserver,
@@ -36,9 +35,6 @@ class ASH_EXPORT GlanceablesController : public wm::ActivationChangeObserver,
 
   // Creates the UI and starts fetching data.
   void ShowOnLogin();
-
-  // Shows from the UI affordance in overview mode / desks bar.
-  void ShowFromOverview();
 
   // Returns true if the glanceables screen is showing.
   bool IsShowing() const;
@@ -77,10 +73,6 @@ class ASH_EXPORT GlanceablesController : public wm::ActivationChangeObserver,
   std::unique_ptr<GlanceablesDelegate> delegate_;
   std::unique_ptr<views::Widget> widget_;
   GlanceablesView* view_ = nullptr;
-  bool show_session_restore_ = true;
-
-  // Hides windows while glanceables are showing.
-  std::unique_ptr<GlanceablesWindowHider> window_hider_;
 
   // The start of current month in UTC. Used for fetching calendar events.
   // TODO(crbug.com/1353495): Update value at the beginning of the next month

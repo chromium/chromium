@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_DATA_USE_MEASUREMENT_CHROME_DATA_USE_MEASUREMENT_H_
 #define CHROME_BROWSER_DATA_USE_MEASUREMENT_CHROME_DATA_USE_MEASUREMENT_H_
 
+#include <cstdint>
+
 #include "base/sequence_checker.h"
 
 class ChromeDataUseMeasurement {

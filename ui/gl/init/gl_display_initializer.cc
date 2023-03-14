@@ -8,6 +8,7 @@
 #include "base/containers/contains.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_implementation.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 
 namespace gl::init {
@@ -92,7 +93,7 @@ void GetEGLInitDisplays(bool supports_angle_d3d,
   if (supports_angle_d3d) {
     if (use_angle_default) {
       // Default mode for ANGLE - try D3D11, else try D3D9
-      if (!command_line->HasSwitch(switches::kDisableD3D11)) {
+      if (!GetGlWorkarounds().disable_d3d11) {
         AddInitDisplay(init_displays, ANGLE_D3D11);
       }
       AddInitDisplay(init_displays, ANGLE_D3D9);

@@ -144,9 +144,6 @@ class UserSelectionScreen
   // contained in the map, it is using the default authentication type.
   std::map<AccountId, proximity_auth::mojom::AuthType> user_auth_type_map_;
 
-  // Timer for measuring idle state duration before password clear.
-  base::OneShotTimer password_clear_timer_;
-
   // Token handler util for checking user OAuth token status.
   std::unique_ptr<TokenHandleUtil> token_handle_util_;
 

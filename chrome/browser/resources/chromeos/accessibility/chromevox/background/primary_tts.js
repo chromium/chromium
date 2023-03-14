@@ -10,12 +10,12 @@ import {LocalStorage} from '../../common/local_storage.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
 import {SettingsManager} from '../common/settings_manager.js';
-import {TtsCapturingEventListener, TtsInterface} from '../common/tts_interface.js';
 import * as ttsTypes from '../common/tts_types.js';
 
 import {AbstractTts} from './abstract_tts.js';
 import {ChromeVox} from './chromevox.js';
 import {PhoneticData} from './phonetic_data.js';
+import {TtsCapturingEventListener, TtsInterface} from './tts_interface.js';
 
 const Utterance = class {
   /**

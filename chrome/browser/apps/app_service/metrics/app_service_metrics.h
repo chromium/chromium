@@ -13,8 +13,6 @@
 
 namespace apps {
 
-class AppUpdate;
-
 // The default app's histogram name. This is used for logging so do
 // not change the order of this enum.
 // https://docs.google.com/document/d/1WJ-BjlVOM87ygIsdDBCyXxdKw3iS5EtNGm1fWiWhfIs
@@ -70,9 +68,14 @@ enum class DefaultAppName {
   kCalculator = 50,
   kFirmwareUpdateApp = 51,
   kGoogleTv = 52,
+  kGoogleCalendar = 53,
+  kGoogleChat = 54,
+  kGoogleMeet = 55,
+  kGoogleMaps = 56,
+  kGoogleMessages = 57,
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kGoogleTv,
+  kMaxValue = kGoogleMessages,
 };
 
 // The built-in app's histogram name. This is used for logging so do not change
@@ -94,8 +97,6 @@ void RecordAppLaunch(const std::string& app_id,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void RecordBuiltInAppSearchResult(const std::string& app_id);
 #endif
-
-void RecordAppBounce(const apps::AppUpdate& app);
 
 void RecordAppsPerNotification(int count);
 

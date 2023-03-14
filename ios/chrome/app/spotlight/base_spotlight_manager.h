@@ -58,7 +58,7 @@ class LargeIconService;
 
 // Called before the instance is deallocated. This method should be overridden
 // by the subclasses and de-activate the instance.
-- (void)shutdown;
+- (void)shutdown NS_REQUIRES_SUPER;
 
 @end
 

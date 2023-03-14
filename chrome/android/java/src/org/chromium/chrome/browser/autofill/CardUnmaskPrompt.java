@@ -150,9 +150,9 @@ public class CardUnmaskPrompt
     public CardUnmaskPrompt(Context context, CardUnmaskPromptDelegate delegate, String title,
             String instructions, int cardIconId, String cardName, String cardLastFourDigits,
             String cardExpiration, GURL cardArtUrl, String confirmButtonLabel, int cvcDrawableId,
-            int googlePayDrawableId, boolean isVirtualCard, boolean shouldRequestExpirationDate,
-            boolean shouldOfferWebauthn, boolean defaultUseScreenlockChecked,
-            long successMessageDurationMilliseconds) {
+            String cvcImageAnnouncement, int googlePayDrawableId, boolean isVirtualCard,
+            boolean shouldRequestExpirationDate, boolean shouldOfferWebauthn,
+            boolean defaultUseScreenlockChecked, long successMessageDurationMilliseconds) {
         mDelegate = delegate;
         mGooglePayDrawableId = googlePayDrawableId;
         mIsVirtualCard = isVirtualCard;
@@ -197,7 +197,9 @@ public class CardUnmaskPrompt
                 (ProgressBar) mMainView.findViewById(R.id.verification_progress_bar);
         mVerificationView = (TextView) mMainView.findViewById(R.id.verification_message);
         mSuccessMessageDurationMilliseconds = successMessageDurationMilliseconds;
-        ((ImageView) mMainView.findViewById(R.id.cvc_hint_image)).setImageResource(cvcDrawableId);
+        ImageView cvcHintImage = (ImageView) mMainView.findViewById(R.id.cvc_hint_image);
+        cvcHintImage.setImageResource(cvcDrawableId);
+        cvcHintImage.setContentDescription(cvcImageAnnouncement);
 
         Resources resources = context.getResources();
         PropertyModel.Builder dialogModelBuilder =

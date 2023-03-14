@@ -8,6 +8,8 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -126,6 +128,11 @@ class VideoConferenceAshBrowserTest : public InProcessBrowserTest {
   VideoConferenceAshBrowserTest(const VideoConferenceAshBrowserTest&) = delete;
   VideoConferenceAshBrowserTest& operator=(
       const VideoConferenceAshBrowserTest&) = delete;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(
+        ::ash::switches::kCameraEffectsSupportedByHardware);
+  }
 
   ~VideoConferenceAshBrowserTest() override = default;
 

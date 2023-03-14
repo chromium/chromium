@@ -18,6 +18,7 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
+import android.view.autofill.AutofillManager;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -42,6 +43,12 @@ import java.util.WeakHashMap;
 @JNINamespace("ui")
 public class AccessibilityState {
     private static final String TAG = "A11yState";
+
+    public static final int EVENT_TYPE_MASK_ALL = ~0;
+    public static final int EVENT_TYPE_MASK_NONE = 0;
+
+    public static final String AUTOFILL_COMPAT_ACCESSIBILITY_SERVICE_ID =
+            "android/com.android.server.autofill.AutofillCompatAccessibilityService";
 
     /**
      * Interface for the observers of the system's accessibility state.
@@ -94,15 +101,21 @@ public class AccessibilityState {
         // False otherwise.
         public final boolean isTextShowPasswordEnabled;
 
+        // True when we suspect that only password managers are enabled, based on the information
+        // from running accessibility services. False otherwise.
+        public final boolean isOnlyPasswordManagersEnabled;
+
         public State(boolean isScreenReaderEnabled, boolean isTouchExplorationEnabled,
                 boolean isAnyAccessibilityServiceEnabled, boolean isAccessibilityToolPresent,
-                boolean isSpokenFeedbackServicePresent, boolean isTextShowPasswordEnabled) {
+                boolean isSpokenFeedbackServicePresent, boolean isTextShowPasswordEnabled,
+                boolean isOnlyPasswordManagersEnabled) {
             this.isScreenReaderEnabled = isScreenReaderEnabled;
             this.isTouchExplorationEnabled = isTouchExplorationEnabled;
             this.isAnyAccessibilityServiceEnabled = isAnyAccessibilityServiceEnabled;
             this.isAccessibilityToolPresent = isAccessibilityToolPresent;
             this.isSpokenFeedbackServicePresent = isSpokenFeedbackServicePresent;
             this.isTextShowPasswordEnabled = isTextShowPasswordEnabled;
+            this.isOnlyPasswordManagersEnabled = isOnlyPasswordManagersEnabled;
         }
     }
 
@@ -112,6 +125,24 @@ public class AccessibilityState {
     // we can enable some optimizations.
     private static final int SCREEN_READER_EVENT_TYPE_MASK = AccessibilityEvent.TYPE_VIEW_SELECTED
             | AccessibilityEvent.TYPE_VIEW_SCROLLED | AccessibilityEvent.TYPE_ANNOUNCEMENT;
+
+    // Analysis of the most popular password managers on Android suggests
+    // that services that only request these events, flags, and capabilities is likely a password
+    // manager. If not more than these events are requested, we can enable some optimizations.
+    private static final int PASSWORD_MANAGER_EVENT_TYPE_MASK = AccessibilityEvent.TYPE_VIEW_CLICKED
+            | AccessibilityEvent.TYPE_VIEW_FOCUSED | AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED
+            | AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
+            | AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED;
+
+    private static final int PASSWORD_MANAGER_FLAG_TYPE_MASK = AccessibilityServiceInfo.DEFAULT
+            | AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS
+            | AccessibilityServiceInfo.FLAG_REQUEST_TOUCH_EXPLORATION_MODE
+            | AccessibilityServiceInfo.FLAG_REQUEST_ENHANCED_WEB_ACCESSIBILITY
+            | AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS
+            | AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS;
+
+    private static final int PASSWORD_MANAGER_CAPABILITY_TYPE_MASK =
+            AccessibilityServiceInfo.CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT;
 
     // A bitmask containing the union of all event types, feedback types, flags,
     // and capabilities of running accessibility services.
@@ -176,7 +207,6 @@ public class AccessibilityState {
         return sState.isAccessibilityToolPresent;
     }
 
-    @CalledByNative
     public static boolean isSpokenFeedbackServicePresent() {
         if (!sInitialized) updateAccessibilityServices();
         return sState.isSpokenFeedbackServicePresent;
@@ -185,6 +215,11 @@ public class AccessibilityState {
     public static boolean isTextShowPasswordEnabled() {
         if (!sInitialized) updateAccessibilityServices();
         return sState.isTextShowPasswordEnabled;
+    }
+
+    public static boolean isOnlyPasswordManagersEnabled() {
+        if (!sInitialized) updateAccessibilityServices();
+        return sState.isOnlyPasswordManagersEnabled;
     }
 
     @Deprecated
@@ -204,29 +239,18 @@ public class AccessibilityState {
     }
 
     @VisibleForTesting
-    public static void setEventTypeMaskForTesting() {
+    public static void setEventTypeMaskForTesting(int mask) {
         if (!sInitialized) updateAccessibilityServices();
 
-        // Explicitly set mask so all events are relevant to currently enabled service.
-        sEventTypeMask = ~0;
+        // Explicitly set mask so events can be (ir)relevant to currently enabled service.
+        sEventTypeMask = mask;
         // Explicitly set accessibility enabled
         State newState = new State(sState.isScreenReaderEnabled, sState.isTouchExplorationEnabled,
                 true, sState.isAccessibilityToolPresent, sState.isSpokenFeedbackServicePresent,
-                sState.isTextShowPasswordEnabled);
+                sState.isTextShowPasswordEnabled, sState.isOnlyPasswordManagersEnabled);
 
         // Inform all listeners of this change.
         updateAndNotifyStateChange(newState);
-    }
-
-    @VisibleForTesting
-    public static void setEventTypeMaskEmptyForTesting() {
-        if (!sInitialized) updateAccessibilityServices();
-
-        // Explicitly set mask so no events are relevant to currently enabled service.
-        sEventTypeMask = 0;
-
-        // Inform all listeners of this change.
-        updateAndNotifyStateChange(sState);
     }
 
     @VisibleForTesting
@@ -237,7 +261,7 @@ public class AccessibilityState {
         // Explicitly set accessibility enabled
         State newState = new State(enabled, sState.isTouchExplorationEnabled, true,
                 sState.isAccessibilityToolPresent, sState.isSpokenFeedbackServicePresent,
-                sState.isTextShowPasswordEnabled);
+                sState.isTextShowPasswordEnabled, sState.isOnlyPasswordManagersEnabled);
         // Inform all listeners of this change.
         updateAndNotifyStateChange(newState);
     }
@@ -248,20 +272,34 @@ public class AccessibilityState {
 
         State newState = new State(sState.isScreenReaderEnabled, sState.isTouchExplorationEnabled,
                 sState.isAnyAccessibilityServiceEnabled, sState.isAccessibilityToolPresent, present,
-                sState.isTextShowPasswordEnabled);
+                sState.isTextShowPasswordEnabled, sState.isOnlyPasswordManagersEnabled);
         // Inform all listeners of this change.
         updateAndNotifyStateChange(newState);
     }
 
     static void updateAccessibilityServices() {
         if (!sInitialized) {
-            sState = new State(false, false, false, false, false, false);
+            sState = new State(false, false, false, false, false, false, false);
         }
         sInitialized = true;
         sEventTypeMask = 0;
         sFeedbackTypeMask = 0;
         sFlagsMask = 0;
         sCapabilitiesMask = 0;
+
+        // Used solely as part of the heuristic to identify whether screen readers are running.
+        // This mask is kept separate from the above masks as those should be the source of
+        // truth.
+        int screenReaderCheckEventTypeMask = 0;
+
+        // Used solely as part of the heuristic to identify whether password managers are running.
+        // These masks are kept separate from the above masks as those should be the source of
+        // truth.
+        int passwordCheckEventTypeMask = 0;
+        int passwordCheckFeedbackTypeMask = 0;
+        int passwordCheckFlagsMask = 0;
+        int passwordCheckCapabilitiesMask = 0;
+
         boolean isAnyAccessibilityServiceEnabled = false;
         boolean isAccessibilityToolPresent = false;
 
@@ -277,16 +315,32 @@ public class AccessibilityState {
         int i = 0;
         for (AccessibilityServiceInfo service : services) {
             if (service == null) continue;
-            sEventTypeMask |= service.eventTypes;
-            sFeedbackTypeMask |= service.feedbackType;
-            sFlagsMask |= service.flags;
-            sCapabilitiesMask |= service.getCapabilities();
             isAccessibilityToolPresent |= (Build.VERSION.SDK_INT < Build.VERSION_CODES.S
                     || service.isAccessibilityTool());
             isAnyAccessibilityServiceEnabled = true;
 
             String serviceId = service.getId();
             sServiceIds[i++] = serviceId;
+
+            sEventTypeMask |= service.eventTypes;
+            sFeedbackTypeMask |= service.feedbackType;
+            sFlagsMask |= service.flags;
+            sCapabilitiesMask |= service.getCapabilities();
+
+            // Only check the event, feedback, flag, and capability types for the password manager
+            // heuristic if the running service is not the AutofillCompatAccessibilityService. The
+            // AutofillCompatAccessibilityService requests all events like a screenreader but
+            // does not serve assistive technology. It only serves autofill applications. The
+            // AutofillCompatAccessibilityService event mask would prevent the form controls
+            // heuristic from identifying the presence of other assistive technologies, so skip
+            // the mask for this service.
+            if (!serviceId.equals(AUTOFILL_COMPAT_ACCESSIBILITY_SERVICE_ID)) {
+                screenReaderCheckEventTypeMask |= service.eventTypes;
+                passwordCheckEventTypeMask |= service.eventTypes;
+                passwordCheckFeedbackTypeMask |= service.feedbackType;
+                passwordCheckFlagsMask |= service.flags;
+                passwordCheckCapabilitiesMask |= service.getCapabilities();
+            }
 
             // Try to canonicalize the component name.
             ComponentName componentName = ComponentName.unflattenFromString(serviceId);
@@ -340,28 +394,90 @@ public class AccessibilityState {
         } else {
             Log.v(TAG, "Enabled accessibility services: " + enabledServiceNames.toString());
             Log.v(TAG, "Running accessibility services: " + runningServiceNames.toString());
-            Log.v(TAG, "Will check again after " + sNextDelayMillis + " milliseconds.");
 
             // Do not inform listeners until the services agree, unless the limit set by
             // {MAX_DELAY_MILLIS} has been reached, in which case send whatever we have.
             if (sNextDelayMillis < MAX_DELAY_MILLIS) {
+                Log.v(TAG, "Will check again after " + sNextDelayMillis + " milliseconds.");
                 ThreadUtils.getUiThreadHandler().postDelayed(
                         AccessibilityState::updateAccessibilityServices, sNextDelayMillis);
                 sNextDelayMillis *= 2;
                 return;
+            } else {
+                Log.v(TAG, "Max delay reached. Send information as is.");
+
+                // Reset if we have reached {MAX_DELAY_MILLIS} so we do not miss later discrepancies
+                // between the sservices.
+                sNextDelayMillis = MIN_DELAY_MILLIS;
             }
+        }
+
+        // If there are some events, flags, and capabilities enabled
+        // and if there are, at most, the expected set of password manager event, flags, and
+        // capabilities enabled, then the system is probably running only password managers
+        boolean areOnlyPasswordManagerMasksRequestedByServices =
+                (passwordCheckEventTypeMask != 0 && passwordCheckFlagsMask != 0
+                        && passwordCheckCapabilitiesMask != 0)
+                && ((passwordCheckEventTypeMask | PASSWORD_MANAGER_EVENT_TYPE_MASK)
+                        == PASSWORD_MANAGER_EVENT_TYPE_MASK)
+                && ((passwordCheckFlagsMask | PASSWORD_MANAGER_FLAG_TYPE_MASK)
+                        == PASSWORD_MANAGER_FLAG_TYPE_MASK)
+                && ((passwordCheckCapabilitiesMask | PASSWORD_MANAGER_CAPABILITY_TYPE_MASK)
+                        == PASSWORD_MANAGER_CAPABILITY_TYPE_MASK)
+                && ((passwordCheckFeedbackTypeMask | AccessibilityServiceInfo.FEEDBACK_GENERIC)
+                        == AccessibilityServiceInfo.FEEDBACK_GENERIC);
+
+        boolean isOnlyAutofillRunning = false;
+
+        // Only explicitly check for Autofill on compatible versions
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            AutofillManager autofillManager = context.getSystemService(AutofillManager.class);
+
+            if (autofillManager != null && autofillManager.isEnabled()) {
+                // Confirm that autofill service is the only service running that requires
+                // accessibility.
+                if (runningServiceNames.isEmpty()
+                        || (runningServiceNames.size() == 1
+                                && runningServiceNames.get(0).equals(
+                                        AUTOFILL_COMPAT_ACCESSIBILITY_SERVICE_ID))) {
+                    isOnlyAutofillRunning = true;
+                }
+            }
+        }
+
+        boolean isOnlyPasswordManagersEnabled = false;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            // If build is >= S, then check if there are no accessibility tools present, then turn
+            // on form controls mode if the heuristic indicates that only password managers are
+            // enabled or Autofill is the only service running.
+            isOnlyPasswordManagersEnabled = !isAccessibilityToolPresent
+                    && (areOnlyPasswordManagerMasksRequestedByServices || isOnlyAutofillRunning);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // If build is >= O and < S, isAccessibilityToolPresent will always be true.
+            // Turn on form controls mode if the heuristic indicates that only password managers are
+            // enabled or Autofill is the only service running.
+            isOnlyPasswordManagersEnabled =
+                    areOnlyPasswordManagerMasksRequestedByServices || isOnlyAutofillRunning;
+        } else {
+            // If the build is < O, isAccessibilityToolPresent will always be true and
+            // isOnlyAutofillRunning will always be false. Turn on form controls mode if the
+            // heuristic indicates that only password managers are enabled.
+            isOnlyPasswordManagersEnabled = areOnlyPasswordManagerMasksRequestedByServices;
         }
 
         // Update all listeners that there was a state change and pass whether or not the
         // new state includes a screen reader.
         Log.v(TAG, "Informing listeners of changes.");
-        boolean isScreenReaderEnabled = (0 != (sEventTypeMask & SCREEN_READER_EVENT_TYPE_MASK));
+        boolean isScreenReaderEnabled =
+                (0 != (screenReaderCheckEventTypeMask & SCREEN_READER_EVENT_TYPE_MASK));
         boolean isSpokenFeedbackServicePresent = (0 != (sFeedbackTypeMask & FEEDBACK_SPOKEN));
         boolean isTouchExplorationEnabled =
                 (0 != (sFlagsMask & FLAG_REQUEST_TOUCH_EXPLORATION_MODE));
         updateAndNotifyStateChange(new State(isScreenReaderEnabled, isTouchExplorationEnabled,
                 isAnyAccessibilityServiceEnabled, isAccessibilityToolPresent,
-                isSpokenFeedbackServicePresent, isTextShowPasswordEnabled));
+                isSpokenFeedbackServicePresent, isTextShowPasswordEnabled,
+                isOnlyPasswordManagersEnabled));
     }
 
     private static void updateAndNotifyStateChange(State newState) {

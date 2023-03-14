@@ -337,11 +337,13 @@ class _Generator(object):
 
     c = Code()
     (c.Sblock('struct Params {')
-      .Append('static std::unique_ptr<Params> Create(%s);' %
+      .Append('static absl::optional<Params> Create(%s);' %
                   self._GenerateParams(
                       ('const base::Value::List& args',)))
       .Append('Params(const Params&) = delete;')
       .Append('Params& operator=(const Params&) = delete;')
+      .Append('Params(Params&& rhs);')
+      .Append('Params& operator=(Params&& rhs);')
       .Append('~Params();')
       .Append()
       .Cblock(self._GenerateTypes(p.type_ for p in function.params))

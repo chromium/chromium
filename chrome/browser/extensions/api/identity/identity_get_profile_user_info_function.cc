@@ -48,9 +48,9 @@ ExtensionFunction::ResponseAction IdentityGetProfileUserInfoFunction::Run() {
     return RespondNow(Error(identity_constants::kOffTheRecord));
   }
 
-  std::unique_ptr<api::identity::GetProfileUserInfo::Params> params(
-      api::identity::GetProfileUserInfo::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<api::identity::GetProfileUserInfo::Params> params =
+      api::identity::GetProfileUserInfo::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   api::identity::ProfileUserInfo profile_user_info;
 

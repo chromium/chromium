@@ -23,7 +23,7 @@ namespace viz {
 class VIZ_SERVICE_EXPORT OverlayProcessorMac
     : public OverlayProcessorInterface {
  public:
-  using CandidateList = CALayerOverlayList;
+  using CandidateList = OverlayCandidateList;
 
   OverlayProcessorMac();
   // For testing.

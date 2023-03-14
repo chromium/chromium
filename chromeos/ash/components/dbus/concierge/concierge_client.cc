@@ -293,6 +293,15 @@ class ConciergeClientImpl : public ConciergeClient {
     CallMethod(concierge::kSwapVmMethod, request, std::move(callback));
   }
 
+  void InstallPflash(
+      base::ScopedFD fd,
+      const vm_tools::concierge::InstallPflashRequest& request,
+      chromeos::DBusMethodCallback<vm_tools::concierge::InstallPflashResponse>
+          callback) override {
+    CallMethodWithFd(concierge::kInstallPflashMethod, request, std::move(fd),
+                     std::move(callback));
+  }
+
   void Init(dbus::Bus* bus) override {
     concierge_proxy_ = bus->GetObjectProxy(
         concierge::kVmConciergeServiceName,

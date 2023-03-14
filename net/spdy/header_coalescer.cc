@@ -35,7 +35,7 @@ void NetLogInvalidHeader(const NetLogWithSource& net_log,
                                   capture_mode, std::string(header_name),
                                   std::string(header_value))));
                      dict.Set("error", error_message);
-                     return base::Value(std::move(dict));
+                     return dict;
                    });
 }
 

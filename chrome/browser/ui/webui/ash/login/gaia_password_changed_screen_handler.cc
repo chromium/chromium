@@ -38,18 +38,16 @@ void GaiaPasswordChangedScreenHandler::DeclareLocalizedValues(
   builder->Add("passwordChangedTryAgain", IDS_LOGIN_PASSWORD_CHANGED_TRY_AGAIN);
   builder->Add("dataLossWarningTitle",
                IDS_LOGIN_PASSWORD_CHANGED_DATA_LOSS_WARNING_TITLE);
-  builder->Add("dataLossWarningSubtitleP1",
-               IDS_LOGIN_PASSWORD_CHANGED_DATA_LOSS_WARNING_SUBTITLE_P1);
-  builder->Add("dataLossWarningSubtitleP2",
-               IDS_LOGIN_PASSWORD_CHANGED_DATA_LOSS_WARNING_SUBTITLE_P2);
+  builder->Add("dataLossWarningSubtitle",
+               IDS_LOGIN_PASSWORD_CHANGED_DATA_LOSS_WARNING_SUBTITLE);
   builder->Add("recoverLocalDataTitle",
                IDS_LOGIN_PASSWORD_CHANGED_RECOVER_DATA_TITLE);
   builder->Add("recoverLocalDataSubtitle",
                IDS_LOGIN_PASSWORD_CHANGED_RECOVER_DATA_SUBTITLE);
   builder->Add("continueAndDeleteDataButton",
                IDS_LOGIN_PASSWORD_CHANGED_CONTINUE_AND_DELETE_BUTTON);
-  builder->Add("continueWithoutLocalDataButton",
-               IDS_LOGIN_PASSWORD_CHANGED_CONTINUE_WITHOUT_LOCAL_DATA_BUTTON);
+  builder->Add("forgotOldPasswordButton",
+               IDS_LOGIN_PASSWORD_CHANGED_FORGOT_OLD_PASSWORD_BUTTON);
 
   builder->Add("recoveryOptInTitle", IDS_LOGIN_PASSWORD_CHANGED_RECOVERY_TITLE);
   builder->Add("recoveryOptInSubtitle",

@@ -18,6 +18,8 @@ import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 
+assert(!is_android)
+
 if (include_js_tests) {
   js2gtest("interactive_ui_tests_js_webui") {
     test_type = "webui"
@@ -25,11 +27,11 @@ if (include_js_tests) {
     sources = [
       "bookmarks/bookmarks_focus_test.js",
       "cr_elements/cr_elements_focus_test.js",
-      "cr_focus_row_mixin_interactive_test.js",
       "extensions/cr_extensions_interactive_ui_tests.js",
       "history/history_focus_test.js",
       "print_preview/print_preview_interactive_ui_tests.js",
       "settings/cr_settings_interactive_ui_tests.js",
+      "support_tool/support_tool_interactive_ui_test.js",
       "tab_search/tab_search_interactive_ui_tests.js",
     ]
 
@@ -43,10 +45,6 @@ if (include_js_tests) {
 
     if (enable_webui_tab_strip) {
       sources += [ "tab_strip/tab_strip_interactive_ui_tests.js" ]
-    }
-
-    if (!is_android) {
-      sources += [ "support_tool/support_tool_interactive_ui_test.js" ]
     }
 
     gen_include_files = [
@@ -92,6 +90,7 @@ if (include_js_tests) {
       "bookmarks/bookmarks_browsertest.js",
       "chrome_timeticks_browsertest.js",
       "color_provider_css_colors_browsertest.js",
+      "commander/commander_browsertest.js",
       "cr_components/cr_components_browsertest.js",
       "cr_elements/cr_elements_browsertest.js",
       "histograms/histograms_internals_ui_browsertest.js",
@@ -175,12 +174,14 @@ if (include_js_tests) {
         "settings/chromeos/os_settings_v3_browsertest.js",
       ]
     } else {
-      sources += [ "signin/signin_browsertest.js" ]
+      sources += [
+        "intro/intro_browsertest.js",
+        "signin/signin_browsertest.js",
+      ]
     }
 
     if (enable_dice_support) {
       sources += [
-        "intro/sign_in_promo_browsertest.js",
         "welcome/a11y_tests.js",
         "welcome/welcome_browsertest.js",
       ]
@@ -205,9 +206,6 @@ if (include_js_tests) {
     if (enable_webui_tab_strip) {
       sources += [ "tab_strip/tab_strip_browsertest.js" ]
     }
-    if (!is_android) {
-      sources += [ "commander/commander_browsertest.js" ]
-    }
     if (is_cfm) {
       sources += [
         "chromeos/chromebox_for_meetings/cfm_network_settings_browsertest.js",
@@ -228,12 +226,14 @@ if (include_js_tests) {
       sources = [
         "chromeos/cloud_upload/cloud_upload_dialog_browsertest.js",
         "chromeos/cloud_upload/file_handler_page_browsertest.js",
+        "chromeos/cloud_upload/move_confirmation_page_browsertest.js",
         "chromeos/crostini_installer_browsertest.js",
         "chromeos/crostini_upgrader_browsertest.js",
         "chromeos/diagnostics/diagnostics_browsertest.js",
         "chromeos/firmware_update/firmware_update_browsertest.js",
         "chromeos/office_fallback/office_fallback_browsertest.js",
         "chromeos/os_feedback_ui/os_feedback_browsertest.js",
+        "chromeos/personalization_app/personalization_app_browsertest.js",
         "chromeos/scanning/scanning_app_browsertest.js",
         "chromeos/shimless_rma/shimless_rma_browsertest.js",
         "nearby_share/nearby_browsertest.js",
@@ -247,6 +247,7 @@ if (include_js_tests) {
   js2gtest("browser_tests_js_mojo_webui") {
     test_type = "mojo_webui"
     sources = [
+      "access_code_cast/access_code_cast_browsertest.js",
       "cr_components/cr_components_mojo_browsertest.js",
       "downloads/downloads_browsertest.js",
       "engagement/site_engagement_browsertest.js",
@@ -281,9 +282,6 @@ if (include_js_tests) {
     if (is_win || is_mac || is_linux || is_chromeos) {
       sources += [ "discards/discards_browsertest.js" ]
     }
-    if (!is_android) {
-      sources += [ "access_code_cast/access_code_cast_browsertest.js" ]
-    }
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   }
 
@@ -308,7 +306,6 @@ if (is_chromeos_ash) {
       "cr_components/chromeos:closure_compile",
       "nearby_share:closure_compile",
       "nearby_share/shared:closure_compile",
-      "settings/chromeos:closure_compile",
     ]
   }
 }
@@ -361,14 +358,13 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/tsc"
   composite = true
   tsconfig_base = "tsconfig_base.json"
-  allow_js = true
   in_files = [
     "chai_assert.ts",
     "chrome_timeticks_test.ts",
     "color_provider_css_colors_test_chromeos.ts",
     "color_provider_css_colors_test.ts",
-    "cr_focus_row_mixin_test.ts",
     "fake_chrome_event.ts",
+    "invalidations/invalidations_test.ts",
     "metrics_test_support.ts",
     "mock_controller.ts",
     "mocked_metrics_reporter.ts",
@@ -386,7 +382,6 @@ ts_library("build_ts") {
 
     # TODO(dpapad): Migrate the files below to TypeScript and remove allowJs
     # from tsconfig_base.json.
-    "invalidations/invalidations_test.js",
     "mocha_adapter.js",
     "mojo_webui_test_support.js",
     "usb_internals_test.js",
@@ -408,6 +403,9 @@ ts_library("build_ts") {
   }
 
   deps = [ "//ui/webui/resources/js:build_ts" ]
+  if (is_chromeos_ash) {
+    deps += [ "//ash/webui/common/resources:build_ts" ]
+  }
   definitions = [
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/chrome_timeticks.d.ts",
@@ -426,10 +424,12 @@ generate_grd("build_grd") {
     ":build_mocha_grdp",
     ":build_ts",
     ":build_web_ui_test_mojo_grdp",
+    "access_code_cast:build_grdp",
     "bookmarks:build_grdp",
     "commander:build_grdp",
     "cr_components:build_grdp",
     "cr_elements:build_grdp",
+    "discards:build_grdp",
     "downloads:build_grdp",
     "history:build_grdp",
     "js:build_grdp",
@@ -442,30 +442,36 @@ generate_grd("build_grd") {
     "settings:build_grdp",
     "side_panel:build_grdp",
     "side_panel/customize_chrome:build_grdp",
+    "support_tool:build_grdp",
     "tab_search:build_grdp",
+    "whats_new:build_grdp",
   ]
 
   grdp_files = [
+    "$target_gen_dir/access_code_cast/resources.grdp",
     "$target_gen_dir/bookmarks/resources.grdp",
     "$target_gen_dir/chai_resources.grdp",
     "$target_gen_dir/commander/resources.grdp",
-    "$target_gen_dir/password_manager/resources.grdp",
     "$target_gen_dir/cr_components/resources.grdp",
     "$target_gen_dir/cr_elements/resources.grdp",
+    "$target_gen_dir/discards/resources.grdp",
     "$target_gen_dir/downloads/resources.grdp",
-    "$target_gen_dir/js/resources.grdp",
     "$target_gen_dir/history/resources.grdp",
-    "$target_gen_dir/net_internals/resources.grdp",
-    "$target_gen_dir/new_tab_page/resources.grdp",
-    "$target_gen_dir/side_panel/resources.grdp",
-    "$target_gen_dir/side_panel/customize_chrome/resources.grdp",
+    "$target_gen_dir/js/resources.grdp",
     "$target_gen_dir/metrics_internals/resources.grdp",
     "$target_gen_dir/metrics_reporter/resources.grdp",
     "$target_gen_dir/mocha_resources.grdp",
+    "$target_gen_dir/net_internals/resources.grdp",
+    "$target_gen_dir/new_tab_page/resources.grdp",
+    "$target_gen_dir/password_manager/resources.grdp",
+    "$target_gen_dir/privacy_sandbox/resources.grdp",
     "$target_gen_dir/settings/resources.grdp",
+    "$target_gen_dir/side_panel/customize_chrome/resources.grdp",
+    "$target_gen_dir/side_panel/resources.grdp",
+    "$target_gen_dir/support_tool/resources.grdp",
     "$target_gen_dir/tab_search/resources.grdp",
     "$target_gen_dir/web_ui_test_mojo_resources.grdp",
-    "$target_gen_dir/privacy_sandbox/resources.grdp",
+    "$target_gen_dir/whats_new/resources.grdp",
   ]
 
   if (enable_extensions) {
@@ -490,32 +496,19 @@ generate_grd("build_grd") {
     grdp_files += [ "$target_gen_dir/../pdf/resources.grdp" ]
   }
 
-  if (!is_android) {
-    deps += [
-      "access_code_cast:build_grdp",
-      "discards:build_grdp",
-      "support_tool:build_grdp",
-      "whats_new:build_grdp",
-    ]
-    grdp_files += [
-      "$target_gen_dir/access_code_cast/resources.grdp",
-      "$target_gen_dir/discards/resources.grdp",
-      "$target_gen_dir/whats_new/resources.grdp",
-      "$target_gen_dir/support_tool/resources.grdp",
-    ]
-
-    if (is_chrome_branded) {
-      deps += [ "media_router:build_grdp" ]
-      grdp_files += [ "$target_gen_dir/media_router/resources.grdp" ]
-    }
+  if (is_chrome_branded) {
+    deps += [ "media_router:build_grdp" ]
+    grdp_files += [ "$target_gen_dir/media_router/resources.grdp" ]
   }
 
-  if (!is_chromeos_ash && !is_android) {
+  if (!is_chromeos_ash) {
     deps += [
+      "intro:build_grdp",
       "signin:build_grdp",
       "welcome:build_grdp",
     ]
     grdp_files += [
+      "$target_gen_dir/intro/resources.grdp",
       "$target_gen_dir/welcome/resources.grdp",
       "$target_gen_dir/signin/resources.grdp",
     ]
@@ -542,6 +535,7 @@ generate_grd("build_grd") {
       "chromeos:build_grdp",
       "chromeos/ash_common:build_grdp",
       "chromeos/cloud_upload:build_grdp",
+      "chromeos/emoji_picker:build_grdp",
       "chromeos/manage_mirrorsync:build_grdp",
       "chromeos/office_fallback:build_grdp",
       "chromeos/personalization_app:build_grdp",
@@ -557,6 +551,7 @@ generate_grd("build_grd") {
       "$target_gen_dir/chromeos/resources.grdp",
       "$target_gen_dir/chromeos/ash_common/resources.grdp",
       "$target_gen_dir/chromeos/cloud_upload/resources.grdp",
+      "$target_gen_dir/chromeos/emoji_picker/resources.grdp",
       "$target_gen_dir/chromeos/office_fallback/resources.grdp",
       "$target_gen_dir/chromeos/personalization_app/resources.grdp",
       "$target_gen_dir/chromeos/shortcut_customization/resources.grdp",
@@ -573,11 +568,6 @@ generate_grd("build_grd") {
   if (is_chromeos_ash || is_win || is_mac) {
     deps += [ "inline_login:build_grdp" ]
     grdp_files += [ "$target_gen_dir/inline_login/resources.grdp" ]
-  }
-
-  if (enable_dice_support) {
-    deps += [ "intro:build_grdp" ]
-    grdp_files += [ "$target_gen_dir/intro/resources.grdp" ]
   }
 
   manifest_files =

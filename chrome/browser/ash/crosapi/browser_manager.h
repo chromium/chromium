@@ -122,6 +122,8 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Virtual for testing.
   virtual bool IsRunningOrWillRun() const;
 
+  bool IsInitialized() const;
+
   // Returns true if Lacros is terminated.
   bool IsTerminated() const { return is_terminated_; }
 
@@ -238,7 +240,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // NOTE: If InitializeAndStartIfNeeded finds Lacros disabled, it unloads
   // Lacros via BrowserLoader::Unload, which also deletes the user data
   // directory.
-  void InitializeAndStartIfNeeded();
+  virtual void InitializeAndStartIfNeeded();
 
   // Returns true if keep-alive is enabled.
   bool IsKeepAliveEnabled() const;

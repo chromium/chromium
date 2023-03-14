@@ -13,6 +13,10 @@ import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_POSITION_DEFAULT;
+import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_POSITION_END;
+import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_POSITION_START;
+import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_HEIGHT;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_HEIGHT_LANDSCAPE;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_WIDTH;
@@ -33,9 +37,11 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.ui.base.LocalizationUtils;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -46,6 +52,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
 public class PartialCustomTabSideSheetStrategyTest {
     private static final float MINIMAL_WIDTH_RATIO = 0.33f;
+    private static final boolean RTL = true;
+    private static final boolean LTR = false;
+    private static final boolean RIGHT = true;
+    private static final boolean LEFT = false;
     private boolean mFullscreen;
 
     @Rule
@@ -55,10 +65,20 @@ public class PartialCustomTabSideSheetStrategyTest {
     public final PartialCustomTabTestRule mPCCTTestRule = new PartialCustomTabTestRule();
 
     private PartialCustomTabSideSheetStrategy createPcctSideSheetStrategy(@Px int widthPx) {
+        return createPcctSideSheetStrategy(widthPx, ACTIVITY_SIDE_SHEET_POSITION_DEFAULT);
+    }
+
+    private PartialCustomTabSideSheetStrategy createLeftPcctSideSheetStrategy(@Px int widthPx) {
+        return createPcctSideSheetStrategy(widthPx, ACTIVITY_SIDE_SHEET_POSITION_START);
+    }
+
+    private PartialCustomTabSideSheetStrategy createPcctSideSheetStrategy(
+            @Px int widthPx, int position) {
         PartialCustomTabSideSheetStrategy pcct = new PartialCustomTabSideSheetStrategy(
                 mPCCTTestRule.mActivity, widthPx, mPCCTTestRule.mOnResizedCallback,
                 mPCCTTestRule.mFullscreenManager, false, true, /*showMaximizedButton=*/true,
-                /*startMaximized=*/false, mPCCTTestRule.mHandleStrategyFactory, 0);
+                /*startMaximized=*/false, position, ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT,
+                mPCCTTestRule.mHandleStrategyFactory, 0);
         pcct.setMockViewForTesting(mPCCTTestRule.mCoordinatorLayout, mPCCTTestRule.mToolbarView,
                 mPCCTTestRule.mToolbarCoordinator);
         return pcct;
@@ -192,20 +212,70 @@ public class PartialCustomTabSideSheetStrategyTest {
                 "Side-sheet has wrong width", 2000, mPCCTTestRule.mAttributeResults.get(0).width);
         assertNotEquals("Left margin should be non-zero for the shadow", 0,
                 mPCCTTestRule.mLayoutParams.leftMargin);
+        assertEquals("Right margin should be zero because shadow is on left side", 0,
+                mPCCTTestRule.mLayoutParams.rightMargin);
+    }
+
+    @Test
+    public void rightShadowIsVisible() {
+        doReturn(47)
+                .when(mPCCTTestRule.mResources)
+                .getDimensionPixelSize(eq(org.chromium.chrome.R.dimen.custom_tabs_shadow_offset));
+
+        mPCCTTestRule.configLandscapeMode();
+        createLeftPcctSideSheetStrategy(2000);
+
+        mPCCTTestRule.verifyWindowFlagsSet();
+        assertTabIsAtFullLandscapeHeight();
+        assertEquals(
+                "Side-sheet has wrong width", 2000, mPCCTTestRule.mAttributeResults.get(0).width);
+        assertNotEquals("Right margin should be non-zero for the shadow", 0,
+                mPCCTTestRule.mLayoutParams.rightMargin);
+        assertEquals("Left margin should be zero because shadow is on right side", 0,
+                mPCCTTestRule.mLayoutParams.leftMargin);
+    }
+
+    @Test
+    public void noShadowsFullWidth() {
+        doReturn(47)
+                .when(mPCCTTestRule.mResources)
+                .getDimensionPixelSize(eq(org.chromium.chrome.R.dimen.custom_tabs_shadow_offset));
+
+        mPCCTTestRule.configLandscapeMode();
+        createLeftPcctSideSheetStrategy(3000);
+
+        mPCCTTestRule.verifyWindowFlagsSet();
+        assertTabIsAtFullLandscapeHeight();
+        assertEquals("Side-sheet has wrong width", DEVICE_WIDTH_LANDSCAPE,
+                mPCCTTestRule.mRealMetrics.widthPixels);
+        assertEquals("Right margin should be zero because side sheet is max width", 0,
+                mPCCTTestRule.mLayoutParams.rightMargin);
+
+        mPCCTTestRule.configPortraitMode();
+        createPcctSideSheetStrategy(2000);
+        assertEquals(
+                "Side-sheet has wrong width", DEVICE_WIDTH, mPCCTTestRule.mRealMetrics.widthPixels);
+        assertEquals("Left margin should be zero because side sheet is max width", 0,
+                mPCCTTestRule.mLayoutParams.leftMargin);
     }
 
     @Test
     public void enterAndExitHtmlFullscreen() {
-        var strategy = createPcctSideSheetStrategy(2000);
+        doReturn(47)
+                .when(mPCCTTestRule.mResources)
+                .getDimensionPixelSize(eq(org.chromium.chrome.R.dimen.custom_tabs_shadow_offset));
+        var strategy = createPcctSideSheetStrategy(1000);
         assertFalse(getWindowAttributes().isFullscreen());
         int height = getWindowAttributes().height;
         int width = getWindowAttributes().width;
+        mPCCTTestRule.verifyWindowFlagsSet();
 
         strategy.setFullscreenSupplierForTesting(() -> mFullscreen);
 
         mFullscreen = true;
         strategy.onEnterFullscreen(null, null);
         assertTrue(getWindowAttributes().isFullscreen());
+        assertEquals("Shadow should be removed.", 0, mPCCTTestRule.mLayoutParams.leftMargin);
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(DEVICE_HEIGHT), eq(DEVICE_WIDTH));
         clearInvocations(mPCCTTestRule.mOnResizedCallback);
 
@@ -215,26 +285,108 @@ public class PartialCustomTabSideSheetStrategyTest {
         assertFalse(getWindowAttributes().isFullscreen());
         assertEquals(height, getWindowAttributes().height);
         assertEquals(width, getWindowAttributes().width);
+        assertNotEquals("Shadow should be restored.", 0, mPCCTTestRule.mLayoutParams.leftMargin);
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(height), eq(width));
     }
 
     @Test
     public void enterAndExitMaximizeMode() {
-        var strategy = createPcctSideSheetStrategy(2000);
+        var strategy = createPcctSideSheetStrategy(700);
         assertFalse(getWindowAttributes().isFullscreen());
         int height = getWindowAttributes().height;
         int width = getWindowAttributes().width;
 
-        strategy.toggleMaximize();
+        strategy.toggleMaximize(true);
         PartialCustomTabTestRule.waitForAnimationToFinish();
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(FULL_HEIGHT), eq(DEVICE_WIDTH));
         clearInvocations(mPCCTTestRule.mOnResizedCallback);
 
-        strategy.toggleMaximize();
+        strategy.toggleMaximize(true);
         PartialCustomTabTestRule.waitForAnimationToFinish();
         assertEquals(height, getWindowAttributes().height);
         assertEquals(width, getWindowAttributes().width);
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(height), eq(width));
+    }
+
+    @Test
+    public void toggleMaximizeNoAnimation() {
+        var strategy = createPcctSideSheetStrategy(700);
+        int height = getWindowAttributes().height;
+        int width = getWindowAttributes().width;
+        strategy.toggleMaximize(/*animation=*/false);
+        verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(FULL_HEIGHT), eq(DEVICE_WIDTH));
+
+        strategy.toggleMaximize(/*animation=*/false);
+        // Even without animation, we still need to wait for task to be idle, since we post
+        // the task for size init in |onMaximizeEnd|.
+        PartialCustomTabTestRule.waitForAnimationToFinish();
+        assertEquals(height, getWindowAttributes().height);
+        assertEquals(width, getWindowAttributes().width);
+        verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(height), eq(width));
+    }
+
+    @Test
+    public void maximizeAndFullscreen() {
+        // Ensure maximize -> fullscreen enter/exit -> comes back to maximize mode
+        var strategy = createPcctSideSheetStrategy(700);
+        strategy.setFullscreenSupplierForTesting(() -> mFullscreen);
+        int height = getWindowAttributes().height;
+        int width = getWindowAttributes().width;
+
+        strategy.toggleMaximize(true);
+        PartialCustomTabTestRule.waitForAnimationToFinish();
+        verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(FULL_HEIGHT), eq(DEVICE_WIDTH));
+
+        mFullscreen = true;
+        strategy.onEnterFullscreen(null, null);
+        clearInvocations(mPCCTTestRule.mOnResizedCallback);
+
+        // Verify we get a single resize callback invocation when exiting fullscreen and restoring
+        // maximize mode.
+        mFullscreen = false;
+        strategy.onExitFullscreen(null);
+        PartialCustomTabTestRule.waitForAnimationToFinish();
+        verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(FULL_HEIGHT), eq(DEVICE_WIDTH));
+    }
+
+    @Test
+    public void sheetPosition() {
+        assertPosition(LEFT, RTL, ACTIVITY_SIDE_SHEET_POSITION_DEFAULT);
+        assertPosition(LEFT, RTL, ACTIVITY_SIDE_SHEET_POSITION_END);
+        assertPosition(RIGHT, RTL, ACTIVITY_SIDE_SHEET_POSITION_START);
+        assertPosition(RIGHT, LTR, ACTIVITY_SIDE_SHEET_POSITION_DEFAULT);
+        assertPosition(RIGHT, LTR, ACTIVITY_SIDE_SHEET_POSITION_END);
+        assertPosition(LEFT, LTR, ACTIVITY_SIDE_SHEET_POSITION_START);
+        LocalizationUtils.setRtlForTesting(false);
+    }
+
+    @Test
+    public void handleCloseAnimation() {
+        var strategy = createPcctSideSheetStrategy(2000);
+        strategy.setSheetOnRightForTesting(true);
+        var invoked = new ObservableSupplierImpl<Boolean>();
+
+        invoked.set(false);
+        assertEquals(0, mPCCTTestRule.getWindowAttributes().x);
+        strategy.handleCloseAnimation(() -> invoked.set(true)); // Slide out to right
+        PartialCustomTabTestRule.waitForAnimationToFinish();
+        assertTrue(invoked.get());
+        assertEquals(DEVICE_WIDTH, mPCCTTestRule.getWindowAttributes().x);
+
+        invoked.set(false);
+        strategy = createPcctSideSheetStrategy(2000);
+        strategy.setSheetOnRightForTesting(false);
+        strategy.setSlideDownAnimationForTesting(true); // Slide down
+        strategy.handleCloseAnimation(() -> invoked.set(true));
+        PartialCustomTabTestRule.waitForAnimationToFinish();
+        assertTrue(invoked.get());
+        assertEquals(DEVICE_HEIGHT, mPCCTTestRule.getWindowAttributes().y);
+    }
+
+    private static void assertPosition(boolean isRightSide, boolean isRtl, int position) {
+        LocalizationUtils.setRtlForTesting(isRtl);
+        String msg = isRightSide ? "Should be on right" : "Should be on left";
+        assertEquals(msg, isRightSide, PartialCustomTabSideSheetStrategy.isSheetOnRight(position));
     }
 
     private void assertTabIsAtFullLandscapeHeight() {

@@ -80,14 +80,14 @@ class ConfigurationPolicyHandlerListTest : public ::testing::Test {
         policies_, &prefs_, &errors_, &deprecated_policies_, &future_policies_);
   }
 
-  void CreateHandlerList(bool allow_all_future_policies = false) {
+  void CreateHandlerList(bool are_future_policies_allowed_by_default = false) {
     handler_list_ = std::make_unique<ConfigurationPolicyHandlerList>(
         ConfigurationPolicyHandlerList::
             PopulatePolicyHandlerParametersCallback(),
         base::BindRepeating(
             &ConfigurationPolicyHandlerListTest::GetPolicyDetails,
             base::Unretained(this)),
-        allow_all_future_policies);
+        are_future_policies_allowed_by_default);
   }
 
   PrefValueMap* prefs() { return &prefs_; }

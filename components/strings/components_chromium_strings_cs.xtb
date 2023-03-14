@@ -26,7 +26,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           a zkontrolujte, zda je konfigurace nastavena na možnost „no proxy“ (bez proxy) nebo „direct“ (přímo).</translation>
+<translation id="6549378540556750549">Chromium využívá také další <ph name="BEGIN_LINK_OSS" />open source software<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Změny se projeví po příštím restartu prohlížeče Chromium.</translation>
+<translation id="7681937895330411637">Chromium staví na open source projektu <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="7861509383340276692">Přejděte do nabídky Chromium &gt; <ph name="SETTINGS_TITLE" /> &gt; <ph name="ADVANCED_TITLE" /> a zrušte výběr možnosti <ph name="NO_PREFETCH_DESCRIPTION" />. Pokud to však problém nevyřeší, doporučujeme vám tuto možnost znovu vybrat (za účelem zlepšení výkonu).</translation>
 <translation id="8187289872471304532">Přejděte do nabídky
           Aplikace &gt; Nastavení systému &gt; Síť &gt; Rozšířená nastavení &gt; Servery proxy

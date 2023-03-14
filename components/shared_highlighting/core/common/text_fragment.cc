@@ -118,10 +118,11 @@ absl::optional<TextFragment> TextFragment::FromValue(const base::Value* value) {
     return absl::nullopt;
   }
 
-  const std::string* text_start = value->FindStringKey(kFragmentTextStartKey);
-  const std::string* text_end = value->FindStringKey(kFragmentTextEndKey);
-  const std::string* prefix = value->FindStringKey(kFragmentPrefixKey);
-  const std::string* suffix = value->FindStringKey(kFragmentSuffixKey);
+  const base::Value::Dict& dict = value->GetDict();
+  const std::string* text_start = dict.FindString(kFragmentTextStartKey);
+  const std::string* text_end = dict.FindString(kFragmentTextEndKey);
+  const std::string* prefix = dict.FindString(kFragmentPrefixKey);
+  const std::string* suffix = dict.FindString(kFragmentSuffixKey);
 
   if (!HasValue(text_start)) {
     // Text Start is the only required parameter.
@@ -157,20 +158,20 @@ std::string TextFragment::ToEscapedString() const {
 }
 
 base::Value TextFragment::ToValue() const {
-  base::Value dict(base::Value::Type::DICT);
+  base::Value::Dict dict;
 
   if (prefix_.size())
-    dict.SetKey(kFragmentPrefixKey, base::Value(prefix_));
+    dict.Set(kFragmentPrefixKey, prefix_);
 
-  dict.SetKey(kFragmentTextStartKey, base::Value(text_start_));
+  dict.Set(kFragmentTextStartKey, text_start_);
 
   if (text_end_.size())
-    dict.SetKey(kFragmentTextEndKey, base::Value(text_end_));
+    dict.Set(kFragmentTextEndKey, text_end_);
 
   if (suffix_.size())
-    dict.SetKey(kFragmentSuffixKey, base::Value(suffix_));
+    dict.Set(kFragmentSuffixKey, suffix_);
 
-  return dict;
+  return base::Value(std::move(dict));
 }
 
 }  // namespace shared_highlighting

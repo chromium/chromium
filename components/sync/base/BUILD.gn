@@ -71,6 +71,7 @@ static_library("base") {
     "//components/invalidation/public",
     "//components/sync/protocol",
     "//third_party/metrics_proto",
+    "//url",
   ]
   deps = [
     "//base",

@@ -70,6 +70,7 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.FullscreenTestUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -329,6 +330,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @SmallTest
     @Feature({"ContextualSearch"})
     public void testRedirectedExternalNavigationWithUserGesture() throws Exception {
+        ExternalNavigationHandler.sAllowIntentsToSelfForTesting = true;
         simulateResolveSearch("intelligence");
         GURL initialUrl = new GURL("http://test.com");
         final NavigationHandle navigationHandle = NavigationHandle.createForTesting(initialUrl,
@@ -339,17 +341,17 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
             public void run() {
-                Assert.assertFalse(
-                        mPanel.getOverlayPanelContent()
-                                .getInterceptNavigationDelegateForTesting()
-                                .shouldIgnoreNavigation(navigationHandle, initialUrl, false));
+                Assert.assertFalse(mPanel.getOverlayPanelContent()
+                                           .getInterceptNavigationDelegateForTesting()
+                                           .shouldIgnoreNavigation(
+                                                   navigationHandle, initialUrl, false, false));
                 Assert.assertEquals(0, mActivityMonitor.getHits());
 
                 navigationHandle.didRedirect(redirectUrl, true);
-                Assert.assertTrue(
-                        mPanel.getOverlayPanelContent()
-                                .getInterceptNavigationDelegateForTesting()
-                                .shouldIgnoreNavigation(navigationHandle, redirectUrl, false));
+                Assert.assertTrue(mPanel.getOverlayPanelContent()
+                                          .getInterceptNavigationDelegateForTesting()
+                                          .shouldIgnoreNavigation(
+                                                  navigationHandle, redirectUrl, false, false));
                 Assert.assertEquals(1, mActivityMonitor.getHits());
             }
         });
@@ -363,6 +365,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @SmallTest
     @Feature({"ContextualSearch"})
     public void testExternalNavigationWithUserGesture() throws Exception {
+        ExternalNavigationHandler.sAllowIntentsToSelfForTesting = true;
         testExternalNavigationImpl(true);
     }
 
@@ -374,6 +377,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @SmallTest
     @Feature({"ContextualSearch"})
     public void testExternalNavigationWithoutUserGesture() throws Exception {
+        ExternalNavigationHandler.sAllowIntentsToSelfForTesting = true;
         testExternalNavigationImpl(false);
     }
 
@@ -386,9 +390,10 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
             public void run() {
-                Assert.assertTrue(mPanel.getOverlayPanelContent()
-                                          .getInterceptNavigationDelegateForTesting()
-                                          .shouldIgnoreNavigation(navigationHandle, url, false));
+                Assert.assertTrue(
+                        mPanel.getOverlayPanelContent()
+                                .getInterceptNavigationDelegateForTesting()
+                                .shouldIgnoreNavigation(navigationHandle, url, false, false));
             }
         });
         Assert.assertEquals(hasGesture ? 1 : 0, mActivityMonitor.getHits());

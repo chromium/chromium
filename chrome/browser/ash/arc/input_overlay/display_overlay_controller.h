@@ -6,8 +6,10 @@
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_DISPLAY_OVERLAY_CONTROLLER_H_
 
 #include "ash/public/cpp/style/color_mode_observer.h"
+#include "ash/wm/window_state.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_uma.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_edit_menu.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
@@ -77,6 +79,8 @@ class DisplayOverlayController : public ui::EventHandler,
   // the view. For example, |InputMappingView| may not be visible if it is
   // hidden or input overlay is disabled.
   void OnApplyMenuState();
+  // Get window state type.
+  InputOverlayWindowStateType GetWindowStateType() const;
 
   // For editor.
   // Show the action view when adding |action|.
@@ -128,7 +132,7 @@ class DisplayOverlayController : public ui::EventHandler,
   void OnMenuEntryPositionChanged(bool leave_focus,
                                   absl::optional<gfx::Point> location);
   void FocusOnMenuEntry();
-  void ClearFocusOnMenuEntry();
+  void ClearFocus();
   void RemoveInputMenuView();
 
   void AddInputMappingView(views::Widget* overlay_widget);
@@ -156,6 +160,12 @@ class DisplayOverlayController : public ui::EventHandler,
   gfx::Point CalculateMenuEntryPosition();
   views::View* GetParentView();
   bool HasMenuView() const;
+  // Used for edit mode, in which the input mapping must be temporarily visible
+  // regardless of user setting, until it is overridden when the user presses
+  // save or cancel.
+  void SetInputMappingVisibleTemporary();
+  // Used for the mapping hint toggle, to save user settings regarding
+  // mapping hint visibility.
   void SetInputMappingVisible(bool visible);
   bool GetInputMappingViewVisible() const;
 
@@ -165,6 +175,13 @@ class DisplayOverlayController : public ui::EventHandler,
   // Close |ActionEditMenu| Or |MessageView| if |LocatedEvent| happens outside
   // of their view bounds.
   void ProcessPressedEvent(const ui::LocatedEvent& event);
+
+  // When the input is processed on overlay in edit mode, PlaceholderActivity
+  // task window becomes the front task window. This ensures the target task
+  // window is moved back to the front of task stack on ARC side for view mode.
+  void EnsureTaskWindowToFrontForViewMode(views::Widget* overlay_widget);
+
+  bool ShowingNudge();
 
   // For test:
   gfx::Rect GetInputMappingViewBoundsForTesting();

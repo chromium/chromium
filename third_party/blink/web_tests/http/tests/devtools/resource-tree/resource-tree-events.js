@@ -28,8 +28,11 @@
         TestRunner.addResult(`    ${eventName} : ${frame.id}`);
         break;
       case 'FrameNavigated':
-      case 'MainFrameNavigated':
         var frame = event.data;
+        TestRunner.addResult(`    ${eventName} : ${frame.id} : ${frame.loaderId}`);
+        break;
+      case 'PrimaryPageChanged':
+        var frame = event.data.frame;
         TestRunner.addResult(`    ${eventName} : ${frame.id} : ${frame.loaderId}`);
         break;
       case 'SecurityOriginAdded':

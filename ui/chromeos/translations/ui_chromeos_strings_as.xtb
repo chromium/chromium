@@ -84,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" />টা বস্তু জিপ কৰি থকা হৈছে...</translation>
 <translation id="1722687688096767818">প্ৰ’ফাইল যোগ দি থকা হৈছে...</translation>
 <translation id="1726100011689679555">নাম সম্পর্কীয় ছার্ভাৰ</translation>
+<translation id="1727562178154619254">ছিংক কৰিবলৈ সাজু</translation>
 <translation id="1729953886957086472">জাৰ্মান (জাৰ্মানী)</translation>
 <translation id="1730235522912993863">চীনা কেঞ্জি</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> টা বস্তুৰ প্ৰতিলিপি কৰা হ'ল।</translation>
@@ -351,11 +352,11 @@
 <translation id="3924145049010392604">মেটা</translation>
 <translation id="3943857333388298514">পেষ্ট কৰক</translation>
 <translation id="3952872973865944257">তেলুগু ফ’নেটিক</translation>
-<translation id="3954354850384043518">চলি আছে</translation>
 <translation id="3958548648197196644">কিৱি</translation>
 <translation id="3971140002794351170">ম’বাইলৰ প্ৰ’ফাইল ডাউনল’ড কৰক, <ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" /> নম্বৰৰটো, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">ইংৰাজী (যুক্তৰাজ্য)</translation>
 <translation id="3975895378829046965">বাংলা ফ’নেটিক</translation>
+<translation id="3999574733850440202">শেহতীয়াকৈ খোলা Microsoft ফাইলসমূহ OneDriveলৈ স্থানান্তৰ কৰা হৈছে</translation>
 <translation id="4002066346123236978">শিৰোনাম</translation>
 <translation id="4017788180641807848">Workman কীব’ৰ্ডৰ সৈতে ইংৰাজী (যুক্তৰাষ্ট্ৰ)</translation>
 <translation id="4019998208269143058">ক্ষিপ্ৰতাৰে এক্সেছ কৰিব পৰা ফাইলত পিন কৰক</translation>
@@ -364,6 +365,7 @@
 <translation id="4092890906744441904">আইৰিশ্ব</translation>
 <translation id="4124935795427217608">এশিঙিয়া ঘোঁৰা</translation>
 <translation id="4131235941541910880">আপোনাক নলগা বস্তুসমূহ ট্ৰেশ্বলৈ নিয়ক</translation>
+<translation id="4134804435730168042"><ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" /> নম্বৰটো, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ডিভাইচ ছেট আপ কৰাৰ পাছত সক্ৰিয় কৰক</translation>
 <translation id="4153015322587141338">শ্বেল্ফত আপোনাৰ ফাইল ক্ষিপ্ৰতাৰে এক্সেছ কৰিবলৈ এটা ফাইলত ৰাইট-ক্লিক কৰক আৰু "<ph name="PIN_COMMAND" />" বাছনি কৰক।</translation>
 <translation id="4157569377477607576">প্ৰশাসকৰ নীতিয়ে এইসমূহ চুপাৰিছ নকৰে:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> স্থানান্তৰ কৰা হ’ল।</translation>
@@ -406,6 +408,7 @@
 <translation id="4414834425328380570">"<ph name="FILE_NAME" />" মচা হ’ব আৰু আপুনি এইটো পুনঃস্থাপন কৰিব নোৱাৰিব।</translation>
 <translation id="4418686080762064601">আপোনাৰ ফাইলৰ বাবে এটা শ্বৰ্টকাট সৃষ্টি কৰক</translation>
 <translation id="4425149324548788773">মোৰ ড্ৰাইভ</translation>
+<translation id="4432921877815220091"><ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" /> নম্বৰটো, <ph name="NETWORK_NAME" />, ডিভাইচ ছেট আপ কৰাৰ পাছত সক্ৰিয় কৰক, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_COUNT" />টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, সংযোগ কৰক</translation>
 <translation id="4442424173763614572">DNS বিচাৰিব পৰা নগ'ল</translation>
 <translation id="4462159676511157176">কাষ্টম নাম ছার্ভাৰ</translation>
@@ -612,8 +615,10 @@
 <translation id="5911887972742538906">আপোনাৰ Linux এপ্লিকেশ্বন ইনষ্টল কৰাৰ সময়ত আসোঁৱাহৰ সৃষ্টি হৈছে৷</translation>
 <translation id="5912396950572065471">ফৰ্মেট কৰক</translation>
 <translation id="5913638992615760742">প্ৰতিলিপি কৰিব পৰা নগ’ল, অপ্ৰত্যাশিত আসোঁৱাহ: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">সন্ধানৰ নতুন সুবিধাসমূহ উপলব্ধ</translation>
 <translation id="5926082595146149752">আমেৰিকা যুক্তৰাষ্ট্ৰৰ আন্তঃৰাষ্ট্ৰীয় PC কীব’ৰ্ডৰ সৈতে ডাট্‌চ (নেডাৰলেণ্ডছ)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063"><ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" /> নম্বৰটো, <ph name="NETWORK_NAME" />, ডিভাইচ ছেট আপ কৰাৰ পাছত সক্ৰিয় কৰক</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" />টা বস্তু</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">মিলোৱাৰ বিকল্পসমূহ</translation>
@@ -700,6 +705,7 @@
 <translation id="6732801395666424405">প্ৰমাণপত্ৰসমূহ ল’ড হোৱা নাই</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Bruschettaৰ সৈতে ফ’ল্ডাৰটো শ্বেয়াৰ কৰক</translation>
+<translation id="6750737795876287924">বৰ্তমানৰ ডাইৰেক্টৰী</translation>
 <translation id="6751256176799620176">১টা ফ’ল্ডাৰ বাছনি কৰা হ’ল</translation>
 <translation id="6755827872271341378">ChromeOS Flex ডিভাইচ</translation>
 <translation id="6790428901817661496">প্লে’ কৰক</translation>
@@ -737,7 +743,6 @@
 <translation id="6973630695168034713">ফ’ল্ডাৰ</translation>
 <translation id="6976795442547527108">সিংহ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">সকলো সময়তে</translation>
 <translation id="6989942356279143254">ছুইডিশ্ব</translation>
 <translation id="6990081529015358884">আপোনাৰ ষ্ট'ৰেজৰ খালী ঠাই কমি আহিছে</translation>
 <translation id="6993826899923627728">এই বস্তুবোৰ আপোনাৰ ট্ৰেশ্বত আছে</translation>
@@ -760,6 +765,7 @@
 <translation id="7126604456862387217">’&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;’ - &lt;em&gt;সন্ধানৰ ড্ৰাইভ&lt;/em&gt;</translation>
 <translation id="7135561821015524160">কানাড়া ফ’নেটিক</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">বিশ্বাসযোগ্যতা প্ৰমাণীকৰণ ছাৰ্ভাৰৰ পৰিচয় সত্যাপন কৰিবলৈ 'বিষয়ৰ বৈকল্পিক নামৰ সৈতে মিলা' অথবা 'ডমেইন চাফিক্সৰ সৈতে মিলা' মান উপলব্ধ নহয়</translation>
 <translation id="7165320105431587207">নেটৱৰ্ক কনফিগাৰ কৰাত বিফল হ'ল</translation>
 <translation id="7170041865419449892">সীমাৰ বাহিৰত</translation>
 <translation id="7180611975245234373">ৰিফ্ৰেশ্ব কৰক</translation>
@@ -792,7 +798,6 @@
 <translation id="7458955835361612701">কোনো শেহতীয়া প্ৰতিচ্ছবি নাই</translation>
 <translation id="7460898608667578234">ইউক্ৰেনিয়ান</translation>
 <translation id="7469894403370665791">এই নেটৱেৰ্কটোত স্বয়ংক্ৰিয়ভাৱে সংযোগ কৰক</translation>
-<translation id="7481358317100446445">সাজু</translation>
 <translation id="7486315294984620427">Parallels Desktopত ফাইল টানি আনি এৰিবলৈ, ফাইলটো Windows ফাইললৈ প্ৰতিলিপি কৰিবই লাগিব।</translation>
 <translation id="749452993132003881">হিৰাগনা</translation>
 <translation id="7495372004724182530">মালায়ালম ফ’নেটিক</translation>
@@ -830,6 +835,7 @@
 <translation id="7724603315864178912">কাট কৰক</translation>
 <translation id="7732111077498238432">নেটৱৰ্কটো নীতিৰ দ্বাৰা নিয়ন্ত্ৰণ কৰা হয়</translation>
 <translation id="7736003208887389532">এই ফাইলসমূহ স্থায়ীভাৱে মচিবনে?</translation>
+<translation id="7740287852186792672">সন্ধানৰ ফলাফলসমূহ</translation>
 <translation id="7748626145866214022">কাৰ্যকলাপৰ বাৰত অধিক বিকল্প আছে। কাৰ্যকলাপৰ বাৰত ফ’কাছ কৰিবলৈ Alt + A টিপক।</translation>
 <translation id="7760449188139285140">চীনা উবি</translation>
 <translation id="7765158879357617694">আঁতৰাওক</translation>
@@ -881,6 +887,7 @@
 <translation id="8116072619078571545">বৰফৰ সৈতে পানী</translation>
 <translation id="8128733386027980860">Dvorak কীব’ৰ্ডৰ সৈতে ইংৰাজী (যুক্তৰাজ্য)</translation>
 <translation id="8137331602592933310">আপোনাৰ সৈতে "<ph name="FILENAME" />" শ্বেয়াৰ কৰা হৈছে। আপুনি ইয়াৰ গৰাকী নহয় বাবে আপুনি এইটো মচিব নোৱাৰে।</translation>
+<translation id="8138705869659070104">ডিভাইচ ছেটআপ কৰাৰ পাছত সক্ৰিয় কৰক</translation>
 <translation id="813913629614996137">আৰম্ভ কৰা হৈছে…</translation>
 <translation id="8147028810663464959">বৰ্ণৰ প্ৰস্থ পূৰ্ণ</translation>
 <translation id="8151638057146502721">কনফিগাৰ</translation>
@@ -906,6 +913,7 @@
 <translation id="8300849813060516376">OTASP বিফল হৈছে</translation>
 <translation id="8312871300878166382">ফ’ল্ডাৰত পে’ষ্ট কৰক</translation>
 <translation id="8329978297633540474">সাধাৰণ পাঠ</translation>
+<translation id="8332007959299458842">শেহতীয়াকৈ খোলা Microsoft ফাইলসমূহ Google Driveলৈ স্থানান্তৰ কৰা হৈছে</translation>
 <translation id="8335587457941836791">শ্বেল্‌ফৰ পৰা আনপিন কৰক</translation>
 <translation id="8335837413233998004">বেলাৰুছিয়ান</translation>
 <translation id="8336153091935557858">কালি <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -932,6 +940,7 @@
 <translation id="8487700953926739672">অফলাইনত উপলব্ধ</translation>
 <translation id="8492972329130824181">গৃহ নেটৱৰ্ক উপলব্ধ নহয়। সংযোগ কৰিবলৈ ম’বাইল ডেটা ৰ’মিং সক্ৰিয় কৰিবই লাগিব।</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> টা বস্তু আহৰণ কৰি থকা হৈছে...</translation>
+<translation id="8502913769543567768"><ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" /> নম্বৰটো, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ডিভাইচ ছেট আপ কৰাৰ পাছত সক্ৰিয় কৰক, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="8521441079177373948">ইউ.কে.</translation>
 <translation id="853494022971700746">ফৰাচী (ফ্ৰান্স)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" />টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, সবিশেষ</translation>
@@ -993,6 +1002,7 @@
 <translation id="9046895021617826162">সংযোগ কৰিব পৰা নগ'ল</translation>
 <translation id="9065512565307033593">আপুনি যদি সত্যাপন কৰিব নোৱাৰে, আপোনাৰ নেটৱৰ্ক এক্সেছ অক্ষম কৰা হ’ব।</translation>
 <translation id="908378762078012445">ফ’নেটিক AATSEEL কীব’ৰ্ডৰ সৈতে ৰাছিয়ান</translation>
+<translation id="9086302186042011942">ছিংক কৰি থকা হৈছে</translation>
 <translation id="9099674669267916096">পৃষ্ঠাৰ সংখ্যা</translation>
 <translation id="9100610230175265781">পাছফ্ৰেজ আৱশ্যক</translation>
 <translation id="9110990317705400362">আমি আপোনাৰ ব্ৰাউজিং সুৰক্ষিত কৰিবলৈ সদায়েই উপায় বিচাৰি আছোঁ। পূৰ্বতে, যিকোনো ৱেবছাইটে আপোনাৰ ব্ৰাউজাৰত এক্সটেনশ্বন যোগ কৰিবলৈ আপোনাক প্ৰ’ম্প্‌ট কৰিব পাৰিছিল। Google Chromeৰ শেহতীয়া সংস্কৰণত আপুনি Chromeক স্পষ্টভাৱে ক’ব লাগিব যে আপুনি এক্সটেনশ্বন পৃষ্ঠাটোৰ জৰিয়তে এই এক্সটেনশ্বনসমূহ ইনষ্টল কৰিবলৈ বিচাৰে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>

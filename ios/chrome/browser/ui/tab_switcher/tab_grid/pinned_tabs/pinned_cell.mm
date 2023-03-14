@@ -9,11 +9,11 @@
 
 #import "base/check.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/elements/top_aligned_image_view.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_transition_animation.h"
-#import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ui/gfx/ios/uikit_util.h"
@@ -156,7 +156,12 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 }
 
 - (void)setIcon:(UIImage*)icon {
-  _faviconView.image = icon;
+  if (icon) {
+    _faviconView.image = icon;
+  } else {
+    _faviconView.image = CustomSymbolWithPointSize(
+        kChromeProductSymbol, kPinnedCellFaviconSymbolPointSize);
+  }
 }
 
 - (UIImage*)snapshot {
@@ -325,6 +330,7 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
   faviconView.clipsToBounds = YES;
   faviconView.layer.cornerRadius = kPinnedCellFaviconCornerRadius;
   faviconView.layer.masksToBounds = YES;
+  faviconView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
 
   [NSLayoutConstraint activateConstraints:@[
     [faviconView.widthAnchor constraintEqualToConstant:kPinnedCellFaviconWidth],

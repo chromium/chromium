@@ -60,7 +60,14 @@ AppSessionServiceFactory* AppSessionServiceFactory::GetInstance() {
 }
 
 AppSessionServiceFactory::AppSessionServiceFactory()
-    : ProfileKeyedServiceFactory("AppSessionService") {
+    : ProfileKeyedServiceFactory(
+          "AppSessionService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   // Ensure that session data is cleared before session restore can happen.
   DependsOn(SessionDataServiceFactory::GetInstance());
 }

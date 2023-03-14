@@ -12,8 +12,10 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory_test_api.h"
+#include "components/autofill/content/browser/test_autofill_client_injector.h"
+#include "components/autofill/content/browser/test_autofill_driver_injector.h"
+#include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -27,6 +29,7 @@ using testing::_;
 namespace autofill {
 
 namespace {
+
 // Generates a ContextMenuParams for the Autofill context menu options.
 content::ContextMenuParams CreateContextMenuParams(
     absl::optional<autofill::FormRendererId> form_renderer_id = absl::nullopt,
@@ -41,11 +44,9 @@ content::ContextMenuParams CreateContextMenuParams(
   return rv;
 }
 
-class MockAutofillDriver : public TestAutofillDriver {
+class MockAutofillDriver : public ContentAutofillDriver {
  public:
-  MockAutofillDriver() = default;
-  MockAutofillDriver(const MockAutofillDriver&) = delete;
-  MockAutofillDriver& operator=(const MockAutofillDriver&) = delete;
+  using ContentAutofillDriver::ContentAutofillDriver;
 
   // Mock methods to enable testability.
   MOCK_METHOD(void,
@@ -80,23 +81,22 @@ class AutofillContextMenuManagerTest : public ChromeRenderViewHostTestHarness {
 
     PersonalDataManagerFactory::GetInstance()->SetTestingFactory(
         profile(), BrowserContextKeyedServiceFactory::TestingFactory());
+    NavigateAndCommit(GURL("about:blank"));
+    autofill_client()->GetPersonalDataManager()->SetPrefService(
+        profile()->GetPrefs());
+    autofill_client()->GetPersonalDataManager()->AddProfile(
+        test::GetFullProfile());
+    autofill_client()->GetPersonalDataManager()->AddCreditCard(
+        test::GetCreditCard());
 
-    auto pdm = std::make_unique<TestPersonalDataManager>();
-    pdm->SetPrefService(profile()->GetPrefs());
-    pdm->AddProfile(test::GetFullProfile());
-    pdm->AddCreditCard(test::GetCreditCard());
-
-    autofill_client_ = std::make_unique<TestAutofillClient>(std::move(pdm));
     menu_model_ = std::make_unique<ui::SimpleMenuModel>(nullptr);
     render_view_context_menu_ = std::make_unique<TestRenderViewContextMenu>(
         *main_rfh(), content::ContextMenuParams());
     render_view_context_menu_->Init();
-    driver_ = InjectAutofillDriver(main_rfh(),
-                                   std::make_unique<MockAutofillDriver>());
 
     autofill_context_menu_manager_ =
         std::make_unique<AutofillContextMenuManager>(
-            autofill_client_->GetPersonalDataManager(),
+            autofill_client()->GetPersonalDataManager(),
             render_view_context_menu_.get(), menu_model_.get(), nullptr);
     autofill_context_menu_manager()->set_params_for_testing(
         CreateContextMenuParams());
@@ -105,22 +105,15 @@ class AutofillContextMenuManagerTest : public ChromeRenderViewHostTestHarness {
   void TearDown() override {
     autofill_context_menu_manager_.reset();
     render_view_context_menu_.reset();
-    autofill_client_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
  protected:
-  MockAutofillDriver* InjectAutofillDriver(
-      content::RenderFrameHost* rfh,
-      std::unique_ptr<MockAutofillDriver> driver) {
-    auto* raw_driver = driver.get();
-    ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
-        web_contents(), autofill_client_.get(),
-        ContentAutofillDriverFactory::DriverInitCallback());
-    auto* cadf = ContentAutofillDriverFactory::FromWebContents(web_contents());
-    ContentAutofillDriverFactoryTestApi(cadf).SetDriver(rfh, std::move(driver));
-    return raw_driver;
+  TestContentAutofillClient* autofill_client() {
+    return autofill_client_injector_[web_contents()];
   }
+
+  MockAutofillDriver* driver() { return autofill_driver_injector_[main_rfh()]; }
 
   ui::SimpleMenuModel* menu_model() const { return menu_model_.get(); }
 
@@ -128,16 +121,15 @@ class AutofillContextMenuManagerTest : public ChromeRenderViewHostTestHarness {
     return autofill_context_menu_manager_.get();
   }
 
-  MockAutofillDriver* driver() const { return driver_; }
-
  private:
-  std::unique_ptr<TestAutofillClient> autofill_client_;
+  TestAutofillClientInjector<TestContentAutofillClient>
+      autofill_client_injector_;
+  TestAutofillDriverInjector<MockAutofillDriver> autofill_driver_injector_;
   std::unique_ptr<TestRenderViewContextMenu> render_view_context_menu_;
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   std::unique_ptr<AutofillContextMenuManager> autofill_context_menu_manager_;
   base::test::ScopedFeatureList feature_;
-  raw_ptr<MockAutofillDriver> driver_;
-  test::AutofillEnvironment autofill_environment_;
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
 // Tests that the Autofill context menu is correctly set up.
@@ -146,14 +138,18 @@ TEST_F(AutofillContextMenuManagerTest, AutofillContextMenuContents) {
   std::vector<std::u16string> all_added_strings;
 
   // Check for top level menu with autofill options.
-  ASSERT_EQ(3u, menu_model()->GetItemCount());
+  ASSERT_EQ(5u, menu_model()->GetItemCount());
   ASSERT_EQ(u"Fill Address Info", menu_model()->GetLabelAt(0));
   ASSERT_EQ(u"Fill Payment", menu_model()->GetLabelAt(1));
   ASSERT_EQ(l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK),
-            menu_model()->GetLabelAt(2));
+            menu_model()->GetLabelAt(3));
   ASSERT_EQ(menu_model()->GetTypeAt(0), ui::MenuModel::ItemType::TYPE_SUBMENU);
   ASSERT_EQ(menu_model()->GetTypeAt(1), ui::MenuModel::ItemType::TYPE_SUBMENU);
-  ASSERT_EQ(menu_model()->GetTypeAt(2), ui::MenuModel::ItemType::TYPE_COMMAND);
+  ASSERT_EQ(menu_model()->GetTypeAt(2),
+            ui::MenuModel::ItemType::TYPE_SEPARATOR);
+  ASSERT_EQ(menu_model()->GetTypeAt(3), ui::MenuModel::ItemType::TYPE_COMMAND);
+  ASSERT_EQ(menu_model()->GetTypeAt(4),
+            ui::MenuModel::ItemType::TYPE_SEPARATOR);
 
   // Check for submenu with address descriptions.
   auto* address_menu_model = menu_model()->GetSubmenuModelAt(0);

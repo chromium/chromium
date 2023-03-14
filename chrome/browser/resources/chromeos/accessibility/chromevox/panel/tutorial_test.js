@@ -19,7 +19,7 @@ ChromeVoxTutorialTest = class extends ChromeVoxPanelTestBase {
         'BackgroundKeyboardHandler',
         '/chromevox/background/keyboard_handler.js');
     await importModule(
-        'ChromeVoxState', '/chromevox/background/chromevox_state.js');
+        'ChromeVoxRange', '/chromevox/background/chromevox_range.js');
     await importModule(
         'CommandHandlerInterface',
         '/chromevox/background/command_handler_interface.js');
@@ -455,9 +455,7 @@ AX_TEST_F(
       // the BackgroundKeyboardHandler. This is necessary because
       // UserActionMonitor intercepts key sequences before they are routed to
       // CommandHandler.
-      const getRangeStartNode = () => {
-        return ChromeVoxState.instance.getCurrentRange().start.node;
-      };
+      const getRangeStartNode = () => ChromeVoxRange.current.start.node;
 
       const simulateKeyPress = (keyCode, opt_modifiers) => {
         const keyEvent = TestUtils.createMockKeyEvent(keyCode, opt_modifiers);

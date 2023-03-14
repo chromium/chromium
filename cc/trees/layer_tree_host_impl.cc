@@ -982,8 +982,10 @@ void LayerTreeHostImpl::NotifyPendingTreeFullyPainted() {
     // is important for SingleThreadProxy and impl-side painting case. For
     // STP, we commit to active tree and RequiresHighResToDraw, and set
     // Scheduler to wait for ReadyToDraw signal to avoid Checkerboard.
-    if (CommitToActiveTree())
+    if (CommitToActiveTree() ||
+        settings_.wait_for_all_pipeline_stages_before_draw) {
       NotifyReadyToDraw();
+    }
   }
 }
 
@@ -1725,11 +1727,10 @@ void LayerTreeHostImpl::RemoveRenderPasses(FrameData* frame) {
       continue;
 
     for (auto it = pass->quad_list.begin(); it != pass->quad_list.end(); ++it) {
-      if (it->material != viz::DrawQuad::Material::kCompositorRenderPass)
-        continue;
-      const viz::CompositorRenderPassDrawQuad* quad =
-          viz::CompositorRenderPassDrawQuad::MaterialCast(*it);
-      pass_references[quad->render_pass_id]--;
+      if (const viz::CompositorRenderPassDrawQuad* quad =
+              it->DynamicCast<viz::CompositorRenderPassDrawQuad>()) {
+        pass_references[quad->render_pass_id]--;
+      }
     }
 
     frame->render_passes.erase(frame->render_passes.end() - 2 - i);
@@ -5235,6 +5236,14 @@ void LayerTreeHostImpl::ApplyFirstScrollTracking(const ui::LatencyInfo& latency,
   // to the given `frame_token`.
   presentation_time_callbacks_.RegisterCompositorThreadSuccessfulCallbacks(
       frame_token, std::move(callbacks));
+}
+
+std::string LayerTreeHostImpl::GetHungCommitDebugInfo() const {
+  return base::StringPrintf(
+      "ptfp%d pwpd%d tmrta%d ", static_cast<int>(pending_tree_fully_painted_),
+      static_cast<int>(paint_worklet_painter_ &&
+                       paint_worklet_painter_->HasOngoingDispatch()),
+      static_cast<int>(tile_manager_.IsReadyToActivate()));
 }
 
 }  // namespace cc

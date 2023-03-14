@@ -6,11 +6,13 @@
 
 #import "ios/chrome/browser/web_selection/web_selection_java_script_feature.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/web/chrome_web_client.h"
+#import "ios/chrome/browser/web_selection/web_selection_java_script_feature_observer.h"
 #import "ios/chrome/browser/web_selection/web_selection_response.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_state_test_util.h"
@@ -40,50 +42,76 @@ NSString* kPageHTML =
      "</html>";
 }
 
+class TestWebSelectionJavaScriptFeatureObserver
+    : public WebSelectionJavaScriptFeatureObserver {
+ public:
+  TestWebSelectionJavaScriptFeatureObserver(web::WebState* web_state)
+      : web_state_(web_state) {}
+
+  void OnSelectionRetrieved(web::WebState* web_state,
+                            WebSelectionResponse* response) override {
+    EXPECT_EQ(web_state, web_state_);
+    response_ = response;
+  }
+
+  WebSelectionResponse* GetLastResponse() { return response_; }
+
+ private:
+  raw_ptr<web::WebState> web_state_;
+  WebSelectionResponse* response_;
+};
+
 // Tests for the WebSelectionJavaScriptFeature.
 class WebSelectionJavaScriptFeatureTest : public PlatformTest {
  public:
   WebSelectionJavaScriptFeatureTest()
-      : web_client_(std::make_unique<ChromeWebClient>()) {
+      : task_environment_(web::WebTaskEnvironment::Options::DEFAULT,
+                          base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        web_client_(std::make_unique<ChromeWebClient>()) {
     feature_list_.InitAndEnableFeature(kIOSEditMenuPartialTranslate);
     browser_state_ = TestChromeBrowserState::Builder().Build();
 
     web::WebState::CreateParams params(browser_state_.get());
     web_state_ = web::WebState::Create(params);
-    web_state_->GetView();
-    web_state_->SetKeepRenderProcessAlive(true);
+
+    selection_observer_ =
+        std::make_unique<TestWebSelectionJavaScriptFeatureObserver>(
+            web_state_.get());
   }
 
   void SetUp() override {
     PlatformTest::SetUp();
+    WebSelectionJavaScriptFeature::GetInstance()->AddObserver(
+        selection_observer_.get());
     web::test::LoadHtml(kPageHTML, web_state());
+  }
+
+  void TearDown() override {
+    WebSelectionJavaScriptFeature::GetInstance()->RemoveObserver(
+        selection_observer_.get());
+    PlatformTest::TearDown();
   }
 
   web::WebState* web_state() { return web_state_.get(); }
 
- private:
-  web::ScopedTestingWebClient web_client_;
+ protected:
   web::WebTaskEnvironment task_environment_;
+  web::ScopedTestingWebClient web_client_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<web::WebState> web_state_;
+  std::unique_ptr<TestWebSelectionJavaScriptFeatureObserver>
+      selection_observer_;
 };
 
 // Tests that no selection is returned if nothing is selected.
 TEST_F(WebSelectionJavaScriptFeatureTest, GetNoSelection) {
-  __block WebSelectionResponse* response = nil;
-  WebSelectionJavaScriptFeature::GetInstance()->GetSelectedText(
-      web_state(), base::BindOnce(^(WebSelectionResponse* block_response) {
-        response = block_response;
-      }));
-
-  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForJSCompletionTimeout, ^{
-        return response != nil;
-      }));
-  EXPECT_TRUE(response.valid);
-  EXPECT_NSEQ(response.selectedText, @"");
-  EXPECT_TRUE(CGRectEqualToRect(response.sourceRect, CGRectZero));
+  WebSelectionJavaScriptFeature::GetInstance()->GetSelectedText(web_state());
+  task_environment_.AdvanceClock(base::Seconds(1));
+  task_environment_.RunUntilIdle();
+  WebSelectionResponse* response = selection_observer_->GetLastResponse();
+  // There is no selection, so the observer should not be called.
+  ASSERT_FALSE(response);
 }
 
 // Tests that selection in main frame is returned correctly.
@@ -92,17 +120,16 @@ TEST_F(WebSelectionJavaScriptFeatureTest, GetSelectionMainFrame) {
                                 "document.getElementById('selectid'));",
                                web_state());
   __block WebSelectionResponse* response = nil;
-  WebSelectionJavaScriptFeature::GetInstance()->GetSelectedText(
-      web_state(), base::BindOnce(^(WebSelectionResponse* block_response) {
-        response = block_response;
-      }));
+  WebSelectionJavaScriptFeature::GetInstance()->GetSelectedText(web_state());
 
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForJSCompletionTimeout, ^{
+        response = selection_observer_->GetLastResponse();
         return response != nil;
       }));
+
   EXPECT_TRUE(response.valid);
-  EXPECT_NSEQ(response.selectedText, @"selection");
+  EXPECT_NSEQ(@"selection", response.selectedText);
   EXPECT_FALSE(CGRectEqualToRect(response.sourceRect, CGRectZero));
 }
 
@@ -114,16 +141,15 @@ TEST_F(WebSelectionJavaScriptFeatureTest, GetSelectionIFrame) {
        "  subWindow.document.getElementById('frameselectid'));",
       web_state());
   __block WebSelectionResponse* response = nil;
-  WebSelectionJavaScriptFeature::GetInstance()->GetSelectedText(
-      web_state(), base::BindOnce(^(WebSelectionResponse* block_response) {
-        response = block_response;
-      }));
+  WebSelectionJavaScriptFeature::GetInstance()->GetSelectedText(web_state());
 
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForJSCompletionTimeout, ^{
+        response = selection_observer_->GetLastResponse();
         return response != nil;
       }));
+
   EXPECT_TRUE(response.valid);
-  EXPECT_NSEQ(response.selectedText, @"frame selection");
+  EXPECT_NSEQ(@"frame selection", response.selectedText);
   EXPECT_FALSE(CGRectEqualToRect(response.sourceRect, CGRectZero));
 }

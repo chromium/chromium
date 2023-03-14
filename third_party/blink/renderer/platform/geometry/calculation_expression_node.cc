@@ -18,7 +18,7 @@ float CalculationExpressionNumberNode::Evaluate(
   return value_;
 }
 
-bool CalculationExpressionNumberNode::operator==(
+bool CalculationExpressionNumberNode::Equals(
     const CalculationExpressionNode& other) const {
   if (!other.IsNumber())
     return false;
@@ -46,7 +46,7 @@ float CalculationExpressionPixelsAndPercentNode::Evaluate(
   return value_.pixels + value_.percent / 100 * max_value;
 }
 
-bool CalculationExpressionPixelsAndPercentNode::operator==(
+bool CalculationExpressionPixelsAndPercentNode::Equals(
     const CalculationExpressionNode& other) const {
   if (!other.IsPixelsAndPercent())
     return false;
@@ -258,7 +258,7 @@ float CalculationExpressionOperationNode::Evaluate(
   return std::numeric_limits<float>::quiet_NaN();
 }
 
-bool CalculationExpressionOperationNode::operator==(
+bool CalculationExpressionOperationNode::Equals(
     const CalculationExpressionNode& other) const {
   if (!other.IsOperation())
     return false;

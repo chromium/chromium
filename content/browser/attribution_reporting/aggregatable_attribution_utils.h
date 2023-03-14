@@ -7,12 +7,12 @@
 
 #include <vector>
 
-#include "components/attribution_reporting/aggregatable_trigger_data.h"
-#include "content/browser/attribution_reporting/attribution_source_type.h"
+#include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
+class AggregatableTriggerData;
 class AggregatableValues;
 class AggregationKeys;
 class FilterData;
@@ -28,9 +28,9 @@ class AttributionReport;
 CONTENT_EXPORT std::vector<AggregatableHistogramContribution>
 CreateAggregatableHistogram(
     const attribution_reporting::FilterData& source_filter_data,
-    AttributionSourceType,
+    attribution_reporting::mojom::SourceType,
     const attribution_reporting::AggregationKeys& keys,
-    const attribution_reporting::AggregatableTriggerDataList&,
+    const std::vector<attribution_reporting::AggregatableTriggerData>&,
     const attribution_reporting::AggregatableValues&);
 
 // These values are persisted to logs. Entries should not be renumbered and

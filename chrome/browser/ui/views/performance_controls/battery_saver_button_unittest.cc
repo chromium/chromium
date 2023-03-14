@@ -31,15 +31,7 @@ class BatterySaverButtonTest : public TestWithBrowserView {
   void SetUp() override {
     feature_list_.InitAndEnableFeature(
         performance_manager::features::kBatterySaverModeAvailable);
-    performance_manager::user_tuning::prefs::RegisterLocalStatePrefs(
-        local_state_.registry());
-    environment_.SetUp(&local_state_);
     TestWithBrowserView::SetUp();
-  }
-
-  void TearDown() override {
-    TestWithBrowserView::TearDown();
-    environment_.TearDown();
   }
 
   void SetBatterySaverModeEnabled(bool enabled) {
@@ -47,7 +39,7 @@ class BatterySaverButtonTest : public TestWithBrowserView {
                               BatterySaverModeState::kEnabled
                         : performance_manager::user_tuning::prefs::
                               BatterySaverModeState::kDisabled;
-    local_state_.SetInteger(
+    g_browser_process->local_state()->SetInteger(
         performance_manager::user_tuning::prefs::kBatterySaverModeState,
         static_cast<int>(mode));
   }
@@ -56,10 +48,7 @@ class BatterySaverButtonTest : public TestWithBrowserView {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  TestingPrefServiceSimple local_state_;
   base::HistogramTester histogram_tester_;
-  performance_manager::user_tuning::TestUserPerformanceTuningManagerEnvironment
-      environment_;
 };
 
 // Battery saver button should not be shown when the pref state for battery
@@ -207,6 +196,15 @@ class BatterySaverButtonNoExperimentsAvailableTest
     : public TestWithBrowserView {
  public:
   BatterySaverButtonNoExperimentsAvailableTest() = default;
+
+  void SetUp() override {
+    feature_list_.InitAndDisableFeature(
+        performance_manager::features::kBatterySaverModeAvailable);
+    TestWithBrowserView::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // When battery saver mode available feature is disabled the toolbar button

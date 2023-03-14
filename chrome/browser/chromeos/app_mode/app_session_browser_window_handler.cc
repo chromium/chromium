@@ -16,6 +16,10 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "kiosk_troubleshooting_controller_ash.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace chromeos {
 
 const char kKioskNewBrowserWindowHistogram[] = "Kiosk.NewBrowserWindow";
@@ -25,17 +29,27 @@ AppSessionBrowserWindowHandler::AppSessionBrowserWindowHandler(
     const absl::optional<std::string>& web_app_name,
     base::RepeatingCallback<void(bool is_closing)>
         on_browser_window_added_callback,
-    base::OnceClosure on_last_browser_window_closed_callback,
-    std::unique_ptr<KioskTroubleshootingController>
-        kiosk_troubleshooting_controller)
+    base::OnceClosure shutdown_app_session_callback)
     : profile_(profile),
       web_app_name_(web_app_name),
       on_browser_window_added_callback_(on_browser_window_added_callback),
-      on_last_browser_window_closed_callback_(
-          std::move(on_last_browser_window_closed_callback)),
-      kiosk_troubleshooting_controller_(
-          std::move(kiosk_troubleshooting_controller)),
+      shutdown_app_session_callback_(std::move(shutdown_app_session_callback)),
       app_session_policies_(profile_->GetPrefs()) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  kiosk_troubleshooting_controller_ =
+      std::make_unique<ash::KioskTroubleshootingControllerAsh>(
+          profile_->GetPrefs(),
+          base::BindOnce(&AppSessionBrowserWindowHandler::ShutdownAppSession,
+                         weak_ptr_factory_.GetWeakPtr()));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  kiosk_troubleshooting_controller_ =
+      std::make_unique<KioskTroubleshootingController>(
+          profile_->GetPrefs(),
+          base::BindOnce(&AppSessionBrowserWindowHandler::ShutdownAppSession,
+                         weak_ptr_factory_.GetWeakPtr()));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   BrowserList::AddObserver(this);
 }
 
@@ -57,6 +71,17 @@ void AppSessionBrowserWindowHandler::HandleNewBrowserWindow(Browser* browser) {
     return;
   }
 
+  if (IsNewBrowserWindowAllowed(browser)) {
+    base::UmaHistogramEnumeration(
+        kKioskNewBrowserWindowHistogram,
+        KioskBrowserWindowType::kOpenedRegularBrowser);
+    LOG(WARNING) << "Open additional fullscreen browser window in kiosk session"
+                 << ", url=" << url_string;
+    chrome::ToggleFullscreenMode(browser);
+    on_browser_window_added_callback_.Run(/*is_closing=*/false);
+    return;
+  }
+
   if (IsDevToolsAllowedBrowser(browser)) {
     base::UmaHistogramEnumeration(
         kKioskNewBrowserWindowHistogram,
@@ -65,13 +90,10 @@ void AppSessionBrowserWindowHandler::HandleNewBrowserWindow(Browser* browser) {
     return;
   }
 
-  if (IsNewBrowserWindowAllowed(browser)) {
+  if (IsNormalTroubleshootingBrowserAllowed(browser)) {
     base::UmaHistogramEnumeration(
         kKioskNewBrowserWindowHistogram,
-        KioskBrowserWindowType::kOpenedRegularBrowser);
-    LOG(WARNING) << "Open additional fullscreen browser window in kiosk session"
-                 << ", url=" << url_string;
-    chrome::ToggleFullscreenMode(browser);
+        KioskBrowserWindowType::kOpenedTroubleshootingNormalBrowser);
     on_browser_window_added_callback_.Run(/*is_closing=*/false);
     return;
   }
@@ -138,7 +160,7 @@ void AppSessionBrowserWindowHandler::OnBrowserRemoved(Browser* browser) {
   // Exit the kiosk session if the last browser was closed.
   if (ShouldExitKioskWhenLastBrowserRemoved() &&
       BrowserList::GetInstance()->empty()) {
-    std::move(on_last_browser_window_closed_callback_).Run();
+    ShutdownAppSession();
   }
 
   if (browser == settings_browser_) {
@@ -165,6 +187,13 @@ bool AppSessionBrowserWindowHandler::IsDevToolsAllowedBrowser(
              ->AreKioskTroubleshootingToolsEnabled();
 }
 
+bool AppSessionBrowserWindowHandler::IsNormalTroubleshootingBrowserAllowed(
+    Browser* browser) const {
+  return browser->is_type_normal() &&
+         kiosk_troubleshooting_controller_
+             ->AreKioskTroubleshootingToolsEnabled();
+}
+
 bool AppSessionBrowserWindowHandler::ShouldExitKioskWhenLastBrowserRemoved()
     const {
   return web_app_name_.has_value();
@@ -173,6 +202,12 @@ bool AppSessionBrowserWindowHandler::ShouldExitKioskWhenLastBrowserRemoved()
 bool AppSessionBrowserWindowHandler::IsOnlySettingsBrowserRemainOpen() const {
   return settings_browser_ && BrowserList::GetInstance()->size() == 1 &&
          BrowserList::GetInstance()->get(0) == settings_browser_;
+}
+
+void AppSessionBrowserWindowHandler::ShutdownAppSession() {
+  if (!shutdown_app_session_callback_.is_null()) {
+    std::move(shutdown_app_session_callback_).Run();
+  }
 }
 
 }  // namespace chromeos

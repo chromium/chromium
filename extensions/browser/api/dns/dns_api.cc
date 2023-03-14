@@ -29,8 +29,8 @@ DnsResolveFunction::~DnsResolveFunction() = default;
 
 ExtensionFunction::ResponseAction DnsResolveFunction::Run() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::unique_ptr<Resolve::Params> params(Resolve::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<Resolve::Params> params = Resolve::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   // Intentionally pass host only (no scheme or non-zero port) to only get a
   // basic resolution for the hostname itself.
@@ -41,7 +41,7 @@ ExtensionFunction::ResponseAction DnsResolveFunction::Run() {
       ->GetNetworkContext()
       ->ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                         std::move(host_port_pair)),
-                    net::NetworkAnonymizationKey(site, site), nullptr,
+                    net::NetworkAnonymizationKey::CreateSameSite(site), nullptr,
                     receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(base::BindOnce(
       &DnsResolveFunction::OnComplete, base::Unretained(this),

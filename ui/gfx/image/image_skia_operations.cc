@@ -59,10 +59,7 @@ class BinaryImageSource : public gfx::ImageSkiaSource {
   BinaryImageSource(const ImageSkia& first,
                     const ImageSkia& second,
                     const char* source_name)
-      : first_(first),
-        second_(second),
-        source_name_(source_name) {
-  }
+      : first_(first), second_(second), source_name_(source_name) {}
 
   BinaryImageSource(const BinaryImageSource&) = delete;
   BinaryImageSource& operator=(const BinaryImageSource&) = delete;
@@ -82,7 +79,7 @@ class BinaryImageSource : public gfx::ImageSkiaSource {
       DCHECK_NE(first_rep.scale(), second_rep.scale());
       if (first_rep.scale() == second_rep.scale()) {
         LOG(ERROR) << "ImageSkiaRep size mismatch in " << source_name_;
-        return GetErrorImageRep(first_rep.scale(),first_rep.pixel_size());
+        return GetErrorImageRep(first_rep.scale(), first_rep.pixel_size());
       }
       first_rep = first_.GetRepresentation(1.0f);
       second_rep = second_.GetRepresentation(1.0f);
@@ -118,8 +115,7 @@ class BlendingImageSource : public BinaryImageSource {
                       const ImageSkia& second,
                       double alpha)
       : BinaryImageSource(first, second, "BlendingImageSource"),
-        alpha_(alpha) {
-  }
+        alpha_(alpha) {}
 
   BlendingImageSource(const BlendingImageSource&) = delete;
   BlendingImageSource& operator=(const BlendingImageSource&) = delete;
@@ -152,8 +148,7 @@ class SuperimposedImageSource : public gfx::CanvasImageSource {
   // gfx::CanvasImageSource override.
   void Draw(Canvas* canvas) override {
     canvas->DrawImageInt(first_, 0, 0);
-    canvas->DrawImageInt(second_,
-                         (first_.width() - second_.width()) / 2,
+    canvas->DrawImageInt(second_, (first_.width() - second_.width()) / 2,
                          (first_.height() - second_.height()) / 2);
   }
 
@@ -165,9 +160,7 @@ class SuperimposedImageSource : public gfx::CanvasImageSource {
 class TransparentImageSource : public gfx::ImageSkiaSource {
  public:
   TransparentImageSource(const ImageSkia& image, double alpha)
-      : image_(image),
-        alpha_(alpha) {
-  }
+      : image_(image), alpha_(alpha) {}
 
   TransparentImageSource(const TransparentImageSource&) = delete;
   TransparentImageSource& operator=(const TransparentImageSource&) = delete;
@@ -182,8 +175,7 @@ class TransparentImageSource : public gfx::ImageSkiaSource {
       return image_rep;
 
     SkBitmap alpha;
-    alpha.allocN32Pixels(image_rep.pixel_width(),
-                         image_rep.pixel_height());
+    alpha.allocN32Pixels(image_rep.pixel_width(), image_rep.pixel_height());
     alpha.eraseColor(SkColorSetA(SK_ColorBLACK, SK_AlphaOPAQUE * alpha_));
     return ImageSkiaRep(
         SkBitmapOperations::CreateMaskedBitmap(image_rep.GetBitmap(), alpha),
@@ -197,8 +189,7 @@ class TransparentImageSource : public gfx::ImageSkiaSource {
 class MaskedImageSource : public BinaryImageSource {
  public:
   MaskedImageSource(const ImageSkia& rgb, const ImageSkia& alpha)
-      : BinaryImageSource(rgb, alpha, "MaskedImageSource") {
-  }
+      : BinaryImageSource(rgb, alpha, "MaskedImageSource") {}
 
   MaskedImageSource(const MaskedImageSource&) = delete;
   MaskedImageSource& operator=(const MaskedImageSource&) = delete;
@@ -218,14 +209,15 @@ class MaskedImageSource : public BinaryImageSource {
 class TiledImageSource : public gfx::ImageSkiaSource {
  public:
   TiledImageSource(const ImageSkia& source,
-                   int src_x, int src_y,
-                   int dst_w, int dst_h)
+                   int src_x,
+                   int src_y,
+                   int dst_w,
+                   int dst_h)
       : source_(source),
         src_x_(src_x),
         src_y_(src_y),
         dst_w_(dst_w),
-        dst_h_(dst_h) {
-  }
+        dst_h_(dst_h) {}
 
   TiledImageSource(const TiledImageSource&) = delete;
   TiledImageSource& operator=(const TiledImageSource&) = delete;
@@ -238,8 +230,8 @@ class TiledImageSource : public gfx::ImageSkiaSource {
     if (source_rep.is_null())
       return source_rep;
 
-    gfx::Rect bounds = DIPToPixelBounds(gfx::Rect(src_x_, src_y_, dst_w_,
-                                                  dst_h_), source_rep.scale());
+    gfx::Rect bounds = DIPToPixelBounds(
+        gfx::Rect(src_x_, src_y_, dst_w_, dst_h_), source_rep.scale());
     return ImageSkiaRep(SkBitmapOperations::CreateTiledBitmap(
                             source_rep.GetBitmap(), bounds.x(), bounds.y(),
                             bounds.width(), bounds.height()),
@@ -256,11 +248,8 @@ class TiledImageSource : public gfx::ImageSkiaSource {
 
 class HSLImageSource : public gfx::ImageSkiaSource {
  public:
-  HSLImageSource(const ImageSkia& image,
-                 const color_utils::HSL& hsl_shift)
-      : image_(image),
-        hsl_shift_(hsl_shift) {
-  }
+  HSLImageSource(const ImageSkia& image, const color_utils::HSL& hsl_shift)
+      : image_(image), hsl_shift_(hsl_shift) {}
 
   HSLImageSource(const HSLImageSource&) = delete;
   HSLImageSource& operator=(const HSLImageSource&) = delete;
@@ -285,16 +274,13 @@ class HSLImageSource : public gfx::ImageSkiaSource {
 
 // ImageSkiaSource which uses SkBitmapOperations::CreateButtonBackground
 // to generate image reps for the target image.  The image and mask can be
-// diferent sizes (crbug.com/171725).
-class ButtonImageSource: public gfx::ImageSkiaSource {
+// different sizes (crbug.com/171725).
+class ButtonImageSource : public gfx::ImageSkiaSource {
  public:
   ButtonImageSource(SkColor color,
                     const ImageSkia& image,
                     const ImageSkia& mask)
-      : color_(color),
-        image_(image),
-        mask_(mask) {
-  }
+      : color_(color), image_(image), mask_(mask) {}
 
   ButtonImageSource(const ButtonImageSource&) = delete;
   ButtonImageSource& operator=(const ButtonImageSource&) = delete;
@@ -328,13 +314,11 @@ class ButtonImageSource: public gfx::ImageSkiaSource {
 
 // ImageSkiaSource which uses SkBitmap::extractSubset to generate image reps
 // for the target image.
-class ExtractSubsetImageSource: public gfx::ImageSkiaSource {
+class ExtractSubsetImageSource : public gfx::ImageSkiaSource {
  public:
   ExtractSubsetImageSource(const gfx::ImageSkia& image,
                            const gfx::Rect& subset_bounds)
-      : image_(image),
-        subset_bounds_(subset_bounds) {
-  }
+      : image_(image), subset_bounds_(subset_bounds) {}
 
   ExtractSubsetImageSource(const ExtractSubsetImageSource&) = delete;
   ExtractSubsetImageSource& operator=(const ExtractSubsetImageSource&) = delete;
@@ -347,8 +331,8 @@ class ExtractSubsetImageSource: public gfx::ImageSkiaSource {
     if (image_rep.is_null())
       return image_rep;
 
-    SkIRect subset_bounds_in_pixel = RectToSkIRect(
-        DIPToPixelBounds(subset_bounds_, image_rep.scale()));
+    SkIRect subset_bounds_in_pixel =
+        RectToSkIRect(DIPToPixelBounds(subset_bounds_, image_rep.scale()));
     SkBitmap dst;
     bool success =
         image_rep.GetBitmap().extractSubset(&dst, subset_bounds_in_pixel);
@@ -370,8 +354,7 @@ class ResizeSource : public ImageSkiaSource {
                const Size& target_dip_size)
       : source_(source),
         resize_method_(method),
-        target_dip_size_(target_dip_size) {
-  }
+        target_dip_size_(target_dip_size) {}
 
   ResizeSource(const ResizeSource&) = delete;
   ResizeSource& operator=(const ResizeSource&) = delete;
@@ -477,9 +460,7 @@ class RotatedSource : public ImageSkiaSource {
  public:
   RotatedSource(const ImageSkia& source,
                 SkBitmapOperations::RotationAmount rotation)
-    : source_(source),
-      rotation_(rotation) {
-  }
+      : source_(source), rotation_(rotation) {}
 
   RotatedSource(const RotatedSource&) = delete;
   RotatedSource& operator=(const RotatedSource&) = delete;
@@ -588,6 +569,46 @@ class ImageWithCircleBackgroundSource : public gfx::CanvasImageSource {
   const gfx::ImageSkia image_;
 };
 
+// Image source to create an image with a rounded rect background.
+class ImageWithRoundRectBackgroundSource : public gfx::CanvasImageSource {
+ public:
+  ImageWithRoundRectBackgroundSource(float size,
+                                     int radius,
+                                     SkColor color,
+                                     const gfx::ImageSkia& image)
+      : gfx::CanvasImageSource(gfx::Size(size, size)),
+        size_(size),
+        radius_(radius),
+        color_(color),
+        image_(image) {}
+
+  ImageWithRoundRectBackgroundSource(
+      const ImageWithRoundRectBackgroundSource&) = delete;
+  ImageWithRoundRectBackgroundSource& operator=(
+      const ImageWithRoundRectBackgroundSource&) = delete;
+
+  ~ImageWithRoundRectBackgroundSource() override = default;
+
+  // gfx::CanvasImageSource:
+  void Draw(gfx::Canvas* canvas) override {
+    cc::PaintFlags flags;
+    flags.setAntiAlias(true);
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    flags.setColor(color_);
+    canvas->DrawRoundRect(RectF{size_, size_}, radius_, flags);
+    // Center the image.
+    const int x = (size_ - image_.width()) / 2;
+    const int y = (size_ - image_.height()) / 2;
+    canvas->DrawImageInt(image_, x, y);
+  }
+
+ private:
+  const float size_;
+  const int radius_;
+  const SkColor color_;
+  const gfx::ImageSkia image_;
+};
+
 // Image source to create an image with a roundrect clip path.
 class ImageWithRoundRectClipSource : public gfx::CanvasImageSource {
  public:
@@ -658,8 +679,10 @@ ImageSkia ImageSkiaOperations::CreateMaskedImage(const ImageSkia& rgb,
 
 // static
 ImageSkia ImageSkiaOperations::CreateTiledImage(const ImageSkia& source,
-                                                int src_x, int src_y,
-                                                int dst_w, int dst_h) {
+                                                int src_x,
+                                                int src_y,
+                                                int dst_w,
+                                                int dst_h) {
   if (source.isNull())
     return ImageSkia();
 
@@ -729,8 +752,7 @@ ImageSkia ImageSkiaOperations::CreateImageWithDropShadow(
 
   const gfx::Insets shadow_padding = -gfx::ShadowValue::GetMargin(shadows);
   gfx::Size shadow_image_size = source.size();
-  shadow_image_size.Enlarge(shadow_padding.width(),
-                            shadow_padding.height());
+  shadow_image_size.Enlarge(shadow_padding.width(), shadow_padding.height());
   return ImageSkia(std::make_unique<DropShadowSource>(source, shadows),
                    shadow_image_size);
 }
@@ -745,8 +767,8 @@ ImageSkia ImageSkiaOperations::CreateHorizontalShadow(
 
 // static
 ImageSkia ImageSkiaOperations::CreateRotatedImage(
-      const ImageSkia& source,
-      SkBitmapOperations::RotationAmount rotation) {
+    const ImageSkia& source,
+    SkBitmapOperations::RotationAmount rotation) {
   if (source.isNull())
     return ImageSkia();
 
@@ -787,6 +809,17 @@ ImageSkia ImageSkiaOperations::CreateImageWithCircleBackground(
   DCHECK_GE(radius * 2, image.height());
   return gfx::CanvasImageSource::MakeImageSkia<ImageWithCircleBackgroundSource>(
       radius, color, image);
+}
+
+ImageSkia ImageSkiaOperations::CreateImageWithRoundRectBackground(
+    float size,
+    int radius,
+    SkColor color,
+    const ImageSkia& image) {
+  DCHECK_GE(size, image.width());
+  DCHECK_GE(size, image.height());
+  return gfx::CanvasImageSource::MakeImageSkia<
+      ImageWithRoundRectBackgroundSource>(size, radius, color, image);
 }
 
 ImageSkia ImageSkiaOperations::CreateImageWithRoundRectClip(

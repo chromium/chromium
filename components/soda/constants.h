@@ -55,6 +55,8 @@ struct SodaLanguagePackComponentConfig {
   const uint8_t public_key_sha[32] = {};
 };
 
+// TODO(crbug.com/1161569): Replace the display name mapping with
+// GetDisplayNameForLocale.
 constexpr SodaLanguagePackComponentConfig kLanguageComponentConfigs[] = {
     {LanguageCode::kEnUs,
      "en-US",

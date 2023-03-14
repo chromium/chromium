@@ -147,14 +147,14 @@ ServicesDelegateDesktop::CreateIncidentReportingService() {
   return new IncidentReportingService(safe_browsing_service_);
 }
 
-void ServicesDelegateDesktop::StartOnIOThread(
+void ServicesDelegateDesktop::StartOnSBThread(
     scoped_refptr<network::SharedURLLoaderFactory> browser_url_loader_factory,
     const V4ProtocolConfig& v4_config) {
-  database_manager_->StartOnIOThread(browser_url_loader_factory, v4_config);
+  database_manager_->StartOnSBThread(browser_url_loader_factory, v4_config);
 }
 
-void ServicesDelegateDesktop::StopOnIOThread(bool shutdown) {
-  database_manager_->StopOnIOThread(shutdown);
+void ServicesDelegateDesktop::StopOnSBThread(bool shutdown) {
+  database_manager_->StopOnSBThread(shutdown);
 }
 
 void ServicesDelegateDesktop::OnProfileWillBeDestroyed(Profile* profile) {

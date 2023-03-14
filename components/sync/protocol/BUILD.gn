@@ -19,6 +19,8 @@ static_library("util") {
   sources = [
     "entity_data.cc",
     "entity_data.h",
+    "model_type_state_helper.cc",
+    "model_type_state_helper.h",
     "proto_enum_conversions.cc",
     "proto_enum_conversions.h",
     "proto_memory_estimations.cc",

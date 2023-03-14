@@ -75,6 +75,24 @@ source_set("dynamic_component_host") {
   public_deps = [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.component:fuchsia.component_hlcpp" ]
 }
 
+source_set("test_support") {
+  testonly = true
+
+  # Only for use by Fuchsia Components.
+  visibility += [
+    ":unit_tests",
+    "//fuchsia_web/*",
+  ]
+  public = [ "mock_realm.h" ]
+  sources = [ "mock_realm.cc" ]
+  public_deps = [
+    "//base",
+    "//testing/gmock",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.component",
+  ]
+  deps = [ "//testing/gtest" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   visibility += [ "//components:components_unittests__exec" ]
@@ -88,6 +106,7 @@ source_set("unit_tests") {
     ":annotations_manager",
     ":dynamic_component_host",
     ":fuchsia_component_support",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/version_info",

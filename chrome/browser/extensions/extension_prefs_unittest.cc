@@ -9,6 +9,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -41,6 +42,7 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::Time;
 using extensions::mojom::APIPermissionID;
@@ -410,8 +412,8 @@ class ExtensionPrefsAcknowledgment : public ExtensionPrefsTest {
       std::string name = "test" + base::NumberToString(i);
       extensions_.push_back(prefs_.AddExtension(name));
     }
-    EXPECT_EQ(nullptr,
-              prefs()->GetInstalledExtensionInfo(not_installed_id_).get());
+    EXPECT_EQ(absl::nullopt,
+              prefs()->GetInstalledExtensionInfo(not_installed_id_));
 
     ExtensionList::const_iterator iter;
     for (iter = extensions_.begin(); iter != extensions_.end(); ++iter) {
@@ -489,7 +491,7 @@ class ExtensionPrefsDelayedInstallInfo : public ExtensionPrefsTest {
   // Verifies that we get back expected idle install information previously
   // set by SetIdleInfo.
   void VerifyIdleInfo(const std::string& id, int num) {
-    std::unique_ptr<ExtensionInfo> info(prefs()->GetDelayedInstallInfo(id));
+    absl::optional<ExtensionInfo> info(prefs()->GetDelayedInstallInfo(id));
     ASSERT_TRUE(info);
     const std::string* version =
         info->extension_manifest->FindString("version");
@@ -499,13 +501,12 @@ class ExtensionPrefsDelayedInstallInfo : public ExtensionPrefsTest {
               info->extension_path.BaseName().MaybeAsASCII());
   }
 
-  bool HasInfoForId(ExtensionPrefs::ExtensionsInfo* info,
+  bool HasInfoForId(const ExtensionPrefs::ExtensionsInfo& info,
                     const std::string& id) {
-    for (size_t i = 0; i < info->size(); ++i) {
-      if (info->at(i)->extension_id == id)
-        return true;
-    }
-    return false;
+    return base::ranges::find_if(info.begin(), info.end(),
+                                 [&id](const ExtensionInfo& info) {
+                                   return info.extension_id == id;
+                                 }) != info.end();
   }
 
   void Initialize() override {
@@ -523,8 +524,8 @@ class ExtensionPrefsDelayedInstallInfo : public ExtensionPrefsTest {
     VerifyIdleInfo(id2_, 2);
     ExtensionPrefs::ExtensionsInfo info = prefs()->GetAllDelayedInstallInfo();
     EXPECT_EQ(2u, info.size());
-    EXPECT_TRUE(HasInfoForId(&info, id1_));
-    EXPECT_TRUE(HasInfoForId(&info, id2_));
+    EXPECT_TRUE(HasInfoForId(info, id1_));
+    EXPECT_TRUE(HasInfoForId(info, id2_));
     prefs()->RemoveDelayedInstallInfo(id1_);
     prefs()->RemoveDelayedInstallInfo(id2_);
     info = prefs()->GetAllDelayedInstallInfo();
@@ -554,9 +555,9 @@ class ExtensionPrefsDelayedInstallInfo : public ExtensionPrefsTest {
     // Make sure the info for the 3 extensions we expect is present.
     ExtensionPrefs::ExtensionsInfo info = prefs()->GetAllDelayedInstallInfo();
     EXPECT_EQ(3u, info.size());
-    EXPECT_TRUE(HasInfoForId(&info, id1_));
-    EXPECT_TRUE(HasInfoForId(&info, id2_));
-    EXPECT_TRUE(HasInfoForId(&info, id4_));
+    EXPECT_TRUE(HasInfoForId(info, id1_));
+    EXPECT_TRUE(HasInfoForId(info, id2_));
+    EXPECT_TRUE(HasInfoForId(info, id4_));
     VerifyIdleInfo(id1_, 1);
     VerifyIdleInfo(id2_, 2);
     VerifyIdleInfo(id4_, 4);
@@ -703,9 +704,9 @@ class ExtensionPrefsMigratesToLastUpdateTime : public ExtensionPrefsTest {
     // Re-create migration scenario by removing the new first_install_time,
     // last_update_time pref keys and adding back the legacy install_time key.
     prefs()->UpdateExtensionPref(extension_->id(), kLastUpdateTimePrefKey,
-                                 nullptr);
+                                 absl::nullopt);
     prefs()->UpdateExtensionPref(extension_->id(), kFirstInstallTimePrefKey,
-                                 nullptr);
+                                 absl::nullopt);
     time_str_ = base::NumberToString(
         base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
     prefs()->SetStringPref(extension_->id(), kOldInstallTimePrefMap, time_str_);
@@ -1075,7 +1076,7 @@ class ExtensionPrefsObsoletePrefRemoval : public ExtensionPrefsTest {
     constexpr char kTestValue[] = "test_value";
     prefs()->UpdateExtensionPref(extension_->id(),
                                  ExtensionPrefs::kFakeObsoletePrefForTesting,
-                                 std::make_unique<base::Value>(kTestValue));
+                                 base::Value(kTestValue));
     std::string str_value;
     EXPECT_TRUE(prefs()->ReadPrefAsString(
         extension_->id(), ExtensionPrefs::kFakeObsoletePrefForTesting,
@@ -1084,9 +1085,8 @@ class ExtensionPrefsObsoletePrefRemoval : public ExtensionPrefsTest {
 
     // TODO(crbug.com/1015619): Remove 2023-05. kPrefStringForIdMapping.
     base::Value::Dict dictionary;
-    prefs()->UpdateExtensionPref(
-        extension_->id(), kPrefStringForIdMapping,
-        std::make_unique<base::Value>(std::move(dictionary)));
+    prefs()->UpdateExtensionPref(extension_->id(), kPrefStringForIdMapping,
+                                 base::Value(std::move(dictionary)));
     EXPECT_TRUE(
         prefs()->ReadPrefAsDict(extension_->id(), kPrefStringForIdMapping));
 
@@ -1232,14 +1232,17 @@ TEST_F(ExtensionPrefsSimpleTest, OldWithholdingPrefMigration) {
 
   // We need to explicitly remove the default value for the new pref as it is
   // added on install by default.
-  prefs.prefs()->UpdateExtensionPref(previous_false_id, kNewPrefKey, nullptr);
-  prefs.prefs()->UpdateExtensionPref(previous_true_id, kNewPrefKey, nullptr);
-  prefs.prefs()->UpdateExtensionPref(previous_empty_id, kNewPrefKey, nullptr);
+  prefs.prefs()->UpdateExtensionPref(previous_false_id, kNewPrefKey,
+                                     absl::nullopt);
+  prefs.prefs()->UpdateExtensionPref(previous_true_id, kNewPrefKey,
+                                     absl::nullopt);
+  prefs.prefs()->UpdateExtensionPref(previous_empty_id, kNewPrefKey,
+                                     absl::nullopt);
 
   prefs.prefs()->UpdateExtensionPref(previous_false_id, kOldPrefKey,
-                                     std::make_unique<base::Value>(false));
+                                     base::Value(false));
   prefs.prefs()->UpdateExtensionPref(previous_true_id, kOldPrefKey,
-                                     std::make_unique<base::Value>(true));
+                                     base::Value(true));
 
   // First make sure that all prefs start out as we expect them to be.
   bool bool_value = false;
@@ -1316,8 +1319,7 @@ TEST_F(ExtensionPrefsSimpleTest, MigrateToNewExternalUninstallBits) {
   // dictionary.
   prefs.prefs()->UpdateExtensionPref(
       external_extension, "state",
-      std::make_unique<base::Value>(
-          Extension::DEPRECATED_EXTERNAL_EXTENSION_UNINSTALLED));
+      base::Value(Extension::DEPRECATED_EXTERNAL_EXTENSION_UNINSTALLED));
 
   // Cause the migration.
   prefs.RecreateExtensionPrefs();

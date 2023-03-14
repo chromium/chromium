@@ -11,18 +11,28 @@
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/test_password_store.h"
 #import "components/password_manager/core/common/password_manager_features.h"
+#import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
+using password_manager::CredentialUIEntry;
+using password_manager::InsecureType;
+using password_manager::PasswordForm;
+using password_manager::TestPasswordStore;
+using ::testing::UnorderedElementsAre;
+
 namespace {
+
 constexpr char kExampleCom1[] = "https://example1.com";
 constexpr char kExampleCom2[] = "https://example2.com";
 constexpr char kExampleCom3[] = "https://example3.com";
@@ -38,9 +48,11 @@ constexpr char16_t kUsername116[] = u"alice";
 constexpr char16_t kPassword116[] = u"s3cre3t";
 
 using password_manager::CredentialUIEntry;
+using password_manager::FormatElapsedTimeSinceLastCheck;
 using password_manager::InsecureType;
 using password_manager::PasswordForm;
 using password_manager::TestPasswordStore;
+using password_manager::WarningType;
 
 PasswordForm MakeSavedPassword(
     base::StringPiece signon_realm,
@@ -238,4 +250,88 @@ TEST_F(PasswordCheckupUtilsTest, CheckPasswordCountForWarningType) {
   // The number of compromised passwords should be returned.
   EXPECT_EQ(GetPasswordCountForWarningType(warning_type, insecure_credentials),
             4);
+}
+
+// Tests that the correct string is returned with the right timestamp.
+TEST_F(PasswordCheckupUtilsTest, ElapsedTimeSinceLastCheck) {
+  EXPECT_NSEQ(@"Check never run.", FormatElapsedTimeSinceLastCheck(
+                                       manager().GetLastPasswordCheckTime()));
+
+  base::Time expected1 = base::Time::Now() - base::Seconds(10);
+  browser_state()->GetPrefs()->SetDouble(
+      password_manager::prefs::kLastTimePasswordCheckCompleted,
+      expected1.ToDoubleT());
+
+  EXPECT_NSEQ(
+      @"Last checked just now.",
+      FormatElapsedTimeSinceLastCheck(manager().GetLastPasswordCheckTime()));
+
+  base::Time expected2 = base::Time::Now() - base::Minutes(5);
+  browser_state()->GetPrefs()->SetDouble(
+      password_manager::prefs::kLastTimePasswordCheckCompleted,
+      expected2.ToDoubleT());
+
+  EXPECT_NSEQ(
+      @"Last checked 5 minutes ago.",
+      FormatElapsedTimeSinceLastCheck(manager().GetLastPasswordCheckTime()));
+}
+
+// Tests that the correct passwords are returned for each warning type.
+TEST_F(PasswordCheckupUtilsTest, CheckPasswordsForWarningType) {
+  // Add a muted password.
+  PasswordForm muted_form = MakeSavedPassword(kExampleCom1, kUsername116);
+  AddIssueToForm(&muted_form, InsecureType::kLeaked, base::Minutes(1),
+                 /*is_muted=*/true);
+  store().AddLogin(muted_form);
+
+  // Add a weak password.
+  PasswordForm weak_form = MakeSavedPassword(kExampleCom2, kUsername116);
+  AddIssueToForm(&weak_form, InsecureType::kWeak, base::Minutes(1));
+  store().AddLogin(weak_form);
+
+  // Add a reused password.
+  PasswordForm reused_form = MakeSavedPassword(kExampleCom3, kUsername116);
+  AddIssueToForm(&reused_form, InsecureType::kReused, base::Minutes(1));
+  store().AddLogin(reused_form);
+
+  // Add two unmuted compromised passwords, a leaked one and a phished one.
+  PasswordForm leaked_form = MakeSavedPassword(kExampleCom4, kUsername116);
+  AddIssueToForm(&leaked_form, InsecureType::kLeaked, base::Minutes(1));
+  store().AddLogin(leaked_form);
+
+  PasswordForm phished_form = MakeSavedPassword(kExampleCom5, kUsername116);
+  AddIssueToForm(&phished_form, InsecureType::kPhished, base::Minutes(1));
+  store().AddLogin(phished_form);
+
+  RunUntilIdle();
+
+  std::vector<CredentialUIEntry> insecure_credentials =
+      manager().GetInsecureCredentials();
+
+  std::vector<CredentialUIEntry> filtered_credentials;
+
+  // Verify Dismissed Passwords.
+  filtered_credentials = GetPasswordsForWarningType(
+      WarningType::kDismissedWarningsWarning, insecure_credentials);
+  EXPECT_THAT(filtered_credentials,
+              UnorderedElementsAre(CredentialUIEntry(muted_form)));
+
+  // Verify Compromised Passwords.
+  filtered_credentials = GetPasswordsForWarningType(
+      WarningType::kCompromisedPasswordsWarning, insecure_credentials);
+  EXPECT_THAT(filtered_credentials,
+              UnorderedElementsAre(CredentialUIEntry(leaked_form),
+                                   CredentialUIEntry(phished_form)));
+
+  // Verify Weak Passwords.
+  filtered_credentials = GetPasswordsForWarningType(
+      WarningType::kWeakPasswordsWarning, insecure_credentials);
+  EXPECT_THAT(filtered_credentials,
+              UnorderedElementsAre(CredentialUIEntry(weak_form)));
+
+  // Verify Reused Passwords.
+  filtered_credentials = GetPasswordsForWarningType(
+      WarningType::kReusedPasswordsWarning, insecure_credentials);
+  EXPECT_THAT(filtered_credentials,
+              UnorderedElementsAre(CredentialUIEntry(reused_form)));
 }

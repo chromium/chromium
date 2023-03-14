@@ -6,6 +6,8 @@ static_library("hash_realtime_service") {
   sources = [
     "hash_realtime_service.cc",
     "hash_realtime_service.h",
+    "ohttp_key_service.cc",
+    "ohttp_key_service.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -68,6 +70,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/safe_browsing/core/browser:verdict_cache_manager",
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common/proto:safebrowsingv5_alpha1_proto",
     "//components/sync_preferences:test_support",
     "//google_apis:google_apis",

@@ -95,7 +95,6 @@ class UpdaterImpl : public DynamicIIDsImpl<IUpdater,
   // Overrides for IUpdater.
   IFACEMETHODIMP GetVersion(BSTR* version) override;
   IFACEMETHODIMP FetchPolicies(IUpdaterCallback* callback) override;
-  IFACEMETHODIMP CheckForUpdate(const wchar_t* app_id) override;
   IFACEMETHODIMP RegisterApp(const wchar_t* app_id,
                              const wchar_t* brand_code,
                              const wchar_t* brand_path,
@@ -104,11 +103,14 @@ class UpdaterImpl : public DynamicIIDsImpl<IUpdater,
                              const wchar_t* existence_checker_path,
                              IUpdaterCallback* callback) override;
   IFACEMETHODIMP RunPeriodicTasks(IUpdaterCallback* callback) override;
+  IFACEMETHODIMP CheckForUpdate(const wchar_t* app_id,
+                                LONG priority,
+                                BOOL same_version_update_allowed,
+                                IUpdaterObserver* observer) override;
   IFACEMETHODIMP Update(const wchar_t* app_id,
                         const wchar_t* install_data_index,
                         LONG priority,
                         BOOL same_version_update_allowed,
-                        BOOL do_update_check_only,
                         IUpdaterObserver* observer) override;
   IFACEMETHODIMP UpdateAll(IUpdaterObserver* observer) override;
   IFACEMETHODIMP Install(const wchar_t* app_id,

@@ -142,11 +142,18 @@ _js_reserved_keywords = [
     'yield',
 ]
 
-_SHARED_MODULE_PREFIX = 'chrome://resources/mojo'
+_CHROME_SCHEME_PREFIX = 'chrome:'
+_SHARED_MODULE_PREFIX = '//resources/mojo'
+
+
+def _IsSharedModulePath(path):
+  return path.startswith(_SHARED_MODULE_PREFIX) or \
+      path.startswith(_CHROME_SCHEME_PREFIX + _SHARED_MODULE_PREFIX)
 
 
 def _IsAbsoluteChromeResourcesPath(path):
-  return path.startswith('chrome://resources/')
+  return path.startswith('chrome://resources/') or \
+      path.startswith('//resources/')
 
 
 def _GetWebUiModulePath(module):
@@ -395,10 +402,6 @@ class Generator(generator.Generator):
         for method in interface.methods:
           referenced_kinds.extend(method.parameters or [])
           referenced_kinds.extend(method.response_parameters or [])
-      for struct in self.module.structs:
-        referenced_kinds.extend(struct.fields)
-      for union in self.module.unions:
-        referenced_kinds.extend(union.fields)
 
       # Determine whether Remote and/or PendingReceiver are referenced.
       imports = []
@@ -569,9 +572,15 @@ class Generator(generator.Generator):
 
   def _GetJsModuleImports(self):
     this_module_path = _GetWebUiModulePath(self.module)
-    this_module_is_shared = bool(
-        this_module_path and this_module_path.startswith(_SHARED_MODULE_PREFIX))
+    this_module_is_shared = bool(this_module_path
+                                 and _IsSharedModulePath(this_module_path))
     imports = dict()
+
+    def strip_prefix(s, prefix):
+      if s.startswith(prefix):
+        return s[len(prefix):]
+      return s
+
     for spec, kind in self.module.imported_kinds.items():
       assert this_module_path is not None
       base_path = _GetWebUiModulePath(kind.module)
@@ -579,7 +588,7 @@ class Generator(generator.Generator):
       import_path = '{}{}-webui.js'.format(base_path,
                                            os.path.basename(kind.module.path))
 
-      import_module_is_shared = import_path.startswith(_SHARED_MODULE_PREFIX)
+      import_module_is_shared = _IsSharedModulePath(import_path)
       if this_module_is_shared:
         assert import_module_is_shared, \
             'Shared WebUI module "{}" cannot depend on non-shared WebUI ' \
@@ -604,19 +613,19 @@ class Generator(generator.Generator):
               import_module_is_shared == this_module_is_shared
 
       if use_relative_path:
-
-        def strip_prefix(s, prefix):
-          if s.startswith(prefix):
-            return s[len(prefix):]
-          return s
-
         import_path = urllib.request.pathname2url(
             os.path.relpath(
-                strip_prefix(import_path, _SHARED_MODULE_PREFIX),
-                strip_prefix(this_module_path, _SHARED_MODULE_PREFIX)))
+                strip_prefix(strip_prefix(import_path, _CHROME_SCHEME_PREFIX),
+                             _SHARED_MODULE_PREFIX),
+                strip_prefix(
+                    strip_prefix(this_module_path, _CHROME_SCHEME_PREFIX),
+                    _SHARED_MODULE_PREFIX)))
         if (not import_path.startswith('.')
             and not import_path.startswith('/')):
           import_path = './' + import_path
+      else:
+        # Import absolute imports from scheme-relative paths.
+        import_path = strip_prefix(import_path, _CHROME_SCHEME_PREFIX)
 
       if import_path not in imports:
         imports[import_path] = []

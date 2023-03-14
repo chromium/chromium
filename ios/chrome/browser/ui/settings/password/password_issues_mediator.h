@@ -12,7 +12,7 @@
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 
 namespace password_manager {
-struct CredentialUIEntry;
+enum class WarningType;
 }  // namespace password_manager
 
 class FaviconLoader;
@@ -23,18 +23,18 @@ class IOSChromePasswordCheckManager;
 @interface PasswordIssuesMediator
     : NSObject <SuccessfulReauthTimeAccessor, TableViewFaviconDataSource>
 
-- (instancetype)initWithPasswordCheckManager:
-                    (IOSChromePasswordCheckManager*)manager
-                               faviconLoader:(FaviconLoader*)faviconLoader
-                                 syncService:(syncer::SyncService*)syncService
+- (instancetype)initForWarningType:(password_manager::WarningType)warningType
+              passwordCheckManager:(IOSChromePasswordCheckManager*)manager
+                     faviconLoader:(FaviconLoader*)faviconLoader
+                       syncService:(syncer::SyncService*)syncService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-@property(nonatomic, weak) id<PasswordIssuesConsumer> consumer;
+// Disconnects from all observers. Must be called before destroying.
+- (void)disconnect;
 
-// Deletes password from the password store.
-- (void)deleteCredential:(const password_manager::CredentialUIEntry&)credential;
+@property(nonatomic, weak) id<PasswordIssuesConsumer> consumer;
 
 @end
 

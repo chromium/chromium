@@ -77,7 +77,10 @@ void FlossLEScanClient::Init(dbus::Bus* bus,
   exported_scanner_callback_manager_.AddMethod(
       adapter::kOnScanResult, &ScannerClientObserver::ScanResultReceived);
   exported_scanner_callback_manager_.AddMethod(
-      adapter::kOnScanResultLost, &ScannerClientObserver::ScanResultLost);
+      adapter::kOnAdvertisementFound,
+      &ScannerClientObserver::AdvertisementFound);
+  exported_scanner_callback_manager_.AddMethod(
+      adapter::kOnAdvertisementLost, &ScannerClientObserver::AdvertisementLost);
 
   dbus::ObjectPath callback_path(kScannerCallbackPath);
 
@@ -177,9 +180,17 @@ void FlossLEScanClient::ScanResultReceived(ScanResult scan_result) {
   }
 }
 
-void FlossLEScanClient::ScanResultLost(ScanResult scan_result) {
+void FlossLEScanClient::AdvertisementFound(uint8_t scanner_id,
+                                           ScanResult scan_result) {
   for (auto& observer : observers_) {
-    observer.ScanResultLost(scan_result);
+    observer.AdvertisementFound(scanner_id, scan_result);
+  }
+}
+
+void FlossLEScanClient::AdvertisementLost(uint8_t scanner_id,
+                                          ScanResult scan_result) {
+  for (auto& observer : observers_) {
+    observer.AdvertisementLost(scanner_id, scan_result);
   }
 }
 

@@ -766,9 +766,11 @@ async function waitForScrollReset(scroller) {
         scroller.scrollLeft == 0) {
       resolve();
     } else {
+      const eventTarget =
+        scroller == document.scrollingElement ? document : scroller;
       scroller.scrollTop = 0;
       scroller.scrollLeft = 0;
-      waitForScrollendEvent(document).then(resolve());
+      waitForScrollendEvent(eventTarget).then(resolve);
     }
   });
 }

@@ -82,7 +82,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
-#include "extensions/common/constants.h"
 #include "extensions/common/extension_set.h"
 #include "net/base/mime_util.h"
 #include "pdf/buildflags.h"
@@ -333,14 +332,13 @@ void PostProcessFoundTasks(Profile* profile,
   disabled_actions.emplace("view-pdf");
 #endif  // !BUILDFLAG(ENABLE_PDF)
 
-  if (!ash::features::IsUploadOfficeToCloudEnabled()) {
+  if (!ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud()) {
     disabled_actions.emplace(kActionIdWebDriveOfficeWord);
     disabled_actions.emplace(kActionIdWebDriveOfficeExcel);
     disabled_actions.emplace(kActionIdWebDriveOfficePowerPoint);
   } else {
     // Hide the office PWA File Handler.
-    RemoveActionsForApp(extension_misc::kOfficePwaAppId,
-                        &resulting_tasks->tasks);
+    RemoveActionsForApp(web_app::kMicrosoft365AppId, &resulting_tasks->tasks);
 
     // Hack around the fact that App Service will only return one task for each
     // app. We want both tasks to be available, so add the office task if the
@@ -418,7 +416,7 @@ bool ExecuteWebDriveOfficeTask(Profile* profile,
       drive::DriveIntegrationServiceFactory::FindForProfile(profile);
   if (integration_service && integration_service->IsMounted() &&
       integration_service->GetDriveFsInterface()) {
-    return ash::cloud_upload::OpenFilesWithCloudProvider(
+    return ash::cloud_upload::CloudOpenTask::Execute(
         profile, file_urls, ash::cloud_upload::CloudProvider::kGoogleDrive);
   } else {
     UMA_HISTOGRAM_ENUMERATION(kDriveErrorMetricName,
@@ -444,7 +442,7 @@ bool ExecuteOpenInOfficeTask(Profile* profile,
     // TODO(petermarshall): UMAs.
   }
 
-  return ash::cloud_upload::OpenFilesWithCloudProvider(
+  return ash::cloud_upload::CloudOpenTask::Execute(
       profile, file_urls, ash::cloud_upload::CloudProvider::kOneDrive);
 }
 
@@ -459,6 +457,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       prefs::kOfficeSetupComplete, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterBooleanPref(prefs::kOfficeFilesAlwaysMove, false);
+  registry->RegisterBooleanPref(prefs::kOfficeMoveConfirmationShown, false);
   registry->RegisterTimePref(prefs::kOfficeFileMovedToOneDrive, base::Time());
   registry->RegisterTimePref(prefs::kOfficeFileMovedToGoogleDrive,
                              base::Time());
@@ -1120,7 +1119,7 @@ std::string ToSwaActionId(const std::string& action_id) {
 
 }  // namespace
 
-void SetWordFileHandler(Profile* profile, TaskDescriptor& task) {
+void SetWordFileHandler(Profile* profile, const TaskDescriptor& task) {
   UpdateDefaultTask(
       profile, task, {".doc", ".docx"},
       {"application/msword",
@@ -1134,7 +1133,7 @@ void SetWordFileHandlerToFilesSWA(Profile* profile,
   SetWordFileHandler(profile, task);
 }
 
-void SetExcelFileHandler(Profile* profile, TaskDescriptor& task) {
+void SetExcelFileHandler(Profile* profile, const TaskDescriptor& task) {
   UpdateDefaultTask(
       profile, task, {".xls", ".xlsx"},
       {"application/vnd.ms-excel",
@@ -1148,7 +1147,7 @@ void SetExcelFileHandlerToFilesSWA(Profile* profile,
   SetExcelFileHandler(profile, task);
 }
 
-void SetPowerPointFileHandler(Profile* profile, TaskDescriptor& task) {
+void SetPowerPointFileHandler(Profile* profile, const TaskDescriptor& task) {
   UpdateDefaultTask(
       profile, task, {".ppt", ".pptx"},
       {"application/vnd.ms-powerpoint",
@@ -1177,6 +1176,15 @@ void SetAlwaysMoveOfficeFiles(Profile* profile, bool always_move) {
 
 bool AlwaysMoveOfficeFiles(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(prefs::kOfficeFilesAlwaysMove);
+}
+
+void SetOfficeMoveConfirmationShown(Profile* profile, bool complete) {
+  profile->GetPrefs()->SetBoolean(prefs::kOfficeMoveConfirmationShown,
+                                  complete);
+}
+
+bool OfficeMoveConfirmationShown(Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(prefs::kOfficeMoveConfirmationShown);
 }
 
 void SetOfficeFileMovedToOneDrive(Profile* profile, base::Time moved) {

@@ -31,7 +31,6 @@
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_trust_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document_parser_client.h"
@@ -67,6 +66,7 @@ class DocumentParser;
 class ExceptionState;
 class ExecutionContext;
 class FormData;
+class PrivateToken;
 class ScriptState;
 class TextResourceDecoder;
 class ThreadableLoader;
@@ -145,7 +145,7 @@ class CORE_EXPORT XMLHttpRequest final
   void setRequestHeader(const AtomicString& name,
                         const AtomicString& value,
                         ExceptionState&);
-  void setTrustToken(const TrustToken*, ExceptionState&);
+  void setPrivateToken(const PrivateToken*, ExceptionState&);
   void overrideMimeType(const AtomicString& override, ExceptionState&);
   String getAllResponseHeaders() const;
   const AtomicString& getResponseHeader(const AtomicString&) const;
@@ -162,7 +162,7 @@ class CORE_EXPORT XMLHttpRequest final
   String responseType();
   void setResponseType(const String&, ExceptionState&);
   String responseURL();
-  DOMException* trustTokenOperationError() const {
+  DOMException* privateTokenOperationError() const {
     return trust_token_operation_error_;
   }
 
@@ -216,10 +216,11 @@ class CORE_EXPORT XMLHttpRequest final
   // spec but doesn't convert the result to ASCII lowercase as specified in
   // the spec. Must be lowered later or compared using case insensitive
   // comparison functions if required.
-  AtomicString FinalResponseMIMEType() const;
+  AtomicString FinalResponseMIMETypeInternal() const;
   // The same as finalResponseMIMEType() but fallbacks to "text/xml" if
   // finalResponseMIMEType() returns an empty string.
-  AtomicString FinalResponseMIMETypeWithFallback() const;
+  // https://xhr.spec.whatwg.org/#response-body
+  AtomicString GetResponseMIMEType() const;
   // Returns the "final charset" defined in
   // https://xhr.spec.whatwg.org/#final-charset.
   WTF::TextEncoding FinalResponseCharset() const;

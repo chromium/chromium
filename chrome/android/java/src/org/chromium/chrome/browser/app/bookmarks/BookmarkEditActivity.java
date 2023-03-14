@@ -131,7 +131,7 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        mDeleteButton = menu.add(R.string.bookmark_action_bar_delete)
+        mDeleteButton = menu.add(R.string.bookmark_toolbar_delete)
                                 .setIcon(TintedDrawable.constructTintedDrawable(
                                         this, R.drawable.ic_delete_white_24dp))
                                 .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);

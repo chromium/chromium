@@ -43,6 +43,7 @@ class HeapMojoRemote {
   Proxy* operator->() const { return get(); }
   Proxy* get() const { return wrapper_->remote().get(); }
   bool is_bound() const { return wrapper_->remote().is_bound(); }
+  explicit operator bool() const { return is_bound(); }
   bool is_connected() const { return wrapper_->remote().is_connected(); }
   void reset() { wrapper_->remote().reset(); }
   void ResetWithReason(uint32_t custom_reason, const std::string& description) {

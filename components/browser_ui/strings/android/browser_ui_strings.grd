@@ -906,6 +906,12 @@
       <message name="IDS_MESSAGE_SCREEN_POSITION" desc="Accessibility label to inform users about the Message location">
         Option available near top of the screen
       </message>
+      <message name="IDS_MESSAGE_NEW_ACTIONS_AVAILABLE" desc="Accessibility label to inform a second message is shown">
+        New actions available near top of the screen
+      </message>
+      <message name="IDS_MESSAGE_DISMISS_AND_SHOW_NEXT" desc="Accessibility label to allow user to dismiss the current one in order to show the background message">
+        Dismiss and show next available action
+      </message>
 
       <!-- In-Product Help -->
       <message name="IDS_IPH_SNOOZE" desc="Snooze button text within In-Product Help tooltip.">
@@ -981,7 +987,7 @@
         Show zoom option in main menu
       </message>
       <message name="IDS_PAGE_ZOOM_ALWAYS_SHOW_PREFERENCE_SUMMARY" desc="Summary of the preference that allows the user to always show the menu item for zoom.">
-        Make it easier to zoom in on text and images for a site you visit
+        Make it easier to customize zoom for different sites
       </message>
       <message name="IDS_PAGE_ZOOM_PREVIEW_TITLE" desc="Label of the section of sample text shown to the user to preview zoom level.">
         Preview

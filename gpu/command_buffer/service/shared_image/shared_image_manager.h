@@ -54,6 +54,10 @@ class GPU_GLES2_EXPORT SharedImageManager
       std::unique_ptr<SharedImageBacking> backing,
       MemoryTypeTracker* ref);
 
+  std::unique_ptr<SharedImageRepresentationFactoryRef> AddSecondaryReference(
+      const Mailbox& mailbox,
+      MemoryTypeTracker* tracker);
+
   // Accessors which return a SharedImageRepresentation. Representations also
   // take a ref on the mailbox, releasing it when the representation is
   // destroyed.

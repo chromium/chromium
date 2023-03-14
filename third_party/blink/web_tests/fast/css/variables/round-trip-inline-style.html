@@ -10,6 +10,6 @@ test(function() {
   assert_equals(testElem.style.getPropertyValue('--bar'), 'value');
   testElem.style.setProperty('--bar', ' value');
   testElem.setAttribute('style', testElem.getAttribute('style'));
-  assert_equals(testElem.style.getPropertyValue('--bar'), ' value');
+  assert_equals(testElem.style.getPropertyValue('--bar'), 'value');
 }, "round tripping style works for variables.");
 </script>

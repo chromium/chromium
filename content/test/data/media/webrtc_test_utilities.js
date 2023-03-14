@@ -13,8 +13,14 @@ var gPendingTimeout;
 
 // Tells the C++ code we succeeded, which will generally exit the test.
 function reportTestSuccess() {
+  const message = logSuccess();
+  window.domAutomationController.send(message);
+}
+
+// Logs a success message to the console, and returns a success string.
+function logSuccess() {
   console.log('Test Success');
-  window.domAutomationController.send('OK');
+  return 'OK';
 }
 
 // Returns a custom return value to the test.
@@ -24,12 +30,17 @@ function sendValueToTest(value) {
 
 // Immediately fails the test on the C++ side.
 function failTest(reason) {
+  window.domAutomationController.send(toStackTrace(reason));
+}
+
+// Converts the given argument to an error stack.
+function toStackTrace(reason) {
   if (reason instanceof Error) {
     var error = reason;
   } else {
     var error = new Error(reason);
   }
-  window.domAutomationController.send(error.stack);
+  return error.stack;
 }
 
 // Fail a test on the C++ side after a timeout. Will cancel any pending timeout.

@@ -1029,10 +1029,10 @@ void SurfaceAggregator::AddRootReadbackPass() {
   // a backdrop filter.
   base::flat_set<AggregatedRenderPassId> pass_ids_drawing_to_root;
   for (auto* quad : root_render_pass->quad_list) {
-    if (quad->material != DrawQuad::Material::kAggregatedRenderPass)
-      continue;
-    pass_ids_drawing_to_root.insert(
-        AggregatedRenderPassDrawQuad::MaterialCast(quad)->render_pass_id);
+    if (auto* render_pass_quad =
+            quad->DynamicCast<AggregatedRenderPassDrawQuad>()) {
+      pass_ids_drawing_to_root.insert(render_pass_quad->render_pass_id);
+    }
   }
   if (!pass_ids_drawing_to_root.empty()) {
     for (auto& render_pass : *dest_pass_list_) {
@@ -1232,8 +1232,8 @@ void SurfaceAggregator::CopyQuadsToPass(
     if (quad->material == DrawQuad::Material::kSharedElement) {
       // SharedElement quads should've been resolved before aggregation.
       continue;
-    } else if (quad->material == DrawQuad::Material::kSurfaceContent) {
-      const auto* surface_quad = SurfaceDrawQuad::MaterialCast(quad);
+    } else if (const auto* surface_quad =
+                   quad->DynamicCast<SurfaceDrawQuad>()) {
       // HandleSurfaceQuad may add other shared quad state, so reset the
       // current data.
       last_copied_source_shared_quad_state = nullptr;
@@ -1298,9 +1298,8 @@ void SurfaceAggregator::CopyQuadsToPass(
       }
 
       DrawQuad* dest_quad;
-      if (quad->material == DrawQuad::Material::kCompositorRenderPass) {
-        const auto* pass_quad =
-            CompositorRenderPassDrawQuad::MaterialCast(quad);
+      if (const auto* pass_quad =
+              quad->DynamicCast<CompositorRenderPassDrawQuad>()) {
         CompositorRenderPassId original_pass_id = pass_quad->render_pass_id;
         AggregatedRenderPassId remapped_pass_id =
             resolved_frame.GetRenderPassDataById(original_pass_id)
@@ -1315,8 +1314,8 @@ void SurfaceAggregator::CopyQuadsToPass(
               resolved_frame, pass_quad, target_transform,
               dest_root_target_clip_rect, dest_pass->transform_to_root_target);
         }
-      } else if (quad->material == DrawQuad::Material::kTextureContent) {
-        const auto* texture_quad = TextureDrawQuad::MaterialCast(quad);
+      } else if (const auto* texture_quad =
+                     quad->DynamicCast<TextureDrawQuad>()) {
         if (texture_quad->secure_output_only &&
             (!output_is_secure_ ||
              resolved_pass.aggregation().in_copy_request_pass)) {
@@ -1591,9 +1590,8 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
           result.page_fullscreen_mode = true;
         }
       }
-    } else if (quad->material == DrawQuad::Material::kCompositorRenderPass) {
-      auto* render_pass_quad = CompositorRenderPassDrawQuad::MaterialCast(quad);
-
+    } else if (auto* render_pass_quad =
+                   quad->DynamicCast<CompositorRenderPassDrawQuad>()) {
       CompositorRenderPassId child_pass_id = render_pass_quad->render_pass_id;
 
       ResolvedPassData& child_resolved_pass =

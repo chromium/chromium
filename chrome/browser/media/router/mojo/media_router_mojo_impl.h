@@ -24,6 +24,7 @@
 #include "components/media_router/browser/media_router_base.h"
 #include "components/media_router/browser/media_router_debugger.h"
 #include "components/media_router/browser/media_routes_observer.h"
+#include "components/media_router/browser/mirroring_media_controller_host.h"
 #include "components/media_router/common/issue.h"
 #include "components/media_router/common/mojom/logger.mojom.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
@@ -47,6 +48,7 @@ class FlingingController;
 namespace media_router {
 
 enum class MediaRouteProviderWakeReason;
+class MediaRouterDebuggerImpl;
 
 // MediaRouter implementation that delegates calls to a MediaRouteProvider.
 class MediaRouterMojoImpl : public MediaRouterBase,
@@ -84,6 +86,8 @@ class MediaRouterMojoImpl : public MediaRouterBase,
   std::vector<MediaRoute> GetCurrentRoutes() const override;
   std::unique_ptr<media::FlingingController> GetFlingingController(
       const MediaRoute::Id& route_id) override;
+  MirroringMediaControllerHost* GetMirroringMediaControllerHost(
+      const MediaRoute::Id& route_id) override;
   void GetMediaController(
       const MediaRoute::Id& route_id,
       mojo::PendingReceiver<mojom::MediaController> controller,
@@ -97,6 +101,10 @@ class MediaRouterMojoImpl : public MediaRouterBase,
   // is in sync with MediaRouter on a best-effort basis.
   virtual void SyncStateToMediaRouteProvider(
       mojom::MediaRouteProviderId provider_id);
+
+  void GetMirroringStats(
+      const MediaRoute::Id& route_id,
+      base::OnceCallback<void(const base::Value)> json_stats_cb);
 
  protected:
   // Standard constructor, used by
@@ -358,6 +366,8 @@ class MediaRouterMojoImpl : public MediaRouterBase,
   // Callback called by MRP's CreateMediaRouteController().
   void OnMediaControllerCreated(const MediaRoute::Id& route_id, bool success);
 
+  void AddMirroringMediaControllerHost(const MediaRoute& route);
+
   // Method for obtaining a pointer to the provider associated with the given
   // object. Returns a nullopt when such a provider is not found.
   absl::optional<mojom::MediaRouteProviderId> GetProviderIdForSink(
@@ -417,6 +427,9 @@ class MediaRouterMojoImpl : public MediaRouterBase,
                  std::unique_ptr<PresentationConnectionMessageObserverList>>
       message_observers_;
 
+  base::flat_map<MediaRoute::Id, std::unique_ptr<MirroringMediaControllerHost>>
+      mirroring_media_controller_hosts_;
+
   // Receivers for Mojo remotes to |this| held by media route providers.
   mojo::ReceiverSet<mojom::MediaRouter> receivers_;
 
@@ -428,7 +441,7 @@ class MediaRouterMojoImpl : public MediaRouterBase,
   // TODO(crbug.com/1077138): Limit logging before Media Router usage.
   LoggerImpl logger_;
 
-  MediaRouterDebugger media_router_debugger_;
+  std::unique_ptr<MediaRouterDebuggerImpl> media_router_debugger_;
 };
 
 }  // namespace media_router

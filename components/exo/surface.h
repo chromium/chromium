@@ -371,6 +371,10 @@ class Surface final : public ui::PropertyHandler {
     return pending_state_.damage.Contains(damage);
   }
 
+  bool HasLeaveEnterCallbackForTesting() const {
+    return !leave_enter_callback_.is_null();
+  }
+
   // Set occlusion tracking region for surface.
   void SetOcclusionTracking(bool tracking);
 
@@ -449,6 +453,17 @@ class Surface final : public ui::PropertyHandler {
   // Returns the SecurityDelegate associated with this surface, or nullptr
   // if one can not be determined. See go/secure-exo-ids for more details.
   SecurityDelegate* GetSecurityDelegate();
+
+  // Sets the accessibility window ID sent from the shell client to the window.
+  // A negative number removes it.
+  void SetClientAccessibilityId(int id);
+
+  // Inform observers and subsurfaces about new fullscreen state
+  void OnFullscreenStateChanged(bool fullscreen);
+
+  OverlayPriority GetOverlayPriorityHint() {
+    return state_.overlay_priority_hint;
+  }
 
  private:
   struct State {
@@ -570,6 +585,9 @@ class Surface final : public ui::PropertyHandler {
 
   // Updates buffer_transform_ to match the current buffer parameters.
   void UpdateBufferTransform(bool y_invert);
+
+  // Update state_.overlay_priority_hint and notify observers
+  void UpdateOverlayPriorityHint(OverlayPriority overlay_priority_hint);
 
   // Puts the current surface into a draw quad, and appends the draw quads into
   // the |frame|.

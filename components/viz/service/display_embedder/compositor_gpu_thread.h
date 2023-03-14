@@ -87,7 +87,7 @@ class VIZ_SERVICE_EXPORT CompositorGpuThread
 
   raw_ptr<gpu::GpuChannelManager> gpu_channel_manager_;
   const bool enable_watchdog_;
-  bool init_succeded_ = false;
+  bool init_succeeded_ = false;
 
   scoped_refptr<VulkanContextProvider> vulkan_context_provider_;
 

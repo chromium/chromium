@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"
-#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -24,6 +24,7 @@ class DigitalGoodsService final : public ScriptWrappable {
 
  public:
   explicit DigitalGoodsService(
+      ExecutionContext* context,
       mojo::PendingRemote<payments::mojom::blink::DigitalGoods> pending_remote);
   ~DigitalGoodsService() override;
 
@@ -36,8 +37,7 @@ class DigitalGoodsService final : public ScriptWrappable {
   void Trace(Visitor* visitor) const override;
 
  private:
-  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
-  mojo::Remote<payments::mojom::blink::DigitalGoods> mojo_service_;
+  HeapMojoRemote<payments::mojom::blink::DigitalGoods> mojo_service_;
 };
 
 }  // namespace blink

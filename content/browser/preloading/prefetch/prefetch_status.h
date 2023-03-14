@@ -126,7 +126,7 @@ enum class PrefetchStatus {
 
   // The prefetch was redirected, but following redirects was disabled.
   // See crbug.com/1266876 for more details.
-  kPrefetchFailedRedirectsDisabled = 35,
+  kPrefetchFailedRedirectsDisabled_DEPRECATED = 35,
 
   // The url was not eligible to be prefetched because its host was not unique
   // (e.g., a non publicly routable IP address or a hostname which is not
@@ -152,8 +152,15 @@ enum class PrefetchStatus {
   // final successful state.
   kPrefetchResponseUsed = 42,
 
+  // The prefetch was redirected, but there was a problem with the redirect.
+  kPrefetchFailedInvalidRedirect = 43,
+
+  // The prefetch was redirected, but the redirect URL is not eligible for
+  // prefetch.
+  kPrefetchFailedIneligibleRedirect = 44,
+
   // The max value of the PrefetchStatus. Update this when new enums are added.
-  kMaxValue = kPrefetchResponseUsed,
+  kMaxValue = kPrefetchFailedIneligibleRedirect,
 };
 
 }  // namespace content

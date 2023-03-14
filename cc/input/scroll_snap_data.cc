@@ -172,9 +172,9 @@ bool SnapContainerData::FindSnapPosition(
       // TODO(http://crbug.com/866127): If the target snap area is covering the
       // snapport then we should fallback to the default "closest-area" method
       // instead.
-      selected_x = GetTargetSnapAreaSearchResult(SearchAxis::kX);
-      DCHECK(selected_x.has_value());
-    } else {
+      selected_x = GetTargetSnapAreaSearchResult(strategy, SearchAxis::kX);
+    }
+    if (!selected_x) {
       // Start from current position in the cross axis. The search algorithm
       // expects the cross axis position to be inside scroller bounds. But since
       // we cannot always assume that the incoming value fits this criteria we
@@ -188,9 +188,9 @@ bool SnapContainerData::FindSnapPosition(
   }
   if (should_snap_on_y) {
     if (should_prioritize_y_target) {
-      selected_y = GetTargetSnapAreaSearchResult(SearchAxis::kY);
-      DCHECK(selected_y.has_value());
-    } else {
+      selected_y = GetTargetSnapAreaSearchResult(strategy, SearchAxis::kY);
+    }
+    if (!selected_y) {
       SnapSearchResult initial_snap_position_x = {
           base::clamp(base_position.x(), 0.f, max_position_.x()),
           gfx::RangeF(0, max_position_.y())};
@@ -303,15 +303,18 @@ bool SnapContainerData::FindSnapPositionForMutualSnap(
 }
 
 absl::optional<SnapSearchResult>
-SnapContainerData::GetTargetSnapAreaSearchResult(SearchAxis axis) const {
+SnapContainerData::GetTargetSnapAreaSearchResult(
+    const SnapSelectionStrategy& strategy,
+    SearchAxis axis) const {
   ElementId target_id = axis == SearchAxis::kX
                             ? target_snap_area_element_ids_.x
                             : target_snap_area_element_ids_.y;
   if (target_id == ElementId())
     return absl::nullopt;
   for (const SnapAreaData& area : snap_area_list_) {
-    if (area.element_id == target_id)
+    if (area.element_id == target_id && strategy.IsValidSnapArea(axis, area)) {
       return GetSnapSearchResult(axis, area);
+    }
   }
   return absl::nullopt;
 }

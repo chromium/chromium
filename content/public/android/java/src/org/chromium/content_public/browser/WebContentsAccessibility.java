@@ -28,28 +28,16 @@ public interface WebContentsAccessibility {
     }
 
     /**
-     *  Determines if a11y enabled.
-     *  @return {@code true} if a11y is enabled.
+     *  Determines if the underlying native C++ a11y framework has been initialized.
+     *  @return {@code true} if the framework has been initialized.
      */
-    boolean isAccessibilityEnabled();
+    boolean isNativeInitialized();
 
     /**
      *  Enables a11y for testing.
      */
     @VisibleForTesting
     void setAccessibilityEnabledForTesting();
-
-    /**
-     * Enables a11y service mask flags in the BrowserAccessibilityState for testing.
-     */
-    @VisibleForTesting
-    void setBrowserAccessibilityStateForTesting();
-
-    /**
-     *  Add a spelling error.
-     */
-    @VisibleForTesting
-    void addSpellingErrorForTesting(int virtualViewId, int startOffset, int endOffset);
 
     /**
      * If native accessibility is enabled and no other views are temporarily
@@ -66,9 +54,27 @@ public interface WebContentsAccessibility {
     void onProvideVirtualStructure(ViewStructure structure, boolean ignoreScrollOffset);
 
     /**
-     * Set whether or not the web contents are obscured by another view.
-     * If true, we won't return an accessibility node provider or respond
-     * to touch exploration events.
+     * Notify the system that the web contents for this instance are obscured by another view.
+     *
+     * If set to true, indicates a client/embedder's view is obscuring the web contents. When the
+     * web contents are obscured, future calls to #getAccessibilityNodeProvider will return |null|,
+     * and calls to #performAction and touch exploration events will not be honored. The
+     * associated WebContentsAccessibilityImpl will return a |null| AccessibilityNodeProvider
+     * instance, and ignore actions sent from the framework.
+     *
+     * Clients may use this method for situations such as (but not limited to):
+     *      - Preventing accessibility from running after certain browser state changes
+     *      - Preventing accessibility from running when a screen/flow is blocking the web contents,
+     *        e.g. modal dialog, tab switcher, bottom sheet, page info tray, etc.
+     *
+     * Note: It is the responsibility of the client/embedder to toggle this state back to its
+     *       previous value when the web contents are no longer obscured.
+     *
+     * Note: The native-side code is lazily initialized, so if it has not been initialized before
+     *       a client invokes this method, then it will not be initialized. However, if it has
+     *       already been initialized, it will remain in memory but not used.
+     *
+     * @param isObscured True if the web contents are currently obscured by another view.
      */
     void setObscuredByAnotherView(boolean isObscured);
 

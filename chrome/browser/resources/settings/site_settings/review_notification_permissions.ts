@@ -16,6 +16,7 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
+import {isUndoKeyboardEvent} from 'chrome://resources/js/util_ts.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
@@ -305,10 +306,10 @@ export class SettingsReviewNotificationPermissionsElement extends
 
   private onUndoButtonClick_(e: Event) {
     e.stopPropagation();
-    this.undoLastAction();
+    this.undoLastAction_();
   }
 
-  private undoLastAction() {
+  private undoLastAction_() {
     switch (this.lastUserAction_) {
       // As BLOCK and RESET actions just change the notification permission,
       // undoing them only requires allowing notification permissions again.
@@ -350,28 +351,8 @@ export class SettingsReviewNotificationPermissionsElement extends
       return;
     }
 
-    /**
-     * TODO(crbug.com/1392664): Unify the implementation of ctrl+z that are in
-     * the current codebase.
-     *
-     * Undo should be done when ctrl+z (or meta+z on macOS) is pressed. No other
-     * modifier should be pressed simultaneously (alt, shift, meta on non-mac
-     * and ctrl on mac).
-     */
-    if (e.key !== 'z') {
-      return;
-    }
-    const excludedModifiers = [e.altKey, e.shiftKey];
-    // <if expr="is_macosx">
-    let targetModifier = e.metaKey;
-    excludedModifiers.push(e.ctrlKey);
-    // </if>
-    // <if expr="not is_macosx">
-    let targetModifier = e.ctrlKey;
-    excludedModifiers.push(e.metaKey);
-    // </if>
-    if (!excludedModifiers.some(Boolean) && targetModifier) {
-      this.undoLastAction();
+    if (isUndoKeyboardEvent(e)) {
+      this.undoLastAction_();
     }
   }
 

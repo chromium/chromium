@@ -1,0 +1,3 @@
+Check that the dismissing a FedCm dialog works
+NetworkError: Error retrieving a token.
+

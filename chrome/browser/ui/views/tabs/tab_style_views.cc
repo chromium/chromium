@@ -36,7 +36,6 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/controls/focus_ring.h"
-#include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -68,7 +67,6 @@ class GM2TabStyle : public TabStyleViews {
   float GetActiveOpacity() const override;
   TabActive GetApparentActiveState() const override;
   TabStyle::TabColors CalculateColors() const override;
-  const gfx::FontList& GetFontList() const override;
   void PaintTab(gfx::Canvas* canvas) const override;
   void SetHoverLocation(const gfx::Point& location) override;
   void ShowHover(ShowHoverStyle style) override;
@@ -156,8 +154,6 @@ class GM2TabStyle : public TabStyleViews {
   const raw_ptr<const Tab> tab_;
 
   std::unique_ptr<GlowHoverController> hover_controller_;
-  gfx::FontList normal_font_;
-  gfx::FontList heavy_font_;
 };
 
 void DrawHighlight(gfx::Canvas* canvas,
@@ -192,11 +188,7 @@ GM2TabStyle::GM2TabStyle(Tab* tab)
     : tab_(tab),
       hover_controller_(gfx::Animation::ShouldRenderRichAnimation()
                             ? new GlowHoverController(tab)
-                            : nullptr),
-      normal_font_(views::style::GetFont(views::style::CONTEXT_LABEL,
-                                         views::style::STYLE_PRIMARY)),
-      heavy_font_(views::style::GetFont(views::style::CONTEXT_BUTTON_MD,
-                                        views::style::STYLE_PRIMARY)) {
+                            : nullptr) {
   // TODO(dfried): create a new STYLE_PROMINENT or similar to use instead of
   // repurposing CONTEXT_BUTTON_MD.
 }
@@ -486,19 +478,6 @@ TabStyle::TabColors GM2TabStyle::CalculateColors() const {
                                      : kColorTabCloseButtonFocusRingInactive;
   return {foreground_color, background_color, focus_ring_color,
           close_button_focus_ring_color};
-}
-
-const gfx::FontList& GM2TabStyle::GetFontList() const {
-  // Don't want to have to keep re-computing this value.
-  static const bool prominent_dark_mode_title =
-      base::FeatureList::IsEnabled(features::kProminentDarkModeActiveTabTitle);
-
-  if (prominent_dark_mode_title && tab_->IsActive() &&
-      color_utils::IsDark(GetTabBackgroundColor(TabActive::kActive))) {
-    return heavy_font_;
-  }
-
-  return normal_font_;
 }
 
 void GM2TabStyle::PaintTab(gfx::Canvas* canvas) const {

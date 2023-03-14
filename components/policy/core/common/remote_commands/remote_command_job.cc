@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/syslog_logging.h"
+#include "device_management_backend.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
@@ -41,9 +42,21 @@ std::string ToString(enterprise_management::RemoteCommand::Type type) {
     CASE(DEVICE_RESET_EUICC);
     CASE(BROWSER_ROTATE_ATTESTATION_CREDENTIAL);
     CASE(FETCH_CRD_AVAILABILITY_INFO);
+    CASE(FETCH_SUPPORT_PACKET);
   }
   return base::StringPrintf("Unknown type %i", type);
 #undef CASE
+}
+
+RemoteCommandJob::Status ResultTypeToStatus(ResultType result) {
+  switch (result) {
+    case ResultType::kSuccess:
+      return RemoteCommandJob::SUCCEEDED;
+    case ResultType::kFailure:
+      return RemoteCommandJob::FAILED;
+    case ResultType::kAcked:
+      return RemoteCommandJob::ACKED;
+  }
 }
 
 }  // namespace
@@ -129,9 +142,7 @@ bool RemoteCommandJob::Run(base::Time now,
 
   RunImpl(
       base::BindOnce(&RemoteCommandJob::OnCommandExecutionFinishedWithResult,
-                     weak_factory_.GetWeakPtr(), true),
-      base::BindOnce(&RemoteCommandJob::OnCommandExecutionFinishedWithResult,
-                     weak_factory_.GetWeakPtr(), false));
+                     weak_factory_.GetWeakPtr()));
 
   // The command is expected to run asynchronously.
   DCHECK_EQ(RUNNING, status_);
@@ -162,6 +173,26 @@ base::TimeDelta RemoteCommandJob::GetCommandTimeout() const {
   return kDefaultCommandTimeout;
 }
 
+absl::optional<enterprise_management::RemoteCommandResult::ResultType>
+RemoteCommandJob::GetResult() const {
+  switch (status_) {
+    case SUCCEEDED:
+      return enterprise_management::
+          RemoteCommandResult_ResultType_RESULT_SUCCESS;
+    case FAILED:
+      return enterprise_management::
+          RemoteCommandResult_ResultType_RESULT_FAILURE;
+    case ACKED:
+      // We don't send any result when the command is in `ACKED` state.
+      return absl::nullopt;
+    // Result type is `RESULT_IGNORED` unless the command has finished execution
+    // with either success or failure.
+    default:
+      return enterprise_management::
+          RemoteCommandResult_ResultType_RESULT_IGNORED;
+  }
+}
+
 bool RemoteCommandJob::IsExecutionFinished() const {
   return status_ == SUCCEEDED || status_ == FAILED || status_ == TERMINATED;
 }
@@ -190,11 +221,11 @@ bool RemoteCommandJob::IsExpired(base::TimeTicks now) {
 void RemoteCommandJob::TerminateImpl() {}
 
 void RemoteCommandJob::OnCommandExecutionFinishedWithResult(
-    bool succeeded,
+    ResultType result,
     absl::optional<std::string> result_payload) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK_EQ(RUNNING, status_);
-  status_ = succeeded ? SUCCEEDED : FAILED;
+  status_ = ResultTypeToStatus(result);
 
   result_payload_ = std::move(result_payload);
 

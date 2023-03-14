@@ -17,9 +17,6 @@ BASE_DECLARE_FEATURE(kWebNotesStylizeEnabled);
 // of templates is randomized for each client or not.
 extern const base::FeatureParam<bool> kRandomizeOrderParam;
 
-// Feature for publishing Web Notes to the server.
-BASE_DECLARE_FEATURE(kWebNotesPublish);
-
 // Feature for enabling dynamic templates.
 BASE_DECLARE_FEATURE(kWebNotesDynamicTemplates);
 
@@ -29,9 +26,6 @@ bool IsStylizeEnabled();
 // Returns true if the order randomization parameter is set to true for the Web
 // Notes Stylize feature.
 bool IsRandomizeOrderEnabled();
-
-// Returns whether the Web Notes Publish feature is enabled.
-bool IsPublishEnabled();
 
 // Returns whether the Dynamic Templates feature is enabled.
 bool IsDynamicTemplatesEnabled();

@@ -76,7 +76,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.DataDecoder.Image.Isolated.ProcessOverhead"
-    units="ms" expires_after="2023-06-25">
+    units="ms" expires_after="2023-08-27">
   <owner>lukasza@chromium.org</owner>
   <owner>rsesek@chromium.org</owner>
   <summary>
@@ -123,7 +123,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.DataDecoder.Image.Reusable.ProcessOverhead"
-    units="ms" expires_after="2023-06-25">
+    units="ms" expires_after="2023-08-27">
   <owner>lukasza@chromium.org</owner>
   <owner>rsesek@chromium.org</owner>
   <summary>
@@ -189,6 +189,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Security.NavigationRequestSecurityLevel"
+    enum="NavigationRequestSecurityLevel" expires_after="2024-03-01">
+  <owner>jdeblasio@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Records the security level (e.g. secure, not secure, etc.) of each HTTP
+    request, recording one histogram per fetch (i.e. including redirects).
+  </summary>
+</histogram>
+
 <histogram base="true" name="Security.PageEndReason" enum="PageEndReason"
     expires_after="2023-07-09">
   <owner>cthomp@chromium.org</owner>
@@ -210,7 +220,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.AboutThisSiteLanguageSupported"
-    enum="Boolean" expires_after="2023-06-18">
+    enum="Boolean" expires_after="2023-08-20">
   <owner>dullweber@chromium.org</owner>
   <owner>olesiamarukhno@chromium.org</owner>
   <summary>
@@ -220,7 +230,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.AboutThisSiteStatus"
-    enum="AboutThisSiteStatus" expires_after="2023-06-25">
+    enum="AboutThisSiteStatus" expires_after="2023-08-27">
   <owner>dullweber@chromium.org</owner>
   <owner>olesiamarukhno@chromium.org</owner>
   <summary>
@@ -292,7 +302,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PrivateNetworkAccess.CheckResult"
-    enum="PrivateNetworkAccessCheckResult" expires_after="2023-06-18">
+    enum="PrivateNetworkAccessCheckResult" expires_after="2023-08-20">
   <owner>titouan@chromium.org</owner>
   <owner>clamy@chromium.org</owner>
   <owner>mkwst@chromium.org</owner>
@@ -314,6 +324,31 @@ chromium-metrics-reviews@google.com.
     connected multiple times to different transports (e.g. for a
     partially-cached range request) and not all the computed IP address spaces
     were the same.
+  </summary>
+</histogram>
+
+<histogram name="Security.PrivateNetworkAccess.PrivateIpInferrable"
+    enum="Boolean" expires_after="2023-12-31">
+  <owner>titouan@chromium.org</owner>
+  <owner>lyf@chromium.org</owner>
+  <owner>clamy@chromium.org</owner>
+  <summary>
+    Records whether a failed PNA check could have been avoided by inferring the
+    request's target IP address space by recognizing that the request URL's host
+    is a literal private IP address. Recorded at most once per URL request.
+  </summary>
+</histogram>
+
+<histogram name="Security.PrivateNetworkAccess.PrivateIpResolveMatch"
+    enum="Boolean" expires_after="2023-12-31">
+  <owner>titouan@chromium.org</owner>
+  <owner>lyf@chromium.org</owner>
+  <owner>clamy@chromium.org</owner>
+  <summary>
+    Records whether a request to a literal private IP address resolved to that
+    private IP address. Recorded at most once per call to
+    `network::URLLoader::OnConnected()`, which may be more than once per URL
+    request.
   </summary>
 </histogram>
 
@@ -353,7 +388,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SafetyTips.SafetyTipIgnoredPageLoad"
-    enum="SafetyTipStatus" expires_after="2023-06-25">
+    enum="SafetyTipStatus" expires_after="2023-08-27">
   <owner>jdeblasio@chromium.org</owner>
   <owner>src/chrome/browser/lookalikes/OWNERS</owner>
   <summary>
@@ -548,7 +583,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SecurityLevel.OnCommit" enum="SecurityLevel"
-    expires_after="2023-06-30">
+    expires_after="2023-09-03">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -560,7 +595,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SecurityLevel.OnComplete" enum="SecurityLevel"
-    expires_after="2023-06-30">
+    expires_after="2023-09-03">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -573,7 +608,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Security.SiteEngagement" units="units"
-    expires_after="2023-07-02">
+    expires_after="2023-09-03">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -583,7 +618,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Security.TimeOnPage2" units="ms"
-    expires_after="2023-07-02">
+    expires_after="2023-09-03">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -607,7 +642,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.BrowsingInstanceCount" units="units"
-    expires_after="2023-05-01">
+    expires_after="2023-08-27">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <summary>
@@ -868,7 +903,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.OutOfProcessInnerFrameTrees" units="frame trees"
-    expires_after="2023-03-14">
+    expires_after="2024-03-14">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
@@ -928,7 +963,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.SavedOAuthSites.Size" units="origins"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
@@ -940,7 +975,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.SavedUserTriggeredIsolatedOrigins.Size"
-    units="origins" expires_after="2023-06-18">
+    units="origins" expires_after="2023-08-20">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
@@ -953,7 +988,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.SavedWebTriggeredIsolatedOrigins.Size"
-    units="origins" expires_after="2023-06-18">
+    units="origins" expires_after="2023-08-20">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
@@ -966,7 +1001,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.SiteInstancesPerBrowsingInstance" units="units"
-    expires_after="2023-07-02">
+    expires_after="2023-09-03">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>

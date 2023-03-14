@@ -37,4 +37,6 @@
 <translation id="8187289872471304532">यसमा जानुहोस्
           एपहरू &gt; प्रणाली प्राथमिकताहरू &gt; सञ्जाल &gt; उन्नत &gt; प्रोक्सीहरू
           र तपाइँले चयन गर्नुका कुनै पनि प्रोक्सीहरूको चयन हटाउनुहोस्।</translation>
+<translation id="8232971017369963250">Chrome बनाउँदा <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> खुला स्रोतको परियोजनाको मद्दत लिइएको छ।</translation>
+<translation id="8279509328145658601">Chrome बनाउँदा <ph name="BEGIN_LINK_OSS" />खुला स्रोतका अन्य सफ्टवेयर<ph name="END_LINK_OSS" />को पनि मद्दत लिइएको छ।</translation>
 </translationbundle>

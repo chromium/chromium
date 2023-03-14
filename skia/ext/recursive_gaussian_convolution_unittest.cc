@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "skia/ext/convolver.h"
 #include "skia/ext/recursive_gaussian_convolution.h"
@@ -208,8 +209,8 @@ TEST(RecursiveGaussian, SmoothingImpulse) {
 
   // Smooth the inverse now.
   std::vector<unsigned char> output2(dest_byte_count);
-  std::transform(input.begin(), input.end(), input.begin(),
-                 [](unsigned char c) { return 255U - c; });
+  base::ranges::transform(input, input.begin(),
+                          [](unsigned char c) { return 255U - c; });
   SingleChannelRecursiveGaussianY(&input[0], src_row_stride,
                                   kChannelIndex, kChannelCount,
                                   recursive_filter, image_size,
@@ -293,8 +294,8 @@ TEST(RecursiveGaussian, FirstDerivative) {
   EXPECT_EQ(image_total, box_inflated);
 
   // Try inverted image. Behaviour should be very similar (modulo rounding).
-  std::transform(input.begin(), input.end(), input.begin(),
-                 [](unsigned char c) { return 255U - c; });
+  base::ranges::transform(input, input.begin(),
+                          [](unsigned char c) { return 255U - c; });
   SingleChannelRecursiveGaussianX(&input[0], src_row_stride,
                                   kChannelIndex, kChannelCount,
                                   recursive_filter, image_size,

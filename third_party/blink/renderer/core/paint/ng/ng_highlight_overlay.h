@@ -56,16 +56,38 @@ class CORE_EXPORT NGHighlightOverlay {
     AtomicString name;
   };
 
-  // Represents the |start| or end of a highlighted range for the given |layer|,
-  // at the given |offset| in canonical text space <https://goo.gl/CJbxky>.
+  // Represents a range of the fragment, as offsets in canonical text space.
+  // More details about canonical text offsets: <https://goo.gl/CJbxky>
+  struct CORE_EXPORT HighlightRange {
+    DISALLOW_NEW();
+
+   public:
+    HighlightRange(unsigned from, unsigned to);
+
+    String ToString() const;
+
+    bool operator==(const HighlightRange&) const;
+    bool operator!=(const HighlightRange&) const;
+
+    unsigned from;
+    unsigned to;
+  };
+
+  // Represents the start or end (indicated by |type|) of a highlighted |range|
+  // for the given |layer|. Storing both offsets of the range, rather than just
+  // the offset of this edge, allows decorations added by highlights to recover
+  // the original range for the purposes of decoration phase and wavelength.
   struct CORE_EXPORT HighlightEdge {
     DISALLOW_NEW();
 
    public:
-    HighlightEdge(unsigned offset, HighlightLayer layer, HighlightEdgeType type)
-        : offset(offset), layer(layer), type(type) {}
+    HighlightEdge(HighlightRange range,
+                  HighlightLayer layer,
+                  HighlightEdgeType type)
+        : range(range), layer(layer), type(type) {}
 
     String ToString() const;
+    unsigned Offset() const;
 
     // Order by offset asc, then “end” edges first, then by layer paint order.
     // ComputeParts requires “end” edges first in case two ranges of the same
@@ -75,20 +97,44 @@ class CORE_EXPORT NGHighlightOverlay {
     bool operator==(const HighlightEdge&) const;
     bool operator!=(const HighlightEdge&) const;
 
-    unsigned offset;
+    HighlightRange range;
     HighlightLayer layer;
     HighlightEdgeType type;
   };
 
-  // Represents a range of the fragment, as offsets in canonical text space,
-  // that needs its text proper painted in the style of the given |layer| with
-  // the given |decorations|.
+  // Represents a potential decoration for the given |layer| that would need to
+  // be painted over the given |range|.
+  //
+  // Note that decorations are painted with this range, but clipped to the range
+  // in each HighlightPart, ensuring that decoration phase and wavelength are
+  // maintained while allowing them to be recolored or split across layers.
+  struct CORE_EXPORT HighlightDecoration {
+    DISALLOW_NEW();
+
+   public:
+    HighlightDecoration(HighlightLayer layer, HighlightRange range);
+
+    String ToString() const;
+
+    bool operator==(const HighlightDecoration&) const;
+    bool operator!=(const HighlightDecoration&) const;
+
+    HighlightLayer layer;
+    HighlightRange range;
+  };
+
+  // Represents a |range| of the fragment that needs its text proper painted in
+  // the style of the given topmost |layer| with the given |decorations|.
+  //
+  // Note that decorations are clipped to this range, but painted with the range
+  // in each HighlightDecoration, ensuring that decoration phase and wavelength
+  // are maintained while allowing them to be recolored or split across layers.
   struct CORE_EXPORT HighlightPart {
     DISALLOW_NEW();
 
    public:
-    HighlightPart(HighlightLayer, unsigned, unsigned, Vector<HighlightLayer>);
-    HighlightPart(HighlightLayer, unsigned, unsigned);
+    HighlightPart(HighlightLayer, HighlightRange, Vector<HighlightDecoration>);
+    HighlightPart(HighlightLayer, HighlightRange);
 
     String ToString() const;
 
@@ -96,9 +142,8 @@ class CORE_EXPORT NGHighlightOverlay {
     bool operator!=(const HighlightPart&) const;
 
     HighlightLayer layer;
-    unsigned from;
-    unsigned to;
-    Vector<HighlightLayer> decorations;
+    HighlightRange range;
+    Vector<HighlightDecoration> decorations;
   };
 
   // Given details of a fragment and how it is highlighted, returns the layers

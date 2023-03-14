@@ -20,7 +20,7 @@
         TestRunner.evaluateInPage('activate()');
         TestRunner
             .waitForEvent(
-                Host.InspectorFrontendHostAPI.Events.ReattachMainTarget,
+                Host.InspectorFrontendHostAPI.Events.ReattachRootTarget,
                 Host.InspectorFrontendHost.events)
             .then(next);
       });

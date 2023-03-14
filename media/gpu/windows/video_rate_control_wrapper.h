@@ -66,7 +66,8 @@ class VideoRateControlWrapper {
   // GetLoopfilterLevel() is only available for VP9, others return -1.
   virtual int GetLoopfilterLevel() const = 0;
   // Feedback to rate control with the size of current encoded frame.
-  virtual void PostEncodeUpdate(uint64_t encoded_frame_size) = 0;
+  virtual void PostEncodeUpdate(uint64_t encoded_frame_size,
+                                const FrameParams& frame_params) = 0;
 };
 
 // VideoRateControlWrapperInternal is an interface for creating
@@ -100,10 +101,8 @@ class VideoRateControlWrapperInternal : public VideoRateControlWrapper {
     return impl_->GetQP();
   }
   int GetLoopfilterLevel() const override;
-  void PostEncodeUpdate(uint64_t encoded_frame_size) override {
-    DCHECK(impl_);
-    impl_->PostEncodeUpdate(encoded_frame_size);
-  }
+  void PostEncodeUpdate(uint64_t encoded_frame_size,
+                        const FrameParams& frame_params) override;
 
  private:
   // "ConvertControlConfig" and "ConvertFrameParams" are used for passing

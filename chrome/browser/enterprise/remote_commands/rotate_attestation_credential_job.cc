@@ -82,26 +82,24 @@ bool RotateAttestationCredentialJob::ParseCommandPayload(
 }
 
 void RotateAttestationCredentialJob::RunImpl(
-    CallbackWithResult succeeded_callback,
-    CallbackWithResult failed_callback) {
+    CallbackWithResult result_callback) {
   DCHECK(nonce_.has_value());
 
   key_manager_->RotateKey(
       nonce_.value(),
       base::BindOnce(&RotateAttestationCredentialJob::OnKeyRotated,
-                     weak_factory_.GetWeakPtr(), std::move(succeeded_callback),
-                     std::move(failed_callback)));
+                     weak_factory_.GetWeakPtr(), std::move(result_callback)));
 }
 
 void RotateAttestationCredentialJob::OnKeyRotated(
-    CallbackWithResult succeeded_callback,
-    CallbackWithResult failed_callback,
+    CallbackWithResult result_callback,
     KeyRotationResult rotation_result) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(IsSuccess(rotation_result) ? succeeded_callback
-                                                          : failed_callback),
-                     CreatePayload(rotation_result)));
+      FROM_HERE, base::BindOnce(std::move(result_callback),
+                                std::move(IsSuccess(rotation_result))
+                                    ? policy::ResultType::kSuccess
+                                    : policy::ResultType::kFailure,
+                                CreatePayload(rotation_result)));
 }
 
 }  // namespace enterprise_commands

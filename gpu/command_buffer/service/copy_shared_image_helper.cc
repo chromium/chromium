@@ -334,6 +334,11 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertRGBAToYUVAMailboxes(
       yuva_images[i]->SetCleared();
     }
   }
+  if (auto end_state = rgba_scoped_access->TakeEndState()) {
+    shared_context_state_->gr_context()->setBackendTextureState(
+        rgba_scoped_access->promise_image_texture()->backendTexture(),
+        *end_state);
+  }
   SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
                     is_drdc_enabled_);
   return base::ok();
@@ -442,6 +447,15 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertYUVAMailboxesToRGB(
   }
 
   FlushSurface(dest_scoped_access.get());
+  for (int i = 0; i < num_src_planes; ++i) {
+    if (source_scoped_access[i]) {
+      if (auto end_state = source_scoped_access[i]->TakeEndState()) {
+        shared_context_state_->gr_context()->setBackendTextureState(
+            source_scoped_access[i]->promise_image_texture()->backendTexture(),
+            *end_state);
+      }
+    }
+  }
   SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
                     is_drdc_enabled_);
 
@@ -555,9 +569,6 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
 
     // Note, that we still generate error for the client to indicate there was
     // problem.
-  }
-
-  if (!source_shared_image) {
     return base::unexpected<GLError>(GLError(
         GL_INVALID_VALUE, "glCopySubTexture", "unknown source image mailbox."));
   }
@@ -659,6 +670,72 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
     if (!dest_shared_image->IsCleared()) {
       dest_shared_image->SetClearedRect(new_cleared_rect);
     }
+  }
+
+  SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
+                    is_drdc_enabled_);
+  return result;
+}
+
+base::expected<void, GLError> CopySharedImageHelper::ReadPixels(
+    GLint src_x,
+    GLint src_y,
+    GLint plane_index,
+    GLuint row_bytes,
+    SkImageInfo dst_info,
+    void* pixel_address,
+    std::unique_ptr<SkiaImageRepresentation> source_shared_image) {
+  std::vector<GrBackendSemaphore> begin_semaphores;
+  std::vector<GrBackendSemaphore> end_semaphores;
+  std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>
+      source_scoped_access = source_shared_image->BeginScopedReadAccess(
+          &begin_semaphores, &end_semaphores);
+
+  if (!source_scoped_access) {
+    return base::unexpected<GLError>(
+        GLError(GL_INVALID_VALUE, "glReadbackImagePixels",
+                "Source shared image is not accessible"));
+  }
+
+  if (!begin_semaphores.empty()) {
+    bool wait_result = shared_context_state_->gr_context()->wait(
+        begin_semaphores.size(), begin_semaphores.data(),
+        /*deleteSemaphoresAfterWait=*/false);
+    DCHECK(wait_result);
+  }
+
+  sk_sp<SkImage> sk_image;
+  if (source_shared_image->format().is_single_plane()) {
+    // Create SkImage without plane index for single planar formats or legacy
+    // multiplanar formats with external sampler.
+    sk_image = source_scoped_access->CreateSkImage(
+        shared_context_state_->gr_context());
+  } else {
+    // Pass plane index for creating an SkImage for multiplanar formats.
+    sk_image = source_scoped_access->CreateSkImageForPlane(
+        plane_index, shared_context_state_->gr_context());
+  }
+
+  base::expected<void, GLError> result = base::ok();
+  if (sk_image) {
+    bool success =
+        sk_image->readPixels(dst_info, pixel_address, row_bytes, src_x, src_y);
+    if (!success) {
+      result = base::unexpected<GLError>(
+          GLError(GL_INVALID_OPERATION, "glReadbackImagePixels",
+                  "Failed to read pixels from SkImage"));
+    }
+  } else {
+    result = base::unexpected<GLError>(
+        GLError(GL_INVALID_OPERATION, "glReadbackImagePixels",
+                "Couldn't create SkImage for reading."));
+  }
+
+  if (auto end_state = source_scoped_access->TakeEndState()) {
+    shared_context_state_->gr_context()->setBackendTextureState(
+        source_scoped_access->promise_image_texture(plane_index)
+            ->backendTexture(),
+        *end_state);
   }
 
   SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,

@@ -27,7 +27,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           y asegúrate de que la configuración seleccionada sea "sin proxy" o "directa".</translation>
+<translation id="6549378540556750549">Chromium también funciona gracias a otros <ph name="BEGIN_LINK_OSS" />software de código abierto<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Los cambios se aplicarán la próxima vez que inicies Chromium.</translation>
+<translation id="7681937895330411637">Chromium funciona gracias al proyecto de código abierto de <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="7861509383340276692">Ve
           al menú de Chromium &gt;
           <ph name="SETTINGS_TITLE" />

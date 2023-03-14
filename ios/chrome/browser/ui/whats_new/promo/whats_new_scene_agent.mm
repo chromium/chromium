@@ -52,12 +52,12 @@
 
 // Register the What's New promo for a single display in the promo manager.
 - (void)registerPromoForSingleDisplay {
-  if (IsFullscreenPromosManagerEnabled()) {
-    DCHECK(self.promosManager);
-    self.promosManager->RegisterPromoForSingleDisplay(
-        promos_manager::Promo::WhatsNew);
-    setWhatsNewPromoRegistration();
-  }
+  DCHECK(self.promosManager);
+
+  self.promosManager->RegisterPromoForSingleDisplay(
+      promos_manager::Promo::WhatsNew);
+
+  setWhatsNewPromoRegistration();
 }
 
 @end

@@ -26,6 +26,7 @@
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -359,10 +360,20 @@ MenuItemView* MenuItemView::AddMenuItemAt(
     const ui::ImageModel& minor_icon,
     const ui::ImageModel& icon,
     Type type,
-    ui::MenuSeparatorType separator_style) {
+    ui::MenuSeparatorType separator_style,
+    absl::optional<ui::ColorId> submenu_background_color,
+    absl::optional<ui::ColorId> foreground_color) {
   DCHECK_NE(type, Type::kEmpty);
-  if (!submenu_)
+  if (!submenu_) {
     CreateSubmenu();
+    // Set the submenu border color to be the same as the first submenu
+    // background color;
+    submenu_->SetBorderColor(submenu_background_color);
+    if (submenu_background_color.has_value()) {
+      submenu_->SetBackground(
+          views::CreateThemedSolidBackground(submenu_background_color.value()));
+    }
+  }
   DCHECK_LE(index, submenu_->children().size());
   if (type == Type::kSeparator) {
     submenu_->AddChildViewAt(std::make_unique<MenuSeparator>(separator_style),
@@ -378,6 +389,7 @@ MenuItemView* MenuItemView::AddMenuItemAt(
   item->SetMinorText(minor_text);
   item->SetMinorIcon(minor_icon);
   item->SetIcon(icon);
+  item->SetForegroundColorId(foreground_color);
   if (type == Type::kSubMenu || type == Type::kActionableSubMenu)
     item->CreateSubmenu();
   if (type == Type::kHighlighted) {
@@ -1163,6 +1175,12 @@ void MenuItemView::PaintMinorIconAndText(gfx::Canvas* canvas, SkColor color) {
 }
 
 SkColor MenuItemView::GetTextColor(bool minor, bool paint_as_selected) const {
+  // Use a custom color if provided by the controller. If the item is selected,
+  // use the default color.
+  if (!paint_as_selected && foreground_color_id_.has_value()) {
+    return GetColorProvider()->GetColor(foreground_color_id_.value());
+  }
+
   style::TextContext context =
       GetMenuController() && GetMenuController()->use_ash_system_ui_layout()
           ? style::CONTEXT_TOUCH_MENU
@@ -1180,7 +1198,7 @@ SkColor MenuItemView::GetTextColor(bool minor, bool paint_as_selected) const {
   else if (minor)
     text_style = style::STYLE_SECONDARY;
 
-  return style::GetColor(*this, context, text_style);
+  return GetColorProvider()->GetColor(style::GetColorId(context, text_style));
 }
 
 MenuItemView::Colors MenuItemView::CalculateColors(
@@ -1456,21 +1474,20 @@ int MenuItemView::GetMaxIconViewWidth() const {
     return 0;
 
   std::vector<int> widths(menu_items.size());
-  const auto get_width = [](MenuItemView* item) {
+  base::ranges::transform(menu_items, widths.begin(), [](MenuItemView* item) {
     if (item->type_ == Type::kCheckbox || item->type_ == Type::kRadio) {
       // If this item has a radio or checkbox, the icon will not affect
       // alignment of other items.
       return 0;
     }
-    if (item->HasSubmenu())
+    if (item->HasSubmenu()) {
       return item->GetMaxIconViewWidth();
+    }
     return (item->icon_view_ && !MenuConfig::instance().icons_in_label)
                ? item->icon_view_->GetPreferredSize().width()
                : 0;
-  };
-  std::transform(menu_items.cbegin(), menu_items.cend(), widths.begin(),
-                 get_width);
-  return *std::max_element(widths.cbegin(), widths.cend());
+  });
+  return base::ranges::max(widths);
 }
 
 bool MenuItemView::HasChecksOrRadioButtons() const {
@@ -1514,10 +1531,22 @@ void MenuItemView::UpdateSelectionBasedState(bool paint_as_selected) {
     const gfx::VectorIcon& radio_icon =
         toggled ? kMenuRadioSelectedIcon : kMenuRadioEmptyIcon;
     const SkColor radio_icon_color = GetColorProvider()->GetColor(
-        toggled ? ui::kColorButtonForegroundChecked
-                : ui::kColorButtonForegroundUnchecked);
+        toggled ? ui::kColorRadioButtonForegroundChecked
+                : ui::kColorRadioButtonForegroundUnchecked);
     radio_check_image_view_->SetImage(ui::ImageModel::FromVectorIcon(
         radio_icon, radio_icon_color, kMenuCheckSize));
+  }
+
+  // Update any vector icons if a custom color is used.
+  if (foreground_color_id_.has_value() && icon_view_) {
+    ui::ImageModel icon_model = icon_view_->GetImageModel();
+    if (!icon_model.IsEmpty() && icon_model.IsVectorIcon()) {
+      ui::VectorIconModel model = icon_model.GetVectorIcon();
+      const gfx::VectorIcon* icon = model.vector_icon();
+      const ui::ImageModel& image_model = ui::ImageModel::FromVectorIcon(
+          *icon, colors.fg_color, model.icon_size());
+      icon_view_->SetImage(image_model);
+    }
   }
 }
 

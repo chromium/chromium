@@ -12,8 +12,9 @@ class TouchIdManagerTest : public testing::Test {
  protected:
   TouchIdManagerTest() = default;
   bool IsTouchIdUsed(int touch_id) {
-    if (touch_id == 0 && TouchIdManager::GetInstance()->touch_ids_ == 1)
+    if (touch_id == 0 && TouchIdManager::GetInstance()->touch_ids_ == 1) {
       return true;
+    }
     return TouchIdManager::GetInstance()->touch_ids_ & (1 << touch_id);
   }
 

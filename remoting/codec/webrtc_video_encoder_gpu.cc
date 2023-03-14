@@ -4,9 +4,11 @@
 
 #include "remoting/codec/webrtc_video_encoder_gpu.h"
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
@@ -55,14 +57,6 @@ const int kWebrtcVideoEncoderGpuOutputBufferCount = 1;
 constexpr VideoCodecProfile kH264Profile = VideoCodecProfile::H264PROFILE_MAIN;
 
 constexpr int kH264MinimumTargetBitrateKbpsPerMegapixel = 1800;
-
-gpu::GpuPreferences CreateGpuPreferences() {
-  gpu::GpuPreferences gpu_preferences;
-#if BUILDFLAG(IS_WIN)
-  gpu_preferences.enable_media_foundation_vea_on_windows7 = true;
-#endif
-  return gpu_preferences;
-}
 
 gpu::GpuDriverBugWorkarounds CreateGpuWorkarounds() {
   gpu::GpuDriverBugWorkarounds gpu_workarounds;
@@ -376,7 +370,7 @@ void WebrtcVideoEncoderGpu::Core::BeginInitialization() {
       input_format, input_visible_size_, codec_profile_, initial_bitrate);
   video_encode_accelerator_ =
       media::GpuVideoEncodeAcceleratorFactory::CreateVEA(
-          config, this, CreateGpuPreferences(), CreateGpuWorkarounds(),
+          config, this, gpu::GpuPreferences(), CreateGpuWorkarounds(),
           CreateGpuDevice());
 
   if (!video_encode_accelerator_) {
@@ -429,7 +423,7 @@ bool WebrtcVideoEncoderGpu::IsSupportedByH264(const Profile& profile) {
 
   media::VideoEncodeAccelerator::SupportedProfiles profiles =
       media::GpuVideoEncodeAcceleratorFactory::GetSupportedProfiles(
-          CreateGpuPreferences(), CreateGpuWorkarounds(), CreateGpuDevice());
+          gpu::GpuPreferences(), CreateGpuWorkarounds(), CreateGpuDevice());
   for (const auto& supported_profile : profiles) {
     if (supported_profile.profile != kH264Profile) {
       continue;

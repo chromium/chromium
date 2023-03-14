@@ -595,6 +595,8 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest, HandleClickCancelEvent) {
 // Verifies item deletion through the mouse click at the delete button.
 IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
                        DeleteItemByClickAtDeleteButton) {
+  base::HistogramTester histogram_tester;
+
   // Write some things to the clipboard.
   SetClipboardText("A");
   SetClipboardText("B");
@@ -612,6 +614,9 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
   EXPECT_TRUE(VerifyClipboardTextData({"B"}));
   EXPECT_TRUE(VerifyClipboardBufferAndHistoryInSync());
 
+  histogram_tester.ExpectTotalCount(
+      "Ash.ClipboardHistory.ContextMenu.DisplayFormatDeleted", 1);
+
   // Delete the last menu item. Verify that the menu is closed.
   {
     ScopedClipboardHistoryListUpdateWaiter scoped_waiter;
@@ -619,6 +624,9 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
   }
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
   EXPECT_TRUE(VerifyClipboardBufferAndHistoryInSync());
+
+  histogram_tester.ExpectTotalCount(
+      "Ash.ClipboardHistory.ContextMenu.DisplayFormatDeleted", 2);
 
   // No menu shows because of the empty clipboard history.
   ShowContextMenuViaAccelerator(/*wait_for_selection=*/false);
@@ -1393,6 +1401,8 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
   WaitForOperationConfirmed(/*success_expected=*/true);
   EXPECT_EQ("C", base::UTF16ToUTF8(textfield_->GetText()));
+  histogram_tester.ExpectTotalCount(
+      "Ash.ClipboardHistory.ContextMenu.DisplayFormatPasted", 2);
 
   textfield_->SetText(std::u16string());
   EXPECT_TRUE(textfield_->GetText().empty());
@@ -1407,6 +1417,8 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
   WaitForOperationConfirmed(/*success_expected=*/true);
   EXPECT_EQ("A", base::UTF16ToUTF8(textfield_->GetText()));
+  histogram_tester.ExpectTotalCount(
+      "Ash.ClipboardHistory.ContextMenu.DisplayFormatPasted", 3);
 
   textfield_->SetText(std::u16string());
 
@@ -1422,6 +1434,8 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
   WaitForOperationConfirmed(/*success_expected=*/true);
   EXPECT_EQ("A", base::UTF16ToUTF8(textfield_->GetText()));
+  histogram_tester.ExpectTotalCount(
+      "Ash.ClipboardHistory.ContextMenu.DisplayFormatPasted", 4);
 }
 
 IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,

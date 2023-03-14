@@ -22,7 +22,8 @@
         id="externalTopRowAreFunctionKeysButton"
         pref="{{topRowAreFunctionKeysPref}}"
         label="$i18n{keyboardSendInvertedFunctionKeys}"
-        sub-label="$i18n{keyboardSendInvertedFunctionKeysDescription}">
+        sub-label="$i18n{keyboardSendInvertedFunctionKeysDescription}"
+        deep-link-focus-id$="[[Setting.kKeyboardFunctionKeys]]">
     </settings-toggle-button>
     <settings-toggle-button
         class="hr" id="blockMetaFunctionKeyRewritesButton"
@@ -43,7 +44,8 @@
       id="enableAutoRepeatButton"
       class="hr"
       pref="{{enableAutoRepeatPref}}"
-      label="$i18n{keyboardEnableAutoRepeat}">
+      label="$i18n{keyboardEnableAutoRepeat}"
+      deep-link-focus-id$="[[Setting.kKeyboardAutoRepeat]]">
   </settings-toggle-button>
   <iron-collapse
       opened="[[enableAutoRepeatPref.value]]">

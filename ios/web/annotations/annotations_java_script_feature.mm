@@ -10,7 +10,7 @@
 #import "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/shared_highlighting/ios/parsing_utils.h"
-#import "ios/web/annotations/annotations_text_manager.h"
+#import "ios/web/annotations/annotations_text_manager_impl.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
@@ -44,7 +44,8 @@ AnnotationsJavaScriptFeature* AnnotationsJavaScriptFeature::GetInstance() {
 }
 
 void AnnotationsJavaScriptFeature::ExtractText(WebState* web_state,
-                                               int maximum_text_length) {
+                                               int maximum_text_length,
+                                               int seq_id) {
   DCHECK(web_state);
   auto* frame = web::GetMainFrame(web_state);
   if (!frame) {
@@ -53,6 +54,7 @@ void AnnotationsJavaScriptFeature::ExtractText(WebState* web_state,
 
   std::vector<base::Value> parameters;
   parameters.push_back(base::Value(maximum_text_length));
+  parameters.push_back(base::Value(seq_id));
   CallJavaScriptFunction(frame, "annotations.extractText", parameters);
 }
 
@@ -97,7 +99,9 @@ void AnnotationsJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  auto* manager = AnnotationsTextManager::FromWebState(web_state);
+  AnnotationsTextManagerImpl* manager =
+      static_cast<AnnotationsTextManagerImpl*>(
+          AnnotationsTextManager::FromWebState(web_state));
   if (!manager) {
     return;
   }
@@ -107,7 +111,9 @@ void AnnotationsJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  const std::string* command = response->FindStringKey("command");
+  const base::Value::Dict& dict = response->GetDict();
+
+  const std::string* command = dict.FindString("command");
   if (!command) {
     return;
   }
@@ -120,16 +126,17 @@ void AnnotationsJavaScriptFeature::ScriptMessageReceived(
   }
 
   if (*command == "annotations.extractedText") {
-    const std::string* text = response->FindStringKey("text");
-    if (!text) {
+    const std::string* text = dict.FindString("text");
+    absl::optional<double> seq_id = dict.FindDouble("seqId");
+    if (!text || !seq_id) {
       return;
     }
-    manager->OnTextExtracted(web_state, *text);
+    manager->OnTextExtracted(web_state, *text,
+                             static_cast<int>(seq_id.value()));
   } else if (*command == "annotations.decoratingComplete") {
     absl::optional<double> optional_annotations =
-        response->FindDoubleKey("annotations");
-    absl::optional<double> optional_successes =
-        response->FindDoubleKey("successes");
+        dict.FindDouble("annotations");
+    absl::optional<double> optional_successes = dict.FindDouble("successes");
     if (!optional_annotations || !optional_successes) {
       return;
     }
@@ -137,10 +144,10 @@ void AnnotationsJavaScriptFeature::ScriptMessageReceived(
     int successes = static_cast<int>(optional_successes.value());
     manager->OnDecorated(web_state, successes, annotations);
   } else if (*command == "annotations.onClick") {
-    const std::string* data = response->FindStringKey("data");
+    const std::string* data = dict.FindString("data");
     absl::optional<CGRect> rect =
-        shared_highlighting::ParseRect(response->FindDictKey("rect"));
-    const std::string* text = response->FindStringKey("text");
+        shared_highlighting::ParseRect(dict.FindDict("rect"));
+    const std::string* text = dict.FindString("text");
     if (!data || !rect || !text) {
       return;
     }

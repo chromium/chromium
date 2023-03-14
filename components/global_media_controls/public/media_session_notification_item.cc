@@ -58,11 +58,13 @@ MediaSessionNotificationItem::MediaSessionNotificationItem(
     Delegate* delegate,
     const std::string& request_id,
     const std::string& source_name,
+    const absl::optional<base::UnguessableToken>& source_id,
     mojo::Remote<media_session::mojom::MediaController> controller,
     media_session::mojom::MediaSessionInfoPtr session_info)
     : delegate_(delegate),
       request_id_(request_id),
-      source_(GetSource(source_name)) {
+      source_(GetSource(source_name)),
+      source_id_(source_id) {
   DCHECK(delegate_);
 
   SetController(std::move(controller), std::move(session_info));
@@ -133,6 +135,16 @@ void MediaSessionNotificationItem::MediaSessionPositionChanged(
 
   if (view_ && !frozen_) {
     view_->UpdateWithMediaPosition(*position);
+  }
+}
+
+void MediaSessionNotificationItem::UpdateDeviceName(
+    const absl::optional<std::string>& device_name) {
+  device_name_ = device_name;
+  if (view_ && !frozen_) {
+    view_->UpdateWithMediaMetadata(GetSessionMetadata());
+    view_->UpdateWithVectorIcon(
+        device_name_ ? &vector_icons::kMediaRouterIdleIcon : nullptr);
   }
 }
 
@@ -236,6 +248,11 @@ bool MediaSessionNotificationItem::RequestMediaRemoting() {
   return true;
 }
 
+absl::optional<base::UnguessableToken>
+MediaSessionNotificationItem::GetSourceId() const {
+  return source_id_;
+}
+
 void MediaSessionNotificationItem::SetController(
     mojo::Remote<media_session::mojom::MediaController> controller,
     media_session::mojom::MediaSessionInfoPtr session_info) {
@@ -317,19 +334,15 @@ media_session::MediaMetadata MediaSessionNotificationItem::GetSessionMetadata()
         optional_presentation_request_origin_.value());
   }
 
-  if (GetRemotePlaybackStarted(session_info_)) {
-    absl::optional<std::string> receiver_name =
-        session_info_->remote_playback_metadata->remoting_device_friendly_name;
+  if (device_name_) {
     std::string source_title = base::UTF16ToUTF8(data.source_title);
     const char kSeparator[] = " \xC2\xB7 ";  // "Middle dot" character.
-    if (!receiver_name) {
-      data.source_title = base::UTF8ToUTF16(source_title);
-    } else if (base::i18n::IsRTL()) {
+    if (base::i18n::IsRTL()) {
       data.source_title =
-          base::UTF8ToUTF16(receiver_name.value() + kSeparator + source_title);
+          base::UTF8ToUTF16(device_name_.value() + kSeparator + source_title);
     } else {
       data.source_title =
-          base::UTF8ToUTF16(source_title + kSeparator + receiver_name.value());
+          base::UTF8ToUTF16(source_title + kSeparator + device_name_.value());
     }
   }
   return data;
@@ -478,9 +491,8 @@ void MediaSessionNotificationItem::UpdateViewCommon() {
   view_->UpdateWithMediaMetadata(GetSessionMetadata());
   view_->UpdateWithMediaActions(GetMediaSessionActions());
   view_->UpdateWithMuteStatus(session_info_->muted);
-  view_->UpdateWithVectorIcon(GetRemotePlaybackStarted(session_info_)
-                                  ? &vector_icons::kMediaRouterIdleIcon
-                                  : nullptr);
+  view_->UpdateWithVectorIcon(device_name_ ? &vector_icons::kMediaRouterIdleIcon
+                                           : nullptr);
 }
 
 }  // namespace global_media_controls

@@ -18,7 +18,7 @@ using ::base::Bucket;
 using ::base::BucketsAre;
 using ::testing::TestWithParam;
 
-namespace autofill::metrics {
+namespace autofill::autofill_metrics {
 
 struct TouchToFillForCreditCardsTestCase {
   std::vector<ServerFieldType> field_types;
@@ -28,7 +28,7 @@ struct TouchToFillForCreditCardsTestCase {
 };
 
 class TouchToFillForCreditCardsTest
-    : public autofill::metrics::AutofillMetricsBaseTest,
+    : public AutofillMetricsBaseTest,
       public TestWithParam<TouchToFillForCreditCardsTestCase> {
  public:
   void SetUp() override {
@@ -116,7 +116,8 @@ TEST_P(TouchToFillForCreditCardsTest,
 
   base::HistogramTester histogram_tester;
   // Simulate user selection in the payments bottom sheet.
-  touch_to_fill_delegate_->SuggestionSelected(kTestLocalCardId);
+  touch_to_fill_delegate_->SuggestionSelected(/*unique_id=*/kTestLocalCardId,
+                                              /*is_virtual=*/false);
   touch_to_fill_delegate_->OnDismissed(/*dismissed_by_user=*/false);
   // Simulate that fields were autofilled.
   SetFieldsAutofilledValues(form, test_case.fields_have_autofilled_values,
@@ -165,4 +166,4 @@ INSTANTIATE_TEST_SUITE_P(
             /*is_all_autofilled=*/false,
             /*is_all_accepted=*/false}));
 
-}  // namespace autofill::metrics
+}  // namespace autofill::autofill_metrics

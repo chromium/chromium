@@ -13,13 +13,13 @@
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
 #include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
-#include "content/common/aggregatable_report.mojom-forward.h"
-#include "content/common/private_aggregation_host.mojom-forward.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/test_content_browser_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom-forward.h"
+#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-forward.h"
 
 namespace base {
 class Time;
@@ -64,15 +64,16 @@ class MockPrivateAggregationHost : public PrivateAggregationHost {
               (url::Origin,
                url::Origin,
                PrivateAggregationBudgetKey::Api,
-               mojo::PendingReceiver<mojom::PrivateAggregationHost>),
+               mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>),
               (override));
 
-  MOCK_METHOD(void,
-              SendHistogramReport,
-              (std::vector<mojom::AggregatableReportHistogramContributionPtr>,
-               mojom::AggregationServiceMode,
-               mojom::DebugModeDetailsPtr),
-              (override));
+  MOCK_METHOD(
+      void,
+      SendHistogramReport,
+      (std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>,
+       blink::mojom::AggregationServiceMode,
+       blink::mojom::DebugModeDetailsPtr),
+      (override));
 
  private:
   TestBrowserContext test_browser_context_;
@@ -88,7 +89,7 @@ class MockPrivateAggregationManager : public PrivateAggregationManager {
               (url::Origin,
                url::Origin,
                PrivateAggregationBudgetKey::Api,
-               mojo::PendingReceiver<mojom::PrivateAggregationHost>),
+               mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>),
               (override));
 
   MOCK_METHOD(void,

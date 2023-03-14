@@ -77,12 +77,29 @@ interface LockScreenSettings {
 
   // Try to enable pin autosubmit, but fail due to a wrong pin.
   EnablePinAutosubmitIncorrectly(string incorrect_pin) => ();
+
+  // Asserts that automatic screen lock is enabled or disabled.
+  AssertAutoLockScreenEnabled(bool is_enabled) => ();
+
+  // Enables automatic screen lock. Assumes that it is currently disabled.
+  EnableAutoLockScreen() => ();
+
+  // Disables automatic screen lock. Assumes that it is currently enabled.
+  DisableAutoLockScreen() => ();
+
+  // Asserts that the auto screen lock control is currently focused.
+  AssertAutoLockScreenFocused() => ();
 };
 
 // An interface that allows clients to manipulate the os settings ui. Served by
 // Javascript injected into the os settings page. Consumed by C++ running in
 // the browser process during tests.
 interface OSSettingsDriver {
+  // Asserts that the lock screen settings page is open. On success, returns a
+  // remote that can be used to operate the lock screen settings page.
+  AssertOnLockScreenSettings() =>
+      (pending_remote<LockScreenSettings> lock_screen_settings);
+
   // Navigate to lock screen settings. The settings page must be in its initial
   // state before calling this. The return value can be used to manipulate lock
   // screen settings.

@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/sync/base/time.h"
@@ -49,6 +50,12 @@ void RecordTrustedVaultDeviceRegistrationState(
                                 registration_state);
 }
 
+void RecordTrustedVaultDeviceRegistrationOutcome(
+    TrustedVaultDeviceRegistrationOutcomeForUMA registration_outcome) {
+  base::UmaHistogramEnumeration("Sync.TrustedVaultDeviceRegistrationOutcome",
+                                registration_outcome);
+}
+
 void RecordTrustedVaultURLFetchResponse(
     int http_response_code,
     int net_error,
@@ -70,11 +77,22 @@ void RecordTrustedVaultURLFetchResponse(
 
 void RecordTrustedVaultDownloadKeysStatus(
     TrustedVaultDownloadKeysStatusForUMA status,
-    bool also_log_with_v1_suffx) {
+    bool also_log_with_v1_suffix) {
   base::UmaHistogramEnumeration("Sync.TrustedVaultDownloadKeysStatus", status);
-  if (also_log_with_v1_suffx) {
+  if (also_log_with_v1_suffix) {
     base::UmaHistogramEnumeration("Sync.TrustedVaultDownloadKeysStatusV1",
                                   status);
+  }
+}
+
+void RecordVerifyRegistrationStatus(TrustedVaultDownloadKeysStatusForUMA status,
+                                    bool also_log_with_v1_suffix) {
+  base::UmaHistogramEnumeration(
+      "Sync.TrustedVaultVerifyDeviceRegistrationState", status);
+
+  if (also_log_with_v1_suffix) {
+    base::UmaHistogramEnumeration(
+        "Sync.TrustedVaultVerifyDeviceRegistrationStateV1", status);
   }
 }
 

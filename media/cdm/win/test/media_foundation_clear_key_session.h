@@ -13,9 +13,18 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "media/cdm/aes_decryptor.h"
 
 namespace media {
+
+// Called when the session specified by `session_id` is created or removed.
+using SessionIdCB = base::OnceCallback<void(const std::string&)>;
+using SessionIdCreatedCB = base::OnceCallback<void(
+    const std::string&,
+    Microsoft::WRL::ComPtr<IMFContentDecryptionModuleSession>)>;
 
 class MediaFoundationClearKeySession final
     : public Microsoft::WRL::RuntimeClass<
@@ -23,6 +32,25 @@ class MediaFoundationClearKeySession final
           IMFContentDecryptionModuleSession,
           Microsoft::WRL::FtmBase> {
  public:
+  struct SessionCallbacks {
+    SessionCallbacks();
+    SessionCallbacks(const SessionMessageCB& session_message_cb,
+                     const SessionClosedCB& session_closed_cb,
+                     const SessionKeysChangeCB& session_keys_change_cb);
+    SessionCallbacks(SessionCallbacks&&);
+
+    SessionCallbacks(const SessionCallbacks&) = delete;
+    SessionCallbacks& operator=(const SessionCallbacks&) = delete;
+
+    ~SessionCallbacks();
+
+    SessionCallbacks& operator=(SessionCallbacks&&);
+
+    SessionMessageCB message_cb;
+    SessionClosedCB closed_cb;
+    SessionKeysChangeCB keys_change_cb;
+  };
+
   MediaFoundationClearKeySession();
   MediaFoundationClearKeySession(const MediaFoundationClearKeySession&) =
       delete;
@@ -30,13 +58,12 @@ class MediaFoundationClearKeySession final
       const MediaFoundationClearKeySession&) = delete;
   ~MediaFoundationClearKeySession() override;
 
-  using HasUsableKeyChangedCB =
-      base::RepeatingCallback<void(const std::wstring& session_id,
-                                   bool has_usable_key)>;
-
   HRESULT RuntimeClassInitialize(
       _In_ MF_MEDIAKEYSESSION_TYPE session_type,
-      _In_ IMFContentDecryptionModuleSessionCallbacks* callbacks);
+      _In_ IMFContentDecryptionModuleSessionCallbacks* callbacks,
+      _In_ scoped_refptr<AesDecryptor> aes_decryptor,
+      _In_ SessionIdCreatedCB session_id_created_cb,
+      _In_ SessionIdCB session_id_removed_cb);
 
   // IMFContentDecryptionModuleSession
   STDMETHODIMP Update(_In_reads_bytes_(response_size) const BYTE* response,
@@ -54,14 +81,31 @@ class MediaFoundationClearKeySession final
   STDMETHODIMP GetExpiration(_Out_ double* expiration) override;
   STDMETHODIMP Remove() override;
 
+  void OnSessionMessage(const std::string& session_id,
+                        CdmMessageType message_type,
+                        const std::vector<uint8_t>& message);
+  void OnSessionClosed(const std::string& session_id,
+                       CdmSessionClosedReason reason);
+  void OnSessionKeysChange(const std::string& session_id,
+                           bool has_additional_usable_key,
+                           CdmKeysInfo keys_info);
+
  private:
+  void OnSessionCreated(const std::string& session_id);
+
   MF_MEDIAKEYSESSION_TYPE session_type_ = MF_MEDIAKEYSESSION_TYPE_TEMPORARY;
   Microsoft::WRL::ComPtr<IMFContentDecryptionModuleSessionCallbacks> callbacks_;
-
-  bool is_closed_ = false;
+  scoped_refptr<AesDecryptor> aes_decryptor_;
+  std::string session_id_;
+  CdmKeysInfo keys_info_;
+  SessionIdCreatedCB session_id_created_cb_;
+  SessionIdCB session_id_removed_cb_;
 
   // Thread checker to enforce that this object is used on a specific thread.
   THREAD_CHECKER(thread_checker_);
+
+  // NOTE: Weak pointers must be invalidated before all other member variables.
+  base::WeakPtrFactory<MediaFoundationClearKeySession> weak_factory_{this};
 };
 
 }  // namespace media

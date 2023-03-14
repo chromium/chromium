@@ -277,8 +277,7 @@ void PasswordReuseModalWarningDialog::InvokeActionForTesting(
       Close();
       break;
     default:
-      NOTREACHED();
-      break;
+      NOTREACHED_NORETURN();
   }
 }
 

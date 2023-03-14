@@ -139,10 +139,12 @@ void WebAppPolicyManager::SetSystemWebAppDelegateMap(
 }
 #endif
 
-void WebAppPolicyManager::Start(base::OnceClosure initialization_complete) {
-  DCHECK(initialization_complete_.is_null());
+void WebAppPolicyManager::Start(
+    base::OnceClosure policy_settings_and_force_installs_applied) {
+  DCHECK(policy_settings_and_force_installs_applied_.is_null());
 
-  initialization_complete_ = std::move(initialization_complete);
+  policy_settings_and_force_installs_applied_ =
+      std::move(policy_settings_and_force_installs_applied);
   // When Lacros is enabled, don't run PWA-specific logic in Ash.
   // TODO(crbug.com/1251491): Consider factoring out logic that should only run
   // in Ash into a separate class. This way, when running in Ash, we won't need
@@ -239,8 +241,8 @@ void WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy(
     RefreshPolicyInstalledIsolatedWebApps();
 #endif
   } else {
-    if (initialization_complete_) {
-      std::move(initialization_complete_).Run();
+    if (policy_settings_and_force_installs_applied_) {
+      std::move(policy_settings_and_force_installs_applied_).Run();
     }
   }
   ObserveDisabledSystemFeaturesPolicy();
@@ -258,10 +260,9 @@ void WebAppPolicyManager::OnDisableListPolicyChanged() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-void WebAppPolicyManager::OnSyncCommandsComplete(
+void WebAppPolicyManager::OnSyncPolicySettingsCommandsComplete(
     std::vector<std::string> app_ids) {
   app_registrar_->NotifyWebAppSettingsPolicyChanged();
-
   if (refresh_policy_settings_completed_) {
     std::move(refresh_policy_settings_completed_).Run();
   }
@@ -407,7 +408,7 @@ void WebAppPolicyManager::RefreshPolicyInstalledIsolatedWebApps() {
 }
 #endif
 
-void WebAppPolicyManager::RefreshPolicySettings() {
+void WebAppPolicyManager::ParsePolicySettings() {
   // No need to validate the types or values of the policy members because we
   // are using a WebAppSettingsPolicyHandler which should validate them for us.
   const base::Value::List& web_apps_list =
@@ -452,7 +453,10 @@ void WebAppPolicyManager::RefreshPolicySettings() {
       LOG(WARNING) << "Malformed web app settings for " << url;
     }
   }
+}
 
+void WebAppPolicyManager::RefreshPolicySettings() {
+  ParsePolicySettings();
   ApplyPolicySettings();
 }
 
@@ -460,7 +464,7 @@ void WebAppPolicyManager::ApplyPolicySettings() {
   std::vector<AppId> app_ids_to_sync = app_registrar_->GetAppIds();
   auto callback_for_sync_commands = base::BarrierCallback<std::string>(
       app_ids_to_sync.size(),
-      base::BindOnce(&WebAppPolicyManager::OnSyncCommandsComplete,
+      base::BindOnce(&WebAppPolicyManager::OnSyncPolicySettingsCommandsComplete,
                      weak_ptr_factory_.GetWeakPtr()));
   WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(profile_);
   for (const AppId& app_id : app_ids_to_sync) {
@@ -815,8 +819,10 @@ void WebAppPolicyManager::OnWebAppForceInstallPolicyParsed() {
     std::move(on_apps_synchronized_for_testing_).Run();
   }
 
-  if (initialization_complete_) {
-    std::move(initialization_complete_).Run();
+  // Policy settings have already been applied, as that happens synchronously
+  // before force-installs are applied.
+  if (policy_settings_and_force_installs_applied_) {
+    std::move(policy_settings_and_force_installs_applied_).Run();
   }
 }
 

@@ -4,7 +4,7 @@
 
 import {assert, assertExists} from '../assert.js';
 import {Metadata} from '../type.js';
-import {bitmapToJpegBlob} from '../util.js';
+import {bitmapToJpegBlob, getNumberEnumMapping} from '../util.js';
 import {WaitableEvent} from '../waitable_event.js';
 
 import {DeviceOperator, parseMetadata} from './device_operator.js';
@@ -154,7 +154,8 @@ export class CrosImageCapture {
     }
 
     const cameraMetadataTagInverseLookup: Record<number, string> = {};
-    for (const [key, value] of Object.entries(CameraMetadataTag)) {
+    for (const [key, value] of Object.entries(
+             getNumberEnumMapping(CameraMetadataTag))) {
       if (key === 'MIN_VALUE' || key === 'MAX_VALUE') {
         continue;
       }

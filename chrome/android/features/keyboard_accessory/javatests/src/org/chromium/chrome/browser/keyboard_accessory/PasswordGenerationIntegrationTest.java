@@ -264,7 +264,7 @@ public class PasswordGenerationIntegrationTest {
     private void waitForGenerationLabel() {
         CriteriaHelper.pollInstrumentationThread(() -> {
             String attribute = mHelper.getAttribute(PASSWORD_NODE_ID, PASSWORD_ATTRIBUTE_NAME);
-            return attribute.equals(ELIGIBLE_FOR_GENERATION);
+            return ELIGIBLE_FOR_GENERATION.equals(attribute);
         });
     }
 

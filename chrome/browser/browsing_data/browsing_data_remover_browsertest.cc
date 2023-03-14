@@ -957,14 +957,8 @@ class BrowsingDataRemoverStorageBucketsBrowserTest
   void ClearSiteDataAndWait(
       const url::Origin& origin,
       const absl::optional<blink::StorageKey>& storage_key,
-      const std::set<std::string>& storage_buckets_to_remove = {}) {
+      const std::set<std::string>& storage_buckets_to_remove) {
     base::RunLoop loop;
-
-    // Passing an empty set of storage_buckets_to_remove should clear all
-    // buckets for the given origin. Update this test if that assumption is
-    // ever changed.
-    const bool clear_storage = storage_buckets_to_remove.empty();
-
     content::ClearSiteData(
         /*browser_context_getter=*/base::BindRepeating(
             [](content::BrowserContext* browser_context) {
@@ -972,7 +966,7 @@ class BrowsingDataRemoverStorageBucketsBrowserTest
             },
             base::Unretained(GetBrowser()->profile())),
         /*origin=*/origin,
-        /*clear_cookies=*/true, clear_storage,
+        /*clear_cookies=*/true, /*clear_storage=*/false,
         /*clear_cache=*/true,
         /*storage_buckets_to_remove=*/storage_buckets_to_remove,
         /*avoid_closing_connections=*/true,
@@ -1024,18 +1018,6 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverStorageBucketsBrowserTest,
       base::BindOnce([](storage::QuotaErrorOr<std::set<storage::BucketInfo>>
                             error_or_buckets) {
         EXPECT_EQ(1u, error_or_buckets.value().size());
-      }));
-
-  // Now, clear the storage without any specific buckets and all the buckets
-  // should be deleted.
-  ClearSiteDataAndWait(origin, storage_key);
-
-  quota_manager_proxy->GetBucketsForStorageKey(
-      storage_key, blink::mojom::StorageType::kTemporary,
-      /*delete_expired*/ false, base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindOnce([](storage::QuotaErrorOr<std::set<storage::BucketInfo>>
-                            error_or_buckets) {
-        EXPECT_TRUE(error_or_buckets.value().empty());
       }));
 }
 

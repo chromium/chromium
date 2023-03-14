@@ -25,7 +25,7 @@ void PrintSettingsInitializerMac::InitPrintSettings(
   print_settings->SetOrientation(orientation == kPMLandscape);
 
   UInt32 resolution_count = 0;
-  PMResolution best_resolution = {72.0, 72.0};
+  PMResolution best_resolution = {kDefaultMacDpi, kDefaultMacDpi};
   OSStatus status =
       PMPrinterGetPrinterResolutionCount(printer, &resolution_count);
   if (status == noErr) {

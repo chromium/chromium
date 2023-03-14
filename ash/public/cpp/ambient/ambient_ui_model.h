@@ -43,6 +43,19 @@ constexpr base::TimeDelta kPhotoRefreshInterval = base::Seconds(60);
 // The default animation playback speed. Not used in slideshow mode.
 constexpr float kAnimationPlaybackSpeed = 1.f;
 
+// The default time before starting the managed screensaver. Must match with the
+// default value declared in the DeviceScreensaverLoginScreenIdleTimeoutSeconds
+// and ScreensaverLockScreenIdleTimeoutSeconds policies.
+constexpr base::TimeDelta kManagedScreensaverInactivityTimeout =
+    base::Seconds(7);
+
+// The default interval to refresh images in the managed screensaver. Must match
+// with the default value declared in the
+// DeviceScreensaverImageDisplayIntervalSeconds and
+// ScreensaverImageDisplayIntervalSeconds policies.
+constexpr base::TimeDelta kManagedScreensaverImageRefreshInterval =
+    base::Seconds(60);
+
 // A checked observer which receives notification of changes to the Ambient Mode
 // UI model.
 class ASH_PUBLIC_EXPORT AmbientUiModelObserver : public base::CheckedObserver {

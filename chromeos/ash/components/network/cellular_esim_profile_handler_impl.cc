@@ -73,7 +73,7 @@ CellularESimProfileHandlerImpl::GetESimProfiles() {
     }
 
     absl::optional<CellularESimProfile> profile =
-        CellularESimProfile::FromDictionaryValue(value);
+        CellularESimProfile::FromDictionaryValue(value.GetDict());
     if (!profile) {
       NET_LOG(ERROR) << "Unable to deserialize eSIM profile: " << value;
       continue;
@@ -166,7 +166,7 @@ void CellularESimProfileHandlerImpl::StartAutoRefresh(
   // originally boots or after a powerwash.
   for (const auto& path : euicc_paths) {
     NET_LOG(EVENT) << "Found new EUICC whose profiles have not yet been "
-                   << "refreshsed. Refreshing profile list for " << path;
+                   << "refreshed. Refreshing profile list for " << path;
     RefreshProfileListAndRestoreSlot(
         dbus::ObjectPath(path),
         base::BindOnce(

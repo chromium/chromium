@@ -11,14 +11,13 @@ import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
 
-import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
@@ -48,13 +47,6 @@ class OsSettingsSmartInputsPageElement extends
         notify: true,
       },
 
-      allowAssistivePersonalInfo_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('allowAssistivePersonalInfo');
-        },
-      },
-
       allowEmojiSuggestion_: {
         type: Boolean,
         value() {
@@ -68,7 +60,6 @@ class OsSettingsSmartInputsPageElement extends
       supportedSettingIds: {
         type: Object,
         value: () => new Set<Setting>([
-          Setting.kShowPersonalInformationSuggestions,
           Setting.kShowEmojiSuggestions,
         ]),
       },
@@ -81,12 +72,10 @@ class OsSettingsSmartInputsPageElement extends
   // Internal properties for mixins.
   // From DeepLinkingMixin.
   // override supportedSettingIds = new Set<Setting>([
-  //   Setting.kShowPersonalInformationSuggestions,
   //   Setting.kShowEmojiSuggestions,
   // ]);
 
   // loadTimeData flags.
-  private allowAssistivePersonalInfo_: boolean;
   private allowEmojiSuggestion_: boolean;
 
   override currentRouteChanged(route: Route): void {
@@ -96,22 +85,6 @@ class OsSettingsSmartInputsPageElement extends
     }
 
     this.attemptDeepLink();
-  }
-
-  /**
-   * Opens Chrome browser's autofill manage addresses setting page.
-   */
-  private onManagePersonalInfoClick_(): void {
-    window.open('chrome://settings/addresses');
-  }
-
-  // 'change' event listener on a <cr-toggle>.
-  private onPersonalInfoSuggestionToggled_(e: CustomEvent<boolean>): void {
-    // Safety: This method is only called from a 'change' event from a
-    // <cr-checkbox>, so the event target must be a <cr-checkbox>.
-    this.setPrefValue(
-        'assistive_input.personal_info_enabled',
-        (e.target! as CrCheckboxElement).checked);
   }
 }
 

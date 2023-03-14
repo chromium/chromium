@@ -289,7 +289,10 @@ TEST_F(OutOfMemoryDeathTest, NewHandlerGeneratesUnhandledException) {
 
 // OS X has no 2Gb allocation limit.
 // See https://crbug.com/169327.
-#if !BUILDFLAG(IS_MAC)
+// PartitionAlloc is not active in component builds, so cannot enforce
+// this limit. (//BUILD.gn asserts that we cannot have an official component
+// build.)
+#if !BUILDFLAG(IS_MAC) && !defined(COMPONENT_BUILD)
 TEST_F(OutOfMemoryDeathTest, SecurityNew) {
   if (ShouldSkipTest()) {
     return;

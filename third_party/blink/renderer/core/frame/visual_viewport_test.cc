@@ -2246,7 +2246,10 @@ TEST_P(VisualViewportTest, InvalidateLayoutViewWhenDocumentSmallerThanView) {
                                            browser_controls_height, 0, true);
   UpdateAllLifecyclePhases();
 
-  frame_test_helpers::LoadFrame(web_view_impl->MainFrameImpl(), "about:blank");
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(web_view_impl->MainFrameImpl(),
+                                     "<div style='height: 20px'>Text</div>",
+                                     base_url);
   UpdateAllLifecyclePhases();
   Document* document =
       To<LocalFrame>(web_view_impl->GetPage()->MainFrame())->GetDocument();

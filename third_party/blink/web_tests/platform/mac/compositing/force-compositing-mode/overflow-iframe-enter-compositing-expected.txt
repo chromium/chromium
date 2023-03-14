@@ -9,7 +9,6 @@
     {
       "name": "LayoutNGBlockFlow HTML",
       "bounds": [508, 516],
-      "contentsOpaqueForText": true,
       "backgroundColor": "#0000FF",
       "transform": 1
     },
@@ -31,7 +30,6 @@
       "name": "Scroll corner of LayoutNGView #document",
       "position": [135, 135],
       "bounds": [15, 15],
-      "contentsOpaqueForText": true,
       "transform": 1
     }
   ],

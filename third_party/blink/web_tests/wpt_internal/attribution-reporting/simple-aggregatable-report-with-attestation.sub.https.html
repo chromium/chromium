@@ -1,0 +1,69 @@
+<!doctype html>
+<meta charset=utf-8>
+<meta name=timeout content=long>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/helpers.js"></script>
+<script>
+attribution_reporting_promise_test(async (t) => {
+  // 1. Register a source as we want the trigger to match a source for the
+  //    report to then be sent.
+  const source = {
+    destination: `https://{{host}}`,
+    aggregation_keys: {
+      campaignCounts: "0x159",
+      geoValue: "0x5",
+    },
+  };
+  await registerAttributionSrc(t, {
+    source,
+    cookie: "foo=bar;Secure;HttpOnly;Path=/",
+  });
+
+  // 2. Register a trigger. We call a custom python script that acts as\
+  //    reporting origin registered as a private state issuer. ie. It will
+  //    sign the blinded message receive and return a blind signature.
+  const trigger = {
+    aggregatable_trigger_data: [
+      { key_piece: "0x400", source_keys: ["campaignCounts"] },
+      { key_piece: "0xA80", source_keys: ["geoValue", "nonMatchingKey"] },
+    ],
+    aggregatable_values: { campaignCounts: 32768, geoValue: 1664 },
+  };
+  const triggerRegistrationResponse = await fetch(
+    "/wpt_internal/attribution-reporting/resources/trigger_with_attestation.py",
+    {
+      headers: {
+        "Attribution-Reporting-Eligible": "trigger",
+        "Test-Trigger-Header-Value": JSON.stringify(trigger),
+      },
+      keepalive: true,
+    }
+  );
+  const registrationReponse = await triggerRegistrationResponse.text();
+  assert_equals(triggerRegistrationResponse.status, 200);
+
+  // 3. We wait for the aggregatable report to be sent. It should be sent with
+  //    a redemption header.
+  const payload = await pollAggregatableReports();
+  const headers = payload.reports[0].headers;
+  assert_own_property(headers, "sec-attribution-reporting-private-state-token");
+  const redemptionHeader =
+    headers["sec-attribution-reporting-private-state-token"];
+  // 4. We check that the redemption header can be validated. The implementation
+  //    in trust_token_voprf.py is not complete (e.g. were not passing the message
+  //    required for redemption and it still pass), but it still ensure that there
+  //    is an attestation token and it has the right shape.
+  const redemptionResponse = await fetch(
+    "/wpt_internal/attribution-reporting/resources/validate_attestation_header.py",
+    {
+      headers: {
+        "Test-Sec-Attribution-Reporting-Private-State-Token": redemptionHeader,
+      },
+    }
+  );
+  assert_equals(redemptionResponse.status, 200);
+
+}, "Ensure aggregatable attribution with trigger attestation is received.");
+
+</script>

@@ -213,10 +213,14 @@ struct HidServiceLinux::ConnectParams {
 
 class HidServiceLinux::BlockingTaskRunnerHelper : public UdevWatcher::Observer {
  public:
-  BlockingTaskRunnerHelper(base::WeakPtr<HidServiceLinux> service)
-      : service_(std::move(service)),
-        task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
-    DETACH_FROM_SEQUENCE(sequence_checker_);
+  BlockingTaskRunnerHelper(base::WeakPtr<HidServiceLinux> service,
+                           scoped_refptr<base::SequencedTaskRunner> task_runner)
+      : service_(std::move(service)), task_runner_(std::move(task_runner)) {
+    watcher_ = UdevWatcher::StartWatching(this);
+    watcher_->EnumerateExistingDevices();
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&HidServiceLinux::FirstEnumerationComplete, service_));
   }
 
   BlockingTaskRunnerHelper(const BlockingTaskRunnerHelper&) = delete;
@@ -224,16 +228,6 @@ class HidServiceLinux::BlockingTaskRunnerHelper : public UdevWatcher::Observer {
 
   ~BlockingTaskRunnerHelper() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  }
-
-  void Start() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-    watcher_ = UdevWatcher::StartWatching(this);
-    watcher_->EnumerateExistingDevices();
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&HidServiceLinux::FirstEnumerationComplete, service_));
   }
 
  private:
@@ -271,19 +265,19 @@ class HidServiceLinux::BlockingTaskRunnerHelper : public UdevWatcher::Observer {
       return;
 
     uint32_t int_property = 0;
-    if (!HexStringToUInt(base::StringPiece(parts[0]), &int_property) ||
+    if (!base::HexStringToUInt(parts[0], &int_property) ||
         int_property > std::numeric_limits<uint16_t>::max()) {
       return;
     }
     auto bus_type = BusTypeFromLinuxBusId(int_property);
 
-    if (!HexStringToUInt(base::StringPiece(parts[1]), &int_property) ||
+    if (!base::HexStringToUInt(parts[1], &int_property) ||
         int_property > std::numeric_limits<uint16_t>::max()) {
       return;
     }
     uint16_t vendor_id = int_property;
 
-    if (!HexStringToUInt(base::StringPiece(parts[2]), &int_property) ||
+    if (!base::HexStringToUInt(parts[2], &int_property) ||
         int_property > std::numeric_limits<uint16_t>::max()) {
       return;
     }
@@ -350,16 +344,11 @@ class HidServiceLinux::BlockingTaskRunnerHelper : public UdevWatcher::Observer {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
-HidServiceLinux::HidServiceLinux()
-    : blocking_task_runner_(
-          base::ThreadPool::CreateSequencedTaskRunner(kBlockingTaskTraits)),
-      helper_(nullptr, base::OnTaskRunnerDeleter(blocking_task_runner_)) {
-  // We need to properly initialize |blocking_task_helper_| here because we need
-  // |weak_factory_| to be created first.
-  helper_.reset(new BlockingTaskRunnerHelper(weak_factory_.GetWeakPtr()));
-  blocking_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&BlockingTaskRunnerHelper::Start,
-                                base::Unretained(helper_.get())));
+HidServiceLinux::HidServiceLinux() {
+  helper_ = base::SequenceBound<BlockingTaskRunnerHelper>(
+      base::ThreadPool::CreateSequencedTaskRunner(kBlockingTaskTraits),
+      weak_factory_.GetWeakPtr(),
+      base::SequencedTaskRunner::GetCurrentDefault());
 }
 
 HidServiceLinux::~HidServiceLinux() = default;

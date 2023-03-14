@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SYNC_BASE_COMMAND_LINE_SWITCHES_H_
 #define COMPONENTS_SYNC_BASE_COMMAND_LINE_SWITCHES_H_
 
+#include "url/gurl.h"
+
 namespace syncer {
 
 // Disables syncing browser data to a Google Account.
@@ -46,6 +48,10 @@ inline constexpr char kTrustedVaultServiceURL[] = "trusted-vault-service-url";
 // This function can be called from any thread, and the implementation doesn't
 // assume it's running on the UI thread.
 bool IsSyncAllowedByFlag();
+
+// Returns the default URL for the trusted vault server or the override
+// specified via `kTrustedVaultServiceURL`.
+GURL ExtractTrustedVaultServiceURLFromCommandLine();
 
 }  // namespace syncer
 

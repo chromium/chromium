@@ -260,7 +260,7 @@ bool SendTouchEventsNotifyWhenDone(int action,
 
   // Touch release events might not have coordinates that match any window, so
   // just use whichever window is on top.
-  if (action & ui_controls::RELEASE) {
+  if (action & ui_controls::kTouchRelease) {
     root_window = TopRootWindow();
   } else {
     root_window = RootWindowForPoint(screen_location);

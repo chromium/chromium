@@ -15,7 +15,6 @@
 #include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
-#include "content/common/aggregatable_report.mojom.h"
 #include "content/common/private_aggregation_features.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
@@ -24,6 +23,8 @@
 #include "gin/dictionary.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-external.h"
 #include "v8/include/v8-function-callback.h"
@@ -38,15 +39,15 @@ namespace {
 // Converts base value string to corresponding mojom enum.
 absl::optional<auction_worklet::mojom::BaseValue> BaseValueStringToEnum(
     const std::string& base_value) {
-  if (base_value == "winningBid") {
+  if (base_value == "winning-bid") {
     return auction_worklet::mojom::BaseValue::kWinningBid;
-  } else if (base_value == "highestScoringOtherBid") {
+  } else if (base_value == "highest-scoring-other-bid") {
     return auction_worklet::mojom::BaseValue::kHighestScoringOtherBid;
-  } else if (base_value == "scriptRunTime") {
+  } else if (base_value == "script-run-time") {
     return auction_worklet::mojom::BaseValue::kScriptRunTime;
-  } else if (base_value == "signalsFetchTime") {
+  } else if (base_value == "signals-fetch-time") {
     return auction_worklet::mojom::BaseValue::kSignalsFetchTime;
-  } else if (base_value == "bidRejectReason") {
+  } else if (base_value == "bid-reject-reason") {
     return auction_worklet::mojom::BaseValue::kBidRejectReason;
   }
   // Invalid (out of range) base_value.
@@ -105,8 +106,10 @@ absl::optional<auction_worklet::mojom::SignalBucketPtr> GetSignalBucket(
     if (!js_scale->IsNumber()) {
       return absl::nullopt;
     }
-    // TODO(qingxinwu): Return empty if scale is NaN or infinite.
     scale = js_scale.As<v8::Number>()->Value();
+    if (!std::isfinite(scale)) {
+      return absl::nullopt;
+    }
   }
 
   v8::Local<v8::Value> js_offset;
@@ -160,8 +163,10 @@ absl::optional<auction_worklet::mojom::SignalValuePtr> GetSignalValue(
     if (!js_scale->IsNumber()) {
       return absl::nullopt;
     }
-    // TODO(b/266615909): Disallow scale being NaN or infinite.
     scale = js_scale.As<v8::Number>()->Value();
+    if (!std::isfinite(scale)) {
+      return absl::nullopt;
+    }
   }
 
   v8::Local<v8::Value> js_offset;
@@ -301,7 +306,8 @@ void PrivateAggregationBindings::FillInGlobalTemplate(
       v8_helper_->CreateStringFromLiteral("sendHistogramReport"),
       send_histogram_report_template);
 
-  if (content::kPrivateAggregationApiFledgeExtensionsEnabled.Get()) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kPrivateAggregationApiFledgeExtensions)) {
     v8::Local<v8::FunctionTemplate> report_contribution_for_event_template =
         v8::FunctionTemplate::New(
             v8_helper_->isolate(),
@@ -344,7 +350,7 @@ PrivateAggregationBindings::TakePrivateAggregationRequests() {
         return auction_worklet::mojom::PrivateAggregationRequest::New(
             std::move(contribution),
             // TODO(alexmt): consider allowing this to be set
-            content::mojom::AggregationServiceMode::kDefault,
+            blink::mojom::AggregationServiceMode::kDefault,
             debug_mode_details_.Clone());
       });
   private_aggregation_contributions_.clear();
@@ -358,7 +364,7 @@ void PrivateAggregationBindings::SendHistogramReport(
       static_cast<PrivateAggregationBindings*>(
           v8::External::Cast(*args.Data())->Value());
 
-  content::mojom::AggregatableReportHistogramContributionPtr contribution =
+  blink::mojom::AggregatableReportHistogramContributionPtr contribution =
       worklet_utils::ParseSendHistogramReportArguments(
           gin::Arguments(args),
           bindings->private_aggregation_permissions_policy_allowed_);

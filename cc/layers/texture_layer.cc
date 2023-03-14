@@ -42,7 +42,7 @@ TextureLayer::~TextureLayer() = default;
 void TextureLayer::ClearClient() {
   client_.Write(*this) = nullptr;
   ClearTexture();
-  SetDrawsContent(HasDrawableContent());
+  UpdateDrawsContent();
 }
 
 void TextureLayer::ClearTexture() {
@@ -134,7 +134,7 @@ void TextureLayer::SetTransferableResourceInternal(
   else
     SetNeedsPushProperties();
 
-  SetDrawsContent(HasDrawableContent());
+  UpdateDrawsContent();
 }
 
 void TextureLayer::SetTransferableResource(

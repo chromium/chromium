@@ -66,14 +66,22 @@ class BASE_EXPORT PartitionAllocSupport {
   // re-configuration steps exactly once.
   //
   // *AfterTaskRunnerInit() may be called more than once.
+  void ReconfigureForTests();
   void ReconfigureEarlyish(const std::string& process_type);
   void ReconfigureAfterZygoteFork(const std::string& process_type);
-  void ReconfigureAfterFeatureListInit(const std::string& process_type);
+  void ReconfigureAfterFeatureListInit(
+      const std::string& process_type,
+      bool configure_dangling_pointer_detector = true);
   void ReconfigureAfterTaskRunnerInit(const std::string& process_type);
 
   // |has_main_frame| tells us if the renderer contains a main frame.
   void OnForegrounded(bool has_main_frame);
   void OnBackgrounded();
+
+#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+  static std::string ExtractDanglingPtrSignatureForTests(
+      std::string stacktrace);
+#endif
 
   static PartitionAllocSupport* Get() {
     static auto* singleton = new PartitionAllocSupport();
@@ -84,6 +92,7 @@ class BASE_EXPORT PartitionAllocSupport {
   PartitionAllocSupport();
 
   base::Lock lock_;
+  bool called_for_tests_ GUARDED_BY(lock_) = false;
   bool called_earlyish_ GUARDED_BY(lock_) = false;
   bool called_after_zygote_fork_ GUARDED_BY(lock_) = false;
   bool called_after_feature_list_init_ GUARDED_BY(lock_) = false;

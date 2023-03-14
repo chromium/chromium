@@ -251,8 +251,8 @@ TEST_F(MojoHostResolverImplTest, ResolveEx) {
 // HostResolver.
 TEST_F(MojoHostResolverImplTest, NetworkAnonymizationKeyUsed) {
   const url::Origin kOrigin = url::Origin::Create(GURL("https://foo.test/"));
-  const net::NetworkAnonymizationKey kNetworkAnonymizationKey(
-      (net::SchemefulSite(kOrigin)), (net::SchemefulSite(kOrigin)));
+  const auto kNetworkAnonymizationKey =
+      net::NetworkAnonymizationKey::CreateSameSite(net::SchemefulSite(kOrigin));
 
   mock_host_resolver_.set_ondemand_mode(true);
 

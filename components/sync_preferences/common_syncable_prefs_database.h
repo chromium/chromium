@@ -9,14 +9,18 @@
 
 namespace sync_preferences {
 
+// Should be used by tests.
+extern const char kSyncablePrefForTesting[];
+
 // This class provides an implementation for SyncablePrefsDatabase for common
 // syncable preferences, i.e. preferences which are shared between all
 // platforms.
 class CommonSyncablePrefsDatabase : public SyncablePrefsDatabase {
  public:
-  // Returns true if `pref_name` is part of the common syncable preferences
-  // allowlist.
-  bool IsPreferenceSyncable(const std::string& pref_name) const override;
+  // Returns the metadata associated to the pref or null if `pref_name` is not
+  // syncable.
+  absl::optional<SyncablePrefMetadata> GetSyncablePrefMetadata(
+      const std::string& pref_name) const override;
 };
 
 }  // namespace sync_preferences

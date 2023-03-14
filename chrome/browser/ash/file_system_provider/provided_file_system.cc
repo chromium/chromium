@@ -601,8 +601,7 @@ void ProvidedFileSystem::OnAbortCompleted(int operation_request_id,
     // bugs in extensions here.
     return;
   }
-  request_manager_->RejectRequest(operation_request_id,
-                                  std::make_unique<RequestValue>(),
+  request_manager_->RejectRequest(operation_request_id, RequestValue(),
                                   base::File::FILE_ERROR_ABORT);
 }
 
@@ -875,8 +874,7 @@ void ProvidedFileSystem::OnCloseFileCompleted(
 
 void ProvidedFileSystem::OnLacrosOperationForwarded(int request_id,
                                                     base::File::Error error) {
-  request_manager_->RejectRequest(request_id, std::make_unique<RequestValue>(),
-                                  error);
+  request_manager_->RejectRequest(request_id, RequestValue(), error);
 }
 
 }  // namespace file_system_provider

@@ -9,12 +9,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyBoolean;
-import static org.mockito.Mockito.anyInt;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -379,7 +379,7 @@ public class PasswordManagerHelperTest {
 
         PasswordManagerHelper.showPasswordSettings(ContextUtils.getApplicationContext(),
                 ManagePasswordsReferrer.CHROME_SETTINGS, mSettingsLauncherMock, mSyncServiceMock,
-                mModalDialogManagerSupplier);
+                mModalDialogManagerSupplier, /*managePasskeys=*/false);
 
         assertNotNull(mModalDialogManager.getCurrentDialogForTest());
 
@@ -417,7 +417,7 @@ public class PasswordManagerHelperTest {
 
         PasswordManagerHelper.showPasswordSettings(ContextUtils.getApplicationContext(),
                 ManagePasswordsReferrer.CHROME_SETTINGS, mSettingsLauncherMock, mSyncServiceMock,
-                mModalDialogManagerSupplier);
+                mModalDialogManagerSupplier, /*managePasskeys=*/false);
 
         assertNull(mModalDialogManager.getCurrentDialogForTest());
 
@@ -513,7 +513,7 @@ public class PasswordManagerHelperTest {
 
         PasswordManagerHelper.showPasswordSettings(ContextUtils.getApplicationContext(),
                 ManagePasswordsReferrer.CHROME_SETTINGS, mSettingsLauncherMock, mSyncServiceMock,
-                mModalDialogManagerSupplier);
+                mModalDialogManagerSupplier, /*managePasskeys=*/false);
 
         verify(mCredentialManagerLauncherMock)
                 .getAccountCredentialManagerIntent(eq(ManagePasswordsReferrer.CHROME_SETTINGS),
@@ -528,7 +528,7 @@ public class PasswordManagerHelperTest {
 
         PasswordManagerHelper.showPasswordSettings(mockContext,
                 ManagePasswordsReferrer.CHROME_SETTINGS, mSettingsLauncherMock, mSyncServiceMock,
-                mModalDialogManagerSupplier);
+                mModalDialogManagerSupplier, /*managePasskeys=*/false);
 
         verify(mockContext).startActivity(any());
         verify(mSettingsLauncherMock)
@@ -544,7 +544,7 @@ public class PasswordManagerHelperTest {
 
         PasswordManagerHelper.showPasswordSettings(ContextUtils.getApplicationContext(),
                 ManagePasswordsReferrer.CHROME_SETTINGS, mSettingsLauncherMock, mSyncServiceMock,
-                mModalDialogManagerSupplier);
+                mModalDialogManagerSupplier, /*managePasskeys=*/false);
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         ACCOUNT_GET_INTENT_LATENCY_HISTOGRAM, 0));
@@ -567,7 +567,7 @@ public class PasswordManagerHelperTest {
 
         PasswordManagerHelper.showPasswordSettings(ContextUtils.getApplicationContext(),
                 ManagePasswordsReferrer.CHROME_SETTINGS, mSettingsLauncherMock, mSyncServiceMock,
-                mModalDialogManagerSupplier);
+                mModalDialogManagerSupplier, /*managePasskeys=*/false);
 
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -592,7 +592,7 @@ public class PasswordManagerHelperTest {
 
         PasswordManagerHelper.showPasswordSettings(ContextUtils.getApplicationContext(),
                 ManagePasswordsReferrer.CHROME_SETTINGS, mSettingsLauncherMock, mSyncServiceMock,
-                mModalDialogManagerSupplier);
+                mModalDialogManagerSupplier, /*managePasskeys=*/false);
 
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -1433,7 +1433,7 @@ public class PasswordManagerHelperTest {
 
         PasswordManagerHelper.showPasswordSettings(ContextUtils.getApplicationContext(),
                 ManagePasswordsReferrer.CHROME_SETTINGS, mSettingsLauncherMock, mSyncServiceMock,
-                mModalDialogManagerSupplier);
+                mModalDialogManagerSupplier, /*managePasskeys=*/false);
 
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -1462,7 +1462,7 @@ public class PasswordManagerHelperTest {
 
         PasswordManagerHelper.showPasswordSettings(ContextUtils.getApplicationContext(),
                 ManagePasswordsReferrer.CHROME_SETTINGS, mSettingsLauncherMock, mSyncServiceMock,
-                mModalDialogManagerSupplier);
+                mModalDialogManagerSupplier, /*managePasskeys=*/false);
 
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -1481,6 +1481,32 @@ public class PasswordManagerHelperTest {
         assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
+            ChromeFeatureList.PASSKEY_MANAGEMENT_USING_ACCOUNT_SETTINGS_ANDROID})
+    public void
+    testUseAccountSettings() {
+        SyncService.overrideForTests(mSyncServiceMock);
+        when(mSyncServiceMock.isEngineInitialized()).thenReturn(false);
+
+        assertTrue(PasswordManagerHelper.canUseAccountSettings());
+        SyncService.resetForTests();
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
+            ChromeFeatureList.PASSKEY_MANAGEMENT_USING_ACCOUNT_SETTINGS_ANDROID})
+    public void
+    testCannotUseAccountSettingsWithNoBackend() {
+        SyncService.overrideForTests(mSyncServiceMock);
+        when(mSyncServiceMock.isEngineInitialized()).thenReturn(false);
+
+        when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(false);
+
+        assertFalse(PasswordManagerHelper.canUseAccountSettings());
+        SyncService.resetForTests();
     }
 
     private void chooseToSyncPasswordsWithoutCustomPassphrase() {

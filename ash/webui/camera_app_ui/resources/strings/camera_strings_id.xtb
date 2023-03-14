@@ -8,9 +8,6 @@
 <translation id="1175958423215084756">Link terdeteksi. <ph name="HOSTNAME" /></translation>
 <translation id="1197694886744716213">Halaman <ph name="PAGE_NUMBER" /> dihapus</translation>
 <translation id="1258009455399840361">Putar 90 derajat searah jarum jam</translation>
-<translation id="1300209025925956156">Pindai dokumen Anda</translation>
-<translation id="1309250603447638106">Mendownload update untuk pemindaian dokumen</translation>
-<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Penelusuran + Panah kiri untuk mengakses.</translation>
 <translation id="1417314334557041815">Edit halaman <ph name="INDEX" /></translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> dicabut.</translation>
 <translation id="1473110567575736769">Timer 3 detik</translation>
@@ -24,7 +21,6 @@
 <translation id="1664224225747386870">Tidak ada yang direkam</translation>
 <translation id="1838104802459806957">Miringkan ke atas</translation>
 <translation id="1843105061469674856">Pindai halaman tambahan</translation>
-<translation id="1851169887664797861">Kontrol kamera tambahan tersedia</translation>
 <translation id="1851616744363735765">DIJEDA</translation>
 <translation id="1899697626337024495">Resolusi foto</translation>
 <translation id="1925845977604399247">Buka Galeri</translation>
@@ -49,7 +45,6 @@
 <translation id="2761536921376153655">Jenis pemindaian</translation>
 <translation id="28682968802727151">Pratinjau cermin</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> dicolokkan.</translation>
-<translation id="2904654629665923749">Pemindaian dokumen tersedia</translation>
 <translation id="3067436040345934772">Geser ke kanan</translation>
 <translation id="3081586908890909590">Beralih ke mode merekam video</translation>
 <translation id="313467653172006084">30 FPS</translation>
@@ -74,7 +69,6 @@
 <translation id="4269820728363426813">Salin URL</translation>
 <translation id="4281620174117014503">Resolusi sedang</translation>
 <translation id="428234092390943511">Thumbnail halaman</translation>
-<translation id="4340659173795395806">Anda kini dapat membuat PDF multi-halaman</translation>
 <translation id="4383571725254449280">Log performa cetak</translation>
 <translation id="4445542136948522167">Berhenti mengambil foto</translation>
 <translation id="4570032796877367747">Kamera depan</translation>
@@ -97,7 +91,6 @@
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5320594929574852403">Berpindah ke arah kiri</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
-<translation id="5444515100983837161">Tempatkan semua sisi dokumen ke dalam bingkai. Pemindaian akan berfungsi baik jika dokumen dan latar belakang memiliki warna yang berbeda.</translation>
 <translation id="5662366948659129155">Memindai halaman <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Persegi</translation>
 <translation id="5746169159649715125">Simpan sebagai PDF</translation>
@@ -157,7 +150,6 @@ Jika masukan Anda berkaitan dengan kualitas gambar atau video, lampirkan contoh 
 <translation id="8428213095426709021">Setelan</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Aktifkan/nonaktifkan tombol bisukan mikrofon. Bisukan aktif</translation>
-<translation id="8712637175834984815">Mengerti</translation>
 <translation id="8730621377337864115">Selesai</translation>
 <translation id="8732462232047530626">Lihat pratinjau metadata</translation>
 <translation id="8815966864175525708">Beralih ke mode mengambil foto potret</translation>

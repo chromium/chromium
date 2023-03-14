@@ -6,6 +6,8 @@
 
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/constants.h"
 #import "ios/chrome/browser/signin/signin_util.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
@@ -37,8 +39,6 @@
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
@@ -74,6 +74,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeURLWithSize,
   ItemTypeURLWithSupplementalText,
   ItemTypeURLWithThirdRowText,
+  ItemTypeURLWithMetadata,
+  ItemTypeURLWithMetadataImage,
   ItemTypeURLWithBadgeImage,
   ItemTypeTextSettingsDetail,
   ItemTypeTableViewWithBlueDot,
@@ -666,6 +668,23 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [[CrURL alloc] initWithGURL:GURL("https://blog.google/products/chrome/")];
   item.thirdRowText = @"Unavailable";
   item.thirdRowTextColor = UIColor.redColor;
+  [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
+
+  item = [[TableViewURLItem alloc] initWithType:ItemTypeURLWithMetadata];
+  item.title = @"Web Channel with metadata image and label";
+  item.URL =
+      [[CrURL alloc] initWithGURL:GURL("https://blog.google/products/chrome/")];
+  item.metadata = @"176 KB";
+  item.metadataImage = CustomSymbolTemplateWithPointSize(kCloudSlashSymbol, 18);
+  item.metadataImageColor = [UIColor colorNamed:kTextSecondaryColor];
+  [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
+
+  item = [[TableViewURLItem alloc] initWithType:ItemTypeURLWithMetadataImage];
+  item.title = @"Web Channel with metadata image";
+  item.URL =
+      [[CrURL alloc] initWithGURL:GURL("https://blog.google/products/chrome/")];
+  item.metadataImage = CustomSymbolTemplateWithPointSize(kCloudSlashSymbol, 18);
+  item.metadataImageColor = [UIColor colorNamed:kTextSecondaryColor];
   [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
 }
 

@@ -3,18 +3,31 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/fetch/trust_token_to_mojom.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_private_token.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 
 namespace blink {
 
+using TokenType = V8PrivateTokenType::Enum;
 using VersionType = V8PrivateTokenVersion::Enum;
 using OperationType = V8OperationType::Enum;
 using RefreshPolicy = V8RefreshPolicy::Enum;
 
-bool ConvertTrustTokenToMojom(const TrustToken& in,
+bool ConvertTrustTokenToMojom(const PrivateToken& in,
                               ExceptionState* exception_state,
                               network::mojom::blink::TrustTokenParams* out) {
   DCHECK(in.hasOperation());  // field is required in IDL
+
+  // Check token type.
+  if (!in.hasType()) {
+    exception_state->ThrowTypeError(
+        "privateToken: token type is not specified.");
+    return false;
+  }
+  if (in.type().AsEnum() != TokenType::kPrivateStateToken) {
+    exception_state->ThrowTypeError("privateToken: unknown token type.");
+    return false;
+  }
 
   // get token version
   if (in.hasVersion()) {
@@ -23,7 +36,7 @@ bool ConvertTrustTokenToMojom(const TrustToken& in,
       out->version =
           network::mojom::blink::TrustTokenMajorVersion::kPrivateStateTokenV1;
     } else {
-      exception_state->ThrowTypeError("trustToken: unknown token version.");
+      exception_state->ThrowTypeError("privateToken: unknown token version.");
       return false;
     }
   } else {
@@ -67,7 +80,8 @@ bool ConvertTrustTokenToMojom(const TrustToken& in,
       KURL parsed_url = KURL(issuer);
       if (!parsed_url.ProtocolIsInHTTPFamily()) {
         exception_state->ThrowTypeError(
-            "trustToken: operation type 'send-redemption-record' requires that "
+            "privateToken: operation type 'send-redemption-record' requires "
+            "that "
             "the 'issuers' "
             "fields' members parse to HTTP(S) origins, but one did not: " +
             issuer);
@@ -78,7 +92,8 @@ bool ConvertTrustTokenToMojom(const TrustToken& in,
       DCHECK(out->issuers.back());  // SecurityOrigin::Create cannot fail.
       if (!out->issuers.back()->IsPotentiallyTrustworthy()) {
         exception_state->ThrowTypeError(
-            "trustToken: operation type 'send-redemption-record' requires that "
+            "privateToken: operation type 'send-redemption-record' requires "
+            "that "
             "the 'issuers' "
             "fields' members parse to secure origins, but one did not: " +
             issuer);
@@ -87,7 +102,8 @@ bool ConvertTrustTokenToMojom(const TrustToken& in,
     }
   } else {
     exception_state->ThrowTypeError(
-        "trustToken: operation type 'send-redemption-record' requires that the "
+        "privateToken: operation type 'send-redemption-record' requires that "
+        "the "
         "'issuers' "
         "field be present and contain at least one secure, HTTP(S) URL, but it "
         "was missing or empty.");

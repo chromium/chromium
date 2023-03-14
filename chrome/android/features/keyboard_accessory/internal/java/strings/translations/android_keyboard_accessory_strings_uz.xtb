@@ -1,13 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
+<translation id="1347497506789975534">Saqlangan toʻlov usuli</translation>
 <translation id="1383876407941801731">Qidiruv</translation>
-<translation id="1566281227936819866">Saqlangan toʻlov usullari koʻrsatilmoqda</translation>
 <translation id="1717486229951421299">Teginib kiritiladigan login va parollar yarim hajmda ochildi.</translation>
 <translation id="207576718733492531">Teginib kiritiladigan login va parollar roʻyxati yopiq.</translation>
 <translation id="2610239185026711824">Parol yaratish</translation>
 <translation id="2652129567809778422">Parolni tanlang</translation>
-<translation id="2803478378562657435">Saqlangan parollar va ularning parametrlari shu yerda turadi</translation>
 <translation id="2903493209154104877">Manzillar</translation>
 <translation id="3399357656427473483">Teginib kiritiladigan login va parollar roʻyxati.</translation>
 <translation id="3688051737190211318"><ph name="ORIGIN" /> saytiga ishonsangiz, kirish uchun saqlangan parolingizni ishlatishingiz mumkin.</translation>
@@ -15,16 +14,14 @@
 <translation id="4660011489602794167">Klaviaturani ko‘rsatish</translation>
 <translation id="4694050069269396220"><ph name="ORIGIN" /> saytiga ishonsangiz, saqlangan parolingizni boshqa saytda ishlatishingiz mumkin.</translation>
 <translation id="5016175294846053194">Avtomatik kiritish takliflari klaviatura tepasida chiqadi</translation>
-<translation id="5088366526685584589">Bu yerda saqlangan manzillar chiqadi</translation>
 <translation id="5441504010984421144">Teginib kiritiladigan login va parollar toʻliq hajmda ochildi.</translation>
+<translation id="6296921860874265377">Saqlangan parollar va parol parametrlari</translation>
 <translation id="6393156038355142111">Ishonchli parol yaratish</translation>
 <translation id="6558703547256592471">Har bir sayt uchun alohida parol ishlating.</translation>
 <translation id="7029809446516969842">Parollar</translation>
-<translation id="7299100402441711551">Manzillarni chiqarish</translation>
-<translation id="7494879913343971937">Parollarni chiqarish</translation>
 <translation id="7594473730623999723">Yana takliflar olish uchun suring</translation>
+<translation id="7873973044507799456">Saqlangan manzillar</translation>
 <translation id="7992095260806105436">Chrome avtomatik kiritish taklifidan foydalanish</translation>
-<translation id="8037472847879765671">Toʻlov usullarini chiqarish</translation>
 <translation id="8507520749471379845">Saqlangan parollar</translation>
 <translation id="8705308553596171387">Parolsiz</translation>
 <translation id="879180780857354295">Muqobil kiritish sozlamalari klaviatura tepasida chiqadi</translation>

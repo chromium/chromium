@@ -96,7 +96,9 @@ public final class FullscreenToast {
         assert mToast == null;
         mDidShowToast = true;
         int resId = R.string.immersive_fullscreen_api_notification;
-        mToast = Toast.makeText(mView.getContext(), resId, Toast.LENGTH_LONG);
+        mToast = Toast.makeText(
+                mTab.getBrowser().getBrowserFragment().getWindowAndroid().getContext().get(), resId,
+                Toast.LENGTH_LONG);
         mToast.setGravity(Gravity.TOP | Gravity.CENTER, 0, 0);
         mToast.show();
     }

@@ -61,6 +61,7 @@
 <translation id="2573731672208488250">{HOURS,plural, =1{1 saat içinde}other{# saat içinde}}</translation>
 <translation id="2583543531130364912">Dokunmatik ekranınızı ayarlayın</translation>
 <translation id="2586657967955657006">Pano</translation>
+<translation id="2653844658857826081">YENİ</translation>
 <translation id="2666092431469916601">Üst</translation>
 <translation id="2701330563083355633">Paylaşan: <ph name="DEVICE_NAME" /></translation>
 <translation id="271033894570825754">Yeni</translation>
@@ -75,6 +76,7 @@
 <translation id="3157931365184549694">Geri yükle</translation>
 <translation id="3183922693828471536">Buraya Kaydır</translation>
 <translation id="3234408098842461169">Aşağı Ok</translation>
+<translation id="3240426699337459095">Bağlantı kopyalandı</translation>
 <translation id="3291688615589870984">{DAYS,plural, =1{1 gün}other{# gün}}</translation>
 <translation id="3295886253693811851">Aramayı şununla yap:</translation>
 <translation id="3306688585798492231">Yerleşik ekran</translation>

@@ -155,5 +155,10 @@
   "empty_contexts": {
     "channel": "beta",
     "contexts": []
+  },
+  "requires_delegated_availability_check": {
+    "channel": "beta",
+    "contexts": ["web_page"],
+    "requires_delegated_availability_check": true
   }
 }

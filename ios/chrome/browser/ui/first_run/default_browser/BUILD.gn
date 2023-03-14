@@ -15,7 +15,7 @@ source_set("default_browser") {
     "//ios/chrome/browser/feature_engagement",
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/main:public",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/ui/first_run:screen_delegate",
   ]

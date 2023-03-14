@@ -44,6 +44,7 @@ android_library("delegate_java") {
     "//chrome/browser/contextmenu:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/search_engines/android:java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//chrome/browser/ui/messages/android:java",

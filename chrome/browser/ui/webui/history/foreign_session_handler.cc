@@ -15,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -174,18 +173,6 @@ void ForeignSessionHandler::OpenForeignSessionWindows(
   auto iter_end = iter_begin + 1;
   SessionRestore::RestoreForeignSessionWindows(Profile::FromWebUI(web_ui),
                                                iter_begin, iter_end);
-
-  size_t total_tabs_opened = 0;
-  for (const ::sessions::SessionWindow* window : windows) {
-    UMA_HISTOGRAM_COUNTS_1000(
-        "HistoryPage.OtherDevicesMenu.OpenAll.TabsPerWindow",
-        window->tabs.size());
-    total_tabs_opened += window->tabs.size();
-  }
-  UMA_HISTOGRAM_COUNTS_1000("HistoryPage.OtherDevicesMenu.OpenAll.TotalTabs",
-                            total_tabs_opened);
-  UMA_HISTOGRAM_COUNTS_100("HistoryPage.OtherDevicesMenu.OpenAll.TotalWindows",
-                           windows.size());
 }
 
 // static

@@ -76,7 +76,6 @@ TEST_F(WebFrameImplTest, CreateWebFrameForMainFrame) {
 
   EXPECT_EQ(&fake_web_state_, web_frame.GetWebState());
   EXPECT_TRUE(web_frame.IsMainFrame());
-  EXPECT_TRUE(web_frame.CanCallJavaScriptFunction());
   EXPECT_EQ(security_origin_, web_frame.GetSecurityOrigin());
   EXPECT_EQ(kFrameId, web_frame.GetFrameId());
 }

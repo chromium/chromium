@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <memory>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -31,6 +30,7 @@
 #include "components/user_manager/user_names.h"
 #include "extensions/browser/extension_function_registry.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -174,9 +174,9 @@ UsersPrivateIsUserInListFunction::UsersPrivateIsUserInListFunction() = default;
 UsersPrivateIsUserInListFunction::~UsersPrivateIsUserInListFunction() = default;
 
 ExtensionFunction::ResponseAction UsersPrivateIsUserInListFunction::Run() {
-  std::unique_ptr<api::users_private::IsUserInList::Params> parameters =
+  absl::optional<api::users_private::IsUserInList::Params> parameters =
       api::users_private::IsUserInList::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(parameters.get());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
 
   std::string username = gaia::CanonicalizeEmail(parameters->email);
   if (IsExistingUser(username)) {
@@ -193,9 +193,9 @@ UsersPrivateAddUserFunction::UsersPrivateAddUserFunction() = default;
 UsersPrivateAddUserFunction::~UsersPrivateAddUserFunction() = default;
 
 ExtensionFunction::ResponseAction UsersPrivateAddUserFunction::Run() {
-  std::unique_ptr<api::users_private::AddUser::Params> parameters =
+  absl::optional<api::users_private::AddUser::Params> parameters =
       api::users_private::AddUser::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(parameters.get());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
 
   // Non-owners should not be able to add users.
   if (!CanModifyUserList(browser_context())) {
@@ -225,9 +225,9 @@ UsersPrivateRemoveUserFunction::UsersPrivateRemoveUserFunction() = default;
 UsersPrivateRemoveUserFunction::~UsersPrivateRemoveUserFunction() = default;
 
 ExtensionFunction::ResponseAction UsersPrivateRemoveUserFunction::Run() {
-  std::unique_ptr<api::users_private::RemoveUser::Params> parameters =
+  absl::optional<api::users_private::RemoveUser::Params> parameters =
       api::users_private::RemoveUser::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(parameters.get());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
 
   // Non-owners should not be able to remove users.
   if (!CanModifyUserList(browser_context())) {

@@ -284,8 +284,9 @@ void WebRtcLogUploader::LoggingStoppedDoStore(
     base::FilePath meta_path =
         log_paths.directory.AppendASCII(log_id).AddExtension(
             FILE_PATH_LITERAL(".meta"));
-    base::WriteFile(meta_path, static_cast<const char*>(pickle.data()),
-                    pickle.size());
+    base::WriteFile(meta_path,
+                    base::make_span(static_cast<const uint8_t*>(pickle.data()),
+                                    pickle.size()));
   }
 
   main_task_runner_->PostTask(
@@ -515,7 +516,7 @@ void WebRtcLogUploader::WriteCompressedLogToFile(
     const base::FilePath& log_file_path) {
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!compressed_log.empty());
-  base::WriteFile(log_file_path, &compressed_log[0], compressed_log.size());
+  base::WriteFile(log_file_path, compressed_log);
 }
 
 void WebRtcLogUploader::AddLocallyStoredLogInfoToUploadListFile(
@@ -554,11 +555,8 @@ void WebRtcLogUploader::AddLocallyStoredLogInfoToUploadListFile(
   contents += ",," + local_log_id + "," +
               base::NumberToString(base::Time::Now().ToDoubleT()) + '\n';
 
-  int written =
-      base::WriteFile(upload_list_path, &contents[0], contents.size());
-  if (written != static_cast<int>(contents.size())) {
-    DPLOG(WARNING) << "Could not write all data to WebRTC log list file: "
-                   << written;
+  if (!base::WriteFile(upload_list_path, contents)) {
+    DPLOG(WARNING) << "Could not write data to WebRTC log list file.";
   }
 }
 
@@ -593,11 +591,8 @@ void WebRtcLogUploader::AddUploadedLogInfoToUploadListFile(
     contents += time_now_str + "," + report_id + ",," + time_now_str + "\n";
   }
 
-  int written =
-      base::WriteFile(upload_list_path, &contents[0], contents.size());
-  if (written != static_cast<int>(contents.size())) {
-    DPLOG(WARNING) << "Could not write all data to WebRTC log list file: "
-                   << written;
+  if (!base::WriteFile(upload_list_path, contents)) {
+    DPLOG(WARNING) << "Could not write data to WebRTC log list file.";
   }
 }
 

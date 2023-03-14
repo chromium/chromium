@@ -172,6 +172,7 @@ class VirtualCardManualFallbackBubbleViewsInteractiveUiTest
   }
 
  private:
+  test::AutofillBrowserTestEnvironment autofill_test_environment_;
   std::unique_ptr<EventWaiter<BubbleEvent>> event_waiter_;
 };
 

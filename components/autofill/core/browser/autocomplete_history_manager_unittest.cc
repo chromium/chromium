@@ -43,23 +43,6 @@ namespace autofill {
 
 namespace {
 
-class MockAutofillClient : public TestAutofillClient {
- public:
-  MockAutofillClient() : prefs_(test::PrefServiceForTesting()) {}
-
-  MockAutofillClient(const MockAutofillClient&) = delete;
-  MockAutofillClient& operator=(const MockAutofillClient&) = delete;
-
-  ~MockAutofillClient() override = default;
-  PrefService* GetPrefs() override {
-    return const_cast<PrefService*>(std::as_const(*this).GetPrefs());
-  }
-  const PrefService* GetPrefs() const override { return prefs_.get(); }
-
- private:
-  std::unique_ptr<PrefService> prefs_;
-};
-
 class MockSuggestionsHandler
     : public AutocompleteHistoryManager::SuggestionsHandler {
  public:
@@ -145,8 +128,8 @@ class AutocompleteHistoryManagerTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  test::AutofillEnvironment autofill_environment_;
-  MockAutofillClient autofill_client_;
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
+  TestAutofillClient autofill_client_;
   scoped_refptr<MockAutofillWebDataService> web_data_service_;
   std::unique_ptr<AutocompleteHistoryManager> autocomplete_manager_;
   std::unique_ptr<PrefService> prefs_;
@@ -410,7 +393,7 @@ TEST_F(AutocompleteHistoryManagerTest, PresentationField) {
 // cleanup if the flag is enabled, we're not in OTR and it hadn't run in the
 // current major version.
 TEST_F(AutocompleteHistoryManagerTest, Init_TriggersCleanup) {
-  // Set the rentention policy cleanup to a past major version.
+  // Set the retention policy cleanup to a past major version.
   prefs_->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
                      CHROME_VERSION_MAJOR - 1);
 
@@ -424,7 +407,7 @@ TEST_F(AutocompleteHistoryManagerTest, Init_TriggersCleanup) {
 // Tests that the Init function will not trigger the Autocomplete Retention
 // Policy when running in OTR.
 TEST_F(AutocompleteHistoryManagerTest, Init_OTR_Not_TriggersCleanup) {
-  // Set the rentention policy cleanup to a past major version.
+  // Set the retention policy cleanup to a past major version.
   prefs_->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
                      CHROME_VERSION_MAJOR - 1);
 
@@ -437,7 +420,7 @@ TEST_F(AutocompleteHistoryManagerTest, Init_OTR_Not_TriggersCleanup) {
 
 // Tests that the Init function will not crash even if we don't have a DB.
 TEST_F(AutocompleteHistoryManagerTest, Init_NullDB_NoCrash) {
-  // Set the rentention policy cleanup to a past major version.
+  // Set the retention policy cleanup to a past major version.
   prefs_->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
                      CHROME_VERSION_MAJOR - 1);
 
@@ -452,7 +435,7 @@ TEST_F(AutocompleteHistoryManagerTest, Init_NullDB_NoCrash) {
 // Policy when running in a major version that was already cleaned.
 TEST_F(AutocompleteHistoryManagerTest,
        Init_SameMajorVersion_Not_TriggersCleanup) {
-  // Set the rentention policy cleanup to the current major version.
+  // Set the retention policy cleanup to the current major version.
   prefs_->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
                      CHROME_VERSION_MAJOR);
 
@@ -989,12 +972,12 @@ TEST_F(AutocompleteHistoryManagerTest,
       AutoselectFirstSuggestion(false), test_field_, autofill_client_,
       suggestions_handler_one->GetWeakPtr(), SuggestionsContext()));
 
-  // Simlate second handler request for autocomplete suggestions.
+  // Simulate second handler request for autocomplete suggestions.
   EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       AutoselectFirstSuggestion(false), test_field_, autofill_client_,
       suggestions_handler_two->GetWeakPtr(), SuggestionsContext()));
 
-  // Simlate first handler cancelling its request.
+  // Simulate first handler cancelling its request.
   EXPECT_CALL(*web_data_service_, CancelRequest(mocked_db_query_id_one))
       .Times(1);
   autocomplete_manager_->CancelPendingQueries(suggestions_handler_one.get());

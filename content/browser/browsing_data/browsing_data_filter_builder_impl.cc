@@ -11,8 +11,10 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/origin.h"
 
 using net::registry_controlled_domains::GetDomainAndRegistry;
 using net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES;
@@ -298,6 +300,15 @@ BrowsingDataFilterBuilderImpl::BuildPluginFilter() {
 
 BrowsingDataFilterBuilderImpl::Mode BrowsingDataFilterBuilderImpl::GetMode() {
   return mode_;
+}
+
+const std::set<url::Origin>& BrowsingDataFilterBuilderImpl::GetOrigins() const {
+  return origins_;
+}
+
+const std::set<std::string>&
+BrowsingDataFilterBuilderImpl::GetRegisterableDomains() const {
+  return domains_;
 }
 
 std::unique_ptr<BrowsingDataFilterBuilder>

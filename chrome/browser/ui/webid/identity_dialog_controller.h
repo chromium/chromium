@@ -40,14 +40,15 @@ class IdentityDialogController
   // content::IdentityRequestDialogController
   void ShowAccountsDialog(
       content::WebContents* rp_web_contents,
-      const std::string& rp_for_display,
+      const std::string& top_frame_for_display,
+      const absl::optional<std::string>& iframe_url_for_display,
       const std::vector<content::IdentityProviderData>& identity_provider_data,
       content::IdentityRequestAccount::SignInMode sign_in_mode,
       bool show_auto_reauthn_checkbox,
       AccountSelectionCallback on_selected,
       DismissCallback dismiss_callback) override;
   void ShowFailureDialog(content::WebContents* rp_web_contents,
-                         const std::string& rp_for_display,
+                         const std::string& top_frame_for_display,
                          const std::string& idp_for_display,
                          DismissCallback dismiss_callback) override;
   void ShowIdpSigninFailureDialog(base::OnceClosure dismiss_callback) override;

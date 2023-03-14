@@ -8,26 +8,25 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
-#include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_strategy.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/feature_engagement/public/feature_list.h"
-#include "components/user_education/common/feature_promo_controller.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/geometry/insets_outsets_base.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/metadata/type_conversion.h"
-#include "ui/views/view_class_properties.h"
 
 namespace autofill {
 
@@ -44,8 +43,7 @@ std::unique_ptr<PopupRowView> PopupRowView::Create(PopupViewViews& popup_view,
     case PopupItemId::POPUP_ITEM_ID_SEPARATOR:
     case PopupItemId::POPUP_ITEM_ID_MIXED_FORM_MESSAGE:
     case PopupItemId::POPUP_ITEM_ID_INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE:
-      NOTREACHED();
-      break;
+      NOTREACHED_NORETURN();
     case PopupItemId::POPUP_ITEM_ID_USERNAME_ENTRY:
     case PopupItemId::POPUP_ITEM_ID_PASSWORD_ENTRY:
     case PopupItemId::POPUP_ITEM_ID_ACCOUNT_STORAGE_USERNAME_ENTRY:
@@ -78,8 +76,15 @@ PopupRowView::PopupRowView(
       controller_(controller),
       strategy_(std::move(strategy)) {
   DCHECK(strategy_);
+  const int kHorizontalPadding =
+      base::FeatureList::IsEnabled(
+          features::kAutofillShowAutocompleteDeleteButton)
+          ? ChromeLayoutProvider::Get()->GetDistanceMetric(
+                DISTANCE_CONTENT_LIST_VERTICAL_SINGLE)
+          : 0;
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>());
+  layout->set_inside_border_insets(gfx::Insets::VH(0, kHorizontalPadding));
 
   auto add_exit_enter_callbacks = [&](CellType type, PopupCellView& cell) {
     cell.SetOnExitedCallback(base::BindRepeating(
@@ -138,26 +143,53 @@ void PopupRowView::SetSelectedCell(absl::optional<CellType> cell) {
   }
 }
 
-// TODO(crbug.com/1411172): Move to `PopupViewViews` class.
-void PopupRowView::MaybeShowIphPromo() {
-  if (!controller_) {
-    return;
+bool PopupRowView::HandleKeyPressEvent(
+    const content::NativeWebKeyboardEvent& event) {
+  switch (event.windows_key_code) {
+    case ui::VKEY_RETURN:
+      if (*GetSelectedCell() == CellType::kControl &&
+          GetControlView()->GetOnAcceptedCallback()) {
+        GetControlView()->GetOnAcceptedCallback().Run();
+        return true;
+      }
+      // TODO(crbug.com/1411172): Handle all return key presses here once the
+      // reaction delay for accepting suggestions is the same between keyboard
+      // and mouse/gesture events.
+      return false;
+    case ui::VKEY_LEFT:
+      // `base::i18n::IsRTL` is used here instead of the controller's method
+      // because the controller's `IsRTL` depends on the language of the focused
+      // field and not the overall UI language. However, the layout of the popup
+      // is determined by the overall UI language.
+      if (base::i18n::IsRTL()) {
+        SelectNextCell();
+      } else {
+        SelectPreviousCell();
+      }
+      return true;
+    case ui::VKEY_RIGHT:
+      if (base::i18n::IsRTL()) {
+        SelectPreviousCell();
+      } else {
+        SelectNextCell();
+      }
+      return true;
+    default:
+      return false;
   }
-  std::string feature_name =
-      controller_->GetSuggestionAt(strategy_->GetLineNumber()).feature_for_iph;
-  if (feature_name.empty()) {
-    return;
-  }
+}
 
-  if (feature_name == "IPH_AutofillVirtualCardSuggestion") {
-    SetProperty(views::kElementIdentifierKey,
-                kAutofillCreditCardSuggestionEntryElementId);
-    Browser* browser = chrome::FindLastActive();
-    if (!browser) {
-      return;
-    }
-    browser->window()->MaybeShowFeaturePromo(
-        feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
+void PopupRowView::SelectNextCell() {
+  DCHECK(GetSelectedCell());
+  if (*GetSelectedCell() == CellType::kContent && GetControlView()) {
+    SetSelectedCell(CellType::kControl);
+  }
+}
+
+void PopupRowView::SelectPreviousCell() {
+  DCHECK(GetSelectedCell());
+  if (*GetSelectedCell() == CellType::kControl) {
+    SetSelectedCell(CellType::kContent);
   }
 }
 

@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_button_util.h"
+#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_drag_data.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/grit/generated_resources.h"
@@ -21,6 +22,7 @@
 #include "content/public/browser/page_navigator.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_menu_model_adapter.h"
@@ -33,16 +35,17 @@
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 constexpr float kBorderRadius = 4.5f;
 constexpr float kButtonRadius = 5.0f;
 constexpr float kBorderThickness = 2.0f;
 
-// This value comes from tab_group_header.cc as kEmptyChipSize. Since this
+// This value comes from tab_group_style.cc (kEmptyChipSize). Since this
 // button and the tab_group_header are rendered on different surfaces, keep the
 // value here in case we want to change one but not the other.
-constexpr float kCircleRadius = 14.0f;
+constexpr float kCircleRadius = 20.0f;
 }  // namespace
 
 SavedTabGroupButton::SavedTabGroupButton(
@@ -72,8 +75,6 @@ SavedTabGroupButton::SavedTabGroupButton(
   // be enabled when a theme provider can provide one onpaint.
   SetEnabledTextColors(gfx::kPlaceholderColor);
 
-  // TODO (dljames): Add set_drag_controller to this button once dragging is
-  // built.
   SetMaxSize(gfx::Size(bookmark_button_util::kMaxButtonWidth, 0));
 
   ConfigureInkDropForToolbar(this);
@@ -100,7 +101,11 @@ SavedTabGroupButton::SavedTabGroupButton(
     // comfortably fit in the bookmarks bar.
     SetPreferredSize(gfx::Size(button_height, button_height));
   }
+
+  set_drag_controller(this);
 }
+
+SavedTabGroupButton::~SavedTabGroupButton() = default;
 
 void SavedTabGroupButton::UpdateButtonData(const SavedTabGroup& group) {
   SetText(group.title());
@@ -124,8 +129,6 @@ void SavedTabGroupButton::UpdateButtonData(const SavedTabGroup& group) {
   }
 }
 
-SavedTabGroupButton::~SavedTabGroupButton() = default;
-
 std::u16string SavedTabGroupButton::GetTooltipText(const gfx::Point& p) const {
   return label()->GetPreferredSize().width() > label()->size().width()
              ? GetText()
@@ -135,8 +138,9 @@ std::u16string SavedTabGroupButton::GetTooltipText(const gfx::Point& p) const {
 void SavedTabGroupButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // If the button would have no name, avoid crashing by setting the name
   // explicitly empty.
-  if (GetAccessibleName().empty())
+  if (GetAccessibleName().empty()) {
     node_data->SetNameExplicitlyEmpty();
+  }
 
   views::MenuButton::GetAccessibleNodeData(node_data);
   node_data->AddStringAttribute(
@@ -209,6 +213,34 @@ void SavedTabGroupButton::OnThemeChanged() {
         text_color, background_color,
         color_utils::kMinimumReadableContrastRatio);
   }
+}
+
+void SavedTabGroupButton::WriteDragDataForView(View* sender,
+                                               const gfx::Point& press_pt,
+                                               ui::OSExchangeData* data) {
+  SavedTabGroupButton* const button =
+      views::AsViewClass<SavedTabGroupButton>(sender);
+  CHECK(button);
+  CHECK(button == this);
+
+  // Write the image and MIME type to the OSExchangeData.
+  SavedTabGroupDragData::WriteToOSExchangeData(this, press_pt,
+                                               GetThemeProvider(), data);
+}
+
+int SavedTabGroupButton::GetDragOperationsForView(View* sender,
+                                                  const gfx::Point& p) {
+  // This may need to become more complicated
+  return ui::DragDropTypes::DRAG_MOVE;
+}
+
+bool SavedTabGroupButton::CanStartDragForView(View* sender,
+                                              const gfx::Point& press_pt,
+                                              const gfx::Point& p) {
+  // Check if we have not moved enough horizontally but we have moved downward
+  // vertically - downward drag.
+  gfx::Vector2d move_offset = p - press_pt;
+  return View::ExceededDragThreshold(move_offset);
 }
 
 std::unique_ptr<ui::DialogModel>

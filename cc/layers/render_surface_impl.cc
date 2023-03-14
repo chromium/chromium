@@ -34,9 +34,9 @@
 namespace cc {
 
 RenderSurfaceImpl::RenderSurfaceImpl(LayerTreeImpl* layer_tree_impl,
-                                     uint64_t stable_id)
+                                     ElementId id)
     : layer_tree_impl_(layer_tree_impl),
-      stable_id_(stable_id),
+      id_(id),
       effect_tree_index_(kInvalidPropertyNodeId),
       num_contributors_(0),
       has_contributing_layer_that_escapes_clip_(false),
@@ -46,6 +46,7 @@ RenderSurfaceImpl::RenderSurfaceImpl(LayerTreeImpl* layer_tree_impl,
       is_render_surface_list_member_(false),
       intersects_damage_under_(true),
       nearest_occlusion_immune_ancestor_(nullptr) {
+  DCHECK(id);
   damage_tracker_ = DamageTracker::Create();
 }
 
@@ -343,23 +344,16 @@ void RenderSurfaceImpl::AccumulateContentRectFromContributingRenderSurface(
 }
 
 bool RenderSurfaceImpl::SurfacePropertyChanged() const {
-  // Surface property changes are tracked as follows:
-  //
-  // - surface_property_changed_ is flagged when the clip_rect or content_rect
-  //   change. As of now, these are the only two properties that can be affected
-  //   by descendant layers.
-  //
-  // - all other property changes come from the surface's property tree nodes
-  //   (or some ancestor node that propagates its change to one of these nodes).
-  //
-  return surface_property_changed_ || AncestorPropertyChanged();
-}
-
-bool RenderSurfaceImpl::SurfacePropertyChangedOnlyFromDescendant() const {
-  return surface_property_changed_ && !AncestorPropertyChanged();
+  // |surface_property_changed_| is flagged when the clip_rect or content_rect
+  // change. As of now, these are the only two properties that can be affected
+  // by descendant layers.
+  return surface_property_changed_;
 }
 
 bool RenderSurfaceImpl::AncestorPropertyChanged() const {
+  // All property changes come from the surface's property tree nodes.
+  // (or some ancestor node that propagates its change to one of these nodes).
+  //
   const PropertyTrees* property_trees = layer_tree_impl_->property_trees();
   return ancestor_property_changed_ || property_trees->full_tree_damaged() ||
          property_trees->transform_tree()

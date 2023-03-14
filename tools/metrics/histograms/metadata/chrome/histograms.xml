@@ -22,6 +22,16 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Chrome.BuildState.BuildStateUpdateType"
+    enum="BuildStateUpdateType" expires_after="2024-03-30">
+  <owner>ajgo@chromium.org</owner>
+  <owner>anunoy@chromium.org</owner>
+  <summary>
+    Result of polling for the installed version of Chrome. Logged once at
+    startup then approximately every two hours.
+  </summary>
+</histogram>
+
 <histogram name="Chrome.KAnonymityService.JoinSet.Action"
     enum="KAnonymityServiceJoinSetAction" expires_after="2023-07-30">
   <owner>behamilton@google.com</owner>
@@ -34,8 +44,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Chrome.KAnonymityService.JoinSetLatency" units="ms"
-    expires_after="M113">
+<histogram name="Chrome.KAnonymityService.JoinSet.Latency" units="ms"
+    expires_after="2023-08-27">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -58,17 +68,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Chrome.KAnonymityService.QuerySet.Size" units="count"
-    expires_after="2023-08-08">
-  <owner>behamilton@google.com</owner>
-  <owner>pauljensen@chromium.org</owner>
-  <summary>
-    Records the number of elements queried per call for each call to QuerySet.
-  </summary>
-</histogram>
-
-<histogram name="Chrome.KAnonymityService.QuerySetsLatency" units="ms"
-    expires_after="M113">
+<histogram name="Chrome.KAnonymityService.QuerySet.Latency" units="ms"
+    expires_after="2023-08-27">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -77,6 +78,15 @@ chromium-metrics-reviews@google.com.
     formatting the request, performing the request, waiting for the response,
     and parsing the response. This metric is only measured for successful
     requests.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.KAnonymityService.QuerySet.Size" units="count"
+    expires_after="2023-08-08">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the number of elements queried per call for each call to QuerySet.
   </summary>
 </histogram>
 
@@ -296,7 +306,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChromeColors.ColorOnLoad" enum="ChromeColorsInfo"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>gayane@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <summary>
@@ -352,6 +362,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ChromeElf.ThirdPartyStatus" enum="ThirdPartyStatus"
     expires_after="M82">
+  <obsolete>
+    Retained for historical data.
+  </obsolete>
   <owner>chrisha@chromium.org</owner>
   <owner>pmonette@chromium.org</owner>
   <summary>

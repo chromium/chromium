@@ -58,8 +58,8 @@ class MockPersistentNelStoreTest : public testing::Test {
   const url::Origin origin_ =
       url::Origin::Create(GURL("https://example.test/"));
   const NetworkAnonymizationKey network_anonymization_key_ =
-      NetworkAnonymizationKey(SchemefulSite(GURL("https://foo.test/")),
-                              SchemefulSite(GURL("https://bar.test/")));
+      NetworkAnonymizationKey::CreateCrossSite(
+          SchemefulSite(GURL("https://foo.test/")));
   const NetworkErrorLoggingService::NelPolicy nel_policy_ =
       MakePolicy(origin_, network_anonymization_key_);
 };

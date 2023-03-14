@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "media/base/bind_to_current_loop.h"
 #include "third_party/blink/public/platform/web_inband_text_track_client.h"
 #include "third_party/blink/public/platform/web_media_player_client.h"
 #include "third_party/blink/renderer/platform/media/web_inband_text_track_impl.h"

@@ -31,9 +31,10 @@
 #endif
 
 using chrome_test_util::SetUpAndReturnMockReauthenticationModule;
-using chrome_test_util::SetUpAndReturnMockReauthenticationModuleForExport;
 using chrome_test_util::
     SetUpAndReturnMockReauthenticationModuleForExportFromSettings;
+using chrome_test_util::
+    SetUpAndReturnMockReauthenticationModuleForPasswordManager;
 using password_manager::PasswordForm;
 
 namespace {
@@ -164,9 +165,9 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
   _mockReauthenticationModule = SetUpAndReturnMockReauthenticationModule(true);
 }
 
-+ (void)setUpMockReauthenticationModuleForExport {
++ (void)setUpMockReauthenticationModuleForPasswordManager {
   _mockReauthenticationModule =
-      SetUpAndReturnMockReauthenticationModuleForExport();
+      SetUpAndReturnMockReauthenticationModuleForPasswordManager();
 }
 
 + (void)mockReauthenticationModuleExpectedResult:
@@ -214,6 +215,20 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
   example.password_value = base::SysNSStringToUTF16(password);
   example.url = GURL(base::SysNSStringToUTF16(origin));
   example.signon_realm = example.url.spec();
+  return SaveToPasswordStore(example);
+}
+
++ (BOOL)saveExampleNote:(NSString*)note
+               password:(NSString*)password
+               userName:(NSString*)userName
+                 origin:(NSString*)origin {
+  PasswordForm example;
+  example.username_value = base::SysNSStringToUTF16(userName);
+  example.password_value = base::SysNSStringToUTF16(password);
+  example.url = GURL(base::SysNSStringToUTF16(origin));
+  example.signon_realm = example.url.spec();
+  example.notes = {password_manager::PasswordNote(
+      base::SysNSStringToUTF16(note), base::Time::Now())};
   return SaveToPasswordStore(example);
 }
 

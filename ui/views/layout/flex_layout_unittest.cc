@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -142,10 +143,10 @@ class FlexLayoutTest : public testing::Test {
 
   std::vector<Rect> GetChildBounds() const {
     std::vector<Rect> result;
-    std::transform(host_->children().cbegin(), host_->children().cend(),
-                   std::back_inserter(result), [](const View* v) {
-                     return v->GetVisible() ? v->bounds() : gfx::Rect();
-                   });
+    base::ranges::transform(
+        host_->children(), std::back_inserter(result), [](const View* v) {
+          return v->GetVisible() ? v->bounds() : gfx::Rect();
+        });
     return result;
   }
 

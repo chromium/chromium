@@ -64,12 +64,12 @@ void RunPendingTasks(scoped_refptr<base::TaskRunner> task_runner) {
   done.Wait();
 }
 
-void DestroySurface(scoped_refptr<DCompPresenter> surface) {
+void DestroyPresenter(scoped_refptr<DCompPresenter> presenter) {
   scoped_refptr<base::TaskRunner> task_runner =
-      surface->GetWindowTaskRunnerForTesting();
-  DCHECK(surface->HasOneRef());
+      presenter->GetWindowTaskRunnerForTesting();
+  DCHECK(presenter->HasOneRef());
 
-  surface = nullptr;
+  presenter.reset();
 
   // Ensure that the ChildWindowWin posts the task to delete the thread to the
   // main loop before doing RunUntilIdle. Otherwise the child threads could
@@ -135,62 +135,66 @@ class DCompPresenterTest : public testing::Test {
       LOG(WARNING) << "DirectComposition not supported, skipping test.";
       return;
     }
-    surface_ = CreateDCompPresenter();
-    context_ = CreateGLContext(surface_);
+    presenter_ = CreateDCompPresenter();
+    gl_surface_ = init::CreateOffscreenGLSurface(
+        gl::GLSurfaceEGL::GetGLDisplayEGL(), gfx::Size());
+    context_ = CreateGLContext(gl_surface_);
     SetDirectCompositionScaledOverlaysSupportedForTesting(false);
     SetDirectCompositionOverlayFormatUsedForTesting(DXGI_FORMAT_NV12);
   }
 
   void TearDown() override {
     context_ = nullptr;
-    if (surface_)
-      DestroySurface(std::move(surface_));
+    if (presenter_) {
+      DestroyPresenter(std::move(presenter_));
+    }
     gl::init::ShutdownGL(display_, false);
   }
 
   scoped_refptr<DCompPresenter> CreateDCompPresenter() {
     DirectCompositionSurfaceWin::Settings settings;
-    scoped_refptr<DCompPresenter> surface =
+    scoped_refptr<DCompPresenter> presenter =
         base::MakeRefCounted<DCompPresenter>(
             gl::GLSurfaceEGL::GetGLDisplayEGL(),
             DCompPresenter::VSyncCallback(), settings);
-    EXPECT_TRUE(surface->Initialize(GLSurfaceFormat()));
+    EXPECT_TRUE(presenter->Initialize());
 
     // ImageTransportSurfaceDelegate::AddChildWindowToBrowser() is called in
     // production code here. However, to remove dependency from
-    // gpu/ipc/service/image_transport_surface_delegate.h, here we directly
+    // gpu/ipc/service/image_transport_presenter_delegate.h, here we directly
     // executes the required minimum code.
     if (parent_window_)
-      ::SetParent(surface->window(), parent_window_);
+      ::SetParent(presenter->window(), parent_window_);
 
-    return surface;
+    return presenter;
   }
 
-  scoped_refptr<GLContext> CreateGLContext(
-      scoped_refptr<DCompPresenter> surface) {
+  scoped_refptr<GLContext> CreateGLContext(scoped_refptr<GLSurface> surface) {
     scoped_refptr<GLContext> context =
         gl::init::CreateGLContext(nullptr, surface.get(), GLContextAttribs());
     EXPECT_TRUE(context->MakeCurrent(surface.get()));
     return context;
   }
 
-  // Wait for |surface_| to present asynchronously check the swap result.
+  // Wait for |presenter_| to present asynchronously check the swap result.
   void PresentAndCheckSwapResult(gfx::SwapResult expected_swap_result) {
     base::RunLoop wait_for_present;
-    surface_->Present(base::BindOnce(
-                          [](base::RepeatingClosure quit_closure,
-                             gfx::SwapResult expected_swap_result,
-                             gfx::SwapCompletionResult result) {
-                            EXPECT_EQ(expected_swap_result, result.swap_result);
-                            quit_closure.Run();
-                          },
-                          wait_for_present.QuitClosure(), expected_swap_result),
-                      base::DoNothing(), gfx::FrameData());
+    presenter_->Present(
+        base::BindOnce(
+            [](base::RepeatingClosure quit_closure,
+               gfx::SwapResult expected_swap_result,
+               gfx::SwapCompletionResult result) {
+              EXPECT_EQ(expected_swap_result, result.swap_result);
+              quit_closure.Run();
+            },
+            wait_for_present.QuitClosure(), expected_swap_result),
+        base::DoNothing(), gfx::FrameData());
     wait_for_present.Run();
   }
 
   HWND parent_window_;
-  scoped_refptr<DCompPresenter> surface_;
+  scoped_refptr<DCompPresenter> presenter_;
+  scoped_refptr<GLSurface> gl_surface_;
   scoped_refptr<GLContext> context_;
   base::test::ScopedPowerMonitorTestSource fake_power_monitor_source_;
   raw_ptr<GLDisplay> display_ = nullptr;
@@ -198,8 +202,9 @@ class DCompPresenterTest : public testing::Test {
 
 // Ensure that the overlay image isn't presented again unless it changes.
 TEST_F(DCompPresenterTest, NoPresentTwice) {
-  if (!surface_)
+  if (!presenter_) {
     return;
+  }
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       QueryD3D11DeviceObjectFromANGLE();
@@ -215,16 +220,16 @@ TEST_F(DCompPresenterTest, NoPresentTwice) {
     params->content_rect = gfx::Rect(texture_size);
     params->quad_rect = gfx::Rect(100, 100);
     params->color_space = gfx::ColorSpace::CreateREC709();
-    surface_->ScheduleDCLayer(std::move(params));
+    presenter_->ScheduleDCLayer(std::move(params));
   }
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
-      surface_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(0);
   ASSERT_FALSE(swap_chain);
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
-  swap_chain = surface_->GetLayerSwapChainForTesting(0);
+  swap_chain = presenter_->GetLayerSwapChainForTesting(0);
   ASSERT_TRUE(swap_chain);
 
   UINT last_present_count = 0;
@@ -240,13 +245,13 @@ TEST_F(DCompPresenterTest, NoPresentTwice) {
     params->content_rect = gfx::Rect(texture_size);
     params->quad_rect = gfx::Rect(100, 100);
     params->color_space = gfx::ColorSpace::CreateREC709();
-    surface_->ScheduleDCLayer(std::move(params));
+    presenter_->ScheduleDCLayer(std::move(params));
   }
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain2 =
-      surface_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(0);
   EXPECT_EQ(swap_chain2.Get(), swap_chain.Get());
 
   // It's the same image, so it should have the same swapchain.
@@ -263,13 +268,13 @@ TEST_F(DCompPresenterTest, NoPresentTwice) {
     params->content_rect = gfx::Rect(texture_size);
     params->quad_rect = gfx::Rect(100, 100);
     params->color_space = gfx::ColorSpace::CreateREC709();
-    surface_->ScheduleDCLayer(std::move(params));
+    presenter_->ScheduleDCLayer(std::move(params));
   }
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain3 =
-      surface_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(0);
   EXPECT_TRUE(SUCCEEDED(swap_chain3->GetLastPresentCount(&last_present_count)));
   // the present count should increase with the new present
   EXPECT_EQ(3u, last_present_count);
@@ -278,8 +283,9 @@ TEST_F(DCompPresenterTest, NoPresentTwice) {
 // Ensure the swapchain size is set to the correct size if HW overlay scaling
 // is support - swapchain should be set to the onscreen video size.
 TEST_F(DCompPresenterTest, SwapchainSizeWithScaledOverlays) {
-  if (!surface_)
+  if (!presenter_) {
     return;
+  }
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       QueryD3D11DeviceObjectFromANGLE();
@@ -301,12 +307,12 @@ TEST_F(DCompPresenterTest, SwapchainSizeWithScaledOverlays) {
     params->content_rect = gfx::Rect(texture_size);
     params->quad_rect = quad_rect;
     params->color_space = gfx::ColorSpace::CreateREC709();
-    surface_->ScheduleDCLayer(std::move(params));
+    presenter_->ScheduleDCLayer(std::move(params));
   }
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
-      surface_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(0);
   ASSERT_TRUE(swap_chain);
 
   DXGI_SWAP_CHAIN_DESC desc;
@@ -329,13 +335,13 @@ TEST_F(DCompPresenterTest, SwapchainSizeWithScaledOverlays) {
     params->content_rect = gfx::Rect(texture_size);
     params->quad_rect = quad_rect;
     params->color_space = gfx::ColorSpace::CreateREC709();
-    surface_->ScheduleDCLayer(std::move(params));
+    presenter_->ScheduleDCLayer(std::move(params));
   }
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain2 =
-      surface_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(0);
   ASSERT_TRUE(swap_chain2);
 
   EXPECT_TRUE(SUCCEEDED(swap_chain2->GetDesc(&desc)));
@@ -347,8 +353,9 @@ TEST_F(DCompPresenterTest, SwapchainSizeWithScaledOverlays) {
 // Ensure the swapchain size is set to the correct size if HW overlay scaling
 // is not support - swapchain should be the onscreen video size.
 TEST_F(DCompPresenterTest, SwapchainSizeWithoutScaledOverlays) {
-  if (!surface_)
+  if (!presenter_) {
     return;
+  }
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       QueryD3D11DeviceObjectFromANGLE();
@@ -365,12 +372,12 @@ TEST_F(DCompPresenterTest, SwapchainSizeWithoutScaledOverlays) {
     params->content_rect = gfx::Rect(texture_size);
     params->quad_rect = quad_rect;
     params->color_space = gfx::ColorSpace::CreateREC709();
-    surface_->ScheduleDCLayer(std::move(params));
+    presenter_->ScheduleDCLayer(std::move(params));
   }
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
-      surface_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(0);
   ASSERT_TRUE(swap_chain);
 
   DXGI_SWAP_CHAIN_DESC desc;
@@ -388,13 +395,13 @@ TEST_F(DCompPresenterTest, SwapchainSizeWithoutScaledOverlays) {
     params->content_rect = gfx::Rect(texture_size);
     params->quad_rect = quad_rect;
     params->color_space = gfx::ColorSpace::CreateREC709();
-    surface_->ScheduleDCLayer(std::move(params));
+    presenter_->ScheduleDCLayer(std::move(params));
   }
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain2 =
-      surface_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(0);
   ASSERT_TRUE(swap_chain2);
 
   EXPECT_TRUE(SUCCEEDED(swap_chain2->GetDesc(&desc)));
@@ -405,8 +412,9 @@ TEST_F(DCompPresenterTest, SwapchainSizeWithoutScaledOverlays) {
 
 // Test protected video flags
 TEST_F(DCompPresenterTest, ProtectedVideos) {
-  if (!surface_)
+  if (!presenter_) {
     return;
+  }
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       QueryD3D11DeviceObjectFromANGLE();
@@ -426,10 +434,10 @@ TEST_F(DCompPresenterTest, ProtectedVideos) {
     params->color_space = gfx::ColorSpace::CreateREC709();
     params->protected_video_type = gfx::ProtectedVideoType::kClear;
 
-    surface_->ScheduleDCLayer(std::move(params));
+    presenter_->ScheduleDCLayer(std::move(params));
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
-        surface_->GetLayerSwapChainForTesting(0);
+        presenter_->GetLayerSwapChainForTesting(0);
     ASSERT_TRUE(swap_chain);
 
     DXGI_SWAP_CHAIN_DESC desc;
@@ -449,10 +457,10 @@ TEST_F(DCompPresenterTest, ProtectedVideos) {
     params->color_space = gfx::ColorSpace::CreateREC709();
     params->protected_video_type = gfx::ProtectedVideoType::kSoftwareProtected;
 
-    surface_->ScheduleDCLayer(std::move(params));
+    presenter_->ScheduleDCLayer(std::move(params));
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
-        surface_->GetLayerSwapChainForTesting(0);
+        presenter_->GetLayerSwapChainForTesting(0);
     ASSERT_TRUE(swap_chain);
 
     DXGI_SWAP_CHAIN_DESC Desc;
@@ -527,15 +535,15 @@ class DCompPresenterPixelTest : public DCompPresenterTest {
     params->quad_rect = gfx::Rect(window_size);
     params->content_rect = params->quad_rect;
     params->overlay_image = DCLayerOverlayImage(window_size, root_surface,
-                                                /*dcomp_surface_serial=*/0);
-    EXPECT_TRUE(surface_->ScheduleDCLayer(std::move(params)));
+                                                /*dcomp_presenter_serial=*/0);
+    EXPECT_TRUE(presenter_->ScheduleDCLayer(std::move(params)));
   }
 
   void InitializeForPixelTest(const gfx::Size& window_size,
                               const gfx::Size& texture_size,
                               const gfx::Rect& content_rect,
                               const gfx::Rect& quad_rect) {
-    EXPECT_TRUE(surface_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
+    EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
 
     InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlack);
 
@@ -550,7 +558,7 @@ class DCompPresenterPixelTest : public DCompPresenterTest {
     params->content_rect = content_rect;
     params->quad_rect = quad_rect;
     params->color_space = gfx::ColorSpace::CreateREC709();
-    surface_->ScheduleDCLayer(std::move(params));
+    presenter_->ScheduleDCLayer(std::move(params));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
@@ -566,11 +574,12 @@ class DCompPresenterVideoPixelTest : public DCompPresenterPixelTest {
   void TestVideo(const gfx::ColorSpace& color_space,
                  SkColor expected_color,
                  bool check_color) {
-    if (!surface_)
+    if (!presenter_) {
       return;
+    }
 
     gfx::Size window_size(100, 100);
-    EXPECT_TRUE(surface_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
+    EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
         QueryD3D11DeviceObjectFromANGLE();
@@ -585,7 +594,7 @@ class DCompPresenterVideoPixelTest : public DCompPresenterPixelTest {
       params->content_rect = gfx::Rect(texture_size);
       params->quad_rect = gfx::Rect(texture_size);
       params->color_space = color_space;
-      surface_->ScheduleDCLayer(std::move(params));
+      presenter_->ScheduleDCLayer(std::move(params));
     }
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -598,7 +607,7 @@ class DCompPresenterVideoPixelTest : public DCompPresenterPixelTest {
       params->content_rect = gfx::Rect(texture_size);
       params->quad_rect = gfx::Rect(window_size);
       params->color_space = color_space;
-      surface_->ScheduleDCLayer(std::move(params));
+      presenter_->ScheduleDCLayer(std::move(params));
     }
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
@@ -640,11 +649,12 @@ TEST_F(DCompPresenterVideoPixelTest, InvalidColorSpace) {
 }
 
 TEST_F(DCompPresenterPixelTest, SoftwareVideoSwapchain) {
-  if (!surface_)
+  if (!presenter_) {
     return;
+  }
 
   gfx::Size window_size(100, 100);
-  EXPECT_TRUE(surface_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
+  EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       QueryD3D11DeviceObjectFromANGLE();
@@ -660,7 +670,7 @@ TEST_F(DCompPresenterPixelTest, SoftwareVideoSwapchain) {
   params->content_rect = gfx::Rect(y_size);
   params->quad_rect = gfx::Rect(window_size);
   params->color_space = gfx::ColorSpace::CreateREC709();
-  surface_->ScheduleDCLayer(std::move(params));
+  presenter_->ScheduleDCLayer(std::move(params));
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
   Sleep(1000);
@@ -674,8 +684,9 @@ TEST_F(DCompPresenterPixelTest, SoftwareVideoSwapchain) {
 }
 
 TEST_F(DCompPresenterPixelTest, VideoHandleSwapchain) {
-  if (!surface_)
+  if (!presenter_) {
     return;
+  }
 
   gfx::Size window_size(100, 100);
   gfx::Size texture_size(50, 50);
@@ -692,8 +703,9 @@ TEST_F(DCompPresenterPixelTest, VideoHandleSwapchain) {
 }
 
 TEST_F(DCompPresenterPixelTest, SkipVideoLayerEmptyBoundsRect) {
-  if (!surface_)
+  if (!presenter_) {
     return;
+  }
 
   gfx::Size window_size(100, 100);
   gfx::Size texture_size(50, 50);
@@ -712,15 +724,16 @@ TEST_F(DCompPresenterPixelTest, SkipVideoLayerEmptyBoundsRect) {
 }
 
 TEST_F(DCompPresenterPixelTest, SkipVideoLayerEmptyContentsRect) {
-  if (!surface_)
+  if (!presenter_) {
     return;
+  }
   // Swap chain size is overridden to onscreen size only if scaled overlays
   // are supported.
   SetDirectCompositionScaledOverlaysSupportedForTesting(true);
 
   gfx::Size window_size(100, 100);
-  EXPECT_TRUE(surface_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
-  EXPECT_TRUE(surface_->SetDrawRectangle(gfx::Rect(window_size)));
+  EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
+  EXPECT_TRUE(presenter_->SetDrawRectangle(gfx::Rect(window_size)));
 
   InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlack);
 
@@ -736,7 +749,7 @@ TEST_F(DCompPresenterPixelTest, SkipVideoLayerEmptyContentsRect) {
   params->overlay_image.emplace(texture_size, texture);
   params->quad_rect = gfx::Rect(window_size);
   params->color_space = gfx::ColorSpace::CreateREC709();
-  surface_->ScheduleDCLayer(std::move(params));
+  presenter_->ScheduleDCLayer(std::move(params));
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
@@ -753,8 +766,9 @@ TEST_F(DCompPresenterPixelTest, SkipVideoLayerEmptyContentsRect) {
 }
 
 TEST_F(DCompPresenterPixelTest, NV12SwapChain) {
-  if (!surface_)
+  if (!presenter_) {
     return;
+  }
   // Swap chain size is overridden to onscreen rect size only if scaled overlays
   // are supported.
   SetDirectCompositionScaledOverlaysSupportedForTesting(true);
@@ -768,7 +782,7 @@ TEST_F(DCompPresenterPixelTest, NV12SwapChain) {
   InitializeForPixelTest(window_size, texture_size, content_rect, quad_rect);
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
-      surface_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(0);
   ASSERT_TRUE(swap_chain);
 
   DXGI_SWAP_CHAIN_DESC1 desc;
@@ -787,8 +801,9 @@ TEST_F(DCompPresenterPixelTest, NV12SwapChain) {
 }
 
 TEST_F(DCompPresenterPixelTest, YUY2SwapChain) {
-  if (!surface_)
+  if (!presenter_) {
     return;
+  }
   // CreateSwapChainForCompositionSurfaceHandle fails with YUY2 format on
   // Win10/AMD bot (Radeon RX550). See https://crbug.com/967860.
   if (context_ && context_->GetVersionInfo() &&
@@ -811,7 +826,7 @@ TEST_F(DCompPresenterPixelTest, YUY2SwapChain) {
   InitializeForPixelTest(window_size, texture_size, content_rect, quad_rect);
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
-      surface_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(0);
   ASSERT_TRUE(swap_chain);
 
   DXGI_SWAP_CHAIN_DESC1 desc;
@@ -830,8 +845,9 @@ TEST_F(DCompPresenterPixelTest, YUY2SwapChain) {
 }
 
 TEST_F(DCompPresenterPixelTest, NonZeroBoundsOffset) {
-  if (!surface_)
+  if (!presenter_) {
     return;
+  }
   // Swap chain size is overridden to onscreen rect size only if scaled overlays
   // are supported.
   SetDirectCompositionScaledOverlaysSupportedForTesting(true);
@@ -868,15 +884,16 @@ TEST_F(DCompPresenterPixelTest, NonZeroBoundsOffset) {
 }
 
 TEST_F(DCompPresenterPixelTest, ResizeVideoLayer) {
-  if (!surface_)
+  if (!presenter_) {
     return;
+  }
   // Swap chain size is overridden to onscreen rect size only if scaled overlays
   // are supported.
   SetDirectCompositionScaledOverlaysSupportedForTesting(true);
 
   gfx::Size window_size(100, 100);
-  EXPECT_TRUE(surface_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
-  EXPECT_TRUE(surface_->SetDrawRectangle(gfx::Rect(window_size)));
+  EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
+  EXPECT_TRUE(presenter_->SetDrawRectangle(gfx::Rect(window_size)));
 
   InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlack);
 
@@ -894,13 +911,13 @@ TEST_F(DCompPresenterPixelTest, ResizeVideoLayer) {
     params->content_rect = gfx::Rect(texture_size);
     params->quad_rect = gfx::Rect(window_size);
     params->color_space = gfx::ColorSpace::CreateREC709();
-    surface_->ScheduleDCLayer(std::move(params));
+    presenter_->ScheduleDCLayer(std::move(params));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
   }
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
-      surface_->GetLayerSwapChainForTesting(0);
+      presenter_->GetLayerSwapChainForTesting(0);
   ASSERT_TRUE(swap_chain);
 
   DXGI_SWAP_CHAIN_DESC1 desc;
@@ -916,11 +933,11 @@ TEST_F(DCompPresenterPixelTest, ResizeVideoLayer) {
     params->content_rect = gfx::Rect(30, 30);
     params->quad_rect = gfx::Rect(window_size);
     params->color_space = gfx::ColorSpace::CreateREC709();
-    surface_->ScheduleDCLayer(std::move(params));
+    presenter_->ScheduleDCLayer(std::move(params));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
   }
-  swap_chain = surface_->GetLayerSwapChainForTesting(0);
+  swap_chain = presenter_->GetLayerSwapChainForTesting(0);
   EXPECT_TRUE(SUCCEEDED(swap_chain->GetDesc1(&desc)));
   // Onscreen window_size is (100, 100).
   EXPECT_EQ(100u, desc.Width);
@@ -941,13 +958,13 @@ TEST_F(DCompPresenterPixelTest, ResizeVideoLayer) {
     params->quad_rect = on_screen_rect;
     params->clip_rect = on_screen_rect;
     params->color_space = gfx::ColorSpace::CreateREC709();
-    surface_->ScheduleDCLayer(std::move(params));
+    presenter_->ScheduleDCLayer(std::move(params));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
   }
 
   // Swap chain is set to monitor/onscreen size.
-  swap_chain = surface_->GetLayerSwapChainForTesting(0);
+  swap_chain = presenter_->GetLayerSwapChainForTesting(0);
   EXPECT_TRUE(SUCCEEDED(swap_chain->GetDesc1(&desc)));
   EXPECT_EQ(static_cast<UINT>(monitor_size.width()), desc.Width);
   EXPECT_EQ(static_cast<UINT>(monitor_size.height()), desc.Height);
@@ -955,8 +972,8 @@ TEST_F(DCompPresenterPixelTest, ResizeVideoLayer) {
   gfx::Transform transform;
   gfx::Point offset;
   gfx::Rect clip_rect;
-  surface_->GetSwapChainVisualInfoForTesting(0, &transform, &offset,
-                                             &clip_rect);
+  presenter_->GetSwapChainVisualInfoForTesting(0, &transform, &offset,
+                                               &clip_rect);
   EXPECT_TRUE(transform.IsIdentity());
   EXPECT_EQ(gfx::Rect(monitor_size), clip_rect);
 
@@ -972,27 +989,28 @@ TEST_F(DCompPresenterPixelTest, ResizeVideoLayer) {
     params->content_rect = gfx::Rect(50, 50);
     params->quad_rect = on_screen_rect;
     params->color_space = gfx::ColorSpace::CreateREC709();
-    surface_->ScheduleDCLayer(std::move(params));
+    presenter_->ScheduleDCLayer(std::move(params));
 
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
   }
 
   // Swap chain is set to monitor size (100, 100).
-  swap_chain = surface_->GetLayerSwapChainForTesting(0);
+  swap_chain = presenter_->GetLayerSwapChainForTesting(0);
   EXPECT_TRUE(SUCCEEDED(swap_chain->GetDesc1(&desc)));
   EXPECT_EQ(100u, desc.Width);
   EXPECT_EQ(100u, desc.Height);
 
   // Make sure the new transform matrix is adjusted, so it transforms the swap
   // chain to |new_on_screen_rect| which fits the monitor.
-  surface_->GetSwapChainVisualInfoForTesting(0, &transform, &offset,
-                                             &clip_rect);
+  presenter_->GetSwapChainVisualInfoForTesting(0, &transform, &offset,
+                                               &clip_rect);
   EXPECT_EQ(gfx::Rect(monitor_size), transform.MapRect(gfx::Rect(100, 100)));
 }
 
 TEST_F(DCompPresenterPixelTest, SwapChainImage) {
-  if (!surface_)
+  if (!presenter_) {
     return;
+  }
   // Fails on AMD RX 5500 XT. https://crbug.com/1152565.
   if (context_ && context_->GetVersionInfo() &&
       context_->GetVersionInfo()->driver_vendor.find("AMD") !=
@@ -1051,8 +1069,8 @@ TEST_F(DCompPresenterPixelTest, SwapChainImage) {
   ASSERT_TRUE(context);
 
   gfx::Size window_size(100, 100);
-  EXPECT_TRUE(surface_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
-  EXPECT_TRUE(surface_->SetDrawRectangle(gfx::Rect(window_size)));
+  EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
+  EXPECT_TRUE(presenter_->SetDrawRectangle(gfx::Rect(window_size)));
 
   InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlack);
 
@@ -1075,7 +1093,7 @@ TEST_F(DCompPresenterPixelTest, SwapChainImage) {
     dc_layer_params->color_space = gfx::ColorSpace::CreateSRGB();
     dc_layer_params->z_order = 1;
 
-    surface_->ScheduleDCLayer(std::move(dc_layer_params));
+    presenter_->ScheduleDCLayer(std::move(dc_layer_params));
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
     SkColor expected_color = SK_ColorRED;
@@ -1100,7 +1118,7 @@ TEST_F(DCompPresenterPixelTest, SwapChainImage) {
     dc_layer_params->quad_rect = gfx::Rect(window_size);
     dc_layer_params->color_space = gfx::ColorSpace::CreateSRGB();
 
-    surface_->ScheduleDCLayer(std::move(dc_layer_params));
+    presenter_->ScheduleDCLayer(std::move(dc_layer_params));
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
     SkColor expected_color = SK_ColorGREEN;
@@ -1123,7 +1141,7 @@ TEST_F(DCompPresenterPixelTest, SwapChainImage) {
     dc_layer_params->quad_rect = gfx::Rect(window_size);
     dc_layer_params->color_space = gfx::ColorSpace::CreateSRGB();
 
-    surface_->ScheduleDCLayer(std::move(dc_layer_params));
+    presenter_->ScheduleDCLayer(std::move(dc_layer_params));
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
     SkColor expected_color = SK_ColorRED;
@@ -1146,7 +1164,7 @@ TEST_F(DCompPresenterPixelTest, SwapChainImage) {
     dc_layer_params->quad_rect = gfx::Rect(window_size);
     dc_layer_params->color_space = gfx::ColorSpace::CreateSRGB();
 
-    surface_->ScheduleDCLayer(std::move(dc_layer_params));
+    presenter_->ScheduleDCLayer(std::move(dc_layer_params));
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
     SkColor expected_color = SK_ColorRED;
@@ -1183,14 +1201,15 @@ class DCompPresenterBufferCountTest : public DCompPresenterTest,
 };
 
 TEST_P(DCompPresenterBufferCountTest, VideoSwapChainBufferCount) {
-  if (!surface_)
+  if (!presenter_) {
     return;
+  }
 
   SetDirectCompositionScaledOverlaysSupportedForTesting(true);
 
   constexpr gfx::Size window_size(100, 100);
-  EXPECT_TRUE(surface_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
-  EXPECT_TRUE(surface_->SetDrawRectangle(gfx::Rect(window_size)));
+  EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
+  EXPECT_TRUE(presenter_->SetDrawRectangle(gfx::Rect(window_size)));
 
   constexpr gfx::Size texture_size(50, 50);
 
@@ -1206,11 +1225,11 @@ TEST_P(DCompPresenterBufferCountTest, VideoSwapChainBufferCount) {
   params->content_rect = gfx::Rect(texture_size);
   params->quad_rect = gfx::Rect(window_size);
   params->color_space = gfx::ColorSpace::CreateREC709();
-  EXPECT_TRUE(surface_->ScheduleDCLayer(std::move(params)));
+  EXPECT_TRUE(presenter_->ScheduleDCLayer(std::move(params)));
 
   PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
-  auto swap_chain = surface_->GetLayerSwapChainForTesting(0);
+  auto swap_chain = presenter_->GetLayerSwapChainForTesting(0);
   ASSERT_TRUE(swap_chain);
 
   DXGI_SWAP_CHAIN_DESC1 desc;

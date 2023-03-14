@@ -6,7 +6,7 @@
  * @fileoverview Helper functions for color manipulations.
  */
 
-import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
+import {SkColor} from '//resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
 /**
  * Converts an SkColor object to a string in the form

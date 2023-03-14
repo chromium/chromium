@@ -29,11 +29,11 @@ std::string GeneratePath(const NetworkIdentifier& id,
 }
 
 PendingNetworkConfigurationUpdate ConvertToPendingUpdate(
-    base::Value* dict,
+    base::Value::Dict* dict,
     const NetworkIdentifier& id) {
-  std::string* change_guid = dict->FindStringKey(kChangeGuidKey);
+  std::string* change_guid = dict->FindString(kChangeGuidKey);
   absl::optional<sync_pb::WifiConfigurationSpecifics> specifics;
-  std::string* encoded_specifics_string = dict->FindStringKey(kSpecificsKey);
+  std::string* encoded_specifics_string = dict->FindString(kSpecificsKey);
   std::string specifics_string;
   if (encoded_specifics_string &&
       base::Base64UrlDecode(*encoded_specifics_string,
@@ -44,8 +44,7 @@ PendingNetworkConfigurationUpdate ConvertToPendingUpdate(
     data.ParseFromString(specifics_string);
     specifics = data;
   }
-  absl::optional<int> completed_attempts =
-      dict->FindIntPath(kCompletedAttemptsKey);
+  absl::optional<int> completed_attempts = dict->FindInt(kCompletedAttemptsKey);
 
   DCHECK(change_guid);
   DCHECK(completed_attempts);
@@ -87,11 +86,10 @@ std::string PendingNetworkConfigurationTrackerImpl::TrackPendingUpdate(
                         &encoded_specifics);
   std::string change_guid = base::GenerateGUID();
 
-  dict_.SetPath(GeneratePath(id, kChangeGuidKey), base::Value(change_guid));
-  dict_.SetPath(GeneratePath(id, kSpecificsKey),
-                base::Value(encoded_specifics));
-  dict_.SetPath(GeneratePath(id, kCompletedAttemptsKey), base::Value(0));
-  pref_service_->Set(kPendingNetworkConfigurationsPref, dict_);
+  dict_.SetByDottedPath(GeneratePath(id, kChangeGuidKey), change_guid);
+  dict_.SetByDottedPath(GeneratePath(id, kSpecificsKey), encoded_specifics);
+  dict_.SetByDottedPath(GeneratePath(id, kCompletedAttemptsKey), 0);
+  pref_service_->SetDict(kPendingNetworkConfigurationsPref, dict_.Clone());
 
   return change_guid;
 }
@@ -102,24 +100,25 @@ void PendingNetworkConfigurationTrackerImpl::MarkComplete(
   if (!GetPendingUpdate(change_guid, id))
     return;
 
-  dict_.RemovePath(id.SerializeToString());
-  pref_service_->Set(kPendingNetworkConfigurationsPref, dict_);
+  dict_.Remove(id.SerializeToString());
+  pref_service_->SetDict(kPendingNetworkConfigurationsPref, dict_.Clone());
 }
 
 void PendingNetworkConfigurationTrackerImpl::IncrementCompletedAttempts(
     const std::string& change_guid,
     const NetworkIdentifier& id) {
   std::string path = GeneratePath(id, kCompletedAttemptsKey);
-  absl::optional<int> completed_attempts = dict_.FindIntPath(path);
-  dict_.SetIntPath(path, completed_attempts.value() + 1);
+  int completed_attempts = dict_.FindIntByDottedPath(path).value_or(0);
+  dict_.SetByDottedPath(path, completed_attempts + 1);
 }
 
 std::vector<PendingNetworkConfigurationUpdate>
 PendingNetworkConfigurationTrackerImpl::GetPendingUpdates() {
   std::vector<PendingNetworkConfigurationUpdate> list;
-  for (const auto [key, value] : dict_.DictItems()) {
+  for (const auto [key, value] : dict_) {
     list.push_back(ConvertToPendingUpdate(
-        /*dict=*/&value, NetworkIdentifier::DeserializeFromString(key)));
+        /*dict=*/&value.GetDict(),
+        NetworkIdentifier::DeserializeFromString(key)));
   }
   return list;
 }
@@ -128,11 +127,11 @@ PendingNetworkConfigurationTrackerImpl::GetPendingUpdate(
     const std::string& change_guid,
     const NetworkIdentifier& id) {
   std::string* found_id =
-      dict_.FindStringPath(GeneratePath(id, kChangeGuidKey));
+      dict_.FindStringByDottedPath(GeneratePath(id, kChangeGuidKey));
   if (!found_id || *found_id != change_guid)
     return absl::nullopt;
 
-  return ConvertToPendingUpdate(dict_.FindPath(id.SerializeToString()), id);
+  return ConvertToPendingUpdate(dict_.FindDict(id.SerializeToString()), id);
 }
 
 }  // namespace ash::sync_wifi

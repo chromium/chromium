@@ -248,6 +248,13 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1366112
   "crostini.ResizeInstallation.stable",
 
+  # b/271636906
+  "crostini.SecureCopyPaste.copy_wayland_bullseye_stable",
+  "crostini.SecureCopyPaste.copy_x11_bullseye_stable",
+  "crostini.SecureCopyPaste.paste_wayland_bullseye_stable",
+  "crostini.RestartIcon.buster_stable",
+  "crostini.RestartIcon.bullseye_stable",
+
   # https://crbug.com/1368586
   "u2fd.WebauthnUsingPassword.tpm1",
   "u2fd.WebauthnUsingPassword.tpm1_lacros",
@@ -308,9 +315,17 @@ tast_disabled_tests_from_chrome_all = [
   "crostini.ResizeRestart.bullseye_stable",
   "crostini.ResizeRestart.buster_stable",
 
-  # https://crbug.com/1416610
-  "enterprise.ARCBlockedAppInstall",
-  "enterprise.ARCPlayStoreModeBlocklist",
+  # https://b/272357159
+  "crostini.AppAudacity.bullseye_clamshell_stable",
+  "crostini.AppAudacity.buster_clamshell_stable",
+  "crostini.AppEmacs.bullseye_clamshell_stable",
+  "crostini.AppEmacs.clamshell_stable",
+  "crostini.AppGedit.bullseye_clamshell_stable",
+  "crostini.AppGedit.clamshell_stable",
+  "crostini.AppGeditUnshareFolder.bullseye_clamshell_stable",
+  "crostini.AppGeditUnshareFolder.clamshell_stable",
+  "crostini.AppVscode.bullseye_clamshell_stable",
+  "crostini.AppVscode.clamshell_stable",
 
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
@@ -336,4 +351,12 @@ tast_disabled_tests_from_lacros_all = [
 
   # https://crbug.com/1376638
   "lacros.AudioRecord",
+
+  # https://crbug.com/1422603
+  "inputs.PhysicalKeyboardAutocorrect",
+  "inputs.PhysicalKeyboardShapeBasedChineseTyping",
+  "inputs.VirtualKeyboardTypingOmnibox",
+  "inputs.PhysicalKeyboardShapeBasedChineseTyping",
+  "inputs.PhysicalKeyboardZhuyinTyping",
+  "inputs.VirtualKeyboardDeadKeys",
 ]

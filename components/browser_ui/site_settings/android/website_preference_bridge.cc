@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include <jni.h>
-#include <algorithm>
+
 #include <set>
 #include <string>
 #include <vector>
@@ -22,6 +22,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "components/browser_ui/site_settings/android/site_settings_jni_headers/WebsitePreferenceBridge_jni.h"
 #include "components/browser_ui/site_settings/android/storage_info_fetcher.h"
 #include "components/browser_ui/site_settings/android/website_preference_bridge_util.h"
@@ -504,8 +505,8 @@ static void JNI_WebsitePreferenceBridge_RevokeObjectPermission(
     const JavaParamRef<jstring>& jobject) {
   GURL origin(ConvertJavaStringToUTF8(env, jorigin));
   DCHECK(origin.is_valid());
-  std::unique_ptr<base::Value> object =
-      base::JSONReader::ReadDeprecated(ConvertJavaStringToUTF8(env, jobject));
+  absl::optional<base::Value> object =
+      base::JSONReader::Read(ConvertJavaStringToUTF8(env, jobject));
   DCHECK(object && object->is_dict());
   permissions::ObjectPermissionContextBase* context = GetChooserContext(
       jbrowser_context_handle,
@@ -588,11 +589,11 @@ void OnLocalStorageModelInfoLoaded(
 
   std::vector<std::pair<url::Origin, bool>> important_notations(
       local_storage_info.size());
-  std::transform(local_storage_info.begin(), local_storage_info.end(),
-                 important_notations.begin(),
-                 [](const content::StorageUsageInfo& info) {
-                   return std::make_pair(info.storage_key.origin(), false);
-                 });
+  base::ranges::transform(local_storage_info, important_notations.begin(),
+                          [](const content::StorageUsageInfo& info) {
+                            return std::make_pair(info.storage_key.origin(),
+                                                  false);
+                          });
   if (fetch_important) {
     permissions::PermissionsClient::Get()->AreSitesImportant(
         browser_context, &important_notations);
@@ -816,6 +817,7 @@ static void JNI_WebsitePreferenceBridge_SetContentSettingEnabled(
         value = CONTENT_SETTING_ASK;
         break;
       case ContentSettingsType::ADS:
+      case ContentSettingsType::ANTI_ABUSE:
       case ContentSettingsType::AUTO_DARK_WEB_CONTENT:
       case ContentSettingsType::BACKGROUND_SYNC:
       case ContentSettingsType::COOKIES:

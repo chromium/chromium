@@ -87,7 +87,9 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
       // this is used in scroll unification to perform a main thread hit test,
       // in which case |main_thread_hit_tested| is true, it is also used in
       // other cases like scroll events reinjected for scrollbar scrolling.
-      cc::ElementIdType scrollable_area_element_id;
+      // Using `cc::ElementId::InternalValue` because  `cc::ElementId` has a
+      // non-trivial constructor and is not allowed in a union.
+      cc::ElementId::InternalValue scrollable_area_element_id;
       // Initial motion that triggered the scroll.
       float delta_x_hint;
       float delta_y_hint;

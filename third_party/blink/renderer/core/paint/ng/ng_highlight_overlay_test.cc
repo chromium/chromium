@@ -134,8 +134,8 @@ TEST_F(NGHighlightOverlayTest, ComputeEdges) {
       NGHighlightOverlay::ComputeEdges(nullptr, registry, false, originating,
                                        &selection, *none, *none, *none, *none),
       (Vector<HighlightEdge>{
-          HighlightEdge{1, selection_layer, HighlightEdgeType::kStart},
-          HighlightEdge{3, selection_layer, HighlightEdgeType::kEnd},
+          HighlightEdge{{1, 3}, selection_layer, HighlightEdgeType::kStart},
+          HighlightEdge{{1, 3}, selection_layer, HighlightEdgeType::kEnd},
       }))
       << "should still return non-marker edges when node is nullptr";
 
@@ -143,8 +143,8 @@ TEST_F(NGHighlightOverlayTest, ComputeEdges) {
       NGHighlightOverlay::ComputeEdges(br, registry, false, originating,
                                        &selection, *none, *none, *none, *none),
       (Vector<HighlightEdge>{
-          HighlightEdge{1, selection_layer, HighlightEdgeType::kStart},
-          HighlightEdge{3, selection_layer, HighlightEdgeType::kEnd},
+          HighlightEdge{{1, 3}, selection_layer, HighlightEdgeType::kStart},
+          HighlightEdge{{1, 3}, selection_layer, HighlightEdgeType::kEnd},
       }))
       << "should still return non-marker edges when node is <br>";
 
@@ -157,40 +157,42 @@ TEST_F(NGHighlightOverlayTest, ComputeEdges) {
   spelling->push_back(MakeGarbageCollected<SpellingMarker>(4, 5, ""));
   spelling->push_back(MakeGarbageCollected<SpellingMarker>(5, 6, ""));
 
-  EXPECT_EQ(NGHighlightOverlay::ComputeEdges(text, registry, false, originating,
-                                             &selection, *none, *grammar,
-                                             *spelling, *target),
-            (Vector<HighlightEdge>{
-                HighlightEdge{1, grammar_layer, HighlightEdgeType::kStart},
-                HighlightEdge{1, selection_layer, HighlightEdgeType::kStart},
-                HighlightEdge{2, grammar_layer, HighlightEdgeType::kEnd},
-                HighlightEdge{2, grammar_layer, HighlightEdgeType::kStart},
-                HighlightEdge{2, spelling_layer, HighlightEdgeType::kStart},
-                HighlightEdge{2, target_layer, HighlightEdgeType::kStart},
-                HighlightEdge{3, grammar_layer, HighlightEdgeType::kEnd},
-                HighlightEdge{3, spelling_layer, HighlightEdgeType::kEnd},
-                HighlightEdge{3, target_layer, HighlightEdgeType::kEnd},
-                HighlightEdge{3, selection_layer, HighlightEdgeType::kEnd},
-                HighlightEdge{3, spelling_layer, HighlightEdgeType::kStart},
-                HighlightEdge{4, spelling_layer, HighlightEdgeType::kEnd},
-            }))
+  EXPECT_EQ(
+      NGHighlightOverlay::ComputeEdges(text, registry, false, originating,
+                                       &selection, *none, *grammar, *spelling,
+                                       *target),
+      (Vector<HighlightEdge>{
+          HighlightEdge{{1, 2}, grammar_layer, HighlightEdgeType::kStart},
+          HighlightEdge{{1, 3}, selection_layer, HighlightEdgeType::kStart},
+          HighlightEdge{{1, 2}, grammar_layer, HighlightEdgeType::kEnd},
+          HighlightEdge{{2, 3}, grammar_layer, HighlightEdgeType::kStart},
+          HighlightEdge{{2, 3}, spelling_layer, HighlightEdgeType::kStart},
+          HighlightEdge{{2, 3}, target_layer, HighlightEdgeType::kStart},
+          HighlightEdge{{2, 3}, grammar_layer, HighlightEdgeType::kEnd},
+          HighlightEdge{{2, 3}, spelling_layer, HighlightEdgeType::kEnd},
+          HighlightEdge{{2, 3}, target_layer, HighlightEdgeType::kEnd},
+          HighlightEdge{{1, 3}, selection_layer, HighlightEdgeType::kEnd},
+          HighlightEdge{{3, 4}, spelling_layer, HighlightEdgeType::kStart},
+          HighlightEdge{{3, 4}, spelling_layer, HighlightEdgeType::kEnd},
+      }))
       << "should return edges in correct order";
 
   NGTextFragmentPaintInfo originating2{"", 2, 3};
 
-  EXPECT_EQ(NGHighlightOverlay::ComputeEdges(text, registry, false,
-                                             originating2, &selection, *none,
-                                             *grammar, *spelling, *target),
-            (Vector<HighlightEdge>{
-                HighlightEdge{1, selection_layer, HighlightEdgeType::kStart},
-                HighlightEdge{2, grammar_layer, HighlightEdgeType::kStart},
-                HighlightEdge{2, spelling_layer, HighlightEdgeType::kStart},
-                HighlightEdge{2, target_layer, HighlightEdgeType::kStart},
-                HighlightEdge{3, grammar_layer, HighlightEdgeType::kEnd},
-                HighlightEdge{3, spelling_layer, HighlightEdgeType::kEnd},
-                HighlightEdge{3, target_layer, HighlightEdgeType::kEnd},
-                HighlightEdge{3, selection_layer, HighlightEdgeType::kEnd},
-            }))
+  EXPECT_EQ(
+      NGHighlightOverlay::ComputeEdges(text, registry, false, originating2,
+                                       &selection, *none, *grammar, *spelling,
+                                       *target),
+      (Vector<HighlightEdge>{
+          HighlightEdge{{1, 3}, selection_layer, HighlightEdgeType::kStart},
+          HighlightEdge{{2, 3}, grammar_layer, HighlightEdgeType::kStart},
+          HighlightEdge{{2, 3}, spelling_layer, HighlightEdgeType::kStart},
+          HighlightEdge{{2, 3}, target_layer, HighlightEdgeType::kStart},
+          HighlightEdge{{2, 3}, grammar_layer, HighlightEdgeType::kEnd},
+          HighlightEdge{{2, 3}, spelling_layer, HighlightEdgeType::kEnd},
+          HighlightEdge{{2, 3}, target_layer, HighlightEdgeType::kEnd},
+          HighlightEdge{{1, 3}, selection_layer, HighlightEdgeType::kEnd},
+      }))
       << "should skip edge pairs that are completely outside fragment";
 }
 
@@ -245,11 +247,13 @@ TEST_F(NGHighlightOverlayTest, ComputeParts) {
   Vector<HighlightEdge> edges = NGHighlightOverlay::ComputeEdges(
       node, registry, false, originating, nullptr, *none, *none, *none, *none);
 
+  // clang-format off
   EXPECT_EQ(NGHighlightOverlay::ComputeParts(originating, layers, edges),
             (Vector<HighlightPart>{
-                HighlightPart{orig, 0, 25, {orig}},
+                HighlightPart{orig, {0,25}, {{orig,{0,25}}}},
             }))
       << "should return correct kOriginating part when nothing is highlighted";
+  // clang-format on
 
   // 0     6   10   15   20  24
   // brown fxo oevr lazy dgo today
@@ -264,20 +268,22 @@ TEST_F(NGHighlightOverlayTest, ComputeParts) {
       node, registry, false, originating, &selection, *custom, *grammar,
       *spelling, *target);
 
+  // clang-format off
   EXPECT_EQ(NGHighlightOverlay::ComputeParts(originating, layers, edges2),
             (Vector<HighlightPart>{
-                HighlightPart{foo, 0, 6, {orig, foo}},
-                HighlightPart{spel, 6, 9, {orig, foo, spel}},
-                HighlightPart{foo, 9, 10, {orig, foo}},
-                HighlightPart{spel, 10, 13, {orig, foo, bar, spel}},
-                HighlightPart{sele, 13, 14, {orig, foo, bar, spel, sele}},
-                HighlightPart{sele, 14, 15, {orig, bar, sele}},
-                HighlightPart{sele, 15, 19, {orig, bar, targ, sele}},
-                HighlightPart{targ, 19, 20, {orig, targ}},
-                HighlightPart{targ, 20, 23, {orig, spel, targ}},
-                HighlightPart{orig, 23, 25, {orig}},
+                HighlightPart{foo, {0,6}, {{orig,{0,25}}, {foo,{0,14}}}},
+                HighlightPart{spel, {6,9}, {{orig,{0,25}}, {foo,{0,14}}, {spel,{6,9}}}},
+                HighlightPart{foo, {9,10}, {{orig,{0,25}}, {foo,{0,14}}}},
+                HighlightPart{spel, {10,13}, {{orig,{0,25}}, {foo,{0,14}}, {bar,{10,19}}, {spel,{10,14}}}},
+                HighlightPart{sele, {13,14}, {{orig,{0,25}}, {foo,{0,14}}, {bar,{10,19}}, {spel,{10,14}}, {sele,{13,19}}}},
+                HighlightPart{sele, {14,15}, {{orig,{0,25}}, {bar,{10,19}}, {sele,{13,19}}}},
+                HighlightPart{sele, {15,19}, {{orig,{0,25}}, {bar,{10,19}}, {targ,{15,23}}, {sele,{13,19}}}},
+                HighlightPart{targ, {19,20}, {{orig,{0,25}}, {targ,{15,23}}}},
+                HighlightPart{targ, {20,23}, {{orig,{0,25}}, {spel,{20,23}}, {targ,{15,23}}}},
+                HighlightPart{orig, {23,25}, {{orig,{0,25}}}},
             }))
       << "should return correct parts given several active highlights";
+  // clang-format on
 
   // 0     6   10   15   20  24
   // brown fxo oevr lazy dgo today
@@ -293,20 +299,22 @@ TEST_F(NGHighlightOverlayTest, ComputeParts) {
       node, registry, false, originating, &selection, *custom, *grammar,
       *spelling, *target);
 
+  // clang-format off
   EXPECT_EQ(NGHighlightOverlay::ComputeParts(originating, layers, edges3),
             (Vector<HighlightPart>{
-                HighlightPart{orig, 0, 6, {orig}},
-                HighlightPart{spel, 6, 9, {orig, foo, spel}},
-                HighlightPart{foo, 9, 10, {orig, foo}},
-                HighlightPart{spel, 10, 13, {orig, foo, bar, spel}},
-                HighlightPart{sele, 13, 14, {orig, foo, bar, spel, sele}},
-                HighlightPart{sele, 14, 15, {orig, bar, sele}},
-                HighlightPart{sele, 15, 19, {orig, bar, targ, sele}},
-                HighlightPart{targ, 19, 20, {orig, targ}},
-                HighlightPart{targ, 20, 23, {orig, spel, targ}},
-                HighlightPart{orig, 23, 25, {orig}},
+                HighlightPart{orig, {0,6}, {{orig,{0,25}}}},
+                HighlightPart{spel, {6,9}, {{orig,{0,25}}, {foo,{6,14}}, {spel,{6,9}}}},
+                HighlightPart{foo, {9,10}, {{orig,{0,25}}, {foo,{6,14}}}},
+                HighlightPart{spel, {10,13}, {{orig,{0,25}}, {foo,{6,14}}, {bar,{10,19}}, {spel,{10,14}}}},
+                HighlightPart{sele, {13,14}, {{orig,{0,25}}, {foo,{6,14}}, {bar,{10,19}}, {spel,{10,14}}, {sele,{13,19}}}},
+                HighlightPart{sele, {14,15}, {{orig,{0,25}}, {bar,{10,19}}, {sele,{13,19}}}},
+                HighlightPart{sele, {15,19}, {{orig,{0,25}}, {bar,{10,19}}, {targ,{15,23}}, {sele,{13,19}}}},
+                HighlightPart{targ, {19,20}, {{orig,{0,25}}, {targ,{15,23}}}},
+                HighlightPart{targ, {20,23}, {{orig,{0,25}}, {spel,{20,23}}, {targ,{15,23}}}},
+                HighlightPart{orig, {23,25}, {{orig,{0,25}}}},
             }))
       << "correct when first edge starts after start of originating fragment";
+  // clang-format on
 
   // 0     6   10   15   20  24
   // brown fxo oevr lazy dgo today
@@ -322,16 +330,18 @@ TEST_F(NGHighlightOverlayTest, ComputeParts) {
       node, registry, false, originating, &selection, *custom, *grammar,
       *spelling, *target);
 
+  // clang-format off
   EXPECT_EQ(NGHighlightOverlay::ComputeParts(originating2, layers, edges4),
             (Vector<HighlightPart>{
-                HighlightPart{spel, 8, 9, {orig, foo, spel}},
-                HighlightPart{foo, 9, 10, {orig, foo}},
-                HighlightPart{spel, 10, 13, {orig, foo, bar, spel}},
-                HighlightPart{sele, 13, 14, {orig, foo, bar, spel, sele}},
-                HighlightPart{sele, 14, 15, {orig, bar, sele}},
-                HighlightPart{sele, 15, 18, {orig, bar, targ, sele}},
+                HighlightPart{spel, {8,9}, {{orig,{8,18}}, {foo,{8,14}}, {spel,{8,9}}}},
+                HighlightPart{foo, {9,10}, {{orig,{8,18}}, {foo,{8,14}}}},
+                HighlightPart{spel, {10,13}, {{orig,{8,18}}, {foo,{8,14}}, {bar,{10,18}}, {spel,{10,14}}}},
+                HighlightPart{sele, {13,14}, {{orig,{8,18}}, {foo,{8,14}}, {bar,{10,18}}, {spel,{10,14}}, {sele,{13,18}}}},
+                HighlightPart{sele, {14,15}, {{orig,{8,18}}, {bar,{10,18}}, {sele,{13,18}}}},
+                HighlightPart{sele, {15,18}, {{orig,{8,18}}, {bar,{10,18}}, {targ,{15,18}}, {sele,{13,18}}}},
             }))
       << "should clamp result to originating fragment offsets";
+  // clang-format on
 
   // 0     6   10   15   20  24
   // brown fxo oevr lazy dgo today
@@ -346,14 +356,16 @@ TEST_F(NGHighlightOverlayTest, ComputeParts) {
       NGHighlightOverlay::ComputeEdges(node, registry, false, originating,
                                        nullptr, *none, *none, *spelling, *none);
 
+  // clang-format off
   EXPECT_EQ(NGHighlightOverlay::ComputeParts(originating2, layers, edges5),
             (Vector<HighlightPart>{
-                HighlightPart{spel, 8, 9, {orig, spel}},
-                HighlightPart{orig, 9, 10, {orig}},
-                HighlightPart{spel, 10, 14, {orig, spel}},
-                HighlightPart{orig, 14, 18, {orig}},
+                HighlightPart{spel, {8,9}, {{orig,{8,18}}, {spel,{8,9}}}},
+                HighlightPart{orig, {9,10}, {{orig,{8,18}}}},
+                HighlightPart{spel, {10,14}, {{orig,{8,18}}, {spel,{10,14}}}},
+                HighlightPart{orig, {14,18}, {{orig,{8,18}}}},
             }))
       << "should not crash if there is a gap in active layers";
+  // clang-format on
 
   // 0     6   10   15   20  24
   // brown fxo oevr lazy dgo today
@@ -369,11 +381,13 @@ TEST_F(NGHighlightOverlayTest, ComputeParts) {
       node, registry, false, originating, &selection, *custom, *grammar,
       *spelling, *target);
 
+  // clang-format off
   EXPECT_EQ(NGHighlightOverlay::ComputeParts(originating3, layers, edges6),
             (Vector<HighlightPart>{
-                HighlightPart{orig, 1, 4, {orig}},
+                HighlightPart{orig, {1,4}, {{orig,{1,4}}}},
             }))
       << "correct when first edge starts after end of originating fragment";
+  // clang-format on
 
   // 0     6   10   15   20  24
   // brown fxo oevr lazy dgo today
@@ -389,11 +403,13 @@ TEST_F(NGHighlightOverlayTest, ComputeParts) {
       node, registry, false, originating, &selection, *custom, *grammar,
       *spelling, *target);
 
+  // clang-format off
   EXPECT_EQ(NGHighlightOverlay::ComputeParts(originating4, layers, edges7),
             (Vector<HighlightPart>{
-                HighlightPart{orig, 25, 28, {orig}},
+                HighlightPart{orig, {25,28}, {{orig,{25,28}}}},
             }))
       << "correct when last edge ends before start of originating fragment";
+  // clang-format on
 }
 
 }  // namespace blink

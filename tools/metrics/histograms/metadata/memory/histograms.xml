@@ -45,6 +45,30 @@ chromium-metrics-reviews@google.com.
   <variant name=".Utility" summary="a Utility process"/>
 </variants>
 
+<variants name="UtilityProcessType">
+  <variant name="AudioService">
+    <owner>olka@chromium.org</owner>
+    <owner>fhernqvist@google.com</owner>
+    <owner>tguilbert@chromium.org</owner>
+    <owner>webrtc-audio-uma@google.com</owner>
+  </variant>
+  <variant name="CdmService">
+    <owner>xhwang@chromium.org</owner>
+    <owner>media-dev@chromium.org</owner>
+  </variant>
+  <variant name="MediaFoundationService">
+    <owner>xhwang@chromium.org</owner>
+    <owner>media-dev@chromium.org</owner>
+  </variant>
+  <variant name="PaintPreviewCompositor">
+    <owner>ckitagawa@chromium.org</owner>
+    <owner>fredmello@chromium.org</owner>
+  </variant>
+  <variant name="Utility">
+    <owner>jam@chromium.org</owner>
+  </variant>
+</variants>
+
 <histogram name="HeapProfiling.AndroidStackUnwinder"
     enum="AndroidStackUnwinder" expires_after="2023-07-09">
   <owner>joenotcharles@chromium.org</owner>
@@ -168,92 +192,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HeapProfiling.SamplingIntervalKB" units="KB"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-memory@google.com</owner>
   <summary>
     The mean number of kilobytes between samples used by the
     SamplingHeapProfiler. Emitted each time the profiler is started, which
     happens at Chrome launch when HeapProfiling.InProcess.Enabled is true.
-  </summary>
-</histogram>
-
-<histogram name="Memory.AudioService.PrivateMemoryFootprint" units="MB"
-    expires_after="2023-07-16">
-  <owner>olka@chromium.org</owner>
-  <owner>fhernqvist@google.com</owner>
-  <owner>tguilbert@chromium.org</owner>
-  <owner>webrtc-audio-uma@google.com</owner>
-  <summary>
-    A rough estimate of the private memory footprint of the audio service
-    process.
-
-    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
-    Android and 30 minutes on other platforms.
-
-    This memory footprint metric cannot be compared across platforms because
-    each platform relies on platform-level APIs for accounting. As such, though
-    this attempts to measure private memory footprint as best as possible, it
-    does not measure the same thing on each platform. We have not found a good
-    way to compare any system level memory metric across platforms due to the
-    different nature of memory management on each platform.
-  </summary>
-</histogram>
-
-<histogram name="Memory.AudioService.PrivateSwapFootprint" units="MB"
-    expires_after="2023-05-14">
-  <owner>olka@chromium.org</owner>
-  <owner>guidou@chromium.org</owner>
-  <owner>fhernqvist@google.com</owner>
-  <owner>tguilbert@chromium.org</owner>
-  <owner>webrtc-audio-uma@google.com</owner>
-  <summary>
-    An amount of private memory of the audio service process placed in swap
-    (VmSwap).
-
-    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
-    Android and 30 minutes on other platforms.
-  </summary>
-</histogram>
-
-<histogram name="Memory.AudioService.ResidentSet" units="MiB"
-    expires_after="never">
-<!-- expires-never: Generic system health metric used to diagnose various performance issues. -->
-
-  <owner>fdoray@chromium.org</owner>
-  <owner>webrtc-audio-uma@google.com</owner>
-  <summary>
-    The size of the resident memory in a audio service process. This is
-    influenced by factors we control (e.g. memory that is not accessed can be
-    swapped) and factors we don't control (e.g. an unrelated process using a lot
-    of memory can force memory in our process to be swapped). Recorded once on
-    Windows/Linux/ChromeOS/Android.
-
-    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
-    Android and 30 minutes on other platforms.
-
-    This resident memory metric cannot be compared across platforms because each
-    platform relies on platform-level APIs for accounting. As such, though this
-    attempts to measure private memory footprint as best as possible, it does
-    not measure the same thing on each platform. We have not found a good way to
-    compare any system level memory metric across platforms due to the different
-    nature of memory management on each platform.
-  </summary>
-</histogram>
-
-<histogram name="Memory.AudioService.SharedMemoryFootprint" units="MB"
-    expires_after="2023-07-16">
-  <owner>olka@chromium.org</owner>
-  <owner>guidou@chromium.org</owner>
-  <owner>fhernqvist@google.com</owner>
-  <owner>tguilbert@chromium.org</owner>
-  <owner>webrtc-audio-uma@google.com</owner>
-  <summary>
-    A rough estimate of the shared memory footprint of the audio service
-    process.
-
-    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
-    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
@@ -299,7 +244,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Browser.MemoryFootprint.Active" units="MB"
-    expires_after="2023-08-08">
+    expires_after="2024-02-05">
   <owner>justincohen@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -310,7 +255,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Browser.MemoryFootprint.Active.Over200MBWatermark"
-    enum="BooleanGreaterOrEqualThan200MB" expires_after="2023-08-08">
+    enum="BooleanGreaterOrEqualThan200MB" expires_after="2024-02-05">
   <owner>justincohen@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -326,7 +271,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Browser.MemoryFootprint.Background" units="MB"
-    expires_after="2023-08-08">
+    expires_after="2024-02-05">
   <owner>justincohen@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -342,7 +287,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Browser.MemoryFootprint.Inactive" units="MB"
-    expires_after="2023-03-19">
+    expires_after="2024-02-05">
   <owner>justincohen@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -370,7 +315,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Browser.MemoryFootprint.NumOpenTabs" units="tabs"
-    expires_after="2023-07-16">
+    expires_after="2024-02-05">
   <owner>ajuma@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
   <summary>
@@ -385,7 +330,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Browser.MemoryFootprint.OnBackground" units="MiB"
-    expires_after="2023-08-08">
+    expires_after="2024-02-05">
   <owner>justincohen@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -1000,7 +945,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Experimental.Renderer.HighestPrivateMemoryFootprint"
-    units="MB" expires_after="2023-06-18">
+    units="MB" expires_after="2023-08-20">
   <owner>tasak@google.com</owner>
   <owner>bartekn@google.com</owner>
   <summary>
@@ -1134,6 +1079,66 @@ chromium-metrics-reviews@google.com.
   <summary>
     The renderer process' private memory footprint right before a memory
     pressure signal is generated.
+
+    This memory footprint metric cannot be compared across platforms because
+    each platform relies on platform-level APIs for accounting. As such, though
+    this attempts to measure private memory footprint as best as possible, it
+    does not measure the same thing on each platform. We have not found a good
+    way to compare any system level memory metric across platforms due to the
+    different nature of memory management on each platform.
+  </summary>
+</histogram>
+
+<histogram
+    name="Memory.Experimental.UserLevelMemoryPressureSignal.TotalPrivateMemoryFootprintAfter"
+    units="MB" expires_after="2023-08-01">
+  <owner>tasak@google.com</owner>
+  <owner>chrome-memory-tok@google.com</owner>
+  <summary>
+    The total private memory footprint 10 seconds after a user-level memory
+    pressure signal is generated. Recorded on Android.
+  </summary>
+</histogram>
+
+<histogram
+    name="Memory.Experimental.UserLevelMemoryPressureSignal.TotalPrivateMemoryFootprintBefore"
+    units="MB" expires_after="2023-08-01">
+  <owner>tasak@google.com</owner>
+  <owner>chrome-memory-tok@google.com</owner>
+  <summary>
+    The total private memory footprint right before a user-level memory pressure
+    signal is generated. Recorded on Android.
+
+    This memory footprint metric cannot be compared across platforms because
+    each platform relies on platform-level APIs for accounting. As such, though
+    this attempts to measure private memory footprint as best as possible, it
+    does not measure the same thing on each platform. We have not found a good
+    way to compare any system level memory metric across platforms due to the
+    different nature of memory management on each platform.
+  </summary>
+</histogram>
+
+<histogram
+    name="Memory.Experimental.UserLevelMemoryPressureSignal.TotalPrivateMemoryFootprintVisibleOrHigherPriorityRenderersAfter"
+    units="MB" expires_after="2023-08-01">
+  <owner>tasak@google.com</owner>
+  <owner>chrome-memory-tok@google.com</owner>
+  <summary>
+    The total private memory footprint excluding lower priority renderers' 10
+    seconds after a user-level memory pressure signal is generated. Recorded on
+    Android.
+  </summary>
+</histogram>
+
+<histogram
+    name="Memory.Experimental.UserLevelMemoryPressureSignal.TotalPrivateMemoryFootprintVisibleOrHigherPriorityRenderersBefore"
+    units="MB" expires_after="2023-08-01">
+  <owner>tasak@google.com</owner>
+  <owner>chrome-memory-tok@google.com</owner>
+  <summary>
+    The total private memory footprint excluding lower priority renderers' right
+    before a user-level memory pressure signal is generated. Recorded on
+    Android.
 
     This memory footprint metric cannot be compared across platforms because
     each platform relies on platform-level APIs for accounting. As such, though
@@ -1423,7 +1428,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.LowMemoryKiller.FreedSize" units="KB"
-    expires_after="2023-06-25">
+    expires_after="2023-08-27">
   <owner>khmel@google.com</owner>
   <owner>vovoy@google.com</owner>
   <summary>The memory size freed by each low memory kill event.</summary>
@@ -1493,7 +1498,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.NetworkService.PrivateMemoryFootprint" units="MiB"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>mmenke@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
@@ -1664,7 +1669,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.OOMKills.Count" units="kills"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>vovoy@google.com</owner>
   <owner>wvk@google.com</owner>
   <summary>Cumulative count of OOM kills in one user session.</summary>
@@ -1700,75 +1705,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The limit of open file descriptors that can be opened per process. Recorded
     once per UMA ping.
-  </summary>
-</histogram>
-
-<histogram name="Memory.PaintPreviewCompositor.PrivateMemoryFootprint"
-    units="MB" expires_after="2023-05-27">
-  <owner>ckitagawa@chromium.org</owner>
-  <owner>fredmello@chromium.org</owner>
-  <summary>
-    A rough estimate of the private memory footprint of the paint preview
-    compositor process.
-
-    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
-    Android and 30 minutes on other platforms.
-
-    This memory footprint metric cannot be compared across platforms because
-    each platform relies on platform-level APIs for accounting. As such, though
-    this attempts to measure private memory footprint as best as possible, it
-    does not measure the same thing on each platform. We have not found a good
-    way to compare any system level memory metric across platforms due to the
-    different nature of memory management on each platform.
-  </summary>
-</histogram>
-
-<histogram name="Memory.PaintPreviewCompositor.PrivateSwapFootprint" units="MB"
-    expires_after="2023-05-27">
-  <owner>ckitagawa@chromium.org</owner>
-  <owner>fredmello@chromium.org</owner>
-  <summary>
-    An amount of private memory of the paint preview compositor process placed
-    in swap (VmSwap).
-
-    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
-    Android and 30 minutes on other platforms.
-  </summary>
-</histogram>
-
-<histogram name="Memory.PaintPreviewCompositor.ResidentSet" units="MiB"
-    expires_after="2023-05-27">
-  <owner>ckitagawa@chromium.org</owner>
-  <owner>fredmello@chromium.org</owner>
-  <summary>
-    The size of the resident memory in a paint preview compositor process. This
-    is influenced by factors we control (e.g. memory that is not accessed can be
-    swapped) and factors we don't control (e.g. an unrelated process using a lot
-    of memory can force memory in our process to be swapped). Recorded once on
-    Windows/Linux/ChromeOS/Android.
-
-    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
-    Android and 30 minutes on other platforms.
-
-    This resident memory metric cannot be compared across platforms because each
-    platform relies on platform-level APIs for accounting. As such, though this
-    attempts to measure private memory footprint as best as possible, it does
-    not measure the same thing on each platform. We have not found a good way to
-    compare any system level memory metric across platforms due to the different
-    nature of memory management on each platform.
-  </summary>
-</histogram>
-
-<histogram name="Memory.PaintPreviewCompositor.SharedMemoryFootprint"
-    units="MB" expires_after="2023-05-27">
-  <owner>ckitagawa@chromium.org</owner>
-  <owner>fredmello@chromium.org</owner>
-  <summary>
-    A rough estimate of the shared memory footprint of the paint preview
-    compositor process.
-
-    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
-    Android and 30 minutes on other platforms.
   </summary>
 </histogram>
 
@@ -1920,7 +1856,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ParkableString.Compression.Latency"
-    units="microseconds" expires_after="2023-07-02">
+    units="microseconds" expires_after="2023-09-03">
   <owner>lizeb@chromium.org</owner>
   <owner>thiabaud@google.com</owner>
   <summary>
@@ -2186,7 +2122,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.PartitionAlloc.MemoryReclaim" units="microseconds"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>lizeb@chromium.org</owner>
   <owner>bartekn@chromium.org</owner>
   <summary>
@@ -2199,7 +2135,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.PartitionAlloc.PeriodicPurge" units="microseconds"
-    expires_after="2023-06-25">
+    expires_after="2023-08-27">
   <owner>lizeb@chromium.org</owner>
   <owner>bartekn@chromium.org</owner>
   <summary>
@@ -2269,7 +2205,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Memory.PressureWindowDuration" units="ms"
-    expires_after="2023-07-02">
+    expires_after="2023-09-03">
 <!-- Name completed by histogram_suffixes name="Memory.Pressure.TransitionType" -->
 
   <owner>fdoray@chromium.org</owner>
@@ -2377,7 +2313,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.RendererProcessCount" units="processes"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>creis@chromium.org</owner>
   <owner>nasko@chromium.org</owner>
   <summary>
@@ -2466,7 +2402,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.RenderProcessHost.Percent.OriginAgentClusterOverhead"
-    units="%" expires_after="2023-06-18">
+    units="%" expires_after="2023-08-20">
   <owner>wjmaclean@chromium.org</owner>
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
@@ -2514,7 +2450,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.System.AvailableMB" units="MB"
-    expires_after="2023-06-30">
+    expires_after="2023-09-03">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -2547,6 +2483,31 @@ chromium-metrics-reviews@google.com.
   <summary>
     System-wide estimate of memory used in ChromeOS, calculated as the
     difference between the amount of total and available memory.
+  </summary>
+</histogram>
+
+<histogram name="Memory.Total.HibernatedCanvas.OriginalSize" units="MB"
+    expires_after="2023-08-08">
+  <owner>lizeb@chromium.org</owner>
+  <owner>chrome-memory@chromium.org</owner>
+  <summary>
+    Total size of all hibernated canvases across all renderers, prior to
+    compression.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android.
+  </summary>
+</histogram>
+
+<histogram name="Memory.Total.HibernatedCanvas.Size" units="MB"
+    expires_after="2023-08-08">
+  <owner>lizeb@chromium.org</owner>
+  <owner>chrome-memory@chromium.org</owner>
+  <summary>
+    Total size of all hibernated canvases across all renderers.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android.
   </summary>
 </histogram>
 
@@ -2638,7 +2599,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Total.RendererPrivateMemoryFootprint" units="MB"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>tommckee@chromium.org</owner>
   <summary>
     A rough estimate of the private memory footprint of all renderer processes.
@@ -2734,7 +2695,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.Total.TileMemory" units="MB" expires_after="2023-06-18">
+<histogram name="Memory.Total.TileMemory" units="MB" expires_after="2023-08-20">
   <owner>lizeb@chromium.org</owner>
   <owner>chrome-gpu-memory@google.com</owner>
   <summary>
@@ -2745,81 +2706,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.Utility.PrivateMemoryFootprint" units="MB"
-    expires_after="never">
-<!-- expires-never: useful diagnostic metric for changes in
-     Memory.Total.PrivateMemoryFootprint, which never expires. -->
-
-  <owner>jam@chromium.org</owner>
-  <summary>
-    A rough estimate of the private memory footprint of the utility process.
-
-    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
-    Android and 30 minutes on other platforms.
-
-    This memory footprint metric cannot be compared across platforms because
-    each platform relies on platform-level APIs for accounting. As such, though
-    this attempts to measure private memory footprint as best as possible, it
-    does not measure the same thing on each platform. We have not found a good
-    way to compare any system level memory metric across platforms due to the
-    different nature of memory management on each platform.
-  </summary>
-</histogram>
-
-<histogram name="Memory.Utility.PrivateSwapFootprint" units="MB"
-    expires_after="2023-03-12">
-  <owner>jam@chromium.org</owner>
-  <summary>
-    An amount of private memory of the utility process placed in swap (VmSwap).
-    Available on Android, Linux and ChromeOS.
-
-    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
-    Android and 30 minutes on other platforms.
-
-    Note: Histogram data may be missing for mid-2020 due to expiry.
-  </summary>
-</histogram>
-
-<histogram name="Memory.Utility.ResidentSet" units="MiB" expires_after="never">
-<!-- expires-never: Generic system health metric used to diagnose various performance issues. -->
-
-  <owner>fdoray@chromium.org</owner>
-  <summary>
-    The size of the resident memory in a utility process. This is influenced by
-    factors we control (e.g. memory that is not accessed can be swapped) and
-    factors we don't control (e.g. an unrelated process using a lot of memory
-    can force memory in our process to be swapped). Recorded on
-    Windows/Linux/ChromeOS/Android.
-
-    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
-    Android and 30 minutes on other platforms.
-
-    This resident memory metric cannot be compared across platforms because each
-    platform relies on platform-level APIs for accounting. As such, though this
-    attempts to measure private memory footprint as best as possible, it does
-    not measure the same thing on each platform. We have not found a good way to
-    compare any system level memory metric across platforms due to the different
-    nature of memory management on each platform.
-  </summary>
-</histogram>
-
-<histogram name="Memory.Utility.SharedMemoryFootprint" units="MB"
-    expires_after="2023-01-10">
-  <owner>jam@chromium.org</owner>
-  <owner>erikchen@chromium.org</owner>
-  <owner>ssid@chromium.org</owner>
-  <summary>
-    A rough estimate of the shared memory footprint of the utility process.
-
-    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
-    Android and 30 minutes on other platforms.
-
-    Note: Histogram data may be missing between M77 to M87 due to expiry.
-  </summary>
-</histogram>
-
 <histogram name="Memory.UX.Study.1" enum="UXStudy1Arm"
-    expires_after="2023-05-14">
+    expires_after="2023-08-27">
   <owner>erikchen@chromium.org</owner>
   <owner>meredithguo@google.com</owner>
   <summary>
@@ -2898,16 +2786,85 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MemoryAndroid.DeviceMemoryClass" units="units"
-    expires_after="2020-06-07">
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>kenjibaheux@google.com</owner>
-  <owner>kouhei@chromium.org</owner>
+<histogram name="Memory.{UtilityProcessType}.PrivateMemoryFootprint" units="MB"
+    expires_after="never">
+<!-- expires-never: useful diagnostic metric for changes in
+     Memory.Total.PrivateMemoryFootprint, which never expires. -->
+
+  <owner>erikchen@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
   <summary>
-    Value of getMemoryClass() recorded once upon startup. This is an integer,
-    device-specific constant correlated with the amount of memory available on
-    Android device.
+    A rough estimate of the private memory footprint of the {UtilityProcessType}
+    process.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
+
+    This memory footprint metric cannot be compared across platforms because
+    each platform relies on platform-level APIs for accounting. As such, though
+    this attempts to measure private memory footprint as best as possible, it
+    does not measure the same thing on each platform. We have not found a good
+    way to compare any system level memory metric across platforms due to the
+    different nature of memory management on each platform.
   </summary>
+  <token key="UtilityProcessType" variants="UtilityProcessType"/>
+</histogram>
+
+<histogram name="Memory.{UtilityProcessType}.PrivateSwapFootprint" units="MB"
+    expires_after="2023-07-16">
+  <owner>erikchen@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <summary>
+    An amount of private memory of the {UtilityProcessType} process placed in
+    swap (VmSwap). Available on Android, Linux and ChromeOS.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
+
+    Note: Histogram data may be missing for mid-2020 due to expiry.
+  </summary>
+  <token key="UtilityProcessType" variants="UtilityProcessType"/>
+</histogram>
+
+<histogram name="Memory.{UtilityProcessType}.ResidentSet" units="MiB"
+    expires_after="never">
+<!-- expires-never: Generic system health metric used to diagnose various performance issues. -->
+
+  <owner>fdoray@chromium.org</owner>
+  <summary>
+    The size of the resident memory in a {UtilityProcessType} process. This is
+    influenced by factors we control (e.g. memory that is not accessed can be
+    swapped) and factors we don't control (e.g. an unrelated process using a lot
+    of memory can force memory in our process to be swapped). Recorded on
+    Windows/Linux/ChromeOS/Android.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
+
+    This resident memory metric cannot be compared across platforms because each
+    platform relies on platform-level APIs for accounting. As such, though this
+    attempts to measure private memory footprint as best as possible, it does
+    not measure the same thing on each platform. We have not found a good way to
+    compare any system level memory metric across platforms due to the different
+    nature of memory management on each platform.
+  </summary>
+  <token key="UtilityProcessType" variants="UtilityProcessType"/>
+</histogram>
+
+<histogram name="Memory.{UtilityProcessType}.SharedMemoryFootprint" units="MB"
+    expires_after="2023-07-16">
+  <owner>erikchen@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <summary>
+    A rough estimate of the shared memory footprint of the {UtilityProcessType}
+    process.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
+
+    Note: Histogram data may be missing between M77 to M87 due to expiry.
+  </summary>
+  <token key="UtilityProcessType" variants="UtilityProcessType"/>
 </histogram>
 
 <histogram name="MemoryAndroid.EvictedTreeSize" units="units"
@@ -2966,14 +2923,6 @@ chromium-metrics-reviews@google.com.
     Whether Chrome is running in low ram mode. This histogram is reported on
     every upload by Android devices. A device is considered low-RAM if it has
     512MiB of RAM or lower (see SysUtils.detectLowEndDevice()).
-  </summary>
-</histogram>
-
-<histogram name="MemoryWarning.OccurrencesPerSession" units="units"
-    expires_after="M85">
-  <owner>marq@chromium.org</owner>
-  <summary>
-    The number of memory warnings during a given foreground session.
   </summary>
 </histogram>
 

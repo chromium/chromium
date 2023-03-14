@@ -160,6 +160,10 @@ class SpeechRecognitionRecognizerImpl
   // Whether the client is still requesting speech recognition.
   bool is_client_requesting_speech_recognition_ = true;
 
+  // Whether the speech recognition session contains any recognized speech. Used
+  // for logging purposes only.
+  bool session_contains_speech_ = false;
+
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::WeakPtrFactory<SpeechRecognitionRecognizerImpl> weak_factory_{this};

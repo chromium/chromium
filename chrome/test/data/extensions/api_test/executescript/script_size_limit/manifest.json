@@ -1,0 +1,11 @@
+{
+  "name": "Large executeScript scripts",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "ExecuteScript scripts that surpass the size limit are not loaded.",
+  "background": {
+    "scripts": ["test.js"],
+    "persistent": false
+  },
+  "permissions": ["*://example.com/*", "tabs"]
+}

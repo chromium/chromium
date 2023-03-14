@@ -84,30 +84,6 @@ bool FFmpegVideoDecoder::IsCodecSupported(VideoCodec codec) {
   return avcodec_find_decoder(VideoCodecToCodecID(codec)) != nullptr;
 }
 
-// static
-SupportedVideoDecoderConfigs FFmpegVideoDecoder::SupportedConfigsForWebRTC() {
-  SupportedVideoDecoderConfigs supported_configs;
-
-  if (IsCodecSupported(VideoCodec::kH264)) {
-    supported_configs.emplace_back(/*profile_min=*/H264PROFILE_BASELINE,
-                                   /*profile_max=*/H264PROFILE_HIGH,
-                                   /*coded_size_min=*/kDefaultSwDecodeSizeMin,
-                                   /*coded_size_max=*/kDefaultSwDecodeSizeMax,
-                                   /*allow_encrypted=*/false,
-                                   /*require_encrypted=*/false);
-  }
-  if (IsCodecSupported(VideoCodec::kVP8)) {
-    supported_configs.emplace_back(/*profile_min=*/VP8PROFILE_ANY,
-                                   /*profile_max=*/VP8PROFILE_ANY,
-                                   /*coded_size_min=*/kDefaultSwDecodeSizeMin,
-                                   /*coded_size_max=*/kDefaultSwDecodeSizeMax,
-                                   /*allow_encrypted=*/false,
-                                   /*require_encrypted=*/false);
-  }
-
-  return supported_configs;
-}
-
 FFmpegVideoDecoder::FFmpegVideoDecoder(MediaLog* media_log)
     : media_log_(media_log) {
   DVLOG(1) << __func__;
@@ -180,11 +156,16 @@ int FFmpegVideoDecoder::GetVideoBuffer(struct AVCodecContext* codec_context,
       codec_context->color_primaries == AVCOL_PRI_UNSPECIFIED &&
       codec_context->color_trc == AVCOL_TRC_UNSPECIFIED &&
       codec_context->colorspace == AVCOL_SPC_BT470BG) {
-    // vp8 has no colorspace information, except for the color range.
+    // vp8 has no colorspace information, except for the color range, so prefer
+    // the config color space if it exists.
+    //
     // However, because of a comment in the vp8 spec, ffmpeg sets the
     // colorspace to BT470BG. We detect this and treat it as unset.
     // If the color range is set to full range, we use the jpeg color space.
-    if (codec_context->color_range == AVCOL_RANGE_JPEG) {
+    if (config_.color_space_info().IsSpecified()) {
+      video_frame->set_color_space(
+          config_.color_space_info().ToGfxColorSpace());
+    } else if (codec_context->color_range == AVCOL_RANGE_JPEG) {
       video_frame->set_color_space(gfx::ColorSpace::CreateJpeg());
     }
   } else if (codec_context->codec_id == AV_CODEC_ID_H264 &&

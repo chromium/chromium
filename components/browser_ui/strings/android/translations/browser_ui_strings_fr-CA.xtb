@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Diminuer le zoom</translation>
 <translation id="1510341833810331442">Les sites ne sont pas autorisés à enregistrer des données sur votre appareil</translation>
 <translation id="1547123415014299762">Les témoins tiers sont autorisés</translation>
+<translation id="1593426485665524382">Nouvelles actions accessibles près du haut de l'écran</translation>
 <translation id="1620510694547887537">Caméra</translation>
 <translation id="1633720957382884102">Sites connexes</translation>
 <translation id="1644574205037202324">Historique</translation>
@@ -59,6 +60,7 @@
 <translation id="216989819110952009">Malgré leurs lunettes vertes, Dorothée et ses amis, au début, furent éblouis par</translation>
 <translation id="2176704795966505152">Afficher l'option de zoom dans le menu principal</translation>
 <translation id="2182457891543959921">Demander avant d'autoriser les sites à créer une carte 3D de votre environnement ou à faire le suivi de la position de l'appareil photo (recommandé)</translation>
+<translation id="2194856509914051091">Points à prendre en compte</translation>
 <translation id="2212565012507486665">Autoriser les témoins</translation>
 <translation id="2228071138934252756">Pour autoriser <ph name="APP_NAME" /> à accéder à votre appareil photo, activez aussi celui-ci dans les <ph name="BEGIN_LINK" />paramètres d'Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Les témoins tiers sont bloqués</translation>
@@ -98,7 +100,6 @@
 <translation id="2713106313042589954">Désactiver la caméra</translation>
 <translation id="2717722538473713889">Adresses de courriel</translation>
 <translation id="2750481671343847896">Les sites peuvent afficher des invites de connexion provenant de services de vérification d'identité.</translation>
-<translation id="2779966372261694284">Vous serez déconnecté de ce site</translation>
 <translation id="2822354292072154809">Voulez-vous vraiment réinitialiser toutes les autorisations de site pour <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2874939134665556319">Chanson précédente</translation>
@@ -144,6 +145,9 @@
 <translation id="3600792891314830896">Désactiver le son sur les sites qui en font jouer</translation>
 <translation id="3602290021589620013">Aperçu</translation>
 <translation id="3628308229821498208">Recherches suggérées</translation>
+<translation id="3636279694100170143">Les sites que vous visitez peuvent valider que vous êtes un véritable utilisateur et non un robot</translation>
+<translation id="3649190289964910441">Un site que vous visitez peut enregistrer des renseignements avec Chrome permettant de valider que vous êtes un véritable utilisateur. Au fur et à mesure de votre navigation, les sites peuvent vérifier auprès de Chrome ainsi qu'à partir du premier site visité que vous êtes bien un utilisateur de confiance.</translation>
+<translation id="3721953990244350188">Ignorer et afficher la prochaine action proposée</translation>
 <translation id="3744111561329211289">Synchronisation en arrière-plan</translation>
 <translation id="3763247130972274048">Touchez deux fois à gauche ou à droite de la vidéo pour sauter 10 secondes</translation>
 <translation id="3794286421982011626">Un site que vous visitez peut enregistrer des renseignements en fonction de vos interactions pour qu’il fonctionne comme vous vous y attendez; par exemple, il peut vous permettre de rester connecté à un site ou d'enregistrer des articles dans votre panier. Les sites enregistrent souvent ces renseignements sur votre appareil de façon temporaire.</translation>
@@ -191,11 +195,11 @@
 <translation id="4534723447064627427">Pour autoriser <ph name="APP_NAME" /> à accéder à votre microphone, vous devez aussi activer le microphone dans les <ph name="BEGIN_LINK" />paramètres d'Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Désactiver le microphone</translation>
 <translation id="4570913071927164677">Détails</translation>
-<translation id="4575264539271661854">Faciliter le zoom avant sur le texte et les images d'un site que vous visitez</translation>
 <translation id="4598549027014564149">En mode navigation privée, les sites ne peuvent pas utiliser de témoins pour suivre votre activité de navigation sur les sites ni même sur les sites connexes. Votre activité de navigation n'utilise pas les options telles que la personnalisation des publicités. Les fonctionnalités de certains sites pourraient ne pas fonctionner.</translation>
 <translation id="4645575059429386691">Géré par l’un de tes parents</translation>
 <translation id="4670064810192446073">Réalité virtuelle</translation>
 <translation id="4751476147751820511">Capteurs de mouvement ou de luminosité</translation>
+<translation id="477781522763920796">Ce paramètre fonctionne sans vous identifier ni autoriser les sites à voir votre historique de navigation.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4811450222531576619">En savoir plus sur sa source et son sujet</translation>
 <translation id="4836046166855586901">Demander une autorisation lorsqu'un site veut savoir si vous êtes en train d'utiliser cet appareil</translation>
@@ -257,6 +261,7 @@
 <translation id="5740126560802162366">Les sites peuvent enregistrer des données sur votre appareil</translation>
 <translation id="5771720122942595109">Autorisation <ph name="PERMISSION_1" /> bloquée</translation>
 <translation id="5804241973901381774">Autorisations</translation>
+<translation id="5810805850857689118">Cette action effacera toutes les données et tous les témoins de <ph name="ORIGIN" /> ainsi que de tous les sites qui y sont subordonnés</translation>
 <translation id="5860033963881614850">Désactivé</translation>
 <translation id="5876056640971328065">Suspendre la vidéo</translation>
 <translation id="5884085660368669834">Préférence de site</translation>
@@ -273,6 +278,7 @@
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6042308850641462728">Plus</translation>
 <translation id="6064125863973209585">Téléchargements terminés</translation>
+<translation id="6071501408666570960">Vous pouvez être déconnecté de ce site</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6177111841848151710">Bloquée pour le moteur de recherche actuel</translation>
 <translation id="6177128806592000436">Votre connexion à ce site n'est pas sécurisée</translation>
@@ -323,6 +329,7 @@
 <translation id="7016516562562142042">Autorisée pour le moteur de recherche actuel</translation>
 <translation id="702275896380648118">Ce site détermine ce que vous aimez et suggère ensuite des annonces à d'autres sites. Ce site récupère également les sujets de vos annonces à partir de Chrome pour vous montrer des annonces plus pertinentes.</translation>
 <translation id="702463548815491781">Recommandé lorsque le service TalkBack ou Switch Access est activé</translation>
+<translation id="7050519587566342213">La navigation est plus fluide, car vous êtes considéré comme un utilisateur de confiance sur chaque site.</translation>
 <translation id="7053983685419859001">Bloquer</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 élément sélectionné}one{# élément sélectionné}other{# éléments sélectionnés}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> élément(s) sélectionné(s). Options disponibles vers le haut de l'écran</translation>
@@ -347,6 +354,7 @@
 <translation id="757524316907819857">Empêcher les sites de lire du contenu protégé</translation>
 <translation id="7577900504646297215">Gérer les centres d'intérêt</translation>
 <translation id="7594634374516752650">Connecté à un appareil Bluetooth</translation>
+<translation id="7634280112532283638">Réduction des pourriels et de la fraude</translation>
 <translation id="7641339528570811325">Effacer les données de navigation…</translation>
 <translation id="7649070708921625228">Aide</translation>
 <translation id="7658239707568436148">Annuler</translation>
@@ -407,6 +415,7 @@
 <translation id="8514955299594277296">Ne pas autoriser les sites à enregistrer des données sur votre appareil (non recommandé)</translation>
 <translation id="851751545965956758">Empêcher les sites de se connecter à des appareils</translation>
 <translation id="8525306231823319788">Plein écran</translation>
+<translation id="8528440122773422556">Cette action effacera toutes les données et tous les témoins stockés par tous les sites subordonnés de <ph name="ORIGIN" /> ou par son application sur votre écran d'accueil</translation>
 <translation id="8541410041357371550">Ce site récupère vos sujets d'annonces à partir de Chrome pour vous montrer des annonces plus pertinentes</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Témoins autorisés pour <ph name="FPS_MEMBERS_COUNT" /> site de <ph name="FPS_OWNER" />}one{Témoins autorisés pour <ph name="FPS_MEMBERS_COUNT" /> site de <ph name="FPS_OWNER" />}other{Témoins autorisés pour <ph name="FPS_MEMBERS_COUNT" /> sites de <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Autorisée (recommandé)</translation>
@@ -421,6 +430,7 @@
 <translation id="8737217482364735741">Cette action effacera toutes les données et tous les témoins stockés par <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Sélectionner une image</translation>
 <translation id="8801436777607969138">Bloquez JavaScript sur un site en particulier.</translation>
+<translation id="8803526663383843427">Lorsque activée</translation>
 <translation id="8816026460808729765">Empêcher les sites d'accéder aux capteurs</translation>
 <translation id="8823559166155093873">Bloquer les témoins</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -434,6 +444,7 @@
 <translation id="8986362086234534611">Supprimer</translation>
 <translation id="8990043154272859344">Vous serez déconnecté de tous les sites</translation>
 <translation id="9019902583201351841">Géré par tes parents</translation>
+<translation id="9039697262778250930">Il se peut que vous soyez déconnecté de ces sites</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Ce site fait partie d'un groupe qui peut voir votre activité. Le groupe est défini par <ph name="FPS_OWNER" />.</translation>
 <translation id="9106233582039520022">Supprimer les témoins?</translation>

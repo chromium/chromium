@@ -115,11 +115,9 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   // A public version of PreviewSuggestion(), only for use in tests.
   bool PreviewSuggestionForTest(const std::u16string& username);
 
-#if defined(UNIT_TEST)
-  void set_autofill_client(autofill::AutofillClient* autofill_client) {
+  void set_autofill_client_for_test(autofill::AutofillClient* autofill_client) {
     autofill_client_ = autofill_client;
   }
-#endif  // defined(UNIT_TEST)
 
  private:
   using ForPasswordField = base::StrongAlias<class ForPasswordFieldTag, bool>;
@@ -226,7 +224,7 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   // Used to trigger a reauthentication prompt based on biometrics that needs
   // to be cleared before the password is filled. Currently only used
   // on Android, Mac and Windows.
-  scoped_refptr<device_reauth::BiometricAuthenticator> authenticator_;
+  scoped_refptr<device_reauth::DeviceAuthenticator> authenticator_;
 
   base::WeakPtrFactory<PasswordAutofillManager> weak_ptr_factory_{this};
 };

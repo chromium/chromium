@@ -10,6 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/shared_bitmap.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -188,6 +189,8 @@ class PLATFORM_EXPORT CanvasResource
     return 0;
   }
 
+  virtual bool HasDetailedMemoryDumpProvider() const { return false; }
+
  protected:
   CanvasResource(base::WeakPtr<CanvasResourceProvider>,
                  cc::PaintFlags::FilterQuality,
@@ -219,7 +222,7 @@ class PLATFORM_EXPORT CanvasResource
   gpu::raster::RasterInterface* RasterInterface() const;
   gpu::webgpu::WebGPUInterface* WebGPUInterface() const;
   GLenum GLFilter() const;
-  viz::ResourceFormat GetResourceFormat() const;
+  viz::SharedImageFormat GetSharedImageFormat() const;
   gfx::BufferFormat GetBufferFormat() const;
   gfx::ColorSpace GetColorSpace() const;
   GrDirectContext* GetGrContext() const;
@@ -242,8 +245,6 @@ class PLATFORM_EXPORT CanvasResource
   const scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner_;
 
  private:
-  // Sync token that was provided when resource was released
-  gpu::SyncToken sync_token_for_release_;
   base::WeakPtr<CanvasResourceProvider> provider_;
   SkColorInfo info_;
   cc::PaintFlags::FilterQuality filter_quality_;
@@ -365,6 +366,10 @@ class PLATFORM_EXPORT CanvasResourceRasterSharedImage final
   const gpu::Mailbox& GetOrCreateGpuMailbox(MailboxSyncMode) override;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                     size_t bytes_per_pixel) const override;
+  // Whether this type of CanvasResource can provide detailed memory data. If
+  // true, then the CanvasResourceProvider will not report data, to avoid
+  // double-countintg.
+  bool HasDetailedMemoryDumpProvider() const override { return true; }
 
  private:
   // These members are either only accessed on the owning thread, or are only

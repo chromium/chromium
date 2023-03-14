@@ -7,11 +7,14 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/types/optional_util.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
@@ -26,6 +29,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "extensions/common/constants.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -303,6 +307,80 @@ TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_CancelDst) {
                                  callback.Get());
   EXPECT_TRUE(events_.empty());
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+class MockFilesController : public policy::DlpFilesController {
+ public:
+  explicit MockFilesController(const policy::DlpRulesManager& rules_manager)
+      : DlpFilesController(rules_manager) {}
+  ~MockFilesController() override = default;
+
+  MOCK_METHOD(void,
+              CheckIfDropAllowed,
+              (const std::vector<ui::FileInfo>& dropped_files,
+               const ui::DataTransferEndpoint* data_dst,
+               CheckIfDlpAllowedCallback result_callback),
+              (override));
+};
+
+TEST_F(DataTransferDlpControllerTest, DropFile_Blocked) {
+  auto drag_data = ui::OSExchangeData();
+  drag_data.SetFilename(base::FilePath("file1.txt"));
+  drag_data.SetSource(std::make_unique<ui::DataTransferEndpoint>(
+      GURL(base::StrCat({extensions::kExtensionScheme, "://",
+                         extension_misc::kFilesManagerAppId}))));
+  ui::DataTransferEndpoint data_dst((GURL(kExample1Url)));
+
+  MockFilesController files_controller(rules_manager_);
+  std::vector<ui::FileInfo> file_names;
+  ASSERT_TRUE(drag_data.GetFilenames(&file_names));
+
+  EXPECT_CALL(rules_manager_, GetDlpFilesController)
+      .WillOnce(testing::Return(&files_controller));
+  EXPECT_CALL(files_controller,
+              CheckIfDropAllowed(file_names, &data_dst,
+                                 base::test::IsNotNullCallback()))
+      .WillOnce(base::test::RunOnceCallback<2>(false));
+  EXPECT_CALL(dlp_controller_, NotifyBlockedDrop);
+
+  ::testing::StrictMock<base::MockOnceClosure> drop_callback;
+  dlp_controller_.DropIfAllowed(&drag_data, &data_dst, drop_callback.Get());
+
+  histogram_tester_.ExpectUniqueSample(
+      GetDlpHistogramPrefix() + dlp::kDragDropBlockedUMA, true, 1);
+}
+
+TEST_F(DataTransferDlpControllerTest, DropFile_Allowed) {
+  auto drag_data = ui::OSExchangeData();
+  drag_data.SetFilename(base::FilePath("file1.txt"));
+  drag_data.SetSource(std::make_unique<ui::DataTransferEndpoint>(
+      GURL(base::StrCat({extensions::kExtensionScheme, "://",
+                         extension_misc::kFilesManagerAppId}))));
+  ui::DataTransferEndpoint data_dst((GURL(kExample1Url)));
+
+  MockFilesController files_controller(rules_manager_);
+  std::vector<ui::FileInfo> file_names;
+  ASSERT_TRUE(drag_data.GetFilenames(&file_names));
+
+  EXPECT_CALL(rules_manager_, GetDlpFilesController)
+      .WillOnce(testing::Return(&files_controller));
+  EXPECT_CALL(rules_manager_, IsRestrictedDestination)
+      .WillOnce(testing::Return(DlpRulesManager::Level::kAllow));
+  EXPECT_CALL(files_controller,
+              CheckIfDropAllowed(file_names, &data_dst,
+                                 base::test::IsNotNullCallback()))
+      .WillOnce(base::test::RunOnceCallback<2>(true));
+
+  ::testing::StrictMock<base::MockOnceClosure> drop_callback;
+  EXPECT_CALL(drop_callback, Run);
+  dlp_controller_.DropIfAllowed(&drag_data, &data_dst, drop_callback.Get());
+
+  histogram_tester_.ExpectUniqueSample(
+      GetDlpHistogramPrefix() + dlp::kDragDropBlockedUMA, false, 1);
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Create a version of the test class for parameterized testing.
 class DlpControllerTest : public DataTransferDlpControllerTest {

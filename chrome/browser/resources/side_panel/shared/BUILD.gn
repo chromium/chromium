@@ -18,6 +18,11 @@ build_webui("build") {
     "sp_list_item_badge.ts",
   ]
 
+  css_files = [
+    "sp_shared_vars.css",
+    "sp_shared_style.css",
+  ]
+
   icons_html_files = [ "sp_icons.html" ]
 
   ts_composite = true

@@ -4,9 +4,7 @@
 
 #include "base/mac/mach_port_rendezvous.h"
 
-#include <bsm/libbsm.h>
 #include <mach/mig.h>
-#include <servers/bootstrap.h>
 #include <unistd.h>
 
 #include <utility>
@@ -18,6 +16,13 @@
 #include "base/mac/scoped_mach_msg_destroy.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+
+#if BUILDFLAG(IS_IOS)
+#include "base/ios/sim_header_shims.h"
+#else
+#include <bsm/libbsm.h>
+#include <servers/bootstrap.h>
+#endif
 
 namespace base {
 

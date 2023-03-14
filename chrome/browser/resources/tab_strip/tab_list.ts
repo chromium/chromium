@@ -8,10 +8,9 @@ import './tab_group.js';
 
 import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {addWebUiListener, removeWebUiListener, WebUiListener} from 'chrome://resources/js/cr.js';
-import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
+import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {isRTL} from 'chrome://resources/js/util_ts.js';
 
 import {DragManager, DragManagerDelegate} from './drag_manager.js';
@@ -129,7 +128,6 @@ export class TabListElement extends CustomElement implements
     DragManagerDelegate {
   animationPromises: Promise<void>;
   private currentScrollUpdateFrame_: number|null;
-  private documentVisibilityChangeListener_: () => void;
   private draggedItem_?: TabElement|TabGroupElement;
   private dropPlaceholder_: HTMLElement;
   private focusOutlineManager_: FocusOutlineManager;
@@ -144,10 +142,7 @@ export class TabListElement extends CustomElement implements
   private pinnedTabsElement_: Element;
   private tabsApi_: TabsApiProxy;
   private unpinnedTabsElement_: Element;
-  private webUIListeners_: WebUiListener[];
-  private windowBlurListener_: () => void;
   private scrollingTimeoutId_: number;
-  private scrollListener_: (e: Event) => void;
 
   static override get template() {
     return getTemplate();
@@ -169,9 +164,6 @@ export class TabListElement extends CustomElement implements
      * scroll position.
      */
     this.currentScrollUpdateFrame_ = null;
-
-    this.documentVisibilityChangeListener_ = () =>
-        this.onDocumentVisibilityChange_();
 
     /**
      * The element that is currently being dragged.
@@ -220,18 +212,12 @@ export class TabListElement extends CustomElement implements
 
     this.unpinnedTabsElement_ = this.$('#unpinnedTabs')!;
 
-    this.webUIListeners_ = [];
-
-    this.windowBlurListener_ = () => this.onWindowBlur_();
-
     /**
      * Timeout that is created at every scroll event and is either canceled at
      * each subsequent scroll event or resolves after a few milliseconds after
      * the last scroll event.
      */
     this.scrollingTimeoutId_ = -1;
-
-    this.scrollListener_ = (e) => this.onScroll_(e);
 
     const callbackRouter = this.tabsApi_.getCallbackRouter();
     callbackRouter.layoutChanged.addListener(
@@ -281,10 +267,6 @@ export class TabListElement extends CustomElement implements
 
   private addAnimationPromise_(promise: Promise<void>) {
     this.animationPromises = this.animationPromises.then(() => promise);
-  }
-
-  private addWebUiListener_(eventName: string, callback: Function) {
-    this.webUIListeners_.push(addWebUiListener(eventName, callback));
   }
 
   private animateScrollPosition_(scrollBy: number) {
@@ -376,7 +358,6 @@ export class TabListElement extends CustomElement implements
   }
 
   disconnectedCallback() {
-    this.webUIListeners_.forEach(removeWebUiListener);
     this.eventTracker_.removeAll();
   }
 
@@ -402,7 +383,7 @@ export class TabListElement extends CustomElement implements
     const tabGroupElements = this.$all<TabGroupElement>('tabstrip-tab-group');
     this.tabsApi_.getGroupVisualData().then(({data}) => {
       tabGroupElements.forEach(tabGroupElement => {
-        const visualData = data[tabGroupElement.dataset.groupId!];
+        const visualData = data[tabGroupElement.dataset['groupId']!];
         assert(visualData);
         tabGroupElement.updateVisuals(visualData);
       });
@@ -556,7 +537,6 @@ export class TabListElement extends CustomElement implements
 
     const tabElement = this.createTabElement_(tab);
     this.placeTabElement(tabElement, tab.index, tab.pinned, tab.groupId);
-    this.addAnimationPromise_(tabElement.slideIn());
     if (tab.active) {
       this.updatePreviouslyActiveTabs_(tab.id);
       this.scrollToTab_(tabElement);
@@ -851,7 +831,7 @@ export class TabListElement extends CustomElement implements
   }
 
   private updateThumbnailTrackStatus_(tabElement: TabElement) {
-    if (!tabElement.tab) {
+    if (!tabElement.hasTabModel()) {
       return;
     }
 

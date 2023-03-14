@@ -16,7 +16,7 @@ _REPO_URL = 'https://repo.maven.apache.org/maven2'
 _GROUP_NAME = 'org/bouncycastle'
 _MODULE_NAME = 'bcprov-jdk15on'
 _FILE_EXT = 'jar'
-_OVERRIDE_LATEST = '1.68'
+_OVERRIDE_LATEST = None
 _PATCH_VERSION = 'cr1'
 
 

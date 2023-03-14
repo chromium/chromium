@@ -274,7 +274,7 @@ bool HostService::Enable() {
     HOST_LOG << "Message from chmod: " << output;
   }
 
-  if (base::WriteFile(enabled_file_, nullptr, 0) < 0) {
+  if (!base::WriteFile(enabled_file_, base::StringPiece())) {
     LOG(ERROR) << "Failed to write enabled file";
     return false;
   }
@@ -286,8 +286,7 @@ bool HostService::WriteStdinToConfig() {
   std::istreambuf_iterator<char> begin(std::cin);
   std::istreambuf_iterator<char> end;
   std::string config(begin, end);
-  if (base::WriteFile(config_file_, config.data(), config.size()) !=
-      static_cast<int>(config.size())) {
+  if (!base::WriteFile(config_file_, config)) {
     LOG(ERROR) << "Failed to write config file";
     return false;
   }

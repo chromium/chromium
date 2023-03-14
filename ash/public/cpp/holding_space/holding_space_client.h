@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "base/functional/callback_forward.h"
 
 class GURL;
@@ -18,8 +19,6 @@ class FilePath;
 
 namespace ash {
 
-class HoldingSpaceItem;
-
 // Interface for the holding space browser client.
 class ASH_PUBLIC_EXPORT HoldingSpaceClient {
  public:
@@ -28,11 +27,10 @@ class ASH_PUBLIC_EXPORT HoldingSpaceClient {
   // Adds a diagnostics log item backed by the provided `file_path`.
   virtual void AddDiagnosticsLog(const base::FilePath& file_path) = 0;
 
-  // Adds a screenshot item backed by the provided `file_path`.
-  virtual void AddScreenshot(const base::FilePath& file_path) = 0;
-
-  // Adds a screen recording item backed by the provided `file_path`.
-  virtual void AddScreenRecording(const base::FilePath& file_path) = 0;
+  // Adds a screen capture item backed by the provided `file_path`.
+  // NOTE: `type` must refer to a screen capture type.
+  virtual void AddScreenCapture(HoldingSpaceItem::Type type,
+                                const base::FilePath& file_path) = 0;
 
   // Attempts to copy the contents of the image file backing the specified
   // holding space `item` to the clipboard. If the backing file is not suspected

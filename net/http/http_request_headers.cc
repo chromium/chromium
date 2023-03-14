@@ -223,7 +223,7 @@ std::string HttpRequestHeaders::ToString() const {
   return output;
 }
 
-base::Value HttpRequestHeaders::NetLogParams(
+base::Value::Dict HttpRequestHeaders::NetLogParams(
     const std::string& request_line,
     NetLogCaptureMode capture_mode) const {
   base::Value::Dict dict;
@@ -236,7 +236,7 @@ base::Value HttpRequestHeaders::NetLogParams(
         NetLogStringValue(base::StrCat({header.key, ": ", log_value})));
   }
   dict.Set("headers", std::move(headers));
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 void HttpRequestHeaders::SetAcceptEncodingIfMissing(

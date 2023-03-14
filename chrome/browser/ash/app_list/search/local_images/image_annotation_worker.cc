@@ -55,13 +55,15 @@ ImageAnnotationWorker::ImageAnnotationWorker(const base::FilePath& root_path)
     : root_path_(root_path),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
 
 ImageAnnotationWorker::~ImageAnnotationWorker() = default;
 
-void ImageAnnotationWorker::Run(
-    scoped_refptr<AnnotationStorage> annotation_storage) {
-  DCHECK(annotation_storage);
+void ImageAnnotationWorker::Initialize(AnnotationStorage* annotation_storage) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(annotation_storage);
   annotation_storage_ = annotation_storage;
 
   on_file_change_callback_ = base::BindRepeating(
@@ -107,12 +109,12 @@ void ImageAnnotationWorker::Run(
           },
           on_file_change_callback_));
 
-  annotation_storage_->GetAllAnnotationsAsync(
-      base::BindOnce(&ImageAnnotationWorker::FindAndRemoveDeletedImages,
-                     weak_ptr_factory_.GetWeakPtr()));
+  FindAndRemoveDeletedImages(annotation_storage_->GetAllAnnotations());
 }
 
 void ImageAnnotationWorker::EnsureAnnotatorIsConnected() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (ml_service_.is_bound() && image_content_annotator_.is_bound() &&
       ml_service_.is_connected() && image_content_annotator_.is_connected()) {
     return;
@@ -140,6 +142,8 @@ void ImageAnnotationWorker::EnsureAnnotatorIsConnected() {
 }
 
 void ImageAnnotationWorker::ConnectToImageAnnotator() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   auto config = chromeos::machine_learning::mojom::ImageAnnotatorConfig::New();
   config->locale = "en-US";
 
@@ -160,13 +164,15 @@ void ImageAnnotationWorker::ConnectToImageAnnotator() {
 
 void ImageAnnotationWorker::OnFileChange(const base::FilePath& path,
                                          bool error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (DirectoryExists(path) || !IsImage(path) || error) {
     return;
   }
 
   auto file_info = std::make_unique<base::File::Info>();
   if (!base::GetFileInfo(path, file_info.get())) {
-    annotation_storage_->RemoveAsync(path);
+    annotation_storage_->Remove(path);
     return;
   }
 
@@ -179,20 +185,20 @@ void ImageAnnotationWorker::OnFileChange(const base::FilePath& path,
   }
 
   if (file_info->size == 0) {
-    annotation_storage_->RemoveAsync(path);
+    annotation_storage_->Remove(path);
     return;
   }
 
-  annotation_storage_->FindImagePathAsync(
-      path, base::BindOnce(&ImageAnnotationWorker::ProcessImage,
-                           weak_ptr_factory_.GetWeakPtr(), path,
-                           std::move(file_info)));
+  auto stored_annotations = annotation_storage_->FindImagePath(path);
+  ProcessImage(path, std::move(file_info), std::move(stored_annotations));
 }
 
 void ImageAnnotationWorker::ProcessImage(
     base::FilePath image_path,
     std::unique_ptr<base::File::Info> file_info,
     std::vector<ImageInfo> stored_annotations_with_this_path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!stored_annotations_with_this_path.empty()) {
     DVLOG(1) << "CompareModifiedTime: "
              << stored_annotations_with_this_path.size() << " same? "
@@ -242,6 +248,7 @@ void ImageAnnotationWorker::ProcessImage(
 void ImageAnnotationWorker::RunImageAnnotator(
     ImageInfo image_info,
     base::MappedReadOnlyRegion mapped_region) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(mapped_region.IsValid());
   DCHECK(mapped_region.region.IsValid());
 
@@ -250,8 +257,7 @@ void ImageAnnotationWorker::RunImageAnnotator(
   image_content_annotator_->AnnotateEncodedImage(
       std::move(mapped_region.region),
       base::BindOnce(
-          [](scoped_refptr<AnnotationStorage> annotation_storage,
-             ImageInfo image_info,
+          [](AnnotationStorage* const annotation_storage, ImageInfo image_info,
              chromeos::machine_learning::mojom::ImageAnnotationResultPtr ptr) {
             DVLOG(1) << "Status: " << ptr->status
                      << " Size: " << ptr->annotations.size();
@@ -267,8 +273,8 @@ void ImageAnnotationWorker::RunImageAnnotator(
               }
             }
             if (!image_info.annotations.empty()) {
-              annotation_storage->RemoveAsync(image_info.path);
-              annotation_storage->InsertOrReplaceAsync(image_info);
+              annotation_storage->Remove(image_info.path);
+              annotation_storage->Insert(image_info);
             }
           },
           annotation_storage_, image_info));
@@ -276,36 +282,39 @@ void ImageAnnotationWorker::RunImageAnnotator(
 
 void ImageAnnotationWorker::FindAndRemoveDeletedImages(
     const std::vector<ImageInfo> images) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "FindAndRemoveDeletedImages.";
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&GetDeletedPaths, std::move(images)),
       base::BindOnce(
-          [](scoped_refptr<AnnotationStorage> annotation_storage,
+          [](AnnotationStorage* const annotation_storage,
              std::set<base::FilePath> paths) {
-            std::for_each(paths.begin(), paths.end(), [&](auto path) {
-              annotation_storage->RemoveAsync(path);
-            });
+            std::for_each(paths.begin(), paths.end(),
+                          [&](auto path) { annotation_storage->Remove(path); });
           },
           annotation_storage_));
 }
 
 void ImageAnnotationWorker::UseFakeAnnotatorForTests() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   use_fake_annotator_for_tests_ = true;
 }
 
 void ImageAnnotationWorker::RunFakeImageAnnotator(
     ImageInfo image_info,
     base::MappedReadOnlyRegion mapped_region) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const std::string annotation =
       image_info.path.BaseName().RemoveFinalExtension().value();
   image_info.annotations.insert(annotation);
-  annotation_storage_->RemoveAsync(image_info.path);
-  annotation_storage_->InsertOrReplaceAsync(image_info);
+  annotation_storage_->Remove(image_info.path);
+  annotation_storage_->Insert(image_info);
 }
 
 void ImageAnnotationWorker::TriggerOnFileChangeForTests(
     const base::FilePath& path,
     bool error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   on_file_change_callback_.Run(path, error);
 }
 

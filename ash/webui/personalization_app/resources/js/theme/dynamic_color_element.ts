@@ -8,6 +8,7 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import '../../css/common.css.js';
+import '../../css/cros_button_style.css.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
@@ -63,11 +64,10 @@ export class DynamicColorElement extends WithPersonalizationStore {
         type: Object,
         readOnly: true,
         value: [
-          // TODO(b/254479499): Replace colors when the spec is ready.
           '#4285f4',
-          '#bdc1c6',
-          '#edd0e4',
-          '#eadecd',
+          '#ffd6d6',
+          '#485045',
+          '#cbbfff',
         ],
       },
       sampleColorSchemes_: {
@@ -203,19 +203,18 @@ export class DynamicColorElement extends WithPersonalizationStore {
   }
 
   /**
-   * Returns the tab index for static color and color scheme buttons. Static
-   * color id is a string whereas color scheme id is an enum.
+   * Returns the tab index for the color scheme buttons.
    */
-  private getTabIndex_(id: string|number): string {
-    if (typeof id === 'string' &&
-        hexColorToSkColor(id).value === DEFAULT_STATIC_COLOR.value) {
-      // Handles static color.
-      return '0';
-    } else if (typeof id === 'number' && id === DEFAULT_COLOR_SCHEME) {
-      // Handles color scheme.
-      return '0';
-    }
-    return '-1';
+  private getColorSchemeTabIndex_(id: number): string {
+    return id === DEFAULT_COLOR_SCHEME ? '0' : '-1';
+  }
+
+  /**
+   * Returns the tab index for the static color buttons.
+   */
+  private getStaticColorTabIndex_(id: string): string {
+    return hexColorToSkColor(id).value === DEFAULT_STATIC_COLOR.value ? '0' :
+                                                                        '-1';
   }
 }
 

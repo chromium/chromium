@@ -170,10 +170,15 @@ void BrowserTabsModelProviderImpl::OnMetadataFetched(
 void BrowserTabsModelProviderImpl::OnForeignSyncedPhoneSessionsUpdated(
     const std::vector<ForeignSyncedSessionAsh>& phone_sessions) {
   DCHECK(IsLacrosSessionSyncFeatureEnabled());
+  DCHECK(synced_session_client_ash_);
+
+  if (!synced_session_client_ash_->is_session_sync_enabled()) {
+    InvalidateWeakPtrsAndClearTabMetadata(/*is_tab_sync_enabled=*/false);
+    return;
+  }
 
   absl::optional<std::string> host_device_name = GetHostDeviceName();
 
-  // TODO(b/260599791): Add tab sync enabled check.
   // Tab sync is disabled or no valid |pii_free_name_|.
   if (!host_device_name) {
     InvalidateWeakPtrsAndClearTabMetadata(/*is_tab_sync_enabled=*/false);
@@ -206,6 +211,18 @@ void BrowserTabsModelProviderImpl::OnForeignSyncedPhoneSessionsUpdated(
       host_phone_session.value(),
       base::BindOnce(&BrowserTabsModelProviderImpl::OnMetadataFetched,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void BrowserTabsModelProviderImpl::OnSessionSyncEnabledChanged(bool enabled) {
+  DCHECK(IsLacrosSessionSyncFeatureEnabled());
+  DCHECK(synced_session_client_ash_);
+
+  if (enabled) {
+    OnForeignSyncedPhoneSessionsUpdated(
+        synced_session_client_ash_->last_foreign_synced_phone_sessions());
+  } else {
+    InvalidateWeakPtrsAndClearTabMetadata(/*is_tab_sync_enabled=*/false);
+  }
 }
 
 }  // namespace ash::phonehub

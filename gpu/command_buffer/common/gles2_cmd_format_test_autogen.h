@@ -5495,6 +5495,35 @@ TEST_F(GLES2FormatTest, CopySharedImageINTERNALImmediate) {
       next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
 }
 
+TEST_F(GLES2FormatTest, ReadbackARGBImagePixelsINTERNAL) {
+  cmds::ReadbackARGBImagePixelsINTERNAL& cmd =
+      *GetBufferAs<cmds::ReadbackARGBImagePixelsINTERNAL>();
+  void* next_cmd = cmd.Set(
+      &cmd, static_cast<GLint>(11), static_cast<GLint>(12),
+      static_cast<GLint>(13), static_cast<GLuint>(14), static_cast<GLuint>(15),
+      static_cast<GLuint>(16), static_cast<GLuint>(17), static_cast<GLuint>(18),
+      static_cast<GLint>(19), static_cast<GLuint>(20), static_cast<GLuint>(21),
+      static_cast<GLuint>(22), static_cast<GLuint>(23));
+  EXPECT_EQ(
+      static_cast<uint32_t>(cmds::ReadbackARGBImagePixelsINTERNAL::kCmdId),
+      cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLint>(11), cmd.src_x);
+  EXPECT_EQ(static_cast<GLint>(12), cmd.src_y);
+  EXPECT_EQ(static_cast<GLint>(13), cmd.plane_index);
+  EXPECT_EQ(static_cast<GLuint>(14), cmd.dst_width);
+  EXPECT_EQ(static_cast<GLuint>(15), cmd.dst_height);
+  EXPECT_EQ(static_cast<GLuint>(16), cmd.row_bytes);
+  EXPECT_EQ(static_cast<GLuint>(17), cmd.dst_sk_color_type);
+  EXPECT_EQ(static_cast<GLuint>(18), cmd.dst_sk_alpha_type);
+  EXPECT_EQ(static_cast<GLint>(19), cmd.shm_id);
+  EXPECT_EQ(static_cast<GLuint>(20), cmd.shm_offset);
+  EXPECT_EQ(static_cast<GLuint>(21), cmd.color_space_offset);
+  EXPECT_EQ(static_cast<GLuint>(22), cmd.pixels_offset);
+  EXPECT_EQ(static_cast<GLuint>(23), cmd.mailbox_offset);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
 TEST_F(GLES2FormatTest, EnableiOES) {
   cmds::EnableiOES& cmd = *GetBufferAs<cmds::EnableiOES>();
   void* next_cmd =

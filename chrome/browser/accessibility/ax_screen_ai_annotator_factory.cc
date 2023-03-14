@@ -42,4 +42,9 @@ KeyedService* AXScreenAIAnnotatorFactory::BuildServiceInstanceFor(
   return new screen_ai::AXScreenAIAnnotator(context);
 }
 
+// static
+void AXScreenAIAnnotatorFactory::EnsureFactoryBuilt() {
+  AXScreenAIAnnotatorFactory::GetInstance();
+}
+
 }  // namespace screen_ai

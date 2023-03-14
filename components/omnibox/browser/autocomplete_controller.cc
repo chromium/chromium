@@ -6,6 +6,7 @@
 
 #include <inttypes.h>
 
+#include <algorithm>
 #include <cstddef>
 #include <memory>
 #include <numeric>
@@ -13,10 +14,12 @@
 #include <string>
 #include <utility>
 
+#include "base/barrier_callback.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -75,6 +78,10 @@
 #include "components/omnibox/browser/history_cluster_provider.h"
 #include "components/open_from_clipboard/clipboard_recent_content_generic.h"
 #endif
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+#include "components/omnibox/browser/autocomplete_scoring_model_service.h"
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 namespace {
 
@@ -332,6 +339,7 @@ AutocompleteController::AutocompleteController(
       search_provider_(nullptr),
       zero_suggest_provider_(nullptr),
       on_device_head_provider_(nullptr),
+      history_fuzzy_provider_(nullptr),
       notify_changed_debouncer_(
           OmniboxFieldTrial::
               kAutocompleteStabilityUpdateResultDebounceFromLastRun.Get(),
@@ -475,12 +483,34 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   // distinguished in the ms-scale buckets, is large enough to move the
   // arithmetic mean.
   base::TimeTicks start_time = base::TimeTicks::Now();
+
+  // Keep a max-heap of negative relevances to quickly estimate a relevance
+  // cutoff that can be used to improve counterfactual triggering.
+  // Prevent memory churn by starting with full size heap, ready for
+  // first change to be pushed without reallocation.
+  std::vector<int> relevances(result_.GetDynamicMaxMatches() + 1, 0);
+  relevances.pop_back();
+
   for (const auto& provider : providers_) {
-    if (!ShouldRunProvider(provider.get()))
+    if (!ShouldRunProvider(provider.get())) {
       continue;
+    }
 
     base::TimeTicks provider_start_time = base::TimeTicks::Now();
+    if (history_fuzzy_provider_) {
+      history_fuzzy_provider_->SetCounterfactualRelevanceHint(
+          -relevances.front());
+    }
     provider->Start(input_, minimal_changes);
+
+    for (const AutocompleteMatch& match : provider->matches()) {
+      relevances.push_back(-match.relevance);
+      std::push_heap(relevances.begin(), relevances.end());
+      std::pop_heap(relevances.begin(), relevances.end());
+      relevances.pop_back();
+      DCHECK(std::is_heap(relevances.begin(), relevances.end()));
+    }
+
     // `UmaHistogramTimes()` uses 1ms - 10s buckets, whereas this uses 1ms - 5s
     // buckets.
     // TODO(crbug.com/1340291|manukh): This isn't handled by `metrics_` yet. It
@@ -581,6 +611,7 @@ void AutocompleteController::Stop(bool clear_result) {
 }
 
 void AutocompleteController::DeleteMatch(const AutocompleteMatch& match) {
+  TRACE_EVENT0("omnibox", "AutocompleteController::DeleteMatch");
   DCHECK(match.SupportsDeletion());
 
   // Delete duplicate matches attached to the main match first.
@@ -623,6 +654,7 @@ void AutocompleteController::ExpireCopiedEntries() {
 void AutocompleteController::OnProviderUpdate(
     bool updated_matches,
     const AutocompleteProvider* provider) {
+  TRACE_EVENT0("omnibox", "AutocompleteController::OnProviderUpdate");
   // Should be called even if `in_start_` is true in order to include early
   // exited async providers. If the provider is done, will log how long the
   // provider took.
@@ -648,6 +680,8 @@ void AutocompleteController::OnProviderUpdate(
 
 void AutocompleteController::AddProviderAndTriggeringLogs(
     OmniboxLog* logs) const {
+  TRACE_EVENT0("omnibox",
+               "AutocompleteController::AddProviderAndTriggeringLogs");
   logs->providers_info.clear();
   for (const auto& provider : providers_) {
     if (!ShouldRunProvider(provider.get()))
@@ -674,6 +708,9 @@ void AutocompleteController::
     UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
         base::TimeDelta query_formulation_time,
         AutocompleteMatch* match) const {
+  TRACE_EVENT0("omnibox",
+               "AutocompleteController::"
+               "UpdateMatchDestinationURLWithAdditionalAssistedQueryStats");
   // The assisted_query_stats is expected to have been previously set when this
   // method is called. If that is not the case, this method is being called by
   // mistake and assisted_query_stats (and searchbox_stats) should not be
@@ -745,6 +782,7 @@ void AutocompleteController::
 
 void AutocompleteController::SetMatchDestinationURL(
     AutocompleteMatch* match) const {
+  TRACE_EVENT0("omnibox", "AutocompleteController::SetMatchDestinationURL");
   const TemplateURL* template_url =
       match->GetTemplateURL(template_url_service_, false);
   if (!template_url)
@@ -765,6 +803,8 @@ void AutocompleteController::GroupSuggestionsBySearchVsURL(size_t begin,
                                                            size_t end) {
   if (begin == end)
     return;
+  TRACE_EVENT0("omnibox",
+               "AutocompleteController::GroupSuggestionsBySearchVsURL");
   const size_t num_elements = result_.size();
   if (begin < 0 || end <= begin || end > num_elements) {
     DCHECK(false) << "Range [" << begin << "; " << end
@@ -876,7 +916,8 @@ void AutocompleteController::InitializeSyncProviders(int provider_types) {
     providers_.push_back(voice_suggest_provider_.get());
   }
   if (provider_types & AutocompleteProvider::TYPE_HISTORY_FUZZY) {
-    providers_.push_back(new HistoryFuzzyProvider(provider_client_.get()));
+    history_fuzzy_provider_ = new HistoryFuzzyProvider(provider_client_.get());
+    providers_.push_back(history_fuzzy_provider_.get());
   }
   if (provider_types & AutocompleteProvider::TYPE_OPEN_TAB) {
     open_tab_provider_ = new OpenTabProvider(provider_client_.get());
@@ -926,10 +967,14 @@ void AutocompleteController::UpdateResult(
 
   static bool single_sort_and_cull_pass =
       base::FeatureList::IsEnabled(omnibox::kSingleSortAndCullPass);
-  // If `done_`, the below `SortAndCull()` is skipped, so this is the single
-  // pass.
-  if (!single_sort_and_cull_pass || done_)
+  // If not all providers are done, merge the old and new matches before
+  // sorting. Otherwise, do a final pass at sorting, skipping the second call to
+  // `SortAndCull()` below.  The async ml scoring is only run on the final pass
+  // after all providers are done.
+  if (!single_sort_and_cull_pass || done_) {
+    RunUrlScoringModel();
     result_.SortAndCull(input_, template_url_service_, preserve_default_match);
+  }
 
   if (!done_) {
     // This conditional needs to match the conditional in Start that invokes
@@ -1222,6 +1267,7 @@ void AutocompleteController::UpdateTailSuggestPrefix(
 }
 
 void AutocompleteController::NotifyChanged() {
+  TRACE_EVENT0("omnibox", "AutocompleteController::NotifyChanged");
   // Will log metrics for how many matches changed. Will also log timing metrics
   // for the current request if it's complete; otherwise, will just update
   // timestamps of when the last update changed any or the default suggestion.
@@ -1307,8 +1353,8 @@ void AutocompleteController::StopHelper(bool clear_result,
   done_ = true;
   if (clear_result && !result_.empty()) {
     result_.Reset();
-    // NOTE: We pass in false since we're trying to only clear the popup, not
-    // touch the edit... this is all a mess and should be cleaned up :(
+    // Pass false to clear only the popup and not the edit. Passing true would,
+    // e.g., discard the selected suggestion when closing the omnibox.
     DelayedNotifyChanged(false);
   }
 }
@@ -1405,4 +1451,54 @@ bool AutocompleteController::ShouldRunProvider(
 
   // Otherwise, run all providers.
   return true;
+}
+
+void AutocompleteController::OnUrlScoringModelDone(
+    base::OnceCallback<void(AutocompleteMatch)> callback,
+    AutocompleteMatch match,
+    const absl::optional<std::vector<float>>& output) {
+  // TODO(crbug/1405555): Populate this callback.  This callback should process
+  //  `output` from the scoring model, updates the relevance score in the copy
+  //  of the AutocompleteMatch, and passes that the final callback.
+  std::move(callback).Run(match);
+}
+
+void AutocompleteController::OnUrlScoringModelDoneForAllMatches(
+    const std::vector<AutocompleteMatch>& matches) {
+  // TODO(crbug/1405555): Populate this callback. This callback receives a list
+  // of matches with the updated relevance scores from the scoring model.  This
+  // should do any necessary (re-)processing of the matches, e.g. determining
+  // which match should be default, and then swaps out the matches in the final
+  // autocomplete result.
+
+  result_.matches_ = matches;
+}
+
+void AutocompleteController::RunUrlScoringModel() {
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  if (!OmniboxFieldTrial::IsMlRelevanceScoringEnabled()) {
+    return;
+  }
+
+  AutocompleteScoringModelService* scoring_model_service =
+      provider_client_->GetAutocompleteScoringModelService();
+  if (scoring_model_service == nullptr ||
+      !scoring_model_service->UrlScoringModelAvailable()) {
+    return;
+  }
+
+  auto barrier_callback = base::BarrierCallback<AutocompleteMatch>(
+      result_.size(),
+      base::BindOnce(
+          &AutocompleteController::OnUrlScoringModelDoneForAllMatches,
+          weak_ptr_factory_.GetWeakPtr()));
+
+  for (auto match : result_.matches_) {
+    scoring_model_service->ScoreAutocompleteUrlMatch(
+        match.scoring_signals,
+        base::BindOnce(&AutocompleteController::OnUrlScoringModelDone,
+                       weak_ptr_factory_.GetWeakPtr(), barrier_callback,
+                       match));
+  }
+#endif // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }

@@ -21,9 +21,8 @@ import {htmlEscape} from 'chrome://resources/js/util_ts.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingChangeValue} from '../../mojom-webui/search/user_action_recorder.mojom-webui.js';
-import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {recordSettingChange} from '../metrics_recorder.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 
 import {getTemplate} from './internet_config.html.js';
 
@@ -172,9 +171,7 @@ export class InternetConfigElement extends InternetConfigElementBase {
    */
   private onPropertiesSet_(): void {
     if (this.type === OncMojo.getNetworkTypeString(NetworkType.kWiFi)) {
-      recordSettingChange(
-          Setting.kWifiAddNetwork,
-          {stringValue: this.guid} as SettingChangeValue);
+      recordSettingChange(Setting.kWifiAddNetwork, {stringValue: this.guid});
     } else {
       recordSettingChange();
     }

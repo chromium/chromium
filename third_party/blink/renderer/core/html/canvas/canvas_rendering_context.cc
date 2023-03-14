@@ -97,10 +97,14 @@ void CanvasRenderingContext::DidProcessTask(
   // at which the current frame may be considered complete.
   if (Host())
     Host()->PreFinalizeFrame();
-  FinalizeFrame(did_print_in_current_task_);
+  CanvasResourceProvider::FlushReason reason =
+      did_print_in_current_task_
+          ? CanvasResourceProvider::FlushReason::kCanvasPushFrameWhilePrinting
+          : CanvasResourceProvider::FlushReason::kCanvasPushFrame;
+  FinalizeFrame(reason);
   did_print_in_current_task_ = false;
   if (Host())
-    Host()->PostFinalizeFrame();
+    Host()->PostFinalizeFrame(reason);
 }
 
 void CanvasRenderingContext::RecordUMACanvasRenderingAPI() {

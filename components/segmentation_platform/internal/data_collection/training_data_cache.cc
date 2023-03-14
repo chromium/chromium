@@ -11,43 +11,45 @@ namespace segmentation_platform {
 using proto::SegmentId;
 using TrainingData = proto::TrainingData;
 
-TrainingDataCache::TrainingDataCache() = default;
+TrainingDataCache::TrainingDataCache(SegmentInfoDatabase* segment_info_database)
+    : segment_info_database_(segment_info_database) {}
 
 TrainingDataCache::~TrainingDataCache() = default;
 
-void TrainingDataCache::StoreInputs(SegmentId segment_id,
-                                    RequestId request_id,
-                                    base::Time prediction_time,
-                                    const ModelProvider::Request& inputs) {
-  TrainingData training_data;
-  for (const auto& input : inputs) {
-    training_data.add_inputs(input);
+void TrainingDataCache::StoreInputs(proto::SegmentId segment_id,
+                                    const proto::TrainingData& data,
+                                    bool save_to_db) {
+  if (save_to_db) {
+    segment_info_database_->SaveTrainingData(segment_id, std::move(data),
+                                             base::DoNothing());
+  } else {
+    cache[segment_id][TrainingRequestId::FromUnsafeValue(data.request_id())] =
+        std::move(data);
   }
-  training_data.set_decision_timestamp(
-      prediction_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
-
-  cache[segment_id][request_id] = std::move(training_data);
 }
 
-absl::optional<TrainingData> TrainingDataCache::GetInputsAndDelete(
-    SegmentId segment_id,
-    RequestId request_id) {
+void TrainingDataCache::GetInputsAndDelete(SegmentId segment_id,
+                                           TrainingRequestId request_id,
+                                           TrainingDataCallback callback) {
   absl::optional<TrainingData> result;
-  if (cache.find(segment_id) != cache.end() &&
-      cache[segment_id].find(request_id) != cache[segment_id].end()) {
-    // Delete the requestID from cache.
-    auto it = cache[segment_id].find(request_id);
+  if (cache.contains(segment_id) && cache[segment_id].contains(request_id)) {
+    // TrainingRequestId found from cache, return and delete the cache entry.
+    auto& segment_data = cache[segment_id];
+    auto it = segment_data.find(request_id);
     result = std::move(it->second);
-    cache[segment_id].erase(it);
+    segment_data.erase(it);
+    std::move(callback).Run(result);
+  } else {
+    segment_info_database_->GetTrainingData(
+        segment_id, request_id, /*delete_from_db=*/true, std::move(callback));
   }
-  return result;
 }
 
-absl::optional<TrainingDataCache::RequestId> TrainingDataCache::GetRequestId(
+absl::optional<TrainingRequestId> TrainingDataCache::GetRequestId(
     proto::SegmentId segment_id) {
   // TODO(haileywang): Add a metric to record how many request at a given time
   // every time this function is triggered.
-  absl::optional<RequestId> request_id;
+  absl::optional<TrainingRequestId> request_id;
   auto it = cache.find(segment_id);
   if (it == cache.end() or it->second.size() == 0) {
     return request_id;
@@ -55,7 +57,7 @@ absl::optional<TrainingDataCache::RequestId> TrainingDataCache::GetRequestId(
   return it->second.begin()->first;
 }
 
-TrainingDataCache::RequestId TrainingDataCache::GenerateNextId() {
+TrainingRequestId TrainingDataCache::GenerateNextId() {
   return request_id_generator.GenerateNextId();
 }
 

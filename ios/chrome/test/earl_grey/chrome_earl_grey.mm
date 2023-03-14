@@ -85,13 +85,7 @@ UIWindow* GetAnyKeyWindow() {
   }
   DCHECK(foregroundScenes <= 1);
 
-  NSArray<UIWindow*>* windows =
-      [GREY_REMOTE_CLASS_IN_APP(UIApplication) sharedApplication].windows;
-  for (UIWindow* window in windows) {
-    if (window.isKeyWindow)
-      return window;
-  }
-  return nil;
+  return [ChromeEarlGreyAppInterface keyWindow];
 }
 }  // namespace chrome_test_util
 
@@ -194,6 +188,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 - (void)removeBrowsingCache {
   EG_TEST_HELPER_ASSERT_NO_ERROR(
       [ChromeEarlGreyAppInterface removeBrowsingCache]);
+}
+
+- (void)saveSessionImmediately {
+  [ChromeEarlGreyAppInterface saveSessionImmediately];
 }
 
 #pragma mark - Navigation Utilities (EG2)
@@ -939,15 +937,17 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                              timeout:(base::TimeDelta)timeout {
   NSString* errorString =
       [NSString stringWithFormat:@"Expected %zu URLs.", [URLs count]];
+  __block NSError* blockError = nil;
   GREYCondition* verifyURLs =
       [GREYCondition conditionWithName:errorString
                                  block:^{
-                                   NSError* error = [ChromeEarlGreyAppInterface
+                                   blockError = [ChromeEarlGreyAppInterface
                                        verifyHistoryOnSyncServerWithURLs:URLs];
-                                   return !error;
+                                   return !blockError;
                                  }];
 
   bool success = [verifyURLs waitWithTimeout:timeout.InSecondsF()];
+  EG_TEST_HELPER_ASSERT_NO_ERROR(blockError);
   EG_TEST_HELPER_ASSERT_TRUE(success, errorString);
 }
 
@@ -1322,6 +1322,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
 - (BOOL)isSFSymbolEnabled {
   return [ChromeEarlGreyAppInterface isSFSymbolEnabled];
+}
+
+- (BOOL)isUIButtonConfigurationEnabled {
+  return [ChromeEarlGreyAppInterface isUIButtonConfigurationEnabled];
 }
 
 #pragma mark - ContentSettings

@@ -73,7 +73,6 @@ include_rules = [
   "+components/browser_ui/site_settings",
   "+components/browser_ui/strings",
   "+components/browser_ui/styles",
-  "+components/browser_watcher",
   "+components/browsing_data/content",
   "+components/browsing_data/core",
   "+components/browsing_topics",
@@ -118,7 +117,7 @@ include_rules = [
   "+components/device_event_log",
   "+components/device_signals/core/browser",
   "+components/device_signals/core/common",
-  "+components/digital_asset_links",
+  "+components/content_relationship_verification",
   "+components/digital_goods",
   "+components/domain_reliability",
   "+components/dom_distiller/content/browser",
@@ -253,6 +252,7 @@ include_rules = [
   "+components/pdf/browser",
   "+components/pdf/common",
   "+components/policy",
+  "+components/power_bookmarks",
   "+components/power_metrics",
   "+components/pref_registry",
   "+components/prefs",
@@ -472,6 +472,7 @@ include_rules = [
   # cc/base here, if this is needed these files need to move to base/
   "+cc/base/features.h",
   "+cc/base/switches.h",
+  "+cc/slim/features.h",
 
   # Unsafe to use from //chrome, see http://goo.gl/QQG5wo
   "-content/public/test/test_browser_context.h",

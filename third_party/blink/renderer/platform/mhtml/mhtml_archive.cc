@@ -310,7 +310,7 @@ void MHTMLArchive::GenerateMHTMLHeader(const String& boundary,
   DCHECK(!boundary.empty());
   DCHECK(!mime_type.empty());
 
-  String date_string = MakeRFC2822DateString(date, 0);
+  auto date_string = MakeRFC2822DateString(date, 0);
 
   StringBuilder string_builder;
   string_builder.Append("From: <Saved by Blink>\r\n");
@@ -322,8 +322,10 @@ void MHTMLArchive::GenerateMHTMLHeader(const String& boundary,
 
   string_builder.Append("\r\nSubject: ");
   string_builder.Append(ConvertToPrintableCharacters(title));
-  string_builder.Append("\r\nDate: ");
-  string_builder.Append(date_string);
+  if (date_string) {
+    string_builder.Append("\r\nDate: ");
+    string_builder.Append(*date_string);
+  }
   string_builder.Append("\r\nMIME-Version: 1.0\r\n");
   string_builder.Append("Content-Type: multipart/related;\r\n");
   string_builder.Append("\ttype=\"");

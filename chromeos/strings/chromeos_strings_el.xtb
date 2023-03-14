@@ -163,6 +163,7 @@
 <translation id="2346474577291266260">Τέλειο (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Συνέχεια</translation>
 <translation id="2364498172489649528">Επιτυχία</translation>
+<translation id="2367335866686097760">Πλήκτρο αντιστοίχισης πλήκτρων</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Αποστολή αναφοράς σχολίων</translation>
 <translation id="2407209115954268704">Κατάσταση κλειδώματος SIM</translation>
@@ -235,7 +236,9 @@
 <translation id="319101249942218879">Η εικόνα avatar άλλαξε</translation>
 <translation id="3192947282887913208">Αρχεία ήχου</translation>
 <translation id="3199982728237701504">Τροφοδότης εγγράφων (Διπλής όψης)</translation>
+<translation id="3211671540163313381">D-pad αντιστοίχισης πλήκτρων</translation>
 <translation id="3226405216343213872">Αναζήτηση για σαρωτές</translation>
+<translation id="3226657629376379887">Μενού ενεργειών διάταξης</translation>
 <translation id="3246869037381808805">Οι εργασίες εκτύπωσης που είναι παλαιότερες της 1 ημέρας θα καταργηθούν.</translation>
 <translation id="3268178239013324452">Σφάλμα - Η θύρα είναι ανοικτή</translation>
 <translation id="3275729367986477355">Εικόνα avatar</translation>
@@ -253,6 +256,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Ασφάλεια</translation>
 <translation id="3435896845095436175">Ενεργοποίηση</translation>
+<translation id="345256797477978759">Αγκύρωση παραθύρου στο <ph name="DIRECTION" /> μεγαλύτερο τμήμα της οθόνης</translation>
 <translation id="3456078764689556234">Εκτυπώθηκε η σελίδα <ph name="PRINTED_PAGES" /> από <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Σάρωση σελίδας <ph name="PAGE_NUM" />. Ολοκληρώθηκε το <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Εκτύπωση</translation>
@@ -273,12 +277,14 @@
 <translation id="3595596368722241419">Μπαταρία πλήρης</translation>
 <translation id="3600339377155080675">Κατοπτρισμός οθόνης</translation>
 <translation id="3602290021589620013">Προεπισκόπηση</translation>
+<translation id="360282891121575443">Οι φωτογραφίες σε κοινόχρηστα λευκώματα μπορούν να ενημερωθούν από άλλους χρήστες. Η ημερήσια αλλαγή ενδέχεται να έχει ως αποτέλεσμα την εμφάνιση ταπετσαριών που δεν βρίσκονται αυτήν τη στιγμή στο λεύκωμα.</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Αλλαγή ταπετσαρίας</translation>
 <translation id="360565022852130722">Η ασφάλεια του δικτύου Wi-Fi βασίζεται σε αδύναμο πρωτόκολλο WEP 802.1x.</translation>
 <translation id="3606583719724308068">Υψηλός λανθάνων χρόνος σε ιστοτόπους HTTPS</translation>
 <translation id="361575905210396100">Σας ευχαριστούμε για τα σχόλιά σας</translation>
 <translation id="3632579075709132555">Εναλλαγή οθόνης απορρήτου</translation>
+<translation id="3639846061339007994">κορυφή</translation>
 <translation id="3651050199673793219">Επιλέξτε μια μονάδα θερμοκρασίας</translation>
 <translation id="3689839747745352263">Δοκιμή <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Φόρτωση...</translation>
@@ -563,6 +569,7 @@
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> ακόμη λευκώματα</translation>
 <translation id="6122191549521593678">Συνδεδεμένο</translation>
 <translation id="6122277663991249694">Υπηρεσία μεθόδου εισαγωγής Chrome OS</translation>
+<translation id="6136285399872347291">backspace</translation>
 <translation id="6137767437444130246">Πιστοποιητικό χρήστη</translation>
 <translation id="6146993107019042706">Για να ολοκληρώσετε, εισαγάγετε τον νέο κωδικό πρόσβασης</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -610,6 +617,7 @@
 <translation id="650266656685499220">Για τη δημιουργία λευκωμάτων, μεταβείτε στις Φωτογραφίες Google.</translation>
 <translation id="6516990319416533844">Για να δοκιμάσετε τον ρυθμό φόρτισης της μπαταρίας, αφήστε την μπαταρία να εξαντληθεί για σύντομο χρονικό διάστημα</translation>
 <translation id="6517239166834772319">Εξερεύνηση</translation>
+<translation id="6526200165918397681">Αντιστοίχιση ταπετσαρίας</translation>
 <translation id="6527081081771465939">Άγνωστο πρωτόκολλο ασφαλείας Wi-Fi</translation>
 <translation id="6535178685492749208">Είστε εκτός σύνδεσης. Τα σχόλια θα σταλούν αργότερα.</translation>
 <translation id="65587193855025101">Επίπεδος</translation>
@@ -629,6 +637,7 @@
 <translation id="6657585470893396449">Κωδικός πρόσβασης</translation>
 <translation id="6659594942844771486">Καρτέλα</translation>
 <translation id="6692996468359469499">Λάβετε πληροφορίες σχετικά με την επιλογή σας.</translation>
+<translation id="6698459586333070823">Τα κοινόχρηστα λευκώματα μπορούν να ενημερωθούν από άλλους χρήστες</translation>
 <translation id="6704062477274546131">Επίλυση DNS</translation>
 <translation id="6723839937902243910">Ενεργοποίηση</translation>
 <translation id="6723847290197874913">Οπίσθιος φωτισμός πληκτρολογίου</translation>
@@ -665,6 +674,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Αποτυχία - Ο έλεγχος ταυτότητας απέτυχε</translation>
 <translation id="7103252855940681301">Συσκευή <ph name="INDEX" /> από <ph name="COUNT" /> με όνομα <ph name="NAME" />.</translation>
+<translation id="7108668606237948702">enter</translation>
 <translation id="7130438335435247835">Όνομα σημείου πρόσβασης (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Διακομιστής ονομάτων}other{Διακομιστές ονομάτων}}</translation>
 <translation id="7143207342074048698">Σύνδεση</translation>
@@ -674,6 +684,7 @@
 <translation id="7155171745945906037">Υπάρχουσα φωτογραφία από την κάμερα ή το αρχείο</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7170236477717446850">Φωτογραφία προφίλ</translation>
+<translation id="7171919371520438592">Αγκύρωση παραθύρου στο <ph name="DIRECTION" /> μικρότερο τμήμα της οθόνης</translation>
 <translation id="7172721935181587524">1 εικόνα</translation>
 <translation id="7177485034254901881">Η διαχείριση της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από τον τομέα <ph name="MANAGER" />. Οι διαχειριστές μπορούν να διαμορφώσουν τη συσκευή απομακρυσμένα.</translation>
 <translation id="7180611975245234373">Ανανέωση</translation>
@@ -749,6 +760,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Τύπος παρόχου</translation>
 <translation id="7882501334836096755">Δημόσιο κλειδί</translation>
+<translation id="78957024357676568">αριστερά</translation>
 <translation id="7915220255123750251">Διαχείριση ρυθμίσεων APN δικτύου. Τα APN δημιουργούν μια σύνδεση μεταξύ ενός δικτύου κινητής τηλεφωνίας και του διαδικτύου.</translation>
 <translation id="7936303884198020182">Δεν βρέθηκαν διακομιστές ονομάτων.</translation>
 <translation id="7942349550061667556">Κόκκινο</translation>
@@ -777,9 +789,11 @@
 <translation id="8183974620058026102">Προσθήκη</translation>
 <translation id="8206859287963243715">Κινητό</translation>
 <translation id="8208861521865154048">Προνόμια</translation>
+<translation id="8210733748736414123">κάτω μέρος</translation>
 <translation id="8226628635270268143">Επιλέξτε τις αγαπημένες σας φωτογραφίες και λευκώματα.</translation>
 <translation id="8227119283605456246">Επισύναψη αρχείου</translation>
 <translation id="8230672074305416752">Αποτυχία ping της προεπιλεγμένης πύλης δικτύου.</translation>
+<translation id="8242426110754782860">Συνέχεια</translation>
 <translation id="8246209727385807362">Άγνωστη εταιρεία κινητής τηλεφωνίας</translation>
 <translation id="827422111966801947">Λουλάκι</translation>
 <translation id="8286154143153872371">Συνδεθείτε σε ένα δίκτυο και επαναφορτώστε τη σελίδα για να δείτε την ταπετσαρία.</translation>
@@ -790,9 +804,11 @@
 <translation id="8318753676953949627">Δεν υπάρχουν εικόνες</translation>
 <translation id="8336739000755212683">Αλλαγή εικόνας λογαριασμού συσκευής</translation>
 <translation id="8347227221149377169">Εργασίες εκτύπωσης</translation>
+<translation id="8351855506390808906">Σημείο αφής αντιστοίχισης πλήκτρων</translation>
 <translation id="8352772353338965963">Προσθέστε έναν λογαριασμό στη σύνδεση σε πολλούς λογαριασμούς. Όλοι οι συνδεδεμένοι λογαριασμοί μπορούν να προσπελαστούν χωρίς κωδικό πρόσβασης, επομένως αυτή η δυνατότητα πρέπει να χρησιμοποιείται μόνο με αξιόπιστους λογαριασμούς.</translation>
 <translation id="8364946094152050673">Κενά ονόματα διακομιστών</translation>
 <translation id="8372477600026034341">Επιπλέον κεντρικοί υπολογιστές</translation>
+<translation id="8380114448424469341">Αγκύρωση παραθύρου στο <ph name="DIRECTION" /> μισό μέρος της οθόνης</translation>
 <translation id="8395584934117017006">Η διαχείριση αυτής της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από επιχείρηση.</translation>
 <translation id="8398927464629426868">Ο ρυθμός με τον οποίο φορτίζεται ή εκφορτίζεται η συσκευή αυτήν τη στιγμή.</translation>
 <translation id="8410244574650205435">Εντοπίστηκε αυτόματα</translation>
@@ -857,6 +873,7 @@
 <translation id="8930622219860340959">Ασύρματο</translation>
 <translation id="8936793075252196307">Διεύθυνση IP εφαρμογής-πελάτη</translation>
 <translation id="894617464444543719">Η συσκευή είναι τηλέφωνο.</translation>
+<translation id="8957423540740801332">δεξιά</translation>
 <translation id="8968751544471797276">Ρυθμός φόρτισης</translation>
 <translation id="8970109610781093811">Επανεκτέλεση</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -884,6 +901,7 @@
 <translation id="9137526406337347448">Υπηρεσίες Google</translation>
 <translation id="9138630967333032450">Αριστερό shift</translation>
 <translation id="9149391708638971077">Εκτέλεση δοκιμής μνήμης</translation>
+<translation id="9161276708550942948">πλήκτρο διαστήματος</translation>
 <translation id="9173638680043580060">Απομένει λιγότερο από ένα λεπτό</translation>
 <translation id="917720651393141712">Δοκιμή</translation>
 <translation id="9188992814426075118">Μπορεί να γίνει αυτόματη αντιστοίχιση του πληκτρολογίου με την ταπετσαρία σας</translation>

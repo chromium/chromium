@@ -14,11 +14,13 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/hash/md5.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
+#include "base/notreached.h"
 #include "base/process/memory.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -538,8 +540,11 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   const gfx::Size& natural_size() const { return natural_size_; }
 
   int stride(size_t plane) const {
-    DCHECK(IsValidPlane(format(), plane));
-    DCHECK_LT(plane, layout_.num_planes());
+    if (UNLIKELY(!IsValidPlane(format(), plane) ||
+                 plane >= layout_.num_planes())) {
+      NOTREACHED();
+      return 0;
+    }
     return layout_.planes()[plane].stride;
   }
 
@@ -559,11 +564,19 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   const uint8_t* data(size_t plane) const {
     DCHECK(IsValidPlane(format(), plane));
     DCHECK(IsMappable());
+    if (UNLIKELY(plane >= kMaxPlanes)) {
+      NOTREACHED();
+      return nullptr;
+    }
     return data_[plane];
   }
   uint8_t* writable_data(size_t plane) {
     DCHECK(IsValidPlane(format(), plane));
     DCHECK(IsMappable());
+    if (UNLIKELY(plane >= kMaxPlanes)) {
+      NOTREACHED();
+      return nullptr;
+    }
     return data_[plane];
   }
 

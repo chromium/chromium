@@ -44,7 +44,7 @@ TextViewWithCompoundDrawables.
         android:layout_marginTop="12dp"
         android:text="@string/webstorage_clear_data_dialog_site_settings_remove_site_ad_personalization"
         app:drawableStartCompat="@drawable/ic_data_personalization_20dp"
-        android:drawablePadding="12dp"
+        android:drawablePadding="16dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"/>

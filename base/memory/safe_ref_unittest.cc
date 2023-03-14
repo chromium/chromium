@@ -11,6 +11,8 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/gtest_util.h"
+#include "base/test/memory/dangling_ptr_instrumentation.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -18,17 +20,22 @@ namespace base {
 namespace {
 
 struct ReallyBaseClass {};
-struct BaseClass : ReallyBaseClass {};
+struct BaseClass : ReallyBaseClass {
+  virtual ~BaseClass() = default;
+  void VirtualMethod() {}
+};
+struct OtherBaseClass {
+  virtual ~OtherBaseClass() = default;
+  virtual void VirtualMethod() {}
+};
 
-struct WithWeak : BaseClass {
-  ~WithWeak() { self = nullptr; }
+struct WithWeak final : BaseClass, OtherBaseClass {
+  ~WithWeak() final { self = nullptr; }
 
   void Method() {}
 
   int i = 1;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION WithWeak* self{this};
+  raw_ptr<WithWeak> self{this};
   base::WeakPtrFactory<WithWeak> factory{this};
 };
 
@@ -59,49 +66,20 @@ TEST(SafeRefTest, CanCopyAndMove) {
 
 TEST(SafeRefTest, AssignCopyAndMove) {
   WithWeak with;
-  SafeRef<WithWeak> safe(with.factory.GetSafeRef());
-
   WithWeak with2;
+  WithWeak with3;
+
+  // Ensure `with`s outlive `safe`s
+  SafeRef<WithWeak> safe(with.factory.GetSafeRef());
   SafeRef<WithWeak> safe2(with2.factory.GetSafeRef());
   EXPECT_NE(safe->self, &with2);
   safe = safe2;
   EXPECT_EQ(safe->self, &with2);
 
-  WithWeak with3;
   SafeRef<WithWeak> safe3(with3.factory.GetSafeRef());
   EXPECT_NE(safe->self, &with3);
   safe = std::move(safe3);
   EXPECT_EQ(safe->self, &with3);
-}
-
-TEST(SafeRefTest, AssignCopyAfterInvalidate) {
-  WithWeak with;
-  SafeRef<WithWeak> safe(with.factory.GetSafeRef());
-  SafeRef<WithWeak> safe2(with.factory.GetSafeRef());
-
-  {
-    WithWeak with2;
-    safe = SafeRef<WithWeak>(with2.factory.GetSafeRef());
-  }
-  // `safe` is now invalidated (oops), but we won't use it in that state!
-  safe = safe2;
-  // `safe` is valid again, we can use it.
-  EXPECT_EQ(safe->self, &with);
-}
-
-TEST(SafeRefTest, AssignMoveAfterInvalidate) {
-  WithWeak with;
-  SafeRef<WithWeak> safe(with.factory.GetSafeRef());
-  SafeRef<WithWeak> safe2(with.factory.GetSafeRef());
-
-  {
-    WithWeak with2;
-    safe = SafeRef<WithWeak>(with2.factory.GetSafeRef());
-  }
-  // `safe` is now invalidated (oops), but we won't use it in that state!
-  safe = std::move(safe2);
-  // `safe` is valid again, we can use it.
-  EXPECT_EQ(safe->self, &with);
 }
 
 TEST(SafeRefDeathTest, ArrowOperatorCrashIfBadPointer) {
@@ -118,18 +96,34 @@ TEST(SafeRefDeathTest, StarOperatorCrashIfBadPointer) {
   EXPECT_CHECK_DEATH(safe.operator*());  // Will crash since not live.
 }
 
+TEST(SafeRefTest, ConversionToBaseClassFromCopyConstruct) {
+  WithWeak with;
+  SafeRef<WithWeak> safe(with.factory.GetSafeRef());
+  SafeRef<OtherBaseClass> base_safe = safe;
+  EXPECT_EQ(static_cast<WithWeak*>(&*base_safe), &with);
+}
+
+TEST(SafeRefTest, ConversionToBaseClassFromMoveConstruct) {
+  WithWeak with;
+  SafeRef<WithWeak> safe(with.factory.GetSafeRef());
+  SafeRef<OtherBaseClass> base_safe = std::move(safe);
+  EXPECT_EQ(static_cast<WithWeak*>(&*base_safe), &with);
+}
+
 TEST(SafeRefTest, ConversionToBaseClassFromCopyAssign) {
   WithWeak with;
   SafeRef<WithWeak> safe(with.factory.GetSafeRef());
-  SafeRef<BaseClass> base_safe = safe;
-  EXPECT_EQ(static_cast<WithWeak*>(&*base_safe)->self, &with);
+  SafeRef<OtherBaseClass> base_safe(with.factory.GetSafeRef());
+  base_safe = safe;
+  EXPECT_EQ(static_cast<WithWeak*>(&*base_safe), &with);
 }
 
 TEST(SafeRefTest, ConversionToBaseClassFromMoveAssign) {
   WithWeak with;
   SafeRef<WithWeak> safe(with.factory.GetSafeRef());
-  SafeRef<BaseClass> base_safe = std::move(safe);
-  EXPECT_EQ(static_cast<WithWeak*>(&*base_safe)->self, &with);
+  SafeRef<OtherBaseClass> base_safe(with.factory.GetSafeRef());
+  base_safe = std::move(safe);
+  EXPECT_EQ(static_cast<WithWeak*>(&*base_safe), &with);
 }
 
 TEST(SafeRefTest, CanDerefConst) {
@@ -264,6 +258,25 @@ TEST(SafeRefTest, InvalidAfterMoveConversionAssignment) {
 TEST(SafeRefTest, Bind) {
   WithWeak with;
   BindOnce(&WithWeak::Method, with.factory.GetSafeRef()).Run();
+}
+
+TEST(SafeRefTest, DanglingPointerDetector) {
+  auto instrumentation = test::DanglingPtrInstrumentation::Create();
+  if (!instrumentation.has_value()) {
+    GTEST_SKIP() << instrumentation.error();
+  }
+  {
+    auto with = std::make_unique<WithWeak>();
+    SafeRef<WithWeak> safe(with->factory.GetSafeRef());
+    EXPECT_EQ(instrumentation->dangling_ptr_detected(), 0u);
+    EXPECT_EQ(instrumentation->dangling_ptr_released(), 0u);
+
+    with.reset();
+    EXPECT_EQ(instrumentation->dangling_ptr_detected(), 1u);
+    EXPECT_EQ(instrumentation->dangling_ptr_released(), 0u);
+  }
+  EXPECT_EQ(instrumentation->dangling_ptr_detected(), 1u);
+  EXPECT_EQ(instrumentation->dangling_ptr_released(), 1u);
 }
 
 }  // namespace

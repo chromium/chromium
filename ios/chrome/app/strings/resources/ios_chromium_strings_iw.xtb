@@ -32,6 +32,7 @@
 <translation id="2450140762465183767">‏עכשיו משתמשים ב-Chromium בכל פעם שמקישים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="2478931088402984578">‏בוחרים באפשרות<ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />.</translation>
 <translation id="2590893390871230428">‏סנכרון נתוני Chromium שלך</translation>
+<translation id="2618596336309823556">‏בהגדרות המכשיר, פותחים את '<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />' ובוחרים ב-Chromium</translation>
 <translation id="2650312721222849884">‏כדי לראות את הכרטיסיות שלך מכל מקום שבו פתחת את Chromium יש להפעיל את הסנכרון</translation>
 <translation id="2684230048001240293">‏כדאי להגדיר את Chromium כדפדפן ברירת המחדל כדי לסנכרן את הכרטיסיות, הסיסמאות ופרטי התשלומים שלך בכל המכשירים שלך</translation>
 <translation id="2730884209570016437">‏Chromium לא יכול להשתמש במצלמה כי אפליקציה אחרת משתמשת בה</translation>
@@ -92,6 +93,7 @@
 <translation id="7118091470949186573">‏אפשר עכשיו להשתמש ב-Chromium בכל פעם שמקישים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="7165402419892018581">‏בחירת Chromium למילוי אוטומטי</translation>
 <translation id="7175400662502680481">הסיסמה שלך נחשפה בעקבות פרצה באבטחת מידע. לפי מנהל הסיסמאות, מומלץ לשנות אותה עכשיו.</translation>
+<translation id="7192111075364461693">‏ההתראות מ-Chromium מושבתות עכשיו בהגדרות המכשיר.</translation>
 <translation id="7208566199746267865">‏Chromium מאפשר גישה לחשבונות באינטרנט וכך חוסך לך זמן. ניתן להוסיף או להסיר חשבונות בקטע 'הגדרות'.</translation>
 <translation id="725427773388857052">‏Chromium יכול להגן עליך מפני פרצות באבטחת מידע, אתרים לא בטוחים וסכנות נוספות</translation>
 <translation id="7255976941681861701">‏היכרות עם תפריט Chromium החדש</translation>
@@ -115,7 +117,6 @@
 <translation id="8073677936375100957">‏למחוק את נתוני Chromium שלך מהמכשיר הזה?</translation>
 <translation id="8240981428553046115">‏Chromium לא הצליח לחפש עדכונים. אפשר לנסות שוב מאוחר יותר.</translation>
 <translation id="8409374867500149834">‏האבטחה החזקה ביותר של Chromium מגינה עליך מפני אתרים מזיקים</translation>
-<translation id="8460301378281140593">‏בהגדרות של iPhone, פותחים את ההגדרה 'אפשרויות של סיסמאות' ובוחרים באפשרות 'Chromium'.</translation>
 <translation id="858114650497379505">‏יש לך אפשרות להשתמש בסיסמאות ששמרת במנהל הסיסמאות באפליקציות אחרות ב-iPhone.</translation>
 <translation id="8586442755830160949">‏Copyright <ph name="YEAR" /> The Chromium Authors. כל הזכויות שמורות.</translation>
 <translation id="865600487977764604">‏מגן עליך ב‑Chromium ועשוי לשפר את רמת האבטחה באפליקציות אחרות של Google. ההגנה הזו פעילה רק אם נכנסים לחשבון.</translation>
@@ -132,6 +133,7 @@
   • אם הסנכרון מופעל, המדדים עשויים לכלול גם פרטים לגבי כתובות URL שביקרת בהן.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">‏החשבון הזה וכל הנתונים שלא נשמרו יוסרו מ-Chromium.</translation>
 <translation id="894437814105052438">‏לאחר היציאה מהחשבון, לא יתבצע סנכרון של נתונים חדשים מ-Chromium בחשבון Google שלך. נתונים שסונכרנו בעבר יישארו בחשבון.</translation>
+<translation id="8963279154877372067">‏אישור לקבלת התראות על הנחות ב-Chromium</translation>
 <translation id="9022552996538154597">‏כניסה אל Chromium</translation>
 <translation id="9059693977935746710">אין צורך לזכור את הסיסמה הזו. היא תישמר במנהל הסיסמאות בחשבון <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">‏Chromium אינו מעודכן</translation>

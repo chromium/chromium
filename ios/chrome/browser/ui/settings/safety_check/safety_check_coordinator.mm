@@ -17,14 +17,16 @@
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
-#import "ios/chrome/browser/ui/commands/application_commands.h"
-#import "ios/chrome/browser/ui/commands/browser_commands.h"
-#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
+#import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_coordinator.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
@@ -33,7 +35,6 @@
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_ui_swift.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
 #import "net/base/mac/url_conversions.h"
 #import "url/gurl.h"
@@ -41,6 +42,8 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using password_manager::WarningType;
 
 @interface SafetyCheckCoordinator () <
     PasswordIssuesCoordinatorDelegate,
@@ -166,14 +169,10 @@
 #pragma mark - SafetyCheckNavigationCommands
 
 - (void)showPasswordIssuesPage {
-  IOSChromePasswordCheckManager* passwordCheckManager =
-      IOSChromePasswordCheckManagerFactory::GetForBrowserState(
-          self.browser->GetBrowserState())
-          .get();
   self.passwordIssuesCoordinator = [[PasswordIssuesCoordinator alloc]
-      initWithBaseNavigationController:self.baseNavigationController
-                               browser:self.browser
-                  passwordCheckManager:passwordCheckManager];
+            initForWarningType:WarningType::kCompromisedPasswordsWarning
+      baseNavigationController:self.baseNavigationController
+                       browser:self.browser];
   self.passwordIssuesCoordinator.delegate = self;
   self.passwordIssuesCoordinator.reauthModule = nil;
   [self.passwordIssuesCoordinator start];
@@ -250,11 +249,6 @@
   [self.passwordIssuesCoordinator stop];
   self.passwordIssuesCoordinator.delegate = nil;
   self.passwordIssuesCoordinator = nil;
-}
-
-- (BOOL)willHandlePasswordDeletion:
-    (const password_manager::CredentialUIEntry&)credential {
-  return NO;
 }
 
 #pragma mark - PrivacySafeBrowsingCoordinatorDelegate

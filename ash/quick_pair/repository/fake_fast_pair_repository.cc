@@ -125,6 +125,13 @@ void FakeFastPairRepository::DeleteAssociatedDeviceByAccountKey(
   std::move(callback).Run(/*success=*/false);
 }
 
+void FakeFastPairRepository::UpdateAssociatedDeviceFootprintsName(
+    const std::string& mac_address,
+    const std::string& display_name,
+    bool cache_may_be_stale) {
+  saved_display_names_.insert_or_assign(mac_address, display_name);
+}
+
 void FakeFastPairRepository::UpdateOptInStatus(
     nearby::fastpair::OptInStatus opt_in_status,
     UpdateOptInStatusCallback callback) {

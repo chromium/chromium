@@ -19,6 +19,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -43,7 +44,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.UserDataHost;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -107,6 +107,8 @@ public class TabSwitcherMediatorUnitTest {
 
     private final OneshotSupplierImpl<IncognitoReauthController>
             mIncognitoReauthControllerSupplier = new OneshotSupplierImpl<>();
+    private final OneshotSupplierImpl<TabGridDialogMediator.DialogController>
+            mTabGridDialogControllerSupplier = new OneshotSupplierImpl<>();
 
     @Mock
     TabSwitcherMediator.ResetHandler mResetHandler;
@@ -160,6 +162,9 @@ public class TabSwitcherMediatorUnitTest {
     @Captor
     private ArgumentCaptor<IncognitoReauthManager.IncognitoReauthCallback>
             mIncognitoReauthCallbackArgumentCaptor;
+
+    @Mock
+    private TabSelectionEditorCoordinator.TabSelectionEditorController mEditorController;
 
     private Tab mTab1;
     private Tab mTab2;
@@ -218,25 +223,25 @@ public class TabSwitcherMediatorUnitTest {
         doReturn(true)
                 .when(mMultiWindowModeStateDispatcher)
                 .addObserver(mMultiWindowModeObserverCaptor.capture());
-        TabSelectionEditorCoordinator.TabSelectionEditorController controller =
-                mock(TabSelectionEditorCoordinator.TabSelectionEditorController.class);
         doReturn(new ObservableSupplierImpl<Boolean>())
-                .when(controller)
+                .when(mEditorController)
                 .getHandleBackPressChangedSupplier();
         doReturn(new ObservableSupplierImpl<Boolean>())
                 .when(mTabGridDialogController)
                 .getHandleBackPressChangedSupplier();
         when(mIncognitoReauthController.isIncognitoReauthPending()).thenReturn(false);
         mIncognitoReauthControllerSupplier.set(mIncognitoReauthController);
+        mTabGridDialogControllerSupplier.set(mTabGridDialogController);
 
         mModel = new PropertyModel(TabListContainerProperties.ALL_KEYS);
         mModel.addObserver(mPropertyObserver);
         mMediator = new TabSwitcherMediator(mContext, mResetHandler, mModel, mTabModelSelector,
                 mBrowserControlsStateProvider, mCompositorViewHolder, null, mMessageItemsController,
                 mPriceWelcomeMessageController, mMultiWindowModeStateDispatcher,
-                TabListCoordinator.TabListMode.GRID, mIncognitoReauthControllerSupplier, null);
+                TabListCoordinator.TabListMode.GRID, mIncognitoReauthControllerSupplier, null,
+                mTabGridDialogControllerSupplier);
 
-        mMediator.initWithNative(controller, null);
+        mMediator.initWithNative(mEditorController, null);
         mMediator.addTabSwitcherViewObserver(mTabSwitcherViewObserver);
         mMediator.setOnTabSelectingListener(mLayout::onTabSelecting);
         verify(mIncognitoReauthController, times(1))
@@ -277,13 +282,6 @@ public class TabSwitcherMediatorUnitTest {
                 mModel.get(TabListContainerProperties.ANIMATE_VISIBILITY_CHANGES), equalTo(true));
         assertThat(mModel.get(TabListContainerProperties.IS_VISIBLE), equalTo(true));
         assertThat(mMediator.overviewVisible(), equalTo(true));
-
-        assertThat(RecordHistogram.getHistogramValueCountForTesting(
-                           TabSwitcherMediator.TAB_COUNT_HISTOGRAM, 3),
-                equalTo(1));
-        assertThat(RecordHistogram.getHistogramValueCountForTesting(
-                           TabSwitcherMediator.TAB_ENTRIES_HISTOGRAM, 3),
-                equalTo(1));
     }
 
     @Test
@@ -306,19 +304,11 @@ public class TabSwitcherMediatorUnitTest {
                 mModel.get(TabListContainerProperties.ANIMATE_VISIBILITY_CHANGES), equalTo(true));
         assertThat(mModel.get(TabListContainerProperties.IS_VISIBLE), equalTo(true));
         assertThat(mMediator.overviewVisible(), equalTo(true));
-
-        assertThat(RecordHistogram.getHistogramValueCountForTesting(
-                           TabSwitcherMediator.TAB_COUNT_HISTOGRAM, 3),
-                equalTo(1));
-        assertThat(RecordHistogram.getHistogramValueCountForTesting(
-                           TabSwitcherMediator.TAB_ENTRIES_HISTOGRAM, 2),
-                equalTo(1));
     }
 
     @Test
     public void hidesWithAnimation() {
         initAndAssertAllProperties();
-        mMediator.setTabGridDialogController(mTabGridDialogController);
         mMediator.showTabSwitcherView(true);
 
         assertThat(
@@ -337,7 +327,6 @@ public class TabSwitcherMediatorUnitTest {
     @Test
     public void hidesWithoutAnimation() {
         initAndAssertAllProperties();
-        mMediator.setTabGridDialogController(mTabGridDialogController);
         mMediator.showTabSwitcherView(true);
 
         assertThat(
@@ -363,13 +352,22 @@ public class TabSwitcherMediatorUnitTest {
 
     @Test
     public void beforeHideTabSwitcherView_NullController() {
+        reset(mTabGridDialogController);
+        mMediator = new TabSwitcherMediator(mContext, mResetHandler, mModel, mTabModelSelector,
+                mBrowserControlsStateProvider, mCompositorViewHolder, null, mMessageItemsController,
+                mPriceWelcomeMessageController, mMultiWindowModeStateDispatcher,
+                TabListCoordinator.TabListMode.GRID, mIncognitoReauthControllerSupplier, null,
+                null);
+        mMediator.initWithNative(mEditorController, null);
+        mMediator.addTabSwitcherViewObserver(mTabSwitcherViewObserver);
+        mMediator.setOnTabSelectingListener(mLayout::onTabSelecting);
+
         mMediator.prepareHideTabSwitcherView();
         verifyNoMoreInteractions(mTabGridDialogController);
     }
 
     @Test
     public void beforeHideTabSwitcherView_WithController() {
-        mMediator.setTabGridDialogController(mTabGridDialogController);
         mMediator.prepareHideTabSwitcherView();
         verify(mTabGridDialogController).hideDialog(eq(false));
     }
@@ -417,9 +415,6 @@ public class TabSwitcherMediatorUnitTest {
         initAndAssertAllProperties();
         mModel.set(TabListContainerProperties.IS_VISIBLE, true);
 
-        // Setup dialog reset handler. Default setup is that dialog handler is null.
-        mMediator.setTabGridDialogController(mTabGridDialogController);
-
         doReturn(true).when(mTabModelFilter).isIncognito();
         mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(mTabModel, null);
         verify(mResetHandler).resetWithTabList(eq(mTabModelFilter), eq(false), eq(false));
@@ -432,6 +427,16 @@ public class TabSwitcherMediatorUnitTest {
 
     @Test
     public void resetsAfterNewTabModelSelected_DialogNotEnabled() {
+        reset(mTabGridDialogController);
+        mMediator = new TabSwitcherMediator(mContext, mResetHandler, mModel, mTabModelSelector,
+                mBrowserControlsStateProvider, mCompositorViewHolder, null, mMessageItemsController,
+                mPriceWelcomeMessageController, mMultiWindowModeStateDispatcher,
+                TabListCoordinator.TabListMode.GRID, mIncognitoReauthControllerSupplier, null,
+                null);
+        mMediator.initWithNative(mEditorController, null);
+        mMediator.addTabSwitcherViewObserver(mTabSwitcherViewObserver);
+        mMediator.setOnTabSelectingListener(mLayout::onTabSelecting);
+
         initAndAssertAllProperties();
         mModel.set(TabListContainerProperties.IS_VISIBLE, true);
 
@@ -449,9 +454,6 @@ public class TabSwitcherMediatorUnitTest {
     public void noResetsAfterNewTabModelSelected_InvisibleGTS() {
         initAndAssertAllProperties();
         assertThat(mModel.get(TabListContainerProperties.IS_VISIBLE), equalTo(false));
-
-        // Setup dialog reset handler. Default setup is that dialog handler is null.
-        mMediator.setTabGridDialogController(mTabGridDialogController);
 
         doReturn(true).when(mTabModelFilter).isIncognito();
         mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(mTabModel, null);
@@ -725,7 +727,6 @@ public class TabSwitcherMediatorUnitTest {
     @Test
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
     public void openDialogButton_SingleTab() {
-        mMediator.setTabGridDialogController(mTabGridDialogController);
         // Mock that tab 1 is a single tab.
         doReturn(new ArrayList<>(Arrays.asList(mTab1)))
                 .when(mTabModelFilter)
@@ -736,7 +737,6 @@ public class TabSwitcherMediatorUnitTest {
     @Test
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
     public void openDialogButton_TabGroup_NotEmpty() {
-        mMediator.setTabGridDialogController(mTabGridDialogController);
         // Set up a tab group.
         Tab newTab = prepareTab(TAB4_ID, TAB4_TITLE);
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, newTab));
@@ -752,7 +752,6 @@ public class TabSwitcherMediatorUnitTest {
     @Test
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
     public void openDialogButton_TabGroup_Empty() {
-        mMediator.setTabGridDialogController(mTabGridDialogController);
         // Assume that due to tab model change, current group becomes empty in current model.
         doReturn(new ArrayList<>()).when(mTabModelFilter).getRelatedTabList(TAB1_ID);
 
@@ -910,14 +909,16 @@ public class TabSwitcherMediatorUnitTest {
         new TabSwitcherMediator(mContext, mResetHandler, mModel, mTabModelSelector,
                 mBrowserControlsStateProvider, mCompositorViewHolder, null, mMessageItemsController,
                 mPriceWelcomeMessageController, mMultiWindowModeStateDispatcher,
-                TabListCoordinator.TabListMode.GRID, mIncognitoReauthControllerSupplier, null);
+                TabListCoordinator.TabListMode.GRID, mIncognitoReauthControllerSupplier, null,
+                mTabGridDialogControllerSupplier);
         assertEquals(16, mModel.get(TabListContainerProperties.BOTTOM_PADDING));
 
         mModel.set(TabListContainerProperties.BOTTOM_PADDING, 0);
         new TabSwitcherMediator(mContext, mResetHandler, mModel, mTabModelSelector,
                 mBrowserControlsStateProvider, mCompositorViewHolder, null, mMessageItemsController,
                 mPriceWelcomeMessageController, mMultiWindowModeStateDispatcher,
-                TabListCoordinator.TabListMode.STRIP, mIncognitoReauthControllerSupplier, null);
+                TabListCoordinator.TabListMode.STRIP, mIncognitoReauthControllerSupplier, null,
+                mTabGridDialogControllerSupplier);
         assertEquals(0, mModel.get(TabListContainerProperties.BOTTOM_PADDING));
     }
 
@@ -945,7 +946,6 @@ public class TabSwitcherMediatorUnitTest {
         initAndAssertAllProperties();
         Assert.assertFalse(mMediator.shouldInterceptBackPress());
 
-        mMediator.setTabGridDialogController(mTabGridDialogController);
         doReturn(true).when(mTabGridDialogController).isVisible();
         Assert.assertTrue("Should intercept back press if tab grid dialog is visible",
                 mMediator.shouldInterceptBackPress());
@@ -1029,6 +1029,23 @@ public class TabSwitcherMediatorUnitTest {
         mTabModelObserverCaptor.getValue().onFinishingTabClosure(mTab1);
         Assert.assertFalse(mMediator.shouldInterceptBackPress());
         Assert.assertEquals(Boolean.FALSE, mMediator.getHandleBackPressChangedSupplier().get());
+    }
+
+    @Test
+    public void testBackPressDuringTransition() {
+        initAndAssertAllProperties();
+        Assert.assertFalse(mMediator.shouldInterceptBackPress());
+
+        mMediator.prepareShowTabSwitcherView();
+        Assert.assertTrue(mMediator.shouldInterceptBackPress());
+        Assert.assertTrue(mMediator.getHandleBackPressChangedSupplier().get());
+
+        doReturn(false).when(mTabGridDialogController).isVisible();
+        mMediator.showTabSwitcherView(false);
+        doReturn(null).when(mTabModelSelector).getCurrentTab();
+        mMediator.showTabSwitcherView(true);
+        Assert.assertFalse(mMediator.shouldInterceptBackPress());
+        Assert.assertFalse(mMediator.getHandleBackPressChangedSupplier().get());
     }
 
     @Test

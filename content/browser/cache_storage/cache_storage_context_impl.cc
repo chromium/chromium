@@ -125,7 +125,8 @@ void CacheStorageContextImpl::AddReceiver(
         bucket_locator.id, base::SequencedTaskRunner::GetCurrentDefault(),
         std::move(add_receiver));
   } else {
-    std::move(add_receiver).Run(storage::QuotaError::kNotFound);
+    std::move(add_receiver)
+        .Run(base::unexpected(storage::QuotaError::kNotFound));
   }
 }
 
@@ -174,8 +175,8 @@ void CacheStorageContextImpl::AddReceiverWithBucketInfo(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const absl::optional<storage::BucketLocator> bucket =
-      result.ok() ? absl::make_optional(result->ToBucketLocator())
-                  : absl::nullopt;
+      result.has_value() ? absl::make_optional(result->ToBucketLocator())
+                         : absl::nullopt;
 
   dispatcher_host_->AddReceiver(cross_origin_embedder_policy,
                                 std::move(coep_reporter), storage_key, bucket,

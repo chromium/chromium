@@ -21,9 +21,9 @@ class TabRestoreService;
 // snapshot from disk and memory. This class also records of history for
 // non-incognito Browser's WebStates.
 class ClosingWebStateObserverBrowserAgent
-    : BrowserObserver,
+    : public BrowserObserver,
       public BrowserUserData<ClosingWebStateObserverBrowserAgent>,
-      WebStateListObserver {
+      public WebStateListObserver {
  public:
   ClosingWebStateObserverBrowserAgent();
   ~ClosingWebStateObserverBrowserAgent() override;

@@ -520,11 +520,8 @@ void NavigationManagerImpl::GoToIndex(int index,
   if (index < 0 || index >= GetItemCount()) {
     // There are bugs in WKWebView where the back/forward list can fall out
     // of sync with reality. In these situations, a navigation item that
-    // appears in the back or forward list might not actually exist. Dump
-    // without crashing in order to catch any increase in the frequency of this
-    // situation (to detect new WebKit bugs) and in order to get better and
-    // more actionable steps for reproducing these states (crbug.com/1407244).
-    base::debug::DumpWithoutCrashing();
+    // appears in the back or forward list might not actually exist. See
+    // crbug.com/1407244.
     return;
   }
 

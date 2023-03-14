@@ -11,21 +11,21 @@ var count = 0;
 
 function takePhoto(imageCapture) {
   console.log("Calling takePhoto");
-  imageCapture.takePhoto()
+  return imageCapture.takePhoto()
     .then(blob => {
       count = count+1;
       console.log("TakePhoto succeeded " + count + " times.");
-      closeCamera();
-  })
-  .catch(error => {
-    console.log("takePhoto failed with " + error)
-    failTest("takePhoto failed with " + error);
-  });
+      return closeCamera();
+    })
+    .catch(error => {
+      console.log("takePhoto failed with " + error)
+      return toStackTrace("takePhoto failed with " + error);
+    });
 }
 
-function openCamera() {
-  navigator.mediaDevices.getUserMedia({video: true})
-  .then(mediaStream => {
+async function openCamera() {
+  try {
+    const mediaStream = await navigator.mediaDevices.getUserMedia({video: true});
     document.getElementById('local-view').srcObject = mediaStream;
 
     track = mediaStream.getVideoTracks()[0];
@@ -40,19 +40,19 @@ function openCamera() {
       console.log('readyState = ' + track.readyState);
     }
     if (track.muted) {
-        console.log("Track is currently muted. Waiting with takePhoto call.");
+      console.log("Track is currently muted. Waiting with takePhoto call.");
+      await new Promise(resolve => {
         track.onunmute = function(evt) {
-        console.log("Track is now unmuted");
-        takePhoto(imageCapture);
-      }
-    } else {
-      takePhoto(imageCapture);
+          resolve();
+        };
+      });
+      console.log("Track is now unmuted");
     }
-  })
-  .catch(error => {
+    return takePhoto(imageCapture);
+  } catch(error) {
     console.log("getUserMedia failed with " + error)
-    failTest("getUserMedia failed with " + error);
-  });
+    return toStackTrace("getUserMedia failed with " + error);
+  }
 }
 
 function closeCamera() {
@@ -63,14 +63,15 @@ function closeCamera() {
   imageCapture = null;
 
   if (count < NUM_PHOTOS_TO_TAKE) {
-    setTimeout(openCamera, 0);
+    return new Promise(resolve => setTimeout(resolve, 0))
+      .then(openCamera);
   } else {
-    reportTestSuccess();
+    return logSuccess();
   }
 }
 
 function testTake10PhotosSucceeds() {
-  openCamera();
+  return openCamera();
 }
 </script>
 </head>

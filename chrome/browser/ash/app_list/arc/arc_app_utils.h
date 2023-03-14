@@ -37,6 +37,7 @@ extern const char kGooglePhotosAppId[];
 extern const char kGoogleTVAppId[];
 extern const char kInfinitePainterAppId[];
 extern const char kLightRoomAppId[];
+extern const char kPackageInstallerAppId[];
 extern const char kPlayBooksAppId[];
 extern const char kPlayGamesAppId[];
 extern const char kPlayMoviesAppId[];

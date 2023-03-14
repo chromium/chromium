@@ -9,12 +9,9 @@
 
 #import <CoreGraphics/CoreGraphics.h>
 
+#import "base/values.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 #import "url/gurl.h"
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace web {
 class WebState;
@@ -25,10 +22,10 @@ namespace shared_highlighting {
 // Returns whether |value| is a dictionary value, and is not empty.
 BOOL IsValidDictValue(const base::Value* value);
 
-// Attempts to parse the given |value| into a CGRect. If |value| does not map
+// Attempts to parse the given |dict| into a CGRect. If |dict| does not map
 // into the expected structure, an empty absl::optional instance will be
 // returned.
-absl::optional<CGRect> ParseRect(const base::Value* value);
+absl::optional<CGRect> ParseRect(const base::Value::Dict* dict);
 
 // Attempts to parse the given |url_value| into a GURL instance. If |url_value|
 // is empty or invalid, an empty absl::optional instance will be returned.

@@ -284,7 +284,16 @@ TEST_F(TextPaintTimingDetectorTest,
   CheckSizeOfTextQueuedForPaintTimeAfterUpdateLifecyclePhases(1u);
 }
 
-TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_TraceEvent_Candidate) {
+#if BUILDFLAG(IS_IOS)
+// TODO(crbug.com/1141478)
+#define MAYBE_LargestTextPaint_TraceEvent_Candidate \
+  DISABLED_LargestTextPaint_TraceEvent_Candidate
+#else
+#define MAYBE_LargestTextPaint_TraceEvent_Candidate \
+  LargestTextPaint_TraceEvent_Candidate
+#endif  // BUILDFLAG(IS_IOS)
+TEST_F(TextPaintTimingDetectorTest,
+       MAYBE_LargestTextPaint_TraceEvent_Candidate) {
   using trace_analyzer::Query;
   trace_analyzer::Start("*");
   {

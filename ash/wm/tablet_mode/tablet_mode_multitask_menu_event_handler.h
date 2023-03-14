@@ -26,6 +26,8 @@ class TabletModeMultitaskMenuEventHandler : public ui::EventHandler {
       const TabletModeMultitaskMenuEventHandler&) = delete;
   ~TabletModeMultitaskMenuEventHandler() override;
 
+  TabletModeMultitaskMenu* multitask_menu() { return multitask_menu_.get(); }
+
   // Creates and shows the menu.
   void ShowMultitaskMenu(aura::Window* window);
 
@@ -35,9 +37,6 @@ class TabletModeMultitaskMenuEventHandler : public ui::EventHandler {
   // ui::EventHandler:
   void OnTouchEvent(ui::TouchEvent* event) override;
 
-  TabletModeMultitaskMenu* multitask_menu_for_testing() {
-    return multitask_menu_.get();
-  }
   TabletModeMultitaskCue* multitask_cue_for_testing() {
     return multitask_cue_.get();
   }

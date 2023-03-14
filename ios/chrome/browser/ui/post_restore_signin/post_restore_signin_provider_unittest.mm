@@ -8,8 +8,8 @@
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/promo_config.h"
+#import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/signin/signin_util.h"
-#import "ios/chrome/browser/ui/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/ui/post_restore_signin/features.h"
 #import "ios/chrome/browser/ui/post_restore_signin/metrics.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -57,11 +57,6 @@ class PostRestoreSignInProviderTest : public PlatformTest {
     provider_.handler = mock_handler_;
   }
 
-  void EnableFeatureVariationFullscreen() {
-    scoped_feature_list_.InitAndEnableFeature(
-        post_restore_signin::features::kIOSNewPostRestoreExperience);
-  }
-
   void EnableFeatureVariationAlert() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {base::test::FeatureRefAndParams(
@@ -77,12 +72,6 @@ class PostRestoreSignInProviderTest : public PlatformTest {
   PostRestoreSignInProvider* provider_;
 };
 
-TEST_F(PostRestoreSignInProviderTest, hasIdentifierFullscreen) {
-  EnableFeatureVariationFullscreen();
-  EXPECT_EQ(provider_.config.identifier,
-            promos_manager::Promo::PostRestoreSignInFullscreen);
-}
-
 TEST_F(PostRestoreSignInProviderTest, hasIdentifierAlert) {
   EnableFeatureVariationAlert();
   EXPECT_EQ(provider_.config.identifier,
@@ -90,7 +79,7 @@ TEST_F(PostRestoreSignInProviderTest, hasIdentifierAlert) {
 }
 
 TEST_F(PostRestoreSignInProviderTest, standardPromoAlertDefaultAction) {
-  EnableFeatureVariationFullscreen();
+  EnableFeatureVariationAlert();
   SetupMockHandler();
   OCMExpect([mock_handler_ showSignin:[OCMArg any]]);
   [provider_ standardPromoAlertDefaultAction];
@@ -98,12 +87,12 @@ TEST_F(PostRestoreSignInProviderTest, standardPromoAlertDefaultAction) {
 }
 
 TEST_F(PostRestoreSignInProviderTest, title) {
-  EnableFeatureVariationFullscreen();
+  EnableFeatureVariationAlert();
   EXPECT_TRUE([[provider_ title] isEqualToString:@"Chrome is Signed Out"]);
 }
 
 TEST_F(PostRestoreSignInProviderTest, message) {
-  EnableFeatureVariationFullscreen();
+  EnableFeatureVariationAlert();
   NSString* expected;
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     expected = @"You were signed out of your account person@example.org as "
@@ -131,7 +120,7 @@ TEST_F(PostRestoreSignInProviderTest, cancelActionButtonText) {
 }
 
 TEST_F(PostRestoreSignInProviderTest, viewController) {
-  EnableFeatureVariationFullscreen();
+  EnableFeatureVariationAlert();
   EXPECT_TRUE(provider_.viewController != nil);
 }
 

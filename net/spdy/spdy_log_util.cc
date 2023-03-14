@@ -40,11 +40,12 @@ base::Value::List ElideHttp2HeaderBlockForNetLog(
   return headers_list;
 }
 
-base::Value Http2HeaderBlockNetLogParams(const spdy::Http2HeaderBlock* headers,
-                                         NetLogCaptureMode capture_mode) {
+base::Value::Dict Http2HeaderBlockNetLogParams(
+    const spdy::Http2HeaderBlock* headers,
+    NetLogCaptureMode capture_mode) {
   base::Value::Dict dict;
   dict.Set("headers", ElideHttp2HeaderBlockForNetLog(*headers, capture_mode));
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 }  // namespace net

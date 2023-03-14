@@ -16,7 +16,6 @@ build_webui("build") {
     "//chrome/browser/ui/webui/ash/office_fallback:mojo_bindings_ts__generator",
   ]
   ts_composite = true
-  ts_use_local_config = false
 
   html_to_wrapper_template = "native"
 
@@ -24,6 +23,6 @@ build_webui("build") {
   ts_deps = [
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
-    "//ui/webui/resources/mojo:library",
+    "//ui/webui/resources/mojo:build_ts",
   ]
 }

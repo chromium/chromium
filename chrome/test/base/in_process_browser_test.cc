@@ -139,10 +139,16 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/base_switches.h"
+#include "base/environment.h"
+#include "base/files/file_path_watcher.h"
+#include "base/guid.h"
+#include "base/process/launch.h"
 #include "chrome/browser/lacros/cert/cert_db_initializer_factory.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"  // nogncheck
 #include "components/account_manager_core/chromeos/fake_account_manager_ui.h"  // nogncheck
+#include "components/variations/variations_switches.h"
 #include "content/public/test/network_connection_change_simulator.h"
 #include "ui/aura/test/ui_controls_factory_aura.h"
 #include "ui/base/test/ui_controls.h"
@@ -513,6 +519,14 @@ void InProcessBrowserTest::TearDown() {
   ash::device_sync::DeviceSyncImpl::Factory::SetCustomFactory(nullptr);
   launch_browser_for_testing_ = nullptr;
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (ash_process_.IsValid()) {
+    // Need to wait for the termination so the temporary user data dir
+    // can be cleaned up.
+    ash_process_.Terminate(0, /*wait=*/true);
+  }
+#endif
 }
 
 // static
@@ -855,3 +869,90 @@ void InProcessBrowserTest::QuitBrowsers() {
   autorelease_pool_ = nullptr;
 #endif
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void InProcessBrowserTest::StartUniqueAshChrome(
+    const std::vector<std::string>& enabled_features,
+    const std::vector<std::string>& disabled_features,
+    const std::vector<std::string>& additional_cmdline_switches,
+    const std::string& bug_number_and_reason) {
+  DCHECK(!bug_number_and_reason.empty());
+  CHECK(!base::CommandLine::ForCurrentProcess()
+             ->GetSwitchValuePath("lacros-mojo-socket-for-testing")
+             .empty())
+      << "You can only start unique ash chrome when crosapi is enabled. "
+      << "It should not be necessary otherwise.";
+  CHECK(unique_ash_user_data_dir_.CreateUniqueTempDir());
+  base::FilePath socket_file =
+      unique_ash_user_data_dir_.GetPath().Append("lacros.sock");
+
+  // Reset the current test runner connecting to the unique ash chrome.
+  base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
+  cmdline->RemoveSwitch("lacros-mojo-socket-for-testing");
+  cmdline->AppendSwitchPath("lacros-mojo-socket-for-testing", socket_file);
+  // Need unique socket name for wayland globally. So for each ash and lacros
+  // pair, they have a unique socket to communicate.
+  base::Environment::Create()->SetVar(
+      "WAYLAND_DISPLAY",
+      base::JoinString({"unique_wayland",
+                        base::GUID::GenerateRandomV4().AsLowercaseString()},
+                       "_"));
+
+  base::FilePath ash_chrome_path =
+      cmdline->GetSwitchValuePath("ash-chrome-path");
+  CHECK(!ash_chrome_path.empty());
+  base::CommandLine ash_cmdline(ash_chrome_path);
+  ash_cmdline.AppendSwitchPath(switches::kUserDataDir,
+                               unique_ash_user_data_dir_.GetPath());
+  ash_cmdline.AppendSwitch("enable-wayland-server");
+  ash_cmdline.AppendSwitch(switches::kNoStartupWindow);
+  ash_cmdline.AppendSwitch("disable-lacros-keep-alive");
+  ash_cmdline.AppendSwitch("disable-login-lacros-opening");
+  ash_cmdline.AppendSwitch(
+      variations::switches::kEnableFieldTrialTestingConfig);
+  for (const std::string& cmdline_switch : additional_cmdline_switches) {
+    ash_cmdline.AppendSwitch(cmdline_switch);
+  }
+
+  std::vector<std::string> all_enabled_features = {
+      "LacrosSupport", "LacrosPrimary", "LacrosOnly"};
+  all_enabled_features.insert(enabled_features.end(), enabled_features.begin(),
+                              enabled_features.end());
+  ash_cmdline.AppendSwitchASCII(switches::kEnableFeatures,
+                                base::JoinString(all_enabled_features, ","));
+  ash_cmdline.AppendSwitchASCII(switches::kDisableFeatures,
+                                base::JoinString(disabled_features, ","));
+
+  ash_cmdline.AppendSwitchPath("lacros-mojo-socket-for-testing", socket_file);
+  std::string wayland_socket;
+  CHECK(
+      base::Environment::Create()->GetVar("WAYLAND_DISPLAY", &wayland_socket));
+  DCHECK(!wayland_socket.empty());
+  ash_cmdline.AppendSwitchASCII("wayland-server-socket", wayland_socket);
+  const base::FilePath ash_ready_file =
+      unique_ash_user_data_dir_.GetPath().AppendASCII("ash_ready.txt");
+  ash_cmdline.AppendSwitchPath("ash-ready-file-path", ash_ready_file);
+
+  // Need this for RunLoop. See
+  // //docs/threading_and_tasks_testing.md#basetestsinglethreadtaskenvironment
+  base::test::SingleThreadTaskEnvironment task_environment;
+  base::FilePathWatcher watcher;
+  base::RunLoop run_loop;
+  CHECK(watcher.Watch(base::FilePath(ash_ready_file),
+                      base::FilePathWatcher::Type::kNonRecursive,
+                      base::BindLambdaForTesting(
+                          [&](const base::FilePath& filepath, bool error) {
+                            CHECK(!error);
+                            run_loop.Quit();
+                          })));
+  base::LaunchOptions option;
+  ash_process_ = base::LaunchProcess(ash_cmdline, option);
+  CHECK(ash_process_.IsValid());
+  run_loop.Run();
+  // When ash is ready and crosapi was enabled, we expect mojo socket is
+  // also ready.
+  CHECK(base::PathExists(socket_file));
+  LOG(INFO) << "Successfully started a unique ash chrome.";
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

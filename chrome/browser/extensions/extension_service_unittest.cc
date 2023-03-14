@@ -293,8 +293,7 @@ void PersistExtensionWithPaths(
 
   std::string data = "file_data";
   for (const auto& file : file_paths) {
-    EXPECT_EQ(static_cast<int>(data.size()),
-              base::WriteFile(file, data.c_str(), data.size()));
+    EXPECT_TRUE(base::WriteFile(file, data));
   }
 
   base::Value::Dict manifest = DictionaryBuilder()
@@ -704,13 +703,15 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
   }
 
   testing::AssertionResult IsBlocked(const std::string& id) {
-    std::unique_ptr<ExtensionSet> all_unblocked_extensions =
+    const ExtensionSet all_unblocked_extensions =
         registry()->GenerateInstalledExtensionsSet(
             ExtensionRegistry::EVERYTHING & ~ExtensionRegistry::BLOCKED);
-    if (all_unblocked_extensions->Contains(id))
+    if (all_unblocked_extensions.Contains(id)) {
       return testing::AssertionFailure() << id << " is still unblocked!";
-    if (!registry()->blocked_extensions().Contains(id))
+    }
+    if (!registry()->blocked_extensions().Contains(id)) {
       return testing::AssertionFailure() << id << " is not blocked!";
+    }
     return testing::AssertionSuccess();
   }
 
@@ -1667,6 +1668,46 @@ TEST_F(ExtensionServiceTest, GrantedPermissions) {
   EXPECT_EQ(expected_host_perms, known_perms->effective_hosts());
 }
 
+// This tests that the granted permissions stored in prefs ignore internal
+// permissions specified in the extension manifest.
+TEST_F(ExtensionServiceTest,
+       GrantedPermissionsIgnoreInternalPermissionsFromManifest) {
+  InitializeEmptyExtensionService();
+
+  // Load an extension that tries to include an internal permission in its
+  // manifest. The internal permission should be ignored on the resulting
+  // extension object and should not be included in persisted permissions in
+  // preferences.
+  constexpr char kManifest[] =
+      R"({
+           "name": "Test",
+           "manifest_version": 3,
+           "version": "1.2.3",
+           "permissions": ["searchProvider", "storage"]
+         })";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  const Extension* extension = InstallCRX(test_dir.Pack(), INSTALL_NEW);
+  ASSERT_TRUE(extension);
+
+  EXPECT_FALSE(extension->permissions_data()->HasAPIPermission(
+      mojom::APIPermissionID::kSearchProvider));
+  EXPECT_TRUE(extension->permissions_data()->HasAPIPermission(
+      mojom::APIPermissionID::kStorage));
+
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+
+  std::unique_ptr<const PermissionSet> granted_perms =
+      prefs->GetGrantedPermissions(extension->id());
+  ASSERT_TRUE(granted_perms);
+  EXPECT_EQ(1u, granted_perms->apis().size());
+  EXPECT_TRUE(
+      granted_perms->HasAPIPermission(mojom::APIPermissionID::kStorage));
+  EXPECT_FALSE(
+      granted_perms->HasAPIPermission(mojom::APIPermissionID::kSearchProvider));
+}
+
 // This tests that the granted permissions preferences are correctly set when
 // updating an extension, and the extension is disabled in case of a permission
 // escalation.
@@ -2249,10 +2290,8 @@ TEST_F(ExtensionServiceTest, PackExtension) {
 
   // Try packing with an invalid manifest.
   std::string invalid_manifest_content = "I am not a manifest.";
-  ASSERT_EQ(static_cast<int>(invalid_manifest_content.size()),
-            base::WriteFile(temp_dir2.GetPath().Append(kManifestFilename),
-                            invalid_manifest_content.c_str(),
-                            invalid_manifest_content.size()));
+  ASSERT_TRUE(base::WriteFile(temp_dir2.GetPath().Append(kManifestFilename),
+                              invalid_manifest_content));
   creator = std::make_unique<ExtensionCreator>();
   ASSERT_FALSE(creator->Run(temp_dir2.GetPath(), crx_path, privkey_path,
                             base::FilePath(), ExtensionCreator::kOverwriteCRX));
@@ -2838,7 +2877,7 @@ TEST_F(ExtensionServiceTest, EnsureCWSOrdinalsInitialized) {
 
 TEST_F(ExtensionServiceTest, InstallAppsWithUnlimitedStorage) {
   InitializeEmptyExtensionService();
-  EXPECT_TRUE(registry()->enabled_extensions().is_empty());
+  EXPECT_TRUE(registry()->enabled_extensions().empty());
 
   int pref_count = 0;
 
@@ -2889,7 +2928,7 @@ TEST_F(ExtensionServiceTest, InstallAppsWithUnlimitedStorage) {
 
 TEST_F(ExtensionServiceTest, InstallAppsAndCheckStorageProtection) {
   InitializeEmptyExtensionService();
-  EXPECT_TRUE(registry()->enabled_extensions().is_empty());
+  EXPECT_TRUE(registry()->enabled_extensions().empty());
 
   int pref_count = 0;
 
@@ -2920,7 +2959,7 @@ TEST_F(ExtensionServiceTest, InstallAppsAndCheckStorageProtection) {
 
   UninstallExtension(id2);
 
-  EXPECT_TRUE(registry()->enabled_extensions().is_empty());
+  EXPECT_TRUE(registry()->enabled_extensions().empty());
   EXPECT_FALSE(
       profile()->GetExtensionSpecialStoragePolicy()->IsStorageProtected(
           origin1));
@@ -4929,7 +4968,7 @@ TEST_F(ExtensionServiceTest, PRE_DisableAllExtensions) {
       ::switches::kDisableExtensions);
   InitializeGoodInstalledExtensionService();
   service()->Init();
-  EXPECT_TRUE(registry()->GenerateInstalledExtensionsSet()->is_empty());
+  EXPECT_TRUE(registry()->GenerateInstalledExtensionsSet().empty());
 }
 
 // ... But, if we remove the switch, they are.
@@ -4938,8 +4977,8 @@ TEST_F(ExtensionServiceTest, DisableAllExtensions) {
       ::switches::kDisableExtensions));
   InitializeGoodInstalledExtensionService();
   service()->Init();
-  EXPECT_FALSE(registry()->GenerateInstalledExtensionsSet()->is_empty());
-  EXPECT_FALSE(registry()->enabled_extensions().is_empty());
+  EXPECT_FALSE(registry()->GenerateInstalledExtensionsSet().empty());
+  EXPECT_FALSE(registry()->enabled_extensions().empty());
 }
 
 // Tests reloading extensions.
@@ -5561,7 +5600,7 @@ TEST_F(ExtensionServiceTest, LoadExtension) {
 
   EXPECT_EQ(1u, GetErrors().size());
   EXPECT_EQ(1u, registry()->enabled_extensions().size());
-  EXPECT_EQ(1u, registry()->GenerateInstalledExtensionsSet()->size());
+  EXPECT_EQ(1u, registry()->GenerateInstalledExtensionsSet().size());
   EXPECT_TRUE(
       get_extension_by_name(registry()->enabled_extensions(), kGoodExtension));
 
@@ -5571,7 +5610,7 @@ TEST_F(ExtensionServiceTest, LoadExtension) {
           ->id();
   service()->UninstallExtension(good_id, UNINSTALL_REASON_FOR_TESTING, nullptr);
   task_environment()->RunUntilIdle();
-  EXPECT_TRUE(registry()->GenerateInstalledExtensionsSet()->is_empty());
+  EXPECT_TRUE(registry()->GenerateInstalledExtensionsSet().empty());
 }
 
 // Tests that we generate IDs when they are not specified in the manifest for
@@ -6052,6 +6091,18 @@ TEST_F(ExtensionServiceTest, ExternalPrefProvider) {
   {
     EXPECT_EQ(0, visitor.Visit(json_data));
   }
+
+  // Test is_bookmark_app.
+  // Bookmark apps are deprecated and should no longer be loaded.
+  json_data =
+      "{"
+      "  \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\": {"
+      "    \"external_crx\": \"RandomExtension.crx\","
+      "    \"external_version\": \"1.0\","
+      "    \"is_bookmark_app\": true"
+      "  }"
+      "}";
+  EXPECT_EQ(0, visitor.Visit(json_data));
 
   // Test is_from_webstore.
   MockProviderVisitor from_webstore_visitor(
@@ -7608,7 +7659,7 @@ TEST_F(ExtensionServiceTest, InstallBlocklistedExtension) {
 TEST_F(ExtensionServiceTest, CannotEnableBlocklistedExtension) {
   InitializeGoodInstalledExtensionService();
   service()->Init();
-  ASSERT_FALSE(registry()->enabled_extensions().is_empty());
+  ASSERT_FALSE(registry()->enabled_extensions().empty());
 
   // Blocklist the first extension; then try enabling it.
   std::string id = (*(registry()->enabled_extensions().begin()))->id();
@@ -7655,7 +7706,7 @@ TEST_F(ExtensionServiceTest, CannotDisableSharedModules) {
 TEST_F(ExtensionServiceTest, UninstallBlocklistedExtension) {
   InitializeGoodInstalledExtensionService();
   service()->Init();
-  ASSERT_FALSE(registry()->enabled_extensions().is_empty());
+  ASSERT_FALSE(registry()->enabled_extensions().empty());
 
   // Blocklist the first extension; then try uninstalling it.
   std::string id = (*(registry()->enabled_extensions().begin()))->id();

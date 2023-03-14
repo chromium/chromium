@@ -197,8 +197,10 @@ base::Time NavigationItemImpl::GetTimestamp() const {
 
 void NavigationItemImpl::SetUserAgentType(UserAgentType type) {
   user_agent_type_ = type;
-  DCHECK_EQ(!wk_navigation_util::URLNeedsUserAgentType(GetURL()),
-            user_agent_type_ == UserAgentType::NONE);
+  DCHECK(!wk_navigation_util::URLNeedsUserAgentType(GetURL()) ==
+         (user_agent_type_ == UserAgentType::NONE))
+      << "GetURL() " << GetURL() << " user_agent_type_ "
+      << static_cast<short>(user_agent_type_);
 }
 
 void NavigationItemImpl::SetUntrusted() {

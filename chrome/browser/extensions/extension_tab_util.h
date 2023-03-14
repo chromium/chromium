@@ -209,12 +209,11 @@ class ExtensionTabUtil {
   static bool IsKillURL(const GURL& url);
 
   // Resolves the URL and ensures the extension is allowed to navigate to it.
-  // Returns true and sets |url| if successful. Returns false and sets |error|
-  // if an error occurs.
-  static bool PrepareURLForNavigation(const std::string& url_string,
-                                      const Extension* extension,
-                                      GURL* url,
-                                      std::string* error);
+  // Returns the url if successful, otherwise returns an error string.
+  static base::expected<GURL, std::string> PrepareURLForNavigation(
+      const std::string& url_string,
+      const Extension* extension,
+      content::BrowserContext* browser_context);
 
   // Opens a tab for the specified |web_contents|.
   static void CreateTab(std::unique_ptr<content::WebContents> web_contents,

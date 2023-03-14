@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_FRAME_WIDGET_INPUT_HANDLER_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_FRAME_WIDGET_INPUT_HANDLER_IMPL_H_
 
-#include "build/build_config.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/stylus_writing_gesture.mojom-blink.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -68,13 +67,15 @@ class PLATFORM_EXPORT FrameWidgetInputHandlerImpl
                                          int32_t after) override;
   void SetEditableSelectionOffsets(int32_t start, int32_t end) override;
   void HandleStylusWritingGestureAction(
-      mojom::blink::StylusWritingGestureDataPtr gesture_data) override;
+      mojom::blink::StylusWritingGestureDataPtr gesture_data,
+      HandleStylusWritingGestureActionCallback callback) override;
   void ExecuteEditCommand(const String& command, const String& value) override;
   void Undo() override;
   void Redo() override;
   void Cut() override;
   void Copy() override;
   void CopyToFindPboard() override;
+  void CenterSelection() override;
   void Paste() override;
   void PasteAndMatchStyle() override;
   void Replace(const String& word) override;
@@ -83,12 +84,10 @@ class PLATFORM_EXPORT FrameWidgetInputHandlerImpl
   void SelectAll() override;
   void CollapseSelection() override;
   void SelectRange(const gfx::Point& base, const gfx::Point& extent) override;
-#if BUILDFLAG(IS_ANDROID)
   void SelectAroundCaret(mojom::blink::SelectionGranularity granularity,
                          bool should_show_handle,
                          bool should_show_context_menu,
                          SelectAroundCaretCallback callback) override;
-#endif  // BUILDFLAG(IS_ANDROID)
   void AdjustSelectionByCharacterOffset(
       int32_t start,
       int32_t end,

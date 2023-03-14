@@ -6,7 +6,6 @@
 
 #include "base/logging.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profile_picker.h"
@@ -106,7 +105,7 @@ void ProfilePickerTurnSyncOnDelegate::ShowMergeSyncDataConfirmation(
     const std::string& new_email,
     signin::SigninChoiceCallback callback) {
   // A brand new profile cannot have a conflict in sync accounts.
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 void ProfilePickerTurnSyncOnDelegate::ShowEnterpriseAccountConfirmation(
@@ -128,27 +127,21 @@ void ProfilePickerTurnSyncOnDelegate::ShowSyncConfirmation(
   DCHECK(callback);
   sync_confirmation_callback_ = std::move(callback);
 
-  absl::optional<EnterpriseProfileWelcomeUI::ScreenType> welcome_screen_type;
-  if (IsLacrosPrimaryProfileFirstRun(profile_)) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Show the enterprise version of the screen even if management consent was
-    // already given. See http://crbug.com/1322067.
-    enterprise_account_ = profile_->GetProfilePolicyConnector()->IsManaged();
-
-    welcome_screen_type =
-        enterprise_account_
-            ? EnterpriseProfileWelcomeUI::ScreenType::kLacrosEnterpriseWelcome
-            : EnterpriseProfileWelcomeUI::ScreenType::kLacrosConsumerWelcome;
-#endif
-  } else if (enterprise_account_) {
-    welcome_screen_type =
-        EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncEnabled;
+  if (IsLacrosPrimaryProfileFirstRun(profile_)) {
+    if (controller_) {
+      controller_->SwitchToLacrosIntro(
+          base::BindOnce(&ProfilePickerTurnSyncOnDelegate::OnLacrosIntroClosed,
+                         base::Unretained(this)));
+    }
+    return;
   }
-
-  if (welcome_screen_type) {
+#endif
+  if (enterprise_account_) {
     // First show the welcome screen and only after that (if the user proceeds
     // with the flow) the sync consent.
-    ShowEnterpriseWelcome(*welcome_screen_type);
+    ShowEnterpriseWelcome(
+        EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncEnabled);
     return;
   }
 
@@ -194,7 +187,7 @@ void ProfilePickerTurnSyncOnDelegate::ShowSyncSettings() {
 void ProfilePickerTurnSyncOnDelegate::SwitchToProfile(Profile* new_profile) {
   // A brand new profile cannot have preexisting syncable data and thus
   // switching to another profile does never get offered.
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 void ProfilePickerTurnSyncOnDelegate::OnSyncConfirmationUIClosed(
@@ -246,18 +239,24 @@ void ProfilePickerTurnSyncOnDelegate::ShowEnterpriseWelcome(
   }
 }
 
+void ProfilePickerTurnSyncOnDelegate::HandleCancelSigninChoice() {
+  LogOutcome(
+      ProfileMetrics::ProfileSignedInFlowOutcome::kAbortedOnEnterpriseWelcome);
+  // The callback provided by TurnSyncOnHelper must be called, UI_CLOSED
+  // makes sure the final callback does not get called. It does not matter
+  // what happens to sync as the signed-in profile creation gets cancelled
+  // right after.
+  FinishSyncConfirmation(LoginUIService::UI_CLOSED);
+  // During the Lacros intro, this is a no-op as the profile picker will already
+  // be closed.
+  ProfilePicker::CancelSignedInFlow();
+}
+
 void ProfilePickerTurnSyncOnDelegate::OnEnterpriseWelcomeClosed(
     EnterpriseProfileWelcomeUI::ScreenType type,
     signin::SigninChoice choice) {
   if (choice == signin::SIGNIN_CHOICE_CANCEL) {
-    LogOutcome(ProfileMetrics::ProfileSignedInFlowOutcome::
-                   kAbortedOnEnterpriseWelcome);
-    // The callback provided by TurnSyncOnHelper must be called, UI_CLOSED
-    // makes sure the final callback does not get called. It does not matter
-    // what happens to sync as the signed-in profile creation gets cancelled
-    // right after.
-    FinishSyncConfirmation(LoginUIService::UI_CLOSED);
-    ProfilePicker::CancelSignedInFlow();
+    HandleCancelSigninChoice();
     return;
   }
 
@@ -267,10 +266,6 @@ void ProfilePickerTurnSyncOnDelegate::OnEnterpriseWelcomeClosed(
 
   switch (type) {
     case EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncEnabled:
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    case EnterpriseProfileWelcomeUI::ScreenType::kLacrosConsumerWelcome:
-    case EnterpriseProfileWelcomeUI::ScreenType::kLacrosEnterpriseWelcome:
-#endif
       ShowSyncConfirmationScreen();
       return;
     case EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncDisabled:
@@ -287,10 +282,22 @@ void ProfilePickerTurnSyncOnDelegate::OnEnterpriseWelcomeClosed(
       FinishSyncConfirmation(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
       break;
     case EnterpriseProfileWelcomeUI::ScreenType::kEnterpriseAccountCreation:
-      NOTREACHED() << "The profile picker should not show an enterprise "
-                      "welcome that prompts for profile creation";
+      NOTREACHED_NORETURN()
+          << "The profile picker should not show an enterprise "
+             "welcome that prompts for profile creation";
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void ProfilePickerTurnSyncOnDelegate::OnLacrosIntroClosed(
+    signin::SigninChoice choice) {
+  if (choice == signin::SIGNIN_CHOICE_CANCEL) {
+    HandleCancelSigninChoice();
+    return;
+  }
+  ShowSyncConfirmationScreen();
+}
+#endif
 
 void ProfilePickerTurnSyncOnDelegate::LogOutcome(
     ProfileMetrics::ProfileSignedInFlowOutcome outcome) {

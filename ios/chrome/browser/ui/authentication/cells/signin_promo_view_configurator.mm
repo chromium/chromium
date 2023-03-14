@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/signin/signin_util.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -22,6 +23,11 @@
 using base::SysNSStringToUTF16;
 using l10n_util::GetNSString;
 using l10n_util::GetNSStringF;
+
+namespace {
+// The image name of the SigninPromoViewStyleCompactTitled view's icon.
+NSString* const kPromoViewImageName = @"ntp_feed_signin_promo_icon";
+}  // namespace
 
 @interface SigninPromoViewConfigurator ()
 
@@ -70,20 +76,12 @@ using l10n_util::GetNSStringF;
   switch (promoViewStyle) {
     case SigninPromoViewStyleStandard: {
       [self configureStandardSigninPromoView:signinPromoView];
-      // The profile icon should only appear for the standard signin promo view.
-      // TODO(crbug.com/1331010): Adapt other styles to accept profile image
-      // when we have UX approval.
-      if (self.signinPromoViewMode != SigninPromoViewModeNoAccounts) {
-        [self assignProfileImageToSigninPromoView:signinPromoView];
-      }
       break;
     }
-    case SigninPromoViewStyleTitled: {
-      [self configureTitledPromoView:signinPromoView];
-      break;
-    }
-    case SigninPromoViewStyleTitledCompact: {
-      [self configureTitledPromoView:signinPromoView];
+    case SigninPromoViewStyleCompactTitled:
+    case SigninPromoViewStyleCompactHorizontal:
+    case SigninPromoViewStyleCompactVertical: {
+      [self configureCompactPromoView:signinPromoView withStyle:promoViewStyle];
       break;
     }
   }
@@ -115,27 +113,44 @@ using l10n_util::GetNSStringF;
       [signinPromoView.secondaryButton
           setTitle:GetNSString(IDS_IOS_SIGNIN_PROMO_CHANGE_ACCOUNT)
           forState:UIControlStateNormal];
+      [self assignProfileImageToSigninPromoView:signinPromoView];
       break;
     }
     case SigninPromoViewModeSyncWithPrimaryAccount: {
       [signinPromoView.primaryButton
           setTitle:GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC)
           forState:UIControlStateNormal];
+      [self assignProfileImageToSigninPromoView:signinPromoView];
       break;
     }
   }
 }
 
-// Configures the view elements of the `signinPromoView` to conform to
-// `SigninPromoViewStyleTitled` or `SigninPromoViewStyleTitledCompact` style.
-- (void)configureTitledPromoView:(SigninPromoView*)signinPromoView {
-  // In the titled Promo views (both compact and non compact the primary button
-  // text will use "continue" regardless of the promo mode.
-  signinPromoView.titleLabel.hidden = NO;
-  //  signinPromoView.secondaryButton.hidden = YES;
-  NSString* signInString = GetNSString(IDS_IOS_NTP_FEED_SIGNIN_PROMO_CONTINUE);
-  [signinPromoView.primaryButton setTitle:signInString
-                                 forState:UIControlStateNormal];
+// Configures the view elements of the `signinPromoView` to conform to a compact
+// style.
+- (void)configureCompactPromoView:(SigninPromoView*)signinPromoView
+                        withStyle:(SigninPromoViewStyle)promoStyle {
+  switch (promoStyle) {
+    case SigninPromoViewStyleStandard:
+      // This function shouldn't be used for the standard promo.
+      CHECK(NO);
+      break;
+    case SigninPromoViewStyleCompactTitled:
+      signinPromoView.titleLabel.hidden = NO;
+      [signinPromoView.primaryButton
+          setTitle:GetNSString(IDS_IOS_NTP_FEED_SIGNIN_PROMO_CONTINUE)
+          forState:UIControlStateNormal];
+      [signinPromoView
+          setNonProfileImage:[UIImage imageNamed:kPromoViewImageName]];
+      break;
+    case SigninPromoViewStyleCompactHorizontal:
+    case SigninPromoViewStyleCompactVertical:
+      // TODO(crbug.com/1412758): Hide title when implementing these styles.
+      signinPromoView.titleLabel.hidden = NO;
+      [signinPromoView.primaryButton
+          setTitle:GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC)
+          forState:UIControlStateNormal];
+  }
 }
 
 // Sets profile image to a given `signinPromoView`.

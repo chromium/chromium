@@ -7,7 +7,6 @@
 
 // The functions in this file are alphabetized. Please insert new functions in
 // alphabetical order.
-#include <memory>
 
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/extensions/api/accessibility_private.h"
@@ -97,7 +96,7 @@ class AccessibilityPrivateInstallPumpkinForDictationFunction
                              ACCESSIBILITY_PRIVATE_INSTALLPUMPKINFORDICTATION)
  private:
   void OnPumpkinInstallFinished(
-      std::unique_ptr<::extensions::api::accessibility_private::PumpkinData>
+      absl::optional<::extensions::api::accessibility_private::PumpkinData>
           data);
 };
 

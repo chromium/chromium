@@ -7,6 +7,7 @@
 
 #include <android/native_window.h>
 #include <memory>
+#include <queue>
 
 #include "base/android/scoped_hardware_buffer_handle.h"
 #include "base/cancelable_callback.h"
@@ -16,6 +17,7 @@
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/frame_data.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/presenter.h"
@@ -36,31 +38,24 @@ class ScopedJavaSurfaceControl;
 class GL_EXPORT GLSurfaceEGLSurfaceControl : public Presenter {
  public:
   GLSurfaceEGLSurfaceControl(
-      GLDisplayEGL* display,
       gl::ScopedANativeWindow window,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   GLSurfaceEGLSurfaceControl(
-      GLDisplayEGL* display,
       gl::ScopedJavaSurfaceControl scoped_java_surface_control,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
+  bool Initialize();
+  void Destroy();
   // Presenter implementation.
-  int GetBufferCount() const override;
-  bool Initialize(GLSurfaceFormat format) override;
-  void PrepareToDestroy(bool have_context) override;
-  void Destroy() override;
   bool Resize(const gfx::Size& size,
               float scale_factor,
               const gfx::ColorSpace& color_space,
               bool has_alpha) override;
 
-  gfx::Size GetSize() override;
-  bool OnMakeCurrent(GLContext* context) override;
   bool ScheduleOverlayPlane(
       OverlayImage image,
       std::unique_ptr<gfx::GpuFence> gpu_fence,
       const gfx::OverlayPlaneData& overlay_plane_data) override;
-  void* GetHandle() override;
   void PreserveChildSurfaceControls() override;
 
   void Present(SwapCompletionCallback completion_callback,
@@ -68,15 +63,12 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public Presenter {
                gfx::FrameData data) override;
 
   bool SupportsPlaneGpuFences() const override;
-  bool SupportsCommitOverlayPlanes() override;
-  void SetDisplayTransform(gfx::OverlayTransform transform) override;
   void SetFrameRate(float frame_rate) override;
   void SetChoreographerVsyncIdForNextFrame(
       absl::optional<int64_t> choreographer_vsync_id) override;
 
  private:
   GLSurfaceEGLSurfaceControl(
-      GLDisplayEGL* display,
       scoped_refptr<gfx::SurfaceControl::Surface> root_surface,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   ~GLSurfaceEGLSurfaceControl() override;
@@ -225,18 +217,12 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public Presenter {
   // Presenter in the java view tree.
   scoped_refptr<gfx::SurfaceControl::Surface> root_surface_;
 
-  // The last context made current with this surface.
-  scoped_refptr<GLContext> context_;
-
   // Set if a transaction was applied and we are waiting for it to be acked.
   bool transaction_ack_pending_ = false;
-
-  gfx::OverlayTransform display_transform_ = gfx::OVERLAY_TRANSFORM_NONE;
 
   float frame_rate_ = 0;
   bool frame_rate_update_pending_ = false;
 
-  EGLSurface offscreen_surface_ = nullptr;
   base::CancelableOnceClosure check_pending_presentation_callback_queue_task_;
 
   // Set if a swap failed and the surface is no longer usable.

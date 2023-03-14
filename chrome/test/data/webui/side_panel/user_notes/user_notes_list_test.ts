@@ -231,6 +231,8 @@ suite('UserNotesListTest', () => {
     const sortNewestButton =
         sortMenu.querySelectorAll('.dropdown-item')[0]! as HTMLButtonElement;
     sortNewestButton.click();
+    const sortByNewest = await testProxy.whenCalled('setSortOrder');
+    testProxy.getCallbackRouterRemote().sortByNewestPrefChanged(sortByNewest);
     await flushTasks();
     // Verify note order.
     notesElements = queryNotes();
@@ -248,5 +250,27 @@ suite('UserNotesListTest', () => {
           notes[notes.length - i]!.text,
           notesElements[i]!.$.noteContent.textContent);
     }
+  });
+
+  test('note entry character count exceeded', async () => {
+    const notesElements = queryNotes();
+    const entryNote = notesElements[2]!;
+    // Add content exceeding 176 characters.
+    const sampleNoteContent =
+        'sample note contentsample note content sample note content sample ' +
+        'note content sample note content sample note content sample note ' +
+        'content sample note content sample note content sample note content';
+    entryNote.$.noteContent.textContent = sampleNoteContent;
+    assertEquals(
+        'plaintext-only',
+        entryNote.$.noteContent.getAttribute('contenteditable'));
+    // Trigger input event so that the character count gets updated.
+    entryNote.$.noteContent.dispatchEvent(
+        new CustomEvent('input', {bubbles: true, composed: true}));
+    entryNote.$.noteContent.focus();
+    await flushTasks();
+    const notesAddButton =
+        entryNote.shadowRoot!.querySelector('#addButton')! as HTMLButtonElement;
+    assertEquals(true, notesAddButton.disabled);
   });
 });

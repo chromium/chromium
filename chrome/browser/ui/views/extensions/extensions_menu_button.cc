@@ -31,12 +31,6 @@ ExtensionsMenuButton::ExtensionsMenuButton(
       browser_(browser),
       controller_(controller) {
   controller_->SetDelegate(this);
-  // TODO(pbos): This currently inherits HoverButton, is this not a no-op?
-  // Also see call in OnThemeChanged() to
-  // views::InkDrop::Get(this)->SetBaseColor which tries to do the same thing.
-  views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
-      [](views::View* host) { return HoverButton::GetInkDropColor(host); },
-      this));
 }
 
 ExtensionsMenuButton::~ExtensionsMenuButton() = default;
@@ -44,11 +38,6 @@ ExtensionsMenuButton::~ExtensionsMenuButton() = default;
 void ExtensionsMenuButton::AddedToWidget() {
   ConfigureBubbleMenuItem(this, 0);
   UpdateState();
-}
-
-void ExtensionsMenuButton::OnThemeChanged() {
-  HoverButton::OnThemeChanged();
-  views::InkDrop::Get(this)->SetBaseColor(HoverButton::GetInkDropColor(this));
 }
 
 // ToolbarActionViewDelegateViews:
@@ -99,7 +88,7 @@ void ExtensionsMenuButton::ShowContextMenuAsFallback() {
   // The items in the extensions menu are disabled and unclickable if the
   // primary action cannot be taken; ShowContextMenuAsFallback() should never
   // be called directly.
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 void ExtensionsMenuButton::ButtonPressed() {

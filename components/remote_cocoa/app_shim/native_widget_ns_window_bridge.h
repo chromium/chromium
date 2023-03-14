@@ -16,6 +16,7 @@
 #import "components/remote_cocoa/app_shim/mouse_capture_delegate.h"
 
 #include "components/remote_cocoa/app_shim/immersive_mode_controller.h"
+#include "components/remote_cocoa/app_shim/immersive_mode_tabbed_controller.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_fullscreen_controller.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
@@ -33,6 +34,8 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/display/display_observer.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 @class BridgedContentView;
 @class ModalShowAnimationWithLayer;
@@ -279,6 +282,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   void SetCursor(const ui::Cursor& cursor) override;
   void EnableImmersiveFullscreen(
       uint64_t fullscreen_overlay_widget_id,
+      uint64_t tab_widget_id,
       EnableImmersiveFullscreenCallback callback) override;
   void DisableImmersiveFullscreen() override;
   void UpdateToolbarVisibility(
@@ -428,6 +432,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   struct HeadlessModeWindow {
     bool visibility_state = false;
     bool fullscreen_state = false;
+    bool initial_bounds_set = false;
+    gfx::Rect bounds;
   };
 
   // This is present iff the window has been created in headless mode.

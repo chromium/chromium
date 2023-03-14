@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -23,6 +24,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/webui/resource_path.h"
 #include "ui/resources/grit/webui_resources.h"
 
@@ -41,21 +43,25 @@ EnterpriseProfileWelcomeUI::EnterpriseProfileWelcomeUI(content::WebUI* web_ui)
        IDR_SIGNIN_ENTERPRISE_PROFILE_WELCOME_ENTERPRISE_PROFILE_WELCOME_BROWSER_PROXY_JS},
       {"signin_shared.css.js", IDR_SIGNIN_SIGNIN_SHARED_CSS_JS},
       {"signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS},
+      {"tangible_sync_style_shared.css.js",
+       IDR_SIGNIN_TANGIBLE_SYNC_STYLE_SHARED_CSS_JS},
   };
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kResources),
       IDR_SIGNIN_ENTERPRISE_PROFILE_WELCOME_ENTERPRISE_PROFILE_WELCOME_HTML);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  source->AddResourcePath(
-      "images/lacros_enterprise_profile_welcome_illustration.svg",
-      IDR_SIGNIN_ENTERPRISE_PROFILE_WELCOME_IMAGES_LACROS_ENTERPRISE_PROFILE_WELCOME_ILLUSTRATION_SVG);
-#else
   source->AddResourcePath(
       "images/enterprise_profile_welcome_illustration.svg",
       IDR_SIGNIN_ENTERPRISE_PROFILE_WELCOME_IMAGES_ENTERPRISE_PROFILE_WELCOME_ILLUSTRATION_SVG);
-#endif
+  source->AddResourcePath("images/left-banner.svg",
+                          IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_SVG);
+  source->AddResourcePath("images/left-banner-dark.svg",
+                          IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_DARK_SVG);
+  source->AddResourcePath("images/right-banner.svg",
+                          IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_SVG);
+  source->AddResourcePath("images/right-banner-dark.svg",
+                          IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_DARK_SVG);
   source->AddLocalizedString("enterpriseProfileWelcomeTitle",
                              IDS_ENTERPRISE_PROFILE_WELCOME_TITLE);
   source->AddLocalizedString("cancelLabel", IDS_CANCEL);
@@ -65,6 +71,12 @@ EnterpriseProfileWelcomeUI::EnterpriseProfileWelcomeUI(content::WebUI* web_ui)
                              IDS_ENTERPRISE_PROFILE_WELCOME_LINK_DATA_CHECKBOX);
   source->AddBoolean("showLinkDataCheckbox", false);
   source->AddBoolean("isModalDialog", false);
+  source->AddBoolean(
+      "isTangibleSyncStyleEnabled",
+      base::FeatureList::IsEnabled(kEnterpriseWelcomeTangibleSyncStyle));
+  source->AddString(
+      "chromeRefresh2023Attribute",
+      features::IsChromeRefresh2023() ? "chrome-refresh-2023" : "");
 }
 
 EnterpriseProfileWelcomeUI::~EnterpriseProfileWelcomeUI() = default;

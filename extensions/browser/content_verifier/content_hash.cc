@@ -37,10 +37,7 @@ bool CreateDirAndWriteFile(const base::FilePath& destination,
   if (!base::CreateDirectory(dir))
     return false;
 
-  int write_result =
-      base::WriteFile(destination, content.data(), content.size());
-  return write_result >= 0 &&
-         base::checked_cast<size_t>(write_result) == content.size();
+  return base::WriteFile(destination, content);
 }
 
 std::unique_ptr<VerifiedContents> ReadVerifiedContents(

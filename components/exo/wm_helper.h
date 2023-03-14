@@ -189,7 +189,6 @@ class WMHelper : public chromeos::PowerManagerClient::Observer,
                                  display::ManagedDisplayMode* mode) const;
   aura::Window* GetActiveWindow() const;
   aura::Window* GetFocusedWindow() const;
-  aura::Window* GetRootWindowForNewWindows() const;
   aura::client::CursorClient* GetCursorClient();
   aura::client::DragDropClient* GetDragDropClient();
   void AddPreTargetHandler(ui::EventHandler* handler);

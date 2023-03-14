@@ -17,7 +17,7 @@
   width: 0;
 }
 
-.inkdrop.animate .inkdrop-ripple {
+.inkdrop .inkdrop-ripple.animate {
   animation: inkdrop var(--moderate1-duration) ease-out;
 }
 

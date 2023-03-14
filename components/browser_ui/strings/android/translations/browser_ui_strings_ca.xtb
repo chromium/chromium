@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Redueix el zoom</translation>
 <translation id="1510341833810331442">Els llocs web no tenen permís per desar dades al dispositiu</translation>
 <translation id="1547123415014299762">Les galetes de tercers estan permeses</translation>
+<translation id="1593426485665524382">Hi ha noves accions disponibles a prop de la part superior de la pantalla</translation>
 <translation id="1620510694547887537">Càmera</translation>
 <translation id="1633720957382884102">Llocs web relacionats</translation>
 <translation id="1644574205037202324">Historial</translation>
@@ -59,6 +60,7 @@
 <translation id="216989819110952009">Fins i tot amb els ulls protegits per les ulleres verdes, la Dorothy i els seus amics van quedar enlluernats per la</translation>
 <translation id="2176704795966505152">Mostra l'opció de zoom al menú principal</translation>
 <translation id="2182457891543959921">Pregunta abans de permetre que els llocs web creïn un mapa en 3D del teu entorn o facin un seguiment de la posició de la càmera (opció recomanada)</translation>
+<translation id="2194856509914051091">Aspectes que cal tenir en compte</translation>
 <translation id="2212565012507486665">Permet les galetes</translation>
 <translation id="2228071138934252756">Perquè <ph name="APP_NAME" /> pugui accedir a la càmera, també has d'activar-la a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Les galetes de tercers estan bloquejades</translation>
@@ -98,7 +100,6 @@
 <translation id="2713106313042589954">Desactiva la càmera</translation>
 <translation id="2717722538473713889">Adreces electròniques</translation>
 <translation id="2750481671343847896">Els llocs web poden mostrar sol·licituds d'inici de sessió procedents de serveis d'identitat.</translation>
-<translation id="2779966372261694284">Se't tancarà la sessió d'aquest lloc web</translation>
 <translation id="2822354292072154809">Confirmes que vols restablir tots els permisos del lloc web concedits a <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Lloc web</translation>
 <translation id="2874939134665556319">Pista anterior</translation>
@@ -144,6 +145,9 @@
 <translation id="3600792891314830896">Silencia els llocs web que reprodueixen so</translation>
 <translation id="3602290021589620013">Previsualitza</translation>
 <translation id="3628308229821498208">Cerques suggerides</translation>
+<translation id="3636279694100170143">Els llocs web que visites poden validar que ets un usuari real i no un bot</translation>
+<translation id="3649190289964910441">Els llocs web que visites poden desar informació a Chrome que valida que ets un usuari real. Mentre naveguis, els llocs web poden recórrer a Chrome per verificar des del primer lloc web que probablement ets un usuari de confiança.</translation>
+<translation id="3721953990244350188">Ignora i mostra la següent acció disponible</translation>
 <translation id="3744111561329211289">Sincronització en segon pla</translation>
 <translation id="3763247130972274048">Fes doble toc a l'esquerra o a la dreta del vídeo per saltar 10 s</translation>
 <translation id="3794286421982011626">A fi de funcionar de la manera prevista, un lloc web que visites pot desar informació sobre el que estàs fent: per exemple, per mantenir la teva sessió iniciada en un lloc web o desar articles al carretó. Sovint, els llocs web desen temporalment aquesta informació al teu dispositiu.</translation>
@@ -191,11 +195,11 @@
 <translation id="4534723447064627427">Perquè <ph name="APP_NAME" /> pugui accedir al micròfon, també has d'activar-lo a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Silencia el micròfon</translation>
 <translation id="4570913071927164677">Detalls</translation>
-<translation id="4575264539271661854">Facilita ampliar el text i les imatges d'un lloc web que visitis</translation>
 <translation id="4598549027014564149">En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva activitat de navegació en llocs web, ni tan sols en llocs web relacionats. La teva activitat de navegació no s'utilitza per a coses com ara personalitzar anuncis. Pot ser que les funcions d'alguns llocs web no funcionin.</translation>
 <translation id="4645575059429386691">Gestionat pels pares</translation>
 <translation id="4670064810192446073">Realitat virtual</translation>
 <translation id="4751476147751820511">Sensors de moviment o de llum</translation>
+<translation id="477781522763920796">Aquesta opció de configuració funciona sense identificar-te ni permetre que els llocs web vegin el teu historial de navegació.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4811450222531576619">Més informació sobre la font i el tema</translation>
 <translation id="4836046166855586901">Pregunta'm quan un lloc web vulgui saber quan estic utilitzant aquest dispositiu de manera activa</translation>
@@ -257,6 +261,7 @@
 <translation id="5740126560802162366">Els llocs web poden desar dades al teu dispositiu</translation>
 <translation id="5771720122942595109">S'ha bloquejat <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Permisos</translation>
+<translation id="5810805850857689118">Aquesta acció esborrarà totes les dades i galetes de <ph name="ORIGIN" /> i de tots els llocs web que conté</translation>
 <translation id="5860033963881614850">Desactivat</translation>
 <translation id="5876056640971328065">Posa en pausa el vídeo</translation>
 <translation id="5884085660368669834">Preferència de lloc web</translation>
@@ -273,6 +278,7 @@
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="6042308850641462728">Més</translation>
 <translation id="6064125863973209585">Baixades completades</translation>
+<translation id="6071501408666570960">És possible que se't tanqui la sessió d'aquest lloc web</translation>
 <translation id="6165508094623778733">Més informació</translation>
 <translation id="6177111841848151710">S'ha bloquejat per al motor de cerca actual</translation>
 <translation id="6177128806592000436">La connexió amb aquest lloc web no és segura</translation>
@@ -323,6 +329,7 @@
 <translation id="7016516562562142042">Es permet al motor de cerca actual</translation>
 <translation id="702275896380648118">Aquest lloc web determina les coses que t'agraden i, a continuació, suggereix anuncis a altres llocs web. També obté de Chrome els teus temes d'anuncis per mostrar-te anuncis més rellevants.</translation>
 <translation id="702463548815491781">Es recomana quan TalkBack o l'accés amb interruptors estan activats</translation>
+<translation id="7050519587566342213">La navegació és més fluida, ja que és més probable que els llocs web confiïn en tu quan naveguis d'un lloc web a un altre.</translation>
 <translation id="7053983685419859001">Bloqueja</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 seleccionat}other{# seleccionats}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> elements seleccionats. Hi ha opcions disponibles a prop de la part superior de la pantalla.</translation>
@@ -347,6 +354,7 @@
 <translation id="757524316907819857">Impedeix que els llocs web reprodueixin contingut protegit</translation>
 <translation id="7577900504646297215">Gestiona els interessos</translation>
 <translation id="7594634374516752650">Connectat a un dispositiu Bluetooth</translation>
+<translation id="7634280112532283638">Reducció del frau i del contingut brossa</translation>
 <translation id="7641339528570811325">Esborra les dades de navegació…</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
@@ -407,6 +415,7 @@
 <translation id="8514955299594277296">No permetis que els llocs web desin dades al teu dispositiu (opció no recomanada)</translation>
 <translation id="851751545965956758">Impedeix que els llocs web es connectin a dispositius</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
+<translation id="8528440122773422556">Aquesta acció esborrarà totes les dades i galetes emmagatzemades per tots els llocs web de <ph name="ORIGIN" /> o per la seva aplicació de la pantalla d'inici</translation>
 <translation id="8541410041357371550">Aquest lloc web obté de Chrome els teus temes d'anuncis per mostrar-te anuncis més rellevants</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Es permeten les galetes per a <ph name="FPS_MEMBERS_COUNT" /> lloc web de <ph name="FPS_OWNER" />}other{Es permeten les galetes per a <ph name="FPS_MEMBERS_COUNT" /> llocs web de <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Permès (opció recomanada)</translation>
@@ -421,6 +430,7 @@
 <translation id="8737217482364735741">Amb aquesta acció s'esborraran totes les dades i galetes emmagatzemades per <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Selecciona una imatge</translation>
 <translation id="8801436777607969138">Bloqueja JavaScript en un lloc web concret.</translation>
+<translation id="8803526663383843427">Quan està activada</translation>
 <translation id="8816026460808729765">Impedeix que els llocs web accedeixin als sensors</translation>
 <translation id="8823559166155093873">Bloqueja les galetes</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -434,6 +444,7 @@
 <translation id="8986362086234534611">Oblida</translation>
 <translation id="8990043154272859344">Se't tancarà la sessió de tots els llocs web</translation>
 <translation id="9019902583201351841">Gestionat pels pares</translation>
+<translation id="9039697262778250930">És possible que se't tanqui la sessió d'aquests llocs web</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Aquest lloc web forma part d'un grup que pot veure la teva activitat. <ph name="FPS_OWNER" /> defineix el grup.</translation>
 <translation id="9106233582039520022">Vols suprimir les galetes?</translation>

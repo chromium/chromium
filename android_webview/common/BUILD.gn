@@ -41,7 +41,7 @@ source_set("common") {
     "//components/crash/core/app",
     "//components/crash/core/common:crash_key",
     "//components/embedder_support/origin_trials",
-    "//components/gwp_asan/common",
+    "//components/gwp_asan/common:crash_keys",
     "//components/services/heap_profiling/public/cpp",
     "//components/version_info",
     "//components/version_info:generate_version_info",

@@ -34,7 +34,7 @@ def CamelToLowerHacker(str):
 def GetEnumsFromFile(fullpath, get_raw_enum_value=False):
   enum_name = None
   enums = {}
-  for line in open(fullpath).readlines():
+  for line in open(fullpath, encoding='utf-8').readlines():
     # Strip out comments
     line = re.sub('//.*', '', line)
 
@@ -222,7 +222,7 @@ def CheckAXEnumsOrdinals(input_api, output_api):
 # header)
 def GetConstexprFromFile(fullpath):
   values = []
-  for line in open(fullpath).readlines():
+  for line in open(fullpath, encoding='utf-8').readlines():
     # Strip out comments
     line = re.sub('//.*', '', line)
 
@@ -242,7 +242,7 @@ def GetConstexprFromFile(fullpath):
 def GetAccessibilityModesFromFile(fullpath):
   values = []
   inside = False
-  for line in open(fullpath).readlines():
+  for line in open(fullpath, encoding='utf-8').readlines():
     if not inside:
       # Look for the block of code that defines the AXMode enum.
       m = re.search('^enum AxMode {$', line)
@@ -287,6 +287,7 @@ def CheckModesMatch(input_api, output_api):
     'kAXModeWebContentsOnly',
     'kAXModeComplete',
     'kAXModeCompleteNoHTML',
+    'kAXModeFormControls',
     'kExperimentalFirstFlag',
     'kExperimentalFormControls',
     'kExperimentalLastFlag',

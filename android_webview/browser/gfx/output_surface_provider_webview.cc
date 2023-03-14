@@ -148,6 +148,13 @@ void OutputSurfaceProviderWebView::InitializeContext() {
     // EGL context.
     attribs.angle_create_from_external_context = is_angle;
 
+    if (is_angle && display->ext->b_EGL_ANGLE_create_context_client_arrays) {
+      // By default client arrays are disabled as they are not supported by
+      // Chrome's IPC architecture. However, they are required for WebView's
+      // usage (in particular, for supporting complex clips).
+      attribs.angle_create_context_client_arrays = true;
+    }
+
     // Skip validation when dcheck is off.
 #if DCHECK_IS_ON()
     attribs.can_skip_validation = false;

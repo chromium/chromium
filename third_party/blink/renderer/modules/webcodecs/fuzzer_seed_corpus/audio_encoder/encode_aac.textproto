@@ -12,7 +12,10 @@ invocations: [
       codec: 'mp4a.67',
       sample_rate: 48000,
       number_of_channels: 2,
-      bitrate: 96000
+      bitrate: 96000,
+      aac {
+        format: AAC
+      }
     }
   },
   {
@@ -48,7 +51,10 @@ invocations: [
       codec: 'mp4a.67',
       sample_rate: 44100,
       number_of_channels: 1,
-      bitrate: 128000
+      bitrate: 128000,
+      aac {
+        format: ADTS
+      }
     }
   },
   {

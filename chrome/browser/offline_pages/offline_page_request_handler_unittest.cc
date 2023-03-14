@@ -583,8 +583,7 @@ void OfflinePageRequestHandlerTest::CreateFileWithContentOnIO(
   file_name += base::NumberToString(file_name_sequence_num_++);
   file_name += ".mht";
   temp_file_path_ = temp_dir_.GetPath().AppendASCII(file_name);
-  ASSERT_NE(base::WriteFile(temp_file_path_, content.c_str(), content.length()),
-            -1);
+  ASSERT_TRUE(base::WriteFile(temp_file_path_, content));
   std::move(callback).Run();
 }
 

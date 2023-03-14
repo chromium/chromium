@@ -209,12 +209,14 @@ ItemSuggestCache::Results::Results(const Results& other)
 ItemSuggestCache::Results::~Results() = default;
 
 ItemSuggestCache::ItemSuggestCache(
+    const std::string& locale,
     Profile* profile,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : made_request_(false),
       enabled_(kEnabled.Get()),
       server_url_(kServerUrl.Get()),
       multiple_queries_per_session_(kMultipleQueriesPerSession.Get()),
+      locale_(locale),
       profile_(profile),
       url_loader_factory_(std::move(url_loader_factory)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -240,20 +242,22 @@ std::string ItemSuggestCache::GetRequestBody() {
   // client_tags can be set via Finch based on what is expected by the
   // ItemSuggest backend, and unexpected tags will be assigned a default model.
   static constexpr char kRequestBody[] = R"({
-        'client_info': {
-          'platform_type': 'CHROME_OS',
-          'scenario_type': 'CHROME_OS_ZSS_FILES',
-          'request_type': 'BACKGROUND_REQUEST',
-          'client_tags': {
-            'name': '$1'
+        "client_info": {
+          "platform_type": "CHROME_OS",
+          "scenario_type": "CHROME_OS_ZSS_FILES",
+          "language_code": "$1",
+          "request_type": "BACKGROUND_REQUEST",
+          "client_tags": {
+            "name": "$2"
           }
         },
-        'max_suggestions': 10,
-        'type_detail_fields': 'drive_item.title,justification.display_text'
+        "max_suggestions": 10,
+        "type_detail_fields": "drive_item.title,justification.display_text"
       })";
 
   const std::string& model = kModelName.Get();
-  return base::ReplaceStringPlaceholders(kRequestBody, {model}, nullptr);
+  return base::ReplaceStringPlaceholders(kRequestBody, {locale_, model},
+                                         nullptr);
 }
 
 base::TimeDelta ItemSuggestCache::GetDelay() {

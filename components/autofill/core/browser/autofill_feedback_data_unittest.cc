@@ -118,7 +118,7 @@ class AutofillFeedbackDataUnitTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  test::AutofillEnvironment autofill_environment_;
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
   TestAutofillClient autofill_client_;
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;
@@ -201,6 +201,31 @@ TEST_F(AutofillFeedbackDataUnitTest,
   EXPECT_EQ(
       data_logs::FetchAutofillFeedbackData(browser_autofill_manager_.get()),
       expected_data->GetDict());
+}
+
+TEST_F(AutofillFeedbackDataUnitTest, IncludesExtraLogs) {
+  FormData form;
+  CreateFeedbackTestFormData(&form);
+  browser_autofill_manager_->OnFormsSeen(
+      /*updated_forms=*/{form},
+      /*removed_forms=*/{});
+
+  base::Value::Dict extra_logs;
+  extra_logs.Set("trigger_form_signature", "123");
+  extra_logs.Set("trigger_field_signature", "456");
+
+  base::Value::Dict autofill_feedback_data =
+      data_logs::FetchAutofillFeedbackData(browser_autofill_manager_.get(),
+                                           extra_logs.Clone());
+
+  auto expected_data = base::JSONReader::ReadAndReturnValueWithError(
+      kExpectedFeedbackDataJSON,
+      base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+  ASSERT_TRUE(expected_data.has_value()) << expected_data.error().message;
+  ASSERT_TRUE(expected_data->is_dict());
+  // Include extra logs in the expected report.
+  expected_data->GetDict().Merge(std::move(extra_logs));
+  EXPECT_EQ(autofill_feedback_data, expected_data->GetDict());
 }
 
 }  // namespace autofill

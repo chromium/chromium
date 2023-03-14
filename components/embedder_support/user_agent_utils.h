@@ -77,9 +77,9 @@ std::string GetUserAgent(
     UserAgentReductionEnterprisePolicyState user_agent_reduction =
         UserAgentReductionEnterprisePolicyState::kDefault);
 
-// Returns UserAgentMetadata per the default policy.
-// This override is currently used in fuchsia, where the enterprise policy
-// is not relevant.
+// Returns UserAgentMetadata per the default policy. This override is currently
+// used in fuchsia and headless_shell, where the enterprise policy is not
+// relevant.
 blink::UserAgentMetadata GetUserAgentMetadata();
 
 // Return UserAgentMetadata, potentially overridden by policy.

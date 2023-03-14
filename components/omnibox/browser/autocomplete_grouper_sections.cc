@@ -95,16 +95,11 @@ void ZpsSection::InitFromMatches(ACMatches& matches) {
   // Sort matches in the order of their potential containing groups. E.g., if
   // `groups_ = {group 1, group 2}, this sorts all matches that can be added to
   // group 1 before those that can only be added to group 2.
-  base::ranges::stable_sort(
-      matches,
-      [&](const auto& group_index1, const auto& group_index2) {
-        return group_index1 - group_index2;
-      },
-      [&](const auto& match) {
-        // Don't have to handle `FindGroup()` returning `groups_.end()` since
-        // those matches won't be added to the section anyways.
-        return std::distance(groups_.begin(), FindGroup(match));
-      });
+  base::ranges::stable_sort(matches, std::less<int>{}, [&](const auto& match) {
+    // Don't have to handle `FindGroup()` returning `groups_.end()` since
+    // those matches won't be added to the section anyways.
+    return std::distance(groups_.begin(), FindGroup(match));
+  });
 }
 
 AndroidZpsSection::AndroidZpsSection(omnibox::GroupConfigMap& group_configs)
@@ -112,7 +107,7 @@ AndroidZpsSection::AndroidZpsSection(omnibox::GroupConfigMap& group_configs)
                  {{1, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX},
                   {1, omnibox::GROUP_MOBILE_CLIPBOARD},
                   {1, omnibox::GROUP_MOBILE_MOST_VISITED},
-                  {15, omnibox::GROUP_PREVIOUS_SEARCH_RELATED},
+                  {15, omnibox::GROUP_VISITED_DOC_RELATED},
                   {15, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST}},
                  group_configs) {}
 

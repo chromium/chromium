@@ -36,7 +36,13 @@ const char kHtmlFile[] = "/context_menu.html";
 @implementation ContextMenuTestCase
 
 // Tests context menu appears on a regular link.
-- (void)testContextMenu {
+// TODO(crbug.com/1421691): Test is flaky on iPad simulator. Re-enable the test.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testContextMenu FLAKY_testContextMenu
+#else
+#define MAYBE_testContextMenu testContextMenu
+#endif
+- (void)MAYBE_testContextMenu {
   const char linkID[] = "normal-link";
   NSString* const linkText = @"normal-link-text";
   const GURL pageURL = self.testServer->GetURL(kHtmlFile);

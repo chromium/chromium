@@ -15,6 +15,7 @@
 #include "content/public/common/page_type.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace base {
 class FilePath;
@@ -257,6 +258,13 @@ void IsolateOriginsForTesting(
     net::test_server::EmbeddedTestServer* embedded_test_server,
     WebContents* web_contents,
     std::vector<std::string> hostnames_to_isolate);
+
+// Same as above, but takes full origins as input.  In particular, this version
+// doesn't assume HTTP, so it can be used for also isolating HTTPS origins.
+void IsolateOriginsForTesting(
+    net::test_server::EmbeddedTestServer* embedded_test_server,
+    WebContents* web_contents,
+    std::vector<url::Origin> origins_to_isolate);
 
 #if BUILDFLAG(IS_WIN)
 

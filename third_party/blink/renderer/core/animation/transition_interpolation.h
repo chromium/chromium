@@ -60,8 +60,10 @@ class CORE_EXPORT TransitionInterpolation : public Interpolation {
     // speculation here to try and broaden our understanding.
     // TODO(crbug.com/826627): Revert once bug is fixed.
     CHECK(start_);
-    CHECK(merge_);
-    cached_interpolable_value_ = merge_.start_interpolable_value->Clone();
+    if (merge_) {
+      CHECK(merge_);
+      cached_interpolable_value_ = merge_.start_interpolable_value->Clone();
+    }
     DCHECK_EQ(compositor_start_ && compositor_end_,
 
               property_.GetCSSProperty().IsCompositableProperty() &&

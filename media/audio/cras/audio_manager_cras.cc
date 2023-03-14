@@ -23,10 +23,10 @@
 #include "media/audio/cras/cras_input.h"
 #include "media/audio/cras/cras_unified.h"
 #include "media/audio/cras/cras_util.h"
-#include "media/base/media_switches.h"
 #include "media/base/channel_layout.h"
 #include "media/base/limits.h"
 #include "media/base/localized_strings.h"
+#include "media/base/media_switches.h"
 
 namespace media {
 namespace {
@@ -168,10 +168,14 @@ void RetrieveSystemEffectFeatures(bool& enforce_system_aec,
       base::FeatureList::IsEnabled(media::kCrOSEnforceSystemAecAgc);
   const bool enforce_system_aec_feature =
       base::FeatureList::IsEnabled(media::kCrOSEnforceSystemAec);
+  const bool enforce_system_aec_by_policy =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kSystemAecEnabled);
 
   enforce_system_aec =
       enforce_system_aec_feature || enforce_system_aec_ns_agc_feature ||
-      enforce_system_aec_ns_feature || enforce_system_aec_agc_feature;
+      enforce_system_aec_ns_feature || enforce_system_aec_agc_feature ||
+      enforce_system_aec_by_policy;
   enforce_system_ns =
       enforce_system_aec_ns_agc_feature || enforce_system_aec_ns_feature;
   enforce_system_agc =

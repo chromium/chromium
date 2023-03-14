@@ -9,8 +9,8 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
+#include "base/task/bind_post_task.h"
 #include "base/time/time.h"
-#include "media/base/bind_to_current_loop.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -219,7 +219,7 @@ TEST_F(MediaStreamVideoCapturerSourceTest, CaptureTimeAndMetadataPlumbing) {
   media::VideoFrameMetadata metadata;
   FakeMediaStreamVideoSink fake_sink(
       &capture_time, &metadata,
-      media::BindToCurrentLoop(run_loop.QuitClosure()));
+      base::BindPostTaskToCurrentDefault(run_loop.QuitClosure()));
   fake_sink.ConnectToTrack(track);
   const scoped_refptr<media::VideoFrame> frame =
       media::VideoFrame::CreateBlackFrame(gfx::Size(2, 2));

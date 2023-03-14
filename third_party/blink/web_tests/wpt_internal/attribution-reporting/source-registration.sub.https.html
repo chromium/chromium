@@ -26,9 +26,11 @@ attribution_reporting_promise_test(async t => {
   const expectedSourceType = await registerAttributionSrc(t, {
     source: {
       destination: `https://{{host}}`,
+      debug_reporting: true,
     },
     method: 'variant',
     reportingOrigin,
+    cookie: attributionDebugCookie,
   });
 
   await registerAttributionSrc(t, {
@@ -44,5 +46,11 @@ attribution_reporting_promise_test(async t => {
   const report = JSON.parse(payload.reports[0].body);
   assert_equals(report.source_event_id, '0');
   assert_equals(report.source_type, expectedSourceType);
+
+  const debugReportPayload = await pollVerboseDebugReports(reportingOrigin);
+  assert_equals(debugReportPayload.reports.length, 1);
+  const debugReport = JSON.parse(debugReportPayload.reports[0].body);
+  assert_equals(debugReport.length, 1);
+  assert_equals(debugReport[0].type, 'source-success');
 }, 'Source registration succeeds.');
 </script>

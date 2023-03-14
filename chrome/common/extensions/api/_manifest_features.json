@@ -20,12 +20,6 @@
     "channel": "stable",
     "extension_types": ["hosted_app"]
   },
-  "app.isolation": {
-    "channel": "stable",
-    // Platform apps always have isolated storage, thus they cannot specify it
-    // via the manifest.
-    "extension_types": ["legacy_packaged_app", "hosted_app"]
-  },
   "app.launch": {
     "channel": "stable",
     "extension_types": ["legacy_packaged_app", "hosted_app"]

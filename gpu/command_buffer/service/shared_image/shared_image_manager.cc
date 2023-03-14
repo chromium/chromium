@@ -134,10 +134,28 @@ SharedImageManager::Register(std::unique_ptr<SharedImageBacking> backing,
   // SharedImageRepresentationFactoryRef leads to ref-counting issues as
   // well as thread-checking failures in tests.
   auto factory_ref = std::make_unique<SharedImageRepresentationFactoryRef>(
-      this, backing.get(), tracker);
+      this, backing.get(), tracker, /*is_primary=*/true);
   images_.emplace(std::move(backing));
 
   return factory_ref;
+}
+
+std::unique_ptr<SharedImageRepresentationFactoryRef>
+SharedImageManager::AddSecondaryReference(const Mailbox& mailbox,
+                                          MemoryTypeTracker* tracker) {
+  CALLED_ON_VALID_THREAD();
+  DCHECK(mailbox.IsSharedImage());
+
+  AutoLock autolock(this);
+  auto found = images_.find(mailbox);
+  if (found == images_.end()) {
+    LOG(ERROR) << "SharedImageManager::AddSecondaryReference: Trying to add "
+                  "reference to non-existent mailbox.";
+    return nullptr;
+  }
+
+  return std::make_unique<SharedImageRepresentationFactoryRef>(
+      this, found->get(), tracker, /*is_primary=*/false);
 }
 
 std::unique_ptr<GLTextureImageRepresentation>
@@ -423,14 +441,21 @@ bool SharedImageManager::OnMemoryDump(
   if (args.level_of_detail ==
       base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND) {
     size_t total_size = 0;
-    for (auto& backing : images_)
-      total_size += backing->GetEstimatedSizeForMemoryDump();
+    size_t total_purgeable_size = 0;
+    for (auto& backing : images_) {
+      size_t size = backing->GetEstimatedSizeForMemoryDump();
+      total_size += size;
+      total_purgeable_size += backing->IsPurgeable() ? size : 0;
+    }
 
     base::trace_event::MemoryAllocatorDump* dump =
         pmd->CreateAllocatorDump(base_dump_name);
     dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
                     base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                     total_size);
+    dump->AddScalar("purgeable_size",
+                    base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                    total_purgeable_size);
 
     // Early out, no need for more detail in a BACKGROUND dump.
     return true;

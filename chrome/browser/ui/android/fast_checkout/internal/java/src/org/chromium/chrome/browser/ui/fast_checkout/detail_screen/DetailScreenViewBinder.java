@@ -4,20 +4,21 @@
 
 package org.chromium.chrome.browser.ui.fast_checkout.detail_screen;
 
+import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.CURRENT_SCREEN;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_BACK_CLICK_HANDLER;
-import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_LIST_HEIGHT_IN_PX;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_MODEL_LIST;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_CLICK_HANDLER;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_MENU_TITLE;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_TITLE;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_TITLE_DESCRIPTION;
+import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.ScreenType.HOME_SCREEN;
 
 import android.content.Context;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.FrameLayout;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DetailItemType;
@@ -35,16 +36,16 @@ public class DetailScreenViewBinder {
         final Context mContext;
         final Toolbar mToolbar;
         final MenuItem mSettingsMenuItem;
-        final FrameLayout mSheetItemListContainer;
         final RecyclerView mRecyclerView;
+        final DetailScreenScrollListener mScrollListener;
 
-        ViewHolder(Context context, View contentView) {
+        ViewHolder(Context context, View contentView, DetailScreenScrollListener scrollListener) {
             mContext = context;
-            mSheetItemListContainer = contentView.findViewById(R.id.sheet_item_list_container);
             mRecyclerView =
                     contentView.findViewById(R.id.fast_checkout_detail_screen_recycler_view);
             mToolbar = contentView.findViewById(R.id.action_bar);
             mSettingsMenuItem = mToolbar.getMenu().findItem(R.id.settings_menu_id);
+            mScrollListener = scrollListener;
         }
 
         /** Sets the adapter for the RecyclerView that contains the profile items. */
@@ -82,9 +83,11 @@ public class DetailScreenViewBinder {
             adapter.registerType(DetailItemType.PROFILE, AutofillProfileItemViewBinder::create,
                     AutofillProfileItemViewBinder::bind);
             view.setAdapter(adapter);
-        } else if (propertyKey == DETAIL_SCREEN_LIST_HEIGHT_IN_PX) {
-            view.mSheetItemListContainer.getLayoutParams().height =
-                    model.get(DETAIL_SCREEN_LIST_HEIGHT_IN_PX);
+        } else if (propertyKey == CURRENT_SCREEN && model.get(CURRENT_SCREEN) == HOME_SCREEN) {
+            view.mRecyclerView.suppressLayout(/*suppress=*/false);
+            ((LinearLayoutManager) view.mRecyclerView.getLayoutManager())
+                    .scrollToPositionWithOffset(/*position=*/0, /*offset=*/0);
+            view.mScrollListener.reset();
         }
     }
 }

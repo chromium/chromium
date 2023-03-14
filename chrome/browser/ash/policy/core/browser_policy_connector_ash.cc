@@ -322,12 +322,15 @@ void BrowserPolicyConnectorAsh::Init(
           chromeos::PowerManagerClient::Get(),
           new ash::AdbSideloadingPolicyChangeNotification());
 
+  reboot_notifications_scheduler_ =
+      std::make_unique<RebootNotificationsScheduler>();
+
   device_scheduled_reboot_handler_ =
       std::make_unique<DeviceScheduledRebootHandler>(
           ash::CrosSettings::Get(),
           std::make_unique<ScheduledTaskExecutorImpl>(
               DeviceScheduledRebootHandler::kRebootTimerTag),
-          std::make_unique<RebootNotificationsScheduler>());
+          reboot_notifications_scheduler_.get());
 }
 
 void BrowserPolicyConnectorAsh::PreShutdown() {
@@ -367,6 +370,8 @@ void BrowserPolicyConnectorAsh::Shutdown() {
   device_scheduled_update_checker_.reset();
 
   device_scheduled_reboot_handler_.reset();
+
+  reboot_notifications_scheduler_.reset();
 
   // The policy handler is registered as an observer to BuildState which gets
   // destructed before BrowserPolicyConnectorAsh. So destruct the policy

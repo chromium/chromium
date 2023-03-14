@@ -45,6 +45,7 @@
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/network_context.h"
+#include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -68,6 +69,14 @@ const uint64_t kCertValidityPeriodEnforcementDate =
 const int kOutputBufferSize = 4096;
 
 constexpr char kTestSxgInnerURL[] = "https://test.example.org/test/";
+
+bool IsCTSupported() {
+#if BUILDFLAG(IS_CT_SUPPORTED)
+  return true;
+#else
+  return false;
+#endif
+}
 
 // "wildcard_example.org.public.pem.cbor" has dummy data in its "ocsp" field.
 constexpr base::StringPiece kDummyOCSPDer = "OCSP";
@@ -481,7 +490,10 @@ TEST_P(SignedExchangeHandlerTest, Simple) {
   EXPECT_EQ(rv, static_cast<int>(expected_payload.size()));
   ExpectHistogramValues(
       SignedExchangeSignatureVerifier::Result::kSuccess, net::OK,
-      net::ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
+      /*ct_result=*/
+      IsCTSupported() ? net::ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS
+                      : net::ct::CTPolicyCompliance::
+                            CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE,
       net::OCSPVerifyResult::PROVIDED, net::OCSPRevocationStatus::GOOD);
 }
 
@@ -844,6 +856,10 @@ TEST_P(SignedExchangeHandlerTest, CertVerifierParams) {
 }
 
 TEST_P(SignedExchangeHandlerTest, NotEnoughSCTsFromPubliclyTrustedCert) {
+  if (!IsCTSupported()) {
+    GTEST_SKIP() << "CT not supported";
+  }
+
   mock_cert_fetcher_factory_->ExpectFetch(
       GURL("https://cert.example.org/cert.msg"),
       GetTestFileContents("test.example.org.public.pem.cbor"));
@@ -875,6 +891,10 @@ TEST_P(SignedExchangeHandlerTest, NotEnoughSCTsFromPubliclyTrustedCert) {
 }
 
 TEST_P(SignedExchangeHandlerTest, ReportUsesNetworkIsolationKey) {
+  if (!IsCTSupported()) {
+    GTEST_SKIP() << "CT not supported";
+  }
+
   const net::NetworkAnonymizationKey kNetworkIsolationKey =
       net::NetworkAnonymizationKey::CreateTransient();
   const GURL kReportUri = GURL("https://report.test/");
@@ -914,6 +934,10 @@ TEST_P(SignedExchangeHandlerTest, ReportUsesNetworkIsolationKey) {
 }
 
 TEST_P(SignedExchangeHandlerTest, CTRequirementsMetForPubliclyTrustedCert) {
+  if (!IsCTSupported()) {
+    GTEST_SKIP() << "CT not supported";
+  }
+
   mock_cert_fetcher_factory_->ExpectFetch(
       GURL("https://cert.example.org/cert.msg"),
       GetTestFileContents("test.example.org.public.pem.cbor"));
@@ -954,6 +978,9 @@ TEST_P(SignedExchangeHandlerTest, CTRequirementsMetForPubliclyTrustedCert) {
 }
 
 TEST_P(SignedExchangeHandlerTest, CTNotRequiredForLocalAnchors) {
+  if (!IsCTSupported()) {
+    GTEST_SKIP() << "CT not supported";
+  }
   mock_cert_fetcher_factory_->ExpectFetch(
       GURL("https://cert.example.org/cert.msg"),
       GetTestFileContents("test.example.org.public.pem.cbor"));
@@ -997,6 +1024,10 @@ TEST_P(SignedExchangeHandlerTest, CTNotRequiredForLocalAnchors) {
 // Test that SignedExchangeHandler calls CTPolicyEnforcer with appropriate
 // arguments.
 TEST_P(SignedExchangeHandlerTest, CTVerifierParams) {
+  if (!IsCTSupported()) {
+    GTEST_SKIP() << "CT not supported";
+  }
+
   mock_cert_fetcher_factory_->ExpectFetch(
       GURL("https://cert.example.org/cert.msg"),
       GetTestFileContents("test.example.org.public.pem.cbor"));
@@ -1045,6 +1076,9 @@ TEST_P(SignedExchangeHandlerTest, CTVerifierParams) {
 
 // Test that SignedExchangeHandler calls SCTAuditingDelegate to enqueue reports.
 TEST_P(SignedExchangeHandlerTest, SCTAuditingReportEnqueued) {
+  if (!IsCTSupported()) {
+    GTEST_SKIP() << "CT not supported";
+  }
   mock_cert_fetcher_factory_->ExpectFetch(
       GURL("https://cert.example.org/cert.msg"),
       GetTestFileContents("test.example.org.public.pem.cbor"));

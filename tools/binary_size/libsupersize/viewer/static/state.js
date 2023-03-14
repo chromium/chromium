@@ -294,6 +294,30 @@ class MainState {
   }
 
   /**
+   * @return {?function(string): boolean}
+   * @public
+   */
+  getFilter() {
+    const getRegExpOrNull = (s) => {
+      if (s) {
+        try {
+          return new RegExp(s);
+        } catch (err) {
+        }
+      }
+      return null;
+    };
+
+    const includeRE = getRegExpOrNull(this.stInclude.get());
+    const excludeRE = getRegExpOrNull(this.stExclude.get());
+    if (includeRE) {
+      return excludeRE ? (s) => includeRE.test(s) && !excludeRE.test(s) :
+                         (s) => includeRE.test(s);
+    }
+    return excludeRE ? (s) => !excludeRE.test(s) : null;
+  }
+
+  /**
    * @return {boolean}
    * @public
    */
@@ -456,38 +480,48 @@ function _startListeners() {
 }
 
 function _makeIconTemplateGetter() {
-  const getIcon = (q) => assertNotNull(g_el.divIcons.querySelector(q));
+  const getSymbolIcon = (q) => assertNotNull(g_el.divIcons.querySelector(q));
 
   /**
    * @type {{[type:string]: SVGSVGElement}} Icon elements
    * that correspond to each symbol type.
    */
   const symbolIcons = {
-    D: getIcon('.foldericon'),
-    G: getIcon('.groupicon'),
-    J: getIcon('.javaclassicon'),
-    F: getIcon('.fileicon'),
-    b: getIcon('.bssicon'),
-    d: getIcon('.dataicon'),
-    r: getIcon('.readonlyicon'),
-    t: getIcon('.codeicon'),
-    R: getIcon('.relroicon'),
-    x: getIcon('.dexicon'),
-    m: getIcon('.dexmethodicon'),
-    p: getIcon('.localpakicon'),
-    P: getIcon('.nonlocalpakicon'),
-    o: getIcon('.othericon'),  // used as default icon
+    D: getSymbolIcon('.foldericon'),
+    G: getSymbolIcon('.groupicon'),
+    J: getSymbolIcon('.javaclassicon'),
+    F: getSymbolIcon('.fileicon'),
+    b: getSymbolIcon('.bssicon'),
+    d: getSymbolIcon('.dataicon'),
+    r: getSymbolIcon('.readonlyicon'),
+    t: getSymbolIcon('.codeicon'),
+    R: getSymbolIcon('.relroicon'),
+    x: getSymbolIcon('.dexicon'),
+    m: getSymbolIcon('.dexmethodicon'),
+    p: getSymbolIcon('.localpakicon'),
+    P: getSymbolIcon('.nonlocalpakicon'),
+    o: getSymbolIcon('.othericon'),  // used as default icon
     '*': null,
   };
 
-  const getDiffStatusIcons = (q) => {
+  const getDiffStatusIcon = (q) => {
     return assertNotNull(g_el.divDiffStatusIcons.querySelector(q));
   };
   const statusIcons = {
-    added: getDiffStatusIcons('.addedicon'),
-    removed: getDiffStatusIcons('.removedicon'),
-    changed: getDiffStatusIcons('.changedicon'),
-    unchanged: getDiffStatusIcons('.unchangedicon'),
+    added: getDiffStatusIcon('.addedicon'),
+    removed: getDiffStatusIcon('.removedicon'),
+    changed: getDiffStatusIcon('.changedicon'),
+    unchanged: getDiffStatusIcon('.unchangedicon'),
+  };
+
+  const getMetricsIcon = (q) => {
+    return assertNotNull(g_el.divMetricsIcons.querySelector(q))
+  };
+  const metricsIcons = {
+    group: getSymbolIcon('.groupicon'),  // Reuse.
+    elf: getSymbolIcon('.fileicon'),     // Reuse.
+    dex: getSymbolIcon('.dexicon'),      // Reuse.
+    metrics: getMetricsIcon('.metricsicon'),
   };
 
   /** @type {Map<string, {color:string, description:string}>} */
@@ -563,15 +597,40 @@ function _makeIconTemplateGetter() {
     return statusIcons[key].cloneNode(true);
   }
 
+  /**
+   * @param {string} key
+   * @return {SVGSVGElement}
+   */
+  function getMetricsIconTemplate(key) {
+    return metricsIcons[key].cloneNode(true);
+  }
+
   return {
     getIconTemplate,
     getIconTemplateWithFill,
     getIconStyle,
-    getDiffStatusTemplate
+    getDiffStatusTemplate,
+    getMetricsIconTemplate,
   };
 }
 
 function _makeSizeTextGetter() {
+  /**
+   * @param {number} bytes
+   * @return {!DocumentFragment}
+   */
+  function makeBytesElement(bytes) {
+    const unit = /** @type {string} */ (state.stByteUnit.get());
+    const suffix = _BYTE_UNITS[unit];
+    // Format |bytes| as a number with 2 digits after the decimal point
+    const text = formatNumber(bytes / suffix, 2, 2);
+    const textNode = document.createTextNode(`${text} `);
+    // Display the suffix with a smaller font
+    const suffixElement = dom.textElement('small', unit);
+
+    return dom.createFragment([textNode, suffixElement]);
+  }
+
   /**
    * Create the contents for the size element of a tree node.
    * The unit to use is selected from the current state.
@@ -611,17 +670,9 @@ function _makeSizeTextGetter() {
         descriptionToks.push(`for 1 of ${node.numAliases} aliases`);
       }
 
-      const unit = /** @type {string} */ (state.stByteUnit.get());
-      const suffix = _BYTE_UNITS[unit];
-      // Format |bytes| as a number with 2 digits after the decimal point
-      const text = formatNumber(bytes / suffix, 2, 2);
-      const textNode = document.createTextNode(`${text} `);
-      // Display the suffix with a smaller font
-      const suffixElement = dom.textElement('small', unit);
-
       return {
         description: descriptionToks.join(' '),
-        element: dom.createFragment([textNode, suffixElement]),
+        element: makeBytesElement(bytes),
         value: bytes,
       };
     }
@@ -631,9 +682,10 @@ function _makeSizeTextGetter() {
    * Set classes on an element based on the size it represents.
    * @param {HTMLElement} sizeElement
    * @param {number} value
+   * @param {boolean} isCount Whether |value| is count (true) or byte (false).
    */
-  function setSizeClasses(sizeElement, value) {
-    const cutOff = state.stMethodCount.get() ? 10 : 50000;
+  function setSizeClasses(sizeElement, value, isCount) {
+    const cutOff = isCount ? 10 : 50000;
     const shouldHaveStyle = state.getDiffMode() && Math.abs(value) > cutOff;
 
     if (shouldHaveStyle) {
@@ -649,7 +701,7 @@ function _makeSizeTextGetter() {
     }
   }
 
-  return {getSizeContents, setSizeClasses};
+  return {makeBytesElement, getSizeContents, setSizeClasses};
 }
 
 /** Global UI State. */
@@ -661,7 +713,9 @@ const {
   getIconTemplate,
   getIconTemplateWithFill,
   getIconStyle,
-  getDiffStatusTemplate
+  getDiffStatusTemplate,
+  getMetricsIconTemplate,
 } = _makeIconTemplateGetter();
-const {getSizeContents, setSizeClasses} = _makeSizeTextGetter();
+const {makeBytesElement, getSizeContents, setSizeClasses} =
+    _makeSizeTextGetter();
 _startListeners();

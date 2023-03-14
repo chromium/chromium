@@ -151,12 +151,14 @@ void AutofillProviderAndroid::StartNewSession(AndroidAutofillManager* manager,
 
   form_ = std::make_unique<FormDataAndroid>(form);
   field_id_ = field.global_id();
+  field_type_group_ = manager->ComputeFieldTypeGroupForField(form, field);
   triggered_origin_ = field.origin;
 
   size_t index;
   if (!form_->GetFieldIndex(field, &index)) {
     form_.reset();
     field_id_ = {};
+    field_type_group_ = FieldTypeGroup::kNoGroup;
     triggered_origin_ = {};
     return;
   }
@@ -185,7 +187,8 @@ void AutofillProviderAndroid::OnAutofillAvailable(JNIEnv* env,
     form_->UpdateFromJava();
     const FormData& form = form_->form();
 
-    FillOrPreviewForm(manager_.get(), form, triggered_origin_);
+    FillOrPreviewForm(manager_.get(), form, field_type_group_,
+                      triggered_origin_);
   }
 }
 
@@ -433,6 +436,13 @@ void AutofillProviderAndroid::Reset(AndroidAutofillManager* manager) {
   }
 }
 
+bool AutofillProviderAndroid::GetCachedIsAutofilled(
+    const FormFieldData& field) const {
+  size_t field_index = 0u;
+  return form_ && form_->GetFieldIndex(field, &field_index) &&
+         form_->form().fields[field_index].is_autofilled;
+}
+
 bool AutofillProviderAndroid::IsCurrentlyLinkedManager(
     AndroidAutofillManager* manager) {
   return manager == manager_.get();
@@ -451,6 +461,7 @@ gfx::RectF AutofillProviderAndroid::ToClientAreaBound(
 void AutofillProviderAndroid::Reset() {
   form_.reset(nullptr);
   field_id_ = {};
+  field_type_group_ = FieldTypeGroup::kNoGroup;
   triggered_origin_ = {};
   check_submission_ = false;
 }

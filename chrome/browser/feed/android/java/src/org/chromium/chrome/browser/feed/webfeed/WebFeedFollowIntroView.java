@@ -49,7 +49,7 @@ class WebFeedFollowIntroView {
     private final Tracker mFeatureEngagementTracker;
     private final Runnable mIntroDismissedCallback;
 
-    private ShadowedClickableTextBubble mFollowBubble;
+    private ClickableTextBubble mFollowBubble;
     private final int mShowTimeoutMillis;
 
     /**
@@ -81,7 +81,7 @@ class WebFeedFollowIntroView {
             return;
         }
 
-        mFollowBubble = new ShadowedClickableTextBubble(mActivity, mMenuButtonAnchorView,
+        mFollowBubble = new ClickableTextBubble(mActivity, mMenuButtonAnchorView,
                 R.string.menu_follow, R.string.menu_follow, createRectProvider(), R.drawable.ic_add,
                 ChromeAccessibilityUtil.get().isAccessibilityEnabled(), onTouchListener,
                 /*inverseColor*/ false);
@@ -143,10 +143,9 @@ class WebFeedFollowIntroView {
     }
 
     void showFollowingBubble() {
-        TextBubble followingBubble = new ShadowedClickableTextBubble(mActivity,
-                mMenuButtonAnchorView, R.string.menu_following, R.string.menu_following,
-                createRectProvider(), R.drawable.ic_done_blue,
-                ChromeAccessibilityUtil.get().isAccessibilityEnabled(),
+        TextBubble followingBubble = new ClickableTextBubble(mActivity, mMenuButtonAnchorView,
+                R.string.menu_following, R.string.menu_following, createRectProvider(),
+                R.drawable.ic_done_blue, ChromeAccessibilityUtil.get().isAccessibilityEnabled(),
                 /* touchListener */ null, /* isInverseColor */ false);
         followingBubble.setDismissOnTouchInteraction(true);
         followingBubble.show();

@@ -33,7 +33,7 @@ import {getTemplate} from './per_device_pointing_stick.html.js';
 const SettingsPerDevicePointingStickElementBase =
     RouteObserverMixin(PolymerElement);
 
-class SettingsPerDevicePointingStickElement extends
+export class SettingsPerDevicePointingStickElement extends
     SettingsPerDevicePointingStickElementBase {
   static get is(): string {
     return 'settings-per-device-pointing-stick';
@@ -57,7 +57,7 @@ class SettingsPerDevicePointingStickElement extends
 
   constructor() {
     super();
-    this.fetchConnectedPointingSticks();
+    this.observePointingStickSettings();
   }
 
   override currentRouteChanged(route: Route): void {
@@ -67,9 +67,12 @@ class SettingsPerDevicePointingStickElement extends
     }
   }
 
-  private async fetchConnectedPointingSticks(): Promise<void> {
-    this.pointingSticks = await this.inputDeviceSettingsProvider
-                              .getConnectedPointingStickSettings();
+  private async observePointingStickSettings(): Promise<void> {
+    this.inputDeviceSettingsProvider.observePointingStickSettings(this);
+  }
+
+  onPointingStickListUpdated(pointingSticks: PointingStick[]): void {
+    this.pointingSticks = pointingSticks;
   }
 }
 

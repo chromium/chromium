@@ -36,10 +36,10 @@
 
 # This field is a list of strings which describe the group of people responsible
 # for maintaining the policy and can help answer questions or solve issues with
-# the policy. The entries can be either emails of committers or
-# file:// references to OWNERS files in the Chromium repository.
+# the policy. The entries can be either emails of committers or file://
+# references to OWNERS files in the Chromium repository.
 # There should be at least 2 owners per policies, and ideally a file://
-# references to an OWNERS files
+# references to an OWNERS files.
 owners:
 - your-ldap@chromium.org
 - file://components/policy/OWNERS
@@ -96,7 +96,6 @@ supported_on:
 - android:106-
 - chrome.*:105-
 - chrome_os:100-1001
-
 
 # Optional field that is `false` by default.
 # Set to true if the policy has been deprecated.
@@ -289,7 +288,7 @@ items:
   value: null
 
 # Indicates the behavior of the controlled setting/feature when the policy is no
-# set. If this is set to `true`, when the poolicy is not set, the feature
+# set. If this is set to `true`, when the policy is not set, the feature
 # controlled by the policy behaves as if the policy was set to `true`.
 # If the default value cannot be expressed with the given type and is equivalent
 # to unset, it should be represent with `null`.

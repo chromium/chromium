@@ -335,8 +335,8 @@ ScriptPromise CustomElementRegistry::whenDefined(
   const auto it = when_defined_promise_map_.find(name);
   if (it != when_defined_promise_map_.end())
     return it->value->Promise();
-  auto* new_resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* new_resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   when_defined_promise_map_.insert(name, new_resolver);
   return new_resolver->Promise();
 }

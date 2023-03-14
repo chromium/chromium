@@ -42,6 +42,7 @@ class NearbyShareController;
 class NearbyShareDelegate;
 class SavedDeskDelegate;
 class SystemSoundsDelegate;
+class UserEducationDelegate;
 
 // Delegate of the Shell.
 class ASH_EXPORT ShellDelegate {
@@ -85,6 +86,10 @@ class ASH_EXPORT ShellDelegate {
 
   // Creates and returns the delegate of the System Sounds feature.
   virtual std::unique_ptr<SystemSoundsDelegate> CreateSystemSoundsDelegate()
+      const = 0;
+
+  // Creates and returns the delegate for user education features.
+  virtual std::unique_ptr<UserEducationDelegate> CreateUserEducationDelegate()
       const = 0;
 
   // Returns the geolocation loader factory used to initialize geolocation

@@ -104,9 +104,8 @@ const std::vector<const PasswordForm*>& PasswordDataForUI::GetBestMatches()
 std::vector<const PasswordForm*> PasswordDataForUI::GetFederatedMatches()
     const {
   std::vector<const PasswordForm*> result(federated_matches_.size());
-  std::transform(federated_matches_.begin(), federated_matches_.end(),
-                 result.begin(),
-                 [](const PasswordForm& form) { return &form; });
+  base::ranges::transform(federated_matches_, result.begin(),
+                          [](const PasswordForm& form) { return &form; });
   return result;
 }
 

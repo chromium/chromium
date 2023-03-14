@@ -233,27 +233,10 @@
         ],
         'test_suites': {
           'skylab_tests': 'lacros_skylab_tests_amd64_generic',
-        },
-        'os_type': 'chromeos',
-      },
-      'lacros-arm-generic-chrome': {
-        'additional_compile_targets': [
-          'chrome',
-          'linux_symbols',
-          'symupload',
-          'strip_lacros_files'
-        ],
-        'mixins': [
-          'chrome-swarming-pool',
-        ],
-        'test_suites': {
-          'gtest_tests': 'lacros_device_arm_tests',
           'isolated_scripts': 'chrome_sizes',
         },
         'os_type': 'chromeos',
       },
-      # TODO(crbug.com/1286898): Merge this to lacros-amd64-generic-chrome
-      # once it's proven to be stable and easy to debug.
       'lacros-arm-generic-chrome-skylab': {
         'additional_compile_targets': [
           'chrome',
@@ -266,20 +249,6 @@
         ],
         'test_suites': {
           'skylab_tests': 'lacros_skylab_arm',
-        },
-        'os_type': 'chromeos',
-      },
-      'lacros-arm64-generic-chrome': {
-        'additional_compile_targets': [
-          'chrome',
-          'linux_symbols',
-          'symupload',
-          'strip_lacros_files'
-        ],
-        'mixins': [
-          'chrome-swarming-pool',
-        ],
-        'test_suites': {
           'isolated_scripts': 'chrome_sizes',
         },
         'os_type': 'chromeos',
@@ -296,6 +265,7 @@
         ],
         'test_suites': {
           'skylab_tests': 'lacros_skylab_arm64',
+          'isolated_scripts': 'chrome_sizes',
         },
         'os_type': 'chromeos',
       },
@@ -352,6 +322,12 @@
         'test_suites': {
           'isolated_scripts': 'chrome_isolated_script_tests',
         },
+      },
+      'win-branded-rel': {
+        'additional_compile_targets': [
+          'chrome',
+          'chrome_official_builder',
+        ],
       },
       'win-chrome': {
         'additional_compile_targets': [
@@ -527,6 +503,24 @@
     'name': 'chromium.accessibility',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
+      'fuchsia-x64-accessibility-rel': {
+        'additional_compile_targets': [
+          'content_browsertests',
+        ],
+        'mixins': [
+          'linux-bionic',
+        ],
+        'test_suites': {
+          'gtest_tests': 'fuchsia_accessibility_browsertests',
+        },
+        'swarming': {
+          'dimension_sets': [
+            {
+              'kvm': '1',
+            },
+          ],
+        },
+      },
       'linux-blink-web-tests-force-accessibility-rel': {
         'additional_compile_targets': [
           'blink_tests',
@@ -999,7 +993,6 @@
           'gtest_tests': 'android_pie_gtests',
         }
       },
-      # To be kept in sync with android-pie-arm64-rel-rts
       'android-pie-arm64-rel': {
         'mixins': [
           'has_native_resultdb_integration',
@@ -1745,7 +1738,6 @@
         'mixins': [
           'arm64',
           'docker',
-          'lifo-test-pool',
           'linux-focal',
         ],
       },
@@ -2132,6 +2124,29 @@
           'gtest_tests': 'chromium_android_gtests',
         },
         'os_type': 'android',
+      },
+      'android-x86-code-coverage': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'isolate_profile_data',
+          'nougat-x86-emulator',
+          'emulator-4-cores',
+          'linux-bionic',
+          'x86-64',
+        ],
+        'additional_compile_targets': [
+          'cronet_test_instrumentation_apk',
+          'chrome_nocompile_tests',
+        ],
+        'args': [
+          '--use-persistent-shell',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'android_nougat_emulator_gtests',
+          'isolated_scripts': 'nougat_isolated_scripts',
+          'scripts': 'chromium_android_scripts',
+        },
       },
       'fuchsia-code-coverage': {
         'additional_compile_targets': [
@@ -2653,7 +2668,6 @@
         'mixins': [
           'arm64',
           'docker',
-          'lifo-test-pool',
           'linux-focal',
         ],
       },
@@ -2668,7 +2682,6 @@
         'mixins': [
           'arm64',
           'docker',
-          'lifo-test-pool',
           'linux-focal',
         ],
       },
@@ -2737,7 +2750,6 @@
         'mixins': [
           'arm64',
           'docker',
-          'lifo-test-pool',
           'linux-focal',
         ],
       },
@@ -2752,7 +2764,6 @@
         'mixins': [
           'arm64',
           'docker',
-          'lifo-test-pool',
           'linux-focal',
         ],
       },
@@ -3214,6 +3225,7 @@
         ],
         'mixins': [
           'has_native_resultdb_integration',
+          'mac_12_arm64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_14_main',
@@ -3313,9 +3325,6 @@
           'has_native_resultdb_integration',
           'mac_12_x64',
           'mac_toolchain',
-          'out_dir_arg',
-          'xcode_14_main',
-          'xctest',
         ],
         'test_suites': {
           'isolated_scripts': 'wpt_tests_ios',
@@ -3327,15 +3336,12 @@
         ],
         'mixins': [
           'has_native_resultdb_integration',
-          'mac_12_x64',
+          'mac_13_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_14_main',
           'xctest',
         ],
-        'test_suites': {
-          'isolated_scripts': 'ios15_beta_simulator_tests'
-        },
       },
       'ios15-sdk-simulator': {
         'additional_compile_targets': [
@@ -3343,7 +3349,7 @@
         ],
         'mixins': [
           'has_native_resultdb_integration',
-          'mac_12_x64',
+          'mac_13_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_14_main',
@@ -3361,7 +3367,7 @@
         ],
         'mixins': [
           'has_native_resultdb_integration',
-          'mac_12_x64',
+          'mac_13_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_14_beta',
@@ -3384,7 +3390,7 @@
         ],
         'mixins': [
           'has_native_resultdb_integration',
-          'mac_12_t2_x64',
+          'mac_13_x64',
           'mac_toolchain',
           'out_dir_arg',
           'xcode_14_beta',
@@ -3555,6 +3561,14 @@
         ],
         'test_suites': {
           'gtest_tests': 'linux_lacros_version_skew_tests',
+        },
+      },
+      'linux-network-sandbox-rel': {
+        'mixins': [
+          'linux-bionic',
+        ],
+        'test_suites': {
+          'gtest_tests': 'network_sandbox_browser_tests',
         },
       },
       'linux-perfetto-rel': {
@@ -3740,6 +3754,28 @@
         },
         'os_type': 'mac',
       },
+      'mac13-arm64-wpt-content-shell-fyi-rel': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'isolate_profile_data',
+          'mac_beta_x64',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'wpt_web_tests_content_shell',
+        },
+        'os_type': 'mac',
+      },
+      'mac13-wpt-content-shell-fyi-rel': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'isolate_profile_data',
+          'mac_beta_arm64',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'wpt_web_tests_content_shell',
+        },
+        'os_type': 'mac',
+      },
       'win-annotator-rel': {
         'test_suites': {
           'scripts': 'test_traffic_annotation_auditor_script',
@@ -3778,6 +3814,15 @@
         ],
         'test_suites': {
           'gtest_tests': 'fieldtrial_browser_tests',
+        },
+      },
+      'win-network-sandbox-tester': {
+        'mixins': [
+          'win10',
+          'x86-64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'network_sandbox_browser_tests',
         },
       },
       'win-perfetto-rel': {
@@ -4573,7 +4618,8 @@
         # the gpu_noop_sleep_telemetry_test test should be used. Otherwise, this
         # should have the same test_suites as 'Mac FYI Retina Release (AMD)'.
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+          'gtest_tests': 'gpu_fyi_mac_release_gtests',
+          'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
         },
       },
       'Mac FYI Experimental Retina Release (NVIDIA)': {
@@ -5513,7 +5559,7 @@
     'name': 'chromium.rust',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
-      'android-rust-arm-dbg': {
+      'android-rust-arm32-rel': {
         'additional_compile_targets': [
           'mojo_rust',
           'rust_build_tests',
@@ -5526,7 +5572,20 @@
           # TODO(https://crbug.com/1260120): Cover `rust_native_tests` here.
         },
       },
-      'android-rust-arm-rel': {
+      'android-rust-arm64-dbg': {
+        'additional_compile_targets': [
+          'mojo_rust',
+          'rust_build_tests',
+        ],
+        'mixins': [ 'pie_fleet' ],
+        'test_suites': {
+          'gtest_tests': 'rust_gtests',
+          # Currently `can_build_rust_unit_tests` is false on Android (because
+          # we need to construct an APK instead of compile an exe).
+          # TODO(https://crbug.com/1260120): Cover `rust_native_tests` here.
+        },
+      },
+      'android-rust-arm64-rel': {
         'additional_compile_targets': [
           'mojo_rust',
           'rust_build_tests',
@@ -5584,7 +5643,58 @@
           'isolated_scripts': 'rust_native_tests',
         },
       },
-
+      'mac-rust-x64-rel' : {
+        'additional_compile_targets': [
+          'gnrt_unittests',
+          'mojo_rust',
+          'mojo_rust_tests',
+          'rust_build_tests',
+        ],
+        'mixins': [
+          'has_native_resultdb_integration',
+          'mac_12_x64',
+          'mac_toolchain',
+          'out_dir_arg',
+          'xcode_14_main',
+          'xctest',
+        ],
+        'test_suites': {
+          'gtest_tests': 'rust_gtests',
+          'isolated_scripts': 'rust_native_tests',
+        },
+      },
+      'win-rust-x64-dbg' : {
+        'additional_compile_targets': [
+          'gnrt_unittests',
+          'mojo_rust',
+          'mojo_rust_tests',
+          'rust_build_tests',
+        ],
+        'mixins': [
+          'win10-any',
+          'x86-64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'rust_gtests',
+          'isolated_scripts': 'rust_native_tests',
+        },
+      },
+      'win-rust-x64-rel' : {
+        'additional_compile_targets': [
+          'gnrt_unittests',
+          'mojo_rust',
+          'mojo_rust_tests',
+          'rust_build_tests',
+        ],
+        'mixins': [
+          'win10-any',
+          'x86-64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'rust_gtests',
+          'isolated_scripts': 'rust_native_tests',
+        },
+      },
     },
   },
   {

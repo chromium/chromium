@@ -5,13 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_DISCOVER_FEED_DISCOVER_FEED_REFRESHER_H_
 #define IOS_CHROME_BROWSER_DISCOVER_FEED_DISCOVER_FEED_REFRESHER_H_
 
+enum class FeedRefreshTrigger;
+
 // An interface to refresh the Discover Feed.
 class DiscoverFeedRefresher {
  public:
-  // Refreshes the Discover Feed.
-  // DEPRECATED: use `RefreshFeed(bool feed_visible)`.
-  virtual void RefreshFeed() = 0;
-
   // Refreshes the Discover Feed, indicating whether the feed is visible at the
   // time of the request.
   virtual void RefreshFeed(bool feed_visible) {}
@@ -20,6 +18,10 @@ class DiscoverFeedRefresher {
   // is needed or not. This should only be called when the feed is visible to
   // the user.
   virtual void RefreshFeedIfNeeded() = 0;
+
+  // Refreshes the Discover Feed. `trigger` describes the context of the
+  // refresh.
+  virtual void RefreshFeed(FeedRefreshTrigger trigger) = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_DISCOVER_FEED_DISCOVER_FEED_REFRESHER_H_

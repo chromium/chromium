@@ -7,6 +7,8 @@
 #include "ash/wm/window_state.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
@@ -21,6 +23,12 @@ class OverlayNativeViewHost final : public views::NativeViewHost {
   OverlayNativeViewHost& operator=(const OverlayNativeViewHost&) = delete;
   ~OverlayNativeViewHost() override = default;
   METADATA_HEADER(OverlayNativeViewHost);
+
+  // views::View:
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
+    node_data->role = ax::mojom::Role::kApplication;
+    node_data->SetNameExplicitlyEmpty();
+  }
 
   // views::NativeViewHost:
   void OnFocus() override {

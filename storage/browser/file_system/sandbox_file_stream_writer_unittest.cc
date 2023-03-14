@@ -76,6 +76,7 @@ class SandboxFileStreamWriterTest : public FileStreamWriterTest {
   }
 
   void TearDown() override {
+    file_system_context_ = nullptr;
     quota_manager_proxy_ = nullptr;
     quota_manager_ = nullptr;
     base::RunLoop().RunUntilIdle();
@@ -84,9 +85,9 @@ class SandboxFileStreamWriterTest : public FileStreamWriterTest {
  protected:
   scoped_refptr<MockSpecialStoragePolicy> special_storage_policy_;
 
-  scoped_refptr<FileSystemContext> file_system_context_;
   scoped_refptr<MockQuotaManager> quota_manager_;
   scoped_refptr<MockQuotaManagerProxy> quota_manager_proxy_;
+  scoped_refptr<FileSystemContext> file_system_context_;
 
   struct quota_usage_and_info {
     blink::mojom::QuotaStatusCode status;
@@ -199,7 +200,7 @@ class SandboxFileStreamWriterTest : public FileStreamWriterTest {
     QuotaErrorOr<BucketInfo> result = quota_manager_proxy_sync.GetBucket(
         blink::StorageKey::CreateFromStringForTesting(kURLOrigin),
         kDefaultBucketName, blink::mojom::StorageType::kTemporary);
-    EXPECT_TRUE(result.ok());
+    EXPECT_TRUE(result.has_value());
     EXPECT_EQ(result->name, kDefaultBucketName);
     EXPECT_EQ(result->storage_key,
               blink::StorageKey::CreateFromStringForTesting(kURLOrigin));

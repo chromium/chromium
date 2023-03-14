@@ -75,6 +75,7 @@ class AuthenticatorRequestDialogModel {
     kErrorNoAvailableTransports,
     kErrorNoPasskeys,
     kErrorInternalUnrecognized,
+    kErrorWindowsHelloNotEnabled,
 
     // The request is already complete, but the error dialog should wait
     // until user acknowledgement.
@@ -263,6 +264,7 @@ class AuthenticatorRequestDialogModel {
            current_step() == Step::kKeyNotRegistered ||
            current_step() == Step::kKeyAlreadyRegistered ||
            current_step() == Step::kMissingCapability ||
+           current_step() == Step::kErrorWindowsHelloNotEnabled ||
            current_step() == Step::kClosed;
   }
 

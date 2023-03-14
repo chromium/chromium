@@ -13,12 +13,11 @@
 #include <string>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/win/windows_types.h"
-
-class WorkItemList;
+#include "chrome/installer/util/work_item_list.h"
 
 namespace base {
-class CommandLine;
 class FilePath;
 }  // namespace base
 
@@ -26,7 +25,7 @@ namespace updater {
 
 enum class UpdaterScope;
 
-bool RegisterWakeTask(const base::CommandLine& run_command, UpdaterScope scope);
+std::wstring GetTaskName(UpdaterScope scope);
 void UnregisterWakeTask(UpdaterScope scope);
 
 std::wstring GetProgIdForClsid(REFCLSID clsid);
@@ -100,6 +99,26 @@ void RegisterUserRunAtStartup(const std::wstring& run_value_name,
 // Deletes the value in the Run key in the user registry under the value
 // `run_value_name`.
 bool UnregisterUserRunAtStartup(const std::wstring& run_value_name);
+
+class RegisterWakeTaskWorkItem : public WorkItem {
+ public:
+  RegisterWakeTaskWorkItem(const base::CommandLine& run_command,
+                           UpdaterScope scope);
+
+  RegisterWakeTaskWorkItem(const RegisterWakeTaskWorkItem&) = delete;
+  RegisterWakeTaskWorkItem& operator=(const RegisterWakeTaskWorkItem&) = delete;
+
+  ~RegisterWakeTaskWorkItem() override;
+
+ private:
+  // Overrides of WorkItem.
+  bool DoImpl() override;
+  void RollbackImpl() override;
+
+  const base::CommandLine run_command_;
+  const UpdaterScope scope_;
+  std::wstring task_name_;
+};
 
 }  // namespace updater
 

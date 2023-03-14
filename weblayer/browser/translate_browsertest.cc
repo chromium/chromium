@@ -326,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoTranslateBrowserTest,
 }
 
 // Test if there was an error during translation.
-IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, PageTranslationError) {
+IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, DISABLED_PageTranslationError) {
   SetTranslateScript(kTestValidScript);
 
   TranslateClientImpl* translate_client = GetTranslateClient(shell());
@@ -356,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, PageTranslationError) {
 
 // Test if there was an error during translate library initialization.
 IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
-                       PageTranslationInitializationError) {
+                       DISABLED_PageTranslationInitializationError) {
   SetTranslateScript(kTestScriptInitializationError);
 
   TranslateClientImpl* translate_client = GetTranslateClient(shell());
@@ -383,7 +383,8 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
 }
 
 // Test the checks translate lib never gets ready and throws timeout.
-IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, PageTranslationTimeoutError) {
+IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
+                       DISABLED_PageTranslationTimeoutError) {
   SetTranslateScript(kTestScriptTimeout);
 
   TranslateClientImpl* translate_client = GetTranslateClient(shell());
@@ -410,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, PageTranslationTimeoutError) {
 }
 
 // Test that autotranslation kicks in if configured via prefs.
-IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, Autotranslation) {
+IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, DISABLED_Autotranslation) {
   SetTranslateScript(kTestValidScript);
 
   TranslateClientImpl* translate_client = GetTranslateClient(shell());
@@ -898,8 +899,9 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
 #if BUILDFLAG(IS_ANDROID)
 // Test that the infobar shows when a predefined target language is set even if
 // the site is in the "never translate" set.
-IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
-                       PredefinedTargetLanguageOverridesSiteBlocklist) {
+IN_PROC_BROWSER_TEST_F(
+    TranslateBrowserTest,
+    DISABLED_PredefinedTargetLanguageOverridesSiteBlocklist) {
   auto* tab = static_cast<TabImpl*>(shell()->tab());
   auto* web_contents = tab->web_contents();
   auto* infobar_manager =

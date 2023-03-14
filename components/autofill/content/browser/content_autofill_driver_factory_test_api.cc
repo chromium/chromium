@@ -4,7 +4,24 @@
 
 #include "components/autofill/content/browser/content_autofill_driver_factory_test_api.h"
 
+#include "base/functional/bind.h"
+#include "components/autofill/core/browser/test_browser_autofill_manager.h"
+
 namespace autofill {
+
+// static
+std::unique_ptr<ContentAutofillDriverFactory>
+ContentAutofillDriverFactoryTestApi::Create(content::WebContents* web_contents,
+                                            TestAutofillClient* client) {
+  return Create(
+      web_contents, client,
+      base::BindRepeating(
+          [](TestAutofillClient* client, ContentAutofillDriver* driver) {
+            driver->set_autofill_manager(
+                std::make_unique<TestBrowserAutofillManager>(driver, client));
+          },
+          client));
+}
 
 // static
 std::unique_ptr<ContentAutofillDriverFactory>

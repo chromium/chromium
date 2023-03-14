@@ -717,9 +717,9 @@ std::wstring GetUniqueShortcutFilenameForProfile(
     const std::u16string& profile_name,
     const std::set<base::FilePath>& excludes) {
   std::set<std::wstring> excludes_names;
-  std::transform(excludes.begin(), excludes.end(),
-                 std::inserter(excludes_names, excludes_names.begin()),
-                 [](const base::FilePath& e) { return e.BaseName().value(); });
+  base::ranges::transform(
+      excludes, std::inserter(excludes_names, excludes_names.begin()),
+      [](const base::FilePath& e) { return e.BaseName().value(); });
 
   const auto base_name = GetShortcutFilenameForProfile(profile_name);
   auto name = base_name;

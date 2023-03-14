@@ -67,11 +67,15 @@ public interface StylusWritingImeCallback {
     /**
      * Handle the action for gestures recognized by stylus writing service.
      *
+     * @param id the unique id of this gesture. This is used by the gesture callback to inform
+     *           Android of the gesture's result. For Android gestures, the gesture IDs are stored
+     *           in {@link org.chromium.content.browser.input.ImeAdapterImpl#mOngoingGestures}. For
+     *           DirectWriting, pass in -1 as no callback needs to be run.
      * @param gestureData the gesture data object that contains information regarding gesture type,
      *                    gesture coordinates, text to insert, alternative text to insert when the
      *                    gesture is invalid in current input, as applicable wrt gesture type.
      */
-    void handleStylusWritingGestureAction(StylusWritingGestureData gestureData);
+    void handleStylusWritingGestureAction(int id, StylusWritingGestureData gestureData);
 
     /**
      * Finish current text composition in the input field.

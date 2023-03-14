@@ -1,0 +1,26 @@
+<style include="cr-shared-style">
+  cr-dialog::part(dialog) {
+    border-radius: 0;
+    height: 100%;
+    width: 100%;
+  }
+
+  #dialogTitle {
+    font-weight: 500;
+  }
+</style>
+
+<cr-dialog show-on-attach>
+  <div slot="title" id="dialogTitle">$i18n{kerberosInBrowserTitle}</div>
+
+  <div slot="body">$i18n{kerberosInBrowserDescription}</div>
+
+  <div slot="button-container">
+    <cr-button class="cancel-button" on-click="onVisitWithoutTicket_">
+      $i18n{kerberosInBrowserVisitWithoutTicket}
+    </cr-button>
+    <cr-button class="action-button" on-click="onManageTickets_">
+      $i18n{kerberosInBrowserManageTickets}
+    </cr-button>
+  </div>
+</cr-dialog>

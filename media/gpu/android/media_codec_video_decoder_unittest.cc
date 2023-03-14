@@ -31,6 +31,7 @@
 #include "media/gpu/android/fake_codec_allocator.h"
 #include "media/gpu/android/mock_android_video_surface_chooser.h"
 #include "media/gpu/android/mock_device_info.h"
+#include "media/gpu/android/video_accelerator_util.h"
 #include "media/gpu/android/video_frame_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -55,6 +56,22 @@ std::unique_ptr<AndroidOverlay> CreateAndroidOverlayCb(
     const base::UnguessableToken&,
     AndroidOverlayConfig) {
   return nullptr;
+}
+
+// Tests require the presence of a software AV1 decoder, which isn't required
+// by Android at this time.
+bool HasAv1Decoder() {
+  if (!MediaCodecUtil::IsAv1DecoderAvailable()) {
+    return false;
+  }
+
+  for (const auto& info : GetDecoderInfoCache()) {
+    if (info.profile >= AV1PROFILE_MIN && info.profile <= AV1PROFILE_MAX) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 }  // namespace
@@ -294,9 +311,9 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
   scoped_refptr<DecoderBuffer> fake_decoder_buffer_;
   std::unique_ptr<MockDeviceInfo> device_info_;
   std::unique_ptr<FakeCodecAllocator> codec_allocator_;
-  raw_ptr<MockAndroidVideoSurfaceChooser> surface_chooser_;
-  raw_ptr<gpu::MockTextureOwner> texture_owner_;
-  raw_ptr<MockVideoFrameFactory> video_frame_factory_;
+  raw_ptr<MockAndroidVideoSurfaceChooser> surface_chooser_ = nullptr;
+  raw_ptr<gpu::MockTextureOwner> texture_owner_ = nullptr;
+  raw_ptr<MockVideoFrameFactory> video_frame_factory_ = nullptr;
   NiceMock<base::MockCallback<VideoDecoder::DecodeCB>> decode_cb_;
   ProvideOverlayInfoCB provide_overlay_info_cb_;
   bool restart_for_transitions_;
@@ -339,6 +356,9 @@ TEST_P(MediaCodecVideoDecoderVp8Test, SmallVp8IsRejected) {
 }
 
 TEST_P(MediaCodecVideoDecoderAV1Test, Av1IsSupported) {
+  if (!HasAv1Decoder()) {
+    return;
+  }
   EXPECT_CALL(*device_info_, IsAv1DecoderAvailable()).WillOnce(Return(true));
   ASSERT_TRUE(Initialize(TestVideoConfig::Normal(VideoCodec::kAV1)));
 }
@@ -1039,8 +1059,9 @@ static std::vector<VideoCodec> GetTestList() {
     test_codecs.push_back(VideoCodec::kVP8);
   if (MediaCodecUtil::IsVp9DecoderAvailable())
     test_codecs.push_back(VideoCodec::kVP9);
-  if (MediaCodecUtil::IsAv1DecoderAvailable())
+  if (HasAv1Decoder()) {
     test_codecs.push_back(VideoCodec::kAV1);
+  }
   return test_codecs;
 }
 
@@ -1065,9 +1086,8 @@ static std::vector<VideoCodec> GetVp8IfAvailable() {
 // }
 
 static std::vector<VideoCodec> GetAv1IfAvailable() {
-  return MediaCodecUtil::IsAv1DecoderAvailable()
-             ? std::vector<VideoCodec>(1, VideoCodec::kAV1)
-             : std::vector<VideoCodec>();
+  return HasAv1Decoder() ? std::vector<VideoCodec>(1, VideoCodec::kAV1)
+                         : std::vector<VideoCodec>();
 }
 
 INSTANTIATE_TEST_SUITE_P(MediaCodecVideoDecoderTest,

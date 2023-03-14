@@ -45,7 +45,6 @@ enum class RendererCorsIssueCode {
 
 enum class AttributionReportingIssueType {
   kPermissionPolicyDisabled,
-  kPermissionPolicyNotDelegated,
   kUntrustworthyReportingOrigin,
   kInsecureContext,
   kInvalidRegisterSourceHeader,
@@ -55,6 +54,11 @@ enum class AttributionReportingIssueType {
   kSourceAndTriggerHeaders,
   kSourceIgnored,
   kTriggerIgnored,
+  kOsSourceIgnored,
+  kOsTriggerIgnored,
+  kInvalidRegisterOsSourceHeader,
+  kInvalidRegisterOsTriggerHeader,
+  kWebAndOsHeaders,
 };
 
 enum class SharedArrayBufferIssueType {

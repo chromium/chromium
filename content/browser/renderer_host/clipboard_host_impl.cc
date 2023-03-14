@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/pickle.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -364,8 +365,8 @@ void ClipboardHostImpl::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
   // paths.
   std::vector<std::string> paths;
   paths.reserve(filenames.size());
-  std::transform(
-      filenames.cbegin(), filenames.cend(), std::back_inserter(paths),
+  base::ranges::transform(
+      filenames, std::back_inserter(paths),
       [](const ui::FileInfo& info) { return info.path.AsUTF8Unsafe(); });
   std::string data = base::JoinString(paths, "\n");
 

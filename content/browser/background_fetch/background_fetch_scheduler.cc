@@ -369,9 +369,6 @@ void BackgroundFetchScheduler::OnRegistrationCreated(
       {{"Total Requests", base::NumberToString(num_requests)},
        {"Start Paused", start_paused ? "Yes" : "No"}});
 
-  registration_notifier_->NoteTotalRequests(registration_id.unique_id(),
-                                            num_requests);
-
   auto controller = CreateInitializedController(
       registration_id, registration_data, std::move(options), icon,
       /* completed_requests= */ 0, num_requests,

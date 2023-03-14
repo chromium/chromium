@@ -89,6 +89,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
+#include "sandbox/policy/features.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/win/sandbox_win.h"
 #include "sandbox/win/src/sandbox.h"
@@ -403,14 +404,11 @@ void WebTestContentBrowserClient::AppendExtraCommandLineSwitches(
                                                             child_process_id);
 
   static const char* kForwardSwitches[] = {
-    // Switches from web_test_switches.h that are used in the renderer.
-    switches::kEnableAccelerated2DCanvas,
-    switches::kEnableFontAntialiasing,
-    switches::kAlwaysUseComplexText,
-    switches::kStableReleaseMode,
-#if BUILDFLAG(IS_WIN)
-    switches::kRegisterFontFiles,
-#endif
+      // Switches from web_test_switches.h that are used in the renderer.
+      switches::kEnableAccelerated2DCanvas,
+      switches::kEnableFontAntialiasing,
+      switches::kAlwaysUseComplexText,
+      switches::kStableReleaseMode,
   };
 
   command_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
@@ -658,25 +656,9 @@ void WebTestContentBrowserClient::BindWebTestControlHost(
 
 #if BUILDFLAG(IS_WIN)
 bool WebTestContentBrowserClient::PreSpawnChild(
-    sandbox::TargetPolicy* policy,
+    sandbox::TargetConfig* config,
     sandbox::mojom::Sandbox sandbox_type,
     ChildSpawnFlags flags) {
-  if (sandbox_type == sandbox::mojom::Sandbox::kRenderer) {
-    if (policy->GetConfig()->IsConfigured())
-      return true;
-
-    // Add sideloaded font files for testing. See also DIR_WINDOWS_FONTS
-    // addition in |StartSandboxedProcess|.
-    std::vector<std::string> font_files = switches::GetSideloadFontFiles();
-    for (std::vector<std::string>::const_iterator i(font_files.begin());
-         i != font_files.end(); ++i) {
-      sandbox::ResultCode result = policy->GetConfig()->AddRule(
-          sandbox::SubSystem::kFiles, sandbox::Semantics::kFilesAllowReadonly,
-          base::UTF8ToWide(*i).c_str());
-      if (result != sandbox::SBOX_ALL_OK)
-        return false;
-    }
-  }
   return true;
 }
 #endif  // BUILDFLAG(IS_WIN)

@@ -95,7 +95,6 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
 
   void MatchLayersToOldTreeDefault(CARendererLayerTree* old_tree);
   void MatchLayersToOldTree(CARendererLayerTree* old_tree);
-  void VerifyCommittedCALayers();
 
   class RootLayer {
    public:
@@ -229,7 +228,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
                  const gfx::ColorSpace& color_space,
                  unsigned edge_aa_mask,
                  float opacity,
-                 unsigned filter,
+                 bool nearest_neighbor_filter,
                  gfx::HDRMode hdr_mode,
                  absl::optional<gfx::HDRMetadata> hdr_metadata,
                  gfx::ProtectedVideoType protected_video_type);

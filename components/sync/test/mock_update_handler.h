@@ -29,7 +29,7 @@ class MockUpdateHandler : public UpdateHandler {
       const sync_pb::DataTypeContext& mutated_context,
       const SyncEntityList& applicable_updates,
       StatusController* status) override;
-  void ApplyUpdates(StatusController* status) override;
+  void ApplyUpdates(StatusController* status, bool cycle_done) override;
   void RecordRemoteInvalidation(
       std::unique_ptr<SyncInvalidation> incoming) override;
   void CollectPendingInvalidations(sync_pb::GetUpdateTriggers* msg) override;

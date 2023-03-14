@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -195,7 +195,8 @@ std::unique_ptr<KeyedService> BuildSyncService(
 
 // static
 SyncServiceFactory* SyncServiceFactory::GetInstance() {
-  return base::Singleton<SyncServiceFactory>::get();
+  static base::NoDestructor<SyncServiceFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -215,7 +216,14 @@ SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(Profile* profile) {
 }
 
 SyncServiceFactory::SyncServiceFactory()
-    : ProfileKeyedServiceFactory("SyncService") {
+    : ProfileKeyedServiceFactory(
+          "SyncService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   // The SyncServiceImpl depends on various SyncableServices being around
   // when it is shut down.  Specify those dependencies here to build the proper
   // destruction order. Note that some of the dependencies are listed here but
@@ -242,7 +250,6 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(SpellcheckServiceFactory::GetInstance());
   DependsOn(SyncInvalidationsServiceFactory::GetInstance());
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  DependsOn(SupervisedUserServiceFactory::GetInstance());
   DependsOn(SupervisedUserSettingsServiceFactory::GetInstance());
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
   DependsOn(SessionSyncServiceFactory::GetInstance());

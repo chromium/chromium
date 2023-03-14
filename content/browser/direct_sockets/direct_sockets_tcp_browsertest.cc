@@ -20,6 +20,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -34,6 +35,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/mdns_responder.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -236,10 +238,12 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
   uint16_t StartTcpServer() {
     base::test::TestFuture<int32_t, const absl::optional<net::IPEndPoint>&>
         future;
+    auto options = network::mojom::TCPServerSocketOptions::New();
+    options->backlog = 5;
     GetNetworkContext()->CreateTCPServerSocket(
         net::IPEndPoint(net::IPAddress::IPv4Localhost(),
                         /*port=*/0),
-        /*backlog=*/5,
+        std::move(options),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
         tcp_server_socket_.BindNewPipeAndPassReceiver(), future.GetCallback());
     auto local_addr = future.Get<absl::optional<net::IPEndPoint>>();
@@ -608,6 +612,75 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest,
 
   EXPECT_THAT(future->Get(),
               ::testing::HasSubstr("waitForClosedPromise succeeded."));
+}
+
+class DirectSocketsTcpServerBrowserTest : public DirectSocketsTcpBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // For TCPServerSocket support.
+    // TODO(crbug.com/1408140): remove after TCPServerSocket is fully supported.
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "DirectSocketsExperimental");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsTcpServerBrowserTest, ExchangeTcpServer) {
+  ASSERT_THAT(EvalJs(shell(), "exchangeSingleTcpPacketBetweenClientAndServer()")
+                  .ExtractString(),
+              testing::HasSubstr("succeeded"));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsTcpServerBrowserTest, OkOnClose) {
+  ASSERT_EQ(true, EvalJs(shell(), R"(
+    (async () => {
+      socket = new TCPServerSocket('127.0.0.1');
+      await socket.opened;
+      socket.close();
+      return await socket.closed.then(() => true);
+    })();
+  )"));
+}
+
+class MockNetworkContextWithTCPServerSocketReceiver
+    : public network::TestNetworkContext {
+ public:
+  void CreateTCPServerSocket(
+      const net::IPEndPoint& local_addr,
+      network::mojom::TCPServerSocketOptionsPtr options,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
+      mojo::PendingReceiver<network::mojom::TCPServerSocket> socket,
+      CreateTCPServerSocketCallback callback) override {
+    receiver_.Bind(std::move(socket));
+    std::move(callback).Run(net::OK, /*local_addr=*/net::IPEndPoint(
+                                net::IPAddress::IPv4Localhost(), 0));
+  }
+
+  void ResetSocketReceiver() { receiver_.reset(); }
+
+ private:
+  mojo::Receiver<network::mojom::TCPServerSocket> receiver_{nullptr};
+};
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsTcpServerBrowserTest, ErrorOnRemoteReset) {
+  MockNetworkContextWithTCPServerSocketReceiver mock_network_context;
+  DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
+
+  ASSERT_EQ(true, EvalJs(shell(), R"(
+    (async () => {
+      socket = new TCPServerSocket('127.0.0.1');
+      await socket.opened;
+      return true;
+    })();
+  )"));
+
+  auto future = GetAsyncJsRunner()->RunScript(R"(
+    (async () => {
+      return socket.closed.catch(() => 'ok');
+    })();
+  )");
+  mock_network_context.ResetSocketReceiver();
+
+  ASSERT_EQ("ok", future->Get());
 }
 
 }  // namespace content

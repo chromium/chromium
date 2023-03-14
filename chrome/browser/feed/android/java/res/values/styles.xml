@@ -40,6 +40,14 @@ found in the LICENSE file.
         <item name="android:textColor">@color/tab_layout_text_color_list</item>
     </style>
 
+    <style name="TextAppearance.ClickableButton" parent="TextAppearance.Button.Text.Filled">
+        <item name="android:textColor">@macro/default_text_color_on_accent1</item>
+    </style>
+
+    <style name="TextAppearance.ClickableButtonInverse" parent="TextAppearance.Button.Text.Filled">
+        <item name="android:textColor">@macro/default_text_color_accent1</item>
+    </style>
+
     <style name="TextAppearance.HeaderTitle" parent="TextAppearance.TextAccentMediumThick">
         <item name="android:textColor">@color/header_title_text_color_list</item>
     </style>

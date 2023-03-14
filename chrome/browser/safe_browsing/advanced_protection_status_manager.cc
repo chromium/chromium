@@ -80,8 +80,9 @@ void AdvancedProtectionStatusManager::MaybeRefreshOnStartUp() {
   // Retrieves advanced protection service status from primary account's info.
   CoreAccountInfo core_info =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  if (core_info.account_id.empty())
+  if (core_info.account_id.empty()) {
     return;
+  }
 
   is_under_advanced_protection_ = core_info.is_under_advanced_protection;
   RecordUMA(is_under_advanced_protection_ ? UmaEvent::kEnabled

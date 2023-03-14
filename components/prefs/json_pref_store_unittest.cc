@@ -224,8 +224,7 @@ TEST_P(JsonPrefStoreTest, NonExistentFile) {
 // Test fallback behavior for an invalid file.
 TEST_P(JsonPrefStoreTest, InvalidFile) {
   base::FilePath invalid_file = temp_dir_.GetPath().AppendASCII("invalid.json");
-  ASSERT_LT(0, base::WriteFile(invalid_file, kInvalidJson,
-                               std::size(kInvalidJson) - 1));
+  ASSERT_TRUE(base::WriteFile(invalid_file, kInvalidJson));
 
   auto pref_store = base::MakeRefCounted<JsonPrefStore>(invalid_file);
   EXPECT_EQ(PersistentPrefStore::PREF_READ_ERROR_JSON_PARSE,
@@ -313,8 +312,7 @@ void RunBasicJsonPrefStoreTest(JsonPrefStore* pref_store,
 
 TEST_P(JsonPrefStoreTest, Basic) {
   base::FilePath input_file = temp_dir_.GetPath().AppendASCII("write.json");
-  ASSERT_LT(0,
-            base::WriteFile(input_file, kReadJson, std::size(kReadJson) - 1));
+  ASSERT_TRUE(base::WriteFile(input_file, kReadJson));
 
   // Test that the persistent value can be loaded.
   ASSERT_TRUE(PathExists(input_file));
@@ -340,8 +338,7 @@ TEST_P(JsonPrefStoreTest, Basic) {
 
 TEST_P(JsonPrefStoreTest, BasicAsync) {
   base::FilePath input_file = temp_dir_.GetPath().AppendASCII("write.json");
-  ASSERT_LT(0,
-            base::WriteFile(input_file, kReadJson, std::size(kReadJson) - 1));
+  ASSERT_TRUE(base::WriteFile(input_file, kReadJson));
 
   // Test that the persistent value can be loaded.
   auto pref_store = base::MakeRefCounted<JsonPrefStore>(input_file);
@@ -448,8 +445,7 @@ TEST_P(JsonPrefStoreTest, AsyncNonExistingFile) {
 
 TEST_P(JsonPrefStoreTest, ReadWithInterceptor) {
   base::FilePath input_file = temp_dir_.GetPath().AppendASCII("write.json");
-  ASSERT_LT(0,
-            base::WriteFile(input_file, kReadJson, std::size(kReadJson) - 1));
+  ASSERT_TRUE(base::WriteFile(input_file, kReadJson));
 
   std::unique_ptr<InterceptingPrefFilter> intercepting_pref_filter(
       new InterceptingPrefFilter());
@@ -490,8 +486,7 @@ TEST_P(JsonPrefStoreTest, ReadWithInterceptor) {
 
 TEST_P(JsonPrefStoreTest, ReadAsyncWithInterceptor) {
   base::FilePath input_file = temp_dir_.GetPath().AppendASCII("write.json");
-  ASSERT_LT(0,
-            base::WriteFile(input_file, kReadJson, std::size(kReadJson) - 1));
+  ASSERT_TRUE(base::WriteFile(input_file, kReadJson));
 
   std::unique_ptr<InterceptingPrefFilter> intercepting_pref_filter(
       new InterceptingPrefFilter());
@@ -884,8 +879,7 @@ class JsonPrefStoreCallbackTest : public testing::Test {
 
 TEST_F(JsonPrefStoreCallbackTest, TestSerializeDataCallbacks) {
   base::FilePath input_file = temp_dir_.GetPath().AppendASCII("write.json");
-  ASSERT_LT(0,
-            base::WriteFile(input_file, kReadJson, std::size(kReadJson) - 1));
+  ASSERT_TRUE(base::WriteFile(input_file, kReadJson));
 
   std::unique_ptr<InterceptingPrefFilter> intercepting_pref_filter(
       new InterceptingPrefFilter(write_callback_observer_.GetCallbackPair()));
@@ -919,7 +913,7 @@ TEST_F(JsonPrefStoreCallbackTest, TestPostWriteCallbacks) {
   // RegisterOnNextSuccessfulWriteReply.
   successful_write_reply_observer_.ObserveNextWriteCallback(pref_store.get());
   write_callback_observer_.ObserveNextWriteCallback(pref_store.get());
-  file_writer->WriteNow(std::make_unique<std::string>("foo"));
+  file_writer->WriteNow("foo");
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(successful_write_reply_observer_.GetAndResetObservationState());
   EXPECT_TRUE(write_callback_observer_.GetAndResetPreWriteObservationState());
@@ -930,7 +924,7 @@ TEST_F(JsonPrefStoreCallbackTest, TestPostWriteCallbacks) {
   // RegisterOnNextWriteSynchronousCallbacks.
   successful_write_reply_observer_.ObserveNextWriteCallback(pref_store.get());
   write_callback_observer_.ObserveNextWriteCallback(pref_store.get());
-  file_writer->WriteNow(std::make_unique<std::string>("foo"));
+  file_writer->WriteNow("foo");
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(successful_write_reply_observer_.GetAndResetObservationState());
   EXPECT_TRUE(write_callback_observer_.GetAndResetPreWriteObservationState());
@@ -939,7 +933,7 @@ TEST_F(JsonPrefStoreCallbackTest, TestPostWriteCallbacks) {
 
   // Test RegisterOnNextSuccessfulWriteReply only.
   successful_write_reply_observer_.ObserveNextWriteCallback(pref_store.get());
-  file_writer->WriteNow(std::make_unique<std::string>("foo"));
+  file_writer->WriteNow("foo");
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(successful_write_reply_observer_.GetAndResetObservationState());
   EXPECT_FALSE(write_callback_observer_.GetAndResetPreWriteObservationState());
@@ -948,7 +942,7 @@ TEST_F(JsonPrefStoreCallbackTest, TestPostWriteCallbacks) {
 
   // Test RegisterOnNextWriteSynchronousCallbacks only.
   write_callback_observer_.ObserveNextWriteCallback(pref_store.get());
-  file_writer->WriteNow(std::make_unique<std::string>("foo"));
+  file_writer->WriteNow("foo");
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(successful_write_reply_observer_.GetAndResetObservationState());
   EXPECT_TRUE(write_callback_observer_.GetAndResetPreWriteObservationState());
@@ -992,7 +986,7 @@ TEST_F(JsonPrefStoreCallbackTest, TestPostWriteCallbacksWithFakeFailure) {
   // Do a real write, and confirm that the successful observer was invoked after
   // being set by |PostWriteCallback| by the last TriggerFakeWriteCallback.
   ImportantFileWriter* file_writer = GetImportantFileWriter(pref_store.get());
-  file_writer->WriteNow(std::make_unique<std::string>("foo"));
+  file_writer->WriteNow("foo");
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(successful_write_reply_observer_.GetAndResetObservationState());
   EXPECT_EQ(NOT_CALLED,
@@ -1011,7 +1005,7 @@ TEST_F(JsonPrefStoreCallbackTest, TestPostWriteCallbacksDuringProfileDeath) {
         soon_out_of_scope_pref_store.get());
     write_callback_observer_.ObserveNextWriteCallback(
         soon_out_of_scope_pref_store.get());
-    file_writer->WriteNow(std::make_unique<std::string>("foo"));
+    file_writer->WriteNow("foo");
   }
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(successful_write_reply_observer_.GetAndResetObservationState());

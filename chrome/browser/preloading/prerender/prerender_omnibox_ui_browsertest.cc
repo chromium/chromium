@@ -112,8 +112,7 @@ class PrerenderOmniboxUIBrowserTest : public InProcessBrowserTest,
             &PrerenderOmniboxUIBrowserTest::GetActiveWebContents,
             base::Unretained(this))) {
     scoped_feature_list_.InitWithFeatures(
-        {features::kOmniboxTriggerForPrerender2},
-        {kSearchPrefetchOnlyAllowDefaultMatchPreloading});
+        {}, {kSearchPrefetchOnlyAllowDefaultMatchPreloading});
   }
 
   void SetUp() override {
@@ -510,8 +509,7 @@ class PrerenderPreloaderHoldbackBrowserTest
  public:
   PrerenderPreloaderHoldbackBrowserTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kOmniboxTriggerForPrerender2,
-                              features::kPrerender2Holdback},
+        /*enabled_features=*/{features::kPrerender2Holdback},
         /* disabled_features=*/{
             kSearchPrefetchOnlyAllowDefaultMatchPreloading});
   }

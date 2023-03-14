@@ -7,17 +7,18 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "device/bluetooth/bluetooth_adapter_mac.h"
+#include "device/bluetooth/bluetooth_low_energy_adapter_apple.h"
 
 namespace device {
 
 // This class exists to bridge between the Objective-C
-// CBPeripheralManagerDelegate class and our BluetoothAdapterMac classes.
+// CBPeripheralManagerDelegate class and our BluetoothLowEnergyAdapterApple
+// classes.
 class BluetoothLowEnergyPeripheralManagerBridge {
  public:
   BluetoothLowEnergyPeripheralManagerBridge(
       BluetoothLowEnergyAdvertisementManagerMac* advertisement_manager,
-      BluetoothAdapterMac* adapter)
+      BluetoothLowEnergyAdapterApple* adapter)
       : advertisement_manager_(advertisement_manager), adapter_(adapter) {}
 
   ~BluetoothLowEnergyPeripheralManagerBridge() {}
@@ -36,7 +37,7 @@ class BluetoothLowEnergyPeripheralManagerBridge {
 
  private:
   raw_ptr<BluetoothLowEnergyAdvertisementManagerMac> advertisement_manager_;
-  raw_ptr<BluetoothAdapterMac> adapter_;
+  raw_ptr<BluetoothLowEnergyAdapterApple> adapter_;
 };
 
 }  // namespace device
@@ -50,7 +51,8 @@ class BluetoothLowEnergyPeripheralManagerBridge {
 - (instancetype)
     initWithAdvertisementManager:
         (device::BluetoothLowEnergyAdvertisementManagerMac*)advertisementManager
-                      andAdapter:(device::BluetoothAdapterMac*)adapter {
+                      andAdapter:
+                          (device::BluetoothLowEnergyAdapterApple*)adapter {
   if ((self = [super init])) {
     _bridge =
         std::make_unique<device::BluetoothLowEnergyPeripheralManagerBridge>(

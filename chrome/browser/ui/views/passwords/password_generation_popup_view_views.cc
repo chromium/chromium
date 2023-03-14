@@ -75,9 +75,9 @@ std::unique_ptr<views::View> CreatePasswordStrengthView(
 
   auto warning_icon = std::make_unique<views::ImageView>();
   warning_icon->SetCanProcessEventsWithinSubtree(false);
-  warning_icon->SetImage(
-      ui::ImageModel::FromVectorIcon(vector_icons::kNotificationWarningIcon,
-                                     ui::kColorAlertMediumSeverity, kIconSize));
+  warning_icon->SetImage(ui::ImageModel::FromVectorIcon(
+      vector_icons::kNotificationWarningIcon, ui::kColorAlertMediumSeverityIcon,
+      kIconSize));
   password_strength_view->AddChildView(std::move(warning_icon));
 
   auto* layout = password_strength_view->SetLayoutManager(
@@ -310,8 +310,8 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
     SetLayoutManager(std::make_unique<views::FillLayout>());
     auto warning_icon = std::make_unique<views::ImageView>();
     warning_icon->SetImage(ui::ImageModel::FromVectorIcon(
-        vector_icons::kNotificationWarningIcon, ui::kColorAlertMediumSeverity,
-        kIconSize));
+        vector_icons::kNotificationWarningIcon,
+        ui::kColorAlertMediumSeverityIcon, kIconSize));
     AddChildView(std::move(warning_icon));
     return;
   }

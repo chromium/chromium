@@ -100,9 +100,6 @@ class StabilityMetricsHelper {
   // Records that a new renderer process was successfully launched.
   void LogRendererLaunched(bool was_extension_process);
 
-  // Records a renderer process hang.
-  void LogRendererHang();
-
   // Registers local state prefs used by this class.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 

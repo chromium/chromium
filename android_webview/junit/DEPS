@@ -1,4 +1,4 @@
 include_rules = [
-    "+components/digital_asset_links/android/java",
+    "+components/content_relationship_verification/android/java",
     "+content/public/test/android/javatests/src/org/chromium/content_public/browser/test/util/TestThreadUtils.java",
 ]

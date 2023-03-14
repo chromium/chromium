@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/input_delegate.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_tracker.h"
@@ -49,6 +50,7 @@ class SyncDeviceInfoObserver : public syncer::DeviceInfoTracker::Observer,
 
   // Called when ready to finish processing.
   void ReadyToFinishProcessing(const proto::CustomInput& input,
+                               scoped_refptr<InputContext> input_context,
                                ProcessedCallback callback,
                                bool success);
 

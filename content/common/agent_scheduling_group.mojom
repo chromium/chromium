@@ -6,10 +6,10 @@ module content.mojom;
 
 import "content/common/associated_interfaces.mojom";
 import "content/common/frame.mojom";
-import "content/common/shared_storage_worklet_service.mojom";
 import "third_party/blink/public/mojom/frame/frame.mojom";
 import "third_party/blink/public/mojom/frame/frame_replication_state.mojom";
 import "third_party/blink/public/mojom/frame/tree_scope_type.mojom";
+import "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
 // Interface for general communication between the renderer process's
@@ -72,6 +72,5 @@ interface AgentSchedulingGroup {
   // Tells the renderer process to create a thread that exclusively hosts the
   // shared storage worklet service.
   CreateSharedStorageWorkletService(
-      pending_receiver<shared_storage_worklet.mojom.SharedStorageWorkletService>
-          receiver);
+      pending_receiver<blink.mojom.SharedStorageWorkletService> receiver);
 };

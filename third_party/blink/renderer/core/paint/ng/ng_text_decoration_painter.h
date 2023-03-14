@@ -49,7 +49,7 @@ class CORE_EXPORT NGTextDecorationPainter {
   // that need to be painted, or nullopt if decorations should not be painted.
   void UpdateDecorationInfo(absl::optional<TextDecorationInfo>&,
                             const ComputedStyle&,
-                            const TextPaintStyle&,
+                            absl::optional<PhysicalRect> = {},
                             const AppliedTextDecoration* = nullptr);
 
   enum Phase { kOriginating, kSelection };

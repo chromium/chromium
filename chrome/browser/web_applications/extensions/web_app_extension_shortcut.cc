@@ -112,7 +112,7 @@ void CreateShortcutsWithInfo(ShortcutCreationReason reason,
 
   // If the shortcut is for an application shortcut with the new bookmark app
   // flow disabled, there will be no corresponding extension.
-  if (!shortcut_info->extension_id.empty()) {
+  if (!shortcut_info->app_id.empty()) {
     // The profile manager does not exist in some unit tests.
     if (!g_browser_process->profile_manager()) {
       std::move(callback).Run(false /* created_shortcut */);
@@ -132,11 +132,11 @@ void CreateShortcutsWithInfo(ShortcutCreationReason reason,
     extensions::ExtensionRegistry* registry =
         extensions::ExtensionRegistry::Get(profile);
     const extensions::Extension* extension = registry->GetExtensionById(
-        shortcut_info->extension_id, extensions::ExtensionRegistry::EVERYTHING);
+        shortcut_info->app_id, extensions::ExtensionRegistry::EVERYTHING);
     bool is_app_installed = false;
     auto* app_provider = WebAppProvider::GetForWebApps(profile);
-    if (app_provider && app_provider->registrar_unsafe().IsInstalled(
-                            shortcut_info->extension_id)) {
+    if (app_provider &&
+        app_provider->registrar_unsafe().IsInstalled(shortcut_info->app_id)) {
       is_app_installed = true;
     }
 
@@ -205,7 +205,7 @@ std::unique_ptr<ShortcutInfo> ShortcutInfoForExtensionAndProfile(
     Profile* profile) {
   auto shortcut_info = std::make_unique<ShortcutInfo>();
 
-  shortcut_info->extension_id = app->id();
+  shortcut_info->app_id = app->id();
   shortcut_info->url = extensions::AppLaunchInfo::GetLaunchWebURL(app);
   shortcut_info->title = base::UTF8ToUTF16(app->name());
   shortcut_info->description = base::UTF8ToUTF16(app->description());

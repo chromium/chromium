@@ -39,6 +39,9 @@ class ChromiumDepGraph {
             licenseName: 'MIT License'),
         com_google_android_datatransport_transport_api: new PropertyOverride(
             description: 'Interfaces for data logging in GmsCore SDKs.'),
+        // Exclude androidx_window_window since it currently addes <uses-library>
+        // to our AndroidManfest.xml, which we don't allow. http://crbug.com/1302987
+        androidx_window_window: new PropertyOverride(exclude: true),
         com_google_android_datatransport_transport_backend_cct: new PropertyOverride(
             exclude: true),  // We're not using datatransport functionality.
         com_google_android_datatransport_transport_runtime: new PropertyOverride(
@@ -59,7 +62,7 @@ class ChromiumDepGraph {
             licenseName: 'Apache 2.0'),
         com_google_code_gson_gson: new PropertyOverride(
             url: 'https://github.com/google/gson',
-            description: "A Java serialization/deserialization library to convert Java Objects into JSON and back",
+            description: 'A Java serialization/deserialization library to convert Java Objects into JSON and back',
             licenseUrl: 'https://raw.githubusercontent.com/google/gson/master/LICENSE',
             licenseName: 'Apache 2.0'),
         com_google_errorprone_error_prone_annotation: new PropertyOverride(
@@ -120,8 +123,7 @@ class ChromiumDepGraph {
             cpePrefix: 'cpe:/a:bouncycastle:legion-of-the-bouncy-castle:1.68',
             url: 'https://github.com/bcgit/bc-java',
             licensePath: 'licenses/Bouncy_Castle-2015.txt',
-            licenseName: 'MIT',
-            overrideLatest: true),
+            licenseName: 'MIT'),
         org_codehaus_mojo_animal_sniffer_annotations: new PropertyOverride(
             url: 'http://www.mojohaus.org/animal-sniffer/animal-sniffer-annotations/',
             description: 'Animal Sniffer Annotations allow marking methods which Animal Sniffer should ignore ' +
@@ -158,13 +160,15 @@ class ChromiumDepGraph {
         net_bytebuddy_byte_buddy: new PropertyOverride(
             url: 'https://github.com/raphw/byte-buddy',
             licenseUrl: 'https://raw.githubusercontent.com/raphw/byte-buddy/master/LICENSE',
-            licenseName: 'Apache 2.0',
-            overrideLatest: true),
+            licenseName: 'Apache 2.0'),
         net_bytebuddy_byte_buddy_agent: new PropertyOverride(
             url: 'https://github.com/raphw/byte-buddy',
             licenseUrl: 'https://raw.githubusercontent.com/raphw/byte-buddy/master/LICENSE',
-            licenseName: 'Apache 2.0',
-            overrideLatest: true),
+            licenseName: 'Apache 2.0'),
+        net_bytebuddy_byte_buddy_android: new PropertyOverride(
+            url: 'https://github.com/raphw/byte-buddy',
+            licenseUrl: 'https://raw.githubusercontent.com/raphw/byte-buddy/master/LICENSE',
+            licenseName: 'Apache 2.0'),
         net_sf_kxml_kxml2: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/stefanhaustein/kxml2/master/license.txt',
             licenseName: 'MIT'),
@@ -190,14 +194,16 @@ class ChromiumDepGraph {
             cpePrefix: 'cpe:/a:jsoup:jsoup:1.14.3',
             licenseUrl: 'https://raw.githubusercontent.com/jhy/jsoup/master/LICENSE',
             licenseName: 'The MIT License'),
+        org_mockito_mockito_android: new PropertyOverride(
+            licenseUrl: 'https://raw.githubusercontent.com/mockito/mockito/main/LICENSE',
+            licenseName: 'The MIT License'),
         org_mockito_mockito_core: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/mockito/mockito/main/LICENSE',
             licenseName: 'The MIT License'),
         org_objenesis_objenesis: new PropertyOverride(
             url: 'http://objenesis.org/index.html',
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0',
-            overrideLatest: true),
+            licenseName: 'Apache 2.0'),
         org_ow2_asm_asm: new PropertyOverride(
             licenseUrl: 'https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt',
             licenseName: 'BSD'),
@@ -246,6 +252,7 @@ class ChromiumDepGraph {
         org_robolectric_shadows_framework: new PropertyOverride(
             licensePath: 'licenses/Codehaus_License-2009.txt',
             licenseName: 'MIT'),
+        org_robolectric_shadows_multidex: new PropertyOverride(exclude: true),
         org_robolectric_shadows_playservices: new PropertyOverride(
             licensePath: 'licenses/Codehaus_License-2009.txt',
             licenseName: 'MIT'),
@@ -295,6 +302,7 @@ class ChromiumDepGraph {
         // Bill of materials (BOM) deps are used to specify versions for other dependencies and don't have children or
         // artifacts of their own. Add other such empty deps here when we encounter them.
         'org_jetbrains_kotlinx_kotlinx_coroutines_bom',
+        'com_squareup_okio_okio_bom',
     ] as Set
 
     // Local text versions of HTML licenses. This cannot replace PROPERTY_OVERRIDES because some libraries refer to
@@ -755,7 +763,7 @@ class ChromiumDepGraph {
         // file: URLs happen when using fetch_all_androidx.py --local-repo.
         if (url.startsWith('file:')) {
             if (!new File(new URI(url).getPath()).exists()) {
-                throw new RuntimeException("File not found: " + url)
+                throw new RuntimeException('File not found: ' + url)
             }
             return
         }

@@ -4,6 +4,7 @@
 
 #include "content/services/shared_storage_worklet/url_selection_operation_handler.h"
 
+#include "base/ranges/algorithm.h"
 #include "content/services/shared_storage_worklet/worklet_v8_helper.h"
 #include "gin/arguments.h"
 #include "gin/function_template.h"
@@ -45,20 +46,20 @@ bool ToIDLUnsignedLong(v8::Isolate* isolate,
 }  // namespace
 
 struct UrlSelectionOperationHandler::PendingRequest {
-  explicit PendingRequest(
-      size_t urls_size,
-      mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback
-          callback);
+  explicit PendingRequest(size_t urls_size,
+                          blink::mojom::SharedStorageWorkletService::
+                              RunURLSelectionOperationCallback callback);
 
   ~PendingRequest();
 
   size_t urls_size;
-  mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback callback;
+  blink::mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback
+      callback;
 };
 
 UrlSelectionOperationHandler::PendingRequest::PendingRequest(
     size_t urls_size,
-    mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback
+    blink::mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback
         callback)
     : urls_size(urls_size), callback(std::move(callback)) {}
 
@@ -76,7 +77,7 @@ void UrlSelectionOperationHandler::RunOperation(
     const std::string& name,
     const std::vector<GURL>& urls,
     const std::vector<uint8_t>& serialized_data,
-    mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback
+    blink::mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback
         callback) {
   auto it = operation_definition_map_->find(name);
   if (it == operation_definition_map_->end()) {
@@ -92,8 +93,7 @@ void UrlSelectionOperationHandler::RunOperation(
   v8::Local<v8::Function> run_function = it->second.Get(isolate);
 
   std::vector<std::string> string_urls;
-  std::transform(urls.cbegin(), urls.cend(), std::back_inserter(string_urls),
-                 [](const GURL& url) { return url.spec(); });
+  base::ranges::transform(urls, std::back_inserter(string_urls), &GURL::spec);
 
   v8::Local<v8::Array> js_urls =
       gin::Converter<std::vector<std::string>>::ToV8(isolate, string_urls)

@@ -127,7 +127,7 @@ void NetworkProfileBubble::CheckNetworkProfile(
       // Try to create some non-empty temp file in the profile dir and use
       // it to check if there is a reparse-point free path to it.
       if (base::CreateTemporaryFileInDir(profile_folder, &temp_file) &&
-          (base::WriteFile(temp_file, ".", 1) == 1)) {
+          base::WriteFile(temp_file, ".")) {
         base::FilePath normalized_temp_file;
         if (!base::NormalizeFilePath(temp_file, &normalized_temp_file))
           profile_on_network = true;

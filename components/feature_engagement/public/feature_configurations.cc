@@ -189,6 +189,19 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHPowerBookmarksSidePanelFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    // Show the promo once a year if the price tracking IPH was not triggered.
+    config->trigger = EventConfig("iph_power_bookmarks_side_panel_trigger",
+                                  Comparator(EQUAL, 0), 360, 360);
+    config->used = EventConfig("power_bookmarks_side_panel_shown",
+                               Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
+
   if (kIPHPriceTrackingInSidePanelFeature.name == feature->name) {
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
@@ -211,6 +224,22 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->trigger =
         EventConfig("price_tracking_page_action_icon_label_in_trigger",
                     Comparator(LESS_THAN, 1), 1, 360);
+    return config;
+  }
+
+  if (kIPHDesktopCustomizeChromeFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    // Used to increase the usage of Customize Chrome for users who have opened
+    // it 0 times in the last 360 days.
+    config->used =
+        EventConfig("customize_chrome_opened", Comparator(EQUAL, 0), 360, 360);
+    // Triggered when IPH hasn't been shown in the past day.
+    config->trigger = EventConfig("iph_customize_chrome_triggered",
+                                  Comparator(EQUAL, 0), 1, 360);
+    config->snooze_params.max_limit = 4;
     return config;
   }
 

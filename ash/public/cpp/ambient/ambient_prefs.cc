@@ -19,6 +19,11 @@ namespace prefs {
 // theme".
 constexpr char kAmbientTheme[] = "ash.ambient.animation_theme";
 
+constexpr char kAmbientUiSettings[] = "ash.ambient.ui_settings";
+
+constexpr char kAmbientUiSettingsFieldTheme[] = "theme";
+constexpr char kAmbientUiSettingsFieldVideo[] = "video";
+
 constexpr char kAmbientBackdropClientId[] = "ash.ambient.backdrop.client.id";
 
 constexpr char kAmbientModeEnabled[] = "settings.ambient_mode.enabled";
@@ -37,6 +42,15 @@ constexpr char kAmbientModeAnimationPlaybackSpeed[] =
 
 constexpr char kAmbientModePhotoRefreshIntervalSeconds[] =
     "ash.ambient.photo_refresh_interval";
+
+constexpr char kAmbientModeManagedScreensaverEnabled[] =
+    "ash.ambient.managed_screensaver.enabled";
+
+constexpr char kAmbientModeManagedScreensaverIdleTimeoutSeconds[] =
+    "ash.ambient.managed_screensaver.idle_timeout_seconds";
+
+constexpr char kAmbientModeManagedScreensaverImageDisplayIntervalSeconds[] =
+    "ash.ambient.managed_screensaver.image_display_interval_seconds";
 
 }  // namespace prefs
 }  // namespace ambient

@@ -19,6 +19,7 @@
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
 #import "ios/chrome/credential_provider_extension/password_spec_fetcher_buildflags.h"
 #import "ios/chrome/credential_provider_extension/password_util.h"
+#import "ios/chrome/credential_provider_extension/ui/credential_response_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/new_password_ui_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/ui_util.h"
 #import "ios/components/credential_provider_extension/password_spec_fetcher.h"
@@ -168,8 +169,7 @@ using base::SysUTF16ToNSString;
   ASPasswordCredential* ASCredential =
       [ASPasswordCredential credentialWithUser:credential.user
                                       password:password];
-  [self.context completeRequestWithSelectedCredential:ASCredential
-                                    completionHandler:nil];
+  [self.credentialResponseHandler userSelectedCredential:ASCredential];
 }
 
 - (NSString*)currentIdentifier {

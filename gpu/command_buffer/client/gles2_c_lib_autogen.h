@@ -1681,6 +1681,25 @@ void GL_APIENTRY GLES2CopySharedImageINTERNAL(GLint xoffset,
   gles2::GetGLContext()->CopySharedImageINTERNAL(
       xoffset, yoffset, x, y, width, height, unpack_flip_y, mailboxes);
 }
+void GL_APIENTRY
+GLES2ReadbackARGBImagePixelsINTERNAL(const GLbyte* mailbox,
+                                     const void* dst_color_space,
+                                     GLuint dst_color_space_size,
+                                     GLuint dst_size,
+                                     GLuint dst_width,
+                                     GLuint dst_height,
+                                     GLuint dst_color_type,
+                                     GLuint dst_alpha_type,
+                                     GLuint dst_row_bytes,
+                                     GLint src_x,
+                                     GLint src_y,
+                                     GLint plane_index,
+                                     void* pixels) {
+  gles2::GetGLContext()->ReadbackARGBImagePixelsINTERNAL(
+      mailbox, dst_color_space, dst_color_space_size, dst_size, dst_width,
+      dst_height, dst_color_type, dst_alpha_type, dst_row_bytes, src_x, src_y,
+      plane_index, pixels);
+}
 void GL_APIENTRY GLES2EnableiOES(GLenum target, GLuint index) {
   gles2::GetGLContext()->EnableiOES(target, index);
 }
@@ -3072,6 +3091,11 @@ extern const NameToFunc g_gles2_function_table[] = {
     {
         "glCopySharedImageINTERNAL",
         reinterpret_cast<GLES2FunctionPointer>(glCopySharedImageINTERNAL),
+    },
+    {
+        "glReadbackARGBImagePixelsINTERNAL",
+        reinterpret_cast<GLES2FunctionPointer>(
+            glReadbackARGBImagePixelsINTERNAL),
     },
     {
         "glEnableiOES",

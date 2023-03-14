@@ -11,6 +11,7 @@
 
 #include "components/sync/trusted_vault/trusted_vault_connection.h"
 #include "components/sync/trusted_vault/trusted_vault_request.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -39,6 +40,12 @@ class DownloadKeysResponseHandler {
     std::vector<std::vector<uint8_t>> new_keys;
     int last_key_version;
   };
+
+  // Returns error cases that can be directly determined from the HTTP status,
+  // or nullopt if successful. Exposed publicly for membership-verification
+  // purposes.
+  static absl::optional<TrustedVaultDownloadKeysStatus> GetErrorFromHttpStatus(
+      TrustedVaultRequest::HttpStatus http_status);
 
   // |device_key_pair| must not be null. It will be verified that the new keys
   // are result of rotating |last_trusted_vault_key_and_version|.

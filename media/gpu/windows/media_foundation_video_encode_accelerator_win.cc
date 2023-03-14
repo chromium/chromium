@@ -178,8 +178,6 @@ bool IsSvcSupported(IMFActivate* activate) {
   // More info: https://crbug.com/1253748
   return false;
 #else
-  // crbug.com/1350257
-  TRACE_EVENT0("catan_investigation", "IsSvcSupported");
   Microsoft::WRL::ComPtr<IMFTransform> encoder;
   Microsoft::WRL::ComPtr<ICodecAPI> codec_api;
   HRESULT hr = activate->ActivateObject(IID_PPV_ARGS(&encoder));
@@ -1077,6 +1075,9 @@ bool MediaFoundationVideoEncodeAccelerator::SetEncoderModes() {
       var.ulVal = eAVEncCommonRateControlMode_PeakConstrainedVBR;
       break;
     }
+    case Bitrate::Mode::kExternal:
+      // Unsupported.
+      return false;
   }
   hr = codec_api_->SetValue(&CODECAPI_AVEncCommonRateControlMode, &var);
   RETURN_ON_HR_FAILURE(hr, "Couldn't set CommonRateControlMode", false);
@@ -1604,15 +1605,6 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
   hr = output_data_buffer.pSample->GetBufferByIndex(0, &output_buffer);
   RETURN_ON_HR_FAILURE(hr, "Couldn't get buffer by index", );
 
-  DWORD size = 0;
-  hr = output_buffer->GetCurrentLength(&size);
-  RETURN_ON_HR_FAILURE(hr, "Couldn't get buffer length", );
-  DCHECK_NE(size, 0u);
-  if (rate_ctrl_) {
-    // Notify SW BRC about recent encoded frame size.
-    rate_ctrl_->PostEncodeUpdate(size);
-  }
-
   base::TimeDelta timestamp;
   LONGLONG sample_time;
   hr = output_data_buffer.pSample->GetSampleTime(&sample_time);
@@ -1652,11 +1644,24 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
 
   const bool keyframe = MFGetAttributeUINT32(
       output_data_buffer.pSample, MFSampleExtension_CleanPoint, false);
+  DWORD size = 0;
+  hr = output_buffer->GetCurrentLength(&size);
+  RETURN_ON_HR_FAILURE(hr, "Couldn't get buffer length", );
+  DCHECK_NE(size, 0u);
   int temporal_id = 0;
   if (!AssignTemporalId(output_buffer, size, &temporal_id, keyframe)) {
     DLOG(ERROR) << "Parse temporalId failed.";
     NotifyError(VideoEncodeAccelerator::Error::kPlatformFailureError);
     return;
+  }
+  if (rate_ctrl_) {
+    VideoRateControlWrapper::FrameParams frame_params{};
+    frame_params.frame_type =
+        keyframe ? VideoRateControlWrapper::FrameParams::FrameType::kKeyFrame
+                 : VideoRateControlWrapper::FrameParams::FrameType::kInterFrame;
+    frame_params.temporal_layer_id = temporal_id;
+    // Notify SW BRC about recent encoded frame size.
+    rate_ctrl_->PostEncodeUpdate(size, frame_params);
   }
   DVLOG(3) << "Encoded data with size:" << size << " keyframe " << keyframe;
 

@@ -12,30 +12,22 @@
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
-#include "base/no_destructor.h"
 #include "base/run_loop.h"
-#include "base/threading/thread_local.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 
 namespace {
 
-ThreadLocalPointer<SingleThreadTaskRunner::CurrentDefaultHandle>&
-CurrentDefaultHandleTls() {
-  static NoDestructor<
-      ThreadLocalPointer<SingleThreadTaskRunner::CurrentDefaultHandle>>
-      instance;
-  return *instance;
-}
+ABSL_CONST_INIT thread_local SingleThreadTaskRunner::CurrentDefaultHandle*
+    current_default_handle = nullptr;
 
 }  // namespace
 
 // static
 const scoped_refptr<SingleThreadTaskRunner>&
 SingleThreadTaskRunner::GetCurrentDefault() {
-  const SingleThreadTaskRunner::CurrentDefaultHandle* current_default =
-      CurrentDefaultHandleTls().Get();
-  CHECK(current_default)
+  CHECK(current_default_handle)
       << "Error: This caller requires a single-threaded context (i.e. the "
          "current task needs to run from a SingleThreadTaskRunner). If you're "
          "in a test refer to //docs/threading_and_tasks_testing.md."
@@ -45,27 +37,25 @@ SingleThreadTaskRunner::GetCurrentDefault() {
                 "consider using it if the current task can run from a "
                 "SequencedTaskRunner."
               : "");
-  return current_default->task_runner_;
+  return current_default_handle->task_runner_;
 }
 
 // static
 bool SingleThreadTaskRunner::HasCurrentDefault() {
-  return !!CurrentDefaultHandleTls().Get();
+  return !!current_default_handle;
 }
 
 SingleThreadTaskRunner::CurrentDefaultHandle::CurrentDefaultHandle(
     scoped_refptr<SingleThreadTaskRunner> task_runner)
-    : task_runner_(std::move(task_runner)),
+    : resetter_(&current_default_handle, this, nullptr),
+      task_runner_(std::move(task_runner)),
       sequenced_task_runner_current_default_(task_runner_) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(!CurrentDefaultHandleTls().Get());
-  CurrentDefaultHandleTls().Set(this);
 }
 
 SingleThreadTaskRunner::CurrentDefaultHandle::~CurrentDefaultHandle() {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK_EQ(CurrentDefaultHandleTls().Get(), this);
-  CurrentDefaultHandleTls().Set(nullptr);
+  DCHECK_EQ(current_default_handle, this);
 }
 
 SingleThreadTaskRunner::CurrentHandleOverride::CurrentHandleOverride(
@@ -88,13 +78,11 @@ SingleThreadTaskRunner::CurrentHandleOverride::CurrentHandleOverride(
 #if DCHECK_IS_ON()
   expected_task_runner_before_restore_ = overriding_task_runner.get();
 #endif
-  SingleThreadTaskRunner::CurrentDefaultHandle* current_default =
-      CurrentDefaultHandleTls().Get();
   SequencedTaskRunner::SetCurrentDefaultHandleTaskRunner(
-      current_default->sequenced_task_runner_current_default_,
+      current_default_handle->sequenced_task_runner_current_default_,
       overriding_task_runner);
-  current_default->task_runner_.swap(overriding_task_runner);
-  // Due to the swap, now `current_default->task_runner_` points to the
+  current_default_handle->task_runner_.swap(overriding_task_runner);
+  // Due to the swap, now `current_default_handle->task_runner_` points to the
   // overriding task runner and `overriding_task_runner_` points to the previous
   // task runner.
   task_runner_to_restore_ = std::move(overriding_task_runner);
@@ -107,21 +95,18 @@ SingleThreadTaskRunner::CurrentHandleOverride::CurrentHandleOverride(
 
 SingleThreadTaskRunner::CurrentHandleOverride::~CurrentHandleOverride() {
   if (task_runner_to_restore_) {
-    SingleThreadTaskRunner::CurrentDefaultHandle* current_default =
-        CurrentDefaultHandleTls().Get();
-
 #if DCHECK_IS_ON()
     DCHECK_EQ(expected_task_runner_before_restore_,
-              current_default->task_runner_.get())
+              current_default_handle->task_runner_.get())
         << "Nested overrides must expire their "
            "SingleThreadTaskRunner::CurrentHandleOverride "
            "in LIFO order.";
 #endif
 
     SequencedTaskRunner::SetCurrentDefaultHandleTaskRunner(
-        current_default->sequenced_task_runner_current_default_,
+        current_default_handle->sequenced_task_runner_current_default_,
         task_runner_to_restore_);
-    current_default->task_runner_.swap(task_runner_to_restore_);
+    current_default_handle->task_runner_.swap(task_runner_to_restore_);
   }
 }
 

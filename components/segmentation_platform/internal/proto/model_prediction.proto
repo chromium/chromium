@@ -19,6 +19,12 @@ message TrainingData {
 
   // The time at which inputs were recorded.
   optional int64 decision_timestamp = 2;
+
+  // The training collection request id.
+  optional int64 request_id = 3;
+
+  // The time at which output should be ready to be recorded.
+  optional int64 observation_trigger_timestamp = 4;
 }
 
 // Top level message for a segment. Contains both the model metadata and
@@ -47,6 +53,9 @@ message SegmentInfo {
 
   // Model source indicating if model is a client model or a server model.
   optional ModelSource model_source = 6;
+
+  // Partial training data awaiting observation time to finish collection.
+  repeated TrainingData training_data = 7;
 }
 
 // Used to test that the model evaluation score for given segment supports the

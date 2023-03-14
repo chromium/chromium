@@ -88,6 +88,11 @@ public class BrowsingDataTest {
                 sActivityTestRule.getWebContents(), type);
     }
 
+    private String runJavascriptSync(String type) throws Exception {
+        return JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                sActivityTestRule.getWebContents(), type);
+    }
+
     /**
      * Test cookies deletion.
      */
@@ -96,14 +101,14 @@ public class BrowsingDataTest {
     public void testCookiesDeleted() throws Exception {
         Assert.assertEquals(0, getCookieCount());
         sActivityTestRule.loadUrl(mUrl);
-        Assert.assertEquals("false", runJavascriptAsync("hasCookie()"));
+        Assert.assertEquals("false", runJavascriptSync("hasCookie()"));
 
-        runJavascriptAsync("setCookie()");
-        Assert.assertEquals("true", runJavascriptAsync("hasCookie()"));
+        runJavascriptSync("setCookie()");
+        Assert.assertEquals("true", runJavascriptSync("hasCookie()"));
         Assert.assertEquals(1, getCookieCount());
 
         clearBrowsingData(BrowsingDataType.COOKIES, TimePeriod.LAST_HOUR);
-        Assert.assertEquals("false", runJavascriptAsync("hasCookie()"));
+        Assert.assertEquals("false", runJavascriptSync("hasCookie()"));
         Assert.assertEquals(0, getCookieCount());
     }
 
@@ -121,15 +126,15 @@ public class BrowsingDataTest {
 
         for (String type : siteData) {
             Assert.assertEquals(type, 0, getCookieCount());
-            Assert.assertEquals(type, "false", runJavascriptAsync("has" + type + "()"));
+            Assert.assertEquals(type, "false", runJavascriptAsync("has" + type + "Async()"));
 
-            runJavascriptAsync("set" + type + "()");
+            runJavascriptAsync("set" + type + "Async()");
             Assert.assertEquals(type, 1, getCookieCount());
-            Assert.assertEquals(type, "true", runJavascriptAsync("has" + type + "()"));
+            Assert.assertEquals(type, "true", runJavascriptAsync("has" + type + "Async()"));
 
             clearBrowsingData(BrowsingDataType.COOKIES, TimePeriod.LAST_HOUR);
             Assert.assertEquals(type, 0, getCookieCount());
-            Assert.assertEquals(type, "false", runJavascriptAsync("has" + type + "()"));
+            Assert.assertEquals(type, "false", runJavascriptAsync("has" + type + "Async()"));
 
             // Some types create data by checking for them, so we need to do a cleanup at the end.
             clearBrowsingData(BrowsingDataType.COOKIES, TimePeriod.LAST_HOUR);
@@ -165,12 +170,12 @@ public class BrowsingDataTest {
     public void testHistoryDeleted() throws Exception {
         Assert.assertEquals(0, getCookieCount());
         sActivityTestRule.loadUrlInNewTab(mUrl);
-        Assert.assertEquals("false", runJavascriptAsync("hasHistory()"));
+        Assert.assertEquals("false", runJavascriptSync("hasHistory()"));
 
-        runJavascriptAsync("setHistory()");
-        Assert.assertEquals("true", runJavascriptAsync("hasHistory()"));
+        runJavascriptSync("setHistory()");
+        Assert.assertEquals("true", runJavascriptSync("hasHistory()"));
 
         clearBrowsingData(BrowsingDataType.HISTORY, TimePeriod.LAST_HOUR);
-        Assert.assertEquals("false", runJavascriptAsync("hasHistory()"));
+        Assert.assertEquals("false", runJavascriptSync("hasHistory()"));
     }
 }

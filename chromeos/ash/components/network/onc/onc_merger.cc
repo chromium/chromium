@@ -545,39 +545,24 @@ class MergeToAugmented : public MergeToEffective {
 base::Value::Dict MergeSettingsAndPoliciesToEffective(
     const base::Value::Dict* user_policy,
     const base::Value::Dict* device_policy,
-    const base::Value* user_settings,
-    const base::Value* shared_settings) {
-  const base::Value::Dict* user_settings_dict =
-      user_settings ? &user_settings->GetDict() : nullptr;
-  const base::Value::Dict* shared_settings_dict =
-      shared_settings ? &shared_settings->GetDict() : nullptr;
-
+    const base::Value::Dict* user_settings,
+    const base::Value::Dict* shared_settings) {
   MergeToEffective merger;
-  return merger.MergeDictionaries(user_policy, device_policy,
-                                  user_settings_dict, shared_settings_dict,
-                                  nullptr);
+  return merger.MergeDictionaries(user_policy, device_policy, user_settings,
+                                  shared_settings, nullptr);
 }
 
 base::Value::Dict MergeSettingsAndPoliciesToAugmented(
     const chromeos::onc::OncValueSignature& signature,
-    const base::Value* user_policy,
-    const base::Value* device_policy,
-    const base::Value* user_settings,
-    const base::Value* shared_settings,
+    const base::Value::Dict* user_policy,
+    const base::Value::Dict* device_policy,
+    const base::Value::Dict* user_settings,
+    const base::Value::Dict* shared_settings,
     const base::Value::Dict* active_settings) {
-  const base::Value::Dict* user_policy_dict =
-      user_policy ? &user_policy->GetDict() : nullptr;
-  const base::Value::Dict* device_policy_dict =
-      device_policy ? &device_policy->GetDict() : nullptr;
-  const base::Value::Dict* user_settings_dict =
-      user_settings ? &user_settings->GetDict() : nullptr;
-  const base::Value::Dict* shared_settings_dict =
-      shared_settings ? &shared_settings->GetDict() : nullptr;
-
   MergeToAugmented merger;
-  return merger.MergeDictionaries(signature, user_policy_dict,
-                                  device_policy_dict, user_settings_dict,
-                                  shared_settings_dict, active_settings);
+  return merger.MergeDictionaries(signature, user_policy, device_policy,
+                                  user_settings, shared_settings,
+                                  active_settings);
 }
 
 }  // namespace ash::onc

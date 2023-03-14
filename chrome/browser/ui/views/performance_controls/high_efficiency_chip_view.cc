@@ -56,12 +56,10 @@ HighEfficiencyChipView::HighEfficiencyChipView(
       browser_(browser) {
   DCHECK(browser_);
 
-  registrar_.Init(g_browser_process->local_state());
-  registrar_.Add(
-      performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled,
-      base::BindRepeating(&HighEfficiencyChipView::OnPrefChanged,
-                          base::Unretained(this)));
-  OnPrefChanged();
+  auto* manager = performance_manager::user_tuning::
+      UserPerformanceTuningManager::GetInstance();
+  user_performance_tuning_manager_observation_.Observe(manager);
+  OnHighEfficiencyModeChanged();
 
   SetUpForInOutAnimation(kChipAnimationDuration);
   SetPaintLabelOverSolidBackground(true);
@@ -120,6 +118,8 @@ void HighEfficiencyChipView::UpdateImpl() {
                                  times_rendered + 1);
       }
     } else if (tab_helper->HasChipBeenHidden()) {
+      UnpauseAnimation();
+      AnimateOut();
       ResetSlideAnimation(false);
     }
 
@@ -193,9 +193,10 @@ void HighEfficiencyChipView::OnIPHClosed() {
   UnpauseAnimation();
 }
 
-void HighEfficiencyChipView::OnPrefChanged() {
-  is_high_efficiency_mode_enabled_ = registrar_.prefs()->GetBoolean(
-      performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled);
+void HighEfficiencyChipView::OnHighEfficiencyModeChanged() {
+  auto* manager = performance_manager::user_tuning::
+      UserPerformanceTuningManager::GetInstance();
+  is_high_efficiency_mode_enabled_ = manager->IsHighEfficiencyModeActive();
 }
 
 BEGIN_METADATA(HighEfficiencyChipView, PageActionIconView)

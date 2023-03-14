@@ -41,13 +41,13 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_url_loader.h"
+#include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
+#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
@@ -546,7 +546,7 @@ TEST_F(InstallIsolatedWebAppCommandTest,
   EXPECT_THAT(web_app->GetSources().test(WebAppManagement::kCommandLine),
               IsTrue());
 
-  EXPECT_THAT(web_app->install_source_for_metrics(),
+  EXPECT_THAT(web_app->latest_install_source(),
               Optional(Eq(InstallSource::ISOLATED_APP_DEV_INSTALL)));
 }
 

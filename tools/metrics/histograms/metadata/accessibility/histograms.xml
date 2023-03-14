@@ -351,20 +351,8 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Accessibility.Android.TabSwitcherPreferenceEnabled"
-    enum="BooleanEnabled" expires_after="M81">
-  <owner>twellington@chromium.org</owner>
-  <owner>tedchoc@chromium.org</owner>
-  <summary>
-    Tracks whether the accessibility tab switcher is enabled when an
-    accessibility service (e.g. TalkBack or Switch Access) is enabled that would
-    typically cause the accessibility tab switcher to be used. Recorded when the
-    activity is resumed or accessibility services are turned on.
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.Android.UserFontSizePref.Change" units="%"
-    expires_after="2023-07-01">
+    expires_after="2023-09-03">
   <owner>twellington@chromium.org</owner>
   <owner>skym@chromium.org</owner>
   <summary>
@@ -375,7 +363,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.UserFontSizePref.OnStartup" units="%"
-    expires_after="2023-07-01">
+    expires_after="2023-09-03">
   <owner>twellington@chromium.org</owner>
   <owner>skym@chromium.org</owner>
   <summary>
@@ -1014,6 +1002,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ExperimentalModeFlag.FormControls"
+    enum="BooleanEnabled" expires_after="2023-11-30">
+  <owner>aldietz@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records whether the experimental form controls mode flag is set for the
+    AXMode. Tracked when the experimental form controls mode flag is flipped to
+    true. This flag is flipped automatically when software communicates with
+    Chrome via accessibility APIs.
+
+    This is currently only used on Android OS.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.FocusHighlight.ToggleEnabled"
     enum="BooleanEnabled" expires_after="never">
   <owner>aleventhal@chromium.org</owner>
@@ -1186,10 +1188,10 @@ chromium-metrics-reviews@google.com.
     This metric is related to the Preferred Content Size chosen by the user. It
     is only recorded once per session. This is hit if the chosen category is not
     listed in the map defined in
-    /ios/chrome/browser/ui/util/dynamic_type_util.mm. In that case, we should
-    update the code by adding an entry for the new category in that map. This is
-    logged when the helper to returning the multiplier associated with the
-    current preferred content size is called.
+    /ios/chrome/browser/shared/ui/util/dynamic_type_util.mm. In that case, we
+    should update the code by adding an entry for the new category in that map.
+    This is logged when the helper to returning the multiplier associated with
+    the current preferred content size is called.
   </summary>
 </histogram>
 
@@ -1475,6 +1477,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Accessibility.LiveCaption.{SodaLanguageCode}.SessionContainsRecognizedSpeech"
+    enum="BooleanEnabled" expires_after="2023-06-01">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the speech recognition session contains any recognized speech. This
+    is logged once per media stream upon the destruction of the
+    SpeechRecognitionRecognizerImpl.
+  </summary>
+  <token key="SodaLanguageCode" variants="SodaLanguageCode"/>
+</histogram>
+
 <histogram name="Accessibility.LiveCaption2" enum="BooleanEnabled"
     expires_after="2023-11-30">
   <owner>katie@chromium.org</owner>
@@ -1695,6 +1711,42 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.Color" enum="ReadAnythingColor"
+    expires_after="2023-11-30">
+  <owner>abigailbklein@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the user-chosen color theme for the Read Anything panel.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ReadAnything.FontScale" units="em"
+    expires_after="2023-11-30">
+  <owner>abigailbklein@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the user-chosen font scale for the Read Anything panel.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ReadAnything.LetterSpacing"
+    enum="ReadAnythingLetterSpacing" expires_after="2023-11-30">
+  <owner>abigailbklein@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the user-chosen letter spacing for the Read Anything panel.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ReadAnything.LineSpacing"
+    enum="ReadAnythingLineSpacing" expires_after="2023-11-30">
+  <owner>abigailbklein@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the user-chosen line spacing for the Read Anything panel.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.Reliability.Tree.UnserializeError"
     enum="AccessibilityTreeUnserializeError" expires_after="2023-11-30">
   <owner>aleventhal@chromium.org</owner>
@@ -1764,46 +1816,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.Shortcuts.CrosDockedMagnifier"
-    enum="BooleanEnabled" expires_after="2021-12-12">
-  <owner>amraboelkher@chromium.org</owner>
-  <owner>poromov@chromium.org</owner>
-  <summary>
-    Whether the Chrome OS Docked Magnifier shortcut is enabled. It's being
-    emitted when the Docked Magnifier shortcut is triggered.
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.Shortcuts.CrosHighContrast"
-    enum="BooleanEnabled" expires_after="2021-08-09">
-  <owner>amraboelkher@chromium.org</owner>
-  <owner>poromov@chromium.org</owner>
-  <summary>
-    Whether the Chrome OS High Contrast mode shortcut is enabled. It's being
-    emitted when the High Contrast shortcut is triggered.
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.Shortcuts.CrosScreenMagnifier"
-    enum="BooleanEnabled" expires_after="2021-08-09">
-  <owner>amraboelkher@chromium.org</owner>
-  <owner>poromov@chromium.org</owner>
-  <summary>
-    Whether the Chrome OS Full-screen Magnifier mode shortcut is enabled. It's
-    being emitted when the Full-screen Magnifier shortcut is triggered.
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.Shortcuts.CrosSpokenFeedback"
-    enum="BooleanEnabled" expires_after="2021-08-09">
-  <owner>amraboelkher@chromium.org</owner>
-  <owner>poromov@chromium.org</owner>
-  <summary>
-    Whether the Chrome OS Spoken Feedback shortcut is enabled. It's being
-    emitted when the Spoken Feedback shortcut is triggered.
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.VTTContainsStyleBlock" enum="BooleanEnabled"
     expires_after="2023-09-06">
   <owner>evliu@google.com</owner>
@@ -1815,7 +1827,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.WebSpeech.Duration" units="ms"
-    expires_after="2023-06-18">
+    expires_after="2023-08-20">
   <owner>evliu@google.com</owner>
   <owner>chrome-media-ux@google.com</owner>
   <summary>
@@ -2201,7 +2213,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DomDistiller.Time.ViewingReaderModePage" units="ms"
-    expires_after="2023-07-02">
+    expires_after="2023-09-03">
   <owner>mdjones@chromium.org</owner>
   <summary>
     Records the amount of time a user spent on a Reader Mode Page.

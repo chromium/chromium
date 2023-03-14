@@ -76,19 +76,4 @@ char* StreamValToStr(const void* v,
   return strdup(ss.str().c_str());
 }
 
-LogMessage* CheckOpResult::CreateLogMessage(bool is_dcheck,
-                                            const char* file,
-                                            int line,
-                                            const char* expr_str,
-                                            char* v1_str,
-                                            char* v2_str) {
-  LogMessage* const log_message =
-      new LogMessage(file, line, is_dcheck ? LOGGING_DCHECK : LOGGING_FATAL);
-  log_message->stream() << "Check failed: " << expr_str << " (" << v1_str
-                        << " vs. " << v2_str << ")";
-  free(v1_str);
-  free(v2_str);
-  return log_message;
-}
-
 }  // namespace logging

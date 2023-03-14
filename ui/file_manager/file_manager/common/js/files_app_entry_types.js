@@ -287,6 +287,16 @@ export class EntryList {
   }
 
   /**
+   * Removes all entries that match the volumeType.
+   * @param {!VolumeManagerCommon.VolumeType} volumeType to be removed.
+   * This method is specific to VolumeEntry/EntryList instance.
+   */
+  removeAllByVolumeType(volumeType) {
+    this.children_ = this.children_.filter(
+        entry => /** @type {VolumeEntry} */ (entry).volumeType !== volumeType);
+  }
+
+  /**
    * Removes the entry.
    * @param {!Entry|FilesAppEntry} entry to be removed.
    * This method is specific to EntryList and VolumeEntry instance.
@@ -357,6 +367,11 @@ export class VolumeEntry {
    */
   get volumeInfo() {
     return this.volumeInfo_;
+  }
+
+  /** @return {!VolumeManagerCommon.VolumeType} */
+  get volumeType() {
+    return this.volumeInfo_.volumeType;
   }
 
   /**
@@ -586,6 +601,16 @@ export class VolumeEntry {
   }
 
   /**
+   * Removes all entries that match the volumeType.
+   * @param {!VolumeManagerCommon.VolumeType} volumeType to be removed.
+   * This method is specific to VolumeEntry/EntryList instance.
+   */
+  removeAllByVolumeType(volumeType) {
+    this.children_ = this.children_.filter(
+        entry => /** @type {VolumeEntry} */ (entry).volumeType !== volumeType);
+  }
+
+  /**
    * Removes the entry.
    * @param {!Entry|FilesAppEntry} entry to be removed.
    * This method is specific to EntryList and VolumeEntry instance.
@@ -635,6 +660,12 @@ export class FakeEntryImpl {
 
     /** @public {boolean} false FakeEntry are always directory-like. */
     this.isFile = false;
+
+    /**
+     * @public {boolean} false FakeEntry can be disabled if it represents the
+     * placeholder of the real volume.
+     */
+    this.disabled = false;
 
     /**
      * @public {chrome.fileManagerPrivate.SourceRestriction|undefined} It's used

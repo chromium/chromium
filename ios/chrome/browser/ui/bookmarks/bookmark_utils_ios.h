@@ -18,11 +18,17 @@
 class ChromeBrowserState;
 class GURL;
 @class MDCSnackbarMessage;
+class SyncSetupService;
 
 namespace bookmarks {
 class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
+
+enum class BookmarkModelType {
+  kProfile,
+  kAccount,
+};
 
 namespace bookmark_utils_ios {
 
@@ -47,7 +53,25 @@ const bookmarks::BookmarkNode* FindFolderById(bookmarks::BookmarkModel* model,
 // to display a slighly different wording for the default folders.
 NSString* TitleForBookmarkNode(const bookmarks::BookmarkNode* node);
 
-#pragma mark - Updating Bookmarks
+// Returns the model type for a node, based on profile model and account model,
+// based on the root node.
+// `bookmark_node` is the bookmark to query. It can not be null.
+// `profile_model` is the profile mode. It can not be null.
+// `account_model` is the account mode. It can be null.
+// The node must belongs to one of the two models.
+// This function is linear in time in the depth of the bookmark_node.
+// TODO(crbug.com/1417992): once the bookmark nodes has access to its model,
+// rewrite the function to be constant time.
+BookmarkModelType GetBookmarkModelType(
+    const bookmarks::BookmarkNode* bookmark_node,
+    bookmarks::BookmarkModel* profile_model,
+    bookmarks::BookmarkModel* account_model);
+
+// Whether the Cloud Slash icon should be displayed for `bookmark_node`.
+bool ShouldDisplayCloudSlashIcon(SyncSetupService* sync_setup_service);
+
+// An image view containing the cloud slash icon.
+UIImageView* CloudSlashIcon();
 
 // Creates the bookmark if `node` is NULL. Otherwise updates `node`.
 // `folder` is the intended parent of `node`.
@@ -114,8 +138,6 @@ bool MoveBookmarks(std::set<const bookmarks::BookmarkNode*> bookmarks,
 // Category name for all bookmarks related snackbars.
 extern NSString* const kBookmarksSnackbarCategory;
 
-#pragma mark - Useful bookmark manipulation.
-
 // Sorts a vector full of folders by title.
 void SortFolders(NodeVector* vector);
 
@@ -135,12 +157,11 @@ std::vector<NodeVector::size_type> MissingNodesIndices(
     const NodeVector& vector1,
     const NodeVector& vector2);
 
-#pragma mark - Cache position in table view.
-
 // Creates bookmark path for `folderId` passed in. For eg: for folderId = 76,
 // Root node(0) --> MobileBookmarks (3) --> Test1(76) will be returned as [0, 3,
 // 76].
-NSArray* CreateBookmarkPath(bookmarks::BookmarkModel* model, int64_t folder_id);
+NSArray<NSNumber*>* CreateBookmarkPath(bookmarks::BookmarkModel* model,
+                                       int64_t folder_id);
 
 }  // namespace bookmark_utils_ios
 

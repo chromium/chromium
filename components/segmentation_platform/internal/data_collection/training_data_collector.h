@@ -14,6 +14,7 @@
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
+#include "components/segmentation_platform/public/trigger.h"
 
 class PrefService;
 
@@ -79,7 +80,7 @@ class TrainingDataCollector {
   // training data and upload all training data.
   virtual void OnObservationTrigger(
       const absl::optional<ImmediaCollectionParam>& param,
-      TrainingDataCache::RequestId request_id,
+      TrainingRequestId request_id,
       const proto::SegmentInfo& segment_info) = 0;
 
   virtual ~TrainingDataCollector();

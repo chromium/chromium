@@ -55,6 +55,14 @@ void WebStateDependencyInstallationObserver::WebStateDetachedAt(
   OnWebStateRemoved(web_state);
 }
 
+void WebStateDependencyInstallationObserver::WebStateListDestroyed(
+    WebStateList* web_state_list) {
+  // Checking that all WebStates have been destroyed before destroying
+  // the WebStateList, so we should not be observing anything.
+  DCHECK(!web_state_observations_.IsObservingAnySource());
+  web_state_list_observation_.Reset();
+}
+
 void WebStateDependencyInstallationObserver::OnWebStateAdded(
     web::WebState* web_state) {
   if (web_state->IsRealized()) {

@@ -209,8 +209,14 @@ void UnifiedSystemTrayBubble::ShowCalendarView(
   }
 
   if (event_source == calendar_metrics::CalendarEventSource::kKeyboard) {
+    auto weak_this = weak_factory_.GetWeakPtr();
     bubble_view_->SetCanActivate(true);
     bubble_widget_->Activate();
+    // Calling `bubble_widget_->Activate()` can cause `this` to be deleted. We
+    // should not continue if that happens.
+    if (!weak_this) {
+      return;
+    }
   }
 
   DCHECK(unified_view_ || quick_settings_view_);

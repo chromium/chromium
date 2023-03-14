@@ -8,8 +8,10 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "cc/cc_export.h"
 #include "cc/resources/ui_resource_client.h"
+#include "components/viz/common/resources/resource_id.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
@@ -21,6 +23,7 @@ class TracedValue;
 }
 
 namespace viz {
+class ClientResourceProvider;
 class CompositorRenderPass;
 class SharedQuadState;
 }  // namespace viz
@@ -99,11 +102,20 @@ class CC_EXPORT NinePatchGenerator {
 
   std::vector<Patch> GeneratePatches() const;
 
-  void AppendQuads(LayerImpl* layer_impl,
-                   UIResourceId ui_resource_id,
-                   viz::CompositorRenderPass* render_pass,
-                   viz::SharedQuadState* shared_quad_state,
-                   const std::vector<Patch>& patches);
+  void AppendQuadsForCc(LayerImpl* layer_impl,
+                        UIResourceId ui_resource_id,
+                        viz::CompositorRenderPass* render_pass,
+                        viz::SharedQuadState* shared_quad_state,
+                        const std::vector<Patch>& patches);
+
+  void AppendQuads(
+      viz::ResourceId resource,
+      bool opaque,
+      base::RepeatingCallback<gfx::Rect(const gfx::Rect&)> clip_visible_rect,
+      viz::ClientResourceProvider* client_resource_provider,
+      viz::CompositorRenderPass* render_pass,
+      viz::SharedQuadState* shared_quad_state,
+      const std::vector<Patch>& patches);
 
   void AsValueInto(base::trace_event::TracedValue* state) const;
   void CheckGeometryLimitations();

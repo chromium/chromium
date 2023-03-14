@@ -118,7 +118,7 @@
 
       // Play the video a second time.
       Utils.timeLog('Playing second time.');
-      play(video, false);
+      play(video, 1);
     }
 
     function onLogEvent(e) {
@@ -139,8 +139,8 @@
       });
     }
 
-    function play(video, playTwice) {
-      Utils.timeLog('Starting play, hidden: ' + document.hidden);
+    function play(video, playCount) {
+      Utils.timeLog('eme_player.html::play(): Starting play, hidden=' + document.hidden + ', playCount=' + playCount);
       video.addEventListener('canplay', onLogEvent);
       video.addEventListener('load', onLogEvent);
       video.addEventListener('playing', onLogEvent);
@@ -151,7 +151,7 @@
       video.addEventListener('waitingforkey', onLogEvent);
       document.addEventListener('visibilitychange', onVisibilityChange);
       Utils.resetTitleChange();
-      if (playTwice) {
+      if (playCount == 2) {
         // Wait for the first play to complete.
         video.addEventListener('ended', onFirstPlayEnded);
         return video.play();
@@ -159,7 +159,9 @@
       // Ended should not fire before onTimeUpdate.
       video.addEventListener('ended', Utils.failTest);
       video.addEventListener('timeupdate', onTimeUpdate);
-      return video.play();
+      if (playCount > 0) {
+        return video.play();
+      }
     }
 
     function toggleDisplay(id) {
@@ -173,13 +175,13 @@
     }
 
     function start() {
-      initApp();  
+      initApp();
       // TODO(jrummell): Support setMediaKeys() after play().
       // See http://crbug.com/675011
       emeApp.createPlayer()
           .then(function(p) {
               player = p;
-              return play(player.video, testConfig.playTwice);
+              return play(player.video, testConfig.playCount);
           }).catch(function(error) {
               Utils.timeLog(error);
               Utils.failTest('Unable to play video.');

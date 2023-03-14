@@ -1,0 +1,116 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'chrome://personalization/strings.m.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
+
+import {CurrentBacklightState, KeyboardBacklightActionName, KeyboardBacklightObserver, SetCurrentBacklightStateAction, staticColorIds, ZoneCustomizationElement} from 'chrome://personalization/js/personalization_app.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+
+import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
+import {TestKeyboardBacklightProvider} from './test_keyboard_backlight_interface_provider.js';
+import {TestPersonalizationStore} from './test_personalization_store.js';
+
+suite('ZoneCustomizationElementTest', function() {
+  let zoneCustomizationElement: ZoneCustomizationElement|null;
+  let keyboardBacklightProvider: TestKeyboardBacklightProvider;
+  let personalizationStore: TestPersonalizationStore;
+
+  setup(() => {
+    const mocks = baseSetup();
+    keyboardBacklightProvider = mocks.keyboardBacklightProvider;
+    personalizationStore = mocks.personalizationStore;
+    KeyboardBacklightObserver.initKeyboardBacklightObserverIfNeeded();
+  });
+
+  teardown(async () => {
+    await teardownElement(zoneCustomizationElement);
+    zoneCustomizationElement = null;
+    KeyboardBacklightObserver.shutdown();
+  });
+
+  async function initZoneCustomizationElement() {
+    loadTimeData.overrideValues(
+        {keyboardBacklightZoneCount: keyboardBacklightProvider.zoneCount});
+    personalizationStore.data.keyboardBacklight.currentBacklightState =
+        keyboardBacklightProvider.currentBacklightState;
+    personalizationStore.notifyObservers();
+    zoneCustomizationElement = initElement(ZoneCustomizationElement);
+    await waitAfterNextRender(zoneCustomizationElement);
+  }
+
+  test(
+      'displays content with current backlight state as a static color',
+      async () => {
+        await initZoneCustomizationElement();
+        const zoneSelector =
+            zoneCustomizationElement!.shadowRoot!.getElementById(
+                'zoneSelector');
+        assertTrue(!!zoneSelector, 'zone selector should display');
+        const zoneButtons =
+            zoneCustomizationElement!.shadowRoot!.querySelectorAll(
+                '.zone-button');
+        assertEquals(
+            5, zoneButtons!.length,
+            '5 zones should display in customization dialog');
+        const dialogCloseButton =
+            zoneCustomizationElement!.shadowRoot!.getElementById(
+                'dialogCloseButton');
+        assertTrue(!!dialogCloseButton, 'close dialog button should display');
+      });
+
+  test(
+      'updates zone content with current backlight state as zone colors',
+      async () => {
+        keyboardBacklightProvider.setZoneCount(4);
+        keyboardBacklightProvider.setCurrentBacklightState(
+            {zoneColors: keyboardBacklightProvider.zoneColors});
+        await initZoneCustomizationElement();
+        const zoneSelector =
+            zoneCustomizationElement!.shadowRoot!.getElementById(
+                'zoneSelector');
+        assertTrue(!!zoneSelector, 'zone selector should display');
+        const zoneButtons =
+            zoneCustomizationElement!.shadowRoot!.querySelectorAll(
+                '.zone-button');
+        assertEquals(
+            4, zoneButtons!.length,
+            '4 zones should display in customization dialog');
+        const colorIcons =
+            zoneCustomizationElement!.shadowRoot!.querySelectorAll(
+                'color-icon');
+        assertEquals(
+            4, colorIcons!.length,
+            '4 color icons should display in customization dialog');
+        // Color of the color-icon displayed in each zone should match with the
+        // corresponding one in zone colors.
+        for (let i = 0; i < 4; i++) {
+          const zoneColor = keyboardBacklightProvider.zoneColors[i];
+          const expectedColorId = staticColorIds[zoneColor!];
+          const colorId =
+              (colorIcons[i] as HTMLElement).getAttribute('color-id');
+          assertEquals(
+              expectedColorId, colorId,
+              `colorId for zone ${i + 1} should be ${expectedColorId}`);
+        }
+      });
+
+  test('sets zone colors data in store on first load', async () => {
+    const currentBacklightState: CurrentBacklightState = {
+      zoneColors: keyboardBacklightProvider.zoneColors,
+    };
+    personalizationStore.expectAction(
+        KeyboardBacklightActionName.SET_CURRENT_BACKLIGHT_STATE);
+    await keyboardBacklightProvider.whenCalled('setKeyboardBacklightObserver');
+    keyboardBacklightProvider.fireOnBacklightStateChanged(
+        currentBacklightState);
+    const action =
+        await personalizationStore.waitForAction(
+            KeyboardBacklightActionName.SET_CURRENT_BACKLIGHT_STATE) as
+        SetCurrentBacklightStateAction;
+    assertDeepEquals(currentBacklightState, action.currentBacklightState);
+  });
+});

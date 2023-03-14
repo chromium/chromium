@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -61,10 +62,14 @@ class WebAppCommand {
   // Returns if the command has been started yet.
   bool IsStarted() const { return command_manager() != nullptr; }
 
-  // Unique id generated for this command. Currently only used for debug values.
+  // Unique id generated for this command.
   Id id() const { return id_; }
 
   const std::string& name() const { return name_; }
+
+  const absl::optional<base::Location>& scheduled_location() const {
+    return scheduled_location_;
+  }
 
   // Returns a debug value to log the state of the command. Used in
   // chrome://web-app-internals.
@@ -85,7 +90,8 @@ class WebAppCommand {
   // after the lock is acquired.
   virtual void RequestLock(WebAppCommandManager* command_manager,
                            WebAppLockManager* lock_manager,
-                           LockAcquiredCallback on_lock_acquired) = 0;
+                           LockAcquiredCallback on_lock_acquired,
+                           const base::Location& location) = 0;
 
   // This is called when the sync system has triggered an uninstall for an app
   // id that is relevant to this command and this command is running
@@ -121,10 +127,13 @@ class WebAppCommand {
  private:
   friend class WebAppCommandManager;
 
+  void SetScheduledLocation(const base::Location& location);
+
   base::WeakPtr<WebAppCommand> AsWeakPtr();
 
   Id id_;
   std::string name_;
+  absl::optional<base::Location> scheduled_location_;
   raw_ptr<WebAppCommandManager> command_manager_ = nullptr;
 
   base::WeakPtrFactory<WebAppCommand> weak_factory_{this};
@@ -154,7 +163,8 @@ class WebAppCommandTemplate : public WebAppCommand {
   // WebAppCommand:
   void RequestLock(WebAppCommandManager* command_manager,
                    WebAppLockManager* lock_manager,
-                   LockAcquiredCallback on_lock_acquired) override;
+                   LockAcquiredCallback on_lock_acquired,
+                   const base::Location& location) override;
 
   void PrepareForStart(WebAppCommandManager* command_manager,
                        LockAcquiredCallback on_lock_acquired,

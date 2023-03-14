@@ -20,7 +20,6 @@
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
-#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -515,26 +514,28 @@ void VariationsService::RegisterPrefs(PrefRegistrySimple* registry) {
   SafeSeedManager::RegisterPrefs(registry);
   VariationsSeedStore::RegisterPrefs(registry);
 
-  // This preference will only be written by the policy service, which will fill
-  // it according to a value stored in the User Policy.
-  registry->RegisterStringPref(prefs::kVariationsRestrictParameter,
-                               std::string());
+  registry->RegisterIntegerPref(
+      prefs::kDeviceVariationsRestrictionsByPolicy,
+      static_cast<int>(RestrictionPolicy::NO_RESTRICTIONS));
+  registry->RegisterDictionaryPref(
+      prefs::kVariationsGoogleGroups,
+      static_cast<int>(RestrictionPolicy::NO_RESTRICTIONS));
+  // This preference keeps track of the country code used to filter
+  // permanent-consistency studies.
+  registry->RegisterListPref(prefs::kVariationsPermanentConsistencyCountry);
   // This preference is used to override the variations country code which is
   // consistent across different chrome version.
   registry->RegisterStringPref(prefs::kVariationsPermanentOverriddenCountry,
                                std::string());
-  // This preference keeps track of the country code used to filter
-  // permanent-consistency studies.
-  registry->RegisterListPref(prefs::kVariationsPermanentConsistencyCountry);
   // This preference keeps track of ChromeVariations enum policy which
   // allows the admin to restrict the set of variations applied.
   registry->RegisterIntegerPref(
       prefs::kVariationsRestrictionsByPolicy,
       static_cast<int>(RestrictionPolicy::NO_RESTRICTIONS));
-
-  registry->RegisterIntegerPref(
-      prefs::kDeviceVariationsRestrictionsByPolicy,
-      static_cast<int>(RestrictionPolicy::NO_RESTRICTIONS));
+  // This preference will only be written by the policy service, which will fill
+  // it according to a value stored in the User Policy.
+  registry->RegisterStringPref(prefs::kVariationsRestrictParameter,
+                               std::string());
 }
 
 // static
@@ -653,7 +654,6 @@ bool VariationsService::DoFetchFromURL(const GURL& url, bool is_http_retry) {
   UMA_HISTOGRAM_CUSTOM_COUNTS("Variations.TimeSinceLastFetchAttempt",
                               time_since_last_fetch.InMinutes(), 1,
                               base::Days(7).InMinutes(), 50);
-  UMA_HISTOGRAM_COUNTS_100("Variations.RequestCount", request_count_);
   ++request_count_;
   last_request_started_time_ = now;
   delta_error_since_last_success_ = false;
@@ -895,22 +895,11 @@ void VariationsService::PerformSimulationWithVersion(
   if (!version.IsValid())
     return;
 
-  const base::ElapsedTimer timer;
-
   auto entropy_providers = state_manager_->CreateEntropyProviders();
 
   std::unique_ptr<ClientFilterableState> client_state =
       field_trial_creator_.GetClientFilterableStateForVersion(version);
   auto result = SimulateSeedStudies(seed, *client_state, *entropy_providers);
-
-  UMA_HISTOGRAM_COUNTS_100("Variations.SimulateSeed.NormalChanges",
-                           result.normal_group_change_count);
-  UMA_HISTOGRAM_COUNTS_100("Variations.SimulateSeed.KillBestEffortChanges",
-                           result.kill_best_effort_group_change_count);
-  UMA_HISTOGRAM_COUNTS_100("Variations.SimulateSeed.KillCriticalChanges",
-                           result.kill_critical_group_change_count);
-
-  UMA_HISTOGRAM_TIMES("Variations.SimulateSeed.Duration", timer.Elapsed());
 
   NotifyObservers(result);
 }

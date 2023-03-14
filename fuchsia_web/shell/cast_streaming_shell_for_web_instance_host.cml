@@ -1,0 +1,44 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// A component that is launched by cast_streming_shell since cast_streming_shell
+// itself runs as a test component, and therefore cannot run WebInstanceHost
+// directly.
+{
+  include: [
+    "//fuchsia_web/webinstance_host/web_instance_host.shard.cml",
+    "syslog/client.shard.cml",
+  ],
+  program: {
+    runner: "elf",
+    binary: "cast_streaming_shell_exe",
+    args: [
+      // Inform cast_streaming_shell that it is running as the sub-process in
+      // which WebInstanceHost may be used. In this scenario, the main test
+      // component is running only as a launcher of this child.
+      "--no-relaunch",
+    ],
+
+    // Required to allow JIT in child processes such as renderers.
+    // Known as 'deprecated-ambient-replace-as-executable' in CFv1.
+    job_policy_ambient_mark_vmo_exec: "true",
+  },
+  use: [
+    {
+      protocol: "fuchsia.posix.socket.Provider",
+    },
+    {
+      protocol: [
+        "fuchsia.element.GraphicalPresenter",
+
+        // TODO(crbug.com/1402457): Remove fuchsia.ui.policy.Presenter.
+        "fuchsia.ui.policy.Presenter",
+
+        // TODO(crbug.com/1418433): Remove fuchsia.ui.scenic.Scenic.
+        "fuchsia.ui.scenic.Scenic",
+      ],
+      availability: "optional",
+    },
+  ],
+}

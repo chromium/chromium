@@ -87,7 +87,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GoogleUpdate.UpgradeResult" enum="GoogleUpdateUpgradeStatus"
-    expires_after="2023-06-26">
+    expires_after="2023-08-27">
   <owner>sorin@chromium.org</owner>
   <owner>waffles@chromium.org</owner>
   <summary>The result of an on-demand update check.</summary>

@@ -112,7 +112,7 @@ separate preferences, their default values, and that either `IdleActionAC` or
 ### policy_test_cases.json
 
 The test cases per policy are defined in
-[//chrome/test/data/policy/policy_test_cases.json](https://cs.chromium.org/chromium/src/chrome/test/data/policy/policy_test_cases.json)
+[//components/policy/test/data/policy_test_cases.json](https://cs.chromium.org/chromium/src/components/policy/test/data/policy_test_cases.json)
 (for iOS, see separate
 [//ios/chrome/test/data/policy/policy_test_cases.json](https://cs.chromium.org/chromium/src/ios/chrome/test/data/policy/policy_test_cases.json)).
 

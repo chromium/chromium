@@ -2008,14 +2008,18 @@ TEST_F(UkmPageLoadMetricsObserverTest,
                   "SessionWindow.Gap1000ms.Max5000ms"),
               testing::ElementsAre(base::Bucket(25, 1)));
   EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
-                  "PageLoad.Experimental.LayoutInstability."
+                  "PageLoad.LayoutInstability."
                   "CumulativeShiftScoreAtFirstOnHidden"),
               testing::ElementsAre(base::Bucket(10, 1)));
+  // The layout shift score was originally 1, after multiplying 10000, it
+  // should fit into the bucket of value 9130, with a histogram of maximum
+  // value of 24000.
+  const base::HistogramBase::Sample max_cls = 9130;
   EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
-                  "PageLoad.Experimental.LayoutInstability."
+                  "PageLoad.LayoutInstability."
                   "MaxCumulativeShiftScoreAtFirstOnHidden.SessionWindow."
                   "Gap1000ms.Max5000ms"),
-              testing::ElementsAre(base::Bucket(10, 1)));
+              testing::ElementsAre(base::Bucket(max_cls, 1)));
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest,
@@ -2060,14 +2064,18 @@ TEST_F(UkmPageLoadMetricsObserverTest,
         100);
   }
   EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
-                  "PageLoad.Experimental.LayoutInstability."
+                  "PageLoad.LayoutInstability."
                   "CumulativeShiftScoreAtFirstOnHidden"),
               testing::ElementsAre(base::Bucket(10, 1)));
+  // The layout shift score was originally 1, after multiplying 10000, it
+  // should fit into the bucket of value 9130, with a histogram of maximum
+  // value of 24000.
+  const base::HistogramBase::Sample max_cls = 9130;
   EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
-                  "PageLoad.Experimental.LayoutInstability."
+                  "PageLoad.LayoutInstability."
                   "MaxCumulativeShiftScoreAtFirstOnHidden.SessionWindow."
                   "Gap1000ms.Max5000ms"),
-              testing::ElementsAre(base::Bucket(10, 1)));
+              testing::ElementsAre(base::Bucket(max_cls, 1)));
 }
 
 TEST_F(UkmPageLoadMetricsObserverWithMockTimeTest,

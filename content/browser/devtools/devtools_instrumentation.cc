@@ -17,12 +17,14 @@
 #include "content/browser/devtools/protocol/browser_handler.h"
 #include "content/browser/devtools/protocol/device_access_handler.h"
 #include "content/browser/devtools/protocol/emulation_handler.h"
+#include "content/browser/devtools/protocol/fedcm_handler.h"
 #include "content/browser/devtools/protocol/fetch_handler.h"
 #include "content/browser/devtools/protocol/input_handler.h"
 #include "content/browser/devtools/protocol/log_handler.h"
 #include "content/browser/devtools/protocol/network.h"
 #include "content/browser/devtools/protocol/network_handler.h"
 #include "content/browser/devtools/protocol/page_handler.h"
+#include "content/browser/devtools/protocol/preload_handler.h"
 #include "content/browser/devtools/protocol/security_handler.h"
 #include "content/browser/devtools/protocol/target_handler.h"
 #include "content/browser/devtools/protocol/tracing_handler.h"
@@ -419,7 +421,7 @@ void DidActivatePrerender(const NavigationRequest& nav_request) {
   // DevTools when the activation is triggered. If the DevTools is not opened at
   // the moment, recording the activation here will still preserve the signal.
   web_contents->set_last_navigation_was_prerender_activation_for_devtools();
-  DispatchToAgents(ftn, &protocol::PageHandler::DidActivatePrerender,
+  DispatchToAgents(ftn, &protocol::PreloadHandler::DidActivatePrerender,
                    nav_request);
   UpdateChildFrameTrees(ftn, /* update_target_info= */ true);
 }
@@ -430,7 +432,7 @@ void DidCancelPrerender(const GURL& prerendering_url,
                         const std::string& disallowed_api_method) {
   std::string initiating_frame_id =
       ftn->current_frame_host()->devtools_frame_token().ToString();
-  DispatchToAgents(ftn, &protocol::PageHandler::DidCancelPrerender,
+  DispatchToAgents(ftn, &protocol::PreloadHandler::DidCancelPrerender,
                    prerendering_url, initiating_frame_id, status,
                    disallowed_api_method);
 }
@@ -440,7 +442,7 @@ void DidUpdatePrefetchStatus(FrameTreeNode* ftn,
                              PreloadingTriggeringOutcome status) {
   std::string initiating_frame_id =
       ftn->current_frame_host()->devtools_frame_token().ToString();
-  DispatchToAgents(ftn, &protocol::PageHandler::DidUpdatePrefetchStatus,
+  DispatchToAgents(ftn, &protocol::PreloadHandler::DidUpdatePrefetchStatus,
                    initiating_frame_id, prefetch_url, status);
 }
 
@@ -452,7 +454,7 @@ void DidUpdatePrerenderStatus(int initiator_frame_tree_node_id,
   if (ftn) {
     std::string initiating_frame_id =
         ftn->current_frame_host()->devtools_frame_token().ToString();
-    DispatchToAgents(ftn, &protocol::PageHandler::DidUpdatePrerenderStatus,
+    DispatchToAgents(ftn, &protocol::PreloadHandler::DidUpdatePrerenderStatus,
                      initiating_frame_id, prerender_url, status);
   }
 }
@@ -1839,6 +1841,22 @@ void CleanUpDeviceRequestPrompt(RenderFrameHost* render_frame_host,
   DispatchToAgents(ftn,
                    &protocol::DeviceAccessHandler::CleanUpDeviceRequestPrompt,
                    prompt_info);
+}
+
+void WillShowFedCmDialog(RenderFrameHost* render_frame_host, bool* intercept) {
+  FrameTreeNode* ftn = FrameTreeNode::From(render_frame_host);
+  if (!ftn) {
+    return;
+  }
+  DispatchToAgents(ftn, &protocol::FedCmHandler::WillShowDialog, intercept);
+}
+
+void OnFedCmAccountsDialogShown(RenderFrameHost* render_frame_host) {
+  FrameTreeNode* ftn = FrameTreeNode::From(render_frame_host);
+  if (!ftn) {
+    return;
+  }
+  DispatchToAgents(ftn, &protocol::FedCmHandler::OnDialogShown);
 }
 
 }  // namespace devtools_instrumentation

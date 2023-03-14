@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ash/printing/zeroconf_printer_detector.h"
 
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/hash/md5.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -27,6 +29,7 @@ const char ZeroconfPrinterDetector::kIppServiceName[] = "_ipp._tcp.local";
 const char ZeroconfPrinterDetector::kIppsServiceName[] = "_ipps._tcp.local";
 const char ZeroconfPrinterDetector::kSocketServiceName[] =
     "_pdl-datastream._tcp.local";
+const char ZeroconfPrinterDetector::kLpdServiceName[] = "_printer._tcp.local";
 
 // IppEverywhere printers are also required to advertise these services.
 const char ZeroconfPrinterDetector::kIppEverywhereServiceName[] =
@@ -36,12 +39,13 @@ const char ZeroconfPrinterDetector::kIppsEverywhereServiceName[] =
 
 // These service names are ordered in priority. In other words, earlier
 // service types in this list will be used preferentially over later ones.
-constexpr std::array<const char*, 5> kServiceNames = {
+constexpr std::array<const char*, 6> kServiceNames = {
     ZeroconfPrinterDetector::kIppsEverywhereServiceName,
     ZeroconfPrinterDetector::kIppEverywhereServiceName,
     ZeroconfPrinterDetector::kIppsServiceName,
     ZeroconfPrinterDetector::kIppServiceName,
     ZeroconfPrinterDetector::kSocketServiceName,
+    ZeroconfPrinterDetector::kLpdServiceName,
 };
 
 namespace {
@@ -186,6 +190,8 @@ bool ConvertToPrinter(const std::string& service_type,
     // If the "rp" key is present in a Socket TXT record, the key/value MUST
     // be ignored.
     rp.clear();
+  } else if (service_type == ZeroconfPrinterDetector::kLpdServiceName) {
+    uri.SetScheme("lpd");
   } else {
     // Since we only register for these services, we should never get back
     // a service other than the ones above.
@@ -228,14 +234,14 @@ bool ConvertToPrinter(const std::string& service_type,
   if (!metadata.pdl.empty()) {
     // Per Bonjour Printer Spec v1.2 section 9.2.8, it is invalid for the pdl to
     // end with a comma.
-    auto media_types = base::SplitString(
+    auto media_types = base::SplitStringPiece(
         metadata.pdl, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     if (!media_types.empty() && !media_types.back().empty()) {
       // Prune any empty splits.
       base::EraseIf(media_types, [](base::StringPiece s) { return s.empty(); });
 
-      std::transform(
-          media_types.begin(), media_types.end(),
+      base::ranges::transform(
+          media_types,
           std::back_inserter(
               detected_printer->ppd_search_data.supported_document_formats),
           [](base::StringPiece s) { return base::ToLowerASCII(s); });

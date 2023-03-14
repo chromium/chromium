@@ -41,7 +41,8 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/embedder_support/switches.h"
-#include "components/gwp_asan/buildflags/buildflags.h"
+#include "components/memory_system/initializer.h"
+#include "components/memory_system/parameters.h"
 #include "components/metrics/unsent_log_store_metrics.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
 #include "components/services/heap_profiling/public/cpp/profiling_client.h"
@@ -79,10 +80,6 @@
 #if BUILDFLAG(ENABLE_SPELLCHECK)
 #include "components/spellcheck/common/spellcheck_features.h"
 #endif  // ENABLE_SPELLCHECK
-
-#if BUILDFLAG(ENABLE_GWP_ASAN)
-#include "components/gwp_asan/client/gwp_asan.h"  // nogncheck
-#endif
 
 namespace android_webview {
 
@@ -435,23 +432,8 @@ absl::optional<int> AwMainDelegate::PostEarlyInitialization(
     content::InitializeMojoCore();
   }
 
-  version_info::Channel channel = version_info::android::GetChannel();
-  [[maybe_unused]] const bool is_canary_dev =
-      (channel == version_info::Channel::CANARY ||
-       channel == version_info::Channel::DEV);
-  [[maybe_unused]] const std::string process_type =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kProcessType);
+  InitializeMemorySystem(is_browser_process);
 
-#if BUILDFLAG(ENABLE_GWP_ASAN_MALLOC)
-  gwp_asan::EnableForMalloc(is_canary_dev || is_browser_process,
-                            process_type.c_str());
-#endif
-
-#if BUILDFLAG(ENABLE_GWP_ASAN_PARTITIONALLOC)
-  gwp_asan::EnableForPartitionAlloc(is_canary_dev || is_browser_process,
-                                    process_type.c_str());
-#endif
   return absl::nullopt;
 }
 
@@ -503,4 +485,26 @@ content::ContentRendererClient* AwMainDelegate::CreateContentRendererClient() {
   return content_renderer_client_.get();
 }
 
+void AwMainDelegate::InitializeMemorySystem(const bool is_browser_process) {
+  const version_info::Channel channel = version_info::android::GetChannel();
+  const bool is_canary_dev = (channel == version_info::Channel::CANARY ||
+                              channel == version_info::Channel::DEV);
+  const std::string process_type =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kProcessType);
+  const bool gwp_asan_boost_sampling = is_canary_dev || is_browser_process;
+
+  // Add PoissonAllocationSampler. On Android WebView we do not have obvious
+  // observers of PoissonAllocationSampler. Unfortunately, some potential
+  // candidates are still linked and may sneak in through hidden paths.
+  // Therefore, we include PoissonAllocationSampler unconditionally.
+  // TODO(crbug.com/1411454): Which observers of PoissonAllocationSampler are
+  // really in use on Android WebView? Can we add the sampler conditionally or
+  // remove it completely?
+  memory_system::Initializer()
+      .SetGwpAsanParameters(gwp_asan_boost_sampling, process_type)
+      .SetDispatcherParameters(memory_system::DispatcherParameters::
+                                   PoissonAllocationSamplerInclusion::kEnforce)
+      .Initialize(memory_system_);
+}
 }  // namespace android_webview

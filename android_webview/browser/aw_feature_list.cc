@@ -25,6 +25,7 @@ namespace {
 // in other locations in the code base (e.g. content/, components/, etc).
 const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewConnectionlessSafeBrowsing,
+    &features::kWebViewServerSideSampling,
     &features::kWebViewDisplayCutout,
     &features::kWebViewMixedContentAutoupgrades,
     &features::kWebViewTestFeature,

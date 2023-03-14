@@ -1,13 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
+<translation id="1347497506789975534">Erakutsi gordetako ordainketa-metodoak</translation>
 <translation id="1383876407941801731">Bilaketa</translation>
-<translation id="1566281227936819866">Gordetako ordainketa-metodoak daude ikusgai</translation>
 <translation id="1717486229951421299">Ukitzean bete beharreko kredentzialen zerrenda altuera erdian irekita dago.</translation>
 <translation id="207576718733492531">Ukitzean bete beharreko kredentzialen zerrenda itxita dago.</translation>
 <translation id="2610239185026711824">Iradoki pasahitza</translation>
 <translation id="2652129567809778422">Hautatu pasahitz bat</translation>
-<translation id="2803478378562657435">Gordetako pasahitzak eta pasahitz-aukerak daude ikusgai</translation>
 <translation id="2903493209154104877">Helbideak</translation>
 <translation id="3399357656427473483">Ukitzean bete beharreko kredentzialen zerrenda.</translation>
 <translation id="3688051737190211318"><ph name="ORIGIN" /> fidagarria dela uste baduzu, gordetako pasahitz bat erabil dezakezu saioa hasteko</translation>
@@ -15,16 +14,14 @@
 <translation id="4660011489602794167">Erakutsi teklatua</translation>
 <translation id="4694050069269396220"><ph name="ORIGIN" /> fidagarria dela uste baduzu, beste webgune baterako gordetako pasahitz bat erabil dezakezu.</translation>
 <translation id="5016175294846053194">Teklatuaren gainean agertzen dira eremuak automatikoki betetzeko iradokizunak</translation>
-<translation id="5088366526685584589">Gordetako helbideak daude ikusgai</translation>
 <translation id="5441504010984421144">Ukitzean bete beharreko kredentzialen zerrenda altuera osoan irekita dago.</translation>
+<translation id="6296921860874265377">Erakutsi gordetako pasahitzak eta pasahitz-aukerak</translation>
 <translation id="6393156038355142111">Iradoki pasahitz konplexu bat</translation>
 <translation id="6558703547256592471">Erabili pasahitz esklusiboa webgune bakoitzerako.</translation>
 <translation id="7029809446516969842">Pasahitzak</translation>
-<translation id="7299100402441711551">Erakutsi helbideak</translation>
-<translation id="7494879913343971937">Erakutsi pasahitzak</translation>
 <translation id="7594473730623999723">Pasatu hatza iradokizun gehiago ikusteko</translation>
+<translation id="7873973044507799456">Erakutsi gordetako helbideak</translation>
 <translation id="7992095260806105436">Erabili Chrome-ren automatikoki betetzeko iradokizuna</translation>
-<translation id="8037472847879765671">Erakutsi ordainketa-metodoak</translation>
 <translation id="8507520749471379845">Pasahitzak daude erabilgarri</translation>
 <translation id="8705308553596171387">Ez da ezarri pasahitzik</translation>
 <translation id="879180780857354295">Eremuak betetzeko beste aukera batzuk erabilgarri daude teklatuaren gainean</translation>

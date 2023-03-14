@@ -184,6 +184,8 @@ class ASH_EXPORT UnifiedSystemTrayBubble
   TrayBubbleView* bubble_view_ = nullptr;
   UnifiedSystemTrayView* unified_view_ = nullptr;
   QuickSettingsView* quick_settings_view_ = nullptr;
+
+  base::WeakPtrFactory<UnifiedSystemTrayBubble> weak_factory_{this};
 };
 
 }  // namespace ash

@@ -48,14 +48,18 @@ class BuildConfigGenerator extends DefaultTask {
     // https://source.chromium.org/chromium/infra/infra/+/master:recipes/recipe_modules/support_3pp/resolved_spec.py?q=symbol:PACKAGE_EPOCH&ss=chromium
     private static final String THREEPP_EPOCH = '2'
 
-    // Use this to exclude a dep from being depended upon. Useful for deps like androidx_window_window_java.
-    private static final String EXCLUDE_THIS_LIB = 'EXCLUDE_THIS_LIB'
+    // Use this to exclude a dep from being depended upon but keep the target.
+    private static final List<String> DISALLOW_DEPS = [
+        // Only useful for SDK < Q where monochrome cannot use profiles because webview.
+        'androidx_profileinstaller_profileinstaller',
+    ]
 
     // Some libraries are hosted in Chromium's //third_party directory. This is a mapping between
     // them so they can be used instead of android_deps pulling in its own copy.
     static final Map<String, String> EXISTING_LIBS = [
         com_ibm_icu_icu4j: '//third_party/icu4j:icu4j_java',
         com_almworks_sqlite4java_sqlite4java: '//third_party/sqlite4java:sqlite4java_java',
+        com_jakewharton_android_repackaged_dalvik_dx: '//third_party/aosp_dalvik:aosp_dalvik_dx_java',
         junit_junit: '//third_party/junit:junit',
         org_hamcrest_hamcrest_core: '//third_party/hamcrest:hamcrest_core_java',
         org_hamcrest_hamcrest_integration: '//third_party/hamcrest:hamcrest_integration_java',
@@ -63,12 +67,6 @@ class BuildConfigGenerator extends DefaultTask {
         org_jetbrains_kotlin_kotlin_stdlib: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
         org_jetbrains_annotations: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
         org_jetbrains_kotlin_kotlin_stdlib_common: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
-        // Remove androidx_window_window from being depended upon since it currently addes <uses-library>
-        // to our AndroidManfest.xml, which we don't allow. http://crbug.com/1302987
-        androidx_window_window: EXCLUDE_THIS_LIB,
-        org_robolectric_shadows_multidex:EXCLUDE_THIS_LIB,
-        // We do not currently support startup profiles in chrome, as such this does nothing.
-        androidx_profileinstaller_profileinstaller: EXCLUDE_THIS_LIB,
     ]
 
     // Some libraries have such long names they'll create a path that exceeds the 200 char path limit, which is
@@ -491,14 +489,15 @@ class BuildConfigGenerator extends DefaultTask {
             String existingLib = EXISTING_LIBS.get(dep.id)
             String aliasedLib = ALIASED_LIBS.get(dep.id)
             String depTargetName = translateTargetName(dep.id) + '_java'
-            if (existingLib) {
-                // Explicitly allow removing specific deps via |EXCLUDE_THIS_LIB| (e.g. androidx_window_window_java).
-                if (existingLib != EXCLUDE_THIS_LIB) {
-                    depsStr += "\"${existingLib}\","
-                }
+
+            /* groovylint-disable-next-line EmptyIfStatement */
+            if (dep.id in DISALLOW_DEPS || dep.exclude) {
+              // Do not depend on excluded or disallowed deps.
+            } else if (existingLib) {
+                depsStr += "\"${existingLib}\","
             } else if (aliasedLib) {
                 depsStr += "\"${aliasedLib}\","
-            } else if (excludeDependency(dep)) {
+            } else if (isInDifferentRepo(dep)) {
                 String thirdPartyDir = (dep.id.startsWith('androidx')) ? 'androidx' : 'android_deps'
                 depsStr += "\"//third_party/${thirdPartyDir}:${depTargetName}\","
             } else {
@@ -569,6 +568,10 @@ class BuildConfigGenerator extends DefaultTask {
         if (dependency.exclude || EXISTING_LIBS.get(dependency.id)) {
             return true
         }
+        return isInDifferentRepo(dependency)
+    }
+
+    boolean isInDifferentRepo(ChromiumDepGraph.DependencyDescription dependency) {
         boolean isAndroidxRepository = (repositoryPath == 'third_party/androidx')
         boolean isAndroidxDependency = (dependency.id.startsWith('androidx'))
         if (isAndroidxRepository != isAndroidxDependency) {
@@ -636,6 +639,10 @@ class BuildConfigGenerator extends DefaultTask {
             case 'androidx_annotation_annotation_jvm':
                 sb.append('  # https://crbug.com/989505\n')
                 sb.append('  jar_excluded_patterns = ["META-INF/proguard/*"]\n')
+                break
+            case 'androidx_benchmark_benchmark_macro':
+                // Manually add dep onto DISALLOWED_DEP androidx.profileinstaller.
+                sb.append('  deps += [ ":androidx_profileinstaller_profileinstaller_java" ]\n')
                 break
             case 'androidx_core_core':
                 sb.with {
@@ -913,9 +920,10 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  # this for other purposes, change buildCompileNoDeps in build.gradle.\n')
                 sb.append('  visibility = [ "//build/android/unused_resources:*" ]\n')
                 break
+            case 'net_bytebuddy_byte_buddy_android':
             case 'net_bytebuddy_byte_buddy_agent':
             case 'net_bytebuddy_byte_buddy':
-                sb.append('  # Can\'t find com.sun.jna classes.\n')
+                sb.append('  # Can\'t find com.sun.jna / dalvik.system classes.\n')
                 sb.append('  enable_bytecode_checks = false\n')
                 break
             case 'org_jetbrains_kotlinx_kotlinx_coroutines_android':

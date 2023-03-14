@@ -169,7 +169,6 @@ class PLATFORM_EXPORT GeometryMapper {
  private:
   struct ExtraProjectionResult {
     bool has_animation = false;
-    bool has_fixed = false;
     bool has_sticky = false;
     STACK_ALLOCATED();
   };
@@ -209,6 +208,7 @@ class PLATFORM_EXPORT GeometryMapper {
       InclusiveIntersectOrNot);
 
   static bool MightOverlapForCompositingInternal(
+      const PropertyTreeState& common_ancestor,
       const gfx::RectF& rect1,
       const PropertyTreeState& state1,
       const gfx::RectF& rect2,
@@ -222,11 +222,6 @@ class PLATFORM_EXPORT GeometryMapper {
       const gfx::RectF& local_rect,
       const PropertyTreeState& local_state,
       const PropertyTreeState& ancestor_state);
-
-  static void MapFixedVisualRectInScrollForCompositingOverlap(
-      const TransformPaintPropertyNode& scroll_translation,
-      gfx::RectF& rect,
-      PropertyTreeState& state);
 
   static void MapVisualRectAboveScrollForCompositingOverlap(
       const TransformPaintPropertyNode& scroll_translation,

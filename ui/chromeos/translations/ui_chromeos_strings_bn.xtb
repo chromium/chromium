@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">পরের</translation>
 <translation id="1209796539517632982">স্বয়ংক্রিয় নাম সার্ভার</translation>
 <translation id="1210831758834677569">লাও</translation>
+<translation id="1221555006497674479">স্টোরেজে স্পেস কম আছে আপনার <ph name="TOTAL_SPACE" /> শেয়ার্ড ড্রাইভ স্টোরেজের <ph name="REMAINING_PERCENTAGE" />% বাকি আছে।</translation>
 <translation id="1243314992276662751">আপলোড</translation>
 <translation id="1249250836236328755">প্রকার</translation>
 <translation id="1254593899333212300">সরাসরি ইন্টারনেট সংযোগ</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">চীনা পিনইন</translation>
 <translation id="1646019627374511909">অফলাইনে দেখার জন্য <ph name="NUMBER_OF_ITEMS" />টি ফাইল ডাউনলোড করা হচ্ছে</translation>
 <translation id="164969095109328410">Chrome ডিভাইস</translation>
+<translation id="1661207570040737402">আপনার সমস্ত শেয়ার্ড ড্রাইভ Google Workspace স্টোরেজ ব্যবহার করেছেন।</translation>
 <translation id="1661867754829461514">পিন হারিয়েছে</translation>
 <translation id="166439687370499867">শেয়ার করার নেটওয়ার্ক কনফিগারেশন পরিবর্তনের অনুমতি নেই</translation>
 <translation id="1665611772925418501">ফাইল সংশোধন করা যায়নি৷</translation>
@@ -82,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" />টি আইটেম জিপ করা হচ্ছে…</translation>
 <translation id="1722687688096767818">প্রোফাইল যোগ করা হচ্ছে...</translation>
 <translation id="1726100011689679555">নেম সার্ভারগুলি</translation>
+<translation id="1727562178154619254">এখন সিঙ্ক করা যাবে</translation>
 <translation id="1729953886957086472">জার্মান (জার্মানি)</translation>
 <translation id="1730235522912993863">চীনা কাংগজি</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" />টি আইটেম কপি করা হয়েছে।</translation>
@@ -349,11 +352,11 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">পেস্ট করুন</translation>
 <translation id="3952872973865944257">তেলুগু ফোনেটিক</translation>
-<translation id="3954354850384043518">প্রক্রিয়ায় আছে</translation>
 <translation id="3958548648197196644">কিউই</translation>
 <translation id="3971140002794351170">মোবাইল প্রোফাইল ডাউনলোড করুন, <ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">ইংরেজি (যুক্তরাজ্য)</translation>
 <translation id="3975895378829046965">বাংলা ফোনেটিক</translation>
+<translation id="3999574733850440202">সম্প্রতি খোলা হয়েছে এমন Microsoft ফাইল OneDrive-এ সরানো হয়েছে</translation>
 <translation id="4002066346123236978">শিরোনাম</translation>
 <translation id="4017788180641807848">ইংরেজি (মার্কিন যুক্তরাষ্ট্র) ওয়ার্কম্যান কীবোর্ড</translation>
 <translation id="4019998208269143058">ঝটপট অ্যাক্সেসযোগ্য ফাইল থেকে পিন করুন</translation>
@@ -362,6 +365,7 @@
 <translation id="4092890906744441904">আইরিশ</translation>
 <translation id="4124935795427217608">ইউনিকর্ন</translation>
 <translation id="4131235941541910880">অপ্রয়োজনীয় আইটেম ট্র্যাশে সরান</translation>
+<translation id="4134804435730168042"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ডিভাইস সেট-আপ করার পর চালু করুন</translation>
 <translation id="4153015322587141338">কোনও ফাইলে রাইট-ক্লিক করুন এবং শেল্ফে আপনার ফাইল দ্রুত অ্যাক্সেস করার জন্য "<ph name="PIN_COMMAND" />" বিকল্পটি বেছে নিন।</translation>
 <translation id="4157569377477607576">অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী এটি করা যাবে না:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> সরানো হয়েছে।</translation>
@@ -404,6 +408,7 @@
 <translation id="4414834425328380570">"<ph name="FILE_NAME" />" মুছে ফেলা হবে এবং আপনি আর এটি ফিরিয়ে আনতে পারবেন না।</translation>
 <translation id="4418686080762064601">আপনার ফাইলের একটি শর্টকাট তৈরি করুন</translation>
 <translation id="4425149324548788773">আমার ড্রাইভ</translation>
+<translation id="4432921877815220091"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, ডিভাইস সেট-আপ করার পর চালু করুন</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />%, কানেক্ট করুন</translation>
 <translation id="4442424173763614572">ডিএনএস খোঁজ ব্যর্থ হয়েছে</translation>
 <translation id="4462159676511157176">কাস্টম নাম সার্ভার</translation>
@@ -610,8 +615,10 @@
 <translation id="5911887972742538906">Linux অ্যাপ্লিকেশন ইনস্টল করার সময়ে সমস্যা হয়েছে।</translation>
 <translation id="5912396950572065471">ফর্ম্যাট</translation>
 <translation id="5913638992615760742">কপি করা যায়নি, অপ্রত্যাশিত সমস্যা হয়েছে: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">নতুন সার্চ ফিচার উপলভ্য আছে</translation>
 <translation id="5926082595146149752">ডাচ (নেদারল্যান্ডস) ভাষায় ইউএস ইন্টারন্যাশনাল পিসি কীবোর্ড</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, ডিভাইস সেট-আপ করার পর চালু করুন</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" />টি আইটেম</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">বাছাই বিকল্পগুলি</translation>
@@ -698,6 +705,7 @@
 <translation id="6732801395666424405">শংসাপত্র লোড হয়নি</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Bruschetta ব্যবহার করে ফোল্ডার শেয়ার করুন</translation>
+<translation id="6750737795876287924">বর্তমান ডিরেক্টরি</translation>
 <translation id="6751256176799620176">১টি ফোল্ডার নির্বাচন করা হয়েছে</translation>
 <translation id="6755827872271341378">ChromeOS Flex ডিভাইস</translation>
 <translation id="6790428901817661496">চালু করুন</translation>
@@ -735,7 +743,6 @@
 <translation id="6973630695168034713">ফোল্ডারগুলি</translation>
 <translation id="6976795442547527108">সিংহ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">শুরু থেকে</translation>
 <translation id="6989942356279143254">সুইডিশ</translation>
 <translation id="6990081529015358884">আপনার ডিভাইসে স্পেশ নেই৷</translation>
 <translation id="6993826899923627728">এই আইটেমগুলি আপনার ট্র্যাশে রয়েছে</translation>
@@ -758,6 +765,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ড্রাইভে খুঁজুন&lt;/em&gt;</translation>
 <translation id="7135561821015524160">কন্নড় ফোনেটিক</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">যাচাইকরণ সার্ভারের পরিচয় যাচাই করতে 'সাবজেক্টের বিকল্প নামের সাথে মিল আছে' বা 'ডোমেন সাফিক্সের সাথে মিল আছে' এমন বিষয় নেই</translation>
 <translation id="7165320105431587207">নেটওয়ার্ক কনফিগার করা যায়নি</translation>
 <translation id="7170041865419449892">নির্দিষ্ট তারিখের বাইরে</translation>
 <translation id="7180611975245234373">রিফ্রেশ করুন</translation>
@@ -790,7 +798,6 @@
 <translation id="7458955835361612701">কোনও সাম্প্রতিক ছবি নেই</translation>
 <translation id="7460898608667578234">ইউক্রেনীয়</translation>
 <translation id="7469894403370665791">স্বয়ংক্রিয়ভাবে এই নেটওয়ার্কে সংযোগ করুন</translation>
-<translation id="7481358317100446445">প্রস্তুত</translation>
 <translation id="7486315294984620427">Parallels Desktop-এ ফাইল রাখতে হলে ফাইলকে অবশ্যই Windows ফাইলের ফোল্ডারে কপি করতে হবে।</translation>
 <translation id="749452993132003881">হিরাগানা</translation>
 <translation id="7495372004724182530">মালয়ালাম ফোনেটিক</translation>
@@ -828,6 +835,7 @@
 <translation id="7724603315864178912">কাটুন</translation>
 <translation id="7732111077498238432">নেটওয়ার্কগুলি নীতি নিয়ন্ত্রিত</translation>
 <translation id="7736003208887389532">এইসব ফাইল স্থায়ীভাবে মুছতে চান?</translation>
+<translation id="7740287852186792672">সার্চ ফলাফল</translation>
 <translation id="7748626145866214022">অ্যাকশন বারে আরও বিকল্প উপলভ্য। অ্যাকশন বারে ফোকাস করতে Alt + A প্রেস করুন।</translation>
 <translation id="7760449188139285140">চীনা উবি</translation>
 <translation id="7765158879357617694">সরান</translation>
@@ -879,6 +887,7 @@
 <translation id="8116072619078571545">বরফ জল</translation>
 <translation id="8128733386027980860">ইংরেজি (যুক্তরাজ্য) ভাষায় Dvorak কীবোর্ড</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" আপনার সাথে শেয়ার করা হয়েছে৷ আপনি এটিকে মুছে ফেলতে পারবেন না কারণ আপনি এটির মালিক নন৷</translation>
+<translation id="8138705869659070104">ডিভাইস সেট-আপ করার পরে চালু করুন</translation>
 <translation id="813913629614996137">আরম্ভ হচ্ছে…</translation>
 <translation id="8147028810663464959">অক্ষরের প্রস্থ 'সম্পূর্ণ' হিসেবে সেট করা হয়েছে</translation>
 <translation id="8151638057146502721">কনফিগার করুন</translation>
@@ -904,6 +913,7 @@
 <translation id="8300849813060516376">OTASP ব্যর্থ</translation>
 <translation id="8312871300878166382">ফোল্ডারের মধ্যে পেস্ট করুন</translation>
 <translation id="8329978297633540474">সাধারণ টেক্সট</translation>
+<translation id="8332007959299458842">সম্প্রতি খোলা হয়েছে এমন Microsoft ফাইল Google Drive-এ সরানো হয়েছে</translation>
 <translation id="8335587457941836791">তাক থেকে আনপিন করুন</translation>
 <translation id="8335837413233998004">বেলারুশীয়</translation>
 <translation id="8336153091935557858">গতলাক <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -930,6 +940,7 @@
 <translation id="8487700953926739672">অফলাইনে উপলব্ধ</translation>
 <translation id="8492972329130824181">হোম নেটওয়ার্ক উপলভ্য নেই। কানেক্ট করতে, মোবাইলে ডেটা রোমিং অবশ্যই চালু থাকতে হবে।</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" />টি আইটেম এক্সট্র্যাক্ট করা হচ্ছে...</translation>
+<translation id="8502913769543567768"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ডিভাইস সেট-আপ করার পর চালু করুন, আপনার অ্যাডমিনিস্ট্রেটর দ্বারা ম্যানেজ করা হয়</translation>
 <translation id="8521441079177373948">যুক্তরাজ্য</translation>
 <translation id="853494022971700746">ফরাসি (ফ্রান্স)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />%, বিবরণ</translation>
@@ -991,6 +1002,7 @@
 <translation id="9046895021617826162">সংযোগ ব্যর্থ হয়েছে</translation>
 <translation id="9065512565307033593">আপনি যাচাই না করলে, আপনার নেটওয়ার্ক অ্যাক্সেস করার সুবিধা বন্ধ হয়ে যাবে।</translation>
 <translation id="908378762078012445">রাশিয়ান ভাষায় ফোনেটিক আটসিল (AATSEEL) কীবোর্ড</translation>
+<translation id="9086302186042011942">সিঙ্ক হচ্ছে</translation>
 <translation id="9099674669267916096">পৃষ্ঠার সংখ্যা</translation>
 <translation id="9100610230175265781">পাসফ্রেজের প্রয়োজন</translation>
 <translation id="9110990317705400362">আমরা ক্রমাগত আপনার ব্রাউজিং নিরাপদ করতে উপায় খুঁজছি৷ আগে, যে কোনো ওয়েবসাইট আপনার ব্রাউজারে একটি এক্সটেনশন যোগ করার অনুরোধ জানাতে পারত৷ Google Chrome-এর সাম্প্রতিক ভার্সনে, আপনাকে অবশ্যই Chrome-কে স্পষ্টভাবে বলতে হবে যে আপনি এক্সটেনশনগুলির পৃষ্ঠার মাধ্যমে তাদের যোগ করে এই এক্সটেনশনগুলি ইনস্টল করতে চান৷ <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>

@@ -24,6 +24,11 @@ base::FilePath GetUpdaterFolderName();
 
 absl::optional<base::FilePath> GetUpdateServiceLauncherPath(UpdaterScope scope);
 
+// Copy a directory, including symlinks.
+bool CopyDir(const base::FilePath& from_path,
+             const base::FilePath& to_path,
+             bool world_readable);
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_UTIL_POSIX_UTIL_H_

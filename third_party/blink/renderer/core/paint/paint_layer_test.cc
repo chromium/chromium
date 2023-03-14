@@ -119,7 +119,14 @@ TEST_P(PaintLayerTest, NonCompositedScrollingNeedsRepaint) {
                    ->HasDirectCompositingReasons());
 
   PaintLayer* content_layer = GetPaintLayerByElementId("content");
+  const auto& fragment = content_layer->GetLayoutObject().FirstFragment();
   EXPECT_EQ(PhysicalOffset(), content_layer->LocationWithoutPositionOffset());
+  if (RuntimeEnabledFeatures::UnifiedScrollPaintingEnabled()) {
+    EXPECT_EQ(gfx::Rect(0, 0, 2000, 2000),
+              fragment.GetContentsCullRect().Rect());
+  } else {
+    EXPECT_EQ(gfx::Rect(0, 0, 100, 100), fragment.GetContentsCullRect().Rect());
+  }
 
   scroll_layer->GetScrollableArea()->SetScrollOffset(
       ScrollOffset(1000, 1000), mojom::blink::ScrollType::kProgrammatic);
@@ -131,8 +138,16 @@ TEST_P(PaintLayerTest, NonCompositedScrollingNeedsRepaint) {
       content_layer->ContainingLayer()->PixelSnappedScrolledContentOffset());
 
   EXPECT_FALSE(scroll_layer->SelfNeedsRepaint());
-  // The content layer needs repaint because its cull rect changed.
-  EXPECT_TRUE(content_layer->SelfNeedsRepaint());
+  if (RuntimeEnabledFeatures::UnifiedScrollPaintingEnabled()) {
+    EXPECT_EQ(gfx::Rect(0, 0, 2000, 2000),
+              fragment.GetContentsCullRect().Rect());
+    EXPECT_FALSE(content_layer->SelfNeedsRepaint());
+  } else {
+    // The content layer needs repaint because its cull rect changed.
+    EXPECT_EQ(gfx::Rect(1000, 1000, 100, 100),
+              fragment.GetContentsCullRect().Rect());
+    EXPECT_TRUE(content_layer->SelfNeedsRepaint());
+  }
 
   UpdateAllLifecyclePhasesForTest();
 }

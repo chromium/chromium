@@ -7,6 +7,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/sharing_hub/sharing_hub_model.h"
 #include "ui/views/controls/button/button.h"
 
 namespace views {
@@ -30,10 +31,7 @@ class SharingHubBubbleActionButton : public views::Button {
       delete;
   ~SharingHubBubbleActionButton() override;
 
-  int action_command_id() const { return action_command_id_; }
-  std::string action_name_for_metrics() const {
-    return action_name_for_metrics_;
-  }
+  const SharingHubAction& action_info() const { return action_info_; }
 
   // views::Button:
   // Listeners for various events, which this class uses to keep its visuals
@@ -44,8 +42,7 @@ class SharingHubBubbleActionButton : public views::Button {
   void OnBlur() override;
 
  private:
-  const int action_command_id_;
-  const std::string action_name_for_metrics_;
+  const SharingHubAction action_info_;
 
   raw_ptr<views::Label> title_;
   raw_ptr<views::ImageView> image_;

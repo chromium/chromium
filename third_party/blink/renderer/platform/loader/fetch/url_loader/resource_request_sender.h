@@ -52,8 +52,7 @@ class BackForwardCacheLoaderHelper;
 class ResourceLoadInfoNotifierWrapper;
 class ThrottlingURLLoader;
 class MojoURLLoaderClient;
-class WebRequestPeer;
-class WebResourceRequestSenderDelegate;
+class ResourceRequestClient;
 struct SyncLoadResponse;
 
 // This class creates a PendingRequestInfo object and handles sending a resource
@@ -89,13 +88,13 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
       const Vector<String>& cors_exempt_header_list,
       base::WaitableEvent* terminate_sync_load_event,
       mojo::PendingRemote<mojom::blink::BlobRegistry> download_to_blob_registry,
-      scoped_refptr<WebRequestPeer> peer,
+      scoped_refptr<ResourceRequestClient> client,
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper);
 
   // Call this method to initiate the request. If this method succeeds, then
-  // the peer's methods will be called asynchronously to report various events.
-  // Returns the request id. |url_loader_factory| must be non-null.
+  // the client's methods will be called asynchronously to report various
+  // events. Returns the request id. |url_loader_factory| must be non-null.
   //
   // You need to pass a non-null |loading_task_runner| to specify task queue to
   // execute loading tasks on.
@@ -105,7 +104,7 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       uint32_t loader_options,
       const Vector<String>& cors_exempt_header_list,
-      scoped_refptr<WebRequestPeer> peer,
+      scoped_refptr<ResourceRequestClient> client,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       WebVector<std::unique_ptr<URLLoaderThrottle>> throttles,
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
@@ -161,7 +160,7 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
   friend class URLResponseBodyConsumer;
 
   struct PendingRequestInfo {
-    PendingRequestInfo(scoped_refptr<WebRequestPeer> peer,
+    PendingRequestInfo(scoped_refptr<ResourceRequestClient> client,
                        network::mojom::RequestDestination request_destination,
                        const KURL& request_url,
                        std::unique_ptr<ResourceLoadInfoNotifierWrapper>
@@ -169,7 +168,7 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
 
     ~PendingRequestInfo();
 
-    scoped_refptr<WebRequestPeer> peer;
+    scoped_refptr<ResourceRequestClient> client;
     network::mojom::RequestDestination request_destination;
     LoaderFreezeMode freeze_mode = LoaderFreezeMode::kNone;
     // Original requested url.
@@ -208,9 +207,6 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
   base::TimeTicks ToLocalURLResponseHead(
       const PendingRequestInfo& request_info,
       network::mojom::URLResponseHead& response_head) const;
-
-  // `delegate_` is expected to live longer than `this`.
-  WebResourceRequestSenderDelegate* delegate_;
 
   // The instance is created on StartAsync() or StartSync(), and it's deleted
   // when the response has finished, or when the request is canceled.

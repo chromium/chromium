@@ -15,13 +15,11 @@
 #include "chrome/browser/ash/input_method/emoji_suggester.h"
 #include "chrome/browser/ash/input_method/longpress_diacritics_suggester.h"
 #include "chrome/browser/ash/input_method/multi_word_suggester.h"
-#include "chrome/browser/ash/input_method/personal_info_suggester.h"
 #include "chrome/browser/ash/input_method/suggester.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/browser/ash/input_method/suggestion_handler_interface.h"
 #include "chrome/browser/ash/input_method/suggestions_source.h"
 #include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -36,16 +34,12 @@ class AssistiveSuggester : public SuggestionsSource {
     kUnknown,  // Includes features not handled by assistive suggester.
     kEmojiSuggestion,
     kMultiWordSuggestion,
-    kPersonalInfoSuggestion,
   };
 
-  // personal_data_manager is only used for testing to override the default
-  // autofill data for PersonalInfoSuggester.
-  AssistiveSuggester(SuggestionHandlerInterface* suggestion_handler,
-                     Profile* profile,
-                     std::unique_ptr<AssistiveSuggesterSwitch> suggester_switch,
-                     autofill::PersonalDataManager*
-                         personal_data_manager_for_testing = nullptr);
+  AssistiveSuggester(
+      SuggestionHandlerInterface* suggestion_handler,
+      Profile* profile,
+      std::unique_ptr<AssistiveSuggesterSwitch> suggester_switch);
 
   ~AssistiveSuggester() override;
 
@@ -114,8 +108,6 @@ class AssistiveSuggester : public SuggestionsSource {
 
   void DismissSuggestion();
 
-  bool IsAssistPersonalInfoEnabled();
-
   bool IsEmojiSuggestAdditionEnabled();
 
   bool IsEnhancedEmojiSuggestEnabled();
@@ -139,10 +131,6 @@ class AssistiveSuggester : public SuggestionsSource {
 
   // Only the first applicable reason in DisabledReason enum is returned.
   DisabledReason GetDisabledReasonForEmoji(
-      const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions);
-
-  // Only the first applicable reason in DisabledReason enum is returned.
-  DisabledReason GetDisabledReasonForPersonalInfo(
       const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions);
 
   // Only the first applicable reason in DisabledReason enum is returned.
@@ -180,7 +168,6 @@ class AssistiveSuggester : public SuggestionsSource {
   void OnLongpressDetected();
 
   Profile* profile_;
-  PersonalInfoSuggester personal_info_suggester_;
   EmojiSuggester emoji_suggester_;
   MultiWordSuggester multi_word_suggester_;
   LongpressDiacriticsSuggester longpress_diacritics_suggester_;
@@ -207,6 +194,10 @@ class AssistiveSuggester : public SuggestionsSource {
       enabled_suggestions_from_last_onfocus_;
 
   std::u16string last_surrounding_text_ = u"";
+
+  // Keeps track if there is a key being held down currently which was already
+  // recorded for the auto repeat suppressed metric.
+  bool auto_repeat_suppress_metric_emitted_ = false;
 
   int last_cursor_pos_ = 0;
 

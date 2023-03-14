@@ -390,7 +390,6 @@ interface PrintManagerHost {
   // Updates the current print settings with new |job_settings|.
   [EnableIf=enable_print_preview, Sync]
   UpdatePrintSettings(
-      int32 cookie,
       mojo_base.mojom.DictionaryValue job_settings)
       => (PrintPagesParams current_settings, bool canceled);
 

@@ -60,27 +60,11 @@ TEST_F(BorealisWindowManagerTest, NonBorealisWindowHasNoId) {
   EXPECT_EQ(window_manager.GetShelfAppId(window.get()), "");
 }
 
-// TODO(b/244651040): Remove legacy tests when sommelier changes are complete.
-TEST_F(BorealisWindowManagerTest, BorealisWindowHasAnIdLegacy) {
-  BorealisWindowManager window_manager(profile());
-  std::unique_ptr<aura::Window> window =
-      MakeWindow("org.chromium.borealis.foobarbaz");
-  EXPECT_NE(window_manager.GetShelfAppId(window.get()), "");
-}
-
 TEST_F(BorealisWindowManagerTest, BorealisWindowHasAnId) {
   BorealisWindowManager window_manager(profile());
   std::unique_ptr<aura::Window> window =
       MakeWindow("org.chromium.guest_os.borealis.foobarbaz");
   EXPECT_NE(window_manager.GetShelfAppId(window.get()), "");
-}
-
-TEST_F(BorealisWindowManagerTest, BorealisWindowHasCorrectIdLegacy) {
-  BorealisWindowManager window_manager(profile());
-  std::unique_ptr<aura::Window> window =
-      MakeWindow("org.chromium.borealis.xprop.456789");
-  CreateFakeApp(profile(), "some_app", "steam://rungameid/456789");
-  EXPECT_EQ(window_manager.GetShelfAppId(window.get()), FakeAppId("some_app"));
 }
 
 TEST_F(BorealisWindowManagerTest, BorealisWindowHasCorrectId) {

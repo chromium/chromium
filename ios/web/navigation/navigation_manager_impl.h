@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "ios/web/navigation/navigation_initiation_type.h"
 #import "ios/web/navigation/navigation_item_impl.h"
 #include "ios/web/navigation/synthesized_session_restore.h"
 #include "ios/web/navigation/time_smoother.h"
@@ -40,29 +41,6 @@ extern const char kRestoreNavigationItemCount[];
 // Name of UMA histogram to log the time spent on asynchronous session
 // restoration.
 extern const char kRestoreNavigationTime[];
-
-// Defines the ways how a pending navigation can be initiated.
-enum class NavigationInitiationType {
-  // Navigation initiation type is only valid for pending navigations, use NONE
-  // if a navigation is already committed.
-  NONE = 0,
-
-  // Navigation was initiated by the browser by calling NavigationManager
-  // methods. Examples of methods which cause browser-initiated navigations
-  // include:
-  //  * NavigationManager::Reload()
-  //  * NavigationManager::GoBack()
-  //  * NavigationManager::GoForward()
-  BROWSER_INITIATED,
-
-  // Navigation was initiated by renderer. Examples of renderer-initiated
-  // navigations include:
-  //  * <a> link click
-  //  * changing window.location.href
-  //  * redirect via the <meta http-equiv="refresh"> tag
-  //  * using window.history.pushState
-  RENDERER_INITIATED,
-};
 
 // WKBackForwardList-based implementation of NavigationManager.
 // Generally mirrors upstream's NavigationController.

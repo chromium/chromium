@@ -4,19 +4,23 @@
 
 #include "chrome/browser/policy/messaging_layer/upload/record_handler_impl.h"
 
-#include <tuple>
+#include <utility>
 
 #include "base/base64.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/synchronization/waitable_event.h"
+#include "base/strings/string_piece.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "chrome/browser/policy/messaging_layer/public/report_client.h"
+#include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_uploader.h"
+#include "chrome/browser/policy/messaging_layer/upload/file_upload_job.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector_test_util.h"
@@ -27,6 +31,7 @@
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/resources/resource_manager.h"
+#include "components/reporting/storage/test_storage_module.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
@@ -67,16 +72,56 @@ MATCHER_P(ResponseEquals,
   return arg.ValueOrDie().force_confirm == expected.force_confirm;
 }
 
+class MockFileUploadDelegate : public FileUploadJob::Delegate {
+ public:
+  MOCK_METHOD(void,
+              DoInitiate,
+              (base::StringPiece origin_path,
+               base::StringPiece upload_parameters,
+               base::OnceCallback<void(
+                   StatusOr<std::pair<int64_t /*total*/,
+                                      std::string /*session_token*/>>)> cb),
+              (override));
+
+  MOCK_METHOD(void,
+              DoNextStep,
+              (int64_t total,
+               int64_t uploaded,
+               base::StringPiece session_token,
+               base::OnceCallback<void(
+                   StatusOr<std::pair<int64_t /*uploaded*/,
+                                      std::string /*session_token*/>>)> cb),
+              (override));
+
+  MOCK_METHOD(
+      void,
+      DoFinalize,
+      (base::StringPiece session_token,
+       base::OnceCallback<void(StatusOr<std::string /*access_parameters*/>)>
+           cb),
+      (override));
+};
+
+// Tests for generic events handling.
 class RecordHandlerImplTest : public ::testing::TestWithParam<
                                   ::testing::tuple</*need_encryption_key*/ bool,
                                                    /*force_confirm*/ bool>> {
  protected:
   void SetUp() override {
+    handler_ = std::make_unique<RecordHandlerImpl>(
+        sequenced_task_runner_, std::make_unique<MockFileUploadDelegate>());
+    test_storage_ = base::MakeRefCounted<test::TestStorageModule>();
+    test_reporting_ = ReportingClient::TestEnvironment::CreateWithStorageModule(
+        test_storage_);
+
     memory_resource_ =
         base::MakeRefCounted<ResourceManager>(4u * 1024LLu * 1024LLu);  // 4 MiB
   }
 
   void TearDown() override {
+    handler_.reset();
+    test_reporting_.reset();
+    test_storage_.reset();
     EXPECT_THAT(memory_resource_->GetUsed(), Eq(0uL));
   }
 
@@ -89,6 +134,11 @@ class RecordHandlerImplTest : public ::testing::TestWithParam<
       base::ThreadPool::CreateSequencedTaskRunner({});
 
   ReportingServerConnector::TestEnvironment test_env_;
+
+  scoped_refptr<test::TestStorageModule> test_storage_;
+  std::unique_ptr<ReportingClient::TestEnvironment> test_reporting_;
+
+  std::unique_ptr<RecordHandlerImpl> handler_;
 
   scoped_refptr<ResourceManager> memory_resource_;
 };
@@ -136,10 +186,9 @@ TEST_P(RecordHandlerImplTest, ForwardsRecordsToCloudPolicyClient) {
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
   test::TestEvent<CompletionResponse> responder_event;
 
-  RecordHandlerImpl handler(sequenced_task_runner_);
-  handler.HandleRecords(need_encryption_key(), std::move(test_records.second),
-                        std::move(test_records.first), responder_event.cb(),
-                        encryption_key_attached_event.repeating_cb());
+  handler_->HandleRecords(need_encryption_key(), std::move(test_records.second),
+                          std::move(test_records.first), responder_event.cb(),
+                          encryption_key_attached_event.repeating_cb());
   if (need_encryption_key()) {
     EXPECT_THAT(
         encryption_key_attached_event.result(),
@@ -175,10 +224,9 @@ TEST_P(RecordHandlerImplTest, MissingPriorityField) {
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
   test::TestEvent<CompletionResponse> responder_event;
 
-  RecordHandlerImpl handler(sequenced_task_runner_);
-  handler.HandleRecords(need_encryption_key(), std::move(test_records.second),
-                        std::move(test_records.first), responder_event.cb(),
-                        encryption_key_attached_event.repeating_cb());
+  handler_->HandleRecords(need_encryption_key(), std::move(test_records.second),
+                          std::move(test_records.first), responder_event.cb(),
+                          encryption_key_attached_event.repeating_cb());
 
   auto response = responder_event.result();
   EXPECT_THAT(response.status(),
@@ -213,10 +261,9 @@ TEST_P(RecordHandlerImplTest, InvalidPriorityField) {
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
   test::TestEvent<CompletionResponse> responder_event;
 
-  RecordHandlerImpl handler(sequenced_task_runner_);
-  handler.HandleRecords(need_encryption_key(), std::move(test_records.second),
-                        std::move(test_records.first), responder_event.cb(),
-                        encryption_key_attached_event.repeating_cb());
+  handler_->HandleRecords(need_encryption_key(), std::move(test_records.second),
+                          std::move(test_records.first), responder_event.cb(),
+                          encryption_key_attached_event.repeating_cb());
 
   auto response = responder_event.result();
   EXPECT_THAT(response.status(),
@@ -239,10 +286,9 @@ TEST_P(RecordHandlerImplTest, MissingSequenceInformation) {
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
   test::TestEvent<CompletionResponse> responder_event;
 
-  RecordHandlerImpl handler(sequenced_task_runner_);
-  handler.HandleRecords(need_encryption_key(), std::move(test_records.second),
-                        std::move(test_records.first), responder_event.cb(),
-                        encryption_key_attached_event.repeating_cb());
+  handler_->HandleRecords(need_encryption_key(), std::move(test_records.second),
+                          std::move(test_records.first), responder_event.cb(),
+                          encryption_key_attached_event.repeating_cb());
 
   auto response = responder_event.result();
   EXPECT_THAT(response.status(),
@@ -263,10 +309,9 @@ TEST_P(RecordHandlerImplTest, ReportsUploadFailure) {
   test::TestEvent<CompletionResponse> response_event;
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
 
-  RecordHandlerImpl handler(sequenced_task_runner_);
-  handler.HandleRecords(need_encryption_key(), std::move(test_records.second),
-                        std::move(test_records.first), response_event.cb(),
-                        encryption_key_attached_event.repeating_cb());
+  handler_->HandleRecords(need_encryption_key(), std::move(test_records.second),
+                          std::move(test_records.first), response_event.cb(),
+                          encryption_key_attached_event.repeating_cb());
 
   const auto response = response_event.result();
   EXPECT_THAT(response.status(),
@@ -303,10 +348,9 @@ TEST_P(RecordHandlerImplTest, UploadsGapRecordOnServerFailure) {
   test::TestEvent<CompletionResponse> response_event;
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
 
-  RecordHandlerImpl handler(sequenced_task_runner_);
-  handler.HandleRecords(need_encryption_key(), std::move(test_records.second),
-                        std::move(test_records.first), response_event.cb(),
-                        encryption_key_attached_event.repeating_cb());
+  handler_->HandleRecords(need_encryption_key(), std::move(test_records.second),
+                          std::move(test_records.first), response_event.cb(),
+                          encryption_key_attached_event.repeating_cb());
 
   const auto response = response_event.result();
   EXPECT_THAT(response, ResponseEquals(expected_response));
@@ -342,10 +386,9 @@ TEST_P(RecordHandlerImplTest, HandleUnknownResponseFromServer) {
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
   test::TestEvent<CompletionResponse> response_event;
 
-  RecordHandlerImpl handler(sequenced_task_runner_);
-  handler.HandleRecords(need_encryption_key(), std::move(test_records.second),
-                        std::move(test_records.first), response_event.cb(),
-                        encryption_key_attached_event.repeating_cb());
+  handler_->HandleRecords(need_encryption_key(), std::move(test_records.second),
+                          std::move(test_records.first), response_event.cb(),
+                          encryption_key_attached_event.repeating_cb());
 
   const auto response = response_event.result();
   EXPECT_THAT(response.status(),
@@ -371,10 +414,9 @@ TEST_P(RecordHandlerImplTest, AssignsRequestIdForRecordUploads) {
           ResponseBuilder().SetForceConfirm(force_confirm_by_server))));
 
   test::TestEvent<CompletionResponse> responder_event;
-  RecordHandlerImpl handler(sequenced_task_runner_);
-  handler.HandleRecords(need_encryption_key(), std::move(test_records.second),
-                        std::move(test_records.first), responder_event.cb(),
-                        base::DoNothing());
+  handler_->HandleRecords(need_encryption_key(), std::move(test_records.second),
+                          std::move(test_records.first), responder_event.cb(),
+                          base::DoNothing());
 
   // We need to wait until the upload operation is marked complete (after it
   // triggers the response callback) so we can avoid leaking unmanaged

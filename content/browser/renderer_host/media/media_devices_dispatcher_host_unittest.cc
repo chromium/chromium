@@ -713,6 +713,26 @@ TEST_P(MediaDevicesDispatcherHostTest,
   run_loop.Run();
 }
 
+TEST_P(MediaDevicesDispatcherHostTest,
+       RegisterAndUnregisterWithMediaDevicesManager) {
+  {
+    mojo::Remote<blink::mojom::MediaDevicesDispatcherHost> client;
+    MediaDevicesDispatcherHost::Create(kProcessId, kRenderId,
+                                       media_stream_manager_.get(),
+                                       client.BindNewPipeAndPassReceiver());
+    EXPECT_TRUE(client.is_bound());
+    EXPECT_EQ(media_stream_manager_->media_devices_manager()
+                  ->num_registered_dispatcher_hosts(),
+              1u);
+  }
+  task_environment_.RunUntilIdle();
+  // At this point the dispatcher created by MediaDevicesDispatcherHost::Create
+  // should be destroyed and unregistered from MediaDevicesManager.
+  EXPECT_EQ(media_stream_manager_->media_devices_manager()
+                ->num_registered_dispatcher_hosts(),
+            0u);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          MediaDevicesDispatcherHostTest,
                          testing::Values(std::string(), "https://test.com"));

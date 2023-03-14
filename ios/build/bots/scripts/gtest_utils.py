@@ -623,15 +623,23 @@ class GTestLogParser(object):
     elif line.startswith('Failing tests:'):
       self._parsing_failures = True
 
-  def ParseAndPopulateTestResultLocations(self, test_repo,
-                                          output_disabled_tests):
+  # host_test_file_path is compiled_tests_file_path by default on simulators.
+  # However, for device tests,
+  # it needs to be overridden with a path that exists on the host because
+  # compiled_tests_file_path is the path on the device in this case
+  def ParseAndPopulateTestResultLocations(self,
+                                          test_repo,
+                                          output_disabled_tests,
+                                          host_test_file_path=None):
     try:
       # TODO(crbug.com/1091345): Read the file when running on device.
       # Parse compiled test file first. If output_disabled_tests is true,
       # then include disabled tests in the test results.
-      if self.compiled_tests_file_path == None:
+      if host_test_file_path is None:
+        host_test_file_path = self.compiled_tests_file_path
+      if host_test_file_path is None:
         return
-      with open(self.compiled_tests_file_path) as f:
+      with open(host_test_file_path) as f:
         disabled_tests_from_json = []
         compiled_tests = json.load(f)
         for single_test in compiled_tests:

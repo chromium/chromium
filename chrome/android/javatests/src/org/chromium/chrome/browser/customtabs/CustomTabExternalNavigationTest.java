@@ -110,6 +110,7 @@ public class CustomTabExternalNavigationTest {
     @Test
     @SmallTest
     public void testExternalActivityStartedForDefaultUrl() {
+        ExternalNavigationHandler.sAllowIntentsToSelfForTesting = true;
         final GURL testUrl = new GURL("customtab://customtabtest/intent");
         RedirectHandler redirectHandler = RedirectHandler.create();
         redirectHandler.updateNewUrlLoading(PageTransition.LINK, false, true, 0, 0, false, true);

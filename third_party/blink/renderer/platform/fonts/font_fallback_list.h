@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/platform/fonts/fallback_list_composite_key.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/ng_shape_cache.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_cache.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -76,6 +77,18 @@ class PLATFORM_EXPORT FontFallbackList : public RefCounted<FontFallbackList> {
   FontSelector* GetFontSelector() const;
   uint16_t Generation() const { return generation_; }
 
+  NGShapeCache* GetNGShapeCache(const FontDescription& font_description) {
+    if (!ng_shape_cache_) {
+      FallbackListCompositeKey key = CompositeKey(font_description);
+      ng_shape_cache_ = FontCache::Get().GetNGShapeCache(key)->GetWeakPtr();
+    }
+    DCHECK(ng_shape_cache_);
+    if (GetFontSelector()) {
+      ng_shape_cache_->ClearIfVersionChanged(GetFontSelector()->Version());
+    }
+    return ng_shape_cache_.get();
+  }
+
   ShapeCache* GetShapeCache(const FontDescription& font_description) {
     if (!shape_cache_) {
       FallbackListCompositeKey key = CompositeKey(font_description);
@@ -89,6 +102,9 @@ class PLATFORM_EXPORT FontFallbackList : public RefCounted<FontFallbackList> {
 
   const SimpleFontData* PrimarySimpleFontData(
       const FontDescription& font_description) {
+    if (nullify_primary_font_data_for_test_) {
+      return nullptr;
+    }
     if (!cached_primary_simple_font_data_) {
       cached_primary_simple_font_data_ =
           DeterminePrimarySimpleFontData(font_description);
@@ -103,6 +119,11 @@ class PLATFORM_EXPORT FontFallbackList : public RefCounted<FontFallbackList> {
   void SetCanShapeWordByWordForTesting(bool b) {
     can_shape_word_by_word_ = b;
     can_shape_word_by_word_computed_ = true;
+  }
+
+  // See Font::NullifyPrimaryFontForTesting.
+  void NullifyPrimarySimpleFontDataForTesting() {
+    nullify_primary_font_data_for_test_ = true;
   }
 
   bool HasLoadingFallback() const { return has_loading_fallback_; }
@@ -132,7 +153,9 @@ class PLATFORM_EXPORT FontFallbackList : public RefCounted<FontFallbackList> {
   bool can_shape_word_by_word_ : 1;
   bool can_shape_word_by_word_computed_ : 1;
   bool is_invalid_ : 1;
+  bool nullify_primary_font_data_for_test_ : 1;
 
+  base::WeakPtr<NGShapeCache> ng_shape_cache_;
   base::WeakPtr<ShapeCache> shape_cache_;
 };
 

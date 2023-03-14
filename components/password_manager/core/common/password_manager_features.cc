@@ -65,12 +65,21 @@ BASE_FEATURE(kEnablePasswordManagerWithinFencedFrame,
 // affiliated website.
 BASE_FEATURE(kFillingAcrossAffiliatedWebsites,
              "FillingAcrossAffiliatedWebsites",
+#if !BUILDFLAG(IS_ANDROID) // Desktop and iOS
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
-
+#endif
 // Enables the experiment for the password manager to only fill on account
 // selection, rather than autofilling on page load, with highlighting of fields.
 BASE_FEATURE(kFillOnAccountSelect,
              "fill-on-account-select",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables logging the content of chrome://password-manager-internals to the
+// terminal.
+BASE_FEATURE(kPasswordManagerLogToTerminal,
+             "PasswordManagerLoggingToTerminal",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -111,13 +120,20 @@ BASE_FEATURE(kIOSPasswordCheckup,
 BASE_FEATURE(kIOSShowPasswordStorageInSaveInfobar,
              "IOSShowPasswordStorageInSaveInfobar",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables password bottom sheet to be displayed (on iOS) when a user is
+// signed-in and taps on a username or password field on a website that has at
+// least one credential saved in their password manager.
+BASE_FEATURE(kIOSPasswordBottomSheet,
+             "IOSPasswordBottomSheet",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // IS_IOS
 
 // Enables memory mapping the word lists used in the zxcvbn library employed
 // for the password weakness check.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 BASE_FEATURE(kMemoryMapWeaknessCheckDictionaries,
-             "kMemoryMapWeaknessCheckDictionaries",
+             "MemoryMapWeaknessCheckDictionaries",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
@@ -203,8 +219,18 @@ BASE_FEATURE(kSkipUndecryptablePasswords,
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+// Use GMS AccountSettings to manage passkeys when UPM is not available.
+BASE_FEATURE(kPasskeyManagementUsingAccountSettingsAndroid,
+             "PasskeyManagementUsingAccountSettingsAndroid",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPasswordEditDialogWithDetails,
              "PasswordEditDialogWithDetails",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the Password generation bottom sheet.
+BASE_FEATURE(kPasswordGenerationBottomSheet,
+             "PasswordGenerationBottomSheet",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kShowUPMErrorNotification,

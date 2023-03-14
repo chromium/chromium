@@ -6,9 +6,17 @@
  * @fileoverview Fake implementation of ReceiveManagerInterface for testing.
  */
 
-import {ReceiveManagerInterface, ReceiveObserverInterface, ReceiveObserverRemote, RegisterReceiveSurfaceResult, TransferStatus} from 'chrome://os-settings/mojo/nearby_share.mojom-webui.js';
+import {nearbyShareMojom} from 'chrome://os-settings/chromeos/os_settings.js';
 import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+
+const {
+  ReceiveManagerInterface,
+  ReceiveObserverInterface,
+  ReceiveObserverRemote,
+  RegisterReceiveSurfaceResult,
+  TransferStatus,
+} = nearbyShareMojom;
 
 /**
  * Fake implementation of ReceiveManagerInterface

@@ -208,11 +208,11 @@ struct IntelVpeExt {
   raw_ptr<void> param;
 };
 
-void ToggleIntelVpSuperResolution(ID3D11VideoContext* video_context,
+// Return true if VpSuperResolution has been set successfully.
+bool ToggleIntelVpSuperResolution(ID3D11VideoContext* video_context,
                                   ID3D11VideoProcessor* video_processor,
-                                  bool is_on_battery_power) {
-  TRACE_EVENT1("gpu", "ToggleIntelVpSuperResolution", "on",
-               !is_on_battery_power);
+                                  bool enable) {
+  TRACE_EVENT1("gpu", "ToggleIntelVpSuperResolution", "on", enable);
 
   IntelVpeExt ext = {};
   UINT param = 0;
@@ -222,39 +222,51 @@ void ToggleIntelVpSuperResolution(ID3D11VideoContext* video_context,
   param = kIntelVpeVersion3;
   HRESULT hr = video_context->VideoProcessorSetOutputExtension(
       video_processor, &GUID_INTEL_VPE_INTERFACE, sizeof(ext), &ext);
+  base::UmaHistogramSparse(enable
+                               ? "GPU.IntelVpSuperResolution.On.VpeFnVersion"
+                               : "GPU.IntelVpSuperResolution.Off.VpeFnVersion",
+                           hr);
   if (FAILED(hr)) {
     DLOG(ERROR) << "VideoProcessorSetOutputExtension failed with error 0x"
                 << std::hex << hr;
-    return;
+    return false;
   }
 
   ext.function = kIntelVpeFnMode;
-  param = is_on_battery_power ? kIntelVpeModeNone : kIntelVpeModePreproc;
+  param = enable ? kIntelVpeModePreproc : kIntelVpeModeNone;
   hr = video_context->VideoProcessorSetOutputExtension(
       video_processor, &GUID_INTEL_VPE_INTERFACE, sizeof(ext), &ext);
+  base::UmaHistogramSparse(enable ? "GPU.IntelVpSuperResolution.On.VpeFnMode"
+                                  : "GPU.IntelVpSuperResolution.Off.VpeFnMode",
+                           hr);
   if (FAILED(hr)) {
     DLOG(ERROR) << "VideoProcessorSetOutputExtension failed with error 0x"
                 << std::hex << hr;
-    return;
+    return false;
   }
 
   ext.function = kIntelVpeFnScaling;
-  param = is_on_battery_power ? kIntelVpeScalingDefault
-                              : kIntelVpeScalingSuperResolution;
+  param = enable ? kIntelVpeScalingSuperResolution : kIntelVpeScalingDefault;
 
   hr = video_context->VideoProcessorSetStreamExtension(
       video_processor, 0, &GUID_INTEL_VPE_INTERFACE, sizeof(ext), &ext);
+  base::UmaHistogramSparse(enable
+                               ? "GPU.IntelVpSuperResolution.On.VpeFnScaling"
+                               : "GPU.IntelVpSuperResolution.Off.VpeFnScaling",
+                           hr);
   if (FAILED(hr)) {
     DLOG(ERROR) << "VideoProcessorSetStreamExtension failed with error 0x"
                 << std::hex << hr;
+    return false;
   }
+  return enable;
 }
 
-void ToggleNvidiaVpSuperResolution(ID3D11VideoContext* video_context,
+// Return true if VpSuperResolution has been set successfully.
+bool ToggleNvidiaVpSuperResolution(ID3D11VideoContext* video_context,
                                    ID3D11VideoProcessor* video_processor,
-                                   bool is_on_battery_power) {
-  TRACE_EVENT1("gpu", "ToggleNvidiaVpSuperResolution", "on",
-               !is_on_battery_power);
+                                   bool enable) {
+  TRACE_EVENT1("gpu", "ToggleNvidiaVpSuperResolution", "on", enable);
 
   constexpr GUID kNvidiaPPEInterfaceGUID = {
       0xd43ce1b3,
@@ -270,17 +282,38 @@ void ToggleNvidiaVpSuperResolution(ID3D11VideoContext* video_context,
     UINT enable;
   } stream_extension_info = {kStreamExtensionVersionV1,
                              kStreamExtensionMethodSuperResolution,
-                             is_on_battery_power ? 0 : 1u};
+                             enable ? 1u : 0u};
 
   HRESULT hr = video_context->VideoProcessorSetStreamExtension(
       video_processor, 0, &kNvidiaPPEInterfaceGUID,
       sizeof(stream_extension_info), &stream_extension_info);
 
+  base::UmaHistogramSparse(enable
+                               ? "GPU.NvidiaVpSuperResolution.On.SetStreamExt"
+                               : "GPU.NvidiaVpSuperResolution.Off.SetStreamExt",
+                           hr);
   if (FAILED(hr)) {
     DLOG(ERROR) << "VideoProcessorSetStreamExtension failed with error 0x"
                 << std::hex << hr;
-    return;
+    return false;
   }
+  return enable;
+}
+
+bool ToggleVpSuperResolution(UINT gpu_vendor_id,
+                             ID3D11VideoContext* video_context,
+                             ID3D11VideoProcessor* video_processor,
+                             bool enable) {
+  if (gpu_vendor_id == 0x8086 &&
+      base::FeatureList::IsEnabled(features::kIntelVpSuperResolution)) {
+    return ToggleIntelVpSuperResolution(video_context, video_processor, enable);
+  }
+  if (gpu_vendor_id == 0x10de &&
+      base::FeatureList::IsEnabled(features::kNvidiaVpSuperResolution)) {
+    return ToggleNvidiaVpSuperResolution(video_context, video_processor,
+                                         enable);
+  }
+  return false;
 }
 
 bool IsWithinMargin(int i, int j) {
@@ -1568,24 +1601,53 @@ bool SwapChainPresenter::VideoProcessorBlt(
       DCHECK(output_view_);
     }
 
-    if (!layer_tree_->disable_vp_super_resolution()) {
-      if (gpu_vendor_id_ == 0x8086 &&
-          base::FeatureList::IsEnabled(features::kIntelVpSuperResolution)) {
-        ToggleIntelVpSuperResolution(video_context.Get(), video_processor.Get(),
-                                     is_on_battery_power_);
-      }
-      if (gpu_vendor_id_ == 0x10de &&
-          base::FeatureList::IsEnabled(features::kNvidiaVpSuperResolution)) {
-        ToggleNvidiaVpSuperResolution(
-            video_context.Get(), video_processor.Get(), is_on_battery_power_);
-      }
+    bool use_vp_super_resolution = false;
+    if (!layer_tree_->disable_vp_super_resolution() &&
+        !force_vp_super_resolution_off_) {
+      use_vp_super_resolution =
+          ToggleVpSuperResolution(gpu_vendor_id_, video_context.Get(),
+                                  video_processor.Get(), !is_on_battery_power_);
     }
 
     hr = video_context->VideoProcessorBlt(video_processor.Get(),
                                           output_view_.Get(), 0, 1, &stream);
+    base::UmaHistogramSparse(
+        (use_vp_super_resolution
+             ? "GPU.VideoProcessorBlt.VpSuperResolution.On"
+             : "GPU.VideoProcessorBlt.VpSuperResolution.Off"),
+        hr);
+
     if (FAILED(hr)) {
-      DLOG(ERROR) << "VideoProcessorBlt failed with error 0x" << std::hex << hr;
-      return false;
+      // Retry VideoProcessorBlt with vp super resolution off if it was on.
+      if (use_vp_super_resolution) {
+        DLOG(ERROR) << "Retry VideoProcessorBlt with VpSuperResolution off "
+                       "after it failed with error 0x"
+                    << std::hex << hr;
+
+        ToggleVpSuperResolution(gpu_vendor_id_, video_context.Get(),
+                                video_processor.Get(), false);
+        hr = video_context->VideoProcessorBlt(
+            video_processor.Get(), output_view_.Get(), 0, 1, &stream);
+
+        base::UmaHistogramSparse(
+            "GPU.VideoProcessorBlt.VpSuperResolution.RetryOffAfterError", hr);
+
+        // We shouldn't use VpSuperResolution if it was the reason that caused
+        // the VideoProcessorBlt failure.
+        force_vp_super_resolution_off_ = SUCCEEDED(hr);
+      }
+
+      if (FAILED(hr)) {
+        DLOG(ERROR) << "VideoProcessorBlt failed with error 0x" << std::hex
+                    << hr;
+
+        // To prevent it from failing in all coming frames, disable overlay if
+        // VideoProcessorBlt is not implemented in the GPU driver.
+        if (hr == E_NOTIMPL) {
+          DisableDirectCompositionOverlays();
+        }
+        return false;
+      }
     }
   }
 

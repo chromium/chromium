@@ -47,6 +47,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
 
   void Install() const override { updater::test::Install(updater_scope_); }
 
+  void InstallUpdaterAndApp(const std::string& app_id) const override {
+    updater::test::InstallUpdaterAndApp(updater_scope_, app_id);
+  }
+
   void ExpectInstalled() const override {
     updater::test::ExpectInstalled(updater_scope_);
   }
@@ -76,32 +80,34 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
   void ExpectUpdateCheckSequence(
       ScopedServer* test_server,
       const std::string& app_id,
-      const std::string& install_data_index,
+      UpdateService::Priority priority,
       const base::Version& from_version,
       const base::Version& to_version) const override {
     updater::test::ExpectUpdateCheckSequence(updater_scope_, test_server,
-                                             app_id, install_data_index,
-                                             from_version, to_version);
+                                             app_id, priority, from_version,
+                                             to_version);
   }
 
   void ExpectUpdateSequence(ScopedServer* test_server,
                             const std::string& app_id,
                             const std::string& install_data_index,
+                            UpdateService::Priority priority,
                             const base::Version& from_version,
                             const base::Version& to_version) const override {
     updater::test::ExpectUpdateSequence(updater_scope_, test_server, app_id,
-                                        install_data_index, from_version,
-                                        to_version);
+                                        install_data_index, priority,
+                                        from_version, to_version);
   }
 
   void ExpectInstallSequence(ScopedServer* test_server,
                              const std::string& app_id,
                              const std::string& install_data_index,
+                             UpdateService::Priority priority,
                              const base::Version& from_version,
                              const base::Version& to_version) const override {
     updater::test::ExpectInstallSequence(updater_scope_, test_server, app_id,
-                                         install_data_index, from_version,
-                                         to_version);
+                                         install_data_index, priority,
+                                         from_version, to_version);
   }
 
   void ExpectVersionActive(const std::string& version) const override {
@@ -176,11 +182,13 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::RunWakeActive(updater_scope_, exit_code);
   }
 
+  void CheckForUpdate(const std::string& app_id) const override {
+    updater::test::CheckForUpdate(updater_scope_, app_id);
+  }
+
   void Update(const std::string& app_id,
-              const std::string& install_data_index,
-              bool do_update_check_only) const override {
-    updater::test::Update(updater_scope_, app_id, install_data_index,
-                          do_update_check_only);
+              const std::string& install_data_index) const override {
+    updater::test::Update(updater_scope_, app_id, install_data_index);
   }
 
   void UpdateAll() const override { updater::test::UpdateAll(updater_scope_); }
@@ -267,12 +275,12 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
             UpdateService::PolicySameVersionUpdate::kAllowed);
   }
 
-  void SetupFakeLegacyUpdaterData() const override {
-    updater::test::SetupFakeLegacyUpdaterData(updater_scope_);
+  void SetupFakeLegacyUpdater() const override {
+    updater::test::SetupFakeLegacyUpdater(updater_scope_);
   }
 
-  void ExpectLegacyUpdaterDataMigrated() const override {
-    updater::test::ExpectLegacyUpdaterDataMigrated(updater_scope_);
+  void ExpectLegacyUpdaterMigrated() const override {
+    updater::test::ExpectLegacyUpdaterMigrated(updater_scope_);
   }
 
   void RunRecoveryComponent(const std::string& app_id,

@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">次へ</translation>
 <translation id="1209796539517632982">自動ネーム サーバー</translation>
 <translation id="1210831758834677569">ラオ語</translation>
+<translation id="1221555006497674479"><ph name="TOTAL_SPACE" /> の共有ドライブ ストレージは残り <ph name="REMAINING_PERCENTAGE" />% と少なくなっています。</translation>
 <translation id="1243314992276662751">アップロード</translation>
 <translation id="1249250836236328755">ジャンル</translation>
 <translation id="1254593899333212300">インターネットへの直接接続</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">中国語（ピンイン）</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> 個のファイルをオフラインで使用できるようにしています</translation>
 <translation id="164969095109328410">Chrome デバイス</translation>
+<translation id="1661207570040737402">共有ドライブの Google Workspace ストレージの空き容量がなくなりました。</translation>
 <translation id="1661867754829461514">PIN がありません</translation>
 <translation id="166439687370499867">共有のネットワーク設定を変更することはできません</translation>
 <translation id="1665611772925418501">ファイルを修正することができませんでした。</translation>
@@ -82,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムを圧縮しています...</translation>
 <translation id="1722687688096767818">プロファイルの追加中...</translation>
 <translation id="1726100011689679555">ネームサーバー</translation>
+<translation id="1727562178154619254">同期の準備ができました</translation>
 <translation id="1729953886957086472">ドイツ語（ドイツ）</translation>
 <translation id="1730235522912993863">中国語（倉頡）</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> 件のアイテムをコピーしました</translation>
@@ -349,11 +352,11 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">貼り付け</translation>
 <translation id="3952872973865944257">テルグ語（表音）</translation>
-<translation id="3954354850384043518">ダウンロード中</translation>
 <translation id="3958548648197196644">キウイ</translation>
 <translation id="3971140002794351170">モバイル プロファイルのダウンロード - <ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">英語（イギリス）</translation>
 <translation id="3975895378829046965">ベンガル語（表音）</translation>
+<translation id="3999574733850440202">最近開いた Microsoft のファイルを OneDrive に移動しました</translation>
 <translation id="4002066346123236978">タイトル</translation>
 <translation id="4017788180641807848">英語（アメリカ）（Workman）キーボード</translation>
 <translation id="4019998208269143058">クイック ファイルに固定</translation>
@@ -362,6 +365,7 @@
 <translation id="4092890906744441904">アイルランド語</translation>
 <translation id="4124935795427217608">ユニコーン</translation>
 <translation id="4131235941541910880">不要なアイテムはゴミ箱に移動してください</translation>
+<translation id="4134804435730168042"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" />件）、<ph name="NETWORK_NAME" />、<ph name="NETWORK_PROVIDER_NAME" />、デバイスのセットアップ後に有効化</translation>
 <translation id="4153015322587141338">ファイルを右クリックして [<ph name="PIN_COMMAND" />] を選択すると、シェルフからファイルに簡単にアクセスできます。</translation>
 <translation id="4157569377477607576">管理者のポリシーでは、次のことは推奨されていません。</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> を移動しました。</translation>
@@ -404,6 +408,7 @@
 <translation id="4414834425328380570">「<ph name="FILE_NAME" />」は削除され、復元できなくなります。</translation>
 <translation id="4418686080762064601">ファイルのショートカットを作成</translation>
 <translation id="4425149324548788773">マイドライブ</translation>
+<translation id="4432921877815220091"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、デバイスのセットアップ後に有効化、管理者によって管理</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、接続</translation>
 <translation id="4442424173763614572">DNS を検索できませんでした</translation>
 <translation id="4462159676511157176">カスタム ネーム サーバー</translation>
@@ -611,8 +616,10 @@
 <translation id="5911887972742538906">Linux アプリケーションのインストール中にエラーが発生しました。</translation>
 <translation id="5912396950572065471">形式</translation>
 <translation id="5913638992615760742">コピーできませんでした。予期しないエラー: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">新しい検索機能をご利用いただけます</translation>
 <translation id="5926082595146149752">オランダ語（オランダ）（US インターナショナル PC）キーボード</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" />件）、<ph name="NETWORK_NAME" />、デバイスのセットアップ後に有効化</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> 個のアイテム</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">並べ替え方法</translation>
@@ -699,6 +706,7 @@
 <translation id="6732801395666424405">証明書が読み込まれていません</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Bruschetta とのフォルダ共有</translation>
+<translation id="6750737795876287924">現在のディレクトリ</translation>
 <translation id="6751256176799620176">1 個のフォルダを選択しました</translation>
 <translation id="6755827872271341378">ChromeOS Flex デバイス</translation>
 <translation id="6790428901817661496">再生</translation>
@@ -736,7 +744,6 @@
 <translation id="6973630695168034713">フォルダ</translation>
 <translation id="6976795442547527108">ライオン</translation>
 <translation id="6979158407327259162">Google ドライブ</translation>
-<translation id="6979737339423435258">全期間</translation>
 <translation id="6989942356279143254">スウェーデン語</translation>
 <translation id="6990081529015358884">空き容量が不足しています</translation>
 <translation id="6993826899923627728">これらのアイテムはゴミ箱に入っています</translation>
@@ -759,6 +766,7 @@
 <translation id="7126604456862387217">「&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;」 - &lt;em&gt;&lt;/em&gt;ドライブを検索</translation>
 <translation id="7135561821015524160">カンナダ語（表音）</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">認証サーバーの ID を検証するための「サブジェクト代替名マッチ」または「ドメイン サフィックス マッチ」がありません</translation>
 <translation id="7165320105431587207">ネットワークを設定できませんでした</translation>
 <translation id="7170041865419449892">圏外</translation>
 <translation id="7180611975245234373">更新</translation>
@@ -791,7 +799,6 @@
 <translation id="7458955835361612701">最近使用した画像はありません</translation>
 <translation id="7460898608667578234">ウクライナ語</translation>
 <translation id="7469894403370665791">このネットワークに自動接続する</translation>
-<translation id="7481358317100446445">準備完了</translation>
 <translation id="7486315294984620427">Parallels Desktop にファイルをドロップするには、[Windows ファイル] にファイルをコピーする必要があります。</translation>
 <translation id="749452993132003881">ひらがな</translation>
 <translation id="7495372004724182530">マラヤーラム語（表音）</translation>
@@ -829,6 +836,7 @@
 <translation id="7724603315864178912">切り取り</translation>
 <translation id="7732111077498238432">ネットワークはポリシーによって管理されています</translation>
 <translation id="7736003208887389532">これらのファイルを完全に削除しますか？</translation>
+<translation id="7740287852186792672">検索結果</translation>
 <translation id="7748626145866214022">アクションバーのオプションが増えました。アクションバーにフォーカスを移動するには Alt+A キーを押してください。</translation>
 <translation id="7760449188139285140">中国語（五筆）</translation>
 <translation id="7765158879357617694">移動</translation>
@@ -880,6 +888,7 @@
 <translation id="8116072619078571545">氷水</translation>
 <translation id="8128733386027980860">英語（イギリス）（Dvorak）キーボード</translation>
 <translation id="8137331602592933310">「<ph name="FILENAME" />」を共有しました。ファイルの所有者ではないため、このファイルを削除することはできません。</translation>
+<translation id="8138705869659070104">デバイスのセットアップ後に有効にします</translation>
 <translation id="813913629614996137">初期化しています...</translation>
 <translation id="8147028810663464959">文字幅は全角です</translation>
 <translation id="8151638057146502721">設定</translation>
@@ -905,6 +914,7 @@
 <translation id="8300849813060516376">OTASP に失敗しました</translation>
 <translation id="8312871300878166382">フォルダに貼り付け</translation>
 <translation id="8329978297633540474">テキスト</translation>
+<translation id="8332007959299458842">最近開いた Microsoft のファイルを Google ドライブに移動しました</translation>
 <translation id="8335587457941836791">シェルフの固定解除</translation>
 <translation id="8335837413233998004">ベラルーシ語</translation>
 <translation id="8336153091935557858">昨日 <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -931,6 +941,7 @@
 <translation id="8487700953926739672">オフラインでの利用</translation>
 <translation id="8492972329130824181">ホーム ネットワークは使用できません。接続するには、モバイルデータ ローミングを有効にする必要があります。</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> 件のアイテムを抽出しています...</translation>
+<translation id="8502913769543567768"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="NETWORK_PROVIDER_NAME" />、デバイスのセットアップ後に有効化、管理者によって管理</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="853494022971700746">フランス語（フランス）</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、詳細</translation>
@@ -992,6 +1003,7 @@
 <translation id="9046895021617826162">接続に失敗しました</translation>
 <translation id="9065512565307033593">確認に失敗した場合、ネットワーク アクセスは無効になります。</translation>
 <translation id="908378762078012445">ロシア語（表音 AATSEEL）キーボード</translation>
+<translation id="9086302186042011942">同期しています</translation>
 <translation id="9099674669267916096">ページ数</translation>
 <translation id="9100610230175265781">パスフレーズを入力してください</translation>
 <translation id="9110990317705400362">Google では、より安全にウェブを閲覧できる方法を常に追求しています。以前は、どのウェブサイトでも、ブラウザに拡張機能を追加するように指示することができました。Google Chrome の最新バージョンでは、ユーザーのインストールの意思をより明確に確認するため、拡張機能の追加は拡張機能ページで行うこととなりました。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>

@@ -20,6 +20,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/display/screen.h"
@@ -200,8 +201,9 @@ class MainView : public views::Button {
   void StateChanged(views::Button::ButtonState old_state) override {
     Button::StateChanged(old_state);
     const bool hovered = GetState() == Button::STATE_HOVERED;
-    if (hovered || (GetState() == Button::STATE_NORMAL))
+    if (hovered || (GetState() == Button::STATE_NORMAL)) {
       SetBackgroundState(hovered);
+    }
   }
 
   void SetBackgroundState(bool highlight) {
@@ -333,8 +335,9 @@ class QuickAnswersUtteranceEventDelegate
         break;
     }
 
-    if (utterance->IsFinished())
+    if (utterance->IsFinished()) {
       delete this;
+    }
   }
 };
 
@@ -383,10 +386,11 @@ void QuickAnswersView::OnFocus() {
       views::FocusSearch::StartingViewPolicy::kCheckStartingView,
       views::FocusSearch::AnchoredDialogPolicy::kSkipAnchoredDialog, nullptr,
       nullptr);
-  if (wants_focus != this)
+  if (wants_focus != this) {
     wants_focus->RequestFocus();
-  else
+  } else {
     NotifyAccessibilityEvent(ax::mojom::Event::kFocus, true);
+  }
 }
 
 void QuickAnswersView::OnThemeChanged() {
@@ -429,8 +433,9 @@ void QuickAnswersView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 void QuickAnswersView::SendQuickAnswersQuery() {
-  if (controller_)
+  if (controller_) {
     controller_->OnQuickAnswersViewPressed();
+  }
 }
 
 void QuickAnswersView::UpdateAnchorViewBounds(
@@ -450,8 +455,9 @@ void QuickAnswersView::UpdateView(const gfx::Rect& anchor_view_bounds,
 }
 
 void QuickAnswersView::ShowRetryView() {
-  if (retry_label_)
+  if (retry_label_) {
     return;
+  }
 
   ResetContentView();
   main_view_->SetBackground(nullptr);
@@ -524,8 +530,12 @@ void QuickAnswersView::InitWidget() {
   // Parent the widget to the owner of the menu.
   auto* active_menu_controller = views::MenuController::GetActiveInstance();
   DCHECK(active_menu_controller && active_menu_controller->owner());
+
+  // This widget has to be a child of menu owner's widget to make keyboard focus
+  // work.
   params.parent = active_menu_controller->owner()->GetNativeView();
   params.child = true;
+  params.name = kWidgetName;
 
   views::Widget* widget = new views::Widget();
   widget->Init(std::move(params));
@@ -638,8 +648,9 @@ void QuickAnswersView::ResetContentView() {
 
 void QuickAnswersView::UpdateBounds() {
   // Multi-line labels need to be resized to be compatible with bounds width.
-  if (first_answer_label_)
+  if (first_answer_label_) {
     first_answer_label_->SizeToFit(GetLabelWidth());
+  }
 
   int height = GetHeightForWidth(GetBoundsWidth());
   int y = anchor_view_bounds_.y() - kMarginDip - height;
@@ -685,8 +696,9 @@ void QuickAnswersView::UpdateQuickAnswerResult(
   // Add phonetics audio button for definition results.
   if (quick_answer.result_type == ResultType::kDefinitionResult &&
       (!quick_answer.phonetics_info.phonetics_audio.is_empty() ||
-       quick_answer.phonetics_info.tts_audio_enabled))
+       quick_answer.phonetics_info.tts_audio_enabled)) {
     AddPhoneticsAudioButton(quick_answer.phonetics_info, title_view);
+  }
 
   // Add first row answer.
   View* first_answer_view = nullptr;
@@ -743,18 +755,24 @@ std::vector<views::View*> QuickAnswersView::GetFocusableViews() {
   std::vector<views::View*> focusable_views;
   // The view itself does not gain focus for retry-view and transfers it to the
   // retry-label, and so is not included when this is the case.
-  if (!retry_label_)
+  if (!retry_label_) {
     focusable_views.push_back(this);
-  if (dogfood_feedback_button_ && dogfood_feedback_button_->GetVisible())
+  }
+  if (dogfood_feedback_button_ && dogfood_feedback_button_->GetVisible()) {
     focusable_views.push_back(dogfood_feedback_button_);
-  if (settings_button_ && settings_button_->GetVisible())
+  }
+  if (settings_button_ && settings_button_->GetVisible()) {
     focusable_views.push_back(settings_button_);
-  if (phonetics_audio_button_ && phonetics_audio_button_->GetVisible())
+  }
+  if (phonetics_audio_button_ && phonetics_audio_button_->GetVisible()) {
     focusable_views.push_back(phonetics_audio_button_);
-  if (retry_label_ && retry_label_->GetVisible())
+  }
+  if (retry_label_ && retry_label_->GetVisible()) {
     focusable_views.push_back(retry_label_);
-  if (report_query_view_ && report_query_view_->GetVisible())
+  }
+  if (report_query_view_ && report_query_view_->GetVisible()) {
     focusable_views.push_back(report_query_view_);
+  }
   return focusable_views;
 }
 

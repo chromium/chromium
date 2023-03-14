@@ -77,8 +77,7 @@ TEST_F(ExtensionCreatorTest, ReadInputKeyDangerousPath) {
   ASSERT_TRUE(file_path_dangerous.ReferencesParent());
 
   const char kTestData[] = "0123";
-  ASSERT_EQ(static_cast<int>(strlen(kTestData)),
-            base::WriteFile(file_path_dangerous, kTestData, strlen(kTestData)));
+  ASSERT_TRUE(base::WriteFile(file_path_dangerous, kTestData));
 
   // If a path includes parent reference `..`, reading the path must fail.
   EXPECT_EQ(nullptr, ReadInputKey(file_path_dangerous));
@@ -93,8 +92,7 @@ TEST_F(ExtensionCreatorTest, ReadInputKeyInvalidPEMFormat) {
   // Creates a file that starts with `-----BEGIN`. but it doesn't end with
   // `KEY-----`.
   const char kTestData[] = "-----BEGIN foo";
-  ASSERT_EQ(static_cast<int>(strlen(kTestData)),
-            base::WriteFile(file_path, kTestData, strlen(kTestData)));
+  ASSERT_TRUE(base::WriteFile(file_path, kTestData));
 
   EXPECT_EQ(nullptr, ReadInputKey(file_path));
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_EXTENSION_PRIVATE_KEY_INVALID),

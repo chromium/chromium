@@ -203,7 +203,8 @@ ScriptPromise NDEFReader::scan(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  scan_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  scan_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   GetPermissionService()->RequestPermission(
       CreatePermissionDescriptor(PermissionName::NFC),
       LocalFrame::HasTransientUserActivation(DomWindow()->GetFrame()),
@@ -356,7 +357,8 @@ ScriptPromise NDEFReader::write(ScriptState* script_state,
   auto message = device::mojom::blink::NDEFMessage::From(ndef_message);
   DCHECK(message);
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   write_requests_.insert(resolver);
 
   // Add the writer to proxy's writer list for Mojo connection error
@@ -478,7 +480,8 @@ ScriptPromise NDEFReader::makeReadOnly(ScriptState* script_state,
         std::make_unique<ScopedAbortState>(make_read_only_signal_, handle);
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   make_read_only_requests_.insert(resolver);
 
   // Add the writer to proxy's writer list for Mojo connection error

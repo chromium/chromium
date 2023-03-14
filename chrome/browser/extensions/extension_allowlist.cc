@@ -294,9 +294,9 @@ void ExtensionAllowlist::ApplyEnforcement(const std::string& extension_id) {
 void ExtensionAllowlist::ActivateAllowlistEnforcement() {
   DCHECK(should_auto_disable_extensions_);
 
-  std::unique_ptr<ExtensionSet> all_extensions =
+  const ExtensionSet all_extensions =
       registry_->GenerateInstalledExtensionsSet();
-  for (const auto& extension : *all_extensions) {
+  for (const auto& extension : all_extensions) {
     if (GetExtensionAllowlistState(extension->id()) ==
         ALLOWLIST_NOT_ALLOWLISTED) {
       ApplyEnforcement(extension->id());
@@ -307,12 +307,12 @@ void ExtensionAllowlist::ActivateAllowlistEnforcement() {
 void ExtensionAllowlist::DeactivateAllowlistEnforcement() {
   DCHECK(!should_auto_disable_extensions_);
 
-  std::unique_ptr<ExtensionSet> all_extensions =
+  const ExtensionSet all_extensions =
       registry_->GenerateInstalledExtensionsSet();
 
   // Find all extensions disabled by allowlist enforcement, remove the disable
   // reason and reset the acknowledge state.
-  for (const auto& extension : *all_extensions) {
+  for (const auto& extension : all_extensions) {
     if (extension_prefs_->HasDisableReason(
             extension->id(), disable_reason::DISABLE_NOT_ALLOWLISTED)) {
       extension_service_->RemoveDisableReasonAndMaybeEnable(
@@ -340,10 +340,10 @@ void ExtensionAllowlist::OnSafeBrowsingEnhancedChanged() {
   }
 
   if (previous_warnings_enabled != warnings_enabled_) {
-    std::unique_ptr<ExtensionSet> all_extensions =
+    const ExtensionSet all_extensions =
         registry_->GenerateInstalledExtensionsSet();
 
-    for (const auto& extension : *all_extensions) {
+    for (const auto& extension : all_extensions) {
       if (GetExtensionAllowlistState(extension->id()) ==
           ALLOWLIST_NOT_ALLOWLISTED) {
         NotifyExtensionAllowlistWarningStateChanged(

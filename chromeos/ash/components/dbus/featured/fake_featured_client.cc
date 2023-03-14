@@ -8,7 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/callback.h"
-#include "chromeos/ash/components/dbus/featured/featured.pb.h"
+#include "components/variations/proto/cros_safe_seed.pb.h"
 #include "dbus/object_proxy.h"
 
 namespace ash::featured {
@@ -40,7 +40,7 @@ void FakeFeaturedClient::SetCallbackSuccess(bool success) {
 }
 
 void FakeFeaturedClient::HandleSeedFetched(
-    const ::featured::SeedDetails& safe_seed,
+    const variations::SeedDetails& safe_seed,
     base::OnceCallback<void(bool success)> callback) {
   std::move(callback).Run(success_);
 }

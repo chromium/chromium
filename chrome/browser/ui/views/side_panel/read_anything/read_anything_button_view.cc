@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_button_view.h"
 
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
+#include "chrome/common/accessibility/read_anything_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -43,6 +43,18 @@ void ReadAnythingButtonView::UpdateIcon(const gfx::VectorIcon& icon,
                                         SkColor icon_color) {
   views::SetImageFromVectorIconWithColor(button_, icon, icon_size, icon_color,
                                          icon_color);
+}
+
+void ReadAnythingButtonView::Enable() {
+  button_->SetState(views::Button::ButtonState::STATE_NORMAL);
+}
+
+void ReadAnythingButtonView::Disable() {
+  button_->SetState(views::Button::ButtonState::STATE_DISABLED);
+}
+
+views::Button::ButtonState ReadAnythingButtonView::GetStateForTesting() {
+  return button_->GetState();
 }
 
 BEGIN_METADATA(ReadAnythingButtonView, views::View)

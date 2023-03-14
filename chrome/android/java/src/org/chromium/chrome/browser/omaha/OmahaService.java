@@ -102,11 +102,6 @@ public class OmahaService extends OmahaBase implements BackgroundTask {
         return false;
     }
 
-    @Override
-    public void reschedule(Context context) {
-        // Needs appropriate implementation.
-    }
-
     /**
      * Schedules the Omaha code to run at the given time.
      * @param delayMs How long to wait until the job should be triggered.

@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/i18n/rtl.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
@@ -32,18 +33,32 @@ namespace wayland_fuzzer {
 
 ServerEnvironment::ServerEnvironment()
     : WaylandClientTestHelper(), ui_thread_("ui") {
-  mojo::core::Init();
-
   base::CommandLine::Init(0, nullptr);
 
   base::Thread::Options ui_options(base::MessagePumpType::UI, 0);
   ui_thread_.StartWithOptions(std::move(ui_options));
   WaylandClientTestHelper::SetUIThreadTaskRunner(ui_thread_.task_runner());
+
+  RunOnUiThreadBlocking(base::BindOnce(
+      &ServerEnvironment::OneTimeSetupOnUiThread, base::Unretained(this)));
 }
 
 ServerEnvironment::~ServerEnvironment() = default;
 
-void ServerEnvironment::SetUpOnUIThread(base::WaitableEvent* event) {
+void ServerEnvironment::RunOnUiThread(base::OnceClosure task) {
+  ui_thread_.task_runner()->PostTask(FROM_HERE, std::move(task));
+}
+
+void ServerEnvironment::RunOnUiThreadBlocking(base::OnceClosure task) {
+  base::RunLoop loop;
+  ui_thread_.task_runner()->PostTaskAndReply(FROM_HERE, std::move(task),
+                                             loop.QuitClosure());
+  loop.Run();
+}
+
+void ServerEnvironment::OneTimeSetupOnUiThread() {
+  mojo::core::Init();
+
   base::test::InitializeICUForTesting();
 
   gl::GLSurfaceTestSupport::InitializeOneOff();
@@ -57,7 +72,6 @@ void ServerEnvironment::SetUpOnUIThread(base::WaitableEvent* event) {
   ash::AshTestSuite::LoadTestResources();
 
   env_ = aura::Env::CreateInstance();
-  WaylandClientTestHelper::SetUpOnUIThread(event);
 }
 
 }  // namespace wayland_fuzzer

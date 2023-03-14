@@ -680,8 +680,8 @@ TEST_F(HttpStreamFactoryTest, PreconnectNetworkIsolationKey) {
   const GURL kURL("http://foo.test/");
   SchemefulSite kSiteFoo(GURL("http://foo.test"));
   SchemefulSite kSiteBar(GURL("http://bar.test"));
-  const NetworkAnonymizationKey kKey1(kSiteFoo, kSiteFoo);
-  const NetworkAnonymizationKey kKey2(kSiteBar, kSiteBar);
+  const auto kKey1 = NetworkAnonymizationKey::CreateSameSite(kSiteFoo);
+  const auto kKey2 = NetworkAnonymizationKey::CreateSameSite(kSiteBar);
   PreconnectHelperForURL(1, kURL, kKey1, SecureDnsPolicy::kAllow,
                          session.get());
   EXPECT_EQ(1, transport_conn_pool->last_num_streams());
@@ -1687,10 +1687,12 @@ TEST_F(HttpStreamFactoryTest, RequestSpdyHttpStreamHttpURL) {
 TEST_F(HttpStreamFactoryTest,
        RequestSpdyHttpStreamHttpURLWithNetworkAnonymizationKey) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
-  const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
+  const auto kNetworkAnonymizationKey1 =
+      NetworkAnonymizationKey::CreateSameSite(kSite1);
   const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
-  const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
+  const auto kNetworkAnonymizationKey2 =
+      NetworkAnonymizationKey::CreateSameSite(kSite2);
   const NetworkIsolationKey kNetworkIsolationKey2(kSite1, kSite1);
 
   base::test::ScopedFeatureList feature_list;
@@ -3497,8 +3499,7 @@ TEST_F(ProcessAlternativeServicesTest, ProcessAltSvcClear) {
       std::make_unique<HttpNetworkSession>(session_params_, session_context_);
   url::SchemeHostPort origin(url::kHttpsScheme, "example.com", 443);
 
-  NetworkAnonymizationKey network_anonymization_key(
-      SchemefulSite(GURL("https://example.com")),
+  auto network_anonymization_key = NetworkAnonymizationKey::CreateSameSite(
       SchemefulSite(GURL("https://example.com")));
 
   http_server_properties_.SetAlternativeServices(
@@ -3530,8 +3531,7 @@ TEST_F(ProcessAlternativeServicesTest, ProcessAltSvcQuicIetf) {
       std::make_unique<HttpNetworkSession>(session_params_, session_context_);
   url::SchemeHostPort origin(url::kHttpsScheme, "example.com", 443);
 
-  NetworkAnonymizationKey network_anonymization_key(
-      SchemefulSite(GURL("https://example.com")),
+  auto network_anonymization_key = NetworkAnonymizationKey::CreateSameSite(
       SchemefulSite(GURL("https://example.com")));
 
   auto headers = base::MakeRefCounted<HttpResponseHeaders>("");
@@ -3567,8 +3567,7 @@ TEST_F(ProcessAlternativeServicesTest, ProcessAltSvcHttp2) {
       std::make_unique<HttpNetworkSession>(session_params_, session_context_);
   url::SchemeHostPort origin(url::kHttpsScheme, "example.com", 443);
 
-  NetworkAnonymizationKey network_anonymization_key(
-      SchemefulSite(GURL("https://example.com")),
+  auto network_anonymization_key = NetworkAnonymizationKey::CreateSameSite(
       SchemefulSite(GURL("https://example.com")));
 
   auto headers = base::MakeRefCounted<HttpResponseHeaders>("");

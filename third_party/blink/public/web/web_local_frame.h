@@ -497,6 +497,7 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
       base::i18n::TextDirection direction) = 0;
 
   // Selection -----------------------------------------------------------
+  virtual void CenterSelection() = 0;
 
   virtual bool HasSelection() const = 0;
 

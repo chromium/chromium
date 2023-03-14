@@ -7,8 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
-#include "components/sync/driver/sync_service.h"
+#import "components/sync/driver/sync_service.h"
+#import "google_apis/gaia/google_service_auth_error.h"
 
+@class AccountErrorUIInfo;
 class ChromeBrowserState;
 @protocol SyncPresenter;
 
@@ -40,5 +42,9 @@ bool ShouldShowSyncSettings(syncer::SyncService::UserActionableError error);
 bool DisplaySyncErrors(ChromeBrowserState* browser_state,
                        web::WebState* web_state,
                        id<SyncPresenter> presenter);
+
+// Returns a data object with the needed information and handlers to display the
+// account error UI. Returns nil if there is no account error to display.
+AccountErrorUIInfo* GetAccountErrorUIInfo(ChromeBrowserState* browserState);
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_SYNC_UTILS_SYNC_UTIL_H_

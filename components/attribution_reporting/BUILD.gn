@@ -16,8 +16,7 @@ mojom("mojom") {
   webui_module_path = "/"
   use_typescript_sources = true
 
-  # The 3 legacy JS bindings types are required by Blink and by the fuzzer
-  # targets below.
+  # Used by Blink, so requires legacy JS bindings.
   generate_legacy_js_bindings = true
   generate_java = true
 }
@@ -32,8 +31,9 @@ component("attribution_reporting") {
     "aggregatable_values.h",
     "aggregation_keys.cc",
     "aggregation_keys.h",
-    "bounded_list.h",
     "constants.h",
+    "destination_set.cc",
+    "destination_set.h",
     "eligibility.cc",
     "eligibility.h",
     "event_trigger_data.cc",
@@ -77,7 +77,7 @@ source_set("unit_tests") {
     "aggregatable_trigger_data_unittest.cc",
     "aggregatable_values_unittest.cc",
     "aggregation_keys_unittest.cc",
-    "bounded_list_unittest.cc",
+    "destination_set_unittest.cc",
     "eligibility_unittest.cc",
     "event_trigger_data_unittest.cc",
     "filters_unittest.cc",
@@ -230,12 +230,6 @@ mojom("registration_mojom") {
           move_only = true
         },
         {
-          mojom = "attribution_reporting.mojom.Filters"
-          cpp = "::attribution_reporting::Filters"
-          forward_declaration =
-              "namespace attribution_reporting { class Filters; }"
-        },
-        {
           mojom = "attribution_reporting.mojom.FilterPair"
           cpp = "::attribution_reporting::FilterPair"
           forward_declaration =
@@ -267,6 +261,12 @@ mojom("registration_mojom") {
           # Avoid expensive copies by forcing Mojo methods to take the type by
           # value, not const ref
           move_only = true
+        },
+        {
+          mojom = "attribution_reporting.mojom.DestinationSet"
+          cpp = "::attribution_reporting::DestinationSet"
+          forward_declaration =
+              "namespace attribution_reporting { class DestinationSet; }"
         },
       ]
       traits_headers = [ "registration_mojom_traits.h" ]
@@ -302,9 +302,4 @@ mojom("source_type_mojom") {
   sources = [ "source_type.mojom" ]
   webui_module_path = "/"
   use_typescript_sources = true
-
-  # Fuzzers use the 3 legacy JS bindings types. This mojom is a dependency of
-  # the attribution_reporting component, which is used by the fuzzer tests
-  # above.
-  generate_legacy_js_bindings = enable_mojom_fuzzer
 }

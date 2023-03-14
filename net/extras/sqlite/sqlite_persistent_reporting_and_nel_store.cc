@@ -782,10 +782,12 @@ SQLitePersistentReportingAndNelStore::Backend::DoMigrateDatabaseSchema() {
       return absl::nullopt;
 
     ++cur_version;
-    meta_table()->SetVersionNumber(cur_version);
-    meta_table()->SetCompatibleVersionNumber(
-        std::min(cur_version, kCompatibleVersionNumber));
-    transaction.Commit();
+    if (!meta_table()->SetVersionNumber(cur_version) ||
+        !meta_table()->SetCompatibleVersionNumber(
+            std::min(cur_version, kCompatibleVersionNumber)) ||
+        !transaction.Commit()) {
+      return absl::nullopt;
+    }
   }
 
   // Future database upgrade statements go here.

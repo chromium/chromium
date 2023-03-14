@@ -154,8 +154,6 @@ public class MainSettingsFragmentTest {
     @Mock
     private SyncConsentActivityLauncher mMockSyncConsentActivityLauncher;
 
-    private @Nullable TemplateUrlService mActualTemplateUrlService;
-
     private MainSettings mMainSettings;
 
     @Before
@@ -172,10 +170,7 @@ public class MainSettingsFragmentTest {
     public void tearDown() {
         DeveloperSettings.setIsEnabledForTests(null);
         NightModeUtils.setNightModeSupportedForTesting(null);
-        if (mActualTemplateUrlService != null) {
-            // Reset the actual service if the mock is used.
-            TemplateUrlServiceFactory.setInstanceForTesting(mActualTemplateUrlService);
-        }
+        TemplateUrlServiceFactory.setInstanceForTesting(null);
         SharedPreferencesManager.getInstance().removeKey(
                 SyncPromoController.getPromoShowCountPreferenceName(SigninAccessPoint.SETTINGS));
         SharedPreferencesManager.getInstance().removeKey(
@@ -711,10 +706,6 @@ public class MainSettingsFragmentTest {
     }
 
     private void configureMockSearchEngine() {
-        // Cache the actual Url Service, so the test can put it back after tests.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mActualTemplateUrlService = TemplateUrlServiceFactory.get(); });
-
         TemplateUrlServiceFactory.setInstanceForTesting(mMockTemplateUrlService);
         Mockito.doReturn(mMockSearchEngine)
                 .when(mMockTemplateUrlService)

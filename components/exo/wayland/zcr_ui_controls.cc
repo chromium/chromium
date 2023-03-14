@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/test/bind.h"
+#include "components/exo/display.h"
 #include "components/exo/wayland/server.h"
 #include "components/exo/wayland/server_util.h"
 #include "ui/aura/env.h"
@@ -24,9 +25,11 @@
 namespace exo::wayland {
 
 struct UiControls::UiControlsState {
-  UiControlsState() = default;
+  explicit UiControlsState(const Seat* seat) : seat_(seat) {}
   UiControlsState(const UiControlsState&) = delete;
   UiControlsState& operator=(const UiControlsState&) = delete;
+
+  const Seat* const seat_;
 
   // Keeps track of the IDs of pending requests for that we still need to emit
   // request_processed events. This is per wl_resource so that we can drop
@@ -56,9 +59,16 @@ base::OnceClosure UpdateStateAndBindEmitProcessed(struct wl_resource* resource,
   });
 }
 
-// Ensures that a crashed test doesn't leave behind pressed mouse buttons or
-// touch points.
-void ResetPointerAndTouch(UiControlsState* state) {
+// Ensures that a crashed test doesn't leave behind pressed keys, mouse buttons,
+// or touch points.
+void ResetInputs(UiControlsState* state) {
+  auto* window = ash::Shell::GetPrimaryRootWindow();
+  auto pressed_keys = state->seat_->pressed_keys();
+  for (auto key : pressed_keys) {
+    auto key_code = ui::DomCodeToUsLayoutNonLocatedKeyboardCode(key.first);
+    ui_controls::SendKeyEvents(window, key_code, ui_controls::kKeyRelease);
+  }
+
   auto* env = aura::Env::GetInstance();
   int button_flags = env->mouse_button_flags();
   if (button_flags & ui::EF_LEFT_MOUSE_BUTTON) {
@@ -77,27 +87,25 @@ void ResetPointerAndTouch(UiControlsState* state) {
   uint32_t touch_ids_down = env->env_controller()->touch_ids_down();
   for (uint32_t touch_id = 0; touch_id < 32; ++touch_id) {
     if (touch_ids_down & (1 << touch_id)) {
-      ui_controls::SendTouchEvents(ui_controls::TouchType::RELEASE, touch_id, 0,
-                                   0);
+      ui_controls::SendTouchEvents(ui_controls::TouchType::kTouchRelease,
+                                   touch_id, 0, 0);
     }
   }
 }
 
-void ui_controls_send_key_press(struct wl_client* client,
-                                struct wl_resource* resource,
-                                uint32_t key,
-                                uint32_t pressed_modifiers,
-                                uint32_t id) {
+void ui_controls_send_key_events(struct wl_client* client,
+                                 struct wl_resource* resource,
+                                 uint32_t key,
+                                 uint32_t key_state,
+                                 uint32_t pressed_modifiers,
+                                 uint32_t id) {
   auto emit_processed = UpdateStateAndBindEmitProcessed(resource, id);
   auto* window = ash::Shell::GetPrimaryRootWindow();
   auto dom_code = ui::KeycodeConverter::EvdevCodeToDomCode(key);
   auto key_code = ui::DomCodeToUsLayoutNonLocatedKeyboardCode(dom_code);
-  bool control = (pressed_modifiers & ZCR_UI_CONTROLS_V1_MODIFIER_CONTROL) != 0;
-  bool shift = (pressed_modifiers & ZCR_UI_CONTROLS_V1_MODIFIER_SHIFT) != 0;
-  bool alt = (pressed_modifiers & ZCR_UI_CONTROLS_V1_MODIFIER_ALT) != 0;
-  ui_controls::SendKeyPressNotifyWhenDone(window, key_code, control, shift, alt,
-                                          /*command=*/false,
-                                          std::move(emit_processed));
+  ui_controls::SendKeyEventsNotifyWhenDone(window, key_code, key_state,
+                                           std::move(emit_processed),
+                                           pressed_modifiers);
 }
 
 void ui_controls_send_mouse_move(struct wl_client* client,
@@ -161,14 +169,14 @@ void ui_controls_set_toplevel_bounds(struct wl_client* client,
 }
 
 const struct zcr_ui_controls_v1_interface ui_controls_implementation = {
-    ui_controls_send_key_press, ui_controls_send_mouse_move,
+    ui_controls_send_key_events, ui_controls_send_mouse_move,
     ui_controls_send_mouse_button, ui_controls_send_touch,
     ui_controls_set_toplevel_bounds};
 
 void destroy_ui_controls_resource(struct wl_resource* resource) {
   auto* state = GetUserDataAs<UiControlsState>(resource);
   state->pending_request_ids_.erase(resource);
-  ResetPointerAndTouch(state);
+  ResetInputs(state);
 }
 
 void bind_ui_controls(wl_client* client,
@@ -185,7 +193,7 @@ void bind_ui_controls(wl_client* client,
 }  // namespace
 
 UiControls::UiControls(Server* server)
-    : state_(std::make_unique<UiControlsState>()) {
+    : state_(std::make_unique<UiControlsState>(server->GetDisplay()->seat())) {
   wl_global_create(server->GetWaylandDisplay(), &zcr_ui_controls_v1_interface,
                    kUiControlsVersion, state_.get(), bind_ui_controls);
 }

@@ -18,10 +18,9 @@ BreadcrumbManagerKeyedServiceFactory::GetInstance() {
 // static
 breadcrumbs::BreadcrumbManagerKeyedService*
 BreadcrumbManagerKeyedServiceFactory::GetForBrowserContext(
-    content::BrowserContext* context,
-    bool create) {
+    content::BrowserContext* context) {
   return static_cast<breadcrumbs::BreadcrumbManagerKeyedService*>(
-      GetInstance()->GetServiceForBrowserContext(context, create));
+      GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
 }
 
 BreadcrumbManagerKeyedServiceFactory::BreadcrumbManagerKeyedServiceFactory()

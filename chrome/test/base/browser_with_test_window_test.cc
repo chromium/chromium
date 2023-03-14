@@ -92,6 +92,9 @@ void BrowserWithTestWindowTest::SetUp() {
       TestingBrowserProcess::GetGlobal());
   ASSERT_TRUE(profile_manager_->SetUp());
 
+  user_performance_tuning_manager_environment_.SetUp(
+      profile_manager_->local_state()->Get());
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   crosapi::IdleServiceAsh::DisableForTesting();
   manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
@@ -133,6 +136,8 @@ void BrowserWithTestWindowTest::TearDown() {
   manager_.reset();
   kiosk_app_manager_.reset();
 #endif
+
+  user_performance_tuning_manager_environment_.TearDown();
 
   // Calling DeleteAllTestingProfiles() first can cause issues in some tests, if
   // they're still holding a ScopedProfileKeepAlive.

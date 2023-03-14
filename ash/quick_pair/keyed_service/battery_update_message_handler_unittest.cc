@@ -8,6 +8,7 @@
 
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/device.h"
+#include "ash/quick_pair/common/fake_bluetooth_adapter.h"
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/message_stream/fake_bluetooth_socket.h"
@@ -70,26 +71,10 @@ CreateTestBluetoothDevice(std::string address,
 namespace ash {
 namespace quick_pair {
 
-class BatteryUpdateMessageFakeBluetoothAdapter
-    : public testing::NiceMock<device::MockBluetoothAdapter> {
- public:
-  device::BluetoothDevice* GetDevice(const std::string& address) override {
-    for (const auto& it : mock_devices_) {
-      if (it->GetAddress() == address)
-        return it.get();
-    }
-
-    return nullptr;
-  }
-
- private:
-  ~BatteryUpdateMessageFakeBluetoothAdapter() = default;
-};
-
 class BatteryUpdateMessageHandlerTest : public testing::Test {
  public:
   void SetUp() override {
-    adapter_ = base::MakeRefCounted<BatteryUpdateMessageFakeBluetoothAdapter>();
+    adapter_ = base::MakeRefCounted<FakeBluetoothAdapter>();
     std::unique_ptr<testing::NiceMock<device::MockBluetoothDevice>>
         bluetooth_device =
             CreateTestBluetoothDevice(kTestDeviceAddress, adapter_.get());
@@ -153,7 +138,7 @@ class BatteryUpdateMessageHandlerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  scoped_refptr<BatteryUpdateMessageFakeBluetoothAdapter> adapter_;
+  scoped_refptr<FakeBluetoothAdapter> adapter_;
 
   scoped_refptr<FakeBluetoothSocket> fake_socket_ =
       base::MakeRefCounted<FakeBluetoothSocket>();

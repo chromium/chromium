@@ -49,6 +49,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -1469,13 +1470,8 @@ class PrerenderTaskBrowserTest : public TaskManagerBrowserTest {
         base::BindRepeating(&PrerenderTaskBrowserTest::GetActiveWebContents,
                             base::Unretained(this)));
     feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/
-        {
-            {features::kBackForwardCache, {{}}},
-            {features::kBackForwardCacheTimeToLiveControl,
-             {{"time_to_live_seconds", "3600"}}},
-            {features::kOmniboxTriggerForPrerender2, {}},
-        },
+        content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(
+            /*ignore_outstanding_network_request=*/false),
         /*disabled_features=*/{});
     EXPECT_TRUE(content::BackForwardCache::IsBackForwardCacheFeatureEnabled());
   }

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <atomic>
 
+#include "base/auto_reset.h"
 #include "base/containers/contains.h"
 #include "base/hash/hash.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -213,9 +214,9 @@ void TrackEventThreadLocalEventSink::AddLegacyTraceEvent(
 base::trace_event::TrackEventHandle
 TrackEventThreadLocalEventSink::AddTypedTraceEvent(
     base::trace_event::TraceEvent* trace_event) {
-  DCHECK(!base::tracing::GetThreadIsInTraceEventTLS()->Get());
+  DCHECK(!*base::tracing::GetThreadIsInTraceEvent());
   // Cleared in OnTrackEventCompleted().
-  base::tracing::GetThreadIsInTraceEventTLS()->Set(true);
+  *base::tracing::GetThreadIsInTraceEvent() = true;
 
   DCHECK(!pending_trace_packet_);
   UpdateIncrementalStateIfNeeded(trace_event);
@@ -262,15 +263,15 @@ void TrackEventThreadLocalEventSink::OnTrackEventCompleted() {
   WriteInternedDataIntoTracePacket(pending_trace_packet_.get());
   pending_trace_packet_ = perfetto::TraceWriter::TracePacketHandle();
 
-  DCHECK(base::tracing::GetThreadIsInTraceEventTLS()->Get());
-  base::tracing::GetThreadIsInTraceEventTLS()->Set(false);
+  DCHECK(*base::tracing::GetThreadIsInTraceEvent());
+  *base::tracing::GetThreadIsInTraceEvent() = false;
 }
 
 base::trace_event::TracePacketHandle
 TrackEventThreadLocalEventSink::AddTracePacket() {
-  DCHECK(!base::tracing::GetThreadIsInTraceEventTLS()->Get());
+  DCHECK(!*base::tracing::GetThreadIsInTraceEvent());
   // Cleared in OnTracePacketCompleted().
-  base::tracing::GetThreadIsInTraceEventTLS()->Set(true);
+  *base::tracing::GetThreadIsInTraceEvent() = true;
 
   DCHECK(!pending_trace_packet_);
 
@@ -289,18 +290,15 @@ void TrackEventThreadLocalEventSink::AddEmptyPacket() {
   if (last_packet_was_empty_)
     return;
 
-  DCHECK(!base::tracing::GetThreadIsInTraceEventTLS()->Get());
-  base::tracing::GetThreadIsInTraceEventTLS()->Set(true);
-
+  const base::AutoReset<bool> resetter(base::tracing::GetThreadIsInTraceEvent(),
+                                       true, false);
   DCHECK(!pending_trace_packet_);
   NewTracePacket(PacketType::kEmpty);
-
-  base::tracing::GetThreadIsInTraceEventTLS()->Set(false);
 }
 
 void TrackEventThreadLocalEventSink::OnTracePacketCompleted() {
-  DCHECK(base::tracing::GetThreadIsInTraceEventTLS()->Get());
-  base::tracing::GetThreadIsInTraceEventTLS()->Set(false);
+  DCHECK(*base::tracing::GetThreadIsInTraceEvent());
+  *base::tracing::GetThreadIsInTraceEvent() = false;
 }
 
 void TrackEventThreadLocalEventSink::UpdateIncrementalStateIfNeeded(

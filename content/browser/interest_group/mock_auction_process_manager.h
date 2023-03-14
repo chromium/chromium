@@ -85,6 +85,7 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
       double browser_signal_bid,
       double browser_signal_highest_scoring_other_bid,
       bool browser_signal_made_highest_scoring_other_bid,
+      absl::optional<double> browser_signal_ad_cost,
       const url::Origin& browser_signal_seller_origin,
       const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
       uint32_t bidding_signals_data_version,
@@ -106,14 +107,21 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
   // Waits for GenerateBid() to be invoked.
   void WaitForGenerateBid();
 
+  // The below functions alter `trusted_signals_fetch_latency` (from
+  // OnBiddingSignalsReceived()) and `bidding_latency` (from
+  // OnGenerateBidComplete()), respectively, to return `delta`.
+  void SetBidderTrustedSignalsFetchLatency(base::TimeDelta delta);
+  void SetBiddingLatency(base::TimeDelta delta);
+
   // Invokes the GenerateBid callback. A bid of base::nullopt means no bid
   // should be offered. Waits for the GenerateBid() call first, if needed.
   void InvokeGenerateBidCallback(
       absl::optional<double> bid,
-      const GURL& render_url = GURL(),
+      const blink::AdDescriptor& ad_descriptor = blink::AdDescriptor(),
       auction_worklet::mojom::BidderWorkletKAnonEnforcedBidPtr mojo_kanon_bid =
           auction_worklet::mojom::BidderWorkletKAnonEnforcedBidPtr(),
-      absl::optional<std::vector<GURL>> ad_component_urls = absl::nullopt,
+      absl::optional<std::vector<blink::AdDescriptor>>
+          ad_component_descriptors = absl::nullopt,
       base::TimeDelta duration = base::TimeDelta(),
       const absl::optional<uint32_t>& bidding_signals_data_version =
           absl::nullopt,
@@ -160,6 +168,12 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
 
   // Expected per-bidder timeout values, indexed by interest group name.
   std::map<std::string, base::TimeDelta> expected_per_buyer_timeouts_;
+
+  // To be fed as `trusted_signals_fetch_latency` (from
+  // OnBiddingSignalsReceived()) and `bidding_latency` (from
+  // OnGenerateBidComplete()), respectively,
+  base::TimeDelta trusted_signals_fetch_latency_;
+  base::TimeDelta bidding_latency_;
 
   // Receiver is last so that destroying `this` while there's a pending callback
   // over the pipe will not DCHECK.
@@ -385,7 +399,7 @@ class MockAuctionProcessManager
   // that those only include cumulative worklets not claimed by
   // TakeBidderWorklet() and TakeSellerWorklet()
   // - once a worklet has been claimed by the consumer, it no longer counts
-  // towads these totals.
+  // towards these totals.
   size_t waiting_for_num_bidders_ = 0;
   size_t waiting_for_num_sellers_ = 0;
 

@@ -24,6 +24,7 @@ include_rules = [
   "+components/error_page/common",
   "+components/favicon/core",
   "+components/shared_highlighting/core/common",
+  "+components/power_bookmarks/core",
   "+components/previous_session_info/previous_session_info.h",
   "+components/favicon/ios",
   "+components/favicon_base",

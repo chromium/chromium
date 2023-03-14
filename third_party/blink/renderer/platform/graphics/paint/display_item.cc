@@ -118,22 +118,15 @@ static WTF::String SpecialDrawingTypeAsDebugString(DisplayItem::Type type) {
     DEBUG_STRING_CASE(BoxDecorationBackground);
     DEBUG_STRING_CASE(Caret);
     DEBUG_STRING_CASE(CapsLockIndicator);
-    DEBUG_STRING_CASE(ClippingMask);
     DEBUG_STRING_CASE(ColumnRules);
-    DEBUG_STRING_CASE(DebugDrawing);
     DEBUG_STRING_CASE(DocumentRootBackdrop);
     DEBUG_STRING_CASE(DocumentBackground);
-    DEBUG_STRING_CASE(DragImage);
     DEBUG_STRING_CASE(DragCaret);
     DEBUG_STRING_CASE(ForcedColorsModeBackplate);
     DEBUG_STRING_CASE(SVGImage);
-    DEBUG_STRING_CASE(LinkHighlight);
     DEBUG_STRING_CASE(ImageAreaFocusRing);
     DEBUG_STRING_CASE(OverflowControls);
     DEBUG_STRING_CASE(FrameOverlay);
-    DEBUG_STRING_CASE(PopupContainerBorder);
-    DEBUG_STRING_CASE(PopupListBoxBackground);
-    DEBUG_STRING_CASE(PopupListBoxRow);
     DEBUG_STRING_CASE(PrintedContentDestinationLocations);
     DEBUG_STRING_CASE(PrintedContentPDFURLRect);
     DEBUG_STRING_CASE(ReflectionMask);
@@ -146,7 +139,6 @@ static WTF::String SpecialDrawingTypeAsDebugString(DisplayItem::Type type) {
     DEBUG_STRING_CASE(ScrollCorner);
     DEBUG_STRING_CASE(SelectionTint);
     DEBUG_STRING_CASE(TableCollapsedBorders);
-    DEBUG_STRING_CASE(VideoBitmap);
     DEBUG_STRING_CASE(WebFont);
     DEBUG_STRING_CASE(WebPlugin);
 

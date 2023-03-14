@@ -8,13 +8,13 @@
 
 #include <stddef.h>
 
-#include <memory>
 #include <utility>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
@@ -22,15 +22,19 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/api/preference/preference_helpers.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/font_pref_change_notifier.h"
 #include "chrome/browser/font_pref_change_notifier_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/font_settings.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/pref_names_util.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/font_list_async.h"
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_source.h"
+#include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_prefs_helper.h"
 #include "extensions/browser/extension_prefs_helper_factory.h"
 #include "extensions/browser/extension_system.h"
@@ -95,6 +99,57 @@ void MaybeUnlocalizeFontName(std::string* font_name) {
 }
 
 }  // namespace
+
+// This class observes pref changed events on a profile and dispatches the
+// corresponding extension API events to extensions.
+class FontSettingsEventRouter {
+ public:
+  // Constructor for observing pref changed events on `profile`. Stores a
+  // pointer to `profile` but does not take ownership. `profile` must be
+  // non-NULL and remain alive for the lifetime of the instance.
+  explicit FontSettingsEventRouter(Profile* profile);
+
+  FontSettingsEventRouter(const FontSettingsEventRouter&) = delete;
+  FontSettingsEventRouter& operator=(const FontSettingsEventRouter&) = delete;
+
+  virtual ~FontSettingsEventRouter();
+
+ private:
+  // Observes browser pref `pref_name`. When a change is observed, dispatches
+  // event `event_name` to extensions. A JavaScript object is passed to the
+  // extension event function with the new value of the pref in property `key`.
+  void AddPrefToObserve(const char* pref_name,
+                        events::HistogramValue histogram_value,
+                        const char* event_name,
+                        const char* key);
+
+  // Decodes a preference change for a font family map and invokes
+  // OnFontNamePrefChange with the right parameters.
+  void OnFontFamilyMapPrefChanged(const std::string& pref_name);
+
+  // Dispatches a changed event for the font setting for `generic_family` and
+  // `script` to extensions. The new value of the setting is the value of
+  // browser pref `pref_name`.
+  void OnFontNamePrefChanged(const std::string& pref_name,
+                             const std::string& generic_family,
+                             const std::string& script);
+
+  // Dispatches the setting changed event `event_name` to extensions. The new
+  // value of the setting is the value of browser pref `pref_name`. This value
+  // is passed in the JavaScript object argument to the extension event function
+  // under the key `key`.
+  void OnFontPrefChanged(events::HistogramValue histogram_value,
+                         const std::string& event_name,
+                         const std::string& key,
+                         const std::string& pref_name);
+
+  // Manages pref observation registration.
+  PrefChangeRegistrar registrar_;
+  FontPrefChangeNotifier::Registrar font_change_registrar_;
+
+  // Weak, owns us (transitively via ExtensionService).
+  raw_ptr<Profile> profile_;
+};
 
 FontSettingsEventRouter::FontSettingsEventRouter(Profile* profile)
     : profile_(profile) {
@@ -212,14 +267,14 @@ ExtensionFunction::ResponseAction FontSettingsClearFontFunction::Run() {
   if (profile->IsOffTheRecord())
     return RespondNow(Error(kSetFromIncognitoError));
 
-  std::unique_ptr<fonts::ClearFont::Params> params(
-      fonts::ClearFont::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<fonts::ClearFont::Params> params =
+      fonts::ClearFont::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   std::string pref_path = GetFontNamePrefPath(params->details.generic_family,
                                               params->details.script);
 
-  // Ensure |pref_path| really is for a registered per-script font pref.
+  // Ensure `pref_path` really is for a registered per-script font pref.
   EXTENSION_FUNCTION_VALIDATE(profile->GetPrefs()->FindPreference(pref_path));
 
   ExtensionPrefsHelper::Get(profile)->RemoveExtensionControlledPref(
@@ -228,9 +283,9 @@ ExtensionFunction::ResponseAction FontSettingsClearFontFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction FontSettingsGetFontFunction::Run() {
-  std::unique_ptr<fonts::GetFont::Params> params(
-      fonts::GetFont::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<fonts::GetFont::Params> params =
+      fonts::GetFont::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   std::string pref_path = GetFontNamePrefPath(params->details.generic_family,
                                               params->details.script);
@@ -266,14 +321,14 @@ ExtensionFunction::ResponseAction FontSettingsSetFontFunction::Run() {
   if (profile->IsOffTheRecord())
     return RespondNow(Error(kSetFromIncognitoError));
 
-  std::unique_ptr<fonts::SetFont::Params> params(
-      fonts::SetFont::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
+  absl::optional<fonts::SetFont::Params> params =
+      fonts::SetFont::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
 
   std::string pref_path = GetFontNamePrefPath(params->details.generic_family,
                                               params->details.script);
 
-  // Ensure |pref_path| really is for a registered font pref.
+  // Ensure `pref_path` really is for a registered font pref.
   EXTENSION_FUNCTION_VALIDATE(profile->GetPrefs()->FindPreference(pref_path));
 
   ExtensionPrefsHelper::Get(profile)->SetExtensionControlledPref(

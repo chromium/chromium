@@ -28,7 +28,7 @@ BASE_FEATURE(kUseUtilityThreadGroup,
 
 BASE_FEATURE(kNoWorkerThreadReclaim,
              "NoWorkerThreadReclaim",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // static
 BASE_FEATURE(kNoWakeUpsForCanceledTasks,
@@ -63,30 +63,6 @@ BASE_FEATURE(kExplicitHighResolutionTimerWin,
 BASE_FEATURE(kRunTasksByBatches,
              "RunTasksByBatches",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kBrowserPeriodicYieldingToNative,
-             "BrowserPeriodicYieldingToNative",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const BASE_EXPORT base::FeatureParam<base::TimeDelta>
-    kBrowserPeriodicYieldingToNativeNormalInputAfterMsParam{
-        &kBrowserPeriodicYieldingToNative,
-        "yield_to_android_looper_after_ms_normal_input", base::Milliseconds(8)};
-
-const BASE_EXPORT base::FeatureParam<base::TimeDelta>
-    kBrowserPeriodicYieldingToNativeFlingInputAfterMsParam{
-        &kBrowserPeriodicYieldingToNative,
-        "yield_to_android_looper_after_ms_fling_input", base::Milliseconds(16)};
-
-const BASE_EXPORT base::FeatureParam<base::TimeDelta>
-    kBrowserPeriodicYieldingToNativeNoInputAfterMsParam{
-        &kBrowserPeriodicYieldingToNative,
-        "yield_to_android_looper_after_ms_no_input", base::Milliseconds(100)};
-
-const BASE_EXPORT base::FeatureParam<base::TimeDelta>
-    kBrowserPeriodicYieldingToNativeDelay{&kBrowserPeriodicYieldingToNative,
-                                          "non_delayed_looper_defer_for_ns",
-                                          base::Nanoseconds(500000)};
 
 // Leeway value applied to delayed tasks. An atomic is used here because the
 // value is queried from multiple threads.

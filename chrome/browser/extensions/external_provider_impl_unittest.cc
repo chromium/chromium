@@ -173,8 +173,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
     params.autoupdate_enabled = true;
     // Create prefs file to make the profile not new.
     const char prefs[] = "{}";
-    EXPECT_EQ(base::WriteFile(params.pref_file, prefs, sizeof(prefs)),
-              int(sizeof(prefs)));
+    EXPECT_TRUE(base::WriteFile(params.pref_file, prefs));
     InitializeExtensionService(params);
     service_->updater()->Start();
     content::RunAllTasksUntilIdle();

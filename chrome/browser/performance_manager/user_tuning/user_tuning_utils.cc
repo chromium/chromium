@@ -16,6 +16,11 @@ bool IsRefreshRateThrottled() {
 #if BUILDFLAG(IS_ANDROID)
   return false;
 #else
+  // This can be false in unit tests.
+  if (!UserPerformanceTuningManager::HasInstance()) {
+    return false;
+  }
+
   return base::FeatureList::IsEnabled(
              performance_manager::features::kBatterySaverModeAvailable) &&
          UserPerformanceTuningManager::GetInstance()->IsBatterySaverActive();

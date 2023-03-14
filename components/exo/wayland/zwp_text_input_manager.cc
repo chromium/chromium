@@ -368,7 +368,8 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
                                std::end(kModifierNames))};
 
   // Pending focus reason.
-  ui::TextInputClient::FocusReason pending_focus_reason_;
+  ui::TextInputClient::FocusReason pending_focus_reason_ =
+      ui::TextInputClient::FOCUS_REASON_OTHER;
 
   base::WeakPtrFactory<WaylandTextInputDelegate> weak_factory_{this};
 };
@@ -530,7 +531,8 @@ void text_input_set_content_type(wl_client* client,
       break;
   }
 
-  text_input->SetTypeModeFlags(type, mode, flags, should_do_learning);
+  text_input->SetTypeModeFlags(type, mode, flags, should_do_learning,
+                               /* can_compose_inline = */ true);
 }
 
 void text_input_set_cursor_rectangle(wl_client* client,
@@ -610,7 +612,8 @@ void extended_text_input_set_input_type(wl_client* client,
                                         uint32_t input_type,
                                         uint32_t input_mode,
                                         uint32_t input_flags,
-                                        uint32_t learning_mode) {
+                                        uint32_t learning_mode,
+                                        uint32_t inline_composition_support) {
   auto* delegate =
       GetUserDataAs<WaylandExtendedTextInput>(resource)->delegate();
   if (!delegate)
@@ -629,9 +632,28 @@ void extended_text_input_set_input_type(wl_client* client,
   auto ui_flags = ui::wayland::ConvertToTextInputFlags(input_flags).first;
   bool should_do_learning =
       learning_mode == ZCR_EXTENDED_TEXT_INPUT_V1_LEARNING_MODE_ENABLED;
+  bool can_compose_inline =
+      inline_composition_support ==
+      ZCR_EXTENDED_TEXT_INPUT_V1_INLINE_COMPOSITION_SUPPORT_SUPPORTED;
 
   auto* text_input = GetUserDataAs<TextInput>(delegate->resource());
-  text_input->SetTypeModeFlags(ui_type, ui_mode, ui_flags, should_do_learning);
+  text_input->SetTypeModeFlags(ui_type, ui_mode, ui_flags, should_do_learning,
+                               can_compose_inline);
+}
+
+void extended_text_input_deprecated_set_input_type(wl_client* client,
+                                                   wl_resource* resource,
+                                                   uint32_t input_type,
+                                                   uint32_t input_mode,
+                                                   uint32_t input_flags,
+                                                   uint32_t learning_mode) {
+  // TODO(crbug.com/1420448) This deprecated method signature is preserved to
+  // maintain backwards compatibility with older client versions. Once both Exo
+  // and Lacros have stabilized on the new API, delete this implementation or
+  // otherwise make it impossible to call.
+  extended_text_input_set_input_type(client, resource, input_type, input_mode,
+                                     input_flags, learning_mode,
+                                     /*inline_composition_support=*/true);
 }
 
 void extended_text_input_set_grammar_fragment_at_cursor(
@@ -725,11 +747,12 @@ void extended_text_input_set_focus_reason(wl_client* client,
 constexpr struct zcr_extended_text_input_v1_interface
     extended_text_input_implementation = {
         extended_text_input_destroy,
-        extended_text_input_set_input_type,
+        extended_text_input_deprecated_set_input_type,
         extended_text_input_set_grammar_fragment_at_cursor,
         extended_text_input_set_autocorrect_info,
         extended_text_input_finalize_virtual_keyboard_changes,
         extended_text_input_set_focus_reason,
+        extended_text_input_set_input_type,
 };
 
 ////////////////////////////////////////////////////////////////////////////////

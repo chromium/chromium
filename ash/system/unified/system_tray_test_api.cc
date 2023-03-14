@@ -6,12 +6,18 @@
 
 #include <string>
 
+#include "ash/public/cpp/ash_view_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/accessibility/select_to_speak/select_to_speak_tray.h"
+#include "ash/system/accessibility/unified_accessibility_detailed_view_controller.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/time/time_tray_item_view.h"
 #include "ash/system/time/time_view.h"
+#include "ash/system/tray/tray_detailed_view.h"
+#include "ash/system/tray/tray_toggle_button.h"
+#include "ash/system/unified/power_button.h"
+#include "ash/system/unified/quick_settings_footer.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
@@ -75,6 +81,14 @@ void SystemTrayTestApi::ShowNetworkDetailedView() {
   GetTray()->bubble_->controller_->ShowNetworkDetailedView(true /* force */);
 }
 
+AccessibilityDetailedView* SystemTrayTestApi::GetAccessibilityDetailedView() {
+  auto* unified_system_tray_controller = GetTray()->bubble_->controller_.get();
+  DCHECK(unified_system_tray_controller->IsDetailedViewShown());
+  return static_cast<UnifiedAccessibilityDetailedViewController*>(
+             unified_system_tray_controller->detailed_view_controller())
+      ->accessibility_detailed_view_for_testing();
+}
+
 bool SystemTrayTestApi::IsBubbleViewVisible(int view_id, bool open_tray) {
   if (open_tray)
     GetTray()->ShowBubble();
@@ -82,16 +96,16 @@ bool SystemTrayTestApi::IsBubbleViewVisible(int view_id, bool open_tray) {
   return view && view->GetVisible();
 }
 
-void SystemTrayTestApi::ScrollToShowView(int view_id) {
-  views::View* view = GetBubbleView(view_id);
+bool SystemTrayTestApi::IsToggleOn(int view_id) {
+  auto* view = static_cast<TrayToggleButton*>(GetBubbleView(view_id));
   DCHECK(view);
+  return view->GetIsOn();
+}
 
-  views::View* contents = view->parent();
-  DCHECK(contents);
-
-  views::ScrollView* scroll_view =
-      views::ScrollView::GetScrollViewForContents(contents);
-  DCHECK(scroll_view);
+void SystemTrayTestApi::ScrollToShowView(views::ScrollView* scroll_view,
+                                         int view_id) {
+  views::View* view = GetBubbleView(view_id);
+  DCHECK(view && scroll_view->Contains(view));
 
   gfx::Point view_center = view->GetBoundsInScreen().CenterPoint();
   gfx::Rect scroll_bounds = scroll_view->GetBoundsInScreen();
@@ -118,6 +132,23 @@ void SystemTrayTestApi::ClickBubbleView(int view_id) {
 std::u16string SystemTrayTestApi::GetBubbleViewTooltip(int view_id) {
   views::View* view = GetBubbleView(view_id);
   return view ? view->GetTooltipText(gfx::Point()) : std::u16string();
+}
+
+std::u16string SystemTrayTestApi::GetShutdownButtonTooltip() {
+  // When the QS revamp is enabled the power button view that has ID
+  // `VIEW_ID_QS_POWER_BUTTON` is not the view that has the tooltip; what we're
+  // looking for is actually the child `ash::IconButton` view.
+  if (base::FeatureList::IsEnabled(features::kQsRevamp)) {
+    auto* icon_button = GetTray()
+                            ->bubble()
+                            ->quick_settings_view()
+                            ->footer_for_testing()
+                            ->power_button_for_testing()
+                            ->button_content_for_testing();
+    return icon_button ? icon_button->GetTooltipText(gfx::Point())
+                       : std::u16string();
+  }
+  return GetBubbleViewTooltip(VIEW_ID_QS_POWER_BUTTON);
 }
 
 std::u16string SystemTrayTestApi::GetBubbleViewText(int view_id) {

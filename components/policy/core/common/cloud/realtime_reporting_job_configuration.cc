@@ -7,17 +7,10 @@
 #include <utility>
 
 #include "base/json/json_reader.h"
-#include "base/json/json_writer.h"
-#include "base/path_service.h"
 #include "components/enterprise/common/strings.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
-#include "components/policy/core/common/cloud/cloud_policy_util.h"
-#include "components/version_info/version_info.h"
-#include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace em = enterprise_management;
 
 namespace policy {
 
@@ -49,14 +42,15 @@ RealtimeReportingJobConfiguration::RealtimeReportingJobConfiguration(
     UploadCompleteCallback callback)
     : ReportingJobConfigurationBase(TYPE_UPLOAD_REAL_TIME_REPORT,
                                     client->GetURLLoaderFactory(),
-                                    client,
+                                    DMAuth::FromDMToken(client->dm_token()),
                                     server_url,
-                                    include_device_info,
                                     std::move(callback)) {
-  InitializePayloadInternal(client, add_connector_url_params);
+  InitializePayloadInternal(client, add_connector_url_params,
+                            include_device_info);
 }
 
-RealtimeReportingJobConfiguration::~RealtimeReportingJobConfiguration() {}
+RealtimeReportingJobConfiguration::~RealtimeReportingJobConfiguration() =
+    default;
 
 bool RealtimeReportingJobConfiguration::AddReport(base::Value::Dict report) {
   base::Value::Dict* context = report.FindDict(kContextKey);
@@ -83,7 +77,14 @@ bool RealtimeReportingJobConfiguration::AddReport(base::Value::Dict report) {
 
 void RealtimeReportingJobConfiguration::InitializePayloadInternal(
     CloudPolicyClient* client,
-    bool add_connector_url_params) {
+    bool add_connector_url_params,
+    bool include_device_info) {
+  if (include_device_info) {
+    InitializePayloadWithDeviceInfo(client->dm_token(), client->client_id());
+  } else {
+    InitializePayloadWithoutDeviceInfo();
+  }
+
   payload_.Set(kEventListKey, base::Value::List());
 
   // If specified add extra enterprise connector URL params.

@@ -139,8 +139,27 @@ DrmDisplay::PrivacyScreenProperty::GetWritePrivacyScreenProperty() const {
   return privacy_screen_legacy_.get();
 }
 
-DrmDisplay::DrmDisplay(const scoped_refptr<DrmDevice>& drm)
-    : drm_(drm), current_color_space_(gfx::ColorSpace::CreateSRGB()) {}
+DrmDisplay::DrmDisplay(const scoped_refptr<DrmDevice>& drm,
+                       HardwareDisplayControllerInfo* info,
+                       const display::DisplaySnapshot& display_snapshot)
+    : display_id_(display_snapshot.display_id()),
+      base_connector_id_(display_snapshot.base_connector_id()),
+      drm_(drm),
+      crtc_(info->crtc()->crtc_id),
+      connector_(info->ReleaseConnector()) {
+  modes_ = GetDrmModeVector(connector_.get());
+  origin_ = display_snapshot.origin();
+  is_hdr_capable_ = display_snapshot.bits_per_channel() > 8 &&
+                    display_snapshot.color_space().IsHDR();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  is_hdr_capable_ =
+      is_hdr_capable_ &&
+      base::FeatureList::IsEnabled(display::features::kUseHDRTransferFunction);
+#endif
+  current_color_space_ = gfx::ColorSpace::CreateSRGB();
+  privacy_screen_property_ =
+      std::make_unique<PrivacyScreenProperty>(drm_, connector_.get());
+}
 
 DrmDisplay::~DrmDisplay() = default;
 
@@ -149,28 +168,33 @@ uint32_t DrmDisplay::connector() const {
   return connector_->connector_id;
 }
 
-void DrmDisplay::Update(HardwareDisplayControllerInfo* info,
-                        const display::DisplaySnapshot* display_snapshot) {
-  // We take ownership of |info|'s connector because it will not be used again
-  // beyond this point. It is safe to assume that |connector_| is populated
-  // since it was obtained from GetDisplayInfosAndInvalidCrtcs(), which discards
-  // invalid (nullptr) connectors.
-  connector_ = info->ReleaseConnector();
+bool DrmDisplay::SetHdcpKeyProp(const std::string& key) {
   DCHECK(connector_);
 
-  crtc_ = info->crtc()->crtc_id;
-  display_id_ = display_snapshot->display_id();
-  base_connector_id_ = display_snapshot->base_connector_id();
-  modes_ = GetDrmModeVector(connector_.get());
-  is_hdr_capable_ = display_snapshot->bits_per_channel() > 8 &&
-                    display_snapshot->color_space().IsHDR();
-  privacy_screen_property_ =
-      std::make_unique<PrivacyScreenProperty>(drm(), connector_.get());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  is_hdr_capable_ =
-      is_hdr_capable_ &&
-      base::FeatureList::IsEnabled(display::features::kUseHDRTransferFunction);
+  TRACE_EVENT1("drm", "DrmDisplay::SetHdcpKeyProp", "connector",
+               connector_->connector_id);
+
+  // The HDCP key is secret, we want to create it as write only so the user
+  // space can't read it back. (i.e. through `modetest`)
+  ScopedDrmPropertyBlob key_blob;
+  // TODO(markyacoub): the flag requires being merged to libdrm then backported
+  // to CrOS. Remove the #if once that happens.
+#if defined(DRM_MODE_CREATE_BLOB_WRITE_ONLY)
+  key_blob = drm_->CreatePropertyBlobWithFlags(key.data(), key.size(),
+                                               DRM_MODE_CREATE_BLOB_WRITE_ONLY);
 #endif
+
+  if (!key_blob) {
+    LOG(ERROR) << "Failed to create HDCP Key property blob";
+    return false;
+  }
+
+  ScopedDrmPropertyPtr hdcp_key_property(
+      drm_->GetProperty(connector_.get(), kContentProtectionKey));
+  DCHECK(hdcp_key_property);
+
+  return drm_->SetProperty(connector_->connector_id, hdcp_key_property->prop_id,
+                           key_blob->id());
 }
 
 // When reading DRM state always check that it's still valid. Any sort of events

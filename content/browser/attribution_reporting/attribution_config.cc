@@ -13,10 +13,6 @@ bool AttributionConfig::Validate() const {
     return false;
   }
 
-  if (source_event_id_cardinality && *source_event_id_cardinality == 0u) {
-    return false;
-  }
-
   if (max_destinations_per_source_site_reporting_origin <= 0) {
     return false;
   }

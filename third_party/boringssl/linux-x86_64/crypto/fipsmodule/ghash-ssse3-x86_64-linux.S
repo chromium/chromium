@@ -415,6 +415,7 @@ gcm_ghash_ssse3:
 
 .size	gcm_ghash_ssse3,.-gcm_ghash_ssse3
 
+.section	.rodata
 .align	16
 
 
@@ -423,6 +424,7 @@ gcm_ghash_ssse3:
 
 .Llow4_mask:
 .quad	0x0f0f0f0f0f0f0f0f, 0x0f0f0f0f0f0f0f0f
+.text	
 #endif
 #if defined(__ELF__)
 // See https://www.airs.com/blog/archives/518.

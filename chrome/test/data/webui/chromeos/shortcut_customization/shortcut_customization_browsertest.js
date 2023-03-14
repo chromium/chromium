@@ -42,6 +42,7 @@ const tests = [
   ['FakeShortcutSearchHandlerTest', 'fake_shortcut_search_handler_test.js'],
   ['InputKeyTest', 'input_key_test.js'],
   ['SearchBoxTest', 'search_box_test.js'],
+  ['SearchResultRowTest', 'search_result_row_test.js'],
   ['ShortcutCustomizationApp', 'shortcut_customization_test.js'],
   ['ShortcutSearchHandlerTest', 'shortcut_search_handler_test.js'],
   ['ShortcutUtils', 'shortcut_utils_test.js'],

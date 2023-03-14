@@ -305,21 +305,14 @@ void PhoneField::AddClassifications(
     }
 
     ServerFieldType field_number_type = PHONE_HOME_NUMBER;
+    // Rationalization will pick the correct trunk-type, so this logic doesn't
+    // need to distinguish.
     if (parsed_phone_fields_[FIELD_AREA_CODE]) {
-      ServerFieldType area_code_type =
-          has_country_code ||
-                  !base::FeatureList::IsEnabled(
-                      features::kAutofillEnableSupportForPhoneNumberTrunkTypes)
-              ? PHONE_HOME_CITY_CODE
-              : PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX;
-      AddClassification(parsed_phone_fields_[FIELD_AREA_CODE], area_code_type,
-                        kBasePhoneParserScore, field_candidates);
+      AddClassification(parsed_phone_fields_[FIELD_AREA_CODE],
+                        PHONE_HOME_CITY_CODE, kBasePhoneParserScore,
+                        field_candidates);
     } else if (has_country_code) {
-      field_number_type =
-          base::FeatureList::IsEnabled(
-              features::kAutofillEnableSupportForPhoneNumberTrunkTypes)
-              ? PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX
-              : PHONE_HOME_CITY_AND_NUMBER;
+      field_number_type = PHONE_HOME_CITY_AND_NUMBER;
     }
     // PHONE_HOME_NUMBER = PHONE_HOME_NUMBER_PREFIX + PHONE_HOME_NUMBER_SUFFIX
     // is technically dialable (seven-digit dialing), and thus not contained in

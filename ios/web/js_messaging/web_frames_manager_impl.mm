@@ -15,34 +15,7 @@
 
 namespace web {
 
-#pragma mark - WebFramesManagerImpl::Container
-
-WEB_STATE_USER_DATA_KEY_IMPL(WebFramesManagerImpl::Container)
-
-WebFramesManagerImpl::Container::Container(web::WebState* web_state)
-    : web_state_(web_state) {}
-WebFramesManagerImpl::Container::~Container() = default;
-
-WebFramesManagerImpl& WebFramesManagerImpl::Container::ManagerForContentWorld(
-    ContentWorld content_world) {
-  DCHECK_NE(content_world, ContentWorld::kAllContentWorlds);
-
-  auto& manager = managers_[content_world];
-  if (!manager) {
-    manager = base::WrapUnique(new WebFramesManagerImpl());
-  }
-  return *manager.get();
-}
-
 #pragma mark - WebFramesManagerImpl
-
-WebFramesManagerImpl& WebFramesManagerImpl::FromWebState(
-    web::WebState* web_state,
-    ContentWorld content_world) {
-  WebFramesManagerImpl::Container::CreateForWebState(web_state);
-  return WebFramesManagerImpl::Container::FromWebState(web_state)
-      ->ManagerForContentWorld(content_world);
-}
 
 WebFramesManagerImpl::WebFramesManagerImpl() : weak_factory_(this) {}
 
@@ -93,6 +66,16 @@ void WebFramesManagerImpl::RemoveFrameWithId(const std::string& frame_id) {
   // destroy it after.
   auto keep_frame_alive = std::move(web_frames_[frame_id]);
   web_frames_.erase(frame_id);
+}
+
+void WebFramesManagerImpl::RemoveAllWebFrames() {
+  std::set<std::string> frame_ids;
+  for (const auto& it : web_frames_) {
+    frame_ids.insert(it.first);
+  }
+  for (std::string frame_id : frame_ids) {
+    RemoveFrameWithId(frame_id);
+  }
 }
 
 #pragma mark - WebFramesManager

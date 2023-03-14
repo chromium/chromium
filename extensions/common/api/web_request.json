@@ -16,7 +16,7 @@
       {
         "id": "ResourceType",
         "type": "string",
-        "enum": ["main_frame", "sub_frame", "stylesheet", "script", "image", "font", "object", "xmlhttprequest", "ping", "csp_report", "media", "websocket", "other"]
+        "enum": ["main_frame", "sub_frame", "stylesheet", "script", "image", "font", "object", "xmlhttprequest", "ping", "csp_report", "media", "websocket", "webbundle", "other"]
       },
       {
         "id": "OnBeforeRequestOptions",

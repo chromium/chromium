@@ -53,6 +53,25 @@ namespace smartCardProviderPrivate {
     UNKNOWN
   };
 
+  // Maps to the SCARD_SHARE_* values defined in the winscard.h API.
+  enum ShareMode {
+    SHARED,
+    EXCLUSIVE,
+    DIRECT
+  };
+
+  // What the reader should do with the card inserted in it.
+  enum Disposition {
+    // SCARD_LEAVE_CARD - Do nothing.
+    LEAVE_CARD,
+    // SCARD_RESET_CARD - Reset the card (warm reset).
+    RESET_CARD,
+    // SCARD_UNPOWER_CARD - Power down the card (cold reset).
+    UNPOWER_CARD,
+    // SCARD_EJECT_CARD - Eject the card.
+    EJECT_CARD
+  };
+
   // Maps to the SCARD_STATE_* flags defined in the winscard.h API.
   dictionary ReaderStateFlags {
     boolean? unaware;
@@ -68,6 +87,21 @@ namespace smartCardProviderPrivate {
     boolean? unpowered;
   };
 
+  // Maps to the SCARD_PROTOCOL_* flags defined in the winscard.h API.
+  dictionary Protocols {
+    boolean? t0;
+    boolean? t1;
+    boolean? raw;
+  };
+
+  // Maps to the SCARD_PROTOCOL_* values defined in the winscard.h API.
+  enum Protocol {
+    UNDEFINED,
+    T0,
+    T1,
+    RAW
+  };
+
   dictionary ReaderStateIn {
     DOMString reader;
     ReaderStateFlags currentState;
@@ -77,6 +111,11 @@ namespace smartCardProviderPrivate {
     DOMString reader;
     ReaderStateFlags eventState;
     ArrayBuffer atr;
+  };
+
+  dictionary Timeout {
+    // If absent, it means "infinite" or "never timeout"
+    long? milliseconds;
   };
 
   interface Events {
@@ -102,8 +141,23 @@ namespace smartCardProviderPrivate {
     // reportGetStatusChangeResult.
     [maxListeners=1] static void onGetStatusChangeRequested(long requestId,
         long scardContext,
-        long timeout,
+        Timeout timeout,
         ReaderStateIn[] readerStates);
+
+    // Browser requested a SCardConnect call.
+    // Extension must report the result to the browser by calling
+    // reportConnectResult.
+    [maxListeners=1] static void onConnectRequested(long requestId,
+        long scardContext,
+        DOMString reader,
+        ShareMode shareMode,
+        Protocols preferredProtocols);
+
+    // Browser requested a SCardDisconnect call.
+    // Extension must report the result to the browser by calling
+    // reportDisconnectResult.
+    [maxListeners=1] static void onDisconnectRequested(long requestId,
+        long scardHandle, Disposition disposition);
   };
 
   interface Functions {
@@ -122,5 +176,12 @@ namespace smartCardProviderPrivate {
       // Reports the result of a SCardGetStatusChange call.
       static void reportGetStatusChangeResult(long requestId,
           ReaderStateOut[] readerStates, ResultCode resultCode);
+
+      // Reports the result of a SCardConnect call.
+      static void reportConnectResult(long requestId, long scardHandle,
+          Protocol activeProtocol, ResultCode resultCode);
+
+      // Reports the result of a SCardDisconnect call.
+      static void reportDisconnectResult(long requestId, ResultCode resultCode);
   };
 };

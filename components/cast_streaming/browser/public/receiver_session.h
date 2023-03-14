@@ -9,13 +9,9 @@
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
-#include "components/cast_streaming/public/mojom/demuxer_connector.mojom.h"
-#include "components/cast_streaming/public/mojom/renderer_controller.mojom.h"
+#include "components/cast_streaming/common/public/mojom/demuxer_connector.mojom.h"
+#include "components/cast_streaming/common/public/mojom/renderer_controller.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
-
-// TODO(crbug.com/1220176): When fixed, remove this include and add it to a file
-// with the narrowest scope possible.
-#include "third_party/openscreen/src/cast/streaming/receiver_session.h"
 
 namespace cast_api_bindings {
 class MessagePort;
@@ -34,8 +30,6 @@ class ReceiverConfig;
 // |message_port| and with a given |demuxer_connector|. On destruction,
 // the Cast Streaming Receiver Session will be terminated if it was ever
 // started.
-// TODO(crbug.com/1220176): Forward declare ReceiverSession::Preferences instead
-// of requiring the import above.
 class ReceiverSession {
  public:
   class Client {
@@ -48,6 +42,9 @@ class ReceiverSession {
         const media::AudioDecoderConfig& audio_config) = 0;
     virtual void OnVideoConfigUpdated(
         const media::VideoDecoderConfig& video_config) = 0;
+
+    // Called when the streaming session ends.
+    virtual void OnStreamingSessionEnded() = 0;
   };
 
   // Provides controls for a media::Renderer instance. Methods are a subset of
@@ -66,7 +63,6 @@ class ReceiverSession {
 
   using MessagePortProvider =
       base::OnceCallback<std::unique_ptr<cast_api_bindings::MessagePort>()>;
-  using AVConstraints = openscreen::cast::ReceiverSession::Preferences;
 
   virtual ~ReceiverSession() = default;
 
@@ -75,12 +71,6 @@ class ReceiverSession {
   // limitations surrounding this support.
   // |message_port_provider| creates a new MessagePort to be used for sending
   // and receiving Cast messages.
-  // TODO(crbug.com/1219079): Add conversion functions to create the
-  // ReceiverSession::Preferences object from //media types.
-  static std::unique_ptr<ReceiverSession> Create(
-      std::unique_ptr<AVConstraints> av_constraints,
-      MessagePortProvider message_port_provider,
-      Client* client = nullptr);
   static std::unique_ptr<ReceiverSession> Create(
       const ReceiverConfig& av_constraints,
       MessagePortProvider message_port_provider,

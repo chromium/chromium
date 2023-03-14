@@ -1,15 +1,14 @@
 <style include="common cros-button-style">
   #container {
-    border: 1px solid var(--cros-separator-color);
     border-radius: 16px;
     display: grid;
     grid-template-areas:
-      '. slot           slot    slot    .'
-      '. image          image   image   .'
-      '. .              .       .       .'
-      '. message        message message .'
-      '. mainpage-desc  .       collage .'
-      '. .              .       .       .';
+      '. slot           slot    slot      .'
+      '. image          image   image     .'
+      '. .              .       .         .'
+      '. message        message message   .'
+      '. mainpage-desc  .       thumbnail .'
+      '. .              .       .         .';
     grid-template-columns: 20px auto 192px auto 20px;
     grid-template-rows: auto auto 20px 192px auto 20px;
     height: 100%;
@@ -20,7 +19,7 @@
       '. slot          .'
       '. image         .'
       '. .             .'
-      '. collage       .'
+      '. thumbnail     .'
       '. mainpage-desc .'
       '. .             .';
     grid-template-columns: 20px minmax(0,1fr) 20px;
@@ -28,13 +27,14 @@
   }
 
   #container.jelly-disabled {
+    border: 1px solid var(--cros-separator-color);
     grid-template-areas:
-      '. slot           slot    slot    .'
-      '. image          image   image   .'
-      '. .              .       .       .'
-      '. message        message message .'
-      '. mainpage-desc  .       collage .'
-      '. .              .       .       .';
+      '. slot           slot    slot      .'
+      '. image          image   image     .'
+      '. .              .       .         .'
+      '. message        message message   .'
+      '. mainpage-desc  .       thumbnail .'
+      '. .              .       .         .';
     grid-template-columns: 20px minmax(0, 1fr) 16px 106px 20px;
     grid-template-rows: auto minmax(158px, 220px) 20px 106px auto 24px;
   }
@@ -194,7 +194,7 @@
     border-radius: 12px;
     display: grid;
     gap: 2px;
-    grid-area: collage;
+    grid-area: thumbnail;
     overflow: hidden;
   }
 
@@ -247,12 +247,18 @@
   #thumbnailContainer,
   #thumbnailPlaceholder {
     display: grid;
-    grid-area: collage;
+    grid-area: thumbnail;
     justify-self: center;
     max-width: 360px;
     min-width: 252px;
     overflow: hidden;
     width: 100%;
+  }
+
+  :host-context(body.jelly-enabled) #thumbnailContainer,
+  :host-context(body.jelly-enabled) #thumbnailPlaceholder {
+    max-width: 460px;
+    min-width: 278px;
   }
 
   .thumbnail-item {
@@ -265,6 +271,11 @@
     height: 100%;
     object-fit: fill;
     width: 100%;
+  }
+
+  #thumbnailContainer.thumbnail-0 {
+    background-color: var(--personalization-app-grid-item-background-color);
+    border-radius: 12px;
   }
 
   #thumbnailContainer.thumbnail-1 .thumbnail-item {
@@ -398,11 +409,11 @@
                   on-keypress="onClickPreviewImage_">
             </div>
             <div aria-hidden="true"
-                class$="[[getThumbnailContainerClass_(collageImages_)]]"
+                class$="[[getThumbnailContainerClass_(thumbnailImages_)]]"
                 id="thumbnailContainer"
-                on-click="onClickPhotoCollage_"
-                on-keypress="onClickPhotoCollage_">
-              <template is="dom-repeat" items="[[collageImages_]]">
+                on-click="onClickPhotoThumbnail_"
+                on-keypress="onClickPhotoThumbnail_">
+              <template is="dom-repeat" items="[[thumbnailImages_]]">
                 <div class="thumbnail-item">
                   <img auto-src="[[item.url]]"
                       is-google-photos
@@ -495,8 +506,8 @@
           <div aria-hidden="true"
               class$="[[getCollageContainerClass_(collageImages_)]]"
               id="collageContainer"
-              on-click="onClickPhotoCollage_"
-              on-keypress="onClickPhotoCollage_">
+              on-click="onClickPhotoThumbnail_"
+              on-keypress="onClickPhotoThumbnail_">
             <template is="dom-repeat" items="[[collageImages_]]">
               <img auto-src="[[item.url]]"
                   class="collage-item"

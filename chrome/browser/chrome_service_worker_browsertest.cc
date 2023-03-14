@@ -126,9 +126,8 @@ class ChromeServiceWorkerTest : public InProcessBrowserTest {
   void WriteFile(const base::FilePath::StringType& filename,
                  base::StringPiece contents) {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    EXPECT_EQ(base::checked_cast<int>(contents.size()),
-              base::WriteFile(service_worker_dir_.GetPath().Append(filename),
-                              contents.data(), contents.size()));
+    EXPECT_TRUE(base::WriteFile(service_worker_dir_.GetPath().Append(filename),
+                                contents));
   }
 
   void NavigateToPageAndWaitForReadyTitle(const std::string path) {
@@ -322,7 +321,14 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
       kInstallAndWaitForActivatedPageWithModuleScript);
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, SubresourceCountUKM) {
+// TODO(crbug.com/1395715): The test is flaky. Re-enable it.
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_SubresourceCountUKM DISABLED_SubresourceCountUKM
+#else
+#define MAYBE_SubresourceCountUKM SubresourceCountUKM
+#endif
+IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, MAYBE_SubresourceCountUKM) {
   base::RunLoop ukm_loop;
   ukm::TestAutoSetUkmRecorder test_recorder;
   test_recorder.SetOnAddEntryCallback(

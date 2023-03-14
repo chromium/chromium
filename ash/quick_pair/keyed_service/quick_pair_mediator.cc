@@ -435,7 +435,7 @@ void Mediator::OnAssociateAccountAction(scoped_refptr<Device> device,
   QP_LOG(VERBOSE) << __func__ << ": Device=" << device << ", Action=" << action;
 
   switch (action) {
-    case AssociateAccountAction::kAssoicateAccount:
+    case AssociateAccountAction::kAssociateAccount:
       DCHECK(device->account_key().has_value());
       fast_pair_repository_->WriteAccountAssociationToFootprints(
           device, device->account_key().value());

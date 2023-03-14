@@ -51,6 +51,7 @@ class TtsResumeFunction : public ExtensionFunction {
 class TtsIsSpeakingFunction : public ExtensionFunction {
  private:
   ~TtsIsSpeakingFunction() override {}
+  void OnIsSpeakingComplete(bool speaking);
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("tts.isSpeaking", TTS_ISSPEAKING)
 };

@@ -7,10 +7,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
-#include "chrome/common/net/safe_search_util.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/policy/policy_constants.h"
+#include "components/safe_search_api/safe_search_util.h"
 #include "content/public/test/test_navigation_observer.h"
 
 namespace policy {
@@ -38,8 +38,8 @@ GURL SafeSearchPolicyTest::GetExpectedSearchURL(bool expect_safe_search) {
   std::string expected_url("http://google.com/");
   if (expect_safe_search) {
     expected_url += "?" +
-                    std::string(safe_search_util::kSafeSearchSafeParameter) +
-                    "&" + safe_search_util::kSafeSearchSsuiParameter;
+                    std::string(safe_search_api::kSafeSearchSafeParameter) +
+                    "&" + safe_search_api::kSafeSearchSsuiParameter;
   }
   return GURL(expected_url);
 }

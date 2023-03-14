@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <memory>
 #include "base/check_is_test.h"
+#include "base/functional/callback_helpers.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
 #include "components/permissions/permission_prompt.h"
@@ -216,6 +217,8 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
       active_chip_permission_request_manager_;
 
   views::ViewTracker bubble_tracker_;
+
+  base::ScopedClosureRunner disallowed_custom_cursors_scope_;
 
   base::WeakPtrFactory<ChipController> weak_factory_{this};
 };

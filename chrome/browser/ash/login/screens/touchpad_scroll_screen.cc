@@ -49,9 +49,12 @@ bool TouchpadScrollScreen::ShouldBeSkipped(const WizardContext& context) const {
 
   if (features::IsOobeChoobeEnabled() &&
       features::IsOobeTouchpadScrollEnabled()) {
-    return WizardController::default_controller()
-        ->GetChoobeFlowController()
-        ->ShouldScreenBeSkipped(TouchpadScrollScreenView::kScreenId);
+    auto* choobe_controller =
+        WizardController::default_controller()->choobe_flow_controller();
+    if (choobe_controller) {
+      return choobe_controller->ShouldScreenBeSkipped(
+          TouchpadScrollScreenView::kScreenId);
+    }
   }
 
   return false;

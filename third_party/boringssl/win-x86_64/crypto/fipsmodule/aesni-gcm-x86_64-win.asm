@@ -939,6 +939,7 @@ $L$gcm_enc_abort:
 $L$SEH_end_aesni_gcm_encrypt_22:
 
 
+section	.rdata rdata align=8
 ALIGN	64
 $L$bswap_mask:
 	DB	15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0
@@ -955,6 +956,8 @@ $L$one_lsb:
 	DB	89,80,84,79,71,65,77,83,32,98,121,32,60,97,112,112
 	DB	114,111,64,111,112,101,110,115,115,108,46,111,114,103,62,0
 ALIGN	64
+section	.text
+
 section	.pdata rdata align=4
 ALIGN	4
 	DD	$L$SEH_begin_aesni_gcm_decrypt_1 wrt ..imagebase

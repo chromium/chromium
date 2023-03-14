@@ -74,6 +74,12 @@ import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_pro
       assertEquals(isChildVisible(testElement, '#backButton'), withinFlow);
     });
 
+    test('GuestLink', async function() {
+      testElement.shadowRoot!.querySelector<HTMLElement>(
+                                 '#guestModeLink')!.click();
+      return browserProxy.whenCalled('openDeviceGuestLinkLacros');
+    });
+
     test('accountButtons', async function() {
       // There are no accounts initially, only "Use another account".
       flushTasks();

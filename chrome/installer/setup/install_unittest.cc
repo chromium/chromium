@@ -88,8 +88,7 @@ class CreateVisualElementsManifestTest
   // Creates a dummy test file at |path|.
   void CreateTestFile(const base::FilePath& path) {
     static constexpr char kBlah[] = "blah";
-    ASSERT_EQ(static_cast<int>(std::size(kBlah) - 1),
-              base::WriteFile(path, &kBlah[0], std::size(kBlah) - 1));
+    ASSERT_TRUE(base::WriteFile(path, kBlah));
   }
 
   // Creates the VisualElements directory and a light asset, if testing such.
@@ -219,7 +218,7 @@ class InstallShortcutTest : public testing::Test {
     ASSERT_TRUE(com_initializer_.Succeeded());
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     chrome_exe_ = temp_dir_.GetPath().Append(installer::kChromeExe);
-    EXPECT_EQ(0, base::WriteFile(chrome_exe_, "", 0));
+    EXPECT_TRUE(base::WriteFile(chrome_exe_, ""));
 
     ShellUtil::ShortcutProperties chrome_properties(ShellUtil::CURRENT_USER);
     ShellUtil::AddDefaultShortcutProperties(chrome_exe_, &chrome_properties);

@@ -30,13 +30,11 @@ content::WebContents* FirstWebContentsProfilerBase::GetVisibleContents(
   content::WebContents* contents =
       browser->tab_strip_model()->GetActiveWebContents();
 
-#if BUILDFLAG(IS_MAC)
-  // TODO(https://crbug.com/1032348): It is incorrect to have a visible
-  // browser window with no active WebContents, but reports on Mac show that
-  // it happens.
+  // It is incorrect to have a visible browser window with no active
+  // WebContents, but reports on show that it happens.
+  // See https://crbug.com/1032348 for Mac or https://crbug.com/1414831 for Win.
   if (!contents)
     return nullptr;
-#endif  // BUILDFLAG(IS_MAC)
 
   if (contents->GetVisibility() != content::Visibility::VISIBLE)
     return nullptr;

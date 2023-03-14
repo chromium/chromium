@@ -9,13 +9,13 @@ import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/css_to_wrapper.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_definitions.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos_ash)
 
-preprocessed_dir = "preprocessed"
-preprocessed_manifest = "preprocessed_manifest.json"
-preprocessed_generated_manifest = "preprocessed_generated_manifest.json"
+preprocessed_dir = "$target_gen_dir/preprocessed"
+preprocessed_manifest = "preprocessed.manifest"
 
 web_component_files = [
   "keyboard_diagram.js",
@@ -189,73 +189,63 @@ foreach(f, css_files) {
 
 preprocess_if_expr("preprocess") {
   in_folder = "."
-  out_folder = "$target_gen_dir/$preprocessed_dir"
+  out_folder = preprocessed_dir
   out_manifest = "$target_gen_dir/$preprocessed_manifest"
   in_files = non_web_component_files + web_component_files + icons_html_files +
              html_files + css_files
 }
 
-preprocess_if_expr("preprocess_ts_generated") {
-  deps = [
-    "hotspot:build_ts",
-    "typescript_utils:build_ts",
-  ]
-  in_folder = "$target_gen_dir"
-  out_folder = "$target_gen_dir/$preprocessed_dir"
-  out_manifest = "$target_gen_dir/$preprocessed_generated_manifest"
-  in_files = [
-    "hotspot/cros_hotspot_config.js",
-    "hotspot/fake_hotspot_config.js",
-    "hotspot/cros_hotspot_config.mojom-webui.js",
-    "typescript_utils/strict_query.js",
-  ]
-}
-
-copy("copy_generated_dts_files_hotspot") {
-  deps = [ "hotspot:build_ts" ]
-  sources = [
-    "$target_gen_dir/hotspot/cros_hotspot_config.d.ts",
-    "$target_gen_dir/hotspot/cros_hotspot_config.mojom-webui.d.ts",
-    "$target_gen_dir/hotspot/fake_hotspot_config.d.ts",
-  ]
-  outputs = [ "$target_gen_dir/$preprocessed_dir/hotspot/{{source_file_part}}" ]
-}
-
-copy("copy_generated_dts_files_typescript_utils") {
-  deps = [ "typescript_utils:build_ts" ]
-  sources = [ "$target_gen_dir/typescript_utils/strict_query.d.ts" ]
-  outputs = [
-    "$target_gen_dir/$preprocessed_dir/typescript_utils/{{source_file_part}}",
-  ]
-}
-
-group("copy_generated_dts_files") {
-  deps = [
-    ":copy_generated_dts_files_hotspot",
-    ":copy_generated_dts_files_typescript_utils",
-  ]
-}
-
 html_to_wrapper("html_wrapper_files") {
   deps = [ ":preprocess" ]
-  in_folder = "$target_gen_dir/$preprocessed_dir"
-  out_folder = "$target_gen_dir/$preprocessed_dir"
+  in_folder = preprocessed_dir
+  out_folder = preprocessed_dir
   in_files = html_files + icons_html_files
   use_js = true
 }
 
 css_to_wrapper("css_wrapper_files") {
   deps = [ ":preprocess" ]
-  in_folder = "$target_gen_dir/$preprocessed_dir"
-  out_folder = "$target_gen_dir/$preprocessed_dir"
+  in_folder = preprocessed_dir
+  out_folder = preprocessed_dir
   in_files = css_files
   use_js = true
 }
 
+non_web_component_files_ts = [
+  "hotspot/cros_hotspot_config.ts",
+  "hotspot/fake_hotspot_config.ts",
+  "typescript_utils/strict_query.ts",
+]
+
+preprocess_if_expr("preprocess_ts") {
+  in_folder = "."
+  in_files = non_web_component_files_ts
+  out_folder = preprocessed_dir
+}
+
+mojo_files_ts = [ "hotspot/cros_hotspot_config.mojom-webui.ts" ]
+
+ts_library("build_ts") {
+  root_dir = preprocessed_dir
+  out_dir = preprocessed_dir
+  in_files = non_web_component_files_ts + mojo_files_ts
+  composite = true
+  deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+  extra_deps = [
+    ":generate_definitions",
+    ":preprocess",
+    ":preprocess_ts",
+    "hotspot:copy_mojo_files",
+  ]
+}
+
 generate_grd("build_html_css_wrapper_files_grdp") {
   input_files = html_wrapper_files + css_wrapper_files
-  input_files_base_dir =
-      rebase_path("$target_gen_dir/$preprocessed_dir", root_build_dir)
+  input_files_base_dir = rebase_path(preprocessed_dir, root_build_dir)
   public_deps = [
     ":css_wrapper_files",
     ":html_wrapper_files",
@@ -265,7 +255,7 @@ generate_grd("build_html_css_wrapper_files_grdp") {
   resource_path_prefix = "ash/common"
 }
 
-generate_grd("build_grdp") {
+generate_grd("build_grd") {
   input_files = [
     "fake_method_resolver.js",
     "fake_observables.js",
@@ -300,6 +290,7 @@ generate_grd("build_grdp") {
     "network/cellular_4.svg",
     "network/cellular_locked.svg",
     "network/cellular_off.svg",
+    "network/cellular_unactivated.svg",
     "network/ethernet.svg",
     "network/roaming_badge.svg",
     "network/vpn.svg",
@@ -317,17 +308,35 @@ generate_grd("build_grdp") {
     "network_health/test_warning.png",
   ]
   input_files_base_dir = rebase_path(".", "//")
-  public_deps = [
-    ":preprocess",
-    ":preprocess_ts_generated",
-  ]
-  manifest_files = [
-    "$target_gen_dir/$preprocessed_manifest",
-    "$target_gen_dir/$preprocessed_generated_manifest",
-  ]
-  grd_prefix = "ash_common"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
+  public_deps = [ ":preprocess" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ]) +
+      filter_include(get_target_outputs(":preprocess"), [ "*.manifest" ])
+  grd_prefix = "ash_webui_common"
+  out_grd = "$target_gen_dir/resources.grd"
   resource_path_prefix = "ash/common"
+
+  deps = [
+    ":build_html_css_wrapper_files_grdp",
+    ":build_ts",
+    ":preprocess",
+  ]
+
+  grdp_files = [ "$target_gen_dir/html_css_wrapper_files_resources.grdp" ]
+}
+
+grit("resources") {
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/resources.grd"
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/ash_webui_common_resources.h",
+    "grit/ash_webui_common_resources_map.cc",
+    "grit/ash_webui_common_resources_map.h",
+    "ash_webui_common_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/ash/webui"
 }
 
 generate_definitions_js_files = [
@@ -373,17 +382,16 @@ generate_definitions_js_files = [
 ]
 
 ts_definitions("generate_definitions") {
-  root_dir = "$target_gen_dir/$preprocessed_dir"
-  out_dir = "$target_gen_dir/$preprocessed_dir"
+  root_dir = preprocessed_dir
+  out_dir = preprocessed_dir
   js_files = generate_definitions_js_files
   deps = [
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
-    "//ui/webui/resources/mojo:library",
+    "//ui/webui/resources/mojo:build_ts",
   ]
   extra_deps = [
     ":copy_checked_in_dts_files",
-    ":copy_generated_dts_files",
     ":css_wrapper_files",
     ":html_wrapper_files",
     ":preprocess",
@@ -462,7 +470,7 @@ checked_in_dts_files = [
 
 copy("copy_checked_in_dts_files") {
   sources = checked_in_dts_files
-  outputs = [ "$target_gen_dir/$preprocessed_dir/{{source_target_relative}}" ]
+  outputs = [ "$preprocessed_dir/{{source_target_relative}}" ]
 }
 
 group("closure_compile") {

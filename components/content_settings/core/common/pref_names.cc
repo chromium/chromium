@@ -65,6 +65,8 @@ const char kManagedDefaultWindowManagementSetting[] =
     "profile.managed_default_content_settings.window_management";
 const char kManagedDefaultLocalFontsSetting[] =
     "profile.managed_default_content_settings.local_fonts";
+const char kManagedDefaultThirdPartyStoragePartitioningSetting[] =
+    "profile.managed_default_content_settings.third_party_storage_partitioning";
 
 // Preferences that are exclusively used to store managed
 // content settings patterns.

@@ -29,7 +29,7 @@ import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfa
 import {ForegroundWindow} from '../../externs/foreground_window.js';
 import {PropStatus} from '../../externs/ts/state.js';
 import {updateSearch} from '../../state/actions.js';
-import {getStore} from '../../state/store.js';
+import {getEmptyState, getStore} from '../../state/store.js';
 
 import {ActionsController} from './actions_controller.js';
 import {AndroidAppListModel} from './android_app_list_model.js';
@@ -894,9 +894,7 @@ export class FileManager extends EventTarget {
     const fileSystemUIPromise = this.initFileSystemUI_();
     // Initialize the Store for the whole app.
     const store = getStore();
-    store.init({
-      allEntries: {},
-    });
+    store.init(getEmptyState());
     this.initUIFocus_();
     metrics.recordInterval('Load.InitUI');
     return fileSystemUIPromise;
@@ -1698,6 +1696,9 @@ export class FileManager extends EventTarget {
     } else if (
         prefs.officeFileMovedOneDrive < prefs.officeFileMovedGoogleDrive) {
       this.ui_.nudgeContainer.showNudge(NudgeType['DRIVE_MOVED_FILE_NUDGE']);
+    }
+    if (util.isSearchV2Enabled()) {
+      this.ui_.nudgeContainer.showNudge(NudgeType['SEARCH_V2_EDUCATION_NUDGE']);
     }
 
     if (redraw) {

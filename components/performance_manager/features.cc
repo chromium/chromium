@@ -25,17 +25,17 @@ BASE_FEATURE(kBackgroundTabLoadingFromPerformanceManager,
 
 BASE_FEATURE(kHighEfficiencyModeAvailable,
              "HighEfficiencyModeAvailable",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBatterySaverModeAvailable,
              "BatterySaverModeAvailable",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta> kHighEfficiencyModeTimeBeforeDiscard{
     &kHighEfficiencyModeAvailable, "time_before_discard", base::Hours(2)};
 
 const base::FeatureParam<bool> kHighEfficiencyModeDefaultState{
-    &kHighEfficiencyModeAvailable, "default_state", false};
+    &kHighEfficiencyModeAvailable, "default_state", true};
 
 // 10 tabs is the 70th percentile of tab counts based on UMA data.
 const base::FeatureParam<int> kHighEfficiencyModePromoTabCountThreshold{
@@ -87,7 +87,12 @@ const base::FeatureParam<int>
 
 BASE_FEATURE(kBFCachePerformanceManagerPolicy,
              "BFCachePerformanceManagerPolicy",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+#if !BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE(kUrgentPageDiscarding,
              "UrgentPageDiscarding",
@@ -95,7 +100,7 @@ BASE_FEATURE(kUrgentPageDiscarding,
 
 BASE_FEATURE(kPageTimelineMonitor,
              "PageTimelineMonitor",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta> kPageTimelineStateIntervalTime{
     &kPageTimelineMonitor, "time_between_collect_slice", base::Minutes(5)};

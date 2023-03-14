@@ -25,17 +25,13 @@ declare_args() {
   # Support for chrome://crash-rust to check crash dump collection works.
   enable_rust_crash = true
 
-  # Use experimental Rust toolchain built in-tree. See //tools/rust. For now,
-  # only use it for linux targets. The package only has prebuilt libs for linux.
-  # More targets will be added later.
+  # Use the Rust toolchain built in-tree. See //tools/rust. The toolchain comes
+  # with a prebuilt stdlib for the host platform.
   #
-  # Ideally this should check `current_os` so that e.g. Android builds will use
-  # the Android toolchain for target artifacts and the Chromium Rust toolchain
-  # for host artifacts. Currently there is an std mixup in //build/rust/std that
-  # prevents this.
-  #
-  # TODO(https://crbug.com/1245714): fix std handling and check `current_os`.
-  use_chromium_rust_toolchain = target_os == "linux" && host_os == "linux"
+  # For now, we don't support cross-compilation at all, but it's in progress. To
+  # allow Rust on Android we have a prebuilt toolchain from the Android team,
+  # which is used when this variable is `false`.
+  use_chromium_rust_toolchain = target_os == host_os
 
   # Build libstd locally with GN and use that instead of the prebuilts, where
   # applicable. If this is false the prebuilt libstd will always be used. If
@@ -84,8 +80,7 @@ android_toolchain_supports_platform =
      (is_android && (current_cpu == "arm" || current_cpu == "arm64" ||
                      current_cpu == "x64" || current_cpu == "x86"))) ||
     (is_linux && current_cpu == "x64")
-chromium_toolchain_supports_platform =
-    !is_nacl && is_linux && current_cpu == "x64"
+chromium_toolchain_supports_platform = !is_nacl
 custom_toolchain_supports_platform = !is_nacl || rust_toolchain_supports_nacl
 
 toolchain_has_rust =
@@ -126,7 +121,7 @@ if (enable_rust) {
     rust_sysroot = get_path_info(rust_sysroot_absolute, "abspath")
     use_unverified_rust_toolchain = true
   } else if (use_chromium_rust_toolchain) {
-    if (host_os != "linux") {
+    if (host_os != target_os) {
       assert(
           false,
           "Attempt to use Chromium Rust toolchain on an unsupported platform")
@@ -198,8 +193,22 @@ if (is_linux) {
   } else {
     assert(false, "Architecture not supported")
   }
+} else if (is_mac) {
+  if (current_cpu == "arm64") {
+    rust_abi_target = "aarch64-apple-darwin"
+  } else if (current_cpu == "x64") {
+    rust_abi_target = "x86_64-apple-darwin"
+  } else {
+    assert(false, "Architecture not supported")
+  }
 } else if (is_win) {
-  rust_abi_target = "x86_64-pc-windows-msvc"
+  if (current_cpu == "arm64") {
+    rust_abi_target = "aarch64-pc-windows-msvc"
+  } else if (current_cpu == "x86" || current_cpu == "x64") {
+    rust_abi_target = "x86_64-pc-windows-msvc"
+  } else {
+    assert(false, "Architecture not supported")
+  }
 }
 
 assert(!toolchain_has_rust || rust_abi_target != "")

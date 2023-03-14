@@ -277,7 +277,7 @@ int SSLConnectJob::DoTransportConnect() {
   absl::optional<TransportConnectJob::EndpointResultOverride>
       endpoint_result_override;
   if (ech_retry_configs_) {
-    DCHECK(ssl_client_context()->EncryptedClientHelloEnabled());
+    DCHECK(ssl_client_context()->config().EncryptedClientHelloEnabled());
     DCHECK(endpoint_result_);
     endpoint_result_override.emplace(*endpoint_result_, dns_aliases_);
   }
@@ -390,9 +390,14 @@ int SSLConnectJob::DoSSLConnect() {
   SSLConfig ssl_config = params_->ssl_config();
   ssl_config.network_anonymization_key = params_->network_anonymization_key();
   ssl_config.privacy_mode = params_->privacy_mode();
-  ssl_config.disable_legacy_crypto = disable_legacy_crypto_with_fallback_;
+  // We do the fallback in both cases here to ensure we separate the effect of
+  // disabling sha1 from the effect of having a single automatic retry
+  // on a potentially unreliably network connection.
+  ssl_config.disable_sha1_server_signatures =
+      disable_legacy_crypto_with_fallback_ ||
+      !base::FeatureList::IsEnabled(features::kSHA1ServerSignature);
 
-  if (ssl_client_context()->EncryptedClientHelloEnabled()) {
+  if (ssl_client_context()->config().EncryptedClientHelloEnabled()) {
     if (ech_retry_configs_) {
       ssl_config.ech_config_list = *ech_retry_configs_;
     } else if (endpoint_result_) {
@@ -446,7 +451,7 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
       endpoint_result_ && !endpoint_result_->metadata.ech_config_list.empty();
 
   if (!ech_retry_configs_ && result == ERR_ECH_NOT_NEGOTIATED &&
-      ssl_client_context()->EncryptedClientHelloEnabled()) {
+      ssl_client_context()->config().EncryptedClientHelloEnabled()) {
     // We used ECH, and the server could not decrypt the ClientHello. However,
     // it was able to handshake with the public name and send authenticated
     // retry configs. If this is not the first time around, retry the connection
@@ -461,7 +466,7 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
         NetLogEventType::SSL_CONNECT_JOB_RESTART_WITH_ECH_CONFIG_LIST, [&] {
           base::Value::Dict dict;
           dict.Set("bytes", NetLogBinaryValue(*ech_retry_configs_));
-          return base::Value(std::move(dict));
+          return dict;
         });
 
     // TODO(https://crbug.com/1091403): Add histograms for how often this

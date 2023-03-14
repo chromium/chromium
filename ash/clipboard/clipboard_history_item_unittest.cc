@@ -18,42 +18,16 @@
 
 namespace ash {
 
+namespace {
+
+struct FormatPair {
+  ui::ClipboardInternalFormat clipboard_format;
+  ClipboardHistoryItem::DisplayFormat display_format;
+};
+
+}  // namespace
+
 using ClipboardHistoryItemTest = AshTestBase;
-
-TEST_F(ClipboardHistoryItemTest, GetImageDataUrl) {
-  using DisplayFormat = ClipboardHistoryItem::DisplayFormat;
-
-  constexpr const auto* kDataUrlStart = "data:image/png;base64,";
-
-  for (size_t i = 0; i <= static_cast<size_t>(DisplayFormat::kMaxValue); ++i) {
-    ClipboardHistoryItemBuilder builder;
-    const auto display_format = static_cast<DisplayFormat>(i);
-    switch (display_format) {
-      case DisplayFormat::kText:
-        builder.SetFormat(ui::ClipboardInternalFormat::kText);
-        break;
-      case DisplayFormat::kPng:
-        builder.SetFormat(ui::ClipboardInternalFormat::kPng);
-        break;
-      case DisplayFormat::kHtml:
-        builder.SetFormat(ui::ClipboardInternalFormat::kHtml);
-        break;
-      case DisplayFormat::kFile:
-        builder.SetFormat(ui::ClipboardInternalFormat::kFilenames);
-        break;
-    }
-    const auto item = builder.Build();
-    EXPECT_EQ(item.display_format(), display_format);
-
-    const auto maybe_image_data_url = item.GetImageDataUrl();
-    if (display_format == DisplayFormat::kText) {
-      EXPECT_FALSE(maybe_image_data_url);
-    } else {
-      ASSERT_TRUE(maybe_image_data_url);
-      EXPECT_TRUE(base::StartsWith(*maybe_image_data_url, kDataUrlStart));
-    }
-  }
-}
 
 TEST_F(ClipboardHistoryItemTest, DisplayText) {
   base::test::ScopedRestoreICUDefaultLocale locale("en_US");
@@ -123,6 +97,71 @@ TEST_F(ClipboardHistoryItemTest, DisplayText) {
   // In the absence of web smart paste data, file system data takes precedence.
   // NOTE: File system data is the only kind of custom data currently supported.
   EXPECT_EQ(builder.Build().display_text(), u"File.txt, Other File.txt");
+}
+
+class ClipboardHistoryItemDisplayTest
+    : public ClipboardHistoryItemTest,
+      public testing::WithParamInterface<FormatPair> {
+ public:
+  ClipboardHistoryItemDisplayTest() : item_(BuildClipboardHistoryItem()) {}
+  ~ClipboardHistoryItemDisplayTest() override = default;
+
+  ui::ClipboardInternalFormat GetClipboardFormat() const {
+    return GetParam().clipboard_format;
+  }
+  ClipboardHistoryItem::DisplayFormat GetDisplayFormat() const {
+    return GetParam().display_format;
+  }
+
+  const ClipboardHistoryItem& item() const { return item_; }
+
+ private:
+  ClipboardHistoryItem BuildClipboardHistoryItem() const {
+    ClipboardHistoryItemBuilder builder;
+    builder.SetFormat(GetClipboardFormat());
+    ClipboardHistoryItem item = builder.Build();
+    EXPECT_EQ(item.display_format(), GetDisplayFormat());
+    return item;
+  }
+
+  const ClipboardHistoryItem item_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ClipboardHistoryItemDisplayTest,
+    ::testing::Values(FormatPair{ui::ClipboardInternalFormat::kText,
+                                 ClipboardHistoryItem::DisplayFormat::kText},
+                      FormatPair{ui::ClipboardInternalFormat::kPng,
+                                 ClipboardHistoryItem::DisplayFormat::kPng},
+                      FormatPair{ui::ClipboardInternalFormat::kHtml,
+                                 ClipboardHistoryItem::DisplayFormat::kHtml},
+                      FormatPair{ui::ClipboardInternalFormat::kFilenames,
+                                 ClipboardHistoryItem::DisplayFormat::kFile}));
+
+TEST_P(ClipboardHistoryItemDisplayTest, Icon) {
+  const auto& maybe_icon = item().icon();
+  if (GetDisplayFormat() == ClipboardHistoryItem::DisplayFormat::kFile) {
+    ASSERT_TRUE(maybe_icon.has_value());
+    EXPECT_TRUE(maybe_icon.value().IsVectorIcon());
+  } else {
+    EXPECT_FALSE(maybe_icon.has_value());
+  }
+}
+
+TEST_P(ClipboardHistoryItemDisplayTest, DisplayImage) {
+  const auto& maybe_image = item().display_image();
+  switch (GetDisplayFormat()) {
+    case ClipboardHistoryItem::DisplayFormat::kText:
+    case ClipboardHistoryItem::DisplayFormat::kFile:
+      EXPECT_FALSE(maybe_image);
+      break;
+    case ClipboardHistoryItem::DisplayFormat::kPng:
+    case ClipboardHistoryItem::DisplayFormat::kHtml:
+      ASSERT_TRUE(maybe_image);
+      EXPECT_TRUE(maybe_image.value().IsImage());
+      break;
+  }
 }
 
 }  // namespace ash

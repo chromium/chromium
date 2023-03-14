@@ -19,9 +19,4 @@ constexpr base::FeatureParam<bool> kPrivateAggregationApiEnabledInFledge{
     &kPrivateAggregationApi, "enabled_in_fledge",
     /*default_value=*/true};
 
-constexpr base::FeatureParam<bool>
-    kPrivateAggregationApiFledgeExtensionsEnabled{&kPrivateAggregationApi,
-                                                  "fledge_extensions_enabled",
-                                                  /*default_value=*/false};
-
 }  // namespace content

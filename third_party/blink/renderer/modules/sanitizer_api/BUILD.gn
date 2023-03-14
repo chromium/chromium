@@ -68,7 +68,7 @@ blink_python_runner("generate_sanitizer_attribute_lists") {
   }
 }
 
-if (use_libfuzzer) {
+if (use_fuzzing_engine_with_lpm) {
   corpus_out_dir = "$target_gen_dir/corpus"
 
   # For our seed corpus, we have several .html files and several proto config

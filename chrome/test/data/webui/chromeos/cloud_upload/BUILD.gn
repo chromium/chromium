@@ -8,10 +8,11 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 ts_library("build_ts") {
   root_dir = "."
   out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
+  tsconfig_base = "../../tsconfig_base.json"
   in_files = [
     "cloud_upload_dialog_test.ts",
     "file_handler_page_test.ts",
+    "move_confirmation_page_test.ts",
     "cloud_upload_test_browser_proxy.ts",
   ]
   path_mappings = [

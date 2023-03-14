@@ -75,17 +75,6 @@ class IdleRequestCallbackWrapper
 
 }  // namespace internal
 
-V8IdleTask::V8IdleTask(V8IdleRequestCallback* callback) : callback_(callback) {}
-
-void V8IdleTask::Trace(Visitor* visitor) const {
-  visitor->Trace(callback_);
-  IdleTask::Trace(visitor);
-}
-
-void V8IdleTask::invoke(IdleDeadline* deadline) {
-  callback_->InvokeAndReportException(nullptr, deadline);
-}
-
 ScriptedIdleTaskController::ScriptedIdleTaskController(
     ExecutionContext* context)
     : ExecutionContextLifecycleStateObserver(context),
@@ -202,8 +191,8 @@ void ScriptedIdleTaskController::RunCallback(
 
   probe::AsyncTask async_task(GetExecutionContext(),
                               idle_task->async_task_context());
-  probe::UserCallback probe(GetExecutionContext(), "requestIdleCallback",
-                            AtomicString(), true);
+  probe::UserCallback probe(GetExecutionContext(), "Window",
+                            "requestIdleCallback", AtomicString(), true);
 
   bool cross_origin_isolated_capability =
       GetExecutionContext()

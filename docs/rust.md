@@ -34,9 +34,9 @@ For questions or help, reach out to `rust-dev@chromium.org` or `#rust` on the
 
 # Building with Rust support
 
+1. Add `"checkout_rust": True` to your `.gclient` file in the `"custom vars"`
+   section. (This is the default on Linux, so you can skip this).
 1. Add `enable_rust = true` in your `gn` arguments, via `gn args <outdir>`.
-1. Add `"use_rust": True` to your `.gclient` file in the `"custom vars"`
-   section.
 
 If you use VSCode, we have [additional advice below](#using-vscode).
 

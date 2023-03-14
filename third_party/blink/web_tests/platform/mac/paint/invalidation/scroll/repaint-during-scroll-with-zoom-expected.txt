@@ -31,7 +31,6 @@
       "name": "Scroll corner of LayoutNGView #document",
       "position": [235, 235],
       "bounds": [15, 15],
-      "contentsOpaqueForText": true,
       "transform": 1
     }
   ],

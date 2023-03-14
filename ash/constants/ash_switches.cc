@@ -303,6 +303,11 @@ const char kCrosRegion[] = "cros-region";
 // flow.
 const char kCryptohomeRecoveryReauthUrl[] = "cryptohome-recovery-reauth-url";
 
+// Forces cryptohome recovery process to use test environment (test keys /
+// URLs).
+const char kCryptohomeRecoveryUseTestEnvironment[] =
+    "cryptohome-recovery-use-test-env";
+
 // Controls if AuthSession API should be used when interacting with cryptohomed.
 const char kCryptohomeUseAuthSession[] = "cryptohome-use-authsession";
 
@@ -485,6 +490,15 @@ const char kEnableTouchpadThreeFingerClick[] =
 
 // Disables ARC for managed accounts.
 const char kEnterpriseDisableArc[] = "enterprise-disable-arc";
+
+// Whether to force manual enrollment instead of trying cert based enrollment.
+// Only works on test builds.
+const char kEnterpriseForceManualEnrollmentInTestBuilds[] =
+    "enterprise-force-manual-enrollment-in-test-builds";
+
+// Whether to enable unified state determination.
+const char kEnterpriseEnableUnifiedStateDetermination[] =
+    "enterprise-enable-unified-state-determination";
 
 // Whether to enable forced enterprise re-enrollment.
 const char kEnterpriseEnableForcedReEnrollment[] =
@@ -804,6 +818,13 @@ const char kHiddenNetworkMigrationInterval[] =
 // follow the format "--hidden-network-migration-age=#", and should be >= 0.
 const char kHiddenNetworkMigrationAge[] = "hidden-network-migration-age";
 
+// Sets the channel from which the PPD files are loaded.
+const char kPrintingPpdChannel[] = "printing-ppd-channel";
+const char kPrintingPpdChannelProduction[] = "production";
+const char kPrintingPpdChannelStaging[] = "staging";
+const char kPrintingPpdChannelDev[] = "dev";
+const char kPrintingPpdChannelLocalhost[] = "localhost";
+
 // If set to "true", the profile requires policy during restart (policy load
 // must succeed, otherwise session restart should fail).
 const char kProfileRequiresPolicy[] = "profile-requires-policy";
@@ -824,6 +845,10 @@ const char kQsAddFakeCastDevices[] = "qs-add-fake-cast-devices";
 // The per-model directories (if there are any) are located under
 // "/usr/share/chromeos-assets/regulatory_labels/".
 const char kRegulatoryLabelDir[] = "regulatory-label-dir";
+
+// Testing timeout for reboot command. Useful for tast tests.
+const char kRemoteRebootCommandTimeoutInSecondsForTesting[] =
+    "remote-reboot-command-timeout-in-seconds-for-testing";
 
 // Indicates that reven UI strings and features should be shown.
 const char kRevenBranding[] = "reven-branding";
@@ -846,6 +871,11 @@ const char kSamlPasswordChangeUrl[] = "saml-password-change-url";
 // New modular design for the shelf with apps separated into a hotseat UI and
 // smaller shelf in clamshell mode.
 const char kShelfHotseat[] = "shelf-hotseat";
+
+// Testing grace period for DeviceScheduledReboot policy. Useful for tast tests.
+// See `ShouldSkipRebootDueToGracePeriod` in scheduled_task_util.h.
+const char kScheduledRebootGracePeriodInSecondsForTesting[] =
+    "scheduled-reboot-grace-period-in-seconds-for-testing";
 
 // App window previews when hovering over the shelf.
 const char kShelfHoverPreviews[] = "shelf-hover-previews";
@@ -955,6 +985,10 @@ const char kWebUiDataSourcePathForTesting[] =
 // Enable the getAccessToken autotest API which creates access tokens using
 // the internal OAuth client ID.
 const char kGetAccessTokenForTest[] = "get-access-token-for-test";
+
+// Indicates whether camera effects use flag is set in ChromeOS.
+const char kCameraEffectsSupportedByHardware[] =
+    "camera-effects-supported-by-hardware";
 
 bool IsAuthSessionCryptohomeEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -1097,6 +1131,11 @@ bool IsSkipRecorderNudgeShowThresholdDurationEnabled() {
 bool IsStabilizeTimeDependentViewForTestsEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kStabilizeTimeDependentViewForTests);
+}
+
+bool IsCameraEffectsSupportedByHardware() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kCameraEffectsSupportedByHardware);
 }
 
 }  // namespace switches

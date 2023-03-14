@@ -10,5 +10,5 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/ToolbarButton"
     android:layout_gravity="top"
-    android:paddingStart="@dimen/toolbar_phone_optional_button_padding"
+    android:paddingStart="@dimen/toolbar_tablet_optional_button_padding"
     tools:ignore="ContentDescription"/>

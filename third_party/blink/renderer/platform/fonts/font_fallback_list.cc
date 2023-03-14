@@ -49,7 +49,8 @@ FontFallbackList::FontFallbackList(FontFallbackMap& font_fallback_map)
       has_custom_font_(false),
       can_shape_word_by_word_(false),
       can_shape_word_by_word_computed_(false),
-      is_invalid_(false) {}
+      is_invalid_(false),
+      nullify_primary_font_data_for_test_(false) {}
 
 FontFallbackList::~FontFallbackList() {
   ReleaseFontData();
@@ -72,6 +73,7 @@ void FontFallbackList::ReleaseFontData() {
       FontCache::Get().ReleaseFontData(To<SimpleFontData>(font_list_[i].get()));
     }
   }
+  ng_shape_cache_.reset();  // Clear the weak pointer to the cache instance.
   shape_cache_.reset();  // Clear the weak pointer to the cache instance.
 }
 

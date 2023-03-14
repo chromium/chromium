@@ -267,7 +267,7 @@ class HeadlessPrintToPdfCommandBrowserTest
         temp_dir().Append(FILE_PATH_LITERAL("print_to.pdf"));
     command_line->AppendSwitchPath(switches::kPrintToPDF,
                                    print_to_pdf_filename_);
-    command_line->AppendSwitch(switches::kPrintToPDFNoHeader);
+    command_line->AppendSwitch(switches::kNoPDFHeaderFooter);
   }
 
   GURL GetTargetUrl() override {

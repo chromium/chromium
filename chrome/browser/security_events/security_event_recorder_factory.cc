@@ -32,7 +32,14 @@ SecurityEventRecorder* SecurityEventRecorderFactory::GetForProfile(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 SecurityEventRecorderFactory::SecurityEventRecorderFactory()
-    : ProfileKeyedServiceFactory("SecurityEventRecorder") {
+    : ProfileKeyedServiceFactory(
+          "SecurityEventRecorder",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
 }
 

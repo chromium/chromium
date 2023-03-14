@@ -20,30 +20,30 @@
 
 <script>
 test(function() {
-  assert_equals(getComputedStyle(container).getPropertyValue("--a"), " it was the best of times");
-  assert_equals(getComputedStyle(container).getPropertyValue("--b"), " it was the worst of times");
-  assert_equals(getComputedStyle(container).getPropertyValue("--c"), " also the blurst of times");
+  assert_equals(getComputedStyle(container).getPropertyValue("--a"), "it was the best of times");
+  assert_equals(getComputedStyle(container).getPropertyValue("--b"), "it was the worst of times");
+  assert_equals(getComputedStyle(container).getPropertyValue("--c"), "also the blurst of times");
   assert_equals(getComputedStyle(container).getPropertyValue("--d"), "");
 }, 'Directly declared custom properties appear in computed style.');
 
 test(function() {
-  assert_equals(getComputedStyle(a).getPropertyValue("--a"), " it was the best of times");
-  assert_equals(getComputedStyle(a).getPropertyValue("--b"), " it was the worst of times");
-  assert_equals(getComputedStyle(a).getPropertyValue("--c"), " also the blurst of times");
+  assert_equals(getComputedStyle(a).getPropertyValue("--a"), "it was the best of times");
+  assert_equals(getComputedStyle(a).getPropertyValue("--b"), "it was the worst of times");
+  assert_equals(getComputedStyle(a).getPropertyValue("--c"), "also the blurst of times");
   assert_equals(getComputedStyle(a).getPropertyValue("--d"), "");
 }, 'Inherited custom properties appear in computed style.');
 
 test(function() {
-  assert_equals(getComputedStyle(b).getPropertyValue("--a"), " it was the best of times");
-  assert_equals(getComputedStyle(b).getPropertyValue("--b"), " it was the worst of times");
-  assert_equals(getComputedStyle(b).getPropertyValue("--c"), " it was the age of wisdom");
+  assert_equals(getComputedStyle(b).getPropertyValue("--a"), "it was the best of times");
+  assert_equals(getComputedStyle(b).getPropertyValue("--b"), "it was the worst of times");
+  assert_equals(getComputedStyle(b).getPropertyValue("--c"), "it was the age of wisdom");
   assert_equals(getComputedStyle(b).getPropertyValue("--d"), "");
 }, 'Inherited custom properties overidden values appear correctly in computed style.');
 
 test(function() {
-  assert_equals(getComputedStyle(c).getPropertyValue("--a"), " it was the best of times");
-  assert_equals(getComputedStyle(c).getPropertyValue("--b"), " it was the worst of times");
-  assert_equals(getComputedStyle(c).getPropertyValue("--c"), " it was the age of wisdom");
+  assert_equals(getComputedStyle(c).getPropertyValue("--a"), "it was the best of times");
+  assert_equals(getComputedStyle(c).getPropertyValue("--b"), "it was the worst of times");
+  assert_equals(getComputedStyle(c).getPropertyValue("--c"), "it was the age of wisdom");
   assert_equals(getComputedStyle(c).getPropertyValue("--d"), "");
 }, 'Overidden and inherited custom properties appear in computed style.');
 </script>

@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Volgende</translation>
 <translation id="1209796539517632982">Automatische naamservers</translation>
 <translation id="1210831758834677569">Lao</translation>
+<translation id="1221555006497674479">Weinig opslagruimte, nog <ph name="REMAINING_PERCENTAGE" />% over van je <ph name="TOTAL_SPACE" /> aan gedeelde Drive-opslag.</translation>
 <translation id="1243314992276662751">Uploaden</translation>
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Rechtstreekse internetverbinding</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">Chinees (Pinyin)</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> bestanden offline beschikbaar maken</translation>
 <translation id="164969095109328410">Chrome-apparaat</translation>
+<translation id="1661207570040737402">Je hebt geen Google Workspace-opslag meer over in je gedeelde Drive.</translation>
 <translation id="1661867754829461514">Pincode ontbreekt</translation>
 <translation id="166439687370499867">Het wijzigen van gedeelde netwerkconfiguraties is niet toegestaan</translation>
 <translation id="1665611772925418501">Het bestand kan niet worden aangepast.</translation>
@@ -82,6 +84,7 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> items inpakken...</translation>
 <translation id="1722687688096767818">Profiel toevoegen...</translation>
 <translation id="1726100011689679555">Naamservers</translation>
+<translation id="1727562178154619254">Klaar om te synchroniseren</translation>
 <translation id="1729953886957086472">Duits (Duitsland)</translation>
 <translation id="1730235522912993863">Chinees (Cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> items gekopieerd.</translation>
@@ -349,11 +352,11 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Plak</translation>
 <translation id="3952872973865944257">Telugu (fonetisch)</translation>
-<translation id="3954354850384043518">In behandeling</translation>
 <translation id="3958548648197196644">Kiwi</translation>
 <translation id="3971140002794351170">Mobiel profiel downloaden, netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Engels (VK)</translation>
 <translation id="3975895378829046965">Bangla (fonetisch)</translation>
+<translation id="3999574733850440202">Onlangs geopende Microsoft-bestanden zijn verplaatst naar OneDrive</translation>
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4017788180641807848">Engels (VS) met Workman-toetsenbord</translation>
 <translation id="4019998208269143058">Vastzetten in Snelle bestanden</translation>
@@ -362,6 +365,7 @@
 <translation id="4092890906744441904">Iers</translation>
 <translation id="4124935795427217608">Eenhoorn</translation>
 <translation id="4131235941541910880">Verplaats overbodige items naar de prullenbak.</translation>
+<translation id="4134804435730168042">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, activeren na apparaatinstelling</translation>
 <translation id="4153015322587141338">Klik met de rechtermuisknop op een bestand en selecteer '<ph name="PIN_COMMAND" />' voor snelle toegang tot je bestanden op de plank.</translation>
 <translation id="4157569377477607576">Op basis van het beheerdersbeleid wordt het volgende afgeraden:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> verplaatst.</translation>
@@ -404,6 +408,7 @@
 <translation id="4414834425328380570"><ph name="FILE_NAME" /> wordt verwijderd en je kunt het niet herstellen.</translation>
 <translation id="4418686080762064601">Een snelkoppeling maken voor je bestanden</translation>
 <translation id="4425149324548788773">Mijn Drive</translation>
+<translation id="4432921877815220091">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, activeren na apparaatinstelling, beheerd door je beheerder</translation>
 <translation id="4439427728133035643">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, verbinden</translation>
 <translation id="4442424173763614572">DNS-lookup mislukt</translation>
 <translation id="4462159676511157176">Aangepaste naamservers</translation>
@@ -612,8 +617,10 @@
 <translation id="5911887972742538906">Er is een fout opgetreden tijdens de installatie van je Linux-app.</translation>
 <translation id="5912396950572065471">Indeling</translation>
 <translation id="5913638992615760742">Kopiëren mislukt. Onverwachte fout: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">Nieuwe zoekfuncties beschikbaar</translation>
 <translation id="5926082595146149752">Nederlands (Nederland) met Amerikaans pc-toetsenbord (internationaal)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, activeren na apparaatinstelling</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> items</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">Sorteeropties</translation>
@@ -700,6 +707,7 @@
 <translation id="6732801395666424405">Certificaten niet geladen</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6740270213273127264">Map delen met Bruschetta</translation>
+<translation id="6750737795876287924">Huidige map</translation>
 <translation id="6751256176799620176">1 map geselecteerd</translation>
 <translation id="6755827872271341378">Chrome OS Flex-apparaat</translation>
 <translation id="6790428901817661496">Spelen</translation>
@@ -737,7 +745,6 @@
 <translation id="6973630695168034713">Mappen</translation>
 <translation id="6976795442547527108">Leeuw</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979737339423435258">Alles</translation>
 <translation id="6989942356279143254">Zweeds</translation>
 <translation id="6990081529015358884">Er is onvoldoende ruimte beschikbaar</translation>
 <translation id="6993826899923627728">Deze items staan in je prullenbak</translation>
@@ -760,6 +767,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;zoeken in Google Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannada (fonetisch)</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Overeenkomst voor alternatieve naam van onderwerp of Overeenkomst voor domeinextensie ontbreekt. De identiteit van de verificatieserver kan niet worden gevalideerd.</translation>
 <translation id="7165320105431587207">Kan netwerk niet configureren</translation>
 <translation id="7170041865419449892">Geen bereik</translation>
 <translation id="7180611975245234373">Vernieuwen</translation>
@@ -792,7 +800,6 @@
 <translation id="7458955835361612701">Geen recente afbeeldingen</translation>
 <translation id="7460898608667578234">Oekraïens</translation>
 <translation id="7469894403370665791">Automatisch verbinding maken met dit netwerk</translation>
-<translation id="7481358317100446445">Klaar</translation>
 <translation id="7486315294984620427">Als je bestanden wilt neerzetten in Parallels Desktop, moet het bestand worden gekopieerd naar de map met Windows-bestanden.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam (fonetisch)</translation>
@@ -830,6 +837,7 @@
 <translation id="7724603315864178912">Knip</translation>
 <translation id="7732111077498238432">Netwerk wordt beheerd op basis van beleid</translation>
 <translation id="7736003208887389532">Deze bestanden definitief verwijderen?</translation>
+<translation id="7740287852186792672">Zoekresultaten</translation>
 <translation id="7748626145866214022">Meer opties beschikbaar op de actiebalk. Druk op Alt+A om de focus op de actiebalk te plaatsen.</translation>
 <translation id="7760449188139285140">Chinees (Wubi)</translation>
 <translation id="7765158879357617694">Verplaatsen</translation>
@@ -881,6 +889,7 @@
 <translation id="8116072619078571545">IJswater</translation>
 <translation id="8128733386027980860">Engels (VK) met Dvorak-toetsenbord</translation>
 <translation id="8137331602592933310">'<ph name="FILENAME" />' is met je gedeeld. Je kunt dit niet verwijderen omdat jij niet de eigenaar bent.</translation>
+<translation id="8138705869659070104">Activeren na apparaatinstelling</translation>
 <translation id="813913629614996137">Starten...</translation>
 <translation id="8147028810663464959">Karakterbreedte: volledig (vol)</translation>
 <translation id="8151638057146502721">Configureren</translation>
@@ -906,6 +915,7 @@
 <translation id="8300849813060516376">OTASP mislukt</translation>
 <translation id="8312871300878166382">Plakken in map</translation>
 <translation id="8329978297633540474">Platte tekst</translation>
+<translation id="8332007959299458842">Onlangs geopende Microsoft-bestanden zijn verplaatst naar Google Drive</translation>
 <translation id="8335587457941836791">Losmaken van plank</translation>
 <translation id="8335837413233998004">Wit-Russisch</translation>
 <translation id="8336153091935557858">Gisteren <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -932,6 +942,7 @@
 <translation id="8487700953926739672">Offline beschikbaar</translation>
 <translation id="8492972329130824181">Thuisnetwerk is niet beschikbaar. Mobiele dataroaming moet aanstaan om verbinding te maken.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> items uitpakken...</translation>
+<translation id="8502913769543567768">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, activeren na apparaatinstelling, beheerd door je beheerder</translation>
 <translation id="8521441079177373948">VK</translation>
 <translation id="853494022971700746">Frans (Frankrijk)</translation>
 <translation id="8540608333167683902">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, details</translation>
@@ -993,6 +1004,7 @@
 <translation id="9046895021617826162">Verbinding mislukt</translation>
 <translation id="9065512565307033593">Als de verificatie mislukt, wordt je netwerktoegang ingetrokken.</translation>
 <translation id="908378762078012445">Russisch met fonetisch AATSEEL-toetsenbord</translation>
+<translation id="9086302186042011942">Synchroniseren</translation>
 <translation id="9099674669267916096">Aantal pagina's</translation>
 <translation id="9100610230175265781">Wachtwoordzin vereist</translation>
 <translation id="9110990317705400362">We zijn altijd op zoek naar manieren om het surfen veiliger te maken. Vroeger kon elke website je vragen een extensie toe te voegen aan je browser. In de nieuwste versies van Google Chrome moet je Chrome expliciet toestemming geven om deze extensies te installeren door ze toe te voegen via de pagina 'Extensies'. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>

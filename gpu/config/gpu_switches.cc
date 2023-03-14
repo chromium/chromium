@@ -121,4 +121,9 @@ const char kForceBrowserCrashOnGpuCrash[] = "force-browser-crash-on-gpu-crash";
 // Override value for the GPU watchdog timeout in seconds.
 const char kGpuWatchdogTimeoutSeconds[] = "gpu-watchdog-timeout-seconds";
 
+// Force the use of a separate EGL display for WebGL contexts. Used for testing
+// multi-GPU pathways on devices with only one valid GPU.
+const char kForceSeparateEGLDisplayForWebGLTesting[] =
+    "force-separate-egl-display-for-webgl-testing";
+
 }  // namespace switches

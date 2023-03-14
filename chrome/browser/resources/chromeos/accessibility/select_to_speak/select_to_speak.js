@@ -135,12 +135,6 @@ export class SelectToSpeak {
      */
     this.onStateChangeRequestedCallbackForTest_ = null;
 
-    /**
-     * Feature flag controlling STS voice switching.
-     * @type {boolean}
-     */
-    this.isVoiceSwitchingEnabled_ = false;
-
     /** @private {PrefsManager} */
     this.prefsManager_ = new PrefsManager();
 
@@ -197,14 +191,6 @@ export class SelectToSpeak {
 
     this.runContentScripts_();
     this.setUpEventListeners_();
-
-    const voiceSwitchingFeature =
-        chrome.accessibilityPrivate.AccessibilityFeature
-            .SELECT_TO_SPEAK_VOICE_SWITCHING;
-    chrome.accessibilityPrivate.isFeatureEnabled(
-        voiceSwitchingFeature, (enabled) => {
-          this.isVoiceSwitchingEnabled_ = enabled;
-        });
 
     const contextMenuOptionFeature =
         chrome.accessibilityPrivate.AccessibilityFeature
@@ -1779,8 +1765,7 @@ export class SelectToSpeak {
    * @private
    */
   shouldUseVoiceSwitching_() {
-    return this.isVoiceSwitchingEnabled_ &&
-        this.prefsManager_.voiceSwitchingEnabled();
+    return this.prefsManager_.voiceSwitchingEnabled();
   }
 
   /**

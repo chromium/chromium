@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/public/cpp/scoped_singleton_resetter_for_test.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "base/observer_list_types.h"
 
@@ -18,6 +19,8 @@ namespace ash {
 class ASH_PUBLIC_EXPORT InputDeviceSettingsController {
  public:
   using DeviceId = uint32_t;
+  using ScopedResetterForTest =
+      ScopedSingletonResetterForTest<InputDeviceSettingsController>;
 
   class Observer : public base::CheckedObserver {
    public:
@@ -52,9 +55,34 @@ class ASH_PUBLIC_EXPORT InputDeviceSettingsController {
   // Returns a list of currently connected pointing sticks and their settings.
   virtual std::vector<mojom::PointingStickPtr> GetConnectedPointingSticks() = 0;
 
-  // Configure the settings for keyboard of |id| with the provided |settings|.
+  // Returns the settings of the keyboard with a device id of `id` or nullptr if
+  // no such device exists.
+  virtual const mojom::KeyboardSettings* GetKeyboardSettings(DeviceId id) = 0;
+  // Returns the settings of the touchpad with a device id of `id` or nullptr if
+  // no such device exists.
+  virtual const mojom::TouchpadSettings* GetTouchpadSettings(DeviceId id) = 0;
+  // Returns the settings of the mouse with a device id of `id` or nullptr if
+  // no such device exists.
+  virtual const mojom::MouseSettings* GetMouseSettings(DeviceId id) = 0;
+  // Returns the settings of the pointing stick with a device id of `id` or
+  // nullptr if no such device exists.
+  virtual const mojom::PointingStickSettings* GetPointingStickSettings(
+      DeviceId id) = 0;
+
+  // Configure the settings for keyboard of `id` with the provided `settings`.
   virtual void SetKeyboardSettings(DeviceId id,
-                                   const mojom::KeyboardSettings& settings) = 0;
+                                   mojom::KeyboardSettingsPtr settings) = 0;
+  // Configure the settings for touchpad of `id` with the provided `settings`.
+  virtual void SetTouchpadSettings(DeviceId id,
+                                   mojom::TouchpadSettingsPtr settings) = 0;
+  // Configure the settings for mouse of `id` with the provided `settings`.
+  virtual void SetMouseSettings(DeviceId id,
+                                mojom::MouseSettingsPtr settings) = 0;
+  // Configure the settings for pointing stick of `id` with the provided
+  // `settings`.
+  virtual void SetPointingStickSettings(
+      DeviceId id,
+      mojom::PointingStickSettingsPtr settings) = 0;
 
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;

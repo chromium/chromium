@@ -51,9 +51,10 @@ class ManualFillingCoordinator implements ManualFillingComponent {
         sheetStub.setLayoutResource(R.layout.keyboard_accessory_sheet);
         barStub.setShouldInflateOnBackgroundThread(true);
         sheetStub.setShouldInflateOnBackgroundThread(true);
-        initialize(windowAndroid, new KeyboardAccessoryCoordinator(mMediator, barStub),
-                new AccessorySheetCoordinator(sheetStub), sheetController, backPressManager,
-                keyboardDelegate, new ConfirmationDialogHelper(windowAndroid.getContext()));
+        initialize(windowAndroid, new KeyboardAccessoryCoordinator(mMediator, mMediator, barStub),
+                new AccessorySheetCoordinator(sheetStub, mMediator), sheetController,
+                backPressManager, keyboardDelegate,
+                new ConfirmationDialogHelper(windowAndroid.getContext()));
     }
 
     @VisibleForTesting
@@ -77,8 +78,8 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     }
 
     @Override
-    public void handleBackPress() {
-        mMediator.handleBackPress();
+    public @BackPressResult int handleBackPress() {
+        return mMediator.handleBackPress();
     }
 
     @Override

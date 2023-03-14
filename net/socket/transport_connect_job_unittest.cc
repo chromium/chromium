@@ -12,20 +12,24 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "net/base/address_family.h"
-#include "net/base/address_list.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
-#include "net/base/test_completion_callback.h"
+#include "net/cert/ct_policy_enforcer.h"
+#include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/secure_dns_policy.h"
+#include "net/http/transport_security_state.h"
 #include "net/log/net_log.h"
 #include "net/socket/connect_job_test_util.h"
 #include "net/socket/connection_attempts.h"
+#include "net/socket/ssl_client_socket.h"
 #include "net/socket/stream_socket.h"
 #include "net/socket/transport_client_socket_pool_test_util.h"
+#include "net/ssl/ssl_config_service.h"
+#include "net/ssl/test_ssl_config_service.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,18 +56,18 @@ class TransportConnectJobTest : public WithTaskEnvironment,
         common_connect_job_params_(
             &client_socket_factory_,
             &host_resolver_,
-            nullptr /* http_auth_cache */,
-            nullptr /* http_auth_handler_factory */,
-            nullptr /* spdy_session_pool */,
-            nullptr /* quic_supported_versions */,
-            nullptr /* quic_stream_factory */,
-            nullptr /* proxy_delegate */,
-            nullptr /* http_user_agent_settings */,
-            nullptr /* ssl_client_context */,
-            nullptr /* socket_performance_watcher_factory */,
-            nullptr /* network_quality_estimator */,
+            /*http_auth_cache=*/nullptr,
+            /*http_auth_handler_factory=*/nullptr,
+            /*spdy_session_pool=*/nullptr,
+            /*quic_supported_versions=*/nullptr,
+            /*quic_stream_factory=*/nullptr,
+            /*proxy_delegate=*/nullptr,
+            /*http_user_agent_settings=*/nullptr,
+            &ssl_client_context_,
+            /*socket_performance_watcher_factory=*/nullptr,
+            /*network_quality_estimator=*/nullptr,
             NetLog::Get(),
-            nullptr /* websocket_endpoint_lock_manager */) {}
+            /*websocket_endpoint_lock_manager=*/nullptr) {}
 
   ~TransportConnectJobTest() override = default;
 
@@ -87,6 +91,16 @@ class TransportConnectJobTest : public WithTaskEnvironment,
   MockHostResolver host_resolver_{/*default_result=*/MockHostResolverBase::
                                       RuleResolver::GetLocalhostResult()};
   MockTransportClientSocketFactory client_socket_factory_;
+  TestSSLConfigService ssl_config_service_{SSLContextConfig{}};
+  MockCertVerifier cert_verifier_;
+  TransportSecurityState transport_security_state_;
+  DefaultCTPolicyEnforcer ct_policy_enforcer_;
+  SSLClientContext ssl_client_context_{&ssl_config_service_,
+                                       &cert_verifier_,
+                                       &transport_security_state_,
+                                       &ct_policy_enforcer_,
+                                       /*ssl_client_session_cache=*/nullptr,
+                                       /*sct_auditing_delegate=*/nullptr};
   const CommonConnectJobParams common_connect_job_params_;
 };
 
@@ -915,10 +929,56 @@ TEST_F(TransportConnectJobTest, SvcbReliantIfEch) {
   EXPECT_EQ(attempts[1].endpoint, IPEndPoint(ParseIP("2::"), 8442));
 }
 
-// SVCB-reliant mode should be disabled for ECH servers when ECH is disabled.
-TEST_F(TransportConnectJobTest, SvcbOptionalIfEchDisabled) {
+// SVCB-reliant mode should be disabled for ECH servers when ECH is disabled via
+// `base::Feature`.
+TEST_F(TransportConnectJobTest, SvcbOptionalIfEchDisabledFeature) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kEncryptedClientHello);
+
+  HostResolverEndpointResult endpoint1, endpoint2, endpoint3;
+  endpoint1.ip_endpoints = {IPEndPoint(ParseIP("1::"), 8441)};
+  endpoint1.metadata.supported_protocol_alpns = {"http/1.1"};
+  endpoint1.metadata.ech_config_list = {1, 2, 3, 4};
+  endpoint2.ip_endpoints = {IPEndPoint(ParseIP("2::"), 8442)};
+  endpoint2.metadata.supported_protocol_alpns = {"http/1.1"};
+  endpoint2.metadata.ech_config_list = {1, 2, 3, 4};
+  endpoint3.ip_endpoints = {IPEndPoint(ParseIP("3::"), 443)};
+  // `endpoint3` has no `supported_protocol_alpns` and is thus a fallback route.
+  host_resolver_.rules()->AddRule(
+      kHostName, MockHostResolverBase::RuleResolver::RuleResult(
+                     std::vector{endpoint1, endpoint2, endpoint3}));
+
+  // `TransportConnectJob` should try `endpoint3`.
+  MockTransportClientSocketFactory::Rule rules[] = {
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kFailing,
+          std::vector{IPEndPoint(ParseIP("1::"), 8441)}),
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kFailing,
+          std::vector{IPEndPoint(ParseIP("2::"), 8442)}),
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kSynchronous,
+          std::vector{IPEndPoint(ParseIP("3::"), 443)}),
+  };
+  client_socket_factory_.SetRules(rules);
+
+  TestConnectJobDelegate test_delegate;
+  TransportConnectJob transport_connect_job(
+      DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_,
+      DefaultHttpsParams(), &test_delegate, /*net_log=*/nullptr);
+  test_delegate.StartJobExpectingResult(&transport_connect_job, OK,
+                                        /*expect_sync_result=*/false);
+}
+
+// SVCB-reliant mode should be disabled for ECH servers when ECH is disabled via
+// config.
+TEST_F(TransportConnectJobTest, SvcbOptionalIfEchDisabledConfig) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
+
+  SSLContextConfig config;
+  config.ech_enabled = false;
+  ssl_config_service_.UpdateSSLConfigAndNotify(config);
 
   HostResolverEndpointResult endpoint1, endpoint2, endpoint3;
   endpoint1.ip_endpoints = {IPEndPoint(ParseIP("1::"), 8441)};

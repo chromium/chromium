@@ -30,6 +30,8 @@
 
 using base::UserMetricsAction;
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel, kAddANoteTabMenuItem);
+
 TabMenuModel::TabMenuModel(ui::SimpleMenuModel::Delegate* delegate,
                            TabMenuModelDelegate* tab_menu_model_delegate,
                            TabStripModel* tab_strip,
@@ -148,6 +150,7 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
   if (UserNotesController::IsUserNotesSupported(tab_strip->profile())) {
     AddItemWithStringId(TabStripModel::CommandAddNote,
                         IDS_CONTENT_CONTEXT_ADD_A_NOTE);
+    SetElementIdentifierAt(GetItemCount() - 1, kAddANoteTabMenuItem);
   }
   if (send_tab_to_self::ShouldDisplayEntryPoint(
           tab_strip->GetWebContentsAt(index))) {

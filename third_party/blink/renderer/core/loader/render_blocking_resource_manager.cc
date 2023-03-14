@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/css/font_face.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -124,6 +125,9 @@ void RenderBlockingResourceManager::FontPreloadingTimerFired(TimerBase*) {
   if (font_preload_timer_has_fired_) {
     return;
   }
+  base::UmaHistogramBoolean(
+      "WebFont.Clients.RenderBlockingFonts.ExpiredFonts",
+      pending_font_preloads_.size() + imperative_font_loading_count_);
   font_preload_timer_has_fired_ = true;
   pending_font_preloads_.clear();
   imperative_font_loading_count_ = 0;

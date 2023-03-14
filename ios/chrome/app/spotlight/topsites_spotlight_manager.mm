@@ -143,9 +143,7 @@ class SpotlightTopSitesBridge : public history::TopSitesObserver {
 - (void)updateAllTopSitesSpotlightItems {
   __weak TopSitesSpotlightManager* weakSelf = self;
   [self clearAllSpotlightItems:^(NSError* error) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [weakSelf addAllTopSitesSpotlightItems];
-    });
+    [weakSelf addAllTopSitesSpotlightItems];
   }];
 }
 

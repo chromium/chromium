@@ -20,7 +20,9 @@
 
 enable_printing = false
 enable_cast_receiver = true
+cast_streaming_enable_remoting = true
 enable_dav1d_decoder = false
+enable_v8_compile_hints = false
 
 # //chrome makes many assumptions that Extensions are enabled.
 # TODO(crbug.com/1363742): Fix theses assumptions or avoid building it.

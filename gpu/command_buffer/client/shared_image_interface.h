@@ -9,7 +9,6 @@
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
-#include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -78,17 +77,6 @@ class GPU_EXPORT SharedImageInterface {
                                     SkAlphaType alpha_type,
                                     uint32_t usage,
                                     base::span<const uint8_t> pixel_data) = 0;
-
-  // Deprecated version of the corresponding method above that takes in a
-  // ResourceFormat rather than a SharedImageFormat. TODO(crbug.com/1414192):
-  // Convert all clients to the above and eliminate this method.
-  virtual Mailbox CreateSharedImage(viz::ResourceFormat format,
-                                    const gfx::Size& size,
-                                    const gfx::ColorSpace& color_space,
-                                    GrSurfaceOrigin surface_origin,
-                                    SkAlphaType alpha_type,
-                                    uint32_t usage,
-                                    gpu::SurfaceHandle surface_handle) = 0;
 
   // Creates a shared image out an existing buffer. The buffer described by
   // `buffer_handle` must hold all planes based `format` and `size. `usage` is a
@@ -172,6 +160,16 @@ class GPU_EXPORT SharedImageInterface {
   virtual void DestroySharedImage(const SyncToken& sync_token,
                                   const Mailbox& mailbox) = 0;
 
+  // Adds another owning reference to the SharedImage. It must be released via
+  // DestroySharedImage in the same way as for SharedImages created via
+  // CreateSharedImage(). Note: The image must have been created on different
+  // gpu channel and each can have only single reference.
+  // Note: `usage` must be the same value as passed to CreateSharedImage call
+  // and is just stored without validation.
+  virtual void AddReferenceToSharedImage(const SyncToken& sync_token,
+                                         const Mailbox& mailbox,
+                                         uint32_t usage) = 0;
+
   struct SwapChainMailboxes {
     Mailbox front_buffer;
     Mailbox back_buffer;
@@ -182,7 +180,7 @@ class GPU_EXPORT SharedImageInterface {
   // be imported into GL command buffer using shared image functions (e.g.
   // GLES2Interface::CreateAndTexStorage2DSharedImageCHROMIUM) or (deprecated)
   // mailbox functions (e.g. GLES2Interface::CreateAndConsumeTextureCHROMIUM).
-  virtual SwapChainMailboxes CreateSwapChain(viz::ResourceFormat format,
+  virtual SwapChainMailboxes CreateSwapChain(viz::SharedImageFormat format,
                                              const gfx::Size& size,
                                              const gfx::ColorSpace& color_space,
                                              GrSurfaceOrigin surface_origin,

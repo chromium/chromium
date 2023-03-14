@@ -54,7 +54,12 @@ class COMPONENT_EXPORT(CC_SLIM) SurfaceLayer : public Layer {
   void SetSurfaceRange(const viz::SurfaceRange& surface_range);
 
   // Layer implementation.
-  bool HasDrawableContent() const override;
+  void AppendQuads(viz::CompositorRenderPass& render_pass,
+                   FrameData& data,
+                   const gfx::Transform& transform_to_root,
+                   const gfx::Transform& transform_to_target,
+                   const gfx::Rect* clip_in_target,
+                   const gfx::Rect& visible_rect) override;
 
   bool stretch_content_to_fill_bounds_ = false;
   viz::SurfaceRange surface_range_;

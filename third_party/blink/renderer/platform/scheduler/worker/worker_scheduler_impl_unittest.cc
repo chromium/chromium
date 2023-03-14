@@ -16,13 +16,16 @@
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/cpu_time_budget_pool.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
+#include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_queue_type.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_task_queue.h"
+#include "third_party/blink/renderer/platform/scheduler/test/web_scheduling_test_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -95,7 +98,7 @@ class WorkerThreadSchedulerForTest : public WorkerThreadScheduler {
                                WorkerSchedulerProxy* proxy)
       : WorkerThreadScheduler(thread_type, manager, proxy) {}
 
-  const HashSet<WorkerScheduler*>& worker_schedulers() {
+  const HashSet<WorkerSchedulerImpl*>& worker_schedulers() {
     return GetWorkerSchedulersForTesting();
   }
 
@@ -160,7 +163,14 @@ class WorkerSchedulerImplTest : public testing::Test {
   void PostTestTask(Vector<String>* run_order,
                     const String& task_descriptor,
                     TaskType task_type) {
-    worker_scheduler_->GetTaskRunner(task_type)->PostTask(
+    PostTestTask(run_order, task_descriptor,
+                 *worker_scheduler_->GetTaskRunner(task_type).get());
+  }
+
+  void PostTestTask(Vector<String>* run_order,
+                    const String& task_descriptor,
+                    base::SingleThreadTaskRunner& task_runner) {
+    task_runner.PostTask(
         FROM_HERE, WTF::BindOnce(&AppendToVectorTestTask,
                                  WTF::Unretained(run_order), task_descriptor));
   }
@@ -184,11 +194,16 @@ TEST_F(WorkerSchedulerImplTest, TestPostTasks) {
   RunUntilIdle();
   EXPECT_THAT(run_order, testing::ElementsAre("T1", "T2", "T3"));
 
+  // GetTaskRunner() is only supposed to be called by the WorkerThread, and only
+  // during initialization. Simulate this by using a cached task runner after
+  // disposal.
+  scoped_refptr<base::SingleThreadTaskRunner> test_task_runner =
+      worker_scheduler_->GetTaskRunner(TaskType::kInternalTest);
   // Tasks should not run after the scheduler is disposed of.
   worker_scheduler_->Dispose();
   run_order.clear();
-  PostTestTask(&run_order, "T4", TaskType::kInternalTest);
-  PostTestTask(&run_order, "T5", TaskType::kInternalTest);
+  PostTestTask(&run_order, "T4", *test_task_runner.get());
+  PostTestTask(&run_order, "T5", *test_task_runner.get());
   RunUntilIdle();
   EXPECT_TRUE(run_order.empty());
 
@@ -347,12 +362,22 @@ TEST_F(WorkerSchedulerImplTest, MAYBE_NestedPauseHandlesTasks) {
 
 class WorkerSchedulerDelegateForTesting : public WorkerScheduler::Delegate {
  public:
-  MOCK_METHOD(void,
-              UpdateBackForwardCacheDisablingFeatures,
-              (uint64_t,
-               const BFCacheBlockingFeatureAndLocations&,
-               const BFCacheBlockingFeatureAndLocations&));
+  MOCK_METHOD(void, UpdateBackForwardCacheDisablingFeatures, (BlockingDetails));
 };
+
+MATCHER(BlockingDetailsHasCCNS, "Compares two blocking details.") {
+  bool vector_empty = arg.non_sticky_features_and_js_locations.empty();
+  bool vector_has_ccns =
+      arg.sticky_features_and_js_locations.Contains(
+          FeatureAndJSLocationBlockingBFCache(
+              SchedulingPolicy::Feature::kMainResourceHasCacheControlNoStore,
+              nullptr)) &&
+      arg.sticky_features_and_js_locations.Contains(
+          FeatureAndJSLocationBlockingBFCache(
+              SchedulingPolicy::Feature::kMainResourceHasCacheControlNoCache,
+              nullptr));
+  return vector_empty && vector_has_ccns;
+}
 
 // Confirms that the feature usage in a dedicated worker is uploaded to
 // somewhere (the browser side in the actual implementation) via a delegate.
@@ -379,25 +404,9 @@ TEST_F(WorkerSchedulerImplTest, FeatureUpload) {
                                kMainResourceHasCacheControlNoCache,
                            {SchedulingPolicy::DisableBackForwardCache()});
                        testing::Mock::VerifyAndClearExpectations(delegate);
-                       EXPECT_CALL(
-                           *delegate,
-                           UpdateBackForwardCacheDisablingFeatures(
-                               (1 << static_cast<uint64_t>(
-                                    SchedulingPolicy::Feature::
-                                        kMainResourceHasCacheControlNoStore)) |
-                                   (1 << static_cast<uint64_t>(
-                                        SchedulingPolicy::Feature::
-                                            kMainResourceHasCacheControlNoCache)),
-                               BFCacheBlockingFeatureAndLocations(),
-                               BFCacheBlockingFeatureAndLocations(
-                                   {FeatureAndJSLocationBlockingBFCache(
-                                        SchedulingPolicy::Feature::
-                                            kMainResourceHasCacheControlNoStore,
-                                        nullptr),
-                                    FeatureAndJSLocationBlockingBFCache(
-                                        SchedulingPolicy::Feature::
-                                            kMainResourceHasCacheControlNoCache,
-                                        nullptr)})));
+                       EXPECT_CALL(*delegate,
+                                   UpdateBackForwardCacheDisablingFeatures(
+                                       BlockingDetailsHasCCNS()));
                      },
                      worker_scheduler_.get(), delegate.get()));
 
@@ -406,81 +415,208 @@ TEST_F(WorkerSchedulerImplTest, FeatureUpload) {
   testing::Mock::VerifyAndClearExpectations(delegate.get());
 }
 
-class NonMainThreadWebSchedulingTaskQueueTest : public WorkerSchedulerImplTest {
+class NonMainThreadWebSchedulingTaskQueueTest
+    : public WorkerSchedulerImplTest,
+      public WebSchedulingTestHelper::Delegate {
  public:
   void SetUp() override {
     WorkerSchedulerImplTest::SetUp();
-
-    for (int i = 0; i <= static_cast<int>(WebSchedulingPriority::kLastPriority);
-         i++) {
-      WebSchedulingPriority priority = static_cast<WebSchedulingPriority>(i);
-      std::unique_ptr<WebSchedulingTaskQueue> task_queue =
-          worker_scheduler_->CreateWebSchedulingTaskQueue(priority);
-      task_queues_.push_back(std::move(task_queue));
-    }
+    web_scheduling_test_helper_ =
+        std::make_unique<WebSchedulingTestHelper>(*this);
   }
 
   void TearDown() override {
     WorkerSchedulerImplTest::TearDown();
-    task_queues_.clear();
+    web_scheduling_test_helper_.reset();
+  }
+
+  FrameOrWorkerScheduler& GetFrameOrWorkerScheduler() override {
+    return *worker_scheduler_.get();
+  }
+
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
+      TaskType task_type) override {
+    return worker_scheduler_->GetTaskRunner(task_type);
   }
 
  protected:
-  // Helper for posting tasks to a WebSchedulingTaskQueue. |task_descriptor| is
-  // a string with space delimited task identifiers. The first letter of each
-  // task identifier specifies the task queue priority:
-  // - 'U': UserBlocking
-  // - 'V': UserVisible
-  // - 'B': Background
-  void PostWebSchedulingTestTasks(Vector<String>* run_order,
-                                  const String& task_descriptor) {
-    std::istringstream stream(task_descriptor.Utf8());
-    while (!stream.eof()) {
-      std::string task;
-      stream >> task;
-      WebSchedulingPriority priority;
-      switch (task[0]) {
-        case 'U':
-          priority = WebSchedulingPriority::kUserBlockingPriority;
-          break;
-        case 'V':
-          priority = WebSchedulingPriority::kUserVisiblePriority;
-          break;
-        case 'B':
-          priority = WebSchedulingPriority::kBackgroundPriority;
-          break;
-        default:
-          EXPECT_FALSE(true);
-          return;
-      }
-      task_queues_[static_cast<int>(priority)]->GetTaskRunner()->PostTask(
-          FROM_HERE, base::BindOnce(&AppendToVectorTestTask, run_order,
-                                    String::FromUTF8(task)));
-    }
-  }
-  Vector<std::unique_ptr<WebSchedulingTaskQueue>> task_queues_;
+  using TestTaskSpecEntry = WebSchedulingTestHelper::TestTaskSpecEntry;
+  using WebSchedulingParams = WebSchedulingTestHelper::WebSchedulingParams;
+
+  std::unique_ptr<WebSchedulingTestHelper> web_scheduling_test_helper_;
 };
 
 TEST_F(NonMainThreadWebSchedulingTaskQueueTest, TasksRunInPriorityOrder) {
   Vector<String> run_order;
 
-  PostWebSchedulingTestTasks(&run_order, "B1 B2 V1 V2 U1 U2");
+  Vector<TestTaskSpecEntry> test_spec = {
+      {.descriptor = "BG1",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kTaskQueue,
+            .priority = WebSchedulingPriority::kBackgroundPriority})},
+      {.descriptor = "BG2",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kTaskQueue,
+            .priority = WebSchedulingPriority::kBackgroundPriority})},
+      {.descriptor = "UV1",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kTaskQueue,
+            .priority = WebSchedulingPriority::kUserVisiblePriority})},
+      {.descriptor = "UV2",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kTaskQueue,
+            .priority = WebSchedulingPriority::kUserVisiblePriority})},
+      {.descriptor = "UB1",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kTaskQueue,
+            .priority = WebSchedulingPriority::kUserBlockingPriority})},
+      {.descriptor = "UB2",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kTaskQueue,
+            .priority = WebSchedulingPriority::kUserBlockingPriority})}};
+  web_scheduling_test_helper_->PostTestTasks(&run_order, test_spec);
 
   RunUntilIdle();
   EXPECT_THAT(run_order,
-              testing::ElementsAre("U1", "U2", "V1", "V2", "B1", "B2"));
+              testing::ElementsAre("UB1", "UB2", "UV1", "UV2", "BG1", "BG2"));
 }
 
 TEST_F(NonMainThreadWebSchedulingTaskQueueTest, DynamicTaskPriorityOrder) {
   Vector<String> run_order;
+  Vector<TestTaskSpecEntry> test_spec = {
+      {.descriptor = "BG1",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kTaskQueue,
+            .priority = WebSchedulingPriority::kBackgroundPriority})},
+      {.descriptor = "BG2",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kTaskQueue,
+            .priority = WebSchedulingPriority::kBackgroundPriority})},
+      {.descriptor = "UV1",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kTaskQueue,
+            .priority = WebSchedulingPriority::kUserVisiblePriority})},
+      {.descriptor = "UV2",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kTaskQueue,
+            .priority = WebSchedulingPriority::kUserVisiblePriority})},
+      {.descriptor = "UB1",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kTaskQueue,
+            .priority = WebSchedulingPriority::kUserBlockingPriority})},
+      {.descriptor = "UB2",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kTaskQueue,
+            .priority = WebSchedulingPriority::kUserBlockingPriority})}};
+  web_scheduling_test_helper_->PostTestTasks(&run_order, test_spec);
 
-  PostWebSchedulingTestTasks(&run_order, "B1 B2 V1 V2 U1 U2");
-  task_queues_[static_cast<int>(WebSchedulingPriority::kUserBlockingPriority)]
+  web_scheduling_test_helper_
+      ->GetWebSchedulingTaskQueue(WebSchedulingQueueType::kTaskQueue,
+                                  WebSchedulingPriority::kUserBlockingPriority)
       ->SetPriority(WebSchedulingPriority::kBackgroundPriority);
 
   RunUntilIdle();
   EXPECT_THAT(run_order,
-              testing::ElementsAre("V1", "V2", "B1", "B2", "U1", "U2"));
+              testing::ElementsAre("UV1", "UV2", "BG1", "BG2", "UB1", "UB2"));
+}
+
+TEST_F(NonMainThreadWebSchedulingTaskQueueTest, TasksAndContinuations) {
+  Vector<String> run_order;
+  Vector<TestTaskSpecEntry> test_spec = {
+      {.descriptor = "BG",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kTaskQueue,
+            .priority = WebSchedulingPriority::kBackgroundPriority})},
+      {.descriptor = "BG-C",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kContinuationQueue,
+            .priority = WebSchedulingPriority::kBackgroundPriority})},
+      {.descriptor = "UV",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kTaskQueue,
+            .priority = WebSchedulingPriority::kUserVisiblePriority})},
+      {.descriptor = "UV-C",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kContinuationQueue,
+            .priority = WebSchedulingPriority::kUserVisiblePriority})},
+      {.descriptor = "UB",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kTaskQueue,
+            .priority = WebSchedulingPriority::kUserBlockingPriority})},
+      {.descriptor = "UB-C",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kContinuationQueue,
+            .priority = WebSchedulingPriority::kUserBlockingPriority})}};
+  web_scheduling_test_helper_->PostTestTasks(&run_order, test_spec);
+
+  RunUntilIdle();
+  EXPECT_THAT(run_order,
+              testing::ElementsAre("UB-C", "UB", "UV-C", "UV", "BG-C", "BG"));
+}
+
+TEST_F(NonMainThreadWebSchedulingTaskQueueTest, DynamicPriorityContinuations) {
+  Vector<String> run_order;
+  Vector<TestTaskSpecEntry> test_spec = {
+      {.descriptor = "BG-C",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kContinuationQueue,
+            .priority = WebSchedulingPriority::kBackgroundPriority})},
+      {.descriptor = "UV-C",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kContinuationQueue,
+            .priority = WebSchedulingPriority::kUserVisiblePriority})},
+      {.descriptor = "UB-C",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kContinuationQueue,
+            .priority = WebSchedulingPriority::kUserBlockingPriority})}};
+  web_scheduling_test_helper_->PostTestTasks(&run_order, test_spec);
+
+  web_scheduling_test_helper_
+      ->GetWebSchedulingTaskQueue(WebSchedulingQueueType::kContinuationQueue,
+                                  WebSchedulingPriority::kUserBlockingPriority)
+      ->SetPriority(WebSchedulingPriority::kBackgroundPriority);
+
+  RunUntilIdle();
+  EXPECT_THAT(run_order, testing::ElementsAre("UV-C", "BG-C", "UB-C"));
+}
+
+TEST_F(NonMainThreadWebSchedulingTaskQueueTest,
+       WebScheduingAndNonWebScheduingTasks) {
+  Vector<String> run_order;
+  Vector<TestTaskSpecEntry> test_spec = {
+      {.descriptor = "PostMessage", .type_info = TaskType::kPostedMessage},
+      {.descriptor = "BG",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kTaskQueue,
+            .priority = WebSchedulingPriority::kBackgroundPriority})},
+      {.descriptor = "BG-C",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kContinuationQueue,
+            .priority = WebSchedulingPriority::kBackgroundPriority})},
+      {.descriptor = "UV",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kTaskQueue,
+            .priority = WebSchedulingPriority::kUserVisiblePriority})},
+      {.descriptor = "UV-C",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kContinuationQueue,
+            .priority = WebSchedulingPriority::kUserVisiblePriority})},
+      {.descriptor = "UB",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kTaskQueue,
+            .priority = WebSchedulingPriority::kUserBlockingPriority})},
+      {.descriptor = "UB-C",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kContinuationQueue,
+            .priority = WebSchedulingPriority::kUserBlockingPriority})},
+      {.descriptor = "Timer",
+       .type_info = TaskType::kJavascriptTimerImmediate}};
+  web_scheduling_test_helper_->PostTestTasks(&run_order, test_spec);
+
+  RunUntilIdle();
+  EXPECT_THAT(run_order,
+              testing::ElementsAre("UB-C", "UB", "UV-C", "PostMessage", "UV",
+                                   "Timer", "BG-C", "BG"));
 }
 
 enum class DeleterTaskRunnerEnabled { kEnabled, kDisabled };

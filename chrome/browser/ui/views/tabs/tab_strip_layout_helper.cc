@@ -368,14 +368,12 @@ int TabStripLayoutHelper::GetFirstSlotIndexForTabModelIndex(
 
 int TabStripLayoutHelper::GetSlotIndexForGroupHeader(
     tab_groups::TabGroupId group) const {
-  for (size_t i = 0; i < slots_.size(); i++) {
-    if (slots_[i].type == ViewType::kGroupHeader &&
-        static_cast<TabGroupHeader*>(slots_[i].view)->group() == group) {
-      return i;
-    }
-  }
-  NOTREACHED();
-  return 0;
+  const auto it = base::ranges::find_if(slots_, [group](const auto& slot) {
+    return slot.type == ViewType::kGroupHeader &&
+           static_cast<TabGroupHeader*>(slot.view)->group() == group;
+  });
+  CHECK(it != slots_.end());
+  return it - slots_.begin();
 }
 
 void TabStripLayoutHelper::UpdateCachedTabWidth(int tab_index,
@@ -396,7 +394,6 @@ bool TabStripLayoutHelper::SlotIsCollapsedTab(int i) const {
   // If the slot is indeed a tab and in a group, check the collapsed state of
   // the group to determine if it is collapsed.
   const absl::optional<tab_groups::TabGroupId> id = slots_[i].view->group();
-  return (slots_[i].type == ViewType::kTab && id.has_value())
-             ? controller_->IsGroupCollapsed(id.value())
-             : false;
+  return slots_[i].type == ViewType::kTab && id.has_value() &&
+         controller_->IsGroupCollapsed(id.value());
 }

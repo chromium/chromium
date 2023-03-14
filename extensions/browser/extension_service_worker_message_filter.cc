@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/singleton.h"
+#include "base/unguessable_token.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "content/public/browser/service_worker_context.h"
@@ -15,7 +16,6 @@
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/events/event_ack_data.h"
 #include "extensions/browser/extension_function_dispatcher.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_factory.h"
@@ -91,8 +91,6 @@ void ExtensionServiceWorkerMessageFilter::OverrideThreadForMessage(
     content::BrowserThread::ID* thread) {
   if (message.type() == ExtensionHostMsg_RequestWorker::ID ||
       message.type() == ExtensionHostMsg_EventAckWorker::ID ||
-      message.type() ==
-          ExtensionHostMsg_DidInitializeServiceWorkerContext::ID ||
       message.type() == ExtensionHostMsg_DidStartServiceWorkerContext::ID ||
       message.type() == ExtensionHostMsg_DidStopServiceWorkerContext::ID ||
       message.type() == ExtensionHostMsg_WorkerResponseAck::ID) {
@@ -115,8 +113,6 @@ bool ExtensionServiceWorkerMessageFilter::OnMessageReceived(
     IPC_MESSAGE_HANDLER(ExtensionHostMsg_DecrementServiceWorkerActivity,
                         OnDecrementServiceWorkerActivity)
     IPC_MESSAGE_HANDLER(ExtensionHostMsg_EventAckWorker, OnEventAckWorker)
-    IPC_MESSAGE_HANDLER(ExtensionHostMsg_DidInitializeServiceWorkerContext,
-                        OnDidInitializeServiceWorkerContext)
     IPC_MESSAGE_HANDLER(ExtensionHostMsg_DidStartServiceWorkerContext,
                         OnDidStartServiceWorkerContext)
     IPC_MESSAGE_HANDLER(ExtensionHostMsg_DidStopServiceWorkerContext,
@@ -204,38 +200,9 @@ void ExtensionServiceWorkerMessageFilter::OnEventAckWorker(
                          this));
 }
 
-void ExtensionServiceWorkerMessageFilter::OnDidInitializeServiceWorkerContext(
-    const ExtensionId& extension_id,
-    int64_t service_worker_version_id,
-    int thread_id) {
-  if (!browser_context_)
-    return;
-
-  ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
-  DCHECK(registry);
-  if (!registry->enabled_extensions().GetByID(extension_id)) {
-    // This can happen if the extension is unloaded at this point. Just
-    // checking the extension process (as below) is insufficient because
-    // tearing down processes is async and happens after extension unload.
-    return;
-  }
-
-  if (!ProcessMap::Get(browser_context_)
-           ->Contains(extension_id, render_process_id_)) {
-    // We check the process in addition to the registry to guard against
-    // situations in which an extension may still be enabled, but no longer
-    // running in a given process.
-    return;
-  }
-
-  ServiceWorkerTaskQueue::Get(browser_context_)
-      ->DidInitializeServiceWorkerContext(render_process_id_, extension_id,
-                                          service_worker_version_id, thread_id);
-}
-
 void ExtensionServiceWorkerMessageFilter::OnDidStartServiceWorkerContext(
     const ExtensionId& extension_id,
-    ActivationSequence activation_sequence,
+    const base::UnguessableToken& activation_sequence,
     const GURL& service_worker_scope,
     int64_t service_worker_version_id,
     int thread_id) {
@@ -259,7 +226,7 @@ void ExtensionServiceWorkerMessageFilter::OnDidStartServiceWorkerContext(
 
 void ExtensionServiceWorkerMessageFilter::OnDidStopServiceWorkerContext(
     const ExtensionId& extension_id,
-    ActivationSequence activation_sequence,
+    const base::UnguessableToken& activation_sequence,
     const GURL& service_worker_scope,
     int64_t service_worker_version_id,
     int thread_id) {

@@ -215,7 +215,6 @@ void CastActivityManager::DoLaunchSession(DoLaunchSessionParams params) {
     if (route_it != routes_by_frame_.end()) {
       TerminateSession(route_it->second, base::DoNothing());
     }
-
     routes_by_frame_[frame_tree_node_id] = route_id;
   }
 
@@ -225,15 +224,18 @@ void CastActivityManager::DoLaunchSession(DoLaunchSessionParams params) {
   for (ReceiverAppType type : cast_source.supported_app_types()) {
     type_str.push_back(cast_util::EnumToString(type).value().data());
   }
+  logger_->LogInfo(mojom::LogCategory::kRoute, kLoggerComponent,
+                   "Sent a Launch Session request.", sink.id(),
+                   cast_source.source_id(),
+                   MediaRoute::GetPresentationIdFromMediaRouteId(route_id));
+  MaybeShowIssueAtLaunch(MediaSource(cast_source.source_id()), sink.id());
+  // `params` gets moved here, and all the variables referencing it cannot be
+  // used after that.
   message_handler_->LaunchSession(
       sink.cast_data().cast_channel_id, app_id, launch_timeout, type_str,
       app_params,
       base::BindOnce(&CastActivityManager::HandleLaunchSessionResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(params)));
-  logger_->LogInfo(mojom::LogCategory::kRoute, kLoggerComponent,
-                   "Sent a Launch Session request.", sink.id(),
-                   cast_source.source_id(),
-                   MediaRoute::GetPresentationIdFromMediaRouteId(route_id));
 }
 
 void CastActivityManager::SetPendingLaunch(DoLaunchSessionParams params) {
@@ -503,6 +505,19 @@ CastActivityManager::FindActivityBySink(const MediaSinkInternal& sink) {
   });
 }
 
+MirroringActivity* CastActivityManager::FindMirroringActivityByRouteId(
+    const MediaRoute::Id& route_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto it = activities_.find(route_id);
+
+  // TODO(b/271322325): Add a better API for determining if a route is being
+  // used for Cast Streaming. Checking the MediaSource might not be sufficient.
+  return it != activities_.end() && it->second->route().controller_type() ==
+                                        RouteControllerType::kMirroring
+             ? static_cast<MirroringActivity*>(it->second.get())
+             : nullptr;
+}
+
 AppActivity* CastActivityManager::AddAppActivity(const MediaRoute& route,
                                                  const std::string& app_id) {
   std::unique_ptr<AppActivity> activity(
@@ -526,12 +541,17 @@ CastActivity* CastActivityManager::AddMirroringActivity(
   auto on_stop =
       base::BindOnce(&CastActivityManager::OnActivityStopped,
                      weak_ptr_factory_.GetWeakPtr(), route.media_route_id());
-  auto activity = cast_activity_factory_for_test_
-                      ? cast_activity_factory_for_test_->MakeMirroringActivity(
-                            route, app_id, std::move(on_stop))
-                      : std::make_unique<MirroringActivity>(
-                            route, app_id, message_handler_, session_tracker_,
-                            frame_tree_node_id, cast_data, std::move(on_stop));
+  auto on_source_changed = base::BindRepeating(
+      &CastActivityManager::OnSourceChanged, weak_ptr_factory_.GetWeakPtr(),
+      route.media_route_id());
+  auto activity =
+      cast_activity_factory_for_test_
+          ? cast_activity_factory_for_test_->MakeMirroringActivity(
+                route, app_id, std::move(on_stop), std::move(on_source_changed))
+          : std::make_unique<MirroringActivity>(
+                route, app_id, message_handler_, session_tracker_,
+                frame_tree_node_id, cast_data, std::move(on_stop),
+                std::move(on_source_changed));
   activity->CreateMojoBindings(media_router_);
   activity->CreateMirroringServiceHost();
   auto* const activity_ptr = activity.get();
@@ -651,6 +671,7 @@ void CastActivityManager::OnMediaStatusUpdated(
 void CastActivityManager::OnSourceChanged(const std::string& media_route_id,
                                           int old_frame_tree_node_id,
                                           int frame_tree_node_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto current_it = routes_by_frame_.find(old_frame_tree_node_id);
   if (current_it == routes_by_frame_.end() ||
       current_it->second != media_route_id) {
@@ -1084,6 +1105,24 @@ void CastActivityManager::TerminateAllLocalMirroringActivities() {
   }
 }
 
+void CastActivityManager::MaybeShowIssueAtLaunch(
+    const MediaSource& media_source,
+    const MediaSink::Id& sink_id) {
+#if BUILDFLAG(IS_MAC)
+  // On macOS, the user cannot choose to share their desktop audio, so we notify
+  // the user as such. On other platforms the desktop picker allows the user to
+  // manually disable audio capture.
+  if (media_source.IsDesktopMirroringSource() &&
+      !media_source.IsDesktopSourceWithAudio()) {
+    IssueInfo issue_info(
+        l10n_util::GetStringUTF8(
+            IDS_MEDIA_ROUTER_ISSUE_DESKTOP_AUDIO_NOT_SUPPORTED),
+        IssueInfo::Severity::NOTIFICATION, sink_id);
+    media_router_->OnIssue(issue_info);
+  }
+#endif
+}
+
 CastActivityManager::DoLaunchSessionParams::DoLaunchSessionParams(
     const MediaRoute& route,
     const CastMediaSource& cast_source,
@@ -1101,6 +1140,12 @@ CastActivityManager::DoLaunchSessionParams::DoLaunchSessionParams(
       callback(std::move(callback)) {
   if (app_params)
     this->app_params = app_params->Clone();
+}
+
+void CastActivityManager::AddMirroringActivityForTest(
+    const MediaRoute::Id& route_id,
+    std::unique_ptr<MirroringActivity> mirroring_activity) {
+  activities_.emplace(route_id, std::move(mirroring_activity));
 }
 
 CastActivityManager::DoLaunchSessionParams::DoLaunchSessionParams(

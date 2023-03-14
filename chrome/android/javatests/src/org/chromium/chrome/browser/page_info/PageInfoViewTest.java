@@ -242,13 +242,13 @@ public class PageInfoViewTest {
 
     private void expectHasCookies(boolean hasData) throws TimeoutException {
         for (String type : sCookieDataTypes) {
-            assertEquals(hasData ? "true" : "false", runJavascriptAsync("has" + type + "()"));
+            assertEquals(hasData ? "true" : "false", runJavascriptAsync("has" + type + "Async()"));
         }
     }
 
     private void createCookies() throws TimeoutException {
         for (String type : sCookieDataTypes) {
-            runJavascriptAsync("set" + type + "()");
+            runJavascriptAsync("set" + type + "Async()");
         }
     }
 
@@ -765,7 +765,8 @@ public class PageInfoViewTest {
     // When both START_SURFACE_ANDROID and TAB_GROUPS_CONTINUATION_ANDROID are enabled, changing
     // accessibility status won't recreate ChromeTabbedActivity.
     @EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID,
-            ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+            ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
+            ChromeFeatureList.START_SURFACE_WITH_ACCESSIBILITY})
     // clang-format off
     public void testCloseButton() {
         // clang-format on

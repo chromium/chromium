@@ -80,6 +80,9 @@ class StyledMarkupAccumulator final {
   bool IsForMarkupSanitization() const {
     return options_.IsForMarkupSanitization();
   }
+  bool ShouldSkipUnselectableContent() const {
+    return options_.ShouldSkipUnselectableContent();
+  }
 
  private:
   String RenderedText(Text&);

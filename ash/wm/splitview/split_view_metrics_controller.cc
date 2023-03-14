@@ -100,7 +100,6 @@ int NumRootWindowsInSplitViewRecording() {
   });
 }
 
-// Checks if the device is in tablet mode.
 bool InTabletMode() {
   return Shell::Get()->tablet_mode_controller()->InTabletMode();
 }
@@ -139,8 +138,7 @@ bool TopTwoVisibleWindowsBothSnapped(
 // Appends the proper suffix to |prefix| based on whether the device is in
 // tablet mode or not.
 std::string GetHistogramNameWithDeviceUIMode(std::string prefix) {
-  return prefix.append(Shell::Get()->IsInTabletMode() ? ".TabletMode"
-                                                      : ".ClamshellMode");
+  return prefix.append(InTabletMode() ? ".TabletMode" : ".ClamshellMode");
 }
 
 SplitViewMetricsController::DeviceOrientation GetDeviceOrientation(
@@ -578,8 +576,9 @@ void SplitViewMetricsController::ClearObservedWindows() {
 
 void SplitViewMetricsController::
     MaybeStartOrEndRecordBothSnappedClamshellSplitView() {
-  if (InTabletMode() || split_view_controller_->InSplitViewMode())
+  if (InTabletMode() || split_view_controller_->InSplitViewMode()) {
     return;
+  }
 
   bool both_snapped = TopTwoVisibleWindowsBothSnapped(observed_windows_);
   if (!in_split_view_recording_ && both_snapped)
@@ -590,8 +589,9 @@ void SplitViewMetricsController::
 
 bool SplitViewMetricsController::
     MaybePauseRecordBothSnappedClamshellSplitView() {
-  if (InTabletMode() || split_view_controller_->InSplitViewMode())
+  if (InTabletMode() || split_view_controller_->InSplitViewMode()) {
     return false;
+  }
 
   if (observed_windows_.size() < 3)
     return false;

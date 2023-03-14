@@ -26,6 +26,7 @@
 <translation id="1448064542941920355">Reducir zoom</translation>
 <translation id="1510341833810331442">Los sitios no pueden guardar datos en tu dispositivo</translation>
 <translation id="1547123415014299762">Se permiten las cookies de terceros</translation>
+<translation id="1593426485665524382">Nuevas acciones disponibles cerca de la parte superior de la pantalla</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1633720957382884102">Sitios relacionados</translation>
 <translation id="1644574205037202324">Historial</translation>
@@ -59,6 +60,7 @@
 <translation id="216989819110952009">Incluso con los ojos protegidos por las gafas verdes, Dorothy y sus amigos quedaron deslumbrados cuando vieron</translation>
 <translation id="2176704795966505152">Mostrar la opción de zoom en el menú principal</translation>
 <translation id="2182457891543959921">Preguntar antes de permitir que los sitios creen un mapa 3D de tu entorno o hagan un seguimiento de la posición de la cámara (recomendado)</translation>
+<translation id="2194856509914051091">Aspectos para tener en cuenta</translation>
 <translation id="2212565012507486665">Permitir cookies</translation>
 <translation id="2228071138934252756">Para permitir que <ph name="APP_NAME" /> acceda a tu cámara, actívala también en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Se bloquearon las cookies de terceros</translation>
@@ -98,7 +100,6 @@
 <translation id="2713106313042589954">Desactivar la cámara</translation>
 <translation id="2717722538473713889">Direcciones de correo electrónico</translation>
 <translation id="2750481671343847896">Los sitios pueden mostrarte mensajes de acceso de servicios de identidad.</translation>
-<translation id="2779966372261694284">Saldrás de este sitio</translation>
 <translation id="2822354292072154809">¿Confirmas que quieres restablecer todos los permisos de sitios para <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Sitio</translation>
 <translation id="2874939134665556319">Pista anterior</translation>
@@ -144,6 +145,9 @@
 <translation id="3600792891314830896">Silenciar los sitios que reproducen sonido</translation>
 <translation id="3602290021589620013">Vista previa</translation>
 <translation id="3628308229821498208">Búsquedas sugeridas</translation>
+<translation id="3636279694100170143">Los sitios que visitas pueden confirmar que eres un usuario real y no un bot</translation>
+<translation id="3649190289964910441">Un sitio que visitas puede guardar información en Chrome para confirmar que eres un usuario real. A medida que continúas navegando, los sitios pueden consultar con Chrome y verificar que eres un usuario de confianza desde el primer sitio.</translation>
+<translation id="3721953990244350188">Descartar y mostrar la siguiente acción disponible</translation>
 <translation id="3744111561329211289">Sincronización en segundo plano</translation>
 <translation id="3763247130972274048">Presiona el video dos veces a la derecha o izquierda para avanzar o retroceder 10 s</translation>
 <translation id="3794286421982011626">Un sitio que visitas puede guardar información sobre tu actividad para que funcione como esperas (por ejemplo, para mantener el acceso a un sitio o guardar artículos en tu carrito de compras). A menudo, los sitios guardan esta información de forma temporal en tu dispositivo.</translation>
@@ -191,11 +195,11 @@
 <translation id="4534723447064627427">Para permitir que <ph name="APP_NAME" /> acceda a tu micrófono, actívalo también en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Silenciar micrófono</translation>
 <translation id="4570913071927164677">Detalles</translation>
-<translation id="4575264539271661854">Facilitar la opción para acercar el texto y las imágenes del sitio que visitas</translation>
 <translation id="4598549027014564149">Cuando está activado el modo Incógnito, los sitios no pueden usar tus cookies para ver tu actividad de navegación en sitios, ni siquiera en sitios relacionados. Tu actividad de navegación no se usa, por ejemplo, para personalizar anuncios. Es posible que algunas funciones no puedan utilizarse en algunos sitios.</translation>
 <translation id="4645575059429386691">Administrado por tus padres</translation>
 <translation id="4670064810192446073">Realidad virtual</translation>
 <translation id="4751476147751820511">Sensores de luz o movimiento</translation>
+<translation id="477781522763920796">Esta configuración funciona sin identificarte ni permitir que los sitios vean tu historial de navegación.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4811450222531576619">Obtén más información sobre el tema y la fuente de la página</translation>
 <translation id="4836046166855586901">Permitir que los sitios pregunten en qué momento estás usando activamente este dispositivo</translation>
@@ -257,6 +261,7 @@
 <translation id="5740126560802162366">Los sitios pueden guardar datos en tu dispositivo</translation>
 <translation id="5771720122942595109">Bloqueado: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Permisos</translation>
+<translation id="5810805850857689118">Esta acción borrará todos los datos y cookies de <ph name="ORIGIN" /> y de todos sus sitios secundarios</translation>
 <translation id="5860033963881614850">Desactivado</translation>
 <translation id="5876056640971328065">Pausar video</translation>
 <translation id="5884085660368669834">Preferencia de sitio</translation>
@@ -273,6 +278,7 @@
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6042308850641462728">Más</translation>
 <translation id="6064125863973209585">Descargas completadas</translation>
+<translation id="6071501408666570960">Es posible que se cierre tu sesión en este sitio</translation>
 <translation id="6165508094623778733">Más información</translation>
 <translation id="6177111841848151710">Se bloqueó para el motor de búsqueda actual</translation>
 <translation id="6177128806592000436">Tu conexión con este sitio no es segura</translation>
@@ -323,6 +329,7 @@
 <translation id="7016516562562142042">Se habilitó para el motor de búsqueda actual</translation>
 <translation id="702275896380648118">Este sitio determina lo que te gusta y, luego, sugiere anuncios a otros sitios. Este sitio también obtiene tus temas de anuncios de Chrome para mostrarte anuncios más relevantes.</translation>
 <translation id="702463548815491781">Se recomienda cuando TalkBack o Accesibilidad con interruptores están activadas</translation>
+<translation id="7050519587566342213">Es más fácil navegar, ya que es más probable que los sitios confíen en ti a medida que los visitas.</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 seleccionado}other{# seleccionados}}</translation>
 <translation id="7087918508125750058">Elementos seleccionados: <ph name="ITEM_COUNT" />. Opciones disponibles cerca de la parte superior de la pantalla</translation>
@@ -347,6 +354,7 @@
 <translation id="757524316907819857">Impedir que los sitios reproduzcan contenido protegido</translation>
 <translation id="7577900504646297215">Administrar intereses</translation>
 <translation id="7594634374516752650">Conectado a un dispositivo Bluetooth</translation>
+<translation id="7634280112532283638">Reducción de spam y fraude</translation>
 <translation id="7641339528570811325">Borrar datos de navegación…</translation>
 <translation id="7649070708921625228">Ayuda</translation>
 <translation id="7658239707568436148">Cancelar</translation>
@@ -407,6 +415,7 @@
 <translation id="8514955299594277296">No permitir que los sitios guarden datos en tu dispositivo (no recomendado)</translation>
 <translation id="851751545965956758">Impedir que los sitios se conecten a los dispositivos</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
+<translation id="8528440122773422556">Esta acción borrará todos los datos y cookies que hayan almacenado todos los sitios secundarios de <ph name="ORIGIN" /> o su app en la pantalla principal</translation>
 <translation id="8541410041357371550">Este sitio obtiene de Chrome tus temas de anuncios para mostrarte anuncios más relevantes</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Se permiten cookies para <ph name="FPS_MEMBERS_COUNT" /> sitio de <ph name="FPS_OWNER" />}other{Se permiten cookies para <ph name="FPS_MEMBERS_COUNT" /> sitios de <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Permitido (recomendado)</translation>
@@ -421,6 +430,7 @@
 <translation id="8737217482364735741">Esta acción borrará todos los datos y cookies almacenados por <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Seleccionar una imagen</translation>
 <translation id="8801436777607969138">Bloquea JavaScript para un sitio específico.</translation>
+<translation id="8803526663383843427">Cuando está activada</translation>
 <translation id="8816026460808729765">Impedir que los sitios accedan a los sensores</translation>
 <translation id="8823559166155093873">Bloquear cookies</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -434,6 +444,7 @@
 <translation id="8986362086234534611">Borrar</translation>
 <translation id="8990043154272859344">Saldrás de todos los sitios</translation>
 <translation id="9019902583201351841">Administrado por tus padres</translation>
+<translation id="9039697262778250930">Es posible que salgas de estos sitios</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Este sitio está en un grupo que puede ver tu actividad. El grupo está definido por <ph name="FPS_OWNER" />.</translation>
 <translation id="9106233582039520022">¿Quieres borrar las cookies?</translation>

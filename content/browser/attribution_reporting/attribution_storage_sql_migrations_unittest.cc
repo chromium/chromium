@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/attribution_reporting/attribution_storage_sql.h"
+#include "content/browser/attribution_reporting/attribution_storage_sql_migrations.h"
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -14,7 +14,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
+#include "content/browser/attribution_reporting/attribution_storage_sql.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
+#include "content/browser/attribution_reporting/store_source_result.h"
+#include "content/browser/attribution_reporting/test/configurable_storage_delegate.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/test/test_helpers.h"
@@ -771,6 +774,53 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion45ToCurrent) {
     // Compare normalized schemas
     EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
               NormalizeSchema(db.GetSchema()));
+  }
+
+  // DB creation histograms should be recorded.
+  histograms.ExpectTotalCount("Conversions.Storage.CreationTime", 0);
+  histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
+}
+
+TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion46ToCurrent) {
+  base::HistogramTester histograms;
+  LoadDatabase(GetVersionFilePath(46), DbPath());
+
+  // Verify pre-conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+    ASSERT_TRUE(db.DoesColumnExist("sources", "destination_site"));
+
+    sql::Statement s(db.GetUniqueStatement(
+        "SELECT source_id,destination_site FROM sources"));
+
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ(2, s.ColumnInt(0));
+    ASSERT_EQ("13", s.ColumnString(1));
+    ASSERT_FALSE(s.Step());
+  }
+
+  MigrateDatabase();
+
+  // Verify schema is current.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    CheckVersionNumbers(&db);
+
+    // Compare normalized schemas
+    EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
+              NormalizeSchema(db.GetSchema()));
+
+    // Verify that data is preserved across the migration.
+    sql::Statement s(db.GetUniqueStatement(
+        "SELECT source_id,destination_site FROM source_destinations"));
+
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ(2, s.ColumnInt(0));
+    ASSERT_EQ("13", s.ColumnString(1));
+    ASSERT_FALSE(s.Step());
   }
 
   // DB creation histograms should be recorded.

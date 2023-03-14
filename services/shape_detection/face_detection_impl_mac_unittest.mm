@@ -67,11 +67,11 @@ std::vector<TestParams> GetTestParams() {
        base::BindRepeating(&CreateFaceDetectorImplMac)},
       {false, 120, 120, "services/test/data/mona_lisa.jpg", 1, 4, 10,
        base::BindRepeating(&CreateFaceDetectorImplMacVision)},
-      {false, 240, 240, "services/test/data/the_beatles.jpg", 4, 3, 1,
+      {false, 468, 529, "services/test/data/the_beatles.jpg", 4, 3, 1,
        base::BindRepeating(&CreateFaceDetectorImplMac)},
-      {true, 240, 240, "services/test/data/the_beatles.jpg", 4, 3, 1,
+      {true, 468, 529, "services/test/data/the_beatles.jpg", 4, 3, 1,
        base::BindRepeating(&CreateFaceDetectorImplMac)},
-      {false, 240, 240, "services/test/data/the_beatles.jpg", 4, 4, 10,
+      {false, 468, 529, "services/test/data/the_beatles.jpg", 4, 4, 10,
        base::BindRepeating(&CreateFaceDetectorImplMacVision)},
   };
 }

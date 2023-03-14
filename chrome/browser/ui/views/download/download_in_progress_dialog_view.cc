@@ -72,8 +72,7 @@ DownloadInProgressDialogView::DownloadInProgressDialogView(
     case Browser::DownloadCloseType::kOk:
       // This dialog should have been created within the same thread invocation
       // as the original test, so it's never ok to close.
-      NOTREACHED();
-      break;
+      NOTREACHED_NORETURN();
   }
   auto message_label = std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(message_id),

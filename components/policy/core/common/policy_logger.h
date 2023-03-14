@@ -11,42 +11,45 @@
 
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/policy/policy_export.h"
 
-namespace policy {
-
 // Note: the DLOG_POLICY macro has no "#if DCHECK_IS_ON()" check because some
 // messages logged with DLOG are still important to be seen on the
 // chrome://policy/logs page in release mode. The DLOG call in StreamLog() will
 // do the check as usual for command line logging.
-#if BUILDFLAG(IS_ANDROID)
-#define LOG_POLICY(log_severity, log_source) \
-  LOG_POLICY_##log_severity(PolicyLogger::LogHelper::LogType::kLog, log_source)
-#define DLOG_POLICY(log_severity, log_source) \
-  LOG_POLICY_##log_severity(PolicyLogger::LogHelper::LogType::kDLog, log_source)
-#define VLOG_POLICY(log_verbosity, log_source)                     \
-  PolicyLogger::LogHelper(PolicyLogger::LogHelper::LogType::kVLog, \
-                          PolicyLogger::Log::Severity::kVerbose,   \
-                          log_verbosity, log_source, FROM_HERE)
-#define DVLOG_POLICY(log_verbosity, log_source)                    \
-  PolicyLogger::LogHelper(PolicyLogger::LogHelper::LogType::kDLog, \
-                          PolicyLogger::Log::Severity::kVerbose,   \
-                          log_verbosity, log_source, FROM_HERE)
-#define LOG_POLICY_INFO(log_type, log_source)                                 \
-  PolicyLogger::LogHelper(log_type, PolicyLogger::Log::Severity::kInfo,       \
-                          PolicyLogger::LogHelper::kNoVerboseLog, log_source, \
-                          FROM_HERE)
-#define LOG_POLICY_WARNING(log_type, log_source)                              \
-  PolicyLogger::LogHelper(log_type, PolicyLogger::Log::Severity::kWarning,    \
-                          PolicyLogger::LogHelper::kNoVerboseLog, log_source, \
-                          FROM_HERE)
-#define LOG_POLICY_ERROR(log_type, log_source)                                \
-  PolicyLogger::LogHelper(log_type, PolicyLogger::Log::Severity::kError,      \
-                          PolicyLogger::LogHelper::kNoVerboseLog, log_source, \
-                          FROM_HERE)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#define LOG_POLICY(log_severity, log_source)                                  \
+  LOG_POLICY_##log_severity(::policy::PolicyLogger::LogHelper::LogType::kLog, \
+                            log_source)
+#define DLOG_POLICY(log_severity, log_source)                                  \
+  LOG_POLICY_##log_severity(::policy::PolicyLogger::LogHelper::LogType::kDLog, \
+                            log_source)
+#define VLOG_POLICY(log_verbosity, log_source)                        \
+  ::policy::PolicyLogger::LogHelper(                                  \
+      ::policy::PolicyLogger::LogHelper::LogType::kVLog,              \
+      ::policy::PolicyLogger::Log::Severity::kVerbose, log_verbosity, \
+      log_source, FROM_HERE)
+#define DVLOG_POLICY(log_verbosity, log_source)                       \
+  ::policy::PolicyLogger::LogHelper(                                  \
+      ::policy::PolicyLogger::LogHelper::LogType::kDLog,              \
+      ::policy::PolicyLogger::Log::Severity::kVerbose, log_verbosity, \
+      log_source, FROM_HERE)
+#define LOG_POLICY_INFO(log_type, log_source)                 \
+  ::policy::PolicyLogger::LogHelper(                          \
+      log_type, ::policy::PolicyLogger::Log::Severity::kInfo, \
+      ::policy::PolicyLogger::LogHelper::kNoVerboseLog, log_source, FROM_HERE)
+#define LOG_POLICY_WARNING(log_type, log_source)                 \
+  ::policy::PolicyLogger::LogHelper(                             \
+      log_type, ::policy::PolicyLogger::Log::Severity::kWarning, \
+      ::policy::PolicyLogger::LogHelper::kNoVerboseLog, log_source, FROM_HERE)
+#define LOG_POLICY_ERROR(log_type, log_source)                 \
+  ::policy::PolicyLogger::LogHelper(                           \
+      log_type, ::policy::PolicyLogger::Log::Severity::kError, \
+      ::policy::PolicyLogger::LogHelper::kNoVerboseLog, log_source, FROM_HERE)
 #else
 #define LOG_POLICY(log_severity, log_source) LOG(log_severity)
 #define DLOG_POLICY(log_severity, log_source) DLOG(log_severity)
@@ -54,11 +57,13 @@ namespace policy {
 #define DVLOG_POLICY(log_verbosity, log_source) DVLOG(log_verbosity)
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#define POLICY_AUTH PolicyLogger::Log::Source::kAuthentication
-#define POLICY_PROCESSING PolicyLogger::Log::Source::kPolicyProcessing
-#define CBCM_ENROLLMENT PolicyLogger::Log::Source::kCBCMEnrollment
-#define POLICY_FETCHING PolicyLogger::Log::Source::kPolicyFetching
-#define PLATFORM_POLICY PolicyLogger::Log::Source::kPlatformPolicy
+#define POLICY_AUTH ::policy::PolicyLogger::Log::Source::kAuthentication
+#define POLICY_PROCESSING ::policy::PolicyLogger::Log::Source::kPolicyProcessing
+#define CBCM_ENROLLMENT ::policy::PolicyLogger::Log::Source::kCBCMEnrollment
+#define POLICY_FETCHING ::policy::PolicyLogger::Log::Source::kPolicyFetching
+#define PLATFORM_POLICY ::policy::PolicyLogger::Log::Source::kPlatformPolicy
+
+namespace policy {
 
 // Collects logs to be displayed in chrome://policy-logs.
 class POLICY_EXPORT PolicyLogger {
@@ -141,6 +146,8 @@ class POLICY_EXPORT PolicyLogger {
     base::Location location_;
   };
 
+  static constexpr base::TimeDelta kTimeToLive = base::Minutes(30);
+
   static PolicyLogger* GetInstance();
 
   PolicyLogger();
@@ -155,17 +162,32 @@ class POLICY_EXPORT PolicyLogger {
   bool IsPolicyLoggingEnabled() const;
 
   // Returns the logs size for testing purposes.
-  int GetPolicyLogsSizeForTesting() const;
+  size_t GetPolicyLogsSizeForTesting() const;
 
-  // TODO(b/251799119): delete logs after an expiry period of ~30 minutes.
+  // Clears `logs_` and sets `is_log_deletion_scheduled_` as cleanup after every
+  // test.
+  void ResetLoggerAfterTest();
 
  private:
-  // Adds a new log to the logs_ list.
+  // Adds a new log to the logs_ list and calls `ScheduleOldLogsDeletion` if
+  // there is no deletion task scheduled.
   void AddLog(Log&& new_log);
+
+  // Deletes logs in the list that have been in the list for `kTimeToLive`
+  // minutes to an hour.
+  void DeleteOldLogs();
+
+  // Posts a new log deletion task and sets the `is_log_deletion_scheduled_`
+  // flag.
+  void ScheduleOldLogsDeletion();
+
+  bool is_log_deletion_scheduled_{false};
 
   std::vector<Log> logs_ GUARDED_BY_CONTEXT(logs_list_sequence_checker_);
 
   SEQUENCE_CHECKER(logs_list_sequence_checker_);
+
+  base::WeakPtrFactory<PolicyLogger> weak_factory_{this};
 };
 
 }  // namespace policy

@@ -88,7 +88,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
     virtual void ClearManagerServices() = 0;
 
     // Returns all enabled services in the given property.
-    virtual base::Value GetEnabledServiceList() const = 0;
+    virtual base::Value::List GetEnabledServiceList() const = 0;
 
     // Called by ShillServiceClient when a service's State property changes,
     // before notifying observers. Sets the DefaultService property to empty

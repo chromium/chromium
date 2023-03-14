@@ -938,11 +938,11 @@ class EnterpriseReportingPrivateGetContextInfoOSFirewallTest
     EnterpriseReportingPrivateGetContextInfoTest::SetUp();
     HRESULT hr = CoCreateInstance(CLSID_NetFwPolicy2, nullptr, CLSCTX_ALL,
                                   IID_PPV_ARGS(&firewall_policy_));
-    EXPECT_FALSE(FAILED(hr));
+    EXPECT_GE(hr, 0);
 
     long profile_types = 0;
     hr = firewall_policy_->get_CurrentProfileTypes(&profile_types);
-    EXPECT_FALSE(FAILED(hr));
+    EXPECT_GE(hr, 0);
 
     // Setting the firewall for each active profile
     const NET_FW_PROFILE_TYPE2 kProfileTypes[] = {NET_FW_PROFILE2_PUBLIC,
@@ -951,13 +951,13 @@ class EnterpriseReportingPrivateGetContextInfoOSFirewallTest
     for (size_t i = 0; i < std::size(kProfileTypes); ++i) {
       if ((profile_types & kProfileTypes[i]) != 0) {
         hr = firewall_policy_->get_FirewallEnabled(kProfileTypes[i], &enabled_);
-        EXPECT_FALSE(FAILED(hr));
+        EXPECT_GE(hr, 0);
         active_profile_ = kProfileTypes[i];
         hr = firewall_policy_->put_FirewallEnabled(
             kProfileTypes[i], firewall_value_ == SettingValue::ENABLED
                                   ? VARIANT_TRUE
                                   : VARIANT_FALSE);
-        EXPECT_FALSE(FAILED(hr));
+        EXPECT_GE(hr, 0);
         break;
       }
     }
@@ -967,7 +967,8 @@ class EnterpriseReportingPrivateGetContextInfoOSFirewallTest
     // Resetting the firewall to its initial state
     HRESULT hr =
         firewall_policy_->put_FirewallEnabled(active_profile_, enabled_);
-    EXPECT_FALSE(FAILED(hr));
+    EXPECT_GE(hr, 0);
+    EnterpriseReportingPrivateGetContextInfoTest::TearDown();
   }
 
   extensions::api::enterprise_reporting_private::SettingValue

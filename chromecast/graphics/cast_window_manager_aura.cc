@@ -187,16 +187,6 @@ void CastWindowManagerAura::Setup() {
   gfx::Rect host_bounds = GetPrimaryDisplayHostBounds();
   ui::PlatformWindowInitProperties properties(host_bounds);
 
-#if BUILDFLAG(IS_FUCHSIA)
-  // When using Scenic Ozone platform we need to supply a view_token to the
-  // window. This is not necessary when using the headless ozone platform.
-  if (ui::OzonePlatform::GetInstance()
-          ->GetPlatformProperties()
-          .needs_view_token) {
-    ui::fuchsia::InitializeViewTokenAndPresentView(&properties);
-  }
-#endif
-
   LOG(INFO) << "Starting window manager, bounds: " << host_bounds.ToString();
   CHECK(aura::Env::GetInstance());
   window_tree_host_ = std::make_unique<CastWindowTreeHostAura>(

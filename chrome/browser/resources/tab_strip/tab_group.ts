@@ -54,13 +54,13 @@ export class TabGroupElement extends CustomElement {
   }
 
   private onClickChip_() {
-    if (!this.dataset.groupId) {
+    if (!this.dataset['groupId']) {
       return;
     }
 
     const boundingBox = this.$('#chip')!.getBoundingClientRect();
     this.tabsApi_.showEditDialogForGroup(
-        this.dataset.groupId, boundingBox.left, boundingBox.top,
+        this.dataset['groupId'], boundingBox.left, boundingBox.top,
         boundingBox.width, boundingBox.height);
   }
 

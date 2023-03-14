@@ -113,7 +113,9 @@
     class$="list-frame [[computeCssClass_(
         removeCardExpirationAndTypeTitlesEnabled_)]]"
     credit-cards="[[creditCards]]" ibans="[[ibans]]" upi-ids="[[upiIds]]"
-    on-dots-iban-menu-click="onDotsIbanMenuClick_">
+    on-dots-iban-menu-click="onDotsIbanMenuClick_"
+    on-dots-card-menu-click="onCreditCardDotsMenuClick_"
+    on-remote-card-menu-click="onRemoteEditCreditCardClick_">
 </settings-payments-list>
 
 <cr-action-menu id="creditCardSharedMenu" role-description="$i18n{menu}">
@@ -160,7 +162,7 @@
 
 <template is="dom-if" if="[[showCreditCardDialog_]]" restamp>
   <settings-credit-card-edit-dialog credit-card="[[activeCreditCard_]]"
-      on-close="onCreditCardDialogClose_">
+      on-close="onCreditCardDialogClose_" on-save-credit-card="saveCreditCard_">
   </settings-credit-card-edit-dialog>
 </template>
 <template is="dom-if" if="[[showIbanDialog_]]" restamp>
@@ -171,7 +173,8 @@
 
 <template is="dom-if" if="[[showVirtualCardUnenrollDialog_]]" restamp>
   <settings-virtual-card-unenroll-dialog credit-card="[[activeCreditCard_]]"
-      on-close="onVirtualCardUnenrollDialogClose_">
+      on-close="onVirtualCardUnenrollDialogClose_"
+      on-unenroll-virtual-card="unenrollVirtualCard_">
   </settings-virtual-card-unenroll-dialog>
 </template>
 

@@ -11,7 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "cc/resources/ui_resource_bitmap.h"
@@ -23,10 +23,7 @@
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
-#include "components/viz/common/quads/compositor_frame.h"
-#include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
-#include "components/viz/common/surfaces/surface_id.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -68,6 +65,10 @@ class COMPONENT_EXPORT(CC_SLIM) FrameSinkImpl
   viz::ResourceId GetVizResourceId(cc::UIResourceId id);
   bool IsUIResourceOpaque(cc::UIResourceId resource_id);
   gfx::Size GetUIResourceSize(cc::UIResourceId resource_id);
+  viz::ClientResourceProvider* client_resource_provider() {
+    return &resource_provider_;
+  }
+  int GetMaxTextureSize() const;
 
   // viz::ContextLostObserver
   void OnContextLost() override;

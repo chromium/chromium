@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/css/media_query.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/media_values_dynamic.h"
+#include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/properties/longhands/custom_property.h"
 #include "third_party/blink/renderer/core/css/resolver/media_query_result.h"
@@ -1332,6 +1333,52 @@ static bool VerticalViewportSegmentsMediaFeatureEval(
          CompareValue(vertical_viewport_segments, static_cast<int>(number), op);
 }
 
+static bool OverflowInlineMediaFeatureEval(const MediaQueryExpValue& value,
+                                           MediaQueryOperator,
+                                           const MediaValues& media_values) {
+  bool can_scroll = !EqualIgnoringASCIICase(media_values.MediaType(),
+                                            media_type_names::kPrint);
+  // No value = boolean context:
+  // https://w3c.github.io/csswg-drafts/mediaqueries/#mq-boolean-context
+  if (!value.IsValid()) {
+    return can_scroll;
+  }
+  DCHECK(value.IsId());
+  switch (value.Id()) {
+    case CSSValueID::kNone:
+      return !can_scroll;
+    case CSSValueID::kScroll:
+      return can_scroll;
+    default:
+      NOTREACHED();
+      return false;
+  }
+}
+
+static bool OverflowBlockMediaFeatureEval(const MediaQueryExpValue& value,
+                                          MediaQueryOperator,
+                                          const MediaValues& media_values) {
+  bool can_scroll = !EqualIgnoringASCIICase(media_values.MediaType(),
+                                            media_type_names::kPrint);
+  // No value = boolean context:
+  // https://w3c.github.io/csswg-drafts/mediaqueries/#mq-boolean-context
+  if (!value.IsValid()) {
+    return true;
+  }
+  DCHECK(value.IsId());
+  switch (value.Id()) {
+    case CSSValueID::kNone:
+      return false;
+    case CSSValueID::kScroll:
+      return can_scroll;
+    case CSSValueID::kPaged:
+      return !can_scroll;
+    default:
+      NOTREACHED();
+      return false;
+  }
+}
+
 static bool DevicePostureMediaFeatureEval(const MediaQueryExpValue& value,
                                           MediaQueryOperator,
                                           const MediaValues& media_values) {
@@ -1354,6 +1401,36 @@ static bool DevicePostureMediaFeatureEval(const MediaQueryExpValue& value,
       return device_posture == DevicePostureType::kContinuous;
     case CSSValueID::kFolded:
       return device_posture == DevicePostureType::kFolded;
+    default:
+      NOTREACHED();
+      return false;
+  }
+}
+
+static bool UpdateMediaFeatureEval(const MediaQueryExpValue& value,
+                                   MediaQueryOperator,
+                                   const MediaValues& media_values) {
+  bool can_update = !EqualIgnoringASCIICase(media_values.MediaType(),
+                                            media_type_names::kPrint);
+  // No value = boolean context:
+  // https://w3c.github.io/csswg-drafts/mediaqueries/#mq-boolean-context
+  if (!value.IsValid()) {
+    return can_update;
+  }
+  const auto& device_update_ability_type =
+      media_values.OutputDeviceUpdateAbilityType();
+  DCHECK(value.IsId());
+  switch (value.Id()) {
+    case CSSValueID::kNone:
+      return !can_update;
+    case CSSValueID::kSlow:
+      return can_update &&
+             device_update_ability_type ==
+                 mojom::blink::OutputDeviceUpdateAbilityType::kSlowType;
+    case CSSValueID::kFast:
+      return can_update &&
+             device_update_ability_type ==
+                 mojom::blink::OutputDeviceUpdateAbilityType::kFastType;
     default:
       NOTREACHED();
       return false;
@@ -1482,8 +1559,13 @@ bool TokensEqualIgnoringLeadingAndTrailingSpaces(
     return false;
   }
 
-  const base::span<CSSParserToken> tokens1 = value1->Tokens();
-  const base::span<CSSParserToken> tokens2 = value2->Tokens();
+  CSSTokenizer tokenizer1(value1->OriginalText());
+  CSSTokenizer tokenizer2(value2->OriginalText());
+  auto tokens1vec = tokenizer1.TokenizeToEOF();
+  auto tokens2vec = tokenizer2.TokenizeToEOF();
+
+  const base::span<CSSParserToken> tokens1 = tokens1vec;
+  const base::span<CSSParserToken> tokens2 = tokens2vec;
 
   base::span<CSSParserToken>::const_iterator tokens1_start = tokens1.begin();
   base::span<CSSParserToken>::const_iterator tokens1_end = tokens1.end();

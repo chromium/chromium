@@ -22,7 +22,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
-#include "fuchsia_web/runners/buildflags.h"
 #include "fuchsia_web/runners/common/web_component.h"
 #include "url/gurl.h"
 
@@ -103,9 +102,6 @@ void WebContentRunner::StartComponent(
       CreateUniqueComponentName(), this,
       std::make_unique<base::StartupContext>(std::move(startup_info)),
       std::move(controller_request));
-#if BUILDFLAG(WEB_RUNNER_REMOTE_DEBUGGING_PORT) != 0
-  component->EnableRemoteDebugging();
-#endif
   component->StartComponent();
   component->LoadUrl(url, std::vector<fuchsia::net::http::Header>());
   RegisterComponent(std::move(component));

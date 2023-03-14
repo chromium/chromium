@@ -149,7 +149,7 @@ void SimpleWebViewDialog::StartLoad(const GURL& url) {
   // Create the password manager that is needed for the proxy.
   ChromePasswordManagerClient::CreateForWebContentsWithAutofillClient(
       web_contents,
-      autofill::ChromeAutofillClient::FromWebContents(web_contents));
+      autofill::ContentAutofillClient::FromWebContents(web_contents));
 
   // Set this as the web modal delegate so that web dialog can appear.
   web_modal::WebContentsModalDialogManager::CreateForWebContents(web_contents);

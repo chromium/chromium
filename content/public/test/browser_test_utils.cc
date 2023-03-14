@@ -135,7 +135,10 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/latency/latency_info.h"
-#include "ui/resources/grit/webui_resources.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/webui/grit/ash_webui_common_resources.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include <combaseapi.h>
@@ -1467,26 +1470,6 @@ void ExecuteScriptAsyncWithoutUserGesture(const ToRenderFrameHost& adapter,
       base::UTF8ToUTF16(script), base::NullCallback());
 }
 
-bool ExecuteScriptAndExtractDouble(const ToRenderFrameHost& adapter,
-                                   const std::string& script, double* result) {
-  DCHECK(result);
-  std::unique_ptr<base::Value> value;
-  // Prerendering pages will never have user gesture.
-  bool user_gesture = adapter.render_frame_host()->GetLifecycleState() !=
-                      RenderFrameHost::LifecycleState::kPrerendering;
-  if (!ExecuteScriptHelper(adapter.render_frame_host(), script, user_gesture,
-                           ISOLATED_WORLD_ID_GLOBAL, &value))
-    return false;
-  if (!value)
-    return false;
-  absl::optional<double> maybe_value = value->GetIfDouble();
-  if (!maybe_value.has_value())
-    return false;
-
-  *result = maybe_value.value();
-  return true;
-}
-
 bool ExecuteScriptAndExtractInt(const ToRenderFrameHost& adapter,
                                 const std::string& script, int* result) {
   DCHECK(result);
@@ -2042,7 +2025,7 @@ bool ExecuteWebUIResourceTest(WebContents* web_contents) {
   std::string script;
   scoped_refptr<base::RefCountedMemory> bytes =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
-          IDR_ASH_COMMON_WEBUI_RESOURCE_TEST_JS);
+          IDR_ASH_WEBUI_COMMON_WEBUI_RESOURCE_TEST_JS);
 
   if (HasGzipHeader(*bytes))
     AppendGzippedResource(*bytes, &script);
@@ -3815,7 +3798,8 @@ void VerifyStaleContentOnFrameEviction(
   EvictionStateWaiter waiter{delegated_frame_host};
   render_widget_host_view_aura->WasOccluded();
   static_cast<viz::FrameEvictorClient*>(delegated_frame_host)
-      ->EvictDelegatedFrame();
+      ->EvictDelegatedFrame(delegated_frame_host->GetFrameEvictorForTesting()
+                                ->CollectSurfaceIdsForEviction());
   EXPECT_EQ(delegated_frame_host->frame_eviction_state(),
             DelegatedFrameHost::FrameEvictionState::kPendingEvictionRequests);
   // Wait until the stale frame content is copied and set onto the layer, i.e.

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next min version: 1
+// Next min version: 3
 
 module cros.mojom;
 
@@ -42,6 +42,15 @@ enum BlurLevel {
   kMaximum,
 };
 
+// Defines the types of segmentation models that the video effects can use.
+// Lower resolution models will reduce the workload on the GPU.
+[Extensible]
+enum SegmentationModel {
+  kAuto = 0,
+  [Default] kHighResolution = 1,
+  kLowerResolution = 2,
+};
+
 // Structure used for configuring and enabling video conferencing effects.
 // This should be kept in sync with the google3 version found in:
 // chromeos/ml/effects_pipeline/effects_config.h
@@ -59,11 +68,15 @@ struct EffectsConfig {
   uint16 graph_max_frames_in_flight = 2;
 
   // Whether background background blur should be enabled.
-  [MinVersion=1]  bool blur_enabled;
+  [MinVersion=1] bool blur_enabled;
 
   // Whether background replacement should be enabled.
-  [MinVersion=1]  bool replace_enabled;
+  [MinVersion=1] bool replace_enabled;
 
   // Whether portrait relighting should be enabled.
-  [MinVersion=1]  bool relight_enabled;
+  [MinVersion=1] bool relight_enabled;
+
+  // The type of segmentation model to use. Lower resolution models will reduce
+  // the workload on the GPU.
+  [MinVersion=2] SegmentationModel segmentation_model;
 };

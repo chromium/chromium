@@ -129,23 +129,16 @@ OutputPresenterGL::OutputPresenterGL(
     uint32_t shared_image_usage)
     : presenter_(presenter),
       dependency_(deps),
-      supports_async_swap_(presenter_->SupportsAsyncSwap()),
       shared_image_factory_(factory),
       shared_image_representation_factory_(representation_factory),
-      shared_image_usage_(shared_image_usage) {
-  // GL is origin is at bottom left normally, all Surfaceless implementations
-  // are flipped.
-  DCHECK_EQ(presenter_->GetOrigin(), gfx::SurfaceOrigin::kTopLeft);
-}
+      shared_image_usage_(shared_image_usage) {}
 
 OutputPresenterGL::~OutputPresenterGL() = default;
 
 void OutputPresenterGL::InitializeCapabilities(
     OutputSurface::Capabilities* capabilities) {
   capabilities->android_surface_control_feature_enabled = true;
-  capabilities->supports_post_sub_buffer = presenter_->SupportsPostSubBuffer();
-  capabilities->supports_commit_overlay_planes =
-      presenter_->SupportsCommitOverlayPlanes();
+  capabilities->supports_post_sub_buffer = true;
   capabilities->supports_viewporter = presenter_->SupportsViewporter();
 
   // Set supports_surfaceless to enable overlays.
@@ -230,39 +223,14 @@ std::unique_ptr<OutputPresenter::Image> OutputPresenterGL::AllocateSingleImage(
   return image;
 }
 
-void OutputPresenterGL::SwapBuffers(
-    SwapCompletionCallback completion_callback,
-    BufferPresentedCallback presentation_callback,
-    gfx::FrameData data) {
-  if (supports_async_swap_) {
-    presenter_->SwapBuffersAsync(std::move(completion_callback),
-                                 std::move(presentation_callback), data);
-  } else {
-    auto result =
-        presenter_->SwapBuffers(std::move(presentation_callback), data);
-    std::move(completion_callback).Run(gfx::SwapCompletionResult(result));
-  }
-}
-
-void OutputPresenterGL::PostSubBuffer(
-    const gfx::Rect& rect,
-    SwapCompletionCallback completion_callback,
-    BufferPresentedCallback presentation_callback,
-    gfx::FrameData data) {
+void OutputPresenterGL::Present(SwapCompletionCallback completion_callback,
+                                BufferPresentedCallback presentation_callback,
+                                gfx::FrameData data) {
 #if BUILDFLAG(IS_APPLE)
   presenter_->SetCALayerErrorCode(ca_layer_error_code_);
 #endif
-
-  if (supports_async_swap_) {
-    presenter_->PostSubBufferAsync(
-        rect.x(), rect.y(), rect.width(), rect.height(),
-        std::move(completion_callback), std::move(presentation_callback), data);
-  } else {
-    auto result = presenter_->PostSubBuffer(
-        rect.x(), rect.y(), rect.width(), rect.height(),
-        std::move(presentation_callback), data);
-    std::move(completion_callback).Run(gfx::SwapCompletionResult(result));
-  }
+  presenter_->Present(std::move(completion_callback),
+                      std::move(presentation_callback), data);
 }
 
 void OutputPresenterGL::SchedulePrimaryPlane(
@@ -291,20 +259,6 @@ void OutputPresenterGL::SchedulePrimaryPlane(
           plane.opacity, plane.priority_hint, plane.rounded_corners,
           presenter_image->color_space(),
           /*hdr_metadata=*/absl::nullopt));
-}
-
-void OutputPresenterGL::CommitOverlayPlanes(
-    SwapCompletionCallback completion_callback,
-    BufferPresentedCallback presentation_callback,
-    gfx::FrameData data) {
-  if (supports_async_swap_) {
-    presenter_->CommitOverlayPlanesAsync(
-        std::move(completion_callback), std::move(presentation_callback), data);
-  } else {
-    auto result =
-        presenter_->CommitOverlayPlanes(std::move(presentation_callback), data);
-    std::move(completion_callback).Run(gfx::SwapCompletionResult(result));
-  }
 }
 
 void OutputPresenterGL::ScheduleOverlayPlane(
@@ -375,19 +329,19 @@ void OutputPresenterGL::ScheduleOverlayPlane(
   }
 #elif BUILDFLAG(IS_APPLE)
   presenter_->ScheduleCALayer(ui::CARendererLayerParams(
-      overlay_plane_candidate.shared_state->is_clipped,
-      gfx::ToEnclosingRect(overlay_plane_candidate.shared_state->clip_rect),
-      overlay_plane_candidate.shared_state->rounded_corner_bounds,
-      overlay_plane_candidate.shared_state->sorting_context_id,
-      gfx::Transform(overlay_plane_candidate.shared_state->transform),
+      overlay_plane_candidate.clip_rect.has_value(),
+      overlay_plane_candidate.clip_rect.value_or(gfx::Rect()),
+      overlay_plane_candidate.rounded_corners,
+      overlay_plane_candidate.sorting_context_id,
+      absl::get<gfx::Transform>(overlay_plane_candidate.transform),
       access ? access->GetIOSurface() : gfx::ScopedIOSurface(),
       access ? access->representation()->color_space() : gfx::ColorSpace(),
-      overlay_plane_candidate.contents_rect,
-      gfx::ToEnclosingRect(overlay_plane_candidate.bounds_rect),
-      overlay_plane_candidate.background_color,
+      overlay_plane_candidate.uv_rect,
+      gfx::ToEnclosingRect(overlay_plane_candidate.display_rect),
+      overlay_plane_candidate.color.value_or(SkColors::kTransparent),
       overlay_plane_candidate.edge_aa_mask, overlay_plane_candidate.opacity,
-      overlay_plane_candidate.filter, overlay_plane_candidate.hdr_mode,
-      overlay_plane_candidate.hdr_metadata,
+      overlay_plane_candidate.nearest_neighbor_filter,
+      overlay_plane_candidate.hdr_mode, overlay_plane_candidate.hdr_metadata,
       overlay_plane_candidate.protected_video_type));
 #endif
 }

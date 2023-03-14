@@ -1,6 +1,6 @@
 {
-  "version": "19.16",
-  "log_list_timestamp": "2023-02-19T12:54:54Z",
+  "version": "20.7",
+  "log_list_timestamp": "2023-03-13T12:53:15Z",
   "operators": [
     {
       "name": "Google",
@@ -173,18 +173,6 @@
         "ctops@digicert.com"
       ],
       "logs": [
-        {
-          "description": "DigiCert Log Server",
-          "log_id": "VhQGmi/XwuzT9eG9RLI+x0Z2ubyZEVzA75SYVdaJ0N0=",
-          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEAkbFvhu7gkAW6MHSrBlpE1n4+HCFRkC5OLAjgqhkTH+/uzSfSl8ois8ZxAD2NgaTZe1M9akhYlrYkes4JECs6A==",
-          "url": "https://ct1.digicert-ct.com/log/",
-          "mmd": 86400,
-          "state": {
-            "retired": {
-              "timestamp": "2022-01-24T00:00:00Z"
-            }
-          }
-        },
         {
           "description": "DigiCert Yeti2023 Log",
           "log_id": "Nc8ZG7+xbFe/D61MbULLu7YnICZR6j/hKu+oA8M71kw=",

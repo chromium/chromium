@@ -53,10 +53,13 @@ const unsigned int kRecentLastLaunchInDays = 10;
 // Dictionary keys to use for the events. Must be kept in sync with
 // AppBannerEvent.
 constexpr const char* kBannerEventKeys[] = {
+    // clang-format off
     "couldShowBannerEvents",
     "didShowBannerEvent",
     "didBlockBannerEvent",
     "didAddToHomescreenEvent",
+    "couldShowAmbientBadgeEvent",
+    // clang-format on
 };
 
 // Keys to use when querying the variations params.

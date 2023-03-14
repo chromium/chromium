@@ -49,9 +49,9 @@
 
     async function activate(next) {
       TestRunner.evaluateInPage('activate()');
-      await TestRunner.waitForTargetRemoved(SDK.targetManager.mainTarget());
+      await TestRunner.waitForTargetRemoved(SDK.targetManager.rootTarget());
       await TestRunner.waitForTarget();
-      await TestRunner.waitForTarget(target => target != SDK.targetManager.mainTarget());
+      await TestRunner.waitForTarget(target => target != SDK.targetManager.rootTarget());
       await TestRunner.waitForExecutionContext(TestRunner.runtimeModel);
       targets = SDK.targetManager.targets();
       next();

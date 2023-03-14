@@ -126,14 +126,12 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
   // has finished with all submitted work.
   virtual void Submit(bool sync_cpu, base::OnceClosure callback);
 
-  // Presents the back buffer.
-  virtual void SwapBuffers(BufferPresentedCallback feedback,
-                           OutputSurfaceFrame frame) = 0;
-  virtual void PostSubBuffer(const gfx::Rect& rect,
-                             BufferPresentedCallback feedback,
-                             OutputSurfaceFrame frame);
-  virtual void CommitOverlayPlanes(BufferPresentedCallback feedback,
-                                   OutputSurfaceFrame frame);
+  // Presents the back buffer. Optional `update_rect` represents hint of the
+  // rect that was updated in the back buffer. If not specified the whole buffer
+  // is supposed to be updated.
+  virtual void Present(const absl::optional<gfx::Rect>& update_rect,
+                       BufferPresentedCallback feedback,
+                       OutputSurfaceFrame frame) = 0;
   virtual bool EnsureMinNumberOfBuffers(size_t n);
 
   // Set the rectangle that will be drawn into on the surface.

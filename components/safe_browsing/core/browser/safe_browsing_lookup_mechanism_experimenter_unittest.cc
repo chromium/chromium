@@ -171,7 +171,7 @@ class PretendCheckerOnIO {
         time_to_self_destruct);
   }
   ~PretendCheckerOnIO() {
-    mechanism_experimenter_->OnBrowserUrlLoaderThrottleCheckerOnIODestructed();
+    mechanism_experimenter_->OnBrowserUrlLoaderThrottleCheckerOnSBDestructed();
   }
   scoped_refptr<SafeBrowsingLookupMechanismExperimenter> GetExperimenter() {
     return mechanism_experimenter_;
@@ -394,7 +394,7 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
           /*sample=*/expected_urt_hpd_hprt_delayed_responses[i],
           /*expected_bucket_count=*/1);
       histogram_tester_->ExpectTotalCount(
-          /*name=*/histogram_prefix + mechanisms[i] + ".DelayedResponseAmount",
+          /*name=*/histogram_prefix + mechanisms[i] + ".DelayedResponseTime",
           /*expected_count=*/expected_urt_hpd_hprt_delayed_responses[i] ==
                   UnknownNoYesResult::kUnknown
               ? 0
@@ -402,8 +402,7 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
       if (expected_urt_hpd_hprt_delayed_responses[i] ==
           UnknownNoYesResult::kNo) {
         histogram_tester_->ExpectUniqueSample(
-            /*name=*/histogram_prefix + mechanisms[i] +
-                ".DelayedResponseAmount",
+            /*name=*/histogram_prefix + mechanisms[i] + ".DelayedResponseTime",
             /*sample=*/0,
             /*expected_bucket_count=*/1);
       }
@@ -955,7 +954,7 @@ TEST_F(SafeBrowsingLookupMechanismExperimenterTest, TestTimeouts) {
 
 TEST_F(SafeBrowsingLookupMechanismExperimenterTest, TestEmptyExperiment) {
   // After one second, calls into mechanism_experimenter's
-  // |OnBrowserUrlLoaderThrottleCheckerOnIODestructed|, which ends the
+  // |OnBrowserUrlLoaderThrottleCheckerOnSBDestructed|, which ends the
   // experiment.
   new PretendCheckerOnIO(
       /*time_to_will_process_response=*/base::Seconds(3),
@@ -1312,6 +1311,56 @@ TEST_F(SafeBrowsingLookupMechanismExperimenterTest, TestRedirectEligibility) {
     RunEligibilityWithTwoRedirectsTest(eligibility_configs, safe_threat_types,
                                        /*is_prefetch=*/true);
     ResetMetrics();
+  }
+}
+TEST_F(SafeBrowsingLookupMechanismExperimenterTest, TestGetDelayInformation) {
+  auto now = base::TimeTicks::Now();
+  struct TestCase {
+    base::TimeDelta mechanism_time_taken;
+    absl::optional<base::TimeTicks> will_process_response_reached_time;
+    absl::optional<base::TimeTicks> first_check_start_time;
+    Experimenter::ExperimentUnknownNoYesResult expected_delayed_response;
+    absl::optional<base::TimeDelta> expected_delayed_response_amount;
+  } test_cases[] = {
+      // Case 1: WillProcessResponse never reached.
+      {/*mechanism_time_taken=*/base::Seconds(3),
+       /*will_process_response_reached_time=*/absl::nullopt,
+       /*first_check_start_time=*/absl::nullopt,
+       /*expected_delayed_response=*/
+       Experimenter::ExperimentUnknownNoYesResult::kUnknown,
+       /*expected_delayed_response_amount=*/absl::nullopt},
+
+      // Case 2: There was a delay after WillProcessResponse.
+      {/*mechanism_time_taken=*/base::Seconds(3),
+       /*will_process_response_reached_time=*/now - base::Seconds(4),
+       /*first_check_start_time=*/now - base::Seconds(5),
+       /*expected_delayed_response=*/
+       Experimenter::ExperimentUnknownNoYesResult::kYes,
+       /*expected_delayed_response_amount=*/base::Seconds(2)},
+
+      // Case 3: There was no delay after WillProcessResponse.
+      {/*mechanism_time_taken=*/base::Seconds(3),
+       /*will_process_response_reached_time=*/now - base::Seconds(1),
+       /*first_check_start_time=*/now - base::Seconds(5),
+       /*expected_delayed_response=*/
+       Experimenter::ExperimentUnknownNoYesResult::kNo,
+       /*expected_delayed_response_amount=*/base::TimeDelta()},
+  };
+
+  for (const auto& test_case : test_cases) {
+    auto results = Experimenter::MechanismResults(
+        test_case.mechanism_time_taken, /*had_warning=*/false,
+        /*timed_out=*/false);
+    auto experimenter = base::MakeRefCounted<Experimenter>(
+        /*is_prefetch=*/false);
+    experimenter->first_check_start_time_ = test_case.first_check_start_time;
+    experimenter->will_process_response_reached_time_ =
+        test_case.will_process_response_reached_time;
+    auto delay_information = experimenter->GetDelayInformation(results);
+    EXPECT_EQ(delay_information.delayed_response,
+              test_case.expected_delayed_response);
+    EXPECT_EQ(delay_information.delayed_response_amount,
+              test_case.expected_delayed_response_amount);
   }
 }
 }  // namespace safe_browsing

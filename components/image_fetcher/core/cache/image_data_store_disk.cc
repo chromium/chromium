@@ -56,8 +56,7 @@ void SaveImageImpl(FilePath storage_path,
                    bool needs_transcoding) {
   FilePath file_path = BuildFilePath(storage_path, key, needs_transcoding);
 
-  int len = base::WriteFile(file_path, data.c_str(), data.length());
-  if (len == -1 || (size_t)len != data.length()) {
+  if (!base::WriteFile(file_path, data)) {
     DVLOG(1) << "WriteFile failed.";
   }
 

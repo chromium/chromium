@@ -74,6 +74,10 @@ ui::AXTreeUpdate BrowserAccessibilityManagerAndroid::GetEmptyDocument() {
   return update;
 }
 
+void BrowserAccessibilityManagerAndroid::ResetWebContentsAccessibility() {
+  web_contents_accessibility_.reset();
+}
+
 bool BrowserAccessibilityManagerAndroid::ShouldAllowImageDescriptions() {
   WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
   return (wcax && wcax->should_allow_image_descriptions()) ||

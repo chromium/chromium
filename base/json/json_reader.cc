@@ -148,14 +148,6 @@ absl::optional<Value> JSONReader::Read(StringPiece json,
 }
 
 // static
-std::unique_ptr<Value> JSONReader::ReadDeprecated(StringPiece json,
-                                                  int options,
-                                                  size_t max_depth) {
-  absl::optional<Value> value = Read(json, options, max_depth);
-  return value ? Value::ToUniquePtrValue(std::move(*value)) : nullptr;
-}
-
-// static
 JSONReader::Result JSONReader::ReadAndReturnValueWithError(StringPiece json,
                                                            int options) {
 #if BUILDFLAG(BUILD_RUST_JSON_READER)

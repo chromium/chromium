@@ -41,11 +41,17 @@ namespace {
 // https://www.rfc-editor.org/rfc/rfc8941.html.
 const AtomicString SerializeStringHeader(std::string str) {
   std::string output;
-  if (!str.empty()) {
-    output = net::structured_headers::SerializeItem(
-                 net::structured_headers::Item(str))
-                 .value_or(std::string());
+
+  // See https://crbug.com/1416925.
+  if (str.empty() &&
+      !base::FeatureList::IsEnabled(
+          blink::features::kQuoteEmptySecChUaStringHeadersConsistently)) {
+    return AtomicString(output.c_str());
   }
+
+  output =
+      net::structured_headers::SerializeItem(net::structured_headers::Item(str))
+          .value_or(std::string());
 
   return AtomicString(output.c_str());
 }

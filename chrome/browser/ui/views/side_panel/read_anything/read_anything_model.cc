@@ -26,7 +26,7 @@ using read_anything::mojom::LetterSpacing;
 using read_anything::mojom::LineSpacing;
 
 ReadAnythingModel::ReadAnythingModel()
-    : font_name_(kReadAnythingDefaultFontName),
+    : font_name_(string_constants::kReadAnythingDefaultFontName),
       font_scale_(kReadAnythingDefaultFontScale),
       font_model_(std::make_unique<ReadAnythingFontModel>()),
       colors_model_(std::make_unique<ReadAnythingColorsModel>()),
@@ -44,7 +44,7 @@ void ReadAnythingModel::Init(const std::string& font_name,
   // If this profile has previously selected choices that were saved to
   // prefs, check they are still a valid, and then assign if so.
   if (font_model_->IsValidFontName(font_name)) {
-    font_model_->SetDefaultIndexFromPrefsFontName(font_name);
+    font_model_->SetSelectedIndex(font_model_->GetFontNameIndex(font_name));
   }
 
   font_scale_ = GetValidFontScale(font_scale);
@@ -70,12 +70,13 @@ void ReadAnythingModel::Init(const std::string& font_name,
     letter_spacing_model_->SetSelectedIndex(letter_spacing_index);
   }
 
-  font_name_ = font_model_->GetFontNameAt(font_model_->GetStartingStateIndex());
+  font_name_ = font_model_->GetFontNameAt(font_model_->GetSelectedIndex());
   colors_combobox_index_ = colors_model_->GetSelectedIndex().value();
   auto& initial_colors = colors_model_->GetColorsAt(colors_combobox_index_);
   foreground_color_id_ = initial_colors.foreground_color_id;
   background_color_id_ = initial_colors.background_color_id;
   separator_color_id_ = initial_colors.separator_color_id;
+  dropdown_color_id_ = initial_colors.dropdown_color_id;
 
   line_spacing_ = line_spacing_model_->GetLineSpacingAt(
       line_spacing_model_->GetSelectedIndex().value());
@@ -96,6 +97,9 @@ void ReadAnythingModel::SetSelectedFontByIndex(size_t new_index) {
   // Check that the index is valid.
   DCHECK(font_model_->IsValidFontIndex(new_index));
 
+  // Keep track of current selection for GetDefaultIndex().
+  font_model_->SetSelectedIndex(new_index);
+
   // Update state and notify listeners
   font_name_ = font_model_->GetFontNameAt(new_index);
   NotifyThemeChanged();
@@ -110,6 +114,7 @@ void ReadAnythingModel::SetSelectedColorsByIndex(size_t new_index) {
   foreground_color_id_ = new_colors.foreground_color_id;
   background_color_id_ = new_colors.background_color_id;
   separator_color_id_ = new_colors.separator_color_id;
+  dropdown_color_id_ = new_colors.dropdown_color_id;
 
   NotifyThemeChanged();
 }
@@ -151,6 +156,14 @@ void ReadAnythingModel::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
   }
 }
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+void ReadAnythingModel::ScreenAIServiceReady() {
+  for (Observer& obs : observers_) {
+    obs.ScreenAIServiceReady();
+  }
+}
+#endif
+
 double ReadAnythingModel::GetValidFontScale(double font_scale) {
   if (font_scale < kReadAnythingMinimumFontScale)
     return kReadAnythingMinimumFontScale;
@@ -178,9 +191,10 @@ void ReadAnythingModel::IncreaseTextSize() {
 
 void ReadAnythingModel::NotifyThemeChanged() {
   for (Observer& obs : observers_) {
-    obs.OnReadAnythingThemeChanged(
-        font_name_, font_scale_, foreground_color_id_, background_color_id_,
-        separator_color_id_, line_spacing_, letter_spacing_);
+    obs.OnReadAnythingThemeChanged(font_name_, font_scale_,
+                                   foreground_color_id_, background_color_id_,
+                                   separator_color_id_, dropdown_color_id_,
+                                   line_spacing_, letter_spacing_);
   }
 }
 
@@ -207,15 +221,23 @@ bool ReadAnythingFontModel::IsValidFontIndex(size_t index) {
   return index < GetItemCount();
 }
 
-void ReadAnythingFontModel::SetDefaultIndexFromPrefsFontName(
-    std::string prefs_font_name) {
-  auto it =
-      base::ranges::find(font_choices_, base::UTF8ToUTF16(prefs_font_name));
-  default_index_ = static_cast<size_t>(it - font_choices_.begin());
+size_t ReadAnythingFontModel::GetFontNameIndex(std::string font_name) {
+  auto it = base::ranges::find(font_choices_, base::UTF8ToUTF16(font_name));
+  return static_cast<size_t>(it - font_choices_.begin());
 }
 
+// ui::Combobox needs a default option to show whenever Read Anything is
+// reopened in the same browser window.
 absl::optional<size_t> ReadAnythingFontModel::GetDefaultIndex() const {
-  return default_index_;
+  return selected_index_;
+}
+
+absl::optional<size_t> ReadAnythingFontModel::GetDefaultIndexForTesting() {
+  return selected_index_;
+}
+
+void ReadAnythingFontModel::SetSelectedIndex(size_t index) {
+  selected_index_ = index;
 }
 
 size_t ReadAnythingFontModel::GetItemCount() const {
@@ -245,7 +267,8 @@ std::string ReadAnythingFontModel::GetFontNameAt(size_t index) {
 // E.g. User chooses 'Serif', this method returns 'Serif, Arial, 18px'.
 std::string ReadAnythingFontModel::GetLabelFontListAt(size_t index) {
   std::string font_label = base::UTF16ToUTF8(GetDropDownTextAt(index));
-  base::StringAppendF(&font_label, "%s", kReadAnythingDefaultFontSyle);
+  base::StringAppendF(&font_label, "%s",
+                      string_constants::kReadAnythingDefaultFontSyle);
   return font_label;
 }
 
@@ -258,25 +281,49 @@ ReadAnythingFontModel::~ReadAnythingFontModel() = default;
 ReadAnythingColorsModel::ReadAnythingColorsModel() {
   // Define the possible sets of colors available to the user.
   ColorInfo kDefaultColors = {
-      u"Default", IDS_READ_ANYTHING_DEFAULT_PNG, kColorReadAnythingForeground,
-      kColorReadAnythingBackground, kColorReadAnythingSeparator};
+      l10n_util::GetStringUTF16(IDS_READING_MODE_DEFAULT_COLOR_LABEL),
+      IDS_READING_MODE_DEFAULT_PNG,
+      kColorReadAnythingForeground,
+      kColorReadAnythingBackground,
+      kColorReadAnythingSeparator,
+      kColorReadAnythingDropdownBackground,
+      ReadAnythingColor::kDefault};
 
   ColorInfo kLightColors = {
-      u"Light", IDS_READ_ANYTHING_LIGHT_PNG, kColorReadAnythingForegroundLight,
-      kColorReadAnythingBackgroundLight, kColorReadAnythingSeparatorLight};
+      l10n_util::GetStringUTF16(IDS_READING_MODE_LIGHT_COLOR_LABEL),
+      IDS_READING_MODE_LIGHT_PNG,
+      kColorReadAnythingForegroundLight,
+      kColorReadAnythingBackgroundLight,
+      kColorReadAnythingSeparatorLight,
+      kColorReadAnythingDropdownBackgroundLight,
+      ReadAnythingColor::kLight};
 
   ColorInfo kDarkColors = {
-      u"Dark", IDS_READ_ANYTHING_DARK_PNG, kColorReadAnythingForegroundDark,
-      kColorReadAnythingBackgroundDark, kColorReadAnythingSeparatorDark};
+      l10n_util::GetStringUTF16(IDS_READING_MODE_DARK_COLOR_LABEL),
+      IDS_READING_MODE_DARK_PNG,
+      kColorReadAnythingForegroundDark,
+      kColorReadAnythingBackgroundDark,
+      kColorReadAnythingSeparatorDark,
+      kColorReadAnythingDropdownBackgroundDark,
+      ReadAnythingColor::kDark};
 
-  ColorInfo kYellowColors = {u"Yellow", IDS_READ_ANYTHING_YELLOW_PNG,
-                             kColorReadAnythingForegroundYellow,
-                             kColorReadAnythingBackgroundYellow,
-                             kColorReadAnythingSeparatorYellow};
+  ColorInfo kYellowColors = {
+      l10n_util::GetStringUTF16(IDS_READING_MODE_YELLOW_COLOR_LABEL),
+      IDS_READING_MODE_YELLOW_PNG,
+      kColorReadAnythingForegroundYellow,
+      kColorReadAnythingBackgroundYellow,
+      kColorReadAnythingSeparatorYellow,
+      kColorReadAnythingDropdownBackgroundYellow,
+      ReadAnythingColor::kYellow};
 
   ColorInfo kBlueColors = {
-      u"Blue", IDS_READ_ANYTHING_BLUE_PNG, kColorReadAnythingForegroundBlue,
-      kColorReadAnythingBackgroundBlue, kColorReadAnythingSeparatorBlue};
+      l10n_util::GetStringUTF16(IDS_READING_MODE_BLUE_COLOR_LABEL),
+      IDS_READING_MODE_BLUE_PNG,
+      kColorReadAnythingForegroundBlue,
+      kColorReadAnythingBackgroundBlue,
+      kColorReadAnythingSeparatorBlue,
+      kColorReadAnythingDropdownBackgroundBlue,
+      ReadAnythingColor::kBlue};
 
   colors_choices_.emplace_back(kDefaultColors);
   colors_choices_.emplace_back(kLightColors);
@@ -322,15 +369,15 @@ ReadAnythingLineSpacingModel::ReadAnythingLineSpacingModel() {
   // Define the line spacing options available to the user.
   LineSpacingInfo kStandard = {
       LineSpacing::kStandard,
-      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_SPACING_COMBOBOX_STANDARD),
+      l10n_util::GetStringUTF16(IDS_READING_MODE_SPACING_COMBOBOX_STANDARD),
       kReadAnythingLineSpacingStandardIcon};
   LineSpacingInfo kLoose = {
       LineSpacing::kLoose,
-      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_SPACING_COMBOBOX_LOOSE),
+      l10n_util::GetStringUTF16(IDS_READING_MODE_SPACING_COMBOBOX_LOOSE),
       kReadAnythingLineSpacingLooseIcon};
   LineSpacingInfo kVeryLoose = {
       LineSpacing::kVeryLoose,
-      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_SPACING_COMBOBOX_VERY_LOOSE),
+      l10n_util::GetStringUTF16(IDS_READING_MODE_SPACING_COMBOBOX_VERY_LOOSE),
       kReadAnythingLineSpacingVeryLooseIcon};
 
   lines_choices_.emplace_back(kStandard);
@@ -377,15 +424,15 @@ ReadAnythingLineSpacingModel::~ReadAnythingLineSpacingModel() = default;
 ReadAnythingLetterSpacingModel::ReadAnythingLetterSpacingModel() {
   LetterSpacingInfo kStandard = {
       LetterSpacing::kStandard,
-      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_SPACING_COMBOBOX_STANDARD),
+      l10n_util::GetStringUTF16(IDS_READING_MODE_SPACING_COMBOBOX_STANDARD),
       kReadAnythingLetterSpacingStandardIcon};
   LetterSpacingInfo kWide = {
       LetterSpacing::kWide,
-      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_SPACING_COMBOBOX_WIDE),
+      l10n_util::GetStringUTF16(IDS_READING_MODE_SPACING_COMBOBOX_WIDE),
       kReadAnythingLetterSpacingWideIcon};
   LetterSpacingInfo kVeryWide = {
       LetterSpacing::kVeryWide,
-      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_SPACING_COMBOBOX_VERY_WIDE),
+      l10n_util::GetStringUTF16(IDS_READING_MODE_SPACING_COMBOBOX_VERY_WIDE),
       kReadAnythingLetterSpacingVeryWideIcon};
 
   letters_choices_.emplace_back(kStandard);

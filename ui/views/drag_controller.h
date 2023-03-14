@@ -39,6 +39,9 @@ class VIEWS_EXPORT DragController {
                                    const gfx::Point& press_pt,
                                    const gfx::Point& p) = 0;
 
+  // Called when the drag on view will start.
+  virtual void OnWillStartDragForView(View* dragged_view) {}
+
  protected:
   virtual ~DragController() = default;
 };

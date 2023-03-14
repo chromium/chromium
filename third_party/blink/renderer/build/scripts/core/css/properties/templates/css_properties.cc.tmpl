@@ -33,7 +33,7 @@ namespace {{namespace}} {
 {% for property in properties %}
 {% set class_name = property.name.to_upper_camel_case() %}
 {% set is_alias = property.alias_for %}
-{% set exposed_property = property.alternative_of or property %}
+{% set exposed_property = property.ultimate_property %}
 // {{property.name}}
 
 {% macro return_none_if_alternative_exposed(alternative) %}

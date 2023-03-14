@@ -437,7 +437,7 @@ TEST_F(LocalFileSyncContextTest, CreateDefaultSyncableBucket) {
       base::SequencedTaskRunner::GetCurrentDefault(), future.GetCallback());
 
   const auto result = future.Take();
-  EXPECT_TRUE(result.ok());
+  EXPECT_TRUE(result.has_value());
   EXPECT_EQ(result->name, storage::kDefaultBucketName);
   EXPECT_EQ(result->type, blink::mojom::StorageType::kSyncable);
   EXPECT_GT(result->id.value(), 0);
@@ -804,13 +804,13 @@ TEST_F(LocalFileSyncContextTest, ApplyRemoteChangeForAddOrUpdate) {
   const FileSystemURL kFile2(file_system.URL("file2"));
   const FileSystemURL kDir(file_system.URL("dir"));
 
-  const char kTestFileData0[] = "0123456789";
-  const char kTestFileData1[] = "Lorem ipsum!";
-  const char kTestFileData2[] = "This is sample test data.";
+  const std::string kTestFileData0 = "0123456789";
+  const std::string kTestFileData1 = "Lorem ipsum!";
+  const std::string kTestFileData2 = "This is sample test data.";
 
   // Create kFile1 and populate it with kTestFileData0.
   EXPECT_EQ(base::File::FILE_OK, file_system.CreateFile(kFile1));
-  EXPECT_EQ(static_cast<int64_t>(std::size(kTestFileData0) - 1),
+  EXPECT_EQ(static_cast<int>(kTestFileData0.size()),
             file_system.WriteString(kFile1, kTestFileData0));
 
   // kFile2 and kDir are not there yet.
@@ -830,12 +830,8 @@ TEST_F(LocalFileSyncContextTest, ApplyRemoteChangeForAddOrUpdate) {
   const base::FilePath kFilePath1(temp_dir.GetPath().Append(FPL("file1")));
   const base::FilePath kFilePath2(temp_dir.GetPath().Append(FPL("file2")));
 
-  ASSERT_EQ(static_cast<int>(std::size(kTestFileData1) - 1),
-            base::WriteFile(kFilePath1, kTestFileData1,
-                            std::size(kTestFileData1) - 1));
-  ASSERT_EQ(static_cast<int>(std::size(kTestFileData2) - 1),
-            base::WriteFile(kFilePath2, kTestFileData2,
-                            std::size(kTestFileData2) - 1));
+  ASSERT_TRUE(base::WriteFile(kFilePath1, kTestFileData1));
+  ASSERT_TRUE(base::WriteFile(kFilePath2, kTestFileData2));
 
   // Record the usage.
   int64_t usage = -1, new_usage = -1;
@@ -865,8 +861,7 @@ TEST_F(LocalFileSyncContextTest, ApplyRemoteChangeForAddOrUpdate) {
                               SYNC_FILE_TYPE_FILE));
 
   // Check if the usage has been increased by (kTestFileData1 - kTestFileData0).
-  const int updated_size =
-      std::size(kTestFileData1) - std::size(kTestFileData0);
+  const int updated_size = kTestFileData1.size() - kTestFileData0.size();
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk,
             file_system.GetUsageAndQuota(&new_usage, &quota));
   EXPECT_EQ(updated_size, new_usage - usage);
@@ -916,8 +911,7 @@ TEST_F(LocalFileSyncContextTest, ApplyRemoteChangeForAddOrUpdate) {
   new_usage = usage;
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk,
             file_system.GetUsageAndQuota(&new_usage, &quota));
-  EXPECT_GT(new_usage,
-            static_cast<int64_t>(usage + std::size(kTestFileData2) - 1));
+  EXPECT_GT(new_usage, static_cast<int64_t>(usage + kTestFileData2.size()));
 
   // The changes applied by ApplyRemoteChange should not be recorded in
   // the change tracker.
@@ -951,7 +945,7 @@ TEST_F(LocalFileSyncContextTest, ApplyRemoteChangeForAddOrUpdate_NoParent) {
             file_system.MaybeInitializeFileSystemContext(sync_context_.get()));
   ASSERT_EQ(base::File::FILE_OK, file_system.OpenFileSystem());
 
-  const char kTestFileData[] = "Lorem ipsum!";
+  constexpr base::StringPiece kTestFileData = "Lorem ipsum!";
   const FileSystemURL kDir(file_system.URL("dir"));
   const FileSystemURL kFile(file_system.URL("dir/file"));
 
@@ -961,9 +955,7 @@ TEST_F(LocalFileSyncContextTest, ApplyRemoteChangeForAddOrUpdate_NoParent) {
 
   // Prepare a temporary file which represents remote file data.
   const base::FilePath kFilePath(temp_dir.GetPath().Append(FPL("file")));
-  ASSERT_EQ(
-      static_cast<int>(std::size(kTestFileData) - 1),
-      base::WriteFile(kFilePath, kTestFileData, std::size(kTestFileData) - 1));
+  ASSERT_TRUE(base::WriteFile(kFilePath, kTestFileData));
 
   // Calling ApplyChange's with kFilePath should create
   // kFile along with kDir.

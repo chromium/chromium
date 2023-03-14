@@ -29,12 +29,17 @@ class CORE_EXPORT CSSVariableParser {
       bool is_animation_tainted,
       const CSSParserContext&);
   static CSSVariableReferenceValue* ParseVariableReferenceValue(
-      CSSParserTokenRange,
+      CSSTokenizedValue,
       const CSSParserContext&,
       bool is_animation_tainted);
 
   static bool IsValidVariableName(const CSSParserToken&);
   static bool IsValidVariableName(const String&);
+
+  // NOTE: We have to strip both leading and trailing whitespace (and comments)
+  // from values as per spec, but we assume the tokenizer has already done the
+  // leading ones for us; see comment on CSSPropertyParser::ParseValue().
+  static StringView StripTrailingWhitespaceAndComments(StringView);
 };
 
 }  // namespace blink

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.segmentation_platform;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
@@ -108,12 +107,12 @@ public class ContextualPageActionControllerTest {
 
     private void setMockSegmentationResult(@AdaptiveToolbarButtonVariant int buttonVariant) {
         Mockito.doAnswer(invocation -> {
-                   Callback<Integer> callback = invocation.getArgument(4);
+                   Callback<Integer> callback = invocation.getArgument(2);
                    callback.onResult(buttonVariant);
                    return null;
                })
                 .when(mMockControllerJni)
-                .computeContextualPageAction(any(), any(), anyBoolean(), anyBoolean(), any());
+                .computeContextualPageAction(any(), any(), any());
     }
 
     @Test
@@ -166,7 +165,6 @@ public class ContextualPageActionControllerTest {
 
         verify(mMockAdaptiveToolbarController, never()).showDynamicAction(anyInt());
         // Even if the UI is disabled segmentation should be called.
-        verify(mMockControllerJni)
-                .computeContextualPageAction(any(), any(), anyBoolean(), anyBoolean(), any());
+        verify(mMockControllerJni).computeContextualPageAction(any(), any(), any());
     }
 }

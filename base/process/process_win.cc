@@ -5,14 +5,12 @@
 #include "base/process/process.h"
 
 #include "base/clang_profiling_buildflags.h"
-#include "base/debug/activity_tracker.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/kill.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/win/windows_version.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include <windows.h>
 
@@ -193,9 +191,6 @@ bool Process::Terminate(int exit_code, bool wait) const {
 Process::WaitExitStatus Process::WaitForExitOrEvent(
     const base::win::ScopedHandle& stop_event_handle,
     int* exit_code) const {
-  // Record the event that this thread is blocking upon (for hang diagnosis).
-  base::debug::ScopedProcessWaitActivity process_activity(this);
-
   HANDLE events[] = {Handle(), stop_event_handle.get()};
   DWORD wait_result =
       ::WaitForMultipleObjects(std::size(events), events, FALSE, INFINITE);
@@ -226,10 +221,7 @@ bool Process::WaitForExit(int* exit_code) const {
 bool Process::WaitForExitWithTimeout(TimeDelta timeout, int* exit_code) const {
   TRACE_EVENT0("base", "Process::WaitForExitWithTimeout");
 
-  // Record the event that this thread is blocking upon (for hang diagnosis).
-  absl::optional<debug::ScopedProcessWaitActivity> process_activity;
   if (!timeout.is_zero()) {
-    process_activity.emplace(this);
     // Assert that this thread is allowed to wait below. This intentionally
     // doesn't use ScopedBlockingCallWithBaseSyncPrimitives because the process
     // being waited upon tends to itself be using the CPU and considering this
@@ -253,10 +245,7 @@ bool Process::WaitForExitWithTimeout(TimeDelta timeout, int* exit_code) const {
   return true;
 }
 
-void Process::Exited(int exit_code) const {
-  base::debug::GlobalActivityTracker::RecordProcessExitIfEnabled(Pid(),
-                                                                 exit_code);
-}
+void Process::Exited(int exit_code) const {}
 
 bool Process::IsProcessBackgrounded() const {
   DCHECK(IsValid());

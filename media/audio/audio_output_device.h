@@ -129,6 +129,8 @@ class MEDIA_EXPORT AudioOutputDevice : public AudioRendererSink,
                        bool play_automatically) override;
   void OnIPCClosed() override;
 
+  AudioOutputIPC* GetIpcForTesting() { return ipc_.get(); }
+
  protected:
   // Magic required by ref_counted.h to avoid any code deleting the object
   // accidentally while there are references to it.

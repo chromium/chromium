@@ -871,7 +871,7 @@ class HTML5FileWriter {
     // Create a temp file.
     base::FilePath temp_file;
     if (!base::CreateTemporaryFile(&temp_file) ||
-        base::WriteFile(temp_file, data, length) != length) {
+        !base::WriteFile(temp_file, base::StringPiece(data, length))) {
       return false;
     }
     // Invoke the fileapi to copy it into the sandboxed filesystem.
@@ -1025,7 +1025,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest, DownloadExtensionTest_Open) {
   std::unique_ptr<ExtensionFunctionDispatcher> dispatcher(
       new ExtensionFunctionDispatcher(current_browser()->profile()));
   open_function->SetDispatcher(dispatcher->AsWeakPtr());
-  open_function->RunWithValidation()->Execute();
+  open_function->RunWithValidation().Execute();
   response_helper.WaitForResponse();
   EXPECT_TRUE(response_helper.has_response());
   EXPECT_TRUE(response_helper.GetResponse());
@@ -1237,7 +1237,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    EXPECT_EQ(0, base::WriteFile(real_path, "", 0));
+    EXPECT_TRUE(base::WriteFile(real_path, ""));
     ASSERT_TRUE(base::PathExists(real_path));
     ASSERT_FALSE(base::PathExists(fake_path));
   }

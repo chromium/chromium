@@ -19,6 +19,8 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkMetrics.PriceTrackingState;
+import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -44,6 +46,7 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
     private CommerceSubscription mSubscription;
     private boolean mSubscriptionChangeInProgress;
     private SnackbarManager mSnackbarManager;
+    private Profile mProfile;
 
     /**
      * Constructor for inflating from XML.
@@ -58,10 +61,11 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
      * @param bookmarkModel The {@link BookmarkModel} used to query power bookmark metadata.
      */
     void init(ImageFetcher imageFetcher, BookmarkModel bookmarkModel,
-            SnackbarManager snackbarManager) {
+            SnackbarManager snackbarManager, Profile profile) {
         mImageFetcher = imageFetcher;
         mBookmarkModel = bookmarkModel;
         mSnackbarManager = snackbarManager;
+        mProfile = profile;
     }
 
     // BookmarkItemRow overrides:
@@ -79,9 +83,14 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
         mCurrencyFormatter =
                 new CurrencyFormatter(currentPrice.getCurrencyCode(), Locale.getDefault());
 
-        boolean mIsPriceTrackingEnabled = specifics.getIsPriceTracked();
+        mIsPriceTrackingEnabled = false;
         initPriceTrackingUI(meta.getLeadImage().getUrl(), mIsPriceTrackingEnabled,
                 previousPrice.getAmountMicros(), currentPrice.getAmountMicros());
+
+        PriceTrackingUtils.isBookmarkPriceTracked(mProfile, bookmarkId.getId(), (isTracked) -> {
+            mIsPriceTrackingEnabled = isTracked;
+            updatePriceTrackingImageForCurrentState();
+        });
 
         return bookmarkItem;
     }

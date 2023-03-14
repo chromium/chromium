@@ -42,14 +42,14 @@ using mojom::SensorType;
 // operations.
 class PlatformSensorAccelerometerMac::BlockingTaskRunnerHelper final {
  public:
-  explicit BlockingTaskRunnerHelper(
-      base::WeakPtr<PlatformSensorAccelerometerMac> platform_sensor);
+  BlockingTaskRunnerHelper(
+      base::WeakPtr<PlatformSensorAccelerometerMac> platform_sensor,
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~BlockingTaskRunnerHelper();
 
   BlockingTaskRunnerHelper(const BlockingTaskRunnerHelper&) = delete;
   BlockingTaskRunnerHelper& operator=(const BlockingTaskRunnerHelper&) = delete;
 
-  void Init();
   void StartPolling(double frequency);
   void StopPolling();
 
@@ -77,26 +77,15 @@ class PlatformSensorAccelerometerMac::BlockingTaskRunnerHelper final {
 
 PlatformSensorAccelerometerMac::BlockingTaskRunnerHelper::
     BlockingTaskRunnerHelper(
-        base::WeakPtr<PlatformSensorAccelerometerMac> platform_sensor)
+        base::WeakPtr<PlatformSensorAccelerometerMac> platform_sensor,
+        scoped_refptr<base::SequencedTaskRunner> task_runner)
     : platform_sensor_(platform_sensor),
-      owner_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
-  // Detaches from the sequence on which this object was created. It will be
-  // bound to another sequence when Init() is called.
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-}
+      owner_task_runner_(std::move(task_runner)),
+      sudden_motion_sensor_(SuddenMotionSensor::Create()) {}
 
 PlatformSensorAccelerometerMac::BlockingTaskRunnerHelper::
     ~BlockingTaskRunnerHelper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
-void PlatformSensorAccelerometerMac::BlockingTaskRunnerHelper::Init() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (sudden_motion_sensor_)
-    return;
-
-  sudden_motion_sensor_.reset(SuddenMotionSensor::Create());
 }
 
 void PlatformSensorAccelerometerMac::BlockingTaskRunnerHelper::StartPolling(
@@ -143,19 +132,13 @@ void PlatformSensorAccelerometerMac::BlockingTaskRunnerHelper::PollForData() {
 PlatformSensorAccelerometerMac::PlatformSensorAccelerometerMac(
     SensorReadingSharedBuffer* reading_buffer,
     PlatformSensorProvider* provider)
-    : PlatformSensor(SensorType::ACCELEROMETER, reading_buffer, provider),
-      blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+    : PlatformSensor(SensorType::ACCELEROMETER, reading_buffer, provider) {
+  blocking_task_helper_ = base::SequenceBound<BlockingTaskRunnerHelper>(
+      base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
-      blocking_task_helper_(nullptr,
-                            base::OnTaskRunnerDeleter(blocking_task_runner_)) {
-  // We need to properly initialize |blocking_task_helper_| here because we need
-  // |weak_factory_| to be created first.
-  blocking_task_helper_.reset(
-      new BlockingTaskRunnerHelper(weak_factory_.GetWeakPtr()));
-  blocking_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&BlockingTaskRunnerHelper::Init,
-                                base::Unretained(blocking_task_helper_.get())));
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}),
+      weak_factory_.GetWeakPtr(),
+      base::SequencedTaskRunner::GetCurrentDefault());
 }
 
 PlatformSensorAccelerometerMac::~PlatformSensorAccelerometerMac() = default;
@@ -182,18 +165,14 @@ bool PlatformSensorAccelerometerMac::StartSensor(
   if (is_reading_active_)
     StopSensor();
   is_reading_active_ = true;
-  blocking_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&BlockingTaskRunnerHelper::StartPolling,
-                                base::Unretained(blocking_task_helper_.get()),
-                                configuration.frequency()));
+  blocking_task_helper_.AsyncCall(&BlockingTaskRunnerHelper::StartPolling)
+      .WithArgs(configuration.frequency());
   return true;
 }
 
 void PlatformSensorAccelerometerMac::StopSensor() {
   is_reading_active_ = false;
-  blocking_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&BlockingTaskRunnerHelper::StopPolling,
-                                base::Unretained(blocking_task_helper_.get())));
+  blocking_task_helper_.AsyncCall(&BlockingTaskRunnerHelper::StopPolling);
 }
 
 void PlatformSensorAccelerometerMac::OnReadingAvailable(SensorReading reading) {

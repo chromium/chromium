@@ -9,10 +9,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_user_data.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 
 class Browser;
-class SidePanelRegistry;
 
 namespace views {
 class View;
@@ -21,7 +22,8 @@ class View;
 // SearchCompanionSidePanelCoordinator handles the creation and registration of
 // the search companion SidePanelEntry.
 class SearchCompanionSidePanelCoordinator
-    : public BrowserUserData<SearchCompanionSidePanelCoordinator> {
+    : public BrowserUserData<SearchCompanionSidePanelCoordinator>,
+      public TabStripModelObserver {
  public:
   explicit SearchCompanionSidePanelCoordinator(Browser* browser);
   SearchCompanionSidePanelCoordinator(
@@ -30,15 +32,24 @@ class SearchCompanionSidePanelCoordinator
       const SearchCompanionSidePanelCoordinator&) = delete;
   ~SearchCompanionSidePanelCoordinator() override;
 
-  void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
+  void CreateAndRegisterEntriesForExistingWebContents(
+      TabStripModel* tab_strip_model);
 
   bool Show();
   BrowserView* GetBrowserView();
+
+  // TabStripModelObserver:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
 
  private:
   raw_ptr<Browser> browser_;
 
   friend class BrowserUserData<SearchCompanionSidePanelCoordinator>;
+
+  std::unique_ptr<SidePanelEntry> CreateCompanionEntry();
 
   std::unique_ptr<views::View> CreateCompanionWebView();
 

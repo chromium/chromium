@@ -15,14 +15,14 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "components/cast_streaming/public/decoder_buffer_reader.h"
-#include "components/cast_streaming/public/remoting_proto_utils.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_switches.h"
 #include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/constants.h"
+#include "media/cast/openscreen/decoder_buffer_reader.h"
+#include "media/cast/openscreen/remoting_proto_utils.h"
 #include "media/cast/sender/openscreen_frame_sender.h"
 #include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
 #include "third_party/openscreen/src/cast/streaming/sender.h"
@@ -70,7 +70,7 @@ class RemotingSender::SenderEncodedFrameFactory {
 
     // DecoderBuffer data must be encoded in a special format.
     std::vector<uint8_t> data =
-        cast_streaming::remoting::DecoderBufferToByteArray(decoder_buffer);
+        media::cast::DecoderBufferToByteArray(decoder_buffer);
     if (!decoder_buffer.end_of_stream() && data.empty()) {
       return nullptr;
     }
@@ -168,11 +168,10 @@ RemotingSender::RemotingSender(
     : frame_sender_(std::move(frame_sender)),
       clock_(cast_environment->Clock()),
       error_callback_(std::move(error_callback)),
-      decoder_buffer_reader_(
-          std::make_unique<cast_streaming::DecoderBufferReader>(
-              base::BindRepeating(&RemotingSender::OnFrameRead,
-                                  base::Unretained(this)),
-              std::move(pipe))),
+      decoder_buffer_reader_(std::make_unique<media::cast::DecoderBufferReader>(
+          base::BindRepeating(&RemotingSender::OnFrameRead,
+                              base::Unretained(this)),
+          std::move(pipe))),
       stream_sender_(this, std::move(stream_sender)),
       is_audio_(config.rtp_payload_type <=
                 media::cast::RtpPayloadType::REMOTE_AUDIO),

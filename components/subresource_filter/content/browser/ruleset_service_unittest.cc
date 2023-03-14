@@ -24,6 +24,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -252,9 +253,7 @@ class SubresourceFilteringRulesetServiceTest : public ::testing::Test {
                              base::FilePath* path) {
     ASSERT_NO_FATAL_FAILURE(
         test_ruleset_creator()->GetUniqueTemporaryPath(path));
-    ASSERT_EQ(static_cast<int>(contents.size()),
-              base::WriteFile(*path, contents.data(),
-                              static_cast<int>(contents.size())));
+    ASSERT_TRUE(base::WriteFile(*path, contents));
   }
 
   void IndexAndStoreAndPublishUpdatedRuleset(
@@ -598,13 +597,13 @@ TEST_F(SubresourceFilteringRulesetServiceTest, DeleteObsoleteRulesets) {
   WriteRuleset(test_ruleset_1(), legacy_format_content_version_1);
   WriteRuleset(test_ruleset_2(), legacy_format_content_version_2);
   base::WriteFile(GetExpectedSentinelFilePath(legacy_format_content_version_2),
-                  nullptr, 0);
+                  base::StringPiece());
 
   WriteRuleset(test_ruleset_1(), current_format_content_version_1);
   WriteRuleset(test_ruleset_2(), current_format_content_version_2);
   WriteRuleset(test_ruleset_3(), current_format_content_version_3);
   base::WriteFile(GetExpectedSentinelFilePath(current_format_content_version_3),
-                  nullptr, 0);
+                  base::StringPiece());
 
   DeleteObsoleteRulesets(base_dir(), current_format_content_version_2);
 

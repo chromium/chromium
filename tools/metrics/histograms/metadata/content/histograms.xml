@@ -119,59 +119,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentIndex.ContentAdded" enum="ContentIndexCategory"
-    expires_after="M99">
-  <owner>rayankans@chromium.org</owner>
-  <owner>platform-capabilities@chromium.org</owner>
-  <summary>Records the category of the content when registered.</summary>
-</histogram>
-
-<histogram base="true" name="ContentIndex.ContentDeleteEvent"
-    enum="ServiceWorkerStatusCode" expires_after="M95">
-<!-- Name completed by histogram_suffixes name="ContentIndexDispatchPhase" -->
-
-  <owner>rayankans@chromium.org</owner>
-  <owner>platform-capabilities@chromium.org</owner>
-  <summary>
-    Records the status of dispatching the `contentdelete` event in every phase
-    of dispatch.
-  </summary>
-</histogram>
-
-<histogram name="ContentIndex.ContentOpened" enum="ContentIndexCategory"
-    expires_after="M99">
-  <owner>rayankans@chromium.org</owner>
-  <owner>platform-capabilities@chromium.org</owner>
-  <summary>Records the category of the entry clicked on by a user.</summary>
-</histogram>
-
-<histogram base="true" name="ContentIndex.Database"
-    enum="ServiceWorkerStatusCode" expires_after="M99">
-<!-- Name completed by histogram_suffixes name="ContentIndexDatabaseTask" -->
-
-  <owner>rayankans@chromium.org</owner>
-  <owner>platform-capabilities@chromium.org</owner>
-  <summary>Records the result of the database operation.</summary>
-</histogram>
-
-<histogram name="ContentIndex.NumEntriesAvailable" units="entries"
-    expires_after="M99">
-  <owner>rayankans@chromium.org</owner>
-  <owner>platform-capabilities@chromium.org</owner>
-  <summary>
-    Records how many entries were found when loaded by the browser.
-  </summary>
-</histogram>
-
-<histogram name="ContentIndex.RegistrationBlocked" enum="ContentIndexCategory"
-    expires_after="M99">
-  <owner>rayankans@chromium.org</owner>
-  <owner>platform-capabilities@chromium.org</owner>
-  <summary>
-    Records the category of an attempted registration that was blocked.
-  </summary>
-</histogram>
-
 <histogram name="ContentSettings.AllowStorageAccessSync" units="ms"
     expires_after="2023-08-08">
   <owner>cduvall@chromium.org</owner>
@@ -331,7 +278,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.RegularProfile.DefaultBackgroundSyncSetting"
-    enum="ContentSetting" expires_after="2023-06-18">
+    enum="ContentSetting" expires_after="2023-08-20">
   <owner>tungnh@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -912,7 +859,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentAgeOnLoad.BlockingRefresh"
-    units="ms" expires_after="2023-07-02">
+    units="ms" expires_after="2023-09-03">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -926,7 +873,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentAgeOnLoad.NotRefreshed"
-    units="ms" expires_after="2023-07-02">
+    units="ms" expires_after="2023-09-03">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -940,7 +887,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentDuplication.Position{Index}"
-    enum="Boolean" expires_after="2023-03-01">
+    enum="Boolean" expires_after="2023-09-01">
   <obsolete>
     Deprecated in 11/2022. Replaced by ContentDuplication2 metrics.
   </obsolete>
@@ -958,7 +905,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentDuplication.{Range}" units="%"
-    expires_after="2023-03-01">
+    expires_after="2023-09-01">
   <obsolete>
     Deprecated in 11/2022. Replaced by ContentDuplication2 metrics.
   </obsolete>
@@ -976,7 +923,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentDuplication2.Position{Index}"
-    enum="Boolean" expires_after="2023-03-01">
+    enum="Boolean" expires_after="2023-09-01">
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -993,7 +940,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentDuplication2.{Range}" units="%"
-    expires_after="2023-03-01">
+    expires_after="2023-09-01">
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1065,7 +1012,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.DisplayStatusOnOpen"
-    enum="ContentSuggestionsDisplayStatus" expires_after="2023-07-02">
+    enum="ContentSuggestionsDisplayStatus" expires_after="2023-09-03">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1078,7 +1025,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ImageFetchStatus"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-07-02">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-09-03">
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1089,7 +1036,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="ContentSuggestions.Feed.LoadStepLatency"
-    units="ms" expires_after="2023-07-02">
+    units="ms" expires_after="2023-09-03">
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1103,7 +1050,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.LoadStreamStatus.LoadMore"
-    enum="FeedLoadStreamStatus" expires_after="2023-07-02">
+    enum="FeedLoadStreamStatus" expires_after="2023-09-03">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1160,7 +1107,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.RequestSizeKB.Compressed"
-    units="KB" expires_after="M90">
+    units="KB" expires_after="M120">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1227,7 +1174,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.NoticeCardFulfilled2" enum="Boolean"
-    expires_after="2023-03-01">
+    expires_after="2023-09-01">
   <owner>vincb@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1412,6 +1359,18 @@ chromium-metrics-reviews@google.com.
     article then quickly returning to the feed is considered within the same
     session. The time between sessions by definition will be longer than 5
     minutes.
+  </summary>
+</histogram>
+
+<histogram name="ContentSuggestions.Feed.SignInFromFeedAction.SignInSuccessful"
+    enum="Boolean" expires_after="2023-07-19">
+  <owner>birnie@google.com</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: If the user triggers a sign in action from somewhere in the Feed we
+    track the status of the sign in as a boolean (successful=true, unsuccessful=
+    false). This provides a measure of how many users are signing in via the
+    Feed and features like Back of Card sign in promo vs other sign in avenues.
   </summary>
 </histogram>
 

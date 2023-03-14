@@ -144,7 +144,7 @@ DXGISwapChainImageBacking::DXGISwapChainImageBacking(
           alpha_type,
           usage,
           gfx::BufferSizeForBufferFormat(size, ToBufferFormat(format)),
-          false /* is_thread_safe */),
+          /*is_thread_safe=*/false),
       d3d11_device_(std::move(d3d11_device)),
       dxgi_swap_chain_(std::move(dxgi_swap_chain)) {
   const bool has_scanout = !!(usage & SHARED_IMAGE_USAGE_SCANOUT);
@@ -252,7 +252,7 @@ std::unique_ptr<SkiaImageRepresentation> DXGISwapChainImageBacking::ProduceSkia(
     scoped_refptr<SharedContextState> context_state) {
   TRACE_EVENT0("gpu", "DXGISwapChainImageBacking::ProduceSkia");
 
-  if (!gl_texture_) {
+  if (!gl_texture_holder_) {
     Microsoft::WRL::ComPtr<ID3D11Texture2D> backbuffer_texture;
     HRESULT hr =
         dxgi_swap_chain_->GetBuffer(0, IID_PPV_ARGS(&backbuffer_texture));
@@ -262,18 +262,18 @@ std::unique_ptr<SkiaImageRepresentation> DXGISwapChainImageBacking::ProduceSkia(
       return nullptr;
     }
 
-    gl_texture_ = D3DImageBacking::CreateGLTexture(
+    gl_texture_holder_ = D3DImageBacking::CreateGLTexture(
         format(), size(), color_space(), backbuffer_texture, GL_TEXTURE_2D, 0,
         0, dxgi_swap_chain_);
-    if (!gl_texture_) {
-      LOG(ERROR) << "Failed to create GL texture";
+    if (!gl_texture_holder_) {
+      LOG(ERROR) << "Failed to create GL texture.";
       return nullptr;
     }
   }
 
   return SkiaGLImageRepresentationDXGISwapChain::Create(
       std::make_unique<GLTexturePassthroughDXGISwapChainBufferRepresentation>(
-          manager, this, tracker, gl_texture_),
+          manager, this, tracker, gl_texture_holder_),
       std::move(context_state), manager, this, tracker);
 }
 

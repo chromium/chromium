@@ -23,7 +23,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Touchpad} from './input_device_settings_types.js';
+import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
+import {InputDeviceSettingsProviderInterface, Touchpad} from './input_device_settings_types.js';
 import {getTemplate} from './per_device_touchpad_subsection.html.js';
 
 export class SettingsPerDeviceTouchpadSubsectionElement extends PolymerElement {
@@ -175,7 +176,8 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends PolymerElement {
           'scrollAccelerationPref.value,' +
           'scrollSensitivityPref.value,' +
           'hapticClickSensitivityPref.value,' +
-          'reverseScrollValue)',
+          'reverseScrollValue,' +
+          'hapticFeedbackValue)',
       'updateSettingsToCurrentPrefs(touchpad)',
     ];
   }
@@ -191,6 +193,8 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends PolymerElement {
   private reverseScrollValue: boolean;
   private hapticFeedbackValue: boolean;
   private isInitialized: boolean = false;
+  private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
+      getInputDeviceSettingsProvider();
 
   private updateSettingsToCurrentPrefs(): void {
     this.set(
@@ -240,6 +244,20 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends PolymerElement {
     if (!this.isInitialized) {
       return;
     }
+    this.touchpad.settings = {
+      ...this.touchpad.settings,
+      tapToClickEnabled: this.enableTapToClickPref.value,
+      tapDraggingEnabled: this.enableTapDraggingPref.value,
+      accelerationEnabled: this.accelerationPref.value,
+      sensitivity: this.sensitivityPref.value,
+      scrollAcceleration: this.scrollAccelerationPref.value,
+      scrollSensitivity: this.scrollSensitivityPref.value,
+      hapticSensitivity: this.hapticClickSensitivityPref.value,
+      reverseScrolling: this.reverseScrollValue,
+      hapticEnabled: this.hapticFeedbackValue,
+    };
+    this.inputDeviceSettingsProvider.setTouchpadSettings(
+        this.touchpad.id, this.touchpad.settings);
   }
 }
 

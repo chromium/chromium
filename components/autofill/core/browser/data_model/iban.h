@@ -25,6 +25,21 @@ class IBAN : public AutofillDataModel {
 
   IBAN& operator=(const IBAN& iban);
 
+  // Returns true if IBAN value is valid. This method is case-insensitive.
+  // The validation follows the below steps:
+  // 1. The IBAN consists of 16 to 33 alphanumeric characters, the first two
+  //    letters are country code.
+  // 2. Check that the total IBAN length is correct as per the country.
+  // 3. Move the four initial characters to the end of the string and replace
+  //    each letter in the rearranged string with two digits, thereby expanding
+  //    the string, where 'A' = 10, 'B' = 11, ..., 'Z' = 35.
+  // 4. Interpret the string as a decimal integer and compute the remainder of
+  //    the number on division by 97, returning true if the remainder is 1.
+  //
+  // The validation algorithm is from:
+  // https://en.wikipedia.org/wiki/International_Bank_Account_Number#Algorithms
+  static bool IsValid(const std::u16string& value);
+
   // AutofillDataModel:
   AutofillMetadata GetMetadata() const override;
   bool SetMetadata(const AutofillMetadata& metadata) override;
@@ -61,7 +76,7 @@ class IBAN : public AutofillDataModel {
 
   // Returns the value (the actual bank account number) of IBAN.
   const std::u16string& value() const { return value_; }
-  void set_value(const std::u16string& value) { value_ = value; }
+  void set_value(const std::u16string& value);
 
   const std::u16string& nickname() const { return nickname_; }
   // Set the |nickname_| with the processed input (replace all tabs and newlines
@@ -84,11 +99,12 @@ class IBAN : public AutofillDataModel {
   std::u16string GetIdentifierStringForAutofillDisplay(
       bool is_value_masked = true) const;
 
- private:
   // Returns a version of |value_| which does not have any separator characters
   // (e.g., '-' and ' ').
+  // TODO(crbug.com/1422672): Cleanup and use value().
   std::u16string GetStrippedValue() const;
 
+ private:
   // This is the ID assigned by the server to uniquely identify this IBAN.
   // Note: server_id is empty for now as only local IBAN is supported.
   std::string server_id_;

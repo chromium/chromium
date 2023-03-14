@@ -121,6 +121,17 @@ TEST_F(PrefNotifierTest, AddAndRemovePrefObservers) {
   ASSERT_EQ(0u, notifier.CountObserver(pref_name, &obs2_));
   ASSERT_EQ(0u, notifier.CountObserver(pref_name2, &obs2_));
 
+  // Re-adding the same observer for the same pref doesn't change anything.
+  // Skip this in debug mode, since it hits a DCHECK and death tests aren't
+  // thread-safe.
+#if defined(NDEBUG) && !defined(DCHECK_ALWAYS_ON)
+  notifier.AddPrefObserver(pref_name, &obs1_);
+  ASSERT_EQ(1u, notifier.CountObserver(pref_name, &obs1_));
+  ASSERT_EQ(0u, notifier.CountObserver(pref_name2, &obs1_));
+  ASSERT_EQ(0u, notifier.CountObserver(pref_name, &obs2_));
+  ASSERT_EQ(0u, notifier.CountObserver(pref_name2, &obs2_));
+#endif
+
   // Ensure that we can add the same observer to a different pref.
   notifier.AddPrefObserver(pref_name2, &obs1_);
   ASSERT_EQ(1u, notifier.CountObserver(pref_name, &obs1_));

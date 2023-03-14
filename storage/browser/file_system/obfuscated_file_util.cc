@@ -1120,8 +1120,9 @@ void ObfuscatedFileUtil::DestroyDirectoryDatabaseHelper(
           GetOrCreateDefaultBucket(storage_key);
       // If there is no default bucket for a given StorageKey, there is not a
       // valid FileSystem to close, so we return.
-      if (!default_bucket.ok())
+      if (!default_bucket.has_value()) {
         return;
+      }
       key_prefix =
           DatabaseKey(storage_key, default_bucket.value(), type_string);
     }
@@ -1181,14 +1182,15 @@ QuotaErrorOr<BucketLocator> ObfuscatedFileUtil::GetOrCreateDefaultBucket(
   // Instead of crashing, return a QuotaError if the proxy is a nullptr.
   if (!sandbox_delegate_->quota_manager_proxy()) {
     LOG(WARNING) << "Failed to GetOrCreateBucket: QuotaManagerProxy is null";
-    return QuotaError::kUnknownError;
+    return base::unexpected(QuotaError::kUnknownError);
   }
   // Retrieve or create the default bucket for this StorageKey.
   QuotaErrorOr<BucketInfo> bucket =
       sandbox_delegate_->quota_manager_proxy()->GetOrCreateBucketSync(
           BucketInitParams::ForDefaultBucket(storage_key));
-  if (!bucket.ok())
-    return bucket.error();
+  if (!bucket.has_value()) {
+    return base::unexpected(bucket.error());
+  }
   default_buckets_[storage_key] = bucket->ToBucketLocator();
   return bucket->ToBucketLocator();
 }
@@ -1383,8 +1385,9 @@ SandboxDirectoryDatabase* ObfuscatedFileUtil::GetDirectoryDatabase(
       // bucket corresponding to the url's StorageKey.
       QuotaErrorOr<BucketLocator> default_bucket =
           GetOrCreateDefaultBucket(url.storage_key());
-      if (!default_bucket.ok())
+      if (!default_bucket.has_value()) {
         return nullptr;
+      }
       key = DatabaseKey(url.storage_key(), default_bucket.value(), type_string);
     }
   } else {  // All other storage types.
@@ -1417,8 +1420,9 @@ base::FileErrorOr<base::FilePath> ObfuscatedFileUtil::GetDirectoryForStorageKey(
   if (storage_key.IsThirdPartyContext()) {
     // Retrieve the default bucket value for `storage_key`.
     QuotaErrorOr<BucketLocator> bucket = GetOrCreateDefaultBucket(storage_key);
-    if (!bucket.ok())
+    if (!bucket.has_value()) {
       return base::unexpected(base::File::FILE_ERROR_FAILED);
+    }
     // Get the path and verify it is valid.
     base::FileErrorOr<base::FilePath> path =
         sandbox_delegate_->quota_manager_proxy()->GetClientBucketPath(

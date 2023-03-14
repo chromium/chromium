@@ -419,7 +419,7 @@ bool ChromeAutofillClientIOS::IsTouchToFillCreditCardSupported() {
 
 bool ChromeAutofillClientIOS::ShowTouchToFillCreditCard(
     base::WeakPtr<TouchToFillDelegate> delegate,
-    base::span<const CreditCard* const> cards_to_suggest) {
+    base::span<const CreditCard> cards_to_suggest) {
   NOTREACHED();
   return false;
 }

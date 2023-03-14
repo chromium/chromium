@@ -284,8 +284,7 @@ std::u16string AvatarToolbarButton::GetAvatarTooltipText() const {
     case State::kNormal:
       return delegate_->GetProfileName();
   }
-  NOTREACHED();
-  return std::u16string();
+  NOTREACHED_NORETURN();
 }
 
 ui::ImageModel AvatarToolbarButton::GetAvatarIcon(
@@ -312,8 +311,7 @@ ui::ImageModel AvatarToolbarButton::GetAvatarIcon(
           delegate_->GetProfileAvatarImage(gaia_account_image, icon_size),
           icon_size, icon_size, profiles::SHAPE_CIRCLE));
   }
-  NOTREACHED();
-  return ui::ImageModel();
+  NOTREACHED_NORETURN();
 }
 
 void AvatarToolbarButton::SetInsets() {

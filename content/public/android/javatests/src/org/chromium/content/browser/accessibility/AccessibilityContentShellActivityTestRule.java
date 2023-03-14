@@ -9,6 +9,7 @@ import static org.chromium.content.browser.accessibility.AccessibilityContentShe
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.NODE_TIMEOUT_ERROR;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.READY_FOR_TEST_ERROR;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sContentShellDelegate;
+import static org.chromium.ui.accessibility.AccessibilityState.EVENT_TYPE_MASK_ALL;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -30,6 +31,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
+import org.chromium.ui.accessibility.AccessibilityState;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -96,7 +98,7 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
     public void setupTestFramework() {
         mWcax = getWebContentsAccessibility();
         mWcax.setAccessibilityEnabledForTesting();
-        mWcax.setBrowserAccessibilityStateForTesting();
+        AccessibilityState.setEventTypeMaskForTesting(EVENT_TYPE_MASK_ALL);
 
         mNodeProvider = getAccessibilityNodeProvider();
 

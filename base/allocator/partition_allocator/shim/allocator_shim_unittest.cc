@@ -19,7 +19,6 @@
 #include "base/memory/page_size.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/thread_local.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,6 +28,7 @@
 #include <windows.h>
 #elif BUILDFLAG(IS_APPLE)
 #include <malloc/malloc.h>
+
 #include "base/allocator/partition_allocator/shim/allocator_interception_mac.h"
 #include "third_party/apple_apsl/malloc.h"
 #else
@@ -108,12 +108,13 @@ class AllocatorShimTest : public testing::Test {
                            size_t size,
                            void* context) {
     if (instance_) {
-      // Size 0xFEED a special sentinel for the NewHandlerConcurrency test.
+      // Size 0xFEED is a special sentinel for the NewHandlerConcurrency test.
       // Hitting it for the first time will cause a failure, causing the
       // invocation of the std::new_handler.
       if (size == 0xFEED) {
-        if (!instance_->did_fail_realloc_0xfeed_once->Get()) {
-          instance_->did_fail_realloc_0xfeed_once->Set(true);
+        thread_local bool did_fail_realloc_0xfeed_once = false;
+        if (!did_fail_realloc_0xfeed_once) {
+          did_fail_realloc_0xfeed_once = true;
           return nullptr;
         }
         return address;
@@ -258,7 +259,6 @@ class AllocatorShimTest : public testing::Test {
     aligned_reallocs_intercepted_by_size.resize(MaxSizeTracked());
     aligned_reallocs_intercepted_by_addr.resize(MaxSizeTracked());
     aligned_frees_intercepted_by_addr.resize(MaxSizeTracked());
-    did_fail_realloc_0xfeed_once = std::make_unique<base::ThreadLocalBoolean>();
     num_new_handler_calls.store(0, std::memory_order_release);
     instance_ = this;
 
@@ -300,7 +300,6 @@ class AllocatorShimTest : public testing::Test {
   std::vector<size_t> aligned_reallocs_intercepted_by_size;
   std::vector<size_t> aligned_reallocs_intercepted_by_addr;
   std::vector<size_t> aligned_frees_intercepted_by_addr;
-  std::unique_ptr<base::ThreadLocalBoolean> did_fail_realloc_0xfeed_once;
   std::atomic<uint32_t> num_new_handler_calls;
 
  private:

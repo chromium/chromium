@@ -59,20 +59,17 @@ class PinnedTabContainerController final : public TabContainerController {
   }
 
   bool IsGroupCollapsed(const tab_groups::TabGroupId& group) const override {
-    NOTREACHED();  // Pinned container can't have groups.
-    return false;
+    NOTREACHED_NORETURN();  // Pinned container can't have groups.
   }
 
   absl::optional<int> GetFirstTabInGroup(
       const tab_groups::TabGroupId& group) const override {
-    NOTREACHED();  // Pinned container can't have groups.
-    return absl::nullopt;
+    NOTREACHED_NORETURN();  // Pinned container can't have groups.
   }
 
   gfx::Range ListTabsInGroup(
       const tab_groups::TabGroupId& group) const override {
-    NOTREACHED();  // Pinned container can't have groups.
-    return gfx::Range();
+    NOTREACHED_NORETURN();  // Pinned container can't have groups.
   }
 
   bool CanExtendDragHandle() const override {
@@ -352,16 +349,14 @@ void CompoundTabContainer::SetActiveTab(
 
 Tab* CompoundTabContainer::RemoveTabFromViewModel(int model_index) {
   // TODO(1395526): This only needs to be implemented in TabContainerImpl.
-  NOTREACHED();
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 
 Tab* CompoundTabContainer::AddTabToViewModel(Tab* tab,
                                              int model_index,
                                              TabPinned pinned) {
   // TODO(1395526): This only needs to be implemented in TabContainerImpl.
-  NOTREACHED();
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 
 void CompoundTabContainer::ReturnTabSlotView(TabSlotView* view) {
@@ -524,14 +519,12 @@ bool CompoundTabContainer::IsRectInContentArea(const gfx::Rect& rect) {
 absl::optional<ZOrderableTabContainerElement>
 CompoundTabContainer::GetLeadingElementForZOrdering() const {
   // TODO(1395526): This only needs to be implemented in TabContainerImpl.
-  NOTREACHED();
-  return absl::nullopt;
+  NOTREACHED_NORETURN();
 }
 absl::optional<ZOrderableTabContainerElement>
 CompoundTabContainer::GetTrailingElementForZOrdering() const {
   // TODO(1395526): This only needs to be implemented in TabContainerImpl.
-  NOTREACHED();
-  return absl::nullopt;
+  NOTREACHED_NORETURN();
 }
 
 void CompoundTabContainer::OnTabSlotAnimationProgressed(TabSlotView* view) {
@@ -540,7 +533,7 @@ void CompoundTabContainer::OnTabSlotAnimationProgressed(TabSlotView* view) {
 
 void CompoundTabContainer::OnTabCloseAnimationCompleted(Tab* tab) {
   // TODO(1395526): This only needs to be implemented in TabContainerImpl.
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 void CompoundTabContainer::InvalidateIdealBounds() {
@@ -674,13 +667,9 @@ views::SizeBounds CompoundTabContainer::GetAvailableSize(
                              views::SizeBound());
   }
 
-  if (child == base::to_address(unpinned_tab_container_)) {
-    return views::SizeBounds(GetAvailableWidthForUnpinnedTabContainer(),
-                             views::SizeBound());
-  }
-
-  NOTREACHED();
-  return views::SizeBounds();
+  CHECK_EQ(child, base::to_address(unpinned_tab_container_));
+  return views::SizeBounds(GetAvailableWidthForUnpinnedTabContainer(),
+                           views::SizeBound());
 }
 
 gfx::Size CompoundTabContainer::CalculatePreferredSize() const {
@@ -966,8 +955,8 @@ gfx::Rect CompoundTabContainer::ConvertUnpinnedContainerIdealBoundsToLocal(
   return ideal_bounds;
 }
 
-raw_ref<TabContainer> CompoundTabContainer::GetTabContainerFor(
-    TabSlotView* view) const {
+raw_ref<TabContainer, DanglingUntriaged>
+CompoundTabContainer::GetTabContainerFor(TabSlotView* view) const {
   if (view->GetTabSlotViewType() == TabSlotView::ViewType::kTabGroupHeader)
     return unpinned_tab_container_;
 

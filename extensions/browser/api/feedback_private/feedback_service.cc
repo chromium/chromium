@@ -272,6 +272,10 @@ void FeedbackService::OnAllLogsFetched(
     feedback_data->SetAndCompressHistograms(std::move(histograms));
   }
 
+  if (params.send_autofill_metadata) {
+    feedback_data->CompressAutofillMetadata();
+  }
+
   DCHECK(feedback_data->attached_file_uuid().empty());
   DCHECK(feedback_data->screenshot_uuid().empty());
 

@@ -22,6 +22,10 @@ namespace base {
 class SingleThreadTaskRunner;
 }
 
+namespace blink {
+struct UserAgentMetadata;
+}
+
 namespace headless {
 
 class HeadlessDevToolsChannel;
@@ -87,6 +91,7 @@ class HEADLESS_EXPORT HeadlessBrowser {
   virtual void Shutdown() = 0;
 
   static std::string GetProductNameAndVersion();
+  static blink::UserAgentMetadata GetUserAgentMetadata();
 
  protected:
   HeadlessBrowser() {}

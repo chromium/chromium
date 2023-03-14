@@ -191,6 +191,7 @@ source_set("browser_sources") {
     "frame_accept_header.h",
     "frame_rate_throttling.h",
     "frame_type.h",
+    "fullscreen_types.h",
     "generated_code_cache_settings.h",
     "global_request_id.cc",
     "global_request_id.h",
@@ -434,6 +435,7 @@ source_set("browser_sources") {
     "web_contents_view_delegate.cc",
     "web_contents_view_delegate.h",
     "web_drag_dest_delegate.h",
+    "web_exposed_isolation_level.h",
     "web_ui.h",
     "web_ui_browser_interface_broker_registry.h",
     "web_ui_controller.cc",
@@ -531,6 +533,7 @@ source_set("browser_sources") {
     "//ui/accessibility",
     "//ui/base",
     "//ui/base/clipboard",
+    "//ui/base/cursor/mojom:cursor_type_shared",
     "//ui/events",
     "//ui/gl",
     "//ui/shell_dialogs",
@@ -631,6 +634,8 @@ source_set("browser_sources") {
       "chromeos/multi_capture_service.h",
       "firewall_hole_proxy.h",
       "lock_screen_storage.h",
+      "smart_card_delegate.cc",
+      "smart_card_delegate.h",
     ]
   }
 
@@ -642,12 +647,6 @@ source_set("browser_sources") {
       # Android provides its own native implementation of that API.
       "web_authentication_request_proxy.h",
     ]
-    if (!is_fuchsia) {
-      sources += [
-        "smart_card_delegate.cc",
-        "smart_card_delegate.h",
-      ]
-    }
   }
 
   if (is_chromeos_ash) {

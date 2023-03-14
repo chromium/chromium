@@ -8,25 +8,25 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.BackPressHelper;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.back_press.BackPressManager;
-import org.chromium.chrome.browser.bookmarks.BookmarkManager;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerCoordinator;
 import org.chromium.chrome.browser.bookmarks.BookmarkPage;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
 /**
- * The activity that displays the bookmark UI on the phone. It keeps a {@link BookmarkManager}
- * inside of it and creates a snackbar manager. This activity should only be shown on phones; on
- * tablet the bookmark UI is shown inside of a tab (see {@link BookmarkPage}).
+ * The activity that displays the bookmark UI on the phone. It keeps a {@link
+ * BookmarkManagerCoordinator} inside of it and creates a snackbar manager. This activity should
+ * only be shown on phones; on tablet the bookmark UI is shown inside of a tab (see {@link
+ * BookmarkPage}).
  */
 public class BookmarkActivity extends SnackbarActivity {
-    private BookmarkManager mBookmarkManager;
+    private BookmarkManagerCoordinator mBookmarkManagerCoordinator;
     public static final int EDIT_BOOKMARK_REQUEST_CODE = 14;
     public static final String INTENT_VISIT_BOOKMARK_ID = "BookmarkEditActivity.VisitBookmarkId";
 
@@ -35,26 +35,26 @@ public class BookmarkActivity extends SnackbarActivity {
         super.onCreate(savedInstanceState);
         boolean isIncognito = IntentUtils.safeGetBooleanExtra(
                 getIntent(), IntentHandler.EXTRA_INCOGNITO_MODE, false);
-        mBookmarkManager = new BookmarkManager(this,
+        mBookmarkManagerCoordinator = new BookmarkManagerCoordinator(this,
                 IntentUtils.safeGetParcelableExtra(
                         getIntent(), IntentHandler.EXTRA_PARENT_COMPONENT),
-                true, isIncognito, getSnackbarManager());
+                true, isIncognito, getSnackbarManager(), Profile.getLastUsedRegularProfile());
         String url = getIntent().getDataString();
         if (TextUtils.isEmpty(url)) url = UrlConstants.BOOKMARKS_URL;
-        mBookmarkManager.updateForUrl(url);
-        setContentView(mBookmarkManager.getView());
+        mBookmarkManagerCoordinator.updateForUrl(url);
+        setContentView(mBookmarkManagerCoordinator.getView());
         if (BackPressManager.isSecondaryActivityEnabled()) {
-            BackPressHelper.create(this, getOnBackPressedDispatcher(), mBookmarkManager);
+            BackPressHelper.create(this, getOnBackPressedDispatcher(), mBookmarkManagerCoordinator);
         } else {
             BackPressHelper.create(
-                    this, getOnBackPressedDispatcher(), mBookmarkManager::onBackPressed);
+                    this, getOnBackPressedDispatcher(), mBookmarkManagerCoordinator::onBackPressed);
         }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mBookmarkManager.onDestroyed();
+        mBookmarkManagerCoordinator.onDestroyed();
     }
 
     @Override
@@ -63,15 +63,14 @@ public class BookmarkActivity extends SnackbarActivity {
         if (requestCode == EDIT_BOOKMARK_REQUEST_CODE && resultCode == RESULT_OK) {
             BookmarkId bookmarkId = BookmarkId.getBookmarkIdFromString(
                     data.getStringExtra(INTENT_VISIT_BOOKMARK_ID));
-            mBookmarkManager.openBookmark(bookmarkId);
+            mBookmarkManagerCoordinator.openBookmark(bookmarkId);
         }
     }
 
     /**
-     * @return The {@link BookmarkManager} for testing purposes.
+     * @return The {@link BookmarkManagerCoordinator} for testing purposes.
      */
-    @VisibleForTesting
-    public BookmarkManager getManagerForTesting() {
-        return mBookmarkManager;
+    public BookmarkManagerCoordinator getManagerForTesting() {
+        return mBookmarkManagerCoordinator;
     }
 }

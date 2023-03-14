@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/lacros/browser_test_util.h"
 #include "chrome/browser/ui/lacros/window_utility.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/crosapi/cpp/input_method_test_interface_constants.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -42,24 +44,50 @@ int GetInputMethodTestInterfaceVersion() {
 // execute IME operations from Ash-Chrome.
 // `required_versions` are the `MethodMinVersion` values of all the test methods
 // from InputMethodTestInterface that will be used by the test.
-// Returns an unbound remote if the current version of InputMethodTestInterface
-// does not support the required test methods.
+// `required_test_capabilities` is a list of all test-only capabilities that Ash
+// needs to support. Returns an unbound remote if the current version of
+// InputMethodTestInterface does not support the required test methods or
+// capabilities.
 mojo::Remote<InputMethodTestInterface> BindInputMethodTestInterface(
     std::initializer_list<InputMethodTestInterface::MethodMinVersions>
-        required_versions) {
-  mojo::Remote<InputMethodTestInterface> remote;
+        required_versions,
+    const std::vector<base::StringPiece>& required_test_capabilities = {}) {
+  // TODO(b/238838841): Remove the `required_versions` check once all tested
+  // versions of Ash in skew tests support `HasCapabilities`.
   if (!IsInputMethodTestInterfaceAvailable() ||
       GetInputMethodTestInterfaceVersion() <
           static_cast<int>(std::max(required_versions))) {
-    return remote;
+    return {};
   }
 
+  // Bind an `InputMethodTestInterface`.
+  mojo::Remote<InputMethodTestInterface> remote;
   crosapi::mojom::TestControllerAsyncWaiter test_controller_async_waiter(
       chromeos::LacrosService::Get()
           ->GetRemote<crosapi::mojom::TestController>()
           .get());
   test_controller_async_waiter.BindInputMethodTestInterface(
       remote.BindNewPipeAndPassReceiver());
+
+  if (required_test_capabilities.empty()) {
+    return remote;
+  }
+
+  // Check if all the required test capabilities are satisfied.
+  if (GetInputMethodTestInterfaceVersion() <
+      static_cast<int>(InputMethodTestInterface::MethodMinVersions::
+                           kHasCapabilitiesMinVersion)) {
+    return {};
+  }
+  InputMethodTestInterfaceAsyncWaiter input_method_async_waiter(remote.get());
+  bool has_capabilities;
+  input_method_async_waiter.HasCapabilities(
+      std::vector<std::string>(required_test_capabilities.begin(),
+                               required_test_capabilities.end()),
+      &has_capabilities);
+  if (!has_capabilities) {
+    return {};
+  }
   return remote;
 }
 
@@ -93,36 +121,69 @@ content::WebContents* GetActiveWebContents(Browser* browser) {
   return browser->tab_strip_model()->GetActiveWebContents();
 }
 
+struct Modifiers {
+  bool alt;
+  bool control;
+  bool meta;
+  bool shift;
+
+  ui::EventFlags ToFlags() const {
+    ui::EventFlags flags = ui::EF_NONE;
+    if (control) {
+      flags |= ui::EF_CONTROL_DOWN;
+    }
+    if (shift) {
+      flags |= ui::EF_SHIFT_DOWN;
+    }
+    if (meta) {
+      flags |= ui::EF_COMMAND_DOWN;
+    }
+    if (alt) {
+      flags |= ui::EF_ALT_DOWN;
+    }
+    return flags;
+  }
+};
+
 auto IsKeyboardEvent(const base::StringPiece type,
                      const base::StringPiece key,
                      const base::StringPiece code,
-                     int key_code) {
+                     int key_code,
+                     Modifiers modifiers = {}) {
   return base::test::IsJson(content::JsReplace(
       R"({
         "type": $1,
         "key": $2,
         "code": $3,
         "keyCode": $4,
+        "altKey": $5,
+        "ctrlKey": $6,
+        "metaKey": $7,
+        "shiftKey": $8,
       })",
-      type, key, code, key_code));
+      type, key, code, key_code, modifiers.alt, modifiers.control,
+      modifiers.meta, modifiers.shift));
 }
 
 auto IsKeyDownEvent(const base::StringPiece key,
                     const base::StringPiece code,
-                    int key_code) {
-  return IsKeyboardEvent("keydown", key, code, key_code);
+                    int key_code,
+                    Modifiers modifiers = {}) {
+  return IsKeyboardEvent("keydown", key, code, key_code, modifiers);
 }
 
 auto IsKeyUpEvent(const base::StringPiece key,
                   const base::StringPiece code,
-                  int key_code) {
-  return IsKeyboardEvent("keyup", key, code, key_code);
+                  int key_code,
+                  Modifiers modifiers = {}) {
+  return IsKeyboardEvent("keyup", key, code, key_code, modifiers);
 }
 
 auto IsKeyPressEvent(const base::StringPiece key,
                      const base::StringPiece code,
-                     int key_code) {
-  return IsKeyboardEvent("keypress", key, code, key_code);
+                     int key_code,
+                     Modifiers modifiers = {}) {
+  return IsKeyboardEvent("keypress", key, code, key_code, modifiers);
 }
 
 auto IsCompositionEvent(const base::StringPiece type,
@@ -230,7 +291,11 @@ InputEventListener ListenForInputEvents(content::WebContents* web_content,
                type: e.type,
                key: e.key,
                code: e.code,
-               keyCode: e.keyCode
+               keyCode: e.keyCode,
+               altKey: e.altKey,
+               ctrlKey: e.ctrlKey,
+               metaKey: e.metaKey,
+               shiftKey: e.shiftKey
              };
            }
            return {};
@@ -300,29 +365,65 @@ bool SetInputFieldText(content::WebContents* web_content,
 }
 
 mojom::KeyEventPtr CreateKeyPressEvent(ui::DomKey dom_key,
-                                       ui::DomCode dom_code) {
-  return mojom::KeyEvent::New(mojom::KeyEventType::kKeyPress,
-                              static_cast<int>(dom_key),
-                              static_cast<int>(dom_code),
-                              static_cast<int>(ui::KeyboardCode::VKEY_UNKNOWN));
+                                       ui::DomCode dom_code,
+                                       ui::EventFlags flags = ui::EF_NONE) {
+  return mojom::KeyEvent::New(
+      mojom::KeyEventType::kKeyPress, static_cast<int>(dom_key),
+      static_cast<int>(dom_code),
+      static_cast<int>(ui::KeyboardCode::VKEY_UNKNOWN), flags);
 }
 
 mojom::KeyEventPtr CreateKeyReleaseEvent(ui::DomKey dom_key,
-                                         ui::DomCode dom_code) {
-  return mojom::KeyEvent::New(mojom::KeyEventType::kKeyRelease,
-                              static_cast<int>(dom_key),
-                              static_cast<int>(dom_code),
-                              static_cast<int>(ui::KeyboardCode::VKEY_UNKNOWN));
+                                         ui::DomCode dom_code,
+                                         ui::EventFlags flags = ui::EF_NONE) {
+  return mojom::KeyEvent::New(
+      mojom::KeyEventType::kKeyRelease, static_cast<int>(dom_key),
+      static_cast<int>(dom_code),
+      static_cast<int>(ui::KeyboardCode::VKEY_UNKNOWN), flags);
 }
 
-std::vector<mojom::KeyEventPtr> CreateKeyPressAndReleaseEvents(
-    ui::DomKey dom_key,
-    ui::DomCode dom_code) {
-  std::vector<mojom::KeyEventPtr> key_events;
-  key_events.push_back(CreateKeyPressEvent(dom_key, dom_code));
-  key_events.push_back(CreateKeyReleaseEvent(dom_key, dom_code));
-  return key_events;
-}
+class KeySequenceBuilder {
+ public:
+  KeySequenceBuilder Press(ui::DomKey dom_key, ui::DomCode dom_code) && {
+    UpdateModifiersFromDomKey(dom_key, true);
+    key_events_.push_back(
+        CreateKeyPressEvent(dom_key, dom_code, active_modifiers_.ToFlags()));
+    return std::move(*this);
+  }
+
+  KeySequenceBuilder Release(ui::DomKey dom_key, ui::DomCode dom_code) && {
+    UpdateModifiersFromDomKey(dom_key, false);
+    key_events_.push_back(
+        CreateKeyReleaseEvent(dom_key, dom_code, active_modifiers_.ToFlags()));
+    return std::move(*this);
+  }
+
+  KeySequenceBuilder PressAndRelease(ui::DomKey dom_key,
+                                     ui::DomCode dom_code) && {
+    return std::move(*this).Press(dom_key, dom_code).Release(dom_key, dom_code);
+  }
+
+  std::vector<mojom::KeyEventPtr> Build() && { return std::move(key_events_); }
+
+ private:
+  void UpdateModifiersFromDomKey(ui::DomKey dom_key, bool pressed) {
+    if (dom_key == ui::DomKey::ALT) {
+      active_modifiers_.alt = pressed;
+    }
+    if (dom_key == ui::DomKey::CONTROL) {
+      active_modifiers_.control = pressed;
+    }
+    if (dom_key == ui::DomKey::META) {
+      active_modifiers_.meta = pressed;
+    }
+    if (dom_key == ui::DomKey::SHIFT) {
+      active_modifiers_.shift = pressed;
+    }
+  }
+
+  std::vector<mojom::KeyEventPtr> key_events_;
+  Modifiers active_modifiers_;
+};
 
 // Sends the key events to the input method. The input method will not handle
 // the given key events.
@@ -771,15 +872,13 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
       input_method.get());
   input_method_async_waiter.WaitForFocus();
 
-  SendKeyEventsSync(input_method_async_waiter,
-                    CreateKeyPressAndReleaseEvents(
-                        ui::DomKey::FromCharacter('a'), ui::DomCode::US_A));
-  SendKeyEventsSync(input_method_async_waiter,
-                    CreateKeyPressAndReleaseEvents(
-                        ui::DomKey::FromCharacter('b'), ui::DomCode::US_B));
-  SendKeyEventsSync(input_method_async_waiter,
-                    CreateKeyPressAndReleaseEvents(
-                        ui::DomKey::FromCharacter('c'), ui::DomCode::US_C));
+  SendKeyEventsSync(
+      input_method_async_waiter,
+      KeySequenceBuilder()
+          .PressAndRelease(ui::DomKey::FromCharacter('a'), ui::DomCode::US_A)
+          .PressAndRelease(ui::DomKey::FromCharacter('b'), ui::DomCode::US_B)
+          .PressAndRelease(ui::DomKey::FromCharacter('c'), ui::DomCode::US_C)
+          .Build());
 
   EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
                                          "abc", gfx::Range(3)));
@@ -802,23 +901,120 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
       input_method.get());
   input_method_async_waiter.WaitForFocus();
 
-  SendKeyEventsSync(input_method_async_waiter,
-                    CreateKeyPressAndReleaseEvents(ui::DomKey::BACKSPACE,
-                                                   ui::DomCode::BACKSPACE));
+  SendKeyEventsSync(
+      input_method_async_waiter,
+      KeySequenceBuilder()
+          .PressAndRelease(ui::DomKey::BACKSPACE, ui::DomCode::BACKSPACE)
+          .Build());
   EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
                                          "helo", gfx::Range(2)));
 
-  SendKeyEventsSync(input_method_async_waiter,
-                    CreateKeyPressAndReleaseEvents(ui::DomKey::BACKSPACE,
-                                                   ui::DomCode::BACKSPACE));
+  SendKeyEventsSync(
+      input_method_async_waiter,
+      KeySequenceBuilder()
+          .PressAndRelease(ui::DomKey::BACKSPACE, ui::DomCode::BACKSPACE)
+          .Build());
   EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
                                          "hlo", gfx::Range(1)));
 
-  SendKeyEventsSync(input_method_async_waiter,
-                    CreateKeyPressAndReleaseEvents(ui::DomKey::BACKSPACE,
-                                                   ui::DomCode::BACKSPACE));
+  SendKeyEventsSync(
+      input_method_async_waiter,
+      KeySequenceBuilder()
+          .PressAndRelease(ui::DomKey::BACKSPACE, ui::DomCode::BACKSPACE)
+          .Build());
   EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
                                          "lo", gfx::Range(0)));
+}
+
+IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+                       SendKeyEventShortcutsModifiesSelection) {
+  mojo::Remote<InputMethodTestInterface> input_method =
+      BindInputMethodTestInterface(
+          {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
+           InputMethodTestInterface::MethodMinVersions::
+               kKeyEventHandledMinVersion},
+          {kInputMethodTestCapabilitySendKeyModifiers});
+  if (!input_method.is_bound()) {
+    GTEST_SKIP() << "Unsupported ash version";
+  }
+  const std::string id = RenderAutofocusedInputFieldInLacros(browser());
+  ASSERT_TRUE(SetInputFieldText(GetActiveWebContents(browser()), id,
+                                "abc abc abc", gfx::Range(0)));
+  InputMethodTestInterfaceAsyncWaiter input_method_async_waiter(
+      input_method.get());
+  input_method_async_waiter.WaitForFocus();
+
+  // Press Ctrl-A with: Control down, A down, A up, Control up
+  SendKeyEventsSync(
+      input_method_async_waiter,
+      KeySequenceBuilder()
+          .Press(ui::DomKey::CONTROL, ui::DomCode::CONTROL_LEFT)
+          .PressAndRelease(ui::DomKey::FromCharacter('a'), ui::DomCode::US_A)
+          .Release(ui::DomKey::CONTROL, ui::DomCode::CONTROL_LEFT)
+          .Build());
+  EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
+                                         "abc abc abc", gfx::Range(0, 11)));
+
+  // Press Ctrl+Left.
+  SendKeyEventsSync(
+      input_method_async_waiter,
+      KeySequenceBuilder()
+          .Press(ui::DomKey::CONTROL, ui::DomCode::CONTROL_LEFT)
+          .PressAndRelease(ui::DomKey::ARROW_LEFT, ui::DomCode::ARROW_LEFT)
+          .Release(ui::DomKey::CONTROL, ui::DomCode::CONTROL_LEFT)
+          .Build());
+  EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
+                                         "abc abc abc", gfx::Range(8)));
+
+  // Press Ctrl+Right with a different order.
+  SendKeyEventsSync(
+      input_method_async_waiter,
+      KeySequenceBuilder()
+          .Press(ui::DomKey::CONTROL, ui::DomCode::CONTROL_LEFT)
+          .Press(ui::DomKey::ARROW_RIGHT, ui::DomCode::ARROW_RIGHT)
+          .Release(ui::DomKey::CONTROL, ui::DomCode::CONTROL_LEFT)
+          .Release(ui::DomKey::ARROW_RIGHT, ui::DomCode::ARROW_RIGHT)
+          .Build());
+  EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
+                                         "abc abc abc", gfx::Range(11)));
+
+  // Press Shift+Left.
+  SendKeyEventsSync(
+      input_method_async_waiter,
+      KeySequenceBuilder()
+          .Press(ui::DomKey::SHIFT, ui::DomCode::SHIFT_LEFT)
+          .PressAndRelease(ui::DomKey::ARROW_LEFT, ui::DomCode::ARROW_LEFT)
+          .Release(ui::DomKey::SHIFT, ui::DomCode::SHIFT_LEFT)
+          .Build());
+  EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
+                                         "abc abc abc", gfx::Range(10, 11)));
+
+  // Press Ctrl+Shift+Left.
+  SendKeyEventsSync(
+      input_method_async_waiter,
+      KeySequenceBuilder()
+          .Press(ui::DomKey::CONTROL, ui::DomCode::CONTROL_LEFT)
+          .Press(ui::DomKey::SHIFT, ui::DomCode::SHIFT_LEFT)
+          .PressAndRelease(ui::DomKey::ARROW_LEFT, ui::DomCode::ARROW_LEFT)
+          .Release(ui::DomKey::SHIFT, ui::DomCode::SHIFT_LEFT)
+          .Release(ui::DomKey::CONTROL, ui::DomCode::CONTROL_LEFT)
+          .Build());
+  EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
+                                         "abc abc abc", gfx::Range(8, 11)));
+
+  // Press Ctrl+Shift+Right with a different order.
+  SendKeyEventsSync(
+      input_method_async_waiter,
+      KeySequenceBuilder()
+          .Press(ui::DomKey::SHIFT, ui::DomCode::SHIFT_LEFT)
+          .Press(ui::DomKey::CONTROL, ui::DomCode::CONTROL_LEFT)
+          .Press(ui::DomKey::ARROW_RIGHT, ui::DomCode::ARROW_RIGHT)
+          .Release(ui::DomKey::SHIFT, ui::DomCode::SHIFT_LEFT)
+          .Release(ui::DomKey::ARROW_RIGHT, ui::DomCode::ARROW_RIGHT)
+          .Release(ui::DomKey::CONTROL, ui::DomCode::CONTROL_LEFT)
+          .Build());
+  EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
+                                         "abc abc abc", gfx::Range(11, 11)));
 }
 
 IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
@@ -885,10 +1081,9 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
   InputEventListener event_listener =
       ListenForInputEvents(GetActiveWebContents(browser()), id);
 
-  SendKeyEventSync(input_method_async_waiter,
-                   CreateKeyPressEvent('a', ui::DomCode::US_A));
-  SendKeyEventSync(input_method_async_waiter,
-                   CreateKeyReleaseEvent('a', ui::DomCode::US_A));
+  SendKeyEventsSync(
+      input_method_async_waiter,
+      KeySequenceBuilder().PressAndRelease('a', ui::DomCode::US_A).Build());
 
   EXPECT_THAT(event_listener.WaitForMessage(), IsKeyDownEvent("a", "KeyA", 65));
   EXPECT_THAT(event_listener.WaitForMessage(),
@@ -899,6 +1094,62 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
   EXPECT_THAT(event_listener.WaitForMessage(),
               IsInputEvent("insertText", "a", CompositionState::kNotComposing));
   EXPECT_THAT(event_listener.WaitForMessage(), IsKeyUpEvent("a", "KeyA", 65));
+  EXPECT_FALSE(event_listener.HasMessages());
+}
+
+IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+                       SendKeyEventModifiersTriggersWebEvents) {
+  mojo::Remote<InputMethodTestInterface> input_method =
+      BindInputMethodTestInterface(
+          {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
+           InputMethodTestInterface::MethodMinVersions::
+               kKeyEventHandledMinVersion},
+          {kInputMethodTestCapabilitySendKeyModifiers});
+  if (!input_method.is_bound()) {
+    GTEST_SKIP() << "Unsupported ash version";
+  }
+  const std::string id = RenderAutofocusedInputFieldInLacros(browser());
+  InputMethodTestInterfaceAsyncWaiter input_method_async_waiter(
+      input_method.get());
+  input_method_async_waiter.WaitForFocus();
+  InputEventListener event_listener =
+      ListenForInputEvents(GetActiveWebContents(browser()), id);
+
+  // Press Control+Alt+Shift+Meta and release them in a different order.
+  SendKeyEventsSync(input_method_async_waiter,
+                    KeySequenceBuilder()
+                        .Press(ui::DomKey::CONTROL, ui::DomCode::CONTROL_LEFT)
+                        .Press(ui::DomKey::ALT, ui::DomCode::ALT_RIGHT)
+                        .Press(ui::DomKey::SHIFT, ui::DomCode::SHIFT_LEFT)
+                        .Press(ui::DomKey::META, ui::DomCode::META_LEFT)
+                        .Release(ui::DomKey::SHIFT, ui::DomCode::SHIFT_LEFT)
+                        .Release(ui::DomKey::ALT, ui::DomCode::ALT_RIGHT)
+                        .Release(ui::DomKey::CONTROL, ui::DomCode::CONTROL_LEFT)
+                        .Release(ui::DomKey::META, ui::DomCode::META_LEFT)
+                        .Build());
+
+  EXPECT_THAT(event_listener.WaitForMessage(),
+              IsKeyDownEvent("Control", "ControlLeft", 17, {.control = true}));
+  EXPECT_THAT(
+      event_listener.WaitForMessage(),
+      IsKeyDownEvent("Alt", "AltRight", 18, {.alt = true, .control = true}));
+  EXPECT_THAT(event_listener.WaitForMessage(),
+              IsKeyDownEvent("Shift", "ShiftLeft", 16,
+                             {.alt = true, .control = true, .shift = true}));
+  EXPECT_THAT(event_listener.WaitForMessage(),
+              IsKeyDownEvent(
+                  "Meta", "MetaLeft", 91,
+                  {.alt = true, .control = true, .meta = true, .shift = true}));
+  EXPECT_THAT(event_listener.WaitForMessage(),
+              IsKeyUpEvent("Shift", "ShiftLeft", 16,
+                           {.alt = true, .control = true, .meta = true}));
+  EXPECT_THAT(
+      event_listener.WaitForMessage(),
+      IsKeyUpEvent("Alt", "AltRight", 18, {.control = true, .meta = true}));
+  EXPECT_THAT(event_listener.WaitForMessage(),
+              IsKeyUpEvent("Control", "ControlLeft", 17, {.meta = true}));
+  EXPECT_THAT(event_listener.WaitForMessage(),
+              IsKeyUpEvent("Meta", "MetaLeft", 91));
   EXPECT_FALSE(event_listener.HasMessages());
 }
 

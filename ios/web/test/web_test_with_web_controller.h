@@ -18,6 +18,8 @@ class WebTestWithWebController : public WebTestWithWebState {
   WebTestWithWebController();
   explicit WebTestWithWebController(std::unique_ptr<web::WebClient> web_client);
   ~WebTestWithWebController() override;
+  void SetUp() override;
+
   // Returns web controller for testing or null if `web_state()` is null.
   CRWWebController* web_controller();
 };

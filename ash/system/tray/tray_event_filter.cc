@@ -35,35 +35,41 @@ TrayEventFilter::~TrayEventFilter() {
 void TrayEventFilter::AddBubble(TrayBubbleBase* bubble) {
   bool was_empty = bubbles_.empty();
   bubbles_.insert(bubble);
-  if (was_empty && !bubbles_.empty())
+  if (was_empty && !bubbles_.empty()) {
     Shell::Get()->AddPreTargetHandler(this);
+  }
 }
 
 void TrayEventFilter::RemoveBubble(TrayBubbleBase* bubble) {
   bubbles_.erase(bubble);
-  if (bubbles_.empty())
+  if (bubbles_.empty()) {
     Shell::Get()->RemovePreTargetHandler(this);
+  }
 }
 
 void TrayEventFilter::OnMouseEvent(ui::MouseEvent* event) {
-  if (event->type() == ui::ET_MOUSE_PRESSED)
+  if (event->type() == ui::ET_MOUSE_PRESSED) {
     ProcessPressedEvent(*event);
+  }
 }
 
 void TrayEventFilter::OnTouchEvent(ui::TouchEvent* event) {
-  if (event->type() == ui::ET_TOUCH_PRESSED)
+  if (event->type() == ui::ET_TOUCH_PRESSED) {
     ProcessPressedEvent(*event);
+  }
 }
 
 void TrayEventFilter::OnGestureEvent(ui::GestureEvent* event) {
-  if (event->type() == ui::ET_GESTURE_SCROLL_BEGIN)
+  if (event->type() == ui::ET_GESTURE_SCROLL_BEGIN) {
     ProcessPressedEvent(*event);
+  }
 }
 
 void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
   // Users in a capture session may be trying to capture tray bubble(s).
-  if (capture_mode_util::IsCaptureModeActive())
+  if (capture_mode_util::IsCaptureModeActive()) {
     return;
+  }
 
   // The hit target window for the virtual keyboard isn't the same as its
   // views::Widget.
@@ -78,8 +84,9 @@ void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
     const int container_id = container->GetId();
     // Don't process events that occurred inside an embedded menu, for example
     // the right-click menu in a popup notification.
-    if (container_id == kShellWindowId_MenuContainer)
+    if (container_id == kShellWindowId_MenuContainer) {
       return;
+    }
     // Don't process events that occurred inside a popup notification
     // from message center.
     if (container_id == kShellWindowId_ShelfContainer &&
@@ -89,8 +96,9 @@ void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
       return;
     }
     // Don't process events that occurred inside a virtual keyboard.
-    if (container_id == kShellWindowId_VirtualKeyboardContainer)
+    if (container_id == kShellWindowId_VirtualKeyboardContainer) {
       return;
+    }
   }
 
   std::set<TrayBackgroundView*> trays;
@@ -101,8 +109,9 @@ void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
                      : event.root_location();
   for (const TrayBubbleBase* bubble : bubbles_) {
     const views::Widget* bubble_widget = bubble->GetBubbleWidget();
-    if (!bubble_widget)
+    if (!bubble_widget) {
       continue;
+    }
 
     gfx::Rect bounds = bubble_widget->GetWindowBoundsInScreen();
     bounds.Inset(bubble->GetBubbleView()->GetBorderInsets());
@@ -133,8 +142,7 @@ void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
 
       // When Quick Settings bubble is opened and the date tray is clicked, the
       // bubble should not be closed since it will transition to show calendar.
-      if (features::IsCalendarViewEnabled() &&
-          status_area->date_tray()->GetBoundsInScreen().Contains(
+      if (status_area->date_tray()->GetBoundsInScreen().Contains(
               screen_location)) {
         continue;
       }
@@ -150,24 +158,27 @@ void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
       }
     }
 
-    if (bounds.Contains(screen_location))
+    if (bounds.Contains(screen_location)) {
       continue;
+    }
     if (bubble->GetTray()) {
       // Maybe close the parent tray if the user drags on it. Otherwise, let the
       // tray logic handle the event and determine show/hide behavior if the
       // user clicks on the parent tray.
       bounds = bubble->GetTray()->GetBoundsInScreen();
       if (bubble->GetTray()->GetVisible() && bounds.Contains(screen_location) &&
-          event.type() != ui::ET_GESTURE_SCROLL_BEGIN)
+          event.type() != ui::ET_GESTURE_SCROLL_BEGIN) {
         continue;
+      }
     }
 
     trays.insert(bubble->GetTray());
   }
 
   // Close all bubbles other than the one that the user clicked on.
-  for (TrayBackgroundView* tray_background_view : trays)
+  for (TrayBackgroundView* tray_background_view : trays) {
     tray_background_view->ClickedOutsideBubble();
+  }
 }
 
 }  // namespace ash

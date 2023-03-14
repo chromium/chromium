@@ -727,7 +727,7 @@ TEST_F(NGInlineLayoutAlgorithmTest, TextCombineFake) {
 }
 
 // http://crbug.com/1413969
-TEST_F(NGInlineLayoutAlgorithmTest, EmptyInitialLetter) {
+TEST_F(NGInlineLayoutAlgorithmTest, InitialLetterEmpty) {
   LoadAhem();
   InsertStyleElement(
       "body { font: 10px/15px Ahem; }"
@@ -736,6 +736,23 @@ TEST_F(NGInlineLayoutAlgorithmTest, EmptyInitialLetter) {
   const char* const expected = R"DUMP(
 {Line #descendants=2 LTR Standard} "0,0 0x15"
 {Box #descendants=1 AtomicInlineLTR Standard} "0,40 0x0"
+)DUMP";
+  EXPECT_EQ(expected, AsFragmentItemsString(*To<LayoutBlockFlow>(
+                          GetLayoutObjectByElementId("sample"))));
+}
+
+// http://crbug.com/1420168
+TEST_F(NGInlineLayoutAlgorithmTest, InitialLetterWithEmptyInline) {
+  GetDocument().SetCompatibilityMode(Document::kQuirksMode);
+  LoadAhem();
+  InsertStyleElement(
+      "body { font: 20px/24px Ahem; }"
+      "div::first-letter { initial-letter: 3; }");
+  SetBodyInnerHTML("<div id=sample>x<span></span></div>");
+  const char* const expected = R"DUMP(
+{Line #descendants=3 LTR Standard} "0,0 80x0"
+{Box #descendants=1 AtomicInlineLTR Standard} "0,2 80x80"
+{Box #descendants=1 Standard} "80,-16 0x20"
 )DUMP";
   EXPECT_EQ(expected, AsFragmentItemsString(*To<LayoutBlockFlow>(
                           GetLayoutObjectByElementId("sample"))));

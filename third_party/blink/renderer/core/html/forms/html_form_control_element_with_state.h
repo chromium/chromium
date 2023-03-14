@@ -56,6 +56,7 @@ class CORE_EXPORT HTMLFormControlElementWithState
 
   void DispatchInputEvent();
   void DispatchChangeEvent();
+  void DispatchCancelEvent();
 
  protected:
   bool user_has_edited_the_field_ = false;

@@ -8,6 +8,7 @@ import android.content.Context;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
 import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -67,8 +68,9 @@ public interface TouchToFillComponent {
 
         /**
          * Called when the user selects the "Manage Passwords" option.
+         * @param passkeysShown True when the sheet contained passkey credentials.
          */
-        void onManagePasswordsSelected();
+        void onManagePasswordsSelected(boolean passkeysShown);
     }
 
     /**
@@ -76,8 +78,11 @@ public interface TouchToFillComponent {
      * @param context A {@link Context} to create views and retrieve resources.
      * @param sheetController A {@link BottomSheetController} used to show/hide the sheet.
      * @param delegate A {@link Delegate} that handles dismiss events.
+     * @param bottomSheetFocusHelper A {@link BottomSheetFocusHelper} used to restore accessibility
+     *         focus after the BottomSheet closes.
      */
-    void initialize(Context context, BottomSheetController sheetController, Delegate delegate);
+    void initialize(Context context, BottomSheetController sheetController, Delegate delegate,
+            BottomSheetFocusHelper bottomSheetFocusHelper);
 
     /**
      * Displays the given credentials in a new bottom sheet.
@@ -87,8 +92,10 @@ public interface TouchToFillComponent {
      * @param credentials A list of {@link Credential}s that will be displayed.
      * @param triggerSubmission A {@link boolean} that indicates whether a form should be submitted
      *         after filling.
+     * @param managePasskeysHidesPasswords A {@link boolean} that indicates whether managing
+     *         passkeys will show a screen that does not provide password management.
      */
     void showCredentials(GURL url, boolean isOriginSecure,
             List<WebAuthnCredential> webauthnCredentials, List<Credential> credentials,
-            boolean triggerSubmission);
+            boolean triggerSubmission, boolean managePasskeysHidesPasswords);
 }

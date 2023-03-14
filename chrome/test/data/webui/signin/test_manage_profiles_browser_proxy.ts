@@ -23,7 +23,7 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
       'confirmProfileSwitch', 'cancelProfileSwitch',
       // <if expr="chromeos_lacros">
       'getAvailableAccounts', 'openAshAccountSettingsPage',
-      'selectExistingAccountLacros',
+      'selectExistingAccountLacros', 'openDeviceGuestLinkLacros',
       // </if>
     ]);
 
@@ -178,6 +178,10 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
 
   selectExistingAccountLacros(profileColor: number|null, gaiaId: string) {
     this.methodCalled('selectExistingAccountLacros', [profileColor, gaiaId]);
+  }
+
+  openDeviceGuestLinkLacros() {
+    this.methodCalled('openDeviceGuestLinkLacros');
   }
   // </if>
 }

@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "components/exo/buffer.h"
 #include "components/exo/shell_surface.h"
+#include "components/exo/shell_surface_util.h"
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/shell_surface_builder.h"
 #include "components/exo/wayland/scoped_wl.h"
@@ -424,6 +425,19 @@ TEST_F(ZAuraSurfaceTest, CanSetFullscreenModeToImmersive) {
   EXPECT_CALL(delegate, SetUseImmersiveForFullscreen(true));
 
   aura_surface().SetFullscreenMode(ZAURA_SURFACE_FULLSCREEN_MODE_IMMERSIVE);
+}
+
+TEST_F(ZAuraSurfaceTest, CanSetAccessibilityId) {
+  aura_surface().SetAccessibilityId(123);
+
+  EXPECT_EQ(123, exo::GetShellClientAccessibilityId(surface().window()));
+}
+
+TEST_F(ZAuraSurfaceTest, CanUnsetAccessibilityId) {
+  aura_surface().SetAccessibilityId(-1);
+
+  EXPECT_FALSE(
+      exo::GetShellClientAccessibilityId(surface().window()).has_value());
 }
 
 // Test without setting surfaces on SetUp().
